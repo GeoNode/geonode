@@ -25,7 +25,6 @@ scattered over the codebase
 import os.path
 from geoserver.resource import FeatureType
 from geoserver.resource import Coverage
-from tempfile import mkstemp
 
 from UserList import UserList
 import zipfile
@@ -109,9 +108,8 @@ class FileType(object):
         base_matches = [
             f for f in others if os.path.splitext(f)[0] == base_name]
         slds = _find_file_type(base_matches, extension='.sld')
-        aux_files = [
-            f for f in others if os.path.splitext(f)[1][
-                1:].lower() in self.auxillary_file_exts]
+        aux_files = [f for f in others if os.path.splitext(f)[1][1:].lower()
+                     in self.auxillary_file_exts]
         xmls = _find_file_type(base_matches, extension='.xml')
         return aux_files, slds, xmls
 
@@ -122,23 +120,22 @@ class FileType(object):
 TYPE_UNKNOWN = FileType("unknown", None, None)
 
 types = [
-    FileType(
-        "Shapefile", "shp", vector, auxillary_file_exts=(
-            'dbf', 'shx', 'prj')), FileType(
-                "GeoTIFF", "tif", raster, aliases=(
-                    'tiff', 'geotif', 'geotiff')), FileType(
-                        "PNG", "png", raster, auxillary_file_exts=(
-                            'prj',)), FileType(
-                                "JPG", "jpg", raster, auxillary_file_exts=(
-                                    'prj',)), FileType(
-                                        "CSV", "csv", vector), FileType(
-                                            "KML", "kml", vector, aliases=(
-                                                'kmz',)), ]
+    FileType("Shapefile", "shp", vector,
+             auxillary_file_exts=('dbf', 'shx', 'prj')),
+    FileType("GeoTIFF", "tif", raster,
+             aliases=('tiff', 'geotif', 'geotiff')),
+    FileType("PNG", "png", raster,
+             auxillary_file_exts=('prj',)),
+    FileType("JPG", "jpg", raster,
+             auxillary_file_exts=('prj',)),
+    FileType("CSV", "csv", vector),
+    FileType("KML", "kml", vector,
+             aliases=('kmz',)),
+]
 
 
 def _contains_bad_names(file_names):
     '''return True if the list of names contains a bad one'''
-    xml_unsafe = re.compile(r"(^[^a-zA-Z\._]+)|([^a-zA-Z\._0-9]+)")
     return any([xml_unsafe.search(f) for f in file_names])
 
 
@@ -169,26 +166,6 @@ def _rename_files(file_names):
         else:
             files.append(f)
     return files
-
-
-def _rename_zip(old_name, valid_name):
-    """Rename files inside zip """
-    handle, tempfile = mkstemp()
-    old_zip = zipfile.ZipFile(old_name, 'r')
-    new_zip = zipfile.ZipFile(open(tempfile, "wb"), "w")
-
-    files_zip = old_zip.namelist()
-    files = ['.shp', '.prj', '.shx', '.dbf', '.sld']
-    for file in files_zip:
-        name, ext = os.path.splitext(file)
-        if ext.lower() in files:
-            # OS X creates hidden subdirectory with garbage files having same
-            # extensions; ignore.
-            files.remove(ext)
-            new_zip.writestr(valid_name + ext, old_zip.read(file))
-    old_zip.close()
-    new_zip.close()
-    os.rename(tempfile, old_name)
 
 
 def _find_file_type(file_names, extension):

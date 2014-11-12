@@ -35,7 +35,6 @@ import gsimporter
 import json
 import logging
 import os
-import re
 import traceback
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
@@ -120,7 +119,7 @@ def _error_response(req, exception=None, errors=None, force_ajax=True):
     if exception:
         logger.exception('Unexpected error in upload step')
     else:
-        logger.warning('upload error: %s', errors)
+        logger.error('upload error: %s', errors)
     if req.is_ajax() or force_ajax:
         content_type = 'text/html' if not req.is_ajax() else None
         return json_response(exception=exception, errors=errors,
@@ -447,33 +446,19 @@ def time_step_view(request, upload_session):
 
     cleaned = form.cleaned_data
 
-    time_attribute_name, time_transform_type = None, None
-    end_time_attribute_name, end_time_transform_type = None, None
+    start_attribute_and_type = cleaned.get('start_attribute', None)
 
-    time_attribute = cleaned.get('attribute', None)
-    end_time_attribute = cleaned.get('end_attribute', None)
-
-    # submitted values will be in the form of '<name> [<type>]'
-    name_pat = re.compile('^\S+')
-    type_pat = re.compile('\[(.*)\]')
-
-    if time_attribute:
-        time_attribute_name = name_pat.search(time_attribute).group(0)
-        time_attribute_type = type_pat.search(time_attribute).group(1)
-        time_transform_type = None if time_attribute_type == 'Date' else 'DateFormatTransform'
-    if end_time_attribute:
-        end_time_attribute_name = name_pat.search(end_time_attribute).group(0)
-        end_time_attribute_type = type_pat.search(end_time_attribute).group(1)
-        end_time_transform_type = None if end_time_attribute_type == 'Date' else 'DateFormatTransform'
-
-    if time_attribute:
+    if start_attribute_and_type:
+        tx = lambda type_name: None if type_name is None or type_name == 'Date' \
+            else 'DateFormatTransform'
+        end_attribute, end_type = cleaned.get('end_attribute', (None, None))
         upload.time_step(
             upload_session,
-            time_attribute=time_attribute_name,
-            time_transform_type=time_transform_type,
+            time_attribute=start_attribute_and_type[0],
+            time_transform_type=tx(start_attribute_and_type[1]),
             time_format=cleaned.get('attribute_format', None),
-            end_time_attribute=end_time_attribute_name,
-            end_time_transform_type=end_time_transform_type,
+            end_time_attribute=end_attribute,
+            end_time_transform_type=tx(end_type),
             end_time_format=cleaned.get('end_attribute_format', None),
             presentation_strategy=cleaned['presentation_strategy'],
             precision_value=cleaned['precision_value'],

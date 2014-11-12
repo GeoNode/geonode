@@ -40,6 +40,7 @@ from geonode.upload.models import Upload
 from geonode.upload import signals
 from geonode.upload.utils import create_geoserver_db_featurestore
 from geonode.geoserver.helpers import gs_catalog, gs_uploader, ogc_server_settings
+from geonode.geoserver.helpers import set_time_info
 
 import geoserver
 from geoserver.resource import Coverage
@@ -361,8 +362,7 @@ def time_step(upload_session, time_attribute, time_transform_type,
               end_time_attribute=None,
               end_time_transform_type=None,
               end_time_format=None,
-              time_format=None,
-              use_big_date=None):
+              time_format=None):
     '''
     time_attribute - name of attribute to use as time
 
@@ -393,11 +393,9 @@ def time_step(upload_session, time_attribute, time_transform_type,
         return {'type': 'AttributeRemapTransform',
                 'field': att,
                 'target': 'org.geotools.data.postgis.PostGISDialect$XDate'}
-    if use_big_date is None:
-        try:
-            use_big_date = settings.USE_BIG_DATE
-        except:
-            use_big_date = False
+
+    use_big_date = getattr(settings, 'USE_BIG_DATE', False) and not upload_session.geogit
+
     if time_attribute:
         if time_transform_type:
 
@@ -432,10 +430,13 @@ def time_step(upload_session, time_attribute, time_transform_type,
             'type': 'CreateIndexTransform',
             'field': time_attribute
         })
+        # the time_info will be used in the last step to configure the
+        # layer in geoserver - the dict matches the arguments of the
+        # set_time_info helper function
         upload_session.time_info = dict(
-            time_attribute=time_attribute,
-            end_time_attribute=end_time_attribute,
-            presentation_strategy=presentation_strategy,
+            attribute=time_attribute,
+            end_attribute=end_time_attribute,
+            presentation=presentation_strategy,
             precision_value=precision_value,
             precision_step=precision_step
         )
@@ -452,6 +453,7 @@ def time_step(upload_session, time_attribute, time_transform_type,
             upload_session.time_transforms = transforms
         except BadRequest as br:
             raise UploadException.from_exc('Error configuring time:', br)
+        upload_session.import_session.tasks[0].save_transforms()
 
 
 def csv_step(upload_session, lat_field, lng_field):
@@ -614,26 +616,6 @@ def final_step(upload_session, user):
     if permissions is not None:
         saved_layer.set_permissions(permissions)
 
-    _log('Verifying the layer [%s] was created correctly' % name)
-
-    # Verify the object was saved to the Django database
-    # @revisit - this should always work since we just created it above and the
-    # message is confusing
-    try:
-        saved_layer = Layer.objects.get(name=name)
-    except Layer.DoesNotExist as e:
-        msg = (
-            'There was a problem saving the layer %s to GeoNetwork/Django. Error is: %s' %
-            (name, str(e)))
-        logger.exception(msg)
-        logger.debug(
-            'Attempting to clean up after failed save for layer [%s]',
-            name)
-        # Since the layer creation was not successful, we need to clean up
-        # @todo implement/test cleanup
-        # cleanup(name, layer_uuid)
-        raise GeoNodeException(msg)
-
     if upload_session.tempdir and os.path.exists(upload_session.tempdir):
         shutil.rmtree(upload_session.tempdir)
 
@@ -643,7 +625,7 @@ def final_step(upload_session, user):
     upload.save()
 
     if upload_session.time_info:
-        saved_layer.set_time_info(**upload_session.time_info)
+        set_time_info(saved_layer, **upload_session.time_info)
 
     signals.upload_complete.send(sender=final_step, layer=saved_layer)
 
