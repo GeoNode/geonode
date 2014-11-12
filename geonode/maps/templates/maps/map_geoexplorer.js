@@ -17,7 +17,6 @@ button.login {
     margin-right: 10px;
 }
 </style>
-<script type="text/javascript" src="{{ STATIC_URL}}geonode/js/thumbnail/map_thumbnail.js"></script>
 <script type="text/javascript" src="{{ STATIC_URL}}geonode/js/extjs/GeoNode-mixin.js"></script>
 <script type="text/javascript" src="{{ STATIC_URL}}geonode/js/extjs/GeoNode-GeoExplorer.js"></script>
 <script type="text/javascript">
@@ -29,13 +28,6 @@ Ext.onReady(function() {
         authStatus: {% if user.is_authenticated %} 200{% else %} 401{% endif %},
         {% if PROXY_URL %}
         proxy: '{{ PROXY_URL }}',
-        {% endif %}
-        {% if PRINT_NG_ENABLED %}
-        listeners: {
-            'save': function(obj_id) {
-                createMapThumbnail(obj_id);
-            }
-        },
         {% endif %}
         {% if MAPFISH_PRINT_ENABLED %}
         printService: "{{GEOSERVER_BASE_URL}}pdf/",
@@ -57,12 +49,6 @@ Ext.onReady(function() {
 
 
     app = new GeoNode.Composer(config);
-    app.mapPanel.map.addControl(
-        new OpenLayers.Control.MousePosition(
-            { numDigits: 2,
-              displayProjection: new OpenLayers.Projection("EPSG:4326")}
-        )
-    );
 {% endautoescape %}
 });
 </script>
