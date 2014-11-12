@@ -10,8 +10,16 @@ urlpatterns = patterns('geonode.dataverse_layer_metadata.views',
 )
 
 
-urlpatterns += patterns('geonode.dataverse_layer_metadata.view_embed_layer',
+#urlpatterns += patterns('geonode.dataverse_layer_metadata.view_embed_layer',
 
-    url(r'^view-embedded/$', 'view_embedded_layer', name='view_embedded_layer'),
+#    url(r'^view-embedded/$', 'view_embedded_layer', name='view_embedded_layer'),
+
+#)
+
+"""
+urlpatterns += patterns('geonode.dataverse_layer_metadata.view_wms_services',
+
+    url(r'^view-layer-legend/$', 'view_layer_legend', name='view_layer_legend'),
 
 )
+"""

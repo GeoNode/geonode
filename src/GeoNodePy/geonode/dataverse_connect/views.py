@@ -14,6 +14,8 @@ from geonode.maps.utils import save
 from geonode.maps.views import _create_new_user
 from geonode.utils import slugify
 
+from geonode.dataverse_private_layer.permissions_helper import make_layer_private, make_layer_public
+
 from geonode.dataverse_connect.dataverse_auth import has_proper_auth
 from geonode.dataverse_connect.layer_metadata import LayerMetadata        # object with layer metadata
 from geonode.dataverse_connect.dv_utils import MessageHelperJSON          # format json response object
@@ -36,7 +38,7 @@ def view_add_worldmap_shapefile(request):
         email = request.POST["email"]
         content = request.FILES.values()[0]
         name = request.POST["shapefile_name"]
-        #dataverse_info = request.POST.get('dataverse_info', None)
+
         keywords = "" if "keywords" not in request.POST else request.POST["keywords"]
 
         #print request.POST.items()
@@ -61,7 +63,7 @@ def view_add_worldmap_shapefile(request):
         else:
             name = slugify(name.replace(".","_"))
             file_obj = write_file(content)
-            print ('file_obj', file_obj)
+            #print ('file_obj', file_obj)
             
             try:
                 
@@ -76,7 +78,27 @@ def view_add_worldmap_shapefile(request):
                 # Look for DataverseInfo in the request.POST
                 #   If it exists, create a DataverseLayerMetadata object
                 #
-                add_dataverse_layer_metadata(saved_layer, request.POST)
+                dataverse_layer_metadata = add_dataverse_layer_metadata(saved_layer, request.POST)
+                if dataverse_layer_metadata is None:
+                    logger.error("Failed to create a DataverseLayerMetadata object")
+                    json_msg = MessageHelperJSON.get_json_msg(success=False, msg="Failed to create a DataverseLayerMetadata object")
+                    return HttpResponse(status=200, content=json_msg, content_type="application/json")
+
+                # Is this a private layer?
+                #
+                if dataverse_layer_metadata.dataset_is_public is False:
+                    #
+                    # Yes, set privacy permissions
+                    #
+                    if make_layer_private(saved_layer) is False:
+                        #
+                        # Failed to set privacy permissions, remove layer
+                        #
+                        logger.error("Failed to set privacy permissions.  Deleting layer")
+                        saved_layer.delete()
+                        json_msg = MessageHelperJSON.get_json_msg(success=False, msg="Failed to set privacy permissions.  Deleting layer")
+                        return HttpResponse(status=200, content=json_msg, content_type="application/json")
+
 
                 # Prepare a JSON reponse
                 # 

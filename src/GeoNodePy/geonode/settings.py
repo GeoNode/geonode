@@ -153,6 +153,7 @@ INSTALLED_APPS = (
     'dataverse_info',       # external repository: https://github.com/IQSS/shared-dataverse-information
     'geonode.dataverse_layer_metadata', # uses the datavere info repository
     'geonode.dataverse_connect',
+    'geonode.dataverse_private_layer',
     'geonode.classification',
 
 )
