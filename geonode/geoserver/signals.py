@@ -545,3 +545,5 @@ def geoserver_post_save_map(instance, sender, **kwargs):
                                        link_type='image',
                                    )
                                    )
+        from geonode.maps.models import Map
+        Map.objects.filter(id=instance.id).update(thumbnail_url=thumbnail_url)

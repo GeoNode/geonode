@@ -222,7 +222,6 @@
 {% else %}
       {% overall_rating resource "map" as the_map_rating %}
 {% endif %}
-<script type="text/javascript" src="{{ STATIC_URL}}geonode/js/thumbnail/map_thumbnail.js"></script>
 {% include 'rating.html' %}
 <script type="text/javascript">
  $(function() {
@@ -287,12 +286,6 @@
     });
     return false;
   });
-
-{% if PRINT_NG_ENABLED %}
-  $('#set_thumbnail').click(function(){
-    return createMapThumbnail();
-  });
-{% endif %}
  
 </script>
 {% include "_permissions_form_js.html" %}
