@@ -1,3 +1,21 @@
+geonode (2.4.0+alpha23) trusty; urgency=high
+
+  [ Simone Dalmasso ]
+  * [9b32f6] comment the amharic language
+  * [4cf5ad] limit the model translation language to english by default. Add the settings for translated languages.
+  * [c5f49c] add missing...space
+  * [92de8f] clear map thumbs logic
+
+  [ Ricardo Garcia Silva ]
+  * [c4c42d] changed temporal extent fields to DateTime
+  * [6a04a4] fixed temporal extent formatting in the xml template
+  * [a7c49a] fixed some pep8 errors reported by flake8
+  * [f350f6] added datetime support for temporal extent fields in layers, maps and documents
+
+  [ Ariel Nunez ]
+
+ -- Ariel Nunez <ingenieroariel@gmail.com>  Wed, 12 Nov 2014 14:48:35 -0500
+
 geonode (2.4.0+alpha22) trusty; urgency=high
 
   [ Simone Dalmasso ]
