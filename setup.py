@@ -126,7 +126,7 @@ setup(name='GeoNode',
         "geonode-arcrest==10.2",
         "geonode-notification==1.1.1",
         "geonode-dialogos==0.4",
-        "gsconfig==0.6.10",
+        "gsconfig==0.6.11",
         "gsimporter==0.1",
         "gisdata==0.5.4",
 
