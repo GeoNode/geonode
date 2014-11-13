@@ -1,3 +1,9 @@
+geonode (2.4.0+alpha27) trusty; urgency=high
+
+  * [bce0ed] Make flake8 happy
+
+ -- Ariel Nunez <ingenieroariel@gmail.com>  Thu, 13 Nov 2014 15:27:33 -0500
+
 geonode (2.4.0+alpha26) trusty; urgency=high
 
   * [086481] Disable test_configure_time temporarily, refs #1767
