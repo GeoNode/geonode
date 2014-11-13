@@ -47,9 +47,10 @@ from geonode.layers.utils import (
 from geonode.tests.utils import check_layer, get_web_page
 
 from geonode.geoserver.helpers import cascading_delete
-#from geonode.geoserver.helpers import get_time_info
-#from geonode.geoserver.helpers import get_wms
-#from geonode.geoserver.helpers import set_time_info
+#FIXME(Ariel): Uncomment these when #1767 is fixed
+# from geonode.geoserver.helpers import get_time_info
+# from geonode.geoserver.helpers import get_wms
+# from geonode.geoserver.helpers import set_time_info
 from geonode.geoserver.signals import gs_catalog
 
 import gisdata
@@ -662,7 +663,7 @@ class GeoNodeMapTest(TestCase):
         # Clean up and completely delete the layer
         layer.delete()
 
-#FIXME(Ariel): Logged this as ticket  #1767
+#    #FIXME(Ariel): Logged this as ticket  #1767
 #    def test_configure_time(self):
 #        # make sure it's not there (and configured)
 #        cascading_delete(gs_catalog, 'boxes_with_end_date')
