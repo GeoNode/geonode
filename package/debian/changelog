@@ -1,3 +1,70 @@
+geonode (2.4.0+alpha26) trusty; urgency=high
+
+  * [086481] Disable test_configure_time temporarily, refs #1767
+  * [2fcb1d] Make flake8 happy
+  * [b6cc3d] Pass geoserver variable to map download to avoid incorrect redirection
+  * [4f6121] Pass geoserver variable to map download to avoid incorrect redirection
+
+ -- Ariel Nunez <ingenieroariel@gmail.com>  Thu, 13 Nov 2014 13:13:21 -0500
+
+geonode (2.4.0+alpha25) trusty; urgency=high
+
+  * [6fa68e] Adedd python-django-bootstrap3-datetimepicker to the control file
+
+ -- Ariel Nunez <ingenieroariel@gmail.com>  Thu, 13 Nov 2014 11:37:21 -0500
+
+geonode (2.4.0+alpha24) trusty; urgency=high
+
+  [ Ian Schneider ]
+  * [99e8db] upload cleanup + tests
+  * [b12ad5] uploader integration tests running and passing
+  * [2c1272] continued upload fixes
+  * [dfb20f] uploader client-side fixes
+
+  [ Ariel Nunez ]
+  * [263622] Upgrade to gsconfig 0.6.11
+  * [d52294] Updated integration tests to try to fix timezone issue
+  * [60c077] Updated integration tests to try to fix timezone issue (second time)
+  * [8a75a7] Fixes map download
+
+ -- Ariel Nunez <ingenieroariel@gmail.com>  Thu, 13 Nov 2014 11:33:15 -0500
+
+geonode (2.4.0+alpha23) trusty; urgency=high
+
+  [ Simone Dalmasso ]
+  * [9b32f6] comment the amharic language
+  * [4cf5ad] limit the model translation language to english by default. Add the settings for translated languages.
+  * [c5f49c] add missing...space
+  * [92de8f] clear map thumbs logic
+
+  [ Ricardo Garcia Silva ]
+  * [c4c42d] changed temporal extent fields to DateTime
+  * [6a04a4] fixed temporal extent formatting in the xml template
+  * [a7c49a] fixed some pep8 errors reported by flake8
+  * [f350f6] added datetime support for temporal extent fields in layers, maps and documents
+
+  [ Ariel Nunez ]
+
+ -- Ariel Nunez <ingenieroariel@gmail.com>  Wed, 12 Nov 2014 14:48:35 -0500
+
+geonode (2.4.0+alpha22) trusty; urgency=high
+
+  [ Simone Dalmasso ]
+  * [1bc5a7] save the system assigned name for uploaded file and use it for the rest
+
+  [ Ariel Nunez ]
+  * [e4e6bc] Added requested languages from transifex
+  * [1e7d1f] Updated translations
+  * [4930f6] Added messages for new languages
+  * [27e8dc] Updated .mo
+  * [888705] Updated .po from transifex
+  * [42f63f] Updated locale with dummy data so they are picked up by tx push
+  * [65bb12] Used google's workbench to translate 30% of arabic
+  * [262e39] Manual fixes to arabic django.po
+  * [b8a60f] Updated arabic
+
+ -- Ariel Nunez <ingenieroariel@gmail.com>  Tue, 11 Nov 2014 18:45:53 -0500
+
 geonode (2.4.0+alpha21) trusty; urgency=high
 
   [ CORTI Paolo ]

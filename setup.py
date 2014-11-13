@@ -114,7 +114,7 @@ setup(name='GeoNode',
         "django-polymorphic==0.5.3",
         "django-leaflet==0.13.2",
         "django-autocomplete-light==1.4.13",
-        "django-modeltranslation",
+        "django-modeltranslation==0.8",
 
         # GeoNode org maintained apps.
         "django-geoexplorer==4.0.4",
@@ -126,7 +126,7 @@ setup(name='GeoNode',
         "geonode-arcrest==10.2",
         "geonode-notification==1.1.1",
         "geonode-dialogos==0.4",
-        "gsconfig==0.6.10",
+        "gsconfig==0.6.11",
         "gsimporter==0.1",
         "gisdata==0.5.4",
 
@@ -136,7 +136,10 @@ setup(name='GeoNode',
 
         # haystack/elasticsearch, uncomment to use
         "django-haystack==2.1.0",
-        "pyelasticsearch==0.6.1"
+        "pyelasticsearch==0.6.1",
+
+        # datetimepicker widget
+        "django-bootstrap3-datetimepicker==2.2.3",
         ],
       zip_safe=False,
       )

@@ -1,23 +1,21 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
-#
+# 
 # Translators:
 msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2014-10-24 10:00-0500\n"
-"PO-Revision-Date: 2013-09-05 01:30+0000\n"
-"Last-Translator: geonode <geonode-transifex@opengeo.org>\n"
-"Language-Team: Russian (http://www.transifex.com/projects/p/geonode/language/"
-"ru/)\n"
-"Language: ru\n"
+"PO-Revision-Date: 2014-11-11 22:40+0000\n"
+"Last-Translator: ingenieroariel <ingenieroariel@gmail.com>\n"
+"Language-Team: Russian (http://www.transifex.com/projects/p/geonode/language/ru/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
-"%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+"Language: ru\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
 
 #: static/geonode/js/extjs/GeoNode.js:72
 msgid "Add user..."
@@ -78,17 +76,16 @@ msgid "Zip Archives"
 msgstr ""
 
 #: static/geonode/js/upload/LayerInfo.js:249
-#, fuzzy
 msgid "Layer Info"
-msgstr "Слои"
+msgstr ""
 
 #: static/geonode/js/upload/LayerInfo.js:250
 msgid "Edit Metadata"
-msgstr ""
+msgstr "Редактирование метаданных"
 
 #: static/geonode/js/upload/LayerInfo.js:251
 msgid "Manage Styles"
-msgstr ""
+msgstr "Управление стилями"
 
 #: static/geonode/js/upload/LayerInfo.js:253
 msgid "Your layer was successfully uploaded"
@@ -113,9 +110,8 @@ msgstr ""
 
 #: static/geonode/js/upload/LayerInfo.js:329
 #: static/geonode/js/upload/LayerInfo.js:414
-#, fuzzy
 msgid "Unexpected Error"
-msgstr "Ошибка соединения"
+msgstr ""
 
 #: static/geonode/js/upload/LayerInfo.js:345
 msgid "Performing GeoServer Config Step"
@@ -134,9 +130,8 @@ msgid "Select or create a Geogit repository."
 msgstr ""
 
 #: static/geonode/js/upload/LayerInfo.js:542
-#, fuzzy
 msgid "Remove"
-msgstr "Удалить слой"
+msgstr ""
 
 #: static/geonode/js/upload/upload.js:126
 #, c-format
@@ -332,9 +327,7 @@ msgstr "Маленький"
 msgid ""
 "Error contacting server.\n"
 " Please check the url and try again."
-msgstr ""
-"Ошибка при подключении к серверу.\n"
-"Пожалуйста, проверьте url и повторите снова."
+msgstr "Ошибка при подключении к серверу.\nПожалуйста, проверьте url и повторите снова."
 
 #: templates/lang.js:69
 msgid "Layer Properties"
@@ -360,9 +353,7 @@ msgstr "Переключить на Google Earth 3D просмотр"
 msgid ""
 "The map that you are trying to load does not exist.  Creating a new map "
 "instead."
-msgstr ""
-"Карта, которую вы пытаетесь загрузить не существует. Создать новую карту "
-"вместо."
+msgstr "Карта, которую вы пытаетесь загрузить не существует. Создать новую карту вместо."
 
 #: templates/lang.js:75
 msgid "Unknown Map"
@@ -436,9 +427,7 @@ msgstr "Нет фона"
 msgid ""
 "Your map is ready to be published to the web!  Simply copy the following "
 "HTML to embed the map in your website:"
-msgstr ""
-"Ваша карта готова для публикации в сети! Просто скопируйте следующий HTML "
-"для того, чтобы разместить карту на вашем вебсайте:"
+msgstr "Ваша карта готова для публикации в сети! Просто скопируйте следующий HTML для того, чтобы разместить карту на вашем вебсайте:"
 
 #: templates/lang.js:136 templates/lang.js.c:202
 msgid "Abstract:"
