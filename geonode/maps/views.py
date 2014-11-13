@@ -31,7 +31,6 @@ from django.template import RequestContext
 from django.utils.translation import ugettext as _
 from django.utils import simplejson as json
 from django.utils.html import strip_tags
-from django.template.loader import render_to_string
 from django.db.models import F
 
 from geonode.layers.models import Layer
@@ -42,7 +41,6 @@ from geonode.utils import DEFAULT_TITLE
 from geonode.utils import DEFAULT_ABSTRACT
 from geonode.utils import default_map_config
 from geonode.utils import resolve_object
-from geonode.utils import http_client
 from geonode.utils import layer_from_viewer_config
 from geonode.maps.forms import MapForm
 from geonode.security.views import _perms_info_json
@@ -58,6 +56,11 @@ if 'geonode.geoserver' in settings.INSTALLED_APPS:
     # should be moved to geonode.geoserver.
     from geonode.geoserver.helpers import ogc_server_settings
 
+    # Use the http_client with one that knows the username
+    # and password for GeoServer's management user.
+    from geonode.geoserver.helpers import http_client
+else:
+    from geonode.utils import http_client
 
 logger = logging.getLogger("geonode.maps.views")
 
@@ -72,31 +75,6 @@ _PERMISSION_MSG_METADATA = _(
     "You are not allowed to modify this map's metadata.")
 _PERMISSION_MSG_VIEW = _("You are not allowed to view this map.")
 _PERMISSION_MSG_UNKNOWN = _('An unknown error has occured.')
-
-
-def _handleThumbNail(req, obj):
-    # object will either be a map or a layer, one or the other permission must
-    # apply
-    if not req.user.has_perm(
-            'change_resourcebase',
-            obj=obj.get_self_resource()):
-        return HttpResponse(
-            render_to_string(
-                '401.html', RequestContext(
-                    req, {
-                        'error_message': _("You are not permitted to modify this object")})), status=401)
-    if req.method == 'GET':
-        return HttpResponseRedirect(obj.get_thumbnail_url())
-    elif req.method == 'POST':
-        try:
-            obj.save_thumbnail(req.body)
-            return HttpResponseRedirect(obj.get_thumbnail_url())
-        except:
-            return HttpResponse(
-                content='error saving thumbnail',
-                status=500,
-                mimetype='text/plain'
-            )
 
 
 def _resolve_map(request, id, permission='base.change_resourcebase',
@@ -614,6 +592,7 @@ def map_download(request, mapid, template='maps/map_download.html'):
                         downloadable_layers.append(lyr)
 
     return render_to_response(template, RequestContext(request, {
+        "geoserver": ogc_server_settings.PUBLIC_LOCATION,
         "map_status": map_status,
         "map": map_obj,
         "locked_layers": locked_layers,
@@ -690,11 +669,6 @@ def map_wms(request, mapid):
         return HttpResponse(json.dumps(response), mimetype="application/json")
 
     return HttpResponseNotAllowed(['PUT', 'GET'])
-
-
-def map_thumbnail(request, mapid):
-    map_obj = _resolve_map(request, mapid, 'base.view_resourcebase', _PERMISSION_MSG_VIEW)
-    return _handleThumbNail(request, map_obj)
 
 
 def maplayer_attributes(request, layername):

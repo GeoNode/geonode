@@ -1,22 +1,22 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
-#
+# 
 # Translators:
-# nwang <nwang@opengeo.org>, 2012
+# Nathan Wang <nwang@opengeo.org>, 2012
+# Nathan Wang <nwang@opengeo.org>, 2012
 msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2014-10-24 10:00-0500\n"
-"PO-Revision-Date: 2013-09-05 02:20+0000\n"
-"Last-Translator: nwang <nwang@opengeo.org>\n"
-"Language-Team: Chinese (http://www.transifex.com/projects/p/geonode/language/"
-"zh/)\n"
-"Language: zh\n"
+"PO-Revision-Date: 2014-11-11 22:40+0000\n"
+"Last-Translator: ingenieroariel <ingenieroariel@gmail.com>\n"
+"Language-Team: Chinese (http://www.transifex.com/projects/p/geonode/language/zh/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Language: zh\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 
 #: static/geonode/js/extjs/GeoNode.js:72
@@ -78,17 +78,16 @@ msgid "Zip Archives"
 msgstr ""
 
 #: static/geonode/js/upload/LayerInfo.js:249
-#, fuzzy
 msgid "Layer Info"
-msgstr "图层"
+msgstr ""
 
 #: static/geonode/js/upload/LayerInfo.js:250
 msgid "Edit Metadata"
-msgstr ""
+msgstr "修改元数据"
 
 #: static/geonode/js/upload/LayerInfo.js:251
 msgid "Manage Styles"
-msgstr ""
+msgstr "管理样式"
 
 #: static/geonode/js/upload/LayerInfo.js:253
 msgid "Your layer was successfully uploaded"
@@ -113,9 +112,8 @@ msgstr ""
 
 #: static/geonode/js/upload/LayerInfo.js:329
 #: static/geonode/js/upload/LayerInfo.js:414
-#, fuzzy
 msgid "Unexpected Error"
-msgstr "连接错误"
+msgstr ""
 
 #: static/geonode/js/upload/LayerInfo.js:345
 msgid "Performing GeoServer Config Step"
@@ -134,9 +132,8 @@ msgid "Select or create a Geogit repository."
 msgstr ""
 
 #: static/geonode/js/upload/LayerInfo.js:542
-#, fuzzy
 msgid "Remove"
-msgstr "删除图层"
+msgstr "删除"
 
 #: static/geonode/js/upload/upload.js:126
 #, c-format
@@ -332,9 +329,7 @@ msgstr "小"
 msgid ""
 "Error contacting server.\n"
 " Please check the url and try again."
-msgstr ""
-"连接服务时出错。\n"
-"请检查网址再重试。"
+msgstr "连接服务时出错。\n请检查网址再重试。"
 
 #: templates/lang.js:69
 msgid "Layer Properties"

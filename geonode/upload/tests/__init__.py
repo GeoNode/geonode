@@ -22,9 +22,9 @@ import shutil
 import tempfile
 import zipfile
 import geonode.upload.files as files
-from django.test import TestCase
-from geonode.upload.utils import rename_and_prepare
+from unittest import TestCase
 from geonode.upload.files import SpatialFiles, scan_file
+from geonode.upload.files import _rename_files, _contains_bad_names
 
 
 @contextlib.contextmanager
@@ -64,6 +64,10 @@ class FilesTests(TestCase):
             self.assertTrue(t.name is not None)
             self.assertTrue(t.layer_type is not None)
 
+    def test_contains_bad_names(self):
+        self.assertTrue(_contains_bad_names(['1', 'a']))
+        self.assertTrue(_contains_bad_names(['a', 'foo-bar']))
+
     def test_rename_files(self):
         with create_files(['junk<y>', 'notjunky']) as tests:
             try:
@@ -74,33 +78,9 @@ class FilesTests(TestCase):
 
     def test_rename_and_prepare(self):
         with create_files(['109029_23.tiff', 'notjunk<y>']) as tests:
-            tests = map(rename_and_prepare, tests)
+            tests = _rename_files(tests)
             self.assertTrue(tests[0].endswith("_109029_23.tiff"))
             self.assertTrue(tests[1].endswith("junk_y_"))
-
-        with create_files(['109029_23.shp', '109029_23.shx', '109029_23.dbf', '109029_23.prj'], zipped=True) as tests:
-            tests = rename_and_prepare(tests[0])
-            path = os.path.dirname(tests)
-            self.assertTrue(
-                os.path.exists(
-                    os.path.join(
-                        path,
-                        '_109029_23.shp')))
-            self.assertTrue(
-                os.path.exists(
-                    os.path.join(
-                        path,
-                        '_109029_23.shx')))
-            self.assertTrue(
-                os.path.exists(
-                    os.path.join(
-                        path,
-                        '_109029_23.dbf')))
-            self.assertTrue(
-                os.path.exists(
-                    os.path.join(
-                        path,
-                        '_109029_23.prj')))
 
     def test_scan_file(self):
         """
@@ -126,8 +106,9 @@ class FilesTests(TestCase):
 
         # Test the scan_file function with a zipped spatial file that needs to
         # be renamed.
-        with create_files(['109029_23.shp', '109029_23.shx', '109029_23.dbf',
-                           '109029_23.prj', '109029_23.xml'], zipped=True) as tests:
+        file_names = ['109029_23.shp', '109029_23.shx', '109029_23.dbf',
+                      '109029_23.prj', '109029_23.xml', '109029_23.sld']
+        with create_files(file_names, zipped=True) as tests:
             spatial_files = scan_file(tests[0])
             self.assertTrue(isinstance(spatial_files, SpatialFiles))
 
@@ -135,6 +116,53 @@ class FilesTests(TestCase):
             self.assertTrue(spatial_file.file_type.matches('shp'))
             self.assertEqual(len(spatial_file.auxillary_files), 3)
             self.assertEqual(len(spatial_file.xml_files), 1)
-            self.assertEqual(len(spatial_file.sld_files), 0)
+            self.assertEqual(len(spatial_file.sld_files), 1)
             self.assertTrue(
                 all(map(lambda s: s.endswith('xml'), spatial_file.xml_files)))
+
+            basedir = os.path.dirname(spatial_file.base_file)
+            for f in file_names:
+                path = os.path.join(basedir, '_%s' % f)
+                self.assertTrue(os.path.exists(path))
+
+
+class TimeFormFormTest(TestCase):
+
+    def _form(self, data):
+        # prevent circular deps error - not sure why this module was getting
+        # imported during normal runserver execution but it was...
+        from geonode.upload.forms import TimeForm
+        return TimeForm(
+            data,
+            time_names=['start_date', 'end_date'],
+            text_names=['start_text', 'end_text'],
+            year_names=['start_year', 'end_year']
+        )
+
+    def assert_start_end(self, data, start, end=None):
+        form = self._form(data)
+        self.assertTrue(form.is_valid())
+        if start:
+            self.assertEqual(start, form.cleaned_data['start_attribute'])
+        if end:
+            self.assertEqual(end, form.cleaned_data['end_attribute'])
+
+    def test_invalid_form(self):
+        form = self._form(dict(time_attribute='start_date', text_attribute='start_text'))
+        self.assertTrue(not form.is_valid())
+
+    def test_start_end_attribute_and_type(self):
+        self.assert_start_end(
+            dict(time_attribute='start_date'),
+            ('start_date', 'Date')
+        )
+        self.assert_start_end(
+            dict(text_attribute='start_text', end_year_attribute='end_year'),
+            ('start_text', 'Text'),
+            ('end_year', 'Number')
+        )
+        self.assert_start_end(
+            dict(year_attribute='start_year', end_time_attribute='end_date'),
+            ('start_year', 'Number'),
+            ('end_date', 'Date')
+        )

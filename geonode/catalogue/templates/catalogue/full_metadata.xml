@@ -276,8 +276,8 @@
              <gmd:EX_TemporalExtent>
                <gmd:extent>
                  <gml:TimePeriod gml:id="T_01">
-                   <gml:beginPosition>{{layer.temporal_extent_start}}</gml:beginPosition>
-                   <gml:endPosition>{{layer.temporal_extent_end}}</gml:endPosition>
+                   <gml:beginPosition>{{layer.temporal_extent_start|date:"c"}}</gml:beginPosition>
+                   <gml:endPosition>{{layer.temporal_extent_end|date:"c"}}</gml:endPosition>
                  </gml:TimePeriod>
                </gmd:extent>
              </gmd:EX_TemporalExtent>
