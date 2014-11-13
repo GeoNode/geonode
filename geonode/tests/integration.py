@@ -47,9 +47,9 @@ from geonode.layers.utils import (
 from geonode.tests.utils import check_layer, get_web_page
 
 from geonode.geoserver.helpers import cascading_delete
-from geonode.geoserver.helpers import get_time_info
-from geonode.geoserver.helpers import get_wms
-from geonode.geoserver.helpers import set_time_info
+#from geonode.geoserver.helpers import get_time_info
+#from geonode.geoserver.helpers import get_wms
+#from geonode.geoserver.helpers import set_time_info
 from geonode.geoserver.signals import gs_catalog
 
 import gisdata
