@@ -592,6 +592,7 @@ def map_download(request, mapid, template='maps/map_download.html'):
                         downloadable_layers.append(lyr)
 
     return render_to_response(template, RequestContext(request, {
+        "geoserver": ogc_server_settings.PUBLIC_LOCATION,
         "map_status": map_status,
         "map": map_obj,
         "locked_layers": locked_layers,
