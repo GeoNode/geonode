@@ -57,6 +57,10 @@ if 'geonode.geoserver' in settings.INSTALLED_APPS:
     # should be moved to geonode.geoserver.
     from geonode.geoserver.helpers import ogc_server_settings
 
+    # Shadow the http_client with one that knows the username
+    # and password for GeoServer's management user.
+    from geonode.geoserver.helpers import http_client
+
 
 logger = logging.getLogger("geonode.maps.views")
 
