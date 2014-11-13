@@ -41,7 +41,6 @@ from geonode.utils import DEFAULT_TITLE
 from geonode.utils import DEFAULT_ABSTRACT
 from geonode.utils import default_map_config
 from geonode.utils import resolve_object
-from geonode.utils import http_client
 from geonode.utils import layer_from_viewer_config
 from geonode.maps.forms import MapForm
 from geonode.security.views import _perms_info_json
@@ -57,10 +56,11 @@ if 'geonode.geoserver' in settings.INSTALLED_APPS:
     # should be moved to geonode.geoserver.
     from geonode.geoserver.helpers import ogc_server_settings
 
-    # Shadow the http_client with one that knows the username
+    # Use the http_client with one that knows the username
     # and password for GeoServer's management user.
     from geonode.geoserver.helpers import http_client
-
+else:
+    from geonode.utils import http_client
 
 logger = logging.getLogger("geonode.maps.views")
 
