@@ -1,3 +1,9 @@
+geonode (2.4.0+alpha25) trusty; urgency=high
+
+  * [6fa68e] Adedd python-django-bootstrap3-datetimepicker to the control file
+
+ -- Ariel Nunez <ingenieroariel@gmail.com>  Thu, 13 Nov 2014 11:37:21 -0500
+
 geonode (2.4.0+alpha24) trusty; urgency=high
 
   [ Ian Schneider ]
