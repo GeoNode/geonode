@@ -1,3 +1,19 @@
+geonode (2.4.0+alpha24) trusty; urgency=high
+
+  [ Ian Schneider ]
+  * [99e8db] upload cleanup + tests
+  * [b12ad5] uploader integration tests running and passing
+  * [2c1272] continued upload fixes
+  * [dfb20f] uploader client-side fixes
+
+  [ Ariel Nunez ]
+  * [263622] Upgrade to gsconfig 0.6.11
+  * [d52294] Updated integration tests to try to fix timezone issue
+  * [60c077] Updated integration tests to try to fix timezone issue (second time)
+  * [8a75a7] Fixes map download
+
+ -- Ariel Nunez <ingenieroariel@gmail.com>  Thu, 13 Nov 2014 11:33:15 -0500
+
 geonode (2.4.0+alpha23) trusty; urgency=high
 
   [ Simone Dalmasso ]
