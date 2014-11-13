@@ -662,6 +662,7 @@ class GeoNodeMapTest(TestCase):
         # Clean up and completely delete the layer
         layer.delete()
 
+
     def test_configure_time(self):
         # make sure it's not there (and configured)
         cascading_delete(gs_catalog, 'boxes_with_end_date')
@@ -683,7 +684,7 @@ class GeoNodeMapTest(TestCase):
         # enable using interval and single attribute
         set_time_info(uploaded, 'date', None, 'DISCRETE_INTERVAL', 3, 'days')
         self.assertEquals(
-            ['2000-03-01T07:00:00.000Z/2000-06-08T06:00:00.000Z/P3D'],
+            ['2000-03-01T00:00:00.000Z/2000-06-08T06:00:00.000Z/P3D'],
             get_wms_timepositions()
         )
         self.assertEquals(
