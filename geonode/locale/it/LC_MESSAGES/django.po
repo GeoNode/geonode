@@ -15,7 +15,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-11-14 08:32-0600\n"
+"POT-Creation-Date: 2014-11-14 09:57-0500\n"
 "PO-Revision-Date: 2014-11-11 22:38+0000\n"
 "Last-Translator: ingenieroariel <ingenieroariel@gmail.com>\n"
 "Language-Team: Italian (http://www.transifex.com/projects/p/geonode/language/"
@@ -149,958 +149,6 @@ msgstr "i dati vengono aggiornati ogni tre mesi"
 #: base/enumerations.py:77
 msgid "No information provided"
 msgstr "Nessuna informazione fornita"
-
-#: base/enumerations.py:81
-msgid "Afghanistan"
-msgstr "Afganistan"
-
-#: base/enumerations.py:82
-msgid "Aland Islands"
-msgstr "Isole Aland"
-
-#: base/enumerations.py:83
-msgid "Albania"
-msgstr "Albania"
-
-#: base/enumerations.py:84
-msgid "Algeria"
-msgstr "Algeria"
-
-#: base/enumerations.py:85
-msgid "American Samoa"
-msgstr "Samoa Americana"
-
-#: base/enumerations.py:86
-msgid "Andorra"
-msgstr "Andorra"
-
-#: base/enumerations.py:87
-msgid "Angola"
-msgstr "Angola"
-
-#: base/enumerations.py:88
-msgid "Anguilla"
-msgstr "Anguilla"
-
-#: base/enumerations.py:89
-msgid "Antigua and Barbuda"
-msgstr "Antigua e Barbuda"
-
-#: base/enumerations.py:90
-msgid "Argentina"
-msgstr "Argentina"
-
-#: base/enumerations.py:91
-msgid "Armenia"
-msgstr "Armenia"
-
-#: base/enumerations.py:92
-msgid "Aruba"
-msgstr "Aruba"
-
-#: base/enumerations.py:93
-msgid "Australia"
-msgstr "Australia"
-
-#: base/enumerations.py:94
-msgid "Austria"
-msgstr "Austria"
-
-#: base/enumerations.py:95
-msgid "Azerbaijan"
-msgstr "Azerbaigian"
-
-#: base/enumerations.py:96
-msgid "Bahamas"
-msgstr "Bahamas"
-
-#: base/enumerations.py:97
-msgid "Bahrain"
-msgstr "Bahrein"
-
-#: base/enumerations.py:98
-msgid "Bangladesh"
-msgstr "Bangladesh "
-
-#: base/enumerations.py:99
-msgid "Barbados"
-msgstr "Barbados"
-
-#: base/enumerations.py:100
-msgid "Belarus"
-msgstr "Bielorussia"
-
-#: base/enumerations.py:101
-msgid "Belgium"
-msgstr "Belgio"
-
-#: base/enumerations.py:102
-msgid "Belize"
-msgstr "Belize"
-
-#: base/enumerations.py:103
-msgid "Benin"
-msgstr "Benin"
-
-#: base/enumerations.py:104
-msgid "Bermuda"
-msgstr "Bermuda"
-
-#: base/enumerations.py:105
-msgid "Bhutan"
-msgstr "Bhutan"
-
-#: base/enumerations.py:106
-msgid "Bolivia"
-msgstr "Bolivia"
-
-#: base/enumerations.py:107
-msgid "Bosnia and Herzegovina"
-msgstr "Bosnia Herzegovina"
-
-#: base/enumerations.py:108
-msgid "Botswana"
-msgstr "Botswana"
-
-#: base/enumerations.py:109
-msgid "Brazil"
-msgstr "Brasile"
-
-#: base/enumerations.py:110
-msgid "British Virgin Islands"
-msgstr "Isole Vergini Britanniche"
-
-#: base/enumerations.py:111
-msgid "Brunei Darussalam"
-msgstr "Brunei Darussalam"
-
-#: base/enumerations.py:112
-msgid "Bulgaria"
-msgstr "Bulgaria "
-
-#: base/enumerations.py:113
-msgid "Burkina Faso"
-msgstr "Burkina Faso"
-
-#: base/enumerations.py:114
-msgid "Burundi"
-msgstr "Burundi "
-
-#: base/enumerations.py:115
-msgid "Cambodia"
-msgstr "Cambogia "
-
-#: base/enumerations.py:116
-msgid "Cameroon"
-msgstr "Cameroun "
-
-#: base/enumerations.py:117
-msgid "Canada"
-msgstr "Canada"
-
-#: base/enumerations.py:118
-msgid "Cape Verde"
-msgstr "Capo Verde"
-
-#: base/enumerations.py:119
-msgid "Cayman Islands"
-msgstr "Isole Cayman"
-
-#: base/enumerations.py:120
-msgid "Central African Republic"
-msgstr "Repubblica Centroafricana"
-
-#: base/enumerations.py:121
-msgid "Chad"
-msgstr "Chad "
-
-#: base/enumerations.py:122
-msgid "Channel Islands"
-msgstr "Isole del Canal "
-
-#: base/enumerations.py:123
-msgid "Chile"
-msgstr "Cile"
-
-#: base/enumerations.py:124
-msgid "China"
-msgstr "Cina"
-
-#: base/enumerations.py:125
-msgid "China - Hong Kong"
-msgstr "Cina - Hong Kong"
-
-#: base/enumerations.py:126
-msgid "China - Macao"
-msgstr "Cina - Macao"
-
-#: base/enumerations.py:127
-msgid "Colombia"
-msgstr "Colombia"
-
-#: base/enumerations.py:128
-msgid "Comoros"
-msgstr "Comore "
-
-#: base/enumerations.py:129
-msgid "Congo"
-msgstr "Congo"
-
-#: base/enumerations.py:130
-msgid "Cook Islands"
-msgstr "Isole di Cook"
-
-#: base/enumerations.py:131
-msgid "Costa Rica"
-msgstr "Costa Rica"
-
-#: base/enumerations.py:132
-msgid "Cote d'Ivoire"
-msgstr "Costa d'Avorio"
-
-#: base/enumerations.py:133
-msgid "Croatia"
-msgstr "Croazia "
-
-#: base/enumerations.py:134
-msgid "Cuba"
-msgstr "Cuba"
-
-#: base/enumerations.py:135
-msgid "Cyprus"
-msgstr "Cipro "
-
-#: base/enumerations.py:136
-msgid "Czech Republic"
-msgstr "Repubblica Checa "
-
-#: base/enumerations.py:137
-msgid "Democratic People's Republic of Korea"
-msgstr "Repubblica Popolare Democratica de Korea"
-
-#: base/enumerations.py:138
-msgid "Democratic Republic of the Congo"
-msgstr "Repubblica Democratica del Congo"
-
-#: base/enumerations.py:139
-msgid "Denmark"
-msgstr "Danimarca "
-
-#: base/enumerations.py:140
-msgid "Djibouti"
-msgstr "Djibouti"
-
-#: base/enumerations.py:141
-msgid "Dominica"
-msgstr "Dominica "
-
-#: base/enumerations.py:142
-msgid "Dominican Republic"
-msgstr "Repubblica Dominicana"
-
-#: base/enumerations.py:143
-msgid "Ecuador"
-msgstr "Ecuador"
-
-#: base/enumerations.py:144
-msgid "Egypt"
-msgstr "Egitto "
-
-#: base/enumerations.py:145
-msgid "El Salvador"
-msgstr "El Salvador"
-
-#: base/enumerations.py:146
-msgid "Equatorial Guinea"
-msgstr "Guinea Equatoriale"
-
-#: base/enumerations.py:147
-msgid "Eritrea"
-msgstr "Eritrea "
-
-#: base/enumerations.py:148
-msgid "Estonia"
-msgstr "Estonia"
-
-#: base/enumerations.py:149
-msgid "Ethiopia"
-msgstr "Etiopía"
-
-#: base/enumerations.py:150
-msgid "Faeroe Islands"
-msgstr "Isole Feroe"
-
-#: base/enumerations.py:151
-msgid "Falkland Islands (Malvinas)"
-msgstr "Isole Malvine"
-
-#: base/enumerations.py:152
-msgid "Fiji"
-msgstr "Fiji "
-
-#: base/enumerations.py:153
-msgid "Finland"
-msgstr "Finlandia"
-
-#: base/enumerations.py:154
-msgid "France"
-msgstr "Francia"
-
-#: base/enumerations.py:155
-msgid "French Guiana"
-msgstr "Guiana Francese"
-
-#: base/enumerations.py:156
-msgid "French Polynesia"
-msgstr "Polinesia Francese"
-
-#: base/enumerations.py:157
-msgid "Gabon"
-msgstr "Gabon"
-
-#: base/enumerations.py:158
-msgid "Gambia"
-msgstr "Gambia "
-
-#: base/enumerations.py:159
-msgid "Georgia"
-msgstr "Georgia"
-
-#: base/enumerations.py:160
-msgid "Germany"
-msgstr "Germania"
-
-#: base/enumerations.py:161
-msgid "Ghana"
-msgstr "Ghana"
-
-#: base/enumerations.py:162
-msgid "Gibraltar"
-msgstr "Gibilterra"
-
-#: base/enumerations.py:163
-msgid "Greece"
-msgstr "Grecia"
-
-#: base/enumerations.py:164
-msgid "Greenland"
-msgstr "Groenlandia"
-
-#: base/enumerations.py:165
-msgid "Grenada"
-msgstr "Granada"
-
-#: base/enumerations.py:166
-msgid "Guadeloupe"
-msgstr "Guadalupe"
-
-#: base/enumerations.py:167
-msgid "Guam"
-msgstr "Guam"
-
-#: base/enumerations.py:168
-msgid "Guatemala"
-msgstr "Guatemala"
-
-#: base/enumerations.py:169
-msgid "Guernsey"
-msgstr "Guernsey"
-
-#: base/enumerations.py:170
-msgid "Guinea"
-msgstr "Guinea"
-
-#: base/enumerations.py:171
-msgid "Guinea-Bissau"
-msgstr "Guinea-Bissau"
-
-#: base/enumerations.py:172
-msgid "Guyana"
-msgstr "Guyana"
-
-#: base/enumerations.py:173
-msgid "Haiti"
-msgstr "Haiti"
-
-#: base/enumerations.py:174
-msgid "Holy See (Vatican City)"
-msgstr "Santa Sede (Città del Vaticano) "
-
-#: base/enumerations.py:175
-msgid "Honduras"
-msgstr "Honduras"
-
-#: base/enumerations.py:176
-msgid "Hungary"
-msgstr "Ungheria"
-
-#: base/enumerations.py:177
-msgid "Iceland"
-msgstr "Islanda"
-
-#: base/enumerations.py:178
-msgid "India"
-msgstr "India"
-
-#: base/enumerations.py:179
-msgid "Indonesia"
-msgstr "Indonesia"
-
-#: base/enumerations.py:180
-msgid "Iran"
-msgstr "Iran"
-
-#: base/enumerations.py:181
-msgid "Iraq"
-msgstr "Iraq"
-
-#: base/enumerations.py:182
-msgid "Ireland"
-msgstr "Irlanda"
-
-#: base/enumerations.py:183
-msgid "Isle of Man"
-msgstr "Isola di Man"
-
-#: base/enumerations.py:184
-msgid "Israel"
-msgstr "Israele"
-
-#: base/enumerations.py:185
-msgid "Italy"
-msgstr "Italia"
-
-#: base/enumerations.py:186
-msgid "Jamaica"
-msgstr "Jamaica"
-
-#: base/enumerations.py:187
-msgid "Japan"
-msgstr "Giappone"
-
-#: base/enumerations.py:188
-msgid "Jersey"
-msgstr "Jersey"
-
-#: base/enumerations.py:189
-msgid "Jordan"
-msgstr "Giordania"
-
-#: base/enumerations.py:190
-msgid "Kazakhstan"
-msgstr "Kazakistan"
-
-#: base/enumerations.py:191
-msgid "Kenya"
-msgstr "Kenya"
-
-#: base/enumerations.py:192
-msgid "Kiribati"
-msgstr "Kiribati"
-
-#: base/enumerations.py:193
-msgid "Kuwait"
-msgstr "Kuwait"
-
-#: base/enumerations.py:194
-msgid "Kyrgyzstan"
-msgstr "Kyrgizstan "
-
-#: base/enumerations.py:195
-msgid "Lao People's Democratic Republic"
-msgstr "Laos"
-
-#: base/enumerations.py:196
-msgid "Latvia"
-msgstr "Lettonia "
-
-#: base/enumerations.py:197
-msgid "Lebanon"
-msgstr "Libano "
-
-#: base/enumerations.py:198
-msgid "Lesotho"
-msgstr "Lesotho "
-
-#: base/enumerations.py:199
-msgid "Liberia"
-msgstr "Liberia"
-
-#: base/enumerations.py:200
-msgid "Libyan Arab Jamahiriya"
-msgstr "Libia"
-
-#: base/enumerations.py:201
-msgid "Liechtenstein"
-msgstr "Liechtenstein "
-
-#: base/enumerations.py:202
-msgid "Lithuania"
-msgstr "Lituania "
-
-#: base/enumerations.py:203
-msgid "Luxembourg"
-msgstr "Lussemburgo "
-
-#: base/enumerations.py:204
-msgid "Macedonia"
-msgstr "Macedonia "
-
-#: base/enumerations.py:205
-msgid "Madagascar"
-msgstr "Madagascar "
-
-#: base/enumerations.py:206
-msgid "Malawi"
-msgstr "Malawi "
-
-#: base/enumerations.py:207
-msgid "Malaysia"
-msgstr "Malesia "
-
-#: base/enumerations.py:208
-msgid "Maldives"
-msgstr "Maldive "
-
-#: base/enumerations.py:209
-msgid "Mali"
-msgstr "Mali"
-
-#: base/enumerations.py:210
-msgid "Malta"
-msgstr "Malta"
-
-#: base/enumerations.py:211
-msgid "Marshall Islands"
-msgstr "Isole Marshall "
-
-#: base/enumerations.py:212
-msgid "Martinique"
-msgstr "Martinica"
-
-#: base/enumerations.py:213
-msgid "Mauritania"
-msgstr "Mauritania"
-
-#: base/enumerations.py:214
-msgid "Mauritius"
-msgstr "Mauritius"
-
-#: base/enumerations.py:215
-msgid "Mayotte"
-msgstr "Mayotte "
-
-#: base/enumerations.py:216
-msgid "Mexico"
-msgstr "Messico "
-
-#: base/enumerations.py:217
-msgid "Micronesia, Federated States of"
-msgstr "Micronesia"
-
-#: base/enumerations.py:218
-msgid "Monaco"
-msgstr "Monaco "
-
-#: base/enumerations.py:219
-msgid "Mongolia"
-msgstr "Mongolia "
-
-#: base/enumerations.py:220
-msgid "Montenegro"
-msgstr "Montenegro"
-
-#: base/enumerations.py:221
-msgid "Montserrat"
-msgstr "Montserrat"
-
-#: base/enumerations.py:222
-msgid "Morocco"
-msgstr "Marocco"
-
-#: base/enumerations.py:223
-msgid "Mozambique"
-msgstr "Mozambico "
-
-#: base/enumerations.py:224
-msgid "Myanmar"
-msgstr "Birmania"
-
-#: base/enumerations.py:225
-msgid "Namibia"
-msgstr "Namibia"
-
-#: base/enumerations.py:226
-msgid "Nauru"
-msgstr "Nauru"
-
-#: base/enumerations.py:227
-msgid "Nepal"
-msgstr "Nepal"
-
-#: base/enumerations.py:228
-msgid "Netherlands"
-msgstr "Olanda"
-
-#: base/enumerations.py:229
-msgid "Netherlands Antilles"
-msgstr "Antille Olandesi"
-
-#: base/enumerations.py:230
-msgid "New Caledonia"
-msgstr "Nuova Caledonia"
-
-#: base/enumerations.py:231
-msgid "New Zealand"
-msgstr "Nuova Zelanda"
-
-#: base/enumerations.py:232
-msgid "Nicaragua"
-msgstr "Nicaragua"
-
-#: base/enumerations.py:233
-msgid "Niger"
-msgstr "Niger "
-
-#: base/enumerations.py:234
-msgid "Nigeria"
-msgstr "Nigeria"
-
-#: base/enumerations.py:235
-msgid "Niue"
-msgstr "Niue"
-
-#: base/enumerations.py:236
-msgid "Norfolk Island"
-msgstr "Isola di Norfolk "
-
-#: base/enumerations.py:237
-msgid "Northern Mariana Islands"
-msgstr "Isole Mariane"
-
-#: base/enumerations.py:238
-msgid "Norway"
-msgstr "Norvegia"
-
-#: base/enumerations.py:239
-msgid "Occupied Palestinian Territory"
-msgstr "Territori Occupati Palestinesi"
-
-#: base/enumerations.py:240
-msgid "Oman"
-msgstr "Oman"
-
-#: base/enumerations.py:241
-msgid "Pakistan"
-msgstr "Pakistan "
-
-#: base/enumerations.py:242
-msgid "Palau"
-msgstr "Palau"
-
-#: base/enumerations.py:243
-msgid "Panama"
-msgstr "Panama"
-
-#: base/enumerations.py:244
-msgid "Papua New Guinea"
-msgstr "Papua Nuova Guinea"
-
-#: base/enumerations.py:245
-msgid "Paraguay"
-msgstr "Paraguay"
-
-#: base/enumerations.py:246
-msgid "Peru"
-msgstr "Perù"
-
-#: base/enumerations.py:247
-msgid "Philippines"
-msgstr "Filippine"
-
-#: base/enumerations.py:248
-msgid "Pitcairn"
-msgstr "Pitcairn"
-
-#: base/enumerations.py:249
-msgid "Poland"
-msgstr "Polonia"
-
-#: base/enumerations.py:250
-msgid "Portugal"
-msgstr "Portogallo"
-
-#: base/enumerations.py:251
-msgid "Puerto Rico"
-msgstr "Porto Rico"
-
-#: base/enumerations.py:252
-msgid "Qatar"
-msgstr "Qatar"
-
-#: base/enumerations.py:253
-msgid "Republic of Korea"
-msgstr "Korea"
-
-#: base/enumerations.py:254
-msgid "Republic of Moldova"
-msgstr "Moldova"
-
-#: base/enumerations.py:255
-msgid "Reunion"
-msgstr "Reunion"
-
-#: base/enumerations.py:256
-msgid "Romania"
-msgstr "Romania"
-
-#: base/enumerations.py:257
-msgid "Russian Federation"
-msgstr "Russia"
-
-#: base/enumerations.py:258
-msgid "Rwanda"
-msgstr "Rwanda"
-
-#: base/enumerations.py:259
-msgid "Saint-Barthelemy"
-msgstr "Saint-Barthelemy"
-
-#: base/enumerations.py:260
-msgid "Saint Helena"
-msgstr "Santa Elena"
-
-#: base/enumerations.py:261
-msgid "Saint Kitts and Nevis"
-msgstr "Saint Kitts and Nevis"
-
-#: base/enumerations.py:262
-msgid "Saint Lucia"
-msgstr "Santa Lucia"
-
-#: base/enumerations.py:263
-msgid "Saint-Martin (French part)"
-msgstr "San Martín "
-
-#: base/enumerations.py:264
-msgid "Saint Pierre and Miquelon"
-msgstr "Saint Pierre and Miquelon"
-
-#: base/enumerations.py:265
-msgid "Saint Vincent and the Grenadines"
-msgstr "Saint Vincent and the Grenadines"
-
-#: base/enumerations.py:266
-msgid "Samoa"
-msgstr "Samoa"
-
-#: base/enumerations.py:267
-msgid "San Marino"
-msgstr "San Marino"
-
-#: base/enumerations.py:268
-msgid "Sao Tome and Principe"
-msgstr "Sao Tome e Principe"
-
-#: base/enumerations.py:269
-msgid "Saudi Arabia"
-msgstr "Arabia Saudita"
-
-#: base/enumerations.py:270
-msgid "Senegal"
-msgstr "Senegal"
-
-#: base/enumerations.py:271
-msgid "Serbia"
-msgstr "Serbia"
-
-#: base/enumerations.py:272
-msgid "Seychelles"
-msgstr "Seychelles "
-
-#: base/enumerations.py:273
-msgid "Sierra Leone"
-msgstr "Sierra Leone"
-
-#: base/enumerations.py:274
-msgid "Singapore"
-msgstr "Singapore"
-
-#: base/enumerations.py:275
-msgid "Slovakia"
-msgstr "Slovacchia"
-
-#: base/enumerations.py:276
-msgid "Slovenia"
-msgstr "Slovenia"
-
-#: base/enumerations.py:277
-msgid "Solomon Islands"
-msgstr "Isole Salomone"
-
-#: base/enumerations.py:278
-msgid "Somalia"
-msgstr "Somalia"
-
-#: base/enumerations.py:279
-msgid "South Africa"
-msgstr "Sudafrica "
-
-#: base/enumerations.py:280
-msgid "South Sudan"
-msgstr ""
-
-#: base/enumerations.py:281
-msgid "Spain"
-msgstr "Spagna"
-
-#: base/enumerations.py:282
-msgid "Sri Lanka"
-msgstr "Sri Lanka"
-
-#: base/enumerations.py:283
-msgid "Sudan"
-msgstr "Sudan"
-
-#: base/enumerations.py:284
-msgid "Suriname"
-msgstr "Suriname"
-
-#: base/enumerations.py:285
-msgid "Svalbard and Jan Mayen Islands"
-msgstr "Isole Svalbard e Jan Mayen"
-
-#: base/enumerations.py:286
-msgid "Swaziland"
-msgstr "Swaziland"
-
-#: base/enumerations.py:287
-msgid "Sweden"
-msgstr "Svezia"
-
-#: base/enumerations.py:288
-msgid "Switzerland"
-msgstr "Svizzera"
-
-#: base/enumerations.py:289
-msgid "Syrian Arab Republic"
-msgstr "Siria"
-
-#: base/enumerations.py:290
-msgid "Tajikistan"
-msgstr "Tajikistan"
-
-#: base/enumerations.py:291
-msgid "Thailand"
-msgstr "Tailandia"
-
-#: base/enumerations.py:292
-msgid "Timor-Leste"
-msgstr "Timor-Est"
-
-#: base/enumerations.py:293
-msgid "Togo"
-msgstr "Togo"
-
-#: base/enumerations.py:294
-msgid "Tokelau"
-msgstr "Tokelau"
-
-#: base/enumerations.py:295
-msgid "Tonga"
-msgstr "Tonga"
-
-#: base/enumerations.py:296
-msgid "Trinidad and Tobago"
-msgstr "Trinidad e Tobago"
-
-#: base/enumerations.py:297
-msgid "Tunisia"
-msgstr "Tunisia"
-
-#: base/enumerations.py:298
-msgid "Turkey"
-msgstr "Turchia"
-
-#: base/enumerations.py:299
-msgid "Turkmenistan"
-msgstr "Turkmenistan"
-
-#: base/enumerations.py:300
-msgid "Turks and Caicos Islands"
-msgstr "Turcas e Caicos"
-
-#: base/enumerations.py:301
-msgid "Tuvalu"
-msgstr "Tuvalu"
-
-#: base/enumerations.py:302
-msgid "Uganda"
-msgstr "Uganda"
-
-#: base/enumerations.py:303
-msgid "Ukraine"
-msgstr "Ucraina"
-
-#: base/enumerations.py:304
-msgid "United Arab Emirates"
-msgstr "Emirati Arabi Uniti"
-
-#: base/enumerations.py:305
-msgid "United Kingdom"
-msgstr "Regno Unito"
-
-#: base/enumerations.py:306
-msgid "United Republic of Tanzania"
-msgstr "Tanzanía"
-
-#: base/enumerations.py:307
-msgid "United States of America"
-msgstr "Stati Uniti"
-
-#: base/enumerations.py:308
-msgid "United States Virgin Islands"
-msgstr "Isole Vergini (USA)"
-
-#: base/enumerations.py:309
-msgid "Uruguay"
-msgstr "Uruguay"
-
-#: base/enumerations.py:310
-msgid "Uzbekistan"
-msgstr "Uzbekistan"
-
-#: base/enumerations.py:311
-msgid "Vanuatu"
-msgstr "Vanuatu"
-
-#: base/enumerations.py:312
-msgid "Venezuela (Bolivarian Republic of)"
-msgstr "Venezuela"
-
-#: base/enumerations.py:313
-msgid "Viet Nam"
-msgstr "Vietnam"
-
-#: base/enumerations.py:314
-msgid "Wallis and Futuna Islands"
-msgstr "Isole Wallis e Futuna"
-
-#: base/enumerations.py:315
-msgid "Western Sahara"
-msgstr "Sahara Occidentale"
-
-#: base/enumerations.py:316
-msgid "Yemen"
-msgstr "Yemen"
-
-#: base/enumerations.py:317
-msgid "Zambia"
-msgstr "Zambia"
-
-#: base/enumerations.py:318
-msgid "Zimbabwe"
-msgstr "Zimbabwe"
 
 #: base/forms.py:35 base/templates/base/resourcebase_info_panel.html:46
 #: documents/templates/documents/document_metadata.html:51
@@ -3599,7 +2647,7 @@ msgstr ""
 #, python-format
 msgid ""
 "Could not find any layers in a compatible projection:                 The "
-"spatial id was: %s and the url %s"
+"spatial id was: %(srs)s and the url %(url)s"
 msgstr ""
 
 #: services/views.py:1207
@@ -4697,6 +3745,717 @@ msgstr "Torna a posta in arrivo"
 #: templates/user_messages/thread_detail.html:25
 msgid "Send Reply"
 msgstr "Invia risposta"
+
+#~ msgid "Afghanistan"
+#~ msgstr "Afganistan"
+
+#~ msgid "Aland Islands"
+#~ msgstr "Isole Aland"
+
+#~ msgid "Albania"
+#~ msgstr "Albania"
+
+#~ msgid "Algeria"
+#~ msgstr "Algeria"
+
+#~ msgid "American Samoa"
+#~ msgstr "Samoa Americana"
+
+#~ msgid "Andorra"
+#~ msgstr "Andorra"
+
+#~ msgid "Angola"
+#~ msgstr "Angola"
+
+#~ msgid "Anguilla"
+#~ msgstr "Anguilla"
+
+#~ msgid "Antigua and Barbuda"
+#~ msgstr "Antigua e Barbuda"
+
+#~ msgid "Argentina"
+#~ msgstr "Argentina"
+
+#~ msgid "Armenia"
+#~ msgstr "Armenia"
+
+#~ msgid "Aruba"
+#~ msgstr "Aruba"
+
+#~ msgid "Australia"
+#~ msgstr "Australia"
+
+#~ msgid "Austria"
+#~ msgstr "Austria"
+
+#~ msgid "Azerbaijan"
+#~ msgstr "Azerbaigian"
+
+#~ msgid "Bahamas"
+#~ msgstr "Bahamas"
+
+#~ msgid "Bahrain"
+#~ msgstr "Bahrein"
+
+#~ msgid "Bangladesh"
+#~ msgstr "Bangladesh "
+
+#~ msgid "Barbados"
+#~ msgstr "Barbados"
+
+#~ msgid "Belarus"
+#~ msgstr "Bielorussia"
+
+#~ msgid "Belgium"
+#~ msgstr "Belgio"
+
+#~ msgid "Belize"
+#~ msgstr "Belize"
+
+#~ msgid "Benin"
+#~ msgstr "Benin"
+
+#~ msgid "Bermuda"
+#~ msgstr "Bermuda"
+
+#~ msgid "Bhutan"
+#~ msgstr "Bhutan"
+
+#~ msgid "Bolivia"
+#~ msgstr "Bolivia"
+
+#~ msgid "Bosnia and Herzegovina"
+#~ msgstr "Bosnia Herzegovina"
+
+#~ msgid "Botswana"
+#~ msgstr "Botswana"
+
+#~ msgid "Brazil"
+#~ msgstr "Brasile"
+
+#~ msgid "British Virgin Islands"
+#~ msgstr "Isole Vergini Britanniche"
+
+#~ msgid "Brunei Darussalam"
+#~ msgstr "Brunei Darussalam"
+
+#~ msgid "Bulgaria"
+#~ msgstr "Bulgaria "
+
+#~ msgid "Burkina Faso"
+#~ msgstr "Burkina Faso"
+
+#~ msgid "Burundi"
+#~ msgstr "Burundi "
+
+#~ msgid "Cambodia"
+#~ msgstr "Cambogia "
+
+#~ msgid "Cameroon"
+#~ msgstr "Cameroun "
+
+#~ msgid "Canada"
+#~ msgstr "Canada"
+
+#~ msgid "Cape Verde"
+#~ msgstr "Capo Verde"
+
+#~ msgid "Cayman Islands"
+#~ msgstr "Isole Cayman"
+
+#~ msgid "Central African Republic"
+#~ msgstr "Repubblica Centroafricana"
+
+#~ msgid "Chad"
+#~ msgstr "Chad "
+
+#~ msgid "Channel Islands"
+#~ msgstr "Isole del Canal "
+
+#~ msgid "Chile"
+#~ msgstr "Cile"
+
+#~ msgid "China"
+#~ msgstr "Cina"
+
+#~ msgid "China - Hong Kong"
+#~ msgstr "Cina - Hong Kong"
+
+#~ msgid "China - Macao"
+#~ msgstr "Cina - Macao"
+
+#~ msgid "Colombia"
+#~ msgstr "Colombia"
+
+#~ msgid "Comoros"
+#~ msgstr "Comore "
+
+#~ msgid "Congo"
+#~ msgstr "Congo"
+
+#~ msgid "Cook Islands"
+#~ msgstr "Isole di Cook"
+
+#~ msgid "Costa Rica"
+#~ msgstr "Costa Rica"
+
+#~ msgid "Cote d'Ivoire"
+#~ msgstr "Costa d'Avorio"
+
+#~ msgid "Croatia"
+#~ msgstr "Croazia "
+
+#~ msgid "Cuba"
+#~ msgstr "Cuba"
+
+#~ msgid "Cyprus"
+#~ msgstr "Cipro "
+
+#~ msgid "Czech Republic"
+#~ msgstr "Repubblica Checa "
+
+#~ msgid "Democratic People's Republic of Korea"
+#~ msgstr "Repubblica Popolare Democratica de Korea"
+
+#~ msgid "Democratic Republic of the Congo"
+#~ msgstr "Repubblica Democratica del Congo"
+
+#~ msgid "Denmark"
+#~ msgstr "Danimarca "
+
+#~ msgid "Djibouti"
+#~ msgstr "Djibouti"
+
+#~ msgid "Dominica"
+#~ msgstr "Dominica "
+
+#~ msgid "Dominican Republic"
+#~ msgstr "Repubblica Dominicana"
+
+#~ msgid "Ecuador"
+#~ msgstr "Ecuador"
+
+#~ msgid "Egypt"
+#~ msgstr "Egitto "
+
+#~ msgid "El Salvador"
+#~ msgstr "El Salvador"
+
+#~ msgid "Equatorial Guinea"
+#~ msgstr "Guinea Equatoriale"
+
+#~ msgid "Eritrea"
+#~ msgstr "Eritrea "
+
+#~ msgid "Estonia"
+#~ msgstr "Estonia"
+
+#~ msgid "Ethiopia"
+#~ msgstr "Etiopía"
+
+#~ msgid "Faeroe Islands"
+#~ msgstr "Isole Feroe"
+
+#~ msgid "Falkland Islands (Malvinas)"
+#~ msgstr "Isole Malvine"
+
+#~ msgid "Fiji"
+#~ msgstr "Fiji "
+
+#~ msgid "Finland"
+#~ msgstr "Finlandia"
+
+#~ msgid "France"
+#~ msgstr "Francia"
+
+#~ msgid "French Guiana"
+#~ msgstr "Guiana Francese"
+
+#~ msgid "French Polynesia"
+#~ msgstr "Polinesia Francese"
+
+#~ msgid "Gabon"
+#~ msgstr "Gabon"
+
+#~ msgid "Gambia"
+#~ msgstr "Gambia "
+
+#~ msgid "Georgia"
+#~ msgstr "Georgia"
+
+#~ msgid "Germany"
+#~ msgstr "Germania"
+
+#~ msgid "Ghana"
+#~ msgstr "Ghana"
+
+#~ msgid "Gibraltar"
+#~ msgstr "Gibilterra"
+
+#~ msgid "Greece"
+#~ msgstr "Grecia"
+
+#~ msgid "Greenland"
+#~ msgstr "Groenlandia"
+
+#~ msgid "Grenada"
+#~ msgstr "Granada"
+
+#~ msgid "Guadeloupe"
+#~ msgstr "Guadalupe"
+
+#~ msgid "Guam"
+#~ msgstr "Guam"
+
+#~ msgid "Guatemala"
+#~ msgstr "Guatemala"
+
+#~ msgid "Guernsey"
+#~ msgstr "Guernsey"
+
+#~ msgid "Guinea"
+#~ msgstr "Guinea"
+
+#~ msgid "Guinea-Bissau"
+#~ msgstr "Guinea-Bissau"
+
+#~ msgid "Guyana"
+#~ msgstr "Guyana"
+
+#~ msgid "Haiti"
+#~ msgstr "Haiti"
+
+#~ msgid "Holy See (Vatican City)"
+#~ msgstr "Santa Sede (Città del Vaticano) "
+
+#~ msgid "Honduras"
+#~ msgstr "Honduras"
+
+#~ msgid "Hungary"
+#~ msgstr "Ungheria"
+
+#~ msgid "Iceland"
+#~ msgstr "Islanda"
+
+#~ msgid "India"
+#~ msgstr "India"
+
+#~ msgid "Indonesia"
+#~ msgstr "Indonesia"
+
+#~ msgid "Iran"
+#~ msgstr "Iran"
+
+#~ msgid "Iraq"
+#~ msgstr "Iraq"
+
+#~ msgid "Ireland"
+#~ msgstr "Irlanda"
+
+#~ msgid "Isle of Man"
+#~ msgstr "Isola di Man"
+
+#~ msgid "Israel"
+#~ msgstr "Israele"
+
+#~ msgid "Italy"
+#~ msgstr "Italia"
+
+#~ msgid "Jamaica"
+#~ msgstr "Jamaica"
+
+#~ msgid "Japan"
+#~ msgstr "Giappone"
+
+#~ msgid "Jersey"
+#~ msgstr "Jersey"
+
+#~ msgid "Jordan"
+#~ msgstr "Giordania"
+
+#~ msgid "Kazakhstan"
+#~ msgstr "Kazakistan"
+
+#~ msgid "Kenya"
+#~ msgstr "Kenya"
+
+#~ msgid "Kiribati"
+#~ msgstr "Kiribati"
+
+#~ msgid "Kuwait"
+#~ msgstr "Kuwait"
+
+#~ msgid "Kyrgyzstan"
+#~ msgstr "Kyrgizstan "
+
+#~ msgid "Lao People's Democratic Republic"
+#~ msgstr "Laos"
+
+#~ msgid "Latvia"
+#~ msgstr "Lettonia "
+
+#~ msgid "Lebanon"
+#~ msgstr "Libano "
+
+#~ msgid "Lesotho"
+#~ msgstr "Lesotho "
+
+#~ msgid "Liberia"
+#~ msgstr "Liberia"
+
+#~ msgid "Libyan Arab Jamahiriya"
+#~ msgstr "Libia"
+
+#~ msgid "Liechtenstein"
+#~ msgstr "Liechtenstein "
+
+#~ msgid "Lithuania"
+#~ msgstr "Lituania "
+
+#~ msgid "Luxembourg"
+#~ msgstr "Lussemburgo "
+
+#~ msgid "Macedonia"
+#~ msgstr "Macedonia "
+
+#~ msgid "Madagascar"
+#~ msgstr "Madagascar "
+
+#~ msgid "Malawi"
+#~ msgstr "Malawi "
+
+#~ msgid "Malaysia"
+#~ msgstr "Malesia "
+
+#~ msgid "Maldives"
+#~ msgstr "Maldive "
+
+#~ msgid "Mali"
+#~ msgstr "Mali"
+
+#~ msgid "Malta"
+#~ msgstr "Malta"
+
+#~ msgid "Marshall Islands"
+#~ msgstr "Isole Marshall "
+
+#~ msgid "Martinique"
+#~ msgstr "Martinica"
+
+#~ msgid "Mauritania"
+#~ msgstr "Mauritania"
+
+#~ msgid "Mauritius"
+#~ msgstr "Mauritius"
+
+#~ msgid "Mayotte"
+#~ msgstr "Mayotte "
+
+#~ msgid "Mexico"
+#~ msgstr "Messico "
+
+#~ msgid "Micronesia, Federated States of"
+#~ msgstr "Micronesia"
+
+#~ msgid "Monaco"
+#~ msgstr "Monaco "
+
+#~ msgid "Mongolia"
+#~ msgstr "Mongolia "
+
+#~ msgid "Montenegro"
+#~ msgstr "Montenegro"
+
+#~ msgid "Montserrat"
+#~ msgstr "Montserrat"
+
+#~ msgid "Morocco"
+#~ msgstr "Marocco"
+
+#~ msgid "Mozambique"
+#~ msgstr "Mozambico "
+
+#~ msgid "Myanmar"
+#~ msgstr "Birmania"
+
+#~ msgid "Namibia"
+#~ msgstr "Namibia"
+
+#~ msgid "Nauru"
+#~ msgstr "Nauru"
+
+#~ msgid "Nepal"
+#~ msgstr "Nepal"
+
+#~ msgid "Netherlands"
+#~ msgstr "Olanda"
+
+#~ msgid "Netherlands Antilles"
+#~ msgstr "Antille Olandesi"
+
+#~ msgid "New Caledonia"
+#~ msgstr "Nuova Caledonia"
+
+#~ msgid "New Zealand"
+#~ msgstr "Nuova Zelanda"
+
+#~ msgid "Nicaragua"
+#~ msgstr "Nicaragua"
+
+#~ msgid "Niger"
+#~ msgstr "Niger "
+
+#~ msgid "Nigeria"
+#~ msgstr "Nigeria"
+
+#~ msgid "Niue"
+#~ msgstr "Niue"
+
+#~ msgid "Norfolk Island"
+#~ msgstr "Isola di Norfolk "
+
+#~ msgid "Northern Mariana Islands"
+#~ msgstr "Isole Mariane"
+
+#~ msgid "Norway"
+#~ msgstr "Norvegia"
+
+#~ msgid "Occupied Palestinian Territory"
+#~ msgstr "Territori Occupati Palestinesi"
+
+#~ msgid "Oman"
+#~ msgstr "Oman"
+
+#~ msgid "Pakistan"
+#~ msgstr "Pakistan "
+
+#~ msgid "Palau"
+#~ msgstr "Palau"
+
+#~ msgid "Panama"
+#~ msgstr "Panama"
+
+#~ msgid "Papua New Guinea"
+#~ msgstr "Papua Nuova Guinea"
+
+#~ msgid "Paraguay"
+#~ msgstr "Paraguay"
+
+#~ msgid "Peru"
+#~ msgstr "Perù"
+
+#~ msgid "Philippines"
+#~ msgstr "Filippine"
+
+#~ msgid "Pitcairn"
+#~ msgstr "Pitcairn"
+
+#~ msgid "Poland"
+#~ msgstr "Polonia"
+
+#~ msgid "Portugal"
+#~ msgstr "Portogallo"
+
+#~ msgid "Puerto Rico"
+#~ msgstr "Porto Rico"
+
+#~ msgid "Qatar"
+#~ msgstr "Qatar"
+
+#~ msgid "Republic of Korea"
+#~ msgstr "Korea"
+
+#~ msgid "Republic of Moldova"
+#~ msgstr "Moldova"
+
+#~ msgid "Reunion"
+#~ msgstr "Reunion"
+
+#~ msgid "Romania"
+#~ msgstr "Romania"
+
+#~ msgid "Russian Federation"
+#~ msgstr "Russia"
+
+#~ msgid "Rwanda"
+#~ msgstr "Rwanda"
+
+#~ msgid "Saint-Barthelemy"
+#~ msgstr "Saint-Barthelemy"
+
+#~ msgid "Saint Helena"
+#~ msgstr "Santa Elena"
+
+#~ msgid "Saint Kitts and Nevis"
+#~ msgstr "Saint Kitts and Nevis"
+
+#~ msgid "Saint Lucia"
+#~ msgstr "Santa Lucia"
+
+#~ msgid "Saint-Martin (French part)"
+#~ msgstr "San Martín "
+
+#~ msgid "Saint Pierre and Miquelon"
+#~ msgstr "Saint Pierre and Miquelon"
+
+#~ msgid "Saint Vincent and the Grenadines"
+#~ msgstr "Saint Vincent and the Grenadines"
+
+#~ msgid "Samoa"
+#~ msgstr "Samoa"
+
+#~ msgid "San Marino"
+#~ msgstr "San Marino"
+
+#~ msgid "Sao Tome and Principe"
+#~ msgstr "Sao Tome e Principe"
+
+#~ msgid "Saudi Arabia"
+#~ msgstr "Arabia Saudita"
+
+#~ msgid "Senegal"
+#~ msgstr "Senegal"
+
+#~ msgid "Serbia"
+#~ msgstr "Serbia"
+
+#~ msgid "Seychelles"
+#~ msgstr "Seychelles "
+
+#~ msgid "Sierra Leone"
+#~ msgstr "Sierra Leone"
+
+#~ msgid "Singapore"
+#~ msgstr "Singapore"
+
+#~ msgid "Slovakia"
+#~ msgstr "Slovacchia"
+
+#~ msgid "Slovenia"
+#~ msgstr "Slovenia"
+
+#~ msgid "Solomon Islands"
+#~ msgstr "Isole Salomone"
+
+#~ msgid "Somalia"
+#~ msgstr "Somalia"
+
+#~ msgid "South Africa"
+#~ msgstr "Sudafrica "
+
+#~ msgid "Spain"
+#~ msgstr "Spagna"
+
+#~ msgid "Sri Lanka"
+#~ msgstr "Sri Lanka"
+
+#~ msgid "Sudan"
+#~ msgstr "Sudan"
+
+#~ msgid "Suriname"
+#~ msgstr "Suriname"
+
+#~ msgid "Svalbard and Jan Mayen Islands"
+#~ msgstr "Isole Svalbard e Jan Mayen"
+
+#~ msgid "Swaziland"
+#~ msgstr "Swaziland"
+
+#~ msgid "Sweden"
+#~ msgstr "Svezia"
+
+#~ msgid "Switzerland"
+#~ msgstr "Svizzera"
+
+#~ msgid "Syrian Arab Republic"
+#~ msgstr "Siria"
+
+#~ msgid "Tajikistan"
+#~ msgstr "Tajikistan"
+
+#~ msgid "Thailand"
+#~ msgstr "Tailandia"
+
+#~ msgid "Timor-Leste"
+#~ msgstr "Timor-Est"
+
+#~ msgid "Togo"
+#~ msgstr "Togo"
+
+#~ msgid "Tokelau"
+#~ msgstr "Tokelau"
+
+#~ msgid "Tonga"
+#~ msgstr "Tonga"
+
+#~ msgid "Trinidad and Tobago"
+#~ msgstr "Trinidad e Tobago"
+
+#~ msgid "Tunisia"
+#~ msgstr "Tunisia"
+
+#~ msgid "Turkey"
+#~ msgstr "Turchia"
+
+#~ msgid "Turkmenistan"
+#~ msgstr "Turkmenistan"
+
+#~ msgid "Turks and Caicos Islands"
+#~ msgstr "Turcas e Caicos"
+
+#~ msgid "Tuvalu"
+#~ msgstr "Tuvalu"
+
+#~ msgid "Uganda"
+#~ msgstr "Uganda"
+
+#~ msgid "Ukraine"
+#~ msgstr "Ucraina"
+
+#~ msgid "United Arab Emirates"
+#~ msgstr "Emirati Arabi Uniti"
+
+#~ msgid "United Kingdom"
+#~ msgstr "Regno Unito"
+
+#~ msgid "United Republic of Tanzania"
+#~ msgstr "Tanzanía"
+
+#~ msgid "United States of America"
+#~ msgstr "Stati Uniti"
+
+#~ msgid "United States Virgin Islands"
+#~ msgstr "Isole Vergini (USA)"
+
+#~ msgid "Uruguay"
+#~ msgstr "Uruguay"
+
+#~ msgid "Uzbekistan"
+#~ msgstr "Uzbekistan"
+
+#~ msgid "Vanuatu"
+#~ msgstr "Vanuatu"
+
+#~ msgid "Venezuela (Bolivarian Republic of)"
+#~ msgstr "Venezuela"
+
+#~ msgid "Viet Nam"
+#~ msgstr "Vietnam"
+
+#~ msgid "Wallis and Futuna Islands"
+#~ msgstr "Isole Wallis e Futuna"
+
+#~ msgid "Western Sahara"
+#~ msgstr "Sahara Occidentale"
+
+#~ msgid "Yemen"
+#~ msgstr "Yemen"
+
+#~ msgid "Zambia"
+#~ msgstr "Zambia"
+
+#~ msgid "Zimbabwe"
+#~ msgstr "Zimbabwe"
 
 #~ msgid "You are not permitted to modify this object"
 #~ msgstr "Non hai i permessi per modificare questo oggetto"
