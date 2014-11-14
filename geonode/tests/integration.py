@@ -47,7 +47,7 @@ from geonode.layers.utils import (
 from geonode.tests.utils import check_layer, get_web_page
 
 from geonode.geoserver.helpers import cascading_delete
-#FIXME(Ariel): Uncomment these when #1767 is fixed
+# FIXME(Ariel): Uncomment these when #1767 is fixed
 # from geonode.geoserver.helpers import get_time_info
 # from geonode.geoserver.helpers import get_wms
 # from geonode.geoserver.helpers import set_time_info
@@ -599,6 +599,18 @@ class GeoNodeMapTest(TestCase):
                                                })
         self.assertEquals(response.status_code, 401)
 
+
+class GeoNodePermissionsTest(TestCase):
+
+    """Tests GeoNode permissions and its integration with GeoServer
+    """
+
+    def setUp(self):
+        call_command('loaddata', 'people_data', verbosity=0)
+
+    def tearDown(self):
+        pass
+
     def test_permissions(self):
         """Test permissions on a layer
         """
@@ -659,6 +671,41 @@ class GeoNodeMapTest(TestCase):
         # test change_layer_data
         # would be nice to make a WFS/T request and test results, but this
         # would work only on PostGIS layers
+
+        # Clean up and completely delete the layer
+        layer.delete()
+
+    def test_unpublished(self):
+        """Test permissions on an unpublished layer
+        """
+
+        thefile = os.path.join(
+            gisdata.VECTOR_DATA,
+            'san_andres_y_providencia_poi.shp')
+        layer = file_upload(thefile, overwrite=True)
+        check_layer(layer)
+
+        # we need some time to have the service up and running
+        time.sleep(20)
+
+        # request getCapabilities: layer must be there as it is published and
+        # advertised: we need to check if in response there is
+        # <Name>geonode:san_andres_y_providencia_water</Name>
+        url = 'http://localhost:8080/geoserver/ows?' \
+            'service=wms&version=1.3.0&request=GetCapabilities'
+        str_to_check = '<Name>geonode:san_andres_y_providencia_poi</Name>'
+        request = urllib2.Request(url)
+        response = urllib2.urlopen(request)
+        self.assertTrue(any(str_to_check in s for s in response.readlines()))
+
+        # now test with unpublished layer
+        resource = layer.get_self_resource()
+        resource.is_published = False
+        resource.save()
+
+        request = urllib2.Request(url)
+        response = urllib2.urlopen(request)
+        self.assertFalse(any(str_to_check in s for s in response.readlines()))
 
         # Clean up and completely delete the layer
         layer.delete()
