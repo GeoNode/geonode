@@ -1,7 +1,7 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
-# 
+#
 # Translators:
 # Nathan Wang <nwang@opengeo.org>, 2013
 # Nathan Wang <nwang@opengeo.org>, 2012-2013
@@ -10,21 +10,22 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-10-24 09:59-0500\n"
+"POT-Creation-Date: 2014-11-14 09:56-0500\n"
 "PO-Revision-Date: 2014-11-11 22:38+0000\n"
 "Last-Translator: ingenieroariel <ingenieroariel@gmail.com>\n"
-"Language-Team: Chinese (http://www.transifex.com/projects/p/geonode/language/zh/)\n"
+"Language-Team: Chinese (http://www.transifex.com/projects/p/geonode/language/"
+"zh/)\n"
+"Language: zh\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Language: zh\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 
-#: utils.py:37
+#: utils.py:38
 msgid "Invalid permission level."
 msgstr "权限等级不够。"
 
-#: utils.py:461
+#: utils.py:473
 msgid "Permission Denied"
 msgstr "权限级别"
 
@@ -144,958 +145,6 @@ msgstr "数据每三个月更新一次"
 msgid "No information provided"
 msgstr "无信息提供"
 
-#: base/enumerations.py:81
-msgid "Afghanistan"
-msgstr "阿富汗"
-
-#: base/enumerations.py:82
-msgid "Aland Islands"
-msgstr "奥兰群岛"
-
-#: base/enumerations.py:83
-msgid "Albania"
-msgstr "阿尔巴尼亚"
-
-#: base/enumerations.py:84
-msgid "Algeria"
-msgstr "阿尔及利亚"
-
-#: base/enumerations.py:85
-msgid "American Samoa"
-msgstr "美属萨摩亚"
-
-#: base/enumerations.py:86
-msgid "Andorra"
-msgstr "安道尔"
-
-#: base/enumerations.py:87
-msgid "Angola"
-msgstr "安哥拉"
-
-#: base/enumerations.py:88
-msgid "Anguilla"
-msgstr "安圭拉"
-
-#: base/enumerations.py:89
-msgid "Antigua and Barbuda"
-msgstr "安提瓜和巴布达"
-
-#: base/enumerations.py:90
-msgid "Argentina"
-msgstr "阿根廷"
-
-#: base/enumerations.py:91
-msgid "Armenia"
-msgstr "亚美尼亚"
-
-#: base/enumerations.py:92
-msgid "Aruba"
-msgstr "阿鲁巴"
-
-#: base/enumerations.py:93
-msgid "Australia"
-msgstr "澳大利亚"
-
-#: base/enumerations.py:94
-msgid "Austria"
-msgstr "奥地利"
-
-#: base/enumerations.py:95
-msgid "Azerbaijan"
-msgstr "阿塞拜疆"
-
-#: base/enumerations.py:96
-msgid "Bahamas"
-msgstr "巴哈马"
-
-#: base/enumerations.py:97
-msgid "Bahrain"
-msgstr "巴林"
-
-#: base/enumerations.py:98
-msgid "Bangladesh"
-msgstr "孟加拉国"
-
-#: base/enumerations.py:99
-msgid "Barbados"
-msgstr "巴巴多斯"
-
-#: base/enumerations.py:100
-msgid "Belarus"
-msgstr "白俄罗斯"
-
-#: base/enumerations.py:101
-msgid "Belgium"
-msgstr "比利时"
-
-#: base/enumerations.py:102
-msgid "Belize"
-msgstr "伯利兹"
-
-#: base/enumerations.py:103
-msgid "Benin"
-msgstr "贝宁"
-
-#: base/enumerations.py:104
-msgid "Bermuda"
-msgstr "百慕大"
-
-#: base/enumerations.py:105
-msgid "Bhutan"
-msgstr "不丹"
-
-#: base/enumerations.py:106
-msgid "Bolivia"
-msgstr "玻利维亚"
-
-#: base/enumerations.py:107
-msgid "Bosnia and Herzegovina"
-msgstr "波斯尼亚和黑塞哥维那"
-
-#: base/enumerations.py:108
-msgid "Botswana"
-msgstr "博茨瓦纳"
-
-#: base/enumerations.py:109
-msgid "Brazil"
-msgstr "巴西"
-
-#: base/enumerations.py:110
-msgid "British Virgin Islands"
-msgstr "英属维尔京群岛"
-
-#: base/enumerations.py:111
-msgid "Brunei Darussalam"
-msgstr "汶莱"
-
-#: base/enumerations.py:112
-msgid "Bulgaria"
-msgstr "保加利亚"
-
-#: base/enumerations.py:113
-msgid "Burkina Faso"
-msgstr "布基纳法索"
-
-#: base/enumerations.py:114
-msgid "Burundi"
-msgstr "布隆迪"
-
-#: base/enumerations.py:115
-msgid "Cambodia"
-msgstr "柬埔寨"
-
-#: base/enumerations.py:116
-msgid "Cameroon"
-msgstr "喀麦隆"
-
-#: base/enumerations.py:117
-msgid "Canada"
-msgstr "加拿大"
-
-#: base/enumerations.py:118
-msgid "Cape Verde"
-msgstr "佛得角"
-
-#: base/enumerations.py:119
-msgid "Cayman Islands"
-msgstr "开曼群岛"
-
-#: base/enumerations.py:120
-msgid "Central African Republic"
-msgstr "中非共和国"
-
-#: base/enumerations.py:121
-msgid "Chad"
-msgstr "乍得"
-
-#: base/enumerations.py:122
-msgid "Channel Islands"
-msgstr "海峡群岛"
-
-#: base/enumerations.py:123
-msgid "Chile"
-msgstr "智利"
-
-#: base/enumerations.py:124
-msgid "China"
-msgstr "中国"
-
-#: base/enumerations.py:125
-msgid "China - Hong Kong"
-msgstr "中国 - 香港"
-
-#: base/enumerations.py:126
-msgid "China - Macao"
-msgstr "中国 - 澳门"
-
-#: base/enumerations.py:127
-msgid "Colombia"
-msgstr "哥伦比亚"
-
-#: base/enumerations.py:128
-msgid "Comoros"
-msgstr "科摩罗"
-
-#: base/enumerations.py:129
-msgid "Congo"
-msgstr "刚果"
-
-#: base/enumerations.py:130
-msgid "Cook Islands"
-msgstr "库克群岛"
-
-#: base/enumerations.py:131
-msgid "Costa Rica"
-msgstr "哥斯达黎加"
-
-#: base/enumerations.py:132
-msgid "Cote d'Ivoire"
-msgstr "科特迪瓦"
-
-#: base/enumerations.py:133
-msgid "Croatia"
-msgstr "克罗地亚"
-
-#: base/enumerations.py:134
-msgid "Cuba"
-msgstr "古巴"
-
-#: base/enumerations.py:135
-msgid "Cyprus"
-msgstr "塞浦路斯"
-
-#: base/enumerations.py:136
-msgid "Czech Republic"
-msgstr "捷克共和国"
-
-#: base/enumerations.py:137
-msgid "Democratic People's Republic of Korea"
-msgstr "朝鲜人民民主共和国"
-
-#: base/enumerations.py:138
-msgid "Democratic Republic of the Congo"
-msgstr "刚果民主共和国"
-
-#: base/enumerations.py:139
-msgid "Denmark"
-msgstr "丹麦"
-
-#: base/enumerations.py:140
-msgid "Djibouti"
-msgstr "吉布提"
-
-#: base/enumerations.py:141
-msgid "Dominica"
-msgstr "多米尼克"
-
-#: base/enumerations.py:142
-msgid "Dominican Republic"
-msgstr "多米尼加共和国"
-
-#: base/enumerations.py:143
-msgid "Ecuador"
-msgstr "厄瓜多尔"
-
-#: base/enumerations.py:144
-msgid "Egypt"
-msgstr "埃及"
-
-#: base/enumerations.py:145
-msgid "El Salvador"
-msgstr "萨尔瓦多"
-
-#: base/enumerations.py:146
-msgid "Equatorial Guinea"
-msgstr "赤道几内亚"
-
-#: base/enumerations.py:147
-msgid "Eritrea"
-msgstr "厄立特里亚"
-
-#: base/enumerations.py:148
-msgid "Estonia"
-msgstr "爱沙尼亚"
-
-#: base/enumerations.py:149
-msgid "Ethiopia"
-msgstr "埃塞俄比亚"
-
-#: base/enumerations.py:150
-msgid "Faeroe Islands"
-msgstr "法罗群岛"
-
-#: base/enumerations.py:151
-msgid "Falkland Islands (Malvinas)"
-msgstr "福克兰群岛（马尔维纳斯）"
-
-#: base/enumerations.py:152
-msgid "Fiji"
-msgstr "斐济"
-
-#: base/enumerations.py:153
-msgid "Finland"
-msgstr "芬兰"
-
-#: base/enumerations.py:154
-msgid "France"
-msgstr "法国"
-
-#: base/enumerations.py:155
-msgid "French Guiana"
-msgstr "法属圭亚那"
-
-#: base/enumerations.py:156
-msgid "French Polynesia"
-msgstr "法属波利尼西亚"
-
-#: base/enumerations.py:157
-msgid "Gabon"
-msgstr "加蓬"
-
-#: base/enumerations.py:158
-msgid "Gambia"
-msgstr "冈比亚"
-
-#: base/enumerations.py:159
-msgid "Georgia"
-msgstr "格鲁吉亚"
-
-#: base/enumerations.py:160
-msgid "Germany"
-msgstr "德国"
-
-#: base/enumerations.py:161
-msgid "Ghana"
-msgstr "加纳"
-
-#: base/enumerations.py:162
-msgid "Gibraltar"
-msgstr "直布罗陀"
-
-#: base/enumerations.py:163
-msgid "Greece"
-msgstr "希腊"
-
-#: base/enumerations.py:164
-msgid "Greenland"
-msgstr "格陵兰"
-
-#: base/enumerations.py:165
-msgid "Grenada"
-msgstr "格林纳达"
-
-#: base/enumerations.py:166
-msgid "Guadeloupe"
-msgstr "瓜德罗普岛"
-
-#: base/enumerations.py:167
-msgid "Guam"
-msgstr "关岛"
-
-#: base/enumerations.py:168
-msgid "Guatemala"
-msgstr "危地马拉"
-
-#: base/enumerations.py:169
-msgid "Guernsey"
-msgstr "根西岛"
-
-#: base/enumerations.py:170
-msgid "Guinea"
-msgstr "几内亚"
-
-#: base/enumerations.py:171
-msgid "Guinea-Bissau"
-msgstr "几内亚比绍"
-
-#: base/enumerations.py:172
-msgid "Guyana"
-msgstr "圭亚那"
-
-#: base/enumerations.py:173
-msgid "Haiti"
-msgstr "海地"
-
-#: base/enumerations.py:174
-msgid "Holy See (Vatican City)"
-msgstr "罗马教廷（梵蒂冈城）"
-
-#: base/enumerations.py:175
-msgid "Honduras"
-msgstr "洪都拉斯"
-
-#: base/enumerations.py:176
-msgid "Hungary"
-msgstr "匈牙利"
-
-#: base/enumerations.py:177
-msgid "Iceland"
-msgstr "冰岛"
-
-#: base/enumerations.py:178
-msgid "India"
-msgstr "印度"
-
-#: base/enumerations.py:179
-msgid "Indonesia"
-msgstr "印尼"
-
-#: base/enumerations.py:180
-msgid "Iran"
-msgstr "伊朗"
-
-#: base/enumerations.py:181
-msgid "Iraq"
-msgstr "伊拉克"
-
-#: base/enumerations.py:182
-msgid "Ireland"
-msgstr "爱尔兰"
-
-#: base/enumerations.py:183
-msgid "Isle of Man"
-msgstr "马恩岛"
-
-#: base/enumerations.py:184
-msgid "Israel"
-msgstr "以色列"
-
-#: base/enumerations.py:185
-msgid "Italy"
-msgstr "意大利"
-
-#: base/enumerations.py:186
-msgid "Jamaica"
-msgstr "牙买加"
-
-#: base/enumerations.py:187
-msgid "Japan"
-msgstr "日本"
-
-#: base/enumerations.py:188
-msgid "Jersey"
-msgstr "新泽西州"
-
-#: base/enumerations.py:189
-msgid "Jordan"
-msgstr "约旦"
-
-#: base/enumerations.py:190
-msgid "Kazakhstan"
-msgstr "哈萨克斯坦"
-
-#: base/enumerations.py:191
-msgid "Kenya"
-msgstr "肯尼亚"
-
-#: base/enumerations.py:192
-msgid "Kiribati"
-msgstr "基里巴斯"
-
-#: base/enumerations.py:193
-msgid "Kuwait"
-msgstr "科威特"
-
-#: base/enumerations.py:194
-msgid "Kyrgyzstan"
-msgstr "吉尔吉斯斯坦"
-
-#: base/enumerations.py:195
-msgid "Lao People's Democratic Republic"
-msgstr "老挝人民民主共和国"
-
-#: base/enumerations.py:196
-msgid "Latvia"
-msgstr "拉脱维亚"
-
-#: base/enumerations.py:197
-msgid "Lebanon"
-msgstr "黎巴嫩"
-
-#: base/enumerations.py:198
-msgid "Lesotho"
-msgstr "莱索托"
-
-#: base/enumerations.py:199
-msgid "Liberia"
-msgstr "利比里亚"
-
-#: base/enumerations.py:200
-msgid "Libyan Arab Jamahiriya"
-msgstr "阿拉伯利比亚民众国"
-
-#: base/enumerations.py:201
-msgid "Liechtenstein"
-msgstr "列支敦士登"
-
-#: base/enumerations.py:202
-msgid "Lithuania"
-msgstr "立陶宛"
-
-#: base/enumerations.py:203
-msgid "Luxembourg"
-msgstr "卢森堡"
-
-#: base/enumerations.py:204
-msgid "Macedonia"
-msgstr "马其顿"
-
-#: base/enumerations.py:205
-msgid "Madagascar"
-msgstr "马达加斯加"
-
-#: base/enumerations.py:206
-msgid "Malawi"
-msgstr "马拉维"
-
-#: base/enumerations.py:207
-msgid "Malaysia"
-msgstr "马来西亚"
-
-#: base/enumerations.py:208
-msgid "Maldives"
-msgstr "马尔代夫"
-
-#: base/enumerations.py:209
-msgid "Mali"
-msgstr "马里"
-
-#: base/enumerations.py:210
-msgid "Malta"
-msgstr "马耳他"
-
-#: base/enumerations.py:211
-msgid "Marshall Islands"
-msgstr "马绍尔群岛"
-
-#: base/enumerations.py:212
-msgid "Martinique"
-msgstr "马提尼克岛"
-
-#: base/enumerations.py:213
-msgid "Mauritania"
-msgstr "毛里塔尼亚"
-
-#: base/enumerations.py:214
-msgid "Mauritius"
-msgstr "毛里求斯"
-
-#: base/enumerations.py:215
-msgid "Mayotte"
-msgstr "马约特岛"
-
-#: base/enumerations.py:216
-msgid "Mexico"
-msgstr "墨西哥"
-
-#: base/enumerations.py:217
-msgid "Micronesia, Federated States of"
-msgstr "密克罗尼西亚联邦"
-
-#: base/enumerations.py:218
-msgid "Monaco"
-msgstr "摩纳哥"
-
-#: base/enumerations.py:219
-msgid "Mongolia"
-msgstr "蒙古"
-
-#: base/enumerations.py:220
-msgid "Montenegro"
-msgstr "黑山"
-
-#: base/enumerations.py:221
-msgid "Montserrat"
-msgstr "蒙特塞拉特"
-
-#: base/enumerations.py:222
-msgid "Morocco"
-msgstr "摩洛哥"
-
-#: base/enumerations.py:223
-msgid "Mozambique"
-msgstr "莫桑比克"
-
-#: base/enumerations.py:224
-msgid "Myanmar"
-msgstr "缅甸"
-
-#: base/enumerations.py:225
-msgid "Namibia"
-msgstr "纳米比亚"
-
-#: base/enumerations.py:226
-msgid "Nauru"
-msgstr "瑙鲁"
-
-#: base/enumerations.py:227
-msgid "Nepal"
-msgstr "尼泊尔"
-
-#: base/enumerations.py:228
-msgid "Netherlands"
-msgstr "荷兰"
-
-#: base/enumerations.py:229
-msgid "Netherlands Antilles"
-msgstr "荷属安的列斯"
-
-#: base/enumerations.py:230
-msgid "New Caledonia"
-msgstr "新喀里多尼亚"
-
-#: base/enumerations.py:231
-msgid "New Zealand"
-msgstr "新西兰"
-
-#: base/enumerations.py:232
-msgid "Nicaragua"
-msgstr "尼加拉瓜"
-
-#: base/enumerations.py:233
-msgid "Niger"
-msgstr "尼日尔"
-
-#: base/enumerations.py:234
-msgid "Nigeria"
-msgstr "尼日利亚"
-
-#: base/enumerations.py:235
-msgid "Niue"
-msgstr "纽埃"
-
-#: base/enumerations.py:236
-msgid "Norfolk Island"
-msgstr "诺福克岛"
-
-#: base/enumerations.py:237
-msgid "Northern Mariana Islands"
-msgstr "北马里亚纳群岛"
-
-#: base/enumerations.py:238
-msgid "Norway"
-msgstr "挪威"
-
-#: base/enumerations.py:239
-msgid "Occupied Palestinian Territory"
-msgstr "被占领的巴勒斯坦领土"
-
-#: base/enumerations.py:240
-msgid "Oman"
-msgstr "阿曼"
-
-#: base/enumerations.py:241
-msgid "Pakistan"
-msgstr "巴基斯坦"
-
-#: base/enumerations.py:242
-msgid "Palau"
-msgstr "帕劳"
-
-#: base/enumerations.py:243
-msgid "Panama"
-msgstr "巴拿马"
-
-#: base/enumerations.py:244
-msgid "Papua New Guinea"
-msgstr "巴布亚新几内亚"
-
-#: base/enumerations.py:245
-msgid "Paraguay"
-msgstr "巴拉圭"
-
-#: base/enumerations.py:246
-msgid "Peru"
-msgstr "秘鲁"
-
-#: base/enumerations.py:247
-msgid "Philippines"
-msgstr "菲律宾"
-
-#: base/enumerations.py:248
-msgid "Pitcairn"
-msgstr "皮特凯恩"
-
-#: base/enumerations.py:249
-msgid "Poland"
-msgstr "波兰"
-
-#: base/enumerations.py:250
-msgid "Portugal"
-msgstr "葡萄牙"
-
-#: base/enumerations.py:251
-msgid "Puerto Rico"
-msgstr "波多黎各"
-
-#: base/enumerations.py:252
-msgid "Qatar"
-msgstr "卡塔尔"
-
-#: base/enumerations.py:253
-msgid "Republic of Korea"
-msgstr "韩国共和国"
-
-#: base/enumerations.py:254
-msgid "Republic of Moldova"
-msgstr "摩尔多瓦共和国"
-
-#: base/enumerations.py:255
-msgid "Reunion"
-msgstr "留尼汪"
-
-#: base/enumerations.py:256
-msgid "Romania"
-msgstr "罗马尼亚"
-
-#: base/enumerations.py:257
-msgid "Russian Federation"
-msgstr "俄罗斯联邦"
-
-#: base/enumerations.py:258
-msgid "Rwanda"
-msgstr "卢旺达"
-
-#: base/enumerations.py:259
-msgid "Saint-Barthelemy"
-msgstr "圣 - 缪"
-
-#: base/enumerations.py:260
-msgid "Saint Helena"
-msgstr "圣赫勒拿"
-
-#: base/enumerations.py:261
-msgid "Saint Kitts and Nevis"
-msgstr "圣基茨和尼维斯"
-
-#: base/enumerations.py:262
-msgid "Saint Lucia"
-msgstr "圣卢西亚"
-
-#: base/enumerations.py:263
-msgid "Saint-Martin (French part)"
-msgstr "圣马丁（法国部分）"
-
-#: base/enumerations.py:264
-msgid "Saint Pierre and Miquelon"
-msgstr "圣皮埃尔和密克隆"
-
-#: base/enumerations.py:265
-msgid "Saint Vincent and the Grenadines"
-msgstr "圣文森特和格林纳丁斯"
-
-#: base/enumerations.py:266
-msgid "Samoa"
-msgstr "萨摩亚"
-
-#: base/enumerations.py:267
-msgid "San Marino"
-msgstr "圣马力诺"
-
-#: base/enumerations.py:268
-msgid "Sao Tome and Principe"
-msgstr "圣多美和普林西比"
-
-#: base/enumerations.py:269
-msgid "Saudi Arabia"
-msgstr "沙特阿拉伯"
-
-#: base/enumerations.py:270
-msgid "Senegal"
-msgstr "塞内加尔"
-
-#: base/enumerations.py:271
-msgid "Serbia"
-msgstr "塞尔维亚"
-
-#: base/enumerations.py:272
-msgid "Seychelles"
-msgstr "塞舌尔"
-
-#: base/enumerations.py:273
-msgid "Sierra Leone"
-msgstr "塞拉利昂"
-
-#: base/enumerations.py:274
-msgid "Singapore"
-msgstr "新加坡"
-
-#: base/enumerations.py:275
-msgid "Slovakia"
-msgstr "斯洛伐克"
-
-#: base/enumerations.py:276
-msgid "Slovenia"
-msgstr "斯洛文尼亚"
-
-#: base/enumerations.py:277
-msgid "Solomon Islands"
-msgstr "所罗门群岛"
-
-#: base/enumerations.py:278
-msgid "Somalia"
-msgstr "索马里"
-
-#: base/enumerations.py:279
-msgid "South Africa"
-msgstr "南非"
-
-#: base/enumerations.py:280
-msgid "South Sudan"
-msgstr ""
-
-#: base/enumerations.py:281
-msgid "Spain"
-msgstr "西班牙"
-
-#: base/enumerations.py:282
-msgid "Sri Lanka"
-msgstr "斯里兰卡"
-
-#: base/enumerations.py:283
-msgid "Sudan"
-msgstr "苏丹"
-
-#: base/enumerations.py:284
-msgid "Suriname"
-msgstr "苏里南"
-
-#: base/enumerations.py:285
-msgid "Svalbard and Jan Mayen Islands"
-msgstr "斯瓦尔巴岛和扬马延岛"
-
-#: base/enumerations.py:286
-msgid "Swaziland"
-msgstr "斯威士兰"
-
-#: base/enumerations.py:287
-msgid "Sweden"
-msgstr "瑞典"
-
-#: base/enumerations.py:288
-msgid "Switzerland"
-msgstr "瑞士"
-
-#: base/enumerations.py:289
-msgid "Syrian Arab Republic"
-msgstr "阿拉伯叙利亚共和国"
-
-#: base/enumerations.py:290
-msgid "Tajikistan"
-msgstr "塔吉克斯坦"
-
-#: base/enumerations.py:291
-msgid "Thailand"
-msgstr "泰国"
-
-#: base/enumerations.py:292
-msgid "Timor-Leste"
-msgstr "东帝汶"
-
-#: base/enumerations.py:293
-msgid "Togo"
-msgstr "多哥"
-
-#: base/enumerations.py:294
-msgid "Tokelau"
-msgstr "托克劳"
-
-#: base/enumerations.py:295
-msgid "Tonga"
-msgstr "汤加"
-
-#: base/enumerations.py:296
-msgid "Trinidad and Tobago"
-msgstr "特里尼达和多巴哥"
-
-#: base/enumerations.py:297
-msgid "Tunisia"
-msgstr "突尼斯"
-
-#: base/enumerations.py:298
-msgid "Turkey"
-msgstr "土耳其"
-
-#: base/enumerations.py:299
-msgid "Turkmenistan"
-msgstr "土库曼斯坦"
-
-#: base/enumerations.py:300
-msgid "Turks and Caicos Islands"
-msgstr "特克斯和凯科斯群岛"
-
-#: base/enumerations.py:301
-msgid "Tuvalu"
-msgstr "图瓦卢"
-
-#: base/enumerations.py:302
-msgid "Uganda"
-msgstr "乌干达"
-
-#: base/enumerations.py:303
-msgid "Ukraine"
-msgstr "乌克兰"
-
-#: base/enumerations.py:304
-msgid "United Arab Emirates"
-msgstr "阿拉伯联合酋长国"
-
-#: base/enumerations.py:305
-msgid "United Kingdom"
-msgstr "英国"
-
-#: base/enumerations.py:306
-msgid "United Republic of Tanzania"
-msgstr "坦桑尼亚联合共和国"
-
-#: base/enumerations.py:307
-msgid "United States of America"
-msgstr "美国"
-
-#: base/enumerations.py:308
-msgid "United States Virgin Islands"
-msgstr "美属维尔京群岛"
-
-#: base/enumerations.py:309
-msgid "Uruguay"
-msgstr "乌拉圭"
-
-#: base/enumerations.py:310
-msgid "Uzbekistan"
-msgstr "乌兹别克斯坦"
-
-#: base/enumerations.py:311
-msgid "Vanuatu"
-msgstr "瓦努阿图"
-
-#: base/enumerations.py:312
-msgid "Venezuela (Bolivarian Republic of)"
-msgstr "委内瑞拉（玻利瓦尔共和国）"
-
-#: base/enumerations.py:313
-msgid "Viet Nam"
-msgstr "越南"
-
-#: base/enumerations.py:314
-msgid "Wallis and Futuna Islands"
-msgstr "瓦利斯群岛和富图纳群岛"
-
-#: base/enumerations.py:315
-msgid "Western Sahara"
-msgstr "西撒哈拉"
-
-#: base/enumerations.py:316
-msgid "Yemen"
-msgstr "也门"
-
-#: base/enumerations.py:317
-msgid "Zambia"
-msgstr "赞比亚"
-
-#: base/enumerations.py:318
-msgid "Zimbabwe"
-msgstr "津巴布韦"
-
 #: base/forms.py:35 base/templates/base/resourcebase_info_panel.html:46
 #: documents/templates/documents/document_metadata.html:51
 #: layers/templates/layers/layer_metadata.html:53
@@ -1107,219 +156,223 @@ msgstr ""
 msgid "Category is required."
 msgstr ""
 
-#: base/models.py:41 services/models.py:85
+#: base/models.py:40 services/models.py:85
 msgid "function performed by the responsible party"
 msgstr "责任方履行职务"
 
-#: base/models.py:232
+#: base/models.py:244
 msgid "reference date for the cited resource"
 msgstr "资料引用日期"
 
-#: base/models.py:233
+#: base/models.py:245
 msgid "identification of when a given event occurred"
 msgstr "识别特定事件的发生"
 
-#: base/models.py:234
+#: base/models.py:246
 msgid "version of the cited resource"
 msgstr "引用文献的版本"
 
-#: base/models.py:235
+#: base/models.py:247
 msgid "brief narrative summary of the content of the resource(s)"
 msgstr "资料简介"
 
-#: base/models.py:236
+#: base/models.py:248
 msgid "summary of the intentions with which the resource(s) was developed"
 msgstr "总结生成资源的动机"
 
-#: base/models.py:237
+#: base/models.py:249
 msgid ""
 "frequency with which modifications and deletions are made to the data after "
 "it is first produced"
 msgstr "数据首次生成后的修改及删除频率"
 
-#: base/models.py:239
+#: base/models.py:251
 msgid ""
 "commonly used word(s) or formalised word(s) or phrase(s) used to describe "
 "the subject (space or comma-separated"
 msgstr "常用词汇或固定短语(用空格或逗号隔开"
 
-#: base/models.py:241
+#: base/models.py:253
 msgid "keyword identifies a location"
 msgstr "定位关键词"
 
-#: base/models.py:242
+#: base/models.py:254
 msgid "limitation(s) placed upon the access or use of the data."
 msgstr ""
 
-#: base/models.py:243
+#: base/models.py:255
 msgid ""
 "other restrictions and legal prerequisites for accessing and using the "
 "resource or metadata"
 msgstr "使用资料或元数据的限制及法律前提"
 
-#: base/models.py:245
+#: base/models.py:257
 msgid "license of the dataset"
 msgstr ""
 
-#: base/models.py:246
+#: base/models.py:258
 msgid "language used within the dataset"
 msgstr "数据组使用语言"
 
-#: base/models.py:247
+#: base/models.py:259
 msgid ""
-"high-level geographic data thematic classification to assist in the grouping"
-" and search of available geographic data sets."
+"high-level geographic data thematic classification to assist in the grouping "
+"and search of available geographic data sets."
 msgstr "用以助于地理信息搜集的高层次地理信息分类"
 
-#: base/models.py:249
+#: base/models.py:261
 msgid "method used to represent geographic information in the dataset."
 msgstr ""
 
-#: base/models.py:250
+#: base/models.py:262
 msgid "time period covered by the content of the dataset (start)"
 msgstr "数据组所覆盖时间段 (起始日期)"
 
-#: base/models.py:251
+#: base/models.py:263
 msgid "time period covered by the content of the dataset (end)"
 msgstr "数据组所覆盖时间段 (结束日期)"
 
-#: base/models.py:252
+#: base/models.py:264
 msgid ""
 "information about on-line sources from which the dataset, specification, or "
 "community profile name and extended metadata elements can be obtained"
 msgstr "关于数据，社区，元数据的网络信息"
 
-#: base/models.py:254
+#: base/models.py:266
 msgid "detailed text description of what the online resource is/does"
 msgstr "对网上资源的详细文字介绍"
 
-#: base/models.py:255
+#: base/models.py:267
 msgid ""
 "general explanation of the data producer's knowledge about the lineage of a "
 "dataset"
 msgstr "对于数据集沿袭的基本知识"
 
-#: base/models.py:261
+#: base/models.py:273
 msgid "title"
 msgstr "标题"
 
-#: base/models.py:261
+#: base/models.py:273
 msgid "name by which the cited resource is known"
 msgstr "用已知资源命名"
 
-#: base/models.py:262
+#: base/models.py:274
 msgid "date"
 msgstr "日期"
 
-#: base/models.py:263
+#: base/models.py:275
 msgid "date type"
 msgstr "日期类型"
 
-#: base/models.py:265
+#: base/models.py:277
 msgid "edition"
 msgstr "版本"
 
-#: base/models.py:266
+#: base/models.py:278
 msgid "abstract"
 msgstr "摘要"
 
-#: base/models.py:267
+#: base/models.py:279
 msgid "purpose"
 msgstr "目标"
 
-#: base/models.py:268
+#: base/models.py:280
 msgid "maintenance frequency"
 msgstr "维护频率"
 
-#: base/models.py:271 groups/models.py:41 people/models.py:86
+#: base/models.py:283 groups/models.py:41 people/models.py:88
 msgid "keywords"
 msgstr "关键字"
 
-#: base/models.py:272
+#: base/models.py:284
 msgid "keywords region"
 msgstr "关键词区域"
 
-#: base/models.py:275
+#: base/models.py:287
 msgid "restrictions"
 msgstr ""
 
-#: base/models.py:279
+#: base/models.py:291
 msgid "restrictions other"
 msgstr ""
 
-#: base/models.py:284
+#: base/models.py:296
 msgid "language"
 msgstr "语言"
 
-#: base/models.py:295
+#: base/models.py:307
 msgid "temporal extent start"
 msgstr "起始时间"
 
-#: base/models.py:297
+#: base/models.py:309
 msgid "temporal extent end"
 msgstr "结束时间"
 
-#: base/models.py:300
+#: base/models.py:312
 msgid "supplemental information"
 msgstr "补充信息"
 
-#: base/models.py:301
+#: base/models.py:313
 msgid "any other descriptive information about the dataset"
 msgstr "其他关于数据的描述性信息"
 
-#: base/models.py:304
+#: base/models.py:316
 msgid "distribution URL"
 msgstr "发布网址"
 
-#: base/models.py:306
+#: base/models.py:318
 msgid "distribution description"
 msgstr "发布描述"
 
-#: base/models.py:310
+#: base/models.py:322
 msgid "data quality statement"
 msgstr "数据质量描述"
 
-#: base/models.py:325
+#: base/models.py:337
 msgid "CSW typename"
 msgstr "CSW类型名称"
 
-#: base/models.py:327
+#: base/models.py:339
 msgid "CSW schema"
 msgstr "CSW 图解"
 
-#: base/models.py:332
+#: base/models.py:344
 msgid "CSW source"
 msgstr "CSW资源"
 
-#: base/models.py:333
+#: base/models.py:345
 msgid "CSW insert date"
 msgstr "CSW 插入日期"
 
-#: base/models.py:334
+#: base/models.py:346
 msgid "CSW type"
 msgstr "CSW类型"
 
-#: base/models.py:335
+#: base/models.py:347
 msgid "CSW anytext"
 msgstr "CSW文本"
 
-#: base/models.py:336
+#: base/models.py:348
 msgid "CSW WKT geometry"
 msgstr "CSW WKT图形"
 
-#: base/models.py:349
+#: base/models.py:361
 msgid "Should this resource be advertised in home page?"
 msgstr ""
 
-#: base/models.py:663
+#: base/models.py:362
+msgid "Should this resource be published and searchable?"
+msgstr ""
+
+#: base/models.py:682
 msgid "For example \"kml\""
 msgstr "比如“kml”"
 
-#: base/models.py:665
+#: base/models.py:684
 msgid "For example \"View in Google Earth\""
 msgstr "比如“在谷歌地球中查看”"
 
-#: base/models.py:666
+#: base/models.py:685
 msgid "For example \"text/xml\""
 msgstr "比如“text/xml”"
 
@@ -1369,7 +422,7 @@ msgid "Date"
 msgstr "日期"
 
 #: base/templates/base/resourcebase_info_panel.html:34
-#: layers/templates/layers/layer_detail.html:288
+#: layers/templates/layers/layer_detail.html:300
 msgid "Type"
 msgstr "类型"
 
@@ -1419,28 +472,28 @@ msgstr "补充信息"
 msgid "Spatial Representation Type"
 msgstr "空间呈现类型"
 
-#: documents/forms.py:59 groups/models.py:42 layers/forms.py:86
-#: maps/forms.py:72 people/forms.py:82
+#: documents/forms.py:68 groups/models.py:42 layers/forms.py:95
+#: maps/forms.py:81 people/forms.py:82
 msgid "A space or comma-separated list of keywords"
 msgstr "空格或者用逗号隔开的关键词"
 
-#: documents/forms.py:174 documents/forms.py:242
+#: documents/forms.py:183 documents/forms.py:251
 msgid "Document must be a file or url."
 msgstr ""
 
-#: documents/forms.py:178 documents/forms.py:246
+#: documents/forms.py:187 documents/forms.py:255
 msgid "A document cannot have both a file and a url."
 msgstr ""
 
-#: documents/forms.py:191 documents/forms.py:259
+#: documents/forms.py:200 documents/forms.py:268
 msgid "This file type is not allowed"
 msgstr ""
 
-#: documents/forms.py:209
+#: documents/forms.py:218
 msgid "Link to"
 msgstr ""
 
-#: documents/forms.py:231
+#: documents/forms.py:240
 msgid "Permissions must be valid JSON."
 msgstr ""
 
@@ -1563,118 +616,117 @@ msgstr "下载"
 msgid "You do not have permission to view this document"
 msgstr ""
 
-#: documents/templates/documents/document_detail.html:40
+#: documents/templates/documents/document_detail.html:42
 msgid "External Resource"
 msgstr ""
 
-#: documents/templates/documents/document_detail.html:45
+#: documents/templates/documents/document_detail.html:48
 #: layers/templates/layers/_actions.html:3
 #: maps/templates/maps/map_detail.html:35 templates/_actions.html:3
 msgid "Info"
 msgstr "信息"
 
-#: documents/templates/documents/document_detail.html:47
+#: documents/templates/documents/document_detail.html:50
 #: layers/templates/layers/_actions.html:6
 #: maps/templates/maps/map_detail.html:38 templates/_actions.html:5
 msgid "Share"
 msgstr "分享"
 
-#: documents/templates/documents/document_detail.html:49
+#: documents/templates/documents/document_detail.html:52
 #: layers/templates/layers/_actions.html:8
 #: maps/templates/maps/map_detail.html:41
 msgid "Ratings"
 msgstr "评分"
 
-#: documents/templates/documents/document_detail.html:50
+#: documents/templates/documents/document_detail.html:53
 #: layers/templates/layers/_actions.html:9
 #: maps/templates/maps/map_detail.html:42 templates/_comments.html:12
 msgid "Comments"
 msgstr "评论"
 
-#: documents/templates/documents/document_detail.html:68
+#: documents/templates/documents/document_detail.html:71
 msgid "Rate this document"
 msgstr "给此文件打分"
 
-#: documents/templates/documents/document_detail.html:72
+#: documents/templates/documents/document_detail.html:75
 #: layers/templates/layers/layer_detail.html:113
 #: maps/templates/maps/map_detail.html:58
 msgid "Average Rating"
 msgstr "平均分数"
 
-#: documents/templates/documents/document_detail.html:86
-#: documents/templates/documents/document_detail.html:88
-#: documents/templates/documents/document_detail.html:90
-#: documents/templates/documents/document_detail.html:101
-#: documents/templates/documents/document_detail.html:126
+#: documents/templates/documents/document_detail.html:91
+#: documents/templates/documents/document_detail.html:93
+#: documents/templates/documents/document_detail.html:95
+#: documents/templates/documents/document_detail.html:107
 msgid "Download Document"
 msgstr ""
 
-#: documents/templates/documents/document_detail.html:94
-#: layers/templates/layers/layer_detail.html:153
-#: layers/templates/layers/layer_detail.html:161
+#: documents/templates/documents/document_detail.html:100
+#: layers/templates/layers/layer_detail.html:156
+#: layers/templates/layers/layer_detail.html:164
 msgid "Download Metadata"
 msgstr "下载元数据"
 
-#: documents/templates/documents/document_detail.html:111
-#: documents/templates/documents/document_detail.html:136
-#: layers/templates/layers/layer_detail.html:146
-#: layers/templates/layers/layer_detail.html:171
-#: layers/templates/layers/layer_detail.html:203
-#: maps/templates/maps/map_detail.html:92
-#: maps/templates/maps/map_detail.html:120
+#: documents/templates/documents/document_detail.html:117
+#: documents/templates/documents/document_detail.html:147
+#: layers/templates/layers/layer_detail.html:149
+#: layers/templates/layers/layer_detail.html:174
+#: layers/templates/layers/layer_detail.html:216
+#: maps/templates/maps/map_detail.html:95
+#: maps/templates/maps/map_detail.html:127
 #: templates/_bulk_permissions_form.html:19
 msgid "Close"
 msgstr ""
 
-#: documents/templates/documents/document_detail.html:119
+#: documents/templates/documents/document_detail.html:124
+#: documents/templates/documents/document_detail.html:131
 msgid "Edit Document"
 msgstr "编辑文件"
 
-#: documents/templates/documents/document_detail.html:130
-#: layers/templates/layers/layer_detail.html:193
+#: documents/templates/documents/document_detail.html:136
+#: layers/templates/layers/layer_detail.html:196
 msgid "Edit Metadata"
 msgstr "修改元数据"
 
-#: documents/templates/documents/document_detail.html:131
+#: documents/templates/documents/document_detail.html:139
 msgid "Replace this Document"
 msgstr "替换此文件"
 
-#: documents/templates/documents/document_detail.html:132
+#: documents/templates/documents/document_detail.html:142
 msgid "Remove this Document"
 msgstr "删除此文件"
 
-#: documents/templates/documents/document_detail.html:144
+#: documents/templates/documents/document_detail.html:154
 msgid "Resource using this document"
 msgstr "用到此文件的资源"
 
-#: documents/templates/documents/document_detail.html:146
+#: documents/templates/documents/document_detail.html:156
 msgid "List of resources using this document:"
 msgstr "列出用到此文件的资源"
 
-#: documents/templates/documents/document_detail.html:150
+#: documents/templates/documents/document_detail.html:160
 msgid "This document is related to a "
 msgstr "当前文件使用于"
 
-#: documents/templates/documents/document_detail.html:153
+#: documents/templates/documents/document_detail.html:163
 msgid "This document is not related to any maps or layers"
 msgstr "当前文件未被任何地图或图层使用"
 
-#: documents/templates/documents/document_detail.html:160
+#: documents/templates/documents/document_detail.html:170
 #: documents/templates/documents/document_upload.html:32
 #: groups/templates/groups/group_detail.html:65
-#: layers/templates/layers/layer_detail.html:277
+#: layers/templates/layers/layer_detail.html:289
 #: layers/templates/layers/layer_replace.html:94
-#: layers/templates/upload/layer_upload.html:91
-#: maps/templates/maps/map_detail.html:167 people/admin.py:55
-#: templates/_permissions_form.html:9
+#: layers/templates/upload/layer_upload.html:93
+#: maps/templates/maps/map_detail.html:173 people/admin.py:55
 msgid "Permissions"
 msgstr "权限"
 
-#: documents/templates/documents/document_detail.html:161
+#: documents/templates/documents/document_detail.html:171
 msgid "Click the button below to change the permissions of this document."
 msgstr "点击下方按钮以改变此文件的使用权限"
 
-#: documents/templates/documents/document_detail.html:162
+#: documents/templates/documents/document_detail.html:172
 msgid "Change Document Permissions"
 msgstr "更改文件权限"
 
@@ -1695,7 +747,9 @@ msgid ""
 "\n"
 "        Editing details for %(document_title)s\n"
 "      "
-msgstr "\n %(document_title)s 的细节修改"
+msgstr ""
+"\n"
+" %(document_title)s 的细节修改"
 
 #: documents/templates/documents/document_metadata.html:22
 #: layers/templates/layers/layer_metadata.html:23
@@ -1722,7 +776,10 @@ msgid ""
 "\n"
 "          Are you sure you want to remove %(document_title)s?\n"
 "        "
-msgstr "\n你确定要移除 %(document_title)s?\n        "
+msgstr ""
+"\n"
+"你确定要移除 %(document_title)s?\n"
+"        "
 
 #: documents/templates/documents/document_remove.html:18
 #: groups/templates/groups/group_remove.html:19
@@ -1751,7 +808,7 @@ msgstr "替换"
 
 #: documents/templates/documents/document_replace.html:27
 #: layers/templates/layers/layer_replace.html:84
-#: layers/templates/upload/layer_upload.html:80
+#: layers/templates/upload/layer_upload.html:82
 msgid "Clear"
 msgstr ""
 
@@ -1795,32 +852,37 @@ msgstr "PDF"
 msgid "PNG"
 msgstr "PNG"
 
-#: geoserver/signals.py:270
+#: geoserver/signals.py:288
 msgid "Could not create a download link for layer."
 msgstr ""
 
-#: geoserver/signals.py:301
+#: geoserver/signals.py:319
 msgid "KML"
 msgstr "KML"
 
-#: geoserver/signals.py:330
+#: geoserver/signals.py:348
 msgid "Tiles"
 msgstr "网格"
 
-#: geoserver/signals.py:385 layers/templates/layers/layer_detail.html:212
+#: geoserver/signals.py:403 layers/templates/layers/layer_detail.html:224
 #: services/views.py:1265
 msgid "Legend"
 msgstr "图例"
 
-#: geoserver/signals.py:507 layers/utils.py:523
+#: geoserver/signals.py:525 layers/utils.py:528
 msgid "Remote Thumbnail"
 msgstr ""
 
-#: geoserver/signals.py:542 layers/utils.py:558
+#: geoserver/signals.py:560 layers/utils.py:563
 msgid "Thumbnail"
 msgstr ""
 
-#: geoserver/views.py:376 geoserver/views.py:431
+#: geoserver/views.py:338
+#, fuzzy
+msgid "You don't have permissions to change style for this layer"
+msgstr "您没有权限查看或下载此图层。"
+
+#: geoserver/views.py:425 geoserver/views.py:480
 msgid "Bad HTTP Authorization Credentials."
 msgstr "HTTP授权证书错误。"
 
@@ -1850,8 +912,8 @@ msgstr "一个图层被评分"
 
 #: groups/forms.py:15
 msgid ""
-"a short version of the name consisting only of letters, numbers, underscores"
-" and hyphens."
+"a short version of the name consisting only of letters, numbers, underscores "
+"and hyphens."
 msgstr ""
 
 #: groups/forms.py:23
@@ -2078,147 +1140,147 @@ msgstr "sld版本"
 msgid "sld url"
 msgstr "sld链接"
 
-#: layers/models.py:280
+#: layers/models.py:278
 msgid "attribute name"
 msgstr "属性名称"
 
-#: layers/models.py:281
+#: layers/models.py:279
 msgid "name of attribute as stored in shapefile/spatial database"
 msgstr "在shapefile和空间数据库中使用的属性名称"
 
-#: layers/models.py:287
+#: layers/models.py:285
 msgid "attribute description"
 msgstr ""
 
-#: layers/models.py:288
+#: layers/models.py:286
 msgid "description of attribute to be used in metadata"
 msgstr ""
 
-#: layers/models.py:293
+#: layers/models.py:291
 msgid "attribute label"
 msgstr "属性标签"
 
-#: layers/models.py:294
+#: layers/models.py:292
 msgid "title of attribute as displayed in GeoNode"
 msgstr "GeoNode中显示属性的标题"
 
-#: layers/models.py:300
+#: layers/models.py:298
 msgid "attribute type"
 msgstr "属性种类"
 
-#: layers/models.py:301
+#: layers/models.py:299
 msgid "the data type of the attribute (integer, string, geometry, etc)"
 msgstr "属性的数据种类(整数，字符串，几何图形等)"
 
-#: layers/models.py:308
+#: layers/models.py:306
 msgid "visible?"
 msgstr "可见？"
 
-#: layers/models.py:309
+#: layers/models.py:307
 msgid "specifies if the attribute should be displayed in identify results"
 msgstr "标明是否在identity中显示属性"
 
-#: layers/models.py:312
+#: layers/models.py:310
 msgid "display order"
 msgstr "显示顺序"
 
-#: layers/models.py:313
+#: layers/models.py:311
 msgid ""
 "specifies the order in which attribute should be displayed in identify "
 "results"
 msgstr "标明属性在identity中显示的顺序"
 
-#: layers/models.py:318
+#: layers/models.py:316
 msgid "count"
 msgstr "数目"
 
-#: layers/models.py:319
+#: layers/models.py:317
 msgid "count value for this field"
 msgstr "计算此列的值"
 
-#: layers/models.py:322
+#: layers/models.py:320
 msgid "min"
 msgstr "最小值"
 
-#: layers/models.py:323
+#: layers/models.py:321
 msgid "minimum value for this field"
 msgstr "此列最小值"
 
-#: layers/models.py:330
+#: layers/models.py:328
 msgid "max"
 msgstr "最大值"
 
-#: layers/models.py:331
+#: layers/models.py:329
 msgid "maximum value for this field"
 msgstr "此列最大值"
 
-#: layers/models.py:338
+#: layers/models.py:336
 msgid "average"
 msgstr "平均值"
 
-#: layers/models.py:339
+#: layers/models.py:337
 msgid "average value for this field"
 msgstr "此列平均值"
 
-#: layers/models.py:346
+#: layers/models.py:344
 msgid "median"
 msgstr "中间值"
 
-#: layers/models.py:347
+#: layers/models.py:345
 msgid "median value for this field"
 msgstr "此列中间值"
 
-#: layers/models.py:354
+#: layers/models.py:352
 msgid "standard deviation"
 msgstr "方差"
 
-#: layers/models.py:355
+#: layers/models.py:353
 msgid "standard deviation for this field"
 msgstr "此列方差"
 
-#: layers/models.py:362
+#: layers/models.py:360
 msgid "sum"
 msgstr "和"
 
-#: layers/models.py:363
+#: layers/models.py:361
 msgid "sum value for this field"
 msgstr "此列和"
 
-#: layers/models.py:370
+#: layers/models.py:368
 msgid "unique values for this field"
 msgstr "此列唯一值"
 
-#: layers/models.py:375
+#: layers/models.py:373
 msgid "last modified"
 msgstr "最后修改"
 
-#: layers/models.py:377
+#: layers/models.py:375
 msgid "date when attribute statistics were last updated"
 msgstr "上一次统计更新的时间"
 
-#: layers/views.py:60
+#: layers/views.py:59
 msgid ""
 "There was an error while attempting to upload your data. Please try again, "
 "or contact and administrator if the problem continues."
 msgstr "在上传数据时出现错误。请重试，如果还有问题，请与管理员联系。"
 
-#: layers/views.py:63
+#: layers/views.py:62
 msgid "You are not permitted to delete this layer"
 msgstr "您无权删除此图层"
 
-#: layers/views.py:64
+#: layers/views.py:63
 msgid "You do not have permissions for this layer."
 msgstr "您没有权限查看或下载此图层。"
 
-#: layers/views.py:65
+#: layers/views.py:64
 msgid "You are not permitted to modify this layer"
 msgstr "您无权修改此图层"
 
-#: layers/views.py:67
+#: layers/views.py:66
 msgid "You are not permitted to modify this layer's metadata"
 msgstr "您无权修改此图层元数据"
 
-#: layers/views.py:68
+#: layers/views.py:67
 msgid "You are not permitted to view this layer"
 msgstr "您无权以查看此图层"
 
@@ -2237,8 +1299,8 @@ msgid "Create a map"
 msgstr "创建地图"
 
 #: layers/templates/layers/_layer_list_item.html:48
-#: layers/templates/layers/layer_detail.html:128
-#: layers/templates/layers/layer_detail.html:136
+#: layers/templates/layers/layer_detail.html:130
+#: layers/templates/layers/layer_detail.html:139
 msgid "Download Layer"
 msgstr "下载图层"
 
@@ -2288,87 +1350,87 @@ msgstr "方差"
 msgid "Rate this layer"
 msgstr "为该图层评分"
 
-#: layers/templates/layers/layer_detail.html:180
-#: layers/templates/layers/layer_detail.html:189
+#: layers/templates/layers/layer_detail.html:182
+#: layers/templates/layers/layer_detail.html:191
 msgid "Edit Layer"
 msgstr "编辑图层"
 
-#: layers/templates/layers/layer_detail.html:195
+#: layers/templates/layers/layer_detail.html:201
 #: layers/templates/layers/layer_style_manage.html:14
 msgid "Manage Styles"
 msgstr "管理样式"
 
-#: layers/templates/layers/layer_detail.html:196
+#: layers/templates/layers/layer_detail.html:203
 msgid "Edit Styles"
 msgstr "修改样式"
 
-#: layers/templates/layers/layer_detail.html:198
+#: layers/templates/layers/layer_detail.html:208
 msgid "Replace this Layer"
 msgstr "替换该图层"
 
-#: layers/templates/layers/layer_detail.html:199
+#: layers/templates/layers/layer_detail.html:211
 msgid "Remove this Layer"
 msgstr "移除此图层"
 
-#: layers/templates/layers/layer_detail.html:222
+#: layers/templates/layers/layer_detail.html:234
 msgid "Maps using this layer"
 msgstr "使用此图层的地图"
 
-#: layers/templates/layers/layer_detail.html:224
+#: layers/templates/layers/layer_detail.html:236
 msgid "List of maps using this layer:"
 msgstr "列出使用此图层的地图"
 
-#: layers/templates/layers/layer_detail.html:230
+#: layers/templates/layers/layer_detail.html:242
 msgid "This layer is not currently used in any maps."
 msgstr "当前图层未被任何地图使用。"
 
-#: layers/templates/layers/layer_detail.html:235
+#: layers/templates/layers/layer_detail.html:247
 msgid "Create a map using this layer"
 msgstr "制作一张用此图层制作的地图"
 
-#: layers/templates/layers/layer_detail.html:236
+#: layers/templates/layers/layer_detail.html:248
 msgid "Click the button below to generate a new map based on this layer."
 msgstr "如果要使用该图层生成新地图，请点击下方按钮"
 
-#: layers/templates/layers/layer_detail.html:237
+#: layers/templates/layers/layer_detail.html:249
 msgid "Create a Map"
 msgstr "生成一张地图"
 
-#: layers/templates/layers/layer_detail.html:242
+#: layers/templates/layers/layer_detail.html:254
 msgid "Documents related to this layer"
 msgstr "与此图层相关的文件"
 
-#: layers/templates/layers/layer_detail.html:243
+#: layers/templates/layers/layer_detail.html:255
 msgid "List of documents related to this layer:"
 msgstr "列出与此图层相关的文件"
 
-#: layers/templates/layers/layer_detail.html:254
+#: layers/templates/layers/layer_detail.html:266
 msgid "Styles"
 msgstr "样式"
 
-#: layers/templates/layers/layer_detail.html:255
+#: layers/templates/layers/layer_detail.html:267
 msgid ""
 "The following styles are associated with this layer. Choose a style to view "
 "it in the preview map."
 msgstr "以下样式与此图层关联。选择一种样式以在"
 
-#: layers/templates/layers/layer_detail.html:268
+#: layers/templates/layers/layer_detail.html:280
 msgid "No styles associated with this layer"
 msgstr "此图层没有与任何样式关联"
 
-#: layers/templates/layers/layer_detail.html:278
+#: layers/templates/layers/layer_detail.html:290
 msgid "Click the button below to change the permissions of this layer."
 msgstr "点击下方按钮以改变该图层的使用权限"
 
-#: layers/templates/layers/layer_detail.html:279
+#: layers/templates/layers/layer_detail.html:291
 msgid "Change Layer Permissions"
 msgstr "改变图层访问权限"
 
-#: layers/templates/layers/layer_detail.html:286
+#: layers/templates/layers/layer_detail.html:298
 msgid "External service layer"
 msgstr ""
 
-#: layers/templates/layers/layer_detail.html:287
+#: layers/templates/layers/layer_detail.html:299
 msgid "Source"
 msgstr ""
 
@@ -2390,14 +1452,20 @@ msgid ""
 "\n"
 "        Editing details for %(layer_title)s\n"
 "      "
-msgstr "\n细节修改%(layer_title)s"
+msgstr ""
+"\n"
+"细节修改%(layer_title)s"
 
 #: layers/templates/layers/layer_metadata.html:17
 msgid ""
-"Note: this layer's orginal metadata was populated by importing a metadata XML file.\n"
-"        GeoNode's metadata import supports a subset of ISO, FGDC, and Dublin Core metadata elements.\n"
+"Note: this layer's orginal metadata was populated by importing a metadata "
+"XML file.\n"
+"        GeoNode's metadata import supports a subset of ISO, FGDC, and Dublin "
+"Core metadata elements.\n"
 "        Some of your original metadata may have been lost."
-msgstr "主意: 此图层的元数据是从元数据XML文件中获取的。GeoNode的元数据输入支持ISO，FGDC和Dublin Core元数据元素。一些早先的元数据可能已经丢失。"
+msgstr ""
+"主意: 此图层的元数据是从元数据XML文件中获取的。GeoNode的元数据输入支持ISO，"
+"FGDC和Dublin Core元数据元素。一些早先的元数据可能已经丢失。"
 
 #: layers/templates/layers/layer_metadata.html:72
 msgid "Attribute"
@@ -2422,7 +1490,10 @@ msgid ""
 "\n"
 "          Are you sure you want to remove %(layer_title)s?\n"
 "        "
-msgstr "\n          确定你要移除 %(layer_title)s?\n        "
+msgstr ""
+"\n"
+"          确定你要移除 %(layer_title)s?\n"
+"        "
 
 #: layers/templates/layers/layer_remove.html:25
 msgid "This action affects the following maps:"
@@ -2489,22 +1560,22 @@ msgid "Delete, and don't ask me again."
 msgstr ""
 
 #: layers/templates/layers/layer_replace.html:55
-#: layers/templates/upload/layer_upload.html:51
+#: layers/templates/upload/layer_upload.html:53
 msgid "Drop files here"
 msgstr ""
 
 #: layers/templates/layers/layer_replace.html:58
-#: layers/templates/upload/layer_upload.html:54
+#: layers/templates/upload/layer_upload.html:56
 msgid " or select them one by one:"
 msgstr ""
 
 #: layers/templates/layers/layer_replace.html:66
-#: layers/templates/upload/layer_upload.html:62
+#: layers/templates/upload/layer_upload.html:64
 msgid "Files to be uploaded"
 msgstr ""
 
 #: layers/templates/layers/layer_replace.html:71
-#: layers/templates/upload/layer_upload.html:67
+#: layers/templates/upload/layer_upload.html:69
 msgid "Select the charset or leave default"
 msgstr ""
 
@@ -2512,7 +1583,8 @@ msgstr ""
 #, python-format
 msgid ""
 "\n"
-"      Manage Available Styles for <a href=\"/layers/%(layer_title)s\">%(layer_title)s</a>\n"
+"      Manage Available Styles for <a href=\"/layers/%(layer_title)s\">"
+"%(layer_title)s</a>\n"
 "    "
 msgstr ""
 
@@ -2540,7 +1612,7 @@ msgstr "更新样式"
 msgid "Upload Layer"
 msgstr "上传图层"
 
-#: layers/templates/upload/layer_upload.html:81
+#: layers/templates/upload/layer_upload.html:83
 msgid "Upload files"
 msgstr ""
 
@@ -2555,7 +1627,8 @@ msgstr ""
 #: layers/templates/upload/layer_upload_crs.html:17
 msgid ""
 "\n"
-"        A coordinate reference system for this layer could not be determined.\n"
+"        A coordinate reference system for this layer could not be "
+"determined.\n"
 "        Locate or enter the appropriate ESPG code for this layer below.\n"
 "        One way to do this is do visit:\n"
 "        <a href=\"http://prj2epsg.org/search\" target=\"_\">prj2epsg</a>\n"
@@ -2565,7 +1638,7 @@ msgstr ""
 
 #: layers/templates/upload/layer_upload_crs.html:32
 #: layers/templates/upload/layer_upload_csv.html:49
-#: layers/templates/upload/layer_upload_time.html:104
+#: layers/templates/upload/layer_upload_time.html:102
 msgid "Next"
 msgstr "下一页"
 
@@ -2609,8 +1682,10 @@ msgstr ""
 
 #: layers/templates/upload/layer_upload_csv.html:57
 msgid ""
-"We did not detect columns that could be used for the latitude and longitude.\n"
-"Please verify that you have two columns in your csv file that can be used for\n"
+"We did not detect columns that could be used for the latitude and "
+"longitude.\n"
+"Please verify that you have two columns in your csv file that can be used "
+"for\n"
 "the latitude and longitude."
 msgstr ""
 
@@ -2648,152 +1723,156 @@ msgid "This data does not have a time attribute"
 msgstr ""
 
 #: layers/templates/upload/layer_upload_time.html:30
-#: layers/templates/upload/layer_upload_time.html:58
+#: layers/templates/upload/layer_upload_time.html:57
 msgid "Existing Time Attribute"
 msgstr ""
 
 #: layers/templates/upload/layer_upload_time.html:36
-#: layers/templates/upload/layer_upload_time.html:64
+#: layers/templates/upload/layer_upload_time.html:63
 msgid "Convert Text Attribute"
 msgstr ""
 
-#: layers/templates/upload/layer_upload_time.html:37
+#: layers/templates/upload/layer_upload_time.html:38
 #: layers/templates/upload/layer_upload_time.html:65
 msgid "Date Format"
 msgstr ""
 
-#: layers/templates/upload/layer_upload_time.html:50
-#: layers/templates/upload/layer_upload_time.html:78
+#: layers/templates/upload/layer_upload_time.html:49
+#: layers/templates/upload/layer_upload_time.html:76
 msgid "Convert Number (As Year)"
 msgstr ""
 
-#: layers/templates/upload/layer_upload_time.html:54
+#: layers/templates/upload/layer_upload_time.html:53
 msgid "Choose optional end time attribute"
 msgstr ""
 
-#: layers/templates/upload/layer_upload_time.html:83
+#: layers/templates/upload/layer_upload_time.html:81
 msgid "Present time attribute as"
 msgstr ""
 
-#: layers/templates/upload/layer_upload_time.html:86
+#: layers/templates/upload/layer_upload_time.html:84
 msgid "List"
 msgstr "列"
 
-#: layers/templates/upload/layer_upload_time.html:86
+#: layers/templates/upload/layer_upload_time.html:84
 msgid "of all the distinct time values"
 msgstr ""
 
-#: layers/templates/upload/layer_upload_time.html:90
+#: layers/templates/upload/layer_upload_time.html:88
 msgid "Intervals"
 msgstr ""
 
-#: layers/templates/upload/layer_upload_time.html:90
+#: layers/templates/upload/layer_upload_time.html:88
 msgid "defined by the resolution"
 msgstr ""
 
-#: layers/templates/upload/layer_upload_time.html:94
+#: layers/templates/upload/layer_upload_time.html:92
 msgid "Continuous Intervals"
 msgstr ""
 
-#: layers/templates/upload/layer_upload_time.html:94
+#: layers/templates/upload/layer_upload_time.html:92
 msgid ""
 "for data that is frequently updated, resolution describes the frequency of "
 "updates"
 msgstr ""
 
-#: layers/templates/upload/layer_upload_time.html:98
+#: layers/templates/upload/layer_upload_time.html:96
 msgid "Resolution of time attribute"
 msgstr ""
 
-#: layers/templates/upload/layer_upload_time.html:108
+#: layers/templates/upload/layer_upload_time.html:107
 msgid "Need Help?"
 msgstr "需要帮助吗？"
 
-#: layers/templates/upload/layer_upload_time.html:109
+#: layers/templates/upload/layer_upload_time.html:108
 msgid "Enabling Time"
 msgstr ""
 
-#: layers/templates/upload/layer_upload_time.html:110
+#: layers/templates/upload/layer_upload_time.html:109
 msgid ""
 "A feature can currently support one or two time attributes. If a single\n"
-"    attribute is used, the feature is considered relevant at that single point in time. If two\n"
-"    attributes are used, the second attribute represents the end of a valid period for the\n"
+"    attribute is used, the feature is considered relevant at that single "
+"point in time. If two\n"
+"    attributes are used, the second attribute represents the end of a valid "
+"period for the\n"
 "    feature."
 msgstr ""
 
-#: layers/templates/upload/layer_upload_time.html:114
+#: layers/templates/upload/layer_upload_time.html:113
 msgid "Selecting an Attribute"
 msgstr ""
 
-#: layers/templates/upload/layer_upload_time.html:115
+#: layers/templates/upload/layer_upload_time.html:114
 msgid "A time attribute can be one of"
 msgstr ""
 
-#: layers/templates/upload/layer_upload_time.html:117
+#: layers/templates/upload/layer_upload_time.html:116
 msgid "An existing date"
 msgstr ""
 
-#: layers/templates/upload/layer_upload_time.html:118
+#: layers/templates/upload/layer_upload_time.html:117
 msgid "Text that can be converted to a timestamp"
 msgstr ""
 
-#: layers/templates/upload/layer_upload_time.html:119
+#: layers/templates/upload/layer_upload_time.html:118
 msgid "A number representing a year"
 msgstr ""
 
-#: layers/templates/upload/layer_upload_time.html:122
+#: layers/templates/upload/layer_upload_time.html:121
 msgid ""
 "\n"
-"    For text attributes, one can specify a custom format or use the 'best guess' approach.\n"
+"    For text attributes, one can specify a custom format or use the 'best "
+"guess' approach.\n"
 "    The most common formatting flags are:\n"
 "    "
 msgstr ""
 
-#: layers/templates/upload/layer_upload_time.html:128
+#: layers/templates/upload/layer_upload_time.html:127
 msgid "year"
 msgstr ""
 
-#: layers/templates/upload/layer_upload_time.html:129
+#: layers/templates/upload/layer_upload_time.html:128
 msgid "month"
 msgstr ""
 
-#: layers/templates/upload/layer_upload_time.html:130
+#: layers/templates/upload/layer_upload_time.html:129
 msgid "day of month"
 msgstr ""
 
+#: layers/templates/upload/layer_upload_time.html:130
 #: layers/templates/upload/layer_upload_time.html:131
-#: layers/templates/upload/layer_upload_time.html:132
 msgid "hour of day"
 msgstr ""
 
-#: layers/templates/upload/layer_upload_time.html:133
+#: layers/templates/upload/layer_upload_time.html:132
 msgid "minute in hour"
 msgstr ""
 
-#: layers/templates/upload/layer_upload_time.html:134
+#: layers/templates/upload/layer_upload_time.html:133
 msgid "second in minute"
 msgstr ""
 
-#: layers/templates/upload/layer_upload_time.html:137
+#: layers/templates/upload/layer_upload_time.html:136
 msgid "Note that single quotes represent a literal character."
 msgstr ""
 
-#: layers/templates/upload/layer_upload_time.html:138
+#: layers/templates/upload/layer_upload_time.html:137
 msgid ""
-"To remove ambiguity, repeat a code to represent the maximum number of digits"
-" - for example yyyy"
+"To remove ambiguity, repeat a code to represent the maximum number of digits "
+"- for example yyyy"
 msgstr ""
 
-#: layers/templates/upload/layer_upload_time.html:140
+#: layers/templates/upload/layer_upload_time.html:139
 msgid "The 'best guess' will handle date and optional time variants of"
 msgstr ""
 
-#: layers/templates/upload/layer_upload_time.html:141
+#: layers/templates/upload/layer_upload_time.html:140
 msgid "In terms of the formatting flags noted above, these are"
 msgstr ""
 
 #: layers/templates/upload/no_upload.html:7
-msgid "Returning to the upload starting page in <span id=\"cnt\">5</span>seconds "
+msgid ""
+"Returning to the upload starting page in <span id=\"cnt\">5</span>seconds "
 msgstr ""
 
 #: layers/templates/upload/no_upload.html:8
@@ -2881,32 +1960,32 @@ msgstr "数据源参数"
 msgid "JSON Configuration"
 msgstr ""
 
-#: maps/views.py:68
+#: maps/views.py:70
 msgid "You are not permitted to delete this map."
 msgstr "您无权删除此地图。"
 
-#: maps/views.py:69
+#: maps/views.py:71
 msgid "You do not have permissions for this map."
 msgstr "您没有权限查看或下载此地图。"
 
-#: maps/views.py:70
+#: maps/views.py:72
 msgid "You must be logged in to save this map"
 msgstr "登录后才能保存地图"
 
-#: maps/views.py:71
+#: maps/views.py:73
 msgid "You are not permitted to save or edit this map."
 msgstr ""
 
-#: maps/views.py:73
+#: maps/views.py:75
 msgid "You are not allowed to modify this map's metadata."
 msgstr "您不得修改此地图元数据。"
 
-#: maps/views.py:74
+#: maps/views.py:76
 msgid "You are not allowed to view this map."
 msgstr "您无权查看此地图。"
 
-#: maps/views.py:87
-msgid "You are not permitted to modify this object"
+#: maps/views.py:77
+msgid "An unknown error has occured."
 msgstr ""
 
 #: maps/management/__init__.py:33
@@ -2950,103 +2029,99 @@ msgstr "浏览地图"
 msgid "Rate this Map"
 msgstr "给此地图打分"
 
-#: maps/templates/maps/map_detail.html:76
-#: maps/templates/maps/map_detail.html:83
+#: maps/templates/maps/map_detail.html:78
+#: maps/templates/maps/map_detail.html:86
 msgid "Download Map"
 msgstr "下载地图"
 
-#: maps/templates/maps/map_detail.html:87
+#: maps/templates/maps/map_detail.html:90
 msgid "Download Data Layers"
 msgstr "下载数据图层"
 
-#: maps/templates/maps/map_detail.html:88
+#: maps/templates/maps/map_detail.html:91
 msgid "Download Web Map Context"
 msgstr "下载网络地图背景"
 
-#: maps/templates/maps/map_detail.html:100
-#: maps/templates/maps/map_detail.html:107
+#: maps/templates/maps/map_detail.html:102
+#: maps/templates/maps/map_detail.html:109
 msgid "Edit Map"
 msgstr "编辑地图"
 
-#: maps/templates/maps/map_detail.html:111
+#: maps/templates/maps/map_detail.html:114
 msgid "Edit Map Metadata"
 msgstr ""
 
-#: maps/templates/maps/map_detail.html:113
+#: maps/templates/maps/map_detail.html:118
 msgid "Set Map Thumbnail"
 msgstr ""
 
-#: maps/templates/maps/map_detail.html:115
-msgid "Edit Map Permissions"
-msgstr ""
-
-#: maps/templates/maps/map_detail.html:116
+#: maps/templates/maps/map_detail.html:122
 msgid "Remove this Map"
 msgstr "删除地图"
 
-#: maps/templates/maps/map_detail.html:128
+#: maps/templates/maps/map_detail.html:134
 msgid "View Map"
 msgstr "浏览地图"
 
-#: maps/templates/maps/map_detail.html:138
+#: maps/templates/maps/map_detail.html:144
 msgid "Map Layers"
 msgstr "地图图层"
 
-#: maps/templates/maps/map_detail.html:139
+#: maps/templates/maps/map_detail.html:145
 msgid "This map uses the following layers:"
 msgstr "这张地图用了以下图层"
 
-#: maps/templates/maps/map_detail.html:155
+#: maps/templates/maps/map_detail.html:161
 msgid "Documents related to this map"
 msgstr "与此地图有关的文件"
 
-#: maps/templates/maps/map_detail.html:156
+#: maps/templates/maps/map_detail.html:162
 msgid "List of documents related to this map:"
 msgstr "列出与此地图有关文件"
 
-#: maps/templates/maps/map_detail.html:168
+#: maps/templates/maps/map_detail.html:174
 msgid "Specify which users can view or modify this map"
 msgstr "指定可以浏览或修改该地图的用户"
 
-#: maps/templates/maps/map_detail.html:169
+#: maps/templates/maps/map_detail.html:175
 msgid "Change Permissions of this Map"
 msgstr "改变此地图的访问权限"
 
-#: maps/templates/maps/map_detail.html:175
+#: maps/templates/maps/map_detail.html:181
 msgid "Copy this map"
 msgstr "复制该地图"
 
-#: maps/templates/maps/map_detail.html:176
+#: maps/templates/maps/map_detail.html:182
 msgid "Duplicate this map and modify it for your own purposes"
 msgstr "复制该地图并且根据你自己的需要进行修改"
 
-#: maps/templates/maps/map_detail.html:177
+#: maps/templates/maps/map_detail.html:183
 #: maps/templates/maps/map_list.html:11
 msgid "Create a New Map"
 msgstr "生成新地图"
 
-#: maps/templates/maps/map_detail.html:182
+#: maps/templates/maps/map_detail.html:188
 msgid "Map WMS"
 msgstr ""
 
-#: maps/templates/maps/map_detail.html:184
+#: maps/templates/maps/map_detail.html:190
 msgid "WMS layer group for local map layers"
 msgstr ""
 
-#: maps/templates/maps/map_detail.html:185 social/tests.py:103
+#: maps/templates/maps/map_detail.html:191 social/tests.py:103
 #: social/templatetags/social_tags.py:47
 msgid "on"
 msgstr ""
 
-#: maps/templates/maps/map_detail.html:185
+#: maps/templates/maps/map_detail.html:191
 msgid "local OWS"
 msgstr ""
 
-#: maps/templates/maps/map_detail.html:188
+#: maps/templates/maps/map_detail.html:194
 msgid "Publish local map layers as WMS layer group"
 msgstr ""
 
-#: maps/templates/maps/map_detail.html:189
+#: maps/templates/maps/map_detail.html:195
 msgid "Publish Map WMS"
 msgstr ""
 
@@ -3061,17 +2136,22 @@ msgstr ""
 #: maps/templates/maps/map_download.html:22
 msgid ""
 "\n"
-"      <div class=\"alert alert-warning\">Could not find downloadable layers for this map. You can go back to  \n"
+"      <div class=\"alert alert-warning\">Could not find downloadable layers "
+"for this map. You can go back to  \n"
 "      "
 msgstr ""
 
 #: maps/templates/maps/map_download.html:29
 msgid ""
 "\n"
-"        Additionally, the map contains these layers which will not be downloaded\n"
+"        Additionally, the map contains these layers which will not be "
+"downloaded\n"
 "        due to security restrictions:\n"
 "      "
-msgstr "\n此外，由于安全限制该地图包含的这些图层不会被下载：\n    "
+msgstr ""
+"\n"
+"此外，由于安全限制该地图包含的这些图层不会被下载：\n"
+"    "
 
 #: maps/templates/maps/map_download.html:41
 msgid ""
@@ -3079,7 +2159,11 @@ msgid ""
 "        Finally, the map contains these layers which will not be downloaded\n"
 "        because they are not available directly from this GeoNode:\n"
 "      "
-msgstr "\n    最后，该地图包含的这些图层将不会被下载，\n    因为图层不是GeoNode数据：\n    "
+msgstr ""
+"\n"
+"    最后，该地图包含的这些图层将不会被下载，\n"
+"    因为图层不是GeoNode数据：\n"
+"    "
 
 #: maps/templates/maps/map_download.html:54
 msgid "Downloading"
@@ -3111,8 +2195,10 @@ msgstr ""
 
 #: maps/templates/maps/map_metadata.html:17
 msgid ""
-"Note: this map's orginal metadata was populated by importing a metadata XML file.\n"
-"        GeoNode's metadata import supports a subset of ISO, FGDC, and Dublin Core metadata elements.\n"
+"Note: this map's orginal metadata was populated by importing a metadata XML "
+"file.\n"
+"        GeoNode's metadata import supports a subset of ISO, FGDC, and Dublin "
+"Core metadata elements.\n"
 "        Some of your original metadata may have been lost."
 msgstr ""
 
@@ -3126,7 +2212,9 @@ msgid ""
 "\n"
 "        Are you sure you want to remove %(map_title)s?\n"
 "    "
-msgstr "\n你确定要删除%(map_title)s？"
+msgstr ""
+"\n"
+"你确定要删除%(map_title)s？"
 
 #: maps/templates/maps/map_view.html:5
 msgid "GeoExplorer"
@@ -3155,8 +2243,8 @@ msgstr "资源授权方"
 
 #: people/enumerations.py:40
 msgid ""
-"party who has processed the data in a manner such that the resource has been"
-" modified"
+"party who has processed the data in a manner such that the resource has been "
+"modified"
 msgstr "资源修改方"
 
 #: people/enumerations.py:41
@@ -3196,8 +2284,7 @@ msgid "party that owns the resource"
 msgstr "资源拥有方"
 
 #: people/enumerations.py:50
-msgid ""
-"key party responsible for gathering information and conducting research"
+msgid "key party responsible for gathering information and conducting research"
 msgstr "信息收集与研究的主要责任方"
 
 #: people/forms.py:64
@@ -3212,89 +2299,89 @@ msgstr "关注你的用户"
 msgid "another user has started following you"
 msgstr "你有新粉丝关注你了"
 
-#: people/models.py:40
+#: people/models.py:42
 msgid "Organization Name"
 msgstr "组织名称"
 
-#: people/models.py:44
+#: people/models.py:46
 msgid "name of the responsible organization"
 msgstr "命名有关责任组织"
 
-#: people/models.py:45 templates/500.html:76 templates/base.html:92
+#: people/models.py:47 templates/500.html:76 templates/base.html:92
 msgid "Profile"
 msgstr "简介"
 
-#: people/models.py:45
+#: people/models.py:47
 msgid "introduce yourself"
 msgstr ""
 
-#: people/models.py:47
+#: people/models.py:49
 msgid "Position Name"
 msgstr "位置名称"
 
-#: people/models.py:51
+#: people/models.py:53
 msgid "role or position of the responsible person"
 msgstr "责任人的作用"
 
-#: people/models.py:52
+#: people/models.py:54
 msgid "Voice"
 msgstr "发言"
 
-#: people/models.py:53
+#: people/models.py:55
 msgid ""
 "telephone number by which individuals can speak to the responsible "
 "organization or individual"
 msgstr "负责人或负责机构的联系电话"
 
-#: people/models.py:54
+#: people/models.py:56
 msgid "Facsimile"
 msgstr "传真"
 
-#: people/models.py:55
+#: people/models.py:57
 msgid ""
 "telephone number of a facsimile machine for the responsible organization or "
 "individual"
 msgstr "负责人或负责机构的传真联系号码"
 
-#: people/models.py:57
+#: people/models.py:59
 msgid "Delivery Point"
 msgstr "交付地点"
 
-#: people/models.py:61
+#: people/models.py:63
 msgid ""
 "physical and email address at which the organization or individual may be "
 "contacted"
 msgstr "可以联系到负责人或负责团体的地址及email地址"
 
-#: people/models.py:63
+#: people/models.py:65
 msgid "City"
 msgstr "城市"
 
-#: people/models.py:67
+#: people/models.py:69
 msgid "city of the location"
 msgstr "城市"
 
-#: people/models.py:69
+#: people/models.py:71
 msgid "Administrative Area"
 msgstr "行政区域"
 
-#: people/models.py:73
+#: people/models.py:75
 msgid "state, province of the location"
 msgstr "州或省"
 
-#: people/models.py:75
+#: people/models.py:77
 msgid "Postal Code"
 msgstr "邮政编码"
 
-#: people/models.py:79
+#: people/models.py:81
 msgid "ZIP or other postal code"
 msgstr "邮编"
 
-#: people/models.py:85
+#: people/models.py:87
 msgid "country of the physical address"
 msgstr "国家"
 
-#: people/models.py:87
+#: people/models.py:89
 msgid ""
 "commonly used word(s) or formalised word(s) or phrase(s) used to describe "
 "the subject             (space or comma-separated"
@@ -3342,8 +2429,8 @@ msgstr "忘记用户名"
 
 #: people/templates/people/forgot_username_form.html:9
 msgid ""
-"Enter your email address and click the submit button.  Your username will be"
-" sent to you."
+"Enter your email address and click the submit button.  Your username will be "
+"sent to you."
 msgstr "请填写您的email地址，然后点击提交按钮。您的用户名会被发到您的电邮信箱"
 
 #: people/templates/people/profile_create.html:8
@@ -3475,11 +2562,16 @@ msgstr ""
 #: services/views.py:63
 msgid ""
 "\n"
-"The Open Geoportal is a consortium comprised of contributions of several universities and organizations to help\n"
-"facilitate the discovery and acquisition of geospatial data across many organizations and platforms. Current partners\n"
-"include: Harvard, MIT, MassGIS, Princeton, Columbia, Stanford, UC Berkeley, UCLA, Yale, and UConn. Built on open source\n"
-"technology, The Open Geoportal provides organizations the opportunity to share thousands of geospatial data layers,\n"
-"maps, metadata, and development resources through a single common interface.\n"
+"The Open Geoportal is a consortium comprised of contributions of several "
+"universities and organizations to help\n"
+"facilitate the discovery and acquisition of geospatial data across many "
+"organizations and platforms. Current partners\n"
+"include: Harvard, MIT, MassGIS, Princeton, Columbia, Stanford, UC Berkeley, "
+"UCLA, Yale, and UConn. Built on open source\n"
+"technology, The Open Geoportal provides organizations the opportunity to "
+"share thousands of geospatial data layers,\n"
+"maps, metadata, and development resources through a single common "
+"interface.\n"
 msgstr ""
 
 #: services/views.py:273
@@ -3498,7 +2590,7 @@ msgstr ""
 #, python-format
 msgid ""
 "Could not find any layers in a compatible projection:                 The "
-"spatial id was: %s and the url %s"
+"spatial id was: %(srs)s and the url %(url)s"
 msgstr ""
 
 #: services/views.py:1207
@@ -3633,7 +2725,9 @@ msgid ""
 "\n"
 "          You are not allowed to perform this operation.  \n"
 "      "
-msgstr "\n您无权执行此操作。"
+msgstr ""
+"\n"
+"您无权执行此操作。"
 
 #: templates/401.html:25
 msgid "Please verify that you are logged in as the correct user."
@@ -3650,9 +2744,12 @@ msgstr "找不到网页"
 #: templates/404.html:6
 msgid ""
 "\n"
-"      The page you requested does not exist.  Perhaps you are using an outdated bookmark?\n"
+"      The page you requested does not exist.  Perhaps you are using an "
+"outdated bookmark?\n"
 "  "
-msgstr "\n您请求的页面不存在。原因可能是网址过时？ "
+msgstr ""
+"\n"
+"您请求的页面不存在。原因可能是网址过时？ "
 
 #: templates/500.html:48 templates/base.html:56
 msgid "People"
@@ -3661,6 +2758,11 @@ msgstr "人"
 #: templates/500.html:51 templates/base.html:59
 msgid "Groups"
 msgstr ""
+
+#: templates/500.html:56 templates/search/search.html:6
+#: templates/search/search.html.py:12
+msgid "Search"
+msgstr "查询"
 
 #: templates/500.html:77 templates/base.html:93
 msgid "Recent Activity"
@@ -3730,8 +2832,11 @@ msgstr ""
 #: templates/500.html:161
 msgid ""
 "\n"
-"          Please contact your GeoNode administrator (he may have received an email automatically if he configured it properly).\n"
-"          If you are the site administrator, enable debug mode to see the actual error and fix it or file an issue in <a href=\"http://github.com/GeoNode/geonode/issues\">GeoNode's issue tracker</a>\n"
+"          Please contact your GeoNode administrator (he may have received an "
+"email automatically if he configured it properly).\n"
+"          If you are the site administrator, enable debug mode to see the "
+"actual error and fix it or file an issue in <a href=\"http://github.com/"
+"GeoNode/geonode/issues\">GeoNode's issue tracker</a>\n"
 "          "
 msgstr ""
 
@@ -3784,37 +2889,61 @@ msgstr "添加一条评论"
 msgid "Submit Comments"
 msgstr "提交评论"
 
-#: templates/_permissions.html:4
-msgid "Who can view and download this data?"
-msgstr "谁有权查看并下载此数据？"
+#: templates/_permissions.html:8
+#, fuzzy
+msgid "Who can view it?"
+msgstr "谁能编辑此数据？"
 
-#: templates/_permissions.html:9
+#: templates/_permissions.html:17 templates/_permissions.html.py:49
 msgid "Anyone"
 msgstr "任何人"
 
-#: templates/_permissions.html:14 templates/_permissions.html.py:31
-#: templates/_permissions.html:48
+#: templates/_permissions.html:22 templates/_permissions.html.py:54
+#: templates/_permissions.html:80 templates/_permissions.html.py:107
+#: templates/_permissions.html:133 templates/_permissions.html.py:160
 msgid "The following users:"
 msgstr ""
 
-#: templates/_permissions.html:20 templates/_permissions.html.py:37
-#: templates/_permissions.html:54
+#: templates/_permissions.html:28 templates/_permissions.html.py:60
+#: templates/_permissions.html:86 templates/_permissions.html.py:113
+#: templates/_permissions.html:139 templates/_permissions.html.py:166
 msgid "The following groups:"
 msgstr ""
 
-#: templates/_permissions.html:27
-msgid "Who can edit this data?"
-msgstr "谁能编辑此数据？"
+#: templates/_permissions.html:40
+#, fuzzy
+msgid "Who can download it?"
+msgstr "谁有权查看并下载此数据？"
 
-#: templates/_permissions.html:44
-msgid "Who can manage?"
+#: templates/_permissions.html:72
+msgid "Who can change metadata for it?"
 msgstr ""
 
-#: templates/_permissions_form_js.html:125
+#: templates/_permissions.html:99
+#, fuzzy
+msgid "Who can edit data for this layer?"
+msgstr "谁能编辑此数据？"
+
+#: templates/_permissions.html:125
+#, fuzzy
+msgid "Who can edit styles for this layer?"
+msgstr "谁能编辑此数据？"
+
+#: templates/_permissions.html:152
+msgid ""
+"Who can manage it? (update, delete, change permissions, publish/unpublish it)"
+msgstr ""
+
+#: templates/_permissions_form.html:9
+#, fuzzy
+msgid "Set permissions for this resource"
+msgstr "引用文献的版本"
+
+#: templates/_permissions_form_js.html:180
 msgid "Choose users..."
 msgstr ""
 
-#: templates/_permissions_form_js.html:158
+#: templates/_permissions_form_js.html:213
 msgid "Choose groups..."
 msgstr ""
 
@@ -3826,7 +2955,7 @@ msgstr "关于GeoNode"
 msgid "About GeoNode."
 msgstr "关于GeoNode"
 
-#: templates/base.html:223
+#: templates/base.html:224
 msgid "Type your search here ..."
 msgstr ""
 
@@ -3841,42 +2970,87 @@ msgstr "给有意GeoNode开发者的实用信息"
 #: templates/developer.html:12
 msgid ""
 "\n"
-"  <p><a href=\"http://geonode.org/\">GeoNode</a> is an open service built on open source software. We encourage you to build new applications using the components and resources it provides. This page is a starting point for developers interesting in taking full advantage of GeoNode. It also includes links to the project's source code so anyone can build and customize their own GeoNode. </p>\n"
+"  <p><a href=\"http://geonode.org/\">GeoNode</a> is an open service built on "
+"open source software. We encourage you to build new applications using the "
+"components and resources it provides. This page is a starting point for "
+"developers interesting in taking full advantage of GeoNode. It also includes "
+"links to the project's source code so anyone can build and customize their "
+"own GeoNode. </p>\n"
 "\n"
 "  <h4>GeoNode Software</h4>\n"
 "\n"
-"  <p>All the code that runs GeoNode is open source. The code is available at <a href=\"http://github.com/GeoNode/geonode\">http://github.com/GeoNode/geonode/</a>. The issue tracker for the project is at <a href=\"http://github.com/GeoNode/geonode/issues\">http://github.com/GeoNode/geonode/issues</a>.</p>\n"
+"  <p>All the code that runs GeoNode is open source. The code is available at "
+"<a href=\"http://github.com/GeoNode/geonode\">http://github.com/GeoNode/"
+"geonode/</a>. The issue tracker for the project is at <a href=\"http://"
+"github.com/GeoNode/geonode/issues\">http://github.com/GeoNode/geonode/"
+"issues</a>.</p>\n"
 "\n"
-"  <p>GeoNode is built using several open source projects, each with its own community. If you are interested in contributing new features to the GeoNode, we encourage you to do so by contributing to one of the projects on which it is built:</p>\n"
+"  <p>GeoNode is built using several open source projects, each with its own "
+"community. If you are interested in contributing new features to the "
+"GeoNode, we encourage you to do so by contributing to one of the projects on "
+"which it is built:</p>\n"
 "  <ul>\n"
-"    <li><a href=\"http://geoext.org\">GeoExt</a> - The JavaScript toolkit for rich web mapping applications</li>\n"
-"    <li><a href=\"http://geoserver.org\">GeoServer</a> - Standards based server for geospatial information</li>\n"
-"    <li><a href=\"http://geowebcache.org\">GeoWebCache</a> - Cache engine for WMS Tiles</li><li><a href=\"http://openlayers.org\">OpenLayers</a> - Pure JavaScript library powering the maps of GeoExt</li>\n"
-"    <li><a href=\"http://pycsw.org\">pycsw</a> - CSW metadata catalogue server</li>\n"
+"    <li><a href=\"http://geoext.org\">GeoExt</a> - The JavaScript toolkit "
+"for rich web mapping applications</li>\n"
+"    <li><a href=\"http://geoserver.org\">GeoServer</a> - Standards based "
+"server for geospatial information</li>\n"
+"    <li><a href=\"http://geowebcache.org\">GeoWebCache</a> - Cache engine "
+"for WMS Tiles</li><li><a href=\"http://openlayers.org\">OpenLayers</a> - "
+"Pure JavaScript library powering the maps of GeoExt</li>\n"
+"    <li><a href=\"http://pycsw.org\">pycsw</a> - CSW metadata catalogue "
+"server</li>\n"
 "  </ul>\n"
 "\n"
 "  <h4>What are OGC Services?</h4>\n"
-"  <p>The data in this application is served using open standards endorsed by the <a href=\"http://opengeospatial.org/\">Open Geospatial Consortium</a>; in particular, WMS (Web Map Service) is used for accessing maps, WFS (Web Feature Service) is used for accessing vector data, and WCS (Web Coverage Service) is used for accessing raster data.  WMC (Web Map Context Documents) is used for sharing maps. You can use these services in your own applications using libraries such as OpenLayers, GeoTools, and OGR (all of which are open-source software and available at zero cost).</p>\n"
+"  <p>The data in this application is served using open standards endorsed by "
+"the <a href=\"http://opengeospatial.org/\">Open Geospatial Consortium</a>; "
+"in particular, WMS (Web Map Service) is used for accessing maps, WFS (Web "
+"Feature Service) is used for accessing vector data, and WCS (Web Coverage "
+"Service) is used for accessing raster data.  WMC (Web Map Context Documents) "
+"is used for sharing maps. You can use these services in your own "
+"applications using libraries such as OpenLayers, GeoTools, and OGR (all of "
+"which are open-source software and available at zero cost).</p>\n"
 "\n"
 "  <h4>What is GeoWebCache?</h4>\n"
-"  <p>GeoWebCache provides mapping tiles that are compatible with a number of mapping engines, including Google Maps, Bing Maps and OpenLayers. All the data hosted by GeoNode is also available through GeoWebCache. GeoWebCache improves on WMS by caching data and providing more responsive maps.</p>\n"
+"  <p>GeoWebCache provides mapping tiles that are compatible with a number of "
+"mapping engines, including Google Maps, Bing Maps and OpenLayers. All the "
+"data hosted by GeoNode is also available through GeoWebCache. GeoWebCache "
+"improves on WMS by caching data and providing more responsive maps.</p>\n"
 "\n"
 "  <h4>OpenLayers Example Code</h4>\n"
 "\n"
-"  <p>To include a GeoNode map layer in an OpenLayers map, first find the name for that layer. This is found in the layer's <code>name</code> field (not <code>title</code>) of the layer list. For this example, we will use the Nicaraguan political boundaries background layer, whose name is <code>risk:nicaragua_admin</code>. Then, create an instance of OpenLayers.Layer.WMS:</p>\n"
-"  <p><code>var geonodeLayer = new OpenLayers.Layer.WMS(\"GeoNode Risk Data\", \"http://demo.geonode.org/geoserver/wms\",{ layers: \"risk:nicaragua_admin\" });</code></p>\n"
+"  <p>To include a GeoNode map layer in an OpenLayers map, first find the "
+"name for that layer. This is found in the layer's <code>name</code> field "
+"(not <code>title</code>) of the layer list. For this example, we will use "
+"the Nicaraguan political boundaries background layer, whose name is "
+"<code>risk:nicaragua_admin</code>. Then, create an instance of OpenLayers."
+"Layer.WMS:</p>\n"
+"  <p><code>var geonodeLayer = new OpenLayers.Layer.WMS(\"GeoNode Risk Data"
+"\", \"http://demo.geonode.org/geoserver/wms\",{ layers: \"risk:"
+"nicaragua_admin\" });</code></p>\n"
 "\n"
 "  <h4>Google Maps Example Code</h4>\n"
-"  <p>To include a GeoNode map layer in a Google Map, include the layer namein the URL template.</p>\n"
-"  <p><code>var tilelayer =  new GTileLayer(null, null, null, {tileUrlTemplate: 'http://demo.geonode.org/geoserver/gwc/service/gmaps?layers=risk:nicaragua_admin&#38;zoom={Z}&#38;x={X}&#38;y={Y}', isPng:true, opacity:0.5 } );</code></p>\n"
+"  <p>To include a GeoNode map layer in a Google Map, include the layer "
+"namein the URL template.</p>\n"
+"  <p><code>var tilelayer =  new GTileLayer(null, null, null, "
+"{tileUrlTemplate: 'http://demo.geonode.org/geoserver/gwc/service/gmaps?"
+"layers=risk:nicaragua_admin&#38;zoom={Z}&#38;x={X}&#38;y={Y}', isPng:true, "
+"opacity:0.5 } );</code></p>\n"
 "\n"
 "  <h4>Shapefile/GeoJSON/GML Output</h4>\n"
-"  <p>To get data from the GeoNode web services use the WFS protocol. For example, to get the full Nicaraguan admin boundaries use:</p>\n"
-"  <p><code>http://demo.geonode.org/geoserver/wfs?request=GetFeature&#38;typeName=risk:nicaragua_admin&#38;outputformat=SHAPE-ZIP</code></p>\n"
-"  <p>Changing output format to <code>json</code>, <code>GML2</code>, <code>GML3</code>, or <code>csv</code> will get data in those formats. The WFS protocol also can handle more precise queries, specifying a bounding box or various spatial and non-spatial filters based on the attributes of the data.</p>\n"
+"  <p>To get data from the GeoNode web services use the WFS protocol. For "
+"example, to get the full Nicaraguan admin boundaries use:</p>\n"
+"  <p><code>http://demo.geonode.org/geoserver/wfs?request=GetFeature&#38;"
+"typeName=risk:nicaragua_admin&#38;outputformat=SHAPE-ZIP</code></p>\n"
+"  <p>Changing output format to <code>json</code>, <code>GML2</code>, "
+"<code>GML3</code>, or <code>csv</code> will get data in those formats. The "
+"WFS protocol also can handle more precise queries, specifying a bounding box "
+"or various spatial and non-spatial filters based on the attributes of the "
+"data.</p>\n"
 "\n"
 "  <h4>GeoTools Example Code</h4>\n"
-"  <p>Create a DataStore and extract a FeatureType from it, then run a Query. It is all documented on the wiki at <code>http://geotools.org/</code>.</p>\n"
+"  <p>Create a DataStore and extract a FeatureType from it, then run a Query. "
+"It is all documented on the wiki at <code>http://geotools.org/</code>.</p>\n"
 msgstr ""
 
 #: templates/developer.html:53
@@ -3917,49 +3091,83 @@ msgstr "GeoNode帮助"
 
 #: templates/help.html:9
 msgid ""
-"This page provides helpful information about how to use the GeoNode. You can"
-" use the sidebar links to navigate to what you want to know."
+"This page provides helpful information about how to use the GeoNode. You can "
+"use the sidebar links to navigate to what you want to know."
 msgstr "本页提供如何使用GeoNode的帮助信息。请点击工具栏链接了解您想知道的内容"
 
 #: templates/help.html:12
 msgid ""
 "\n"
-"  <p>The GeoNode provides access to data sets and a map editing application allows users to browse existing maps and contribute their own.</p>\n"
+"  <p>The GeoNode provides access to data sets and a map editing application "
+"allows users to browse existing maps and contribute their own.</p>\n"
 "\n"
 "  <h4 id=\"browsing-data\">Browsing Layers</h4>\n"
-"  <p>The <a href=\"/layers\">Layers</a> tab allows you to browse data uploaded to this GeoNode.</p>\n"
-"  <p>All data can be downloaded in a variety of formats, for use in other applications.</p>\n"
+"  <p>The <a href=\"/layers\">Layers</a> tab allows you to browse data "
+"uploaded to this GeoNode.</p>\n"
+"  <p>All data can be downloaded in a variety of formats, for use in other "
+"applications.</p>\n"
 "\n"
 "  <h4 id=\"developer-access\">Developer Access</h4>\n"
-"  <p>The <a href=\"/developer\"> Developer</a> page is the place for developers to get started building applications against the GeoNode. It includes instructions on using the web services, links to the source code of the GeoNode, and information about the open source projects used to create it.</p>\n"
+"  <p>The <a href=\"/developer\"> Developer</a> page is the place for "
+"developers to get started building applications against the GeoNode. It "
+"includes instructions on using the web services, links to the source code of "
+"the GeoNode, and information about the open source projects used to create "
+"it.</p>\n"
 "\n"
 "  <h4 id=\"browsing-maps\">Browsing Maps</h4>\n"
-"  <p>The GeoNode allows users to create and share maps with one another.</p>\n"
-"  <p>The <a href=\"/maps\">Maps</a> tab is a gateway to map exploration on GeoNode.  From here you can <strong>search for a map</strong> or <strong>create a map</strong>, which will open the <a href=\"/maps/new\">Map Composer</a>.</p>\n"
+"  <p>The GeoNode allows users to create and share maps with one another.</"
+"p>\n"
+"  <p>The <a href=\"/maps\">Maps</a> tab is a gateway to map exploration on "
+"GeoNode.  From here you can <strong>search for a map</strong> or "
+"<strong>create a map</strong>, which will open the <a href=\"/maps/new\">Map "
+"Composer</a>.</p>\n"
 "  <h5>Google Earth Mode</h5>\n"
-"  <p>Any map viewed in the interactive map editor can be seen in 3D mode with the Google Earth plugin. To switch to 3D mode select the Google Earth globe logo, the rightmost button on top toolbar. If you do not have the Google Earth plugin installed you will be prompted to install it.</p>\n"
+"  <p>Any map viewed in the interactive map editor can be seen in 3D mode "
+"with the Google Earth plugin. To switch to 3D mode select the Google Earth "
+"globe logo, the rightmost button on top toolbar. If you do not have the "
+"Google Earth plugin installed you will be prompted to install it.</p>\n"
 "\n"
 "  <h4 id=\"creating-a-map\">Creating a Map</h4>\n"
-"  <p>To create a new map go to the <a href=\"/maps\">Contributed Maps</a> tab and click the <a href=\"/maps/new\">create your own map</a> link.</p>\n"
-"  <p>This will take you to the <a href=\"/maps/new\">Map Composer</a> with a base layer loaded.</p>\n"
-"  <p>To add data layers from the GeoNode click on the green plus button located below the layers tab on the left hand side of the screen. This will open a dialog listing all the layers available on the GeoNode.</p>\n"
-"  <p>To add layers to your map select them and hit the <strong>Add Layers</strong> button. When finished you may hit <strong>Done</strong> to close the dialog and go back to the map.</p>\n"
+"  <p>To create a new map go to the <a href=\"/maps\">Contributed Maps</a> "
+"tab and click the <a href=\"/maps/new\">create your own map</a> link.</p>\n"
+"  <p>This will take you to the <a href=\"/maps/new\">Map Composer</a> with a "
+"base layer loaded.</p>\n"
+"  <p>To add data layers from the GeoNode click on the green plus button "
+"located below the layers tab on the left hand side of the screen. This will "
+"open a dialog listing all the layers available on the GeoNode.</p>\n"
+"  <p>To add layers to your map select them and hit the <strong>Add Layers</"
+"strong> button. When finished you may hit <strong>Done</strong> to close the "
+"dialog and go back to the map.</p>\n"
 "\n"
 "  <h5>Reordering and Removing Layers</h5>\n"
-"  <p>Change the display order of the layers listed in the data tab by simply dragging and dropping their names. The order in the map will be updated to reflect that. To turn a layer's visibility off simply uncheck it, and to remove it entirely select it and hit the red minus button.</p>\n"
+"  <p>Change the display order of the layers listed in the data tab by simply "
+"dragging and dropping their names. The order in the map will be updated to "
+"reflect that. To turn a layer's visibility off simply uncheck it, and to "
+"remove it entirely select it and hit the red minus button.</p>\n"
 "\n"
 "  <h5>Saving your map</h5>\n"
-"  <p>Once a suitable set of layers and zoom level has been found it's time to save it so others can see it.  Click the Save button--the left most icon on the top toolbar, an image of a map with a disk--on the top menu and fill out the title and abstract of the map.</p>\n"
+"  <p>Once a suitable set of layers and zoom level has been found it's time "
+"to save it so others can see it.  Click the Save button--the left most icon "
+"on the top toolbar, an image of a map with a disk--on the top menu and fill "
+"out the title and abstract of the map.</p>\n"
 "\n"
 "  <h4 id=\"exporting-a-map\">Exporting a Map</h4>\n"
-"  <p>Any map from the GeoNode can be embedded for use in another site or blog. To export a map:</p>\n"
+"  <p>Any map from the GeoNode can be embedded for use in another site or "
+"blog. To export a map:</p>\n"
 "  <ol>\n"
-"    <li>Select the from the list of maps on the community or map page and then hit the 'export map' button.</li> \n"
-"    <li>Choose your desired height and width for the widget in the wizard.</li> \n"
-"    <li>Copy the HTML snippet provided in the wizard to any HTML page or iFrame-supporting blog post.</li>\n"
+"    <li>Select the from the list of maps on the community or map page and "
+"then hit the 'export map' button.</li> \n"
+"    <li>Choose your desired height and width for the widget in the wizard.</"
+"li> \n"
+"    <li>Copy the HTML snippet provided in the wizard to any HTML page or "
+"iFrame-supporting blog post.</li>\n"
 "  </ol>\n"
-"  <p>This will put an interactive widget showing you map in your web page or blog post.</p>\n"
-"  <p>Note that the <a href=\"/maps/new\">Map Composer</a> also has a button to export the map. Just be sure to save the map before exporting if there are changes that you want others to see. It exports the last saved version, not the last viewed version.</p>\n"
+"  <p>This will put an interactive widget showing you map in your web page or "
+"blog post.</p>\n"
+"  <p>Note that the <a href=\"/maps/new\">Map Composer</a> also has a button "
+"to export the map. Just be sure to save the map before exporting if there "
+"are changes that you want others to see. It exports the last saved version, "
+"not the last viewed version.</p>\n"
 "\n"
 "  <h4 id=\"remixing-a-map\">Remixing a Map</h4>\n"
 "  <p>Any map available can serve as a starting point for a new map.</p>\n"
@@ -3967,10 +3175,12 @@ msgid ""
 "    <li>Open the map in the Map Composer.</li>\n"
 "    <li>Add and remove layers as you like.</li>\n"
 "    <li>Pan and zoom to highlight the area of interest.</li>\n"
-"    <li><strong>IMPORTANT:</strong> Update the title, abstract, contact info and tags to reflect the new map.</li>\n"
+"    <li><strong>IMPORTANT:</strong> Update the title, abstract, contact info "
+"and tags to reflect the new map.</li>\n"
 "    <li>Save the map.</li>\n"
 "  </ol>\n"
-"  <p>You will be able to see your new map when you search for it from the <a href=\"/maps\">Maps</a> tab.</p> \n"
+"  <p>You will be able to see your new map when you search for it from the <a "
+"href=\"/maps\">Maps</a> tab.</p> \n"
 "  "
 msgstr ""
 
@@ -4017,8 +3227,8 @@ msgstr ""
 
 #: templates/index.html:17
 msgid ""
-"If you have any questions about the software or service, join our <a "
-"href=\"https://groups.google.com/d/forum/geonode-users\">mailing list</a>."
+"If you have any questions about the software or service, join our <a href="
+"\"https://groups.google.com/d/forum/geonode-users\">mailing list</a>."
 msgstr ""
 
 #: templates/index.html:18
@@ -4109,8 +3319,9 @@ msgstr "重设密码"
 #: templates/account/password_reset.html:25
 #, python-format
 msgid ""
-"If you have any trouble resetting your password, contact us at <a "
-"href=\"mailto:%(THEME_ACCOUNT_CONTACT_EMAIL)s\">%(THEME_ACCOUNT_CONTACT_EMAIL)s</a>."
+"If you have any trouble resetting your password, contact us at <a href="
+"\"mailto:%(THEME_ACCOUNT_CONTACT_EMAIL)s\">%(THEME_ACCOUNT_CONTACT_EMAIL)s</"
+"a>."
 msgstr ""
 
 #: templates/account/signup.html:7 templates/account/signup.html.py:14
@@ -4140,8 +3351,10 @@ msgstr ""
 #: templates/account/email/password_reset.txt:1
 #, python-format
 msgid ""
-"You're receiving this email because you or someone else has requested a password for your user account at %(site_name)s.\n"
-"It can be safely ignored if you did not request a password reset. Click the link below to reset your password.\n"
+"You're receiving this email because you or someone else has requested a "
+"password for your user account at %(site_name)s.\n"
+"It can be safely ignored if you did not request a password reset. Click the "
+"link below to reset your password.\n"
 "\n"
 "%(password_reset_url)s\n"
 msgstr ""
@@ -4191,7 +3404,8 @@ msgstr ""
 #, python-format
 msgid ""
 "\n"
-"                        Published from <b>%(publish_start)s</b> to <b>%(publish_end)s</b>.\n"
+"                        Published from <b>%(publish_start)s</b> to <b>"
+"%(publish_end)s</b>.\n"
 "                        "
 msgstr ""
 
@@ -4232,8 +3446,8 @@ msgstr ""
 #: templates/avatar/confirm_delete.html:9
 #, python-format
 msgid ""
-"You have no avatars to delete. Please <a "
-"href=\"%(avatar_change_url)s\">upload one</a> now."
+"You have no avatars to delete. Please <a href=\"%(avatar_change_url)s"
+"\">upload one</a> now."
 msgstr ""
 
 #: templates/avatar/confirm_delete.html:15
@@ -4276,7 +3490,8 @@ msgstr "笔记"
 msgid ""
 "You do not have a verified email address to which notices can be sent. You "
 "can add one by going to <a href=\"%(email_url)s\">Account</a>."
-msgstr "您还未提供一个确认过的电邮地址用以发送通知。您可以在%(email_url)s 里添加一个"
+msgstr ""
+"您还未提供一个确认过的电邮地址用以发送通知。您可以在%(email_url)s 里添加一个"
 
 #: templates/notification/notice_settings.html:30
 msgid "Notification Type"
@@ -4392,6 +3607,11 @@ msgstr "种类"
 msgid "Date begins after:"
 msgstr ""
 
+#: templates/search/_general_filters.html:31
+#: templates/search/_general_filters.html:35
+msgid "yyyy-mm-dd"
+msgstr ""
+
 #: templates/search/_general_filters.html:34
 msgid "Date ends before:"
 msgstr ""
@@ -4411,10 +3631,6 @@ msgstr ""
 #: templates/search/_text_filter.html:5
 msgid "Text"
 msgstr ""
-
-#: templates/search/search.html:6 templates/search/search.html.py:12
-msgid "Search"
-msgstr "查询"
 
 #: templates/user_messages/inbox.html:6
 msgid "Message Inbox"
@@ -4463,3 +3679,714 @@ msgstr "回到收件箱"
 #: templates/user_messages/thread_detail.html:25
 msgid "Send Reply"
 msgstr "发送回复"
+
+#~ msgid "Afghanistan"
+#~ msgstr "阿富汗"
+
+#~ msgid "Aland Islands"
+#~ msgstr "奥兰群岛"
+
+#~ msgid "Albania"
+#~ msgstr "阿尔巴尼亚"
+
+#~ msgid "Algeria"
+#~ msgstr "阿尔及利亚"
+
+#~ msgid "American Samoa"
+#~ msgstr "美属萨摩亚"
+
+#~ msgid "Andorra"
+#~ msgstr "安道尔"
+
+#~ msgid "Angola"
+#~ msgstr "安哥拉"
+
+#~ msgid "Anguilla"
+#~ msgstr "安圭拉"
+
+#~ msgid "Antigua and Barbuda"
+#~ msgstr "安提瓜和巴布达"
+
+#~ msgid "Argentina"
+#~ msgstr "阿根廷"
+
+#~ msgid "Armenia"
+#~ msgstr "亚美尼亚"
+
+#~ msgid "Aruba"
+#~ msgstr "阿鲁巴"
+
+#~ msgid "Australia"
+#~ msgstr "澳大利亚"
+
+#~ msgid "Austria"
+#~ msgstr "奥地利"
+
+#~ msgid "Azerbaijan"
+#~ msgstr "阿塞拜疆"
+
+#~ msgid "Bahamas"
+#~ msgstr "巴哈马"
+
+#~ msgid "Bahrain"
+#~ msgstr "巴林"
+
+#~ msgid "Bangladesh"
+#~ msgstr "孟加拉国"
+
+#~ msgid "Barbados"
+#~ msgstr "巴巴多斯"
+
+#~ msgid "Belarus"
+#~ msgstr "白俄罗斯"
+
+#~ msgid "Belgium"
+#~ msgstr "比利时"
+
+#~ msgid "Belize"
+#~ msgstr "伯利兹"
+
+#~ msgid "Benin"
+#~ msgstr "贝宁"
+
+#~ msgid "Bermuda"
+#~ msgstr "百慕大"
+
+#~ msgid "Bhutan"
+#~ msgstr "不丹"
+
+#~ msgid "Bolivia"
+#~ msgstr "玻利维亚"
+
+#~ msgid "Bosnia and Herzegovina"
+#~ msgstr "波斯尼亚和黑塞哥维那"
+
+#~ msgid "Botswana"
+#~ msgstr "博茨瓦纳"
+
+#~ msgid "Brazil"
+#~ msgstr "巴西"
+
+#~ msgid "British Virgin Islands"
+#~ msgstr "英属维尔京群岛"
+
+#~ msgid "Brunei Darussalam"
+#~ msgstr "汶莱"
+
+#~ msgid "Bulgaria"
+#~ msgstr "保加利亚"
+
+#~ msgid "Burkina Faso"
+#~ msgstr "布基纳法索"
+
+#~ msgid "Burundi"
+#~ msgstr "布隆迪"
+
+#~ msgid "Cambodia"
+#~ msgstr "柬埔寨"
+
+#~ msgid "Cameroon"
+#~ msgstr "喀麦隆"
+
+#~ msgid "Canada"
+#~ msgstr "加拿大"
+
+#~ msgid "Cape Verde"
+#~ msgstr "佛得角"
+
+#~ msgid "Cayman Islands"
+#~ msgstr "开曼群岛"
+
+#~ msgid "Central African Republic"
+#~ msgstr "中非共和国"
+
+#~ msgid "Chad"
+#~ msgstr "乍得"
+
+#~ msgid "Channel Islands"
+#~ msgstr "海峡群岛"
+
+#~ msgid "Chile"
+#~ msgstr "智利"
+
+#~ msgid "China"
+#~ msgstr "中国"
+
+#~ msgid "China - Hong Kong"
+#~ msgstr "中国 - 香港"
+
+#~ msgid "China - Macao"
+#~ msgstr "中国 - 澳门"
+
+#~ msgid "Colombia"
+#~ msgstr "哥伦比亚"
+
+#~ msgid "Comoros"
+#~ msgstr "科摩罗"
+
+#~ msgid "Congo"
+#~ msgstr "刚果"
+
+#~ msgid "Cook Islands"
+#~ msgstr "库克群岛"
+
+#~ msgid "Costa Rica"
+#~ msgstr "哥斯达黎加"
+
+#~ msgid "Cote d'Ivoire"
+#~ msgstr "科特迪瓦"
+
+#~ msgid "Croatia"
+#~ msgstr "克罗地亚"
+
+#~ msgid "Cuba"
+#~ msgstr "古巴"
+
+#~ msgid "Cyprus"
+#~ msgstr "塞浦路斯"
+
+#~ msgid "Czech Republic"
+#~ msgstr "捷克共和国"
+
+#~ msgid "Democratic People's Republic of Korea"
+#~ msgstr "朝鲜人民民主共和国"
+
+#~ msgid "Democratic Republic of the Congo"
+#~ msgstr "刚果民主共和国"
+
+#~ msgid "Denmark"
+#~ msgstr "丹麦"
+
+#~ msgid "Djibouti"
+#~ msgstr "吉布提"
+
+#~ msgid "Dominica"
+#~ msgstr "多米尼克"
+
+#~ msgid "Dominican Republic"
+#~ msgstr "多米尼加共和国"
+
+#~ msgid "Ecuador"
+#~ msgstr "厄瓜多尔"
+
+#~ msgid "Egypt"
+#~ msgstr "埃及"
+
+#~ msgid "El Salvador"
+#~ msgstr "萨尔瓦多"
+
+#~ msgid "Equatorial Guinea"
+#~ msgstr "赤道几内亚"
+
+#~ msgid "Eritrea"
+#~ msgstr "厄立特里亚"
+
+#~ msgid "Estonia"
+#~ msgstr "爱沙尼亚"
+
+#~ msgid "Ethiopia"
+#~ msgstr "埃塞俄比亚"
+
+#~ msgid "Faeroe Islands"
+#~ msgstr "法罗群岛"
+
+#~ msgid "Falkland Islands (Malvinas)"
+#~ msgstr "福克兰群岛（马尔维纳斯）"
+
+#~ msgid "Fiji"
+#~ msgstr "斐济"
+
+#~ msgid "Finland"
+#~ msgstr "芬兰"
+
+#~ msgid "France"
+#~ msgstr "法国"
+
+#~ msgid "French Guiana"
+#~ msgstr "法属圭亚那"
+
+#~ msgid "French Polynesia"
+#~ msgstr "法属波利尼西亚"
+
+#~ msgid "Gabon"
+#~ msgstr "加蓬"
+
+#~ msgid "Gambia"
+#~ msgstr "冈比亚"
+
+#~ msgid "Georgia"
+#~ msgstr "格鲁吉亚"
+
+#~ msgid "Germany"
+#~ msgstr "德国"
+
+#~ msgid "Ghana"
+#~ msgstr "加纳"
+
+#~ msgid "Gibraltar"
+#~ msgstr "直布罗陀"
+
+#~ msgid "Greece"
+#~ msgstr "希腊"
+
+#~ msgid "Greenland"
+#~ msgstr "格陵兰"
+
+#~ msgid "Grenada"
+#~ msgstr "格林纳达"
+
+#~ msgid "Guadeloupe"
+#~ msgstr "瓜德罗普岛"
+
+#~ msgid "Guam"
+#~ msgstr "关岛"
+
+#~ msgid "Guatemala"
+#~ msgstr "危地马拉"
+
+#~ msgid "Guernsey"
+#~ msgstr "根西岛"
+
+#~ msgid "Guinea"
+#~ msgstr "几内亚"
+
+#~ msgid "Guinea-Bissau"
+#~ msgstr "几内亚比绍"
+
+#~ msgid "Guyana"
+#~ msgstr "圭亚那"
+
+#~ msgid "Haiti"
+#~ msgstr "海地"
+
+#~ msgid "Holy See (Vatican City)"
+#~ msgstr "罗马教廷（梵蒂冈城）"
+
+#~ msgid "Honduras"
+#~ msgstr "洪都拉斯"
+
+#~ msgid "Hungary"
+#~ msgstr "匈牙利"
+
+#~ msgid "Iceland"
+#~ msgstr "冰岛"
+
+#~ msgid "India"
+#~ msgstr "印度"
+
+#~ msgid "Indonesia"
+#~ msgstr "印尼"
+
+#~ msgid "Iran"
+#~ msgstr "伊朗"
+
+#~ msgid "Iraq"
+#~ msgstr "伊拉克"
+
+#~ msgid "Ireland"
+#~ msgstr "爱尔兰"
+
+#~ msgid "Isle of Man"
+#~ msgstr "马恩岛"
+
+#~ msgid "Israel"
+#~ msgstr "以色列"
+
+#~ msgid "Italy"
+#~ msgstr "意大利"
+
+#~ msgid "Jamaica"
+#~ msgstr "牙买加"
+
+#~ msgid "Japan"
+#~ msgstr "日本"
+
+#~ msgid "Jersey"
+#~ msgstr "新泽西州"
+
+#~ msgid "Jordan"
+#~ msgstr "约旦"
+
+#~ msgid "Kazakhstan"
+#~ msgstr "哈萨克斯坦"
+
+#~ msgid "Kenya"
+#~ msgstr "肯尼亚"
+
+#~ msgid "Kiribati"
+#~ msgstr "基里巴斯"
+
+#~ msgid "Kuwait"
+#~ msgstr "科威特"
+
+#~ msgid "Kyrgyzstan"
+#~ msgstr "吉尔吉斯斯坦"
+
+#~ msgid "Lao People's Democratic Republic"
+#~ msgstr "老挝人民民主共和国"
+
+#~ msgid "Latvia"
+#~ msgstr "拉脱维亚"
+
+#~ msgid "Lebanon"
+#~ msgstr "黎巴嫩"
+
+#~ msgid "Lesotho"
+#~ msgstr "莱索托"
+
+#~ msgid "Liberia"
+#~ msgstr "利比里亚"
+
+#~ msgid "Libyan Arab Jamahiriya"
+#~ msgstr "阿拉伯利比亚民众国"
+
+#~ msgid "Liechtenstein"
+#~ msgstr "列支敦士登"
+
+#~ msgid "Lithuania"
+#~ msgstr "立陶宛"
+
+#~ msgid "Luxembourg"
+#~ msgstr "卢森堡"
+
+#~ msgid "Macedonia"
+#~ msgstr "马其顿"
+
+#~ msgid "Madagascar"
+#~ msgstr "马达加斯加"
+
+#~ msgid "Malawi"
+#~ msgstr "马拉维"
+
+#~ msgid "Malaysia"
+#~ msgstr "马来西亚"
+
+#~ msgid "Maldives"
+#~ msgstr "马尔代夫"
+
+#~ msgid "Mali"
+#~ msgstr "马里"
+
+#~ msgid "Malta"
+#~ msgstr "马耳他"
+
+#~ msgid "Marshall Islands"
+#~ msgstr "马绍尔群岛"
+
+#~ msgid "Martinique"
+#~ msgstr "马提尼克岛"
+
+#~ msgid "Mauritania"
+#~ msgstr "毛里塔尼亚"
+
+#~ msgid "Mauritius"
+#~ msgstr "毛里求斯"
+
+#~ msgid "Mayotte"
+#~ msgstr "马约特岛"
+
+#~ msgid "Mexico"
+#~ msgstr "墨西哥"
+
+#~ msgid "Micronesia, Federated States of"
+#~ msgstr "密克罗尼西亚联邦"
+
+#~ msgid "Monaco"
+#~ msgstr "摩纳哥"
+
+#~ msgid "Mongolia"
+#~ msgstr "蒙古"
+
+#~ msgid "Montenegro"
+#~ msgstr "黑山"
+
+#~ msgid "Montserrat"
+#~ msgstr "蒙特塞拉特"
+
+#~ msgid "Morocco"
+#~ msgstr "摩洛哥"
+
+#~ msgid "Mozambique"
+#~ msgstr "莫桑比克"
+
+#~ msgid "Myanmar"
+#~ msgstr "缅甸"
+
+#~ msgid "Namibia"
+#~ msgstr "纳米比亚"
+
+#~ msgid "Nauru"
+#~ msgstr "瑙鲁"
+
+#~ msgid "Nepal"
+#~ msgstr "尼泊尔"
+
+#~ msgid "Netherlands"
+#~ msgstr "荷兰"
+
+#~ msgid "Netherlands Antilles"
+#~ msgstr "荷属安的列斯"
+
+#~ msgid "New Caledonia"
+#~ msgstr "新喀里多尼亚"
+
+#~ msgid "New Zealand"
+#~ msgstr "新西兰"
+
+#~ msgid "Nicaragua"
+#~ msgstr "尼加拉瓜"
+
+#~ msgid "Niger"
+#~ msgstr "尼日尔"
+
+#~ msgid "Nigeria"
+#~ msgstr "尼日利亚"
+
+#~ msgid "Niue"
+#~ msgstr "纽埃"
+
+#~ msgid "Norfolk Island"
+#~ msgstr "诺福克岛"
+
+#~ msgid "Northern Mariana Islands"
+#~ msgstr "北马里亚纳群岛"
+
+#~ msgid "Norway"
+#~ msgstr "挪威"
+
+#~ msgid "Occupied Palestinian Territory"
+#~ msgstr "被占领的巴勒斯坦领土"
+
+#~ msgid "Oman"
+#~ msgstr "阿曼"
+
+#~ msgid "Pakistan"
+#~ msgstr "巴基斯坦"
+
+#~ msgid "Palau"
+#~ msgstr "帕劳"
+
+#~ msgid "Panama"
+#~ msgstr "巴拿马"
+
+#~ msgid "Papua New Guinea"
+#~ msgstr "巴布亚新几内亚"
+
+#~ msgid "Paraguay"
+#~ msgstr "巴拉圭"
+
+#~ msgid "Peru"
+#~ msgstr "秘鲁"
+
+#~ msgid "Philippines"
+#~ msgstr "菲律宾"
+
+#~ msgid "Pitcairn"
+#~ msgstr "皮特凯恩"
+
+#~ msgid "Poland"
+#~ msgstr "波兰"
+
+#~ msgid "Portugal"
+#~ msgstr "葡萄牙"
+
+#~ msgid "Puerto Rico"
+#~ msgstr "波多黎各"
+
+#~ msgid "Qatar"
+#~ msgstr "卡塔尔"
+
+#~ msgid "Republic of Korea"
+#~ msgstr "韩国共和国"
+
+#~ msgid "Republic of Moldova"
+#~ msgstr "摩尔多瓦共和国"
+
+#~ msgid "Reunion"
+#~ msgstr "留尼汪"
+
+#~ msgid "Romania"
+#~ msgstr "罗马尼亚"
+
+#~ msgid "Russian Federation"
+#~ msgstr "俄罗斯联邦"
+
+#~ msgid "Rwanda"
+#~ msgstr "卢旺达"
+
+#~ msgid "Saint-Barthelemy"
+#~ msgstr "圣 - 缪"
+
+#~ msgid "Saint Helena"
+#~ msgstr "圣赫勒拿"
+
+#~ msgid "Saint Kitts and Nevis"
+#~ msgstr "圣基茨和尼维斯"
+
+#~ msgid "Saint Lucia"
+#~ msgstr "圣卢西亚"
+
+#~ msgid "Saint-Martin (French part)"
+#~ msgstr "圣马丁（法国部分）"
+
+#~ msgid "Saint Pierre and Miquelon"
+#~ msgstr "圣皮埃尔和密克隆"
+
+#~ msgid "Saint Vincent and the Grenadines"
+#~ msgstr "圣文森特和格林纳丁斯"
+
+#~ msgid "Samoa"
+#~ msgstr "萨摩亚"
+
+#~ msgid "San Marino"
+#~ msgstr "圣马力诺"
+
+#~ msgid "Sao Tome and Principe"
+#~ msgstr "圣多美和普林西比"
+
+#~ msgid "Saudi Arabia"
+#~ msgstr "沙特阿拉伯"
+
+#~ msgid "Senegal"
+#~ msgstr "塞内加尔"
+
+#~ msgid "Serbia"
+#~ msgstr "塞尔维亚"
+
+#~ msgid "Seychelles"
+#~ msgstr "塞舌尔"
+
+#~ msgid "Sierra Leone"
+#~ msgstr "塞拉利昂"
+
+#~ msgid "Singapore"
+#~ msgstr "新加坡"
+
+#~ msgid "Slovakia"
+#~ msgstr "斯洛伐克"
+
+#~ msgid "Slovenia"
+#~ msgstr "斯洛文尼亚"
+
+#~ msgid "Solomon Islands"
+#~ msgstr "所罗门群岛"
+
+#~ msgid "Somalia"
+#~ msgstr "索马里"
+
+#~ msgid "South Africa"
+#~ msgstr "南非"
+
+#~ msgid "Spain"
+#~ msgstr "西班牙"
+
+#~ msgid "Sri Lanka"
+#~ msgstr "斯里兰卡"
+
+#~ msgid "Sudan"
+#~ msgstr "苏丹"
+
+#~ msgid "Suriname"
+#~ msgstr "苏里南"
+
+#~ msgid "Svalbard and Jan Mayen Islands"
+#~ msgstr "斯瓦尔巴岛和扬马延岛"
+
+#~ msgid "Swaziland"
+#~ msgstr "斯威士兰"
+
+#~ msgid "Sweden"
+#~ msgstr "瑞典"
+
+#~ msgid "Switzerland"
+#~ msgstr "瑞士"
+
+#~ msgid "Syrian Arab Republic"
+#~ msgstr "阿拉伯叙利亚共和国"
+
+#~ msgid "Tajikistan"
+#~ msgstr "塔吉克斯坦"
+
+#~ msgid "Thailand"
+#~ msgstr "泰国"
+
+#~ msgid "Timor-Leste"
+#~ msgstr "东帝汶"
+
+#~ msgid "Togo"
+#~ msgstr "多哥"
+
+#~ msgid "Tokelau"
+#~ msgstr "托克劳"
+
+#~ msgid "Tonga"
+#~ msgstr "汤加"
+
+#~ msgid "Trinidad and Tobago"
+#~ msgstr "特里尼达和多巴哥"
+
+#~ msgid "Tunisia"
+#~ msgstr "突尼斯"
+
+#~ msgid "Turkey"
+#~ msgstr "土耳其"
+
+#~ msgid "Turkmenistan"
+#~ msgstr "土库曼斯坦"
+
+#~ msgid "Turks and Caicos Islands"
+#~ msgstr "特克斯和凯科斯群岛"
+
+#~ msgid "Tuvalu"
+#~ msgstr "图瓦卢"
+
+#~ msgid "Uganda"
+#~ msgstr "乌干达"
+
+#~ msgid "Ukraine"
+#~ msgstr "乌克兰"
+
+#~ msgid "United Arab Emirates"
+#~ msgstr "阿拉伯联合酋长国"
+
+#~ msgid "United Kingdom"
+#~ msgstr "英国"
+
+#~ msgid "United Republic of Tanzania"
+#~ msgstr "坦桑尼亚联合共和国"
+
+#~ msgid "United States of America"
+#~ msgstr "美国"
+
+#~ msgid "United States Virgin Islands"
+#~ msgstr "美属维尔京群岛"
+
+#~ msgid "Uruguay"
+#~ msgstr "乌拉圭"
+
+#~ msgid "Uzbekistan"
+#~ msgstr "乌兹别克斯坦"
+
+#~ msgid "Vanuatu"
+#~ msgstr "瓦努阿图"
+
+#~ msgid "Venezuela (Bolivarian Republic of)"
+#~ msgstr "委内瑞拉（玻利瓦尔共和国）"
+
+#~ msgid "Viet Nam"
+#~ msgstr "越南"
+
+#~ msgid "Wallis and Futuna Islands"
+#~ msgstr "瓦利斯群岛和富图纳群岛"
+
+#~ msgid "Western Sahara"
+#~ msgstr "西撒哈拉"
+
+#~ msgid "Yemen"
+#~ msgstr "也门"
+
+#~ msgid "Zambia"
+#~ msgstr "赞比亚"
+
+#~ msgid "Zimbabwe"
+#~ msgstr "津巴布韦"
