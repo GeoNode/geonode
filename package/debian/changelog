@@ -1,3 +1,9 @@
+geonode (2.4.0+alpha30) trusty; urgency=high
+
+  * [7a4155] Updated translations
+
+ -- Ariel Nunez <ingenieroariel@gmail.com>  Fri, 14 Nov 2014 13:41:02 -0500
+
 geonode (2.4.0+alpha29) trusty; urgency=high
 
   * [7c4cfd] flake8 on services/views.py
