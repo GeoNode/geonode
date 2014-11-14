@@ -360,6 +360,16 @@ Default: ``False``
 By default, the GeoNode application allows visitors to view most pages without being authenticated. If this is set to ``True``
 users must be authenticated before accessing URL routes not included in ``AUTH_EXEMPT_URLS``.
 
+RESOURCE_PUBLISHING
+-------------------
+Default: ``True``
+
+By default, the GeoNode application allows GeoNode staff members to 
+publish/unpublish resources.
+By default resources are published when created. When this settings is set to 
+True the staff members will be able to unpublish a resource (and eventually 
+publish it back).
+
 Social settings
 ===============
 

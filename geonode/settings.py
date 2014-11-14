@@ -715,6 +715,9 @@ LEAFLET_CONFIG = {
     }
 }
 
+# option to enable/disable resource unpublishing for administrators
+RESOURCE_PUBLISHING = True
+
 CACHES = {
     # DUMMY CACHE FOR DEVELOPMENT
     'default': {
