@@ -944,7 +944,8 @@ def _process_arcgis_folder(folder, services=[], owner=None, parent=None):
                     service, owner, parent=parent)
             else:
                 return_dict['msg'] = _("Could not find any layers in a compatible projection: \
-                The spatial id was: %(srs)s and the url %(url)s" % { 'srs': service.spatialReference.wkid, 'url': service.url})
+                The spatial id was: %(srs)s and the url %(url)s" % {'srs': service.spatialReference.wkid,
+                                                                    'url': service.url})
 
         services.append(return_dict)
 
