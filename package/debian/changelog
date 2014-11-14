@@ -1,3 +1,30 @@
+geonode (2.4.0+alpha28) trusty; urgency=high
+
+  [ capooti ]
+  * [b37a1b] First raw implementation of published/unpublished resource
+  * [7dc3e3] Refuse from previous commit
+  * [0128bf] Returning 404 for an unpublished resource
+  * [c42312] Testing the search API with unpublished layers
+  * [c0e177] Testing that layer_detail returns 404 for an unpublished layer
+  * [d0a8c3] Added some basic documentation on publishing/unpublishing resources
+  * [050c6b] Forgot a documentation image from previous commit
+  * [a774d4] Making flake8 happy
+  * [b58499] Added a RESOURCE_PUBLISHING to enable/disable resource unpublishing for django staff members
+  * [715d8b] Now when unpublishing the layer is unadvertised in GeoSever. Users with publish_resourcebase can still access the layer detail page.
+  * [842242] Moved integration permissions test to its appropriate TestCase
+
+  [ Simone Dalmasso ]
+  * [8a1675] add ngcloak to resource base snippet, fixes #1768
+
+  [ capooti ]
+  * [7520e3] Fixed a couple of strings in permission forms and updated IT messages related to permissions
+
+  [ Ariel Nunez ]
+  * [1bf35f] Take countries out from translations
+  * [1f9817] Updated translation strings
+
+ -- Ariel Nunez <ingenieroariel@gmail.com>  Fri, 14 Nov 2014 10:04:22 -0500
+
 geonode (2.4.0+alpha27) trusty; urgency=high
 
   * [bce0ed] Make flake8 happy
