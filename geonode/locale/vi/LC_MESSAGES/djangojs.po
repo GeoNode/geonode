@@ -3,12 +3,13 @@
 # This file is distributed under the same license as the PACKAGE package.
 # 
 # Translators:
+# ingenieroariel <ingenieroariel@gmail.com>, 2014
 msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2014-10-24 10:00-0500\n"
-"PO-Revision-Date: 2014-11-11 22:38+0000\n"
+"PO-Revision-Date: 2014-11-14 17:01+0000\n"
 "Last-Translator: ingenieroariel <ingenieroariel@gmail.com>\n"
 "Language-Team: Vietnamese (http://www.transifex.com/projects/p/geonode/language/vi/)\n"
 "MIME-Version: 1.0\n"
@@ -19,580 +20,580 @@ msgstr ""
 
 #: static/geonode/js/extjs/GeoNode.js:72
 msgid "Add user..."
-msgstr "Add user..."
+msgstr "Thêm người dùng ..."
 
 #: static/geonode/js/extjs/GeoNode.js:72
 msgid "Who can view and download this data?"
-msgstr ""
+msgstr "Ai có thể xem và tải về dữ liệu này?"
 
 #: static/geonode/js/extjs/GeoNode.js:72
 msgid "Anyone"
-msgstr ""
+msgstr "Bất cứ người nào"
 
 #: static/geonode/js/extjs/GeoNode.js:72
 msgid "Any registered user"
-msgstr ""
+msgstr "Bất kỳ người dùng đăng ký"
 
 #: static/geonode/js/extjs/GeoNode.js:72
 msgid "Only users who can edit"
-msgstr ""
+msgstr "Chỉ những người dùng có thể chỉnh sửa"
 
 #: static/geonode/js/extjs/GeoNode.js:72
 msgid "Who can edit this data?"
-msgstr ""
+msgstr "Ai có thể chỉnh sửa dữ liệu này?"
 
 #: static/geonode/js/extjs/GeoNode.js:72
 msgid "Only the following users or groups:"
-msgstr ""
+msgstr "Chỉ những người dùng hoặc các nhóm sau đây:"
 
 #: static/geonode/js/extjs/GeoNode.js:72
 msgid "Who can manage and edit this data?"
-msgstr ""
+msgstr "Ai có thể quản lý và chỉnh sửa dữ liệu này?"
 
 #: static/geonode/js/upload/FileType.js:33
 #, c-format
 msgid "Missing a %s file, which is required"
-msgstr ""
+msgstr "Thiếu một %s file, đó là cần thiết"
 
 #: static/geonode/js/upload/FileTypes.js:7
 msgid "ESRI Shapefile"
-msgstr ""
+msgstr "ESRI Shapefile"
 
 #: static/geonode/js/upload/FileTypes.js:13
 #: static/geonode/js/upload/FileTypes.js:19
 msgid "GeoTiff File"
-msgstr ""
+msgstr "Tệp GeoTiff tập tin"
 
 #: static/geonode/js/upload/FileTypes.js:26
 msgid "Comma Separated File"
-msgstr ""
+msgstr "Comma Ly tập tin"
 
 #: static/geonode/js/upload/FileTypes.js:32
 msgid "Google Earth KML"
-msgstr ""
+msgstr "Google Earth KML"
 
 #: static/geonode/js/upload/FileTypes.js:38
 msgid "Zip Archives"
-msgstr ""
+msgstr "Lưu trữ Zip"
 
 #: static/geonode/js/upload/LayerInfo.js:249
 msgid "Layer Info"
-msgstr ""
+msgstr "Layer Info"
 
 #: static/geonode/js/upload/LayerInfo.js:250
 msgid "Edit Metadata"
-msgstr ""
+msgstr "Chỉnh sửa Metadata"
 
 #: static/geonode/js/upload/LayerInfo.js:251
 msgid "Manage Styles"
-msgstr ""
+msgstr "Quản lý Styles"
 
 #: static/geonode/js/upload/LayerInfo.js:253
 msgid "Your layer was successfully uploaded"
-msgstr ""
+msgstr "Lớp của bạn đã được tải lên thành công"
 
 #: static/geonode/js/upload/LayerInfo.js:282
 msgid "Performing Final GeoServer Config Step"
-msgstr ""
+msgstr "Thực hiện cuối cùng GeoServer Config Bước"
 
 #: static/geonode/js/upload/LayerInfo.js:297
 #: static/geonode/js/upload/LayerInfo.js:319
 msgid "You need to specify more information in order to complete your upload"
-msgstr ""
+msgstr "Bạn cần xác định thêm thông tin để hoàn thành tải lên của bạn"
 
 #: static/geonode/js/upload/LayerInfo.js:311
 msgid "You need to specify more information in order to complete your upload."
-msgstr ""
+msgstr "Bạn cần xác định thêm thông tin để hoàn thành tải lên của bạn."
 
 #: static/geonode/js/upload/LayerInfo.js:311
 msgid "You can continue configuring your layer."
-msgstr ""
+msgstr "Bạn có thể tiếp tục cấu hình lớp của bạn."
 
 #: static/geonode/js/upload/LayerInfo.js:329
 #: static/geonode/js/upload/LayerInfo.js:414
 msgid "Unexpected Error"
-msgstr ""
+msgstr "Lỗi bất ngờ"
 
 #: static/geonode/js/upload/LayerInfo.js:345
 msgid "Performing GeoServer Config Step"
-msgstr ""
+msgstr "Thực hiện GeoServer Config Bước"
 
 #: static/geonode/js/upload/LayerInfo.js:417
 msgid "No error message supplied"
-msgstr ""
+msgstr "Không có thông báo lỗi được cung cấp"
 
 #: static/geonode/js/upload/LayerInfo.js:432
 msgid "Layer files uploaded, configuring in GeoServer"
-msgstr ""
+msgstr "Các tập tin tải lên lớp, cấu hình trong GeoServer"
 
 #: static/geonode/js/upload/LayerInfo.js:447
 msgid "Select or create a Geogit repository."
-msgstr ""
+msgstr "Chọn hoặc tạo một kho lưu trữ Geogit."
 
 #: static/geonode/js/upload/LayerInfo.js:542
 msgid "Remove"
-msgstr ""
+msgstr "Tẩy"
 
 #: static/geonode/js/upload/upload.js:126
 #, c-format
 msgid "The file %s is an unsupported file type, please select another file."
-msgstr ""
+msgstr "Các tập tin%s là một loại tập tin không được hỗ trợ, xin vui lòng chọn tập tin khác."
 
 #: static/geonode/js/upload/upload.js:286
 msgid "You are uploading an incomplete set of files."
-msgstr ""
+msgstr "Bạn đang tải lên một tập hợp đầy đủ các tập tin."
 
 #: templates/lang.js:9 templates/lang.js.c:236
 msgid "Cancel"
-msgstr ""
+msgstr "Hủy bỏ"
 
 #: templates/lang.js:10
 msgid "Save as Copy"
-msgstr ""
+msgstr "Tiết kiệm như Sao chép"
 
 #: templates/lang.js:11
 msgid "About this Map"
-msgstr ""
+msgstr "Về Bản đồ này"
 
 #: templates/lang.js:12 templates/lang.js.c:96 templates/lang.js.c:165
 msgid "Abstract"
-msgstr ""
+msgstr "Trừu tượng"
 
 #: templates/lang.js:13
 msgid "Save"
-msgstr ""
+msgstr "Lưu"
 
 #: templates/lang.js:14 templates/lang.js.c:100 templates/lang.js.c:109
 #: templates/lang.js:162 templates/lang.js.c:184 templates/lang.js.c:219
 msgid "Title"
-msgstr ""
+msgstr "Tiêu đề"
 
 #: templates/lang.js:20
 msgid "Connection Error"
-msgstr ""
+msgstr "Lỗi kết nối"
 
 #: templates/lang.js:21
 msgid "The server returned an error"
-msgstr ""
+msgstr "Các máy chủ trả về một lỗi"
 
 #: templates/lang.js:22
 msgid "Details..."
-msgstr ""
+msgstr "Xem chi tiết ..."
 
 #: templates/lang.js:28 templates/lang.js.c:31
 msgid "Add Layers"
-msgstr ""
+msgstr "Thêm Layers"
 
 #: templates/lang.js:29
 msgid "Area"
-msgstr ""
+msgstr "Khu vực"
 
 #: templates/lang.js:30
 msgid "Background"
-msgstr ""
+msgstr "Lý lịch"
 
 #: templates/lang.js:32
 msgid "Done"
-msgstr ""
+msgstr "Làm xong"
 
 #: templates/lang.js:33
 msgid "Available Layers"
-msgstr ""
+msgstr "Layers có sẵn"
 
 #: templates/lang.js:35 templates/lang.js.c:121
 msgid "Height"
-msgstr ""
+msgstr "Chiều cao"
 
 #: templates/lang.js:36
 msgid "Get Feature Info"
-msgstr ""
+msgstr "Nhận Tính năng Thông tin"
 
 #: templates/lang.js:37 templates/lang.js.c:122
 msgid "Large"
-msgstr ""
+msgstr "Lớn"
 
 #: templates/lang.js:38
 msgid "or add a new server."
-msgstr ""
+msgstr "hoặc thêm một máy chủ mới."
 
 #: templates/lang.js:39
 msgid "Map Layers"
-msgstr ""
+msgstr "Bản đồ Layers"
 
 #: templates/lang.js:40
 msgid "View available data from:"
-msgstr ""
+msgstr "Xem dữ liệu có sẵn từ:"
 
 #: templates/lang.js:41
 msgid "Data"
-msgstr ""
+msgstr "Dữ liệu"
 
 #: templates/lang.js:42
 msgid "Layers"
-msgstr ""
+msgstr "Layers"
 
 #: templates/lang.js:43
 msgid "Legend"
-msgstr ""
+msgstr "Huyền thoại"
 
 #: templates/lang.js:44
 msgid "Length"
-msgstr ""
+msgstr "Chiều dài"
 
 #: templates/lang.js:45
 msgid "Loading Map..."
-msgstr ""
+msgstr "Đang tải Bản đồ ..."
 
 #: templates/lang.js:46 templates/lang.js.c:123
 msgid "Map Size"
-msgstr ""
+msgstr "Bản đồ Kích"
 
 #: templates/lang.js:47
 msgid "Measure"
-msgstr ""
+msgstr "Biện pháp"
 
 #: templates/lang.js:48 templates/lang.js.c:97 templates/lang.js.c:163
 msgid "Contact"
-msgstr ""
+msgstr "Tiếp xúc"
 
 #: templates/lang.js:49 templates/lang.js.c:55
 msgid "Permalink"
-msgstr ""
+msgstr "Liên kết"
 
 #: templates/lang.js:50 templates/lang.js.c:124
 msgid "Mini"
-msgstr ""
+msgstr "Mini"
 
 #: templates/lang.js:51
 msgid "Pan Map"
-msgstr ""
+msgstr "Pan Bản đồ"
 
 #: templates/lang.js:52
 msgid "Zoom to Next Extent"
-msgstr ""
+msgstr "Phóng to để Mức độ Tiếp theo"
 
 #: templates/lang.js:53
 msgid "Zoom to Previous Extent"
-msgstr ""
+msgstr "Phóng to để Mức độ trước"
 
 #: templates/lang.js:54
 msgid "This map has not yet been saved."
-msgstr ""
+msgstr "Bản đồ này vẫn chưa được lưu."
 
 #: templates/lang.js:56 templates/lang.js.c:125
 msgid "Premium"
-msgstr ""
+msgstr "Phí bảo hiểm"
 
 #: templates/lang.js:57
 msgid "Print Map"
-msgstr ""
+msgstr "In Bản"
 
 #: templates/lang.js:58
 msgid "Print Preview"
-msgstr ""
+msgstr "Print Preview"
 
 #: templates/lang.js:59
 msgid "Properties"
-msgstr ""
+msgstr "Thuộc tính"
 
 #: templates/lang.js:60 templates/lang.js.c:126
 msgid "Publish Map"
-msgstr ""
+msgstr "Xuất bản Bản đồ"
 
 #: templates/lang.js:61 templates/lang.js.c:62
 msgid "Remove Layer"
-msgstr ""
+msgstr "Hủy bỏ lớp"
 
 #: templates/lang.js:63
 msgid "Sorry, your map could not be saved."
-msgstr ""
+msgstr "Xin lỗi, bản đồ của bạn có thể không được lưu."
 
 #: templates/lang.js:64
 msgid "Error While Saving"
-msgstr ""
+msgstr "Lỗi khi tiết kiệm"
 
 #: templates/lang.js:65
 msgid "Save Map"
-msgstr ""
+msgstr "Lưu Bản đồ"
 
 #: templates/lang.js:66
 msgid "You must be logged in to save this map."
-msgstr ""
+msgstr "Bạn phải đăng nhập để lưu bản đồ này."
 
 #: templates/lang.js:67 templates/lang.js.c:128
 msgid "Small"
-msgstr ""
+msgstr "Nhỏ"
 
 #: templates/lang.js:68
 msgid ""
 "Error contacting server.\n"
 " Please check the url and try again."
-msgstr ""
+msgstr "Lỗi liên lạc với máy chủ. Vui lòng kiểm tra địa chỉ và thử lại."
 
 #: templates/lang.js:69
 msgid "Layer Properties"
-msgstr ""
+msgstr "Layer Properties"
 
 #: templates/lang.js:70
 msgid "Change layer format and style"
-msgstr ""
+msgstr "Thay đổi định dạng lớp và phong cách"
 
 #: templates/lang.js:71
 msgid "Edit Styles"
-msgstr ""
+msgstr "Chỉnh sửa Styles"
 
 #: templates/lang.js:72
 msgid "Edit layer styles"
-msgstr ""
+msgstr "Phong cách chỉnh sửa lớp"
 
 #: templates/lang.js:73
 msgid "Switch to Google Earth 3D Viewer"
-msgstr ""
+msgstr "Chuyển sang Google Earth 3D Viewer"
 
 #: templates/lang.js:74
 msgid ""
 "The map that you are trying to load does not exist.  Creating a new map "
 "instead."
-msgstr ""
+msgstr "Các bản đồ mà bạn đang cố gắng để tải không tồn tại. Tạo một bản đồ mới thay thế."
 
 #: templates/lang.js:75
 msgid "Unknown Map"
-msgstr ""
+msgstr "Không biết Bản đồ"
 
 #: templates/lang.js:76 templates/lang.js.c:129
 msgid "Width"
-msgstr ""
+msgstr "Chiều rộng"
 
 #: templates/lang.js:77
 msgid "Zoom In"
-msgstr ""
+msgstr "Zoom In"
 
 #: templates/lang.js:78
 msgid "Zoom Out"
-msgstr ""
+msgstr "Thu nhỏ"
 
 #: templates/lang.js:79
 msgid "Zoom level"
-msgstr ""
+msgstr "Mức độ phóng"
 
 #: templates/lang.js:80
 msgid "Zoom Level"
-msgstr ""
+msgstr "Zoom Level"
 
 #: templates/lang.js:81
 msgid "Zoom to Layer Extent"
-msgstr ""
+msgstr "Phóng to Layer Mức độ"
 
 #: templates/lang.js:82
 msgid "Zoom to Visible Extent"
-msgstr ""
+msgstr "Phóng to để Mức độ Visible"
 
 #: templates/lang.js:88
 msgid "Zoom Level {zoom}"
-msgstr ""
+msgstr "Zoom Level {} zoom"
 
 #: templates/lang.js:94
 msgid "Create Map"
-msgstr ""
+msgstr "Tạo Bản đồ"
 
 #: templates/lang.js:95
 msgid "Export Map"
-msgstr ""
+msgstr "Bản đồ xuất khẩu"
 
 #: templates/lang.js:98
 msgid "Map"
-msgstr ""
+msgstr "Bản đồ"
 
 #: templates/lang.js:99 templates/lang.js.c:166
 msgid "View this Map"
-msgstr ""
+msgstr "Xem bản đồ này"
 
 #: templates/lang.js:101
 msgid "Open Map"
-msgstr ""
+msgstr "Mở Bản đồ"
 
 #: templates/lang.js:107 templates/lang.js.c:183
 msgid "Name"
-msgstr ""
+msgstr "Tên"
 
 #: templates/lang.js:108
 msgid "Queryable"
-msgstr ""
+msgstr "Queryable"
 
 #: templates/lang.js:115
 msgid "No background"
-msgstr ""
+msgstr "Không có hình nền"
 
 #: templates/lang.js:127
 msgid ""
 "Your map is ready to be published to the web!  Simply copy the following "
 "HTML to embed the map in your website:"
-msgstr ""
+msgstr "Bản đồ của bạn đã sẵn sàng để được xuất bản lên web! Đơn giản chỉ cần sao chép mã HTML sau đây để nhúng bản đồ trong trang web của bạn:"
 
 #: templates/lang.js:136 templates/lang.js.c:202
 msgid "Abstract:"
-msgstr ""
+msgstr "Tóm tắt:"
 
 #: templates/lang.js:137 templates/lang.js.c:204
 msgid "No attribution information is provided for this layer."
-msgstr ""
+msgstr "Không có thông tin ghi nhận được cung cấp cho lớp này."
 
 #: templates/lang.js:138 templates/lang.js.c:205
 msgid "Provided by:"
-msgstr ""
+msgstr "Được cung cấp bởi:"
 
 #: templates/lang.js:139 templates/lang.js.c:206
 msgid "Download:"
-msgstr ""
+msgstr "Tải về:"
 
 #: templates/lang.js:140 templates/lang.js.c:208
 msgid "No keywords are listed for this layer."
-msgstr ""
+msgstr "Chưa có từ khóa được liệt kê cho lớp này."
 
 #: templates/lang.js:141 templates/lang.js.c:209
 msgid "Keywords:"
-msgstr ""
+msgstr "Từ khóa:"
 
 #: templates/lang.js:142 templates/lang.js.c:210
 msgid "No metadata URLs are defined for this layer."
-msgstr ""
+msgstr "Không có URL siêu dữ liệu được định nghĩa cho lớp này."
 
 #: templates/lang.js:143 templates/lang.js.c:211
 msgid "Metadata Links:"
-msgstr ""
+msgstr "Liên kết siêu dữ liệu:"
 
 #: templates/lang.js:149
 msgid "Paper size:"
-msgstr ""
+msgstr "Kích thước giấy:"
 
 #: templates/lang.js:150
 msgid "Resolution:"
-msgstr ""
+msgstr "Nghị quyết:"
 
 #: templates/lang.js:151
 msgid "Print"
-msgstr ""
+msgstr "In"
 
 #: templates/lang.js:152
 msgid "Enter map title here."
-msgstr ""
+msgstr "Nhập tiêu đề bản đồ ở đây."
 
 #: templates/lang.js:153
 msgid "Include legend?"
-msgstr ""
+msgstr "Bao gồm huyền thoại?"
 
 #: templates/lang.js:154
 msgid "Enter comments here."
-msgstr ""
+msgstr "Nhập ý kiến ​​ở đây."
 
 #: templates/lang.js:155
 msgid "Creating PDF..."
-msgstr ""
+msgstr "Tạo PDF ..."
 
 #: templates/lang.js:164
 msgid "Last Modified"
-msgstr ""
+msgstr "Last Modified"
 
 #: templates/lang.js:167 templates/lang.js.c:188
 msgid "Prev"
-msgstr ""
+msgstr "Trước"
 
 #: templates/lang.js:168 templates/lang.js.c:189
 msgid "Next"
-msgstr ""
+msgstr "Tới"
 
 #: templates/lang.js:169 templates/lang.js.c:190
 msgid "of"
-msgstr ""
+msgstr "của"
 
 #: templates/lang.js:170 templates/lang.js.c:191
 msgid "Your search did not match any items."
-msgstr ""
+msgstr "Tìm kiếm của bạn không phù hợp với bất kỳ mục."
 
 #: templates/lang.js:171
 msgid "Search Maps"
-msgstr ""
+msgstr "Search Maps"
 
 #: templates/lang.js:172 templates/lang.js.c:192
 msgid "Search"
-msgstr ""
+msgstr "Tìm kiếm"
 
 #: templates/lang.js:173 templates/lang.js.c:193
 msgid "Showing"
-msgstr ""
+msgstr "Xếp"
 
 #: templates/lang.js:174
 msgid "Loading"
-msgstr ""
+msgstr "Đang tải"
 
 #: templates/lang.js:175 templates/lang.js.c:195
 msgid "permalink"
-msgstr ""
+msgstr "permalink"
 
 #: templates/lang.js:182
 msgid "Select"
-msgstr ""
+msgstr "Lựa chọn"
 
 #: templates/lang.js:185
 msgid "Select:"
-msgstr ""
+msgstr "Chọn:"
 
 #: templates/lang.js:186
 msgid "All"
-msgstr ""
+msgstr "Tất cả"
 
 #: templates/lang.js:187
 msgid "None"
-msgstr ""
+msgstr "Không ai"
 
 #: templates/lang.js:194
 msgid "Loading..."
-msgstr ""
+msgstr "Loading ..."
 
 #: templates/lang.js:196
 msgid "You do not have permission to view this data"
-msgstr ""
+msgstr "Bạn không có quyền để xem thông tin này"
 
 #: templates/lang.js:197
 msgid "This data is stored on a remote server"
-msgstr ""
+msgstr "Những thông tin này được lưu trữ trên một máy chủ từ xa"
 
 #: templates/lang.js:203
 msgid "No abstract is provided for this layer."
-msgstr ""
+msgstr "Không trừu tượng được cung cấp cho lớp này."
 
 #: templates/lang.js:207
 msgid "No download URLs are definied for this layer."
-msgstr ""
+msgstr "Không có đường dẫn URL được definied cho lớp này."
 
 #: templates/lang.js:217
 msgid "Selected Layers"
-msgstr ""
+msgstr "Layers chọn"
 
 #: templates/lang.js:218
 msgid "No Layers Selected"
-msgstr ""
+msgstr "Không Layers chọn"
 
 #: templates/lang.js:220
 msgid "Clear Selected"
-msgstr ""
+msgstr "Rõ ràng chọn"
 
 #: templates/lang.js:221
 msgid "Clear All"
-msgstr ""
+msgstr "Xóa tất cả"
 
 #: templates/lang.js:227
 msgid "Operation Failed"
-msgstr ""
+msgstr "Không hoạt động"
 
 #: templates/lang.js:228
 msgid "No layers are currently selected."
-msgstr ""
+msgstr "Không có lớp hiện đang được chọn."
 
 #: templates/lang.js:235
 msgid "Downloading..."
-msgstr ""
+msgstr "Tải ..."
 
 #: templates/lang.js:237
 msgid "Please wait"
-msgstr ""
+msgstr "Xin vui lòng chờ"

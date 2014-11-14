@@ -4,6 +4,7 @@
 # 
 # Translators:
 # BJ Jang <qgis.tr.kr@gmail.com>, 2014
+# ingenieroariel <ingenieroariel@gmail.com>, 2014
 # Minpa Lee <mapplus@gmail.com>, 2013-2014
 # Minpa Lee <mapplus@gmail.com>, 2013
 msgid ""
@@ -11,7 +12,7 @@ msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2014-11-14 09:56-0500\n"
-"PO-Revision-Date: 2014-11-14 15:05+0000\n"
+"PO-Revision-Date: 2014-11-14 16:58+0000\n"
 "Last-Translator: ingenieroariel <ingenieroariel@gmail.com>\n"
 "Language-Team: Korean (http://www.transifex.com/projects/p/geonode/language/ko/)\n"
 "MIME-Version: 1.0\n"
@@ -361,7 +362,7 @@ msgstr "이 리소스를 홈페이지에 게재해야 합니까?"
 
 #: base/models.py:362
 msgid "Should this resource be published and searchable?"
-msgstr ""
+msgstr "이 자원은 게시 및 검색해야 하는가?"
 
 #: base/models.py:682
 msgid "For example \"kml\""
@@ -873,7 +874,7 @@ msgstr "썸네일"
 
 #: geoserver/views.py:338
 msgid "You don't have permissions to change style for this layer"
-msgstr ""
+msgstr "당신은이 계층에 대해 스타일을 변경할 수있는 권한이 없습니다"
 
 #: geoserver/views.py:425 geoserver/views.py:480
 msgid "Bad HTTP Authorization Credentials."
@@ -1882,7 +1883,7 @@ msgstr "사이트 URL"
 
 #: maps/models.py:81
 msgid "Featured Map URL"
-msgstr ""
+msgstr "주요지도 URL"
 
 #: maps/models.py:371
 msgid "stack order"
@@ -1962,7 +1963,7 @@ msgstr "이 지도를 볼 수 있는 권한이 없습니다."
 
 #: maps/views.py:77
 msgid "An unknown error has occured."
-msgstr ""
+msgstr "알 수없는 오류가 발생했습니다."
 
 #: maps/management/__init__.py:33
 msgid "Map Created"
@@ -2165,7 +2166,7 @@ msgid ""
 "Note: this map's orginal metadata was populated by importing a metadata XML file.\n"
 "        GeoNode's metadata import supports a subset of ISO, FGDC, and Dublin Core metadata elements.\n"
 "        Some of your original metadata may have been lost."
-msgstr ""
+msgstr "참고 :이지도의 orginal 한 메타 데이터는 메타 데이터 XML 파일을 가져 와서 채워졌다. GeoNode의 메타 데이터 가져 오기는 ISO, FGDC, 더블린 코어 메타 데이터 요소의 일부를 지원합니다. 원래 메타 데이터의 일부가 손실되었을 수 있습니다."
 
 #: maps/templates/maps/map_remove.html:6
 msgid "Deleting"
@@ -2218,7 +2219,7 @@ msgstr "자원을 발행하는 집단"
 msgid ""
 "party that accepts accountability and responsibility for the data and "
 "ensures         appropriate care and maintenance of the resource"
-msgstr ""
+msgstr "데이터에 대한 책임과 책임을 수용하고 자원의 적절한 관리 및 유지 보수를 보장 자"
 
 #: people/enumerations.py:44
 msgid ""
@@ -2349,7 +2350,7 @@ msgstr "물리적 주소의 국가"
 msgid ""
 "commonly used word(s) or formalised word(s) or phrase(s) used to describe "
 "the subject             (space or comma-separated"
-msgstr ""
+msgstr "일반적으로 사용 된 단어 (들) 또는 공식화 할 단어 나 구 (들)은 피사체 (공간 또는 쉼표로 구분을 설명하기 위해 사용"
 
 #: people/views.py:84
 msgid "Your username for "
@@ -2457,7 +2458,7 @@ msgstr "자동 감지"
 
 #: services/enumerations.py:25
 msgid "Paired WMS/WFS/WCS"
-msgstr ""
+msgstr "페어 WMS / WFS / WCS"
 
 #: services/enumerations.py:26
 msgid "Web Map Service"
@@ -2481,23 +2482,23 @@ msgstr "Harvard Geospatial Library"
 
 #: services/enumerations.py:34
 msgid "Local"
-msgstr ""
+msgstr "지방의"
 
 #: services/enumerations.py:35
 msgid "Cascaded"
-msgstr ""
+msgstr "캐스케이드"
 
 #: services/enumerations.py:36
 msgid "Harvested"
-msgstr ""
+msgstr "수확"
 
 #: services/enumerations.py:37
 msgid "Indexed"
-msgstr ""
+msgstr "색인"
 
 #: services/enumerations.py:38
 msgid "Live"
-msgstr ""
+msgstr "라이브"
 
 #: services/forms.py:12
 msgid "Service URL"
@@ -2531,7 +2532,7 @@ msgid ""
 "include: Harvard, MIT, MassGIS, Princeton, Columbia, Stanford, UC Berkeley, UCLA, Yale, and UConn. Built on open source\n"
 "technology, The Open Geoportal provides organizations the opportunity to share thousands of geospatial data layers,\n"
 "maps, metadata, and development resources through a single common interface.\n"
-msgstr ""
+msgstr "\n오픈 Geoportal 많은 조직과 플랫폼 검색 및 지리 공간 데이터의 획득을 촉진하기 위해 여러 대학과 기관의 기여로 구성된 컨소시엄이다. 현재 파트너는 다음과 같습니다 : 하버드, MIT, MassGIS, 프린스턴, 컬럼비아, 스탠포드, UC 버클리, UCLA, 예일, 그리고 UCONN을. 오픈 소스 기술을 기반으로, 오픈 Geoportal 조직을 하나의 일반적인 인터페이스를 통해 지리 공간 데이터 레이어,지도, 메타 데이터 및 개발 자원의 수천을 공유 할 수있는 기회를 제공한다.\n"
 
 #: services/views.py:273
 msgid "This is an existing service"
@@ -2550,7 +2551,7 @@ msgstr "호환되는 좌표체계에서 어떤 레이어도 찾을 수 없습니
 msgid ""
 "Could not find any layers in a compatible projection:                 The "
 "spatial id was: %(srs)s and the url %(url)s"
-msgstr ""
+msgstr "호환 투사의 모든 레이어를 찾을 수 없습니다 공간 ID : %(srs)s 를 S와 URL의 %(url)s 의"
 
 #: services/views.py:1207
 msgid "You are not permitted to remove this service."
@@ -2558,7 +2559,7 @@ msgstr "이 서비스를 삭제할 권한이 없습니다."
 
 #: services/templates/services/layers_register.html:26
 msgid "All/None"
-msgstr ""
+msgstr "모든 / 없음"
 
 #: services/templates/services/layers_register.html:27
 msgid "Name"
@@ -2789,7 +2790,7 @@ msgid ""
 "          Please contact your GeoNode administrator (he may have received an email automatically if he configured it properly).\n"
 "          If you are the site administrator, enable debug mode to see the actual error and fix it or file an issue in <a href=\"http://github.com/GeoNode/geonode/issues\">GeoNode's issue tracker</a>\n"
 "          "
-msgstr ""
+msgstr "\n당신의 GeoNode 관리자에게 문의하십시오 (그는 제대로 구성된 경우 그는 자동으로 이메일을받은 수 있음). 당신이 사이트 관리자 인 경우, 실제 오류를보고 디버그 모드를 활성화하고이를 수정하거나에 문제를 제기 <a href=\"http://github.com/GeoNode/geonode/issues\">GeoNode의 이슈 트래커</a>"
 
 #: templates/500.html:182 templates/base.html:172
 msgid "Powered by"
@@ -2842,7 +2843,7 @@ msgstr "댓글 제출"
 
 #: templates/_permissions.html:8
 msgid "Who can view it?"
-msgstr ""
+msgstr "누가 볼 수 있습니까?"
 
 #: templates/_permissions.html:17 templates/_permissions.html.py:49
 msgid "Anyone"
@@ -2862,29 +2863,29 @@ msgstr "다음 그룹:"
 
 #: templates/_permissions.html:40
 msgid "Who can download it?"
-msgstr ""
+msgstr "누구를 다운로드 할 수 있습니까?"
 
 #: templates/_permissions.html:72
 msgid "Who can change metadata for it?"
-msgstr ""
+msgstr "누가 메타 데이터를 변경할 수 있습니까?"
 
 #: templates/_permissions.html:99
 msgid "Who can edit data for this layer?"
-msgstr ""
+msgstr "누가이 계층에 대해 데이터를 편집 할 수 있습니까?"
 
 #: templates/_permissions.html:125
 msgid "Who can edit styles for this layer?"
-msgstr ""
+msgstr "누가이 계층에 대해 스타일을 편집 할 수 있습니다?"
 
 #: templates/_permissions.html:152
 msgid ""
 "Who can manage it? (update, delete, change permissions, publish/unpublish "
 "it)"
-msgstr ""
+msgstr "누가 그것을 관리 할 수​​ 있습니까? (업데이트는, 그것의 게시를 취소 / 게시, 변경 권한을 삭제)"
 
 #: templates/_permissions_form.html:9
 msgid "Set permissions for this resource"
-msgstr ""
+msgstr "이 리소스에 대한 권한 설정"
 
 #: templates/_permissions_form_js.html:180
 msgid "Choose users..."
@@ -3048,7 +3049,7 @@ msgid ""
 "  </ol>\n"
 "  <p>You will be able to see your new map when you search for it from the <a href=\"/maps\">Maps</a> tab.</p> \n"
 "  "
-msgstr ""
+msgstr "\n <p>GeoNode는 데이터셋에 대한 접근 및 지도 편집 응용프로그램을 제공하여 사용자가 기존의 지도를 탐색하고 자신이 직접 기여할 수 있도록 합니다.</p>\n\n\n<h4 id=\"browsing-data\">레이어 검색하기</h4>\n\n<p><a href=\"/data\">레이어</a> 탭은 이 GeoNode에 업로드된 데이터를 검색할 수 있게 합니다.</p>\n\n<p>모든 데이터를 다른 응용프로그램에 사용할 수 있는 다양한 포맷으로 다운로드할 수 있습니다.</p>\n\n\n<h4 id=\"developer-access\">개발자 접근</h4>\n\n<p><a href=\"/developer\">개발자</a> 페이지는 GeoNode에 대한 응용프로그램 구축을 시작하는 개발자를 위한 장소입니다. 이 페이지에는 웹 서비스 사용에 대한 지침, GeoNode 소스코드 링크, GeoNode 구축에 사용되는 오픈 소스 프로젝트에 대한 정보가 포함되어 있습니다.</p>\n\n\n<h4 id=\"browsing-maps\">지도 검색하기</h4>\n\n<p>GeoNode는 사용자들이 서로 지도를 만들고 공유할 수 있도록 합니다.</p>\n\n<p><a href=\"maps\">지도</a> 탭은 GeoNode에서 지도를 탐색하는 게이트웨이 입니다. 여기에서 여러분은 <strong>지도를 탐색</strong>하거나, <a href=\"maps/new\">지도 편집기</a>를 열어 <strong>지도를 생성</strong>할 수 있습니다.</p> \n\n<h5>구글 어스 모드</h5>\n\n<p>지도 편집기에서 보는 모든 지도는 구글 어스 플러그인을 통해 3D 모드에서 볼 수 있습니다. 3D 모드로 전환하려면 상단 도구모음의 맨 오른쪽 버튼에 있는 구글 어스 글로브 로고를 선택합니다. 구글 어스 플러그인이 설치되어 있지 않은 경우 설치하라는 메시지가 표시됩니다.</p>\n\n\n<h4 id=\"creating-a-map\">지도 생성하기</h4>\n\n<p>새로운 지도를 만들려면 <a href=\"maps\">기여 지도</a> 탭으로 가서 <a href=\"maps/new\">자신의 지도 생성</a> 링크를 클릭합니다.</p>\n\n<p>이렇게 하면 기본 지도가 추가된 <a href=\"maps/new\">Map Composer</a>로 이동할 것입니다.</p> \n\n<p>GeoNoded에서 데이터 레이어를 추가하려면 화면 왼쪽에 있는 레이어 탭 아래의 녹색 더하기 버튼을 클릭합니다. 그러면 GeoNode에서 사용가능한 모든 레이어 목록을 나열하는 대화상자가 열립니다.</p>\n\n<p>지도에 레이어를 추가하려면 레이어를 선택하고 <strong>레이어 추가</strong> 버튼을 누릅니다. 완료되면 대화상자를 닫고 지도로 돌아가기 위해 <strong>완료</strong> 버튼을 누릅니다.</p>\n\n\n<h5>레이어 순서 변경 및 제거</h5> \n\n<p>단순히 레이어 이름을 드래그 앤 드롭하여 데이터 탭에 나열된 레이어의 표시 순서를 변경합니다. 지도에서 레이어 순서는 해당 사항을 반영하여 업데이트 됩니다. 레이어를 숨기려면 간단히 레이어 체크를 해제하고, 완전히 제거하려면 선택 후 빨간색 빼기 버튼을 누르면 됩니다.</p>\n\n\n<h5>지도 저장</h5>\n\n<p>일단 적절한 레이어 및 줌 레벨을 설정했다면 저장하고 다른 사람들과 공유할 수 있습니다. 상단 메뉴의 저장 버튼--상단 도구상자의 가장 왼쪽 아이콘, 디스크가 그려진 지도 이미지--을 클릭하고 지도의 제목과 요약정보를 입력합니다.</p>\n\n\n<h4 id=\"exporting-a-map\">지도 내보내기</h4> \n\n<p>GeoNode의 모든 지도는 다른 사이트나 블로그에 포함될 수 있습니다. 지도를 내보내려면:</p>\n\n<ol> \n<li>커뮤니티 또는 지도 페이지의 지도 목록에서 지도를 선택하고 '지도 내보내기' 버튼을 클릭합니다.</li>\n<li>마법사 위젯에서 원하는 높이와 너비를 선택합니다.</li> \n<li>마법사에서 제공하는 HTML 코드조각을 HTML 페이지 또는 아이프레임을 지원하는 블로그 게시물에 복사합니다.</li>\n</ol>\n\n<p>이는 여러분의 웹 페이지 또는 블로그 게시물에 여러분의 지도를 볼 수 있는 대화형 위젯을 포함합니다.</p>\n\n<p><a href=\"maps/new\">Map Composer</a> 역시 지도 내보내기 버튼이 있음을 밝힙니다. 다른 사람들이 보기를 원하는 변경사항이 있을 경우 내보내기 전에 지도를 저장해야 합니다. 내보내기는 마지막으로 본 버전이 아니라 마지막으로 저장된 버전을 내보냅니다.</p>\n\n\n<h4 id=\"remixing-a-map\">지도 리믹싱하기</h4>\n\n<p>사용가능한 모든 지도는 새로운 지도 작성을 위한 시작점으로 사용될 수 있습니다.</p>\n\n<ol>\n<li>지도 작성기에서 지도를 불러옵니다.</li> \n<li>여러분이 원하는대로 레이어를 추가하거나 제거합니다.</li>\n<li>관심지역을 강조하기 위해 지도를 이동 또는 확대합니다.</li>\n<li><strong>중요:</strong> 새로운 지도에 반영하기 위해 지도 제목, 요약, 연락처, 태그 정보를 갱신하십시오.</li>\n<li>지도를 저장합니다.</li>\n</ol>\n\n<p><a href=\"maps\">Maps</a> 탭에서 검색할 때 여러분의 새로운 지도를 볼 수 있을 것입니다.</p> "
 
 #: templates/help.html:65
 msgid "Sections"
@@ -3095,7 +3096,7 @@ msgstr "GeoNode는 지리공간 데이터와 지도를 공유하기 위한 오�
 msgid ""
 "If you have any questions about the software or service, join our <a "
 "href=\"https://groups.google.com/d/forum/geonode-users\">mailing list</a>."
-msgstr ""
+msgstr "소프트웨어 나 서비스에 대한 문의 사항이있는 경우, 우리의 가입 <a href=\"https://groups.google.com/d/forum/geonode-users\">메일 링리스트</a> ."
 
 #: templates/index.html:18
 msgid "Need help?"
@@ -3107,7 +3108,7 @@ msgstr "시작하기"
 
 #: templates/index.html:30 templates/index.html.py:37 templates/index.html:43
 msgid "No"
-msgstr ""
+msgstr "아니"
 
 #: templates/index.html:30
 msgid "Layer"
@@ -3117,7 +3118,7 @@ msgstr "레이어"
 msgid ""
 "Click to search for geospatial data published by other users, organizations "
 "and public sources. Download data in standard formats."
-msgstr ""
+msgstr "다른 사용자 단체와 공개 된 자료에 의해 출판 지리 공간 데이터를 검색하려면 클릭합니다. 표준 형식의 데이터 다운로드."
 
 #: templates/index.html:37
 msgid "Map"
@@ -3127,7 +3128,7 @@ msgstr "지도"
 msgid ""
 "Data is available for browsing, aggregating and styling to generate maps "
 "which can be shared publicly or restricted to specific users only."
-msgstr ""
+msgstr "데이터는 특정 사용자에게 공개적으로 공유하거나 제한 할 수 있습니다지도를 생성하는 검색, 집계 및 스타일 사용할 수 있습니다."
 
 #: templates/index.html:39
 msgid "Create maps"
@@ -3141,7 +3142,7 @@ msgstr "사용자"
 msgid ""
 "GeoNode allows registered users to easily upload geospatial data in several "
 "formats including shapefile and GeoTiff."
-msgstr ""
+msgstr "GeoNode 등록 된 사용자가 쉽게 Shape 파일과 GEOTIFF 등 여러 가지 형식으로 지리 공간 데이터를 업로드 할 수 있습니다."
 
 #: templates/index.html:45
 msgid "Share data"
@@ -3196,7 +3197,7 @@ msgstr "가입"
 
 #: templates/account/signup.html:27
 msgid "Sorry, registrations are not open at this time."
-msgstr ""
+msgstr "죄송합니다, 등록은이 번에 열 수 없습니다."
 
 #: templates/account/email/email_confirmation_message.txt:1
 #, python-format
@@ -3206,7 +3207,7 @@ msgid ""
 "To confirm this email address, go to %(activate_url)s\n"
 "\n"
 "If you did not sign up for this site, you can ignore this message.\n"
-msgstr ""
+msgstr "%(site_name)s 에 사용자는이 이메일 주소를 사용하여 계정을 만들었습니다. 이 이메일 주소를 확인하려면이 사이트에 가입하지 않은 경우,이 메시지를 무시할 수 있습니다 %(activate_url)s 로 이동합니다.\n"
 
 #: templates/account/email/email_confirmation_subject.txt:1
 #, python-format
@@ -3220,7 +3221,7 @@ msgid ""
 "It can be safely ignored if you did not request a password reset. Click the link below to reset your password.\n"
 "\n"
 "%(password_reset_url)s\n"
-msgstr ""
+msgstr "당신이나 다른 사람이 %(site_name)s 의 사용자 계정에 대한 암호를 요청했기 때문에 이메일을 보내드립니다. 암호 재설정을 요청하지 않은 경우는 무시해도됩니다. 암호를 재설정하려면 아래 링크를 클릭하십시오.\n\n%(password_reset_url)s\n"
 
 #: templates/account/email/password_reset_subject.txt:1
 #, python-format
@@ -3269,7 +3270,7 @@ msgid ""
 "\n"
 "                        Published from <b>%(publish_start)s</b> to <b>%(publish_end)s</b>.\n"
 "                        "
-msgstr ""
+msgstr "\n<b>%(publish_start)s 에서</b> 간행 <b>%(publish_end)s</b>"
 
 #: templates/announcements/detail.html:4
 #, python-format
@@ -3471,7 +3472,7 @@ msgstr "시작 날짜:"
 #: templates/search/_general_filters.html:31
 #: templates/search/_general_filters.html:35
 msgid "yyyy-mm-dd"
-msgstr ""
+msgstr "yyyy-mm-dd"
 
 #: templates/search/_general_filters.html:34
 msgid "Date ends before:"

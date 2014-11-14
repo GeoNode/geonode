@@ -3,12 +3,13 @@
 # This file is distributed under the same license as the PACKAGE package.
 # 
 # Translators:
+# ingenieroariel <ingenieroariel@gmail.com>, 2014
 msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2014-11-14 09:56-0500\n"
-"PO-Revision-Date: 2014-11-14 15:05+0000\n"
+"PO-Revision-Date: 2014-11-14 17:01+0000\n"
 "Last-Translator: ingenieroariel <ingenieroariel@gmail.com>\n"
 "Language-Team: Vietnamese (http://www.transifex.com/projects/p/geonode/language/vi/)\n"
 "MIME-Version: 1.0\n"
@@ -19,372 +20,372 @@ msgstr ""
 
 #: utils.py:38
 msgid "Invalid permission level."
-msgstr ""
+msgstr "Mức cho phép không hợp lệ."
 
 #: utils.py:473
 msgid "Permission Denied"
-msgstr ""
+msgstr "Permission Denied"
 
 #: base/enumerations.py:27
 msgid "series"
-msgstr ""
+msgstr "loạt"
 
 #: base/enumerations.py:28
 msgid "computer program or routine"
-msgstr ""
+msgstr "chương trình máy tính hoặc thường xuyên"
 
 #: base/enumerations.py:29
 msgid "feature type"
-msgstr ""
+msgstr "loại tính năng"
 
 #: base/enumerations.py:30
 msgid "copy or imitation of an existing or hypothetical object"
-msgstr ""
+msgstr "bản sao hay bắt chước của một đối tượng hiện có hoặc giả thuyết"
 
 #: base/enumerations.py:31
 msgid "collection hardware"
-msgstr ""
+msgstr "phần cứng bộ sưu tập"
 
 #: base/enumerations.py:32
 msgid "collection session"
-msgstr ""
+msgstr "phiên bộ sưu tập"
 
 #: base/enumerations.py:33
 msgid "non-geographic data"
-msgstr ""
+msgstr "dữ liệu không địa lý"
 
 #: base/enumerations.py:34
 msgid "property type"
-msgstr ""
+msgstr "loại tài sản"
 
 #: base/enumerations.py:35
 msgid "field session"
-msgstr ""
+msgstr "phiên lĩnh vực"
 
 #: base/enumerations.py:36
 msgid "dataset"
-msgstr ""
+msgstr "bộ dữ liệu"
 
 #: base/enumerations.py:37
 msgid "service interfaces"
-msgstr ""
+msgstr "giao diện dịch vụ"
 
 #: base/enumerations.py:38
 msgid "attribute class"
-msgstr ""
+msgstr "lớp thuộc tính"
 
 #: base/enumerations.py:39
 msgid "characteristic of a feature"
-msgstr ""
+msgstr "đặc trưng của một tính năng"
 
 #: base/enumerations.py:40
 msgid "tile or spatial subset of geographic data"
-msgstr ""
+msgstr "gạch hoặc tập hợp con của không gian dữ liệu địa lý"
 
 #: base/enumerations.py:41
 msgid "feature"
-msgstr ""
+msgstr "đặc tính"
 
 #: base/enumerations.py:42
 msgid "dimension group"
-msgstr ""
+msgstr "nhóm kích thước"
 
 #: base/enumerations.py:46
 msgid "frequency of maintenance for the data is not known"
-msgstr ""
+msgstr "tần suất bảo trì cho các dữ liệu không được biết đến"
 
 #: base/enumerations.py:47
 msgid "data is repeatedly and frequently updated"
-msgstr ""
+msgstr "dữ liệu được liên tục và thường xuyên cập nhật"
 
 #: base/enumerations.py:48
 msgid "there are no plans to update the data"
-msgstr ""
+msgstr "không có kế hoạch để cập nhật dữ liệu"
 
 #: base/enumerations.py:49
 msgid "data is updated each day"
-msgstr ""
+msgstr "Dữ liệu được cập nhật mỗi ngày"
 
 #: base/enumerations.py:50
 msgid "data is updated every year"
-msgstr ""
+msgstr "Dữ liệu được cập nhật hàng năm"
 
 #: base/enumerations.py:51
 msgid "data is updated as deemed necessary"
-msgstr ""
+msgstr "dữ liệu được cập nhật khi cần thiết"
 
 #: base/enumerations.py:52
 msgid "data is updated each month"
-msgstr ""
+msgstr "Dữ liệu được cập nhật mỗi tháng"
 
 #: base/enumerations.py:53
 msgid "data is updated every two weeks"
-msgstr ""
+msgstr "dữ liệu được cập nhật mỗi hai tuần"
 
 #: base/enumerations.py:55
 msgid "data is updated in intervals that are uneven in duration"
-msgstr ""
+msgstr "dữ liệu được cập nhật trong khoảng thời gian đó là không đồng đều trong thời gian"
 
 #: base/enumerations.py:56
 msgid "data is updated on a weekly basis"
-msgstr ""
+msgstr "dữ liệu được cập nhật trên cơ sở hàng tuần"
 
 #: base/enumerations.py:57
 msgid "data is updated twice each year"
-msgstr ""
+msgstr "Dữ liệu được cập nhật hai lần mỗi năm"
 
 #: base/enumerations.py:58
 msgid "data is updated every three months"
-msgstr ""
+msgstr "dữ liệu được cập nhật mỗi ba tháng"
 
 #: base/enumerations.py:77
 msgid "No information provided"
-msgstr ""
+msgstr "Không có thông tin cung cấp"
 
 #: base/forms.py:35 base/templates/base/resourcebase_info_panel.html:46
 #: documents/templates/documents/document_metadata.html:51
 #: layers/templates/layers/layer_metadata.html:53
 #: maps/templates/maps/map_metadata.html:53
 msgid "Category"
-msgstr ""
+msgstr "Danh mục"
 
 #: base/forms.py:44
 msgid "Category is required."
-msgstr ""
+msgstr "Danh mục được yêu cầu."
 
 #: base/models.py:40 services/models.py:85
 msgid "function performed by the responsible party"
-msgstr ""
+msgstr "chức năng thực hiện bởi các bên chịu trách nhiệm"
 
 #: base/models.py:244
 msgid "reference date for the cited resource"
-msgstr ""
+msgstr "ngày tham chiếu cho các tài nguyên trích dẫn"
 
 #: base/models.py:245
 msgid "identification of when a given event occurred"
-msgstr ""
+msgstr "xác định khi một sự kiện được xảy ra"
 
 #: base/models.py:246
 msgid "version of the cited resource"
-msgstr ""
+msgstr "phiên bản của tài nguyên trích dẫn"
 
 #: base/models.py:247
 msgid "brief narrative summary of the content of the resource(s)"
-msgstr ""
+msgstr "ngắn gọn tóm tắt diễn giải nội dung của tài nguyên (s)"
 
 #: base/models.py:248
 msgid "summary of the intentions with which the resource(s) was developed"
-msgstr ""
+msgstr "tóm tắt những ý định mà các nguồn tài nguyên (s) đã được phát triển"
 
 #: base/models.py:249
 msgid ""
 "frequency with which modifications and deletions are made to the data after "
 "it is first produced"
-msgstr ""
+msgstr "tần số mà thay đổi và xóa bỏ được thực hiện cho các dữ liệu sau khi nó được sản xuất đầu tiên"
 
 #: base/models.py:251
 msgid ""
 "commonly used word(s) or formalised word(s) or phrase(s) used to describe "
 "the subject (space or comma-separated"
-msgstr ""
+msgstr "từ thường được sử dụng (s) hoặc từ chính thức (s) hoặc cụm từ (s) được sử dụng để mô tả các đối tượng (không gian hoặc bằng dấu phẩy"
 
 #: base/models.py:253
 msgid "keyword identifies a location"
-msgstr ""
+msgstr "từ khóa xác định một vị trí"
 
 #: base/models.py:254
 msgid "limitation(s) placed upon the access or use of the data."
-msgstr ""
+msgstr "hạn chế (s) được đặt trên các truy cập hoặc sử dụng các dữ liệu."
 
 #: base/models.py:255
 msgid ""
 "other restrictions and legal prerequisites for accessing and using the "
 "resource or metadata"
-msgstr ""
+msgstr "hạn chế khác và điều kiện tiên quyết pháp lý cho việc truy cập và sử dụng tài nguyên hoặc siêu dữ liệu"
 
 #: base/models.py:257
 msgid "license of the dataset"
-msgstr ""
+msgstr "giấy phép của bộ dữ liệu"
 
 #: base/models.py:258
 msgid "language used within the dataset"
-msgstr ""
+msgstr "ngôn ngữ được sử dụng trong các tập dữ liệu"
 
 #: base/models.py:259
 msgid ""
 "high-level geographic data thematic classification to assist in the grouping"
 " and search of available geographic data sets."
-msgstr ""
+msgstr "cao cấp dữ liệu địa lý phân loại theo chủ đề để hỗ trợ các nhóm và tìm kiếm có sẵn của bộ dữ liệu địa lý."
 
 #: base/models.py:261
 msgid "method used to represent geographic information in the dataset."
-msgstr ""
+msgstr "phương pháp được sử dụng để đại diện cho thông tin địa lý trong tập dữ liệu."
 
 #: base/models.py:262
 msgid "time period covered by the content of the dataset (start)"
-msgstr ""
+msgstr "khoảng thời gian bao phủ bởi các nội dung của dữ liệu (bắt đầu)"
 
 #: base/models.py:263
 msgid "time period covered by the content of the dataset (end)"
-msgstr ""
+msgstr "khoảng thời gian bao phủ bởi các nội dung của dữ liệu (kết thúc)"
 
 #: base/models.py:264
 msgid ""
 "information about on-line sources from which the dataset, specification, or "
 "community profile name and extended metadata elements can be obtained"
-msgstr ""
+msgstr "thông tin về các nguồn trên mạng mà từ đó các dữ liệu, đặc điểm kỹ thuật, hoặc tên cấu hình cộng đồng và các yếu tố siêu dữ liệu mở rộng có thể thu được"
 
 #: base/models.py:266
 msgid "detailed text description of what the online resource is/does"
-msgstr ""
+msgstr "mô tả chi tiết về những gì các nguồn tài nguyên trực tuyến là / không"
 
 #: base/models.py:267
 msgid ""
 "general explanation of the data producer's knowledge about the lineage of a "
 "dataset"
-msgstr ""
+msgstr "giải thích chung về kiến ​​thức sản xuất dữ liệu về dòng dõi của một tập dữ liệu"
 
 #: base/models.py:273
 msgid "title"
-msgstr ""
+msgstr "tiêu đề"
 
 #: base/models.py:273
 msgid "name by which the cited resource is known"
-msgstr ""
+msgstr "tên mà nguồn trích dẫn là được biết đến"
 
 #: base/models.py:274
 msgid "date"
-msgstr ""
+msgstr "ngày"
 
 #: base/models.py:275
 msgid "date type"
-msgstr ""
+msgstr "loại ngày"
 
 #: base/models.py:277
 msgid "edition"
-msgstr ""
+msgstr "phiên bản"
 
 #: base/models.py:278
 msgid "abstract"
-msgstr ""
+msgstr "trừu tượng"
 
 #: base/models.py:279
 msgid "purpose"
-msgstr ""
+msgstr "mục đích"
 
 #: base/models.py:280
 msgid "maintenance frequency"
-msgstr ""
+msgstr "tần số bảo trì"
 
 #: base/models.py:283 groups/models.py:41 people/models.py:88
 msgid "keywords"
-msgstr ""
+msgstr "từ khóa"
 
 #: base/models.py:284
 msgid "keywords region"
-msgstr ""
+msgstr "khu vực từ khóa"
 
 #: base/models.py:287
 msgid "restrictions"
-msgstr ""
+msgstr "hạn chế"
 
 #: base/models.py:291
 msgid "restrictions other"
-msgstr ""
+msgstr "hạn chế khác"
 
 #: base/models.py:296
 msgid "language"
-msgstr ""
+msgstr "ngôn ngữ"
 
 #: base/models.py:307
 msgid "temporal extent start"
-msgstr ""
+msgstr "thời gian bắt đầu mức độ"
 
 #: base/models.py:309
 msgid "temporal extent end"
-msgstr ""
+msgstr "thời gian mức độ cuối"
 
 #: base/models.py:312
 msgid "supplemental information"
-msgstr ""
+msgstr "thông tin bổ sung"
 
 #: base/models.py:313
 msgid "any other descriptive information about the dataset"
-msgstr ""
+msgstr "bất kỳ thông tin mô tả khác về dữ liệu"
 
 #: base/models.py:316
 msgid "distribution URL"
-msgstr ""
+msgstr "URL phân phối"
 
 #: base/models.py:318
 msgid "distribution description"
-msgstr ""
+msgstr "Mô tả phân phối"
 
 #: base/models.py:322
 msgid "data quality statement"
-msgstr ""
+msgstr "tuyên bố chất lượng dữ liệu"
 
 #: base/models.py:337
 msgid "CSW typename"
-msgstr ""
+msgstr "CSW typename"
 
 #: base/models.py:339
 msgid "CSW schema"
-msgstr ""
+msgstr "Schema CSW"
 
 #: base/models.py:344
 msgid "CSW source"
-msgstr ""
+msgstr "CSW nguồn"
 
 #: base/models.py:345
 msgid "CSW insert date"
-msgstr ""
+msgstr "CSW ngày chèn"
 
 #: base/models.py:346
 msgid "CSW type"
-msgstr ""
+msgstr "CSW loại"
 
 #: base/models.py:347
 msgid "CSW anytext"
-msgstr ""
+msgstr "CSW anytext"
 
 #: base/models.py:348
 msgid "CSW WKT geometry"
-msgstr ""
+msgstr "CSW WKT hình học"
 
 #: base/models.py:361
 msgid "Should this resource be advertised in home page?"
-msgstr ""
+msgstr "Nguồn tài nguyên này nên được quảng cáo trên trang chủ?"
 
 #: base/models.py:362
 msgid "Should this resource be published and searchable?"
-msgstr ""
+msgstr "Nguồn tài nguyên này phải được công bố và có thể tìm kiếm?"
 
 #: base/models.py:682
 msgid "For example \"kml\""
-msgstr ""
+msgstr "Ví dụ \"kml\""
 
 #: base/models.py:684
 msgid "For example \"View in Google Earth\""
-msgstr ""
+msgstr "Ví dụ \"Xem trong Google Earth\""
 
 #: base/models.py:685
 msgid "For example \"text/xml\""
-msgstr ""
+msgstr "Ví dụ \"text / xml\""
 
 #: base/templates/base/_resourcebase_contact_snippet.html:3
 #: templates/500.html:184 templates/base.html:174
 msgid "About"
-msgstr ""
+msgstr "Về"
 
 #: base/templates/base/_resourcebase_contact_snippet.html:5
 msgid "Owner, Point of Contact, Metadata Author"
-msgstr ""
+msgstr "Chủ sở hữu, đầu mối liên lạc, Metadata Tác giả"
 
 #: base/templates/base/_resourcebase_contact_snippet.html:10
 #: base/templates/base/resourcebase_info_panel.html:56
 msgid "Owner"
-msgstr ""
+msgstr "Chủ nhân"
 
 #: base/templates/base/_resourcebase_contact_snippet.html:14
 #: base/templates/base/resourcebase_info_panel.html:61
@@ -392,146 +393,146 @@ msgstr ""
 #: layers/templates/layers/layer_metadata.html:80
 #: maps/templates/maps/map_metadata.html:43
 msgid "Point of Contact"
-msgstr ""
+msgstr "Mối liên lạc"
 
 #: base/templates/base/_resourcebase_contact_snippet.html:18
 msgid "Metadata Author"
-msgstr ""
+msgstr "Metadata Tác giả"
 
 #: base/templates/base/resourcebase_info_panel.html:6 services/forms.py:21
 #: templates/announcements/announcement_list.html:30
 msgid "Title"
-msgstr ""
+msgstr "Tiêu đề"
 
 #: base/templates/base/resourcebase_info_panel.html:11
 #: base/templates/base/resourcebase_info_panel.html:75
 msgid "License"
-msgstr ""
+msgstr "Giấy phép"
 
 #: base/templates/base/resourcebase_info_panel.html:24 services/forms.py:26
 msgid "Abstract"
-msgstr ""
+msgstr "Trừu tượng"
 
 #: base/templates/base/resourcebase_info_panel.html:29
 #: templates/search/_general_filters.html:28
 msgid "Date"
-msgstr ""
+msgstr "Ngày"
 
 #: base/templates/base/resourcebase_info_panel.html:34
 #: layers/templates/layers/layer_detail.html:300
 msgid "Type"
-msgstr ""
+msgstr "Kiểu"
 
 #: base/templates/base/resourcebase_info_panel.html:39
 #: templates/search/_general_filters.html:16
 msgid "Keywords"
-msgstr ""
+msgstr "Từ khóa"
 
 #: base/templates/base/resourcebase_info_panel.html:51
 msgid "Regions"
-msgstr ""
+msgstr "Khu vực"
 
 #: base/templates/base/resourcebase_info_panel.html:88
 msgid "Maintenance Frequency"
-msgstr ""
+msgstr "Bảo trì tần số"
 
 #: base/templates/base/resourcebase_info_panel.html:93
 msgid "Restrictions"
-msgstr ""
+msgstr "Hạn chế"
 
 #: base/templates/base/resourcebase_info_panel.html:102
 msgid "Edition"
-msgstr ""
+msgstr "Phiên bản"
 
 #: base/templates/base/resourcebase_info_panel.html:107
 msgid "Purpose"
-msgstr ""
+msgstr "Mục đích"
 
 #: base/templates/base/resourcebase_info_panel.html:112 templates/500.html:187
 #: templates/base.html:177
 msgid "Language"
-msgstr ""
+msgstr "Ngôn ngữ"
 
 #: base/templates/base/resourcebase_info_panel.html:117
 msgid "Temporal Extent"
-msgstr ""
+msgstr "Mức độ thời gian"
 
 #: base/templates/base/resourcebase_info_panel.html:122
 msgid "Data Quality"
-msgstr ""
+msgstr "Chất lượng dữ liệu"
 
 #: base/templates/base/resourcebase_info_panel.html:127
 msgid "Supplemental Information"
-msgstr ""
+msgstr "Thông tin bổ sung"
 
 #: base/templates/base/resourcebase_info_panel.html:132
 msgid "Spatial Representation Type"
-msgstr ""
+msgstr "Loại không gian đại diện"
 
 #: documents/forms.py:68 groups/models.py:42 layers/forms.py:95
 #: maps/forms.py:81 people/forms.py:82
 msgid "A space or comma-separated list of keywords"
-msgstr ""
+msgstr "Một không gian hoặc danh sách bằng dấu phẩy của các từ khóa"
 
 #: documents/forms.py:183 documents/forms.py:251
 msgid "Document must be a file or url."
-msgstr ""
+msgstr "Tài liệu phải là một tập tin hoặc url."
 
 #: documents/forms.py:187 documents/forms.py:255
 msgid "A document cannot have both a file and a url."
-msgstr ""
+msgstr "Một tài liệu không thể có cả một tập tin và một url."
 
 #: documents/forms.py:200 documents/forms.py:268
 msgid "This file type is not allowed"
-msgstr ""
+msgstr "Loại tập tin này không được phép"
 
 #: documents/forms.py:218
 msgid "Link to"
-msgstr ""
+msgstr "Liên kết đến"
 
 #: documents/forms.py:240
 msgid "Permissions must be valid JSON."
-msgstr ""
+msgstr "Quyền phải JSON hợp lệ."
 
 #: documents/models.py:39
 msgid "File"
-msgstr ""
+msgstr "Hồ sơ"
 
 #: documents/models.py:48
 msgid "The URL of the document if it is external."
-msgstr ""
+msgstr "URL của tài liệu nếu nó là bên ngoài."
 
 #: documents/models.py:49
 msgid "URL"
-msgstr ""
+msgstr "URL"
 
 #: documents/views.py:26
 msgid "You are not permitted to delete this document"
-msgstr ""
+msgstr "Bạn không được phép để xóa tài liệu này"
 
 #: documents/views.py:27
 msgid "You do not have permissions for this document."
-msgstr ""
+msgstr "Bạn không có quyền cho tài liệu này."
 
 #: documents/views.py:28
 msgid "You are not permitted to modify this document"
-msgstr ""
+msgstr "Bạn không được phép chỉnh sửa tài liệu này"
 
 #: documents/views.py:30
 msgid "You are not permitted to modify this document's metadata"
-msgstr ""
+msgstr "Bạn không được phép chỉnh sửa siêu dữ liệu của tài liệu này"
 
 #: documents/views.py:31
 msgid "You are not permitted to view this document"
-msgstr ""
+msgstr "Bạn không được phép xem tài liệu này"
 
 #: documents/views.py:67 documents/views.py:105
 msgid "You are not allowed to view this document."
-msgstr ""
+msgstr "Bạn không được phép xem tài liệu này."
 
 #: documents/views.py:175
 msgid "You are not allowed to edit this document."
-msgstr ""
+msgstr "Bạn không được phép chỉnh sửa tài liệu này."
 
 #: documents/templates/documents/_document_filters.html:5
 #: groups/templates/groups/group_list.html:15
@@ -540,20 +541,20 @@ msgstr ""
 #: people/templates/people/profile_list.html:12
 #: templates/search/_sort_filters.html:4
 msgid "Most recent"
-msgstr ""
+msgstr "Gần đây nhất"
 
 #: documents/templates/documents/_document_filters.html:6
 #: layers/templates/layers/_layer_filters.html:6
 #: maps/templates/maps/_map_filters.html:6
 #: templates/search/_sort_filters.html:8
 msgid "Most popular"
-msgstr ""
+msgstr "Phổ biến nhất"
 
 #: documents/templates/documents/_document_filters.html:7
 #: layers/templates/layers/_layer_filters.html:7
 #: maps/templates/maps/_map_filters.html:7
 msgid "Most shared"
-msgstr ""
+msgstr "Chia sẻ nhiều nhất"
 
 #: documents/templates/documents/_document_list_item.html:23
 #: documents/templates/documents/_document_list_item.html:45
@@ -562,7 +563,7 @@ msgstr ""
 #: maps/templates/maps/_map_list_item.html:21
 #: maps/templates/maps/_map_list_item.html:46
 msgid "from"
-msgstr ""
+msgstr "từ"
 
 #: documents/templates/documents/_document_list_item.html:23
 #: documents/templates/documents/_document_list_item.html:45
@@ -572,7 +573,7 @@ msgstr ""
 #: maps/templates/maps/_map_list_item.html:46
 #: social/templates/social/_activity_item.html:27
 msgid "ago"
-msgstr ""
+msgstr "cách đây"
 
 #: documents/templates/documents/_document_list_item.html:26
 #: documents/templates/documents/_document_list_item.html:48
@@ -581,7 +582,7 @@ msgstr ""
 #: maps/templates/maps/_map_list_item.html:24
 #: maps/templates/maps/_map_list_item.html:49
 msgid "view"
-msgstr ""
+msgstr "quang cảnh"
 
 #: documents/templates/documents/_document_list_item.html:27
 #: documents/templates/documents/_document_list_item.html:49
@@ -590,7 +591,7 @@ msgstr ""
 #: maps/templates/maps/_map_list_item.html:25
 #: maps/templates/maps/_map_list_item.html:50
 msgid "Average rating"
-msgstr ""
+msgstr "Đánh giá trung bình"
 
 #: documents/templates/documents/_document_list_item.html:27
 #: documents/templates/documents/_document_list_item.html:49
@@ -599,69 +600,69 @@ msgstr ""
 #: maps/templates/maps/_map_list_item.html:25
 #: maps/templates/maps/_map_list_item.html:50
 msgid "votes"
-msgstr ""
+msgstr "phiếu"
 
 #: documents/templates/documents/_document_list_item.html:31
 #: layers/templates/layers/_layer_list_item.html:37
 #: maps/templates/maps/_map_list_item.html:30
 #: maps/templates/maps/map_download.html:6
 msgid "Download"
-msgstr ""
+msgstr "Tải về"
 
 #: documents/templates/documents/_document_list_item.html:46
 msgid "You do not have permission to view this document"
-msgstr ""
+msgstr "Bạn không được phép xem tài liệu này"
 
 #: documents/templates/documents/document_detail.html:42
 msgid "External Resource"
-msgstr ""
+msgstr "Tài nguyên bên ngoài"
 
 #: documents/templates/documents/document_detail.html:48
 #: layers/templates/layers/_actions.html:3
 #: maps/templates/maps/map_detail.html:35 templates/_actions.html:3
 msgid "Info"
-msgstr ""
+msgstr "Thông tin"
 
 #: documents/templates/documents/document_detail.html:50
 #: layers/templates/layers/_actions.html:6
 #: maps/templates/maps/map_detail.html:38 templates/_actions.html:5
 msgid "Share"
-msgstr ""
+msgstr "Cổ phiếu"
 
 #: documents/templates/documents/document_detail.html:52
 #: layers/templates/layers/_actions.html:8
 #: maps/templates/maps/map_detail.html:41
 msgid "Ratings"
-msgstr ""
+msgstr "Xếp hạng"
 
 #: documents/templates/documents/document_detail.html:53
 #: layers/templates/layers/_actions.html:9
 #: maps/templates/maps/map_detail.html:42 templates/_comments.html:12
 msgid "Comments"
-msgstr ""
+msgstr "Comments"
 
 #: documents/templates/documents/document_detail.html:71
 msgid "Rate this document"
-msgstr ""
+msgstr "Đánh giá tài liệu này"
 
 #: documents/templates/documents/document_detail.html:75
 #: layers/templates/layers/layer_detail.html:113
 #: maps/templates/maps/map_detail.html:58
 msgid "Average Rating"
-msgstr ""
+msgstr "Đánh giá trung bình"
 
 #: documents/templates/documents/document_detail.html:91
 #: documents/templates/documents/document_detail.html:93
 #: documents/templates/documents/document_detail.html:95
 #: documents/templates/documents/document_detail.html:107
 msgid "Download Document"
-msgstr ""
+msgstr "Tải về tài liệu"
 
 #: documents/templates/documents/document_detail.html:100
 #: layers/templates/layers/layer_detail.html:156
 #: layers/templates/layers/layer_detail.html:164
 msgid "Download Metadata"
-msgstr ""
+msgstr "Tải về Metadata"
 
 #: documents/templates/documents/document_detail.html:117
 #: documents/templates/documents/document_detail.html:147
@@ -672,41 +673,41 @@ msgstr ""
 #: maps/templates/maps/map_detail.html:127
 #: templates/_bulk_permissions_form.html:19
 msgid "Close"
-msgstr ""
+msgstr "Gần"
 
 #: documents/templates/documents/document_detail.html:124
 #: documents/templates/documents/document_detail.html:131
 msgid "Edit Document"
-msgstr ""
+msgstr "Chỉnh sửa tài liệu"
 
 #: documents/templates/documents/document_detail.html:136
 #: layers/templates/layers/layer_detail.html:196
 msgid "Edit Metadata"
-msgstr ""
+msgstr "Chỉnh sửa Metadata"
 
 #: documents/templates/documents/document_detail.html:139
 msgid "Replace this Document"
-msgstr ""
+msgstr "Thay thế tài liệu này"
 
 #: documents/templates/documents/document_detail.html:142
 msgid "Remove this Document"
-msgstr ""
+msgstr "Hủy bỏ tài liệu này"
 
 #: documents/templates/documents/document_detail.html:154
 msgid "Resource using this document"
-msgstr ""
+msgstr "Tài nguyên sử dụng tài liệu này"
 
 #: documents/templates/documents/document_detail.html:156
 msgid "List of resources using this document:"
-msgstr ""
+msgstr "Danh sách các nguồn lực sử dụng tài liệu này:"
 
 #: documents/templates/documents/document_detail.html:160
 msgid "This document is related to a "
-msgstr ""
+msgstr "Tài liệu này liên quan đến một"
 
 #: documents/templates/documents/document_detail.html:163
 msgid "This document is not related to any maps or layers"
-msgstr ""
+msgstr "Tài liệu này không liên quan đến bất kỳ bản đồ hoặc các lớp"
 
 #: documents/templates/documents/document_detail.html:170
 #: documents/templates/documents/document_upload.html:32
@@ -716,26 +717,26 @@ msgstr ""
 #: layers/templates/upload/layer_upload.html:93
 #: maps/templates/maps/map_detail.html:173 people/admin.py:55
 msgid "Permissions"
-msgstr ""
+msgstr "Quyền"
 
 #: documents/templates/documents/document_detail.html:171
 msgid "Click the button below to change the permissions of this document."
-msgstr ""
+msgstr "Nhấn vào nút bên dưới để thay đổi quyền truy cập của tài liệu này."
 
 #: documents/templates/documents/document_detail.html:172
 msgid "Change Document Permissions"
-msgstr ""
+msgstr "Thay đổi tài liệu Quyền"
 
 #: documents/templates/documents/document_list.html:6
 #: documents/templates/documents/document_list.html:13
 #: documents/templates/documents/document_upload_base.html:11
 msgid "Explore Documents"
-msgstr ""
+msgstr "Khám phá tài liệu"
 
 #: documents/templates/documents/document_list.html:12
 #: documents/templates/documents/document_upload_base.html:12
 msgid "Upload Documents"
-msgstr ""
+msgstr "Tài liệu tải lên"
 
 #: documents/templates/documents/document_metadata.html:17
 #, python-format
@@ -858,7 +859,7 @@ msgstr ""
 #: geoserver/signals.py:403 layers/templates/layers/layer_detail.html:224
 #: services/views.py:1265
 msgid "Legend"
-msgstr ""
+msgstr "Huyền thoại"
 
 #: geoserver/signals.py:525 layers/utils.py:528
 msgid "Remote Thumbnail"
@@ -1348,11 +1349,11 @@ msgstr ""
 #: layers/templates/layers/layer_detail.html:201
 #: layers/templates/layers/layer_style_manage.html:14
 msgid "Manage Styles"
-msgstr ""
+msgstr "Quản lý Styles"
 
 #: layers/templates/layers/layer_detail.html:203
 msgid "Edit Styles"
-msgstr ""
+msgstr "Chỉnh sửa Styles"
 
 #: layers/templates/layers/layer_detail.html:208
 msgid "Replace this Layer"
@@ -1533,7 +1534,7 @@ msgstr ""
 #: templates/_permissions_form.html:15
 #: templates/announcements/announcement_form.html:21
 msgid "Cancel"
-msgstr ""
+msgstr "Hủy bỏ"
 
 #: layers/templates/layers/layer_replace.html:41
 #: layers/templates/upload/layer_upload.html:36
@@ -1619,7 +1620,7 @@ msgstr ""
 #: layers/templates/upload/layer_upload_csv.html:49
 #: layers/templates/upload/layer_upload_time.html:102
 msgid "Next"
-msgstr ""
+msgstr "Tới"
 
 #: layers/templates/upload/layer_upload_crs.html:35
 msgid ""
@@ -2038,7 +2039,7 @@ msgstr ""
 
 #: maps/templates/maps/map_detail.html:144
 msgid "Map Layers"
-msgstr ""
+msgstr "Bản đồ Layers"
 
 #: maps/templates/maps/map_detail.html:145
 msgid "This map uses the following layers:"
@@ -2372,7 +2373,7 @@ msgstr ""
 #: services/templates/services/service_detail.html:64 templates/500.html:39
 #: templates/base.html:47
 msgid "Layers"
-msgstr ""
+msgstr "Layers"
 
 #: people/templates/people/_profile_filters.html:6 templates/500.html:42
 #: templates/base.html:50
@@ -2559,11 +2560,11 @@ msgstr ""
 
 #: services/templates/services/layers_register.html:27
 msgid "Name"
-msgstr ""
+msgstr "Tên"
 
 #: services/templates/services/layers_register.html:42
 msgid "Add Layers"
-msgstr ""
+msgstr "Thêm Layers"
 
 #: services/templates/services/service_detail.html:43
 msgid "Name:"
@@ -2575,11 +2576,11 @@ msgstr ""
 
 #: services/templates/services/service_detail.html:45
 msgid "Abstract:"
-msgstr ""
+msgstr "Tóm tắt:"
 
 #: services/templates/services/service_detail.html:46
 msgid "Keywords:"
-msgstr ""
+msgstr "Từ khóa:"
 
 #: services/templates/services/service_detail.html:47
 msgid "Contact:"
@@ -2613,7 +2614,7 @@ msgstr ""
 #: services/templates/services/service_edit.html:19
 #: templates/announcements/announcement_form.html:25
 msgid "Save"
-msgstr ""
+msgstr "Lưu"
 
 #: services/templates/services/service_layers.html:3
 msgid "Service:"
@@ -2713,7 +2714,7 @@ msgstr ""
 #: templates/500.html:56 templates/search/search.html:6
 #: templates/search/search.html.py:12
 msgid "Search"
-msgstr ""
+msgstr "Tìm kiếm"
 
 #: templates/500.html:77 templates/base.html:93
 msgid "Recent Activity"
@@ -2843,7 +2844,7 @@ msgstr ""
 
 #: templates/_permissions.html:17 templates/_permissions.html.py:49
 msgid "Anyone"
-msgstr ""
+msgstr "Bất cứ người nào"
 
 #: templates/_permissions.html:22 templates/_permissions.html.py:54
 #: templates/_permissions.html:80 templates/_permissions.html.py:107
@@ -3118,7 +3119,7 @@ msgstr ""
 
 #: templates/index.html:37
 msgid "Map"
-msgstr ""
+msgstr "Bản đồ"
 
 #: templates/index.html:38
 msgid ""

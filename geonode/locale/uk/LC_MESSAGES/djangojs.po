@@ -3,13 +3,14 @@
 # This file is distributed under the same license as the PACKAGE package.
 # 
 # Translators:
+# Andres Alfonso Lemon Gomez <lemon.andres@gmail.com>, 2014
 msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2014-10-24 10:00-0500\n"
-"PO-Revision-Date: 2014-11-11 23:40+0000\n"
-"Last-Translator: ingenieroariel <ingenieroariel@gmail.com>\n"
+"PO-Revision-Date: 2014-11-14 18:24+0000\n"
+"Last-Translator: Andres Alfonso Lemon Gomez <lemon.andres@gmail.com>\n"
 "Language-Team: Ukrainian (http://www.transifex.com/projects/p/geonode/language/uk/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -19,580 +20,580 @@ msgstr ""
 
 #: static/geonode/js/extjs/GeoNode.js:72
 msgid "Add user..."
-msgstr ""
+msgstr "Додати користувача ..."
 
 #: static/geonode/js/extjs/GeoNode.js:72
 msgid "Who can view and download this data?"
-msgstr ""
+msgstr "Хто може переглядати і завантажувати ці дані?"
 
 #: static/geonode/js/extjs/GeoNode.js:72
 msgid "Anyone"
-msgstr ""
+msgstr "Хто-небудь"
 
 #: static/geonode/js/extjs/GeoNode.js:72
 msgid "Any registered user"
-msgstr ""
+msgstr "Будь-який зареєстрований користувач"
 
 #: static/geonode/js/extjs/GeoNode.js:72
 msgid "Only users who can edit"
-msgstr ""
+msgstr "Тільки користувачі, які можна редагувати"
 
 #: static/geonode/js/extjs/GeoNode.js:72
 msgid "Who can edit this data?"
-msgstr ""
+msgstr "Хто може редагувати ці дані?"
 
 #: static/geonode/js/extjs/GeoNode.js:72
 msgid "Only the following users or groups:"
-msgstr ""
+msgstr "Тільки такі користувачі або групи:"
 
 #: static/geonode/js/extjs/GeoNode.js:72
 msgid "Who can manage and edit this data?"
-msgstr ""
+msgstr "Хто може управляти і редагувати ці дані?"
 
 #: static/geonode/js/upload/FileType.js:33
 #, c-format
 msgid "Missing a %s file, which is required"
-msgstr ""
+msgstr "Відсутня файл %s, який необхідний"
 
 #: static/geonode/js/upload/FileTypes.js:7
 msgid "ESRI Shapefile"
-msgstr ""
+msgstr "ESRI шейп"
 
 #: static/geonode/js/upload/FileTypes.js:13
 #: static/geonode/js/upload/FileTypes.js:19
 msgid "GeoTiff File"
-msgstr ""
+msgstr "GeoTiff файлу"
 
 #: static/geonode/js/upload/FileTypes.js:26
 msgid "Comma Separated File"
-msgstr ""
+msgstr "Розділені коми файлу"
 
 #: static/geonode/js/upload/FileTypes.js:32
 msgid "Google Earth KML"
-msgstr ""
+msgstr "Google Earth KML"
 
 #: static/geonode/js/upload/FileTypes.js:38
 msgid "Zip Archives"
-msgstr ""
+msgstr "Zip архів"
 
 #: static/geonode/js/upload/LayerInfo.js:249
 msgid "Layer Info"
-msgstr ""
+msgstr "Шар інформація"
 
 #: static/geonode/js/upload/LayerInfo.js:250
 msgid "Edit Metadata"
-msgstr ""
+msgstr "Зміна метаданих"
 
 #: static/geonode/js/upload/LayerInfo.js:251
 msgid "Manage Styles"
-msgstr ""
+msgstr "Управління стилями"
 
 #: static/geonode/js/upload/LayerInfo.js:253
 msgid "Your layer was successfully uploaded"
-msgstr ""
+msgstr "Ваше шар успішно завантажені"
 
 #: static/geonode/js/upload/LayerInfo.js:282
 msgid "Performing Final GeoServer Config Step"
-msgstr ""
+msgstr "Виконання Остаточна GeoServer Config крок"
 
 #: static/geonode/js/upload/LayerInfo.js:297
 #: static/geonode/js/upload/LayerInfo.js:319
 msgid "You need to specify more information in order to complete your upload"
-msgstr ""
+msgstr "Ви повинні вказати додаткову інформацію для того, щоб завершити своє завантаження"
 
 #: static/geonode/js/upload/LayerInfo.js:311
 msgid "You need to specify more information in order to complete your upload."
-msgstr ""
+msgstr "Ви повинні вказати додаткову інформацію для того, щоб завершити свій завантаження."
 
 #: static/geonode/js/upload/LayerInfo.js:311
 msgid "You can continue configuring your layer."
-msgstr ""
+msgstr "Ви можете продовжити налаштування вашого шар."
 
 #: static/geonode/js/upload/LayerInfo.js:329
 #: static/geonode/js/upload/LayerInfo.js:414
 msgid "Unexpected Error"
-msgstr ""
+msgstr "Несподівана помилка"
 
 #: static/geonode/js/upload/LayerInfo.js:345
 msgid "Performing GeoServer Config Step"
-msgstr ""
+msgstr "Виконання GeoServer Config Крок"
 
 #: static/geonode/js/upload/LayerInfo.js:417
 msgid "No error message supplied"
-msgstr ""
+msgstr "Повідомлення про помилку не поставляється"
 
 #: static/geonode/js/upload/LayerInfo.js:432
 msgid "Layer files uploaded, configuring in GeoServer"
-msgstr ""
+msgstr "Шар файли завантажені, настройці в GeoServer"
 
 #: static/geonode/js/upload/LayerInfo.js:447
 msgid "Select or create a Geogit repository."
-msgstr ""
+msgstr "Виберіть або створіть Geogit сховище."
 
 #: static/geonode/js/upload/LayerInfo.js:542
 msgid "Remove"
-msgstr ""
+msgstr "Видаляти"
 
 #: static/geonode/js/upload/upload.js:126
 #, c-format
 msgid "The file %s is an unsupported file type, please select another file."
-msgstr ""
+msgstr "Файл %s не підтримується тип файлу, будь ласка, виберіть інший файл."
 
 #: static/geonode/js/upload/upload.js:286
 msgid "You are uploading an incomplete set of files."
-msgstr ""
+msgstr "Ви завантажуєте неповний набір файлів."
 
 #: templates/lang.js:9 templates/lang.js.c:236
 msgid "Cancel"
-msgstr ""
+msgstr "Скасувати"
 
 #: templates/lang.js:10
 msgid "Save as Copy"
-msgstr ""
+msgstr "Зберегти як копію"
 
 #: templates/lang.js:11
 msgid "About this Map"
-msgstr ""
+msgstr "Про це Map"
 
 #: templates/lang.js:12 templates/lang.js.c:96 templates/lang.js.c:165
 msgid "Abstract"
-msgstr ""
+msgstr "Абстрактний"
 
 #: templates/lang.js:13
 msgid "Save"
-msgstr ""
+msgstr "Зберегти"
 
 #: templates/lang.js:14 templates/lang.js.c:100 templates/lang.js.c:109
 #: templates/lang.js:162 templates/lang.js.c:184 templates/lang.js.c:219
 msgid "Title"
-msgstr ""
+msgstr "Назва"
 
 #: templates/lang.js:20
 msgid "Connection Error"
-msgstr ""
+msgstr "Помилка підключення"
 
 #: templates/lang.js:21
 msgid "The server returned an error"
-msgstr ""
+msgstr "Сервер повернув помилку"
 
 #: templates/lang.js:22
 msgid "Details..."
-msgstr ""
+msgstr "Детальніше ..."
 
 #: templates/lang.js:28 templates/lang.js.c:31
 msgid "Add Layers"
-msgstr ""
+msgstr "Додати Layers"
 
 #: templates/lang.js:29
 msgid "Area"
-msgstr ""
+msgstr "Площа"
 
 #: templates/lang.js:30
 msgid "Background"
-msgstr ""
+msgstr "Фон"
 
 #: templates/lang.js:32
 msgid "Done"
-msgstr ""
+msgstr "Зроблено"
 
 #: templates/lang.js:33
 msgid "Available Layers"
-msgstr ""
+msgstr "Доступні Шари"
 
 #: templates/lang.js:35 templates/lang.js.c:121
 msgid "Height"
-msgstr ""
+msgstr "Висота"
 
 #: templates/lang.js:36
 msgid "Get Feature Info"
-msgstr ""
+msgstr "Отримати Feature інформація"
 
 #: templates/lang.js:37 templates/lang.js.c:122
 msgid "Large"
-msgstr ""
+msgstr "Великий"
 
 #: templates/lang.js:38
 msgid "or add a new server."
-msgstr ""
+msgstr "або додати новий сервер."
 
 #: templates/lang.js:39
 msgid "Map Layers"
-msgstr ""
+msgstr "Шари карти"
 
 #: templates/lang.js:40
 msgid "View available data from:"
-msgstr ""
+msgstr "Переглянути наявні дані:"
 
 #: templates/lang.js:41
 msgid "Data"
-msgstr ""
+msgstr "Дані"
 
 #: templates/lang.js:42
 msgid "Layers"
-msgstr ""
+msgstr "Шари"
 
 #: templates/lang.js:43
 msgid "Legend"
-msgstr ""
+msgstr "Легенда"
 
 #: templates/lang.js:44
 msgid "Length"
-msgstr ""
+msgstr "Довжина"
 
 #: templates/lang.js:45
 msgid "Loading Map..."
-msgstr ""
+msgstr "Завантаження карти ..."
 
 #: templates/lang.js:46 templates/lang.js.c:123
 msgid "Map Size"
-msgstr ""
+msgstr "Розмір Карта"
 
 #: templates/lang.js:47
 msgid "Measure"
-msgstr ""
+msgstr "Міра"
 
 #: templates/lang.js:48 templates/lang.js.c:97 templates/lang.js.c:163
 msgid "Contact"
-msgstr ""
+msgstr "Контакт"
 
 #: templates/lang.js:49 templates/lang.js.c:55
 msgid "Permalink"
-msgstr ""
+msgstr "Постійне посилання"
 
 #: templates/lang.js:50 templates/lang.js.c:124
 msgid "Mini"
-msgstr ""
+msgstr "Міні"
 
 #: templates/lang.js:51
 msgid "Pan Map"
-msgstr ""
+msgstr "Пан Карта"
 
 #: templates/lang.js:52
 msgid "Zoom to Next Extent"
-msgstr ""
+msgstr "Збільшити до наступної Ступінь"
 
 #: templates/lang.js:53
 msgid "Zoom to Previous Extent"
-msgstr ""
+msgstr "Огляньте на попередню Ступінь"
 
 #: templates/lang.js:54
 msgid "This map has not yet been saved."
-msgstr ""
+msgstr "Ця карта ще не була збережена."
 
 #: templates/lang.js:56 templates/lang.js.c:125
 msgid "Premium"
-msgstr ""
+msgstr "Премія"
 
 #: templates/lang.js:57
 msgid "Print Map"
-msgstr ""
+msgstr "Роздрукувати Карта"
 
 #: templates/lang.js:58
 msgid "Print Preview"
-msgstr ""
+msgstr "Попередній перегляд"
 
 #: templates/lang.js:59
 msgid "Properties"
-msgstr ""
+msgstr "Властивості"
 
 #: templates/lang.js:60 templates/lang.js.c:126
 msgid "Publish Map"
-msgstr ""
+msgstr "Опублікувати Карта"
 
 #: templates/lang.js:61 templates/lang.js.c:62
 msgid "Remove Layer"
-msgstr ""
+msgstr "Видалити шар"
 
 #: templates/lang.js:63
 msgid "Sorry, your map could not be saved."
-msgstr ""
+msgstr "На жаль, ваша карта не може бути збережений."
 
 #: templates/lang.js:64
 msgid "Error While Saving"
-msgstr ""
+msgstr "Помилка при збереженні"
 
 #: templates/lang.js:65
 msgid "Save Map"
-msgstr ""
+msgstr "Зберегти карту"
 
 #: templates/lang.js:66
 msgid "You must be logged in to save this map."
-msgstr ""
+msgstr "Ви повинні увійти в систему, щоб зберегти цю карту."
 
 #: templates/lang.js:67 templates/lang.js.c:128
 msgid "Small"
-msgstr ""
+msgstr "Невеликий"
 
 #: templates/lang.js:68
 msgid ""
 "Error contacting server.\n"
 " Please check the url and try again."
-msgstr ""
+msgstr "Помилка зв'язуючись з сервером. Будь ласка, перевірте URL і повторіть спробу."
 
 #: templates/lang.js:69
 msgid "Layer Properties"
-msgstr ""
+msgstr "Властивості шару"
 
 #: templates/lang.js:70
 msgid "Change layer format and style"
-msgstr ""
+msgstr "Змінити формат шар і стиль"
 
 #: templates/lang.js:71
 msgid "Edit Styles"
-msgstr ""
+msgstr "Редагувати стилі"
 
 #: templates/lang.js:72
 msgid "Edit layer styles"
-msgstr ""
+msgstr "Стилі Редагувати шар"
 
 #: templates/lang.js:73
 msgid "Switch to Google Earth 3D Viewer"
-msgstr ""
+msgstr "Переключіться на Google Earth 3D Viewer"
 
 #: templates/lang.js:74
 msgid ""
 "The map that you are trying to load does not exist.  Creating a new map "
 "instead."
-msgstr ""
+msgstr "Карта, яку ви намагаєтеся завантажити не існує. Створення нової карти натомість."
 
 #: templates/lang.js:75
 msgid "Unknown Map"
-msgstr ""
+msgstr "Невідомий Карта"
 
 #: templates/lang.js:76 templates/lang.js.c:129
 msgid "Width"
-msgstr ""
+msgstr "Ширина"
 
 #: templates/lang.js:77
 msgid "Zoom In"
-msgstr ""
+msgstr "Зменшити"
 
 #: templates/lang.js:78
 msgid "Zoom Out"
-msgstr ""
+msgstr "Зменшити"
 
 #: templates/lang.js:79
 msgid "Zoom level"
-msgstr ""
+msgstr "Рівень масштабування"
 
 #: templates/lang.js:80
 msgid "Zoom Level"
-msgstr ""
+msgstr "Збільшити рівень"
 
 #: templates/lang.js:81
 msgid "Zoom to Layer Extent"
-msgstr ""
+msgstr "Збільшити до кордонів шару"
 
 #: templates/lang.js:82
 msgid "Zoom to Visible Extent"
-msgstr ""
+msgstr "Огляньте Відомий Ступінь"
 
 #: templates/lang.js:88
 msgid "Zoom Level {zoom}"
-msgstr ""
+msgstr "Рівень Збільшити {зум}"
 
 #: templates/lang.js:94
 msgid "Create Map"
-msgstr ""
+msgstr "Створити карту"
 
 #: templates/lang.js:95
 msgid "Export Map"
-msgstr ""
+msgstr "Експорт Карта"
 
 #: templates/lang.js:98
 msgid "Map"
-msgstr ""
+msgstr "Карта"
 
 #: templates/lang.js:99 templates/lang.js.c:166
 msgid "View this Map"
-msgstr ""
+msgstr "Перегляду цієї карти"
 
 #: templates/lang.js:101
 msgid "Open Map"
-msgstr ""
+msgstr "Відкрийте карту"
 
 #: templates/lang.js:107 templates/lang.js.c:183
 msgid "Name"
-msgstr ""
+msgstr "Назва"
 
 #: templates/lang.js:108
 msgid "Queryable"
-msgstr ""
+msgstr "Queryable"
 
 #: templates/lang.js:115
 msgid "No background"
-msgstr ""
+msgstr "Ні тлі"
 
 #: templates/lang.js:127
 msgid ""
 "Your map is ready to be published to the web!  Simply copy the following "
 "HTML to embed the map in your website:"
-msgstr ""
+msgstr "Ваша карта готова бути опубліковані в Інтернеті! Просто скопіюйте наступний HTML для вбудовування карти в свій веб-сайт:"
 
 #: templates/lang.js:136 templates/lang.js.c:202
 msgid "Abstract:"
-msgstr ""
+msgstr "Анотація:"
 
 #: templates/lang.js:137 templates/lang.js.c:204
 msgid "No attribution information is provided for this layer."
-msgstr ""
+msgstr "Ніякої інформації атрибуції не передбачений для цього шару."
 
 #: templates/lang.js:138 templates/lang.js.c:205
 msgid "Provided by:"
-msgstr ""
+msgstr "Надано:"
 
 #: templates/lang.js:139 templates/lang.js.c:206
 msgid "Download:"
-msgstr ""
+msgstr "Завантажити:"
 
 #: templates/lang.js:140 templates/lang.js.c:208
 msgid "No keywords are listed for this layer."
-msgstr ""
+msgstr "Ключові слова не перераховані для цього шару."
 
 #: templates/lang.js:141 templates/lang.js.c:209
 msgid "Keywords:"
-msgstr ""
+msgstr "Ключові слова:"
 
 #: templates/lang.js:142 templates/lang.js.c:210
 msgid "No metadata URLs are defined for this layer."
-msgstr ""
+msgstr "Немає посилань метаданих не визначені для цього шару."
 
 #: templates/lang.js:143 templates/lang.js.c:211
 msgid "Metadata Links:"
-msgstr ""
+msgstr "Метаданих Посилання:"
 
 #: templates/lang.js:149
 msgid "Paper size:"
-msgstr ""
+msgstr "Розмір паперу:"
 
 #: templates/lang.js:150
 msgid "Resolution:"
-msgstr ""
+msgstr "Дозвіл:"
 
 #: templates/lang.js:151
 msgid "Print"
-msgstr ""
+msgstr "Друк"
 
 #: templates/lang.js:152
 msgid "Enter map title here."
-msgstr ""
+msgstr "Введіть заголовок карти тут."
 
 #: templates/lang.js:153
 msgid "Include legend?"
-msgstr ""
+msgstr "Включити легенду?"
 
 #: templates/lang.js:154
 msgid "Enter comments here."
-msgstr ""
+msgstr "Введіть коментарі тут."
 
 #: templates/lang.js:155
 msgid "Creating PDF..."
-msgstr ""
+msgstr "Створення PDF ..."
 
 #: templates/lang.js:164
 msgid "Last Modified"
-msgstr ""
+msgstr "Остання зміна"
 
 #: templates/lang.js:167 templates/lang.js.c:188
 msgid "Prev"
-msgstr ""
+msgstr "Попередня"
 
 #: templates/lang.js:168 templates/lang.js.c:189
 msgid "Next"
-msgstr ""
+msgstr "Поруч"
 
 #: templates/lang.js:169 templates/lang.js.c:190
 msgid "of"
-msgstr ""
+msgstr "з"
 
 #: templates/lang.js:170 templates/lang.js.c:191
 msgid "Your search did not match any items."
-msgstr ""
+msgstr "За Вашим запитом нічого не знайдено предметів."
 
 #: templates/lang.js:171
 msgid "Search Maps"
-msgstr ""
+msgstr "Пошук Карти"
 
 #: templates/lang.js:172 templates/lang.js.c:192
 msgid "Search"
-msgstr ""
+msgstr "Пошуковий"
 
 #: templates/lang.js:173 templates/lang.js.c:193
 msgid "Showing"
-msgstr ""
+msgstr "Показ"
 
 #: templates/lang.js:174
 msgid "Loading"
-msgstr ""
+msgstr "Завантаження"
 
 #: templates/lang.js:175 templates/lang.js.c:195
 msgid "permalink"
-msgstr ""
+msgstr "Постійне посилання"
 
 #: templates/lang.js:182
 msgid "Select"
-msgstr ""
+msgstr "Вибрати"
 
 #: templates/lang.js:185
 msgid "Select:"
-msgstr ""
+msgstr "Виберіть:"
 
 #: templates/lang.js:186
 msgid "All"
-msgstr ""
+msgstr "Все"
 
 #: templates/lang.js:187
 msgid "None"
-msgstr ""
+msgstr "Жоден"
 
 #: templates/lang.js:194
 msgid "Loading..."
-msgstr ""
+msgstr "Loading ..."
 
 #: templates/lang.js:196
 msgid "You do not have permission to view this data"
-msgstr ""
+msgstr "Ви не маєте дозволу для перегляду цієї інформації"
 
 #: templates/lang.js:197
 msgid "This data is stored on a remote server"
-msgstr ""
+msgstr "Ці дані зберігаються на віддаленому сервері"
 
 #: templates/lang.js:203
 msgid "No abstract is provided for this layer."
-msgstr ""
+msgstr "Немає абстрактного не передбачено для цього шару."
 
 #: templates/lang.js:207
 msgid "No download URLs are definied for this layer."
-msgstr ""
+msgstr "Ні завантажити URL, не визначається для цього шару."
 
 #: templates/lang.js:217
 msgid "Selected Layers"
-msgstr ""
+msgstr "Окремі верстви"
 
 #: templates/lang.js:218
 msgid "No Layers Selected"
-msgstr ""
+msgstr "Ні шари не Selected"
 
 #: templates/lang.js:220
 msgid "Clear Selected"
-msgstr ""
+msgstr "Очистити вибрані"
 
 #: templates/lang.js:221
 msgid "Clear All"
-msgstr ""
+msgstr "Очистити всі"
 
 #: templates/lang.js:227
 msgid "Operation Failed"
-msgstr ""
+msgstr "Operation Failed"
 
 #: templates/lang.js:228
 msgid "No layers are currently selected."
-msgstr ""
+msgstr "Ні верстви в даний час не встановлено."
 
 #: templates/lang.js:235
 msgid "Downloading..."
-msgstr ""
+msgstr "Завантаження ..."
 
 #: templates/lang.js:237
 msgid "Please wait"
-msgstr ""
+msgstr "Будь ласка, почекайте"

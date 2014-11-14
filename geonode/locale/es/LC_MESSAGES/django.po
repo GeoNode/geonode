@@ -20,7 +20,7 @@ msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2014-11-14 09:56-0500\n"
-"PO-Revision-Date: 2014-11-14 15:23+0000\n"
+"PO-Revision-Date: 2014-11-14 16:58+0000\n"
 "Last-Translator: Andres Alfonso Lemon Gomez <lemon.andres@gmail.com>\n"
 "Language-Team: Spanish (http://www.transifex.com/projects/p/geonode/language/es/)\n"
 "MIME-Version: 1.0\n"
@@ -519,7 +519,7 @@ msgstr "URL"
 
 #: documents/views.py:26
 msgid "You are not permitted to delete this document"
-msgstr "Usted no tiene permisos para eliminar este documento"
+msgstr "Usted no tiene permitido eliminar este documento"
 
 #: documents/views.py:27
 msgid "You do not have permissions for this document."
@@ -527,15 +527,15 @@ msgstr "Usted no tiene permisos para acceder a este documento."
 
 #: documents/views.py:28
 msgid "You are not permitted to modify this document"
-msgstr "Usted no tiene permisos para modificar este documento"
+msgstr "Usted no tiene permitido modificar este documento"
 
 #: documents/views.py:30
 msgid "You are not permitted to modify this document's metadata"
-msgstr "Usted no tiene permisos para modificar los metadatos de este documento"
+msgstr "Usted no tiene permitido modificar los metadatos de este documento"
 
 #: documents/views.py:31
 msgid "You are not permitted to view this document"
-msgstr "Usted no tiene permisos para ver este documento"
+msgstr "Usted no tiene permitido ver este documento"
 
 #: documents/views.py:67 documents/views.py:105
 msgid "You are not allowed to view this document."
@@ -626,7 +626,7 @@ msgstr "Usted no tiene permiso para ver este documento"
 
 #: documents/templates/documents/document_detail.html:42
 msgid "External Resource"
-msgstr "Fuente Externa"
+msgstr "Recurso Externo"
 
 #: documents/templates/documents/document_detail.html:48
 #: layers/templates/layers/_actions.html:3
@@ -638,7 +638,7 @@ msgstr "Información"
 #: layers/templates/layers/_actions.html:6
 #: maps/templates/maps/map_detail.html:38 templates/_actions.html:5
 msgid "Share"
-msgstr "Compartido"
+msgstr "Compartir"
 
 #: documents/templates/documents/document_detail.html:52
 #: layers/templates/layers/_actions.html:8
@@ -742,7 +742,7 @@ msgstr "Cambiar Permisos del documento"
 #: documents/templates/documents/document_list.html:13
 #: documents/templates/documents/document_upload_base.html:11
 msgid "Explore Documents"
-msgstr "Explora Documentos"
+msgstr "Explorar Documentos"
 
 #: documents/templates/documents/document_list.html:12
 #: documents/templates/documents/document_upload_base.html:12
@@ -1148,7 +1148,7 @@ msgstr "nombre de atributo"
 
 #: layers/models.py:279
 msgid "name of attribute as stored in shapefile/spatial database"
-msgstr "nombre del atributo que almacenada en shapefile / bases de datos espaciales"
+msgstr "nombre original del atributo en el shapefile / bases de datos espaciales"
 
 #: layers/models.py:285
 msgid "attribute description"
@@ -1176,7 +1176,7 @@ msgstr "el tipo de datos del atributo (entero, cadena, geometría, etc)"
 
 #: layers/models.py:306
 msgid "visible?"
-msgstr "¿visible?"
+msgstr "visible?"
 
 #: layers/models.py:307
 msgid "specifies if the attribute should be displayed in identify results"
@@ -1268,7 +1268,7 @@ msgstr "Hubo un error mientras se intentaba subir tus datos. Por favor, intenta 
 
 #: layers/views.py:62
 msgid "You are not permitted to delete this layer"
-msgstr "No tienes permiso para eliminar esta capa"
+msgstr "No tiene permitido eliminar esta capa"
 
 #: layers/views.py:63
 msgid "You do not have permissions for this layer."
@@ -1304,7 +1304,7 @@ msgstr "Crear un Mapa"
 #: layers/templates/layers/layer_detail.html:130
 #: layers/templates/layers/layer_detail.html:139
 msgid "Download Layer"
-msgstr "Bajar Capa"
+msgstr "Descargar Capa"
 
 #: layers/templates/layers/_layer_list_item.html:85
 msgid "You do not have permission to view this layer"
@@ -1396,7 +1396,7 @@ msgstr "Haga clic en el botón de abajo para generar un nuevo Mapa basado en est
 
 #: layers/templates/layers/layer_detail.html:249
 msgid "Create a Map"
-msgstr "Crear un Mapa"
+msgstr "Crear un mapa"
 
 #: layers/templates/layers/layer_detail.html:254
 msgid "Documents related to this layer"
