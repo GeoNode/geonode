@@ -20,8 +20,8 @@ msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2014-11-14 09:56-0500\n"
-"PO-Revision-Date: 2014-11-14 15:05+0000\n"
-"Last-Translator: ingenieroariel <ingenieroariel@gmail.com>\n"
+"PO-Revision-Date: 2014-11-14 15:23+0000\n"
+"Last-Translator: Andres Alfonso Lemon Gomez <lemon.andres@gmail.com>\n"
 "Language-Team: Spanish (http://www.transifex.com/projects/p/geonode/language/es/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -370,7 +370,7 @@ msgstr "Debería ser publicado éste recurso en la página de incio?"
 
 #: base/models.py:362
 msgid "Should this resource be published and searchable?"
-msgstr ""
+msgstr "Debería éste recurso ser público e indexado?"
 
 #: base/models.py:682
 msgid "For example \"kml\""
@@ -882,7 +882,7 @@ msgstr "Miniaturas"
 
 #: geoserver/views.py:338
 msgid "You don't have permissions to change style for this layer"
-msgstr ""
+msgstr "Usted no tiene permisos para cambiar el estilo de ésta capa"
 
 #: geoserver/views.py:425 geoserver/views.py:480
 msgid "Bad HTTP Authorization Credentials."
@@ -1971,7 +1971,7 @@ msgstr "No tienes permiso para ver este mapa"
 
 #: maps/views.py:77
 msgid "An unknown error has occured."
-msgstr ""
+msgstr "Un error desconocido ha ocurrido."
 
 #: maps/management/__init__.py:33
 msgid "Map Created"
@@ -2559,7 +2559,7 @@ msgstr "No se pudo encontrar ninguna capa en una proyección compatible."
 msgid ""
 "Could not find any layers in a compatible projection:                 The "
 "spatial id was: %(srs)s and the url %(url)s"
-msgstr ""
+msgstr "No se pudo encontrar ninguna capa en una proyección compatible: El id espacial fue: %(srs)s y el url %(url)s"
 
 #: services/views.py:1207
 msgid "You are not permitted to remove this service."
@@ -2851,7 +2851,7 @@ msgstr "Presentar Comentarios"
 
 #: templates/_permissions.html:8
 msgid "Who can view it?"
-msgstr ""
+msgstr "Quién puede ver ésto?"
 
 #: templates/_permissions.html:17 templates/_permissions.html.py:49
 msgid "Anyone"
@@ -2871,29 +2871,29 @@ msgstr "Los siguientes grupos:"
 
 #: templates/_permissions.html:40
 msgid "Who can download it?"
-msgstr ""
+msgstr "Quién puede descargar ésto?"
 
 #: templates/_permissions.html:72
 msgid "Who can change metadata for it?"
-msgstr ""
+msgstr "Quién puede cambiar a ésto los metadatos?"
 
 #: templates/_permissions.html:99
 msgid "Who can edit data for this layer?"
-msgstr ""
+msgstr "Quién puede editar los datos para ésta capa?"
 
 #: templates/_permissions.html:125
 msgid "Who can edit styles for this layer?"
-msgstr ""
+msgstr "Quién puede editar estilos para ésta capa?"
 
 #: templates/_permissions.html:152
 msgid ""
 "Who can manage it? (update, delete, change permissions, publish/unpublish "
 "it)"
-msgstr ""
+msgstr "Quién puede administrar ésto? (actualizar, eliminar, cambiar permisos, publicar y quitar la publicación)"
 
 #: templates/_permissions_form.html:9
 msgid "Set permissions for this resource"
-msgstr ""
+msgstr "Configurar permisos para éste recurso"
 
 #: templates/_permissions_form_js.html:180
 msgid "Choose users..."
@@ -3480,7 +3480,7 @@ msgstr "Fecha de inicio después de:"
 #: templates/search/_general_filters.html:31
 #: templates/search/_general_filters.html:35
 msgid "yyyy-mm-dd"
-msgstr ""
+msgstr "aaaa-mm-dd"
 
 #: templates/search/_general_filters.html:34
 msgid "Date ends before:"
