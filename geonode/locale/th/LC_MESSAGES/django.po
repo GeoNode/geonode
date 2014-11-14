@@ -9,8 +9,8 @@ msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2014-11-14 09:56-0500\n"
-"PO-Revision-Date: 2014-11-14 15:05+0000\n"
-"Last-Translator: ingenieroariel <ingenieroariel@gmail.com>\n"
+"PO-Revision-Date: 2014-11-14 18:33+0000\n"
+"Last-Translator: keeratipong petchadapong <jobcskku@hotmail.com>\n"
 "Language-Team: Thai (http://www.transifex.com/projects/p/geonode/language/th/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -187,11 +187,11 @@ msgstr "ความถี่ในการแก้ไขและลบที
 msgid ""
 "commonly used word(s) or formalised word(s) or phrase(s) used to describe "
 "the subject (space or comma-separated"
-msgstr ""
+msgstr "คำที่ใช้ทั่วไป หรือคำทางการ หรือวลี ที่ใช้อธิบายหัวเรื่อง (เว้นวรรค หรือคั่นด้วยจุลภาพ)"
 
 #: base/models.py:253
 msgid "keyword identifies a location"
-msgstr ""
+msgstr "คำสำคัญที่ระบุตำแหน่ง"
 
 #: base/models.py:254
 msgid "limitation(s) placed upon the access or use of the data."
@@ -201,7 +201,7 @@ msgstr ""
 msgid ""
 "other restrictions and legal prerequisites for accessing and using the "
 "resource or metadata"
-msgstr ""
+msgstr "เงื่อนไขอื่นๆและข้อกำหนดเบื้องต้นตามกฎหมายสำหรับการเข้าถึงและใช้งานแหล่งข้อมูลและคำอธิบายข้อมูล"
 
 #: base/models.py:257
 msgid "license of the dataset"
@@ -251,7 +251,7 @@ msgstr "ชื่อเรื่อง"
 
 #: base/models.py:273
 msgid "name by which the cited resource is known"
-msgstr ""
+msgstr "ชื่อของแหล่งข้อมูลที่เป็นที่รู้จักกัน"
 
 #: base/models.py:274
 msgid "date"
@@ -307,7 +307,7 @@ msgstr ""
 
 #: base/models.py:312
 msgid "supplemental information"
-msgstr ""
+msgstr "ข้อมูลเพิ่มเติม"
 
 #: base/models.py:313
 msgid "any other descriptive information about the dataset"
@@ -315,15 +315,15 @@ msgstr ""
 
 #: base/models.py:316
 msgid "distribution URL"
-msgstr ""
+msgstr "URL ที่เผยแพร่"
 
 #: base/models.py:318
 msgid "distribution description"
-msgstr ""
+msgstr "คำอธิบายเกี่ยวกับการเผยแพร่"
 
 #: base/models.py:322
 msgid "data quality statement"
-msgstr ""
+msgstr "คำแถลงเกี่ยวคุณภาพข้อมูล"
 
 #: base/models.py:337
 msgid "CSW typename"
@@ -359,7 +359,7 @@ msgstr "ควรให้แหล่งข้อมูลนี้แสดง
 
 #: base/models.py:362
 msgid "Should this resource be published and searchable?"
-msgstr ""
+msgstr "ควรให้แหล่งข้อมูลนี้ถูกเผยแพร่และค้นหาได้หรือไม่?"
 
 #: base/models.py:682
 msgid "For example \"kml\""
@@ -434,7 +434,7 @@ msgstr "ภูมิภาค"
 
 #: base/templates/base/resourcebase_info_panel.html:88
 msgid "Maintenance Frequency"
-msgstr ""
+msgstr "ความถี่ในการดูแลรักษา"
 
 #: base/templates/base/resourcebase_info_panel.html:93
 msgid "Restrictions"
@@ -500,7 +500,7 @@ msgstr "ไฟล์"
 
 #: documents/models.py:48
 msgid "The URL of the document if it is external."
-msgstr ""
+msgstr "URL ของเอกสาร ถ้าหากมาจากภายนอก"
 
 #: documents/models.py:49
 msgid "URL"
@@ -516,7 +516,7 @@ msgstr "คุณไม่มีสิทธิ์ในเอกสารนี
 
 #: documents/views.py:28
 msgid "You are not permitted to modify this document"
-msgstr ""
+msgstr "คุณไม่มีสิทธิ์แก้ไขเอกสารนี้"
 
 #: documents/views.py:30
 msgid "You are not permitted to modify this document's metadata"
@@ -524,7 +524,7 @@ msgstr "คุณไม่มีสิทธิ์แก้ไขคำอธิ
 
 #: documents/views.py:31
 msgid "You are not permitted to view this document"
-msgstr ""
+msgstr "คุณไม่มีสิทธิ์ดูเอกสารนี้"
 
 #: documents/views.py:67 documents/views.py:105
 msgid "You are not allowed to view this document."
@@ -554,7 +554,7 @@ msgstr "ความนิยมสูงสุด"
 #: layers/templates/layers/_layer_filters.html:7
 #: maps/templates/maps/_map_filters.html:7
 msgid "Most shared"
-msgstr ""
+msgstr "แบ่งปันมากที่สุด"
 
 #: documents/templates/documents/_document_list_item.html:23
 #: documents/templates/documents/_document_list_item.html:45
@@ -600,7 +600,7 @@ msgstr "ความนิยมเฉลี่ย"
 #: maps/templates/maps/_map_list_item.html:25
 #: maps/templates/maps/_map_list_item.html:50
 msgid "votes"
-msgstr ""
+msgstr "โหวต"
 
 #: documents/templates/documents/_document_list_item.html:31
 #: layers/templates/layers/_layer_list_item.html:37
@@ -621,13 +621,13 @@ msgstr "แหล่งที่มาภายนอก"
 #: layers/templates/layers/_actions.html:3
 #: maps/templates/maps/map_detail.html:35 templates/_actions.html:3
 msgid "Info"
-msgstr ""
+msgstr "ข้อมูล"
 
 #: documents/templates/documents/document_detail.html:50
 #: layers/templates/layers/_actions.html:6
 #: maps/templates/maps/map_detail.html:38 templates/_actions.html:5
 msgid "Share"
-msgstr ""
+msgstr "แบ่งปัน"
 
 #: documents/templates/documents/document_detail.html:52
 #: layers/templates/layers/_actions.html:8
@@ -867,11 +867,11 @@ msgstr ""
 
 #: geoserver/signals.py:560 layers/utils.py:563
 msgid "Thumbnail"
-msgstr ""
+msgstr "รูปย่อ"
 
 #: geoserver/views.py:338
 msgid "You don't have permissions to change style for this layer"
-msgstr ""
+msgstr "คุณไม่มีสิทธิ์แก้ไขสไตล์ของชั้นข้อมูลนี้"
 
 #: geoserver/views.py:425 geoserver/views.py:480
 msgid "Bad HTTP Authorization Credentials."
@@ -1073,7 +1073,7 @@ msgstr "เข้าร่วมกลุ่ม"
 #: people/templates/people/profile_list.html:13
 #: templates/search/_sort_filters.html:5
 msgid "Less recent"
-msgstr ""
+msgstr "ก่อนหน้านี้"
 
 #: groups/templates/groups/group_list.html:17
 #: people/templates/people/profile_list.html:14
@@ -1247,13 +1247,13 @@ msgstr "แก้ไขครั้งล่าสุด"
 
 #: layers/models.py:375
 msgid "date when attribute statistics were last updated"
-msgstr ""
+msgstr "วันที่สถิติเกี่ยวกับแอตทริบิวต์มีการปรับปรุงล่าสุด"
 
 #: layers/views.py:59
 msgid ""
 "There was an error while attempting to upload your data. Please try again, "
 "or contact and administrator if the problem continues."
-msgstr ""
+msgstr "เกิดปัญหาขณะอัพโหลดข้อมูลของคุณ กรุณาลองอีกครั้ง หรือติดต่อผู้ดูแลระบบถ้าหากยังคงพบปัญหาอยู่"
 
 #: layers/views.py:62
 msgid "You are not permitted to delete this layer"
@@ -1450,7 +1450,7 @@ msgid ""
 "Note: this layer's orginal metadata was populated by importing a metadata XML file.\n"
 "        GeoNode's metadata import supports a subset of ISO, FGDC, and Dublin Core metadata elements.\n"
 "        Some of your original metadata may have been lost."
-msgstr ""
+msgstr "หมายเหตุ: คำอธิบายข้อมูลต้นฉบับของแผนที่นี้ถูกสร้างขึ้นโดยนำเข้าคำอธิบายข้อมูลจากไฟล์ XML\nคำอธิบายข้อมูลของ GeoNode รองรับบางส่วนของมาตรฐาน ISO, FGDC, และ Dublin Core\nอาจจะทำให้มีบางส่วนของคำอธิบายต้นฉบับของคุณสูญเสียไป"
 
 #: layers/templates/layers/layer_metadata.html:72
 msgid "Attribute"
@@ -1599,11 +1599,11 @@ msgstr "อัพโหลดไฟล์"
 
 #: layers/templates/upload/layer_upload_crs.html:10
 msgid "Provide CRS for "
-msgstr ""
+msgstr "กำหนด CRS ให้กับ"
 
 #: layers/templates/upload/layer_upload_crs.html:14
 msgid "Coordinate Reference System"
-msgstr ""
+msgstr "ระบบพิกัดอ้างอิง"
 
 #: layers/templates/upload/layer_upload_crs.html:17
 msgid ""
@@ -1614,7 +1614,7 @@ msgid ""
 "        <a href=\"http://prj2epsg.org/search\" target=\"_\">prj2epsg</a>\n"
 "        and enter the following:\n"
 "    "
-msgstr ""
+msgstr "\nไม่สามารถระบุระบบพิกัดอ้างอิงของชั้นข้อมูลนี้ได้\nค้นหาหรือป้อนรหัส EPSG ที่เหมาะสมกับชั้นข้อมูลนี้ด้านล่าง\nวิธีหนึ่งที่จะทำสิ่งนี้ได้คือการเยี่ยมชม:\n<a href=\"http://prj2epsg.org/search\" target=\"_\">prj2epsg</a>\nแล้วป้อนรหัสด้านล่าง:"
 
 #: layers/templates/upload/layer_upload_crs.html:32
 #: layers/templates/upload/layer_upload_csv.html:49
@@ -1628,7 +1628,7 @@ msgid ""
 "        There is a problem recognizing the projection of this data. Please\n"
 "        reproject this data to a more common projection.\n"
 "        "
-msgstr ""
+msgstr "\nมีปัญหาในการตรวจสอบ projection ของข้อมูลนี้\nกรุณา\nreproject ข้อมูลนี้เป็น projection ที่ใช้กันทั่วไปกว่านี้"
 
 #: layers/templates/upload/layer_upload_csv.html:11
 msgid "Geospatial Data"
@@ -1645,7 +1645,7 @@ msgid ""
 "With this data, GeoNode was able to guess which attributes contain the\n"
 "latitude and longitude coordinates, but please confirm that the correct\n"
 "attributes are selected below."
-msgstr ""
+msgstr "ด้วยข้อมูลนี้ GeoNode สามารถเดาได้ว่าแอตทริบิวต์ไหนมี\nพิกัดละติจูดและลองจิจูด แต่โปรดยืนยันด้วยว่าถูกต้องแล้ว\nแอตทริบิวต์ที่ถูกเลือกมีดังนี้"
 
 #: layers/templates/upload/layer_upload_csv.html:24
 msgid "Latitude"
@@ -1678,7 +1678,7 @@ msgstr ""
 
 #: layers/templates/upload/layer_upload_invalid.html:7
 msgid "Upload Form"
-msgstr ""
+msgstr "แบบฟอร์มอัพโหลด"
 
 #: layers/templates/upload/layer_upload_time.html:7
 msgid "Upload Layer Step 2"
@@ -1690,7 +1690,7 @@ msgstr "แก้ไขรายละเอียดสำหรับ"
 
 #: layers/templates/upload/layer_upload_time.html:19
 msgid "Time Options"
-msgstr ""
+msgstr "ตัวเลือกเกี่ยวกับเวลา"
 
 #: layers/templates/upload/layer_upload_time.html:22
 msgid "Choose time attribute"
@@ -1738,7 +1738,7 @@ msgstr ""
 
 #: layers/templates/upload/layer_upload_time.html:88
 msgid "Intervals"
-msgstr ""
+msgstr "ช่วงเวลา"
 
 #: layers/templates/upload/layer_upload_time.html:88
 msgid "defined by the resolution"
@@ -1746,7 +1746,7 @@ msgstr "กำหนดโดยความละเอียด"
 
 #: layers/templates/upload/layer_upload_time.html:92
 msgid "Continuous Intervals"
-msgstr ""
+msgstr "ช่วงเวลาที่ต่อเนื่อง"
 
 #: layers/templates/upload/layer_upload_time.html:92
 msgid ""
@@ -1764,7 +1764,7 @@ msgstr "ต้องการความช่วยเหลือ?"
 
 #: layers/templates/upload/layer_upload_time.html:108
 msgid "Enabling Time"
-msgstr ""
+msgstr "เปิดใช้เวลา"
 
 #: layers/templates/upload/layer_upload_time.html:109
 msgid ""
@@ -1847,7 +1847,7 @@ msgstr ""
 
 #: layers/templates/upload/no_upload.html:7
 msgid "Returning to the upload starting page in <span id=\"cnt\">5</span>seconds "
-msgstr ""
+msgstr "กำลังกลับไปที่หน้าเริ่มต้นการอัพโหลดในอีก <span id=\"cnt\">5</span> วินาที "
 
 #: layers/templates/upload/no_upload.html:8
 msgid " Or just go "
@@ -1864,7 +1864,7 @@ msgstr "ซูม"
 
 #: maps/models.py:61
 msgid "projection"
-msgstr ""
+msgstr "projection"
 
 #: maps/models.py:65
 msgid "center X"
@@ -1960,7 +1960,7 @@ msgstr "คุณไม่ได้รับอนุญาตให้ดูแ
 
 #: maps/views.py:77
 msgid "An unknown error has occured."
-msgstr ""
+msgstr "เกิดข้อผิดพลาดที่ไม่รู้จัก"
 
 #: maps/management/__init__.py:33
 msgid "Map Created"
@@ -2080,7 +2080,7 @@ msgstr "แผนที่ WMS"
 
 #: maps/templates/maps/map_detail.html:190
 msgid "WMS layer group for local map layers"
-msgstr ""
+msgstr "กลุ่มชั้นข้อมูล WMS ของชั้นข้อมูลแผนที่"
 
 #: maps/templates/maps/map_detail.html:191 social/tests.py:103
 #: social/templatetags/social_tags.py:47
@@ -2093,7 +2093,7 @@ msgstr ""
 
 #: maps/templates/maps/map_detail.html:194
 msgid "Publish local map layers as WMS layer group"
-msgstr ""
+msgstr "เผยแพร่ชั้นข้อมูลแผนที่เป็นกลุ่มชั้นข้อมูล WMS"
 
 #: maps/templates/maps/map_detail.html:195
 msgid "Publish Map WMS"
@@ -2163,7 +2163,7 @@ msgid ""
 "Note: this map's orginal metadata was populated by importing a metadata XML file.\n"
 "        GeoNode's metadata import supports a subset of ISO, FGDC, and Dublin Core metadata elements.\n"
 "        Some of your original metadata may have been lost."
-msgstr ""
+msgstr "หมายเหตุ: คำอธิบายข้อมูลต้นฉบับของแผนที่นี้ถูกสร้างขึ้นโดยนำเข้าคำอธิบายข้อมูลจากไฟล์ XML\nคำอธิบายข้อมูลของ GeoNode รองรับบางส่วนของมาตรฐาน ISO, FGDC, และ Dublin Core\nอาจจะทำให้มีบางส่วนของคำอธิบายต้นฉบับของคุณสูญเสียไป"
 
 #: maps/templates/maps/map_remove.html:6
 msgid "Deleting"
@@ -2200,17 +2200,17 @@ msgstr "เปลี่ยนรหัสผ่าน: %s"
 
 #: people/enumerations.py:39
 msgid "party who authored the resource"
-msgstr ""
+msgstr "กลุ่มผู้จัดทำแหล่งข้อมูล"
 
 #: people/enumerations.py:40
 msgid ""
 "party who has processed the data in a manner such that the resource has been"
 " modified"
-msgstr ""
+msgstr "กลุ่มผู้ประมวลผลข้อมูลในลักษณะที่ว่าแหล่งข้อมูลนั้นได้รับการแก้ไข"
 
 #: people/enumerations.py:41
 msgid "party who published the resource"
-msgstr ""
+msgstr "กลุ่มผู้เผยแพร่แหล่งข้อมูล"
 
 #: people/enumerations.py:42
 msgid ""
@@ -2222,19 +2222,19 @@ msgstr ""
 msgid ""
 "party who can be contacted for acquiring knowledge about or acquisition of "
 "the resource"
-msgstr ""
+msgstr "กลุ่มบุคคลที่สามารถติดต่อเพื่อหาความรู้หรือได้มาซึ่งแหล่งข้อมูล"
 
 #: people/enumerations.py:45
 msgid "party who distributes the resource"
-msgstr ""
+msgstr "กลุ่มผู้ที่เผยแพร่แหล่งข้อมูล"
 
 #: people/enumerations.py:46
 msgid "party who uses the resource"
-msgstr ""
+msgstr "กลุ่มผู้ใช้แหล่งข้อมูล"
 
 #: people/enumerations.py:47
 msgid "party that supplies the resource"
-msgstr ""
+msgstr "กลุ่มผู้ให้แหล่งข้อมูล"
 
 #: people/enumerations.py:48
 msgid "party who created the resource"
@@ -2242,7 +2242,7 @@ msgstr "ผู้ที่สร้างแหล่งข้อมูล"
 
 #: people/enumerations.py:49
 msgid "party that owns the resource"
-msgstr ""
+msgstr "กลุ่มผู้ที่เป็นเจ้าของแหล่งข้อมูล"
 
 #: people/enumerations.py:50
 msgid ""
@@ -2347,11 +2347,11 @@ msgstr "ประเทศของที่อยู่จริง"
 msgid ""
 "commonly used word(s) or formalised word(s) or phrase(s) used to describe "
 "the subject             (space or comma-separated"
-msgstr ""
+msgstr "คำที่ใช้ทั่วไป หรือคำทางการ หรือวลี ที่ใช้สำหรับอธิบายหัวเรื่อง (เว้นวรรค หรือคั่นด้วยจุลภาค)"
 
 #: people/views.py:84
 msgid "Your username for "
-msgstr ""
+msgstr "ชื่อผู้ใช้ของคุณสำหรับ"
 
 #: people/views.py:99
 msgid "Your username has been emailed to you."
@@ -2475,11 +2475,11 @@ msgstr "OpenGeoPortal"
 
 #: services/enumerations.py:30
 msgid "Harvard Geospatial Library"
-msgstr ""
+msgstr "Harvard Geospatial Library"
 
 #: services/enumerations.py:34
 msgid "Local"
-msgstr ""
+msgstr "ท้องถิ่น"
 
 #: services/enumerations.py:35
 msgid "Cascaded"
@@ -2533,7 +2533,7 @@ msgstr "\nOpen Geoportal เป็นสมาคมที่ประกอบ�
 
 #: services/views.py:273
 msgid "This is an existing service"
-msgstr ""
+msgstr "เซอร์วิสนี้มีอยู่แล้ว"
 
 #: services/views.py:536 services/views.py:633 services/views.py:849
 msgid "Not provided"
@@ -2556,7 +2556,7 @@ msgstr "คุณไม่มีสิทธิ์ลบเซอร์วิส
 
 #: services/templates/services/layers_register.html:26
 msgid "All/None"
-msgstr ""
+msgstr "ทั้งหมด/ไม่มี"
 
 #: services/templates/services/layers_register.html:27
 msgid "Name"
@@ -2840,7 +2840,7 @@ msgstr "ส่งความเห็น"
 
 #: templates/_permissions.html:8
 msgid "Who can view it?"
-msgstr ""
+msgstr "ใครสามารถดูได้บ้าง?"
 
 #: templates/_permissions.html:17 templates/_permissions.html.py:49
 msgid "Anyone"
@@ -2860,29 +2860,29 @@ msgstr "กลุ่มดังต่อไปนี้"
 
 #: templates/_permissions.html:40
 msgid "Who can download it?"
-msgstr ""
+msgstr "ใครสามารถดาวน์โหลดได้บ้าง?"
 
 #: templates/_permissions.html:72
 msgid "Who can change metadata for it?"
-msgstr ""
+msgstr "ใครสามารถแก้ไขคำอธิบายข้อมูลได้บ้าง?"
 
 #: templates/_permissions.html:99
 msgid "Who can edit data for this layer?"
-msgstr ""
+msgstr "ใครสามารถแก้ไขข้อมูลของชั้นข้อมูลนี้ได้บ้าง?"
 
 #: templates/_permissions.html:125
 msgid "Who can edit styles for this layer?"
-msgstr ""
+msgstr "ใครสามารถแก้ไขสไตล์ของชั้นข้อมูลนี้ได้บ้าง?"
 
 #: templates/_permissions.html:152
 msgid ""
 "Who can manage it? (update, delete, change permissions, publish/unpublish "
 "it)"
-msgstr ""
+msgstr "ใครสามารถจัดการได้บ้าง? (ปรับปรุง, ลบ, เปลี่ยนแปลงสิทธิ์, เผยแพร่/หยุดเผยแพร่)"
 
 #: templates/_permissions_form.html:9
 msgid "Set permissions for this resource"
-msgstr ""
+msgstr "ตั้งค่าสิทธิ์ของแหล่งข้อมูลนี้"
 
 #: templates/_permissions_form_js.html:180
 msgid "Choose users..."
@@ -3125,7 +3125,7 @@ msgstr "แผนที่"
 msgid ""
 "Data is available for browsing, aggregating and styling to generate maps "
 "which can be shared publicly or restricted to specific users only."
-msgstr ""
+msgstr "ข้อมูลพร้อมสำหรับการเรียกดู, นำมารวมและใส่สไตล์สร้างเป็นแผนที่ซึ่งสามารถเผยแพร่สู่สาธารณะหรือเฉพาะผู้ใช้ที่เลือกเท่านั้น"
 
 #: templates/index.html:39
 msgid "Create maps"
@@ -3139,7 +3139,7 @@ msgstr "ผู้ใช้"
 msgid ""
 "GeoNode allows registered users to easily upload geospatial data in several "
 "formats including shapefile and GeoTiff."
-msgstr ""
+msgstr "GeoNode อนุญาตให้ผู้ใช้ที่ลงทะเบียนแล้วสามารถอัพโหลดข้อมูลเชิงพื้นที่ได้หลากหลายรูปแบบรวมทั้ง shapefile และ GeoTiff"
 
 #: templates/index.html:45
 msgid "Share data"
@@ -3317,11 +3317,11 @@ msgstr "ลบรูปนี้"
 #: templates/notification/base.html:16 templates/notification/notices.html:7
 #: templates/notification/notices.html:11
 msgid "Notices"
-msgstr ""
+msgstr "การแจ้งเตือน"
 
 #: templates/notification/base.html:17
 msgid "Notice settings"
-msgstr ""
+msgstr "การตั้งค่าการแจ้งเตือน"
 
 #: templates/notification/base.html:18
 msgid "Observed objects"
@@ -3339,7 +3339,7 @@ msgstr "อีเมล์หลัก"
 #: templates/notification/notice_settings.html:17
 #, python-format
 msgid "change under <a href=\"%(email_url)s\">Account</a>"
-msgstr ""
+msgstr "ความเปลี่ยนแปลงภายใน <a href=\"%(email_url)s\">บัญชี</a>"
 
 #: templates/notification/notice_settings.html:21
 msgid "Note"
@@ -3362,7 +3362,7 @@ msgstr "เปลี่ยน"
 
 #: templates/notification/notices.html:16
 msgid "Mark all unseen notices seen"
-msgstr ""
+msgstr "ทำเครื่องหมายที่ยังไม่ดูเป็นดูแล้ว"
 
 #: templates/notification/notices.html:22
 msgid "MONTH_DAY_FORMAT"
@@ -3370,15 +3370,15 @@ msgstr ""
 
 #: templates/notification/notices.html:33
 msgid "View Notice"
-msgstr ""
+msgstr "ดูการแจ้งเตือน"
 
 #: templates/notification/notices.html:41
 msgid "No notices."
-msgstr ""
+msgstr "ไม่มีการแจ้งเตือน"
 
 #: templates/notification/single.html:6 templates/notification/single.html:9
 msgid "Notice"
-msgstr ""
+msgstr "การแจ้งเตือน"
 
 #: templates/relationships/_list_connections.html:3
 #: templates/relationships/_manage_connections.html:6
@@ -3469,7 +3469,7 @@ msgstr "หลังวันที่"
 #: templates/search/_general_filters.html:31
 #: templates/search/_general_filters.html:35
 msgid "yyyy-mm-dd"
-msgstr ""
+msgstr "ปปปป-ดด-วว"
 
 #: templates/search/_general_filters.html:34
 msgid "Date ends before:"

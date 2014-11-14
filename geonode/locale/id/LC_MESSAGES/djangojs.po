@@ -3,13 +3,14 @@
 # This file is distributed under the same license as the PACKAGE package.
 # 
 # Translators:
+# ingenieroariel <ingenieroariel@gmail.com>, 2014
 # Iwan Setiawan <iwan@agrisoft.co.id>, 2014
 msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2014-10-24 10:00-0500\n"
-"PO-Revision-Date: 2014-11-11 22:51+0000\n"
+"PO-Revision-Date: 2014-11-14 17:42+0000\n"
 "Last-Translator: ingenieroariel <ingenieroariel@gmail.com>\n"
 "Language-Team: Indonesian (http://www.transifex.com/projects/p/geonode/language/id/)\n"
 "MIME-Version: 1.0\n"
@@ -53,32 +54,32 @@ msgstr "Siapa yang dapat mengelola dan mengedit data ini?"
 #: static/geonode/js/upload/FileType.js:33
 #, c-format
 msgid "Missing a %s file, which is required"
-msgstr ""
+msgstr "Hilang file %s, yang diperlukan"
 
 #: static/geonode/js/upload/FileTypes.js:7
 msgid "ESRI Shapefile"
-msgstr ""
+msgstr "ESRI Shapefile"
 
 #: static/geonode/js/upload/FileTypes.js:13
 #: static/geonode/js/upload/FileTypes.js:19
 msgid "GeoTiff File"
-msgstr ""
+msgstr "GeoTiff Berkas"
 
 #: static/geonode/js/upload/FileTypes.js:26
 msgid "Comma Separated File"
-msgstr ""
+msgstr "Koma Terpisah Berkas"
 
 #: static/geonode/js/upload/FileTypes.js:32
 msgid "Google Earth KML"
-msgstr ""
+msgstr "Google Earth KML"
 
 #: static/geonode/js/upload/FileTypes.js:38
 msgid "Zip Archives"
-msgstr ""
+msgstr "Arsip Zip"
 
 #: static/geonode/js/upload/LayerInfo.js:249
 msgid "Layer Info"
-msgstr ""
+msgstr "Lapisan Info"
 
 #: static/geonode/js/upload/LayerInfo.js:250
 msgid "Edit Metadata"
@@ -90,45 +91,45 @@ msgstr "Kelola Styles"
 
 #: static/geonode/js/upload/LayerInfo.js:253
 msgid "Your layer was successfully uploaded"
-msgstr ""
+msgstr "Lapisan kamu telah diunggah"
 
 #: static/geonode/js/upload/LayerInfo.js:282
 msgid "Performing Final GeoServer Config Step"
-msgstr ""
+msgstr "Pertunjukan Akhir GeoServer Config Langkah"
 
 #: static/geonode/js/upload/LayerInfo.js:297
 #: static/geonode/js/upload/LayerInfo.js:319
 msgid "You need to specify more information in order to complete your upload"
-msgstr ""
+msgstr "Anda perlu menentukan informasi lebih lanjut untuk menyelesaikan upload"
 
 #: static/geonode/js/upload/LayerInfo.js:311
 msgid "You need to specify more information in order to complete your upload."
-msgstr ""
+msgstr "Anda perlu menentukan informasi lebih lanjut untuk menyelesaikan upload Anda."
 
 #: static/geonode/js/upload/LayerInfo.js:311
 msgid "You can continue configuring your layer."
-msgstr ""
+msgstr "Anda dapat melanjutkan dengan mengkonfigurasi lapisan Anda."
 
 #: static/geonode/js/upload/LayerInfo.js:329
 #: static/geonode/js/upload/LayerInfo.js:414
 msgid "Unexpected Error"
-msgstr ""
+msgstr "Kesalahan tak terduga"
 
 #: static/geonode/js/upload/LayerInfo.js:345
 msgid "Performing GeoServer Config Step"
-msgstr ""
+msgstr "Pertunjukan GeoServer Config Langkah"
 
 #: static/geonode/js/upload/LayerInfo.js:417
 msgid "No error message supplied"
-msgstr ""
+msgstr "Tidak ada pesan kesalahan yang disediakan"
 
 #: static/geonode/js/upload/LayerInfo.js:432
 msgid "Layer files uploaded, configuring in GeoServer"
-msgstr ""
+msgstr "File lapisan upload, mengkonfigurasi di GeoServer"
 
 #: static/geonode/js/upload/LayerInfo.js:447
 msgid "Select or create a Geogit repository."
-msgstr ""
+msgstr "Pilih atau membuat repositori Geogit."
 
 #: static/geonode/js/upload/LayerInfo.js:542
 msgid "Remove"
@@ -137,11 +138,11 @@ msgstr "Hapus"
 #: static/geonode/js/upload/upload.js:126
 #, c-format
 msgid "The file %s is an unsupported file type, please select another file."
-msgstr ""
+msgstr "File %s adalah jenis file yang tidak didukung, silahkan pilih file lain."
 
 #: static/geonode/js/upload/upload.js:286
 msgid "You are uploading an incomplete set of files."
-msgstr ""
+msgstr "Anda meng-upload sebuah set lengkap dari file."
 
 #: templates/lang.js:9 templates/lang.js.c:236
 msgid "Cancel"

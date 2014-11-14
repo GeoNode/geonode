@@ -3,13 +3,14 @@
 # This file is distributed under the same license as the PACKAGE package.
 # 
 # Translators:
+# ingenieroariel <ingenieroariel@gmail.com>, 2014
 # Iwan Setiawan <iwan@agrisoft.co.id>, 2014
 msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2014-11-14 09:56-0500\n"
-"PO-Revision-Date: 2014-11-14 15:05+0000\n"
+"PO-Revision-Date: 2014-11-14 17:32+0000\n"
 "Last-Translator: ingenieroariel <ingenieroariel@gmail.com>\n"
 "Language-Team: Indonesian (http://www.transifex.com/projects/p/geonode/language/id/)\n"
 "MIME-Version: 1.0\n"
@@ -40,7 +41,7 @@ msgstr "tipe feature"
 
 #: base/enumerations.py:30
 msgid "copy or imitation of an existing or hypothetical object"
-msgstr ""
+msgstr "copy atau imitasi dari suatu obyek yang ada atau hipotetis"
 
 #: base/enumerations.py:31
 msgid "collection hardware"
@@ -151,7 +152,7 @@ msgstr "Kategori"
 
 #: base/forms.py:44
 msgid "Category is required."
-msgstr ""
+msgstr "Kategori diperlukan."
 
 #: base/models.py:40 services/models.py:85
 msgid "function performed by the responsible party"
@@ -175,19 +176,19 @@ msgstr "jelaskan rimgkasan isi sumber(s)"
 
 #: base/models.py:248
 msgid "summary of the intentions with which the resource(s) was developed"
-msgstr ""
+msgstr "ringkasan niat dengan yang sumber daya (s) dikembangkan"
 
 #: base/models.py:249
 msgid ""
 "frequency with which modifications and deletions are made to the data after "
 "it is first produced"
-msgstr ""
+msgstr "Frekuensi modifikasi dan penghapusan yang dibuat untuk data setelah pertama kali diproduksi"
 
 #: base/models.py:251
 msgid ""
 "commonly used word(s) or formalised word(s) or phrase(s) used to describe "
 "the subject (space or comma-separated"
-msgstr ""
+msgstr "kata yang umum digunakan (s) atau diformalkan kata (s) atau frase (s) digunakan untuk menggambarkan subjek (spasi atau dipisahkan koma"
 
 #: base/models.py:253
 msgid "keyword identifies a location"
@@ -205,7 +206,7 @@ msgstr "alasan lain atau syarat untuk mengakses dan menggunakan sumberdaya atau 
 
 #: base/models.py:257
 msgid "license of the dataset"
-msgstr ""
+msgstr "lisensi dataset"
 
 #: base/models.py:258
 msgid "language used within the dataset"
@@ -215,7 +216,7 @@ msgstr "bahasa yang digunakan dalam dataset"
 msgid ""
 "high-level geographic data thematic classification to assist in the grouping"
 " and search of available geographic data sets."
-msgstr ""
+msgstr "tingkat tinggi data geografis klasifikasi tematik untuk membantu dalam pengelompokan dan pencarian yang tersedia set data geografis."
 
 #: base/models.py:261
 msgid "method used to represent geographic information in the dataset."
@@ -227,13 +228,13 @@ msgstr "periode waktu (mulai)"
 
 #: base/models.py:263
 msgid "time period covered by the content of the dataset (end)"
-msgstr ""
+msgstr "periode waktu yang dicakup oleh isi dataset (end)"
 
 #: base/models.py:264
 msgid ""
 "information about on-line sources from which the dataset, specification, or "
 "community profile name and extended metadata elements can be obtained"
-msgstr ""
+msgstr "informasi tentang sumber on-line dari mana dataset, spesifikasi, atau nama profil komunitas dan elemen metadata diperpanjang dapat diperoleh"
 
 #: base/models.py:266
 msgid "detailed text description of what the online resource is/does"
@@ -355,11 +356,11 @@ msgstr "CSW WKT geometry"
 
 #: base/models.py:361
 msgid "Should this resource be advertised in home page?"
-msgstr ""
+msgstr "Haruskah sumber daya ini akan diiklankan di halaman rumah?"
 
 #: base/models.py:362
 msgid "Should this resource be published and searchable?"
-msgstr ""
+msgstr "Haruskah sumber daya ini akan diterbitkan dan dicari?"
 
 #: base/models.py:682
 msgid "For example \"kml\""
@@ -380,7 +381,7 @@ msgstr "Tentang"
 
 #: base/templates/base/_resourcebase_contact_snippet.html:5
 msgid "Owner, Point of Contact, Metadata Author"
-msgstr ""
+msgstr "Pemilik, Point of Contact, Metadata Penulis"
 
 #: base/templates/base/_resourcebase_contact_snippet.html:10
 #: base/templates/base/resourcebase_info_panel.html:56
@@ -407,7 +408,7 @@ msgstr "Judul"
 #: base/templates/base/resourcebase_info_panel.html:11
 #: base/templates/base/resourcebase_info_panel.html:75
 msgid "License"
-msgstr ""
+msgstr "Lisensi"
 
 #: base/templates/base/resourcebase_info_panel.html:24 services/forms.py:26
 msgid "Abstract"
@@ -476,15 +477,15 @@ msgstr "kata kunci"
 
 #: documents/forms.py:183 documents/forms.py:251
 msgid "Document must be a file or url."
-msgstr ""
+msgstr "Dokumen harus file atau url."
 
 #: documents/forms.py:187 documents/forms.py:255
 msgid "A document cannot have both a file and a url."
-msgstr ""
+msgstr "Sebuah dokumen tidak dapat memiliki dua file dan url."
 
 #: documents/forms.py:200 documents/forms.py:268
 msgid "This file type is not allowed"
-msgstr ""
+msgstr "Jenis file ini tidak diperbolehkan"
 
 #: documents/forms.py:218
 msgid "Link to"
@@ -492,19 +493,19 @@ msgstr "Tautan ke"
 
 #: documents/forms.py:240
 msgid "Permissions must be valid JSON."
-msgstr ""
+msgstr "Perizinan harus JSON valid."
 
 #: documents/models.py:39
 msgid "File"
-msgstr ""
+msgstr "Berkas"
 
 #: documents/models.py:48
 msgid "The URL of the document if it is external."
-msgstr ""
+msgstr "URL dari dokumen jika eksternal."
 
 #: documents/models.py:49
 msgid "URL"
-msgstr ""
+msgstr "URL"
 
 #: documents/views.py:26
 msgid "You are not permitted to delete this document"
@@ -532,7 +533,7 @@ msgstr "Anda tidak diijinkan untuk melihat dokumen ini"
 
 #: documents/views.py:175
 msgid "You are not allowed to edit this document."
-msgstr ""
+msgstr "Anda tidak diizinkan untuk mengedit dokumen ini."
 
 #: documents/templates/documents/_document_filters.html:5
 #: groups/templates/groups/group_list.html:15
@@ -611,11 +612,11 @@ msgstr "Unduh"
 
 #: documents/templates/documents/_document_list_item.html:46
 msgid "You do not have permission to view this document"
-msgstr ""
+msgstr "Anda tidak memiliki izin untuk melihat dokumen ini"
 
 #: documents/templates/documents/document_detail.html:42
 msgid "External Resource"
-msgstr ""
+msgstr "Sumber eksternal"
 
 #: documents/templates/documents/document_detail.html:48
 #: layers/templates/layers/_actions.html:3
@@ -656,7 +657,7 @@ msgstr "Rating rata-rata"
 #: documents/templates/documents/document_detail.html:95
 #: documents/templates/documents/document_detail.html:107
 msgid "Download Document"
-msgstr ""
+msgstr "Download Dokumen"
 
 #: documents/templates/documents/document_detail.html:100
 #: layers/templates/layers/layer_detail.html:156
@@ -673,7 +674,7 @@ msgstr "Mengunduh Metadata"
 #: maps/templates/maps/map_detail.html:127
 #: templates/_bulk_permissions_form.html:19
 msgid "Close"
-msgstr ""
+msgstr "Dekat"
 
 #: documents/templates/documents/document_detail.html:124
 #: documents/templates/documents/document_detail.html:131
@@ -846,7 +847,7 @@ msgstr "PNG"
 
 #: geoserver/signals.py:288
 msgid "Could not create a download link for layer."
-msgstr ""
+msgstr "Tidak dapat membuat link download untuk lapisan."
 
 #: geoserver/signals.py:319
 msgid "KML"
@@ -863,15 +864,15 @@ msgstr "Legenda"
 
 #: geoserver/signals.py:525 layers/utils.py:528
 msgid "Remote Thumbnail"
-msgstr ""
+msgstr "Jauh Thumbnail"
 
 #: geoserver/signals.py:560 layers/utils.py:563
 msgid "Thumbnail"
-msgstr ""
+msgstr "Kuku ibu jari"
 
 #: geoserver/views.py:338
 msgid "You don't have permissions to change style for this layer"
-msgstr ""
+msgstr "Anda tidak memiliki izin untuk mengubah gaya untuk lapisan ini"
 
 #: geoserver/views.py:425 geoserver/views.py:480
 msgid "Bad HTTP Authorization Credentials."
@@ -905,27 +906,27 @@ msgstr "nilai telah diberikan pada layer"
 msgid ""
 "a short version of the name consisting only of letters, numbers, underscores"
 " and hyphens."
-msgstr ""
+msgstr "versi singkat dari nama hanya terdiri dari huruf, angka, garis bawah dan tanda hubung."
 
 #: groups/forms.py:23
 msgid "A group already exists with that slug."
-msgstr ""
+msgstr "Sebuah kelompok sudah ada dengan siput itu."
 
 #: groups/forms.py:30 groups/forms.py:57
 msgid "A group already exists with that name."
-msgstr ""
+msgstr "Sebuah kelompok sudah ada dengan nama itu."
 
 #: groups/models.py:17
 msgid "Public"
-msgstr ""
+msgstr "Publik"
 
 #: groups/models.py:18
 msgid "Public (invite-only)"
-msgstr ""
+msgstr "Publik (khusus undangan)"
 
 #: groups/models.py:19
 msgid "Private"
-msgstr ""
+msgstr "Pribadi"
 
 #: groups/models.py:22
 msgid ""
@@ -933,37 +934,37 @@ msgid ""
 "(invite-only):Any registered user can view the group.  Only invited users "
 "can join.<br>Private: Registered users cannot see any details about the "
 "group, including membership.  Only invited users can join."
-msgstr ""
+msgstr "Publik: Setiap pengguna terdaftar dapat melihat dan bergabung dengan kelompok masyarakat. <br> Publik (khusus undangan): Setiap pengguna terdaftar dapat melihat kelompok. Hanya pengguna yang diundang dapat bergabung. <br> Swasta: Pengguna terdaftar tidak dapat melihat rincian apapun tentang kelompok, termasuk keanggotaan. Hanya pengguna yang diundang dapat bergabung."
 
 #: groups/models.py:27
 msgid ""
 "Email used to contact one or all group members, such as a mailing list, "
 "shared email, or exchange group."
-msgstr ""
+msgstr "Email yang digunakan untuk menghubungi anggota satu atau semua kelompok, seperti milis, email bersama, atau kelompok pertukaran."
 
 #: groups/models.py:36
 msgid "email"
-msgstr ""
+msgstr "email"
 
 #: groups/models.py:181 groups/models.py:200
 msgid "Manager"
-msgstr ""
+msgstr "Manajer"
 
 #: groups/models.py:182 groups/models.py:201
 msgid "Member"
-msgstr ""
+msgstr "Anggota"
 
 #: groups/models.py:206
 msgid "Sent"
-msgstr ""
+msgstr "Dikirim"
 
 #: groups/models.py:207
 msgid "Accepted"
-msgstr ""
+msgstr "Diterima"
 
 #: groups/models.py:208
 msgid "Declined"
-msgstr ""
+msgstr "Ditolak"
 
 #: groups/templates/groups/activity.html:7
 #: groups/templates/groups/activity.html:8
@@ -981,57 +982,57 @@ msgstr "Belum ada aktivitas"
 #: groups/templates/groups/group_list.html:5
 #: groups/templates/groups/group_list.html:11
 msgid "Explore Groups"
-msgstr ""
+msgstr "Jelajahi Grup"
 
 #: groups/templates/groups/group_base.html:14
 #: groups/templates/groups/group_create.html:11
 msgid "Create a Group"
-msgstr ""
+msgstr "Buat Grup a"
 
 #: groups/templates/groups/group_base.html:16
 #: groups/templates/groups/group_update.html:11
 msgid "Update Group"
-msgstr ""
+msgstr "Perbarui Grup"
 
 #: groups/templates/groups/group_base.html:17
 msgid "Remove Group"
-msgstr ""
+msgstr "Hapus Grup"
 
 #: groups/templates/groups/group_create.html:5
 #: groups/templates/groups/group_update.html:5
 msgid "Create Group"
-msgstr ""
+msgstr "Buat Grup"
 
 #: groups/templates/groups/group_create.html:26
 #: services/templates/services/service_register.html:17
 msgid "Create"
-msgstr ""
+msgstr "Membuat"
 
 #: groups/templates/groups/group_detail.html:19
 msgid "This group has not created a logo."
-msgstr ""
+msgstr "Kelompok ini belum membuat logo."
 
 #: groups/templates/groups/group_detail.html:46
 #: groups/templates/groups/group_invite_response.html:7
 #: groups/templates/groups/group_members.html:12
 msgid "Members"
-msgstr ""
+msgstr "Anggota"
 
 #: groups/templates/groups/group_detail.html:57
 msgid "Edit Group Details"
-msgstr ""
+msgstr "Sunting Grup Detail"
 
 #: groups/templates/groups/group_detail.html:58
 msgid "Manage Group Members"
-msgstr ""
+msgstr "Kelola Anggota Grup"
 
 #: groups/templates/groups/group_detail.html:59
 msgid "Delete this Group"
-msgstr ""
+msgstr "Hapus Grup ini"
 
 #: groups/templates/groups/group_detail.html:62
 msgid "Group Activities"
-msgstr ""
+msgstr "Aktivitas kelompok"
 
 #: groups/templates/groups/group_detail.html:67
 #, python-format
@@ -1039,35 +1040,35 @@ msgid ""
 "\n"
 "            This group is <strong>%(access)s</strong>.\n"
 "          "
-msgstr ""
+msgstr "\nKelompok ini <strong>%(access)s</strong>"
 
 #: groups/templates/groups/group_detail.html:71
 msgid "Anyone may join this group."
-msgstr ""
+msgstr "Siapapun bisa bergabung dengan grup ini."
 
 #: groups/templates/groups/group_detail.html:77
 msgid "Anyone may view this group but membership is by invitation only."
-msgstr ""
+msgstr "Siapapun dapat melihat grup ini tapi keanggotaan adalah dengan undangan saja."
 
 #: groups/templates/groups/group_detail.html:79
 msgid "Membership is by invitation only."
-msgstr ""
+msgstr "Keanggotaan adalah dengan undangan saja."
 
 #: groups/templates/groups/group_detail.html:84
 msgid "Managers"
-msgstr ""
+msgstr "Manajer"
 
 #: groups/templates/groups/group_invite_response.html:10
 msgid "Membership Request"
-msgstr ""
+msgstr "Permintaan Keanggotaan"
 
 #: groups/templates/groups/group_invite_response.html:14
 msgid "Don't Join"
-msgstr ""
+msgstr "Jangan Gabung"
 
 #: groups/templates/groups/group_invite_response.html:15
 msgid "Join Group"
-msgstr ""
+msgstr "Bergabung dengan Grup"
 
 #: groups/templates/groups/group_list.html:16
 #: people/templates/people/profile_list.html:13
@@ -1089,15 +1090,15 @@ msgstr "Z - A"
 
 #: groups/templates/groups/group_members.html:9
 msgid "Group details"
-msgstr ""
+msgstr "Rincian kelompok"
 
 #: groups/templates/groups/group_members.html:19
 msgid "Add members"
-msgstr ""
+msgstr "Tambah anggota"
 
 #: groups/templates/groups/group_members.html:28
 msgid "Invite people"
-msgstr ""
+msgstr "Undang orang"
 
 #: groups/templates/groups/group_remove.html:12
 #, python-format
@@ -1105,15 +1106,15 @@ msgid ""
 "\n"
 "          Are you sure you want to remove the group: %(group_title)s?\n"
 "        "
-msgstr ""
+msgstr "\nApakah Anda yakin ingin menghapus grup: %(group_title)s?"
 
 #: groups/templates/groups/group_remove_maps_data.html:6
 msgid "Remove Maps/Data from Group"
-msgstr ""
+msgstr "Hapus Maps / Data dari Grup"
 
 #: groups/templates/groups/group_remove_maps_data.html:15
 msgid "Remove selected maps/data"
-msgstr ""
+msgstr "Hapus peta yang dipilih / data"
 
 #: layers/models.py:51
 msgid "style name"
@@ -1283,7 +1284,7 @@ msgstr "Atribut"
 
 #: layers/templates/layers/_actions.html:11
 msgid "GeoGit"
-msgstr ""
+msgstr "GeoGit"
 
 #: layers/templates/layers/_layer_list_item.html:38
 msgid "Create a map"
@@ -1297,7 +1298,7 @@ msgstr "Unduh Layer"
 
 #: layers/templates/layers/_layer_list_item.html:85
 msgid "You do not have permission to view this layer"
-msgstr ""
+msgstr "Anda tidak memiliki izin untuk melihat lapisan ini"
 
 #: layers/templates/layers/layer_change_poc.html:5
 msgid "Home"
@@ -1419,11 +1420,11 @@ msgstr "Ubah kepemilikan layer"
 
 #: layers/templates/layers/layer_detail.html:298
 msgid "External service layer"
-msgstr ""
+msgstr "Lapisan layanan eksternal"
 
 #: layers/templates/layers/layer_detail.html:299
 msgid "Source"
-msgstr ""
+msgstr "Sumber"
 
 #: layers/templates/layers/layer_list.html:7
 #: layers/templates/layers/layer_list.html:14
@@ -1450,7 +1451,7 @@ msgid ""
 "Note: this layer's orginal metadata was populated by importing a metadata XML file.\n"
 "        GeoNode's metadata import supports a subset of ISO, FGDC, and Dublin Core metadata elements.\n"
 "        Some of your original metadata may have been lost."
-msgstr ""
+msgstr "Catatan: metadata asli lapisan ini dihuni oleh mengimpor file metadata XML. GeoNode ini metadata impor mendukung subset dari elemen metadata ISO, FGDC, dan Dublin Core. Beberapa metadata asli Anda mungkin telah hilang."
 
 #: layers/templates/layers/layer_metadata.html:72
 msgid "Attribute"
@@ -1839,11 +1840,11 @@ msgstr "Untuk menghilangkan abiguity, ulangi kode untuk merepresentasikan nilai 
 
 #: layers/templates/upload/layer_upload_time.html:139
 msgid "The 'best guess' will handle date and optional time variants of"
-msgstr ""
+msgstr "The 'tebakan terbaik' akan menangani varian tanggal dan waktu opsional"
 
 #: layers/templates/upload/layer_upload_time.html:140
 msgid "In terms of the formatting flags noted above, these are"
-msgstr ""
+msgstr "Dalam hal bendera format yang disebutkan di atas, ini adalah"
 
 #: layers/templates/upload/no_upload.html:7
 msgid "Returning to the upload starting page in <span id=\"cnt\">5</span>seconds "
@@ -1876,11 +1877,11 @@ msgstr "titik pusat Y"
 
 #: maps/models.py:76
 msgid "Site URL"
-msgstr ""
+msgstr "URL situs"
 
 #: maps/models.py:81
 msgid "Featured Map URL"
-msgstr ""
+msgstr "Pilihan Peta URL"
 
 #: maps/models.py:371
 msgid "stack order"
@@ -1932,7 +1933,7 @@ msgstr "parameter sumber"
 
 #: maps/models.py:518
 msgid "JSON Configuration"
-msgstr ""
+msgstr "JSON Konfigurasi"
 
 #: maps/views.py:70
 msgid "You are not permitted to delete this map."
@@ -1948,7 +1949,7 @@ msgstr "Anda harus login untuk menyimpan peta ini"
 
 #: maps/views.py:73
 msgid "You are not permitted to save or edit this map."
-msgstr ""
+msgstr "Anda tidak diizinkan untuk menyimpan atau mengedit peta ini."
 
 #: maps/views.py:75
 msgid "You are not allowed to modify this map's metadata."
@@ -1960,7 +1961,7 @@ msgstr "Anda tidak diijinkan untuk melihat peta ini"
 
 #: maps/views.py:77
 msgid "An unknown error has occured."
-msgstr ""
+msgstr "Sebuah kesalahan yang tidak diketahui telah terjadi."
 
 #: maps/management/__init__.py:33
 msgid "Map Created"
@@ -1992,7 +1993,7 @@ msgstr "Lihat"
 
 #: maps/templates/maps/_map_list_item.html:47
 msgid "You do not have permission to view this map"
-msgstr ""
+msgstr "Anda tidak memiliki izin untuk melihat peta ini"
 
 #: maps/templates/maps/map_base.html:5 maps/templates/maps/map_base.html:12
 #: maps/templates/maps/map_list.html:12
@@ -2156,14 +2157,14 @@ msgid ""
 "\n"
 "        Editing details for %(map_title)s\n"
 "      "
-msgstr ""
+msgstr "\nRincian editing untuk %(map_title)s"
 
 #: maps/templates/maps/map_metadata.html:17
 msgid ""
 "Note: this map's orginal metadata was populated by importing a metadata XML file.\n"
 "        GeoNode's metadata import supports a subset of ISO, FGDC, and Dublin Core metadata elements.\n"
 "        Some of your original metadata may have been lost."
-msgstr ""
+msgstr "Catatan: ini peta ini metadata asli dihuni oleh mengimpor file metadata XML. GeoNode ini metadata impor mendukung subset dari elemen metadata ISO, FGDC, dan Dublin Core. Beberapa metadata asli Anda mungkin telah hilang."
 
 #: maps/templates/maps/map_remove.html:6
 msgid "Deleting"
@@ -2183,20 +2184,20 @@ msgstr "GeoExplorer"
 
 #: people/admin.py:54
 msgid "Personal info"
-msgstr ""
+msgstr "Info Pribadi"
 
 #: people/admin.py:57
 msgid "Important dates"
-msgstr ""
+msgstr "Tanggal penting"
 
 #: people/admin.py:150
 msgid "Password changed successfully."
-msgstr ""
+msgstr "Sandi berhasil diubah."
 
 #: people/admin.py:160
 #, python-format
 msgid "Change password: %s"
-msgstr ""
+msgstr "Ubah password: %s"
 
 #: people/enumerations.py:39
 msgid "party who authored the resource"
@@ -2216,7 +2217,7 @@ msgstr "kelompok yang mempublikasikan"
 msgid ""
 "party that accepts accountability and responsibility for the data and "
 "ensures         appropriate care and maintenance of the resource"
-msgstr ""
+msgstr "pihak yang menerima akuntabilitas dan tanggung jawab atas data dan memastikan perawatan yang tepat dan pemeliharaan sumber daya"
 
 #: people/enumerations.py:44
 msgid ""
@@ -2275,7 +2276,7 @@ msgstr "Profil"
 
 #: people/models.py:47
 msgid "introduce yourself"
-msgstr ""
+msgstr "memperkenalkan diri"
 
 #: people/models.py:49
 msgid "Position Name"
@@ -2347,7 +2348,7 @@ msgstr "negara"
 msgid ""
 "commonly used word(s) or formalised word(s) or phrase(s) used to describe "
 "the subject             (space or comma-separated"
-msgstr ""
+msgstr "kata yang umum digunakan (s) atau diformalkan kata (s) atau frase (s) digunakan untuk menggambarkan subjek (spasi atau dipisahkan koma"
 
 #: people/views.py:84
 msgid "Your username for "
@@ -2363,7 +2364,7 @@ msgstr "Tidak ditemukan pengguna dengan alamat email tersebut"
 
 #: people/templates/people/_profile_about_item.html:18
 msgid "No Group"
-msgstr ""
+msgstr "Tidak ada Grup"
 
 #: people/templates/people/_profile_filters.html:4
 msgid "All contents"
@@ -2406,7 +2407,7 @@ msgstr "Profil dari"
 
 #: people/templates/people/profile_detail.html:69
 msgid "Edit profile"
-msgstr ""
+msgstr "Edit profil"
 
 #: people/templates/people/profile_detail.html:70
 msgid "Change password"
@@ -2426,11 +2427,11 @@ msgstr "Aktivitas Saya"
 
 #: people/templates/people/profile_detail.html:82
 msgid "User Activities"
-msgstr ""
+msgstr "Pengguna Aktivitas"
 
 #: people/templates/people/profile_detail.html:139
 msgid "Resources"
-msgstr ""
+msgstr "Sumber"
 
 #: people/templates/people/profile_edit.html:10
 #: people/templates/people/profile_edit.html:18
@@ -2451,75 +2452,75 @@ msgstr "Telusuri Pengguna"
 
 #: services/enumerations.py:24
 msgid "Auto-detect"
-msgstr ""
+msgstr "Auto-mendeteksi"
 
 #: services/enumerations.py:25
 msgid "Paired WMS/WFS/WCS"
-msgstr ""
+msgstr "Paired WMS / WFS / WCS"
 
 #: services/enumerations.py:26
 msgid "Web Map Service"
-msgstr ""
+msgstr "Layanan Web Peta"
 
 #: services/enumerations.py:27
 msgid "Catalogue Service"
-msgstr ""
+msgstr "Layanan Katalog"
 
 #: services/enumerations.py:28
 msgid "ArcGIS REST Service"
-msgstr ""
+msgstr "ArcGIS SISA Layanan"
 
 #: services/enumerations.py:29 services/enumerations.py:39
 msgid "OpenGeoPortal"
-msgstr ""
+msgstr "OpenGeoPortal"
 
 #: services/enumerations.py:30
 msgid "Harvard Geospatial Library"
-msgstr ""
+msgstr "Harvard Geospatial Perpustakaan"
 
 #: services/enumerations.py:34
 msgid "Local"
-msgstr ""
+msgstr "Lokal"
 
 #: services/enumerations.py:35
 msgid "Cascaded"
-msgstr ""
+msgstr "Mengalir"
 
 #: services/enumerations.py:36
 msgid "Harvested"
-msgstr ""
+msgstr "Panen"
 
 #: services/enumerations.py:37
 msgid "Indexed"
-msgstr ""
+msgstr "Diindeks"
 
 #: services/enumerations.py:38
 msgid "Live"
-msgstr ""
+msgstr "Hidup"
 
 #: services/forms.py:12
 msgid "Service URL"
-msgstr ""
+msgstr "URL layanan"
 
 #: services/forms.py:16
 msgid "Service Type"
-msgstr ""
+msgstr "Layanan Type"
 
 #: services/models.py:91
 msgid "Layer Name"
-msgstr ""
+msgstr "Lapisan Nama"
 
 #: services/models.py:92
 msgid "Layer Title"
-msgstr ""
+msgstr "Lapisan Judul"
 
 #: services/models.py:93
 msgid "Layer Description"
-msgstr ""
+msgstr "Lapisan Keterangan"
 
 #: services/models.py:94
 msgid "Layer Styles"
-msgstr ""
+msgstr "Layer Styles"
 
 #: services/views.py:63
 msgid ""
@@ -2529,34 +2530,34 @@ msgid ""
 "include: Harvard, MIT, MassGIS, Princeton, Columbia, Stanford, UC Berkeley, UCLA, Yale, and UConn. Built on open source\n"
 "technology, The Open Geoportal provides organizations the opportunity to share thousands of geospatial data layers,\n"
 "maps, metadata, and development resources through a single common interface.\n"
-msgstr ""
+msgstr "\nOpen Geoportal adalah sebuah konsorsium yang terdiri dari kontribusi dari beberapa universitas dan organisasi untuk membantu memfasilitasi penemuan dan akuisisi data geospasial di banyak organisasi dan platform. Mitra saat ini meliputi: Harvard, MIT, MassGIS, Princeton, Columbia, Stanford, UC Berkeley, UCLA, Yale, dan UConn. Dibangun pada teknologi open source, The Open Geoportal memberikan kesempatan untuk berbagi ribuan lapisan geospasial data, peta, metadata, dan sumber daya pembangunan melalui interface umum tunggal organisasi.\n"
 
 #: services/views.py:273
 msgid "This is an existing service"
-msgstr ""
+msgstr "Ini adalah layanan yang ada"
 
 #: services/views.py:536 services/views.py:633 services/views.py:849
 msgid "Not provided"
-msgstr ""
+msgstr "Tidak tersedia"
 
 #: services/views.py:801
 msgid "Could not find any layers in a compatible projection."
-msgstr ""
+msgstr "Tidak dapat menemukan lapisan dalam proyeksi yang kompatibel."
 
 #: services/views.py:946
 #, python-format
 msgid ""
 "Could not find any layers in a compatible projection:                 The "
 "spatial id was: %(srs)s and the url %(url)s"
-msgstr ""
+msgstr "Tidak dapat menemukan lapisan dalam proyeksi kompatibel: The id spasial adalah: %(srs)s dan url %(url)s"
 
 #: services/views.py:1207
 msgid "You are not permitted to remove this service."
-msgstr ""
+msgstr "Anda tidak diizinkan untuk menghapus layanan ini."
 
 #: services/templates/services/layers_register.html:26
 msgid "All/None"
-msgstr ""
+msgstr "Semua / Tidak"
 
 #: services/templates/services/layers_register.html:27
 msgid "Name"
@@ -2568,11 +2569,11 @@ msgstr "Tambah Layer"
 
 #: services/templates/services/service_detail.html:43
 msgid "Name:"
-msgstr ""
+msgstr "Nama:"
 
 #: services/templates/services/service_detail.html:44
 msgid "URL:"
-msgstr ""
+msgstr "URL:"
 
 #: services/templates/services/service_detail.html:45
 msgid "Abstract:"
@@ -2588,15 +2589,15 @@ msgstr "Kontak"
 
 #: services/templates/services/service_detail.html:51
 msgid "Services"
-msgstr ""
+msgstr "Layanan"
 
 #: services/templates/services/service_detail.html:52
 msgid "This CSW server contains the following services"
-msgstr ""
+msgstr "Server CSW ini berisi layanan berikut"
 
 #: services/templates/services/service_detail.html:65
 msgid "This Service contains the following layers"
-msgstr ""
+msgstr "Layanan ini berisi lapisan berikut"
 
 #: services/templates/services/service_detail.html:110
 #: services/templates/services/service_list.html:29
@@ -2605,11 +2606,11 @@ msgstr "Mengelola"
 
 #: services/templates/services/service_detail.html:113
 msgid "Edit Service Metadata"
-msgstr ""
+msgstr "Sunting Layanan Metadata"
 
 #: services/templates/services/service_detail.html:116
 msgid "Remove Service"
-msgstr ""
+msgstr "Hapus Layanan"
 
 #: services/templates/services/service_edit.html:19
 #: templates/announcements/announcement_form.html:25
@@ -2618,27 +2619,27 @@ msgstr "Simpan"
 
 #: services/templates/services/service_layers.html:3
 msgid "Service:"
-msgstr ""
+msgstr "Layanan:"
 
 #: services/templates/services/service_layers.html:5
 msgid "The following layers will soon be added to the data catalog:"
-msgstr ""
+msgstr "Lapisan berikut akan segera ditambahkan ke katalog data yang:"
 
 #: services/templates/services/service_list.html:30
 msgid "Register a new Service"
-msgstr ""
+msgstr "Daftarkan Layanan baru"
 
 #: services/templates/services/service_register.html:21
 msgid "Service has been created:"
-msgstr ""
+msgstr "Layanan telah dibuat:"
 
 #: services/templates/services/service_register.html:28
 msgid "The following layers will be imported"
-msgstr ""
+msgstr "Lapisan berikut akan diimpor"
 
 #: services/templates/services/service_remove.html:7
 msgid "Are you sure you want to remove"
-msgstr ""
+msgstr "Apakah Anda yakin ingin menghapus"
 
 #: social/signals.py:73
 msgid "created"
@@ -2709,7 +2710,7 @@ msgstr "Pengguna"
 
 #: templates/500.html:51 templates/base.html:59
 msgid "Groups"
-msgstr ""
+msgstr "Grup"
 
 #: templates/500.html:56 templates/search/search.html:6
 #: templates/search/search.html.py:12
@@ -2722,7 +2723,7 @@ msgstr "Aktivitas Terakhir"
 
 #: templates/500.html:78 templates/base.html:94
 msgid "Inbox"
-msgstr ""
+msgstr "Inbox"
 
 #: templates/500.html:80 templates/base.html:96
 #: templates/announcements/announcement_list.html:6
@@ -2733,11 +2734,11 @@ msgstr "Pengumuman"
 
 #: templates/500.html:83 templates/base.html:99
 msgid "Remote Services"
-msgstr ""
+msgstr "Jauh Layanan"
 
 #: templates/500.html:84 templates/base.html:100
 msgid "Invite User"
-msgstr ""
+msgstr "Undang Pengguna"
 
 #: templates/500.html:86 templates/base.html:102
 msgid "GeoServer"
@@ -2787,7 +2788,7 @@ msgid ""
 "          Please contact your GeoNode administrator (he may have received an email automatically if he configured it properly).\n"
 "          If you are the site administrator, enable debug mode to see the actual error and fix it or file an issue in <a href=\"http://github.com/GeoNode/geonode/issues\">GeoNode's issue tracker</a>\n"
 "          "
-msgstr ""
+msgstr "\nSilahkan hubungi administrator GeoNode Anda (ia mungkin telah menerima email secara otomatis jika ia dikonfigurasi dengan benar). Jika Anda adalah administrator situs, aktifkan mode debug untuk melihat kesalahan yang sebenarnya dan memperbaikinya atau mengajukan masalah di <a href=\"http://github.com/GeoNode/geonode/issues\">GeoNode dunia pelacak isu</a>"
 
 #: templates/500.html:182 templates/base.html:172
 msgid "Powered by"
@@ -2811,7 +2812,7 @@ msgstr "Tambahkan sebagai favorit"
 
 #: templates/_bulk_permissions_form.html:9
 msgid "Set permissions on selected resources"
-msgstr ""
+msgstr "Mengatur hak akses pada sumber daya yang dipilih"
 
 #: templates/_bulk_permissions_form.html:20
 #: templates/_permissions_form.html:16
@@ -2840,7 +2841,7 @@ msgstr "Kirim Komentar"
 
 #: templates/_permissions.html:8
 msgid "Who can view it?"
-msgstr ""
+msgstr "Siapa yang bisa melihatnya?"
 
 #: templates/_permissions.html:17 templates/_permissions.html.py:49
 msgid "Anyone"
@@ -2850,47 +2851,47 @@ msgstr "Semua pengguna"
 #: templates/_permissions.html:80 templates/_permissions.html.py:107
 #: templates/_permissions.html:133 templates/_permissions.html.py:160
 msgid "The following users:"
-msgstr ""
+msgstr "Pengguna berikut:"
 
 #: templates/_permissions.html:28 templates/_permissions.html.py:60
 #: templates/_permissions.html:86 templates/_permissions.html.py:113
 #: templates/_permissions.html:139 templates/_permissions.html.py:166
 msgid "The following groups:"
-msgstr ""
+msgstr "Kelompok berikut:"
 
 #: templates/_permissions.html:40
 msgid "Who can download it?"
-msgstr ""
+msgstr "Siapa yang bisa download?"
 
 #: templates/_permissions.html:72
 msgid "Who can change metadata for it?"
-msgstr ""
+msgstr "Siapa yang bisa mengubah metadata untuk itu?"
 
 #: templates/_permissions.html:99
 msgid "Who can edit data for this layer?"
-msgstr ""
+msgstr "Siapa yang bisa mengedit data untuk lapisan ini?"
 
 #: templates/_permissions.html:125
 msgid "Who can edit styles for this layer?"
-msgstr ""
+msgstr "Siapa yang dapat mengedit gaya untuk lapisan ini?"
 
 #: templates/_permissions.html:152
 msgid ""
 "Who can manage it? (update, delete, change permissions, publish/unpublish "
 "it)"
-msgstr ""
+msgstr "Siapa yang bisa mengelola itu? (Update, menghapus, perizinan perubahan, mempublikasikan / membatalkan publikasi itu)"
 
 #: templates/_permissions_form.html:9
 msgid "Set permissions for this resource"
-msgstr ""
+msgstr "Set hak akses untuk sumber daya ini"
 
 #: templates/_permissions_form_js.html:180
 msgid "Choose users..."
-msgstr ""
+msgstr "Pilih pengguna ..."
 
 #: templates/_permissions_form_js.html:213
 msgid "Choose groups..."
-msgstr ""
+msgstr "Pilih kelompok ..."
 
 #: templates/about.html:4 templates/about.html.py:8
 msgid "About GeoNode"
@@ -2902,7 +2903,7 @@ msgstr "Tentang GeoNode."
 
 #: templates/base.html:224
 msgid "Type your search here ..."
-msgstr ""
+msgstr "Ketik penelusuran Anda di sini ..."
 
 #: templates/developer.html:4 templates/developer.html.py:8
 msgid "Information for Developers"
@@ -3087,35 +3088,35 @@ msgstr "Selamat Datang"
 #: templates/index.html:16
 msgid ""
 "GeoNode is an open source platform for sharing geospatial data and maps."
-msgstr ""
+msgstr "GeoNode adalah sebuah platform open source untuk berbagi data geospasial dan peta."
 
 #: templates/index.html:17
 msgid ""
 "If you have any questions about the software or service, join our <a "
 "href=\"https://groups.google.com/d/forum/geonode-users\">mailing list</a>."
-msgstr ""
+msgstr "Jika Anda memiliki pertanyaan tentang perangkat lunak atau layanan, bergabung kami <a href=\"https://groups.google.com/d/forum/geonode-users\">mailing list</a> ."
 
 #: templates/index.html:18
 msgid "Need help?"
-msgstr ""
+msgstr "Butuh bantuan?"
 
 #: templates/index.html:18
 msgid "Getting Started"
-msgstr ""
+msgstr "Memulai"
 
 #: templates/index.html:30 templates/index.html.py:37 templates/index.html:43
 msgid "No"
-msgstr ""
+msgstr "Tidak"
 
 #: templates/index.html:30
 msgid "Layer"
-msgstr ""
+msgstr "Lapisan"
 
 #: templates/index.html:32
 msgid ""
 "Click to search for geospatial data published by other users, organizations "
 "and public sources. Download data in standard formats."
-msgstr ""
+msgstr "Klik untuk mencari data geospasial yang diterbitkan oleh pengguna lain, organisasi dan sumber-sumber publik. Download data dalam format standar."
 
 #: templates/index.html:37
 msgid "Map"
@@ -3125,11 +3126,11 @@ msgstr "Peta"
 msgid ""
 "Data is available for browsing, aggregating and styling to generate maps "
 "which can be shared publicly or restricted to specific users only."
-msgstr ""
+msgstr "Data yang tersedia untuk browsing, menggabungkan dan styling untuk menghasilkan peta yang dapat dibagikan secara publik atau dibatasi untuk pengguna tertentu saja."
 
 #: templates/index.html:39
 msgid "Create maps"
-msgstr ""
+msgstr "Membuat peta"
 
 #: templates/index.html:43
 msgid "User"
@@ -3139,11 +3140,11 @@ msgstr "Pengguna"
 msgid ""
 "GeoNode allows registered users to easily upload geospatial data in several "
 "formats including shapefile and GeoTiff."
-msgstr ""
+msgstr "GeoNode memungkinkan pengguna terdaftar untuk dengan mudah meng-upload data geospasial dalam beberapa format termasuk shapefile dan GeoTiff."
 
 #: templates/index.html:45
 msgid "Share data"
-msgstr ""
+msgstr "Data saham"
 
 #: templates/account/login.html:7 templates/account/login.html.py:24
 msgid "Log in"
@@ -3190,11 +3191,11 @@ msgstr "Jika anda mengalami masalah saat reset password, kontak kami di <a href=
 #: templates/account/signup.html:7 templates/account/signup.html.py:14
 #: templates/account/signup.html:22
 msgid "Sign up"
-msgstr ""
+msgstr "DAFTAR"
 
 #: templates/account/signup.html:27
 msgid "Sorry, registrations are not open at this time."
-msgstr ""
+msgstr "Maaf, pendaftaran tidak terbuka saat ini."
 
 #: templates/account/email/email_confirmation_message.txt:1
 #, python-format
@@ -3204,12 +3205,12 @@ msgid ""
 "To confirm this email address, go to %(activate_url)s\n"
 "\n"
 "If you did not sign up for this site, you can ignore this message.\n"
-msgstr ""
+msgstr "Seorang pengguna pada %(site_name)s telah membuat akun menggunakan alamat email ini. Untuk mengkonfirmasi alamat email ini, buka %(activate_url)s Jika Anda tidak mendaftar untuk situs ini, Anda dapat mengabaikan pesan ini.\n"
 
 #: templates/account/email/email_confirmation_subject.txt:1
 #, python-format
 msgid "Confirm email address for %(site_name)s"
-msgstr ""
+msgstr "Konfirmasi alamat email untuk %(site_name)s"
 
 #: templates/account/email/password_reset.txt:1
 #, python-format
@@ -3218,12 +3219,12 @@ msgid ""
 "It can be safely ignored if you did not request a password reset. Click the link below to reset your password.\n"
 "\n"
 "%(password_reset_url)s\n"
-msgstr ""
+msgstr "Anda menerima email ini karena Anda atau orang lain telah meminta password untuk account pengguna Anda di %(site_name)s. Hal ini dapat dengan aman diabaikan jika Anda tidak meminta reset password. Klik tautan di bawah ini untuk mereset password Anda. %(password_reset_url)s\n"
 
 #: templates/account/email/password_reset_subject.txt:1
 #, python-format
 msgid "[%(site_name)s] Password reset"
-msgstr ""
+msgstr "[%(site_name)s] Kata ulang"
 
 #: templates/actstream/actor.html:7 templates/actstream/actor.html.py:8
 msgid "My Activity feed"
@@ -3235,11 +3236,11 @@ msgstr "Activity Feed"
 
 #: templates/admin/base_site.html:3
 msgid "GeoNode site admin"
-msgstr ""
+msgstr "GeoNode situs admin"
 
 #: templates/admin/base_site.html:6
 msgid "GeoNode administration"
-msgstr ""
+msgstr "Administrasi GeoNode"
 
 #: templates/announcements/announcement_form.html:10
 msgid "Edit Announcement"
@@ -3267,7 +3268,7 @@ msgid ""
 "\n"
 "                        Published from <b>%(publish_start)s</b> to <b>%(publish_end)s</b>.\n"
 "                        "
-msgstr ""
+msgstr "\nDiterbitkan <b>dari %(publish_start)s ke %(publish_end)s.</b>"
 
 #: templates/announcements/detail.html:4
 #, python-format
@@ -3456,7 +3457,7 @@ msgstr "%(to_user_username)s's profil"
 
 #: templates/search/_extent_filter.html:3
 msgid "Extent"
-msgstr ""
+msgstr "Luasnya"
 
 #: templates/search/_general_filters.html:3
 msgid "Categories"
@@ -3464,16 +3465,16 @@ msgstr "Kategori"
 
 #: templates/search/_general_filters.html:30
 msgid "Date begins after:"
-msgstr ""
+msgstr "Tanggal dimulai setelah:"
 
 #: templates/search/_general_filters.html:31
 #: templates/search/_general_filters.html:35
 msgid "yyyy-mm-dd"
-msgstr ""
+msgstr "yyyy-mm-dd"
 
 #: templates/search/_general_filters.html:34
 msgid "Date ends before:"
-msgstr ""
+msgstr "Tanggal berakhir sebelum:"
 
 #: templates/search/_search_content.html:10
 msgid "Your selections"
@@ -3481,15 +3482,15 @@ msgstr "Pilihan anda"
 
 #: templates/search/_search_content.html:11
 msgid "Clear all filters"
-msgstr ""
+msgstr "Hapus semua filter"
 
 #: templates/search/_sort_filters.html:13
 msgid "Set permissions"
-msgstr ""
+msgstr "Mengatur hak akses"
 
 #: templates/search/_text_filter.html:5
 msgid "Text"
-msgstr ""
+msgstr "Teks"
 
 #: templates/user_messages/inbox.html:6
 msgid "Message Inbox"
