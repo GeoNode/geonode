@@ -1,7 +1,7 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
-#
+# 
 # Translators:
 # Nathan Wang <nwang@opengeo.org>, 2013
 # Nathan Wang <nwang@opengeo.org>, 2012-2013
@@ -11,14 +11,13 @@ msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2014-11-14 09:56-0500\n"
-"PO-Revision-Date: 2014-11-11 22:38+0000\n"
+"PO-Revision-Date: 2014-11-14 15:05+0000\n"
 "Last-Translator: ingenieroariel <ingenieroariel@gmail.com>\n"
-"Language-Team: Chinese (http://www.transifex.com/projects/p/geonode/language/"
-"zh/)\n"
-"Language: zh\n"
+"Language-Team: Chinese (http://www.transifex.com/projects/p/geonode/language/zh/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Language: zh\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 
 #: utils.py:38
@@ -216,8 +215,8 @@ msgstr "数据组使用语言"
 
 #: base/models.py:259
 msgid ""
-"high-level geographic data thematic classification to assist in the grouping "
-"and search of available geographic data sets."
+"high-level geographic data thematic classification to assist in the grouping"
+" and search of available geographic data sets."
 msgstr "用以助于地理信息搜集的高层次地理信息分类"
 
 #: base/models.py:261
@@ -747,9 +746,7 @@ msgid ""
 "\n"
 "        Editing details for %(document_title)s\n"
 "      "
-msgstr ""
-"\n"
-" %(document_title)s 的细节修改"
+msgstr "\n %(document_title)s 的细节修改"
 
 #: documents/templates/documents/document_metadata.html:22
 #: layers/templates/layers/layer_metadata.html:23
@@ -776,10 +773,7 @@ msgid ""
 "\n"
 "          Are you sure you want to remove %(document_title)s?\n"
 "        "
-msgstr ""
-"\n"
-"你确定要移除 %(document_title)s?\n"
-"        "
+msgstr "\n你确定要移除 %(document_title)s?\n        "
 
 #: documents/templates/documents/document_remove.html:18
 #: groups/templates/groups/group_remove.html:19
@@ -878,9 +872,8 @@ msgid "Thumbnail"
 msgstr ""
 
 #: geoserver/views.py:338
-#, fuzzy
 msgid "You don't have permissions to change style for this layer"
-msgstr "您没有权限查看或下载此图层。"
+msgstr ""
 
 #: geoserver/views.py:425 geoserver/views.py:480
 msgid "Bad HTTP Authorization Credentials."
@@ -912,8 +905,8 @@ msgstr "一个图层被评分"
 
 #: groups/forms.py:15
 msgid ""
-"a short version of the name consisting only of letters, numbers, underscores "
-"and hyphens."
+"a short version of the name consisting only of letters, numbers, underscores"
+" and hyphens."
 msgstr ""
 
 #: groups/forms.py:23
@@ -1452,20 +1445,14 @@ msgid ""
 "\n"
 "        Editing details for %(layer_title)s\n"
 "      "
-msgstr ""
-"\n"
-"细节修改%(layer_title)s"
+msgstr "\n细节修改%(layer_title)s"
 
 #: layers/templates/layers/layer_metadata.html:17
 msgid ""
-"Note: this layer's orginal metadata was populated by importing a metadata "
-"XML file.\n"
-"        GeoNode's metadata import supports a subset of ISO, FGDC, and Dublin "
-"Core metadata elements.\n"
+"Note: this layer's orginal metadata was populated by importing a metadata XML file.\n"
+"        GeoNode's metadata import supports a subset of ISO, FGDC, and Dublin Core metadata elements.\n"
 "        Some of your original metadata may have been lost."
-msgstr ""
-"主意: 此图层的元数据是从元数据XML文件中获取的。GeoNode的元数据输入支持ISO，"
-"FGDC和Dublin Core元数据元素。一些早先的元数据可能已经丢失。"
+msgstr "主意: 此图层的元数据是从元数据XML文件中获取的。GeoNode的元数据输入支持ISO，FGDC和Dublin Core元数据元素。一些早先的元数据可能已经丢失。"
 
 #: layers/templates/layers/layer_metadata.html:72
 msgid "Attribute"
@@ -1490,10 +1477,7 @@ msgid ""
 "\n"
 "          Are you sure you want to remove %(layer_title)s?\n"
 "        "
-msgstr ""
-"\n"
-"          确定你要移除 %(layer_title)s?\n"
-"        "
+msgstr "\n          确定你要移除 %(layer_title)s?\n        "
 
 #: layers/templates/layers/layer_remove.html:25
 msgid "This action affects the following maps:"
@@ -1583,8 +1567,7 @@ msgstr ""
 #, python-format
 msgid ""
 "\n"
-"      Manage Available Styles for <a href=\"/layers/%(layer_title)s\">"
-"%(layer_title)s</a>\n"
+"      Manage Available Styles for <a href=\"/layers/%(layer_title)s\">%(layer_title)s</a>\n"
 "    "
 msgstr ""
 
@@ -1627,8 +1610,7 @@ msgstr ""
 #: layers/templates/upload/layer_upload_crs.html:17
 msgid ""
 "\n"
-"        A coordinate reference system for this layer could not be "
-"determined.\n"
+"        A coordinate reference system for this layer could not be determined.\n"
 "        Locate or enter the appropriate ESPG code for this layer below.\n"
 "        One way to do this is do visit:\n"
 "        <a href=\"http://prj2epsg.org/search\" target=\"_\">prj2epsg</a>\n"
@@ -1682,10 +1664,8 @@ msgstr ""
 
 #: layers/templates/upload/layer_upload_csv.html:57
 msgid ""
-"We did not detect columns that could be used for the latitude and "
-"longitude.\n"
-"Please verify that you have two columns in your csv file that can be used "
-"for\n"
+"We did not detect columns that could be used for the latitude and longitude.\n"
+"Please verify that you have two columns in your csv file that can be used for\n"
 "the latitude and longitude."
 msgstr ""
 
@@ -1791,10 +1771,8 @@ msgstr ""
 #: layers/templates/upload/layer_upload_time.html:109
 msgid ""
 "A feature can currently support one or two time attributes. If a single\n"
-"    attribute is used, the feature is considered relevant at that single "
-"point in time. If two\n"
-"    attributes are used, the second attribute represents the end of a valid "
-"period for the\n"
+"    attribute is used, the feature is considered relevant at that single point in time. If two\n"
+"    attributes are used, the second attribute represents the end of a valid period for the\n"
 "    feature."
 msgstr ""
 
@@ -1821,8 +1799,7 @@ msgstr ""
 #: layers/templates/upload/layer_upload_time.html:121
 msgid ""
 "\n"
-"    For text attributes, one can specify a custom format or use the 'best "
-"guess' approach.\n"
+"    For text attributes, one can specify a custom format or use the 'best guess' approach.\n"
 "    The most common formatting flags are:\n"
 "    "
 msgstr ""
@@ -1858,8 +1835,8 @@ msgstr ""
 
 #: layers/templates/upload/layer_upload_time.html:137
 msgid ""
-"To remove ambiguity, repeat a code to represent the maximum number of digits "
-"- for example yyyy"
+"To remove ambiguity, repeat a code to represent the maximum number of digits"
+" - for example yyyy"
 msgstr ""
 
 #: layers/templates/upload/layer_upload_time.html:139
@@ -1871,8 +1848,7 @@ msgid "In terms of the formatting flags noted above, these are"
 msgstr ""
 
 #: layers/templates/upload/no_upload.html:7
-msgid ""
-"Returning to the upload starting page in <span id=\"cnt\">5</span>seconds "
+msgid "Returning to the upload starting page in <span id=\"cnt\">5</span>seconds "
 msgstr ""
 
 #: layers/templates/upload/no_upload.html:8
@@ -2136,22 +2112,17 @@ msgstr ""
 #: maps/templates/maps/map_download.html:22
 msgid ""
 "\n"
-"      <div class=\"alert alert-warning\">Could not find downloadable layers "
-"for this map. You can go back to  \n"
+"      <div class=\"alert alert-warning\">Could not find downloadable layers for this map. You can go back to  \n"
 "      "
 msgstr ""
 
 #: maps/templates/maps/map_download.html:29
 msgid ""
 "\n"
-"        Additionally, the map contains these layers which will not be "
-"downloaded\n"
+"        Additionally, the map contains these layers which will not be downloaded\n"
 "        due to security restrictions:\n"
 "      "
-msgstr ""
-"\n"
-"此外，由于安全限制该地图包含的这些图层不会被下载：\n"
-"    "
+msgstr "\n此外，由于安全限制该地图包含的这些图层不会被下载：\n    "
 
 #: maps/templates/maps/map_download.html:41
 msgid ""
@@ -2159,11 +2130,7 @@ msgid ""
 "        Finally, the map contains these layers which will not be downloaded\n"
 "        because they are not available directly from this GeoNode:\n"
 "      "
-msgstr ""
-"\n"
-"    最后，该地图包含的这些图层将不会被下载，\n"
-"    因为图层不是GeoNode数据：\n"
-"    "
+msgstr "\n    最后，该地图包含的这些图层将不会被下载，\n    因为图层不是GeoNode数据：\n    "
 
 #: maps/templates/maps/map_download.html:54
 msgid "Downloading"
@@ -2195,10 +2162,8 @@ msgstr ""
 
 #: maps/templates/maps/map_metadata.html:17
 msgid ""
-"Note: this map's orginal metadata was populated by importing a metadata XML "
-"file.\n"
-"        GeoNode's metadata import supports a subset of ISO, FGDC, and Dublin "
-"Core metadata elements.\n"
+"Note: this map's orginal metadata was populated by importing a metadata XML file.\n"
+"        GeoNode's metadata import supports a subset of ISO, FGDC, and Dublin Core metadata elements.\n"
 "        Some of your original metadata may have been lost."
 msgstr ""
 
@@ -2212,9 +2177,7 @@ msgid ""
 "\n"
 "        Are you sure you want to remove %(map_title)s?\n"
 "    "
-msgstr ""
-"\n"
-"你确定要删除%(map_title)s？"
+msgstr "\n你确定要删除%(map_title)s？"
 
 #: maps/templates/maps/map_view.html:5
 msgid "GeoExplorer"
@@ -2243,8 +2206,8 @@ msgstr "资源授权方"
 
 #: people/enumerations.py:40
 msgid ""
-"party who has processed the data in a manner such that the resource has been "
-"modified"
+"party who has processed the data in a manner such that the resource has been"
+" modified"
 msgstr "资源修改方"
 
 #: people/enumerations.py:41
@@ -2284,7 +2247,8 @@ msgid "party that owns the resource"
 msgstr "资源拥有方"
 
 #: people/enumerations.py:50
-msgid "key party responsible for gathering information and conducting research"
+msgid ""
+"key party responsible for gathering information and conducting research"
 msgstr "信息收集与研究的主要责任方"
 
 #: people/forms.py:64
@@ -2429,8 +2393,8 @@ msgstr "忘记用户名"
 
 #: people/templates/people/forgot_username_form.html:9
 msgid ""
-"Enter your email address and click the submit button.  Your username will be "
-"sent to you."
+"Enter your email address and click the submit button.  Your username will be"
+" sent to you."
 msgstr "请填写您的email地址，然后点击提交按钮。您的用户名会被发到您的电邮信箱"
 
 #: people/templates/people/profile_create.html:8
@@ -2562,16 +2526,11 @@ msgstr ""
 #: services/views.py:63
 msgid ""
 "\n"
-"The Open Geoportal is a consortium comprised of contributions of several "
-"universities and organizations to help\n"
-"facilitate the discovery and acquisition of geospatial data across many "
-"organizations and platforms. Current partners\n"
-"include: Harvard, MIT, MassGIS, Princeton, Columbia, Stanford, UC Berkeley, "
-"UCLA, Yale, and UConn. Built on open source\n"
-"technology, The Open Geoportal provides organizations the opportunity to "
-"share thousands of geospatial data layers,\n"
-"maps, metadata, and development resources through a single common "
-"interface.\n"
+"The Open Geoportal is a consortium comprised of contributions of several universities and organizations to help\n"
+"facilitate the discovery and acquisition of geospatial data across many organizations and platforms. Current partners\n"
+"include: Harvard, MIT, MassGIS, Princeton, Columbia, Stanford, UC Berkeley, UCLA, Yale, and UConn. Built on open source\n"
+"technology, The Open Geoportal provides organizations the opportunity to share thousands of geospatial data layers,\n"
+"maps, metadata, and development resources through a single common interface.\n"
 msgstr ""
 
 #: services/views.py:273
@@ -2725,9 +2684,7 @@ msgid ""
 "\n"
 "          You are not allowed to perform this operation.  \n"
 "      "
-msgstr ""
-"\n"
-"您无权执行此操作。"
+msgstr "\n您无权执行此操作。"
 
 #: templates/401.html:25
 msgid "Please verify that you are logged in as the correct user."
@@ -2744,12 +2701,9 @@ msgstr "找不到网页"
 #: templates/404.html:6
 msgid ""
 "\n"
-"      The page you requested does not exist.  Perhaps you are using an "
-"outdated bookmark?\n"
+"      The page you requested does not exist.  Perhaps you are using an outdated bookmark?\n"
 "  "
-msgstr ""
-"\n"
-"您请求的页面不存在。原因可能是网址过时？ "
+msgstr "\n您请求的页面不存在。原因可能是网址过时？ "
 
 #: templates/500.html:48 templates/base.html:56
 msgid "People"
@@ -2832,11 +2786,8 @@ msgstr ""
 #: templates/500.html:161
 msgid ""
 "\n"
-"          Please contact your GeoNode administrator (he may have received an "
-"email automatically if he configured it properly).\n"
-"          If you are the site administrator, enable debug mode to see the "
-"actual error and fix it or file an issue in <a href=\"http://github.com/"
-"GeoNode/geonode/issues\">GeoNode's issue tracker</a>\n"
+"          Please contact your GeoNode administrator (he may have received an email automatically if he configured it properly).\n"
+"          If you are the site administrator, enable debug mode to see the actual error and fix it or file an issue in <a href=\"http://github.com/GeoNode/geonode/issues\">GeoNode's issue tracker</a>\n"
 "          "
 msgstr ""
 
@@ -2890,9 +2841,8 @@ msgid "Submit Comments"
 msgstr "提交评论"
 
 #: templates/_permissions.html:8
-#, fuzzy
 msgid "Who can view it?"
-msgstr "谁能编辑此数据？"
+msgstr ""
 
 #: templates/_permissions.html:17 templates/_permissions.html.py:49
 msgid "Anyone"
@@ -2911,33 +2861,30 @@ msgid "The following groups:"
 msgstr ""
 
 #: templates/_permissions.html:40
-#, fuzzy
 msgid "Who can download it?"
-msgstr "谁有权查看并下载此数据？"
+msgstr ""
 
 #: templates/_permissions.html:72
 msgid "Who can change metadata for it?"
 msgstr ""
 
 #: templates/_permissions.html:99
-#, fuzzy
 msgid "Who can edit data for this layer?"
-msgstr "谁能编辑此数据？"
+msgstr ""
 
 #: templates/_permissions.html:125
-#, fuzzy
 msgid "Who can edit styles for this layer?"
-msgstr "谁能编辑此数据？"
+msgstr ""
 
 #: templates/_permissions.html:152
 msgid ""
-"Who can manage it? (update, delete, change permissions, publish/unpublish it)"
+"Who can manage it? (update, delete, change permissions, publish/unpublish "
+"it)"
 msgstr ""
 
 #: templates/_permissions_form.html:9
-#, fuzzy
 msgid "Set permissions for this resource"
-msgstr "引用文献的版本"
+msgstr ""
 
 #: templates/_permissions_form_js.html:180
 msgid "Choose users..."
@@ -2970,87 +2917,42 @@ msgstr "给有意GeoNode开发者的实用信息"
 #: templates/developer.html:12
 msgid ""
 "\n"
-"  <p><a href=\"http://geonode.org/\">GeoNode</a> is an open service built on "
-"open source software. We encourage you to build new applications using the "
-"components and resources it provides. This page is a starting point for "
-"developers interesting in taking full advantage of GeoNode. It also includes "
-"links to the project's source code so anyone can build and customize their "
-"own GeoNode. </p>\n"
+"  <p><a href=\"http://geonode.org/\">GeoNode</a> is an open service built on open source software. We encourage you to build new applications using the components and resources it provides. This page is a starting point for developers interesting in taking full advantage of GeoNode. It also includes links to the project's source code so anyone can build and customize their own GeoNode. </p>\n"
 "\n"
 "  <h4>GeoNode Software</h4>\n"
 "\n"
-"  <p>All the code that runs GeoNode is open source. The code is available at "
-"<a href=\"http://github.com/GeoNode/geonode\">http://github.com/GeoNode/"
-"geonode/</a>. The issue tracker for the project is at <a href=\"http://"
-"github.com/GeoNode/geonode/issues\">http://github.com/GeoNode/geonode/"
-"issues</a>.</p>\n"
+"  <p>All the code that runs GeoNode is open source. The code is available at <a href=\"http://github.com/GeoNode/geonode\">http://github.com/GeoNode/geonode/</a>. The issue tracker for the project is at <a href=\"http://github.com/GeoNode/geonode/issues\">http://github.com/GeoNode/geonode/issues</a>.</p>\n"
 "\n"
-"  <p>GeoNode is built using several open source projects, each with its own "
-"community. If you are interested in contributing new features to the "
-"GeoNode, we encourage you to do so by contributing to one of the projects on "
-"which it is built:</p>\n"
+"  <p>GeoNode is built using several open source projects, each with its own community. If you are interested in contributing new features to the GeoNode, we encourage you to do so by contributing to one of the projects on which it is built:</p>\n"
 "  <ul>\n"
-"    <li><a href=\"http://geoext.org\">GeoExt</a> - The JavaScript toolkit "
-"for rich web mapping applications</li>\n"
-"    <li><a href=\"http://geoserver.org\">GeoServer</a> - Standards based "
-"server for geospatial information</li>\n"
-"    <li><a href=\"http://geowebcache.org\">GeoWebCache</a> - Cache engine "
-"for WMS Tiles</li><li><a href=\"http://openlayers.org\">OpenLayers</a> - "
-"Pure JavaScript library powering the maps of GeoExt</li>\n"
-"    <li><a href=\"http://pycsw.org\">pycsw</a> - CSW metadata catalogue "
-"server</li>\n"
+"    <li><a href=\"http://geoext.org\">GeoExt</a> - The JavaScript toolkit for rich web mapping applications</li>\n"
+"    <li><a href=\"http://geoserver.org\">GeoServer</a> - Standards based server for geospatial information</li>\n"
+"    <li><a href=\"http://geowebcache.org\">GeoWebCache</a> - Cache engine for WMS Tiles</li><li><a href=\"http://openlayers.org\">OpenLayers</a> - Pure JavaScript library powering the maps of GeoExt</li>\n"
+"    <li><a href=\"http://pycsw.org\">pycsw</a> - CSW metadata catalogue server</li>\n"
 "  </ul>\n"
 "\n"
 "  <h4>What are OGC Services?</h4>\n"
-"  <p>The data in this application is served using open standards endorsed by "
-"the <a href=\"http://opengeospatial.org/\">Open Geospatial Consortium</a>; "
-"in particular, WMS (Web Map Service) is used for accessing maps, WFS (Web "
-"Feature Service) is used for accessing vector data, and WCS (Web Coverage "
-"Service) is used for accessing raster data.  WMC (Web Map Context Documents) "
-"is used for sharing maps. You can use these services in your own "
-"applications using libraries such as OpenLayers, GeoTools, and OGR (all of "
-"which are open-source software and available at zero cost).</p>\n"
+"  <p>The data in this application is served using open standards endorsed by the <a href=\"http://opengeospatial.org/\">Open Geospatial Consortium</a>; in particular, WMS (Web Map Service) is used for accessing maps, WFS (Web Feature Service) is used for accessing vector data, and WCS (Web Coverage Service) is used for accessing raster data.  WMC (Web Map Context Documents) is used for sharing maps. You can use these services in your own applications using libraries such as OpenLayers, GeoTools, and OGR (all of which are open-source software and available at zero cost).</p>\n"
 "\n"
 "  <h4>What is GeoWebCache?</h4>\n"
-"  <p>GeoWebCache provides mapping tiles that are compatible with a number of "
-"mapping engines, including Google Maps, Bing Maps and OpenLayers. All the "
-"data hosted by GeoNode is also available through GeoWebCache. GeoWebCache "
-"improves on WMS by caching data and providing more responsive maps.</p>\n"
+"  <p>GeoWebCache provides mapping tiles that are compatible with a number of mapping engines, including Google Maps, Bing Maps and OpenLayers. All the data hosted by GeoNode is also available through GeoWebCache. GeoWebCache improves on WMS by caching data and providing more responsive maps.</p>\n"
 "\n"
 "  <h4>OpenLayers Example Code</h4>\n"
 "\n"
-"  <p>To include a GeoNode map layer in an OpenLayers map, first find the "
-"name for that layer. This is found in the layer's <code>name</code> field "
-"(not <code>title</code>) of the layer list. For this example, we will use "
-"the Nicaraguan political boundaries background layer, whose name is "
-"<code>risk:nicaragua_admin</code>. Then, create an instance of OpenLayers."
-"Layer.WMS:</p>\n"
-"  <p><code>var geonodeLayer = new OpenLayers.Layer.WMS(\"GeoNode Risk Data"
-"\", \"http://demo.geonode.org/geoserver/wms\",{ layers: \"risk:"
-"nicaragua_admin\" });</code></p>\n"
+"  <p>To include a GeoNode map layer in an OpenLayers map, first find the name for that layer. This is found in the layer's <code>name</code> field (not <code>title</code>) of the layer list. For this example, we will use the Nicaraguan political boundaries background layer, whose name is <code>risk:nicaragua_admin</code>. Then, create an instance of OpenLayers.Layer.WMS:</p>\n"
+"  <p><code>var geonodeLayer = new OpenLayers.Layer.WMS(\"GeoNode Risk Data\", \"http://demo.geonode.org/geoserver/wms\",{ layers: \"risk:nicaragua_admin\" });</code></p>\n"
 "\n"
 "  <h4>Google Maps Example Code</h4>\n"
-"  <p>To include a GeoNode map layer in a Google Map, include the layer "
-"namein the URL template.</p>\n"
-"  <p><code>var tilelayer =  new GTileLayer(null, null, null, "
-"{tileUrlTemplate: 'http://demo.geonode.org/geoserver/gwc/service/gmaps?"
-"layers=risk:nicaragua_admin&#38;zoom={Z}&#38;x={X}&#38;y={Y}', isPng:true, "
-"opacity:0.5 } );</code></p>\n"
+"  <p>To include a GeoNode map layer in a Google Map, include the layer namein the URL template.</p>\n"
+"  <p><code>var tilelayer =  new GTileLayer(null, null, null, {tileUrlTemplate: 'http://demo.geonode.org/geoserver/gwc/service/gmaps?layers=risk:nicaragua_admin&#38;zoom={Z}&#38;x={X}&#38;y={Y}', isPng:true, opacity:0.5 } );</code></p>\n"
 "\n"
 "  <h4>Shapefile/GeoJSON/GML Output</h4>\n"
-"  <p>To get data from the GeoNode web services use the WFS protocol. For "
-"example, to get the full Nicaraguan admin boundaries use:</p>\n"
-"  <p><code>http://demo.geonode.org/geoserver/wfs?request=GetFeature&#38;"
-"typeName=risk:nicaragua_admin&#38;outputformat=SHAPE-ZIP</code></p>\n"
-"  <p>Changing output format to <code>json</code>, <code>GML2</code>, "
-"<code>GML3</code>, or <code>csv</code> will get data in those formats. The "
-"WFS protocol also can handle more precise queries, specifying a bounding box "
-"or various spatial and non-spatial filters based on the attributes of the "
-"data.</p>\n"
+"  <p>To get data from the GeoNode web services use the WFS protocol. For example, to get the full Nicaraguan admin boundaries use:</p>\n"
+"  <p><code>http://demo.geonode.org/geoserver/wfs?request=GetFeature&#38;typeName=risk:nicaragua_admin&#38;outputformat=SHAPE-ZIP</code></p>\n"
+"  <p>Changing output format to <code>json</code>, <code>GML2</code>, <code>GML3</code>, or <code>csv</code> will get data in those formats. The WFS protocol also can handle more precise queries, specifying a bounding box or various spatial and non-spatial filters based on the attributes of the data.</p>\n"
 "\n"
 "  <h4>GeoTools Example Code</h4>\n"
-"  <p>Create a DataStore and extract a FeatureType from it, then run a Query. "
-"It is all documented on the wiki at <code>http://geotools.org/</code>.</p>\n"
+"  <p>Create a DataStore and extract a FeatureType from it, then run a Query. It is all documented on the wiki at <code>http://geotools.org/</code>.</p>\n"
 msgstr ""
 
 #: templates/developer.html:53
@@ -3091,83 +2993,49 @@ msgstr "GeoNode帮助"
 
 #: templates/help.html:9
 msgid ""
-"This page provides helpful information about how to use the GeoNode. You can "
-"use the sidebar links to navigate to what you want to know."
+"This page provides helpful information about how to use the GeoNode. You can"
+" use the sidebar links to navigate to what you want to know."
 msgstr "本页提供如何使用GeoNode的帮助信息。请点击工具栏链接了解您想知道的内容"
 
 #: templates/help.html:12
 msgid ""
 "\n"
-"  <p>The GeoNode provides access to data sets and a map editing application "
-"allows users to browse existing maps and contribute their own.</p>\n"
+"  <p>The GeoNode provides access to data sets and a map editing application allows users to browse existing maps and contribute their own.</p>\n"
 "\n"
 "  <h4 id=\"browsing-data\">Browsing Layers</h4>\n"
-"  <p>The <a href=\"/layers\">Layers</a> tab allows you to browse data "
-"uploaded to this GeoNode.</p>\n"
-"  <p>All data can be downloaded in a variety of formats, for use in other "
-"applications.</p>\n"
+"  <p>The <a href=\"/layers\">Layers</a> tab allows you to browse data uploaded to this GeoNode.</p>\n"
+"  <p>All data can be downloaded in a variety of formats, for use in other applications.</p>\n"
 "\n"
 "  <h4 id=\"developer-access\">Developer Access</h4>\n"
-"  <p>The <a href=\"/developer\"> Developer</a> page is the place for "
-"developers to get started building applications against the GeoNode. It "
-"includes instructions on using the web services, links to the source code of "
-"the GeoNode, and information about the open source projects used to create "
-"it.</p>\n"
+"  <p>The <a href=\"/developer\"> Developer</a> page is the place for developers to get started building applications against the GeoNode. It includes instructions on using the web services, links to the source code of the GeoNode, and information about the open source projects used to create it.</p>\n"
 "\n"
 "  <h4 id=\"browsing-maps\">Browsing Maps</h4>\n"
-"  <p>The GeoNode allows users to create and share maps with one another.</"
-"p>\n"
-"  <p>The <a href=\"/maps\">Maps</a> tab is a gateway to map exploration on "
-"GeoNode.  From here you can <strong>search for a map</strong> or "
-"<strong>create a map</strong>, which will open the <a href=\"/maps/new\">Map "
-"Composer</a>.</p>\n"
+"  <p>The GeoNode allows users to create and share maps with one another.</p>\n"
+"  <p>The <a href=\"/maps\">Maps</a> tab is a gateway to map exploration on GeoNode.  From here you can <strong>search for a map</strong> or <strong>create a map</strong>, which will open the <a href=\"/maps/new\">Map Composer</a>.</p>\n"
 "  <h5>Google Earth Mode</h5>\n"
-"  <p>Any map viewed in the interactive map editor can be seen in 3D mode "
-"with the Google Earth plugin. To switch to 3D mode select the Google Earth "
-"globe logo, the rightmost button on top toolbar. If you do not have the "
-"Google Earth plugin installed you will be prompted to install it.</p>\n"
+"  <p>Any map viewed in the interactive map editor can be seen in 3D mode with the Google Earth plugin. To switch to 3D mode select the Google Earth globe logo, the rightmost button on top toolbar. If you do not have the Google Earth plugin installed you will be prompted to install it.</p>\n"
 "\n"
 "  <h4 id=\"creating-a-map\">Creating a Map</h4>\n"
-"  <p>To create a new map go to the <a href=\"/maps\">Contributed Maps</a> "
-"tab and click the <a href=\"/maps/new\">create your own map</a> link.</p>\n"
-"  <p>This will take you to the <a href=\"/maps/new\">Map Composer</a> with a "
-"base layer loaded.</p>\n"
-"  <p>To add data layers from the GeoNode click on the green plus button "
-"located below the layers tab on the left hand side of the screen. This will "
-"open a dialog listing all the layers available on the GeoNode.</p>\n"
-"  <p>To add layers to your map select them and hit the <strong>Add Layers</"
-"strong> button. When finished you may hit <strong>Done</strong> to close the "
-"dialog and go back to the map.</p>\n"
+"  <p>To create a new map go to the <a href=\"/maps\">Contributed Maps</a> tab and click the <a href=\"/maps/new\">create your own map</a> link.</p>\n"
+"  <p>This will take you to the <a href=\"/maps/new\">Map Composer</a> with a base layer loaded.</p>\n"
+"  <p>To add data layers from the GeoNode click on the green plus button located below the layers tab on the left hand side of the screen. This will open a dialog listing all the layers available on the GeoNode.</p>\n"
+"  <p>To add layers to your map select them and hit the <strong>Add Layers</strong> button. When finished you may hit <strong>Done</strong> to close the dialog and go back to the map.</p>\n"
 "\n"
 "  <h5>Reordering and Removing Layers</h5>\n"
-"  <p>Change the display order of the layers listed in the data tab by simply "
-"dragging and dropping their names. The order in the map will be updated to "
-"reflect that. To turn a layer's visibility off simply uncheck it, and to "
-"remove it entirely select it and hit the red minus button.</p>\n"
+"  <p>Change the display order of the layers listed in the data tab by simply dragging and dropping their names. The order in the map will be updated to reflect that. To turn a layer's visibility off simply uncheck it, and to remove it entirely select it and hit the red minus button.</p>\n"
 "\n"
 "  <h5>Saving your map</h5>\n"
-"  <p>Once a suitable set of layers and zoom level has been found it's time "
-"to save it so others can see it.  Click the Save button--the left most icon "
-"on the top toolbar, an image of a map with a disk--on the top menu and fill "
-"out the title and abstract of the map.</p>\n"
+"  <p>Once a suitable set of layers and zoom level has been found it's time to save it so others can see it.  Click the Save button--the left most icon on the top toolbar, an image of a map with a disk--on the top menu and fill out the title and abstract of the map.</p>\n"
 "\n"
 "  <h4 id=\"exporting-a-map\">Exporting a Map</h4>\n"
-"  <p>Any map from the GeoNode can be embedded for use in another site or "
-"blog. To export a map:</p>\n"
+"  <p>Any map from the GeoNode can be embedded for use in another site or blog. To export a map:</p>\n"
 "  <ol>\n"
-"    <li>Select the from the list of maps on the community or map page and "
-"then hit the 'export map' button.</li> \n"
-"    <li>Choose your desired height and width for the widget in the wizard.</"
-"li> \n"
-"    <li>Copy the HTML snippet provided in the wizard to any HTML page or "
-"iFrame-supporting blog post.</li>\n"
+"    <li>Select the from the list of maps on the community or map page and then hit the 'export map' button.</li> \n"
+"    <li>Choose your desired height and width for the widget in the wizard.</li> \n"
+"    <li>Copy the HTML snippet provided in the wizard to any HTML page or iFrame-supporting blog post.</li>\n"
 "  </ol>\n"
-"  <p>This will put an interactive widget showing you map in your web page or "
-"blog post.</p>\n"
-"  <p>Note that the <a href=\"/maps/new\">Map Composer</a> also has a button "
-"to export the map. Just be sure to save the map before exporting if there "
-"are changes that you want others to see. It exports the last saved version, "
-"not the last viewed version.</p>\n"
+"  <p>This will put an interactive widget showing you map in your web page or blog post.</p>\n"
+"  <p>Note that the <a href=\"/maps/new\">Map Composer</a> also has a button to export the map. Just be sure to save the map before exporting if there are changes that you want others to see. It exports the last saved version, not the last viewed version.</p>\n"
 "\n"
 "  <h4 id=\"remixing-a-map\">Remixing a Map</h4>\n"
 "  <p>Any map available can serve as a starting point for a new map.</p>\n"
@@ -3175,12 +3043,10 @@ msgid ""
 "    <li>Open the map in the Map Composer.</li>\n"
 "    <li>Add and remove layers as you like.</li>\n"
 "    <li>Pan and zoom to highlight the area of interest.</li>\n"
-"    <li><strong>IMPORTANT:</strong> Update the title, abstract, contact info "
-"and tags to reflect the new map.</li>\n"
+"    <li><strong>IMPORTANT:</strong> Update the title, abstract, contact info and tags to reflect the new map.</li>\n"
 "    <li>Save the map.</li>\n"
 "  </ol>\n"
-"  <p>You will be able to see your new map when you search for it from the <a "
-"href=\"/maps\">Maps</a> tab.</p> \n"
+"  <p>You will be able to see your new map when you search for it from the <a href=\"/maps\">Maps</a> tab.</p> \n"
 "  "
 msgstr ""
 
@@ -3227,8 +3093,8 @@ msgstr ""
 
 #: templates/index.html:17
 msgid ""
-"If you have any questions about the software or service, join our <a href="
-"\"https://groups.google.com/d/forum/geonode-users\">mailing list</a>."
+"If you have any questions about the software or service, join our <a "
+"href=\"https://groups.google.com/d/forum/geonode-users\">mailing list</a>."
 msgstr ""
 
 #: templates/index.html:18
@@ -3319,9 +3185,8 @@ msgstr "重设密码"
 #: templates/account/password_reset.html:25
 #, python-format
 msgid ""
-"If you have any trouble resetting your password, contact us at <a href="
-"\"mailto:%(THEME_ACCOUNT_CONTACT_EMAIL)s\">%(THEME_ACCOUNT_CONTACT_EMAIL)s</"
-"a>."
+"If you have any trouble resetting your password, contact us at <a "
+"href=\"mailto:%(THEME_ACCOUNT_CONTACT_EMAIL)s\">%(THEME_ACCOUNT_CONTACT_EMAIL)s</a>."
 msgstr ""
 
 #: templates/account/signup.html:7 templates/account/signup.html.py:14
@@ -3351,10 +3216,8 @@ msgstr ""
 #: templates/account/email/password_reset.txt:1
 #, python-format
 msgid ""
-"You're receiving this email because you or someone else has requested a "
-"password for your user account at %(site_name)s.\n"
-"It can be safely ignored if you did not request a password reset. Click the "
-"link below to reset your password.\n"
+"You're receiving this email because you or someone else has requested a password for your user account at %(site_name)s.\n"
+"It can be safely ignored if you did not request a password reset. Click the link below to reset your password.\n"
 "\n"
 "%(password_reset_url)s\n"
 msgstr ""
@@ -3404,8 +3267,7 @@ msgstr ""
 #, python-format
 msgid ""
 "\n"
-"                        Published from <b>%(publish_start)s</b> to <b>"
-"%(publish_end)s</b>.\n"
+"                        Published from <b>%(publish_start)s</b> to <b>%(publish_end)s</b>.\n"
 "                        "
 msgstr ""
 
@@ -3446,8 +3308,8 @@ msgstr ""
 #: templates/avatar/confirm_delete.html:9
 #, python-format
 msgid ""
-"You have no avatars to delete. Please <a href=\"%(avatar_change_url)s"
-"\">upload one</a> now."
+"You have no avatars to delete. Please <a "
+"href=\"%(avatar_change_url)s\">upload one</a> now."
 msgstr ""
 
 #: templates/avatar/confirm_delete.html:15
@@ -3490,8 +3352,7 @@ msgstr "笔记"
 msgid ""
 "You do not have a verified email address to which notices can be sent. You "
 "can add one by going to <a href=\"%(email_url)s\">Account</a>."
-msgstr ""
-"您还未提供一个确认过的电邮地址用以发送通知。您可以在%(email_url)s 里添加一个"
+msgstr "您还未提供一个确认过的电邮地址用以发送通知。您可以在%(email_url)s 里添加一个"
 
 #: templates/notification/notice_settings.html:30
 msgid "Notification Type"
@@ -3679,714 +3540,3 @@ msgstr "回到收件箱"
 #: templates/user_messages/thread_detail.html:25
 msgid "Send Reply"
 msgstr "发送回复"
-
-#~ msgid "Afghanistan"
-#~ msgstr "阿富汗"
-
-#~ msgid "Aland Islands"
-#~ msgstr "奥兰群岛"
-
-#~ msgid "Albania"
-#~ msgstr "阿尔巴尼亚"
-
-#~ msgid "Algeria"
-#~ msgstr "阿尔及利亚"
-
-#~ msgid "American Samoa"
-#~ msgstr "美属萨摩亚"
-
-#~ msgid "Andorra"
-#~ msgstr "安道尔"
-
-#~ msgid "Angola"
-#~ msgstr "安哥拉"
-
-#~ msgid "Anguilla"
-#~ msgstr "安圭拉"
-
-#~ msgid "Antigua and Barbuda"
-#~ msgstr "安提瓜和巴布达"
-
-#~ msgid "Argentina"
-#~ msgstr "阿根廷"
-
-#~ msgid "Armenia"
-#~ msgstr "亚美尼亚"
-
-#~ msgid "Aruba"
-#~ msgstr "阿鲁巴"
-
-#~ msgid "Australia"
-#~ msgstr "澳大利亚"
-
-#~ msgid "Austria"
-#~ msgstr "奥地利"
-
-#~ msgid "Azerbaijan"
-#~ msgstr "阿塞拜疆"
-
-#~ msgid "Bahamas"
-#~ msgstr "巴哈马"
-
-#~ msgid "Bahrain"
-#~ msgstr "巴林"
-
-#~ msgid "Bangladesh"
-#~ msgstr "孟加拉国"
-
-#~ msgid "Barbados"
-#~ msgstr "巴巴多斯"
-
-#~ msgid "Belarus"
-#~ msgstr "白俄罗斯"
-
-#~ msgid "Belgium"
-#~ msgstr "比利时"
-
-#~ msgid "Belize"
-#~ msgstr "伯利兹"
-
-#~ msgid "Benin"
-#~ msgstr "贝宁"
-
-#~ msgid "Bermuda"
-#~ msgstr "百慕大"
-
-#~ msgid "Bhutan"
-#~ msgstr "不丹"
-
-#~ msgid "Bolivia"
-#~ msgstr "玻利维亚"
-
-#~ msgid "Bosnia and Herzegovina"
-#~ msgstr "波斯尼亚和黑塞哥维那"
-
-#~ msgid "Botswana"
-#~ msgstr "博茨瓦纳"
-
-#~ msgid "Brazil"
-#~ msgstr "巴西"
-
-#~ msgid "British Virgin Islands"
-#~ msgstr "英属维尔京群岛"
-
-#~ msgid "Brunei Darussalam"
-#~ msgstr "汶莱"
-
-#~ msgid "Bulgaria"
-#~ msgstr "保加利亚"
-
-#~ msgid "Burkina Faso"
-#~ msgstr "布基纳法索"
-
-#~ msgid "Burundi"
-#~ msgstr "布隆迪"
-
-#~ msgid "Cambodia"
-#~ msgstr "柬埔寨"
-
-#~ msgid "Cameroon"
-#~ msgstr "喀麦隆"
-
-#~ msgid "Canada"
-#~ msgstr "加拿大"
-
-#~ msgid "Cape Verde"
-#~ msgstr "佛得角"
-
-#~ msgid "Cayman Islands"
-#~ msgstr "开曼群岛"
-
-#~ msgid "Central African Republic"
-#~ msgstr "中非共和国"
-
-#~ msgid "Chad"
-#~ msgstr "乍得"
-
-#~ msgid "Channel Islands"
-#~ msgstr "海峡群岛"
-
-#~ msgid "Chile"
-#~ msgstr "智利"
-
-#~ msgid "China"
-#~ msgstr "中国"
-
-#~ msgid "China - Hong Kong"
-#~ msgstr "中国 - 香港"
-
-#~ msgid "China - Macao"
-#~ msgstr "中国 - 澳门"
-
-#~ msgid "Colombia"
-#~ msgstr "哥伦比亚"
-
-#~ msgid "Comoros"
-#~ msgstr "科摩罗"
-
-#~ msgid "Congo"
-#~ msgstr "刚果"
-
-#~ msgid "Cook Islands"
-#~ msgstr "库克群岛"
-
-#~ msgid "Costa Rica"
-#~ msgstr "哥斯达黎加"
-
-#~ msgid "Cote d'Ivoire"
-#~ msgstr "科特迪瓦"
-
-#~ msgid "Croatia"
-#~ msgstr "克罗地亚"
-
-#~ msgid "Cuba"
-#~ msgstr "古巴"
-
-#~ msgid "Cyprus"
-#~ msgstr "塞浦路斯"
-
-#~ msgid "Czech Republic"
-#~ msgstr "捷克共和国"
-
-#~ msgid "Democratic People's Republic of Korea"
-#~ msgstr "朝鲜人民民主共和国"
-
-#~ msgid "Democratic Republic of the Congo"
-#~ msgstr "刚果民主共和国"
-
-#~ msgid "Denmark"
-#~ msgstr "丹麦"
-
-#~ msgid "Djibouti"
-#~ msgstr "吉布提"
-
-#~ msgid "Dominica"
-#~ msgstr "多米尼克"
-
-#~ msgid "Dominican Republic"
-#~ msgstr "多米尼加共和国"
-
-#~ msgid "Ecuador"
-#~ msgstr "厄瓜多尔"
-
-#~ msgid "Egypt"
-#~ msgstr "埃及"
-
-#~ msgid "El Salvador"
-#~ msgstr "萨尔瓦多"
-
-#~ msgid "Equatorial Guinea"
-#~ msgstr "赤道几内亚"
-
-#~ msgid "Eritrea"
-#~ msgstr "厄立特里亚"
-
-#~ msgid "Estonia"
-#~ msgstr "爱沙尼亚"
-
-#~ msgid "Ethiopia"
-#~ msgstr "埃塞俄比亚"
-
-#~ msgid "Faeroe Islands"
-#~ msgstr "法罗群岛"
-
-#~ msgid "Falkland Islands (Malvinas)"
-#~ msgstr "福克兰群岛（马尔维纳斯）"
-
-#~ msgid "Fiji"
-#~ msgstr "斐济"
-
-#~ msgid "Finland"
-#~ msgstr "芬兰"
-
-#~ msgid "France"
-#~ msgstr "法国"
-
-#~ msgid "French Guiana"
-#~ msgstr "法属圭亚那"
-
-#~ msgid "French Polynesia"
-#~ msgstr "法属波利尼西亚"
-
-#~ msgid "Gabon"
-#~ msgstr "加蓬"
-
-#~ msgid "Gambia"
-#~ msgstr "冈比亚"
-
-#~ msgid "Georgia"
-#~ msgstr "格鲁吉亚"
-
-#~ msgid "Germany"
-#~ msgstr "德国"
-
-#~ msgid "Ghana"
-#~ msgstr "加纳"
-
-#~ msgid "Gibraltar"
-#~ msgstr "直布罗陀"
-
-#~ msgid "Greece"
-#~ msgstr "希腊"
-
-#~ msgid "Greenland"
-#~ msgstr "格陵兰"
-
-#~ msgid "Grenada"
-#~ msgstr "格林纳达"
-
-#~ msgid "Guadeloupe"
-#~ msgstr "瓜德罗普岛"
-
-#~ msgid "Guam"
-#~ msgstr "关岛"
-
-#~ msgid "Guatemala"
-#~ msgstr "危地马拉"
-
-#~ msgid "Guernsey"
-#~ msgstr "根西岛"
-
-#~ msgid "Guinea"
-#~ msgstr "几内亚"
-
-#~ msgid "Guinea-Bissau"
-#~ msgstr "几内亚比绍"
-
-#~ msgid "Guyana"
-#~ msgstr "圭亚那"
-
-#~ msgid "Haiti"
-#~ msgstr "海地"
-
-#~ msgid "Holy See (Vatican City)"
-#~ msgstr "罗马教廷（梵蒂冈城）"
-
-#~ msgid "Honduras"
-#~ msgstr "洪都拉斯"
-
-#~ msgid "Hungary"
-#~ msgstr "匈牙利"
-
-#~ msgid "Iceland"
-#~ msgstr "冰岛"
-
-#~ msgid "India"
-#~ msgstr "印度"
-
-#~ msgid "Indonesia"
-#~ msgstr "印尼"
-
-#~ msgid "Iran"
-#~ msgstr "伊朗"
-
-#~ msgid "Iraq"
-#~ msgstr "伊拉克"
-
-#~ msgid "Ireland"
-#~ msgstr "爱尔兰"
-
-#~ msgid "Isle of Man"
-#~ msgstr "马恩岛"
-
-#~ msgid "Israel"
-#~ msgstr "以色列"
-
-#~ msgid "Italy"
-#~ msgstr "意大利"
-
-#~ msgid "Jamaica"
-#~ msgstr "牙买加"
-
-#~ msgid "Japan"
-#~ msgstr "日本"
-
-#~ msgid "Jersey"
-#~ msgstr "新泽西州"
-
-#~ msgid "Jordan"
-#~ msgstr "约旦"
-
-#~ msgid "Kazakhstan"
-#~ msgstr "哈萨克斯坦"
-
-#~ msgid "Kenya"
-#~ msgstr "肯尼亚"
-
-#~ msgid "Kiribati"
-#~ msgstr "基里巴斯"
-
-#~ msgid "Kuwait"
-#~ msgstr "科威特"
-
-#~ msgid "Kyrgyzstan"
-#~ msgstr "吉尔吉斯斯坦"
-
-#~ msgid "Lao People's Democratic Republic"
-#~ msgstr "老挝人民民主共和国"
-
-#~ msgid "Latvia"
-#~ msgstr "拉脱维亚"
-
-#~ msgid "Lebanon"
-#~ msgstr "黎巴嫩"
-
-#~ msgid "Lesotho"
-#~ msgstr "莱索托"
-
-#~ msgid "Liberia"
-#~ msgstr "利比里亚"
-
-#~ msgid "Libyan Arab Jamahiriya"
-#~ msgstr "阿拉伯利比亚民众国"
-
-#~ msgid "Liechtenstein"
-#~ msgstr "列支敦士登"
-
-#~ msgid "Lithuania"
-#~ msgstr "立陶宛"
-
-#~ msgid "Luxembourg"
-#~ msgstr "卢森堡"
-
-#~ msgid "Macedonia"
-#~ msgstr "马其顿"
-
-#~ msgid "Madagascar"
-#~ msgstr "马达加斯加"
-
-#~ msgid "Malawi"
-#~ msgstr "马拉维"
-
-#~ msgid "Malaysia"
-#~ msgstr "马来西亚"
-
-#~ msgid "Maldives"
-#~ msgstr "马尔代夫"
-
-#~ msgid "Mali"
-#~ msgstr "马里"
-
-#~ msgid "Malta"
-#~ msgstr "马耳他"
-
-#~ msgid "Marshall Islands"
-#~ msgstr "马绍尔群岛"
-
-#~ msgid "Martinique"
-#~ msgstr "马提尼克岛"
-
-#~ msgid "Mauritania"
-#~ msgstr "毛里塔尼亚"
-
-#~ msgid "Mauritius"
-#~ msgstr "毛里求斯"
-
-#~ msgid "Mayotte"
-#~ msgstr "马约特岛"
-
-#~ msgid "Mexico"
-#~ msgstr "墨西哥"
-
-#~ msgid "Micronesia, Federated States of"
-#~ msgstr "密克罗尼西亚联邦"
-
-#~ msgid "Monaco"
-#~ msgstr "摩纳哥"
-
-#~ msgid "Mongolia"
-#~ msgstr "蒙古"
-
-#~ msgid "Montenegro"
-#~ msgstr "黑山"
-
-#~ msgid "Montserrat"
-#~ msgstr "蒙特塞拉特"
-
-#~ msgid "Morocco"
-#~ msgstr "摩洛哥"
-
-#~ msgid "Mozambique"
-#~ msgstr "莫桑比克"
-
-#~ msgid "Myanmar"
-#~ msgstr "缅甸"
-
-#~ msgid "Namibia"
-#~ msgstr "纳米比亚"
-
-#~ msgid "Nauru"
-#~ msgstr "瑙鲁"
-
-#~ msgid "Nepal"
-#~ msgstr "尼泊尔"
-
-#~ msgid "Netherlands"
-#~ msgstr "荷兰"
-
-#~ msgid "Netherlands Antilles"
-#~ msgstr "荷属安的列斯"
-
-#~ msgid "New Caledonia"
-#~ msgstr "新喀里多尼亚"
-
-#~ msgid "New Zealand"
-#~ msgstr "新西兰"
-
-#~ msgid "Nicaragua"
-#~ msgstr "尼加拉瓜"
-
-#~ msgid "Niger"
-#~ msgstr "尼日尔"
-
-#~ msgid "Nigeria"
-#~ msgstr "尼日利亚"
-
-#~ msgid "Niue"
-#~ msgstr "纽埃"
-
-#~ msgid "Norfolk Island"
-#~ msgstr "诺福克岛"
-
-#~ msgid "Northern Mariana Islands"
-#~ msgstr "北马里亚纳群岛"
-
-#~ msgid "Norway"
-#~ msgstr "挪威"
-
-#~ msgid "Occupied Palestinian Territory"
-#~ msgstr "被占领的巴勒斯坦领土"
-
-#~ msgid "Oman"
-#~ msgstr "阿曼"
-
-#~ msgid "Pakistan"
-#~ msgstr "巴基斯坦"
-
-#~ msgid "Palau"
-#~ msgstr "帕劳"
-
-#~ msgid "Panama"
-#~ msgstr "巴拿马"
-
-#~ msgid "Papua New Guinea"
-#~ msgstr "巴布亚新几内亚"
-
-#~ msgid "Paraguay"
-#~ msgstr "巴拉圭"
-
-#~ msgid "Peru"
-#~ msgstr "秘鲁"
-
-#~ msgid "Philippines"
-#~ msgstr "菲律宾"
-
-#~ msgid "Pitcairn"
-#~ msgstr "皮特凯恩"
-
-#~ msgid "Poland"
-#~ msgstr "波兰"
-
-#~ msgid "Portugal"
-#~ msgstr "葡萄牙"
-
-#~ msgid "Puerto Rico"
-#~ msgstr "波多黎各"
-
-#~ msgid "Qatar"
-#~ msgstr "卡塔尔"
-
-#~ msgid "Republic of Korea"
-#~ msgstr "韩国共和国"
-
-#~ msgid "Republic of Moldova"
-#~ msgstr "摩尔多瓦共和国"
-
-#~ msgid "Reunion"
-#~ msgstr "留尼汪"
-
-#~ msgid "Romania"
-#~ msgstr "罗马尼亚"
-
-#~ msgid "Russian Federation"
-#~ msgstr "俄罗斯联邦"
-
-#~ msgid "Rwanda"
-#~ msgstr "卢旺达"
-
-#~ msgid "Saint-Barthelemy"
-#~ msgstr "圣 - 缪"
-
-#~ msgid "Saint Helena"
-#~ msgstr "圣赫勒拿"
-
-#~ msgid "Saint Kitts and Nevis"
-#~ msgstr "圣基茨和尼维斯"
-
-#~ msgid "Saint Lucia"
-#~ msgstr "圣卢西亚"
-
-#~ msgid "Saint-Martin (French part)"
-#~ msgstr "圣马丁（法国部分）"
-
-#~ msgid "Saint Pierre and Miquelon"
-#~ msgstr "圣皮埃尔和密克隆"
-
-#~ msgid "Saint Vincent and the Grenadines"
-#~ msgstr "圣文森特和格林纳丁斯"
-
-#~ msgid "Samoa"
-#~ msgstr "萨摩亚"
-
-#~ msgid "San Marino"
-#~ msgstr "圣马力诺"
-
-#~ msgid "Sao Tome and Principe"
-#~ msgstr "圣多美和普林西比"
-
-#~ msgid "Saudi Arabia"
-#~ msgstr "沙特阿拉伯"
-
-#~ msgid "Senegal"
-#~ msgstr "塞内加尔"
-
-#~ msgid "Serbia"
-#~ msgstr "塞尔维亚"
-
-#~ msgid "Seychelles"
-#~ msgstr "塞舌尔"
-
-#~ msgid "Sierra Leone"
-#~ msgstr "塞拉利昂"
-
-#~ msgid "Singapore"
-#~ msgstr "新加坡"
-
-#~ msgid "Slovakia"
-#~ msgstr "斯洛伐克"
-
-#~ msgid "Slovenia"
-#~ msgstr "斯洛文尼亚"
-
-#~ msgid "Solomon Islands"
-#~ msgstr "所罗门群岛"
-
-#~ msgid "Somalia"
-#~ msgstr "索马里"
-
-#~ msgid "South Africa"
-#~ msgstr "南非"
-
-#~ msgid "Spain"
-#~ msgstr "西班牙"
-
-#~ msgid "Sri Lanka"
-#~ msgstr "斯里兰卡"
-
-#~ msgid "Sudan"
-#~ msgstr "苏丹"
-
-#~ msgid "Suriname"
-#~ msgstr "苏里南"
-
-#~ msgid "Svalbard and Jan Mayen Islands"
-#~ msgstr "斯瓦尔巴岛和扬马延岛"
-
-#~ msgid "Swaziland"
-#~ msgstr "斯威士兰"
-
-#~ msgid "Sweden"
-#~ msgstr "瑞典"
-
-#~ msgid "Switzerland"
-#~ msgstr "瑞士"
-
-#~ msgid "Syrian Arab Republic"
-#~ msgstr "阿拉伯叙利亚共和国"
-
-#~ msgid "Tajikistan"
-#~ msgstr "塔吉克斯坦"
-
-#~ msgid "Thailand"
-#~ msgstr "泰国"
-
-#~ msgid "Timor-Leste"
-#~ msgstr "东帝汶"
-
-#~ msgid "Togo"
-#~ msgstr "多哥"
-
-#~ msgid "Tokelau"
-#~ msgstr "托克劳"
-
-#~ msgid "Tonga"
-#~ msgstr "汤加"
-
-#~ msgid "Trinidad and Tobago"
-#~ msgstr "特里尼达和多巴哥"
-
-#~ msgid "Tunisia"
-#~ msgstr "突尼斯"
-
-#~ msgid "Turkey"
-#~ msgstr "土耳其"
-
-#~ msgid "Turkmenistan"
-#~ msgstr "土库曼斯坦"
-
-#~ msgid "Turks and Caicos Islands"
-#~ msgstr "特克斯和凯科斯群岛"
-
-#~ msgid "Tuvalu"
-#~ msgstr "图瓦卢"
-
-#~ msgid "Uganda"
-#~ msgstr "乌干达"
-
-#~ msgid "Ukraine"
-#~ msgstr "乌克兰"
-
-#~ msgid "United Arab Emirates"
-#~ msgstr "阿拉伯联合酋长国"
-
-#~ msgid "United Kingdom"
-#~ msgstr "英国"
-
-#~ msgid "United Republic of Tanzania"
-#~ msgstr "坦桑尼亚联合共和国"
-
-#~ msgid "United States of America"
-#~ msgstr "美国"
-
-#~ msgid "United States Virgin Islands"
-#~ msgstr "美属维尔京群岛"
-
-#~ msgid "Uruguay"
-#~ msgstr "乌拉圭"
-
-#~ msgid "Uzbekistan"
-#~ msgstr "乌兹别克斯坦"
-
-#~ msgid "Vanuatu"
-#~ msgstr "瓦努阿图"
-
-#~ msgid "Venezuela (Bolivarian Republic of)"
-#~ msgstr "委内瑞拉（玻利瓦尔共和国）"
-
-#~ msgid "Viet Nam"
-#~ msgstr "越南"
-
-#~ msgid "Wallis and Futuna Islands"
-#~ msgstr "瓦利斯群岛和富图纳群岛"
-
-#~ msgid "Western Sahara"
-#~ msgstr "西撒哈拉"
-
-#~ msgid "Yemen"
-#~ msgstr "也门"
-
-#~ msgid "Zambia"
-#~ msgstr "赞比亚"
-
-#~ msgid "Zimbabwe"
-#~ msgstr "津巴布韦"
