@@ -3,13 +3,14 @@
 # This file is distributed under the same license as the PACKAGE package.
 # 
 # Translators:
+# Andres Alfonso Lemon Gomez <lemon.andres@gmail.com>, 2014
 msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2014-10-24 10:00-0500\n"
-"PO-Revision-Date: 2014-11-11 22:40+0000\n"
-"Last-Translator: ingenieroariel <ingenieroariel@gmail.com>\n"
+"PO-Revision-Date: 2014-11-14 15:05+0000\n"
+"Last-Translator: Andres Alfonso Lemon Gomez <lemon.andres@gmail.com>\n"
 "Language-Team: Spanish (http://www.transifex.com/projects/p/geonode/language/es/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -52,32 +53,32 @@ msgstr "¿Quién puede administrar o editar estos datos?"
 #: static/geonode/js/upload/FileType.js:33
 #, c-format
 msgid "Missing a %s file, which is required"
-msgstr ""
+msgstr "Falta un archivo %s, el cual es requerido"
 
 #: static/geonode/js/upload/FileTypes.js:7
 msgid "ESRI Shapefile"
-msgstr ""
+msgstr "ESRI Shapefile"
 
 #: static/geonode/js/upload/FileTypes.js:13
 #: static/geonode/js/upload/FileTypes.js:19
 msgid "GeoTiff File"
-msgstr ""
+msgstr "Archivo GeoTiff"
 
 #: static/geonode/js/upload/FileTypes.js:26
 msgid "Comma Separated File"
-msgstr ""
+msgstr "Archivo Separado por Coma"
 
 #: static/geonode/js/upload/FileTypes.js:32
 msgid "Google Earth KML"
-msgstr ""
+msgstr "Google Earth KML"
 
 #: static/geonode/js/upload/FileTypes.js:38
 msgid "Zip Archives"
-msgstr ""
+msgstr "Archivos Zip"
 
 #: static/geonode/js/upload/LayerInfo.js:249
 msgid "Layer Info"
-msgstr ""
+msgstr "Información de Capas"
 
 #: static/geonode/js/upload/LayerInfo.js:250
 msgid "Edit Metadata"
@@ -89,45 +90,45 @@ msgstr "Administrar Estilos"
 
 #: static/geonode/js/upload/LayerInfo.js:253
 msgid "Your layer was successfully uploaded"
-msgstr ""
+msgstr "Su capa fue cargada exitosamente"
 
 #: static/geonode/js/upload/LayerInfo.js:282
 msgid "Performing Final GeoServer Config Step"
-msgstr ""
+msgstr "Realizando Paso Final en la Configuración del GeoServer"
 
 #: static/geonode/js/upload/LayerInfo.js:297
 #: static/geonode/js/upload/LayerInfo.js:319
 msgid "You need to specify more information in order to complete your upload"
-msgstr ""
+msgstr "Usted necesita especificar mas información para poder completar la carga"
 
 #: static/geonode/js/upload/LayerInfo.js:311
 msgid "You need to specify more information in order to complete your upload."
-msgstr ""
+msgstr "Usted necesita especificar mas información para poder completar la carga."
 
 #: static/geonode/js/upload/LayerInfo.js:311
 msgid "You can continue configuring your layer."
-msgstr ""
+msgstr "Puedes continuar configurando tu capa."
 
 #: static/geonode/js/upload/LayerInfo.js:329
 #: static/geonode/js/upload/LayerInfo.js:414
 msgid "Unexpected Error"
-msgstr ""
+msgstr "Error Inesperado"
 
 #: static/geonode/js/upload/LayerInfo.js:345
 msgid "Performing GeoServer Config Step"
-msgstr ""
+msgstr "Realizando Configuración del GeoServer"
 
 #: static/geonode/js/upload/LayerInfo.js:417
 msgid "No error message supplied"
-msgstr ""
+msgstr "Ningún mensaje de error suministrado"
 
 #: static/geonode/js/upload/LayerInfo.js:432
 msgid "Layer files uploaded, configuring in GeoServer"
-msgstr ""
+msgstr "Archivo de capas cargado, configurando en GeoServer"
 
 #: static/geonode/js/upload/LayerInfo.js:447
 msgid "Select or create a Geogit repository."
-msgstr ""
+msgstr "Seleccionar o crear un repositorio Geogit."
 
 #: static/geonode/js/upload/LayerInfo.js:542
 msgid "Remove"
@@ -136,11 +137,11 @@ msgstr "Remover"
 #: static/geonode/js/upload/upload.js:126
 #, c-format
 msgid "The file %s is an unsupported file type, please select another file."
-msgstr ""
+msgstr "El archivo %s no es un tipo de archivo soportado, por favor selecciona otro archivo."
 
 #: static/geonode/js/upload/upload.js:286
 msgid "You are uploading an incomplete set of files."
-msgstr ""
+msgstr "Usted esta cargando un conjunto incompleto de archivos."
 
 #: templates/lang.js:9 templates/lang.js.c:236
 msgid "Cancel"
@@ -269,11 +270,11 @@ msgstr "Paneo del Mapa"
 
 #: templates/lang.js:52
 msgid "Zoom to Next Extent"
-msgstr "Zoom a la Extensión Siguiente"
+msgstr "Acercamiento a la Extensión Siguiente"
 
 #: templates/lang.js:53
 msgid "Zoom to Previous Extent"
-msgstr "Zoom a la Extensión Anterior"
+msgstr "Acercamiento a la Extensión Anterior"
 
 #: templates/lang.js:54
 msgid "This map has not yet been saved."

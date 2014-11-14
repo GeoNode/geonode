@@ -1,604 +1,599 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 # 
-#, fuzzy
+# Translators:
+# keeratipong petchadapong <jobcskku@hotmail.com>, 2014
 msgid ""
 msgstr ""
-"Project-Id-Version: PACKAGE VERSION\n"
+"Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-11-11 17:37-0500\n"
-"PO-Revision-Date: 2014-11-11 16:55-0551\n"
-"Last-Translator:   <a@aaa.aaa>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
+"POT-Creation-Date: 2014-10-24 10:00-0500\n"
+"PO-Revision-Date: 2014-11-13 10:31+0000\n"
+"Last-Translator: keeratipong petchadapong <jobcskku@hotmail.com>\n"
+"Language-Team: Thai (http://www.transifex.com/projects/p/geonode/language/th/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Language: \n"
+"Language: th\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Translated-Using: django-rosetta 0.7.4\n"
 
 #: static/geonode/js/extjs/GeoNode.js:72
 msgid "Add user..."
-msgstr ""
+msgstr "เพิ่มผู้ใช้..."
 
 #: static/geonode/js/extjs/GeoNode.js:72
 msgid "Who can view and download this data?"
-msgstr ""
+msgstr "ใครสามารถดูและดาวน์โหลดข้อมูลนี้ได้บ้าง?"
 
 #: static/geonode/js/extjs/GeoNode.js:72
 msgid "Anyone"
-msgstr "anyone"
+msgstr "ทุกคน"
 
 #: static/geonode/js/extjs/GeoNode.js:72
 msgid "Any registered user"
-msgstr ""
+msgstr "ผู้ใช้ทุกคนที่ลงทะเบียนแล้ว"
 
 #: static/geonode/js/extjs/GeoNode.js:72
 msgid "Only users who can edit"
-msgstr ""
+msgstr "เฉพาะผู้ใช้ที่สามารถแก้ไขได้"
 
 #: static/geonode/js/extjs/GeoNode.js:72
 msgid "Who can edit this data?"
-msgstr ""
+msgstr "ใครสามารถแก้ไขข้อมูลนี้ได้บ้าง?"
 
 #: static/geonode/js/extjs/GeoNode.js:72
 msgid "Only the following users or groups:"
-msgstr ""
+msgstr "เฉพาะผู้ใช้หรือกลุ่มดังต่อไปนี้:"
 
 #: static/geonode/js/extjs/GeoNode.js:72
 msgid "Who can manage and edit this data?"
-msgstr ""
-
-#: static/geonode/js/search/search.js:296
-msgid "Enter your text here ..."
-msgstr ""
+msgstr "ใครสามารถจัดการและแก้ไขข้อมูลนี้ได้บ้าง?"
 
 #: static/geonode/js/upload/FileType.js:33
 #, c-format
 msgid "Missing a %s file, which is required"
-msgstr ""
+msgstr "ขาดไฟล์ %s ซึ่งมีความจำเป็น"
 
 #: static/geonode/js/upload/FileTypes.js:7
 msgid "ESRI Shapefile"
-msgstr ""
+msgstr "ESRI Shapefile"
 
 #: static/geonode/js/upload/FileTypes.js:13
 #: static/geonode/js/upload/FileTypes.js:19
 msgid "GeoTiff File"
-msgstr ""
+msgstr "GeoTiff"
 
 #: static/geonode/js/upload/FileTypes.js:26
 msgid "Comma Separated File"
-msgstr ""
+msgstr "Comma Separated File"
 
 #: static/geonode/js/upload/FileTypes.js:32
 msgid "Google Earth KML"
-msgstr ""
+msgstr "Google Earth KML"
 
 #: static/geonode/js/upload/FileTypes.js:38
 msgid "Zip Archives"
-msgstr ""
+msgstr "Zip Archives"
 
 #: static/geonode/js/upload/LayerInfo.js:249
 msgid "Layer Info"
-msgstr ""
+msgstr "ข้อมูลเกี่ยวกับชั้นข้อมูล"
 
 #: static/geonode/js/upload/LayerInfo.js:250
 msgid "Edit Metadata"
-msgstr ""
+msgstr "แก้ไข Metadata"
 
 #: static/geonode/js/upload/LayerInfo.js:251
 msgid "Manage Styles"
-msgstr ""
+msgstr "จัดการสไตล์"
 
 #: static/geonode/js/upload/LayerInfo.js:253
 msgid "Your layer was successfully uploaded"
-msgstr ""
+msgstr "ชั้นข้อมูลของคุณอัพโหลดเสร็จแล้ว"
 
 #: static/geonode/js/upload/LayerInfo.js:282
 msgid "Performing Final GeoServer Config Step"
-msgstr ""
+msgstr "กำลังทำขั้นตอนสุดท้ายของการตั้งค่า GeoServer"
 
 #: static/geonode/js/upload/LayerInfo.js:297
 #: static/geonode/js/upload/LayerInfo.js:319
 msgid "You need to specify more information in order to complete your upload"
-msgstr ""
+msgstr "คุณจำเป็นต้องเพิ่มรายละเอียดมากกว่านี้เพื่ออัพโหลดไฟล์"
 
 #: static/geonode/js/upload/LayerInfo.js:311
 msgid "You need to specify more information in order to complete your upload."
-msgstr ""
+msgstr "คุณจำเป็นต้องเพิ่มรายละเอียดมากกว่านี้เพื่ออัพโหลดไฟล์"
 
 #: static/geonode/js/upload/LayerInfo.js:311
 msgid "You can continue configuring your layer."
-msgstr ""
+msgstr "คุณสามารถทำการตั้งค่าชั้นข้อมูลของคุณต่อไปได้"
 
 #: static/geonode/js/upload/LayerInfo.js:329
 #: static/geonode/js/upload/LayerInfo.js:414
 msgid "Unexpected Error"
-msgstr ""
+msgstr "ข้อผิดพลาดที่คาดไม่ถึง"
 
 #: static/geonode/js/upload/LayerInfo.js:345
 msgid "Performing GeoServer Config Step"
-msgstr ""
+msgstr "กำลังทำขั้นตอนการตั้งค่าของ GeoServer"
 
 #: static/geonode/js/upload/LayerInfo.js:417
 msgid "No error message supplied"
-msgstr ""
+msgstr "ไม่มีการใส่ข้อความแสดงข้อผิดพลาด"
 
 #: static/geonode/js/upload/LayerInfo.js:432
 msgid "Layer files uploaded, configuring in GeoServer"
-msgstr ""
+msgstr "ไฟล์ชั้นข้อมูลอัพโหลดเสร็จแล้ว กำลังตั้งค่าใน GeoServer"
 
 #: static/geonode/js/upload/LayerInfo.js:447
 msgid "Select or create a Geogit repository."
-msgstr ""
+msgstr "เลือกหรือสร้าง Geogit repository"
 
 #: static/geonode/js/upload/LayerInfo.js:542
 msgid "Remove"
-msgstr ""
+msgstr "ลบ"
 
 #: static/geonode/js/upload/upload.js:126
 #, c-format
 msgid "The file %s is an unsupported file type, please select another file."
-msgstr ""
+msgstr "ไฟล์ %s เป็นชนิดไฟล์ที่ไม่รองรับ โปรดเลือกไฟล์อื่น"
 
 #: static/geonode/js/upload/upload.js:286
 msgid "You are uploading an incomplete set of files."
-msgstr ""
+msgstr "คุณกำลังอัพโหลดชุดไฟล์ที่ไม่สมบูรณ์"
 
 #: templates/lang.js:9 templates/lang.js.c:236
 msgid "Cancel"
-msgstr ""
+msgstr "ยกเลิก"
 
 #: templates/lang.js:10
 msgid "Save as Copy"
-msgstr ""
+msgstr "บันทึกเป็นสำเนา"
 
 #: templates/lang.js:11
 msgid "About this Map"
-msgstr ""
+msgstr "เกี่ยวกับแผนที่นี้"
 
 #: templates/lang.js:12 templates/lang.js.c:96 templates/lang.js.c:165
 msgid "Abstract"
-msgstr ""
+msgstr "บทคัดย่อ"
 
 #: templates/lang.js:13
 msgid "Save"
-msgstr ""
+msgstr "บันทึก"
 
 #: templates/lang.js:14 templates/lang.js.c:100 templates/lang.js.c:109
 #: templates/lang.js:162 templates/lang.js.c:184 templates/lang.js.c:219
 msgid "Title"
-msgstr ""
+msgstr "ชื่อเรื่อง"
 
 #: templates/lang.js:20
 msgid "Connection Error"
-msgstr ""
+msgstr "มีปัญหาในการเชื่อมต่อ"
 
 #: templates/lang.js:21
 msgid "The server returned an error"
-msgstr ""
+msgstr "เซิร์ฟเวอร์แจ้งกลับมาว่ามีปัญหาเกิดขึ้น"
 
 #: templates/lang.js:22
 msgid "Details..."
-msgstr ""
+msgstr "รายละเอียด..."
 
 #: templates/lang.js:28 templates/lang.js.c:31
 msgid "Add Layers"
-msgstr ""
+msgstr "เพิ่มชั้นข้อมูล"
 
 #: templates/lang.js:29
 msgid "Area"
-msgstr ""
+msgstr "พื้นที่"
 
 #: templates/lang.js:30
 msgid "Background"
-msgstr ""
+msgstr "พื้นหลัง"
 
 #: templates/lang.js:32
 msgid "Done"
-msgstr ""
+msgstr "เสร็จ"
 
 #: templates/lang.js:33
 msgid "Available Layers"
-msgstr ""
+msgstr "ชั้นข้อมูลที่สามารถใช้ได้"
 
 #: templates/lang.js:35 templates/lang.js.c:121
 msgid "Height"
-msgstr ""
+msgstr "ความสูง"
 
 #: templates/lang.js:36
 msgid "Get Feature Info"
-msgstr ""
+msgstr "ดูข้อมูลของฟีเจอร์"
 
 #: templates/lang.js:37 templates/lang.js.c:122
 msgid "Large"
-msgstr ""
+msgstr "ใหญ่"
 
 #: templates/lang.js:38
 msgid "or add a new server."
-msgstr ""
+msgstr "หรือเพิ่มเซิฟเวอร์ใหม่"
 
 #: templates/lang.js:39
 msgid "Map Layers"
-msgstr ""
+msgstr "ชั้นข้อมูลในแผนที่"
 
 #: templates/lang.js:40
 msgid "View available data from:"
-msgstr ""
+msgstr "ดูข้อมูลที่สามารถใช้ได้จาก:"
 
 #: templates/lang.js:41
 msgid "Data"
-msgstr ""
+msgstr "ข้อมูล"
 
 #: templates/lang.js:42
 msgid "Layers"
-msgstr ""
+msgstr "ชั้นข้อมูล"
 
 #: templates/lang.js:43
 msgid "Legend"
-msgstr ""
+msgstr "สัญลักษณ์"
 
 #: templates/lang.js:44
 msgid "Length"
-msgstr ""
+msgstr "ความยาว"
 
 #: templates/lang.js:45
 msgid "Loading Map..."
-msgstr ""
+msgstr "กำลังโหลดแผนที่..."
 
 #: templates/lang.js:46 templates/lang.js.c:123
 msgid "Map Size"
-msgstr ""
+msgstr "ขนาดแผนที่"
 
 #: templates/lang.js:47
 msgid "Measure"
-msgstr ""
+msgstr "เครื่องมือวัด"
 
 #: templates/lang.js:48 templates/lang.js.c:97 templates/lang.js.c:163
 msgid "Contact"
-msgstr ""
+msgstr "ติดต่อ"
 
 #: templates/lang.js:49 templates/lang.js.c:55
 msgid "Permalink"
-msgstr ""
+msgstr "ลิงค์ถาวร"
 
 #: templates/lang.js:50 templates/lang.js.c:124
 msgid "Mini"
-msgstr ""
+msgstr "เล็ก"
 
 #: templates/lang.js:51
 msgid "Pan Map"
-msgstr ""
+msgstr "เลื่อนแผนที่"
 
 #: templates/lang.js:52
 msgid "Zoom to Next Extent"
-msgstr ""
+msgstr "ไปยังพื้นที่ถัดไป"
 
 #: templates/lang.js:53
 msgid "Zoom to Previous Extent"
-msgstr ""
+msgstr "กลับไปพื้นที่ก่อนหน้านี้"
 
 #: templates/lang.js:54
 msgid "This map has not yet been saved."
-msgstr ""
+msgstr "แผนที่นี้ยังไม่ได้บันทึก"
 
 #: templates/lang.js:56 templates/lang.js.c:125
 msgid "Premium"
-msgstr ""
+msgstr "พรีเมียม"
 
 #: templates/lang.js:57
 msgid "Print Map"
-msgstr ""
+msgstr "พิมพ์แผนที่"
 
 #: templates/lang.js:58
 msgid "Print Preview"
-msgstr ""
+msgstr "ตัวอย่างก่อนพิมพ์"
 
 #: templates/lang.js:59
 msgid "Properties"
-msgstr ""
+msgstr "คุณสมบัติ"
 
 #: templates/lang.js:60 templates/lang.js.c:126
 msgid "Publish Map"
-msgstr ""
+msgstr "เผยแพร่แผนที่"
 
 #: templates/lang.js:61 templates/lang.js.c:62
 msgid "Remove Layer"
-msgstr ""
+msgstr "ลบชั้นข้อมูล"
 
 #: templates/lang.js:63
 msgid "Sorry, your map could not be saved."
-msgstr ""
+msgstr "ขออภัยด้วย ไม่สามาถบันทึกแผนที่ของคุณได้"
 
 #: templates/lang.js:64
 msgid "Error While Saving"
-msgstr ""
+msgstr "เกิดข้อผิดพลาดขณะกำลังบันทึก"
 
 #: templates/lang.js:65
 msgid "Save Map"
-msgstr ""
+msgstr "บันทึกแผนที่"
 
 #: templates/lang.js:66
 msgid "You must be logged in to save this map."
-msgstr ""
+msgstr "คุณต้องลงชื่อเข้าใช้เพื่อบันทึกแผนที่นี้"
 
 #: templates/lang.js:67 templates/lang.js.c:128
 msgid "Small"
-msgstr ""
+msgstr "เล็ก"
 
 #: templates/lang.js:68
 msgid ""
 "Error contacting server.\n"
 " Please check the url and try again."
-msgstr ""
+msgstr "เกิดปัญหาในการติดต่อกับเซิร์ฟเวอร์\nโปรดตรวจสอบ url แล้วลองอีกครั้ง"
 
 #: templates/lang.js:69
 msgid "Layer Properties"
-msgstr ""
+msgstr "คุณสมบัติชั้นข้อมูล"
 
 #: templates/lang.js:70
 msgid "Change layer format and style"
-msgstr ""
+msgstr "เปลี่ยนรูปแบบและสไตล์ชั้นข้อมูล"
 
 #: templates/lang.js:71
 msgid "Edit Styles"
-msgstr ""
+msgstr "แก้ไขสไตล์"
 
 #: templates/lang.js:72
 msgid "Edit layer styles"
-msgstr ""
+msgstr "แก้ไขสไตล์ของชั้นข้อมูล"
 
 #: templates/lang.js:73
 msgid "Switch to Google Earth 3D Viewer"
-msgstr ""
+msgstr "สลับไปยังมุมมอง Google Earth 3D"
 
 #: templates/lang.js:74
 msgid ""
 "The map that you are trying to load does not exist.  Creating a new map "
 "instead."
-msgstr ""
+msgstr "ไม่พบแผนที่ที่คุณกำลังเปิด ให้คุณสร้างแผนที่ใหม่แทน"
 
 #: templates/lang.js:75
 msgid "Unknown Map"
-msgstr ""
+msgstr "แผนที่ที่ไม่รู้จัก"
 
 #: templates/lang.js:76 templates/lang.js.c:129
 msgid "Width"
-msgstr ""
+msgstr "ความกว้าง"
 
 #: templates/lang.js:77
 msgid "Zoom In"
-msgstr ""
+msgstr "ซูมเข้า"
 
 #: templates/lang.js:78
 msgid "Zoom Out"
-msgstr ""
+msgstr "ซูมออก"
 
 #: templates/lang.js:79
 msgid "Zoom level"
-msgstr ""
+msgstr "ระดับการซูม"
 
 #: templates/lang.js:80
 msgid "Zoom Level"
-msgstr ""
+msgstr "ระดับการซูม"
 
 #: templates/lang.js:81
 msgid "Zoom to Layer Extent"
-msgstr ""
+msgstr "ไปยังขอบเขตของชั้นข้อมูล"
 
 #: templates/lang.js:82
 msgid "Zoom to Visible Extent"
-msgstr ""
+msgstr "ไปยังขอบเขตที่มองเห็นได้"
 
 #: templates/lang.js:88
 msgid "Zoom Level {zoom}"
-msgstr ""
+msgstr "ระดับการซูมที่ {zoom}"
 
 #: templates/lang.js:94
 msgid "Create Map"
-msgstr ""
+msgstr "สร้างแผนที่"
 
 #: templates/lang.js:95
 msgid "Export Map"
-msgstr ""
+msgstr "ส่งออกแผนที่"
 
 #: templates/lang.js:98
 msgid "Map"
-msgstr ""
+msgstr "แผนที่"
 
 #: templates/lang.js:99 templates/lang.js.c:166
 msgid "View this Map"
-msgstr ""
+msgstr "ดูแผนที่นี้"
 
 #: templates/lang.js:101
 msgid "Open Map"
-msgstr ""
+msgstr "เปิดแผนที่"
 
 #: templates/lang.js:107 templates/lang.js.c:183
 msgid "Name"
-msgstr ""
+msgstr "ชื่อ"
 
 #: templates/lang.js:108
 msgid "Queryable"
-msgstr ""
+msgstr "ค้นหาข้อมูลได้"
 
 #: templates/lang.js:115
 msgid "No background"
-msgstr ""
+msgstr "ไม่มีพื้นหลัง"
 
 #: templates/lang.js:127
 msgid ""
 "Your map is ready to be published to the web!  Simply copy the following "
 "HTML to embed the map in your website:"
-msgstr ""
+msgstr "แผนที่ของคุณพร้อมที่จะเผยแพร่ผ่านเว็บแล้ว\nเหลือเพียงแค่คัดลอก HTML ด้านล่างเพื่อนำไปใส่ในเว็บไซต์ของคุณเท่านั้น:"
 
 #: templates/lang.js:136 templates/lang.js.c:202
 msgid "Abstract:"
-msgstr ""
+msgstr "บทคัดย่อ:"
 
 #: templates/lang.js:137 templates/lang.js.c:204
 msgid "No attribution information is provided for this layer."
-msgstr ""
+msgstr "ชั้นข้อมูลนี้ยังไม่มีข้อมูลแสดงความเป็นเจ้าของ"
 
 #: templates/lang.js:138 templates/lang.js.c:205
 msgid "Provided by:"
-msgstr ""
+msgstr "จัดทำโดย:"
 
 #: templates/lang.js:139 templates/lang.js.c:206
 msgid "Download:"
-msgstr ""
+msgstr "ดาวน์โหลด:"
 
 #: templates/lang.js:140 templates/lang.js.c:208
 msgid "No keywords are listed for this layer."
-msgstr ""
+msgstr "ชั้นข้อมูลนี้ยังไม่มีการใส่คำสำคัญ"
 
 #: templates/lang.js:141 templates/lang.js.c:209
 msgid "Keywords:"
-msgstr ""
+msgstr "คำสำคัญ:"
 
 #: templates/lang.js:142 templates/lang.js.c:210
 msgid "No metadata URLs are defined for this layer."
-msgstr ""
+msgstr "ชั้นข้อมูลนี้ยังไม่มี url ของคำอธิบายข้อมูล"
 
 #: templates/lang.js:143 templates/lang.js.c:211
 msgid "Metadata Links:"
-msgstr ""
+msgstr "ลิงค์ Metadata:"
 
 #: templates/lang.js:149
 msgid "Paper size:"
-msgstr ""
+msgstr "ขนาดกระดาษ:"
 
 #: templates/lang.js:150
 msgid "Resolution:"
-msgstr ""
+msgstr "ความละเอียด:"
 
 #: templates/lang.js:151
 msgid "Print"
-msgstr ""
+msgstr "พิมพ์"
 
 #: templates/lang.js:152
 msgid "Enter map title here."
-msgstr ""
+msgstr "กรอกชื่อแผนที่ที่นี่"
 
 #: templates/lang.js:153
 msgid "Include legend?"
-msgstr ""
+msgstr "รวมสัญลักษณ์ด้วย?"
 
 #: templates/lang.js:154
 msgid "Enter comments here."
-msgstr ""
+msgstr "กรอกความคิดเห็นที่นี่"
 
 #: templates/lang.js:155
 msgid "Creating PDF..."
-msgstr ""
+msgstr "กำลังสร้างไฟล์ PDF..."
 
 #: templates/lang.js:164
 msgid "Last Modified"
-msgstr ""
+msgstr "แก้ไขครั้งล่าสุด"
 
 #: templates/lang.js:167 templates/lang.js.c:188
 msgid "Prev"
-msgstr ""
+msgstr "ก่อนหน้า"
 
 #: templates/lang.js:168 templates/lang.js.c:189
 msgid "Next"
-msgstr ""
+msgstr "ถัดไป"
 
 #: templates/lang.js:169 templates/lang.js.c:190
 msgid "of"
-msgstr ""
+msgstr "จาก"
 
 #: templates/lang.js:170 templates/lang.js.c:191
 msgid "Your search did not match any items."
-msgstr ""
+msgstr "ไม่พบสิ่งที่คุณค้นหา"
 
 #: templates/lang.js:171
 msgid "Search Maps"
-msgstr ""
+msgstr "ค้นหาแผนที่"
 
 #: templates/lang.js:172 templates/lang.js.c:192
 msgid "Search"
-msgstr ""
+msgstr "ค้นหา"
 
 #: templates/lang.js:173 templates/lang.js.c:193
 msgid "Showing"
-msgstr ""
+msgstr "กำลังแสดง"
 
 #: templates/lang.js:174
 msgid "Loading"
-msgstr ""
+msgstr "กำลังโหลด"
 
 #: templates/lang.js:175 templates/lang.js.c:195
 msgid "permalink"
-msgstr ""
+msgstr "ลิงค์ถาวร"
 
 #: templates/lang.js:182
 msgid "Select"
-msgstr ""
+msgstr "เลือก"
 
 #: templates/lang.js:185
 msgid "Select:"
-msgstr ""
+msgstr "เลือก:"
 
 #: templates/lang.js:186
 msgid "All"
-msgstr ""
+msgstr "ทั้งหมด"
 
 #: templates/lang.js:187
 msgid "None"
-msgstr ""
+msgstr "ไม่มี"
 
 #: templates/lang.js:194
 msgid "Loading..."
-msgstr ""
+msgstr "กำลังโหลด..."
 
 #: templates/lang.js:196
 msgid "You do not have permission to view this data"
-msgstr ""
+msgstr "คุณไม่มีสิทธิ์ดูข้อมูลนี้"
 
 #: templates/lang.js:197
 msgid "This data is stored on a remote server"
-msgstr ""
+msgstr "ข้อมูลนี้เก็บอยู่บนเซิร์ฟเวอร์"
 
 #: templates/lang.js:203
 msgid "No abstract is provided for this layer."
-msgstr ""
+msgstr "ชั้นข้อมูลนี้ยังไม่มีบทคัดย่อ"
 
 #: templates/lang.js:207
 msgid "No download URLs are definied for this layer."
-msgstr ""
+msgstr "ชั้นข้อมูลนี้ยังไม่มี URL สำหรับดาวน์โหลด"
 
 #: templates/lang.js:217
 msgid "Selected Layers"
-msgstr ""
+msgstr "ชั้นข้อมูลที่เลือก"
 
 #: templates/lang.js:218
 msgid "No Layers Selected"
-msgstr ""
+msgstr "ยังไม่ได้เลือกชั้นข้อมูล"
 
 #: templates/lang.js:220
 msgid "Clear Selected"
-msgstr ""
+msgstr "ลบสิ่งที่เลือก"
 
 #: templates/lang.js:221
 msgid "Clear All"
-msgstr ""
+msgstr "ลบทั้งหมด"
 
 #: templates/lang.js:227
 msgid "Operation Failed"
-msgstr ""
+msgstr "การทำงานล้มเหลว"
 
 #: templates/lang.js:228
 msgid "No layers are currently selected."
-msgstr ""
+msgstr "ยังไม่มีชั้นข้อมูลที่ถูกเลือก"
 
 #: templates/lang.js:235
 msgid "Downloading..."
-msgstr ""
+msgstr "กำลังดาวน์โหลด..."
 
 #: templates/lang.js:237
 msgid "Please wait"
-msgstr ""
+msgstr "โปรดรอสักครู่"
