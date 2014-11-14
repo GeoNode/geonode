@@ -1,3 +1,11 @@
+geonode (2.4.0+alpha29) trusty; urgency=high
+
+  * [7c4cfd] flake8 on services/views.py
+  * [fb4b2e] Updated locale files
+  * [69012d] Updated locale
+
+ -- Ariel Nunez <ingenieroariel@gmail.com>  Fri, 14 Nov 2014 10:35:54 -0500
+
 geonode (2.4.0+alpha28) trusty; urgency=high
 
   [ capooti ]
