@@ -125,11 +125,16 @@
     <ul class="list-group">
       {% if resource.storeType != "remoteStore" %}
         {% get_obj_perms request.user for resource.get_self_resource as "perms" %}
-        {% if links %}
+        
         <li class="list-group-item">
+        {% if links %}
            <button class="btn btn-default btn-md btn-block" data-toggle="modal" data-target="#download-layer">{% trans "Download Layer" %}</button>
-        </li>
+        {% else %}
+          {% if request.user.is_authenticated %}
+          <button class="btn btn-default btn-md btn-block" id="request-download">{% trans "Request Download" %}</button>
+          {% endif %}
         {% endif %}
+        </li>
       {% endif %}
     <div class="modal fade" id="download-layer" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
       <div class="modal-dialog">
@@ -139,11 +144,13 @@
             <h4 class="modal-title" id="myModalLabel">{% trans "Download Layer" %}</h4>
           </div>
           <div class="modal-body">
+            {% if links %}
             <ul>
               {% for link in links %}
               <li><a href="{{ link.url }}">{% trans link.name %}</a></li>
               {% endfor %}
-            <ul>
+            </ul>
+            {% endif %}
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-default" data-dismiss="modal">{% trans "Close" %}</button>
@@ -328,6 +335,7 @@
       {% overall_rating resource 'layer' as the_layer_rating %}
     {% endif %}
     {% include 'rating.html' %}
+    {% include 'request_download.html' %}
     <script type="text/javascript">
        $("#comment_submit_btn").click(function(event) {
             $.ajax({
