@@ -7,4 +7,7 @@ urlpatterns = patterns('geonode.security.views',
                        url(r'^bulk-permissions/?$',
                            'set_bulk_permissions',
                            name='bulk_permissions'),
+                       url(r'^request-permissions/?$',
+                           'request_permissions',
+                           name='request_permissions'),
                        )

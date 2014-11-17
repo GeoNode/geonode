@@ -1,0 +1,11 @@
+The user {{ from_user.username }} requested you to download this resource:
+{{ resource.title }}
+
+{% if resource.polymorphic_ctype.name = 'layer' %}
+Layer: {{ current_site }}{% url "layer_detail" resource.layer.service_typename %}
+{% else %}
+Document: {{ current_site }}{% url "document_detail" resource.document.id %}
+{% endif %}
+
+Please go to resource page and assign the download permissions if you wish.
+
