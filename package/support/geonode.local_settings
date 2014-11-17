@@ -141,6 +141,9 @@ MAP_BASELAYERS = [{
   }
 ]
 
+# Allowed values for the preview library are 'geoext' and 'leaflet'.
+#LAYER_PREVIEW_LIBRARY = 'geoext'
+
 # Uncomment the following to receive emails whenever there are errors in GeoNode
 #ADMINS = (
 #            ('John', 'john@example.com'), 
