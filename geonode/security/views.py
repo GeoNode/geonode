@@ -22,6 +22,7 @@ from django.utils import simplejson as json
 from django.core.exceptions import PermissionDenied
 from django.http import HttpResponse
 from django.views.decorators.http import require_POST
+from django.shortcuts import get_object_or_404
 from django.conf import settings
 
 if "notification" in settings.INSTALLED_APPS:
@@ -119,9 +120,13 @@ def request_permissions(request):
     """ Request permission to download a resource.
     """
     uuid = request.POST['uuid']
-    resource = ResourceBase.objects.get(uuid=uuid)
+    resource = get_object_or_404(ResourceBase, uuid=uuid)
     try:
-        notification.send([resource.owner], 'request_download_resourcebase', {'from_user': request.user, 'resource': resource})
+        notification.send(
+            [resource.owner],
+            'request_download_resourcebase',
+            {'from_user': request.user, 'resource': resource}
+        )
         return HttpResponse(
             json.dumps({'success': 'ok', }),
             status=200,
