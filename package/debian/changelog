@@ -1,3 +1,13 @@
+geonode (2.4.0+alpha31) trusty; urgency=high
+
+  [ Simone Dalmasso ]
+  * [8303b2] fix search by date using datetimepicker
+
+  [ Ariel Nunez ]
+  * [ef614b] Set LAYER_PREVIEW_LIBRARY = 'geoext' as default, refs #1528
+
+ -- Ariel Nunez <ingenieroariel@gmail.com>  Mon, 17 Nov 2014 09:19:21 -0500
+
 geonode (2.4.0+alpha30) trusty; urgency=high
 
   * [7a4155] Updated translations
