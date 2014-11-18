@@ -1,3 +1,15 @@
+geonode (2.4.0+alpha34) trusty; urgency=high
+
+  [ Ariel Nunez ]
+  * [9d30a6] Fixed pyflake issues.
+
+  [ Jeffrey Johnson ]
+  * [a6fcee] Fix map.zoomToExtent
+
+  [ Ariel Nunez ]
+
+ -- Ariel Nunez <ingenieroariel@gmail.com>  Tue, 18 Nov 2014 15:15:31 -0500
+
 geonode (2.4.0+alpha33) trusty; urgency=high
 
   [ Paolo Pasquali ]
