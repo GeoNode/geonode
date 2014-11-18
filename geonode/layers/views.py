@@ -42,7 +42,7 @@ from geonode.layers.models import Layer, Attribute
 from geonode.base.enumerations import CHARSETS
 from geonode.base.models import TopicCategory
 
-from geonode.utils import default_map_config, llbbox_to_mercator
+from geonode.utils import default_map_config
 from geonode.utils import GXPLayer
 from geonode.utils import GXPMap
 from geonode.layers.utils import file_upload
@@ -180,18 +180,18 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
         layername,
         'base.view_resourcebase',
         _PERMISSION_MSG_VIEW)
-    layer_bbox = layer.bbox
     # assert False, str(layer_bbox)
-    bbox = list(layer_bbox[0:4])
     config = layer.attribute_config()
 
-    # FIXME(Ariel): Disabled Lazy Loading for beta release.
-    # Tracked in ticket #1795
-    # Add required parameters for GXP lazy-loading
-    #config["srs"] = layer.srid
+# FIXME(Ariel): Disabled Lazy Loading for beta release.
+# Tracked in ticket #1795
+#    # Add required parameters for GXP lazy-loading
+#    layer_bbox = layer.bbox
+#    bbox = list(layer_bbox[0:4])
+#    config["srs"] = layer.srid
+#    config["bbox"] = [float(coord) for coord in bbox] if layer.srid == "EPSG:4326" else llbbox_to_mercator(
+#        [float(coord) for coord in bbox])
     config["title"] = layer.title
-    #config["bbox"] = [float(coord) for coord in bbox] if layer.srid == "EPSG:4326" else llbbox_to_mercator(
-    #    [float(coord) for coord in bbox])
 
     if layer.storeType == "remoteStore":
         service = layer.service
