@@ -1,0 +1,26 @@
+<script type="text/javascript">
+if($("#request-download").length){
+  $("#request-download").click(function () {
+    $.ajax(
+      {
+        type: "POST",
+        url: "{% url 'request_permissions' %}",
+        dataType: 'json',
+        data: { uuid: "{{ resource.uuid }}" },
+        success: function(data) {
+          $('#status-message-text').text('Success!');
+          $('#status-message-text-body').text('Permission to download the resource requested to resource owner.');
+          $('#status-message').addClass('alert-success').removeClass('alert-danger');
+          $('#status-message').show();
+        },
+        error: function(data) {
+          $('#status-message-text').text('Error!');
+          $('#status-message-text-body').text('Permission to download the resource could not be requested to resource owner because of an error.');
+          $('#status-message').addClass('alert-danger').removeClass('alert-success');
+          $('#status-message').show();
+        }
+      }
+    );
+  });
+}
+</script>

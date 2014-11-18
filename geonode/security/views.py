@@ -22,6 +22,11 @@ from django.utils import simplejson as json
 from django.core.exceptions import PermissionDenied
 from django.http import HttpResponse
 from django.views.decorators.http import require_POST
+from django.shortcuts import get_object_or_404
+from django.conf import settings
+
+if "notification" in settings.INSTALLED_APPS:
+    from notification import models as notification
 
 from geonode.utils import resolve_object
 from geonode.base.models import ResourceBase
@@ -106,5 +111,28 @@ def set_bulk_permissions(request):
     else:
         return HttpResponse(
             json.dumps({'error': 'Wrong permissions specification'}),
+            status=400,
+            mimetype='text/plain')
+
+
+@require_POST
+def request_permissions(request):
+    """ Request permission to download a resource.
+    """
+    uuid = request.POST['uuid']
+    resource = get_object_or_404(ResourceBase, uuid=uuid)
+    try:
+        notification.send(
+            [resource.owner],
+            'request_download_resourcebase',
+            {'from_user': request.user, 'resource': resource}
+        )
+        return HttpResponse(
+            json.dumps({'success': 'ok', }),
+            status=200,
+            mimetype='text/plain')
+    except:
+        return HttpResponse(
+            json.dumps({'error': 'error delivering notification'}),
             status=400,
             mimetype='text/plain')
