@@ -698,17 +698,8 @@ class GeoNodePermissionsTest(TestCase):
         response = urllib2.urlopen(request)
         self.assertTrue(any(str_to_check in s for s in response.readlines()))
 
-        # by default the uploaded layer must be published
+        # by default the uploaded layer is
         self.assertTrue(layer.is_published, True)
-
-        # now test with unpublished layer
-        resource = layer.get_self_resource()
-        resource.is_published = False
-        resource.save()
-
-        request = urllib2.Request(url)
-        response = urllib2.urlopen(request)
-        self.assertFalse(any(str_to_check in s for s in response.readlines()))
 
         # Clean up and completely delete the layer
         layer.delete()
@@ -734,6 +725,15 @@ class GeoNodePermissionsTest(TestCase):
             request = urllib2.Request(url)
             response = urllib2.urlopen(request)
             self.assertFalse(any(str_to_check in s for s in response.readlines()))
+
+            # now test with published layer
+            resource = layer.get_self_resource()
+            resource.is_published = True
+            resource.save()
+
+            request = urllib2.Request(url)
+            response = urllib2.urlopen(request)
+            self.assertTrue(any(str_to_check in s for s in response.readlines()))
 
             # Clean up and completely delete the layer
             layer.delete()
