@@ -1,3 +1,29 @@
+geonode (2.4.0+alpha32) trusty; urgency=high
+
+  [ Geode Team ]
+  * [c53480] corection 1771
+  * [893255] put last modification on less file
+
+  [ capooti ]
+  * [c44d5a] Added a request download button in layer and document detail pages. The request will be sent to resource owner using django-notification
+  * [6f5abc] Making flake8 happy. Using get_object_or_404 for getting the resource
+  * [0a419a] Refactored the RESOURCE_PUBLISHING setting, now it is not activated by default
+
+  [ state-hiu ]
+  * [26bee7] initial levels support
+
+  [ Humanitarian Information Unit ]
+  * [e21c49] Fix minor typo in comment
+
+  [ Simone Dalmasso ]
+  * [c45b9b] update integrations tests for resource publishing
+  * [bca79e] update base.css
+  * [bec1d9] bump announcements version
+
+  [ Ariel Nunez ]
+
+ -- Ariel Nunez <ingenieroariel@gmail.com>  Tue, 18 Nov 2014 09:20:21 -0500
+
 geonode (2.4.0+alpha31) trusty; urgency=high
 
   [ Simone Dalmasso ]
