@@ -39,10 +39,9 @@
                 listeners: {
                     "ready": function() {
                         map = app.mapPanel.map;
-                        layer = app.map.layers.slice(-1)[0];
 
                         // FIXME(Ariel): Zoom to extent until #1795 is fixed.
-                        map.zoomToExtent(layer.maxExtent, false)
+                         map.zoomToExtent(map.layers.slice(-1)[0].maxExtent);
                         
                         //bbox = layer.bbox
                         //if (bbox != undefined)
