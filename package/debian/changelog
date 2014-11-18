@@ -1,3 +1,15 @@
+geonode (2.4.0+alpha33) trusty; urgency=high
+
+  [ Paolo Pasquali ]
+  * [5124a6] Fix paneltbar margin in maps page
+  * [29657f] Fix geoexplorer body font
+
+  [ Ariel Nunez ]
+  * [317651] Disabled lazy loading, refs #1795
+  * [197477] Zoom to extent instead of bbox (temporary), refs #1795
+
+ -- Ariel Nunez <ingenieroariel@gmail.com>  Tue, 18 Nov 2014 14:14:12 -0500
+
 geonode (2.4.0+alpha32) trusty; urgency=high
 
   [ Geode Team ]
