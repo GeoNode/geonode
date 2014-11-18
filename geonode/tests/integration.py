@@ -698,6 +698,9 @@ class GeoNodePermissionsTest(TestCase):
         response = urllib2.urlopen(request)
         self.assertTrue(any(str_to_check in s for s in response.readlines()))
 
+        # by default the uploaded layer must be published
+        self.assertTrue(layer.is_published, True)
+
         # now test with unpublished layer
         resource = layer.get_self_resource()
         resource.is_published = False
@@ -709,6 +712,31 @@ class GeoNodePermissionsTest(TestCase):
 
         # Clean up and completely delete the layer
         layer.delete()
+
+        # with settings disabled
+        with self.settings(RESOURCE_PUBLISHING=True):
+
+            thefile = os.path.join(
+                gisdata.VECTOR_DATA,
+                'san_andres_y_providencia_administrative.shp')
+            layer = file_upload(thefile, overwrite=True)
+            check_layer(layer)
+
+            # we need some time to have the service up and running
+            time.sleep(20)
+
+            str_to_check = '<Name>san_andres_y_providencia_administrative</Name>'
+
+            # by default the uploaded layer must be unpublished
+            self.assertEqual(layer.is_published, False)
+
+            # check the layer is not in GetCapabilities
+            request = urllib2.Request(url)
+            response = urllib2.urlopen(request)
+            self.assertFalse(any(str_to_check in s for s in response.readlines()))
+
+            # Clean up and completely delete the layer
+            layer.delete()
 
 #    #FIXME(Ariel): Logged this as ticket  #1767
 #    def test_configure_time(self):

@@ -219,21 +219,6 @@ class ResourceBaseManager(PolymorphicManager):
         return super(ResourceBaseManager, self).get_queryset()
 
 
-class PublishedResourceBaseManager(PolymorphicManager):
-
-    def get_queryset(self):
-        qs = super(PublishedResourceBaseManager, self).get_queryset()
-        if settings.RESOURCE_PUBLISHING:
-            qs = qs.filter(is_published=True).non_polymorphic()
-        return qs
-
-    def polymorphic_queryset(self):
-        qs = super(PublishedResourceBaseManager, self).get_queryset()
-        if settings.RESOURCE_PUBLISHING:
-            qs.filter(is_published=True)
-        return qs
-
-
 class ResourceBase(PolymorphicModel, PermissionLevelMixin):
     """
     Base Resource Object loosely based on ISO 19115:2003
@@ -623,7 +608,6 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin):
     metadata_author = property(_get_metadata_author, _set_metadata_author)
 
     objects = ResourceBaseManager()
-    published = PublishedResourceBaseManager()
 
     class Meta:
         # custom permissions,
