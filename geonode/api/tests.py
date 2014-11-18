@@ -1,5 +1,3 @@
-from datetime import datetime
-
 from django.core.urlresolvers import reverse
 from tastypie.test import ResourceTestCase
 
@@ -139,27 +137,6 @@ class SearchApiTests(ResourceTestCase):
         self.assertValidJSONResponse(resp)
         self.assertEquals(len(self.deserialize(resp)['objects']), 5)
 
-        # same tests, with an unpublished layer
-        layer = Layer.objects.filter(category__identifier='location')[0]
-        layer.is_published = False
-        layer.save()
-
-        filter_url = self.list_url + '?category__identifier=location'
-
-        resp = self.api_client.get(filter_url)
-        self.assertValidJSONResponse(resp)
-        self.assertEquals(len(self.deserialize(resp)['objects']), 2)
-
-        filter_url = self.list_url + \
-            '?category__identifier__in=location&category__identifier__in=biota'
-
-        resp = self.api_client.get(filter_url)
-        self.assertValidJSONResponse(resp)
-        self.assertEquals(len(self.deserialize(resp)['objects']), 4)
-
-        layer.is_published = True
-        layer.save()
-
     def test_tag_filters(self):
         """Test keywords filtering"""
 
@@ -177,27 +154,6 @@ class SearchApiTests(ResourceTestCase):
         resp = self.api_client.get(filter_url)
         self.assertValidJSONResponse(resp)
         self.assertEquals(len(self.deserialize(resp)['objects']), 8)
-
-        # same tests, with an unpublished layer
-        layer = Layer.objects.filter(keywords__slug='layertagunique')[0]
-        layer.is_published = False
-        layer.save()
-
-        filter_url = self.list_url + '?keywords__slug=layertagunique'
-
-        resp = self.api_client.get(filter_url)
-        self.assertValidJSONResponse(resp)
-        self.assertEquals(len(self.deserialize(resp)['objects']), 0)
-
-        filter_url = self.list_url + \
-            '?keywords__slug__in=layertagunique&keywords__slug__in=populartag'
-
-        resp = self.api_client.get(filter_url)
-        self.assertValidJSONResponse(resp)
-        self.assertEquals(len(self.deserialize(resp)['objects']), 7)
-
-        layer.is_published = True
-        layer.save()
 
     def test_owner_filters(self):
         """Test owner filtering"""
@@ -217,27 +173,6 @@ class SearchApiTests(ResourceTestCase):
         self.assertValidJSONResponse(resp)
         self.assertEquals(len(self.deserialize(resp)['objects']), 3)
 
-        # same tests, with an unpublished layer
-        layer = Layer.objects.filter(owner__username='user1')[0]
-        layer.is_published = False
-        layer.save()
-
-        filter_url = self.list_url + '?owner__username=user1'
-
-        resp = self.api_client.get(filter_url)
-        self.assertValidJSONResponse(resp)
-        self.assertEquals(len(self.deserialize(resp)['objects']), 1)
-
-        filter_url = self.list_url + \
-            '?owner__username__in=user1&owner__username__in=foo'
-
-        resp = self.api_client.get(filter_url)
-        self.assertValidJSONResponse(resp)
-        self.assertEquals(len(self.deserialize(resp)['objects']), 2)
-
-        layer.is_published = True
-        layer.save()
-
     def test_title_filter(self):
         """Test title filtering"""
 
@@ -248,18 +183,6 @@ class SearchApiTests(ResourceTestCase):
         resp = self.api_client.get(filter_url)
         self.assertValidJSONResponse(resp)
         self.assertEquals(len(self.deserialize(resp)['objects']), 1)
-
-        # same test, with an unpublished layer
-        layer = Layer.objects.filter(title='layer2')[0]
-        layer.is_published = False
-        layer.save()
-
-        resp = self.api_client.get(filter_url)
-        self.assertValidJSONResponse(resp)
-        self.assertEquals(len(self.deserialize(resp)['objects']), 0)
-
-        layer.is_published = True
-        layer.save()
 
     def test_date_filter(self):
         """Test date filtering"""
@@ -283,29 +206,3 @@ class SearchApiTests(ResourceTestCase):
         resp = self.api_client.get(filter_url)
         self.assertValidJSONResponse(resp)
         self.assertEquals(len(self.deserialize(resp)['objects']), 4)
-
-        # same test, with an unpublished layer
-        layer = Layer.objects.filter(date=datetime(1985, 1, 1))[0]
-        layer.is_published = False
-        layer.save()
-
-        filter_url = self.list_url + '?date__exact=1985-01-01'
-
-        resp = self.api_client.get(filter_url)
-        self.assertValidJSONResponse(resp)
-        self.assertEquals(len(self.deserialize(resp)['objects']), 0)
-
-        filter_url = self.list_url + '?date__gte=1985-01-01'
-
-        resp = self.api_client.get(filter_url)
-        self.assertValidJSONResponse(resp)
-        self.assertEquals(len(self.deserialize(resp)['objects']), 2)
-
-        filter_url = self.list_url + '?date__range=1950-01-01,1985-01-01'
-
-        resp = self.api_client.get(filter_url)
-        self.assertValidJSONResponse(resp)
-        self.assertEquals(len(self.deserialize(resp)['objects']), 3)
-
-        layer.is_published = True
-        layer.save()

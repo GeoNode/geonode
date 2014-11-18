@@ -139,38 +139,32 @@ def geoserver_post_save(instance, sender, **kwargs):
        to be saved to the database before accessing them.
     """
 
-    def get_gs_resource(instance):
-        if type(instance) is ResourceBase:
-            if hasattr(instance, 'layer'):
-                resource = instance.layer
-            else:
-                return None
+    if type(instance) is ResourceBase:
+        if hasattr(instance, 'layer'):
+            instance = instance.layer
         else:
-            resource = instance
-        try:
-            return gs_catalog.get_resource(
-                resource.name,
-                store=resource.store,
-                workspace=resource.workspace)
-        except socket_error as serr:
-            if serr.errno != errno.ECONNREFUSED:
-                # Not the error we are looking for, re-raise
-                raise serr
-            # If the connection is refused, take it easy.
             return
 
-    gs_resource = get_gs_resource(instance)
+    try:
+        gs_resource = gs_catalog.get_resource(
+            instance.name,
+            store=instance.store,
+            workspace=instance.workspace)
+    except socket_error as serr:
+        if serr.errno != errno.ECONNREFUSED:
+            # Not the error we are looking for, re-raise
+            raise serr
+        # If the connection is refused, take it easy.
+        return
 
     if gs_resource is None:
         return
 
-    if type(instance) is ResourceBase:
-        # unadvertise the resource it the layer is unpublished
+    if settings.RESOURCE_PUBLISHING:
         if instance.is_published != gs_resource.advertised:
             if getattr(ogc_server_settings, "BACKEND_WRITE_ENABLED", True):
                 gs_resource.advertised = instance.is_published
                 gs_catalog.save(gs_resource)
-        return
 
     if instance.storeType == "remoteStore":
         # Save layer attributes

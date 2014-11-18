@@ -332,6 +332,12 @@ def file_upload(filename, name=None, user=None, title=None, abstract=None,
     # Get a bounding box
     bbox_x0, bbox_x1, bbox_y0, bbox_y1 = get_bbox(filename)
 
+    # by default, if RESOURCE_PUBLISHING=True then layer.is_published
+    # must be set to False
+    is_published = True
+    if settings.RESOURCE_PUBLISHING:
+        is_published = False
+
     defaults = {
         'upload_session': upload_session,
         'title': title,
@@ -342,6 +348,7 @@ def file_upload(filename, name=None, user=None, title=None, abstract=None,
         'bbox_x1': bbox_x1,
         'bbox_y0': bbox_y0,
         'bbox_y1': bbox_y1,
+        'is_published': is_published,
     }
 
     # set metadata

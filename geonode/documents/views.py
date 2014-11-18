@@ -116,6 +116,12 @@ class DocumentUploadView(CreateView):
         """
         self.object = form.save(commit=False)
         self.object.owner = self.request.user
+        # by default, if RESOURCE_PUBLISHING=True then document.is_published
+        # must be set to False
+        is_published = True
+        if settings.RESOURCE_PUBLISHING:
+            is_published = False
+        self.object.is_published = is_published
         self.object.save()
         self.object.set_permissions(form.cleaned_data['permissions'])
         return HttpResponseRedirect(

@@ -717,26 +717,29 @@ class UnpublishedObjectTests(TestCase):
         user = get_user_model().objects.get(username='bobby')
         client.login(username='bobby', password='bob')
 
-        # access to layer detail page gives 200 if layer is published
+        # default (RESOURCE_PUBLISHING=False)
+        # access to layer detail page gives 200 if layer is published or
+        # unpublished
         response = client.get(reverse('layer_detail', args=('geonode:CA',)))
         self.failUnlessEqual(response.status_code, 200)
-
         layer = Layer.objects.filter(title='CA')[0]
         layer.is_published = False
         layer.save()
-
-        # access to layer detail page gives 404 if layer is unpublished
-        response = client.get(reverse('layer_detail', args=('geonode:CA',)))
-        self.failUnlessEqual(response.status_code, 404)
-
-        # access to layer deatil pages give 200 if a layer is unpublished
-        # but the user has the publish_resourcebase permission
-        assign_perm('publish_resourcebase', user, layer.get_self_resource())
         response = client.get(reverse('layer_detail', args=('geonode:CA',)))
         self.failUnlessEqual(response.status_code, 200)
 
-        # with settings disabled
-        with self.settings(RESOURCE_PUBLISHING=False):
+        # with resource publishing
+        with self.settings(RESOURCE_PUBLISHING=True):
+            # 404 if layer is unpublished
+            response = client.get(reverse('layer_detail', args=('geonode:CA',)))
+            self.failUnlessEqual(response.status_code, 404)
+            # 200 if layer is unpublished but user has permission
+            assign_perm('publish_resourcebase', user, layer.get_self_resource())
+            response = client.get(reverse('layer_detail', args=('geonode:CA',)))
+            self.failUnlessEqual(response.status_code, 200)
+            # 200 if layer is published
+            layer.is_published = True
+            layer.save()
             remove_perm('publish_resourcebase', user, layer.get_self_resource())
             response = client.get(reverse('layer_detail', args=('geonode:CA',)))
             self.failUnlessEqual(response.status_code, 200)
