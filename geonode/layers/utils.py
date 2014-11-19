@@ -507,23 +507,27 @@ def upload(incoming, user=None, overwrite=False,
     return output
 
 
-def create_thumbnail(instance, thumbnail_remote_url, thumbail_create_url=None):
+def create_thumbnail(instance, thumbnail_remote_url, thumbail_create_url=None, check_bbox=True):
     BBOX_DIFFERENCE_THRESHOLD = 1e-5
 
     if not thumbail_create_url:
         thumbail_create_url = thumbnail_remote_url
 
-    # Check if the bbox is invalid
-    valid_x = (
-        float(
-            instance.bbox_x0) -
-        float(
-            instance.bbox_x1)) ** 2 > BBOX_DIFFERENCE_THRESHOLD
-    valid_y = (
-        float(
-            instance.bbox_y1) -
-        float(
-            instance.bbox_y0)) ** 2 > BBOX_DIFFERENCE_THRESHOLD
+    if check_bbox:
+        # Check if the bbox is invalid
+        valid_x = (
+            float(
+               instance.bbox_x0) -
+            float(
+                instance.bbox_x1)) ** 2 > BBOX_DIFFERENCE_THRESHOLD
+        valid_y = (
+            float(
+               instance.bbox_y1) -
+            float(
+                instance.bbox_y0)) ** 2 > BBOX_DIFFERENCE_THRESHOLD
+    else:
+        valid_x = True
+        valid_y = True
 
     image = None
 
