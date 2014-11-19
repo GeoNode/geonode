@@ -1,3 +1,10 @@
+geonode (2.4.0+alpha36) trusty; urgency=high
+
+  * [febb21] Fixed map thumbnail saving
+  * [0ccd95] flake8
+
+ -- Ariel Nunez <ingenieroariel@gmail.com>  Wed, 19 Nov 2014 11:51:35 -0500
+
 geonode (2.4.0+alpha35) trusty; urgency=high
 
   [ state-hiu ]
