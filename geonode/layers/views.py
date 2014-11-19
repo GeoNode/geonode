@@ -46,7 +46,7 @@ from geonode.utils import default_map_config
 from geonode.utils import GXPLayer
 from geonode.utils import GXPMap
 from geonode.layers.utils import file_upload
-from geonode.utils import resolve_object
+from geonode.utils import resolve_object, llbbox_to_mercator
 from geonode.people.forms import ProfileForm, PocForm
 from geonode.security.views import _perms_info_json
 from geonode.documents.models import get_related_documents
@@ -75,11 +75,11 @@ def _resolve_layer(request, typename, permission='base.view_resourcebase',
     service_typename = typename.split(":", 1)
     service = Service.objects.filter(name=service_typename[0])
 
-    if service.count() > 0 and service[0].method != "C":
-        return resolve_object(request,
+    if service.count() > 0:
+            return resolve_object(request,
                               Layer,
                               {'service': service[0],
-                               'typename': service_typename[1]},
+                               'typename': service_typename[1] if service[0].method != "C" else typename},
                               permission=permission,
                               permission_msg=msg,
                               **kwargs)
@@ -185,12 +185,12 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
 
 # FIXME(Ariel): Disabled Lazy Loading for beta release.
 # Tracked in ticket #1795
-#    # Add required parameters for GXP lazy-loading
-#    layer_bbox = layer.bbox
-#    bbox = list(layer_bbox[0:4])
-#    config["srs"] = layer.srid
-#    config["bbox"] = [float(coord) for coord in bbox] if layer.srid == "EPSG:4326" else llbbox_to_mercator(
-#        [float(coord) for coord in bbox])
+   # Add required parameters for GXP lazy-loading
+    layer_bbox = layer.bbox
+    bbox = list(layer_bbox[0:4])
+    config["srs"] = layer.srid if layer.srid != "EPSG:4326" else "EPSG:900913"
+    config["bbox"] = llbbox_to_mercator(
+       [float(coord) for coord in bbox])
     config["title"] = layer.title
 
     if layer.storeType == "remoteStore":
