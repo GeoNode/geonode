@@ -1,13 +1,11 @@
 import errno
 import logging
 import urllib
-import json
 
 from urlparse import urlparse, urljoin
 from socket import error as socket_error
 
 from django.utils.translation import ugettext, ugettext_lazy as _
-from django.core.files.base import ContentFile
 from django.conf import settings
 
 from geonode import GeoNodeException
@@ -16,10 +14,8 @@ from geonode.geoserver.helpers import cascading_delete, set_attributes
 from geonode.geoserver.helpers import set_styles, gs_catalog, get_coverage_grid_extent
 from geonode.geoserver.helpers import ogc_server_settings
 from geonode.geoserver.helpers import geoserver_upload
-from geonode.utils import http_client
 from geonode.base.models import ResourceBase
 from geonode.base.models import Link
-from geonode.base.models import Thumbnail
 from geonode.layers.utils import create_thumbnail
 from geonode.people.models import Profile
 
@@ -376,7 +372,7 @@ def geoserver_post_save(instance, sender, **kwargs):
     thumbnail_create_url = ogc_server_settings.LOCATION + \
         "wms/reflect?" + p
 
-    create_thumbnail(instance, thumbnail_remote_url, thumbail_create_url)
+    create_thumbnail(instance, thumbnail_remote_url, thumbnail_create_url)
 
     legend_url = ogc_server_settings.PUBLIC_LOCATION + \
         'wms?request=GetLegendGraphic&format=image/png&WIDTH=20&HEIGHT=20&LAYER=' + \
@@ -479,8 +475,6 @@ def geoserver_post_save_map(instance, sender, **kwargs):
     for layer in instance.layers:
         if layer.local:
             local_layers.append(layer.name)
-
-    image = None
 
     # If the map does not have any local layers, do not create the thumbnail.
     if len(local_layers) > 0:
