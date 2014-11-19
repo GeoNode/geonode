@@ -28,7 +28,7 @@
            <table class="table">
            <thead>
                <td><b>{% trans "Title" %}</b></td>
-               <td><b>{% trans "Type" %}</b></td>
+               <td><b>{% trans "Level" %}</b></td>
                <td><b>{% trans "Announcement" %}</b></td>
                <td><b>{% trans "Published From" %}</b></td>
            </thead>
@@ -38,7 +38,7 @@
                         <a href="{% url "announcements_update" pk=announcement.pk %}">{{ announcement.title|truncatewords:50  }}</a>
                     </td>
                     <td>
-                        {{ announcement.type }}
+                        {{ announcement.level_label }}
                     </td>
                     <td>
                         {{ announcement.content|truncatewords:8 }}
