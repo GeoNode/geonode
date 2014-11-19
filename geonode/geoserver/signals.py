@@ -145,6 +145,11 @@ def geoserver_post_save(instance, sender, **kwargs):
         else:
             return
 
+    if instance.storeType == "remoteStore":
+        # Save layer attributes
+        set_attributes(instance)
+        return
+
     try:
         gs_resource = gs_catalog.get_resource(
             instance.name,
@@ -165,11 +170,6 @@ def geoserver_post_save(instance, sender, **kwargs):
             if getattr(ogc_server_settings, "BACKEND_WRITE_ENABLED", True):
                 gs_resource.advertised = instance.is_published
                 gs_catalog.save(gs_resource)
-
-    if instance.storeType == "remoteStore":
-        # Save layer attributes
-        set_attributes(instance)
-        return
 
     if any(instance.keyword_list()):
         gs_resource.keywords = instance.keyword_list()
@@ -387,7 +387,8 @@ def geoserver_post_save(instance, sender, **kwargs):
     if settings.DEBUG:
         instance.set_permissions(json.loads(current_perms))
 
-    legend_url = ogc_server_settings.PUBLIC_LOCATION + 'wms?request=GetLegendGraphic&format=image/png&WIDTH=20&HEIGHT=20&LAYER=' + \
+    legend_url = ogc_server_settings.PUBLIC_LOCATION + \
+        'wms?request=GetLegendGraphic&format=image/png&WIDTH=20&HEIGHT=20&LAYER=' + \
         instance.typename + '&legend_options=fontAntiAliasing:true;fontSize:12;forceLabels:on'
 
     Link.objects.get_or_create(resource=instance.resourcebase_ptr,
