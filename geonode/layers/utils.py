@@ -539,7 +539,7 @@ def create_thumbnail(instance, thumbnail_remote_url, thumbail_create_url=None, c
                                        name="Remote Thumbnail",
                                        mime='image/png',
                                        link_type='image',
-                                   )
+                                       )
                                    )
 
         # Download thumbnail and save it locally.
