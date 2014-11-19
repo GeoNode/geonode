@@ -10,7 +10,10 @@ logger = logging.getLogger("geonode.dataverse_layer_metadata.layer_metadata_help
 
 def add_dataverse_layer_metadata(saved_layer, dataverse_info):
     """
-    If a Layer has been created via Geoconnect/Dataverse, create a 
+    If a Layer has been created via Dataverse, create a DataverseLayerMetadata object.
+
+    fail: return None
+    success: return DataverseLayerMetadata object
     """
     assert type(saved_layer), Layer
     assert type(dataverse_info), dict
@@ -20,7 +23,7 @@ def add_dataverse_layer_metadata(saved_layer, dataverse_info):
     if success is False:
         print ('failed to format datetime', create_datetime_obj_or_err_str)
         logger.error('Invalid "datafile_create_datetime"\n%s' % create_datetime_obj_or_err_str)
-        return False
+        return None
 
     dataverse_info['datafile_create_datetime'] = create_datetime_obj_or_err_str
 
@@ -30,7 +33,7 @@ def add_dataverse_layer_metadata(saved_layer, dataverse_info):
         print ('failed validation')
         print (f.errors)
         logger.error("Unexpected form validation error in add_dataverse_layer_metadata. dvn import: %s" % f.errors)
-        return False
+        return None
 
 
     # Create the DataverseLayerMetadata object
@@ -43,5 +46,5 @@ def add_dataverse_layer_metadata(saved_layer, dataverse_info):
     # Save it!!
     layer_metadata.save()
     
-    return True
+    return layer_metadata
     

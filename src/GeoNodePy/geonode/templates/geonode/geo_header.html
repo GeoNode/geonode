@@ -14,7 +14,7 @@ var nicEditIconsPath = "{{ GEONODE_CLIENT_LOCATION }}externals/misc/images/nicEd
 gxp.plugins.Styler.prototype.enableActionIfAvailable  = function(url) {
     Ext.Ajax.request({
         method: "POST",
-        url:"/data/" + this.target.selectedLayer.getLayer().params.LAYERS + "/ajax-edit-check",
+        url:"{{ STATIC_URL }}/data/" + this.target.selectedLayer.getLayer().params.LAYERS + "/ajax-edit-check",
         callback: function(options, success, response) {
             this.launchAction.setDisabled(response.status !== 200);
         },
@@ -90,7 +90,7 @@ gxp.WMSLayerPanel.prototype.createStylesPanel = function(url) {
                     if (!render) {
                             Ext.Ajax.request({
                                 method: "PUT",
-                                url:"/data/" + this.layerRecord.getLayer().params.LAYERS + "/ajax-edit-check",
+                                url:"{{ STATIC_URL }}/data/" + this.layerRecord.getLayer().params.LAYERS + "/ajax-edit-check",
                                 callback: function(options, success, response) {
                                     // we expect a 405 error code here if we are dealing with
                                     // GeoServer and have write access. Otherwise we will

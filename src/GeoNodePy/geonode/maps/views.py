@@ -289,7 +289,8 @@ def newmap_config(request):
             map_obj = Map(projection="EPSG:900913")
             layers, groups, bbox = additional_layers(request,map_obj, params.getlist('layer'))
 
-
+            print 'layers', layers
+            print 'type: ', type(layers[0])
             if bbox is not None:
                 minx, miny, maxx, maxy = [float(c) for c in bbox]
                 x = (minx + maxx) / 2
