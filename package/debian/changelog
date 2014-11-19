@@ -1,3 +1,9 @@
+geonode (2.4.0+beta1) trusty; urgency=high
+
+  * [ec9bf4] The thumbnail url can be longer than 255 chars
+
+ -- Ariel Nunez <ingenieroariel@gmail.com>  Wed, 19 Nov 2014 13:13:21 -0500
+
 geonode (2.4.0+alpha38) trusty; urgency=high
 
   [ Paolo Pasquali ]
