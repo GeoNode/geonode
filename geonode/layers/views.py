@@ -189,12 +189,10 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
     srid = layer.srid
 
     # Transform WGS84 to Mercator.
-    if srid == "EPSG:4326":
-        srid = "EPSG:900913"
-        bbox = llbbox_to_mercator(bbox)
+    config["srs"] = srid if srid != "EPSG:4326" else "EPSG:900913"
+    config["bbox"] = llbbox_to_mercator(
+       [float(coord) for coord in bbox])
 
-    config["bbox"] = bbox
-    config["srs"] = srid
     config["title"] = layer.title
 
     if layer.storeType == "remoteStore":
