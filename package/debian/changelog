@@ -1,3 +1,10 @@
+geonode (2.4.0+alpha37) trusty; urgency=high
+
+  * [2c8ea7] Fixed E126 continuation line over-indented for hanging indent
+  * [6f7d2d] Added link to PUBLIC_LOCATION in map save
+
+ -- Ariel Nunez <ingenieroariel@gmail.com>  Wed, 19 Nov 2014 12:29:21 -0500
+
 geonode (2.4.0+alpha36) trusty; urgency=high
 
   * [febb21] Fixed map thumbnail saving
