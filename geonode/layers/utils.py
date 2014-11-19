@@ -517,12 +517,12 @@ def create_thumbnail(instance, thumbnail_remote_url, thumbail_create_url=None, c
         # Check if the bbox is invalid
         valid_x = (
             float(
-               instance.bbox_x0) -
+                instance.bbox_x0) -
             float(
                 instance.bbox_x1)) ** 2 > BBOX_DIFFERENCE_THRESHOLD
         valid_y = (
             float(
-               instance.bbox_y1) -
+                instance.bbox_y1) -
             float(
                 instance.bbox_y0)) ** 2 > BBOX_DIFFERENCE_THRESHOLD
     else:
@@ -535,12 +535,12 @@ def create_thumbnail(instance, thumbnail_remote_url, thumbail_create_url=None, c
         Link.objects.get_or_create(resource=instance.get_self_resource(),
                                    url=thumbnail_remote_url,
                                    defaults=dict(
-            extension='png',
-            name="Remote Thumbnail",
-            mime='image/png',
-            link_type='image',
-        )
-        )
+                                       extension='png',
+                                       name="Remote Thumbnail",
+                                       mime='image/png',
+                                       link_type='image',
+                                   )
+                                   )
 
         # Download thumbnail and save it locally.
         resp, image = http_client.request(thumbail_create_url)
