@@ -31,12 +31,14 @@ def view_private_layer(request, wm_token):
     if wm_token is None:
         raise Http404('no token')
     
+    print ('view_private_layer')
     #request.GET = QueryDict('layer=hah')
     #print 'request', request
     #return HttpResponse('ok')
 
     try:
         worldmap_token = WorldMapToken.objects.get(token=wm_token)
+        print ('    - token found')
     except WorldMapToken.DoesNotExist:
         raise Http404('The token was not found')
         
@@ -63,6 +65,23 @@ def view_private_layer(request, wm_token):
     #print ('view_embedded_layer 10')
     lookup = { 'config': json.dumps(map_config)\
                     }
+
+    ##############
+    ### Test Hack: Can the layer owner be logged in?  This wouldn't happen--seeing if possible
+    ##############
+    #layer_owner = worldmap_token.map_layer.owner
+    #print 'owner type', type(layer_owner)
+    #print 'owner', layer_owner
+
+    #from django.contrib.auth import authenticate, login#, logout
+    #layer_owner.backend = 'django.contrib.auth.backends.ModelBackend'
+    #login(request, layer_owner)
+
+    #logout(request)
+    ####################
+
+    #print ('lookup', lookup)
+    
     #if False:
     return render_to_response('maps/dataverse_embed/iframed_map.html'\
                             , lookup\
@@ -106,7 +125,7 @@ def build_map_config(request, map_layer):
                 ows_url = settings.GEOSERVER_BASE_URL + "wms",
                 visibility = True, #request.user.has_perm('maps.view_layer', obj=layer),
                 styles='',
-                #group=group,
+                group=map_layer.topic_category.title if map_layer.topic_category else "General",
                 source_params = u'{"ptype": "gxp_gnsource"}',
                 layer_params= u'{"tiled":true, "title":" '+ map_layer.title + '", "format":"image/png","queryable":true}')
 
@@ -151,6 +170,6 @@ def build_map_config(request, map_layer):
     config['fromLayer'] = True
 
     config['topic_categories'] = category_list()
-    config['edit_map'] = True
+    config['edit_map'] = False
 
     return json.dumps(config)

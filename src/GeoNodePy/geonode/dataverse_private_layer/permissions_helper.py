@@ -188,6 +188,6 @@ from geonode.maps.views import _perms_info_email, LAYER_LEV_NAMES
 
 l = Layer.objects.get(pk=4)
 
-_perms_info_email(l, LAYER_LEV_NAMES)
+0_perms_info_email(l, LAYER_LEV_NAMES)
 
 """

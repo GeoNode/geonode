@@ -8,13 +8,13 @@ from django.http import HttpResponse
 from django.conf import settings
 from django.utils.html import escape
 from django.views.decorators.csrf import csrf_exempt
-
+from django.core.files.uploadedfile import TemporaryUploadedFile
 
 from geonode.maps.utils import save
 from geonode.maps.views import _create_new_user
 from geonode.utils import slugify
 
-from geonode.dataverse_private_layer.permissions_helper import make_layer_private, make_layer_public
+#from geonode.dataverse_private_layer.permissions_helper import make_layer_private
 
 from geonode.dataverse_connect.dataverse_auth import has_proper_auth
 from geonode.dataverse_connect.layer_metadata import LayerMetadata        # object with layer metadata
@@ -62,7 +62,7 @@ def view_add_worldmap_shapefile(request):
             
         else:
             name = slugify(name.replace(".","_"))
-            file_obj = write_file(content)
+            file_obj = write_the_dataverse_file(content)
             #print ('file_obj', file_obj)
             
             try:
@@ -83,21 +83,6 @@ def view_add_worldmap_shapefile(request):
                     logger.error("Failed to create a DataverseLayerMetadata object")
                     json_msg = MessageHelperJSON.get_json_msg(success=False, msg="Failed to create a DataverseLayerMetadata object")
                     return HttpResponse(status=200, content=json_msg, content_type="application/json")
-
-                # Is this a private layer?
-                #
-                if dataverse_layer_metadata.dataset_is_public is False:
-                    #
-                    # Yes, set privacy permissions
-                    #
-                    if make_layer_private(saved_layer) is False:
-                        #
-                        # Failed to set privacy permissions, remove layer
-                        #
-                        logger.error("Failed to set privacy permissions.  Deleting layer")
-                        saved_layer.delete()
-                        json_msg = MessageHelperJSON.get_json_msg(success=False, msg="Failed to set privacy permissions.  Deleting layer")
-                        return HttpResponse(status=200, content=json_msg, content_type="application/json")
 
 
                 # Prepare a JSON reponse
@@ -125,14 +110,39 @@ def view_add_worldmap_shapefile(request):
         
 
 
-#@csrf_exempt
-#def dvn_export(request):
-#    return HttpResponse(status=500)
+def write_the_dataverse_file(temp_uploaded_file):
+    """
+    Save the uploaded dataverse file to disk
+    """
+    assert type(temp_uploaded_file) is TemporaryUploadedFile\
+        , '"temp_uploaded_file" must be type "django.core.files.uploadedfile.TemporaryUploadedFile"'
 
-def write_file(file):
+    #print 'file type', type(temp_uploaded_file)
+
     tempdir = tempfile.mkdtemp()
-    path = os.path.join(tempdir, file.name)
+    path = os.path.join(tempdir, temp_uploaded_file.name)
     with open(path, 'w') as writable:
-        for c in file.chunks():
+        for c in temp_uploaded_file.chunks():
             writable.write(c)
     return path
+    
+
+
+"""
+# Is this a private layer?
+#
+if dataverse_layer_metadata.dataset_is_public is False:
+    #
+    # Yes, set privacy permissions
+    #
+    if make_layer_private(saved_layer) is False:
+        #
+        # Failed to set privacy permissions, remove layer
+        #
+        logger.error("Failed to set privacy permissions.  Deleting layer")
+        saved_layer.delete()
+        json_msg = MessageHelperJSON.get_json_msg(success=False, msg="Failed to set privacy permissions.  Deleting layer")
+        return HttpResponse(status=200, content=json_msg, content_type="application/json")
+
+
+"""

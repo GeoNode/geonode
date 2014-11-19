@@ -14,7 +14,7 @@ class RegisteredApplicationAdmin(admin.ModelAdmin):
     #inlines = (WorldMapTokenInline)
     save_on_top = True
     list_display = ('name', 'ip_address', 'hostname', 'time_limit_minutes', 'contact_email', 'description' )
-    readonly_fields = ('update_time', 'create_time', 'md5', )
+    readonly_fields = ('update_time', 'create_time', 'md5', 'time_limit_seconds')
 admin.site.register(RegisteredApplication, RegisteredApplicationAdmin)
 
 

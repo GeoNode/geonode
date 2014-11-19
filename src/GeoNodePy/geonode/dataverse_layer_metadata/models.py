@@ -1,5 +1,4 @@
 from django.db import models
-from geonode.classification.models import TimeStampedModel
 from geonode.maps.models import Layer
 from dataverse_info.models import DataverseInfo
 

@@ -24,7 +24,7 @@ from geonode.maps.models import Layer
 from geonode.dataverse_private_layer.permissions_helper import make_layer_private, make_layer_public
 #make_layer_private
 
-n = 'transportation_to_work_v24_zip_zct'
+n = 'bari_q1y'
 layer = Layer.objects.get(name=n)
 
 make_layer_private(layer)

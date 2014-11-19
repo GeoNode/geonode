@@ -9,7 +9,7 @@ if __name__=='__main__':
     
 from django import forms
 from geonode.maps.models import Layer
-from geonode.classification.models import ClassificationMethod, ColorRamp
+from layer_classification.models import ClassificationMethod, ColorRamp
 
 """
  http://localhost:8000/gs/rest/sldservice/geonode:boston_social_disorder_pbl/classify.xml?

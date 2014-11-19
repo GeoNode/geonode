@@ -10,6 +10,8 @@ from django.core.urlresolvers import reverse
 from django.shortcuts import render_to_response
 from django.views.decorators.csrf import csrf_exempt
 
+from django.contrib.sites.models import Site
+
 from dataverse_info.forms_embed_layer import EmbedLayerForm
 
 from geonode.maps.models import Layer
@@ -23,13 +25,51 @@ from geonode.dataverse_private_layer.models import RegisteredApplication, WorldM
 logger = logging.getLogger("geonode.dataverse_private_layer.views_request_private_layer_url")
 
 
+'''
+def view_quick_test(request):
+    """
+    http://localhost:8000/dataverse-private-layer/proxy-test/
+
+    http://localhost:8080/geoserver/wms?LAYERS=geonode%3Abari_q1y&VERSION=1.1.1&REQUEST=DescribeLayer
+    http://localhost:8080/geoserver/wms?LAYERS=geonode%3A' bari_q1y' &VERSION=1.1.1&REQUEST=DescribeLayer
+
+    """
+    from geonode.proxy.views import proxy
+
+    layer_name = 'geonode%3Abari_q1y'
+    test_url='http://localhost:8080/geoserver/wms?LAYERS=' + layer_name + '&VERSION=1.1.1&REQUEST=DescribeLayer'
+    print 'test_url', test_url
+    request.GET = dict(url=test_url)
+    return proxy(request)
+'''
+
+'''
+def view_proxy_test2(request):
+    from geonode.proxy.views import internal_proxy
+
+    layer_name = 'geonode%3Abari_q1y'
+    test_url='http://localhost:8080/geoserver/wms?LAYERS=' + layer_name + '&VERSION=1.1.1&REQUEST=DescribeLayer'
+    print 'test_url', test_url
+    return internal_proxy(request, test_url)
+'''
+
+
+'''
+#
+# 11/19/2014 - abandoned attempt to show private layers via a temporary url
+#
+#
 def format_embed_layer_error(request, err_msg):
     assert type(request) in (HttpRequest, wsgi.WSGIRequest), 'request must be a HttpRequest or WSGIRequest object'
     assert err_msg is not None, "err_msg cannot be None"
+    
+    json_msg = MessageHelperJSON.get_json_msg(success=False, msg=err_msg)
+    return HttpResponse(status=200, content=json_msg, content_type="application/json")
+    
 
-    return render_to_response('dataverse_layer_metadata/view_embed_layer_error.html'\
-                             , dict(err_msg=err_msg)\
-                            , context_instance=RequestContext(request))
+    #return render_to_response('dataverse_layer_metadata/view_embed_layer_error.html'\
+    #                         , dict(err_msg=err_msg)\
+    #                        , context_instance=RequestContext(request))
 
 
 
@@ -117,8 +157,13 @@ def view_request_private_layer_url(request):
                                             , layer_obj)
     
     private_layer_url = reverse('view_private_layer', kwargs={ 'wm_token' : dv_token.token })
+    private_layer_url = '%s%s' % (Site.objects.get_current().domain, private_layer_url)
     
+    json_msg = MessageHelperJSON.get_json_msg(success=True
+                                            , msg='It worked'\
+                                            , data_dict=dict(private_layer_url=private_layer_url)\
+                                            )
+    return HttpResponse(status=200, content=json_msg, content_type="application/json")
     return HttpResponse(private_layer_url)
-    #token_url = 
-    
+'''
     

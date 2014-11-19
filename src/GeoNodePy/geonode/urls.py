@@ -74,8 +74,7 @@ urlpatterns = patterns('',
     url(r'^autocomplete/', include('autocomplete_light.urls')),
     
     (r'^dataverse-layer/', include('geonode.dataverse_layer_metadata.urls')),
-    (r'^dataverse-private-layer/', include('geonode.dataverse_private_layer.urls')),
-    (r'^dataverse/', include('geonode.dataverse_connect.urls')),    
+    (r'^dataverse/', include('geonode.dataverse_connect.urls')),
     
     
     )
