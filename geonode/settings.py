@@ -97,7 +97,8 @@ LANGUAGES = (
     ('sv', 'Swedish'),
     ('th', 'Thai'),
     ('uk', 'Ukranian'),
-
+    ('si', 'Sinhala'),
+    ('ta', 'Tamil'),
     # ('tl', 'Tagalog'),
 )
 
