@@ -516,7 +516,7 @@ def geoserver_post_save_map(instance, sender, **kwargs):
                                    url=thumbnail_remote_url,
                                    defaults=dict(
                                        extension='png',
-                                       name=_("Remote Thumbnail"),
+                                       name="Remote Thumbnail",
                                        mime='image/png',
                                        link_type='image',
                                    )
