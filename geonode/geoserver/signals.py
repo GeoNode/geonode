@@ -372,20 +372,11 @@ def geoserver_post_save(instance, sender, **kwargs):
 
     thumbnail_remote_url = ogc_server_settings.PUBLIC_LOCATION + \
         "wms/reflect?" + p
-    thumbail_create_url = ogc_server_settings.LOCATION + \
+
+    thumbnail_create_url = ogc_server_settings.LOCATION + \
         "wms/reflect?" + p
 
-    # This is a workaround for development mode where cookies are not shared and the layer is not public so
-    # not visible through geoserver
-    if settings.DEBUG:
-        from geonode.security.views import _perms_info_json
-        current_perms = _perms_info_json(instance.get_self_resource())
-        instance.set_default_permissions()
-
     create_thumbnail(instance, thumbnail_remote_url, thumbail_create_url)
-
-    if settings.DEBUG:
-        instance.set_permissions(json.loads(current_perms))
 
     legend_url = ogc_server_settings.PUBLIC_LOCATION + \
         'wms?request=GetLegendGraphic&format=image/png&WIDTH=20&HEIGHT=20&LAYER=' + \
@@ -513,50 +504,4 @@ def geoserver_post_save_map(instance, sender, **kwargs):
         thumbnail_remote_url = ogc_server_settings.LOCATION + \
             "wms/reflect?" + p
 
-        Link.objects.get_or_create(resource=instance.resourcebase_ptr,
-                                   url=thumbnail_remote_url,
-                                   defaults=dict(
-                                       extension='png',
-                                       name="Remote Thumbnail",
-                                       mime='image/png',
-                                       link_type='image',
-                                   )
-                                   )
-
-        # Download thumbnail and save it locally.
-        resp, image = http_client.request(thumbnail_remote_url)
-
-        if 'ServiceException' in image or resp.status < 200 or resp.status > 299:
-            msg = 'Unable to obtain thumbnail: %s' % image
-            logger.debug(msg)
-            # Replace error message with None.
-            image = None
-
-    if image is not None:
-        if instance.has_thumbnail():
-            instance.thumbnail_set.get().thumb_file.delete()
-        else:
-            instance.thumbnail_set.add(Thumbnail())
-
-        instance.thumbnail_set.get().thumb_file.save(
-            'map-%s-thumb.png' %
-            instance.id,
-            ContentFile(image))
-        instance.thumbnail_set.get().thumb_spec = thumbnail_remote_url
-        instance.thumbnail_set.get().save()
-
-        thumbnail_url = urljoin(
-            settings.SITEURL,
-            instance.thumbnail_set.get().thumb_file.url)
-
-        Link.objects.get_or_create(resource=instance.resourcebase_ptr,
-                                   url=thumbnail_url,
-                                   defaults=dict(
-                                       name=_('Thumbnail'),
-                                       extension='png',
-                                       mime='image/png',
-                                       link_type='image',
-                                   )
-                                   )
-        from geonode.maps.models import Map
-        Map.objects.filter(id=instance.id).update(thumbnail_url=thumbnail_url)
+        create_thumbnail(instance, thumbnail_remote_url, check_bbox=False)
