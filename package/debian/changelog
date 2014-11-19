@@ -1,3 +1,23 @@
+geonode (2.4.0+alpha35) trusty; urgency=high
+
+  [ state-hiu ]
+  * [39f5a4] Levels, V2
+
+  [ Matt Bertrand ]
+  * [e1157c] Fix lazy loading in geoexplorer detail pages, fix service layer issues
+
+  [ Simone Dalmasso ]
+  * [d7616d] bump announcement version and update css
+
+  [ Geode Team ]
+  * [224597] unstranslating name var for Remote Thumbnaill
+  * [0d3276] Outsourcing css GeoExplorer
+
+  [ Ariel Nunez ]
+  * [47d576] Improved logic on gxp configuration
+
+ -- Ariel Nunez <ingenieroariel@gmail.com>  Wed, 19 Nov 2014 10:31:58 -0500
+
 geonode (2.4.0+alpha34) trusty; urgency=high
 
   [ Ariel Nunez ]
