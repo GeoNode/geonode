@@ -3,13 +3,14 @@
 # This file is distributed under the same license as the PACKAGE package.
 # 
 # Translators:
+# Andres Alfonso Lemon Gomez <lemon.andres@gmail.com>, 2014
 msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2014-10-24 10:00-0500\n"
-"PO-Revision-Date: 2014-11-11 23:40+0000\n"
-"Last-Translator: ingenieroariel <ingenieroariel@gmail.com>\n"
+"PO-Revision-Date: 2014-11-14 23:10+0000\n"
+"Last-Translator: Andres Alfonso Lemon Gomez <lemon.andres@gmail.com>\n"
 "Language-Team: Polish (http://www.transifex.com/projects/p/geonode/language/pl/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -19,580 +20,580 @@ msgstr ""
 
 #: static/geonode/js/extjs/GeoNode.js:72
 msgid "Add user..."
-msgstr ""
+msgstr "Dodaj użytkownika ..."
 
 #: static/geonode/js/extjs/GeoNode.js:72
 msgid "Who can view and download this data?"
-msgstr ""
+msgstr "Kto może oglądać i pobierać te dane?"
 
 #: static/geonode/js/extjs/GeoNode.js:72
 msgid "Anyone"
-msgstr ""
+msgstr "Ktoś"
 
 #: static/geonode/js/extjs/GeoNode.js:72
 msgid "Any registered user"
-msgstr ""
+msgstr "Każdy zarejestrowany użytkownik"
 
 #: static/geonode/js/extjs/GeoNode.js:72
 msgid "Only users who can edit"
-msgstr ""
+msgstr "Tylko użytkownicy, którzy mogą edytować"
 
 #: static/geonode/js/extjs/GeoNode.js:72
 msgid "Who can edit this data?"
-msgstr ""
+msgstr "Kto może edytować te dane?"
 
 #: static/geonode/js/extjs/GeoNode.js:72
 msgid "Only the following users or groups:"
-msgstr ""
+msgstr "Tylko następujące użytkowników lub grup:"
 
 #: static/geonode/js/extjs/GeoNode.js:72
 msgid "Who can manage and edit this data?"
-msgstr ""
+msgstr "Kto może zarządzać i edytować te dane?"
 
 #: static/geonode/js/upload/FileType.js:33
 #, c-format
 msgid "Missing a %s file, which is required"
-msgstr ""
+msgstr "Brakuje pliku %s, który jest wymagany"
 
 #: static/geonode/js/upload/FileTypes.js:7
 msgid "ESRI Shapefile"
-msgstr ""
+msgstr "ESRI Shapefile"
 
 #: static/geonode/js/upload/FileTypes.js:13
 #: static/geonode/js/upload/FileTypes.js:19
 msgid "GeoTiff File"
-msgstr ""
+msgstr "GeoTIFF pliku"
 
 #: static/geonode/js/upload/FileTypes.js:26
 msgid "Comma Separated File"
-msgstr ""
+msgstr "Plik oddzielonych przecinkami"
 
 #: static/geonode/js/upload/FileTypes.js:32
 msgid "Google Earth KML"
-msgstr ""
+msgstr "Google Earth KML"
 
 #: static/geonode/js/upload/FileTypes.js:38
 msgid "Zip Archives"
-msgstr ""
+msgstr "ZIP"
 
 #: static/geonode/js/upload/LayerInfo.js:249
 msgid "Layer Info"
-msgstr ""
+msgstr "Warstwa Info"
 
 #: static/geonode/js/upload/LayerInfo.js:250
 msgid "Edit Metadata"
-msgstr ""
+msgstr "Edytuj metadane"
 
 #: static/geonode/js/upload/LayerInfo.js:251
 msgid "Manage Styles"
-msgstr ""
+msgstr "Zarządzanie stylami"
 
 #: static/geonode/js/upload/LayerInfo.js:253
 msgid "Your layer was successfully uploaded"
-msgstr ""
+msgstr "Twoja warstwa została pomyślnie przesłany"
 
 #: static/geonode/js/upload/LayerInfo.js:282
 msgid "Performing Final GeoServer Config Step"
-msgstr ""
+msgstr "Wykonywanie GeoServer Config Krok końcowy"
 
 #: static/geonode/js/upload/LayerInfo.js:297
 #: static/geonode/js/upload/LayerInfo.js:319
 msgid "You need to specify more information in order to complete your upload"
-msgstr ""
+msgstr "Musisz podać więcej informacji w celu zakończenia przesyłania"
 
 #: static/geonode/js/upload/LayerInfo.js:311
 msgid "You need to specify more information in order to complete your upload."
-msgstr ""
+msgstr "Musisz podać więcej informacji w celu zakończenia przesyłania."
 
 #: static/geonode/js/upload/LayerInfo.js:311
 msgid "You can continue configuring your layer."
-msgstr ""
+msgstr "Możesz kontynuować konfigurowanie warstwy."
 
 #: static/geonode/js/upload/LayerInfo.js:329
 #: static/geonode/js/upload/LayerInfo.js:414
 msgid "Unexpected Error"
-msgstr ""
+msgstr "Nieoczekiwany błąd"
 
 #: static/geonode/js/upload/LayerInfo.js:345
 msgid "Performing GeoServer Config Step"
-msgstr ""
+msgstr "Konfiguracja Krok Wykonywanie GeoServer"
 
 #: static/geonode/js/upload/LayerInfo.js:417
 msgid "No error message supplied"
-msgstr ""
+msgstr "Brak komunikatu o błędzie w zestawie"
 
 #: static/geonode/js/upload/LayerInfo.js:432
 msgid "Layer files uploaded, configuring in GeoServer"
-msgstr ""
+msgstr "Pliki warstwy dodane, konfigurowanie w GeoServer"
 
 #: static/geonode/js/upload/LayerInfo.js:447
 msgid "Select or create a Geogit repository."
-msgstr ""
+msgstr "Wybierz lub utwórz Geogit repozytorium."
 
 #: static/geonode/js/upload/LayerInfo.js:542
 msgid "Remove"
-msgstr ""
+msgstr "Usunąć"
 
 #: static/geonode/js/upload/upload.js:126
 #, c-format
 msgid "The file %s is an unsupported file type, please select another file."
-msgstr ""
+msgstr "Plik %s jest nieobsługiwany typ pliku, wybierz inny plik."
 
 #: static/geonode/js/upload/upload.js:286
 msgid "You are uploading an incomplete set of files."
-msgstr ""
+msgstr "Wysyłasz niekompletny zestaw plików."
 
 #: templates/lang.js:9 templates/lang.js.c:236
 msgid "Cancel"
-msgstr ""
+msgstr "Anulować"
 
 #: templates/lang.js:10
 msgid "Save as Copy"
-msgstr ""
+msgstr "Zapisz jako kopię"
 
 #: templates/lang.js:11
 msgid "About this Map"
-msgstr ""
+msgstr "O tej mapie"
 
 #: templates/lang.js:12 templates/lang.js.c:96 templates/lang.js.c:165
 msgid "Abstract"
-msgstr ""
+msgstr "Abstrakcyjny"
 
 #: templates/lang.js:13
 msgid "Save"
-msgstr ""
+msgstr "Zapisz"
 
 #: templates/lang.js:14 templates/lang.js.c:100 templates/lang.js.c:109
 #: templates/lang.js:162 templates/lang.js.c:184 templates/lang.js.c:219
 msgid "Title"
-msgstr ""
+msgstr "Tytuł"
 
 #: templates/lang.js:20
 msgid "Connection Error"
-msgstr ""
+msgstr "Błąd połączenia"
 
 #: templates/lang.js:21
 msgid "The server returned an error"
-msgstr ""
+msgstr "Serwer zwrócił błąd"
 
 #: templates/lang.js:22
 msgid "Details..."
-msgstr ""
+msgstr "Szczegóły ..."
 
 #: templates/lang.js:28 templates/lang.js.c:31
 msgid "Add Layers"
-msgstr ""
+msgstr "Dodaj Layers"
 
 #: templates/lang.js:29
 msgid "Area"
-msgstr ""
+msgstr "Obszar"
 
 #: templates/lang.js:30
 msgid "Background"
-msgstr ""
+msgstr "Tło"
 
 #: templates/lang.js:32
 msgid "Done"
-msgstr ""
+msgstr "Gotowe"
 
 #: templates/lang.js:33
 msgid "Available Layers"
-msgstr ""
+msgstr "Dostępne Warstwy"
 
 #: templates/lang.js:35 templates/lang.js.c:121
 msgid "Height"
-msgstr ""
+msgstr "Wysokość"
 
 #: templates/lang.js:36
 msgid "Get Feature Info"
-msgstr ""
+msgstr "Get Feature Info"
 
 #: templates/lang.js:37 templates/lang.js.c:122
 msgid "Large"
-msgstr ""
+msgstr "Duży"
 
 #: templates/lang.js:38
 msgid "or add a new server."
-msgstr ""
+msgstr "lub dodać nowy serwer."
 
 #: templates/lang.js:39
 msgid "Map Layers"
-msgstr ""
+msgstr "Warstwy mapy"
 
 #: templates/lang.js:40
 msgid "View available data from:"
-msgstr ""
+msgstr "Zobacz dostępne dane z:"
 
 #: templates/lang.js:41
 msgid "Data"
-msgstr ""
+msgstr "Dane"
 
 #: templates/lang.js:42
 msgid "Layers"
-msgstr ""
+msgstr "Warstwy"
 
 #: templates/lang.js:43
 msgid "Legend"
-msgstr ""
+msgstr "Legenda"
 
 #: templates/lang.js:44
 msgid "Length"
-msgstr ""
+msgstr "Długość"
 
 #: templates/lang.js:45
 msgid "Loading Map..."
-msgstr ""
+msgstr "Ładowanie mapy ..."
 
 #: templates/lang.js:46 templates/lang.js.c:123
 msgid "Map Size"
-msgstr ""
+msgstr "Mapa Rozmiar"
 
 #: templates/lang.js:47
 msgid "Measure"
-msgstr ""
+msgstr "Działanie"
 
 #: templates/lang.js:48 templates/lang.js.c:97 templates/lang.js.c:163
 msgid "Contact"
-msgstr ""
+msgstr "Kontakt"
 
 #: templates/lang.js:49 templates/lang.js.c:55
 msgid "Permalink"
-msgstr ""
+msgstr "Permalink"
 
 #: templates/lang.js:50 templates/lang.js.c:124
 msgid "Mini"
-msgstr ""
+msgstr "Mini"
 
 #: templates/lang.js:51
 msgid "Pan Map"
-msgstr ""
+msgstr "Pan Mapa"
 
 #: templates/lang.js:52
 msgid "Zoom to Next Extent"
-msgstr ""
+msgstr "Przybliża Następny wyciągnięcie"
 
 #: templates/lang.js:53
 msgid "Zoom to Previous Extent"
-msgstr ""
+msgstr "Powiększyć do poprzedniego wyciągnięcie"
 
 #: templates/lang.js:54
 msgid "This map has not yet been saved."
-msgstr ""
+msgstr "Ta mapa nie została jeszcze zapisana."
 
 #: templates/lang.js:56 templates/lang.js.c:125
 msgid "Premium"
-msgstr ""
+msgstr "Premia"
 
 #: templates/lang.js:57
 msgid "Print Map"
-msgstr ""
+msgstr "Drukuj Mapa"
 
 #: templates/lang.js:58
 msgid "Print Preview"
-msgstr ""
+msgstr "Podgląd wydruku"
 
 #: templates/lang.js:59
 msgid "Properties"
-msgstr ""
+msgstr "Właściwości"
 
 #: templates/lang.js:60 templates/lang.js.c:126
 msgid "Publish Map"
-msgstr ""
+msgstr "Publikowanie Mapa"
 
 #: templates/lang.js:61 templates/lang.js.c:62
 msgid "Remove Layer"
-msgstr ""
+msgstr "Usuń warstwę"
 
 #: templates/lang.js:63
 msgid "Sorry, your map could not be saved."
-msgstr ""
+msgstr "Niestety, Twoja mapa nie może zostać zapisany."
 
 #: templates/lang.js:64
 msgid "Error While Saving"
-msgstr ""
+msgstr "Błąd podczas zapisywania"
 
 #: templates/lang.js:65
 msgid "Save Map"
-msgstr ""
+msgstr "Zapisz Mapa"
 
 #: templates/lang.js:66
 msgid "You must be logged in to save this map."
-msgstr ""
+msgstr "Musisz być zalogowany, aby zapisać tę mapę."
 
 #: templates/lang.js:67 templates/lang.js.c:128
 msgid "Small"
-msgstr ""
+msgstr "Mały"
 
 #: templates/lang.js:68
 msgid ""
 "Error contacting server.\n"
 " Please check the url and try again."
-msgstr ""
+msgstr "Błąd kontaktując serwer. Sprawdź adres URL i spróbuj ponownie."
 
 #: templates/lang.js:69
 msgid "Layer Properties"
-msgstr ""
+msgstr "Właściwości warstw"
 
 #: templates/lang.js:70
 msgid "Change layer format and style"
-msgstr ""
+msgstr "Zmień styl warstwy i formacie"
 
 #: templates/lang.js:71
 msgid "Edit Styles"
-msgstr ""
+msgstr "Edytuj Style"
 
 #: templates/lang.js:72
 msgid "Edit layer styles"
-msgstr ""
+msgstr "Edit layer style"
 
 #: templates/lang.js:73
 msgid "Switch to Google Earth 3D Viewer"
-msgstr ""
+msgstr "Przełączyć się do Google Earth 3D Viewer"
 
 #: templates/lang.js:74
 msgid ""
 "The map that you are trying to load does not exist.  Creating a new map "
 "instead."
-msgstr ""
+msgstr "Mapa, że ​​próbujesz załadować nie istnieje. Tworzenie nowej mapy zamiast."
 
 #: templates/lang.js:75
 msgid "Unknown Map"
-msgstr ""
+msgstr "Nieznane Mapa"
 
 #: templates/lang.js:76 templates/lang.js.c:129
 msgid "Width"
-msgstr ""
+msgstr "Szerokość"
 
 #: templates/lang.js:77
 msgid "Zoom In"
-msgstr ""
+msgstr "Powiększ"
 
 #: templates/lang.js:78
 msgid "Zoom Out"
-msgstr ""
+msgstr "Oddalanie"
 
 #: templates/lang.js:79
 msgid "Zoom level"
-msgstr ""
+msgstr "Poziom zoomu"
 
 #: templates/lang.js:80
 msgid "Zoom Level"
-msgstr ""
+msgstr "Poziom powiększenia"
 
 #: templates/lang.js:81
 msgid "Zoom to Layer Extent"
-msgstr ""
+msgstr "Powiększ do warstwy Zakres"
 
 #: templates/lang.js:82
 msgid "Zoom to Visible Extent"
-msgstr ""
+msgstr "Widoczne wyciągnięcie zbliżeniem"
 
 #: templates/lang.js:88
 msgid "Zoom Level {zoom}"
-msgstr ""
+msgstr "Poziom zoom zoom} {"
 
 #: templates/lang.js:94
 msgid "Create Map"
-msgstr ""
+msgstr "Tworzenie mapy"
 
 #: templates/lang.js:95
 msgid "Export Map"
-msgstr ""
+msgstr "Eksport Mapa"
 
 #: templates/lang.js:98
 msgid "Map"
-msgstr ""
+msgstr "Mapa"
 
 #: templates/lang.js:99 templates/lang.js.c:166
 msgid "View this Map"
-msgstr ""
+msgstr "Zobacz to na mapie"
 
 #: templates/lang.js:101
 msgid "Open Map"
-msgstr ""
+msgstr "Otwórz mapę"
 
 #: templates/lang.js:107 templates/lang.js.c:183
 msgid "Name"
-msgstr ""
+msgstr "Nazwa"
 
 #: templates/lang.js:108
 msgid "Queryable"
-msgstr ""
+msgstr "Queryable"
 
 #: templates/lang.js:115
 msgid "No background"
-msgstr ""
+msgstr "Bez tła"
 
 #: templates/lang.js:127
 msgid ""
 "Your map is ready to be published to the web!  Simply copy the following "
 "HTML to embed the map in your website:"
-msgstr ""
+msgstr "Twoja mapa jest gotowy do publikacji w internecie! Wystarczy skopiować poniższy kod HTML, aby umieścić mapę na swojej stronie:"
 
 #: templates/lang.js:136 templates/lang.js.c:202
 msgid "Abstract:"
-msgstr ""
+msgstr "Streszczenie:"
 
 #: templates/lang.js:137 templates/lang.js.c:204
 msgid "No attribution information is provided for this layer."
-msgstr ""
+msgstr "Brak jest informacji o uznanie dla tej warstwy."
 
 #: templates/lang.js:138 templates/lang.js.c:205
 msgid "Provided by:"
-msgstr ""
+msgstr "Zapewnione przez:"
 
 #: templates/lang.js:139 templates/lang.js.c:206
 msgid "Download:"
-msgstr ""
+msgstr "Download:"
 
 #: templates/lang.js:140 templates/lang.js.c:208
 msgid "No keywords are listed for this layer."
-msgstr ""
+msgstr "Brak słów kluczowych są wyświetlane na tej warstwie."
 
 #: templates/lang.js:141 templates/lang.js.c:209
 msgid "Keywords:"
-msgstr ""
+msgstr "Słowa kluczowe:"
 
 #: templates/lang.js:142 templates/lang.js.c:210
 msgid "No metadata URLs are defined for this layer."
-msgstr ""
+msgstr "Brak URL metadanych są zdefiniowane dla tej warstwy."
 
 #: templates/lang.js:143 templates/lang.js.c:211
 msgid "Metadata Links:"
-msgstr ""
+msgstr "Metadanych Linki:"
 
 #: templates/lang.js:149
 msgid "Paper size:"
-msgstr ""
+msgstr "Rozmiar papieru:"
 
 #: templates/lang.js:150
 msgid "Resolution:"
-msgstr ""
+msgstr "Rozdzielczość:"
 
 #: templates/lang.js:151
 msgid "Print"
-msgstr ""
+msgstr "Druk"
 
 #: templates/lang.js:152
 msgid "Enter map title here."
-msgstr ""
+msgstr "Wprowadź tytuł mapę tutaj."
 
 #: templates/lang.js:153
 msgid "Include legend?"
-msgstr ""
+msgstr "Dołącz legendę?"
 
 #: templates/lang.js:154
 msgid "Enter comments here."
-msgstr ""
+msgstr "Wpisz tutaj komentarzy."
 
 #: templates/lang.js:155
 msgid "Creating PDF..."
-msgstr ""
+msgstr "Tworzenie plików PDF ..."
 
 #: templates/lang.js:164
 msgid "Last Modified"
-msgstr ""
+msgstr "Ostatnia modyfikacja"
 
 #: templates/lang.js:167 templates/lang.js.c:188
 msgid "Prev"
-msgstr ""
+msgstr "Poprzednia"
 
 #: templates/lang.js:168 templates/lang.js.c:189
 msgid "Next"
-msgstr ""
+msgstr "Następny"
 
 #: templates/lang.js:169 templates/lang.js.c:190
 msgid "of"
-msgstr ""
+msgstr "z"
 
 #: templates/lang.js:170 templates/lang.js.c:191
 msgid "Your search did not match any items."
-msgstr ""
+msgstr "Wyszukiwanie nie dało żadnych przedmiotów."
 
 #: templates/lang.js:171
 msgid "Search Maps"
-msgstr ""
+msgstr "Szukaj Mapy"
 
 #: templates/lang.js:172 templates/lang.js.c:192
 msgid "Search"
-msgstr ""
+msgstr "Poszukiwanie"
 
 #: templates/lang.js:173 templates/lang.js.c:193
 msgid "Showing"
-msgstr ""
+msgstr "Pokazywanie"
 
 #: templates/lang.js:174
 msgid "Loading"
-msgstr ""
+msgstr "Ładowanie"
 
 #: templates/lang.js:175 templates/lang.js.c:195
 msgid "permalink"
-msgstr ""
+msgstr "permalink"
 
 #: templates/lang.js:182
 msgid "Select"
-msgstr ""
+msgstr "Wybierać"
 
 #: templates/lang.js:185
 msgid "Select:"
-msgstr ""
+msgstr "Wybierz:"
 
 #: templates/lang.js:186
 msgid "All"
-msgstr ""
+msgstr "Wszystko"
 
 #: templates/lang.js:187
 msgid "None"
-msgstr ""
+msgstr "Żaden"
 
 #: templates/lang.js:194
 msgid "Loading..."
-msgstr ""
+msgstr "Ładowanie ..."
 
 #: templates/lang.js:196
 msgid "You do not have permission to view this data"
-msgstr ""
+msgstr "Nie masz uprawnień, aby zobaczyć te dane"
 
 #: templates/lang.js:197
 msgid "This data is stored on a remote server"
-msgstr ""
+msgstr "Dane te są przechowywane w zdalnym serwerze"
 
 #: templates/lang.js:203
 msgid "No abstract is provided for this layer."
-msgstr ""
+msgstr "Nie abstrakcyjne jest dla tej warstwy."
 
 #: templates/lang.js:207
 msgid "No download URLs are definied for this layer."
-msgstr ""
+msgstr "Brak pobieranie adresy są przepisami określonymi dla tej warstwy."
 
 #: templates/lang.js:217
 msgid "Selected Layers"
-msgstr ""
+msgstr "Wybrane warstwy"
 
 #: templates/lang.js:218
 msgid "No Layers Selected"
-msgstr ""
+msgstr "Brak Warstwy Wybrany"
 
 #: templates/lang.js:220
 msgid "Clear Selected"
-msgstr ""
+msgstr "Wyczyść Zaznaczone"
 
 #: templates/lang.js:221
 msgid "Clear All"
-msgstr ""
+msgstr "Wyczyść wszystko"
 
 #: templates/lang.js:227
 msgid "Operation Failed"
-msgstr ""
+msgstr "Operacja nie powiodła się"
 
 #: templates/lang.js:228
 msgid "No layers are currently selected."
-msgstr ""
+msgstr "Brak warstwy są aktualnie wybrany."
 
 #: templates/lang.js:235
 msgid "Downloading..."
-msgstr ""
+msgstr "Pobieranie ..."
 
 #: templates/lang.js:237
 msgid "Please wait"
-msgstr ""
+msgstr "Proszę czekać"

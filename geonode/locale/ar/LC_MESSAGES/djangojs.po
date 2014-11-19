@@ -3,13 +3,14 @@
 # This file is distributed under the same license as the PACKAGE package.
 # 
 # Translators:
+# Andres Alfonso Lemon Gomez <lemon.andres@gmail.com>, 2014
 msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2014-10-24 10:00-0500\n"
-"PO-Revision-Date: 2014-11-11 23:51+0000\n"
-"Last-Translator: ingenieroariel <ingenieroariel@gmail.com>\n"
+"PO-Revision-Date: 2014-11-15 18:21+0000\n"
+"Last-Translator: Andres Alfonso Lemon Gomez <lemon.andres@gmail.com>\n"
 "Language-Team: Arabic (http://www.transifex.com/projects/p/geonode/language/ar/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -19,11 +20,11 @@ msgstr ""
 
 #: static/geonode/js/extjs/GeoNode.js:72
 msgid "Add user..."
-msgstr ""
+msgstr "إضافة المستخدم ..."
 
 #: static/geonode/js/extjs/GeoNode.js:72
 msgid "Who can view and download this data?"
-msgstr ""
+msgstr "الذين يمكنهم عرض وتحميل هذه البيانات؟"
 
 #: static/geonode/js/extjs/GeoNode.js:72
 msgid "Anyone"
@@ -31,568 +32,568 @@ msgstr "anyone"
 
 #: static/geonode/js/extjs/GeoNode.js:72
 msgid "Any registered user"
-msgstr ""
+msgstr "أي مستخدم مسجل"
 
 #: static/geonode/js/extjs/GeoNode.js:72
 msgid "Only users who can edit"
-msgstr ""
+msgstr "فقط للمستخدمين الذين يمكن تحرير"
 
 #: static/geonode/js/extjs/GeoNode.js:72
 msgid "Who can edit this data?"
-msgstr ""
+msgstr "الذين يمكن تعديل هذه البيانات؟"
 
 #: static/geonode/js/extjs/GeoNode.js:72
 msgid "Only the following users or groups:"
-msgstr ""
+msgstr "فقط المستخدمين أو المجموعات التالية:"
 
 #: static/geonode/js/extjs/GeoNode.js:72
 msgid "Who can manage and edit this data?"
-msgstr ""
+msgstr "الذين يمكن إدارة وتحرير هذه البيانات؟"
 
 #: static/geonode/js/upload/FileType.js:33
 #, c-format
 msgid "Missing a %s file, which is required"
-msgstr ""
+msgstr "ملف المفقودين ليالي %s وهو مطلوب"
 
 #: static/geonode/js/upload/FileTypes.js:7
 msgid "ESRI Shapefile"
-msgstr ""
+msgstr "ESRI بحلقات"
 
 #: static/geonode/js/upload/FileTypes.js:13
 #: static/geonode/js/upload/FileTypes.js:19
 msgid "GeoTiff File"
-msgstr ""
+msgstr "ملفات GeoTiff الملف"
 
 #: static/geonode/js/upload/FileTypes.js:26
 msgid "Comma Separated File"
-msgstr ""
+msgstr "فاصلة ملف المنفصلين"
 
 #: static/geonode/js/upload/FileTypes.js:32
 msgid "Google Earth KML"
-msgstr ""
+msgstr "جوجل الأرض KML"
 
 #: static/geonode/js/upload/FileTypes.js:38
 msgid "Zip Archives"
-msgstr ""
+msgstr "الرمز البريدي المحفوظات"
 
 #: static/geonode/js/upload/LayerInfo.js:249
 msgid "Layer Info"
-msgstr ""
+msgstr "معلومات طبقة"
 
 #: static/geonode/js/upload/LayerInfo.js:250
 msgid "Edit Metadata"
-msgstr ""
+msgstr "تحرير البيانات الوصفية"
 
 #: static/geonode/js/upload/LayerInfo.js:251
 msgid "Manage Styles"
-msgstr ""
+msgstr "إدارة أنماط"
 
 #: static/geonode/js/upload/LayerInfo.js:253
 msgid "Your layer was successfully uploaded"
-msgstr ""
+msgstr "تم تحميله طبقة الخاص بك بنجاح"
 
 #: static/geonode/js/upload/LayerInfo.js:282
 msgid "Performing Final GeoServer Config Step"
-msgstr ""
+msgstr "أداء النهائية GeoServer التكوين الخطوة"
 
 #: static/geonode/js/upload/LayerInfo.js:297
 #: static/geonode/js/upload/LayerInfo.js:319
 msgid "You need to specify more information in order to complete your upload"
-msgstr ""
+msgstr "تحتاج إلى تحديد مزيد من المعلومات لاستكمال التحميل"
 
 #: static/geonode/js/upload/LayerInfo.js:311
 msgid "You need to specify more information in order to complete your upload."
-msgstr ""
+msgstr "تحتاج إلى تحديد مزيد من المعلومات لاستكمال التحميل."
 
 #: static/geonode/js/upload/LayerInfo.js:311
 msgid "You can continue configuring your layer."
-msgstr ""
+msgstr "يمكنك متابعة تكوين طبقة الخاصة بك."
 
 #: static/geonode/js/upload/LayerInfo.js:329
 #: static/geonode/js/upload/LayerInfo.js:414
 msgid "Unexpected Error"
-msgstr ""
+msgstr "خطأ غير متوقع"
 
 #: static/geonode/js/upload/LayerInfo.js:345
 msgid "Performing GeoServer Config Step"
-msgstr ""
+msgstr "أداء GeoServer التكوين الخطوة"
 
 #: static/geonode/js/upload/LayerInfo.js:417
 msgid "No error message supplied"
-msgstr ""
+msgstr "أية رسالة خطأ زودت"
 
 #: static/geonode/js/upload/LayerInfo.js:432
 msgid "Layer files uploaded, configuring in GeoServer"
-msgstr ""
+msgstr "الملفات التي تم تحميلها طبقة، في تكوين GeoServer"
 
 #: static/geonode/js/upload/LayerInfo.js:447
 msgid "Select or create a Geogit repository."
-msgstr ""
+msgstr "تحديد أو إنشاء مستودع Geogit."
 
 #: static/geonode/js/upload/LayerInfo.js:542
 msgid "Remove"
-msgstr ""
+msgstr "نقل"
 
 #: static/geonode/js/upload/upload.js:126
 #, c-format
 msgid "The file %s is an unsupported file type, please select another file."
-msgstr ""
+msgstr "الملف %s هو نوع ملف غير معتمد، الرجاء اختيار ملف آخر."
 
 #: static/geonode/js/upload/upload.js:286
 msgid "You are uploading an incomplete set of files."
-msgstr ""
+msgstr "كنت تحميل مجموعة غير كاملة من الملفات."
 
 #: templates/lang.js:9 templates/lang.js.c:236
 msgid "Cancel"
-msgstr ""
+msgstr "إلغاء"
 
 #: templates/lang.js:10
 msgid "Save as Copy"
-msgstr ""
+msgstr "حفظ ك صورة"
 
 #: templates/lang.js:11
 msgid "About this Map"
-msgstr ""
+msgstr "حول هذه الخريطة"
 
 #: templates/lang.js:12 templates/lang.js.c:96 templates/lang.js.c:165
 msgid "Abstract"
-msgstr ""
+msgstr "ملخص"
 
 #: templates/lang.js:13
 msgid "Save"
-msgstr ""
+msgstr "حفظ"
 
 #: templates/lang.js:14 templates/lang.js.c:100 templates/lang.js.c:109
 #: templates/lang.js:162 templates/lang.js.c:184 templates/lang.js.c:219
 msgid "Title"
-msgstr ""
+msgstr "لقب"
 
 #: templates/lang.js:20
 msgid "Connection Error"
-msgstr ""
+msgstr "خطأ اتصال"
 
 #: templates/lang.js:21
 msgid "The server returned an error"
-msgstr ""
+msgstr "عاد الخادم خطأ"
 
 #: templates/lang.js:22
 msgid "Details..."
-msgstr ""
+msgstr "التفاصيل ..."
 
 #: templates/lang.js:28 templates/lang.js.c:31
 msgid "Add Layers"
-msgstr ""
+msgstr "إضافة طبقات"
 
 #: templates/lang.js:29
 msgid "Area"
-msgstr ""
+msgstr "منطقة"
 
 #: templates/lang.js:30
 msgid "Background"
-msgstr ""
+msgstr "خلفية"
 
 #: templates/lang.js:32
 msgid "Done"
-msgstr ""
+msgstr "منته"
 
 #: templates/lang.js:33
 msgid "Available Layers"
-msgstr ""
+msgstr "الطبقات المتاحة"
 
 #: templates/lang.js:35 templates/lang.js.c:121
 msgid "Height"
-msgstr ""
+msgstr "ارتفاع"
 
 #: templates/lang.js:36
 msgid "Get Feature Info"
-msgstr ""
+msgstr "ميزة الحصول على معلومات"
 
 #: templates/lang.js:37 templates/lang.js.c:122
 msgid "Large"
-msgstr ""
+msgstr "كبير"
 
 #: templates/lang.js:38
 msgid "or add a new server."
-msgstr ""
+msgstr "أو إضافة ملقم جديد."
 
 #: templates/lang.js:39
 msgid "Map Layers"
-msgstr ""
+msgstr "خريطة الطبقات"
 
 #: templates/lang.js:40
 msgid "View available data from:"
-msgstr ""
+msgstr "عرض البيانات المتاحة من:"
 
 #: templates/lang.js:41
 msgid "Data"
-msgstr ""
+msgstr "معطيات"
 
 #: templates/lang.js:42
 msgid "Layers"
-msgstr ""
+msgstr "طبقات"
 
 #: templates/lang.js:43
 msgid "Legend"
-msgstr ""
+msgstr "أسطورة"
 
 #: templates/lang.js:44
 msgid "Length"
-msgstr ""
+msgstr "طول"
 
 #: templates/lang.js:45
 msgid "Loading Map..."
-msgstr ""
+msgstr "تحميل الخريطة ..."
 
 #: templates/lang.js:46 templates/lang.js.c:123
 msgid "Map Size"
-msgstr ""
+msgstr "خريطة الحجم"
 
 #: templates/lang.js:47
 msgid "Measure"
-msgstr ""
+msgstr "قياس"
 
 #: templates/lang.js:48 templates/lang.js.c:97 templates/lang.js.c:163
 msgid "Contact"
-msgstr ""
+msgstr "اتصال"
 
 #: templates/lang.js:49 templates/lang.js.c:55
 msgid "Permalink"
-msgstr ""
+msgstr "الرابط الثابت"
 
 #: templates/lang.js:50 templates/lang.js.c:124
 msgid "Mini"
-msgstr ""
+msgstr "مصغرة"
 
 #: templates/lang.js:51
 msgid "Pan Map"
-msgstr ""
+msgstr "عموم خريطة"
 
 #: templates/lang.js:52
 msgid "Zoom to Next Extent"
-msgstr ""
+msgstr "تكبير لمدى التالي"
 
 #: templates/lang.js:53
 msgid "Zoom to Previous Extent"
-msgstr ""
+msgstr "تكبير لمدى السابق"
 
 #: templates/lang.js:54
 msgid "This map has not yet been saved."
-msgstr ""
+msgstr "لم يتم حفظ هذه الخريطة."
 
 #: templates/lang.js:56 templates/lang.js.c:125
 msgid "Premium"
-msgstr ""
+msgstr "علاوة"
 
 #: templates/lang.js:57
 msgid "Print Map"
-msgstr ""
+msgstr "أطبع الخريطة"
 
 #: templates/lang.js:58
 msgid "Print Preview"
-msgstr ""
+msgstr "معاينة قبل الطباعة"
 
 #: templates/lang.js:59
 msgid "Properties"
-msgstr ""
+msgstr "عقارات"
 
 #: templates/lang.js:60 templates/lang.js.c:126
 msgid "Publish Map"
-msgstr ""
+msgstr "نشر خريطة"
 
 #: templates/lang.js:61 templates/lang.js.c:62
 msgid "Remove Layer"
-msgstr ""
+msgstr "إزالة طبقة"
 
 #: templates/lang.js:63
 msgid "Sorry, your map could not be saved."
-msgstr ""
+msgstr "آسف، لا يمكن أن يتم حفظ الخريطة الخاصة بك."
 
 #: templates/lang.js:64
 msgid "Error While Saving"
-msgstr ""
+msgstr "خطأ أثناء حفظ"
 
 #: templates/lang.js:65
 msgid "Save Map"
-msgstr ""
+msgstr "حفظ خريطة"
 
 #: templates/lang.js:66
 msgid "You must be logged in to save this map."
-msgstr ""
+msgstr "يجب أن تكون مسجلا لحفظ هذه الخريطة."
 
 #: templates/lang.js:67 templates/lang.js.c:128
 msgid "Small"
-msgstr ""
+msgstr "صغير"
 
 #: templates/lang.js:68
 msgid ""
 "Error contacting server.\n"
 " Please check the url and try again."
-msgstr ""
+msgstr "خطأ الخادم الاتصال. يرجى التحقق من عنوان الموقع وحاول مرة أخرى."
 
 #: templates/lang.js:69
 msgid "Layer Properties"
-msgstr ""
+msgstr "خصائص الطبقة"
 
 #: templates/lang.js:70
 msgid "Change layer format and style"
-msgstr ""
+msgstr "تغيير شكل طبقة والأناقة"
 
 #: templates/lang.js:71
 msgid "Edit Styles"
-msgstr ""
+msgstr "تحرير أنماط"
 
 #: templates/lang.js:72
 msgid "Edit layer styles"
-msgstr ""
+msgstr "أساليب تحرير طبقة"
 
 #: templates/lang.js:73
 msgid "Switch to Google Earth 3D Viewer"
-msgstr ""
+msgstr "التبديل إلى برنامج Google Earth 3D عارض"
 
 #: templates/lang.js:74
 msgid ""
 "The map that you are trying to load does not exist.  Creating a new map "
 "instead."
-msgstr ""
+msgstr "الخريطة التي تحاول تحميل غير موجود. خلق خريطة جديدة بدلا من ذلك."
 
 #: templates/lang.js:75
 msgid "Unknown Map"
-msgstr ""
+msgstr "خريطة مجهولة"
 
 #: templates/lang.js:76 templates/lang.js.c:129
 msgid "Width"
-msgstr ""
+msgstr "عرض"
 
 #: templates/lang.js:77
 msgid "Zoom In"
-msgstr ""
+msgstr "تكبير"
 
 #: templates/lang.js:78
 msgid "Zoom Out"
-msgstr ""
+msgstr "تصغير"
 
 #: templates/lang.js:79
 msgid "Zoom level"
-msgstr ""
+msgstr "مستوى التكبير"
 
 #: templates/lang.js:80
 msgid "Zoom Level"
-msgstr ""
+msgstr "التكبير المستوى"
 
 #: templates/lang.js:81
 msgid "Zoom to Layer Extent"
-msgstr ""
+msgstr "تكبير إلى طبقة مدى"
 
 #: templates/lang.js:82
 msgid "Zoom to Visible Extent"
-msgstr ""
+msgstr "تكبير لمدى المرئية"
 
 #: templates/lang.js:88
 msgid "Zoom Level {zoom}"
-msgstr ""
+msgstr "مستوى التكبير التكبير {}"
 
 #: templates/lang.js:94
 msgid "Create Map"
-msgstr ""
+msgstr "خلق خريطة"
 
 #: templates/lang.js:95
 msgid "Export Map"
-msgstr ""
+msgstr "تصدير خريطة"
 
 #: templates/lang.js:98
 msgid "Map"
-msgstr ""
+msgstr "خريطة"
 
 #: templates/lang.js:99 templates/lang.js.c:166
 msgid "View this Map"
-msgstr ""
+msgstr "عرض هذه الخريطة"
 
 #: templates/lang.js:101
 msgid "Open Map"
-msgstr ""
+msgstr "افتح الخريطة"
 
 #: templates/lang.js:107 templates/lang.js.c:183
 msgid "Name"
-msgstr ""
+msgstr "اسم"
 
 #: templates/lang.js:108
 msgid "Queryable"
-msgstr ""
+msgstr "Queryable"
 
 #: templates/lang.js:115
 msgid "No background"
-msgstr ""
+msgstr "أي خلفية"
 
 #: templates/lang.js:127
 msgid ""
 "Your map is ready to be published to the web!  Simply copy the following "
 "HTML to embed the map in your website:"
-msgstr ""
+msgstr "الخريطة الخاصة بك على استعداد لنشرها على شبكة الإنترنت! ببساطة نسخ HTML التالية إلى تضمين الخريطة في موقع الويب الخاص بك:"
 
 #: templates/lang.js:136 templates/lang.js.c:202
 msgid "Abstract:"
-msgstr ""
+msgstr "الملخص:"
 
 #: templates/lang.js:137 templates/lang.js.c:204
 msgid "No attribution information is provided for this layer."
-msgstr ""
+msgstr "يتم توفير أي معلومات الإسناد لهذه الطبقة."
 
 #: templates/lang.js:138 templates/lang.js.c:205
 msgid "Provided by:"
-msgstr ""
+msgstr "تقدمها:"
 
 #: templates/lang.js:139 templates/lang.js.c:206
 msgid "Download:"
-msgstr ""
+msgstr "التحميل:"
 
 #: templates/lang.js:140 templates/lang.js.c:208
 msgid "No keywords are listed for this layer."
-msgstr ""
+msgstr "وترد توجد كلمات لهذه الطبقة."
 
 #: templates/lang.js:141 templates/lang.js.c:209
 msgid "Keywords:"
-msgstr ""
+msgstr "كلمات البحث:"
 
 #: templates/lang.js:142 templates/lang.js.c:210
 msgid "No metadata URLs are defined for this layer."
-msgstr ""
+msgstr "لم يتم تحديد عناوين المواقع الفوقية لهذه الطبقة."
 
 #: templates/lang.js:143 templates/lang.js.c:211
 msgid "Metadata Links:"
-msgstr ""
+msgstr "الفوقية وصلات:"
 
 #: templates/lang.js:149
 msgid "Paper size:"
-msgstr ""
+msgstr "حجم الورق:"
 
 #: templates/lang.js:150
 msgid "Resolution:"
-msgstr ""
+msgstr "القرار:"
 
 #: templates/lang.js:151
 msgid "Print"
-msgstr ""
+msgstr "طباعة"
 
 #: templates/lang.js:152
 msgid "Enter map title here."
-msgstr ""
+msgstr "أدخل عنوان خريطة هنا."
 
 #: templates/lang.js:153
 msgid "Include legend?"
-msgstr ""
+msgstr "تشمل أسطورة؟"
 
 #: templates/lang.js:154
 msgid "Enter comments here."
-msgstr ""
+msgstr "إدخال تعليقات هنا."
 
 #: templates/lang.js:155
 msgid "Creating PDF..."
-msgstr ""
+msgstr "خلق PDF ..."
 
 #: templates/lang.js:164
 msgid "Last Modified"
-msgstr ""
+msgstr "آخر تعديل ل"
 
 #: templates/lang.js:167 templates/lang.js.c:188
 msgid "Prev"
-msgstr ""
+msgstr "السابق"
 
 #: templates/lang.js:168 templates/lang.js.c:189
 msgid "Next"
-msgstr ""
+msgstr "التالي"
 
 #: templates/lang.js:169 templates/lang.js.c:190
 msgid "of"
-msgstr ""
+msgstr "من"
 
 #: templates/lang.js:170 templates/lang.js.c:191
 msgid "Your search did not match any items."
-msgstr ""
+msgstr "البحث لم يتوافق مع أي من البنود."
 
 #: templates/lang.js:171
 msgid "Search Maps"
-msgstr ""
+msgstr "بحث خرائط"
 
 #: templates/lang.js:172 templates/lang.js.c:192
 msgid "Search"
-msgstr ""
+msgstr "تفتيش"
 
 #: templates/lang.js:173 templates/lang.js.c:193
 msgid "Showing"
-msgstr ""
+msgstr "عرض"
 
 #: templates/lang.js:174
 msgid "Loading"
-msgstr ""
+msgstr "تحميل"
 
 #: templates/lang.js:175 templates/lang.js.c:195
 msgid "permalink"
-msgstr ""
+msgstr "الرابط الثابت"
 
 #: templates/lang.js:182
 msgid "Select"
-msgstr ""
+msgstr "اختار"
 
 #: templates/lang.js:185
 msgid "Select:"
-msgstr ""
+msgstr "تحديد:"
 
 #: templates/lang.js:186
 msgid "All"
-msgstr ""
+msgstr "جميع"
 
 #: templates/lang.js:187
 msgid "None"
-msgstr ""
+msgstr "لا شيء"
 
 #: templates/lang.js:194
 msgid "Loading..."
-msgstr ""
+msgstr "تحميل ..."
 
 #: templates/lang.js:196
 msgid "You do not have permission to view this data"
-msgstr ""
+msgstr "لم يكن لديك إذن لمشاهدة هذه البيانات"
 
 #: templates/lang.js:197
 msgid "This data is stored on a remote server"
-msgstr ""
+msgstr "يتم تخزين هذه البيانات على ملقم بعيد"
 
 #: templates/lang.js:203
 msgid "No abstract is provided for this layer."
-msgstr ""
+msgstr "لم يتم توفير ملخص لهذه الطبقة."
 
 #: templates/lang.js:207
 msgid "No download URLs are definied for this layer."
-msgstr ""
+msgstr "وdefinied أي عناوين التحميل لهذه الطبقة."
 
 #: templates/lang.js:217
 msgid "Selected Layers"
-msgstr ""
+msgstr "الطبقات المحددة"
 
 #: templates/lang.js:218
 msgid "No Layers Selected"
-msgstr ""
+msgstr "لم الطبقات المحددة"
 
 #: templates/lang.js:220
 msgid "Clear Selected"
-msgstr ""
+msgstr "واضح مختارة"
 
 #: templates/lang.js:221
 msgid "Clear All"
-msgstr ""
+msgstr "مسح جميع"
 
 #: templates/lang.js:227
 msgid "Operation Failed"
-msgstr ""
+msgstr "فشلت العملية"
 
 #: templates/lang.js:228
 msgid "No layers are currently selected."
-msgstr ""
+msgstr "ويتم اختيار أي طبقات حاليا."
 
 #: templates/lang.js:235
 msgid "Downloading..."
-msgstr ""
+msgstr "تحميل ..."
 
 #: templates/lang.js:237
 msgid "Please wait"
-msgstr ""
+msgstr "يرجى الانتظار"

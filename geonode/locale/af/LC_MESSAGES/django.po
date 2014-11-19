@@ -1,21 +1,22 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
-# 
+#
 # Translators:
 # Andres Alfonso Lemon Gomez <lemon.andres@gmail.com>, 2014
 msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-11-14 09:56-0500\n"
+"POT-Creation-Date: 2014-11-19 18:27-0500\n"
 "PO-Revision-Date: 2014-11-14 17:11+0000\n"
 "Last-Translator: Andres Alfonso Lemon Gomez <lemon.andres@gmail.com>\n"
-"Language-Team: Afrikaans (http://www.transifex.com/projects/p/geonode/language/af/)\n"
+"Language-Team: Afrikaans (http://www.transifex.com/projects/p/geonode/"
+"language/af/)\n"
+"Language: af\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Language: af\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #: utils.py:38
@@ -157,224 +158,246 @@ msgstr "Kategorie word vereis."
 msgid "function performed by the responsible party"
 msgstr "funksie wat uitgevoer word deur die verantwoordelike party"
 
-#: base/models.py:244
+#: base/models.py:229
 msgid "reference date for the cited resource"
 msgstr "verwysing datum vir die aangehaal hulpbron"
 
-#: base/models.py:245
+#: base/models.py:230
 msgid "identification of when a given event occurred"
 msgstr "identifisering van wanneer 'n gegewe gebeurtenis plaasgevind het"
 
-#: base/models.py:246
+#: base/models.py:231
 msgid "version of the cited resource"
 msgstr "weergawe van die aangehaal hulpbron"
 
-#: base/models.py:247
+#: base/models.py:232
 msgid "brief narrative summary of the content of the resource(s)"
 msgstr "kort vertelling opsomming van die inhoud van die hulpbron (s)"
 
-#: base/models.py:248
+#: base/models.py:233
 msgid "summary of the intentions with which the resource(s) was developed"
 msgstr "opsomming van die bedoelings waarmee die hulpbron (s) ontwikkel"
 
-#: base/models.py:249
+#: base/models.py:234
 msgid ""
 "frequency with which modifications and deletions are made to the data after "
 "it is first produced"
-msgstr "frekwensie waarmee veranderinge en weglatings is gemaak om die data nadat dit vir die eerste keer vervaardig"
+msgstr ""
+"frekwensie waarmee veranderinge en weglatings is gemaak om die data nadat "
+"dit vir die eerste keer vervaardig"
 
-#: base/models.py:251
+#: base/models.py:236
 msgid ""
 "commonly used word(s) or formalised word(s) or phrase(s) used to describe "
 "the subject (space or comma-separated"
-msgstr "algemeen gebruik woord (e) of geformaliseer woord (e) of frase (s) gebruik word om die vak (ruimte of komma geskei te beskryf"
+msgstr ""
+"algemeen gebruik woord (e) of geformaliseer woord (e) of frase (s) gebruik "
+"word om die vak (ruimte of komma geskei te beskryf"
 
-#: base/models.py:253
+#: base/models.py:238
 msgid "keyword identifies a location"
 msgstr "navraag identifiseer 'n plek"
 
-#: base/models.py:254
+#: base/models.py:239
 msgid "limitation(s) placed upon the access or use of the data."
 msgstr "beperking (s) geplaas op die toegang tot of gebruik van die data."
 
-#: base/models.py:255
+#: base/models.py:240
 msgid ""
 "other restrictions and legal prerequisites for accessing and using the "
 "resource or metadata"
-msgstr "ander beperkings en wetlike vereistes vir toegang tot en die gebruik van die hulpbronne of metadata"
+msgstr ""
+"ander beperkings en wetlike vereistes vir toegang tot en die gebruik van die "
+"hulpbronne of metadata"
 
-#: base/models.py:257
+#: base/models.py:242
 msgid "license of the dataset"
 msgstr "lisensie van die dataset"
 
-#: base/models.py:258
+#: base/models.py:243
 msgid "language used within the dataset"
 msgstr "taal wat gebruik word in die dataset"
 
-#: base/models.py:259
+#: base/models.py:244
 msgid ""
-"high-level geographic data thematic classification to assist in the grouping"
-" and search of available geographic data sets."
-msgstr "hoë-vlak geografiese data tematiese klassifikasie te help in die groepering en soek beskikbaar geografiese data stelle."
+"high-level geographic data thematic classification to assist in the grouping "
+"and search of available geographic data sets."
+msgstr ""
+"hoë-vlak geografiese data tematiese klassifikasie te help in die groepering "
+"en soek beskikbaar geografiese data stelle."
 
-#: base/models.py:261
+#: base/models.py:246
 msgid "method used to represent geographic information in the dataset."
-msgstr "metode wat gebruik word geografiese inligting in die dataset te verteenwoordig."
+msgstr ""
+"metode wat gebruik word geografiese inligting in die dataset te "
+"verteenwoordig."
 
-#: base/models.py:262
+#: base/models.py:247
 msgid "time period covered by the content of the dataset (start)"
 msgstr "tydperk gedek deur die inhoud van die dataset (begin)"
 
-#: base/models.py:263
+#: base/models.py:248
 msgid "time period covered by the content of the dataset (end)"
 msgstr "tydperk gedek deur die inhoud van die dataset (einde)"
 
-#: base/models.py:264
+#: base/models.py:249
 msgid ""
 "information about on-line sources from which the dataset, specification, or "
 "community profile name and extended metadata elements can be obtained"
-msgstr "inligting oor die on-line bronne waaruit die dataset, spesifikasie, of die gemeenskap profiel naam en uitgebreide metadata elemente verkry kan word"
+msgstr ""
+"inligting oor die on-line bronne waaruit die dataset, spesifikasie, of die "
+"gemeenskap profiel naam en uitgebreide metadata elemente verkry kan word"
 
-#: base/models.py:266
+#: base/models.py:251
 msgid "detailed text description of what the online resource is/does"
 msgstr "gedetailleerde teks beskrywing van wat die aanlyn hulpbron is / nie"
 
-#: base/models.py:267
+#: base/models.py:252
 msgid ""
 "general explanation of the data producer's knowledge about the lineage of a "
 "dataset"
-msgstr "algemene verduideliking van die data produsent se kennis oor die geslag van 'n dataset"
+msgstr ""
+"algemene verduideliking van die data produsent se kennis oor die geslag van "
+"'n dataset"
 
-#: base/models.py:273
+#: base/models.py:258
 msgid "title"
 msgstr "titel"
 
-#: base/models.py:273
+#: base/models.py:258
 msgid "name by which the cited resource is known"
 msgstr "naam wat die aangehaal hulpbron is bekende"
 
-#: base/models.py:274
+#: base/models.py:259
 msgid "date"
 msgstr "datum"
 
-#: base/models.py:275
+#: base/models.py:260
 msgid "date type"
 msgstr "datum tipe"
 
-#: base/models.py:277
+#: base/models.py:262
 msgid "edition"
 msgstr "uitgawe"
 
-#: base/models.py:278
+#: base/models.py:263
 msgid "abstract"
 msgstr "abstrakte"
 
-#: base/models.py:279
+#: base/models.py:264
 msgid "purpose"
 msgstr "doel"
 
-#: base/models.py:280
+#: base/models.py:265
 msgid "maintenance frequency"
 msgstr "onderhoud frekwensie"
 
-#: base/models.py:283 groups/models.py:41 people/models.py:88
+#: base/models.py:268 groups/models.py:41 people/models.py:88
 msgid "keywords"
 msgstr "sleutelwoorde"
 
-#: base/models.py:284
+#: base/models.py:269
 msgid "keywords region"
 msgstr "sleutelwoorde streek"
 
-#: base/models.py:287
+#: base/models.py:272
 msgid "restrictions"
 msgstr "beperkings"
 
-#: base/models.py:291
+#: base/models.py:276
 msgid "restrictions other"
 msgstr "Beperkings ander"
 
-#: base/models.py:296
+#: base/models.py:281
 msgid "language"
 msgstr "taal"
 
-#: base/models.py:307
+#: base/models.py:292
 msgid "temporal extent start"
 msgstr "tydelike mate begin"
 
-#: base/models.py:309
+#: base/models.py:294
 msgid "temporal extent end"
 msgstr "tydelike mate einde"
 
-#: base/models.py:312
+#: base/models.py:297
 msgid "supplemental information"
 msgstr "aanvullende inligting"
 
-#: base/models.py:313
+#: base/models.py:298
 msgid "any other descriptive information about the dataset"
 msgstr "enige ander beskrywende inligting oor die dataset"
 
-#: base/models.py:316
+#: base/models.py:301
 msgid "distribution URL"
 msgstr "verspreiding URL"
 
-#: base/models.py:318
+#: base/models.py:303
 msgid "distribution description"
 msgstr "verspreiding beskrywing"
 
-#: base/models.py:322
+#: base/models.py:307
 msgid "data quality statement"
 msgstr "data gehalte verklaring"
 
-#: base/models.py:337
+#: base/models.py:322
 msgid "CSW typename"
 msgstr "CSW Type Name"
 
-#: base/models.py:339
+#: base/models.py:324
 msgid "CSW schema"
 msgstr "CSW skedule"
 
-#: base/models.py:344
+#: base/models.py:329
 msgid "CSW source"
 msgstr "CSW bron"
 
-#: base/models.py:345
+#: base/models.py:330
 msgid "CSW insert date"
 msgstr "CSW voeg datum"
 
-#: base/models.py:346
+#: base/models.py:331
 msgid "CSW type"
 msgstr "CSW tipe"
 
-#: base/models.py:347
+#: base/models.py:332
 msgid "CSW anytext"
 msgstr "CSW anytext"
 
-#: base/models.py:348
+#: base/models.py:333
 msgid "CSW WKT geometry"
 msgstr "CSW WKT meetkunde"
 
-#: base/models.py:361
+#: base/models.py:346
 msgid "Should this resource be advertised in home page?"
 msgstr "Indien hierdie hulpbron in tuisblad geadverteer word?"
 
-#: base/models.py:362
+#: base/models.py:347
 msgid "Should this resource be published and searchable?"
 msgstr "Indien hierdie bron gepubliseer word en deursoek?"
 
-#: base/models.py:682
+#: base/models.py:666
 msgid "For example \"kml\""
 msgstr "Byvoorbeeld \"kml\""
 
-#: base/models.py:684
+#: base/models.py:668
 msgid "For example \"View in Google Earth\""
 msgstr "Byvoorbeeld \"View in Google Earth\""
 
-#: base/models.py:685
+#: base/models.py:669
 msgid "For example \"text/xml\""
 msgstr "Byvoorbeeld \"text / xml\""
 
+#: base/management/__init__.py:14
+msgid "Request to download a resource"
+msgstr ""
+
+#: base/management/__init__.py:15
+msgid "A request for downloading a resource was sent"
+msgstr ""
+
 #: base/templates/base/_resourcebase_contact_snippet.html:3
-#: templates/500.html:184 templates/base.html:174
+#: templates/500.html:184 templates/base.html:175
 msgid "About"
 msgstr "Oor"
 
@@ -419,7 +442,7 @@ msgid "Date"
 msgstr "Datum"
 
 #: base/templates/base/resourcebase_info_panel.html:34
-#: layers/templates/layers/layer_detail.html:300
+#: layers/templates/layers/layer_detail.html:307
 msgid "Type"
 msgstr "Tipe"
 
@@ -449,7 +472,7 @@ msgid "Purpose"
 msgstr "Doel"
 
 #: base/templates/base/resourcebase_info_panel.html:112 templates/500.html:187
-#: templates/base.html:177
+#: templates/base.html:178
 msgid "Language"
 msgstr "Taal"
 
@@ -530,7 +553,7 @@ msgstr "Jy word nie toegelaat om hierdie dokument te sien"
 msgid "You are not allowed to view this document."
 msgstr "Jy word nie toegelaat om hierdie dokument te besigtig."
 
-#: documents/views.py:175
+#: documents/views.py:181
 msgid "You are not allowed to edit this document."
 msgstr "Jy word nie toegelaat om hierdie dokument te wysig."
 
@@ -654,76 +677,82 @@ msgstr "Gemiddelde gradering"
 #: documents/templates/documents/document_detail.html:91
 #: documents/templates/documents/document_detail.html:93
 #: documents/templates/documents/document_detail.html:95
-#: documents/templates/documents/document_detail.html:107
+#: documents/templates/documents/document_detail.html:111
 msgid "Download Document"
 msgstr "Laai dokument"
 
-#: documents/templates/documents/document_detail.html:100
-#: layers/templates/layers/layer_detail.html:156
-#: layers/templates/layers/layer_detail.html:164
+#: documents/templates/documents/document_detail.html:99
+#: layers/templates/layers/layer_detail.html:134
+#, fuzzy
+msgid "Request Download"
+msgstr "Aflaai"
+
+#: documents/templates/documents/document_detail.html:104
+#: layers/templates/layers/layer_detail.html:163
+#: layers/templates/layers/layer_detail.html:171
 msgid "Download Metadata"
 msgstr "Aflaai Metadata"
 
-#: documents/templates/documents/document_detail.html:117
-#: documents/templates/documents/document_detail.html:147
-#: layers/templates/layers/layer_detail.html:149
-#: layers/templates/layers/layer_detail.html:174
-#: layers/templates/layers/layer_detail.html:216
+#: documents/templates/documents/document_detail.html:121
+#: documents/templates/documents/document_detail.html:151
+#: layers/templates/layers/layer_detail.html:156
+#: layers/templates/layers/layer_detail.html:181
+#: layers/templates/layers/layer_detail.html:223
 #: maps/templates/maps/map_detail.html:95
 #: maps/templates/maps/map_detail.html:127
 #: templates/_bulk_permissions_form.html:19
 msgid "Close"
 msgstr "Close"
 
-#: documents/templates/documents/document_detail.html:124
-#: documents/templates/documents/document_detail.html:131
+#: documents/templates/documents/document_detail.html:128
+#: documents/templates/documents/document_detail.html:135
 msgid "Edit Document"
 msgstr "Wysig Document"
 
-#: documents/templates/documents/document_detail.html:136
-#: layers/templates/layers/layer_detail.html:196
+#: documents/templates/documents/document_detail.html:140
+#: layers/templates/layers/layer_detail.html:203
 msgid "Edit Metadata"
 msgstr "Wysig Metadata"
 
-#: documents/templates/documents/document_detail.html:139
+#: documents/templates/documents/document_detail.html:143
 msgid "Replace this Document"
 msgstr "Vervang hierdie dokument"
 
-#: documents/templates/documents/document_detail.html:142
+#: documents/templates/documents/document_detail.html:146
 msgid "Remove this Document"
 msgstr "Verwyder hierdie dokument"
 
-#: documents/templates/documents/document_detail.html:154
+#: documents/templates/documents/document_detail.html:158
 msgid "Resource using this document"
 msgstr "Hulpbron gebruik van hierdie dokument"
 
-#: documents/templates/documents/document_detail.html:156
+#: documents/templates/documents/document_detail.html:160
 msgid "List of resources using this document:"
 msgstr "Lys van hulpbronne die gebruik van hierdie dokument:"
 
-#: documents/templates/documents/document_detail.html:160
+#: documents/templates/documents/document_detail.html:164
 msgid "This document is related to a "
 msgstr "Hierdie dokument is wat verband hou met 'n"
 
-#: documents/templates/documents/document_detail.html:163
+#: documents/templates/documents/document_detail.html:167
 msgid "This document is not related to any maps or layers"
 msgstr "Hierdie dokument is nie verwant aan enige kaarte of lae"
 
-#: documents/templates/documents/document_detail.html:170
+#: documents/templates/documents/document_detail.html:174
 #: documents/templates/documents/document_upload.html:32
 #: groups/templates/groups/group_detail.html:65
-#: layers/templates/layers/layer_detail.html:289
+#: layers/templates/layers/layer_detail.html:296
 #: layers/templates/layers/layer_replace.html:94
 #: layers/templates/upload/layer_upload.html:93
 #: maps/templates/maps/map_detail.html:173 people/admin.py:55
 msgid "Permissions"
 msgstr "Permissions"
 
-#: documents/templates/documents/document_detail.html:171
+#: documents/templates/documents/document_detail.html:175
 msgid "Click the button below to change the permissions of this document."
 msgstr "Klik op die knoppie onder die regte van hierdie dokument te verander."
 
-#: documents/templates/documents/document_detail.html:172
+#: documents/templates/documents/document_detail.html:176
 msgid "Change Document Permissions"
 msgstr "Verander Document Permissions"
 
@@ -744,7 +773,9 @@ msgid ""
 "\n"
 "        Editing details for %(document_title)s\n"
 "      "
-msgstr "\nRedigering besonderhede vir %(document_title)s"
+msgstr ""
+"\n"
+"Redigering besonderhede vir %(document_title)s"
 
 #: documents/templates/documents/document_metadata.html:22
 #: layers/templates/layers/layer_metadata.html:23
@@ -771,7 +802,9 @@ msgid ""
 "\n"
 "          Are you sure you want to remove %(document_title)s?\n"
 "        "
-msgstr "\nIs jy seker jy wil %(document_title)s te verwyder?"
+msgstr ""
+"\n"
+"Is jy seker jy wil %(document_title)s te verwyder?"
 
 #: documents/templates/documents/document_remove.html:18
 #: groups/templates/groups/group_remove.html:19
@@ -844,30 +877,22 @@ msgstr "PDF"
 msgid "PNG"
 msgstr "PNG"
 
-#: geoserver/signals.py:288
+#: geoserver/signals.py:278
 msgid "Could not create a download link for layer."
 msgstr "Kon nie 'n aflaai skakel vir laag."
 
-#: geoserver/signals.py:319
+#: geoserver/signals.py:309
 msgid "KML"
 msgstr "KML"
 
-#: geoserver/signals.py:348
+#: geoserver/signals.py:338
 msgid "Tiles"
 msgstr "Teëls"
 
-#: geoserver/signals.py:403 layers/templates/layers/layer_detail.html:224
-#: services/views.py:1265
+#: geoserver/signals.py:385 layers/templates/layers/layer_detail.html:231
+#: services/views.py:1266
 msgid "Legend"
 msgstr "Legende"
-
-#: geoserver/signals.py:525 layers/utils.py:528
-msgid "Remote Thumbnail"
-msgstr "Afgeleë Thumbnail"
-
-#: geoserver/signals.py:560 layers/utils.py:563
-msgid "Thumbnail"
-msgstr "Miniatuur"
 
 #: geoserver/views.py:338
 msgid "You don't have permissions to change style for this layer"
@@ -903,9 +928,11 @@ msgstr "A-gradering is om 'n laag gegee"
 
 #: groups/forms.py:15
 msgid ""
-"a short version of the name consisting only of letters, numbers, underscores"
-" and hyphens."
-msgstr "'n kort weergawe van die naam wat slegs uit letters, getalle, onderstreping en koppeltekens."
+"a short version of the name consisting only of letters, numbers, underscores "
+"and hyphens."
+msgstr ""
+"'n kort weergawe van die naam wat slegs uit letters, getalle, onderstreping "
+"en koppeltekens."
 
 #: groups/forms.py:23
 msgid "A group already exists with that slug."
@@ -933,13 +960,20 @@ msgid ""
 "(invite-only):Any registered user can view the group.  Only invited users "
 "can join.<br>Private: Registered users cannot see any details about the "
 "group, including membership.  Only invited users can join."
-msgstr "Publiek: Enige geregistreerde gebruiker kan sien en sluit aan by 'n openbare groep. <br> Openbare (slegs nooi-) Enige geregistreerde gebruiker kan die groep sien. Slegs genooide gebruikers kan aansluit. <br> Privaat: Geregistreerde gebruikers kan sien nie enige besonderhede oor die groep, insluitend lidmaatskap. Slegs genooide gebruikers kan aansluit."
+msgstr ""
+"Publiek: Enige geregistreerde gebruiker kan sien en sluit aan by 'n openbare "
+"groep. <br> Openbare (slegs nooi-) Enige geregistreerde gebruiker kan die "
+"groep sien. Slegs genooide gebruikers kan aansluit. <br> Privaat: "
+"Geregistreerde gebruikers kan sien nie enige besonderhede oor die groep, "
+"insluitend lidmaatskap. Slegs genooide gebruikers kan aansluit."
 
 #: groups/models.py:27
 msgid ""
 "Email used to contact one or all group members, such as a mailing list, "
 "shared email, or exchange group."
-msgstr "E-pos gebruik om een ​​of al die groeplede, soos 'n e-lys, gedeel e-pos, of ruil groep te kontak."
+msgstr ""
+"E-pos gebruik om een ​​of al die groeplede, soos 'n e-lys, gedeel e-pos, of "
+"ruil groep te kontak."
 
 #: groups/models.py:36
 msgid "email"
@@ -1039,7 +1073,9 @@ msgid ""
 "\n"
 "            This group is <strong>%(access)s</strong>.\n"
 "          "
-msgstr "\nHierdie groep is <strong>%(access)s</strong>."
+msgstr ""
+"\n"
+"Hierdie groep is <strong>%(access)s</strong>."
 
 #: groups/templates/groups/group_detail.html:71
 msgid "Anyone may join this group."
@@ -1047,7 +1083,8 @@ msgstr "Enigeen kan hierdie groep aan te sluit."
 
 #: groups/templates/groups/group_detail.html:77
 msgid "Anyone may view this group but membership is by invitation only."
-msgstr "Enigeen kan hierdie groep sien, maar lidmaatskap is slegs op uitnodiging."
+msgstr ""
+"Enigeen kan hierdie groep sien, maar lidmaatskap is slegs op uitnodiging."
 
 #: groups/templates/groups/group_detail.html:79
 msgid "Membership is by invitation only."
@@ -1105,7 +1142,9 @@ msgid ""
 "\n"
 "          Are you sure you want to remove the group: %(group_title)s?\n"
 "        "
-msgstr "\nIs jy seker jy wil die groep te verwyder: %(group_title)s?"
+msgstr ""
+"\n"
+"Is jy seker jy wil die groep te verwyder: %(group_title)s?"
 
 #: groups/templates/groups/group_remove_maps_data.html:6
 msgid "Remove Maps/Data from Group"
@@ -1169,7 +1208,8 @@ msgstr "sigbaar?"
 
 #: layers/models.py:307
 msgid "specifies if the attribute should be displayed in identify results"
-msgstr "is bepaal as die kenmerk vertoon moet word in die resultate te identifiseer"
+msgstr ""
+"is bepaal as die kenmerk vertoon moet word in die resultate te identifiseer"
 
 #: layers/models.py:310
 msgid "display order"
@@ -1179,7 +1219,9 @@ msgstr "vertoon om"
 msgid ""
 "specifies the order in which attribute should be displayed in identify "
 "results"
-msgstr "bepaal die volgorde in wat kenmerk moet in resultate identifiseer vertoon word"
+msgstr ""
+"bepaal die volgorde in wat kenmerk moet in resultate identifiseer vertoon "
+"word"
 
 #: layers/models.py:316
 msgid "count"
@@ -1249,11 +1291,17 @@ msgstr "Die laaste wysiging"
 msgid "date when attribute statistics were last updated"
 msgstr "datum wanneer kenmerk statistieke was laas"
 
+#: layers/utils.py:574
+msgid "Thumbnail"
+msgstr "Miniatuur"
+
 #: layers/views.py:59
 msgid ""
 "There was an error while attempting to upload your data. Please try again, "
 "or contact and administrator if the problem continues."
-msgstr "Daar was 'n fout tydens 'n poging om jou data te laai. Probeer asseblief weer, of kontak en administrateur indien die probleem voortduur."
+msgstr ""
+"Daar was 'n fout tydens 'n poging om jou data te laai. Probeer asseblief "
+"weer, of kontak en administrateur indien die probleem voortduur."
 
 #: layers/views.py:62
 msgid "You are not permitted to delete this layer"
@@ -1290,8 +1338,8 @@ msgid "Create a map"
 msgstr "Skep 'n kaart"
 
 #: layers/templates/layers/_layer_list_item.html:48
-#: layers/templates/layers/layer_detail.html:130
-#: layers/templates/layers/layer_detail.html:139
+#: layers/templates/layers/layer_detail.html:131
+#: layers/templates/layers/layer_detail.html:144
 msgid "Download Layer"
 msgstr "Aflaai Layer"
 
@@ -1341,87 +1389,91 @@ msgstr "Standaardafwyking"
 msgid "Rate this layer"
 msgstr "Gradeer hierdie laag"
 
-#: layers/templates/layers/layer_detail.html:182
-#: layers/templates/layers/layer_detail.html:191
+#: layers/templates/layers/layer_detail.html:189
+#: layers/templates/layers/layer_detail.html:198
 msgid "Edit Layer"
 msgstr "Wysig Layer"
 
-#: layers/templates/layers/layer_detail.html:201
+#: layers/templates/layers/layer_detail.html:208
 #: layers/templates/layers/layer_style_manage.html:14
 msgid "Manage Styles"
 msgstr "Bestuur Styles"
 
-#: layers/templates/layers/layer_detail.html:203
+#: layers/templates/layers/layer_detail.html:210
 msgid "Edit Styles"
 msgstr "Wysig Styles"
 
-#: layers/templates/layers/layer_detail.html:208
+#: layers/templates/layers/layer_detail.html:215
 msgid "Replace this Layer"
 msgstr "Vervang hierdie laag"
 
-#: layers/templates/layers/layer_detail.html:211
+#: layers/templates/layers/layer_detail.html:218
 msgid "Remove this Layer"
 msgstr "Verwyder hierdie laag"
 
-#: layers/templates/layers/layer_detail.html:234
+#: layers/templates/layers/layer_detail.html:241
 msgid "Maps using this layer"
 msgstr "Kaarte met behulp van hierdie laag"
 
-#: layers/templates/layers/layer_detail.html:236
+#: layers/templates/layers/layer_detail.html:243
 msgid "List of maps using this layer:"
 msgstr "Lys van kaarte deur hierdie laag:"
 
-#: layers/templates/layers/layer_detail.html:242
+#: layers/templates/layers/layer_detail.html:249
 msgid "This layer is not currently used in any maps."
 msgstr "Hierdie laag is tans nie gebruik word in enige kaarte."
 
-#: layers/templates/layers/layer_detail.html:247
+#: layers/templates/layers/layer_detail.html:254
 msgid "Create a map using this layer"
 msgstr "Skep 'n kaart met behulp van hierdie laag"
 
-#: layers/templates/layers/layer_detail.html:248
+#: layers/templates/layers/layer_detail.html:255
 msgid "Click the button below to generate a new map based on this layer."
-msgstr "Klik op die knoppie hieronder om 'n nuwe kaart wat gebaseer is op hierdie laag te genereer."
+msgstr ""
+"Klik op die knoppie hieronder om 'n nuwe kaart wat gebaseer is op hierdie "
+"laag te genereer."
 
-#: layers/templates/layers/layer_detail.html:249
+#: layers/templates/layers/layer_detail.html:256
 msgid "Create a Map"
 msgstr "Skep 'n kaart"
 
-#: layers/templates/layers/layer_detail.html:254
+#: layers/templates/layers/layer_detail.html:261
 msgid "Documents related to this layer"
 msgstr "Dokumente wat verband hou met hierdie laag"
 
-#: layers/templates/layers/layer_detail.html:255
+#: layers/templates/layers/layer_detail.html:262
 msgid "List of documents related to this layer:"
 msgstr "Lys van dokumente wat verband hou met hierdie laag:"
 
-#: layers/templates/layers/layer_detail.html:266
+#: layers/templates/layers/layer_detail.html:273
 msgid "Styles"
 msgstr "Style"
 
-#: layers/templates/layers/layer_detail.html:267
+#: layers/templates/layers/layer_detail.html:274
 msgid ""
 "The following styles are associated with this layer. Choose a style to view "
 "it in the preview map."
-msgstr "Die volgende style is wat verband hou met hierdie laag. Kies 'n styl om dit te sien in die voorbeeld kaart."
+msgstr ""
+"Die volgende style is wat verband hou met hierdie laag. Kies 'n styl om dit "
+"te sien in die voorbeeld kaart."
 
-#: layers/templates/layers/layer_detail.html:280
+#: layers/templates/layers/layer_detail.html:287
 msgid "No styles associated with this layer"
 msgstr "Geen style wat verband hou met hierdie laag"
 
-#: layers/templates/layers/layer_detail.html:290
+#: layers/templates/layers/layer_detail.html:297
 msgid "Click the button below to change the permissions of this layer."
 msgstr "Klik op die knoppie onder die regte van hierdie laag te verander."
 
-#: layers/templates/layers/layer_detail.html:291
+#: layers/templates/layers/layer_detail.html:298
 msgid "Change Layer Permissions"
 msgstr "Verandering Layer Permissions"
 
-#: layers/templates/layers/layer_detail.html:298
+#: layers/templates/layers/layer_detail.html:305
 msgid "External service layer"
 msgstr "Eksterne diens laag"
 
-#: layers/templates/layers/layer_detail.html:299
+#: layers/templates/layers/layer_detail.html:306
 msgid "Source"
 msgstr "Bron"
 
@@ -1443,14 +1495,22 @@ msgid ""
 "\n"
 "        Editing details for %(layer_title)s\n"
 "      "
-msgstr "\nRedigering besonderhede vir %(layer_title)s"
+msgstr ""
+"\n"
+"Redigering besonderhede vir %(layer_title)s"
 
 #: layers/templates/layers/layer_metadata.html:17
 msgid ""
-"Note: this layer's orginal metadata was populated by importing a metadata XML file.\n"
-"        GeoNode's metadata import supports a subset of ISO, FGDC, and Dublin Core metadata elements.\n"
+"Note: this layer's orginal metadata was populated by importing a metadata "
+"XML file.\n"
+"        GeoNode's metadata import supports a subset of ISO, FGDC, and Dublin "
+"Core metadata elements.\n"
 "        Some of your original metadata may have been lost."
-msgstr "Let wel: hierdie laag se oorspronklike metadata is bevolk deur die invoer van 'n metadata XML-lêer. GeoNode se metadata invoer ondersteun 'n subset van die ISO, Fgdc en Dublin Core metadata elemente. Sommige van jou oorspronklike metadata verlore gewees het."
+msgstr ""
+"Let wel: hierdie laag se oorspronklike metadata is bevolk deur die invoer "
+"van 'n metadata XML-lêer. GeoNode se metadata invoer ondersteun 'n subset "
+"van die ISO, Fgdc en Dublin Core metadata elemente. Sommige van jou "
+"oorspronklike metadata verlore gewees het."
 
 #: layers/templates/layers/layer_metadata.html:72
 msgid "Attribute"
@@ -1475,7 +1535,9 @@ msgid ""
 "\n"
 "          Are you sure you want to remove %(layer_title)s?\n"
 "        "
-msgstr "\nIs jy seker jy wil %(layer_title)s te verwyder?"
+msgstr ""
+"\n"
+"Is jy seker jy wil %(layer_title)s te verwyder?"
 
 #: layers/templates/layers/layer_remove.html:25
 msgid "This action affects the following maps:"
@@ -1565,25 +1627,31 @@ msgstr "Kies die karakterstel of laat verstek"
 #, python-format
 msgid ""
 "\n"
-"      Manage Available Styles for <a href=\"/layers/%(layer_title)s\">%(layer_title)s</a>\n"
+"      Manage Available Styles for <a href=\"/layers/%(layer_title)s\">"
+"%(layer_title)s</a>\n"
 "    "
-msgstr "\nBestuur beskikbaar style vir <a href=\"/layers/%(layer_title)s\">%(layer_title)s</a>"
+msgstr ""
+"\n"
+"Bestuur beskikbaar style vir <a href=\"/layers/%(layer_title)s\">"
+"%(layer_title)s</a>"
 
-#: layers/templates/layers/layer_style_manage.html:26
+#: layers/templates/layers/layer_style_manage.html:23
 msgid "Layer Default Style"
 msgstr "Laag Default Style"
 
-#: layers/templates/layers/layer_style_manage.html:43
+#: layers/templates/layers/layer_style_manage.html:41
 msgid "Available styles"
 msgstr "Beskikbaar style"
 
-#: layers/templates/layers/layer_style_manage.html:44
+#: layers/templates/layers/layer_style_manage.html:42
 msgid ""
 "Click on an available style in the upper box to assign it to this layer. "
 "Selected styles appear in the lower box."
-msgstr "Klik op 'n beskikbare styl in die boonste kassie om dit te wys aan hierdie laag. Gekies style verskyn in die laer boks."
+msgstr ""
+"Klik op 'n beskikbare styl in die boonste kassie om dit te wys aan hierdie "
+"laag. Gekies style verskyn in die laer boks."
 
-#: layers/templates/layers/layer_style_manage.html:62
+#: layers/templates/layers/layer_style_manage.html:61
 msgid "Update Available Styles"
 msgstr "Werk Beskikbaar Styles"
 
@@ -1608,13 +1676,20 @@ msgstr "Koördineer verwysingstelsel"
 #: layers/templates/upload/layer_upload_crs.html:17
 msgid ""
 "\n"
-"        A coordinate reference system for this layer could not be determined.\n"
+"        A coordinate reference system for this layer could not be "
+"determined.\n"
 "        Locate or enter the appropriate ESPG code for this layer below.\n"
 "        One way to do this is do visit:\n"
 "        <a href=\"http://prj2epsg.org/search\" target=\"_\">prj2epsg</a>\n"
 "        and enter the following:\n"
 "    "
-msgstr "\nA koördineer verwysingstelsel vir hierdie laag kon nie vasgestel word nie. Vind of tik die toepaslike ESPG kode vir hierdie laag hieronder. Een manier om dit te doen, is om Besoek gerus: \n<a href=\"http://prj2epsg.org/search\" target=\"_\">prj2epsg</a> \nen tik die volgende:"
+msgstr ""
+"\n"
+"A koördineer verwysingstelsel vir hierdie laag kon nie vasgestel word nie. "
+"Vind of tik die toepaslike ESPG kode vir hierdie laag hieronder. Een manier "
+"om dit te doen, is om Besoek gerus: \n"
+"<a href=\"http://prj2epsg.org/search\" target=\"_\">prj2epsg</a> \n"
+"en tik die volgende:"
 
 #: layers/templates/upload/layer_upload_crs.html:32
 #: layers/templates/upload/layer_upload_csv.html:49
@@ -1628,7 +1703,10 @@ msgid ""
 "        There is a problem recognizing the projection of this data. Please\n"
 "        reproject this data to a more common projection.\n"
 "        "
-msgstr "\nDaar is 'n probleem te erken die projeksie van hierdie data. Repro Ject asseblief hierdie inligting aan 'n meer algemene projeksie."
+msgstr ""
+"\n"
+"Daar is 'n probleem te erken die projeksie van hierdie data. Repro Ject "
+"asseblief hierdie inligting aan 'n meer algemene projeksie."
 
 #: layers/templates/upload/layer_upload_csv.html:11
 msgid "Geospatial Data"
@@ -1638,14 +1716,19 @@ msgstr "Geospatial Data"
 msgid ""
 "Please indicate which attributes contain the latitude and longitude "
 "coordinates in the CSV data."
-msgstr "Dui asseblief aan watter eienskappe die breedtegraad bevat en breedtegraad in die CSV data."
+msgstr ""
+"Dui asseblief aan watter eienskappe die breedtegraad bevat en breedtegraad "
+"in die CSV data."
 
 #: layers/templates/upload/layer_upload_csv.html:14
 msgid ""
 "With this data, GeoNode was able to guess which attributes contain the\n"
 "latitude and longitude coordinates, but please confirm that the correct\n"
 "attributes are selected below."
-msgstr "Met hierdie inligting, GeoNode in staat was om te raai wat eienskappe bevat\n die lengte-en breedtegraad, maar bevestig asseblief dat die regte \neienskappe word hieronder gekies."
+msgstr ""
+"Met hierdie inligting, GeoNode in staat was om te raai wat eienskappe bevat\n"
+" die lengte-en breedtegraad, maar bevestig asseblief dat die regte \n"
+"eienskappe word hieronder gekies."
 
 #: layers/templates/upload/layer_upload_csv.html:24
 msgid "Latitude"
@@ -1662,10 +1745,16 @@ msgstr "Longitude"
 
 #: layers/templates/upload/layer_upload_csv.html:57
 msgid ""
-"We did not detect columns that could be used for the latitude and longitude.\n"
-"Please verify that you have two columns in your csv file that can be used for\n"
+"We did not detect columns that could be used for the latitude and "
+"longitude.\n"
+"Please verify that you have two columns in your csv file that can be used "
+"for\n"
 "the latitude and longitude."
-msgstr "Ons het nie die kolomme wat gebruik kan word vir die lengte-en breedtegraad spoor. \nMaak seker dat jy twee kolomme in die CSV wat gebruik kan word vir \ndie lengte-en breedtegraad."
+msgstr ""
+"Ons het nie die kolomme wat gebruik kan word vir die lengte-en breedtegraad "
+"spoor. \n"
+"Maak seker dat jy twee kolomme in die CSV wat gebruik kan word vir \n"
+"die lengte-en breedtegraad."
 
 #: layers/templates/upload/layer_upload_invalid.html:6
 #: layers/templates/upload/no_upload.html:6
@@ -1752,7 +1841,8 @@ msgstr "Deurlopende Intervalle"
 msgid ""
 "for data that is frequently updated, resolution describes the frequency of "
 "updates"
-msgstr "vir data wat gereeld opgedateer, resolusie beskryf die frekwensie van updates"
+msgstr ""
+"vir data wat gereeld opgedateer, resolusie beskryf die frekwensie van updates"
 
 #: layers/templates/upload/layer_upload_time.html:96
 msgid "Resolution of time attribute"
@@ -1769,10 +1859,18 @@ msgstr "In staat te stel Tyd"
 #: layers/templates/upload/layer_upload_time.html:109
 msgid ""
 "A feature can currently support one or two time attributes. If a single\n"
-"    attribute is used, the feature is considered relevant at that single point in time. If two\n"
-"    attributes are used, the second attribute represents the end of a valid period for the\n"
+"    attribute is used, the feature is considered relevant at that single "
+"point in time. If two\n"
+"    attributes are used, the second attribute represents the end of a valid "
+"period for the\n"
 "    feature."
-msgstr "'N funksie kan ondersteun tans een of twee keer eienskappe. As 'n enkele\n eienskap gebruik word, word die funksie beskou betrokke by daardie enkele punt in die tyd. Indien twee \neienskappe gebruik word, die tweede eienskap verteenwoordig die einde van 'n geldige tydperk vir \ndie funksie."
+msgstr ""
+"'N funksie kan ondersteun tans een of twee keer eienskappe. As 'n enkele\n"
+" eienskap gebruik word, word die funksie beskou betrokke by daardie enkele "
+"punt in die tyd. Indien twee \n"
+"eienskappe gebruik word, die tweede eienskap verteenwoordig die einde van 'n "
+"geldige tydperk vir \n"
+"die funksie."
 
 #: layers/templates/upload/layer_upload_time.html:113
 msgid "Selecting an Attribute"
@@ -1797,10 +1895,15 @@ msgstr "'N getal wat 'n jaar"
 #: layers/templates/upload/layer_upload_time.html:121
 msgid ""
 "\n"
-"    For text attributes, one can specify a custom format or use the 'best guess' approach.\n"
+"    For text attributes, one can specify a custom format or use the 'best "
+"guess' approach.\n"
 "    The most common formatting flags are:\n"
 "    "
-msgstr "\nVir teks eienskappe, kan 'n mens 'n persoonlike formaat spesifiseer of gebruik die 'beste raaiskoot \"benadering. \nDie mees algemene uitleg vlae is:"
+msgstr ""
+"\n"
+"Vir teks eienskappe, kan 'n mens 'n persoonlike formaat spesifiseer of "
+"gebruik die 'beste raaiskoot \"benadering. \n"
+"Die mees algemene uitleg vlae is:"
 
 #: layers/templates/upload/layer_upload_time.html:127
 msgid "year"
@@ -1829,25 +1932,31 @@ msgstr "tweede in minute"
 
 #: layers/templates/upload/layer_upload_time.html:136
 msgid "Note that single quotes represent a literal character."
-msgstr "Let daarop dat enkele aanhalings verteenwoordig 'n letterlike karakter."
+msgstr ""
+"Let daarop dat enkele aanhalings verteenwoordig 'n letterlike karakter."
 
 #: layers/templates/upload/layer_upload_time.html:137
 msgid ""
-"To remove ambiguity, repeat a code to represent the maximum number of digits"
-" - for example yyyy"
-msgstr "Dubbelsinnigheid te verwyder, herhaal 'n kode om die maksimum aantal van syfers te verteenwoordig - byvoorbeeld yyyy"
+"To remove ambiguity, repeat a code to represent the maximum number of digits "
+"- for example yyyy"
+msgstr ""
+"Dubbelsinnigheid te verwyder, herhaal 'n kode om die maksimum aantal van "
+"syfers te verteenwoordig - byvoorbeeld yyyy"
 
 #: layers/templates/upload/layer_upload_time.html:139
 msgid "The 'best guess' will handle date and optional time variants of"
-msgstr "Die 'beste raaiskoot \"sal die datum en opsionele tyd variante van hanteer"
+msgstr ""
+"Die 'beste raaiskoot \"sal die datum en opsionele tyd variante van hanteer"
 
 #: layers/templates/upload/layer_upload_time.html:140
 msgid "In terms of the formatting flags noted above, these are"
 msgstr "In terme van die uitleg vlae wat hierbo genoem, dit is"
 
 #: layers/templates/upload/no_upload.html:7
-msgid "Returning to the upload starting page in <span id=\"cnt\">5</span>seconds "
-msgstr "Terug te keer na die oplaai tuisblad in <span id=\"cnt\">5</span> sekondes"
+msgid ""
+"Returning to the upload starting page in <span id=\"cnt\">5</span>seconds "
+msgstr ""
+"Terug te keer na die oplaai tuisblad in <span id=\"cnt\">5</span> sekondes"
 
 #: layers/templates/upload/no_upload.html:8
 msgid " Or just go "
@@ -2105,22 +2214,33 @@ msgid ""
 "      Here you can download all the layers of this map that\n"
 "      are hosted on this GeoNode.\n"
 "    "
-msgstr "\nHier kan jy die aflaai van al die lae van die kaart wat aangebied \nword op hierdie GeoNode."
+msgstr ""
+"\n"
+"Hier kan jy die aflaai van al die lae van die kaart wat aangebied \n"
+"word op hierdie GeoNode."
 
 #: maps/templates/maps/map_download.html:22
 msgid ""
 "\n"
-"      <div class=\"alert alert-warning\">Could not find downloadable layers for this map. You can go back to  \n"
+"      <div class=\"alert alert-warning\">Could not find downloadable layers "
+"for this map. You can go back to  \n"
 "      "
-msgstr "\n<div class=\"alert alert-warning\">Kon dit nie vind afgelaai lae vir die kaart. Jy kan terug gaan na"
+msgstr ""
+"\n"
+"<div class=\"alert alert-warning\">Kon dit nie vind afgelaai lae vir die "
+"kaart. Jy kan terug gaan na"
 
 #: maps/templates/maps/map_download.html:29
 msgid ""
 "\n"
-"        Additionally, the map contains these layers which will not be downloaded\n"
+"        Additionally, the map contains these layers which will not be "
+"downloaded\n"
 "        due to security restrictions:\n"
 "      "
-msgstr "\nDaarbenewens het die kaart bevat hierdie lae wat nie afgelaai word nie \nas gevolg van sekuriteit beperkinge:"
+msgstr ""
+"\n"
+"Daarbenewens het die kaart bevat hierdie lae wat nie afgelaai word nie \n"
+"as gevolg van sekuriteit beperkinge:"
 
 #: maps/templates/maps/map_download.html:41
 msgid ""
@@ -2128,7 +2248,10 @@ msgid ""
 "        Finally, the map contains these layers which will not be downloaded\n"
 "        because they are not available directly from this GeoNode:\n"
 "      "
-msgstr "\nTen slotte, die kaart bevat hierdie lae wat nie afgelaai word nie, \nwant hulle is nie beskikbaar direk van hierdie GeoNode:"
+msgstr ""
+"\n"
+"Ten slotte, die kaart bevat hierdie lae wat nie afgelaai word nie, \n"
+"want hulle is nie beskikbaar direk van hierdie GeoNode:"
 
 #: maps/templates/maps/map_download.html:54
 msgid "Downloading"
@@ -2156,14 +2279,23 @@ msgid ""
 "\n"
 "        Editing details for %(map_title)s\n"
 "      "
-msgstr "\nRedigering besonderhede vir %(map_title)s"
+msgstr ""
+"\n"
+"Redigering besonderhede vir %(map_title)s"
 
 #: maps/templates/maps/map_metadata.html:17
 msgid ""
-"Note: this map's orginal metadata was populated by importing a metadata XML file.\n"
-"        GeoNode's metadata import supports a subset of ISO, FGDC, and Dublin Core metadata elements.\n"
+"Note: this map's orginal metadata was populated by importing a metadata XML "
+"file.\n"
+"        GeoNode's metadata import supports a subset of ISO, FGDC, and Dublin "
+"Core metadata elements.\n"
 "        Some of your original metadata may have been lost."
-msgstr "Let wel: die kaart se oorspronklike metadata is bevolk deur die invoer van 'n metadata XML-lêer. \nGeoNode se metadata invoer ondersteun 'n subset van die ISO, Fgdc en Dublin Core metadata elemente. \nSommige van jou oorspronklike metadata verlore gewees het."
+msgstr ""
+"Let wel: die kaart se oorspronklike metadata is bevolk deur die invoer van "
+"'n metadata XML-lêer. \n"
+"GeoNode se metadata invoer ondersteun 'n subset van die ISO, Fgdc en Dublin "
+"Core metadata elemente. \n"
+"Sommige van jou oorspronklike metadata verlore gewees het."
 
 #: maps/templates/maps/map_remove.html:6
 msgid "Deleting"
@@ -2175,7 +2307,9 @@ msgid ""
 "\n"
 "        Are you sure you want to remove %(map_title)s?\n"
 "    "
-msgstr "\nIs jy seker jy wil %(map_title)s te verwyder?"
+msgstr ""
+"\n"
+"Is jy seker jy wil %(map_title)s te verwyder?"
 
 #: maps/templates/maps/map_view.html:5
 msgid "GeoExplorer"
@@ -2204,9 +2338,10 @@ msgstr "party wat die hulpbron outeur"
 
 #: people/enumerations.py:40
 msgid ""
-"party who has processed the data in a manner such that the resource has been"
-" modified"
-msgstr "party wat verwerk het die data op 'n wyse soos wat die hulpbron is verander"
+"party who has processed the data in a manner such that the resource has been "
+"modified"
+msgstr ""
+"party wat verwerk het die data op 'n wyse soos wat die hulpbron is verander"
 
 #: people/enumerations.py:41
 msgid "party who published the resource"
@@ -2216,13 +2351,17 @@ msgstr "party wat die hulpbron gepubliseer"
 msgid ""
 "party that accepts accountability and responsibility for the data and "
 "ensures         appropriate care and maintenance of the resource"
-msgstr "party wat aanvaar aanspreeklikheid en verantwoordelikheid vir die data en verseker die nodige sorg en instandhouding van die hulpbron"
+msgstr ""
+"party wat aanvaar aanspreeklikheid en verantwoordelikheid vir die data en "
+"verseker die nodige sorg en instandhouding van die hulpbron"
 
 #: people/enumerations.py:44
 msgid ""
 "party who can be contacted for acquiring knowledge about or acquisition of "
 "the resource"
-msgstr "party wat gekontak kan word vir die verkryging van kennis oor of verkryging van die hulpbron"
+msgstr ""
+"party wat gekontak kan word vir die verkryging van kennis oor of verkryging "
+"van die hulpbron"
 
 #: people/enumerations.py:45
 msgid "party who distributes the resource"
@@ -2245,9 +2384,10 @@ msgid "party that owns the resource"
 msgstr "party wat die eienaar van die hulpbron"
 
 #: people/enumerations.py:50
-msgid ""
-"key party responsible for gathering information and conducting research"
-msgstr "sleutel party wat verantwoordelik is vir die insameling van inligting en die uitvoer van navorsing"
+msgid "key party responsible for gathering information and conducting research"
+msgstr ""
+"sleutel party wat verantwoordelik is vir die insameling van inligting en die "
+"uitvoer van navorsing"
 
 #: people/forms.py:64
 msgid "Email Address"
@@ -2293,7 +2433,9 @@ msgstr "Voice"
 msgid ""
 "telephone number by which individuals can speak to the responsible "
 "organization or individual"
-msgstr "telefoonnommer waardeur individue kan praat met die verantwoordelike organisasie of individu"
+msgstr ""
+"telefoonnommer waardeur individue kan praat met die verantwoordelike "
+"organisasie of individu"
 
 #: people/models.py:56
 msgid "Facsimile"
@@ -2303,7 +2445,9 @@ msgstr "Faks"
 msgid ""
 "telephone number of a facsimile machine for the responsible organization or "
 "individual"
-msgstr "telefoonnommer van 'n faks masjien vir die verantwoordelike organisasie of individu"
+msgstr ""
+"telefoonnommer van 'n faks masjien vir die verantwoordelike organisasie of "
+"individu"
 
 #: people/models.py:59
 msgid "Delivery Point"
@@ -2313,7 +2457,8 @@ msgstr "Lewering punt"
 msgid ""
 "physical and email address at which the organization or individual may be "
 "contacted"
-msgstr "fisiese en e-posadres wat die organisasie of individu kan gekontak word"
+msgstr ""
+"fisiese en e-posadres wat die organisasie of individu kan gekontak word"
 
 #: people/models.py:65
 msgid "City"
@@ -2347,7 +2492,9 @@ msgstr "land van die fisiese adres"
 msgid ""
 "commonly used word(s) or formalised word(s) or phrase(s) used to describe "
 "the subject             (space or comma-separated"
-msgstr "algemeen gebruik woord (e) of geformaliseer woord (e) of frase (s) gebruik word om die vak (ruimte of komma geskei te beskryf"
+msgstr ""
+"algemeen gebruik woord (e) of geformaliseer woord (e) of frase (s) gebruik "
+"word om die vak (ruimte of komma geskei te beskryf"
 
 #: people/views.py:84
 msgid "Your username for "
@@ -2391,9 +2538,11 @@ msgstr "Vergeet"
 
 #: people/templates/people/forgot_username_form.html:9
 msgid ""
-"Enter your email address and click the submit button.  Your username will be"
-" sent to you."
-msgstr "Tik jou epos adres en klik op die stuur knoppie. Jou gebruikersnaam sal aan jou gestuur word."
+"Enter your email address and click the submit button.  Your username will be "
+"sent to you."
+msgstr ""
+"Tik jou epos adres en klik op die stuur knoppie. Jou gebruikersnaam sal aan "
+"jou gestuur word."
 
 #: people/templates/people/profile_create.html:8
 #: people/templates/people/profile_create.html:14
@@ -2524,12 +2673,27 @@ msgstr "Laag Styles"
 #: services/views.py:63
 msgid ""
 "\n"
-"The Open Geoportal is a consortium comprised of contributions of several universities and organizations to help\n"
-"facilitate the discovery and acquisition of geospatial data across many organizations and platforms. Current partners\n"
-"include: Harvard, MIT, MassGIS, Princeton, Columbia, Stanford, UC Berkeley, UCLA, Yale, and UConn. Built on open source\n"
-"technology, The Open Geoportal provides organizations the opportunity to share thousands of geospatial data layers,\n"
-"maps, metadata, and development resources through a single common interface.\n"
-msgstr "\nDie Open Geoportal is 'n konsortium bestaan ​​uit bydraes van verskeie universiteite en organisasies te help \nfasiliteer die ontdekking en verkryging van geospatiale data oor baie organisasies en platforms. Huidige vennote \nsluit in: Harvard, MIT, MassGIS, Princeton, Columbia, Stanford, UC Berkeley, UCLA, Yale, en UConn. Gebou op open source \ntegnologie, The Open Geoportal bied organisasies die geleentheid duisende geospatiale data lae, kaarte, metadata, en ontwikkeling hulpbronne te deel deur middel van 'n gemeenskaplike koppelvlak.\n"
+"The Open Geoportal is a consortium comprised of contributions of several "
+"universities and organizations to help\n"
+"facilitate the discovery and acquisition of geospatial data across many "
+"organizations and platforms. Current partners\n"
+"include: Harvard, MIT, MassGIS, Princeton, Columbia, Stanford, UC Berkeley, "
+"UCLA, Yale, and UConn. Built on open source\n"
+"technology, The Open Geoportal provides organizations the opportunity to "
+"share thousands of geospatial data layers,\n"
+"maps, metadata, and development resources through a single common "
+"interface.\n"
+msgstr ""
+"\n"
+"Die Open Geoportal is 'n konsortium bestaan ​​uit bydraes van verskeie "
+"universiteite en organisasies te help \n"
+"fasiliteer die ontdekking en verkryging van geospatiale data oor baie "
+"organisasies en platforms. Huidige vennote \n"
+"sluit in: Harvard, MIT, MassGIS, Princeton, Columbia, Stanford, UC Berkeley, "
+"UCLA, Yale, en UConn. Gebou op open source \n"
+"tegnologie, The Open Geoportal bied organisasies die geleentheid duisende "
+"geospatiale data lae, kaarte, metadata, en ontwikkeling hulpbronne te deel "
+"deur middel van 'n gemeenskaplike koppelvlak.\n"
 
 #: services/views.py:273
 msgid "This is an existing service"
@@ -2548,9 +2712,11 @@ msgstr "Kon nie enige lae in 'n aanpasbare projeksie vind."
 msgid ""
 "Could not find any layers in a compatible projection:                 The "
 "spatial id was: %(srs)s and the url %(url)s"
-msgstr "Kon nie enige lae in 'n aanpasbare projeksie vind: Die ruimtelike id was: %(srs)s en die url %(url)s"
+msgstr ""
+"Kon nie enige lae in 'n aanpasbare projeksie vind: Die ruimtelike id was: "
+"%(srs)s en die url %(url)s"
 
-#: services/views.py:1207
+#: services/views.py:1208
 msgid "You are not permitted to remove this service."
 msgstr "Jy word nie toegelaat om hierdie diens te verwyder nie."
 
@@ -2682,7 +2848,9 @@ msgid ""
 "\n"
 "          You are not allowed to perform this operation.  \n"
 "      "
-msgstr "\nJy word nie toegelaat om hierdie aksie uit te voer."
+msgstr ""
+"\n"
+"Jy word nie toegelaat om hierdie aksie uit te voer."
 
 #: templates/401.html:25
 msgid "Please verify that you are logged in as the correct user."
@@ -2699,9 +2867,13 @@ msgstr "Bladsy nie gevind"
 #: templates/404.html:6
 msgid ""
 "\n"
-"      The page you requested does not exist.  Perhaps you are using an outdated bookmark?\n"
+"      The page you requested does not exist.  Perhaps you are using an "
+"outdated bookmark?\n"
 "  "
-msgstr "\nDie bladsy wat jy aangevra het bestaan ​​nie. Miskien het jy gebruik 'n verouderde boekmerk?"
+msgstr ""
+"\n"
+"Die bladsy wat jy aangevra het bestaan ​​nie. Miskien het jy gebruik 'n "
+"verouderde boekmerk?"
 
 #: templates/500.html:48 templates/base.html:56
 msgid "People"
@@ -2784,24 +2956,33 @@ msgstr "Daar was 'n probleem met die laai hierdie bladsy"
 #: templates/500.html:161
 msgid ""
 "\n"
-"          Please contact your GeoNode administrator (he may have received an email automatically if he configured it properly).\n"
-"          If you are the site administrator, enable debug mode to see the actual error and fix it or file an issue in <a href=\"http://github.com/GeoNode/geonode/issues\">GeoNode's issue tracker</a>\n"
+"          Please contact your GeoNode administrator (he may have received an "
+"email automatically if he configured it properly).\n"
+"          If you are the site administrator, enable debug mode to see the "
+"actual error and fix it or file an issue in <a href=\"http://github.com/"
+"GeoNode/geonode/issues\">GeoNode's issue tracker</a>\n"
 "          "
-msgstr "\nKontak gerus jou GeoNode administrateur (hy kan 'n e-pos ontvang het nie outomaties as hy dit behoorlik ingestel). \nAs jy die administrateur, in staat stel om debug modus die werklike fout om te sien en dit reg te stel of 'n lêer 'n probleem in <a href=\"http://github.com/GeoNode/geonode/issues\">GeoNode se issue tracker</a>"
+msgstr ""
+"\n"
+"Kontak gerus jou GeoNode administrateur (hy kan 'n e-pos ontvang het nie "
+"outomaties as hy dit behoorlik ingestel). \n"
+"As jy die administrateur, in staat stel om debug modus die werklike fout om "
+"te sien en dit reg te stel of 'n lêer 'n probleem in <a href=\"http://github."
+"com/GeoNode/geonode/issues\">GeoNode se issue tracker</a>"
 
-#: templates/500.html:182 templates/base.html:172
+#: templates/500.html:182 templates/base.html:173
 msgid "Powered by"
 msgstr "Aangedryf deur"
 
-#: templates/500.html:182 templates/base.html:172
+#: templates/500.html:182 templates/base.html:173
 msgid "GeoNode"
 msgstr "GeoNode"
 
-#: templates/500.html:182 templates/base.html:172
+#: templates/500.html:182 templates/base.html:173
 msgid "version"
 msgstr "weergawe"
 
-#: templates/500.html:183 templates/base.html:173
+#: templates/500.html:183 templates/base.html:174
 msgid "Developers"
 msgstr "Ontwikkelaars"
 
@@ -2876,9 +3057,10 @@ msgstr "Wie kan style vir hierdie laag wysig?"
 
 #: templates/_permissions.html:152
 msgid ""
-"Who can manage it? (update, delete, change permissions, publish/unpublish "
-"it)"
-msgstr "Wie kan dit bestuur? (Update, verwyder, verandering regte, publiseer / ongedaan dit)"
+"Who can manage it? (update, delete, change permissions, publish/unpublish it)"
+msgstr ""
+"Wie kan dit bestuur? (Update, verwyder, verandering regte, publiseer / "
+"ongedaan dit)"
 
 #: templates/_permissions_form.html:9
 msgid "Set permissions for this resource"
@@ -2915,42 +3097,87 @@ msgstr "Nuttige inligting vir ontwikkelaars wat belangstel in GeoNode."
 #: templates/developer.html:12
 msgid ""
 "\n"
-"  <p><a href=\"http://geonode.org/\">GeoNode</a> is an open service built on open source software. We encourage you to build new applications using the components and resources it provides. This page is a starting point for developers interesting in taking full advantage of GeoNode. It also includes links to the project's source code so anyone can build and customize their own GeoNode. </p>\n"
+"  <p><a href=\"http://geonode.org/\">GeoNode</a> is an open service built on "
+"open source software. We encourage you to build new applications using the "
+"components and resources it provides. This page is a starting point for "
+"developers interesting in taking full advantage of GeoNode. It also includes "
+"links to the project's source code so anyone can build and customize their "
+"own GeoNode. </p>\n"
 "\n"
 "  <h4>GeoNode Software</h4>\n"
 "\n"
-"  <p>All the code that runs GeoNode is open source. The code is available at <a href=\"http://github.com/GeoNode/geonode\">http://github.com/GeoNode/geonode/</a>. The issue tracker for the project is at <a href=\"http://github.com/GeoNode/geonode/issues\">http://github.com/GeoNode/geonode/issues</a>.</p>\n"
+"  <p>All the code that runs GeoNode is open source. The code is available at "
+"<a href=\"http://github.com/GeoNode/geonode\">http://github.com/GeoNode/"
+"geonode/</a>. The issue tracker for the project is at <a href=\"http://"
+"github.com/GeoNode/geonode/issues\">http://github.com/GeoNode/geonode/"
+"issues</a>.</p>\n"
 "\n"
-"  <p>GeoNode is built using several open source projects, each with its own community. If you are interested in contributing new features to the GeoNode, we encourage you to do so by contributing to one of the projects on which it is built:</p>\n"
+"  <p>GeoNode is built using several open source projects, each with its own "
+"community. If you are interested in contributing new features to the "
+"GeoNode, we encourage you to do so by contributing to one of the projects on "
+"which it is built:</p>\n"
 "  <ul>\n"
-"    <li><a href=\"http://geoext.org\">GeoExt</a> - The JavaScript toolkit for rich web mapping applications</li>\n"
-"    <li><a href=\"http://geoserver.org\">GeoServer</a> - Standards based server for geospatial information</li>\n"
-"    <li><a href=\"http://geowebcache.org\">GeoWebCache</a> - Cache engine for WMS Tiles</li><li><a href=\"http://openlayers.org\">OpenLayers</a> - Pure JavaScript library powering the maps of GeoExt</li>\n"
-"    <li><a href=\"http://pycsw.org\">pycsw</a> - CSW metadata catalogue server</li>\n"
+"    <li><a href=\"http://geoext.org\">GeoExt</a> - The JavaScript toolkit "
+"for rich web mapping applications</li>\n"
+"    <li><a href=\"http://geoserver.org\">GeoServer</a> - Standards based "
+"server for geospatial information</li>\n"
+"    <li><a href=\"http://geowebcache.org\">GeoWebCache</a> - Cache engine "
+"for WMS Tiles</li><li><a href=\"http://openlayers.org\">OpenLayers</a> - "
+"Pure JavaScript library powering the maps of GeoExt</li>\n"
+"    <li><a href=\"http://pycsw.org\">pycsw</a> - CSW metadata catalogue "
+"server</li>\n"
 "  </ul>\n"
 "\n"
 "  <h4>What are OGC Services?</h4>\n"
-"  <p>The data in this application is served using open standards endorsed by the <a href=\"http://opengeospatial.org/\">Open Geospatial Consortium</a>; in particular, WMS (Web Map Service) is used for accessing maps, WFS (Web Feature Service) is used for accessing vector data, and WCS (Web Coverage Service) is used for accessing raster data.  WMC (Web Map Context Documents) is used for sharing maps. You can use these services in your own applications using libraries such as OpenLayers, GeoTools, and OGR (all of which are open-source software and available at zero cost).</p>\n"
+"  <p>The data in this application is served using open standards endorsed by "
+"the <a href=\"http://opengeospatial.org/\">Open Geospatial Consortium</a>; "
+"in particular, WMS (Web Map Service) is used for accessing maps, WFS (Web "
+"Feature Service) is used for accessing vector data, and WCS (Web Coverage "
+"Service) is used for accessing raster data.  WMC (Web Map Context Documents) "
+"is used for sharing maps. You can use these services in your own "
+"applications using libraries such as OpenLayers, GeoTools, and OGR (all of "
+"which are open-source software and available at zero cost).</p>\n"
 "\n"
 "  <h4>What is GeoWebCache?</h4>\n"
-"  <p>GeoWebCache provides mapping tiles that are compatible with a number of mapping engines, including Google Maps, Bing Maps and OpenLayers. All the data hosted by GeoNode is also available through GeoWebCache. GeoWebCache improves on WMS by caching data and providing more responsive maps.</p>\n"
+"  <p>GeoWebCache provides mapping tiles that are compatible with a number of "
+"mapping engines, including Google Maps, Bing Maps and OpenLayers. All the "
+"data hosted by GeoNode is also available through GeoWebCache. GeoWebCache "
+"improves on WMS by caching data and providing more responsive maps.</p>\n"
 "\n"
 "  <h4>OpenLayers Example Code</h4>\n"
 "\n"
-"  <p>To include a GeoNode map layer in an OpenLayers map, first find the name for that layer. This is found in the layer's <code>name</code> field (not <code>title</code>) of the layer list. For this example, we will use the Nicaraguan political boundaries background layer, whose name is <code>risk:nicaragua_admin</code>. Then, create an instance of OpenLayers.Layer.WMS:</p>\n"
-"  <p><code>var geonodeLayer = new OpenLayers.Layer.WMS(\"GeoNode Risk Data\", \"http://demo.geonode.org/geoserver/wms\",{ layers: \"risk:nicaragua_admin\" });</code></p>\n"
+"  <p>To include a GeoNode map layer in an OpenLayers map, first find the "
+"name for that layer. This is found in the layer's <code>name</code> field "
+"(not <code>title</code>) of the layer list. For this example, we will use "
+"the Nicaraguan political boundaries background layer, whose name is "
+"<code>risk:nicaragua_admin</code>. Then, create an instance of OpenLayers."
+"Layer.WMS:</p>\n"
+"  <p><code>var geonodeLayer = new OpenLayers.Layer.WMS(\"GeoNode Risk Data"
+"\", \"http://demo.geonode.org/geoserver/wms\",{ layers: \"risk:"
+"nicaragua_admin\" });</code></p>\n"
 "\n"
 "  <h4>Google Maps Example Code</h4>\n"
-"  <p>To include a GeoNode map layer in a Google Map, include the layer namein the URL template.</p>\n"
-"  <p><code>var tilelayer =  new GTileLayer(null, null, null, {tileUrlTemplate: 'http://demo.geonode.org/geoserver/gwc/service/gmaps?layers=risk:nicaragua_admin&#38;zoom={Z}&#38;x={X}&#38;y={Y}', isPng:true, opacity:0.5 } );</code></p>\n"
+"  <p>To include a GeoNode map layer in a Google Map, include the layer "
+"namein the URL template.</p>\n"
+"  <p><code>var tilelayer =  new GTileLayer(null, null, null, "
+"{tileUrlTemplate: 'http://demo.geonode.org/geoserver/gwc/service/gmaps?"
+"layers=risk:nicaragua_admin&#38;zoom={Z}&#38;x={X}&#38;y={Y}', isPng:true, "
+"opacity:0.5 } );</code></p>\n"
 "\n"
 "  <h4>Shapefile/GeoJSON/GML Output</h4>\n"
-"  <p>To get data from the GeoNode web services use the WFS protocol. For example, to get the full Nicaraguan admin boundaries use:</p>\n"
-"  <p><code>http://demo.geonode.org/geoserver/wfs?request=GetFeature&#38;typeName=risk:nicaragua_admin&#38;outputformat=SHAPE-ZIP</code></p>\n"
-"  <p>Changing output format to <code>json</code>, <code>GML2</code>, <code>GML3</code>, or <code>csv</code> will get data in those formats. The WFS protocol also can handle more precise queries, specifying a bounding box or various spatial and non-spatial filters based on the attributes of the data.</p>\n"
+"  <p>To get data from the GeoNode web services use the WFS protocol. For "
+"example, to get the full Nicaraguan admin boundaries use:</p>\n"
+"  <p><code>http://demo.geonode.org/geoserver/wfs?request=GetFeature&#38;"
+"typeName=risk:nicaragua_admin&#38;outputformat=SHAPE-ZIP</code></p>\n"
+"  <p>Changing output format to <code>json</code>, <code>GML2</code>, "
+"<code>GML3</code>, or <code>csv</code> will get data in those formats. The "
+"WFS protocol also can handle more precise queries, specifying a bounding box "
+"or various spatial and non-spatial filters based on the attributes of the "
+"data.</p>\n"
 "\n"
 "  <h4>GeoTools Example Code</h4>\n"
-"  <p>Create a DataStore and extract a FeatureType from it, then run a Query. It is all documented on the wiki at <code>http://geotools.org/</code>.</p>\n"
+"  <p>Create a DataStore and extract a FeatureType from it, then run a Query. "
+"It is all documented on the wiki at <code>http://geotools.org/</code>.</p>\n"
 msgstr ""
 
 #: templates/developer.html:53
@@ -2991,49 +3218,85 @@ msgstr "GeoNode Hulp"
 
 #: templates/help.html:9
 msgid ""
-"This page provides helpful information about how to use the GeoNode. You can"
-" use the sidebar links to navigate to what you want to know."
-msgstr "Hierdie bladsy bied nuttige inligting oor hoe die GeoNode te gebruik. Jy kan die sidebar skakels gebruik om na wat jy wil weet."
+"This page provides helpful information about how to use the GeoNode. You can "
+"use the sidebar links to navigate to what you want to know."
+msgstr ""
+"Hierdie bladsy bied nuttige inligting oor hoe die GeoNode te gebruik. Jy kan "
+"die sidebar skakels gebruik om na wat jy wil weet."
 
 #: templates/help.html:12
 msgid ""
 "\n"
-"  <p>The GeoNode provides access to data sets and a map editing application allows users to browse existing maps and contribute their own.</p>\n"
+"  <p>The GeoNode provides access to data sets and a map editing application "
+"allows users to browse existing maps and contribute their own.</p>\n"
 "\n"
 "  <h4 id=\"browsing-data\">Browsing Layers</h4>\n"
-"  <p>The <a href=\"/layers\">Layers</a> tab allows you to browse data uploaded to this GeoNode.</p>\n"
-"  <p>All data can be downloaded in a variety of formats, for use in other applications.</p>\n"
+"  <p>The <a href=\"/layers\">Layers</a> tab allows you to browse data "
+"uploaded to this GeoNode.</p>\n"
+"  <p>All data can be downloaded in a variety of formats, for use in other "
+"applications.</p>\n"
 "\n"
 "  <h4 id=\"developer-access\">Developer Access</h4>\n"
-"  <p>The <a href=\"/developer\"> Developer</a> page is the place for developers to get started building applications against the GeoNode. It includes instructions on using the web services, links to the source code of the GeoNode, and information about the open source projects used to create it.</p>\n"
+"  <p>The <a href=\"/developer\"> Developer</a> page is the place for "
+"developers to get started building applications against the GeoNode. It "
+"includes instructions on using the web services, links to the source code of "
+"the GeoNode, and information about the open source projects used to create "
+"it.</p>\n"
 "\n"
 "  <h4 id=\"browsing-maps\">Browsing Maps</h4>\n"
-"  <p>The GeoNode allows users to create and share maps with one another.</p>\n"
-"  <p>The <a href=\"/maps\">Maps</a> tab is a gateway to map exploration on GeoNode.  From here you can <strong>search for a map</strong> or <strong>create a map</strong>, which will open the <a href=\"/maps/new\">Map Composer</a>.</p>\n"
+"  <p>The GeoNode allows users to create and share maps with one another.</"
+"p>\n"
+"  <p>The <a href=\"/maps\">Maps</a> tab is a gateway to map exploration on "
+"GeoNode.  From here you can <strong>search for a map</strong> or "
+"<strong>create a map</strong>, which will open the <a href=\"/maps/new\">Map "
+"Composer</a>.</p>\n"
 "  <h5>Google Earth Mode</h5>\n"
-"  <p>Any map viewed in the interactive map editor can be seen in 3D mode with the Google Earth plugin. To switch to 3D mode select the Google Earth globe logo, the rightmost button on top toolbar. If you do not have the Google Earth plugin installed you will be prompted to install it.</p>\n"
+"  <p>Any map viewed in the interactive map editor can be seen in 3D mode "
+"with the Google Earth plugin. To switch to 3D mode select the Google Earth "
+"globe logo, the rightmost button on top toolbar. If you do not have the "
+"Google Earth plugin installed you will be prompted to install it.</p>\n"
 "\n"
 "  <h4 id=\"creating-a-map\">Creating a Map</h4>\n"
-"  <p>To create a new map go to the <a href=\"/maps\">Contributed Maps</a> tab and click the <a href=\"/maps/new\">create your own map</a> link.</p>\n"
-"  <p>This will take you to the <a href=\"/maps/new\">Map Composer</a> with a base layer loaded.</p>\n"
-"  <p>To add data layers from the GeoNode click on the green plus button located below the layers tab on the left hand side of the screen. This will open a dialog listing all the layers available on the GeoNode.</p>\n"
-"  <p>To add layers to your map select them and hit the <strong>Add Layers</strong> button. When finished you may hit <strong>Done</strong> to close the dialog and go back to the map.</p>\n"
+"  <p>To create a new map go to the <a href=\"/maps\">Contributed Maps</a> "
+"tab and click the <a href=\"/maps/new\">create your own map</a> link.</p>\n"
+"  <p>This will take you to the <a href=\"/maps/new\">Map Composer</a> with a "
+"base layer loaded.</p>\n"
+"  <p>To add data layers from the GeoNode click on the green plus button "
+"located below the layers tab on the left hand side of the screen. This will "
+"open a dialog listing all the layers available on the GeoNode.</p>\n"
+"  <p>To add layers to your map select them and hit the <strong>Add Layers</"
+"strong> button. When finished you may hit <strong>Done</strong> to close the "
+"dialog and go back to the map.</p>\n"
 "\n"
 "  <h5>Reordering and Removing Layers</h5>\n"
-"  <p>Change the display order of the layers listed in the data tab by simply dragging and dropping their names. The order in the map will be updated to reflect that. To turn a layer's visibility off simply uncheck it, and to remove it entirely select it and hit the red minus button.</p>\n"
+"  <p>Change the display order of the layers listed in the data tab by simply "
+"dragging and dropping their names. The order in the map will be updated to "
+"reflect that. To turn a layer's visibility off simply uncheck it, and to "
+"remove it entirely select it and hit the red minus button.</p>\n"
 "\n"
 "  <h5>Saving your map</h5>\n"
-"  <p>Once a suitable set of layers and zoom level has been found it's time to save it so others can see it.  Click the Save button--the left most icon on the top toolbar, an image of a map with a disk--on the top menu and fill out the title and abstract of the map.</p>\n"
+"  <p>Once a suitable set of layers and zoom level has been found it's time "
+"to save it so others can see it.  Click the Save button--the left most icon "
+"on the top toolbar, an image of a map with a disk--on the top menu and fill "
+"out the title and abstract of the map.</p>\n"
 "\n"
 "  <h4 id=\"exporting-a-map\">Exporting a Map</h4>\n"
-"  <p>Any map from the GeoNode can be embedded for use in another site or blog. To export a map:</p>\n"
+"  <p>Any map from the GeoNode can be embedded for use in another site or "
+"blog. To export a map:</p>\n"
 "  <ol>\n"
-"    <li>Select the from the list of maps on the community or map page and then hit the 'export map' button.</li> \n"
-"    <li>Choose your desired height and width for the widget in the wizard.</li> \n"
-"    <li>Copy the HTML snippet provided in the wizard to any HTML page or iFrame-supporting blog post.</li>\n"
+"    <li>Select the from the list of maps on the community or map page and "
+"then hit the 'export map' button.</li> \n"
+"    <li>Choose your desired height and width for the widget in the wizard.</"
+"li> \n"
+"    <li>Copy the HTML snippet provided in the wizard to any HTML page or "
+"iFrame-supporting blog post.</li>\n"
 "  </ol>\n"
-"  <p>This will put an interactive widget showing you map in your web page or blog post.</p>\n"
-"  <p>Note that the <a href=\"/maps/new\">Map Composer</a> also has a button to export the map. Just be sure to save the map before exporting if there are changes that you want others to see. It exports the last saved version, not the last viewed version.</p>\n"
+"  <p>This will put an interactive widget showing you map in your web page or "
+"blog post.</p>\n"
+"  <p>Note that the <a href=\"/maps/new\">Map Composer</a> also has a button "
+"to export the map. Just be sure to save the map before exporting if there "
+"are changes that you want others to see. It exports the last saved version, "
+"not the last viewed version.</p>\n"
 "\n"
 "  <h4 id=\"remixing-a-map\">Remixing a Map</h4>\n"
 "  <p>Any map available can serve as a starting point for a new map.</p>\n"
@@ -3041,10 +3304,12 @@ msgid ""
 "    <li>Open the map in the Map Composer.</li>\n"
 "    <li>Add and remove layers as you like.</li>\n"
 "    <li>Pan and zoom to highlight the area of interest.</li>\n"
-"    <li><strong>IMPORTANT:</strong> Update the title, abstract, contact info and tags to reflect the new map.</li>\n"
+"    <li><strong>IMPORTANT:</strong> Update the title, abstract, contact info "
+"and tags to reflect the new map.</li>\n"
 "    <li>Save the map.</li>\n"
 "  </ol>\n"
-"  <p>You will be able to see your new map when you search for it from the <a href=\"/maps\">Maps</a> tab.</p> \n"
+"  <p>You will be able to see your new map when you search for it from the <a "
+"href=\"/maps\">Maps</a> tab.</p> \n"
 "  "
 msgstr ""
 
@@ -3087,13 +3352,16 @@ msgstr "Welkom"
 #: templates/index.html:16
 msgid ""
 "GeoNode is an open source platform for sharing geospatial data and maps."
-msgstr "GeoNode is 'n oop bron platform vir die deel van geospatiale data en kaarte."
+msgstr ""
+"GeoNode is 'n oop bron platform vir die deel van geospatiale data en kaarte."
 
 #: templates/index.html:17
 msgid ""
-"If you have any questions about the software or service, join our <a "
-"href=\"https://groups.google.com/d/forum/geonode-users\">mailing list</a>."
-msgstr "Indien u enige vrae oor die sagteware of diens, sluit aan by ons <a href=\"https://groups.google.com/d/forum/geonode-users\">poslys</a> ."
+"If you have any questions about the software or service, join our <a href="
+"\"https://groups.google.com/d/forum/geonode-users\">mailing list</a>."
+msgstr ""
+"Indien u enige vrae oor die sagteware of diens, sluit aan by ons <a href="
+"\"https://groups.google.com/d/forum/geonode-users\">poslys</a> ."
 
 #: templates/index.html:18
 msgid "Need help?"
@@ -3115,7 +3383,10 @@ msgstr "Laag"
 msgid ""
 "Click to search for geospatial data published by other users, organizations "
 "and public sources. Download data in standard formats."
-msgstr "Klik om te soek vir geospatiale data wat gepubliseer is deur ander gebruikers, organisasies en openbare bronne. Aflaai data in die standaard formaat."
+msgstr ""
+"Klik om te soek vir geospatiale data wat gepubliseer is deur ander "
+"gebruikers, organisasies en openbare bronne. Aflaai data in die standaard "
+"formaat."
 
 #: templates/index.html:37
 msgid "Map"
@@ -3125,7 +3396,9 @@ msgstr "Kaart"
 msgid ""
 "Data is available for browsing, aggregating and styling to generate maps "
 "which can be shared publicly or restricted to specific users only."
-msgstr "Data is beskikbaar vir blaai, saamgevoeg en stilering kaarte wat publiek gedeel word of beperk tot spesifieke gebruikers op te wek."
+msgstr ""
+"Data is beskikbaar vir blaai, saamgevoeg en stilering kaarte wat publiek "
+"gedeel word of beperk tot spesifieke gebruikers op te wek."
 
 #: templates/index.html:39
 msgid "Create maps"
@@ -3139,7 +3412,9 @@ msgstr "Gebruiker"
 msgid ""
 "GeoNode allows registered users to easily upload geospatial data in several "
 "formats including shapefile and GeoTiff."
-msgstr "GeoNode laat geregistreerde gebruikers toe om maklik te laai geospatiale data in verskeie formate, insluitend shape file en Geotiff."
+msgstr ""
+"GeoNode laat geregistreerde gebruikers toe om maklik te laai geospatiale "
+"data in verskeie formate, insluitend shape file en Geotiff."
 
 #: templates/index.html:45
 msgid "Share data"
@@ -3174,7 +3449,9 @@ msgstr "Wagwoord herstel"
 msgid ""
 "Forgotten your password? Enter your email address below, and we'll send you "
 "an email allowing you to reset it."
-msgstr "Jou wagwoord vergeet? Tik jou epos adres hieronder en ons sal aan jou stuur 'n e-pos sodat jy om dit te herstel."
+msgstr ""
+"Jou wagwoord vergeet? Tik jou epos adres hieronder en ons sal aan jou stuur "
+"'n e-pos sodat jy om dit te herstel."
 
 #: templates/account/password_reset.html:20
 msgid "Reset my password"
@@ -3183,9 +3460,12 @@ msgstr "Weer my wagwoord"
 #: templates/account/password_reset.html:25
 #, python-format
 msgid ""
-"If you have any trouble resetting your password, contact us at <a "
-"href=\"mailto:%(THEME_ACCOUNT_CONTACT_EMAIL)s\">%(THEME_ACCOUNT_CONTACT_EMAIL)s</a>."
-msgstr "As jy enige probleme om jou wagwoord, kontak ons by <a href=\"mailto:%(THEME_ACCOUNT_CONTACT_EMAIL)s\">%(THEME_ACCOUNT_CONTACT_EMAIL)s</a>."
+"If you have any trouble resetting your password, contact us at <a href="
+"\"mailto:%(THEME_ACCOUNT_CONTACT_EMAIL)s\">%(THEME_ACCOUNT_CONTACT_EMAIL)s</"
+"a>."
+msgstr ""
+"As jy enige probleme om jou wagwoord, kontak ons by <a href=\"mailto:"
+"%(THEME_ACCOUNT_CONTACT_EMAIL)s\">%(THEME_ACCOUNT_CONTACT_EMAIL)s</a>."
 
 #: templates/account/signup.html:7 templates/account/signup.html.py:14
 #: templates/account/signup.html:22
@@ -3204,7 +3484,12 @@ msgid ""
 "To confirm this email address, go to %(activate_url)s\n"
 "\n"
 "If you did not sign up for this site, you can ignore this message.\n"
-msgstr "'N gebruiker op %(site_name)s 'n rekening met hierdie e-posadres geskep.\n\n Hierdie e-posadres te bevestig, gaan na %(activate_url)s\n\n As jy nie inteken vir hierdie webwerf, kan jy hierdie boodskap ignoreer.\n"
+msgstr ""
+"'N gebruiker op %(site_name)s 'n rekening met hierdie e-posadres geskep.\n"
+"\n"
+" Hierdie e-posadres te bevestig, gaan na %(activate_url)s\n"
+"\n"
+" As jy nie inteken vir hierdie webwerf, kan jy hierdie boodskap ignoreer.\n"
 
 #: templates/account/email/email_confirmation_subject.txt:1
 #, python-format
@@ -3214,11 +3499,19 @@ msgstr "Bevestig e-posadres vir %(site_name)s"
 #: templates/account/email/password_reset.txt:1
 #, python-format
 msgid ""
-"You're receiving this email because you or someone else has requested a password for your user account at %(site_name)s.\n"
-"It can be safely ignored if you did not request a password reset. Click the link below to reset your password.\n"
+"You're receiving this email because you or someone else has requested a "
+"password for your user account at %(site_name)s.\n"
+"It can be safely ignored if you did not request a password reset. Click the "
+"link below to reset your password.\n"
 "\n"
 "%(password_reset_url)s\n"
-msgstr "Jy hierdie e-pos ontvang omdat jy of iemand anders het 'n wagwoord aangevra vir jou rekening op %(site_name)s. \nDit kan veilig geïgnoreer word as jy nie 'n wagwoord in te stel versoek het. Klik op die onderstaande skakel om jou wagwoord te herstel. \n\n%(password_reset_url)s\n"
+msgstr ""
+"Jy hierdie e-pos ontvang omdat jy of iemand anders het 'n wagwoord aangevra "
+"vir jou rekening op %(site_name)s. \n"
+"Dit kan veilig geïgnoreer word as jy nie 'n wagwoord in te stel versoek het. "
+"Klik op die onderstaande skakel om jou wagwoord te herstel. \n"
+"\n"
+"%(password_reset_url)s\n"
 
 #: templates/account/email/password_reset_subject.txt:1
 #, python-format
@@ -3254,20 +3547,27 @@ msgid "New Announcement"
 msgstr "Nuwe Aankondiging"
 
 #: templates/announcements/announcement_list.html:31
+msgid "Level"
+msgstr ""
+
+#: templates/announcements/announcement_list.html:32
 msgid "Announcement"
 msgstr "Aankondiging"
 
-#: templates/announcements/announcement_list.html:32
+#: templates/announcements/announcement_list.html:33
 msgid "Published From"
 msgstr "Gepubliseer"
 
-#: templates/announcements/announcement_list.html:44
+#: templates/announcements/announcement_list.html:48
 #, python-format
 msgid ""
 "\n"
-"                        Published from <b>%(publish_start)s</b> to <b>%(publish_end)s</b>.\n"
+"                        Published from <b>%(publish_start)s</b> to <b>"
+"%(publish_end)s</b>.\n"
 "                        "
-msgstr "\nGepubliseer <b>%(publish_start)s</b> to <b>%(publish_end)s</b>"
+msgstr ""
+"\n"
+"Gepubliseer <b>%(publish_start)s</b> to <b>%(publish_end)s</b>"
 
 #: templates/announcements/detail.html:4
 #, python-format
@@ -3306,9 +3606,11 @@ msgstr "Kies die avatars wat jy wil verwyder."
 #: templates/avatar/confirm_delete.html:9
 #, python-format
 msgid ""
-"You have no avatars to delete. Please <a "
-"href=\"%(avatar_change_url)s\">upload one</a> now."
-msgstr "Jy het geen avatars te verwyder. Let <a href=\"%(avatar_change_url)s\">laai een</a> nou."
+"You have no avatars to delete. Please <a href=\"%(avatar_change_url)s"
+"\">upload one</a> now."
+msgstr ""
+"Jy het geen avatars te verwyder. Let <a href=\"%(avatar_change_url)s\">laai "
+"een</a> nou."
 
 #: templates/avatar/confirm_delete.html:15
 msgid "Delete These"
@@ -3350,7 +3652,10 @@ msgstr "Let wel"
 msgid ""
 "You do not have a verified email address to which notices can be sent. You "
 "can add one by going to <a href=\"%(email_url)s\">Account</a>."
-msgstr "Jy het nie 'n geverifieerde e-pos adres waarheen kennisgewings gestuur kan word. Jy kan een voeg deur te gaan na <a href=\"%(email_url)s\">rekening</a> ."
+msgstr ""
+"Jy het nie 'n geverifieerde e-pos adres waarheen kennisgewings gestuur kan "
+"word. Jy kan een voeg deur te gaan na <a href=\"%(email_url)s\">rekening</"
+"a> ."
 
 #: templates/notification/notice_settings.html:30
 msgid "Notification Type"
@@ -3538,3 +3843,6 @@ msgstr "Terug na Inbox"
 #: templates/user_messages/thread_detail.html:25
 msgid "Send Reply"
 msgstr "Stuur Antwoord"
+
+#~ msgid "Remote Thumbnail"
+#~ msgstr "Afgeleë Thumbnail"
