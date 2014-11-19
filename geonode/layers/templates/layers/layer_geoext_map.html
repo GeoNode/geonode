@@ -39,21 +39,30 @@
                 listeners: {
                     "ready": function() {
                         map = app.mapPanel.map;
+                        layer = app.map.layers.slice(-1)[0];
 
                         // FIXME(Ariel): Zoom to extent until #1795 is fixed.
-                         map.zoomToExtent(map.layers.slice(-1)[0].maxExtent);
+                        //map.zoomToExtent(layer.maxExtent, false)
                         
-                        //bbox = layer.bbox
-                        //if (bbox != undefined)
-                        //{
-                        //    extent = OpenLayers.Bounds.fromArray(bbox).transform(new OpenLayers.Projection("EPSG:4326"), new OpenLayers.Projection(this.map.projection));
-                        //    zoomToData = function()
-                        //    {
-                        //        map.zoomToExtent(extent, false)
-                        //        map.events.unregister('changebaselayer', null, zoomToData)
-                        //    };
-                        //    map.events.register('changebaselayer',null,zoomToData);
-                        //}
+                        bbox = layer.bbox;
+                        if (bbox != undefined)
+                        {
+                           if (!Array.isArray(bbox) && Object.keys(layer.srs) in bbox) {
+                            bbox = bbox[Object.keys(layer.srs)].bbox;
+                           }
+
+                           extent = OpenLayers.Bounds.fromArray(bbox);
+                           layer.maxExtent = extent;
+                           zoomToData = function()
+                           {
+                               map.zoomToExtent(extent, false);
+                               app.mapPanel.center = map.center;
+                               app.mapPanel.zoom = map.zoom;
+                               map.events.unregister('changebaselayer', null, zoomToData);
+                           };
+                           map.events.register('changebaselayer',null,zoomToData);
+                           map.zoomToExtent(extent, false)
+                        }
                     },
                     "beforeunload": function() {
                         if (modified) {
