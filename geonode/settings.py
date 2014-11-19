@@ -91,7 +91,7 @@ LANGUAGES = (
     ('ru', 'Russian'),
     ('vi', 'Vietnamese'),
     ('ko', '한국어'),
-    # ('am', 'Amharic'),
+    ('am', 'Amharic'),
     ('km', 'Khmer'),
     ('pl', 'Polish'),
     ('sv', 'Swedish'),
@@ -99,8 +99,35 @@ LANGUAGES = (
     ('uk', 'Ukranian'),
     ('si', 'Sinhala'),
     ('ta', 'Tamil'),
-    # ('tl', 'Tagalog'),
+    ('tl', 'Tagalog'),
 )
+
+EXTRA_LANG_INFO = {
+    'am': {
+        'bidi': False,
+        'code': 'am',
+        'name': 'Amharic',
+        'name_local': 'Amharic',
+        },
+    'tl': {
+        'bidi': False,
+        'code': 'tl',
+        'name': 'Tagalog',
+        'name_local': 'tagalog',
+        },
+    'ta': {
+        'bidi': False,
+        'code': 'ta',
+        'name': 'Tamil',
+        'name_local': u'tamil',
+        },
+    'si': {
+        'bidi': False,
+        'code': 'si',
+        'name': 'Sinhala',
+        'name_local': 'sinhala',
+        },
+}
 
 AUTH_USER_MODEL = 'people.Profile'
 
