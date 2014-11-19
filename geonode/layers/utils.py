@@ -532,7 +532,7 @@ def create_thumbnail(instance, thumbnail_remote_url, thumbail_create_url=None):
                                    url=thumbnail_remote_url,
                                    defaults=dict(
             extension='png',
-            name=_("Remote Thumbnail"),
+            name="Remote Thumbnail",
             mime='image/png',
             link_type='image',
         )
