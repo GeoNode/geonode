@@ -78,7 +78,12 @@ article.tab-pane {
   list-style-type: none;
   margin-top: 20px;
   }
-
+select {
+  background: white;
+  border: 1px solid @gray-light;
+  height: 30px;
+  line-height: 30px;
+}
 /* Header
 ----------------------- */
 .navbar {
@@ -194,6 +199,9 @@ body.groups li#nav_groups a {
 .arcgis-legend > li > img {
     padding-right: 25px;
 }
+.grid-spacer {
+  margin-top: 30px;
+}
 
 /* Metadata Layer
 ----------------------- */
@@ -203,12 +211,12 @@ body.groups li#nav_groups a {
 .controls > select, .controls > textarea, .controls > input {
  width: 320px; 
 }
-
 /* Maps
 ----------------------- */
 .map-actions {
   margin-top: 20px;
 }
+
 /* Documents
 ----------------------- */
 .documents-actions {
@@ -359,7 +367,6 @@ footer {
 .select2-container-multi .select2-choices .select2-search-field input {
   height: auto;
 }
-
 .datepicker {
   border-radius: 0px;
   -webkit-border-radius: 0px;

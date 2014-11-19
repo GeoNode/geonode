@@ -174,13 +174,13 @@
             <a href="{% url "developer" %}">{% trans "Developers" %}</a> |
             <a href="{% url "about" %}">{% trans "About" %}</a>
           </div>
-          <div class="col-md-4 pull-right">
-            <label>{% trans "Language" %}</label>
+          <div class="col-md-4">
+            <label class="hidden">{% trans "Language" %}</label>
             {% if csrf_token != "NOTPROVIDED" %}
             {% get_current_language as LANGUAGE %}
             <form class="form-inline" action="/i18n/setlang/" method="post">
             {% csrf_token %}
-              <select name="language" onchange="javascript:form.submit()">
+              <select class="col-md-6 pull-right" name="language" onchange="javascript:form.submit()">
                 {% for lang in LANGUAGES %}
                 <option value="{{ lang.0 }}" {% ifequal LANGUAGE_CODE lang.0 %} selected="selected"{% endifequal %}>
                   {{ lang.1 }}
@@ -188,10 +188,10 @@
                 {% endfor %}
               </select>
             </form>
-          {% endif %}
-          </div> <!-- /.pull-right -->
+            {% endif %}
+          </div>
         </div>
-      </div> <!-- /.container -->
+      </div>
     </footer>
     {% endblock footer %}
     
@@ -213,7 +213,6 @@
     <script src="{{ STATIC_URL }}geonode/js/utils/utils.js"></script>
     <script src="{{ STATIC_URL }}geonode/js/base/base.js"></script>
     {% include 'autocomplete_light/static.html' %}
-
     <script type="text/javascript" src="{% url 'django.views.i18n.javascript_catalog' %}"></script>
     {% block extra_script %}{% endblock extra_script %}
     <script type="text/javascript">
