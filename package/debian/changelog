@@ -1,3 +1,10 @@
+geonode (2.4.0+beta2) trusty; urgency=high
+
+  * [ea214b] Added Sinhala and Tamil
+  * [8f10e3] Added languages that are not well supported in Django
+
+ -- Ariel Nunez <ingenieroariel@gmail.com>  Wed, 19 Nov 2014 17:55:40 -0500
+
 geonode (2.4.0+beta1) trusty; urgency=high
 
   * [ec9bf4] The thumbnail url can be longer than 255 chars
