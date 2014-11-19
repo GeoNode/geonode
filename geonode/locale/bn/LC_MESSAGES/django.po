@@ -1,7 +1,7 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
-# 
+#
 # Translators:
 # Andres Alfonso Lemon Gomez <lemon.andres@gmail.com>, 2014
 # ingenieroariel <ingenieroariel@gmail.com>, 2014
@@ -9,14 +9,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-11-14 09:56-0500\n"
-"PO-Revision-Date: 2014-11-14 18:31+0000\n"
+"POT-Creation-Date: 2014-11-19 18:27-0500\n"
+"PO-Revision-Date: 2014-11-14 18:41+0000\n"
 "Last-Translator: Andres Alfonso Lemon Gomez <lemon.andres@gmail.com>\n"
-"Language-Team: Bengali (http://www.transifex.com/projects/p/geonode/language/bn/)\n"
+"Language-Team: Bengali (http://www.transifex.com/projects/p/geonode/language/"
+"bn/)\n"
+"Language: bn\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Language: bn\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #: utils.py:38
@@ -158,224 +159,240 @@ msgstr "বিষয়শ্রেণী প্রয়োজন বোধ ক
 msgid "function performed by the responsible party"
 msgstr "দায়ী পক্ষের দ্বারা সঞ্চালিত ফাংশন"
 
-#: base/models.py:244
+#: base/models.py:229
 msgid "reference date for the cited resource"
 msgstr "উদাহৃত সম্পদ জন্য রেফারেন্স তারিখ"
 
-#: base/models.py:245
+#: base/models.py:230
 msgid "identification of when a given event occurred"
 msgstr "একটি প্রদত্ত ঘটনা ঘটেছে যখন সনাক্তকরণ"
 
-#: base/models.py:246
+#: base/models.py:231
 msgid "version of the cited resource"
 msgstr "উদাহৃত সম্পদ সংস্করণ"
 
-#: base/models.py:247
+#: base/models.py:232
 msgid "brief narrative summary of the content of the resource(s)"
 msgstr "সম্পদ এর বিষয়বস্তুর সংক্ষিপ্ত আখ্যান সারসংক্ষেপ (গুলি)"
 
-#: base/models.py:248
+#: base/models.py:233
 msgid "summary of the intentions with which the resource(s) was developed"
 msgstr "সম্পদ (গুলি) উন্নত ছিল যা দিয়ে করতেও সারসংক্ষেপ"
 
-#: base/models.py:249
+#: base/models.py:234
 msgid ""
 "frequency with which modifications and deletions are made to the data after "
 "it is first produced"
-msgstr "এটা প্রথম উত্পাদিত হয় পরে ফ্রিকোয়েন্সি সঙ্গে যা পরিবর্তন ও মুছে ডেটাতে তৈরি হয়"
+msgstr ""
+"এটা প্রথম উত্পাদিত হয় পরে ফ্রিকোয়েন্সি সঙ্গে যা পরিবর্তন ও মুছে ডেটাতে তৈরি হয়"
 
-#: base/models.py:251
+#: base/models.py:236
 msgid ""
 "commonly used word(s) or formalised word(s) or phrase(s) used to describe "
 "the subject (space or comma-separated"
-msgstr "সাধারণভাবে ব্যবহৃত শব্দ (গুলি) বা বিধিবদ্ধ শব্দ (গুলি) বা ফ্রেইজ (গুলি) বিষয় (স্পেস বা কমা দ্বারা পৃথক বর্ণনা ব্যবহৃত"
+msgstr ""
+"সাধারণভাবে ব্যবহৃত শব্দ (গুলি) বা বিধিবদ্ধ শব্দ (গুলি) বা ফ্রেইজ (গুলি) বিষয় (স্পেস বা "
+"কমা দ্বারা পৃথক বর্ণনা ব্যবহৃত"
 
-#: base/models.py:253
+#: base/models.py:238
 msgid "keyword identifies a location"
 msgstr "শব্দ একটি অবস্থান চিহ্নিত"
 
-#: base/models.py:254
+#: base/models.py:239
 msgid "limitation(s) placed upon the access or use of the data."
 msgstr "সীমাবদ্ধতা (গুলি) তথ্য প্রবেশাধিকার বা ব্যবহারের উপর স্থাপিত."
 
-#: base/models.py:255
+#: base/models.py:240
 msgid ""
 "other restrictions and legal prerequisites for accessing and using the "
 "resource or metadata"
-msgstr "অ্যাক্সেস এবং সম্পদ বা মেটাডেটা ব্যবহারের জন্য অন্যান্য সীমাবদ্ধতা ও আইনি অপরিহার্য"
+msgstr ""
+"অ্যাক্সেস এবং সম্পদ বা মেটাডেটা ব্যবহারের জন্য অন্যান্য সীমাবদ্ধতা ও আইনি অপরিহার্য"
 
-#: base/models.py:257
+#: base/models.py:242
 msgid "license of the dataset"
 msgstr "ডেটা সেটটি এর লাইসেন্স"
 
-#: base/models.py:258
+#: base/models.py:243
 msgid "language used within the dataset"
 msgstr "ভাষা ডেটা সেটটি মধ্যে ব্যবহার"
 
-#: base/models.py:259
+#: base/models.py:244
 msgid ""
-"high-level geographic data thematic classification to assist in the grouping"
-" and search of available geographic data sets."
-msgstr "উচ্চ-স্তর ভৌগলিক তথ্য বিষয়ভিত্তিক শ্রেণীবিভাগ বিভাজন এবং উপলব্ধ ভৌগলিক তথ্য সেট সন্ধানে সাহায্য করতে."
+"high-level geographic data thematic classification to assist in the grouping "
+"and search of available geographic data sets."
+msgstr ""
+"উচ্চ-স্তর ভৌগলিক তথ্য বিষয়ভিত্তিক শ্রেণীবিভাগ বিভাজন এবং উপলব্ধ ভৌগলিক তথ্য সেট "
+"সন্ধানে সাহায্য করতে."
 
-#: base/models.py:261
+#: base/models.py:246
 msgid "method used to represent geographic information in the dataset."
 msgstr "পদ্ধতি ডেটা সেটটি মধ্যে ভৌগলিক তথ্য প্রতিনিধিত্ব করতে ব্যবহৃত."
 
-#: base/models.py:262
+#: base/models.py:247
 msgid "time period covered by the content of the dataset (start)"
 msgstr "ডেটা সেটটি এর কন্টেন্ট দ্বারা আচ্ছাদিত সময় (শুরু)"
 
-#: base/models.py:263
+#: base/models.py:248
 msgid "time period covered by the content of the dataset (end)"
 msgstr "ডেটা সেটটি (শেষ) এর কন্টেন্ট দ্বারা আচ্ছাদিত সময়"
 
-#: base/models.py:264
+#: base/models.py:249
 msgid ""
 "information about on-line sources from which the dataset, specification, or "
 "community profile name and extended metadata elements can be obtained"
-msgstr "ডেটা সেটটি, স্পেসিফিকেশন, বা সম্প্রদায় প্রোফাইল নাম এবং বর্ধিত মেটাডেটা উপাদান পাওয়া যাবে যা থেকে অন লাইন উত্স সম্পর্কে তথ্য"
+msgstr ""
+"ডেটা সেটটি, স্পেসিফিকেশন, বা সম্প্রদায় প্রোফাইল নাম এবং বর্ধিত মেটাডেটা উপাদান "
+"পাওয়া যাবে যা থেকে অন লাইন উত্স সম্পর্কে তথ্য"
 
-#: base/models.py:266
+#: base/models.py:251
 msgid "detailed text description of what the online resource is/does"
 msgstr "/ কী জন্য অনলাইন সম্পদ বিস্তারিত পাঠ্য বর্ণনা"
 
-#: base/models.py:267
+#: base/models.py:252
 msgid ""
 "general explanation of the data producer's knowledge about the lineage of a "
 "dataset"
 msgstr "একটি ডেটা সেটটি এর বংশ সম্পর্কে তথ্য প্রযোজক এর জ্ঞান সাধারণ ব্যাখ্যা"
 
-#: base/models.py:273
+#: base/models.py:258
 msgid "title"
 msgstr "খেতাব"
 
-#: base/models.py:273
+#: base/models.py:258
 msgid "name by which the cited resource is known"
 msgstr "উদাহৃত সম্পদ পরিচিত যা দ্বারা নাম"
 
-#: base/models.py:274
+#: base/models.py:259
 msgid "date"
 msgstr "তারিখ"
 
-#: base/models.py:275
+#: base/models.py:260
 msgid "date type"
 msgstr "তারিখ ধরন"
 
-#: base/models.py:277
+#: base/models.py:262
 msgid "edition"
 msgstr "সংস্করণ"
 
-#: base/models.py:278
+#: base/models.py:263
 msgid "abstract"
 msgstr "বিমূর্ত"
 
-#: base/models.py:279
+#: base/models.py:264
 msgid "purpose"
 msgstr "উদ্দেশ্য"
 
-#: base/models.py:280
+#: base/models.py:265
 msgid "maintenance frequency"
 msgstr "রক্ষণাবেক্ষণ ফ্রিকোয়েন্সি"
 
-#: base/models.py:283 groups/models.py:41 people/models.py:88
+#: base/models.py:268 groups/models.py:41 people/models.py:88
 msgid "keywords"
 msgstr "কীওয়ার্ড"
 
-#: base/models.py:284
+#: base/models.py:269
 msgid "keywords region"
 msgstr "কীওয়ার্ড অঞ্চল"
 
-#: base/models.py:287
+#: base/models.py:272
 msgid "restrictions"
 msgstr "নিষেধাজ্ঞা"
 
-#: base/models.py:291
+#: base/models.py:276
 msgid "restrictions other"
 msgstr "অন্যান্য বিধিনিষেধ"
 
-#: base/models.py:296
+#: base/models.py:281
 msgid "language"
 msgstr "ভাষা"
 
-#: base/models.py:307
+#: base/models.py:292
 msgid "temporal extent start"
 msgstr "সময়গত ব্যাপ্তি শুরু"
 
-#: base/models.py:309
+#: base/models.py:294
 msgid "temporal extent end"
 msgstr "সময়গত ব্যাপ্তি শেষ"
 
-#: base/models.py:312
+#: base/models.py:297
 msgid "supplemental information"
 msgstr "সম্পূরক তথ্য"
 
-#: base/models.py:313
+#: base/models.py:298
 msgid "any other descriptive information about the dataset"
 msgstr "ডেটা সেটটি সম্পর্কে অন্য কোন বর্ণনামূলক তথ্য"
 
-#: base/models.py:316
+#: base/models.py:301
 msgid "distribution URL"
 msgstr "বন্টন URL টি"
 
-#: base/models.py:318
+#: base/models.py:303
 msgid "distribution description"
 msgstr "বন্টন বিবরণ"
 
-#: base/models.py:322
+#: base/models.py:307
 msgid "data quality statement"
 msgstr "তথ্য মানের বিবৃতি"
 
-#: base/models.py:337
+#: base/models.py:322
 msgid "CSW typename"
 msgstr "CSW TypeName"
 
-#: base/models.py:339
+#: base/models.py:324
 msgid "CSW schema"
 msgstr "CSW স্কিমা"
 
-#: base/models.py:344
+#: base/models.py:329
 msgid "CSW source"
 msgstr "CSW উৎস"
 
-#: base/models.py:345
+#: base/models.py:330
 msgid "CSW insert date"
 msgstr "CSW সন্নিবেশ তারিখ"
 
-#: base/models.py:346
+#: base/models.py:331
 msgid "CSW type"
 msgstr "CSW টাইপ"
 
-#: base/models.py:347
+#: base/models.py:332
 msgid "CSW anytext"
 msgstr "CSW anytext"
 
-#: base/models.py:348
+#: base/models.py:333
 msgid "CSW WKT geometry"
 msgstr "CSW উইকেটরক্ষক জ্যামিতি"
 
-#: base/models.py:361
+#: base/models.py:346
 msgid "Should this resource be advertised in home page?"
 msgstr "এই সম্পদ হোম পেজ এ বিজ্ঞাপনে করা উচিত?"
 
-#: base/models.py:362
+#: base/models.py:347
 msgid "Should this resource be published and searchable?"
 msgstr "এই সম্পদ প্রকাশিত এবং অনুসন্ধানযোগ্য করা উচিত?"
 
-#: base/models.py:682
+#: base/models.py:666
 msgid "For example \"kml\""
 msgstr "উদাহরণস্বরূপ \"KML\""
 
-#: base/models.py:684
+#: base/models.py:668
 msgid "For example \"View in Google Earth\""
 msgstr "উদাহরণস্বরূপ \"গুগল আর্থ দেখুন\""
 
-#: base/models.py:685
+#: base/models.py:669
 msgid "For example \"text/xml\""
 msgstr "উদাহরণস্বরূপ \"টেক্সট / XML\""
 
+#: base/management/__init__.py:14
+msgid "Request to download a resource"
+msgstr ""
+
+#: base/management/__init__.py:15
+msgid "A request for downloading a resource was sent"
+msgstr ""
+
 #: base/templates/base/_resourcebase_contact_snippet.html:3
-#: templates/500.html:184 templates/base.html:174
+#: templates/500.html:184 templates/base.html:175
 msgid "About"
 msgstr "প্রায়"
 
@@ -420,7 +437,7 @@ msgid "Date"
 msgstr "তারিখ"
 
 #: base/templates/base/resourcebase_info_panel.html:34
-#: layers/templates/layers/layer_detail.html:300
+#: layers/templates/layers/layer_detail.html:307
 msgid "Type"
 msgstr "প্রকার"
 
@@ -450,7 +467,7 @@ msgid "Purpose"
 msgstr "উদ্দেশ্য"
 
 #: base/templates/base/resourcebase_info_panel.html:112 templates/500.html:187
-#: templates/base.html:177
+#: templates/base.html:178
 msgid "Language"
 msgstr "ভাষা"
 
@@ -531,7 +548,7 @@ msgstr "আপনি এই নথি দেখতে অনুমতি নে�
 msgid "You are not allowed to view this document."
 msgstr "আপনি এই নথি দেখতে অনুমতি দেওয়া হয়নি."
 
-#: documents/views.py:175
+#: documents/views.py:181
 msgid "You are not allowed to edit this document."
 msgstr "আপনি এই নথি সম্পাদনা করার অনুমতি দেওয়া হয়নি."
 
@@ -655,76 +672,82 @@ msgstr "মাঝামাঝি নির্ধারণ"
 #: documents/templates/documents/document_detail.html:91
 #: documents/templates/documents/document_detail.html:93
 #: documents/templates/documents/document_detail.html:95
-#: documents/templates/documents/document_detail.html:107
+#: documents/templates/documents/document_detail.html:111
 msgid "Download Document"
 msgstr "ডাউনলোড ডকুমেন্ট"
 
-#: documents/templates/documents/document_detail.html:100
-#: layers/templates/layers/layer_detail.html:156
-#: layers/templates/layers/layer_detail.html:164
+#: documents/templates/documents/document_detail.html:99
+#: layers/templates/layers/layer_detail.html:134
+#, fuzzy
+msgid "Request Download"
+msgstr "ডাউনলোড"
+
+#: documents/templates/documents/document_detail.html:104
+#: layers/templates/layers/layer_detail.html:163
+#: layers/templates/layers/layer_detail.html:171
 msgid "Download Metadata"
 msgstr "ডাউনলোড মেটাডাটা"
 
-#: documents/templates/documents/document_detail.html:117
-#: documents/templates/documents/document_detail.html:147
-#: layers/templates/layers/layer_detail.html:149
-#: layers/templates/layers/layer_detail.html:174
-#: layers/templates/layers/layer_detail.html:216
+#: documents/templates/documents/document_detail.html:121
+#: documents/templates/documents/document_detail.html:151
+#: layers/templates/layers/layer_detail.html:156
+#: layers/templates/layers/layer_detail.html:181
+#: layers/templates/layers/layer_detail.html:223
 #: maps/templates/maps/map_detail.html:95
 #: maps/templates/maps/map_detail.html:127
 #: templates/_bulk_permissions_form.html:19
 msgid "Close"
 msgstr "ঘনিষ্ঠ"
 
-#: documents/templates/documents/document_detail.html:124
-#: documents/templates/documents/document_detail.html:131
+#: documents/templates/documents/document_detail.html:128
+#: documents/templates/documents/document_detail.html:135
 msgid "Edit Document"
 msgstr "সম্পাদনা ডকুমেন্ট"
 
-#: documents/templates/documents/document_detail.html:136
-#: layers/templates/layers/layer_detail.html:196
+#: documents/templates/documents/document_detail.html:140
+#: layers/templates/layers/layer_detail.html:203
 msgid "Edit Metadata"
 msgstr "সম্পাদনা মেটাডেটা"
 
-#: documents/templates/documents/document_detail.html:139
+#: documents/templates/documents/document_detail.html:143
 msgid "Replace this Document"
 msgstr "এই ডকুমেন্ট Replace"
 
-#: documents/templates/documents/document_detail.html:142
+#: documents/templates/documents/document_detail.html:146
 msgid "Remove this Document"
 msgstr "এই ডকুমেন্ট সরান"
 
-#: documents/templates/documents/document_detail.html:154
+#: documents/templates/documents/document_detail.html:158
 msgid "Resource using this document"
 msgstr "এই নথির ব্যবহার করে সম্পদ"
 
-#: documents/templates/documents/document_detail.html:156
+#: documents/templates/documents/document_detail.html:160
 msgid "List of resources using this document:"
 msgstr "এই নথির ব্যবহার করে সম্পদের তালিকা:"
 
-#: documents/templates/documents/document_detail.html:160
+#: documents/templates/documents/document_detail.html:164
 msgid "This document is related to a "
 msgstr "এই নথির একটি সঙ্গে সম্পর্কযুক্ত"
 
-#: documents/templates/documents/document_detail.html:163
+#: documents/templates/documents/document_detail.html:167
 msgid "This document is not related to any maps or layers"
 msgstr "এই ডকুমেন্টের কোন মানচিত্র বা স্তর এর সাথে সম্পর্কিত করা হয় না"
 
-#: documents/templates/documents/document_detail.html:170
+#: documents/templates/documents/document_detail.html:174
 #: documents/templates/documents/document_upload.html:32
 #: groups/templates/groups/group_detail.html:65
-#: layers/templates/layers/layer_detail.html:289
+#: layers/templates/layers/layer_detail.html:296
 #: layers/templates/layers/layer_replace.html:94
 #: layers/templates/upload/layer_upload.html:93
 #: maps/templates/maps/map_detail.html:173 people/admin.py:55
 msgid "Permissions"
 msgstr "অনুমতি"
 
-#: documents/templates/documents/document_detail.html:171
+#: documents/templates/documents/document_detail.html:175
 msgid "Click the button below to change the permissions of this document."
 msgstr "এই ডকুমেন্টের অনুমতি পরিবর্তন করতে নিচের বাটনে ক্লিক করুন."
 
-#: documents/templates/documents/document_detail.html:172
+#: documents/templates/documents/document_detail.html:176
 msgid "Change Document Permissions"
 msgstr "ডকুমেন্ট অনুমতি পরিবর্তন করুন"
 
@@ -745,7 +768,9 @@ msgid ""
 "\n"
 "        Editing details for %(document_title)s\n"
 "      "
-msgstr "\nজন্য সম্পাদনার বিবরণ %(document_title)s এর"
+msgstr ""
+"\n"
+"জন্য সম্পাদনার বিবরণ %(document_title)s এর"
 
 #: documents/templates/documents/document_metadata.html:22
 #: layers/templates/layers/layer_metadata.html:23
@@ -772,7 +797,9 @@ msgid ""
 "\n"
 "          Are you sure you want to remove %(document_title)s?\n"
 "        "
-msgstr "\nআপনি %(document_title)s এর সরানোর বিষয়ে নিশ্চিত?"
+msgstr ""
+"\n"
+"আপনি %(document_title)s এর সরানোর বিষয়ে নিশ্চিত?"
 
 #: documents/templates/documents/document_remove.html:18
 #: groups/templates/groups/group_remove.html:19
@@ -845,30 +872,22 @@ msgstr "পিডিএফ"
 msgid "PNG"
 msgstr "PNG"
 
-#: geoserver/signals.py:288
+#: geoserver/signals.py:278
 msgid "Could not create a download link for layer."
 msgstr "স্তর জন্য একটি ডাউনলোড লিংক তৈরী করা যায়নি."
 
-#: geoserver/signals.py:319
+#: geoserver/signals.py:309
 msgid "KML"
 msgstr "কেএমএল"
 
-#: geoserver/signals.py:348
+#: geoserver/signals.py:338
 msgid "Tiles"
 msgstr "টাইল"
 
-#: geoserver/signals.py:403 layers/templates/layers/layer_detail.html:224
-#: services/views.py:1265
+#: geoserver/signals.py:385 layers/templates/layers/layer_detail.html:231
+#: services/views.py:1266
 msgid "Legend"
 msgstr "কিংবদন্তী"
-
-#: geoserver/signals.py:525 layers/utils.py:528
-msgid "Remote Thumbnail"
-msgstr "রিমোট থাম্বনেল"
-
-#: geoserver/signals.py:560 layers/utils.py:563
-msgid "Thumbnail"
-msgstr "ছোট"
 
 #: geoserver/views.py:338
 msgid "You don't have permissions to change style for this layer"
@@ -904,9 +923,10 @@ msgstr "একটি রেটিং একটি স্তর দেওয়�
 
 #: groups/forms.py:15
 msgid ""
-"a short version of the name consisting only of letters, numbers, underscores"
-" and hyphens."
-msgstr "শুধুমাত্র অক্ষর, সংখ্যা, আন্ডারস্কোর এবং হাইফেন গঠিত নামের একটি সংক্ষিপ্ত সংস্করণ."
+"a short version of the name consisting only of letters, numbers, underscores "
+"and hyphens."
+msgstr ""
+"শুধুমাত্র অক্ষর, সংখ্যা, আন্ডারস্কোর এবং হাইফেন গঠিত নামের একটি সংক্ষিপ্ত সংস্করণ."
 
 #: groups/forms.py:23
 msgid "A group already exists with that slug."
@@ -934,13 +954,20 @@ msgid ""
 "(invite-only):Any registered user can view the group.  Only invited users "
 "can join.<br>Private: Registered users cannot see any details about the "
 "group, including membership.  Only invited users can join."
-msgstr "পাবলিক: কোন নিবন্ধিত ব্যবহারকারী হন এবং একটি পাবলিক গ্রুপ যোগ দিতে পারেন. <br> পাবলিক (আমন্ত্রণ শুধুমাত্র): কোন নিবন্ধিত ব্যবহারকারী গ্রুপ দেখতে পারেন. শুধু আমন্ত্রিত ব্যবহারকারীদের যোগ দিতে পারেন. <br> বেসরকারী: নিবন্ধিত ব্যবহারকারী সদস্যপদ সহ গ্রুপ, সম্পর্কে কোনো বিবরণ দেখতে পারবেন না. শুধু আমন্ত্রিত ব্যবহারকারীদের যোগ দিতে পারেন."
+msgstr ""
+"পাবলিক: কোন নিবন্ধিত ব্যবহারকারী হন এবং একটি পাবলিক গ্রুপ যোগ দিতে পারেন. <br> "
+"পাবলিক (আমন্ত্রণ শুধুমাত্র): কোন নিবন্ধিত ব্যবহারকারী গ্রুপ দেখতে পারেন. শুধু আমন্ত্রিত "
+"ব্যবহারকারীদের যোগ দিতে পারেন. <br> বেসরকারী: নিবন্ধিত ব্যবহারকারী সদস্যপদ সহ "
+"গ্রুপ, সম্পর্কে কোনো বিবরণ দেখতে পারবেন না. শুধু আমন্ত্রিত ব্যবহারকারীদের যোগ দিতে "
+"পারেন."
 
 #: groups/models.py:27
 msgid ""
 "Email used to contact one or all group members, such as a mailing list, "
 "shared email, or exchange group."
-msgstr "এটি ইমেল যেমন একটি মেইলিং তালিকা, ভাগ ইমেইল, বা বিনিময় দল হিসেবে এক বা সব দলের সদস্যরা, যোগাযোগ করতে ব্যবহৃত."
+msgstr ""
+"এটি ইমেল যেমন একটি মেইলিং তালিকা, ভাগ ইমেইল, বা বিনিময় দল হিসেবে এক বা সব "
+"দলের সদস্যরা, যোগাযোগ করতে ব্যবহৃত."
 
 #: groups/models.py:36
 msgid "email"
@@ -1040,7 +1067,9 @@ msgid ""
 "\n"
 "            This group is <strong>%(access)s</strong>.\n"
 "          "
-msgstr "\nএই এর গ্রুপ <strong>%(access)s</strong>. হয়."
+msgstr ""
+"\n"
+"এই এর গ্রুপ <strong>%(access)s</strong>. হয়."
 
 #: groups/templates/groups/group_detail.html:71
 msgid "Anyone may join this group."
@@ -1106,7 +1135,9 @@ msgid ""
 "\n"
 "          Are you sure you want to remove the group: %(group_title)s?\n"
 "        "
-msgstr "\nআপনি গ্রুপ মুছে ফেলার ব্যাপারে নিশ্চিত: %(group_title)s?"
+msgstr ""
+"\n"
+"আপনি গ্রুপ মুছে ফেলার ব্যাপারে নিশ্চিত: %(group_title)s?"
 
 #: groups/templates/groups/group_remove_maps_data.html:6
 msgid "Remove Maps/Data from Group"
@@ -1250,11 +1281,17 @@ msgstr "সর্বশেষ সম্পাদিত"
 msgid "date when attribute statistics were last updated"
 msgstr "অ্যাট্রিবিউট পরিসংখ্যান গত ছিল যখন তারিখের আপডেট"
 
+#: layers/utils.py:574
+msgid "Thumbnail"
+msgstr "ছোট"
+
 #: layers/views.py:59
 msgid ""
 "There was an error while attempting to upload your data. Please try again, "
 "or contact and administrator if the problem continues."
-msgstr "আপনার তথ্য আপলোড করার প্রয়াসের সময় একটি ত্রুটি হয়েছিল. আবার চেষ্টা করুন, অথবা সমস্যা অব্যাহত থাকলে যোগাযোগ করুন এবং অ্যাডমিনিস্ট্রেটর দয়া করে."
+msgstr ""
+"আপনার তথ্য আপলোড করার প্রয়াসের সময় একটি ত্রুটি হয়েছিল. আবার চেষ্টা করুন, অথবা "
+"সমস্যা অব্যাহত থাকলে যোগাযোগ করুন এবং অ্যাডমিনিস্ট্রেটর দয়া করে."
 
 #: layers/views.py:62
 msgid "You are not permitted to delete this layer"
@@ -1291,8 +1328,8 @@ msgid "Create a map"
 msgstr "একটি মানচিত্র তৈরি করুন"
 
 #: layers/templates/layers/_layer_list_item.html:48
-#: layers/templates/layers/layer_detail.html:130
-#: layers/templates/layers/layer_detail.html:139
+#: layers/templates/layers/layer_detail.html:131
+#: layers/templates/layers/layer_detail.html:144
 msgid "Download Layer"
 msgstr "ডাউনলোড লেয়ার"
 
@@ -1342,87 +1379,89 @@ msgstr "পরিমিত ব্যবধান"
 msgid "Rate this layer"
 msgstr "এই স্তর রেটিং করুন"
 
-#: layers/templates/layers/layer_detail.html:182
-#: layers/templates/layers/layer_detail.html:191
+#: layers/templates/layers/layer_detail.html:189
+#: layers/templates/layers/layer_detail.html:198
 msgid "Edit Layer"
 msgstr "সম্পাদনা লেয়ার"
 
-#: layers/templates/layers/layer_detail.html:201
+#: layers/templates/layers/layer_detail.html:208
 #: layers/templates/layers/layer_style_manage.html:14
 msgid "Manage Styles"
 msgstr "শৈলী পরিচালনা"
 
-#: layers/templates/layers/layer_detail.html:203
+#: layers/templates/layers/layer_detail.html:210
 msgid "Edit Styles"
 msgstr "সম্পাদনা স্টাইলস"
 
-#: layers/templates/layers/layer_detail.html:208
+#: layers/templates/layers/layer_detail.html:215
 msgid "Replace this Layer"
 msgstr "এই লেয়ার প্রতিস্থাপন"
 
-#: layers/templates/layers/layer_detail.html:211
+#: layers/templates/layers/layer_detail.html:218
 msgid "Remove this Layer"
 msgstr "এই লেয়ার সরান"
 
-#: layers/templates/layers/layer_detail.html:234
+#: layers/templates/layers/layer_detail.html:241
 msgid "Maps using this layer"
 msgstr "এই স্তর ব্যবহার করে মানচিত্র"
 
-#: layers/templates/layers/layer_detail.html:236
+#: layers/templates/layers/layer_detail.html:243
 msgid "List of maps using this layer:"
 msgstr "এই স্তর ব্যবহার ম্যাপের তালিকা:"
 
-#: layers/templates/layers/layer_detail.html:242
+#: layers/templates/layers/layer_detail.html:249
 msgid "This layer is not currently used in any maps."
 msgstr "এই স্তর বর্তমানে কোনো ম্যাপের ব্যবহার করা না হয়."
 
-#: layers/templates/layers/layer_detail.html:247
+#: layers/templates/layers/layer_detail.html:254
 msgid "Create a map using this layer"
 msgstr "এই স্তর ব্যবহার করে একটি মানচিত্র তৈরি করুন"
 
-#: layers/templates/layers/layer_detail.html:248
+#: layers/templates/layers/layer_detail.html:255
 msgid "Click the button below to generate a new map based on this layer."
 msgstr "এই স্তর উপর ভিত্তি করে একটি নতুন মানচিত্র উৎপন্ন করতে নিচের বাটনে ক্লিক করুন."
 
-#: layers/templates/layers/layer_detail.html:249
+#: layers/templates/layers/layer_detail.html:256
 msgid "Create a Map"
 msgstr "একটি মানচিত্র তৈরি করুন"
 
-#: layers/templates/layers/layer_detail.html:254
+#: layers/templates/layers/layer_detail.html:261
 msgid "Documents related to this layer"
 msgstr "এই স্তর সংক্রান্ত ডকুমেন্টস"
 
-#: layers/templates/layers/layer_detail.html:255
+#: layers/templates/layers/layer_detail.html:262
 msgid "List of documents related to this layer:"
 msgstr "এই স্তর সংক্রান্ত নথি তালিকা:"
 
-#: layers/templates/layers/layer_detail.html:266
+#: layers/templates/layers/layer_detail.html:273
 msgid "Styles"
 msgstr "স্টাইলস"
 
-#: layers/templates/layers/layer_detail.html:267
+#: layers/templates/layers/layer_detail.html:274
 msgid ""
 "The following styles are associated with this layer. Choose a style to view "
 "it in the preview map."
-msgstr "নিম্নলিখিত শৈলী এই স্তর সঙ্গে যুক্ত হয়. প্রাকদর্শন মানচিত্র তা দেখতে একটি শৈলী চয়ন করুন."
+msgstr ""
+"নিম্নলিখিত শৈলী এই স্তর সঙ্গে যুক্ত হয়. প্রাকদর্শন মানচিত্র তা দেখতে একটি শৈলী চয়ন "
+"করুন."
 
-#: layers/templates/layers/layer_detail.html:280
+#: layers/templates/layers/layer_detail.html:287
 msgid "No styles associated with this layer"
 msgstr "এই স্তর সঙ্গে যুক্ত কোন শৈলী"
 
-#: layers/templates/layers/layer_detail.html:290
+#: layers/templates/layers/layer_detail.html:297
 msgid "Click the button below to change the permissions of this layer."
 msgstr "এই স্তর অনুমতি পরিবর্তন করতে নিচের বাটনে ক্লিক করুন."
 
-#: layers/templates/layers/layer_detail.html:291
+#: layers/templates/layers/layer_detail.html:298
 msgid "Change Layer Permissions"
 msgstr "পরিবর্তন লেয়ার অনুমতি"
 
-#: layers/templates/layers/layer_detail.html:298
+#: layers/templates/layers/layer_detail.html:305
 msgid "External service layer"
 msgstr "বাহ্যিক সেবা স্তর"
 
-#: layers/templates/layers/layer_detail.html:299
+#: layers/templates/layers/layer_detail.html:306
 msgid "Source"
 msgstr "উত্স"
 
@@ -1444,14 +1483,21 @@ msgid ""
 "\n"
 "        Editing details for %(layer_title)s\n"
 "      "
-msgstr "\nজন্য সম্পাদনার বিবরণ %(layer_title)s এর"
+msgstr ""
+"\n"
+"জন্য সম্পাদনার বিবরণ %(layer_title)s এর"
 
 #: layers/templates/layers/layer_metadata.html:17
 msgid ""
-"Note: this layer's orginal metadata was populated by importing a metadata XML file.\n"
-"        GeoNode's metadata import supports a subset of ISO, FGDC, and Dublin Core metadata elements.\n"
+"Note: this layer's orginal metadata was populated by importing a metadata "
+"XML file.\n"
+"        GeoNode's metadata import supports a subset of ISO, FGDC, and Dublin "
+"Core metadata elements.\n"
 "        Some of your original metadata may have been lost."
-msgstr "উল্লেখ্য: এই লেয়ার এর মূল মিটাডাটা একটি মেটাডাটা XML ফাইল ইম্পোর্ট দ্বারা পূর্ণ ছিল. GeoNode এর মেটাডেটা আমদানি আইএসও, FGDC, এবং ডাবলিন কোর মেটাডাটা উপাদানের একটি উপসেট সমর্থন করে. আপনার মূল মেটাডাটা কিছু হারিয়ে হয়ে থাকতে পারে."
+msgstr ""
+"উল্লেখ্য: এই লেয়ার এর মূল মিটাডাটা একটি মেটাডাটা XML ফাইল ইম্পোর্ট দ্বারা পূর্ণ ছিল. "
+"GeoNode এর মেটাডেটা আমদানি আইএসও, FGDC, এবং ডাবলিন কোর মেটাডাটা উপাদানের "
+"একটি উপসেট সমর্থন করে. আপনার মূল মেটাডাটা কিছু হারিয়ে হয়ে থাকতে পারে."
 
 #: layers/templates/layers/layer_metadata.html:72
 msgid "Attribute"
@@ -1476,7 +1522,9 @@ msgid ""
 "\n"
 "          Are you sure you want to remove %(layer_title)s?\n"
 "        "
-msgstr "\nআপনি %(layer_title)s? র সরানোর বিষয়ে নিশ্চিত?"
+msgstr ""
+"\n"
+"আপনি %(layer_title)s? র সরানোর বিষয়ে নিশ্চিত?"
 
 #: layers/templates/layers/layer_remove.html:25
 msgid "This action affects the following maps:"
@@ -1566,25 +1614,31 @@ msgstr "অক্ষরসেট নির্বাচন করুন অথব
 #, python-format
 msgid ""
 "\n"
-"      Manage Available Styles for <a href=\"/layers/%(layer_title)s\">%(layer_title)s</a>\n"
+"      Manage Available Styles for <a href=\"/layers/%(layer_title)s\">"
+"%(layer_title)s</a>\n"
 "    "
-msgstr "\nজন্য উপলব্ধ শৈলী পরিচালনা <a href=\"/layers/%(layer_title)s\">%(layer_title)s</a>"
+msgstr ""
+"\n"
+"জন্য উপলব্ধ শৈলী পরিচালনা <a href=\"/layers/%(layer_title)s\">%(layer_title)s</"
+"a>"
 
-#: layers/templates/layers/layer_style_manage.html:26
+#: layers/templates/layers/layer_style_manage.html:23
 msgid "Layer Default Style"
 msgstr "লেয়ার ডিফল্ট স্টাইল"
 
-#: layers/templates/layers/layer_style_manage.html:43
+#: layers/templates/layers/layer_style_manage.html:41
 msgid "Available styles"
 msgstr "উপলভ্য শৈলী"
 
-#: layers/templates/layers/layer_style_manage.html:44
+#: layers/templates/layers/layer_style_manage.html:42
 msgid ""
 "Click on an available style in the upper box to assign it to this layer. "
 "Selected styles appear in the lower box."
-msgstr "এই স্তর থেকে এটি ধার্য করতে উপরের বক্সে একটি উপলব্ধ শৈলী উপর ক্লিক করুন. সিলেক্টেড শৈলী নিচের বক্সে প্রদর্শিত."
+msgstr ""
+"এই স্তর থেকে এটি ধার্য করতে উপরের বক্সে একটি উপলব্ধ শৈলী উপর ক্লিক করুন. সিলেক্টেড "
+"শৈলী নিচের বক্সে প্রদর্শিত."
 
-#: layers/templates/layers/layer_style_manage.html:62
+#: layers/templates/layers/layer_style_manage.html:61
 msgid "Update Available Styles"
 msgstr "আপডেট উপলব্ধ স্টাইলস"
 
@@ -1609,13 +1663,19 @@ msgstr "রেফারেন্স সিস্টেম স্থানাঙ�
 #: layers/templates/upload/layer_upload_crs.html:17
 msgid ""
 "\n"
-"        A coordinate reference system for this layer could not be determined.\n"
+"        A coordinate reference system for this layer could not be "
+"determined.\n"
 "        Locate or enter the appropriate ESPG code for this layer below.\n"
 "        One way to do this is do visit:\n"
 "        <a href=\"http://prj2epsg.org/search\" target=\"_\">prj2epsg</a>\n"
 "        and enter the following:\n"
 "    "
-msgstr "\nএই স্তর জন্য একটি তুল্য রেফারেন্স সিস্টেম নির্ধারণ না করতে পারার. নির্ণয় করুন অথবা নীচে এই স্তর জন্য উপযুক্ত ESPG কোড লিখুন. : এই কাজ করতে এক উপায় যান বিক্ষোভ হয় <a href=\"http://prj2epsg.org/search\" target=\"_\">prj2epsg</a> এবং নিম্নলিখিত লিখুন:"
+msgstr ""
+"\n"
+"এই স্তর জন্য একটি তুল্য রেফারেন্স সিস্টেম নির্ধারণ না করতে পারার. নির্ণয় করুন অথবা "
+"নীচে এই স্তর জন্য উপযুক্ত ESPG কোড লিখুন. : এই কাজ করতে এক উপায় যান বিক্ষোভ হয় <a "
+"href=\"http://prj2epsg.org/search\" target=\"_\">prj2epsg</a> এবং নিম্নলিখিত "
+"লিখুন:"
 
 #: layers/templates/upload/layer_upload_crs.html:32
 #: layers/templates/upload/layer_upload_csv.html:49
@@ -1629,7 +1689,10 @@ msgid ""
 "        There is a problem recognizing the projection of this data. Please\n"
 "        reproject this data to a more common projection.\n"
 "        "
-msgstr "\nএই তথ্য প্রজেকশন স্বীকৃতি একটি সমস্যা আছে. আরো একটি সাধারণ অভিক্ষেপ এই তথ্য reproject দয়া করে."
+msgstr ""
+"\n"
+"এই তথ্য প্রজেকশন স্বীকৃতি একটি সমস্যা আছে. আরো একটি সাধারণ অভিক্ষেপ এই তথ্য "
+"reproject দয়া করে."
 
 #: layers/templates/upload/layer_upload_csv.html:11
 msgid "Geospatial Data"
@@ -1639,14 +1702,17 @@ msgstr "জিওস্পেসিয়াল ডেটা"
 msgid ""
 "Please indicate which attributes contain the latitude and longitude "
 "coordinates in the CSV data."
-msgstr "অক্ষাংশ ধারণ ও দ্রাঘিমাংশ CSV ডেটা মধ্যে স্থানাঙ্ক বৈশিষ্ট্যাবলী যা নির্দেশ করুন."
+msgstr ""
+"অক্ষাংশ ধারণ ও দ্রাঘিমাংশ CSV ডেটা মধ্যে স্থানাঙ্ক বৈশিষ্ট্যাবলী যা নির্দেশ করুন."
 
 #: layers/templates/upload/layer_upload_csv.html:14
 msgid ""
 "With this data, GeoNode was able to guess which attributes contain the\n"
 "latitude and longitude coordinates, but please confirm that the correct\n"
 "attributes are selected below."
-msgstr "এই তথ্য দিয়ে, GeoNode অক্ষাংশ ও দ্রাঘিমাংশ স্থানাঙ্ক থাকে বৈশিষ্ট্যাবলী যা অনুমান, কিন্তু সঠিক বৈশিষ্ট্যাবলী নীচের নির্বাচন করা হয় তা নিশ্চিত করুন সক্ষম."
+msgstr ""
+"এই তথ্য দিয়ে, GeoNode অক্ষাংশ ও দ্রাঘিমাংশ স্থানাঙ্ক থাকে বৈশিষ্ট্যাবলী যা অনুমান, "
+"কিন্তু সঠিক বৈশিষ্ট্যাবলী নীচের নির্বাচন করা হয় তা নিশ্চিত করুন সক্ষম."
 
 #: layers/templates/upload/layer_upload_csv.html:24
 msgid "Latitude"
@@ -1663,10 +1729,15 @@ msgstr "দ্রাঘিমা"
 
 #: layers/templates/upload/layer_upload_csv.html:57
 msgid ""
-"We did not detect columns that could be used for the latitude and longitude.\n"
-"Please verify that you have two columns in your csv file that can be used for\n"
+"We did not detect columns that could be used for the latitude and "
+"longitude.\n"
+"Please verify that you have two columns in your csv file that can be used "
+"for\n"
 "the latitude and longitude."
-msgstr "আমরা অক্ষাংশ ও দ্রাঘিমাংশ জন্য ব্যবহার করা যেতে পারে যে কলাম সনাক্ত করা হয়নি. আপনি অক্ষাংশ ও দ্রাঘিমাংশ জন্য ব্যবহার করা যেতে পারে যে আপনার CSV ফাইলের মধ্যে দুটি কলাম আছে তা যাচাই করুন."
+msgstr ""
+"আমরা অক্ষাংশ ও দ্রাঘিমাংশ জন্য ব্যবহার করা যেতে পারে যে কলাম সনাক্ত করা হয়নি. "
+"আপনি অক্ষাংশ ও দ্রাঘিমাংশ জন্য ব্যবহার করা যেতে পারে যে আপনার CSV ফাইলের মধ্যে "
+"দুটি কলাম আছে তা যাচাই করুন."
 
 #: layers/templates/upload/layer_upload_invalid.html:6
 #: layers/templates/upload/no_upload.html:6
@@ -1770,10 +1841,16 @@ msgstr "টাইম সক্রিয় করার প্রণালী"
 #: layers/templates/upload/layer_upload_time.html:109
 msgid ""
 "A feature can currently support one or two time attributes. If a single\n"
-"    attribute is used, the feature is considered relevant at that single point in time. If two\n"
-"    attributes are used, the second attribute represents the end of a valid period for the\n"
+"    attribute is used, the feature is considered relevant at that single "
+"point in time. If two\n"
+"    attributes are used, the second attribute represents the end of a valid "
+"period for the\n"
 "    feature."
-msgstr "একটি বৈশিষ্ট্য বর্তমানে একটি বা দুটি সময় বৈশিষ্ট্যাবলী সমর্থন করতে পারে না. একটি একক অ্যাট্রিবিউট ব্যবহার করা হয়, বৈশিষ্ট্য সময়ে যে একক সময়ে প্রাসঙ্গিক বলে মনে করা হয়. দুই বৈশিষ্ট্যাবলী ব্যবহার করা হয়, তাহলে দ্বিতীয়টি অ্যাট্রিবিউট বৈশিষ্ট্য জন্য একটি বৈধ সময়ের শেষে প্রতিনিধিত্ব করে."
+msgstr ""
+"একটি বৈশিষ্ট্য বর্তমানে একটি বা দুটি সময় বৈশিষ্ট্যাবলী সমর্থন করতে পারে না. একটি "
+"একক অ্যাট্রিবিউট ব্যবহার করা হয়, বৈশিষ্ট্য সময়ে যে একক সময়ে প্রাসঙ্গিক বলে মনে করা "
+"হয়. দুই বৈশিষ্ট্যাবলী ব্যবহার করা হয়, তাহলে দ্বিতীয়টি অ্যাট্রিবিউট বৈশিষ্ট্য জন্য একটি "
+"বৈধ সময়ের শেষে প্রতিনিধিত্ব করে."
 
 #: layers/templates/upload/layer_upload_time.html:113
 msgid "Selecting an Attribute"
@@ -1798,10 +1875,14 @@ msgstr "একটি বছর প্রতিনিধিত্বমূলক 
 #: layers/templates/upload/layer_upload_time.html:121
 msgid ""
 "\n"
-"    For text attributes, one can specify a custom format or use the 'best guess' approach.\n"
+"    For text attributes, one can specify a custom format or use the 'best "
+"guess' approach.\n"
 "    The most common formatting flags are:\n"
 "    "
-msgstr "\nটেক্সট বৈশিষ্ট্যাবলী জন্য, এক একটি পছন্দসই বিন্যাস উল্লেখ বা 'সেরা অনুমান' পদ্ধতির ব্যবহার করতে পারেন. সবচেয়ে সাধারণ বিন্যাস পতাকা আছে:"
+msgstr ""
+"\n"
+"টেক্সট বৈশিষ্ট্যাবলী জন্য, এক একটি পছন্দসই বিন্যাস উল্লেখ বা 'সেরা অনুমান' পদ্ধতির "
+"ব্যবহার করতে পারেন. সবচেয়ে সাধারণ বিন্যাস পতাকা আছে:"
 
 #: layers/templates/upload/layer_upload_time.html:127
 msgid "year"
@@ -1834,9 +1915,11 @@ msgstr "একক উদ্ধৃতি চিহ্ন একটি আক্�
 
 #: layers/templates/upload/layer_upload_time.html:137
 msgid ""
-"To remove ambiguity, repeat a code to represent the maximum number of digits"
-" - for example yyyy"
-msgstr "উদাহরণস্বরূপ yyyy জন্য - অস্পষ্টতা অপসারণ, সংখ্যা সর্বোচ্চ সংখ্যা প্রতিনিধিত্ব করার জন্য একটি কোড পুনরাবৃত্তি"
+"To remove ambiguity, repeat a code to represent the maximum number of digits "
+"- for example yyyy"
+msgstr ""
+"উদাহরণস্বরূপ yyyy জন্য - অস্পষ্টতা অপসারণ, সংখ্যা সর্বোচ্চ সংখ্যা প্রতিনিধিত্ব করার জন্য "
+"একটি কোড পুনরাবৃত্তি"
 
 #: layers/templates/upload/layer_upload_time.html:139
 msgid "The 'best guess' will handle date and optional time variants of"
@@ -1847,7 +1930,8 @@ msgid "In terms of the formatting flags noted above, these are"
 msgstr "উপরে উল্লিখিত বিন্যাস পতাকা নিরিখে, সেগুলি হল"
 
 #: layers/templates/upload/no_upload.html:7
-msgid "Returning to the upload starting page in <span id=\"cnt\">5</span>seconds "
+msgid ""
+"Returning to the upload starting page in <span id=\"cnt\">5</span>seconds "
 msgstr "<span id=\"cnt\">5</span> সেকেন্ডের মধ্যে আপলোড শুরু পৃষ্ঠায় ফিরে"
 
 #: layers/templates/upload/no_upload.html:8
@@ -2106,22 +2190,32 @@ msgid ""
 "      Here you can download all the layers of this map that\n"
 "      are hosted on this GeoNode.\n"
 "    "
-msgstr "\nএখানে আপনি এই GeoNode হোস্ট করা হয় যে এই ম্যাপ এর সব স্তর ডাউনলোড করতে পারেন."
+msgstr ""
+"\n"
+"এখানে আপনি এই GeoNode হোস্ট করা হয় যে এই ম্যাপ এর সব স্তর ডাউনলোড করতে পারেন."
 
 #: maps/templates/maps/map_download.html:22
 msgid ""
 "\n"
-"      <div class=\"alert alert-warning\">Could not find downloadable layers for this map. You can go back to  \n"
+"      <div class=\"alert alert-warning\">Could not find downloadable layers "
+"for this map. You can go back to  \n"
 "      "
-msgstr "\n<div class=\"alert alert-warning\"> এই মানচিত্রের জন্য ডাউনলোডযোগ্য স্তর খুঁজে পাওয়া যায়নি. আপনি ফিরে যেতে পারেন"
+msgstr ""
+"\n"
+"<div class=\"alert alert-warning\"> এই মানচিত্রের জন্য ডাউনলোডযোগ্য স্তর খুঁজে "
+"পাওয়া যায়নি. আপনি ফিরে যেতে পারেন"
 
 #: maps/templates/maps/map_download.html:29
 msgid ""
 "\n"
-"        Additionally, the map contains these layers which will not be downloaded\n"
+"        Additionally, the map contains these layers which will not be "
+"downloaded\n"
 "        due to security restrictions:\n"
 "      "
-msgstr "\nউপরন্তু, মানচিত্র কারণে নিরাপত্তা বিধিনিষেধ থেকে ডাউনলোড করা না হবে, যা এই তিনটি স্তরের মধ্যে রয়েছে:"
+msgstr ""
+"\n"
+"উপরন্তু, মানচিত্র কারণে নিরাপত্তা বিধিনিষেধ থেকে ডাউনলোড করা না হবে, যা এই তিনটি "
+"স্তরের মধ্যে রয়েছে:"
 
 #: maps/templates/maps/map_download.html:41
 msgid ""
@@ -2129,7 +2223,10 @@ msgid ""
 "        Finally, the map contains these layers which will not be downloaded\n"
 "        because they are not available directly from this GeoNode:\n"
 "      "
-msgstr "\nঅবশেষে, মানচিত্র তারা এই GeoNode থেকে সরাসরি পাওয়া যায় না, কারণ ডাউনলোড করা না হবে, যা এই তিনটি স্তরের মধ্যে রয়েছে:"
+msgstr ""
+"\n"
+"অবশেষে, মানচিত্র তারা এই GeoNode থেকে সরাসরি পাওয়া যায় না, কারণ ডাউনলোড করা "
+"না হবে, যা এই তিনটি স্তরের মধ্যে রয়েছে:"
 
 #: maps/templates/maps/map_download.html:54
 msgid "Downloading"
@@ -2157,14 +2254,21 @@ msgid ""
 "\n"
 "        Editing details for %(map_title)s\n"
 "      "
-msgstr "\nজন্য সম্পাদনার বিবরণ %(map_title)s"
+msgstr ""
+"\n"
+"জন্য সম্পাদনার বিবরণ %(map_title)s"
 
 #: maps/templates/maps/map_metadata.html:17
 msgid ""
-"Note: this map's orginal metadata was populated by importing a metadata XML file.\n"
-"        GeoNode's metadata import supports a subset of ISO, FGDC, and Dublin Core metadata elements.\n"
+"Note: this map's orginal metadata was populated by importing a metadata XML "
+"file.\n"
+"        GeoNode's metadata import supports a subset of ISO, FGDC, and Dublin "
+"Core metadata elements.\n"
 "        Some of your original metadata may have been lost."
-msgstr "উল্লেখ্য: এই ম্যাপ এর মূল মিটাডাটা একটি মেটাডাটা XML ফাইল ইম্পোর্ট দ্বারা পূর্ণ ছিল. GeoNode এর মেটাডেটা আমদানি আইএসও, FGDC, এবং ডাবলিন কোর মেটাডাটা উপাদানের একটি উপসেট সমর্থন করে. আপনার মূল মেটাডাটা কিছু হারিয়ে হয়ে থাকতে পারে."
+msgstr ""
+"উল্লেখ্য: এই ম্যাপ এর মূল মিটাডাটা একটি মেটাডাটা XML ফাইল ইম্পোর্ট দ্বারা পূর্ণ ছিল. "
+"GeoNode এর মেটাডেটা আমদানি আইএসও, FGDC, এবং ডাবলিন কোর মেটাডাটা উপাদানের "
+"একটি উপসেট সমর্থন করে. আপনার মূল মেটাডাটা কিছু হারিয়ে হয়ে থাকতে পারে."
 
 #: maps/templates/maps/map_remove.html:6
 msgid "Deleting"
@@ -2176,7 +2280,9 @@ msgid ""
 "\n"
 "        Are you sure you want to remove %(map_title)s?\n"
 "    "
-msgstr "\nআপনি %(map_title)s সরানোর বিষয়ে নিশ্চিত?"
+msgstr ""
+"\n"
+"আপনি %(map_title)s সরানোর বিষয়ে নিশ্চিত?"
 
 #: maps/templates/maps/map_view.html:5
 msgid "GeoExplorer"
@@ -2205,8 +2311,8 @@ msgstr "সম্পদ রচনা যারা পার্টি"
 
 #: people/enumerations.py:40
 msgid ""
-"party who has processed the data in a manner such that the resource has been"
-" modified"
+"party who has processed the data in a manner such that the resource has been "
+"modified"
 msgstr "সম্পদ পরিবর্তন করা হয়েছে যেমন এমনভাবে যে তথ্য প্রক্রিয়াকরণ হয়েছে যারা পার্টি"
 
 #: people/enumerations.py:41
@@ -2217,7 +2323,9 @@ msgstr "সম্পদ প্রকাশিত যিনি পার্টি
 msgid ""
 "party that accepts accountability and responsibility for the data and "
 "ensures         appropriate care and maintenance of the resource"
-msgstr "তথ্য জন্য জবাবদিহিতা ও দায়িত্ব গ্রহণ ও সম্পদ যথাযথ যত্ন এবং রক্ষণাবেক্ষণ নিশ্চিত করে যে পার্টি"
+msgstr ""
+"তথ্য জন্য জবাবদিহিতা ও দায়িত্ব গ্রহণ ও সম্পদ যথাযথ যত্ন এবং রক্ষণাবেক্ষণ নিশ্চিত করে "
+"যে পার্টি"
 
 #: people/enumerations.py:44
 msgid ""
@@ -2246,8 +2354,7 @@ msgid "party that owns the resource"
 msgstr "সম্পদ মালিক যে পার্টি"
 
 #: people/enumerations.py:50
-msgid ""
-"key party responsible for gathering information and conducting research"
+msgid "key party responsible for gathering information and conducting research"
 msgstr "তথ্য সংগ্রহ ও গবেষণা আবহ জন্য দায়ী কী পার্টি"
 
 #: people/forms.py:64
@@ -2294,7 +2401,8 @@ msgstr "স্বর"
 msgid ""
 "telephone number by which individuals can speak to the responsible "
 "organization or individual"
-msgstr "টেলিফোন নম্বর যার দ্বারা ব্যক্তি দায়ী প্রতিষ্ঠান বা ব্যক্তির সাথে কথা বলতে পারেন"
+msgstr ""
+"টেলিফোন নম্বর যার দ্বারা ব্যক্তি দায়ী প্রতিষ্ঠান বা ব্যক্তির সাথে কথা বলতে পারেন"
 
 #: people/models.py:56
 msgid "Facsimile"
@@ -2314,7 +2422,8 @@ msgstr "ডেলিভারি পয়েন্ট"
 msgid ""
 "physical and email address at which the organization or individual may be "
 "contacted"
-msgstr "প্রতিষ্ঠান বা ব্যক্তির সাথে যোগাযোগ করা যেতে পারে, যা এ শারীরিক এবং ইমেল ঠিকানা"
+msgstr ""
+"প্রতিষ্ঠান বা ব্যক্তির সাথে যোগাযোগ করা যেতে পারে, যা এ শারীরিক এবং ইমেল ঠিকানা"
 
 #: people/models.py:65
 msgid "City"
@@ -2348,7 +2457,9 @@ msgstr "প্রকৃত ঠিকানা দেশ"
 msgid ""
 "commonly used word(s) or formalised word(s) or phrase(s) used to describe "
 "the subject             (space or comma-separated"
-msgstr "সাধারণভাবে ব্যবহৃত শব্দ (গুলি) বা বিধিবদ্ধ শব্দ (গুলি) বা ফ্রেইজ (গুলি) বিষয় (স্পেস বা কমা দ্বারা পৃথক বর্ণনা ব্যবহৃত"
+msgstr ""
+"সাধারণভাবে ব্যবহৃত শব্দ (গুলি) বা বিধিবদ্ধ শব্দ (গুলি) বা ফ্রেইজ (গুলি) বিষয় (স্পেস বা "
+"কমা দ্বারা পৃথক বর্ণনা ব্যবহৃত"
 
 #: people/views.py:84
 msgid "Your username for "
@@ -2392,9 +2503,11 @@ msgstr "ভুলে গেছেন ইউজারনেম"
 
 #: people/templates/people/forgot_username_form.html:9
 msgid ""
-"Enter your email address and click the submit button.  Your username will be"
-" sent to you."
-msgstr "আপনার ইমেইল ঠিকানা লিখুন এবং সাবমিট বাটনে ক্লিক করুন. আপনার ব্যবহারকারী নাম আপনার কাছে পাঠানো হবে."
+"Enter your email address and click the submit button.  Your username will be "
+"sent to you."
+msgstr ""
+"আপনার ইমেইল ঠিকানা লিখুন এবং সাবমিট বাটনে ক্লিক করুন. আপনার ব্যবহারকারী নাম "
+"আপনার কাছে পাঠানো হবে."
 
 #: people/templates/people/profile_create.html:8
 #: people/templates/people/profile_create.html:14
@@ -2525,12 +2638,25 @@ msgstr "লেয়ার স্টাইলস"
 #: services/views.py:63
 msgid ""
 "\n"
-"The Open Geoportal is a consortium comprised of contributions of several universities and organizations to help\n"
-"facilitate the discovery and acquisition of geospatial data across many organizations and platforms. Current partners\n"
-"include: Harvard, MIT, MassGIS, Princeton, Columbia, Stanford, UC Berkeley, UCLA, Yale, and UConn. Built on open source\n"
-"technology, The Open Geoportal provides organizations the opportunity to share thousands of geospatial data layers,\n"
-"maps, metadata, and development resources through a single common interface.\n"
-msgstr "\nওপেন Geoportal অনেক প্রতিষ্ঠান এবং প্ল্যাটফর্মের জুড়ে আবিষ্কার এবং ভৌগলিক অবস্থান বিষয়ক প্রযুক্তিবিদ্যা তথ্য অধিগ্রহণের সহজতর সাহায্য বিভিন্ন বিশ্ববিদ্যালয় ও সংস্থার অবদান গঠিত একটি সাহচর্য হয়. চলতি সহযোগীদের মধ্যে রয়েছে: হার্ভার্ড, এমআইটি, MassGIS, প্রিন্সটন, কলম্বিয়া, স্ট্যানফোর্ড, UC বার্কলে, UCLA, ইয়েল, এবং UConn. ওপেন সোর্স প্রযুক্তির উপর নির্মিত, ওপেন Geoportal প্রতিষ্ঠানের একটি একক সাধারণ ইন্টারফেসের মাধ্যমে ভৌগলিক অবস্থান বিষয়ক প্রযুক্তিবিদ্যা তথ্য স্তর, মানচিত্র, মেটাডেটা, এবং উন্নয়ন সম্পদ হাজার শেয়ার করার সুযোগ প্রদান করে.\n"
+"The Open Geoportal is a consortium comprised of contributions of several "
+"universities and organizations to help\n"
+"facilitate the discovery and acquisition of geospatial data across many "
+"organizations and platforms. Current partners\n"
+"include: Harvard, MIT, MassGIS, Princeton, Columbia, Stanford, UC Berkeley, "
+"UCLA, Yale, and UConn. Built on open source\n"
+"technology, The Open Geoportal provides organizations the opportunity to "
+"share thousands of geospatial data layers,\n"
+"maps, metadata, and development resources through a single common "
+"interface.\n"
+msgstr ""
+"\n"
+"ওপেন Geoportal অনেক প্রতিষ্ঠান এবং প্ল্যাটফর্মের জুড়ে আবিষ্কার এবং ভৌগলিক অবস্থান "
+"বিষয়ক প্রযুক্তিবিদ্যা তথ্য অধিগ্রহণের সহজতর সাহায্য বিভিন্ন বিশ্ববিদ্যালয় ও সংস্থার "
+"অবদান গঠিত একটি সাহচর্য হয়. চলতি সহযোগীদের মধ্যে রয়েছে: হার্ভার্ড, এমআইটি, "
+"MassGIS, প্রিন্সটন, কলম্বিয়া, স্ট্যানফোর্ড, UC বার্কলে, UCLA, ইয়েল, এবং UConn. ওপেন "
+"সোর্স প্রযুক্তির উপর নির্মিত, ওপেন Geoportal প্রতিষ্ঠানের একটি একক সাধারণ "
+"ইন্টারফেসের মাধ্যমে ভৌগলিক অবস্থান বিষয়ক প্রযুক্তিবিদ্যা তথ্য স্তর, মানচিত্র, "
+"মেটাডেটা, এবং উন্নয়ন সম্পদ হাজার শেয়ার করার সুযোগ প্রদান করে.\n"
 
 #: services/views.py:273
 msgid "This is an existing service"
@@ -2549,9 +2675,11 @@ msgstr "একটি সামঞ্জস্যপূর্ণ অভিক্�
 msgid ""
 "Could not find any layers in a compatible projection:                 The "
 "spatial id was: %(srs)s and the url %(url)s"
-msgstr "একটি সামঞ্জস্যপূর্ণ অভিক্ষেপ যে কোন স্তর খুঁজে পাওয়া যায়নি: স্থানিক আইডি ছিল: %(srs)s গুলি এবং URL%(url)s"
+msgstr ""
+"একটি সামঞ্জস্যপূর্ণ অভিক্ষেপ যে কোন স্তর খুঁজে পাওয়া যায়নি: স্থানিক আইডি ছিল: %(srs)s "
+"গুলি এবং URL%(url)s"
 
-#: services/views.py:1207
+#: services/views.py:1208
 msgid "You are not permitted to remove this service."
 msgstr "আপনি এই সেবা অপসারণ করার অনুমতি নেই."
 
@@ -2683,7 +2811,9 @@ msgid ""
 "\n"
 "          You are not allowed to perform this operation.  \n"
 "      "
-msgstr "\nআপনি এই অপারেশন সম্পাদন করতে অনুমতি দেওয়া হয় না."
+msgstr ""
+"\n"
+"আপনি এই অপারেশন সম্পাদন করতে অনুমতি দেওয়া হয় না."
 
 #: templates/401.html:25
 msgid "Please verify that you are logged in as the correct user."
@@ -2700,9 +2830,12 @@ msgstr "পাতা পাওয়া যায়নি"
 #: templates/404.html:6
 msgid ""
 "\n"
-"      The page you requested does not exist.  Perhaps you are using an outdated bookmark?\n"
+"      The page you requested does not exist.  Perhaps you are using an "
+"outdated bookmark?\n"
 "  "
-msgstr "\nআপনি অনুরোধ পৃষ্ঠা বিদ্যমান নেই. সম্ভবত আপনি একটি সেকেলে বুকমার্ক ব্যবহার করছেন?"
+msgstr ""
+"\n"
+"আপনি অনুরোধ পৃষ্ঠা বিদ্যমান নেই. সম্ভবত আপনি একটি সেকেলে বুকমার্ক ব্যবহার করছেন?"
 
 #: templates/500.html:48 templates/base.html:56
 msgid "People"
@@ -2785,24 +2918,32 @@ msgstr "এই পৃষ্ঠা লোড একটি ত্রুটি ছ�
 #: templates/500.html:161
 msgid ""
 "\n"
-"          Please contact your GeoNode administrator (he may have received an email automatically if he configured it properly).\n"
-"          If you are the site administrator, enable debug mode to see the actual error and fix it or file an issue in <a href=\"http://github.com/GeoNode/geonode/issues\">GeoNode's issue tracker</a>\n"
+"          Please contact your GeoNode administrator (he may have received an "
+"email automatically if he configured it properly).\n"
+"          If you are the site administrator, enable debug mode to see the "
+"actual error and fix it or file an issue in <a href=\"http://github.com/"
+"GeoNode/geonode/issues\">GeoNode's issue tracker</a>\n"
 "          "
-msgstr "\nআপনার GeoNode প্রশাসকের সাথে যোগাযোগ করুন (তিনি সঠিকভাবে কনফিগার করে তিনি স্বয়ংক্রিয়ভাবে একটি ইমেইল পেয়েছি পারে). আপনি সাইট প্রশাসক হন, প্রকৃত ত্রুটি দেখতে ডিবাগ মোড সক্রিয় এবং এটি সমাধান করতে বা মধ্যে একটি বিষয় দায়ের <a href=\"http://github.com/GeoNode/geonode/issues\">GeoNode এর বিষয় অনুসরণ</a>"
+msgstr ""
+"\n"
+"আপনার GeoNode প্রশাসকের সাথে যোগাযোগ করুন (তিনি সঠিকভাবে কনফিগার করে তিনি "
+"স্বয়ংক্রিয়ভাবে একটি ইমেইল পেয়েছি পারে). আপনি সাইট প্রশাসক হন, প্রকৃত ত্রুটি দেখতে "
+"ডিবাগ মোড সক্রিয় এবং এটি সমাধান করতে বা মধ্যে একটি বিষয় দায়ের <a href=\"http://"
+"github.com/GeoNode/geonode/issues\">GeoNode এর বিষয় অনুসরণ</a>"
 
-#: templates/500.html:182 templates/base.html:172
+#: templates/500.html:182 templates/base.html:173
 msgid "Powered by"
 msgstr "দ্বারা প্রস্তুত Blogger"
 
-#: templates/500.html:182 templates/base.html:172
+#: templates/500.html:182 templates/base.html:173
 msgid "GeoNode"
 msgstr "GeoNode"
 
-#: templates/500.html:182 templates/base.html:172
+#: templates/500.html:182 templates/base.html:173
 msgid "version"
 msgstr "সংস্করণ"
 
-#: templates/500.html:183 templates/base.html:173
+#: templates/500.html:183 templates/base.html:174
 msgid "Developers"
 msgstr "ডেভালোপার"
 
@@ -2877,9 +3018,9 @@ msgstr "কে এই স্তর জন্য শৈলী সম্পাদ�
 
 #: templates/_permissions.html:152
 msgid ""
-"Who can manage it? (update, delete, change permissions, publish/unpublish "
-"it)"
-msgstr "কে এটি পরিচালনা করতে পারেন? (আপডেট, তা অপ্রকাশিত / প্রকাশ, পরিবর্তনের অনুমতি মুছে)"
+"Who can manage it? (update, delete, change permissions, publish/unpublish it)"
+msgstr ""
+"কে এটি পরিচালনা করতে পারেন? (আপডেট, তা অপ্রকাশিত / প্রকাশ, পরিবর্তনের অনুমতি মুছে)"
 
 #: templates/_permissions_form.html:9
 msgid "Set permissions for this resource"
@@ -2916,42 +3057,87 @@ msgstr "GeoNode আগ্রহী ডেভেলপারদের জন্�
 #: templates/developer.html:12
 msgid ""
 "\n"
-"  <p><a href=\"http://geonode.org/\">GeoNode</a> is an open service built on open source software. We encourage you to build new applications using the components and resources it provides. This page is a starting point for developers interesting in taking full advantage of GeoNode. It also includes links to the project's source code so anyone can build and customize their own GeoNode. </p>\n"
+"  <p><a href=\"http://geonode.org/\">GeoNode</a> is an open service built on "
+"open source software. We encourage you to build new applications using the "
+"components and resources it provides. This page is a starting point for "
+"developers interesting in taking full advantage of GeoNode. It also includes "
+"links to the project's source code so anyone can build and customize their "
+"own GeoNode. </p>\n"
 "\n"
 "  <h4>GeoNode Software</h4>\n"
 "\n"
-"  <p>All the code that runs GeoNode is open source. The code is available at <a href=\"http://github.com/GeoNode/geonode\">http://github.com/GeoNode/geonode/</a>. The issue tracker for the project is at <a href=\"http://github.com/GeoNode/geonode/issues\">http://github.com/GeoNode/geonode/issues</a>.</p>\n"
+"  <p>All the code that runs GeoNode is open source. The code is available at "
+"<a href=\"http://github.com/GeoNode/geonode\">http://github.com/GeoNode/"
+"geonode/</a>. The issue tracker for the project is at <a href=\"http://"
+"github.com/GeoNode/geonode/issues\">http://github.com/GeoNode/geonode/"
+"issues</a>.</p>\n"
 "\n"
-"  <p>GeoNode is built using several open source projects, each with its own community. If you are interested in contributing new features to the GeoNode, we encourage you to do so by contributing to one of the projects on which it is built:</p>\n"
+"  <p>GeoNode is built using several open source projects, each with its own "
+"community. If you are interested in contributing new features to the "
+"GeoNode, we encourage you to do so by contributing to one of the projects on "
+"which it is built:</p>\n"
 "  <ul>\n"
-"    <li><a href=\"http://geoext.org\">GeoExt</a> - The JavaScript toolkit for rich web mapping applications</li>\n"
-"    <li><a href=\"http://geoserver.org\">GeoServer</a> - Standards based server for geospatial information</li>\n"
-"    <li><a href=\"http://geowebcache.org\">GeoWebCache</a> - Cache engine for WMS Tiles</li><li><a href=\"http://openlayers.org\">OpenLayers</a> - Pure JavaScript library powering the maps of GeoExt</li>\n"
-"    <li><a href=\"http://pycsw.org\">pycsw</a> - CSW metadata catalogue server</li>\n"
+"    <li><a href=\"http://geoext.org\">GeoExt</a> - The JavaScript toolkit "
+"for rich web mapping applications</li>\n"
+"    <li><a href=\"http://geoserver.org\">GeoServer</a> - Standards based "
+"server for geospatial information</li>\n"
+"    <li><a href=\"http://geowebcache.org\">GeoWebCache</a> - Cache engine "
+"for WMS Tiles</li><li><a href=\"http://openlayers.org\">OpenLayers</a> - "
+"Pure JavaScript library powering the maps of GeoExt</li>\n"
+"    <li><a href=\"http://pycsw.org\">pycsw</a> - CSW metadata catalogue "
+"server</li>\n"
 "  </ul>\n"
 "\n"
 "  <h4>What are OGC Services?</h4>\n"
-"  <p>The data in this application is served using open standards endorsed by the <a href=\"http://opengeospatial.org/\">Open Geospatial Consortium</a>; in particular, WMS (Web Map Service) is used for accessing maps, WFS (Web Feature Service) is used for accessing vector data, and WCS (Web Coverage Service) is used for accessing raster data.  WMC (Web Map Context Documents) is used for sharing maps. You can use these services in your own applications using libraries such as OpenLayers, GeoTools, and OGR (all of which are open-source software and available at zero cost).</p>\n"
+"  <p>The data in this application is served using open standards endorsed by "
+"the <a href=\"http://opengeospatial.org/\">Open Geospatial Consortium</a>; "
+"in particular, WMS (Web Map Service) is used for accessing maps, WFS (Web "
+"Feature Service) is used for accessing vector data, and WCS (Web Coverage "
+"Service) is used for accessing raster data.  WMC (Web Map Context Documents) "
+"is used for sharing maps. You can use these services in your own "
+"applications using libraries such as OpenLayers, GeoTools, and OGR (all of "
+"which are open-source software and available at zero cost).</p>\n"
 "\n"
 "  <h4>What is GeoWebCache?</h4>\n"
-"  <p>GeoWebCache provides mapping tiles that are compatible with a number of mapping engines, including Google Maps, Bing Maps and OpenLayers. All the data hosted by GeoNode is also available through GeoWebCache. GeoWebCache improves on WMS by caching data and providing more responsive maps.</p>\n"
+"  <p>GeoWebCache provides mapping tiles that are compatible with a number of "
+"mapping engines, including Google Maps, Bing Maps and OpenLayers. All the "
+"data hosted by GeoNode is also available through GeoWebCache. GeoWebCache "
+"improves on WMS by caching data and providing more responsive maps.</p>\n"
 "\n"
 "  <h4>OpenLayers Example Code</h4>\n"
 "\n"
-"  <p>To include a GeoNode map layer in an OpenLayers map, first find the name for that layer. This is found in the layer's <code>name</code> field (not <code>title</code>) of the layer list. For this example, we will use the Nicaraguan political boundaries background layer, whose name is <code>risk:nicaragua_admin</code>. Then, create an instance of OpenLayers.Layer.WMS:</p>\n"
-"  <p><code>var geonodeLayer = new OpenLayers.Layer.WMS(\"GeoNode Risk Data\", \"http://demo.geonode.org/geoserver/wms\",{ layers: \"risk:nicaragua_admin\" });</code></p>\n"
+"  <p>To include a GeoNode map layer in an OpenLayers map, first find the "
+"name for that layer. This is found in the layer's <code>name</code> field "
+"(not <code>title</code>) of the layer list. For this example, we will use "
+"the Nicaraguan political boundaries background layer, whose name is "
+"<code>risk:nicaragua_admin</code>. Then, create an instance of OpenLayers."
+"Layer.WMS:</p>\n"
+"  <p><code>var geonodeLayer = new OpenLayers.Layer.WMS(\"GeoNode Risk Data"
+"\", \"http://demo.geonode.org/geoserver/wms\",{ layers: \"risk:"
+"nicaragua_admin\" });</code></p>\n"
 "\n"
 "  <h4>Google Maps Example Code</h4>\n"
-"  <p>To include a GeoNode map layer in a Google Map, include the layer namein the URL template.</p>\n"
-"  <p><code>var tilelayer =  new GTileLayer(null, null, null, {tileUrlTemplate: 'http://demo.geonode.org/geoserver/gwc/service/gmaps?layers=risk:nicaragua_admin&#38;zoom={Z}&#38;x={X}&#38;y={Y}', isPng:true, opacity:0.5 } );</code></p>\n"
+"  <p>To include a GeoNode map layer in a Google Map, include the layer "
+"namein the URL template.</p>\n"
+"  <p><code>var tilelayer =  new GTileLayer(null, null, null, "
+"{tileUrlTemplate: 'http://demo.geonode.org/geoserver/gwc/service/gmaps?"
+"layers=risk:nicaragua_admin&#38;zoom={Z}&#38;x={X}&#38;y={Y}', isPng:true, "
+"opacity:0.5 } );</code></p>\n"
 "\n"
 "  <h4>Shapefile/GeoJSON/GML Output</h4>\n"
-"  <p>To get data from the GeoNode web services use the WFS protocol. For example, to get the full Nicaraguan admin boundaries use:</p>\n"
-"  <p><code>http://demo.geonode.org/geoserver/wfs?request=GetFeature&#38;typeName=risk:nicaragua_admin&#38;outputformat=SHAPE-ZIP</code></p>\n"
-"  <p>Changing output format to <code>json</code>, <code>GML2</code>, <code>GML3</code>, or <code>csv</code> will get data in those formats. The WFS protocol also can handle more precise queries, specifying a bounding box or various spatial and non-spatial filters based on the attributes of the data.</p>\n"
+"  <p>To get data from the GeoNode web services use the WFS protocol. For "
+"example, to get the full Nicaraguan admin boundaries use:</p>\n"
+"  <p><code>http://demo.geonode.org/geoserver/wfs?request=GetFeature&#38;"
+"typeName=risk:nicaragua_admin&#38;outputformat=SHAPE-ZIP</code></p>\n"
+"  <p>Changing output format to <code>json</code>, <code>GML2</code>, "
+"<code>GML3</code>, or <code>csv</code> will get data in those formats. The "
+"WFS protocol also can handle more precise queries, specifying a bounding box "
+"or various spatial and non-spatial filters based on the attributes of the "
+"data.</p>\n"
 "\n"
 "  <h4>GeoTools Example Code</h4>\n"
-"  <p>Create a DataStore and extract a FeatureType from it, then run a Query. It is all documented on the wiki at <code>http://geotools.org/</code>.</p>\n"
+"  <p>Create a DataStore and extract a FeatureType from it, then run a Query. "
+"It is all documented on the wiki at <code>http://geotools.org/</code>.</p>\n"
 msgstr ""
 
 #: templates/developer.html:53
@@ -2992,49 +3178,85 @@ msgstr "GeoNode সহায়তা"
 
 #: templates/help.html:9
 msgid ""
-"This page provides helpful information about how to use the GeoNode. You can"
-" use the sidebar links to navigate to what you want to know."
-msgstr "এ পৃষ্ঠায় GeoNode ব্যবহার পদ্ধতি সম্পর্কে সহায়ক তথ্য প্রদান করে. আপনি জানতে চান কি চলাচল পার্শ্বদন্ডে লিঙ্ক ব্যবহার করতে পারেন."
+"This page provides helpful information about how to use the GeoNode. You can "
+"use the sidebar links to navigate to what you want to know."
+msgstr ""
+"এ পৃষ্ঠায় GeoNode ব্যবহার পদ্ধতি সম্পর্কে সহায়ক তথ্য প্রদান করে. আপনি জানতে চান কি "
+"চলাচল পার্শ্বদন্ডে লিঙ্ক ব্যবহার করতে পারেন."
 
 #: templates/help.html:12
 msgid ""
 "\n"
-"  <p>The GeoNode provides access to data sets and a map editing application allows users to browse existing maps and contribute their own.</p>\n"
+"  <p>The GeoNode provides access to data sets and a map editing application "
+"allows users to browse existing maps and contribute their own.</p>\n"
 "\n"
 "  <h4 id=\"browsing-data\">Browsing Layers</h4>\n"
-"  <p>The <a href=\"/layers\">Layers</a> tab allows you to browse data uploaded to this GeoNode.</p>\n"
-"  <p>All data can be downloaded in a variety of formats, for use in other applications.</p>\n"
+"  <p>The <a href=\"/layers\">Layers</a> tab allows you to browse data "
+"uploaded to this GeoNode.</p>\n"
+"  <p>All data can be downloaded in a variety of formats, for use in other "
+"applications.</p>\n"
 "\n"
 "  <h4 id=\"developer-access\">Developer Access</h4>\n"
-"  <p>The <a href=\"/developer\"> Developer</a> page is the place for developers to get started building applications against the GeoNode. It includes instructions on using the web services, links to the source code of the GeoNode, and information about the open source projects used to create it.</p>\n"
+"  <p>The <a href=\"/developer\"> Developer</a> page is the place for "
+"developers to get started building applications against the GeoNode. It "
+"includes instructions on using the web services, links to the source code of "
+"the GeoNode, and information about the open source projects used to create "
+"it.</p>\n"
 "\n"
 "  <h4 id=\"browsing-maps\">Browsing Maps</h4>\n"
-"  <p>The GeoNode allows users to create and share maps with one another.</p>\n"
-"  <p>The <a href=\"/maps\">Maps</a> tab is a gateway to map exploration on GeoNode.  From here you can <strong>search for a map</strong> or <strong>create a map</strong>, which will open the <a href=\"/maps/new\">Map Composer</a>.</p>\n"
+"  <p>The GeoNode allows users to create and share maps with one another.</"
+"p>\n"
+"  <p>The <a href=\"/maps\">Maps</a> tab is a gateway to map exploration on "
+"GeoNode.  From here you can <strong>search for a map</strong> or "
+"<strong>create a map</strong>, which will open the <a href=\"/maps/new\">Map "
+"Composer</a>.</p>\n"
 "  <h5>Google Earth Mode</h5>\n"
-"  <p>Any map viewed in the interactive map editor can be seen in 3D mode with the Google Earth plugin. To switch to 3D mode select the Google Earth globe logo, the rightmost button on top toolbar. If you do not have the Google Earth plugin installed you will be prompted to install it.</p>\n"
+"  <p>Any map viewed in the interactive map editor can be seen in 3D mode "
+"with the Google Earth plugin. To switch to 3D mode select the Google Earth "
+"globe logo, the rightmost button on top toolbar. If you do not have the "
+"Google Earth plugin installed you will be prompted to install it.</p>\n"
 "\n"
 "  <h4 id=\"creating-a-map\">Creating a Map</h4>\n"
-"  <p>To create a new map go to the <a href=\"/maps\">Contributed Maps</a> tab and click the <a href=\"/maps/new\">create your own map</a> link.</p>\n"
-"  <p>This will take you to the <a href=\"/maps/new\">Map Composer</a> with a base layer loaded.</p>\n"
-"  <p>To add data layers from the GeoNode click on the green plus button located below the layers tab on the left hand side of the screen. This will open a dialog listing all the layers available on the GeoNode.</p>\n"
-"  <p>To add layers to your map select them and hit the <strong>Add Layers</strong> button. When finished you may hit <strong>Done</strong> to close the dialog and go back to the map.</p>\n"
+"  <p>To create a new map go to the <a href=\"/maps\">Contributed Maps</a> "
+"tab and click the <a href=\"/maps/new\">create your own map</a> link.</p>\n"
+"  <p>This will take you to the <a href=\"/maps/new\">Map Composer</a> with a "
+"base layer loaded.</p>\n"
+"  <p>To add data layers from the GeoNode click on the green plus button "
+"located below the layers tab on the left hand side of the screen. This will "
+"open a dialog listing all the layers available on the GeoNode.</p>\n"
+"  <p>To add layers to your map select them and hit the <strong>Add Layers</"
+"strong> button. When finished you may hit <strong>Done</strong> to close the "
+"dialog and go back to the map.</p>\n"
 "\n"
 "  <h5>Reordering and Removing Layers</h5>\n"
-"  <p>Change the display order of the layers listed in the data tab by simply dragging and dropping their names. The order in the map will be updated to reflect that. To turn a layer's visibility off simply uncheck it, and to remove it entirely select it and hit the red minus button.</p>\n"
+"  <p>Change the display order of the layers listed in the data tab by simply "
+"dragging and dropping their names. The order in the map will be updated to "
+"reflect that. To turn a layer's visibility off simply uncheck it, and to "
+"remove it entirely select it and hit the red minus button.</p>\n"
 "\n"
 "  <h5>Saving your map</h5>\n"
-"  <p>Once a suitable set of layers and zoom level has been found it's time to save it so others can see it.  Click the Save button--the left most icon on the top toolbar, an image of a map with a disk--on the top menu and fill out the title and abstract of the map.</p>\n"
+"  <p>Once a suitable set of layers and zoom level has been found it's time "
+"to save it so others can see it.  Click the Save button--the left most icon "
+"on the top toolbar, an image of a map with a disk--on the top menu and fill "
+"out the title and abstract of the map.</p>\n"
 "\n"
 "  <h4 id=\"exporting-a-map\">Exporting a Map</h4>\n"
-"  <p>Any map from the GeoNode can be embedded for use in another site or blog. To export a map:</p>\n"
+"  <p>Any map from the GeoNode can be embedded for use in another site or "
+"blog. To export a map:</p>\n"
 "  <ol>\n"
-"    <li>Select the from the list of maps on the community or map page and then hit the 'export map' button.</li> \n"
-"    <li>Choose your desired height and width for the widget in the wizard.</li> \n"
-"    <li>Copy the HTML snippet provided in the wizard to any HTML page or iFrame-supporting blog post.</li>\n"
+"    <li>Select the from the list of maps on the community or map page and "
+"then hit the 'export map' button.</li> \n"
+"    <li>Choose your desired height and width for the widget in the wizard.</"
+"li> \n"
+"    <li>Copy the HTML snippet provided in the wizard to any HTML page or "
+"iFrame-supporting blog post.</li>\n"
 "  </ol>\n"
-"  <p>This will put an interactive widget showing you map in your web page or blog post.</p>\n"
-"  <p>Note that the <a href=\"/maps/new\">Map Composer</a> also has a button to export the map. Just be sure to save the map before exporting if there are changes that you want others to see. It exports the last saved version, not the last viewed version.</p>\n"
+"  <p>This will put an interactive widget showing you map in your web page or "
+"blog post.</p>\n"
+"  <p>Note that the <a href=\"/maps/new\">Map Composer</a> also has a button "
+"to export the map. Just be sure to save the map before exporting if there "
+"are changes that you want others to see. It exports the last saved version, "
+"not the last viewed version.</p>\n"
 "\n"
 "  <h4 id=\"remixing-a-map\">Remixing a Map</h4>\n"
 "  <p>Any map available can serve as a starting point for a new map.</p>\n"
@@ -3042,10 +3264,12 @@ msgid ""
 "    <li>Open the map in the Map Composer.</li>\n"
 "    <li>Add and remove layers as you like.</li>\n"
 "    <li>Pan and zoom to highlight the area of interest.</li>\n"
-"    <li><strong>IMPORTANT:</strong> Update the title, abstract, contact info and tags to reflect the new map.</li>\n"
+"    <li><strong>IMPORTANT:</strong> Update the title, abstract, contact info "
+"and tags to reflect the new map.</li>\n"
 "    <li>Save the map.</li>\n"
 "  </ol>\n"
-"  <p>You will be able to see your new map when you search for it from the <a href=\"/maps\">Maps</a> tab.</p> \n"
+"  <p>You will be able to see your new map when you search for it from the <a "
+"href=\"/maps\">Maps</a> tab.</p> \n"
 "  "
 msgstr ""
 
@@ -3088,13 +3312,17 @@ msgstr "স্বাগত"
 #: templates/index.html:16
 msgid ""
 "GeoNode is an open source platform for sharing geospatial data and maps."
-msgstr "GeoNode ভৌগলিক অবস্থান বিষয়ক প্রযুক্তিবিদ্যা তথ্য এবং মানচিত্র ভাগ করে নেওয়ার জন্য একটি ওপেন সোর্স প্ল্যাটফর্ম."
+msgstr ""
+"GeoNode ভৌগলিক অবস্থান বিষয়ক প্রযুক্তিবিদ্যা তথ্য এবং মানচিত্র ভাগ করে নেওয়ার জন্য "
+"একটি ওপেন সোর্স প্ল্যাটফর্ম."
 
 #: templates/index.html:17
 msgid ""
-"If you have any questions about the software or service, join our <a "
-"href=\"https://groups.google.com/d/forum/geonode-users\">mailing list</a>."
-msgstr "আপনি সফ্টওয়্যার বা সেবা সম্পর্কে কোনো প্রশ্ন থাকে, আমাদের সঙ্গে যোগদান <a href=\"https://groups.google.com/d/forum/geonode-users\">মেইলিং তালিকা</a> ."
+"If you have any questions about the software or service, join our <a href="
+"\"https://groups.google.com/d/forum/geonode-users\">mailing list</a>."
+msgstr ""
+"আপনি সফ্টওয়্যার বা সেবা সম্পর্কে কোনো প্রশ্ন থাকে, আমাদের সঙ্গে যোগদান <a href="
+"\"https://groups.google.com/d/forum/geonode-users\">মেইলিং তালিকা</a> ."
 
 #: templates/index.html:18
 msgid "Need help?"
@@ -3116,7 +3344,9 @@ msgstr "স্তর"
 msgid ""
 "Click to search for geospatial data published by other users, organizations "
 "and public sources. Download data in standard formats."
-msgstr "অন্যান্য ব্যবহারকারীদের, প্রতিষ্ঠান এবং পাবলিক সূত্র দ্বারা প্রকাশ ভৌগলিক অবস্থান বিষয়ক প্রযুক্তিবিদ্যা তথ্য অনুসন্ধান করার জন্য ক্লিক করুন. মান বিন্যাসে ডাউনলোড করা তথ্য."
+msgstr ""
+"অন্যান্য ব্যবহারকারীদের, প্রতিষ্ঠান এবং পাবলিক সূত্র দ্বারা প্রকাশ ভৌগলিক অবস্থান "
+"বিষয়ক প্রযুক্তিবিদ্যা তথ্য অনুসন্ধান করার জন্য ক্লিক করুন. মান বিন্যাসে ডাউনলোড করা তথ্য."
 
 #: templates/index.html:37
 msgid "Map"
@@ -3126,7 +3356,9 @@ msgstr "মানচিত্র"
 msgid ""
 "Data is available for browsing, aggregating and styling to generate maps "
 "which can be shared publicly or restricted to specific users only."
-msgstr "ডেটা শুধুমাত্র নির্দিষ্ট ব্যবহারকারীদের প্রকাশ্যে ভাগ বা সীমিত করা যাবে যা মানচিত্র উৎপন্ন করতে ব্রাউজিং, aggregating এবং স্টাইলিং জন্য উপলব্ধ."
+msgstr ""
+"ডেটা শুধুমাত্র নির্দিষ্ট ব্যবহারকারীদের প্রকাশ্যে ভাগ বা সীমিত করা যাবে যা মানচিত্র "
+"উৎপন্ন করতে ব্রাউজিং, aggregating এবং স্টাইলিং জন্য উপলব্ধ."
 
 #: templates/index.html:39
 msgid "Create maps"
@@ -3140,7 +3372,9 @@ msgstr "ব্যবহারকারী"
 msgid ""
 "GeoNode allows registered users to easily upload geospatial data in several "
 "formats including shapefile and GeoTiff."
-msgstr "GeoNode নিবন্ধিত ব্যবহারকারীরা সহজেই shapefile এবং GeoTiff সহ বিভিন্ন ফরম্যাটের মধ্যে ভৌগলিক অবস্থান বিষয়ক প্রযুক্তিবিদ্যা তথ্য আপলোড করতে পারবেন."
+msgstr ""
+"GeoNode নিবন্ধিত ব্যবহারকারীরা সহজেই shapefile এবং GeoTiff সহ বিভিন্ন ফরম্যাটের "
+"মধ্যে ভৌগলিক অবস্থান বিষয়ক প্রযুক্তিবিদ্যা তথ্য আপলোড করতে পারবেন."
 
 #: templates/index.html:45
 msgid "Share data"
@@ -3175,7 +3409,9 @@ msgstr "পাসওয়ার্ড রিসেট"
 msgid ""
 "Forgotten your password? Enter your email address below, and we'll send you "
 "an email allowing you to reset it."
-msgstr "আপনার পাসওয়ার্ড ভুলে গেছেন? নিচে আপনার ইমেল ঠিকানা লিখুন, এবং আমরা আপনাকে এটি পুনরায় সেট করতে সক্ষম হবেন আপনি একটি ইমেইল পাঠাব."
+msgstr ""
+"আপনার পাসওয়ার্ড ভুলে গেছেন? নিচে আপনার ইমেল ঠিকানা লিখুন, এবং আমরা আপনাকে এটি "
+"পুনরায় সেট করতে সক্ষম হবেন আপনি একটি ইমেইল পাঠাব."
 
 #: templates/account/password_reset.html:20
 msgid "Reset my password"
@@ -3184,9 +3420,13 @@ msgstr "আমার পাসওয়ার্ডটি পুনরায় 
 #: templates/account/password_reset.html:25
 #, python-format
 msgid ""
-"If you have any trouble resetting your password, contact us at <a "
-"href=\"mailto:%(THEME_ACCOUNT_CONTACT_EMAIL)s\">%(THEME_ACCOUNT_CONTACT_EMAIL)s</a>."
-msgstr "আপনি আপনার পাসওয়ার্ড রিসেট করার কোনো ঝামেলা আছে, এ আমাদের সাথে যোগাযোগ <a href=\"mailto:%(THEME_ACCOUNT_CONTACT_EMAIL)s\">%(THEME_ACCOUNT_CONTACT_EMAIL)s</a>."
+"If you have any trouble resetting your password, contact us at <a href="
+"\"mailto:%(THEME_ACCOUNT_CONTACT_EMAIL)s\">%(THEME_ACCOUNT_CONTACT_EMAIL)s</"
+"a>."
+msgstr ""
+"আপনি আপনার পাসওয়ার্ড রিসেট করার কোনো ঝামেলা আছে, এ আমাদের সাথে যোগাযোগ <a "
+"href=\"mailto:%(THEME_ACCOUNT_CONTACT_EMAIL)s\">"
+"%(THEME_ACCOUNT_CONTACT_EMAIL)s</a>."
 
 #: templates/account/signup.html:7 templates/account/signup.html.py:14
 #: templates/account/signup.html:22
@@ -3205,7 +3445,11 @@ msgid ""
 "To confirm this email address, go to %(activate_url)s\n"
 "\n"
 "If you did not sign up for this site, you can ignore this message.\n"
-msgstr "%(site_name)s উপর একটি ব্যবহারকারী এই ইমেইল ঠিকানা ব্যবহার করে একটি একাউন্ট তৈরি করেছে. \nএই ইমেইল ঠিকানা নিশ্চিত করার জন্য, আপনি এই সাইটের জন্য নিবন্ধন করুন হয়নি, আপনি এই বার্তাটি উপেক্ষা করতে পারেন %(activate_url)s  যান.\n"
+msgstr ""
+"%(site_name)s উপর একটি ব্যবহারকারী এই ইমেইল ঠিকানা ব্যবহার করে একটি একাউন্ট "
+"তৈরি করেছে. \n"
+"এই ইমেইল ঠিকানা নিশ্চিত করার জন্য, আপনি এই সাইটের জন্য নিবন্ধন করুন হয়নি, আপনি এই "
+"বার্তাটি উপেক্ষা করতে পারেন %(activate_url)s  যান.\n"
 
 #: templates/account/email/email_confirmation_subject.txt:1
 #, python-format
@@ -3215,11 +3459,19 @@ msgstr "%(site_name)s জন্য ইমেইল ঠিকানা নিশ�
 #: templates/account/email/password_reset.txt:1
 #, python-format
 msgid ""
-"You're receiving this email because you or someone else has requested a password for your user account at %(site_name)s.\n"
-"It can be safely ignored if you did not request a password reset. Click the link below to reset your password.\n"
+"You're receiving this email because you or someone else has requested a "
+"password for your user account at %(site_name)s.\n"
+"It can be safely ignored if you did not request a password reset. Click the "
+"link below to reset your password.\n"
 "\n"
 "%(password_reset_url)s\n"
-msgstr "আপনি বা অন্য কেউ %(site_name)s সময়ে আপনার ব্যবহারকারী অ্যাকাউন্টের জন্য একটি পাসওয়ার্ড অনুরোধ করেছে কারণে এই ইমেলটি পেয়ে থাকেন. আপনি একটি পাসওয়ার্ড রিসেট অনুরোধ না করে যদি এটি উপেক্ষা করা যাবে. আপনার পাসওয়ার্ড রিসেট করতে নিচের লিঙ্কে ক্লিক করুন. \n\n%(password_reset_url)s\n"
+msgstr ""
+"আপনি বা অন্য কেউ %(site_name)s সময়ে আপনার ব্যবহারকারী অ্যাকাউন্টের জন্য একটি "
+"পাসওয়ার্ড অনুরোধ করেছে কারণে এই ইমেলটি পেয়ে থাকেন. আপনি একটি পাসওয়ার্ড রিসেট "
+"অনুরোধ না করে যদি এটি উপেক্ষা করা যাবে. আপনার পাসওয়ার্ড রিসেট করতে নিচের লিঙ্কে "
+"ক্লিক করুন. \n"
+"\n"
+"%(password_reset_url)s\n"
 
 #: templates/account/email/password_reset_subject.txt:1
 #, python-format
@@ -3255,20 +3507,27 @@ msgid "New Announcement"
 msgstr "নতুন ঘোষণা"
 
 #: templates/announcements/announcement_list.html:31
+msgid "Level"
+msgstr ""
+
+#: templates/announcements/announcement_list.html:32
 msgid "Announcement"
 msgstr "ঘোষণা"
 
-#: templates/announcements/announcement_list.html:32
+#: templates/announcements/announcement_list.html:33
 msgid "Published From"
 msgstr "থেকে প্রকাশিত"
 
-#: templates/announcements/announcement_list.html:44
+#: templates/announcements/announcement_list.html:48
 #, python-format
 msgid ""
 "\n"
-"                        Published from <b>%(publish_start)s</b> to <b>%(publish_end)s</b>.\n"
+"                        Published from <b>%(publish_start)s</b> to <b>"
+"%(publish_end)s</b>.\n"
 "                        "
-msgstr "\n<b>%(publish_start)s</b> থেকে প্রকাশিত থেকে <b>%(publish_end)s</b>."
+msgstr ""
+"\n"
+"<b>%(publish_start)s</b> থেকে প্রকাশিত থেকে <b>%(publish_end)s</b>."
 
 #: templates/announcements/detail.html:4
 #, python-format
@@ -3307,9 +3566,11 @@ msgstr "আপনি মুছে ফেলতে চান যে অবতা�
 #: templates/avatar/confirm_delete.html:9
 #, python-format
 msgid ""
-"You have no avatars to delete. Please <a "
-"href=\"%(avatar_change_url)s\">upload one</a> now."
-msgstr "আপনি মুছে ফেলতে অবতার কোন আছে. দয়া করে <a href=\"%(avatar_change_url)s\">আপলোড</a> এখন."
+"You have no avatars to delete. Please <a href=\"%(avatar_change_url)s"
+"\">upload one</a> now."
+msgstr ""
+"আপনি মুছে ফেলতে অবতার কোন আছে. দয়া করে <a href=\"%(avatar_change_url)s"
+"\">আপলোড</a> এখন."
 
 #: templates/avatar/confirm_delete.html:15
 msgid "Delete These"
@@ -3351,7 +3612,9 @@ msgstr "নোট"
 msgid ""
 "You do not have a verified email address to which notices can be sent. You "
 "can add one by going to <a href=\"%(email_url)s\">Account</a>."
-msgstr "আপনি নোটিশ পাঠানো যেতে পারে যা একটি যাচাই ইমেল ঠিকানা না. আপনি যাচ্ছে এক যোগ করতে পারেন <a href=\"%(email_url)s\">অ্যাকাউন্ট</a> ."
+msgstr ""
+"আপনি নোটিশ পাঠানো যেতে পারে যা একটি যাচাই ইমেল ঠিকানা না. আপনি যাচ্ছে এক যোগ "
+"করতে পারেন <a href=\"%(email_url)s\">অ্যাকাউন্ট</a> ."
 
 #: templates/notification/notice_settings.html:30
 msgid "Notification Type"
@@ -3539,3 +3802,6 @@ msgstr "পিছনে ইনবক্সে"
 #: templates/user_messages/thread_detail.html:25
 msgid "Send Reply"
 msgstr "উত্তর পাঠান"
+
+#~ msgid "Remote Thumbnail"
+#~ msgstr "রিমোট থাম্বনেল"
