@@ -1,3 +1,12 @@
+geonode (2.4.0+alpha38) trusty; urgency=high
+
+  [ Paolo Pasquali ]
+  * [d6a8bb] Fix Layer Style Manage Page Layout and HTML Select Style
+
+  [ Ariel Nunez ]
+
+ -- Ariel Nunez <ingenieroariel@gmail.com>  Wed, 19 Nov 2014 12:36:37 -0500
+
 geonode (2.4.0+alpha37) trusty; urgency=high
 
   * [2c8ea7] Fixed E126 continuation line over-indented for hanging indent
