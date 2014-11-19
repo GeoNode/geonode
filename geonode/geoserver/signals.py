@@ -387,7 +387,8 @@ def geoserver_post_save(instance, sender, **kwargs):
     if settings.DEBUG:
         instance.set_permissions(json.loads(current_perms))
 
-    legend_url = ogc_server_settings.PUBLIC_LOCATION + 'wms?request=GetLegendGraphic&format=image/png&WIDTH=20&HEIGHT=20&LAYER=' + \
+    legend_url = ogc_server_settings.PUBLIC_LOCATION + \
+        'wms?request=GetLegendGraphic&format=image/png&WIDTH=20&HEIGHT=20&LAYER=' + \
         instance.typename + '&legend_options=fontAntiAliasing:true;fontSize:12;forceLabels:on'
 
     Link.objects.get_or_create(resource=instance.resourcebase_ptr,
