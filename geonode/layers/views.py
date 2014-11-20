@@ -190,8 +190,7 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
 
     # Transform WGS84 to Mercator.
     config["srs"] = srid if srid != "EPSG:4326" else "EPSG:900913"
-    config["bbox"] = llbbox_to_mercator(
-       [float(coord) for coord in bbox])
+    config["bbox"] = llbbox_to_mercator([float(coord) for coord in bbox])
 
     config["title"] = layer.title
 
