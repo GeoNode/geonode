@@ -507,11 +507,11 @@ def upload(incoming, user=None, overwrite=False,
     return output
 
 
-def create_thumbnail(instance, thumbnail_remote_url, thumbail_create_url=None):
+def create_thumbnail(instance, thumbnail_remote_url, thumbnail_create_url=None):
     BBOX_DIFFERENCE_THRESHOLD = 1e-5
 
-    if not thumbail_create_url:
-        thumbail_create_url = thumbnail_remote_url
+    if not thumbnail_create_url:
+        thumbnail_create_url = thumbnail_remote_url
 
     # Check if the bbox is invalid
     valid_x = (
@@ -539,7 +539,7 @@ def create_thumbnail(instance, thumbnail_remote_url, thumbail_create_url=None):
         )
 
         # Download thumbnail and save it locally.
-        resp, image = http_client.request(thumbail_create_url)
+        resp, image = http_client.request(thumbnail_create_url)
         if 'ServiceException' in image or resp.status < 200 or resp.status > 299:
             msg = 'Unable to obtain thumbnail: %s' % image
             logger.debug(msg)
