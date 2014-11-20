@@ -1,3 +1,32 @@
+geonode (2.4.0+beta2) trusty; urgency=high
+
+  * [ea214b] Added Sinhala and Tamil
+  * [8f10e3] Added languages that are not well supported in Django
+
+ -- Ariel Nunez <ingenieroariel@gmail.com>  Wed, 19 Nov 2014 17:55:40 -0500
+
+geonode (2.4.0+beta1) trusty; urgency=high
+
+  * [ec9bf4] The thumbnail url can be longer than 255 chars
+
+ -- Ariel Nunez <ingenieroariel@gmail.com>  Wed, 19 Nov 2014 13:13:21 -0500
+
+geonode (2.4.0+alpha38) trusty; urgency=high
+
+  [ Paolo Pasquali ]
+  * [d6a8bb] Fix Layer Style Manage Page Layout and HTML Select Style
+
+  [ Ariel Nunez ]
+
+ -- Ariel Nunez <ingenieroariel@gmail.com>  Wed, 19 Nov 2014 12:36:37 -0500
+
+geonode (2.4.0+alpha37) trusty; urgency=high
+
+  * [2c8ea7] Fixed E126 continuation line over-indented for hanging indent
+  * [6f7d2d] Added link to PUBLIC_LOCATION in map save
+
+ -- Ariel Nunez <ingenieroariel@gmail.com>  Wed, 19 Nov 2014 12:29:21 -0500
+
 geonode (2.4.0+alpha36) trusty; urgency=high
 
   * [febb21] Fixed map thumbnail saving

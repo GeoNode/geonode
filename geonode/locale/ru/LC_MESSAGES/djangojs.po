@@ -3,13 +3,14 @@
 # This file is distributed under the same license as the PACKAGE package.
 # 
 # Translators:
+# Andres Alfonso Lemon Gomez <lemon.andres@gmail.com>, 2014
 msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2014-10-24 10:00-0500\n"
-"PO-Revision-Date: 2014-11-11 22:51+0000\n"
-"Last-Translator: ingenieroariel <ingenieroariel@gmail.com>\n"
+"PO-Revision-Date: 2014-11-14 22:50+0000\n"
+"Last-Translator: Andres Alfonso Lemon Gomez <lemon.andres@gmail.com>\n"
 "Language-Team: Russian (http://www.transifex.com/projects/p/geonode/language/ru/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -52,32 +53,32 @@ msgstr "Кто может управлять и редактировать эт�
 #: static/geonode/js/upload/FileType.js:33
 #, c-format
 msgid "Missing a %s file, which is required"
-msgstr ""
+msgstr "Отсутствует файл %s, который необходим"
 
 #: static/geonode/js/upload/FileTypes.js:7
 msgid "ESRI Shapefile"
-msgstr ""
+msgstr "ESRI шейп"
 
 #: static/geonode/js/upload/FileTypes.js:13
 #: static/geonode/js/upload/FileTypes.js:19
 msgid "GeoTiff File"
-msgstr ""
+msgstr "GeoTiff файла"
 
 #: static/geonode/js/upload/FileTypes.js:26
 msgid "Comma Separated File"
-msgstr ""
+msgstr "Разделенные запятой файла"
 
 #: static/geonode/js/upload/FileTypes.js:32
 msgid "Google Earth KML"
-msgstr ""
+msgstr "Google Earth KML"
 
 #: static/geonode/js/upload/FileTypes.js:38
 msgid "Zip Archives"
-msgstr ""
+msgstr "Zip архив"
 
 #: static/geonode/js/upload/LayerInfo.js:249
 msgid "Layer Info"
-msgstr ""
+msgstr "Слой информация"
 
 #: static/geonode/js/upload/LayerInfo.js:250
 msgid "Edit Metadata"
@@ -89,58 +90,58 @@ msgstr "Управление стилями"
 
 #: static/geonode/js/upload/LayerInfo.js:253
 msgid "Your layer was successfully uploaded"
-msgstr ""
+msgstr "Ваше слой успешно загружены"
 
 #: static/geonode/js/upload/LayerInfo.js:282
 msgid "Performing Final GeoServer Config Step"
-msgstr ""
+msgstr "Выполнение Окончательная GeoServer Config шаг"
 
 #: static/geonode/js/upload/LayerInfo.js:297
 #: static/geonode/js/upload/LayerInfo.js:319
 msgid "You need to specify more information in order to complete your upload"
-msgstr ""
+msgstr "Вы должны указать дополнительную информацию для того, чтобы завершить свое загрузки"
 
 #: static/geonode/js/upload/LayerInfo.js:311
 msgid "You need to specify more information in order to complete your upload."
-msgstr ""
+msgstr "Вы должны указать дополнительную информацию для того, чтобы завершить свой загрузку."
 
 #: static/geonode/js/upload/LayerInfo.js:311
 msgid "You can continue configuring your layer."
-msgstr ""
+msgstr "Вы можете продолжить настройку вашей слой."
 
 #: static/geonode/js/upload/LayerInfo.js:329
 #: static/geonode/js/upload/LayerInfo.js:414
 msgid "Unexpected Error"
-msgstr ""
+msgstr "Неожиданная ошибка"
 
 #: static/geonode/js/upload/LayerInfo.js:345
 msgid "Performing GeoServer Config Step"
-msgstr ""
+msgstr "Выполнение GeoServer Config Шаг"
 
 #: static/geonode/js/upload/LayerInfo.js:417
 msgid "No error message supplied"
-msgstr ""
+msgstr "Сообщение об ошибке не поставляется"
 
 #: static/geonode/js/upload/LayerInfo.js:432
 msgid "Layer files uploaded, configuring in GeoServer"
-msgstr ""
+msgstr "Слой файлы загружены, настройке в GeoServer"
 
 #: static/geonode/js/upload/LayerInfo.js:447
 msgid "Select or create a Geogit repository."
-msgstr ""
+msgstr "Выберите или создайте Geogit хранилище."
 
 #: static/geonode/js/upload/LayerInfo.js:542
 msgid "Remove"
-msgstr ""
+msgstr "Удалять"
 
 #: static/geonode/js/upload/upload.js:126
 #, c-format
 msgid "The file %s is an unsupported file type, please select another file."
-msgstr ""
+msgstr "Файл %s не поддерживается тип файла, пожалуйста, выберите другой файл."
 
 #: static/geonode/js/upload/upload.js:286
 msgid "You are uploading an incomplete set of files."
-msgstr ""
+msgstr "Вы загружаете неполный набор файлов."
 
 #: templates/lang.js:9 templates/lang.js.c:236
 msgid "Cancel"
