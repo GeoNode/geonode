@@ -1,23 +1,6 @@
 {% include 'geonode/ext_header.html' %}
 {% include 'geonode/geo_header.html' %}
-<style type="text/css">
-body {font-family: Lato,"Helvetica Neue",Helvetica,Arial,sans-serif;}
-#aboutbutton {
-    display: none;
-}
-#paneltbar {
-    margin-top: 51px;
-}
-button.logout {
-    display: none;
-}
-button.login {
-    display:none;
-}
-.map-title-header {
-    margin-right: 10px;
-}
-</style>
+<link href="{{ STATIC_URL}}geonode/css/geoexplorer/map_geoexplorer.css" rel="stylesheet"/>
 <script type="text/javascript" src="{{ STATIC_URL}}geonode/js/extjs/GeoNode-mixin.js"></script>
 <script type="text/javascript" src="{{ STATIC_URL}}geonode/js/extjs/GeoNode-GeoExplorer.js"></script>
 <script type="text/javascript">

@@ -507,23 +507,28 @@ def upload(incoming, user=None, overwrite=False,
     return output
 
 
-def create_thumbnail(instance, thumbnail_remote_url, thumbnail_create_url=None):
+def create_thumbnail(instance, thumbnail_remote_url, thumbnail_create_url=None, check_bbox=True):
+
     BBOX_DIFFERENCE_THRESHOLD = 1e-5
 
     if not thumbnail_create_url:
         thumbnail_create_url = thumbnail_remote_url
 
-    # Check if the bbox is invalid
-    valid_x = (
-        float(
-            instance.bbox_x0) -
-        float(
-            instance.bbox_x1)) ** 2 > BBOX_DIFFERENCE_THRESHOLD
-    valid_y = (
-        float(
-            instance.bbox_y1) -
-        float(
-            instance.bbox_y0)) ** 2 > BBOX_DIFFERENCE_THRESHOLD
+    if check_bbox:
+        # Check if the bbox is invalid
+        valid_x = (
+            float(
+                instance.bbox_x0) -
+            float(
+                instance.bbox_x1)) ** 2 > BBOX_DIFFERENCE_THRESHOLD
+        valid_y = (
+            float(
+                instance.bbox_y1) -
+            float(
+                instance.bbox_y0)) ** 2 > BBOX_DIFFERENCE_THRESHOLD
+    else:
+        valid_x = True
+        valid_y = True
 
     image = None
 
@@ -531,12 +536,12 @@ def create_thumbnail(instance, thumbnail_remote_url, thumbnail_create_url=None):
         Link.objects.get_or_create(resource=instance.get_self_resource(),
                                    url=thumbnail_remote_url,
                                    defaults=dict(
-            extension='png',
-            name=_("Remote Thumbnail"),
-            mime='image/png',
-            link_type='image',
-        )
-        )
+                                       extension='png',
+                                       name="Remote Thumbnail",
+                                       mime='image/png',
+                                       link_type='image',
+                                       )
+                                   )
 
         # Download thumbnail and save it locally.
         resp, image = http_client.request(thumbnail_create_url)

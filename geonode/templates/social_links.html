@@ -6,13 +6,13 @@
 	<article class="tab-pane" id="share">
         <!-- TODO: Move this to a reusable template snippet -->
         <header>
-            <h3>Share This Map</h3>
+            <h3>Share This {{ resource.class_name }} </h3>
         </header>
         <div>
               <ul class="social">
                   <li><a href="http://www.facebook.com/sharer.php?u=http://{{ request.get_host }}{{ request.get_full_path }}" class="fb">facebook</a></li>
                   <li><a href="https://twitter.com/share?url=http://{{ request.get_host }}{{ request.get_full_path }}" class="tw">twitter</a></li>
-                  <li><a href="https://plusone.google.com/_/1/confirm?hl=en&url=http://{{ request.get_host }}{{ request.get_full_path }}" class="gp">google+</a></li>
+                  <li><a href="https://plus.google.com/share?url=http://{{ request.get_host }}{{ request.get_full_path }}" class="gp">google+</a></li>
               </ul>
          </div>
         <!-- TODO: Add more sharing options -->
