@@ -1,0 +1,61 @@
+.. _applications:
+
+============================
+Django external applications
+============================
+
+GeoNode is installed with some external django applications, suchs as:
+
+* django-notification, to manage notification system
+* django-announcements, to manage announcements
+* agon-ratings, to manage content rating
+* django-user-messages, to manage private message system
+* django-avatar, to manage avatars
+* dialogos, for managing the comment system
+
+django-notification
+===================
+
+The notification system is enabled by default in INSTALLED_APPS. The GeoNode 
+administrator should adjust some settings such as:
+
+* DEFAULT_FROM_EMAIL, a Django general setting, will be the email used to send notifications
+* NOTIFICATION_QUEUE_ALL, is set to False by default, therefore all the notifications are sent immediately. It is recommended for production to set this variable to True, and send the queued messages by using the emit_notices command using a scheduled task
+
+Notification must rely on a notification backend. For testing purpose you may
+set the EMAIL_BACKEND variable to output emails to console window:: 
+
+    EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+It is possible to customize the notification messages by overriding the text
+files in the templates/notification directory.
+
+For more information please refer to the django-notification official
+documentation: http://django-notification.readthedocs.org/en/latest/
+
+django-announcements
+====================
+
+TODO...
+
+agon-ratings
+============
+
+TODO...
+
+django-user-messages
+====================
+
+TODO...
+
+django-avatar
+=============
+
+TODO...
+
+dialogos
+========
+
+TODO...
+
+

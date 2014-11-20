@@ -1,0 +1,2 @@
+The following layer was deleted:
+{{ resource.title }}, owned by {{ resource.owner.username }}

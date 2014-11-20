@@ -1,0 +1,2 @@
+The following map was deleted:
+{{ resource.title }}, owned by {{ resource.owner.username }}

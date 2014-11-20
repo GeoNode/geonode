@@ -33,6 +33,14 @@ if "notification" in settings.INSTALLED_APPS:
                 _("Map Created"),
                 _("A Map was created"))
             notification.models.NoticeType.create(
+                "map_updated",
+                _("Map Updated"),
+                _("A Map was updated"))
+            notification.models.NoticeType.create(
+                "map_deleted",
+                _("Map Deleted"),
+                _("A Map was deleted"))
+            notification.models.NoticeType.create(
                 "map_comment",
                 _("Comment on Map"),
                 _("A map was commented on"))

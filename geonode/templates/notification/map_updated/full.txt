@@ -1,0 +1,4 @@
+The following map was updated:
+{{ resource.title }}, owned by {{ resource.owner.username }}
+
+You can visit the map's detail page here: http://{{ current_site }}{% url "map_detail" resource.id %}

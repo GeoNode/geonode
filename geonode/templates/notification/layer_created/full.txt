@@ -1,0 +1,4 @@
+The user {{ resource.owner.username }} uploaded the following layer:
+{{ resource.title }}
+
+You can visit the layer's detail page here: http://{{ current_site }}{% url "layer_detail" resource.service_typename %}

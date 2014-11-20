@@ -1,0 +1,4 @@
+The user {{ instance.user.username }} rated {{ instance.rating }} the following document:
+{{ instance.content_object.title }}, owned by {{ instance.content_object.owner.username }}
+
+You can visit the layer's detail page here: http://{{ current_site }}{% url "document_detail" instance.content_object.id %}
