@@ -1,0 +1,4 @@
+The user {{ resource.owner.username }} created the following map:
+{{ resource.title }}
+
+You can visit the map's detail page here: http://{{ current_site }}{% url "map_detail" resource.id %}

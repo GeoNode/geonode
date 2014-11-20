@@ -1,0 +1,3 @@
+A comment has been posted for the map {{ instance.content_object.title }} by the user {{ instance.author.username }}
+
+You can visit the map's detail page here: http://{{ current_site }}{% url "map_detail" instance.content_object.id %}
