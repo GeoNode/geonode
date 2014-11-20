@@ -1,30 +1,28 @@
 {% load i18n %}
-  <div class="col-md-12 filter">      
-    {% include "search/_sort_filters.html" %}
-  </div>
-  <div class="col-md-12">
-    <div class="row" id="contain-slider">
-      <div class="col-md-3">
-        <div class="selections">
-          <h5>
-            {% trans "Your selections" %}
-            <a href="." id="clear-search" class="pull-right">{% trans "Clear all filters" %}</a>
-          </h5>
-        </div>
-          {% include "search/_text_filter.html" %}
-        <div id="slide-pane">
-          {% if include_type_filter == 'true' %}
-          {% include "search/_type_filters.html" %}
-          {% endif %}
-          {% include "search/_general_filters.html" %}
-          {% include "search/_extent_filter.html" %}
-        </div>
-      </div>
-      <div class="col-md-9">
+<div class="row">
+  <div class="col-md-3">
+    <div class="selections">
       {% include 'search/_pagination.html' %}
+      <h5>
+        {% trans "Your selections" %}
+        <a href="." id="clear-search" class="pull-right">{% trans "Clear all filters" %}</a>
+      </h5>
       </div>
-      <div class="col-md-9">
-        {% include 'base/_resourcebase_snippet.html' %}
+        {% include "search/_text_filter.html" %}
+      <div id="slide-pane">
+        {% if include_type_filter == 'true' %}
+        {% include "search/_type_filters.html" %}
+        {% endif %}
+        {% include "search/_general_filters.html" %}
+        {% include "search/_extent_filter.html" %}
       </div>
+  </div>
+  <div class="col-md-9">
+    <div class="col-md-12">
+    {% include "search/_sort_filters.html" %}
+    </div>
+    <div class="col-md-12 grid-spacer">
+    {% include 'base/_resourcebase_snippet.html' %}
     </div>
   </div>
+</div>
