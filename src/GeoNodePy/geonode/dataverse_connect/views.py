@@ -27,7 +27,6 @@ logger = logging.getLogger("geonode.dataverse_connect.views")
 @csrf_exempt
 def view_add_worldmap_shapefile(request):
     
-    logger.info('----- view_add_worldmap_shapefile -----')
     if not has_proper_auth(request):
         json_msg = MessageHelperJSON.get_json_msg(success=False, msg="Authentication failed.")
         return HttpResponse(status=401, content=json_msg, content_type="application/json")
