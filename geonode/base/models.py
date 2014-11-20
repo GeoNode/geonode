@@ -347,7 +347,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin):
     is_published = models.BooleanField(default=True, help_text=_('Should this resource be published and searchable?'))
 
     # fields necessary for the apis
-    thumbnail_url = models.CharField(max_length=255, null=True, blank=True)
+    thumbnail_url = models.TextField(null=True, blank=True)
     detail_url = models.CharField(max_length=255, null=True, blank=True)
     rating = models.IntegerField(default=0, null=True)
 

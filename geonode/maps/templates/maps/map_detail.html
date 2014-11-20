@@ -98,6 +98,7 @@
           </div>
         </div>
         {% get_obj_perms request.user for resource.get_self_resource as "perms" %}
+        {% if "change_resourcebase" in perms  or "change_resourcebase_metadata" in perms %}
         <li class="list-group-item">
           <button class="btn btn-default btn-md btn-block" data-toggle="modal" data-target="#edit-map">{% trans "Edit Map" %}</button>
         </li>
@@ -129,7 +130,7 @@
             </div>
           </div>
         </div>
-
+        {% endif %}
         <li class="list-group-item">
           <a href="{% url "map_view" resource.id %}" class="btn btn-default btn-md btn-block">{% trans "View Map" %}</a>
         </li>
