@@ -79,7 +79,7 @@ class TagResource(TypeFilteredResource):
         return count
 
     class Meta:
-        queryset = Tag.objects.all()
+        queryset = Tag.objects.all().order_by('name')
         resource_name = 'keywords'
         allowed_methods = ['get']
         filtering = {
