@@ -1,21 +1,24 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
-# 
+#
 # Translators:
+# Andres Alfonso Lemon Gomez <lemon.andres@gmail.com>, 2014
 msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-11-14 09:56-0500\n"
-"PO-Revision-Date: 2014-11-14 15:05+0000\n"
-"Last-Translator: ingenieroariel <ingenieroariel@gmail.com>\n"
-"Language-Team: Russian (http://www.transifex.com/projects/p/geonode/language/ru/)\n"
+"POT-Creation-Date: 2014-11-19 18:27-0500\n"
+"PO-Revision-Date: 2014-11-14 23:21+0000\n"
+"Last-Translator: Andres Alfonso Lemon Gomez <lemon.andres@gmail.com>\n"
+"Language-Team: Russian (http://www.transifex.com/projects/p/geonode/language/"
+"ru/)\n"
+"Language: ru\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Language: ru\n"
-"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
+"%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
 
 #: utils.py:38
 msgid "Invalid permission level."
@@ -146,240 +149,262 @@ msgstr "Информация отсутствует"
 #: layers/templates/layers/layer_metadata.html:53
 #: maps/templates/maps/map_metadata.html:53
 msgid "Category"
-msgstr ""
+msgstr "Категория"
 
 #: base/forms.py:44
 msgid "Category is required."
-msgstr ""
+msgstr "Категория требуется."
 
 #: base/models.py:40 services/models.py:85
 msgid "function performed by the responsible party"
 msgstr "функция, выполненная ответственной стороной"
 
-#: base/models.py:244
+#: base/models.py:229
 msgid "reference date for the cited resource"
 msgstr "базисная дата для приведенного источника"
 
-#: base/models.py:245
+#: base/models.py:230
 msgid "identification of when a given event occurred"
 msgstr "определение времени произошедшего события"
 
-#: base/models.py:246
+#: base/models.py:231
 msgid "version of the cited resource"
 msgstr "версия приведенного источника"
 
-#: base/models.py:247
+#: base/models.py:232
 msgid "brief narrative summary of the content of the resource(s)"
 msgstr "краткий повествовательный абстракт о происхождении источника(ов)"
 
-#: base/models.py:248
+#: base/models.py:233
 msgid "summary of the intentions with which the resource(s) was developed"
 msgstr "абстракт о целях разработки источника"
 
-#: base/models.py:249
+#: base/models.py:234
 msgid ""
 "frequency with which modifications and deletions are made to the data after "
 "it is first produced"
-msgstr "частота, с которой были выполнены обновления и удаления данных послепервичного произведения"
+msgstr ""
+"частота, с которой были выполнены обновления и удаления данных "
+"послепервичного произведения"
 
-#: base/models.py:251
+#: base/models.py:236
 msgid ""
 "commonly used word(s) or formalised word(s) or phrase(s) used to describe "
 "the subject (space or comma-separated"
-msgstr "широкоиспользуемое слово(а) или формализованное слово(а) или фраза(ы) в описании предмета (пробел или отделенный запятой"
+msgstr ""
+"широкоиспользуемое слово(а) или формализованное слово(а) или фраза(ы) в "
+"описании предмета (пробел или отделенный запятой"
 
-#: base/models.py:253
+#: base/models.py:238
 msgid "keyword identifies a location"
 msgstr "ключевое слово, определяющее место"
 
-#: base/models.py:254
+#: base/models.py:239
 msgid "limitation(s) placed upon the access or use of the data."
-msgstr ""
+msgstr "Ограничение (ы) накладывают на доступ или использование данных."
 
-#: base/models.py:255
+#: base/models.py:240
 msgid ""
 "other restrictions and legal prerequisites for accessing and using the "
 "resource or metadata"
-msgstr "другие ограничения и юридические предпоссылки для получения доступа и использования источника или метаданных"
-
-#: base/models.py:257
-msgid "license of the dataset"
 msgstr ""
+"другие ограничения и юридические предпоссылки для получения доступа и "
+"использования источника или метаданных"
 
-#: base/models.py:258
+#: base/models.py:242
+msgid "license of the dataset"
+msgstr "Лицензия набора данных"
+
+#: base/models.py:243
 msgid "language used within the dataset"
 msgstr "язык, используемый в наборе данных"
 
-#: base/models.py:259
+#: base/models.py:244
 msgid ""
-"high-level geographic data thematic classification to assist in the grouping"
-" and search of available geographic data sets."
-msgstr "тематическая классификация высококачественных географических данных для группирования и поиска доступных географических наборов данных."
+"high-level geographic data thematic classification to assist in the grouping "
+"and search of available geographic data sets."
+msgstr ""
+"тематическая классификация высококачественных географических данных для "
+"группирования и поиска доступных географических наборов данных."
 
-#: base/models.py:261
+#: base/models.py:246
 msgid "method used to represent geographic information in the dataset."
 msgstr ""
+"Метод используется для представления географической информации в наборе "
+"данных."
 
-#: base/models.py:262
+#: base/models.py:247
 msgid "time period covered by the content of the dataset (start)"
 msgstr "период времени, охватывающий содержание набора данных (начало)"
 
-#: base/models.py:263
+#: base/models.py:248
 msgid "time period covered by the content of the dataset (end)"
 msgstr "период времени, охватывающий содержание набора данных (конец)"
 
-#: base/models.py:264
+#: base/models.py:249
 msgid ""
 "information about on-line sources from which the dataset, specification, or "
 "community profile name and extended metadata elements can be obtained"
-msgstr "информация об он-лайн источниках, из которых возможно получение набора данных, спецификацию, или групповое профильное имя и расширенные элементы метаданных"
+msgstr ""
+"информация об он-лайн источниках, из которых возможно получение набора "
+"данных, спецификацию, или групповое профильное имя и расширенные элементы "
+"метаданных"
 
-#: base/models.py:266
+#: base/models.py:251
 msgid "detailed text description of what the online resource is/does"
 msgstr "подробное описание текста об он-лайн источнике"
 
-#: base/models.py:267
+#: base/models.py:252
 msgid ""
 "general explanation of the data producer's knowledge about the lineage of a "
 "dataset"
-msgstr "общее объяснение знаний производителя данных о происхождении набора данных"
+msgstr ""
+"общее объяснение знаний производителя данных о происхождении набора данных"
 
-#: base/models.py:273
+#: base/models.py:258
 msgid "title"
 msgstr "заголовок"
 
-#: base/models.py:273
+#: base/models.py:258
 msgid "name by which the cited resource is known"
 msgstr "название, определяющее приведенный источник"
 
-#: base/models.py:274
+#: base/models.py:259
 msgid "date"
 msgstr "дата"
 
-#: base/models.py:275
+#: base/models.py:260
 msgid "date type"
 msgstr "тип даты"
 
-#: base/models.py:277
+#: base/models.py:262
 msgid "edition"
 msgstr "редактирование"
 
-#: base/models.py:278
+#: base/models.py:263
 msgid "abstract"
 msgstr "абстракт"
 
-#: base/models.py:279
+#: base/models.py:264
 msgid "purpose"
 msgstr "цель"
 
-#: base/models.py:280
+#: base/models.py:265
 msgid "maintenance frequency"
 msgstr "частота обслуживания"
 
-#: base/models.py:283 groups/models.py:41 people/models.py:88
+#: base/models.py:268 groups/models.py:41 people/models.py:88
 msgid "keywords"
 msgstr "ключевые слова"
 
-#: base/models.py:284
+#: base/models.py:269
 msgid "keywords region"
 msgstr "регион с ключевыми словами"
 
-#: base/models.py:287
+#: base/models.py:272
 msgid "restrictions"
-msgstr ""
+msgstr "ограничения"
 
-#: base/models.py:291
+#: base/models.py:276
 msgid "restrictions other"
-msgstr ""
+msgstr "другие ограничения"
 
-#: base/models.py:296
+#: base/models.py:281
 msgid "language"
 msgstr "язык"
 
-#: base/models.py:307
+#: base/models.py:292
 msgid "temporal extent start"
 msgstr "начало временного промежутка"
 
-#: base/models.py:309
+#: base/models.py:294
 msgid "temporal extent end"
 msgstr "конец временного промежутка"
 
-#: base/models.py:312
+#: base/models.py:297
 msgid "supplemental information"
 msgstr "дополнительная информация"
 
-#: base/models.py:313
+#: base/models.py:298
 msgid "any other descriptive information about the dataset"
 msgstr "любая другая информация о наборе данных"
 
-#: base/models.py:316
+#: base/models.py:301
 msgid "distribution URL"
 msgstr "URL для распространения"
 
-#: base/models.py:318
+#: base/models.py:303
 msgid "distribution description"
 msgstr "описание распространения"
 
-#: base/models.py:322
+#: base/models.py:307
 msgid "data quality statement"
 msgstr "оператор качества данных"
 
-#: base/models.py:337
+#: base/models.py:322
 msgid "CSW typename"
 msgstr "название типа CSW"
 
-#: base/models.py:339
+#: base/models.py:324
 msgid "CSW schema"
 msgstr "CSW схема"
 
-#: base/models.py:344
+#: base/models.py:329
 msgid "CSW source"
 msgstr "CSW источник"
 
-#: base/models.py:345
+#: base/models.py:330
 msgid "CSW insert date"
 msgstr "дата ввода CSW "
 
-#: base/models.py:346
+#: base/models.py:331
 msgid "CSW type"
 msgstr "тип CSW"
 
-#: base/models.py:347
+#: base/models.py:332
 msgid "CSW anytext"
 msgstr "любой текст CSW"
 
-#: base/models.py:348
+#: base/models.py:333
 msgid "CSW WKT geometry"
 msgstr "CSW WKT геометрия"
 
-#: base/models.py:361
+#: base/models.py:346
 msgid "Should this resource be advertised in home page?"
-msgstr ""
+msgstr "Если этот ресурс рекламироваться на домашней странице?"
 
-#: base/models.py:362
+#: base/models.py:347
 msgid "Should this resource be published and searchable?"
-msgstr ""
+msgstr "Если этот ресурс опубликован и для поиска?"
 
-#: base/models.py:682
+#: base/models.py:666
 msgid "For example \"kml\""
 msgstr "Например \"kml\""
 
-#: base/models.py:684
+#: base/models.py:668
 msgid "For example \"View in Google Earth\""
 msgstr "Например \"View in Google Earth\""
 
-#: base/models.py:685
+#: base/models.py:669
 msgid "For example \"text/xml\""
 msgstr "Например \"text/xml\""
 
+#: base/management/__init__.py:14
+msgid "Request to download a resource"
+msgstr ""
+
+#: base/management/__init__.py:15
+msgid "A request for downloading a resource was sent"
+msgstr ""
+
 #: base/templates/base/_resourcebase_contact_snippet.html:3
-#: templates/500.html:184 templates/base.html:174
+#: templates/500.html:184 templates/base.html:175
 msgid "About"
 msgstr "О"
 
 #: base/templates/base/_resourcebase_contact_snippet.html:5
 msgid "Owner, Point of Contact, Metadata Author"
-msgstr ""
+msgstr "Владелец, точка контакта, Автор метаданных"
 
 #: base/templates/base/_resourcebase_contact_snippet.html:10
 #: base/templates/base/resourcebase_info_panel.html:56
@@ -406,7 +431,7 @@ msgstr "Заголовок"
 #: base/templates/base/resourcebase_info_panel.html:11
 #: base/templates/base/resourcebase_info_panel.html:75
 msgid "License"
-msgstr ""
+msgstr "Лицензия"
 
 #: base/templates/base/resourcebase_info_panel.html:24 services/forms.py:26
 msgid "Abstract"
@@ -418,7 +443,7 @@ msgid "Date"
 msgstr "Дата"
 
 #: base/templates/base/resourcebase_info_panel.html:34
-#: layers/templates/layers/layer_detail.html:300
+#: layers/templates/layers/layer_detail.html:307
 msgid "Type"
 msgstr "Тип"
 
@@ -429,7 +454,7 @@ msgstr "Ключевые слова"
 
 #: base/templates/base/resourcebase_info_panel.html:51
 msgid "Regions"
-msgstr ""
+msgstr "Районы"
 
 #: base/templates/base/resourcebase_info_panel.html:88
 msgid "Maintenance Frequency"
@@ -437,7 +462,7 @@ msgstr "Частота обслуживания"
 
 #: base/templates/base/resourcebase_info_panel.html:93
 msgid "Restrictions"
-msgstr ""
+msgstr "Ограничения"
 
 #: base/templates/base/resourcebase_info_panel.html:102
 msgid "Edition"
@@ -448,7 +473,7 @@ msgid "Purpose"
 msgstr "Цель"
 
 #: base/templates/base/resourcebase_info_panel.html:112 templates/500.html:187
-#: templates/base.html:177
+#: templates/base.html:178
 msgid "Language"
 msgstr "Язык"
 
@@ -475,35 +500,35 @@ msgstr "Список ключевых слов, разделенных проб�
 
 #: documents/forms.py:183 documents/forms.py:251
 msgid "Document must be a file or url."
-msgstr ""
+msgstr "Документ должен быть файл или URL."
 
 #: documents/forms.py:187 documents/forms.py:255
 msgid "A document cannot have both a file and a url."
-msgstr ""
+msgstr "Документ не может иметь как файл и URL."
 
 #: documents/forms.py:200 documents/forms.py:268
 msgid "This file type is not allowed"
-msgstr ""
+msgstr "Этот тип файла не допускается"
 
 #: documents/forms.py:218
 msgid "Link to"
-msgstr ""
+msgstr "Ссылка на"
 
 #: documents/forms.py:240
 msgid "Permissions must be valid JSON."
-msgstr ""
+msgstr "Разрешения должны быть действительны JSON."
 
 #: documents/models.py:39
 msgid "File"
-msgstr ""
+msgstr "Файл"
 
 #: documents/models.py:48
 msgid "The URL of the document if it is external."
-msgstr ""
+msgstr "Ссылка на документ, если он является внешним."
 
 #: documents/models.py:49
 msgid "URL"
-msgstr ""
+msgstr "URL"
 
 #: documents/views.py:26
 msgid "You are not permitted to delete this document"
@@ -529,9 +554,9 @@ msgstr "Вам не разрешено просматривать этот до�
 msgid "You are not allowed to view this document."
 msgstr "Вам не разрешено просматривать этот документ"
 
-#: documents/views.py:175
+#: documents/views.py:181
 msgid "You are not allowed to edit this document."
-msgstr ""
+msgstr "Вы не можете редактировать этот документ."
 
 #: documents/templates/documents/_document_filters.html:5
 #: groups/templates/groups/group_list.html:15
@@ -599,7 +624,7 @@ msgstr "Средняя норма"
 #: maps/templates/maps/_map_list_item.html:25
 #: maps/templates/maps/_map_list_item.html:50
 msgid "votes"
-msgstr ""
+msgstr "голосов"
 
 #: documents/templates/documents/_document_list_item.html:31
 #: layers/templates/layers/_layer_list_item.html:37
@@ -610,11 +635,11 @@ msgstr "Скачать"
 
 #: documents/templates/documents/_document_list_item.html:46
 msgid "You do not have permission to view this document"
-msgstr ""
+msgstr "Вы не имеете разрешения для просмотра этого документа"
 
 #: documents/templates/documents/document_detail.html:42
 msgid "External Resource"
-msgstr ""
+msgstr "Внешний ресурс"
 
 #: documents/templates/documents/document_detail.html:48
 #: layers/templates/layers/_actions.html:3
@@ -653,76 +678,82 @@ msgstr "Средняя норма"
 #: documents/templates/documents/document_detail.html:91
 #: documents/templates/documents/document_detail.html:93
 #: documents/templates/documents/document_detail.html:95
-#: documents/templates/documents/document_detail.html:107
+#: documents/templates/documents/document_detail.html:111
 msgid "Download Document"
-msgstr ""
+msgstr "Скачать документ"
 
-#: documents/templates/documents/document_detail.html:100
-#: layers/templates/layers/layer_detail.html:156
-#: layers/templates/layers/layer_detail.html:164
+#: documents/templates/documents/document_detail.html:99
+#: layers/templates/layers/layer_detail.html:134
+#, fuzzy
+msgid "Request Download"
+msgstr "Скачать"
+
+#: documents/templates/documents/document_detail.html:104
+#: layers/templates/layers/layer_detail.html:163
+#: layers/templates/layers/layer_detail.html:171
 msgid "Download Metadata"
 msgstr "Скачать метаданные"
 
-#: documents/templates/documents/document_detail.html:117
-#: documents/templates/documents/document_detail.html:147
-#: layers/templates/layers/layer_detail.html:149
-#: layers/templates/layers/layer_detail.html:174
-#: layers/templates/layers/layer_detail.html:216
+#: documents/templates/documents/document_detail.html:121
+#: documents/templates/documents/document_detail.html:151
+#: layers/templates/layers/layer_detail.html:156
+#: layers/templates/layers/layer_detail.html:181
+#: layers/templates/layers/layer_detail.html:223
 #: maps/templates/maps/map_detail.html:95
 #: maps/templates/maps/map_detail.html:127
 #: templates/_bulk_permissions_form.html:19
 msgid "Close"
-msgstr ""
+msgstr "Близко"
 
-#: documents/templates/documents/document_detail.html:124
-#: documents/templates/documents/document_detail.html:131
+#: documents/templates/documents/document_detail.html:128
+#: documents/templates/documents/document_detail.html:135
 msgid "Edit Document"
 msgstr "Редактирование документа"
 
-#: documents/templates/documents/document_detail.html:136
-#: layers/templates/layers/layer_detail.html:196
+#: documents/templates/documents/document_detail.html:140
+#: layers/templates/layers/layer_detail.html:203
 msgid "Edit Metadata"
 msgstr "Редактирование метаданных"
 
-#: documents/templates/documents/document_detail.html:139
+#: documents/templates/documents/document_detail.html:143
 msgid "Replace this Document"
 msgstr "Заменить данный документ"
 
-#: documents/templates/documents/document_detail.html:142
+#: documents/templates/documents/document_detail.html:146
 msgid "Remove this Document"
 msgstr "Удалить данный документ"
 
-#: documents/templates/documents/document_detail.html:154
+#: documents/templates/documents/document_detail.html:158
 msgid "Resource using this document"
 msgstr "Определение источника при использовании данного документа"
 
-#: documents/templates/documents/document_detail.html:156
+#: documents/templates/documents/document_detail.html:160
 msgid "List of resources using this document:"
 msgstr "Перечисление источников в данном документе"
 
-#: documents/templates/documents/document_detail.html:160
+#: documents/templates/documents/document_detail.html:164
 msgid "This document is related to a "
 msgstr "Данный документ относится к"
 
-#: documents/templates/documents/document_detail.html:163
+#: documents/templates/documents/document_detail.html:167
 msgid "This document is not related to any maps or layers"
 msgstr "Данный документ не относится никаким картам или слоям"
 
-#: documents/templates/documents/document_detail.html:170
+#: documents/templates/documents/document_detail.html:174
 #: documents/templates/documents/document_upload.html:32
 #: groups/templates/groups/group_detail.html:65
-#: layers/templates/layers/layer_detail.html:289
+#: layers/templates/layers/layer_detail.html:296
 #: layers/templates/layers/layer_replace.html:94
 #: layers/templates/upload/layer_upload.html:93
 #: maps/templates/maps/map_detail.html:173 people/admin.py:55
 msgid "Permissions"
 msgstr "Права доступа"
 
-#: documents/templates/documents/document_detail.html:171
+#: documents/templates/documents/document_detail.html:175
 msgid "Click the button below to change the permissions of this document."
 msgstr "Кликните кнопкой ниже для изменения разрешений данного документа"
 
-#: documents/templates/documents/document_detail.html:172
+#: documents/templates/documents/document_detail.html:176
 msgid "Change Document Permissions"
 msgstr "Изменение прав доступа к документу"
 
@@ -743,13 +774,17 @@ msgid ""
 "\n"
 "        Editing details for %(document_title)s\n"
 "      "
-msgstr "\n        Детали редактирования для %(document_title)s\n      "
+msgstr ""
+"\n"
+"        Детали редактирования для %(document_title)s\n"
+"      "
 
 #: documents/templates/documents/document_metadata.html:22
 #: layers/templates/layers/layer_metadata.html:23
 #: maps/templates/maps/map_metadata.html:23
 msgid "Error updating metadata.  Please check the following fields: "
 msgstr ""
+"Ошибка при обновлении метаданных. Пожалуйста, проверьте следующие поля:"
 
 #: documents/templates/documents/document_metadata.html:46
 #: layers/templates/layers/layer_metadata.html:85
@@ -770,7 +805,10 @@ msgid ""
 "\n"
 "          Are you sure you want to remove %(document_title)s?\n"
 "        "
-msgstr "\n          Вы уверены в том, что хотите удалить документ %(document_title)s?\n        "
+msgstr ""
+"\n"
+"          Вы уверены в том, что хотите удалить документ %(document_title)s?\n"
+"        "
 
 #: documents/templates/documents/document_remove.html:18
 #: groups/templates/groups/group_remove.html:19
@@ -801,7 +839,7 @@ msgstr "Заменить "
 #: layers/templates/layers/layer_replace.html:84
 #: layers/templates/upload/layer_upload.html:82
 msgid "Clear"
-msgstr ""
+msgstr "Ясно"
 
 #: documents/templates/documents/document_upload.html:5
 msgid "Upload Document"
@@ -843,34 +881,26 @@ msgstr "PDF"
 msgid "PNG"
 msgstr "PNG"
 
-#: geoserver/signals.py:288
+#: geoserver/signals.py:278
 msgid "Could not create a download link for layer."
-msgstr ""
+msgstr "Не удалось создать ссылку для загрузки слоя."
 
-#: geoserver/signals.py:319
+#: geoserver/signals.py:309
 msgid "KML"
 msgstr "KML"
 
-#: geoserver/signals.py:348
+#: geoserver/signals.py:338
 msgid "Tiles"
 msgstr "Мозаики"
 
-#: geoserver/signals.py:403 layers/templates/layers/layer_detail.html:224
-#: services/views.py:1265
+#: geoserver/signals.py:385 layers/templates/layers/layer_detail.html:231
+#: services/views.py:1266
 msgid "Legend"
 msgstr "Легенда"
 
-#: geoserver/signals.py:525 layers/utils.py:528
-msgid "Remote Thumbnail"
-msgstr ""
-
-#: geoserver/signals.py:560 layers/utils.py:563
-msgid "Thumbnail"
-msgstr ""
-
 #: geoserver/views.py:338
 msgid "You don't have permissions to change style for this layer"
-msgstr ""
+msgstr "Вы не имеете прав на изменение стиля для этого слоя"
 
 #: geoserver/views.py:425 geoserver/views.py:480
 msgid "Bad HTTP Authorization Credentials."
@@ -902,29 +932,31 @@ msgstr "Слою был дан рейтинг"
 
 #: groups/forms.py:15
 msgid ""
-"a short version of the name consisting only of letters, numbers, underscores"
-" and hyphens."
+"a short version of the name consisting only of letters, numbers, underscores "
+"and hyphens."
 msgstr ""
+"Короткая версия именем, состоящим только из букв, цифр, символов "
+"подчеркивания и тире."
 
 #: groups/forms.py:23
 msgid "A group already exists with that slug."
-msgstr ""
+msgstr "Группа уже существует с этой пули."
 
 #: groups/forms.py:30 groups/forms.py:57
 msgid "A group already exists with that name."
-msgstr ""
+msgstr "Группа уже существует с таким именем."
 
 #: groups/models.py:17
 msgid "Public"
-msgstr ""
+msgstr "Общественный"
 
 #: groups/models.py:18
 msgid "Public (invite-only)"
-msgstr ""
+msgstr "Публичная (только по приглашению)"
 
 #: groups/models.py:19
 msgid "Private"
-msgstr ""
+msgstr "Частное"
 
 #: groups/models.py:22
 msgid ""
@@ -933,42 +965,50 @@ msgid ""
 "can join.<br>Private: Registered users cannot see any details about the "
 "group, including membership.  Only invited users can join."
 msgstr ""
+"Общественный: Любой зарегистрированный пользователь может просматривать и "
+"присоединиться к общественной группе. <br> Публичная (только по "
+"приглашению): Любой зарегистрированный пользователь может просматривать "
+"группу. Только приглашенные пользователи могут присоединиться. <br> Частные: "
+"Зарегистрированные пользователи не вижу каких-либо деталей о группе, в том "
+"числе членов. Только приглашенные пользователи могут присоединиться."
 
 #: groups/models.py:27
 msgid ""
 "Email used to contact one or all group members, such as a mailing list, "
 "shared email, or exchange group."
 msgstr ""
+"E-mail используется для контакта с членами одной или всех групп, таких, как "
+"список рассылки, общей электронной почте или обмена группы."
 
 #: groups/models.py:36
 msgid "email"
-msgstr ""
+msgstr "по электронной почте"
 
 #: groups/models.py:181 groups/models.py:200
 msgid "Manager"
-msgstr ""
+msgstr "Менеджер"
 
 #: groups/models.py:182 groups/models.py:201
 msgid "Member"
-msgstr ""
+msgstr "Член"
 
 #: groups/models.py:206
 msgid "Sent"
-msgstr ""
+msgstr "Посланный"
 
 #: groups/models.py:207
 msgid "Accepted"
-msgstr ""
+msgstr "Принято"
 
 #: groups/models.py:208
 msgid "Declined"
-msgstr ""
+msgstr "Отклонено"
 
 #: groups/templates/groups/activity.html:7
 #: groups/templates/groups/activity.html:8
 #: groups/templates/groups/activity.html:20 templates/actstream/actor.html:20
 msgid "Activity Feed for"
-msgstr ""
+msgstr "Лента для"
 
 #: groups/templates/groups/activity.html:27
 #: social/templates/social/activity_list.html:23
@@ -980,57 +1020,57 @@ msgstr "Действий еще не совершено"
 #: groups/templates/groups/group_list.html:5
 #: groups/templates/groups/group_list.html:11
 msgid "Explore Groups"
-msgstr ""
+msgstr "Исследуйте группы"
 
 #: groups/templates/groups/group_base.html:14
 #: groups/templates/groups/group_create.html:11
 msgid "Create a Group"
-msgstr ""
+msgstr "Создание группы"
 
 #: groups/templates/groups/group_base.html:16
 #: groups/templates/groups/group_update.html:11
 msgid "Update Group"
-msgstr ""
+msgstr "Группа Update"
 
 #: groups/templates/groups/group_base.html:17
 msgid "Remove Group"
-msgstr ""
+msgstr "Удалить группу"
 
 #: groups/templates/groups/group_create.html:5
 #: groups/templates/groups/group_update.html:5
 msgid "Create Group"
-msgstr ""
+msgstr "Создать группу"
 
 #: groups/templates/groups/group_create.html:26
 #: services/templates/services/service_register.html:17
 msgid "Create"
-msgstr ""
+msgstr "Создать"
 
 #: groups/templates/groups/group_detail.html:19
 msgid "This group has not created a logo."
-msgstr ""
+msgstr "Эта группа еще не создал логотип."
 
 #: groups/templates/groups/group_detail.html:46
 #: groups/templates/groups/group_invite_response.html:7
 #: groups/templates/groups/group_members.html:12
 msgid "Members"
-msgstr ""
+msgstr "Пользователи"
 
 #: groups/templates/groups/group_detail.html:57
 msgid "Edit Group Details"
-msgstr ""
+msgstr "Редактировать данные Группа"
 
 #: groups/templates/groups/group_detail.html:58
 msgid "Manage Group Members"
-msgstr ""
+msgstr "Управление Группа: Пользователи"
 
 #: groups/templates/groups/group_detail.html:59
 msgid "Delete this Group"
-msgstr ""
+msgstr "Удалить эту группу"
 
 #: groups/templates/groups/group_detail.html:62
 msgid "Group Activities"
-msgstr ""
+msgstr "Деятельность Группы"
 
 #: groups/templates/groups/group_detail.html:67
 #, python-format
@@ -1039,34 +1079,37 @@ msgid ""
 "            This group is <strong>%(access)s</strong>.\n"
 "          "
 msgstr ""
+"\n"
+"Эта группа является <strong>%(access)s</strong>"
 
 #: groups/templates/groups/group_detail.html:71
 msgid "Anyone may join this group."
-msgstr ""
+msgstr "Любой может присоединиться к этой группе."
 
 #: groups/templates/groups/group_detail.html:77
 msgid "Anyone may view this group but membership is by invitation only."
 msgstr ""
+"Каждый может просмотреть эту группу, но членство только по приглашению."
 
 #: groups/templates/groups/group_detail.html:79
 msgid "Membership is by invitation only."
-msgstr ""
+msgstr "Членство только по приглашению."
 
 #: groups/templates/groups/group_detail.html:84
 msgid "Managers"
-msgstr ""
+msgstr "Менеджеры"
 
 #: groups/templates/groups/group_invite_response.html:10
 msgid "Membership Request"
-msgstr ""
+msgstr "Членство Запрос"
 
 #: groups/templates/groups/group_invite_response.html:14
 msgid "Don't Join"
-msgstr ""
+msgstr "Не Присоединяйтесь"
 
 #: groups/templates/groups/group_invite_response.html:15
 msgid "Join Group"
-msgstr ""
+msgstr "Присоединиться к группе"
 
 #: groups/templates/groups/group_list.html:16
 #: people/templates/people/profile_list.html:13
@@ -1088,15 +1131,15 @@ msgstr "Z - A"
 
 #: groups/templates/groups/group_members.html:9
 msgid "Group details"
-msgstr ""
+msgstr "Информация о группе"
 
 #: groups/templates/groups/group_members.html:19
 msgid "Add members"
-msgstr ""
+msgstr "Добавить в группу"
 
 #: groups/templates/groups/group_members.html:28
 msgid "Invite people"
-msgstr ""
+msgstr "Пригласить людей"
 
 #: groups/templates/groups/group_remove.html:12
 #, python-format
@@ -1105,14 +1148,16 @@ msgid ""
 "          Are you sure you want to remove the group: %(group_title)s?\n"
 "        "
 msgstr ""
+"\n"
+"Вы уверены, что хотите удалить группу: %(group_title)s?"
 
 #: groups/templates/groups/group_remove_maps_data.html:6
 msgid "Remove Maps/Data from Group"
-msgstr ""
+msgstr "Удалить Карт / данных из группы"
 
 #: groups/templates/groups/group_remove_maps_data.html:15
 msgid "Remove selected maps/data"
-msgstr ""
+msgstr "Удалить выбранные карты / данные"
 
 #: layers/models.py:51
 msgid "style name"
@@ -1140,11 +1185,11 @@ msgstr "имя атрибута, сохраненного в шейп-файле
 
 #: layers/models.py:285
 msgid "attribute description"
-msgstr ""
+msgstr "атрибутов описание"
 
 #: layers/models.py:286
 msgid "description of attribute to be used in metadata"
-msgstr ""
+msgstr "Описание атрибута, которые будут использоваться в метаданных"
 
 #: layers/models.py:291
 msgid "attribute label"
@@ -1178,7 +1223,8 @@ msgstr "порядок отображения"
 msgid ""
 "specifies the order in which attribute should be displayed in identify "
 "results"
-msgstr "определить порядок, в котором атрибут должен отображаться в определении "
+msgstr ""
+"определить порядок, в котором атрибут должен отображаться в определении "
 
 #: layers/models.py:316
 msgid "count"
@@ -1248,11 +1294,17 @@ msgstr "последнее обновление"
 msgid "date when attribute statistics were last updated"
 msgstr "дата последнего обновления статистики атрибута"
 
+#: layers/utils.py:574
+msgid "Thumbnail"
+msgstr "Миниатюра"
+
 #: layers/views.py:59
 msgid ""
 "There was an error while attempting to upload your data. Please try again, "
 "or contact and administrator if the problem continues."
-msgstr "Обнаружена ошибка при попытке загрузки ваших данных. Попытайтесь заново, или при нерешении проблемы свяжитесь с администратором."
+msgstr ""
+"Обнаружена ошибка при попытке загрузки ваших данных. Попытайтесь заново, или "
+"при нерешении проблемы свяжитесь с администратором."
 
 #: layers/views.py:62
 msgid "You are not permitted to delete this layer"
@@ -1282,21 +1334,21 @@ msgstr "Атрибуты"
 
 #: layers/templates/layers/_actions.html:11
 msgid "GeoGit"
-msgstr ""
+msgstr "GeoGit"
 
 #: layers/templates/layers/_layer_list_item.html:38
 msgid "Create a map"
 msgstr "Создать карту"
 
 #: layers/templates/layers/_layer_list_item.html:48
-#: layers/templates/layers/layer_detail.html:130
-#: layers/templates/layers/layer_detail.html:139
+#: layers/templates/layers/layer_detail.html:131
+#: layers/templates/layers/layer_detail.html:144
 msgid "Download Layer"
 msgstr "Скачать слой"
 
 #: layers/templates/layers/_layer_list_item.html:85
 msgid "You do not have permission to view this layer"
-msgstr ""
+msgstr "Вы не имеете разрешения для просмотра этого слоя"
 
 #: layers/templates/layers/layer_change_poc.html:5
 msgid "Home"
@@ -1340,89 +1392,91 @@ msgstr "Стандартное отклонение"
 msgid "Rate this layer"
 msgstr "Оценить данный слой"
 
-#: layers/templates/layers/layer_detail.html:182
-#: layers/templates/layers/layer_detail.html:191
+#: layers/templates/layers/layer_detail.html:189
+#: layers/templates/layers/layer_detail.html:198
 msgid "Edit Layer"
 msgstr "Редактировать слой"
 
-#: layers/templates/layers/layer_detail.html:201
+#: layers/templates/layers/layer_detail.html:208
 #: layers/templates/layers/layer_style_manage.html:14
 msgid "Manage Styles"
 msgstr "Управление стилями"
 
-#: layers/templates/layers/layer_detail.html:203
+#: layers/templates/layers/layer_detail.html:210
 msgid "Edit Styles"
 msgstr "Редактировать стили"
 
-#: layers/templates/layers/layer_detail.html:208
+#: layers/templates/layers/layer_detail.html:215
 msgid "Replace this Layer"
 msgstr "Заменить данный слой"
 
-#: layers/templates/layers/layer_detail.html:211
+#: layers/templates/layers/layer_detail.html:218
 msgid "Remove this Layer"
 msgstr "Удалить данный слой"
 
-#: layers/templates/layers/layer_detail.html:234
+#: layers/templates/layers/layer_detail.html:241
 msgid "Maps using this layer"
 msgstr "Карты с данным слоем"
 
-#: layers/templates/layers/layer_detail.html:236
+#: layers/templates/layers/layer_detail.html:243
 msgid "List of maps using this layer:"
 msgstr "Список карт с данным слоем"
 
-#: layers/templates/layers/layer_detail.html:242
+#: layers/templates/layers/layer_detail.html:249
 msgid "This layer is not currently used in any maps."
 msgstr "Данный слой в настоящее время не используется ни в каких картах"
 
-#: layers/templates/layers/layer_detail.html:247
+#: layers/templates/layers/layer_detail.html:254
 msgid "Create a map using this layer"
 msgstr "Создать карту с данным слоем"
 
-#: layers/templates/layers/layer_detail.html:248
+#: layers/templates/layers/layer_detail.html:255
 msgid "Click the button below to generate a new map based on this layer."
 msgstr "Кликнуть кнопкой ниже для создания новой карты на основе данного слоя"
 
-#: layers/templates/layers/layer_detail.html:249
+#: layers/templates/layers/layer_detail.html:256
 msgid "Create a Map"
 msgstr "Создать карту"
 
-#: layers/templates/layers/layer_detail.html:254
+#: layers/templates/layers/layer_detail.html:261
 msgid "Documents related to this layer"
 msgstr "Документы, связанные с данным слоем"
 
-#: layers/templates/layers/layer_detail.html:255
+#: layers/templates/layers/layer_detail.html:262
 msgid "List of documents related to this layer:"
 msgstr "Список документов, относящиеся к данному слою"
 
-#: layers/templates/layers/layer_detail.html:266
+#: layers/templates/layers/layer_detail.html:273
 msgid "Styles"
 msgstr "Стили"
 
-#: layers/templates/layers/layer_detail.html:267
+#: layers/templates/layers/layer_detail.html:274
 msgid ""
 "The following styles are associated with this layer. Choose a style to view "
 "it in the preview map."
-msgstr "Данные стили связаны с данным слоем. Выберите стиль для обзорав предыдущей карте."
+msgstr ""
+"Данные стили связаны с данным слоем. Выберите стиль для обзорав предыдущей "
+"карте."
 
-#: layers/templates/layers/layer_detail.html:280
+#: layers/templates/layers/layer_detail.html:287
 msgid "No styles associated with this layer"
 msgstr "Нет стиля, связанного с данным слоем"
 
-#: layers/templates/layers/layer_detail.html:290
+#: layers/templates/layers/layer_detail.html:297
 msgid "Click the button below to change the permissions of this layer."
 msgstr "Кликнуть кнопкой ниже для изменения прав доступа данного слоя."
 
-#: layers/templates/layers/layer_detail.html:291
+#: layers/templates/layers/layer_detail.html:298
 msgid "Change Layer Permissions"
 msgstr "Изменить права доступа слоя"
 
-#: layers/templates/layers/layer_detail.html:298
+#: layers/templates/layers/layer_detail.html:305
 msgid "External service layer"
-msgstr ""
+msgstr "Внешний слой служба"
 
-#: layers/templates/layers/layer_detail.html:299
+#: layers/templates/layers/layer_detail.html:306
 msgid "Source"
-msgstr ""
+msgstr "Источник"
 
 #: layers/templates/layers/layer_list.html:7
 #: layers/templates/layers/layer_list.html:14
@@ -1442,14 +1496,23 @@ msgid ""
 "\n"
 "        Editing details for %(layer_title)s\n"
 "      "
-msgstr "\n        Детали редактирования для %(layer_title)s\n      "
+msgstr ""
+"\n"
+"        Детали редактирования для %(layer_title)s\n"
+"      "
 
 #: layers/templates/layers/layer_metadata.html:17
 msgid ""
-"Note: this layer's orginal metadata was populated by importing a metadata XML file.\n"
-"        GeoNode's metadata import supports a subset of ISO, FGDC, and Dublin Core metadata elements.\n"
+"Note: this layer's orginal metadata was populated by importing a metadata "
+"XML file.\n"
+"        GeoNode's metadata import supports a subset of ISO, FGDC, and Dublin "
+"Core metadata elements.\n"
 "        Some of your original metadata may have been lost."
 msgstr ""
+"Примечание: оригинал, метаданные этого слоя была заселена импорта XML "
+"метаданных файла. Импорт метаданных GeoNode поддерживает подмножество "
+"элементов ISO, FGDC, и метаданных Dublin Core. Некоторые из оригинального "
+"метаданных могут быть потеряны."
 
 #: layers/templates/layers/layer_metadata.html:72
 msgid "Attribute"
@@ -1457,12 +1520,12 @@ msgstr "Атрибут"
 
 #: layers/templates/layers/layer_metadata.html:72
 msgid "Label"
-msgstr ""
+msgstr "Этикетка"
 
 #: layers/templates/layers/layer_metadata.html:72 services/forms.py:24
 #: services/templates/services/layers_register.html:28
 msgid "Description"
-msgstr ""
+msgstr "Описание"
 
 #: layers/templates/layers/layer_metadata.html:72
 msgid "Display Order"
@@ -1474,7 +1537,10 @@ msgid ""
 "\n"
 "          Are you sure you want to remove %(layer_title)s?\n"
 "        "
-msgstr "\n          Вы уверены, что хотите удалить слой %(layer_title)s?\n        "
+msgstr ""
+"\n"
+"          Вы уверены, что хотите удалить слой %(layer_title)s?\n"
+"        "
 
 #: layers/templates/layers/layer_remove.html:25
 msgid "This action affects the following maps:"
@@ -1491,27 +1557,27 @@ msgstr "Заменить слой"
 
 #: layers/templates/layers/layer_replace.html:19
 msgid "Replace Layer: "
-msgstr ""
+msgstr "Заменить слой:"
 
 #: layers/templates/layers/layer_replace.html:23
 #: layers/templates/upload/layer_upload.html:20
 msgid "Incomplete Uploads"
-msgstr ""
+msgstr "Неполные Загружено"
 
 #: layers/templates/layers/layer_replace.html:24
 #: layers/templates/upload/layer_upload.html:21
 msgid "You have the following incomplete uploads"
-msgstr ""
+msgstr "У вас есть следующие неполные добавления"
 
 #: layers/templates/layers/layer_replace.html:27
 #: layers/templates/upload/layer_upload.html:24
 msgid "last updated on"
-msgstr ""
+msgstr "Последнее обновление на"
 
 #: layers/templates/layers/layer_replace.html:29
 #: layers/templates/upload/layer_upload.html:26
 msgid "Resume"
-msgstr ""
+msgstr "Продолжить"
 
 #: layers/templates/layers/layer_replace.html:30
 #: layers/templates/layers/layer_replace.html:38
@@ -1525,7 +1591,7 @@ msgstr "Удалить"
 #: layers/templates/layers/layer_replace.html:36
 #: layers/templates/upload/layer_upload.html:33
 msgid "Are you sure you want to delete this upload?"
-msgstr ""
+msgstr "Вы уверены, что хотите удалить этот загрузку?"
 
 #: layers/templates/layers/layer_replace.html:39
 #: layers/templates/upload/layer_upload.html:35
@@ -1538,17 +1604,17 @@ msgstr "Отмена"
 #: layers/templates/layers/layer_replace.html:41
 #: layers/templates/upload/layer_upload.html:36
 msgid "Delete, and don't ask me again."
-msgstr ""
+msgstr "Удалить, и не спрашивайте меня снова."
 
 #: layers/templates/layers/layer_replace.html:55
 #: layers/templates/upload/layer_upload.html:53
 msgid "Drop files here"
-msgstr ""
+msgstr "Бросьте файлы здесь"
 
 #: layers/templates/layers/layer_replace.html:58
 #: layers/templates/upload/layer_upload.html:56
 msgid " or select them one by one:"
-msgstr ""
+msgstr "или выбрать их по одному:"
 
 #: layers/templates/layers/layer_replace.html:66
 #: layers/templates/upload/layer_upload.html:64
@@ -1558,31 +1624,37 @@ msgstr "Файлы для загрузки"
 #: layers/templates/layers/layer_replace.html:71
 #: layers/templates/upload/layer_upload.html:69
 msgid "Select the charset or leave default"
-msgstr ""
+msgstr "Выберите кодировку или оставить по умолчанию"
 
 #: layers/templates/layers/layer_style_manage.html:16
 #, python-format
 msgid ""
 "\n"
-"      Manage Available Styles for <a href=\"/layers/%(layer_title)s\">%(layer_title)s</a>\n"
+"      Manage Available Styles for <a href=\"/layers/%(layer_title)s\">"
+"%(layer_title)s</a>\n"
 "    "
 msgstr ""
+"\n"
+"Управление доступных стилей для <a href=\"/layers/%(layer_title)s\">"
+"%(layer_title)s</a>"
 
-#: layers/templates/layers/layer_style_manage.html:26
+#: layers/templates/layers/layer_style_manage.html:23
 msgid "Layer Default Style"
-msgstr ""
+msgstr "Слой Обычный стиль"
 
-#: layers/templates/layers/layer_style_manage.html:43
+#: layers/templates/layers/layer_style_manage.html:41
 msgid "Available styles"
-msgstr ""
+msgstr "Доступные стили"
 
-#: layers/templates/layers/layer_style_manage.html:44
+#: layers/templates/layers/layer_style_manage.html:42
 msgid ""
 "Click on an available style in the upper box to assign it to this layer. "
 "Selected styles appear in the lower box."
 msgstr ""
+"Нажмите на доступном стиле в верхнем поле, чтобы назначить его на этот слой. "
+"Отдельные стили появляются в нижнем окне."
 
-#: layers/templates/layers/layer_style_manage.html:62
+#: layers/templates/layers/layer_style_manage.html:61
 msgid "Update Available Styles"
 msgstr "Обновление доступных стилей"
 
@@ -1594,7 +1666,7 @@ msgstr "Загрузить слой"
 
 #: layers/templates/upload/layer_upload.html:83
 msgid "Upload files"
-msgstr ""
+msgstr "Загрузка файлов"
 
 #: layers/templates/upload/layer_upload_crs.html:10
 msgid "Provide CRS for "
@@ -1602,18 +1674,25 @@ msgstr "Предоставить CRS для "
 
 #: layers/templates/upload/layer_upload_crs.html:14
 msgid "Coordinate Reference System"
-msgstr ""
+msgstr "Контрольная система координат"
 
 #: layers/templates/upload/layer_upload_crs.html:17
 msgid ""
 "\n"
-"        A coordinate reference system for this layer could not be determined.\n"
+"        A coordinate reference system for this layer could not be "
+"determined.\n"
 "        Locate or enter the appropriate ESPG code for this layer below.\n"
 "        One way to do this is do visit:\n"
 "        <a href=\"http://prj2epsg.org/search\" target=\"_\">prj2epsg</a>\n"
 "        and enter the following:\n"
 "    "
 msgstr ""
+"\n"
+"Координат системы отсчета для этого слоя не может быть определена. Найдите "
+"или введите соответствующий код ESPG для этого слоя ниже. Один из способов "
+"сделать это делать посетить: \n"
+"<a href=\"http://prj2epsg.org/search\" target=\"_\">prj2epsg</a> \n"
+"и введите следующие данные:"
 
 #: layers/templates/upload/layer_upload_crs.html:32
 #: layers/templates/upload/layer_upload_csv.html:49
@@ -1628,16 +1707,21 @@ msgid ""
 "        reproject this data to a more common projection.\n"
 "        "
 msgstr ""
+"\n"
+"Существует проблема распознавания проекцию этих данных. Пожалуйста "
+"перепроецировать эти данные в более общей проекции."
 
 #: layers/templates/upload/layer_upload_csv.html:11
 msgid "Geospatial Data"
-msgstr ""
+msgstr "Геопространственных данных"
 
 #: layers/templates/upload/layer_upload_csv.html:12
 msgid ""
 "Please indicate which attributes contain the latitude and longitude "
 "coordinates in the CSV data."
 msgstr ""
+"Просьба указать, какие атрибуты содержат координаты широты и долготы в "
+"данных CSV."
 
 #: layers/templates/upload/layer_upload_csv.html:14
 msgid ""
@@ -1645,39 +1729,47 @@ msgid ""
 "latitude and longitude coordinates, but please confirm that the correct\n"
 "attributes are selected below."
 msgstr ""
+"С помощью этих данных, GeoNode смог угадать, какие атрибуты содержат "
+"координаты широты и долготы, но, пожалуйста, убедитесь, что правильные "
+"атрибуты выбираются ниже."
 
 #: layers/templates/upload/layer_upload_csv.html:24
 msgid "Latitude"
-msgstr ""
+msgstr "Широта"
 
 #: layers/templates/upload/layer_upload_csv.html:26
 #: layers/templates/upload/layer_upload_csv.html:39
 msgid "Select an attribute"
-msgstr ""
+msgstr "Выберите атрибут"
 
 #: layers/templates/upload/layer_upload_csv.html:37
 msgid "Longitude"
-msgstr ""
+msgstr "Долгота"
 
 #: layers/templates/upload/layer_upload_csv.html:57
 msgid ""
-"We did not detect columns that could be used for the latitude and longitude.\n"
-"Please verify that you have two columns in your csv file that can be used for\n"
+"We did not detect columns that could be used for the latitude and "
+"longitude.\n"
+"Please verify that you have two columns in your csv file that can be used "
+"for\n"
 "the latitude and longitude."
 msgstr ""
+"Мы не обнаружили столбцы, которые могли бы быть использованы для широты и "
+"долготы. Пожалуйста, убедитесь, что у вас есть две колонки в вашем CSV файл, "
+"который может быть использован для широты и долготы."
 
 #: layers/templates/upload/layer_upload_invalid.html:6
 #: layers/templates/upload/no_upload.html:6
 msgid "Your upload is either complete or you haven't resumed an earlier one."
-msgstr ""
+msgstr "Ваше загрузки является полный или вы не возобновили раньше."
 
 #: layers/templates/upload/layer_upload_invalid.html:7
 msgid "Return to"
-msgstr ""
+msgstr "Вернуться к"
 
 #: layers/templates/upload/layer_upload_invalid.html:7
 msgid "Upload Form"
-msgstr ""
+msgstr "Форма для загрузки"
 
 #: layers/templates/upload/layer_upload_time.html:7
 msgid "Upload Layer Step 2"
@@ -1689,11 +1781,11 @@ msgstr "Редактирование деталей для "
 
 #: layers/templates/upload/layer_upload_time.html:19
 msgid "Time Options"
-msgstr ""
+msgstr "Время Опции"
 
 #: layers/templates/upload/layer_upload_time.html:22
 msgid "Choose time attribute"
-msgstr ""
+msgstr "Выберите атрибут времени"
 
 #: layers/templates/upload/layer_upload_time.html:25
 msgid "This data does not have a time attribute"
@@ -1721,11 +1813,11 @@ msgstr "Конвертировать число (как год)"
 
 #: layers/templates/upload/layer_upload_time.html:53
 msgid "Choose optional end time attribute"
-msgstr ""
+msgstr "Выберите атрибут времени дополнительный концевой"
 
 #: layers/templates/upload/layer_upload_time.html:81
 msgid "Present time attribute as"
-msgstr ""
+msgstr "Настоящее время атрибут, как"
 
 #: layers/templates/upload/layer_upload_time.html:84
 msgid "List"
@@ -1733,124 +1825,143 @@ msgstr "Список"
 
 #: layers/templates/upload/layer_upload_time.html:84
 msgid "of all the distinct time values"
-msgstr ""
+msgstr "всех различных значений времени"
 
 #: layers/templates/upload/layer_upload_time.html:88
 msgid "Intervals"
-msgstr ""
+msgstr "Интервалы"
 
 #: layers/templates/upload/layer_upload_time.html:88
 msgid "defined by the resolution"
-msgstr ""
+msgstr "определяется решением"
 
 #: layers/templates/upload/layer_upload_time.html:92
 msgid "Continuous Intervals"
-msgstr ""
+msgstr "Непрерывные интервалы"
 
 #: layers/templates/upload/layer_upload_time.html:92
 msgid ""
 "for data that is frequently updated, resolution describes the frequency of "
 "updates"
 msgstr ""
+"для данных, которые часто обновляемой, разрешение описывает частоту "
+"обновлений"
 
 #: layers/templates/upload/layer_upload_time.html:96
 msgid "Resolution of time attribute"
-msgstr ""
+msgstr "Постановление атрибута времени"
 
 #: layers/templates/upload/layer_upload_time.html:107
 msgid "Need Help?"
-msgstr ""
+msgstr "Нужна помощь?"
 
 #: layers/templates/upload/layer_upload_time.html:108
 msgid "Enabling Time"
-msgstr ""
+msgstr "Включение Время"
 
 #: layers/templates/upload/layer_upload_time.html:109
 msgid ""
 "A feature can currently support one or two time attributes. If a single\n"
-"    attribute is used, the feature is considered relevant at that single point in time. If two\n"
-"    attributes are used, the second attribute represents the end of a valid period for the\n"
+"    attribute is used, the feature is considered relevant at that single "
+"point in time. If two\n"
+"    attributes are used, the second attribute represents the end of a valid "
+"period for the\n"
 "    feature."
 msgstr ""
+"Функция может в настоящее время поддерживают один или два атрибута времени. "
+"Если используется один атрибут, функция считается актуальным в то "
+"определенный момент времени. Если два атрибута используются, второй атрибут "
+"представляет конец действительного периода для функции."
 
 #: layers/templates/upload/layer_upload_time.html:113
 msgid "Selecting an Attribute"
-msgstr ""
+msgstr "Выбор атрибута"
 
 #: layers/templates/upload/layer_upload_time.html:114
 msgid "A time attribute can be one of"
-msgstr ""
+msgstr "Атрибут времени может быть одним из"
 
 #: layers/templates/upload/layer_upload_time.html:116
 msgid "An existing date"
-msgstr ""
+msgstr "Существующий дата"
 
 #: layers/templates/upload/layer_upload_time.html:117
 msgid "Text that can be converted to a timestamp"
-msgstr ""
+msgstr "Текст, который может быть преобразован в метку времени"
 
 #: layers/templates/upload/layer_upload_time.html:118
 msgid "A number representing a year"
-msgstr ""
+msgstr "Число, представляющее год"
 
 #: layers/templates/upload/layer_upload_time.html:121
 msgid ""
 "\n"
-"    For text attributes, one can specify a custom format or use the 'best guess' approach.\n"
+"    For text attributes, one can specify a custom format or use the 'best "
+"guess' approach.\n"
 "    The most common formatting flags are:\n"
 "    "
 msgstr ""
+"\n"
+"Для атрибутов текстовых, можно указать пользовательский формат или "
+"использовать \"лучшее предположение\" подход. \n"
+"Наиболее распространенными форматирования флаги:"
 
 #: layers/templates/upload/layer_upload_time.html:127
 msgid "year"
-msgstr ""
+msgstr "год"
 
 #: layers/templates/upload/layer_upload_time.html:128
 msgid "month"
-msgstr ""
+msgstr "месяц"
 
 #: layers/templates/upload/layer_upload_time.html:129
 msgid "day of month"
-msgstr ""
+msgstr "день месяца"
 
 #: layers/templates/upload/layer_upload_time.html:130
 #: layers/templates/upload/layer_upload_time.html:131
 msgid "hour of day"
-msgstr ""
+msgstr "час день"
 
 #: layers/templates/upload/layer_upload_time.html:132
 msgid "minute in hour"
-msgstr ""
+msgstr "минут в час"
 
 #: layers/templates/upload/layer_upload_time.html:133
 msgid "second in minute"
-msgstr ""
+msgstr "Второй в минуту"
 
 #: layers/templates/upload/layer_upload_time.html:136
 msgid "Note that single quotes represent a literal character."
 msgstr ""
+"Обратите внимание, что одинарные кавычки представляют собой буквальный "
+"характер."
 
 #: layers/templates/upload/layer_upload_time.html:137
 msgid ""
-"To remove ambiguity, repeat a code to represent the maximum number of digits"
-" - for example yyyy"
+"To remove ambiguity, repeat a code to represent the maximum number of digits "
+"- for example yyyy"
 msgstr ""
+"Для удаления двусмысленности, повторите код для представления максимальное "
+"количество цифр - например гггг"
 
 #: layers/templates/upload/layer_upload_time.html:139
 msgid "The 'best guess' will handle date and optional time variants of"
-msgstr ""
+msgstr "«Догадка» будет обрабатывать варианты даты и дополнительно временные"
 
 #: layers/templates/upload/layer_upload_time.html:140
 msgid "In terms of the formatting flags noted above, these are"
-msgstr ""
+msgstr "С точки зрения флагов форматирования, отмеченных выше, это"
 
 #: layers/templates/upload/no_upload.html:7
-msgid "Returning to the upload starting page in <span id=\"cnt\">5</span>seconds "
+msgid ""
+"Returning to the upload starting page in <span id=\"cnt\">5</span>seconds "
 msgstr ""
+"Возвращаясь к загрузки стартовой страницы в <span id=\"cnt\">5</span> секунд"
 
 #: layers/templates/upload/no_upload.html:8
 msgid " Or just go "
-msgstr ""
+msgstr "Или просто пойти"
 
 #: layers/templates/upload/no_upload.html:8
 #: templates/relationships/success.html:6
@@ -1875,11 +1986,11 @@ msgstr "центр Y"
 
 #: maps/models.py:76
 msgid "Site URL"
-msgstr ""
+msgstr "Ссылка на сайт"
 
 #: maps/models.py:81
 msgid "Featured Map URL"
-msgstr ""
+msgstr "Показанный URL Карта"
 
 #: maps/models.py:371
 msgid "stack order"
@@ -1931,7 +2042,7 @@ msgstr "параметры источника"
 
 #: maps/models.py:518
 msgid "JSON Configuration"
-msgstr ""
+msgstr "Конфигурация JSON"
 
 #: maps/views.py:70
 msgid "You are not permitted to delete this map."
@@ -1947,7 +2058,7 @@ msgstr "Вы должны зарегистрироваться для сохра
 
 #: maps/views.py:73
 msgid "You are not permitted to save or edit this map."
-msgstr ""
+msgstr "Вам не разрешается, чтобы сохранить или создать карту."
 
 #: maps/views.py:75
 msgid "You are not allowed to modify this map's metadata."
@@ -1959,7 +2070,7 @@ msgstr "Вам не разрешено просматривать данную �
 
 #: maps/views.py:77
 msgid "An unknown error has occured."
-msgstr ""
+msgstr "Неизвестная ошибка."
 
 #: maps/management/__init__.py:33
 msgid "Map Created"
@@ -1987,11 +2098,11 @@ msgstr "Оценка была дана к карте"
 
 #: maps/templates/maps/_map_list_item.html:31
 msgid "View"
-msgstr ""
+msgstr "Вид"
 
 #: maps/templates/maps/_map_list_item.html:47
 msgid "You do not have permission to view this map"
-msgstr ""
+msgstr "Вы не имеете разрешения для просмотра этой карте"
 
 #: maps/templates/maps/map_base.html:5 maps/templates/maps/map_base.html:12
 #: maps/templates/maps/map_list.html:12
@@ -2022,11 +2133,11 @@ msgstr "Редактировать карту"
 
 #: maps/templates/maps/map_detail.html:114
 msgid "Edit Map Metadata"
-msgstr ""
+msgstr "Редактировать Карта метаданных"
 
 #: maps/templates/maps/map_detail.html:118
 msgid "Set Map Thumbnail"
-msgstr ""
+msgstr "Установить эскиз карты"
 
 #: maps/templates/maps/map_detail.html:122
 msgid "Remove this Map"
@@ -2054,7 +2165,9 @@ msgstr "Список документов, относящихся к данно�
 
 #: maps/templates/maps/map_detail.html:174
 msgid "Specify which users can view or modify this map"
-msgstr "Определить пользователей, которые могут просматривать или модифицировать данную карту"
+msgstr ""
+"Определить пользователей, которые могут просматривать или модифицировать "
+"данную карту"
 
 #: maps/templates/maps/map_detail.html:175
 msgid "Change Permissions of this Map"
@@ -2075,28 +2188,28 @@ msgstr "Создать новую карту"
 
 #: maps/templates/maps/map_detail.html:188
 msgid "Map WMS"
-msgstr ""
+msgstr "Карта WMS"
 
 #: maps/templates/maps/map_detail.html:190
 msgid "WMS layer group for local map layers"
-msgstr ""
+msgstr "WMS слоя группа местных картографических слоев"
 
 #: maps/templates/maps/map_detail.html:191 social/tests.py:103
 #: social/templatetags/social_tags.py:47
 msgid "on"
-msgstr ""
+msgstr "на"
 
 #: maps/templates/maps/map_detail.html:191
 msgid "local OWS"
-msgstr ""
+msgstr "местные РМО"
 
 #: maps/templates/maps/map_detail.html:194
 msgid "Publish local map layers as WMS layer group"
-msgstr ""
+msgstr "Опубликовать местные слои карты, как WMS слоя группы"
 
 #: maps/templates/maps/map_detail.html:195
 msgid "Publish Map WMS"
-msgstr ""
+msgstr "Опубликовать Карта WMS"
 
 #: maps/templates/maps/map_download.html:8
 msgid ""
@@ -2105,21 +2218,32 @@ msgid ""
 "      are hosted on this GeoNode.\n"
 "    "
 msgstr ""
+"\n"
+"Здесь вы можете скачать все слои этой карте, размещенных на этом GeoNode."
 
 #: maps/templates/maps/map_download.html:22
 msgid ""
 "\n"
-"      <div class=\"alert alert-warning\">Could not find downloadable layers for this map. You can go back to  \n"
+"      <div class=\"alert alert-warning\">Could not find downloadable layers "
+"for this map. You can go back to  \n"
 "      "
 msgstr ""
+"\n"
+"<div class=\"alert alert-warning\"> Не удалось найти загружаемые слои для "
+"этой карты. Вы можете вернуться к"
 
 #: maps/templates/maps/map_download.html:29
 msgid ""
 "\n"
-"        Additionally, the map contains these layers which will not be downloaded\n"
+"        Additionally, the map contains these layers which will not be "
+"downloaded\n"
 "        due to security restrictions:\n"
 "      "
-msgstr "\n        В дополнение, карта содержит эти слои, которые не будут загружены         из-за ограничений по защите:\n      "
+msgstr ""
+"\n"
+"        В дополнение, карта содержит эти слои, которые не будут "
+"загружены         из-за ограничений по защите:\n"
+"      "
 
 #: maps/templates/maps/map_download.html:41
 msgid ""
@@ -2127,15 +2251,19 @@ msgid ""
 "        Finally, the map contains these layers which will not be downloaded\n"
 "        because they are not available directly from this GeoNode:\n"
 "      "
-msgstr "\n        В итоге, карта содержит слои, которые не будут загружены\n        из-за их отсутствия в GeoNode:\n      "
+msgstr ""
+"\n"
+"        В итоге, карта содержит слои, которые не будут загружены\n"
+"        из-за их отсутствия в GeoNode:\n"
+"      "
 
 #: maps/templates/maps/map_download.html:54
 msgid "Downloading"
-msgstr ""
+msgstr "Загрузка"
 
 #: maps/templates/maps/map_download.html:59
 msgid "Retry"
-msgstr ""
+msgstr "Повторить"
 
 #: maps/templates/maps/map_download.html:65
 msgid "Start downloading this map"
@@ -2143,11 +2271,11 @@ msgstr "Начало загрузки данной карты"
 
 #: maps/templates/maps/map_download.html:95
 msgid "Download Complete"
-msgstr ""
+msgstr "Скачать полный"
 
 #: maps/templates/maps/map_download.html:105
 msgid "Download Failed"
-msgstr ""
+msgstr "Не удалось загрузить"
 
 #: maps/templates/maps/map_metadata.html:12
 #, python-format
@@ -2156,13 +2284,21 @@ msgid ""
 "        Editing details for %(map_title)s\n"
 "      "
 msgstr ""
+"\n"
+"Подробнее редактирования для %(map_title)s"
 
 #: maps/templates/maps/map_metadata.html:17
 msgid ""
-"Note: this map's orginal metadata was populated by importing a metadata XML file.\n"
-"        GeoNode's metadata import supports a subset of ISO, FGDC, and Dublin Core metadata elements.\n"
+"Note: this map's orginal metadata was populated by importing a metadata XML "
+"file.\n"
+"        GeoNode's metadata import supports a subset of ISO, FGDC, and Dublin "
+"Core metadata elements.\n"
 "        Some of your original metadata may have been lost."
 msgstr ""
+"Примечание: оригинал, метаданные этой карте была населена импорта XML "
+"метаданных файла. Импорт метаданных GeoNode поддерживает подмножество "
+"элементов ISO, FGDC, и метаданных Dublin Core. Некоторые из оригинального "
+"метаданных могут быть потеряны."
 
 #: maps/templates/maps/map_remove.html:6
 msgid "Deleting"
@@ -2174,7 +2310,10 @@ msgid ""
 "\n"
 "        Are you sure you want to remove %(map_title)s?\n"
 "    "
-msgstr "\n        Вы уверены, что хотите удалить %(map_title)s?\n    "
+msgstr ""
+"\n"
+"        Вы уверены, что хотите удалить %(map_title)s?\n"
+"    "
 
 #: maps/templates/maps/map_view.html:5
 msgid "GeoExplorer"
@@ -2182,20 +2321,20 @@ msgstr "GeoExplorer"
 
 #: people/admin.py:54
 msgid "Personal info"
-msgstr ""
+msgstr "Личная информация"
 
 #: people/admin.py:57
 msgid "Important dates"
-msgstr ""
+msgstr "Важные даты"
 
 #: people/admin.py:150
 msgid "Password changed successfully."
-msgstr ""
+msgstr "Пароль успешно изменен."
 
 #: people/admin.py:160
 #, python-format
 msgid "Change password: %s"
-msgstr ""
+msgstr "Измените пароль: %s"
 
 #: people/enumerations.py:39
 msgid "party who authored the resource"
@@ -2203,9 +2342,10 @@ msgstr "сторона, владеющая источником"
 
 #: people/enumerations.py:40
 msgid ""
-"party who has processed the data in a manner such that the resource has been"
-" modified"
-msgstr "сторона, обработавшая данные таким способом, что источник был модифицирован"
+"party who has processed the data in a manner such that the resource has been "
+"modified"
+msgstr ""
+"сторона, обработавшая данные таким способом, что источник был модифицирован"
 
 #: people/enumerations.py:41
 msgid "party who published the resource"
@@ -2216,12 +2356,15 @@ msgid ""
 "party that accepts accountability and responsibility for the data and "
 "ensures         appropriate care and maintenance of the resource"
 msgstr ""
+"партия, которая принимает подотчетности и ответственности за данные и "
+"обеспечивает надлежащий уход и обслуживание ресурса"
 
 #: people/enumerations.py:44
 msgid ""
 "party who can be contacted for acquiring knowledge about or acquisition of "
 "the resource"
-msgstr "сторона, с кем можно контактироваться по поводу получения знаний или ресурса"
+msgstr ""
+"сторона, с кем можно контактироваться по поводу получения знаний или ресурса"
 
 #: people/enumerations.py:45
 msgid "party who distributes the resource"
@@ -2244,9 +2387,9 @@ msgid "party that owns the resource"
 msgstr "сторона, владеющая ресурсом"
 
 #: people/enumerations.py:50
-msgid ""
-"key party responsible for gathering information and conducting research"
-msgstr "ключевая сторона, ответственная за сбор информации и проведение исследований"
+msgid "key party responsible for gathering information and conducting research"
+msgstr ""
+"ключевая сторона, ответственная за сбор информации и проведение исследований"
 
 #: people/forms.py:64
 msgid "Email Address"
@@ -2274,7 +2417,7 @@ msgstr "Профиль"
 
 #: people/models.py:47
 msgid "introduce yourself"
-msgstr ""
+msgstr "представьтесь"
 
 #: people/models.py:49
 msgid "Position Name"
@@ -2292,7 +2435,9 @@ msgstr "Голос"
 msgid ""
 "telephone number by which individuals can speak to the responsible "
 "organization or individual"
-msgstr "номер телефона, по которому отдельные лица могут контактировать с ответственной организацией или лицом"
+msgstr ""
+"номер телефона, по которому отдельные лица могут контактировать с "
+"ответственной организацией или лицом"
 
 #: people/models.py:56
 msgid "Facsimile"
@@ -2312,7 +2457,9 @@ msgstr "Точка доставки"
 msgid ""
 "physical and email address at which the organization or individual may be "
 "contacted"
-msgstr "действующий и почтовый адрес, по которому можно связаться с организацией или отдельным лицом"
+msgstr ""
+"действующий и почтовый адрес, по которому можно связаться с организацией или "
+"отдельным лицом"
 
 #: people/models.py:65
 msgid "City"
@@ -2347,6 +2494,8 @@ msgid ""
 "commonly used word(s) or formalised word(s) or phrase(s) used to describe "
 "the subject             (space or comma-separated"
 msgstr ""
+"обычно используется слово (а) или оформлено слово (а) или фраза (ы), "
+"используемый для описания предмета (пространство или через запятую"
 
 #: people/views.py:84
 msgid "Your username for "
@@ -2362,7 +2511,7 @@ msgstr "Нет пользователя по данному почтовому �
 
 #: people/templates/people/_profile_about_item.html:18
 msgid "No Group"
-msgstr ""
+msgstr "Нет Группа"
 
 #: people/templates/people/_profile_filters.html:4
 msgid "All contents"
@@ -2390,9 +2539,11 @@ msgstr "Забыли имя пользователя"
 
 #: people/templates/people/forgot_username_form.html:9
 msgid ""
-"Enter your email address and click the submit button.  Your username will be"
-" sent to you."
-msgstr "Введите свой почтовый адрес и кликните кнопкой подачи. Вам будет выслано ваше имя пользователя"
+"Enter your email address and click the submit button.  Your username will be "
+"sent to you."
+msgstr ""
+"Введите свой почтовый адрес и кликните кнопкой подачи. Вам будет выслано "
+"ваше имя пользователя"
 
 #: people/templates/people/profile_create.html:8
 #: people/templates/people/profile_create.html:14
@@ -2405,7 +2556,7 @@ msgstr "Профиль"
 
 #: people/templates/people/profile_detail.html:69
 msgid "Edit profile"
-msgstr ""
+msgstr "Редактировать профиль"
 
 #: people/templates/people/profile_detail.html:70
 msgid "Change password"
@@ -2425,11 +2576,11 @@ msgstr "Моя деятельность"
 
 #: people/templates/people/profile_detail.html:82
 msgid "User Activities"
-msgstr ""
+msgstr "Деятельность пользователей"
 
 #: people/templates/people/profile_detail.html:139
 msgid "Resources"
-msgstr ""
+msgstr "Ресурсы"
 
 #: people/templates/people/profile_edit.html:10
 #: people/templates/people/profile_edit.html:18
@@ -2438,7 +2589,7 @@ msgstr "Редактировать Ваш профиль"
 
 #: people/templates/people/profile_edit.html:14
 msgid "Change your avatar"
-msgstr ""
+msgstr "Измените свой аватар"
 
 #: people/templates/people/profile_edit.html:24
 msgid "Update profile"
@@ -2450,97 +2601,112 @@ msgstr "Поиск людей"
 
 #: services/enumerations.py:24
 msgid "Auto-detect"
-msgstr ""
+msgstr "Автоматическое обнаружение"
 
 #: services/enumerations.py:25
 msgid "Paired WMS/WFS/WCS"
-msgstr ""
+msgstr "Парные WMS / WFS / WCS"
 
 #: services/enumerations.py:26
 msgid "Web Map Service"
-msgstr ""
+msgstr "Веб-служба Карта"
 
 #: services/enumerations.py:27
 msgid "Catalogue Service"
-msgstr ""
+msgstr "Каталог Сервис"
 
 #: services/enumerations.py:28
 msgid "ArcGIS REST Service"
-msgstr ""
+msgstr "Сервис ArcGIS REST"
 
 #: services/enumerations.py:29 services/enumerations.py:39
 msgid "OpenGeoPortal"
-msgstr ""
+msgstr "OpenGeoPortal"
 
 #: services/enumerations.py:30
 msgid "Harvard Geospatial Library"
-msgstr ""
+msgstr "Гарвардский геопространственной библиотека"
 
 #: services/enumerations.py:34
 msgid "Local"
-msgstr ""
+msgstr "Местный"
 
 #: services/enumerations.py:35
 msgid "Cascaded"
-msgstr ""
+msgstr "Каскадная"
 
 #: services/enumerations.py:36
 msgid "Harvested"
-msgstr ""
+msgstr "Собранные"
 
 #: services/enumerations.py:37
 msgid "Indexed"
-msgstr ""
+msgstr "Индексированный"
 
 #: services/enumerations.py:38
 msgid "Live"
-msgstr ""
+msgstr "Живая"
 
 #: services/forms.py:12
 msgid "Service URL"
-msgstr ""
+msgstr "Сервис URL"
 
 #: services/forms.py:16
 msgid "Service Type"
-msgstr ""
+msgstr "Тип служба"
 
 #: services/models.py:91
 msgid "Layer Name"
-msgstr ""
+msgstr "Имя слоя"
 
 #: services/models.py:92
 msgid "Layer Title"
-msgstr ""
+msgstr "Слой Название"
 
 #: services/models.py:93
 msgid "Layer Description"
-msgstr ""
+msgstr "Слой Описание"
 
 #: services/models.py:94
 msgid "Layer Styles"
-msgstr ""
+msgstr "Стили слоя"
 
 #: services/views.py:63
 msgid ""
 "\n"
-"The Open Geoportal is a consortium comprised of contributions of several universities and organizations to help\n"
-"facilitate the discovery and acquisition of geospatial data across many organizations and platforms. Current partners\n"
-"include: Harvard, MIT, MassGIS, Princeton, Columbia, Stanford, UC Berkeley, UCLA, Yale, and UConn. Built on open source\n"
-"technology, The Open Geoportal provides organizations the opportunity to share thousands of geospatial data layers,\n"
-"maps, metadata, and development resources through a single common interface.\n"
+"The Open Geoportal is a consortium comprised of contributions of several "
+"universities and organizations to help\n"
+"facilitate the discovery and acquisition of geospatial data across many "
+"organizations and platforms. Current partners\n"
+"include: Harvard, MIT, MassGIS, Princeton, Columbia, Stanford, UC Berkeley, "
+"UCLA, Yale, and UConn. Built on open source\n"
+"technology, The Open Geoportal provides organizations the opportunity to "
+"share thousands of geospatial data layers,\n"
+"maps, metadata, and development resources through a single common "
+"interface.\n"
 msgstr ""
+"\n"
+"Открыть Геопортал является консорциум состоит из вкладов нескольких "
+"университетов и организаций, чтобы помочь облегчить открытие и приобретение "
+"геопространственных данных во многих организациях и платформ. Текущие "
+"партнерами являются: Гарвард, Массачусетский технологический институт, "
+"MassGIS, Принстон, Колумбия, Стэнфорд, Калифорнийский университет в Беркли, "
+"Лос-Анджелесе, Йель и UConn. Построенный на технологии с открытым исходным "
+"кодом, Open Геопортал предоставляет организациям возможность поделиться "
+"тысячи геопространственных информационных слоев, карты, метаданных и "
+"ресурсов развития через один общий интерфейс.\n"
 
 #: services/views.py:273
 msgid "This is an existing service"
-msgstr ""
+msgstr "Это реально существующая служба"
 
 #: services/views.py:536 services/views.py:633 services/views.py:849
 msgid "Not provided"
-msgstr ""
+msgstr "Не предусмотрено"
 
 #: services/views.py:801
 msgid "Could not find any layers in a compatible projection."
-msgstr ""
+msgstr "Не удалось найти каких-либо слои в совместимом проекции."
 
 #: services/views.py:946
 #, python-format
@@ -2548,14 +2714,16 @@ msgid ""
 "Could not find any layers in a compatible projection:                 The "
 "spatial id was: %(srs)s and the url %(url)s"
 msgstr ""
+"Не удалось найти каких-либо слои в совместимом проекции: Пространственное "
+"было Ид: %(srs)s и гиперссылка %(url)s"
 
-#: services/views.py:1207
+#: services/views.py:1208
 msgid "You are not permitted to remove this service."
-msgstr ""
+msgstr "Вам не разрешается удалять эту услугу."
 
 #: services/templates/services/layers_register.html:26
 msgid "All/None"
-msgstr ""
+msgstr "не всё / ничего"
 
 #: services/templates/services/layers_register.html:27
 msgid "Name"
@@ -2567,11 +2735,11 @@ msgstr "Добавить слои"
 
 #: services/templates/services/service_detail.html:43
 msgid "Name:"
-msgstr ""
+msgstr "Имя:"
 
 #: services/templates/services/service_detail.html:44
 msgid "URL:"
-msgstr ""
+msgstr "URL:"
 
 #: services/templates/services/service_detail.html:45
 msgid "Abstract:"
@@ -2583,32 +2751,32 @@ msgstr "Ключевые слова:"
 
 #: services/templates/services/service_detail.html:47
 msgid "Contact:"
-msgstr ""
+msgstr "Контакты:"
 
 #: services/templates/services/service_detail.html:51
 msgid "Services"
-msgstr ""
+msgstr "Услуги"
 
 #: services/templates/services/service_detail.html:52
 msgid "This CSW server contains the following services"
-msgstr ""
+msgstr "Это РКС сервер содержит следующие услуги"
 
 #: services/templates/services/service_detail.html:65
 msgid "This Service contains the following layers"
-msgstr ""
+msgstr "Это служба содержит следующие слои"
 
 #: services/templates/services/service_detail.html:110
 #: services/templates/services/service_list.html:29
 msgid "Manage"
-msgstr ""
+msgstr "Управлять"
 
 #: services/templates/services/service_detail.html:113
 msgid "Edit Service Metadata"
-msgstr ""
+msgstr "Редактировать сервис метаданных"
 
 #: services/templates/services/service_detail.html:116
 msgid "Remove Service"
-msgstr ""
+msgstr "Удалить служба"
 
 #: services/templates/services/service_edit.html:19
 #: templates/announcements/announcement_form.html:25
@@ -2617,60 +2785,60 @@ msgstr "Сохранить"
 
 #: services/templates/services/service_layers.html:3
 msgid "Service:"
-msgstr ""
+msgstr "Услуги:"
 
 #: services/templates/services/service_layers.html:5
 msgid "The following layers will soon be added to the data catalog:"
-msgstr ""
+msgstr "Следующие слои вскоре будет добавлен в каталог данных:"
 
 #: services/templates/services/service_list.html:30
 msgid "Register a new Service"
-msgstr ""
+msgstr "Регистрация нового служба"
 
 #: services/templates/services/service_register.html:21
 msgid "Service has been created:"
-msgstr ""
+msgstr "Сервис был создан:"
 
 #: services/templates/services/service_register.html:28
 msgid "The following layers will be imported"
-msgstr ""
+msgstr "Следующие слои будут импортированы"
 
 #: services/templates/services/service_remove.html:7
 msgid "Are you sure you want to remove"
-msgstr ""
+msgstr "Вы уверены, что хотите удалить"
 
 #: social/signals.py:73
 msgid "created"
-msgstr ""
+msgstr "созданный"
 
 #: social/signals.py:74 social/tests.py:80
 msgid "deleted"
-msgstr ""
+msgstr "удаленный"
 
 #: social/signals.py:77
 msgid "updated"
-msgstr ""
+msgstr "обновленный"
 
 #: social/signals.py:82 social/tests.py:100
 msgid "added a comment"
-msgstr ""
+msgstr "добавил комментарий"
 
 #: social/signals.py:84
 msgid "updated a comment"
-msgstr ""
+msgstr "обновляются комментарий"
 
 #: social/signals.py:86 social/tests.py:54
 msgid "uploaded"
-msgstr ""
+msgstr "загружено"
 
 #: social/templates/social/activity_list.html:4
 #: social/templates/social/activity_list.html:16
 msgid "Recent activity"
-msgstr ""
+msgstr "Последние действия"
 
 #: social/templatetags/social_tags.py:32
 msgid "to"
-msgstr ""
+msgstr "к"
 
 #: templates/401.html:10
 msgid "Not Permitted"
@@ -2681,7 +2849,10 @@ msgid ""
 "\n"
 "          You are not allowed to perform this operation.  \n"
 "      "
-msgstr "\n          Вам не разрешено выполнять данную операцию.  \n      "
+msgstr ""
+"\n"
+"          Вам не разрешено выполнять данную операцию.  \n"
+"      "
 
 #: templates/401.html:25
 msgid "Please verify that you are logged in as the correct user."
@@ -2698,9 +2869,13 @@ msgstr "Страница не найдена"
 #: templates/404.html:6
 msgid ""
 "\n"
-"      The page you requested does not exist.  Perhaps you are using an outdated bookmark?\n"
+"      The page you requested does not exist.  Perhaps you are using an "
+"outdated bookmark?\n"
 "  "
-msgstr "\n      Страница не существует. Возможно, вы используете устаревшую закладку?\n  "
+msgstr ""
+"\n"
+"      Страница не существует. Возможно, вы используете устаревшую закладку?\n"
+"  "
 
 #: templates/500.html:48 templates/base.html:56
 msgid "People"
@@ -2708,7 +2883,7 @@ msgstr "Люди"
 
 #: templates/500.html:51 templates/base.html:59
 msgid "Groups"
-msgstr ""
+msgstr "Группы"
 
 #: templates/500.html:56 templates/search/search.html:6
 #: templates/search/search.html.py:12
@@ -2717,11 +2892,11 @@ msgstr "Поиск"
 
 #: templates/500.html:77 templates/base.html:93
 msgid "Recent Activity"
-msgstr ""
+msgstr "Последняя активность"
 
 #: templates/500.html:78 templates/base.html:94
 msgid "Inbox"
-msgstr ""
+msgstr "Входящие"
 
 #: templates/500.html:80 templates/base.html:96
 #: templates/announcements/announcement_list.html:6
@@ -2732,11 +2907,11 @@ msgstr "Сообщения"
 
 #: templates/500.html:83 templates/base.html:99
 msgid "Remote Services"
-msgstr ""
+msgstr "Дистанционные услуги"
 
 #: templates/500.html:84 templates/base.html:100
 msgid "Invite User"
-msgstr ""
+msgstr "Пригласить Пользователь"
 
 #: templates/500.html:86 templates/base.html:102
 msgid "GeoServer"
@@ -2778,29 +2953,38 @@ msgstr "Регистрация"
 
 #: templates/500.html:159
 msgid "There was a problem loading this page"
-msgstr ""
+msgstr "Существовал проблема загрузки на этой странице"
 
 #: templates/500.html:161
 msgid ""
 "\n"
-"          Please contact your GeoNode administrator (he may have received an email automatically if he configured it properly).\n"
-"          If you are the site administrator, enable debug mode to see the actual error and fix it or file an issue in <a href=\"http://github.com/GeoNode/geonode/issues\">GeoNode's issue tracker</a>\n"
+"          Please contact your GeoNode administrator (he may have received an "
+"email automatically if he configured it properly).\n"
+"          If you are the site administrator, enable debug mode to see the "
+"actual error and fix it or file an issue in <a href=\"http://github.com/"
+"GeoNode/geonode/issues\">GeoNode's issue tracker</a>\n"
 "          "
 msgstr ""
+"\n"
+"Пожалуйста, обратитесь к администратору GeoNode (он, возможно, получил "
+"письмо автоматически, если он настроен правильно его). Если вы являетесь "
+"администратором сайта, включите режим отладки, чтобы увидеть фактические "
+"ошибки и исправить ее или подать вопрос в <a href=\"http://github.com/"
+"GeoNode/geonode/issues\">системе отслеживания проблем GeoNode в</a>"
 
-#: templates/500.html:182 templates/base.html:172
+#: templates/500.html:182 templates/base.html:173
 msgid "Powered by"
 msgstr "Организованный"
 
-#: templates/500.html:182 templates/base.html:172
+#: templates/500.html:182 templates/base.html:173
 msgid "GeoNode"
 msgstr "GeoNode"
 
-#: templates/500.html:182 templates/base.html:172
+#: templates/500.html:182 templates/base.html:173
 msgid "version"
 msgstr "версия"
 
-#: templates/500.html:183 templates/base.html:173
+#: templates/500.html:183 templates/base.html:174
 msgid "Developers"
 msgstr "Разработчики"
 
@@ -2810,7 +2994,7 @@ msgstr "Добавьте к избранным"
 
 #: templates/_bulk_permissions_form.html:9
 msgid "Set permissions on selected resources"
-msgstr ""
+msgstr "Установка разрешений на выбранных ресурсов"
 
 #: templates/_bulk_permissions_form.html:20
 #: templates/_permissions_form.html:16
@@ -2823,11 +3007,11 @@ msgstr "Добавьте комментарий"
 
 #: templates/_comments.html:21
 msgid "Log in to add a comment"
-msgstr ""
+msgstr "Войти чтобы добавить комментарий"
 
 #: templates/_comments.html:33
 msgid "By"
-msgstr ""
+msgstr "По"
 
 #: templates/_comments.html:49
 msgid "Add a Comment"
@@ -2839,7 +3023,7 @@ msgstr "Представьте комментарии"
 
 #: templates/_permissions.html:8
 msgid "Who can view it?"
-msgstr ""
+msgstr "Кто может его смотреть?"
 
 #: templates/_permissions.html:17 templates/_permissions.html.py:49
 msgid "Anyone"
@@ -2849,47 +3033,48 @@ msgstr "Любой"
 #: templates/_permissions.html:80 templates/_permissions.html.py:107
 #: templates/_permissions.html:133 templates/_permissions.html.py:160
 msgid "The following users:"
-msgstr ""
+msgstr "Следующие пользователи:"
 
 #: templates/_permissions.html:28 templates/_permissions.html.py:60
 #: templates/_permissions.html:86 templates/_permissions.html.py:113
 #: templates/_permissions.html:139 templates/_permissions.html.py:166
 msgid "The following groups:"
-msgstr ""
+msgstr "Следующие группы:"
 
 #: templates/_permissions.html:40
 msgid "Who can download it?"
-msgstr ""
+msgstr "Кто может скачать?"
 
 #: templates/_permissions.html:72
 msgid "Who can change metadata for it?"
-msgstr ""
+msgstr "Кто может изменить метаданные для него?"
 
 #: templates/_permissions.html:99
 msgid "Who can edit data for this layer?"
-msgstr ""
+msgstr "Кто может редактировать данные для этого слоя?"
 
 #: templates/_permissions.html:125
 msgid "Who can edit styles for this layer?"
-msgstr ""
+msgstr "Кто может редактировать стили для этого слоя?"
 
 #: templates/_permissions.html:152
 msgid ""
-"Who can manage it? (update, delete, change permissions, publish/unpublish "
-"it)"
+"Who can manage it? (update, delete, change permissions, publish/unpublish it)"
 msgstr ""
+"Кто может управлять им? (Обновление, удаление, разрешения на изменение, "
+"публикация / отменить публикацию его)"
 
 #: templates/_permissions_form.html:9
 msgid "Set permissions for this resource"
-msgstr ""
+msgstr "Задание разрешений для этого ресурса"
 
 #: templates/_permissions_form_js.html:180
 msgid "Choose users..."
-msgstr ""
+msgstr "Выберите пользователей ..."
 
 #: templates/_permissions_form_js.html:213
 msgid "Choose groups..."
-msgstr ""
+msgstr "Выбор групп ..."
 
 #: templates/about.html:4 templates/about.html.py:8
 msgid "About GeoNode"
@@ -2901,7 +3086,7 @@ msgstr "О GeoNode."
 
 #: templates/base.html:224
 msgid "Type your search here ..."
-msgstr ""
+msgstr "Что искать ..."
 
 #: templates/developer.html:4 templates/developer.html.py:8
 msgid "Information for Developers"
@@ -2914,42 +3099,87 @@ msgstr "Полезная информация для разработчиков,
 #: templates/developer.html:12
 msgid ""
 "\n"
-"  <p><a href=\"http://geonode.org/\">GeoNode</a> is an open service built on open source software. We encourage you to build new applications using the components and resources it provides. This page is a starting point for developers interesting in taking full advantage of GeoNode. It also includes links to the project's source code so anyone can build and customize their own GeoNode. </p>\n"
+"  <p><a href=\"http://geonode.org/\">GeoNode</a> is an open service built on "
+"open source software. We encourage you to build new applications using the "
+"components and resources it provides. This page is a starting point for "
+"developers interesting in taking full advantage of GeoNode. It also includes "
+"links to the project's source code so anyone can build and customize their "
+"own GeoNode. </p>\n"
 "\n"
 "  <h4>GeoNode Software</h4>\n"
 "\n"
-"  <p>All the code that runs GeoNode is open source. The code is available at <a href=\"http://github.com/GeoNode/geonode\">http://github.com/GeoNode/geonode/</a>. The issue tracker for the project is at <a href=\"http://github.com/GeoNode/geonode/issues\">http://github.com/GeoNode/geonode/issues</a>.</p>\n"
+"  <p>All the code that runs GeoNode is open source. The code is available at "
+"<a href=\"http://github.com/GeoNode/geonode\">http://github.com/GeoNode/"
+"geonode/</a>. The issue tracker for the project is at <a href=\"http://"
+"github.com/GeoNode/geonode/issues\">http://github.com/GeoNode/geonode/"
+"issues</a>.</p>\n"
 "\n"
-"  <p>GeoNode is built using several open source projects, each with its own community. If you are interested in contributing new features to the GeoNode, we encourage you to do so by contributing to one of the projects on which it is built:</p>\n"
+"  <p>GeoNode is built using several open source projects, each with its own "
+"community. If you are interested in contributing new features to the "
+"GeoNode, we encourage you to do so by contributing to one of the projects on "
+"which it is built:</p>\n"
 "  <ul>\n"
-"    <li><a href=\"http://geoext.org\">GeoExt</a> - The JavaScript toolkit for rich web mapping applications</li>\n"
-"    <li><a href=\"http://geoserver.org\">GeoServer</a> - Standards based server for geospatial information</li>\n"
-"    <li><a href=\"http://geowebcache.org\">GeoWebCache</a> - Cache engine for WMS Tiles</li><li><a href=\"http://openlayers.org\">OpenLayers</a> - Pure JavaScript library powering the maps of GeoExt</li>\n"
-"    <li><a href=\"http://pycsw.org\">pycsw</a> - CSW metadata catalogue server</li>\n"
+"    <li><a href=\"http://geoext.org\">GeoExt</a> - The JavaScript toolkit "
+"for rich web mapping applications</li>\n"
+"    <li><a href=\"http://geoserver.org\">GeoServer</a> - Standards based "
+"server for geospatial information</li>\n"
+"    <li><a href=\"http://geowebcache.org\">GeoWebCache</a> - Cache engine "
+"for WMS Tiles</li><li><a href=\"http://openlayers.org\">OpenLayers</a> - "
+"Pure JavaScript library powering the maps of GeoExt</li>\n"
+"    <li><a href=\"http://pycsw.org\">pycsw</a> - CSW metadata catalogue "
+"server</li>\n"
 "  </ul>\n"
 "\n"
 "  <h4>What are OGC Services?</h4>\n"
-"  <p>The data in this application is served using open standards endorsed by the <a href=\"http://opengeospatial.org/\">Open Geospatial Consortium</a>; in particular, WMS (Web Map Service) is used for accessing maps, WFS (Web Feature Service) is used for accessing vector data, and WCS (Web Coverage Service) is used for accessing raster data.  WMC (Web Map Context Documents) is used for sharing maps. You can use these services in your own applications using libraries such as OpenLayers, GeoTools, and OGR (all of which are open-source software and available at zero cost).</p>\n"
+"  <p>The data in this application is served using open standards endorsed by "
+"the <a href=\"http://opengeospatial.org/\">Open Geospatial Consortium</a>; "
+"in particular, WMS (Web Map Service) is used for accessing maps, WFS (Web "
+"Feature Service) is used for accessing vector data, and WCS (Web Coverage "
+"Service) is used for accessing raster data.  WMC (Web Map Context Documents) "
+"is used for sharing maps. You can use these services in your own "
+"applications using libraries such as OpenLayers, GeoTools, and OGR (all of "
+"which are open-source software and available at zero cost).</p>\n"
 "\n"
 "  <h4>What is GeoWebCache?</h4>\n"
-"  <p>GeoWebCache provides mapping tiles that are compatible with a number of mapping engines, including Google Maps, Bing Maps and OpenLayers. All the data hosted by GeoNode is also available through GeoWebCache. GeoWebCache improves on WMS by caching data and providing more responsive maps.</p>\n"
+"  <p>GeoWebCache provides mapping tiles that are compatible with a number of "
+"mapping engines, including Google Maps, Bing Maps and OpenLayers. All the "
+"data hosted by GeoNode is also available through GeoWebCache. GeoWebCache "
+"improves on WMS by caching data and providing more responsive maps.</p>\n"
 "\n"
 "  <h4>OpenLayers Example Code</h4>\n"
 "\n"
-"  <p>To include a GeoNode map layer in an OpenLayers map, first find the name for that layer. This is found in the layer's <code>name</code> field (not <code>title</code>) of the layer list. For this example, we will use the Nicaraguan political boundaries background layer, whose name is <code>risk:nicaragua_admin</code>. Then, create an instance of OpenLayers.Layer.WMS:</p>\n"
-"  <p><code>var geonodeLayer = new OpenLayers.Layer.WMS(\"GeoNode Risk Data\", \"http://demo.geonode.org/geoserver/wms\",{ layers: \"risk:nicaragua_admin\" });</code></p>\n"
+"  <p>To include a GeoNode map layer in an OpenLayers map, first find the "
+"name for that layer. This is found in the layer's <code>name</code> field "
+"(not <code>title</code>) of the layer list. For this example, we will use "
+"the Nicaraguan political boundaries background layer, whose name is "
+"<code>risk:nicaragua_admin</code>. Then, create an instance of OpenLayers."
+"Layer.WMS:</p>\n"
+"  <p><code>var geonodeLayer = new OpenLayers.Layer.WMS(\"GeoNode Risk Data"
+"\", \"http://demo.geonode.org/geoserver/wms\",{ layers: \"risk:"
+"nicaragua_admin\" });</code></p>\n"
 "\n"
 "  <h4>Google Maps Example Code</h4>\n"
-"  <p>To include a GeoNode map layer in a Google Map, include the layer namein the URL template.</p>\n"
-"  <p><code>var tilelayer =  new GTileLayer(null, null, null, {tileUrlTemplate: 'http://demo.geonode.org/geoserver/gwc/service/gmaps?layers=risk:nicaragua_admin&#38;zoom={Z}&#38;x={X}&#38;y={Y}', isPng:true, opacity:0.5 } );</code></p>\n"
+"  <p>To include a GeoNode map layer in a Google Map, include the layer "
+"namein the URL template.</p>\n"
+"  <p><code>var tilelayer =  new GTileLayer(null, null, null, "
+"{tileUrlTemplate: 'http://demo.geonode.org/geoserver/gwc/service/gmaps?"
+"layers=risk:nicaragua_admin&#38;zoom={Z}&#38;x={X}&#38;y={Y}', isPng:true, "
+"opacity:0.5 } );</code></p>\n"
 "\n"
 "  <h4>Shapefile/GeoJSON/GML Output</h4>\n"
-"  <p>To get data from the GeoNode web services use the WFS protocol. For example, to get the full Nicaraguan admin boundaries use:</p>\n"
-"  <p><code>http://demo.geonode.org/geoserver/wfs?request=GetFeature&#38;typeName=risk:nicaragua_admin&#38;outputformat=SHAPE-ZIP</code></p>\n"
-"  <p>Changing output format to <code>json</code>, <code>GML2</code>, <code>GML3</code>, or <code>csv</code> will get data in those formats. The WFS protocol also can handle more precise queries, specifying a bounding box or various spatial and non-spatial filters based on the attributes of the data.</p>\n"
+"  <p>To get data from the GeoNode web services use the WFS protocol. For "
+"example, to get the full Nicaraguan admin boundaries use:</p>\n"
+"  <p><code>http://demo.geonode.org/geoserver/wfs?request=GetFeature&#38;"
+"typeName=risk:nicaragua_admin&#38;outputformat=SHAPE-ZIP</code></p>\n"
+"  <p>Changing output format to <code>json</code>, <code>GML2</code>, "
+"<code>GML3</code>, or <code>csv</code> will get data in those formats. The "
+"WFS protocol also can handle more precise queries, specifying a bounding box "
+"or various spatial and non-spatial filters based on the attributes of the "
+"data.</p>\n"
 "\n"
 "  <h4>GeoTools Example Code</h4>\n"
-"  <p>Create a DataStore and extract a FeatureType from it, then run a Query. It is all documented on the wiki at <code>http://geotools.org/</code>.</p>\n"
+"  <p>Create a DataStore and extract a FeatureType from it, then run a Query. "
+"It is all documented on the wiki at <code>http://geotools.org/</code>.</p>\n"
 msgstr ""
 
 #: templates/developer.html:53
@@ -2970,7 +3200,7 @@ msgstr "Векторные данные через WFS:"
 
 #: templates/developer.html:65
 msgid "Raster data via WCS:"
-msgstr ""
+msgstr "Растровые данные через WCS:"
 
 #: templates/developer.html:69
 msgid "Metadata search via CSW:"
@@ -2990,49 +3220,85 @@ msgstr "Помощь GeoNode"
 
 #: templates/help.html:9
 msgid ""
-"This page provides helpful information about how to use the GeoNode. You can"
-" use the sidebar links to navigate to what you want to know."
-msgstr "данная страница содержит полезную информацию о способах использования GeoNode. Вы можете использовать боковые ссылки для навигации к нужному "
+"This page provides helpful information about how to use the GeoNode. You can "
+"use the sidebar links to navigate to what you want to know."
+msgstr ""
+"данная страница содержит полезную информацию о способах использования "
+"GeoNode. Вы можете использовать боковые ссылки для навигации к нужному "
 
 #: templates/help.html:12
 msgid ""
 "\n"
-"  <p>The GeoNode provides access to data sets and a map editing application allows users to browse existing maps and contribute their own.</p>\n"
+"  <p>The GeoNode provides access to data sets and a map editing application "
+"allows users to browse existing maps and contribute their own.</p>\n"
 "\n"
 "  <h4 id=\"browsing-data\">Browsing Layers</h4>\n"
-"  <p>The <a href=\"/layers\">Layers</a> tab allows you to browse data uploaded to this GeoNode.</p>\n"
-"  <p>All data can be downloaded in a variety of formats, for use in other applications.</p>\n"
+"  <p>The <a href=\"/layers\">Layers</a> tab allows you to browse data "
+"uploaded to this GeoNode.</p>\n"
+"  <p>All data can be downloaded in a variety of formats, for use in other "
+"applications.</p>\n"
 "\n"
 "  <h4 id=\"developer-access\">Developer Access</h4>\n"
-"  <p>The <a href=\"/developer\"> Developer</a> page is the place for developers to get started building applications against the GeoNode. It includes instructions on using the web services, links to the source code of the GeoNode, and information about the open source projects used to create it.</p>\n"
+"  <p>The <a href=\"/developer\"> Developer</a> page is the place for "
+"developers to get started building applications against the GeoNode. It "
+"includes instructions on using the web services, links to the source code of "
+"the GeoNode, and information about the open source projects used to create "
+"it.</p>\n"
 "\n"
 "  <h4 id=\"browsing-maps\">Browsing Maps</h4>\n"
-"  <p>The GeoNode allows users to create and share maps with one another.</p>\n"
-"  <p>The <a href=\"/maps\">Maps</a> tab is a gateway to map exploration on GeoNode.  From here you can <strong>search for a map</strong> or <strong>create a map</strong>, which will open the <a href=\"/maps/new\">Map Composer</a>.</p>\n"
+"  <p>The GeoNode allows users to create and share maps with one another.</"
+"p>\n"
+"  <p>The <a href=\"/maps\">Maps</a> tab is a gateway to map exploration on "
+"GeoNode.  From here you can <strong>search for a map</strong> or "
+"<strong>create a map</strong>, which will open the <a href=\"/maps/new\">Map "
+"Composer</a>.</p>\n"
 "  <h5>Google Earth Mode</h5>\n"
-"  <p>Any map viewed in the interactive map editor can be seen in 3D mode with the Google Earth plugin. To switch to 3D mode select the Google Earth globe logo, the rightmost button on top toolbar. If you do not have the Google Earth plugin installed you will be prompted to install it.</p>\n"
+"  <p>Any map viewed in the interactive map editor can be seen in 3D mode "
+"with the Google Earth plugin. To switch to 3D mode select the Google Earth "
+"globe logo, the rightmost button on top toolbar. If you do not have the "
+"Google Earth plugin installed you will be prompted to install it.</p>\n"
 "\n"
 "  <h4 id=\"creating-a-map\">Creating a Map</h4>\n"
-"  <p>To create a new map go to the <a href=\"/maps\">Contributed Maps</a> tab and click the <a href=\"/maps/new\">create your own map</a> link.</p>\n"
-"  <p>This will take you to the <a href=\"/maps/new\">Map Composer</a> with a base layer loaded.</p>\n"
-"  <p>To add data layers from the GeoNode click on the green plus button located below the layers tab on the left hand side of the screen. This will open a dialog listing all the layers available on the GeoNode.</p>\n"
-"  <p>To add layers to your map select them and hit the <strong>Add Layers</strong> button. When finished you may hit <strong>Done</strong> to close the dialog and go back to the map.</p>\n"
+"  <p>To create a new map go to the <a href=\"/maps\">Contributed Maps</a> "
+"tab and click the <a href=\"/maps/new\">create your own map</a> link.</p>\n"
+"  <p>This will take you to the <a href=\"/maps/new\">Map Composer</a> with a "
+"base layer loaded.</p>\n"
+"  <p>To add data layers from the GeoNode click on the green plus button "
+"located below the layers tab on the left hand side of the screen. This will "
+"open a dialog listing all the layers available on the GeoNode.</p>\n"
+"  <p>To add layers to your map select them and hit the <strong>Add Layers</"
+"strong> button. When finished you may hit <strong>Done</strong> to close the "
+"dialog and go back to the map.</p>\n"
 "\n"
 "  <h5>Reordering and Removing Layers</h5>\n"
-"  <p>Change the display order of the layers listed in the data tab by simply dragging and dropping their names. The order in the map will be updated to reflect that. To turn a layer's visibility off simply uncheck it, and to remove it entirely select it and hit the red minus button.</p>\n"
+"  <p>Change the display order of the layers listed in the data tab by simply "
+"dragging and dropping their names. The order in the map will be updated to "
+"reflect that. To turn a layer's visibility off simply uncheck it, and to "
+"remove it entirely select it and hit the red minus button.</p>\n"
 "\n"
 "  <h5>Saving your map</h5>\n"
-"  <p>Once a suitable set of layers and zoom level has been found it's time to save it so others can see it.  Click the Save button--the left most icon on the top toolbar, an image of a map with a disk--on the top menu and fill out the title and abstract of the map.</p>\n"
+"  <p>Once a suitable set of layers and zoom level has been found it's time "
+"to save it so others can see it.  Click the Save button--the left most icon "
+"on the top toolbar, an image of a map with a disk--on the top menu and fill "
+"out the title and abstract of the map.</p>\n"
 "\n"
 "  <h4 id=\"exporting-a-map\">Exporting a Map</h4>\n"
-"  <p>Any map from the GeoNode can be embedded for use in another site or blog. To export a map:</p>\n"
+"  <p>Any map from the GeoNode can be embedded for use in another site or "
+"blog. To export a map:</p>\n"
 "  <ol>\n"
-"    <li>Select the from the list of maps on the community or map page and then hit the 'export map' button.</li> \n"
-"    <li>Choose your desired height and width for the widget in the wizard.</li> \n"
-"    <li>Copy the HTML snippet provided in the wizard to any HTML page or iFrame-supporting blog post.</li>\n"
+"    <li>Select the from the list of maps on the community or map page and "
+"then hit the 'export map' button.</li> \n"
+"    <li>Choose your desired height and width for the widget in the wizard.</"
+"li> \n"
+"    <li>Copy the HTML snippet provided in the wizard to any HTML page or "
+"iFrame-supporting blog post.</li>\n"
 "  </ol>\n"
-"  <p>This will put an interactive widget showing you map in your web page or blog post.</p>\n"
-"  <p>Note that the <a href=\"/maps/new\">Map Composer</a> also has a button to export the map. Just be sure to save the map before exporting if there are changes that you want others to see. It exports the last saved version, not the last viewed version.</p>\n"
+"  <p>This will put an interactive widget showing you map in your web page or "
+"blog post.</p>\n"
+"  <p>Note that the <a href=\"/maps/new\">Map Composer</a> also has a button "
+"to export the map. Just be sure to save the map before exporting if there "
+"are changes that you want others to see. It exports the last saved version, "
+"not the last viewed version.</p>\n"
 "\n"
 "  <h4 id=\"remixing-a-map\">Remixing a Map</h4>\n"
 "  <p>Any map available can serve as a starting point for a new map.</p>\n"
@@ -3040,10 +3306,12 @@ msgid ""
 "    <li>Open the map in the Map Composer.</li>\n"
 "    <li>Add and remove layers as you like.</li>\n"
 "    <li>Pan and zoom to highlight the area of interest.</li>\n"
-"    <li><strong>IMPORTANT:</strong> Update the title, abstract, contact info and tags to reflect the new map.</li>\n"
+"    <li><strong>IMPORTANT:</strong> Update the title, abstract, contact info "
+"and tags to reflect the new map.</li>\n"
 "    <li>Save the map.</li>\n"
 "  </ol>\n"
-"  <p>You will be able to see your new map when you search for it from the <a href=\"/maps\">Maps</a> tab.</p> \n"
+"  <p>You will be able to see your new map when you search for it from the <a "
+"href=\"/maps\">Maps</a> tab.</p> \n"
 "  "
 msgstr ""
 
@@ -3087,24 +3355,29 @@ msgstr "Приветствие"
 msgid ""
 "GeoNode is an open source platform for sharing geospatial data and maps."
 msgstr ""
+"GeoNode является платформой с открытым кодом для обмена геопространственных "
+"данных и карт."
 
 #: templates/index.html:17
 msgid ""
-"If you have any questions about the software or service, join our <a "
-"href=\"https://groups.google.com/d/forum/geonode-users\">mailing list</a>."
+"If you have any questions about the software or service, join our <a href="
+"\"https://groups.google.com/d/forum/geonode-users\">mailing list</a>."
 msgstr ""
+"Если у вас есть какие-либо вопросы по поводу программного обеспечения или "
+"службы, присоединиться к нашей <a href=\"https://groups.google.com/d/forum/"
+"geonode-users\">список рассылки</a> ."
 
 #: templates/index.html:18
 msgid "Need help?"
-msgstr ""
+msgstr "Нужна помощь?"
 
 #: templates/index.html:18
 msgid "Getting Started"
-msgstr ""
+msgstr "Начинаем"
 
 #: templates/index.html:30 templates/index.html.py:37 templates/index.html:43
 msgid "No"
-msgstr ""
+msgstr "Нет"
 
 #: templates/index.html:30
 msgid "Layer"
@@ -3115,6 +3388,9 @@ msgid ""
 "Click to search for geospatial data published by other users, organizations "
 "and public sources. Download data in standard formats."
 msgstr ""
+"Нажмите для поиска геопространственных данных, опубликованных другими "
+"пользователями, организациями и из открытых источников. Загрузка данных в "
+"стандартных форматах."
 
 #: templates/index.html:37
 msgid "Map"
@@ -3125,10 +3401,13 @@ msgid ""
 "Data is available for browsing, aggregating and styling to generate maps "
 "which can be shared publicly or restricted to specific users only."
 msgstr ""
+"Данные доступны для просмотра, объединения и стиль для создания карт, "
+"которые могут быть совместно публично или ограничен только определенным "
+"пользователям."
 
 #: templates/index.html:39
 msgid "Create maps"
-msgstr ""
+msgstr "Создание карт"
 
 #: templates/index.html:43
 msgid "User"
@@ -3139,61 +3418,69 @@ msgid ""
 "GeoNode allows registered users to easily upload geospatial data in several "
 "formats including shapefile and GeoTiff."
 msgstr ""
+"GeoNode позволяет зарегистрированным пользователям легко загружать "
+"геопространственных данных в нескольких форматах, включая шейп и GeoTiff."
 
 #: templates/index.html:45
 msgid "Share data"
-msgstr ""
+msgstr "Совместное использование данных"
 
 #: templates/account/login.html:7 templates/account/login.html.py:24
 msgid "Log in"
-msgstr ""
+msgstr "Войти"
 
 #: templates/account/login.html:12
 msgid "Log in to an existing account"
-msgstr ""
+msgstr "Войдите под существующей учетной записи"
 
 #: templates/account/login.html:22
 msgid "Forgot your username?"
-msgstr ""
+msgstr "Забыли имя пользователя?"
 
 #: templates/account/login.html:23
 msgid "Forgot your password?"
-msgstr ""
+msgstr "Забыли свой пароль?"
 
 #: templates/account/logout.html:15
 msgid "Are you sure you want to log out?"
-msgstr ""
+msgstr "Вы уверены, что хотите выйти?"
 
 #: templates/account/password_reset.html:8
 #: templates/account/password_reset.html:14
 msgid "Password reset"
-msgstr ""
+msgstr "Восстановление пароля"
 
 #: templates/account/password_reset.html:15
 msgid ""
 "Forgotten your password? Enter your email address below, and we'll send you "
 "an email allowing you to reset it."
 msgstr ""
+"Забыли пароль? Введите адрес электронной почты ниже, и мы вышлем Вам по "
+"электронной почте позволяет сбросить его."
 
 #: templates/account/password_reset.html:20
 msgid "Reset my password"
-msgstr ""
+msgstr "Сброс свой пароль"
 
 #: templates/account/password_reset.html:25
 #, python-format
 msgid ""
-"If you have any trouble resetting your password, contact us at <a "
-"href=\"mailto:%(THEME_ACCOUNT_CONTACT_EMAIL)s\">%(THEME_ACCOUNT_CONTACT_EMAIL)s</a>."
+"If you have any trouble resetting your password, contact us at <a href="
+"\"mailto:%(THEME_ACCOUNT_CONTACT_EMAIL)s\">%(THEME_ACCOUNT_CONTACT_EMAIL)s</"
+"a>."
 msgstr ""
+"Если у вас есть какие-либо проблемы восстановить пароль, свяжитесь с нами по "
+"<a href=\"mailto:%(THEME_ACCOUNT_CONTACT_EMAIL)s\">"
+"%(THEME_ACCOUNT_CONTACT_EMAIL)s</a>."
 
 #: templates/account/signup.html:7 templates/account/signup.html.py:14
 #: templates/account/signup.html:22
 msgid "Sign up"
-msgstr ""
+msgstr "Подписаться"
 
 #: templates/account/signup.html:27
 msgid "Sorry, registrations are not open at this time."
-msgstr ""
+msgstr "К сожалению, регистрация не открыты в это время."
 
 #: templates/account/email/email_confirmation_message.txt:1
 #, python-format
@@ -3204,79 +3491,99 @@ msgid ""
 "\n"
 "If you did not sign up for this site, you can ignore this message.\n"
 msgstr ""
+"Пользователь на %(site_name)s создал учетную запись, используя этот адрес "
+"электронной почты. \n"
+"Чтобы подтвердить этот адрес электронной почты, перейдите%(activate_url)s\n"
+" Если вы не подписаться на этом сайте, вы можете проигнорировать это "
+"сообщение.\n"
 
 #: templates/account/email/email_confirmation_subject.txt:1
 #, python-format
 msgid "Confirm email address for %(site_name)s"
-msgstr ""
+msgstr "Подтвердите адрес электронной почты для %(site_name)s"
 
 #: templates/account/email/password_reset.txt:1
 #, python-format
 msgid ""
-"You're receiving this email because you or someone else has requested a password for your user account at %(site_name)s.\n"
-"It can be safely ignored if you did not request a password reset. Click the link below to reset your password.\n"
+"You're receiving this email because you or someone else has requested a "
+"password for your user account at %(site_name)s.\n"
+"It can be safely ignored if you did not request a password reset. Click the "
+"link below to reset your password.\n"
 "\n"
 "%(password_reset_url)s\n"
 msgstr ""
+"Вы получили это письмо, потому что вы или кто-то еще просил пароль для "
+"учетной записи пользователя в %(site_name)s \n"
+"Это может быть проигнорировано, если вы не запрашивали изменение пароля. "
+"Нажмите на ссылку ниже, чтобы сбросить пароль. \n"
+"\n"
+"%(password_reset_url)s\n"
 
 #: templates/account/email/password_reset_subject.txt:1
 #, python-format
 msgid "[%(site_name)s] Password reset"
-msgstr ""
+msgstr "[%(site_name)s] Восстановление пароля"
 
 #: templates/actstream/actor.html:7 templates/actstream/actor.html.py:8
 msgid "My Activity feed"
-msgstr ""
+msgstr "Моя подача активность"
 
 #: templates/actstream/actor.html:7 templates/actstream/actor.html.py:8
 msgid "Activity Feed"
-msgstr ""
+msgstr "Лента"
 
 #: templates/admin/base_site.html:3
 msgid "GeoNode site admin"
-msgstr ""
+msgstr "GeoNode администратор сайта"
 
 #: templates/admin/base_site.html:6
 msgid "GeoNode administration"
-msgstr ""
+msgstr "Администрация GeoNode"
 
 #: templates/announcements/announcement_form.html:10
 msgid "Edit Announcement"
-msgstr ""
+msgstr "Редактировать Объявление"
 
 #: templates/announcements/announcement_form.html:10
 msgid "Create Announcement"
-msgstr ""
+msgstr "Создать Объявление"
 
 #: templates/announcements/announcement_list.html:19
 msgid "New Announcement"
-msgstr ""
+msgstr "Новый анонс"
 
 #: templates/announcements/announcement_list.html:31
-msgid "Announcement"
+msgid "Level"
 msgstr ""
 
 #: templates/announcements/announcement_list.html:32
-msgid "Published From"
-msgstr ""
+msgid "Announcement"
+msgstr "Объявление"
 
-#: templates/announcements/announcement_list.html:44
+#: templates/announcements/announcement_list.html:33
+msgid "Published From"
+msgstr "Опубликовано С"
+
+#: templates/announcements/announcement_list.html:48
 #, python-format
 msgid ""
 "\n"
-"                        Published from <b>%(publish_start)s</b> to <b>%(publish_end)s</b>.\n"
+"                        Published from <b>%(publish_start)s</b> to <b>"
+"%(publish_end)s</b>.\n"
 "                        "
 msgstr ""
+"\n"
+"Опубликовано <b>%(publish_start)s</b> в<b>%(publish_end)s</b>"
 
 #: templates/announcements/detail.html:4
 #, python-format
 msgid "Announcements : %(announcement)s"
-msgstr ""
+msgstr "Объявления: %(announcement)s"
 
 #: templates/avatar/add.html:6 templates/avatar/change.html:6
 #: templates/avatar/confirm_delete.html:5
 msgid "Back to edit your profile information"
-msgstr ""
+msgstr "Вернуться редактировать информацию своего профиля"
 
 #: templates/avatar/add.html:7 templates/avatar/change.html:7
 msgid "Your current avatar: "
@@ -3288,30 +3595,32 @@ msgstr "Вы еще не загрузили аватар. Загрузите с�
 
 #: templates/avatar/add.html:14 templates/avatar/change.html:21
 msgid "Upload New Image"
-msgstr ""
+msgstr "Добавить новое изображение"
 
 #: templates/avatar/change.html:16
 msgid "Choose new Default"
-msgstr ""
+msgstr "Выберите новый умолчанию"
 
 #: templates/avatar/change.html:23
 msgid "Delete your avatars"
-msgstr ""
+msgstr "Удалить свои аватары"
 
 #: templates/avatar/confirm_delete.html:6
 msgid "Please select the avatars that you would like to delete."
-msgstr ""
+msgstr "Пожалуйста, выберите аватары, которые вы хотели бы удалить."
 
 #: templates/avatar/confirm_delete.html:9
 #, python-format
 msgid ""
-"You have no avatars to delete. Please <a "
-"href=\"%(avatar_change_url)s\">upload one</a> now."
+"You have no avatars to delete. Please <a href=\"%(avatar_change_url)s"
+"\">upload one</a> now."
 msgstr ""
+"У вас нет аватары для удаления. Пожалуйста, <a href=\"%(avatar_change_url)s"
+"\">загрузите один</a> сейчас."
 
 #: templates/avatar/confirm_delete.html:15
 msgid "Delete These"
-msgstr ""
+msgstr "Удалить эти"
 
 #: templates/notification/base.html:16 templates/notification/notices.html:7
 #: templates/notification/notices.html:11
@@ -3349,7 +3658,9 @@ msgstr "Примечание"
 msgid ""
 "You do not have a verified email address to which notices can be sent. You "
 "can add one by going to <a href=\"%(email_url)s\">Account</a>."
-msgstr "У вас нет действующего почтового адреса, куда могли бы приходить сообщения. Вы можете добавить один в <a href=\"%(email_url)s\">Account</a>."
+msgstr ""
+"У вас нет действующего почтового адреса, куда могли бы приходить сообщения. "
+"Вы можете добавить один в <a href=\"%(email_url)s\">Account</a>."
 
 #: templates/notification/notice_settings.html:30
 msgid "Notification Type"
@@ -3386,15 +3697,15 @@ msgstr "Следующий"
 
 #: templates/relationships/_list_connections.html:9
 msgid "This user is not following anyone"
-msgstr ""
+msgstr "Пользователь не следует никого"
 
 #: templates/relationships/_list_connections.html:11
 msgid "Followers"
-msgstr ""
+msgstr "Аудитория"
 
 #: templates/relationships/_list_connections.html:17
 msgid "No one is following this user"
-msgstr ""
+msgstr "Никто не следит за этим пользователем"
 
 #: templates/relationships/_manage_connections.html:4
 msgid "Manage Connections"
@@ -3411,7 +3722,7 @@ msgstr "Не следовать"
 
 #: templates/relationships/_profile_follow.html:9
 msgid "Follow"
-msgstr ""
+msgstr "Следовать"
 
 #: templates/relationships/_profile_follow.html:14
 #: templates/relationships/relationship_list.html:20
@@ -3420,7 +3731,7 @@ msgstr "Разблокировать"
 
 #: templates/relationships/_profile_follow.html:17
 msgid "Block"
-msgstr ""
+msgstr "Блок"
 
 #: templates/relationships/confirm.html:4
 #: templates/relationships/confirm.html:7
@@ -3434,7 +3745,7 @@ msgstr "Подтвердить"
 #: templates/relationships/relationship_list.html:26
 #, python-format
 msgid "You're not %(status_slug)s anyone!"
-msgstr ""
+msgstr "Ты не %(status_slug)s любой!"
 
 #: templates/relationships/success.html:5
 msgid "Success"
@@ -3455,7 +3766,7 @@ msgstr "%(to_user_username)s's профиль"
 
 #: templates/search/_extent_filter.html:3
 msgid "Extent"
-msgstr ""
+msgstr "Степень"
 
 #: templates/search/_general_filters.html:3
 msgid "Categories"
@@ -3463,16 +3774,16 @@ msgstr "Категории"
 
 #: templates/search/_general_filters.html:30
 msgid "Date begins after:"
-msgstr ""
+msgstr "Дата начинается после:"
 
 #: templates/search/_general_filters.html:31
 #: templates/search/_general_filters.html:35
 msgid "yyyy-mm-dd"
-msgstr ""
+msgstr "гггг-мм-дд"
 
 #: templates/search/_general_filters.html:34
 msgid "Date ends before:"
-msgstr ""
+msgstr "Дата заканчивается раньше:"
 
 #: templates/search/_search_content.html:10
 msgid "Your selections"
@@ -3480,15 +3791,15 @@ msgstr "Ваши выборы"
 
 #: templates/search/_search_content.html:11
 msgid "Clear all filters"
-msgstr ""
+msgstr "Очистить все фильтры"
 
 #: templates/search/_sort_filters.html:13
 msgid "Set permissions"
-msgstr ""
+msgstr "Задание разрешений"
 
 #: templates/search/_text_filter.html:5
 msgid "Text"
-msgstr ""
+msgstr "Текст"
 
 #: templates/user_messages/inbox.html:6
 msgid "Message Inbox"
@@ -3537,3 +3848,6 @@ msgstr "Вернуться в ящик входящих сообщений"
 #: templates/user_messages/thread_detail.html:25
 msgid "Send Reply"
 msgstr "Послать ответ"
+
+#~ msgid "Remote Thumbnail"
+#~ msgstr "Удаленная эскизов"
