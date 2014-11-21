@@ -1,7 +1,7 @@
 {% load i18n %}
 
 {% verbatim %}
-<article ng-repeat="profile in results">
+<article ng-repeat="profile in results" ng-cloak class="ng-cloak">
   <div class="row">
     <div class="col-md-2">
       <a href="{{ profile.profile_detail_url }}" ><img ng-src="{{ profile.avatar_100 }}"/></a>
