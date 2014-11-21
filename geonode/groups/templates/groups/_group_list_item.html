@@ -1,5 +1,5 @@
 {% verbatim %}
-<article ng-repeat="group in results">
+<article ng-repeat="group in results" ng-cloak class="ng-cloak">
   <div class="row">
   <div ng-if="group.logo != ''" class="col-md-3">
     <a href="{{ group.detail_url }}" ><img ng-src="{{ group.logo }}" alt="{{ group.title }}" class="group-logo" /></a>
