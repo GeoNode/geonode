@@ -5,10 +5,9 @@ import sys
 
 from django.contrib.auth.models import User
 from django.http import HttpResponse
-from django.conf import settings
 from django.utils.html import escape
 from django.views.decorators.csrf import csrf_exempt
-from django.core.files.uploadedfile import TemporaryUploadedFile
+from django.core.files.uploadedfile import TemporaryUploadedFile, InMemoryUploadedFile
 
 from geonode.maps.utils import save
 from geonode.maps.views import _create_new_user
@@ -22,102 +21,135 @@ from geonode.dataverse_connect.dv_utils import MessageHelperJSON          # form
 
 from geonode.dataverse_layer_metadata.layer_metadata_helper import add_dataverse_layer_metadata
 
+
+from shared_form_util.format_form_errors import format_errors_as_text
+from shapefile_import.forms import ShapefileImportDataForm
+
 logger = logging.getLogger("geonode.dataverse_connect.views")
 
 @csrf_exempt
 def view_add_worldmap_shapefile(request):
-    
+    """
+    Process a Dataverse POST request to create a Layer with an accompanying LayerMetadata object
+    """
+
+    #   Is this request a POST?
+    #
+    if not request.POST:
+        json_msg = MessageHelperJSON.get_json_msg(success=False, msg="The request must be a POST.")
+        return HttpResponse(status=401, content=json_msg, content_type="application/json")
+
+    #   Does the request have proper auth?
+    #
     if not has_proper_auth(request):
         json_msg = MessageHelperJSON.get_json_msg(success=False, msg="Authentication failed.")
         return HttpResponse(status=401, content=json_msg, content_type="application/json")
-    
-    
-    if request.POST:
-        
-        user = None
-        title = request.POST["title"]
-        abstract = request.POST["abstract"]
-        email = request.POST["email"]
-        content = request.FILES.values()[0]
-        name = request.POST["shapefile_name"]
 
-        keywords = "" if "keywords" not in request.POST else request.POST["keywords"]
 
-        #print request.POST.items()
+    #   Is this a valid request?  Check parameters.
+    #
+    form_shapefile_import= ShapefileImportDataForm(request.POST)
+    if not form_shapefile_import.is_valid():
+        #
+        #   Invalid send back an error message
+        #
+        logger.error("Shapefile import error: \n%s" % format_errors_as_text(form_shapefile_import))
+        json_msg = MessageHelperJSON.get_json_msg(success=False\
+                                , msg="Incorrect params for ShapefileImportDataForm: <br />%s" % form_shapefile_import.errors)
 
-        if "worldmap_username" in request.POST:
-            try:
-                user = User.objects.get(username=request.POST["username"])
-            except:
-                pass
+        return HttpResponse(status=200, content=json_msg, content_type="application/json")
 
-        if user is None:
-            existing_user = User.objects.filter(email=email)
-            if existing_user.count() > 0:
-                user = existing_user[0]
-            else:
-                user = _create_new_user(email, None, None, None)
 
-        if not user:
-            json_msg = MessageHelperJSON.get_json_msg(success=False, msg="A user account could not be created for email %s" % email)
+    #
+    #   Using the ShapefileImportDataForm,
+    #   get/set the attributes needed to create a layer
+    #
+    import_data = form_shapefile_import.cleaned_data
+
+    title = import_data['title']
+    abstract = import_data['abstract']
+    dv_user_email = import_data['dv_user_email']
+    worldmap_username = import_data['worldmap_username']
+    shapefile_name = import_data['shapefile_name']
+    keywords = import_data['keywords']
+
+    transferred_file = request.FILES.values()[0]
+
+
+    # Retrieve or create a User object
+    #
+    # - attempt #1 - Has a username name been sent in the request?
+    # - attempt #2 - Does the dataverse email match an existing WorldMap user?
+    # - attempt #3 -
+    #
+    user_object = get_worldmap_user_object(worldmap_username, dv_user_email)
+    if user_object is None:
+        error_msg = "A user account could not be created for email %s" % dv_user_email
+        logger.error(error_msg)
+        json_msg = MessageHelperJSON.get_json_msg(success=False, msg=error_msg)
+        return HttpResponse(status=200, content=json_msg, content_type="application/json")
+
+    #   Format file name and save actual file
+    #
+    shapefile_name = slugify(shapefile_name.replace(".","_"))
+    file_obj = write_the_dataverse_file(transferred_file)
+        #print ('file_obj', file_obj)
+
+    #   Save the actual layer
+    #
+    #
+    try:
+
+        saved_layer = save(shapefile_name,\
+                           file_obj,\
+                           user_object,\
+                           overwrite = False,\
+                           abstract = abstract,\
+                           title = title,\
+                           keywords = keywords.split()\
+                        )
+
+        # Look for DataverseInfo in the request.POST
+        #   If it exists, create a DataverseLayerMetadata object
+        #
+        dataverse_layer_metadata = add_dataverse_layer_metadata(saved_layer, request.POST)
+        if dataverse_layer_metadata is None:
+            logger.error("Failed to create a DataverseLayerMetadata object")
+            json_msg = MessageHelperJSON.get_json_msg(success=False, msg="Failed to create a DataverseLayerMetadata object")
+
+            # remove the layer
+            #
+            if saved_layer:
+                saved_layer.delete()
             return HttpResponse(status=200, content=json_msg, content_type="application/json")
-            
-        else:
-            name = slugify(name.replace(".","_"))
-            file_obj = write_the_dataverse_file(content)
-            #print ('file_obj', file_obj)
-            
-            try:
-                
-                # Save the actual layer
-                saved_layer = save(name, file_obj, user,
-                               overwrite = False,
-                               abstract = abstract,
-                               title = title,
-                               keywords = keywords.split()
-                )
-                
-                # Look for DataverseInfo in the request.POST
-                #   If it exists, create a DataverseLayerMetadata object
-                #
-                dataverse_layer_metadata = add_dataverse_layer_metadata(saved_layer, request.POST)
-                if dataverse_layer_metadata is None:
-                    logger.error("Failed to create a DataverseLayerMetadata object")
-                    json_msg = MessageHelperJSON.get_json_msg(success=False, msg="Failed to create a DataverseLayerMetadata object")
-                    return HttpResponse(status=200, content=json_msg, content_type="application/json")
 
 
-                # Prepare a JSON reponse
-                # 
-                layer_metadata_obj = LayerMetadata(**{ 'geonode_layer_object' : saved_layer})
+        # Prepare a JSON reponse
+        #
+        layer_metadata_obj = LayerMetadata(**{ 'geonode_layer_object' : saved_layer})
 
-                # Return the response!
-                json_msg = MessageHelperJSON.get_json_msg(success=True, msg='worked', data_dict=layer_metadata_obj.get_metadata_dict())
-                #print '-' * 40
-                #print 'json_msg', json_msg
-                
-                return HttpResponse(status=200, content=json_msg, content_type="application/json")
-            
-            except:
-                e = sys.exc_info()[0]
-                logger.error("Unexpected error during dvn import: %s : %s" % (name, escape(str(e))))
-                err_msg = "Unexpected error during upload: %s" %  escape(str(e))
-                json_msg = MessageHelperJSON.get_json_msg(success=False, msg=err_msg)
-                return HttpResponse(content=json_msg, content_type="application/json")
-            
-    else:
-        
-        json_msg = MessageHelperJSON.get_json_msg(success=False, msg="The request must be a POST, not GET")
-        return HttpResponse(status=401, content=json_msg, content_type="application/json")
-        
+        # Return the response!
+        json_msg = MessageHelperJSON.get_json_msg(success=True, msg='worked', data_dict=layer_metadata_obj.get_metadata_dict())
+        #print '-' * 40
+        #print 'json_msg', json_msg
+
+        return HttpResponse(status=200, content=json_msg, content_type="application/json")
+
+    except:
+        e = sys.exc_info()[0]
+        logger.error("Unexpected error during dvn import: %s : %s" % (shapefile_name, escape(str(e))))
+        err_msg = "Unexpected error during upload: %s" %  escape(str(e))
+        json_msg = MessageHelperJSON.get_json_msg(success=False, msg=err_msg)
+        return HttpResponse(content=json_msg, content_type="application/json")
+
 
 
 def write_the_dataverse_file(temp_uploaded_file):
     """
     Save the uploaded dataverse file to disk
     """
-    assert type(temp_uploaded_file) is TemporaryUploadedFile\
-        , '"temp_uploaded_file" must be type "django.core.files.uploadedfile.TemporaryUploadedFile"'
+    assert type(temp_uploaded_file) in (InMemoryUploadedFile, TemporaryUploadedFile)\
+        , 'temp_uploaded_file" must be type "django.core.files.uploadedfile.TemporaryUploadedFile or InMemoryUploadedFile.  Found type: %s' % type(temp_uploaded_file)
 
     #print 'file type', type(temp_uploaded_file)
 
@@ -129,7 +161,36 @@ def write_the_dataverse_file(temp_uploaded_file):
     return path
     
 
+def get_worldmap_user_object(worldmap_username, dv_user_email):
+    """
+    Retrieve or create a User object
 
+    - attempt #1 - Is there a worldmap_username?
+    - attempt #2 - Does the dataverse email match an existing WorldMap user?
+    - attempt #3 - Create new user based on the dataverse email
+
+    If all attempts fail, return None
+    """
+    user_object = None
+
+    if worldmap_username:
+        try:
+            user_object = User.objects.get(username=worldmap_username)
+            return user_object
+        except:
+            pass
+
+    if dv_user_email:
+        existing_users = User.objects.filter(email=dv_user_email)
+        if existing_users.count() > 0:
+            return existing_users[0]
+
+    try:
+        return _create_new_user(dv_user_email, None, None, None)
+    except:
+        logger.error('_create_new_user failed with email: %s' % dv_user_email)
+
+    return None
 """
 # Is this a private layer?
 #
