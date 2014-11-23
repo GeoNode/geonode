@@ -30,6 +30,7 @@ def activity_item(action, **kwargs):
     raw_action = get_data(action, 'raw_action')
     object_name = get_data(action, 'object_name')
     preposition = _("to")
+    fragment = None
 
     if object:
         object_type = object.__class__._meta.object_name.lower()
@@ -46,6 +47,7 @@ def activity_item(action, **kwargs):
             activity_class = 'comment'
             preposition = _("on")
             object = None
+            fragment = "comments"
 
         if object_type == 'map':
             activity_class = 'map'
@@ -70,5 +72,6 @@ def activity_item(action, **kwargs):
         timestamp=action.timestamp,
         username=username,
         verb=verb,
+        fragment=fragment
     )
     return ctx
