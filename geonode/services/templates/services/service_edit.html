@@ -11,12 +11,14 @@
 {% block title %} Edit Service - {{ block.super }} {% endblock %}
 
 {% block body %}
-
-    <h2 class="page-title">Edit Service</h2>
-    <form method="POST" id="service_edit_form">
-        {% csrf_token %}
-            {{ service_form|as_bootstrap }}
-        <div class="form_block"><p><input type="submit" class="btn btn-primary pull-left" value="{% trans "Save" %}"/></p></div>
-    </form>
-
+<div class="page-header">
+  <h2>{% trans "Edit Service" %}</h2>
+</div>
+<form method="POST" id="service_edit_form">
+  {% csrf_token %}
+  {{ service_form|as_bootstrap }}
+  <div class="grid-spacer">
+    <p><input type="submit" class="btn btn-primary" value="{% trans "Save" %}"/></p>
+  </div>
+</form>
 {% endblock %}

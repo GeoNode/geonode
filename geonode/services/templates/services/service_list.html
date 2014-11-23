@@ -3,30 +3,27 @@
 
 {% block title %} Services -- {{ block.super }} {% endblock %}
 
-{% block body %}
+{% block body_outer %}
+<div class="page-header">
+  <a href="{% url "register_service" %}" class="btn btn-primary pull-right">{% trans "Register a new Service" %}</a>
+  <h2>{% trans "Remote Services" %}</h2>
+</div>
 <div class="twocol">
 {% if services %}
-<table>
-    <tr>
-        <th>Title</th><th>URL</th>
-    </tr>
-
-{% for service in services %}
-<tr>
-<td><a href='{% url "service_detail" service.id %}'>{{ service.title }}</a></td>
-<td><a href='{% url "service_detail" service.id %}'>{{ service.base_url }}</a></td>
-</tr>
-{% endfor %}
+<table class="table table-striped">
+  <thead>
+  	<th>Title</th>
+  	<th>URL</th>
+  </thead>
+  {% for service in services %}
+  <tr>
+	<td><a href='{% url "service_detail" service.id %}'>{{ service.title }}</a></td>
+	<td><a href='{% url "service_detail" service.id %}'>{{ service.base_url }}</a></td>
+  </tr>
+  {% endfor %}
 </table>
 {% else %}
-<h3>No services registered</h3>
+<h4>No services registered</h4>
 {% endif %}
 </div>
-{% endblock %}
-
-{% block sidebar %}
-    <ul class="list-group">
-    <li class="list-group-item"><h3>{% trans "Manage" %}</h3></li>
-        <li class="list-group-item"><a class="btn btn-default btn-md btn-block" href="{% url "register_service" %}">{% trans "Register a new Service" %}</a></li>
-    </ul>
 {% endblock %}
