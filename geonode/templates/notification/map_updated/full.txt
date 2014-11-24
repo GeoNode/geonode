@@ -1,4 +1,6 @@
-The following map was updated:
-{{ resource.title }}, owned by {{ resource.owner.username }}
+{% load i18n %}
 
-You can visit the map's detail page here: http://{{ current_site }}{% url "map_detail" resource.id %}
+{% trans "The following map was updated" %}:
+{{ resource.title }}, {% trans "owned by" %} {{ resource.owner.username }}
+
+{% trans "You can visit the map's detail page here" %}: http://{{ current_site }}{% url "map_detail" resource.id %}

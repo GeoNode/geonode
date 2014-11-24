@@ -1,4 +1,6 @@
-The following layer was updated:
-{{ resource.title }}, owned by {{ resource.owner.username }}
+{% load i18n %}
 
-You can visit the layer's detail page here: http://{{ current_site }}{% url "layer_detail" resource.service_typename %}
+{% trans "The following layer was updated" %}:
+{{ resource.title }}, {% trans "owned by" %} {{ resource.owner.username }}
+
+{% trans "You can visit the layer's detail page here" %}: http://{{ current_site }}{% url "layer_detail" resource.service_typename %}

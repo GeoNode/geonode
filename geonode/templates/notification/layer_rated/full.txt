@@ -1,4 +1,8 @@
-The user {{ instance.user.username }} rated {{ instance.rating }} the following layer:
-{{ instance.content_object.title }}, owned by {{ instance.content_object.owner.username }}
+{% load i18n %}
 
-You can visit the layer's detail page here: http://{{ current_site }}{% url "layer_detail" instance.content_object.service_typename %}
+{% trans "The user" %} {{ instance.user.username }}
+{% trans "rated" %} {{ instance.rating }}
+{% trans "the following layer" %}:
+{{ instance.content_object.title }}, {% trans "owned by" %} {{ instance.content_object.owner.username }}
+
+{% trans "You can visit the layer's detail page here" %}: http://{{ current_site }}{% url "layer_detail" instance.content_object.service_typename %}
