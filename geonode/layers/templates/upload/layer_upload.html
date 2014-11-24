@@ -12,8 +12,12 @@
 {{ block.super }}
 {% endblock %}
 
-{% block body %}
-
+{% block body_outer %}
+<div class="page-header">
+  <a href="{% url "layer_browse" %}" class="btn btn-primary pull-right">{% trans "Explore Layers" %}</a>
+  <h2 class="page-title">{% trans "Upload Layers" %}</h2>
+</div>
+<div class="row">
   <div class="col-md-8">
     {% if incomplete %}
     <section class="widget" id="incomplete-download-list">
@@ -83,20 +87,16 @@
       <a href="#" id="upload-button" class="btn btn-danger">{% trans "Upload files" %}</a>
     </section>
   </div>
-{% endblock %}
 
-
-{% block sidebar %}
-
-{% if GEONODE_SECURITY_ENABLED %}
-<div class="col-md-4">
-  <h3>{% trans "Permissions"  %}</h3>
-  <form id="permission_form">
-    {% include "_permissions.html" %}
-  </form>
+  {% if GEONODE_SECURITY_ENABLED %}
+  <div class="col-md-4">
+    <h3>{% trans "Permissions"  %}</h3>
+    <form id="permission_form">
+      {% include "_permissions.html" %}
+    </form>
+  </div>
+  {% endif %}
 </div>
-{% endif %}
-
 {% endblock %}
 
 

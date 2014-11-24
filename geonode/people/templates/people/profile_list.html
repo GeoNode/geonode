@@ -4,17 +4,20 @@
 {% block body_class %}people people-list explore{% endblock %}
 
 {% block body %}
-    <div class="col-md-12">
-      <h2 class="page-title">{% trans "Explore People" %}</h2>
-    </div>
-    <div class="col-md-8 filter">      
-      <ul class="nav nav-pills filter" id="sort">
-        <li><a data-value="-date_joined" data-filter="order_by" class="selected" ng-click="single_choice_listener($event)">{% trans "Most recent" %}</a></li>
-        <li><a data-value="date_joined" data-filter="order_by" ng-click="single_choice_listener($event)">{% trans "Less recent" %}</a></li>
-        <li><a data-value="username" data-filter="order_by" ng-click="single_choice_listener($event)">{% trans "A - Z" %}</a></li>
-        <li><a data-value="-username" data-filter="order_by" ng-click="single_choice_listener($event)">{% trans "Z - A" %}</a></li>
-      </ul>
-    </div>
+<div class="page-header">
+  <h2>{% trans "Explore People" %}</h2>
+</div>
+<div class="row">
+  <div class="col-md-8 col-md-offset-2">
+    <ul class="nav nav-pills filter" id="sort">
+      <li><a data-value="-date_joined" data-filter="order_by" class="selected" ng-click="single_choice_listener($event)">{% trans "Most recent" %}</a></li>
+      <li><a data-value="date_joined" data-filter="order_by" ng-click="single_choice_listener($event)">{% trans "Less recent" %}</a></li>
+      <li><a data-value="username" data-filter="order_by" ng-click="single_choice_listener($event)">{% trans "A - Z" %}</a></li>
+      <li><a data-value="-username" data-filter="order_by" ng-click="single_choice_listener($event)">{% trans "Z - A" %}</a></li>
+    </ul>
+  </div>
+</div>
+<div class="row">
     <div class="col-md-12">
       <div class="row">
         <div class="tab-content col-md-12" id="search-content">
@@ -22,11 +25,12 @@
         </div>
       </div>
     </div>
+</div>
 {% endblock %}
 
 {% block extra_script %}
 <script type="text/javascript">
-        SEARCH_URL = '{% url 'api_dispatch_list' api_name='api' resource_name='profiles' %}';
+  SEARCH_URL = '{% url 'api_dispatch_list' api_name='api' resource_name='profiles' %}';
 </script>
   {% with include_spatial='false' %}
   {% include 'search/search_scripts.html' %}

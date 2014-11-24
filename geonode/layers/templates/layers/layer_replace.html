@@ -16,7 +16,7 @@
 {% block body %}
 
   <div class="col-md-8">
-    <h2 class="page-title">{% trans "Replace Layer: " %}{{ layer.title }}</h2>
+    <p class="lead">{% trans "Replace Layer: " %}<a href="{{ layer.get_absolute_url }}">{{ layer.title }}</a></p>
 
     {% if incomplete %}
     <section class="widget" id="incomplete-download-list">
