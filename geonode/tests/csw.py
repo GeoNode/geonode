@@ -47,7 +47,7 @@ class GeoNodeCSWTest(TestCase):
                 self.assertEqual(
                     csw.catalogue.url,
                     method['url'],
-                   'Expected GeoNode URL to be equal to all CSW URLs')
+                    'Expected GeoNode URL to be equal to all CSW URLs')
 
         # test that OGC:CSW 2.0.2 is supported
         self.assertEqual(csw.catalogue.version, '2.0.2',
