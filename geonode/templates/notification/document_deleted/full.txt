@@ -1,2 +1,4 @@
-The following document was deleted:
-{{ resource.title }}, owned by {{ resource.owner.username }}
+{% load i18n %}
+
+{% trans "The following document was deleted" %}:
+{{ resource.title }}, {% trans "owned by" %} {{ resource.owner.username }}
