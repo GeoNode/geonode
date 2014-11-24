@@ -5,8 +5,8 @@
   	    <a href="{{ item.detail_url }}"><img class="thumb" ng-src="{{ item.thumbnail_url }}" /></a>
   	  </div>
       <div class="col-md-8">
-        <h4><a href="{{ item.detail_url }}">{{ item.title }}</a> <span class="owner">{{ item.owner.username }}</span></h4>
-        <p>{{ item.category.gn_description }}</p>
+        <h4><a href="{{ item.detail_url }}">{{ item.title }}</a> by <span class="owner"><a href="/people/profile/{{ item.owner__username }}">{{ item.owner__username }}</a></span></h4>
+        <p>{{ item.category__gn_description }}</p>
         <p class="abstract">{{ item.abstract|limitTo:250 }}...</p>
         <p class="actions">
           <a ng-if="item.detail_url.indexOf('/layers/') > -1" 
