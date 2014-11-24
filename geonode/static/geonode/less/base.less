@@ -68,8 +68,10 @@ h1, h2, h3, h4, h5, h6 {
   padding-top: 10px;
   width: 100%;
 }
-.fa {
-  margin-right: 8px;
+.actions {
+  .fa {
+    margin-right: 8px;
+  }
 }
 article.tab-pane {
   padding: 20px 0;
@@ -282,6 +284,10 @@ nav.filter {
 }
 
 #sort{
+  cursor: pointer;
+  a {
+    color: @gray-light;
+  }
   .selected{
     color: @brand-alternate;
   }
