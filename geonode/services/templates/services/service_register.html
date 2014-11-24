@@ -8,8 +8,10 @@
 
 {% block title %} Register Service - {{ block.super }} {% endblock %}
 
-{% block body %}
-    <h2 class="page-title">Register New Service</h2>
+{% block body_outer %}
+<div class="page-header">
+  <h2>{% trans "Register New Service" %}</h2>
+</div>
     <form method="POST" id="service_register_form">
     {% csrf_token %}
     {{ create_service_form|as_bootstrap }}

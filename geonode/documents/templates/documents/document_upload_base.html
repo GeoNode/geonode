@@ -7,12 +7,12 @@
 {% block body_class %}documents{% endblock %}
 
 {% block body_outer %}
-  <div class="col-md-12">
-    <a href="{% url "document_browse" %}" class="btn btn-primary pull-right">{% trans "Explore Documents" %}</a>
-    <h2 class="page-title">{% trans "Upload Documents" %}</h2>
-  </div>
-    
+<div class="page-header">
+  <a href="{% url "document_browse" %}" class="btn btn-primary pull-right">{% trans "Explore Documents" %}</a>
+  <h2 class="page-title">{% trans "Upload Documents" %}</h2>
+</div>
+<div class="row">    
   {% block body %}{% endblock body %}
   {% block sidebar %}{% endblock sidebar %}
-
+</div>
 {% endblock body_outer %}

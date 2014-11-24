@@ -68,8 +68,10 @@ h1, h2, h3, h4, h5, h6 {
   padding-top: 10px;
   width: 100%;
 }
-.fa {
-  margin-right: 8px;
+.filter, .actions {
+  .fa {
+    margin-right: 8px;
+  }
 }
 article.tab-pane {
   padding: 20px 0;
@@ -83,6 +85,15 @@ select {
   border: 1px solid @gray-light;
   height: 30px;
   line-height: 30px;
+}
+code {
+  background-color: @gray-lighter;
+  color: @brand-alternate;
+  white-space: pre-wrap;       /* css-3 */
+  white-space: -moz-pre-wrap;  /* Mozilla, since 1999 */
+  white-space: -pre-wrap;      /* Opera 4-6 */
+  white-space: -o-pre-wrap;    /* Opera 7 */
+  word-wrap: break-word;       /* Internet Explorer 5.5+ */
 }
 /* Header
 ----------------------- */
@@ -273,6 +284,10 @@ nav.filter {
 }
 
 #sort{
+  cursor: pointer;
+  a {
+    color: @gray-light;
+  }
   .selected{
     color: @brand-alternate;
   }

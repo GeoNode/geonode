@@ -8,8 +8,8 @@
 {% block body_class %}search{% endblock %}
 
 {% block body_outer %}
-  <div class="col-md-12">
-    <h2 class="page-title">{% trans "Search" %} <span ng-bind="text_query"></span></h2>
+  <div class="page-header">
+    <h2>{% trans "Search" %} <span ng-bind="text_query"></span></h2>
   </div>
   {% with include_type_filter='true' %}
   {% with header='Type' %}
