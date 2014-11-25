@@ -182,13 +182,13 @@
         </div>
       </div>
     </div>
-
-    <li class="list-group-item">
-    
-    <button class="btn btn-default btn-md btn-block" data-toggle="modal" data-target="#edit-layer">{% trans "Edit Layer" %}</button>
-
-  </li>
-
+    {% if GEOSERVER_BASE_URL %}
+      {% get_obj_perms request.user for resource.layer as "layer_perms" %}
+    {% endif %}
+    {% if "change_resourcebase_metadata" in perms or "change_resourcebase" in perms or "delete_resourcebase" in perms or "change_layer_style" in layer_perms %}
+    <li class="list-group-item"> 
+      <button class="btn btn-default btn-md btn-block" data-toggle="modal" data-target="#edit-layer">{% trans "Edit Layer" %}</button>
+    </li>
     <div class="modal fade" id="edit-layer" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
       <div class="modal-dialog">
         <div class="modal-content">
@@ -202,7 +202,6 @@
               <li><a href="{% url "layer_metadata" resource.service_typename %}">{% trans "Edit Metadata" %}</a></li>  
               {% endif %}             
               {% if GEOSERVER_BASE_URL %}
-                {% get_obj_perms request.user for resource.layer as "layer_perms" %}
                 {% if "change_layer_style" in layer_perms %}
                 <li><a href="{% url "layer_style_manage" resource.service_typename %}">{% trans "Manage Styles" %}</a></li>
                   {% if preview == 'geoext' %}
@@ -224,7 +223,7 @@
         </div>
       </div>
     </div>
-
+    {% endif %}
     {% if resource.get_legend %}
     <li class="list-group-item">
       <h4 class="list-group-item-heading">{%trans "Legend" %}</h4>
