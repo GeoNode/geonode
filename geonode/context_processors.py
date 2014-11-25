@@ -80,6 +80,7 @@ def resource_urls(request):
             dict()).get(
             'METADATA',
             'never'),
+        USE_NOTIFICATIONS=('notification' in settings.INSTALLED_APPS),
     )
 
     return defaults

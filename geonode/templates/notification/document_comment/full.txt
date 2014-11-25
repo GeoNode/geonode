@@ -1,0 +1,5 @@
+{% load i18n %}
+
+{% trans "A comment has been posted for the document" %} {{ instance.content_object.title }} {% trans "by the user" %} {{ instance.author.username }}
+
+{% trans "You can visit the document's detail page here" %}: http://{{ current_site }}{% url "document_detail" instance.content_object.id %}
