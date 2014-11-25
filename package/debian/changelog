@@ -1,3 +1,19 @@
+geonode (2.4.0+beta4) trusty; urgency=high
+
+  [ capooti ]
+  * [614930] Restored the notification app and adding some more notification types
+  * [f5b19e] Added support for i18n
+
+  [ state-hiu ]
+  * [82fdb4] fixes #1830
+  * [52c3ab] whitespace fixes
+  * [51e468] Fixes #1835
+
+  [ Simone Dalmasso ]
+  * [6a0a27] show categories if they have records
+
+ -- Simone Dalmasso <simone.dalmasso@gmail.com>  Tue, 25 Nov 2014 14:22:18 +0000
+
 geonode (2.4.0+beta3) trusty; urgency=high
 
   [ Matt Bertrand ]
