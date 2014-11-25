@@ -1,0 +1,8 @@
+{% load i18n %}
+
+{% trans "The user" %} {{ instance.user.username }} 
+{% trans "rated" %} {{ instance.rating }} 
+{% trans "the following map" %}:
+{{ instance.content_object.title }}, {% trans "owned by" %} {{ instance.content_object.owner.username }}
+
+{% trans "You can visit the map's detail page here" %}: http://{{ current_site }}{% url "map_detail" instance.content_object.id %}

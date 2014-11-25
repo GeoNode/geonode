@@ -1,0 +1,6 @@
+{% load i18n %}
+
+{% trans "The user" %} {{ resource.owner.username }} {% trans "uploaded the following layer" %}:
+{{ resource.title }}
+
+{% trans "You can visit the layer's detail page here" %}: http://{{ current_site }}{% url "layer_detail" resource.service_typename %}
