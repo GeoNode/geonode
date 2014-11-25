@@ -3,7 +3,7 @@
   <h4><a href="#" class="toggle toggle-nav"><i class="fa fa-chevron-right"></i>{% trans "Categories" %}</a></h4>
   <ul class="nav closed" id="categories">
     {% verbatim %}
-      <li ng-repeat="category in categories">
+      <li ng-repeat="category in categories" ng-if="category.count > 0">
         <a data-value="{{ category.identifier }}" data-filter="category__identifier__in" 
          ng-click="multiple_choice_listener($event)" class="{{category.active}}">{{ category.gn_description }}
           <span class="badge pull-right">{{ category.count }}</span>
