@@ -15,7 +15,6 @@
 {% block body %}
 
 <div class="col-md-8">
-
   <form id="upload_form"  method="post" enctype="multipart/form-data" action="{% url "document_upload" %}">
     <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}" />
     {{ form|as_bootstrap }}
