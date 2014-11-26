@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-11-19 18:27-0500\n"
+"POT-Creation-Date: 2014-11-26 12:15+0000\n"
 "PO-Revision-Date: 2014-11-15 19:51+0000\n"
 "Last-Translator: Andres Alfonso Lemon Gomez <lemon.andres@gmail.com>\n"
 "Language-Team: Vietnamese (http://www.transifex.com/projects/p/geonode/"
@@ -147,9 +147,9 @@ msgid "No information provided"
 msgstr "Không có thông tin cung cấp"
 
 #: base/forms.py:35 base/templates/base/resourcebase_info_panel.html:46
-#: documents/templates/documents/document_metadata.html:51
-#: layers/templates/layers/layer_metadata.html:53
-#: maps/templates/maps/map_metadata.html:53
+#: documents/templates/documents/document_metadata.html:60
+#: layers/templates/layers/layer_metadata.html:61
+#: maps/templates/maps/map_metadata.html:61
 msgid "Category"
 msgstr "Danh mục"
 
@@ -415,9 +415,9 @@ msgstr "Chủ nhân"
 
 #: base/templates/base/_resourcebase_contact_snippet.html:14
 #: base/templates/base/resourcebase_info_panel.html:61
-#: documents/templates/documents/document_metadata.html:41
-#: layers/templates/layers/layer_metadata.html:80
-#: maps/templates/maps/map_metadata.html:43
+#: documents/templates/documents/document_metadata.html:50
+#: layers/templates/layers/layer_metadata.html:84
+#: maps/templates/maps/map_metadata.html:51
 msgid "Point of Contact"
 msgstr "Mối liên lạc"
 
@@ -426,7 +426,7 @@ msgid "Metadata Author"
 msgstr "Metadata Tác giả"
 
 #: base/templates/base/resourcebase_info_panel.html:6 services/forms.py:21
-#: templates/announcements/announcement_list.html:30
+#: templates/announcements/announcement_list.html:20
 msgid "Title"
 msgstr "Tiêu đề"
 
@@ -445,7 +445,7 @@ msgid "Date"
 msgstr "Ngày"
 
 #: base/templates/base/resourcebase_info_panel.html:34
-#: layers/templates/layers/layer_detail.html:307
+#: layers/templates/layers/layer_detail.html:305
 msgid "Type"
 msgstr "Kiểu"
 
@@ -552,27 +552,83 @@ msgstr "Bạn không được phép chỉnh sửa siêu dữ liệu của tài l
 msgid "You are not permitted to view this document"
 msgstr "Bạn không được phép xem tài liệu này"
 
-#: documents/views.py:67 documents/views.py:105
+#: documents/views.py:67 documents/views.py:107
 msgid "You are not allowed to view this document."
 msgstr "Bạn không được phép xem tài liệu này."
 
-#: documents/views.py:181
+#: documents/views.py:94
+#, fuzzy
+msgid "Share This Document"
+msgstr "Đánh giá tài liệu này"
+
+#: documents/views.py:187
 msgid "You are not allowed to edit this document."
 msgstr "Bạn không được phép chỉnh sửa tài liệu này."
 
+#: documents/management/__init__.py:14
+#, fuzzy
+msgid "Document Created"
+msgstr "Các tài liệu liên quan đến bản đồ này"
+
+#: documents/management/__init__.py:15
+#, fuzzy
+msgid "A Document was created"
+msgstr "Một Bản đồ đã được tạo ra"
+
+#: documents/management/__init__.py:18
+#, fuzzy
+msgid "Document Updated"
+msgstr "Tài liệu"
+
+#: documents/management/__init__.py:19
+#, fuzzy
+msgid "A Document was updated"
+msgstr "Một lớp đã được tải lên"
+
+#: documents/management/__init__.py:22
+#, fuzzy
+msgid "Document Deleted"
+msgstr "Tài liệu"
+
+#: documents/management/__init__.py:23
+#, fuzzy
+msgid "A Document was deleted"
+msgstr "Tài liệu này liên quan đến một"
+
+#: documents/management/__init__.py:26
+#, fuzzy
+msgid "Comment on Document"
+msgstr "Nhận xét về lớp"
+
+#: documents/management/__init__.py:27
+#, fuzzy
+msgid "A Document was commented on"
+msgstr "Một bản đồ được nhận xét về"
+
+#: documents/management/__init__.py:30
+#, fuzzy
+msgid "Document for Map"
+msgstr "Bình luận trên bản đồ"
+
+#: documents/management/__init__.py:31
+#, fuzzy
+msgid "A rating was given to a document"
+msgstr "Một đánh giá đã được trao cho một bản đồ"
+
 #: documents/templates/documents/_document_filters.html:5
-#: groups/templates/groups/group_list.html:15
+#: groups/templates/groups/group_list.html:17
 #: layers/templates/layers/_layer_filters.html:5
 #: maps/templates/maps/_map_filters.html:5
-#: people/templates/people/profile_list.html:12
-#: templates/search/_sort_filters.html:4
+#: people/templates/people/profile_list.html:13
+#: templates/search/_sort_filters.html:5
 msgid "Most recent"
 msgstr "Gần đây nhất"
 
 #: documents/templates/documents/_document_filters.html:6
+#: groups/templates/groups/group_list.html:21
 #: layers/templates/layers/_layer_filters.html:6
 #: maps/templates/maps/_map_filters.html:6
-#: templates/search/_sort_filters.html:8
+#: templates/search/_sort_filters.html:9
 msgid "Most popular"
 msgstr "Phổ biến nhất"
 
@@ -597,7 +653,7 @@ msgstr "từ"
 #: layers/templates/layers/_layer_list_item.html:84
 #: maps/templates/maps/_map_list_item.html:21
 #: maps/templates/maps/_map_list_item.html:46
-#: social/templates/social/_activity_item.html:27
+#: social/templates/social/_activity_item.html:31
 msgid "ago"
 msgstr "cách đây"
 
@@ -639,128 +695,132 @@ msgstr "Tải về"
 msgid "You do not have permission to view this document"
 msgstr "Bạn không được phép xem tài liệu này"
 
-#: documents/templates/documents/document_detail.html:42
+#: documents/templates/documents/document_detail.html:40
 msgid "External Resource"
 msgstr "Tài nguyên bên ngoài"
 
-#: documents/templates/documents/document_detail.html:48
+#: documents/templates/documents/document_detail.html:46
 #: layers/templates/layers/_actions.html:3
-#: maps/templates/maps/map_detail.html:35 templates/_actions.html:3
+#: maps/templates/maps/map_detail.html:36 templates/_actions.html:3
 msgid "Info"
 msgstr "Thông tin"
 
-#: documents/templates/documents/document_detail.html:50
+#: documents/templates/documents/document_detail.html:48
 #: layers/templates/layers/_actions.html:6
-#: maps/templates/maps/map_detail.html:38 templates/_actions.html:5
+#: maps/templates/maps/map_detail.html:39 templates/_actions.html:5
 msgid "Share"
 msgstr "Cổ phiếu"
 
-#: documents/templates/documents/document_detail.html:52
+#: documents/templates/documents/document_detail.html:50
 #: layers/templates/layers/_actions.html:8
-#: maps/templates/maps/map_detail.html:41
+#: maps/templates/maps/map_detail.html:42
 msgid "Ratings"
 msgstr "Xếp hạng"
 
-#: documents/templates/documents/document_detail.html:53
+#: documents/templates/documents/document_detail.html:51
 #: layers/templates/layers/_actions.html:9
-#: maps/templates/maps/map_detail.html:42 templates/_comments.html:12
+#: maps/templates/maps/map_detail.html:43 templates/_comments.html:12
 msgid "Comments"
 msgstr "Comments"
 
-#: documents/templates/documents/document_detail.html:71
+#: documents/templates/documents/document_detail.html:69
 msgid "Rate this document"
 msgstr "Đánh giá tài liệu này"
 
-#: documents/templates/documents/document_detail.html:75
-#: layers/templates/layers/layer_detail.html:113
-#: maps/templates/maps/map_detail.html:58
+#: documents/templates/documents/document_detail.html:73
+#: layers/templates/layers/layer_detail.html:112
+#: maps/templates/maps/map_detail.html:59
 msgid "Average Rating"
 msgstr "Đánh giá trung bình"
 
+#: documents/templates/documents/document_detail.html:89
 #: documents/templates/documents/document_detail.html:91
 #: documents/templates/documents/document_detail.html:93
-#: documents/templates/documents/document_detail.html:95
-#: documents/templates/documents/document_detail.html:111
+#: documents/templates/documents/document_detail.html:109
 msgid "Download Document"
 msgstr "Tải về tài liệu"
 
-#: documents/templates/documents/document_detail.html:99
-#: layers/templates/layers/layer_detail.html:134
+#: documents/templates/documents/document_detail.html:97
+#: layers/templates/layers/layer_detail.html:133
 #, fuzzy
 msgid "Request Download"
 msgstr "Tải về"
 
-#: documents/templates/documents/document_detail.html:104
-#: layers/templates/layers/layer_detail.html:163
-#: layers/templates/layers/layer_detail.html:171
+#: documents/templates/documents/document_detail.html:102
+#: layers/templates/layers/layer_detail.html:162
+#: layers/templates/layers/layer_detail.html:170
 msgid "Download Metadata"
 msgstr "Tải về Metadata"
 
-#: documents/templates/documents/document_detail.html:121
-#: documents/templates/documents/document_detail.html:151
-#: layers/templates/layers/layer_detail.html:156
-#: layers/templates/layers/layer_detail.html:181
-#: layers/templates/layers/layer_detail.html:223
-#: maps/templates/maps/map_detail.html:95
-#: maps/templates/maps/map_detail.html:127
+#: documents/templates/documents/document_detail.html:119
+#: documents/templates/documents/document_detail.html:149
+#: layers/templates/layers/layer_detail.html:155
+#: layers/templates/layers/layer_detail.html:180
+#: layers/templates/layers/layer_detail.html:221
+#: maps/templates/maps/map_detail.html:96
+#: maps/templates/maps/map_detail.html:129
 #: templates/_bulk_permissions_form.html:19
 msgid "Close"
 msgstr "Gần"
 
-#: documents/templates/documents/document_detail.html:128
-#: documents/templates/documents/document_detail.html:135
+#: documents/templates/documents/document_detail.html:126
+#: documents/templates/documents/document_detail.html:133
 msgid "Edit Document"
 msgstr "Chỉnh sửa tài liệu"
 
-#: documents/templates/documents/document_detail.html:140
-#: layers/templates/layers/layer_detail.html:203
+#: documents/templates/documents/document_detail.html:138
+#: documents/templates/documents/document_metadata.html:17
+#: layers/templates/layers/layer_detail.html:202
+#: layers/templates/layers/layer_metadata.html:12
+#: maps/templates/maps/map_metadata.html:12
 msgid "Edit Metadata"
 msgstr "Chỉnh sửa Metadata"
 
-#: documents/templates/documents/document_detail.html:143
+#: documents/templates/documents/document_detail.html:141
 msgid "Replace this Document"
 msgstr "Thay thế tài liệu này"
 
-#: documents/templates/documents/document_detail.html:146
+#: documents/templates/documents/document_detail.html:144
 msgid "Remove this Document"
 msgstr "Hủy bỏ tài liệu này"
 
-#: documents/templates/documents/document_detail.html:158
+#: documents/templates/documents/document_detail.html:156
 msgid "Resource using this document"
 msgstr "Tài nguyên sử dụng tài liệu này"
 
-#: documents/templates/documents/document_detail.html:160
+#: documents/templates/documents/document_detail.html:158
 msgid "List of resources using this document:"
 msgstr "Danh sách các nguồn lực sử dụng tài liệu này:"
 
-#: documents/templates/documents/document_detail.html:164
+#: documents/templates/documents/document_detail.html:162
 msgid "This document is related to a "
 msgstr "Tài liệu này liên quan đến một"
 
-#: documents/templates/documents/document_detail.html:167
+#: documents/templates/documents/document_detail.html:165
 msgid "This document is not related to any maps or layers"
 msgstr "Tài liệu này không liên quan đến bất kỳ bản đồ hoặc các lớp"
 
-#: documents/templates/documents/document_detail.html:174
-#: documents/templates/documents/document_upload.html:32
+#: documents/templates/documents/document_detail.html:172
+#: documents/templates/documents/document_upload.html:31
 #: groups/templates/groups/group_detail.html:65
-#: layers/templates/layers/layer_detail.html:296
+#: layers/templates/layers/layer_detail.html:294
 #: layers/templates/layers/layer_replace.html:94
 #: layers/templates/upload/layer_upload.html:93
-#: maps/templates/maps/map_detail.html:173 people/admin.py:55
+#: maps/templates/maps/map_detail.html:175 people/admin.py:55
 msgid "Permissions"
 msgstr "Quyền"
 
-#: documents/templates/documents/document_detail.html:175
+#: documents/templates/documents/document_detail.html:173
 msgid "Click the button below to change the permissions of this document."
 msgstr "Nhấn vào nút bên dưới để thay đổi quyền truy cập của tài liệu này."
 
-#: documents/templates/documents/document_detail.html:176
+#: documents/templates/documents/document_detail.html:174
 msgid "Change Document Permissions"
 msgstr "Thay đổi tài liệu Quyền"
 
 #: documents/templates/documents/document_list.html:6
 #: documents/templates/documents/document_list.html:13
+#: documents/templates/documents/document_metadata.html:16
 #: documents/templates/documents/document_upload_base.html:11
 msgid "Explore Documents"
 msgstr "Khám phá tài liệu"
@@ -770,7 +830,7 @@ msgstr "Khám phá tài liệu"
 msgid "Upload Documents"
 msgstr "Tài liệu tải lên"
 
-#: documents/templates/documents/document_metadata.html:17
+#: documents/templates/documents/document_metadata.html:22
 #, python-format
 msgid ""
 "\n"
@@ -780,24 +840,27 @@ msgstr ""
 "\n"
 "Chi tiết chỉnh sửa cho %(document_title)s"
 
-#: documents/templates/documents/document_metadata.html:22
-#: layers/templates/layers/layer_metadata.html:23
-#: maps/templates/maps/map_metadata.html:23
+#: documents/templates/documents/document_metadata.html:28
+#: layers/templates/layers/layer_metadata.html:29
+#: maps/templates/maps/map_metadata.html:29
 msgid "Error updating metadata.  Please check the following fields: "
 msgstr "Lỗi cập nhật siêu dữ liệu. Vui lòng kiểm tra các lĩnh vực sau:"
 
-#: documents/templates/documents/document_metadata.html:46
-#: layers/templates/layers/layer_metadata.html:85
-#: maps/templates/maps/map_metadata.html:48
-msgid "Metadata Provider"
-msgstr "Nhà cung cấp siêu dữ liệu"
-
-#: documents/templates/documents/document_metadata.html:68
+#: documents/templates/documents/document_metadata.html:43
+#: documents/templates/documents/document_metadata.html:77
 #: groups/templates/groups/group_update.html:26
-#: layers/templates/layers/layer_metadata.html:90
-#: maps/templates/maps/map_metadata.html:70
+#: layers/templates/layers/layer_metadata.html:51
+#: layers/templates/layers/layer_metadata.html:94
+#: maps/templates/maps/map_metadata.html:44
+#: maps/templates/maps/map_metadata.html:78
 msgid "Update"
 msgstr "Cập nhật"
+
+#: documents/templates/documents/document_metadata.html:55
+#: layers/templates/layers/layer_metadata.html:89
+#: maps/templates/maps/map_metadata.html:56
+msgid "Metadata Provider"
+msgstr "Nhà cung cấp siêu dữ liệu"
 
 #: documents/templates/documents/document_remove.html:11
 #, python-format
@@ -811,17 +874,17 @@ msgstr ""
 
 #: documents/templates/documents/document_remove.html:18
 #: groups/templates/groups/group_remove.html:19
-#: layers/templates/layers/layer_remove.html:18
+#: layers/templates/layers/layer_remove.html:22
 #: maps/templates/maps/map_remove.html:19
-#: services/templates/services/service_remove.html:14
+#: services/templates/services/service_remove.html:17
 msgid "Yes, I am sure"
 msgstr "Có, tôi chắc chắn"
 
 #: documents/templates/documents/document_remove.html:19
 #: groups/templates/groups/group_remove.html:20
-#: layers/templates/layers/layer_remove.html:19
+#: layers/templates/layers/layer_remove.html:23
 #: maps/templates/maps/map_remove.html:20
-#: services/templates/services/service_remove.html:15
+#: services/templates/services/service_remove.html:18
 msgid "No, don't remove it"
 msgstr "Không, không loại bỏ nó"
 
@@ -836,7 +899,7 @@ msgstr "Thay thế"
 
 #: documents/templates/documents/document_replace.html:27
 #: layers/templates/layers/layer_replace.html:84
-#: layers/templates/upload/layer_upload.html:82
+#: layers/templates/upload/layer_upload.html:86
 msgid "Clear"
 msgstr "Trong sáng"
 
@@ -892,7 +955,7 @@ msgstr "KML"
 msgid "Tiles"
 msgstr "Gạch"
 
-#: geoserver/signals.py:385 layers/templates/layers/layer_detail.html:231
+#: geoserver/signals.py:385 layers/templates/layers/layer_detail.html:229
 #: services/views.py:1266
 msgid "Legend"
 msgstr "Huyền thoại"
@@ -905,27 +968,27 @@ msgstr "Bạn không có quyền để thay đổi phong cách cho lớp này"
 msgid "Bad HTTP Authorization Credentials."
 msgstr "Bad Giây chứng nhận ủy quyền HTTP."
 
-#: geoserver/management/__init__.py:30 layers/management/__init__.py:30
+#: geoserver/management/__init__.py:30
 msgid "Layer Uploaded"
 msgstr "Lớp Uploaded"
 
-#: geoserver/management/__init__.py:30 layers/management/__init__.py:30
+#: geoserver/management/__init__.py:30
 msgid "A layer was uploaded"
 msgstr "Một lớp đã được tải lên"
 
-#: geoserver/management/__init__.py:31 layers/management/__init__.py:31
+#: geoserver/management/__init__.py:31 layers/management/__init__.py:45
 msgid "Comment on Layer"
 msgstr "Nhận xét về lớp"
 
-#: geoserver/management/__init__.py:31 layers/management/__init__.py:31
+#: geoserver/management/__init__.py:31 layers/management/__init__.py:46
 msgid "A layer was commented on"
 msgstr "Một lớp đã nhận xét về"
 
-#: geoserver/management/__init__.py:32 layers/management/__init__.py:32
+#: geoserver/management/__init__.py:32 layers/management/__init__.py:49
 msgid "Rating for Layer"
 msgstr "Đánh giá cho lớp"
 
-#: geoserver/management/__init__.py:32 layers/management/__init__.py:32
+#: geoserver/management/__init__.py:32 layers/management/__init__.py:50
 msgid "A rating was given to a layer"
 msgstr "Một đánh giá đã được trao cho một lớp"
 
@@ -1004,24 +1067,25 @@ msgstr "Từ chối"
 
 #: groups/templates/groups/activity.html:7
 #: groups/templates/groups/activity.html:8
-#: groups/templates/groups/activity.html:20 templates/actstream/actor.html:20
+#: groups/templates/groups/activity.html:20 templates/actstream/actor.html:19
 msgid "Activity Feed for"
 msgstr "Hoạt động nguồn cấp dữ liệu cho"
 
 #: groups/templates/groups/activity.html:27
 #: social/templates/social/activity_list.html:23
-#: templates/actstream/actor.html:27
+#: templates/actstream/actor.html:28
 msgid "No actions yet"
 msgstr "Không có hành động nào"
 
 #: groups/templates/groups/group_base.html:13
 #: groups/templates/groups/group_list.html:5
-#: groups/templates/groups/group_list.html:11
+#: groups/templates/groups/group_list.html:12
 msgid "Explore Groups"
 msgstr "Khám phá Groups"
 
 #: groups/templates/groups/group_base.html:14
 #: groups/templates/groups/group_create.html:11
+#: groups/templates/groups/group_list.html:11
 msgid "Create a Group"
 msgstr "Tạo một Nhóm"
 
@@ -1040,7 +1104,7 @@ msgid "Create Group"
 msgstr "Tạo Nhóm"
 
 #: groups/templates/groups/group_create.html:26
-#: services/templates/services/service_register.html:17
+#: services/templates/services/service_register.html:19
 msgid "Create"
 msgstr "Sáng tạo"
 
@@ -1084,15 +1148,15 @@ msgstr ""
 msgid "Anyone may join this group."
 msgstr "Bất cứ ai cũng có thể tham gia nhóm này."
 
-#: groups/templates/groups/group_detail.html:77
+#: groups/templates/groups/group_detail.html:79
 msgid "Anyone may view this group but membership is by invitation only."
 msgstr "Bất cứ ai cũng có thể xem nhóm này nhưng thành viên là chỉ lời mời."
 
-#: groups/templates/groups/group_detail.html:79
+#: groups/templates/groups/group_detail.html:81
 msgid "Membership is by invitation only."
 msgstr "Thành viên là chỉ mời."
 
-#: groups/templates/groups/group_detail.html:84
+#: groups/templates/groups/group_detail.html:86
 msgid "Managers"
 msgstr "Nhà quản lý"
 
@@ -1108,21 +1172,21 @@ msgstr "Đừng Tham gia"
 msgid "Join Group"
 msgstr "Tham gia Nhóm"
 
-#: groups/templates/groups/group_list.html:16
-#: people/templates/people/profile_list.html:13
-#: templates/search/_sort_filters.html:5
+#: groups/templates/groups/group_list.html:18
+#: people/templates/people/profile_list.html:14
+#: templates/search/_sort_filters.html:6
 msgid "Less recent"
 msgstr "Ít gần đây"
 
-#: groups/templates/groups/group_list.html:17
-#: people/templates/people/profile_list.html:14
-#: templates/search/_sort_filters.html:6
+#: groups/templates/groups/group_list.html:19
+#: people/templates/people/profile_list.html:15
+#: templates/search/_sort_filters.html:7
 msgid "A - Z"
 msgstr "A - Z"
 
-#: groups/templates/groups/group_list.html:18
-#: people/templates/people/profile_list.html:15
-#: templates/search/_sort_filters.html:7
+#: groups/templates/groups/group_list.html:20
+#: people/templates/people/profile_list.html:16
+#: templates/search/_sort_filters.html:8
 msgid "Z - A"
 msgstr "Z - A"
 
@@ -1294,7 +1358,7 @@ msgstr "biến đổi cuối cùng"
 msgid "date when attribute statistics were last updated"
 msgstr "ngày khi thống kê thuộc tính được cập nhật lần cuối"
 
-#: layers/utils.py:574
+#: layers/utils.py:575
 msgid "Thumbnail"
 msgstr "Thumbnail"
 
@@ -1326,9 +1390,44 @@ msgstr "Bạn không được phép chỉnh sửa siêu dữ liệu của lớp 
 msgid "You are not permitted to view this layer"
 msgstr "Bạn không được phép để xem lớp này"
 
+#: layers/views.py:251
+#, fuzzy
+msgid "Share This Layer"
+msgstr "Đánh giá lớp này"
+
+#: layers/management/__init__.py:33
+#, fuzzy
+msgid "Layer Created"
+msgstr "Bản đồ tạo"
+
+#: layers/management/__init__.py:34
+#, fuzzy
+msgid "A Layer was created"
+msgstr "Một Bản đồ đã được tạo ra"
+
+#: layers/management/__init__.py:37
+#, fuzzy
+msgid "Layer Updated"
+msgstr "Lớp Uploaded"
+
+#: layers/management/__init__.py:38
+#, fuzzy
+msgid "A Layer was updated"
+msgstr "Một lớp đã được tải lên"
+
+#: layers/management/__init__.py:41
+#, fuzzy
+msgid "Layer Deleted"
+msgstr "Lớp Default Style"
+
+#: layers/management/__init__.py:42
+#, fuzzy
+msgid "A Layer was deleted"
+msgstr "Một lớp đã được tải lên"
+
 #: layers/templates/layers/_actions.html:4
-#: layers/templates/layers/layer_metadata.html:32
-#: layers/templates/layers/layer_metadata.html:70
+#: layers/templates/layers/layer_metadata.html:37
+#: layers/templates/layers/layer_metadata.html:74
 msgid "Attributes"
 msgstr "Thuộc tính"
 
@@ -1341,8 +1440,8 @@ msgid "Create a map"
 msgstr "Tạo một bản đồ"
 
 #: layers/templates/layers/_layer_list_item.html:48
-#: layers/templates/layers/layer_detail.html:131
-#: layers/templates/layers/layer_detail.html:144
+#: layers/templates/layers/layer_detail.html:130
+#: layers/templates/layers/layer_detail.html:143
 msgid "Download Layer"
 msgstr "Tải về lớp"
 
@@ -1364,93 +1463,93 @@ msgid "Assign a new point of contact to the layers below:"
 msgstr "Chỉ định một điểm mới của liên lạc để các lớp dưới đây:"
 
 #: layers/templates/layers/layer_change_poc.html:17
-#: people/templates/people/forgot_username_form.html:17
+#: people/templates/people/forgot_username_form.html:15
 msgid "Submit"
 msgstr "Đệ trình"
 
-#: layers/templates/layers/layer_detail.html:52
+#: layers/templates/layers/layer_detail.html:51
 msgid "Attribute Name"
 msgstr "Tên thuộc tính"
 
-#: layers/templates/layers/layer_detail.html:53
+#: layers/templates/layers/layer_detail.html:52
 msgid "Range"
 msgstr "Khoảng cách"
 
-#: layers/templates/layers/layer_detail.html:54
+#: layers/templates/layers/layer_detail.html:53
 msgid "Average"
 msgstr "Trung bình"
 
-#: layers/templates/layers/layer_detail.html:55
+#: layers/templates/layers/layer_detail.html:54
 msgid "Median"
 msgstr "Trung tuyến"
 
-#: layers/templates/layers/layer_detail.html:56
+#: layers/templates/layers/layer_detail.html:55
 msgid "Standard Deviation"
 msgstr "Độ lệch chuẩn"
 
-#: layers/templates/layers/layer_detail.html:109
+#: layers/templates/layers/layer_detail.html:108
 msgid "Rate this layer"
 msgstr "Đánh giá lớp này"
 
-#: layers/templates/layers/layer_detail.html:189
-#: layers/templates/layers/layer_detail.html:198
+#: layers/templates/layers/layer_detail.html:190
+#: layers/templates/layers/layer_detail.html:197
 msgid "Edit Layer"
 msgstr "Chỉnh sửa lớp"
 
-#: layers/templates/layers/layer_detail.html:208
+#: layers/templates/layers/layer_detail.html:206
 #: layers/templates/layers/layer_style_manage.html:14
 msgid "Manage Styles"
 msgstr "Quản lý Styles"
 
-#: layers/templates/layers/layer_detail.html:210
+#: layers/templates/layers/layer_detail.html:208
 msgid "Edit Styles"
 msgstr "Chỉnh sửa Styles"
 
-#: layers/templates/layers/layer_detail.html:215
+#: layers/templates/layers/layer_detail.html:213
 msgid "Replace this Layer"
 msgstr "Thay thế lớp này"
 
-#: layers/templates/layers/layer_detail.html:218
+#: layers/templates/layers/layer_detail.html:216
 msgid "Remove this Layer"
 msgstr "Hủy bỏ lớp này"
 
-#: layers/templates/layers/layer_detail.html:241
+#: layers/templates/layers/layer_detail.html:239
 msgid "Maps using this layer"
 msgstr "Maps sử dụng lớp này"
 
-#: layers/templates/layers/layer_detail.html:243
+#: layers/templates/layers/layer_detail.html:241
 msgid "List of maps using this layer:"
 msgstr "Danh sách các bản đồ sử dụng lớp này:"
 
-#: layers/templates/layers/layer_detail.html:249
+#: layers/templates/layers/layer_detail.html:247
 msgid "This layer is not currently used in any maps."
 msgstr "Lớp này hiện không được sử dụng trong bất kỳ bản đồ."
 
-#: layers/templates/layers/layer_detail.html:254
+#: layers/templates/layers/layer_detail.html:252
 msgid "Create a map using this layer"
 msgstr "Tạo một bản đồ bằng cách sử dụng lớp này"
 
-#: layers/templates/layers/layer_detail.html:255
+#: layers/templates/layers/layer_detail.html:253
 msgid "Click the button below to generate a new map based on this layer."
 msgstr "Click vào nút dưới đây để tạo ra một bản đồ mới dựa trên lớp này."
 
-#: layers/templates/layers/layer_detail.html:256
+#: layers/templates/layers/layer_detail.html:254
 msgid "Create a Map"
 msgstr "Tạo một bản đồ"
 
-#: layers/templates/layers/layer_detail.html:261
+#: layers/templates/layers/layer_detail.html:259
 msgid "Documents related to this layer"
 msgstr "Các tài liệu liên quan đến lớp này"
 
-#: layers/templates/layers/layer_detail.html:262
+#: layers/templates/layers/layer_detail.html:260
 msgid "List of documents related to this layer:"
 msgstr "Danh sách các tài liệu liên quan đến lớp này:"
 
-#: layers/templates/layers/layer_detail.html:273
+#: layers/templates/layers/layer_detail.html:271
 msgid "Styles"
 msgstr "Styles"
 
-#: layers/templates/layers/layer_detail.html:274
+#: layers/templates/layers/layer_detail.html:272
 msgid ""
 "The following styles are associated with this layer. Choose a style to view "
 "it in the preview map."
@@ -1458,39 +1557,43 @@ msgstr ""
 "Các phong cách sau đây có liên quan với lớp này. Chọn một phong cách để xem "
 "nó trong bản đồ xem trước."
 
-#: layers/templates/layers/layer_detail.html:287
+#: layers/templates/layers/layer_detail.html:285
 msgid "No styles associated with this layer"
 msgstr "Không có phong cách kết hợp với lớp này"
 
-#: layers/templates/layers/layer_detail.html:297
+#: layers/templates/layers/layer_detail.html:295
 msgid "Click the button below to change the permissions of this layer."
 msgstr "Nhấn vào nút bên dưới để thay đổi quyền truy cập của lớp này."
 
-#: layers/templates/layers/layer_detail.html:298
+#: layers/templates/layers/layer_detail.html:296
 msgid "Change Layer Permissions"
 msgstr "Thay đổi lớp Quyền"
 
-#: layers/templates/layers/layer_detail.html:305
+#: layers/templates/layers/layer_detail.html:303
 msgid "External service layer"
 msgstr "Lớp dịch vụ bên ngoài"
 
-#: layers/templates/layers/layer_detail.html:306
+#: layers/templates/layers/layer_detail.html:304
 msgid "Source"
 msgstr "Nguồn"
 
 #: layers/templates/layers/layer_list.html:7
 #: layers/templates/layers/layer_list.html:14
+#: layers/templates/layers/layer_metadata.html:11
+#: layers/templates/layers/layer_remove.html:8
+#: layers/templates/upload/layer_upload.html:17
 #: layers/templates/upload/layer_upload_base.html:11 templates/index.html:33
 msgid "Explore Layers"
 msgstr "Khám phá Layers"
 
 #: layers/templates/layers/layer_list.html:13
+#: layers/templates/upload/layer_upload.html:18
 #: layers/templates/upload/layer_upload_base.html:12 templates/500.html:74
-#: templates/base.html:90
+#: templates/base.html:89
 msgid "Upload Layers"
 msgstr "Layers tải lên"
 
-#: layers/templates/layers/layer_metadata.html:12
+#: layers/templates/layers/layer_metadata.html:17
 #, python-format
 msgid ""
 "\n"
@@ -1500,51 +1603,58 @@ msgstr ""
 "\n"
 "Chi tiết chỉnh sửa cho %(layer_title)s"
 
-#: layers/templates/layers/layer_metadata.html:17
+#: layers/templates/layers/layer_metadata.html:23
+#, fuzzy
 msgid ""
 "Note: this layer's orginal metadata was populated by importing a metadata "
 "XML file.\n"
-"        GeoNode's metadata import supports a subset of ISO, FGDC, and Dublin "
-"Core metadata elements.\n"
-"        Some of your original metadata may have been lost."
+"          GeoNode's metadata import supports a subset of ISO, FGDC, and "
+"Dublin Core metadata elements.\n"
+"          Some of your original metadata may have been lost."
 msgstr ""
 "Lưu ý: ban đầu siêu dữ liệu của lớp này đã được dân cư bằng cách nhập một "
 "tập tin siêu dữ liệu XML. Siêu dữ liệu nhập khẩu GeoNode hỗ trợ một tập hợp "
 "con của các yếu tố siêu dữ liệu ISO, FGDC, và Dublin Core. Một số siêu dữ "
 "liệu ban đầu của bạn có thể đã bị mất."
 
-#: layers/templates/layers/layer_metadata.html:72
+#: layers/templates/layers/layer_metadata.html:76
 msgid "Attribute"
 msgstr "Đặc tính"
 
-#: layers/templates/layers/layer_metadata.html:72
+#: layers/templates/layers/layer_metadata.html:76
 msgid "Label"
 msgstr "Label"
 
-#: layers/templates/layers/layer_metadata.html:72 services/forms.py:24
+#: layers/templates/layers/layer_metadata.html:76 services/forms.py:24
 #: services/templates/services/layers_register.html:28
 msgid "Description"
 msgstr "Miêu tả"
 
-#: layers/templates/layers/layer_metadata.html:72
+#: layers/templates/layers/layer_metadata.html:76
 msgid "Display Order"
 msgstr "Hiển thị thứ tự"
 
-#: layers/templates/layers/layer_remove.html:11
-#, python-format
+#: layers/templates/layers/layer_remove.html:9
+#, fuzzy
+msgid "Remove Layers"
+msgstr "Hủy bỏ lớp này"
+
+#: layers/templates/layers/layer_remove.html:14
+#, fuzzy, python-format
 msgid ""
 "\n"
-"          Are you sure you want to remove %(layer_title)s?\n"
+"          Are you sure you want to remove <a href="
+"\"%(layer.get_absolute_url)s\">%(layer_title)s</a>?\n"
 "        "
 msgstr ""
 "\n"
 "Bạn có chắc chắn bạn muốn loại bỏ %(layer_title)s?"
 
-#: layers/templates/layers/layer_remove.html:25
+#: layers/templates/layers/layer_remove.html:29
 msgid "This action affects the following maps:"
 msgstr "Hành động này ảnh hưởng đến các bản đồ sau đây:"
 
-#: layers/templates/layers/layer_remove.html:29
+#: layers/templates/layers/layer_remove.html:33
 msgid "No maps are using this layer"
 msgstr "Không có bản đồ được sử dụng lớp này"
 
@@ -1558,69 +1668,69 @@ msgid "Replace Layer: "
 msgstr "Thay Layer:"
 
 #: layers/templates/layers/layer_replace.html:23
-#: layers/templates/upload/layer_upload.html:20
+#: layers/templates/upload/layer_upload.html:24
 msgid "Incomplete Uploads"
 msgstr "Ơn Incomplete"
 
 #: layers/templates/layers/layer_replace.html:24
-#: layers/templates/upload/layer_upload.html:21
+#: layers/templates/upload/layer_upload.html:25
 msgid "You have the following incomplete uploads"
 msgstr "Bạn có cập nhật không đầy đủ sau"
 
 #: layers/templates/layers/layer_replace.html:27
-#: layers/templates/upload/layer_upload.html:24
+#: layers/templates/upload/layer_upload.html:28
 msgid "last updated on"
 msgstr "cập nhật lần cuối vào"
 
 #: layers/templates/layers/layer_replace.html:29
-#: layers/templates/upload/layer_upload.html:26
+#: layers/templates/upload/layer_upload.html:30
 msgid "Resume"
 msgstr "Sơ yếu lý lịch"
 
 #: layers/templates/layers/layer_replace.html:30
 #: layers/templates/layers/layer_replace.html:38
-#: layers/templates/upload/layer_upload.html:27
-#: layers/templates/upload/layer_upload.html:34
-#: templates/announcements/announcement_form.html:23
+#: layers/templates/upload/layer_upload.html:31
+#: layers/templates/upload/layer_upload.html:38
+#: templates/announcements/announcement_form.html:25
 #: templates/user_messages/inbox.html:44
 msgid "Delete"
 msgstr "Xóa bỏ"
 
 #: layers/templates/layers/layer_replace.html:36
-#: layers/templates/upload/layer_upload.html:33
+#: layers/templates/upload/layer_upload.html:37
 msgid "Are you sure you want to delete this upload?"
 msgstr "Bạn có chắc chắn muốn xóa upload này?"
 
 #: layers/templates/layers/layer_replace.html:39
-#: layers/templates/upload/layer_upload.html:35
-#: maps/templates/maps/map_download.html:58 templates/_comments.html:59
+#: layers/templates/upload/layer_upload.html:39
+#: maps/templates/maps/map_download.html:58 templates/_comments.html:66
 #: templates/_permissions_form.html:15
-#: templates/announcements/announcement_form.html:21
+#: templates/announcements/announcement_form.html:23
 msgid "Cancel"
 msgstr "Hủy bỏ"
 
 #: layers/templates/layers/layer_replace.html:41
-#: layers/templates/upload/layer_upload.html:36
+#: layers/templates/upload/layer_upload.html:40
 msgid "Delete, and don't ask me again."
 msgstr "Xóa, và đừng hỏi tôi một lần nữa."
 
 #: layers/templates/layers/layer_replace.html:55
-#: layers/templates/upload/layer_upload.html:53
+#: layers/templates/upload/layer_upload.html:57
 msgid "Drop files here"
 msgstr "Thả các tập tin ở đây"
 
 #: layers/templates/layers/layer_replace.html:58
-#: layers/templates/upload/layer_upload.html:56
+#: layers/templates/upload/layer_upload.html:60
 msgid " or select them one by one:"
 msgstr "hoặc chọn từng cái một:"
 
 #: layers/templates/layers/layer_replace.html:66
-#: layers/templates/upload/layer_upload.html:64
+#: layers/templates/upload/layer_upload.html:68
 msgid "Files to be uploaded"
 msgstr "Các tập tin được tải lên"
 
 #: layers/templates/layers/layer_replace.html:71
-#: layers/templates/upload/layer_upload.html:69
+#: layers/templates/upload/layer_upload.html:73
 msgid "Select the charset or leave default"
 msgstr "Chọn bộ ký tự hoặc để mặc định"
 
@@ -1662,7 +1772,7 @@ msgstr "Cập nhật Styles có sẵn"
 msgid "Upload Layer"
 msgstr "Tải lên lớp"
 
-#: layers/templates/upload/layer_upload.html:83
+#: layers/templates/upload/layer_upload.html:87
 msgid "Upload files"
 msgstr "Tải file"
 
@@ -2066,6 +2176,11 @@ msgstr "Bạn không được phép xem bản đồ này."
 msgid "An unknown error has occured."
 msgstr "Đã xảy ra một lỗi không rõ."
 
+#: maps/views.py:117
+#, fuzzy
+msgid "Share This Map"
+msgstr "Đánh giá Bản đồ này"
+
 #: maps/management/__init__.py:33
 msgid "Map Created"
 msgstr "Bản đồ tạo"
@@ -2075,18 +2190,38 @@ msgid "A Map was created"
 msgstr "Một Bản đồ đã được tạo ra"
 
 #: maps/management/__init__.py:37
+#, fuzzy
+msgid "Map Updated"
+msgstr "Bản đồ tạo"
+
+#: maps/management/__init__.py:38
+#, fuzzy
+msgid "A Map was updated"
+msgstr "Một Bản đồ đã được tạo ra"
+
+#: maps/management/__init__.py:41
+#, fuzzy
+msgid "Map Deleted"
+msgstr "Bản đồ tạo"
+
+#: maps/management/__init__.py:42
+#, fuzzy
+msgid "A Map was deleted"
+msgstr "Một Bản đồ đã được tạo ra"
+
+#: maps/management/__init__.py:45
 msgid "Comment on Map"
 msgstr "Bình luận trên bản đồ"
 
-#: maps/management/__init__.py:38
+#: maps/management/__init__.py:46
 msgid "A map was commented on"
 msgstr "Một bản đồ được nhận xét về"
 
-#: maps/management/__init__.py:41
+#: maps/management/__init__.py:49
 msgid "Rating for Map"
 msgstr "Đánh giá cho Bản đồ"
 
-#: maps/management/__init__.py:42
+#: maps/management/__init__.py:50
 msgid "A rating was given to a map"
 msgstr "Một đánh giá đã được trao cho một bản đồ"
 
@@ -2100,106 +2235,107 @@ msgstr "Bạn không có quyền để xem bản đồ này"
 
 #: maps/templates/maps/map_base.html:5 maps/templates/maps/map_base.html:12
 #: maps/templates/maps/map_list.html:12
+#: maps/templates/maps/map_metadata.html:11
 msgid "Explore Maps"
 msgstr "Khám phá Maps"
 
-#: maps/templates/maps/map_detail.html:54 templates/_actions.html:6
+#: maps/templates/maps/map_detail.html:55 templates/_actions.html:6
 msgid "Rate this Map"
 msgstr "Đánh giá Bản đồ này"
 
-#: maps/templates/maps/map_detail.html:78
-#: maps/templates/maps/map_detail.html:86
+#: maps/templates/maps/map_detail.html:79
+#: maps/templates/maps/map_detail.html:87
 msgid "Download Map"
 msgstr "Tải về Bản đồ"
 
-#: maps/templates/maps/map_detail.html:90
+#: maps/templates/maps/map_detail.html:91
 msgid "Download Data Layers"
 msgstr "Tải về Layers dữ liệu"
 
-#: maps/templates/maps/map_detail.html:91
+#: maps/templates/maps/map_detail.html:92
 msgid "Download Web Map Context"
 msgstr "Tải về Web Map Context"
 
-#: maps/templates/maps/map_detail.html:102
-#: maps/templates/maps/map_detail.html:109
+#: maps/templates/maps/map_detail.html:104
+#: maps/templates/maps/map_detail.html:111
 msgid "Edit Map"
 msgstr "Chỉnh sửa Bản đồ"
 
-#: maps/templates/maps/map_detail.html:114
+#: maps/templates/maps/map_detail.html:116
 msgid "Edit Map Metadata"
 msgstr "Chỉnh sửa Bản đồ Metadata"
 
-#: maps/templates/maps/map_detail.html:118
+#: maps/templates/maps/map_detail.html:120
 msgid "Set Map Thumbnail"
 msgstr "Thiết lập Bản đồ Thumbnail"
 
-#: maps/templates/maps/map_detail.html:122
+#: maps/templates/maps/map_detail.html:124
 msgid "Remove this Map"
 msgstr "Hủy bỏ Bản đồ này"
 
-#: maps/templates/maps/map_detail.html:134
+#: maps/templates/maps/map_detail.html:136
 msgid "View Map"
 msgstr "Xem bản đồ"
 
-#: maps/templates/maps/map_detail.html:144
+#: maps/templates/maps/map_detail.html:146
 msgid "Map Layers"
 msgstr "Bản đồ Layers"
 
-#: maps/templates/maps/map_detail.html:145
+#: maps/templates/maps/map_detail.html:147
 msgid "This map uses the following layers:"
 msgstr "Bản đồ này sử dụng các lớp sau đây:"
 
-#: maps/templates/maps/map_detail.html:161
+#: maps/templates/maps/map_detail.html:163
 msgid "Documents related to this map"
 msgstr "Các tài liệu liên quan đến bản đồ này"
 
-#: maps/templates/maps/map_detail.html:162
+#: maps/templates/maps/map_detail.html:164
 msgid "List of documents related to this map:"
 msgstr "Danh sách các tài liệu liên quan đến bản đồ này:"
 
-#: maps/templates/maps/map_detail.html:174
+#: maps/templates/maps/map_detail.html:176
 msgid "Specify which users can view or modify this map"
 msgstr "Chỉ định những người dùng có thể xem hoặc chỉnh sửa bản đồ này"
 
-#: maps/templates/maps/map_detail.html:175
+#: maps/templates/maps/map_detail.html:177
 msgid "Change Permissions of this Map"
 msgstr "Change Permissions of Bản đồ này"
 
-#: maps/templates/maps/map_detail.html:181
+#: maps/templates/maps/map_detail.html:183
 msgid "Copy this map"
 msgstr "Sao chép bản đồ này"
 
-#: maps/templates/maps/map_detail.html:182
+#: maps/templates/maps/map_detail.html:184
 msgid "Duplicate this map and modify it for your own purposes"
 msgstr "Duplicate bản đồ này và sửa đổi nó cho mục đích riêng của bạn"
 
-#: maps/templates/maps/map_detail.html:183
+#: maps/templates/maps/map_detail.html:185
 #: maps/templates/maps/map_list.html:11
 msgid "Create a New Map"
 msgstr "Tạo một bản đồ mới"
 
-#: maps/templates/maps/map_detail.html:188
+#: maps/templates/maps/map_detail.html:190
 msgid "Map WMS"
 msgstr "Bản đồ WMS"
 
-#: maps/templates/maps/map_detail.html:190
+#: maps/templates/maps/map_detail.html:192
 msgid "WMS layer group for local map layers"
 msgstr "Nhóm lớp WMS cho các lớp bản đồ địa phương"
 
-#: maps/templates/maps/map_detail.html:191 social/tests.py:103
-#: social/templatetags/social_tags.py:47
+#: maps/templates/maps/map_detail.html:193 social/tests.py:103
+#: social/templatetags/social_tags.py:48
 msgid "on"
 msgstr "trên"
 
-#: maps/templates/maps/map_detail.html:191
+#: maps/templates/maps/map_detail.html:193
 msgid "local OWS"
 msgstr "OWS địa phương"
 
-#: maps/templates/maps/map_detail.html:194
+#: maps/templates/maps/map_detail.html:196
 msgid "Publish local map layers as WMS layer group"
 msgstr "Xuất bản các lớp bản đồ địa phương như nhóm lớp WMS"
 
-#: maps/templates/maps/map_detail.html:195
+#: maps/templates/maps/map_detail.html:197
 msgid "Publish Map WMS"
 msgstr "Xuất bản Bản đồ WMS"
 
@@ -2267,7 +2403,7 @@ msgstr "Tải xuống hoàn tất"
 msgid "Download Failed"
 msgstr "Tải về Không"
 
-#: maps/templates/maps/map_metadata.html:12
+#: maps/templates/maps/map_metadata.html:17
 #, python-format
 msgid ""
 "\n"
@@ -2277,7 +2413,7 @@ msgstr ""
 "\n"
 "Chi tiết chỉnh sửa cho %(map_title)s"
 
-#: maps/templates/maps/map_metadata.html:17
+#: maps/templates/maps/map_metadata.html:23
 msgid ""
 "Note: this map's orginal metadata was populated by importing a metadata XML "
 "file.\n"
@@ -2400,7 +2536,7 @@ msgstr "Tên tổ chức"
 msgid "name of the responsible organization"
 msgstr "Tên của tổ chức chịu trách nhiệm"
 
-#: people/models.py:47 templates/500.html:76 templates/base.html:92
+#: people/models.py:47 templates/500.html:76 templates/base.html:91
 msgid "Profile"
 msgstr "Hồ sơ"
 
@@ -2507,28 +2643,29 @@ msgstr "Tất cả nội dung"
 
 #: people/templates/people/_profile_filters.html:5
 #: services/templates/services/service_detail.html:64 templates/500.html:39
-#: templates/base.html:47
+#: templates/base.html:48
 msgid "Layers"
 msgstr "Layers"
 
 #: people/templates/people/_profile_filters.html:6 templates/500.html:42
-#: templates/base.html:50
+#: templates/base.html:51
 msgid "Maps"
 msgstr "Maps"
 
 #: people/templates/people/_profile_filters.html:7 templates/500.html:45
-#: templates/base.html:53
+#: templates/base.html:54
 msgid "Documents"
 msgstr "Tài liệu"
 
-#: people/templates/people/forgot_username_form.html:5
+#: people/templates/people/forgot_username_form.html:6
 msgid "Forgot Username"
 msgstr "Quên tên người dùng"
 
-#: people/templates/people/forgot_username_form.html:9
+#: people/templates/people/forgot_username_form.html:10
+#, fuzzy
 msgid ""
-"Enter your email address and click the submit button.  Your username will be "
-"sent to you."
+"Enter your email address and click the submit button. <br />Your username "
+"will be sent to you."
 msgstr ""
 "Nhập địa chỉ email của bạn và click vào nút gửi. Tên người dùng của bạn sẽ "
 "được gửi đến bạn."
@@ -2753,7 +2890,6 @@ msgid "This Service contains the following layers"
 msgstr "Dịch vụ này bao gồm các lớp sau"
 
 #: services/templates/services/service_detail.html:110
-#: services/templates/services/service_list.html:29
 msgid "Manage"
 msgstr "Quản lý"
 
@@ -2765,8 +2901,13 @@ msgstr "Edit Service Metadata"
 msgid "Remove Service"
 msgstr "Hủy bỏ dịch vụ"
 
-#: services/templates/services/service_edit.html:19
-#: templates/announcements/announcement_form.html:25
+#: services/templates/services/service_edit.html:15
+#, fuzzy
+msgid "Edit Service"
+msgstr "Edit Service Metadata"
+
+#: services/templates/services/service_edit.html:21
+#: templates/announcements/announcement_form.html:27
 msgid "Save"
 msgstr "Lưu"
 
@@ -2778,48 +2919,63 @@ msgstr "Dịch vụ:"
 msgid "The following layers will soon be added to the data catalog:"
 msgstr "Các lớp sau đây sẽ sớm được bổ sung vào Danh mục dữ liệu:"
 
-#: services/templates/services/service_list.html:30
+#: services/templates/services/service_list.html:8
 msgid "Register a new Service"
 msgstr "Đăng ký một dịch vụ mới"
 
-#: services/templates/services/service_register.html:21
+#: services/templates/services/service_list.html:9 templates/500.html:83
+#: templates/base.html:98
+msgid "Remote Services"
+msgstr "Dịch vụ từ xa"
+
+#: services/templates/services/service_register.html:13
+#, fuzzy
+msgid "Register New Service"
+msgstr "Đăng ký một dịch vụ mới"
+
+#: services/templates/services/service_register.html:23
 msgid "Service has been created:"
 msgstr "Dịch vụ đã được tạo ra:"
 
-#: services/templates/services/service_register.html:28
+#: services/templates/services/service_register.html:30
 msgid "The following layers will be imported"
 msgstr "Các lớp sau sẽ được nhập"
 
-#: services/templates/services/service_remove.html:7
+#: services/templates/services/service_remove.html:8
+#, fuzzy
+msgid "Remove Remote Service"
+msgstr "Hủy bỏ dịch vụ"
+
+#: services/templates/services/service_remove.html:12
 msgid "Are you sure you want to remove"
 msgstr "Bạn có chắc chắn bạn muốn loại bỏ"
 
-#: social/signals.py:73
+#: social/signals.py:84
 msgid "created"
 msgstr "tạo"
 
-#: social/signals.py:74 social/tests.py:80
+#: social/signals.py:85 social/tests.py:80
 msgid "deleted"
 msgstr "xóa"
 
-#: social/signals.py:77
+#: social/signals.py:88
 msgid "updated"
 msgstr "cập nhật"
 
-#: social/signals.py:82 social/tests.py:100
+#: social/signals.py:93 social/tests.py:100
 msgid "added a comment"
 msgstr "thêm một bình luận"
 
-#: social/signals.py:84
+#: social/signals.py:95
 msgid "updated a comment"
 msgstr "cập nhật một nhận xét"
 
-#: social/signals.py:86 social/tests.py:54
+#: social/signals.py:97 social/tests.py:54
 msgid "uploaded"
 msgstr "tải lên"
 
 #: social/templates/social/activity_list.html:4
-#: social/templates/social/activity_list.html:16
+#: social/templates/social/activity_list.html:15
 msgid "Recent activity"
 msgstr "Hoạt động gần đây"
 
@@ -2863,11 +3019,11 @@ msgstr ""
 "Trang bạn yêu cầu không tồn tại. Có lẽ bạn đang sử dụng một bookmark lỗi "
 "thời?"
 
-#: templates/500.html:48 templates/base.html:56
+#: templates/500.html:48 templates/base.html:57
 msgid "People"
 msgstr "Người"
 
-#: templates/500.html:51 templates/base.html:59
+#: templates/500.html:51 templates/base.html:60
 msgid "Groups"
 msgstr "Nhóm"
 
@@ -2876,38 +3032,33 @@ msgstr "Nhóm"
 msgid "Search"
 msgstr "Tìm kiếm"
 
-#: templates/500.html:77 templates/base.html:93
+#: templates/500.html:77 templates/base.html:92
 msgid "Recent Activity"
 msgstr "Hoạt động gần đây"
 
-#: templates/500.html:78 templates/base.html:94
+#: templates/500.html:78 templates/base.html:93
 msgid "Inbox"
 msgstr "Hộp thư đến"
 
-#: templates/500.html:80 templates/base.html:96
+#: templates/500.html:80 templates/base.html:95
 #: templates/announcements/announcement_list.html:6
 #: templates/announcements/announcement_list.html:13
-#: templates/announcements/announcement_list.html:20
 msgid "Announcements"
 msgstr "Thông báo"
 
-#: templates/500.html:83 templates/base.html:99
-msgid "Remote Services"
-msgstr "Dịch vụ từ xa"
-
-#: templates/500.html:84 templates/base.html:100
+#: templates/500.html:84 templates/base.html:99
 msgid "Invite User"
 msgstr "Mời thành viên"
 
-#: templates/500.html:86 templates/base.html:102
+#: templates/500.html:86 templates/base.html:101
 msgid "GeoServer"
 msgstr "GeoServer"
 
-#: templates/500.html:89 templates/base.html:105
+#: templates/500.html:89 templates/base.html:104
 msgid "Admin"
 msgstr "Quản trị viên"
 
-#: templates/500.html:92 templates/base.html:108
+#: templates/500.html:92 templates/base.html:107
 msgid "Help"
 msgstr "Giúp"
 
@@ -2933,7 +3084,7 @@ msgstr "Ghi nhớ"
 msgid "Sign in"
 msgstr "Đăng nhập"
 
-#: templates/500.html:128 templates/base.html:77
+#: templates/500.html:128 templates/base.html:80
 msgid "Register"
 msgstr "Đăng ký"
 
@@ -2987,7 +3138,7 @@ msgstr "Thiết lập quyền trên tài nguyên đã chọn"
 msgid "Apply Changes"
 msgstr "Áp dụng Thay đổi"
 
-#: templates/_comments.html:17
+#: templates/_comments.html:17 templates/_comments.html.py:58
 msgid "Add Comment"
 msgstr "Nhập bình luận"
 
@@ -2999,12 +3150,9 @@ msgstr "Đăng nhập để thêm một bình luận"
 msgid "By"
 msgstr "Qua"
 
-#: templates/_comments.html:49
-msgid "Add a Comment"
-msgstr "Thêm một bình luận"
-
-#: templates/_comments.html:60
-msgid "Submit Comments"
+#: templates/_comments.html:67
+#, fuzzy
+msgid "Submit Comment"
 msgstr "Gửi Comments"
 
 #: templates/_permissions.html:8
@@ -3066,7 +3214,7 @@ msgstr "Chọn nhóm ..."
 msgid "About GeoNode"
 msgstr "Về GeoNode"
 
-#: templates/about.html:9
+#: templates/about.html:10
 msgid "About GeoNode."
 msgstr "Về GeoNode."
 
@@ -3078,121 +3226,123 @@ msgstr "Nhập tìm kiếm của bạn ở đây ..."
 msgid "Information for Developers"
 msgstr "Thông tin dành cho nhà phát triển"
 
-#: templates/developer.html:9
+#: templates/developer.html:13
 msgid "Useful information for developers interested in GeoNode."
 msgstr "Thông tin hữu ích cho các nhà phát triển quan tâm GeoNode."
 
-#: templates/developer.html:12
+#: templates/developer.html:14
 msgid ""
 "\n"
-"  <p><a href=\"http://geonode.org/\">GeoNode</a> is an open service built on "
-"open source software. We encourage you to build new applications using the "
-"components and resources it provides. This page is a starting point for "
+"    <p><a href=\"http://geonode.org/\">GeoNode</a> is an open service built "
+"on open source software. We encourage you to build new applications using "
+"the components and resources it provides. This page is a starting point for "
 "developers interesting in taking full advantage of GeoNode. It also includes "
 "links to the project's source code so anyone can build and customize their "
 "own GeoNode. </p>\n"
 "\n"
-"  <h4>GeoNode Software</h4>\n"
+"    <h3>GeoNode Software</h3>\n"
 "\n"
-"  <p>All the code that runs GeoNode is open source. The code is available at "
-"<a href=\"http://github.com/GeoNode/geonode\">http://github.com/GeoNode/"
+"    <p>All the code that runs GeoNode is open source. The code is available "
+"at <a href=\"http://github.com/GeoNode/geonode\">http://github.com/GeoNode/"
 "geonode/</a>. The issue tracker for the project is at <a href=\"http://"
 "github.com/GeoNode/geonode/issues\">http://github.com/GeoNode/geonode/"
 "issues</a>.</p>\n"
 "\n"
-"  <p>GeoNode is built using several open source projects, each with its own "
-"community. If you are interested in contributing new features to the "
+"    <p>GeoNode is built using several open source projects, each with its "
+"own community. If you are interested in contributing new features to the "
 "GeoNode, we encourage you to do so by contributing to one of the projects on "
 "which it is built:</p>\n"
-"  <ul>\n"
-"    <li><a href=\"http://geoext.org\">GeoExt</a> - The JavaScript toolkit "
+"    <ul>\n"
+"      <li><a href=\"http://geoext.org\">GeoExt</a> - The JavaScript toolkit "
 "for rich web mapping applications</li>\n"
-"    <li><a href=\"http://geoserver.org\">GeoServer</a> - Standards based "
+"      <li><a href=\"http://geoserver.org\">GeoServer</a> - Standards based "
 "server for geospatial information</li>\n"
-"    <li><a href=\"http://geowebcache.org\">GeoWebCache</a> - Cache engine "
+"      <li><a href=\"http://geowebcache.org\">GeoWebCache</a> - Cache engine "
 "for WMS Tiles</li><li><a href=\"http://openlayers.org\">OpenLayers</a> - "
 "Pure JavaScript library powering the maps of GeoExt</li>\n"
-"    <li><a href=\"http://pycsw.org\">pycsw</a> - CSW metadata catalogue "
+"      <li><a href=\"http://pycsw.org\">pycsw</a> - CSW metadata catalogue "
 "server</li>\n"
-"  </ul>\n"
+"    </ul>\n"
 "\n"
-"  <h4>What are OGC Services?</h4>\n"
-"  <p>The data in this application is served using open standards endorsed by "
-"the <a href=\"http://opengeospatial.org/\">Open Geospatial Consortium</a>; "
-"in particular, WMS (Web Map Service) is used for accessing maps, WFS (Web "
-"Feature Service) is used for accessing vector data, and WCS (Web Coverage "
-"Service) is used for accessing raster data.  WMC (Web Map Context Documents) "
-"is used for sharing maps. You can use these services in your own "
+"    <h3>What are OGC Services?</h3>\n"
+"    <p>The data in this application is served using open standards endorsed "
+"by the <a href=\"http://opengeospatial.org/\">Open Geospatial Consortium</"
+"a>; in particular, WMS (Web Map Service) is used for accessing maps, WFS "
+"(Web Feature Service) is used for accessing vector data, and WCS (Web "
+"Coverage Service) is used for accessing raster data.  WMC (Web Map Context "
+"Documents) is used for sharing maps. You can use these services in your own "
 "applications using libraries such as OpenLayers, GeoTools, and OGR (all of "
 "which are open-source software and available at zero cost).</p>\n"
 "\n"
-"  <h4>What is GeoWebCache?</h4>\n"
-"  <p>GeoWebCache provides mapping tiles that are compatible with a number of "
-"mapping engines, including Google Maps, Bing Maps and OpenLayers. All the "
+"    <h3>What is GeoWebCache?</h3>\n"
+"    <p>GeoWebCache provides mapping tiles that are compatible with a number "
+"of mapping engines, including Google Maps, Bing Maps and OpenLayers. All the "
 "data hosted by GeoNode is also available through GeoWebCache. GeoWebCache "
 "improves on WMS by caching data and providing more responsive maps.</p>\n"
 "\n"
-"  <h4>OpenLayers Example Code</h4>\n"
+"    <h3>OpenLayers Example Code</h3>\n"
 "\n"
-"  <p>To include a GeoNode map layer in an OpenLayers map, first find the "
+"    <p>To include a GeoNode map layer in an OpenLayers map, first find the "
 "name for that layer. This is found in the layer's <code>name</code> field "
 "(not <code>title</code>) of the layer list. For this example, we will use "
 "the Nicaraguan political boundaries background layer, whose name is "
 "<code>risk:nicaragua_admin</code>. Then, create an instance of OpenLayers."
 "Layer.WMS:</p>\n"
-"  <p><code>var geonodeLayer = new OpenLayers.Layer.WMS(\"GeoNode Risk Data"
+"    <p><code>var geonodeLayer = new OpenLayers.Layer.WMS(\"GeoNode Risk Data"
 "\", \"http://demo.geonode.org/geoserver/wms\",{ layers: \"risk:"
 "nicaragua_admin\" });</code></p>\n"
 "\n"
-"  <h4>Google Maps Example Code</h4>\n"
-"  <p>To include a GeoNode map layer in a Google Map, include the layer "
+"    <h3>Google Maps Example Code</h3>\n"
+"    <p>To include a GeoNode map layer in a Google Map, include the layer "
 "namein the URL template.</p>\n"
-"  <p><code>var tilelayer =  new GTileLayer(null, null, null, "
+"    <p><code>var tilelayer =  new GTileLayer(null, null, null, "
 "{tileUrlTemplate: 'http://demo.geonode.org/geoserver/gwc/service/gmaps?"
 "layers=risk:nicaragua_admin&#38;zoom={Z}&#38;x={X}&#38;y={Y}', isPng:true, "
 "opacity:0.5 } );</code></p>\n"
 "\n"
-"  <h4>Shapefile/GeoJSON/GML Output</h4>\n"
-"  <p>To get data from the GeoNode web services use the WFS protocol. For "
+"    <h3>Shapefile/GeoJSON/GML Output</h3>\n"
+"    <p>To get data from the GeoNode web services use the WFS protocol. For "
 "example, to get the full Nicaraguan admin boundaries use:</p>\n"
-"  <p><code>http://demo.geonode.org/geoserver/wfs?request=GetFeature&#38;"
+"    <p><code>http://demo.geonode.org/geoserver/wfs?request=GetFeature&#38;"
 "typeName=risk:nicaragua_admin&#38;outputformat=SHAPE-ZIP</code></p>\n"
-"  <p>Changing output format to <code>json</code>, <code>GML2</code>, "
+"    <p>Changing output format to <code>json</code>, <code>GML2</code>, "
 "<code>GML3</code>, or <code>csv</code> will get data in those formats. The "
 "WFS protocol also can handle more precise queries, specifying a bounding box "
 "or various spatial and non-spatial filters based on the attributes of the "
 "data.</p>\n"
 "\n"
-"  <h4>GeoTools Example Code</h4>\n"
-"  <p>Create a DataStore and extract a FeatureType from it, then run a Query. "
-"It is all documented on the wiki at <code>http://geotools.org/</code>.</p>\n"
+"    <h3>GeoTools Example Code</h3>\n"
+"    <p>Create a DataStore and extract a FeatureType from it, then run a "
+"Query. It is all documented on the wiki at <code>http://geotools.org/</code>."
+"</p>\n"
+"    "
 msgstr ""
 
-#: templates/developer.html:53
+#: templates/developer.html:55
 msgid "GeoNode's Web Services"
 msgstr "Web Services GeoNode của"
 
-#: templates/developer.html:54
+#: templates/developer.html:56
 msgid "GeoNode's Web Services are available from the following URLs:"
 msgstr "Web Dịch vụ GeoNode của có sẵn từ các URL sau:"
 
-#: templates/developer.html:57
+#: templates/developer.html:59
 msgid "Dynamic tiles via WMS:"
 msgstr "Gạch động thông qua WMS:"
 
-#: templates/developer.html:61
+#: templates/developer.html:63
 msgid "Vector data via WFS:"
 msgstr "Dữ liệu Vector qua WFS:"
 
-#: templates/developer.html:65
+#: templates/developer.html:67
 msgid "Raster data via WCS:"
 msgstr "Dữ liệu Raster qua WCS:"
 
-#: templates/developer.html:69
+#: templates/developer.html:71
 msgid "Metadata search via CSW:"
 msgstr "Tìm kiếm siêu dữ liệu qua CSW:"
 
-#: templates/developer.html:73
+#: templates/developer.html:75
 msgid "Cached tiles via WMTS:"
 msgstr "Gạch Cached qua WMTS:"
 
@@ -3204,7 +3354,7 @@ msgstr "Hướng dẫn sử dụng"
 msgid "GeoNode Help"
 msgstr "GeoNode Trợ giúp"
 
-#: templates/help.html:9
+#: templates/help.html:12
 msgid ""
 "This page provides helpful information about how to use the GeoNode. You can "
 "use the sidebar links to navigate to what you want to know."
@@ -3212,120 +3362,121 @@ msgstr ""
 "Trang này cung cấp thông tin hữu ích về cách sử dụng các GeoNode. Bạn có thể "
 "sử dụng các liên kết bên để điều hướng đến những gì bạn muốn biết."
 
-#: templates/help.html:12
+#: templates/help.html:14
 msgid ""
 "\n"
-"  <p>The GeoNode provides access to data sets and a map editing application "
-"allows users to browse existing maps and contribute their own.</p>\n"
+"    <p>The GeoNode provides access to data sets and a map editing "
+"application allows users to browse existing maps and contribute their own.</"
+"p>\n"
 "\n"
-"  <h4 id=\"browsing-data\">Browsing Layers</h4>\n"
-"  <p>The <a href=\"/layers\">Layers</a> tab allows you to browse data "
+"    <h4 id=\"browsing-data\">Browsing Layers</h4>\n"
+"    <p>The <a href=\"/layers\">Layers</a> tab allows you to browse data "
 "uploaded to this GeoNode.</p>\n"
-"  <p>All data can be downloaded in a variety of formats, for use in other "
+"    <p>All data can be downloaded in a variety of formats, for use in other "
 "applications.</p>\n"
 "\n"
-"  <h4 id=\"developer-access\">Developer Access</h4>\n"
-"  <p>The <a href=\"/developer\"> Developer</a> page is the place for "
+"    <h4 id=\"developer-access\">Developer Access</h4>\n"
+"    <p>The <a href=\"/developer\"> Developer</a> page is the place for "
 "developers to get started building applications against the GeoNode. It "
 "includes instructions on using the web services, links to the source code of "
 "the GeoNode, and information about the open source projects used to create "
 "it.</p>\n"
 "\n"
-"  <h4 id=\"browsing-maps\">Browsing Maps</h4>\n"
-"  <p>The GeoNode allows users to create and share maps with one another.</"
+"    <h4 id=\"browsing-maps\">Browsing Maps</h4>\n"
+"    <p>The GeoNode allows users to create and share maps with one another.</"
 "p>\n"
-"  <p>The <a href=\"/maps\">Maps</a> tab is a gateway to map exploration on "
+"    <p>The <a href=\"/maps\">Maps</a> tab is a gateway to map exploration on "
 "GeoNode.  From here you can <strong>search for a map</strong> or "
 "<strong>create a map</strong>, which will open the <a href=\"/maps/new\">Map "
 "Composer</a>.</p>\n"
-"  <h5>Google Earth Mode</h5>\n"
-"  <p>Any map viewed in the interactive map editor can be seen in 3D mode "
+"    <h5>Google Earth Mode</h5>\n"
+"    <p>Any map viewed in the interactive map editor can be seen in 3D mode "
 "with the Google Earth plugin. To switch to 3D mode select the Google Earth "
 "globe logo, the rightmost button on top toolbar. If you do not have the "
 "Google Earth plugin installed you will be prompted to install it.</p>\n"
 "\n"
-"  <h4 id=\"creating-a-map\">Creating a Map</h4>\n"
-"  <p>To create a new map go to the <a href=\"/maps\">Contributed Maps</a> "
+"    <h4 id=\"creating-a-map\">Creating a Map</h4>\n"
+"    <p>To create a new map go to the <a href=\"/maps\">Contributed Maps</a> "
 "tab and click the <a href=\"/maps/new\">create your own map</a> link.</p>\n"
-"  <p>This will take you to the <a href=\"/maps/new\">Map Composer</a> with a "
-"base layer loaded.</p>\n"
-"  <p>To add data layers from the GeoNode click on the green plus button "
+"    <p>This will take you to the <a href=\"/maps/new\">Map Composer</a> with "
+"a base layer loaded.</p>\n"
+"    <p>To add data layers from the GeoNode click on the green plus button "
 "located below the layers tab on the left hand side of the screen. This will "
 "open a dialog listing all the layers available on the GeoNode.</p>\n"
-"  <p>To add layers to your map select them and hit the <strong>Add Layers</"
+"    <p>To add layers to your map select them and hit the <strong>Add Layers</"
 "strong> button. When finished you may hit <strong>Done</strong> to close the "
 "dialog and go back to the map.</p>\n"
 "\n"
-"  <h5>Reordering and Removing Layers</h5>\n"
-"  <p>Change the display order of the layers listed in the data tab by simply "
-"dragging and dropping their names. The order in the map will be updated to "
-"reflect that. To turn a layer's visibility off simply uncheck it, and to "
-"remove it entirely select it and hit the red minus button.</p>\n"
+"    <h5>Reordering and Removing Layers</h5>\n"
+"    <p>Change the display order of the layers listed in the data tab by "
+"simply dragging and dropping their names. The order in the map will be "
+"updated to reflect that. To turn a layer's visibility off simply uncheck it, "
+"and to remove it entirely select it and hit the red minus button.</p>\n"
 "\n"
-"  <h5>Saving your map</h5>\n"
-"  <p>Once a suitable set of layers and zoom level has been found it's time "
+"    <h5>Saving your map</h5>\n"
+"    <p>Once a suitable set of layers and zoom level has been found it's time "
 "to save it so others can see it.  Click the Save button--the left most icon "
 "on the top toolbar, an image of a map with a disk--on the top menu and fill "
 "out the title and abstract of the map.</p>\n"
 "\n"
-"  <h4 id=\"exporting-a-map\">Exporting a Map</h4>\n"
-"  <p>Any map from the GeoNode can be embedded for use in another site or "
+"    <h4 id=\"exporting-a-map\">Exporting a Map</h4>\n"
+"    <p>Any map from the GeoNode can be embedded for use in another site or "
 "blog. To export a map:</p>\n"
-"  <ol>\n"
-"    <li>Select the from the list of maps on the community or map page and "
+"    <ol>\n"
+"      <li>Select the from the list of maps on the community or map page and "
 "then hit the 'export map' button.</li> \n"
-"    <li>Choose your desired height and width for the widget in the wizard.</"
-"li> \n"
-"    <li>Copy the HTML snippet provided in the wizard to any HTML page or "
+"      <li>Choose your desired height and width for the widget in the wizard."
+"</li> \n"
+"      <li>Copy the HTML snippet provided in the wizard to any HTML page or "
 "iFrame-supporting blog post.</li>\n"
-"  </ol>\n"
-"  <p>This will put an interactive widget showing you map in your web page or "
-"blog post.</p>\n"
-"  <p>Note that the <a href=\"/maps/new\">Map Composer</a> also has a button "
-"to export the map. Just be sure to save the map before exporting if there "
-"are changes that you want others to see. It exports the last saved version, "
-"not the last viewed version.</p>\n"
+"    </ol>\n"
+"    <p>This will put an interactive widget showing you map in your web page "
+"or blog post.</p>\n"
+"    <p>Note that the <a href=\"/maps/new\">Map Composer</a> also has a "
+"button to export the map. Just be sure to save the map before exporting if "
+"there are changes that you want others to see. It exports the last saved "
+"version, not the last viewed version.</p>\n"
 "\n"
-"  <h4 id=\"remixing-a-map\">Remixing a Map</h4>\n"
-"  <p>Any map available can serve as a starting point for a new map.</p>\n"
-"  <ol>\n"
-"    <li>Open the map in the Map Composer.</li>\n"
-"    <li>Add and remove layers as you like.</li>\n"
-"    <li>Pan and zoom to highlight the area of interest.</li>\n"
-"    <li><strong>IMPORTANT:</strong> Update the title, abstract, contact info "
-"and tags to reflect the new map.</li>\n"
-"    <li>Save the map.</li>\n"
-"  </ol>\n"
-"  <p>You will be able to see your new map when you search for it from the <a "
-"href=\"/maps\">Maps</a> tab.</p> \n"
-"  "
+"    <h4 id=\"remixing-a-map\">Remixing a Map</h4>\n"
+"    <p>Any map available can serve as a starting point for a new map.</p>\n"
+"    <ol>\n"
+"      <li>Open the map in the Map Composer.</li>\n"
+"      <li>Add and remove layers as you like.</li>\n"
+"      <li>Pan and zoom to highlight the area of interest.</li>\n"
+"      <li><strong>IMPORTANT:</strong> Update the title, abstract, contact "
+"info and tags to reflect the new map.</li>\n"
+"      <li>Save the map.</li>\n"
+"    </ol>\n"
+"    <p>You will be able to see your new map when you search for it from the "
+"<a href=\"/maps\">Maps</a> tab.</p> \n"
+"    "
 msgstr ""
 
-#: templates/help.html:65
+#: templates/help.html:66
 msgid "Sections"
 msgstr "Phần"
 
-#: templates/help.html:66
+#: templates/help.html:67
 msgid "Browsing Layers"
 msgstr "Layers duyệt"
 
-#: templates/help.html:67
+#: templates/help.html:68
 msgid "Developer Access"
 msgstr "Truy cập Developer"
 
-#: templates/help.html:68
+#: templates/help.html:69
 msgid "Browsing Maps"
 msgstr "Duyệt Maps"
 
-#: templates/help.html:69
+#: templates/help.html:70
 msgid "Creating a Map"
 msgstr "Tạo một bản đồ"
 
-#: templates/help.html:70
+#: templates/help.html:71
 msgid "Exporting a Map"
 msgstr "Xuất khẩu một bản đồ"
 
-#: templates/help.html:71
+#: templates/help.html:72
 msgid "Remixing a Map"
 msgstr "Remixing Map"
 
@@ -3365,6 +3516,7 @@ msgid "No"
 msgstr "Không"
 
 #: templates/index.html:30
+#: templates/notification/request_download_resourcebase/full.txt:7
 msgid "Layer"
 msgstr "Lớp"
 
@@ -3410,11 +3562,16 @@ msgstr ""
 msgid "Share data"
 msgstr "Chia sẻ dữ liệu"
 
-#: templates/account/login.html:7 templates/account/login.html.py:24
+#: templates/social_links.html:9
+#, python-format
+msgid "%(share_res)s"
+msgstr ""
+
+#: templates/account/login.html:7 templates/account/login.html.py:25
 msgid "Log in"
 msgstr "Đăng nhập"
 
-#: templates/account/login.html:12
+#: templates/account/login.html:11
 msgid "Log in to an existing account"
 msgstr "Đăng nhập vào tài khoản hiện có"
 
@@ -3431,11 +3588,15 @@ msgid "Are you sure you want to log out?"
 msgstr "Bạn có chắc chắn bạn muốn thoát?"
 
 #: templates/account/password_reset.html:8
-#: templates/account/password_reset.html:14
 msgid "Password reset"
 msgstr "Đặt lại mật khẩu"
 
-#: templates/account/password_reset.html:15
+#: templates/account/password_reset.html:14
+#, fuzzy
+msgid "Password Reset"
+msgstr "Đặt lại mật khẩu"
+
+#: templates/account/password_reset.html:18
 msgid ""
 "Forgotten your password? Enter your email address below, and we'll send you "
 "an email allowing you to reset it."
@@ -3443,11 +3604,11 @@ msgstr ""
 "Quên mật khẩu của bạn? Nhập địa chỉ email của bạn dưới đây, và chúng tôi sẽ "
 "gửi cho bạn một email cho phép bạn thiết lập lại nó."
 
-#: templates/account/password_reset.html:20
+#: templates/account/password_reset.html:24
 msgid "Reset my password"
 msgstr "Thiết lập lại mật khẩu của mình"
 
-#: templates/account/password_reset.html:25
+#: templates/account/password_reset.html:28
 #, python-format
 msgid ""
 "If you have any trouble resetting your password, contact us at <a href="
@@ -3523,37 +3684,37 @@ msgstr "GeoNode site admin"
 msgid "GeoNode administration"
 msgstr "Quản trị GeoNode"
 
-#: templates/announcements/announcement_form.html:10
+#: templates/announcements/announcement_form.html:11
 msgid "Edit Announcement"
 msgstr "Chỉnh sửa Thông báo"
 
-#: templates/announcements/announcement_form.html:10
+#: templates/announcements/announcement_form.html:11
 msgid "Create Announcement"
 msgstr "Tạo Thông báo"
 
-#: templates/announcements/announcement_list.html:19
+#: templates/announcements/announcement_list.html:12
 msgid "New Announcement"
 msgstr "Thông báo mới"
 
-#: templates/announcements/announcement_list.html:31
+#: templates/announcements/announcement_list.html:21
 msgid "Level"
 msgstr ""
 
-#: templates/announcements/announcement_list.html:32
+#: templates/announcements/announcement_list.html:22
 msgid "Announcement"
 msgstr "Thông cáo"
 
-#: templates/announcements/announcement_list.html:33
+#: templates/announcements/announcement_list.html:23
 msgid "Published From"
 msgstr "Xuất bản Từ"
 
-#: templates/announcements/announcement_list.html:48
-#, python-format
+#: templates/announcements/announcement_list.html:38
+#, fuzzy, python-format
 msgid ""
 "\n"
-"                        Published from <b>%(publish_start)s</b> to <b>"
-"%(publish_end)s</b>.\n"
-"                        "
+"          Published from <b>%(publish_start)s</b> to <b>%(publish_end)s</"
+"b>.\n"
+"          "
 msgstr ""
 "\n"
 "Xuất bản <b>%(publish_start)s</b> đến <b>%(publish_end)s</b>"
@@ -3605,73 +3766,256 @@ msgstr ""
 msgid "Delete These"
 msgstr "Xóa Những"
 
-#: templates/notification/base.html:16 templates/notification/notices.html:7
-#: templates/notification/notices.html:11
-msgid "Notices"
-msgstr "Thông báo"
-
-#: templates/notification/base.html:17
-msgid "Notice settings"
-msgstr "Thiết lập thông báo"
-
-#: templates/notification/base.html:18
-msgid "Observed objects"
-msgstr "Đối tượng quan sát"
-
-#: templates/notification/notice_settings.html:5
-#: templates/notification/notice_settings.html:10
+#: templates/notification/notice_settings.html:8
+#: templates/notification/notice_settings.html:11
 msgid "Notification Settings"
 msgstr "Cài đặt thông báo"
 
 #: templates/notification/notice_settings.html:15
-msgid "Primary email"
-msgstr "Email chính"
-
-#: templates/notification/notice_settings.html:17
-#, python-format
-msgid "change under <a href=\"%(email_url)s\">Account</a>"
-msgstr "thay đổi trong <a href=\"%(email_url)s\">tài khoản</a>"
-
-#: templates/notification/notice_settings.html:21
-msgid "Note"
-msgstr "Chú ý"
-
-#: templates/notification/notice_settings.html:22
 #, python-format
 msgid ""
-"You do not have a verified email address to which notices can be sent. You "
-"can add one by going to <a href=\"%(email_url)s\">Account</a>."
+"\n"
+"        <p class=\"alert alert-warning\">\n"
+"            <span class=\"warning\">Note</span>:\n"
+"            You do not have a verified email address to which notices can be "
+"sent. <a href=\"%(email_url)s\">Add one</a> now.\n"
+"        </p>\n"
+"        "
 msgstr ""
-"Bạn không có một địa chỉ email xác nhận mà thông báo có thể được gửi đi. Bạn "
-"có thể thêm một bằng cách vào <a href=\"%(email_url)s\">tài khoản</a> ."
 
-#: templates/notification/notice_settings.html:30
+#: templates/notification/notice_settings.html:27
 msgid "Notification Type"
 msgstr "Loại thông báo"
 
-#: templates/notification/notice_settings.html:48
+#: templates/notification/notice_settings.html:52
 msgid "Change"
 msgstr "Thay đổi"
 
-#: templates/notification/notices.html:16
-msgid "Mark all unseen notices seen"
-msgstr "Đánh dấu tất cả các thông báo vô thấy"
+#: templates/notification/document_comment/full.txt:3
+#, fuzzy
+msgid "A comment has been posted for the document"
+msgstr "Bạn không có quyền cho tài liệu này."
 
-#: templates/notification/notices.html:22
-msgid "MONTH_DAY_FORMAT"
-msgstr "MONTH_DAY_FORMAT"
+#: templates/notification/document_comment/full.txt:3
+#: templates/notification/layer_comment/full.txt:3
+#: templates/notification/map_comment/full.txt:4
+msgid "by the user"
+msgstr ""
 
-#: templates/notification/notices.html:33
-msgid "View Notice"
-msgstr "Xem Thông báo"
+#: templates/notification/document_comment/full.txt:5
+#: templates/notification/document_created/full.txt:6
+#: templates/notification/document_updated/full.txt:6
+msgid "You can visit the document's detail page here"
+msgstr ""
 
-#: templates/notification/notices.html:41
-msgid "No notices."
-msgstr "Không có thông báo."
+#: templates/notification/document_comment/short.txt:3
+#, fuzzy
+msgid "A comment has been posted for a document"
+msgstr "Bạn không có quyền cho tài liệu này."
 
-#: templates/notification/single.html:6 templates/notification/single.html:9
-msgid "Notice"
-msgstr "Nhận thấy"
+#: templates/notification/document_created/full.txt:3
+#: templates/notification/document_rated/full.txt:3
+#: templates/notification/layer_created/full.txt:3
+#: templates/notification/layer_rated/full.txt:3
+#: templates/notification/map_created/full.txt:3
+#: templates/notification/map_rated/full.txt:3
+#: templates/notification/request_download_resourcebase/full.txt:3
+#, fuzzy
+msgid "The user"
+msgstr "Chọn người sử dụng ..."
+
+#: templates/notification/document_created/full.txt:3
+#, fuzzy
+msgid "uploaded the following document"
+msgstr "Thay thế tài liệu này"
+
+#: templates/notification/document_created/short.txt:3
+#, fuzzy
+msgid "A document has been uploaded"
+msgstr "Một lớp đã được tải lên"
+
+#: templates/notification/document_deleted/full.txt:3
+#, fuzzy
+msgid "The following document was deleted"
+msgstr "Người sử dụng sau đây:"
+
+#: templates/notification/document_deleted/full.txt:4
+#: templates/notification/document_rated/full.txt:6
+#: templates/notification/document_updated/full.txt:4
+#: templates/notification/layer_deleted/full.txt:4
+#: templates/notification/layer_rated/full.txt:6
+#: templates/notification/layer_updated/full.txt:4
+#: templates/notification/map_deleted/full.txt:4
+#: templates/notification/map_rated/full.txt:6
+#: templates/notification/map_updated/full.txt:4
+#, fuzzy
+msgid "owned by"
+msgstr "Powered by"
+
+#: templates/notification/document_deleted/short.txt:3
+#, fuzzy
+msgid "A document has been deleted"
+msgstr "Dịch vụ đã được tạo ra:"
+
+#: templates/notification/document_rated/full.txt:4
+#: templates/notification/layer_rated/full.txt:4
+#: templates/notification/map_rated/full.txt:4
+#, fuzzy
+msgid "rated"
+msgstr "tạo"
+
+#: templates/notification/document_rated/full.txt:5
+#, fuzzy
+msgid "the following document"
+msgstr "Người sử dụng sau đây:"
+
+#: templates/notification/document_rated/full.txt:8
+#: templates/notification/layer_comment/full.txt:5
+#: templates/notification/layer_created/full.txt:6
+#: templates/notification/layer_rated/full.txt:8
+#: templates/notification/layer_updated/full.txt:6
+msgid "You can visit the layer's detail page here"
+msgstr ""
+
+#: templates/notification/document_rated/short.txt:3
+#, fuzzy
+msgid "A document has been rated"
+msgstr "Dịch vụ đã được tạo ra:"
+
+#: templates/notification/document_updated/full.txt:3
+#, fuzzy
+msgid "The following document was updated"
+msgstr "Người sử dụng sau đây:"
+
+#: templates/notification/document_updated/short.txt:3
+#, fuzzy
+msgid "A document has been updated"
+msgstr "Dịch vụ đã được tạo ra:"
+
+#: templates/notification/layer_comment/full.txt:3
+#, fuzzy
+msgid "A comment has been posted for the layer"
+msgstr "Các tài liệu liên quan đến lớp này"
+
+#: templates/notification/layer_comment/short.txt:3
+#, fuzzy
+msgid "A comment has been posted for a layer"
+msgstr "Một đánh giá đã được trao cho một lớp"
+
+#: templates/notification/layer_created/full.txt:3
+#, fuzzy
+msgid "uploaded the following layer"
+msgstr "Bản đồ này sử dụng các lớp sau đây:"
+
+#: templates/notification/layer_created/short.txt:3
+#, fuzzy
+msgid "A new layer has been uploaded"
+msgstr "Một lớp đã được tải lên"
+
+#: templates/notification/layer_deleted/full.txt:3
+#, fuzzy
+msgid "The following layer was deleted"
+msgstr "Các lớp sau sẽ được nhập"
+
+#: templates/notification/layer_deleted/short.txt:3
+#, fuzzy
+msgid "A layer has been deleted"
+msgstr "Một lớp đã nhận xét về"
+
+#: templates/notification/layer_rated/full.txt:5
+#, fuzzy
+msgid "the following layer"
+msgstr "Người sử dụng sau đây:"
+
+#: templates/notification/layer_rated/short.txt:3
+#, fuzzy
+msgid "A layer has been rated"
+msgstr "Dịch vụ đã được tạo ra:"
+
+#: templates/notification/layer_updated/full.txt:3
+#, fuzzy
+msgid "The following layer was updated"
+msgstr "Các lớp sau sẽ được nhập"
+
+#: templates/notification/layer_updated/short.txt:3
+#, fuzzy
+msgid "A layer has been updated"
+msgstr "Một lớp đã được tải lên"
+
+#: templates/notification/map_comment/full.txt:3
+#, fuzzy
+msgid "A comment has been posted for the map"
+msgstr "Các tài liệu liên quan đến bản đồ này"
+
+#: templates/notification/map_comment/full.txt:6
+#: templates/notification/map_created/full.txt:6
+#: templates/notification/map_rated/full.txt:8
+#: templates/notification/map_updated/full.txt:6
+msgid "You can visit the map's detail page here"
+msgstr ""
+
+#: templates/notification/map_comment/short.txt:3
+msgid "A comment has been posted for a map"
+msgstr ""
+
+#: templates/notification/map_created/full.txt:3
+#, fuzzy
+msgid "created the following map"
+msgstr "Hành động này ảnh hưởng đến các bản đồ sau đây:"
+
+#: templates/notification/map_created/short.txt:3
+#, fuzzy
+msgid "A map has been created"
+msgstr "Một Bản đồ đã được tạo ra"
+
+#: templates/notification/map_deleted/full.txt:3
+#, fuzzy
+msgid "The following map was deleted"
+msgstr "Các lớp sau sẽ được nhập"
+
+#: templates/notification/map_deleted/short.txt:3
+#, fuzzy
+msgid "A map has been deleted"
+msgstr "Một bản đồ được nhận xét về"
+
+#: templates/notification/map_rated/full.txt:5
+#, fuzzy
+msgid "the following map"
+msgstr "Các nhóm sau:"
+
+#: templates/notification/map_rated/short.txt:3
+#, fuzzy
+msgid "A map has been rated"
+msgstr "Một Bản đồ đã được tạo ra"
+
+#: templates/notification/map_updated/full.txt:3
+#, fuzzy
+msgid "The following map was updated"
+msgstr "Các lớp sau sẽ được nhập"
+
+#: templates/notification/map_updated/short.txt:3
+#, fuzzy
+msgid "A map has been updated"
+msgstr "Một Bản đồ đã được tạo ra"
+
+#: templates/notification/request_download_resourcebase/full.txt:3
+#, fuzzy
+msgid "requested you to download this resource"
+msgstr "bên sở hữu các nguồn tài nguyên"
+
+#: templates/notification/request_download_resourcebase/full.txt:9
+#, fuzzy
+msgid "Document"
+msgstr "Tài liệu"
+
+#: templates/notification/request_download_resourcebase/full.txt:12
+msgid ""
+"Please go to resource page and assign the download permissions if you wish"
+msgstr ""
+
+#: templates/notification/request_download_resourcebase/short.txt:3
+msgid "A resource's download has been requested"
+msgstr ""
 
 #: templates/relationships/_list_connections.html:3
 #: templates/relationships/_manage_connections.html:6
@@ -3768,15 +4112,15 @@ msgstr "yyyy-mm-dd"
 msgid "Date ends before:"
 msgstr "Ngày kết thúc trước:"
 
-#: templates/search/_search_content.html:10
+#: templates/search/_search_content.html:6
 msgid "Your selections"
 msgstr "Lựa chọn của bạn"
 
-#: templates/search/_search_content.html:11
+#: templates/search/_search_content.html:7
 msgid "Clear all filters"
 msgstr "Xóa tất cả các bộ lọc"
 
-#: templates/search/_sort_filters.html:13
+#: templates/search/_sort_filters.html:15
 msgid "Set permissions"
 msgstr "Thiết lập quyền"
 
@@ -3831,6 +4175,50 @@ msgstr "Trở lại Hộp thư"
 #: templates/user_messages/thread_detail.html:25
 msgid "Send Reply"
 msgstr "Gửi trả lời"
+
+#~ msgid "Add a Comment"
+#~ msgstr "Thêm một bình luận"
+
+#~ msgid "Notices"
+#~ msgstr "Thông báo"
+
+#~ msgid "Notice settings"
+#~ msgstr "Thiết lập thông báo"
+
+#~ msgid "Observed objects"
+#~ msgstr "Đối tượng quan sát"
+
+#~ msgid "Primary email"
+#~ msgstr "Email chính"
+
+#~ msgid "change under <a href=\"%(email_url)s\">Account</a>"
+#~ msgstr "thay đổi trong <a href=\"%(email_url)s\">tài khoản</a>"
+
+#~ msgid "Note"
+#~ msgstr "Chú ý"
+
+#~ msgid ""
+#~ "You do not have a verified email address to which notices can be sent. "
+#~ "You can add one by going to <a href=\"%(email_url)s\">Account</a>."
+#~ msgstr ""
+#~ "Bạn không có một địa chỉ email xác nhận mà thông báo có thể được gửi đi. "
+#~ "Bạn có thể thêm một bằng cách vào <a href=\"%(email_url)s\">tài khoản</"
+#~ "a> ."
+
+#~ msgid "Mark all unseen notices seen"
+#~ msgstr "Đánh dấu tất cả các thông báo vô thấy"
+
+#~ msgid "MONTH_DAY_FORMAT"
+#~ msgstr "MONTH_DAY_FORMAT"
+
+#~ msgid "View Notice"
+#~ msgstr "Xem Thông báo"
+
+#~ msgid "No notices."
+#~ msgstr "Không có thông báo."
+
+#~ msgid "Notice"
+#~ msgstr "Nhận thấy"
 
 #~ msgid "Remote Thumbnail"
 #~ msgstr "Thumbnail từ xa"

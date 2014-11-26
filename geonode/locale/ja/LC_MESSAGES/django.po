@@ -12,7 +12,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-11-19 18:27-0500\n"
+"POT-Creation-Date: 2014-11-26 12:15+0000\n"
 "PO-Revision-Date: 2014-11-15 17:51+0000\n"
 "Last-Translator: Andres Alfonso Lemon Gomez <lemon.andres@gmail.com>\n"
 "Language-Team: Japanese (http://www.transifex.com/projects/p/geonode/"
@@ -148,9 +148,9 @@ msgid "No information provided"
 msgstr "どの情報も提供されません"
 
 #: base/forms.py:35 base/templates/base/resourcebase_info_panel.html:46
-#: documents/templates/documents/document_metadata.html:51
-#: layers/templates/layers/layer_metadata.html:53
-#: maps/templates/maps/map_metadata.html:53
+#: documents/templates/documents/document_metadata.html:60
+#: layers/templates/layers/layer_metadata.html:61
+#: maps/templates/maps/map_metadata.html:61
 msgid "Category"
 msgstr "カテゴリ"
 
@@ -410,9 +410,9 @@ msgstr "オーナー"
 
 #: base/templates/base/_resourcebase_contact_snippet.html:14
 #: base/templates/base/resourcebase_info_panel.html:61
-#: documents/templates/documents/document_metadata.html:41
-#: layers/templates/layers/layer_metadata.html:80
-#: maps/templates/maps/map_metadata.html:43
+#: documents/templates/documents/document_metadata.html:50
+#: layers/templates/layers/layer_metadata.html:84
+#: maps/templates/maps/map_metadata.html:51
 msgid "Point of Contact"
 msgstr "連絡先"
 
@@ -421,7 +421,7 @@ msgid "Metadata Author"
 msgstr "メタデータ作成者"
 
 #: base/templates/base/resourcebase_info_panel.html:6 services/forms.py:21
-#: templates/announcements/announcement_list.html:30
+#: templates/announcements/announcement_list.html:20
 msgid "Title"
 msgstr "タイトル"
 
@@ -440,7 +440,7 @@ msgid "Date"
 msgstr "日"
 
 #: base/templates/base/resourcebase_info_panel.html:34
-#: layers/templates/layers/layer_detail.html:307
+#: layers/templates/layers/layer_detail.html:305
 msgid "Type"
 msgstr "タイプ"
 
@@ -547,27 +547,83 @@ msgstr "このドキュメントのメタデータを変更する権限があり
 msgid "You are not permitted to view this document"
 msgstr "このドキュメントを閲覧する権限がありません"
 
-#: documents/views.py:67 documents/views.py:105
+#: documents/views.py:67 documents/views.py:107
 msgid "You are not allowed to view this document."
 msgstr "ドキュメントの閲覧が許可されていません。"
 
-#: documents/views.py:181
+#: documents/views.py:94
+#, fuzzy
+msgid "Share This Document"
+msgstr "このドキュメントを評価"
+
+#: documents/views.py:187
 msgid "You are not allowed to edit this document."
 msgstr "あなたは、この文書を編集することが許可されていません。"
 
+#: documents/management/__init__.py:14
+#, fuzzy
+msgid "Document Created"
+msgstr "この地図に関連するドキュメント"
+
+#: documents/management/__init__.py:15
+#, fuzzy
+msgid "A Document was created"
+msgstr "地図が作成されました"
+
+#: documents/management/__init__.py:18
+#, fuzzy
+msgid "Document Updated"
+msgstr "ドキュメント"
+
+#: documents/management/__init__.py:19
+#, fuzzy
+msgid "A Document was updated"
+msgstr "レイヤーがアップロードされました"
+
+#: documents/management/__init__.py:22
+#, fuzzy
+msgid "Document Deleted"
+msgstr "ドキュメント"
+
+#: documents/management/__init__.py:23
+#, fuzzy
+msgid "A Document was deleted"
+msgstr "ドキュメントの関連データ"
+
+#: documents/management/__init__.py:26
+#, fuzzy
+msgid "Comment on Document"
+msgstr "レイヤーのコメント"
+
+#: documents/management/__init__.py:27
+#, fuzzy
+msgid "A Document was commented on"
+msgstr "地図は次の方にコメントされました"
+
+#: documents/management/__init__.py:30
+#, fuzzy
+msgid "Document for Map"
+msgstr "地図へのコメント"
+
+#: documents/management/__init__.py:31
+#, fuzzy
+msgid "A rating was given to a document"
+msgstr "地図が評価されました"
+
 #: documents/templates/documents/_document_filters.html:5
-#: groups/templates/groups/group_list.html:15
+#: groups/templates/groups/group_list.html:17
 #: layers/templates/layers/_layer_filters.html:5
 #: maps/templates/maps/_map_filters.html:5
-#: people/templates/people/profile_list.html:12
-#: templates/search/_sort_filters.html:4
+#: people/templates/people/profile_list.html:13
+#: templates/search/_sort_filters.html:5
 msgid "Most recent"
 msgstr "公開順"
 
 #: documents/templates/documents/_document_filters.html:6
+#: groups/templates/groups/group_list.html:21
 #: layers/templates/layers/_layer_filters.html:6
 #: maps/templates/maps/_map_filters.html:6
-#: templates/search/_sort_filters.html:8
+#: templates/search/_sort_filters.html:9
 msgid "Most popular"
 msgstr "人気順"
 
@@ -592,7 +648,7 @@ msgstr "から"
 #: layers/templates/layers/_layer_list_item.html:84
 #: maps/templates/maps/_map_list_item.html:21
 #: maps/templates/maps/_map_list_item.html:46
-#: social/templates/social/_activity_item.html:27
+#: social/templates/social/_activity_item.html:31
 msgid "ago"
 msgstr "前に"
 
@@ -634,128 +690,132 @@ msgstr "ダウンロード"
 msgid "You do not have permission to view this document"
 msgstr "あなたは、このドキュメントを表示する権限がありません"
 
-#: documents/templates/documents/document_detail.html:42
+#: documents/templates/documents/document_detail.html:40
 msgid "External Resource"
 msgstr "外部リソース"
 
-#: documents/templates/documents/document_detail.html:48
+#: documents/templates/documents/document_detail.html:46
 #: layers/templates/layers/_actions.html:3
-#: maps/templates/maps/map_detail.html:35 templates/_actions.html:3
+#: maps/templates/maps/map_detail.html:36 templates/_actions.html:3
 msgid "Info"
 msgstr "詳細情報"
 
-#: documents/templates/documents/document_detail.html:50
+#: documents/templates/documents/document_detail.html:48
 #: layers/templates/layers/_actions.html:6
-#: maps/templates/maps/map_detail.html:38 templates/_actions.html:5
+#: maps/templates/maps/map_detail.html:39 templates/_actions.html:5
 msgid "Share"
 msgstr "シェア"
 
-#: documents/templates/documents/document_detail.html:52
+#: documents/templates/documents/document_detail.html:50
 #: layers/templates/layers/_actions.html:8
-#: maps/templates/maps/map_detail.html:41
+#: maps/templates/maps/map_detail.html:42
 msgid "Ratings"
 msgstr "評価"
 
-#: documents/templates/documents/document_detail.html:53
+#: documents/templates/documents/document_detail.html:51
 #: layers/templates/layers/_actions.html:9
-#: maps/templates/maps/map_detail.html:42 templates/_comments.html:12
+#: maps/templates/maps/map_detail.html:43 templates/_comments.html:12
 msgid "Comments"
 msgstr "コメント"
 
-#: documents/templates/documents/document_detail.html:71
+#: documents/templates/documents/document_detail.html:69
 msgid "Rate this document"
 msgstr "このドキュメントを評価"
 
-#: documents/templates/documents/document_detail.html:75
-#: layers/templates/layers/layer_detail.html:113
-#: maps/templates/maps/map_detail.html:58
+#: documents/templates/documents/document_detail.html:73
+#: layers/templates/layers/layer_detail.html:112
+#: maps/templates/maps/map_detail.html:59
 msgid "Average Rating"
 msgstr "評価平均"
 
+#: documents/templates/documents/document_detail.html:89
 #: documents/templates/documents/document_detail.html:91
 #: documents/templates/documents/document_detail.html:93
-#: documents/templates/documents/document_detail.html:95
-#: documents/templates/documents/document_detail.html:111
+#: documents/templates/documents/document_detail.html:109
 msgid "Download Document"
 msgstr "ダウンロードドキュメント"
 
-#: documents/templates/documents/document_detail.html:99
-#: layers/templates/layers/layer_detail.html:134
+#: documents/templates/documents/document_detail.html:97
+#: layers/templates/layers/layer_detail.html:133
 #, fuzzy
 msgid "Request Download"
 msgstr "ダウンロード"
 
-#: documents/templates/documents/document_detail.html:104
-#: layers/templates/layers/layer_detail.html:163
-#: layers/templates/layers/layer_detail.html:171
+#: documents/templates/documents/document_detail.html:102
+#: layers/templates/layers/layer_detail.html:162
+#: layers/templates/layers/layer_detail.html:170
 msgid "Download Metadata"
 msgstr "メタデータのダウンロード"
 
-#: documents/templates/documents/document_detail.html:121
-#: documents/templates/documents/document_detail.html:151
-#: layers/templates/layers/layer_detail.html:156
-#: layers/templates/layers/layer_detail.html:181
-#: layers/templates/layers/layer_detail.html:223
-#: maps/templates/maps/map_detail.html:95
-#: maps/templates/maps/map_detail.html:127
+#: documents/templates/documents/document_detail.html:119
+#: documents/templates/documents/document_detail.html:149
+#: layers/templates/layers/layer_detail.html:155
+#: layers/templates/layers/layer_detail.html:180
+#: layers/templates/layers/layer_detail.html:221
+#: maps/templates/maps/map_detail.html:96
+#: maps/templates/maps/map_detail.html:129
 #: templates/_bulk_permissions_form.html:19
 msgid "Close"
 msgstr "クローズ"
 
-#: documents/templates/documents/document_detail.html:128
-#: documents/templates/documents/document_detail.html:135
+#: documents/templates/documents/document_detail.html:126
+#: documents/templates/documents/document_detail.html:133
 msgid "Edit Document"
 msgstr "ドキュメント編集"
 
-#: documents/templates/documents/document_detail.html:140
-#: layers/templates/layers/layer_detail.html:203
+#: documents/templates/documents/document_detail.html:138
+#: documents/templates/documents/document_metadata.html:17
+#: layers/templates/layers/layer_detail.html:202
+#: layers/templates/layers/layer_metadata.html:12
+#: maps/templates/maps/map_metadata.html:12
 msgid "Edit Metadata"
 msgstr "メタデータの編集"
 
-#: documents/templates/documents/document_detail.html:143
+#: documents/templates/documents/document_detail.html:141
 msgid "Replace this Document"
 msgstr "このドキュメントを入れ替え"
 
-#: documents/templates/documents/document_detail.html:146
+#: documents/templates/documents/document_detail.html:144
 msgid "Remove this Document"
 msgstr "このドキュメントを削除"
 
-#: documents/templates/documents/document_detail.html:158
+#: documents/templates/documents/document_detail.html:156
 msgid "Resource using this document"
 msgstr "このドキュメントを使用しているリソース"
 
-#: documents/templates/documents/document_detail.html:160
+#: documents/templates/documents/document_detail.html:158
 msgid "List of resources using this document:"
 msgstr "このドキュメントを使用中のリソース一覧:"
 
-#: documents/templates/documents/document_detail.html:164
+#: documents/templates/documents/document_detail.html:162
 msgid "This document is related to a "
 msgstr "ドキュメントの関連データ"
 
-#: documents/templates/documents/document_detail.html:167
+#: documents/templates/documents/document_detail.html:165
 msgid "This document is not related to any maps or layers"
 msgstr "ドキュメントが関連している地図やレイヤーはありません"
 
-#: documents/templates/documents/document_detail.html:174
-#: documents/templates/documents/document_upload.html:32
+#: documents/templates/documents/document_detail.html:172
+#: documents/templates/documents/document_upload.html:31
 #: groups/templates/groups/group_detail.html:65
-#: layers/templates/layers/layer_detail.html:296
+#: layers/templates/layers/layer_detail.html:294
 #: layers/templates/layers/layer_replace.html:94
 #: layers/templates/upload/layer_upload.html:93
-#: maps/templates/maps/map_detail.html:173 people/admin.py:55
+#: maps/templates/maps/map_detail.html:175 people/admin.py:55
 msgid "Permissions"
 msgstr "権限"
 
-#: documents/templates/documents/document_detail.html:175
+#: documents/templates/documents/document_detail.html:173
 msgid "Click the button below to change the permissions of this document."
 msgstr "ボタンをクリックすると、ドキュメントのアクセス権が変更されます。"
 
-#: documents/templates/documents/document_detail.html:176
+#: documents/templates/documents/document_detail.html:174
 msgid "Change Document Permissions"
 msgstr "ドキュメントのアクセス権を変更"
 
 #: documents/templates/documents/document_list.html:6
 #: documents/templates/documents/document_list.html:13
+#: documents/templates/documents/document_metadata.html:16
 #: documents/templates/documents/document_upload_base.html:11
 msgid "Explore Documents"
 msgstr "ドキュメントを検索"
@@ -765,7 +825,7 @@ msgstr "ドキュメントを検索"
 msgid "Upload Documents"
 msgstr "ドキュメントをアップロード"
 
-#: documents/templates/documents/document_metadata.html:17
+#: documents/templates/documents/document_metadata.html:22
 #, python-format
 msgid ""
 "\n"
@@ -776,25 +836,28 @@ msgstr ""
 "        %(document_title)s の詳細を編集する\n"
 "      "
 
-#: documents/templates/documents/document_metadata.html:22
-#: layers/templates/layers/layer_metadata.html:23
-#: maps/templates/maps/map_metadata.html:23
+#: documents/templates/documents/document_metadata.html:28
+#: layers/templates/layers/layer_metadata.html:29
+#: maps/templates/maps/map_metadata.html:29
 msgid "Error updating metadata.  Please check the following fields: "
 msgstr ""
 "メタデータのアップデートにエラー発生。以下のフィールドを確認してください: "
 
-#: documents/templates/documents/document_metadata.html:46
-#: layers/templates/layers/layer_metadata.html:85
-#: maps/templates/maps/map_metadata.html:48
-msgid "Metadata Provider"
-msgstr "メタデータの提供者"
-
-#: documents/templates/documents/document_metadata.html:68
+#: documents/templates/documents/document_metadata.html:43
+#: documents/templates/documents/document_metadata.html:77
 #: groups/templates/groups/group_update.html:26
-#: layers/templates/layers/layer_metadata.html:90
-#: maps/templates/maps/map_metadata.html:70
+#: layers/templates/layers/layer_metadata.html:51
+#: layers/templates/layers/layer_metadata.html:94
+#: maps/templates/maps/map_metadata.html:44
+#: maps/templates/maps/map_metadata.html:78
 msgid "Update"
 msgstr "更新"
+
+#: documents/templates/documents/document_metadata.html:55
+#: layers/templates/layers/layer_metadata.html:89
+#: maps/templates/maps/map_metadata.html:56
+msgid "Metadata Provider"
+msgstr "メタデータの提供者"
 
 #: documents/templates/documents/document_remove.html:11
 #, python-format
@@ -809,17 +872,17 @@ msgstr ""
 
 #: documents/templates/documents/document_remove.html:18
 #: groups/templates/groups/group_remove.html:19
-#: layers/templates/layers/layer_remove.html:18
+#: layers/templates/layers/layer_remove.html:22
 #: maps/templates/maps/map_remove.html:19
-#: services/templates/services/service_remove.html:14
+#: services/templates/services/service_remove.html:17
 msgid "Yes, I am sure"
 msgstr "はい、確かにそうです"
 
 #: documents/templates/documents/document_remove.html:19
 #: groups/templates/groups/group_remove.html:20
-#: layers/templates/layers/layer_remove.html:19
+#: layers/templates/layers/layer_remove.html:23
 #: maps/templates/maps/map_remove.html:20
-#: services/templates/services/service_remove.html:15
+#: services/templates/services/service_remove.html:18
 msgid "No, don't remove it"
 msgstr "いいえ、削除しません"
 
@@ -834,7 +897,7 @@ msgstr "入れ替え"
 
 #: documents/templates/documents/document_replace.html:27
 #: layers/templates/layers/layer_replace.html:84
-#: layers/templates/upload/layer_upload.html:82
+#: layers/templates/upload/layer_upload.html:86
 msgid "Clear"
 msgstr "クリア"
 
@@ -890,7 +953,7 @@ msgstr "KML"
 msgid "Tiles"
 msgstr "タイル"
 
-#: geoserver/signals.py:385 layers/templates/layers/layer_detail.html:231
+#: geoserver/signals.py:385 layers/templates/layers/layer_detail.html:229
 #: services/views.py:1266
 msgid "Legend"
 msgstr "凡例"
@@ -903,27 +966,27 @@ msgstr "あなたは、この層のためのスタイルを変更する権限が
 msgid "Bad HTTP Authorization Credentials."
 msgstr "無効なHTTP認証証明書"
 
-#: geoserver/management/__init__.py:30 layers/management/__init__.py:30
+#: geoserver/management/__init__.py:30
 msgid "Layer Uploaded"
 msgstr "アップロード済みレイヤー"
 
-#: geoserver/management/__init__.py:30 layers/management/__init__.py:30
+#: geoserver/management/__init__.py:30
 msgid "A layer was uploaded"
 msgstr "レイヤーがアップロードされました"
 
-#: geoserver/management/__init__.py:31 layers/management/__init__.py:31
+#: geoserver/management/__init__.py:31 layers/management/__init__.py:45
 msgid "Comment on Layer"
 msgstr "レイヤーのコメント"
 
-#: geoserver/management/__init__.py:31 layers/management/__init__.py:31
+#: geoserver/management/__init__.py:31 layers/management/__init__.py:46
 msgid "A layer was commented on"
 msgstr "レイヤは次の方にコメントされました"
 
-#: geoserver/management/__init__.py:32 layers/management/__init__.py:32
+#: geoserver/management/__init__.py:32 layers/management/__init__.py:49
 msgid "Rating for Layer"
 msgstr "レイヤーの評価"
 
-#: geoserver/management/__init__.py:32 layers/management/__init__.py:32
+#: geoserver/management/__init__.py:32 layers/management/__init__.py:50
 msgid "A rating was given to a layer"
 msgstr "レイヤが評価されました"
 
@@ -1001,24 +1064,25 @@ msgstr "辞退"
 
 #: groups/templates/groups/activity.html:7
 #: groups/templates/groups/activity.html:8
-#: groups/templates/groups/activity.html:20 templates/actstream/actor.html:20
+#: groups/templates/groups/activity.html:20 templates/actstream/actor.html:19
 msgid "Activity Feed for"
 msgstr "活動履歴"
 
 #: groups/templates/groups/activity.html:27
 #: social/templates/social/activity_list.html:23
-#: templates/actstream/actor.html:27
+#: templates/actstream/actor.html:28
 msgid "No actions yet"
 msgstr "まだアクションしていません"
 
 #: groups/templates/groups/group_base.html:13
 #: groups/templates/groups/group_list.html:5
-#: groups/templates/groups/group_list.html:11
+#: groups/templates/groups/group_list.html:12
 msgid "Explore Groups"
 msgstr "グループを探る"
 
 #: groups/templates/groups/group_base.html:14
 #: groups/templates/groups/group_create.html:11
+#: groups/templates/groups/group_list.html:11
 msgid "Create a Group"
 msgstr "グループを作成"
 
@@ -1037,7 +1101,7 @@ msgid "Create Group"
 msgstr "グループを作成"
 
 #: groups/templates/groups/group_create.html:26
-#: services/templates/services/service_register.html:17
+#: services/templates/services/service_register.html:19
 msgid "Create"
 msgstr "作る"
 
@@ -1081,15 +1145,15 @@ msgstr ""
 msgid "Anyone may join this group."
 msgstr "誰もがこのグループに参加することができる。"
 
-#: groups/templates/groups/group_detail.html:77
+#: groups/templates/groups/group_detail.html:79
 msgid "Anyone may view this group but membership is by invitation only."
 msgstr "誰もがこのグループを表示できますが、メンバーシップは招待者のみである。"
 
-#: groups/templates/groups/group_detail.html:79
+#: groups/templates/groups/group_detail.html:81
 msgid "Membership is by invitation only."
 msgstr "メンバーシップは招待者のみである。"
 
-#: groups/templates/groups/group_detail.html:84
+#: groups/templates/groups/group_detail.html:86
 msgid "Managers"
 msgstr "経営者"
 
@@ -1105,21 +1169,21 @@ msgstr "参加しないでください"
 msgid "Join Group"
 msgstr "グループに参加"
 
-#: groups/templates/groups/group_list.html:16
-#: people/templates/people/profile_list.html:13
-#: templates/search/_sort_filters.html:5
+#: groups/templates/groups/group_list.html:18
+#: people/templates/people/profile_list.html:14
+#: templates/search/_sort_filters.html:6
 msgid "Less recent"
 msgstr "あまり最近の"
 
-#: groups/templates/groups/group_list.html:17
-#: people/templates/people/profile_list.html:14
-#: templates/search/_sort_filters.html:6
+#: groups/templates/groups/group_list.html:19
+#: people/templates/people/profile_list.html:15
+#: templates/search/_sort_filters.html:7
 msgid "A - Z"
 msgstr "A - Z"
 
-#: groups/templates/groups/group_list.html:18
-#: people/templates/people/profile_list.html:15
-#: templates/search/_sort_filters.html:7
+#: groups/templates/groups/group_list.html:20
+#: people/templates/people/profile_list.html:16
+#: templates/search/_sort_filters.html:8
 msgid "Z - A"
 msgstr "Z - A"
 
@@ -1287,7 +1351,7 @@ msgstr "最終更新"
 msgid "date when attribute statistics were last updated"
 msgstr "属性値の最終更新日"
 
-#: layers/utils.py:574
+#: layers/utils.py:575
 msgid "Thumbnail"
 msgstr "サムネイル"
 
@@ -1319,9 +1383,44 @@ msgstr "このレイヤーのメタデータを変更する権限がありませ
 msgid "You are not permitted to view this layer"
 msgstr "このレイヤーを閲覧する権限がありません"
 
+#: layers/views.py:251
+#, fuzzy
+msgid "Share This Layer"
+msgstr "このレイヤーを評価"
+
+#: layers/management/__init__.py:33
+#, fuzzy
+msgid "Layer Created"
+msgstr "地図が作成されました"
+
+#: layers/management/__init__.py:34
+#, fuzzy
+msgid "A Layer was created"
+msgstr "地図が作成されました"
+
+#: layers/management/__init__.py:37
+#, fuzzy
+msgid "Layer Updated"
+msgstr "アップロード済みレイヤー"
+
+#: layers/management/__init__.py:38
+#, fuzzy
+msgid "A Layer was updated"
+msgstr "レイヤーがアップロードされました"
+
+#: layers/management/__init__.py:41
+#, fuzzy
+msgid "Layer Deleted"
+msgstr "レイヤーデフォルトスタイル"
+
+#: layers/management/__init__.py:42
+#, fuzzy
+msgid "A Layer was deleted"
+msgstr "レイヤーがアップロードされました"
+
 #: layers/templates/layers/_actions.html:4
-#: layers/templates/layers/layer_metadata.html:32
-#: layers/templates/layers/layer_metadata.html:70
+#: layers/templates/layers/layer_metadata.html:37
+#: layers/templates/layers/layer_metadata.html:74
 msgid "Attributes"
 msgstr "属性"
 
@@ -1334,8 +1433,8 @@ msgid "Create a map"
 msgstr "地図を作成"
 
 #: layers/templates/layers/_layer_list_item.html:48
-#: layers/templates/layers/layer_detail.html:131
-#: layers/templates/layers/layer_detail.html:144
+#: layers/templates/layers/layer_detail.html:130
+#: layers/templates/layers/layer_detail.html:143
 msgid "Download Layer"
 msgstr "レイヤーダウンロード"
 
@@ -1357,93 +1456,93 @@ msgid "Assign a new point of contact to the layers below:"
 msgstr "レイヤーに関する連絡先をアサイン:"
 
 #: layers/templates/layers/layer_change_poc.html:17
-#: people/templates/people/forgot_username_form.html:17
+#: people/templates/people/forgot_username_form.html:15
 msgid "Submit"
 msgstr "許可"
 
-#: layers/templates/layers/layer_detail.html:52
+#: layers/templates/layers/layer_detail.html:51
 msgid "Attribute Name"
 msgstr "属性名称"
 
-#: layers/templates/layers/layer_detail.html:53
+#: layers/templates/layers/layer_detail.html:52
 msgid "Range"
 msgstr "範囲"
 
-#: layers/templates/layers/layer_detail.html:54
+#: layers/templates/layers/layer_detail.html:53
 msgid "Average"
 msgstr "平均"
 
-#: layers/templates/layers/layer_detail.html:55
+#: layers/templates/layers/layer_detail.html:54
 msgid "Median"
 msgstr "中央値"
 
-#: layers/templates/layers/layer_detail.html:56
+#: layers/templates/layers/layer_detail.html:55
 msgid "Standard Deviation"
 msgstr "標準偏差"
 
-#: layers/templates/layers/layer_detail.html:109
+#: layers/templates/layers/layer_detail.html:108
 msgid "Rate this layer"
 msgstr "このレイヤーを評価"
 
-#: layers/templates/layers/layer_detail.html:189
-#: layers/templates/layers/layer_detail.html:198
+#: layers/templates/layers/layer_detail.html:190
+#: layers/templates/layers/layer_detail.html:197
 msgid "Edit Layer"
 msgstr "レイヤー編集"
 
-#: layers/templates/layers/layer_detail.html:208
+#: layers/templates/layers/layer_detail.html:206
 #: layers/templates/layers/layer_style_manage.html:14
 msgid "Manage Styles"
 msgstr "スタイル管理"
 
-#: layers/templates/layers/layer_detail.html:210
+#: layers/templates/layers/layer_detail.html:208
 msgid "Edit Styles"
 msgstr "スタイルを編集する"
 
-#: layers/templates/layers/layer_detail.html:215
+#: layers/templates/layers/layer_detail.html:213
 msgid "Replace this Layer"
 msgstr "レイヤーを入れ替え"
 
-#: layers/templates/layers/layer_detail.html:218
+#: layers/templates/layers/layer_detail.html:216
 msgid "Remove this Layer"
 msgstr "このレイヤーを削除"
 
-#: layers/templates/layers/layer_detail.html:241
+#: layers/templates/layers/layer_detail.html:239
 msgid "Maps using this layer"
 msgstr "このレイヤーを使用中の地図"
 
-#: layers/templates/layers/layer_detail.html:243
+#: layers/templates/layers/layer_detail.html:241
 msgid "List of maps using this layer:"
 msgstr "このレイヤーを使用中の地図一覧"
 
-#: layers/templates/layers/layer_detail.html:249
+#: layers/templates/layers/layer_detail.html:247
 msgid "This layer is not currently used in any maps."
 msgstr "このレイヤーは全ての地図で現在使われていません。"
 
-#: layers/templates/layers/layer_detail.html:254
+#: layers/templates/layers/layer_detail.html:252
 msgid "Create a map using this layer"
 msgstr "このレイヤーを使用して地図を作成"
 
-#: layers/templates/layers/layer_detail.html:255
+#: layers/templates/layers/layer_detail.html:253
 msgid "Click the button below to generate a new map based on this layer."
 msgstr "ボタンをクリックすると、このレイヤーを背景とした地図が作成されます。"
 
-#: layers/templates/layers/layer_detail.html:256
+#: layers/templates/layers/layer_detail.html:254
 msgid "Create a Map"
 msgstr "地図を作成"
 
-#: layers/templates/layers/layer_detail.html:261
+#: layers/templates/layers/layer_detail.html:259
 msgid "Documents related to this layer"
 msgstr "このレイヤーに関連するドキュメント"
 
-#: layers/templates/layers/layer_detail.html:262
+#: layers/templates/layers/layer_detail.html:260
 msgid "List of documents related to this layer:"
 msgstr "このレイヤーに関連するドキュメント一覧:"
 
-#: layers/templates/layers/layer_detail.html:273
+#: layers/templates/layers/layer_detail.html:271
 msgid "Styles"
 msgstr "スタイル"
 
-#: layers/templates/layers/layer_detail.html:274
+#: layers/templates/layers/layer_detail.html:272
 msgid ""
 "The following styles are associated with this layer. Choose a style to view "
 "it in the preview map."
@@ -1451,39 +1550,43 @@ msgstr ""
 "このレイヤーには以下のスタイルが関連しています。選択するとプレビューで表示さ"
 "れます。"
 
-#: layers/templates/layers/layer_detail.html:287
+#: layers/templates/layers/layer_detail.html:285
 msgid "No styles associated with this layer"
 msgstr "このレイヤーに関連しているスタイルはありません"
 
-#: layers/templates/layers/layer_detail.html:297
+#: layers/templates/layers/layer_detail.html:295
 msgid "Click the button below to change the permissions of this layer."
 msgstr "ボタンをクリックすると、レイヤーのアクセス権が変更されます。"
 
-#: layers/templates/layers/layer_detail.html:298
+#: layers/templates/layers/layer_detail.html:296
 msgid "Change Layer Permissions"
 msgstr "レイヤーのアクセス権を変更"
 
-#: layers/templates/layers/layer_detail.html:305
+#: layers/templates/layers/layer_detail.html:303
 msgid "External service layer"
 msgstr "外部サービス層"
 
-#: layers/templates/layers/layer_detail.html:306
+#: layers/templates/layers/layer_detail.html:304
 msgid "Source"
 msgstr "ソース"
 
 #: layers/templates/layers/layer_list.html:7
 #: layers/templates/layers/layer_list.html:14
+#: layers/templates/layers/layer_metadata.html:11
+#: layers/templates/layers/layer_remove.html:8
+#: layers/templates/upload/layer_upload.html:17
 #: layers/templates/upload/layer_upload_base.html:11 templates/index.html:33
 msgid "Explore Layers"
 msgstr "レイヤーを検索"
 
 #: layers/templates/layers/layer_list.html:13
+#: layers/templates/upload/layer_upload.html:18
 #: layers/templates/upload/layer_upload_base.html:12 templates/500.html:74
-#: templates/base.html:90
+#: templates/base.html:89
 msgid "Upload Layers"
 msgstr "レイヤーアップロード"
 
-#: layers/templates/layers/layer_metadata.html:12
+#: layers/templates/layers/layer_metadata.html:17
 #, python-format
 msgid ""
 "\n"
@@ -1494,13 +1597,14 @@ msgstr ""
 "%(layer_title)sの詳細を編集する\n"
 " "
 
-#: layers/templates/layers/layer_metadata.html:17
+#: layers/templates/layers/layer_metadata.html:23
+#, fuzzy
 msgid ""
 "Note: this layer's orginal metadata was populated by importing a metadata "
 "XML file.\n"
-"        GeoNode's metadata import supports a subset of ISO, FGDC, and Dublin "
-"Core metadata elements.\n"
-"        Some of your original metadata may have been lost."
+"          GeoNode's metadata import supports a subset of ISO, FGDC, and "
+"Dublin Core metadata elements.\n"
+"          Some of your original metadata may have been lost."
 msgstr ""
 "注意: このレイヤーのオリジナルメタデータは、インポートしたメタデータXMLファイ"
 "ルから形成されています。\n"
@@ -1508,39 +1612,45 @@ msgstr ""
 "要素に対応しています。\n"
 "        オリジナルのメタデータの一部が欠落した可能性があります。"
 
-#: layers/templates/layers/layer_metadata.html:72
+#: layers/templates/layers/layer_metadata.html:76
 msgid "Attribute"
 msgstr "属性"
 
-#: layers/templates/layers/layer_metadata.html:72
+#: layers/templates/layers/layer_metadata.html:76
 msgid "Label"
 msgstr "ラベル"
 
-#: layers/templates/layers/layer_metadata.html:72 services/forms.py:24
+#: layers/templates/layers/layer_metadata.html:76 services/forms.py:24
 #: services/templates/services/layers_register.html:28
 msgid "Description"
 msgstr "説明"
 
-#: layers/templates/layers/layer_metadata.html:72
+#: layers/templates/layers/layer_metadata.html:76
 msgid "Display Order"
 msgstr "表示順"
 
-#: layers/templates/layers/layer_remove.html:11
-#, python-format
+#: layers/templates/layers/layer_remove.html:9
+#, fuzzy
+msgid "Remove Layers"
+msgstr "このレイヤーを削除"
+
+#: layers/templates/layers/layer_remove.html:14
+#, fuzzy, python-format
 msgid ""
 "\n"
-"          Are you sure you want to remove %(layer_title)s?\n"
+"          Are you sure you want to remove <a href="
+"\"%(layer.get_absolute_url)s\">%(layer_title)s</a>?\n"
 "        "
 msgstr ""
 "\n"
 "          本当に %(layer_title)s を削除してもよいですか？\n"
 "        "
 
-#: layers/templates/layers/layer_remove.html:25
+#: layers/templates/layers/layer_remove.html:29
 msgid "This action affects the following maps:"
 msgstr "この動作は次の地図に影響します:"
 
-#: layers/templates/layers/layer_remove.html:29
+#: layers/templates/layers/layer_remove.html:33
 msgid "No maps are using this layer"
 msgstr "このレイヤーには地図が使われていません"
 
@@ -1554,69 +1664,69 @@ msgid "Replace Layer: "
 msgstr "レイヤーを入れ替え:"
 
 #: layers/templates/layers/layer_replace.html:23
-#: layers/templates/upload/layer_upload.html:20
+#: layers/templates/upload/layer_upload.html:24
 msgid "Incomplete Uploads"
 msgstr "アップロード未完了"
 
 #: layers/templates/layers/layer_replace.html:24
-#: layers/templates/upload/layer_upload.html:21
+#: layers/templates/upload/layer_upload.html:25
 msgid "You have the following incomplete uploads"
 msgstr "以下のアップロードが未完了です"
 
 #: layers/templates/layers/layer_replace.html:27
-#: layers/templates/upload/layer_upload.html:24
+#: layers/templates/upload/layer_upload.html:28
 msgid "last updated on"
 msgstr "最終更新"
 
 #: layers/templates/layers/layer_replace.html:29
-#: layers/templates/upload/layer_upload.html:26
+#: layers/templates/upload/layer_upload.html:30
 msgid "Resume"
 msgstr "中断"
 
 #: layers/templates/layers/layer_replace.html:30
 #: layers/templates/layers/layer_replace.html:38
-#: layers/templates/upload/layer_upload.html:27
-#: layers/templates/upload/layer_upload.html:34
-#: templates/announcements/announcement_form.html:23
+#: layers/templates/upload/layer_upload.html:31
+#: layers/templates/upload/layer_upload.html:38
+#: templates/announcements/announcement_form.html:25
 #: templates/user_messages/inbox.html:44
 msgid "Delete"
 msgstr "削除"
 
 #: layers/templates/layers/layer_replace.html:36
-#: layers/templates/upload/layer_upload.html:33
+#: layers/templates/upload/layer_upload.html:37
 msgid "Are you sure you want to delete this upload?"
 msgstr "このアップロードデータを削除してよろしいですか？"
 
 #: layers/templates/layers/layer_replace.html:39
-#: layers/templates/upload/layer_upload.html:35
-#: maps/templates/maps/map_download.html:58 templates/_comments.html:59
+#: layers/templates/upload/layer_upload.html:39
+#: maps/templates/maps/map_download.html:58 templates/_comments.html:66
 #: templates/_permissions_form.html:15
-#: templates/announcements/announcement_form.html:21
+#: templates/announcements/announcement_form.html:23
 msgid "Cancel"
 msgstr "中止"
 
 #: layers/templates/layers/layer_replace.html:41
-#: layers/templates/upload/layer_upload.html:36
+#: layers/templates/upload/layer_upload.html:40
 msgid "Delete, and don't ask me again."
 msgstr "削除し、その後表示しない。"
 
 #: layers/templates/layers/layer_replace.html:55
-#: layers/templates/upload/layer_upload.html:53
+#: layers/templates/upload/layer_upload.html:57
 msgid "Drop files here"
 msgstr "ファイルをドロップしてください"
 
 #: layers/templates/layers/layer_replace.html:58
-#: layers/templates/upload/layer_upload.html:56
+#: layers/templates/upload/layer_upload.html:60
 msgid " or select them one by one:"
 msgstr "あるいは各々を選択:"
 
 #: layers/templates/layers/layer_replace.html:66
-#: layers/templates/upload/layer_upload.html:64
+#: layers/templates/upload/layer_upload.html:68
 msgid "Files to be uploaded"
 msgstr "アップロード対象ファイル"
 
 #: layers/templates/layers/layer_replace.html:71
-#: layers/templates/upload/layer_upload.html:69
+#: layers/templates/upload/layer_upload.html:73
 msgid "Select the charset or leave default"
 msgstr "文字コードを選択してください。空白はデフォルトとなります"
 
@@ -1659,7 +1769,7 @@ msgstr "利用可能なスタイルを更新"
 msgid "Upload Layer"
 msgstr "レイヤーアップロード"
 
-#: layers/templates/upload/layer_upload.html:83
+#: layers/templates/upload/layer_upload.html:87
 msgid "Upload files"
 msgstr "ファイルアップロード"
 
@@ -2065,6 +2175,11 @@ msgstr "この地図を閲覧することが許可されていません。"
 msgid "An unknown error has occured."
 msgstr "不明なエラーが発生しました。"
 
+#: maps/views.py:117
+#, fuzzy
+msgid "Share This Map"
+msgstr "地図を評価"
+
 #: maps/management/__init__.py:33
 msgid "Map Created"
 msgstr "地図が作成されました"
@@ -2074,18 +2189,38 @@ msgid "A Map was created"
 msgstr "地図が作成されました"
 
 #: maps/management/__init__.py:37
+#, fuzzy
+msgid "Map Updated"
+msgstr "地図が作成されました"
+
+#: maps/management/__init__.py:38
+#, fuzzy
+msgid "A Map was updated"
+msgstr "地図が作成されました"
+
+#: maps/management/__init__.py:41
+#, fuzzy
+msgid "Map Deleted"
+msgstr "地図が作成されました"
+
+#: maps/management/__init__.py:42
+#, fuzzy
+msgid "A Map was deleted"
+msgstr "地図が作成されました"
+
+#: maps/management/__init__.py:45
 msgid "Comment on Map"
 msgstr "地図へのコメント"
 
-#: maps/management/__init__.py:38
+#: maps/management/__init__.py:46
 msgid "A map was commented on"
 msgstr "地図は次の方にコメントされました"
 
-#: maps/management/__init__.py:41
+#: maps/management/__init__.py:49
 msgid "Rating for Map"
 msgstr "地図の評価"
 
-#: maps/management/__init__.py:42
+#: maps/management/__init__.py:50
 msgid "A rating was given to a map"
 msgstr "地図が評価されました"
 
@@ -2099,106 +2234,107 @@ msgstr "あなたはこのマップを表示する権限がありません"
 
 #: maps/templates/maps/map_base.html:5 maps/templates/maps/map_base.html:12
 #: maps/templates/maps/map_list.html:12
+#: maps/templates/maps/map_metadata.html:11
 msgid "Explore Maps"
 msgstr "地図検索"
 
-#: maps/templates/maps/map_detail.html:54 templates/_actions.html:6
+#: maps/templates/maps/map_detail.html:55 templates/_actions.html:6
 msgid "Rate this Map"
 msgstr "地図を評価"
 
-#: maps/templates/maps/map_detail.html:78
-#: maps/templates/maps/map_detail.html:86
+#: maps/templates/maps/map_detail.html:79
+#: maps/templates/maps/map_detail.html:87
 msgid "Download Map"
 msgstr "地図のダウンロード"
 
-#: maps/templates/maps/map_detail.html:90
+#: maps/templates/maps/map_detail.html:91
 msgid "Download Data Layers"
 msgstr "データレイヤーのダウンロード"
 
-#: maps/templates/maps/map_detail.html:91
+#: maps/templates/maps/map_detail.html:92
 msgid "Download Web Map Context"
 msgstr "ウェブ地図コンテンツをダウンロード"
 
-#: maps/templates/maps/map_detail.html:102
-#: maps/templates/maps/map_detail.html:109
+#: maps/templates/maps/map_detail.html:104
+#: maps/templates/maps/map_detail.html:111
 msgid "Edit Map"
 msgstr "地図を編集"
 
-#: maps/templates/maps/map_detail.html:114
+#: maps/templates/maps/map_detail.html:116
 msgid "Edit Map Metadata"
 msgstr "地図のメタデータを編集"
 
-#: maps/templates/maps/map_detail.html:118
+#: maps/templates/maps/map_detail.html:120
 msgid "Set Map Thumbnail"
 msgstr "地図のサムネイル設定"
 
-#: maps/templates/maps/map_detail.html:122
+#: maps/templates/maps/map_detail.html:124
 msgid "Remove this Map"
 msgstr "この地図を削除"
 
-#: maps/templates/maps/map_detail.html:134
+#: maps/templates/maps/map_detail.html:136
 msgid "View Map"
 msgstr "地図閲覧"
 
-#: maps/templates/maps/map_detail.html:144
+#: maps/templates/maps/map_detail.html:146
 msgid "Map Layers"
 msgstr "地図レイヤー"
 
-#: maps/templates/maps/map_detail.html:145
+#: maps/templates/maps/map_detail.html:147
 msgid "This map uses the following layers:"
 msgstr "地図で使用しているレイヤー:"
 
-#: maps/templates/maps/map_detail.html:161
+#: maps/templates/maps/map_detail.html:163
 msgid "Documents related to this map"
 msgstr "この地図に関連するドキュメント"
 
-#: maps/templates/maps/map_detail.html:162
+#: maps/templates/maps/map_detail.html:164
 msgid "List of documents related to this map:"
 msgstr "この地図に関連するドキュメント一覧:"
 
-#: maps/templates/maps/map_detail.html:174
+#: maps/templates/maps/map_detail.html:176
 msgid "Specify which users can view or modify this map"
 msgstr "この地図を表示編集可能なユーザーを指定"
 
-#: maps/templates/maps/map_detail.html:175
+#: maps/templates/maps/map_detail.html:177
 msgid "Change Permissions of this Map"
 msgstr "この地図へのアクセス権を変更"
 
-#: maps/templates/maps/map_detail.html:181
+#: maps/templates/maps/map_detail.html:183
 msgid "Copy this map"
 msgstr "この地図をコピー"
 
-#: maps/templates/maps/map_detail.html:182
+#: maps/templates/maps/map_detail.html:184
 msgid "Duplicate this map and modify it for your own purposes"
 msgstr "地図を複製して改変"
 
-#: maps/templates/maps/map_detail.html:183
+#: maps/templates/maps/map_detail.html:185
 #: maps/templates/maps/map_list.html:11
 msgid "Create a New Map"
 msgstr "新しい地図を生成"
 
-#: maps/templates/maps/map_detail.html:188
+#: maps/templates/maps/map_detail.html:190
 msgid "Map WMS"
 msgstr "地図WMS"
 
-#: maps/templates/maps/map_detail.html:190
+#: maps/templates/maps/map_detail.html:192
 msgid "WMS layer group for local map layers"
 msgstr "ローカル地図レイヤ用WMSレイヤグループ"
 
-#: maps/templates/maps/map_detail.html:191 social/tests.py:103
-#: social/templatetags/social_tags.py:47
+#: maps/templates/maps/map_detail.html:193 social/tests.py:103
+#: social/templatetags/social_tags.py:48
 msgid "on"
 msgstr "上の"
 
-#: maps/templates/maps/map_detail.html:191
+#: maps/templates/maps/map_detail.html:193
 msgid "local OWS"
 msgstr "ローカルOWS"
 
-#: maps/templates/maps/map_detail.html:194
+#: maps/templates/maps/map_detail.html:196
 msgid "Publish local map layers as WMS layer group"
 msgstr "ローカル地図をWMSレイヤーグループとして公開"
 
-#: maps/templates/maps/map_detail.html:195
+#: maps/templates/maps/map_detail.html:197
 msgid "Publish Map WMS"
 msgstr "WMS公開"
 
@@ -2271,7 +2407,7 @@ msgstr "ダウンロード完了"
 msgid "Download Failed"
 msgstr "ダウンロード失敗"
 
-#: maps/templates/maps/map_metadata.html:12
+#: maps/templates/maps/map_metadata.html:17
 #, python-format
 msgid ""
 "\n"
@@ -2281,7 +2417,7 @@ msgstr ""
 "\n"
 "の編集の詳細%(map_title)s"
 
-#: maps/templates/maps/map_metadata.html:17
+#: maps/templates/maps/map_metadata.html:23
 msgid ""
 "Note: this map's orginal metadata was populated by importing a metadata XML "
 "file.\n"
@@ -2402,7 +2538,7 @@ msgstr "組織名"
 msgid "name of the responsible organization"
 msgstr "担当組織名"
 
-#: people/models.py:47 templates/500.html:76 templates/base.html:92
+#: people/models.py:47 templates/500.html:76 templates/base.html:91
 msgid "Profile"
 msgstr "プロフィール"
 
@@ -2506,28 +2642,29 @@ msgstr "すべてのコンテンツ"
 
 #: people/templates/people/_profile_filters.html:5
 #: services/templates/services/service_detail.html:64 templates/500.html:39
-#: templates/base.html:47
+#: templates/base.html:48
 msgid "Layers"
 msgstr "レイヤー"
 
 #: people/templates/people/_profile_filters.html:6 templates/500.html:42
-#: templates/base.html:50
+#: templates/base.html:51
 msgid "Maps"
 msgstr "地図"
 
 #: people/templates/people/_profile_filters.html:7 templates/500.html:45
-#: templates/base.html:53
+#: templates/base.html:54
 msgid "Documents"
 msgstr "ドキュメント"
 
-#: people/templates/people/forgot_username_form.html:5
+#: people/templates/people/forgot_username_form.html:6
 msgid "Forgot Username"
 msgstr "ユーザ名を忘れた"
 
-#: people/templates/people/forgot_username_form.html:9
+#: people/templates/people/forgot_username_form.html:10
+#, fuzzy
 msgid ""
-"Enter your email address and click the submit button.  Your username will be "
-"sent to you."
+"Enter your email address and click the submit button. <br />Your username "
+"will be sent to you."
 msgstr ""
 "メールアドレスを入力し、了承ボタンを押してください。ユーザ名がメールで送付さ"
 "れます。"
@@ -2752,7 +2889,6 @@ msgid "This Service contains the following layers"
 msgstr "本サービスは、以下の層が含まれています"
 
 #: services/templates/services/service_detail.html:110
-#: services/templates/services/service_list.html:29
 msgid "Manage"
 msgstr "管理する"
 
@@ -2764,8 +2900,13 @@ msgstr "編集サービスメタデータ"
 msgid "Remove Service"
 msgstr "サービスを削除する"
 
-#: services/templates/services/service_edit.html:19
-#: templates/announcements/announcement_form.html:25
+#: services/templates/services/service_edit.html:15
+#, fuzzy
+msgid "Edit Service"
+msgstr "編集サービスメタデータ"
+
+#: services/templates/services/service_edit.html:21
+#: templates/announcements/announcement_form.html:27
 msgid "Save"
 msgstr "保存"
 
@@ -2777,48 +2918,63 @@ msgstr "サービス："
 msgid "The following layers will soon be added to the data catalog:"
 msgstr "以下の層はすぐにデータカタログに追加されます。"
 
-#: services/templates/services/service_list.html:30
+#: services/templates/services/service_list.html:8
 msgid "Register a new Service"
 msgstr "新しいサービスを登録します"
 
-#: services/templates/services/service_register.html:21
+#: services/templates/services/service_list.html:9 templates/500.html:83
+#: templates/base.html:98
+msgid "Remote Services"
+msgstr "リモートサービス"
+
+#: services/templates/services/service_register.html:13
+#, fuzzy
+msgid "Register New Service"
+msgstr "新しいサービスを登録します"
+
+#: services/templates/services/service_register.html:23
 msgid "Service has been created:"
 msgstr "サービスが作成されています："
 
-#: services/templates/services/service_register.html:28
+#: services/templates/services/service_register.html:30
 msgid "The following layers will be imported"
 msgstr "以下の層がインポートされます"
 
-#: services/templates/services/service_remove.html:7
+#: services/templates/services/service_remove.html:8
+#, fuzzy
+msgid "Remove Remote Service"
+msgstr "サービスを削除する"
+
+#: services/templates/services/service_remove.html:12
 msgid "Are you sure you want to remove"
 msgstr "あなたが削除してもよろしいですか"
 
-#: social/signals.py:73
+#: social/signals.py:84
 msgid "created"
 msgstr "作成"
 
-#: social/signals.py:74 social/tests.py:80
+#: social/signals.py:85 social/tests.py:80
 msgid "deleted"
 msgstr "削除"
 
-#: social/signals.py:77
+#: social/signals.py:88
 msgid "updated"
 msgstr "更新"
 
-#: social/signals.py:82 social/tests.py:100
+#: social/signals.py:93 social/tests.py:100
 msgid "added a comment"
 msgstr "コメント追加"
 
-#: social/signals.py:84
+#: social/signals.py:95
 msgid "updated a comment"
 msgstr "コメント更新"
 
-#: social/signals.py:86 social/tests.py:54
+#: social/signals.py:97 social/tests.py:54
 msgid "uploaded"
 msgstr "アップロード"
 
 #: social/templates/social/activity_list.html:4
-#: social/templates/social/activity_list.html:16
+#: social/templates/social/activity_list.html:15
 msgid "Recent activity"
 msgstr "最近の更新"
 
@@ -2864,11 +3020,11 @@ msgstr ""
 "んか？\n"
 " "
 
-#: templates/500.html:48 templates/base.html:56
+#: templates/500.html:48 templates/base.html:57
 msgid "People"
 msgstr "人々"
 
-#: templates/500.html:51 templates/base.html:59
+#: templates/500.html:51 templates/base.html:60
 msgid "Groups"
 msgstr "グループ"
 
@@ -2877,38 +3033,33 @@ msgstr "グループ"
 msgid "Search"
 msgstr "検索"
 
-#: templates/500.html:77 templates/base.html:93
+#: templates/500.html:77 templates/base.html:92
 msgid "Recent Activity"
 msgstr "最近の更新"
 
-#: templates/500.html:78 templates/base.html:94
+#: templates/500.html:78 templates/base.html:93
 msgid "Inbox"
 msgstr "受信トレイ"
 
-#: templates/500.html:80 templates/base.html:96
+#: templates/500.html:80 templates/base.html:95
 #: templates/announcements/announcement_list.html:6
 #: templates/announcements/announcement_list.html:13
-#: templates/announcements/announcement_list.html:20
 msgid "Announcements"
 msgstr "アナウンスメント"
 
-#: templates/500.html:83 templates/base.html:99
-msgid "Remote Services"
-msgstr "リモートサービス"
-
-#: templates/500.html:84 templates/base.html:100
+#: templates/500.html:84 templates/base.html:99
 msgid "Invite User"
 msgstr "ユーザーを招待"
 
-#: templates/500.html:86 templates/base.html:102
+#: templates/500.html:86 templates/base.html:101
 msgid "GeoServer"
 msgstr "GeoServer"
 
-#: templates/500.html:89 templates/base.html:105
+#: templates/500.html:89 templates/base.html:104
 msgid "Admin"
 msgstr "アドミン"
 
-#: templates/500.html:92 templates/base.html:108
+#: templates/500.html:92 templates/base.html:107
 msgid "Help"
 msgstr "手助け"
 
@@ -2934,7 +3085,7 @@ msgstr "ログイン情報を記憶"
 msgid "Sign in"
 msgstr "サインイン"
 
-#: templates/500.html:128 templates/base.html:77
+#: templates/500.html:128 templates/base.html:80
 msgid "Register"
 msgstr "登録"
 
@@ -2988,7 +3139,7 @@ msgstr "選択したリソース上でアクセス許可を設定する"
 msgid "Apply Changes"
 msgstr "変更を適用"
 
-#: templates/_comments.html:17
+#: templates/_comments.html:17 templates/_comments.html.py:58
 msgid "Add Comment"
 msgstr "コメント追加"
 
@@ -3000,12 +3151,9 @@ msgstr "コメントするにはログインが必要です"
 msgid "By"
 msgstr "バイ"
 
-#: templates/_comments.html:49
-msgid "Add a Comment"
-msgstr "コメント追加"
-
-#: templates/_comments.html:60
-msgid "Submit Comments"
+#: templates/_comments.html:67
+#, fuzzy
+msgid "Submit Comment"
 msgstr "コメント投稿"
 
 #: templates/_permissions.html:8
@@ -3067,7 +3215,7 @@ msgstr "グループを選択してください..."
 msgid "About GeoNode"
 msgstr "GeoNodeについて"
 
-#: templates/about.html:9
+#: templates/about.html:10
 msgid "About GeoNode."
 msgstr "GeoNodeについて。"
 
@@ -3079,121 +3227,123 @@ msgstr "ここに検索キーワードを入力してください..."
 msgid "Information for Developers"
 msgstr "開発者のための情報"
 
-#: templates/developer.html:9
+#: templates/developer.html:13
 msgid "Useful information for developers interested in GeoNode."
 msgstr "GeoNodeに興味のあるユーザーのための有用な情報。"
 
-#: templates/developer.html:12
+#: templates/developer.html:14
 msgid ""
 "\n"
-"  <p><a href=\"http://geonode.org/\">GeoNode</a> is an open service built on "
-"open source software. We encourage you to build new applications using the "
-"components and resources it provides. This page is a starting point for "
+"    <p><a href=\"http://geonode.org/\">GeoNode</a> is an open service built "
+"on open source software. We encourage you to build new applications using "
+"the components and resources it provides. This page is a starting point for "
 "developers interesting in taking full advantage of GeoNode. It also includes "
 "links to the project's source code so anyone can build and customize their "
 "own GeoNode. </p>\n"
 "\n"
-"  <h4>GeoNode Software</h4>\n"
+"    <h3>GeoNode Software</h3>\n"
 "\n"
-"  <p>All the code that runs GeoNode is open source. The code is available at "
-"<a href=\"http://github.com/GeoNode/geonode\">http://github.com/GeoNode/"
+"    <p>All the code that runs GeoNode is open source. The code is available "
+"at <a href=\"http://github.com/GeoNode/geonode\">http://github.com/GeoNode/"
 "geonode/</a>. The issue tracker for the project is at <a href=\"http://"
 "github.com/GeoNode/geonode/issues\">http://github.com/GeoNode/geonode/"
 "issues</a>.</p>\n"
 "\n"
-"  <p>GeoNode is built using several open source projects, each with its own "
-"community. If you are interested in contributing new features to the "
+"    <p>GeoNode is built using several open source projects, each with its "
+"own community. If you are interested in contributing new features to the "
 "GeoNode, we encourage you to do so by contributing to one of the projects on "
 "which it is built:</p>\n"
-"  <ul>\n"
-"    <li><a href=\"http://geoext.org\">GeoExt</a> - The JavaScript toolkit "
+"    <ul>\n"
+"      <li><a href=\"http://geoext.org\">GeoExt</a> - The JavaScript toolkit "
 "for rich web mapping applications</li>\n"
-"    <li><a href=\"http://geoserver.org\">GeoServer</a> - Standards based "
+"      <li><a href=\"http://geoserver.org\">GeoServer</a> - Standards based "
 "server for geospatial information</li>\n"
-"    <li><a href=\"http://geowebcache.org\">GeoWebCache</a> - Cache engine "
+"      <li><a href=\"http://geowebcache.org\">GeoWebCache</a> - Cache engine "
 "for WMS Tiles</li><li><a href=\"http://openlayers.org\">OpenLayers</a> - "
 "Pure JavaScript library powering the maps of GeoExt</li>\n"
-"    <li><a href=\"http://pycsw.org\">pycsw</a> - CSW metadata catalogue "
+"      <li><a href=\"http://pycsw.org\">pycsw</a> - CSW metadata catalogue "
 "server</li>\n"
-"  </ul>\n"
+"    </ul>\n"
 "\n"
-"  <h4>What are OGC Services?</h4>\n"
-"  <p>The data in this application is served using open standards endorsed by "
-"the <a href=\"http://opengeospatial.org/\">Open Geospatial Consortium</a>; "
-"in particular, WMS (Web Map Service) is used for accessing maps, WFS (Web "
-"Feature Service) is used for accessing vector data, and WCS (Web Coverage "
-"Service) is used for accessing raster data.  WMC (Web Map Context Documents) "
-"is used for sharing maps. You can use these services in your own "
+"    <h3>What are OGC Services?</h3>\n"
+"    <p>The data in this application is served using open standards endorsed "
+"by the <a href=\"http://opengeospatial.org/\">Open Geospatial Consortium</"
+"a>; in particular, WMS (Web Map Service) is used for accessing maps, WFS "
+"(Web Feature Service) is used for accessing vector data, and WCS (Web "
+"Coverage Service) is used for accessing raster data.  WMC (Web Map Context "
+"Documents) is used for sharing maps. You can use these services in your own "
 "applications using libraries such as OpenLayers, GeoTools, and OGR (all of "
 "which are open-source software and available at zero cost).</p>\n"
 "\n"
-"  <h4>What is GeoWebCache?</h4>\n"
-"  <p>GeoWebCache provides mapping tiles that are compatible with a number of "
-"mapping engines, including Google Maps, Bing Maps and OpenLayers. All the "
+"    <h3>What is GeoWebCache?</h3>\n"
+"    <p>GeoWebCache provides mapping tiles that are compatible with a number "
+"of mapping engines, including Google Maps, Bing Maps and OpenLayers. All the "
 "data hosted by GeoNode is also available through GeoWebCache. GeoWebCache "
 "improves on WMS by caching data and providing more responsive maps.</p>\n"
 "\n"
-"  <h4>OpenLayers Example Code</h4>\n"
+"    <h3>OpenLayers Example Code</h3>\n"
 "\n"
-"  <p>To include a GeoNode map layer in an OpenLayers map, first find the "
+"    <p>To include a GeoNode map layer in an OpenLayers map, first find the "
 "name for that layer. This is found in the layer's <code>name</code> field "
 "(not <code>title</code>) of the layer list. For this example, we will use "
 "the Nicaraguan political boundaries background layer, whose name is "
 "<code>risk:nicaragua_admin</code>. Then, create an instance of OpenLayers."
 "Layer.WMS:</p>\n"
-"  <p><code>var geonodeLayer = new OpenLayers.Layer.WMS(\"GeoNode Risk Data"
+"    <p><code>var geonodeLayer = new OpenLayers.Layer.WMS(\"GeoNode Risk Data"
 "\", \"http://demo.geonode.org/geoserver/wms\",{ layers: \"risk:"
 "nicaragua_admin\" });</code></p>\n"
 "\n"
-"  <h4>Google Maps Example Code</h4>\n"
-"  <p>To include a GeoNode map layer in a Google Map, include the layer "
+"    <h3>Google Maps Example Code</h3>\n"
+"    <p>To include a GeoNode map layer in a Google Map, include the layer "
 "namein the URL template.</p>\n"
-"  <p><code>var tilelayer =  new GTileLayer(null, null, null, "
+"    <p><code>var tilelayer =  new GTileLayer(null, null, null, "
 "{tileUrlTemplate: 'http://demo.geonode.org/geoserver/gwc/service/gmaps?"
 "layers=risk:nicaragua_admin&#38;zoom={Z}&#38;x={X}&#38;y={Y}', isPng:true, "
 "opacity:0.5 } );</code></p>\n"
 "\n"
-"  <h4>Shapefile/GeoJSON/GML Output</h4>\n"
-"  <p>To get data from the GeoNode web services use the WFS protocol. For "
+"    <h3>Shapefile/GeoJSON/GML Output</h3>\n"
+"    <p>To get data from the GeoNode web services use the WFS protocol. For "
 "example, to get the full Nicaraguan admin boundaries use:</p>\n"
-"  <p><code>http://demo.geonode.org/geoserver/wfs?request=GetFeature&#38;"
+"    <p><code>http://demo.geonode.org/geoserver/wfs?request=GetFeature&#38;"
 "typeName=risk:nicaragua_admin&#38;outputformat=SHAPE-ZIP</code></p>\n"
-"  <p>Changing output format to <code>json</code>, <code>GML2</code>, "
+"    <p>Changing output format to <code>json</code>, <code>GML2</code>, "
 "<code>GML3</code>, or <code>csv</code> will get data in those formats. The "
 "WFS protocol also can handle more precise queries, specifying a bounding box "
 "or various spatial and non-spatial filters based on the attributes of the "
 "data.</p>\n"
 "\n"
-"  <h4>GeoTools Example Code</h4>\n"
-"  <p>Create a DataStore and extract a FeatureType from it, then run a Query. "
-"It is all documented on the wiki at <code>http://geotools.org/</code>.</p>\n"
+"    <h3>GeoTools Example Code</h3>\n"
+"    <p>Create a DataStore and extract a FeatureType from it, then run a "
+"Query. It is all documented on the wiki at <code>http://geotools.org/</code>."
+"</p>\n"
+"    "
 msgstr ""
 
-#: templates/developer.html:53
+#: templates/developer.html:55
 msgid "GeoNode's Web Services"
 msgstr "GeoNodeのウェブサービス"
 
-#: templates/developer.html:54
+#: templates/developer.html:56
 msgid "GeoNode's Web Services are available from the following URLs:"
 msgstr "GeoNodeのウェブサービスは、次のURLで利用可能です:"
 
-#: templates/developer.html:57
+#: templates/developer.html:59
 msgid "Dynamic tiles via WMS:"
 msgstr "WMSによる動的タイル:"
 
-#: templates/developer.html:61
+#: templates/developer.html:63
 msgid "Vector data via WFS:"
 msgstr "WFSによるベクタデータ:"
 
-#: templates/developer.html:65
+#: templates/developer.html:67
 msgid "Raster data via WCS:"
 msgstr "WCS経由ラスタデータ:"
 
-#: templates/developer.html:69
+#: templates/developer.html:71
 msgid "Metadata search via CSW:"
 msgstr "CSWによるメタデータ検索:"
 
-#: templates/developer.html:73
+#: templates/developer.html:75
 msgid "Cached tiles via WMTS:"
 msgstr "WMTSによるキャッシュタイル:"
 
@@ -3205,7 +3355,7 @@ msgstr "ユーザーガイド"
 msgid "GeoNode Help"
 msgstr "GeoNodeヘルプ"
 
-#: templates/help.html:9
+#: templates/help.html:12
 msgid ""
 "This page provides helpful information about how to use the GeoNode. You can "
 "use the sidebar links to navigate to what you want to know."
@@ -3213,120 +3363,121 @@ msgstr ""
 "このページには、GeoNodeの使用方法に関する有用な情報を提供しています。あなたが"
 "知りたいことに移動するために、サイドバーのリンクを使用することができます。"
 
-#: templates/help.html:12
+#: templates/help.html:14
 msgid ""
 "\n"
-"  <p>The GeoNode provides access to data sets and a map editing application "
-"allows users to browse existing maps and contribute their own.</p>\n"
+"    <p>The GeoNode provides access to data sets and a map editing "
+"application allows users to browse existing maps and contribute their own.</"
+"p>\n"
 "\n"
-"  <h4 id=\"browsing-data\">Browsing Layers</h4>\n"
-"  <p>The <a href=\"/layers\">Layers</a> tab allows you to browse data "
+"    <h4 id=\"browsing-data\">Browsing Layers</h4>\n"
+"    <p>The <a href=\"/layers\">Layers</a> tab allows you to browse data "
 "uploaded to this GeoNode.</p>\n"
-"  <p>All data can be downloaded in a variety of formats, for use in other "
+"    <p>All data can be downloaded in a variety of formats, for use in other "
 "applications.</p>\n"
 "\n"
-"  <h4 id=\"developer-access\">Developer Access</h4>\n"
-"  <p>The <a href=\"/developer\"> Developer</a> page is the place for "
+"    <h4 id=\"developer-access\">Developer Access</h4>\n"
+"    <p>The <a href=\"/developer\"> Developer</a> page is the place for "
 "developers to get started building applications against the GeoNode. It "
 "includes instructions on using the web services, links to the source code of "
 "the GeoNode, and information about the open source projects used to create "
 "it.</p>\n"
 "\n"
-"  <h4 id=\"browsing-maps\">Browsing Maps</h4>\n"
-"  <p>The GeoNode allows users to create and share maps with one another.</"
+"    <h4 id=\"browsing-maps\">Browsing Maps</h4>\n"
+"    <p>The GeoNode allows users to create and share maps with one another.</"
 "p>\n"
-"  <p>The <a href=\"/maps\">Maps</a> tab is a gateway to map exploration on "
+"    <p>The <a href=\"/maps\">Maps</a> tab is a gateway to map exploration on "
 "GeoNode.  From here you can <strong>search for a map</strong> or "
 "<strong>create a map</strong>, which will open the <a href=\"/maps/new\">Map "
 "Composer</a>.</p>\n"
-"  <h5>Google Earth Mode</h5>\n"
-"  <p>Any map viewed in the interactive map editor can be seen in 3D mode "
+"    <h5>Google Earth Mode</h5>\n"
+"    <p>Any map viewed in the interactive map editor can be seen in 3D mode "
 "with the Google Earth plugin. To switch to 3D mode select the Google Earth "
 "globe logo, the rightmost button on top toolbar. If you do not have the "
 "Google Earth plugin installed you will be prompted to install it.</p>\n"
 "\n"
-"  <h4 id=\"creating-a-map\">Creating a Map</h4>\n"
-"  <p>To create a new map go to the <a href=\"/maps\">Contributed Maps</a> "
+"    <h4 id=\"creating-a-map\">Creating a Map</h4>\n"
+"    <p>To create a new map go to the <a href=\"/maps\">Contributed Maps</a> "
 "tab and click the <a href=\"/maps/new\">create your own map</a> link.</p>\n"
-"  <p>This will take you to the <a href=\"/maps/new\">Map Composer</a> with a "
-"base layer loaded.</p>\n"
-"  <p>To add data layers from the GeoNode click on the green plus button "
+"    <p>This will take you to the <a href=\"/maps/new\">Map Composer</a> with "
+"a base layer loaded.</p>\n"
+"    <p>To add data layers from the GeoNode click on the green plus button "
 "located below the layers tab on the left hand side of the screen. This will "
 "open a dialog listing all the layers available on the GeoNode.</p>\n"
-"  <p>To add layers to your map select them and hit the <strong>Add Layers</"
+"    <p>To add layers to your map select them and hit the <strong>Add Layers</"
 "strong> button. When finished you may hit <strong>Done</strong> to close the "
 "dialog and go back to the map.</p>\n"
 "\n"
-"  <h5>Reordering and Removing Layers</h5>\n"
-"  <p>Change the display order of the layers listed in the data tab by simply "
-"dragging and dropping their names. The order in the map will be updated to "
-"reflect that. To turn a layer's visibility off simply uncheck it, and to "
-"remove it entirely select it and hit the red minus button.</p>\n"
+"    <h5>Reordering and Removing Layers</h5>\n"
+"    <p>Change the display order of the layers listed in the data tab by "
+"simply dragging and dropping their names. The order in the map will be "
+"updated to reflect that. To turn a layer's visibility off simply uncheck it, "
+"and to remove it entirely select it and hit the red minus button.</p>\n"
 "\n"
-"  <h5>Saving your map</h5>\n"
-"  <p>Once a suitable set of layers and zoom level has been found it's time "
+"    <h5>Saving your map</h5>\n"
+"    <p>Once a suitable set of layers and zoom level has been found it's time "
 "to save it so others can see it.  Click the Save button--the left most icon "
 "on the top toolbar, an image of a map with a disk--on the top menu and fill "
 "out the title and abstract of the map.</p>\n"
 "\n"
-"  <h4 id=\"exporting-a-map\">Exporting a Map</h4>\n"
-"  <p>Any map from the GeoNode can be embedded for use in another site or "
+"    <h4 id=\"exporting-a-map\">Exporting a Map</h4>\n"
+"    <p>Any map from the GeoNode can be embedded for use in another site or "
 "blog. To export a map:</p>\n"
-"  <ol>\n"
-"    <li>Select the from the list of maps on the community or map page and "
+"    <ol>\n"
+"      <li>Select the from the list of maps on the community or map page and "
 "then hit the 'export map' button.</li> \n"
-"    <li>Choose your desired height and width for the widget in the wizard.</"
-"li> \n"
-"    <li>Copy the HTML snippet provided in the wizard to any HTML page or "
+"      <li>Choose your desired height and width for the widget in the wizard."
+"</li> \n"
+"      <li>Copy the HTML snippet provided in the wizard to any HTML page or "
 "iFrame-supporting blog post.</li>\n"
-"  </ol>\n"
-"  <p>This will put an interactive widget showing you map in your web page or "
-"blog post.</p>\n"
-"  <p>Note that the <a href=\"/maps/new\">Map Composer</a> also has a button "
-"to export the map. Just be sure to save the map before exporting if there "
-"are changes that you want others to see. It exports the last saved version, "
-"not the last viewed version.</p>\n"
+"    </ol>\n"
+"    <p>This will put an interactive widget showing you map in your web page "
+"or blog post.</p>\n"
+"    <p>Note that the <a href=\"/maps/new\">Map Composer</a> also has a "
+"button to export the map. Just be sure to save the map before exporting if "
+"there are changes that you want others to see. It exports the last saved "
+"version, not the last viewed version.</p>\n"
 "\n"
-"  <h4 id=\"remixing-a-map\">Remixing a Map</h4>\n"
-"  <p>Any map available can serve as a starting point for a new map.</p>\n"
-"  <ol>\n"
-"    <li>Open the map in the Map Composer.</li>\n"
-"    <li>Add and remove layers as you like.</li>\n"
-"    <li>Pan and zoom to highlight the area of interest.</li>\n"
-"    <li><strong>IMPORTANT:</strong> Update the title, abstract, contact info "
-"and tags to reflect the new map.</li>\n"
-"    <li>Save the map.</li>\n"
-"  </ol>\n"
-"  <p>You will be able to see your new map when you search for it from the <a "
-"href=\"/maps\">Maps</a> tab.</p> \n"
-"  "
+"    <h4 id=\"remixing-a-map\">Remixing a Map</h4>\n"
+"    <p>Any map available can serve as a starting point for a new map.</p>\n"
+"    <ol>\n"
+"      <li>Open the map in the Map Composer.</li>\n"
+"      <li>Add and remove layers as you like.</li>\n"
+"      <li>Pan and zoom to highlight the area of interest.</li>\n"
+"      <li><strong>IMPORTANT:</strong> Update the title, abstract, contact "
+"info and tags to reflect the new map.</li>\n"
+"      <li>Save the map.</li>\n"
+"    </ol>\n"
+"    <p>You will be able to see your new map when you search for it from the "
+"<a href=\"/maps\">Maps</a> tab.</p> \n"
+"    "
 msgstr ""
 
-#: templates/help.html:65
+#: templates/help.html:66
 msgid "Sections"
 msgstr "セクション"
 
-#: templates/help.html:66
+#: templates/help.html:67
 msgid "Browsing Layers"
 msgstr "レイヤー閲覧"
 
-#: templates/help.html:67
+#: templates/help.html:68
 msgid "Developer Access"
 msgstr "開発者アクセス"
 
-#: templates/help.html:68
+#: templates/help.html:69
 msgid "Browsing Maps"
 msgstr "地図閲覧"
 
-#: templates/help.html:69
+#: templates/help.html:70
 msgid "Creating a Map"
 msgstr "地図作成"
 
-#: templates/help.html:70
+#: templates/help.html:71
 msgid "Exporting a Map"
 msgstr "地図出力"
 
-#: templates/help.html:71
+#: templates/help.html:72
 msgid "Remixing a Map"
 msgstr "地図のリミックス"
 
@@ -3366,6 +3517,7 @@ msgid "No"
 msgstr "ノー"
 
 #: templates/index.html:30
+#: templates/notification/request_download_resourcebase/full.txt:7
 msgid "Layer"
 msgstr "層"
 
@@ -3409,11 +3561,16 @@ msgstr ""
 msgid "Share data"
 msgstr "データを共有"
 
-#: templates/account/login.html:7 templates/account/login.html.py:24
+#: templates/social_links.html:9
+#, python-format
+msgid "%(share_res)s"
+msgstr ""
+
+#: templates/account/login.html:7 templates/account/login.html.py:25
 msgid "Log in"
 msgstr "ログイン"
 
-#: templates/account/login.html:12
+#: templates/account/login.html:11
 msgid "Log in to an existing account"
 msgstr "既存のアカウントでログイン"
 
@@ -3430,11 +3587,15 @@ msgid "Are you sure you want to log out?"
 msgstr "ログアウトしてよろしいですか？"
 
 #: templates/account/password_reset.html:8
-#: templates/account/password_reset.html:14
 msgid "Password reset"
 msgstr "パスワードリセット"
 
-#: templates/account/password_reset.html:15
+#: templates/account/password_reset.html:14
+#, fuzzy
+msgid "Password Reset"
+msgstr "パスワードリセット"
+
+#: templates/account/password_reset.html:18
 msgid ""
 "Forgotten your password? Enter your email address below, and we'll send you "
 "an email allowing you to reset it."
@@ -3442,11 +3603,11 @@ msgstr ""
 "パスワードを忘れてしまった場合は、以下にメールアドレスを入力してください。パ"
 "スワードリセットの方法をメールで送付します。"
 
-#: templates/account/password_reset.html:20
+#: templates/account/password_reset.html:24
 msgid "Reset my password"
 msgstr "パスワードをリセット"
 
-#: templates/account/password_reset.html:25
+#: templates/account/password_reset.html:28
 #, python-format
 msgid ""
 "If you have any trouble resetting your password, contact us at <a href="
@@ -3522,37 +3683,37 @@ msgstr "GeoNodeサイト管理者"
 msgid "GeoNode administration"
 msgstr "GeoNode管理"
 
-#: templates/announcements/announcement_form.html:10
+#: templates/announcements/announcement_form.html:11
 msgid "Edit Announcement"
 msgstr "アナウンスメント編集"
 
-#: templates/announcements/announcement_form.html:10
+#: templates/announcements/announcement_form.html:11
 msgid "Create Announcement"
 msgstr "アナウンスメント作成"
 
-#: templates/announcements/announcement_list.html:19
+#: templates/announcements/announcement_list.html:12
 msgid "New Announcement"
 msgstr "新規アナウンスメント"
 
-#: templates/announcements/announcement_list.html:31
+#: templates/announcements/announcement_list.html:21
 msgid "Level"
 msgstr ""
 
-#: templates/announcements/announcement_list.html:32
+#: templates/announcements/announcement_list.html:22
 msgid "Announcement"
 msgstr "アナウンスメント"
 
-#: templates/announcements/announcement_list.html:33
+#: templates/announcements/announcement_list.html:23
 msgid "Published From"
 msgstr "公開元"
 
-#: templates/announcements/announcement_list.html:48
-#, python-format
+#: templates/announcements/announcement_list.html:38
+#, fuzzy, python-format
 msgid ""
 "\n"
-"                        Published from <b>%(publish_start)s</b> to <b>"
-"%(publish_end)s</b>.\n"
-"                        "
+"          Published from <b>%(publish_start)s</b> to <b>%(publish_end)s</"
+"b>.\n"
+"          "
 msgstr ""
 "\n"
 "<b>%(publish_start)s</b> to <b>%(publish_end)s</b>. から出版した。"
@@ -3605,73 +3766,256 @@ msgstr ""
 msgid "Delete These"
 msgstr "以下を削除"
 
-#: templates/notification/base.html:16 templates/notification/notices.html:7
-#: templates/notification/notices.html:11
-msgid "Notices"
-msgstr "通知"
-
-#: templates/notification/base.html:17
-msgid "Notice settings"
-msgstr "通知設定"
-
-#: templates/notification/base.html:18
-msgid "Observed objects"
-msgstr "監視対象オブジェクト"
-
-#: templates/notification/notice_settings.html:5
-#: templates/notification/notice_settings.html:10
+#: templates/notification/notice_settings.html:8
+#: templates/notification/notice_settings.html:11
 msgid "Notification Settings"
 msgstr "通知設定"
 
 #: templates/notification/notice_settings.html:15
-msgid "Primary email"
-msgstr "第一メールアドレス"
-
-#: templates/notification/notice_settings.html:17
-#, python-format
-msgid "change under <a href=\"%(email_url)s\">Account</a>"
-msgstr "<a href=\"%(email_url)s\">アカウント</a>を使って変更"
-
-#: templates/notification/notice_settings.html:21
-msgid "Note"
-msgstr "ノート"
-
-#: templates/notification/notice_settings.html:22
 #, python-format
 msgid ""
-"You do not have a verified email address to which notices can be sent. You "
-"can add one by going to <a href=\"%(email_url)s\">Account</a>."
+"\n"
+"        <p class=\"alert alert-warning\">\n"
+"            <span class=\"warning\">Note</span>:\n"
+"            You do not have a verified email address to which notices can be "
+"sent. <a href=\"%(email_url)s\">Add one</a> now.\n"
+"        </p>\n"
+"        "
 msgstr ""
-"通知送付用のメールアドレスが検証されていません。<a href=\"%(email_url)s\">ア"
-"カウント設定</a>から追加を行ってください。"
 
-#: templates/notification/notice_settings.html:30
+#: templates/notification/notice_settings.html:27
 msgid "Notification Type"
 msgstr "通知タイプ"
 
-#: templates/notification/notice_settings.html:48
+#: templates/notification/notice_settings.html:52
 msgid "Change"
 msgstr "変更"
 
-#: templates/notification/notices.html:16
-msgid "Mark all unseen notices seen"
-msgstr "すべて既読にする"
+#: templates/notification/document_comment/full.txt:3
+#, fuzzy
+msgid "A comment has been posted for the document"
+msgstr "このドキュメントのアクセス権がありません"
 
-#: templates/notification/notices.html:22
-msgid "MONTH_DAY_FORMAT"
-msgstr "日時表記"
+#: templates/notification/document_comment/full.txt:3
+#: templates/notification/layer_comment/full.txt:3
+#: templates/notification/map_comment/full.txt:4
+msgid "by the user"
+msgstr ""
 
-#: templates/notification/notices.html:33
-msgid "View Notice"
-msgstr "通知を表示"
+#: templates/notification/document_comment/full.txt:5
+#: templates/notification/document_created/full.txt:6
+#: templates/notification/document_updated/full.txt:6
+msgid "You can visit the document's detail page here"
+msgstr ""
 
-#: templates/notification/notices.html:41
-msgid "No notices."
-msgstr "通知がありません。"
+#: templates/notification/document_comment/short.txt:3
+#, fuzzy
+msgid "A comment has been posted for a document"
+msgstr "このドキュメントのアクセス権がありません"
 
-#: templates/notification/single.html:6 templates/notification/single.html:9
-msgid "Notice"
-msgstr "通知"
+#: templates/notification/document_created/full.txt:3
+#: templates/notification/document_rated/full.txt:3
+#: templates/notification/layer_created/full.txt:3
+#: templates/notification/layer_rated/full.txt:3
+#: templates/notification/map_created/full.txt:3
+#: templates/notification/map_rated/full.txt:3
+#: templates/notification/request_download_resourcebase/full.txt:3
+#, fuzzy
+msgid "The user"
+msgstr "ユーザーを選択してください..."
+
+#: templates/notification/document_created/full.txt:3
+#, fuzzy
+msgid "uploaded the following document"
+msgstr "このドキュメントを入れ替え"
+
+#: templates/notification/document_created/short.txt:3
+#, fuzzy
+msgid "A document has been uploaded"
+msgstr "レイヤーがアップロードされました"
+
+#: templates/notification/document_deleted/full.txt:3
+#, fuzzy
+msgid "The following document was deleted"
+msgstr "次のユーザー："
+
+#: templates/notification/document_deleted/full.txt:4
+#: templates/notification/document_rated/full.txt:6
+#: templates/notification/document_updated/full.txt:4
+#: templates/notification/layer_deleted/full.txt:4
+#: templates/notification/layer_rated/full.txt:6
+#: templates/notification/layer_updated/full.txt:4
+#: templates/notification/map_deleted/full.txt:4
+#: templates/notification/map_rated/full.txt:6
+#: templates/notification/map_updated/full.txt:4
+#, fuzzy
+msgid "owned by"
+msgstr "によって整備されています"
+
+#: templates/notification/document_deleted/short.txt:3
+#, fuzzy
+msgid "A document has been deleted"
+msgstr "サービスが作成されています："
+
+#: templates/notification/document_rated/full.txt:4
+#: templates/notification/layer_rated/full.txt:4
+#: templates/notification/map_rated/full.txt:4
+#, fuzzy
+msgid "rated"
+msgstr "作成"
+
+#: templates/notification/document_rated/full.txt:5
+#, fuzzy
+msgid "the following document"
+msgstr "次のユーザー："
+
+#: templates/notification/document_rated/full.txt:8
+#: templates/notification/layer_comment/full.txt:5
+#: templates/notification/layer_created/full.txt:6
+#: templates/notification/layer_rated/full.txt:8
+#: templates/notification/layer_updated/full.txt:6
+msgid "You can visit the layer's detail page here"
+msgstr ""
+
+#: templates/notification/document_rated/short.txt:3
+#, fuzzy
+msgid "A document has been rated"
+msgstr "サービスが作成されています："
+
+#: templates/notification/document_updated/full.txt:3
+#, fuzzy
+msgid "The following document was updated"
+msgstr "次のユーザー："
+
+#: templates/notification/document_updated/short.txt:3
+#, fuzzy
+msgid "A document has been updated"
+msgstr "サービスが作成されています："
+
+#: templates/notification/layer_comment/full.txt:3
+#, fuzzy
+msgid "A comment has been posted for the layer"
+msgstr "このレイヤーに関連するドキュメント"
+
+#: templates/notification/layer_comment/short.txt:3
+#, fuzzy
+msgid "A comment has been posted for a layer"
+msgstr "レイヤが評価されました"
+
+#: templates/notification/layer_created/full.txt:3
+#, fuzzy
+msgid "uploaded the following layer"
+msgstr "地図で使用しているレイヤー:"
+
+#: templates/notification/layer_created/short.txt:3
+#, fuzzy
+msgid "A new layer has been uploaded"
+msgstr "レイヤーがアップロードされました"
+
+#: templates/notification/layer_deleted/full.txt:3
+#, fuzzy
+msgid "The following layer was deleted"
+msgstr "以下の層がインポートされます"
+
+#: templates/notification/layer_deleted/short.txt:3
+#, fuzzy
+msgid "A layer has been deleted"
+msgstr "レイヤは次の方にコメントされました"
+
+#: templates/notification/layer_rated/full.txt:5
+#, fuzzy
+msgid "the following layer"
+msgstr "次のユーザー："
+
+#: templates/notification/layer_rated/short.txt:3
+#, fuzzy
+msgid "A layer has been rated"
+msgstr "サービスが作成されています："
+
+#: templates/notification/layer_updated/full.txt:3
+#, fuzzy
+msgid "The following layer was updated"
+msgstr "以下の層がインポートされます"
+
+#: templates/notification/layer_updated/short.txt:3
+#, fuzzy
+msgid "A layer has been updated"
+msgstr "レイヤーがアップロードされました"
+
+#: templates/notification/map_comment/full.txt:3
+#, fuzzy
+msgid "A comment has been posted for the map"
+msgstr "この地図に関連するドキュメント"
+
+#: templates/notification/map_comment/full.txt:6
+#: templates/notification/map_created/full.txt:6
+#: templates/notification/map_rated/full.txt:8
+#: templates/notification/map_updated/full.txt:6
+msgid "You can visit the map's detail page here"
+msgstr ""
+
+#: templates/notification/map_comment/short.txt:3
+msgid "A comment has been posted for a map"
+msgstr ""
+
+#: templates/notification/map_created/full.txt:3
+#, fuzzy
+msgid "created the following map"
+msgstr "この動作は次の地図に影響します:"
+
+#: templates/notification/map_created/short.txt:3
+#, fuzzy
+msgid "A map has been created"
+msgstr "地図が作成されました"
+
+#: templates/notification/map_deleted/full.txt:3
+#, fuzzy
+msgid "The following map was deleted"
+msgstr "以下の層がインポートされます"
+
+#: templates/notification/map_deleted/short.txt:3
+#, fuzzy
+msgid "A map has been deleted"
+msgstr "地図は次の方にコメントされました"
+
+#: templates/notification/map_rated/full.txt:5
+#, fuzzy
+msgid "the following map"
+msgstr "以下のグループ："
+
+#: templates/notification/map_rated/short.txt:3
+#, fuzzy
+msgid "A map has been rated"
+msgstr "地図が作成されました"
+
+#: templates/notification/map_updated/full.txt:3
+#, fuzzy
+msgid "The following map was updated"
+msgstr "以下の層がインポートされます"
+
+#: templates/notification/map_updated/short.txt:3
+#, fuzzy
+msgid "A map has been updated"
+msgstr "地図が作成されました"
+
+#: templates/notification/request_download_resourcebase/full.txt:3
+#, fuzzy
+msgid "requested you to download this resource"
+msgstr "リソース所有者"
+
+#: templates/notification/request_download_resourcebase/full.txt:9
+#, fuzzy
+msgid "Document"
+msgstr "ドキュメント"
+
+#: templates/notification/request_download_resourcebase/full.txt:12
+msgid ""
+"Please go to resource page and assign the download permissions if you wish"
+msgstr ""
+
+#: templates/notification/request_download_resourcebase/short.txt:3
+msgid "A resource's download has been requested"
+msgstr ""
 
 #: templates/relationships/_list_connections.html:3
 #: templates/relationships/_manage_connections.html:6
@@ -3768,15 +4112,15 @@ msgstr "YYYY-MM-DD"
 msgid "Date ends before:"
 msgstr "日付が前に終了："
 
-#: templates/search/_search_content.html:10
+#: templates/search/_search_content.html:6
 msgid "Your selections"
 msgstr "選択中"
 
-#: templates/search/_search_content.html:11
+#: templates/search/_search_content.html:7
 msgid "Clear all filters"
 msgstr "すべてのフィルタをクリア"
 
-#: templates/search/_sort_filters.html:13
+#: templates/search/_sort_filters.html:15
 msgid "Set permissions"
 msgstr "権限を設定"
 
@@ -3831,6 +4175,49 @@ msgstr "受信箱を表示"
 #: templates/user_messages/thread_detail.html:25
 msgid "Send Reply"
 msgstr "返信する"
+
+#~ msgid "Add a Comment"
+#~ msgstr "コメント追加"
+
+#~ msgid "Notices"
+#~ msgstr "通知"
+
+#~ msgid "Notice settings"
+#~ msgstr "通知設定"
+
+#~ msgid "Observed objects"
+#~ msgstr "監視対象オブジェクト"
+
+#~ msgid "Primary email"
+#~ msgstr "第一メールアドレス"
+
+#~ msgid "change under <a href=\"%(email_url)s\">Account</a>"
+#~ msgstr "<a href=\"%(email_url)s\">アカウント</a>を使って変更"
+
+#~ msgid "Note"
+#~ msgstr "ノート"
+
+#~ msgid ""
+#~ "You do not have a verified email address to which notices can be sent. "
+#~ "You can add one by going to <a href=\"%(email_url)s\">Account</a>."
+#~ msgstr ""
+#~ "通知送付用のメールアドレスが検証されていません。<a href=\"%(email_url)s\">"
+#~ "アカウント設定</a>から追加を行ってください。"
+
+#~ msgid "Mark all unseen notices seen"
+#~ msgstr "すべて既読にする"
+
+#~ msgid "MONTH_DAY_FORMAT"
+#~ msgstr "日時表記"
+
+#~ msgid "View Notice"
+#~ msgstr "通知を表示"
+
+#~ msgid "No notices."
+#~ msgstr "通知がありません。"
+
+#~ msgid "Notice"
+#~ msgstr "通知"
 
 #~ msgid "Remote Thumbnail"
 #~ msgstr "リモートサムネイル"
