@@ -1,5 +1,6 @@
 @import "../fonts/lato_font.css";
 @import "../css/font-awesome.css";
+/*@import "../../../../../lib/python2.7/site-packages/pinax_theme_bootstrap/static/bootstrap/less/variables.less";*/
 
 /* Variables
 ----------------------- */
@@ -109,12 +110,13 @@ article.tab-pane {
   width: 140px;
 }
 .navbar-right > li > a {
-  padding: 8px 15px 5px 5px;
+  padding: 8px 15px;
 }
 .nav-pills a {
   cursor: pointer;
 }
-
+.navbar-collapse {
+  max-height: none;}
 form#search {
   margin-top: 8px;
   .fa {
@@ -125,6 +127,9 @@ form#search {
   img {
    margin-right: 8px;
   }
+}
+.dropdown-menu {
+  padding: 8px 15px;
 }
 .avatar {
   img {

@@ -62,7 +62,7 @@
             {% endblock %}
           </ul>
           <form class="navbar-form" id="search" action="{% url "search" %}" >
-            <div class="col-sm-3 col-md-3">
+            <div class="col-md-3">
               <div class="input-group">
                 {% if HAYSTACK_SEARCH %}
                 <input id="search_input" type="text" placeholder="Search" class="form-control" name="q">
@@ -116,7 +116,10 @@
                 </li>
               </ul>
               {% else %}
-              <a href="#" class="dropdown-toggle" data-toggle="dropdown">{% trans "Sign in" %} <span class="caret"></span></a>
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+                {% trans "Sign in" %} 
+                <span class="caret"></span>
+              </a>
               <ul class="dropdown-menu" role="menu">
                 <li>
                   <form role="form" action="{% url "account_login" %}?next={{ request.path }}" method="post">
