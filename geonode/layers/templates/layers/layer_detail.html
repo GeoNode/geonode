@@ -201,7 +201,7 @@
               {% if "change_resourcebase_metadata" in perms %}
               <li><a href="{% url "layer_metadata" resource.service_typename %}">{% trans "Edit Metadata" %}</a></li>  
               {% endif %}             
-              {% if GEOSERVER_BASE_URL %}
+              {% if GEOSERVER_BASE_URL and not resource.service %}
                 {% if "change_layer_style" in layer_perms %}
                 <li><a href="{% url "layer_style_manage" resource.service_typename %}">{% trans "Manage Styles" %}</a></li>
                   {% if preview == 'geoext' %}
@@ -209,7 +209,7 @@
                   {% endif %}
                 {% endif %}
               {% endif %}
-              {% if "change_resourcebase" in perms %}
+              {% if "change_resourcebase" in perms and not resource.service %}
                 <li><a href="{% url "layer_replace" resource.service_typename %}">{% trans "Replace this Layer" %}</a></li>
               {% endif %}
               {% if "delete_resourcebase" in perms %}
