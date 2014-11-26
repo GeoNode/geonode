@@ -20,7 +20,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-11-26 12:15+0000\n"
+"POT-Creation-Date: 2014-11-26 14:12+0000\n"
 "PO-Revision-Date: 2014-11-15 00:00+0000\n"
 "Last-Translator: Andres Alfonso Lemon Gomez <lemon.andres@gmail.com>\n"
 "Language-Team: German (http://www.transifex.com/projects/p/geonode/language/"
@@ -3606,7 +3606,7 @@ msgstr ""
 msgid "Share data"
 msgstr "Daten zur Aktie"
 
-#: templates/social_links.html:9
+#: templates/social_links.html:10
 #, python-format
 msgid "%(share_res)s"
 msgstr ""

@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-11-26 12:15+0000\n"
+"POT-Creation-Date: 2014-11-26 14:12+0000\n"
 "PO-Revision-Date: 2014-11-14 18:41+0000\n"
 "Last-Translator: Andres Alfonso Lemon Gomez <lemon.andres@gmail.com>\n"
 "Language-Team: Bengali (http://www.transifex.com/projects/p/geonode/language/"
@@ -3532,7 +3532,7 @@ msgstr ""
 msgid "Share data"
 msgstr "সেয়ার তথ্য"
 
-#: templates/social_links.html:9
+#: templates/social_links.html:10
 #, python-format
 msgid "%(share_res)s"
 msgstr ""

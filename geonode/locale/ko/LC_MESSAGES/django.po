@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-11-26 12:15+0000\n"
+"POT-Creation-Date: 2014-11-26 14:12+0000\n"
 "PO-Revision-Date: 2014-11-14 16:58+0000\n"
 "Last-Translator: ingenieroariel <ingenieroariel@gmail.com>\n"
 "Language-Team: Korean (http://www.transifex.com/projects/p/geonode/language/"
@@ -3722,7 +3722,7 @@ msgstr ""
 msgid "Share data"
 msgstr "데이터 공유"
 
-#: templates/social_links.html:9
+#: templates/social_links.html:10
 #, python-format
 msgid "%(share_res)s"
 msgstr ""
