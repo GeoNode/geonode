@@ -1,3 +1,66 @@
+geonode (2.4.0+beta4) trusty; urgency=high
+
+  [ capooti ]
+  * [614930] Restored the notification app and adding some more notification types
+  * [f5b19e] Added support for i18n
+
+  [ state-hiu ]
+  * [82fdb4] fixes #1830
+  * [52c3ab] whitespace fixes
+  * [51e468] Fixes #1835
+
+  [ Simone Dalmasso ]
+  * [6a0a27] show categories if they have records
+
+ -- Simone Dalmasso <simone.dalmasso@gmail.com>  Tue, 25 Nov 2014 14:22:18 +0000
+
+geonode (2.4.0+beta3) trusty; urgency=high
+
+  [ Matt Bertrand ]
+  * [b8a96c] Always convert to web mercator coordinates
+
+  [ state-hiu ]
+  * [d9101e] fixes #1783
+  * [ab667c] fixes #1723
+  * [d516ef] fixes #1785
+  * [7158b9] fixes #1807
+
+  [ Ariel Nunez ]
+  * [171649] Updated locale files
+
+  [ Matt Bertrand ]
+  * [15e948] pep8
+
+  [ Simone Dalmasso ]
+  * [0152f1] order keywords alphabetically and fix typo
+
+  [ Paolo Pasquali ]
+  * [0c9feb] General improvements in page layouts
+  * [76659d] Improving page layouts
+
+  [ state-hiu ]
+  * [fe49f5] fixes #1768 and #1777
+  * [e44ec3] Fixes #1780
+
+  [ Paolo Pasquali ]
+  * [3f8a75] General Style fixes on page templates
+
+  [ Tom Kralidis ]
+  * [27519e] bump pycsw/OWSLib dependencies
+  * [b6a47f] fix CSW test
+  * [b43a9d] fix indent
+
+  [ Simone Dalmasso ]
+  * [2a6a9c] few fixes to the search results
+
+  [ Paolo Pasquali ]
+  * [9b0855] Style fixes
+  * [13eb90] Fix .fa class margin in filters
+
+  [ Simone Dalmasso ]
+
+ -- Simone Dalmasso <simone.dalmasso@gmail.com>  Mon, 24 Nov 2014 14:40:21 +0000
+
 geonode (2.4.0+beta2) trusty; urgency=high
 
   * [ea214b] Added Sinhala and Tamil

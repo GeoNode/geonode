@@ -24,13 +24,17 @@
 import logging
 from collections import defaultdict
 from dialogos.models import Comment
+
 from django.conf import settings
 from django.db.models import signals
-from django.contrib.auth import get_user_model
 from django.utils.translation import ugettext as _
+
+from actstream.exceptions import ModelNotActionable
+
 from geonode.layers.models import Layer
 from geonode.maps.models import Map
-from actstream.exceptions import ModelNotActionable
+from geonode.documents.models import Document
+from geonode.people.models import Profile
 
 logger = logging.getLogger(__name__)
 
@@ -39,14 +43,21 @@ if "actstream" in settings.INSTALLED_APPS:
     from actstream import action as activity
     from actstream.actions import follow, unfollow
 
-notification = None
-if "notication" in settings.INSTALLED_APPS:
+notification_app = None
+if "notification" in settings.INSTALLED_APPS:
+    notification_app = True
     from notification import models as notification
+    from notification.models import NoticeSetting
 
 relationships = None
 if "relationships" in settings.INSTALLED_APPS:
     relationships = True
     from relationships.models import Relationship
+
+ratings = None
+if "agon_ratings" in settings.INSTALLED_APPS:
+    ratings = True
+    from agon_ratings.models import Rating
 
 
 def activity_post_modify_object(sender, instance, created=None, **kwargs):
@@ -118,15 +129,6 @@ def activity_post_modify_object(sender, instance, created=None, **kwargs):
             logger.debug('The activity received a non-actionable Model or None as the actor/action.')
 
 
-def notification_post_save_layer(instance, sender, created, **kwargs):
-    if created:
-        superusers = get_user_model().objects.filter(is_superuser=True)
-        notification.queue(superusers, "layer_uploaded", {"from_user": instance.owner})
-    else:
-        # Notification if existing layer is updated
-        pass
-
-
 def relationship_post_save_actstream(instance, sender, created, **kwargs):
     follow(instance.from_user, instance.to_user)
 
@@ -138,6 +140,7 @@ def relationship_pre_delete_actstream(instance, sender, **kwargs):
 def relationship_post_save(instance, sender, created, **kwargs):
     notification.queue([instance.to_user], "user_follow", {"from_user": instance.from_user})
 
+
 if activity:
     signals.post_save.connect(activity_post_modify_object, sender=Comment)
     signals.post_save.connect(activity_post_modify_object, sender=Layer)
@@ -146,10 +149,69 @@ if activity:
     signals.post_save.connect(activity_post_modify_object, sender=Map)
     signals.post_delete.connect(activity_post_modify_object, sender=Map)
 
-if notification:
-    signals.post_save.connect(notification_post_save_layer, sender=Layer)
+
+if notification_app:
+
+    def notification_post_save_resource(instance, sender, created, **kwargs):
+        """ Send a notification when a layer, map or document is created or
+        updated
+        """
+        if created:
+            notice_type_label = '%s_created' % instance.class_name.lower()
+            recipients = get_notification_recipients(notice_type_label)
+            notification.send(recipients, notice_type_label, {'resource': instance})
+        else:
+            notice_type_label = '%s_updated' % instance.class_name.lower()
+            recipients = get_notification_recipients(notice_type_label)
+            notification.send(recipients, notice_type_label, {'resource': instance})
+
+    def notification_post_delete_resource(instance, sender, **kwargs):
+        """ Send a notification when a layer, map or document is deleted
+        """
+        notice_type_label = '%s_deleted' % instance.class_name.lower()
+        recipients = get_notification_recipients(notice_type_label)
+        notification.send(recipients, notice_type_label, {'resource': instance})
+
+    def rating_post_save(instance, sender, created, **kwargs):
+        """ Send a notification when rating a layer, map or document
+        """
+        notice_type_label = '%s_rated' % instance.content_object.class_name.lower()
+        recipients = get_notification_recipients(notice_type_label, instance.user)
+        notification.send(recipients, notice_type_label, {"instance": instance})
+
+    def comment_post_save(instance, sender, created, **kwargs):
+        """ Send a notification when a comment to a layer, map or document has
+        been submitted
+        """
+        notice_type_label = '%s_comment' % instance.content_object.class_name.lower()
+        recipients = get_notification_recipients(notice_type_label, instance.author)
+        notification.send(recipients, notice_type_label, {"instance": instance})
+
+    def get_notification_recipients(notice_type_label, exclude_user=None):
+        """ Get notification recipients
+        """
+        recipients_ids = NoticeSetting.objects \
+            .filter(notice_type__label=notice_type_label) \
+            .values_list('user', flat=True)
+        profiles = Profile.objects.filter(id__in=recipients_ids)
+        if exclude_user:
+            profiles.exclude(username=exclude_user.username)
+        return profiles
+
+    # signals
+    # layer/map/document notifications
+    for resource in (Layer, Map, Document):
+        signals.post_save.connect(notification_post_save_resource, sender=resource)
+        signals.post_delete.connect(notification_post_delete_resource, sender=resource)
+
+    signals.post_save.connect(comment_post_save, sender=Comment)
+
+    # rating notifications
+    if ratings and notification_app:
+        signals.post_save.connect(rating_post_save, sender=Rating)
+
 if relationships and activity:
     signals.post_save.connect(relationship_post_save_actstream, sender=Relationship)
     signals.pre_delete.connect(relationship_pre_delete_actstream, sender=Relationship)
-if relationships and notification:
+if relationships and notification_app:
     signals.post_save.connect(relationship_post_save, sender=Relationship)
