@@ -47,6 +47,11 @@
           </ul>
         {% endif %}
 
+        <div class="form-actions">
+          <input type="submit" class="btn btn-primary" value="{% trans "Update" %}"/>
+        </div>
+
+
         {% csrf_token %}
         <div class="form-controls">
           {{ layer_form|as_bootstrap }}
