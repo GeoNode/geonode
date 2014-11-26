@@ -11,14 +11,20 @@
 
 {% block body_class %}data{% endblock %}
 
-{% block body_outer %}  
-<form class="form-horizontal" action="{% url "document_metadata" document.id %}" method="POST">
-    <legend>
+{% block body_outer %}
+<div class="page-header">
+  <a href="{% url "document_browse" %}" class="btn btn-primary pull-right">{% trans "Explore Documents" %}</a>
+  <h2 class="page-title">{% trans "Edit Metadata" %}</h2>
+</div> 
+<div class="row">
+  <div class="col-md-8">
+    <p class="lead">
       {% blocktrans with document.name_long as document_title %}
         Editing details for {{ document_title }}
       {% endblocktrans %}
-    </legend>
-    {% if document_form.errors or category_form.errors %}
+    </p>
+    <form class="form-horizontal" action="{% url "document_metadata" document.id %}" method="POST">
+      {% if document_form.errors or category_form.errors %}
         <div style="background-color: pink">{% blocktrans %}Error updating metadata.  Please check the following fields: {% endblocktrans %}
             <ul>
         {% for field in document_form %}
@@ -32,42 +38,47 @@
         {% endif %}
             </ul>
         </div>
-    {% endif %}
-    {% csrf_token %}
-    <div class="form-controls">
-      {{ document_form|as_bootstrap }}
-    </div>
-    <fieldset class="form-controls modal-forms modal hide fade" id="poc_form" >
-      <h2>{% trans "Point of Contact" %}</h2>
-      {{ poc_form|as_bootstrap }}
-      <button type='button' class="modal-cloose-btn btn btn-primary">Done</button>
-    </fieldset>
-    <fieldset class="form-controls modal-forms modal hide fade" id="metadata_form">
-      <h2>{% trans "Metadata Provider" %}</h2>
-        {{ author_form|as_bootstrap }}
-      <button type='button' class="modal-cloose-btn btn btn-primary">Done</button>
-    </fieldset>
-       <fieldset id="category_form">
-            <label class="control-label required-field">{% trans "Category" %}</label><br/>
-            {% autoescape off %}
-                <div style="clear:both;padding-left:175px;">
-                    {% for choice in category_form.category_choice_field.field.choices %}
-                        <div style="width:50%;float:left;padding-bottom:5px;">
-                            <input type="radio" name="category_choice_field" value="{{ choice.0 }}"
-                                    {% ifequal category_form.initial choice.0 %}
-                                   checked="checked"
-                                    {% endifequal %}> 
-                                    {{ choice.1 }}
-                            </input>
-                        </div>
-                    {% endfor %}
-                </div>
-            {% endautoescape %}
-        </fieldset>
-    <div class="form-actions">
-      <input type="submit" class="btn btn-primary" value="{% trans "Update" %}"/>
-    </div>
-  </form>
+      {% endif %}
+        <div class="form-actions">
+          <input type="submit" class="btn btn-primary" value="{% trans "Update" %}"/>
+        </div>
+      {% csrf_token %}
+      <div class="form-controls">
+        {{ document_form|as_bootstrap }}
+      </div>
+      <fieldset class="form-controls modal-forms modal hide fade" id="poc_form" >
+        <h2>{% trans "Point of Contact" %}</h2>
+        {{ poc_form|as_bootstrap }}
+        <button type='button' class="modal-cloose-btn btn btn-primary">Done</button>
+      </fieldset>
+      <fieldset class="form-controls modal-forms modal hide fade" id="metadata_form">
+        <h2>{% trans "Metadata Provider" %}</h2>
+          {{ author_form|as_bootstrap }}
+        <button type='button' class="modal-cloose-btn btn btn-primary">Done</button>
+      </fieldset>
+      <fieldset id="category_form">
+        <label class="control-label required-field">{% trans "Category" %}</label><br/>
+        {% autoescape off %}
+        <div style="clear:both;padding-left:175px;">
+        {% for choice in category_form.category_choice_field.field.choices %}
+          <div style="width:50%;float:left;padding-bottom:5px;">
+            <input type="radio" name="category_choice_field" value="{{ choice.0 }}"
+            {% ifequal category_form.initial choice.0 %}
+              checked="checked"
+            {% endifequal %}> 
+            {{ choice.1 }}
+            </input>
+          </div>
+          {% endfor %}
+        </div>
+        {% endautoescape %}
+      </fieldset>
+      <div class="form-actions">
+        <input type="submit" class="btn btn-primary" value="{% trans "Update" %}"/>
+      </div>
+    </form>
+  </div>
+</div>
 {% endblock %}
 {% block extra_script %}
 {% include 'metadata_form_js.html' %}
