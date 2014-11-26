@@ -218,7 +218,7 @@ class DocumentCreateForm(TranslationModelForm):
         label=_("Link to"),
         widget=TextInput(
             attrs={
-                'name': 'q',
+                'name': 'title__contains',
                 'id': 'resource'}))
 
     class Meta:
