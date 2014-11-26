@@ -705,6 +705,9 @@ TASTYPIE_DEFAULT_FORMATS = ['json']
 # gravatar settings
 AUTO_GENERATE_AVATAR_SIZES = (20, 32, 80, 100, 140, 200)
 
+# notification settings
+NOTIFICATION_LANGUAGE_MODULE = "account.Account"
+
 # Number of results per page listed in the GeoNode search pages
 CLIENT_RESULTS_LIMIT = 100
 
