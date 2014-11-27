@@ -134,8 +134,8 @@
             $scope.text_query = $location.search()['q'].replace(/\+/g," ");
           }
         } else {
-          if ($location.search().hasOwnProperty('title__contains')){
-            $scope.text_query = $location.search()['title__contains'].replace(/\+/g," ");
+          if ($location.search().hasOwnProperty('title__icontains')){
+            $scope.text_query = $location.search()['title__icontains'].replace(/\+/g," ");
           }
         }
 
@@ -306,7 +306,7 @@
         if (HAYSTACK_SEARCH)
             $scope.query['q'] = $('#text_search_input').val();
         else
-            $scope.query['title__contains'] = $('#text_search_input').val();
+            $scope.query['title__icontains'] = $('#text_search_input').val();
         query_api($scope.query);
     });
 
