@@ -128,7 +128,11 @@ class LayerForm(TranslationModelForm):
             'share_count',
             'thumbnail',
             'default_style',
-            'styles')
+            'styles',
+            'upload_session',
+            'charset',
+            'rating',
+            'service',)
         widgets = autocomplete_light.get_widgets_dict(Layer)
 
     def __init__(self, *args, **kwargs):
