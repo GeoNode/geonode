@@ -498,4 +498,7 @@ def geoserver_post_save_map(instance, sender, **kwargs):
         thumbnail_remote_url = ogc_server_settings.PUBLIC_LOCATION + \
             "wms/reflect?" + p
 
-        create_thumbnail(instance, thumbnail_remote_url, check_bbox=False)
+        thumbnail_create_url = ogc_server_settings.LOCATION + \
+            "wms/reflect?" + p
+
+        create_thumbnail(instance, thumbnail_remote_url, thumbnail_create_url, check_bbox=False)
