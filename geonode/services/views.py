@@ -698,7 +698,7 @@ def _register_harvested_service(url, username, password, csw=None, owner=None):
                                          csw.identification.title or url),
                                      title=csw.identification.title,
                                      version=csw.identification.version,
-                                     abstract=csw.identification.abstract,
+                                     abstract=csw.identification.abstract or _("Not provided"),
                                      owner=owner)
 
     service.keywords = ','.join(csw.identification.keywords)
