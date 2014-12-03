@@ -1,3 +1,38 @@
+geonode (2.4.0+beta5) trusty; urgency=high
+
+  [ Ariel Núñez ]
+  * [c7941b] Update ec2.py
+
+  [ state-hiu ]
+  * [6a2781] added update button to top.  Updated page headers for documents and maps
+
+  [ Paolo Pasquali ]
+  * [766414] Work on Responsive header
+
+  [ Simone Dalmasso ]
+  * [2cc2f2] fix the document upload link to resource
+
+  [ Paolo Pasquali ]
+  * [c38c25] Fix header dropdown sign in form style
+
+  [ Matt Bertrand ]
+  * [5dc0b5] "Manage Layers" and "Replace this Layer" should not be available for remote service layers
+
+  [ Simone Dalmasso ]
+  * [23f21b] make search by title case insensitive
+  * [492c3a] hide some fields from the layer metadata, fixes #1850
+
+  [ Geode Team ]
+  * [29626b] adding rule for controls>div
+
+  [ Andres Lemon ]
+  * [8c1e7b] Removed ubuntu version in pdf instructions
+
+  [ Simone Dalmasso ]
+  * [1aaf3b] add local geoserver to map thumbnail create
+
+ -- Simone Dalmasso <simone.dalmasso@gmail.com>  Thu, 27 Nov 2014 14:33:12 +0000
+
 geonode (2.4.0+beta4) trusty; urgency=high
 
   [ capooti ]
