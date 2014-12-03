@@ -281,7 +281,6 @@ INSTALLED_APPS = (
     # Utility
     'pagination',
     'taggit',
-    'taggit_templatetags',
     'friendlytagloader',
     'geoexplorer',
     'leaflet',
