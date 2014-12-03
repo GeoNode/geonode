@@ -80,7 +80,8 @@ def document_detail(request, docid):
         except:
             related = ''
 
-        Document.objects.filter(id=document.id).update(popular_count=F('popular_count') + 1)
+        if request.user != document.owner:
+            Document.objects.filter(id=document.id).update(popular_count=F('popular_count') + 1)
 
         return render_to_response(
             "documents/document_detail.html",
