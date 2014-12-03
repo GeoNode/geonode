@@ -11,8 +11,9 @@ The GeoNode community is divided into two groups - users and committers.  There 
  
   
 Committers must:
-  * make useful contributions to the project in the form of commits at least once in a 6-month period, else they fall back to "committer emeritus" status.  A committer emeritus has no special involvement in the project, but may request committer privileges from the current body of committers.
-  * review code contributions, which may come from other committers or from users.  Users must submit code externally to the main GeoNode repository (ie as a patch or a github pull request); committers can do this as well if they see review as particularly important (for example, a patch might affect a particularly crucial component of GeoNode, or a committer might be working in a part of the code that he is relatively unfamiliar with.)   A review should result in either (a) instructions on how to bring the code to a more acceptable condition or (b) merging the changes in and notifying the submitter that this has been done.
+
+  * Make useful contributions to the project in the form of commits at least once in a 6-month period, else they fall back to "committer emeritus" status.  A committer emeritus has no special involvement in the project, but may request committer privileges from the current body of committers.
+  * Review code contributions, which may come from other committers or from users.  Users must submit code externally to the main GeoNode repository (ie as a patch or a github pull request); committers can do this as well if they see review as particularly important (for example, a patch might affect a particularly crucial component of GeoNode, or a committer might be working in a part of the code that he is relatively unfamiliar with.)   A review should result in either (a) instructions on how to bring the code to a more acceptable condition or (b) merging the changes in and notifying the submitter that this has been done.
   * Committers also have the option to "self-review" and commit changes directly.  It is at the discretion of individual committers when this is appropriate, but it should be rare - we encourage committers to only use this option when they deem a change extremely safe.
 
 GeoNode Improvement Proposals (GNIPS)
@@ -25,6 +26,7 @@ To upgrade an issue to a GNIP, an active committer should give the ticket the 'G
 If a ticket has a GNIP label, its patch can't be committed unless it also has the 'Approved' label.  To be approved, it must pass community vote (see below).
 
 When the GNIP is announced, other committers should review and provide feedback in the issue comments.  Feedback should take the form of:
+ 
   * +1 (with optional comment)
   * -1, with mandatory rationale and suggestion for a better approach.  The suggestion may be omitted if the objection doesn't have a straightforward solution - we don't want to withhold feedback just because problems with a proposal are hard to solve.
 
