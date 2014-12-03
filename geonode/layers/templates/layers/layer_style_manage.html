@@ -41,7 +41,7 @@
         <h4>{% trans "Available styles" %}</h4>
         <p>{% trans "Click on an available style in the upper box to assign it to this layer. Selected styles appear in the lower box." %}</p>
       </div>
-      <div class="col-md-6">
+      <div class="col-md-9">
         <select multiple="multiple" id="style-select" name="style-select">
           {% for style in gs_styles %}
             {% if style in layer_styles %}
