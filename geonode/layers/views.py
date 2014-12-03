@@ -213,8 +213,9 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
             layer_params=json.dumps(config))
 
     # Update count for popularity ranking.
-    Layer.objects.filter(
-        id=layer.id).update(popular_count=F('popular_count') + 1)
+    if request.user != layer.owner:
+        Layer.objects.filter(
+            id=layer.id).update(popular_count=F('popular_count') + 1)
 
     # center/zoom don't matter; the viewer will center on the layer bounds
     map_obj = GXPMap(projection="EPSG:900913")
