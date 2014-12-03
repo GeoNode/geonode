@@ -99,7 +99,8 @@ def map_detail(request, mapid, snapshot=None, template='maps/map_detail.html'):
 
     map_obj = _resolve_map(request, mapid, 'base.view_resourcebase', _PERMISSION_MSG_VIEW)
 
-    Map.objects.filter(id=map_obj.id).update(popular_count=F('popular_count') + 1)
+    if request.user != map_obj.owner:
+        Map.objects.filter(id=map_obj.id).update(popular_count=F('popular_count') + 1)
 
     if snapshot is None:
         config = map_obj.viewer_json(request.user)
