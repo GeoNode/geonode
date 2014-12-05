@@ -20,6 +20,9 @@
 
 import math
 import logging
+import httplib2
+from urlparse import urlparse
+import urllib
 
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ObjectDoesNotExist
@@ -32,6 +35,7 @@ from django.utils.translation import ugettext as _
 from django.utils import simplejson as json
 from django.utils.html import strip_tags
 from django.db.models import F
+from django.core.files.base import ContentFile
 
 from geonode.layers.models import Layer
 from geonode.maps.models import Map, MapLayer, MapSnapshot
@@ -45,7 +49,7 @@ from geonode.utils import layer_from_viewer_config
 from geonode.maps.forms import MapForm
 from geonode.security.views import _perms_info_json
 from geonode.base.forms import CategoryForm
-from geonode.base.models import TopicCategory
+from geonode.base.models import TopicCategory, Thumbnail
 
 from geonode.documents.models import get_related_documents
 from geonode.people.forms import ProfileForm
@@ -818,3 +822,81 @@ def ajax_url_lookup(request):
         content=json.dumps(json_dict),
         mimetype='text/plain'
     )
+
+def map_thumbnail(request, mapid):
+    if request.method == 'POST':
+        map_obj = _resolve_map(request, mapid)
+        try:
+            spec = _fixup_ows_url(request.body)
+            image = _render_thumbnail(spec)
+
+            if not image:
+                return
+            #Clean any orphan Thumbnail before
+            Thumbnail.objects.filter(resourcebase=map_obj.get_self_resource()).delete()
+            
+            thumbnail, created = Thumbnail.objects.get_or_create(resourcebase=map_obj.get_self_resource(),
+                thumb_spec = spec)
+            thumbnail.thumb_file.save(mapid + '.png', ContentFile(image))
+            Map.objects.filter(pk=map_obj.id).update(thumbnail_url=thumbnail.thumb_file.url)
+            return HttpResponse('Thumbnail saved')
+        except:
+            return HttpResponse(
+                content='error saving thumbnail',
+                status=500,
+                mimetype='text/plain'
+            )
+
+def _fixup_ows_url(thumb_spec):
+    #@HACK - for whatever reason, a map's maplayers ows_url contains only /geoserver/wms
+    # so rendering of thumbnails fails - replace those uri's with full geoserver URL
+    import re
+    gspath = '"' + ogc_server_settings.public_url # this should be in img src attributes
+    repl = '"' + ogc_server_settings.LOCATION
+    return re.sub(gspath, repl, thumb_spec)
+
+def _render_thumbnail(spec):
+        http = httplib2.Http()
+        url = "%srest/printng/render.png" % ogc_server_settings.LOCATION
+        _user, _password = ogc_server_settings.credentials
+        hostname = urlparse(settings.SITEURL).hostname
+        params = dict(width=240, height=180, auth="%s,%s,%s" % (hostname, _user, _password))
+        url = url + "?" + urllib.urlencode(params)
+        http.add_credentials(_user, _password)
+        netloc = urlparse(url).netloc
+        http.authorizations.append(
+        httplib2.BasicAuthentication(
+            (_user,_password),
+            netloc,
+            url,
+            {},
+            None,
+            None,
+            http
+        ))
+        # @todo annoying but not critical
+        # openlayers controls posted back contain a bad character. this seems
+        # to come from a &minus; entity in the html, but it gets converted
+        # to a unicode en-dash but is not uncoded properly during transmission
+        # 'ignore' the error for now as controls are not being rendered...
+        data = spec 
+        if type(data) == unicode:
+            # make sure any stored bad values are wiped out
+            # don't use keyword for errors - 2.6 compat
+            # though unicode accepts them (as seen below)
+            data = data.encode('ASCII','ignore')
+        data = unicode(data, errors='ignore').encode('UTF-8')
+        try:
+            resp, content = http.request(url,"POST",data,{
+                'Content-type':'text/html'
+            })
+        except Exception:
+            logging.warning('Error generating thumbnail')
+            return 
+        if resp.status < 200 or resp.status > 299:
+            logging.warning('Error generating thumbnail %s',content)
+            return 
+        if len(content) == 0:
+            logging.warning('Empty thumb content %s',content)
+            return
+        return content
