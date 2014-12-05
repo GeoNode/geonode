@@ -110,9 +110,9 @@ setup(name='GeoNode',
         "django-activity-stream==0.4.5beta1",
         "django-downloadview==1.2",
         "django-tastypie==0.11.0",
-        "django-polymorphic==0.5.3",
-        "django-leaflet==0.13.2",
-        "django-autocomplete-light==1.4.13",
+        "django-polymorphic==0.5.6",
+        "django-leaflet==0.13.7",
+        "django-autocomplete-light==1.4.14",
         "django-modeltranslation==0.8",
 
         # GeoNode org maintained apps.
