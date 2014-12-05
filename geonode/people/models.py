@@ -30,6 +30,7 @@ from geonode.base.enumerations import COUNTRIES
 from geonode.groups.models import GroupProfile
 
 from account.models import EmailAddress
+from notification import models as notification
 
 from .utils import format_address
 
@@ -148,5 +149,14 @@ def email_post_save(instance, sender, **kw):
         Profile.objects.filter(id=instance.user.pk).update(email=instance.email)
 
 
+def profile_pre_save(instance, sender, **kw):
+    matching_profiles = Profile.objects.filter(id=instance.id)
+    if matching_profiles.count() == 0:
+        return
+
+    if instance.is_active and not matching_profiles.get().is_active:
+        notification.send([instance, ], "account_active")
+
+signals.pre_save.connect(profile_pre_save, sender=Profile)
 signals.post_save.connect(profile_post_save, sender=Profile)
 signals.post_save.connect(email_post_save, sender=EmailAddress)
