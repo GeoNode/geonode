@@ -839,7 +839,7 @@ def map_thumbnail(request, mapid):
             
             thumbnail, created = Thumbnail.objects.get_or_create(resourcebase=map_obj.get_self_resource(),
                 thumb_spec = spec)
-            thumbnail.thumb_file.save(mapid + '.png', ContentFile(image))
+            thumbnail.thumb_file.save('map-%s-thumb.png' % mapid, ContentFile(image))
             Map.objects.filter(pk=map_obj.id).update(thumbnail_url=thumbnail.thumb_file.url)
             return HttpResponse('Thumbnail saved')
         except:
