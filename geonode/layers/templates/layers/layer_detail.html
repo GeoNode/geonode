@@ -56,7 +56,7 @@
                 </tr>
               </thead>
               <tbody>
-                {% for attribute in resource.attribute_set.all %}
+                {% for attribute in resource.attributes %}
                   <tr>
                     <td>{{ attribute }}</td>
                     {% if attribute.unique_values == "NA" %}

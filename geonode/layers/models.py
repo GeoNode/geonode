@@ -154,6 +154,10 @@ class Layer(ResourceBase):
         else:
             return self.typename
 
+    @property
+    def attributes(self):
+        return self.attribute_set.exclude(attribute='the_geom')
+
     def get_base_file(self):
         """Get the shp or geotiff file for this layer.
         """
