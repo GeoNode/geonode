@@ -20,8 +20,8 @@ Here we assume you have github running locally and that you are familiar with th
     $ git pull
 
 
-#. get latest version from transifex
-   (it should be synced with Github, but just in case)
+#. Get latest version from transifex
+   (it should be synced with Github, but just in case):
 
    .. code-block:: console
 
