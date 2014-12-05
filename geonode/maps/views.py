@@ -833,7 +833,9 @@ def map_thumbnail(request, mapid):
             if not image:
                 return
             #Clean any orphan Thumbnail before
-            Thumbnail.objects.filter(resourcebase=map_obj.get_self_resource()).delete()
+            for thumb in Thumbnail.objects.filter(resourcebase=map_obj.get_self_resource()):
+                thumb.thumb_file.delete()
+                thumb.delete()
             
             thumbnail, created = Thumbnail.objects.get_or_create(resourcebase=map_obj.get_self_resource(),
                 thumb_spec = spec)
