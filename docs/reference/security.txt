@@ -14,51 +14,51 @@ Generally permissions can be set on all your uploaded data. Here´s an overview:
 
 #. Users
 
-   * superuser permissions
+   * Superuser permissions
    
-   * django admin interface permissions
+   * Django admin interface permissions
    
 #. Groups
 
-   * public
+   * Public
    
-   * public (invite only)
+   * Public (invite only)
    
-   * private
+   * Private
 
 #. Layers
 
-   * view a layer
+   * View a layer
    
-   * download a layer
+   * Download a layer
    
-   * change metadata for a layer
+   * Change metadata for a layer
    
-   * edit layer's features
+   * Edit layer's features
    
-   * edit styles for a layer
+   * Edit styles for a layer
    
-   * manage a layer (update, delete, change permissions, publish/unpublish it)
+   * Manage a layer (update, delete, change permissions, publish/unpublish it)
 
 #. Maps
 
-   * view a map
+   * View a map
    
-   * download a map
+   * Download a map
    
-   * change metadata for a map
+   * Change metadata for a map
    
-   * manage a map (update, delete, change permissions, publish/unpublish it)
+   * Manage a map (update, delete, change permissions, publish/unpublish it)
 
 #. Documents
 
-   * view a document
+   * View a document
    
-   * download a document
+   * Download a document
    
-   * change metadata for a document
+   * Change metadata for a document
    
-   * manage a document (update, delete, change permissions, publish/unpublish it)
+   * Manage a document (update, delete, change permissions, publish/unpublish it)
 
 To understand how this permissions can be set, you first have to know about the different kinds of users.
 
@@ -70,15 +70,15 @@ Users
 
 GeoNode has two types of users:
 
-* unregistered users (anonymous)
-* registered users
+* Unregistered users (anonymous)
+* Registered users
 
 An unregistered user is someone who is just visiting the site, but doesn't have any data uploaded yet. A registered user has
 already done that. But there are even more kinds of registered users! A registered user can have one or more of those three status:
 
-* superuser
-* staff
-* active
+* Superuser
+* Staff
+* Active
  
 A superuser is usually generated directly after the installation of GeoNode via the terminal. When creating a *superuser* through 
 the terminal it always has the status *active* and the status *staff* as well. It is also important to know that a superuser is a user that has all permissions without explicitly assigning them! That means that he is able to 
@@ -88,10 +88,10 @@ The status *staff* only implies that a user with this status is able to attend t
 
 There are several options to create a user:
 
-* from the terminal: here you can only create a *superuser*
-* from the GeoNode interface (when GeoNode registration are open): a *normal* user will be created by signing up to GeoNode. It only has the status *active* so far! 
-* from the GeoNode interface (when GeoNode registration are closed): a superuser will be able to invite a user
-* frm the Django administrative interface: a new user can be created as well as the status of an already existing user can be changed, e.g make a generic user a superuser.
+* From the terminal: Here you can only create a *superuser*
+* From the GeoNode interface (when GeoNode registration are open): A *normal* user will be created by signing up to GeoNode. It only has the status *active* so far! 
+* From the GeoNode interface (when GeoNode registration are closed): A superuser will be able to invite a user
+* From the Django administrative interface: a new user can be created as well as the status of an already existing user can be changed, e.g make a generic user a superuser.
 
 Groups
 ------
@@ -112,18 +112,18 @@ Generally there are the following types of permissions:
 
 These are permissions that is possible to assign to a GeoNode layer:
 
-* who can view the layer
-* who can download the layer
-* who can change the metadata of the layer
-* who can edit data of the layer
-* who can edit styles of the layer
-* who can manage the layer (update, delete, change permissions, publish/unpublish it)
+* Who can view the layer
+* Who can download the layer
+* Who can change the metadata of the layer
+* Who can edit data of the layer
+* Who can edit styles of the layer
+* Who can manage the layer (update, delete, change permissions, publish/unpublish it)
  
 Each of these permissions can be assigned to:
 
-* anyone (only for who can view and download)
-* one or more users
-* one or more groups
+* Anyone (only for who can view and download)
+* One or more users
+* One or more groups
 
 A user with all of these permissions in the layer detail page will have a button
 to download the layer, a button to download its metadata, a button to change the
@@ -176,11 +176,10 @@ Maps
 
 Generally all the same applies to maps, but with fewer options:
 
-* who can view the map
-* who can download the map
-* who can change the metadata of the map
-* who can manage (delete, change permissions, publish/unpublish it, set map
-thumbnail)
+* Who can view the map
+* Who can download the map
+* Who can change the metadata of the map
+* Who can manage (delete, change permissions, publish/unpublish it, set map thumbnail)
 
 The section *Edit metadata* is almost the same as for layers, with two more 
 options:
