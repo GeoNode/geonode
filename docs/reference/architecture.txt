@@ -27,8 +27,8 @@ MVC
 MVT 
   Model, View, Template
 
-- Model represents application data and provides rich ORM functionality
-- Views are a rendering of a Model most often using the Django template engine
+- Model represents application data and provides rich ORM functionality.
+- Views are a rendering of a Model most often using the Django template engine.
 - In Django, the controller part of this commonly discussed, layered architecture is a
   subject of discussion. According to the standard definition, the controller is the
   layer or component through which the user interacts and model changes occur.
