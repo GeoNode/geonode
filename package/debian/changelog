@@ -1,3 +1,17 @@
+geonode (2.4.0+beta7) trusty; urgency=high
+
+  [ Ariel Nunez ]
+  * [1790e4] Updated setup.py based on ppa versions
+
+  [ Andres Lemon ]
+  * [f9af9d] Corrected some of .txt documents
+  * [bd017f] Removed images with PNG in capital letters
+
+  [ Ariel Nunez ]
+  * [83dcee] Added dependency on python-geolinks needed by latest pycsw
+
+ -- Ariel Nunez <ingenieroariel@gmail.com>  Sun, 07 Dec 2014 16:31:30 -0500
+
 geonode (2.4.0+beta6) trusty; urgency=high
 
   [ capooti ]
