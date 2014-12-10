@@ -516,6 +516,61 @@ footer {
   -webkit-box-shadow: 0 0 5px #0033CC;
   box-shadow: 0px 0px 5px #0033CC;
 }
+
+/* Sign In Modal
+----------------------- */
+.form-signin {
+  max-width: 330px;
+  padding: 15px;
+  margin: 0 auto;
+}
+.form-signin .form-signin-heading,
+.form-signin .checkbox {
+  margin-bottom: 10px;
+}
+.form-signin .checkbox {
+  font-weight: normal;
+}
+.form-signin .form-control {
+  position: relative;
+  height: auto;
+  -webkit-box-sizing: border-box;
+     -moz-box-sizing: border-box;
+          box-sizing: border-box;
+  padding: 10px;
+  font-size: 1em;
+}
+.form-signin .form-control:focus {
+  z-index: 2;
+}
+.form-signin input[type="username"] {
+  margin-bottom: -1px;
+  border-bottom-right-radius: 0;
+  border-bottom-left-radius: 0;
+}
+.form-signin input[type="password"] {
+  margin-bottom: 10px;
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+}
+.modal-body .list-unstyled a {
+  color: @text-color;
+  font-size: 1.14285714em;
+  line-height: 2em;
+  i {
+    margin-right: 8px;
+  }
+  &:hover {
+    color: @brand-alternate;
+    text-decoration: none;
+  };
+}
+.modal-divider {
+  padding-top: 1px;
+  margin: 5px 1px 6px;
+  border-bottom: 1px solid #e1e8ed;
+}
+
 /* Media Queries
    ----------------------------- */
 @media (max-width: 991px) {
