@@ -1,3 +1,69 @@
+geonode (2.4.0+beta7) trusty; urgency=high
+
+  [ Ariel Nunez ]
+  * [1790e4] Updated setup.py based on ppa versions
+
+  [ Andres Lemon ]
+  * [f9af9d] Corrected some of .txt documents
+  * [bd017f] Removed images with PNG in capital letters
+
+  [ Ariel Nunez ]
+  * [83dcee] Added dependency on python-geolinks needed by latest pycsw
+
+ -- Ariel Nunez <ingenieroariel@gmail.com>  Sun, 07 Dec 2014 16:31:30 -0500
+
+geonode (2.4.0+beta6) trusty; urgency=high
+
+  [ capooti ]
+  * [a965cf] For some reasons this file was not merged in PR #1811
+
+  [ Julien Collaer ]
+  * [673ead] Update views.py
+
+  [ capooti ]
+  * [986468] Added the test required by @ingenieroariel in #134
+
+  [ DHohls ]
+  * [beecfe] Bumped version dependency for OWSLib
+
+  [ Andres Lemon ]
+  * [266053] Minimal modifications to the comm_bylaws file
+
+  [ capooti ]
+  * [d511e1] Fixes #1858, also for maps and documents
+
+  [ Simone Dalmasso ]
+  * [531afc] move ng-cloak css out from extra-head, fixes #1871
+  * [ec22fa] add border and margin to manage styles
+  * [d25101] make style manage boxes to be adjacent, fixes #1863
+  * [0cacda] unify _action in all templates, fixes #1781
+  * [ef86e5] remove some lad and unused templates
+  * [274842] remove django_templatetags from dependencies
+  * [39f43b] remove unneeded tags (fix tests)
+
+  [ capooti ]
+  * [7eec87] Bump geonode-user-accounts 1.0.8, fixing #1857
+
+  [ Andres Lemon ]
+  * [776af0] Modified some images in tutorial
+
+  [ Simone Dalmasso ]
+  * [3a1a88] hide the_eom from attributes, fixes #1859
+
+  [ Andres Lemon ]
+  * [889e03] Fixed .png
+
+  [ Ariel Nunez ]
+  * [b5429f] Add missing messages block to base.html
+  * [418177] Support activating accounts by admin users.
+
+  [ Andres Lemon ]
+  * [57a9a0] More screenshots added in tutorial
+
+  [ Ariel Nunez ]
+
+ -- Ariel Nunez <ingenieroariel@gmail.com>  Fri, 05 Dec 2014 15:19:06 -0500
+
 geonode (2.4.0+beta5) trusty; urgency=high
 
   [ Ariel Núñez ]

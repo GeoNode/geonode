@@ -160,9 +160,12 @@ Mac OSX Development Build Instructions::
 Once fully started, you should see a message indicating the address of your geonode.
 The default username and password are ``admin`` and ``admin``::
   
-  Development GeoNode is running at http://localhost:8000/
-  The GeoNode is an unstoppable machine
-  Press CTRL-C to shut down
+  Development Geonode is running at http://localhost:8000/
+  To stop the GeoNode machine run:
+  paver stop
+
+  Or quit the server by pressing
+  CTRL-C to shut down
 
 Before starting GeoNode (paver start), you could test your installation by running tests::
 
