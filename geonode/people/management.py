@@ -30,7 +30,15 @@ if "notification" in settings.INSTALLED_APPS:
         notification.models.NoticeType.create(
             "user_follow",
             _("User following you"),
-            _("another user has started following you"))
+            _("Another user has started following you"))
+        notification.models.NoticeType.create(
+            "account_approve",
+            _("User requested access"),
+            _("A new user has requested access to the site"))
+        notification.models.NoticeType.create(
+            "account_active",
+            _("Account activated"),
+            _("This account is now active and can log in the site"))
 
     signals.post_syncdb.connect(
         create_notice_types,
