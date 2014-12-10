@@ -538,6 +538,7 @@ def create_thumbnail(instance, thumbnail_remote_url, thumbnail_create_url=None, 
                                        link_type='image',
                                        )
                                    )
+        Layer.objects.filter(id=instance.id).update(thumbnail_url=thumbnail_remote_url)
         # Download thumbnail and save it locally.
         resp, image = http_client.request(thumbnail_create_url)
         if 'ServiceException' in image or resp.status < 200 or resp.status > 299:
