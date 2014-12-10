@@ -335,8 +335,10 @@ def layer_metadata(request, layername, template='layers/layer_metadata.html'):
             the_layer.metadata_author = new_author
             the_layer.keywords.clear()
             the_layer.keywords.add(*new_keywords)
-            the_layer.category = new_category
-            the_layer.save()
+            Layer.objects.filter(id=the_layer.id).update(
+                category=new_category
+                )
+
             return HttpResponseRedirect(
                 reverse(
                     'layer_detail',
