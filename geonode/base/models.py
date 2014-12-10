@@ -331,10 +331,6 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin):
     detail_url = models.CharField(max_length=255, null=True, blank=True)
     rating = models.IntegerField(default=0, null=True)
 
-    def delete(self, *args, **kwargs):
-        resourcebase_pre_delete(self)
-        super(ResourceBase, self).delete(*args, **kwargs)
-
     def __unicode__(self):
         return self.title
 
@@ -517,12 +513,14 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin):
         """Determine if the thumbnail object exists and an image exists"""
         return self.link_set.filter(name='Thumbnail').exists()
 
-    def save_thumbnail(self, filename, image=None):
+    def save_thumbnail(self, filename, image):
         thumb_folder = 'thumbs'
-        upload_path = os.path.join(settings.MEDIA_ROOT, thumb_folder, filename)
+        upload_path = os.path.join(settings.MEDIA_ROOT, thumb_folder)
+        if not os.path.exists(upload_path):
+            os.makedirs(upload_path)
         url = os.path.join(settings.MEDIA_URL, thumb_folder, filename)
 
-        with open(upload_path, 'w') as f:
+        with open(os.path.join(upload_path, filename), 'w') as f:
             thumbnail = File(f)
             thumbnail.write(image)
 
@@ -669,11 +667,6 @@ class Link(models.Model):
 
     def __str__(self):
         return '%s link' % self.link_type
-
-
-def resourcebase_pre_delete(instance):
-    if instance.thumbnail_set.exists():
-        instance.thumbnail_set.get().thumb_file.delete()
 
 
 def resourcebase_post_save(instance, *args, **kwargs):
