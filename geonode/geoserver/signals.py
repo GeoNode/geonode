@@ -16,7 +16,7 @@ from geonode.geoserver.helpers import ogc_server_settings
 from geonode.geoserver.helpers import geoserver_upload
 from geonode.base.models import ResourceBase
 from geonode.base.models import Link
-from geonode.layers.utils import create_thumbnail
+from geonode.geoserver.helpers import create_thumbnail
 from geonode.people.models import Profile
 
 from geoserver.layer import Layer as GsLayer

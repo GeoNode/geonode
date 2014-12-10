@@ -51,7 +51,7 @@ from geonode.security.views import _perms_info_json
 from geonode.utils import bbox_to_wkt
 from geonode.services.forms import CreateServiceForm, ServiceForm
 from geonode.utils import mercator_to_llbbox
-from geonode.layers.utils import create_thumbnail
+from geonode.geoserver.helpers import create_thumbnail
 from geonode.geoserver.helpers import set_attributes
 from geonode.base.models import Link
 
