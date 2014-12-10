@@ -40,9 +40,10 @@ from django.conf import settings
 from geonode import GeoNodeException
 from geonode.people.utils import get_valid_user
 from geonode.layers.models import Layer, UploadSession
-from geonode.base.models import SpatialRepresentationType, TopicCategory
+from geonode.base.models import Link, SpatialRepresentationType, TopicCategory
 from geonode.layers.models import shp_exts, csv_exts, vec_exts, cov_exts
 from geonode.layers.metadata import set_metadata
+from geonode.utils import http_client
 
 from zipfile import ZipFile
 
@@ -499,3 +500,53 @@ def upload(incoming, user=None, overwrite=False,
         if verbosity > 0:
             print >> console, msg
     return output
+
+
+def create_thumbnail(instance, thumbnail_remote_url, thumbnail_create_url=None, check_bbox=True, ogc_client=None):
+    if not ogc_client:
+        ogc_client = http_client
+    BBOX_DIFFERENCE_THRESHOLD = 1e-5
+
+    if not thumbnail_create_url:
+        thumbnail_create_url = thumbnail_remote_url
+
+    if check_bbox:
+        # Check if the bbox is invalid
+        valid_x = (
+            float(
+                instance.bbox_x0) -
+            float(
+                instance.bbox_x1)) ** 2 > BBOX_DIFFERENCE_THRESHOLD
+        valid_y = (
+            float(
+                instance.bbox_y1) -
+            float(
+                instance.bbox_y0)) ** 2 > BBOX_DIFFERENCE_THRESHOLD
+    else:
+        valid_x = True
+        valid_y = True
+
+    image = None
+
+    if valid_x and valid_y:
+        Link.objects.get_or_create(resource=instance.get_self_resource(),
+                                   url=thumbnail_remote_url,
+                                   defaults=dict(
+                                       extension='png',
+                                       name="Remote Thumbnail",
+                                       mime='image/png',
+                                       link_type='image',
+                                       )
+                                   )
+        Layer.objects.filter(id=instance.id).update(thumbnail_url=thumbnail_remote_url)
+        # Download thumbnail and save it locally.
+        resp, image = ogc_client.request(thumbnail_create_url)
+        if 'ServiceException' in image or resp.status < 200 or resp.status > 299:
+            msg = 'Unable to obtain thumbnail: %s' % image
+            logger.debug(msg)
+            # Replace error message with None.
+            image = None
+
+    if image is not None:
+        filename = 'layer-%s-thumb.png' % instance.id
+        instance.save_thumbnail(filename, image=image)

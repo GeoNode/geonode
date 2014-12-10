@@ -13,10 +13,10 @@ from geonode.geoserver.ows import wcs_links, wfs_links, wms_links
 from geonode.geoserver.helpers import cascading_delete, set_attributes
 from geonode.geoserver.helpers import set_styles, gs_catalog, get_coverage_grid_extent
 from geonode.geoserver.helpers import ogc_server_settings
-from geonode.geoserver.helpers import geoserver_upload
+from geonode.geoserver.helpers import geoserver_upload, http_client
 from geonode.base.models import ResourceBase
 from geonode.base.models import Link
-from geonode.geoserver.helpers import create_thumbnail
+from geonode.layers.utils import create_thumbnail
 from geonode.people.models import Profile
 
 from geoserver.layer import Layer as GsLayer
@@ -372,7 +372,7 @@ def geoserver_post_save(instance, sender, **kwargs):
     thumbnail_create_url = ogc_server_settings.LOCATION + \
         "wms/reflect?" + p
 
-    create_thumbnail(instance, thumbnail_remote_url, thumbnail_create_url)
+    create_thumbnail(instance, thumbnail_remote_url, thumbnail_create_url, ogc_client=http_client)
 
     legend_url = ogc_server_settings.PUBLIC_LOCATION + \
         'wms?request=GetLegendGraphic&format=image/png&WIDTH=20&HEIGHT=20&LAYER=' + \
