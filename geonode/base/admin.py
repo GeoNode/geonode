@@ -5,7 +5,7 @@ import autocomplete_light
 from modeltranslation.admin import TranslationAdmin
 
 from geonode.base.models import (TopicCategory, SpatialRepresentationType, Region, RestrictionCodeType,
-                                 ContactRole, ResourceBase, Link, License, Thumbnail)
+                                 ContactRole, ResourceBase, Link, License)
 
 
 class MediaTranslationAdmin(TranslationAdmin):
@@ -109,29 +109,6 @@ class LinkAdmin(admin.ModelAdmin):
     search_fields = ('name', 'resource__title',)
     form = autocomplete_light.modelform_factory(Link)
 
-
-class ThumbnailAdmin(admin.ModelAdmin):
-    model = Thumbnail
-    list_display = ('get_title', 'get_geonode_type', 'thumb_file', 'get_thumb_url',)
-    search_fields = ('resourcebase__title',)
-    form = autocomplete_light.modelform_factory(Thumbnail)
-
-    def get_title(self, obj):
-        rb = obj.resourcebase_set.all()[0]  # should be always just one!
-        return rb.title
-    get_title.short_description = 'Title'
-
-    def get_thumb_url(self, obj):
-        rb = obj.resourcebase_set.all()[0]  # should be always just one!
-        return u'<img src="%s" alt="%s" height="80px" />' % (rb.get_thumbnail_url(), obj.id)
-    get_thumb_url.allow_tags = True
-    get_thumb_url.short_description = 'URL'
-
-    def get_geonode_type(self, obj):
-        rb = obj.resourcebase_set.all()[0]  # should be always just one!
-        return rb.class_name
-    get_geonode_type.short_description = 'Type'
-
 admin.site.register(TopicCategory, TopicCategoryAdmin)
 admin.site.register(Region, RegionAdmin)
 admin.site.register(SpatialRepresentationType, SpatialRepresentationTypeAdmin)
@@ -139,5 +116,4 @@ admin.site.register(RestrictionCodeType, RestrictionCodeTypeAdmin)
 admin.site.register(ContactRole, ContactRoleAdmin)
 admin.site.register(ResourceBase, ResourceBaseAdmin)
 admin.site.register(Link, LinkAdmin)
-admin.site.register(Thumbnail, ThumbnailAdmin)
 admin.site.register(License, LicenseAdmin)

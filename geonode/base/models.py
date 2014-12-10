@@ -12,6 +12,7 @@ from django.contrib.staticfiles.templatetags import staticfiles
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.auth import get_user_model
 from django.db.models import signals
+from django.core.files import File
 
 from mptt.models import MPTTModel, TreeForeignKey
 
@@ -146,27 +147,6 @@ class RestrictionCodeType(models.Model):
     class Meta:
         ordering = ("identifier",)
         verbose_name_plural = 'Metadata Restriction Code Types'
-
-
-class Thumbnail(models.Model):
-
-    resourcebase = models.ForeignKey('ResourceBase')
-    thumb_file = models.FileField(upload_to='thumbs')
-    thumb_spec = models.TextField(null=True, blank=True)
-    version = models.PositiveSmallIntegerField(null=True, default=0)
-
-    def _delete_thumb(self):
-        try:
-            self.thumb_file.delete()
-        except OSError:
-            pass
-
-    def delete(self):
-        self._delete_thumb()
-        super(Thumbnail, self).delete()
-
-    def __unicode__(self):
-        return self.thumb_file.name
 
 
 class License(models.Model):
@@ -535,13 +515,29 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin):
 
     def has_thumbnail(self):
         """Determine if the thumbnail object exists and an image exists"""
-        if not self.thumbnail_set.exists():
-            return False
+        return self.link_set.filter(name='Thumbnail').exists()
 
-        if not hasattr(self.thumbnail_set.get().thumb_file, 'path'):
-            return False
+    def save_thumbnail(self, filename, image=None):
+        thumb_folder = 'thumbs'
+        upload_path = os.path.join(settings.MEDIA_ROOT, thumb_folder, filename)
+        url = os.path.join(settings.MEDIA_URL, thumb_folder, filename)
 
-        return os.path.exists(self.thumbnail_set.get().thumb_file.path)
+        with open(upload_path, 'w') as f:
+            thumbnail = File(f)
+            thumbnail.write(image)
+
+        Link.objects.get_or_create(resource=self,
+                                   url=url,
+                                   defaults=dict(
+                                       name='Thumbnail',
+                                       extension='png',
+                                       mime='image/png',
+                                       link_type='image',
+                                   ))
+
+        ResourceBase.objects.filter(id=self.id).update(
+            thumbnail_url=url
+        )
 
     def set_missing_info(self):
         """Set default permissions and point of contacts.

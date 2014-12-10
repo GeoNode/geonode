@@ -1524,3 +1524,41 @@ _esri_types = {
     "esriFieldTypeGUID": "xsd:string",
     "esriFieldTypeGlobalID": "xsd:string",
     "esriFieldTypeXML": "xsd:anyType"}
+
+
+def _render_thumbnail(req_body):
+    spec = _fixup_ows_url(req_body)
+    url = "%srest/printng/render.png" % ogc_server_settings.LOCATION
+    hostname = urlparse(settings.SITEURL).hostname
+    params = dict(width=240, height=180, auth="%s,%s,%s" % (hostname, _user, _password))
+    url = url + "?" + urllib.urlencode(params)
+
+    # @todo annoying but not critical
+    # openlayers controls posted back contain a bad character. this seems
+    # to come from a &minus; entity in the html, but it gets converted
+    # to a unicode en-dash but is not uncoded properly during transmission
+    # 'ignore' the error for now as controls are not being rendered...
+    data = spec
+    if type(data) == unicode:
+        # make sure any stored bad values are wiped out
+        # don't use keyword for errors - 2.6 compat
+        # though unicode accepts them (as seen below)
+        data = data.encode('ASCII', 'ignore')
+    data = unicode(data, errors='ignore').encode('UTF-8')
+    try:
+        resp, content = http_client.request(url, "POST", data, {
+            'Content-type': 'text/html'
+        })
+    except Exception:
+        logging.warning('Error generating thumbnail')
+        return
+    return content
+
+
+def _fixup_ows_url(thumb_spec):
+    # @HACK - for whatever reason, a map's maplayers ows_url contains only /geoserver/wms
+    # so rendering of thumbnails fails - replace those uri's with full geoserver URL
+    import re
+    gspath = '"' + ogc_server_settings.public_url  # this should be in img src attributes
+    repl = '"' + ogc_server_settings.LOCATION
+    return re.sub(gspath, repl, thumb_spec)
