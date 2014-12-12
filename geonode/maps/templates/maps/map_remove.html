@@ -17,7 +17,7 @@
   {% csrf_token %}
   <div class="form-actions">
     <input type="submit" class="btn btn-danger" value="{% trans "Yes, I am sure"  %}" />
-    <a href="{{ map.get_absolute_url }}" class="btn">{% trans "No, don't remove it" %}</a>
+    <a href="{{ map.get_absolute_url }}" class="btn btn-default">{% trans "No, don't remove it" %}</a>
   </div>
 </form>
 {% endblock %}
