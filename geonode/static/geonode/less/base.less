@@ -132,6 +132,7 @@ form#search {
   padding: 8px 15px;
 }
 .avatar {
+  padding: 3px;
   img {
    border-radius: 3px;
   }
@@ -205,9 +206,17 @@ body.groups li#nav_groups a {
 }
 /* Layers
 ----------------------- */
-.layer-actions {
+.detail-page-actions {
   margin-top: 20px;
+  i {
+    padding-right: 3px;
+  }
 }
+
+.layer-actions {
+  .detail-page-actions;
+}
+
 .arcgis-legend > li {
   text-align:right;
 }
@@ -229,13 +238,13 @@ body.groups li#nav_groups a {
 /* Maps
 ----------------------- */
 .map-actions {
-  margin-top: 20px;
+  .detail-page-actions;
 }
 
 /* Documents
 ----------------------- */
 .documents-actions {
-  margin-top: 20px;
+  .detail-page-actions;
 }
 /* Documents
 ----------------------- */
