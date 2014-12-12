@@ -206,7 +206,7 @@ define(function (require, exports) {
      */
     LayerInfo.prototype.markStart = function () {
         this.logStatus({
-            msg: 'Your upload has started<div class="progress" id="prog"><div class="bar bar-success" style="width:0%"></div>',
+            msg: 'Your upload has started<div class="progress" id="prog"><div class="progress-bar progress-bar-success" style="width:0%"></div>',
             level: 'alert-success',
             empty: 'true'
         });
@@ -379,7 +379,7 @@ define(function (require, exports) {
                     req.upload.addEventListener('progress', function(evt) {
                         if(evt.lengthComputable) {
                             var pct = (evt.loaded / evt.total) * 100;
-                            $('#prog > .bar').css('width', pct.toPrecision(3) + '%');
+                            $('#prog > .progress-bar').css('width', pct.toPrecision(3) + '%');
                         }
                     }, false);
                 }
