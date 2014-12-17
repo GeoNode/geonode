@@ -52,7 +52,6 @@ from django.db.models import Max
 from django.contrib.auth import get_user_model
 
 import shutil
-import time
 import os.path
 import logging
 import uuid
@@ -69,6 +68,10 @@ class UploadException(Exception):
         args = [msg]
         args.extend(ex.args)
         return UploadException(*args)
+
+
+class LayerNotReady(Exception):
+    pass
 
 
 class UploaderSession(object):
@@ -502,18 +505,10 @@ def final_step(upload_session, user):
     name = task.layer.name
 
     _log('Getting from catalog [%s]', name)
-    publishing = None
-    for i in xrange(60):
-        publishing = cat.get_layer(name)
-        if publishing:
-            break
-        time.sleep(.5)
+    publishing = cat.get_layer(name)
 
     if not publishing:
-        raise Exception(
-            "Expected to find layer named '%s' in geoserver, tried %s times" %
-            (name, i))
-    _log('Had to try %s times to get layer from catalog' % (i + 1))
+        raise LayerNotReady("Expected to find layer named '%s' in geoserver" % name)
 
     _log('Creating style for [%s]', name)
     # get_files will not find the sld if it doesn't match the base name
