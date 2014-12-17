@@ -280,10 +280,14 @@ define(function (require, exports) {
                             level: 'alert-success',
                             empty: 'true'
                         });
+                    } else if (resp.status === "pending") {
+                        setTimeout(function() {
+                            self.doFinal(resp);
+                        }, 5000);
                     } else {
                         self.displayUploadedLayerLinks(resp);
                     }
-                },
+                }
             });
         } else if (resp.status === "incomplete") {
             var id = resp.url.split('=')[1]
