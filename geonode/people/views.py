@@ -18,7 +18,6 @@
 #########################################################################
 
 from django.contrib.auth import get_user_model
-from django.core.mail import send_mail
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.shortcuts import render, redirect, get_object_or_404
@@ -32,6 +31,7 @@ from django.conf import settings
 from geonode.people.models import Profile
 from geonode.people.forms import ProfileForm
 from geonode.people.forms import ForgotUsernameForm
+from geonode.tasks.email import send_email
 
 
 @login_required
@@ -89,13 +89,12 @@ def forgot_username(request):
 
             users = get_user_model().objects.filter(
                 email=username_form.cleaned_data['email'])
-            if len(users) > 0:
+
+            if users:
                 username = users[0].username
                 email_message = email_subject + " : " + username
-                send_mail(email_subject, email_message,
-                          settings.DEFAULT_FROM_EMAIL,
-                          [username_form.cleaned_data['email']],
-                          fail_silently=False)
+                send_email.delay(email_subject, email_message, settings.DEFAULT_FROM_EMAIL,
+                                 [username_form.cleaned_data['email']], fail_silently=False)
                 message = _("Your username has been emailed to you.")
             else:
                 message = _("No user could be found with that email address.")

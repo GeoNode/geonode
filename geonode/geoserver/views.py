@@ -4,7 +4,6 @@ import httplib2
 import os
 
 from django.contrib.auth import authenticate
-from django.utils import simplejson
 from django.http import HttpResponse, HttpResponseRedirect
 from django.views.decorators.http import require_POST
 from django.shortcuts import render_to_response
@@ -23,17 +22,18 @@ from geonode.layers.forms import LayerStyleUploadForm
 from geonode.layers.models import Layer, Style
 from geonode.layers.views import _resolve_layer, _PERMISSION_MSG_MODIFY
 from geonode.geoserver.signals import gs_catalog
+from geonode.tasks.update import geoserver_update_layers
 from geonode.utils import json_response, _get_basic_auth_info
 from geoserver.catalog import FailedRequestError, ConflictingDataError
 from lxml import etree
-from .helpers import get_stores, gs_slurp, ogc_server_settings, set_styles, style_update
+from .helpers import get_stores, ogc_server_settings, set_styles, style_update
 
 logger = logging.getLogger(__name__)
 
 
 def stores(request, store_type=None):
     stores = get_stores(store_type)
-    data = simplejson.dumps(stores)
+    data = json.dumps(stores)
     return HttpResponse(data)
 
 
@@ -48,14 +48,10 @@ def updatelayers(request):
     workspace = params.get('workspace', None)
     store = params.get('store', None)
     filter = params.get('filter', None)
+    geoserver_update_layers.delay(ignore_errors=False, owner=owner, workspace=workspace,
+                                  store=store, filter=filter)
 
-    output = gs_slurp(
-        ignore_errors=False,
-        owner=owner,
-        workspace=workspace,
-        store=store,
-        filter=filter)
-    return HttpResponse(simplejson.dumps(output))
+    return HttpResponseRedirect(reverse('layer_browse'))
 
 
 @login_required

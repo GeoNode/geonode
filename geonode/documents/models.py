@@ -167,13 +167,12 @@ def pre_save_document(instance, sender, **kwargs):
 
 
 def create_thumbnail(sender, instance, created, **kwargs):
+    from geonode.tasks.update import create_document_thumbnail
+
     if not created:
         return
 
-    image = instance._render_thumbnail()
-    filename = 'doc-%s-thumb.png' % instance.id
-
-    instance.save_thumbnail(filename, image)
+    create_document_thumbnail.delay(object_id=instance.id)
 
 
 def update_documents_extent(sender, **kwargs):
