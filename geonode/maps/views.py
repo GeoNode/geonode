@@ -46,6 +46,7 @@ from geonode.maps.forms import MapForm
 from geonode.security.views import _perms_info_json
 from geonode.base.forms import CategoryForm
 from geonode.base.models import TopicCategory
+from geonode.tasks.deletion import delete_map
 
 from geonode.documents.models import get_related_documents
 from geonode.people.forms import ProfileForm
@@ -232,11 +233,7 @@ def map_remove(request, mapid, template='maps/map_remove.html'):
         }))
 
     elif request.method == 'POST':
-        layers = map_obj.layer_set.all()
-        for layer in layers:
-            layer.delete()
-        map_obj.delete()
-
+        delete_map.delay(object_id=map_obj.id)
         return HttpResponseRedirect(reverse("maps_browse"))
 
 
