@@ -298,14 +298,13 @@
     {% endif %}
     {% endif %}
 
+    {% if resource.storeType == "remoteStore" %}
     <li class="list-group-item">
-        {% if resource.storeType == "remoteStore" %}
             <h4>{% trans "External service layer" %}</h4>
             <div>{% trans "Source" %}: <a href="/services/{{resource.service.id}}">{{ resource.service.title }}</a></div>
             <div>{% trans "Type" %}: {{ resource.service.type }}</div>
-
-        {% endif %}
     </li>
+    {% endif %}
 
     {% include "base/_resourcebase_contact_snippet.html" %}  
   </ul>

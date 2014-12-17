@@ -66,7 +66,7 @@ Ext.onReady(function() {
     <table>
         <tr><th style="width:50%">Title</th><th>Description</th></tr>
         {% for layer in layers %}
-            {% if not layer.group == "background" %}
+            {% if layer.group != "background" %}
             <tr>
                 <td><a href='{{ layer.get_absolute_url }}'>{{layer.title}}</a></td>
                 <td>{{layer.abstract}}</td>

@@ -206,7 +206,7 @@ define(function (require, exports) {
      */
     LayerInfo.prototype.markStart = function () {
         this.logStatus({
-            msg: 'Your upload has started<div class="progress" id="prog"><div class="bar bar-success" style="width:0%"></div>',
+            msg: 'Your upload has started<div class="progress" id="prog"><div class="progress-bar progress-bar-success" style="width:0%"></div>',
             level: 'alert-success',
             empty: 'true'
         });
@@ -228,9 +228,9 @@ define(function (require, exports) {
 
     LayerInfo.prototype.displayUploadedLayerLinks = function(resp) {
         var self = this;
-        var a = '<a href="' + resp.url + '" class="btn">' + gettext('Layer Info') + '</a>';
-        var b = '<a href="' + resp.url + '/metadata" class="btn">' + gettext('Edit Metadata') + '</a>';
-        var c = '<a href="' + resp.url + '/style/manage" class="btn">' + gettext('Manage Styles') + '</a>';
+        var a = '<a href="' + resp.url + '" class="btn btn-success">' + gettext('Layer Info') + '</a>';
+        var b = '<a href="' + resp.url + '/metadata" class="btn btn-warning">' + gettext('Edit Metadata') + '</a>';
+        var c = '<a href="' + resp.url + '/style/manage" class="btn btn-warning">' + gettext('Manage Styles') + '</a>';
         self.logStatus({
             msg: '<p>' + gettext('Your layer was successfully uploaded') + '<br/><br/>' + a + '&nbsp;&nbsp;&nbsp;' + b + '&nbsp;&nbsp;&nbsp;' + c + '</p>',
             level: 'alert-success',
@@ -379,7 +379,7 @@ define(function (require, exports) {
                     req.upload.addEventListener('progress', function(evt) {
                         if(evt.lengthComputable) {
                             var pct = (evt.loaded / evt.total) * 100;
-                            $('#prog > .bar').css('width', pct.toPrecision(3) + '%');
+                            $('#prog > .progress-bar').css('width', pct.toPrecision(3) + '%');
                         }
                     }, false);
                 }

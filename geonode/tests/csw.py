@@ -26,7 +26,6 @@ from geonode.catalogue import get_catalogue
 
 
 class GeoNodeCSWTest(TestCase):
-
     """Tests geonode.catalogue app/module"""
 
     def setUp(self):
@@ -78,7 +77,7 @@ class GeoNodeCSWTest(TestCase):
             'Expected "http://www.isotc211.org/2005/gmd" to be a supported outputSchema value')
 
     def test_csw_search_count(self):
-        """Verify that GeoNode can handle search counting"""
+        """Verify that GeoNode CSW can handle search counting"""
 
         csw = get_catalogue(skip_caps=False)
 
@@ -97,7 +96,7 @@ class GeoNodeCSWTest(TestCase):
             'Expected 16 records against ISO typename')
 
     def test_csw_outputschema_dc(self):
-        """Verify that GeoNode can handle ISO metadata with Dublin Core outputSchema"""
+        """Verify that GeoNode CSW can handle ISO metadata with Dublin Core outputSchema"""
 
         csw = get_catalogue()
 
@@ -130,7 +129,7 @@ class GeoNodeCSWTest(TestCase):
                                  'Expected a specific OGC:WFS URL')
 
     def test_csw_outputschema_iso(self):
-        """Verify that GeoNode can handle ISO metadata with ISO outputSchema"""
+        """Verify that GeoNode CSW can handle ISO metadata with ISO outputSchema"""
 
         csw = get_catalogue()
 
@@ -185,7 +184,7 @@ class GeoNodeCSWTest(TestCase):
                                  'Expected a specific OGC:WFS URL')
 
     def test_csw_outputschema_dc_bbox(self):
-        """Verify that GeoNode can handle ISO metadata BBOX model with Dublin Core outputSchema"""
+        """Verify that GeoNode CSW can handle ISO metadata BBOX model with Dublin Core outputSchema"""
 
         # GeoNetwork is not to spec for DC BBOX output
         # once ticket http://trac.osgeo.org/geonetwork/ticket/730 is fixed
@@ -227,7 +226,7 @@ class GeoNodeCSWTest(TestCase):
                 'Expected a specific maxy coordinate value in Dublin Core model')
 
     def test_csw_outputschema_fgdc(self):
-        """Verify that GeoNode can handle ISO metadata with FGDC outputSchema"""
+        """Verify that GeoNode CSW can handle ISO metadata with FGDC outputSchema"""
 
         # GeoNetwork and deegree do not transform ISO <-> FGDC
         # once this is implemented we can remove this condition
@@ -254,8 +253,18 @@ class GeoNodeCSWTest(TestCase):
                 'No abstract provided',
                 'Expected a specific abstract in FGDC model')
 
+    def test_csw_query_bbox(self):
+        """Verify that GeoNode CSW can handle bbox queries"""
+
+        csw = get_catalogue()
+        csw.catalogue.getrecords(bbox=[-140, -70, 80, 70])
+        self.assertEqual(
+            csw.catalogue.results,
+            {'matches': 7, 'nextrecord': 0, 'returned': 7},
+            'Expected a specific bbox query result set')
+
     def test_csw_upload_fgdc(self):
-        """Verify that GeoNode can handle FGDC metadata upload"""
+        """Verify that GeoNode CSW can handle FGDC metadata upload"""
 
         # GeoNetwork and deegree do not transform ISO <-> FGDC
         # once this is implemented we can remove this condition
@@ -356,7 +365,7 @@ class GeoNodeCSWTest(TestCase):
                 'Expected 1 deleted record in FGDC model')
 
     def test_csw_bulk_upload(self):
-        """Verify that GeoNode can handle bulk upload of ISO and FGDC metadata"""
+        """Verify that GeoNode CSW can handle bulk upload of ISO and FGDC metadata"""
 
         # GeoNetwork and deegree do not transform ISO <-> FGDC
         # once this is implemented we can remove this condition
