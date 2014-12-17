@@ -175,7 +175,7 @@ msgstr "identificação de quando um determinado evento acontece"
 
 #: base/models.py:231
 msgid "version of the cited resource"
-msgstr "versão de um recusro citado"
+msgstr "versão de um recurso citado"
 
 #: base/models.py:232
 msgid "brief narrative summary of the content of the resource(s)"
@@ -399,11 +399,11 @@ msgstr "Por exemplo \"text/html\""
 
 #: base/management/__init__.py:14
 msgid "Request to download a resource"
-msgstr ""
+msgstr "Pedido para realizar o download de um recurso"
 
 #: base/management/__init__.py:15
 msgid "A request for downloading a resource was sent"
-msgstr ""
+msgstr "O pedido para download de um recurso foi enviado"
 
 #: base/templates/base/_resourcebase_contact_snippet.html:3
 #: templates/500.html:184 templates/base.html:175
@@ -711,7 +711,7 @@ msgstr "Baixar Metadados"
 #: maps/templates/maps/map_detail.html:127
 #: templates/_bulk_permissions_form.html:19
 msgid "Close"
-msgstr "Perto"
+msgstr "Fechar"
 
 #: documents/templates/documents/document_detail.html:128
 #: documents/templates/documents/document_detail.html:135
@@ -791,8 +791,7 @@ msgstr ""
 #: layers/templates/layers/layer_metadata.html:23
 #: maps/templates/maps/map_metadata.html:23
 msgid "Error updating metadata.  Please check the following fields: "
-msgstr ""
-"Erro na atualização de metadados. Por favor verifique os seguintes campos:"
+msgstr "Erro na atualização de metadados. Por favor verifique os seguintes campos: "
 
 #: documents/templates/documents/document_metadata.html:46
 #: layers/templates/layers/layer_metadata.html:85
@@ -3650,7 +3649,7 @@ msgstr "Novo anúncio"
 
 #: templates/announcements/announcement_list.html:31
 msgid "Level"
-msgstr ""
+msgstr "Nível"
 
 #: templates/announcements/announcement_list.html:32
 msgid "Announcement"

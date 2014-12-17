@@ -29,7 +29,7 @@ ONEIRIC_64="ami-8baa73e2"
 PRECISE_32="ami-b89842d1"
 PRECISE_64="ami-3c994355"
 TRUSTY_32="ami-134b0923"
-TRUSTY_64="ami-a94e0c99"
+TRUSTY_64="ami-d0ba0cb8"
 
 
 # CentOS

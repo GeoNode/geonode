@@ -105,7 +105,7 @@ setup(name='GeoNode',
         ## Apps with packages provided in GeoNode's PPA on Launchpad.
         "pinax-theme-bootstrap==3.0a11",
         "pinax-theme-bootstrap-account==1.0b2",
-        "django-forms-bootstrap==2.0.3.post1",
+        "django-forms-bootstrap==3.0.1",
         "django-friendly-tag-loader==1.1",
         "django-activity-stream==0.4.5beta1",
         "django-downloadview==1.2",
