@@ -40,11 +40,10 @@ from django.conf import settings
 from geonode import GeoNodeException
 from geonode.people.utils import get_valid_user
 from geonode.layers.models import Layer, UploadSession
-from geonode.base.models import (Link,
-                                 SpatialRepresentationType, TopicCategory)
+from geonode.base.models import Link, SpatialRepresentationType, TopicCategory
 from geonode.layers.models import shp_exts, csv_exts, vec_exts, cov_exts
-from geonode.utils import http_client
 from geonode.layers.metadata import set_metadata
+from geonode.utils import http_client
 
 from zipfile import ZipFile
 
@@ -503,8 +502,9 @@ def upload(incoming, user=None, overwrite=False,
     return output
 
 
-def create_thumbnail(instance, thumbnail_remote_url, thumbnail_create_url=None, check_bbox=True):
-
+def create_thumbnail(instance, thumbnail_remote_url, thumbnail_create_url=None, check_bbox=True, ogc_client=None):
+    if not ogc_client:
+        ogc_client = http_client
     BBOX_DIFFERENCE_THRESHOLD = 1e-5
 
     if not thumbnail_create_url:
@@ -538,8 +538,9 @@ def create_thumbnail(instance, thumbnail_remote_url, thumbnail_create_url=None, 
                                        link_type='image',
                                        )
                                    )
+        Layer.objects.filter(id=instance.id).update(thumbnail_url=thumbnail_remote_url)
         # Download thumbnail and save it locally.
-        resp, image = http_client.request(thumbnail_create_url)
+        resp, image = ogc_client.request(thumbnail_create_url)
         if 'ServiceException' in image or resp.status < 200 or resp.status > 299:
             msg = 'Unable to obtain thumbnail: %s' % image
             logger.debug(msg)
