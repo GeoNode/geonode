@@ -71,9 +71,9 @@
           {% endautoescape %}
         </fieldset>
 
-          <header>{% trans "Attributes" %}</header>
+          <h5>{% trans "Attributes" %}</h5>
           {{ attribute_form.management_form }}
-          <table cellpadding="5" cellspacing="5" width="100%"><tr><th style="text-align: left;">{% trans "Attribute" %}</th><th style="text-align: left;">{% trans "Label" %}</th><th style="text-align: left;">{% trans "Description" %}</th><th style="text-align: left;">{% trans "Display Order" %}</th></tr>
+          <table cellpadding="5" cellspacing="5" width="100%" class="table table-striped table-bordered table-condensed"><tr><th style="text-align: left;">{% trans "Attribute" %}</th><th style="text-align: left;">{% trans "Label" %}</th><th style="text-align: left;">{% trans "Description" %}</th><th style="text-align: left;">{% trans "Display Order" %}</th></tr>
               {% for form in attribute_form.forms %}
               {% if form.attribute %}
               <tr><td><div style="display:none">{{form.id}}</div>{{form.attribute}}</td><td> {{form.attribute_label}}</td><td> {{form.description}}</td><td> {{form.display_order}}</td></tr>

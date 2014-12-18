@@ -282,10 +282,11 @@
  
 </script>
 {% include "_permissions_form_js.html" %}
-<script type="text/javascript" src="{{ STATIC_URL}}geonode/js/utils/map_thumbnail.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL}}geonode/js/utils/thumbnail.js"></script>
 <script type="text/javascript">
   $('#set_thumbnail').click(function(){
-    return createMapThumbnail();
+    createMapThumbnail();
+    $('#edit-map').modal('toggle');
   });
 </script>
  

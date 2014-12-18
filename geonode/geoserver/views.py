@@ -438,9 +438,9 @@ def resolve_user(request):
     }
 
     if acl_user and acl_user.is_authenticated():
-        resp['fullname'] = acl_user.first_name
+        resp['fullname'] = acl_user.get_full_name()
         resp['email'] = acl_user.email
-    return HttpResponse(json.dumps(resp))
+    return HttpResponse(json.dumps(resp), mimetype="application/json")
 
 
 def layer_acls(request):
@@ -505,7 +505,7 @@ def layer_acls(request):
         'is_anonymous': acl_user.is_anonymous(),
     }
     if acl_user.is_authenticated():
-        result['fullname'] = acl_user.first_name
+        result['fullname'] = acl_user.get_full_name()
         result['email'] = acl_user.email
 
     return HttpResponse(json.dumps(result), mimetype="application/json")

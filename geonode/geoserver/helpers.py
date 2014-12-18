@@ -374,16 +374,15 @@ def gs_slurp(
             k for k in resources_for_delete_compare if k.enabled == "true"]
         if skip_unadvertised:
             resources_for_delete_compare = [
-                k for k in resources_for_delete_compare if k.advertised == "true" or
-                k.advertised or k.advertised is None]
+                k for k in resources_for_delete_compare if k.advertised != "false"]
+
     if filter:
         resources = [k for k in resources if filter in k.name]
 
     # filter out layers depending on enabled, advertised status:
     resources = [k for k in resources if k.enabled == "true"]
     if skip_unadvertised:
-        resources = [k for k in resources if k.advertised ==
-                     "true" or k.advertised or k.advertised is None]
+        resources = [k for k in resources if k.advertised != "false"]
 
     # filter out layers already registered in geonode
     layer_names = Layer.objects.all().values_list('typename', flat=True)

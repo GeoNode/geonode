@@ -7,10 +7,10 @@
     <div class="avatar span1 pull-left"><a href="{% url "profile_detail" profile.username %}">{% avatar profile avatar_size %}</a></div>
   {% endwith %}
   <div>
-    <p>
+    <div>
     <a href="{{ profile.get_absolute_url }}">{{ profile.username }}</a>
       {{ username }}
-    </p>
+    </div>
     <div class="details">
       <div class="meta">
         <p>
