@@ -209,6 +209,9 @@
                   {% endif %}
                 {% endif %}
               {% endif %}
+              {% if "change_resourcebase" in perms %}       
+                <li><a href="#" id="set_thumbnail">{% trans "Set Map Thumbnail" %}</a></li> 
+              {% endif %}
               {% if "change_resourcebase" in perms and not resource.service %}
                 <li><a href="{% url "layer_replace" resource.service_typename %}">{% trans "Replace this Layer" %}</a></li>
               {% endif %}
@@ -298,14 +301,13 @@
     {% endif %}
     {% endif %}
 
+    {% if resource.storeType == "remoteStore" %}
     <li class="list-group-item">
-        {% if resource.storeType == "remoteStore" %}
             <h4>{% trans "External service layer" %}</h4>
             <div>{% trans "Source" %}: <a href="/services/{{resource.service.id}}">{{ resource.service.title }}</a></div>
             <div>{% trans "Type" %}: {{ resource.service.type }}</div>
-
-        {% endif %}
     </li>
+    {% endif %}
 
     {% include "base/_resourcebase_contact_snippet.html" %}  
   </ul>
@@ -366,6 +368,12 @@
     });
     {% endif %}
         </script>
+    <script type="text/javascript">
+      $('#set_thumbnail').click(function(){
+        createMapThumbnail();
+        $('#edit-layer').modal('toggle');
+      });
+    </script>
     {% if GEONODE_SECURITY_ENABLED %}
     {% include "_permissions_form_js.html" %}
     {% endif %}
