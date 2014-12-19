@@ -9,7 +9,7 @@ from django.http import HttpResponse, HttpRequest
 from django.shortcuts import render_to_response, get_object_or_404
 from django.views.decorators.csrf import csrf_exempt
 
-from dataverse_info.forms_embed_layer import EmbedLayerForm
+from shared_dataverse_information.dataverse_info.forms_embed_layer import EmbedLayerForm
 
 from geonode.maps.models import Layer
 from geonode.maps.views import newmap_config, snapshot_config

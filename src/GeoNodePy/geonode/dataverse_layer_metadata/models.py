@@ -1,6 +1,6 @@
 from django.db import models
 from geonode.maps.models import Layer
-from dataverse_info.models import DataverseInfo
+from shared_dataverse_information.dataverse_info.models import DataverseInfo
 
 class DataverseLayerMetadata(DataverseInfo):
     """

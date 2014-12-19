@@ -64,7 +64,8 @@ def get_sld_rules(params):
     print '-' *40
 
     response, content = make_geoserver_get_request(sld_rules_url)
-    print response
+    print 'response:', response
+    
     # New rules not created -- possible bad data
     if content is not None and content == '<list/>':
         return MessageHelperJSON.get_json_msg(success=False, msg='Error in creating style rules for layer. Bad parameters.')

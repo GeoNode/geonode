@@ -5,7 +5,7 @@ from django.utils.translation import ugettext as _
 from django import forms 
 
 from geonode.dataverse_layer_metadata.models import DataverseLayerMetadata
-from dataverse_info.forms import DataverseInfoValidationForm\
+from shared_dataverse_information.dataverse_info.forms import DataverseInfoValidationForm\
                                 , CheckForExistingLayerFormBasic\
                                 , CheckForDataverseUserLayersFormBasic
 

@@ -22,8 +22,8 @@ from geonode.dataverse_connect.dv_utils import MessageHelperJSON          # form
 from geonode.dataverse_layer_metadata.layer_metadata_helper import add_dataverse_layer_metadata
 
 
-from shared_form_util.format_form_errors import format_errors_as_text
-from shapefile_import.forms import ShapefileImportDataForm
+from shared_dataverse_information.shared_form_util.format_form_errors import format_errors_as_text
+from shared_dataverse_information.shapefile_import.forms import ShapefileImportDataForm
 
 logger = logging.getLogger("geonode.dataverse_connect.views")
 
