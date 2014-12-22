@@ -8,6 +8,7 @@ from django.http import HttpResponse
 from django.utils.html import escape
 from django.views.decorators.csrf import csrf_exempt
 from django.core.files.uploadedfile import TemporaryUploadedFile, InMemoryUploadedFile
+from django.core.exceptions import ValidationError
 
 from geonode.maps.utils import save
 from geonode.maps.views import _create_new_user
@@ -19,13 +20,78 @@ from geonode.dataverse_connect.dataverse_auth import has_proper_auth
 from geonode.dataverse_connect.layer_metadata import LayerMetadata        # object with layer metadata
 from geonode.dataverse_connect.dv_utils import MessageHelperJSON          # format json response object
 
-from geonode.dataverse_layer_metadata.layer_metadata_helper import add_dataverse_layer_metadata
+from geonode.dataverse_layer_metadata.layer_metadata_helper import add_dataverse_layer_metadata, check_for_existing_layer, update_the_layer_metadata
 
 
 from shared_dataverse_information.shared_form_util.format_form_errors import format_errors_as_text
 from shared_dataverse_information.shapefile_import.forms import ShapefileImportDataForm
 
 logger = logging.getLogger("geonode.dataverse_connect.views")
+
+
+
+@csrf_exempt
+def view_check_for_existing_layer(request):
+    """
+    Before sending over the actual file:
+        (1) Send over the metadata
+        (2) Check if a layer already exists
+    """
+
+    #   Is this request a POST?
+    #
+    if not request.POST:
+        json_msg = MessageHelperJSON.get_json_msg(success=False, msg="The request must be a POST.")
+        return HttpResponse(status=401, content=json_msg, content_type="application/json")
+
+    #   Does the request have proper auth?
+    #
+    if not has_proper_auth(request):
+        json_msg = MessageHelperJSON.get_json_msg(success=False, msg="Authentication failed.")
+        return HttpResponse(status=401, content=json_msg, content_type="application/json")
+
+    #-----------------------------------------------------------
+    #   start: check for existing layer
+    #   Does a layer already exist for this file?
+    #   Check for an existing DataverseLayerMetadata object.
+    #-----------------------------------------------------------
+    dv_layer_metadata = None
+    logger.info("pre existing layer check")
+    print "pre existing layer check"
+    try:
+        existing_dv_layer_metadata = check_for_existing_layer(Post_Data_As_Dict)
+        logger.info("found existing layer")
+        print "found existing layer"
+    except ValidationError as e:
+        error_msg = "The dataverse information failed validation: %s" % Post_Data_As_Dict
+        logger.error(error_msg)
+        json_msg = MessageHelperJSON.get_json_msg(success=False, msg="(The WorldMap could not verify the data.)")
+        return HttpResponse(status=200, content=json_msg, content_type="application/json")
+
+    #-----------------------------------------------------------
+    #   end: check for existing layer
+    #   A layer was found!
+    #   Update the DataverseLayerMetadata and return the layer.
+    #   * Update the worldmap user? *
+    #-----------------------------------------------------------
+    if existing_dv_layer_metadata:
+        print "Found existing layer!"
+        logger.info("Found existing layer!")
+
+        update_the_layer_metadata(existing_dv_layer_metadata, Post_Data_As_Dict)
+
+        layer_metadata_obj = LayerMetadata(**{ 'geonode_layer_object' : existing_dv_layer_metadata.map_layer})
+
+        json_msg = MessageHelperJSON.get_json_msg(success=True, msg='worked', data_dict=layer_metadata_obj.get_metadata_dict())
+        return HttpResponse(status=200, content=json_msg, content_type="application/json")
+
+    logger.info("Layer not yet created on WorldMap")
+
+    json_msg = MessageHelperJSON.get_json_msg(success=False, msg="Layer not yet created on WorldMap")
+
+    return HttpResponse(status=200, content=json_msg, content_type="application/json")
+
+
 
 @csrf_exempt
 def view_add_worldmap_shapefile(request):
@@ -46,9 +112,11 @@ def view_add_worldmap_shapefile(request):
         return HttpResponse(status=401, content=json_msg, content_type="application/json")
 
 
+    Post_Data_As_Dict = request.POST.dict()
+
     #   Is this a valid request?  Check parameters.
     #
-    form_shapefile_import= ShapefileImportDataForm(request.POST)
+    form_shapefile_import= ShapefileImportDataForm(Post_Data_As_Dict)
     if not form_shapefile_import.is_valid():
         #
         #   Invalid send back an error message
@@ -58,6 +126,43 @@ def view_add_worldmap_shapefile(request):
                                 , msg="Incorrect params for ShapefileImportDataForm: <br />%s" % form_shapefile_import.errors)
 
         return HttpResponse(status=200, content=json_msg, content_type="application/json")
+
+
+    #-----------------------------------------------------------
+    #   start: check for existing layer
+    #   Does a layer already exist for this file?
+    #   Check for an existing DataverseLayerMetadata object.
+    #-----------------------------------------------------------
+    dv_layer_metadata = None
+    logger.info("pre existing layer check")
+    print "pre existing layer check"
+    try:
+        existing_dv_layer_metadata = check_for_existing_layer(Post_Data_As_Dict)
+        logger.info("found existing layer")
+        print "found existing layer"
+    except ValidationError as e:
+        error_msg = "The dataverse information failed validation: %s" % Post_Data_As_Dict
+        logger.error(error_msg)
+        json_msg = MessageHelperJSON.get_json_msg(success=False, msg="(The WorldMap could not verify the data.)")
+        return HttpResponse(status=200, content=json_msg, content_type="application/json")
+
+    #-----------------------------------------------------------
+    #   end: check for existing layer
+    #   A layer was found!
+    #   Update the DataverseLayerMetadata and return the layer.
+    #   * Update the worldmap user? *
+    #-----------------------------------------------------------
+    if existing_dv_layer_metadata:
+        print "Found existing layer!"
+        logger.info("Found existing layer!")
+
+        update_the_layer_metadata(existing_dv_layer_metadata, Post_Data_As_Dict)
+
+        layer_metadata_obj = LayerMetadata(**{ 'geonode_layer_object' : existing_dv_layer_metadata.map_layer})
+
+        json_msg = MessageHelperJSON.get_json_msg(success=True, msg='worked', data_dict=layer_metadata_obj.get_metadata_dict())
+        return HttpResponse(status=200, content=json_msg, content_type="application/json")
+
 
 
     #
@@ -109,10 +214,10 @@ def view_add_worldmap_shapefile(request):
                            keywords = keywords.split()\
                         )
 
-        # Look for DataverseInfo in the request.POST
+        # Look for DataverseInfo in the Post_Data_As_Dict
         #   If it exists, create a DataverseLayerMetadata object
         #
-        dataverse_layer_metadata = add_dataverse_layer_metadata(saved_layer, request.POST)
+        dataverse_layer_metadata = add_dataverse_layer_metadata(saved_layer, Post_Data_As_Dict)
         if dataverse_layer_metadata is None:
             logger.error("Failed to create a DataverseLayerMetadata object")
             json_msg = MessageHelperJSON.get_json_msg(success=False, msg="Failed to create a DataverseLayerMetadata object")
@@ -121,6 +226,8 @@ def view_add_worldmap_shapefile(request):
             #
             if saved_layer:
                 saved_layer.delete()
+                
+            # Error
             return HttpResponse(status=200, content=json_msg, content_type="application/json")
 
 
