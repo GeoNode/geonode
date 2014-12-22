@@ -80,7 +80,7 @@ def view_check_for_existing_layer(request):
 
         update_the_layer_metadata(existing_dv_layer_metadata, Post_Data_As_Dict)
 
-        layer_metadata_obj = LayerMetadata(**{ 'geonode_layer_object' : existing_dv_layer_metadata.map_layer})
+        layer_metadata_obj = LayerMetadata(existing_dv_layer_metadata.map_layer)
 
         json_msg = MessageHelperJSON.get_json_msg(success=True, msg='worked', data_dict=layer_metadata_obj.get_metadata_dict())
         return HttpResponse(status=200, content=json_msg, content_type="application/json")
@@ -158,7 +158,7 @@ def view_add_worldmap_shapefile(request):
 
         update_the_layer_metadata(existing_dv_layer_metadata, Post_Data_As_Dict)
 
-        layer_metadata_obj = LayerMetadata(**{ 'geonode_layer_object' : existing_dv_layer_metadata.map_layer})
+        layer_metadata_obj = LayerMetadata( existing_dv_layer_metadata.map_layer)
 
         json_msg = MessageHelperJSON.get_json_msg(success=True, msg='worked', data_dict=layer_metadata_obj.get_metadata_dict())
         return HttpResponse(status=200, content=json_msg, content_type="application/json")
@@ -233,7 +233,7 @@ def view_add_worldmap_shapefile(request):
 
         # Prepare a JSON reponse
         #
-        layer_metadata_obj = LayerMetadata(**{ 'geonode_layer_object' : saved_layer})
+        layer_metadata_obj = LayerMetadata(saved_layer)
 
         # Return the response!
         json_msg = MessageHelperJSON.get_json_msg(success=True, msg='worked', data_dict=layer_metadata_obj.get_metadata_dict())

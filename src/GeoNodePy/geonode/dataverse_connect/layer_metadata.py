@@ -2,14 +2,17 @@ if __name__=='__main__':
     import os, sys
     DJANGO_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     sys.path.append(DJANGO_ROOT)
+    sys.path.append('/Users/rmp553/Documents/iqss-git/shared-dataverse-information')
     os.environ['DJANGO_SETTINGS_MODULE'] = 'geonode.settings'
 
 import logging
-
 from django.conf import settings
+from django.core.exceptions import ValidationError
 
+from shared_dataverse_information.map_layer_metadata.forms import WorldMapToGeoconnectMapLayerMetadataValidationForm
 from geonode.maps.models import Layer
-from geonode.dataverse_connect.dv_utils import remove_whitespace_from_xml, MessageHelperJSON
+#from geonode.dataverse_connect.dv_utils import remove_whitespace_from_xml, MessageHelperJSON
+import json
 
 logger = logging.getLogger("geonode.dataverse_connect.layer_metadata")
 
@@ -27,46 +30,85 @@ to do, add attribute metadata
     is_gaz_start_date = models.BooleanField(_('Gazetteer Start Date'), default=False)
     is_gaz_end_date = models.BooleanField(_('Gazetteer End Date'), default=False)
 
+
+http://worldmap.harvard.edu/download/wms/14708/png?layers=geonode%3Apower_plants_enipedia_jan_2014_kvg&width=948
+&bbox=76.04800165%2C18.31860358%2C132.0322222%2C50.78441&
+service=WMS&format=image%2Fpng&
+srs=EPSG
+%3A4326&request=GetMap&height=550
+
+KEY_MAPPING_FOR_DATAVERSE_API = { 'worldmap_username' : 'worldmapUsername'\
+                                    , 'layer_name' : 'layerName'\
+                                    , 'layer_link' : 'layerLink'\
+                                    , 'embed_map_link' : 'embedMapLink'\
+                                    , 'datafile_id': 'datafileID'\
+                                    , 'dv_session_token' : settings.DATAVERSE_TOKEN_KEYNAME\
+                                    , 'map_image_link' : 'mapImageLink'\
+                                    }
+DATAVERSE_REQUIRED_KEYS = KEY_MAPPING_FOR_DATAVERSE_API.values()
 """
 
-
 class LayerMetadata:
-    """Object used to format JSON and send information back to DVN"""
+    """
+    Prepare Layer Metadata to send back to Geoconnect, and then the Dataverse.
+
+    For consistency between apps, use the WorldMapToGeoconnectMapLayerMetadataValidationForm
+
+    In this case, Map Layer Metadata:
+        (1) Gathered/Formatted in a dict
+        (2) Validated by the WorldMapToGeoconnectMapLayerMetadataValidationForm
+        (3) cleaned_data is returned
+    """
+
+    # Used to initialize this class
+    METADATA_ATTRIBUTES = WorldMapToGeoconnectMapLayerMetadataValidationForm.base_fields.keys()
+
     
-    METADATA_ATTRIBUTES = ['layer_name', 'layer_link', 'embed_map_link', 'worldmap_username', 'llbbox', 'attribute_info']
-    
-    
-    def __init__(self, **kwargs):
-        
-        # Initialize attributes 
+    def __init__(self, geonode_layer_object):
+        """
+
+        :param geonode_layer_object: Layer object
+        """
+        assert type(geonode_layer_object) is Layer, "geonode_layer_object must be a Layer"
+
+        # Initialize attributes
         for attr in self.METADATA_ATTRIBUTES:
             self.__dict__[attr] = None      # kwargs.get(attr, None)
 
-        # Is an entire name being passed?
-        geonode_layer_name = kwargs.get('geonode_layer_name', None)
-        if geonode_layer_name:
-            self.update_metadata_with_layer_name(geonode_layer_name)
+        self.update_metadata_with_layer_object(geonode_layer_object)
 
-        # Is the entire layer being passed?
-        geonode_layer_object = kwargs.get('geonode_layer_object', None)
-        if geonode_layer_object:
-            self.update_metadata_with_layer_object(geonode_layer_object)
+
+    @staticmethod
+    def create_metadata_using_layer_name(layer_name):
+        assert layer_name is not None, "layer_name must be the name of a Layer object"
+
+        try:
+            layer_obj = Layer.objects.get(name=layer_name)
+        except Layer.DoesNotExist:
+            logger.error("Layer not found in database for name: %s" % layer_name)
+            raise LookupError("Layer not found for name: %s" % layer_name)
+
+        return LayerMetadata(layer_obj)\
 
 
     def get_metadata_dict(self, as_json=False):
         
-        json_dict = {}
+        params = {}
         for attr in self.METADATA_ATTRIBUTES:
-            json_dict[attr] = self.__dict__.get(attr, None)
-        
+            params[attr] = self.__dict__.get(attr, None)
+
+        f = WorldMapToGeoconnectMapLayerMetadataValidationForm(params)
+        if not f.is_valid():
+            raise ValidationError('Validation failed for the WorldMapToGeoconnectMapLayerMetadataValidationForm.  \nErrors: %s' % f.errors)
+
         if as_json:
             try:
-                return json.dumps(json_dict)
+                return json.dumps(params)
             except:
                 logger.warn('Failed to convert metadata to JSON')
                 return None
                                 
-        return json_dict
+        return params
 
     def get_attribute_metadata(self, layer_obj):
         """
@@ -77,8 +119,7 @@ class LayerMetadata:
         etc.
         ]
         """
-        if not type(layer_obj) is Layer:
-            return None
+        assert type(layer_obj) is Layer, "layer_obj must be a Layer"
         
         return [ dict(name=info.attribute\
                                     , display_name=info.attribute_label\
@@ -86,18 +127,7 @@ class LayerMetadata:
                     for info in layer_obj.attribute_set.all().order_by('display_order')\
                                 ]
        
-      
-    def update_metadata_with_layer_name(self, layer_name):
-        if not layer_name:
-            return False
 
-        try:
-            layer_obj = Layer.objects.get(name=layer_name)
-        except Layer.DoesNotExist:
-            return False
-            
-        return self.update_metadata_with_layer_object(layer_obj)
-        
         
     def update_metadata_with_layer_object(self, layer_obj):
         if not type(layer_obj) is Layer:
@@ -110,22 +140,53 @@ class LayerMetadata:
 
 
         self.llbbox = layer_obj.llbbox
+        #self.srs = layer_obj.srs
         self.attribute_info = self.get_attribute_metadata(layer_obj)
         if layer_obj.owner:
             self.worldmap_username =  layer_obj.owner.username
-            
+
+        self.download_links = self.format_download_links(layer_obj)
+        download_links = self.format_download_links(layer_obj)
+        if download_links:
+            self.download_links = json.dumps(download_links)
+            if download_links.has_key('png'):
+                png_link = download_links['png']
+                self.map_image_link = download_links['png']
         return True
+
+    def format_download_links(self, layer_obj):
+        assert type(layer_obj) is Layer, "layer_obj must be type Layer"
+
+        link_tuples = layer_obj.download_links()
+        if not link_tuples:
+            return None
+
+        link_dict = {}
+        for lt in link_tuples:
+            if lt and len(lt)==3:
+                link_dict[lt[0]] = lt[2]
+        if len(link_dict) == 0:
+            return None
+        return link_dict
 
 
 if __name__=='__main__':
-    layer = None
+    layers = Layer.objects.all()
+    print 'layers', layers
+    layer=None
     try:
-        layer = Layer.objects.get(name='social_disorder_in_boston_2_zip_m1u')
+        layer = Layer.objects.get(name='social_disorder_in_boston_yqh_zip_m3c')
     except Layer.DoesNotExist:
         print 'layer does not exist'
     if layer:
         print type(layer)
         print dir(layer)
         print layer.owner.username
-        lm = LayerMetadata(**{'geonode_layer_object':layer})
-        print lm.get_metadata_dict()
+        #lm = LayerMetadata(layer)
+        #print lm.get_metadata_dict()
+
+        #print '-'*40
+        #print layer.download_links()
+
+        lm = LayerMetadata.create_metadata_using_layer_name(layer.name)
+        print lm.get_metadata_dict(as_json=True)

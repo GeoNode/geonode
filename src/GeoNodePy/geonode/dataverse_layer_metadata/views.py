@@ -15,7 +15,8 @@ logger = logging.getLogger("geonode.dataverse_layer_metadata.views")
 @csrf_exempt
 def view_get_dataverse_user_layers(request):
     """
-    Send a POST with a 'dv_user_id' 
+    Send a POST with a 'dv_user_id'
+    TODO: Rewrite using a datafile_id -- the user may differ!
     
     Check if a DataverseLayerMetadata record exists for this information.
     """
@@ -46,7 +47,7 @@ def view_get_dataverse_user_layers(request):
 
     metadata_list = []
     for mo in metadata_objects:
-        layer_metadata_obj = LayerMetadata(**{ 'geonode_layer_object' : mo.map_layer })
+        layer_metadata_obj = LayerMetadata( mo.map_layer )
         metadata_list.append(layer_metadata_obj.get_metadata_dict())
     
     if len(metadata_list) == 0:
@@ -103,7 +104,7 @@ def get_existing_layer_data(request):
 
     # Prepare a JSON response
     #
-    layer_metadata_obj = LayerMetadata(**{ 'geonode_layer_object' : dataverse_layer_metadata.map_layer })
+    layer_metadata_obj = LayerMetadata(dataverse_layer_metadata.map_layer)
 
     # Return the response!
     json_msg = MessageHelperJSON.get_json_msg(success=True, msg='worked', data_dict=layer_metadata_obj.get_metadata_dict())
