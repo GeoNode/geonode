@@ -484,7 +484,14 @@ def run_response(req, upload_session):
 
 
 def final_step_view(req, upload_session):
-    saved_layer = upload.final_step(upload_session, req.user)
+    try:
+        saved_layer = upload.final_step(upload_session, req.user)
+
+    except upload.LayerNotReady:
+        return json_response({'status': 'pending',
+                              'success': True,
+                              'redirect_to': '/upload/final'})
+
     # this response is different then all of the other views in the
     # upload as it does not return a response as a json object
     return json_response(
@@ -591,10 +598,18 @@ def view(req, step):
         # must be put back to update object in session
         if upload_session:
             if step == 'final':
-                # we're done with this session, wax it
-                Upload.objects.update_from_session(upload_session)
-                upload_session = None
-                del req.session[_SESSION_KEY]
+                delete_session = True
+                try:
+                    resp_js = json.loads(resp.content)
+                    delete_session = resp_js.get('status') != 'pending'
+                except:
+                    pass
+
+                if delete_session:
+                    # we're done with this session, wax it
+                    Upload.objects.update_from_session(upload_session)
+                    upload_session = None
+                    del req.session[_SESSION_KEY]
             else:
                 req.session[_SESSION_KEY] = upload_session
         elif _SESSION_KEY in req.session:
