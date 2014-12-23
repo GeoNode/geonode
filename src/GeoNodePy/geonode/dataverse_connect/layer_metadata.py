@@ -117,13 +117,16 @@ class LayerMetadata:
         ]
         """
         assert type(layer_obj) is Layer, "layer_obj must be a Layer"
-        
-        return [ dict(name=info.attribute\
+
+        attr_info = [ dict(name=info.attribute\
                                     , display_name=info.attribute_label\
                                     , type=info.attribute_type.replace('xsd:', ''))\
                     for info in layer_obj.attribute_set.all().order_by('display_order')\
                                 ]
-       
+        try:
+            return json.dumps(attr_info)
+        except:
+            raise ValueError('JSON dump failed for attribute info')
 
         
     def update_metadata_with_layer_object(self, layer_obj):
@@ -142,13 +145,17 @@ class LayerMetadata:
         if layer_obj.owner:
             self.worldmap_username =  layer_obj.owner.username
 
-        self.download_links = self.format_download_links(layer_obj)
-        download_links = self.format_download_links(layer_obj)
-        if download_links:
-            self.download_links = json.dumps(download_links)
-            if download_links.has_key('png'):
-                png_link = download_links['png']
-                self.map_image_link = download_links['png']
+        download_links_dict = self.format_download_links(layer_obj)
+        if download_links_dict:
+            try:
+                self.download_links = json.dumps(download_links_dict)
+            except:
+                logger.error('JSON dump failed for download links')
+                logger.error('download_links_dict data: %s' % download_links_dict)
+                raise ValueError('JSON dump failed for download links')
+            if download_links_dict.has_key('png'):
+                self.map_image_link = download_links_dict['png']
+
         return True
 
     def format_download_links(self, layer_obj):
@@ -156,15 +163,22 @@ class LayerMetadata:
 
         link_tuples = layer_obj.download_links()
         if not link_tuples:
-            return None
+            return ''
 
         link_dict = {}
         for lt in link_tuples:
             if lt and len(lt)==3:
                 link_dict[lt[0]] = lt[2]
         if len(link_dict) == 0:
-            return None
+            return ''
+
         return link_dict
+        #try:
+        #    return json.dumps(link_dict)
+        #except:
+        #    logger.error('JSON dump failed for download_links')
+        #    logger.error('link data: %s' % link_dict)
+        #    raise ValueError('JSON dump failed for download_links')
 
 
 if __name__=='__main__':
