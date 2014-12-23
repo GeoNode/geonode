@@ -4,6 +4,7 @@ import logging
 from django import forms
 from geonode.dataverse_layer_metadata.models import DataverseLayerMetadata
 from geonode.dataverse_layer_metadata.forms import DataverseLayerMetadataValidationForm
+from shared_dataverse_information.shapefile_import.forms import ShapefileImportDataForm
 
 from geonode.maps.models import Layer
 
@@ -57,6 +58,17 @@ def update_the_layer_metadata(dv_layer_metadata, dataverse_info):
         setattr(dv_layer_metadata, k, v)
         dv_layer_metadata.save()
 
+    #   Update the Layer object title and abstract
+    #   Using the 'ShapefileImportDataForm' is a bit redundant,
+    #      but not sure where updates will arise in the future
+    #
+    f2= ShapefileImportDataForm(dataverse_info)
+    if not f2.is_valid():
+        raise forms.ValidationError('Failed to validate form_shapefile_import data')
+
+    dv_layer_metadata.map_layer.abstract = f2.cleaned_data['abstract']
+    dv_layer_metadata.map_layer.title = f2.cleaned_data['title']
+    dv_layer_metadata.map_layer.save()
 
 
 def add_dataverse_layer_metadata(saved_layer, dataverse_info):
