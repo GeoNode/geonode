@@ -24,6 +24,8 @@ def check_for_existing_layer(dataverse_info):
     # Validate the data
     f = DataverseLayerMetadataValidationForm(dataverse_info)
     if not f.is_valid():
+        logger.error('check_for_existing_layer. failed validation')
+        logger.error('Errors: %s' % f.errors)
         raise forms.ValidationError('Failed to validate dataverse_info data')
 
     # Check for DataverseLayerMetadata objects with the same "datafile_id"
