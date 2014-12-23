@@ -7,7 +7,7 @@ if __name__=='__main__':
 
 import logging
 from django.conf import settings
-from django.core.exceptions import ValidationError
+from django import forms
 
 from shared_dataverse_information.map_layer_metadata.forms import WorldMapToGeoconnectMapLayerMetadataValidationForm
 from geonode.maps.models import Layer
@@ -17,11 +17,11 @@ import json
 logger = logging.getLogger("geonode.dataverse_connect.layer_metadata")
 
 """
-to do, add attribute metadata
+For a layer, add attribute metadata + download links
 
-(1)  layer_obj .attribute_set.all()
+(1a)  layer_obj.attribute_set.all()
 
-(2) see maps.models: class LayerAttribute(models.Model):
+(1b) see maps.models: class LayerAttribute(models.Model):
     attribute = models.CharField(_('Attribute Name'), max_length=255, blank=False, null=True, unique=False)
     attribute_label = models.CharField(_('Attribute Label'), max_length=255, blank=False, null=True, unique=False)
     attribute_type = models.CharField(_('Attribute Type'), max_length=50, blank=False, null=False, default='xsd:string', unique=False)
@@ -30,6 +30,7 @@ to do, add attribute metadata
     is_gaz_start_date = models.BooleanField(_('Gazetteer Start Date'), default=False)
     is_gaz_end_date = models.BooleanField(_('Gazetteer End Date'), default=False)
 
+(2) layer_obj.download_links()
 
 http://worldmap.harvard.edu/download/wms/14708/png?layers=geonode%3Apower_plants_enipedia_jan_2014_kvg&width=948
 &bbox=76.04800165%2C18.31860358%2C132.0322222%2C50.78441&
@@ -37,15 +38,6 @@ service=WMS&format=image%2Fpng&
 srs=EPSG
 %3A4326&request=GetMap&height=550
 
-KEY_MAPPING_FOR_DATAVERSE_API = { 'worldmap_username' : 'worldmapUsername'\
-                                    , 'layer_name' : 'layerName'\
-                                    , 'layer_link' : 'layerLink'\
-                                    , 'embed_map_link' : 'embedMapLink'\
-                                    , 'datafile_id': 'datafileID'\
-                                    , 'dv_session_token' : settings.DATAVERSE_TOKEN_KEYNAME\
-                                    , 'map_image_link' : 'mapImageLink'\
-                                    }
-DATAVERSE_REQUIRED_KEYS = KEY_MAPPING_FOR_DATAVERSE_API.values()
 """
 
 class LayerMetadata:
@@ -99,15 +91,20 @@ class LayerMetadata:
 
         f = WorldMapToGeoconnectMapLayerMetadataValidationForm(params)
         if not f.is_valid():
-            raise ValidationError('Validation failed for the WorldMapToGeoconnectMapLayerMetadataValidationForm.  \nErrors: %s' % f.errors)
+            raise forms.ValidationError('Validation failed for the WorldMapToGeoconnectMapLayerMetadataValidationForm.  \nErrors: %s' % f.errors)
+
+        print '-'
+        for k, v in params.items():
+            print '%s: (%s)' % (k, v)
+        print '-'
 
         if as_json:
             try:
                 return json.dumps(params)
             except:
-                logger.warn('Failed to convert metadata to JSON')
-                return None
-                                
+                err_msg = 'Failed to convert metadata to JSON'
+                raise ValueError(err_msg)
+
         return params
 
     def get_attribute_metadata(self, layer_obj):

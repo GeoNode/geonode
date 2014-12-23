@@ -1,7 +1,7 @@
 from __future__ import print_function
 import logging
 
-from django.core.exceptions import ValidationError
+from django import forms
 from geonode.dataverse_layer_metadata.models import DataverseLayerMetadata
 from geonode.dataverse_layer_metadata.forms import DataverseLayerMetadataValidationForm
 
@@ -24,7 +24,7 @@ def check_for_existing_layer(dataverse_info):
     # Validate the data
     f = DataverseLayerMetadataValidationForm(dataverse_info)
     if not f.is_valid():
-        raise ValidationError('Failed to validate dataverse_info data')
+        raise forms.ValidationError('Failed to validate dataverse_info data')
 
     # Check for DataverseLayerMetadata objects with the same "datafile_id"
     l = DataverseLayerMetadata.objects.filter(datafile_id=f.cleaned_data.get('datafile_id'))
@@ -48,7 +48,7 @@ def update_the_layer_metadata(dv_layer_metadata, dataverse_info):
     # Validate the data
     f = DataverseLayerMetadataValidationForm(dataverse_info)
     if not f.is_valid():
-        raise ValidationError('Failed to validate dataverse_info data')
+        raise forms.ValidationError('Failed to validate dataverse_info data')
 
     # Update the metadata, field by field
     for k, v in f.cleaned_data.items():

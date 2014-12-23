@@ -70,8 +70,8 @@ class StyleLayerMaker:
             self.layer_metadata = None
             return
         
-        self.layer_metadata = LayerMetadata(**dict(geonode_layer_name=layer_name))
-         
+        #self.layer_metadata = LayerMetadata(**dict(geonode_layer_name=layer_name))
+        self.layer_metadata = LayerMetadata.create_metadata_using_layer_name(layer_name)
     
     def get_layer_metadata(self):
         """Return a LayerMetadata object, if it exists"""
