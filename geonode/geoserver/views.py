@@ -254,7 +254,7 @@ def feature_edit_check(request, layername):
     """
     layer = _resolve_layer(request, layername)
     datastore = ogc_server_settings.DATASTORE
-    feature_edit = getattr(settings, "GEOGIT_DATASTORE", None) or datastore
+    feature_edit = getattr(settings, "GEOGIG_DATASTORE", None) or datastore
     if request.user.has_perm(
             'change_layer_data',
             obj=layer) and layer.storeType == 'dataStore' and feature_edit:

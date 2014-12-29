@@ -128,8 +128,8 @@ msgid "Layer files uploaded, configuring in GeoServer"
 msgstr "レイヤファイルは、アップロードされたGeoServerに設定"
 
 #: static/geonode/js/upload/LayerInfo.js:447
-msgid "Select or create a Geogit repository."
-msgstr "Geogitリポジトリを選択するか作成します。"
+msgid "Select or create a Geogig repository."
+msgstr "Geogigリポジトリを選択するか作成します。"
 
 #: static/geonode/js/upload/LayerInfo.js:542
 msgid "Remove"

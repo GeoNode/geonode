@@ -269,8 +269,8 @@ def save_step_view(req, session):
             permissions=form.cleaned_data["permissions"],
             import_sld_file=sld,
             upload_type=base_file[0].file_type.code,
-            geogit=form.cleaned_data['geogit'],
-            geogit_store=form.cleaned_data['geogit_store'],
+            geogig=form.cleaned_data['geogig'],
+            geogig_store=form.cleaned_data['geogig_store'],
             time=form.cleaned_data['time']
         )
         return _next_step_response(req, upload_session, force_ajax=True)

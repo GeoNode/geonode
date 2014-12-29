@@ -2,15 +2,15 @@
 
 (function() {
 
-  var module = angular.module('geogit', []);
+  var module = angular.module('geogig', []);
   var http, rootScope;
   var service_ = null;
   var q = null;
 
 
-  module.service('geoGitService', function($q, $http) {
+  module.service('geoGigService', function($q, $http) {
     return {
-      geogitCommand: function(url) {
+      geogigCommand: function(url) {
         var deferred = new $q.defer();
         if (url) {
           var request = url + '&callback=JSON_CALLBACK';
@@ -30,38 +30,38 @@
   * Load data from api and defines the multiple and single choice handlers
   * Syncs the browser url with the selections
   */
-  module.controller('geogitController', function($scope, geogitConfig, geoGitService) {
-    var errorText = 'There was an error receiving the latest GeoGit stats.';
-    $scope.geoserverURL = geogitConfig.geoserverURL;
-    $scope.workspace = geogitConfig.workspace;
-    $scope.typename = geogitConfig.typename;
-    $scope.store = geogitConfig.store;
-    $scope.statisticsURL = geogitConfig.statisticsURL;
-    $scope.logURL = geogitConfig.logURL;
-    $scope.repoURL = geogitConfig.repoURL;
+  module.controller('geogigController', function($scope, geogigConfig, geoGigService) {
+    var errorText = 'There was an error receiving the latest GeoGig stats.';
+    $scope.geoserverURL = geogigConfig.geoserverURL;
+    $scope.workspace = geogigConfig.workspace;
+    $scope.typename = geogigConfig.typename;
+    $scope.store = geogigConfig.store;
+    $scope.statisticsURL = geogigConfig.statisticsURL;
+    $scope.logURL = geogigConfig.logURL;
+    $scope.repoURL = geogigConfig.repoURL;
 
     if ($scope.statisticsURL) {
-      geoGitService.geogitCommand($scope.statisticsURL).then(
+      geoGigService.geogigCommand($scope.statisticsURL).then(
           function(data) {
             if (data.response.success) {
               $scope.stats = data.response.Statistics;
-              $('#geogit-message').hide();
-              $('#geogit-stats').show();
+              $('#geogig-message').hide();
+              $('#geogig-stats').show();
             }
           },
           function(error) {
             $scope.error = error;
-            $('#geogit-message > h4').text(errorText);
+            $('#geogig-message > h4').text(errorText);
             console.log(error);
           });
     }
 
     if ($scope.logURL) {
-      geoGitService.geogitCommand($scope.logURL).then(
+      geoGigService.geogigCommand($scope.logURL).then(
           function(data) {
             if (data.response.success) {
-              $('#geogit-message').hide();
-              $('#geogit-stats').show();
+              $('#geogig-message').hide();
+              $('#geogig-stats').show();
               var response = data.response.commit;
               if (!Array.isArray(response)) {
                 $scope.commits = [response];
@@ -78,7 +78,7 @@
           },
           function(error) {
             $scope.error = error;
-            $('#geogit-message > h4').text(errorText);
+            $('#geogig-message > h4').text(errorText);
           });
     }
 

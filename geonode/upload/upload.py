@@ -103,11 +103,11 @@ class UploaderSession(object):
     # defaults to REPLACE if not provided. Accepts APPEND, too
     update_mode = None
 
-    # Import to GeoGit repository
-    geogit = None
+    # Import to GeoGig repository
+    geogig = None
 
-    # GeoGit Repository to import to
-    geogit_store = None
+    # GeoGig Repository to import to
+    geogig_store = None
 
     # Configure Time for this Layer
     time = None
@@ -325,12 +325,12 @@ def run_import(upload_session, async):
     # if a target datastore is configured, ensure the datastore exists
     # in geoserver and set the uploader target appropriately
 
-    if ogc_server_settings.GEOGIT_ENABLED and upload_session.geogit is True \
+    if ogc_server_settings.GEOGIG_ENABLED and upload_session.geogig is True \
             and task.target.store_type != 'coverageStore':
 
         target = create_geoserver_db_featurestore(
-            store_type='geogit',
-            store_name=upload_session.geogit_store)
+            store_type='geogig',
+            store_name=upload_session.geogig_store)
         _log(
             'setting target datastore %s %s',
             target.name,
@@ -397,7 +397,7 @@ def time_step(upload_session, time_attribute, time_transform_type,
                 'field': att,
                 'target': 'org.geotools.data.postgis.PostGISDialect$XDate'}
 
-    use_big_date = getattr(settings, 'USE_BIG_DATE', False) and not upload_session.geogit
+    use_big_date = getattr(settings, 'USE_BIG_DATE', False) and not upload_session.geogig
 
     if time_attribute:
         if time_transform_type:

@@ -128,7 +128,7 @@ msgid "Layer files uploaded, configuring in GeoServer"
 msgstr "Couche chargée sur le serveur, configuration de GeoServer"
 
 #: static/geonode/js/upload/LayerInfo.js:447
-msgid "Select or create a Geogit repository."
+msgid "Select or create a Geogig repository."
 msgstr "Sélectionnez ou créer une base de référence Git."
 
 #: static/geonode/js/upload/LayerInfo.js:542
