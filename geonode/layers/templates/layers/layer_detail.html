@@ -92,11 +92,11 @@
         {% endwith %}
       </article>
 
-      {% if GEOGIT_ENABLED and resource.link_set.geogit %}
-        {% with "_geogit_layer_detail.html" as geogit_template %}
-        <article id="geogit" class="tab-pane">
+      {% if GEOGIG_ENABLED and resource.link_set.geogig %}
+        {% with "_geogig_layer_detail.html" as geogig_template %}
+        <article id="geogig" class="tab-pane">
           {% with resource as obj %}
-            {% include geogit_template %}
+            {% include geogig_template %}
           {% endwith %}
         </article>
         {% endwith %}
@@ -323,9 +323,9 @@
 
 {% block extra_script %}
 
-    {% if GEOGIT_ENABLED and resource.link_set.geogit %}
-        {% with "_geogit_scripts.html" as geogit_scripts_template %}
-            {% include  geogit_scripts_template %}
+    {% if GEOGIG_ENABLED and resource.link_set.geogig %}
+        {% with "_geogig_scripts.html" as geogig_scripts_template %}
+            {% include  geogig_scripts_template %}
         {% endwith %}
     {% endif %}
 

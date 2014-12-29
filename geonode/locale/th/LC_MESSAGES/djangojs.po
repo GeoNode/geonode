@@ -127,8 +127,8 @@ msgid "Layer files uploaded, configuring in GeoServer"
 msgstr "ไฟล์ชั้นข้อมูลอัพโหลดเสร็จแล้ว กำลังตั้งค่าใน GeoServer"
 
 #: static/geonode/js/upload/LayerInfo.js:447
-msgid "Select or create a Geogit repository."
-msgstr "เลือกหรือสร้าง Geogit repository"
+msgid "Select or create a Geogig repository."
+msgstr "เลือกหรือสร้าง Geogig repository"
 
 #: static/geonode/js/upload/LayerInfo.js:542
 msgid "Remove"

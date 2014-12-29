@@ -129,8 +129,8 @@ msgid "Layer files uploaded, configuring in GeoServer"
 msgstr "图层文件上传，配置在GeoServer的"
 
 #: static/geonode/js/upload/LayerInfo.js:447
-msgid "Select or create a Geogit repository."
-msgstr "选择或创建一个Geogit存储库。"
+msgid "Select or create a Geogig repository."
+msgstr "选择或创建一个Geogig存储库。"
 
 #: static/geonode/js/upload/LayerInfo.js:542
 msgid "Remove"
