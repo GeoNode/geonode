@@ -55,7 +55,7 @@ def profile_edit(request, username=None):
     else:
         profile = get_object_or_404(Profile, user__username=username)
 
-    if username == request.user.username or request.user.is_superuser:
+    if username == request.user.username:
         if request.method == "POST":
             form = ProfileForm(request.POST, request.FILES, instance=profile)
             if form.is_valid():
