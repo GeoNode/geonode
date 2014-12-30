@@ -29,6 +29,7 @@ from django.utils.translation import ugettext as _
 from django.views.generic.list import ListView
 from django.contrib.sites.models import Site
 from django.conf import settings
+from django.http import HttpResponseForbidden
 
 from itertools import chain
 
@@ -54,18 +55,25 @@ def profile_edit(request, username=None):
     else:
         profile = get_object_or_404(Profile, user__username=username)
 
-    if request.method == "POST":
-        form = ProfileForm(request.POST, request.FILES, instance=profile)
-        if form.is_valid():
-            form.save()
-            messages.success(request, "Profile profile updated.")
-            return redirect(reverse('profile_detail', args=[request.user.username]))
-    else:
-        form = ProfileForm(instance=profile)
+    if username == request.user.username or request.user.is_superuser:
+        if request.method == "POST":
+            form = ProfileForm(request.POST, request.FILES, instance=profile)
+            if form.is_valid():
+                form.save()
+                messages.success(request, "Profile profile updated.")
+                return redirect(reverse('profile_detail',
+                                args=[request.user.username]))
+        else:
+            form = ProfileForm(instance=profile)
 
-    return render(request, "people/profile_edit.html", {
-        "form": form,
-    })
+        return render(request, "people/profile_edit.html", {
+            "form": form,
+        })
+    else:
+        # 'raise PermissionDenied' would be better
+        # but hits the infinite loop redirect bug
+        return HttpResponseForbidden(
+            'You are not allowed to edit other users profile')
 
 def _get_user_objects(profile):
     qs_layers = []
