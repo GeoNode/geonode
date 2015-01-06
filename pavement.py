@@ -429,6 +429,16 @@ def test_integration(options):
     if not success:
         sys.exit(1)
 
+@task
+def run_tests():
+    """
+    Executes the entire test suite.
+    """
+    sh('python manage.py test geonode.tests.smoke')
+    call_task('test')
+    call_task('test_integration')
+    call_task('test_integration', options={'name': 'geonode.tests.csw'})
+    sh('flake8 geonode')
 
 @task
 @needs(['stop'])
