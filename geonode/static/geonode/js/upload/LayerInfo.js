@@ -230,7 +230,7 @@ define(function (require, exports) {
         var self = this;
         var a = '<a href="' + resp.url + '" class="btn btn-success">' + gettext('Layer Info') + '</a>';
         var b = '<a href="' + resp.url + '/metadata" class="btn btn-warning">' + gettext('Edit Metadata') + '</a>';
-        var c = '<a href="' + resp.url + '/style/manage" class="btn btn-warning">' + gettext('Manage Styles') + '</a>';
+        var c = '<a href="' + resp.url.replace(/^\/layers/, '/gs') + '/style/manage" class="btn btn-warning">' + gettext('Manage Styles') + '</a>';
         self.logStatus({
             msg: '<p>' + gettext('Your layer was successfully uploaded') + '<br/><br/>' + a + '&nbsp;&nbsp;&nbsp;' + b + '&nbsp;&nbsp;&nbsp;' + c + '</p>',
             level: 'alert-success',
