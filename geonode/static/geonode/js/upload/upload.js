@@ -293,7 +293,9 @@ define(['underscore',
             dropZone = document.querySelector(options.dropZone),
             file_queue = $(options.file_queue),
             doClearState = function () {
-                $("#file-input").replaceWith($("#file-input").clone());
+                // http://stackoverflow.com/questions/1043957/clearing-input-type-file-using-jquery/13351234#13351234
+                $("#file-input").wrap('<form>').closest('form').get(0).reset();
+                $("#file-input").unwrap();
                 // set the global layer object to empty
                 layers = {};
                 // redraw the file display view
