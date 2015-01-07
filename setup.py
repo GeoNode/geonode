@@ -139,6 +139,7 @@ setup(name='GeoNode',
 
         # datetimepicker widget
         "django-bootstrap3-datetimepicker==2.2.3",
+        "flake8==2.2.5"
         ],
       zip_safe=False,
       )

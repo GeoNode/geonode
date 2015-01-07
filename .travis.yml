@@ -8,7 +8,7 @@ virtualenv:
 
 branches:
   only:
-    - master 
+    - master
 
 install:
   - sudo apt-get -qq -y update
@@ -16,19 +16,12 @@ install:
   - sudo apt-get install -y python-virtualenv python-imaging python-lxml python-pyproj python-shapely python-nose python-httplib2 python-httplib2 gettext
   - sudo apt-get install -y --force-yes openjdk-6-jdk ant maven2 libjai-imageio-core-java --no-install-recommends
   - pip install -e . --use-mirrors
-  - pip install flake8
 
 before_script:
   - paver setup
-#  - paver static
 
 script:
-  - python manage.py test geonode.tests.smoke
-  - paver test
-  - paver test_integration
-  - paver test_integration -n geonode.tests.csw
-  - flake8 geonode
-#  - paver test_javascript
+  - paver run_tests
 
 after_script:
   - paver reset_hard
