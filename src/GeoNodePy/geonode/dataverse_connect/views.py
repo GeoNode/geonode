@@ -105,12 +105,31 @@ def view_add_worldmap_shapefile(request):
         json_msg = MessageHelperJSON.get_json_msg(success=False, msg="The request must be a POST.")
         return HttpResponse(status=401, content=json_msg, content_type="application/json")
 
+
     #   Does the request have proper auth?
     #
     if not has_proper_auth(request):
         json_msg = MessageHelperJSON.get_json_msg(success=False, msg="Authentication failed.")
         return HttpResponse(status=401, content=json_msg, content_type="application/json")
 
+
+    #   Is there a file in this request
+    #
+    if (not request.FILES) or len(request.FILES)==0:
+        logger.error("Shapefile import error.  No FILES in request")
+        json_msg = MessageHelperJSON.get_json_msg(success=False\
+                                , msg="File not found.  Did you send a file?")
+
+        return HttpResponse(status=400, content=json_msg, content_type="application/json")
+    
+    if not len(request.FILES)==1:
+        logger.error("Shapefile import error.  Only send 1 file")
+        json_msg = MessageHelperJSON.get_json_msg(success=False\
+                                , msg="This request only accepts a single file")
+
+        return HttpResponse(status=400, content=json_msg, content_type="application/json")
+        
+    
 
     Post_Data_As_Dict = request.POST.dict()
 
@@ -125,7 +144,7 @@ def view_add_worldmap_shapefile(request):
         json_msg = MessageHelperJSON.get_json_msg(success=False\
                                 , msg="Incorrect params for ShapefileImportDataForm: <br />%s" % form_shapefile_import.errors)
 
-        return HttpResponse(status=200, content=json_msg, content_type="application/json")
+        return HttpResponse(status=400, content=json_msg, content_type="application/json")
 
 
     #-----------------------------------------------------------
@@ -144,7 +163,7 @@ def view_add_worldmap_shapefile(request):
         error_msg = "The dataverse information failed validation: %s" % Post_Data_As_Dict
         logger.error(error_msg)
         json_msg = MessageHelperJSON.get_json_msg(success=False, msg="(The WorldMap could not verify the data.)")
-        return HttpResponse(status=200, content=json_msg, content_type="application/json")
+        return HttpResponse(status=400, content=json_msg, content_type="application/json")
 
     #-----------------------------------------------------------
     #   end: check for existing layer
@@ -192,7 +211,7 @@ def view_add_worldmap_shapefile(request):
         error_msg = "A user account could not be created for email %s" % dv_user_email
         logger.error(error_msg)
         json_msg = MessageHelperJSON.get_json_msg(success=False, msg=error_msg)
-        return HttpResponse(status=200, content=json_msg, content_type="application/json")
+        return HttpResponse(status=400, content=json_msg, content_type="application/json")
 
     #   Format file name and save actual file
     #
@@ -228,7 +247,7 @@ def view_add_worldmap_shapefile(request):
                 saved_layer.delete()
                 
             # Error
-            return HttpResponse(status=200, content=json_msg, content_type="application/json")
+            return HttpResponse(status=400, content=json_msg, content_type="application/json")
 
 
         # Prepare a JSON reponse
@@ -247,7 +266,7 @@ def view_add_worldmap_shapefile(request):
         logger.error("Unexpected error during dvn import: %s : %s" % (shapefile_name, escape(str(e))))
         err_msg = "Unexpected error during upload: %s" %  escape(str(e))
         json_msg = MessageHelperJSON.get_json_msg(success=False, msg=err_msg)
-        return HttpResponse(content=json_msg, content_type="application/json")
+        return HttpResponse(status=500, content=json_msg, content_type="application/json")
 
 
 
