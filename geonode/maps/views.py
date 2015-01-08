@@ -58,7 +58,7 @@ if 'geonode.geoserver' in settings.INSTALLED_APPS:
 
     # Use the http_client with one that knows the username
     # and password for GeoServer's management user.
-    from geonode.geoserver.helpers import http_client
+    from geonode.geoserver.helpers import http_client, _render_thumbnail
 else:
     from geonode.utils import http_client
 
@@ -818,3 +818,23 @@ def ajax_url_lookup(request):
         content=json.dumps(json_dict),
         mimetype='text/plain'
     )
+
+
+def map_thumbnail(request, mapid):
+    if request.method == 'POST':
+        map_obj = _resolve_map(request, mapid)
+        try:
+            image = _render_thumbnail(request.body)
+
+            if not image:
+                return
+            filename = "map-%s-thumb.png" % map_obj.id
+            map_obj.save_thumbnail(filename, image)
+
+            return HttpResponse('Thumbnail saved')
+        except:
+            return HttpResponse(
+                content='error saving thumbnail',
+                status=500,
+                mimetype='text/plain'
+            )

@@ -32,23 +32,18 @@ from osgeo import gdal
 
 # Django functionality
 from django.contrib.auth import get_user_model
-from django.utils.translation import ugettext_lazy as _
 from django.template.defaultfilters import slugify
 from django.core.files import File
-from django.core.files.base import ContentFile
 from django.conf import settings
 
 # Geonode functionality
 from geonode import GeoNodeException
 from geonode.people.utils import get_valid_user
 from geonode.layers.models import Layer, UploadSession
-from geonode.base.models import (Link, ResourceBase, Thumbnail,
-                                 SpatialRepresentationType, TopicCategory)
+from geonode.base.models import Link, SpatialRepresentationType, TopicCategory
 from geonode.layers.models import shp_exts, csv_exts, vec_exts, cov_exts
-from geonode.utils import http_client
 from geonode.layers.metadata import set_metadata
-
-from urlparse import urljoin
+from geonode.utils import http_client
 
 from zipfile import ZipFile
 
@@ -507,8 +502,9 @@ def upload(incoming, user=None, overwrite=False,
     return output
 
 
-def create_thumbnail(instance, thumbnail_remote_url, thumbnail_create_url=None, check_bbox=True):
-
+def create_thumbnail(instance, thumbnail_remote_url, thumbnail_create_url=None, check_bbox=True, ogc_client=None):
+    if not ogc_client:
+        ogc_client = http_client
     BBOX_DIFFERENCE_THRESHOLD = 1e-5
 
     if not thumbnail_create_url:
@@ -542,9 +538,9 @@ def create_thumbnail(instance, thumbnail_remote_url, thumbnail_create_url=None, 
                                        link_type='image',
                                        )
                                    )
-
+        Layer.objects.filter(id=instance.id).update(thumbnail_url=thumbnail_remote_url)
         # Download thumbnail and save it locally.
-        resp, image = http_client.request(thumbnail_create_url)
+        resp, image = ogc_client.request(thumbnail_create_url)
         if 'ServiceException' in image or resp.status < 200 or resp.status > 299:
             msg = 'Unable to obtain thumbnail: %s' % image
             logger.debug(msg)
@@ -552,32 +548,5 @@ def create_thumbnail(instance, thumbnail_remote_url, thumbnail_create_url=None, 
             image = None
 
     if image is not None:
-        # first delete thumbnail file on disk to prevent duplicates:
-        if instance.has_thumbnail():
-            instance.thumbnail_set.get().thumb_file.delete()
-        # update database and save new thumbnail file on disk:
-        instance.thumbnail_set.all().delete()
-        thumbnail = Thumbnail(thumb_spec=thumbnail_remote_url)
-        instance.thumbnail_set.add(thumbnail)
-        thumbnail.thumb_file.save(
-            'layer-%s-thumb.png' %
-            instance.id,
-            ContentFile(image))
-        thumbnail.save()
-
-        thumbnail_url = urljoin(
-            settings.SITEURL,
-            instance.thumbnail_set.get().thumb_file.url)
-
-        Link.objects.get_or_create(resource=instance.resourcebase_ptr,
-                                   url=thumbnail_url,
-                                   defaults=dict(
-                                       name=_('Thumbnail'),
-                                       extension='png',
-                                       mime='image/png',
-                                       link_type='image',
-                                   )
-                                   )
-    ResourceBase.objects.filter(id=instance.id).update(
-        thumbnail_url=instance.get_thumbnail_url()
-    )
+        filename = 'layer-%s-thumb.png' % instance.id
+        instance.save_thumbnail(filename, image=image)
