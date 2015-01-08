@@ -7,13 +7,12 @@ from django.db.models import signals
 from django.conf import settings
 from django.contrib.contenttypes.models import ContentType
 from django.core.urlresolvers import reverse
-from django.core.files.base import ContentFile
 from django.contrib.contenttypes import generic
 from django.contrib.staticfiles import finders
 from django.utils.translation import ugettext_lazy as _
 
 from geonode.layers.models import Layer
-from geonode.base.models import ResourceBase, Thumbnail, Link, resourcebase_post_save
+from geonode.base.models import ResourceBase, resourcebase_post_save
 from geonode.maps.signals import map_changed_signal
 from geonode.maps.models import Map
 
@@ -171,27 +170,10 @@ def create_thumbnail(sender, instance, created, **kwargs):
     if not created:
         return
 
-    if instance.has_thumbnail():
-        instance.thumbnail_set.get().thumb_file.delete()
-    else:
-        instance.thumbnail_set.add(Thumbnail())
-
     image = instance._render_thumbnail()
+    filename = 'doc-%s-thumb.png' % instance.id
 
-    instance.thumbnail_set.get().thumb_file.save(
-        'doc-%s-thumb.png' %
-        instance.id,
-        ContentFile(image))
-    instance.thumbnail_set.get().thumb_spec = 'Rendered'
-    instance.thumbnail_set.get().save()
-    Link.objects.get_or_create(
-        resource=instance.get_self_resource(),
-        url=instance.thumbnail_set.get().thumb_file.url,
-        defaults=dict(
-            name=('Thumbnail'),
-            extension='png',
-            mime='image/png',
-            link_type='image',))
+    instance.save_thumbnail(filename, image)
 
 
 def update_documents_extent(sender, **kwargs):
