@@ -1333,8 +1333,8 @@ msgid "Attributes"
 msgstr "Thuộc tính"
 
 #: layers/templates/layers/_actions.html:11
-msgid "GeoGit"
-msgstr "GeoGit"
+msgid "GeoGig"
+msgstr "GeoGig"
 
 #: layers/templates/layers/_layer_list_item.html:38
 msgid "Create a map"

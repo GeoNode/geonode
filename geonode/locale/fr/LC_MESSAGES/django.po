@@ -1355,7 +1355,7 @@ msgid "Attributes"
 msgstr "Attributs"
 
 #: layers/templates/layers/_actions.html:11
-msgid "GeoGit"
+msgid "GeoGig"
 msgstr "GeoGig"
 
 #: layers/templates/layers/_layer_list_item.html:38

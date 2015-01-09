@@ -128,8 +128,8 @@ msgid "Layer files uploaded, configuring in GeoServer"
 msgstr "GeoServer에 레이어 파일 업로드 완료, 구성중"
 
 #: static/geonode/js/upload/LayerInfo.js:447
-msgid "Select or create a Geogit repository."
-msgstr "Geogit 저장소를 선택하가나 생성하십시오."
+msgid "Select or create a Geogig repository."
+msgstr "Geogig 저장소를 선택하가나 생성하십시오."
 
 #: static/geonode/js/upload/LayerInfo.js:542
 msgid "Remove"

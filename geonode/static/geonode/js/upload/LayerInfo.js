@@ -134,7 +134,7 @@ define(function (require, exports) {
      *  @returns {FromData}
      */
     LayerInfo.prototype.prepareFormData = function (form_data) {
-        var i, ext, file, perm, geogit, geogit_store, time;
+        var i, ext, file, perm, geogig, geogig_store, time;
 
         if (!form_data) {
             form_data = new FormData();
@@ -147,15 +147,15 @@ define(function (require, exports) {
             perm = permissionsString('#permission_form','layers');
         }
 
-        if (geogit_enabled) {
-            geogit = $('#' + this.main.name.slice(0, -4) + '\\:geogit_toggle').is(':checked');
-            if (geogit) {
-                geogit_store = $('#' + this.main.name.slice(0, -4) + '\\:geogit_store').val();
-                form_data.append('geogit_store', geogit_store);
+        if (geogig_enabled) {
+            geogig = $('#' + this.main.name.slice(0, -4) + '\\:geogig_toggle').is(':checked');
+            if (geogig) {
+                geogig_store = $('#' + this.main.name.slice(0, -4) + '\\:geogig_store').val();
+                form_data.append('geogig_store', geogig_store);
             } else {
-                form_data.append('geogit_store', "");
+                form_data.append('geogig_store', "");
             }
-            form_data.append('geogit', geogit);
+            form_data.append('geogig', geogig);
         }
         if (time_enabled) {
             time = $('#' + this.main.name.slice(0, -4) + '-time').is(':checked');
@@ -413,13 +413,13 @@ define(function (require, exports) {
         });
     };
 
-    LayerInfo.prototype.setupGeogitDropdown = function(selector){
+    LayerInfo.prototype.setupGeogigDropdown = function(selector){
         function format(item){return item.name;};
         $(selector).select2({
-           data: {results:geogit_stores, text:'name'},
+           data: {results:geogig_stores, text:'name'},
            formatSelection: format,
            formatResult: format,
-           placeholder: gettext('Select or create a Geogit repository.'),
+           placeholder: gettext('Select or create a Geogig repository.'),
 
             id: function(object) {
              return object.name;
@@ -449,7 +449,7 @@ define(function (require, exports) {
                 selector: LayerInfo.safeSelector(this.name),
                 type: this.type.name,
                 format: this.type.format,
-                geogit: geogit_enabled,
+                geogig: geogig_enabled,
                 time: time_enabled
             });
         file_queue.append(li);
@@ -458,11 +458,11 @@ define(function (require, exports) {
         this.displayErrors();
         this.element = $(this.selector);
 
-        $('#' + this.name + '\\:geogit_toggle').on('change', this.doGeoGitToggle);
+        $('#' + this.name + '\\:geogig_toggle').on('change', this.doGeoGigToggle);
 
-        // Add values to the geogit store dropdown and hide.
-        this.setupGeogitDropdown($('#' + this.main.name.slice(0, -4) + '\\:geogit_store'));
-        $("#s2id_" + this.name + "\\:geogit_store").hide()
+        // Add values to the geogig store dropdown and hide.
+        this.setupGeogigDropdown($('#' + this.main.name.slice(0, -4) + '\\:geogig_store'));
+        $("#s2id_" + this.name + "\\:geogig_store").hide()
 
         return li;
     };
@@ -559,17 +559,17 @@ define(function (require, exports) {
         this.displayErrors();
     };
 
-    LayerInfo.prototype.doGeoGitToggle = function (event) {
+    LayerInfo.prototype.doGeoGigToggle = function (event) {
         var target = event.target || event.srcElement;
         var id = target.id;
         var base_name = id.split(':')[0];
-        var geogit = $('#' + id.replace(':', '\\:')).is(':checked');
-        if (geogit) {
-            $('#' + base_name + '\\:geogit_store').show();
-            $("#s2id_" + base_name + "\\:geogit_store").show()
+        var geogig = $('#' + id.replace(':', '\\:')).is(':checked');
+        if (geogig) {
+            $('#' + base_name + '\\:geogig_store').show();
+            $("#s2id_" + base_name + "\\:geogig_store").show()
         } else {
-            $("#s2id_" + base_name + "\\:geogit_store").hide()
-            $('#' + base_name + '\\:geogit_store').hide();
+            $("#s2id_" + base_name + "\\:geogig_store").hide()
+            $('#' + base_name + '\\:geogig_store').hide();
         }
     };
 
