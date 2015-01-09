@@ -231,11 +231,11 @@ entry for the datastore in the ``DATABASES`` dictionary with the same name.  Exa
    }
   }
 
-GEOGIT_ENABLED
+GEOGIG_ENABLED
 ..............
 Default: ``False``
 
-A boolean that represents whether the OGC server supports GeoGit datastores.
+A boolean that represents whether the OGC server supports GeoGig datastores.
 
 GEONODE_SECURITY_ENABLED
 ........................
@@ -382,12 +382,12 @@ A boolean which specifies whether the social media icons and javascript should b
 Upload settings
 ===============
 
-GEOGIT_DATASTORE_NAME
+GEOGIG_DATASTORE_NAME
 ---------------------
 Default: ``None``
 
-A string with the default GeoGit datastore name.  This value is only used if no GeoGit datastore name is provided
-when data is uploaded but it must be populated if your deployment supports GeoGit.
+A string with the default GeoGig datastore name.  This value is only used if no GeoGig datastore name is provided
+when data is uploaded but it must be populated if your deployment supports GeoGig.
 
 UPLOADER
 --------
@@ -397,7 +397,7 @@ Default::
         'BACKEND' : 'geonode.rest',
         'OPTIONS' : {
             'TIME_ENABLED': False,
-            'GEOGIT_ENABLED': False,
+            'GEOGIG_ENABLED': False,
         }
     }
 
@@ -413,7 +413,7 @@ The uploader backend to use.  The backend choices are:
 * ``'geonode.rest'``
 
 The importer backend requires the Geoserver importer extension to be enabled and is required for uploading data into
-GeoGit datastores.
+GeoGig datastores.
 
 OPTIONS
 -------
@@ -421,7 +421,7 @@ Default::
 
     'OPTIONS' : {
         'TIME_ENABLED': False,
-        'GEOGIT_ENABLED': False,
+        'GEOGIG_ENABLED': False,
     }
 
 TIME_ENABED
@@ -430,11 +430,11 @@ Default: ``False``
 
 A boolean that specifies whether the upload should allow the user to enable time support when uploading data.
 
-GEOGIT_ENABED
+GEOGIG_ENABED
 .............
 Default: ``False``
 
-A boolean that specifies whether the uploader should allow the user to upload data into a GeoGit datastore.
+A boolean that specifies whether the uploader should allow the user to upload data into a GeoGig datastore.
 
 User Account settings
 =====================

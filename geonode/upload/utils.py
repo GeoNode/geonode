@@ -30,29 +30,29 @@ def create_geoserver_db_featurestore(store_type=None, store_name=None):
     dsname = ogc_server_settings.DATASTORE
     # get or create datastore
     try:
-        if store_type == 'geogit' and ogc_server_settings.GEOGIT_ENABLED:
+        if store_type == 'geogig' and ogc_server_settings.GEOGIG_ENABLED:
             if store_name is not None:
                 ds = cat.get_store(store_name)
             else:
-                ds = cat.get_store(settings.GEOGIT_DATASTORE_NAME)
+                ds = cat.get_store(settings.GEOGIG_DATASTORE_NAME)
         elif dsname:
             ds = cat.get_store(dsname)
         else:
             return None
     except FailedRequestError:
-        if store_type == 'geogit':
+        if store_type == 'geogig':
             if store_name is None and hasattr(
                     settings,
-                    'GEOGIT_DATASTORE_NAME'):
-                store_name = settings.GEOGIT_DATASTORE_NAME
+                    'GEOGIG_DATASTORE_NAME'):
+                store_name = settings.GEOGIG_DATASTORE_NAME
             logger.info(
                 'Creating target datastore %s' %
-                settings.GEOGIT_DATASTORE_NAME)
+                settings.GEOGIG_DATASTORE_NAME)
             ds = cat.create_datastore(store_name)
-            ds.type = "GeoGIT"
+            ds.type = "GeoGig"
             ds.connection_parameters.update(
-                geogit_repository=os.path.join(
-                    ogc_server_settings.GEOGIT_DATASTORE_DIR,
+                geogig_repository=os.path.join(
+                    ogc_server_settings.GEOGIG_DATASTORE_DIR,
                     store_name),
                 branch="master",
                 create="true")

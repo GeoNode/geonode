@@ -225,7 +225,7 @@ OGC_SERVER
   GEOGIT_ENABLED
     Default: ``False``
 
-    A boolean that represents whether the OGC server supports Geogit datastores.
+    A boolean that represents whether the OGC server supports Geogig datastores.
 
   WMST_ENABLED
     Default: ``False``
