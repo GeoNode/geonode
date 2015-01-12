@@ -729,7 +729,7 @@ def set_styles(layer, gs_catalog):
 
 
 def save_style(gs_style):
-    style, created = Style.objects.get_or_create(name=gs_style.sld_name)
+    style, created = Style.objects.get_or_create(name=gs_style.name)
     style.sld_title = gs_style.sld_title
     style.sld_body = gs_style.sld_body
     style.sld_url = gs_style.body_href()
