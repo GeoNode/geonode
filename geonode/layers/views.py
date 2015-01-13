@@ -35,6 +35,7 @@ from django.template.defaultfilters import slugify
 from django.forms.models import inlineformset_factory
 from django.db.models import F
 
+from geonode.tasks.deletion import delete_layer
 from geonode.services.models import Service
 from geonode.layers.forms import LayerForm, LayerUploadForm, NewLayerUploadForm, LayerAttributeForm
 from geonode.base.forms import CategoryForm
@@ -469,7 +470,7 @@ def layer_remove(request, layername, template='layers/layer_remove.html'):
             "layer": layer
         }))
     if (request.method == 'POST'):
-        layer.delete()
+        delete_layer.delay(object_id=layer.id)
         return HttpResponseRedirect(reverse("layer_browse"))
     else:
         return HttpResponse("Not allowed", status=403)
