@@ -1,3 +1,71 @@
+geonode (2.4.0+beta8) trusty; urgency=high
+
+  [ Simone Dalmasso ]
+  * [c8f5f5] add initial thumbnail logic
+  * [b63a85] add thumbnail to map save
+  * [79d6d4] cleanup map thumbnails files on regen
+  * [63c5c4] formalize thumb name
+
+  [ Ariel Nunez ]
+  * [fe1e18] Fixed short version of account requested
+  * [c4cb6d] Renamed capital PNG to png in docs
+  * [fe5b5f] Renamed capital PNG to png in docs
+
+  [ Tom Kralidis ]
+  * [e62edb] add CSW bbox query test
+
+  [ Simone Dalmasso ]
+  * [b64467] simplify thumbnail management
+  * [1fef11] save layer only once
+  * [af42b6] fix tests and folder creation
+  * [227934] Save the remote thumbnail url on layer load
+  * [ae6eea] move the create logic in helpers
+  * [007573] make the http_client not tied to gs
+
+  [ Paolo Pasquali ]
+  * [608773] Change the profile dropdown in bootstrap modal
+
+  [ Tyler Garner ]
+  * [c13513] Return the user's full name in the resolve_user and layer_acls views.
+
+  [ Paolo Pasquali ]
+  * [52bf1d] Add links to profile page
+
+  [ Tyler Garner ]
+  * [f7f9c7] Update skip_unadvertised logic to not run when advertised is "false".
+
+  [ Ariel Núñez ]
+  * [12b3fb] Update ec2.py
+
+  [ Tyler Garner ]
+  * [5a89f6] Update the upload progress bar to use bootstrap 3 class names.  Fixes #1797.
+  * [595a8f] Bump django-forms-bootstrap to 3.0.1 for bootstrap 3 classes.
+  * [112222] Minor style improvements and code cleanup.
+  * [b1e95a] Fix autopep8 shenanigans in the url routes.
+  * [f1f783] Improve upload button styles.
+  * [e27326] Improve style of the attribute table on the layer metadata route.
+
+  [ George Silva ]
+  * [e00168] corrigindo algumas traduções.
+
+  [ Tyler Garner ]
+  * [9b82d7] Use client-side polling (instead of server-side) polling when using the importer upload.
+
+  [ menegon ]
+  * [8ab593] fixed the pluralization of translated strings
+
+  [ Tyler Garner ]
+  * [c38352] Fix a bug where clicking 'Clear' on the upload page would fail to clear the actual files.
+  * [b44281] Use a single paver task to execute all of the tests.
+  * [91a9c1] Fix a broken url on the upload layer page.
+  * [b4e47a] Rename GeoGit to GeoGig.
+  * [1000ca] Initial celery integration.
+  * [fb2973] Use an SLD's name instead of text from a name element when saving styles in GeoNode.
+
+  [ Simone Dalmasso ]
+
+ -- Simone Dalmasso <simone.dalmasso@gmail.com>  Wed, 14 Jan 2015 07:30:09 +0000
+
 geonode (2.4.0+beta7) trusty; urgency=high
 
   [ Ariel Nunez ]
