@@ -343,7 +343,13 @@ def start_geoserver(options):
     # prevents geonode security from initializing correctly otherwise
     with pushd(data_dir):
         javapath = "java"
-        loggernullpath = "/dev/null"
+        loggernullpath = os.devnull
+
+        # checking if our loggernullpath exists and if not, reset it to something manageable
+        if loggernullpath == "nul":
+            open("../../downloaded/null.txt", 'w+').close()
+            loggernullpath = "../../downloaded/null.txt"
+
         try:
             sh(('java -version'))
         except:
@@ -352,10 +358,6 @@ def start_geoserver(options):
                 sys.exit(1)
             # if there are spaces
             javapath = 'START /B "" "' + options['java_path'] + '"'
-            # cmd log file needs to exist in windows
-            # using folder from .gitignore
-            open("../../downloaded/null.txt", 'w+').close()
-            loggernullpath = "../../downloaded/null.txt"
 
         sh((
             '%(javapath)s -Xmx512m -XX:MaxPermSize=256m'
