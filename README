@@ -46,6 +46,22 @@ If instead, you are interested in doing development on the source code, here are
     # Visit the development geonode site
     http://localhost:8000
 
+Docker Usage
+If you want to use Docker you can now:
+
+    # build the docker container
+    docker build -t geonode .
+
+    # run the docker container
+    docker run -d -p 8111:8000 geonode
+
+Or if you use fig:
+
+    # build the container
+    fig build
+
+    # run the container
+    fig up
 
 openSUSE Development Build Instructions::
 

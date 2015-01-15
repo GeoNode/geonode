@@ -266,7 +266,8 @@ def package(options):
         'start_django'])
 @cmdopts([
     ('bind=', 'b', 'Bind server to provided IP address and port number.'),
-    ('java_path=', 'j', 'Full path to java install for Windows')
+    ('java_path=', 'j', 'Full path to java install for Windows'),
+    ('foreground', 'f', 'Do not run in background but in foreground')
 ], share_with=['start_django', 'start_geoserver'])
 def start():
     """
@@ -311,7 +312,8 @@ def start_django():
     Start the GeoNode Django application
     """
     bind = options.get('bind', '')
-    sh('python manage.py runserver %s &' % bind)
+    foreground = '' if options.get('foreground', False) else '&'
+    sh('python manage.py runserver %s %s' % (bind, foreground))
 
 
 @cmdopts([
