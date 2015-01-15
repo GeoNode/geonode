@@ -20,6 +20,7 @@ from geonode.base.models import TopicCategory, ResourceBase
 from geonode.documents.models import Document
 from geonode.documents.forms import DocumentForm, DocumentCreateForm, DocumentReplaceForm
 from geonode.documents.models import IMGTYPES
+from geonode.utils import format_urls
 
 ALLOWED_DOC_TYPES = settings.ALLOWED_DOCUMENT_TYPES
 
@@ -83,15 +84,23 @@ def document_detail(request, docid):
         if request.user != document.owner:
             Document.objects.filter(id=document.id).update(popular_count=F('popular_count') + 1)
 
+
+        context_dict = {
+            'permissions_json': _perms_info_json(document),
+            'resource': document,
+            'imgtypes': IMGTYPES,
+            'related': related}
+
+        if settings.SOCIAL_ORIGINS:
+            social_url = "{protocol}://{host}{path}".format(
+                protocol=("https" if request.is_secure() else "http"),
+                host=request.get_host(),
+                path=request.get_full_path())
+            context_dict["social_links"] = format_urls(settings.SOCIAL_ORIGINS, {'name':document.title,'url': social_url})
+
         return render_to_response(
             "documents/document_detail.html",
-            RequestContext(
-                request,
-                {
-                    'permissions_json': _perms_info_json(document),
-                    'resource': document,
-                    'imgtypes': IMGTYPES,
-                    'related': related}))
+            RequestContext(request,context_dict))
 
 
 def document_download(request, docid):

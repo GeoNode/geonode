@@ -51,6 +51,7 @@ from geonode.tasks.deletion import delete_map
 from geonode.documents.models import get_related_documents
 from geonode.people.forms import ProfileForm
 from geonode.utils import num_encode, num_decode
+from geonode.utils import format_urls
 
 if 'geonode.geoserver' in settings.INSTALLED_APPS:
     # FIXME: The post service providing the map_status object
@@ -110,13 +111,23 @@ def map_detail(request, mapid, snapshot=None, template='maps/map_detail.html'):
 
     config = json.dumps(config)
     layers = MapLayer.objects.filter(map=map_obj.id)
-    return render_to_response(template, RequestContext(request, {
+
+    context_dict = {
         'config': config,
         'resource': map_obj,
         'layers': layers,
         'permissions_json': _perms_info_json(map_obj),
         "documents": get_related_documents(map_obj),
-    }))
+    }
+
+    if settings.SOCIAL_ORIGINS:
+        social_url = "{protocol}://{host}{path}".format(
+            protocol=("https" if request.is_secure() else "http"),
+            host=request.get_host(),
+            path=request.get_full_path())
+        context_dict["social_links"] = format_urls(settings.SOCIAL_ORIGINS, {'name':map_obj.title,'url': social_url})
+
+    return render_to_response(template, RequestContext(request, context_dict))
 
 
 @login_required
