@@ -539,3 +539,14 @@ def num_decode(s):
     for c in s:
         n = n * BASE + ALPHABET_REVERSE[c]
     return n
+
+def format_urls(a, values):
+    b = []
+    for i in a:
+        j = i.copy()
+        try:
+            j['url'] = j['url'].format(**values)
+        except KeyError:
+            j['url'] = None
+        b.append(j)
+    return b
