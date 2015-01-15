@@ -341,10 +341,10 @@ def start_geoserver(options):
     # prevents geonode security from initializing correctly otherwise
     with pushd(data_dir):
         javapath = "java"
-        loggernullpath = "/dev/null"
+        loggernullpath = os.devnull
 
         # checking if our loggernullpath exists and if not, reset it to something manageable
-        if os.devnull == "nul":
+        if loggernullpath == "nul":
             open("../../downloaded/null.txt", 'w+').close()
             loggernullpath = "../../downloaded/null.txt"
 
