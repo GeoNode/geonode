@@ -1,3 +1,13 @@
+geonode (2.4.0+beta10) trusty; urgency=high
+
+  [ Mila Frerichs ]
+  * [996276] Add foreground option to startup script to start django in foreground
+  * [889056] Add Dockerfile and fig for easier developement/deployment
+
+  [ Ariel Nunez ]
+
+ -- Ariel Nunez <ingenieroariel@gmail.com>  Thu, 15 Jan 2015 10:10:36 -0500
+
 geonode (2.4.0+beta9) trusty; urgency=high
 
   [ Tom Kralidis ]
