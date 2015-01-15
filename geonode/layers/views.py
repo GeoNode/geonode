@@ -259,7 +259,9 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
             protocol=("https" if request.is_secure() else "http"),
             host=request.get_host(),
             path=request.get_full_path())
-        context_dict["social_links"] = format_urls(settings.SOCIAL_ORIGINS, {'name':layer.title,'url': social_url})
+        context_dict["social_links"] = format_urls(
+            settings.SOCIAL_ORIGINS,
+            {'name': layer.title, 'url': social_url})
 
     return render_to_response(template, RequestContext(request, context_dict))
 
