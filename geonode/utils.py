@@ -551,3 +551,13 @@ def format_urls(a, values):
             j['url'] = None
         b.append(j)
     return b
+
+
+def build_social_links(request, resourcebase):
+    social_url = "{protocol}://{host}{path}".format(
+        protocol=("https" if request.is_secure() else "http"),
+        host=request.get_host(),
+        path=request.get_full_path())
+    return format_urls(
+        settings.SOCIAL_ORIGINS,
+        {'name': resourcebase.title, 'url': social_url})

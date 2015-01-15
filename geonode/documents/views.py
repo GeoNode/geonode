@@ -20,7 +20,7 @@ from geonode.base.models import TopicCategory, ResourceBase
 from geonode.documents.models import Document
 from geonode.documents.forms import DocumentForm, DocumentCreateForm, DocumentReplaceForm
 from geonode.documents.models import IMGTYPES
-from geonode.utils import format_urls
+from geonode.utils import build_social_links
 
 ALLOWED_DOC_TYPES = settings.ALLOWED_DOCUMENT_TYPES
 
@@ -91,13 +91,7 @@ def document_detail(request, docid):
             'related': related}
 
         if settings.SOCIAL_ORIGINS:
-            social_url = "{protocol}://{host}{path}".format(
-                protocol=("https" if request.is_secure() else "http"),
-                host=request.get_host(),
-                path=request.get_full_path())
-            context_dict["social_links"] = format_urls(
-                settings.SOCIAL_ORIGINS,
-                {'name': document.title, 'url': social_url})
+            context_dict["social_links"] = build_social_links(request, document)
 
         return render_to_response(
             "documents/document_detail.html",
