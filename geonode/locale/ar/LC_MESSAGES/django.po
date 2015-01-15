@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-11-19 18:27-0500\n"
+"POT-Creation-Date: 2014-11-26 14:12+0000\n"
 "PO-Revision-Date: 2014-11-15 18:41+0000\n"
 "Last-Translator: Andres Alfonso Lemon Gomez <lemon.andres@gmail.com>\n"
 "Language-Team: Arabic (http://www.transifex.com/projects/p/geonode/language/"
@@ -145,9 +145,9 @@ msgid "No information provided"
 msgstr "لم تقدم أية معلومات"
 
 #: base/forms.py:35 base/templates/base/resourcebase_info_panel.html:46
-#: documents/templates/documents/document_metadata.html:51
-#: layers/templates/layers/layer_metadata.html:53
-#: maps/templates/maps/map_metadata.html:53
+#: documents/templates/documents/document_metadata.html:60
+#: layers/templates/layers/layer_metadata.html:61
+#: maps/templates/maps/map_metadata.html:61
 msgid "Category"
 msgstr "فئة"
 
@@ -406,9 +406,9 @@ msgstr "مالك"
 
 #: base/templates/base/_resourcebase_contact_snippet.html:14
 #: base/templates/base/resourcebase_info_panel.html:61
-#: documents/templates/documents/document_metadata.html:41
-#: layers/templates/layers/layer_metadata.html:80
-#: maps/templates/maps/map_metadata.html:43
+#: documents/templates/documents/document_metadata.html:50
+#: layers/templates/layers/layer_metadata.html:84
+#: maps/templates/maps/map_metadata.html:51
 msgid "Point of Contact"
 msgstr "جهة الاتصال"
 
@@ -417,7 +417,7 @@ msgid "Metadata Author"
 msgstr "الكاتب الفوقية"
 
 #: base/templates/base/resourcebase_info_panel.html:6 services/forms.py:21
-#: templates/announcements/announcement_list.html:30
+#: templates/announcements/announcement_list.html:20
 msgid "Title"
 msgstr "لقب"
 
@@ -436,7 +436,7 @@ msgid "Date"
 msgstr "تاريخ"
 
 #: base/templates/base/resourcebase_info_panel.html:34
-#: layers/templates/layers/layer_detail.html:307
+#: layers/templates/layers/layer_detail.html:305
 msgid "Type"
 msgstr "نوع"
 
@@ -543,27 +543,83 @@ msgstr "لا يسمح لك لتعديل الفوقية هذه الوثيقة"
 msgid "You are not permitted to view this document"
 msgstr "لا يسمح لك لعرض هذه الوثيقة"
 
-#: documents/views.py:67 documents/views.py:105
+#: documents/views.py:67 documents/views.py:107
 msgid "You are not allowed to view this document."
 msgstr "لا يسمح لك لعرض هذه الوثيقة."
 
-#: documents/views.py:181
+#: documents/views.py:94
+#, fuzzy
+msgid "Share This Document"
+msgstr "قيم هذا المستند"
+
+#: documents/views.py:187
 msgid "You are not allowed to edit this document."
 msgstr "لا يسمح لك لتحرير هذه الوثيقة."
 
+#: documents/management/__init__.py:14
+#, fuzzy
+msgid "Document Created"
+msgstr "وثائق تتعلق هذه الخريطة"
+
+#: documents/management/__init__.py:15
+#, fuzzy
+msgid "A Document was created"
+msgstr "تم إنشاء خريطة"
+
+#: documents/management/__init__.py:18
+#, fuzzy
+msgid "Document Updated"
+msgstr "الوثائق"
+
+#: documents/management/__init__.py:19
+#, fuzzy
+msgid "A Document was updated"
+msgstr "تم تحميله طبقة"
+
+#: documents/management/__init__.py:22
+#, fuzzy
+msgid "Document Deleted"
+msgstr "الوثائق"
+
+#: documents/management/__init__.py:23
+#, fuzzy
+msgid "A Document was deleted"
+msgstr "وترتبط هذه الوثيقة إلى"
+
+#: documents/management/__init__.py:26
+#, fuzzy
+msgid "Comment on Document"
+msgstr "التعليق على طبقة"
+
+#: documents/management/__init__.py:27
+#, fuzzy
+msgid "A Document was commented on"
+msgstr "وقد علق على خريطة"
+
+#: documents/management/__init__.py:30
+#, fuzzy
+msgid "Document for Map"
+msgstr "التعليق على خريطة"
+
+#: documents/management/__init__.py:31
+#, fuzzy
+msgid "A rating was given to a document"
+msgstr "وقدم تصنيف للخريطة"
+
 #: documents/templates/documents/_document_filters.html:5
-#: groups/templates/groups/group_list.html:15
+#: groups/templates/groups/group_list.html:17
 #: layers/templates/layers/_layer_filters.html:5
 #: maps/templates/maps/_map_filters.html:5
-#: people/templates/people/profile_list.html:12
-#: templates/search/_sort_filters.html:4
+#: people/templates/people/profile_list.html:13
+#: templates/search/_sort_filters.html:5
 msgid "Most recent"
 msgstr "آخرها"
 
 #: documents/templates/documents/_document_filters.html:6
+#: groups/templates/groups/group_list.html:21
 #: layers/templates/layers/_layer_filters.html:6
 #: maps/templates/maps/_map_filters.html:6
-#: templates/search/_sort_filters.html:8
+#: templates/search/_sort_filters.html:9
 msgid "Most popular"
 msgstr "الأكثر شعبية"
 
@@ -588,7 +644,7 @@ msgstr "من"
 #: layers/templates/layers/_layer_list_item.html:84
 #: maps/templates/maps/_map_list_item.html:21
 #: maps/templates/maps/_map_list_item.html:46
-#: social/templates/social/_activity_item.html:27
+#: social/templates/social/_activity_item.html:31
 msgid "ago"
 msgstr "منذ"
 
@@ -630,128 +686,132 @@ msgstr "تحميل"
 msgid "You do not have permission to view this document"
 msgstr "لم يكن لديك إذن لعرض هذا المستند"
 
-#: documents/templates/documents/document_detail.html:42
+#: documents/templates/documents/document_detail.html:40
 msgid "External Resource"
 msgstr "الموارد الخارجية"
 
-#: documents/templates/documents/document_detail.html:48
+#: documents/templates/documents/document_detail.html:46
 #: layers/templates/layers/_actions.html:3
-#: maps/templates/maps/map_detail.html:35 templates/_actions.html:3
+#: maps/templates/maps/map_detail.html:36 templates/_actions.html:3
 msgid "Info"
 msgstr "معلومات"
 
-#: documents/templates/documents/document_detail.html:50
+#: documents/templates/documents/document_detail.html:48
 #: layers/templates/layers/_actions.html:6
-#: maps/templates/maps/map_detail.html:38 templates/_actions.html:5
+#: maps/templates/maps/map_detail.html:39 templates/_actions.html:5
 msgid "Share"
 msgstr "حصة"
 
-#: documents/templates/documents/document_detail.html:52
+#: documents/templates/documents/document_detail.html:50
 #: layers/templates/layers/_actions.html:8
-#: maps/templates/maps/map_detail.html:41
+#: maps/templates/maps/map_detail.html:42
 msgid "Ratings"
 msgstr "تصنيفات"
 
-#: documents/templates/documents/document_detail.html:53
+#: documents/templates/documents/document_detail.html:51
 #: layers/templates/layers/_actions.html:9
-#: maps/templates/maps/map_detail.html:42 templates/_comments.html:12
+#: maps/templates/maps/map_detail.html:43 templates/_comments.html:12
 msgid "Comments"
 msgstr "تعليقات"
 
-#: documents/templates/documents/document_detail.html:71
+#: documents/templates/documents/document_detail.html:69
 msgid "Rate this document"
 msgstr "قيم هذا المستند"
 
-#: documents/templates/documents/document_detail.html:75
-#: layers/templates/layers/layer_detail.html:113
-#: maps/templates/maps/map_detail.html:58
+#: documents/templates/documents/document_detail.html:73
+#: layers/templates/layers/layer_detail.html:112
+#: maps/templates/maps/map_detail.html:59
 msgid "Average Rating"
 msgstr "متوسط ​​التقييم"
 
+#: documents/templates/documents/document_detail.html:89
 #: documents/templates/documents/document_detail.html:91
 #: documents/templates/documents/document_detail.html:93
-#: documents/templates/documents/document_detail.html:95
-#: documents/templates/documents/document_detail.html:111
+#: documents/templates/documents/document_detail.html:109
 msgid "Download Document"
 msgstr "تحميل الوثيقة"
 
-#: documents/templates/documents/document_detail.html:99
-#: layers/templates/layers/layer_detail.html:134
+#: documents/templates/documents/document_detail.html:97
+#: layers/templates/layers/layer_detail.html:133
 #, fuzzy
 msgid "Request Download"
 msgstr "تحميل"
 
-#: documents/templates/documents/document_detail.html:104
-#: layers/templates/layers/layer_detail.html:163
-#: layers/templates/layers/layer_detail.html:171
+#: documents/templates/documents/document_detail.html:102
+#: layers/templates/layers/layer_detail.html:162
+#: layers/templates/layers/layer_detail.html:170
 msgid "Download Metadata"
 msgstr "تحميل بيانات ميتا"
 
-#: documents/templates/documents/document_detail.html:121
-#: documents/templates/documents/document_detail.html:151
-#: layers/templates/layers/layer_detail.html:156
-#: layers/templates/layers/layer_detail.html:181
-#: layers/templates/layers/layer_detail.html:223
-#: maps/templates/maps/map_detail.html:95
-#: maps/templates/maps/map_detail.html:127
+#: documents/templates/documents/document_detail.html:119
+#: documents/templates/documents/document_detail.html:149
+#: layers/templates/layers/layer_detail.html:155
+#: layers/templates/layers/layer_detail.html:180
+#: layers/templates/layers/layer_detail.html:221
+#: maps/templates/maps/map_detail.html:96
+#: maps/templates/maps/map_detail.html:129
 #: templates/_bulk_permissions_form.html:19
 msgid "Close"
 msgstr "قريب"
 
-#: documents/templates/documents/document_detail.html:128
-#: documents/templates/documents/document_detail.html:135
+#: documents/templates/documents/document_detail.html:126
+#: documents/templates/documents/document_detail.html:133
 msgid "Edit Document"
 msgstr "تحرير المستند"
 
-#: documents/templates/documents/document_detail.html:140
-#: layers/templates/layers/layer_detail.html:203
+#: documents/templates/documents/document_detail.html:138
+#: documents/templates/documents/document_metadata.html:17
+#: layers/templates/layers/layer_detail.html:202
+#: layers/templates/layers/layer_metadata.html:12
+#: maps/templates/maps/map_metadata.html:12
 msgid "Edit Metadata"
 msgstr "تحرير البيانات الوصفية"
 
-#: documents/templates/documents/document_detail.html:143
+#: documents/templates/documents/document_detail.html:141
 msgid "Replace this Document"
 msgstr "استبدال هذه الوثيقة"
 
-#: documents/templates/documents/document_detail.html:146
+#: documents/templates/documents/document_detail.html:144
 msgid "Remove this Document"
 msgstr "إزالة هذه الوثيقة"
 
-#: documents/templates/documents/document_detail.html:158
+#: documents/templates/documents/document_detail.html:156
 msgid "Resource using this document"
 msgstr "الموارد باستخدام هذا المستند"
 
-#: documents/templates/documents/document_detail.html:160
+#: documents/templates/documents/document_detail.html:158
 msgid "List of resources using this document:"
 msgstr "قائمة الموارد باستخدام هذه الوثيقة:"
 
-#: documents/templates/documents/document_detail.html:164
+#: documents/templates/documents/document_detail.html:162
 msgid "This document is related to a "
 msgstr "وترتبط هذه الوثيقة إلى"
 
-#: documents/templates/documents/document_detail.html:167
+#: documents/templates/documents/document_detail.html:165
 msgid "This document is not related to any maps or layers"
 msgstr "لا تتعلق هذه الوثيقة إلى أي خرائط أو طبقات"
 
-#: documents/templates/documents/document_detail.html:174
-#: documents/templates/documents/document_upload.html:32
+#: documents/templates/documents/document_detail.html:172
+#: documents/templates/documents/document_upload.html:31
 #: groups/templates/groups/group_detail.html:65
-#: layers/templates/layers/layer_detail.html:296
+#: layers/templates/layers/layer_detail.html:294
 #: layers/templates/layers/layer_replace.html:94
 #: layers/templates/upload/layer_upload.html:93
-#: maps/templates/maps/map_detail.html:173 people/admin.py:55
+#: maps/templates/maps/map_detail.html:175 people/admin.py:55
 msgid "Permissions"
 msgstr "أذونات"
 
-#: documents/templates/documents/document_detail.html:175
+#: documents/templates/documents/document_detail.html:173
 msgid "Click the button below to change the permissions of this document."
 msgstr "انقر فوق الزر أدناه لتغيير الأذونات من هذه الوثيقة."
 
-#: documents/templates/documents/document_detail.html:176
+#: documents/templates/documents/document_detail.html:174
 msgid "Change Document Permissions"
 msgstr "تغيير صلاحيات الوثيقة"
 
 #: documents/templates/documents/document_list.html:6
 #: documents/templates/documents/document_list.html:13
+#: documents/templates/documents/document_metadata.html:16
 #: documents/templates/documents/document_upload_base.html:11
 msgid "Explore Documents"
 msgstr "استكشاف المستندات"
@@ -761,7 +821,7 @@ msgstr "استكشاف المستندات"
 msgid "Upload Documents"
 msgstr "تحميل المستندات"
 
-#: documents/templates/documents/document_metadata.html:17
+#: documents/templates/documents/document_metadata.html:22
 #, python-format
 msgid ""
 "\n"
@@ -771,24 +831,27 @@ msgstr ""
 "\n"
 "تفاصيل تحرير ل %(document_title)s"
 
-#: documents/templates/documents/document_metadata.html:22
-#: layers/templates/layers/layer_metadata.html:23
-#: maps/templates/maps/map_metadata.html:23
+#: documents/templates/documents/document_metadata.html:28
+#: layers/templates/layers/layer_metadata.html:29
+#: maps/templates/maps/map_metadata.html:29
 msgid "Error updating metadata.  Please check the following fields: "
 msgstr "خطأ تحديث البيانات الوصفية. يرجى التحقق من الحقول التالية:"
 
-#: documents/templates/documents/document_metadata.html:46
-#: layers/templates/layers/layer_metadata.html:85
-#: maps/templates/maps/map_metadata.html:48
-msgid "Metadata Provider"
-msgstr "مزود الفوقية"
-
-#: documents/templates/documents/document_metadata.html:68
+#: documents/templates/documents/document_metadata.html:43
+#: documents/templates/documents/document_metadata.html:77
 #: groups/templates/groups/group_update.html:26
-#: layers/templates/layers/layer_metadata.html:90
-#: maps/templates/maps/map_metadata.html:70
+#: layers/templates/layers/layer_metadata.html:51
+#: layers/templates/layers/layer_metadata.html:94
+#: maps/templates/maps/map_metadata.html:44
+#: maps/templates/maps/map_metadata.html:78
 msgid "Update"
 msgstr "تحديث"
+
+#: documents/templates/documents/document_metadata.html:55
+#: layers/templates/layers/layer_metadata.html:89
+#: maps/templates/maps/map_metadata.html:56
+msgid "Metadata Provider"
+msgstr "مزود الفوقية"
 
 #: documents/templates/documents/document_remove.html:11
 #, python-format
@@ -802,17 +865,17 @@ msgstr ""
 
 #: documents/templates/documents/document_remove.html:18
 #: groups/templates/groups/group_remove.html:19
-#: layers/templates/layers/layer_remove.html:18
+#: layers/templates/layers/layer_remove.html:22
 #: maps/templates/maps/map_remove.html:19
-#: services/templates/services/service_remove.html:14
+#: services/templates/services/service_remove.html:17
 msgid "Yes, I am sure"
 msgstr "نعم، وأنا واثق"
 
 #: documents/templates/documents/document_remove.html:19
 #: groups/templates/groups/group_remove.html:20
-#: layers/templates/layers/layer_remove.html:19
+#: layers/templates/layers/layer_remove.html:23
 #: maps/templates/maps/map_remove.html:20
-#: services/templates/services/service_remove.html:15
+#: services/templates/services/service_remove.html:18
 msgid "No, don't remove it"
 msgstr "لا، لا إزالته"
 
@@ -827,7 +890,7 @@ msgstr "استبدل"
 
 #: documents/templates/documents/document_replace.html:27
 #: layers/templates/layers/layer_replace.html:84
-#: layers/templates/upload/layer_upload.html:82
+#: layers/templates/upload/layer_upload.html:86
 msgid "Clear"
 msgstr "واضح"
 
@@ -883,7 +946,7 @@ msgstr "KML"
 msgid "Tiles"
 msgstr "البلاط"
 
-#: geoserver/signals.py:385 layers/templates/layers/layer_detail.html:231
+#: geoserver/signals.py:385 layers/templates/layers/layer_detail.html:229
 #: services/views.py:1266
 msgid "Legend"
 msgstr "أسطورة"
@@ -896,27 +959,27 @@ msgstr "لم يكن لديك أذونات لتغيير أسلوب لهذه ال�
 msgid "Bad HTTP Authorization Credentials."
 msgstr "وثائق التفويض التفويض HTTP سيئة."
 
-#: geoserver/management/__init__.py:30 layers/management/__init__.py:30
+#: geoserver/management/__init__.py:30
 msgid "Layer Uploaded"
 msgstr "طبقة محملة"
 
-#: geoserver/management/__init__.py:30 layers/management/__init__.py:30
+#: geoserver/management/__init__.py:30
 msgid "A layer was uploaded"
 msgstr "تم تحميله طبقة"
 
-#: geoserver/management/__init__.py:31 layers/management/__init__.py:31
+#: geoserver/management/__init__.py:31 layers/management/__init__.py:45
 msgid "Comment on Layer"
 msgstr "التعليق على طبقة"
 
-#: geoserver/management/__init__.py:31 layers/management/__init__.py:31
+#: geoserver/management/__init__.py:31 layers/management/__init__.py:46
 msgid "A layer was commented on"
 msgstr "وقد علق على طبقة"
 
-#: geoserver/management/__init__.py:32 layers/management/__init__.py:32
+#: geoserver/management/__init__.py:32 layers/management/__init__.py:49
 msgid "Rating for Layer"
 msgstr "تصنيف لطبقة"
 
-#: geoserver/management/__init__.py:32 layers/management/__init__.py:32
+#: geoserver/management/__init__.py:32 layers/management/__init__.py:50
 msgid "A rating was given to a layer"
 msgstr "وقدم تصنيف لطبقة"
 
@@ -992,24 +1055,25 @@ msgstr "رفض"
 
 #: groups/templates/groups/activity.html:7
 #: groups/templates/groups/activity.html:8
-#: groups/templates/groups/activity.html:20 templates/actstream/actor.html:20
+#: groups/templates/groups/activity.html:20 templates/actstream/actor.html:19
 msgid "Activity Feed for"
 msgstr "النشاط تغذية ل"
 
 #: groups/templates/groups/activity.html:27
 #: social/templates/social/activity_list.html:23
-#: templates/actstream/actor.html:27
+#: templates/actstream/actor.html:28
 msgid "No actions yet"
 msgstr "أية إجراءات بعد"
 
 #: groups/templates/groups/group_base.html:13
 #: groups/templates/groups/group_list.html:5
-#: groups/templates/groups/group_list.html:11
+#: groups/templates/groups/group_list.html:12
 msgid "Explore Groups"
 msgstr "استكشاف المجموعات"
 
 #: groups/templates/groups/group_base.html:14
 #: groups/templates/groups/group_create.html:11
+#: groups/templates/groups/group_list.html:11
 msgid "Create a Group"
 msgstr "إنشاء مجموعة"
 
@@ -1028,7 +1092,7 @@ msgid "Create Group"
 msgstr "إنشاء مجموعة"
 
 #: groups/templates/groups/group_create.html:26
-#: services/templates/services/service_register.html:17
+#: services/templates/services/service_register.html:19
 msgid "Create"
 msgstr "خلق"
 
@@ -1072,15 +1136,15 @@ msgstr ""
 msgid "Anyone may join this group."
 msgstr "يمكن لأي شخص الانضمام إلى هذه المجموعة."
 
-#: groups/templates/groups/group_detail.html:77
+#: groups/templates/groups/group_detail.html:79
 msgid "Anyone may view this group but membership is by invitation only."
 msgstr "أي شخص قد عرض هذه المجموعة ولكن العضوية هو للمدعوين فقط."
 
-#: groups/templates/groups/group_detail.html:79
+#: groups/templates/groups/group_detail.html:81
 msgid "Membership is by invitation only."
 msgstr "العضوية عن طريق الدعوة فقط."
 
-#: groups/templates/groups/group_detail.html:84
+#: groups/templates/groups/group_detail.html:86
 msgid "Managers"
 msgstr "مدراء"
 
@@ -1096,21 +1160,21 @@ msgstr "لا تاريخ"
 msgid "Join Group"
 msgstr "انضمام مجموعة"
 
-#: groups/templates/groups/group_list.html:16
-#: people/templates/people/profile_list.html:13
-#: templates/search/_sort_filters.html:5
+#: groups/templates/groups/group_list.html:18
+#: people/templates/people/profile_list.html:14
+#: templates/search/_sort_filters.html:6
 msgid "Less recent"
 msgstr "أقل حداثة"
 
-#: groups/templates/groups/group_list.html:17
-#: people/templates/people/profile_list.html:14
-#: templates/search/_sort_filters.html:6
+#: groups/templates/groups/group_list.html:19
+#: people/templates/people/profile_list.html:15
+#: templates/search/_sort_filters.html:7
 msgid "A - Z"
 msgstr "A - Z"
 
-#: groups/templates/groups/group_list.html:18
-#: people/templates/people/profile_list.html:15
-#: templates/search/_sort_filters.html:7
+#: groups/templates/groups/group_list.html:20
+#: people/templates/people/profile_list.html:16
+#: templates/search/_sort_filters.html:8
 msgid "Z - A"
 msgstr "ي - أ"
 
@@ -1278,7 +1342,7 @@ msgstr "آخر تعديل"
 msgid "date when attribute statistics were last updated"
 msgstr "تاريخ عندما كانت الإحصاءات السمة آخر تحديث"
 
-#: layers/utils.py:574
+#: layers/utils.py:575
 msgid "Thumbnail"
 msgstr "ظفر الإبهام"
 
@@ -1310,9 +1374,44 @@ msgstr "لا يسمح لك لتعديل هذه الطبقة الفوقية"
 msgid "You are not permitted to view this layer"
 msgstr "لا يسمح لك بمشاهدة هذه الطبقة"
 
+#: layers/views.py:251
+#, fuzzy
+msgid "Share This Layer"
+msgstr "قيم هذا طبقة"
+
+#: layers/management/__init__.py:33
+#, fuzzy
+msgid "Layer Created"
+msgstr "خريطة مكون"
+
+#: layers/management/__init__.py:34
+#, fuzzy
+msgid "A Layer was created"
+msgstr "تم إنشاء خريطة"
+
+#: layers/management/__init__.py:37
+#, fuzzy
+msgid "Layer Updated"
+msgstr "طبقة محملة"
+
+#: layers/management/__init__.py:38
+#, fuzzy
+msgid "A Layer was updated"
+msgstr "تم تحميله طبقة"
+
+#: layers/management/__init__.py:41
+#, fuzzy
+msgid "Layer Deleted"
+msgstr "طبقة الاستايل الافتراضي"
+
+#: layers/management/__init__.py:42
+#, fuzzy
+msgid "A Layer was deleted"
+msgstr "تم تحميله طبقة"
+
 #: layers/templates/layers/_actions.html:4
-#: layers/templates/layers/layer_metadata.html:32
-#: layers/templates/layers/layer_metadata.html:70
+#: layers/templates/layers/layer_metadata.html:37
+#: layers/templates/layers/layer_metadata.html:74
 msgid "Attributes"
 msgstr "سمات"
 
@@ -1325,8 +1424,8 @@ msgid "Create a map"
 msgstr "إنشاء خريطة"
 
 #: layers/templates/layers/_layer_list_item.html:48
-#: layers/templates/layers/layer_detail.html:131
-#: layers/templates/layers/layer_detail.html:144
+#: layers/templates/layers/layer_detail.html:130
+#: layers/templates/layers/layer_detail.html:143
 msgid "Download Layer"
 msgstr "تحميل طبقة"
 
@@ -1348,132 +1447,136 @@ msgid "Assign a new point of contact to the layers below:"
 msgstr "تعيين نقطة اتصال جديدة إلى الطبقات التالية:"
 
 #: layers/templates/layers/layer_change_poc.html:17
-#: people/templates/people/forgot_username_form.html:17
+#: people/templates/people/forgot_username_form.html:15
 msgid "Submit"
 msgstr "عرض"
 
-#: layers/templates/layers/layer_detail.html:52
+#: layers/templates/layers/layer_detail.html:51
 msgid "Attribute Name"
 msgstr "السمة الاسم"
 
-#: layers/templates/layers/layer_detail.html:53
+#: layers/templates/layers/layer_detail.html:52
 msgid "Range"
 msgstr "نطاق"
 
-#: layers/templates/layers/layer_detail.html:54
+#: layers/templates/layers/layer_detail.html:53
 msgid "Average"
 msgstr "متوسط"
 
-#: layers/templates/layers/layer_detail.html:55
+#: layers/templates/layers/layer_detail.html:54
 msgid "Median"
 msgstr "متوسط"
 
-#: layers/templates/layers/layer_detail.html:56
+#: layers/templates/layers/layer_detail.html:55
 msgid "Standard Deviation"
 msgstr "الانحراف المعياري"
 
-#: layers/templates/layers/layer_detail.html:109
+#: layers/templates/layers/layer_detail.html:108
 msgid "Rate this layer"
 msgstr "قيم هذا طبقة"
 
-#: layers/templates/layers/layer_detail.html:189
-#: layers/templates/layers/layer_detail.html:198
+#: layers/templates/layers/layer_detail.html:190
+#: layers/templates/layers/layer_detail.html:197
 msgid "Edit Layer"
 msgstr "تحرير طبقة"
 
-#: layers/templates/layers/layer_detail.html:208
+#: layers/templates/layers/layer_detail.html:206
 #: layers/templates/layers/layer_style_manage.html:14
 msgid "Manage Styles"
 msgstr "إدارة أنماط"
 
-#: layers/templates/layers/layer_detail.html:210
+#: layers/templates/layers/layer_detail.html:208
 msgid "Edit Styles"
 msgstr "تحرير أنماط"
 
-#: layers/templates/layers/layer_detail.html:215
+#: layers/templates/layers/layer_detail.html:213
 msgid "Replace this Layer"
 msgstr "استبدال هذه الطبقة"
 
-#: layers/templates/layers/layer_detail.html:218
+#: layers/templates/layers/layer_detail.html:216
 msgid "Remove this Layer"
 msgstr "إزالة هذه الطبقة"
 
-#: layers/templates/layers/layer_detail.html:241
+#: layers/templates/layers/layer_detail.html:239
 msgid "Maps using this layer"
 msgstr "خرائط باستخدام هذه الطبقة"
 
-#: layers/templates/layers/layer_detail.html:243
+#: layers/templates/layers/layer_detail.html:241
 msgid "List of maps using this layer:"
 msgstr "قائمة الخرائط باستخدام هذه الطبقة:"
 
-#: layers/templates/layers/layer_detail.html:249
+#: layers/templates/layers/layer_detail.html:247
 msgid "This layer is not currently used in any maps."
 msgstr "لا تستخدم هذه الطبقة في الوقت الراهن في أي خرائط."
 
-#: layers/templates/layers/layer_detail.html:254
+#: layers/templates/layers/layer_detail.html:252
 msgid "Create a map using this layer"
 msgstr "إنشاء خريطة باستخدام هذه الطبقة"
 
-#: layers/templates/layers/layer_detail.html:255
+#: layers/templates/layers/layer_detail.html:253
 msgid "Click the button below to generate a new map based on this layer."
 msgstr "انقر فوق الزر أدناه لتوليد خريطة جديدة مبنية على هذه الطبقة."
 
-#: layers/templates/layers/layer_detail.html:256
+#: layers/templates/layers/layer_detail.html:254
 msgid "Create a Map"
 msgstr "إنشاء خريطة"
 
-#: layers/templates/layers/layer_detail.html:261
+#: layers/templates/layers/layer_detail.html:259
 msgid "Documents related to this layer"
 msgstr "الوثائق المتصلة بهذه الطبقة"
 
-#: layers/templates/layers/layer_detail.html:262
+#: layers/templates/layers/layer_detail.html:260
 msgid "List of documents related to this layer:"
 msgstr "قائمة الوثائق ذات الصلة لهذه الطبقة:"
 
-#: layers/templates/layers/layer_detail.html:273
+#: layers/templates/layers/layer_detail.html:271
 msgid "Styles"
 msgstr "الأنماط"
 
-#: layers/templates/layers/layer_detail.html:274
+#: layers/templates/layers/layer_detail.html:272
 msgid ""
 "The following styles are associated with this layer. Choose a style to view "
 "it in the preview map."
 msgstr ""
 "وترتبط الأنماط التالية مع هذه الطبقة. اختيار نمط لمشاهدته في المعاينة خريطة."
 
-#: layers/templates/layers/layer_detail.html:287
+#: layers/templates/layers/layer_detail.html:285
 msgid "No styles associated with this layer"
 msgstr "لا توجد أنماط المرتبطة بهذه الطبقة"
 
-#: layers/templates/layers/layer_detail.html:297
+#: layers/templates/layers/layer_detail.html:295
 msgid "Click the button below to change the permissions of this layer."
 msgstr "انقر فوق الزر أدناه لتغيير الأذونات من هذه الطبقة."
 
-#: layers/templates/layers/layer_detail.html:298
+#: layers/templates/layers/layer_detail.html:296
 msgid "Change Layer Permissions"
 msgstr "ضوابط تغيير طبقة"
 
-#: layers/templates/layers/layer_detail.html:305
+#: layers/templates/layers/layer_detail.html:303
 msgid "External service layer"
 msgstr "طبقة الخدمة الخارجية"
 
-#: layers/templates/layers/layer_detail.html:306
+#: layers/templates/layers/layer_detail.html:304
 msgid "Source"
 msgstr "مصدر"
 
 #: layers/templates/layers/layer_list.html:7
 #: layers/templates/layers/layer_list.html:14
+#: layers/templates/layers/layer_metadata.html:11
+#: layers/templates/layers/layer_remove.html:8
+#: layers/templates/upload/layer_upload.html:17
 #: layers/templates/upload/layer_upload_base.html:11 templates/index.html:33
 msgid "Explore Layers"
 msgstr "استكشاف الطبقات"
 
 #: layers/templates/layers/layer_list.html:13
+#: layers/templates/upload/layer_upload.html:18
 #: layers/templates/upload/layer_upload_base.html:12 templates/500.html:74
-#: templates/base.html:90
+#: templates/base.html:89
 msgid "Upload Layers"
 msgstr "تحميل الطبقات"
 
-#: layers/templates/layers/layer_metadata.html:12
+#: layers/templates/layers/layer_metadata.html:17
 #, python-format
 msgid ""
 "\n"
@@ -1483,50 +1586,57 @@ msgstr ""
 "\n"
 "تفاصيل تحرير ل %(layer_title)s"
 
-#: layers/templates/layers/layer_metadata.html:17
+#: layers/templates/layers/layer_metadata.html:23
+#, fuzzy
 msgid ""
 "Note: this layer's orginal metadata was populated by importing a metadata "
 "XML file.\n"
-"        GeoNode's metadata import supports a subset of ISO, FGDC, and Dublin "
-"Core metadata elements.\n"
-"        Some of your original metadata may have been lost."
+"          GeoNode's metadata import supports a subset of ISO, FGDC, and "
+"Dublin Core metadata elements.\n"
+"          Some of your original metadata may have been lost."
 msgstr ""
 "ملاحظة: تم بالسكان الفوقية الاصلي هذه الطبقة عن طريق استيراد ملف XML "
 "الفوقية. يدعم البيانات الوصفية استيراد GeoNode في مجموعة فرعية من عناصر "
 "البيانات الوصفية ISO، FGDC، ودبلن كور. بعض التعريف الأصلي قد ضاعت."
 
-#: layers/templates/layers/layer_metadata.html:72
+#: layers/templates/layers/layer_metadata.html:76
 msgid "Attribute"
 msgstr "سمة"
 
-#: layers/templates/layers/layer_metadata.html:72
+#: layers/templates/layers/layer_metadata.html:76
 msgid "Label"
 msgstr "ملصق"
 
-#: layers/templates/layers/layer_metadata.html:72 services/forms.py:24
+#: layers/templates/layers/layer_metadata.html:76 services/forms.py:24
 #: services/templates/services/layers_register.html:28
 msgid "Description"
 msgstr "وصف"
 
-#: layers/templates/layers/layer_metadata.html:72
+#: layers/templates/layers/layer_metadata.html:76
 msgid "Display Order"
 msgstr "ترتيب العرض"
 
-#: layers/templates/layers/layer_remove.html:11
-#, python-format
+#: layers/templates/layers/layer_remove.html:9
+#, fuzzy
+msgid "Remove Layers"
+msgstr "إزالة هذه الطبقة"
+
+#: layers/templates/layers/layer_remove.html:14
+#, fuzzy, python-format
 msgid ""
 "\n"
-"          Are you sure you want to remove %(layer_title)s?\n"
+"          Are you sure you want to remove <a href="
+"\"%(layer.get_absolute_url)s\">%(layer_title)s</a>?\n"
 "        "
 msgstr ""
 "\n"
 "هل أنت متأكد أنك تريد إزالة %(layer_title)sق؟"
 
-#: layers/templates/layers/layer_remove.html:25
+#: layers/templates/layers/layer_remove.html:29
 msgid "This action affects the following maps:"
 msgstr "هذا العمل يؤثر على الخرائط التالية:"
 
-#: layers/templates/layers/layer_remove.html:29
+#: layers/templates/layers/layer_remove.html:33
 msgid "No maps are using this layer"
 msgstr "لا خرائط تستخدم هذه الطبقة"
 
@@ -1540,69 +1650,69 @@ msgid "Replace Layer: "
 msgstr "استبدال طبقة:"
 
 #: layers/templates/layers/layer_replace.html:23
-#: layers/templates/upload/layer_upload.html:20
+#: layers/templates/upload/layer_upload.html:24
 msgid "Incomplete Uploads"
 msgstr "عمليات التحميل غير مكتملة"
 
 #: layers/templates/layers/layer_replace.html:24
-#: layers/templates/upload/layer_upload.html:21
+#: layers/templates/upload/layer_upload.html:25
 msgid "You have the following incomplete uploads"
 msgstr "لديك مكتملة الإضافات التالية"
 
 #: layers/templates/layers/layer_replace.html:27
-#: layers/templates/upload/layer_upload.html:24
+#: layers/templates/upload/layer_upload.html:28
 msgid "last updated on"
 msgstr "آخر تحديث لل"
 
 #: layers/templates/layers/layer_replace.html:29
-#: layers/templates/upload/layer_upload.html:26
+#: layers/templates/upload/layer_upload.html:30
 msgid "Resume"
 msgstr "سيرة ذاتية"
 
 #: layers/templates/layers/layer_replace.html:30
 #: layers/templates/layers/layer_replace.html:38
-#: layers/templates/upload/layer_upload.html:27
-#: layers/templates/upload/layer_upload.html:34
-#: templates/announcements/announcement_form.html:23
+#: layers/templates/upload/layer_upload.html:31
+#: layers/templates/upload/layer_upload.html:38
+#: templates/announcements/announcement_form.html:25
 #: templates/user_messages/inbox.html:44
 msgid "Delete"
 msgstr "حذف"
 
 #: layers/templates/layers/layer_replace.html:36
-#: layers/templates/upload/layer_upload.html:33
+#: layers/templates/upload/layer_upload.html:37
 msgid "Are you sure you want to delete this upload?"
 msgstr "هل أنت متأكد أنك تريد حذف هذا التحميل؟"
 
 #: layers/templates/layers/layer_replace.html:39
-#: layers/templates/upload/layer_upload.html:35
-#: maps/templates/maps/map_download.html:58 templates/_comments.html:59
+#: layers/templates/upload/layer_upload.html:39
+#: maps/templates/maps/map_download.html:58 templates/_comments.html:66
 #: templates/_permissions_form.html:15
-#: templates/announcements/announcement_form.html:21
+#: templates/announcements/announcement_form.html:23
 msgid "Cancel"
 msgstr "إلغاء"
 
 #: layers/templates/layers/layer_replace.html:41
-#: layers/templates/upload/layer_upload.html:36
+#: layers/templates/upload/layer_upload.html:40
 msgid "Delete, and don't ask me again."
 msgstr "حذف، ولا تسألني ثانية."
 
 #: layers/templates/layers/layer_replace.html:55
-#: layers/templates/upload/layer_upload.html:53
+#: layers/templates/upload/layer_upload.html:57
 msgid "Drop files here"
 msgstr "إسقاط الملفات هنا"
 
 #: layers/templates/layers/layer_replace.html:58
-#: layers/templates/upload/layer_upload.html:56
+#: layers/templates/upload/layer_upload.html:60
 msgid " or select them one by one:"
 msgstr "أو حدد واحدا تلو الآخر:"
 
 #: layers/templates/layers/layer_replace.html:66
-#: layers/templates/upload/layer_upload.html:64
+#: layers/templates/upload/layer_upload.html:68
 msgid "Files to be uploaded"
 msgstr "الملفات المراد تحميلها"
 
 #: layers/templates/layers/layer_replace.html:71
-#: layers/templates/upload/layer_upload.html:69
+#: layers/templates/upload/layer_upload.html:73
 msgid "Select the charset or leave default"
 msgstr "حدد محارف أو ترك الافتراضي"
 
@@ -1644,7 +1754,7 @@ msgstr "تحديث الأنماط المتوفرة"
 msgid "Upload Layer"
 msgstr "تحميل طبقة"
 
-#: layers/templates/upload/layer_upload.html:83
+#: layers/templates/upload/layer_upload.html:87
 msgid "Upload files"
 msgstr "تحميل الملفات"
 
@@ -2041,6 +2151,11 @@ msgstr "لا يسمح لك لعرض هذه الخريطة."
 msgid "An unknown error has occured."
 msgstr "حدث خطأ غير معروف."
 
+#: maps/views.py:117
+#, fuzzy
+msgid "Share This Map"
+msgstr "قيم هذا خريطة"
+
 #: maps/management/__init__.py:33
 msgid "Map Created"
 msgstr "خريطة مكون"
@@ -2050,18 +2165,38 @@ msgid "A Map was created"
 msgstr "تم إنشاء خريطة"
 
 #: maps/management/__init__.py:37
+#, fuzzy
+msgid "Map Updated"
+msgstr "خريطة مكون"
+
+#: maps/management/__init__.py:38
+#, fuzzy
+msgid "A Map was updated"
+msgstr "تم إنشاء خريطة"
+
+#: maps/management/__init__.py:41
+#, fuzzy
+msgid "Map Deleted"
+msgstr "خريطة مكون"
+
+#: maps/management/__init__.py:42
+#, fuzzy
+msgid "A Map was deleted"
+msgstr "تم إنشاء خريطة"
+
+#: maps/management/__init__.py:45
 msgid "Comment on Map"
 msgstr "التعليق على خريطة"
 
-#: maps/management/__init__.py:38
+#: maps/management/__init__.py:46
 msgid "A map was commented on"
 msgstr "وقد علق على خريطة"
 
-#: maps/management/__init__.py:41
+#: maps/management/__init__.py:49
 msgid "Rating for Map"
 msgstr "تصنيف للخريطة"
 
-#: maps/management/__init__.py:42
+#: maps/management/__init__.py:50
 msgid "A rating was given to a map"
 msgstr "وقدم تصنيف للخريطة"
 
@@ -2075,106 +2210,107 @@ msgstr "ليس لديك الصلاحية لدخول هذه الخريطة"
 
 #: maps/templates/maps/map_base.html:5 maps/templates/maps/map_base.html:12
 #: maps/templates/maps/map_list.html:12
+#: maps/templates/maps/map_metadata.html:11
 msgid "Explore Maps"
 msgstr "استكشاف خرائط"
 
-#: maps/templates/maps/map_detail.html:54 templates/_actions.html:6
+#: maps/templates/maps/map_detail.html:55 templates/_actions.html:6
 msgid "Rate this Map"
 msgstr "قيم هذا خريطة"
 
-#: maps/templates/maps/map_detail.html:78
-#: maps/templates/maps/map_detail.html:86
+#: maps/templates/maps/map_detail.html:79
+#: maps/templates/maps/map_detail.html:87
 msgid "Download Map"
 msgstr "تحميل خريطة"
 
-#: maps/templates/maps/map_detail.html:90
+#: maps/templates/maps/map_detail.html:91
 msgid "Download Data Layers"
 msgstr "تحميل طبقات البيانات"
 
-#: maps/templates/maps/map_detail.html:91
+#: maps/templates/maps/map_detail.html:92
 msgid "Download Web Map Context"
 msgstr "تحميل خريطة السياق الويب"
 
-#: maps/templates/maps/map_detail.html:102
-#: maps/templates/maps/map_detail.html:109
+#: maps/templates/maps/map_detail.html:104
+#: maps/templates/maps/map_detail.html:111
 msgid "Edit Map"
 msgstr "تحرير خريطة"
 
-#: maps/templates/maps/map_detail.html:114
+#: maps/templates/maps/map_detail.html:116
 msgid "Edit Map Metadata"
 msgstr "تحرير خريطة الفوقية"
 
-#: maps/templates/maps/map_detail.html:118
+#: maps/templates/maps/map_detail.html:120
 msgid "Set Map Thumbnail"
 msgstr "وضع خريطة مصغرة"
 
-#: maps/templates/maps/map_detail.html:122
+#: maps/templates/maps/map_detail.html:124
 msgid "Remove this Map"
 msgstr "إزالة هذا خريطة"
 
-#: maps/templates/maps/map_detail.html:134
+#: maps/templates/maps/map_detail.html:136
 msgid "View Map"
 msgstr "عرض الخريطة"
 
-#: maps/templates/maps/map_detail.html:144
+#: maps/templates/maps/map_detail.html:146
 msgid "Map Layers"
 msgstr "خريطة الطبقات"
 
-#: maps/templates/maps/map_detail.html:145
+#: maps/templates/maps/map_detail.html:147
 msgid "This map uses the following layers:"
 msgstr "هذه الخريطة تستخدم الطبقات التالية:"
 
-#: maps/templates/maps/map_detail.html:161
+#: maps/templates/maps/map_detail.html:163
 msgid "Documents related to this map"
 msgstr "وثائق تتعلق هذه الخريطة"
 
-#: maps/templates/maps/map_detail.html:162
+#: maps/templates/maps/map_detail.html:164
 msgid "List of documents related to this map:"
 msgstr "قائمة الوثائق المتعلقة بهذا الخارطة:"
 
-#: maps/templates/maps/map_detail.html:174
+#: maps/templates/maps/map_detail.html:176
 msgid "Specify which users can view or modify this map"
 msgstr "تحديد أي يمكن للمستخدمين عرض أو تعديل هذه الخريطة"
 
-#: maps/templates/maps/map_detail.html:175
+#: maps/templates/maps/map_detail.html:177
 msgid "Change Permissions of this Map"
 msgstr "تغيير صلاحيات هذا خريطة"
 
-#: maps/templates/maps/map_detail.html:181
+#: maps/templates/maps/map_detail.html:183
 msgid "Copy this map"
 msgstr "نسخ هذه الخريطة"
 
-#: maps/templates/maps/map_detail.html:182
+#: maps/templates/maps/map_detail.html:184
 msgid "Duplicate this map and modify it for your own purposes"
 msgstr "تكرار هذه الخريطة وتعديله لأغراضك الخاصة"
 
-#: maps/templates/maps/map_detail.html:183
+#: maps/templates/maps/map_detail.html:185
 #: maps/templates/maps/map_list.html:11
 msgid "Create a New Map"
 msgstr "إنشاء خريطة جديدة"
 
-#: maps/templates/maps/map_detail.html:188
+#: maps/templates/maps/map_detail.html:190
 msgid "Map WMS"
 msgstr "خريطة WMS"
 
-#: maps/templates/maps/map_detail.html:190
+#: maps/templates/maps/map_detail.html:192
 msgid "WMS layer group for local map layers"
 msgstr "WMS مجموعة طبقة لطبقات الخريطة المحلية"
 
-#: maps/templates/maps/map_detail.html:191 social/tests.py:103
-#: social/templatetags/social_tags.py:47
+#: maps/templates/maps/map_detail.html:193 social/tests.py:103
+#: social/templatetags/social_tags.py:48
 msgid "on"
 msgstr "في"
 
-#: maps/templates/maps/map_detail.html:191
+#: maps/templates/maps/map_detail.html:193
 msgid "local OWS"
 msgstr "OWS المحلية"
 
-#: maps/templates/maps/map_detail.html:194
+#: maps/templates/maps/map_detail.html:196
 msgid "Publish local map layers as WMS layer group"
 msgstr "نشر خريطة الطبقات المحلية وWMS مجموعة طبقة"
 
-#: maps/templates/maps/map_detail.html:195
+#: maps/templates/maps/map_detail.html:197
 msgid "Publish Map WMS"
 msgstr "نشر خريطة WMS"
 
@@ -2242,7 +2378,7 @@ msgstr "تحميل كامل"
 msgid "Download Failed"
 msgstr "فشل تحميل"
 
-#: maps/templates/maps/map_metadata.html:12
+#: maps/templates/maps/map_metadata.html:17
 #, python-format
 msgid ""
 "\n"
@@ -2252,7 +2388,7 @@ msgstr ""
 "\n"
 "تفاصيل التحرير ل %(map_title)s"
 
-#: maps/templates/maps/map_metadata.html:17
+#: maps/templates/maps/map_metadata.html:23
 msgid ""
 "Note: this map's orginal metadata was populated by importing a metadata XML "
 "file.\n"
@@ -2371,7 +2507,7 @@ msgstr "اسم المؤسسة"
 msgid "name of the responsible organization"
 msgstr "اسم المنظمة المسؤولة"
 
-#: people/models.py:47 templates/500.html:76 templates/base.html:92
+#: people/models.py:47 templates/500.html:76 templates/base.html:91
 msgid "Profile"
 msgstr "الملف الشخصي"
 
@@ -2475,28 +2611,29 @@ msgstr "جميع المحتويات"
 
 #: people/templates/people/_profile_filters.html:5
 #: services/templates/services/service_detail.html:64 templates/500.html:39
-#: templates/base.html:47
+#: templates/base.html:48
 msgid "Layers"
 msgstr "طبقات"
 
 #: people/templates/people/_profile_filters.html:6 templates/500.html:42
-#: templates/base.html:50
+#: templates/base.html:51
 msgid "Maps"
 msgstr "خرائط"
 
 #: people/templates/people/_profile_filters.html:7 templates/500.html:45
-#: templates/base.html:53
+#: templates/base.html:54
 msgid "Documents"
 msgstr "الوثائق"
 
-#: people/templates/people/forgot_username_form.html:5
+#: people/templates/people/forgot_username_form.html:6
 msgid "Forgot Username"
 msgstr "نسيت اسم المستخدم"
 
-#: people/templates/people/forgot_username_form.html:9
+#: people/templates/people/forgot_username_form.html:10
+#, fuzzy
 msgid ""
-"Enter your email address and click the submit button.  Your username will be "
-"sent to you."
+"Enter your email address and click the submit button. <br />Your username "
+"will be sent to you."
 msgstr ""
 "أدخل عنوان البريد الإلكتروني الخاص بك وانقر على زر إرسال. سيتم إرسال اسم "
 "المستخدم الخاص بك لك."
@@ -2721,7 +2858,6 @@ msgid "This Service contains the following layers"
 msgstr "تحتوي هذه الخدمة على الطبقات التالية"
 
 #: services/templates/services/service_detail.html:110
-#: services/templates/services/service_list.html:29
 msgid "Manage"
 msgstr "إدارة"
 
@@ -2733,8 +2869,13 @@ msgstr "تحرير الخدمات الفوقية"
 msgid "Remove Service"
 msgstr "إزالة Service"
 
-#: services/templates/services/service_edit.html:19
-#: templates/announcements/announcement_form.html:25
+#: services/templates/services/service_edit.html:15
+#, fuzzy
+msgid "Edit Service"
+msgstr "تحرير الخدمات الفوقية"
+
+#: services/templates/services/service_edit.html:21
+#: templates/announcements/announcement_form.html:27
 msgid "Save"
 msgstr "حفظ"
 
@@ -2746,48 +2887,63 @@ msgstr "الخدمة:"
 msgid "The following layers will soon be added to the data catalog:"
 msgstr "قريبا ستضاف الطبقات التالية إلى النشرة المصورة البيانات:"
 
-#: services/templates/services/service_list.html:30
+#: services/templates/services/service_list.html:8
 msgid "Register a new Service"
 msgstr "تسجيل خدمة جديدة"
 
-#: services/templates/services/service_register.html:21
+#: services/templates/services/service_list.html:9 templates/500.html:83
+#: templates/base.html:98
+msgid "Remote Services"
+msgstr "الخدمات عن بعد"
+
+#: services/templates/services/service_register.html:13
+#, fuzzy
+msgid "Register New Service"
+msgstr "تسجيل خدمة جديدة"
+
+#: services/templates/services/service_register.html:23
 msgid "Service has been created:"
 msgstr "تم إنشاء خدمة:"
 
-#: services/templates/services/service_register.html:28
+#: services/templates/services/service_register.html:30
 msgid "The following layers will be imported"
 msgstr "سيتم استيراد الطبقات التالية"
 
-#: services/templates/services/service_remove.html:7
+#: services/templates/services/service_remove.html:8
+#, fuzzy
+msgid "Remove Remote Service"
+msgstr "إزالة Service"
+
+#: services/templates/services/service_remove.html:12
 msgid "Are you sure you want to remove"
 msgstr "هل أنت متأكد أنك تريد إزالة"
 
-#: social/signals.py:73
+#: social/signals.py:84
 msgid "created"
 msgstr "خلق"
 
-#: social/signals.py:74 social/tests.py:80
+#: social/signals.py:85 social/tests.py:80
 msgid "deleted"
 msgstr "حذف"
 
-#: social/signals.py:77
+#: social/signals.py:88
 msgid "updated"
 msgstr "محدث"
 
-#: social/signals.py:82 social/tests.py:100
+#: social/signals.py:93 social/tests.py:100
 msgid "added a comment"
 msgstr "إضافة تعليق"
 
-#: social/signals.py:84
+#: social/signals.py:95
 msgid "updated a comment"
 msgstr "تحديث تعليق"
 
-#: social/signals.py:86 social/tests.py:54
+#: social/signals.py:97 social/tests.py:54
 msgid "uploaded"
 msgstr "تم تحميلها"
 
 #: social/templates/social/activity_list.html:4
-#: social/templates/social/activity_list.html:16
+#: social/templates/social/activity_list.html:15
 msgid "Recent activity"
 msgstr "النشاط الأخير"
 
@@ -2830,11 +2986,11 @@ msgstr ""
 "\n"
 "غير موجود على الصفحة المطلوبة. ربما كنت تستخدم المرجعية التي عفا عليها الزمن؟"
 
-#: templates/500.html:48 templates/base.html:56
+#: templates/500.html:48 templates/base.html:57
 msgid "People"
 msgstr "الناس"
 
-#: templates/500.html:51 templates/base.html:59
+#: templates/500.html:51 templates/base.html:60
 msgid "Groups"
 msgstr "مجموعات"
 
@@ -2843,38 +2999,33 @@ msgstr "مجموعات"
 msgid "Search"
 msgstr "تفتيش"
 
-#: templates/500.html:77 templates/base.html:93
+#: templates/500.html:77 templates/base.html:92
 msgid "Recent Activity"
 msgstr "آخر الزوار"
 
-#: templates/500.html:78 templates/base.html:94
+#: templates/500.html:78 templates/base.html:93
 msgid "Inbox"
 msgstr "البريد الوارد"
 
-#: templates/500.html:80 templates/base.html:96
+#: templates/500.html:80 templates/base.html:95
 #: templates/announcements/announcement_list.html:6
 #: templates/announcements/announcement_list.html:13
-#: templates/announcements/announcement_list.html:20
 msgid "Announcements"
 msgstr "الإعلانات"
 
-#: templates/500.html:83 templates/base.html:99
-msgid "Remote Services"
-msgstr "الخدمات عن بعد"
-
-#: templates/500.html:84 templates/base.html:100
+#: templates/500.html:84 templates/base.html:99
 msgid "Invite User"
 msgstr "دعوة العضو"
 
-#: templates/500.html:86 templates/base.html:102
+#: templates/500.html:86 templates/base.html:101
 msgid "GeoServer"
 msgstr "GeoServer"
 
-#: templates/500.html:89 templates/base.html:105
+#: templates/500.html:89 templates/base.html:104
 msgid "Admin"
 msgstr "المشرف"
 
-#: templates/500.html:92 templates/base.html:108
+#: templates/500.html:92 templates/base.html:107
 msgid "Help"
 msgstr "مساعدة"
 
@@ -2900,7 +3051,7 @@ msgstr "حفظ البيانات"
 msgid "Sign in"
 msgstr "توقيع في"
 
-#: templates/500.html:128 templates/base.html:77
+#: templates/500.html:128 templates/base.html:80
 msgid "Register"
 msgstr "تسجيل"
 
@@ -2953,7 +3104,7 @@ msgstr "تعيين الأذونات على موارد مختارة"
 msgid "Apply Changes"
 msgstr "تطبيق التغييرات"
 
-#: templates/_comments.html:17
+#: templates/_comments.html:17 templates/_comments.html.py:58
 msgid "Add Comment"
 msgstr "إضافة تعليق"
 
@@ -2965,12 +3116,9 @@ msgstr "تسجيل الدخول لإضافة تعليق"
 msgid "By"
 msgstr "بواسطة"
 
-#: templates/_comments.html:49
-msgid "Add a Comment"
-msgstr "إضافة تعليق"
-
-#: templates/_comments.html:60
-msgid "Submit Comments"
+#: templates/_comments.html:67
+#, fuzzy
+msgid "Submit Comment"
 msgstr "تقديم تعليقات"
 
 #: templates/_permissions.html:8
@@ -3031,7 +3179,7 @@ msgstr "اختيار مجموعات ..."
 msgid "About GeoNode"
 msgstr "حول GeoNode"
 
-#: templates/about.html:9
+#: templates/about.html:10
 msgid "About GeoNode."
 msgstr "حول GeoNode."
 
@@ -3043,121 +3191,123 @@ msgstr "اكتب بحثك هنا ..."
 msgid "Information for Developers"
 msgstr "معلومات للمطورين"
 
-#: templates/developer.html:9
+#: templates/developer.html:13
 msgid "Useful information for developers interested in GeoNode."
 msgstr "معلومات مفيدة للمطورين المهتمين GeoNode."
 
-#: templates/developer.html:12
+#: templates/developer.html:14
 msgid ""
 "\n"
-"  <p><a href=\"http://geonode.org/\">GeoNode</a> is an open service built on "
-"open source software. We encourage you to build new applications using the "
-"components and resources it provides. This page is a starting point for "
+"    <p><a href=\"http://geonode.org/\">GeoNode</a> is an open service built "
+"on open source software. We encourage you to build new applications using "
+"the components and resources it provides. This page is a starting point for "
 "developers interesting in taking full advantage of GeoNode. It also includes "
 "links to the project's source code so anyone can build and customize their "
 "own GeoNode. </p>\n"
 "\n"
-"  <h4>GeoNode Software</h4>\n"
+"    <h3>GeoNode Software</h3>\n"
 "\n"
-"  <p>All the code that runs GeoNode is open source. The code is available at "
-"<a href=\"http://github.com/GeoNode/geonode\">http://github.com/GeoNode/"
+"    <p>All the code that runs GeoNode is open source. The code is available "
+"at <a href=\"http://github.com/GeoNode/geonode\">http://github.com/GeoNode/"
 "geonode/</a>. The issue tracker for the project is at <a href=\"http://"
 "github.com/GeoNode/geonode/issues\">http://github.com/GeoNode/geonode/"
 "issues</a>.</p>\n"
 "\n"
-"  <p>GeoNode is built using several open source projects, each with its own "
-"community. If you are interested in contributing new features to the "
+"    <p>GeoNode is built using several open source projects, each with its "
+"own community. If you are interested in contributing new features to the "
 "GeoNode, we encourage you to do so by contributing to one of the projects on "
 "which it is built:</p>\n"
-"  <ul>\n"
-"    <li><a href=\"http://geoext.org\">GeoExt</a> - The JavaScript toolkit "
+"    <ul>\n"
+"      <li><a href=\"http://geoext.org\">GeoExt</a> - The JavaScript toolkit "
 "for rich web mapping applications</li>\n"
-"    <li><a href=\"http://geoserver.org\">GeoServer</a> - Standards based "
+"      <li><a href=\"http://geoserver.org\">GeoServer</a> - Standards based "
 "server for geospatial information</li>\n"
-"    <li><a href=\"http://geowebcache.org\">GeoWebCache</a> - Cache engine "
+"      <li><a href=\"http://geowebcache.org\">GeoWebCache</a> - Cache engine "
 "for WMS Tiles</li><li><a href=\"http://openlayers.org\">OpenLayers</a> - "
 "Pure JavaScript library powering the maps of GeoExt</li>\n"
-"    <li><a href=\"http://pycsw.org\">pycsw</a> - CSW metadata catalogue "
+"      <li><a href=\"http://pycsw.org\">pycsw</a> - CSW metadata catalogue "
 "server</li>\n"
-"  </ul>\n"
+"    </ul>\n"
 "\n"
-"  <h4>What are OGC Services?</h4>\n"
-"  <p>The data in this application is served using open standards endorsed by "
-"the <a href=\"http://opengeospatial.org/\">Open Geospatial Consortium</a>; "
-"in particular, WMS (Web Map Service) is used for accessing maps, WFS (Web "
-"Feature Service) is used for accessing vector data, and WCS (Web Coverage "
-"Service) is used for accessing raster data.  WMC (Web Map Context Documents) "
-"is used for sharing maps. You can use these services in your own "
+"    <h3>What are OGC Services?</h3>\n"
+"    <p>The data in this application is served using open standards endorsed "
+"by the <a href=\"http://opengeospatial.org/\">Open Geospatial Consortium</"
+"a>; in particular, WMS (Web Map Service) is used for accessing maps, WFS "
+"(Web Feature Service) is used for accessing vector data, and WCS (Web "
+"Coverage Service) is used for accessing raster data.  WMC (Web Map Context "
+"Documents) is used for sharing maps. You can use these services in your own "
 "applications using libraries such as OpenLayers, GeoTools, and OGR (all of "
 "which are open-source software and available at zero cost).</p>\n"
 "\n"
-"  <h4>What is GeoWebCache?</h4>\n"
-"  <p>GeoWebCache provides mapping tiles that are compatible with a number of "
-"mapping engines, including Google Maps, Bing Maps and OpenLayers. All the "
+"    <h3>What is GeoWebCache?</h3>\n"
+"    <p>GeoWebCache provides mapping tiles that are compatible with a number "
+"of mapping engines, including Google Maps, Bing Maps and OpenLayers. All the "
 "data hosted by GeoNode is also available through GeoWebCache. GeoWebCache "
 "improves on WMS by caching data and providing more responsive maps.</p>\n"
 "\n"
-"  <h4>OpenLayers Example Code</h4>\n"
+"    <h3>OpenLayers Example Code</h3>\n"
 "\n"
-"  <p>To include a GeoNode map layer in an OpenLayers map, first find the "
+"    <p>To include a GeoNode map layer in an OpenLayers map, first find the "
 "name for that layer. This is found in the layer's <code>name</code> field "
 "(not <code>title</code>) of the layer list. For this example, we will use "
 "the Nicaraguan political boundaries background layer, whose name is "
 "<code>risk:nicaragua_admin</code>. Then, create an instance of OpenLayers."
 "Layer.WMS:</p>\n"
-"  <p><code>var geonodeLayer = new OpenLayers.Layer.WMS(\"GeoNode Risk Data"
+"    <p><code>var geonodeLayer = new OpenLayers.Layer.WMS(\"GeoNode Risk Data"
 "\", \"http://demo.geonode.org/geoserver/wms\",{ layers: \"risk:"
 "nicaragua_admin\" });</code></p>\n"
 "\n"
-"  <h4>Google Maps Example Code</h4>\n"
-"  <p>To include a GeoNode map layer in a Google Map, include the layer "
+"    <h3>Google Maps Example Code</h3>\n"
+"    <p>To include a GeoNode map layer in a Google Map, include the layer "
 "namein the URL template.</p>\n"
-"  <p><code>var tilelayer =  new GTileLayer(null, null, null, "
+"    <p><code>var tilelayer =  new GTileLayer(null, null, null, "
 "{tileUrlTemplate: 'http://demo.geonode.org/geoserver/gwc/service/gmaps?"
 "layers=risk:nicaragua_admin&#38;zoom={Z}&#38;x={X}&#38;y={Y}', isPng:true, "
 "opacity:0.5 } );</code></p>\n"
 "\n"
-"  <h4>Shapefile/GeoJSON/GML Output</h4>\n"
-"  <p>To get data from the GeoNode web services use the WFS protocol. For "
+"    <h3>Shapefile/GeoJSON/GML Output</h3>\n"
+"    <p>To get data from the GeoNode web services use the WFS protocol. For "
 "example, to get the full Nicaraguan admin boundaries use:</p>\n"
-"  <p><code>http://demo.geonode.org/geoserver/wfs?request=GetFeature&#38;"
+"    <p><code>http://demo.geonode.org/geoserver/wfs?request=GetFeature&#38;"
 "typeName=risk:nicaragua_admin&#38;outputformat=SHAPE-ZIP</code></p>\n"
-"  <p>Changing output format to <code>json</code>, <code>GML2</code>, "
+"    <p>Changing output format to <code>json</code>, <code>GML2</code>, "
 "<code>GML3</code>, or <code>csv</code> will get data in those formats. The "
 "WFS protocol also can handle more precise queries, specifying a bounding box "
 "or various spatial and non-spatial filters based on the attributes of the "
 "data.</p>\n"
 "\n"
-"  <h4>GeoTools Example Code</h4>\n"
-"  <p>Create a DataStore and extract a FeatureType from it, then run a Query. "
-"It is all documented on the wiki at <code>http://geotools.org/</code>.</p>\n"
+"    <h3>GeoTools Example Code</h3>\n"
+"    <p>Create a DataStore and extract a FeatureType from it, then run a "
+"Query. It is all documented on the wiki at <code>http://geotools.org/</code>."
+"</p>\n"
+"    "
 msgstr ""
 
-#: templates/developer.html:53
+#: templates/developer.html:55
 msgid "GeoNode's Web Services"
 msgstr "خدمات ويب GeoNode ل"
 
-#: templates/developer.html:54
+#: templates/developer.html:56
 msgid "GeoNode's Web Services are available from the following URLs:"
 msgstr "تتوفر خدمات ويب GeoNode من عناوين المواقع التالية:"
 
-#: templates/developer.html:57
+#: templates/developer.html:59
 msgid "Dynamic tiles via WMS:"
 msgstr "البلاط ديناميكية عبر WMS:"
 
-#: templates/developer.html:61
+#: templates/developer.html:63
 msgid "Vector data via WFS:"
 msgstr "بيانات المتجه عبر مؤتمر القمة العالمي:"
 
-#: templates/developer.html:65
+#: templates/developer.html:67
 msgid "Raster data via WCS:"
 msgstr "البيانات النقطية عبر WCS:"
 
-#: templates/developer.html:69
+#: templates/developer.html:71
 msgid "Metadata search via CSW:"
 msgstr "بحث الفوقية عن طريق لجنة وضع المرأة:"
 
-#: templates/developer.html:73
+#: templates/developer.html:75
 msgid "Cached tiles via WMTS:"
 msgstr "البلاط مؤقتا عبر WMTS:"
 
@@ -3169,7 +3319,7 @@ msgstr "دليل المستخدم"
 msgid "GeoNode Help"
 msgstr "GeoNode مساعدة"
 
-#: templates/help.html:9
+#: templates/help.html:12
 msgid ""
 "This page provides helpful information about how to use the GeoNode. You can "
 "use the sidebar links to navigate to what you want to know."
@@ -3177,120 +3327,121 @@ msgstr ""
 "توفر هذه الصفحة معلومات مفيدة حول كيفية استخدام GeoNode. يمكنك استخدام "
 "الروابط الشريط الجانبي للانتقال إلى ما كنت تريد أن تعرف."
 
-#: templates/help.html:12
+#: templates/help.html:14
 msgid ""
 "\n"
-"  <p>The GeoNode provides access to data sets and a map editing application "
-"allows users to browse existing maps and contribute their own.</p>\n"
+"    <p>The GeoNode provides access to data sets and a map editing "
+"application allows users to browse existing maps and contribute their own.</"
+"p>\n"
 "\n"
-"  <h4 id=\"browsing-data\">Browsing Layers</h4>\n"
-"  <p>The <a href=\"/layers\">Layers</a> tab allows you to browse data "
+"    <h4 id=\"browsing-data\">Browsing Layers</h4>\n"
+"    <p>The <a href=\"/layers\">Layers</a> tab allows you to browse data "
 "uploaded to this GeoNode.</p>\n"
-"  <p>All data can be downloaded in a variety of formats, for use in other "
+"    <p>All data can be downloaded in a variety of formats, for use in other "
 "applications.</p>\n"
 "\n"
-"  <h4 id=\"developer-access\">Developer Access</h4>\n"
-"  <p>The <a href=\"/developer\"> Developer</a> page is the place for "
+"    <h4 id=\"developer-access\">Developer Access</h4>\n"
+"    <p>The <a href=\"/developer\"> Developer</a> page is the place for "
 "developers to get started building applications against the GeoNode. It "
 "includes instructions on using the web services, links to the source code of "
 "the GeoNode, and information about the open source projects used to create "
 "it.</p>\n"
 "\n"
-"  <h4 id=\"browsing-maps\">Browsing Maps</h4>\n"
-"  <p>The GeoNode allows users to create and share maps with one another.</"
+"    <h4 id=\"browsing-maps\">Browsing Maps</h4>\n"
+"    <p>The GeoNode allows users to create and share maps with one another.</"
 "p>\n"
-"  <p>The <a href=\"/maps\">Maps</a> tab is a gateway to map exploration on "
+"    <p>The <a href=\"/maps\">Maps</a> tab is a gateway to map exploration on "
 "GeoNode.  From here you can <strong>search for a map</strong> or "
 "<strong>create a map</strong>, which will open the <a href=\"/maps/new\">Map "
 "Composer</a>.</p>\n"
-"  <h5>Google Earth Mode</h5>\n"
-"  <p>Any map viewed in the interactive map editor can be seen in 3D mode "
+"    <h5>Google Earth Mode</h5>\n"
+"    <p>Any map viewed in the interactive map editor can be seen in 3D mode "
 "with the Google Earth plugin. To switch to 3D mode select the Google Earth "
 "globe logo, the rightmost button on top toolbar. If you do not have the "
 "Google Earth plugin installed you will be prompted to install it.</p>\n"
 "\n"
-"  <h4 id=\"creating-a-map\">Creating a Map</h4>\n"
-"  <p>To create a new map go to the <a href=\"/maps\">Contributed Maps</a> "
+"    <h4 id=\"creating-a-map\">Creating a Map</h4>\n"
+"    <p>To create a new map go to the <a href=\"/maps\">Contributed Maps</a> "
 "tab and click the <a href=\"/maps/new\">create your own map</a> link.</p>\n"
-"  <p>This will take you to the <a href=\"/maps/new\">Map Composer</a> with a "
-"base layer loaded.</p>\n"
-"  <p>To add data layers from the GeoNode click on the green plus button "
+"    <p>This will take you to the <a href=\"/maps/new\">Map Composer</a> with "
+"a base layer loaded.</p>\n"
+"    <p>To add data layers from the GeoNode click on the green plus button "
 "located below the layers tab on the left hand side of the screen. This will "
 "open a dialog listing all the layers available on the GeoNode.</p>\n"
-"  <p>To add layers to your map select them and hit the <strong>Add Layers</"
+"    <p>To add layers to your map select them and hit the <strong>Add Layers</"
 "strong> button. When finished you may hit <strong>Done</strong> to close the "
 "dialog and go back to the map.</p>\n"
 "\n"
-"  <h5>Reordering and Removing Layers</h5>\n"
-"  <p>Change the display order of the layers listed in the data tab by simply "
-"dragging and dropping their names. The order in the map will be updated to "
-"reflect that. To turn a layer's visibility off simply uncheck it, and to "
-"remove it entirely select it and hit the red minus button.</p>\n"
+"    <h5>Reordering and Removing Layers</h5>\n"
+"    <p>Change the display order of the layers listed in the data tab by "
+"simply dragging and dropping their names. The order in the map will be "
+"updated to reflect that. To turn a layer's visibility off simply uncheck it, "
+"and to remove it entirely select it and hit the red minus button.</p>\n"
 "\n"
-"  <h5>Saving your map</h5>\n"
-"  <p>Once a suitable set of layers and zoom level has been found it's time "
+"    <h5>Saving your map</h5>\n"
+"    <p>Once a suitable set of layers and zoom level has been found it's time "
 "to save it so others can see it.  Click the Save button--the left most icon "
 "on the top toolbar, an image of a map with a disk--on the top menu and fill "
 "out the title and abstract of the map.</p>\n"
 "\n"
-"  <h4 id=\"exporting-a-map\">Exporting a Map</h4>\n"
-"  <p>Any map from the GeoNode can be embedded for use in another site or "
+"    <h4 id=\"exporting-a-map\">Exporting a Map</h4>\n"
+"    <p>Any map from the GeoNode can be embedded for use in another site or "
 "blog. To export a map:</p>\n"
-"  <ol>\n"
-"    <li>Select the from the list of maps on the community or map page and "
+"    <ol>\n"
+"      <li>Select the from the list of maps on the community or map page and "
 "then hit the 'export map' button.</li> \n"
-"    <li>Choose your desired height and width for the widget in the wizard.</"
-"li> \n"
-"    <li>Copy the HTML snippet provided in the wizard to any HTML page or "
+"      <li>Choose your desired height and width for the widget in the wizard."
+"</li> \n"
+"      <li>Copy the HTML snippet provided in the wizard to any HTML page or "
 "iFrame-supporting blog post.</li>\n"
-"  </ol>\n"
-"  <p>This will put an interactive widget showing you map in your web page or "
-"blog post.</p>\n"
-"  <p>Note that the <a href=\"/maps/new\">Map Composer</a> also has a button "
-"to export the map. Just be sure to save the map before exporting if there "
-"are changes that you want others to see. It exports the last saved version, "
-"not the last viewed version.</p>\n"
+"    </ol>\n"
+"    <p>This will put an interactive widget showing you map in your web page "
+"or blog post.</p>\n"
+"    <p>Note that the <a href=\"/maps/new\">Map Composer</a> also has a "
+"button to export the map. Just be sure to save the map before exporting if "
+"there are changes that you want others to see. It exports the last saved "
+"version, not the last viewed version.</p>\n"
 "\n"
-"  <h4 id=\"remixing-a-map\">Remixing a Map</h4>\n"
-"  <p>Any map available can serve as a starting point for a new map.</p>\n"
-"  <ol>\n"
-"    <li>Open the map in the Map Composer.</li>\n"
-"    <li>Add and remove layers as you like.</li>\n"
-"    <li>Pan and zoom to highlight the area of interest.</li>\n"
-"    <li><strong>IMPORTANT:</strong> Update the title, abstract, contact info "
-"and tags to reflect the new map.</li>\n"
-"    <li>Save the map.</li>\n"
-"  </ol>\n"
-"  <p>You will be able to see your new map when you search for it from the <a "
-"href=\"/maps\">Maps</a> tab.</p> \n"
-"  "
+"    <h4 id=\"remixing-a-map\">Remixing a Map</h4>\n"
+"    <p>Any map available can serve as a starting point for a new map.</p>\n"
+"    <ol>\n"
+"      <li>Open the map in the Map Composer.</li>\n"
+"      <li>Add and remove layers as you like.</li>\n"
+"      <li>Pan and zoom to highlight the area of interest.</li>\n"
+"      <li><strong>IMPORTANT:</strong> Update the title, abstract, contact "
+"info and tags to reflect the new map.</li>\n"
+"      <li>Save the map.</li>\n"
+"    </ol>\n"
+"    <p>You will be able to see your new map when you search for it from the "
+"<a href=\"/maps\">Maps</a> tab.</p> \n"
+"    "
 msgstr ""
 
-#: templates/help.html:65
+#: templates/help.html:66
 msgid "Sections"
 msgstr "أقسام"
 
-#: templates/help.html:66
+#: templates/help.html:67
 msgid "Browsing Layers"
 msgstr "الطبقات التصفح"
 
-#: templates/help.html:67
+#: templates/help.html:68
 msgid "Developer Access"
 msgstr "الوصول مطور"
 
-#: templates/help.html:68
+#: templates/help.html:69
 msgid "Browsing Maps"
 msgstr "خرائط التصفح"
 
-#: templates/help.html:69
+#: templates/help.html:70
 msgid "Creating a Map"
 msgstr "خلق خريطة"
 
-#: templates/help.html:70
+#: templates/help.html:71
 msgid "Exporting a Map"
 msgstr "تصدير خريطة"
 
-#: templates/help.html:71
+#: templates/help.html:72
 msgid "Remixing a Map"
 msgstr "التعديل على خريطة"
 
@@ -3328,6 +3479,7 @@ msgid "No"
 msgstr "لا"
 
 #: templates/index.html:30
+#: templates/notification/request_download_resourcebase/full.txt:7
 msgid "Layer"
 msgstr "طبقة"
 
@@ -3371,11 +3523,16 @@ msgstr ""
 msgid "Share data"
 msgstr "تبادل البيانات"
 
-#: templates/account/login.html:7 templates/account/login.html.py:24
+#: templates/social_links.html:10
+#, python-format
+msgid "%(share_res)s"
+msgstr ""
+
+#: templates/account/login.html:7 templates/account/login.html.py:25
 msgid "Log in"
 msgstr "تسجيل الدخول"
 
-#: templates/account/login.html:12
+#: templates/account/login.html:11
 msgid "Log in to an existing account"
 msgstr "تسجيل الدخول إلى حساب موجود"
 
@@ -3392,11 +3549,15 @@ msgid "Are you sure you want to log out?"
 msgstr "هل أنت متأكد أنك تريد الخروج؟"
 
 #: templates/account/password_reset.html:8
-#: templates/account/password_reset.html:14
 msgid "Password reset"
 msgstr "إعادة تعيين كلمة المرور"
 
-#: templates/account/password_reset.html:15
+#: templates/account/password_reset.html:14
+#, fuzzy
+msgid "Password Reset"
+msgstr "إعادة تعيين كلمة المرور"
+
+#: templates/account/password_reset.html:18
 msgid ""
 "Forgotten your password? Enter your email address below, and we'll send you "
 "an email allowing you to reset it."
@@ -3404,11 +3565,11 @@ msgstr ""
 "نسيت كلمة المرور؟ أدخل عنوان البريد الالكتروني أدناه، وسوف نرسل لك رسالة "
 "بالبريد الالكتروني مما يتيح لك إعادة تعيينها."
 
-#: templates/account/password_reset.html:20
+#: templates/account/password_reset.html:24
 msgid "Reset my password"
 msgstr "إعادة تعيين كلمة المرور الخاصة بي"
 
-#: templates/account/password_reset.html:25
+#: templates/account/password_reset.html:28
 #, python-format
 msgid ""
 "If you have any trouble resetting your password, contact us at <a href="
@@ -3484,37 +3645,37 @@ msgstr "GeoNode الإداري للموقع"
 msgid "GeoNode administration"
 msgstr "إدارة GeoNode"
 
-#: templates/announcements/announcement_form.html:10
+#: templates/announcements/announcement_form.html:11
 msgid "Edit Announcement"
 msgstr "إعلان تحرير"
 
-#: templates/announcements/announcement_form.html:10
+#: templates/announcements/announcement_form.html:11
 msgid "Create Announcement"
 msgstr "خلق إعلان"
 
-#: templates/announcements/announcement_list.html:19
+#: templates/announcements/announcement_list.html:12
 msgid "New Announcement"
 msgstr "إعلان جديد"
 
-#: templates/announcements/announcement_list.html:31
+#: templates/announcements/announcement_list.html:21
 msgid "Level"
 msgstr ""
 
-#: templates/announcements/announcement_list.html:32
+#: templates/announcements/announcement_list.html:22
 msgid "Announcement"
 msgstr "إعلان"
 
-#: templates/announcements/announcement_list.html:33
+#: templates/announcements/announcement_list.html:23
 msgid "Published From"
 msgstr "نشرت من"
 
-#: templates/announcements/announcement_list.html:48
-#, python-format
+#: templates/announcements/announcement_list.html:38
+#, fuzzy, python-format
 msgid ""
 "\n"
-"                        Published from <b>%(publish_start)s</b> to <b>"
-"%(publish_end)s</b>.\n"
-"                        "
+"          Published from <b>%(publish_start)s</b> to <b>%(publish_end)s</"
+"b>.\n"
+"          "
 msgstr ""
 "\n"
 "نشرت <b>%(publish_start)s</b> إلى <b>%(publish_end)s</b>."
@@ -3566,73 +3727,256 @@ msgstr ""
 msgid "Delete These"
 msgstr "حذف هذه"
 
-#: templates/notification/base.html:16 templates/notification/notices.html:7
-#: templates/notification/notices.html:11
-msgid "Notices"
-msgstr "إشعارات"
-
-#: templates/notification/base.html:17
-msgid "Notice settings"
-msgstr "إعدادات إشعار"
-
-#: templates/notification/base.html:18
-msgid "Observed objects"
-msgstr "الأجسام المرصودة"
-
-#: templates/notification/notice_settings.html:5
-#: templates/notification/notice_settings.html:10
+#: templates/notification/notice_settings.html:8
+#: templates/notification/notice_settings.html:11
 msgid "Notification Settings"
 msgstr "إعدادات الإخطار"
 
 #: templates/notification/notice_settings.html:15
-msgid "Primary email"
-msgstr "البريد الإلكتروني الرئيسي"
-
-#: templates/notification/notice_settings.html:17
-#, python-format
-msgid "change under <a href=\"%(email_url)s\">Account</a>"
-msgstr "التغيير تحت <a href=\"%(email_url)s\">حساب</a>"
-
-#: templates/notification/notice_settings.html:21
-msgid "Note"
-msgstr "مذكرة"
-
-#: templates/notification/notice_settings.html:22
 #, python-format
 msgid ""
-"You do not have a verified email address to which notices can be sent. You "
-"can add one by going to <a href=\"%(email_url)s\">Account</a>."
+"\n"
+"        <p class=\"alert alert-warning\">\n"
+"            <span class=\"warning\">Note</span>:\n"
+"            You do not have a verified email address to which notices can be "
+"sent. <a href=\"%(email_url)s\">Add one</a> now.\n"
+"        </p>\n"
+"        "
 msgstr ""
-"لم يكن لديك عنوان بريد إلكتروني التحقق التي إشعارات يمكن إرسالها. يمكنك "
-"إضافة واحدة عن طريق الذهاب الى <a href=\"%(email_url)s\">الحساب</a> ."
 
-#: templates/notification/notice_settings.html:30
+#: templates/notification/notice_settings.html:27
 msgid "Notification Type"
 msgstr "نوع الإخطار"
 
-#: templates/notification/notice_settings.html:48
+#: templates/notification/notice_settings.html:52
 msgid "Change"
 msgstr "تغيير"
 
-#: templates/notification/notices.html:16
-msgid "Mark all unseen notices seen"
-msgstr "علامة جميع إشعارات الغيب ينظر"
+#: templates/notification/document_comment/full.txt:3
+#, fuzzy
+msgid "A comment has been posted for the document"
+msgstr "لم يكن لديك أذونات لهذه الوثيقة."
 
-#: templates/notification/notices.html:22
-msgid "MONTH_DAY_FORMAT"
-msgstr "MONTH_DAY_FORMAT"
+#: templates/notification/document_comment/full.txt:3
+#: templates/notification/layer_comment/full.txt:3
+#: templates/notification/map_comment/full.txt:4
+msgid "by the user"
+msgstr ""
 
-#: templates/notification/notices.html:33
-msgid "View Notice"
-msgstr "عرض الإشعار"
+#: templates/notification/document_comment/full.txt:5
+#: templates/notification/document_created/full.txt:6
+#: templates/notification/document_updated/full.txt:6
+msgid "You can visit the document's detail page here"
+msgstr ""
 
-#: templates/notification/notices.html:41
-msgid "No notices."
-msgstr "لا الإشعارات."
+#: templates/notification/document_comment/short.txt:3
+#, fuzzy
+msgid "A comment has been posted for a document"
+msgstr "لم يكن لديك أذونات لهذه الوثيقة."
 
-#: templates/notification/single.html:6 templates/notification/single.html:9
-msgid "Notice"
-msgstr "إشعار"
+#: templates/notification/document_created/full.txt:3
+#: templates/notification/document_rated/full.txt:3
+#: templates/notification/layer_created/full.txt:3
+#: templates/notification/layer_rated/full.txt:3
+#: templates/notification/map_created/full.txt:3
+#: templates/notification/map_rated/full.txt:3
+#: templates/notification/request_download_resourcebase/full.txt:3
+#, fuzzy
+msgid "The user"
+msgstr "اختيار المستخدمين ..."
+
+#: templates/notification/document_created/full.txt:3
+#, fuzzy
+msgid "uploaded the following document"
+msgstr "استبدال هذه الوثيقة"
+
+#: templates/notification/document_created/short.txt:3
+#, fuzzy
+msgid "A document has been uploaded"
+msgstr "تم تحميله طبقة"
+
+#: templates/notification/document_deleted/full.txt:3
+#, fuzzy
+msgid "The following document was deleted"
+msgstr "المستخدمين التالية:"
+
+#: templates/notification/document_deleted/full.txt:4
+#: templates/notification/document_rated/full.txt:6
+#: templates/notification/document_updated/full.txt:4
+#: templates/notification/layer_deleted/full.txt:4
+#: templates/notification/layer_rated/full.txt:6
+#: templates/notification/layer_updated/full.txt:4
+#: templates/notification/map_deleted/full.txt:4
+#: templates/notification/map_rated/full.txt:6
+#: templates/notification/map_updated/full.txt:4
+#, fuzzy
+msgid "owned by"
+msgstr "مدعوم من"
+
+#: templates/notification/document_deleted/short.txt:3
+#, fuzzy
+msgid "A document has been deleted"
+msgstr "تم إنشاء خدمة:"
+
+#: templates/notification/document_rated/full.txt:4
+#: templates/notification/layer_rated/full.txt:4
+#: templates/notification/map_rated/full.txt:4
+#, fuzzy
+msgid "rated"
+msgstr "خلق"
+
+#: templates/notification/document_rated/full.txt:5
+#, fuzzy
+msgid "the following document"
+msgstr "المستخدمين التالية:"
+
+#: templates/notification/document_rated/full.txt:8
+#: templates/notification/layer_comment/full.txt:5
+#: templates/notification/layer_created/full.txt:6
+#: templates/notification/layer_rated/full.txt:8
+#: templates/notification/layer_updated/full.txt:6
+msgid "You can visit the layer's detail page here"
+msgstr ""
+
+#: templates/notification/document_rated/short.txt:3
+#, fuzzy
+msgid "A document has been rated"
+msgstr "تم إنشاء خدمة:"
+
+#: templates/notification/document_updated/full.txt:3
+#, fuzzy
+msgid "The following document was updated"
+msgstr "المستخدمين التالية:"
+
+#: templates/notification/document_updated/short.txt:3
+#, fuzzy
+msgid "A document has been updated"
+msgstr "تم إنشاء خدمة:"
+
+#: templates/notification/layer_comment/full.txt:3
+#, fuzzy
+msgid "A comment has been posted for the layer"
+msgstr "الوثائق المتصلة بهذه الطبقة"
+
+#: templates/notification/layer_comment/short.txt:3
+#, fuzzy
+msgid "A comment has been posted for a layer"
+msgstr "وقدم تصنيف لطبقة"
+
+#: templates/notification/layer_created/full.txt:3
+#, fuzzy
+msgid "uploaded the following layer"
+msgstr "هذه الخريطة تستخدم الطبقات التالية:"
+
+#: templates/notification/layer_created/short.txt:3
+#, fuzzy
+msgid "A new layer has been uploaded"
+msgstr "تم تحميله طبقة"
+
+#: templates/notification/layer_deleted/full.txt:3
+#, fuzzy
+msgid "The following layer was deleted"
+msgstr "سيتم استيراد الطبقات التالية"
+
+#: templates/notification/layer_deleted/short.txt:3
+#, fuzzy
+msgid "A layer has been deleted"
+msgstr "وقد علق على طبقة"
+
+#: templates/notification/layer_rated/full.txt:5
+#, fuzzy
+msgid "the following layer"
+msgstr "المستخدمين التالية:"
+
+#: templates/notification/layer_rated/short.txt:3
+#, fuzzy
+msgid "A layer has been rated"
+msgstr "تم إنشاء خدمة:"
+
+#: templates/notification/layer_updated/full.txt:3
+#, fuzzy
+msgid "The following layer was updated"
+msgstr "سيتم استيراد الطبقات التالية"
+
+#: templates/notification/layer_updated/short.txt:3
+#, fuzzy
+msgid "A layer has been updated"
+msgstr "تم تحميله طبقة"
+
+#: templates/notification/map_comment/full.txt:3
+#, fuzzy
+msgid "A comment has been posted for the map"
+msgstr "وثائق تتعلق هذه الخريطة"
+
+#: templates/notification/map_comment/full.txt:6
+#: templates/notification/map_created/full.txt:6
+#: templates/notification/map_rated/full.txt:8
+#: templates/notification/map_updated/full.txt:6
+msgid "You can visit the map's detail page here"
+msgstr ""
+
+#: templates/notification/map_comment/short.txt:3
+msgid "A comment has been posted for a map"
+msgstr ""
+
+#: templates/notification/map_created/full.txt:3
+#, fuzzy
+msgid "created the following map"
+msgstr "هذا العمل يؤثر على الخرائط التالية:"
+
+#: templates/notification/map_created/short.txt:3
+#, fuzzy
+msgid "A map has been created"
+msgstr "تم إنشاء خريطة"
+
+#: templates/notification/map_deleted/full.txt:3
+#, fuzzy
+msgid "The following map was deleted"
+msgstr "سيتم استيراد الطبقات التالية"
+
+#: templates/notification/map_deleted/short.txt:3
+#, fuzzy
+msgid "A map has been deleted"
+msgstr "وقد علق على خريطة"
+
+#: templates/notification/map_rated/full.txt:5
+#, fuzzy
+msgid "the following map"
+msgstr "المجموعات التالية:"
+
+#: templates/notification/map_rated/short.txt:3
+#, fuzzy
+msgid "A map has been rated"
+msgstr "تم إنشاء خريطة"
+
+#: templates/notification/map_updated/full.txt:3
+#, fuzzy
+msgid "The following map was updated"
+msgstr "سيتم استيراد الطبقات التالية"
+
+#: templates/notification/map_updated/short.txt:3
+#, fuzzy
+msgid "A map has been updated"
+msgstr "تم إنشاء خريطة"
+
+#: templates/notification/request_download_resourcebase/full.txt:3
+#, fuzzy
+msgid "requested you to download this resource"
+msgstr "الحزب التي تملك المورد"
+
+#: templates/notification/request_download_resourcebase/full.txt:9
+#, fuzzy
+msgid "Document"
+msgstr "الوثائق"
+
+#: templates/notification/request_download_resourcebase/full.txt:12
+msgid ""
+"Please go to resource page and assign the download permissions if you wish"
+msgstr ""
+
+#: templates/notification/request_download_resourcebase/short.txt:3
+msgid "A resource's download has been requested"
+msgstr ""
 
 #: templates/relationships/_list_connections.html:3
 #: templates/relationships/_manage_connections.html:6
@@ -3729,15 +4073,15 @@ msgstr "YYYY-MM-DD"
 msgid "Date ends before:"
 msgstr "تاريخ ينتهي قبل:"
 
-#: templates/search/_search_content.html:10
+#: templates/search/_search_content.html:6
 msgid "Your selections"
 msgstr "اختياراتك"
 
-#: templates/search/_search_content.html:11
+#: templates/search/_search_content.html:7
 msgid "Clear all filters"
 msgstr "مسح جميع المرشحات"
 
-#: templates/search/_sort_filters.html:13
+#: templates/search/_sort_filters.html:15
 msgid "Set permissions"
 msgstr "تعيين أذونات"
 
@@ -3792,6 +4136,49 @@ msgstr "العودة إلى علبة الوارد"
 #: templates/user_messages/thread_detail.html:25
 msgid "Send Reply"
 msgstr "أرسل الرد"
+
+#~ msgid "Add a Comment"
+#~ msgstr "إضافة تعليق"
+
+#~ msgid "Notices"
+#~ msgstr "إشعارات"
+
+#~ msgid "Notice settings"
+#~ msgstr "إعدادات إشعار"
+
+#~ msgid "Observed objects"
+#~ msgstr "الأجسام المرصودة"
+
+#~ msgid "Primary email"
+#~ msgstr "البريد الإلكتروني الرئيسي"
+
+#~ msgid "change under <a href=\"%(email_url)s\">Account</a>"
+#~ msgstr "التغيير تحت <a href=\"%(email_url)s\">حساب</a>"
+
+#~ msgid "Note"
+#~ msgstr "مذكرة"
+
+#~ msgid ""
+#~ "You do not have a verified email address to which notices can be sent. "
+#~ "You can add one by going to <a href=\"%(email_url)s\">Account</a>."
+#~ msgstr ""
+#~ "لم يكن لديك عنوان بريد إلكتروني التحقق التي إشعارات يمكن إرسالها. يمكنك "
+#~ "إضافة واحدة عن طريق الذهاب الى <a href=\"%(email_url)s\">الحساب</a> ."
+
+#~ msgid "Mark all unseen notices seen"
+#~ msgstr "علامة جميع إشعارات الغيب ينظر"
+
+#~ msgid "MONTH_DAY_FORMAT"
+#~ msgstr "MONTH_DAY_FORMAT"
+
+#~ msgid "View Notice"
+#~ msgstr "عرض الإشعار"
+
+#~ msgid "No notices."
+#~ msgstr "لا الإشعارات."
+
+#~ msgid "Notice"
+#~ msgstr "إشعار"
 
 #~ msgid "Remote Thumbnail"
 #~ msgstr "صورة مصغرة عن بعد"

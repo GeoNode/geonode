@@ -91,7 +91,9 @@ def document_detail(request, docid):
                     'permissions_json': _perms_info_json(document),
                     'resource': document,
                     'imgtypes': IMGTYPES,
-                    'related': related}))
+                    'related': related,
+                    'share_res': _("Share This Document"),
+                }))
 
 
 def document_download(request, docid):
