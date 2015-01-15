@@ -1,3 +1,15 @@
+geonode (2.4.0+beta9) trusty; urgency=high
+
+  [ Tom Kralidis ]
+  * [143a06] update pycsw docs ref [ci skip]
+
+  [ Tyler Garner ]
+  * [8bb675] Bump Django to 1.6.10.
+
+  [ Ariel Nunez ]
+
+ -- Ariel Nunez <ingenieroariel@gmail.com>  Thu, 15 Jan 2015 10:09:39 -0500
+
 geonode (2.4.0+beta8) trusty; urgency=high
 
   [ Simone Dalmasso ]
