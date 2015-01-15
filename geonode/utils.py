@@ -540,6 +540,7 @@ def num_decode(s):
         n = n * BASE + ALPHABET_REVERSE[c]
     return n
 
+
 def format_urls(a, values):
     b = []
     for i in a:

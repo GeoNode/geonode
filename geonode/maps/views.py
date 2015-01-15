@@ -125,7 +125,7 @@ def map_detail(request, mapid, snapshot=None, template='maps/map_detail.html'):
             protocol=("https" if request.is_secure() else "http"),
             host=request.get_host(),
             path=request.get_full_path())
-        context_dict["social_links"] = format_urls(settings.SOCIAL_ORIGINS, {'name':map_obj.title,'url': social_url})
+        context_dict["social_links"] = format_urls(settings.SOCIAL_ORIGINS, {'name': map_obj.title, 'url': social_url})
 
     return render_to_response(template, RequestContext(request, context_dict))
 
