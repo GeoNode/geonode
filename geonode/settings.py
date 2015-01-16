@@ -658,7 +658,7 @@ CKAN_ORIGINS = [{
     "url":"https://data.hdx.rwlabs.org/dataset/new?title={name}&notes={abstract}",
     "css_class":"hdx"
 }]
-SOCIAL_ORIGINS.extend(CKAN_ORIGINS)
+#SOCIAL_ORIGINS.extend(CKAN_ORIGINS)
 
 # Enable Licenses User Interface
 # Regardless of selection, license field stil exists as a field in the Resourcebase model.
