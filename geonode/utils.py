@@ -552,6 +552,11 @@ def format_urls(a, values):
         b.append(j)
     return b
 
+def build_abstract(resourcebase, url=None, includeURL=True):
+    if resourcebase.abstract and url and includeURL:
+        return "{abstract} -- [{url}]({url})".format(abstract=resourcebase.abstract, url=url)
+    else:
+        return resourcebase.abstract
 
 def build_social_links(request, resourcebase):
     social_url = "{protocol}://{host}{path}".format(
@@ -560,4 +565,7 @@ def build_social_links(request, resourcebase):
         path=request.get_full_path())
     return format_urls(
         settings.SOCIAL_ORIGINS,
-        {'name': resourcebase.title, 'url': social_url})
+        {
+            'name': resourcebase.title,
+            'abstract': build_abstract(resourcebase, url=social_url, includeURL=True),
+            'url': social_url})
