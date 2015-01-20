@@ -661,10 +661,11 @@ def set_attributes(layer, overwrite=False):
         except Exception:
             attribute_map = []
 
-    # we need two more items for description and attribute_label
+    # we need 3 more items for description, attribute_label and display_order
     attribute_map_dict = {'field': 0, 'ftype': 1,
-                          'description': 2, 'label': 3}
+                          'description': 2, 'label': 3, 'display_order': 4, }
     for attribute in attribute_map:
+        attribute.append(None)
         attribute.append(None)
         attribute.append(None)
 
@@ -673,12 +674,13 @@ def set_attributes(layer, overwrite=False):
     for la in attributes:
         lafound = False
         for attribute in attribute_map:
-            field, ftype, description, label = attribute
+            field, ftype, description, label, display_order = attribute
             if field == la.attribute:
                 lafound = True
                 # store description and attribute_label in attribute_map
                 attribute[attribute_map_dict['description']] = la.description
                 attribute[attribute_map_dict['label']] = la.attribute_label
+                attribute[attribute_map_dict['display_order']] = la.display_order
         if overwrite or not lafound:
             logger.debug(
                 "Going to delete [%s] for [%s]",
@@ -690,11 +692,12 @@ def set_attributes(layer, overwrite=False):
     if attribute_map is not None:
         iter = len(Attribute.objects.filter(layer=layer)) + 1
         for attribute in attribute_map:
-            field, ftype, description, label = attribute
+            field, ftype, description, label, display_order = attribute
             if field is not None:
                 la, created = Attribute.objects.get_or_create(
                     layer=layer, attribute=field, attribute_type=ftype,
-                    description=description, attribute_label=label)
+                    description=description, attribute_label=label,
+                    display_order=display_order)
                 if created:
                     if is_layer_attribute_aggregable(
                             layer.storeType,
