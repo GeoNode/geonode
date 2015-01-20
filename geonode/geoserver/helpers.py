@@ -661,13 +661,24 @@ def set_attributes(layer, overwrite=False):
         except Exception:
             attribute_map = []
 
+    # we need two more items for description and attribute_label
+    attribute_map_dict = {'field': 0, 'ftype': 1,
+                          'description': 2, 'label': 3}
+    for attribute in attribute_map:
+        attribute.append(None)
+        attribute.append(None)
+
     attributes = layer.attribute_set.all()
     # Delete existing attributes if they no longer exist in an updated layer
     for la in attributes:
         lafound = False
-        for field, ftype in attribute_map:
+        for attribute in attribute_map:
+            field, ftype, description, label = attribute
             if field == la.attribute:
                 lafound = True
+                # store description and attribute_label in attribute_map
+                attribute[attribute_map_dict['description']] = la.description
+                attribute[attribute_map_dict['label']] = la.attribute_label
         if overwrite or not lafound:
             logger.debug(
                 "Going to delete [%s] for [%s]",
@@ -678,10 +689,12 @@ def set_attributes(layer, overwrite=False):
     # Add new layer attributes if they don't already exist
     if attribute_map is not None:
         iter = len(Attribute.objects.filter(layer=layer)) + 1
-        for field, ftype in attribute_map:
+        for attribute in attribute_map:
+            field, ftype, description, label = attribute
             if field is not None:
                 la, created = Attribute.objects.get_or_create(
-                    layer=layer, attribute=field, attribute_type=ftype)
+                    layer=layer, attribute=field, attribute_type=ftype,
+                    description=description, attribute_label=label)
                 if created:
                     if is_layer_attribute_aggregable(
                             layer.storeType,
@@ -699,7 +712,6 @@ def set_attributes(layer, overwrite=False):
                             la.sum = result['Sum']
                             la.unique_values = result['unique_values']
                             la.last_stats_updated = datetime.datetime.now()
-                    la.attribute_label = field.title()
                     la.visible = ftype.find("gml:") != 0
                     la.display_order = iter
                     la.save()
