@@ -662,12 +662,15 @@ def set_attributes(layer, overwrite=False):
             attribute_map = []
 
     # we need 3 more items for description, attribute_label and display_order
-    attribute_map_dict = {'field': 0, 'ftype': 1,
-                          'description': 2, 'label': 3, 'display_order': 4, }
+    attribute_map_dict = {
+        'field': 0,
+        'ftype': 1,
+        'description': 2,
+        'label': 3,
+        'display_order': 4,
+    }
     for attribute in attribute_map:
-        attribute.append(None)
-        attribute.append(None)
-        attribute.append(None)
+        attribute.extend((None, None, 0))
 
     attributes = layer.attribute_set.all()
     # Delete existing attributes if they no longer exist in an updated layer
