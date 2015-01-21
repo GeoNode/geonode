@@ -379,6 +379,30 @@ Default: ``True``
 
 A boolean which specifies whether the social media icons and javascript should be rendered in GeoNode.
 
+SOCIAL_ORIGINS
+--------------
+Default::
+
+    SOCIAL_ORIGINS = [{
+        "label":"Email",
+        "url":"mailto:?subject={name}&body={url}",
+        "css_class":"email"
+    }, {
+        "label":"Facebook",
+        "url":"http://www.facebook.com/sharer.php?u={url}",
+        "css_class":"fb"
+    }, {
+        "label":"Twitter",
+        "url":"https://twitter.com/share?url={url}",
+        "css_class":"tw"
+    }, {
+        "label":"Google +",
+        "url":"https://plus.google.com/share?url={url}",
+        "css_class":"gp"
+    }]
+
+A list of dictionaries that is used to generate the social links displayed in the Share tab.  For each origin, the name and and url format parameters are replaced by the actual values of the ResourceBase object (layer, map, document).
+
 Upload settings
 ===============
 

@@ -633,6 +633,24 @@ MAP_BASELAYERS = [{
 
 SOCIAL_BUTTONS = True
 
+SOCIAL_ORIGINS = [{
+    "label":"Email",
+    "url":"mailto:?subject={name}&body={url}",
+    "css_class":"email"
+}, {
+    "label":"Facebook",
+    "url":"http://www.facebook.com/sharer.php?u={url}",
+    "css_class":"fb"
+}, {
+    "label":"Twitter",
+    "url":"https://twitter.com/share?url={url}",
+    "css_class":"tw"
+}, {
+    "label":"Google +",
+    "url":"https://plus.google.com/share?url={url}",
+    "css_class":"gp"
+}]
+
 # Enable Licenses User Interface
 # Regardless of selection, license field stil exists as a field in the Resourcebase model.
 # Detail Display: above, below, never

@@ -51,6 +51,7 @@ from geonode.utils import resolve_object, llbbox_to_mercator
 from geonode.people.forms import ProfileForm, PocForm
 from geonode.security.views import _perms_info_json
 from geonode.documents.models import get_related_documents
+from geonode.utils import build_social_links
 
 if 'geonode.geoserver' in settings.INSTALLED_APPS:
 
@@ -252,6 +253,9 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
             links = layer.link_set.download().filter(
                 name__in=settings.DOWNLOAD_FORMATS_RASTER)
         context_dict["links"] = links
+
+    if settings.SOCIAL_ORIGINS:
+        context_dict["social_links"] = build_social_links(request, layer)
 
     return render_to_response(template, RequestContext(request, context_dict))
 

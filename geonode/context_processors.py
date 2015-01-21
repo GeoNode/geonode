@@ -45,7 +45,7 @@ def resource_urls(request):
         SOCIAL_BUTTONS=getattr(
             settings,
             'SOCIAL_BUTTONS',
-            True),
+            False),
         HAYSTACK_SEARCH=getattr(
             settings,
             'HAYSTACK_SEARCH',
