@@ -1,5 +1,6 @@
 import json
 from django.contrib.auth import get_user_model
+from django.contrib.auth.models import Group
 from django.core.urlresolvers import reverse
 from django.test import TestCase
 from django.test.client import Client
@@ -15,18 +16,20 @@ from geonode.security.views import _perms_info_json
 
 
 class SmokeTest(TestCase):
-
-    "Basic checks to make sure pages load, etc."
+    """
+    Basic checks to make sure pages load, etc.
+    """
 
     fixtures = ["group_test_data"]
 
     def setUp(self):
-        from django.contrib.auth.models import Group
         create_models(type='layer')
         create_models(type='map')
         create_models(type='document')
         self.norman = get_user_model().objects.get(username="norman")
         self.norman.groups.add(Group.objects.get(name='anonymous'))
+        self.test_user = get_user_model().objects.get(username='test_user')
+        self.test_user.groups.add(Group.objects.get(name='anonymous'))
         self.bar = GroupProfile.objects.get(slug='bar')
         self.anonymous_user = get_anonymous_user()
 
@@ -41,21 +44,12 @@ class SmokeTest(TestCase):
         layer.set_default_permissions()
 
         # Test that the anonymous user can read
-        self.assertTrue(
-            self.anonymous_user.has_perm(
-                'view_resourcebase',
-                layer.get_self_resource()))
+        self.assertTrue(self.anonymous_user.has_perm('view_resourcebase', layer.get_self_resource()))
 
         # Test that the default perms give Norman view permissions but not
         # write permissions
-        self.assertTrue(
-            self.norman.has_perm(
-                'view_resourcebase',
-                layer.get_self_resource()))
-        self.assertFalse(
-            self.norman.has_perm(
-                'change_resourcebase',
-                layer.get_self_resource()))
+        self.assertTrue(self.norman.has_perm('view_resourcebase', layer.get_self_resource()))
+        self.assertFalse(self.norman.has_perm('change_resourcebase', layer.get_self_resource()))
 
         # Make sure Norman is not in the bar group.
         self.assertFalse(self.bar.user_is_member(self.norman))
@@ -67,21 +61,22 @@ class SmokeTest(TestCase):
         self.assertTrue(self.bar.user_is_member(self.norman))
 
         # Give the bar group permissions to change the layer.
-        permissions = {
-            'groups': {
-                'bar': [
-                    'view_resourcebase',
-                    'change_resourcebase']}}
+        permissions = {'groups': {'bar': ['view_resourcebase', 'change_resourcebase']}}
         layer.set_permissions(permissions)
-        self.assertTrue(
-            self.norman.has_perm(
-                'view_resourcebase',
-                layer.get_self_resource()))
+
+        self.assertTrue(self.norman.has_perm('view_resourcebase', layer.get_self_resource()))
         # check that now norman can change the layer
-        self.assertTrue(
-            self.norman.has_perm(
-                'change_resourcebase',
-                layer.get_self_resource()))
+        self.assertTrue(self.norman.has_perm('change_resourcebase', layer.get_self_resource()))
+
+        # Test adding a new user to the group after setting permissions on the layer.
+        # Make sure Test User is not in the bar group.
+        self.assertFalse(self.bar.user_is_member(self.test_user))
+
+        self.assertFalse(self.test_user.has_perm('change_resourcebase', layer.get_self_resource()))
+
+        self.bar.join(self.test_user)
+
+        self.assertTrue(self.test_user.has_perm('change_resourcebase', layer.get_self_resource()))
 
     def test_group_resource(self):
         """
@@ -101,12 +96,8 @@ class SmokeTest(TestCase):
         self.assertTrue(map.get_self_resource() in self.bar.resources())
 
         # Test the resource filter
-        self.assertTrue(
-            layer.get_self_resource() in self.bar.resources(
-                resource_type='layer'))
-        self.assertTrue(
-            map.get_self_resource() not in self.bar.resources(
-                resource_type='layer'))
+        self.assertTrue(layer.get_self_resource() in self.bar.resources(resource_type='layer'))
+        self.assertTrue(map.get_self_resource() not in self.bar.resources(resource_type='layer'))
 
         # Revoke permissions on the layer from the self.bar group
         layer.set_permissions("{}")
@@ -130,9 +121,7 @@ class SmokeTest(TestCase):
 
         perms_info = _perms_info_json(layer)
         # Ensure foo is in the perms_info output
-        self.assertDictEqual(
-            json.loads(perms_info)['groups'], {
-                'bar': ['view_resourcebase']})
+        self.assertDictEqual(json.loads(perms_info)['groups'], {'bar': ['view_resourcebase']})
 
     def test_resource_permissions(self):
         """
@@ -148,20 +137,12 @@ class SmokeTest(TestCase):
         objects = layer, document, map_obj
 
         for obj in objects:
-            response = c.get(
-                reverse(
-                    'resource_permissions',
-                    kwargs=dict(
-                        resource_id=obj.id)))
+            response = c.get(reverse('resource_permissions', kwargs=dict(resource_id=obj.id)))
             self.assertEqual(response.status_code, 200)
             js = json.loads(response.content)
             permissions = js.get('permissions', dict())
 
-            if isinstance(
-                    permissions,
-                    unicode) or isinstance(
-                    permissions,
-                    str):
+            if isinstance(permissions, unicode) or isinstance(permissions, str):
                 permissions = json.loads(permissions)
 
             # Ensure the groups value is empty by default
@@ -177,65 +158,39 @@ class SmokeTest(TestCase):
             }
 
             # Give the bar group permissions
-            response = c.post(
-                reverse(
-                    'resource_permissions',
-                    kwargs=dict(
-                        resource_id=obj.id)),
-                data=json.dumps(permissions),
-                content_type="application/json")
+            response = c.post(reverse('resource_permissions', kwargs=dict(resource_id=obj.id)),
+                              data=json.dumps(permissions),
+                              content_type="application/json")
 
             self.assertEqual(response.status_code, 200)
 
-            response = c.get(
-                reverse(
-                    'resource_permissions',
-                    kwargs=dict(
-                        resource_id=obj.id)))
+            response = c.get(reverse('resource_permissions', kwargs=dict(resource_id=obj.id)))
 
             js = json.loads(response.content)
             permissions = js.get('permissions', dict())
 
-            if isinstance(
-                    permissions,
-                    unicode) or isinstance(
-                    permissions,
-                    str):
+            if isinstance(permissions, unicode) or isinstance(permissions, str):
                 permissions = json.loads(permissions)
 
             # Make sure the bar group now has write permissions
-            self.assertDictEqual(
-                permissions['groups'], {
-                    'bar': ['change_resourcebase']})
+            self.assertDictEqual(permissions['groups'], {'bar': ['change_resourcebase']})
 
             # Remove group permissions
             permissions = {"users": {"admin": ['change_resourcebase']}}
 
             # Update the object's permissions to remove the bar group
-            response = c.post(
-                reverse(
-                    'resource_permissions',
-                    kwargs=dict(
-                        resource_id=obj.id)),
-                data=json.dumps(permissions),
-                content_type="application/json")
+            response = c.post(reverse('resource_permissions', kwargs=dict(resource_id=obj.id)),
+                              data=json.dumps(permissions),
+                              content_type="application/json")
 
             self.assertEqual(response.status_code, 200)
 
-            response = c.get(
-                reverse(
-                    'resource_permissions',
-                    kwargs=dict(
-                        resource_id=obj.id)))
+            response = c.get(reverse('resource_permissions', kwargs=dict(resource_id=obj.id)))
 
             js = json.loads(response.content)
             permissions = js.get('permissions', dict())
 
-            if isinstance(
-                    permissions,
-                    unicode) or isinstance(
-                    permissions,
-                    str):
+            if isinstance(permissions, unicode) or isinstance(permissions, str):
                 permissions = json.loads(permissions)
 
             # Assert the bar group no longer has permissions
@@ -250,6 +205,7 @@ class SmokeTest(TestCase):
                  description='This is a test group.',
                  access='public',
                  keywords='testing, groups')
+
         c = Client()
         c.login(username="admin", password="admin")
         response = c.post(reverse('group_create'), data=d)
@@ -273,9 +229,7 @@ class SmokeTest(TestCase):
 
         # successful POSTS will redirect to the group list view.
         self.assertEqual(response.status_code, 302)
-        self.assertFalse(
-            GroupProfile.objects.filter(
-                id=self.bar.id).count() > 0)
+        self.assertFalse(GroupProfile.objects.filter(id=self.bar.id).count() > 0)
 
     def test_delete_group_view_no_perms(self):
         """
@@ -319,7 +273,9 @@ class SmokeTest(TestCase):
         self.assertTrue(admin in self.bar.get_managers())
 
     def test_public_pages_render(self):
-        "Verify pages that do not require login load without internal error"
+        """
+        Verify pages that do not require login load without internal error
+        """
 
         c = Client()
 
@@ -344,7 +300,9 @@ class SmokeTest(TestCase):
         self.assertEqual(405, response.status_code)
 
     def test_protected_pages_render(self):
-        "Verify pages that require login load without internal error"
+        """
+        Verify pages that require login load without internal error
+        """
 
         c = Client()
         self.assertTrue(c.login(username="admin", password="admin"))
@@ -370,13 +328,16 @@ class SmokeTest(TestCase):
 
 
 class MembershipTest(TestCase):
-
-    "Tests membership logic in the geonode.groups models"
+    """
+    Tests membership logic in the geonode.groups models
+    """
 
     fixtures = ["group_test_data"]
 
     def test_group_is_member(self):
-        "Test checking group membership"
+        """
+        Tests checking group membership
+        """
 
         anon = get_anonymous_user()
         normal = get_user_model().objects.get(username="norman")
@@ -386,7 +347,9 @@ class MembershipTest(TestCase):
         self.assert_(not group.user_is_member(normal))
 
     def test_group_add_member(self):
-        "Test adding a user to a group"
+        """
+        Tests adding a user to a group
+        """
 
         anon = get_anonymous_user()
         normal = get_user_model().objects.get(username="norman")
@@ -397,39 +360,36 @@ class MembershipTest(TestCase):
 
 
 class InvitationTest(TestCase):
-
-    "Tests invitation logic in geonode.groups models"
+    """
+    Tests invitation logic in geonode.groups models
+    """
 
     fixtures = ["group_test_data"]
 
     def test_invite_user(self):
-        "Test inviting a registered user"
+        """
+        Tests inviting a registered user
+        """
 
         normal = get_user_model().objects.get(username="norman")
         admin = get_user_model().objects.get(username="admin")
         group = GroupProfile.objects.get(slug="bar")
         group.invite(normal, admin, role="member", send=False)
 
-        self.assert_(
-            GroupInvitation.objects.filter(
-                user=normal,
-                from_user=admin,
-                group=group).exists())
+        self.assert_(GroupInvitation.objects.filter(user=normal, from_user=admin, group=group).exists())
 
-        invite = GroupInvitation.objects.get(
-            user=normal,
-            from_user=admin,
-            group=group)
+        invite = GroupInvitation.objects.get(user=normal, from_user=admin, group=group)
 
         # Test that the user can access the token url.
         c = Client()
         c.login(username="norman", password="norman")
-        response = c.get(
-            "/groups/group/{group}/invite/{token}/".format(group=group, token=invite.token))
+        response = c.get("/groups/group/{group}/invite/{token}/".format(group=group, token=invite.token))
         self.assertEqual(200, response.status_code)
 
     def test_accept_invitation(self):
-        "Test accepting an invitation"
+        """
+        Tests accepting an invitation
+        """
 
         anon = get_anonymous_user()
         normal = get_user_model().objects.get(username="norman")
@@ -437,10 +397,7 @@ class InvitationTest(TestCase):
         group = GroupProfile.objects.get(slug="bar")
         group.invite(normal, admin, role="member", send=False)
 
-        invitation = GroupInvitation.objects.get(
-            user=normal,
-            from_user=admin,
-            group=group)
+        invitation = GroupInvitation.objects.get(user=normal, from_user=admin, group=group)
 
         self.assertRaises(ValueError, lambda: invitation.accept(anon))
         self.assertRaises(ValueError, lambda: invitation.accept(admin))
@@ -450,7 +407,9 @@ class InvitationTest(TestCase):
         self.assert_(invitation.state == "accepted")
 
     def test_decline_invitation(self):
-        "Test declining an invitation"
+        """
+        Tests declining an invitation
+        """
 
         anon = get_anonymous_user()
         normal = get_user_model().objects.get(username="norman")
@@ -458,10 +417,7 @@ class InvitationTest(TestCase):
         group = GroupProfile.objects.get(slug="bar")
         group.invite(normal, admin, role="member", send=False)
 
-        invitation = GroupInvitation.objects.get(
-            user=normal,
-            from_user=admin,
-            group=group)
+        invitation = GroupInvitation.objects.get(user=normal, from_user=admin, group=group)
 
         self.assertRaises(ValueError, lambda: invitation.decline(anon))
         self.assertRaises(ValueError, lambda: invitation.decline(admin))
