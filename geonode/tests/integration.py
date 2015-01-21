@@ -46,7 +46,7 @@ from geonode.layers.utils import (
 )
 from geonode.tests.utils import check_layer, get_web_page
 
-from geonode.geoserver.helpers import cascading_delete
+from geonode.geoserver.helpers import cascading_delete, set_attributes
 # FIXME(Ariel): Uncomment these when #1767 is fixed
 # from geonode.geoserver.helpers import get_time_info
 # from geonode.geoserver.helpers import get_wms
@@ -981,3 +981,45 @@ class GeoNodeMapPrintTest(TestCase):
 
         else:
             pass
+
+
+class GeoNodeGeoServerSync(TestCase):
+
+    """Tests GeoNode/GeoServer syncronization
+    """
+
+    def setUp(self):
+        call_command('loaddata', 'people_data', verbosity=0)
+
+    def tearDown(self):
+        pass
+
+    def test_set_attributes(self):
+        """Test attributes syncronization
+        """
+
+        # upload a shapefile
+        shp_file = os.path.join(
+            gisdata.VECTOR_DATA,
+            'san_andres_y_providencia_poi.shp')
+        layer = file_upload(shp_file)
+
+        # set attributes for resource
+        for attribute in layer.attribute_set.all():
+            attribute.attribute_label = '%s_label' % attribute.attribute
+            attribute.description = '%s_description' % attribute.attribute
+            attribute.save()
+
+        # sync the attributes with GeoServer
+        set_attributes(layer)
+
+        # tests if everything is synced properly
+        for attribute in layer.attribute_set.all():
+            self.assertEquals(
+                attribute.attribute_label,
+                '%s_label' % attribute.attribute
+            )
+            self.assertEquals(
+                attribute.description,
+                '%s_description' % attribute.attribute
+            )
