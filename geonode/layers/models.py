@@ -295,7 +295,7 @@ class Attribute(models.Model):
         _('attribute label'),
         help_text=_('title of attribute as displayed in GeoNode'),
         max_length=255,
-        blank=False,
+        blank=True,
         null=True,
         unique=False)
     attribute_type = models.CharField(
