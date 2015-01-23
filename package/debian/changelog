@@ -1,3 +1,42 @@
+geonode (2.4.0+beta11) trusty; urgency=high
+
+  [ state-hiu ]
+  * [153fdd] Social Origins List; SOCIAL_BUTTONS fallbacks to False
+  * [f941e2] PEP8 Fixes; Documented settings.SOCIAL_ORIGINS
+  * [a60b7a] Refractor.  Added function to utils.py
+
+  [ Jeffrey Johnson ]
+  * [cf24b5] Added John Jediny (nepanode) to contributors.
+  * [02f724] Adding slack config to travis.yml
+
+  [ George Silva ]
+  * [340d6e] Fix bug that causes paver_start to fail on windows.
+
+  [ Geode Team ]
+  * [bf2353] add perm choice for #1922
+  * [4e5c81] replace is_layer_list by is_layer
+
+  [ capooti ]
+  * [9e0b8d] This fixes #1908
+  * [9519d3] Oops, forgot about the display_order in previous commit
+  * [e74388] Default value for display order cannot be null
+  * [5a3d35] Added an integration test for set_attributes, used by updatelayers
+
+  [ Tyler Garner ]
+  * [65e191] Minor improvements to the `groups` tests.
+
+  [ state-hiu ]
+  * [e1ce41] Fix #1849
+  * [986a9d] Fix #1934
+  * [63726b] PEP8 Fix
+  * [1300c6] Activity Filters (All, Layers, Maps, Comments)
+  * [bcc714] PEP8 Fixes
+
+  [ Simone Dalmasso ]
+  * [e79ce7] add celery to debian dependencies
+
+ -- Simone Dalmasso <simone.dalmasso@gmail.com>  Fri, 23 Jan 2015 13:55:26 +0000
+
 geonode (2.4.0+beta10) trusty; urgency=high
 
   [ Mila Frerichs ]
