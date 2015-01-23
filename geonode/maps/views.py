@@ -32,6 +32,7 @@ from django.utils.translation import ugettext as _
 from django.utils import simplejson as json
 from django.utils.html import strip_tags
 from django.db.models import F
+from django.views.decorators.clickjacking import xframe_options_exempt
 
 from geonode.layers.models import Layer
 from geonode.maps.models import Map, MapLayer, MapSnapshot
@@ -244,6 +245,7 @@ def map_remove(request, mapid, template='maps/map_remove.html'):
         return HttpResponseRedirect(reverse("maps_browse"))
 
 
+@xframe_options_exempt
 def map_embed(
         request,
         mapid=None,

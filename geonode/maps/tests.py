@@ -445,6 +445,11 @@ community."
         c.login(username=self.user, password=self.passwd)
         response = c.get(url)
         self.assertEquals(response.status_code, 200)
+
+        # The embedded map is exempt from X-FRAME-OPTIONS restrictions.
+        if hasattr(response, 'xframe_options_exempt'):
+            self.assertTrue(response.xframe_options_exempt)
+
         # Config equals to that of the map whose id is given
         map_obj = Map.objects.get(id=map_id)
         config_map = map_obj.viewer_json(None)
