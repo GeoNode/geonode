@@ -58,7 +58,7 @@
               <tbody>
                 {% for attribute in resource.attributes %}
                   <tr>
-                    <td>{{ attribute }}</td>
+                    <td {% if attribute.attribute_label and attribute.attribute_label != attribute.attribute %}title="{{ attribute.attribute }}"{% endif %}>{{ attribute }}</td>
                     {% if attribute.unique_values == "NA" %}
                     <td>{{ attribute.unique_values }}</td>
                     {% else %}
