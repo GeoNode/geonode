@@ -74,7 +74,7 @@ class TopicCategory(models.Model):
     <CodeListDictionary gml:id="MD_MD_TopicCategoryCode">
     """
     identifier = models.CharField(max_length=255, default='location')
-    description = models.TextField()
+    description = models.TextField(default='')
     gn_description = models.TextField('GeoNode description', default='', null=True)
     is_choice = models.BooleanField(default=True)
 
