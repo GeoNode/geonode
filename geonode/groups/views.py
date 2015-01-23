@@ -251,7 +251,7 @@ class GroupActivityView(ListView):
     def get_context_data(self, **kwargs):
         context = super(GroupActivityView, self).get_context_data(**kwargs)
         context['group'] = self.group
-        #Additional Filtered Lists Below
+        # Additional Filtered Lists Below
         members = ([(member.user.id) for member in self.group.member_queryset()])
         context['action_list_layers'] = Action.objects.filter(
             public=True,
