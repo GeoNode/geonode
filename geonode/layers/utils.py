@@ -359,7 +359,7 @@ def file_upload(filename, name=None, user=None, title=None, abstract=None,
             elif key == 'topic_category':
                 value, created = TopicCategory.objects.get_or_create(
                     identifier=value.lower(),
-                    defaults={'description':'', 'gn_description': value})
+                    defaults={'description': '', 'gn_description': value})
                 key = 'category'
                 defaults[key] = value
             else:
