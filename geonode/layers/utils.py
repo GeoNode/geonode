@@ -358,8 +358,10 @@ def file_upload(filename, name=None, user=None, title=None, abstract=None,
                 value = SpatialRepresentationType(identifier=value)
             elif key == 'topic_category':
                 value, created = TopicCategory.objects.get_or_create(
-                    identifier=value.lower(), gn_description=value)
+                    identifier=value.lower(),
+                    defaults={'description': '', 'gn_description': value})
                 key = 'category'
+                defaults[key] = value
             else:
                 defaults[key] = value
 
