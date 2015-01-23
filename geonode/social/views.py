@@ -12,8 +12,13 @@ class RecentActivity(ListView):
 
     def get_context_data(self, *args, **kwargs):
         context = super(ListView, self).get_context_data(*args, **kwargs)
-        context['action_list_layers'] = Action.objects.filter(public=True,action_object_content_type__name='layer')[:15]
-        context['action_list_maps'] = Action.objects.filter(public=True,action_object_content_type__name='map')[:15]
-        context['action_list_comments'] = Action.objects.filter(public=True,action_object_content_type__name='comment')[:15]
-        return context 
-
+        context['action_list_layers'] = Action.objects.filter(
+            public=True,
+            action_object_content_type__name='layer')[:15]
+        context['action_list_maps'] = Action.objects.filter(
+            public=True,
+            action_object_content_type__name='map')[:15]
+        context['action_list_comments'] = Action.objects.filter(
+            public=True,
+            action_object_content_type__name='comment')[:15]
+        return context
