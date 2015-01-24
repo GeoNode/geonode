@@ -30,8 +30,8 @@ FILTER_TYPES = {
 
 class TypeFilteredResource(ModelResource):
 
-    """ Common resource used to apply faceting to categories and keywords
-    based on the type passed as query parameter in the form
+    """ Common resource used to apply faceting to categories, keywords, and
+    regions based on the type passed as query parameter in the form
     type:layer/map/document"""
     count = fields.IntegerField()
 
@@ -84,6 +84,42 @@ class TagResource(TypeFilteredResource):
         allowed_methods = ['get']
         filtering = {
             'slug': ALL,
+        }
+
+
+class RegionResource(TypeFilteredResource):
+
+    """Regions api"""
+
+    def dehydrate_count(self, bundle):
+        count = 0
+        if settings.SKIP_PERMS_FILTER:
+            resources = ResourceBase.published.all()
+        else:
+            resources = get_objects_for_user(
+                bundle.request.user,
+                'base.view_resourcebase'
+            )
+        if settings.RESOURCE_PUBLISHING:
+            resources = resources.filter(is_published=True)
+
+        resources_ids = resources.values_list('id', flat=True)
+
+        if self.type_filter:
+            ctype = ContentType.objects.get_for_model(self.type_filter)
+            count = bundle.obj.taggit_taggeditem_items.filter(
+                content_type=ctype).filter(object_id__in=resources_ids).count()
+        else:
+            count = bundle.obj.taggit_taggeditem_items.filter(object_id__in=resources_ids).count()
+
+        return count
+
+    class Meta:
+        queryset = Tag.objects.all().order_by('name')
+        resource_name = 'regions'
+        allowed_methods = ['get']
+        filtering = {
+            'name': ALL,
         }
 
 

@@ -25,7 +25,8 @@ from geonode.base.models import ResourceBase
 
 from .authorization import GeoNodeAuthorization
 
-from .api import TagResource, ProfileResource, TopicCategoryResource, \
+from .api import TagResource, RegionResource, ProfileResource, \
+    TopicCategoryResource, \
     FILTER_TYPES
 
 LAYER_SUBTYPES = {
@@ -41,6 +42,7 @@ class CommonMetaApi:
     allowed_methods = ['get']
     filtering = {'title': ALL,
                  'keywords': ALL_WITH_RELATIONS,
+                 'regions': ALL_WITH_RELATIONS,
                  'category': ALL_WITH_RELATIONS,
                  'owner': ALL_WITH_RELATIONS,
                  'date': ALL,
@@ -51,6 +53,7 @@ class CommonMetaApi:
 
 class CommonModelApi(ModelResource):
     keywords = fields.ToManyField(TagResource, 'keywords', null=True)
+    regions = fields.ToManyField(RegionResource, 'regions', null=True)
     category = fields.ToOneField(
         TopicCategoryResource,
         'category',
@@ -150,6 +153,9 @@ class CommonModelApi(ModelResource):
         # Keyword filter
         keywords = parameters.getlist("keywords__slug__in")
 
+        # Region filter
+        regions = parameters.getlist("regions__name__in")
+
         # Sort order
         sort = parameters.get("order_by", "relevance")
 
@@ -234,6 +240,16 @@ class CommonModelApi(ModelResource):
                     SearchQuerySet() if sqs is None else sqs).filter_or(
                     keywords_exact=keyword)
 
+        # filter by regions: use filter_or with regions_exact
+        # not using exact leads to fuzzy matching and too many results
+        # using narrow with exact leads to zero results if multiple keywords
+        # selected
+        if regions:
+            for region in regions:
+                sqs = (
+                    SearchQuerySet() if sqs is None else sqs).filter_or(
+                    regions_iexact=region)
+
         # filter by date
         if date_range[0]:
             sqs = (SearchQuerySet() if sqs is None else sqs).filter(
@@ -302,12 +318,12 @@ class CommonModelApi(ModelResource):
             # results
             if len(filter_set) > 0:
                 sqs = sqs.filter(oid__in=filter_set_ids).facet('type').facet('subtype').facet('owner').facet('keywords')\
-                    .facet('category')
+                    .facet('regions').facet('category')
             else:
                 sqs = None
         else:
             sqs = sqs.facet('type').facet('subtype').facet(
-                'owner').facet('keywords').facet('category')
+                'owner').facet('keywords').facet('regions').facet('category')
 
         if sqs:
             # Build the Facet dict
