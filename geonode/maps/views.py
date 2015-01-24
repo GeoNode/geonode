@@ -102,7 +102,9 @@ def map_detail(request, mapid, snapshot=None, template='maps/map_detail.html'):
 
     map_obj = _resolve_map(request, mapid, 'base.view_resourcebase', _PERMISSION_MSG_VIEW)
 
-    if request.user != map_obj.owner:
+    # Update count for popularity ranking,
+    # but do not includes admins or resource owners
+    if request.user != map_obj.owner and not request.user.is_superuser:
         Map.objects.filter(id=map_obj.id).update(popular_count=F('popular_count') + 1)
 
     if snapshot is None:
