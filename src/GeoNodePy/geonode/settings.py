@@ -12,10 +12,25 @@ gettext = lambda s: s
 
 ####################### DATAVERSE_INFO_REPOSITORY_PATH
 #
-# Path to additional repository: https://github.com/IQSS/shared-dataverse-information
-# Used for dataverse/worldmap communication.  Validate data passed via api, etc
+# For Dataverse/Worldmap communication, the following repository is required: 
 #
+#   https://github.com/IQSS/shared-dataverse-information
+#
+# It may be accessed in 1 of 2 ways
+# -----------------------------------------------
+# 
+#   (1) Add to the sys.path.  In the local_settings.py:
+#       (a) Add/Uncomment the code belowo (lines 28-31), 
+#           ending with the "sys.path.append" line
+#       (b) Set the appropriate path for "DATAVERSE_INFO_REPOSITORY_PATH"
+#   (2) or run "pip install shared_dataverse_information"
+# -----------------------------------------------
+"""
 DATAVERSE_INFO_REPOSITORY_PATH = '/home/ubuntu/code/shared-dataverse-information'
+if not os.path.isdir(DATAVERSE_INFO_REPOSITORY_PATH):
+    raise Exception('Directory not found for repository "shared-dataverse-information" (https://github.com/IQSS/shared-dataverse-information)\ndirectory in settings: %s' % DATAVERSE_INFO_REPOSITORY_PATH)
+sys.path.append(DATAVERSE_INFO_REPOSITORY_PATH)
+"""
 ####################### END: DATAVERSE_INFO_REPOSITORY_PATH
 
 
