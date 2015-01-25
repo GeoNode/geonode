@@ -20,7 +20,7 @@ gettext = lambda s: s
 # -----------------------------------------------
 # 
 #   (1) Add to the sys.path.  In the local_settings.py:
-#       (a) Add/Uncomment the code belowo (lines 28-31), 
+#       (a) Add/Uncomment the code below (lines 28-31), 
 #           ending with the "sys.path.append" line
 #       (b) Set the appropriate path for "DATAVERSE_INFO_REPOSITORY_PATH"
 #   (2) or run "pip install shared_dataverse_information"
