@@ -51,9 +51,10 @@ vectorformats
 #For autocomplete
 django-autocomplete-light==1.4.5
 
-
-#DVN
+# For the Dataverse/Geoconnect/WorldMap connection
 xmltodict
+shared_dataverse_information
+# ------------------
 
 
 paste
