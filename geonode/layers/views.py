@@ -217,8 +217,9 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
             ows_url=layer.ows_url,
             layer_params=json.dumps(config))
 
-    # Update count for popularity ranking.
-    if request.user != layer.owner:
+    # Update count for popularity ranking,
+    # but do not includes admins or resource owners
+    if request.user != layer.owner and not request.user.is_superuser:
         Layer.objects.filter(
             id=layer.id).update(popular_count=F('popular_count') + 1)
 
