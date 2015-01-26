@@ -546,7 +546,7 @@ def format_urls(a, values):
     for i in a:
         j = i.copy()
         try:
-            j['url'] = j['url'].format(**values)
+            j['url'] = unicode(j['url']).format(**values)
         except KeyError:
             j['url'] = None
         b.append(j)
