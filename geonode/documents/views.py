@@ -81,7 +81,9 @@ def document_detail(request, docid):
         except:
             related = ''
 
-        if request.user != document.owner:
+        # Update count for popularity ranking,
+        # but do not includes admins or resource owners
+        if request.user != document.owner and not request.user.is_superuser:
             Document.objects.filter(id=document.id).update(popular_count=F('popular_count') + 1)
 
         context_dict = {
