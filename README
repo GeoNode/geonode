@@ -16,9 +16,7 @@ For 12.04 with python software properties installed, install the latest stable r
     sudo apt-get update
     sudo apt-get install geonode
 
-If instead, you are interested in doing development on the source code, here are the instructions.::
-
-    <http://docs.geonode.org/en/master/tutorials/devel/install_devmode/index.html#install-devmode>`_.
+If instead, you are interested in doing development on the source code, here are the instructions: http://docs.geonode.org/en/master/tutorials/devel/install_devmode/index.html#install-devmode.
 
 Docker Usage
 If you want to use Docker you can now:
