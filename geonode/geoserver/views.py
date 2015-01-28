@@ -485,15 +485,15 @@ def layer_acls(request):
     layer_writable = get_objects_for_user(acl_user, 'change_layer_data',
                                           Layer.objects.all())
 
-    _read = [l.typename for l in layer_readable.get_real_instances()]
-    _write = layer_writable.values_list('typename', flat=True)
+    _read = set([l.typename for l in layer_readable.get_real_instances()])
+    _write = set(layer_writable.values_list('typename', flat=True))
 
-    read_only = [x for x in _read if x not in _write]
-    read_write = [x for x in _write if x in _read]
+    read_only = _read ^ _write
+    read_write = _read & _write
 
     result = {
-        'rw': read_write,
-        'ro': read_only,
+        'rw': list(read_write),
+        'ro': list(read_only),
         'name': acl_user.username,
         'is_superuser': acl_user.is_superuser,
         'is_anonymous': acl_user.is_anonymous(),
