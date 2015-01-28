@@ -126,9 +126,16 @@ class Map(ResourceBase, GXPMapBase):
         # the readme text will appear in a README file in the zip
         readme = (
             "Title: %s\n" +
-            "Author: %s\n"
+            "Author: %s\n" +
             "Abstract: %s\n"
-        ) % (self.title, "The GeoNode Team", self.abstract)
+        ) % (self.title, self.poc, self.abstract)
+        if self.license:
+            readme += "License: %s" % self.license
+            if self.license.url:
+                readme += " (%s)" % self.license.url
+            readme += "\n"
+        if self.constraints_other:
+            readme += "Additional constraints: %s\n" % self.constraints_other
 
         def layer_json(lyr):
             return {
