@@ -157,7 +157,8 @@ class LayerTests(TestCase):
         c = Client()
         response = c.get(reverse('layer_acls'), **valid_auth_headers)
         response_json = json.loads(response.content)
-        self.assertEquals(expected_result, response_json)
+        # 'ro' and 'rw' are unsorted collections
+        self.assertEquals(sorted(expected_result), sorted(response_json))
 
         # Test that requesting when supplying invalid credentials returns the
         # appropriate error code

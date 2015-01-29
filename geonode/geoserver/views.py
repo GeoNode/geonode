@@ -18,6 +18,7 @@ from django.utils.translation import ugettext as _
 
 from guardian.shortcuts import get_objects_for_user
 
+from geonode.base.models import ResourceBase
 from geonode.layers.forms import LayerStyleUploadForm
 from geonode.layers.models import Layer, Style
 from geonode.layers.views import _resolve_layer, _PERMISSION_MSG_MODIFY
@@ -478,24 +479,21 @@ def layer_acls(request):
                                 mimetype="text/plain")
 
     # Include permissions on the anonymous user
-    all_readable = get_objects_for_user(acl_user, 'base.view_resourcebase')
-    all_writable_layers = get_objects_for_user(acl_user, 'layers.change_layer_data')
-    all_writable = []
-    for obj in all_writable_layers:
-        all_writable.append(obj.get_self_resource())
+    # use of polymorphic selectors/functions to optimize performances
+    layer_readable = get_objects_for_user(acl_user, 'view_resourcebase',
+                                          ResourceBase.objects.instance_of(Layer))
+    layer_writable = get_objects_for_user(acl_user, 'change_layer_data',
+                                          Layer.objects.all())
 
-    read_only = [
-        x.layer.typename for x in all_readable if x not in all_writable and hasattr(
-            x,
-            'layer')]
-    read_write = [
-        x.layer.typename for x in all_writable if x in all_readable and hasattr(
-            x,
-            'layer')]
+    _read = set([l.typename for l in layer_readable.get_real_instances()])
+    _write = set(layer_writable.values_list('typename', flat=True))
+
+    read_only = _read ^ _write
+    read_write = _read & _write
 
     result = {
-        'rw': read_write,
-        'ro': read_only,
+        'rw': list(read_write),
+        'ro': list(read_only),
         'name': acl_user.username,
         'is_superuser': acl_user.is_superuser,
         'is_anonymous': acl_user.is_anonymous(),
