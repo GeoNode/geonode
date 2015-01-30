@@ -110,7 +110,7 @@ def group_members(request, slug):
         ctx["member_form"] = GroupMemberForm()
 
     ctx.update({
-        "object": group,
+        "group": group,
         "members": group.member_queryset(),
         "is_member": group.user_is_member(request.user),
         "is_manager": group.user_is_role(request.user, "manager"),
