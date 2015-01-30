@@ -403,6 +403,18 @@ Default::
 
 A list of dictionaries that is used to generate the social links displayed in the Share tab.  For each origin, the name and and url format parameters are replaced by the actual values of the ResourceBase object (layer, map, document).
 
+CKAN_ORIGINS
+--------------
+Default::
+
+    CKAN_ORIGINS = [{
+        "label":"Humanitarian Data Exchange (HDX)",
+        "url":"https://data.hdx.rwlabs.org/dataset/new?title={name}&notes={abstract}",
+        "css_class":"hdx"
+    }]
+
+A list of dictionaries that is used to generate the links to CKAN instances displayed in the Share tab.  For each origin, the name and and abstract format parameters are replaced by the actual values of the ResourceBase object (layer, map, document).  This is not enabled by default.  To enabled, uncomment the following line: SOCIAL_ORIGINS.extend(CKAN_ORIGINS).
+
 Upload settings
 ===============
 
