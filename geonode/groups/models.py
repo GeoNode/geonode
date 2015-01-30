@@ -134,8 +134,11 @@ class GroupProfile(models.Model):
     def join(self, user, **kwargs):
         if user == user.get_anonymous():
             raise ValueError("The invited user cannot be anonymous")
-        GroupMember.objects.get_or_create(group=self, user=user, **kwargs)
-        user.groups.add(self.group)
+        member, created = GroupMember.objects.get_or_create(group=self, user=user, defaults=kwargs)
+        if created:
+            user.groups.add(self.group)
+        else:
+            raise ValueError("The invited user \"{0}\" is already a member".format(user.username))
 
     def invite(self, user, from_user, role="member", send=True):
         params = dict(role=role, from_user=from_user)

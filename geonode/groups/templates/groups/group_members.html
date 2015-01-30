@@ -99,7 +99,9 @@
           <h2>{% trans "Add members" %}</h2>
           <form class="uniForm" method="POST" action="{% url "group_members_add" group.slug %}">
             {% csrf_token %}
-            {{ member_form|as_bootstrap }}<br/><br/>
+            <div id="member_form_container">
+              {{ member_form|as_bootstrap }}<br/><br/>
+            </div>
             <input type="submit" value="Add Group Members" class="btn btn-success"/>
           </form>
         {% endif %}
