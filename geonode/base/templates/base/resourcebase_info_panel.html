@@ -44,7 +44,12 @@
           
     {% if resource.category %}
     <dt>{% trans "Category" %}</dt>
-    <dd>{{ resource.category }}</dd>
+    <dd><a href="/search/?category__identifier__in={{ resource.category.identifier }}">{{ resource.category }}</a> {% if resource.category.description %}<a href="#category-more" data-toggle="collapse" data-target=".category-more"><i class="fa fa-info-circle"></i></a>{% endif %}</dd>
+      {% if resource.category.description %}
+      <dd class="category-more collapse">
+        {{ resource.category.description }}
+      </dd>
+      {% endif %}
     {% endif %}
   
     {% if resource.regions.all %}
