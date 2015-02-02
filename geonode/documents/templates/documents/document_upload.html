@@ -42,7 +42,7 @@
 <script type="text/javascript">
     $('#id_doc_file').on('change', function(){
         if($('#id_title').val() == ''){
-            $('#id_title').val($('#id_doc_file').val());
+            $('#id_title').val($('#id_doc_file').val().replace("C:\\fakepath\\", ""));
         }
     });
     $("#resource").select2({
