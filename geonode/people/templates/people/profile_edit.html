@@ -5,10 +5,10 @@
 {% block body_class %}explore people{% endblock %}
 
 {% block body %}
-  
-  <div class="col-md-12">
-    <h2 class="page-title">{% trans "Edit Your Profile" %}</h2>
-  </div>
+<div class="page-header">
+  <h2 class="page-title">{% trans "Edit Your Profile" %}</h2>
+</div>
+<div class="row">
   <div class="col-md-2">
     <div class="avatar">{% avatar user 140 %}</div>
     <p><a class="btn btn-primary btn-block" href="{% url 'avatar_change' %}">{% trans "Change your avatar" %}</a></p>
@@ -25,4 +25,5 @@
       </div>
     </form>
   </div>
+</div>
 {% endblock %}
