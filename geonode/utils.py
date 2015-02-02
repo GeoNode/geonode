@@ -555,7 +555,7 @@ def format_urls(a, values):
 
 def build_abstract(resourcebase, url=None, includeURL=True):
     if resourcebase.abstract and url and includeURL:
-        return "{abstract} -- [{url}]({url})".format(abstract=resourcebase.abstract, url=url)
+        return u"{abstract} -- [{url}]({url})".format(abstract=resourcebase.abstract, url=url)
     else:
         return resourcebase.abstract
 
