@@ -836,7 +836,7 @@ def map_thumbnail(request, mapid):
 
             if not image:
                 return
-            filename = "map-%s-thumb.png" % map_obj.id
+            filename = "map-%s-thumb.png" % map_obj.uuid
             map_obj.save_thumbnail(filename, image)
 
             return HttpResponse('Thumbnail saved')
