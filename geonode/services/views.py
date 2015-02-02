@@ -17,13 +17,13 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-import urllib
 
+import urllib
 import uuid
 import logging
 import re
-
 from urlparse import urlsplit, urlunsplit
+import urlparse
 
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
@@ -175,6 +175,11 @@ def _clean_url(base_url):
     urlprop = urlsplit(base_url)
     url = urlunsplit(
         (urlprop.scheme, urlprop.netloc, urlprop.path, None, None))
+    # hack, we make sure to append the map parameter for MapServer endpoints
+    # that are exposing it
+    if 'map' in urlparse.parse_qs(urlprop.query):
+        map_param = urllib.urlencode({'map': urlparse.parse_qs(urlprop.query)['map'][0]})
+        url = '%s?%s' % (url, map_param)
     return url
 
 
