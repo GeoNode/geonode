@@ -50,8 +50,6 @@ class PermissionLevelMixin(object):
     an object representing an "access level"
     """
 
-    LEVEL_NONE = "_none"
-
     def get_all_level_info(self):
 
         resource = self.get_self_resource()

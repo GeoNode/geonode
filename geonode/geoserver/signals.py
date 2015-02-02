@@ -52,6 +52,9 @@ def geoserver_pre_save(instance, sender, **kwargs):
     if base_file is None:
         return
 
+    # delete geoserver's store before upload
+    cascading_delete(gs_catalog, instance.typename)
+
     gs_name, workspace, values = geoserver_upload(instance,
                                                   base_file.file.path,
                                                   instance.owner,
@@ -218,7 +221,7 @@ def geoserver_post_save(instance, sender, **kwargs):
                                        )
                                        )
 
-        if gs_resource.store.type.lower() == 'geogig' and \
+        if gs_resource.store.type and gs_resource.store.type.lower() == 'geogig' and \
                 gs_resource.store.connection_parameters.get('geogig_repository'):
 
             repo_url = '{url}geogig/{geogig_repository}'.format(
