@@ -550,5 +550,5 @@ def create_thumbnail(instance, thumbnail_remote_url, thumbnail_create_url=None, 
             image = None
 
     if image is not None:
-        filename = 'layer-%s-thumb.png' % instance.id
+        filename = 'layer-%s-thumb.png' % instance.uuid
         instance.save_thumbnail(filename, image=image)
