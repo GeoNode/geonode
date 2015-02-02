@@ -18,7 +18,7 @@ In this Quickstart guide you will learn the following:
 To start GeoNode on your OSGeoLive DVD you have to choose *Geospatial* => *Browser Clients* => *Start GeoNode* and the GeoNode web page will automatically
 be opened at http://localhost:8000/ (I assume!). The page will look like shown in the image below.
 
-    .. figure:: img/start_page.PNG
+    .. figure:: img/start_page.png
 
 1. Register a new account
 -------------------------
@@ -58,7 +58,7 @@ Layers are a published resource representing a raster or vector spatial data sou
 
 #. Now click *Upload Layers* and you'll see the upload form.
 
-   .. figure:: img/uploadform_new_quickstart.PNG
+   .. figure:: img/uploadform_new_quickstart.png
 
 #. You have two possibilities to add your files. You can either do that by using *drag & drop* or you choose to *browse* them.
    Be aware that you have to upload a complete set of files, consisting of a *shp*, a *prj*, a *dbf* and a *shx* file. If one of them is missing,
@@ -66,13 +66,13 @@ Layers are a published resource representing a raster or vector spatial data sou
 
 #. You shold now be able to see all the files you want to upload. 
 
-   .. figure:: img/files_to_be_uploaded.PNG
+   .. figure:: img/files_to_be_uploaded.png
 
 #. GeoNode has the ability to restrict who can view, edit, and manage layers. On the right side of the page you can see the *Permission* section, where you can limit the access on your layer. 
    Under *Who can view and download this data*, select *Any registered user*. This will ensure that anonymous view access is disabled.
    In the same area, under *Who can edit this data*, select your username. This will ensure that only you are able to edit the data in the layer.
 
-    .. figure:: img/permission.PNG
+    .. figure:: img/permission.png
     
 #. To upload data, click the *Upload* button at the bottom.
 

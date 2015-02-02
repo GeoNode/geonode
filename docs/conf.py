@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+	# -*- coding: utf-8 -*-
 #
 # GeoNode documentation build configuration file, created by
 # sphinx-quickstart on Mon Oct  3 16:20:38 2011.
