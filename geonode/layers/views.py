@@ -489,7 +489,7 @@ def layer_thumbnail(request, layername):
 
             if not image:
                 return
-            filename = "layer-%s-thumb.png" % layer_obj.id
+            filename = "layer-%s-thumb.png" % layer_obj.uuid
             layer_obj.save_thumbnail(filename, image)
 
             return HttpResponse('Thumbnail saved')
