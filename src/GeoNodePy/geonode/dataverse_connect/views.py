@@ -107,9 +107,6 @@ def view_add_worldmap_shapefile(request):
 
     #   Does the request have proper auth?
     #   -> check is now done by the ShapefileImportDataForm
-    #if not has_proper_auth(request):
-    #    json_msg = MessageHelperJSON.get_json_msg(success=False, msg="Authentication failed.")
-    #    return HttpResponse(status=401, content=json_msg, content_type="application/json")
 
 
     #   Is there a file in this request
@@ -137,7 +134,7 @@ def view_add_worldmap_shapefile(request):
     form_shapefile_import= ShapefileImportDataForm(Post_Data_As_Dict)
     if not form_shapefile_import.is_valid():
         #
-        #   Invalid send back an error message
+        #   Invalid, send back an error message
         #
         logger.error("Shapefile import error: \n%s" % format_errors_as_text(form_shapefile_import))
         json_msg = MessageHelperJSON.get_json_msg(success=False\

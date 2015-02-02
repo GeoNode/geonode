@@ -15,7 +15,7 @@ def check_for_existing_layer(dataverse_info):
     """
     Using the dataverse_info information
 
-    Does the datafile_id in dataverse_info match an existing DataverseLayerMetadata object?
+    Does the datafile_id and dataverse_installation_name in dataverse_info match an existing DataverseLayerMetadata object?
 
     Yes:  return first matching DataverseLayerMetadata object
     No: return None
