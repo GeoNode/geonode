@@ -429,7 +429,7 @@ def layer_replace(request, layername, template='layers/layer_replace.html'):
                 if layer.is_vector() and is_raster(base_file):
                     out['success'] = False
                     out['errors'] = _("You are attempting to replace a vector layer with a raster.")
-                elif layer.is_vector() == False and is_vector(base_file):
+                elif (not layer.is_vector()) and is_vector(base_file):
                     out['success'] = False
                     out['errors'] = _("You are attempting to replace a raster layer with a vector.")
                 else:
