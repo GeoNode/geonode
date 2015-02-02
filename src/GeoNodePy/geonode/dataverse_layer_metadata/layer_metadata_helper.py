@@ -29,8 +29,10 @@ def check_for_existing_layer(dataverse_info):
         logger.error('Errors: %s' % f.errors)
         raise forms.ValidationError('Failed to validate dataverse_info data')
 
-    # Check for DataverseLayerMetadata objects with the same "datafile_id"
-    l = DataverseLayerMetadata.objects.filter(datafile_id=f.cleaned_data.get('datafile_id'))
+    # Check for DataverseLayerMetadata objects with the same "datafile_id" AND "dataverse_installation_name"
+    l = DataverseLayerMetadata.objects.filter(datafile_id=f.cleaned_data.get('datafile_id')\
+                                , dataverse_installation_name=f.cleaned_data.get('dataverse_installation_name')\
+                                )
 
     # If DataverseLayerMetadata objects match, return the 1st one
     # (Note: Not ~yet~ enforcing only 1 DataverseLayerMetadata per datafile_id.

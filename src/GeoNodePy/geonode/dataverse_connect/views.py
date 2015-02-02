@@ -28,8 +28,7 @@ from shared_dataverse_information.shapefile_import.forms import ShapefileImportD
 
 logger = logging.getLogger("geonode.dataverse_connect.views")
 
-
-
+'''
 @csrf_exempt
 def view_check_for_existing_layer(request):
     """
@@ -90,7 +89,7 @@ def view_check_for_existing_layer(request):
     json_msg = MessageHelperJSON.get_json_msg(success=False, msg="Layer not yet created on WorldMap")
 
     return HttpResponse(status=200, content=json_msg, content_type="application/json")
-
+'''
 
 
 @csrf_exempt
@@ -107,10 +106,10 @@ def view_add_worldmap_shapefile(request):
 
 
     #   Does the request have proper auth?
-    #
-    if not has_proper_auth(request):
-        json_msg = MessageHelperJSON.get_json_msg(success=False, msg="Authentication failed.")
-        return HttpResponse(status=401, content=json_msg, content_type="application/json")
+    #   -> check is now done by the ShapefileImportDataForm
+    #if not has_proper_auth(request):
+    #    json_msg = MessageHelperJSON.get_json_msg(success=False, msg="Authentication failed.")
+    #    return HttpResponse(status=401, content=json_msg, content_type="application/json")
 
 
     #   Is there a file in this request
@@ -147,12 +146,22 @@ def view_add_worldmap_shapefile(request):
         return HttpResponse(status=400, content=json_msg, content_type="application/json")
 
 
+    if not form_shapefile_import.is_signature_valid_check_post(request):
+        #
+        #   Invalid signature on request
+        #
+        logger.error("Invalid signature on request.  Failed validation with ShapefileImportDataForm")
+        json_msg = MessageHelperJSON.get_json_msg(success=False\
+                                , msg="Invalid signature on request.  Failed validation with ShapefileImportDataForm")
+        return HttpResponse(status=400, content=json_msg, content_type="application/json")
+
+
     #-----------------------------------------------------------
     #   start: check for existing layer
     #   Does a layer already exist for this file?
     #   Check for an existing DataverseLayerMetadata object.
     #-----------------------------------------------------------
-    dv_layer_metadata = None
+    existing_dv_layer_metadata = None
     logger.info("pre existing layer check")
     print "pre existing layer check"
     try:
