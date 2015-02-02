@@ -13,7 +13,7 @@
       <div class="controls">
         <div class="radio">
           <label>
-            <input type="checkbox" name="view_anonymous" id="perms_view_anyone" value="AnonymousUser">
+            <input type="checkbox" name="view_anonymous" id="perms_view_anyone" value="AnonymousUser" {% if DEFAULT_ANONYMOUS_VIEW_PERMISSION %}checked{% endif %}>
             {% trans "Anyone" %}
           </label>
         </div>
@@ -45,7 +45,7 @@
       <div class="controls">
         <div class="radio">
           <label>
-            <input type="checkbox" name="download_anonymous" id="perms_download_resourcebase_anyone" value="AnonymousUser">
+            <input type="checkbox" name="download_anonymous" id="perms_download_resourcebase_anyone" value="AnonymousUser" {% if DEFAULT_ANONYMOUS_DOWNLOAD_PERMISSION %}checked{% endif %}>
             {% trans "Anyone" %}
           </label>
         </div>
