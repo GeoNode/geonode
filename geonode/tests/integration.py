@@ -555,7 +555,7 @@ class GeoNodeMapTest(TestCase):
                 'base_file': open(
                     raster_file, 'rb')})
         # TODO: This should really return a 400 series error with the json dict
-        self.assertEquals(response.status_code, 500)
+        self.assertEquals(response.status_code, 400)
         response_dict = json.loads(response.content)
         self.assertEquals(response_dict['success'], False)
 
