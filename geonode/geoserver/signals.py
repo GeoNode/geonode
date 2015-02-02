@@ -218,7 +218,7 @@ def geoserver_post_save(instance, sender, **kwargs):
                                        )
                                        )
 
-        if gs_resource.store.type.lower() == 'geogig' and \
+        if gs_resource.store.type and gs_resource.store.type.lower() == 'geogig' and \
                 gs_resource.store.connection_parameters.get('geogig_repository'):
 
             repo_url = '{url}geogig/{geogig_repository}'.format(
