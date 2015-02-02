@@ -1,3 +1,73 @@
+geonode (2.4.0+beta13) trusty; urgency=high
+
+  [ Paolo Pasquali ]
+  * [310a6c] Fix #1960
+
+  [ Simone Dalmasso ]
+  * [7737d4] disable html5 mode in explorer in search
+  * [284206] disable notification by default
+
+  [ Jeffrey Johnson ]
+  * [12c995] Dont use ^ in autocomplete (this means starts with)
+
+  [ Paolo Pasquali ]
+  * [666036] Add links to homepage facets. And some padding improvements. Fix #1901
+  * [ca486f] Remove text-center class from homepage
+
+  [ capooti ]
+  * [7a71de] Hack to fix #1932
+
+  [ Paolo Pasquali ]
+  * [881c43] Add some profile layout fixes
+
+  [ capooti ]
+  * [9fccf0] Removing stale links when updating layers. Fixes #1090
+  * [6818a9] Making flake8 happy
+
+  [ Simone Dalmasso ]
+  * [97493c] fixes #1888
+
+  [ Tyler Garner ]
+  * [e1c1ab] Include step to install `sphinx_rtd_theme` when building docs.
+
+  [ capooti ]
+  * [1b769b] Fixes #1966
+
+  [ Simone Dalmasso ]
+  * [84e8cd] obscure thumbnail urls
+
+  [ capooti ]
+  * [944446] Reading THEME_ACCOUNT_CONTACT_EMAIL in context processor
+
+  [ Paolo Pasquali ]
+  * [c2ec51] General minor layout improvements
+
+  [ Jeffrey Johnson ]
+  * [f0828e] Check if the store.type is None before checking its value
+
+  [ Paolo Pasquali ]
+  * [6a93e3] Fix form width
+
+  [ Simone Dalmasso ]
+  * [2dc741] add back the print middleware for private layers fixes #765
+
+  [ Jeffrey Johnson ]
+  * [c1c5cc] Delete geoservers store (deleting the postgis table) when doing layer replace (fixes #1860)
+
+  [ capooti ]
+  * [67f28d] Bumped geonode-avatar 2.1.4
+
+  [ Simone Dalmasso ]
+  * [5f1f81] add default configurable permissions for anonymous user
+
+  [ Jeffrey Johnson ]
+  * [6189f7] Add new logic to detect changing layer types (raster/vector) when replacing layers vs letting geonode handle this
+  * [06aac1] Use 400 error code vs 500
+
+  [ Simone Dalmasso ]
+
+ -- Simone Dalmasso <simone.dalmasso@gmail.com>  Mon, 02 Feb 2015 17:21:05 +0000
+
 geonode (2.4.0+beta12) trusty; urgency=high
 
   [ state-hiu ]
