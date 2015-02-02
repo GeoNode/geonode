@@ -12,33 +12,28 @@
 <div class="row">
   <div class="col-md-8">
     <div class="row">
-      <div class="col-md-3">
+      <div class="col-xs-4 col-md-3 group-logo">
       {% if object.logo %}
-        <img src="{{ object.logo.url }}" alt="{{ object.title }}" class="group-logo" />
+        <img src="{{ object.logo.url }}" alt="{{ object.title }}" />
       {% else %}
         <p>{% trans "This group has not created a logo." %}</p>
       {% endif %}
       </div>
-      <div class="col-md-9">
-        <p>{{ object.description }}</p>
-        <dl class="dl-horizontal profile-details">
-          <dt><i class="fa fa-tag"></i></dt>
-          <dd>
+      <div class="col-xs-8 col-md-9 group-details">
+        <p class="group-desc">{{ object.description }}</p>
           {% if object.keyword_list %}
+          <p><i class="fa fa-tag"></i>
             {% for keyword in object.keyword_list %}
               {{ keyword }}
             {% endfor %}
+          </p>
           {% else %}
-          <br>
           {% endif %}
-          </dd>
           {% if object.email %}
-          <dt><i class="fa fa-envelope-o"></i></dt>
-          <dd>
+          <p><i class="fa fa-envelope-o"></i>
             <a href="mailto:{{ object.email }}">{{ object.email }}</a>
-          </dd>
+          </p>
           {% endif %}
-        </dl>
       </div>
     </div>
     <div class="row">
