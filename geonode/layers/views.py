@@ -46,7 +46,7 @@ from geonode.base.models import TopicCategory
 from geonode.utils import default_map_config
 from geonode.utils import GXPLayer
 from geonode.utils import GXPMap
-from geonode.layers.utils import file_upload
+from geonode.layers.utils import file_upload, is_raster, is_vector
 from geonode.utils import resolve_object, llbbox_to_mercator
 from geonode.people.forms import ProfileForm, PocForm
 from geonode.security.views import _perms_info_json
@@ -172,7 +172,7 @@ def layer_upload(request, template='upload/layer_upload.html'):
         if out['success']:
             status_code = 200
         else:
-            status_code = 500
+            status_code = 400
         return HttpResponse(
             json.dumps(out),
             mimetype='application/json',
@@ -426,21 +426,27 @@ def layer_replace(request, layername, template='layers/layer_replace.html'):
         if form.is_valid():
             try:
                 tempdir, base_file = form.write_files()
-                saved_layer = file_upload(
-                    base_file,
-                    name=layer.name,
-                    user=request.user,
-                    overwrite=True,
-                    charset=form.cleaned_data["charset"],
-                )
+                if layer.is_vector() and is_raster(base_file):
+                    out['success'] = False
+                    out['errors'] = _("You are attempting to replace a vector layer with a raster.")
+                elif layer.is_vector() == False and is_vector(base_file):
+                    out['success'] = False
+                    out['errors'] = _("You are attempting to replace a raster layer with a vector.")
+                else:
+                    saved_layer = file_upload(
+                        base_file,
+                        name=layer.name,
+                        user=request.user,
+                        overwrite=True,
+                        charset=form.cleaned_data["charset"],
+                    )
+                    out['success'] = True
+                    out['url'] = reverse(
+                        'layer_detail', args=[
+                            saved_layer.service_typename])
             except Exception as e:
                 out['success'] = False
                 out['errors'] = str(e)
-            else:
-                out['success'] = True
-                out['url'] = reverse(
-                    'layer_detail', args=[
-                        saved_layer.service_typename])
             finally:
                 if tempdir is not None:
                     shutil.rmtree(tempdir)
@@ -455,7 +461,7 @@ def layer_replace(request, layername, template='layers/layer_replace.html'):
         if out['success']:
             status_code = 200
         else:
-            status_code = 500
+            status_code = 400
         return HttpResponse(
             json.dumps(out),
             mimetype='application/json',
