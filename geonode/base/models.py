@@ -678,11 +678,12 @@ def resourcebase_post_save(instance, *args, **kwargs):
         thumbnail_url=instance.get_thumbnail_url(),
         detail_url=instance.get_absolute_url())
     instance.set_missing_info()
-    
+
     # we need to remove stale links
     for link in instance.link_set.all():
         if settings.SITEURL not in link.url:
             link.delete()
+
 
 def rating_post_save(instance, *args, **kwargs):
     """
