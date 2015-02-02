@@ -1,3 +1,61 @@
+geonode (2.4.0+beta12) trusty; urgency=high
+
+  [ state-hiu ]
+  * [ef373f] Initial support for Share with CKAN (HDX as prototype)
+  * [936b0b] Disable CKAN by default
+  * [51342f] PEP8 fixes
+
+  [ Tyler Garner ]
+  * [129000] Enable XFrameOptionsMiddleware for clickjacking prevention.
+
+  [ state-hiu ]
+  * [a069c7] Do not include admins in view counts
+  * [0e39c0] layout changes for group members and avatar change
+
+  [ Stefano Menegon ]
+  * [c20130] Fixed issue with non ASCII characters
+
+  [ state-hiu ]
+  * [6fc90a] Fix #1847; anonymoususer fix; layout fixes
+
+  [ Daniele Viganò ]
+  * [b2246b] Fix the README contained in the zip file created by a map download
+
+  [ Simone Dalmasso ]
+  * [e002a3] use link to docs in readme for installation devmode
+  * [67b61b] fix link
+
+  [ menegon ]
+  * [27057b] improved layer_acls performaces
+
+  [ John Jediny ]
+  * [c85974] Adding blank extra_tab block
+
+  [ menegon ]
+  * [edb815] PEP8 fixes
+  * [2fb7d8] used set operations - as suggested by @ischneider
+  * [f3385a] fixed test_layer_acls issue
+
+  [ Geode Team ]
+  * [4634b5] research user-group insensitive and exclude AnonymousUser
+  * [9fbd6b] fix pep8
+
+  [ state-hiu ]
+  * [76e43b] Fix dropdown; Prevent duplicate group members
+
+  [ Simone Dalmasso ]
+  * [a3472c] compile css
+
+  [ state-hiu ]
+  * [30b305] added documentation to settings.txt
+  * [2114cb] fixes fakepath issue on document upload
+  * [785a73] category links to search; more info button
+
+  [ Simone Dalmasso ]
+  * [94ebf1] simplify notifications
+
+ -- Simone Dalmasso <simone.dalmasso@gmail.com>  Mon, 02 Feb 2015 10:22:57 +0000
+
 geonode (2.4.0+beta11) trusty; urgency=high
 
   [ state-hiu ]
