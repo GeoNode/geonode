@@ -3,13 +3,15 @@
 (function(){
 
   var module = angular.module('geonode_main_search', [], function($locationProvider) {
-      $locationProvider.html5Mode({
-        enabled: true,
-        requireBase: false
-      });
+      if (window.navigator.userAgent.indexOf("MSIE") == -1){
+          $locationProvider.html5Mode({
+            enabled: true,
+            requireBase: false
+          });
 
-      // make sure that angular doesn't intercept the page links
-      angular.element("a").prop("target", "_self");
+          // make sure that angular doesn't intercept the page links
+          angular.element("a").prop("target", "_self");
+      }
     });
 
     // Used to set the class of the filters based on the url parameters
