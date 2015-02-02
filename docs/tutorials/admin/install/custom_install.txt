@@ -474,7 +474,7 @@ to::
 again using ``sudo service apache2 reload`` and visit localhost/admin.
 Now you should be able to see this:
 
-.. figure:: img/admin_interface.PNG
+.. figure:: img/admin_interface.png
 
 Change permissions of folders
 `````````````````````````````
@@ -526,7 +526,7 @@ By starting tomcat it will unpack the geoserver.war and create a new directory
 Let's try to visit http://localhost:8080/geoserver or ``localhost/geoserver``.
 You will now see the geoserver homepage:
 
-.. figure:: img/geoserver_webpage.PNG
+.. figure:: img/geoserver_webpage.png
 
 .. warning:: Geoserver is not a Vanilla Geoserver install, please use the
         geoserver.war that comes with geonode.

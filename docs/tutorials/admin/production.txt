@@ -151,7 +151,7 @@ Some other things that require tweaking:
 Robot Exclusion File
 --------------------
 
-GeoNode has several views that require considerable resources to properly respond - for example, the download links on layer detail pages require GeoServer to dynamically generate output in PDF, PNG, etc. format.
+GeoNode has several views that require considerable resources to properly respond - for example, the download links on layer detail pages require GeoServer to dynamically generate output in PDF, png, etc. format.
 
 Crawlers for web search engines such as Google may cause problems by quickly following many such links in succession.
 
@@ -288,7 +288,7 @@ On the JAI Settings page
 
    There are two considerations for the JAI settings.
    
-      * Enable JPEG and PNG Native Acceleration to speed up the performance of WMS requests
+      * Enable JPEG and png Native Acceleration to speed up the performance of WMS requests
 
       * Disable Tile Recycling as this optimization is less relevant on recent JVM implementations and has some overhead itself.
 

@@ -4711,7 +4711,7 @@ msgstr ""
 msgid ""
 "GeoNode has several views that require considerable resources to properly "
 "respond - for example, the download links on layer detail pages require "
-"GeoServer to dynamically generate output in PDF, PNG, etc. format."
+"GeoServer to dynamically generate output in PDF, png, etc. format."
 msgstr ""
 
 #: ../../tutorials/admin/production.txt:148
@@ -4926,7 +4926,7 @@ msgstr ""
 
 #: ../../tutorials/admin/production.txt:283
 msgid ""
-"Enable JPEG and PNG Native Acceleration to speed up the performance of WMS "
+"Enable JPEG and png Native Acceleration to speed up the performance of WMS "
 "requests"
 msgstr ""
 
@@ -5246,7 +5246,7 @@ msgstr ""
 # 5abefb47a8134f05924723a520db2c8d
 #: ../../tutorials/devel/api/ogc.txt:33
 msgid ""
-"WMS provides an API to retrieve map images (PNG, JPEG, etc.) of geospatial "
+"WMS provides an API to retrieve map images (png, JPEG, etc.) of geospatial "
 "data.  WMS is suitable for visualization and when access to raw data is not "
 "a requirement."
 msgstr ""
@@ -13631,7 +13631,7 @@ msgid "GML (geographic markup language)"
 msgstr ""
 
 #: ../../tutorials/users/old/share.txt:46
-msgid "PNG (image)"
+msgid "png (image)"
 msgstr ""
 
 #: ../../tutorials/users/old/share.txt:47

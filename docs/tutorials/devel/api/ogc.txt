@@ -30,7 +30,7 @@ The following sections briefly describe the OGC Web Services provided by GeoNode
 Web Map Service (WMS)
 ---------------------
 
-WMS provides an API to retrieve map images (PNG, JPEG, etc.) of geospatial data.  WMS is suitable for visualization and when access to raw data is not a requirement.
+WMS provides an API to retrieve map images (png, JPEG, etc.) of geospatial data.  WMS is suitable for visualization and when access to raw data is not a requirement.
 
 WFS
 ---
