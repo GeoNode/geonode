@@ -32,7 +32,7 @@ Fork a repository
 
 In order to make changes to these files, you first have to fork the repository. On the top of the website you can see the following buttons:
 
-.. image:: img/fork_repo.PNG
+.. image:: img/fork_repo.png
 
 Click on the button *Fork* at the top right and the *geonode* repository will be forked. You should now be able to see your repository *your_name/geonode*.
 If you want to read more about how to fork a repository go to https://help.github.com/articles/fork-a-repo.
