@@ -52,6 +52,9 @@ def geoserver_pre_save(instance, sender, **kwargs):
     if base_file is None:
         return
 
+    # delete geoserver's store before upload
+    cascading_delete(gs_catalog, instance.typename)
+
     gs_name, workspace, values = geoserver_upload(instance,
                                                   base_file.file.path,
                                                   instance.owner,
