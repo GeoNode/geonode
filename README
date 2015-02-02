@@ -163,6 +163,7 @@ Before starting GeoNode (paver start), you could test your installation by runni
 In case you want to build yourself the documentation, you need to install Sphinx and the run 'make html' from within the docs directory::
 
     pip install Sphinx
+    pip install sphinx_rtd_theme
     cd docs
     make html
     
