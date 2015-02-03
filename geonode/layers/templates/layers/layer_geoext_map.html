@@ -100,7 +100,11 @@
                     };
                 }
             });
-
+            Ext.Ajax.on('requestcomplete', function(req, cippa, opts){
+                if(opts.method == 'PUT'){
+                    $('#legend_icon').attr('src', $('#legend_icon').attr('src')+'?'+Math.random());
+                }   
+            }, this);
         });
     
     {% endautoescape %}
