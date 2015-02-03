@@ -1,3 +1,26 @@
+geonode (2.4.0+beta16) trusty; urgency=high
+
+  [ Tyler Garner ]
+  * [433cf0] Propagate exceptions from tasks when CELERY_ALWAYS_EAGER is True.
+  * [75d256] Catch exception when deleting a layer from a layer group.  Fixes #1671.
+
+  [ Simone Dalmasso ]
+  * [9dcab3] fix #1341
+
+  [ Tyler Garner ]
+  * [556698] Rename 'Profile Menu' to 'Menu'.  Fixes #1898.
+
+  [ Simone Dalmasso ]
+  * [7cbf3f] fadd back the print service to map detail, fixes #1779
+  * [ce7429] update keywords before layer form save, fixes #1196
+
+  [ Ariel Núñez ]
+  * [20a3a2] Added LOG_FILE to local_settings.py in packages
+
+  [ Simone Dalmasso ]
+
+ -- Simone Dalmasso <simone.dalmasso@gmail.com>  Tue, 03 Feb 2015 15:26:42 +0000
+
 geonode (2.4.0+beta15) trusty; urgency=high
 
   [ Paolo Pasquali ]
