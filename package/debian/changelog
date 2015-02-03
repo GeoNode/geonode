@@ -1,3 +1,50 @@
+geonode (2.4.0+beta15) trusty; urgency=high
+
+  [ Paolo Pasquali ]
+  * [c92f17] Revert layers upload buttons to correct style
+  * [9eaeb7] Fix group logo image responsiveness in group list page
+
+  [ Jeffrey Johnson ]
+  * [27f372] Add config["queryable"] = True to the layer detail view so the Identify tool works. closes #1865
+
+  [ capooti ]
+  * [c4139d] Bumped geonode-user-messages 0.1.2
+
+  [ Jeffrey Johnson ]
+  * [f16853] Actually get a user with importlayers. Closes #1953
+
+  [ Paolo Pasquali ]
+  * [f7d05f] Some improvements in people layout and style
+
+  [ Simone Dalmasso ]
+  * [2b946b] add option to specify remote services name, partially helps for #1961
+
+  [ Daniele Viganò ]
+  * [2ba7b5] Users should not be able to edit other users profile
+
+  [ Jeffrey Johnson ]
+  * [b7373f] Moving test_configure_time to geonode.upload.tests.integration and re-enabling. The tests in geonode.upload.tests.integration are not currently run. @ischneider has proposed to replace this entire module Closes #1767
+
+  [ Simone Dalmasso ]
+  * [990c88] make groups selection by title in permissions widget, fixes #1961
+
+  [ Ariel Núñez ]
+  * [27e341] Added a context field to UploadSession
+  * [85e5c3] Better information on the traceback
+  * [0723a2] Added a LOG_FILE key to OGC_SERVER
+  * [90378a] Removed help fields on UploadSession
+
+  [ Jeffrey Johnson ]
+  * [1f4650] Fix up some imports in the upload integration tests
+
+  [ Ariel Núñez ]
+  * [80a593] Better error reporting
+
+  [ Simone Dalmasso ]
+  * [60b4f7] fix pep8
+
+ -- Simone Dalmasso <simone.dalmasso@gmail.com>  Tue, 03 Feb 2015 11:50:19 +0000
+
 geonode (2.4.0+beta14) trusty; urgency=high
 
   [ Allan Oware ]
