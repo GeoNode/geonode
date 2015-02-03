@@ -103,7 +103,7 @@ def register_service(request):
         # method = request.POST.get('method')
         # type = request.POST.get('type')
         # name = slugify(request.POST.get('name'))
-
+            name = service_form.cleaned_data['name']
             type = service_form.cleaned_data["type"]
             server = None
             if type == "AUTO":
@@ -120,11 +120,11 @@ def register_service(request):
                 password = None
 
             if type in ["WMS", "OWS"]:
-                return _process_wms_service(url, type, user, password, wms=server, owner=request.user)
+                return _process_wms_service(url, name, type, user, password, wms=server, owner=request.user)
             elif type == "REST":
-                return _register_arcgis_url(url, user, password, owner=request.user)
+                return _register_arcgis_url(url, name, user, password, owner=request.user)
             elif type == "CSW":
-                return _register_harvested_service(url, user, password, owner=request.user)
+                return _register_harvested_service(url, name, user, password, owner=request.user)
             elif type == "OGP":
                 return _register_ogp_service(url, owner=request.user)
             else:
@@ -158,7 +158,7 @@ def register_service_by_type(request):
     if type == "WMS" or type == "OWS":
         return _process_wms_service(url, type, None, None, wms=server)
     elif type == "REST":
-        return _register_arcgis_url(url, None, None)
+        return _register_arcgis_url(url, None, None, None)
 
 
 def _is_unique(url):
@@ -254,7 +254,7 @@ def _verify_service_type(base_url, service_type=None):
     return [None, None]
 
 
-def _process_wms_service(url, type, username, password, wms=None, owner=None, parent=None):
+def _process_wms_service(url, name, type, username, password, wms=None, owner=None, parent=None):
     """
     Create a new WMS/OWS service, cascade it if necessary (i.e. if Web Mercator not available)
     """
@@ -287,10 +287,11 @@ def _process_wms_service(url, type, username, password, wms=None, owner=None, pa
         pass
 
     title = wms.identification.title
-    if title:
-        name = _get_valid_name(title)
-    else:
-        name = _get_valid_name(urlsplit(url).netloc)
+    if not name:
+        if title:
+            name = _get_valid_name(title)
+        else:
+            name = _get_valid_name(urlsplit(url).netloc)
     try:
         supported_crs = ','.join(wms.contents.itervalues().next().crsOptions)
     except:
@@ -674,7 +675,7 @@ def _register_indexed_layers(service, wms=None, verbosity=False):
         return HttpResponse('Invalid Service Type', status=400)
 
 
-def _register_harvested_service(url, username, password, csw=None, owner=None):
+def _register_harvested_service(url, name, username, password, csw=None, owner=None):
     """
     Register a CSW service, then step through results (or queue for asynchronous harvesting)
     """
@@ -700,7 +701,7 @@ def _register_harvested_service(url, username, password, csw=None, owner=None):
                                      type='CSW',
                                      method='H',
                                      name=_get_valid_name(
-                                         csw.identification.title or url),
+                                         csw.identification.title or url) if not name else name,
                                      title=csw.identification.title,
                                      version=csw.identification.version,
                                      abstract=csw.identification.abstract or _("Not provided"),
@@ -782,7 +783,7 @@ def _harvest_csw(csw, maxrecords=10, totalrecords=float('inf')):
                                  (known_types["WMS"], str(e)))
             elif "REST" in known_types:
                 try:
-                    _register_arcgis_url(ref["url"], None, None, parent=csw)
+                    _register_arcgis_url(ref["url"], None, None, None, parent=csw)
                 except Exception, e:
                     logger.error("Error registering %s:%s" %
                                  (known_types["REST"], str(e)))
@@ -791,7 +792,7 @@ def _harvest_csw(csw, maxrecords=10, totalrecords=float('inf')):
         stop = 0
 
 
-def _register_arcgis_url(url, username, password, owner=None, parent=None):
+def _register_arcgis_url(url, name, username, password, owner=None, parent=None):
     """
     Register an ArcGIS REST service URL
     """
@@ -801,7 +802,7 @@ def _register_arcgis_url(url, username, password, owner=None, parent=None):
         # This is a MapService
         arcserver = ArcMapService(baseurl)
         if isinstance(arcserver, ArcMapService) and arcserver.spatialReference.wkid in [102100, 3857, 900913]:
-            return_json = [_process_arcgis_service(arcserver, owner=owner, parent=parent)]
+            return_json = [_process_arcgis_service(arcserver, name, owner=owner, parent=parent)]
         else:
             return_json = [{'msg':  _("Could not find any layers in a compatible projection.")}]
 
@@ -809,7 +810,7 @@ def _register_arcgis_url(url, username, password, owner=None, parent=None):
         # This is a Folder
         arcserver = ArcFolder(baseurl)
         return_json = _process_arcgis_folder(
-            arcserver, services=[], owner=owner, parent=parent)
+            arcserver, name, services=[], owner=owner, parent=parent)
 
     return HttpResponse(json.dumps(return_json),
                         mimetype='application/json',
@@ -883,7 +884,7 @@ def _register_arcgis_layers(service, arc=None):
     return return_dict
 
 
-def _process_arcgis_service(arcserver, owner=None, parent=None):
+def _process_arcgis_service(arcserver, name, owner=None, parent=None):
     """
     Create a Service model instance for an ArcGIS REST service
     """
@@ -901,7 +902,7 @@ def _process_arcgis_service(arcserver, owner=None, parent=None):
         }]
         return return_dict
 
-    name = _get_valid_name(arcserver.mapName or arc_url)
+    name = _get_valid_name(arcserver.mapName or arc_url) if not name else name
     service = Service.objects.create(base_url=arc_url, name=name,
                                      type='REST',
                                      method='I',
@@ -934,7 +935,7 @@ def _process_arcgis_service(arcserver, owner=None, parent=None):
     return return_dict
 
 
-def _process_arcgis_folder(folder, services=[], owner=None, parent=None):
+def _process_arcgis_folder(folder, name, services=[], owner=None, parent=None):
     """
     Iterate through folders and services in an ArcGIS REST service folder
     """
@@ -946,7 +947,7 @@ def _process_arcgis_folder(folder, services=[], owner=None, parent=None):
         else:
             if service.spatialReference.wkid in [102100, 3857, 900913]:
                 return_dict = _process_arcgis_service(
-                    service, owner, parent=parent)
+                    service, name, owner, parent=parent)
             else:
                 return_dict['msg'] = _("Could not find any layers in a compatible projection: \
                 The spatial id was: %(srs)s and the url %(url)s" % {'srs': service.spatialReference.wkid,
@@ -955,7 +956,7 @@ def _process_arcgis_folder(folder, services=[], owner=None, parent=None):
         services.append(return_dict)
 
     for subfolder in folder.folders:
-        _process_arcgis_folder(subfolder, services, owner)
+        _process_arcgis_folder(subfolder, name, services, owner)
     return services
 
 
