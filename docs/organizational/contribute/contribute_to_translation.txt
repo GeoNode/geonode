@@ -15,14 +15,14 @@ Here you will see how easy it is to update the translations directly on the tran
 
    Go to `<https://www.transifex.com>`_ and, click *Try it for free* and enter the needed information to create your free account.
 
-   .. figure:: img/transifex_homepage.PNG
+   .. figure:: img/transifex_homepage.png
 
 
 #. Join our project
 
    After activating the link you've got you will be asked whether you want to start a new project or to join an existing project.
 
-   .. figure:: img/transifex_join_project.PNG
+   .. figure:: img/transifex_join_project.png
 
    Click *join an existing project* and type *geonode* into the search bar. You will be directed to the geonode project site on transifex. To join the team, click on the language you want to add a translation in. Then a button *Join the team* will appaer. Hit it, and you will submit for permission to join.
 
@@ -32,7 +32,7 @@ Here you will see how easy it is to update the translations directly on the tran
 
    Click on the language where you want to add a translation. You'll see some bars, e.g. *javascript* and *master*. Choose the one you want to add a translation and you will see a dialog window like this
 
-    .. figure:: img/download_translation.PNG
+    .. figure:: img/download_translation.png
 
    Now you have two options to start translating. Either you use the transifex interface (*option 1*) or you download the file to translate locally (*option 2*).
 
@@ -40,11 +40,11 @@ Here you will see how easy it is to update the translations directly on the tran
 
    To start translating using the Transifex interface, hit *Translate now*. You'll see an interface like this
 
-   .. figure:: img/transifex_interface.PNG
+   .. figure:: img/transifex_interface.png
 
    Click *untranslated* and add your translation like shown below
 
-   .. figure:: img/transifex_add_translation.PNG
+   .. figure:: img/transifex_add_translation.png
 
    When you stop translating, do not forget to hit the green *save* button at the top right!
 
@@ -120,4 +120,4 @@ How to add a new language
 
    To add a new language, click on *Request language* on the right top of the transifex webpage.
 
-   .. figure:: img/transifex_request_language.PNG
+   .. figure:: img/transifex_request_language.png
