@@ -49,6 +49,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.db.models.signals import pre_delete
 from django.template.loader import render_to_string
 from django.conf import settings
+from django.utils.translation import ugettext as _
 
 from dialogos.models import Comment
 from agon_ratings.models import OverallRating
@@ -939,12 +940,14 @@ def _create_db_featurestore(name, data, overwrite=False, charset="UTF-8"):
                               charset=charset)
         return ds, cat.get_resource(name, store=ds)
     except Exception:
-        # FIXME(Ariel): This is not a good idea, today there was a problem
-        # accessing postgis that caused add_data_to_store to fail,
-        # for the same reasons the call to delete_from_postgis below failed too
-        # I am commenting it out and filing it as issue #1058
-        # delete_from_postgis(name)
-        raise
+        msg = _("An exception occurred loading data to PostGIS")
+        msg += "- %s" % (sys.exc_info()[1])
+        try:
+            delete_from_postgis(name)
+        except Exception:
+            msg += _(" Additionally an error occured during database cleanup")
+            msg += "- %s" % (sys.exc_info()[1])
+        raise GeoNodeException(msg)
 
 
 def geoserver_upload(
