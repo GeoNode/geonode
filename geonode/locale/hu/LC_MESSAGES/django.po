@@ -3,15 +3,16 @@
 # This file is distributed under the same license as the PACKAGE package.
 #
 # Translators:
+# Translators:
 # Andres Alfonso Lemon Gomez <lemon.andres@gmail.com>, 2014
 # jankoja <transifex.com@mezoseg.ro>, 2014
 msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-02-03 05:20-0600\n"
-"PO-Revision-Date: 2014-11-15 18:01+0000\n"
-"Last-Translator: Andres Alfonso Lemon Gomez <lemon.andres@gmail.com>\n"
+"POT-Creation-Date: 2015-02-03 08:23-0600\n"
+"PO-Revision-Date: 2015-02-03 12:11+0000\n"
+"Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
 "Language-Team: Hungarian (http://www.transifex.com/projects/p/geonode/"
 "language/hu/)\n"
 "Language: hu\n"
@@ -558,54 +559,44 @@ msgid "You are not allowed to edit this document."
 msgstr "Ön nem szerkesztheti a dokumentumot."
 
 #: documents/management/__init__.py:14
-#, fuzzy
 msgid "Document Created"
-msgstr "Kapcsolódó dokumentumok megosztása"
+msgstr ""
 
 #: documents/management/__init__.py:15
-#, fuzzy
 msgid "A Document was created"
-msgstr "A Map jött létre"
+msgstr ""
 
 #: documents/management/__init__.py:18
-#, fuzzy
 msgid "Document Updated"
-msgstr "Dokumentumok"
+msgstr ""
 
 #: documents/management/__init__.py:19
-#, fuzzy
 msgid "A Document was updated"
-msgstr "A réteget feltöltve"
+msgstr ""
 
 #: documents/management/__init__.py:22
-#, fuzzy
 msgid "Document Deleted"
-msgstr "Dokumentumok"
+msgstr ""
 
 #: documents/management/__init__.py:23
-#, fuzzy
 msgid "A Document was deleted"
-msgstr "Ez a dokumentum kapcsolódik egy"
+msgstr ""
 
 #: documents/management/__init__.py:26
-#, fuzzy
 msgid "Comment on Document"
-msgstr "Hozzászólás a réteg"
+msgstr ""
 
 #: documents/management/__init__.py:27
-#, fuzzy
 msgid "A Document was commented on"
-msgstr "A térképet hozzászólást"
+msgstr ""
 
 #: documents/management/__init__.py:30
-#, fuzzy
 msgid "Document for Map"
-msgstr "Hozzászólás Térkép"
+msgstr ""
 
 #: documents/management/__init__.py:31
-#, fuzzy
 msgid "A rating was given to a document"
-msgstr "A hitelminősítő kapott egy térképet"
+msgstr ""
 
 #: documents/templates/documents/document_detail.html:40
 msgid "External Resource"
@@ -630,9 +621,8 @@ msgstr "Download Document"
 
 #: documents/templates/documents/document_detail.html:90
 #: layers/templates/layers/layer_detail.html:131
-#, fuzzy
 msgid "Request Download"
-msgstr "Download"
+msgstr ""
 
 #: documents/templates/documents/document_detail.html:95
 #: layers/templates/layers/layer_detail.html:160
@@ -970,7 +960,7 @@ msgstr "Activity Feed for"
 #: social/templates/social/activity_list.html:20
 #: templates/user_messages/inbox.html:16
 msgid "All"
-msgstr ""
+msgstr "Minden"
 
 #: groups/templates/groups/activity.html:25
 #: people/templates/people/_profile_filters.html:5
@@ -1132,16 +1122,14 @@ msgid "Most popular"
 msgstr "Legnépszerűbb"
 
 #: groups/templates/groups/group_members.html:8
-#, fuzzy
 msgid "Edit Members for"
-msgstr "Szerkesztése adatai"
+msgstr ""
 
 #: groups/templates/groups/group_members.html:33
 #: groups/templates/groups/group_members.html:59
 #: groups/templates/groups/group_members.html:86
-#, fuzzy
 msgid "Remove"
-msgstr "Csoport törlése"
+msgstr "Eltávolít"
 
 #: groups/templates/groups/group_members.html:37
 #: groups/templates/groups/group_members.html:63
@@ -1349,34 +1337,28 @@ msgid "You are attempting to replace a raster layer with a vector."
 msgstr ""
 
 #: layers/management/__init__.py:33
-#, fuzzy
 msgid "Layer Created"
-msgstr "Térkép Létrehozva"
+msgstr ""
 
 #: layers/management/__init__.py:34
-#, fuzzy
 msgid "A Layer was created"
-msgstr "A Map jött létre"
+msgstr ""
 
 #: layers/management/__init__.py:37
-#, fuzzy
 msgid "Layer Updated"
-msgstr "Feltöltött réteg"
+msgstr ""
 
 #: layers/management/__init__.py:38
-#, fuzzy
 msgid "A Layer was updated"
-msgstr "A réteget feltöltve"
+msgstr ""
 
 #: layers/management/__init__.py:41
-#, fuzzy
 msgid "Layer Deleted"
-msgstr "Réteg Default Style"
+msgstr ""
 
 #: layers/management/__init__.py:42
-#, fuzzy
 msgid "A Layer was deleted"
-msgstr "A réteget feltöltve"
+msgstr ""
 
 #: layers/templates/layers/layer_change_poc.html:5
 msgid "Home"
@@ -1545,7 +1527,6 @@ msgstr ""
 "Szerkesztése adatai %(layer_title)s"
 
 #: layers/templates/layers/layer_metadata.html:23
-#, fuzzy
 msgid ""
 "Note: this layer's orginal metadata was populated by importing a metadata "
 "XML file.\n"
@@ -1553,9 +1534,6 @@ msgid ""
 "Dublin Core metadata elements.\n"
 "          Some of your original metadata may have been lost."
 msgstr ""
-"Megjegyzés: ez a réteg eredetinek metaadat lakott importálásával metaadatok "
-"XML fájl. GeoNode metaadat import egy részét támogatja az ISO, FGDC, és "
-"Dublin Core metaadat elemek. Néhány eredeti metaadatok esetleg elveszett."
 
 #: layers/templates/layers/layer_metadata.html:37
 #: layers/templates/layers/layer_metadata.html:74 templates/_actions.html:5
@@ -1580,20 +1558,17 @@ msgid "Display Order"
 msgstr "Display Order"
 
 #: layers/templates/layers/layer_remove.html:9
-#, fuzzy
 msgid "Remove Layers"
-msgstr "Távolítsa el ezt a réteg"
+msgstr ""
 
 #: layers/templates/layers/layer_remove.html:14
-#, fuzzy, python-format
+#, python-format
 msgid ""
 "\n"
 "          Are you sure you want to remove <a href="
 "\"%(layer.get_absolute_url)s\">%(layer_title)s</a>?\n"
 "        "
 msgstr ""
-"\n"
-"Biztos, hogy el akarja távolítani %(layer_title)s?"
 
 #: layers/templates/layers/layer_remove.html:30
 msgid "This action affects the following maps:"
@@ -2130,24 +2105,20 @@ msgid "A Map was created"
 msgstr "A Map jött létre"
 
 #: maps/management/__init__.py:37
-#, fuzzy
 msgid "Map Updated"
-msgstr "Térkép Létrehozva"
+msgstr ""
 
 #: maps/management/__init__.py:38
-#, fuzzy
 msgid "A Map was updated"
-msgstr "A Map jött létre"
+msgstr ""
 
 #: maps/management/__init__.py:41
-#, fuzzy
 msgid "Map Deleted"
-msgstr "Térkép Létrehozva"
+msgstr ""
 
 #: maps/management/__init__.py:42
-#, fuzzy
 msgid "A Map was deleted"
-msgstr "A Map jött létre"
+msgstr ""
 
 #: maps/management/__init__.py:45
 msgid "Comment on Map"
@@ -2456,9 +2427,8 @@ msgid "User following you"
 msgstr "Felhasználói követi Önt"
 
 #: people/management.py:33
-#, fuzzy
 msgid "Another user has started following you"
-msgstr "egy másik felhasználó kezdte el követni téged"
+msgstr ""
 
 #: people/management.py:36
 msgid "User requested access"
@@ -2469,9 +2439,8 @@ msgid "A new user has requested access to the site"
 msgstr ""
 
 #: people/management.py:40
-#, fuzzy
 msgid "Account activated"
-msgstr "Legutóbbi aktivitás"
+msgstr ""
 
 #: people/management.py:41
 msgid "This account is now active and can log in the site"
@@ -2598,13 +2567,10 @@ msgid "Forgot Username"
 msgstr "Elfelejtett Felhasználónév"
 
 #: people/templates/people/forgot_username_form.html:10
-#, fuzzy
 msgid ""
 "Enter your email address and click the submit button. <br />Your username "
 "will be sent to you."
 msgstr ""
-"Adja meg e-mail címét, majd kattintson az elküld gombra. A felhasználónevét "
-"elküldjük Önnek."
 
 #: people/templates/people/profile_create.html:8
 #: people/templates/people/profile_create.html:14
@@ -2616,9 +2582,8 @@ msgid "Profile of "
 msgstr "Profilja"
 
 #: people/templates/people/profile_detail.html:19
-#, fuzzy
 msgid "Message User"
-msgstr "Bejövő üzenetek"
+msgstr ""
 
 #: people/templates/people/profile_detail.html:65
 msgid "Edit profile"
@@ -2641,9 +2606,8 @@ msgid "My Activities"
 msgstr "Saját tevékenységek"
 
 #: people/templates/people/profile_detail.html:77 templates/base.html:202
-#, fuzzy
 msgid "Notifications"
-msgstr "Értesítés típusa"
+msgstr ""
 
 #: people/templates/people/profile_detail.html:80 templates/500.html:80
 #: templates/base.html:205 templates/announcements/announcement_list.html:6
@@ -2750,9 +2714,8 @@ msgid "Service URL"
 msgstr "Szolgáltatás URL"
 
 #: services/forms.py:15
-#, fuzzy
 msgid "Service name"
-msgstr "A szolgáltatás típusa"
+msgstr ""
 
 #: services/forms.py:19
 msgid "Service Type"
@@ -2881,9 +2844,8 @@ msgid "Remove Service"
 msgstr "Távolítsuk Service"
 
 #: services/templates/services/service_edit.html:15
-#, fuzzy
 msgid "Edit Service"
-msgstr "Szerkesztés Service Metadata"
+msgstr ""
 
 #: services/templates/services/service_edit.html:21
 #: templates/announcements/announcement_form.html:27
@@ -2903,9 +2865,8 @@ msgid "Register a new Service"
 msgstr "Regisztráljon egy új szolgáltatás"
 
 #: services/templates/services/service_register.html:13
-#, fuzzy
 msgid "Register New Service"
-msgstr "Regisztráljon egy új szolgáltatás"
+msgstr ""
 
 #: services/templates/services/service_register.html:23
 msgid "Service has been created:"
@@ -2916,9 +2877,8 @@ msgid "The following layers will be imported"
 msgstr "A következő rétegeket fogja importálni"
 
 #: services/templates/services/service_remove.html:8
-#, fuzzy
 msgid "Remove Remote Service"
-msgstr "Távolítsuk Service"
+msgstr ""
 
 #: services/templates/services/service_remove.html:12
 msgid "Are you sure you want to remove"
@@ -3099,9 +3059,8 @@ msgid "Ratings"
 msgstr "Értékelések"
 
 #: templates/_actions.html:13
-#, fuzzy
 msgid "GeoGig"
-msgstr "GeoGit"
+msgstr ""
 
 #: templates/_bulk_permissions_form.html:9
 msgid "Set permissions on selected resources"
@@ -3125,9 +3084,8 @@ msgid "By"
 msgstr "Szerint"
 
 #: templates/_comments.html:67
-#, fuzzy
 msgid "Submit Comment"
-msgstr "Küldés Comments"
+msgstr ""
 
 #: templates/_permissions.html:8
 msgid "Who can view it?"
@@ -3193,9 +3151,8 @@ msgid "About GeoNode."
 msgstr "Mintegy GeoNode."
 
 #: templates/base.html:192
-#, fuzzy
 msgid "Profile Menu"
-msgstr "Profil"
+msgstr ""
 
 #: templates/base.html:258
 msgid "Type your search here ..."
@@ -3498,11 +3455,10 @@ msgstr "Nincs"
 
 #: templates/index.html:30
 #: templates/notification/request_download_resourcebase/full.txt:7
-#, fuzzy
 msgid "Layer"
 msgid_plural "Layers"
-msgstr[0] "Réteg"
-msgstr[1] "Réteg"
+msgstr[0] ""
+msgstr[1] ""
 
 #: templates/index.html:31
 msgid ""
@@ -3514,11 +3470,10 @@ msgstr ""
 "formátumban."
 
 #: templates/index.html:36
-#, fuzzy
 msgid "Map"
 msgid_plural "Maps"
-msgstr[0] "Térkép"
-msgstr[1] "Térkép"
+msgstr[0] ""
+msgstr[1] ""
 
 #: templates/index.html:37
 msgid ""
@@ -3535,11 +3490,10 @@ msgstr "Létrehozása térképek"
 
 #: templates/index.html:43 templates/index.html.py:48
 #: templates/notification/account_approve/full.txt:1
-#, fuzzy
 msgid "User"
 msgid_plural "Users"
-msgstr[0] "Felhasználó"
-msgstr[1] "Felhasználó"
+msgstr[0] ""
+msgstr[1] ""
 
 #: templates/index.html:44 templates/index.html.py:49
 msgid ""
@@ -3568,9 +3522,8 @@ msgstr ""
 
 #: templates/account/email_confirmation_sent.html:6
 #: templates/account/email_confirmation_sent.html:9
-#, fuzzy
 msgid "Confirm your email address"
-msgstr "Erősítse meg e-mail címét %(site_name)s"
+msgstr ""
 
 #: templates/account/email_confirmation_sent.html:11
 #, python-format
@@ -3604,23 +3557,18 @@ msgid "Password reset"
 msgstr "Jelszó visszaállítás"
 
 #: templates/account/password_reset.html:14
-#, fuzzy
 msgid "Password Reset"
-msgstr "Jelszó visszaállítás"
+msgstr ""
 
 #: templates/account/password_reset.html:18
-#, fuzzy
 msgid "Forgotten your password?"
-msgstr "Elfelejtette a jelszavát?"
+msgstr ""
 
 #: templates/account/password_reset.html:19
-#, fuzzy
 msgid ""
 "Enter your email address below, and we'll send you an email allowing you to "
 "reset it."
 msgstr ""
-"Elfelejtette a jelszavát? Adja meg e-mail címét, és mi küldünk Önnek egy e-"
-"mailt, amely lehetővé teszi, hogy Ön visszaállíthatja."
 
 #: templates/account/password_reset.html:25
 msgid "Reset my password"
@@ -3729,15 +3677,13 @@ msgid "Published From"
 msgstr "Közreadta"
 
 #: templates/announcements/announcement_list.html:38
-#, fuzzy, python-format
+#, python-format
 msgid ""
 "\n"
 "          Published from <b>%(publish_start)s</b> to <b>%(publish_end)s</"
 "b>.\n"
 "          "
 msgstr ""
-"\n"
-"Megjelent <b>%(publish_start)s</b> az <b>%(publish_end)s</b>."
 
 #: templates/announcements/detail.html:4
 #, python-format
@@ -3766,9 +3712,8 @@ msgid "Choose new Default"
 msgstr "Válassza ki az új alapértelmezett"
 
 #: templates/avatar/change.html:23
-#, fuzzy
 msgid "Delete Your Avatar"
-msgstr "Törlése avatarok"
+msgstr ""
 
 #: templates/avatar/confirm_delete.html:6
 msgid "Please select the avatars that you would like to delete."
@@ -3838,9 +3783,8 @@ msgid "A user has requested access to the site"
 msgstr ""
 
 #: templates/notification/document_comment/full.txt:3
-#, fuzzy
 msgid "A comment has been posted for the document"
-msgstr "Nem rendelkezik engedélyekkel a dokumentumot."
+msgstr ""
 
 #: templates/notification/document_comment/full.txt:3
 #: templates/notification/layer_comment/full.txt:3
@@ -3855,9 +3799,8 @@ msgid "You can visit the document's detail page here"
 msgstr ""
 
 #: templates/notification/document_comment/short.txt:3
-#, fuzzy
 msgid "A comment has been posted for a document"
-msgstr "Nem rendelkezik engedélyekkel a dokumentumot."
+msgstr ""
 
 #: templates/notification/document_created/full.txt:3
 #: templates/notification/document_rated/full.txt:3
@@ -3866,24 +3809,20 @@ msgstr "Nem rendelkezik engedélyekkel a dokumentumot."
 #: templates/notification/map_created/full.txt:3
 #: templates/notification/map_rated/full.txt:3
 #: templates/notification/request_download_resourcebase/full.txt:3
-#, fuzzy
 msgid "The user"
-msgstr "Válasszon a felhasználók ..."
+msgstr ""
 
 #: templates/notification/document_created/full.txt:3
-#, fuzzy
 msgid "uploaded the following document"
-msgstr "Cserélje A dokumentum"
+msgstr ""
 
 #: templates/notification/document_created/short.txt:3
-#, fuzzy
 msgid "A document has been uploaded"
-msgstr "A réteget feltöltve"
+msgstr ""
 
 #: templates/notification/document_deleted/full.txt:3
-#, fuzzy
 msgid "The following document was deleted"
-msgstr "A következő felhasználók:"
+msgstr ""
 
 #: templates/notification/document_deleted/full.txt:4
 #: templates/notification/document_rated/full.txt:6
@@ -3894,26 +3833,22 @@ msgstr "A következő felhasználók:"
 #: templates/notification/map_deleted/full.txt:4
 #: templates/notification/map_rated/full.txt:6
 #: templates/notification/map_updated/full.txt:4
-#, fuzzy
 msgid "owned by"
-msgstr "Powered by"
+msgstr ""
 
 #: templates/notification/document_deleted/short.txt:3
-#, fuzzy
 msgid "A document has been deleted"
-msgstr "Szolgáltatás jött létre:"
+msgstr ""
 
 #: templates/notification/document_rated/full.txt:4
 #: templates/notification/layer_rated/full.txt:4
 #: templates/notification/map_rated/full.txt:4
-#, fuzzy
 msgid "rated"
-msgstr "létre"
+msgstr ""
 
 #: templates/notification/document_rated/full.txt:5
-#, fuzzy
 msgid "the following document"
-msgstr "A következő felhasználók:"
+msgstr ""
 
 #: templates/notification/document_rated/full.txt:8
 #: templates/notification/layer_comment/full.txt:5
@@ -3924,74 +3859,60 @@ msgid "You can visit the layer's detail page here"
 msgstr ""
 
 #: templates/notification/document_rated/short.txt:3
-#, fuzzy
 msgid "A document has been rated"
-msgstr "Szolgáltatás jött létre:"
+msgstr ""
 
 #: templates/notification/document_updated/full.txt:3
-#, fuzzy
 msgid "The following document was updated"
-msgstr "A következő felhasználók:"
+msgstr ""
 
 #: templates/notification/document_updated/short.txt:3
-#, fuzzy
 msgid "A document has been updated"
-msgstr "Szolgáltatás jött létre:"
+msgstr ""
 
 #: templates/notification/layer_comment/full.txt:3
-#, fuzzy
 msgid "A comment has been posted for the layer"
-msgstr "Kapcsolatos dokumentumok ezt a réteget"
+msgstr ""
 
 #: templates/notification/layer_comment/short.txt:3
-#, fuzzy
 msgid "A comment has been posted for a layer"
-msgstr "A hitelminősítő kapott egy réteg"
+msgstr ""
 
 #: templates/notification/layer_created/full.txt:3
-#, fuzzy
 msgid "uploaded the following layer"
-msgstr "Ez a térkép használja a következő rétegeket:"
+msgstr ""
 
 #: templates/notification/layer_created/short.txt:3
-#, fuzzy
 msgid "A new layer has been uploaded"
-msgstr "A réteget feltöltve"
+msgstr ""
 
 #: templates/notification/layer_deleted/full.txt:3
-#, fuzzy
 msgid "The following layer was deleted"
-msgstr "A következő rétegeket fogja importálni"
+msgstr ""
 
 #: templates/notification/layer_deleted/short.txt:3
-#, fuzzy
 msgid "A layer has been deleted"
-msgstr "A réteget hozzászólást"
+msgstr ""
 
 #: templates/notification/layer_rated/full.txt:5
-#, fuzzy
 msgid "the following layer"
-msgstr "A következő felhasználók:"
+msgstr ""
 
 #: templates/notification/layer_rated/short.txt:3
-#, fuzzy
 msgid "A layer has been rated"
-msgstr "Szolgáltatás jött létre:"
+msgstr ""
 
 #: templates/notification/layer_updated/full.txt:3
-#, fuzzy
 msgid "The following layer was updated"
-msgstr "A következő rétegeket fogja importálni"
+msgstr ""
 
 #: templates/notification/layer_updated/short.txt:3
-#, fuzzy
 msgid "A layer has been updated"
-msgstr "A réteget feltöltve"
+msgstr ""
 
 #: templates/notification/map_comment/full.txt:3
-#, fuzzy
 msgid "A comment has been posted for the map"
-msgstr "Kapcsolódó dokumentumok megosztása"
+msgstr ""
 
 #: templates/notification/map_comment/full.txt:6
 #: templates/notification/map_created/full.txt:6
@@ -4005,54 +3926,44 @@ msgid "A comment has been posted for a map"
 msgstr ""
 
 #: templates/notification/map_created/full.txt:3
-#, fuzzy
 msgid "created the following map"
-msgstr "Ez a művelet érinti a következő térképek:"
+msgstr ""
 
 #: templates/notification/map_created/short.txt:3
-#, fuzzy
 msgid "A map has been created"
-msgstr "A Map jött létre"
+msgstr ""
 
 #: templates/notification/map_deleted/full.txt:3
-#, fuzzy
 msgid "The following map was deleted"
-msgstr "A következő rétegeket fogja importálni"
+msgstr ""
 
 #: templates/notification/map_deleted/short.txt:3
-#, fuzzy
 msgid "A map has been deleted"
-msgstr "A térképet hozzászólást"
+msgstr ""
 
 #: templates/notification/map_rated/full.txt:5
-#, fuzzy
 msgid "the following map"
-msgstr "A következő csoportok:"
+msgstr ""
 
 #: templates/notification/map_rated/short.txt:3
-#, fuzzy
 msgid "A map has been rated"
-msgstr "A Map jött létre"
+msgstr ""
 
 #: templates/notification/map_updated/full.txt:3
-#, fuzzy
 msgid "The following map was updated"
-msgstr "A következő rétegeket fogja importálni"
+msgstr ""
 
 #: templates/notification/map_updated/short.txt:3
-#, fuzzy
 msgid "A map has been updated"
-msgstr "A Map jött létre"
+msgstr ""
 
 #: templates/notification/request_download_resourcebase/full.txt:3
-#, fuzzy
 msgid "requested you to download this resource"
-msgstr "a készlet tulajdonosa"
+msgstr ""
 
 #: templates/notification/request_download_resourcebase/full.txt:9
-#, fuzzy
 msgid "Document"
-msgstr "Dokumentumok"
+msgstr ""
 
 #: templates/notification/request_download_resourcebase/full.txt:12
 msgid ""
@@ -4196,18 +4107,16 @@ msgstr "Törlés?"
 
 #: templates/user_messages/_message_snippet.html:29
 #: templates/user_messages/thread_detail.html:14
-#, fuzzy
 msgid "me"
-msgstr "Főoldal"
+msgstr ""
 
 #: templates/user_messages/inbox.html:6
 msgid "Message Inbox"
 msgstr "Bejövő üzenetek"
 
 #: templates/user_messages/inbox.html:11
-#, fuzzy
 msgid "Messages"
-msgstr "Bejövő üzenetek"
+msgstr ""
 
 #: templates/user_messages/inbox.html:38
 #: templates/user_messages/message_create.html:6
@@ -4229,89 +4138,89 @@ msgid "Send Reply"
 msgstr "Küldés Reply"
 
 #~ msgid "Most shared"
-#~ msgstr "Most közös"
+#~ msgstr "Most shared"
 
 #~ msgid "from"
-#~ msgstr "-tól"
+#~ msgstr "from"
 
 #~ msgid "view"
-#~ msgstr "kilátás"
+#~ msgstr "view"
 
 #~ msgid "Average rating"
-#~ msgstr "Átlagos értékelés"
+#~ msgstr "Average rating"
 
 #~ msgid "votes"
-#~ msgstr "szavazat"
+#~ msgstr "votes"
 
 #~ msgid "You do not have permission to view this document"
-#~ msgstr "Önnek nincs jogosultsága megtekinteni ezt a dokumentumot"
+#~ msgstr "You do not have permission to view this document"
 
 #~ msgid "Remote Thumbnail"
-#~ msgstr "Távoli Thumbnail"
+#~ msgstr "Remote Thumbnail"
 
 #~ msgid "Thumbnail"
 #~ msgstr "Thumbnail"
 
 #~ msgid "Group details"
-#~ msgstr "Csoport további részletek"
+#~ msgstr "Group details"
 
 #~ msgid "Create a map"
-#~ msgstr "Hozzon létre egy térkép"
+#~ msgstr "Create a map"
 
 #~ msgid "You do not have permission to view this layer"
-#~ msgstr "Önnek nincs jogosultsága megtekinteni ezt a réteget"
+#~ msgstr "You do not have permission to view this layer"
 
 #~ msgid "View"
-#~ msgstr "Kilátás"
+#~ msgstr "View"
 
 #~ msgid "You do not have permission to view this map"
-#~ msgstr "Nem engedélye, hogy ezt a térképet"
+#~ msgstr "You do not have permission to view this map"
 
 #~ msgid "Add to Favorites"
-#~ msgstr "Hozzáadás a kedvencekhez"
+#~ msgstr "Add to Favorites"
 
 #~ msgid "Add a Comment"
 #~ msgstr "Add a Comment"
 
 #~ msgid "Notices"
-#~ msgstr "Közlemények"
+#~ msgstr "Notices"
 
 #~ msgid "Notice settings"
-#~ msgstr "Értesítés beállítások"
+#~ msgstr "Notice settings"
 
 #~ msgid "Observed objects"
-#~ msgstr "Megfigyelt tárgyak"
+#~ msgstr "Observed objects"
 
 #~ msgid "Primary email"
-#~ msgstr "Elsődleges email"
+#~ msgstr "Primary email"
 
 #~ msgid "change under <a href=\"%(email_url)s\">Account</a>"
-#~ msgstr "változás alatt <a href=\"%(email_url)s\">Fiók</a>"
+#~ msgstr "change under <a href=\"%(email_url)s\">Account</a>"
 
 #~ msgid "Note"
-#~ msgstr "Jegyzet"
+#~ msgstr "Note"
 
 #~ msgid ""
 #~ "You do not have a verified email address to which notices can be sent. "
 #~ "You can add one by going to <a href=\"%(email_url)s\">Account</a>."
 #~ msgstr ""
-#~ "Önnek nem ellenőrzött e-mail címet, amelyre az értesítéseket lehet "
-#~ "küldeni. Felveheti egyik megy, <a href=\"%(email_url)s\">számla</a> ."
+#~ "You do not have a verified email address to which notices can be sent. "
+#~ "You can add one by going to <a href=\"%(email_url)s\">Account</a>."
 
 #~ msgid "Mark all unseen notices seen"
-#~ msgstr "Mark minden láthatatlan közlemények látott"
+#~ msgstr "Mark all unseen notices seen"
 
 #~ msgid "MONTH_DAY_FORMAT"
 #~ msgstr "MONTH_DAY_FORMAT"
 
 #~ msgid "View Notice"
-#~ msgstr "Nézd meg Közlemény"
+#~ msgstr "View Notice"
 
 #~ msgid "No notices."
-#~ msgstr "Nincs hirdetmények."
+#~ msgstr "No notices."
 
 #~ msgid "Notice"
-#~ msgstr "Értesítés"
+#~ msgstr "Notice"
 
 #~ msgid "you"
-#~ msgstr "Ön"
+#~ msgstr "you"

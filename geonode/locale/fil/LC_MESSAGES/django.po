@@ -3,13 +3,14 @@
 # This file is distributed under the same license as the PACKAGE package.
 #
 # Translators:
+# Translators:
 msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-02-03 05:20-0600\n"
-"PO-Revision-Date: 2014-11-14 15:05+0000\n"
-"Last-Translator: ingenieroariel <ingenieroariel@gmail.com>\n"
+"POT-Creation-Date: 2015-02-03 08:23-0600\n"
+"PO-Revision-Date: 2015-02-03 11:57+0000\n"
+"Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
 "Language-Team: Filipino (http://www.transifex.com/projects/p/geonode/"
 "language/fil/)\n"
 "Language: fil\n"
@@ -3975,3 +3976,91 @@ msgstr ""
 #: templates/user_messages/thread_detail.html:26
 msgid "Send Reply"
 msgstr ""
+
+#~ msgid "Most shared"
+#~ msgstr "Most shared"
+
+#~ msgid "from"
+#~ msgstr "from"
+
+#~ msgid "view"
+#~ msgstr "view"
+
+#~ msgid "Average rating"
+#~ msgstr "Average rating"
+
+#~ msgid "votes"
+#~ msgstr "votes"
+
+#~ msgid "You do not have permission to view this document"
+#~ msgstr "You do not have permission to view this document"
+
+#~ msgid "Remote Thumbnail"
+#~ msgstr "Remote Thumbnail"
+
+#~ msgid "Thumbnail"
+#~ msgstr "Thumbnail"
+
+#~ msgid "Group details"
+#~ msgstr "Group details"
+
+#~ msgid "Create a map"
+#~ msgstr "Create a map"
+
+#~ msgid "You do not have permission to view this layer"
+#~ msgstr "You do not have permission to view this layer"
+
+#~ msgid "View"
+#~ msgstr "View"
+
+#~ msgid "You do not have permission to view this map"
+#~ msgstr "You do not have permission to view this map"
+
+#~ msgid "Add to Favorites"
+#~ msgstr "Add to Favorites"
+
+#~ msgid "Add a Comment"
+#~ msgstr "Add a Comment"
+
+#~ msgid "Notices"
+#~ msgstr "Notices"
+
+#~ msgid "Notice settings"
+#~ msgstr "Notice settings"
+
+#~ msgid "Observed objects"
+#~ msgstr "Observed objects"
+
+#~ msgid "Primary email"
+#~ msgstr "Primary email"
+
+#~ msgid "change under <a href=\"%(email_url)s\">Account</a>"
+#~ msgstr "change under <a href=\"%(email_url)s\">Account</a>"
+
+#~ msgid "Note"
+#~ msgstr "Note"
+
+#~ msgid ""
+#~ "You do not have a verified email address to which notices can be sent. "
+#~ "You can add one by going to <a href=\"%(email_url)s\">Account</a>."
+#~ msgstr ""
+#~ "You do not have a verified email address to which notices can be sent. "
+#~ "You can add one by going to <a href=\"%(email_url)s\">Account</a>."
+
+#~ msgid "Mark all unseen notices seen"
+#~ msgstr "Mark all unseen notices seen"
+
+#~ msgid "MONTH_DAY_FORMAT"
+#~ msgstr "MONTH_DAY_FORMAT"
+
+#~ msgid "View Notice"
+#~ msgstr "View Notice"
+
+#~ msgid "No notices."
+#~ msgstr "No notices."
+
+#~ msgid "Notice"
+#~ msgstr "Notice"
+
+#~ msgid "you"
+#~ msgstr "you"

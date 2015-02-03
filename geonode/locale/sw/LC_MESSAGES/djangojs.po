@@ -3,15 +3,16 @@
 # This file is distributed under the same license as the PACKAGE package.
 #
 # Translators:
+# Translators:
 # Andres Alfonso Lemon Gomez <lemon.andres@gmail.com>, 2014
 # Emil <bmachaku@gmail.com>, 2014-2015
 msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-02-03 05:20-0600\n"
-"PO-Revision-Date: 2015-01-12 11:11+0000\n"
-"Last-Translator: Emil <bmachaku@gmail.com>\n"
+"POT-Creation-Date: 2015-02-03 08:21-0600\n"
+"PO-Revision-Date: 2015-02-03 12:11+0000\n"
+"Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
 "Language-Team: Swahili (http://www.transifex.com/projects/p/geonode/language/"
 "sw/)\n"
 "Language: sw\n"
@@ -62,9 +63,8 @@ msgstr "Nani anaweza kusimamia na kuhariri data hii?"
 
 #: static/geonode/js/search/search.js:298
 #: static_root/geonode/js/search/search.js:298
-#, fuzzy
 msgid "Enter your text here ..."
-msgstr "Ingiza maoni hapa."
+msgstr ""
 
 #: static/geonode/js/upload/FileType.js:33
 #: static_root/geonode/js/upload/FileType.js:33
@@ -160,9 +160,8 @@ msgstr "Mafaili ya tabaka yamepakiwa, usanidi katika GeoServer"
 
 #: static/geonode/js/upload/LayerInfo.js:422
 #: static_root/geonode/js/upload/LayerInfo.js:422
-#, fuzzy
 msgid "Select or create a Geogig repository."
-msgstr "Chagua au unda hazina ya Geogit."
+msgstr ""
 
 #: static/geonode/js/upload/LayerInfo.js:517
 #: static_root/admin/js/SelectFilter2.js:69
@@ -183,9 +182,9 @@ msgid "You are uploading an incomplete set of files."
 msgstr "Unapakia seti ya mafaili ambayo haijakamilika."
 
 #: static_root/admin/js/SelectFilter2.js:45
-#, fuzzy, c-format
+#, c-format
 msgid "Available %s"
-msgstr "Mabaka yaliyomo"
+msgstr ""
 
 #: static_root/admin/js/SelectFilter2.js:46
 #, c-format
@@ -229,9 +228,8 @@ msgid ""
 msgstr ""
 
 #: static_root/admin/js/SelectFilter2.js:80
-#, fuzzy
 msgid "Remove all"
-msgstr "Ondoa"
+msgstr ""
 
 #: static_root/admin/js/SelectFilter2.js:80
 #, c-format
@@ -276,9 +274,8 @@ msgstr ""
 
 #: static_root/admin/js/collapse.js:8 static_root/admin/js/collapse.js.c:19
 #: static_root/admin/js/collapse.min.js:1
-#, fuzzy
 msgid "Show"
-msgstr "Inaonesha"
+msgstr ""
 
 #: static_root/admin/js/collapse.js:16 static_root/admin/js/collapse.min.js:1
 msgid "Hide"
@@ -788,4 +785,4 @@ msgid "Please wait"
 msgstr "Tafadhali subiri"
 
 #~ msgid "No error message supplied"
-#~ msgstr "Hakuna ujumbe kuhusu hitilafu ulioainishwa"
+#~ msgstr "No error message supplied"

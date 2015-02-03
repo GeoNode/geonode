@@ -3,14 +3,15 @@
 # This file is distributed under the same license as the PACKAGE package.
 #
 # Translators:
+# Translators:
 # Andres Alfonso Lemon Gomez <lemon.andres@gmail.com>, 2014
 msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-02-03 05:20-0600\n"
-"PO-Revision-Date: 2014-11-15 00:00+0000\n"
-"Last-Translator: Andres Alfonso Lemon Gomez <lemon.andres@gmail.com>\n"
+"POT-Creation-Date: 2015-02-03 08:21-0600\n"
+"PO-Revision-Date: 2015-02-03 12:11+0000\n"
+"Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
 "Language-Team: Swedish (http://www.transifex.com/projects/p/geonode/language/"
 "sv/)\n"
 "Language: sv\n"
@@ -61,9 +62,8 @@ msgstr "Vem kan hantera och redigera dessa data?"
 
 #: static/geonode/js/search/search.js:298
 #: static_root/geonode/js/search/search.js:298
-#, fuzzy
 msgid "Enter your text here ..."
-msgstr "Skriv kommentarer här."
+msgstr ""
 
 #: static/geonode/js/upload/FileType.js:33
 #: static_root/geonode/js/upload/FileType.js:33
@@ -159,9 +159,8 @@ msgstr "Lager filer uppladdade, konfigurera i GeoServer"
 
 #: static/geonode/js/upload/LayerInfo.js:422
 #: static_root/geonode/js/upload/LayerInfo.js:422
-#, fuzzy
 msgid "Select or create a Geogig repository."
-msgstr "Välj eller skapa en Geogit förvar."
+msgstr ""
 
 #: static/geonode/js/upload/LayerInfo.js:517
 #: static_root/admin/js/SelectFilter2.js:69
@@ -181,9 +180,9 @@ msgid "You are uploading an incomplete set of files."
 msgstr "Du laddar upp en ofullständig uppsättning filer."
 
 #: static_root/admin/js/SelectFilter2.js:45
-#, fuzzy, c-format
+#, c-format
 msgid "Available %s"
-msgstr "Tillgängliga Skikt"
+msgstr ""
 
 #: static_root/admin/js/SelectFilter2.js:46
 #, c-format
@@ -227,9 +226,8 @@ msgid ""
 msgstr ""
 
 #: static_root/admin/js/SelectFilter2.js:80
-#, fuzzy
 msgid "Remove all"
-msgstr "Ta bort"
+msgstr ""
 
 #: static_root/admin/js/SelectFilter2.js:80
 #, c-format
@@ -274,9 +272,8 @@ msgstr ""
 
 #: static_root/admin/js/collapse.js:8 static_root/admin/js/collapse.js.c:19
 #: static_root/admin/js/collapse.min.js:1
-#, fuzzy
 msgid "Show"
-msgstr "Visar"
+msgstr ""
 
 #: static_root/admin/js/collapse.js:16 static_root/admin/js/collapse.min.js:1
 msgid "Hide"
@@ -786,4 +783,4 @@ msgid "Please wait"
 msgstr "Vänta"
 
 #~ msgid "No error message supplied"
-#~ msgstr "Inget felmeddelande levereras"
+#~ msgstr "No error message supplied"

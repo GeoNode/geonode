@@ -3,14 +3,15 @@
 # This file is distributed under the same license as the PACKAGE package.
 #
 # Translators:
+# Translators:
 # Andres Alfonso Lemon Gomez <lemon.andres@gmail.com>, 2014
 msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-02-03 05:20-0600\n"
-"PO-Revision-Date: 2014-11-14 23:21+0000\n"
-"Last-Translator: Andres Alfonso Lemon Gomez <lemon.andres@gmail.com>\n"
+"POT-Creation-Date: 2015-02-03 08:23-0600\n"
+"PO-Revision-Date: 2015-02-03 12:11+0000\n"
+"Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
 "Language-Team: Russian (http://www.transifex.com/projects/p/geonode/language/"
 "ru/)\n"
 "Language: ru\n"
@@ -559,54 +560,44 @@ msgid "You are not allowed to edit this document."
 msgstr "Вы не можете редактировать этот документ."
 
 #: documents/management/__init__.py:14
-#, fuzzy
 msgid "Document Created"
-msgstr "Документы, относящиеся к данной карте"
+msgstr ""
 
 #: documents/management/__init__.py:15
-#, fuzzy
 msgid "A Document was created"
-msgstr "Карта была создана"
+msgstr ""
 
 #: documents/management/__init__.py:18
-#, fuzzy
 msgid "Document Updated"
-msgstr "Документы"
+msgstr ""
 
 #: documents/management/__init__.py:19
-#, fuzzy
 msgid "A Document was updated"
-msgstr "Слой был загружен"
+msgstr ""
 
 #: documents/management/__init__.py:22
-#, fuzzy
 msgid "Document Deleted"
-msgstr "Документы"
+msgstr ""
 
 #: documents/management/__init__.py:23
-#, fuzzy
 msgid "A Document was deleted"
-msgstr "Данный документ относится к"
+msgstr ""
 
 #: documents/management/__init__.py:26
-#, fuzzy
 msgid "Comment on Document"
-msgstr "Комментарий по слою"
+msgstr ""
 
 #: documents/management/__init__.py:27
-#, fuzzy
 msgid "A Document was commented on"
-msgstr "Карта была комментирована"
+msgstr ""
 
 #: documents/management/__init__.py:30
-#, fuzzy
 msgid "Document for Map"
-msgstr "Комментарии к карте"
+msgstr ""
 
 #: documents/management/__init__.py:31
-#, fuzzy
 msgid "A rating was given to a document"
-msgstr "Оценка была дана к карте"
+msgstr ""
 
 #: documents/templates/documents/document_detail.html:40
 msgid "External Resource"
@@ -631,9 +622,8 @@ msgstr "Скачать документ"
 
 #: documents/templates/documents/document_detail.html:90
 #: layers/templates/layers/layer_detail.html:131
-#, fuzzy
 msgid "Request Download"
-msgstr "Скачать"
+msgstr ""
 
 #: documents/templates/documents/document_detail.html:95
 #: layers/templates/layers/layer_detail.html:160
@@ -972,7 +962,7 @@ msgstr "Лента для"
 #: social/templates/social/activity_list.html:20
 #: templates/user_messages/inbox.html:16
 msgid "All"
-msgstr ""
+msgstr "Все"
 
 #: groups/templates/groups/activity.html:25
 #: people/templates/people/_profile_filters.html:5
@@ -1135,16 +1125,14 @@ msgid "Most popular"
 msgstr "Наиболее известный"
 
 #: groups/templates/groups/group_members.html:8
-#, fuzzy
 msgid "Edit Members for"
-msgstr "Редактирование деталей для "
+msgstr ""
 
 #: groups/templates/groups/group_members.html:33
 #: groups/templates/groups/group_members.html:59
 #: groups/templates/groups/group_members.html:86
-#, fuzzy
 msgid "Remove"
-msgstr "Удалить группу"
+msgstr "Удалять"
 
 #: groups/templates/groups/group_members.html:37
 #: groups/templates/groups/group_members.html:63
@@ -1350,34 +1338,28 @@ msgid "You are attempting to replace a raster layer with a vector."
 msgstr ""
 
 #: layers/management/__init__.py:33
-#, fuzzy
 msgid "Layer Created"
-msgstr "Созданная карта"
+msgstr ""
 
 #: layers/management/__init__.py:34
-#, fuzzy
 msgid "A Layer was created"
-msgstr "Карта была создана"
+msgstr ""
 
 #: layers/management/__init__.py:37
-#, fuzzy
 msgid "Layer Updated"
-msgstr "Слой загружен"
+msgstr ""
 
 #: layers/management/__init__.py:38
-#, fuzzy
 msgid "A Layer was updated"
-msgstr "Слой был загружен"
+msgstr ""
 
 #: layers/management/__init__.py:41
-#, fuzzy
 msgid "Layer Deleted"
-msgstr "Слой Обычный стиль"
+msgstr ""
 
 #: layers/management/__init__.py:42
-#, fuzzy
 msgid "A Layer was deleted"
-msgstr "Слой был загружен"
+msgstr ""
 
 #: layers/templates/layers/layer_change_poc.html:5
 msgid "Home"
@@ -1545,7 +1527,6 @@ msgstr ""
 "      "
 
 #: layers/templates/layers/layer_metadata.html:23
-#, fuzzy
 msgid ""
 "Note: this layer's orginal metadata was populated by importing a metadata "
 "XML file.\n"
@@ -1553,10 +1534,6 @@ msgid ""
 "Dublin Core metadata elements.\n"
 "          Some of your original metadata may have been lost."
 msgstr ""
-"Примечание: оригинал, метаданные этого слоя была заселена импорта XML "
-"метаданных файла. Импорт метаданных GeoNode поддерживает подмножество "
-"элементов ISO, FGDC, и метаданных Dublin Core. Некоторые из оригинального "
-"метаданных могут быть потеряны."
 
 #: layers/templates/layers/layer_metadata.html:37
 #: layers/templates/layers/layer_metadata.html:74 templates/_actions.html:5
@@ -1581,21 +1558,17 @@ msgid "Display Order"
 msgstr "Порядок отображения"
 
 #: layers/templates/layers/layer_remove.html:9
-#, fuzzy
 msgid "Remove Layers"
-msgstr "Удалить данный слой"
+msgstr ""
 
 #: layers/templates/layers/layer_remove.html:14
-#, fuzzy, python-format
+#, python-format
 msgid ""
 "\n"
 "          Are you sure you want to remove <a href="
 "\"%(layer.get_absolute_url)s\">%(layer_title)s</a>?\n"
 "        "
 msgstr ""
-"\n"
-"          Вы уверены, что хотите удалить слой %(layer_title)s?\n"
-"        "
 
 #: layers/templates/layers/layer_remove.html:30
 msgid "This action affects the following maps:"
@@ -2136,24 +2109,20 @@ msgid "A Map was created"
 msgstr "Карта была создана"
 
 #: maps/management/__init__.py:37
-#, fuzzy
 msgid "Map Updated"
-msgstr "Созданная карта"
+msgstr ""
 
 #: maps/management/__init__.py:38
-#, fuzzy
 msgid "A Map was updated"
-msgstr "Карта была создана"
+msgstr ""
 
 #: maps/management/__init__.py:41
-#, fuzzy
 msgid "Map Deleted"
-msgstr "Созданная карта"
+msgstr ""
 
 #: maps/management/__init__.py:42
-#, fuzzy
 msgid "A Map was deleted"
-msgstr "Карта была создана"
+msgstr ""
 
 #: maps/management/__init__.py:45
 msgid "Comment on Map"
@@ -2468,9 +2437,8 @@ msgid "User following you"
 msgstr "Пользователь и вы"
 
 #: people/management.py:33
-#, fuzzy
 msgid "Another user has started following you"
-msgstr "другой пользователь, следующий за вами"
+msgstr ""
 
 #: people/management.py:36
 msgid "User requested access"
@@ -2481,9 +2449,8 @@ msgid "A new user has requested access to the site"
 msgstr ""
 
 #: people/management.py:40
-#, fuzzy
 msgid "Account activated"
-msgstr "Последние действия"
+msgstr ""
 
 #: people/management.py:41
 msgid "This account is now active and can log in the site"
@@ -2613,13 +2580,10 @@ msgid "Forgot Username"
 msgstr "Забыли имя пользователя"
 
 #: people/templates/people/forgot_username_form.html:10
-#, fuzzy
 msgid ""
 "Enter your email address and click the submit button. <br />Your username "
 "will be sent to you."
 msgstr ""
-"Введите свой почтовый адрес и кликните кнопкой подачи. Вам будет выслано "
-"ваше имя пользователя"
 
 #: people/templates/people/profile_create.html:8
 #: people/templates/people/profile_create.html:14
@@ -2631,9 +2595,8 @@ msgid "Profile of "
 msgstr "Профиль"
 
 #: people/templates/people/profile_detail.html:19
-#, fuzzy
 msgid "Message User"
-msgstr "Ящик входящих сообщений"
+msgstr ""
 
 #: people/templates/people/profile_detail.html:65
 msgid "Edit profile"
@@ -2656,9 +2619,8 @@ msgid "My Activities"
 msgstr "Моя деятельность"
 
 #: people/templates/people/profile_detail.html:77 templates/base.html:202
-#, fuzzy
 msgid "Notifications"
-msgstr "Тип уведомления"
+msgstr "Уведомления"
 
 #: people/templates/people/profile_detail.html:80 templates/500.html:80
 #: templates/base.html:205 templates/announcements/announcement_list.html:6
@@ -2765,9 +2727,8 @@ msgid "Service URL"
 msgstr "Сервис URL"
 
 #: services/forms.py:15
-#, fuzzy
 msgid "Service name"
-msgstr "Тип служба"
+msgstr ""
 
 #: services/forms.py:19
 msgid "Service Type"
@@ -2897,9 +2858,8 @@ msgid "Remove Service"
 msgstr "Удалить служба"
 
 #: services/templates/services/service_edit.html:15
-#, fuzzy
 msgid "Edit Service"
-msgstr "Редактировать сервис метаданных"
+msgstr ""
 
 #: services/templates/services/service_edit.html:21
 #: templates/announcements/announcement_form.html:27
@@ -2919,9 +2879,8 @@ msgid "Register a new Service"
 msgstr "Регистрация нового служба"
 
 #: services/templates/services/service_register.html:13
-#, fuzzy
 msgid "Register New Service"
-msgstr "Регистрация нового служба"
+msgstr ""
 
 #: services/templates/services/service_register.html:23
 msgid "Service has been created:"
@@ -2932,9 +2891,8 @@ msgid "The following layers will be imported"
 msgstr "Следующие слои будут импортированы"
 
 #: services/templates/services/service_remove.html:8
-#, fuzzy
 msgid "Remove Remote Service"
-msgstr "Удалить служба"
+msgstr ""
 
 #: services/templates/services/service_remove.html:12
 msgid "Are you sure you want to remove"
@@ -3116,9 +3074,8 @@ msgid "Ratings"
 msgstr "Нормы"
 
 #: templates/_actions.html:13
-#, fuzzy
 msgid "GeoGig"
-msgstr "GeoGit"
+msgstr ""
 
 #: templates/_bulk_permissions_form.html:9
 msgid "Set permissions on selected resources"
@@ -3142,9 +3099,8 @@ msgid "By"
 msgstr "По"
 
 #: templates/_comments.html:67
-#, fuzzy
 msgid "Submit Comment"
-msgstr "Представьте комментарии"
+msgstr ""
 
 #: templates/_permissions.html:8
 msgid "Who can view it?"
@@ -3210,9 +3166,8 @@ msgid "About GeoNode."
 msgstr "О GeoNode."
 
 #: templates/base.html:192
-#, fuzzy
 msgid "Profile Menu"
-msgstr "Профиль"
+msgstr ""
 
 #: templates/base.html:258
 msgid "Type your search here ..."
@@ -3515,12 +3470,11 @@ msgstr "Нет"
 
 #: templates/index.html:30
 #: templates/notification/request_download_resourcebase/full.txt:7
-#, fuzzy
 msgid "Layer"
 msgid_plural "Layers"
-msgstr[0] "Слой"
-msgstr[1] "Слой"
-msgstr[2] "Слой"
+msgstr[0] ""
+msgstr[1] ""
+msgstr[2] ""
 
 #: templates/index.html:31
 msgid ""
@@ -3532,12 +3486,11 @@ msgstr ""
 "стандартных форматах."
 
 #: templates/index.html:36
-#, fuzzy
 msgid "Map"
 msgid_plural "Maps"
-msgstr[0] "Карта"
-msgstr[1] "Карта"
-msgstr[2] "Карта"
+msgstr[0] ""
+msgstr[1] ""
+msgstr[2] ""
 
 #: templates/index.html:37
 msgid ""
@@ -3554,12 +3507,11 @@ msgstr "Создание карт"
 
 #: templates/index.html:43 templates/index.html.py:48
 #: templates/notification/account_approve/full.txt:1
-#, fuzzy
 msgid "User"
 msgid_plural "Users"
-msgstr[0] "Пользователь"
-msgstr[1] "Пользователь"
-msgstr[2] "Пользователь"
+msgstr[0] ""
+msgstr[1] ""
+msgstr[2] ""
 
 #: templates/index.html:44 templates/index.html.py:49
 msgid ""
@@ -3588,9 +3540,8 @@ msgstr ""
 
 #: templates/account/email_confirmation_sent.html:6
 #: templates/account/email_confirmation_sent.html:9
-#, fuzzy
 msgid "Confirm your email address"
-msgstr "Подтвердите адрес электронной почты для %(site_name)s"
+msgstr ""
 
 #: templates/account/email_confirmation_sent.html:11
 #, python-format
@@ -3624,23 +3575,18 @@ msgid "Password reset"
 msgstr "Восстановление пароля"
 
 #: templates/account/password_reset.html:14
-#, fuzzy
 msgid "Password Reset"
-msgstr "Восстановление пароля"
+msgstr ""
 
 #: templates/account/password_reset.html:18
-#, fuzzy
 msgid "Forgotten your password?"
-msgstr "Забыли свой пароль?"
+msgstr ""
 
 #: templates/account/password_reset.html:19
-#, fuzzy
 msgid ""
 "Enter your email address below, and we'll send you an email allowing you to "
 "reset it."
 msgstr ""
-"Забыли пароль? Введите адрес электронной почты ниже, и мы вышлем Вам по "
-"электронной почте позволяет сбросить его."
 
 #: templates/account/password_reset.html:25
 msgid "Reset my password"
@@ -3749,15 +3695,13 @@ msgid "Published From"
 msgstr "Опубликовано С"
 
 #: templates/announcements/announcement_list.html:38
-#, fuzzy, python-format
+#, python-format
 msgid ""
 "\n"
 "          Published from <b>%(publish_start)s</b> to <b>%(publish_end)s</"
 "b>.\n"
 "          "
 msgstr ""
-"\n"
-"Опубликовано <b>%(publish_start)s</b> в<b>%(publish_end)s</b>"
 
 #: templates/announcements/detail.html:4
 #, python-format
@@ -3786,9 +3730,8 @@ msgid "Choose new Default"
 msgstr "Выберите новый умолчанию"
 
 #: templates/avatar/change.html:23
-#, fuzzy
 msgid "Delete Your Avatar"
-msgstr "Удалить свои аватары"
+msgstr ""
 
 #: templates/avatar/confirm_delete.html:6
 msgid "Please select the avatars that you would like to delete."
@@ -3858,9 +3801,8 @@ msgid "A user has requested access to the site"
 msgstr ""
 
 #: templates/notification/document_comment/full.txt:3
-#, fuzzy
 msgid "A comment has been posted for the document"
-msgstr "У вас нет разрешений на этот документ."
+msgstr ""
 
 #: templates/notification/document_comment/full.txt:3
 #: templates/notification/layer_comment/full.txt:3
@@ -3875,9 +3817,8 @@ msgid "You can visit the document's detail page here"
 msgstr ""
 
 #: templates/notification/document_comment/short.txt:3
-#, fuzzy
 msgid "A comment has been posted for a document"
-msgstr "У вас нет разрешений на этот документ."
+msgstr ""
 
 #: templates/notification/document_created/full.txt:3
 #: templates/notification/document_rated/full.txt:3
@@ -3886,24 +3827,20 @@ msgstr "У вас нет разрешений на этот документ."
 #: templates/notification/map_created/full.txt:3
 #: templates/notification/map_rated/full.txt:3
 #: templates/notification/request_download_resourcebase/full.txt:3
-#, fuzzy
 msgid "The user"
-msgstr "Выберите пользователей ..."
+msgstr ""
 
 #: templates/notification/document_created/full.txt:3
-#, fuzzy
 msgid "uploaded the following document"
-msgstr "Заменить данный документ"
+msgstr ""
 
 #: templates/notification/document_created/short.txt:3
-#, fuzzy
 msgid "A document has been uploaded"
-msgstr "Слой был загружен"
+msgstr ""
 
 #: templates/notification/document_deleted/full.txt:3
-#, fuzzy
 msgid "The following document was deleted"
-msgstr "Следующие пользователи:"
+msgstr ""
 
 #: templates/notification/document_deleted/full.txt:4
 #: templates/notification/document_rated/full.txt:6
@@ -3914,26 +3851,22 @@ msgstr "Следующие пользователи:"
 #: templates/notification/map_deleted/full.txt:4
 #: templates/notification/map_rated/full.txt:6
 #: templates/notification/map_updated/full.txt:4
-#, fuzzy
 msgid "owned by"
-msgstr "Организованный"
+msgstr ""
 
 #: templates/notification/document_deleted/short.txt:3
-#, fuzzy
 msgid "A document has been deleted"
-msgstr "Сервис был создан:"
+msgstr ""
 
 #: templates/notification/document_rated/full.txt:4
 #: templates/notification/layer_rated/full.txt:4
 #: templates/notification/map_rated/full.txt:4
-#, fuzzy
 msgid "rated"
-msgstr "созданный"
+msgstr ""
 
 #: templates/notification/document_rated/full.txt:5
-#, fuzzy
 msgid "the following document"
-msgstr "Следующие пользователи:"
+msgstr ""
 
 #: templates/notification/document_rated/full.txt:8
 #: templates/notification/layer_comment/full.txt:5
@@ -3944,74 +3877,60 @@ msgid "You can visit the layer's detail page here"
 msgstr ""
 
 #: templates/notification/document_rated/short.txt:3
-#, fuzzy
 msgid "A document has been rated"
-msgstr "Сервис был создан:"
+msgstr ""
 
 #: templates/notification/document_updated/full.txt:3
-#, fuzzy
 msgid "The following document was updated"
-msgstr "Следующие пользователи:"
+msgstr ""
 
 #: templates/notification/document_updated/short.txt:3
-#, fuzzy
 msgid "A document has been updated"
-msgstr "Сервис был создан:"
+msgstr ""
 
 #: templates/notification/layer_comment/full.txt:3
-#, fuzzy
 msgid "A comment has been posted for the layer"
-msgstr "Документы, связанные с данным слоем"
+msgstr ""
 
 #: templates/notification/layer_comment/short.txt:3
-#, fuzzy
 msgid "A comment has been posted for a layer"
-msgstr "Слою был дан рейтинг"
+msgstr ""
 
 #: templates/notification/layer_created/full.txt:3
-#, fuzzy
 msgid "uploaded the following layer"
-msgstr "Данная карта использует следующие слои"
+msgstr ""
 
 #: templates/notification/layer_created/short.txt:3
-#, fuzzy
 msgid "A new layer has been uploaded"
-msgstr "Слой был загружен"
+msgstr ""
 
 #: templates/notification/layer_deleted/full.txt:3
-#, fuzzy
 msgid "The following layer was deleted"
-msgstr "Следующие слои будут импортированы"
+msgstr ""
 
 #: templates/notification/layer_deleted/short.txt:3
-#, fuzzy
 msgid "A layer has been deleted"
-msgstr "Слой был прокомментирован"
+msgstr ""
 
 #: templates/notification/layer_rated/full.txt:5
-#, fuzzy
 msgid "the following layer"
-msgstr "Следующие пользователи:"
+msgstr ""
 
 #: templates/notification/layer_rated/short.txt:3
-#, fuzzy
 msgid "A layer has been rated"
-msgstr "Сервис был создан:"
+msgstr ""
 
 #: templates/notification/layer_updated/full.txt:3
-#, fuzzy
 msgid "The following layer was updated"
-msgstr "Следующие слои будут импортированы"
+msgstr ""
 
 #: templates/notification/layer_updated/short.txt:3
-#, fuzzy
 msgid "A layer has been updated"
-msgstr "Слой был загружен"
+msgstr ""
 
 #: templates/notification/map_comment/full.txt:3
-#, fuzzy
 msgid "A comment has been posted for the map"
-msgstr "Документы, относящиеся к данной карте"
+msgstr ""
 
 #: templates/notification/map_comment/full.txt:6
 #: templates/notification/map_created/full.txt:6
@@ -4025,54 +3944,44 @@ msgid "A comment has been posted for a map"
 msgstr ""
 
 #: templates/notification/map_created/full.txt:3
-#, fuzzy
 msgid "created the following map"
-msgstr "Данное действие повлияет на следующие карты:"
+msgstr ""
 
 #: templates/notification/map_created/short.txt:3
-#, fuzzy
 msgid "A map has been created"
-msgstr "Карта была создана"
+msgstr ""
 
 #: templates/notification/map_deleted/full.txt:3
-#, fuzzy
 msgid "The following map was deleted"
-msgstr "Следующие слои будут импортированы"
+msgstr ""
 
 #: templates/notification/map_deleted/short.txt:3
-#, fuzzy
 msgid "A map has been deleted"
-msgstr "Карта была комментирована"
+msgstr ""
 
 #: templates/notification/map_rated/full.txt:5
-#, fuzzy
 msgid "the following map"
-msgstr "Следующие группы:"
+msgstr ""
 
 #: templates/notification/map_rated/short.txt:3
-#, fuzzy
 msgid "A map has been rated"
-msgstr "Карта была создана"
+msgstr ""
 
 #: templates/notification/map_updated/full.txt:3
-#, fuzzy
 msgid "The following map was updated"
-msgstr "Следующие слои будут импортированы"
+msgstr ""
 
 #: templates/notification/map_updated/short.txt:3
-#, fuzzy
 msgid "A map has been updated"
-msgstr "Карта была создана"
+msgstr ""
 
 #: templates/notification/request_download_resourcebase/full.txt:3
-#, fuzzy
 msgid "requested you to download this resource"
-msgstr "сторона, владеющая ресурсом"
+msgstr ""
 
 #: templates/notification/request_download_resourcebase/full.txt:9
-#, fuzzy
 msgid "Document"
-msgstr "Документы"
+msgstr "Документ"
 
 #: templates/notification/request_download_resourcebase/full.txt:12
 msgid ""
@@ -4216,18 +4125,16 @@ msgstr "Удалить?"
 
 #: templates/user_messages/_message_snippet.html:29
 #: templates/user_messages/thread_detail.html:14
-#, fuzzy
 msgid "me"
-msgstr "Главная"
+msgstr ""
 
 #: templates/user_messages/inbox.html:6
 msgid "Message Inbox"
 msgstr "Ящик входящих сообщений"
 
 #: templates/user_messages/inbox.html:11
-#, fuzzy
 msgid "Messages"
-msgstr "Ящик входящих сообщений"
+msgstr "Сообщения"
 
 #: templates/user_messages/inbox.html:38
 #: templates/user_messages/message_create.html:6
@@ -4249,90 +4156,89 @@ msgid "Send Reply"
 msgstr "Послать ответ"
 
 #~ msgid "Most shared"
-#~ msgstr "Наиболее распространенный"
+#~ msgstr "Most shared"
 
 #~ msgid "from"
-#~ msgstr "из/от"
+#~ msgstr "from"
 
 #~ msgid "view"
-#~ msgstr "обзор"
+#~ msgstr "view"
 
 #~ msgid "Average rating"
-#~ msgstr "Средняя норма"
+#~ msgstr "Average rating"
 
 #~ msgid "votes"
-#~ msgstr "голосов"
+#~ msgstr "votes"
 
 #~ msgid "You do not have permission to view this document"
-#~ msgstr "Вы не имеете разрешения для просмотра этого документа"
+#~ msgstr "You do not have permission to view this document"
 
 #~ msgid "Remote Thumbnail"
-#~ msgstr "Удаленная эскизов"
+#~ msgstr "Remote Thumbnail"
 
 #~ msgid "Thumbnail"
-#~ msgstr "Миниатюра"
+#~ msgstr "Thumbnail"
 
 #~ msgid "Group details"
-#~ msgstr "Информация о группе"
+#~ msgstr "Group details"
 
 #~ msgid "Create a map"
-#~ msgstr "Создать карту"
+#~ msgstr "Create a map"
 
 #~ msgid "You do not have permission to view this layer"
-#~ msgstr "Вы не имеете разрешения для просмотра этого слоя"
+#~ msgstr "You do not have permission to view this layer"
 
 #~ msgid "View"
-#~ msgstr "Вид"
+#~ msgstr "View"
 
 #~ msgid "You do not have permission to view this map"
-#~ msgstr "Вы не имеете разрешения для просмотра этой карте"
+#~ msgstr "You do not have permission to view this map"
 
 #~ msgid "Add to Favorites"
-#~ msgstr "Добавьте к избранным"
+#~ msgstr "Add to Favorites"
 
 #~ msgid "Add a Comment"
-#~ msgstr "Добавьте комментарий"
+#~ msgstr "Add a Comment"
 
 #~ msgid "Notices"
-#~ msgstr "Сообщения"
+#~ msgstr "Notices"
 
 #~ msgid "Notice settings"
-#~ msgstr "Настройки сообщений"
+#~ msgstr "Notice settings"
 
 #~ msgid "Observed objects"
-#~ msgstr "Наблюдаемые объекты"
+#~ msgstr "Observed objects"
 
 #~ msgid "Primary email"
-#~ msgstr "Первичное письмо"
+#~ msgstr "Primary email"
 
 #~ msgid "change under <a href=\"%(email_url)s\">Account</a>"
-#~ msgstr "изменить под <a href=\"%(email_url)s\">Account</a>"
+#~ msgstr "change under <a href=\"%(email_url)s\">Account</a>"
 
 #~ msgid "Note"
-#~ msgstr "Примечание"
+#~ msgstr "Note"
 
 #~ msgid ""
 #~ "You do not have a verified email address to which notices can be sent. "
 #~ "You can add one by going to <a href=\"%(email_url)s\">Account</a>."
 #~ msgstr ""
-#~ "У вас нет действующего почтового адреса, куда могли бы приходить "
-#~ "сообщения. Вы можете добавить один в <a href=\"%(email_url)s\">Account</"
-#~ "a>."
+#~ "You do not have a verified email address to which notices can be sent. "
+#~ "You can add one by going to <a href=\"%(email_url)s\">Account</a>."
 
 #~ msgid "Mark all unseen notices seen"
-#~ msgstr "Маркировать все неувиденные сообщения"
+#~ msgstr "Mark all unseen notices seen"
 
 #~ msgid "MONTH_DAY_FORMAT"
-#~ msgstr "МЕСЯЦ_ДЕНЬ_ФОРМАТ"
+#~ msgstr "MONTH_DAY_FORMAT"
 
 #~ msgid "View Notice"
-#~ msgstr "Просмотр сообщений"
+#~ msgstr "View Notice"
 
 #~ msgid "No notices."
-#~ msgstr "Нет сообщений"
+#~ msgstr "No notices."
 
 #~ msgid "Notice"
-#~ msgstr "Сообщение"
+#~ msgstr "Notice"
 
 #~ msgid "you"
-#~ msgstr "вы"
+#~ msgstr "you"

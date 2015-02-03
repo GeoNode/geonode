@@ -3,14 +3,15 @@
 # This file is distributed under the same license as the PACKAGE package.
 #
 # Translators:
+# Translators:
 # Andres Alfonso Lemon Gomez <lemon.andres@gmail.com>, 2014
 msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-02-03 05:20-0600\n"
-"PO-Revision-Date: 2014-11-14 18:19+0000\n"
-"Last-Translator: Andres Alfonso Lemon Gomez <lemon.andres@gmail.com>\n"
+"POT-Creation-Date: 2015-02-03 08:21-0600\n"
+"PO-Revision-Date: 2015-02-03 12:11+0000\n"
+"Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
 "Language-Team: Bengali (http://www.transifex.com/projects/p/geonode/language/"
 "bn/)\n"
 "Language: bn\n"
@@ -61,9 +62,8 @@ msgstr "কে পরিচালনা করতে পারেন এবং �
 
 #: static/geonode/js/search/search.js:298
 #: static_root/geonode/js/search/search.js:298
-#, fuzzy
 msgid "Enter your text here ..."
-msgstr "এখানে মন্তব্য লিখুন."
+msgstr ""
 
 #: static/geonode/js/upload/FileType.js:33
 #: static_root/geonode/js/upload/FileType.js:33
@@ -159,9 +159,8 @@ msgstr "লেয়ার ফাইল আপলোড GeoServer মধ্য�
 
 #: static/geonode/js/upload/LayerInfo.js:422
 #: static_root/geonode/js/upload/LayerInfo.js:422
-#, fuzzy
 msgid "Select or create a Geogig repository."
-msgstr "নির্বাচন করুন অথবা একটি Geogit সংগ্রহস্থলের তৈরি."
+msgstr ""
 
 #: static/geonode/js/upload/LayerInfo.js:517
 #: static_root/admin/js/SelectFilter2.js:69
@@ -181,9 +180,9 @@ msgid "You are uploading an incomplete set of files."
 msgstr "আপনি ফাইল একটি অসম্পূর্ণ সেট আপলোড করা হয়."
 
 #: static_root/admin/js/SelectFilter2.js:45
-#, fuzzy, c-format
+#, c-format
 msgid "Available %s"
-msgstr "উপলভ্য স্তরসমূহ"
+msgstr ""
 
 #: static_root/admin/js/SelectFilter2.js:46
 #, c-format
@@ -227,9 +226,8 @@ msgid ""
 msgstr ""
 
 #: static_root/admin/js/SelectFilter2.js:80
-#, fuzzy
 msgid "Remove all"
-msgstr "অপসারণ"
+msgstr ""
 
 #: static_root/admin/js/SelectFilter2.js:80
 #, c-format
@@ -274,9 +272,8 @@ msgstr ""
 
 #: static_root/admin/js/collapse.js:8 static_root/admin/js/collapse.js.c:19
 #: static_root/admin/js/collapse.min.js:1
-#, fuzzy
 msgid "Show"
-msgstr "প্রদর্শন"
+msgstr ""
 
 #: static_root/admin/js/collapse.js:16 static_root/admin/js/collapse.min.js:1
 msgid "Hide"
@@ -786,4 +783,4 @@ msgid "Please wait"
 msgstr "অনুগ্রহ করে অপেক্ষা করুন"
 
 #~ msgid "No error message supplied"
-#~ msgstr "কোন ত্রুটি বার্তা সরবরাহকৃত"
+#~ msgstr "No error message supplied"

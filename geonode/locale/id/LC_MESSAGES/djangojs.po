@@ -3,15 +3,16 @@
 # This file is distributed under the same license as the PACKAGE package.
 #
 # Translators:
+# Translators:
 # ingenieroariel <ingenieroariel@gmail.com>, 2014
 # Iwan Setiawan <iwan@agrisoft.co.id>, 2014
 msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-02-03 05:20-0600\n"
-"PO-Revision-Date: 2014-11-14 17:42+0000\n"
-"Last-Translator: ingenieroariel <ingenieroariel@gmail.com>\n"
+"POT-Creation-Date: 2015-02-03 08:21-0600\n"
+"PO-Revision-Date: 2015-02-03 12:11+0000\n"
+"Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
 "Language-Team: Indonesian (http://www.transifex.com/projects/p/geonode/"
 "language/id/)\n"
 "Language: id\n"
@@ -62,9 +63,8 @@ msgstr "Siapa yang dapat mengelola dan mengedit data ini?"
 
 #: static/geonode/js/search/search.js:298
 #: static_root/geonode/js/search/search.js:298
-#, fuzzy
 msgid "Enter your text here ..."
-msgstr "Tambahkan komentar disini."
+msgstr ""
 
 #: static/geonode/js/upload/FileType.js:33
 #: static_root/geonode/js/upload/FileType.js:33
@@ -162,9 +162,8 @@ msgstr "File lapisan upload, mengkonfigurasi di GeoServer"
 
 #: static/geonode/js/upload/LayerInfo.js:422
 #: static_root/geonode/js/upload/LayerInfo.js:422
-#, fuzzy
 msgid "Select or create a Geogig repository."
-msgstr "Pilih atau membuat repositori Geogit."
+msgstr ""
 
 #: static/geonode/js/upload/LayerInfo.js:517
 #: static_root/admin/js/SelectFilter2.js:69
@@ -185,9 +184,9 @@ msgid "You are uploading an incomplete set of files."
 msgstr "Anda meng-upload sebuah set lengkap dari file."
 
 #: static_root/admin/js/SelectFilter2.js:45
-#, fuzzy, c-format
+#, c-format
 msgid "Available %s"
-msgstr "Layer yang tersedia"
+msgstr ""
 
 #: static_root/admin/js/SelectFilter2.js:46
 #, c-format
@@ -231,9 +230,8 @@ msgid ""
 msgstr ""
 
 #: static_root/admin/js/SelectFilter2.js:80
-#, fuzzy
 msgid "Remove all"
-msgstr "Hapus"
+msgstr ""
 
 #: static_root/admin/js/SelectFilter2.js:80
 #, c-format
@@ -277,9 +275,8 @@ msgstr ""
 
 #: static_root/admin/js/collapse.js:8 static_root/admin/js/collapse.js.c:19
 #: static_root/admin/js/collapse.min.js:1
-#, fuzzy
 msgid "Show"
-msgstr "Menampilkan"
+msgstr ""
 
 #: static_root/admin/js/collapse.js:16 static_root/admin/js/collapse.min.js:1
 msgid "Hide"
@@ -789,4 +786,4 @@ msgid "Please wait"
 msgstr "Silakan menunggu"
 
 #~ msgid "No error message supplied"
-#~ msgstr "Tidak ada pesan kesalahan yang disediakan"
+#~ msgstr "No error message supplied"

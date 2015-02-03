@@ -3,6 +3,7 @@
 # This file is distributed under the same license as the PACKAGE package.
 #
 # Translators:
+# Translators:
 # Indunil <ricsdej@gmail.com>, 2013
 # srimalsl <srimalsl@yahoo.com>, 2013
 # chandimathamali <thamalimampitiya@gmail.com>, 2013
@@ -11,9 +12,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-02-03 05:20-0600\n"
-"PO-Revision-Date: 2014-11-14 15:05+0000\n"
-"Last-Translator: ingenieroariel <ingenieroariel@gmail.com>\n"
+"POT-Creation-Date: 2015-02-03 08:23-0600\n"
+"PO-Revision-Date: 2015-02-03 12:11+0000\n"
+"Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
 "Language-Team: Sinhala (http://www.transifex.com/projects/p/geonode/language/"
 "si/)\n"
 "Language: si\n"
@@ -555,53 +556,44 @@ msgid "You are not allowed to edit this document."
 msgstr ""
 
 #: documents/management/__init__.py:14
-#, fuzzy
 msgid "Document Created"
-msgstr "මෙම සිතියමට සම්බන්ධ ලේඛන"
+msgstr ""
 
 #: documents/management/__init__.py:15
-#, fuzzy
 msgid "A Document was created"
-msgstr "සිතියමක් නිර්මාණය කරන ලදී"
+msgstr ""
 
 #: documents/management/__init__.py:18
-#, fuzzy
 msgid "Document Updated"
-msgstr "ලේඛන"
+msgstr ""
 
 #: documents/management/__init__.py:19
-#, fuzzy
 msgid "A Document was updated"
-msgstr "එක් ස්ථරයක් උඩුගත කලා."
+msgstr ""
 
 #: documents/management/__init__.py:22
-#, fuzzy
 msgid "Document Deleted"
-msgstr "ලේඛන"
+msgstr ""
 
 #: documents/management/__init__.py:23
 msgid "A Document was deleted"
 msgstr ""
 
 #: documents/management/__init__.py:26
-#, fuzzy
 msgid "Comment on Document"
-msgstr "ස්ථරය ගැන අදහස් දක්වන්න"
+msgstr ""
 
 #: documents/management/__init__.py:27
-#, fuzzy
 msgid "A Document was commented on"
-msgstr "සිතියමක් පිළිබඳ අදහසක් දක්වන ලදී"
+msgstr ""
 
 #: documents/management/__init__.py:30
-#, fuzzy
 msgid "Document for Map"
-msgstr "සිතියම පිළිබඳ අදහස් දක්වන්න"
+msgstr ""
 
 #: documents/management/__init__.py:31
-#, fuzzy
 msgid "A rating was given to a document"
-msgstr "සිතියමක් සඳහා ප්‍රමාණනයක් දෙන ලදී"
+msgstr ""
 
 #: documents/templates/documents/document_detail.html:40
 msgid "External Resource"
@@ -626,9 +618,8 @@ msgstr ""
 
 #: documents/templates/documents/document_detail.html:90
 #: layers/templates/layers/layer_detail.html:131
-#, fuzzy
 msgid "Request Download"
-msgstr "බාගත කරන්න"
+msgstr ""
 
 #: documents/templates/documents/document_detail.html:95
 #: layers/templates/layers/layer_detail.html:160
@@ -954,7 +945,7 @@ msgstr ""
 #: social/templates/social/activity_list.html:20
 #: templates/user_messages/inbox.html:16
 msgid "All"
-msgstr ""
+msgstr "සියල්ල"
 
 #: groups/templates/groups/activity.html:25
 #: people/templates/people/_profile_filters.html:5
@@ -1324,34 +1315,28 @@ msgid "You are attempting to replace a raster layer with a vector."
 msgstr ""
 
 #: layers/management/__init__.py:33
-#, fuzzy
 msgid "Layer Created"
-msgstr "සිතියම නිර්මාණය කරන ලදී."
+msgstr ""
 
 #: layers/management/__init__.py:34
-#, fuzzy
 msgid "A Layer was created"
-msgstr "සිතියමක් නිර්මාණය කරන ලදී"
+msgstr ""
 
 #: layers/management/__init__.py:37
-#, fuzzy
 msgid "Layer Updated"
-msgstr "ස්ථරය උඩුගත කලා"
+msgstr ""
 
 #: layers/management/__init__.py:38
-#, fuzzy
 msgid "A Layer was updated"
-msgstr "එක් ස්ථරයක් උඩුගත කලා."
+msgstr ""
 
 #: layers/management/__init__.py:41
-#, fuzzy
 msgid "Layer Deleted"
-msgstr "ස්ථරය උඩුගත කලා"
+msgstr ""
 
 #: layers/management/__init__.py:42
-#, fuzzy
 msgid "A Layer was deleted"
-msgstr "එක් ස්ථරයක් උඩුගත කලා."
+msgstr ""
 
 #: layers/templates/layers/layer_change_poc.html:5
 msgid "Home"
@@ -1548,20 +1533,17 @@ msgid "Display Order"
 msgstr "දිස්වන පිළිවල"
 
 #: layers/templates/layers/layer_remove.html:9
-#, fuzzy
 msgid "Remove Layers"
-msgstr "මෙම ස්ථරය ඉවත් කරන්න"
+msgstr ""
 
 #: layers/templates/layers/layer_remove.html:14
-#, fuzzy, python-format
+#, python-format
 msgid ""
 "\n"
 "          Are you sure you want to remove <a href="
 "\"%(layer.get_absolute_url)s\">%(layer_title)s</a>?\n"
 "        "
 msgstr ""
-"\n"
-"%(layer_title)s ඉවත් කිරීම ගැන ඔබට සහතිකද?"
 
 #: layers/templates/layers/layer_remove.html:30
 msgid "This action affects the following maps:"
@@ -2080,24 +2062,20 @@ msgid "A Map was created"
 msgstr "සිතියමක් නිර්මාණය කරන ලදී"
 
 #: maps/management/__init__.py:37
-#, fuzzy
 msgid "Map Updated"
-msgstr "සිතියම නිර්මාණය කරන ලදී."
+msgstr ""
 
 #: maps/management/__init__.py:38
-#, fuzzy
 msgid "A Map was updated"
-msgstr "සිතියමක් නිර්මාණය කරන ලදී"
+msgstr ""
 
 #: maps/management/__init__.py:41
-#, fuzzy
 msgid "Map Deleted"
-msgstr "සිතියම නිර්මාණය කරන ලදී."
+msgstr ""
 
 #: maps/management/__init__.py:42
-#, fuzzy
 msgid "A Map was deleted"
-msgstr "සිතියමක් නිර්මාණය කරන ලදී"
+msgstr ""
 
 #: maps/management/__init__.py:45
 msgid "Comment on Map"
@@ -2395,9 +2373,8 @@ msgid "User following you"
 msgstr ""
 
 #: people/management.py:33
-#, fuzzy
 msgid "Another user has started following you"
-msgstr "තවත් පරිශීලකයෙක් ඔබව අනුගමනය කිරීමට පටන් ගෙන ඇත"
+msgstr ""
 
 #: people/management.py:36
 msgid "User requested access"
@@ -2408,9 +2385,8 @@ msgid "A new user has requested access to the site"
 msgstr ""
 
 #: people/management.py:40
-#, fuzzy
 msgid "Account activated"
-msgstr "මෑතකදී සිදුකරන ලද ක්‍රියාකාරකම්"
+msgstr ""
 
 #: people/management.py:41
 msgid "This account is now active and can log in the site"
@@ -2534,13 +2510,10 @@ msgid "Forgot Username"
 msgstr "පරිශීලක නාමය අමතක වී ඇත"
 
 #: people/templates/people/forgot_username_form.html:10
-#, fuzzy
 msgid ""
 "Enter your email address and click the submit button. <br />Your username "
 "will be sent to you."
 msgstr ""
-"ඔබගේ විද්‍යුත්-තැපැල් ලිපිනය ඇතුලත් කර යොමු කරන්න බොත්තම ක්ලික් කරන්න. ඔබගේ පරිශීලක නාමය ඔබට "
-"එවනු ලබනු ඇත"
 
 #: people/templates/people/profile_create.html:8
 #: people/templates/people/profile_create.html:14
@@ -2576,9 +2549,8 @@ msgid "My Activities"
 msgstr "මගේ ක්‍රියාකාරකම්"
 
 #: people/templates/people/profile_detail.html:77 templates/base.html:202
-#, fuzzy
 msgid "Notifications"
-msgstr "නිවේදන වර්ගය"
+msgstr "නිවේදන"
 
 #: people/templates/people/profile_detail.html:80 templates/500.html:80
 #: templates/base.html:205 templates/announcements/announcement_list.html:6
@@ -2685,9 +2657,8 @@ msgid "Service URL"
 msgstr ""
 
 #: services/forms.py:15
-#, fuzzy
 msgid "Service name"
-msgstr "සේවා අතුරුමුහුණත්"
+msgstr ""
 
 #: services/forms.py:19
 msgid "Service Type"
@@ -2805,9 +2776,8 @@ msgid "Remove Service"
 msgstr ""
 
 #: services/templates/services/service_edit.html:15
-#, fuzzy
 msgid "Edit Service"
-msgstr "ස්ථරය සංස්කරණය කරන්න"
+msgstr ""
 
 #: services/templates/services/service_edit.html:21
 #: templates/announcements/announcement_form.html:27
@@ -2839,9 +2809,8 @@ msgid "The following layers will be imported"
 msgstr ""
 
 #: services/templates/services/service_remove.html:8
-#, fuzzy
 msgid "Remove Remote Service"
-msgstr "GeoNode හි වෙබ් සේවා"
+msgstr ""
 
 #: services/templates/services/service_remove.html:12
 msgid "Are you sure you want to remove"
@@ -3038,9 +3007,8 @@ msgid "By"
 msgstr ""
 
 #: templates/_comments.html:67
-#, fuzzy
 msgid "Submit Comment"
-msgstr "විවරණ යොමු කරන්න"
+msgstr ""
 
 #: templates/_permissions.html:8
 msgid "Who can view it?"
@@ -3104,9 +3072,8 @@ msgid "About GeoNode."
 msgstr "GeoNode ගැන."
 
 #: templates/base.html:192
-#, fuzzy
 msgid "Profile Menu"
-msgstr "පැතිකඩ"
+msgstr ""
 
 #: templates/base.html:258
 msgid "Type your search here ..."
@@ -3416,11 +3383,10 @@ msgid ""
 msgstr ""
 
 #: templates/index.html:36
-#, fuzzy
 msgid "Map"
 msgid_plural "Maps"
-msgstr[0] "සිතියම"
-msgstr[1] "සිතියම"
+msgstr[0] ""
+msgstr[1] ""
 
 #: templates/index.html:37
 msgid ""
@@ -3434,11 +3400,10 @@ msgstr ""
 
 #: templates/index.html:43 templates/index.html.py:48
 #: templates/notification/account_approve/full.txt:1
-#, fuzzy
 msgid "User"
 msgid_plural "Users"
-msgstr[0] "පරිශීලක"
-msgstr[1] "පරිශීලක"
+msgstr[0] ""
+msgstr[1] ""
 
 #: templates/index.html:44 templates/index.html.py:49
 msgid ""
@@ -3500,23 +3465,18 @@ msgid "Password reset"
 msgstr "මුරපදය නැවත පිහිටුවන්න"
 
 #: templates/account/password_reset.html:14
-#, fuzzy
 msgid "Password Reset"
-msgstr "මුරපදය නැවත පිහිටුවන්න"
+msgstr ""
 
 #: templates/account/password_reset.html:18
-#, fuzzy
 msgid "Forgotten your password?"
-msgstr "ඔබගේ මුරපදය අමතකද?"
+msgstr ""
 
 #: templates/account/password_reset.html:19
-#, fuzzy
 msgid ""
 "Enter your email address below, and we'll send you an email allowing you to "
 "reset it."
 msgstr ""
-"ඔබගේ මුරපදය අමතක වී ඇත්ද? ඔබගේ විද්‍යුත්-තැපැල් ලිපිනය පහත ඇතුලත් කරන්න. එය යලි පිහිටුවීමට හැකි "
-"වන පරිදි අපි ඔබට විද්‍යුත්-තැපැල් පණිවුඩයක් එවන්නෙමු"
 
 #: templates/account/password_reset.html:25
 msgid "Reset my password"
@@ -3649,9 +3609,8 @@ msgid "Choose new Default"
 msgstr ""
 
 #: templates/avatar/change.html:23
-#, fuzzy
 msgid "Delete Your Avatar"
-msgstr "ඔබේ ඡායාරූප මකා දමන්න"
+msgstr ""
 
 #: templates/avatar/confirm_delete.html:6
 msgid "Please select the avatars that you would like to delete."
@@ -3721,9 +3680,8 @@ msgid "A user has requested access to the site"
 msgstr ""
 
 #: templates/notification/document_comment/full.txt:3
-#, fuzzy
 msgid "A comment has been posted for the document"
-msgstr "මෙම ලේඛනය සඳහා ඔබට අවසර නැත"
+msgstr ""
 
 #: templates/notification/document_comment/full.txt:3
 #: templates/notification/layer_comment/full.txt:3
@@ -3738,9 +3696,8 @@ msgid "You can visit the document's detail page here"
 msgstr ""
 
 #: templates/notification/document_comment/short.txt:3
-#, fuzzy
 msgid "A comment has been posted for a document"
-msgstr "මෙම ලේඛනය සඳහා ඔබට අවසර නැත"
+msgstr ""
 
 #: templates/notification/document_created/full.txt:3
 #: templates/notification/document_rated/full.txt:3
@@ -3753,14 +3710,12 @@ msgid "The user"
 msgstr ""
 
 #: templates/notification/document_created/full.txt:3
-#, fuzzy
 msgid "uploaded the following document"
-msgstr "මෙම ලේඛනය ප්‍රතිස්ථාපනය කරන්න"
+msgstr ""
 
 #: templates/notification/document_created/short.txt:3
-#, fuzzy
 msgid "A document has been uploaded"
-msgstr "එක් ස්ථරයක් උඩුගත කලා."
+msgstr ""
 
 #: templates/notification/document_deleted/full.txt:3
 msgid "The following document was deleted"
@@ -3775,9 +3730,8 @@ msgstr ""
 #: templates/notification/map_deleted/full.txt:4
 #: templates/notification/map_rated/full.txt:6
 #: templates/notification/map_updated/full.txt:4
-#, fuzzy
 msgid "owned by"
-msgstr "බලය ලත්"
+msgstr ""
 
 #: templates/notification/document_deleted/short.txt:3
 msgid "A document has been deleted"
@@ -3786,14 +3740,12 @@ msgstr ""
 #: templates/notification/document_rated/full.txt:4
 #: templates/notification/layer_rated/full.txt:4
 #: templates/notification/map_rated/full.txt:4
-#, fuzzy
 msgid "rated"
-msgstr "නිර්මාණය කරන ලද්දේ"
+msgstr ""
 
 #: templates/notification/document_rated/full.txt:5
-#, fuzzy
 msgid "the following document"
-msgstr "මෙම ලේඛනය ප්‍රමාණනය කරන්න"
+msgstr ""
 
 #: templates/notification/document_rated/full.txt:8
 #: templates/notification/layer_comment/full.txt:5
@@ -3816,59 +3768,48 @@ msgid "A document has been updated"
 msgstr ""
 
 #: templates/notification/layer_comment/full.txt:3
-#, fuzzy
 msgid "A comment has been posted for the layer"
-msgstr "මෙම ස්ථරයට සම්බන්ධ ලේඛන"
+msgstr ""
 
 #: templates/notification/layer_comment/short.txt:3
-#, fuzzy
 msgid "A comment has been posted for a layer"
-msgstr "ස්ථරයක් සඳහා ප්‍රමාණනයක් දෙන ලදී"
+msgstr ""
 
 #: templates/notification/layer_created/full.txt:3
-#, fuzzy
 msgid "uploaded the following layer"
-msgstr "මෙම සිතියමේ පහත ස්ථර භාවිතා වේ:"
+msgstr ""
 
 #: templates/notification/layer_created/short.txt:3
-#, fuzzy
 msgid "A new layer has been uploaded"
-msgstr "එක් ස්ථරයක් උඩුගත කලා."
+msgstr ""
 
 #: templates/notification/layer_deleted/full.txt:3
-#, fuzzy
 msgid "The following layer was deleted"
-msgstr "මෙම සිතියමේ පහත ස්ථර භාවිතා වේ:"
+msgstr ""
 
 #: templates/notification/layer_deleted/short.txt:3
-#, fuzzy
 msgid "A layer has been deleted"
-msgstr "ස්ථරයක් සඳහා අදහස් දක්වන ලදී"
+msgstr ""
 
 #: templates/notification/layer_rated/full.txt:5
-#, fuzzy
 msgid "the following layer"
-msgstr "මෙම සිතියමේ පහත ස්ථර භාවිතා වේ:"
+msgstr ""
 
 #: templates/notification/layer_rated/short.txt:3
-#, fuzzy
 msgid "A layer has been rated"
-msgstr "ස්ථරයක් සඳහා අදහස් දක්වන ලදී"
+msgstr ""
 
 #: templates/notification/layer_updated/full.txt:3
-#, fuzzy
 msgid "The following layer was updated"
-msgstr "එක් ස්ථරයක් උඩුගත කලා."
+msgstr ""
 
 #: templates/notification/layer_updated/short.txt:3
-#, fuzzy
 msgid "A layer has been updated"
-msgstr "එක් ස්ථරයක් උඩුගත කලා."
+msgstr ""
 
 #: templates/notification/map_comment/full.txt:3
-#, fuzzy
 msgid "A comment has been posted for the map"
-msgstr "මෙම සිතියමට සම්බන්ධ ලේඛන"
+msgstr ""
 
 #: templates/notification/map_comment/full.txt:6
 #: templates/notification/map_created/full.txt:6
@@ -3882,52 +3823,44 @@ msgid "A comment has been posted for a map"
 msgstr ""
 
 #: templates/notification/map_created/full.txt:3
-#, fuzzy
 msgid "created the following map"
-msgstr "මෙම ක්‍රියාව පහත සිතියම් වලට බලපානු ඇත"
+msgstr ""
 
 #: templates/notification/map_created/short.txt:3
-#, fuzzy
 msgid "A map has been created"
-msgstr "සිතියමක් නිර්මාණය කරන ලදී"
+msgstr ""
 
 #: templates/notification/map_deleted/full.txt:3
 msgid "The following map was deleted"
 msgstr ""
 
 #: templates/notification/map_deleted/short.txt:3
-#, fuzzy
 msgid "A map has been deleted"
-msgstr "සිතියමක් පිළිබඳ අදහසක් දක්වන ලදී"
+msgstr ""
 
 #: templates/notification/map_rated/full.txt:5
-#, fuzzy
 msgid "the following map"
-msgstr "අනුගමනය කරන්නන්"
+msgstr ""
 
 #: templates/notification/map_rated/short.txt:3
-#, fuzzy
 msgid "A map has been rated"
-msgstr "සිතියමක් නිර්මාණය කරන ලදී"
+msgstr ""
 
 #: templates/notification/map_updated/full.txt:3
 msgid "The following map was updated"
 msgstr ""
 
 #: templates/notification/map_updated/short.txt:3
-#, fuzzy
 msgid "A map has been updated"
-msgstr "සිතියමක් නිර්මාණය කරන ලදී"
+msgstr ""
 
 #: templates/notification/request_download_resourcebase/full.txt:3
-#, fuzzy
 msgid "requested you to download this resource"
-msgstr "සම්පත අයිති පාර්ශවය"
+msgstr ""
 
 #: templates/notification/request_download_resourcebase/full.txt:9
-#, fuzzy
 msgid "Document"
-msgstr "ලේඛන"
+msgstr ""
 
 #: templates/notification/request_download_resourcebase/full.txt:12
 msgid ""
@@ -4071,18 +4004,16 @@ msgstr "මකා දමන්නද?"
 
 #: templates/user_messages/_message_snippet.html:29
 #: templates/user_messages/thread_detail.html:14
-#, fuzzy
 msgid "me"
-msgstr "මුල් පිටුව"
+msgstr ""
 
 #: templates/user_messages/inbox.html:6
 msgid "Message Inbox"
 msgstr ""
 
 #: templates/user_messages/inbox.html:11
-#, fuzzy
 msgid "Messages"
-msgstr "පණිවුඩය නිර්මාණය කරන්න"
+msgstr "පණිවිඩ"
 
 #: templates/user_messages/inbox.html:38
 #: templates/user_messages/message_create.html:6
@@ -4104,65 +4035,89 @@ msgid "Send Reply"
 msgstr "පිළිතුරු යවන්න"
 
 #~ msgid "Most shared"
-#~ msgstr "වැඩිපුරම හවුල්කර ගත්"
+#~ msgstr "Most shared"
 
 #~ msgid "from"
-#~ msgstr "සිට"
+#~ msgstr "from"
 
 #~ msgid "view"
-#~ msgstr "බලන්න"
+#~ msgstr "view"
 
 #~ msgid "Average rating"
-#~ msgstr "සාමාන්‍ය ප්‍රමාණනයන්"
+#~ msgstr "Average rating"
 
 #~ msgid "votes"
-#~ msgstr "ඡන්ද"
+#~ msgstr "votes"
+
+#~ msgid "You do not have permission to view this document"
+#~ msgstr "You do not have permission to view this document"
+
+#~ msgid "Remote Thumbnail"
+#~ msgstr "Remote Thumbnail"
+
+#~ msgid "Thumbnail"
+#~ msgstr "Thumbnail"
+
+#~ msgid "Group details"
+#~ msgstr "Group details"
 
 #~ msgid "Create a map"
-#~ msgstr "සිතියමක් නිර්මාණය කරන්න"
+#~ msgstr "Create a map"
+
+#~ msgid "You do not have permission to view this layer"
+#~ msgstr "You do not have permission to view this layer"
 
 #~ msgid "View"
-#~ msgstr "බලන්න"
+#~ msgstr "View"
+
+#~ msgid "You do not have permission to view this map"
+#~ msgstr "You do not have permission to view this map"
+
+#~ msgid "Add to Favorites"
+#~ msgstr "Add to Favorites"
 
 #~ msgid "Add a Comment"
-#~ msgstr "විවරණයක් එක් කරන්න"
+#~ msgstr "Add a Comment"
 
 #~ msgid "Notices"
-#~ msgstr "දැන්වීම්"
+#~ msgstr "Notices"
+
+#~ msgid "Notice settings"
+#~ msgstr "Notice settings"
 
 #~ msgid "Observed objects"
-#~ msgstr "නිරීක්ෂණය කරන ලද වස්තු"
+#~ msgstr "Observed objects"
 
 #~ msgid "Primary email"
-#~ msgstr "මුලික විද්‍යුත් තැපෑල"
+#~ msgstr "Primary email"
 
 #~ msgid "change under <a href=\"%(email_url)s\">Account</a>"
-#~ msgstr " <a href=\"%(email_url)s\">Account</a> යටතේ වෙනස් කරන්න."
+#~ msgstr "change under <a href=\"%(email_url)s\">Account</a>"
 
 #~ msgid "Note"
-#~ msgstr "සටහන"
+#~ msgstr "Note"
 
 #~ msgid ""
 #~ "You do not have a verified email address to which notices can be sent. "
 #~ "You can add one by going to <a href=\"%(email_url)s\">Account</a>."
 #~ msgstr ""
-#~ "ඔබට දැන්වීම් එවිය හැකි සත්‍යාපනය කරන ලද විද්‍යුත් තැපැල් ලිපිනයක් නැත.\n"
-#~ "<a href=\"%(email_url)s\">ගිණුම</a> ට ගොස් ඔබට විද්‍යුත් තැපැල් ලිපිනයක් එක් කල හැක."
+#~ "You do not have a verified email address to which notices can be sent. "
+#~ "You can add one by going to <a href=\"%(email_url)s\">Account</a>."
 
 #~ msgid "Mark all unseen notices seen"
-#~ msgstr "නොබලන ලද සියලුම නිවේදන බලා ඇති ලෙස සලකුණු කරන්න"
+#~ msgstr "Mark all unseen notices seen"
 
 #~ msgid "MONTH_DAY_FORMAT"
-#~ msgstr "මාසය_දවස_ආකෘතිය"
+#~ msgstr "MONTH_DAY_FORMAT"
 
 #~ msgid "View Notice"
-#~ msgstr "නිවේදන බලන්න"
+#~ msgstr "View Notice"
 
 #~ msgid "No notices."
-#~ msgstr "නිවේදන නැත."
+#~ msgstr "No notices."
 
 #~ msgid "Notice"
-#~ msgstr "නිවේදන"
+#~ msgstr "Notice"
 
 #~ msgid "you"
-#~ msgstr "ඔබ"
+#~ msgstr "you"

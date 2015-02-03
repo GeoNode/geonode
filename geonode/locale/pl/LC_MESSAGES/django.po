@@ -3,14 +3,15 @@
 # This file is distributed under the same license as the PACKAGE package.
 #
 # Translators:
+# Translators:
 # Andres Alfonso Lemon Gomez <lemon.andres@gmail.com>, 2014
 msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-02-03 05:20-0600\n"
-"PO-Revision-Date: 2014-11-14 23:40+0000\n"
-"Last-Translator: Andres Alfonso Lemon Gomez <lemon.andres@gmail.com>\n"
+"POT-Creation-Date: 2015-02-03 08:23-0600\n"
+"PO-Revision-Date: 2015-02-03 12:11+0000\n"
+"Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
 "Language-Team: Polish (http://www.transifex.com/projects/p/geonode/language/"
 "pl/)\n"
 "Language: pl\n"
@@ -559,54 +560,44 @@ msgid "You are not allowed to edit this document."
 msgstr "Nie masz uprawnień do edytowania tego dokumentu."
 
 #: documents/management/__init__.py:14
-#, fuzzy
 msgid "Document Created"
-msgstr "Dokumenty związane z tej mapy"
+msgstr ""
 
 #: documents/management/__init__.py:15
-#, fuzzy
 msgid "A Document was created"
-msgstr "Mapa została stworzona"
+msgstr ""
 
 #: documents/management/__init__.py:18
-#, fuzzy
 msgid "Document Updated"
-msgstr "Dokumenty"
+msgstr ""
 
 #: documents/management/__init__.py:19
-#, fuzzy
 msgid "A Document was updated"
-msgstr "Warstwa został przesłany"
+msgstr ""
 
 #: documents/management/__init__.py:22
-#, fuzzy
 msgid "Document Deleted"
-msgstr "Dokumenty"
+msgstr ""
 
 #: documents/management/__init__.py:23
-#, fuzzy
 msgid "A Document was deleted"
-msgstr "Dokument ten jest związany z"
+msgstr ""
 
 #: documents/management/__init__.py:26
-#, fuzzy
 msgid "Comment on Document"
-msgstr "Skomentuj warstwy"
+msgstr ""
 
 #: documents/management/__init__.py:27
-#, fuzzy
 msgid "A Document was commented on"
-msgstr "Mapa została skomentował"
+msgstr ""
 
 #: documents/management/__init__.py:30
-#, fuzzy
 msgid "Document for Map"
-msgstr "Komentarz na mapie"
+msgstr ""
 
 #: documents/management/__init__.py:31
-#, fuzzy
 msgid "A rating was given to a document"
-msgstr "Ocena została przyznana na mapie"
+msgstr ""
 
 #: documents/templates/documents/document_detail.html:40
 msgid "External Resource"
@@ -631,9 +622,8 @@ msgstr "Pobierz dokument"
 
 #: documents/templates/documents/document_detail.html:90
 #: layers/templates/layers/layer_detail.html:131
-#, fuzzy
 msgid "Request Download"
-msgstr "Pobierz"
+msgstr ""
 
 #: documents/templates/documents/document_detail.html:95
 #: layers/templates/layers/layer_detail.html:160
@@ -969,7 +959,7 @@ msgstr "Kanał aktywności na"
 #: social/templates/social/activity_list.html:20
 #: templates/user_messages/inbox.html:16
 msgid "All"
-msgstr ""
+msgstr "Wszystko"
 
 #: groups/templates/groups/activity.html:25
 #: people/templates/people/_profile_filters.html:5
@@ -1132,16 +1122,14 @@ msgid "Most popular"
 msgstr "Najbardziej popularne"
 
 #: groups/templates/groups/group_members.html:8
-#, fuzzy
 msgid "Edit Members for"
-msgstr "Edycja dla szczegóły"
+msgstr ""
 
 #: groups/templates/groups/group_members.html:33
 #: groups/templates/groups/group_members.html:59
 #: groups/templates/groups/group_members.html:86
-#, fuzzy
 msgid "Remove"
-msgstr "Usuń grupę"
+msgstr "Usunąć"
 
 #: groups/templates/groups/group_members.html:37
 #: groups/templates/groups/group_members.html:63
@@ -1349,34 +1337,28 @@ msgid "You are attempting to replace a raster layer with a vector."
 msgstr ""
 
 #: layers/management/__init__.py:33
-#, fuzzy
 msgid "Layer Created"
-msgstr "Mapa Utworzono"
+msgstr ""
 
 #: layers/management/__init__.py:34
-#, fuzzy
 msgid "A Layer was created"
-msgstr "Mapa została stworzona"
+msgstr ""
 
 #: layers/management/__init__.py:37
-#, fuzzy
 msgid "Layer Updated"
-msgstr "Warstwa Dodane"
+msgstr ""
 
 #: layers/management/__init__.py:38
-#, fuzzy
 msgid "A Layer was updated"
-msgstr "Warstwa został przesłany"
+msgstr ""
 
 #: layers/management/__init__.py:41
-#, fuzzy
 msgid "Layer Deleted"
-msgstr "Warstwa Styl domyślny"
+msgstr ""
 
 #: layers/management/__init__.py:42
-#, fuzzy
 msgid "A Layer was deleted"
-msgstr "Warstwa został przesłany"
+msgstr ""
 
 #: layers/templates/layers/layer_change_poc.html:5
 msgid "Home"
@@ -1544,7 +1526,6 @@ msgstr ""
 "Szczegóły Edycja dla %(layer_title)s"
 
 #: layers/templates/layers/layer_metadata.html:23
-#, fuzzy
 msgid ""
 "Note: this layer's orginal metadata was populated by importing a metadata "
 "XML file.\n"
@@ -1552,10 +1533,6 @@ msgid ""
 "Dublin Core metadata elements.\n"
 "          Some of your original metadata may have been lost."
 msgstr ""
-"Uwaga: Ta warstwa jest oryginalna metadanych został zaludniony przez import "
-"pliku XML metadanych. Import metadanych GeoNode obsługuje podzbiór elementów "
-"metadanych ISO, FGDC i Dublin Core. Niektóre z oryginalnego metadanych mogły "
-"zostać utracone."
 
 #: layers/templates/layers/layer_metadata.html:37
 #: layers/templates/layers/layer_metadata.html:74 templates/_actions.html:5
@@ -1580,20 +1557,17 @@ msgid "Display Order"
 msgstr "Wyświetlacz Zamówienie"
 
 #: layers/templates/layers/layer_remove.html:9
-#, fuzzy
 msgid "Remove Layers"
-msgstr "Usuń tę warstwę"
+msgstr ""
 
 #: layers/templates/layers/layer_remove.html:14
-#, fuzzy, python-format
+#, python-format
 msgid ""
 "\n"
 "          Are you sure you want to remove <a href="
 "\"%(layer.get_absolute_url)s\">%(layer_title)s</a>?\n"
 "        "
 msgstr ""
-"\n"
-"Czy na pewno chcesz usunąć %(layer_title)s?"
 
 #: layers/templates/layers/layer_remove.html:30
 msgid "This action affects the following maps:"
@@ -2131,24 +2105,20 @@ msgid "A Map was created"
 msgstr "Mapa została stworzona"
 
 #: maps/management/__init__.py:37
-#, fuzzy
 msgid "Map Updated"
-msgstr "Mapa Utworzono"
+msgstr ""
 
 #: maps/management/__init__.py:38
-#, fuzzy
 msgid "A Map was updated"
-msgstr "Mapa została stworzona"
+msgstr ""
 
 #: maps/management/__init__.py:41
-#, fuzzy
 msgid "Map Deleted"
-msgstr "Mapa Utworzono"
+msgstr ""
 
 #: maps/management/__init__.py:42
-#, fuzzy
 msgid "A Map was deleted"
-msgstr "Mapa została stworzona"
+msgstr ""
 
 #: maps/management/__init__.py:45
 msgid "Comment on Map"
@@ -2460,9 +2430,8 @@ msgid "User following you"
 msgstr "Użytkownik po ciebie"
 
 #: people/management.py:33
-#, fuzzy
 msgid "Another user has started following you"
-msgstr "inny użytkownik rozpoczął za tobą"
+msgstr ""
 
 #: people/management.py:36
 msgid "User requested access"
@@ -2473,9 +2442,8 @@ msgid "A new user has requested access to the site"
 msgstr ""
 
 #: people/management.py:40
-#, fuzzy
 msgid "Account activated"
-msgstr "Ostatnia aktywność"
+msgstr ""
 
 #: people/management.py:41
 msgid "This account is now active and can log in the site"
@@ -2605,13 +2573,10 @@ msgid "Forgot Username"
 msgstr "Nie pamiętam nazwy użytkownika"
 
 #: people/templates/people/forgot_username_form.html:10
-#, fuzzy
 msgid ""
 "Enter your email address and click the submit button. <br />Your username "
 "will be sent to you."
 msgstr ""
-"Wpisz swój adres e-mail i kliknij przycisk Prześlij. Twoja nazwa użytkownika "
-"zostanie wysłane do Ciebie."
 
 #: people/templates/people/profile_create.html:8
 #: people/templates/people/profile_create.html:14
@@ -2623,9 +2588,8 @@ msgid "Profile of "
 msgstr "Profil"
 
 #: people/templates/people/profile_detail.html:19
-#, fuzzy
 msgid "Message User"
-msgstr "Wiadomość Skrzynka odbiorcza"
+msgstr ""
 
 #: people/templates/people/profile_detail.html:65
 msgid "Edit profile"
@@ -2648,9 +2612,8 @@ msgid "My Activities"
 msgstr "Moje działania"
 
 #: people/templates/people/profile_detail.html:77 templates/base.html:202
-#, fuzzy
 msgid "Notifications"
-msgstr "Rodzaj powiadomienia"
+msgstr ""
 
 #: people/templates/people/profile_detail.html:80 templates/500.html:80
 #: templates/base.html:205 templates/announcements/announcement_list.html:6
@@ -2757,9 +2720,8 @@ msgid "Service URL"
 msgstr "Adres URL usługi"
 
 #: services/forms.py:15
-#, fuzzy
 msgid "Service name"
-msgstr "Rodzaj usługi"
+msgstr ""
 
 #: services/forms.py:19
 msgid "Service Type"
@@ -2887,9 +2849,8 @@ msgid "Remove Service"
 msgstr "Usuń usługę"
 
 #: services/templates/services/service_edit.html:15
-#, fuzzy
 msgid "Edit Service"
-msgstr "Metadane usługi Edycja"
+msgstr ""
 
 #: services/templates/services/service_edit.html:21
 #: templates/announcements/announcement_form.html:27
@@ -2909,9 +2870,8 @@ msgid "Register a new Service"
 msgstr "Zarejestruj nowe usługi"
 
 #: services/templates/services/service_register.html:13
-#, fuzzy
 msgid "Register New Service"
-msgstr "Zarejestruj nowe usługi"
+msgstr ""
 
 #: services/templates/services/service_register.html:23
 msgid "Service has been created:"
@@ -2922,9 +2882,8 @@ msgid "The following layers will be imported"
 msgstr "Poniżej warstwy zostaną zaimportowane"
 
 #: services/templates/services/service_remove.html:8
-#, fuzzy
 msgid "Remove Remote Service"
-msgstr "Usuń usługę"
+msgstr ""
 
 #: services/templates/services/service_remove.html:12
 msgid "Are you sure you want to remove"
@@ -3104,9 +3063,8 @@ msgid "Ratings"
 msgstr "Oceny"
 
 #: templates/_actions.html:13
-#, fuzzy
 msgid "GeoGig"
-msgstr "GeoGit"
+msgstr ""
 
 #: templates/_bulk_permissions_form.html:9
 msgid "Set permissions on selected resources"
@@ -3130,9 +3088,8 @@ msgid "By"
 msgstr "Przez"
 
 #: templates/_comments.html:67
-#, fuzzy
 msgid "Submit Comment"
-msgstr "Prześlij Komentarze"
+msgstr ""
 
 #: templates/_permissions.html:8
 msgid "Who can view it?"
@@ -3198,9 +3155,8 @@ msgid "About GeoNode."
 msgstr "O GeoNode."
 
 #: templates/base.html:192
-#, fuzzy
 msgid "Profile Menu"
-msgstr "Profil"
+msgstr ""
 
 #: templates/base.html:258
 msgid "Type your search here ..."
@@ -3503,12 +3459,11 @@ msgstr "Nie"
 
 #: templates/index.html:30
 #: templates/notification/request_download_resourcebase/full.txt:7
-#, fuzzy
 msgid "Layer"
 msgid_plural "Layers"
-msgstr[0] "Warstwa"
-msgstr[1] "Warstwa"
-msgstr[2] "Warstwa"
+msgstr[0] ""
+msgstr[1] ""
+msgstr[2] ""
 
 #: templates/index.html:31
 msgid ""
@@ -3520,12 +3475,11 @@ msgstr ""
 "formatach."
 
 #: templates/index.html:36
-#, fuzzy
 msgid "Map"
 msgid_plural "Maps"
-msgstr[0] "Mapa"
-msgstr[1] "Mapa"
-msgstr[2] "Mapa"
+msgstr[0] ""
+msgstr[1] ""
+msgstr[2] ""
 
 #: templates/index.html:37
 msgid ""
@@ -3542,12 +3496,11 @@ msgstr "Tworzenie map"
 
 #: templates/index.html:43 templates/index.html.py:48
 #: templates/notification/account_approve/full.txt:1
-#, fuzzy
 msgid "User"
 msgid_plural "Users"
-msgstr[0] "Użytkownik"
-msgstr[1] "Użytkownik"
-msgstr[2] "Użytkownik"
+msgstr[0] ""
+msgstr[1] ""
+msgstr[2] ""
 
 #: templates/index.html:44 templates/index.html.py:49
 msgid ""
@@ -3576,9 +3529,8 @@ msgstr ""
 
 #: templates/account/email_confirmation_sent.html:6
 #: templates/account/email_confirmation_sent.html:9
-#, fuzzy
 msgid "Confirm your email address"
-msgstr "Potwierdź adres e-mail dla %(site_name)s"
+msgstr ""
 
 #: templates/account/email_confirmation_sent.html:11
 #, python-format
@@ -3612,23 +3564,18 @@ msgid "Password reset"
 msgstr "Resetowanie hasła"
 
 #: templates/account/password_reset.html:14
-#, fuzzy
 msgid "Password Reset"
-msgstr "Resetowanie hasła"
+msgstr ""
 
 #: templates/account/password_reset.html:18
-#, fuzzy
 msgid "Forgotten your password?"
-msgstr "Nie pamiętasz hasła?"
+msgstr ""
 
 #: templates/account/password_reset.html:19
-#, fuzzy
 msgid ""
 "Enter your email address below, and we'll send you an email allowing you to "
 "reset it."
 msgstr ""
-"Nie pamiętasz hasła? Wpisz swój adres e-mail poniżej, a my wyślemy Ci e-mail "
-"pozwala na je zresetować."
 
 #: templates/account/password_reset.html:25
 msgid "Reset my password"
@@ -3734,15 +3681,13 @@ msgid "Published From"
 msgstr "Opublikowane Od"
 
 #: templates/announcements/announcement_list.html:38
-#, fuzzy, python-format
+#, python-format
 msgid ""
 "\n"
 "          Published from <b>%(publish_start)s</b> to <b>%(publish_end)s</"
 "b>.\n"
 "          "
 msgstr ""
-"\n"
-"Publikuj <b>%(publish_start)s</b> do <b>%(publish_end)s</b>"
 
 #: templates/announcements/detail.html:4
 #, python-format
@@ -3771,9 +3716,8 @@ msgid "Choose new Default"
 msgstr "Wybierz nową domyślną"
 
 #: templates/avatar/change.html:23
-#, fuzzy
 msgid "Delete Your Avatar"
-msgstr "Usuwać swoich awatarów"
+msgstr ""
 
 #: templates/avatar/confirm_delete.html:6
 msgid "Please select the avatars that you would like to delete."
@@ -3843,9 +3787,8 @@ msgid "A user has requested access to the site"
 msgstr ""
 
 #: templates/notification/document_comment/full.txt:3
-#, fuzzy
 msgid "A comment has been posted for the document"
-msgstr "Nie masz uprawnień do tego dokumentu."
+msgstr ""
 
 #: templates/notification/document_comment/full.txt:3
 #: templates/notification/layer_comment/full.txt:3
@@ -3860,9 +3803,8 @@ msgid "You can visit the document's detail page here"
 msgstr ""
 
 #: templates/notification/document_comment/short.txt:3
-#, fuzzy
 msgid "A comment has been posted for a document"
-msgstr "Nie masz uprawnień do tego dokumentu."
+msgstr ""
 
 #: templates/notification/document_created/full.txt:3
 #: templates/notification/document_rated/full.txt:3
@@ -3871,24 +3813,20 @@ msgstr "Nie masz uprawnień do tego dokumentu."
 #: templates/notification/map_created/full.txt:3
 #: templates/notification/map_rated/full.txt:3
 #: templates/notification/request_download_resourcebase/full.txt:3
-#, fuzzy
 msgid "The user"
-msgstr "Wybierz użytkowników ..."
+msgstr ""
 
 #: templates/notification/document_created/full.txt:3
-#, fuzzy
 msgid "uploaded the following document"
-msgstr "Wymień ten dokument"
+msgstr ""
 
 #: templates/notification/document_created/short.txt:3
-#, fuzzy
 msgid "A document has been uploaded"
-msgstr "Warstwa został przesłany"
+msgstr ""
 
 #: templates/notification/document_deleted/full.txt:3
-#, fuzzy
 msgid "The following document was deleted"
-msgstr "Następujący użytkownicy:"
+msgstr ""
 
 #: templates/notification/document_deleted/full.txt:4
 #: templates/notification/document_rated/full.txt:6
@@ -3899,26 +3837,22 @@ msgstr "Następujący użytkownicy:"
 #: templates/notification/map_deleted/full.txt:4
 #: templates/notification/map_rated/full.txt:6
 #: templates/notification/map_updated/full.txt:4
-#, fuzzy
 msgid "owned by"
-msgstr "Wspierane przez"
+msgstr ""
 
 #: templates/notification/document_deleted/short.txt:3
-#, fuzzy
 msgid "A document has been deleted"
-msgstr "Serwis został stworzony:"
+msgstr ""
 
 #: templates/notification/document_rated/full.txt:4
 #: templates/notification/layer_rated/full.txt:4
 #: templates/notification/map_rated/full.txt:4
-#, fuzzy
 msgid "rated"
-msgstr "stworzony"
+msgstr ""
 
 #: templates/notification/document_rated/full.txt:5
-#, fuzzy
 msgid "the following document"
-msgstr "Następujący użytkownicy:"
+msgstr ""
 
 #: templates/notification/document_rated/full.txt:8
 #: templates/notification/layer_comment/full.txt:5
@@ -3929,74 +3863,60 @@ msgid "You can visit the layer's detail page here"
 msgstr ""
 
 #: templates/notification/document_rated/short.txt:3
-#, fuzzy
 msgid "A document has been rated"
-msgstr "Serwis został stworzony:"
+msgstr ""
 
 #: templates/notification/document_updated/full.txt:3
-#, fuzzy
 msgid "The following document was updated"
-msgstr "Następujący użytkownicy:"
+msgstr ""
 
 #: templates/notification/document_updated/short.txt:3
-#, fuzzy
 msgid "A document has been updated"
-msgstr "Serwis został stworzony:"
+msgstr ""
 
 #: templates/notification/layer_comment/full.txt:3
-#, fuzzy
 msgid "A comment has been posted for the layer"
-msgstr "Dokumenty związane z tą warstwą"
+msgstr ""
 
 #: templates/notification/layer_comment/short.txt:3
-#, fuzzy
 msgid "A comment has been posted for a layer"
-msgstr "Ocena została podana do warstwy"
+msgstr ""
 
 #: templates/notification/layer_created/full.txt:3
-#, fuzzy
 msgid "uploaded the following layer"
-msgstr "Mapa ta korzysta z następujących warstw:"
+msgstr ""
 
 #: templates/notification/layer_created/short.txt:3
-#, fuzzy
 msgid "A new layer has been uploaded"
-msgstr "Warstwa został przesłany"
+msgstr ""
 
 #: templates/notification/layer_deleted/full.txt:3
-#, fuzzy
 msgid "The following layer was deleted"
-msgstr "Poniżej warstwy zostaną zaimportowane"
+msgstr ""
 
 #: templates/notification/layer_deleted/short.txt:3
-#, fuzzy
 msgid "A layer has been deleted"
-msgstr "Warstwy skomentował"
+msgstr ""
 
 #: templates/notification/layer_rated/full.txt:5
-#, fuzzy
 msgid "the following layer"
-msgstr "Następujący użytkownicy:"
+msgstr ""
 
 #: templates/notification/layer_rated/short.txt:3
-#, fuzzy
 msgid "A layer has been rated"
-msgstr "Serwis został stworzony:"
+msgstr ""
 
 #: templates/notification/layer_updated/full.txt:3
-#, fuzzy
 msgid "The following layer was updated"
-msgstr "Poniżej warstwy zostaną zaimportowane"
+msgstr ""
 
 #: templates/notification/layer_updated/short.txt:3
-#, fuzzy
 msgid "A layer has been updated"
-msgstr "Warstwa został przesłany"
+msgstr ""
 
 #: templates/notification/map_comment/full.txt:3
-#, fuzzy
 msgid "A comment has been posted for the map"
-msgstr "Dokumenty związane z tej mapy"
+msgstr ""
 
 #: templates/notification/map_comment/full.txt:6
 #: templates/notification/map_created/full.txt:6
@@ -4010,54 +3930,44 @@ msgid "A comment has been posted for a map"
 msgstr ""
 
 #: templates/notification/map_created/full.txt:3
-#, fuzzy
 msgid "created the following map"
-msgstr "Działanie to ma wpływ na następujące mapy:"
+msgstr ""
 
 #: templates/notification/map_created/short.txt:3
-#, fuzzy
 msgid "A map has been created"
-msgstr "Mapa została stworzona"
+msgstr ""
 
 #: templates/notification/map_deleted/full.txt:3
-#, fuzzy
 msgid "The following map was deleted"
-msgstr "Poniżej warstwy zostaną zaimportowane"
+msgstr ""
 
 #: templates/notification/map_deleted/short.txt:3
-#, fuzzy
 msgid "A map has been deleted"
-msgstr "Mapa została skomentował"
+msgstr ""
 
 #: templates/notification/map_rated/full.txt:5
-#, fuzzy
 msgid "the following map"
-msgstr "Następujące grupy:"
+msgstr ""
 
 #: templates/notification/map_rated/short.txt:3
-#, fuzzy
 msgid "A map has been rated"
-msgstr "Mapa została stworzona"
+msgstr ""
 
 #: templates/notification/map_updated/full.txt:3
-#, fuzzy
 msgid "The following map was updated"
-msgstr "Poniżej warstwy zostaną zaimportowane"
+msgstr ""
 
 #: templates/notification/map_updated/short.txt:3
-#, fuzzy
 msgid "A map has been updated"
-msgstr "Mapa została stworzona"
+msgstr ""
 
 #: templates/notification/request_download_resourcebase/full.txt:3
-#, fuzzy
 msgid "requested you to download this resource"
-msgstr "partia, która jest właścicielem zasobu"
+msgstr ""
 
 #: templates/notification/request_download_resourcebase/full.txt:9
-#, fuzzy
 msgid "Document"
-msgstr "Dokumenty"
+msgstr ""
 
 #: templates/notification/request_download_resourcebase/full.txt:12
 msgid ""
@@ -4201,18 +4111,16 @@ msgstr "Usunąć?"
 
 #: templates/user_messages/_message_snippet.html:29
 #: templates/user_messages/thread_detail.html:14
-#, fuzzy
 msgid "me"
-msgstr "Dom"
+msgstr ""
 
 #: templates/user_messages/inbox.html:6
 msgid "Message Inbox"
 msgstr "Wiadomość Skrzynka odbiorcza"
 
 #: templates/user_messages/inbox.html:11
-#, fuzzy
 msgid "Messages"
-msgstr "Wiadomość Skrzynka odbiorcza"
+msgstr ""
 
 #: templates/user_messages/inbox.html:38
 #: templates/user_messages/message_create.html:6
@@ -4234,90 +4142,89 @@ msgid "Send Reply"
 msgstr "Wyślij odpowiedź"
 
 #~ msgid "Most shared"
-#~ msgstr "Najczęściej udostępniane"
+#~ msgstr "Most shared"
 
 #~ msgid "from"
-#~ msgstr "z"
+#~ msgstr "from"
 
 #~ msgid "view"
-#~ msgstr "widok"
+#~ msgstr "view"
 
 #~ msgid "Average rating"
-#~ msgstr "Średnia ocena"
+#~ msgstr "Average rating"
 
 #~ msgid "votes"
-#~ msgstr "głosów"
+#~ msgstr "votes"
 
 #~ msgid "You do not have permission to view this document"
-#~ msgstr "Nie masz dostępu do tego dokumentu"
+#~ msgstr "You do not have permission to view this document"
 
 #~ msgid "Remote Thumbnail"
-#~ msgstr "Zdalne Miniatura"
+#~ msgstr "Remote Thumbnail"
 
 #~ msgid "Thumbnail"
-#~ msgstr "Miniatura"
+#~ msgstr "Thumbnail"
 
 #~ msgid "Group details"
-#~ msgstr "Szczegóły grupowe"
+#~ msgstr "Group details"
 
 #~ msgid "Create a map"
-#~ msgstr "Tworzenie mapy"
+#~ msgstr "Create a map"
 
 #~ msgid "You do not have permission to view this layer"
-#~ msgstr "Nie masz dostępu do tej warstwy"
+#~ msgstr "You do not have permission to view this layer"
 
 #~ msgid "View"
-#~ msgstr "Widok"
+#~ msgstr "View"
 
 #~ msgid "You do not have permission to view this map"
-#~ msgstr "Nie masz dostępu do tej mapy"
+#~ msgstr "You do not have permission to view this map"
 
 #~ msgid "Add to Favorites"
-#~ msgstr "Dodaj do ulubionych"
+#~ msgstr "Add to Favorites"
 
 #~ msgid "Add a Comment"
-#~ msgstr "Dodaj komentarz"
+#~ msgstr "Add a Comment"
 
 #~ msgid "Notices"
-#~ msgstr "Zawiadomienia"
+#~ msgstr "Notices"
 
 #~ msgid "Notice settings"
-#~ msgstr "Ogłoszenie ustawienia"
+#~ msgstr "Notice settings"
 
 #~ msgid "Observed objects"
-#~ msgstr "Zaobserwowane obiekty"
+#~ msgstr "Observed objects"
 
 #~ msgid "Primary email"
-#~ msgstr "Podstawowy e-mail"
+#~ msgstr "Primary email"
 
 #~ msgid "change under <a href=\"%(email_url)s\">Account</a>"
-#~ msgstr "zmiany w ramach <a href=\"%(email_url)s\">Rachunku</a>"
+#~ msgstr "change under <a href=\"%(email_url)s\">Account</a>"
 
 #~ msgid "Note"
-#~ msgstr "Uwaga"
+#~ msgstr "Note"
 
 #~ msgid ""
 #~ "You do not have a verified email address to which notices can be sent. "
 #~ "You can add one by going to <a href=\"%(email_url)s\">Account</a>."
 #~ msgstr ""
-#~ "Nie masz zweryfikowanego adresu e-mail, do którego mogą być wysyłane "
-#~ "powiadomienia. Możesz dodać jeden, przechodząc do <a href=\"%(email_url)s"
-#~ "\">konta</a> ."
+#~ "You do not have a verified email address to which notices can be sent. "
+#~ "You can add one by going to <a href=\"%(email_url)s\">Account</a>."
 
 #~ msgid "Mark all unseen notices seen"
-#~ msgstr "Oznacz wszystkie niewidzialne powiadomienia widział"
+#~ msgstr "Mark all unseen notices seen"
 
 #~ msgid "MONTH_DAY_FORMAT"
 #~ msgstr "MONTH_DAY_FORMAT"
 
 #~ msgid "View Notice"
-#~ msgstr "Zobacz Zawiadomienie"
+#~ msgstr "View Notice"
 
 #~ msgid "No notices."
-#~ msgstr "Brak zawiadomienia."
+#~ msgstr "No notices."
 
 #~ msgid "Notice"
-#~ msgstr "Ogłoszenie"
+#~ msgstr "Notice"
 
 #~ msgid "you"
-#~ msgstr "ty"
+#~ msgstr "you"

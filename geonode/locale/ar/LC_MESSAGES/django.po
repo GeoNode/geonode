@@ -3,14 +3,15 @@
 # This file is distributed under the same license as the PACKAGE package.
 #
 # Translators:
+# Translators:
 # Andres Alfonso Lemon Gomez <lemon.andres@gmail.com>, 2014
 msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-02-03 05:20-0600\n"
-"PO-Revision-Date: 2014-11-15 18:41+0000\n"
-"Last-Translator: Andres Alfonso Lemon Gomez <lemon.andres@gmail.com>\n"
+"POT-Creation-Date: 2015-02-03 08:23-0600\n"
+"PO-Revision-Date: 2015-02-03 12:11+0000\n"
+"Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
 "Language-Team: Arabic (http://www.transifex.com/projects/p/geonode/language/"
 "ar/)\n"
 "Language: ar\n"
@@ -552,54 +553,44 @@ msgid "You are not allowed to edit this document."
 msgstr "لا يسمح لك لتحرير هذه الوثيقة."
 
 #: documents/management/__init__.py:14
-#, fuzzy
 msgid "Document Created"
-msgstr "وثائق تتعلق هذه الخريطة"
+msgstr ""
 
 #: documents/management/__init__.py:15
-#, fuzzy
 msgid "A Document was created"
-msgstr "تم إنشاء خريطة"
+msgstr ""
 
 #: documents/management/__init__.py:18
-#, fuzzy
 msgid "Document Updated"
-msgstr "الوثائق"
+msgstr ""
 
 #: documents/management/__init__.py:19
-#, fuzzy
 msgid "A Document was updated"
-msgstr "تم تحميله طبقة"
+msgstr ""
 
 #: documents/management/__init__.py:22
-#, fuzzy
 msgid "Document Deleted"
-msgstr "الوثائق"
+msgstr ""
 
 #: documents/management/__init__.py:23
-#, fuzzy
 msgid "A Document was deleted"
-msgstr "وترتبط هذه الوثيقة إلى"
+msgstr ""
 
 #: documents/management/__init__.py:26
-#, fuzzy
 msgid "Comment on Document"
-msgstr "التعليق على طبقة"
+msgstr ""
 
 #: documents/management/__init__.py:27
-#, fuzzy
 msgid "A Document was commented on"
-msgstr "وقد علق على خريطة"
+msgstr ""
 
 #: documents/management/__init__.py:30
-#, fuzzy
 msgid "Document for Map"
-msgstr "التعليق على خريطة"
+msgstr ""
 
 #: documents/management/__init__.py:31
-#, fuzzy
 msgid "A rating was given to a document"
-msgstr "وقدم تصنيف للخريطة"
+msgstr ""
 
 #: documents/templates/documents/document_detail.html:40
 msgid "External Resource"
@@ -624,9 +615,8 @@ msgstr "تحميل الوثيقة"
 
 #: documents/templates/documents/document_detail.html:90
 #: layers/templates/layers/layer_detail.html:131
-#, fuzzy
 msgid "Request Download"
-msgstr "تحميل"
+msgstr ""
 
 #: documents/templates/documents/document_detail.html:95
 #: layers/templates/layers/layer_detail.html:160
@@ -958,7 +948,7 @@ msgstr "النشاط تغذية ل"
 #: social/templates/social/activity_list.html:20
 #: templates/user_messages/inbox.html:16
 msgid "All"
-msgstr ""
+msgstr "جميع"
 
 #: groups/templates/groups/activity.html:25
 #: people/templates/people/_profile_filters.html:5
@@ -1120,16 +1110,14 @@ msgid "Most popular"
 msgstr "الأكثر شعبية"
 
 #: groups/templates/groups/group_members.html:8
-#, fuzzy
 msgid "Edit Members for"
-msgstr "تفاصيل التحرير ل"
+msgstr ""
 
 #: groups/templates/groups/group_members.html:33
 #: groups/templates/groups/group_members.html:59
 #: groups/templates/groups/group_members.html:86
-#, fuzzy
 msgid "Remove"
-msgstr "إزالة المجموعة"
+msgstr "نقل"
 
 #: groups/templates/groups/group_members.html:37
 #: groups/templates/groups/group_members.html:63
@@ -1334,34 +1322,28 @@ msgid "You are attempting to replace a raster layer with a vector."
 msgstr ""
 
 #: layers/management/__init__.py:33
-#, fuzzy
 msgid "Layer Created"
-msgstr "خريطة مكون"
+msgstr ""
 
 #: layers/management/__init__.py:34
-#, fuzzy
 msgid "A Layer was created"
-msgstr "تم إنشاء خريطة"
+msgstr ""
 
 #: layers/management/__init__.py:37
-#, fuzzy
 msgid "Layer Updated"
-msgstr "طبقة محملة"
+msgstr ""
 
 #: layers/management/__init__.py:38
-#, fuzzy
 msgid "A Layer was updated"
-msgstr "تم تحميله طبقة"
+msgstr ""
 
 #: layers/management/__init__.py:41
-#, fuzzy
 msgid "Layer Deleted"
-msgstr "طبقة الاستايل الافتراضي"
+msgstr ""
 
 #: layers/management/__init__.py:42
-#, fuzzy
 msgid "A Layer was deleted"
-msgstr "تم تحميله طبقة"
+msgstr ""
 
 #: layers/templates/layers/layer_change_poc.html:5
 msgid "Home"
@@ -1527,7 +1509,6 @@ msgstr ""
 "تفاصيل تحرير ل %(layer_title)s"
 
 #: layers/templates/layers/layer_metadata.html:23
-#, fuzzy
 msgid ""
 "Note: this layer's orginal metadata was populated by importing a metadata "
 "XML file.\n"
@@ -1535,9 +1516,6 @@ msgid ""
 "Dublin Core metadata elements.\n"
 "          Some of your original metadata may have been lost."
 msgstr ""
-"ملاحظة: تم بالسكان الفوقية الاصلي هذه الطبقة عن طريق استيراد ملف XML "
-"الفوقية. يدعم البيانات الوصفية استيراد GeoNode في مجموعة فرعية من عناصر "
-"البيانات الوصفية ISO، FGDC، ودبلن كور. بعض التعريف الأصلي قد ضاعت."
 
 #: layers/templates/layers/layer_metadata.html:37
 #: layers/templates/layers/layer_metadata.html:74 templates/_actions.html:5
@@ -1562,20 +1540,17 @@ msgid "Display Order"
 msgstr "ترتيب العرض"
 
 #: layers/templates/layers/layer_remove.html:9
-#, fuzzy
 msgid "Remove Layers"
-msgstr "إزالة هذه الطبقة"
+msgstr ""
 
 #: layers/templates/layers/layer_remove.html:14
-#, fuzzy, python-format
+#, python-format
 msgid ""
 "\n"
 "          Are you sure you want to remove <a href="
 "\"%(layer.get_absolute_url)s\">%(layer_title)s</a>?\n"
 "        "
 msgstr ""
-"\n"
-"هل أنت متأكد أنك تريد إزالة %(layer_title)sق؟"
 
 #: layers/templates/layers/layer_remove.html:30
 msgid "This action affects the following maps:"
@@ -2105,24 +2080,20 @@ msgid "A Map was created"
 msgstr "تم إنشاء خريطة"
 
 #: maps/management/__init__.py:37
-#, fuzzy
 msgid "Map Updated"
-msgstr "خريطة مكون"
+msgstr ""
 
 #: maps/management/__init__.py:38
-#, fuzzy
 msgid "A Map was updated"
-msgstr "تم إنشاء خريطة"
+msgstr ""
 
 #: maps/management/__init__.py:41
-#, fuzzy
 msgid "Map Deleted"
-msgstr "خريطة مكون"
+msgstr ""
 
 #: maps/management/__init__.py:42
-#, fuzzy
 msgid "A Map was deleted"
-msgstr "تم إنشاء خريطة"
+msgstr ""
 
 #: maps/management/__init__.py:45
 msgid "Comment on Map"
@@ -2428,9 +2399,8 @@ msgid "User following you"
 msgstr "المستخدم التالية لك"
 
 #: people/management.py:33
-#, fuzzy
 msgid "Another user has started following you"
-msgstr "وقد بدأت مستخدم آخر التالية لك"
+msgstr ""
 
 #: people/management.py:36
 msgid "User requested access"
@@ -2441,9 +2411,8 @@ msgid "A new user has requested access to the site"
 msgstr ""
 
 #: people/management.py:40
-#, fuzzy
 msgid "Account activated"
-msgstr "النشاط الأخير"
+msgstr ""
 
 #: people/management.py:41
 msgid "This account is now active and can log in the site"
@@ -2569,13 +2538,10 @@ msgid "Forgot Username"
 msgstr "نسيت اسم المستخدم"
 
 #: people/templates/people/forgot_username_form.html:10
-#, fuzzy
 msgid ""
 "Enter your email address and click the submit button. <br />Your username "
 "will be sent to you."
 msgstr ""
-"أدخل عنوان البريد الإلكتروني الخاص بك وانقر على زر إرسال. سيتم إرسال اسم "
-"المستخدم الخاص بك لك."
 
 #: people/templates/people/profile_create.html:8
 #: people/templates/people/profile_create.html:14
@@ -2587,9 +2553,8 @@ msgid "Profile of "
 msgstr "الملف الشخصى"
 
 #: people/templates/people/profile_detail.html:19
-#, fuzzy
 msgid "Message User"
-msgstr "رسالة البريد الوارد"
+msgstr ""
 
 #: people/templates/people/profile_detail.html:65
 msgid "Edit profile"
@@ -2612,9 +2577,8 @@ msgid "My Activities"
 msgstr "نشاطاتي"
 
 #: people/templates/people/profile_detail.html:77 templates/base.html:202
-#, fuzzy
 msgid "Notifications"
-msgstr "نوع الإخطار"
+msgstr ""
 
 #: people/templates/people/profile_detail.html:80 templates/500.html:80
 #: templates/base.html:205 templates/announcements/announcement_list.html:6
@@ -2721,9 +2685,8 @@ msgid "Service URL"
 msgstr "عنوان الخدمة"
 
 #: services/forms.py:15
-#, fuzzy
 msgid "Service name"
-msgstr "نوع الخدمة"
+msgstr ""
 
 #: services/forms.py:19
 msgid "Service Type"
@@ -2852,9 +2815,8 @@ msgid "Remove Service"
 msgstr "إزالة Service"
 
 #: services/templates/services/service_edit.html:15
-#, fuzzy
 msgid "Edit Service"
-msgstr "تحرير الخدمات الفوقية"
+msgstr ""
 
 #: services/templates/services/service_edit.html:21
 #: templates/announcements/announcement_form.html:27
@@ -2874,9 +2836,8 @@ msgid "Register a new Service"
 msgstr "تسجيل خدمة جديدة"
 
 #: services/templates/services/service_register.html:13
-#, fuzzy
 msgid "Register New Service"
-msgstr "تسجيل خدمة جديدة"
+msgstr ""
 
 #: services/templates/services/service_register.html:23
 msgid "Service has been created:"
@@ -2887,9 +2848,8 @@ msgid "The following layers will be imported"
 msgstr "سيتم استيراد الطبقات التالية"
 
 #: services/templates/services/service_remove.html:8
-#, fuzzy
 msgid "Remove Remote Service"
-msgstr "إزالة Service"
+msgstr ""
 
 #: services/templates/services/service_remove.html:12
 msgid "Are you sure you want to remove"
@@ -3068,9 +3028,8 @@ msgid "Ratings"
 msgstr "تصنيفات"
 
 #: templates/_actions.html:13
-#, fuzzy
 msgid "GeoGig"
-msgstr "GeoGit"
+msgstr ""
 
 #: templates/_bulk_permissions_form.html:9
 msgid "Set permissions on selected resources"
@@ -3094,9 +3053,8 @@ msgid "By"
 msgstr "بواسطة"
 
 #: templates/_comments.html:67
-#, fuzzy
 msgid "Submit Comment"
-msgstr "تقديم تعليقات"
+msgstr ""
 
 #: templates/_permissions.html:8
 msgid "Who can view it?"
@@ -3161,9 +3119,8 @@ msgid "About GeoNode."
 msgstr "حول GeoNode."
 
 #: templates/base.html:192
-#, fuzzy
 msgid "Profile Menu"
-msgstr "الملف الشخصي"
+msgstr ""
 
 #: templates/base.html:258
 msgid "Type your search here ..."
@@ -3463,15 +3420,14 @@ msgstr "لا"
 
 #: templates/index.html:30
 #: templates/notification/request_download_resourcebase/full.txt:7
-#, fuzzy
 msgid "Layer"
 msgid_plural "Layers"
-msgstr[0] "طبقة"
-msgstr[1] "طبقة"
-msgstr[2] "طبقة"
-msgstr[3] "طبقة"
-msgstr[4] "طبقة"
-msgstr[5] "طبقة"
+msgstr[0] ""
+msgstr[1] ""
+msgstr[2] ""
+msgstr[3] ""
+msgstr[4] ""
+msgstr[5] ""
 
 #: templates/index.html:31
 msgid ""
@@ -3482,15 +3438,14 @@ msgstr ""
 "والمصادر العامة. تحميل البيانات في النماذج القياسية."
 
 #: templates/index.html:36
-#, fuzzy
 msgid "Map"
 msgid_plural "Maps"
-msgstr[0] "خريطة"
-msgstr[1] "خريطة"
-msgstr[2] "خريطة"
-msgstr[3] "خريطة"
-msgstr[4] "خريطة"
-msgstr[5] "خريطة"
+msgstr[0] ""
+msgstr[1] ""
+msgstr[2] ""
+msgstr[3] ""
+msgstr[4] ""
+msgstr[5] ""
 
 #: templates/index.html:37
 msgid ""
@@ -3506,15 +3461,14 @@ msgstr "إنشاء خرائط"
 
 #: templates/index.html:43 templates/index.html.py:48
 #: templates/notification/account_approve/full.txt:1
-#, fuzzy
 msgid "User"
 msgid_plural "Users"
-msgstr[0] "المستخدم"
-msgstr[1] "المستخدم"
-msgstr[2] "المستخدم"
-msgstr[3] "المستخدم"
-msgstr[4] "المستخدم"
-msgstr[5] "المستخدم"
+msgstr[0] ""
+msgstr[1] ""
+msgstr[2] ""
+msgstr[3] ""
+msgstr[4] ""
+msgstr[5] ""
 
 #: templates/index.html:44 templates/index.html.py:49
 msgid ""
@@ -3543,9 +3497,8 @@ msgstr ""
 
 #: templates/account/email_confirmation_sent.html:6
 #: templates/account/email_confirmation_sent.html:9
-#, fuzzy
 msgid "Confirm your email address"
-msgstr "تأكيد عنوان البريد الإلكتروني ل %(site_name)s"
+msgstr ""
 
 #: templates/account/email_confirmation_sent.html:11
 #, python-format
@@ -3579,23 +3532,18 @@ msgid "Password reset"
 msgstr "إعادة تعيين كلمة المرور"
 
 #: templates/account/password_reset.html:14
-#, fuzzy
 msgid "Password Reset"
-msgstr "إعادة تعيين كلمة المرور"
+msgstr ""
 
 #: templates/account/password_reset.html:18
-#, fuzzy
 msgid "Forgotten your password?"
-msgstr "نسيت كلمة المرور؟"
+msgstr ""
 
 #: templates/account/password_reset.html:19
-#, fuzzy
 msgid ""
 "Enter your email address below, and we'll send you an email allowing you to "
 "reset it."
 msgstr ""
-"نسيت كلمة المرور؟ أدخل عنوان البريد الالكتروني أدناه، وسوف نرسل لك رسالة "
-"بالبريد الالكتروني مما يتيح لك إعادة تعيينها."
 
 #: templates/account/password_reset.html:25
 msgid "Reset my password"
@@ -3702,15 +3650,13 @@ msgid "Published From"
 msgstr "نشرت من"
 
 #: templates/announcements/announcement_list.html:38
-#, fuzzy, python-format
+#, python-format
 msgid ""
 "\n"
 "          Published from <b>%(publish_start)s</b> to <b>%(publish_end)s</"
 "b>.\n"
 "          "
 msgstr ""
-"\n"
-"نشرت <b>%(publish_start)s</b> إلى <b>%(publish_end)s</b>."
 
 #: templates/announcements/detail.html:4
 #, python-format
@@ -3739,9 +3685,8 @@ msgid "Choose new Default"
 msgstr "اختيار جديد افتراضي"
 
 #: templates/avatar/change.html:23
-#, fuzzy
 msgid "Delete Your Avatar"
-msgstr "حذف الآلهة الخاصة بك"
+msgstr ""
 
 #: templates/avatar/confirm_delete.html:6
 msgid "Please select the avatars that you would like to delete."
@@ -3811,9 +3756,8 @@ msgid "A user has requested access to the site"
 msgstr ""
 
 #: templates/notification/document_comment/full.txt:3
-#, fuzzy
 msgid "A comment has been posted for the document"
-msgstr "لم يكن لديك أذونات لهذه الوثيقة."
+msgstr ""
 
 #: templates/notification/document_comment/full.txt:3
 #: templates/notification/layer_comment/full.txt:3
@@ -3828,9 +3772,8 @@ msgid "You can visit the document's detail page here"
 msgstr ""
 
 #: templates/notification/document_comment/short.txt:3
-#, fuzzy
 msgid "A comment has been posted for a document"
-msgstr "لم يكن لديك أذونات لهذه الوثيقة."
+msgstr ""
 
 #: templates/notification/document_created/full.txt:3
 #: templates/notification/document_rated/full.txt:3
@@ -3839,24 +3782,20 @@ msgstr "لم يكن لديك أذونات لهذه الوثيقة."
 #: templates/notification/map_created/full.txt:3
 #: templates/notification/map_rated/full.txt:3
 #: templates/notification/request_download_resourcebase/full.txt:3
-#, fuzzy
 msgid "The user"
-msgstr "اختيار المستخدمين ..."
+msgstr ""
 
 #: templates/notification/document_created/full.txt:3
-#, fuzzy
 msgid "uploaded the following document"
-msgstr "استبدال هذه الوثيقة"
+msgstr ""
 
 #: templates/notification/document_created/short.txt:3
-#, fuzzy
 msgid "A document has been uploaded"
-msgstr "تم تحميله طبقة"
+msgstr ""
 
 #: templates/notification/document_deleted/full.txt:3
-#, fuzzy
 msgid "The following document was deleted"
-msgstr "المستخدمين التالية:"
+msgstr ""
 
 #: templates/notification/document_deleted/full.txt:4
 #: templates/notification/document_rated/full.txt:6
@@ -3867,26 +3806,22 @@ msgstr "المستخدمين التالية:"
 #: templates/notification/map_deleted/full.txt:4
 #: templates/notification/map_rated/full.txt:6
 #: templates/notification/map_updated/full.txt:4
-#, fuzzy
 msgid "owned by"
-msgstr "مدعوم من"
+msgstr ""
 
 #: templates/notification/document_deleted/short.txt:3
-#, fuzzy
 msgid "A document has been deleted"
-msgstr "تم إنشاء خدمة:"
+msgstr ""
 
 #: templates/notification/document_rated/full.txt:4
 #: templates/notification/layer_rated/full.txt:4
 #: templates/notification/map_rated/full.txt:4
-#, fuzzy
 msgid "rated"
-msgstr "خلق"
+msgstr ""
 
 #: templates/notification/document_rated/full.txt:5
-#, fuzzy
 msgid "the following document"
-msgstr "المستخدمين التالية:"
+msgstr ""
 
 #: templates/notification/document_rated/full.txt:8
 #: templates/notification/layer_comment/full.txt:5
@@ -3897,74 +3832,60 @@ msgid "You can visit the layer's detail page here"
 msgstr ""
 
 #: templates/notification/document_rated/short.txt:3
-#, fuzzy
 msgid "A document has been rated"
-msgstr "تم إنشاء خدمة:"
+msgstr ""
 
 #: templates/notification/document_updated/full.txt:3
-#, fuzzy
 msgid "The following document was updated"
-msgstr "المستخدمين التالية:"
+msgstr ""
 
 #: templates/notification/document_updated/short.txt:3
-#, fuzzy
 msgid "A document has been updated"
-msgstr "تم إنشاء خدمة:"
+msgstr ""
 
 #: templates/notification/layer_comment/full.txt:3
-#, fuzzy
 msgid "A comment has been posted for the layer"
-msgstr "الوثائق المتصلة بهذه الطبقة"
+msgstr ""
 
 #: templates/notification/layer_comment/short.txt:3
-#, fuzzy
 msgid "A comment has been posted for a layer"
-msgstr "وقدم تصنيف لطبقة"
+msgstr ""
 
 #: templates/notification/layer_created/full.txt:3
-#, fuzzy
 msgid "uploaded the following layer"
-msgstr "هذه الخريطة تستخدم الطبقات التالية:"
+msgstr ""
 
 #: templates/notification/layer_created/short.txt:3
-#, fuzzy
 msgid "A new layer has been uploaded"
-msgstr "تم تحميله طبقة"
+msgstr ""
 
 #: templates/notification/layer_deleted/full.txt:3
-#, fuzzy
 msgid "The following layer was deleted"
-msgstr "سيتم استيراد الطبقات التالية"
+msgstr ""
 
 #: templates/notification/layer_deleted/short.txt:3
-#, fuzzy
 msgid "A layer has been deleted"
-msgstr "وقد علق على طبقة"
+msgstr ""
 
 #: templates/notification/layer_rated/full.txt:5
-#, fuzzy
 msgid "the following layer"
-msgstr "المستخدمين التالية:"
+msgstr ""
 
 #: templates/notification/layer_rated/short.txt:3
-#, fuzzy
 msgid "A layer has been rated"
-msgstr "تم إنشاء خدمة:"
+msgstr ""
 
 #: templates/notification/layer_updated/full.txt:3
-#, fuzzy
 msgid "The following layer was updated"
-msgstr "سيتم استيراد الطبقات التالية"
+msgstr ""
 
 #: templates/notification/layer_updated/short.txt:3
-#, fuzzy
 msgid "A layer has been updated"
-msgstr "تم تحميله طبقة"
+msgstr ""
 
 #: templates/notification/map_comment/full.txt:3
-#, fuzzy
 msgid "A comment has been posted for the map"
-msgstr "وثائق تتعلق هذه الخريطة"
+msgstr ""
 
 #: templates/notification/map_comment/full.txt:6
 #: templates/notification/map_created/full.txt:6
@@ -3978,54 +3899,44 @@ msgid "A comment has been posted for a map"
 msgstr ""
 
 #: templates/notification/map_created/full.txt:3
-#, fuzzy
 msgid "created the following map"
-msgstr "هذا العمل يؤثر على الخرائط التالية:"
+msgstr ""
 
 #: templates/notification/map_created/short.txt:3
-#, fuzzy
 msgid "A map has been created"
-msgstr "تم إنشاء خريطة"
+msgstr ""
 
 #: templates/notification/map_deleted/full.txt:3
-#, fuzzy
 msgid "The following map was deleted"
-msgstr "سيتم استيراد الطبقات التالية"
+msgstr ""
 
 #: templates/notification/map_deleted/short.txt:3
-#, fuzzy
 msgid "A map has been deleted"
-msgstr "وقد علق على خريطة"
+msgstr ""
 
 #: templates/notification/map_rated/full.txt:5
-#, fuzzy
 msgid "the following map"
-msgstr "المجموعات التالية:"
+msgstr ""
 
 #: templates/notification/map_rated/short.txt:3
-#, fuzzy
 msgid "A map has been rated"
-msgstr "تم إنشاء خريطة"
+msgstr ""
 
 #: templates/notification/map_updated/full.txt:3
-#, fuzzy
 msgid "The following map was updated"
-msgstr "سيتم استيراد الطبقات التالية"
+msgstr ""
 
 #: templates/notification/map_updated/short.txt:3
-#, fuzzy
 msgid "A map has been updated"
-msgstr "تم إنشاء خريطة"
+msgstr ""
 
 #: templates/notification/request_download_resourcebase/full.txt:3
-#, fuzzy
 msgid "requested you to download this resource"
-msgstr "الحزب التي تملك المورد"
+msgstr ""
 
 #: templates/notification/request_download_resourcebase/full.txt:9
-#, fuzzy
 msgid "Document"
-msgstr "الوثائق"
+msgstr ""
 
 #: templates/notification/request_download_resourcebase/full.txt:12
 msgid ""
@@ -4169,18 +4080,16 @@ msgstr "حذف؟"
 
 #: templates/user_messages/_message_snippet.html:29
 #: templates/user_messages/thread_detail.html:14
-#, fuzzy
 msgid "me"
-msgstr "منزل"
+msgstr ""
 
 #: templates/user_messages/inbox.html:6
 msgid "Message Inbox"
 msgstr "رسالة البريد الوارد"
 
 #: templates/user_messages/inbox.html:11
-#, fuzzy
 msgid "Messages"
-msgstr "رسالة البريد الوارد"
+msgstr ""
 
 #: templates/user_messages/inbox.html:38
 #: templates/user_messages/message_create.html:6
@@ -4202,89 +4111,89 @@ msgid "Send Reply"
 msgstr "أرسل الرد"
 
 #~ msgid "Most shared"
-#~ msgstr "الأكثر مشاركة"
+#~ msgstr "Most shared"
 
 #~ msgid "from"
-#~ msgstr "من"
+#~ msgstr "from"
 
 #~ msgid "view"
-#~ msgstr "رأي"
+#~ msgstr "view"
 
 #~ msgid "Average rating"
-#~ msgstr "تصنيف متوسط"
+#~ msgstr "Average rating"
 
 #~ msgid "votes"
-#~ msgstr "الأصوات"
+#~ msgstr "votes"
 
 #~ msgid "You do not have permission to view this document"
-#~ msgstr "لم يكن لديك إذن لعرض هذا المستند"
+#~ msgstr "You do not have permission to view this document"
 
 #~ msgid "Remote Thumbnail"
-#~ msgstr "صورة مصغرة عن بعد"
+#~ msgstr "Remote Thumbnail"
 
 #~ msgid "Thumbnail"
-#~ msgstr "ظفر الإبهام"
+#~ msgstr "Thumbnail"
 
 #~ msgid "Group details"
-#~ msgstr "تفاصيل المجموعة"
+#~ msgstr "Group details"
 
 #~ msgid "Create a map"
-#~ msgstr "إنشاء خريطة"
+#~ msgstr "Create a map"
 
 #~ msgid "You do not have permission to view this layer"
-#~ msgstr "ليس لديك الصلاحية لدخول هذه الطبقة"
+#~ msgstr "You do not have permission to view this layer"
 
 #~ msgid "View"
-#~ msgstr "رأي"
+#~ msgstr "View"
 
 #~ msgid "You do not have permission to view this map"
-#~ msgstr "ليس لديك الصلاحية لدخول هذه الخريطة"
+#~ msgstr "You do not have permission to view this map"
 
 #~ msgid "Add to Favorites"
-#~ msgstr "أضف إلى المفضلة"
+#~ msgstr "Add to Favorites"
 
 #~ msgid "Add a Comment"
-#~ msgstr "إضافة تعليق"
+#~ msgstr "Add a Comment"
 
 #~ msgid "Notices"
-#~ msgstr "إشعارات"
+#~ msgstr "Notices"
 
 #~ msgid "Notice settings"
-#~ msgstr "إعدادات إشعار"
+#~ msgstr "Notice settings"
 
 #~ msgid "Observed objects"
-#~ msgstr "الأجسام المرصودة"
+#~ msgstr "Observed objects"
 
 #~ msgid "Primary email"
-#~ msgstr "البريد الإلكتروني الرئيسي"
+#~ msgstr "Primary email"
 
 #~ msgid "change under <a href=\"%(email_url)s\">Account</a>"
-#~ msgstr "التغيير تحت <a href=\"%(email_url)s\">حساب</a>"
+#~ msgstr "change under <a href=\"%(email_url)s\">Account</a>"
 
 #~ msgid "Note"
-#~ msgstr "مذكرة"
+#~ msgstr "Note"
 
 #~ msgid ""
 #~ "You do not have a verified email address to which notices can be sent. "
 #~ "You can add one by going to <a href=\"%(email_url)s\">Account</a>."
 #~ msgstr ""
-#~ "لم يكن لديك عنوان بريد إلكتروني التحقق التي إشعارات يمكن إرسالها. يمكنك "
-#~ "إضافة واحدة عن طريق الذهاب الى <a href=\"%(email_url)s\">الحساب</a> ."
+#~ "You do not have a verified email address to which notices can be sent. "
+#~ "You can add one by going to <a href=\"%(email_url)s\">Account</a>."
 
 #~ msgid "Mark all unseen notices seen"
-#~ msgstr "علامة جميع إشعارات الغيب ينظر"
+#~ msgstr "Mark all unseen notices seen"
 
 #~ msgid "MONTH_DAY_FORMAT"
 #~ msgstr "MONTH_DAY_FORMAT"
 
 #~ msgid "View Notice"
-#~ msgstr "عرض الإشعار"
+#~ msgstr "View Notice"
 
 #~ msgid "No notices."
-#~ msgstr "لا الإشعارات."
+#~ msgstr "No notices."
 
 #~ msgid "Notice"
-#~ msgstr "إشعار"
+#~ msgstr "Notice"
 
 #~ msgid "you"
-#~ msgstr "أنت"
+#~ msgstr "you"

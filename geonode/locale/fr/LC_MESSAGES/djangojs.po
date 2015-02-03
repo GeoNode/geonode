@@ -3,14 +3,15 @@
 # This file is distributed under the same license as the PACKAGE package.
 #
 # Translators:
-# Julien Collaer <julien.collaer@opengeode.be>, 2014
+# Translators:
+# Julien Collaer <julien.collaer@opengeode.be>, 2014-2015
 # Vincent BONNAL <vincent.bonnal@cirad.fr>, 2013-2014
 msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-02-03 05:20-0600\n"
-"PO-Revision-Date: 2014-11-12 08:27+0000\n"
+"POT-Creation-Date: 2015-02-03 08:21-0600\n"
+"PO-Revision-Date: 2015-02-03 14:19+0000\n"
 "Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
 "Language-Team: French (http://www.transifex.com/projects/p/geonode/language/"
 "fr/)\n"
@@ -62,9 +63,8 @@ msgstr "Qui peut gérer et modifier cette donnée?"
 
 #: static/geonode/js/search/search.js:298
 #: static_root/geonode/js/search/search.js:298
-#, fuzzy
 msgid "Enter your text here ..."
-msgstr "Entrez ici vos commentaires."
+msgstr "Entrer votre texte ici..."
 
 #: static/geonode/js/upload/FileType.js:33
 #: static_root/geonode/js/upload/FileType.js:33
@@ -162,9 +162,8 @@ msgstr "Couche chargée sur le serveur, configuration de GeoServer"
 
 #: static/geonode/js/upload/LayerInfo.js:422
 #: static_root/geonode/js/upload/LayerInfo.js:422
-#, fuzzy
 msgid "Select or create a Geogig repository."
-msgstr "Sélectionnez ou créer une base de référence Git."
+msgstr "Sélectionner ou créer une base de données Geogig."
 
 #: static/geonode/js/upload/LayerInfo.js:517
 #: static_root/admin/js/SelectFilter2.js:69
@@ -186,9 +185,9 @@ msgid "You are uploading an incomplete set of files."
 msgstr "Vous disposez d'un ensemble incomplet de fichiers."
 
 #: static_root/admin/js/SelectFilter2.js:45
-#, fuzzy, c-format
+#, c-format
 msgid "Available %s"
-msgstr "Couches disponibles"
+msgstr "Disponible %s"
 
 #: static_root/admin/js/SelectFilter2.js:46
 #, c-format
@@ -196,33 +195,37 @@ msgid ""
 "This is the list of available %s. You may choose some by selecting them in "
 "the box below and then clicking the \"Choose\" arrow between the two boxes."
 msgstr ""
+"Cette liste des tout les disponibles %s. Vous pouvez en choisir dans le "
+"cadre ci-dessous et ensuite cliquer sur la flèche \"Choisir\" pour les "
+"ajouter."
 
 #: static_root/admin/js/SelectFilter2.js:53
 #, c-format
 msgid "Type into this box to filter down the list of available %s."
 msgstr ""
+"Encoder dans le contrôle ci-dessous pour filtrer la liste des disponibles %s"
 
 #: static_root/admin/js/SelectFilter2.js:57
 msgid "Filter"
-msgstr ""
+msgstr "Filtrer"
 
 #: static_root/admin/js/SelectFilter2.js:61
 msgid "Choose all"
-msgstr ""
+msgstr "Choisir tous"
 
 #: static_root/admin/js/SelectFilter2.js:61
 #, c-format
 msgid "Click to choose all %s at once."
-msgstr ""
+msgstr "Cliquer pour choisir tout les %s à la fois."
 
 #: static_root/admin/js/SelectFilter2.js:67
 msgid "Choose"
-msgstr ""
+msgstr "Choisir"
 
 #: static_root/admin/js/SelectFilter2.js:75
 #, c-format
 msgid "Chosen %s"
-msgstr ""
+msgstr "Choisi %s"
 
 #: static_root/admin/js/SelectFilter2.js:76
 #, c-format
@@ -230,28 +233,32 @@ msgid ""
 "This is the list of chosen %s. You may remove some by selecting them in the "
 "box below and then clicking the \"Remove\" arrow between the two boxes."
 msgstr ""
+"C'est la liste des %s choisi. Vous pouvez les enlever en sélectionnant des "
+"entrée dans le dialogue ci-dessous et cliquer sur la flèche \"Supprimer\". "
 
 #: static_root/admin/js/SelectFilter2.js:80
-#, fuzzy
 msgid "Remove all"
-msgstr "Supprimer"
+msgstr "Supprimer tous"
 
 #: static_root/admin/js/SelectFilter2.js:80
 #, c-format
 msgid "Click to remove all chosen %s at once."
-msgstr ""
+msgstr "Cliquer pour enlever tout les %s choisi."
 
 #: static_root/admin/js/actions.js:18 static_root/admin/js/actions.min.js:1
 msgid "%(sel)s of %(cnt)s selected"
 msgid_plural "%(sel)s of %(cnt)s selected"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "%(sel)s de %(cnt)s sélectionné"
+msgstr[1] "%(sel)s de %(cnt)s sélectionnés"
 
 #: static_root/admin/js/actions.js:109 static_root/admin/js/actions.min.js:5
 msgid ""
 "You have unsaved changes on individual editable fields. If you run an "
 "action, your unsaved changes will be lost."
 msgstr ""
+"Vous avez des modifications non enregistrées sur des champs éditables. Si "
+"vous avez réalisé une autre action, vos changements non enregistrés seront "
+"perdus."
 
 #: static_root/admin/js/actions.js:121 static_root/admin/js/actions.min.js:5
 msgid ""
@@ -259,6 +266,9 @@ msgid ""
 "individual fields yet. Please click OK to save. You'll need to re-run the "
 "action."
 msgstr ""
+"Vous avez choisi une action, mais vous n'avez pas sauvegardé vos dernières "
+"modifications. S'il vous plait cliquer Ok pour les enregistrer. Vous devrez "
+"alors re-lancer l'action."
 
 #: static_root/admin/js/actions.js:123 static_root/admin/js/actions.min.js:6
 msgid ""
@@ -266,51 +276,54 @@ msgid ""
 "fields. You're probably looking for the Go button rather than the Save "
 "button."
 msgstr ""
+"Vous avez choisi une action, mais vous n'avez pas modifié de champs. Vous "
+"avez probablement confondu le bouton Go avec celui de sauvegarde?"
 
 #: static_root/admin/js/calendar.js:8
 msgid ""
 "January February March April May June July August September October November "
 "December"
 msgstr ""
+"Janvier Février Mars Avril Mai Juin Juillet Août Septembre Octobre Novembre "
+"Décembre"
 
 #: static_root/admin/js/calendar.js:9
 msgid "S M T W T F S"
-msgstr ""
+msgstr "D L M M J V S"
 
 #: static_root/admin/js/collapse.js:8 static_root/admin/js/collapse.js.c:19
 #: static_root/admin/js/collapse.min.js:1
-#, fuzzy
 msgid "Show"
 msgstr "Montrer"
 
 #: static_root/admin/js/collapse.js:16 static_root/admin/js/collapse.min.js:1
 msgid "Hide"
-msgstr ""
+msgstr "Cacher"
 
 #: static_root/admin/js/admin/DateTimeShortcuts.js:52
 #: static_root/admin/js/admin/DateTimeShortcuts.js:88
 msgid "Now"
-msgstr ""
+msgstr "Maintenant"
 
 #: static_root/admin/js/admin/DateTimeShortcuts.js:56
 msgid "Clock"
-msgstr ""
+msgstr "Heure"
 
 #: static_root/admin/js/admin/DateTimeShortcuts.js:84
 msgid "Choose a time"
-msgstr ""
+msgstr "Choisissez l'heure"
 
 #: static_root/admin/js/admin/DateTimeShortcuts.js:89
 msgid "Midnight"
-msgstr ""
+msgstr "Minuit"
 
 #: static_root/admin/js/admin/DateTimeShortcuts.js:90
 msgid "6 a.m."
-msgstr ""
+msgstr "06:00"
 
 #: static_root/admin/js/admin/DateTimeShortcuts.js:91
 msgid "Noon"
-msgstr ""
+msgstr "Midi"
 
 #: static_root/admin/js/admin/DateTimeShortcuts.js:95
 #: static_root/admin/js/admin/DateTimeShortcuts.js:208 templates/lang.js:9
@@ -321,19 +334,19 @@ msgstr "Annuler"
 #: static_root/admin/js/admin/DateTimeShortcuts.js:148
 #: static_root/admin/js/admin/DateTimeShortcuts.js:201
 msgid "Today"
-msgstr ""
+msgstr "Aujourd'hui"
 
 #: static_root/admin/js/admin/DateTimeShortcuts.js:152
 msgid "Calendar"
-msgstr ""
+msgstr "Calendrier"
 
 #: static_root/admin/js/admin/DateTimeShortcuts.js:199
 msgid "Yesterday"
-msgstr ""
+msgstr "Hier"
 
 #: static_root/admin/js/admin/DateTimeShortcuts.js:203
 msgid "Tomorrow"
-msgstr ""
+msgstr "Demain"
 
 #: templates/lang.js:10
 msgid "Save as Copy"
@@ -793,4 +806,4 @@ msgid "Please wait"
 msgstr "Patientez s'il vous plaît"
 
 #~ msgid "No error message supplied"
-#~ msgstr "Pas de message d'erreur spécifique"
+#~ msgstr "No error message supplied"

@@ -3,6 +3,7 @@
 # This file is distributed under the same license as the PACKAGE package.
 #
 # Translators:
+# Translators:
 # Andres Alfonso Lemon Gomez <lemon.andres@gmail.com>, 2014
 # aaizemberg <ariel.aizemberg@gmail.com>, 2013
 # aaizemberg <ariel.aizemberg@gmail.com>, 2013
@@ -19,9 +20,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-02-03 05:20-0600\n"
-"PO-Revision-Date: 2014-11-15 00:10+0000\n"
-"Last-Translator: Andres Alfonso Lemon Gomez <lemon.andres@gmail.com>\n"
+"POT-Creation-Date: 2015-02-03 08:23-0600\n"
+"PO-Revision-Date: 2015-02-03 12:11+0000\n"
+"Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
 "Language-Team: Spanish (http://www.transifex.com/projects/p/geonode/language/"
 "es/)\n"
 "Language: es\n"
@@ -572,54 +573,44 @@ msgid "You are not allowed to edit this document."
 msgstr "Usted no esta autorizado para editar este documento."
 
 #: documents/management/__init__.py:14
-#, fuzzy
 msgid "Document Created"
-msgstr "Documentos relacionados con este Mapa"
+msgstr ""
 
 #: documents/management/__init__.py:15
-#, fuzzy
 msgid "A Document was created"
-msgstr "Un Mapa fué creado"
+msgstr ""
 
 #: documents/management/__init__.py:18
-#, fuzzy
 msgid "Document Updated"
-msgstr "Documentos"
+msgstr ""
 
 #: documents/management/__init__.py:19
-#, fuzzy
 msgid "A Document was updated"
-msgstr "Una Capa fué subida"
+msgstr ""
 
 #: documents/management/__init__.py:22
-#, fuzzy
 msgid "Document Deleted"
-msgstr "Documentos"
+msgstr ""
 
 #: documents/management/__init__.py:23
-#, fuzzy
 msgid "A Document was deleted"
-msgstr "Este documento esta relacionado con "
+msgstr ""
 
 #: documents/management/__init__.py:26
-#, fuzzy
 msgid "Comment on Document"
-msgstr "Comentario sobre Capa"
+msgstr ""
 
 #: documents/management/__init__.py:27
-#, fuzzy
 msgid "A Document was commented on"
-msgstr "Un Mapa fue comentado"
+msgstr ""
 
 #: documents/management/__init__.py:30
-#, fuzzy
 msgid "Document for Map"
-msgstr "Comentar sobre Mapa"
+msgstr ""
 
 #: documents/management/__init__.py:31
-#, fuzzy
 msgid "A rating was given to a document"
-msgstr "Se calificó un Mapa"
+msgstr ""
 
 #: documents/templates/documents/document_detail.html:40
 msgid "External Resource"
@@ -644,9 +635,8 @@ msgstr "Descargar Documento"
 
 #: documents/templates/documents/document_detail.html:90
 #: layers/templates/layers/layer_detail.html:131
-#, fuzzy
 msgid "Request Download"
-msgstr "Descargar"
+msgstr ""
 
 #: documents/templates/documents/document_detail.html:95
 #: layers/templates/layers/layer_detail.html:160
@@ -984,7 +974,7 @@ msgstr "Canal de actividades de"
 #: social/templates/social/activity_list.html:20
 #: templates/user_messages/inbox.html:16
 msgid "All"
-msgstr ""
+msgstr "Todos los"
 
 #: groups/templates/groups/activity.html:25
 #: people/templates/people/_profile_filters.html:5
@@ -1148,16 +1138,14 @@ msgid "Most popular"
 msgstr "Más popular"
 
 #: groups/templates/groups/group_members.html:8
-#, fuzzy
 msgid "Edit Members for"
-msgstr "Edición de los detalles de "
+msgstr ""
 
 #: groups/templates/groups/group_members.html:33
 #: groups/templates/groups/group_members.html:59
 #: groups/templates/groups/group_members.html:86
-#, fuzzy
 msgid "Remove"
-msgstr "Remover Grupo"
+msgstr "Remover"
 
 #: groups/templates/groups/group_members.html:37
 #: groups/templates/groups/group_members.html:63
@@ -1366,34 +1354,28 @@ msgid "You are attempting to replace a raster layer with a vector."
 msgstr ""
 
 #: layers/management/__init__.py:33
-#, fuzzy
 msgid "Layer Created"
-msgstr "Mapa Creado"
+msgstr ""
 
 #: layers/management/__init__.py:34
-#, fuzzy
 msgid "A Layer was created"
-msgstr "Un Mapa fué creado"
+msgstr ""
 
 #: layers/management/__init__.py:37
-#, fuzzy
 msgid "Layer Updated"
-msgstr "Capa subida"
+msgstr ""
 
 #: layers/management/__init__.py:38
-#, fuzzy
 msgid "A Layer was updated"
-msgstr "Una Capa fué subida"
+msgstr ""
 
 #: layers/management/__init__.py:41
-#, fuzzy
 msgid "Layer Deleted"
-msgstr "Estilo de capa por defecto"
+msgstr ""
 
 #: layers/management/__init__.py:42
-#, fuzzy
 msgid "A Layer was deleted"
-msgstr "Una Capa fué subida"
+msgstr ""
 
 #: layers/templates/layers/layer_change_poc.html:5
 msgid "Home"
@@ -1564,7 +1546,6 @@ msgstr ""
 "      "
 
 #: layers/templates/layers/layer_metadata.html:23
-#, fuzzy
 msgid ""
 "Note: this layer's orginal metadata was populated by importing a metadata "
 "XML file.\n"
@@ -1572,10 +1553,6 @@ msgid ""
 "Dublin Core metadata elements.\n"
 "          Some of your original metadata may have been lost."
 msgstr ""
-"Nota: los metadatos originales de esta capa fueron cargados usando un "
-"archivo XML con metadatos. GeoNode soporta un subconjunto de los elementos "
-"de las especificaciones ISO, FGDC y Dublin Core. Parte de sus metadatos "
-"originales pueden perderse en el proceso. "
 
 #: layers/templates/layers/layer_metadata.html:37
 #: layers/templates/layers/layer_metadata.html:74 templates/_actions.html:5
@@ -1600,20 +1577,17 @@ msgid "Display Order"
 msgstr "Mostar Orden"
 
 #: layers/templates/layers/layer_remove.html:9
-#, fuzzy
 msgid "Remove Layers"
-msgstr "Eliminar esta Capa"
+msgstr ""
 
 #: layers/templates/layers/layer_remove.html:14
-#, fuzzy, python-format
+#, python-format
 msgid ""
 "\n"
 "          Are you sure you want to remove <a href="
 "\"%(layer.get_absolute_url)s\">%(layer_title)s</a>?\n"
 "        "
 msgstr ""
-"\n"
-"¿Está seguro de que desea eliminar %(layer_title)s?"
 
 #: layers/templates/layers/layer_remove.html:30
 msgid "This action affects the following maps:"
@@ -2163,24 +2137,20 @@ msgid "A Map was created"
 msgstr "Un Mapa fué creado"
 
 #: maps/management/__init__.py:37
-#, fuzzy
 msgid "Map Updated"
-msgstr "Mapa Creado"
+msgstr ""
 
 #: maps/management/__init__.py:38
-#, fuzzy
 msgid "A Map was updated"
-msgstr "Un Mapa fué creado"
+msgstr ""
 
 #: maps/management/__init__.py:41
-#, fuzzy
 msgid "Map Deleted"
-msgstr "Mapa Creado"
+msgstr ""
 
 #: maps/management/__init__.py:42
-#, fuzzy
 msgid "A Map was deleted"
-msgstr "Un Mapa fué creado"
+msgstr ""
 
 #: maps/management/__init__.py:45
 msgid "Comment on Map"
@@ -2499,9 +2469,8 @@ msgid "User following you"
 msgstr "Usuarios que lo siguen"
 
 #: people/management.py:33
-#, fuzzy
 msgid "Another user has started following you"
-msgstr "otro usuario ha comenzado a seguirlo"
+msgstr ""
 
 #: people/management.py:36
 msgid "User requested access"
@@ -2512,9 +2481,8 @@ msgid "A new user has requested access to the site"
 msgstr ""
 
 #: people/management.py:40
-#, fuzzy
 msgid "Account activated"
-msgstr "Reciente actividad "
+msgstr ""
 
 #: people/management.py:41
 msgid "This account is now active and can log in the site"
@@ -2645,13 +2613,10 @@ msgid "Forgot Username"
 msgstr "Olvido su Nombre de Usuario"
 
 #: people/templates/people/forgot_username_form.html:10
-#, fuzzy
 msgid ""
 "Enter your email address and click the submit button. <br />Your username "
 "will be sent to you."
 msgstr ""
-"Ingrese su dirección de correo electrónico y haga clic en el botón de envío. "
-"Su nombre de usuario será Enviado a Usted."
 
 #: people/templates/people/profile_create.html:8
 #: people/templates/people/profile_create.html:14
@@ -2663,9 +2628,8 @@ msgid "Profile of "
 msgstr "Perfil de"
 
 #: people/templates/people/profile_detail.html:19
-#, fuzzy
 msgid "Message User"
-msgstr "Bandeja de Entrada"
+msgstr ""
 
 #: people/templates/people/profile_detail.html:65
 msgid "Edit profile"
@@ -2688,9 +2652,8 @@ msgid "My Activities"
 msgstr "Mis Actividades"
 
 #: people/templates/people/profile_detail.html:77 templates/base.html:202
-#, fuzzy
 msgid "Notifications"
-msgstr "Tipo de Notificación"
+msgstr "Notificaciones"
 
 #: people/templates/people/profile_detail.html:80 templates/500.html:80
 #: templates/base.html:205 templates/announcements/announcement_list.html:6
@@ -2797,9 +2760,8 @@ msgid "Service URL"
 msgstr "Servicio URL"
 
 #: services/forms.py:15
-#, fuzzy
 msgid "Service name"
-msgstr "Tipo de Servicio"
+msgstr ""
 
 #: services/forms.py:19
 msgid "Service Type"
@@ -2930,9 +2892,8 @@ msgid "Remove Service"
 msgstr "Remover Servicio"
 
 #: services/templates/services/service_edit.html:15
-#, fuzzy
 msgid "Edit Service"
-msgstr "Editar Servicio de Metadatos"
+msgstr ""
 
 #: services/templates/services/service_edit.html:21
 #: templates/announcements/announcement_form.html:27
@@ -2953,9 +2914,8 @@ msgid "Register a new Service"
 msgstr "Registrar un nuevo Servicio"
 
 #: services/templates/services/service_register.html:13
-#, fuzzy
 msgid "Register New Service"
-msgstr "Registrar un nuevo Servicio"
+msgstr ""
 
 #: services/templates/services/service_register.html:23
 msgid "Service has been created:"
@@ -2966,9 +2926,8 @@ msgid "The following layers will be imported"
 msgstr "Las siguientes capas serán importadas"
 
 #: services/templates/services/service_remove.html:8
-#, fuzzy
 msgid "Remove Remote Service"
-msgstr "Remover Servicio"
+msgstr ""
 
 #: services/templates/services/service_remove.html:12
 msgid "Are you sure you want to remove"
@@ -3149,9 +3108,8 @@ msgid "Ratings"
 msgstr "Puntaje"
 
 #: templates/_actions.html:13
-#, fuzzy
 msgid "GeoGig"
-msgstr "GeoGit"
+msgstr ""
 
 #: templates/_bulk_permissions_form.html:9
 msgid "Set permissions on selected resources"
@@ -3175,9 +3133,8 @@ msgid "By"
 msgstr "Por"
 
 #: templates/_comments.html:67
-#, fuzzy
 msgid "Submit Comment"
-msgstr "Presentar Comentarios"
+msgstr ""
 
 #: templates/_permissions.html:8
 msgid "Who can view it?"
@@ -3243,9 +3200,8 @@ msgid "About GeoNode."
 msgstr "Acerca de GeoNode."
 
 #: templates/base.html:192
-#, fuzzy
 msgid "Profile Menu"
-msgstr "Perfil"
+msgstr ""
 
 #: templates/base.html:258
 msgid "Type your search here ..."
@@ -3260,7 +3216,6 @@ msgid "Useful information for developers interested in GeoNode."
 msgstr "Información útil para desarrolladores interesados en GeoNode."
 
 #: templates/developer.html:14
-#, fuzzy
 msgid ""
 "\n"
 "    <p><a href=\"http://geonode.org/\">GeoNode</a> is an open service built "
@@ -3347,94 +3302,6 @@ msgid ""
 "</p>\n"
 "    "
 msgstr ""
-"\n"
-"  <p><a href=\"http://geonode.org/\">GeoNode</a> es un servicio abierto "
-"construido sobre el software de código abierto. Le animamos a crear nuevas "
-"aplicaciones utilizando los elementos y recursos que proporciona. Esta "
-"página es un punto de partida para los desarrolladores interesantes para "
-"aprovechar plenamente de GeoNode. También incluye enlaces a código fuente "
-"del proyecto, de modo que cualquiera puede crear y personalizar su propio "
-"GeoNode.</p>\n"
-"\n"
-"  <h4>Software GeoNode</h4>\n"
-"\n"
-"  <p>Todo el código que se ejecuta GeoNode es de código abierto. El código "
-"está disponible en <a href=\"http://github.com/GeoNode/geonode\">http://"
-"github.com/GeoNode/geonode/</a>. El seguimiento de incidencias para el "
-"proyecto se encuentra en <a href=\"http://github.com/GeoNode/geonode/issues"
-"\">http://github.com/GeoNode/geonode/issues</a>.</p>\n"
-"\n"
-"  <p>GeoNode se construye a partir de varios proyectos de código abierto, "
-"cada uno con su propia comunidad. Si usted está interesado en aportar nuevas "
-"características a la GeoNode, os animamos a hacerlo, contribuyendo a uno de "
-"los proyectos sobre los que se construye:</p>\n"
-"  <ul>\n"
-"    <li><a href=\"http://geoext.org\">GeoExt</a> - Kit de herramientas "
-"JavaScript para aplicaciones de cartografía web</li>\n"
-"    <li><a href=\"http://geoserver.org\">GeoServer</a> - Servidor basado en "
-"estándares para la información geoespacial</li>\n"
-"    <li><a href=\"http://geowebcache.org\">GeoWebCache</a> - Caché de "
-"Teselas WMS </li><li><a href=\"http://openlayers.org\">OpenLayers</a> -  "
-"Biblioteca JavaScript que alimentan los mapas de GeoExt</li>\n"
-"    <li><a href=\"http://pycsw.org\">pycsw</a> - CSW Servidor de catálogo de "
-"metadatos</li>\n"
-"  </ul>\n"
-"\n"
-"  <h4>¿Qué significa usar los servicios OGC?</h4>\n"
-"  <p>que los datos en esta aplicación se sirve utilizando estándares "
-"abiertos aprobados por el <a href=\"http://opengeospatial.org/\">Open "
-"Geospatial Consortium</a>; en particular, WMS (Web Map Service) se utiliza "
-"para acceder mapas , WFS (Web Feature Service) se utiliza para acceder a "
-"datos de vectores, and WCS (Web Coverage Service) se utiliza para acceder a "
-"datos de trama o raster.  WMC (Web Map Context Documents) se utiliza para el "
-"intercambio de mapas. Usted puede utilizar estos servicios en sus propias "
-"aplicaciones utilizando las bibliotecas como OpenLayers, GeoTools y OGR "
-"(todos los cuales son software de código abierto y disponible sin costo de "
-"licencia o uso)</p>\n"
-"\n"
-"  <h4>¿Qué es GeoWebCache?</h4>\n"
-"  <p>GeoWebCache proporciona teselas que son compatibles con un número de "
-"motores de mapeo, incluyendo Google Maps, Bing Maps y OpenLayers. Todos los "
-"datos alojados por GeoNode también está disponible a través de GeoWebCache. "
-"GeoWebCache mejora en WMS al almacenar en caché los datos y proporcionar a "
-"los mapas mayor capacidad de respuesta.</p>\n"
-"\n"
-"  <h4>Ejemplo de código OpenLayers</h4>\n"
-"\n"
-"  <p>Para utilizar una capa de mapa GeoNode con  OpenLayers, primero hay que "
-"encontrar el nombre de esa capa. Esto se encuentra en la capa de <code>name</"
-"code> field (no <code>title</code>) de la lista de capas. \n"
-"Para este ejemplo, vamos a utilizar la capa de límites  políticos "
-"nicaragüenses, cuyo nombre es<code>risk:nicaragua_admin</code>. A "
-"continuación, cree una instancia de OpenLayers.Layer.WMS:</p>\n"
-"  <p><code>var geonodeLayer = new OpenLayers.Layer.WMS(\"GeoNode Risk Data"
-"\", \"http://demo.geonode.org/geoserver/wms\",{ layers: \"risk:"
-"nicaragua_admin\" });</code></p>\n"
-"\n"
-"  <h4>Ejemplo de Código Google Maps</h4>\n"
-"  <p>Para incluir una capa de mapa GeoNode en un mapa de Google ,incluya el "
-"nombre de la capa en la plantilla URL.</p>\n"
-"  <p><code>var tilelayer =  new GTileLayer(null, null, null, "
-"{tileUrlTemplate: 'http://demo.geonode.org/geoserver/gwc/service/gmaps?"
-"layers=risk:nicaragua_admin&#38;zoom={Z}&#38;x={X}&#38;y={Y}', isPng:true, "
-"opacity:0.5 } );</code></p>\n"
-"\n"
-"  <h4>Salida cómo Shapefile/GeoJSON/GML </h4>\n"
-"  <p>Para obtener los datos de los servicios web GeoNode utilizan el "
-"protocolo WFS. Por ejemplo, para obtener el límites de administración "
-"nicaragüense use:</p>\n"
-"  <p><code>http://demo.geonode.org/geoserver/wfs?request=GetFeature&#38;"
-"typeName=risk:nicaragua_admin&#38;outputformat=SHAPE-ZIP</code></p>\n"
-"  <p>Cambio de formato de salida a <code>json</code>, <code>GML2</code>, "
-"<code>GML3</code>, o <code>csv</code> \n"
-"obtendrá datos en estos formatos. El protocolo WFS también puede manejar "
-"consultas más precisas, especificando un cuadro delimitador o varios filtros "
-"espaciales y no espaciales basados ​​en los atributos de los datos.</p>\n"
-"\n"
-"  <h4> Ejemplo de Código GeoTools </h4>\n"
-"  <p>Crear un almacén de datos y extrae un tipo de entidad  que, a "
-"continuación, ejecutar una consulta. Todo está documentado en la wiki en "
-"<code>http://geotools.org/</code>.</p>\n"
 
 #: templates/developer.html:55
 msgid "GeoNode's Web Services"
@@ -3481,7 +3348,6 @@ msgstr ""
 "usar los vínculos de la barra lateral para ir hacia lo que quieras conocer."
 
 #: templates/help.html:14
-#, fuzzy
 msgid ""
 "\n"
 "    <p>The GeoNode provides access to data sets and a map editing "
@@ -3570,94 +3436,6 @@ msgid ""
 "<a href=\"/maps\">Maps</a> tab.</p> \n"
 "    "
 msgstr ""
-"\n"
-"<p>GeoNode provee acceso a un conjunto de datos y una aplicación para la "
-"edición de mapas que permite a los usuarios navegar por mapas existentes y "
-"contribuir sus propios mapas.</p>\n"
-"\n"
-"<h4 id=\"browsing-data\">Búsqueda de Datos</h4>\n"
-"<p>El tab de <a href=\"data\">Datos</a> le permite ver los datos cargados en "
-"este GeoNode.</p>\n"
-"<p>Todos lo datos pueden ser descargados en varios formatos para usarlos en "
-"otras aplicaciones.</p>\n"
-"\n"
-"<h4 id=\"developer-access\">Acceso a Desarrolladores</h4>\n"
-"<p>La página <a href=\"developer\">Desarrollador</a> es un lugar para que "
-"los desarrolladores comiencen a crear aplicaciones con GeoNode. Incluye "
-"instrucciones sobre cómo utilizar los servicios web, enlaces al código "
-"fuente de GeoNode e información sobre los proyectos de código abierto "
-"utilizados.</p>\n"
-"\n"
-"<h4 id=\"browsing-maps\">Exploracion de mapas</h4>\n"
-"<p>El GeoNode permite a los usuarios crear y compartir mapas con otros.</p>\n"
-"<p> El tab de <a href=\"maps\">Mapas</a> es un puente de enlace a la "
-"exploración de mapas en GeoNode. Desde aquí puedes <strong>buscar un mapa</"
-"strong> o <strong>crear un mapa</strong>, el cual abrirá el <a href=\"maps/"
-"new\">Editor de Mapas</a>.</p>\n"
-"<h5>Modo Google Earth</h5>\n"
-"<p> Cualquier mapa en el editor de mapas interactivo, puede ser visto en "
-"modo 3D con el plugin de Google Earth. Para cambiar a modo 3D, selecciona el "
-"logo del globo de Google Earth, el botón que está a la derecha en la barra "
-"de herramientas. Si no tienes el plugin de Google Earth instalado, te pedirá "
-"que lo instales. </p>\n"
-"\n"
-"<h4 id=\"creating-a-map\">Creando un Mapa</h4>\n"
-"<p> Para crear un mapa ve al tab de <a href=\"map\">Mapas</a> Contribuidos y "
-"dale click al link <a href=\"maps/new\">Crea tu propio mapa</a>. Esto te "
-"llevará al  <a href=\"maps/new\">Editor de Mapas</a> con una capa base "
-"cargada.</p>\n"
-"<p>Para agregar capas de datos desde GeoNode, has click en el botón verde "
-"con el signo más, localizado debajo del tab de Datos del lado izquierdo de "
-"la pantalla. Esto abrirá un cuadro de diálogo con todas las capas "
-"disponibles en GeoNode.</p>\n"
-"<p>Para agregar capas a tu mapa, selecciónalas y  dale click al botón de "
-"<strong>Agregar Capas</strong>. Cuando finalices dale click a <strong>Hecho</"
-"strong> para cerrar el dialogo y volver a el mapa.</p>\n"
-"\n"
-"<h5>Reorganizando y Removiendo capas</h5>\n"
-"<p>Cambia el orden de visualización de las capas listadas en el tab de "
-"datos, simplemente arrastrando sus nombres. El orden en el mapa será "
-"actualizado para reflejar el cambio. Para apagar la visibilidad de una capa, "
-"simplemente deselecionala, y para removerla completamente, seleccionala y "
-"dale click al signo rojo de sustracción. </p>\n"
-"\n"
-"<h5>Guardando tu mapa</h5>\n"
-"<p>Una vez que se ha definido un conjunto adecuado de capas y niveles de "
-"zoom, es hora de guardar el mapa para que otros puedan verlo. Haz click en "
-"el botón Guardar --el ícono que se encuentra a la izquierda en la barra de "
-"herramientas, una imagen de un mapa con un disco-- y llena el título y un "
-"resumen del mapa </p>\n"
-"\n"
-"<h4 id=\"exporting-a-map\">Exportando un Mapa</h4>\n"
-"<p>Cualquier mapa de GeoNode puede ser embebido para su uso en otro sitio o "
-"blog. Para exportar un mapa: <p>\n"
-"<ol>\n"
-"<li>Seleccionalo en la lista de mapas y haz click en el botón 'Exportar "
-"mapa'</li>\n"
-"<li>Escoge la altura y ancho deseados del widget en el asistente.</li>\n"
-"<li>Copia el código HTML proporcionado por el asistente a cualquier página "
-"HTML o entrada de un blog </li>\n"
-"</ol>\n"
-"<p> Esto pondrá un widget interactivo mostrándote el mapa en la página web o "
-"blog.</p>\n"
-"<p>Nota que el <a href=\"maps/new\">Editor de Mapas</a> tiene un botón para "
-"exportar el mapa. Sólo asegúrate de guardar el mapa antes de exportarlo si "
-"hay cambios que quieres que otros vean. Se exporta la última versión "
-"guardada, no la última versión vista. </p>\n"
-"\n"
-"<h4 id=\"remixing-a-map\">Reutilizar un Mapa</h4>\n"
-"<p>Cualquier mapa disponible puede servir como punto de partida para un "
-"nuevo mapa</p>\n"
-"<ol>\n"
-"<li>Abrir el mapa en el Editor de Mapas. </li>\n"
-"<li>Agregar y remover capas. </li>\n"
-"<li>Pan y zoom para resaltar el área de interés </li>\n"
-"<li><strong>IMPORTANTE:</strong> Actualiza el título, resumen, contacto y "
-"tags para el nuevo mapa. </li>\n"
-"<li>Guardar el mapa</li>\n"
-"</ol>\n"
-"<p>Podrás ver tu nuevo mapa, cuando lo busques desde el tab de <a href=\"maps"
-"\">Mapas</a>. </p>"
 
 #: templates/help.html:66
 msgid "Sections"
@@ -3726,11 +3504,10 @@ msgstr "No"
 
 #: templates/index.html:30
 #: templates/notification/request_download_resourcebase/full.txt:7
-#, fuzzy
 msgid "Layer"
 msgid_plural "Layers"
-msgstr[0] "Capa"
-msgstr[1] "Capa"
+msgstr[0] ""
+msgstr[1] ""
 
 #: templates/index.html:31
 msgid ""
@@ -3741,11 +3518,10 @@ msgstr ""
 "organizaciones y fuentes públicas. Descargar datos en formatos estándar."
 
 #: templates/index.html:36
-#, fuzzy
 msgid "Map"
 msgid_plural "Maps"
-msgstr[0] "Mapa"
-msgstr[1] "Mapa"
+msgstr[0] ""
+msgstr[1] ""
 
 #: templates/index.html:37
 msgid ""
@@ -3762,11 +3538,10 @@ msgstr "Crear mapas"
 
 #: templates/index.html:43 templates/index.html.py:48
 #: templates/notification/account_approve/full.txt:1
-#, fuzzy
 msgid "User"
 msgid_plural "Users"
-msgstr[0] "Usuario"
-msgstr[1] "Usuario"
+msgstr[0] ""
+msgstr[1] ""
 
 #: templates/index.html:44 templates/index.html.py:49
 msgid ""
@@ -3795,9 +3570,8 @@ msgstr ""
 
 #: templates/account/email_confirmation_sent.html:6
 #: templates/account/email_confirmation_sent.html:9
-#, fuzzy
 msgid "Confirm your email address"
-msgstr "Confirmar dirección de correo electrónico para %(site_name)s"
+msgstr ""
 
 #: templates/account/email_confirmation_sent.html:11
 #, python-format
@@ -3831,24 +3605,18 @@ msgid "Password reset"
 msgstr "Restablecer contraseña"
 
 #: templates/account/password_reset.html:14
-#, fuzzy
 msgid "Password Reset"
-msgstr "Restablecer contraseña"
+msgstr ""
 
 #: templates/account/password_reset.html:18
-#, fuzzy
 msgid "Forgotten your password?"
-msgstr "¿Olvidó la contraseña?"
+msgstr ""
 
 #: templates/account/password_reset.html:19
-#, fuzzy
 msgid ""
 "Enter your email address below, and we'll send you an email allowing you to "
 "reset it."
 msgstr ""
-"¿Olvidó la contraseña? Ingrese su dirección de correo electrónico a "
-"continuación y le enviaremos un correo electrónico autorizándole a "
-"restablecerla."
 
 #: templates/account/password_reset.html:25
 msgid "Reset my password"
@@ -3960,15 +3728,13 @@ msgid "Published From"
 msgstr "Publicado desde"
 
 #: templates/announcements/announcement_list.html:38
-#, fuzzy, python-format
+#, python-format
 msgid ""
 "\n"
 "          Published from <b>%(publish_start)s</b> to <b>%(publish_end)s</"
 "b>.\n"
 "          "
 msgstr ""
-"\n"
-"Publicado de <b>%(publish_start)s</b> para <b>%(publish_end)s</b>."
 
 #: templates/announcements/detail.html:4
 #, python-format
@@ -3997,9 +3763,8 @@ msgid "Choose new Default"
 msgstr "Elige nuevo Default"
 
 #: templates/avatar/change.html:23
-#, fuzzy
 msgid "Delete Your Avatar"
-msgstr "Eliminar su avatar"
+msgstr ""
 
 #: templates/avatar/confirm_delete.html:6
 msgid "Please select the avatars that you would like to delete."
@@ -4069,9 +3834,8 @@ msgid "A user has requested access to the site"
 msgstr ""
 
 #: templates/notification/document_comment/full.txt:3
-#, fuzzy
 msgid "A comment has been posted for the document"
-msgstr "Usted no tiene permisos para acceder a este documento."
+msgstr ""
 
 #: templates/notification/document_comment/full.txt:3
 #: templates/notification/layer_comment/full.txt:3
@@ -4086,9 +3850,8 @@ msgid "You can visit the document's detail page here"
 msgstr ""
 
 #: templates/notification/document_comment/short.txt:3
-#, fuzzy
 msgid "A comment has been posted for a document"
-msgstr "Usted no tiene permisos para acceder a este documento."
+msgstr ""
 
 #: templates/notification/document_created/full.txt:3
 #: templates/notification/document_rated/full.txt:3
@@ -4097,24 +3860,20 @@ msgstr "Usted no tiene permisos para acceder a este documento."
 #: templates/notification/map_created/full.txt:3
 #: templates/notification/map_rated/full.txt:3
 #: templates/notification/request_download_resourcebase/full.txt:3
-#, fuzzy
 msgid "The user"
-msgstr "Escoger usuarios..."
+msgstr ""
 
 #: templates/notification/document_created/full.txt:3
-#, fuzzy
 msgid "uploaded the following document"
-msgstr "Remplazar este documento"
+msgstr ""
 
 #: templates/notification/document_created/short.txt:3
-#, fuzzy
 msgid "A document has been uploaded"
-msgstr "Una Capa fué subida"
+msgstr ""
 
 #: templates/notification/document_deleted/full.txt:3
-#, fuzzy
 msgid "The following document was deleted"
-msgstr "Los siguientes usuarios:"
+msgstr ""
 
 #: templates/notification/document_deleted/full.txt:4
 #: templates/notification/document_rated/full.txt:6
@@ -4125,26 +3884,22 @@ msgstr "Los siguientes usuarios:"
 #: templates/notification/map_deleted/full.txt:4
 #: templates/notification/map_rated/full.txt:6
 #: templates/notification/map_updated/full.txt:4
-#, fuzzy
 msgid "owned by"
-msgstr "Proporcionado por:"
+msgstr ""
 
 #: templates/notification/document_deleted/short.txt:3
-#, fuzzy
 msgid "A document has been deleted"
-msgstr "Servicio ha sido creado:"
+msgstr ""
 
 #: templates/notification/document_rated/full.txt:4
 #: templates/notification/layer_rated/full.txt:4
 #: templates/notification/map_rated/full.txt:4
-#, fuzzy
 msgid "rated"
-msgstr "creado"
+msgstr ""
 
 #: templates/notification/document_rated/full.txt:5
-#, fuzzy
 msgid "the following document"
-msgstr "Los siguientes usuarios:"
+msgstr ""
 
 #: templates/notification/document_rated/full.txt:8
 #: templates/notification/layer_comment/full.txt:5
@@ -4155,74 +3910,60 @@ msgid "You can visit the layer's detail page here"
 msgstr ""
 
 #: templates/notification/document_rated/short.txt:3
-#, fuzzy
 msgid "A document has been rated"
-msgstr "Servicio ha sido creado:"
+msgstr ""
 
 #: templates/notification/document_updated/full.txt:3
-#, fuzzy
 msgid "The following document was updated"
-msgstr "Los siguientes usuarios:"
+msgstr ""
 
 #: templates/notification/document_updated/short.txt:3
-#, fuzzy
 msgid "A document has been updated"
-msgstr "Servicio ha sido creado:"
+msgstr ""
 
 #: templates/notification/layer_comment/full.txt:3
-#, fuzzy
 msgid "A comment has been posted for the layer"
-msgstr "Documentos relacionados con esta Capa"
+msgstr ""
 
 #: templates/notification/layer_comment/short.txt:3
-#, fuzzy
 msgid "A comment has been posted for a layer"
-msgstr "Se ha dado una clasificación a una Capa"
+msgstr ""
 
 #: templates/notification/layer_created/full.txt:3
-#, fuzzy
 msgid "uploaded the following layer"
-msgstr "Este mapa utiliza las siguientes capas:"
+msgstr ""
 
 #: templates/notification/layer_created/short.txt:3
-#, fuzzy
 msgid "A new layer has been uploaded"
-msgstr "Una Capa fué subida"
+msgstr ""
 
 #: templates/notification/layer_deleted/full.txt:3
-#, fuzzy
 msgid "The following layer was deleted"
-msgstr "Las siguientes capas serán importadas"
+msgstr ""
 
 #: templates/notification/layer_deleted/short.txt:3
-#, fuzzy
 msgid "A layer has been deleted"
-msgstr "Una Capa ha sido comentada"
+msgstr ""
 
 #: templates/notification/layer_rated/full.txt:5
-#, fuzzy
 msgid "the following layer"
-msgstr "Los siguientes usuarios:"
+msgstr ""
 
 #: templates/notification/layer_rated/short.txt:3
-#, fuzzy
 msgid "A layer has been rated"
-msgstr "Servicio ha sido creado:"
+msgstr ""
 
 #: templates/notification/layer_updated/full.txt:3
-#, fuzzy
 msgid "The following layer was updated"
-msgstr "Las siguientes capas serán importadas"
+msgstr ""
 
 #: templates/notification/layer_updated/short.txt:3
-#, fuzzy
 msgid "A layer has been updated"
-msgstr "Una Capa fué subida"
+msgstr ""
 
 #: templates/notification/map_comment/full.txt:3
-#, fuzzy
 msgid "A comment has been posted for the map"
-msgstr "Documentos relacionados con este Mapa"
+msgstr ""
 
 #: templates/notification/map_comment/full.txt:6
 #: templates/notification/map_created/full.txt:6
@@ -4236,54 +3977,44 @@ msgid "A comment has been posted for a map"
 msgstr ""
 
 #: templates/notification/map_created/full.txt:3
-#, fuzzy
 msgid "created the following map"
-msgstr "Esta acción afecta los siguientes mapas:"
+msgstr ""
 
 #: templates/notification/map_created/short.txt:3
-#, fuzzy
 msgid "A map has been created"
-msgstr "Un Mapa fué creado"
+msgstr ""
 
 #: templates/notification/map_deleted/full.txt:3
-#, fuzzy
 msgid "The following map was deleted"
-msgstr "Las siguientes capas serán importadas"
+msgstr ""
 
 #: templates/notification/map_deleted/short.txt:3
-#, fuzzy
 msgid "A map has been deleted"
-msgstr "Un Mapa fue comentado"
+msgstr ""
 
 #: templates/notification/map_rated/full.txt:5
-#, fuzzy
 msgid "the following map"
-msgstr "Los siguientes grupos:"
+msgstr ""
 
 #: templates/notification/map_rated/short.txt:3
-#, fuzzy
 msgid "A map has been rated"
-msgstr "Un Mapa fué creado"
+msgstr ""
 
 #: templates/notification/map_updated/full.txt:3
-#, fuzzy
 msgid "The following map was updated"
-msgstr "Las siguientes capas serán importadas"
+msgstr ""
 
 #: templates/notification/map_updated/short.txt:3
-#, fuzzy
 msgid "A map has been updated"
-msgstr "Un Mapa fué creado"
+msgstr ""
 
 #: templates/notification/request_download_resourcebase/full.txt:3
-#, fuzzy
 msgid "requested you to download this resource"
-msgstr "quien es el dueño del recurso"
+msgstr ""
 
 #: templates/notification/request_download_resourcebase/full.txt:9
-#, fuzzy
 msgid "Document"
-msgstr "Documentos"
+msgstr "Documento"
 
 #: templates/notification/request_download_resourcebase/full.txt:12
 msgid ""
@@ -4427,18 +4158,16 @@ msgstr "¿Elimina?"
 
 #: templates/user_messages/_message_snippet.html:29
 #: templates/user_messages/thread_detail.html:14
-#, fuzzy
 msgid "me"
-msgstr "Inicio"
+msgstr ""
 
 #: templates/user_messages/inbox.html:6
 msgid "Message Inbox"
 msgstr "Bandeja de Entrada"
 
 #: templates/user_messages/inbox.html:11
-#, fuzzy
 msgid "Messages"
-msgstr "Bandeja de Entrada"
+msgstr "Mensajes"
 
 #: templates/user_messages/inbox.html:38
 #: templates/user_messages/message_create.html:6
@@ -4460,90 +4189,89 @@ msgid "Send Reply"
 msgstr "Enviar Respuesta"
 
 #~ msgid "Most shared"
-#~ msgstr "Más compartido"
+#~ msgstr "Most shared"
 
 #~ msgid "from"
-#~ msgstr "desde"
+#~ msgstr "from"
 
 #~ msgid "view"
-#~ msgstr "ver"
+#~ msgstr "view"
 
 #~ msgid "Average rating"
-#~ msgstr "Puntuación media"
+#~ msgstr "Average rating"
 
 #~ msgid "votes"
-#~ msgstr "votos"
+#~ msgstr "votes"
 
 #~ msgid "You do not have permission to view this document"
-#~ msgstr "Usted no tiene permiso para ver este documento"
+#~ msgstr "You do not have permission to view this document"
 
 #~ msgid "Remote Thumbnail"
-#~ msgstr "Miniatura Remota"
+#~ msgstr "Remote Thumbnail"
 
 #~ msgid "Thumbnail"
-#~ msgstr "Miniaturas"
+#~ msgstr "Thumbnail"
 
 #~ msgid "Group details"
-#~ msgstr "Detalles del Grupo"
+#~ msgstr "Group details"
 
 #~ msgid "Create a map"
-#~ msgstr "Crear un Mapa"
+#~ msgstr "Create a map"
 
 #~ msgid "You do not have permission to view this layer"
-#~ msgstr "Usted no tiene permiso para ver esta capa"
+#~ msgstr "You do not have permission to view this layer"
 
 #~ msgid "View"
-#~ msgstr "Ver"
+#~ msgstr "View"
 
 #~ msgid "You do not have permission to view this map"
-#~ msgstr "Usted no tiene permiso para ver éste mapa"
+#~ msgstr "You do not have permission to view this map"
 
 #~ msgid "Add to Favorites"
-#~ msgstr "Agregar a Favoritos"
+#~ msgstr "Add to Favorites"
 
 #~ msgid "Add a Comment"
-#~ msgstr "Agregar un Comentario"
+#~ msgstr "Add a Comment"
 
 #~ msgid "Notices"
-#~ msgstr "Notificaciones"
+#~ msgstr "Notices"
 
 #~ msgid "Notice settings"
-#~ msgstr "Configuración de Notificaciones"
+#~ msgstr "Notice settings"
 
 #~ msgid "Observed objects"
-#~ msgstr "objetos observados"
+#~ msgstr "Observed objects"
 
 #~ msgid "Primary email"
-#~ msgstr "Correo Principal"
+#~ msgstr "Primary email"
 
 #~ msgid "change under <a href=\"%(email_url)s\">Account</a>"
-#~ msgstr "cambiar bajo <a href=\"%(email_url)s\">Cuenta</a>"
+#~ msgstr "change under <a href=\"%(email_url)s\">Account</a>"
 
 #~ msgid "Note"
-#~ msgstr "Nota"
+#~ msgstr "Note"
 
 #~ msgid ""
 #~ "You do not have a verified email address to which notices can be sent. "
 #~ "You can add one by going to <a href=\"%(email_url)s\">Account</a>."
 #~ msgstr ""
-#~ "Usted no tiene una dirección de correo electrónico para que se le envíen "
-#~ "los avisos. Usted puede agregar uno a <a href=\"%(email_url)s\">Usuario</"
-#~ "a>."
+#~ "You do not have a verified email address to which notices can be sent. "
+#~ "You can add one by going to <a href=\"%(email_url)s\">Account</a>."
 
 #~ msgid "Mark all unseen notices seen"
-#~ msgstr "Marcar todos los anuncios como no vistos como vistos"
+#~ msgstr "Mark all unseen notices seen"
 
 #~ msgid "MONTH_DAY_FORMAT"
-#~ msgstr "FORMATO_MES_DIA"
+#~ msgstr "MONTH_DAY_FORMAT"
 
 #~ msgid "View Notice"
-#~ msgstr "Ver Notificaciones"
+#~ msgstr "View Notice"
 
 #~ msgid "No notices."
-#~ msgstr "Sin Notificaciones"
+#~ msgstr "No notices."
 
 #~ msgid "Notice"
-#~ msgstr "Notificaciones"
+#~ msgstr "Notice"
 
 #~ msgid "you"
-#~ msgstr "Usted"
+#~ msgstr "you"
