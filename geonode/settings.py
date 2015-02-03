@@ -515,6 +515,7 @@ OGC_SERVER = {
         'WMST_ENABLED': False,
         'BACKEND_WRITE_ENABLED': True,
         'WPS_ENABLED': True,
+        'LOG_FILE': '/usr/share/geoserver/data/logs/geoserver.log',
         # Set to name of database in DATABASES dictionary to enable
         'DATASTORE': '',  # 'datastore',
         'TIMEOUT': 10  # number of seconds to allow for HTTP requests
