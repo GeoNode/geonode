@@ -1,3 +1,19 @@
+geonode (2.4.0+beta17) trusty; urgency=high
+
+  [ Tyler Garner ]
+  * [a21884] Minor profile page enhancements.  Fixes #1975.
+
+  [ Jeffrey Johnson ]
+  * [e34875] Add an inner try/except block when trying to clean up and delete_from_postgis. Closes #1058
+
+  [ Tyler Garner ]
+  * [c2e6b6] Bump `geonode-user-accounts` version to 1.0.10.  Fixes #1856.
+
+  [ Simone Dalmasso ]
+  * [d705ff] add missing comma
+
+ -- Simone Dalmasso <simone.dalmasso@gmail.com>  Tue, 03 Feb 2015 16:33:57 +0000
+
 geonode (2.4.0+beta16) trusty; urgency=high
 
   [ Tyler Garner ]

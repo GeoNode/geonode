@@ -272,6 +272,19 @@ class GXPMapBase(object):
                 sources[
                     str(int(max(sources.keys(), key=int)) + 1)] = lyr["source"]
 
+        # adding remote services sources
+        from geonode.services.models import Service
+        index = int(max(sources.keys()))
+        for service in Service.objects.all():
+            remote_source = {
+                'url': service.base_url,
+                'remote': True,
+                'ptype': 'gxp_wmscsource',
+                'name': service.name
+            }
+            index += 1
+            sources[index] = remote_source
+
         config = {
             'id': self.id,
             'about': {
