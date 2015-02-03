@@ -5,8 +5,7 @@ from django.utils.translation import ugettext as _
 from django import forms 
 
 from geonode.dataverse_layer_metadata.models import DataverseLayerMetadata
-from shared_dataverse_information.dataverse_info.forms import DataverseInfoValidationForm\
-                                , CheckForDataverseUserLayersFormBasic
+from shared_dataverse_information.dataverse_info.forms import DataverseInfoValidationForm                
 from shared_dataverse_information.dataverse_info.forms_existing_layer import CheckForExistingLayerForm
 DATETIME_PAT_STR = '%Y-%m-%d %H:%M'
 
@@ -81,27 +80,4 @@ class CheckForExistingLayerFormWorldmap(CheckForExistingLayerForm):
         if r:
             return r[0]
         return None
-        
-        
-        
-class CheckForDataverseUserLayersForm(CheckForDataverseUserLayersFormBasic):
-    """
-    Used for the API that retrieves a Dataverse user's WorldMap Layers
-        - input: dv_user_id
-    """
-    #class Meta:
-    #    model = DataverseLayerMetadata
-    #    fields = ('dv_user_id',)
-
-
-    def get_dataverse_layer_metadata_objects(self):
-        """
-        Return DataverseLayerMetadata objects that matches the given 'dv_user_id'
-        """
-        if hasattr(self, 'cleaned_data') is False:
-            raise AssertionError('Form is invalid.  cleaned_data is not available')
-
-        return DataverseLayerMetadata.objects.select_related('map_layer').filter(**self.cleaned_data)
-        
-        
-
+    

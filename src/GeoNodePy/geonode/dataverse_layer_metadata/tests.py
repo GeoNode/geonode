@@ -12,7 +12,7 @@ from django.test import TestCase
 from django.test.client import Client
 
 from geonode.dataverse_layer_metadata.models import DataverseLayerMetadata
-from geonode.dataverse_layer_metadata.forms import DataverseLayerMetadataValidationForm, CheckForExistingLayerForm, CheckForDataverseUserLayersForm
+from geonode.dataverse_layer_metadata.forms import DataverseLayerMetadataValidationForm, CheckForExistingLayerForm
 
 from django.conf import settings
 
