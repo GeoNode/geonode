@@ -1,3 +1,22 @@
+geonode (2.4.0+beta14) trusty; urgency=high
+
+  [ Allan Oware ]
+  * [d4d668] modified about page
+
+  [ d3netxer ]
+  * [ee28e4] fixed #1803
+
+  [ state-hiu ]
+  * [871e53] quick pep8 fix
+  * [12efdf] support for local geoserver binary
+
+  [ machakux ]
+  * [f21944] Fix image references in translation contribution docs
+
+  [ Simone Dalmasso ]
+
+ -- Simone Dalmasso <simone.dalmasso@gmail.com>  Tue, 03 Feb 2015 09:00:45 +0000
+
 geonode (2.4.0+beta13) trusty; urgency=high
 
   [ Paolo Pasquali ]
