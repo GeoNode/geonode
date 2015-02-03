@@ -374,10 +374,17 @@ def file_upload(filename, name=None, user=None, title=None, abstract=None,
         defaults['storeType'] = 'coverageStore'
 
     # Create a Django object.
-    layer, created = Layer.objects.get_or_create(
-        name=valid_name,
-        defaults=defaults
-    )
+    # remove files from uploaded layers if an error occurs
+    try:
+        layer, created = Layer.objects.get_or_create(
+            name=valid_name,
+            defaults=defaults
+        )
+    except GeoNodeException:
+        for lf in upload_session.layerfile_set.all():
+            lf.file.delete()
+        upload_session.delete()
+        raise
 
     # Delete the old layers if overwrite is true
     # and the layer was not just created
