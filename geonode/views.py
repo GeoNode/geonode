@@ -89,7 +89,7 @@ def ajax_lookup(request):
         'count': users.count(),
     }
 
-    json_dict['groups'] = [({'name': g.slug}) for g in groups]
+    json_dict['groups'] = [({'name': g.slug, 'title': g.title}) for g in groups]
     return HttpResponse(
         content=json.dumps(json_dict),
         mimetype='text/plain'
