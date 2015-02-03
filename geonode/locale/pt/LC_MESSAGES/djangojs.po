@@ -1,7 +1,7 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
-# 
+#
 # Translators:
 # Bibiana T. de Almeida <bibiana.almeida@embrapa.br>, 2013
 # ingenieroariel <ingenieroariel@gmail.com>, 2014
@@ -11,144 +11,331 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-10-24 10:00-0500\n"
+"POT-Creation-Date: 2015-02-03 05:20-0600\n"
 "PO-Revision-Date: 2014-11-14 16:58+0000\n"
 "Last-Translator: ingenieroariel <ingenieroariel@gmail.com>\n"
-"Language-Team: Portuguese (http://www.transifex.com/projects/p/geonode/language/pt/)\n"
+"Language-Team: Portuguese (http://www.transifex.com/projects/p/geonode/"
+"language/pt/)\n"
+"Language: pt\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Language: pt\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #: static/geonode/js/extjs/GeoNode.js:72
+#: static_root/geonode/js/extjs/GeoNode.js:72
 msgid "Add user..."
 msgstr "Adicionando usuário..."
 
 #: static/geonode/js/extjs/GeoNode.js:72
+#: static_root/geonode/js/extjs/GeoNode.js:72
 msgid "Who can view and download this data?"
 msgstr "Quem pode ver e baixar este dado?"
 
 #: static/geonode/js/extjs/GeoNode.js:72
+#: static_root/geonode/js/extjs/GeoNode.js:72
 msgid "Anyone"
 msgstr "Qualquer um"
 
 #: static/geonode/js/extjs/GeoNode.js:72
+#: static_root/geonode/js/extjs/GeoNode.js:72
 msgid "Any registered user"
 msgstr "Qualquer usuário registrado"
 
 #: static/geonode/js/extjs/GeoNode.js:72
+#: static_root/geonode/js/extjs/GeoNode.js:72
 msgid "Only users who can edit"
 msgstr "Somente usuário que podem editar"
 
 #: static/geonode/js/extjs/GeoNode.js:72
+#: static_root/geonode/js/extjs/GeoNode.js:72
 msgid "Who can edit this data?"
 msgstr "Quem pode editar este dado?"
 
 #: static/geonode/js/extjs/GeoNode.js:72
+#: static_root/geonode/js/extjs/GeoNode.js:72
 msgid "Only the following users or groups:"
 msgstr "Somente os seguintes usuários ou grupos:"
 
 #: static/geonode/js/extjs/GeoNode.js:72
+#: static_root/geonode/js/extjs/GeoNode.js:72
 msgid "Who can manage and edit this data?"
 msgstr "Quem pode gerenciar e editar este dado?"
 
+#: static/geonode/js/search/search.js:298
+#: static_root/geonode/js/search/search.js:298
+#, fuzzy
+msgid "Enter your text here ..."
+msgstr "Entre comentários aqui."
+
 #: static/geonode/js/upload/FileType.js:33
+#: static_root/geonode/js/upload/FileType.js:33
 #, c-format
 msgid "Missing a %s file, which is required"
 msgstr "Faltando um arquivo %s, que é necessário"
 
 #: static/geonode/js/upload/FileTypes.js:7
+#: static_root/geonode/js/upload/FileTypes.js:7
 msgid "ESRI Shapefile"
 msgstr "ESRI Shapefile"
 
 #: static/geonode/js/upload/FileTypes.js:13
 #: static/geonode/js/upload/FileTypes.js:19
+#: static_root/geonode/js/upload/FileTypes.js:13
+#: static_root/geonode/js/upload/FileTypes.js:19
 msgid "GeoTiff File"
 msgstr "GeoTiff Arquivo"
 
 #: static/geonode/js/upload/FileTypes.js:26
+#: static_root/geonode/js/upload/FileTypes.js:26
 msgid "Comma Separated File"
 msgstr "Arquivo separado por vírgulas"
 
 #: static/geonode/js/upload/FileTypes.js:32
+#: static_root/geonode/js/upload/FileTypes.js:32
 msgid "Google Earth KML"
 msgstr "Google Earth KML"
 
 #: static/geonode/js/upload/FileTypes.js:38
+#: static_root/geonode/js/upload/FileTypes.js:38
 msgid "Zip Archives"
 msgstr "Arquivos Zip"
 
-#: static/geonode/js/upload/LayerInfo.js:249
+#: static/geonode/js/upload/LayerInfo.js:231
+#: static_root/geonode/js/upload/LayerInfo.js:231
 msgid "Layer Info"
 msgstr "Camada de Informações"
 
-#: static/geonode/js/upload/LayerInfo.js:250
+#: static/geonode/js/upload/LayerInfo.js:232
+#: static_root/geonode/js/upload/LayerInfo.js:232
 msgid "Edit Metadata"
 msgstr "Editar Metadados"
 
-#: static/geonode/js/upload/LayerInfo.js:251
+#: static/geonode/js/upload/LayerInfo.js:233
+#: static_root/geonode/js/upload/LayerInfo.js:233
 msgid "Manage Styles"
 msgstr "Gerenciar Estilos"
 
-#: static/geonode/js/upload/LayerInfo.js:253
+#: static/geonode/js/upload/LayerInfo.js:235
+#: static_root/geonode/js/upload/LayerInfo.js:235
 msgid "Your layer was successfully uploaded"
 msgstr "Sua camada foi enviada com sucesso"
 
-#: static/geonode/js/upload/LayerInfo.js:282
+#: static/geonode/js/upload/LayerInfo.js:264
+#: static_root/geonode/js/upload/LayerInfo.js:264
 msgid "Performing Final GeoServer Config Step"
 msgstr "Realizando último passo GeoServer config"
 
-#: static/geonode/js/upload/LayerInfo.js:297
-#: static/geonode/js/upload/LayerInfo.js:319
+#: static/geonode/js/upload/LayerInfo.js:279
+#: static/geonode/js/upload/LayerInfo.js:305
+#: static_root/geonode/js/upload/LayerInfo.js:279
+#: static_root/geonode/js/upload/LayerInfo.js:305
 msgid "You need to specify more information in order to complete your upload"
-msgstr "Você precisa especificar mais informações a fim de completar o seu upload"
+msgstr ""
+"Você precisa especificar mais informações a fim de completar o seu upload"
 
-#: static/geonode/js/upload/LayerInfo.js:311
+#: static/geonode/js/upload/LayerInfo.js:297
+#: static_root/geonode/js/upload/LayerInfo.js:297
 msgid "You need to specify more information in order to complete your upload."
-msgstr "Você precisa especificar mais informações, a fim de completar o seu upload."
+msgstr ""
+"Você precisa especificar mais informações, a fim de completar o seu upload."
 
-#: static/geonode/js/upload/LayerInfo.js:311
+#: static/geonode/js/upload/LayerInfo.js:297
+#: static_root/geonode/js/upload/LayerInfo.js:297
 msgid "You can continue configuring your layer."
 msgstr "Você pode continuar a configurar a sua camada."
 
-#: static/geonode/js/upload/LayerInfo.js:329
-#: static/geonode/js/upload/LayerInfo.js:414
+#: static/geonode/js/upload/LayerInfo.js:315
+#: static/geonode/js/upload/LayerInfo.js:400
+#: static_root/geonode/js/upload/LayerInfo.js:315
+#: static_root/geonode/js/upload/LayerInfo.js:400
 msgid "Unexpected Error"
 msgstr "Erro inesperado"
 
-#: static/geonode/js/upload/LayerInfo.js:345
+#: static/geonode/js/upload/LayerInfo.js:331
+#: static_root/geonode/js/upload/LayerInfo.js:331
 msgid "Performing GeoServer Config Step"
 msgstr "Realizando GeoServer config Etapa"
 
-#: static/geonode/js/upload/LayerInfo.js:417
-msgid "No error message supplied"
-msgstr "Nenhuma mensagem de erro fornecido"
-
-#: static/geonode/js/upload/LayerInfo.js:432
+#: static/geonode/js/upload/LayerInfo.js:407
+#: static_root/geonode/js/upload/LayerInfo.js:407
 msgid "Layer files uploaded, configuring in GeoServer"
 msgstr "Arquivos camada carregado, configurando em GeoServer"
 
-#: static/geonode/js/upload/LayerInfo.js:447
+#: static/geonode/js/upload/LayerInfo.js:422
+#: static_root/geonode/js/upload/LayerInfo.js:422
+#, fuzzy
 msgid "Select or create a Geogig repository."
-msgstr "Selecionar ou criar um repositório Geogig."
+msgstr "Selecionar ou criar um repositório Geogit."
 
-#: static/geonode/js/upload/LayerInfo.js:542
+#: static/geonode/js/upload/LayerInfo.js:517
+#: static_root/admin/js/SelectFilter2.js:69
+#: static_root/geonode/js/upload/LayerInfo.js:517
 msgid "Remove"
 msgstr "Remover"
 
-#: static/geonode/js/upload/upload.js:126
+#: static/geonode/js/upload/upload.js:125
+#: static_root/geonode/js/upload/upload.js:125
 #, c-format
 msgid "The file %s is an unsupported file type, please select another file."
-msgstr "O arquivo %s é um tipo de arquivo não suportado, por favor selecione outro arquivo."
+msgstr ""
+"O arquivo %s é um tipo de arquivo não suportado, por favor selecione outro "
+"arquivo."
 
-#: static/geonode/js/upload/upload.js:286
+#: static/geonode/js/upload/upload.js:260
+#: static_root/geonode/js/upload/upload.js:260
 msgid "You are uploading an incomplete set of files."
 msgstr "Você está carregando um conjunto incompleto de arquivos."
 
-#: templates/lang.js:9 templates/lang.js.c:236
+#: static_root/admin/js/SelectFilter2.js:45
+#, fuzzy, c-format
+msgid "Available %s"
+msgstr "Camadas Disponíveis"
+
+#: static_root/admin/js/SelectFilter2.js:46
+#, c-format
+msgid ""
+"This is the list of available %s. You may choose some by selecting them in "
+"the box below and then clicking the \"Choose\" arrow between the two boxes."
+msgstr ""
+
+#: static_root/admin/js/SelectFilter2.js:53
+#, c-format
+msgid "Type into this box to filter down the list of available %s."
+msgstr ""
+
+#: static_root/admin/js/SelectFilter2.js:57
+msgid "Filter"
+msgstr ""
+
+#: static_root/admin/js/SelectFilter2.js:61
+msgid "Choose all"
+msgstr ""
+
+#: static_root/admin/js/SelectFilter2.js:61
+#, c-format
+msgid "Click to choose all %s at once."
+msgstr ""
+
+#: static_root/admin/js/SelectFilter2.js:67
+msgid "Choose"
+msgstr ""
+
+#: static_root/admin/js/SelectFilter2.js:75
+#, c-format
+msgid "Chosen %s"
+msgstr ""
+
+#: static_root/admin/js/SelectFilter2.js:76
+#, c-format
+msgid ""
+"This is the list of chosen %s. You may remove some by selecting them in the "
+"box below and then clicking the \"Remove\" arrow between the two boxes."
+msgstr ""
+
+#: static_root/admin/js/SelectFilter2.js:80
+#, fuzzy
+msgid "Remove all"
+msgstr "Remover"
+
+#: static_root/admin/js/SelectFilter2.js:80
+#, c-format
+msgid "Click to remove all chosen %s at once."
+msgstr ""
+
+#: static_root/admin/js/actions.js:18 static_root/admin/js/actions.min.js:1
+msgid "%(sel)s of %(cnt)s selected"
+msgid_plural "%(sel)s of %(cnt)s selected"
+msgstr[0] ""
+msgstr[1] ""
+
+#: static_root/admin/js/actions.js:109 static_root/admin/js/actions.min.js:5
+msgid ""
+"You have unsaved changes on individual editable fields. If you run an "
+"action, your unsaved changes will be lost."
+msgstr ""
+
+#: static_root/admin/js/actions.js:121 static_root/admin/js/actions.min.js:5
+msgid ""
+"You have selected an action, but you haven't saved your changes to "
+"individual fields yet. Please click OK to save. You'll need to re-run the "
+"action."
+msgstr ""
+
+#: static_root/admin/js/actions.js:123 static_root/admin/js/actions.min.js:6
+msgid ""
+"You have selected an action, and you haven't made any changes on individual "
+"fields. You're probably looking for the Go button rather than the Save "
+"button."
+msgstr ""
+
+#: static_root/admin/js/calendar.js:8
+msgid ""
+"January February March April May June July August September October November "
+"December"
+msgstr ""
+
+#: static_root/admin/js/calendar.js:9
+msgid "S M T W T F S"
+msgstr ""
+
+#: static_root/admin/js/collapse.js:8 static_root/admin/js/collapse.js.c:19
+#: static_root/admin/js/collapse.min.js:1
+#, fuzzy
+msgid "Show"
+msgstr "Apresentando"
+
+#: static_root/admin/js/collapse.js:16 static_root/admin/js/collapse.min.js:1
+msgid "Hide"
+msgstr ""
+
+#: static_root/admin/js/admin/DateTimeShortcuts.js:52
+#: static_root/admin/js/admin/DateTimeShortcuts.js:88
+msgid "Now"
+msgstr ""
+
+#: static_root/admin/js/admin/DateTimeShortcuts.js:56
+msgid "Clock"
+msgstr ""
+
+#: static_root/admin/js/admin/DateTimeShortcuts.js:84
+msgid "Choose a time"
+msgstr ""
+
+#: static_root/admin/js/admin/DateTimeShortcuts.js:89
+msgid "Midnight"
+msgstr ""
+
+#: static_root/admin/js/admin/DateTimeShortcuts.js:90
+msgid "6 a.m."
+msgstr ""
+
+#: static_root/admin/js/admin/DateTimeShortcuts.js:91
+msgid "Noon"
+msgstr ""
+
+#: static_root/admin/js/admin/DateTimeShortcuts.js:95
+#: static_root/admin/js/admin/DateTimeShortcuts.js:208 templates/lang.js:9
+#: templates/lang.js.c:236
 msgid "Cancel"
 msgstr "Cancelar"
+
+#: static_root/admin/js/admin/DateTimeShortcuts.js:148
+#: static_root/admin/js/admin/DateTimeShortcuts.js:201
+msgid "Today"
+msgstr ""
+
+#: static_root/admin/js/admin/DateTimeShortcuts.js:152
+msgid "Calendar"
+msgstr ""
+
+#: static_root/admin/js/admin/DateTimeShortcuts.js:199
+msgid "Yesterday"
+msgstr ""
+
+#: static_root/admin/js/admin/DateTimeShortcuts.js:203
+msgid "Tomorrow"
+msgstr ""
 
 #: templates/lang.js:10
 msgid "Save as Copy"
@@ -331,7 +518,9 @@ msgstr "Pequeno"
 msgid ""
 "Error contacting server.\n"
 " Please check the url and try again."
-msgstr "Erro conectando o servidor.\nPor favor, verifique o endereço e tente novamente."
+msgstr ""
+"Erro conectando o servidor.\n"
+"Por favor, verifique o endereço e tente novamente."
 
 #: templates/lang.js:69
 msgid "Layer Properties"
@@ -357,7 +546,8 @@ msgstr "Alterar para o Google Earth 3D Viewer"
 msgid ""
 "The map that you are trying to load does not exist.  Creating a new map "
 "instead."
-msgstr "O mapa que você está tentando carregar não existe mais. Criando um novo."
+msgstr ""
+"O mapa que você está tentando carregar não existe mais. Criando um novo."
 
 #: templates/lang.js:75
 msgid "Unknown Map"
@@ -431,7 +621,9 @@ msgstr "Sem Fundo"
 msgid ""
 "Your map is ready to be published to the web!  Simply copy the following "
 "HTML to embed the map in your website:"
-msgstr "Seu mapa está pronto para ser publicado na rede! Simplesmente copie o caminha a seguir e adicione ao ser website:"
+msgstr ""
+"Seu mapa está pronto para ser publicado na rede! Simplesmente copie o "
+"caminha a seguir e adicione ao ser website:"
 
 #: templates/lang.js:136 templates/lang.js.c:202
 msgid "Abstract:"
@@ -600,3 +792,6 @@ msgstr "Baixando..."
 #: templates/lang.js:237
 msgid "Please wait"
 msgstr "Por favor aguarde"
+
+#~ msgid "No error message supplied"
+#~ msgstr "Nenhuma mensagem de erro fornecido"

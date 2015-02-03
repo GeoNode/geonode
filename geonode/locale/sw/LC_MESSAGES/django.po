@@ -4,13 +4,14 @@
 #
 # Translators:
 # Andres Alfonso Lemon Gomez <lemon.andres@gmail.com>, 2014
+# Emil <bmachaku@gmail.com>, 2014-2015
 msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-11-19 18:27-0500\n"
-"PO-Revision-Date: 2014-11-15 20:30+0000\n"
-"Last-Translator: Andres Alfonso Lemon Gomez <lemon.andres@gmail.com>\n"
+"POT-Creation-Date: 2015-02-03 05:20-0600\n"
+"PO-Revision-Date: 2015-01-12 14:21+0000\n"
+"Last-Translator: Emil <bmachaku@gmail.com>\n"
 "Language-Team: Swahili (http://www.transifex.com/projects/p/geonode/language/"
 "sw/)\n"
 "Language: sw\n"
@@ -21,11 +22,11 @@ msgstr ""
 
 #: utils.py:38
 msgid "Invalid permission level."
-msgstr "Ngazi ruhusa batili."
+msgstr "Kibali batili."
 
 #: utils.py:473
 msgid "Permission Denied"
-msgstr "Ruhusa Kunyimwa"
+msgstr "Kibali kimekataliwa"
 
 #: base/enumerations.py:27
 msgid "series"
@@ -33,11 +34,11 @@ msgstr "mfululizo"
 
 #: base/enumerations.py:28
 msgid "computer program or routine"
-msgstr "programu ya kompyuta au mara kwa mara"
+msgstr "Programu ya kompyuta au mchakato"
 
 #: base/enumerations.py:29
 msgid "feature type"
-msgstr "kipengele aina"
+msgstr "aina ya sura"
 
 #: base/enumerations.py:30
 msgid "copy or imitation of an existing or hypothetical object"
@@ -45,39 +46,39 @@ msgstr "nakala au kuiga ya zilizopo au kubuni kitu"
 
 #: base/enumerations.py:31
 msgid "collection hardware"
-msgstr "ukusanyaji vifaa"
+msgstr "vifaa vya ukusanyaji"
 
 #: base/enumerations.py:32
 msgid "collection session"
-msgstr "kikao mkusanyiko"
+msgstr "Kipindi cha ukusanyaji"
 
 #: base/enumerations.py:33
 msgid "non-geographic data"
-msgstr "data zisizo kijiografia"
+msgstr "data zisizo za kijiografia"
 
 #: base/enumerations.py:34
 msgid "property type"
-msgstr "aina ya mali"
+msgstr "aina ya uga"
 
 #: base/enumerations.py:35
 msgid "field session"
-msgstr "kikao uwanja"
+msgstr ""
 
 #: base/enumerations.py:36
 msgid "dataset"
-msgstr "CCD"
+msgstr "kanzidata"
 
 #: base/enumerations.py:37
 msgid "service interfaces"
-msgstr "interfaces huduma"
+msgstr "kusano za huduma"
 
 #: base/enumerations.py:38
 msgid "attribute class"
-msgstr "sifa darasa"
+msgstr "daraja la sifa"
 
 #: base/enumerations.py:39
 msgid "characteristic of a feature"
-msgstr "tabia ya kipengele"
+msgstr "tabia ya sura"
 
 #: base/enumerations.py:40
 msgid "tile or spatial subset of geographic data"
@@ -85,100 +86,100 @@ msgstr "tile au nafasi subset ya data ya kijiografia"
 
 #: base/enumerations.py:41
 msgid "feature"
-msgstr "kipengele"
+msgstr "sura"
 
 #: base/enumerations.py:42
 msgid "dimension group"
-msgstr "mwelekeo kundi"
+msgstr "kundi la vipimo"
 
 #: base/enumerations.py:46
 msgid "frequency of maintenance for the data is not known"
-msgstr "mzunguko wa matengenezo kwa ajili ya data ni haijulikani"
+msgstr "Wastani wa muda anaupita hadi data kusasishwa haujulikani"
 
 #: base/enumerations.py:47
 msgid "data is repeatedly and frequently updated"
-msgstr "data ni mara kwa mara na mara nyingi updated"
+msgstr "data husasishwa mara kwa mara"
 
 #: base/enumerations.py:48
 msgid "there are no plans to update the data"
-msgstr "hakuna mipango ya mahitaji data"
+msgstr "hakuna mipango wa kusasisha data"
 
 #: base/enumerations.py:49
 msgid "data is updated each day"
-msgstr "data ni updated kila siku"
+msgstr "data husasishwa kila siku"
 
 #: base/enumerations.py:50
 msgid "data is updated every year"
-msgstr "data ni updated kila mwaka"
+msgstr "data husasishwa kila mwaka"
 
 #: base/enumerations.py:51
 msgid "data is updated as deemed necessary"
-msgstr "data ni updated kama aliona muhimu"
+msgstr "data husasishwa kadiri ya umuhimu unaoonekana"
 
 #: base/enumerations.py:52
 msgid "data is updated each month"
-msgstr "data ni updated kila mwezi"
+msgstr "data husasishwa kila mwezi"
 
 #: base/enumerations.py:53
 msgid "data is updated every two weeks"
-msgstr "data ni updated kila wiki mbili"
+msgstr "data husasishwa ndani ya kila wiki mbili"
 
 #: base/enumerations.py:55
 msgid "data is updated in intervals that are uneven in duration"
-msgstr "data ni updated katika vipindi ambavyo ni kutofautiana katika muda"
+msgstr "data husasishwa katika muda wa vipindi vinavyotofautiana"
 
 #: base/enumerations.py:56
 msgid "data is updated on a weekly basis"
-msgstr "data ni updated juu ya msingi ya kila wiki"
+msgstr "data husasishwa kwa wiki"
 
 #: base/enumerations.py:57
 msgid "data is updated twice each year"
-msgstr "data ni updated mara mbili kila mwaka"
+msgstr "data husasishwa mara mbili kwa kila mwaka"
 
 #: base/enumerations.py:58
 msgid "data is updated every three months"
-msgstr "data ni updated kila baada ya miezi mitatu"
+msgstr "data husasishwa kila baada ya miezi mitatu"
 
 #: base/enumerations.py:77
 msgid "No information provided"
-msgstr "Hakuna taarifa zinazotolewa"
+msgstr "Hakuna taarifa zilizotolewa"
 
 #: base/forms.py:35 base/templates/base/resourcebase_info_panel.html:46
-#: documents/templates/documents/document_metadata.html:51
-#: layers/templates/layers/layer_metadata.html:53
-#: maps/templates/maps/map_metadata.html:53
+#: documents/templates/documents/document_metadata.html:60
+#: layers/templates/layers/layer_metadata.html:61
+#: maps/templates/maps/map_metadata.html:61
 msgid "Category"
-msgstr "Jamii"
+msgstr "Kundi"
 
 #: base/forms.py:44
 msgid "Category is required."
-msgstr "Jamii inahitajika."
+msgstr "Kundi linahitajika"
 
-#: base/models.py:40 services/models.py:85
+#: base/models.py:41 services/models.py:85
 msgid "function performed by the responsible party"
 msgstr "kazi iliyofanywa na chama kuwajibika"
 
-#: base/models.py:229
+#: base/models.py:209
 msgid "reference date for the cited resource"
 msgstr "tarehe rejea kwa ajili ya rasilimali alitoa"
 
-#: base/models.py:230
+#: base/models.py:210
 msgid "identification of when a given event occurred"
 msgstr "utambulisho wa wakati tukio kupewa ilitokea"
 
-#: base/models.py:231
+#: base/models.py:211
 msgid "version of the cited resource"
 msgstr "toleo la rasilimali alitoa"
 
-#: base/models.py:232
+#: base/models.py:212
 msgid "brief narrative summary of the content of the resource(s)"
 msgstr "kifupi maelezo muhtasari wa maudhui ya rasilimali (s)"
 
-#: base/models.py:233
+#: base/models.py:213
 msgid "summary of the intentions with which the resource(s) was developed"
 msgstr "muhtasari wa nia na ambayo rasilimali (s) ilitengenezwa"
 
-#: base/models.py:234
+#: base/models.py:214
 msgid ""
 "frequency with which modifications and deletions are made to the data after "
 "it is first produced"
@@ -186,203 +187,206 @@ msgstr ""
 "na kasi ambayo marekebisho na kufuta maneno yaliyotolewa na data baada ya "
 "kwanza zinazozalishwa"
 
-#: base/models.py:236
+#: base/models.py:216
 msgid ""
 "commonly used word(s) or formalised word(s) or phrase(s) used to describe "
 "the subject (space or comma-separated"
 msgstr ""
-"kawaida kutumika neno (s) au rasmi neno (s) au maneno (s) linalotumiwa somo "
-"(nafasi au comma-waliojitenga"
+"maneno yanayotumika mara kwa mara au maneno rasimi au misemo inayotumika "
+"kuelezea kitu hiki (tenganisha kwa nafasi au koma)"
 
-#: base/models.py:238
+#: base/models.py:218
 msgid "keyword identifies a location"
-msgstr "Keyword kubainisha eneo"
+msgstr "Maneno muhimu yanayotambulisha eneo"
 
-#: base/models.py:239
+#: base/models.py:219
 msgid "limitation(s) placed upon the access or use of the data."
-msgstr "kiwango cha juu (s) kuwekwa juu ya kupata au matumizi ya data."
+msgstr ""
+"Kizuizi (au vizuizi) vilivyowekwa juu ya upataikanaji au matumizi ya data"
 
-#: base/models.py:240
+#: base/models.py:220
 msgid ""
 "other restrictions and legal prerequisites for accessing and using the "
 "resource or metadata"
 msgstr ""
-"vikwazo vingine na prerequisites kisheria kwa ajili ya kupata na kutumia "
-"rasilimali au metadata"
+"vikwazo vingine na matakwa ya kisheria katika kupata na kutumia rasilimali "
+"au metadata"
 
-#: base/models.py:242
+#: base/models.py:222
 msgid "license of the dataset"
-msgstr "leseni ya CCD"
+msgstr "leseni ya kanzidata"
 
-#: base/models.py:243
+#: base/models.py:223
 msgid "language used within the dataset"
-msgstr "lugha ya kutumika ndani ya CCD"
+msgstr "lugha iliyotumika kwenye kanzidata"
 
-#: base/models.py:244
+#: base/models.py:224
 msgid ""
 "high-level geographic data thematic classification to assist in the grouping "
 "and search of available geographic data sets."
 msgstr ""
-"ngazi ya juu data kijiografia uainishaji mada ili kusaidia katika kambi na "
-"kutafuta inapatikana kijiografia seti data."
+"Uhusiano wa juu wa data unaoweza kusaidia katika kutafuta au kuainisha kundi "
+"la data za kijiografia zilizopo"
 
-#: base/models.py:246
+#: base/models.py:226
 msgid "method used to represent geographic information in the dataset."
 msgstr "mbinu kutumika kuwakilisha kijiografia habari katika CCD."
 
-#: base/models.py:247
+#: base/models.py:227
 msgid "time period covered by the content of the dataset (start)"
-msgstr "wakati wa kipindi cha kufunikwa na maudhui ya CCD (kuanza)"
+msgstr "Mwanzo wa kipindi kilichojumishwa katika maudui kanzidata"
 
-#: base/models.py:248
+#: base/models.py:228
 msgid "time period covered by the content of the dataset (end)"
-msgstr "wakati wa kipindi cha kufunikwa na maudhui ya CCD (mwisho)"
+msgstr "Mwisho wa kipindi kilichojumishwa katika maudui kanzidata"
 
-#: base/models.py:249
+#: base/models.py:229
 msgid ""
 "information about on-line sources from which the dataset, specification, or "
 "community profile name and extended metadata elements can be obtained"
 msgstr ""
-"habari kuhusu vyanzo on-line ambayo CCD, vipimo, au jina la wasifu jamii na "
-"metadata mambo kupanuliwa yanaweza kupatikana"
+"maelezo kuhusu vyanzo vya mtandaoni ambavyo kanzidata, vipimo, wasifu, "
+"jumuiya na metadata vinaweza kupatikana"
 
-#: base/models.py:251
+#: base/models.py:231
 msgid "detailed text description of what the online resource is/does"
-msgstr "kina Nakala maelezo ya nini rasilimali online ni / anafanya"
+msgstr ""
+"Maelezo ya kina kuhusu rasilimali hii ya mtandaoni ni nini au inafanya nini"
 
-#: base/models.py:252
+#: base/models.py:232
 msgid ""
 "general explanation of the data producer's knowledge about the lineage of a "
 "dataset"
 msgstr "maelezo ya jumla ya maarifa data uzalishaji kuhusu ukoo wa CCD"
 
-#: base/models.py:258
+#: base/models.py:238
 msgid "title"
-msgstr "cheo"
+msgstr "kichwa"
 
-#: base/models.py:258
+#: base/models.py:238
 msgid "name by which the cited resource is known"
-msgstr "jina ambalo rasilimali alitoa ni inayojulikana"
+msgstr "jina la rasilimali tajwa"
 
-#: base/models.py:259
+#: base/models.py:239
 msgid "date"
 msgstr "tarehe"
 
-#: base/models.py:260
+#: base/models.py:240
 msgid "date type"
-msgstr "tarehe ya aina"
+msgstr "aina ya tarehe"
 
-#: base/models.py:262
+#: base/models.py:242
 msgid "edition"
 msgstr "toleo"
 
-#: base/models.py:263
+#: base/models.py:243
 msgid "abstract"
-msgstr "abstract"
+msgstr "muhtasari"
 
-#: base/models.py:264
+#: base/models.py:244
 msgid "purpose"
 msgstr "kusudi"
 
-#: base/models.py:265
+#: base/models.py:245
 msgid "maintenance frequency"
-msgstr "matengenezo ya mzunguko"
+msgstr "wastani wa mzunguko wa matengenezo"
 
-#: base/models.py:268 groups/models.py:41 people/models.py:88
+#: base/models.py:248 groups/models.py:41 people/models.py:89
 msgid "keywords"
-msgstr "maneno"
+msgstr "maneno muhimu"
 
-#: base/models.py:269
+#: base/models.py:249
 msgid "keywords region"
-msgstr "maneno mkoa"
+msgstr "eneo la maneno muhimu"
 
-#: base/models.py:272
+#: base/models.py:252
 msgid "restrictions"
 msgstr "vikwazo"
 
-#: base/models.py:276
+#: base/models.py:256
 msgid "restrictions other"
 msgstr "vikwazo vingine"
 
-#: base/models.py:281
+#: base/models.py:261
 msgid "language"
-msgstr "Lugha"
+msgstr "lugha"
 
-#: base/models.py:292
+#: base/models.py:272
 msgid "temporal extent start"
-msgstr "muda kiasi kuanza"
+msgstr ""
 
-#: base/models.py:294
+#: base/models.py:274
 msgid "temporal extent end"
-msgstr "muda kiasi mwisho"
+msgstr "temporal extent end"
 
-#: base/models.py:297
+#: base/models.py:277
 msgid "supplemental information"
-msgstr "habari supplemental"
+msgstr "maelezo ya ziada"
 
-#: base/models.py:298
+#: base/models.py:278
 msgid "any other descriptive information about the dataset"
-msgstr "yoyote habari maelezo kuhusu CCD"
+msgstr "maelezo mengine yoyote ya ufafanuzi kuhusu kanzidata"
 
-#: base/models.py:301
+#: base/models.py:281
 msgid "distribution URL"
-msgstr "usambazaji URL"
+msgstr "URL ya usambazaji"
 
-#: base/models.py:303
+#: base/models.py:283
 msgid "distribution description"
-msgstr "usambazaji maelezo"
+msgstr "maelezo ya usambazaji"
 
-#: base/models.py:307
+#: base/models.py:287
 msgid "data quality statement"
-msgstr "Taarifa data ubora"
+msgstr "Taarifa ya ubora wa data"
 
-#: base/models.py:322
+#: base/models.py:302
 msgid "CSW typename"
 msgstr "CSW typename"
 
-#: base/models.py:324
+#: base/models.py:304
 msgid "CSW schema"
 msgstr "CSW schema"
 
-#: base/models.py:329
+#: base/models.py:309
 msgid "CSW source"
-msgstr "CSW chanzo"
+msgstr "chanzo cha CSW"
 
-#: base/models.py:330
+#: base/models.py:310
 msgid "CSW insert date"
-msgstr "CSW kuingiza tarehe"
+msgstr "tarehe ya kuingiza CSW"
 
-#: base/models.py:331
+#: base/models.py:311
 msgid "CSW type"
 msgstr "CSW aina"
 
-#: base/models.py:332
+#: base/models.py:312
 msgid "CSW anytext"
 msgstr "CSW anytext"
 
-#: base/models.py:333
+#: base/models.py:313
 msgid "CSW WKT geometry"
-msgstr "CSW WKT jiometri"
+msgstr "Jometria ya CSW WKT"
 
-#: base/models.py:346
+#: base/models.py:326
 msgid "Should this resource be advertised in home page?"
-msgstr "Je, rasilimali hii kutangazwa katika ukurasa wa nyumbani?"
+msgstr "Je, rasilimali hii kutangazwa katika ukurasa wa mbele?"
 
-#: base/models.py:347
+#: base/models.py:327
 msgid "Should this resource be published and searchable?"
-msgstr "Je, rasilimali hii kuchapishwa na kutafutwa?"
+msgstr ""
+"Je, rasilimali hii inatakiwa kusambazwa na kupatikana katika utafutaji?"
 
-#: base/models.py:666
+#: base/models.py:660
 msgid "For example \"kml\""
-msgstr "Kwa mfano \"KML\""
+msgstr "Kwa mfano \"kml\""
 
-#: base/models.py:668
+#: base/models.py:662
 msgid "For example \"View in Google Earth\""
-msgstr "Kwa mfano \"View katika Google Earth\""
+msgstr "Kwa mfano \"Tazama katika Google Earth\""
 
-#: base/models.py:669
+#: base/models.py:663
 msgid "For example \"text/xml\""
-msgstr "Kwa mfano \"Nakala / xml\""
+msgstr "Kwa mfano \"text/xml\""
 
 #: base/management/__init__.py:14
 msgid "Request to download a resource"
@@ -393,44 +397,44 @@ msgid "A request for downloading a resource was sent"
 msgstr ""
 
 #: base/templates/base/_resourcebase_contact_snippet.html:3
-#: templates/500.html:184 templates/base.html:175
+#: templates/500.html:184 templates/base.html:131
 msgid "About"
 msgstr "Kuhusu"
 
 #: base/templates/base/_resourcebase_contact_snippet.html:5
 msgid "Owner, Point of Contact, Metadata Author"
-msgstr "Mmiliki, Point ya Mawasiliano, Metadata Mwandishi"
+msgstr "Mmiliki, Kituo cha Mawasiliano, Mwandishi wa Metadata"
 
 #: base/templates/base/_resourcebase_contact_snippet.html:10
-#: base/templates/base/resourcebase_info_panel.html:56
+#: base/templates/base/resourcebase_info_panel.html:61
 msgid "Owner"
 msgstr "Mmiliki"
 
 #: base/templates/base/_resourcebase_contact_snippet.html:14
-#: base/templates/base/resourcebase_info_panel.html:61
-#: documents/templates/documents/document_metadata.html:41
-#: layers/templates/layers/layer_metadata.html:80
-#: maps/templates/maps/map_metadata.html:43
+#: base/templates/base/resourcebase_info_panel.html:66
+#: documents/templates/documents/document_metadata.html:50
+#: layers/templates/layers/layer_metadata.html:84
+#: maps/templates/maps/map_metadata.html:51
 msgid "Point of Contact"
-msgstr "Point ya Mawasiliano"
+msgstr "Mawasiliano"
 
 #: base/templates/base/_resourcebase_contact_snippet.html:18
 msgid "Metadata Author"
-msgstr "Metadata Mwandishi"
+msgstr "Mwandishi wa Metadata"
 
-#: base/templates/base/resourcebase_info_panel.html:6 services/forms.py:21
-#: templates/announcements/announcement_list.html:30
+#: base/templates/base/resourcebase_info_panel.html:6 services/forms.py:24
+#: templates/announcements/announcement_list.html:20
 msgid "Title"
-msgstr "Cheo"
+msgstr "Kichwa"
 
 #: base/templates/base/resourcebase_info_panel.html:11
-#: base/templates/base/resourcebase_info_panel.html:75
+#: base/templates/base/resourcebase_info_panel.html:80
 msgid "License"
 msgstr "Leseni"
 
-#: base/templates/base/resourcebase_info_panel.html:24 services/forms.py:26
+#: base/templates/base/resourcebase_info_panel.html:24 services/forms.py:29
 msgid "Abstract"
-msgstr "Abstract"
+msgstr "Muhtasari"
 
 #: base/templates/base/resourcebase_info_panel.html:29
 #: templates/search/_general_filters.html:28
@@ -438,332 +442,283 @@ msgid "Date"
 msgstr "Tarehe"
 
 #: base/templates/base/resourcebase_info_panel.html:34
-#: layers/templates/layers/layer_detail.html:307
+#: layers/templates/layers/layer_detail.html:306
 msgid "Type"
 msgstr "Aina"
 
 #: base/templates/base/resourcebase_info_panel.html:39
 #: templates/search/_general_filters.html:16
 msgid "Keywords"
-msgstr "Maneno"
+msgstr "Maneno muhimu"
 
-#: base/templates/base/resourcebase_info_panel.html:51
+#: base/templates/base/resourcebase_info_panel.html:56
 msgid "Regions"
-msgstr "Mikoa"
-
-#: base/templates/base/resourcebase_info_panel.html:88
-msgid "Maintenance Frequency"
-msgstr "Matengenezo Frequency"
+msgstr "Maeneo"
 
 #: base/templates/base/resourcebase_info_panel.html:93
+msgid "Maintenance Frequency"
+msgstr "Wastani wa Vipindi vya Matengenezo"
+
+#: base/templates/base/resourcebase_info_panel.html:98
 msgid "Restrictions"
 msgstr "Vikwazo"
 
-#: base/templates/base/resourcebase_info_panel.html:102
+#: base/templates/base/resourcebase_info_panel.html:107
 msgid "Edition"
 msgstr "Toleo"
 
-#: base/templates/base/resourcebase_info_panel.html:107
+#: base/templates/base/resourcebase_info_panel.html:112
 msgid "Purpose"
 msgstr "Kusudi"
 
-#: base/templates/base/resourcebase_info_panel.html:112 templates/500.html:187
-#: templates/base.html:178
+#: base/templates/base/resourcebase_info_panel.html:117 templates/500.html:187
+#: templates/base.html:134
 msgid "Language"
 msgstr "Lugha"
 
-#: base/templates/base/resourcebase_info_panel.html:117
-msgid "Temporal Extent"
-msgstr "Muda Kiwango"
-
 #: base/templates/base/resourcebase_info_panel.html:122
-msgid "Data Quality"
-msgstr "Takwimu Quality"
+msgid "Temporal Extent"
+msgstr "Temporal Extent"
 
 #: base/templates/base/resourcebase_info_panel.html:127
+msgid "Data Quality"
+msgstr "Ubora wa Data"
+
+#: base/templates/base/resourcebase_info_panel.html:132
 msgid "Supplemental Information"
 msgstr "Habari Supplemental"
 
-#: base/templates/base/resourcebase_info_panel.html:132
+#: base/templates/base/resourcebase_info_panel.html:137
 msgid "Spatial Representation Type"
-msgstr "Spatial Uwakilishi Aina"
+msgstr "Aina ya Uwakilishaji  wa Kijiografia"
 
 #: documents/forms.py:68 groups/models.py:42 layers/forms.py:95
 #: maps/forms.py:81 people/forms.py:82
 msgid "A space or comma-separated list of keywords"
-msgstr "nafasi au comma-waliojitenga orodha ya maneno"
+msgstr "Orodha ya maneno muhimu yalionganishwa kwa nafasi au koma "
 
 #: documents/forms.py:183 documents/forms.py:251
 msgid "Document must be a file or url."
-msgstr "Document lazima faili au url."
+msgstr "Hati ni lazima uwe faili au url."
 
 #: documents/forms.py:187 documents/forms.py:255
 msgid "A document cannot have both a file and a url."
-msgstr "hati hawezi kuwa wote faili na url."
+msgstr "hati haiwezi kuwa faili na url kwa wakati mmoja."
 
 #: documents/forms.py:200 documents/forms.py:268
 msgid "This file type is not allowed"
-msgstr "Aina hii ya faili haruhusiwi"
+msgstr "Aina hii ya faili hairuhusiwi"
 
 #: documents/forms.py:218
 msgid "Link to"
-msgstr "Link kwa"
+msgstr "Link to"
 
 #: documents/forms.py:240
 msgid "Permissions must be valid JSON."
-msgstr "Ruhusa lazima iwe halali JSON."
+msgstr "Kibali ni lazima kiwe JSON halali."
 
-#: documents/models.py:39
+#: documents/models.py:38
 msgid "File"
 msgstr "Faili"
 
-#: documents/models.py:48
+#: documents/models.py:47
 msgid "The URL of the document if it is external."
-msgstr "URL ya hati kama ni nje."
+msgstr "URL ya hati kama ni kutoka nje."
 
-#: documents/models.py:49
+#: documents/models.py:48
 msgid "URL"
 msgstr "URL"
 
-#: documents/views.py:26
-msgid "You are not permitted to delete this document"
-msgstr "Wewe hawaruhusiwi kufuta hati hii"
-
 #: documents/views.py:27
-msgid "You do not have permissions for this document."
-msgstr "Huna ruhusa kwa waraka huu."
+msgid "You are not permitted to delete this document"
+msgstr "Hauruhusiwi kufuta hati hii"
 
 #: documents/views.py:28
-msgid "You are not permitted to modify this document"
-msgstr "Wewe hawaruhusiwi kurekebisha hati hii"
+msgid "You do not have permissions for this document."
+msgstr "Huna kibali cha hati hii."
 
-#: documents/views.py:30
-msgid "You are not permitted to modify this document's metadata"
-msgstr "You hawaruhusiwi kurekebisha metadata waraka huu"
+#: documents/views.py:29
+msgid "You are not permitted to modify this document"
+msgstr "Huruhusiwi kubadilisha hati hii"
 
 #: documents/views.py:31
+msgid "You are not permitted to modify this document's metadata"
+msgstr "Hauruhusiwi kubadilisha metadata za hati hii"
+
+#: documents/views.py:32
 msgid "You are not permitted to view this document"
-msgstr "Wewe si ruhusa kwa mtazamo hati hii"
+msgstr "Huna kibali cha kutazama hati hii"
 
-#: documents/views.py:67 documents/views.py:105
+#: documents/views.py:68 documents/views.py:112
 msgid "You are not allowed to view this document."
-msgstr "Wewe si kuruhusiwa mtazamo hati hii."
+msgstr "Hauruhusiwi kutazama hati hii"
 
-#: documents/views.py:181
+#: documents/views.py:192
 msgid "You are not allowed to edit this document."
-msgstr "Wewe hawaruhusiwi hariri hati hii."
+msgstr "Hauruhusiwi kuhariri hati hii"
 
-#: documents/templates/documents/_document_filters.html:5
-#: groups/templates/groups/group_list.html:15
-#: layers/templates/layers/_layer_filters.html:5
-#: maps/templates/maps/_map_filters.html:5
-#: people/templates/people/profile_list.html:12
-#: templates/search/_sort_filters.html:4
-msgid "Most recent"
-msgstr "Wengi hivi karibuni"
+#: documents/management/__init__.py:14
+#, fuzzy
+msgid "Document Created"
+msgstr "Nyaraka kuhusiana na ramani hii"
 
-#: documents/templates/documents/_document_filters.html:6
-#: layers/templates/layers/_layer_filters.html:6
-#: maps/templates/maps/_map_filters.html:6
-#: templates/search/_sort_filters.html:8
-msgid "Most popular"
-msgstr "Maarufu"
+#: documents/management/__init__.py:15
+#, fuzzy
+msgid "A Document was created"
+msgstr "Ramani iliundwa"
 
-#: documents/templates/documents/_document_filters.html:7
-#: layers/templates/layers/_layer_filters.html:7
-#: maps/templates/maps/_map_filters.html:7
-msgid "Most shared"
-msgstr "Wengi pamoja"
+#: documents/management/__init__.py:18
+#, fuzzy
+msgid "Document Updated"
+msgstr "Hati"
 
-#: documents/templates/documents/_document_list_item.html:23
-#: documents/templates/documents/_document_list_item.html:45
-#: layers/templates/layers/_layer_list_item.html:28
-#: layers/templates/layers/_layer_list_item.html:84
-#: maps/templates/maps/_map_list_item.html:21
-#: maps/templates/maps/_map_list_item.html:46
-msgid "from"
-msgstr "kutoka"
+#: documents/management/__init__.py:19
+#, fuzzy
+msgid "A Document was updated"
+msgstr "Tabaka limepakiwa"
 
-#: documents/templates/documents/_document_list_item.html:23
-#: documents/templates/documents/_document_list_item.html:45
-#: layers/templates/layers/_layer_list_item.html:28
-#: layers/templates/layers/_layer_list_item.html:84
-#: maps/templates/maps/_map_list_item.html:21
-#: maps/templates/maps/_map_list_item.html:46
-#: social/templates/social/_activity_item.html:27
-msgid "ago"
-msgstr "iliyopita"
+#: documents/management/__init__.py:22
+#, fuzzy
+msgid "Document Deleted"
+msgstr "Hati"
 
-#: documents/templates/documents/_document_list_item.html:26
-#: documents/templates/documents/_document_list_item.html:48
-#: layers/templates/layers/_layer_list_item.html:31
-#: layers/templates/layers/_layer_list_item.html:87
-#: maps/templates/maps/_map_list_item.html:24
-#: maps/templates/maps/_map_list_item.html:49
-msgid "view"
-msgstr "mtazamo"
+#: documents/management/__init__.py:23
+#, fuzzy
+msgid "A Document was deleted"
+msgstr "Hati hii  inahusiana na"
 
-#: documents/templates/documents/_document_list_item.html:27
-#: documents/templates/documents/_document_list_item.html:49
-#: layers/templates/layers/_layer_list_item.html:32
-#: layers/templates/layers/_layer_list_item.html:88
-#: maps/templates/maps/_map_list_item.html:25
-#: maps/templates/maps/_map_list_item.html:50
-msgid "Average rating"
-msgstr "Wastani rating"
+#: documents/management/__init__.py:26
+#, fuzzy
+msgid "Comment on Document"
+msgstr "Maoni kuhusu Tabaka"
 
-#: documents/templates/documents/_document_list_item.html:27
-#: documents/templates/documents/_document_list_item.html:49
-#: layers/templates/layers/_layer_list_item.html:32
-#: layers/templates/layers/_layer_list_item.html:88
-#: maps/templates/maps/_map_list_item.html:25
-#: maps/templates/maps/_map_list_item.html:50
-msgid "votes"
-msgstr "kura"
+#: documents/management/__init__.py:27
+#, fuzzy
+msgid "A Document was commented on"
+msgstr "ramani ilikuwa maoni juu ya"
 
-#: documents/templates/documents/_document_list_item.html:31
-#: layers/templates/layers/_layer_list_item.html:37
-#: maps/templates/maps/_map_list_item.html:30
-#: maps/templates/maps/map_download.html:6
-msgid "Download"
-msgstr "Download"
+#: documents/management/__init__.py:30
+#, fuzzy
+msgid "Document for Map"
+msgstr "Maoni juu ya Ramani"
 
-#: documents/templates/documents/_document_list_item.html:46
-msgid "You do not have permission to view this document"
-msgstr "Huna ruhusa kwa mtazamo hati hii"
+#: documents/management/__init__.py:31
+#, fuzzy
+msgid "A rating was given to a document"
+msgstr "rating ilitolewa kwa ramani"
 
-#: documents/templates/documents/document_detail.html:42
+#: documents/templates/documents/document_detail.html:40
 msgid "External Resource"
-msgstr "Rasilimali nje"
+msgstr "Rasilimali kutoka nje"
 
-#: documents/templates/documents/document_detail.html:48
-#: layers/templates/layers/_actions.html:3
-#: maps/templates/maps/map_detail.html:35 templates/_actions.html:3
-msgid "Info"
-msgstr "Info"
-
-#: documents/templates/documents/document_detail.html:50
-#: layers/templates/layers/_actions.html:6
-#: maps/templates/maps/map_detail.html:38 templates/_actions.html:5
-msgid "Share"
-msgstr "Share"
-
-#: documents/templates/documents/document_detail.html:52
-#: layers/templates/layers/_actions.html:8
-#: maps/templates/maps/map_detail.html:41
-msgid "Ratings"
-msgstr "Ratings"
-
-#: documents/templates/documents/document_detail.html:53
-#: layers/templates/layers/_actions.html:9
-#: maps/templates/maps/map_detail.html:42 templates/_comments.html:12
-msgid "Comments"
-msgstr "Maoni"
-
-#: documents/templates/documents/document_detail.html:71
+#: documents/templates/documents/document_detail.html:62
 msgid "Rate this document"
-msgstr "Kiwango hati hii"
+msgstr "Thaminisha waraka huu"
 
-#: documents/templates/documents/document_detail.html:75
-#: layers/templates/layers/layer_detail.html:113
-#: maps/templates/maps/map_detail.html:58
+#: documents/templates/documents/document_detail.html:66
+#: layers/templates/layers/layer_detail.html:110
+#: maps/templates/maps/map_detail.html:50
 msgid "Average Rating"
-msgstr "Wastani Upimaji"
+msgstr "Wastani wa uthaminishaji"
 
-#: documents/templates/documents/document_detail.html:91
-#: documents/templates/documents/document_detail.html:93
-#: documents/templates/documents/document_detail.html:95
-#: documents/templates/documents/document_detail.html:111
+#: documents/templates/documents/document_detail.html:82
+#: documents/templates/documents/document_detail.html:84
+#: documents/templates/documents/document_detail.html:86
+#: documents/templates/documents/document_detail.html:102
 msgid "Download Document"
-msgstr "Download Document"
+msgstr "Pakua Hati"
 
-#: documents/templates/documents/document_detail.html:99
-#: layers/templates/layers/layer_detail.html:134
+#: documents/templates/documents/document_detail.html:90
+#: layers/templates/layers/layer_detail.html:131
 #, fuzzy
 msgid "Request Download"
-msgstr "Download"
+msgstr "Pakua"
 
-#: documents/templates/documents/document_detail.html:104
-#: layers/templates/layers/layer_detail.html:163
-#: layers/templates/layers/layer_detail.html:171
+#: documents/templates/documents/document_detail.html:95
+#: layers/templates/layers/layer_detail.html:160
+#: layers/templates/layers/layer_detail.html:168
 msgid "Download Metadata"
-msgstr "Download Metadata"
+msgstr "Pakua Metadata"
 
-#: documents/templates/documents/document_detail.html:121
-#: documents/templates/documents/document_detail.html:151
-#: layers/templates/layers/layer_detail.html:156
-#: layers/templates/layers/layer_detail.html:181
-#: layers/templates/layers/layer_detail.html:223
-#: maps/templates/maps/map_detail.html:95
-#: maps/templates/maps/map_detail.html:127
+#: documents/templates/documents/document_detail.html:112
+#: documents/templates/documents/document_detail.html:142
+#: layers/templates/layers/layer_detail.html:153
+#: layers/templates/layers/layer_detail.html:178
+#: layers/templates/layers/layer_detail.html:222
+#: maps/templates/maps/map_detail.html:87
+#: maps/templates/maps/map_detail.html:120
 #: templates/_bulk_permissions_form.html:19
 msgid "Close"
-msgstr "Karibu"
+msgstr "Funga"
 
-#: documents/templates/documents/document_detail.html:128
-#: documents/templates/documents/document_detail.html:135
+#: documents/templates/documents/document_detail.html:119
+#: documents/templates/documents/document_detail.html:126
 msgid "Edit Document"
-msgstr "Hariri Document"
+msgstr "Hariri Hati"
 
-#: documents/templates/documents/document_detail.html:140
-#: layers/templates/layers/layer_detail.html:203
+#: documents/templates/documents/document_detail.html:131
+#: documents/templates/documents/document_metadata.html:17
+#: layers/templates/layers/layer_detail.html:200
+#: layers/templates/layers/layer_metadata.html:12
+#: maps/templates/maps/map_metadata.html:12
 msgid "Edit Metadata"
-msgstr "Edit Metadata"
+msgstr "Hariri Metadata"
 
-#: documents/templates/documents/document_detail.html:143
+#: documents/templates/documents/document_detail.html:134
 msgid "Replace this Document"
-msgstr "Nafasi Document hii"
+msgstr "Badilisha hati hii"
 
-#: documents/templates/documents/document_detail.html:146
+#: documents/templates/documents/document_detail.html:137
 msgid "Remove this Document"
-msgstr "Kuondoa Document hii"
+msgstr "Ondoa Hati hii"
+
+#: documents/templates/documents/document_detail.html:149
+msgid "Resource using this document"
+msgstr "Rasilimali zinazotumia hati hii"
+
+#: documents/templates/documents/document_detail.html:151
+msgid "List of resources using this document:"
+msgstr "Orodha ya rasilimali zinazotumia hati hii"
+
+#: documents/templates/documents/document_detail.html:155
+msgid "This document is related to a "
+msgstr "Hati hii  inahusiana na"
 
 #: documents/templates/documents/document_detail.html:158
-msgid "Resource using this document"
-msgstr "Rasilimali kwa kutumia hati hii"
-
-#: documents/templates/documents/document_detail.html:160
-msgid "List of resources using this document:"
-msgstr "Orodha ya rasilimali kwa kutumia hati hii:"
-
-#: documents/templates/documents/document_detail.html:164
-msgid "This document is related to a "
-msgstr "Waraka huu ni kuhusiana na"
-
-#: documents/templates/documents/document_detail.html:167
 msgid "This document is not related to any maps or layers"
-msgstr "Hati hii si kuhusiana na ramani yoyote au tabaka"
+msgstr "Hati hii haihusiani na ramani au tabaka lolote"
 
-#: documents/templates/documents/document_detail.html:174
-#: documents/templates/documents/document_upload.html:32
-#: groups/templates/groups/group_detail.html:65
-#: layers/templates/layers/layer_detail.html:296
+#: documents/templates/documents/document_detail.html:165
+#: documents/templates/documents/document_upload.html:31
+#: groups/templates/groups/group_detail.html:60
+#: layers/templates/layers/layer_detail.html:295
 #: layers/templates/layers/layer_replace.html:94
 #: layers/templates/upload/layer_upload.html:93
-#: maps/templates/maps/map_detail.html:173 people/admin.py:55
+#: maps/templates/maps/map_detail.html:166 people/admin.py:55
 msgid "Permissions"
-msgstr "Ruhusa"
+msgstr "Vibali"
 
-#: documents/templates/documents/document_detail.html:175
+#: documents/templates/documents/document_detail.html:166
 msgid "Click the button below to change the permissions of this document."
-msgstr "Bonyeza kifungo chini ya mabadiliko ya ruhusa ya hati hii."
+msgstr "Bonyeza kitufe hapo chini kubadilisha vibali vya hati hii."
 
-#: documents/templates/documents/document_detail.html:176
+#: documents/templates/documents/document_detail.html:167
 msgid "Change Document Permissions"
-msgstr "Mabadiliko Document Permissions"
+msgstr "Badilisha Vibali vya Hati"
 
 #: documents/templates/documents/document_list.html:6
 #: documents/templates/documents/document_list.html:13
+#: documents/templates/documents/document_metadata.html:16
 #: documents/templates/documents/document_upload_base.html:11
 msgid "Explore Documents"
-msgstr "Kuchunguza Nyaraka"
+msgstr "Peruzi Hati"
 
 #: documents/templates/documents/document_list.html:12
 #: documents/templates/documents/document_upload_base.html:12
 msgid "Upload Documents"
-msgstr "Pakia Nyaraka"
+msgstr "Pakia Hati"
 
-#: documents/templates/documents/document_metadata.html:17
+#: documents/templates/documents/document_metadata.html:22
 #, python-format
 msgid ""
 "\n"
@@ -771,26 +726,30 @@ msgid ""
 "      "
 msgstr ""
 "\n"
-"Maelezo editing kwa %(document_title)s"
+"Hariri maelezo ya %(document_title)s"
 
-#: documents/templates/documents/document_metadata.html:22
-#: layers/templates/layers/layer_metadata.html:23
-#: maps/templates/maps/map_metadata.html:23
+#: documents/templates/documents/document_metadata.html:28
+#: layers/templates/layers/layer_metadata.html:29
+#: maps/templates/maps/map_metadata.html:29
 msgid "Error updating metadata.  Please check the following fields: "
-msgstr "Hitilafu kusasisha metadata. Tafadhali angalia mashamba yafuatayo:"
+msgstr ""
+"Hitilafu imetokea katika kusasisha metadata. Tafadhali angalia uga zifuatazo:"
 
-#: documents/templates/documents/document_metadata.html:46
-#: layers/templates/layers/layer_metadata.html:85
-#: maps/templates/maps/map_metadata.html:48
+#: documents/templates/documents/document_metadata.html:43
+#: documents/templates/documents/document_metadata.html:77
+#: groups/templates/groups/group_update.html:26
+#: layers/templates/layers/layer_metadata.html:51
+#: layers/templates/layers/layer_metadata.html:94
+#: maps/templates/maps/map_metadata.html:44
+#: maps/templates/maps/map_metadata.html:78
+msgid "Update"
+msgstr "Kusasisha"
+
+#: documents/templates/documents/document_metadata.html:55
+#: layers/templates/layers/layer_metadata.html:89
+#: maps/templates/maps/map_metadata.html:56
 msgid "Metadata Provider"
 msgstr "Mtoa metadata"
-
-#: documents/templates/documents/document_metadata.html:68
-#: groups/templates/groups/group_update.html:26
-#: layers/templates/layers/layer_metadata.html:90
-#: maps/templates/maps/map_metadata.html:70
-msgid "Update"
-msgstr "Mwisho"
 
 #: documents/templates/documents/document_remove.html:11
 #, python-format
@@ -804,38 +763,38 @@ msgstr ""
 
 #: documents/templates/documents/document_remove.html:18
 #: groups/templates/groups/group_remove.html:19
-#: layers/templates/layers/layer_remove.html:18
+#: layers/templates/layers/layer_remove.html:22
 #: maps/templates/maps/map_remove.html:19
-#: services/templates/services/service_remove.html:14
+#: services/templates/services/service_remove.html:17
 msgid "Yes, I am sure"
 msgstr "Ndiyo, nina uhakika"
 
 #: documents/templates/documents/document_remove.html:19
 #: groups/templates/groups/group_remove.html:20
-#: layers/templates/layers/layer_remove.html:19
+#: layers/templates/layers/layer_remove.html:23
 #: maps/templates/maps/map_remove.html:20
-#: services/templates/services/service_remove.html:15
+#: services/templates/services/service_remove.html:18
 msgid "No, don't remove it"
-msgstr "Hakuna, si kuondoa hiyo"
+msgstr "Hapana, usiondoe"
 
 #: documents/templates/documents/document_replace.html:4
 #: documents/templates/documents/document_replace.html:28
 msgid "Replace Document"
-msgstr "Nafasi Document"
+msgstr "Badilisha Hati"
 
 #: documents/templates/documents/document_replace.html:16
 msgid "Replace "
-msgstr "Nafasi"
+msgstr "Badilisha"
 
 #: documents/templates/documents/document_replace.html:27
 #: layers/templates/layers/layer_replace.html:84
-#: layers/templates/upload/layer_upload.html:82
+#: layers/templates/upload/layer_upload.html:86
 msgid "Clear"
-msgstr "Wazi"
+msgstr "Safisha"
 
 #: documents/templates/documents/document_upload.html:5
 msgid "Upload Document"
-msgstr "Upload Document"
+msgstr "Pakia hati"
 
 #: geoserver/ows.py:103
 msgid "Zipped Shapefile"
@@ -873,77 +832,76 @@ msgstr "PDF"
 msgid "PNG"
 msgstr "PNG"
 
-#: geoserver/signals.py:278
+#: geoserver/signals.py:282
 msgid "Could not create a download link for layer."
-msgstr "Haikuweza kuunda kiungo cha kupakua safu."
+msgstr "Haikuwezekana kuunda kiungo cha kupakua tabaka."
 
-#: geoserver/signals.py:309
+#: geoserver/signals.py:313
 msgid "KML"
 msgstr "KML"
 
-#: geoserver/signals.py:338
+#: geoserver/signals.py:342
 msgid "Tiles"
 msgstr "Tiles"
 
-#: geoserver/signals.py:385 layers/templates/layers/layer_detail.html:231
-#: services/views.py:1266
+#: geoserver/signals.py:389 layers/templates/layers/layer_detail.html:230
+#: services/views.py:1272
 msgid "Legend"
-msgstr "Hadithi"
+msgstr "Ufunguo"
 
-#: geoserver/views.py:338
+#: geoserver/views.py:335
 msgid "You don't have permissions to change style for this layer"
-msgstr "Huna ruhusa ya kubadili style kwa ajili ya safu hii"
+msgstr "Huna kibali cha kubadili mtido wa tabaka hili"
 
-#: geoserver/views.py:425 geoserver/views.py:480
+#: geoserver/views.py:422 geoserver/views.py:477
 msgid "Bad HTTP Authorization Credentials."
-msgstr "Mbaya Authorization HTTP sifa."
+msgstr "Utambulisho wa idhini ya HTTP batili"
 
-#: geoserver/management/__init__.py:30 layers/management/__init__.py:30
+#: geoserver/management/__init__.py:30
 msgid "Layer Uploaded"
-msgstr "Safu Uploaded"
+msgstr "Tabaka la Limepakiwa"
 
-#: geoserver/management/__init__.py:30 layers/management/__init__.py:30
+#: geoserver/management/__init__.py:30
 msgid "A layer was uploaded"
-msgstr "safu ilipakiwa"
+msgstr "Tabaka limepakiwa"
 
-#: geoserver/management/__init__.py:31 layers/management/__init__.py:31
+#: geoserver/management/__init__.py:31 layers/management/__init__.py:45
 msgid "Comment on Layer"
-msgstr "Maoni juu ya Tabaka"
+msgstr "Maoni kuhusu Tabaka"
 
-#: geoserver/management/__init__.py:31 layers/management/__init__.py:31
+#: geoserver/management/__init__.py:31 layers/management/__init__.py:46
 msgid "A layer was commented on"
-msgstr "safu ilikuwa maoni juu ya"
+msgstr "Maoni kuhusu tabaka yalitolewa"
 
-#: geoserver/management/__init__.py:32 layers/management/__init__.py:32
+#: geoserver/management/__init__.py:32 layers/management/__init__.py:49
 msgid "Rating for Layer"
-msgstr "Upimaji kwa Tabaka"
+msgstr "Uthaminishaji wa Tabaka"
 
-#: geoserver/management/__init__.py:32 layers/management/__init__.py:32
+#: geoserver/management/__init__.py:32 layers/management/__init__.py:50
 msgid "A rating was given to a layer"
-msgstr "rating ilitolewa kwa safu"
+msgstr "Tabaka limethaminishwa"
 
 #: groups/forms.py:15
 msgid ""
 "a short version of the name consisting only of letters, numbers, underscores "
 "and hyphens."
-msgstr ""
-"short version ya jina yenye tu ya barua, idadi, inasisitiza na hyphens."
+msgstr "ufupisha wa jina unaojumuisha herufi, namba, viunganishi '-' au' _' tu"
 
 #: groups/forms.py:23
 msgid "A group already exists with that slug."
-msgstr "kundi tayari ipo na kwamba koa."
+msgstr "Ttayari kuna kundi lenye `slug` hiyo."
 
 #: groups/forms.py:30 groups/forms.py:57
 msgid "A group already exists with that name."
-msgstr "kundi tayari ipo kwa jina hilo."
+msgstr "tayari kuna kundi lenye jina hilo."
 
 #: groups/models.py:17
 msgid "Public"
-msgstr "Public"
+msgstr "Umma "
 
 #: groups/models.py:18
 msgid "Public (invite-only)"
-msgstr "Umma (kukaribisha-tu)"
+msgstr "Umma (waalikwa tu)"
 
 #: groups/models.py:19
 msgid "Private"
@@ -956,113 +914,152 @@ msgid ""
 "can join.<br>Private: Registered users cannot see any details about the "
 "group, including membership.  Only invited users can join."
 msgstr ""
-"Umma: user yoyote iliyosajiliwa unaweza kuona na kujiunga na kundi umma. "
-"<br> Umma (kukaribisha-tu): user yoyote iliyosajiliwa unaweza kuona kundi. "
-"Tu watumiaji walioalikwa inaweza kujiunga. <br> Binafsi: Watumiaji "
-"waliojiandikisha hawezi kuona maelezo yoyote kuhusu kundi, ikiwa ni pamoja "
-"na uanachama. Tu watumiaji walioalikwa inaweza kujiunga."
+"Umma: mtumiaji yeyote aliyesajiliwa anaweza kuona na kujiunga na kundi la "
+"umma. <br> Umma (waalikwa tu): Mtumiaji yeyote aliyesajiliwa anaweza kuona "
+"kundi. Watumiaji walioalikwa tu ndio wanaweza kujiunga. <br> Binafsi: "
+"Watumiaji waliojiandikisha hawezi kuona maelezo yoyote kuhusu kundi, ikiwa "
+"ni pamoja na uanachama. Watumiaji walioalikwa tu ndio wanaweza kujiunga."
 
 #: groups/models.py:27
 msgid ""
 "Email used to contact one or all group members, such as a mailing list, "
 "shared email, or exchange group."
 msgstr ""
-"Email kutumika kuwasiliana na wanachama moja au yote ya kundi, kama vile "
-"orodha ya barua, barua pepe ya pamoja, au kubadilishana kikundi."
+"Barua pepe ya kuwasiliana na mwanachama mmoja au wanachama wote wa kundi, "
+"kama vile jukwaa la barua pepe, barua pepe ya pamoja au `exchang group`."
 
 #: groups/models.py:36
 msgid "email"
-msgstr "email"
+msgstr "barua pepe"
 
-#: groups/models.py:181 groups/models.py:200
+#: groups/models.py:184 groups/models.py:203
+#: groups/templates/groups/group_members.html:28
+#: groups/templates/groups/group_members.html:54
+#: groups/templates/groups/group_members.html:81
 msgid "Manager"
-msgstr "Meneja"
+msgstr "Msimamizi"
 
-#: groups/models.py:182 groups/models.py:201
+#: groups/models.py:185 groups/models.py:204
 msgid "Member"
 msgstr "Mwanachama"
 
-#: groups/models.py:206
+#: groups/models.py:209
 msgid "Sent"
-msgstr "Alimtuma"
+msgstr "Imetumwa"
 
-#: groups/models.py:207
+#: groups/models.py:210
 msgid "Accepted"
 msgstr "Kukubalika"
 
-#: groups/models.py:208
+#: groups/models.py:211
 msgid "Declined"
-msgstr "Ulipungua"
+msgstr "Imekataliwa"
 
 #: groups/templates/groups/activity.html:7
 #: groups/templates/groups/activity.html:8
-#: groups/templates/groups/activity.html:20 templates/actstream/actor.html:20
+#: groups/templates/groups/activity.html:20 templates/actstream/actor.html:19
 msgid "Activity Feed for"
-msgstr "Shughuli Feed kwa"
+msgstr "Mlisho wa matukio ya"
+
+#: groups/templates/groups/activity.html:24
+#: groups/templates/groups/group_members.html:13
+#: social/templates/social/activity_list.html:20
+#: templates/user_messages/inbox.html:16
+msgid "All"
+msgstr ""
+
+#: groups/templates/groups/activity.html:25
+#: people/templates/people/_profile_filters.html:5
+#: services/templates/services/service_detail.html:64
+#: social/templates/social/activity_list.html:21 templates/500.html:39
+#: templates/base.html:48
+msgid "Layers"
+msgstr "Matabaka"
+
+#: groups/templates/groups/activity.html:26
+#: people/templates/people/_profile_filters.html:6
+#: social/templates/social/activity_list.html:22 templates/500.html:42
+#: templates/base.html:51
+msgid "Maps"
+msgstr "Ramani"
 
 #: groups/templates/groups/activity.html:27
-#: social/templates/social/activity_list.html:23
-#: templates/actstream/actor.html:27
+#: social/templates/social/activity_list.html:23 templates/_actions.html:11
+#: templates/_comments.html:12
+msgid "Comments"
+msgstr "Maoni"
+
+#: groups/templates/groups/activity.html:35
+#: groups/templates/groups/activity.html:44
+#: groups/templates/groups/activity.html:53
+#: groups/templates/groups/activity.html:62
+#: social/templates/social/activity_list.html:31
+#: social/templates/social/activity_list.html:40
+#: social/templates/social/activity_list.html:49
+#: social/templates/social/activity_list.html:58
+#: templates/actstream/actor.html:28
 msgid "No actions yet"
-msgstr "Hakuna hatua bado"
+msgstr "Hakuna kilichofanyika bado"
 
 #: groups/templates/groups/group_base.html:13
 #: groups/templates/groups/group_list.html:5
-#: groups/templates/groups/group_list.html:11
+#: groups/templates/groups/group_list.html:12
 msgid "Explore Groups"
-msgstr "Kuchunguza Vikundi"
+msgstr "Peruzi Makundi"
 
 #: groups/templates/groups/group_base.html:14
 #: groups/templates/groups/group_create.html:11
+#: groups/templates/groups/group_list.html:11
 msgid "Create a Group"
-msgstr "Kujenga Group"
+msgstr "Unda kundi"
 
 #: groups/templates/groups/group_base.html:16
 #: groups/templates/groups/group_update.html:11
 msgid "Update Group"
-msgstr "Mwisho Group"
+msgstr "Sasisha Kundi"
 
 #: groups/templates/groups/group_base.html:17
 msgid "Remove Group"
-msgstr "Kuondoa Group"
+msgstr "Ondoa Kundi"
 
 #: groups/templates/groups/group_create.html:5
 #: groups/templates/groups/group_update.html:5
 msgid "Create Group"
-msgstr "Kujenga Group"
+msgstr "Unda Kundi"
 
 #: groups/templates/groups/group_create.html:26
-#: services/templates/services/service_register.html:17
+#: services/templates/services/service_register.html:19
 msgid "Create"
-msgstr "Kujenga"
+msgstr "Unda"
 
 #: groups/templates/groups/group_detail.html:19
 msgid "This group has not created a logo."
-msgstr "Kundi hili hakuumba alama."
+msgstr "Kundi hili halijaunda nembo"
 
-#: groups/templates/groups/group_detail.html:46
+#: groups/templates/groups/group_detail.html:41
 #: groups/templates/groups/group_invite_response.html:7
-#: groups/templates/groups/group_members.html:12
+#: groups/templates/groups/group_members.html:9
+#: groups/templates/groups/group_members.html:15
 msgid "Members"
 msgstr "Wanachama"
 
-#: groups/templates/groups/group_detail.html:57
+#: groups/templates/groups/group_detail.html:52
 msgid "Edit Group Details"
-msgstr "Hariri Group Maelezo"
+msgstr "Hariri Maelezo ys Kundi"
 
-#: groups/templates/groups/group_detail.html:58
+#: groups/templates/groups/group_detail.html:53
 msgid "Manage Group Members"
-msgstr "Kusimamia Wanachama Group"
+msgstr "Simamia Wanachama wa Kundi"
 
-#: groups/templates/groups/group_detail.html:59
+#: groups/templates/groups/group_detail.html:54
 msgid "Delete this Group"
-msgstr "Kufuta Group hii"
+msgstr "Futa kundi hili"
+
+#: groups/templates/groups/group_detail.html:57
+msgid "Group Activities"
+msgstr "Matukio ya Kundi"
 
 #: groups/templates/groups/group_detail.html:62
-msgid "Group Activities"
-msgstr "Group Shughuli"
-
-#: groups/templates/groups/group_detail.html:67
 #, python-format
 msgid ""
 "\n"
@@ -1070,66 +1067,91 @@ msgid ""
 "          "
 msgstr ""
 "\n"
-"Kundi hili <strong>%(access)s</strong>."
+"Kundi hili  ni la <strong>%(access)s</strong>."
 
-#: groups/templates/groups/group_detail.html:71
+#: groups/templates/groups/group_detail.html:66
 msgid "Anyone may join this group."
-msgstr "Mtu yeyote anaweza kujiunga na kikundi hiki."
+msgstr "Mtu yeyote anaweza kujiunga na kundi hili."
 
-#: groups/templates/groups/group_detail.html:77
+#: groups/templates/groups/group_detail.html:74
 msgid "Anyone may view this group but membership is by invitation only."
-msgstr ""
-"Mtu yeyote anaweza kuona kundi hili lakini ni uanachama kwa mwaliko tu."
+msgstr "Mtu yeyote anaweza kuona kundi hili lakini uanachama kwa mwaliko tu."
 
-#: groups/templates/groups/group_detail.html:79
+#: groups/templates/groups/group_detail.html:76
 msgid "Membership is by invitation only."
 msgstr "Uanachama ni kwa mwaliko tu."
 
-#: groups/templates/groups/group_detail.html:84
+#: groups/templates/groups/group_detail.html:81
+#: groups/templates/groups/group_members.html:14
 msgid "Managers"
 msgstr "Wasimamizi"
 
 #: groups/templates/groups/group_invite_response.html:10
 msgid "Membership Request"
-msgstr "Ombi uanachama"
+msgstr "Ombi la uwanachama"
 
 #: groups/templates/groups/group_invite_response.html:14
 msgid "Don't Join"
-msgstr "Je, si Kujiunga"
+msgstr "Usijiunge"
 
 #: groups/templates/groups/group_invite_response.html:15
 msgid "Join Group"
-msgstr "Kujiunga Group"
-
-#: groups/templates/groups/group_list.html:16
-#: people/templates/people/profile_list.html:13
-#: templates/search/_sort_filters.html:5
-msgid "Less recent"
-msgstr "Chini ya hivi karibuni"
+msgstr "Jiunge na Kundi"
 
 #: groups/templates/groups/group_list.html:17
-#: people/templates/people/profile_list.html:14
-#: templates/search/_sort_filters.html:6
-msgid "A - Z"
-msgstr "- Z"
+#: people/templates/people/profile_list.html:13
+#: templates/search/_sort_filters.html:5
+msgid "Most recent"
+msgstr "Hivi karibuni zaidi"
 
 #: groups/templates/groups/group_list.html:18
+#: people/templates/people/profile_list.html:14
+#: templates/search/_sort_filters.html:6
+msgid "Less recent"
+msgstr "Wakati wa nyuma zaidi"
+
+#: groups/templates/groups/group_list.html:19
 #: people/templates/people/profile_list.html:15
 #: templates/search/_sort_filters.html:7
+msgid "A - Z"
+msgstr "A - Z"
+
+#: groups/templates/groups/group_list.html:20
+#: people/templates/people/profile_list.html:16
+#: templates/search/_sort_filters.html:8
 msgid "Z - A"
 msgstr "Z - A"
 
-#: groups/templates/groups/group_members.html:9
-msgid "Group details"
-msgstr "Maelezo Group"
+#: groups/templates/groups/group_list.html:21
+#: templates/search/_sort_filters.html:9
+msgid "Most popular"
+msgstr "Maarufu zaidi"
 
-#: groups/templates/groups/group_members.html:19
+#: groups/templates/groups/group_members.html:8
+#, fuzzy
+msgid "Edit Members for"
+msgstr "Hariri maelezo ya"
+
+#: groups/templates/groups/group_members.html:33
+#: groups/templates/groups/group_members.html:59
+#: groups/templates/groups/group_members.html:86
+#, fuzzy
+msgid "Remove"
+msgstr "Ondoa Kundi"
+
+#: groups/templates/groups/group_members.html:37
+#: groups/templates/groups/group_members.html:63
+#: groups/templates/groups/group_members.html:90
+msgid "Role"
+msgstr ""
+
+#: groups/templates/groups/group_members.html:99
 msgid "Add members"
-msgstr "Kuongeza wanachama"
+msgstr "Ongeza wanachama"
 
-#: groups/templates/groups/group_members.html:28
+#: groups/templates/groups/group_members.html:110
 msgid "Invite people"
-msgstr "Kualika watu"
+msgstr "Alika watu"
 
 #: groups/templates/groups/group_remove.html:12
 #, python-format
@@ -1143,205 +1165,216 @@ msgstr ""
 
 #: groups/templates/groups/group_remove_maps_data.html:6
 msgid "Remove Maps/Data from Group"
-msgstr "Kuondoa Maps / Takwimu kutoka Group"
+msgstr "Ondoa Ramani/Data kwenye Kundi"
 
 #: groups/templates/groups/group_remove_maps_data.html:15
 msgid "Remove selected maps/data"
-msgstr "Kuondoa ramani aliliteua / data"
+msgstr "Ondoa ramani/data zilizochaguliwa"
 
 #: layers/models.py:51
 msgid "style name"
-msgstr "jina style"
+msgstr "jina la mtindo"
 
 #: layers/models.py:53
 msgid "sld text"
-msgstr "Nakala SLD"
+msgstr "sld text"
 
 #: layers/models.py:55
 msgid "sld version"
-msgstr "SLD toleo"
+msgstr "toleo la sld"
 
 #: layers/models.py:59
 msgid "sld url"
-msgstr "SLD url"
+msgstr "url ya sld"
 
-#: layers/models.py:278
+#: layers/models.py:283
 msgid "attribute name"
-msgstr "sifa jina"
+msgstr "jina la sifa"
 
-#: layers/models.py:279
+#: layers/models.py:284
 msgid "name of attribute as stored in shapefile/spatial database"
-msgstr "jina la sifa kama kuhifadhiwa katika shapefile / anga database"
+msgstr ""
+"jina la sifa kama kuhifadhiwa katika shapefile au hifadhidata ya kijiografia"
 
-#: layers/models.py:285
+#: layers/models.py:290
 msgid "attribute description"
-msgstr "sifa maelezo"
-
-#: layers/models.py:286
-msgid "description of attribute to be used in metadata"
-msgstr "maelezo ya sifa ya kutumika katika metadata"
+msgstr "maelezo kuhusu sifa"
 
 #: layers/models.py:291
-msgid "attribute label"
-msgstr "sifa studio"
+msgid "description of attribute to be used in metadata"
+msgstr "maelezo ya sifa kwa ajili ya metadata"
 
-#: layers/models.py:292
+#: layers/models.py:296
+msgid "attribute label"
+msgstr "lebo ya sifa"
+
+#: layers/models.py:297
 msgid "title of attribute as displayed in GeoNode"
 msgstr "jina la sifa kama kuonyeshwa katika GeoNode"
 
-#: layers/models.py:298
+#: layers/models.py:303
 msgid "attribute type"
-msgstr "sifa ya aina"
+msgstr "aina ya sifa"
 
-#: layers/models.py:299
+#: layers/models.py:304
 msgid "the data type of the attribute (integer, string, geometry, etc)"
-msgstr "aina ya data sifa (integer, kamba, jiometri, nk)"
-
-#: layers/models.py:306
-msgid "visible?"
-msgstr "inayoonekana?"
-
-#: layers/models.py:307
-msgid "specifies if the attribute should be displayed in identify results"
-msgstr "anges kama sifa lazima kuonyeshwa katika kutambua matokeo"
-
-#: layers/models.py:310
-msgid "display order"
-msgstr "kuonyesha ili"
+msgstr "aina ya data ya sifa (integer, string, geometry, nk)"
 
 #: layers/models.py:311
+msgid "visible?"
+msgstr "inaonekana?"
+
+#: layers/models.py:312
+msgid "specifies if the attribute should be displayed in identify results"
+msgstr "Inabainisha ikiwa sifa ionyeshwe katika kuonesha matokeo"
+
+#: layers/models.py:315
+msgid "display order"
+msgstr "mpangilio wa kuonesha"
+
+#: layers/models.py:316
 msgid ""
 "specifies the order in which attribute should be displayed in identify "
 "results"
-msgstr "bayana utaratibu ambao sifa lazima kuonyeshwa katika kutambua matokeo"
-
-#: layers/models.py:316
-msgid "count"
-msgstr "kuhesabu"
-
-#: layers/models.py:317
-msgid "count value for this field"
-msgstr "kuhesabu thamani ya uwanja huu"
-
-#: layers/models.py:320
-msgid "min"
-msgstr "min"
+msgstr "Inabainisha mpangilio ambao sifa inatakiwa kuonyeshwa katika matokeo"
 
 #: layers/models.py:321
+msgid "count"
+msgstr "hesabu"
+
+#: layers/models.py:322
+msgid "count value for this field"
+msgstr "hesabu ya thamani kwa uga huu"
+
+#: layers/models.py:325
+msgid "min"
+msgstr "kiwango cha chini"
+
+#: layers/models.py:326
 msgid "minimum value for this field"
-msgstr "thamani ya chini kwa uwanja huu"
+msgstr "Kiwango cha chini kwa uga huu"
 
-#: layers/models.py:328
+#: layers/models.py:333
 msgid "max"
-msgstr "max"
+msgstr "kiwango cha juu"
 
-#: layers/models.py:329
+#: layers/models.py:334
 msgid "maximum value for this field"
-msgstr "thamani ya upeo kwa ajili ya uwanja huu"
+msgstr "kiwango cha juu kwa uga huu"
 
-#: layers/models.py:336
+#: layers/models.py:341
 msgid "average"
 msgstr "wastani"
 
-#: layers/models.py:337
+#: layers/models.py:342
 msgid "average value for this field"
-msgstr "wastani wa thamani kwa uwanja huu"
+msgstr "wastani wa kiwango ya uga huu"
 
-#: layers/models.py:344
+#: layers/models.py:349
 msgid "median"
-msgstr "wastani"
+msgstr "kiwango cha katikati"
 
-#: layers/models.py:345
+#: layers/models.py:350
 msgid "median value for this field"
-msgstr "wastani thamani kwa uwanja huu"
+msgstr "kiwango cha kati kwa sehemu hii"
 
-#: layers/models.py:352
+#: layers/models.py:357
 msgid "standard deviation"
 msgstr "kiwango kupotoka"
 
-#: layers/models.py:353
+#: layers/models.py:358
 msgid "standard deviation for this field"
-msgstr "kiwango kupotoka kwa uwanja huu"
+msgstr "standard deviation ya uga huu"
 
-#: layers/models.py:360
+#: layers/models.py:365
 msgid "sum"
-msgstr "Jumla"
+msgstr "jumla"
 
-#: layers/models.py:361
+#: layers/models.py:366
 msgid "sum value for this field"
-msgstr "Jumla ya thamani ya uwanja huu"
-
-#: layers/models.py:368
-msgid "unique values for this field"
-msgstr "maadili kipekee kwa uwanja huu"
+msgstr "Jumla ya thamani ya uga huu"
 
 #: layers/models.py:373
+msgid "unique values for this field"
+msgstr "thamani maalum kwa uga huu"
+
+#: layers/models.py:378
 msgid "last modified"
-msgstr "mara iliyopita"
+msgstr "maboresho ya mwisho"
 
-#: layers/models.py:375
+#: layers/models.py:380
 msgid "date when attribute statistics were last updated"
-msgstr "tarehe wakati takwimu sifa walikuwa mwisho updated"
+msgstr "tarehe ambapo takwimu za sifa zilisasishwa kwa mara ya mwisho"
 
-#: layers/utils.py:574
-msgid "Thumbnail"
-msgstr "Picha ndogo"
-
-#: layers/views.py:59
+#: layers/views.py:66
 msgid ""
 "There was an error while attempting to upload your data. Please try again, "
 "or contact and administrator if the problem continues."
 msgstr ""
-"Kulikuwa na makosa wakati wa majaribio ya kupakia data yako. Tafadhali "
-"jaribu tena, au wasiliana na msimamizi kama tatizo inaendelea."
+"Kulitokea hitilafu katika kujaribu kuakia data yako. Tafadhali jaribu tena, "
+"au wasiliana na msimamizi kama tatizo litaendelea."
 
-#: layers/views.py:62
+#: layers/views.py:69
 msgid "You are not permitted to delete this layer"
-msgstr "Wewe hawaruhusiwi kufuta safu hii"
+msgstr "Huna kibali cha kufuta tabaka hili"
 
-#: layers/views.py:63
+#: layers/views.py:70
 msgid "You do not have permissions for this layer."
-msgstr "Huna ruhusa kwa safu hii."
+msgstr "Huna kibali cha tabaka hili"
 
-#: layers/views.py:64
+#: layers/views.py:71
 msgid "You are not permitted to modify this layer"
-msgstr "Wewe hawaruhusiwi kurekebisha safu hii"
+msgstr "Huna kibali cha kubadilisha kitu katika tabaka hili"
 
-#: layers/views.py:66
+#: layers/views.py:73
 msgid "You are not permitted to modify this layer's metadata"
-msgstr "You hawaruhusiwi kurekebisha metadata safu hii ya"
+msgstr "Huna kibali cha kubadilisha metadata za tabaka hili"
 
-#: layers/views.py:67
+#: layers/views.py:74
 msgid "You are not permitted to view this layer"
-msgstr "Wewe si ruhusa kwa mtazamo safu hii"
+msgstr "Huna kibali cha kutazama tabaka  hili"
 
-#: layers/templates/layers/_actions.html:4
-#: layers/templates/layers/layer_metadata.html:32
-#: layers/templates/layers/layer_metadata.html:70
-msgid "Attributes"
-msgstr "Sifa"
+#: layers/views.py:443
+msgid "You are attempting to replace a vector layer with a raster."
+msgstr ""
 
-#: layers/templates/layers/_actions.html:11
-msgid "GeoGig"
-msgstr "GeoGig"
+#: layers/views.py:446
+msgid "You are attempting to replace a raster layer with a vector."
+msgstr ""
 
-#: layers/templates/layers/_layer_list_item.html:38
-msgid "Create a map"
-msgstr "Kujenga ramani"
+#: layers/management/__init__.py:33
+#, fuzzy
+msgid "Layer Created"
+msgstr "Ramani Imetengenezwa"
 
-#: layers/templates/layers/_layer_list_item.html:48
-#: layers/templates/layers/layer_detail.html:131
-#: layers/templates/layers/layer_detail.html:144
-msgid "Download Layer"
-msgstr "Download Tabaka"
+#: layers/management/__init__.py:34
+#, fuzzy
+msgid "A Layer was created"
+msgstr "Ramani iliundwa"
 
-#: layers/templates/layers/_layer_list_item.html:85
-msgid "You do not have permission to view this layer"
-msgstr "Huna ruhusa kuona safu hii"
+#: layers/management/__init__.py:37
+#, fuzzy
+msgid "Layer Updated"
+msgstr "Tabaka la Limepakiwa"
+
+#: layers/management/__init__.py:38
+#, fuzzy
+msgid "A Layer was updated"
+msgstr "Tabaka limepakiwa"
+
+#: layers/management/__init__.py:41
+#, fuzzy
+msgid "Layer Deleted"
+msgstr "Mtindo msingoi wa tabaka"
+
+#: layers/management/__init__.py:42
+#, fuzzy
+msgid "A Layer was deleted"
+msgstr "Tabaka limepakiwa"
 
 #: layers/templates/layers/layer_change_poc.html:5
 msgid "Home"
-msgstr "Home"
+msgstr "Nyumbani"
 
 #: layers/templates/layers/layer_change_poc.html:5
 #: layers/templates/layers/layer_change_poc.html:7
@@ -1353,133 +1386,148 @@ msgid "Assign a new point of contact to the layers below:"
 msgstr "Hawawajui hatua mpya ya kuwasiliana na tabaka chini:"
 
 #: layers/templates/layers/layer_change_poc.html:17
-#: people/templates/people/forgot_username_form.html:17
+#: people/templates/people/forgot_username_form.html:15
 msgid "Submit"
 msgstr "Wasilisha"
 
-#: layers/templates/layers/layer_detail.html:52
+#: layers/templates/layers/layer_detail.html:49
 msgid "Attribute Name"
-msgstr "Sifa Jina"
+msgstr "Jina la Sifa"
 
-#: layers/templates/layers/layer_detail.html:53
+#: layers/templates/layers/layer_detail.html:50
 msgid "Range"
-msgstr "Mbalimbali"
+msgstr "Range"
 
-#: layers/templates/layers/layer_detail.html:54
+#: layers/templates/layers/layer_detail.html:51
 msgid "Average"
 msgstr "Wastani"
 
-#: layers/templates/layers/layer_detail.html:55
+#: layers/templates/layers/layer_detail.html:52
 msgid "Median"
-msgstr "Wastani"
+msgstr "Kiwango cha katikati"
 
-#: layers/templates/layers/layer_detail.html:56
+#: layers/templates/layers/layer_detail.html:53
 msgid "Standard Deviation"
-msgstr "Standard Kupotoka"
+msgstr "Standard Deviation"
 
-#: layers/templates/layers/layer_detail.html:109
+#: layers/templates/layers/layer_detail.html:106
 msgid "Rate this layer"
 msgstr "Kiwango safu hii"
 
-#: layers/templates/layers/layer_detail.html:189
-#: layers/templates/layers/layer_detail.html:198
+#: layers/templates/layers/layer_detail.html:128
+#: layers/templates/layers/layer_detail.html:141
+msgid "Download Layer"
+msgstr "Pakua Tabaka"
+
+#: layers/templates/layers/layer_detail.html:188
+#: layers/templates/layers/layer_detail.html:195
 msgid "Edit Layer"
 msgstr "Hariri Tabaka"
 
-#: layers/templates/layers/layer_detail.html:208
+#: layers/templates/layers/layer_detail.html:204
 #: layers/templates/layers/layer_style_manage.html:14
 msgid "Manage Styles"
-msgstr "Kusimamia Styles"
+msgstr "Ratibu mitindo"
 
-#: layers/templates/layers/layer_detail.html:210
+#: layers/templates/layers/layer_detail.html:206
 msgid "Edit Styles"
-msgstr "Edit Styles"
+msgstr "Hariri mitindo"
 
-#: layers/templates/layers/layer_detail.html:215
+#: layers/templates/layers/layer_detail.html:211
+#: maps/templates/maps/map_detail.html:111
+msgid "Set Map Thumbnail"
+msgstr "Seti kipicha cha ramani"
+
+#: layers/templates/layers/layer_detail.html:214
 msgid "Replace this Layer"
-msgstr "Nafasi Tabaka hii"
+msgstr "Badilisha Tabaka hili"
 
-#: layers/templates/layers/layer_detail.html:218
+#: layers/templates/layers/layer_detail.html:217
 msgid "Remove this Layer"
-msgstr "Kuondoa Tabaka hii"
+msgstr "Ondoa Tabaka hili"
 
-#: layers/templates/layers/layer_detail.html:241
+#: layers/templates/layers/layer_detail.html:240
 msgid "Maps using this layer"
-msgstr "Ramani ya kutumia safu hii"
+msgstr "Ramani zinazotumia tabaka hili"
 
-#: layers/templates/layers/layer_detail.html:243
+#: layers/templates/layers/layer_detail.html:242
 msgid "List of maps using this layer:"
-msgstr "Orodha ya ramani kwa kutumia safu hii:"
+msgstr "Orodha ya ramani zinzotumia tabaka hili"
 
-#: layers/templates/layers/layer_detail.html:249
+#: layers/templates/layers/layer_detail.html:248
 msgid "This layer is not currently used in any maps."
-msgstr "Safu hii kwa sasa kutumika katika ramani yoyote."
+msgstr "Tabaka hili kwa sasa halitumiwi na ramani yoyote"
+
+#: layers/templates/layers/layer_detail.html:253
+msgid "Create a map using this layer"
+msgstr "Tengeza ramani kwa kutumia tabaka hili"
 
 #: layers/templates/layers/layer_detail.html:254
-msgid "Create a map using this layer"
-msgstr "Kujenga ramani kwa kutumia safu hii"
+msgid "Click the button below to generate a new map based on this layer."
+msgstr ""
+"Bonyeza kitufe hapo chini kutengenza ramani mpya kutokana na tabaka hili."
 
 #: layers/templates/layers/layer_detail.html:255
-msgid "Click the button below to generate a new map based on this layer."
-msgstr "Bonyeza kifungo chini ya kuzalisha ramani mpya kulingana na safu hii."
-
-#: layers/templates/layers/layer_detail.html:256
 msgid "Create a Map"
-msgstr "Kujenga Ramani"
+msgstr "Tengeneza Ramani"
+
+#: layers/templates/layers/layer_detail.html:260
+msgid "Documents related to this layer"
+msgstr "Hati zinazohusiana na tabaka hili"
 
 #: layers/templates/layers/layer_detail.html:261
-msgid "Documents related to this layer"
-msgstr "Nyaraka kuhusiana na safu hii"
-
-#: layers/templates/layers/layer_detail.html:262
 msgid "List of documents related to this layer:"
-msgstr "Orodha ya nyaraka kuhusiana na safu hii:"
+msgstr "Orodha ya hati kuhusiana na safu hii:"
 
-#: layers/templates/layers/layer_detail.html:273
+#: layers/templates/layers/layer_detail.html:272
 msgid "Styles"
 msgstr "Mitindo"
 
-#: layers/templates/layers/layer_detail.html:274
+#: layers/templates/layers/layer_detail.html:273
 msgid ""
 "The following styles are associated with this layer. Choose a style to view "
 "it in the preview map."
 msgstr ""
-"mitindo zifuatazo ni kuhusishwa na safu hii. Kuchagua mtindo kuona ni katika "
-"ramani hakikisho."
+"Mitindo ifuatayo inahusishwa na tabaka hili. Chagua mtindo ukitaka kuutazama "
+"kwenye ramani"
 
-#: layers/templates/layers/layer_detail.html:287
+#: layers/templates/layers/layer_detail.html:286
 msgid "No styles associated with this layer"
-msgstr "Hakuna mitindo kuhusishwa na safu hii"
+msgstr "Hakuna mitindo iliyosishwa na safu hii"
+
+#: layers/templates/layers/layer_detail.html:296
+msgid "Click the button below to change the permissions of this layer."
+msgstr "Bonyeza kitufe hapo chini ili kubadili vibali vya safu hii."
 
 #: layers/templates/layers/layer_detail.html:297
-msgid "Click the button below to change the permissions of this layer."
-msgstr "Bonyeza kifungo chini ya kubadili ruhusa ya safu hii."
-
-#: layers/templates/layers/layer_detail.html:298
 msgid "Change Layer Permissions"
-msgstr "Change Tabaka Permissions"
+msgstr "Badilisha Vibali vya Tabaka"
+
+#: layers/templates/layers/layer_detail.html:304
+msgid "External service layer"
+msgstr "Tabaka kutoka huduma ya nje"
 
 #: layers/templates/layers/layer_detail.html:305
-msgid "External service layer"
-msgstr "Huduma ya nje safu"
-
-#: layers/templates/layers/layer_detail.html:306
 msgid "Source"
 msgstr "Chanzo"
 
-#: layers/templates/layers/layer_list.html:7
-#: layers/templates/layers/layer_list.html:14
-#: layers/templates/upload/layer_upload_base.html:11 templates/index.html:33
-msgid "Explore Layers"
-msgstr "Kuchunguza tabaka"
-
+#: layers/templates/layers/layer_list.html:6
 #: layers/templates/layers/layer_list.html:13
-#: layers/templates/upload/layer_upload_base.html:12 templates/500.html:74
-#: templates/base.html:90
-msgid "Upload Layers"
-msgstr "Upload Tabaka"
+#: layers/templates/layers/layer_metadata.html:11
+#: layers/templates/layers/layer_remove.html:8
+#: layers/templates/upload/layer_upload.html:17
+#: layers/templates/upload/layer_upload_base.html:11 templates/index.html:32
+msgid "Explore Layers"
+msgstr "Peruzi matabaka"
 
-#: layers/templates/layers/layer_metadata.html:12
+#: layers/templates/layers/layer_list.html:12
+#: layers/templates/upload/layer_upload.html:18
+#: layers/templates/upload/layer_upload_base.html:12 templates/500.html:74
+#: templates/base.html:196
+msgid "Upload Layers"
+msgstr "Pakia Matabaka"
+
+#: layers/templates/layers/layer_metadata.html:17
 #, python-format
 msgid ""
 "\n"
@@ -1487,131 +1535,143 @@ msgid ""
 "      "
 msgstr ""
 "\n"
-"Maelezo Editing kwa %(layer_title)s"
+"Hariri maelezo ya %(layer_title)s"
 
-#: layers/templates/layers/layer_metadata.html:17
+#: layers/templates/layers/layer_metadata.html:23
+#, fuzzy
 msgid ""
 "Note: this layer's orginal metadata was populated by importing a metadata "
 "XML file.\n"
-"        GeoNode's metadata import supports a subset of ISO, FGDC, and Dublin "
-"Core metadata elements.\n"
-"        Some of your original metadata may have been lost."
+"          GeoNode's metadata import supports a subset of ISO, FGDC, and "
+"Dublin Core metadata elements.\n"
+"          Some of your original metadata may have been lost."
 msgstr ""
-"Kumbuka: metadata safu hii ya ya awali ilikuwa wakazi na kuagiza metadata ya "
-"XML faili. GeoNode ya metadata kuagiza inasaidia subset ya ISO, FGDC, na "
-"Dublin Core metadata vipengele. Baadhi ya metadata yako ya awali inaweza "
-"zimepotea."
+"Kumbuka: Metadata halisi za tabaka hili ziliingizwa kwa kuleta metadata "
+"kutoka faili la XML. Geonode inawezasha uletaji wa sehemu ya metadata za  "
+"ISO, FGDC, na Dublin Core metadata.\n"
+"baadhi ya metadata halisi zinaweza kuwa zimeachwa"
 
-#: layers/templates/layers/layer_metadata.html:72
+#: layers/templates/layers/layer_metadata.html:37
+#: layers/templates/layers/layer_metadata.html:74 templates/_actions.html:5
+msgid "Attributes"
+msgstr "Sifa"
+
+#: layers/templates/layers/layer_metadata.html:76
 msgid "Attribute"
 msgstr "Sifa"
 
-#: layers/templates/layers/layer_metadata.html:72
+#: layers/templates/layers/layer_metadata.html:76
 msgid "Label"
-msgstr "Label"
+msgstr "Lebo"
 
-#: layers/templates/layers/layer_metadata.html:72 services/forms.py:24
+#: layers/templates/layers/layer_metadata.html:76 services/forms.py:27
 #: services/templates/services/layers_register.html:28
 msgid "Description"
 msgstr "Maelezo"
 
-#: layers/templates/layers/layer_metadata.html:72
+#: layers/templates/layers/layer_metadata.html:76
 msgid "Display Order"
-msgstr "Display Order"
+msgstr "Mpangilio wa muonekano"
 
-#: layers/templates/layers/layer_remove.html:11
-#, python-format
+#: layers/templates/layers/layer_remove.html:9
+#, fuzzy
+msgid "Remove Layers"
+msgstr "Ondoa Tabaka hili"
+
+#: layers/templates/layers/layer_remove.html:14
+#, fuzzy, python-format
 msgid ""
 "\n"
-"          Are you sure you want to remove %(layer_title)s?\n"
+"          Are you sure you want to remove <a href="
+"\"%(layer.get_absolute_url)s\">%(layer_title)s</a>?\n"
 "        "
 msgstr ""
 "\n"
 "Je una uhakika unataka kuondoa %(layer_title)s?"
 
-#: layers/templates/layers/layer_remove.html:25
+#: layers/templates/layers/layer_remove.html:30
 msgid "This action affects the following maps:"
-msgstr "Hatua hii huathiri ramani ifuatayo:"
+msgstr "Hatua hii ina athari kwa ramani zifuatazo:"
 
-#: layers/templates/layers/layer_remove.html:29
+#: layers/templates/layers/layer_remove.html:34
 msgid "No maps are using this layer"
-msgstr "Hakuna ramani ni kutumia safu hii"
+msgstr "Hakuna ramani zinazotumia tabaka hili"
 
 #: layers/templates/layers/layer_replace.html:5
 #: layers/templates/layers/layer_replace.html:85
 msgid "Replace Layer"
-msgstr "Nafasi Tabaka"
+msgstr "Badilisha Tabaka"
 
 #: layers/templates/layers/layer_replace.html:19
 msgid "Replace Layer: "
-msgstr "Nafasi Tabaka:"
+msgstr "Badilisha Tabaka:"
 
 #: layers/templates/layers/layer_replace.html:23
-#: layers/templates/upload/layer_upload.html:20
+#: layers/templates/upload/layer_upload.html:24
 msgid "Incomplete Uploads"
-msgstr "Upakiaji haujakamilika"
+msgstr "Upakiaji usio kamili"
 
 #: layers/templates/layers/layer_replace.html:24
-#: layers/templates/upload/layer_upload.html:21
+#: layers/templates/upload/layer_upload.html:25
 msgid "You have the following incomplete uploads"
-msgstr "Una zifuatazo uploads incomplete"
+msgstr "Kuna upakiaji ufuatao ambaosi kamili"
 
 #: layers/templates/layers/layer_replace.html:27
-#: layers/templates/upload/layer_upload.html:24
+#: layers/templates/upload/layer_upload.html:28
 msgid "last updated on"
-msgstr "mwisho updated juu ya"
+msgstr "mara ya mwisho kusasishwa ni"
 
 #: layers/templates/layers/layer_replace.html:29
-#: layers/templates/upload/layer_upload.html:26
+#: layers/templates/upload/layer_upload.html:30
 msgid "Resume"
 msgstr "Resume"
 
 #: layers/templates/layers/layer_replace.html:30
 #: layers/templates/layers/layer_replace.html:38
-#: layers/templates/upload/layer_upload.html:27
-#: layers/templates/upload/layer_upload.html:34
-#: templates/announcements/announcement_form.html:23
-#: templates/user_messages/inbox.html:44
+#: layers/templates/upload/layer_upload.html:31
+#: layers/templates/upload/layer_upload.html:38
+#: templates/announcements/announcement_form.html:25
+#: templates/user_messages/_message_snippet.html:40
 msgid "Delete"
-msgstr "Kufuta"
+msgstr "Futa"
 
 #: layers/templates/layers/layer_replace.html:36
-#: layers/templates/upload/layer_upload.html:33
+#: layers/templates/upload/layer_upload.html:37
 msgid "Are you sure you want to delete this upload?"
-msgstr "Je, una uhakika unataka kufuta upload hii?"
+msgstr "Je, una uhakika unataka kufuta upakiaji huu?"
 
 #: layers/templates/layers/layer_replace.html:39
-#: layers/templates/upload/layer_upload.html:35
-#: maps/templates/maps/map_download.html:58 templates/_comments.html:59
+#: layers/templates/upload/layer_upload.html:39
+#: maps/templates/maps/map_download.html:58 templates/_comments.html:66
 #: templates/_permissions_form.html:15
-#: templates/announcements/announcement_form.html:21
+#: templates/announcements/announcement_form.html:23
 msgid "Cancel"
-msgstr "Kufuta"
+msgstr "Sitisha"
 
 #: layers/templates/layers/layer_replace.html:41
-#: layers/templates/upload/layer_upload.html:36
+#: layers/templates/upload/layer_upload.html:40
 msgid "Delete, and don't ask me again."
-msgstr "Kufuta, na wala kuuliza mimi tena."
+msgstr "Futa, na usiniulize tena."
 
 #: layers/templates/layers/layer_replace.html:55
-#: layers/templates/upload/layer_upload.html:53
+#: layers/templates/upload/layer_upload.html:57
 msgid "Drop files here"
-msgstr "Kuacha files hapa"
+msgstr "Achia mafaili hapa"
 
 #: layers/templates/layers/layer_replace.html:58
-#: layers/templates/upload/layer_upload.html:56
+#: layers/templates/upload/layer_upload.html:60
 msgid " or select them one by one:"
-msgstr "au kuchagua nao moja kwa moja:"
+msgstr "au chagua moja baada ya lingiine:"
 
 #: layers/templates/layers/layer_replace.html:66
-#: layers/templates/upload/layer_upload.html:64
+#: layers/templates/upload/layer_upload.html:68
 msgid "Files to be uploaded"
-msgstr "Files kupakiwa"
+msgstr "Mafaili yakupakia"
 
 #: layers/templates/layers/layer_replace.html:71
-#: layers/templates/upload/layer_upload.html:69
+#: layers/templates/upload/layer_upload.html:73
 msgid "Select the charset or leave default"
-msgstr "Kuchagua charset au kuondoka default"
+msgstr "Kuchagua `charset` au acha kama ilivyo"
 
 #: layers/templates/layers/layer_style_manage.html:16
 #, python-format
@@ -1622,46 +1682,46 @@ msgid ""
 "    "
 msgstr ""
 "\n"
-"Kusimamia Available Styles kwa <a href=\"/layers/%(layer_title)s\">"
+"Simamia mitindo iliyopo kwa ajili ya <a href=\"/layers/%(layer_title)s\">"
 "%(layer_title)s</a>"
 
 #: layers/templates/layers/layer_style_manage.html:23
 msgid "Layer Default Style"
-msgstr "Tabaka Default Sinema"
+msgstr "Mtindo msingoi wa tabaka"
 
 #: layers/templates/layers/layer_style_manage.html:41
 msgid "Available styles"
-msgstr "Mitindo inapatikana"
+msgstr "Mitindo iliyopo"
 
 #: layers/templates/layers/layer_style_manage.html:42
 msgid ""
 "Click on an available style in the upper box to assign it to this layer. "
 "Selected styles appear in the lower box."
 msgstr ""
-"Bonyeza kwenye style inapatikana katika sanduku juu hawawajui kwa safu hii. "
-"Mitindo Baadhi ya kuonekana katika sanduku chini."
+"Bonyeza kwenye style inapatikana katika sanduku cha juu ili kuteua kw ajili "
+"ya tabaka hili. Mitindo iliyochaguliwa itaonekana katika sanduku cha chini."
 
 #: layers/templates/layers/layer_style_manage.html:61
 msgid "Update Available Styles"
-msgstr "Mwisho Haipatikani Styles"
+msgstr "Sasisha mitindo iliyopo"
 
 #: layers/templates/upload/layer_upload.html:5
 #: layers/templates/upload/layer_upload_crs.html:7
 #: layers/templates/upload/layer_upload_csv.html:7
 msgid "Upload Layer"
-msgstr "Upload Tabaka"
+msgstr "Pakia Tabaka"
 
-#: layers/templates/upload/layer_upload.html:83
+#: layers/templates/upload/layer_upload.html:87
 msgid "Upload files"
-msgstr "Pakia faili"
+msgstr "Pakia mafaili"
 
 #: layers/templates/upload/layer_upload_crs.html:10
 msgid "Provide CRS for "
-msgstr "Kutoa CRS kwa"
+msgstr "Ainisha CRS kwa"
 
 #: layers/templates/upload/layer_upload_crs.html:14
 msgid "Coordinate Reference System"
-msgstr "Kuratibu Reference System"
+msgstr "Coordinate Reference System"
 
 #: layers/templates/upload/layer_upload_crs.html:17
 msgid ""
@@ -1684,7 +1744,7 @@ msgstr ""
 #: layers/templates/upload/layer_upload_csv.html:49
 #: layers/templates/upload/layer_upload_time.html:102
 msgid "Next"
-msgstr "Ijayo"
+msgstr "Kifuatacho"
 
 #: layers/templates/upload/layer_upload_crs.html:35
 msgid ""
@@ -1699,15 +1759,15 @@ msgstr ""
 
 #: layers/templates/upload/layer_upload_csv.html:11
 msgid "Geospatial Data"
-msgstr "Geospatial Data"
+msgstr "Data za kijografia"
 
 #: layers/templates/upload/layer_upload_csv.html:12
 msgid ""
 "Please indicate which attributes contain the latitude and longitude "
 "coordinates in the CSV data."
 msgstr ""
-"Tafadhali zinaonyesha ambayo sifa vyenye latitude na longitude kuratibu "
-"katika data CSV."
+"Tafadhali bainisha ni uga upi una namba latitudo na longitudo katika CSV "
+"husika"
 
 #: layers/templates/upload/layer_upload_csv.html:14
 msgid ""
@@ -1715,13 +1775,13 @@ msgid ""
 "latitude and longitude coordinates, but please confirm that the correct\n"
 "attributes are selected below."
 msgstr ""
-"Na data hii, GeoNode alikuwa na uwezo wa nadhani ambayo sifa vyenye latitudo "
-"na longitudo, lakini tafadhali kuthibitisha kwamba sifa sahihi ni "
-"kuchaguliwa chini."
+"Katika data hii, GeoNode imejaribu kukadiria sifa zenye latitudo na "
+"longitudo, tafadhali kuthibitisha kama ni sifa sahihi zimechaguliwa hapo "
+"chini."
 
 #: layers/templates/upload/layer_upload_csv.html:24
 msgid "Latitude"
-msgstr "Latitude"
+msgstr "Latitudo"
 
 #: layers/templates/upload/layer_upload_csv.html:26
 #: layers/templates/upload/layer_upload_csv.html:39
@@ -1730,7 +1790,7 @@ msgstr "Kuchagua sifa"
 
 #: layers/templates/upload/layer_upload_csv.html:37
 msgid "Longitude"
-msgstr "Longitude"
+msgstr "Longitudo"
 
 #: layers/templates/upload/layer_upload_csv.html:57
 msgid ""
@@ -1747,15 +1807,15 @@ msgstr ""
 #: layers/templates/upload/layer_upload_invalid.html:6
 #: layers/templates/upload/no_upload.html:6
 msgid "Your upload is either complete or you haven't resumed an earlier one."
-msgstr "Kupakia yako ni aidha kamili au una si tena mapema moja."
+msgstr "Upakiaji wako aidha umekamilika au hujarudia uliiopita."
 
 #: layers/templates/upload/layer_upload_invalid.html:7
 msgid "Return to"
-msgstr "Kurudi"
+msgstr "Rudi"
 
 #: layers/templates/upload/layer_upload_invalid.html:7
 msgid "Upload Form"
-msgstr "Pakia kidato"
+msgstr "Pakia Fomu"
 
 #: layers/templates/upload/layer_upload_time.html:7
 msgid "Upload Layer Step 2"
@@ -1763,11 +1823,11 @@ msgstr "Pakia Tabaka Hatua ya 2"
 
 #: layers/templates/upload/layer_upload_time.html:15
 msgid "Editing details for "
-msgstr "Maelezo Editing kwa"
+msgstr "Hariri maelezo ya"
 
 #: layers/templates/upload/layer_upload_time.html:19
 msgid "Time Options"
-msgstr "Wakati Chaguzi"
+msgstr "Chaguzi za wakati"
 
 #: layers/templates/upload/layer_upload_time.html:22
 msgid "Choose time attribute"
@@ -1975,222 +2035,235 @@ msgstr "URL tovuti"
 msgid "Featured Map URL"
 msgstr "Matukio ya Ramani URL"
 
-#: maps/models.py:371
+#: maps/models.py:378
 msgid "stack order"
 msgstr "Ili stack"
 
-#: maps/models.py:376
-msgid "format"
-msgstr "format"
-
 #: maps/models.py:383
+msgid "format"
+msgstr "muundo"
+
+#: maps/models.py:390
 msgid "name"
 msgstr "jina"
 
-#: maps/models.py:390
+#: maps/models.py:397
 msgid "opacity"
 msgstr "opacity"
 
-#: maps/models.py:394
+#: maps/models.py:401
 msgid "styles"
 msgstr "mitindo"
 
-#: maps/models.py:400
+#: maps/models.py:407
 msgid "transparent"
 msgstr "uwazi"
 
-#: maps/models.py:404
+#: maps/models.py:411
 msgid "fixed"
 msgstr "fasta"
 
-#: maps/models.py:408
+#: maps/models.py:415
 msgid "group"
 msgstr "kundi"
 
-#: maps/models.py:412
+#: maps/models.py:419
 msgid "visibility"
 msgstr "muonekano"
 
-#: maps/models.py:415
+#: maps/models.py:422
 msgid "ows URL"
 msgstr "ows URL"
 
-#: maps/models.py:418
+#: maps/models.py:425
 msgid "layer params"
 msgstr "safu zilizounganishwa"
 
-#: maps/models.py:425
+#: maps/models.py:432
 msgid "source params"
 msgstr "chanzo zilizounganishwa"
 
-#: maps/models.py:518
+#: maps/models.py:525
 msgid "JSON Configuration"
-msgstr "JSON Configuration"
+msgstr "Mpangilio wa JSON"
 
-#: maps/views.py:70
+#: maps/views.py:73
 msgid "You are not permitted to delete this map."
 msgstr "You hawaruhusiwi kufuta ramani hii."
 
-#: maps/views.py:71
+#: maps/views.py:74
 msgid "You do not have permissions for this map."
 msgstr "Huna ruhusa kwa ramani hii."
 
-#: maps/views.py:72
+#: maps/views.py:75
 msgid "You must be logged in to save this map"
 msgstr "Ni lazima uwe watumiaji katika kuokoa ramani hii"
 
-#: maps/views.py:73
+#: maps/views.py:76
 msgid "You are not permitted to save or edit this map."
 msgstr "Wewe hawaruhusiwi kuokoa au hariri ramani hii."
 
-#: maps/views.py:75
+#: maps/views.py:78
 msgid "You are not allowed to modify this map's metadata."
 msgstr "Wewe hawaruhusiwi kurekebisha metadata ya ramani hii."
 
-#: maps/views.py:76
+#: maps/views.py:79
 msgid "You are not allowed to view this map."
 msgstr "Wewe hawaruhusiwi kuangalia ramani hii."
 
-#: maps/views.py:77
+#: maps/views.py:80
 msgid "An unknown error has occured."
 msgstr "hitilafu isiyojulikana imetokea."
 
 #: maps/management/__init__.py:33
 msgid "Map Created"
-msgstr "Ramani Created"
+msgstr "Ramani Imetengenezwa"
 
 #: maps/management/__init__.py:34
 msgid "A Map was created"
 msgstr "Ramani iliundwa"
 
 #: maps/management/__init__.py:37
+#, fuzzy
+msgid "Map Updated"
+msgstr "Ramani Imetengenezwa"
+
+#: maps/management/__init__.py:38
+#, fuzzy
+msgid "A Map was updated"
+msgstr "Ramani iliundwa"
+
+#: maps/management/__init__.py:41
+#, fuzzy
+msgid "Map Deleted"
+msgstr "Ramani Imetengenezwa"
+
+#: maps/management/__init__.py:42
+#, fuzzy
+msgid "A Map was deleted"
+msgstr "Ramani iliundwa"
+
+#: maps/management/__init__.py:45
 msgid "Comment on Map"
 msgstr "Maoni juu ya Ramani"
 
-#: maps/management/__init__.py:38
+#: maps/management/__init__.py:46
 msgid "A map was commented on"
 msgstr "ramani ilikuwa maoni juu ya"
 
-#: maps/management/__init__.py:41
+#: maps/management/__init__.py:49
 msgid "Rating for Map"
 msgstr "Rating kwa Ramani"
 
-#: maps/management/__init__.py:42
+#: maps/management/__init__.py:50
 msgid "A rating was given to a map"
 msgstr "rating ilitolewa kwa ramani"
 
-#: maps/templates/maps/_map_list_item.html:31
-msgid "View"
-msgstr "View"
-
-#: maps/templates/maps/_map_list_item.html:47
-msgid "You do not have permission to view this map"
-msgstr "Huna ruhusa ya kuangalia ramani hii"
-
 #: maps/templates/maps/map_base.html:5 maps/templates/maps/map_base.html:12
-#: maps/templates/maps/map_list.html:12
+#: maps/templates/maps/map_list.html:11
+#: maps/templates/maps/map_metadata.html:11
 msgid "Explore Maps"
-msgstr "Kuchunguza Maps"
+msgstr "Peruzi Ramani"
 
-#: maps/templates/maps/map_detail.html:54 templates/_actions.html:6
+#: maps/templates/maps/map_detail.html:46
 msgid "Rate this Map"
-msgstr "Kiwango Ramani hii"
+msgstr "Thaminisha Ramani hii"
 
+#: maps/templates/maps/map_detail.html:70
 #: maps/templates/maps/map_detail.html:78
-#: maps/templates/maps/map_detail.html:86
 msgid "Download Map"
 msgstr "Download Ramani"
 
-#: maps/templates/maps/map_detail.html:90
+#: maps/templates/maps/map_detail.html:82
 msgid "Download Data Layers"
 msgstr "Download Takwimu Tabaka"
 
-#: maps/templates/maps/map_detail.html:91
+#: maps/templates/maps/map_detail.html:83
 msgid "Download Web Map Context"
-msgstr "Download Mtandao Ramani Muktadha"
+msgstr "Pakua maudhui ya ramani ya wavuti"
 
+#: maps/templates/maps/map_detail.html:95
 #: maps/templates/maps/map_detail.html:102
-#: maps/templates/maps/map_detail.html:109
 msgid "Edit Map"
 msgstr "Hariri Ramani"
 
-#: maps/templates/maps/map_detail.html:114
+#: maps/templates/maps/map_detail.html:107
 msgid "Edit Map Metadata"
-msgstr "Edit Ramani Metadata"
+msgstr "Hariri Metadata za ramani"
 
-#: maps/templates/maps/map_detail.html:118
-msgid "Set Map Thumbnail"
-msgstr "Kuweka Ramani Picha ndogo"
-
-#: maps/templates/maps/map_detail.html:122
+#: maps/templates/maps/map_detail.html:115
 msgid "Remove this Map"
 msgstr "Kuondoa Ramani hii"
 
-#: maps/templates/maps/map_detail.html:134
+#: maps/templates/maps/map_detail.html:127
 msgid "View Map"
 msgstr "Mtazamo Ramani"
 
-#: maps/templates/maps/map_detail.html:144
+#: maps/templates/maps/map_detail.html:137
 msgid "Map Layers"
 msgstr "Ramani tabaka"
 
-#: maps/templates/maps/map_detail.html:145
+#: maps/templates/maps/map_detail.html:138
 msgid "This map uses the following layers:"
 msgstr "Ramani hii inatumia tabaka yafuatayo:"
 
-#: maps/templates/maps/map_detail.html:161
+#: maps/templates/maps/map_detail.html:154
 msgid "Documents related to this map"
 msgstr "Nyaraka kuhusiana na ramani hii"
 
-#: maps/templates/maps/map_detail.html:162
+#: maps/templates/maps/map_detail.html:155
 msgid "List of documents related to this map:"
 msgstr "Orodha ya nyaraka kuhusiana na ramani hii:"
 
-#: maps/templates/maps/map_detail.html:174
+#: maps/templates/maps/map_detail.html:167
 msgid "Specify which users can view or modify this map"
 msgstr "Bayana ambayo watumiaji unaweza kuona au kurekebisha ramani hii"
 
-#: maps/templates/maps/map_detail.html:175
+#: maps/templates/maps/map_detail.html:168
 msgid "Change Permissions of this Map"
 msgstr "Change Permissions ya Ramani hii"
 
-#: maps/templates/maps/map_detail.html:181
+#: maps/templates/maps/map_detail.html:174
 msgid "Copy this map"
-msgstr "Nakala ramani hii"
+msgstr "Nakili ramani hii"
 
-#: maps/templates/maps/map_detail.html:182
+#: maps/templates/maps/map_detail.html:175
 msgid "Duplicate this map and modify it for your own purposes"
 msgstr "Duplicate ramani hii na kurekebisha kwa madhumuni yako mwenyewe"
 
-#: maps/templates/maps/map_detail.html:183
-#: maps/templates/maps/map_list.html:11
+#: maps/templates/maps/map_detail.html:176
+#: maps/templates/maps/map_list.html:10
 msgid "Create a New Map"
-msgstr "Kujenga Ramani New"
+msgstr "Tengeneza ramani mpya"
 
-#: maps/templates/maps/map_detail.html:188
+#: maps/templates/maps/map_detail.html:181
 msgid "Map WMS"
 msgstr "Ramani WMS"
 
-#: maps/templates/maps/map_detail.html:190
+#: maps/templates/maps/map_detail.html:183
 msgid "WMS layer group for local map layers"
-msgstr "WMS safu kikundi kwa ajili ya tabaka ramani za mitaa"
+msgstr "WMS layer group for local map layers"
 
-#: maps/templates/maps/map_detail.html:191 social/tests.py:103
-#: social/templatetags/social_tags.py:47
+#: maps/templates/maps/map_detail.html:184 social/tests.py:103
+#: social/templatetags/social_tags.py:48
 msgid "on"
 msgstr "juu ya"
 
-#: maps/templates/maps/map_detail.html:191
+#: maps/templates/maps/map_detail.html:184
 msgid "local OWS"
-msgstr "ows ndani"
+msgstr "local OWS"
 
-#: maps/templates/maps/map_detail.html:194
+#: maps/templates/maps/map_detail.html:187
 msgid "Publish local map layers as WMS layer group"
-msgstr "Kuchapisha tabaka mitaa ramani kama WMS safu ya kundi"
+msgstr "Publish local map layers as WMS layer group"
 
-#: maps/templates/maps/map_detail.html:195
+#: maps/templates/maps/map_detail.html:188
 msgid "Publish Map WMS"
-msgstr "Kuchapisha Ramani WMS"
+msgstr "Sambaza WMS ya Ramani"
+
+#: maps/templates/maps/map_download.html:6
+msgid "Download"
+msgstr "Pakua"
 
 #: maps/templates/maps/map_download.html:8
 msgid ""
@@ -2200,7 +2273,7 @@ msgid ""
 "    "
 msgstr ""
 "\n"
-"Hapa unaweza kushusha tabaka yote ya ramani hii kuwa ni mwenyeji juu ya "
+"Hapa unaweza kupakua matabaka yote ya ramani hii yanayopatikana kwenye "
 "GeoNode hii."
 
 #: maps/templates/maps/map_download.html:22
@@ -2211,8 +2284,8 @@ msgid ""
 "      "
 msgstr ""
 "\n"
-"<div class=\"alert alert-warning\"> Hakuweza kupata tabaka downloadable kwa "
-"ramani hii. Unaweza kwenda nyuma"
+"<div class=\"alert alert-warning\"> Haikuwezekana kupata tabaka linalofaa "
+"kupakua kwa ramani hii. Unaweza kurudi nyuma"
 
 #: maps/templates/maps/map_download.html:29
 msgid ""
@@ -2223,8 +2296,8 @@ msgid ""
 "      "
 msgstr ""
 "\n"
-"Zaidi ya hayo, ramani ina tabaka hizi ambayo hautapakuliwa kutokana na "
-"vikwazo vya usalama:"
+"Zaidi ya hayo, ramani ina matabaka haya ambayo hayawezi kupakuliwa kutokana "
+"na sababu za kiusalama:"
 
 #: maps/templates/maps/map_download.html:41
 msgid ""
@@ -2234,8 +2307,8 @@ msgid ""
 "      "
 msgstr ""
 "\n"
-"Hatimaye, ramani ina tabaka hizi ambayo hautapakuliwa kwa sababu wao si "
-"inapatikana moja kwa moja kutoka GeoNode hii:"
+"Hatimaye, Ramani ina matabaka haya ambayo hayawezi kupakuliwa kwa sababu "
+"hayapo moja kwa moja kutoka GeoNode hii:"
 
 #: maps/templates/maps/map_download.html:54
 msgid "Downloading"
@@ -2247,17 +2320,17 @@ msgstr "Jaribu tena"
 
 #: maps/templates/maps/map_download.html:65
 msgid "Start downloading this map"
-msgstr "Kuanza kushusha ramani hii"
+msgstr "Anza kupakua ramani hii"
 
 #: maps/templates/maps/map_download.html:95
 msgid "Download Complete"
-msgstr "Download Kamili"
+msgstr "Upakuzi umekamilika"
 
 #: maps/templates/maps/map_download.html:105
 msgid "Download Failed"
-msgstr "Download Imeshindwa"
+msgstr "Upakuzi umeshindikana"
 
-#: maps/templates/maps/map_metadata.html:12
+#: maps/templates/maps/map_metadata.html:17
 #, python-format
 msgid ""
 "\n"
@@ -2265,9 +2338,9 @@ msgid ""
 "      "
 msgstr ""
 "\n"
-"Maelezo Editing kwa %(map_title)s"
+"Hariri maelezao ya %(map_title)s"
 
-#: maps/templates/maps/map_metadata.html:17
+#: maps/templates/maps/map_metadata.html:23
 msgid ""
 "Note: this map's orginal metadata was populated by importing a metadata XML "
 "file.\n"
@@ -2275,10 +2348,11 @@ msgid ""
 "Core metadata elements.\n"
 "        Some of your original metadata may have been lost."
 msgstr ""
-"Kumbuka: ya awali metadata ya ramani hii ilikuwa wakazi na kuagiza metadata "
-"ya XML faili. GeoNode ya metadata kuagiza inasaidia subset ya ISO, FGDC, na "
-"Dublin Core metadata vipengele. Baadhi ya metadata yako ya awali inaweza "
-"zimepotea."
+"Kumbuka: metadata halisi za ramani hii zilipatikana kwa kuleta fail la XML "
+"la metadata.\n"
+"geonode inawezesha uletaji wa sehemu ya metadata za  ISO, FGDC, na Dublin "
+"Core.\n"
+"Baadhi ya metadata halisi zinaweza kuwa zimepotea"
 
 #: maps/templates/maps/map_remove.html:6
 msgid "Deleting"
@@ -2308,22 +2382,22 @@ msgstr "Tarehe muhimu"
 
 #: people/admin.py:150
 msgid "Password changed successfully."
-msgstr "Password iliyopita kwa mafanikio."
+msgstr "Nenosiri limebadilishwa kwa mafanikio."
 
 #: people/admin.py:160
 #, python-format
 msgid "Change password: %s"
-msgstr "Kubadili password: %s"
+msgstr "Badilisha nenosiri: %s"
 
 #: people/enumerations.py:39
 msgid "party who authored the resource"
-msgstr "chama ambao mwandishi wa rasilimali"
+msgstr "upande wa uwandishi wa rasilimali"
 
 #: people/enumerations.py:40
 msgid ""
 "party who has processed the data in a manner such that the resource has been "
 "modified"
-msgstr "chama ambaye kusindika data kwa namna ambayo rasilimali imebadilishwa"
+msgstr "Upande ambao umechakata data"
 
 #: people/enumerations.py:41
 msgid "party who published the resource"
@@ -2347,125 +2421,141 @@ msgstr ""
 
 #: people/enumerations.py:45
 msgid "party who distributes the resource"
-msgstr "chama ambao inasambaza rasilimali"
+msgstr "upande unaosambaza rasilimali"
 
 #: people/enumerations.py:46
 msgid "party who uses the resource"
-msgstr "chama ambaye anatumia rasilimali"
+msgstr "upande unaotumia rasilimali"
 
 #: people/enumerations.py:47
 msgid "party that supplies the resource"
-msgstr "chama kwamba vifaa rasilimali"
+msgstr "Upande unaotoa rasilimali"
 
 #: people/enumerations.py:48
 msgid "party who created the resource"
-msgstr "chama ambao kuundwa rasilimali"
+msgstr "upande uliounda rasilimali"
 
 #: people/enumerations.py:49
 msgid "party that owns the resource"
-msgstr "chama kwamba anamiliki rasilimali"
+msgstr "upande unaomiliki rasilimali"
 
 #: people/enumerations.py:50
 msgid "key party responsible for gathering information and conducting research"
-msgstr "chama muhimu kuwajibika kwa kukusanya taarifa na kufanya utafiti"
+msgstr "pande muhimu zinazohusika na ukusanyaji wa taarifa na kufanya utafiti"
 
 #: people/forms.py:64
 msgid "Email Address"
-msgstr "Email mitaani"
+msgstr "Anuani ya barua pepe"
 
 #: people/management.py:32
 msgid "User following you"
-msgstr "User zifuatazo you"
+msgstr "matumiaji anayekufuatilia"
 
 #: people/management.py:33
-msgid "another user has started following you"
-msgstr "mtumiaji mwingine imeanza kufuatia unaweza"
+#, fuzzy
+msgid "Another user has started following you"
+msgstr "mtumiaji mwingine ameanza kukufuatilia"
 
-#: people/models.py:42
+#: people/management.py:36
+msgid "User requested access"
+msgstr ""
+
+#: people/management.py:37
+msgid "A new user has requested access to the site"
+msgstr ""
+
+#: people/management.py:40
+#, fuzzy
+msgid "Account activated"
+msgstr "Matukio ya hivi karibuni"
+
+#: people/management.py:41
+msgid "This account is now active and can log in the site"
+msgstr ""
+
+#: people/models.py:43
 msgid "Organization Name"
 msgstr "Jina shirika"
 
-#: people/models.py:46
-msgid "name of the responsible organization"
-msgstr "jina la shirika kuwajibika"
-
-#: people/models.py:47 templates/500.html:76 templates/base.html:92
-msgid "Profile"
-msgstr "Profile"
-
 #: people/models.py:47
+msgid "name of the responsible organization"
+msgstr "jina la shirika husika"
+
+#: people/models.py:48 templates/500.html:76 templates/base.html:198
+msgid "Profile"
+msgstr "Wasifu"
+
+#: people/models.py:48
 msgid "introduce yourself"
 msgstr "kuanzisha mwenyewe"
 
-#: people/models.py:49
+#: people/models.py:50
 msgid "Position Name"
 msgstr "Jina Position"
 
-#: people/models.py:53
-msgid "role or position of the responsible person"
-msgstr "jukumu au nafasi ya mtu kuwajibika"
-
 #: people/models.py:54
+msgid "role or position of the responsible person"
+msgstr "cheo au nafasi ya anayehusika"
+
+#: people/models.py:55
 msgid "Voice"
 msgstr "Sauti"
 
-#: people/models.py:55
+#: people/models.py:56
 msgid ""
 "telephone number by which individuals can speak to the responsible "
 "organization or individual"
-msgstr ""
-"namba ya simu ambayo watu wanaweza kuzungumza na shirika kuwajibika au "
-"binafsi"
-
-#: people/models.py:56
-msgid "Facsimile"
-msgstr "Facsimile"
+msgstr "namba ya simu ambayo watu wanaweza kuzungumza na shirika au mtu husika"
 
 #: people/models.py:57
+msgid "Facsimile"
+msgstr "Nukushi"
+
+#: people/models.py:58
 msgid ""
 "telephone number of a facsimile machine for the responsible organization or "
 "individual"
-msgstr "namba ya simu ya mashine facsimile kwa shirika kuwajibika au binafsi"
+msgstr "namba ya simu ya mashine ya nukushi kwa shirika au mtu husika"
 
-#: people/models.py:59
+#: people/models.py:60
 msgid "Delivery Point"
-msgstr "Utoaji Point"
+msgstr "Sehemu ya kuchukulia"
 
-#: people/models.py:63
+#: people/models.py:64
 msgid ""
 "physical and email address at which the organization or individual may be "
 "contacted"
-msgstr "kimwili na barua pepe ambayo shirika au mtu binafsi inaweza kupatikana"
+msgstr "anuani ya eneo na barua pepe kwa mawasiliano na shirika au mtu binafsi"
 
-#: people/models.py:65
+#: people/models.py:66
 msgid "City"
-msgstr "Mji"
+msgstr "Jiji"
 
-#: people/models.py:69
+#: people/models.py:70
 msgid "city of the location"
-msgstr "mji wa eneo"
+msgstr "jiji la eneo"
 
-#: people/models.py:71
+#: people/models.py:72
 msgid "Administrative Area"
 msgstr "Tawala Area"
 
-#: people/models.py:75
+#: people/models.py:76
 msgid "state, province of the location"
 msgstr "serikali, jimbo la eneo"
 
-#: people/models.py:77
+#: people/models.py:78
 msgid "Postal Code"
-msgstr "Postal Code"
+msgstr "Sanduku la posta"
 
-#: people/models.py:81
+#: people/models.py:82
 msgid "ZIP or other postal code"
 msgstr "ZIP au nyingine code ya posta"
 
-#: people/models.py:87
+#: people/models.py:88
 msgid "country of the physical address"
 msgstr "nchi ya anwani ya kimwili"
 
-#: people/models.py:89
+#: people/models.py:90
 msgid ""
 "commonly used word(s) or formalised word(s) or phrase(s) used to describe "
 "the subject             (space or comma-separated"
@@ -2473,127 +2563,154 @@ msgstr ""
 "kawaida kutumika neno (s) au rasmi neno (s) au maneno (s) linalotumiwa somo "
 "(nafasi au koma"
 
-#: people/views.py:84
+#: people/views.py:89
 msgid "Your username for "
-msgstr "Jina lako kwa"
+msgstr "Jina la mtumiaji la"
 
-#: people/views.py:99
+#: people/views.py:103
 msgid "Your username has been emailed to you."
-msgstr "Jina lako imekuwa Emailed na wewe."
+msgstr "Umetumiwa jina lako la mtuniaji."
 
-#: people/views.py:101
+#: people/views.py:105
 msgid "No user could be found with that email address."
-msgstr "Hakuna user ingeweza kupatikana kwa kuwa anwani ya barua pepe."
+msgstr "Hakuna mtumiaji mwenye barua pepe hiyo aliyepatikana"
 
 #: people/templates/people/_profile_about_item.html:18
 msgid "No Group"
-msgstr "Hakuna Group"
+msgstr "Hakuna Kundi"
 
 #: people/templates/people/_profile_filters.html:4
 msgid "All contents"
 msgstr "Yote yaliyomo"
 
-#: people/templates/people/_profile_filters.html:5
-#: services/templates/services/service_detail.html:64 templates/500.html:39
-#: templates/base.html:47
-msgid "Layers"
-msgstr "Tabaka"
-
-#: people/templates/people/_profile_filters.html:6 templates/500.html:42
-#: templates/base.html:50
-msgid "Maps"
-msgstr "Maps"
-
 #: people/templates/people/_profile_filters.html:7 templates/500.html:45
-#: templates/base.html:53
+#: templates/base.html:54
 msgid "Documents"
-msgstr "Nyaraka"
+msgstr "Hati"
 
-#: people/templates/people/forgot_username_form.html:5
+#: people/templates/people/forgot_username_form.html:6
 msgid "Forgot Username"
-msgstr "Umesahau Username"
+msgstr "Umesahau Jina la mtumiaji"
 
-#: people/templates/people/forgot_username_form.html:9
+#: people/templates/people/forgot_username_form.html:10
+#, fuzzy
 msgid ""
-"Enter your email address and click the submit button.  Your username will be "
-"sent to you."
+"Enter your email address and click the submit button. <br />Your username "
+"will be sent to you."
 msgstr ""
-"Ingiza anwani yako ya barua pepe na bonyeza kuwasilisha button. Jina lako la "
-"mtumiaji watapelekwa na wewe."
+"Ingiza anwani yako ya barua pepe na bonyeza kitufe cha kuwasilisha. "
+"Utatumiwa jina lako la mtumiaji."
 
 #: people/templates/people/profile_create.html:8
 #: people/templates/people/profile_create.html:14
 msgid "Create Profile"
-msgstr "Kujenga Profile"
+msgstr "Tengeneza Wasifu"
 
 #: people/templates/people/profile_detail.html:7
 msgid "Profile of "
-msgstr "Hadhi ya"
+msgstr "Wasifu wa "
 
-#: people/templates/people/profile_detail.html:69
+#: people/templates/people/profile_detail.html:19
+#, fuzzy
+msgid "Message User"
+msgstr "Kikasha cha ujumbe"
+
+#: people/templates/people/profile_detail.html:65
 msgid "Edit profile"
-msgstr "Edit profile"
+msgstr "Hariri wasifu"
 
-#: people/templates/people/profile_detail.html:70
+#: people/templates/people/profile_detail.html:66
 msgid "Change password"
 msgstr "Change password"
 
-#: people/templates/people/profile_detail.html:71
+#: people/templates/people/profile_detail.html:69
 msgid "Upload new layers"
-msgstr "Weka tabaka mpya"
+msgstr "pakia matabaka mapya"
+
+#: people/templates/people/profile_detail.html:70
+msgid "Create a new map"
+msgstr "Tengeneza ramani mpya"
 
 #: people/templates/people/profile_detail.html:72
-msgid "Create a new map"
-msgstr "Kujenga ramani mpya"
-
-#: people/templates/people/profile_detail.html:74
 msgid "My Activities"
-msgstr "Shughuli yangu"
+msgstr "Matukio yangu"
 
-#: people/templates/people/profile_detail.html:82
+#: people/templates/people/profile_detail.html:77 templates/base.html:202
+#, fuzzy
+msgid "Notifications"
+msgstr "Aina ya Taarifa"
+
+#: people/templates/people/profile_detail.html:80 templates/500.html:80
+#: templates/base.html:205 templates/announcements/announcement_list.html:6
+#: templates/announcements/announcement_list.html:13
+msgid "Announcements"
+msgstr "Matangazo"
+
+#: people/templates/people/profile_detail.html:85
+#: services/templates/services/service_list.html:9 templates/500.html:83
+#: templates/base.html:208
+msgid "Remote Services"
+msgstr "Huduma ukiwa mbali"
+
+#: people/templates/people/profile_detail.html:86 templates/500.html:84
+#: templates/base.html:209
+msgid "Invite User"
+msgstr "Alika Mtu"
+
+#: people/templates/people/profile_detail.html:87 templates/500.html:86
+#: templates/base.html:211
+msgid "GeoServer"
+msgstr "GeoServer"
+
+#: people/templates/people/profile_detail.html:90 templates/500.html:89
+#: templates/base.html:214
+msgid "Admin"
+msgstr "Utawala"
+
+#: people/templates/people/profile_detail.html:98
 msgid "User Activities"
-msgstr "User Shughuli"
+msgstr "Matukio ya mtumiaji"
 
-#: people/templates/people/profile_detail.html:139
+#: people/templates/people/profile_detail.html:155
 msgid "Resources"
 msgstr "Rasilimali"
 
-#: people/templates/people/profile_edit.html:10
+#: people/templates/people/profile_edit.html:9
 #: people/templates/people/profile_edit.html:18
 msgid "Edit Your Profile"
-msgstr "Hariri Profaili yako"
+msgstr "Hariri Wasifu wako"
 
 #: people/templates/people/profile_edit.html:14
 msgid "Change your avatar"
-msgstr "Mabadiliko ya avatar yako"
+msgstr "Badilisha ya avatar yako"
 
 #: people/templates/people/profile_edit.html:24
 msgid "Update profile"
-msgstr "Mwisho profile"
+msgstr "Sasisha wasifu"
 
 #: people/templates/people/profile_list.html:8
 msgid "Explore People"
-msgstr "Kuchunguza Watu"
+msgstr "Peruzi Watu"
 
 #: services/enumerations.py:24
 msgid "Auto-detect"
-msgstr "Auto-kuchunguza"
+msgstr "Baini kiautomatiki"
 
 #: services/enumerations.py:25
 msgid "Paired WMS/WFS/WCS"
-msgstr "Paired WMS / WFS / WCS"
+msgstr "Jozi WMS / WFS / WCS"
 
 #: services/enumerations.py:26
 msgid "Web Map Service"
-msgstr "Web Map Service"
+msgstr "Huduma ya Ramani kwa Wavuti"
 
 #: services/enumerations.py:27
 msgid "Catalogue Service"
-msgstr "Catalogue Huduma"
+msgstr "Huduma ya Catalogue"
 
 #: services/enumerations.py:28
 msgid "ArcGIS REST Service"
-msgstr "ArcGIS REST Service"
+msgstr "Huduma ya REST ya ArcGIS "
 
 #: services/enumerations.py:29 services/enumerations.py:39
 msgid "OpenGeoPortal"
@@ -2601,11 +2718,11 @@ msgstr "OpenGeoPortal"
 
 #: services/enumerations.py:30
 msgid "Harvard Geospatial Library"
-msgstr "Harvard geospatial maktaba"
+msgstr "Maktaba ya kijiografia ya Harvard"
 
 #: services/enumerations.py:34
 msgid "Local"
-msgstr "Mitaa"
+msgstr "Local"
 
 #: services/enumerations.py:35
 msgid "Cascaded"
@@ -2621,31 +2738,36 @@ msgstr "Indexed"
 
 #: services/enumerations.py:38
 msgid "Live"
-msgstr "Kuishi"
+msgstr "Moja kwa moja"
 
 #: services/forms.py:12
 msgid "Service URL"
 msgstr "URL ya Huduma"
 
-#: services/forms.py:16
+#: services/forms.py:15
+#, fuzzy
+msgid "Service name"
+msgstr "Aina ya huduma"
+
+#: services/forms.py:19
 msgid "Service Type"
 msgstr "Aina ya huduma"
 
 #: services/models.py:91
 msgid "Layer Name"
-msgstr "Jina Tabaka"
+msgstr "Jina la Tabaka"
 
 #: services/models.py:92
 msgid "Layer Title"
-msgstr "Tabaka Title"
+msgstr "Kichwa cha tabaka"
 
 #: services/models.py:93
 msgid "Layer Description"
-msgstr "Tabaka Maelezo"
+msgstr "Maelezo kuhu tabaka"
 
 #: services/models.py:94
 msgid "Layer Styles"
-msgstr "Safu Styles"
+msgstr "Mitindo ya matabaka"
 
 #: services/views.py:63
 msgid ""
@@ -2662,42 +2784,44 @@ msgid ""
 "interface.\n"
 msgstr ""
 "\n"
-"Geoportal Open ni muungano zikiwemo za michango ya vyuo vikuu kadhaa na "
-"mashirika ya kusaidia kuwezesha ugunduzi na upatikanaji wa data geospatial "
-"kwenye mashirika mengi na majukwaa. Washirika wa sasa ni pamoja na: Harvard, "
-"MIT, MassGIS, Princeton, Columbia, Stanford, UC Berkeley, UCLA, Yale, na "
-"UConn. Umejengwa juu ya teknolojia ya wazi chanzo Geoportal Open, hutoa "
-"mashirika nafasi ya kushiriki maelfu ya geospatial data tabaka, ramani, "
-"metadata, na rasilimali ya maendeleo kupitia single interface kawaida.\n"
+"Open Geoportal ni muungano unaojumuisha michango ya vyuo vikuu kadhaa na "
+"mashirika ya kusaidia kuwezesha ugunduzi na upatikanaji wa takwimu za "
+"kijiografia kutoka mashirika na majukwaa mbalimbali. Washirika wa sasa ni "
+"pamoja na: Harvard, MIT, MassGIS, Princeton, Columbia, Stanford, UC "
+"Berkeley, UCLA, Yale, na UConn. Kuptia teknolojia zenye vyanzo huria Open "
+"Geoportal, inayapa mashirika nafasi ya kushirikishana maelfu ya takwimu za "
+"matabaka ya kijiografia, ramani, metadata, na rasilimali za maendeleo "
+"kupitia mfummmo mmoja kwa pamoja.\n"
 
-#: services/views.py:273
+#: services/views.py:278
 msgid "This is an existing service"
-msgstr "Hii ni huduma ya zilizopo"
+msgstr "Hii ni huduma ya iliyopo"
 
-#: services/views.py:536 services/views.py:633 services/views.py:849
+#: services/views.py:542 services/views.py:639 services/views.py:707
+#: services/views.py:855
 msgid "Not provided"
-msgstr "Si zinazotolewa"
+msgstr "Haijaainishwa"
 
-#: services/views.py:801
+#: services/views.py:807
 msgid "Could not find any layers in a compatible projection."
-msgstr "Hakuweza kupata tabaka yoyote katika makadirio sambamba."
+msgstr "Halijapatikana tabaka lolote lililo katika mfumo unaoendana."
 
-#: services/views.py:946
+#: services/views.py:952
 #, python-format
 msgid ""
 "Could not find any layers in a compatible projection:                 The "
 "spatial id was: %(srs)s and the url %(url)s"
 msgstr ""
-"Hakuweza kupata tabaka yoyote katika makadirio sambamba: id anga ilikuwa: "
-"%(srs)s na url %(url)s"
+"Halijapatika tabaka lolote lililo katika mfumo unaoendana: `spatial id` "
+"ilikuwa: %(srs)s na url %(url)s"
 
-#: services/views.py:1208
+#: services/views.py:1214
 msgid "You are not permitted to remove this service."
-msgstr "Wewe hawaruhusiwi kuondoa huduma hii."
+msgstr "Hauruhusiwi kuondoa huduma hii."
 
 #: services/templates/services/layers_register.html:26
 msgid "All/None"
-msgstr "Zote / Hakuna"
+msgstr "Yote/Hakuna"
 
 #: services/templates/services/layers_register.html:27
 msgid "Name"
@@ -2705,7 +2829,7 @@ msgstr "Jina"
 
 #: services/templates/services/layers_register.html:42
 msgid "Add Layers"
-msgstr "Kuongeza Tabaka"
+msgstr "ongeza Tabaka"
 
 #: services/templates/services/service_detail.html:43
 msgid "Name:"
@@ -2717,11 +2841,11 @@ msgstr "URL:"
 
 #: services/templates/services/service_detail.html:45
 msgid "Abstract:"
-msgstr "Abstract:"
+msgstr "Dibaji:"
 
 #: services/templates/services/service_detail.html:46
 msgid "Keywords:"
-msgstr "Keywords:"
+msgstr "Maneno msingi:"
 
 #: services/templates/services/service_detail.html:47
 msgid "Contact:"
@@ -2729,86 +2853,104 @@ msgstr "Mawasiliano:"
 
 #: services/templates/services/service_detail.html:51
 msgid "Services"
-msgstr "Huduma za"
+msgstr "Huduma"
 
 #: services/templates/services/service_detail.html:52
 msgid "This CSW server contains the following services"
-msgstr "Server Hii CSW ina huduma zifuatazo"
+msgstr "Seva hii ya CSW ina huduma zifuatazo"
 
 #: services/templates/services/service_detail.html:65
 msgid "This Service contains the following layers"
-msgstr "Huduma hii ina tabaka zifuatazo"
+msgstr "Huduma hii ina matabaka yafuatayo"
 
 #: services/templates/services/service_detail.html:110
-#: services/templates/services/service_list.html:29
 msgid "Manage"
-msgstr "Kusimamia"
+msgstr "Kuratibu"
 
 #: services/templates/services/service_detail.html:113
 msgid "Edit Service Metadata"
-msgstr "Edit Service Metadata"
+msgstr "Hariri Metadata za Huduma"
 
 #: services/templates/services/service_detail.html:116
 msgid "Remove Service"
-msgstr "Ondoa Service"
+msgstr "Ondoa Huduma"
 
-#: services/templates/services/service_edit.html:19
-#: templates/announcements/announcement_form.html:25
+#: services/templates/services/service_edit.html:15
+#, fuzzy
+msgid "Edit Service"
+msgstr "Hariri Metadata za Huduma"
+
+#: services/templates/services/service_edit.html:21
+#: templates/announcements/announcement_form.html:27
 msgid "Save"
-msgstr "Save"
+msgstr "Hifadhi"
 
 #: services/templates/services/service_layers.html:3
 msgid "Service:"
-msgstr "Service:"
+msgstr "Huduma:"
 
 #: services/templates/services/service_layers.html:5
 msgid "The following layers will soon be added to the data catalog:"
-msgstr "tabaka zifuatazo hivi karibuni kuongezwa kwa data catalog:"
+msgstr "Matabaka yafuatazo yataingizwa kwenye orodha hivi karibuni:"
 
-#: services/templates/services/service_list.html:30
+#: services/templates/services/service_list.html:8
 msgid "Register a new Service"
-msgstr "Kusajili Huduma mpya"
+msgstr "Sajili Huduma mpya"
 
-#: services/templates/services/service_register.html:21
+#: services/templates/services/service_register.html:13
+#, fuzzy
+msgid "Register New Service"
+msgstr "Sajili Huduma mpya"
+
+#: services/templates/services/service_register.html:23
 msgid "Service has been created:"
 msgstr "Huduma imeanzishwa:"
 
-#: services/templates/services/service_register.html:28
+#: services/templates/services/service_register.html:30
 msgid "The following layers will be imported"
-msgstr "tabaka zifuatazo itakuwa nje"
+msgstr "Matabaka yafuatayo yataingizwa"
 
-#: services/templates/services/service_remove.html:7
+#: services/templates/services/service_remove.html:8
+#, fuzzy
+msgid "Remove Remote Service"
+msgstr "Ondoa Huduma"
+
+#: services/templates/services/service_remove.html:12
 msgid "Are you sure you want to remove"
 msgstr "Je, una uhakika unataka kuondoa"
 
-#: social/signals.py:73
+#: social/signals.py:85
 msgid "created"
 msgstr "kuundwa"
 
-#: social/signals.py:74 social/tests.py:80
+#: social/signals.py:86 social/tests.py:80
 msgid "deleted"
 msgstr "kufutwa"
 
-#: social/signals.py:77
+#: social/signals.py:89
 msgid "updated"
-msgstr "updated"
+msgstr "kusasishwa"
 
-#: social/signals.py:82 social/tests.py:100
+#: social/signals.py:94 social/tests.py:100
 msgid "added a comment"
-msgstr "aliongeza maoni"
+msgstr "maoni yameingizwa"
 
-#: social/signals.py:84
+#: social/signals.py:96
 msgid "updated a comment"
-msgstr "updated maoni"
+msgstr "maoni yamesasishwa"
 
-#: social/signals.py:86 social/tests.py:54
+#: social/signals.py:98 social/tests.py:54
 msgid "uploaded"
-msgstr "uploaded"
+msgstr "kupakiwa"
+
+#: social/templates/social/_activity_item.html:31
+msgid "ago"
+msgstr "iliyopita"
 
 #: social/templates/social/activity_list.html:4
-#: social/templates/social/activity_list.html:16
+#: social/templates/social/activity_list.html:15
 msgid "Recent activity"
-msgstr "Shughuli za hivi karibuni"
+msgstr "Matukio ya hivi karibuni"
 
 #: social/templatetags/social_tags.py:32
 msgid "to"
@@ -2816,7 +2958,7 @@ msgstr "kwa"
 
 #: templates/401.html:10
 msgid "Not Permitted"
-msgstr "Si Mmehalalishiwa"
+msgstr "Hairuhusiwi"
 
 #: templates/401.html:18
 msgid ""
@@ -2825,16 +2967,16 @@ msgid ""
 "      "
 msgstr ""
 "\n"
-"Wewe hawaruhusiwi kufanya operesheni hii."
+"Hauruhusiwi kufanya mchakato huu.\n"
+" "
 
 #: templates/401.html:25
 msgid "Please verify that you are logged in as the correct user."
-msgstr ""
-"Tafadhali kuthibitisha kwamba wewe ni watumiaji katika kama user sahihi."
+msgstr "Tafadhali thibitisha kwamba umeingia kama mtumiaji sahihi."
 
 #: templates/401.html:27
 msgid "Please login or register and retry."
-msgstr "Tafadhali login au kujiandikisha na jaribu tena."
+msgstr "Tafadhali ingia au jisajili na kisha jaribu tena."
 
 #: templates/404.html:5
 msgid "Page Not Found"
@@ -2848,85 +2990,64 @@ msgid ""
 "  "
 msgstr ""
 "\n"
-"ukurasa wewe ombi haipo. Labda wewe ni kutumia alama zamani?"
+"Ukurasa uliouhitaaji haupo. Labda unatumia alamisho lilipitwa na wakati?\n"
+" "
 
-#: templates/500.html:48 templates/base.html:56
+#: templates/500.html:48 templates/base.html:59
 msgid "People"
 msgstr "Watu"
 
-#: templates/500.html:51 templates/base.html:59
+#: templates/500.html:51 templates/base.html:62
 msgid "Groups"
-msgstr "Vikundi"
+msgstr "Makundi"
 
 #: templates/500.html:56 templates/search/search.html:6
 #: templates/search/search.html.py:12
 msgid "Search"
 msgstr "Tafuta"
 
-#: templates/500.html:77 templates/base.html:93
+#: templates/500.html:77 templates/base.html:199
 msgid "Recent Activity"
-msgstr "Shughuli za hivi karibuni"
+msgstr "Matukio ya hivi karibuni"
 
-#: templates/500.html:78 templates/base.html:94
+#: templates/500.html:78 templates/base.html:200
+#: templates/user_messages/inbox.html:15
 msgid "Inbox"
-msgstr "Inbox"
+msgstr "Kikasha"
 
-#: templates/500.html:80 templates/base.html:96
-#: templates/announcements/announcement_list.html:6
-#: templates/announcements/announcement_list.html:13
-#: templates/announcements/announcement_list.html:20
-msgid "Announcements"
-msgstr "Matangazo"
-
-#: templates/500.html:83 templates/base.html:99
-msgid "Remote Services"
-msgstr "Huduma kijijini"
-
-#: templates/500.html:84 templates/base.html:100
-msgid "Invite User"
-msgstr "Kukaribisha mtumiaji"
-
-#: templates/500.html:86 templates/base.html:102
-msgid "GeoServer"
-msgstr "GeoServer"
-
-#: templates/500.html:89 templates/base.html:105
-msgid "Admin"
-msgstr "Admin"
-
-#: templates/500.html:92 templates/base.html:108
+#: templates/500.html:92 templates/base.html:217
 msgid "Help"
 msgstr "Msaada"
 
-#: templates/500.html:97 templates/base.html:113
+#: templates/500.html:97 templates/base.html:223
 #: templates/account/logout.html:6 templates/account/logout.html.py:12
 #: templates/account/logout.html:17
 msgid "Log out"
-msgstr "Ingia nje"
+msgstr "Ondoka"
 
-#: templates/500.html:109 templates/base.html:125
+#: templates/500.html:109 templates/base.html:168 templates/base.html.py:169
 msgid "Username"
 msgstr "Jina la mtumiaji"
 
-#: templates/500.html:113 templates/base.html:129
+#: templates/500.html:113 templates/base.html:172
 msgid "Password"
-msgstr "Password"
+msgstr "Nenosiri"
 
-#: templates/500.html:118 templates/base.html:134
+#: templates/500.html:118 templates/base.html:176
 msgid "Remember Me"
-msgstr "Kumbuka Me"
+msgstr "Nikumbuke"
 
-#: templates/500.html:120 templates/base.html:119 templates/base.html.py:136
+#: templates/500.html:120 templates/base.html:93 templates/base.html.py:180
 msgid "Sign in"
-msgstr "Ingia katika"
+msgstr "Ingia"
 
-#: templates/500.html:128 templates/base.html:77
+#: templates/500.html:128 templates/base.html:82
 msgid "Register"
-msgstr "Daftari"
+msgstr "Jisajili"
 
 #: templates/500.html:159
 msgid "There was a problem loading this page"
-msgstr "Kulikuwa na tatizo kupakia ukurasa hii"
+msgstr "Kuna hitilafu imejitokeza katika upakiaji wa ukurasa huu"
 
 #: templates/500.html:161
 msgid ""
@@ -2945,25 +3066,38 @@ msgstr ""
 "suala hilo katika <a href=\"http://github.com/GeoNode/geonode/issues"
 "\">GeoNode ya suala tracker</a>"
 
-#: templates/500.html:182 templates/base.html:173
+#: templates/500.html:182 templates/base.html:129
 msgid "Powered by"
-msgstr "Powered by"
+msgstr "Imewezeshwa na"
 
-#: templates/500.html:182 templates/base.html:173
+#: templates/500.html:182 templates/base.html:129
 msgid "GeoNode"
 msgstr "GeoNode"
 
-#: templates/500.html:182 templates/base.html:173
+#: templates/500.html:182 templates/base.html:129
 msgid "version"
 msgstr "toleo"
 
-#: templates/500.html:183 templates/base.html:174
+#: templates/500.html:183 templates/base.html:130
 msgid "Developers"
-msgstr "Watengenezaji"
+msgstr "Waandaaji"
 
-#: templates/_actions.html:4
-msgid "Add to Favorites"
-msgstr "Kuongeza favorites"
+#: templates/_actions.html:3
+msgid "Info"
+msgstr "Taarifa"
+
+#: templates/_actions.html:8
+msgid "Share"
+msgstr "Shirikisha"
+
+#: templates/_actions.html:10
+msgid "Ratings"
+msgstr "Ratings"
+
+#: templates/_actions.html:13
+#, fuzzy
+msgid "GeoGig"
+msgstr "GeoGit"
 
 #: templates/_bulk_permissions_form.html:9
 msgid "Set permissions on selected resources"
@@ -2972,31 +3106,28 @@ msgstr "Ruhusa ya kuweka juu ya rasilimali aliliteua"
 #: templates/_bulk_permissions_form.html:20
 #: templates/_permissions_form.html:16
 msgid "Apply Changes"
-msgstr "Kuomba Mabadiliko"
+msgstr "Fanya Mabadiliko"
 
-#: templates/_comments.html:17
+#: templates/_comments.html:17 templates/_comments.html.py:58
 msgid "Add Comment"
-msgstr "Kuongeza Maoni"
+msgstr "Toa Maoni"
 
 #: templates/_comments.html:21
 msgid "Log in to add a comment"
-msgstr "Ingia ili kuongeza maoni"
+msgstr "Ingia ili kutoa maoni"
 
 #: templates/_comments.html:33
 msgid "By"
-msgstr "By"
+msgstr "Kutoka kwa"
 
-#: templates/_comments.html:49
-msgid "Add a Comment"
-msgstr "Kuongeza Maoni"
-
-#: templates/_comments.html:60
-msgid "Submit Comments"
-msgstr "Kuwasilisha Maoni"
+#: templates/_comments.html:67
+#, fuzzy
+msgid "Submit Comment"
+msgstr "Wasilisha Maoni"
 
 #: templates/_permissions.html:8
 msgid "Who can view it?"
-msgstr "Ambao wanaweza kuona ni?"
+msgstr "Nani anaweza kuona?"
 
 #: templates/_permissions.html:17 templates/_permissions.html.py:49
 msgid "Anyone"
@@ -3006,192 +3137,199 @@ msgstr "Mtu yeyote"
 #: templates/_permissions.html:80 templates/_permissions.html.py:107
 #: templates/_permissions.html:133 templates/_permissions.html.py:160
 msgid "The following users:"
-msgstr "watumiaji zifuatazo:"
+msgstr "Watumiaji wafuatao:"
 
 #: templates/_permissions.html:28 templates/_permissions.html.py:60
 #: templates/_permissions.html:86 templates/_permissions.html.py:113
 #: templates/_permissions.html:139 templates/_permissions.html.py:166
 msgid "The following groups:"
-msgstr "makundi yafuatayo:"
+msgstr "Makundi yafuatayo:"
 
 #: templates/_permissions.html:40
 msgid "Who can download it?"
-msgstr "Ambao unaweza kushusha ni?"
+msgstr "Nani anaweza kupakua?"
 
 #: templates/_permissions.html:72
 msgid "Who can change metadata for it?"
-msgstr "Ambao wanaweza kubadili metadata kwa ajili yake?"
+msgstr "Nani anaweza kubadili metadata zake?"
 
 #: templates/_permissions.html:99
 msgid "Who can edit data for this layer?"
-msgstr "Nani anaweza kuhariri data kwa ajili ya safu hii?"
+msgstr "Nani anaweza kuhariri data za tabaka hili?"
 
 #: templates/_permissions.html:125
 msgid "Who can edit styles for this layer?"
-msgstr "Ambao wanaweza kuhariri mitindo kwa safu hii?"
+msgstr "Nani anaweza kubadilisha mtindo wa tabaka hili?"
 
 #: templates/_permissions.html:152
 msgid ""
 "Who can manage it? (update, delete, change permissions, publish/unpublish it)"
 msgstr ""
-"Ambao wanaweza kusimamia? (Update, kufuta, mabadiliko ya ruhusa, "
-"kuchapisha / kubatilisha uchapishaji yake)"
+"Nani anaweza kuratibu? (kusasisha, kufuta, kubadilisha ruhusa, kutoa au "
+"kusitisha utoaji wake)"
 
 #: templates/_permissions_form.html:9
 msgid "Set permissions for this resource"
-msgstr "Ruhusa ya kuweka kwa rasilimali hii"
+msgstr "Seti ruhusa kwa rasilimali hii"
 
 #: templates/_permissions_form_js.html:180
 msgid "Choose users..."
-msgstr "Kuchagua watumiaji ..."
+msgstr "Chagua watumiaji ..."
 
 #: templates/_permissions_form_js.html:213
 msgid "Choose groups..."
-msgstr "Kuchagua makundi ..."
+msgstr "Chagua makundi ..."
 
 #: templates/about.html:4 templates/about.html.py:8
 msgid "About GeoNode"
 msgstr "Kuhusu GeoNode"
 
-#: templates/about.html:9
+#: templates/about.html:10
 msgid "About GeoNode."
 msgstr "Kuhusu GeoNode."
 
-#: templates/base.html:224
+#: templates/base.html:192
+#, fuzzy
+msgid "Profile Menu"
+msgstr "Wasifu"
+
+#: templates/base.html:258
 msgid "Type your search here ..."
-msgstr "Chapa utafutaji wako hapa ..."
+msgstr "Andika utafutacho hapa ..."
 
 #: templates/developer.html:4 templates/developer.html.py:8
 msgid "Information for Developers"
 msgstr "Taarifa kwa Developers"
 
-#: templates/developer.html:9
+#: templates/developer.html:13
 msgid "Useful information for developers interested in GeoNode."
-msgstr "Habari muhimu kwa watengenezaji nia GeoNode."
+msgstr "Mambo muhimu kwa developers ambao wangependa kutumia GeoNode."
 
-#: templates/developer.html:12
+#: templates/developer.html:14
 msgid ""
 "\n"
-"  <p><a href=\"http://geonode.org/\">GeoNode</a> is an open service built on "
-"open source software. We encourage you to build new applications using the "
-"components and resources it provides. This page is a starting point for "
+"    <p><a href=\"http://geonode.org/\">GeoNode</a> is an open service built "
+"on open source software. We encourage you to build new applications using "
+"the components and resources it provides. This page is a starting point for "
 "developers interesting in taking full advantage of GeoNode. It also includes "
 "links to the project's source code so anyone can build and customize their "
 "own GeoNode. </p>\n"
 "\n"
-"  <h4>GeoNode Software</h4>\n"
+"    <h3>GeoNode Software</h3>\n"
 "\n"
-"  <p>All the code that runs GeoNode is open source. The code is available at "
-"<a href=\"http://github.com/GeoNode/geonode\">http://github.com/GeoNode/"
+"    <p>All the code that runs GeoNode is open source. The code is available "
+"at <a href=\"http://github.com/GeoNode/geonode\">http://github.com/GeoNode/"
 "geonode/</a>. The issue tracker for the project is at <a href=\"http://"
 "github.com/GeoNode/geonode/issues\">http://github.com/GeoNode/geonode/"
 "issues</a>.</p>\n"
 "\n"
-"  <p>GeoNode is built using several open source projects, each with its own "
-"community. If you are interested in contributing new features to the "
+"    <p>GeoNode is built using several open source projects, each with its "
+"own community. If you are interested in contributing new features to the "
 "GeoNode, we encourage you to do so by contributing to one of the projects on "
 "which it is built:</p>\n"
-"  <ul>\n"
-"    <li><a href=\"http://geoext.org\">GeoExt</a> - The JavaScript toolkit "
+"    <ul>\n"
+"      <li><a href=\"http://geoext.org\">GeoExt</a> - The JavaScript toolkit "
 "for rich web mapping applications</li>\n"
-"    <li><a href=\"http://geoserver.org\">GeoServer</a> - Standards based "
+"      <li><a href=\"http://geoserver.org\">GeoServer</a> - Standards based "
 "server for geospatial information</li>\n"
-"    <li><a href=\"http://geowebcache.org\">GeoWebCache</a> - Cache engine "
+"      <li><a href=\"http://geowebcache.org\">GeoWebCache</a> - Cache engine "
 "for WMS Tiles</li><li><a href=\"http://openlayers.org\">OpenLayers</a> - "
 "Pure JavaScript library powering the maps of GeoExt</li>\n"
-"    <li><a href=\"http://pycsw.org\">pycsw</a> - CSW metadata catalogue "
+"      <li><a href=\"http://pycsw.org\">pycsw</a> - CSW metadata catalogue "
 "server</li>\n"
-"  </ul>\n"
+"    </ul>\n"
 "\n"
-"  <h4>What are OGC Services?</h4>\n"
-"  <p>The data in this application is served using open standards endorsed by "
-"the <a href=\"http://opengeospatial.org/\">Open Geospatial Consortium</a>; "
-"in particular, WMS (Web Map Service) is used for accessing maps, WFS (Web "
-"Feature Service) is used for accessing vector data, and WCS (Web Coverage "
-"Service) is used for accessing raster data.  WMC (Web Map Context Documents) "
-"is used for sharing maps. You can use these services in your own "
+"    <h3>What are OGC Services?</h3>\n"
+"    <p>The data in this application is served using open standards endorsed "
+"by the <a href=\"http://opengeospatial.org/\">Open Geospatial Consortium</"
+"a>; in particular, WMS (Web Map Service) is used for accessing maps, WFS "
+"(Web Feature Service) is used for accessing vector data, and WCS (Web "
+"Coverage Service) is used for accessing raster data.  WMC (Web Map Context "
+"Documents) is used for sharing maps. You can use these services in your own "
 "applications using libraries such as OpenLayers, GeoTools, and OGR (all of "
 "which are open-source software and available at zero cost).</p>\n"
 "\n"
-"  <h4>What is GeoWebCache?</h4>\n"
-"  <p>GeoWebCache provides mapping tiles that are compatible with a number of "
-"mapping engines, including Google Maps, Bing Maps and OpenLayers. All the "
+"    <h3>What is GeoWebCache?</h3>\n"
+"    <p>GeoWebCache provides mapping tiles that are compatible with a number "
+"of mapping engines, including Google Maps, Bing Maps and OpenLayers. All the "
 "data hosted by GeoNode is also available through GeoWebCache. GeoWebCache "
 "improves on WMS by caching data and providing more responsive maps.</p>\n"
 "\n"
-"  <h4>OpenLayers Example Code</h4>\n"
+"    <h3>OpenLayers Example Code</h3>\n"
 "\n"
-"  <p>To include a GeoNode map layer in an OpenLayers map, first find the "
+"    <p>To include a GeoNode map layer in an OpenLayers map, first find the "
 "name for that layer. This is found in the layer's <code>name</code> field "
 "(not <code>title</code>) of the layer list. For this example, we will use "
 "the Nicaraguan political boundaries background layer, whose name is "
 "<code>risk:nicaragua_admin</code>. Then, create an instance of OpenLayers."
 "Layer.WMS:</p>\n"
-"  <p><code>var geonodeLayer = new OpenLayers.Layer.WMS(\"GeoNode Risk Data"
+"    <p><code>var geonodeLayer = new OpenLayers.Layer.WMS(\"GeoNode Risk Data"
 "\", \"http://demo.geonode.org/geoserver/wms\",{ layers: \"risk:"
 "nicaragua_admin\" });</code></p>\n"
 "\n"
-"  <h4>Google Maps Example Code</h4>\n"
-"  <p>To include a GeoNode map layer in a Google Map, include the layer "
+"    <h3>Google Maps Example Code</h3>\n"
+"    <p>To include a GeoNode map layer in a Google Map, include the layer "
 "namein the URL template.</p>\n"
-"  <p><code>var tilelayer =  new GTileLayer(null, null, null, "
+"    <p><code>var tilelayer =  new GTileLayer(null, null, null, "
 "{tileUrlTemplate: 'http://demo.geonode.org/geoserver/gwc/service/gmaps?"
 "layers=risk:nicaragua_admin&#38;zoom={Z}&#38;x={X}&#38;y={Y}', isPng:true, "
 "opacity:0.5 } );</code></p>\n"
 "\n"
-"  <h4>Shapefile/GeoJSON/GML Output</h4>\n"
-"  <p>To get data from the GeoNode web services use the WFS protocol. For "
+"    <h3>Shapefile/GeoJSON/GML Output</h3>\n"
+"    <p>To get data from the GeoNode web services use the WFS protocol. For "
 "example, to get the full Nicaraguan admin boundaries use:</p>\n"
-"  <p><code>http://demo.geonode.org/geoserver/wfs?request=GetFeature&#38;"
+"    <p><code>http://demo.geonode.org/geoserver/wfs?request=GetFeature&#38;"
 "typeName=risk:nicaragua_admin&#38;outputformat=SHAPE-ZIP</code></p>\n"
-"  <p>Changing output format to <code>json</code>, <code>GML2</code>, "
+"    <p>Changing output format to <code>json</code>, <code>GML2</code>, "
 "<code>GML3</code>, or <code>csv</code> will get data in those formats. The "
 "WFS protocol also can handle more precise queries, specifying a bounding box "
 "or various spatial and non-spatial filters based on the attributes of the "
 "data.</p>\n"
 "\n"
-"  <h4>GeoTools Example Code</h4>\n"
-"  <p>Create a DataStore and extract a FeatureType from it, then run a Query. "
-"It is all documented on the wiki at <code>http://geotools.org/</code>.</p>\n"
+"    <h3>GeoTools Example Code</h3>\n"
+"    <p>Create a DataStore and extract a FeatureType from it, then run a "
+"Query. It is all documented on the wiki at <code>http://geotools.org/</code>."
+"</p>\n"
+"    "
 msgstr ""
 
-#: templates/developer.html:53
+#: templates/developer.html:55
 msgid "GeoNode's Web Services"
-msgstr "GeoNode ya Huduma za Mtandao"
+msgstr "Huduma za GeoNode kwa mtandao"
 
-#: templates/developer.html:54
+#: templates/developer.html:56
 msgid "GeoNode's Web Services are available from the following URLs:"
-msgstr "GeoNode ya Mtandao Huduma zinapatikana kutoka URL zifuatazo:"
+msgstr "Huduma za GeoNode kwa mtandao zinapatikana kupitia URL zifuatazo:"
 
-#: templates/developer.html:57
+#: templates/developer.html:59
 msgid "Dynamic tiles via WMS:"
-msgstr "Nguvu matofali kupitia WMS:"
+msgstr "`Dynamic tiles` kupitia WMS:"
 
-#: templates/developer.html:61
+#: templates/developer.html:63
 msgid "Vector data via WFS:"
-msgstr "Vector data kupitia WFS:"
+msgstr "Takwimu za vekta kupitia WFS:"
 
-#: templates/developer.html:65
+#: templates/developer.html:67
 msgid "Raster data via WCS:"
-msgstr "Raster data kupitia WCS:"
+msgstr "Takwimu za `Raster` kupitia WCS:"
 
-#: templates/developer.html:69
+#: templates/developer.html:71
 msgid "Metadata search via CSW:"
-msgstr "Search metadata kupitia CSW:"
+msgstr "Tafuta metadata kupitia CSW:"
 
-#: templates/developer.html:73
+#: templates/developer.html:75
 msgid "Cached tiles via WMTS:"
-msgstr "Cached matofali kupitia WMTS:"
+msgstr "`Tiles` kutoka kwenye kashe kupitia WMTS:"
 
 #: templates/help.html:4
 msgid "User Guide"
-msgstr "Guide User"
+msgstr "Muongozo kwa mtumiaji"
 
 #: templates/help.html:8
 msgid "GeoNode Help"
-msgstr "GeoNode Msaada"
+msgstr "Msaada kuhusu Geonode"
 
-#: templates/help.html:9
+#: templates/help.html:12
 msgid ""
 "This page provides helpful information about how to use the GeoNode. You can "
 "use the sidebar links to navigate to what you want to know."
@@ -3199,122 +3337,123 @@ msgstr ""
 "Ukurasa hii hutoa habari muhimu kuhusu jinsi ya kutumia GeoNode. Unaweza "
 "kutumia viungo sidebar navigate kwa nini unataka kujua."
 
-#: templates/help.html:12
+#: templates/help.html:14
 msgid ""
 "\n"
-"  <p>The GeoNode provides access to data sets and a map editing application "
-"allows users to browse existing maps and contribute their own.</p>\n"
+"    <p>The GeoNode provides access to data sets and a map editing "
+"application allows users to browse existing maps and contribute their own.</"
+"p>\n"
 "\n"
-"  <h4 id=\"browsing-data\">Browsing Layers</h4>\n"
-"  <p>The <a href=\"/layers\">Layers</a> tab allows you to browse data "
+"    <h4 id=\"browsing-data\">Browsing Layers</h4>\n"
+"    <p>The <a href=\"/layers\">Layers</a> tab allows you to browse data "
 "uploaded to this GeoNode.</p>\n"
-"  <p>All data can be downloaded in a variety of formats, for use in other "
+"    <p>All data can be downloaded in a variety of formats, for use in other "
 "applications.</p>\n"
 "\n"
-"  <h4 id=\"developer-access\">Developer Access</h4>\n"
-"  <p>The <a href=\"/developer\"> Developer</a> page is the place for "
+"    <h4 id=\"developer-access\">Developer Access</h4>\n"
+"    <p>The <a href=\"/developer\"> Developer</a> page is the place for "
 "developers to get started building applications against the GeoNode. It "
 "includes instructions on using the web services, links to the source code of "
 "the GeoNode, and information about the open source projects used to create "
 "it.</p>\n"
 "\n"
-"  <h4 id=\"browsing-maps\">Browsing Maps</h4>\n"
-"  <p>The GeoNode allows users to create and share maps with one another.</"
+"    <h4 id=\"browsing-maps\">Browsing Maps</h4>\n"
+"    <p>The GeoNode allows users to create and share maps with one another.</"
 "p>\n"
-"  <p>The <a href=\"/maps\">Maps</a> tab is a gateway to map exploration on "
+"    <p>The <a href=\"/maps\">Maps</a> tab is a gateway to map exploration on "
 "GeoNode.  From here you can <strong>search for a map</strong> or "
 "<strong>create a map</strong>, which will open the <a href=\"/maps/new\">Map "
 "Composer</a>.</p>\n"
-"  <h5>Google Earth Mode</h5>\n"
-"  <p>Any map viewed in the interactive map editor can be seen in 3D mode "
+"    <h5>Google Earth Mode</h5>\n"
+"    <p>Any map viewed in the interactive map editor can be seen in 3D mode "
 "with the Google Earth plugin. To switch to 3D mode select the Google Earth "
 "globe logo, the rightmost button on top toolbar. If you do not have the "
 "Google Earth plugin installed you will be prompted to install it.</p>\n"
 "\n"
-"  <h4 id=\"creating-a-map\">Creating a Map</h4>\n"
-"  <p>To create a new map go to the <a href=\"/maps\">Contributed Maps</a> "
+"    <h4 id=\"creating-a-map\">Creating a Map</h4>\n"
+"    <p>To create a new map go to the <a href=\"/maps\">Contributed Maps</a> "
 "tab and click the <a href=\"/maps/new\">create your own map</a> link.</p>\n"
-"  <p>This will take you to the <a href=\"/maps/new\">Map Composer</a> with a "
-"base layer loaded.</p>\n"
-"  <p>To add data layers from the GeoNode click on the green plus button "
+"    <p>This will take you to the <a href=\"/maps/new\">Map Composer</a> with "
+"a base layer loaded.</p>\n"
+"    <p>To add data layers from the GeoNode click on the green plus button "
 "located below the layers tab on the left hand side of the screen. This will "
 "open a dialog listing all the layers available on the GeoNode.</p>\n"
-"  <p>To add layers to your map select them and hit the <strong>Add Layers</"
+"    <p>To add layers to your map select them and hit the <strong>Add Layers</"
 "strong> button. When finished you may hit <strong>Done</strong> to close the "
 "dialog and go back to the map.</p>\n"
 "\n"
-"  <h5>Reordering and Removing Layers</h5>\n"
-"  <p>Change the display order of the layers listed in the data tab by simply "
-"dragging and dropping their names. The order in the map will be updated to "
-"reflect that. To turn a layer's visibility off simply uncheck it, and to "
-"remove it entirely select it and hit the red minus button.</p>\n"
+"    <h5>Reordering and Removing Layers</h5>\n"
+"    <p>Change the display order of the layers listed in the data tab by "
+"simply dragging and dropping their names. The order in the map will be "
+"updated to reflect that. To turn a layer's visibility off simply uncheck it, "
+"and to remove it entirely select it and hit the red minus button.</p>\n"
 "\n"
-"  <h5>Saving your map</h5>\n"
-"  <p>Once a suitable set of layers and zoom level has been found it's time "
+"    <h5>Saving your map</h5>\n"
+"    <p>Once a suitable set of layers and zoom level has been found it's time "
 "to save it so others can see it.  Click the Save button--the left most icon "
 "on the top toolbar, an image of a map with a disk--on the top menu and fill "
 "out the title and abstract of the map.</p>\n"
 "\n"
-"  <h4 id=\"exporting-a-map\">Exporting a Map</h4>\n"
-"  <p>Any map from the GeoNode can be embedded for use in another site or "
+"    <h4 id=\"exporting-a-map\">Exporting a Map</h4>\n"
+"    <p>Any map from the GeoNode can be embedded for use in another site or "
 "blog. To export a map:</p>\n"
-"  <ol>\n"
-"    <li>Select the from the list of maps on the community or map page and "
+"    <ol>\n"
+"      <li>Select the from the list of maps on the community or map page and "
 "then hit the 'export map' button.</li> \n"
-"    <li>Choose your desired height and width for the widget in the wizard.</"
-"li> \n"
-"    <li>Copy the HTML snippet provided in the wizard to any HTML page or "
+"      <li>Choose your desired height and width for the widget in the wizard."
+"</li> \n"
+"      <li>Copy the HTML snippet provided in the wizard to any HTML page or "
 "iFrame-supporting blog post.</li>\n"
-"  </ol>\n"
-"  <p>This will put an interactive widget showing you map in your web page or "
-"blog post.</p>\n"
-"  <p>Note that the <a href=\"/maps/new\">Map Composer</a> also has a button "
-"to export the map. Just be sure to save the map before exporting if there "
-"are changes that you want others to see. It exports the last saved version, "
-"not the last viewed version.</p>\n"
+"    </ol>\n"
+"    <p>This will put an interactive widget showing you map in your web page "
+"or blog post.</p>\n"
+"    <p>Note that the <a href=\"/maps/new\">Map Composer</a> also has a "
+"button to export the map. Just be sure to save the map before exporting if "
+"there are changes that you want others to see. It exports the last saved "
+"version, not the last viewed version.</p>\n"
 "\n"
-"  <h4 id=\"remixing-a-map\">Remixing a Map</h4>\n"
-"  <p>Any map available can serve as a starting point for a new map.</p>\n"
-"  <ol>\n"
-"    <li>Open the map in the Map Composer.</li>\n"
-"    <li>Add and remove layers as you like.</li>\n"
-"    <li>Pan and zoom to highlight the area of interest.</li>\n"
-"    <li><strong>IMPORTANT:</strong> Update the title, abstract, contact info "
-"and tags to reflect the new map.</li>\n"
-"    <li>Save the map.</li>\n"
-"  </ol>\n"
-"  <p>You will be able to see your new map when you search for it from the <a "
-"href=\"/maps\">Maps</a> tab.</p> \n"
-"  "
+"    <h4 id=\"remixing-a-map\">Remixing a Map</h4>\n"
+"    <p>Any map available can serve as a starting point for a new map.</p>\n"
+"    <ol>\n"
+"      <li>Open the map in the Map Composer.</li>\n"
+"      <li>Add and remove layers as you like.</li>\n"
+"      <li>Pan and zoom to highlight the area of interest.</li>\n"
+"      <li><strong>IMPORTANT:</strong> Update the title, abstract, contact "
+"info and tags to reflect the new map.</li>\n"
+"      <li>Save the map.</li>\n"
+"    </ol>\n"
+"    <p>You will be able to see your new map when you search for it from the "
+"<a href=\"/maps\">Maps</a> tab.</p> \n"
+"    "
 msgstr ""
 
-#: templates/help.html:65
+#: templates/help.html:66
 msgid "Sections"
 msgstr "Sehemu"
 
-#: templates/help.html:66
-msgid "Browsing Layers"
-msgstr "Kuvinjari tabaka"
-
 #: templates/help.html:67
+msgid "Browsing Layers"
+msgstr "Kuperuzi Matabaka"
+
+#: templates/help.html:68
 msgid "Developer Access"
 msgstr "Developer Kupata"
 
-#: templates/help.html:68
-msgid "Browsing Maps"
-msgstr "Kuvinjari Maps"
-
 #: templates/help.html:69
-msgid "Creating a Map"
-msgstr "Kujenga Ramani"
+msgid "Browsing Maps"
+msgstr "Kuperuzi Ramani"
 
 #: templates/help.html:70
-msgid "Exporting a Map"
-msgstr "Kusafirisha Ramani"
+msgid "Creating a Map"
+msgstr "Kutengeneza Ramani"
 
 #: templates/help.html:71
+msgid "Exporting a Map"
+msgstr "Kutoa Ramani"
+
+#: templates/help.html:72
 msgid "Remixing a Map"
-msgstr "Remixing Ramani"
+msgstr "Kuboresha Ramani"
 
 #: templates/index.html:6
 msgid "Welcome!"
@@ -3328,129 +3467,181 @@ msgstr "Karibu"
 msgid ""
 "GeoNode is an open source platform for sharing geospatial data and maps."
 msgstr ""
-"GeoNode ni wazi chanzo jukwaa kwa ajili ya kubadilishana data geospatial na "
-"ramani."
+"GeoNode ni mfumo kutokana chanzo huru kwa ajili ya kubadilishanatakwimu za "
+"kijiografia na ramani."
 
 #: templates/index.html:17
 msgid ""
 "If you have any questions about the software or service, join our <a href="
 "\"https://groups.google.com/d/forum/geonode-users\">mailing list</a>."
 msgstr ""
-"Kama una maswali yoyote kuhusu programu au huduma, kujiunga wetu <a href="
-"\"https://groups.google.com/d/forum/geonode-users\">orodha ya barua</a> ."
+"Kama una maswali yoyote kuhusu programu au huduma hii, Jiunge na <a href="
+"\"https://groups.google.com/d/forum/geonode-users\">jukwaa letu la barua "
+"pepe</a> ."
 
 #: templates/index.html:18
 msgid "Need help?"
-msgstr "Wanahitaji msaada?"
+msgstr "Unahitaji msaada?"
 
 #: templates/index.html:18
 msgid "Getting Started"
 msgstr "Anza"
 
-#: templates/index.html:30 templates/index.html.py:37 templates/index.html:43
+#: templates/index.html:30 templates/index.html.py:36 templates/index.html:43
+#: templates/index.html.py:48
 msgid "No"
-msgstr "Hakuna"
+msgstr "Hapana"
 
 #: templates/index.html:30
+#: templates/notification/request_download_resourcebase/full.txt:7
+#, fuzzy
 msgid "Layer"
-msgstr "Safu"
+msgid_plural "Layers"
+msgstr[0] "Tabaka"
+msgstr[1] "Tabaka"
 
-#: templates/index.html:32
+#: templates/index.html:31
 msgid ""
 "Click to search for geospatial data published by other users, organizations "
 "and public sources. Download data in standard formats."
 msgstr ""
-"Bofya ili kutafuta data geospatial kuchapishwa na watumiaji wengine, "
-"mashirika na vyanzo vya umma. Download data katika muundo standard."
+"Bofya ili kutafuta takwimu za kijiografia zilizotolewa na watumiaji wengine, "
+"mashirika na vyanzo vya umma. Pakua takwimu katika mfumo wenye viwango "
+"vinavyokubalika."
+
+#: templates/index.html:36
+#, fuzzy
+msgid "Map"
+msgid_plural "Maps"
+msgstr[0] "Ramani"
+msgstr[1] "Ramani"
 
 #: templates/index.html:37
-msgid "Map"
-msgstr "Ramani"
-
-#: templates/index.html:38
 msgid ""
 "Data is available for browsing, aggregating and styling to generate maps "
 "which can be shared publicly or restricted to specific users only."
 msgstr ""
-"Takwimu inapatikana kwa kuvinjari, kujumlisha na styling kuzalisha ramani "
-"ambayo inaweza kuwa pamoja kwa umma au vikwazo kwa watumiaji maalum tu."
+"Takwimu zinapatikana kwa ajili ya kuperuzi, kufanya majumuisho nakubadilisha "
+"muonekano kwa ajili ya kutengeneza ramani ambayo inaweza kuwa ya umma au kwa "
+"watumiaji walioidhinishwa tu."
 
-#: templates/index.html:39
+#: templates/index.html:38
 msgid "Create maps"
-msgstr "Kuunda ramani"
+msgstr "Tengeneza ramani"
 
-#: templates/index.html:43
+#: templates/index.html:43 templates/index.html.py:48
+#: templates/notification/account_approve/full.txt:1
+#, fuzzy
 msgid "User"
-msgstr "Mtumiaji"
+msgid_plural "Users"
+msgstr[0] "Mtumiaji"
+msgstr[1] "Mtumiaji"
 
-#: templates/index.html:44
+#: templates/index.html:44 templates/index.html.py:49
 msgid ""
 "GeoNode allows registered users to easily upload geospatial data in several "
 "formats including shapefile and GeoTiff."
 msgstr ""
-"GeoNode inaruhusu watumiaji waliojiandikisha kupakia kwa urahisi data "
-"geospatial katika format kadhaa ikiwa ni pamoja na shapefile na GeoTiff."
+"GeoNode inaruhusu watumiaji waliosajiliwa kupakia kwa urahisi data za "
+"kijiografia zilizokatika mifumo mbali mbali ikiwa ni pamoja na shapefile na "
+"GeoTiff."
 
-#: templates/index.html:45
+#: templates/index.html:45 templates/index.html.py:50
 msgid "Share data"
-msgstr "Kushiriki data"
+msgstr "Changia data"
 
-#: templates/account/login.html:7 templates/account/login.html.py:24
+#: templates/account/admin_approval_sent.html:6
+#: templates/account/admin_approval_sent.html:9
+msgid "Account Pending Approval"
+msgstr ""
+
+#: templates/account/admin_approval_sent.html:11
+#, python-format
+msgid ""
+"We have sent the administrators a notice to approve your account associated "
+"with <b>%(email)s</b>. If the account is approved, you will receive a "
+"confirmation notice."
+msgstr ""
+
+#: templates/account/email_confirmation_sent.html:6
+#: templates/account/email_confirmation_sent.html:9
+#, fuzzy
+msgid "Confirm your email address"
+msgstr "Thibitisha barua pepe kwa ajili ya %(site_name)s"
+
+#: templates/account/email_confirmation_sent.html:11
+#, python-format
+msgid ""
+"We have sent you an email to <b>%(email)s</b> for verification. Follow the "
+"link provided to finalize the signup process."
+msgstr ""
+
+#: templates/account/login.html:7 templates/account/login.html.py:25
 msgid "Log in"
-msgstr "Kuingia katika"
+msgstr "Ingia"
 
-#: templates/account/login.html:12
+#: templates/account/login.html:11
 msgid "Log in to an existing account"
-msgstr "Kuingia kwenye akaunti zilizopo"
+msgstr "Ingia kwenye akaunti yako"
 
 #: templates/account/login.html:22
 msgid "Forgot your username?"
-msgstr "Umesahau jina lako?"
+msgstr "Umesahau jina unalotumia?"
 
 #: templates/account/login.html:23
 msgid "Forgot your password?"
-msgstr "Umesahau nywila yako?"
+msgstr "Umesahau nenosiri lako?"
 
 #: templates/account/logout.html:15
 msgid "Are you sure you want to log out?"
-msgstr "Je, una hakika unataka kuingia nje?"
+msgstr "Je, una hakika unataka kutoka?"
 
 #: templates/account/password_reset.html:8
-#: templates/account/password_reset.html:14
 msgid "Password reset"
-msgstr "Password reset"
+msgstr "Kuseti upyan enosiri"
 
-#: templates/account/password_reset.html:15
+#: templates/account/password_reset.html:14
+#, fuzzy
+msgid "Password Reset"
+msgstr "Kuseti upyan enosiri"
+
+#: templates/account/password_reset.html:18
+#, fuzzy
+msgid "Forgotten your password?"
+msgstr "Umesahau nenosiri lako?"
+
+#: templates/account/password_reset.html:19
+#, fuzzy
 msgid ""
-"Forgotten your password? Enter your email address below, and we'll send you "
-"an email allowing you to reset it."
+"Enter your email address below, and we'll send you an email allowing you to "
+"reset it."
 msgstr ""
-"Wamesahau password yako? Kuingia anwani yako ya barua pepe hapa chini, na "
-"tutaweza kukutumia email kuruhusu wewe upya."
-
-#: templates/account/password_reset.html:20
-msgid "Reset my password"
-msgstr "Rudisha password yangu"
+"Umesahau nenosiri lako?Ingiza anwani yako ya barua pepe hapo chini, nasi "
+"tutakutumia barua pepeitakayo kuwezesha kuseiti upya."
 
 #: templates/account/password_reset.html:25
+msgid "Reset my password"
+msgstr "Seti upya nenosiri langu"
+
+#: templates/account/password_reset.html:29
 #, python-format
 msgid ""
 "If you have any trouble resetting your password, contact us at <a href="
 "\"mailto:%(THEME_ACCOUNT_CONTACT_EMAIL)s\">%(THEME_ACCOUNT_CONTACT_EMAIL)s</"
 "a>."
 msgstr ""
-"Kama una matatizo yoyote resetting password yako, wasiliana nasi saa <a href="
-"\"mailto:%(THEME_ACCOUNT_CONTACT_EMAIL)s\">%(THEME_ACCOUNT_CONTACT_EMAIL)s</"
-"a>."
+"Kama una matatizo yoyote katika kuseti upya nenosiri lako, wasiliana nasi "
+"kupitia <a href=\"mailto:%(THEME_ACCOUNT_CONTACT_EMAIL)s\">"
+"%(THEME_ACCOUNT_CONTACT_EMAIL)s</a>."
 
 #: templates/account/signup.html:7 templates/account/signup.html.py:14
 #: templates/account/signup.html:22
 msgid "Sign up"
-msgstr "Ishara ya juu"
+msgstr "Kujiunga"
 
 #: templates/account/signup.html:27
 msgid "Sorry, registrations are not open at this time."
-msgstr "Pole, usajili si wazi kwa wakati huu."
+msgstr "Samahani, usajili umesitishwa kwa wakati huu."
 
 #: templates/account/email/email_confirmation_message.txt:1
 #, python-format
@@ -3461,14 +3652,16 @@ msgid ""
 "\n"
 "If you did not sign up for this site, you can ignore this message.\n"
 msgstr ""
-"user juu ya %(site_name)s imeunda akaunti kwa kutumia anwani hii ya barua "
-"pepe. Kuthibitisha barua pepe hii, kwenda %(activate_url)s Ikiwa hakuwa "
-"ishara kwa ajili ya tovuti hii, unaweza kupuuza ujumbe huu.\n"
+"Kuna mtumiaji wa %(site_name)s ameunda akaunti kwa kutumia anwani hii ya "
+"barua pepe.\n"
+"Kwa uthibitisho wa anuani hii ya barua pepe, nenda %(activate_url)s\n"
+"\n"
+"Ikiwa hajawahi kujiunga na tovuti hii, unaweza kupuuza ujumbe huu.\n"
 
 #: templates/account/email/email_confirmation_subject.txt:1
 #, python-format
 msgid "Confirm email address for %(site_name)s"
-msgstr "Kuthibitisha barua pepe kwa %(site_name)s"
+msgstr "Thibitisha barua pepe kwa ajili ya %(site_name)s"
 
 #: templates/account/email/password_reset.txt:1
 #, python-format
@@ -3480,66 +3673,67 @@ msgid ""
 "\n"
 "%(password_reset_url)s\n"
 msgstr ""
-"Wewe ni kupokea barua pepe hii kwa sababu wewe au mtu mwingine ameomba "
-"nenosiri kwa akaunti yako user katika %(site_name)s. Ni inaweza kuwa salama "
-"kupuuzwa kama hukuomba upya password. Bonyeza link hapo chini ili kuweka "
-"upya nenosiri yako. %(password_reset_url)s\n"
+"Umepokea barua pepe hii kwa sababu wewe au mtu fulani ameomba nenosiri kwa "
+"ajili ya akaunti yako ya %(site_name)s.\n"
+" Unaweza kupuuza ujumbe huu ikiwa hukuomba kuseti upya nenosiri. Bonyeza "
+"kiungo hapo chini ili kuseti upya nenosiri lako.\n"
+" %(password_reset_url)s\n"
 
 #: templates/account/email/password_reset_subject.txt:1
 #, python-format
 msgid "[%(site_name)s] Password reset"
-msgstr "[%(site_name)s] Password reset"
+msgstr "Kuseti upya nenosiri [%(site_name)s]"
 
 #: templates/actstream/actor.html:7 templates/actstream/actor.html.py:8
 msgid "My Activity feed"
-msgstr "Shughuli yangu kulisha"
+msgstr "Mlisho wa matukio yangu"
 
 #: templates/actstream/actor.html:7 templates/actstream/actor.html.py:8
 msgid "Activity Feed"
-msgstr "Shughuli Feed"
+msgstr "Mlisho wa matukio"
 
 #: templates/admin/base_site.html:3
 msgid "GeoNode site admin"
-msgstr "GeoNode tovuti admin"
+msgstr "Tovuti ya utawala GeoNode"
 
 #: templates/admin/base_site.html:6
 msgid "GeoNode administration"
-msgstr "GeoNode utawala"
+msgstr "Utawala GeoNode"
 
-#: templates/announcements/announcement_form.html:10
+#: templates/announcements/announcement_form.html:11
 msgid "Edit Announcement"
-msgstr "Edit Tangazo"
+msgstr "Hariri Tangazo"
 
-#: templates/announcements/announcement_form.html:10
+#: templates/announcements/announcement_form.html:11
 msgid "Create Announcement"
-msgstr "Kujenga Tangazo"
+msgstr "Tengeneza Tangazo"
 
-#: templates/announcements/announcement_list.html:19
+#: templates/announcements/announcement_list.html:12
 msgid "New Announcement"
-msgstr "New Tangazo"
+msgstr "Tangazo jipya"
 
-#: templates/announcements/announcement_list.html:31
+#: templates/announcements/announcement_list.html:21
 msgid "Level"
 msgstr ""
 
-#: templates/announcements/announcement_list.html:32
+#: templates/announcements/announcement_list.html:22
 msgid "Announcement"
 msgstr "Tangazo"
 
-#: templates/announcements/announcement_list.html:33
+#: templates/announcements/announcement_list.html:23
 msgid "Published From"
-msgstr "Kuchapishwa Kutokana"
+msgstr "Toleo kutoka"
 
-#: templates/announcements/announcement_list.html:48
-#, python-format
+#: templates/announcements/announcement_list.html:38
+#, fuzzy, python-format
 msgid ""
 "\n"
-"                        Published from <b>%(publish_start)s</b> to <b>"
-"%(publish_end)s</b>.\n"
-"                        "
+"          Published from <b>%(publish_start)s</b> to <b>%(publish_end)s</"
+"b>.\n"
+"          "
 msgstr ""
 "\n"
-"Kuchapishwa <b>%(publish_start)s</b> na<b>%(publish_end)s</b>"
+"Toleo la <b>%(publish_start)s</b> hadi <b>%(publish_end)s</b>"
 
 #: templates/announcements/detail.html:4
 #, python-format
@@ -3549,11 +3743,11 @@ msgstr "Matangazo: %(announcement)s"
 #: templates/avatar/add.html:6 templates/avatar/change.html:6
 #: templates/avatar/confirm_delete.html:5
 msgid "Back to edit your profile information"
-msgstr "Nyuma hariri maelezo ya wasifu wako"
+msgstr "Rudi kuhariri maelezo ya wasifu wako"
 
 #: templates/avatar/add.html:7 templates/avatar/change.html:7
 msgid "Your current avatar: "
-msgstr "Avatar yako ya sasa:"
+msgstr "Avatar yako ya sasa: "
 
 #: templates/avatar/add.html:10 templates/avatar/change.html:10
 msgid "You haven't uploaded an avatar yet. Please upload one now."
@@ -3561,19 +3755,20 @@ msgstr "Hujapakia avatar bado. Tafadhali pakia moja sasa."
 
 #: templates/avatar/add.html:14 templates/avatar/change.html:21
 msgid "Upload New Image"
-msgstr "Weka New Image"
+msgstr "Pakia Picha Mpya"
 
 #: templates/avatar/change.html:16
 msgid "Choose new Default"
 msgstr "Kuchagua Default mpya"
 
 #: templates/avatar/change.html:23
-msgid "Delete your avatars"
-msgstr "Kufuta avatars yako"
+#, fuzzy
+msgid "Delete Your Avatar"
+msgstr "Futa avatars zako"
 
 #: templates/avatar/confirm_delete.html:6
 msgid "Please select the avatars that you would like to delete."
-msgstr "Tafadhali chagua avatars kwamba ungependa kufuta."
+msgstr "Tafadhali chagua avatars ambazo ungependa kufuta."
 
 #: templates/avatar/confirm_delete.html:9
 #, python-format
@@ -3581,85 +3776,293 @@ msgid ""
 "You have no avatars to delete. Please <a href=\"%(avatar_change_url)s"
 "\">upload one</a> now."
 msgstr ""
-"Wewe huna avatars kufuta. Tafadhali <a href=\"%(avatar_change_url)s\">upload "
-"moja</a> sasa."
+"Huna avatars za kufuta. Tafadhali <a href=\"%(avatar_change_url)s\">pakia "
+"mojawapo</a> sasa."
 
 #: templates/avatar/confirm_delete.html:15
 msgid "Delete These"
-msgstr "Kufuta hizi"
+msgstr "Futa hizi"
 
-#: templates/notification/base.html:16 templates/notification/notices.html:7
-#: templates/notification/notices.html:11
-msgid "Notices"
-msgstr "Matangazo"
-
-#: templates/notification/base.html:17
-msgid "Notice settings"
-msgstr "Mazingira ilani"
-
-#: templates/notification/base.html:18
-msgid "Observed objects"
-msgstr "Vitu aliona"
-
-#: templates/notification/notice_settings.html:5
-#: templates/notification/notice_settings.html:10
+#: templates/notification/notice_settings.html:8
+#: templates/notification/notice_settings.html:11
 msgid "Notification Settings"
-msgstr "Taarifa Settings"
+msgstr "Mipangilio ya Taarifa"
 
 #: templates/notification/notice_settings.html:15
-msgid "Primary email"
-msgstr "Barua pepe ya msingi"
-
-#: templates/notification/notice_settings.html:17
-#, python-format
-msgid "change under <a href=\"%(email_url)s\">Account</a>"
-msgstr "mabadiliko ya chini ya <a href=\"%(email_url)s\">Akaunti</a>"
-
-#: templates/notification/notice_settings.html:21
-msgid "Note"
-msgstr "Kumbuka"
-
-#: templates/notification/notice_settings.html:22
 #, python-format
 msgid ""
-"You do not have a verified email address to which notices can be sent. You "
-"can add one by going to <a href=\"%(email_url)s\">Account</a>."
+"\n"
+"        <p class=\"alert alert-warning\">\n"
+"            <span class=\"warning\">Note</span>:\n"
+"            You do not have a verified email address to which notices can be "
+"sent. <a href=\"%(email_url)s\">Add one</a> now.\n"
+"        </p>\n"
+"        "
 msgstr ""
-"Huna anwani ya barua pepe kuthibitishwa ambayo matangazo inaweza kutumwa. "
-"Unaweza kuongeza moja kwa kwenda <a href=\"%(email_url)s\">Akaunti</a> ."
 
-#: templates/notification/notice_settings.html:30
+#: templates/notification/notice_settings.html:27
 msgid "Notification Type"
-msgstr "Taarifa Aina"
+msgstr "Aina ya Taarifa"
 
-#: templates/notification/notice_settings.html:48
+#: templates/notification/notice_settings.html:52
 msgid "Change"
-msgstr "Change"
+msgstr "Badilisha"
 
-#: templates/notification/notices.html:16
-msgid "Mark all unseen notices seen"
-msgstr "Mark matangazo yote ghaibu kuonekana"
+#: templates/notification/account_active/full.txt:3
+msgid "Your account has been approved and is now active."
+msgstr ""
 
-#: templates/notification/notices.html:22
-msgid "MONTH_DAY_FORMAT"
-msgstr "MONTH_DAY_FORMAT"
+#: templates/notification/account_active/full.txt:5
+msgid "You can use the login form at"
+msgstr ""
 
-#: templates/notification/notices.html:33
-msgid "View Notice"
-msgstr "Mtazamo Ilani"
+#: templates/notification/account_active/short.txt:3
+msgid "Your account is now active"
+msgstr ""
 
-#: templates/notification/notices.html:41
-msgid "No notices."
-msgstr "Hakuna matangazo."
+#: templates/notification/account_approve/full.txt:1
+msgid "has requested access to the site."
+msgstr ""
 
-#: templates/notification/single.html:6 templates/notification/single.html:9
-msgid "Notice"
-msgstr "Ilani"
+#: templates/notification/account_approve/full.txt:1
+msgid ""
+"You can enable access by setting the user as active on the admin section"
+msgstr ""
+
+#: templates/notification/account_approve/short.txt:3
+msgid "A user has requested access to the site"
+msgstr ""
+
+#: templates/notification/document_comment/full.txt:3
+#, fuzzy
+msgid "A comment has been posted for the document"
+msgstr "Huna kibali cha hati hii."
+
+#: templates/notification/document_comment/full.txt:3
+#: templates/notification/layer_comment/full.txt:3
+#: templates/notification/map_comment/full.txt:4
+msgid "by the user"
+msgstr ""
+
+#: templates/notification/document_comment/full.txt:5
+#: templates/notification/document_created/full.txt:6
+#: templates/notification/document_updated/full.txt:6
+msgid "You can visit the document's detail page here"
+msgstr ""
+
+#: templates/notification/document_comment/short.txt:3
+#, fuzzy
+msgid "A comment has been posted for a document"
+msgstr "Huna kibali cha hati hii."
+
+#: templates/notification/document_created/full.txt:3
+#: templates/notification/document_rated/full.txt:3
+#: templates/notification/layer_created/full.txt:3
+#: templates/notification/layer_rated/full.txt:3
+#: templates/notification/map_created/full.txt:3
+#: templates/notification/map_rated/full.txt:3
+#: templates/notification/request_download_resourcebase/full.txt:3
+#, fuzzy
+msgid "The user"
+msgstr "Chagua watumiaji ..."
+
+#: templates/notification/document_created/full.txt:3
+#, fuzzy
+msgid "uploaded the following document"
+msgstr "Badilisha hati hii"
+
+#: templates/notification/document_created/short.txt:3
+#, fuzzy
+msgid "A document has been uploaded"
+msgstr "Tabaka limepakiwa"
+
+#: templates/notification/document_deleted/full.txt:3
+#, fuzzy
+msgid "The following document was deleted"
+msgstr "Watumiaji wafuatao:"
+
+#: templates/notification/document_deleted/full.txt:4
+#: templates/notification/document_rated/full.txt:6
+#: templates/notification/document_updated/full.txt:4
+#: templates/notification/layer_deleted/full.txt:4
+#: templates/notification/layer_rated/full.txt:6
+#: templates/notification/layer_updated/full.txt:4
+#: templates/notification/map_deleted/full.txt:4
+#: templates/notification/map_rated/full.txt:6
+#: templates/notification/map_updated/full.txt:4
+#, fuzzy
+msgid "owned by"
+msgstr "Imewezeshwa na"
+
+#: templates/notification/document_deleted/short.txt:3
+#, fuzzy
+msgid "A document has been deleted"
+msgstr "Huduma imeanzishwa:"
+
+#: templates/notification/document_rated/full.txt:4
+#: templates/notification/layer_rated/full.txt:4
+#: templates/notification/map_rated/full.txt:4
+#, fuzzy
+msgid "rated"
+msgstr "kuundwa"
+
+#: templates/notification/document_rated/full.txt:5
+#, fuzzy
+msgid "the following document"
+msgstr "Watumiaji wafuatao:"
+
+#: templates/notification/document_rated/full.txt:8
+#: templates/notification/layer_comment/full.txt:5
+#: templates/notification/layer_created/full.txt:6
+#: templates/notification/layer_rated/full.txt:8
+#: templates/notification/layer_updated/full.txt:6
+msgid "You can visit the layer's detail page here"
+msgstr ""
+
+#: templates/notification/document_rated/short.txt:3
+#, fuzzy
+msgid "A document has been rated"
+msgstr "Huduma imeanzishwa:"
+
+#: templates/notification/document_updated/full.txt:3
+#, fuzzy
+msgid "The following document was updated"
+msgstr "Watumiaji wafuatao:"
+
+#: templates/notification/document_updated/short.txt:3
+#, fuzzy
+msgid "A document has been updated"
+msgstr "Huduma imeanzishwa:"
+
+#: templates/notification/layer_comment/full.txt:3
+#, fuzzy
+msgid "A comment has been posted for the layer"
+msgstr "Hati zinazohusiana na tabaka hili"
+
+#: templates/notification/layer_comment/short.txt:3
+#, fuzzy
+msgid "A comment has been posted for a layer"
+msgstr "Tabaka limethaminishwa"
+
+#: templates/notification/layer_created/full.txt:3
+#, fuzzy
+msgid "uploaded the following layer"
+msgstr "Ramani hii inatumia tabaka yafuatayo:"
+
+#: templates/notification/layer_created/short.txt:3
+#, fuzzy
+msgid "A new layer has been uploaded"
+msgstr "Tabaka limepakiwa"
+
+#: templates/notification/layer_deleted/full.txt:3
+#, fuzzy
+msgid "The following layer was deleted"
+msgstr "Matabaka yafuatayo yataingizwa"
+
+#: templates/notification/layer_deleted/short.txt:3
+#, fuzzy
+msgid "A layer has been deleted"
+msgstr "Maoni kuhusu tabaka yalitolewa"
+
+#: templates/notification/layer_rated/full.txt:5
+#, fuzzy
+msgid "the following layer"
+msgstr "Watumiaji wafuatao:"
+
+#: templates/notification/layer_rated/short.txt:3
+#, fuzzy
+msgid "A layer has been rated"
+msgstr "Huduma imeanzishwa:"
+
+#: templates/notification/layer_updated/full.txt:3
+#, fuzzy
+msgid "The following layer was updated"
+msgstr "Matabaka yafuatayo yataingizwa"
+
+#: templates/notification/layer_updated/short.txt:3
+#, fuzzy
+msgid "A layer has been updated"
+msgstr "Tabaka limepakiwa"
+
+#: templates/notification/map_comment/full.txt:3
+#, fuzzy
+msgid "A comment has been posted for the map"
+msgstr "Nyaraka kuhusiana na ramani hii"
+
+#: templates/notification/map_comment/full.txt:6
+#: templates/notification/map_created/full.txt:6
+#: templates/notification/map_rated/full.txt:8
+#: templates/notification/map_updated/full.txt:6
+msgid "You can visit the map's detail page here"
+msgstr ""
+
+#: templates/notification/map_comment/short.txt:3
+msgid "A comment has been posted for a map"
+msgstr ""
+
+#: templates/notification/map_created/full.txt:3
+#, fuzzy
+msgid "created the following map"
+msgstr "Hatua hii ina athari kwa ramani zifuatazo:"
+
+#: templates/notification/map_created/short.txt:3
+#, fuzzy
+msgid "A map has been created"
+msgstr "Ramani iliundwa"
+
+#: templates/notification/map_deleted/full.txt:3
+#, fuzzy
+msgid "The following map was deleted"
+msgstr "Matabaka yafuatayo yataingizwa"
+
+#: templates/notification/map_deleted/short.txt:3
+#, fuzzy
+msgid "A map has been deleted"
+msgstr "ramani ilikuwa maoni juu ya"
+
+#: templates/notification/map_rated/full.txt:5
+#, fuzzy
+msgid "the following map"
+msgstr "Makundi yafuatayo:"
+
+#: templates/notification/map_rated/short.txt:3
+#, fuzzy
+msgid "A map has been rated"
+msgstr "Ramani iliundwa"
+
+#: templates/notification/map_updated/full.txt:3
+#, fuzzy
+msgid "The following map was updated"
+msgstr "Matabaka yafuatayo yataingizwa"
+
+#: templates/notification/map_updated/short.txt:3
+#, fuzzy
+msgid "A map has been updated"
+msgstr "Ramani iliundwa"
+
+#: templates/notification/request_download_resourcebase/full.txt:3
+#, fuzzy
+msgid "requested you to download this resource"
+msgstr "upande unaomiliki rasilimali"
+
+#: templates/notification/request_download_resourcebase/full.txt:9
+#, fuzzy
+msgid "Document"
+msgstr "Hati"
+
+#: templates/notification/request_download_resourcebase/full.txt:12
+msgid ""
+"Please go to resource page and assign the download permissions if you wish"
+msgstr ""
+
+#: templates/notification/request_download_resourcebase/short.txt:3
+msgid "A resource's download has been requested"
+msgstr ""
 
 #: templates/relationships/_list_connections.html:3
 #: templates/relationships/_manage_connections.html:6
 msgid "Following"
-msgstr "Kufuatia"
+msgstr "Unaowafuatia"
 
 #: templates/relationships/_list_connections.html:9
 msgid "This user is not following anyone"
@@ -3671,7 +4074,7 @@ msgstr "Wafuasi"
 
 #: templates/relationships/_list_connections.html:17
 msgid "No one is following this user"
-msgstr "Hakuna mtu ni yafuatayo mtumiaji huyu"
+msgstr "Hakuna anayemfuatilia"
 
 #: templates/relationships/_manage_connections.html:4
 msgid "Manage Connections"
@@ -3684,29 +4087,29 @@ msgstr "Kuzuia"
 #: templates/relationships/_profile_follow.html:6
 #: templates/relationships/relationship_list.html:16
 msgid "Unfollow"
-msgstr "Acha kumfuata"
+msgstr "Acha kufuatilia"
 
 #: templates/relationships/_profile_follow.html:9
 msgid "Follow"
-msgstr "Kufuata"
+msgstr "Fuatilia"
 
 #: templates/relationships/_profile_follow.html:14
 #: templates/relationships/relationship_list.html:20
 msgid "Unblock"
-msgstr "Kufungulia"
+msgstr "Ruhusu"
 
 #: templates/relationships/_profile_follow.html:17
 msgid "Block"
-msgstr "Block"
+msgstr "Usiruhusu"
 
 #: templates/relationships/confirm.html:4
 #: templates/relationships/confirm.html:7
 msgid "No longer"
-msgstr "Tena"
+msgstr "Si tena"
 
 #: templates/relationships/confirm.html:12
 msgid "Confirm"
-msgstr "Kuthibitisha"
+msgstr "Thibitisha"
 
 #: templates/relationships/relationship_list.html:26
 #, python-format
@@ -3728,7 +4131,7 @@ msgstr "tena"
 #: templates/relationships/success.html:7
 #, python-format
 msgid "%(to_user_username)s's profile"
-msgstr "%(to_user_username)s ya profile"
+msgstr "Wasifu wa %(to_user_username)s"
 
 #: templates/search/_extent_filter.html:3
 msgid "Extent"
@@ -3736,7 +4139,7 @@ msgstr "Kiwango"
 
 #: templates/search/_general_filters.html:3
 msgid "Categories"
-msgstr "Jamii"
+msgstr "Makundi"
 
 #: templates/search/_general_filters.html:30
 msgid "Date begins after:"
@@ -3751,69 +4154,160 @@ msgstr "yyyy-mm-dd"
 msgid "Date ends before:"
 msgstr "Tarehe ya mwisho kabla ya:"
 
-#: templates/search/_search_content.html:10
+#: templates/search/_search_content.html:6
 msgid "Your selections"
 msgstr "Uchaguzi wako"
 
-#: templates/search/_search_content.html:11
+#: templates/search/_search_content.html:7
 msgid "Clear all filters"
-msgstr "Wazi filters wote"
+msgstr "Safisha chujio"
 
-#: templates/search/_sort_filters.html:13
+#: templates/search/_sort_filters.html:15
 msgid "Set permissions"
-msgstr "Ruhusa kuweka"
+msgstr "Idhinisha ruhusa"
 
 #: templates/search/_text_filter.html:5
 msgid "Text"
 msgstr "Nakala"
 
+#: templates/user_messages/_message_snippet.html:8
+msgid "With"
+msgstr "NA"
+
+#: templates/user_messages/_message_snippet.html:9
+msgid "Subject"
+msgstr "Mada"
+
+#: templates/user_messages/_message_snippet.html:10
+msgid "Last Sender"
+msgstr "Mtumaji wa Mwisho"
+
+#: templates/user_messages/_message_snippet.html:11
+msgid "Preview"
+msgstr "Hakiki"
+
+#: templates/user_messages/_message_snippet.html:12
+msgid "Delete?"
+msgstr "Futa?"
+
+#: templates/user_messages/_message_snippet.html:29
+#: templates/user_messages/thread_detail.html:14
+#, fuzzy
+msgid "me"
+msgstr "Nyumbani"
+
 #: templates/user_messages/inbox.html:6
 msgid "Message Inbox"
-msgstr "Ujumbe Kikasha"
+msgstr "Kikasha cha ujumbe"
 
-#: templates/user_messages/inbox.html:12
-msgid "With"
-msgstr "Kwa"
+#: templates/user_messages/inbox.html:11
+#, fuzzy
+msgid "Messages"
+msgstr "Kikasha cha ujumbe"
 
-#: templates/user_messages/inbox.html:13
-msgid "Subject"
-msgstr "Somo"
-
-#: templates/user_messages/inbox.html:14
-msgid "Last Sender"
-msgstr "Mwisho Sender"
-
-#: templates/user_messages/inbox.html:15
-msgid "Preview"
-msgstr "Hakikisho"
-
-#: templates/user_messages/inbox.html:16
-msgid "Delete?"
-msgstr "Kufuta?"
-
-#: templates/user_messages/inbox.html:33
-#: templates/user_messages/thread_detail.html:14
-msgid "you"
-msgstr "you"
-
-#: templates/user_messages/inbox.html:55
-#: templates/user_messages/message_create.html:5
-#: templates/user_messages/message_create.html:8
+#: templates/user_messages/inbox.html:38
+#: templates/user_messages/message_create.html:6
+#: templates/user_messages/message_create.html:9
 msgid "Create Message"
-msgstr "Kujenga Ujumbe"
+msgstr "Andika Ujumbe"
 
-#: templates/user_messages/message_create.html:14
+#: templates/user_messages/message_create.html:16
 msgid "Send message"
-msgstr "Kutuma ujumbe"
+msgstr "Tuma ujumbe"
 
-#: templates/user_messages/message_create.html:19
+#: templates/user_messages/message_create.html:22
 #: templates/user_messages/thread_detail.html:32
 msgid "Back to Inbox"
-msgstr "Nyuma Kikasha"
+msgstr "Rudi kwenye Kikasha"
 
-#: templates/user_messages/thread_detail.html:25
+#: templates/user_messages/thread_detail.html:26
 msgid "Send Reply"
-msgstr "Kutuma Reply"
+msgstr "Tuma Majibu"
+
+#~ msgid "Most shared"
+#~ msgstr "Iliyokuwa shared zaidi"
+
+#~ msgid "from"
+#~ msgstr "kutoka"
+
+#~ msgid "view"
+#~ msgstr "mtazamo"
+
+#~ msgid "Average rating"
+#~ msgstr "Wastani rating"
+
+#~ msgid "votes"
+#~ msgstr "kura"
+
+#~ msgid "You do not have permission to view this document"
+#~ msgstr "Huna ruhusa ya kutazama hati hii"
 
 #~ msgid "Remote Thumbnail"
-#~ msgstr "Picha ndogo ya kijijini"
+#~ msgstr "Remote thumbnail"
+
+#~ msgid "Thumbnail"
+#~ msgstr "Kijipicha"
+
+#~ msgid "Group details"
+#~ msgstr "Maelezo kuhusu kundi"
+
+#~ msgid "Create a map"
+#~ msgstr "Tengeneza ramani"
+
+#~ msgid "You do not have permission to view this layer"
+#~ msgstr "Huna ruhusa kuona tabaka hili"
+
+#~ msgid "View"
+#~ msgstr "Tazama"
+
+#~ msgid "You do not have permission to view this map"
+#~ msgstr "Huna kibali cha kuangalia ramani hii"
+
+#~ msgid "Add to Favorites"
+#~ msgstr "Ingiza kwenye mapendeleo"
+
+#~ msgid "Add a Comment"
+#~ msgstr "Toa Maoni"
+
+#~ msgid "Notices"
+#~ msgstr "Taarifa"
+
+#~ msgid "Notice settings"
+#~ msgstr "Mipangilio ya taarifa"
+
+#~ msgid "Observed objects"
+#~ msgstr "Vitu vinavyofuatiliwa"
+
+#~ msgid "Primary email"
+#~ msgstr "Barua pepe ya msingi"
+
+#~ msgid "change under <a href=\"%(email_url)s\">Account</a>"
+#~ msgstr "mabadiliko ya <a href=\"%(email_url)s\">Akaunti</a>"
+
+#~ msgid "Note"
+#~ msgstr "Kumbuka"
+
+#~ msgid ""
+#~ "You do not have a verified email address to which notices can be sent. "
+#~ "You can add one by going to <a href=\"%(email_url)s\">Account</a>."
+#~ msgstr ""
+#~ "Huna anwani ya barua pepe iliyothibitishwa inayoweza kutumiwa taarifa."
+#~ "Unaweza kuwa nayo kwa kupitia <a href=\"%(email_url)s\">Akaunti</a> yako."
+
+#~ msgid "Mark all unseen notices seen"
+#~ msgstr "Fanya taarifa zote ambazo hazijaangaliwa kuwa zimeangaliwa"
+
+#~ msgid "MONTH_DAY_FORMAT"
+#~ msgstr "MONTH_DAY_FORMAT"
+
+#~ msgid "View Notice"
+#~ msgstr "Angalia Taarifa"
+
+#~ msgid "No notices."
+#~ msgstr "Hakuna taarifa."
+
+#~ msgid "Notice"
+#~ msgstr "Taarifa"
+
+#~ msgid "you"
+#~ msgstr "wewe"

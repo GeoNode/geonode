@@ -1,7 +1,7 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
-# 
+#
 # Translators:
 # Andres Alfonso Lemon Gomez <lemon.andres@gmail.com>, 2014
 # kalxas <gcpp.kalxas@gmail.com>, 2013
@@ -10,144 +10,333 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-10-24 10:00-0500\n"
+"POT-Creation-Date: 2015-02-03 05:20-0600\n"
 "PO-Revision-Date: 2014-11-15 18:41+0000\n"
 "Last-Translator: Andres Alfonso Lemon Gomez <lemon.andres@gmail.com>\n"
-"Language-Team: Greek (http://www.transifex.com/projects/p/geonode/language/el/)\n"
+"Language-Team: Greek (http://www.transifex.com/projects/p/geonode/language/"
+"el/)\n"
+"Language: el\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Language: el\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #: static/geonode/js/extjs/GeoNode.js:72
+#: static_root/geonode/js/extjs/GeoNode.js:72
 msgid "Add user..."
 msgstr "Προσθήκη χρήστη..."
 
 #: static/geonode/js/extjs/GeoNode.js:72
+#: static_root/geonode/js/extjs/GeoNode.js:72
 msgid "Who can view and download this data?"
 msgstr "Ποιός μπορεί να δει και να κατεβάσει αυτά τα δεδομένα;"
 
 #: static/geonode/js/extjs/GeoNode.js:72
+#: static_root/geonode/js/extjs/GeoNode.js:72
 msgid "Anyone"
 msgstr "Όλοι"
 
 #: static/geonode/js/extjs/GeoNode.js:72
+#: static_root/geonode/js/extjs/GeoNode.js:72
 msgid "Any registered user"
 msgstr "Κάθε εγγεγραμμένος χρήστης"
 
 #: static/geonode/js/extjs/GeoNode.js:72
+#: static_root/geonode/js/extjs/GeoNode.js:72
 msgid "Only users who can edit"
 msgstr "Μόνο χρήστες που μπορούν να επεξεργαστούν"
 
 #: static/geonode/js/extjs/GeoNode.js:72
+#: static_root/geonode/js/extjs/GeoNode.js:72
 msgid "Who can edit this data?"
 msgstr "Ποιός μπορεί να επεξεργαστεί αυτά τα δεδομένα;"
 
 #: static/geonode/js/extjs/GeoNode.js:72
+#: static_root/geonode/js/extjs/GeoNode.js:72
 msgid "Only the following users or groups:"
 msgstr "Μόνο οι ακόλουθοι χρήστες ή ομάδες:"
 
 #: static/geonode/js/extjs/GeoNode.js:72
+#: static_root/geonode/js/extjs/GeoNode.js:72
 msgid "Who can manage and edit this data?"
 msgstr "Ποιός μπορεί να διαχειριστεί και να επεξεργαστεί αυτά τα δεδομένα;"
 
+#: static/geonode/js/search/search.js:298
+#: static_root/geonode/js/search/search.js:298
+#, fuzzy
+msgid "Enter your text here ..."
+msgstr "Εισάγετε τα σχόλια εδώ."
+
 #: static/geonode/js/upload/FileType.js:33
+#: static_root/geonode/js/upload/FileType.js:33
 #, c-format
 msgid "Missing a %s file, which is required"
 msgstr "Λείπει το αρχείο %s, η οποία είναι απαραίτητη"
 
 #: static/geonode/js/upload/FileTypes.js:7
+#: static_root/geonode/js/upload/FileTypes.js:7
 msgid "ESRI Shapefile"
 msgstr "ESRI Shapefile"
 
 #: static/geonode/js/upload/FileTypes.js:13
 #: static/geonode/js/upload/FileTypes.js:19
+#: static_root/geonode/js/upload/FileTypes.js:13
+#: static_root/geonode/js/upload/FileTypes.js:19
 msgid "GeoTiff File"
 msgstr "GeoTiff αρχείου"
 
 #: static/geonode/js/upload/FileTypes.js:26
+#: static_root/geonode/js/upload/FileTypes.js:26
 msgid "Comma Separated File"
 msgstr "Αρχείο διαχωρισμένο με κόμματα"
 
 #: static/geonode/js/upload/FileTypes.js:32
+#: static_root/geonode/js/upload/FileTypes.js:32
 msgid "Google Earth KML"
 msgstr "Google Earth KML"
 
 #: static/geonode/js/upload/FileTypes.js:38
+#: static_root/geonode/js/upload/FileTypes.js:38
 msgid "Zip Archives"
 msgstr "Αρχεία Zip"
 
-#: static/geonode/js/upload/LayerInfo.js:249
+#: static/geonode/js/upload/LayerInfo.js:231
+#: static_root/geonode/js/upload/LayerInfo.js:231
 msgid "Layer Info"
 msgstr "Layer Πληροφορίες"
 
-#: static/geonode/js/upload/LayerInfo.js:250
+#: static/geonode/js/upload/LayerInfo.js:232
+#: static_root/geonode/js/upload/LayerInfo.js:232
 msgid "Edit Metadata"
 msgstr "Επεξεργασία Μεταδεδομένων"
 
-#: static/geonode/js/upload/LayerInfo.js:251
+#: static/geonode/js/upload/LayerInfo.js:233
+#: static_root/geonode/js/upload/LayerInfo.js:233
 msgid "Manage Styles"
 msgstr "Διαχειριστείτε Στυλ"
 
-#: static/geonode/js/upload/LayerInfo.js:253
+#: static/geonode/js/upload/LayerInfo.js:235
+#: static_root/geonode/js/upload/LayerInfo.js:235
 msgid "Your layer was successfully uploaded"
 msgstr "Στρώμα σας ανέβηκε με επιτυχία"
 
-#: static/geonode/js/upload/LayerInfo.js:282
+#: static/geonode/js/upload/LayerInfo.js:264
+#: static_root/geonode/js/upload/LayerInfo.js:264
 msgid "Performing Final GeoServer Config Step"
 msgstr "Εκτέλεση των Τελικών Βήμα GeoServer Config"
 
-#: static/geonode/js/upload/LayerInfo.js:297
-#: static/geonode/js/upload/LayerInfo.js:319
+#: static/geonode/js/upload/LayerInfo.js:279
+#: static/geonode/js/upload/LayerInfo.js:305
+#: static_root/geonode/js/upload/LayerInfo.js:279
+#: static_root/geonode/js/upload/LayerInfo.js:305
 msgid "You need to specify more information in order to complete your upload"
-msgstr "Θα πρέπει να καθορίσετε περισσότερες πληροφορίες προκειμένου να ολοκληρωθεί η μεταφόρτωση"
+msgstr ""
+"Θα πρέπει να καθορίσετε περισσότερες πληροφορίες προκειμένου να ολοκληρωθεί "
+"η μεταφόρτωση"
 
-#: static/geonode/js/upload/LayerInfo.js:311
+#: static/geonode/js/upload/LayerInfo.js:297
+#: static_root/geonode/js/upload/LayerInfo.js:297
 msgid "You need to specify more information in order to complete your upload."
-msgstr "Θα πρέπει να καθορίσετε περισσότερες πληροφορίες προκειμένου να ολοκληρωθεί η μεταφόρτωση."
+msgstr ""
+"Θα πρέπει να καθορίσετε περισσότερες πληροφορίες προκειμένου να ολοκληρωθεί "
+"η μεταφόρτωση."
 
-#: static/geonode/js/upload/LayerInfo.js:311
+#: static/geonode/js/upload/LayerInfo.js:297
+#: static_root/geonode/js/upload/LayerInfo.js:297
 msgid "You can continue configuring your layer."
 msgstr "Μπορείτε να συνεχίσετε τη ρύθμιση παραμέτρων στρώμα σας."
 
-#: static/geonode/js/upload/LayerInfo.js:329
-#: static/geonode/js/upload/LayerInfo.js:414
+#: static/geonode/js/upload/LayerInfo.js:315
+#: static/geonode/js/upload/LayerInfo.js:400
+#: static_root/geonode/js/upload/LayerInfo.js:315
+#: static_root/geonode/js/upload/LayerInfo.js:400
 msgid "Unexpected Error"
 msgstr "Απροσδόκητη Σφάλμα"
 
-#: static/geonode/js/upload/LayerInfo.js:345
+#: static/geonode/js/upload/LayerInfo.js:331
+#: static_root/geonode/js/upload/LayerInfo.js:331
 msgid "Performing GeoServer Config Step"
 msgstr "Εκτέλεση GeoServer Config Βήμα"
 
-#: static/geonode/js/upload/LayerInfo.js:417
-msgid "No error message supplied"
-msgstr "Δεν υπάρχει μήνυμα σφάλματος που παρέχονται"
-
-#: static/geonode/js/upload/LayerInfo.js:432
+#: static/geonode/js/upload/LayerInfo.js:407
+#: static_root/geonode/js/upload/LayerInfo.js:407
 msgid "Layer files uploaded, configuring in GeoServer"
 msgstr "Αρχεία Layer φορτωθεί, διαμόρφωση σε GeoServer"
 
-#: static/geonode/js/upload/LayerInfo.js:447
+#: static/geonode/js/upload/LayerInfo.js:422
+#: static_root/geonode/js/upload/LayerInfo.js:422
+#, fuzzy
 msgid "Select or create a Geogig repository."
-msgstr "Επιλέξτε ή δημιουργήστε ένα Geogig αποθετήριο."
+msgstr "Επιλέξτε ή δημιουργήστε ένα Geogit αποθετήριο."
 
-#: static/geonode/js/upload/LayerInfo.js:542
+#: static/geonode/js/upload/LayerInfo.js:517
+#: static_root/admin/js/SelectFilter2.js:69
+#: static_root/geonode/js/upload/LayerInfo.js:517
 msgid "Remove"
 msgstr "Κατάργηση"
 
-#: static/geonode/js/upload/upload.js:126
+#: static/geonode/js/upload/upload.js:125
+#: static_root/geonode/js/upload/upload.js:125
 #, c-format
 msgid "The file %s is an unsupported file type, please select another file."
-msgstr "Το αρχείο %s είναι ένα μη υποστηριζόμενο τύπο αρχείου, επιλέξτε ένα άλλο αρχείο."
+msgstr ""
+"Το αρχείο %s είναι ένα μη υποστηριζόμενο τύπο αρχείου, επιλέξτε ένα άλλο "
+"αρχείο."
 
-#: static/geonode/js/upload/upload.js:286
+#: static/geonode/js/upload/upload.js:260
+#: static_root/geonode/js/upload/upload.js:260
 msgid "You are uploading an incomplete set of files."
 msgstr "Είστε φόρτωμα μια πλήρη σειρά των αρχείων."
 
-#: templates/lang.js:9 templates/lang.js.c:236
+#: static_root/admin/js/SelectFilter2.js:45
+#, fuzzy, c-format
+msgid "Available %s"
+msgstr "Διαθέσιμες Επιφάνειες"
+
+#: static_root/admin/js/SelectFilter2.js:46
+#, c-format
+msgid ""
+"This is the list of available %s. You may choose some by selecting them in "
+"the box below and then clicking the \"Choose\" arrow between the two boxes."
+msgstr ""
+
+#: static_root/admin/js/SelectFilter2.js:53
+#, c-format
+msgid "Type into this box to filter down the list of available %s."
+msgstr ""
+
+#: static_root/admin/js/SelectFilter2.js:57
+msgid "Filter"
+msgstr ""
+
+#: static_root/admin/js/SelectFilter2.js:61
+msgid "Choose all"
+msgstr ""
+
+#: static_root/admin/js/SelectFilter2.js:61
+#, c-format
+msgid "Click to choose all %s at once."
+msgstr ""
+
+#: static_root/admin/js/SelectFilter2.js:67
+msgid "Choose"
+msgstr ""
+
+#: static_root/admin/js/SelectFilter2.js:75
+#, c-format
+msgid "Chosen %s"
+msgstr ""
+
+#: static_root/admin/js/SelectFilter2.js:76
+#, c-format
+msgid ""
+"This is the list of chosen %s. You may remove some by selecting them in the "
+"box below and then clicking the \"Remove\" arrow between the two boxes."
+msgstr ""
+
+#: static_root/admin/js/SelectFilter2.js:80
+#, fuzzy
+msgid "Remove all"
+msgstr "Κατάργηση"
+
+#: static_root/admin/js/SelectFilter2.js:80
+#, c-format
+msgid "Click to remove all chosen %s at once."
+msgstr ""
+
+#: static_root/admin/js/actions.js:18 static_root/admin/js/actions.min.js:1
+msgid "%(sel)s of %(cnt)s selected"
+msgid_plural "%(sel)s of %(cnt)s selected"
+msgstr[0] ""
+msgstr[1] ""
+
+#: static_root/admin/js/actions.js:109 static_root/admin/js/actions.min.js:5
+msgid ""
+"You have unsaved changes on individual editable fields. If you run an "
+"action, your unsaved changes will be lost."
+msgstr ""
+
+#: static_root/admin/js/actions.js:121 static_root/admin/js/actions.min.js:5
+msgid ""
+"You have selected an action, but you haven't saved your changes to "
+"individual fields yet. Please click OK to save. You'll need to re-run the "
+"action."
+msgstr ""
+
+#: static_root/admin/js/actions.js:123 static_root/admin/js/actions.min.js:6
+msgid ""
+"You have selected an action, and you haven't made any changes on individual "
+"fields. You're probably looking for the Go button rather than the Save "
+"button."
+msgstr ""
+
+#: static_root/admin/js/calendar.js:8
+msgid ""
+"January February March April May June July August September October November "
+"December"
+msgstr ""
+
+#: static_root/admin/js/calendar.js:9
+msgid "S M T W T F S"
+msgstr ""
+
+#: static_root/admin/js/collapse.js:8 static_root/admin/js/collapse.js.c:19
+#: static_root/admin/js/collapse.min.js:1
+#, fuzzy
+msgid "Show"
+msgstr "Έχουν βρεθεί"
+
+#: static_root/admin/js/collapse.js:16 static_root/admin/js/collapse.min.js:1
+msgid "Hide"
+msgstr ""
+
+#: static_root/admin/js/admin/DateTimeShortcuts.js:52
+#: static_root/admin/js/admin/DateTimeShortcuts.js:88
+msgid "Now"
+msgstr ""
+
+#: static_root/admin/js/admin/DateTimeShortcuts.js:56
+msgid "Clock"
+msgstr ""
+
+#: static_root/admin/js/admin/DateTimeShortcuts.js:84
+msgid "Choose a time"
+msgstr ""
+
+#: static_root/admin/js/admin/DateTimeShortcuts.js:89
+msgid "Midnight"
+msgstr ""
+
+#: static_root/admin/js/admin/DateTimeShortcuts.js:90
+msgid "6 a.m."
+msgstr ""
+
+#: static_root/admin/js/admin/DateTimeShortcuts.js:91
+msgid "Noon"
+msgstr ""
+
+#: static_root/admin/js/admin/DateTimeShortcuts.js:95
+#: static_root/admin/js/admin/DateTimeShortcuts.js:208 templates/lang.js:9
+#: templates/lang.js.c:236
 msgid "Cancel"
 msgstr "Ακύρωση"
+
+#: static_root/admin/js/admin/DateTimeShortcuts.js:148
+#: static_root/admin/js/admin/DateTimeShortcuts.js:201
+msgid "Today"
+msgstr ""
+
+#: static_root/admin/js/admin/DateTimeShortcuts.js:152
+msgid "Calendar"
+msgstr ""
+
+#: static_root/admin/js/admin/DateTimeShortcuts.js:199
+msgid "Yesterday"
+msgstr ""
+
+#: static_root/admin/js/admin/DateTimeShortcuts.js:203
+msgid "Tomorrow"
+msgstr ""
 
 #: templates/lang.js:10
 msgid "Save as Copy"
@@ -330,7 +519,9 @@ msgstr "Μικρό"
 msgid ""
 "Error contacting server.\n"
 " Please check the url and try again."
-msgstr "Σφάλμα στην επικοινωνία με τον εξυπηρετητή.\nΠαρακαλώ ελέγξτε τον σύνδεσμο και δοκιμάστε ξανά."
+msgstr ""
+"Σφάλμα στην επικοινωνία με τον εξυπηρετητή.\n"
+"Παρακαλώ ελέγξτε τον σύνδεσμο και δοκιμάστε ξανά."
 
 #: templates/lang.js:69
 msgid "Layer Properties"
@@ -356,7 +547,9 @@ msgstr "Μεταβείτε στο Google Earth 3D Viewer"
 msgid ""
 "The map that you are trying to load does not exist.  Creating a new map "
 "instead."
-msgstr "Ο χάρτης που προσπαθείτε να φορτώσετε δεν υπάρχει. Δημιουργήστε ένα νέο χάρτη αντί αυτού."
+msgstr ""
+"Ο χάρτης που προσπαθείτε να φορτώσετε δεν υπάρχει. Δημιουργήστε ένα νέο "
+"χάρτη αντί αυτού."
 
 #: templates/lang.js:75
 msgid "Unknown Map"
@@ -430,7 +623,9 @@ msgstr "Καθόλου φόντο"
 msgid ""
 "Your map is ready to be published to the web!  Simply copy the following "
 "HTML to embed the map in your website:"
-msgstr "Ο χάρτης σας είναι έτοιμος να δημοσιευθεί στο διαδίκτυο! Απλά αντιγράψτε τον παρακάτω σύνδεσμο HTML για να ενσωματώσετε τον χάρτη στην ιστοσελίδα σας:"
+msgstr ""
+"Ο χάρτης σας είναι έτοιμος να δημοσιευθεί στο διαδίκτυο! Απλά αντιγράψτε τον "
+"παρακάτω σύνδεσμο HTML για να ενσωματώσετε τον χάρτη στην ιστοσελίδα σας:"
 
 #: templates/lang.js:136 templates/lang.js.c:202
 msgid "Abstract:"
@@ -599,3 +794,6 @@ msgstr "Λήψη..."
 #: templates/lang.js:237
 msgid "Please wait"
 msgstr "Παρακαλώ περιμένετε"
+
+#~ msgid "No error message supplied"
+#~ msgstr "Δεν υπάρχει μήνυμα σφάλματος που παρέχονται"
