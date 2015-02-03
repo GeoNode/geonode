@@ -1,18 +1,24 @@
 import json
 import urllib
+import logging
 
 from django.http import HttpResponse
 from django.conf import settings
 from django.views.decorators.csrf import csrf_exempt
 
-from geonode.dataverse_connect.layer_metadata import LayerMetadata
+from shared_dataverse_information.layer_classification.forms_api import ClassifyRequestDataForm
+from shared_dataverse_information.shared_form_util.format_form_errors import format_errors_as_text
 
+from geonode.dataverse_connect.layer_metadata import LayerMetadata
 from geonode.dataverse_connect.dv_utils import MessageHelperJSON
 from geonode.dataverse_connect.dataverse_auth import has_proper_auth
 from geonode.dataverse_connect.geonode_get_services import get_layer_features_definition
 from geonode.dataverse_connect.sld_helper_form import SLDHelperForm
 from geonode.dataverse_connect.layer_styler import LayerStyler
 from geonode.dataverse_connect.layer_metadata import LayerMetadata
+
+
+logger = logging.getLogger("geonode.dataverse_connect.views_sld")
 
 #from proxy.views import geoserver_rest_proxy
 
@@ -70,13 +76,40 @@ def view_create_new_layer_style(request):
     :returns: JSON message with either an error or data containing links to the update classification layer
     
     """
-    if not has_proper_auth(request):
-        json_msg = MessageHelperJSON.get_json_msg(success=False, msg="Authentication failed.")
-        return HttpResponse(status=401, content=json_msg, content_type="application/json")
+    
+    # Auth check embedded in params, handled by ClassifyRequestDataForm
+    #if not has_proper_auth(request):
+    #    json_msg = MessageHelperJSON.get_json_msg(success=False, msg="Authentication failed.")
+    #    return HttpResponse(status=401, content=json_msg, content_type="application/json")
 
     if not request.POST:
         json_msg = MessageHelperJSON.get_json_msg(success=False, msg="use a POST request")    
         return HttpResponse(status=405, content=json_msg, content_type="application/json")
+
+    
+    Post_Data_As_Dict = request.POST.dict()
+    api_form = ClassifyRequestDataForm(Post_Data_As_Dict)
+    if not api_form.is_valid():
+        #
+        #   Invalid, send back an error message
+        #
+        logger.error("Classfication error import error: \n%s" % format_errors_as_text(api_form))
+        json_msg = MessageHelperJSON.get_json_msg(success=False\
+                                , msg="Incorrect params for ClassifyRequestDataForm: <br />%s" % api_form.errors)
+
+        return HttpResponse(status=400, content=json_msg, content_type="application/json")
+        
+
+    if not api_form.is_signature_valid_check_post(request):
+        #
+        #   Invalid signature on request
+        #
+        logger.error("Invalid signature on request.  Failed validation with ClassifyRequestDataForm")
+        json_msg = MessageHelperJSON.get_json_msg(success=False\
+                                , msg="Invalid signature on request.  Failed validation with ClassifyRequestDataForm")
+        return HttpResponse(status=400, content=json_msg, content_type="application/json")
+    
+
 
     ls = LayerStyler(request.POST)
     ls.style_layer()
