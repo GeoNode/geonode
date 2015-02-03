@@ -366,11 +366,12 @@ def layer_metadata(request, layername, template='layers/layer_metadata.html'):
             la.save()
 
         if new_poc is not None and new_author is not None:
+            new_keywords = layer_form.cleaned_data['keywords']
+            layer.keywords.clear()
+            layer.keywords.add(*new_keywords)
             the_layer = layer_form.save()
             the_layer.poc = new_poc
             the_layer.metadata_author = new_author
-            the_layer.keywords.clear()
-            the_layer.keywords.add(*new_keywords)
             Layer.objects.filter(id=the_layer.id).update(
                 category=new_category
                 )
