@@ -41,7 +41,7 @@ from geonode.tasks.deletion import delete_layer
 from geonode.services.models import Service
 from geonode.layers.forms import LayerForm, LayerUploadForm, NewLayerUploadForm, LayerAttributeForm
 from geonode.base.forms import CategoryForm
-from geonode.layers.models import Layer, Attribute
+from geonode.layers.models import Layer, Attribute, UploadSession
 from geonode.base.enumerations import CHARSETS
 from geonode.base.models import TopicCategory
 
@@ -76,12 +76,14 @@ _PERMISSION_MSG_METADATA = _(
     "You are not permitted to modify this layer's metadata")
 _PERMISSION_MSG_VIEW = _("You are not permitted to view this layer")
 
+
 def log_snippet(log_file):
     with open(log_file, "r") as f:
-        f.seek (0, 2)           # Seek @ EOF
-        fsize = f.tell()        # Get Size
-        f.seek (max (fsize-10024, 0), 0) # Set pos @ last n chars
+        f.seek(0, 2)  # Seek @ EOF
+        fsize = f.tell()  # Get Size
+        f.seek(max(fsize - 10024, 0), 0)  # Set pos @ last n chars
         return f.read()
+
 
 def _resolve_layer(request, typename, permission='base.view_resourcebase',
                    msg=_PERMISSION_MSG_GENERIC, **kwargs):
