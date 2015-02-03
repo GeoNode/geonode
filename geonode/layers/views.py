@@ -19,8 +19,10 @@
 #########################################################################
 
 import os
+import sys
 import logging
 import shutil
+import traceback
 
 from django.contrib.auth.decorators import login_required
 from django.core.urlresolvers import reverse
@@ -146,9 +148,18 @@ def layer_upload(request, template='upload/layer_upload.html'):
                 )
 
             except Exception as e:
+                exception_type, error, tb = sys.exc_info()
                 logger.exception(e)
                 out['success'] = False
-                out['errors'] = str(e)
+                out['errors'] = str(error)
+                # Assign the error message to the latest UploadSession from that user.
+                latest_uploads = UploadSession.objects.filter(user=request.user).order_by('-date')
+                if latest_uploads.count() > 0:
+                    upload_session = latest_uploads[0]
+                    upload_session.error = str(error)
+                    upload_session.traceback = tb = traceback.format_exc(tb)
+                    upload_session.save()
+                    out['upload_session'] = upload_session.id
             else:
                 out['success'] = True
                 out['url'] = reverse(
