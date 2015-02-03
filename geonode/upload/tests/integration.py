@@ -34,6 +34,10 @@ from geonode.upload.models import Upload
 from geonode.upload.views import _ALLOW_TIME_STEP
 from geonode.geoserver.helpers import ogc_server_settings
 from geonode.geoserver.helpers import cascading_delete
+from geonode.layers.utils import file_upload
+from geonode.tests.utils import check_layer
+from geonode.geoserver.helpers import get_time_info, set_time_info
+from geonode.geoserver.signals import gs_catalog
 from geoserver.catalog import Catalog
 from gisdata import BAD_DATA
 from gisdata import GOOD_DATA
@@ -633,7 +637,7 @@ class TestUploadDBDataStore(UploaderBase):
             return metadata.timepositions
 
         thefile = os.path.join(
-            gisdata.GOOD_DATA, 'time', 'boxes_with_end_date.shp'
+            GOOD_DATA, 'time', 'boxes_with_end_date.shp'
         )
         uploaded = file_upload(thefile, overwrite=True)
         check_layer(uploaded)
