@@ -6,9 +6,8 @@ from django import forms
 
 from geonode.dataverse_layer_metadata.models import DataverseLayerMetadata
 from shared_dataverse_information.dataverse_info.forms import DataverseInfoValidationForm\
-                                , CheckForExistingLayerFormBasic\
                                 , CheckForDataverseUserLayersFormBasic
-
+from shared_dataverse_information.dataverse_info.forms_existing_layer import CheckForExistingLayerForm
 DATETIME_PAT_STR = '%Y-%m-%d %H:%M'
 
 
@@ -59,20 +58,16 @@ class DataverseLayerMetadataValidationForm(DataverseInfoValidationForm):
         exclude = ['map_layer','created', 'modified']
 
 
-class CheckForExistingLayerForm(CheckForExistingLayerFormBasic):
+class CheckForExistingLayerFormWorldmap(CheckForExistingLayerForm):
     """
     Used for the API that retrieves a WorldMap Layer based on a specific:
-        - Dataverse user id
         - Dataverse file id
+        - Dataverse installation name
     """
-    #class Meta:
-    #    model = DataverseLayerMetadata
-    #    fields = ('dv_user_id', 'datafile_id')
-
-        
+          
     def get_latest_dataverse_layer_metadata(self):
         """
-        Return DataverseLayerMetadata objects that match the given 'dv_user_id' and 'datafile_id'
+        Return DataverseLayerMetadata objects that match the given 'dataverse_installation_name' and 'datafile_id'
         """
         if hasattr(self, 'cleaned_data') is False:
             raise AssertionError('Form is invalid.  cleaned_data is not available')

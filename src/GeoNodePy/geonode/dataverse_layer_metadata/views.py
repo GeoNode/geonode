@@ -5,7 +5,7 @@ from django.views.decorators.csrf import csrf_exempt
 
 from geonode.dataverse_connect.dataverse_auth import has_proper_auth
 from geonode.dataverse_connect.layer_metadata import LayerMetadata        # object with layer metadata
-from geonode.dataverse_layer_metadata.forms import CheckForExistingLayerForm, CheckForDataverseUserLayersForm
+from geonode.dataverse_layer_metadata.forms import CheckForExistingLayerFormWorldmap, CheckForDataverseUserLayersForm
 
 from geonode.dataverse_connect.dv_utils import MessageHelperJSON          # format json response object
 
@@ -21,7 +21,6 @@ def view_get_dataverse_user_layers(request):
     Check if a DataverseLayerMetadata record exists for this information.
     """
     #   Does it have proper auth?
-    #
     if not has_proper_auth(request):
         json_msg = MessageHelperJSON.get_json_msg(success=False, msg="Authentication failed.")
         return HttpResponse(status=401, content=json_msg, content_type="application/json")
@@ -64,7 +63,7 @@ def view_get_dataverse_user_layers(request):
 @csrf_exempt
 def get_existing_layer_data(request):
     """
-    Given a POST with a 'dv_user_id' and 'datafile_id'
+    Given a POST with a 'dataverse_installation_name' and 'datafile_id'
     
     Check if a DataverseLayerMetadata record exists for this information.
     
@@ -72,9 +71,10 @@ def get_existing_layer_data(request):
     """
     #   Does it have proper auth?
     #
-    if not has_proper_auth(request):
-        json_msg = MessageHelperJSON.get_json_msg(success=False, msg="Authentication failed.")
-        return HttpResponse(status=401, content=json_msg, content_type="application/json")
+    #   -Auth now checked by CheckForExistingLayerFormWorldmap
+    #if not has_proper_auth(request):
+    #    json_msg = MessageHelperJSON.get_json_msg(success=False, msg="Authentication failed.")
+    #    return HttpResponse(status=401, content=json_msg, content_type="application/json")
 
     #   Is it a POST?
     #
@@ -85,12 +85,21 @@ def get_existing_layer_data(request):
 
     #   Does the request contain the correct params?
     #
-    f = CheckForExistingLayerForm(request.POST)
+    f = CheckForExistingLayerFormWorldmap(request.POST)
 
     if not f.is_valid():
-        logger.error("Unexpected form validation error in add_dataverse_layer_metadata. dvn import: %s" % f.errors)
-        json_msg = MessageHelperJSON.get_json_msg(success=False, msg="The request did not validate.  Expected a 'dv_user_id' and 'datafile_id'")
+        logger.error("Unexpected form validation error in CheckForExistingLayerFormWorldmap. Errors: %s" % f.errors)
+        json_msg = MessageHelperJSON.get_json_msg(success=False\
+                            , msg="Invalid data for retrieving an existing layer.")
+        return HttpResponse(status=400, content=json_msg, content_type="application/json")
+
+
+    if not f.is_signature_valid_check_post(request):
+        logger.error("Get existing layer API. Error: Invalid signature key")
+        json_msg = MessageHelperJSON.get_json_msg(success=False, msg="Authentication failed.")
         return HttpResponse(status=401, content=json_msg, content_type="application/json")
+
+
 
     #   Does a DataverseLayerMetadata object exist for the given params?
     #
