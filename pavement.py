@@ -57,7 +57,15 @@ def grab(src, dest, name):
     else:
         download = False
     if download:
-        urllib.urlretrieve(str(src), str(dest))
+        if str(src).startswith("file://"):
+            src2 = src[7:]
+            if not os.path.exists(src2):
+                print "Source location (%s) does not exist" % str(src2)
+            else:
+                print "Copying local file from %s"  % str(src2)
+                shutil.copyfile(str(src2), str(dest))
+        else:
+            urllib.urlretrieve(str(src), str(dest))
 
 GEOSERVER_URL = "http://build.geonode.org/geoserver/latest/geoserver.war"
 DATA_DIR_URL = "http://build.geonode.org/geoserver/latest/data.zip"
@@ -65,6 +73,9 @@ JETTY_RUNNER_URL = "http://repo2.maven.org/maven2/org/mortbay/jetty/jetty-runner
 
 
 @task
+@cmdopts([
+    ('geoserver=', 'g', 'The location of the geoserver build (.war file).'),
+])
 def setup_geoserver(options):
     """Prepare a testing instance of GeoServer."""
     download_dir = path('downloaded')
@@ -76,7 +87,7 @@ def setup_geoserver(options):
     geoserver_bin = download_dir / os.path.basename(GEOSERVER_URL)
     jetty_runner = download_dir / os.path.basename(JETTY_RUNNER_URL)
 
-    grab(GEOSERVER_URL, geoserver_bin, "geoserver binary")
+    grab(options.get('geoserver', GEOSERVER_URL), geoserver_bin, "geoserver binary")
     grab(JETTY_RUNNER_URL, jetty_runner, "jetty runner")
 
     if not geoserver_dir.exists():

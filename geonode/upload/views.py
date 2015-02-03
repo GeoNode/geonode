@@ -123,7 +123,7 @@ def _error_response(req, exception=None, errors=None, force_ajax=True):
     if req.is_ajax() or force_ajax:
         content_type = 'text/html' if not req.is_ajax() else None
         return json_response(exception=exception, errors=errors,
-                             content_type=content_type, status=500)
+                             content_type=content_type, status=400)
     # not sure if any responses will (ideally) ever be non-ajax
     if errors:
         exception = "<br>".join(errors)

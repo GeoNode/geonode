@@ -20,6 +20,7 @@
 from django.core.management.base import BaseCommand
 from optparse import make_option
 from geonode.layers.utils import upload
+from geonode.people.utils import get_valid_user
 import traceback
 import datetime
 import sys
@@ -66,7 +67,8 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         verbosity = int(options.get('verbosity'))
         # ignore_errors = options.get('ignore_errors')
-        user = options.get('user')
+        username = options.get('user')
+        user = get_valid_user(username)
         overwrite = options.get('overwrite')
 
         if verbosity > 0:
