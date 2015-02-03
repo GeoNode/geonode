@@ -28,6 +28,10 @@
      {{ profile.organization }}<br />
      {% endif %}
      {% if user.is_authenticated %}
+		{% if profile.profile %}
+		<i class="fa fa-info-circle"></i>
+		{{ profile.profile }}<br />
+		{% endif %}
         {% if profile.location %}
         <i class="fa fa-map-marker"></i>
         {{ profile.location }}<br />
