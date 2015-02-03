@@ -3,15 +3,16 @@
 # This file is distributed under the same license as the PACKAGE package.
 #
 # Translators:
+# Translators:
 # Andres Alfonso Lemon Gomez <lemon.andres@gmail.com>, 2014
 # Seyed Mohammad Hosseini <PersianPolaris@Gmail.com>, 2013
 msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-02-03 05:20-0600\n"
-"PO-Revision-Date: 2014-11-15 17:41+0000\n"
-"Last-Translator: Andres Alfonso Lemon Gomez <lemon.andres@gmail.com>\n"
+"POT-Creation-Date: 2015-02-03 08:23-0600\n"
+"PO-Revision-Date: 2015-02-03 12:11+0000\n"
+"Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
 "Language-Team: Persian (http://www.transifex.com/projects/p/geonode/language/"
 "fa/)\n"
 "Language: fa\n"
@@ -554,54 +555,44 @@ msgid "You are not allowed to edit this document."
 msgstr "شما مجاز به ویرایش این سند است."
 
 #: documents/management/__init__.py:14
-#, fuzzy
 msgid "Document Created"
-msgstr "اسناد مربوط به این نقشه"
+msgstr ""
 
 #: documents/management/__init__.py:15
-#, fuzzy
 msgid "A Document was created"
-msgstr "نقشه شد"
+msgstr ""
 
 #: documents/management/__init__.py:18
-#, fuzzy
 msgid "Document Updated"
-msgstr "اسناد"
+msgstr ""
 
 #: documents/management/__init__.py:19
-#, fuzzy
 msgid "A Document was updated"
-msgstr "لایه آپلود شد"
+msgstr ""
 
 #: documents/management/__init__.py:22
-#, fuzzy
 msgid "Document Deleted"
-msgstr "اسناد"
+msgstr ""
 
 #: documents/management/__init__.py:23
-#, fuzzy
 msgid "A Document was deleted"
-msgstr "این سند به مرتبط"
+msgstr ""
 
 #: documents/management/__init__.py:26
-#, fuzzy
 msgid "Comment on Document"
-msgstr "اظهار نظر در مورد لایه"
+msgstr ""
 
 #: documents/management/__init__.py:27
-#, fuzzy
 msgid "A Document was commented on"
-msgstr "نقشه نظر شد"
+msgstr ""
 
 #: documents/management/__init__.py:30
-#, fuzzy
 msgid "Document for Map"
-msgstr "اظهار نظر در مورد نقشه"
+msgstr ""
 
 #: documents/management/__init__.py:31
-#, fuzzy
 msgid "A rating was given to a document"
-msgstr "امتیاز به نقشه داده شد"
+msgstr ""
 
 #: documents/templates/documents/document_detail.html:40
 msgid "External Resource"
@@ -626,9 +617,8 @@ msgstr "دانلود مستند"
 
 #: documents/templates/documents/document_detail.html:90
 #: layers/templates/layers/layer_detail.html:131
-#, fuzzy
 msgid "Request Download"
-msgstr "دانلود"
+msgstr ""
 
 #: documents/templates/documents/document_detail.html:95
 #: layers/templates/layers/layer_detail.html:160
@@ -961,7 +951,7 @@ msgstr "خوراک فعالیت برای"
 #: social/templates/social/activity_list.html:20
 #: templates/user_messages/inbox.html:16
 msgid "All"
-msgstr ""
+msgstr "همه"
 
 #: groups/templates/groups/activity.html:25
 #: people/templates/people/_profile_filters.html:5
@@ -1123,16 +1113,14 @@ msgid "Most popular"
 msgstr "محبوب ترین"
 
 #: groups/templates/groups/group_members.html:8
-#, fuzzy
 msgid "Edit Members for"
-msgstr "جزئیات حال ویرایش برای"
+msgstr ""
 
 #: groups/templates/groups/group_members.html:33
 #: groups/templates/groups/group_members.html:59
 #: groups/templates/groups/group_members.html:86
-#, fuzzy
 msgid "Remove"
-msgstr "حذف گروه"
+msgstr "برداشتن"
 
 #: groups/templates/groups/group_members.html:37
 #: groups/templates/groups/group_members.html:63
@@ -1337,34 +1325,28 @@ msgid "You are attempting to replace a raster layer with a vector."
 msgstr ""
 
 #: layers/management/__init__.py:33
-#, fuzzy
 msgid "Layer Created"
-msgstr "نقشه"
+msgstr ""
 
 #: layers/management/__init__.py:34
-#, fuzzy
 msgid "A Layer was created"
-msgstr "نقشه شد"
+msgstr ""
 
 #: layers/management/__init__.py:37
-#, fuzzy
 msgid "Layer Updated"
-msgstr "لایه آپلود"
+msgstr ""
 
 #: layers/management/__init__.py:38
-#, fuzzy
 msgid "A Layer was updated"
-msgstr "لایه آپلود شد"
+msgstr ""
 
 #: layers/management/__init__.py:41
-#, fuzzy
 msgid "Layer Deleted"
-msgstr "لایه گرینویچ"
+msgstr ""
 
 #: layers/management/__init__.py:42
-#, fuzzy
 msgid "A Layer was deleted"
-msgstr "لایه آپلود شد"
+msgstr ""
 
 #: layers/templates/layers/layer_change_poc.html:5
 msgid "Home"
@@ -1531,7 +1513,6 @@ msgstr ""
 "جزئیات حال ویرایش برای%(layer_title)s بازدید کنندگان"
 
 #: layers/templates/layers/layer_metadata.html:23
-#, fuzzy
 msgid ""
 "Note: this layer's orginal metadata was populated by importing a metadata "
 "XML file.\n"
@@ -1539,9 +1520,6 @@ msgid ""
 "Dublin Core metadata elements.\n"
 "          Some of your original metadata may have been lost."
 msgstr ""
-"توجه: فراداده های ارجینال این لایه را با وارد کردن یک فایل ابرداده XML جمعیت "
-"بود. واردات ابرداده GeoNode پشتیبانی زیر مجموعه ای از عناصر ابرداده ISO، "
-"FGDC و هسته دوبلین. برخی از ابرداده اصلی خود را ممکن است از دست داده است."
 
 #: layers/templates/layers/layer_metadata.html:37
 #: layers/templates/layers/layer_metadata.html:74 templates/_actions.html:5
@@ -1566,20 +1544,17 @@ msgid "Display Order"
 msgstr "پنل"
 
 #: layers/templates/layers/layer_remove.html:9
-#, fuzzy
 msgid "Remove Layers"
-msgstr "حذف این لایه"
+msgstr ""
 
 #: layers/templates/layers/layer_remove.html:14
-#, fuzzy, python-format
+#, python-format
 msgid ""
 "\n"
 "          Are you sure you want to remove <a href="
 "\"%(layer.get_absolute_url)s\">%(layer_title)s</a>?\n"
 "        "
 msgstr ""
-"\n"
-"آیا مطمئن هستید که می خواهید %(layer_title)sبه حذف؟"
 
 #: layers/templates/layers/layer_remove.html:30
 msgid "This action affects the following maps:"
@@ -2109,24 +2084,20 @@ msgid "A Map was created"
 msgstr "نقشه شد"
 
 #: maps/management/__init__.py:37
-#, fuzzy
 msgid "Map Updated"
-msgstr "نقشه"
+msgstr ""
 
 #: maps/management/__init__.py:38
-#, fuzzy
 msgid "A Map was updated"
-msgstr "نقشه شد"
+msgstr ""
 
 #: maps/management/__init__.py:41
-#, fuzzy
 msgid "Map Deleted"
-msgstr "نقشه"
+msgstr ""
 
 #: maps/management/__init__.py:42
-#, fuzzy
 msgid "A Map was deleted"
-msgstr "نقشه شد"
+msgstr ""
 
 #: maps/management/__init__.py:45
 msgid "Comment on Map"
@@ -2433,9 +2404,8 @@ msgid "User following you"
 msgstr "کاربر زیر از شما"
 
 #: people/management.py:33
-#, fuzzy
 msgid "Another user has started following you"
-msgstr "کاربر دیگری زیر شما را آغاز کرده است"
+msgstr ""
 
 #: people/management.py:36
 msgid "User requested access"
@@ -2446,9 +2416,8 @@ msgid "A new user has requested access to the site"
 msgstr ""
 
 #: people/management.py:40
-#, fuzzy
 msgid "Account activated"
-msgstr "فعالیت های اخیر"
+msgstr ""
 
 #: people/management.py:41
 msgid "This account is now active and can log in the site"
@@ -2574,13 +2543,10 @@ msgid "Forgot Username"
 msgstr "نام کاربری را فراموش کرده اید"
 
 #: people/templates/people/forgot_username_form.html:10
-#, fuzzy
 msgid ""
 "Enter your email address and click the submit button. <br />Your username "
 "will be sent to you."
 msgstr ""
-"آدرس ایمیل خود را وارد کنید و روی دکمه ارسال کنید. نام کاربری شما به شما "
-"ارسال می شود."
 
 #: people/templates/people/profile_create.html:8
 #: people/templates/people/profile_create.html:14
@@ -2592,9 +2558,8 @@ msgid "Profile of "
 msgstr "پروفایل"
 
 #: people/templates/people/profile_detail.html:19
-#, fuzzy
 msgid "Message User"
-msgstr "پیام صندوق"
+msgstr ""
 
 #: people/templates/people/profile_detail.html:65
 msgid "Edit profile"
@@ -2617,9 +2582,8 @@ msgid "My Activities"
 msgstr "فعالیت های من"
 
 #: people/templates/people/profile_detail.html:77 templates/base.html:202
-#, fuzzy
 msgid "Notifications"
-msgstr "نوع اعلان"
+msgstr ""
 
 #: people/templates/people/profile_detail.html:80 templates/500.html:80
 #: templates/base.html:205 templates/announcements/announcement_list.html:6
@@ -2726,9 +2690,8 @@ msgid "Service URL"
 msgstr "URL خدمات"
 
 #: services/forms.py:15
-#, fuzzy
 msgid "Service name"
-msgstr "نوع خدمات"
+msgstr ""
 
 #: services/forms.py:19
 msgid "Service Type"
@@ -2856,9 +2819,8 @@ msgid "Remove Service"
 msgstr "حذف خدمات"
 
 #: services/templates/services/service_edit.html:15
-#, fuzzy
 msgid "Edit Service"
-msgstr "ویرایش خدمات فراداده"
+msgstr ""
 
 #: services/templates/services/service_edit.html:21
 #: templates/announcements/announcement_form.html:27
@@ -2878,9 +2840,8 @@ msgid "Register a new Service"
 msgstr "ثبت نام یک سرویس جدید"
 
 #: services/templates/services/service_register.html:13
-#, fuzzy
 msgid "Register New Service"
-msgstr "ثبت نام یک سرویس جدید"
+msgstr ""
 
 #: services/templates/services/service_register.html:23
 msgid "Service has been created:"
@@ -2891,9 +2852,8 @@ msgid "The following layers will be imported"
 msgstr "لایه زیر وارد خواهد شد"
 
 #: services/templates/services/service_remove.html:8
-#, fuzzy
 msgid "Remove Remote Service"
-msgstr "حذف خدمات"
+msgstr ""
 
 #: services/templates/services/service_remove.html:12
 msgid "Are you sure you want to remove"
@@ -3072,9 +3032,8 @@ msgid "Ratings"
 msgstr "اعتبار"
 
 #: templates/_actions.html:13
-#, fuzzy
 msgid "GeoGig"
-msgstr "GeoGit"
+msgstr ""
 
 #: templates/_bulk_permissions_form.html:9
 msgid "Set permissions on selected resources"
@@ -3098,9 +3057,8 @@ msgid "By"
 msgstr "توسط"
 
 #: templates/_comments.html:67
-#, fuzzy
 msgid "Submit Comment"
-msgstr "ارسال نظرات"
+msgstr ""
 
 #: templates/_permissions.html:8
 msgid "Who can view it?"
@@ -3165,9 +3123,8 @@ msgid "About GeoNode."
 msgstr "درباره GeoNode."
 
 #: templates/base.html:192
-#, fuzzy
 msgid "Profile Menu"
-msgstr "نمایه"
+msgstr ""
 
 #: templates/base.html:258
 msgid "Type your search here ..."
@@ -3470,10 +3427,9 @@ msgstr "هیچ"
 
 #: templates/index.html:30
 #: templates/notification/request_download_resourcebase/full.txt:7
-#, fuzzy
 msgid "Layer"
 msgid_plural "Layers"
-msgstr[0] "لایه"
+msgstr[0] ""
 
 #: templates/index.html:31
 msgid ""
@@ -3484,10 +3440,9 @@ msgstr ""
 "منابع عمومی کلیک کنید. دانلود داده ها در فرمت های استاندارد."
 
 #: templates/index.html:36
-#, fuzzy
 msgid "Map"
 msgid_plural "Maps"
-msgstr[0] "نقشه"
+msgstr[0] ""
 
 #: templates/index.html:37
 msgid ""
@@ -3504,10 +3459,9 @@ msgstr "ایجاد نقشه"
 
 #: templates/index.html:43 templates/index.html.py:48
 #: templates/notification/account_approve/full.txt:1
-#, fuzzy
 msgid "User"
 msgid_plural "Users"
-msgstr[0] "کاربر"
+msgstr[0] ""
 
 #: templates/index.html:44 templates/index.html.py:49
 msgid ""
@@ -3536,9 +3490,8 @@ msgstr ""
 
 #: templates/account/email_confirmation_sent.html:6
 #: templates/account/email_confirmation_sent.html:9
-#, fuzzy
 msgid "Confirm your email address"
-msgstr "تایید آدرس پست الکترونیک برای %(site_name)sبازدید کنندگان"
+msgstr ""
 
 #: templates/account/email_confirmation_sent.html:11
 #, python-format
@@ -3572,23 +3525,18 @@ msgid "Password reset"
 msgstr "تنظیم مجدد رمز عبور"
 
 #: templates/account/password_reset.html:14
-#, fuzzy
 msgid "Password Reset"
-msgstr "تنظیم مجدد رمز عبور"
+msgstr ""
 
 #: templates/account/password_reset.html:18
-#, fuzzy
 msgid "Forgotten your password?"
-msgstr "رمز عبور خود را فراموش کرده اید؟"
+msgstr ""
 
 #: templates/account/password_reset.html:19
-#, fuzzy
 msgid ""
 "Enter your email address below, and we'll send you an email allowing you to "
 "reset it."
 msgstr ""
-"رمز عبور خود را فراموش کرده اید؟ آدرس ایمیل خود را در زیر وارد کنید، و ما به "
-"شما یک ایمیل ارسال شما اجازه می دهد تا آن را بازنشانی کنید."
 
 #: templates/account/password_reset.html:25
 msgid "Reset my password"
@@ -3695,15 +3643,13 @@ msgid "Published From"
 msgstr "منتشر شده"
 
 #: templates/announcements/announcement_list.html:38
-#, fuzzy, python-format
+#, python-format
 msgid ""
 "\n"
 "          Published from <b>%(publish_start)s</b> to <b>%(publish_end)s</"
 "b>.\n"
 "          "
 msgstr ""
-"\n"
-"منتشر شده <b>%(publish_start)s</b> to <b>%(publish_end)s</b>."
 
 #: templates/announcements/detail.html:4
 #, python-format
@@ -3732,9 +3678,8 @@ msgid "Choose new Default"
 msgstr "انتخاب پیش فرض جدید"
 
 #: templates/avatar/change.html:23
-#, fuzzy
 msgid "Delete Your Avatar"
-msgstr "حذف آواتار خود"
+msgstr ""
 
 #: templates/avatar/confirm_delete.html:6
 msgid "Please select the avatars that you would like to delete."
@@ -3804,9 +3749,8 @@ msgid "A user has requested access to the site"
 msgstr ""
 
 #: templates/notification/document_comment/full.txt:3
-#, fuzzy
 msgid "A comment has been posted for the document"
-msgstr "شما مجوز برای این سند را ندارد."
+msgstr ""
 
 #: templates/notification/document_comment/full.txt:3
 #: templates/notification/layer_comment/full.txt:3
@@ -3821,9 +3765,8 @@ msgid "You can visit the document's detail page here"
 msgstr ""
 
 #: templates/notification/document_comment/short.txt:3
-#, fuzzy
 msgid "A comment has been posted for a document"
-msgstr "شما مجوز برای این سند را ندارد."
+msgstr ""
 
 #: templates/notification/document_created/full.txt:3
 #: templates/notification/document_rated/full.txt:3
@@ -3832,24 +3775,20 @@ msgstr "شما مجوز برای این سند را ندارد."
 #: templates/notification/map_created/full.txt:3
 #: templates/notification/map_rated/full.txt:3
 #: templates/notification/request_download_resourcebase/full.txt:3
-#, fuzzy
 msgid "The user"
-msgstr "را انتخاب کنید کاربران ..."
+msgstr ""
 
 #: templates/notification/document_created/full.txt:3
-#, fuzzy
 msgid "uploaded the following document"
-msgstr "جایگزین این سند"
+msgstr ""
 
 #: templates/notification/document_created/short.txt:3
-#, fuzzy
 msgid "A document has been uploaded"
-msgstr "لایه آپلود شد"
+msgstr ""
 
 #: templates/notification/document_deleted/full.txt:3
-#, fuzzy
 msgid "The following document was deleted"
-msgstr "کاربران زیر:"
+msgstr ""
 
 #: templates/notification/document_deleted/full.txt:4
 #: templates/notification/document_rated/full.txt:6
@@ -3860,26 +3799,22 @@ msgstr "کاربران زیر:"
 #: templates/notification/map_deleted/full.txt:4
 #: templates/notification/map_rated/full.txt:6
 #: templates/notification/map_updated/full.txt:4
-#, fuzzy
 msgid "owned by"
-msgstr "قدرت گرفته از"
+msgstr ""
 
 #: templates/notification/document_deleted/short.txt:3
-#, fuzzy
 msgid "A document has been deleted"
-msgstr "خدمات ایجاد شده است:"
+msgstr ""
 
 #: templates/notification/document_rated/full.txt:4
 #: templates/notification/layer_rated/full.txt:4
 #: templates/notification/map_rated/full.txt:4
-#, fuzzy
 msgid "rated"
-msgstr "ساخته"
+msgstr ""
 
 #: templates/notification/document_rated/full.txt:5
-#, fuzzy
 msgid "the following document"
-msgstr "کاربران زیر:"
+msgstr ""
 
 #: templates/notification/document_rated/full.txt:8
 #: templates/notification/layer_comment/full.txt:5
@@ -3890,74 +3825,60 @@ msgid "You can visit the layer's detail page here"
 msgstr ""
 
 #: templates/notification/document_rated/short.txt:3
-#, fuzzy
 msgid "A document has been rated"
-msgstr "خدمات ایجاد شده است:"
+msgstr ""
 
 #: templates/notification/document_updated/full.txt:3
-#, fuzzy
 msgid "The following document was updated"
-msgstr "کاربران زیر:"
+msgstr ""
 
 #: templates/notification/document_updated/short.txt:3
-#, fuzzy
 msgid "A document has been updated"
-msgstr "خدمات ایجاد شده است:"
+msgstr ""
 
 #: templates/notification/layer_comment/full.txt:3
-#, fuzzy
 msgid "A comment has been posted for the layer"
-msgstr "اسناد مربوط به این لایه"
+msgstr ""
 
 #: templates/notification/layer_comment/short.txt:3
-#, fuzzy
 msgid "A comment has been posted for a layer"
-msgstr "امتیاز به لایه داده شد"
+msgstr ""
 
 #: templates/notification/layer_created/full.txt:3
-#, fuzzy
 msgid "uploaded the following layer"
-msgstr "این نقشه با استفاده از لایه های زیر است:"
+msgstr ""
 
 #: templates/notification/layer_created/short.txt:3
-#, fuzzy
 msgid "A new layer has been uploaded"
-msgstr "لایه آپلود شد"
+msgstr ""
 
 #: templates/notification/layer_deleted/full.txt:3
-#, fuzzy
 msgid "The following layer was deleted"
-msgstr "لایه زیر وارد خواهد شد"
+msgstr ""
 
 #: templates/notification/layer_deleted/short.txt:3
-#, fuzzy
 msgid "A layer has been deleted"
-msgstr "یک لایه در نظر گرفت"
+msgstr ""
 
 #: templates/notification/layer_rated/full.txt:5
-#, fuzzy
 msgid "the following layer"
-msgstr "کاربران زیر:"
+msgstr ""
 
 #: templates/notification/layer_rated/short.txt:3
-#, fuzzy
 msgid "A layer has been rated"
-msgstr "خدمات ایجاد شده است:"
+msgstr ""
 
 #: templates/notification/layer_updated/full.txt:3
-#, fuzzy
 msgid "The following layer was updated"
-msgstr "لایه زیر وارد خواهد شد"
+msgstr ""
 
 #: templates/notification/layer_updated/short.txt:3
-#, fuzzy
 msgid "A layer has been updated"
-msgstr "لایه آپلود شد"
+msgstr ""
 
 #: templates/notification/map_comment/full.txt:3
-#, fuzzy
 msgid "A comment has been posted for the map"
-msgstr "اسناد مربوط به این نقشه"
+msgstr ""
 
 #: templates/notification/map_comment/full.txt:6
 #: templates/notification/map_created/full.txt:6
@@ -3971,54 +3892,44 @@ msgid "A comment has been posted for a map"
 msgstr ""
 
 #: templates/notification/map_created/full.txt:3
-#, fuzzy
 msgid "created the following map"
-msgstr "این عمل از نقشه زیر تاثیر می گذارد:"
+msgstr ""
 
 #: templates/notification/map_created/short.txt:3
-#, fuzzy
 msgid "A map has been created"
-msgstr "نقشه شد"
+msgstr ""
 
 #: templates/notification/map_deleted/full.txt:3
-#, fuzzy
 msgid "The following map was deleted"
-msgstr "لایه زیر وارد خواهد شد"
+msgstr ""
 
 #: templates/notification/map_deleted/short.txt:3
-#, fuzzy
 msgid "A map has been deleted"
-msgstr "نقشه نظر شد"
+msgstr ""
 
 #: templates/notification/map_rated/full.txt:5
-#, fuzzy
 msgid "the following map"
-msgstr "گروه های زیر:"
+msgstr ""
 
 #: templates/notification/map_rated/short.txt:3
-#, fuzzy
 msgid "A map has been rated"
-msgstr "نقشه شد"
+msgstr ""
 
 #: templates/notification/map_updated/full.txt:3
-#, fuzzy
 msgid "The following map was updated"
-msgstr "لایه زیر وارد خواهد شد"
+msgstr ""
 
 #: templates/notification/map_updated/short.txt:3
-#, fuzzy
 msgid "A map has been updated"
-msgstr "نقشه شد"
+msgstr ""
 
 #: templates/notification/request_download_resourcebase/full.txt:3
-#, fuzzy
 msgid "requested you to download this resource"
-msgstr "شخصی که دارای منابع"
+msgstr ""
 
 #: templates/notification/request_download_resourcebase/full.txt:9
-#, fuzzy
 msgid "Document"
-msgstr "اسناد"
+msgstr ""
 
 #: templates/notification/request_download_resourcebase/full.txt:12
 msgid ""
@@ -4162,18 +4073,16 @@ msgstr "حذف شود؟"
 
 #: templates/user_messages/_message_snippet.html:29
 #: templates/user_messages/thread_detail.html:14
-#, fuzzy
 msgid "me"
-msgstr "خانه"
+msgstr ""
 
 #: templates/user_messages/inbox.html:6
 msgid "Message Inbox"
 msgstr "پیام صندوق"
 
 #: templates/user_messages/inbox.html:11
-#, fuzzy
 msgid "Messages"
-msgstr "پیام صندوق"
+msgstr ""
 
 #: templates/user_messages/inbox.html:38
 #: templates/user_messages/message_create.html:6
@@ -4195,89 +4104,89 @@ msgid "Send Reply"
 msgstr "ارسال پاسخ"
 
 #~ msgid "Most shared"
-#~ msgstr "بیشتر به اشتراک گذاشته"
+#~ msgstr "Most shared"
 
 #~ msgid "from"
-#~ msgstr "از"
+#~ msgstr "from"
 
 #~ msgid "view"
-#~ msgstr "نظر"
+#~ msgstr "view"
 
 #~ msgid "Average rating"
-#~ msgstr "میانگین امتیاز"
+#~ msgstr "Average rating"
 
 #~ msgid "votes"
-#~ msgstr "رای"
+#~ msgstr "votes"
 
 #~ msgid "You do not have permission to view this document"
-#~ msgstr "شما اجازه دسترسی به این سند را ندارد"
+#~ msgstr "You do not have permission to view this document"
 
 #~ msgid "Remote Thumbnail"
-#~ msgstr "تصویر بند از راه دور"
+#~ msgstr "Remote Thumbnail"
 
 #~ msgid "Thumbnail"
-#~ msgstr "کوچک"
+#~ msgstr "Thumbnail"
 
 #~ msgid "Group details"
-#~ msgstr "جزئیات گروه"
+#~ msgstr "Group details"
 
 #~ msgid "Create a map"
-#~ msgstr "ایجاد یک نقشه"
+#~ msgstr "Create a map"
 
 #~ msgid "You do not have permission to view this layer"
-#~ msgstr "شما اجازه دسترسی به این لایه ندارد"
+#~ msgstr "You do not have permission to view this layer"
 
 #~ msgid "View"
-#~ msgstr "نظر"
+#~ msgstr "View"
 
 #~ msgid "You do not have permission to view this map"
-#~ msgstr "شما اجازه دسترسی به این نقشه نیست"
+#~ msgstr "You do not have permission to view this map"
 
 #~ msgid "Add to Favorites"
-#~ msgstr "اضافه کردن به علاقه مندی ها"
+#~ msgstr "Add to Favorites"
 
 #~ msgid "Add a Comment"
-#~ msgstr "افزودن یک نظر"
+#~ msgstr "Add a Comment"
 
 #~ msgid "Notices"
-#~ msgstr "اعلامیه"
+#~ msgstr "Notices"
 
 #~ msgid "Notice settings"
-#~ msgstr "تنظیمات و مقررات"
+#~ msgstr "Notice settings"
 
 #~ msgid "Observed objects"
-#~ msgstr "اشیاء مشاهده"
+#~ msgstr "Observed objects"
 
 #~ msgid "Primary email"
-#~ msgstr "ایمیل اصلی"
+#~ msgstr "Primary email"
 
 #~ msgid "change under <a href=\"%(email_url)s\">Account</a>"
-#~ msgstr "تغییر تحت <a href=\"%(email_url)s\">حساب</a>"
+#~ msgstr "change under <a href=\"%(email_url)s\">Account</a>"
 
 #~ msgid "Note"
-#~ msgstr "یادداشت"
+#~ msgstr "Note"
 
 #~ msgid ""
 #~ "You do not have a verified email address to which notices can be sent. "
 #~ "You can add one by going to <a href=\"%(email_url)s\">Account</a>."
 #~ msgstr ""
-#~ "شما یک آدرس ایمیل تأیید به آن اعلامیه را می توان ارسال ندارد. شما می "
-#~ "توانید با رفتن به یکی اضافه <a href=\"%(email_url)s\">کاربری</a> ."
+#~ "You do not have a verified email address to which notices can be sent. "
+#~ "You can add one by going to <a href=\"%(email_url)s\">Account</a>."
 
 #~ msgid "Mark all unseen notices seen"
-#~ msgstr "علامت همه به اعلامیه ندیده"
+#~ msgstr "Mark all unseen notices seen"
 
 #~ msgid "MONTH_DAY_FORMAT"
 #~ msgstr "MONTH_DAY_FORMAT"
 
 #~ msgid "View Notice"
-#~ msgstr "مشخصات و مقررات"
+#~ msgstr "View Notice"
 
 #~ msgid "No notices."
-#~ msgstr "هیچ اعلامیه."
+#~ msgstr "No notices."
 
 #~ msgid "Notice"
-#~ msgstr "اطلاع"
+#~ msgstr "Notice"
 
 #~ msgid "you"
-#~ msgstr "شما"
+#~ msgstr "you"

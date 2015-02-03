@@ -3,6 +3,7 @@
 # This file is distributed under the same license as the PACKAGE package.
 #
 # Translators:
+# Translators:
 # Andres Alfonso Lemon Gomez <lemon.andres@gmail.com>, 2014
 # ingenieroariel <ingenieroariel@gmail.com>, 2014
 # ingenieroariel <ingenieroariel@gmail.com>, 2014
@@ -10,9 +11,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-02-03 05:20-0600\n"
-"PO-Revision-Date: 2014-11-14 18:41+0000\n"
-"Last-Translator: Andres Alfonso Lemon Gomez <lemon.andres@gmail.com>\n"
+"POT-Creation-Date: 2015-02-03 08:23-0600\n"
+"PO-Revision-Date: 2015-02-03 12:11+0000\n"
+"Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
 "Language-Team: Bengali (http://www.transifex.com/projects/p/geonode/language/"
 "bn/)\n"
 "Language: bn\n"
@@ -554,54 +555,44 @@ msgid "You are not allowed to edit this document."
 msgstr "আপনি এই নথি সম্পাদনা করার অনুমতি দেওয়া হয়নি."
 
 #: documents/management/__init__.py:14
-#, fuzzy
 msgid "Document Created"
-msgstr "এই ম্যাপ এর সাথে সম্পর্কিত ডকুমেন্টস"
+msgstr ""
 
 #: documents/management/__init__.py:15
-#, fuzzy
 msgid "A Document was created"
-msgstr "একটি মানচিত্র তৈরি করা হয়েছে"
+msgstr ""
 
 #: documents/management/__init__.py:18
-#, fuzzy
 msgid "Document Updated"
-msgstr "কাগজপত্র"
+msgstr ""
 
 #: documents/management/__init__.py:19
-#, fuzzy
 msgid "A Document was updated"
-msgstr "একটি স্তর আপলোড করা হয় নি"
+msgstr ""
 
 #: documents/management/__init__.py:22
-#, fuzzy
 msgid "Document Deleted"
-msgstr "কাগজপত্র"
+msgstr ""
 
 #: documents/management/__init__.py:23
-#, fuzzy
 msgid "A Document was deleted"
-msgstr "এই নথির একটি সঙ্গে সম্পর্কযুক্ত"
+msgstr ""
 
 #: documents/management/__init__.py:26
-#, fuzzy
 msgid "Comment on Document"
-msgstr "লেয়ার মন্তব্য করুন"
+msgstr ""
 
 #: documents/management/__init__.py:27
-#, fuzzy
 msgid "A Document was commented on"
-msgstr "একটি মানচিত্রের মন্তব্য করেন"
+msgstr ""
 
 #: documents/management/__init__.py:30
-#, fuzzy
 msgid "Document for Map"
-msgstr "মানচিত্র মন্তব্য করুন"
+msgstr ""
 
 #: documents/management/__init__.py:31
-#, fuzzy
 msgid "A rating was given to a document"
-msgstr "একটি রেটিং একটি মানচিত্র দেওয়া হয়"
+msgstr ""
 
 #: documents/templates/documents/document_detail.html:40
 msgid "External Resource"
@@ -626,9 +617,8 @@ msgstr "ডাউনলোড ডকুমেন্ট"
 
 #: documents/templates/documents/document_detail.html:90
 #: layers/templates/layers/layer_detail.html:131
-#, fuzzy
 msgid "Request Download"
-msgstr "ডাউনলোড"
+msgstr ""
 
 #: documents/templates/documents/document_detail.html:95
 #: layers/templates/layers/layer_detail.html:160
@@ -962,7 +952,7 @@ msgstr "মার্কিন ফিডে"
 #: social/templates/social/activity_list.html:20
 #: templates/user_messages/inbox.html:16
 msgid "All"
-msgstr ""
+msgstr "সব"
 
 #: groups/templates/groups/activity.html:25
 #: people/templates/people/_profile_filters.html:5
@@ -1124,16 +1114,14 @@ msgid "Most popular"
 msgstr "সর্বাধিক জনপ্রিয়"
 
 #: groups/templates/groups/group_members.html:8
-#, fuzzy
 msgid "Edit Members for"
-msgstr "জন্য সম্পাদনার বিবরণ"
+msgstr ""
 
 #: groups/templates/groups/group_members.html:33
 #: groups/templates/groups/group_members.html:59
 #: groups/templates/groups/group_members.html:86
-#, fuzzy
 msgid "Remove"
-msgstr "গ্রুপ সরান"
+msgstr "অপসারণ"
 
 #: groups/templates/groups/group_members.html:37
 #: groups/templates/groups/group_members.html:63
@@ -1338,34 +1326,28 @@ msgid "You are attempting to replace a raster layer with a vector."
 msgstr ""
 
 #: layers/management/__init__.py:33
-#, fuzzy
 msgid "Layer Created"
-msgstr "মানচিত্র তৈরী করা"
+msgstr ""
 
 #: layers/management/__init__.py:34
-#, fuzzy
 msgid "A Layer was created"
-msgstr "একটি মানচিত্র তৈরি করা হয়েছে"
+msgstr ""
 
 #: layers/management/__init__.py:37
-#, fuzzy
 msgid "Layer Updated"
-msgstr "লেয়ার ঊর্ধ্বভরণকৃত"
+msgstr ""
 
 #: layers/management/__init__.py:38
-#, fuzzy
 msgid "A Layer was updated"
-msgstr "একটি স্তর আপলোড করা হয় নি"
+msgstr ""
 
 #: layers/management/__init__.py:41
-#, fuzzy
 msgid "Layer Deleted"
-msgstr "লেয়ার ডিফল্ট স্টাইল"
+msgstr ""
 
 #: layers/management/__init__.py:42
-#, fuzzy
 msgid "A Layer was deleted"
-msgstr "একটি স্তর আপলোড করা হয় নি"
+msgstr ""
 
 #: layers/templates/layers/layer_change_poc.html:5
 msgid "Home"
@@ -1532,7 +1514,6 @@ msgstr ""
 "জন্য সম্পাদনার বিবরণ %(layer_title)s এর"
 
 #: layers/templates/layers/layer_metadata.html:23
-#, fuzzy
 msgid ""
 "Note: this layer's orginal metadata was populated by importing a metadata "
 "XML file.\n"
@@ -1540,9 +1521,6 @@ msgid ""
 "Dublin Core metadata elements.\n"
 "          Some of your original metadata may have been lost."
 msgstr ""
-"উল্লেখ্য: এই লেয়ার এর মূল মিটাডাটা একটি মেটাডাটা XML ফাইল ইম্পোর্ট দ্বারা পূর্ণ ছিল. "
-"GeoNode এর মেটাডেটা আমদানি আইএসও, FGDC, এবং ডাবলিন কোর মেটাডাটা উপাদানের "
-"একটি উপসেট সমর্থন করে. আপনার মূল মেটাডাটা কিছু হারিয়ে হয়ে থাকতে পারে."
 
 #: layers/templates/layers/layer_metadata.html:37
 #: layers/templates/layers/layer_metadata.html:74 templates/_actions.html:5
@@ -1567,20 +1545,17 @@ msgid "Display Order"
 msgstr "প্রদর্শন আদেশ"
 
 #: layers/templates/layers/layer_remove.html:9
-#, fuzzy
 msgid "Remove Layers"
-msgstr "এই লেয়ার সরান"
+msgstr ""
 
 #: layers/templates/layers/layer_remove.html:14
-#, fuzzy, python-format
+#, python-format
 msgid ""
 "\n"
 "          Are you sure you want to remove <a href="
 "\"%(layer.get_absolute_url)s\">%(layer_title)s</a>?\n"
 "        "
 msgstr ""
-"\n"
-"আপনি %(layer_title)s? র সরানোর বিষয়ে নিশ্চিত?"
 
 #: layers/templates/layers/layer_remove.html:30
 msgid "This action affects the following maps:"
@@ -2112,24 +2087,20 @@ msgid "A Map was created"
 msgstr "একটি মানচিত্র তৈরি করা হয়েছে"
 
 #: maps/management/__init__.py:37
-#, fuzzy
 msgid "Map Updated"
-msgstr "মানচিত্র তৈরী করা"
+msgstr ""
 
 #: maps/management/__init__.py:38
-#, fuzzy
 msgid "A Map was updated"
-msgstr "একটি মানচিত্র তৈরি করা হয়েছে"
+msgstr ""
 
 #: maps/management/__init__.py:41
-#, fuzzy
 msgid "Map Deleted"
-msgstr "মানচিত্র তৈরী করা"
+msgstr ""
 
 #: maps/management/__init__.py:42
-#, fuzzy
 msgid "A Map was deleted"
-msgstr "একটি মানচিত্র তৈরি করা হয়েছে"
+msgstr ""
 
 #: maps/management/__init__.py:45
 msgid "Comment on Map"
@@ -2435,9 +2406,8 @@ msgid "User following you"
 msgstr "ব্যবহারকারী আপনি নিম্নলিখিত"
 
 #: people/management.py:33
-#, fuzzy
 msgid "Another user has started following you"
-msgstr "অন্য ব্যবহারকারীর আপনি নিম্নলিখিত শুরু করেছে"
+msgstr ""
 
 #: people/management.py:36
 msgid "User requested access"
@@ -2448,9 +2418,8 @@ msgid "A new user has requested access to the site"
 msgstr ""
 
 #: people/management.py:40
-#, fuzzy
 msgid "Account activated"
-msgstr "সাম্প্রতিক কার্যকলাপ"
+msgstr ""
 
 #: people/management.py:41
 msgid "This account is now active and can log in the site"
@@ -2578,13 +2547,10 @@ msgid "Forgot Username"
 msgstr "ভুলে গেছেন ইউজারনেম"
 
 #: people/templates/people/forgot_username_form.html:10
-#, fuzzy
 msgid ""
 "Enter your email address and click the submit button. <br />Your username "
 "will be sent to you."
 msgstr ""
-"আপনার ইমেইল ঠিকানা লিখুন এবং সাবমিট বাটনে ক্লিক করুন. আপনার ব্যবহারকারী নাম "
-"আপনার কাছে পাঠানো হবে."
 
 #: people/templates/people/profile_create.html:8
 #: people/templates/people/profile_create.html:14
@@ -2596,9 +2562,8 @@ msgid "Profile of "
 msgstr "এর প্রোফাইল"
 
 #: people/templates/people/profile_detail.html:19
-#, fuzzy
 msgid "Message User"
-msgstr "বার্তা ইনবক্স"
+msgstr ""
 
 #: people/templates/people/profile_detail.html:65
 msgid "Edit profile"
@@ -2621,9 +2586,8 @@ msgid "My Activities"
 msgstr "আমার কর্মকান্ড"
 
 #: people/templates/people/profile_detail.html:77 templates/base.html:202
-#, fuzzy
 msgid "Notifications"
-msgstr "বিজ্ঞপ্তি প্রকার"
+msgstr ""
 
 #: people/templates/people/profile_detail.html:80 templates/500.html:80
 #: templates/base.html:205 templates/announcements/announcement_list.html:6
@@ -2730,9 +2694,8 @@ msgid "Service URL"
 msgstr "পরিষেবা URL টি"
 
 #: services/forms.py:15
-#, fuzzy
 msgid "Service name"
-msgstr "সেবার ধরণ"
+msgstr ""
 
 #: services/forms.py:19
 msgid "Service Type"
@@ -2860,9 +2823,8 @@ msgid "Remove Service"
 msgstr "পরিষেবা সরান"
 
 #: services/templates/services/service_edit.html:15
-#, fuzzy
 msgid "Edit Service"
-msgstr "সম্পাদনা পরিষেবা মেটাডাটা"
+msgstr ""
 
 #: services/templates/services/service_edit.html:21
 #: templates/announcements/announcement_form.html:27
@@ -2882,9 +2844,8 @@ msgid "Register a new Service"
 msgstr "একটি নতুন পরিষেবা নিবন্ধন"
 
 #: services/templates/services/service_register.html:13
-#, fuzzy
 msgid "Register New Service"
-msgstr "একটি নতুন পরিষেবা নিবন্ধন"
+msgstr ""
 
 #: services/templates/services/service_register.html:23
 msgid "Service has been created:"
@@ -2895,9 +2856,8 @@ msgid "The following layers will be imported"
 msgstr "নিম্নলিখিত স্তর আমদানি করা হবে"
 
 #: services/templates/services/service_remove.html:8
-#, fuzzy
 msgid "Remove Remote Service"
-msgstr "পরিষেবা সরান"
+msgstr ""
 
 #: services/templates/services/service_remove.html:12
 msgid "Are you sure you want to remove"
@@ -3076,9 +3036,8 @@ msgid "Ratings"
 msgstr "সৈনিকগণ"
 
 #: templates/_actions.html:13
-#, fuzzy
 msgid "GeoGig"
-msgstr "GeoGit"
+msgstr ""
 
 #: templates/_bulk_permissions_form.html:9
 msgid "Set permissions on selected resources"
@@ -3102,9 +3061,8 @@ msgid "By"
 msgstr "দ্বারা"
 
 #: templates/_comments.html:67
-#, fuzzy
 msgid "Submit Comment"
-msgstr "মন্তব্য জমা দিন"
+msgstr ""
 
 #: templates/_permissions.html:8
 msgid "Who can view it?"
@@ -3169,9 +3127,8 @@ msgid "About GeoNode."
 msgstr "GeoNode সম্পর্কে."
 
 #: templates/base.html:192
-#, fuzzy
 msgid "Profile Menu"
-msgstr "প্রোফাইল"
+msgstr ""
 
 #: templates/base.html:258
 msgid "Type your search here ..."
@@ -3473,11 +3430,10 @@ msgstr "না"
 
 #: templates/index.html:30
 #: templates/notification/request_download_resourcebase/full.txt:7
-#, fuzzy
 msgid "Layer"
 msgid_plural "Layers"
-msgstr[0] "স্তর"
-msgstr[1] "স্তর"
+msgstr[0] ""
+msgstr[1] ""
 
 #: templates/index.html:31
 msgid ""
@@ -3488,11 +3444,10 @@ msgstr ""
 "বিষয়ক প্রযুক্তিবিদ্যা তথ্য অনুসন্ধান করার জন্য ক্লিক করুন. মান বিন্যাসে ডাউনলোড করা তথ্য."
 
 #: templates/index.html:36
-#, fuzzy
 msgid "Map"
 msgid_plural "Maps"
-msgstr[0] "মানচিত্র"
-msgstr[1] "মানচিত্র"
+msgstr[0] ""
+msgstr[1] ""
 
 #: templates/index.html:37
 msgid ""
@@ -3508,11 +3463,10 @@ msgstr "মানচিত্র তৈরি করুন"
 
 #: templates/index.html:43 templates/index.html.py:48
 #: templates/notification/account_approve/full.txt:1
-#, fuzzy
 msgid "User"
 msgid_plural "Users"
-msgstr[0] "ব্যবহারকারী"
-msgstr[1] "ব্যবহারকারী"
+msgstr[0] ""
+msgstr[1] ""
 
 #: templates/index.html:44 templates/index.html.py:49
 msgid ""
@@ -3541,9 +3495,8 @@ msgstr ""
 
 #: templates/account/email_confirmation_sent.html:6
 #: templates/account/email_confirmation_sent.html:9
-#, fuzzy
 msgid "Confirm your email address"
-msgstr "%(site_name)s জন্য ইমেইল ঠিকানা নিশ্চিত করুন"
+msgstr ""
 
 #: templates/account/email_confirmation_sent.html:11
 #, python-format
@@ -3577,23 +3530,18 @@ msgid "Password reset"
 msgstr "পাসওয়ার্ড রিসেট"
 
 #: templates/account/password_reset.html:14
-#, fuzzy
 msgid "Password Reset"
-msgstr "পাসওয়ার্ড রিসেট"
+msgstr ""
 
 #: templates/account/password_reset.html:18
-#, fuzzy
 msgid "Forgotten your password?"
-msgstr "আপনার পাসওয়ার্ড ভুলে গেছেন?"
+msgstr ""
 
 #: templates/account/password_reset.html:19
-#, fuzzy
 msgid ""
 "Enter your email address below, and we'll send you an email allowing you to "
 "reset it."
 msgstr ""
-"আপনার পাসওয়ার্ড ভুলে গেছেন? নিচে আপনার ইমেল ঠিকানা লিখুন, এবং আমরা আপনাকে এটি "
-"পুনরায় সেট করতে সক্ষম হবেন আপনি একটি ইমেইল পাঠাব."
 
 #: templates/account/password_reset.html:25
 msgid "Reset my password"
@@ -3701,15 +3649,13 @@ msgid "Published From"
 msgstr "থেকে প্রকাশিত"
 
 #: templates/announcements/announcement_list.html:38
-#, fuzzy, python-format
+#, python-format
 msgid ""
 "\n"
 "          Published from <b>%(publish_start)s</b> to <b>%(publish_end)s</"
 "b>.\n"
 "          "
 msgstr ""
-"\n"
-"<b>%(publish_start)s</b> থেকে প্রকাশিত থেকে <b>%(publish_end)s</b>."
 
 #: templates/announcements/detail.html:4
 #, python-format
@@ -3738,9 +3684,8 @@ msgid "Choose new Default"
 msgstr "নতুন ডিফল্ট চয়ন করুন"
 
 #: templates/avatar/change.html:23
-#, fuzzy
 msgid "Delete Your Avatar"
-msgstr "আপনার অবতার মুছুন"
+msgstr ""
 
 #: templates/avatar/confirm_delete.html:6
 msgid "Please select the avatars that you would like to delete."
@@ -3810,9 +3755,8 @@ msgid "A user has requested access to the site"
 msgstr ""
 
 #: templates/notification/document_comment/full.txt:3
-#, fuzzy
 msgid "A comment has been posted for the document"
-msgstr "আপনি এই নথির জন্য অনুমতি নেই."
+msgstr ""
 
 #: templates/notification/document_comment/full.txt:3
 #: templates/notification/layer_comment/full.txt:3
@@ -3827,9 +3771,8 @@ msgid "You can visit the document's detail page here"
 msgstr ""
 
 #: templates/notification/document_comment/short.txt:3
-#, fuzzy
 msgid "A comment has been posted for a document"
-msgstr "আপনি এই নথির জন্য অনুমতি নেই."
+msgstr ""
 
 #: templates/notification/document_created/full.txt:3
 #: templates/notification/document_rated/full.txt:3
@@ -3838,24 +3781,20 @@ msgstr "আপনি এই নথির জন্য অনুমতি নে�
 #: templates/notification/map_created/full.txt:3
 #: templates/notification/map_rated/full.txt:3
 #: templates/notification/request_download_resourcebase/full.txt:3
-#, fuzzy
 msgid "The user"
-msgstr "ব্যবহারকারীদের চয়ন করুন ..."
+msgstr ""
 
 #: templates/notification/document_created/full.txt:3
-#, fuzzy
 msgid "uploaded the following document"
-msgstr "এই ডকুমেন্ট Replace"
+msgstr ""
 
 #: templates/notification/document_created/short.txt:3
-#, fuzzy
 msgid "A document has been uploaded"
-msgstr "একটি স্তর আপলোড করা হয় নি"
+msgstr ""
 
 #: templates/notification/document_deleted/full.txt:3
-#, fuzzy
 msgid "The following document was deleted"
-msgstr "নিম্নলিখিত ব্যবহারকারী:"
+msgstr ""
 
 #: templates/notification/document_deleted/full.txt:4
 #: templates/notification/document_rated/full.txt:6
@@ -3866,26 +3805,22 @@ msgstr "নিম্নলিখিত ব্যবহারকারী:"
 #: templates/notification/map_deleted/full.txt:4
 #: templates/notification/map_rated/full.txt:6
 #: templates/notification/map_updated/full.txt:4
-#, fuzzy
 msgid "owned by"
-msgstr "দ্বারা প্রস্তুত Blogger"
+msgstr ""
 
 #: templates/notification/document_deleted/short.txt:3
-#, fuzzy
 msgid "A document has been deleted"
-msgstr "পরিষেবা তৈরি করা হয়েছে:"
+msgstr ""
 
 #: templates/notification/document_rated/full.txt:4
 #: templates/notification/layer_rated/full.txt:4
 #: templates/notification/map_rated/full.txt:4
-#, fuzzy
 msgid "rated"
-msgstr "নির্মিত"
+msgstr ""
 
 #: templates/notification/document_rated/full.txt:5
-#, fuzzy
 msgid "the following document"
-msgstr "নিম্নলিখিত ব্যবহারকারী:"
+msgstr ""
 
 #: templates/notification/document_rated/full.txt:8
 #: templates/notification/layer_comment/full.txt:5
@@ -3896,74 +3831,60 @@ msgid "You can visit the layer's detail page here"
 msgstr ""
 
 #: templates/notification/document_rated/short.txt:3
-#, fuzzy
 msgid "A document has been rated"
-msgstr "পরিষেবা তৈরি করা হয়েছে:"
+msgstr ""
 
 #: templates/notification/document_updated/full.txt:3
-#, fuzzy
 msgid "The following document was updated"
-msgstr "নিম্নলিখিত ব্যবহারকারী:"
+msgstr ""
 
 #: templates/notification/document_updated/short.txt:3
-#, fuzzy
 msgid "A document has been updated"
-msgstr "পরিষেবা তৈরি করা হয়েছে:"
+msgstr ""
 
 #: templates/notification/layer_comment/full.txt:3
-#, fuzzy
 msgid "A comment has been posted for the layer"
-msgstr "এই স্তর সংক্রান্ত ডকুমেন্টস"
+msgstr ""
 
 #: templates/notification/layer_comment/short.txt:3
-#, fuzzy
 msgid "A comment has been posted for a layer"
-msgstr "একটি রেটিং একটি স্তর দেওয়া হয়"
+msgstr ""
 
 #: templates/notification/layer_created/full.txt:3
-#, fuzzy
 msgid "uploaded the following layer"
-msgstr "এই মানচিত্রের নিচের স্তর ব্যবহার করে:"
+msgstr ""
 
 #: templates/notification/layer_created/short.txt:3
-#, fuzzy
 msgid "A new layer has been uploaded"
-msgstr "একটি স্তর আপলোড করা হয় নি"
+msgstr ""
 
 #: templates/notification/layer_deleted/full.txt:3
-#, fuzzy
 msgid "The following layer was deleted"
-msgstr "নিম্নলিখিত স্তর আমদানি করা হবে"
+msgstr ""
 
 #: templates/notification/layer_deleted/short.txt:3
-#, fuzzy
 msgid "A layer has been deleted"
-msgstr "একটি স্তর মন্তব্য করেন"
+msgstr ""
 
 #: templates/notification/layer_rated/full.txt:5
-#, fuzzy
 msgid "the following layer"
-msgstr "নিম্নলিখিত ব্যবহারকারী:"
+msgstr ""
 
 #: templates/notification/layer_rated/short.txt:3
-#, fuzzy
 msgid "A layer has been rated"
-msgstr "পরিষেবা তৈরি করা হয়েছে:"
+msgstr ""
 
 #: templates/notification/layer_updated/full.txt:3
-#, fuzzy
 msgid "The following layer was updated"
-msgstr "নিম্নলিখিত স্তর আমদানি করা হবে"
+msgstr ""
 
 #: templates/notification/layer_updated/short.txt:3
-#, fuzzy
 msgid "A layer has been updated"
-msgstr "একটি স্তর আপলোড করা হয় নি"
+msgstr ""
 
 #: templates/notification/map_comment/full.txt:3
-#, fuzzy
 msgid "A comment has been posted for the map"
-msgstr "এই ম্যাপ এর সাথে সম্পর্কিত ডকুমেন্টস"
+msgstr ""
 
 #: templates/notification/map_comment/full.txt:6
 #: templates/notification/map_created/full.txt:6
@@ -3977,54 +3898,44 @@ msgid "A comment has been posted for a map"
 msgstr ""
 
 #: templates/notification/map_created/full.txt:3
-#, fuzzy
 msgid "created the following map"
-msgstr "এই কর্ম নিম্নলিখিত ম্যাপের প্রভাবিত:"
+msgstr ""
 
 #: templates/notification/map_created/short.txt:3
-#, fuzzy
 msgid "A map has been created"
-msgstr "একটি মানচিত্র তৈরি করা হয়েছে"
+msgstr ""
 
 #: templates/notification/map_deleted/full.txt:3
-#, fuzzy
 msgid "The following map was deleted"
-msgstr "নিম্নলিখিত স্তর আমদানি করা হবে"
+msgstr ""
 
 #: templates/notification/map_deleted/short.txt:3
-#, fuzzy
 msgid "A map has been deleted"
-msgstr "একটি মানচিত্রের মন্তব্য করেন"
+msgstr ""
 
 #: templates/notification/map_rated/full.txt:5
-#, fuzzy
 msgid "the following map"
-msgstr "নিম্নলিখিত গ্রুপ:"
+msgstr ""
 
 #: templates/notification/map_rated/short.txt:3
-#, fuzzy
 msgid "A map has been rated"
-msgstr "একটি মানচিত্র তৈরি করা হয়েছে"
+msgstr ""
 
 #: templates/notification/map_updated/full.txt:3
-#, fuzzy
 msgid "The following map was updated"
-msgstr "নিম্নলিখিত স্তর আমদানি করা হবে"
+msgstr ""
 
 #: templates/notification/map_updated/short.txt:3
-#, fuzzy
 msgid "A map has been updated"
-msgstr "একটি মানচিত্র তৈরি করা হয়েছে"
+msgstr ""
 
 #: templates/notification/request_download_resourcebase/full.txt:3
-#, fuzzy
 msgid "requested you to download this resource"
-msgstr "সম্পদ মালিক যে পার্টি"
+msgstr ""
 
 #: templates/notification/request_download_resourcebase/full.txt:9
-#, fuzzy
 msgid "Document"
-msgstr "কাগজপত্র"
+msgstr ""
 
 #: templates/notification/request_download_resourcebase/full.txt:12
 msgid ""
@@ -4168,18 +4079,16 @@ msgstr "মুছবেন?"
 
 #: templates/user_messages/_message_snippet.html:29
 #: templates/user_messages/thread_detail.html:14
-#, fuzzy
 msgid "me"
-msgstr "বাড়ি"
+msgstr ""
 
 #: templates/user_messages/inbox.html:6
 msgid "Message Inbox"
 msgstr "বার্তা ইনবক্স"
 
 #: templates/user_messages/inbox.html:11
-#, fuzzy
 msgid "Messages"
-msgstr "বার্তা ইনবক্স"
+msgstr ""
 
 #: templates/user_messages/inbox.html:38
 #: templates/user_messages/message_create.html:6
@@ -4201,89 +4110,89 @@ msgid "Send Reply"
 msgstr "উত্তর পাঠান"
 
 #~ msgid "Most shared"
-#~ msgstr "সর্বাধিক ভাগ"
+#~ msgstr "Most shared"
 
 #~ msgid "from"
-#~ msgstr "থেকে"
+#~ msgstr "from"
 
 #~ msgid "view"
-#~ msgstr "দৃশ্য"
+#~ msgstr "view"
 
 #~ msgid "Average rating"
-#~ msgstr "গড় রেটিং"
+#~ msgstr "Average rating"
 
 #~ msgid "votes"
-#~ msgstr "ভোট"
+#~ msgstr "votes"
 
 #~ msgid "You do not have permission to view this document"
-#~ msgstr "আপনি এই নথি দেখার অনুমতি নেই"
+#~ msgstr "You do not have permission to view this document"
 
 #~ msgid "Remote Thumbnail"
-#~ msgstr "রিমোট থাম্বনেল"
+#~ msgstr "Remote Thumbnail"
 
 #~ msgid "Thumbnail"
-#~ msgstr "ছোট"
+#~ msgstr "Thumbnail"
 
 #~ msgid "Group details"
-#~ msgstr "গ্রুপ বিবরণ"
+#~ msgstr "Group details"
 
 #~ msgid "Create a map"
-#~ msgstr "একটি মানচিত্র তৈরি করুন"
+#~ msgstr "Create a map"
 
 #~ msgid "You do not have permission to view this layer"
-#~ msgstr "আপনি এই স্তর দেখতে অনুমতিপ্রাপ্ত নন"
+#~ msgstr "You do not have permission to view this layer"
 
 #~ msgid "View"
-#~ msgstr "দৃশ্য"
+#~ msgstr "View"
 
 #~ msgid "You do not have permission to view this map"
-#~ msgstr "আপনি এই ম্যাপ দেখতে অনুমতিপ্রাপ্ত নন"
+#~ msgstr "You do not have permission to view this map"
 
 #~ msgid "Add to Favorites"
-#~ msgstr "ফেভারিটে যোগ করুন"
+#~ msgstr "Add to Favorites"
 
 #~ msgid "Add a Comment"
-#~ msgstr "একটি মন্তব্য যুক্ত করুন"
+#~ msgstr "Add a Comment"
 
 #~ msgid "Notices"
-#~ msgstr "নোটিশ"
+#~ msgstr "Notices"
 
 #~ msgid "Notice settings"
-#~ msgstr "নোটিশ সেটিংস"
+#~ msgstr "Notice settings"
 
 #~ msgid "Observed objects"
-#~ msgstr "পর্যবেক্ষিত বস্তু"
+#~ msgstr "Observed objects"
 
 #~ msgid "Primary email"
-#~ msgstr "প্রাথমিক ইমেইল"
+#~ msgstr "Primary email"
 
 #~ msgid "change under <a href=\"%(email_url)s\">Account</a>"
-#~ msgstr "অধীন পরিবর্তনের <a href=\"%(email_url)s\">অ্যাকাউন্ট</a>"
+#~ msgstr "change under <a href=\"%(email_url)s\">Account</a>"
 
 #~ msgid "Note"
-#~ msgstr "নোট"
+#~ msgstr "Note"
 
 #~ msgid ""
 #~ "You do not have a verified email address to which notices can be sent. "
 #~ "You can add one by going to <a href=\"%(email_url)s\">Account</a>."
 #~ msgstr ""
-#~ "আপনি নোটিশ পাঠানো যেতে পারে যা একটি যাচাই ইমেল ঠিকানা না. আপনি যাচ্ছে এক "
-#~ "যোগ করতে পারেন <a href=\"%(email_url)s\">অ্যাকাউন্ট</a> ."
+#~ "You do not have a verified email address to which notices can be sent. "
+#~ "You can add one by going to <a href=\"%(email_url)s\">Account</a>."
 
 #~ msgid "Mark all unseen notices seen"
-#~ msgstr "মার্ক সমস্ত অদেখা নোটিশ দেখা"
+#~ msgstr "Mark all unseen notices seen"
 
 #~ msgid "MONTH_DAY_FORMAT"
 #~ msgstr "MONTH_DAY_FORMAT"
 
 #~ msgid "View Notice"
-#~ msgstr "দেখুন নোটিশ"
+#~ msgstr "View Notice"
 
 #~ msgid "No notices."
-#~ msgstr "কোন নোটিশ."
+#~ msgstr "No notices."
 
 #~ msgid "Notice"
-#~ msgstr "বিজ্ঞপ্তি"
+#~ msgstr "Notice"
 
 #~ msgid "you"
-#~ msgstr "আপনি"
+#~ msgstr "you"

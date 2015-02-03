@@ -3,14 +3,15 @@
 # This file is distributed under the same license as the PACKAGE package.
 #
 # Translators:
+# Translators:
 # ingenieroariel <ingenieroariel@gmail.com>, 2014
 msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-02-03 05:20-0600\n"
-"PO-Revision-Date: 2014-11-14 17:01+0000\n"
-"Last-Translator: ingenieroariel <ingenieroariel@gmail.com>\n"
+"POT-Creation-Date: 2015-02-03 08:21-0600\n"
+"PO-Revision-Date: 2015-02-03 12:11+0000\n"
+"Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
 "Language-Team: Vietnamese (http://www.transifex.com/projects/p/geonode/"
 "language/vi/)\n"
 "Language: vi\n"
@@ -61,9 +62,8 @@ msgstr "Ai có thể quản lý và chỉnh sửa dữ liệu này?"
 
 #: static/geonode/js/search/search.js:298
 #: static_root/geonode/js/search/search.js:298
-#, fuzzy
 msgid "Enter your text here ..."
-msgstr "Nhập ý kiến ​​ở đây."
+msgstr ""
 
 #: static/geonode/js/upload/FileType.js:33
 #: static_root/geonode/js/upload/FileType.js:33
@@ -159,9 +159,8 @@ msgstr "Các tập tin tải lên lớp, cấu hình trong GeoServer"
 
 #: static/geonode/js/upload/LayerInfo.js:422
 #: static_root/geonode/js/upload/LayerInfo.js:422
-#, fuzzy
 msgid "Select or create a Geogig repository."
-msgstr "Chọn hoặc tạo một kho lưu trữ Geogit."
+msgstr ""
 
 #: static/geonode/js/upload/LayerInfo.js:517
 #: static_root/admin/js/SelectFilter2.js:69
@@ -183,9 +182,9 @@ msgid "You are uploading an incomplete set of files."
 msgstr "Bạn đang tải lên một tập hợp đầy đủ các tập tin."
 
 #: static_root/admin/js/SelectFilter2.js:45
-#, fuzzy, c-format
+#, c-format
 msgid "Available %s"
-msgstr "Layers có sẵn"
+msgstr ""
 
 #: static_root/admin/js/SelectFilter2.js:46
 #, c-format
@@ -229,9 +228,8 @@ msgid ""
 msgstr ""
 
 #: static_root/admin/js/SelectFilter2.js:80
-#, fuzzy
 msgid "Remove all"
-msgstr "Tẩy"
+msgstr ""
 
 #: static_root/admin/js/SelectFilter2.js:80
 #, c-format
@@ -275,9 +273,8 @@ msgstr ""
 
 #: static_root/admin/js/collapse.js:8 static_root/admin/js/collapse.js.c:19
 #: static_root/admin/js/collapse.min.js:1
-#, fuzzy
 msgid "Show"
-msgstr "Xếp"
+msgstr ""
 
 #: static_root/admin/js/collapse.js:16 static_root/admin/js/collapse.min.js:1
 msgid "Hide"
@@ -787,4 +784,4 @@ msgid "Please wait"
 msgstr "Xin vui lòng chờ"
 
 #~ msgid "No error message supplied"
-#~ msgstr "Không có thông báo lỗi được cung cấp"
+#~ msgstr "No error message supplied"

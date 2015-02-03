@@ -3,13 +3,14 @@
 # This file is distributed under the same license as the PACKAGE package.
 #
 # Translators:
+# Translators:
 msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-02-03 05:20-0600\n"
-"PO-Revision-Date: 2014-11-11 22:57+0000\n"
-"Last-Translator: ingenieroariel <ingenieroariel@gmail.com>\n"
+"POT-Creation-Date: 2015-02-03 08:21-0600\n"
+"PO-Revision-Date: 2015-02-03 11:58+0000\n"
+"Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
 "Language-Team: Amharic (http://www.transifex.com/projects/p/geonode/language/"
 "am/)\n"
 "Language: am\n"
@@ -775,3 +776,6 @@ msgstr ""
 #: templates/lang.js:237
 msgid "Please wait"
 msgstr ""
+
+#~ msgid "No error message supplied"
+#~ msgstr "No error message supplied"

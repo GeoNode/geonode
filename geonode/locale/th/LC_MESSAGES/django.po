@@ -3,15 +3,16 @@
 # This file is distributed under the same license as the PACKAGE package.
 #
 # Translators:
+# Translators:
 # Andres Alfonso Lemon Gomez <lemon.andres@gmail.com>, 2014
 # keeratipong petchadapong <jobcskku@hotmail.com>, 2014
 msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-02-03 05:20-0600\n"
-"PO-Revision-Date: 2014-11-15 18:31+0000\n"
-"Last-Translator: Andres Alfonso Lemon Gomez <lemon.andres@gmail.com>\n"
+"POT-Creation-Date: 2015-02-03 08:23-0600\n"
+"PO-Revision-Date: 2015-02-03 12:11+0000\n"
+"Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
 "Language-Team: Thai (http://www.transifex.com/projects/p/geonode/language/"
 "th/)\n"
 "Language: th\n"
@@ -545,54 +546,44 @@ msgid "You are not allowed to edit this document."
 msgstr "คุณไม่ได้รับอนุญาตให้แก้ไขเอกสารนี้"
 
 #: documents/management/__init__.py:14
-#, fuzzy
 msgid "Document Created"
-msgstr "เอกสารที่เกี่ยวข้องกับแผนที่นี้"
+msgstr ""
 
 #: documents/management/__init__.py:15
-#, fuzzy
 msgid "A Document was created"
-msgstr "สร้างแผนที่เสร็จแล้ว"
+msgstr ""
 
 #: documents/management/__init__.py:18
-#, fuzzy
 msgid "Document Updated"
-msgstr "เอกสาร"
+msgstr ""
 
 #: documents/management/__init__.py:19
-#, fuzzy
 msgid "A Document was updated"
-msgstr "อัพโหลดชั้นข้อมูลเสร็จแล้ว"
+msgstr ""
 
 #: documents/management/__init__.py:22
-#, fuzzy
 msgid "Document Deleted"
-msgstr "เอกสาร"
+msgstr ""
 
 #: documents/management/__init__.py:23
-#, fuzzy
 msgid "A Document was deleted"
-msgstr "เอกสารนี้มีความเกี่ยวข้องกับ"
+msgstr ""
 
 #: documents/management/__init__.py:26
-#, fuzzy
 msgid "Comment on Document"
-msgstr "แสดงความเห็นเกี่ยวกับชั้นข้อมูล"
+msgstr ""
 
 #: documents/management/__init__.py:27
-#, fuzzy
 msgid "A Document was commented on"
-msgstr "แผนที่ได้รับการแสดงความคิดเห็น"
+msgstr ""
 
 #: documents/management/__init__.py:30
-#, fuzzy
 msgid "Document for Map"
-msgstr "แสดงความคิดเห็นบนแผนที่"
+msgstr ""
 
 #: documents/management/__init__.py:31
-#, fuzzy
 msgid "A rating was given to a document"
-msgstr "แผนที่ได้รับการให้คะแนนแล้ว"
+msgstr ""
 
 #: documents/templates/documents/document_detail.html:40
 msgid "External Resource"
@@ -617,9 +608,8 @@ msgstr "ดาวน์โหลดเอกสาร"
 
 #: documents/templates/documents/document_detail.html:90
 #: layers/templates/layers/layer_detail.html:131
-#, fuzzy
 msgid "Request Download"
-msgstr "ดาวน์โหลด"
+msgstr ""
 
 #: documents/templates/documents/document_detail.html:95
 #: layers/templates/layers/layer_detail.html:160
@@ -952,7 +942,7 @@ msgstr "ฟีดกิจกรรมสำหรับ"
 #: social/templates/social/activity_list.html:20
 #: templates/user_messages/inbox.html:16
 msgid "All"
-msgstr ""
+msgstr "ทั้งหมด"
 
 #: groups/templates/groups/activity.html:25
 #: people/templates/people/_profile_filters.html:5
@@ -1114,16 +1104,14 @@ msgid "Most popular"
 msgstr "ความนิยมสูงสุด"
 
 #: groups/templates/groups/group_members.html:8
-#, fuzzy
 msgid "Edit Members for"
-msgstr "แก้ไขรายละเอียดสำหรับ"
+msgstr ""
 
 #: groups/templates/groups/group_members.html:33
 #: groups/templates/groups/group_members.html:59
 #: groups/templates/groups/group_members.html:86
-#, fuzzy
 msgid "Remove"
-msgstr "ลบกลุ่ม"
+msgstr "ลบ"
 
 #: groups/templates/groups/group_members.html:37
 #: groups/templates/groups/group_members.html:63
@@ -1327,34 +1315,28 @@ msgid "You are attempting to replace a raster layer with a vector."
 msgstr ""
 
 #: layers/management/__init__.py:33
-#, fuzzy
 msgid "Layer Created"
-msgstr "สร้างแผนที่เสร็จแล้ว"
+msgstr ""
 
 #: layers/management/__init__.py:34
-#, fuzzy
 msgid "A Layer was created"
-msgstr "สร้างแผนที่เสร็จแล้ว"
+msgstr ""
 
 #: layers/management/__init__.py:37
-#, fuzzy
 msgid "Layer Updated"
-msgstr "อัพโหลดชั้นข้อมูลเสร็จแล้ว"
+msgstr ""
 
 #: layers/management/__init__.py:38
-#, fuzzy
 msgid "A Layer was updated"
-msgstr "อัพโหลดชั้นข้อมูลเสร็จแล้ว"
+msgstr ""
 
 #: layers/management/__init__.py:41
-#, fuzzy
 msgid "Layer Deleted"
-msgstr "สไตล์เริ่มต้นของชั้นข้อมูล"
+msgstr ""
 
 #: layers/management/__init__.py:42
-#, fuzzy
 msgid "A Layer was deleted"
-msgstr "อัพโหลดชั้นข้อมูลเสร็จแล้ว"
+msgstr ""
 
 #: layers/templates/layers/layer_change_poc.html:5
 msgid "Home"
@@ -1519,7 +1501,6 @@ msgstr ""
 "รายละเอียดการแก้ไขของ %(layer_title)s"
 
 #: layers/templates/layers/layer_metadata.html:23
-#, fuzzy
 msgid ""
 "Note: this layer's orginal metadata was populated by importing a metadata "
 "XML file.\n"
@@ -1527,9 +1508,6 @@ msgid ""
 "Dublin Core metadata elements.\n"
 "          Some of your original metadata may have been lost."
 msgstr ""
-"หมายเหตุ: คำอธิบายข้อมูลต้นฉบับของแผนที่นี้ถูกสร้างขึ้นโดยนำเข้าคำอธิบายข้อมูลจากไฟล์ XML\n"
-"คำอธิบายข้อมูลของ GeoNode รองรับบางส่วนของมาตรฐาน ISO, FGDC, และ Dublin Core\n"
-"อาจจะทำให้มีบางส่วนของคำอธิบายต้นฉบับของคุณสูญเสียไป"
 
 #: layers/templates/layers/layer_metadata.html:37
 #: layers/templates/layers/layer_metadata.html:74 templates/_actions.html:5
@@ -1554,20 +1532,17 @@ msgid "Display Order"
 msgstr "ลำดับการแสดงผล"
 
 #: layers/templates/layers/layer_remove.html:9
-#, fuzzy
 msgid "Remove Layers"
-msgstr "ลบชั้นข้อมูลนี้"
+msgstr ""
 
 #: layers/templates/layers/layer_remove.html:14
-#, fuzzy, python-format
+#, python-format
 msgid ""
 "\n"
 "          Are you sure you want to remove <a href="
 "\"%(layer.get_absolute_url)s\">%(layer_title)s</a>?\n"
 "        "
 msgstr ""
-"\n"
-"คุณแน่ใจแล้วหรือว่าจะลบ %(layer_title)s?"
 
 #: layers/templates/layers/layer_remove.html:30
 msgid "This action affects the following maps:"
@@ -2096,24 +2071,20 @@ msgid "A Map was created"
 msgstr "สร้างแผนที่เสร็จแล้ว"
 
 #: maps/management/__init__.py:37
-#, fuzzy
 msgid "Map Updated"
-msgstr "สร้างแผนที่เสร็จแล้ว"
+msgstr ""
 
 #: maps/management/__init__.py:38
-#, fuzzy
 msgid "A Map was updated"
-msgstr "สร้างแผนที่เสร็จแล้ว"
+msgstr ""
 
 #: maps/management/__init__.py:41
-#, fuzzy
 msgid "Map Deleted"
-msgstr "สร้างแผนที่เสร็จแล้ว"
+msgstr ""
 
 #: maps/management/__init__.py:42
-#, fuzzy
 msgid "A Map was deleted"
-msgstr "สร้างแผนที่เสร็จแล้ว"
+msgstr ""
 
 #: maps/management/__init__.py:45
 msgid "Comment on Map"
@@ -2417,9 +2388,8 @@ msgid "User following you"
 msgstr "ผู้ใช้ที่กำลังติดตามคุณ"
 
 #: people/management.py:33
-#, fuzzy
 msgid "Another user has started following you"
-msgstr "ผู้ใช้คนอื่นเริ่มติดตามคุณแล้ว"
+msgstr ""
 
 #: people/management.py:36
 msgid "User requested access"
@@ -2430,9 +2400,8 @@ msgid "A new user has requested access to the site"
 msgstr ""
 
 #: people/management.py:40
-#, fuzzy
 msgid "Account activated"
-msgstr "กิจกรรมล่าสุด"
+msgstr ""
 
 #: people/management.py:41
 msgid "This account is now active and can log in the site"
@@ -2557,11 +2526,10 @@ msgid "Forgot Username"
 msgstr "ลืม"
 
 #: people/templates/people/forgot_username_form.html:10
-#, fuzzy
 msgid ""
 "Enter your email address and click the submit button. <br />Your username "
 "will be sent to you."
-msgstr "ป้อนอีเมล์แอดเดรสของคุณและคลิกปุ่มส่ง แล้วคุณจะได้รับชื่อผู้ใช้ของคุณ"
+msgstr ""
 
 #: people/templates/people/profile_create.html:8
 #: people/templates/people/profile_create.html:14
@@ -2573,9 +2541,8 @@ msgid "Profile of "
 msgstr "โปรไฟล์ของ"
 
 #: people/templates/people/profile_detail.html:19
-#, fuzzy
 msgid "Message User"
-msgstr "ข้อความขาเข้า"
+msgstr ""
 
 #: people/templates/people/profile_detail.html:65
 msgid "Edit profile"
@@ -2598,9 +2565,8 @@ msgid "My Activities"
 msgstr "กิจกรรมของฉัน"
 
 #: people/templates/people/profile_detail.html:77 templates/base.html:202
-#, fuzzy
 msgid "Notifications"
-msgstr "ชนิดการแจ้งเตือน"
+msgstr ""
 
 #: people/templates/people/profile_detail.html:80 templates/500.html:80
 #: templates/base.html:205 templates/announcements/announcement_list.html:6
@@ -2707,9 +2673,8 @@ msgid "Service URL"
 msgstr "URL ของเซอร์วิส"
 
 #: services/forms.py:15
-#, fuzzy
 msgid "Service name"
-msgstr "ชนิดของเซอร์วิส"
+msgstr ""
 
 #: services/forms.py:19
 msgid "Service Type"
@@ -2835,9 +2800,8 @@ msgid "Remove Service"
 msgstr "ลบเซอร์วิส"
 
 #: services/templates/services/service_edit.html:15
-#, fuzzy
 msgid "Edit Service"
-msgstr "แก้ไขคำอธิบายข้อมูลของเซอร์วิส"
+msgstr ""
 
 #: services/templates/services/service_edit.html:21
 #: templates/announcements/announcement_form.html:27
@@ -2857,9 +2821,8 @@ msgid "Register a new Service"
 msgstr "ลงทะเบียนเซอร์วิสใหม่"
 
 #: services/templates/services/service_register.html:13
-#, fuzzy
 msgid "Register New Service"
-msgstr "ลงทะเบียนเซอร์วิสใหม่"
+msgstr ""
 
 #: services/templates/services/service_register.html:23
 msgid "Service has been created:"
@@ -2870,9 +2833,8 @@ msgid "The following layers will be imported"
 msgstr "ชั้นข้อมูลดังต่อไปนี้จะถูกนำเข้า"
 
 #: services/templates/services/service_remove.html:8
-#, fuzzy
 msgid "Remove Remote Service"
-msgstr "ลบเซอร์วิส"
+msgstr ""
 
 #: services/templates/services/service_remove.html:12
 msgid "Are you sure you want to remove"
@@ -3052,9 +3014,8 @@ msgid "Ratings"
 msgstr "ความนิยม"
 
 #: templates/_actions.html:13
-#, fuzzy
 msgid "GeoGig"
-msgstr "GeoGit"
+msgstr ""
 
 #: templates/_bulk_permissions_form.html:9
 msgid "Set permissions on selected resources"
@@ -3078,9 +3039,8 @@ msgid "By"
 msgstr "โดย"
 
 #: templates/_comments.html:67
-#, fuzzy
 msgid "Submit Comment"
-msgstr "ส่งความเห็น"
+msgstr ""
 
 #: templates/_permissions.html:8
 msgid "Who can view it?"
@@ -3144,9 +3104,8 @@ msgid "About GeoNode."
 msgstr "เกี่ยวกับ GeoNode"
 
 #: templates/base.html:192
-#, fuzzy
 msgid "Profile Menu"
-msgstr "โปรไฟล์"
+msgstr ""
 
 #: templates/base.html:258
 msgid "Type your search here ..."
@@ -3161,7 +3120,6 @@ msgid "Useful information for developers interested in GeoNode."
 msgstr "ข้อมูลที่เป็นประโยชน์สำหรับนักพัฒนาที่สนใจใน GeoNode"
 
 #: templates/developer.html:14
-#, fuzzy
 msgid ""
 "\n"
 "    <p><a href=\"http://geonode.org/\">GeoNode</a> is an open service built "
@@ -3248,83 +3206,6 @@ msgid ""
 "</p>\n"
 "    "
 msgstr ""
-"\n"
-"<p><a href=\"http://geonode.org/\">GeoNode</a> เป็น open service "
-"ที่สร้างขึ้นบนซอฟต์แวร์โอเพ่นซอร์ส "
-"เราสนับสนุนให้คุณสร้างแอพพลิเคชันใหม่ได้โดยใช้คอมโพเนนต์และทรัพยากรที่มีให้ "
-"หน้านี้เป็นจุดเริ่มต้นสำหรับนักพัฒนาที่สนใจในการใช้ประโยชน์อย่างเต็มที่จาก GeoNode  "
-"นอกจากนี้ยังมีลิงค์ไปยังซอร์สโค๊ดของโครงการ ซึ่งทำให้ทุกคนสามารถสร้างและแก้ไข GeoNode "
-"ของตนเองได้</p>\n"
-"\n"
-"<h4>ซอฟต์แวร์ GeoNode</h4>\n"
-"\n"
-"<p>โค๊ดทั้งหมดที่รันอยู่ของ GeoNode เป็นโอเพ่นซอร์สทั้งหมด สามารถดูโค๊ดได้ที่ <a href=\"http://"
-"github.com/GeoNode/geonode\">http://github.com/GeoNode/geonode/</a> "
-"หน้าติดตามปัญหาของโครงการอยู่ที่ <a href=\"http://github.com/GeoNode/geonode/issues"
-"\">http://github.com/GeoNode/geonode/issues</a></p>\n"
-"\n"
-"<p>GeoNode สร้างขึ้นโดยใช้โครงการโอเพ่นซอร์สหลายโครงการ "
-"แต่ละโครงการก็มีชุมชนเป็นของตนเอง ถ้าหากคุณสนใจมีส่วนร่วมพัฒนาความสามารถใหม่ๆให้ GeoNode "
-"เราขอแนะนำคุณให้เข้าร่วมกับโครงการที่ใช้สร้างมันขึ้นมา:</p>\n"
-"<ul>\n"
-"<li><a href=\"http://geoext.org\">GeoExt</a> - ชุดเครื่องมือ JavaScript "
-"สำหรับสร้าง rich web mapping applications</li>\n"
-"<li><a href=\"http://geoserver.org\">GeoServer</a> - "
-"เซิร์ฟเวอร์ตามมาตรฐานสำหรับข้อมูลเชิงพื้นที่</li>\n"
-"<li><a href=\"http://geowebcache.org\">GeoWebCache</a> - Cache engine สำหรับ "
-"WMS Tiles</li><li><a href=\"http://openlayers.org\">OpenLayers</a> - "
-"ไลบรารี่ภาษา JavaScript ซึ่งใช้ขับเคลื่อนแผนที่ของ GeoExt</li>\n"
-"<li><a href=\"http://pycsw.org\">pycsw</a> - เซิร์ฟเวอร์แคตตาล็อกคำอธิบายข้อมูล "
-"CSW</li>\n"
-"</ul>\n"
-"\n"
-"<h4>เซอร์วิส OGC คืออะไร?</h4>\n"
-"<p>ข้อมูลในแอพพลิเคชันนี้ให้บริการโดยใช้มาตรฐานเปิดซึ่งรับรองโดย <a href=\"http://"
-"opengeospatial.org/\">Open Geospatial Consortium</a> โดยเฉพาะ WMS (Web Map "
-"Service) ใช้ในการเข้าถึงแผนที่ WFS (Web Feature Service) ใช้สำหรับเข้าถึงข้อมูลเวกเตอร์ "
-"และ WCS (Web Coverage Service) ใช้ในการเข้าถึงข้อมูลแรสเตอร์. WMC (Web Map Context "
-"Documents) ใช้ในการแบ่งปันแผนที่ "
-"คุณสามารถใช้เซอร์วิสเหล่านี้ในแอพพลิเคชันของคุณเองโดยใช้ไลบรารี่เช่น OpenLayers, GeoTools, "
-"และ OGR (ซึ่งทั้งหมดเป็นซอฟต์แวร์โอเพ่นซอร์สและสามารถใช้ได้โดยไม่เสียค่าใช้จ่าย)</p>\n"
-"\n"
-"<h4>GeoWebCache คืออะไร?</h4>\n"
-"<p>GeoWebCache ให้บริการ mapping tiles ซึ่งเข้ากันได้กับเครื่องมือทำแผนที่หลายตัวรวมทั้ง "
-"Google Maps, Bing Maps และ OpenLayers ข้อมูลทั้งหมดที่อยู่บน GeoNode ก็สามารถใช้ผ่าน "
-"GeoWebCache ได้เช่นกัน GeoWebCache ช่วยเพิ่มประสิทธิภาพให้ WMS "
-"โดยเก็บแคชข้อมูลและทำให้แผนที่ตอบสนองดีขึ้น</p>\n"
-"\n"
-"<h4>โค๊ดตัวอย่างของ OpenLayers</h4>\n"
-"\n"
-"<p>การนำชั้นข้อมูลจาก GeoNode ไปใช้ในแผนที่ OpenLayers ขั้นตอนแรกคือหาชื่อของชั้นข้อมูลนั้น "
-"ซึ่งหาได้จากฟิลด์ <code>name</code> (ไม่ใช่ <code>title</code>) ของรายการชั้นข้อมูล "
-"สำหรับตัวอย่างนี้เราจะใช้ชั้นข้อมูลพื้นหลังขอบเขตการปกครองของนิการากัวซึ่งมีชื่อว่า <code>risk:"
-"nicaragua_admin</code> จากนั้นสร้าง instance ของ OpenLayers.Layer.WMS:</p>\n"
-"<p><code>var geonodeLayer = new OpenLayers.Layer.WMS(\"GeoNode Risk Data\", "
-"\"http://demo.geonode.org/geoserver/wms\",{ layers: \"risk:nicaragua_admin"
-"\" });</code></p>\n"
-"\n"
-"<h4>โค๊ดตัวอย่างของ Google Maps</h4>\n"
-"<p>การนำชั้นข้อมูลจาก GeoNode ไปใช้ใน Google Map ให้ใส่ชื่อชั้นข้อมูลเข้าไปใน URL "
-"template</p>\n"
-"<p><code>var tilelayer = new GTileLayer(null, null, null, {tileUrlTemplate: "
-"'http://demo.geonode.org/geoserver/gwc/service/gmaps?layers=risk:"
-"nicaragua_admin&#38;zoom={Z}&#38;x={X}&#38;y={Y}', isPng:true, "
-"opacity:0.5 } );</code></p>\n"
-"\n"
-"<h4>ผลลัพธ์ Shapefile/GeoJSON/GML</h4>\n"
-"<p>การรับข้อมูลจากเว็บเซอร์วิสของ GeoNode โดยใช้โปรโตคอล WFS ตัวอย่างเช่น "
-"ต้องการขอบเขตการปกครองทั้งหมดของนิการากัว ให้ใช้:</p>\n"
-"<p><code>http://demo.geonode.org/geoserver/wfs?request=GetFeature&#38;"
-"typeName=risk:nicaragua_admin&#38;outputformat=SHAPE-ZIP</code></p>\n"
-"<p>การเปลี่ยนรูปแบบผลลัพธ์เป็น <code>json</code>, <code>GML2</code>, <code>GML3</"
-"code>, หรือ <code>csv</code> จะทำให้ได้รับข้อมูลตามรูปแบบนั้น นอกจากนี้โปรโตคอล WFS "
-"ยังสามารถค้นหาข้อมูลได้เฉพาะเจาะจงมากขึ้น "
-"โดยระบุขอบเขตหรือตัวกรองเชิงพื้นที่และตัวกรองที่ไม่ใช่เชิงพื้นที่ตามลักษณะของแอตทริบิวต์ของข้อมูล</"
-"p>\n"
-"\n"
-"<h4>โค๊ดตัวอย่างของ GeoTools</h4>\n"
-"<p>สร้าง DataStore แล้วจึงสกัด FeatureType จากมัน จากนั้นเรียกใช้คำสั่ง Query "
-"ซึ่งทั้งหมดถูกทำเป็นเอกสารไว้บน wiki ที่ <code>http://geotools.org/</code></p>\n"
 
 #: templates/developer.html:55
 msgid "GeoNode's Web Services"
@@ -3370,7 +3251,6 @@ msgstr ""
 "หน้านี้ให้ข้อมูลที่มีประโยชน์เกี่ยวกับวิธีใช้ GeoNode โดยคุณสามารถใช้ลิงค์ด้านข้างไปยังหัวข้อที่คุณอยากรู้"
 
 #: templates/help.html:14
-#, fuzzy
 msgid ""
 "\n"
 "    <p>The GeoNode provides access to data sets and a map editing "
@@ -3459,76 +3339,6 @@ msgid ""
 "<a href=\"/maps\">Maps</a> tab.</p> \n"
 "    "
 msgstr ""
-"\n"
-"<p> GeoNode "
-"มีชุดข้อมูลที่สามารถเข้าถึงได้และมีแอพพลิเคชันสำหรับแก้ไขแผนที่ที่ผู้ใช้สามารถเรียกดูแผนที่ที่มีอยู่แล้วนำไปสร้างเป็นแผนที่ของตนเองได้</"
-"p>\n"
-"\n"
-"<h4 id=\"browsing-data\">การเรียกดูชั้นข้อมูล</h4>\n"
-"<p>แท็บ <a href=\"/layers\">ชั้นข้อมูล</a> เป็นที่ที่คุณสามารถเรียกดูข้อมูลที่ถูกอัพโหลดมาที่ "
-"GeoNode นี้</p>\n"
-"<pข้อมูลทั้งหมดสามารถดาวน์โหลดได้ในรูปแบบที่หลากหลายเพื่อใช้ในแอพพลิเคชันอื่นๆ</p>\n"
-"<h4 id=\"developer-access\">การเข้าถึงของนักพัฒนา</h4>\n"
-"<p>หน้า <a href=\"/developer\">นักพัฒนา</a> "
-"เป็นจุดเริ่มต้นสำหรับนักพัฒนาที่จะสร้างแอพพลิเคชันกับ GeoNode รวมถึงคำแนะในการใช้เว็บเซอร์วิส "
-"ลิงค์ของซอร์สโค๊ดของ GeoNode และข้อมูลเกี่ยวกับโครงการโอเพ่นซอร์สที่ใช้ในการสร้างมันขึ้นมาด้วย</"
-"p>\n"
-"\n"
-"<h4 id=\"browsing-maps\">การเรียกดูแผนที่</h4>\n"
-"<p>ผู้ใช้สามารถสร้างและแบ่งปันแผนที่ระหว่างผู้ใช้ด้วยกันผ่าน GeoNode ได้</p>\n"
-"<p>แท็บ <a href=\"/maps\">แผนที่</a> เป็นประตูสู่การสำรวจแผนที่บน GeoNode "
-"ที่นี่คุณสามารถค้นหาแผนที่หรือสร้างแผนที่ซึ่งจะเปิดหน้า <a href=\"/maps/new\">Map Composer</"
-"a>ขึ้นมา</p>\n"
-"<h5>มุมมอง Google Earth</h5>\n"
-"<p>แผนที่ใดๆที่เปิดดูในหน้าต่างแก้ไขแผนที่สามารถดูในมุมมอง 3 มิติได้ด้วยปลั๊กอิน Google Earth "
-"เมื่อต้องการสลับไปยังมุมมอง 3 มิติให้คลิกที่โลโก้ของ Google Earth  "
-"ซึ่งเป็นปุ่มอยู่ด้านซ้ายสุดในแถบเครื่องมือด้านบน ถ้าคุณยังไม่ได้ติดตั้งปลั๊กอิน Google Earth "
-"ก็จะมีการแจ้งเตือนให้ติดตั้งก่อน</p>\n"
-"\n"
-"<h4 id=\"creating-a-map\">การสร้างแผนที่</h4>\n"
-"<p>การสร้างแผนที่ใหม่ให้ไปที่แท็บ <a href=\"/maps\">Contributed Maps</a> แล้วคลิกที่ลิงค์ "
-"<a href=\"/maps/new\">create your own map</a></p>\n"
-"<p>ซึ่งจะนำคุณไปที่ <a href=\"/maps/new\">Map Composer</a> ซึ่งมีชั้นข้อมูลฐานพร้อมใช้งาน</"
-"p>\n"
-"<p>การเพิ่มชั้นข้อมูลจาก GeoNodeให้คลิกที่ปุ่มเครื่องหมายบวกสีเขียวด้านล่างแท็บ layers "
-"ด้านซ้ายมือของจอ ซึ่งจะเปิดหน้าต่างที่มีรายการชั้นข้อมูลที่สามารถใช้ได้ทั้งหมดใน GeoNode</p>\n"
-"<p>เลือกชั้นข้อมูลแล้วคลิกปุ่ม <strong>Add Layers</strong> เพื่อเพิ่มชั้นข้อมูลลงบนแผนที่ของคุณ "
-"เมื่อเสร็จแล้วคุณอาจจะคลิกปุ่ม <strong>Done</strong> เพื่อปิดหน้าต่างและกลับสู่แผนที่ก็ได้</p>\n"
-"\n"
-" <h5>การเรียงลำดับและลบชั้นข้อมูล</h5>\n"
-"<p>การเปลี่ยนลำดับการแสดงผลชั้นข้อมูลซึ่งเป็นรายการอยู่ในแท็บ data "
-"ทำได้อย่างง่ายดายเพียงคลิกชื่อชั้นข้อมูลลากและวางในตำแหน่งที่ต้องการ "
-"ลำดับในแผนที่จะมีการเปลี่ยนแปลงตามนั้น คลิกไม่ทำเครื่องหมายเพื่อซ่อนชั้นข้อมูล "
-"และถ้าหากต้องการลบชั้นข้อมูลให้เลือกชั้นข้อมูลแล้วกดปุ่มเครื่องหมายลบสีแดง</p>\n"
-"\n"
-"<h5>การบันทึกแผนที่ของคุณ</h5>\n"
-"<p>หลังจากที่ปรับแต่งชั้นข้อมูลและระดับการซูมเรียบร้อยแล้วก็ถึงเวลาที่จะบันทึกแผนที่เพื่อให้คนอื่นๆได้เห็นมัน "
-"คลิกปุ่มบันทึกซึ่งเป็นไอคอนรูปแผนที่และแผ่นดิสก์อยู่ในเมนูด้านซ้ายสุดของแถบเครื่องมือด้านบน "
-"แล้วใส่ชื่อเรื่องและบทคัดย่อของแผนที่</p>\n"
-"\n"
-"<h4 id=\"exporting-a-map\">การส่งออกแผนที่</h4>\n"
-"<p>ทุกแผนที่จาก GeoNode สามารถนำไปใช้ฝังในเว็บไซต์หรือบล็อกอื่นๆได้ ในการส่งออกแผนที่:</p>\n"
-"<ol>\n"
-"<li>เลือกจากรายการแผนที่ในกลุ่มหรือจากหน้าแผนที่แล้วคลิกปุ่ม 'ส่งออกแผนที่'</li>\n"
-"<li>เลือกความสูงและความกว้างของวิดเจ็ตในวิซาร์ด</li>\n"
-"<li>คัดลอก HTML จากวิซาร์ดไปที่หน้าเว็บ HTML หรือบล็อกที่รองรับการโพสต์ iFrame</li>\n"
-"</ol>\n"
-"<p>คุณก็จะได้วิเจ็ตแผนที่ไปแสดงในเว็บเพจหรือบล็อกโพสต์แล้ว</p>\n"
-"<p>หมายเหตุ <a href=\"/maps/new\">Map Composer</a> "
-"นั้นก็มีปุ่มสำหรับส่งออกแผนที่ด้วยเช่นกัน ต้องแน่ใจว่าบันทึกแผนที่ก่อนที่จะมีการส่งออกเพราะว่า "
-"หากมีการเปลี่ยนแปลงที่ต้องการให้คนอื่นดู มันจะส่งออกที่บันทึกครั้งล่าสุด ไม่ใช่ที่ดูครั้งล่าสุด</p>\n"
-"\n"
-"<h4 id=\"remixing-a-map\">การเรียบเรียงแผนที่ใหม่</h4>\n"
-"<p>แผนที่ทุกแผนที่สามารถใช้เป็นจุดเริ่มต้นในการสร้างแผนที่ใหม่ได้</p>\n"
-"<ol>\n"
-"<li>เปิดแผนที่ใน Map Composer.</li>\n"
-"<li>เพิ่มหรือลบชั้นข้อมูลตามที่คุณต้องการ</li>\n"
-"<li>เลื่อนและซูมเพื่อไฮไลท์พื้นที่ที่สนใจ</li>\n"
-"<li><strong>สำคัญ:</strong> แก้ไขชื่อเรื่อง, บทคัดย่อ, ข้อมูลสำหรับติดต่อ "
-"และแท็กที่สัมพันธ์กับแผนที่ใหม่</li>\n"
-"<li>บันทึกแผนที่</li>\n"
-"</ol>\n"
-"<p>คุณสามารถดูแผนที่ใหม่ขอคุณได้เมื่อคุณค้นหาจากแท็บ <a href=\"/maps\">แผนที่</a></p>"
 
 #: templates/help.html:66
 msgid "Sections"
@@ -3594,10 +3404,9 @@ msgstr "ไม่มี"
 
 #: templates/index.html:30
 #: templates/notification/request_download_resourcebase/full.txt:7
-#, fuzzy
 msgid "Layer"
 msgid_plural "Layers"
-msgstr[0] "ชั้นข้อมูล"
+msgstr[0] ""
 
 #: templates/index.html:31
 msgid ""
@@ -3608,10 +3417,9 @@ msgstr ""
 "สามารถดาวน์โหลดข้อมูลได้ในรูปแบบมาตรฐาน"
 
 #: templates/index.html:36
-#, fuzzy
 msgid "Map"
 msgid_plural "Maps"
-msgstr[0] "แผนที่"
+msgstr[0] ""
 
 #: templates/index.html:37
 msgid ""
@@ -3627,10 +3435,9 @@ msgstr "สร้างแผนที่"
 
 #: templates/index.html:43 templates/index.html.py:48
 #: templates/notification/account_approve/full.txt:1
-#, fuzzy
 msgid "User"
 msgid_plural "Users"
-msgstr[0] "ผู้ใช้"
+msgstr[0] ""
 
 #: templates/index.html:44 templates/index.html.py:49
 msgid ""
@@ -3659,9 +3466,8 @@ msgstr ""
 
 #: templates/account/email_confirmation_sent.html:6
 #: templates/account/email_confirmation_sent.html:9
-#, fuzzy
 msgid "Confirm your email address"
-msgstr "ยืนยันอีเมล์แอดเดรสสำหรับเว็บ %(site_name)s"
+msgstr ""
 
 #: templates/account/email_confirmation_sent.html:11
 #, python-format
@@ -3695,22 +3501,18 @@ msgid "Password reset"
 msgstr "ตั้งรหัสผ่านใหม่"
 
 #: templates/account/password_reset.html:14
-#, fuzzy
 msgid "Password Reset"
-msgstr "ตั้งรหัสผ่านใหม่"
+msgstr ""
 
 #: templates/account/password_reset.html:18
-#, fuzzy
 msgid "Forgotten your password?"
-msgstr "คุณลืมรหัสผ่าน?"
+msgstr ""
 
 #: templates/account/password_reset.html:19
-#, fuzzy
 msgid ""
 "Enter your email address below, and we'll send you an email allowing you to "
 "reset it."
 msgstr ""
-"คุณลืมรหัสผ่านหรือ? กรอกอีเมล์แอดเดรสด้านล่างแล้วเราจะส่งอีเมล์สำหรับกำหนดรหัสผ่านใหม่ไปให้คุณ"
 
 #: templates/account/password_reset.html:25
 msgid "Reset my password"
@@ -3817,15 +3619,13 @@ msgid "Published From"
 msgstr "ประกาศเมื่อ"
 
 #: templates/announcements/announcement_list.html:38
-#, fuzzy, python-format
+#, python-format
 msgid ""
 "\n"
 "          Published from <b>%(publish_start)s</b> to <b>%(publish_end)s</"
 "b>.\n"
 "          "
 msgstr ""
-"\n"
-"ประกาศตั้งแต่ <b>%(publish_start)s</b> ถึง <b>%(publish_end)s</b>"
 
 #: templates/announcements/detail.html:4
 #, python-format
@@ -3854,9 +3654,8 @@ msgid "Choose new Default"
 msgstr "ใช้เป็นค่าเริ่มต้น"
 
 #: templates/avatar/change.html:23
-#, fuzzy
 msgid "Delete Your Avatar"
-msgstr "ลบรูปของคุณ"
+msgstr ""
 
 #: templates/avatar/confirm_delete.html:6
 msgid "Please select the avatars that you would like to delete."
@@ -3926,9 +3725,8 @@ msgid "A user has requested access to the site"
 msgstr ""
 
 #: templates/notification/document_comment/full.txt:3
-#, fuzzy
 msgid "A comment has been posted for the document"
-msgstr "คุณไม่มีสิทธิ์ในเอกสารนี้"
+msgstr ""
 
 #: templates/notification/document_comment/full.txt:3
 #: templates/notification/layer_comment/full.txt:3
@@ -3943,9 +3741,8 @@ msgid "You can visit the document's detail page here"
 msgstr ""
 
 #: templates/notification/document_comment/short.txt:3
-#, fuzzy
 msgid "A comment has been posted for a document"
-msgstr "คุณไม่มีสิทธิ์ในเอกสารนี้"
+msgstr ""
 
 #: templates/notification/document_created/full.txt:3
 #: templates/notification/document_rated/full.txt:3
@@ -3954,24 +3751,20 @@ msgstr "คุณไม่มีสิทธิ์ในเอกสารนี
 #: templates/notification/map_created/full.txt:3
 #: templates/notification/map_rated/full.txt:3
 #: templates/notification/request_download_resourcebase/full.txt:3
-#, fuzzy
 msgid "The user"
-msgstr "เลือกผู้ใช้..."
+msgstr ""
 
 #: templates/notification/document_created/full.txt:3
-#, fuzzy
 msgid "uploaded the following document"
-msgstr "แทนที่เอกสารนี้"
+msgstr ""
 
 #: templates/notification/document_created/short.txt:3
-#, fuzzy
 msgid "A document has been uploaded"
-msgstr "อัพโหลดชั้นข้อมูลเสร็จแล้ว"
+msgstr ""
 
 #: templates/notification/document_deleted/full.txt:3
-#, fuzzy
 msgid "The following document was deleted"
-msgstr "ผู้ใช้ดังต่อไปนี้:"
+msgstr ""
 
 #: templates/notification/document_deleted/full.txt:4
 #: templates/notification/document_rated/full.txt:6
@@ -3982,26 +3775,22 @@ msgstr "ผู้ใช้ดังต่อไปนี้:"
 #: templates/notification/map_deleted/full.txt:4
 #: templates/notification/map_rated/full.txt:6
 #: templates/notification/map_updated/full.txt:4
-#, fuzzy
 msgid "owned by"
-msgstr "ขับเคลื่อนด้วย"
+msgstr ""
 
 #: templates/notification/document_deleted/short.txt:3
-#, fuzzy
 msgid "A document has been deleted"
-msgstr "สร้างเซอร์วิสเสร็จแล้ว:"
+msgstr ""
 
 #: templates/notification/document_rated/full.txt:4
 #: templates/notification/layer_rated/full.txt:4
 #: templates/notification/map_rated/full.txt:4
-#, fuzzy
 msgid "rated"
-msgstr "สร้างแล้ว"
+msgstr ""
 
 #: templates/notification/document_rated/full.txt:5
-#, fuzzy
 msgid "the following document"
-msgstr "ผู้ใช้ดังต่อไปนี้:"
+msgstr ""
 
 #: templates/notification/document_rated/full.txt:8
 #: templates/notification/layer_comment/full.txt:5
@@ -4012,74 +3801,60 @@ msgid "You can visit the layer's detail page here"
 msgstr ""
 
 #: templates/notification/document_rated/short.txt:3
-#, fuzzy
 msgid "A document has been rated"
-msgstr "สร้างเซอร์วิสเสร็จแล้ว:"
+msgstr ""
 
 #: templates/notification/document_updated/full.txt:3
-#, fuzzy
 msgid "The following document was updated"
-msgstr "ผู้ใช้ดังต่อไปนี้:"
+msgstr ""
 
 #: templates/notification/document_updated/short.txt:3
-#, fuzzy
 msgid "A document has been updated"
-msgstr "สร้างเซอร์วิสเสร็จแล้ว:"
+msgstr ""
 
 #: templates/notification/layer_comment/full.txt:3
-#, fuzzy
 msgid "A comment has been posted for the layer"
-msgstr "เอกสารที่เกี่ยวข้องกับชั้นข้อมูลนี้"
+msgstr ""
 
 #: templates/notification/layer_comment/short.txt:3
-#, fuzzy
 msgid "A comment has been posted for a layer"
-msgstr "ชั้นข้อมูลได้รับการให้คะแนนแล้ว"
+msgstr ""
 
 #: templates/notification/layer_created/full.txt:3
-#, fuzzy
 msgid "uploaded the following layer"
-msgstr "แผนที่นี้ใช้ชั้นข้อมูลดังต่อไปนี้:"
+msgstr ""
 
 #: templates/notification/layer_created/short.txt:3
-#, fuzzy
 msgid "A new layer has been uploaded"
-msgstr "อัพโหลดชั้นข้อมูลเสร็จแล้ว"
+msgstr ""
 
 #: templates/notification/layer_deleted/full.txt:3
-#, fuzzy
 msgid "The following layer was deleted"
-msgstr "ชั้นข้อมูลดังต่อไปนี้จะถูกนำเข้า"
+msgstr ""
 
 #: templates/notification/layer_deleted/short.txt:3
-#, fuzzy
 msgid "A layer has been deleted"
-msgstr "ชั้นข้อมูลได้รับการแสดงความคิดเห็น"
+msgstr ""
 
 #: templates/notification/layer_rated/full.txt:5
-#, fuzzy
 msgid "the following layer"
-msgstr "ผู้ใช้ดังต่อไปนี้:"
+msgstr ""
 
 #: templates/notification/layer_rated/short.txt:3
-#, fuzzy
 msgid "A layer has been rated"
-msgstr "สร้างเซอร์วิสเสร็จแล้ว:"
+msgstr ""
 
 #: templates/notification/layer_updated/full.txt:3
-#, fuzzy
 msgid "The following layer was updated"
-msgstr "ชั้นข้อมูลดังต่อไปนี้จะถูกนำเข้า"
+msgstr ""
 
 #: templates/notification/layer_updated/short.txt:3
-#, fuzzy
 msgid "A layer has been updated"
-msgstr "อัพโหลดชั้นข้อมูลเสร็จแล้ว"
+msgstr ""
 
 #: templates/notification/map_comment/full.txt:3
-#, fuzzy
 msgid "A comment has been posted for the map"
-msgstr "เอกสารที่เกี่ยวข้องกับแผนที่นี้"
+msgstr ""
 
 #: templates/notification/map_comment/full.txt:6
 #: templates/notification/map_created/full.txt:6
@@ -4093,54 +3868,44 @@ msgid "A comment has been posted for a map"
 msgstr ""
 
 #: templates/notification/map_created/full.txt:3
-#, fuzzy
 msgid "created the following map"
-msgstr "การกระทำนี้ส่งผลต่อแผนที่ดังต่อไปนี้:"
+msgstr ""
 
 #: templates/notification/map_created/short.txt:3
-#, fuzzy
 msgid "A map has been created"
-msgstr "สร้างแผนที่เสร็จแล้ว"
+msgstr ""
 
 #: templates/notification/map_deleted/full.txt:3
-#, fuzzy
 msgid "The following map was deleted"
-msgstr "ชั้นข้อมูลดังต่อไปนี้จะถูกนำเข้า"
+msgstr ""
 
 #: templates/notification/map_deleted/short.txt:3
-#, fuzzy
 msgid "A map has been deleted"
-msgstr "แผนที่ได้รับการแสดงความคิดเห็น"
+msgstr ""
 
 #: templates/notification/map_rated/full.txt:5
-#, fuzzy
 msgid "the following map"
-msgstr "กลุ่มดังต่อไปนี้:"
+msgstr ""
 
 #: templates/notification/map_rated/short.txt:3
-#, fuzzy
 msgid "A map has been rated"
-msgstr "สร้างแผนที่เสร็จแล้ว"
+msgstr ""
 
 #: templates/notification/map_updated/full.txt:3
-#, fuzzy
 msgid "The following map was updated"
-msgstr "ชั้นข้อมูลดังต่อไปนี้จะถูกนำเข้า"
+msgstr ""
 
 #: templates/notification/map_updated/short.txt:3
-#, fuzzy
 msgid "A map has been updated"
-msgstr "สร้างแผนที่เสร็จแล้ว"
+msgstr ""
 
 #: templates/notification/request_download_resourcebase/full.txt:3
-#, fuzzy
 msgid "requested you to download this resource"
-msgstr "กลุ่มผู้ที่เป็นเจ้าของแหล่งข้อมูล"
+msgstr ""
 
 #: templates/notification/request_download_resourcebase/full.txt:9
-#, fuzzy
 msgid "Document"
-msgstr "เอกสาร"
+msgstr ""
 
 #: templates/notification/request_download_resourcebase/full.txt:12
 msgid ""
@@ -4284,18 +4049,16 @@ msgstr "ลบ?"
 
 #: templates/user_messages/_message_snippet.html:29
 #: templates/user_messages/thread_detail.html:14
-#, fuzzy
 msgid "me"
-msgstr "บ้าน"
+msgstr ""
 
 #: templates/user_messages/inbox.html:6
 msgid "Message Inbox"
 msgstr "ข้อความขาเข้า"
 
 #: templates/user_messages/inbox.html:11
-#, fuzzy
 msgid "Messages"
-msgstr "ข้อความขาเข้า"
+msgstr ""
 
 #: templates/user_messages/inbox.html:38
 #: templates/user_messages/message_create.html:6
@@ -4317,89 +4080,89 @@ msgid "Send Reply"
 msgstr "ตอบกลับ"
 
 #~ msgid "Most shared"
-#~ msgstr "แบ่งปันมากที่สุด"
+#~ msgstr "Most shared"
 
 #~ msgid "from"
-#~ msgstr "จาก"
+#~ msgstr "from"
 
 #~ msgid "view"
-#~ msgstr "ดู"
+#~ msgstr "view"
 
 #~ msgid "Average rating"
-#~ msgstr "ความนิยมเฉลี่ย"
+#~ msgstr "Average rating"
 
 #~ msgid "votes"
-#~ msgstr "โหวต"
+#~ msgstr "votes"
 
 #~ msgid "You do not have permission to view this document"
-#~ msgstr "คุณไม่มีสิทธิ์ดูเอกสารนี้"
+#~ msgstr "You do not have permission to view this document"
 
 #~ msgid "Remote Thumbnail"
-#~ msgstr "รูปย่อระยะไกล"
+#~ msgstr "Remote Thumbnail"
 
 #~ msgid "Thumbnail"
-#~ msgstr "รูปย่อ"
+#~ msgstr "Thumbnail"
 
 #~ msgid "Group details"
-#~ msgstr "รายละเอียดกลุ่ม"
+#~ msgstr "Group details"
 
 #~ msgid "Create a map"
-#~ msgstr "สร้างแผนที่"
+#~ msgstr "Create a map"
 
 #~ msgid "You do not have permission to view this layer"
-#~ msgstr "คุณไม่มีสิทธิ์ดูชั้นข้อมูลนี้"
+#~ msgstr "You do not have permission to view this layer"
 
 #~ msgid "View"
-#~ msgstr "ดู"
+#~ msgstr "View"
 
 #~ msgid "You do not have permission to view this map"
-#~ msgstr "คุณไม่มีสิทธิ์ดูแผนที่นี้"
+#~ msgstr "You do not have permission to view this map"
 
 #~ msgid "Add to Favorites"
-#~ msgstr "เพิ่มไปยังรายการที่ชื่นชอบ"
+#~ msgstr "Add to Favorites"
 
 #~ msgid "Add a Comment"
-#~ msgstr "เขียนความเห็น"
+#~ msgstr "Add a Comment"
 
 #~ msgid "Notices"
-#~ msgstr "การแจ้งเตือน"
+#~ msgstr "Notices"
 
 #~ msgid "Notice settings"
-#~ msgstr "การตั้งค่าการแจ้งเตือน"
+#~ msgstr "Notice settings"
 
 #~ msgid "Observed objects"
-#~ msgstr "วัตถุที่สังเกต"
+#~ msgstr "Observed objects"
 
 #~ msgid "Primary email"
-#~ msgstr "อีเมล์หลัก"
+#~ msgstr "Primary email"
 
 #~ msgid "change under <a href=\"%(email_url)s\">Account</a>"
-#~ msgstr "ความเปลี่ยนแปลงภายใน <a href=\"%(email_url)s\">บัญชี</a>"
+#~ msgstr "change under <a href=\"%(email_url)s\">Account</a>"
 
 #~ msgid "Note"
-#~ msgstr "หมายเหตุ"
+#~ msgstr "Note"
 
 #~ msgid ""
 #~ "You do not have a verified email address to which notices can be sent. "
 #~ "You can add one by going to <a href=\"%(email_url)s\">Account</a>."
 #~ msgstr ""
-#~ "คุณยังไม่มีอีเมล์แอดเดรสที่ได้รับการยืนยันแล้วเพื่อส่งการแจ้งเตือน คุณสามารถเพิ่มได้โดยไปที่ <a "
-#~ "href=\"%(email_url)s\">Account</a>"
+#~ "You do not have a verified email address to which notices can be sent. "
+#~ "You can add one by going to <a href=\"%(email_url)s\">Account</a>."
 
 #~ msgid "Mark all unseen notices seen"
-#~ msgstr "ทำเครื่องหมายที่ยังไม่ดูเป็นดูแล้ว"
+#~ msgstr "Mark all unseen notices seen"
 
 #~ msgid "MONTH_DAY_FORMAT"
 #~ msgstr "MONTH_DAY_FORMAT"
 
 #~ msgid "View Notice"
-#~ msgstr "ดูการแจ้งเตือน"
+#~ msgstr "View Notice"
 
 #~ msgid "No notices."
-#~ msgstr "ไม่มีการแจ้งเตือน"
+#~ msgstr "No notices."
 
 #~ msgid "Notice"
-#~ msgstr "การแจ้งเตือน"
+#~ msgstr "Notice"
 
 #~ msgid "you"
-#~ msgstr "คุณ"
+#~ msgstr "you"

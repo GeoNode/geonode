@@ -3,14 +3,15 @@
 # This file is distributed under the same license as the PACKAGE package.
 #
 # Translators:
+# Translators:
 # Andres Alfonso Lemon Gomez <lemon.andres@gmail.com>, 2014
 msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-02-03 05:20-0600\n"
-"PO-Revision-Date: 2014-11-15 20:21+0000\n"
-"Last-Translator: Andres Alfonso Lemon Gomez <lemon.andres@gmail.com>\n"
+"POT-Creation-Date: 2015-02-03 08:23-0600\n"
+"PO-Revision-Date: 2015-02-03 12:11+0000\n"
+"Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
 "Language-Team: Khmer (http://www.transifex.com/projects/p/geonode/language/"
 "km/)\n"
 "Language: km\n"
@@ -551,54 +552,44 @@ msgid "You are not allowed to edit this document."
 msgstr "អ្នក​មិន​ត្រូវ​បាន​អនុញ្ញាត​ឱ្យ​កែ​សម្រួល​ឯកសារ​នេះ​។"
 
 #: documents/management/__init__.py:14
-#, fuzzy
 msgid "Document Created"
-msgstr "ឯកសារ​ដែល​ទាក់ទង​ទៅ​នឹង​ផែនទី​នេះ"
+msgstr ""
 
 #: documents/management/__init__.py:15
-#, fuzzy
 msgid "A Document was created"
-msgstr "ផែនទី​មួយ​ដែល​ត្រូវ​បាន​បង្កើត​ឡើង"
+msgstr ""
 
 #: documents/management/__init__.py:18
-#, fuzzy
 msgid "Document Updated"
-msgstr "ឯកសារ"
+msgstr ""
 
 #: documents/management/__init__.py:19
-#, fuzzy
 msgid "A Document was updated"
-msgstr "ស្រទាប់​មួយ​ត្រូវ​បាន​ផ្ទុក​ឡើង"
+msgstr ""
 
 #: documents/management/__init__.py:22
-#, fuzzy
 msgid "Document Deleted"
-msgstr "ឯកសារ"
+msgstr ""
 
 #: documents/management/__init__.py:23
-#, fuzzy
 msgid "A Document was deleted"
-msgstr "ឯកសារ​នេះ​ត្រូវ​បាន​ទាក់ទង​ទៅ​នឹង"
+msgstr ""
 
 #: documents/management/__init__.py:26
-#, fuzzy
 msgid "Comment on Document"
-msgstr "អត្ថាធិប្បាយ​លើ​ស្រទាប់"
+msgstr ""
 
 #: documents/management/__init__.py:27
-#, fuzzy
 msgid "A Document was commented on"
-msgstr "ផែនទី​មួយ​ត្រូវ​បាន​អធិប្បាយ​នៅ​លើ"
+msgstr ""
 
 #: documents/management/__init__.py:30
-#, fuzzy
 msgid "Document for Map"
-msgstr "អត្ថាធិប្បាយ​លើ​ផែនទី"
+msgstr ""
 
 #: documents/management/__init__.py:31
-#, fuzzy
 msgid "A rating was given to a document"
-msgstr "ចំណាត់​ថ្នាក់​មួយ​ត្រូវ​បាន​ផ្តល់​ទៅ​ឱ្យ​ផែនទី"
+msgstr ""
 
 #: documents/templates/documents/document_detail.html:40
 msgid "External Resource"
@@ -623,9 +614,8 @@ msgstr "ទាញ​យក​ឯកសារ"
 
 #: documents/templates/documents/document_detail.html:90
 #: layers/templates/layers/layer_detail.html:131
-#, fuzzy
 msgid "Request Download"
-msgstr "ទាញ​យក"
+msgstr ""
 
 #: documents/templates/documents/document_detail.html:95
 #: layers/templates/layers/layer_detail.html:160
@@ -957,7 +947,7 @@ msgstr "មតិ​ព័ត៌មាន​សម្រាប់​សកម្
 #: social/templates/social/activity_list.html:20
 #: templates/user_messages/inbox.html:16
 msgid "All"
-msgstr ""
+msgstr "ទាំងអស់"
 
 #: groups/templates/groups/activity.html:25
 #: people/templates/people/_profile_filters.html:5
@@ -1119,16 +1109,14 @@ msgid "Most popular"
 msgstr "ពេញ​និយម​បំផុត"
 
 #: groups/templates/groups/group_members.html:8
-#, fuzzy
 msgid "Edit Members for"
-msgstr "ព័ត៌មាន​លម្អិត​សម្រាប់​ការ​កែ​សម្រួល"
+msgstr ""
 
 #: groups/templates/groups/group_members.html:33
 #: groups/templates/groups/group_members.html:59
 #: groups/templates/groups/group_members.html:86
-#, fuzzy
 msgid "Remove"
-msgstr "យក​ក្រុម​ចេញ"
+msgstr "យក"
 
 #: groups/templates/groups/group_members.html:37
 #: groups/templates/groups/group_members.html:63
@@ -1333,34 +1321,28 @@ msgid "You are attempting to replace a raster layer with a vector."
 msgstr ""
 
 #: layers/management/__init__.py:33
-#, fuzzy
 msgid "Layer Created"
-msgstr "បង្កើត​ផែនទី"
+msgstr ""
 
 #: layers/management/__init__.py:34
-#, fuzzy
 msgid "A Layer was created"
-msgstr "ផែនទី​មួយ​ដែល​ត្រូវ​បាន​បង្កើត​ឡើង"
+msgstr ""
 
 #: layers/management/__init__.py:37
-#, fuzzy
 msgid "Layer Updated"
-msgstr "ស្រទាប់​បាន​ផ្ទុក​ឡើង"
+msgstr ""
 
 #: layers/management/__init__.py:38
-#, fuzzy
 msgid "A Layer was updated"
-msgstr "ស្រទាប់​មួយ​ត្រូវ​បាន​ផ្ទុក​ឡើង"
+msgstr ""
 
 #: layers/management/__init__.py:41
-#, fuzzy
 msgid "Layer Deleted"
-msgstr "រចនាប័ទ្ម​លំនាំដើម​ស្រទាប់"
+msgstr ""
 
 #: layers/management/__init__.py:42
-#, fuzzy
 msgid "A Layer was deleted"
-msgstr "ស្រទាប់​មួយ​ត្រូវ​បាន​ផ្ទុក​ឡើង"
+msgstr ""
 
 #: layers/templates/layers/layer_change_poc.html:5
 msgid "Home"
@@ -1527,7 +1509,6 @@ msgstr ""
 "ការ​កែ​សម្រួល​សេចក្ដី​លម្អិត​សម្រាប់​ %(layer_title)s"
 
 #: layers/templates/layers/layer_metadata.html:23
-#, fuzzy
 msgid ""
 "Note: this layer's orginal metadata was populated by importing a metadata "
 "XML file.\n"
@@ -1535,9 +1516,6 @@ msgid ""
 "Dublin Core metadata elements.\n"
 "          Some of your original metadata may have been lost."
 msgstr ""
-"ចំណាំ & ‧​;​: ទិន្នន័យ​មេតា orginal ស្រទាប់​នេះ​ត្រូវ​បាន​ប្រជាជន​ដោយ​ការ​នាំ​ចូល​ឯកសារ​ទិន្នន័យ​មេតា​របស់ "
-"XML ។ ការ​នាំ​ចូល​ទិន្នន័យ​មេតា GeoNode គាំទ្រ​របស់​សំណុំ​រង​របស់​អាយ​អេ​ស​អូ​, FGDC​, និង​ទីក្រុង Dublin ស្នូល​"
-"ធាតុ​ទិន្នន័យ​មេតា​មួយ​។ មួយ​ចំនួន​នៃ​ទិន្នន័យ​មេតា​ដើម​របស់​អ្នក​អាច​ត្រូវ​បាន​បាត់​បង់​។"
 
 #: layers/templates/layers/layer_metadata.html:37
 #: layers/templates/layers/layer_metadata.html:74 templates/_actions.html:5
@@ -1562,20 +1540,17 @@ msgid "Display Order"
 msgstr "បង្ហាញ​លំដាប់"
 
 #: layers/templates/layers/layer_remove.html:9
-#, fuzzy
 msgid "Remove Layers"
-msgstr "យក​ចេញ​ស្រទាប់​នេះ"
+msgstr ""
 
 #: layers/templates/layers/layer_remove.html:14
-#, fuzzy, python-format
+#, python-format
 msgid ""
 "\n"
 "          Are you sure you want to remove <a href="
 "\"%(layer.get_absolute_url)s\">%(layer_title)s</a>?\n"
 "        "
 msgstr ""
-"\n"
-"តើ​អ្នក​ពិត​ជា​ចង់​យក​ %(layer_title)s​?"
 
 #: layers/templates/layers/layer_remove.html:30
 msgid "This action affects the following maps:"
@@ -2104,24 +2079,20 @@ msgid "A Map was created"
 msgstr "ផែនទី​មួយ​ដែល​ត្រូវ​បាន​បង្កើត​ឡើង"
 
 #: maps/management/__init__.py:37
-#, fuzzy
 msgid "Map Updated"
-msgstr "បង្កើត​ផែនទី"
+msgstr ""
 
 #: maps/management/__init__.py:38
-#, fuzzy
 msgid "A Map was updated"
-msgstr "ផែនទី​មួយ​ដែល​ត្រូវ​បាន​បង្កើត​ឡើង"
+msgstr ""
 
 #: maps/management/__init__.py:41
-#, fuzzy
 msgid "Map Deleted"
-msgstr "បង្កើត​ផែនទី"
+msgstr ""
 
 #: maps/management/__init__.py:42
-#, fuzzy
 msgid "A Map was deleted"
-msgstr "ផែនទី​មួយ​ដែល​ត្រូវ​បាន​បង្កើត​ឡើង"
+msgstr ""
 
 #: maps/management/__init__.py:45
 msgid "Comment on Map"
@@ -2426,9 +2397,8 @@ msgid "User following you"
 msgstr "អ្នក​ប្រើ​ខាងក្រោម​អ្នក"
 
 #: people/management.py:33
-#, fuzzy
 msgid "Another user has started following you"
-msgstr "អ្នក​ប្រើ​ផ្សេង​ទៀត​បាន​ចាប់​ផ្តើ​ម​ខាងក្រោម​អ្នក"
+msgstr ""
 
 #: people/management.py:36
 msgid "User requested access"
@@ -2439,9 +2409,8 @@ msgid "A new user has requested access to the site"
 msgstr ""
 
 #: people/management.py:40
-#, fuzzy
 msgid "Account activated"
-msgstr "សកម្មភាព​ថ្មី"
+msgstr ""
 
 #: people/management.py:41
 msgid "This account is now active and can log in the site"
@@ -2567,11 +2536,10 @@ msgid "Forgot Username"
 msgstr "ភ្លេច​ឈ្មោះ​អ្នក​ប្រើ"
 
 #: people/templates/people/forgot_username_form.html:10
-#, fuzzy
 msgid ""
 "Enter your email address and click the submit button. <br />Your username "
 "will be sent to you."
-msgstr "បញ្ចូល​អាសយដ្ឋាន​អ៊ីមែល​របស់​អ្នក​ហើយ​ចុច​ប៊ូតុង​ផ្ញើ​។ ឈ្មោះ​អ្នក​ប្រើ​របស់​អ្នក​នឹង​ត្រូវ​បាន​ផ្ញើ​ទៅ​អ្ន​​ក​។"
+msgstr ""
 
 #: people/templates/people/profile_create.html:8
 #: people/templates/people/profile_create.html:14
@@ -2583,9 +2551,8 @@ msgid "Profile of "
 msgstr "ព​ត៌​មាន​នៃ​ការ"
 
 #: people/templates/people/profile_detail.html:19
-#, fuzzy
 msgid "Message User"
-msgstr "ប្រអប់​ទទួល​សារ"
+msgstr ""
 
 #: people/templates/people/profile_detail.html:65
 msgid "Edit profile"
@@ -2608,9 +2575,8 @@ msgid "My Activities"
 msgstr "សកម្មភាព​របស់​យើង"
 
 #: people/templates/people/profile_detail.html:77 templates/base.html:202
-#, fuzzy
 msgid "Notifications"
-msgstr "ប្រភេទ​ជូន​ដំណឹង"
+msgstr ""
 
 #: people/templates/people/profile_detail.html:80 templates/500.html:80
 #: templates/base.html:205 templates/announcements/announcement_list.html:6
@@ -2717,9 +2683,8 @@ msgid "Service URL"
 msgstr "សេវា URL ដែល"
 
 #: services/forms.py:15
-#, fuzzy
 msgid "Service name"
-msgstr "ប្រភេទ​សេវាកម្ម"
+msgstr ""
 
 #: services/forms.py:19
 msgid "Service Type"
@@ -2845,9 +2810,8 @@ msgid "Remove Service"
 msgstr "យក​សេវា"
 
 #: services/templates/services/service_edit.html:15
-#, fuzzy
 msgid "Edit Service"
-msgstr "កែសម្រួល​សេវា​ទិន្នន័យ​មេតា"
+msgstr ""
 
 #: services/templates/services/service_edit.html:21
 #: templates/announcements/announcement_form.html:27
@@ -2867,9 +2831,8 @@ msgid "Register a new Service"
 msgstr "ចុះ​ឈ្មោះ​ជា​មួយ​សេវាកម្ម​ថ្មី"
 
 #: services/templates/services/service_register.html:13
-#, fuzzy
 msgid "Register New Service"
-msgstr "ចុះ​ឈ្មោះ​ជា​មួយ​សេវាកម្ម​ថ្មី"
+msgstr ""
 
 #: services/templates/services/service_register.html:23
 msgid "Service has been created:"
@@ -2880,9 +2843,8 @@ msgid "The following layers will be imported"
 msgstr "ស្រទាប់​ខាង​ក្រោម​នឹង​ត្រូវ​បាន​នាំ​ចូល"
 
 #: services/templates/services/service_remove.html:8
-#, fuzzy
 msgid "Remove Remote Service"
-msgstr "យក​សេវា"
+msgstr ""
 
 #: services/templates/services/service_remove.html:12
 msgid "Are you sure you want to remove"
@@ -3061,9 +3023,8 @@ msgid "Ratings"
 msgstr "ការ​ផ្តល់​ចំណាត់​ថ្នាក់"
 
 #: templates/_actions.html:13
-#, fuzzy
 msgid "GeoGig"
-msgstr "GeoGit"
+msgstr ""
 
 #: templates/_bulk_permissions_form.html:9
 msgid "Set permissions on selected resources"
@@ -3087,9 +3048,8 @@ msgid "By"
 msgstr "ដោយ"
 
 #: templates/_comments.html:67
-#, fuzzy
 msgid "Submit Comment"
-msgstr "ដាក់​​​ស្នើ​មតិយោបល់"
+msgstr ""
 
 #: templates/_permissions.html:8
 msgid "Who can view it?"
@@ -3154,9 +3114,8 @@ msgid "About GeoNode."
 msgstr "អំពី GeoNode ។"
 
 #: templates/base.html:192
-#, fuzzy
 msgid "Profile Menu"
-msgstr "ព​ត៌​មាន"
+msgstr ""
 
 #: templates/base.html:258
 msgid "Type your search here ..."
@@ -3456,10 +3415,9 @@ msgstr "គ្មាន"
 
 #: templates/index.html:30
 #: templates/notification/request_download_resourcebase/full.txt:7
-#, fuzzy
 msgid "Layer"
 msgid_plural "Layers"
-msgstr[0] "ស្រទាប់"
+msgstr[0] ""
 
 #: templates/index.html:31
 msgid ""
@@ -3470,10 +3428,9 @@ msgstr ""
 "យក​ទិន្នន័យ​នៅ​ក្នុង​ទ្រង់ទ្រាយ​ស្តង់ដារ​។"
 
 #: templates/index.html:36
-#, fuzzy
 msgid "Map"
 msgid_plural "Maps"
-msgstr[0] "ផែនទី"
+msgstr[0] ""
 
 #: templates/index.html:37
 msgid ""
@@ -3489,10 +3446,9 @@ msgstr "បង្កើត​ផែនទី"
 
 #: templates/index.html:43 templates/index.html.py:48
 #: templates/notification/account_approve/full.txt:1
-#, fuzzy
 msgid "User"
 msgid_plural "Users"
-msgstr[0] "អ្នក​ប្រើ"
+msgstr[0] ""
 
 #: templates/index.html:44 templates/index.html.py:49
 msgid ""
@@ -3521,9 +3477,8 @@ msgstr ""
 
 #: templates/account/email_confirmation_sent.html:6
 #: templates/account/email_confirmation_sent.html:9
-#, fuzzy
 msgid "Confirm your email address"
-msgstr "បញ្ជាក់​អាសយដ្ឋាន​អ៊ីមែល​សម្រាប់​ %(site_name)s"
+msgstr ""
 
 #: templates/account/email_confirmation_sent.html:11
 #, python-format
@@ -3557,23 +3512,18 @@ msgid "Password reset"
 msgstr "កំណត់​ពាក្យ​សម្ងាត់"
 
 #: templates/account/password_reset.html:14
-#, fuzzy
 msgid "Password Reset"
-msgstr "កំណត់​ពាក្យ​សម្ងាត់"
+msgstr ""
 
 #: templates/account/password_reset.html:18
-#, fuzzy
 msgid "Forgotten your password?"
-msgstr "ភ្លេច​ពាក្យសម្ងាត់​របស់​អ្នក​?"
+msgstr ""
 
 #: templates/account/password_reset.html:19
-#, fuzzy
 msgid ""
 "Enter your email address below, and we'll send you an email allowing you to "
 "reset it."
 msgstr ""
-"ភ្លេច​ពាក្យសម្ងាត់​របស់​អ្នក​? បញ្ចូល​អាសយដ្ឋាន​អ៊ីមែល​របស់​អ្នក​នៅ​ខាង​ក្រោម​ហើយ​យើង​នឹង​ផ្ញើ​អ៊ី​ម៉ែ​ល​មួយ​ដែល​អ្នក​"
-"អនុញ្ញាត​ឱ្យ​អ្នក​កំណត់​វា​បាន​។"
 
 #: templates/account/password_reset.html:25
 msgid "Reset my password"
@@ -3677,15 +3627,13 @@ msgid "Published From"
 msgstr "បាន​ចេញ​ផ្សាយ​ពី"
 
 #: templates/announcements/announcement_list.html:38
-#, fuzzy, python-format
+#, python-format
 msgid ""
 "\n"
 "          Published from <b>%(publish_start)s</b> to <b>%(publish_end)s</"
 "b>.\n"
 "          "
 msgstr ""
-"\n"
-"បាន​ចេញ​ផ្សាយ​ពី​ <b>%(publish_start)s</b>ទៅ​ <b>%(publish_end)s</b>"
 
 #: templates/announcements/detail.html:4
 #, python-format
@@ -3714,9 +3662,8 @@ msgid "Choose new Default"
 msgstr "ជ្រើស​លំនាំដើម​ថ្មី"
 
 #: templates/avatar/change.html:23
-#, fuzzy
 msgid "Delete Your Avatar"
-msgstr "លុប​អវ​តា​របស់​អ្នក"
+msgstr ""
 
 #: templates/avatar/confirm_delete.html:6
 msgid "Please select the avatars that you would like to delete."
@@ -3785,9 +3732,8 @@ msgid "A user has requested access to the site"
 msgstr ""
 
 #: templates/notification/document_comment/full.txt:3
-#, fuzzy
 msgid "A comment has been posted for the document"
-msgstr "អ្នក​មិន​មាន​សិទ្ធិ​សម្រាប់​ឯកសារ​នេះ​។"
+msgstr ""
 
 #: templates/notification/document_comment/full.txt:3
 #: templates/notification/layer_comment/full.txt:3
@@ -3802,9 +3748,8 @@ msgid "You can visit the document's detail page here"
 msgstr ""
 
 #: templates/notification/document_comment/short.txt:3
-#, fuzzy
 msgid "A comment has been posted for a document"
-msgstr "អ្នក​មិន​មាន​សិទ្ធិ​សម្រាប់​ឯកសារ​នេះ​។"
+msgstr ""
 
 #: templates/notification/document_created/full.txt:3
 #: templates/notification/document_rated/full.txt:3
@@ -3813,24 +3758,20 @@ msgstr "អ្នក​មិន​មាន​សិទ្ធិ​សម្រ
 #: templates/notification/map_created/full.txt:3
 #: templates/notification/map_rated/full.txt:3
 #: templates/notification/request_download_resourcebase/full.txt:3
-#, fuzzy
 msgid "The user"
-msgstr "ជ្រើស​អ្នក​ប្រើ​ប្រាស់ ..."
+msgstr ""
 
 #: templates/notification/document_created/full.txt:3
-#, fuzzy
 msgid "uploaded the following document"
-msgstr "ជំនួស​ឯកសារ​នេះ"
+msgstr ""
 
 #: templates/notification/document_created/short.txt:3
-#, fuzzy
 msgid "A document has been uploaded"
-msgstr "ស្រទាប់​មួយ​ត្រូវ​បាន​ផ្ទុក​ឡើង"
+msgstr ""
 
 #: templates/notification/document_deleted/full.txt:3
-#, fuzzy
 msgid "The following document was deleted"
-msgstr "អ្នក​ប្រើ​ដូច​ខាង​ក្រោម​:"
+msgstr ""
 
 #: templates/notification/document_deleted/full.txt:4
 #: templates/notification/document_rated/full.txt:6
@@ -3841,26 +3782,22 @@ msgstr "អ្នក​ប្រើ​ដូច​ខាង​ក្រោម​
 #: templates/notification/map_deleted/full.txt:4
 #: templates/notification/map_rated/full.txt:6
 #: templates/notification/map_updated/full.txt:4
-#, fuzzy
 msgid "owned by"
-msgstr "ឧបត្ថម្ភ​ដោយ"
+msgstr ""
 
 #: templates/notification/document_deleted/short.txt:3
-#, fuzzy
 msgid "A document has been deleted"
-msgstr "សេវាកម្ម​ត្រូវ​បាន​បង្កើត​:"
+msgstr ""
 
 #: templates/notification/document_rated/full.txt:4
 #: templates/notification/layer_rated/full.txt:4
 #: templates/notification/map_rated/full.txt:4
-#, fuzzy
 msgid "rated"
-msgstr "បាន​បង្កើត​ឡើង"
+msgstr ""
 
 #: templates/notification/document_rated/full.txt:5
-#, fuzzy
 msgid "the following document"
-msgstr "អ្នក​ប្រើ​ដូច​ខាង​ក្រោម​:"
+msgstr ""
 
 #: templates/notification/document_rated/full.txt:8
 #: templates/notification/layer_comment/full.txt:5
@@ -3871,74 +3808,60 @@ msgid "You can visit the layer's detail page here"
 msgstr ""
 
 #: templates/notification/document_rated/short.txt:3
-#, fuzzy
 msgid "A document has been rated"
-msgstr "សេវាកម្ម​ត្រូវ​បាន​បង្កើត​:"
+msgstr ""
 
 #: templates/notification/document_updated/full.txt:3
-#, fuzzy
 msgid "The following document was updated"
-msgstr "អ្នក​ប្រើ​ដូច​ខាង​ក្រោម​:"
+msgstr ""
 
 #: templates/notification/document_updated/short.txt:3
-#, fuzzy
 msgid "A document has been updated"
-msgstr "សេវាកម្ម​ត្រូវ​បាន​បង្កើត​:"
+msgstr ""
 
 #: templates/notification/layer_comment/full.txt:3
-#, fuzzy
 msgid "A comment has been posted for the layer"
-msgstr "ឯកសារ​ដែល​ទាក់ទង​ទៅ​នឹង​ស្រទាប់​នេះ"
+msgstr ""
 
 #: templates/notification/layer_comment/short.txt:3
-#, fuzzy
 msgid "A comment has been posted for a layer"
-msgstr "ចំណាត់​ថ្នាក់​មួយ​ត្រូវ​បាន​ផ្តល់​ទៅ​ឱ្យ​ស្រទាប់​មួយ"
+msgstr ""
 
 #: templates/notification/layer_created/full.txt:3
-#, fuzzy
 msgid "uploaded the following layer"
-msgstr "ផែនទី​នេះ​ប្រើ​ស្រទាប់​ដូច​ខាង​ក្រោម​:"
+msgstr ""
 
 #: templates/notification/layer_created/short.txt:3
-#, fuzzy
 msgid "A new layer has been uploaded"
-msgstr "ស្រទាប់​មួយ​ត្រូវ​បាន​ផ្ទុក​ឡើង"
+msgstr ""
 
 #: templates/notification/layer_deleted/full.txt:3
-#, fuzzy
 msgid "The following layer was deleted"
-msgstr "ស្រទាប់​ខាង​ក្រោម​នឹង​ត្រូវ​បាន​នាំ​ចូល"
+msgstr ""
 
 #: templates/notification/layer_deleted/short.txt:3
-#, fuzzy
 msgid "A layer has been deleted"
-msgstr "ស្រទាប់​មួយ​ត្រូវ​បាន​អធិប្បាយ​នៅ​លើ"
+msgstr ""
 
 #: templates/notification/layer_rated/full.txt:5
-#, fuzzy
 msgid "the following layer"
-msgstr "អ្នក​ប្រើ​ដូច​ខាង​ក្រោម​:"
+msgstr ""
 
 #: templates/notification/layer_rated/short.txt:3
-#, fuzzy
 msgid "A layer has been rated"
-msgstr "សេវាកម្ម​ត្រូវ​បាន​បង្កើត​:"
+msgstr ""
 
 #: templates/notification/layer_updated/full.txt:3
-#, fuzzy
 msgid "The following layer was updated"
-msgstr "ស្រទាប់​ខាង​ក្រោម​នឹង​ត្រូវ​បាន​នាំ​ចូល"
+msgstr ""
 
 #: templates/notification/layer_updated/short.txt:3
-#, fuzzy
 msgid "A layer has been updated"
-msgstr "ស្រទាប់​មួយ​ត្រូវ​បាន​ផ្ទុក​ឡើង"
+msgstr ""
 
 #: templates/notification/map_comment/full.txt:3
-#, fuzzy
 msgid "A comment has been posted for the map"
-msgstr "ឯកសារ​ដែល​ទាក់ទង​ទៅ​នឹង​ផែនទី​នេះ"
+msgstr ""
 
 #: templates/notification/map_comment/full.txt:6
 #: templates/notification/map_created/full.txt:6
@@ -3952,54 +3875,44 @@ msgid "A comment has been posted for a map"
 msgstr ""
 
 #: templates/notification/map_created/full.txt:3
-#, fuzzy
 msgid "created the following map"
-msgstr "សកម្មភាព​នេះ​ប៉ះពាល់​ដល់​ផែន​ទី​ដូច​ខាង​ក្រោម​:"
+msgstr ""
 
 #: templates/notification/map_created/short.txt:3
-#, fuzzy
 msgid "A map has been created"
-msgstr "ផែនទី​មួយ​ដែល​ត្រូវ​បាន​បង្កើត​ឡើង"
+msgstr ""
 
 #: templates/notification/map_deleted/full.txt:3
-#, fuzzy
 msgid "The following map was deleted"
-msgstr "ស្រទាប់​ខាង​ក្រោម​នឹង​ត្រូវ​បាន​នាំ​ចូល"
+msgstr ""
 
 #: templates/notification/map_deleted/short.txt:3
-#, fuzzy
 msgid "A map has been deleted"
-msgstr "ផែនទី​មួយ​ត្រូវ​បាន​អធិប្បាយ​នៅ​លើ"
+msgstr ""
 
 #: templates/notification/map_rated/full.txt:5
-#, fuzzy
 msgid "the following map"
-msgstr "ក្រុម​ដូច​ខាង​ក្រោម​:"
+msgstr ""
 
 #: templates/notification/map_rated/short.txt:3
-#, fuzzy
 msgid "A map has been rated"
-msgstr "ផែនទី​មួយ​ដែល​ត្រូវ​បាន​បង្កើត​ឡើង"
+msgstr ""
 
 #: templates/notification/map_updated/full.txt:3
-#, fuzzy
 msgid "The following map was updated"
-msgstr "ស្រទាប់​ខាង​ក្រោម​នឹង​ត្រូវ​បាន​នាំ​ចូល"
+msgstr ""
 
 #: templates/notification/map_updated/short.txt:3
-#, fuzzy
 msgid "A map has been updated"
-msgstr "ផែនទី​មួយ​ដែល​ត្រូវ​បាន​បង្កើត​ឡើង"
+msgstr ""
 
 #: templates/notification/request_download_resourcebase/full.txt:3
-#, fuzzy
 msgid "requested you to download this resource"
-msgstr "គណបក្ស​ដែល​មាន​ធនធាន"
+msgstr ""
 
 #: templates/notification/request_download_resourcebase/full.txt:9
-#, fuzzy
 msgid "Document"
-msgstr "ឯកសារ"
+msgstr ""
 
 #: templates/notification/request_download_resourcebase/full.txt:12
 msgid ""
@@ -4143,18 +4056,16 @@ msgstr "លុប​?"
 
 #: templates/user_messages/_message_snippet.html:29
 #: templates/user_messages/thread_detail.html:14
-#, fuzzy
 msgid "me"
-msgstr "ទំព័រ​ដើម"
+msgstr ""
 
 #: templates/user_messages/inbox.html:6
 msgid "Message Inbox"
 msgstr "ប្រអប់​ទទួល​សារ"
 
 #: templates/user_messages/inbox.html:11
-#, fuzzy
 msgid "Messages"
-msgstr "ប្រអប់​ទទួល​សារ"
+msgstr ""
 
 #: templates/user_messages/inbox.html:38
 #: templates/user_messages/message_create.html:6
@@ -4176,89 +4087,89 @@ msgid "Send Reply"
 msgstr "ផ្ញើ​ការ​ឆ្លើយ​តប"
 
 #~ msgid "Most shared"
-#~ msgstr "ចែក​រំលែក​ច្រើន​បំផុត"
+#~ msgstr "Most shared"
 
 #~ msgid "from"
-#~ msgstr "ពី"
+#~ msgstr "from"
 
 #~ msgid "view"
-#~ msgstr "ទិដ្ឋភាព"
+#~ msgstr "view"
 
 #~ msgid "Average rating"
-#~ msgstr "ចំណាត់​ថ្នាក់​មធ្យម"
+#~ msgstr "Average rating"
 
 #~ msgid "votes"
-#~ msgstr "ការ​បោះ​ឆ្នោត"
+#~ msgstr "votes"
 
 #~ msgid "You do not have permission to view this document"
-#~ msgstr "អ្នក​មិន​មាន​សិទ្ធិ​ដើម្បី​មើល​ឯកសារ​នេះ"
+#~ msgstr "You do not have permission to view this document"
 
 #~ msgid "Remote Thumbnail"
-#~ msgstr "កូន​រូបភាព​ពី​ចម្ងាយ"
+#~ msgstr "Remote Thumbnail"
 
 #~ msgid "Thumbnail"
-#~ msgstr "កូន​រូបភាព"
+#~ msgstr "Thumbnail"
 
 #~ msgid "Group details"
-#~ msgstr "ក្រុម​ព​ត៌​មាន​លំអិត"
+#~ msgstr "Group details"
 
 #~ msgid "Create a map"
-#~ msgstr "បង្កើត​ផែនទី"
+#~ msgstr "Create a map"
 
 #~ msgid "You do not have permission to view this layer"
-#~ msgstr "អ្នក​មិន​មាន​សិទ្ធិ​ដើម្បី​មើល​ស្រទាប់​នេះ"
+#~ msgstr "You do not have permission to view this layer"
 
 #~ msgid "View"
-#~ msgstr "មើល"
+#~ msgstr "View"
 
 #~ msgid "You do not have permission to view this map"
-#~ msgstr "អ្នក​មិន​មាន​សិទ្ធិ​ដើម្បី​មើល​ផែនទី​នេះ"
+#~ msgstr "You do not have permission to view this map"
 
 #~ msgid "Add to Favorites"
-#~ msgstr "បន្ថែម​ទៅ​សំណព្វ"
+#~ msgstr "Add to Favorites"
 
 #~ msgid "Add a Comment"
-#~ msgstr "បន្ថែម​មតិយោបល់"
+#~ msgstr "Add a Comment"
 
 #~ msgid "Notices"
-#~ msgstr "សេចក្តី​ជូនដំណឹង"
+#~ msgstr "Notices"
 
 #~ msgid "Notice settings"
-#~ msgstr "ការ​កំណត់​ការ​ជូន​ដំណឹង"
+#~ msgstr "Notice settings"
 
 #~ msgid "Observed objects"
-#~ msgstr "វត្ថុ​សង្កេត​ឃើញ"
+#~ msgstr "Observed objects"
 
 #~ msgid "Primary email"
-#~ msgstr "អ៊ីមែល​ចម្បង"
+#~ msgstr "Primary email"
 
 #~ msgid "change under <a href=\"%(email_url)s\">Account</a>"
-#~ msgstr "ការ​ផ្លាស់​ប្តូ​រ​នៅ​ក្រោម <a href=\"%(email_url)s\">គណនី</a>"
+#~ msgstr "change under <a href=\"%(email_url)s\">Account</a>"
 
 #~ msgid "Note"
-#~ msgstr "ចំណាំ"
+#~ msgstr "Note"
 
 #~ msgid ""
 #~ "You do not have a verified email address to which notices can be sent. "
 #~ "You can add one by going to <a href=\"%(email_url)s\">Account</a>."
 #~ msgstr ""
-#~ "អ្នក​មិន​មាន​អាសយដ្ឋាន​អ៊ីមែល​ដែល​បាន​ផ្ទៀងផ្ទាត់​ដែល​ជូនដំណឹង​អាច​ត្រូវ​បាន​ផ្ញើ​។ អ្នក​អាច​បន្ថែម​មួយ​ដោយ​ចូល​"
-#~ "ទៅ​កាន់ <a href=\"%(email_url)s\">គណនី</a> ។"
+#~ "You do not have a verified email address to which notices can be sent. "
+#~ "You can add one by going to <a href=\"%(email_url)s\">Account</a>."
 
 #~ msgid "Mark all unseen notices seen"
-#~ msgstr "លោក Mark ជូនដំណឹង​ដែល​មើល​មិនឃើញ​ទាំង​អស់​បាន​គេ​មើល​ឃើញ"
+#~ msgstr "Mark all unseen notices seen"
 
 #~ msgid "MONTH_DAY_FORMAT"
 #~ msgstr "MONTH_DAY_FORMAT"
 
 #~ msgid "View Notice"
-#~ msgstr "មើល​សេចក្តី​ជូនដំណឹង"
+#~ msgstr "View Notice"
 
 #~ msgid "No notices."
-#~ msgstr "គ្មាន​ការ​ជូនដំណឹង​។"
+#~ msgstr "No notices."
 
 #~ msgid "Notice"
-#~ msgstr "សេចក្តី​ជូនដំណឹង"
+#~ msgstr "Notice"
 
 #~ msgid "you"
-#~ msgstr "អ្នក"
+#~ msgstr "you"

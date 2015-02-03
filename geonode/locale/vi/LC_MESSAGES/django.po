@@ -3,15 +3,16 @@
 # This file is distributed under the same license as the PACKAGE package.
 #
 # Translators:
+# Translators:
 # Andres Alfonso Lemon Gomez <lemon.andres@gmail.com>, 2014
 # ingenieroariel <ingenieroariel@gmail.com>, 2014
 msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-02-03 05:20-0600\n"
-"PO-Revision-Date: 2014-11-15 19:51+0000\n"
-"Last-Translator: Andres Alfonso Lemon Gomez <lemon.andres@gmail.com>\n"
+"POT-Creation-Date: 2015-02-03 08:23-0600\n"
+"PO-Revision-Date: 2015-02-03 12:11+0000\n"
+"Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
 "Language-Team: Vietnamese (http://www.transifex.com/projects/p/geonode/"
 "language/vi/)\n"
 "Language: vi\n"
@@ -561,54 +562,44 @@ msgid "You are not allowed to edit this document."
 msgstr "Bạn không được phép chỉnh sửa tài liệu này."
 
 #: documents/management/__init__.py:14
-#, fuzzy
 msgid "Document Created"
-msgstr "Các tài liệu liên quan đến bản đồ này"
+msgstr ""
 
 #: documents/management/__init__.py:15
-#, fuzzy
 msgid "A Document was created"
-msgstr "Một Bản đồ đã được tạo ra"
+msgstr ""
 
 #: documents/management/__init__.py:18
-#, fuzzy
 msgid "Document Updated"
-msgstr "Tài liệu"
+msgstr ""
 
 #: documents/management/__init__.py:19
-#, fuzzy
 msgid "A Document was updated"
-msgstr "Một lớp đã được tải lên"
+msgstr ""
 
 #: documents/management/__init__.py:22
-#, fuzzy
 msgid "Document Deleted"
-msgstr "Tài liệu"
+msgstr ""
 
 #: documents/management/__init__.py:23
-#, fuzzy
 msgid "A Document was deleted"
-msgstr "Tài liệu này liên quan đến một"
+msgstr ""
 
 #: documents/management/__init__.py:26
-#, fuzzy
 msgid "Comment on Document"
-msgstr "Nhận xét về lớp"
+msgstr ""
 
 #: documents/management/__init__.py:27
-#, fuzzy
 msgid "A Document was commented on"
-msgstr "Một bản đồ được nhận xét về"
+msgstr ""
 
 #: documents/management/__init__.py:30
-#, fuzzy
 msgid "Document for Map"
-msgstr "Bình luận trên bản đồ"
+msgstr ""
 
 #: documents/management/__init__.py:31
-#, fuzzy
 msgid "A rating was given to a document"
-msgstr "Một đánh giá đã được trao cho một bản đồ"
+msgstr ""
 
 #: documents/templates/documents/document_detail.html:40
 msgid "External Resource"
@@ -633,9 +624,8 @@ msgstr "Tải về tài liệu"
 
 #: documents/templates/documents/document_detail.html:90
 #: layers/templates/layers/layer_detail.html:131
-#, fuzzy
 msgid "Request Download"
-msgstr "Tải về"
+msgstr ""
 
 #: documents/templates/documents/document_detail.html:95
 #: layers/templates/layers/layer_detail.html:160
@@ -970,7 +960,7 @@ msgstr "Hoạt động nguồn cấp dữ liệu cho"
 #: social/templates/social/activity_list.html:20
 #: templates/user_messages/inbox.html:16
 msgid "All"
-msgstr ""
+msgstr "Tất cả"
 
 #: groups/templates/groups/activity.html:25
 #: people/templates/people/_profile_filters.html:5
@@ -1132,16 +1122,14 @@ msgid "Most popular"
 msgstr "Phổ biến nhất"
 
 #: groups/templates/groups/group_members.html:8
-#, fuzzy
 msgid "Edit Members for"
-msgstr "Chi tiết chỉnh sửa cho"
+msgstr ""
 
 #: groups/templates/groups/group_members.html:33
 #: groups/templates/groups/group_members.html:59
 #: groups/templates/groups/group_members.html:86
-#, fuzzy
 msgid "Remove"
-msgstr "Xóa Nhóm"
+msgstr "Tẩy"
 
 #: groups/templates/groups/group_members.html:37
 #: groups/templates/groups/group_members.html:63
@@ -1350,34 +1338,28 @@ msgid "You are attempting to replace a raster layer with a vector."
 msgstr ""
 
 #: layers/management/__init__.py:33
-#, fuzzy
 msgid "Layer Created"
-msgstr "Bản đồ tạo"
+msgstr ""
 
 #: layers/management/__init__.py:34
-#, fuzzy
 msgid "A Layer was created"
-msgstr "Một Bản đồ đã được tạo ra"
+msgstr ""
 
 #: layers/management/__init__.py:37
-#, fuzzy
 msgid "Layer Updated"
-msgstr "Lớp Uploaded"
+msgstr ""
 
 #: layers/management/__init__.py:38
-#, fuzzy
 msgid "A Layer was updated"
-msgstr "Một lớp đã được tải lên"
+msgstr ""
 
 #: layers/management/__init__.py:41
-#, fuzzy
 msgid "Layer Deleted"
-msgstr "Lớp Default Style"
+msgstr ""
 
 #: layers/management/__init__.py:42
-#, fuzzy
 msgid "A Layer was deleted"
-msgstr "Một lớp đã được tải lên"
+msgstr ""
 
 #: layers/templates/layers/layer_change_poc.html:5
 msgid "Home"
@@ -1544,7 +1526,6 @@ msgstr ""
 "Chi tiết chỉnh sửa cho %(layer_title)s"
 
 #: layers/templates/layers/layer_metadata.html:23
-#, fuzzy
 msgid ""
 "Note: this layer's orginal metadata was populated by importing a metadata "
 "XML file.\n"
@@ -1552,10 +1533,6 @@ msgid ""
 "Dublin Core metadata elements.\n"
 "          Some of your original metadata may have been lost."
 msgstr ""
-"Lưu ý: ban đầu siêu dữ liệu của lớp này đã được dân cư bằng cách nhập một "
-"tập tin siêu dữ liệu XML. Siêu dữ liệu nhập khẩu GeoNode hỗ trợ một tập hợp "
-"con của các yếu tố siêu dữ liệu ISO, FGDC, và Dublin Core. Một số siêu dữ "
-"liệu ban đầu của bạn có thể đã bị mất."
 
 #: layers/templates/layers/layer_metadata.html:37
 #: layers/templates/layers/layer_metadata.html:74 templates/_actions.html:5
@@ -1580,20 +1557,17 @@ msgid "Display Order"
 msgstr "Hiển thị thứ tự"
 
 #: layers/templates/layers/layer_remove.html:9
-#, fuzzy
 msgid "Remove Layers"
-msgstr "Hủy bỏ lớp này"
+msgstr ""
 
 #: layers/templates/layers/layer_remove.html:14
-#, fuzzy, python-format
+#, python-format
 msgid ""
 "\n"
 "          Are you sure you want to remove <a href="
 "\"%(layer.get_absolute_url)s\">%(layer_title)s</a>?\n"
 "        "
 msgstr ""
-"\n"
-"Bạn có chắc chắn bạn muốn loại bỏ %(layer_title)s?"
 
 #: layers/templates/layers/layer_remove.html:30
 msgid "This action affects the following maps:"
@@ -2130,24 +2104,20 @@ msgid "A Map was created"
 msgstr "Một Bản đồ đã được tạo ra"
 
 #: maps/management/__init__.py:37
-#, fuzzy
 msgid "Map Updated"
-msgstr "Bản đồ tạo"
+msgstr ""
 
 #: maps/management/__init__.py:38
-#, fuzzy
 msgid "A Map was updated"
-msgstr "Một Bản đồ đã được tạo ra"
+msgstr ""
 
 #: maps/management/__init__.py:41
-#, fuzzy
 msgid "Map Deleted"
-msgstr "Bản đồ tạo"
+msgstr ""
 
 #: maps/management/__init__.py:42
-#, fuzzy
 msgid "A Map was deleted"
-msgstr "Một Bản đồ đã được tạo ra"
+msgstr ""
 
 #: maps/management/__init__.py:45
 msgid "Comment on Map"
@@ -2457,9 +2427,8 @@ msgid "User following you"
 msgstr "Dùng sau bạn"
 
 #: people/management.py:33
-#, fuzzy
 msgid "Another user has started following you"
-msgstr "người dùng khác đã bắt đầu sau bạn"
+msgstr ""
 
 #: people/management.py:36
 msgid "User requested access"
@@ -2470,9 +2439,8 @@ msgid "A new user has requested access to the site"
 msgstr ""
 
 #: people/management.py:40
-#, fuzzy
 msgid "Account activated"
-msgstr "Hoạt động gần đây"
+msgstr ""
 
 #: people/management.py:41
 msgid "This account is now active and can log in the site"
@@ -2601,13 +2569,10 @@ msgid "Forgot Username"
 msgstr "Quên tên người dùng"
 
 #: people/templates/people/forgot_username_form.html:10
-#, fuzzy
 msgid ""
 "Enter your email address and click the submit button. <br />Your username "
 "will be sent to you."
 msgstr ""
-"Nhập địa chỉ email của bạn và click vào nút gửi. Tên người dùng của bạn sẽ "
-"được gửi đến bạn."
 
 #: people/templates/people/profile_create.html:8
 #: people/templates/people/profile_create.html:14
@@ -2619,9 +2584,8 @@ msgid "Profile of "
 msgstr "Thông tin của"
 
 #: people/templates/people/profile_detail.html:19
-#, fuzzy
 msgid "Message User"
-msgstr "Hộp thư tin nhắn"
+msgstr ""
 
 #: people/templates/people/profile_detail.html:65
 msgid "Edit profile"
@@ -2644,9 +2608,8 @@ msgid "My Activities"
 msgstr "Hoạt động của tôi"
 
 #: people/templates/people/profile_detail.html:77 templates/base.html:202
-#, fuzzy
 msgid "Notifications"
-msgstr "Loại thông báo"
+msgstr ""
 
 #: people/templates/people/profile_detail.html:80 templates/500.html:80
 #: templates/base.html:205 templates/announcements/announcement_list.html:6
@@ -2753,9 +2716,8 @@ msgid "Service URL"
 msgstr "URL dịch vụ"
 
 #: services/forms.py:15
-#, fuzzy
 msgid "Service name"
-msgstr "Loại dịch vụ"
+msgstr ""
 
 #: services/forms.py:19
 msgid "Service Type"
@@ -2884,9 +2846,8 @@ msgid "Remove Service"
 msgstr "Hủy bỏ dịch vụ"
 
 #: services/templates/services/service_edit.html:15
-#, fuzzy
 msgid "Edit Service"
-msgstr "Edit Service Metadata"
+msgstr ""
 
 #: services/templates/services/service_edit.html:21
 #: templates/announcements/announcement_form.html:27
@@ -2906,9 +2867,8 @@ msgid "Register a new Service"
 msgstr "Đăng ký một dịch vụ mới"
 
 #: services/templates/services/service_register.html:13
-#, fuzzy
 msgid "Register New Service"
-msgstr "Đăng ký một dịch vụ mới"
+msgstr ""
 
 #: services/templates/services/service_register.html:23
 msgid "Service has been created:"
@@ -2919,9 +2879,8 @@ msgid "The following layers will be imported"
 msgstr "Các lớp sau sẽ được nhập"
 
 #: services/templates/services/service_remove.html:8
-#, fuzzy
 msgid "Remove Remote Service"
-msgstr "Hủy bỏ dịch vụ"
+msgstr ""
 
 #: services/templates/services/service_remove.html:12
 msgid "Are you sure you want to remove"
@@ -3102,9 +3061,8 @@ msgid "Ratings"
 msgstr "Xếp hạng"
 
 #: templates/_actions.html:13
-#, fuzzy
 msgid "GeoGig"
-msgstr "GeoGit"
+msgstr ""
 
 #: templates/_bulk_permissions_form.html:9
 msgid "Set permissions on selected resources"
@@ -3128,9 +3086,8 @@ msgid "By"
 msgstr "Qua"
 
 #: templates/_comments.html:67
-#, fuzzy
 msgid "Submit Comment"
-msgstr "Gửi Comments"
+msgstr ""
 
 #: templates/_permissions.html:8
 msgid "Who can view it?"
@@ -3196,9 +3153,8 @@ msgid "About GeoNode."
 msgstr "Về GeoNode."
 
 #: templates/base.html:192
-#, fuzzy
 msgid "Profile Menu"
-msgstr "Hồ sơ"
+msgstr ""
 
 #: templates/base.html:258
 msgid "Type your search here ..."
@@ -3500,10 +3456,9 @@ msgstr "Không"
 
 #: templates/index.html:30
 #: templates/notification/request_download_resourcebase/full.txt:7
-#, fuzzy
 msgid "Layer"
 msgid_plural "Layers"
-msgstr[0] "Lớp"
+msgstr[0] ""
 
 #: templates/index.html:31
 msgid ""
@@ -3515,10 +3470,9 @@ msgstr ""
 "tiêu chuẩn."
 
 #: templates/index.html:36
-#, fuzzy
 msgid "Map"
 msgid_plural "Maps"
-msgstr[0] "Bản đồ"
+msgstr[0] ""
 
 #: templates/index.html:37
 msgid ""
@@ -3535,10 +3489,9 @@ msgstr "Tạo bản đồ"
 
 #: templates/index.html:43 templates/index.html.py:48
 #: templates/notification/account_approve/full.txt:1
-#, fuzzy
 msgid "User"
 msgid_plural "Users"
-msgstr[0] "Người sử dụng"
+msgstr[0] ""
 
 #: templates/index.html:44 templates/index.html.py:49
 msgid ""
@@ -3567,9 +3520,8 @@ msgstr ""
 
 #: templates/account/email_confirmation_sent.html:6
 #: templates/account/email_confirmation_sent.html:9
-#, fuzzy
 msgid "Confirm your email address"
-msgstr "Xác nhận địa chỉ email cho %(site_name)s"
+msgstr ""
 
 #: templates/account/email_confirmation_sent.html:11
 #, python-format
@@ -3603,23 +3555,18 @@ msgid "Password reset"
 msgstr "Đặt lại mật khẩu"
 
 #: templates/account/password_reset.html:14
-#, fuzzy
 msgid "Password Reset"
-msgstr "Đặt lại mật khẩu"
+msgstr ""
 
 #: templates/account/password_reset.html:18
-#, fuzzy
 msgid "Forgotten your password?"
-msgstr "Quên mật khẩu của bạn?"
+msgstr ""
 
 #: templates/account/password_reset.html:19
-#, fuzzy
 msgid ""
 "Enter your email address below, and we'll send you an email allowing you to "
 "reset it."
 msgstr ""
-"Quên mật khẩu của bạn? Nhập địa chỉ email của bạn dưới đây, và chúng tôi sẽ "
-"gửi cho bạn một email cho phép bạn thiết lập lại nó."
 
 #: templates/account/password_reset.html:25
 msgid "Reset my password"
@@ -3726,15 +3673,13 @@ msgid "Published From"
 msgstr "Xuất bản Từ"
 
 #: templates/announcements/announcement_list.html:38
-#, fuzzy, python-format
+#, python-format
 msgid ""
 "\n"
 "          Published from <b>%(publish_start)s</b> to <b>%(publish_end)s</"
 "b>.\n"
 "          "
 msgstr ""
-"\n"
-"Xuất bản <b>%(publish_start)s</b> đến <b>%(publish_end)s</b>"
 
 #: templates/announcements/detail.html:4
 #, python-format
@@ -3763,9 +3708,8 @@ msgid "Choose new Default"
 msgstr "Chọn Mặc định mới"
 
 #: templates/avatar/change.html:23
-#, fuzzy
 msgid "Delete Your Avatar"
-msgstr "Xóa avatar của bạn"
+msgstr ""
 
 #: templates/avatar/confirm_delete.html:6
 msgid "Please select the avatars that you would like to delete."
@@ -3835,9 +3779,8 @@ msgid "A user has requested access to the site"
 msgstr ""
 
 #: templates/notification/document_comment/full.txt:3
-#, fuzzy
 msgid "A comment has been posted for the document"
-msgstr "Bạn không có quyền cho tài liệu này."
+msgstr ""
 
 #: templates/notification/document_comment/full.txt:3
 #: templates/notification/layer_comment/full.txt:3
@@ -3852,9 +3795,8 @@ msgid "You can visit the document's detail page here"
 msgstr ""
 
 #: templates/notification/document_comment/short.txt:3
-#, fuzzy
 msgid "A comment has been posted for a document"
-msgstr "Bạn không có quyền cho tài liệu này."
+msgstr ""
 
 #: templates/notification/document_created/full.txt:3
 #: templates/notification/document_rated/full.txt:3
@@ -3863,24 +3805,20 @@ msgstr "Bạn không có quyền cho tài liệu này."
 #: templates/notification/map_created/full.txt:3
 #: templates/notification/map_rated/full.txt:3
 #: templates/notification/request_download_resourcebase/full.txt:3
-#, fuzzy
 msgid "The user"
-msgstr "Chọn người sử dụng ..."
+msgstr ""
 
 #: templates/notification/document_created/full.txt:3
-#, fuzzy
 msgid "uploaded the following document"
-msgstr "Thay thế tài liệu này"
+msgstr ""
 
 #: templates/notification/document_created/short.txt:3
-#, fuzzy
 msgid "A document has been uploaded"
-msgstr "Một lớp đã được tải lên"
+msgstr ""
 
 #: templates/notification/document_deleted/full.txt:3
-#, fuzzy
 msgid "The following document was deleted"
-msgstr "Người sử dụng sau đây:"
+msgstr ""
 
 #: templates/notification/document_deleted/full.txt:4
 #: templates/notification/document_rated/full.txt:6
@@ -3891,26 +3829,22 @@ msgstr "Người sử dụng sau đây:"
 #: templates/notification/map_deleted/full.txt:4
 #: templates/notification/map_rated/full.txt:6
 #: templates/notification/map_updated/full.txt:4
-#, fuzzy
 msgid "owned by"
-msgstr "Powered by"
+msgstr ""
 
 #: templates/notification/document_deleted/short.txt:3
-#, fuzzy
 msgid "A document has been deleted"
-msgstr "Dịch vụ đã được tạo ra:"
+msgstr ""
 
 #: templates/notification/document_rated/full.txt:4
 #: templates/notification/layer_rated/full.txt:4
 #: templates/notification/map_rated/full.txt:4
-#, fuzzy
 msgid "rated"
-msgstr "tạo"
+msgstr ""
 
 #: templates/notification/document_rated/full.txt:5
-#, fuzzy
 msgid "the following document"
-msgstr "Người sử dụng sau đây:"
+msgstr ""
 
 #: templates/notification/document_rated/full.txt:8
 #: templates/notification/layer_comment/full.txt:5
@@ -3921,74 +3855,60 @@ msgid "You can visit the layer's detail page here"
 msgstr ""
 
 #: templates/notification/document_rated/short.txt:3
-#, fuzzy
 msgid "A document has been rated"
-msgstr "Dịch vụ đã được tạo ra:"
+msgstr ""
 
 #: templates/notification/document_updated/full.txt:3
-#, fuzzy
 msgid "The following document was updated"
-msgstr "Người sử dụng sau đây:"
+msgstr ""
 
 #: templates/notification/document_updated/short.txt:3
-#, fuzzy
 msgid "A document has been updated"
-msgstr "Dịch vụ đã được tạo ra:"
+msgstr ""
 
 #: templates/notification/layer_comment/full.txt:3
-#, fuzzy
 msgid "A comment has been posted for the layer"
-msgstr "Các tài liệu liên quan đến lớp này"
+msgstr ""
 
 #: templates/notification/layer_comment/short.txt:3
-#, fuzzy
 msgid "A comment has been posted for a layer"
-msgstr "Một đánh giá đã được trao cho một lớp"
+msgstr ""
 
 #: templates/notification/layer_created/full.txt:3
-#, fuzzy
 msgid "uploaded the following layer"
-msgstr "Bản đồ này sử dụng các lớp sau đây:"
+msgstr ""
 
 #: templates/notification/layer_created/short.txt:3
-#, fuzzy
 msgid "A new layer has been uploaded"
-msgstr "Một lớp đã được tải lên"
+msgstr ""
 
 #: templates/notification/layer_deleted/full.txt:3
-#, fuzzy
 msgid "The following layer was deleted"
-msgstr "Các lớp sau sẽ được nhập"
+msgstr ""
 
 #: templates/notification/layer_deleted/short.txt:3
-#, fuzzy
 msgid "A layer has been deleted"
-msgstr "Một lớp đã nhận xét về"
+msgstr ""
 
 #: templates/notification/layer_rated/full.txt:5
-#, fuzzy
 msgid "the following layer"
-msgstr "Người sử dụng sau đây:"
+msgstr ""
 
 #: templates/notification/layer_rated/short.txt:3
-#, fuzzy
 msgid "A layer has been rated"
-msgstr "Dịch vụ đã được tạo ra:"
+msgstr ""
 
 #: templates/notification/layer_updated/full.txt:3
-#, fuzzy
 msgid "The following layer was updated"
-msgstr "Các lớp sau sẽ được nhập"
+msgstr ""
 
 #: templates/notification/layer_updated/short.txt:3
-#, fuzzy
 msgid "A layer has been updated"
-msgstr "Một lớp đã được tải lên"
+msgstr ""
 
 #: templates/notification/map_comment/full.txt:3
-#, fuzzy
 msgid "A comment has been posted for the map"
-msgstr "Các tài liệu liên quan đến bản đồ này"
+msgstr ""
 
 #: templates/notification/map_comment/full.txt:6
 #: templates/notification/map_created/full.txt:6
@@ -4002,54 +3922,44 @@ msgid "A comment has been posted for a map"
 msgstr ""
 
 #: templates/notification/map_created/full.txt:3
-#, fuzzy
 msgid "created the following map"
-msgstr "Hành động này ảnh hưởng đến các bản đồ sau đây:"
+msgstr ""
 
 #: templates/notification/map_created/short.txt:3
-#, fuzzy
 msgid "A map has been created"
-msgstr "Một Bản đồ đã được tạo ra"
+msgstr ""
 
 #: templates/notification/map_deleted/full.txt:3
-#, fuzzy
 msgid "The following map was deleted"
-msgstr "Các lớp sau sẽ được nhập"
+msgstr ""
 
 #: templates/notification/map_deleted/short.txt:3
-#, fuzzy
 msgid "A map has been deleted"
-msgstr "Một bản đồ được nhận xét về"
+msgstr ""
 
 #: templates/notification/map_rated/full.txt:5
-#, fuzzy
 msgid "the following map"
-msgstr "Các nhóm sau:"
+msgstr ""
 
 #: templates/notification/map_rated/short.txt:3
-#, fuzzy
 msgid "A map has been rated"
-msgstr "Một Bản đồ đã được tạo ra"
+msgstr ""
 
 #: templates/notification/map_updated/full.txt:3
-#, fuzzy
 msgid "The following map was updated"
-msgstr "Các lớp sau sẽ được nhập"
+msgstr ""
 
 #: templates/notification/map_updated/short.txt:3
-#, fuzzy
 msgid "A map has been updated"
-msgstr "Một Bản đồ đã được tạo ra"
+msgstr ""
 
 #: templates/notification/request_download_resourcebase/full.txt:3
-#, fuzzy
 msgid "requested you to download this resource"
-msgstr "bên sở hữu các nguồn tài nguyên"
+msgstr ""
 
 #: templates/notification/request_download_resourcebase/full.txt:9
-#, fuzzy
 msgid "Document"
-msgstr "Tài liệu"
+msgstr ""
 
 #: templates/notification/request_download_resourcebase/full.txt:12
 msgid ""
@@ -4193,18 +4103,16 @@ msgstr "Xóa?"
 
 #: templates/user_messages/_message_snippet.html:29
 #: templates/user_messages/thread_detail.html:14
-#, fuzzy
 msgid "me"
-msgstr "Nhà"
+msgstr ""
 
 #: templates/user_messages/inbox.html:6
 msgid "Message Inbox"
 msgstr "Hộp thư tin nhắn"
 
 #: templates/user_messages/inbox.html:11
-#, fuzzy
 msgid "Messages"
-msgstr "Hộp thư tin nhắn"
+msgstr ""
 
 #: templates/user_messages/inbox.html:38
 #: templates/user_messages/message_create.html:6
@@ -4226,90 +4134,89 @@ msgid "Send Reply"
 msgstr "Gửi trả lời"
 
 #~ msgid "Most shared"
-#~ msgstr "Chia sẻ nhiều nhất"
+#~ msgstr "Most shared"
 
 #~ msgid "from"
-#~ msgstr "từ"
+#~ msgstr "from"
 
 #~ msgid "view"
-#~ msgstr "quang cảnh"
+#~ msgstr "view"
 
 #~ msgid "Average rating"
-#~ msgstr "Đánh giá trung bình"
+#~ msgstr "Average rating"
 
 #~ msgid "votes"
-#~ msgstr "phiếu"
+#~ msgstr "votes"
 
 #~ msgid "You do not have permission to view this document"
-#~ msgstr "Bạn không được phép xem tài liệu này"
+#~ msgstr "You do not have permission to view this document"
 
 #~ msgid "Remote Thumbnail"
-#~ msgstr "Thumbnail từ xa"
+#~ msgstr "Remote Thumbnail"
 
 #~ msgid "Thumbnail"
 #~ msgstr "Thumbnail"
 
 #~ msgid "Group details"
-#~ msgstr "Chi tiết nhóm"
+#~ msgstr "Group details"
 
 #~ msgid "Create a map"
-#~ msgstr "Tạo một bản đồ"
+#~ msgstr "Create a map"
 
 #~ msgid "You do not have permission to view this layer"
-#~ msgstr "Bạn không được phép xem lớp này"
+#~ msgstr "You do not have permission to view this layer"
 
 #~ msgid "View"
-#~ msgstr "Quang cảnh"
+#~ msgstr "View"
 
 #~ msgid "You do not have permission to view this map"
-#~ msgstr "Bạn không có quyền để xem bản đồ này"
+#~ msgstr "You do not have permission to view this map"
 
 #~ msgid "Add to Favorites"
-#~ msgstr "Thêm vào yêu thích"
+#~ msgstr "Add to Favorites"
 
 #~ msgid "Add a Comment"
-#~ msgstr "Thêm một bình luận"
+#~ msgstr "Add a Comment"
 
 #~ msgid "Notices"
-#~ msgstr "Thông báo"
+#~ msgstr "Notices"
 
 #~ msgid "Notice settings"
-#~ msgstr "Thiết lập thông báo"
+#~ msgstr "Notice settings"
 
 #~ msgid "Observed objects"
-#~ msgstr "Đối tượng quan sát"
+#~ msgstr "Observed objects"
 
 #~ msgid "Primary email"
-#~ msgstr "Email chính"
+#~ msgstr "Primary email"
 
 #~ msgid "change under <a href=\"%(email_url)s\">Account</a>"
-#~ msgstr "thay đổi trong <a href=\"%(email_url)s\">tài khoản</a>"
+#~ msgstr "change under <a href=\"%(email_url)s\">Account</a>"
 
 #~ msgid "Note"
-#~ msgstr "Chú ý"
+#~ msgstr "Note"
 
 #~ msgid ""
 #~ "You do not have a verified email address to which notices can be sent. "
 #~ "You can add one by going to <a href=\"%(email_url)s\">Account</a>."
 #~ msgstr ""
-#~ "Bạn không có một địa chỉ email xác nhận mà thông báo có thể được gửi đi. "
-#~ "Bạn có thể thêm một bằng cách vào <a href=\"%(email_url)s\">tài khoản</"
-#~ "a> ."
+#~ "You do not have a verified email address to which notices can be sent. "
+#~ "You can add one by going to <a href=\"%(email_url)s\">Account</a>."
 
 #~ msgid "Mark all unseen notices seen"
-#~ msgstr "Đánh dấu tất cả các thông báo vô thấy"
+#~ msgstr "Mark all unseen notices seen"
 
 #~ msgid "MONTH_DAY_FORMAT"
 #~ msgstr "MONTH_DAY_FORMAT"
 
 #~ msgid "View Notice"
-#~ msgstr "Xem Thông báo"
+#~ msgstr "View Notice"
 
 #~ msgid "No notices."
-#~ msgstr "Không có thông báo."
+#~ msgstr "No notices."
 
 #~ msgid "Notice"
-#~ msgstr "Nhận thấy"
+#~ msgstr "Notice"
 
 #~ msgid "you"
-#~ msgstr "bạn"
+#~ msgstr "you"
