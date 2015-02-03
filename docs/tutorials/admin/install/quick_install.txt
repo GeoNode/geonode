@@ -71,7 +71,6 @@ To install in Windows it is assumed you're familiar with python development and 
     * ant (bin directory must be on system PATH)
     * maven2 (bin directory must be on system PATH)
     * git
-    * GDAL core libraries from [GISInternals](http://www.gisinternals.com) -> Downloads, Stable Releases -> gdal-111-1600-core.msi
 
 Install and configure from the windows command prompt, if you don't already have python virtualenv installed, then do it now::
    
@@ -100,14 +99,13 @@ Install GeoNode in the local virtualenv::
 
     pip install -e .
 
-Set up geos and gdal by going to geonode\local_settings.py.sample.  First add the following two lines:
+You have two options to set up the geos and gdal libraries.  Either create an environment variable
+or add the variables to your local_settings.py file as below.
 
     GEOS_LIBRARY_PATH="C:/path/to/geos_c.dll"
     GDAL_LIBRARY_PATH="C:/path/to/gdal111.dll"
 
-The geos and gdal libraries can be found 
-
-You can comment out the rest of the settings in local_settings.py.sample for development purposes, then save the file in the same location with local_settings.py
+The geos and gdal libraries can be found in your <virtualenv directory>\Lib\site-packages\GDAL-1.11.0-py2.7-win32.egg\osgeo\ folder.
 
     
 Setup GeoServer::
