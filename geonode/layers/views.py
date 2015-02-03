@@ -24,6 +24,7 @@ import logging
 import shutil
 import traceback
 
+from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.urlresolvers import reverse
 from django.http import HttpResponse, HttpResponseRedirect
@@ -507,7 +508,17 @@ def layer_remove(request, layername, template='layers/layer_remove.html'):
             "layer": layer
         }))
     if (request.method == 'POST'):
-        delete_layer.delay(object_id=layer.id)
+        try:
+            delete_layer.delay(object_id=layer.id)
+        except Exception as e:
+            message = '{0}: {1}.'.format(_('Unable to delete layer'), layer.typename)
+
+            if 'referenced by layer group' in getattr(e, 'message', ''):
+                message = _('This layer is a member of a layer group, you must remove the layer from the group '
+                            'before deleting.')
+
+            messages.error(request, message)
+            return render_to_response(template, RequestContext(request, {"layer": layer}))
         return HttpResponseRedirect(reverse("layer_browse"))
     else:
         return HttpResponse("Not allowed", status=403)
