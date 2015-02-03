@@ -1,12 +1,13 @@
 {% load i18n %}
 
+
 {% verbatim %}
 <article ng-repeat="profile in results" ng-cloak class="ng-cloak">
   <div class="row">
-    <div class="col-md-2">
+    <div class="col-xs-3 col-md-1 profile-avatar">
       <a href="{{ profile.profile_detail_url }}" ><img ng-src="{{ profile.avatar_100 }}"/></a>
     </div>
-    <div class="col-md-10">
+    <div class="col-xs-9 col-md-11 profile-details">
       <h5>
         <i class="fa fa-user"></i> <a href="{{ profile.profile_detail_url }}">{{ profile.username }}</a>
         <a href="mailto:{{ profile.email }}" ng-if="profile.email != ''"><i class="fa fa-envelope-o"></i></a>
