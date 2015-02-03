@@ -237,8 +237,8 @@ class UploadSession(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL)
     processed = models.BooleanField(default=False)
     error = models.TextField(blank=True, null=True)
-    traceback = models.TextField(blank=True, null=True, help="A Python traceback")
-    context = models.TextField(blank=True, null=True, help="For example, GeoServer Log")
+    traceback = models.TextField(blank=True, null=True)
+    context = models.TextField(blank=True, null=True)
 
     def successful(self):
         return self.processed and self.errors is None
