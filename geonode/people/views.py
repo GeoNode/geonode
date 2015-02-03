@@ -27,6 +27,7 @@ from django.template.context import RequestContext
 from django.utils.translation import ugettext as _
 from django.contrib.sites.models import Site
 from django.conf import settings
+from django.http import HttpResponseForbidden
 
 from geonode.people.models import Profile
 from geonode.people.forms import ProfileForm
@@ -44,22 +45,26 @@ def profile_edit(request, username=None):
     else:
         profile = get_object_or_404(Profile, username=username)
 
-    if request.method == "POST":
-        form = ProfileForm(request.POST, request.FILES, instance=profile)
-        if form.is_valid():
-            form.save()
-            messages.success(request, "Profile profile updated.")
-            return redirect(
-                reverse(
-                    'profile_detail',
-                    args=[
-                        request.user.username]))
-    else:
-        form = ProfileForm(instance=profile)
+    if username == request.user.username:
+        if request.method == "POST":
+            form = ProfileForm(request.POST, request.FILES, instance=profile)
+            if form.is_valid():
+                form.save()
+                messages.success(request, "Profile profile updated.")
+                return redirect(
+                    reverse(
+                        'profile_detail',
+                        args=[
+                            request.user.username]))
+        else:
+            form = ProfileForm(instance=profile)
 
-    return render(request, "people/profile_edit.html", {
-        "form": form,
-    })
+        return render(request, "people/profile_edit.html", {
+            "form": form,
+        })
+    else:
+        return HttpResponseForbidden(
+            'You are not allowed to edit other users profile')
 
 
 def profile_detail(request, username):
