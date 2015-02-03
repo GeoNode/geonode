@@ -55,9 +55,12 @@ from geonode.security.views import _perms_info_json
 from geonode.documents.models import get_related_documents
 from geonode.utils import build_social_links
 
-if 'geonode.geoserver' in settings.INSTALLED_APPS:
+CONTEXT_LOG_FILE = None
 
+if 'geonode.geoserver' in settings.INSTALLED_APPS:
     from geonode.geoserver.helpers import _render_thumbnail
+    from geonode.geoserver.helpers import ogc_server_settings
+    CONTEXT_LOG_FILE = ogc_server_settings.LOG_FILE
 
 logger = logging.getLogger("geonode.layers.views")
 
@@ -73,6 +76,12 @@ _PERMISSION_MSG_METADATA = _(
     "You are not permitted to modify this layer's metadata")
 _PERMISSION_MSG_VIEW = _("You are not permitted to view this layer")
 
+def log_snippet(log_file):
+    with open(log_file, "r") as f:
+        f.seek (0, 2)           # Seek @ EOF
+        fsize = f.tell()        # Get Size
+        f.seek (max (fsize-10024, 0), 0) # Set pos @ last n chars
+        return f.read()
 
 def _resolve_layer(request, typename, permission='base.view_resourcebase',
                    msg=_PERMISSION_MSG_GENERIC, **kwargs):
@@ -157,8 +166,11 @@ def layer_upload(request, template='upload/layer_upload.html'):
                 if latest_uploads.count() > 0:
                     upload_session = latest_uploads[0]
                     upload_session.error = str(error)
-                    upload_session.traceback = tb = traceback.format_exc(tb)
+                    upload_session.traceback = traceback.format_exc(tb)
+                    upload_session.context = log_snippet(CONTEXT_LOG_FILE)
                     upload_session.save()
+                    out['traceback'] = upload_session.traceback
+                    out['context'] = upload_session.context
                     out['upload_session'] = upload_session.id
             else:
                 out['success'] = True
