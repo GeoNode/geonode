@@ -230,7 +230,7 @@
       <h4 class="list-group-item-heading">{%trans "Legend" %}</h4>
       <p>{{ style.sld_title }}</p>
       {% if resource.get_legend.link_type == 'image' %}
-      <p><img src="{{ resource.get_legend.url }}"></p>
+      <p><img id="legend_icon" src="{{ resource.get_legend.url }}"></p>
       {% else %}
       <div id='legend_placeholder'></div>
       {% endif %}
