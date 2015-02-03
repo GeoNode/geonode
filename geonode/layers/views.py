@@ -198,6 +198,7 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
     config["bbox"] = llbbox_to_mercator([float(coord) for coord in bbox])
 
     config["title"] = layer.title
+    config["queryable"] = True
 
     if layer.storeType == "remoteStore":
         service = layer.service
