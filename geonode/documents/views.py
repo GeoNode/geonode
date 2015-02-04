@@ -86,9 +86,13 @@ def document_detail(request, docid):
         if request.user != document.owner and not request.user.is_superuser:
             Document.objects.filter(id=document.id).update(popular_count=F('popular_count') + 1)
 
+        metadata = document.link_set.metadata().filter(
+            name__in=settings.DOWNLOAD_FORMATS_METADATA)
+
         context_dict = {
             'permissions_json': _perms_info_json(document),
             'resource': document,
+            'metadata': metadata,
             'imgtypes': IMGTYPES,
             'related': related}
 

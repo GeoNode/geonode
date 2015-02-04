@@ -22,6 +22,7 @@ import base64
 import math
 import copy
 import string
+import datetime
 
 from django.conf import settings
 from django.core.exceptions import PermissionDenied
@@ -271,6 +272,19 @@ class GXPMapBase(object):
                     sources.values()):
                 sources[
                     str(int(max(sources.keys(), key=int)) + 1)] = lyr["source"]
+
+        # adding remote services sources
+        from geonode.services.models import Service
+        index = int(max(sources.keys()))
+        for service in Service.objects.all():
+            remote_source = {
+                'url': service.base_url,
+                'remote': True,
+                'ptype': 'gxp_wmscsource',
+                'name': service.name
+            }
+            index += 1
+            sources[index] = remote_source
 
         config = {
             'id': self.id,
@@ -560,14 +574,33 @@ def build_abstract(resourcebase, url=None, includeURL=True):
         return resourcebase.abstract
 
 
+def build_caveats(resourcebase):
+    caveats = []
+    if resourcebase.maintenance_frequency:
+        caveats.append(resourcebase.maintenance_frequency_title())
+    if resourcebase.license:
+        caveats.append(resourcebase.license_verbose)
+    if resourcebase.data_quality_statement:
+        caveats.append(resourcebase.data_quality_statement)
+    if len(caveats) > 0:
+        return u"- "+u"%0A- ".join(caveats)
+    else:
+        return u""
+
+
 def build_social_links(request, resourcebase):
-    social_url = "{protocol}://{host}{path}".format(
+    social_url = u"{protocol}://{host}{path}".format(
         protocol=("https" if request.is_secure() else "http"),
         host=request.get_host(),
         path=request.get_full_path())
+    date = datetime.datetime.strftime(resourcebase.date, "%m/%d/%Y") if resourcebase.date else None
+    abstract = build_abstract(resourcebase, url=social_url, includeURL=True)
+    caveats = build_caveats(resourcebase)
     return format_urls(
         settings.SOCIAL_ORIGINS,
         {
             'name': resourcebase.title,
-            'abstract': build_abstract(resourcebase, url=social_url, includeURL=True),
+            'date': date,
+            'abstract': abstract,
+            'caveats': caveats,
             'url': social_url})

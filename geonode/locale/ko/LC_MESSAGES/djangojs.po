@@ -1,7 +1,8 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
-# 
+#
+# Translators:
 # Translators:
 # Minpa Lee <mapplus@gmail.com>, 2013-2014
 # Minpa Lee <mapplus@gmail.com>, 2013
@@ -9,144 +10,322 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-10-24 10:00-0500\n"
-"PO-Revision-Date: 2014-11-13 10:31+0000\n"
-"Last-Translator: Minpa Lee <mapplus@gmail.com>\n"
-"Language-Team: Korean (http://www.transifex.com/projects/p/geonode/language/ko/)\n"
+"POT-Creation-Date: 2015-02-03 08:21-0600\n"
+"PO-Revision-Date: 2015-02-03 12:11+0000\n"
+"Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
+"Language-Team: Korean (http://www.transifex.com/projects/p/geonode/language/"
+"ko/)\n"
+"Language: ko\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Language: ko\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 
 #: static/geonode/js/extjs/GeoNode.js:72
+#: static_root/geonode/js/extjs/GeoNode.js:72
 msgid "Add user..."
 msgstr "사용자 추가..."
 
 #: static/geonode/js/extjs/GeoNode.js:72
+#: static_root/geonode/js/extjs/GeoNode.js:72
 msgid "Who can view and download this data?"
 msgstr "누가 이 데이터를 보거나 다운로드 할 수 있습니까?"
 
 #: static/geonode/js/extjs/GeoNode.js:72
+#: static_root/geonode/js/extjs/GeoNode.js:72
 msgid "Anyone"
 msgstr "모든 사용자"
 
 #: static/geonode/js/extjs/GeoNode.js:72
+#: static_root/geonode/js/extjs/GeoNode.js:72
 msgid "Any registered user"
 msgstr "등록된 사용자"
 
 #: static/geonode/js/extjs/GeoNode.js:72
+#: static_root/geonode/js/extjs/GeoNode.js:72
 msgid "Only users who can edit"
 msgstr "편집 가능한 사용자만"
 
 #: static/geonode/js/extjs/GeoNode.js:72
+#: static_root/geonode/js/extjs/GeoNode.js:72
 msgid "Who can edit this data?"
 msgstr "누가 이 데이터를 편집 할 수 있습니까?"
 
 #: static/geonode/js/extjs/GeoNode.js:72
+#: static_root/geonode/js/extjs/GeoNode.js:72
 msgid "Only the following users or groups:"
 msgstr "다음 사용자 또는 그룹 전용 :"
 
 #: static/geonode/js/extjs/GeoNode.js:72
+#: static_root/geonode/js/extjs/GeoNode.js:72
 msgid "Who can manage and edit this data?"
 msgstr "누가 이 데이터를 관리하고 편집 할 수 있습니까?"
 
+#: static/geonode/js/search/search.js:298
+#: static_root/geonode/js/search/search.js:298
+msgid "Enter your text here ..."
+msgstr ""
+
 #: static/geonode/js/upload/FileType.js:33
+#: static_root/geonode/js/upload/FileType.js:33
 #, c-format
 msgid "Missing a %s file, which is required"
 msgstr "필요한 %s 파일이 누락되었습니다"
 
 #: static/geonode/js/upload/FileTypes.js:7
+#: static_root/geonode/js/upload/FileTypes.js:7
 msgid "ESRI Shapefile"
 msgstr "ESRI Shape파일"
 
 #: static/geonode/js/upload/FileTypes.js:13
 #: static/geonode/js/upload/FileTypes.js:19
+#: static_root/geonode/js/upload/FileTypes.js:13
+#: static_root/geonode/js/upload/FileTypes.js:19
 msgid "GeoTiff File"
 msgstr "GeoTIFF 파일"
 
 #: static/geonode/js/upload/FileTypes.js:26
+#: static_root/geonode/js/upload/FileTypes.js:26
 msgid "Comma Separated File"
 msgstr "콤마로 분리된 파일"
 
 #: static/geonode/js/upload/FileTypes.js:32
+#: static_root/geonode/js/upload/FileTypes.js:32
 msgid "Google Earth KML"
 msgstr "구글 어스 KML 파일"
 
 #: static/geonode/js/upload/FileTypes.js:38
+#: static_root/geonode/js/upload/FileTypes.js:38
 msgid "Zip Archives"
 msgstr "Zip 압축 파일"
 
-#: static/geonode/js/upload/LayerInfo.js:249
+#: static/geonode/js/upload/LayerInfo.js:231
+#: static_root/geonode/js/upload/LayerInfo.js:231
 msgid "Layer Info"
 msgstr "레이어 정보"
 
-#: static/geonode/js/upload/LayerInfo.js:250
+#: static/geonode/js/upload/LayerInfo.js:232
+#: static_root/geonode/js/upload/LayerInfo.js:232
 msgid "Edit Metadata"
 msgstr "메타데이터 편집"
 
-#: static/geonode/js/upload/LayerInfo.js:251
+#: static/geonode/js/upload/LayerInfo.js:233
+#: static_root/geonode/js/upload/LayerInfo.js:233
 msgid "Manage Styles"
 msgstr "스타일 관리"
 
-#: static/geonode/js/upload/LayerInfo.js:253
+#: static/geonode/js/upload/LayerInfo.js:235
+#: static_root/geonode/js/upload/LayerInfo.js:235
 msgid "Your layer was successfully uploaded"
 msgstr "레이어를 성공적으로 업로드했습니다"
 
-#: static/geonode/js/upload/LayerInfo.js:282
+#: static/geonode/js/upload/LayerInfo.js:264
+#: static_root/geonode/js/upload/LayerInfo.js:264
 msgid "Performing Final GeoServer Config Step"
 msgstr "마지막 GeoServer 구성 단계 수행"
 
-#: static/geonode/js/upload/LayerInfo.js:297
-#: static/geonode/js/upload/LayerInfo.js:319
+#: static/geonode/js/upload/LayerInfo.js:279
+#: static/geonode/js/upload/LayerInfo.js:305
+#: static_root/geonode/js/upload/LayerInfo.js:279
+#: static_root/geonode/js/upload/LayerInfo.js:305
 msgid "You need to specify more information in order to complete your upload"
 msgstr "업로드를 완료하기 위해 더 많은 정보를 설정해야 합니다"
 
-#: static/geonode/js/upload/LayerInfo.js:311
+#: static/geonode/js/upload/LayerInfo.js:297
+#: static_root/geonode/js/upload/LayerInfo.js:297
 msgid "You need to specify more information in order to complete your upload."
 msgstr "업로드를 완료하기 위해 더 많은 정보를 설정해야 합니다."
 
-#: static/geonode/js/upload/LayerInfo.js:311
+#: static/geonode/js/upload/LayerInfo.js:297
+#: static_root/geonode/js/upload/LayerInfo.js:297
 msgid "You can continue configuring your layer."
 msgstr "레이어를 계속해서 설정할 수 있습니다."
 
-#: static/geonode/js/upload/LayerInfo.js:329
-#: static/geonode/js/upload/LayerInfo.js:414
+#: static/geonode/js/upload/LayerInfo.js:315
+#: static/geonode/js/upload/LayerInfo.js:400
+#: static_root/geonode/js/upload/LayerInfo.js:315
+#: static_root/geonode/js/upload/LayerInfo.js:400
 msgid "Unexpected Error"
 msgstr "예기치 않은 오류"
 
-#: static/geonode/js/upload/LayerInfo.js:345
+#: static/geonode/js/upload/LayerInfo.js:331
+#: static_root/geonode/js/upload/LayerInfo.js:331
 msgid "Performing GeoServer Config Step"
 msgstr "GeoServer 구성 단계 수행"
 
-#: static/geonode/js/upload/LayerInfo.js:417
-msgid "No error message supplied"
-msgstr "이 오류에 대한 메세지가 없습니다"
-
-#: static/geonode/js/upload/LayerInfo.js:432
+#: static/geonode/js/upload/LayerInfo.js:407
+#: static_root/geonode/js/upload/LayerInfo.js:407
 msgid "Layer files uploaded, configuring in GeoServer"
 msgstr "GeoServer에 레이어 파일 업로드 완료, 구성중"
 
-#: static/geonode/js/upload/LayerInfo.js:447
+#: static/geonode/js/upload/LayerInfo.js:422
+#: static_root/geonode/js/upload/LayerInfo.js:422
 msgid "Select or create a Geogig repository."
-msgstr "Geogig 저장소를 선택하가나 생성하십시오."
+msgstr ""
 
-#: static/geonode/js/upload/LayerInfo.js:542
+#: static/geonode/js/upload/LayerInfo.js:517
+#: static_root/admin/js/SelectFilter2.js:69
+#: static_root/geonode/js/upload/LayerInfo.js:517
 msgid "Remove"
 msgstr "제거"
 
-#: static/geonode/js/upload/upload.js:126
+#: static/geonode/js/upload/upload.js:125
+#: static_root/geonode/js/upload/upload.js:125
 #, c-format
 msgid "The file %s is an unsupported file type, please select another file."
 msgstr "%s 파일은 지원되지 않는 유형입니다. 다른 파일을 선택하십시오."
 
-#: static/geonode/js/upload/upload.js:286
+#: static/geonode/js/upload/upload.js:260
+#: static_root/geonode/js/upload/upload.js:260
 msgid "You are uploading an incomplete set of files."
 msgstr "불완전한 파일 세트를 업로드하려 합니다."
 
-#: templates/lang.js:9 templates/lang.js.c:236
+#: static_root/admin/js/SelectFilter2.js:45
+#, c-format
+msgid "Available %s"
+msgstr ""
+
+#: static_root/admin/js/SelectFilter2.js:46
+#, c-format
+msgid ""
+"This is the list of available %s. You may choose some by selecting them in "
+"the box below and then clicking the \"Choose\" arrow between the two boxes."
+msgstr ""
+
+#: static_root/admin/js/SelectFilter2.js:53
+#, c-format
+msgid "Type into this box to filter down the list of available %s."
+msgstr ""
+
+#: static_root/admin/js/SelectFilter2.js:57
+msgid "Filter"
+msgstr ""
+
+#: static_root/admin/js/SelectFilter2.js:61
+msgid "Choose all"
+msgstr ""
+
+#: static_root/admin/js/SelectFilter2.js:61
+#, c-format
+msgid "Click to choose all %s at once."
+msgstr ""
+
+#: static_root/admin/js/SelectFilter2.js:67
+msgid "Choose"
+msgstr ""
+
+#: static_root/admin/js/SelectFilter2.js:75
+#, c-format
+msgid "Chosen %s"
+msgstr ""
+
+#: static_root/admin/js/SelectFilter2.js:76
+#, c-format
+msgid ""
+"This is the list of chosen %s. You may remove some by selecting them in the "
+"box below and then clicking the \"Remove\" arrow between the two boxes."
+msgstr ""
+
+#: static_root/admin/js/SelectFilter2.js:80
+msgid "Remove all"
+msgstr ""
+
+#: static_root/admin/js/SelectFilter2.js:80
+#, c-format
+msgid "Click to remove all chosen %s at once."
+msgstr ""
+
+#: static_root/admin/js/actions.js:18 static_root/admin/js/actions.min.js:1
+msgid "%(sel)s of %(cnt)s selected"
+msgid_plural "%(sel)s of %(cnt)s selected"
+msgstr[0] ""
+
+#: static_root/admin/js/actions.js:109 static_root/admin/js/actions.min.js:5
+msgid ""
+"You have unsaved changes on individual editable fields. If you run an "
+"action, your unsaved changes will be lost."
+msgstr ""
+
+#: static_root/admin/js/actions.js:121 static_root/admin/js/actions.min.js:5
+msgid ""
+"You have selected an action, but you haven't saved your changes to "
+"individual fields yet. Please click OK to save. You'll need to re-run the "
+"action."
+msgstr ""
+
+#: static_root/admin/js/actions.js:123 static_root/admin/js/actions.min.js:6
+msgid ""
+"You have selected an action, and you haven't made any changes on individual "
+"fields. You're probably looking for the Go button rather than the Save "
+"button."
+msgstr ""
+
+#: static_root/admin/js/calendar.js:8
+msgid ""
+"January February March April May June July August September October November "
+"December"
+msgstr ""
+
+#: static_root/admin/js/calendar.js:9
+msgid "S M T W T F S"
+msgstr ""
+
+#: static_root/admin/js/collapse.js:8 static_root/admin/js/collapse.js.c:19
+#: static_root/admin/js/collapse.min.js:1
+msgid "Show"
+msgstr ""
+
+#: static_root/admin/js/collapse.js:16 static_root/admin/js/collapse.min.js:1
+msgid "Hide"
+msgstr ""
+
+#: static_root/admin/js/admin/DateTimeShortcuts.js:52
+#: static_root/admin/js/admin/DateTimeShortcuts.js:88
+msgid "Now"
+msgstr ""
+
+#: static_root/admin/js/admin/DateTimeShortcuts.js:56
+msgid "Clock"
+msgstr ""
+
+#: static_root/admin/js/admin/DateTimeShortcuts.js:84
+msgid "Choose a time"
+msgstr ""
+
+#: static_root/admin/js/admin/DateTimeShortcuts.js:89
+msgid "Midnight"
+msgstr ""
+
+#: static_root/admin/js/admin/DateTimeShortcuts.js:90
+msgid "6 a.m."
+msgstr ""
+
+#: static_root/admin/js/admin/DateTimeShortcuts.js:91
+msgid "Noon"
+msgstr ""
+
+#: static_root/admin/js/admin/DateTimeShortcuts.js:95
+#: static_root/admin/js/admin/DateTimeShortcuts.js:208 templates/lang.js:9
+#: templates/lang.js.c:236
 msgid "Cancel"
 msgstr "취소"
+
+#: static_root/admin/js/admin/DateTimeShortcuts.js:148
+#: static_root/admin/js/admin/DateTimeShortcuts.js:201
+msgid "Today"
+msgstr ""
+
+#: static_root/admin/js/admin/DateTimeShortcuts.js:152
+msgid "Calendar"
+msgstr ""
+
+#: static_root/admin/js/admin/DateTimeShortcuts.js:199
+msgid "Yesterday"
+msgstr ""
+
+#: static_root/admin/js/admin/DateTimeShortcuts.js:203
+msgid "Tomorrow"
+msgstr ""
 
 #: templates/lang.js:10
 msgid "Save as Copy"
@@ -329,7 +508,9 @@ msgstr "작게"
 msgid ""
 "Error contacting server.\n"
 " Please check the url and try again."
-msgstr "서버 연결 오류입니다.\nURL을 확인하고 다시 시도하십시오."
+msgstr ""
+"서버 연결 오류입니다.\n"
+"URL을 확인하고 다시 시도하십시오."
 
 #: templates/lang.js:69
 msgid "Layer Properties"
@@ -429,7 +610,9 @@ msgstr "배경 없음"
 msgid ""
 "Your map is ready to be published to the web!  Simply copy the following "
 "HTML to embed the map in your website:"
-msgstr "지도를 웹에 발행할 준비가 되었습니다! 웹사이트에 지도를 추가하려면 다음 HTML을 복사하십시오."
+msgstr ""
+"지도를 웹에 발행할 준비가 되었습니다! 웹사이트에 지도를 추가하려면 다음 HTML"
+"을 복사하십시오."
 
 #: templates/lang.js:136 templates/lang.js.c:202
 msgid "Abstract:"
@@ -598,3 +781,6 @@ msgstr "다운로드 중..."
 #: templates/lang.js:237
 msgid "Please wait"
 msgstr "잠시만 기다리십시오"
+
+#~ msgid "No error message supplied"
+#~ msgstr "No error message supplied"

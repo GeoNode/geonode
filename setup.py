@@ -117,11 +117,11 @@ setup(name='GeoNode',
 
         # GeoNode org maintained apps.
         "django-geoexplorer==4.0.4",
-        "geonode-user-messages==0.1.1",
+        "geonode-user-messages==0.1.2",
         "geonode-avatar==2.1.4",
         "geonode-announcements==1.0.5",
         "geonode-agon-ratings==0.3.1",
-        "geonode-user-accounts==1.0.9",
+        "geonode-user-accounts==1.0.10",
         "geonode-arcrest==10.2",
         "geonode-notification==1.1.1",
         "geonode-dialogos==0.4",

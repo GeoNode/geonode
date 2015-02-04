@@ -174,12 +174,12 @@ def layer_style_manage(request, layername):
             all_available_gs_styles = cat.get_styles()
             gs_styles = []
             for style in all_available_gs_styles:
-                gs_styles.append(style.name)
+                gs_styles.append((style.name, style.sld_title))
 
             current_layer_styles = layer.styles.all()
             layer_styles = []
             for style in current_layer_styles:
-                layer_styles.append(style.name)
+                layer_styles.append((style.name, style.sld_title))
 
             # Render the form
             return render_to_response(
@@ -188,7 +188,7 @@ def layer_style_manage(request, layername):
                     "layer": layer,
                     "gs_styles": gs_styles,
                     "layer_styles": layer_styles,
-                    "default_style": layer.default_style.name
+                    "default_style": (layer.default_style.name, layer.default_style.sld_title)
                 }
                 )
             )

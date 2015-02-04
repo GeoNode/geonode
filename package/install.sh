@@ -65,8 +65,10 @@ function randpass() {
 function setup_postgres_once() {
     su - postgres <<EOF
 createdb -E UTF8 -l en_US.UTF8 -T template0 geonode
+createdb -E UTF8 -l en_US.UTF8 -T template0 geonode_data
 createlang -d geonode plpgsql
-psql -d geonode -c 'CREATE EXTENSION postgis'
+createlang -d geonode_data plpgsql
+psql -d geonode_data -c 'CREATE EXTENSION postgis'
 EOF
 su - postgres -c "psql" <<EOF
 CREATE ROLE geonode WITH LOGIN PASSWORD '$psqlpass' SUPERUSER INHERIT;

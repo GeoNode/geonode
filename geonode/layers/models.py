@@ -238,6 +238,7 @@ class UploadSession(models.Model):
     processed = models.BooleanField(default=False)
     error = models.TextField(blank=True, null=True)
     traceback = models.TextField(blank=True, null=True)
+    context = models.TextField(blank=True, null=True)
 
     def successful(self):
         return self.processed and self.errors is None
