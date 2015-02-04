@@ -55,6 +55,7 @@ from geonode.people.forms import ProfileForm, PocForm
 from geonode.security.views import _perms_info_json
 from geonode.documents.models import get_related_documents
 from geonode.utils import build_social_links
+from geonode.geoserver.helpers import cascading_delete, gs_catalog
 
 CONTEXT_LOG_FILE = None
 
@@ -461,6 +462,9 @@ def layer_replace(request, layername, template='layers/layer_replace.html'):
                     out['success'] = False
                     out['errors'] = _("You are attempting to replace a raster layer with a vector.")
                 else:
+                    # delete geoserver's store before upload
+                    cat = gs_catalog
+                    cascading_delete(cat, layer.typename)
                     saved_layer = file_upload(
                         base_file,
                         name=layer.name,
