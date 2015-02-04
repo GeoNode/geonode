@@ -17,12 +17,15 @@
 #
 #########################################################################
 
+import os
 import httplib2
 import base64
 import math
 import copy
 import string
 import datetime
+import shapefile
+import re
 
 from django.conf import settings
 from django.core.exceptions import PermissionDenied
@@ -604,3 +607,25 @@ def build_social_links(request, resourcebase):
             'abstract': abstract,
             'caveats': caveats,
             'url': social_url})
+
+
+def check_shp_columnnames(layer):
+    """ Check if shapefile for a given layer has valid column names.
+    """
+    # TODO we may add in a better location this method
+    shp_name = ''
+    for f in layer.upload_session.layerfile_set.all():
+        if os.path.splitext(f.file.name)[1] == '.shp':
+            shp_name = f.file.path
+
+    # TODO we may need to improve this regexp
+    regex = r'^[a-zA-Z][a-zA-Z\d]*$'
+    a = re.compile(regex)
+    shp = shapefile.Reader(shp_name)
+    for field in shp.fields:
+        field_name = field[0]
+        if not a.match(field_name):
+            print 'Shapefile has an invalid column name: %s' % field_name
+            return False, field_name
+
+    return True, None
