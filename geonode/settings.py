@@ -853,6 +853,20 @@ try:
 except ImportError:
     pass
 
+
+#for windows users check if they didn't set GEOS and GDAL in local_settings.py
+#maybe they set it as a windows environment
+if os.name == 'nt':
+    if not "GEOS_LIBRARY_PATH" in locals() or not "GDAL_LIBRARY_PATH" in locals():
+        if os.environ.get("GEOS_LIBRARY_PATH", None) \
+            and os.environ.get("GDAL_LIBRARY_PATH", None):
+            GEOS_LIBRARY_PATH = os.environ.get('GEOS_LIBRARY_PATH') 
+            GDAL_LIBRARY_PATH = os.environ.get('GDAL_LIBRARY_PATH')
+        else:
+            #maybe it will be found regardless if not it will throw 500 error
+            from django.contrib.gis.geos import GEOSGeometry
+
+
 # define the urls after the settings are overridden
 if 'geonode.geoserver' in INSTALLED_APPS:
     LOCAL_GEOSERVER = {
