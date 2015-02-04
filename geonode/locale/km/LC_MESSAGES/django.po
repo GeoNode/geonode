@@ -3,14 +3,15 @@
 # This file is distributed under the same license as the PACKAGE package.
 #
 # Translators:
+# Translators:
 # Andres Alfonso Lemon Gomez <lemon.andres@gmail.com>, 2014
 msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-11-19 18:27-0500\n"
-"PO-Revision-Date: 2014-11-15 20:21+0000\n"
-"Last-Translator: Andres Alfonso Lemon Gomez <lemon.andres@gmail.com>\n"
+"POT-Creation-Date: 2015-02-03 08:23-0600\n"
+"PO-Revision-Date: 2015-02-03 12:11+0000\n"
+"Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
 "Language-Team: Khmer (http://www.transifex.com/projects/p/geonode/language/"
 "km/)\n"
 "Language: km\n"
@@ -144,9 +145,9 @@ msgid "No information provided"
 msgstr "គ្មាន​ព័ត៌មាន​ដែល​បាន​ផ្តល់"
 
 #: base/forms.py:35 base/templates/base/resourcebase_info_panel.html:46
-#: documents/templates/documents/document_metadata.html:51
-#: layers/templates/layers/layer_metadata.html:53
-#: maps/templates/maps/map_metadata.html:53
+#: documents/templates/documents/document_metadata.html:60
+#: layers/templates/layers/layer_metadata.html:61
+#: maps/templates/maps/map_metadata.html:61
 msgid "Category"
 msgstr "ប្រភេទ"
 
@@ -154,37 +155,37 @@ msgstr "ប្រភេទ"
 msgid "Category is required."
 msgstr "ប្រភេទ​ត្រូវ​បាន​ទាមទារ​។"
 
-#: base/models.py:40 services/models.py:85
+#: base/models.py:41 services/models.py:85
 msgid "function performed by the responsible party"
 msgstr "មុខងារ​បាន​អនុវត្ត​ដោយ​ភាគី​ទទួល​ខុស​ត្រូវ"
 
-#: base/models.py:229
+#: base/models.py:209
 msgid "reference date for the cited resource"
 msgstr "កាលបរិច្ឆេទ​សេចក្ដី​យោង​សម្រាប់​ធនធាន​ដែល​បាន​លើក​ឡើង​នោះ"
 
-#: base/models.py:230
+#: base/models.py:210
 msgid "identification of when a given event occurred"
 msgstr "កំណត់​ពេល​ព្រឹត្តិការណ៍​ដែល​បាន​ផ្តល់​ឱ្យ​កើត​ឡើង"
 
-#: base/models.py:231
+#: base/models.py:211
 msgid "version of the cited resource"
 msgstr "កំណែ​របស់​ធនធាន​បាន​លើក​ឡើង​នោះ"
 
-#: base/models.py:232
+#: base/models.py:212
 msgid "brief narrative summary of the content of the resource(s)"
 msgstr "សេចក្តី​សង្ខេប​រៀប​រាប់​សង្ខេប​នៃ​មាតិកា​នៃ​ធនធាន (s​)"
 
-#: base/models.py:233
+#: base/models.py:213
 msgid "summary of the intentions with which the resource(s) was developed"
 msgstr "សេចក្តី​សង្ខេប​នៃ​ចេតនា​មួយ​ដែល​ធនធាន (s បាន​) ត្រូវ​បាន​បង្កើត​ឡើង"
 
-#: base/models.py:234
+#: base/models.py:214
 msgid ""
 "frequency with which modifications and deletions are made to the data after "
 "it is first produced"
 msgstr "ប្រេកង់​ដែល​កែប្រែ​និង​លុប​ត្រូវ​បាន​ធ្វើ​ឡើង​តាម​ទិន្នន័យ​បន្ទាប់​ពី​វា​ត្រូវ​បាន​ផលិត​ឡើង​ជា​លើក​ដំបូង"
 
-#: base/models.py:236
+#: base/models.py:216
 msgid ""
 "commonly used word(s) or formalised word(s) or phrase(s) used to describe "
 "the subject (space or comma-separated"
@@ -192,30 +193,30 @@ msgstr ""
 "ពាក្យ​ដែល​បាន​ប្រើ​ជា​ទូទៅ (s​) បាន​ឬ​ពាក្យ​ផ្លូវការ (s​) បាន​ឬ​ឃ្លា (s​) បាន​ត្រូវ​បាន​គេ​ប្រើ​ដើម្បី​ពិពណ៌នា​"
 "អំពី​ប្រធានបទ (ចន្លោះ​ឬ​បំបែក​ដោយ​សញ្ញា​ក្បៀស"
 
-#: base/models.py:238
+#: base/models.py:218
 msgid "keyword identifies a location"
 msgstr "ពាក្យ​គន្លឹះ​កំណត់​ទីតាំង​មួយ"
 
-#: base/models.py:239
+#: base/models.py:219
 msgid "limitation(s) placed upon the access or use of the data."
 msgstr "ដែន​កំណត់ (s​) បាន​ដាក់​លើ​ការ​ចូល​ដំណើរ​ការ​ឬ​ការ​ប្រើ​ប្រាស់​ទិន្នន័យ​។"
 
-#: base/models.py:240
+#: base/models.py:220
 msgid ""
 "other restrictions and legal prerequisites for accessing and using the "
 "resource or metadata"
 msgstr ""
 "ការ​រឹត​បន្តឹង​ផ្សេង​ទៀត​និង​លក្ខណៈ​ស្រប​ច្បាប់​សម្រាប់​ចូល​ដំណើរការ​និង​ការ​ប្រើ​ប្រាស់​ធន​ធាន​ឬ​ទ​​ិន្នន័យ​មេតា"
 
-#: base/models.py:242
+#: base/models.py:222
 msgid "license of the dataset"
 msgstr "អាជ្ញា​ប​ណ្ណ​នៃ​សំណុំ​ទិន្នន័យ​នេះ"
 
-#: base/models.py:243
+#: base/models.py:223
 msgid "language used within the dataset"
 msgstr "ភាសា​ដែល​បាន​ប្រើ​ក្នុង​ទិន្នន័យ​នេះ"
 
-#: base/models.py:244
+#: base/models.py:224
 msgid ""
 "high-level geographic data thematic classification to assist in the grouping "
 "and search of available geographic data sets."
@@ -223,19 +224,19 @@ msgstr ""
 "កម្រិត​ខ្ពស់​ទិន្នន័យ​ភូមិ​សា​ស្រ្ត​ចាត់​ថ្នាក់​តាម​វិស័យ​ដើម្បី​ជួយ​ក្រុម​និង​ការ​ស្វែង​រក​របស់​សំណុំ​ទិន្នន័យ​ភូមិ​សា​ស្រ្ត​ដែល​អាច​"
 "ប្រើ​បាន​។"
 
-#: base/models.py:246
+#: base/models.py:226
 msgid "method used to represent geographic information in the dataset."
 msgstr "វិធី​សា​ស្រ្ត​ដែល​ត្រូវ​បាន​ប្រើ​ដើម្បី​តំណាង​ឱ្យ​ព័​ត៌​មាន​ភូមិ​សា​ស្រ្ត​នៅ​ក្នុង​សំណុំ​ទិន្នន័យ​នេះ​។"
 
-#: base/models.py:247
+#: base/models.py:227
 msgid "time period covered by the content of the dataset (start)"
 msgstr "រយៈ​ពេល​ពេល​វេលា​គ្រប​ដ​ណ្ត​ប់​ដោយ​មាតិកា​នៃ​សំណុំ​ទិន្នន័យ​នេះ (ចាប់​ផ្តើ​ម​)"
 
-#: base/models.py:248
+#: base/models.py:228
 msgid "time period covered by the content of the dataset (end)"
 msgstr "រយៈពេល​គ្រប​ដ​ណ្ត​ប់​ដោយ​មាតិកា​នៃ​សំណុំ​ទិន្នន័យ (ចុង​) ដែល​បាន"
 
-#: base/models.py:249
+#: base/models.py:229
 msgid ""
 "information about on-line sources from which the dataset, specification, or "
 "community profile name and extended metadata elements can be obtained"
@@ -243,141 +244,141 @@ msgstr ""
 "ព​ត៌​មាន​អំពី​ប្រភព​នៅ​លើ​បន្ទាត់​ដែល​បាន​មក​ពី​ការ​សំណុំ​ទិន្នន័យ​, ការ​បញ្ជាក់​ឬ​ឈ្មោះ​ទម្រង់​សហគមន៍​និង​ធាតុ​ទិន្នន័យ​មេតា​"
 "បន្ថែម​អាច​ត្រូវ​បាន​ទទួល​បាន"
 
-#: base/models.py:251
+#: base/models.py:231
 msgid "detailed text description of what the online resource is/does"
 msgstr "សេចក្ដី​ពណ៌នា​អត្ថបទ​លម្អិត​នៃ​អ្វី​ដែល​ធនធាន​លើ​ប​ណ្តា​ញ​គឺ / ធ្វើ"
 
-#: base/models.py:252
+#: base/models.py:232
 msgid ""
 "general explanation of the data producer's knowledge about the lineage of a "
 "dataset"
 msgstr "ការ​ពន្យល់​ទូទៅ​នៃ​ចំណេះដឹង​អ្នក​ផលិត​ទិន្នន័យ​អំពី​ពូជពង្ស​នៃ​សំណុំ​ទិន្នន័យ​មួយ"
 
-#: base/models.py:258
+#: base/models.py:238
 msgid "title"
 msgstr "ចំណង​ជើង"
 
-#: base/models.py:258
+#: base/models.py:238
 msgid "name by which the cited resource is known"
 msgstr "ឈ្មោះ​ដែល​ធនធាន​បាន​លើក​ឡើង​ត្រូវ​បាន​គេ​ស្គាល់"
 
-#: base/models.py:259
+#: base/models.py:239
 msgid "date"
 msgstr "កាល​បរិ​ច្ឆេ​ត"
 
-#: base/models.py:260
+#: base/models.py:240
 msgid "date type"
 msgstr "ប្រភេទ​កាលបរិច្ឆេទ"
 
-#: base/models.py:262
+#: base/models.py:242
 msgid "edition"
 msgstr "ការ​បោះពុម្ពផ្សាយ"
 
-#: base/models.py:263
+#: base/models.py:243
 msgid "abstract"
 msgstr "អរូបី"
 
-#: base/models.py:264
+#: base/models.py:244
 msgid "purpose"
 msgstr "គោលបំណង"
 
-#: base/models.py:265
+#: base/models.py:245
 msgid "maintenance frequency"
 msgstr "ប្រេកង់​ថែទាំ"
 
-#: base/models.py:268 groups/models.py:41 people/models.py:88
+#: base/models.py:248 groups/models.py:41 people/models.py:89
 msgid "keywords"
 msgstr "ពាក្យគន្លឹះ"
 
-#: base/models.py:269
+#: base/models.py:249
 msgid "keywords region"
 msgstr "តំបន់​ពាក្យ​គន្លឹះ"
 
-#: base/models.py:272
+#: base/models.py:252
 msgid "restrictions"
 msgstr "ការ​រឹត​បន្តឹង"
 
-#: base/models.py:276
+#: base/models.py:256
 msgid "restrictions other"
 msgstr "ការ​រឹត​បន្តឹង​ផ្សេង​ទៀត"
 
-#: base/models.py:281
+#: base/models.py:261
 msgid "language"
 msgstr "ភាសា"
 
-#: base/models.py:292
+#: base/models.py:272
 msgid "temporal extent start"
 msgstr "ការ​ចាប់​ផ្តើ​ម​វិសាលភាព​ខាង​សាច់ឈាម"
 
-#: base/models.py:294
+#: base/models.py:274
 msgid "temporal extent end"
 msgstr "ចុង​បញ្ចប់​វិសាលភាព​ខាង​សាច់ឈាម"
 
-#: base/models.py:297
+#: base/models.py:277
 msgid "supplemental information"
 msgstr "ព​ត៌​មាន​បន្ថែម"
 
-#: base/models.py:298
+#: base/models.py:278
 msgid "any other descriptive information about the dataset"
 msgstr "ព័ត៌មាន​ពិពណ៌នា​ណា​មួយ​ផ្សេង​ទៀត​អំពី​សំណុំ​ទិន្នន័យ​នេះ"
 
-#: base/models.py:301
+#: base/models.py:281
 msgid "distribution URL"
 msgstr "URL របស់​ការ​ចែកចាយ"
 
-#: base/models.py:303
+#: base/models.py:283
 msgid "distribution description"
 msgstr "ការ​ពិពណ៌នា​ចែកចាយ"
 
-#: base/models.py:307
+#: base/models.py:287
 msgid "data quality statement"
 msgstr "សេចក្តី​ថ្លែង​ការណ៍​ដែល​មាន​គុណភាព​ទិន្នន័យ"
 
-#: base/models.py:322
+#: base/models.py:302
 msgid "CSW typename"
 msgstr "TypeName CSW"
 
-#: base/models.py:324
+#: base/models.py:304
 msgid "CSW schema"
 msgstr "គ្រោងការណ៍ CSW"
 
-#: base/models.py:329
+#: base/models.py:309
 msgid "CSW source"
 msgstr "ប្រភព CSW"
 
-#: base/models.py:330
+#: base/models.py:310
 msgid "CSW insert date"
 msgstr "កាលបរិច្ឆេទ​បញ្ចូល CSW"
 
-#: base/models.py:331
+#: base/models.py:311
 msgid "CSW type"
 msgstr "ប្រភេទ CSW"
 
-#: base/models.py:332
+#: base/models.py:312
 msgid "CSW anytext"
 msgstr "anytext CSW"
 
-#: base/models.py:333
+#: base/models.py:313
 msgid "CSW WKT geometry"
 msgstr "ធរណីមាត្រ CS​​W WKT"
 
-#: base/models.py:346
+#: base/models.py:326
 msgid "Should this resource be advertised in home page?"
 msgstr "គួរ​ធនធាន​នេះ​ត្រូវ​បាន​ផ្សាយ​ក្នុង​ទំព័រ​ផ្ទះ​?"
 
-#: base/models.py:347
+#: base/models.py:327
 msgid "Should this resource be published and searchable?"
 msgstr "គួរ​ធនធាន​នេះ​ត្រូវ​បាន​បោះ​ពុម្ព​ផ្សាយ​និង​ការ​ស្វែងរក​បាន​?"
 
-#: base/models.py:666
+#: base/models.py:660
 msgid "For example \"kml\""
 msgstr "ឧទាហរណ៍ \"KML​\""
 
-#: base/models.py:668
+#: base/models.py:662
 msgid "For example \"View in Google Earth\""
 msgstr "ឧទាហរណ៍ \"មើល​ក្នុង Google Earth​\""
 
-#: base/models.py:669
+#: base/models.py:663
 msgid "For example \"text/xml\""
 msgstr "ឧទាហរណ៍ \"អត្ថបទ / XML​\""
 
@@ -390,7 +391,7 @@ msgid "A request for downloading a resource was sent"
 msgstr ""
 
 #: base/templates/base/_resourcebase_contact_snippet.html:3
-#: templates/500.html:184 templates/base.html:175
+#: templates/500.html:184 templates/base.html:131
 msgid "About"
 msgstr "អំពី"
 
@@ -399,15 +400,15 @@ msgid "Owner, Point of Contact, Metadata Author"
 msgstr "ម្ចាស់​ចំណុច​នៃ​ការ​ទំនាក់ទំនង​, អ្នក​និពន្ធ​ទិន្នន័យ​មេតា"
 
 #: base/templates/base/_resourcebase_contact_snippet.html:10
-#: base/templates/base/resourcebase_info_panel.html:56
+#: base/templates/base/resourcebase_info_panel.html:61
 msgid "Owner"
 msgstr "ម្ចាស់"
 
 #: base/templates/base/_resourcebase_contact_snippet.html:14
-#: base/templates/base/resourcebase_info_panel.html:61
-#: documents/templates/documents/document_metadata.html:41
-#: layers/templates/layers/layer_metadata.html:80
-#: maps/templates/maps/map_metadata.html:43
+#: base/templates/base/resourcebase_info_panel.html:66
+#: documents/templates/documents/document_metadata.html:50
+#: layers/templates/layers/layer_metadata.html:84
+#: maps/templates/maps/map_metadata.html:51
 msgid "Point of Contact"
 msgstr "ចំណុច​នៃ​ការ​ទំនាក់ទំនង"
 
@@ -415,17 +416,17 @@ msgstr "ចំណុច​នៃ​ការ​ទំនាក់ទំនង"
 msgid "Metadata Author"
 msgstr "អ្នក​និពន្ធ​ទិន្នន័យ​មេតា"
 
-#: base/templates/base/resourcebase_info_panel.html:6 services/forms.py:21
-#: templates/announcements/announcement_list.html:30
+#: base/templates/base/resourcebase_info_panel.html:6 services/forms.py:24
+#: templates/announcements/announcement_list.html:20
 msgid "Title"
 msgstr "ចំណងជើង"
 
 #: base/templates/base/resourcebase_info_panel.html:11
-#: base/templates/base/resourcebase_info_panel.html:75
+#: base/templates/base/resourcebase_info_panel.html:80
 msgid "License"
 msgstr "អាជ្ញាប័ណ្ណ"
 
-#: base/templates/base/resourcebase_info_panel.html:24 services/forms.py:26
+#: base/templates/base/resourcebase_info_panel.html:24 services/forms.py:29
 msgid "Abstract"
 msgstr "អរូបី"
 
@@ -435,7 +436,7 @@ msgid "Date"
 msgstr "កាលបរិច្ឆេទ"
 
 #: base/templates/base/resourcebase_info_panel.html:34
-#: layers/templates/layers/layer_detail.html:307
+#: layers/templates/layers/layer_detail.html:306
 msgid "Type"
 msgstr "ប្រភេទ"
 
@@ -444,44 +445,44 @@ msgstr "ប្រភេទ"
 msgid "Keywords"
 msgstr "ពាក្យ​គន្លឹះ"
 
-#: base/templates/base/resourcebase_info_panel.html:51
+#: base/templates/base/resourcebase_info_panel.html:56
 msgid "Regions"
 msgstr "តំបន់"
 
-#: base/templates/base/resourcebase_info_panel.html:88
+#: base/templates/base/resourcebase_info_panel.html:93
 msgid "Maintenance Frequency"
 msgstr "ភព​ញឹក​ញ​ប់​ការ​ថែទាំ"
 
-#: base/templates/base/resourcebase_info_panel.html:93
+#: base/templates/base/resourcebase_info_panel.html:98
 msgid "Restrictions"
 msgstr "ការ​រឹត​បន្តឹង"
 
-#: base/templates/base/resourcebase_info_panel.html:102
+#: base/templates/base/resourcebase_info_panel.html:107
 msgid "Edition"
 msgstr "បោះពុម្ព​លើក"
 
-#: base/templates/base/resourcebase_info_panel.html:107
+#: base/templates/base/resourcebase_info_panel.html:112
 msgid "Purpose"
 msgstr "គោលបំណង"
 
-#: base/templates/base/resourcebase_info_panel.html:112 templates/500.html:187
-#: templates/base.html:178
+#: base/templates/base/resourcebase_info_panel.html:117 templates/500.html:187
+#: templates/base.html:134
 msgid "Language"
 msgstr "ភាសា"
 
-#: base/templates/base/resourcebase_info_panel.html:117
+#: base/templates/base/resourcebase_info_panel.html:122
 msgid "Temporal Extent"
 msgstr "វិសាលភាព​ខាង​សាច់ឈាម"
 
-#: base/templates/base/resourcebase_info_panel.html:122
+#: base/templates/base/resourcebase_info_panel.html:127
 msgid "Data Quality"
 msgstr "គុណភាព​ទិន្នន័យ"
 
-#: base/templates/base/resourcebase_info_panel.html:127
+#: base/templates/base/resourcebase_info_panel.html:132
 msgid "Supplemental Information"
 msgstr "ព័ត៌មាន​បន្ថែម"
 
-#: base/templates/base/resourcebase_info_panel.html:132
+#: base/templates/base/resourcebase_info_panel.html:137
 msgid "Spatial Representation Type"
 msgstr "ប្រភេទ​តំណាង spatial"
 
@@ -510,247 +511,187 @@ msgstr "តំណ​ទៅ"
 msgid "Permissions must be valid JSON."
 msgstr "សិទ្ធិ​ត្រូវ​តែ​ជា JSON ត្រឹមត្រូវ​។"
 
-#: documents/models.py:39
+#: documents/models.py:38
 msgid "File"
 msgstr "ឯកសារ"
 
-#: documents/models.py:48
+#: documents/models.py:47
 msgid "The URL of the document if it is external."
 msgstr "URL របស់​ឯកសារ​នេះ​ប្រសិន​បើ​វា​គឺ​ជា​ការ​ខាង​ក្រៅ​។"
 
-#: documents/models.py:49
+#: documents/models.py:48
 msgid "URL"
 msgstr "URL ដែល"
 
-#: documents/views.py:26
+#: documents/views.py:27
 msgid "You are not permitted to delete this document"
 msgstr "អ្នក​មិន​ត្រូវ​បាន​អនុញ្ញាត​ឱ្យ​លុប​ឯកសារ​នេះ"
 
-#: documents/views.py:27
+#: documents/views.py:28
 msgid "You do not have permissions for this document."
 msgstr "អ្នក​មិន​មាន​សិទ្ធិ​សម្រាប់​ឯកសារ​នេះ​។"
 
-#: documents/views.py:28
+#: documents/views.py:29
 msgid "You are not permitted to modify this document"
 msgstr "អ្នក​មិន​ត្រូវ​បាន​អនុញ្ញាត​ឱ្យ​កែប្រែ​ឯកសារ​នេះ"
 
-#: documents/views.py:30
+#: documents/views.py:31
 msgid "You are not permitted to modify this document's metadata"
 msgstr "អ្នក​មិន​ត្រូវ​បាន​អនុញ្ញាត​ឱ្យ​កែប្រែ​ទិន្នន័យ​មេតា​របស់​ឯកសារ​នេះ"
 
-#: documents/views.py:31
+#: documents/views.py:32
 msgid "You are not permitted to view this document"
 msgstr "អ្នក​មិន​ត្រូវ​បាន​អនុញ្ញាត​ឱ្យ​មើល​ឯកសារ​នេះ"
 
-#: documents/views.py:67 documents/views.py:105
+#: documents/views.py:68 documents/views.py:112
 msgid "You are not allowed to view this document."
 msgstr "អ្នក​មិន​ត្រូវ​បាន​អនុញ្ញាត​ឱ្យ​មើល​ឯកសារ​នេះ​។"
 
-#: documents/views.py:181
+#: documents/views.py:192
 msgid "You are not allowed to edit this document."
 msgstr "អ្នក​មិន​ត្រូវ​បាន​អនុញ្ញាត​ឱ្យ​កែ​សម្រួល​ឯកសារ​នេះ​។"
 
-#: documents/templates/documents/_document_filters.html:5
-#: groups/templates/groups/group_list.html:15
-#: layers/templates/layers/_layer_filters.html:5
-#: maps/templates/maps/_map_filters.html:5
-#: people/templates/people/profile_list.html:12
-#: templates/search/_sort_filters.html:4
-msgid "Most recent"
-msgstr "ថ្មី​បំផុត"
+#: documents/management/__init__.py:14
+msgid "Document Created"
+msgstr ""
 
-#: documents/templates/documents/_document_filters.html:6
-#: layers/templates/layers/_layer_filters.html:6
-#: maps/templates/maps/_map_filters.html:6
-#: templates/search/_sort_filters.html:8
-msgid "Most popular"
-msgstr "ពេញ​និយម​បំផុត"
+#: documents/management/__init__.py:15
+msgid "A Document was created"
+msgstr ""
 
-#: documents/templates/documents/_document_filters.html:7
-#: layers/templates/layers/_layer_filters.html:7
-#: maps/templates/maps/_map_filters.html:7
-msgid "Most shared"
-msgstr "ចែក​រំលែក​ច្រើន​បំផុត"
+#: documents/management/__init__.py:18
+msgid "Document Updated"
+msgstr ""
 
-#: documents/templates/documents/_document_list_item.html:23
-#: documents/templates/documents/_document_list_item.html:45
-#: layers/templates/layers/_layer_list_item.html:28
-#: layers/templates/layers/_layer_list_item.html:84
-#: maps/templates/maps/_map_list_item.html:21
-#: maps/templates/maps/_map_list_item.html:46
-msgid "from"
-msgstr "ពី"
+#: documents/management/__init__.py:19
+msgid "A Document was updated"
+msgstr ""
 
-#: documents/templates/documents/_document_list_item.html:23
-#: documents/templates/documents/_document_list_item.html:45
-#: layers/templates/layers/_layer_list_item.html:28
-#: layers/templates/layers/_layer_list_item.html:84
-#: maps/templates/maps/_map_list_item.html:21
-#: maps/templates/maps/_map_list_item.html:46
-#: social/templates/social/_activity_item.html:27
-msgid "ago"
-msgstr "មុន"
+#: documents/management/__init__.py:22
+msgid "Document Deleted"
+msgstr ""
 
-#: documents/templates/documents/_document_list_item.html:26
-#: documents/templates/documents/_document_list_item.html:48
-#: layers/templates/layers/_layer_list_item.html:31
-#: layers/templates/layers/_layer_list_item.html:87
-#: maps/templates/maps/_map_list_item.html:24
-#: maps/templates/maps/_map_list_item.html:49
-msgid "view"
-msgstr "ទិដ្ឋភាព"
+#: documents/management/__init__.py:23
+msgid "A Document was deleted"
+msgstr ""
 
-#: documents/templates/documents/_document_list_item.html:27
-#: documents/templates/documents/_document_list_item.html:49
-#: layers/templates/layers/_layer_list_item.html:32
-#: layers/templates/layers/_layer_list_item.html:88
-#: maps/templates/maps/_map_list_item.html:25
-#: maps/templates/maps/_map_list_item.html:50
-msgid "Average rating"
-msgstr "ចំណាត់​ថ្នាក់​មធ្យម"
+#: documents/management/__init__.py:26
+msgid "Comment on Document"
+msgstr ""
 
-#: documents/templates/documents/_document_list_item.html:27
-#: documents/templates/documents/_document_list_item.html:49
-#: layers/templates/layers/_layer_list_item.html:32
-#: layers/templates/layers/_layer_list_item.html:88
-#: maps/templates/maps/_map_list_item.html:25
-#: maps/templates/maps/_map_list_item.html:50
-msgid "votes"
-msgstr "ការ​បោះ​ឆ្នោត"
+#: documents/management/__init__.py:27
+msgid "A Document was commented on"
+msgstr ""
 
-#: documents/templates/documents/_document_list_item.html:31
-#: layers/templates/layers/_layer_list_item.html:37
-#: maps/templates/maps/_map_list_item.html:30
-#: maps/templates/maps/map_download.html:6
-msgid "Download"
-msgstr "ទាញ​យក"
+#: documents/management/__init__.py:30
+msgid "Document for Map"
+msgstr ""
 
-#: documents/templates/documents/_document_list_item.html:46
-msgid "You do not have permission to view this document"
-msgstr "អ្នក​មិន​មាន​សិទ្ធិ​ដើម្បី​មើល​ឯកសារ​នេះ"
+#: documents/management/__init__.py:31
+msgid "A rating was given to a document"
+msgstr ""
 
-#: documents/templates/documents/document_detail.html:42
+#: documents/templates/documents/document_detail.html:40
 msgid "External Resource"
 msgstr "ធនធាន​ខាង​ក្រៅ"
 
-#: documents/templates/documents/document_detail.html:48
-#: layers/templates/layers/_actions.html:3
-#: maps/templates/maps/map_detail.html:35 templates/_actions.html:3
-msgid "Info"
-msgstr "ព​ត៌​មាន"
-
-#: documents/templates/documents/document_detail.html:50
-#: layers/templates/layers/_actions.html:6
-#: maps/templates/maps/map_detail.html:38 templates/_actions.html:5
-msgid "Share"
-msgstr "ចែករំលែក"
-
-#: documents/templates/documents/document_detail.html:52
-#: layers/templates/layers/_actions.html:8
-#: maps/templates/maps/map_detail.html:41
-msgid "Ratings"
-msgstr "ការ​ផ្តល់​ចំណាត់​ថ្នាក់"
-
-#: documents/templates/documents/document_detail.html:53
-#: layers/templates/layers/_actions.html:9
-#: maps/templates/maps/map_detail.html:42 templates/_comments.html:12
-msgid "Comments"
-msgstr "យោបល់"
-
-#: documents/templates/documents/document_detail.html:71
+#: documents/templates/documents/document_detail.html:62
 msgid "Rate this document"
 msgstr "វាយតម្លៃ​ឯកសារ​នេះ"
 
-#: documents/templates/documents/document_detail.html:75
-#: layers/templates/layers/layer_detail.html:113
-#: maps/templates/maps/map_detail.html:58
+#: documents/templates/documents/document_detail.html:66
+#: layers/templates/layers/layer_detail.html:110
+#: maps/templates/maps/map_detail.html:50
 msgid "Average Rating"
 msgstr "ការ​វាយ​តម្លៃ​មធ្យម"
 
-#: documents/templates/documents/document_detail.html:91
-#: documents/templates/documents/document_detail.html:93
-#: documents/templates/documents/document_detail.html:95
-#: documents/templates/documents/document_detail.html:111
+#: documents/templates/documents/document_detail.html:82
+#: documents/templates/documents/document_detail.html:84
+#: documents/templates/documents/document_detail.html:86
+#: documents/templates/documents/document_detail.html:102
 msgid "Download Document"
 msgstr "ទាញ​យក​ឯកសារ"
 
-#: documents/templates/documents/document_detail.html:99
-#: layers/templates/layers/layer_detail.html:134
-#, fuzzy
+#: documents/templates/documents/document_detail.html:90
+#: layers/templates/layers/layer_detail.html:131
 msgid "Request Download"
-msgstr "ទាញ​យក"
+msgstr ""
 
-#: documents/templates/documents/document_detail.html:104
-#: layers/templates/layers/layer_detail.html:163
-#: layers/templates/layers/layer_detail.html:171
+#: documents/templates/documents/document_detail.html:95
+#: layers/templates/layers/layer_detail.html:160
+#: layers/templates/layers/layer_detail.html:168
 msgid "Download Metadata"
 msgstr "ទិន្នន័យ​មេតា​ទាញ​យក"
 
-#: documents/templates/documents/document_detail.html:121
-#: documents/templates/documents/document_detail.html:151
-#: layers/templates/layers/layer_detail.html:156
-#: layers/templates/layers/layer_detail.html:181
-#: layers/templates/layers/layer_detail.html:223
-#: maps/templates/maps/map_detail.html:95
-#: maps/templates/maps/map_detail.html:127
+#: documents/templates/documents/document_detail.html:112
+#: documents/templates/documents/document_detail.html:142
+#: layers/templates/layers/layer_detail.html:153
+#: layers/templates/layers/layer_detail.html:178
+#: layers/templates/layers/layer_detail.html:222
+#: maps/templates/maps/map_detail.html:87
+#: maps/templates/maps/map_detail.html:120
 #: templates/_bulk_permissions_form.html:19
 msgid "Close"
 msgstr "បិទ"
 
-#: documents/templates/documents/document_detail.html:128
-#: documents/templates/documents/document_detail.html:135
+#: documents/templates/documents/document_detail.html:119
+#: documents/templates/documents/document_detail.html:126
 msgid "Edit Document"
 msgstr "កែ​សម្រួល​ឯកសារ"
 
-#: documents/templates/documents/document_detail.html:140
-#: layers/templates/layers/layer_detail.html:203
+#: documents/templates/documents/document_detail.html:131
+#: documents/templates/documents/document_metadata.html:17
+#: layers/templates/layers/layer_detail.html:200
+#: layers/templates/layers/layer_metadata.html:12
+#: maps/templates/maps/map_metadata.html:12
 msgid "Edit Metadata"
 msgstr "កែសម្រួល​ទិន្នន័យ​មេតា"
 
-#: documents/templates/documents/document_detail.html:143
+#: documents/templates/documents/document_detail.html:134
 msgid "Replace this Document"
 msgstr "ជំនួស​ឯកសារ​នេះ"
 
-#: documents/templates/documents/document_detail.html:146
+#: documents/templates/documents/document_detail.html:137
 msgid "Remove this Document"
 msgstr "យក​ឯកសារ​នេះ"
 
-#: documents/templates/documents/document_detail.html:158
+#: documents/templates/documents/document_detail.html:149
 msgid "Resource using this document"
 msgstr "ធនធាន​ដោយ​ប្រើ​ឯកសារ​នេះ"
 
-#: documents/templates/documents/document_detail.html:160
+#: documents/templates/documents/document_detail.html:151
 msgid "List of resources using this document:"
 msgstr "បញ្ជី​នៃ​ធនធាន​ដោយ​ប្រើ​ឯកសារ​នេះ​:"
 
-#: documents/templates/documents/document_detail.html:164
+#: documents/templates/documents/document_detail.html:155
 msgid "This document is related to a "
 msgstr "ឯកសារ​នេះ​ត្រូវ​បាន​ទាក់ទង​ទៅ​នឹង"
 
-#: documents/templates/documents/document_detail.html:167
+#: documents/templates/documents/document_detail.html:158
 msgid "This document is not related to any maps or layers"
 msgstr "ឯកសារ​នេះ​មិន​ត្រូវ​បាន​ទាក់ទង​ទៅ​នឹង​ផែនទី​ឬ​ស្រទាប់​ណាមួយ​ឡើយ"
 
-#: documents/templates/documents/document_detail.html:174
-#: documents/templates/documents/document_upload.html:32
-#: groups/templates/groups/group_detail.html:65
-#: layers/templates/layers/layer_detail.html:296
+#: documents/templates/documents/document_detail.html:165
+#: documents/templates/documents/document_upload.html:31
+#: groups/templates/groups/group_detail.html:60
+#: layers/templates/layers/layer_detail.html:295
 #: layers/templates/layers/layer_replace.html:94
 #: layers/templates/upload/layer_upload.html:93
-#: maps/templates/maps/map_detail.html:173 people/admin.py:55
+#: maps/templates/maps/map_detail.html:166 people/admin.py:55
 msgid "Permissions"
 msgstr "សិទ្ធិ"
 
-#: documents/templates/documents/document_detail.html:175
+#: documents/templates/documents/document_detail.html:166
 msgid "Click the button below to change the permissions of this document."
 msgstr "សូម​ចុច​ប៊ូតុង​ខាង​ក្រោម​ដើម្បី​ផ្លាស់​ប្តូ​រ​សិទ្ធិ​របស់​ឯកសារ​នេះ​។"
 
-#: documents/templates/documents/document_detail.html:176
+#: documents/templates/documents/document_detail.html:167
 msgid "Change Document Permissions"
 msgstr "ការ​ផ្លាស់​ប្តូ​រ​សិទ្ធិ​របស់​ឯកសារ"
 
 #: documents/templates/documents/document_list.html:6
 #: documents/templates/documents/document_list.html:13
+#: documents/templates/documents/document_metadata.html:16
 #: documents/templates/documents/document_upload_base.html:11
 msgid "Explore Documents"
 msgstr "រក​មើល​ឯកសារ"
@@ -760,7 +701,7 @@ msgstr "រក​មើល​ឯកសារ"
 msgid "Upload Documents"
 msgstr "ឯកសារ​ផ្ទុក​ឡើង"
 
-#: documents/templates/documents/document_metadata.html:17
+#: documents/templates/documents/document_metadata.html:22
 #, python-format
 msgid ""
 "\n"
@@ -770,24 +711,27 @@ msgstr ""
 "\n"
 "ការ​កែ​សម្រួល​សេចក្ដី​លម្អិត​សម្រាប់​ %(document_title)s"
 
-#: documents/templates/documents/document_metadata.html:22
-#: layers/templates/layers/layer_metadata.html:23
-#: maps/templates/maps/map_metadata.html:23
+#: documents/templates/documents/document_metadata.html:28
+#: layers/templates/layers/layer_metadata.html:29
+#: maps/templates/maps/map_metadata.html:29
 msgid "Error updating metadata.  Please check the following fields: "
 msgstr "កំហុស​ក្នុង​ការ​ធ្វើ​ឱ្យ​ទាន់​សម័យ​ទិន្នន័យ​មេតា​។ សូម​ពិនិត្យ​មើល​វាល​ដូច​ខាង​ក្រោម​:"
 
-#: documents/templates/documents/document_metadata.html:46
-#: layers/templates/layers/layer_metadata.html:85
-#: maps/templates/maps/map_metadata.html:48
-msgid "Metadata Provider"
-msgstr "ក្រុមហ៊ុន​ផ្ដល់​ទិន្នន័យ​មេតា"
-
-#: documents/templates/documents/document_metadata.html:68
+#: documents/templates/documents/document_metadata.html:43
+#: documents/templates/documents/document_metadata.html:77
 #: groups/templates/groups/group_update.html:26
-#: layers/templates/layers/layer_metadata.html:90
-#: maps/templates/maps/map_metadata.html:70
+#: layers/templates/layers/layer_metadata.html:51
+#: layers/templates/layers/layer_metadata.html:94
+#: maps/templates/maps/map_metadata.html:44
+#: maps/templates/maps/map_metadata.html:78
 msgid "Update"
 msgstr "ធ្វើ​ឱ្យ​ទាន់សម័យ"
+
+#: documents/templates/documents/document_metadata.html:55
+#: layers/templates/layers/layer_metadata.html:89
+#: maps/templates/maps/map_metadata.html:56
+msgid "Metadata Provider"
+msgstr "ក្រុមហ៊ុន​ផ្ដល់​ទិន្នន័យ​មេតា"
 
 #: documents/templates/documents/document_remove.html:11
 #, python-format
@@ -801,17 +745,17 @@ msgstr ""
 
 #: documents/templates/documents/document_remove.html:18
 #: groups/templates/groups/group_remove.html:19
-#: layers/templates/layers/layer_remove.html:18
+#: layers/templates/layers/layer_remove.html:22
 #: maps/templates/maps/map_remove.html:19
-#: services/templates/services/service_remove.html:14
+#: services/templates/services/service_remove.html:17
 msgid "Yes, I am sure"
 msgstr "បាទ​, ខ្ញុំ​ប្រាកដ"
 
 #: documents/templates/documents/document_remove.html:19
 #: groups/templates/groups/group_remove.html:20
-#: layers/templates/layers/layer_remove.html:19
+#: layers/templates/layers/layer_remove.html:23
 #: maps/templates/maps/map_remove.html:20
-#: services/templates/services/service_remove.html:15
+#: services/templates/services/service_remove.html:18
 msgid "No, don't remove it"
 msgstr "គ្មាន​, មិន​យក​វា​ចេញ"
 
@@ -826,7 +770,7 @@ msgstr "ជំនួស"
 
 #: documents/templates/documents/document_replace.html:27
 #: layers/templates/layers/layer_replace.html:84
-#: layers/templates/upload/layer_upload.html:82
+#: layers/templates/upload/layer_upload.html:86
 msgid "Clear"
 msgstr "ច្បាស់​លាស់"
 
@@ -870,52 +814,52 @@ msgstr "ជា PDF"
 msgid "PNG"
 msgstr "PNG & ‧​;"
 
-#: geoserver/signals.py:278
+#: geoserver/signals.py:282
 msgid "Could not create a download link for layer."
 msgstr "មិន​អាច​បង្កើត​តំណ​ទាញ​យក​សម្រាប់​ស្រទាប់​។"
 
-#: geoserver/signals.py:309
+#: geoserver/signals.py:313
 msgid "KML"
 msgstr "ឯកសារ KML"
 
-#: geoserver/signals.py:338
+#: geoserver/signals.py:342
 msgid "Tiles"
 msgstr "ក្បឿង"
 
-#: geoserver/signals.py:385 layers/templates/layers/layer_detail.html:231
-#: services/views.py:1266
+#: geoserver/signals.py:389 layers/templates/layers/layer_detail.html:230
+#: services/views.py:1272
 msgid "Legend"
 msgstr "តាង"
 
-#: geoserver/views.py:338
+#: geoserver/views.py:335
 msgid "You don't have permissions to change style for this layer"
 msgstr "អ្នក​មិន​មាន​សិទ្ធិ​ដើម្បី​ផ្លាស់​ប្តូ​រ​រចនាប័ទ្ម​សម្រាប់​ស្រទាប់​នេះ"
 
-#: geoserver/views.py:425 geoserver/views.py:480
+#: geoserver/views.py:422 geoserver/views.py:477
 msgid "Bad HTTP Authorization Credentials."
 msgstr "សារ​តាំង​អនុញ្ញាត HTTP ដែល​អាក្រក់​។"
 
-#: geoserver/management/__init__.py:30 layers/management/__init__.py:30
+#: geoserver/management/__init__.py:30
 msgid "Layer Uploaded"
 msgstr "ស្រទាប់​បាន​ផ្ទុក​ឡើង"
 
-#: geoserver/management/__init__.py:30 layers/management/__init__.py:30
+#: geoserver/management/__init__.py:30
 msgid "A layer was uploaded"
 msgstr "ស្រទាប់​មួយ​ត្រូវ​បាន​ផ្ទុក​ឡើង"
 
-#: geoserver/management/__init__.py:31 layers/management/__init__.py:31
+#: geoserver/management/__init__.py:31 layers/management/__init__.py:45
 msgid "Comment on Layer"
 msgstr "អត្ថាធិប្បាយ​លើ​ស្រទាប់"
 
-#: geoserver/management/__init__.py:31 layers/management/__init__.py:31
+#: geoserver/management/__init__.py:31 layers/management/__init__.py:46
 msgid "A layer was commented on"
 msgstr "ស្រទាប់​មួយ​ត្រូវ​បាន​អធិប្បាយ​នៅ​លើ"
 
-#: geoserver/management/__init__.py:32 layers/management/__init__.py:32
+#: geoserver/management/__init__.py:32 layers/management/__init__.py:49
 msgid "Rating for Layer"
 msgstr "ការ​វាយ​តម្លៃ​សម្រាប់​ស្រទាប់"
 
-#: geoserver/management/__init__.py:32 layers/management/__init__.py:32
+#: geoserver/management/__init__.py:32 layers/management/__init__.py:50
 msgid "A rating was given to a layer"
 msgstr "ចំណាត់​ថ្នាក់​មួយ​ត្រូវ​បាន​ផ្តល់​ទៅ​ឱ្យ​ស្រទាប់​មួយ"
 
@@ -969,46 +913,84 @@ msgstr ""
 msgid "email"
 msgstr "អ៊ី​ម៉ែ​ល"
 
-#: groups/models.py:181 groups/models.py:200
+#: groups/models.py:184 groups/models.py:203
+#: groups/templates/groups/group_members.html:28
+#: groups/templates/groups/group_members.html:54
+#: groups/templates/groups/group_members.html:81
 msgid "Manager"
 msgstr "កម្មវិធី​គ្រប់​គ្រង"
 
-#: groups/models.py:182 groups/models.py:201
+#: groups/models.py:185 groups/models.py:204
 msgid "Member"
 msgstr "សមាជិក"
 
-#: groups/models.py:206
+#: groups/models.py:209
 msgid "Sent"
 msgstr "ផ្ញើ​រ"
 
-#: groups/models.py:207
+#: groups/models.py:210
 msgid "Accepted"
 msgstr "បាន​ទទួល​យក"
 
-#: groups/models.py:208
+#: groups/models.py:211
 msgid "Declined"
 msgstr "បាន​បដិសេធ"
 
 #: groups/templates/groups/activity.html:7
 #: groups/templates/groups/activity.html:8
-#: groups/templates/groups/activity.html:20 templates/actstream/actor.html:20
+#: groups/templates/groups/activity.html:20 templates/actstream/actor.html:19
 msgid "Activity Feed for"
 msgstr "មតិ​ព័ត៌មាន​សម្រាប់​សកម្មភាព"
 
+#: groups/templates/groups/activity.html:24
+#: groups/templates/groups/group_members.html:13
+#: social/templates/social/activity_list.html:20
+#: templates/user_messages/inbox.html:16
+msgid "All"
+msgstr "ទាំងអស់"
+
+#: groups/templates/groups/activity.html:25
+#: people/templates/people/_profile_filters.html:5
+#: services/templates/services/service_detail.html:64
+#: social/templates/social/activity_list.html:21 templates/500.html:39
+#: templates/base.html:48
+msgid "Layers"
+msgstr "ស្រទាប់"
+
+#: groups/templates/groups/activity.html:26
+#: people/templates/people/_profile_filters.html:6
+#: social/templates/social/activity_list.html:22 templates/500.html:42
+#: templates/base.html:51
+msgid "Maps"
+msgstr "ផែនទី"
+
 #: groups/templates/groups/activity.html:27
-#: social/templates/social/activity_list.html:23
-#: templates/actstream/actor.html:27
+#: social/templates/social/activity_list.html:23 templates/_actions.html:11
+#: templates/_comments.html:12
+msgid "Comments"
+msgstr "យោបល់"
+
+#: groups/templates/groups/activity.html:35
+#: groups/templates/groups/activity.html:44
+#: groups/templates/groups/activity.html:53
+#: groups/templates/groups/activity.html:62
+#: social/templates/social/activity_list.html:31
+#: social/templates/social/activity_list.html:40
+#: social/templates/social/activity_list.html:49
+#: social/templates/social/activity_list.html:58
+#: templates/actstream/actor.html:28
 msgid "No actions yet"
 msgstr "មិន​មាន​សកម្មភាព​នៅឡើយ​ទេ"
 
 #: groups/templates/groups/group_base.html:13
 #: groups/templates/groups/group_list.html:5
-#: groups/templates/groups/group_list.html:11
+#: groups/templates/groups/group_list.html:12
 msgid "Explore Groups"
 msgstr "រុករក​ក្រុម"
 
 #: groups/templates/groups/group_base.html:14
 #: groups/templates/groups/group_create.html:11
+#: groups/templates/groups/group_list.html:11
 msgid "Create a Group"
 msgstr "បង្កើត​ក្រុម​មួយ"
 
@@ -1027,7 +1009,7 @@ msgid "Create Group"
 msgstr "បង្កើត​ក្រុម"
 
 #: groups/templates/groups/group_create.html:26
-#: services/templates/services/service_register.html:17
+#: services/templates/services/service_register.html:19
 msgid "Create"
 msgstr "បង្កើត"
 
@@ -1035,29 +1017,30 @@ msgstr "បង្កើត"
 msgid "This group has not created a logo."
 msgstr "ក្រុម​នេះ​មិន​បាន​បង្កើត​ស្លាក​សញ្ញា​មួយ​។"
 
-#: groups/templates/groups/group_detail.html:46
+#: groups/templates/groups/group_detail.html:41
 #: groups/templates/groups/group_invite_response.html:7
-#: groups/templates/groups/group_members.html:12
+#: groups/templates/groups/group_members.html:9
+#: groups/templates/groups/group_members.html:15
 msgid "Members"
 msgstr "សមាជិក"
 
-#: groups/templates/groups/group_detail.html:57
+#: groups/templates/groups/group_detail.html:52
 msgid "Edit Group Details"
 msgstr "កែសម្រួល​ព័ត៌មាន​លំអិត​ក្រុម"
 
-#: groups/templates/groups/group_detail.html:58
+#: groups/templates/groups/group_detail.html:53
 msgid "Manage Group Members"
 msgstr "គ្រប់គ្រង​សមាជិក​ក្រុម"
 
-#: groups/templates/groups/group_detail.html:59
+#: groups/templates/groups/group_detail.html:54
 msgid "Delete this Group"
 msgstr "លុប​ក្រុម​នេះ"
 
-#: groups/templates/groups/group_detail.html:62
+#: groups/templates/groups/group_detail.html:57
 msgid "Group Activities"
 msgstr "សកម្មភាព​ក្រុម"
 
-#: groups/templates/groups/group_detail.html:67
+#: groups/templates/groups/group_detail.html:62
 #, python-format
 msgid ""
 "\n"
@@ -1067,19 +1050,20 @@ msgstr ""
 "\n"
 "ក្រុម​នេ <strong>%(access)s</strong>.​"
 
-#: groups/templates/groups/group_detail.html:71
+#: groups/templates/groups/group_detail.html:66
 msgid "Anyone may join this group."
 msgstr "មនុស្ស​គ្រប់​គ្នា​អាច​ចូល​រួម​ជាមួយ​ក្រុម​នេះ​។"
 
-#: groups/templates/groups/group_detail.html:77
+#: groups/templates/groups/group_detail.html:74
 msgid "Anyone may view this group but membership is by invitation only."
 msgstr "មនុស្ស​គ្រប់​គ្នា​អាច​មើល​ក្រុម​នេះ​ទេ​ប៉ុន្តែ​សមាជិក​ភាព​គឺ​ដោយ​អញ្ជើញ​តែ​ប៉ុណ្ណោះ​។"
 
-#: groups/templates/groups/group_detail.html:79
+#: groups/templates/groups/group_detail.html:76
 msgid "Membership is by invitation only."
 msgstr "សមាជិក​គឺ​ដោយ​អញ្ជើញ​តែ​ប៉ុណ្ណោះ​។"
 
-#: groups/templates/groups/group_detail.html:84
+#: groups/templates/groups/group_detail.html:81
+#: groups/templates/groups/group_members.html:14
 msgid "Managers"
 msgstr "អ្នក​ចាត់​ការ​ទូទៅ"
 
@@ -1095,33 +1079,56 @@ msgstr "កុំ​ចូលរួម"
 msgid "Join Group"
 msgstr "ចូលរួម​ក្នុង​ក្រុម"
 
-#: groups/templates/groups/group_list.html:16
+#: groups/templates/groups/group_list.html:17
 #: people/templates/people/profile_list.html:13
 #: templates/search/_sort_filters.html:5
+msgid "Most recent"
+msgstr "ថ្មី​បំផុត"
+
+#: groups/templates/groups/group_list.html:18
+#: people/templates/people/profile_list.html:14
+#: templates/search/_sort_filters.html:6
 msgid "Less recent"
 msgstr "ថ្មី​តិច"
 
-#: groups/templates/groups/group_list.html:17
-#: people/templates/people/profile_list.html:14
-#: templates/search/_sort_filters.html:6
+#: groups/templates/groups/group_list.html:19
+#: people/templates/people/profile_list.html:15
+#: templates/search/_sort_filters.html:7
 msgid "A - Z"
 msgstr "ក - Z បាន"
 
-#: groups/templates/groups/group_list.html:18
-#: people/templates/people/profile_list.html:15
-#: templates/search/_sort_filters.html:7
+#: groups/templates/groups/group_list.html:20
+#: people/templates/people/profile_list.html:16
+#: templates/search/_sort_filters.html:8
 msgid "Z - A"
 msgstr "Z បាន - មួយ"
 
-#: groups/templates/groups/group_members.html:9
-msgid "Group details"
-msgstr "ក្រុម​ព​ត៌​មាន​លំអិត"
+#: groups/templates/groups/group_list.html:21
+#: templates/search/_sort_filters.html:9
+msgid "Most popular"
+msgstr "ពេញ​និយម​បំផុត"
 
-#: groups/templates/groups/group_members.html:19
+#: groups/templates/groups/group_members.html:8
+msgid "Edit Members for"
+msgstr ""
+
+#: groups/templates/groups/group_members.html:33
+#: groups/templates/groups/group_members.html:59
+#: groups/templates/groups/group_members.html:86
+msgid "Remove"
+msgstr "យក"
+
+#: groups/templates/groups/group_members.html:37
+#: groups/templates/groups/group_members.html:63
+#: groups/templates/groups/group_members.html:90
+msgid "Role"
+msgstr ""
+
+#: groups/templates/groups/group_members.html:99
 msgid "Add members"
 msgstr "បន្ថែម​សមាជិក"
 
-#: groups/templates/groups/group_members.html:28
+#: groups/templates/groups/group_members.html:110
 msgid "Invite people"
 msgstr "អញ្ជើញ​មនុស្ស"
 
@@ -1159,129 +1166,125 @@ msgstr "កំណែ sld"
 msgid "sld url"
 msgstr "URL sld"
 
-#: layers/models.py:278
+#: layers/models.py:283
 msgid "attribute name"
 msgstr "ឈ្មោះ Attribute"
 
-#: layers/models.py:279
+#: layers/models.py:284
 msgid "name of attribute as stored in shapefile/spatial database"
 msgstr "ឈ្មោះ​គុណលក្ខណៈ​ដូច​ដែល​បាន​រក្សា​ទុក​ក្នុង shapefile មូលដ្ឋាន​ទិន្នន័យ / ទំហំ"
 
-#: layers/models.py:285
+#: layers/models.py:290
 msgid "attribute description"
 msgstr "ចាត់ទុក​ការ​ពិពណ៌នា"
 
-#: layers/models.py:286
+#: layers/models.py:291
 msgid "description of attribute to be used in metadata"
 msgstr "ការ​ពិពណ៌នា​អំពី​គុណ​លក្ខណៈ​ដែល​នឹង​ត្រូវ​បាន​ប្រើ​ក្នុង​ទិន្នន័យ​មេតា"
 
-#: layers/models.py:291
+#: layers/models.py:296
 msgid "attribute label"
 msgstr "ស្លាក​គុណលក្ខណៈ"
 
-#: layers/models.py:292
+#: layers/models.py:297
 msgid "title of attribute as displayed in GeoNode"
 msgstr "ចំណង​ជើង​នៃ​គុណ​លក្ខណៈ​ជា​ការ​បង្ហាញ​នៅ​ក្នុង GeoNode"
 
-#: layers/models.py:298
+#: layers/models.py:303
 msgid "attribute type"
 msgstr "ប្រភេទ​គុណលក្ខណៈ"
 
-#: layers/models.py:299
+#: layers/models.py:304
 msgid "the data type of the attribute (integer, string, geometry, etc)"
 msgstr "ប្រភេទ​ទិន្នន័យ​នៃ​គុណលក្ខណៈ​នេះ (ចំនួន​គត់​ខ្សែ​អក្សរ​, ធរណីមាត្រ​, ល​)"
 
-#: layers/models.py:306
+#: layers/models.py:311
 msgid "visible?"
 msgstr "ដែល​អាច​មើល​ឃើញ​?"
 
-#: layers/models.py:307
+#: layers/models.py:312
 msgid "specifies if the attribute should be displayed in identify results"
 msgstr "បញ្ជាក់​ប្រសិន​បើ​មាន​គុណ​លក្ខណៈ​ដែល​គួរ​តែ​ត្រូវ​បាន​បង្ហាញ​នៅ​ក្នុង​កំណត់​ពី​លទ្ធផល"
 
-#: layers/models.py:310
+#: layers/models.py:315
 msgid "display order"
 msgstr "គោល​បំណង​បង្ហាញ"
 
-#: layers/models.py:311
+#: layers/models.py:316
 msgid ""
 "specifies the order in which attribute should be displayed in identify "
 "results"
 msgstr "បញ្ជាក់​លំដាប់​ដែល​គុណលក្ខណៈ​គួរ​ត្រូវ​បាន​បង្ហាញ​នៅ​ក្នុង​កំណត់​អត្តសញ្ញាណ​លទ្ធផល"
 
-#: layers/models.py:316
+#: layers/models.py:321
 msgid "count"
 msgstr "រាប់"
 
-#: layers/models.py:317
+#: layers/models.py:322
 msgid "count value for this field"
 msgstr "រាប់​តម្លៃ​សម្រាប់​វាល​នេះ"
 
-#: layers/models.py:320
+#: layers/models.py:325
 msgid "min"
 msgstr "នាទី"
 
-#: layers/models.py:321
+#: layers/models.py:326
 msgid "minimum value for this field"
 msgstr "តម្លៃ​អប្បបរមា​សម្រាប់​វាល​នេះ"
 
-#: layers/models.py:328
+#: layers/models.py:333
 msgid "max"
 msgstr "អតិបរមា"
 
-#: layers/models.py:329
+#: layers/models.py:334
 msgid "maximum value for this field"
 msgstr "តម្លៃ​អតិបរមា​សម្រាប់​វាល​នេះ"
 
-#: layers/models.py:336
+#: layers/models.py:341
 msgid "average"
 msgstr "មធ្យម"
 
-#: layers/models.py:337
+#: layers/models.py:342
 msgid "average value for this field"
 msgstr "តម្លៃ​ជា​មធ្យម​សម្រាប់​វាល​នេះ"
 
-#: layers/models.py:344
+#: layers/models.py:349
 msgid "median"
 msgstr "មធ្យម"
 
-#: layers/models.py:345
+#: layers/models.py:350
 msgid "median value for this field"
 msgstr "តម្លៃ​ជា​មធ្យម​សម្រាប់​វាល​នេះ"
 
-#: layers/models.py:352
+#: layers/models.py:357
 msgid "standard deviation"
 msgstr "គម្លាត​គំរូ"
 
-#: layers/models.py:353
+#: layers/models.py:358
 msgid "standard deviation for this field"
 msgstr "គម្លាត​គំរូ​សម្រាប់​វាល​នេះ"
 
-#: layers/models.py:360
+#: layers/models.py:365
 msgid "sum"
 msgstr "ផលបូក"
 
-#: layers/models.py:361
+#: layers/models.py:366
 msgid "sum value for this field"
 msgstr "តម្លៃ​ផលបូក​សម្រាប់​វាល​នេះ"
 
-#: layers/models.py:368
+#: layers/models.py:373
 msgid "unique values for this field"
 msgstr "តម្លៃ​តែ​មួយ​គត់​សម្រាប់​វាល​នេះ"
 
-#: layers/models.py:373
+#: layers/models.py:378
 msgid "last modified"
 msgstr "បាន​កែប្រែ​ចុង​ក្រោយ"
 
-#: layers/models.py:375
+#: layers/models.py:380
 msgid "date when attribute statistics were last updated"
 msgstr "កាលបរិច្ឆេទ​នៅពេល​ដែល​ស្ថិតិ​គុណលក្ខណៈ​ត្រូវ​បាន​ធ្វើ​ឱ្យ​ទាន់​សម័យ​ចុង​ក្រោយ"
 
-#: layers/utils.py:574
-msgid "Thumbnail"
-msgstr "កូន​រូបភាព"
-
-#: layers/views.py:59
+#: layers/views.py:66
 msgid ""
 "There was an error while attempting to upload your data. Please try again, "
 "or contact and administrator if the problem continues."
@@ -1289,49 +1292,57 @@ msgstr ""
 "មាន​កំហុស​មួយ​គឺ​ខណៈ​ពេល​ដែល​ការ​ព្យាយាម​ផ្ទុក​ទិន្នន័យ​របស់​អ្នក​។ សូម​ព្យាយាម​ម្តង​ទៀត​ឬ​ទាក់ទង​និង​គ្រប់គ្រង​ប្រសិន​បើ​"
 "បញ្ហា​នេះ​នៅ​តែ​បន្ត​។"
 
-#: layers/views.py:62
+#: layers/views.py:69
 msgid "You are not permitted to delete this layer"
 msgstr "អ្នក​មិន​ត្រូវ​បាន​អនុញ្ញាត​ឱ្យ​លុប​ស្រទាប់​នេះ"
 
-#: layers/views.py:63
+#: layers/views.py:70
 msgid "You do not have permissions for this layer."
 msgstr "អ្នក​មិន​មាន​សិទ្ធិ​សម្រាប់​ស្រទាប់​នេះ​។"
 
-#: layers/views.py:64
+#: layers/views.py:71
 msgid "You are not permitted to modify this layer"
 msgstr "អ្នក​មិន​ត្រូវ​បាន​អនុញ្ញាត​ឱ្យ​កែប្រែ​ស្រទាប់​នេះ"
 
-#: layers/views.py:66
+#: layers/views.py:73
 msgid "You are not permitted to modify this layer's metadata"
 msgstr "អ្នក​មិន​ត្រូវ​បាន​អនុញ្ញាត​ឱ្យ​កែប្រែ​ទិន្នន័យ​មេតា​ស្រទាប់​នេះ"
 
-#: layers/views.py:67
+#: layers/views.py:74
 msgid "You are not permitted to view this layer"
 msgstr "អ្នក​មិន​ត្រូវ​បាន​អនុញ្ញាត​ឱ្យ​មើល​ស្រទាប់​នេះ"
 
-#: layers/templates/layers/_actions.html:4
-#: layers/templates/layers/layer_metadata.html:32
-#: layers/templates/layers/layer_metadata.html:70
-msgid "Attributes"
-msgstr "គុណលក្ខណៈ"
+#: layers/views.py:443
+msgid "You are attempting to replace a vector layer with a raster."
+msgstr ""
 
-#: layers/templates/layers/_actions.html:11
-msgid "GeoGig"
-msgstr "GeoGig"
+#: layers/views.py:446
+msgid "You are attempting to replace a raster layer with a vector."
+msgstr ""
 
-#: layers/templates/layers/_layer_list_item.html:38
-msgid "Create a map"
-msgstr "បង្កើត​ផែនទី"
+#: layers/management/__init__.py:33
+msgid "Layer Created"
+msgstr ""
 
-#: layers/templates/layers/_layer_list_item.html:48
-#: layers/templates/layers/layer_detail.html:131
-#: layers/templates/layers/layer_detail.html:144
-msgid "Download Layer"
-msgstr "ស្រទាប់​ទាញ​យក"
+#: layers/management/__init__.py:34
+msgid "A Layer was created"
+msgstr ""
 
-#: layers/templates/layers/_layer_list_item.html:85
-msgid "You do not have permission to view this layer"
-msgstr "អ្នក​មិន​មាន​សិទ្ធិ​ដើម្បី​មើល​ស្រទាប់​នេះ"
+#: layers/management/__init__.py:37
+msgid "Layer Updated"
+msgstr ""
+
+#: layers/management/__init__.py:38
+msgid "A Layer was updated"
+msgstr ""
+
+#: layers/management/__init__.py:41
+msgid "Layer Deleted"
+msgstr ""
+
+#: layers/management/__init__.py:42
+msgid "A Layer was deleted"
+msgstr ""
 
 #: layers/templates/layers/layer_change_poc.html:5
 msgid "Home"
@@ -1347,93 +1358,103 @@ msgid "Assign a new point of contact to the layers below:"
 msgstr "កំណត់​ចំណុច​ថ្មី​មួយ​នៃ​ទំនាក់​ទំនង​ទៅ​នឹង​ស្រទាប់​ខាងក្រោម​:"
 
 #: layers/templates/layers/layer_change_poc.html:17
-#: people/templates/people/forgot_username_form.html:17
+#: people/templates/people/forgot_username_form.html:15
 msgid "Submit"
 msgstr "ដាក់​​​ស្នើ"
 
-#: layers/templates/layers/layer_detail.html:52
+#: layers/templates/layers/layer_detail.html:49
 msgid "Attribute Name"
 msgstr "ឈ្មោះ Attribute"
 
-#: layers/templates/layers/layer_detail.html:53
+#: layers/templates/layers/layer_detail.html:50
 msgid "Range"
 msgstr "ជួរ"
 
-#: layers/templates/layers/layer_detail.html:54
+#: layers/templates/layers/layer_detail.html:51
 msgid "Average"
 msgstr "មធ្យម"
 
-#: layers/templates/layers/layer_detail.html:55
+#: layers/templates/layers/layer_detail.html:52
 msgid "Median"
 msgstr "មធ្យម"
 
-#: layers/templates/layers/layer_detail.html:56
+#: layers/templates/layers/layer_detail.html:53
 msgid "Standard Deviation"
 msgstr "ងាក​ស្តង់​ដា"
 
-#: layers/templates/layers/layer_detail.html:109
+#: layers/templates/layers/layer_detail.html:106
 msgid "Rate this layer"
 msgstr "វាយតម្លៃ​ស្រទាប់​នេះ"
 
-#: layers/templates/layers/layer_detail.html:189
-#: layers/templates/layers/layer_detail.html:198
+#: layers/templates/layers/layer_detail.html:128
+#: layers/templates/layers/layer_detail.html:141
+msgid "Download Layer"
+msgstr "ស្រទាប់​ទាញ​យក"
+
+#: layers/templates/layers/layer_detail.html:188
+#: layers/templates/layers/layer_detail.html:195
 msgid "Edit Layer"
 msgstr "កែសម្រួល​ស្រទាប់"
 
-#: layers/templates/layers/layer_detail.html:208
+#: layers/templates/layers/layer_detail.html:204
 #: layers/templates/layers/layer_style_manage.html:14
 msgid "Manage Styles"
 msgstr "គ្រប់គ្រង​រចនាប័ទ្ម"
 
-#: layers/templates/layers/layer_detail.html:210
+#: layers/templates/layers/layer_detail.html:206
 msgid "Edit Styles"
 msgstr "កែសម្រួល​រចនាប័ទ្ម"
 
-#: layers/templates/layers/layer_detail.html:215
+#: layers/templates/layers/layer_detail.html:211
+#: maps/templates/maps/map_detail.html:111
+msgid "Set Map Thumbnail"
+msgstr "កំណត់​ផែនទី​កូន​រូបភាព"
+
+#: layers/templates/layers/layer_detail.html:214
 msgid "Replace this Layer"
 msgstr "ជំនួស​ស្រទាប់​នេះ"
 
-#: layers/templates/layers/layer_detail.html:218
+#: layers/templates/layers/layer_detail.html:217
 msgid "Remove this Layer"
 msgstr "យក​ចេញ​ស្រទាប់​នេះ"
 
-#: layers/templates/layers/layer_detail.html:241
+#: layers/templates/layers/layer_detail.html:240
 msgid "Maps using this layer"
 msgstr "ផែនទី​ការ​ប្រើ​ស្រទាប់​នេះ"
 
-#: layers/templates/layers/layer_detail.html:243
+#: layers/templates/layers/layer_detail.html:242
 msgid "List of maps using this layer:"
 msgstr "បញ្ជី​នៃ​ផែនទី​ការ​ប្រើ​ស្រទាប់​នេះ​:"
 
-#: layers/templates/layers/layer_detail.html:249
+#: layers/templates/layers/layer_detail.html:248
 msgid "This layer is not currently used in any maps."
 msgstr "ស្រទាប់​នេះ​ត្រូវ​បាន​បច្ចុប្បន្ន​មិន​ត្រូវ​បាន​ប្រើ​ក្នុង​ផែន​ទី​ណា​មួយ​ឡើយ​។"
 
-#: layers/templates/layers/layer_detail.html:254
+#: layers/templates/layers/layer_detail.html:253
 msgid "Create a map using this layer"
 msgstr "បង្កើត​ផែនទី​ដោយ​ប្រើ​ស្រទាប់​នេះ"
 
-#: layers/templates/layers/layer_detail.html:255
+#: layers/templates/layers/layer_detail.html:254
 msgid "Click the button below to generate a new map based on this layer."
 msgstr "សូម​ចុច​ប៊ូតុង​ខាង​ក្រោម​ដើម្បី​បង្កើត​ផែនទី​ថ្មី​ដែល​មាន​មូលដ្ឋាន​នៅ​លើ​ស្រទាប់​នេះ​។"
 
-#: layers/templates/layers/layer_detail.html:256
+#: layers/templates/layers/layer_detail.html:255
 msgid "Create a Map"
 msgstr "បង្កើត​ផែនទី​មួយ"
 
-#: layers/templates/layers/layer_detail.html:261
+#: layers/templates/layers/layer_detail.html:260
 msgid "Documents related to this layer"
 msgstr "ឯកសារ​ដែល​ទាក់ទង​ទៅ​នឹង​ស្រទាប់​នេះ"
 
-#: layers/templates/layers/layer_detail.html:262
+#: layers/templates/layers/layer_detail.html:261
 msgid "List of documents related to this layer:"
 msgstr "បញ្ជី​ឯកសារ​ដែល​ទាក់ទង​ទៅ​នឹង​ស្រទាប់​នេះ​:"
 
-#: layers/templates/layers/layer_detail.html:273
+#: layers/templates/layers/layer_detail.html:272
 msgid "Styles"
 msgstr "រចនាប័ទ្ម"
 
-#: layers/templates/layers/layer_detail.html:274
+#: layers/templates/layers/layer_detail.html:273
 msgid ""
 "The following styles are associated with this layer. Choose a style to view "
 "it in the preview map."
@@ -1441,39 +1462,43 @@ msgstr ""
 "រចនាប័ទ្ម​ដូច​ខាង​ក្រោម​ត្រូវ​បាន​ផ្សារភ្ជាប់​ជាមួយ​នឹង​ស្រទាប់​នេះ​។ ជ្រើស​រចនាប័ទ្ម​មួយ​ដើម្បី​មើល​វា​ក្នុង​ផែនទី​"
 "ការ​មើល​ជា​មុន​នេះ​។"
 
-#: layers/templates/layers/layer_detail.html:287
+#: layers/templates/layers/layer_detail.html:286
 msgid "No styles associated with this layer"
 msgstr "រចនាប័ទ្ម​ដែល​បាន​ភ្ជាប់​ជាមួយ​នឹង​ស្រទាប់​នេះ​ទេ"
 
-#: layers/templates/layers/layer_detail.html:297
+#: layers/templates/layers/layer_detail.html:296
 msgid "Click the button below to change the permissions of this layer."
 msgstr "សូម​ចុច​ប៊ូតុង​ខាង​ក្រោម​ដើម្បី​ផ្លាស់​ប្តូ​រ​សិទ្ធិ​របស់​ស្រទាប់​នេះ​។"
 
-#: layers/templates/layers/layer_detail.html:298
+#: layers/templates/layers/layer_detail.html:297
 msgid "Change Layer Permissions"
 msgstr "សិទ្ធិ​ផ្លាស់​ប្តូ​រ​ស្រទាប់"
 
-#: layers/templates/layers/layer_detail.html:305
+#: layers/templates/layers/layer_detail.html:304
 msgid "External service layer"
 msgstr "ស្រទាប់​សេវា​ខាងក្រៅ"
 
-#: layers/templates/layers/layer_detail.html:306
+#: layers/templates/layers/layer_detail.html:305
 msgid "Source"
 msgstr "ប្រភព"
 
-#: layers/templates/layers/layer_list.html:7
-#: layers/templates/layers/layer_list.html:14
-#: layers/templates/upload/layer_upload_base.html:11 templates/index.html:33
+#: layers/templates/layers/layer_list.html:6
+#: layers/templates/layers/layer_list.html:13
+#: layers/templates/layers/layer_metadata.html:11
+#: layers/templates/layers/layer_remove.html:8
+#: layers/templates/upload/layer_upload.html:17
+#: layers/templates/upload/layer_upload_base.html:11 templates/index.html:32
 msgid "Explore Layers"
 msgstr "រុករក​ស្រទាប់"
 
-#: layers/templates/layers/layer_list.html:13
+#: layers/templates/layers/layer_list.html:12
+#: layers/templates/upload/layer_upload.html:18
 #: layers/templates/upload/layer_upload_base.html:12 templates/500.html:74
-#: templates/base.html:90
+#: templates/base.html:196
 msgid "Upload Layers"
 msgstr "ស្រទាប់​ផ្ទុក​ឡើង"
 
-#: layers/templates/layers/layer_metadata.html:12
+#: layers/templates/layers/layer_metadata.html:17
 #, python-format
 msgid ""
 "\n"
@@ -1483,50 +1508,55 @@ msgstr ""
 "\n"
 "ការ​កែ​សម្រួល​សេចក្ដី​លម្អិត​សម្រាប់​ %(layer_title)s"
 
-#: layers/templates/layers/layer_metadata.html:17
+#: layers/templates/layers/layer_metadata.html:23
 msgid ""
 "Note: this layer's orginal metadata was populated by importing a metadata "
 "XML file.\n"
-"        GeoNode's metadata import supports a subset of ISO, FGDC, and Dublin "
-"Core metadata elements.\n"
-"        Some of your original metadata may have been lost."
+"          GeoNode's metadata import supports a subset of ISO, FGDC, and "
+"Dublin Core metadata elements.\n"
+"          Some of your original metadata may have been lost."
 msgstr ""
-"ចំណាំ & ‧​;​: ទិន្នន័យ​មេតា orginal ស្រទាប់​នេះ​ត្រូវ​បាន​ប្រជាជន​ដោយ​ការ​នាំ​ចូល​ឯកសារ​ទិន្នន័យ​មេតា​របស់ "
-"XML ។ ការ​នាំ​ចូល​ទិន្នន័យ​មេតា GeoNode គាំទ្រ​របស់​សំណុំ​រង​របស់​អាយ​អេ​ស​អូ​, FGDC​, និង​ទីក្រុង Dublin ស្នូល​"
-"ធាតុ​ទិន្នន័យ​មេតា​មួយ​។ មួយ​ចំនួន​នៃ​ទិន្នន័យ​មេតា​ដើម​របស់​អ្នក​អាច​ត្រូវ​បាន​បាត់​បង់​។"
 
-#: layers/templates/layers/layer_metadata.html:72
+#: layers/templates/layers/layer_metadata.html:37
+#: layers/templates/layers/layer_metadata.html:74 templates/_actions.html:5
+msgid "Attributes"
+msgstr "គុណលក្ខណៈ"
+
+#: layers/templates/layers/layer_metadata.html:76
 msgid "Attribute"
 msgstr "គុណលក្ខណៈ"
 
-#: layers/templates/layers/layer_metadata.html:72
+#: layers/templates/layers/layer_metadata.html:76
 msgid "Label"
 msgstr "ស្លាក"
 
-#: layers/templates/layers/layer_metadata.html:72 services/forms.py:24
+#: layers/templates/layers/layer_metadata.html:76 services/forms.py:27
 #: services/templates/services/layers_register.html:28
 msgid "Description"
 msgstr "ការ​ពិពណ៌នា​សង្ខេប"
 
-#: layers/templates/layers/layer_metadata.html:72
+#: layers/templates/layers/layer_metadata.html:76
 msgid "Display Order"
 msgstr "បង្ហាញ​លំដាប់"
 
-#: layers/templates/layers/layer_remove.html:11
+#: layers/templates/layers/layer_remove.html:9
+msgid "Remove Layers"
+msgstr ""
+
+#: layers/templates/layers/layer_remove.html:14
 #, python-format
 msgid ""
 "\n"
-"          Are you sure you want to remove %(layer_title)s?\n"
+"          Are you sure you want to remove <a href="
+"\"%(layer.get_absolute_url)s\">%(layer_title)s</a>?\n"
 "        "
 msgstr ""
-"\n"
-"តើ​អ្នក​ពិត​ជា​ចង់​យក​ %(layer_title)s​?"
 
-#: layers/templates/layers/layer_remove.html:25
+#: layers/templates/layers/layer_remove.html:30
 msgid "This action affects the following maps:"
 msgstr "សកម្មភាព​នេះ​ប៉ះពាល់​ដល់​ផែន​ទី​ដូច​ខាង​ក្រោម​:"
 
-#: layers/templates/layers/layer_remove.html:29
+#: layers/templates/layers/layer_remove.html:34
 msgid "No maps are using this layer"
 msgstr "គ្មាន​ផែនទី​កំពុង​ប្រើ​ស្រទាប់​នេះ"
 
@@ -1540,69 +1570,69 @@ msgid "Replace Layer: "
 msgstr "ជំនួស​ស្រទាប់​:"
 
 #: layers/templates/layers/layer_replace.html:23
-#: layers/templates/upload/layer_upload.html:20
+#: layers/templates/upload/layer_upload.html:24
 msgid "Incomplete Uploads"
 msgstr "ផ្ទុក​ឡើង​មិន​ពេញលេញ"
 
 #: layers/templates/layers/layer_replace.html:24
-#: layers/templates/upload/layer_upload.html:21
+#: layers/templates/upload/layer_upload.html:25
 msgid "You have the following incomplete uploads"
 msgstr "អ្នក​មាន​ឯកសារ​ផ្ទុក​ឡើង​មិន​ពេញលេញ​ដូច​ខាង​ក្រោម"
 
 #: layers/templates/layers/layer_replace.html:27
-#: layers/templates/upload/layer_upload.html:24
+#: layers/templates/upload/layer_upload.html:28
 msgid "last updated on"
 msgstr "ធ្វើ​ឱ្យ​ទាន់​សម័យ​ចុង​ក្រោយ​នៅ​លើ"
 
 #: layers/templates/layers/layer_replace.html:29
-#: layers/templates/upload/layer_upload.html:26
+#: layers/templates/upload/layer_upload.html:30
 msgid "Resume"
 msgstr "បន្ត"
 
 #: layers/templates/layers/layer_replace.html:30
 #: layers/templates/layers/layer_replace.html:38
-#: layers/templates/upload/layer_upload.html:27
-#: layers/templates/upload/layer_upload.html:34
-#: templates/announcements/announcement_form.html:23
-#: templates/user_messages/inbox.html:44
+#: layers/templates/upload/layer_upload.html:31
+#: layers/templates/upload/layer_upload.html:38
+#: templates/announcements/announcement_form.html:25
+#: templates/user_messages/_message_snippet.html:40
 msgid "Delete"
 msgstr "លុប"
 
 #: layers/templates/layers/layer_replace.html:36
-#: layers/templates/upload/layer_upload.html:33
+#: layers/templates/upload/layer_upload.html:37
 msgid "Are you sure you want to delete this upload?"
 msgstr "តើ​អ្នក​ប្រាកដ​ជា​ចង់​លុប​ការ​ផ្ទុក​ឡើង​នេះ​?"
 
 #: layers/templates/layers/layer_replace.html:39
-#: layers/templates/upload/layer_upload.html:35
-#: maps/templates/maps/map_download.html:58 templates/_comments.html:59
+#: layers/templates/upload/layer_upload.html:39
+#: maps/templates/maps/map_download.html:58 templates/_comments.html:66
 #: templates/_permissions_form.html:15
-#: templates/announcements/announcement_form.html:21
+#: templates/announcements/announcement_form.html:23
 msgid "Cancel"
 msgstr "បោះបង់"
 
 #: layers/templates/layers/layer_replace.html:41
-#: layers/templates/upload/layer_upload.html:36
+#: layers/templates/upload/layer_upload.html:40
 msgid "Delete, and don't ask me again."
 msgstr "លុប​និង​មិន​សួរ​ខ្ញុំ​ម្តង​ទៀត​។"
 
 #: layers/templates/layers/layer_replace.html:55
-#: layers/templates/upload/layer_upload.html:53
+#: layers/templates/upload/layer_upload.html:57
 msgid "Drop files here"
 msgstr "ទម្លាក់​ឯកសារ​នៅ​ទីនេះ"
 
 #: layers/templates/layers/layer_replace.html:58
-#: layers/templates/upload/layer_upload.html:56
+#: layers/templates/upload/layer_upload.html:60
 msgid " or select them one by one:"
 msgstr "ឬ​ជ្រើស​វា​ម្តង​មួយ​:"
 
 #: layers/templates/layers/layer_replace.html:66
-#: layers/templates/upload/layer_upload.html:64
+#: layers/templates/upload/layer_upload.html:68
 msgid "Files to be uploaded"
 msgstr "ឯកសារ​នឹង​ត្រូវ​បាន​ផ្ទុក​ឡើង"
 
 #: layers/templates/layers/layer_replace.html:71
-#: layers/templates/upload/layer_upload.html:69
+#: layers/templates/upload/layer_upload.html:73
 msgid "Select the charset or leave default"
 msgstr "ជ្រើស​សំណុំ​តួអក្សរ​ឬ​ទុក​ឱ្យ​លំនាំដើម"
 
@@ -1644,7 +1674,7 @@ msgstr "ធ្វើ​ឱ្យ​ទាន់សម័យ​រចនាប័
 msgid "Upload Layer"
 msgstr "ស្រទាប់​ផ្ទុក​ឡើង"
 
-#: layers/templates/upload/layer_upload.html:83
+#: layers/templates/upload/layer_upload.html:87
 msgid "Upload files"
 msgstr "ផ្ទុក​ឯកសារ​ឡើង"
 
@@ -1960,83 +1990,83 @@ msgstr "តំបន់​ប​ណ្តា​ញ URL ដែល"
 msgid "Featured Map URL"
 msgstr "URL ដែល​ផែនទី​លក្ខណៈ​ពិសេស"
 
-#: maps/models.py:371
+#: maps/models.py:378
 msgid "stack order"
 msgstr "តាម​លំដាប់​ជង់"
 
-#: maps/models.py:376
+#: maps/models.py:383
 msgid "format"
 msgstr "ទ្រង់ទ្រាយ"
 
-#: maps/models.py:383
+#: maps/models.py:390
 msgid "name"
 msgstr "ឈ្មោះ​របស់"
 
-#: maps/models.py:390
+#: maps/models.py:397
 msgid "opacity"
 msgstr "ភាព​ស្រអាប់"
 
-#: maps/models.py:394
+#: maps/models.py:401
 msgid "styles"
 msgstr "រចនាប័ទ្ម"
 
-#: maps/models.py:400
+#: maps/models.py:407
 msgid "transparent"
 msgstr "តម្លាភាព"
 
-#: maps/models.py:404
+#: maps/models.py:411
 msgid "fixed"
 msgstr "ថេរ"
 
-#: maps/models.py:408
+#: maps/models.py:415
 msgid "group"
 msgstr "ក្រុម"
 
-#: maps/models.py:412
+#: maps/models.py:419
 msgid "visibility"
 msgstr "ភាព​មើលឃើញ"
 
-#: maps/models.py:415
+#: maps/models.py:422
 msgid "ows URL"
 msgstr "URL ដែល ows"
 
-#: maps/models.py:418
+#: maps/models.py:425
 msgid "layer params"
 msgstr "ប៉ារ៉ាម៉ែត្រ​ស្រទាប់"
 
-#: maps/models.py:425
+#: maps/models.py:432
 msgid "source params"
 msgstr "ប៉ារ៉ាម៉ែត្រ​ប្រភព"
 
-#: maps/models.py:518
+#: maps/models.py:525
 msgid "JSON Configuration"
 msgstr "ការ​កំណត់​រចនា​សម្ព័ន្ធ JSON"
 
-#: maps/views.py:70
+#: maps/views.py:73
 msgid "You are not permitted to delete this map."
 msgstr "អ្នក​មិន​ត្រូវ​បាន​អនុញ្ញាត​ឱ្យ​លុប​ផែនទី​នេះ​។"
 
-#: maps/views.py:71
+#: maps/views.py:74
 msgid "You do not have permissions for this map."
 msgstr "អ្នក​មិន​មាន​សិទ្ធិ​សម្រាប់​ផែនទី​នេះ​។"
 
-#: maps/views.py:72
+#: maps/views.py:75
 msgid "You must be logged in to save this map"
 msgstr "អ្នក​ត្រូវ​តែ​ចូល​ក្នុង​ដើម្បី​រក្សា​ទុក​ផែនទី​នេះ"
 
-#: maps/views.py:73
+#: maps/views.py:76
 msgid "You are not permitted to save or edit this map."
 msgstr "អ្នក​មិន​ត្រូវ​បាន​អនុញ្ញាត​ឱ្យ​រក្សា​ទុក​ឬ​កែសម្រួល​ផែនទី​នេះ​។"
 
-#: maps/views.py:75
+#: maps/views.py:78
 msgid "You are not allowed to modify this map's metadata."
 msgstr "អ្នក​មិន​ត្រូវ​បាន​អនុញ្ញាត​ឱ្យ​កែប្រែ​ទិន្នន័យ​មេតា​ផែនទី​នេះ​។"
 
-#: maps/views.py:76
+#: maps/views.py:79
 msgid "You are not allowed to view this map."
 msgstr "អ្នក​មិន​ត្រូវ​បាន​អនុញ្ញាត​ឱ្យ​មើល​ផែនទី​នេះ​។"
 
-#: maps/views.py:77
+#: maps/views.py:80
 msgid "An unknown error has occured."
 msgstr "កំហុស​មិន​ស្គាល់​មួយ​បាន​កើត​ឡើង​។"
 
@@ -2049,133 +2079,142 @@ msgid "A Map was created"
 msgstr "ផែនទី​មួយ​ដែល​ត្រូវ​បាន​បង្កើត​ឡើង"
 
 #: maps/management/__init__.py:37
+msgid "Map Updated"
+msgstr ""
+
+#: maps/management/__init__.py:38
+msgid "A Map was updated"
+msgstr ""
+
+#: maps/management/__init__.py:41
+msgid "Map Deleted"
+msgstr ""
+
+#: maps/management/__init__.py:42
+msgid "A Map was deleted"
+msgstr ""
+
+#: maps/management/__init__.py:45
 msgid "Comment on Map"
 msgstr "អត្ថាធិប្បាយ​លើ​ផែនទី"
 
-#: maps/management/__init__.py:38
+#: maps/management/__init__.py:46
 msgid "A map was commented on"
 msgstr "ផែនទី​មួយ​ត្រូវ​បាន​អធិប្បាយ​នៅ​លើ"
 
-#: maps/management/__init__.py:41
+#: maps/management/__init__.py:49
 msgid "Rating for Map"
 msgstr "ការ​វាយ​តម្លៃ​សម្រាប់​ផែនទី"
 
-#: maps/management/__init__.py:42
+#: maps/management/__init__.py:50
 msgid "A rating was given to a map"
 msgstr "ចំណាត់​ថ្នាក់​មួយ​ត្រូវ​បាន​ផ្តល់​ទៅ​ឱ្យ​ផែនទី"
 
-#: maps/templates/maps/_map_list_item.html:31
-msgid "View"
-msgstr "មើល"
-
-#: maps/templates/maps/_map_list_item.html:47
-msgid "You do not have permission to view this map"
-msgstr "អ្នក​មិន​មាន​សិទ្ធិ​ដើម្បី​មើល​ផែនទី​នេះ"
-
 #: maps/templates/maps/map_base.html:5 maps/templates/maps/map_base.html:12
-#: maps/templates/maps/map_list.html:12
+#: maps/templates/maps/map_list.html:11
+#: maps/templates/maps/map_metadata.html:11
 msgid "Explore Maps"
 msgstr "ស្វែងរក​ផែនទី"
 
-#: maps/templates/maps/map_detail.html:54 templates/_actions.html:6
+#: maps/templates/maps/map_detail.html:46
 msgid "Rate this Map"
 msgstr "វាយ​តម្លៃ​ផែនទី​នេះ"
 
+#: maps/templates/maps/map_detail.html:70
 #: maps/templates/maps/map_detail.html:78
-#: maps/templates/maps/map_detail.html:86
 msgid "Download Map"
 msgstr "ទាញ​យក​ផែនទី"
 
-#: maps/templates/maps/map_detail.html:90
+#: maps/templates/maps/map_detail.html:82
 msgid "Download Data Layers"
 msgstr "ទាញ​យក​ស្រទាប់​ទិន្នន័យ"
 
-#: maps/templates/maps/map_detail.html:91
+#: maps/templates/maps/map_detail.html:83
 msgid "Download Web Map Context"
 msgstr "ទាញ​យក​ប​ណ្តា​ញ​ផែនទី​បរិបទ"
 
+#: maps/templates/maps/map_detail.html:95
 #: maps/templates/maps/map_detail.html:102
-#: maps/templates/maps/map_detail.html:109
 msgid "Edit Map"
 msgstr "កែសម្រួល​ផែនទី"
 
-#: maps/templates/maps/map_detail.html:114
+#: maps/templates/maps/map_detail.html:107
 msgid "Edit Map Metadata"
 msgstr "កែសម្រួល​ផែនទី​ទិន្នន័យ​មេតា"
 
-#: maps/templates/maps/map_detail.html:118
-msgid "Set Map Thumbnail"
-msgstr "កំណត់​ផែនទី​កូន​រូបភាព"
-
-#: maps/templates/maps/map_detail.html:122
+#: maps/templates/maps/map_detail.html:115
 msgid "Remove this Map"
 msgstr "យក​ផែនទី​នេះ"
 
-#: maps/templates/maps/map_detail.html:134
+#: maps/templates/maps/map_detail.html:127
 msgid "View Map"
 msgstr "មើល​ផែនទី"
 
-#: maps/templates/maps/map_detail.html:144
+#: maps/templates/maps/map_detail.html:137
 msgid "Map Layers"
 msgstr "ស្រទាប់​ផែនទី"
 
-#: maps/templates/maps/map_detail.html:145
+#: maps/templates/maps/map_detail.html:138
 msgid "This map uses the following layers:"
 msgstr "ផែនទី​នេះ​ប្រើ​ស្រទាប់​ដូច​ខាង​ក្រោម​:"
 
-#: maps/templates/maps/map_detail.html:161
+#: maps/templates/maps/map_detail.html:154
 msgid "Documents related to this map"
 msgstr "ឯកសារ​ដែល​ទាក់ទង​ទៅ​នឹង​ផែនទី​នេះ"
 
-#: maps/templates/maps/map_detail.html:162
+#: maps/templates/maps/map_detail.html:155
 msgid "List of documents related to this map:"
 msgstr "បញ្ជី​ឯកសារ​ដែល​ទាក់ទង​ទៅ​នឹង​ផែនទី​នេះ​:"
 
-#: maps/templates/maps/map_detail.html:174
+#: maps/templates/maps/map_detail.html:167
 msgid "Specify which users can view or modify this map"
 msgstr "បញ្ជាក់​អ្នក​ប្រើ​ដែល​អាច​មើល​ឬ​កែប្រែ​ផែនទី​នេះ"
 
-#: maps/templates/maps/map_detail.html:175
+#: maps/templates/maps/map_detail.html:168
 msgid "Change Permissions of this Map"
 msgstr "ការ​ផ្លាស់​ប្តូ​រ​សិទ្ធិ​នៃ​ផែនទី​នេះ"
 
-#: maps/templates/maps/map_detail.html:181
+#: maps/templates/maps/map_detail.html:174
 msgid "Copy this map"
 msgstr "ចម្លង​ផែនទី​នេះ"
 
-#: maps/templates/maps/map_detail.html:182
+#: maps/templates/maps/map_detail.html:175
 msgid "Duplicate this map and modify it for your own purposes"
 msgstr "ស្ទួន​ផែនទី​នេះ​និង​កែប្រែ​វា​សម្រាប់​គោល​បំណង​ផ្ទាល់​ខ្លួន​របស់​អ្នក"
 
-#: maps/templates/maps/map_detail.html:183
-#: maps/templates/maps/map_list.html:11
+#: maps/templates/maps/map_detail.html:176
+#: maps/templates/maps/map_list.html:10
 msgid "Create a New Map"
 msgstr "បង្កើត​ផែនទី​ថ្មី"
 
-#: maps/templates/maps/map_detail.html:188
+#: maps/templates/maps/map_detail.html:181
 msgid "Map WMS"
 msgstr "ផែនទី WMS"
 
-#: maps/templates/maps/map_detail.html:190
+#: maps/templates/maps/map_detail.html:183
 msgid "WMS layer group for local map layers"
 msgstr "ក្រុម​ស្រទាប់ WMS សម្រាប់​ស្រទាប់​ផែនទី​ក្នុង​តំបន់"
 
-#: maps/templates/maps/map_detail.html:191 social/tests.py:103
-#: social/templatetags/social_tags.py:47
+#: maps/templates/maps/map_detail.html:184 social/tests.py:103
+#: social/templatetags/social_tags.py:48
 msgid "on"
 msgstr "នៅ​លើ"
 
-#: maps/templates/maps/map_detail.html:191
+#: maps/templates/maps/map_detail.html:184
 msgid "local OWS"
 msgstr "OWS ក្នុង​ស្រុក"
 
-#: maps/templates/maps/map_detail.html:194
+#: maps/templates/maps/map_detail.html:187
 msgid "Publish local map layers as WMS layer group"
 msgstr "បោះ​ពុ​ម្ភ​ស្រទាប់​ផែនទី​ក្នុង​តំបន់​ជា​ក្រុម​ស្រទាប់ WMS"
 
-#: maps/templates/maps/map_detail.html:195
+#: maps/templates/maps/map_detail.html:188
 msgid "Publish Map WMS"
 msgstr "បោះ​ពុ​ម្ភ​ផែនទី WMS"
+
+#: maps/templates/maps/map_download.html:6
+msgid "Download"
+msgstr "ទាញ​យក"
 
 #: maps/templates/maps/map_download.html:8
 msgid ""
@@ -2240,7 +2279,7 @@ msgstr "ទាញ​យក​ពេញលេញ"
 msgid "Download Failed"
 msgstr "បាន​បរាជ័យ​ក្នុង​ការ​ទាញ​យក"
 
-#: maps/templates/maps/map_metadata.html:12
+#: maps/templates/maps/map_metadata.html:17
 #, python-format
 msgid ""
 "\n"
@@ -2250,7 +2289,7 @@ msgstr ""
 "\n"
 "ការ​កែ​សម្រួល​ព័ត៌មាន​លម្អិត​សម្រាប់​ %(map_title)s"
 
-#: maps/templates/maps/map_metadata.html:17
+#: maps/templates/maps/map_metadata.html:23
 msgid ""
 "Note: this map's orginal metadata was populated by importing a metadata XML "
 "file.\n"
@@ -2358,92 +2397,108 @@ msgid "User following you"
 msgstr "អ្នក​ប្រើ​ខាងក្រោម​អ្នក"
 
 #: people/management.py:33
-msgid "another user has started following you"
-msgstr "អ្នក​ប្រើ​ផ្សេង​ទៀត​បាន​ចាប់​ផ្តើ​ម​ខាងក្រោម​អ្នក"
+msgid "Another user has started following you"
+msgstr ""
 
-#: people/models.py:42
+#: people/management.py:36
+msgid "User requested access"
+msgstr ""
+
+#: people/management.py:37
+msgid "A new user has requested access to the site"
+msgstr ""
+
+#: people/management.py:40
+msgid "Account activated"
+msgstr ""
+
+#: people/management.py:41
+msgid "This account is now active and can log in the site"
+msgstr ""
+
+#: people/models.py:43
 msgid "Organization Name"
 msgstr "ឈ្មោះ​អង្គភាព"
 
-#: people/models.py:46
+#: people/models.py:47
 msgid "name of the responsible organization"
 msgstr "ឈ្មោះ​របស់​អង្គការ​ទទួល​ខុស​ត្រូវ"
 
-#: people/models.py:47 templates/500.html:76 templates/base.html:92
+#: people/models.py:48 templates/500.html:76 templates/base.html:198
 msgid "Profile"
 msgstr "ព​ត៌​មាន"
 
-#: people/models.py:47
+#: people/models.py:48
 msgid "introduce yourself"
 msgstr "ណែនាំ​ខ្លួន​អ្នក"
 
-#: people/models.py:49
+#: people/models.py:50
 msgid "Position Name"
 msgstr "ទីតាំង​ឈ្មោះ"
 
-#: people/models.py:53
+#: people/models.py:54
 msgid "role or position of the responsible person"
 msgstr "តួនាទី​ឬ​ទីតាំង​នៃ​មនុស្ស​ដែល​ទទួល​ខុស​ត្រូវ"
 
-#: people/models.py:54
+#: people/models.py:55
 msgid "Voice"
 msgstr "សំ​លេង"
 
-#: people/models.py:55
+#: people/models.py:56
 msgid ""
 "telephone number by which individuals can speak to the responsible "
 "organization or individual"
 msgstr "លេខ​ទូរស័ព្ទ​ដែល​បុគ្គល​អាច​និយាយ​ទៅ​អង្គការ​ឬ​បុគ្គល​ដែល​ទទួល​ខុស​ត្រូវ"
 
-#: people/models.py:56
+#: people/models.py:57
 msgid "Facsimile"
 msgstr "ទូរ​រ"
 
-#: people/models.py:57
+#: people/models.py:58
 msgid ""
 "telephone number of a facsimile machine for the responsible organization or "
 "individual"
 msgstr "លេខ​ទូរស័ព្ទ​នៃ​ម៉ាស៊ីន​ទូរ​សម្រាប់​អង្គការ​ឬ​បុគ្គល​ដែល​ទទួល​ខុស​ត្រូវ"
 
-#: people/models.py:59
+#: people/models.py:60
 msgid "Delivery Point"
 msgstr "ចំណុច​ដឹកជញ្ជូន"
 
-#: people/models.py:63
+#: people/models.py:64
 msgid ""
 "physical and email address at which the organization or individual may be "
 "contacted"
 msgstr "អាសយដ្ឋាន​រាងកាយ​និង​អ៊ី​ម៉ែ​ល​ដែល​អង្គការ​ឬ​បុគ្គល​អាច​នឹង​ត្រូវ​បាន​ទាក់ទង"
 
-#: people/models.py:65
+#: people/models.py:66
 msgid "City"
 msgstr "ទីក្រុង"
 
-#: people/models.py:69
+#: people/models.py:70
 msgid "city of the location"
 msgstr "ទីក្រុង​នៃ​ទីតាំង"
 
-#: people/models.py:71
+#: people/models.py:72
 msgid "Administrative Area"
 msgstr "តំបន់​រដ្ឋបាល"
 
-#: people/models.py:75
+#: people/models.py:76
 msgid "state, province of the location"
 msgstr "រដ្ឋ​ខេត្ត​ទីតាំង"
 
-#: people/models.py:77
+#: people/models.py:78
 msgid "Postal Code"
 msgstr "លេខ​កូដ​ប្រៃ​ស​ណី​យ"
 
-#: people/models.py:81
+#: people/models.py:82
 msgid "ZIP or other postal code"
 msgstr "ហ្ស៊ីប​ឬ​កូដ​ប្រៃសណីយ៍​ផ្សេង​ទៀត"
 
-#: people/models.py:87
+#: people/models.py:88
 msgid "country of the physical address"
 msgstr "ប្រទេស​នៃ​អាសយដ្ឋាន​រាងកាយ"
 
-#: people/models.py:89
+#: people/models.py:90
 msgid ""
 "commonly used word(s) or formalised word(s) or phrase(s) used to describe "
 "the subject             (space or comma-separated"
@@ -2451,15 +2506,15 @@ msgstr ""
 "ពាក្យ​ដែល​បាន​ប្រើ​ជា​ទូទៅ (s​) បាន​ឬ​ពាក្យ​ផ្លូវការ (s​) បាន​ឬ​ឃ្លា (s​) បាន​ត្រូវ​បាន​គេ​ប្រើ​ដើម្បី​ពិពណ៌នា​"
 "អំពី​ប្រធានបទ (ចន្លោះ​ឬ​បំបែក​ដោយ​សញ្ញា​ក្បៀស"
 
-#: people/views.py:84
+#: people/views.py:89
 msgid "Your username for "
 msgstr "ឈ្មោះ​អ្នក​ប្រើ​របស់​អ្នក​សម្រាប់"
 
-#: people/views.py:99
+#: people/views.py:103
 msgid "Your username has been emailed to you."
 msgstr "ឈ្មោះ​អ្នក​ប្រើ​របស់​អ្នក​ត្រូវ​បាន​ផ្ញើ​អ៊ីមែល​ទៅ​អ្ន​​ក​។"
 
-#: people/views.py:101
+#: people/views.py:105
 msgid "No user could be found with that email address."
 msgstr "គ្មាន​អ្នក​ប្រើ​ដែល​អាច​ត្រូវ​បាន​រក​ឃើញ​ដែល​មាន​អាសយដ្ឋាន​អ៊ី​ម៉ែ​ល​នោះ​។"
 
@@ -2471,31 +2526,20 @@ msgstr "គ្មាន​ក្រុម"
 msgid "All contents"
 msgstr "មាតិកា​ទាំងអស់"
 
-#: people/templates/people/_profile_filters.html:5
-#: services/templates/services/service_detail.html:64 templates/500.html:39
-#: templates/base.html:47
-msgid "Layers"
-msgstr "ស្រទាប់"
-
-#: people/templates/people/_profile_filters.html:6 templates/500.html:42
-#: templates/base.html:50
-msgid "Maps"
-msgstr "ផែនទី"
-
 #: people/templates/people/_profile_filters.html:7 templates/500.html:45
-#: templates/base.html:53
+#: templates/base.html:54
 msgid "Documents"
 msgstr "ឯកសារ"
 
-#: people/templates/people/forgot_username_form.html:5
+#: people/templates/people/forgot_username_form.html:6
 msgid "Forgot Username"
 msgstr "ភ្លេច​ឈ្មោះ​អ្នក​ប្រើ"
 
-#: people/templates/people/forgot_username_form.html:9
+#: people/templates/people/forgot_username_form.html:10
 msgid ""
-"Enter your email address and click the submit button.  Your username will be "
-"sent to you."
-msgstr "បញ្ចូល​អាសយដ្ឋាន​អ៊ីមែល​របស់​អ្នក​ហើយ​ចុច​ប៊ូតុង​ផ្ញើ​។ ឈ្មោះ​អ្នក​ប្រើ​របស់​អ្នក​នឹង​ត្រូវ​បាន​ផ្ញើ​ទៅ​អ្ន​​ក​។"
+"Enter your email address and click the submit button. <br />Your username "
+"will be sent to you."
+msgstr ""
 
 #: people/templates/people/profile_create.html:8
 #: people/templates/people/profile_create.html:14
@@ -2506,35 +2550,70 @@ msgstr "បង្កើត​ព​ត៌​មាន"
 msgid "Profile of "
 msgstr "ព​ត៌​មាន​នៃ​ការ"
 
-#: people/templates/people/profile_detail.html:69
+#: people/templates/people/profile_detail.html:19
+msgid "Message User"
+msgstr ""
+
+#: people/templates/people/profile_detail.html:65
 msgid "Edit profile"
 msgstr "កែ​សម្រួល​ទម្រង់"
 
-#: people/templates/people/profile_detail.html:70
+#: people/templates/people/profile_detail.html:66
 msgid "Change password"
 msgstr "ផ្លាស់​ប្តូ​រ​ពាក្យ​សម្ងាត់​របស់"
 
-#: people/templates/people/profile_detail.html:71
+#: people/templates/people/profile_detail.html:69
 msgid "Upload new layers"
 msgstr "ផ្ទុក​ឡើង​ស្រទាប់​ថ្មី"
 
-#: people/templates/people/profile_detail.html:72
+#: people/templates/people/profile_detail.html:70
 msgid "Create a new map"
 msgstr "បង្កើត​ផែនទី​ថ្មី​មួយ"
 
-#: people/templates/people/profile_detail.html:74
+#: people/templates/people/profile_detail.html:72
 msgid "My Activities"
 msgstr "សកម្មភាព​របស់​យើង"
 
-#: people/templates/people/profile_detail.html:82
+#: people/templates/people/profile_detail.html:77 templates/base.html:202
+msgid "Notifications"
+msgstr ""
+
+#: people/templates/people/profile_detail.html:80 templates/500.html:80
+#: templates/base.html:205 templates/announcements/announcement_list.html:6
+#: templates/announcements/announcement_list.html:13
+msgid "Announcements"
+msgstr "សេចក្តី​ប្រកាស"
+
+#: people/templates/people/profile_detail.html:85
+#: services/templates/services/service_list.html:9 templates/500.html:83
+#: templates/base.html:208
+msgid "Remote Services"
+msgstr "សេវាកម្ម​ពី​ចម្ងាយ"
+
+#: people/templates/people/profile_detail.html:86 templates/500.html:84
+#: templates/base.html:209
+msgid "Invite User"
+msgstr "អញ្ជើញ​អ្នក​ប្រើប្រាស់"
+
+#: people/templates/people/profile_detail.html:87 templates/500.html:86
+#: templates/base.html:211
+msgid "GeoServer"
+msgstr "GeoServer"
+
+#: people/templates/people/profile_detail.html:90 templates/500.html:89
+#: templates/base.html:214
+msgid "Admin"
+msgstr "admin"
+
+#: people/templates/people/profile_detail.html:98
 msgid "User Activities"
 msgstr "សកម្មភាព​របស់​អ្នក​ប្រើ"
 
-#: people/templates/people/profile_detail.html:139
+#: people/templates/people/profile_detail.html:155
 msgid "Resources"
 msgstr "ធនធាន"
 
-#: people/templates/people/profile_edit.html:10
+#: people/templates/people/profile_edit.html:9
 #: people/templates/people/profile_edit.html:18
 msgid "Edit Your Profile"
 msgstr "កែប្រែ​ព​ត៌​មាន​របស់​អ្នក"
@@ -2603,7 +2682,11 @@ msgstr "ការ​ផ្សាយ​បន្ត​ផ្ទាល់"
 msgid "Service URL"
 msgstr "សេវា URL ដែល"
 
-#: services/forms.py:16
+#: services/forms.py:15
+msgid "Service name"
+msgstr ""
+
+#: services/forms.py:19
 msgid "Service Type"
 msgstr "ប្រភេទ​សេវាកម្ម"
 
@@ -2645,19 +2728,20 @@ msgstr ""
 "Geoportal អង្គការ​ផ្តល់​នូវ​ឱកាស​ដើម្បី​ចែក​រំលែក​រាប់​ពាន់​នាក់​នៃ​ស្រទាប់​ទីតាំង​ភូមិ​សា​ស្ដ្រ​ទិន្នន័យ​ផែនទី​ទិន្នន័យ​"
 "មេតា​និង​ធនធាន​អភិវឌ្ឍ​តាម​រយៈ​ចំណុច​ប្រទាក់​ទូទៅ​តែ​មួយ​នោះ​។\n"
 
-#: services/views.py:273
+#: services/views.py:278
 msgid "This is an existing service"
 msgstr "នេះ​ជា​សេវាកម្ម​ដែល​មាន​ស្រាប់"
 
-#: services/views.py:536 services/views.py:633 services/views.py:849
+#: services/views.py:542 services/views.py:639 services/views.py:707
+#: services/views.py:855
 msgid "Not provided"
 msgstr "មិន​បាន​ផ្ដល់"
 
-#: services/views.py:801
+#: services/views.py:807
 msgid "Could not find any layers in a compatible projection."
 msgstr "មិន​អាច​រក​ឃើញ​ស្រទាប់​ណា​មួយ​នៅ​ក្នុង​ការ​ព្យាករ​ឆ​ប​គ្នា​។"
 
-#: services/views.py:946
+#: services/views.py:952
 #, python-format
 msgid ""
 "Could not find any layers in a compatible projection:                 The "
@@ -2665,7 +2749,7 @@ msgid ""
 msgstr ""
 "មិន​អាច​រក​ឃើញ​ស្រទាប់​ណា​មួយ​នៅ​ក្នុង​ការ​ព្យាករ​ឆ​ប​គ្នា​: លេខ​សម្គាល់​ទំហំ​គឺ​:​%(srs)s និង URL ដែល​ %(url)s"
 
-#: services/views.py:1208
+#: services/views.py:1214
 msgid "You are not permitted to remove this service."
 msgstr "អ្នក​មិន​ត្រូវ​បាន​អនុញ្ញាត​ក្នុង​ការ​យក​សេវា​នេះ​។"
 
@@ -2714,7 +2798,6 @@ msgid "This Service contains the following layers"
 msgstr "សេវា​នេះ​មាន​ស្រទាប់​ខាង​ក្រោម​នេះ"
 
 #: services/templates/services/service_detail.html:110
-#: services/templates/services/service_list.html:29
 msgid "Manage"
 msgstr "គ្រប់គ្រង"
 
@@ -2726,8 +2809,12 @@ msgstr "កែសម្រួល​សេវា​ទិន្នន័យ​ម
 msgid "Remove Service"
 msgstr "យក​សេវា"
 
-#: services/templates/services/service_edit.html:19
-#: templates/announcements/announcement_form.html:25
+#: services/templates/services/service_edit.html:15
+msgid "Edit Service"
+msgstr ""
+
+#: services/templates/services/service_edit.html:21
+#: templates/announcements/announcement_form.html:27
 msgid "Save"
 msgstr "រក្សា​ទុក"
 
@@ -2739,48 +2826,60 @@ msgstr "សេវា​:"
 msgid "The following layers will soon be added to the data catalog:"
 msgstr "ស្រទាប់​ខាងក្រោម​នឹង​ត្រូវ​បាន​បន្ថែម​ទៅ​បញ្ជី​ទិន្នន័យ​:"
 
-#: services/templates/services/service_list.html:30
+#: services/templates/services/service_list.html:8
 msgid "Register a new Service"
 msgstr "ចុះ​ឈ្មោះ​ជា​មួយ​សេវាកម្ម​ថ្មី"
 
-#: services/templates/services/service_register.html:21
+#: services/templates/services/service_register.html:13
+msgid "Register New Service"
+msgstr ""
+
+#: services/templates/services/service_register.html:23
 msgid "Service has been created:"
 msgstr "សេវាកម្ម​ត្រូវ​បាន​បង្កើត​:"
 
-#: services/templates/services/service_register.html:28
+#: services/templates/services/service_register.html:30
 msgid "The following layers will be imported"
 msgstr "ស្រទាប់​ខាង​ក្រោម​នឹង​ត្រូវ​បាន​នាំ​ចូល"
 
-#: services/templates/services/service_remove.html:7
+#: services/templates/services/service_remove.html:8
+msgid "Remove Remote Service"
+msgstr ""
+
+#: services/templates/services/service_remove.html:12
 msgid "Are you sure you want to remove"
 msgstr "តើ​អ្នក​ពិត​ជា​ចង់​យក"
 
-#: social/signals.py:73
+#: social/signals.py:85
 msgid "created"
 msgstr "បាន​បង្កើត​ឡើង"
 
-#: social/signals.py:74 social/tests.py:80
+#: social/signals.py:86 social/tests.py:80
 msgid "deleted"
 msgstr "លុប"
 
-#: social/signals.py:77
+#: social/signals.py:89
 msgid "updated"
 msgstr "ធ្វើ​ឱ្យ​ទាន់សម័យ"
 
-#: social/signals.py:82 social/tests.py:100
+#: social/signals.py:94 social/tests.py:100
 msgid "added a comment"
 msgstr "បាន​បន្ថែម​សេចក្តី​អធិប្បាយ"
 
-#: social/signals.py:84
+#: social/signals.py:96
 msgid "updated a comment"
 msgstr "ធ្វើ​ឱ្យ​ទាន់​សម័យ​មតិយោបល់"
 
-#: social/signals.py:86 social/tests.py:54
+#: social/signals.py:98 social/tests.py:54
 msgid "uploaded"
 msgstr "ផ្ទុក​ឡើង"
 
+#: social/templates/social/_activity_item.html:31
+msgid "ago"
+msgstr "មុន"
+
 #: social/templates/social/activity_list.html:4
-#: social/templates/social/activity_list.html:16
+#: social/templates/social/activity_list.html:15
 msgid "Recent activity"
 msgstr "សកម្មភាព​ថ្មី"
 
@@ -2823,11 +2922,11 @@ msgstr ""
 "\n"
 "ទំព័រ​ដែល​អ្នក​បាន​ស្នើ​មិន​មាន​ទេ​។ ប្រហែល​ជា​អ្នក​កំពុង​ប្រើ​កំណត់​ចំណាំ​ហួស​សម័យ​មួយ​?"
 
-#: templates/500.html:48 templates/base.html:56
+#: templates/500.html:48 templates/base.html:59
 msgid "People"
 msgstr "ប្រជាជន"
 
-#: templates/500.html:51 templates/base.html:59
+#: templates/500.html:51 templates/base.html:62
 msgid "Groups"
 msgstr "ក្រុម"
 
@@ -2836,64 +2935,42 @@ msgstr "ក្រុម"
 msgid "Search"
 msgstr "ស្វែងរក"
 
-#: templates/500.html:77 templates/base.html:93
+#: templates/500.html:77 templates/base.html:199
 msgid "Recent Activity"
 msgstr "សកម្មភាព​ថ្មី"
 
-#: templates/500.html:78 templates/base.html:94
+#: templates/500.html:78 templates/base.html:200
+#: templates/user_messages/inbox.html:15
 msgid "Inbox"
 msgstr "ប្រអប់​ទទួល"
 
-#: templates/500.html:80 templates/base.html:96
-#: templates/announcements/announcement_list.html:6
-#: templates/announcements/announcement_list.html:13
-#: templates/announcements/announcement_list.html:20
-msgid "Announcements"
-msgstr "សេចក្តី​ប្រកាស"
-
-#: templates/500.html:83 templates/base.html:99
-msgid "Remote Services"
-msgstr "សេវាកម្ម​ពី​ចម្ងាយ"
-
-#: templates/500.html:84 templates/base.html:100
-msgid "Invite User"
-msgstr "អញ្ជើញ​អ្នក​ប្រើប្រាស់"
-
-#: templates/500.html:86 templates/base.html:102
-msgid "GeoServer"
-msgstr "GeoServer"
-
-#: templates/500.html:89 templates/base.html:105
-msgid "Admin"
-msgstr "admin"
-
-#: templates/500.html:92 templates/base.html:108
+#: templates/500.html:92 templates/base.html:217
 msgid "Help"
 msgstr "ជួយ"
 
-#: templates/500.html:97 templates/base.html:113
+#: templates/500.html:97 templates/base.html:223
 #: templates/account/logout.html:6 templates/account/logout.html.py:12
 #: templates/account/logout.html:17
 msgid "Log out"
 msgstr "ចេញ"
 
-#: templates/500.html:109 templates/base.html:125
+#: templates/500.html:109 templates/base.html:168 templates/base.html.py:169
 msgid "Username"
 msgstr "ឈ្មោះ​អ្នក​ប្រើ"
 
-#: templates/500.html:113 templates/base.html:129
+#: templates/500.html:113 templates/base.html:172
 msgid "Password"
 msgstr "ពាក្យ​សម្ងាត់"
 
-#: templates/500.html:118 templates/base.html:134
+#: templates/500.html:118 templates/base.html:176
 msgid "Remember Me"
 msgstr "ចងចាំ​ខ្ញុំ"
 
-#: templates/500.html:120 templates/base.html:119 templates/base.html.py:136
+#: templates/500.html:120 templates/base.html:93 templates/base.html.py:180
 msgid "Sign in"
 msgstr "ចុះ​ឈ្មោះ​ចូល"
 
-#: templates/500.html:128 templates/base.html:77
+#: templates/500.html:128 templates/base.html:82
 msgid "Register"
 msgstr "ចុះឈ្មោះ"
 
@@ -2917,25 +2994,37 @@ msgstr ""
 "ឃើញ​កំហុស​ពិត​ប្រាកដ​និង​ការ​ជួសជុល​វា​ឬ​ឯកសារ​ដែល​ជា​បញ្ហា​មួយ​នៅក្នុង <a href=\"http://github.com/"
 "GeoNode/geonode/issues\">កម្មវិធី​តាមដាន​បញ្ហា GeoNode របស់</a>"
 
-#: templates/500.html:182 templates/base.html:173
+#: templates/500.html:182 templates/base.html:129
 msgid "Powered by"
 msgstr "ឧបត្ថម្ភ​ដោយ"
 
-#: templates/500.html:182 templates/base.html:173
+#: templates/500.html:182 templates/base.html:129
 msgid "GeoNode"
 msgstr "GeoNode"
 
-#: templates/500.html:182 templates/base.html:173
+#: templates/500.html:182 templates/base.html:129
 msgid "version"
 msgstr "កំណែ"
 
-#: templates/500.html:183 templates/base.html:174
+#: templates/500.html:183 templates/base.html:130
 msgid "Developers"
 msgstr "អ្នក​អភិវឌ្ឍ"
 
-#: templates/_actions.html:4
-msgid "Add to Favorites"
-msgstr "បន្ថែម​ទៅ​សំណព្វ"
+#: templates/_actions.html:3
+msgid "Info"
+msgstr "ព​ត៌​មាន"
+
+#: templates/_actions.html:8
+msgid "Share"
+msgstr "ចែករំលែក"
+
+#: templates/_actions.html:10
+msgid "Ratings"
+msgstr "ការ​ផ្តល់​ចំណាត់​ថ្នាក់"
+
+#: templates/_actions.html:13
+msgid "GeoGig"
+msgstr ""
 
 #: templates/_bulk_permissions_form.html:9
 msgid "Set permissions on selected resources"
@@ -2946,7 +3035,7 @@ msgstr "កំណត់​សិទ្ធិ​នៅ​លើ​ធនធាន
 msgid "Apply Changes"
 msgstr "អនុវត្ត​ការ​ផ្លាស់​ប្តូ​រ"
 
-#: templates/_comments.html:17
+#: templates/_comments.html:17 templates/_comments.html.py:58
 msgid "Add Comment"
 msgstr "បន្ថែម​សេចក្តី​អធិប្បាយ"
 
@@ -2958,13 +3047,9 @@ msgstr "ចូល​ដើម្បី​បន្ថែម​សេចក្ត
 msgid "By"
 msgstr "ដោយ"
 
-#: templates/_comments.html:49
-msgid "Add a Comment"
-msgstr "បន្ថែម​មតិយោបល់"
-
-#: templates/_comments.html:60
-msgid "Submit Comments"
-msgstr "ដាក់​​​ស្នើ​មតិយោបល់"
+#: templates/_comments.html:67
+msgid "Submit Comment"
+msgstr ""
 
 #: templates/_permissions.html:8
 msgid "Who can view it?"
@@ -3024,11 +3109,15 @@ msgstr "ជ្រើស​ក្រុម ..."
 msgid "About GeoNode"
 msgstr "អំពី GeoNode"
 
-#: templates/about.html:9
+#: templates/about.html:10
 msgid "About GeoNode."
 msgstr "អំពី GeoNode ។"
 
-#: templates/base.html:224
+#: templates/base.html:192
+msgid "Profile Menu"
+msgstr ""
+
+#: templates/base.html:258
 msgid "Type your search here ..."
 msgstr "វាយ​ការ​ស្វែងរក​របស់​អ្នក​នៅ​ទីនេះ ..."
 
@@ -3036,121 +3125,123 @@ msgstr "វាយ​ការ​ស្វែងរក​របស់​អ្ន
 msgid "Information for Developers"
 msgstr "ព័ត៌មាន​សម្រាប់​អ្នក​អភិវឌ្ឍន៍"
 
-#: templates/developer.html:9
+#: templates/developer.html:13
 msgid "Useful information for developers interested in GeoNode."
 msgstr "ព័ត៌មាន​ដែល​មាន​ប្រយោជន៍​សម្រាប់​អ្នក​អភិវឌ្ឍន៍​ចាប់​អារម្មណ៍​នៅ​ក្នុង​ការ GeoNode ។"
 
-#: templates/developer.html:12
+#: templates/developer.html:14
 msgid ""
 "\n"
-"  <p><a href=\"http://geonode.org/\">GeoNode</a> is an open service built on "
-"open source software. We encourage you to build new applications using the "
-"components and resources it provides. This page is a starting point for "
+"    <p><a href=\"http://geonode.org/\">GeoNode</a> is an open service built "
+"on open source software. We encourage you to build new applications using "
+"the components and resources it provides. This page is a starting point for "
 "developers interesting in taking full advantage of GeoNode. It also includes "
 "links to the project's source code so anyone can build and customize their "
 "own GeoNode. </p>\n"
 "\n"
-"  <h4>GeoNode Software</h4>\n"
+"    <h3>GeoNode Software</h3>\n"
 "\n"
-"  <p>All the code that runs GeoNode is open source. The code is available at "
-"<a href=\"http://github.com/GeoNode/geonode\">http://github.com/GeoNode/"
+"    <p>All the code that runs GeoNode is open source. The code is available "
+"at <a href=\"http://github.com/GeoNode/geonode\">http://github.com/GeoNode/"
 "geonode/</a>. The issue tracker for the project is at <a href=\"http://"
 "github.com/GeoNode/geonode/issues\">http://github.com/GeoNode/geonode/"
 "issues</a>.</p>\n"
 "\n"
-"  <p>GeoNode is built using several open source projects, each with its own "
-"community. If you are interested in contributing new features to the "
+"    <p>GeoNode is built using several open source projects, each with its "
+"own community. If you are interested in contributing new features to the "
 "GeoNode, we encourage you to do so by contributing to one of the projects on "
 "which it is built:</p>\n"
-"  <ul>\n"
-"    <li><a href=\"http://geoext.org\">GeoExt</a> - The JavaScript toolkit "
+"    <ul>\n"
+"      <li><a href=\"http://geoext.org\">GeoExt</a> - The JavaScript toolkit "
 "for rich web mapping applications</li>\n"
-"    <li><a href=\"http://geoserver.org\">GeoServer</a> - Standards based "
+"      <li><a href=\"http://geoserver.org\">GeoServer</a> - Standards based "
 "server for geospatial information</li>\n"
-"    <li><a href=\"http://geowebcache.org\">GeoWebCache</a> - Cache engine "
+"      <li><a href=\"http://geowebcache.org\">GeoWebCache</a> - Cache engine "
 "for WMS Tiles</li><li><a href=\"http://openlayers.org\">OpenLayers</a> - "
 "Pure JavaScript library powering the maps of GeoExt</li>\n"
-"    <li><a href=\"http://pycsw.org\">pycsw</a> - CSW metadata catalogue "
+"      <li><a href=\"http://pycsw.org\">pycsw</a> - CSW metadata catalogue "
 "server</li>\n"
-"  </ul>\n"
+"    </ul>\n"
 "\n"
-"  <h4>What are OGC Services?</h4>\n"
-"  <p>The data in this application is served using open standards endorsed by "
-"the <a href=\"http://opengeospatial.org/\">Open Geospatial Consortium</a>; "
-"in particular, WMS (Web Map Service) is used for accessing maps, WFS (Web "
-"Feature Service) is used for accessing vector data, and WCS (Web Coverage "
-"Service) is used for accessing raster data.  WMC (Web Map Context Documents) "
-"is used for sharing maps. You can use these services in your own "
+"    <h3>What are OGC Services?</h3>\n"
+"    <p>The data in this application is served using open standards endorsed "
+"by the <a href=\"http://opengeospatial.org/\">Open Geospatial Consortium</"
+"a>; in particular, WMS (Web Map Service) is used for accessing maps, WFS "
+"(Web Feature Service) is used for accessing vector data, and WCS (Web "
+"Coverage Service) is used for accessing raster data.  WMC (Web Map Context "
+"Documents) is used for sharing maps. You can use these services in your own "
 "applications using libraries such as OpenLayers, GeoTools, and OGR (all of "
 "which are open-source software and available at zero cost).</p>\n"
 "\n"
-"  <h4>What is GeoWebCache?</h4>\n"
-"  <p>GeoWebCache provides mapping tiles that are compatible with a number of "
-"mapping engines, including Google Maps, Bing Maps and OpenLayers. All the "
+"    <h3>What is GeoWebCache?</h3>\n"
+"    <p>GeoWebCache provides mapping tiles that are compatible with a number "
+"of mapping engines, including Google Maps, Bing Maps and OpenLayers. All the "
 "data hosted by GeoNode is also available through GeoWebCache. GeoWebCache "
 "improves on WMS by caching data and providing more responsive maps.</p>\n"
 "\n"
-"  <h4>OpenLayers Example Code</h4>\n"
+"    <h3>OpenLayers Example Code</h3>\n"
 "\n"
-"  <p>To include a GeoNode map layer in an OpenLayers map, first find the "
+"    <p>To include a GeoNode map layer in an OpenLayers map, first find the "
 "name for that layer. This is found in the layer's <code>name</code> field "
 "(not <code>title</code>) of the layer list. For this example, we will use "
 "the Nicaraguan political boundaries background layer, whose name is "
 "<code>risk:nicaragua_admin</code>. Then, create an instance of OpenLayers."
 "Layer.WMS:</p>\n"
-"  <p><code>var geonodeLayer = new OpenLayers.Layer.WMS(\"GeoNode Risk Data"
+"    <p><code>var geonodeLayer = new OpenLayers.Layer.WMS(\"GeoNode Risk Data"
 "\", \"http://demo.geonode.org/geoserver/wms\",{ layers: \"risk:"
 "nicaragua_admin\" });</code></p>\n"
 "\n"
-"  <h4>Google Maps Example Code</h4>\n"
-"  <p>To include a GeoNode map layer in a Google Map, include the layer "
+"    <h3>Google Maps Example Code</h3>\n"
+"    <p>To include a GeoNode map layer in a Google Map, include the layer "
 "namein the URL template.</p>\n"
-"  <p><code>var tilelayer =  new GTileLayer(null, null, null, "
+"    <p><code>var tilelayer =  new GTileLayer(null, null, null, "
 "{tileUrlTemplate: 'http://demo.geonode.org/geoserver/gwc/service/gmaps?"
 "layers=risk:nicaragua_admin&#38;zoom={Z}&#38;x={X}&#38;y={Y}', isPng:true, "
 "opacity:0.5 } );</code></p>\n"
 "\n"
-"  <h4>Shapefile/GeoJSON/GML Output</h4>\n"
-"  <p>To get data from the GeoNode web services use the WFS protocol. For "
+"    <h3>Shapefile/GeoJSON/GML Output</h3>\n"
+"    <p>To get data from the GeoNode web services use the WFS protocol. For "
 "example, to get the full Nicaraguan admin boundaries use:</p>\n"
-"  <p><code>http://demo.geonode.org/geoserver/wfs?request=GetFeature&#38;"
+"    <p><code>http://demo.geonode.org/geoserver/wfs?request=GetFeature&#38;"
 "typeName=risk:nicaragua_admin&#38;outputformat=SHAPE-ZIP</code></p>\n"
-"  <p>Changing output format to <code>json</code>, <code>GML2</code>, "
+"    <p>Changing output format to <code>json</code>, <code>GML2</code>, "
 "<code>GML3</code>, or <code>csv</code> will get data in those formats. The "
 "WFS protocol also can handle more precise queries, specifying a bounding box "
 "or various spatial and non-spatial filters based on the attributes of the "
 "data.</p>\n"
 "\n"
-"  <h4>GeoTools Example Code</h4>\n"
-"  <p>Create a DataStore and extract a FeatureType from it, then run a Query. "
-"It is all documented on the wiki at <code>http://geotools.org/</code>.</p>\n"
+"    <h3>GeoTools Example Code</h3>\n"
+"    <p>Create a DataStore and extract a FeatureType from it, then run a "
+"Query. It is all documented on the wiki at <code>http://geotools.org/</code>."
+"</p>\n"
+"    "
 msgstr ""
 
-#: templates/developer.html:53
+#: templates/developer.html:55
 msgid "GeoNode's Web Services"
 msgstr "សេវា​គេហទំព័រ GeoNode របស់"
 
-#: templates/developer.html:54
+#: templates/developer.html:56
 msgid "GeoNode's Web Services are available from the following URLs:"
 msgstr "សេវា​គេហទំព័រ GeoNode គឺ​អាច​រក​បាន​ពី URLs ដែល​ដូច​ខាងក្រោម​:"
 
-#: templates/developer.html:57
+#: templates/developer.html:59
 msgid "Dynamic tiles via WMS:"
 msgstr "ក្បឿង​ថាមវន្ត​តាម​រយៈ WMS​:"
 
-#: templates/developer.html:61
+#: templates/developer.html:63
 msgid "Vector data via WFS:"
 msgstr "ទិន្នន័យ​វ៉ិចទ័រ​តាមរយៈ WFS​:"
 
-#: templates/developer.html:65
+#: templates/developer.html:67
 msgid "Raster data via WCS:"
 msgstr "ទិន្នន័យ​បន្ទាត់​បញ្ឈរ​តាម​រយៈ​អង្គការ WCS​:"
 
-#: templates/developer.html:69
+#: templates/developer.html:71
 msgid "Metadata search via CSW:"
 msgstr "ការ​ស្វែង​រក​ទិន្នន័យ​មេតា​តាម​រយៈ CSW​:"
 
-#: templates/developer.html:73
+#: templates/developer.html:75
 msgid "Cached tiles via WMTS:"
 msgstr "ក្បឿង​ទុក​ក្នុង​ឃ្លាំង​សម្ងាត់​តាម​រយៈ WMTS​:"
 
@@ -3162,7 +3253,7 @@ msgstr "មគ្គុទ្ទេសក៍​អ្នក​ប្រើ"
 msgid "GeoNode Help"
 msgstr "GeoNode ជំនួយ"
 
-#: templates/help.html:9
+#: templates/help.html:12
 msgid ""
 "This page provides helpful information about how to use the GeoNode. You can "
 "use the sidebar links to navigate to what you want to know."
@@ -3170,120 +3261,121 @@ msgstr ""
 "ទំព័រ​នេះ​ផ្តល់​នូវ​ព័ត៌មាន​មាន​ប្រយោជន៍​អំពី​របៀប​ប្រើ GeoNode នេះ​។ អ្នក​អាច​ប្រើ​តំណ​ភ្ជាប់​របារ​ចំហៀង​ដើម្បី​"
 "រុករក​អ្វី​ដែល​អ្នក​ចង់​ដឹង​។"
 
-#: templates/help.html:12
+#: templates/help.html:14
 msgid ""
 "\n"
-"  <p>The GeoNode provides access to data sets and a map editing application "
-"allows users to browse existing maps and contribute their own.</p>\n"
+"    <p>The GeoNode provides access to data sets and a map editing "
+"application allows users to browse existing maps and contribute their own.</"
+"p>\n"
 "\n"
-"  <h4 id=\"browsing-data\">Browsing Layers</h4>\n"
-"  <p>The <a href=\"/layers\">Layers</a> tab allows you to browse data "
+"    <h4 id=\"browsing-data\">Browsing Layers</h4>\n"
+"    <p>The <a href=\"/layers\">Layers</a> tab allows you to browse data "
 "uploaded to this GeoNode.</p>\n"
-"  <p>All data can be downloaded in a variety of formats, for use in other "
+"    <p>All data can be downloaded in a variety of formats, for use in other "
 "applications.</p>\n"
 "\n"
-"  <h4 id=\"developer-access\">Developer Access</h4>\n"
-"  <p>The <a href=\"/developer\"> Developer</a> page is the place for "
+"    <h4 id=\"developer-access\">Developer Access</h4>\n"
+"    <p>The <a href=\"/developer\"> Developer</a> page is the place for "
 "developers to get started building applications against the GeoNode. It "
 "includes instructions on using the web services, links to the source code of "
 "the GeoNode, and information about the open source projects used to create "
 "it.</p>\n"
 "\n"
-"  <h4 id=\"browsing-maps\">Browsing Maps</h4>\n"
-"  <p>The GeoNode allows users to create and share maps with one another.</"
+"    <h4 id=\"browsing-maps\">Browsing Maps</h4>\n"
+"    <p>The GeoNode allows users to create and share maps with one another.</"
 "p>\n"
-"  <p>The <a href=\"/maps\">Maps</a> tab is a gateway to map exploration on "
+"    <p>The <a href=\"/maps\">Maps</a> tab is a gateway to map exploration on "
 "GeoNode.  From here you can <strong>search for a map</strong> or "
 "<strong>create a map</strong>, which will open the <a href=\"/maps/new\">Map "
 "Composer</a>.</p>\n"
-"  <h5>Google Earth Mode</h5>\n"
-"  <p>Any map viewed in the interactive map editor can be seen in 3D mode "
+"    <h5>Google Earth Mode</h5>\n"
+"    <p>Any map viewed in the interactive map editor can be seen in 3D mode "
 "with the Google Earth plugin. To switch to 3D mode select the Google Earth "
 "globe logo, the rightmost button on top toolbar. If you do not have the "
 "Google Earth plugin installed you will be prompted to install it.</p>\n"
 "\n"
-"  <h4 id=\"creating-a-map\">Creating a Map</h4>\n"
-"  <p>To create a new map go to the <a href=\"/maps\">Contributed Maps</a> "
+"    <h4 id=\"creating-a-map\">Creating a Map</h4>\n"
+"    <p>To create a new map go to the <a href=\"/maps\">Contributed Maps</a> "
 "tab and click the <a href=\"/maps/new\">create your own map</a> link.</p>\n"
-"  <p>This will take you to the <a href=\"/maps/new\">Map Composer</a> with a "
-"base layer loaded.</p>\n"
-"  <p>To add data layers from the GeoNode click on the green plus button "
+"    <p>This will take you to the <a href=\"/maps/new\">Map Composer</a> with "
+"a base layer loaded.</p>\n"
+"    <p>To add data layers from the GeoNode click on the green plus button "
 "located below the layers tab on the left hand side of the screen. This will "
 "open a dialog listing all the layers available on the GeoNode.</p>\n"
-"  <p>To add layers to your map select them and hit the <strong>Add Layers</"
+"    <p>To add layers to your map select them and hit the <strong>Add Layers</"
 "strong> button. When finished you may hit <strong>Done</strong> to close the "
 "dialog and go back to the map.</p>\n"
 "\n"
-"  <h5>Reordering and Removing Layers</h5>\n"
-"  <p>Change the display order of the layers listed in the data tab by simply "
-"dragging and dropping their names. The order in the map will be updated to "
-"reflect that. To turn a layer's visibility off simply uncheck it, and to "
-"remove it entirely select it and hit the red minus button.</p>\n"
+"    <h5>Reordering and Removing Layers</h5>\n"
+"    <p>Change the display order of the layers listed in the data tab by "
+"simply dragging and dropping their names. The order in the map will be "
+"updated to reflect that. To turn a layer's visibility off simply uncheck it, "
+"and to remove it entirely select it and hit the red minus button.</p>\n"
 "\n"
-"  <h5>Saving your map</h5>\n"
-"  <p>Once a suitable set of layers and zoom level has been found it's time "
+"    <h5>Saving your map</h5>\n"
+"    <p>Once a suitable set of layers and zoom level has been found it's time "
 "to save it so others can see it.  Click the Save button--the left most icon "
 "on the top toolbar, an image of a map with a disk--on the top menu and fill "
 "out the title and abstract of the map.</p>\n"
 "\n"
-"  <h4 id=\"exporting-a-map\">Exporting a Map</h4>\n"
-"  <p>Any map from the GeoNode can be embedded for use in another site or "
+"    <h4 id=\"exporting-a-map\">Exporting a Map</h4>\n"
+"    <p>Any map from the GeoNode can be embedded for use in another site or "
 "blog. To export a map:</p>\n"
-"  <ol>\n"
-"    <li>Select the from the list of maps on the community or map page and "
+"    <ol>\n"
+"      <li>Select the from the list of maps on the community or map page and "
 "then hit the 'export map' button.</li> \n"
-"    <li>Choose your desired height and width for the widget in the wizard.</"
-"li> \n"
-"    <li>Copy the HTML snippet provided in the wizard to any HTML page or "
+"      <li>Choose your desired height and width for the widget in the wizard."
+"</li> \n"
+"      <li>Copy the HTML snippet provided in the wizard to any HTML page or "
 "iFrame-supporting blog post.</li>\n"
-"  </ol>\n"
-"  <p>This will put an interactive widget showing you map in your web page or "
-"blog post.</p>\n"
-"  <p>Note that the <a href=\"/maps/new\">Map Composer</a> also has a button "
-"to export the map. Just be sure to save the map before exporting if there "
-"are changes that you want others to see. It exports the last saved version, "
-"not the last viewed version.</p>\n"
+"    </ol>\n"
+"    <p>This will put an interactive widget showing you map in your web page "
+"or blog post.</p>\n"
+"    <p>Note that the <a href=\"/maps/new\">Map Composer</a> also has a "
+"button to export the map. Just be sure to save the map before exporting if "
+"there are changes that you want others to see. It exports the last saved "
+"version, not the last viewed version.</p>\n"
 "\n"
-"  <h4 id=\"remixing-a-map\">Remixing a Map</h4>\n"
-"  <p>Any map available can serve as a starting point for a new map.</p>\n"
-"  <ol>\n"
-"    <li>Open the map in the Map Composer.</li>\n"
-"    <li>Add and remove layers as you like.</li>\n"
-"    <li>Pan and zoom to highlight the area of interest.</li>\n"
-"    <li><strong>IMPORTANT:</strong> Update the title, abstract, contact info "
-"and tags to reflect the new map.</li>\n"
-"    <li>Save the map.</li>\n"
-"  </ol>\n"
-"  <p>You will be able to see your new map when you search for it from the <a "
-"href=\"/maps\">Maps</a> tab.</p> \n"
-"  "
+"    <h4 id=\"remixing-a-map\">Remixing a Map</h4>\n"
+"    <p>Any map available can serve as a starting point for a new map.</p>\n"
+"    <ol>\n"
+"      <li>Open the map in the Map Composer.</li>\n"
+"      <li>Add and remove layers as you like.</li>\n"
+"      <li>Pan and zoom to highlight the area of interest.</li>\n"
+"      <li><strong>IMPORTANT:</strong> Update the title, abstract, contact "
+"info and tags to reflect the new map.</li>\n"
+"      <li>Save the map.</li>\n"
+"    </ol>\n"
+"    <p>You will be able to see your new map when you search for it from the "
+"<a href=\"/maps\">Maps</a> tab.</p> \n"
+"    "
 msgstr ""
 
-#: templates/help.html:65
+#: templates/help.html:66
 msgid "Sections"
 msgstr "ផ្នែក"
 
-#: templates/help.html:66
+#: templates/help.html:67
 msgid "Browsing Layers"
 msgstr "ស្រទាប់​រក​មើល"
 
-#: templates/help.html:67
+#: templates/help.html:68
 msgid "Developer Access"
 msgstr "ការ​ចូល​ដំណើរ​ការ​អភិវឌ្ឍន៍"
 
-#: templates/help.html:68
+#: templates/help.html:69
 msgid "Browsing Maps"
 msgstr "រក​មើល​ផែនទី"
 
-#: templates/help.html:69
+#: templates/help.html:70
 msgid "Creating a Map"
 msgstr "ការ​បង្កើត​ផែនទី​មួយ"
 
-#: templates/help.html:70
+#: templates/help.html:71
 msgid "Exporting a Map"
 msgstr "នាំ​ចេញ​ជា​មួយ​ផែនទី"
 
-#: templates/help.html:71
+#: templates/help.html:72
 msgid "Remixing a Map"
 msgstr "Remixing ផែនទី​មួយ"
 
@@ -3316,15 +3408,18 @@ msgstr "ត្រូវការ​ជំនួយ​?"
 msgid "Getting Started"
 msgstr "ការ​ចាប់ផ្តើម"
 
-#: templates/index.html:30 templates/index.html.py:37 templates/index.html:43
+#: templates/index.html:30 templates/index.html.py:36 templates/index.html:43
+#: templates/index.html.py:48
 msgid "No"
 msgstr "គ្មាន"
 
 #: templates/index.html:30
+#: templates/notification/request_download_resourcebase/full.txt:7
 msgid "Layer"
-msgstr "ស្រទាប់"
+msgid_plural "Layers"
+msgstr[0] ""
 
-#: templates/index.html:32
+#: templates/index.html:31
 msgid ""
 "Click to search for geospatial data published by other users, organizations "
 "and public sources. Download data in standard formats."
@@ -3332,11 +3427,12 @@ msgstr ""
 "ចុច​ដើម្បី​ស្វែងរក​ទិន្នន័យ​ភូមិ​សា​ស្ដ្រ​ដែល​បាន​ចេញ​ផ្សាយ​ដោយ​អ្នក​ប្រើ​ផ្សេង​ទៀត​អង្គការ​និង​ប្រភព​សាធារណៈ​។ ទាញ​"
 "យក​ទិន្នន័យ​នៅ​ក្នុង​ទ្រង់ទ្រាយ​ស្តង់ដារ​។"
 
-#: templates/index.html:37
+#: templates/index.html:36
 msgid "Map"
-msgstr "ផែនទី"
+msgid_plural "Maps"
+msgstr[0] ""
 
-#: templates/index.html:38
+#: templates/index.html:37
 msgid ""
 "Data is available for browsing, aggregating and styling to generate maps "
 "which can be shared publicly or restricted to specific users only."
@@ -3344,15 +3440,17 @@ msgstr ""
 "ទិន្នន័យ​គឺ​អាច​ប្រើ​បាន​សម្រាប់​ការ​រក​មើល​, ផ្ដុំ​និង​រចនាប័ទ្ម​ដើម្បី​បង្កើត​ផែនទី​ដែល​អាច​ត្រូវ​បាន​ចែក​រំលែក​ជា​"
 "សាធារណៈ​ឬ​ការ​ដាក់​កម្រិត​ទៅ​អ្ន​​ក​ប្រើ​ជាក់លាក់​ប៉ុណ្ណោះ​។"
 
-#: templates/index.html:39
+#: templates/index.html:38
 msgid "Create maps"
 msgstr "បង្កើត​ផែនទី"
 
-#: templates/index.html:43
+#: templates/index.html:43 templates/index.html.py:48
+#: templates/notification/account_approve/full.txt:1
 msgid "User"
-msgstr "អ្នក​ប្រើ"
+msgid_plural "Users"
+msgstr[0] ""
 
-#: templates/index.html:44
+#: templates/index.html:44 templates/index.html.py:49
 msgid ""
 "GeoNode allows registered users to easily upload geospatial data in several "
 "formats including shapefile and GeoTiff."
@@ -3360,15 +3458,40 @@ msgstr ""
 "GeoNode អនុញ្ញាត​ឱ្យ​អ្នក​ប្រើ​ដែល​បាន​ចុះ​ឈ្មោះ​ដើម្បី​ផ្ទុក​ឡើង​បាន​យ៉ាង​ងាយ​ស្រួល​ទិន្នន័យ​ភូមិ​សា​ស្ដ្រ​នៅ​ក្នុង​"
 "ទ្រង់ទ្រាយ​ជា​ច្រើន​រួម​ទាំង​ការ shapefile និង GeoTiff ។"
 
-#: templates/index.html:45
+#: templates/index.html:45 templates/index.html.py:50
 msgid "Share data"
 msgstr "ទិន្នន័យ​ចែករំលែក"
 
-#: templates/account/login.html:7 templates/account/login.html.py:24
+#: templates/account/admin_approval_sent.html:6
+#: templates/account/admin_approval_sent.html:9
+msgid "Account Pending Approval"
+msgstr ""
+
+#: templates/account/admin_approval_sent.html:11
+#, python-format
+msgid ""
+"We have sent the administrators a notice to approve your account associated "
+"with <b>%(email)s</b>. If the account is approved, you will receive a "
+"confirmation notice."
+msgstr ""
+
+#: templates/account/email_confirmation_sent.html:6
+#: templates/account/email_confirmation_sent.html:9
+msgid "Confirm your email address"
+msgstr ""
+
+#: templates/account/email_confirmation_sent.html:11
+#, python-format
+msgid ""
+"We have sent you an email to <b>%(email)s</b> for verification. Follow the "
+"link provided to finalize the signup process."
+msgstr ""
+
+#: templates/account/login.html:7 templates/account/login.html.py:25
 msgid "Log in"
 msgstr "ចូល"
 
-#: templates/account/login.html:12
+#: templates/account/login.html:11
 msgid "Log in to an existing account"
 msgstr "ចូល​ទៅ​ក្នុង​គណនី​ដែល​មាន​ស្រាប់"
 
@@ -3385,23 +3508,28 @@ msgid "Are you sure you want to log out?"
 msgstr "តើ​អ្នក​ពិត​ជា​ចង់​ចេញ​?"
 
 #: templates/account/password_reset.html:8
-#: templates/account/password_reset.html:14
 msgid "Password reset"
 msgstr "កំណត់​ពាក្យ​សម្ងាត់"
 
-#: templates/account/password_reset.html:15
-msgid ""
-"Forgotten your password? Enter your email address below, and we'll send you "
-"an email allowing you to reset it."
+#: templates/account/password_reset.html:14
+msgid "Password Reset"
 msgstr ""
-"ភ្លេច​ពាក្យសម្ងាត់​របស់​អ្នក​? បញ្ចូល​អាសយដ្ឋាន​អ៊ីមែល​របស់​អ្នក​នៅ​ខាង​ក្រោម​ហើយ​យើង​នឹង​ផ្ញើ​អ៊ី​ម៉ែ​ល​មួយ​ដែល​អ្នក​"
-"អនុញ្ញាត​ឱ្យ​អ្នក​កំណត់​វា​បាន​។"
 
-#: templates/account/password_reset.html:20
+#: templates/account/password_reset.html:18
+msgid "Forgotten your password?"
+msgstr ""
+
+#: templates/account/password_reset.html:19
+msgid ""
+"Enter your email address below, and we'll send you an email allowing you to "
+"reset it."
+msgstr ""
+
+#: templates/account/password_reset.html:25
 msgid "Reset my password"
 msgstr "កំណត់​ពាក្យ​សម្ងាត់​របស់​ខ្ញុំ"
 
-#: templates/account/password_reset.html:25
+#: templates/account/password_reset.html:29
 #, python-format
 msgid ""
 "If you have any trouble resetting your password, contact us at <a href="
@@ -3474,40 +3602,38 @@ msgstr "GeoNode អ្នក​គ្រប់គ្រង​វែ​ប​ស�
 msgid "GeoNode administration"
 msgstr "រដ្ឋបាល GeoNode"
 
-#: templates/announcements/announcement_form.html:10
+#: templates/announcements/announcement_form.html:11
 msgid "Edit Announcement"
 msgstr "កែសម្រួល​សេចក្តី​ជូនដំណឹង"
 
-#: templates/announcements/announcement_form.html:10
+#: templates/announcements/announcement_form.html:11
 msgid "Create Announcement"
 msgstr "ការ​បង្កើត​សេចក្តី​ជូនដំណឹង"
 
-#: templates/announcements/announcement_list.html:19
+#: templates/announcements/announcement_list.html:12
 msgid "New Announcement"
 msgstr "សេចក្តី​ជូនដំណឹង​ថ្មី"
 
-#: templates/announcements/announcement_list.html:31
+#: templates/announcements/announcement_list.html:21
 msgid "Level"
 msgstr ""
 
-#: templates/announcements/announcement_list.html:32
+#: templates/announcements/announcement_list.html:22
 msgid "Announcement"
 msgstr "សេចក្តី​ប្រកាស"
 
-#: templates/announcements/announcement_list.html:33
+#: templates/announcements/announcement_list.html:23
 msgid "Published From"
 msgstr "បាន​ចេញ​ផ្សាយ​ពី"
 
-#: templates/announcements/announcement_list.html:48
+#: templates/announcements/announcement_list.html:38
 #, python-format
 msgid ""
 "\n"
-"                        Published from <b>%(publish_start)s</b> to <b>"
-"%(publish_end)s</b>.\n"
-"                        "
+"          Published from <b>%(publish_start)s</b> to <b>%(publish_end)s</"
+"b>.\n"
+"          "
 msgstr ""
-"\n"
-"បាន​ចេញ​ផ្សាយ​ពី​ <b>%(publish_start)s</b>ទៅ​ <b>%(publish_end)s</b>"
 
 #: templates/announcements/detail.html:4
 #, python-format
@@ -3536,8 +3662,8 @@ msgid "Choose new Default"
 msgstr "ជ្រើស​លំនាំដើម​ថ្មី"
 
 #: templates/avatar/change.html:23
-msgid "Delete your avatars"
-msgstr "លុប​អវ​តា​របស់​អ្នក"
+msgid "Delete Your Avatar"
+msgstr ""
 
 #: templates/avatar/confirm_delete.html:6
 msgid "Please select the avatars that you would like to delete."
@@ -3555,73 +3681,247 @@ msgstr ""
 msgid "Delete These"
 msgstr "លុប​ទាំង​នេះ"
 
-#: templates/notification/base.html:16 templates/notification/notices.html:7
-#: templates/notification/notices.html:11
-msgid "Notices"
-msgstr "សេចក្តី​ជូនដំណឹង"
-
-#: templates/notification/base.html:17
-msgid "Notice settings"
-msgstr "ការ​កំណត់​ការ​ជូន​ដំណឹង"
-
-#: templates/notification/base.html:18
-msgid "Observed objects"
-msgstr "វត្ថុ​សង្កេត​ឃើញ"
-
-#: templates/notification/notice_settings.html:5
-#: templates/notification/notice_settings.html:10
+#: templates/notification/notice_settings.html:8
+#: templates/notification/notice_settings.html:11
 msgid "Notification Settings"
 msgstr "ការ​កំណត់​ការ​ជូន​ដំណឹង"
 
 #: templates/notification/notice_settings.html:15
-msgid "Primary email"
-msgstr "អ៊ីមែល​ចម្បង"
-
-#: templates/notification/notice_settings.html:17
-#, python-format
-msgid "change under <a href=\"%(email_url)s\">Account</a>"
-msgstr "ការ​ផ្លាស់​ប្តូ​រ​នៅ​ក្រោម <a href=\"%(email_url)s\">គណនី</a>"
-
-#: templates/notification/notice_settings.html:21
-msgid "Note"
-msgstr "ចំណាំ"
-
-#: templates/notification/notice_settings.html:22
 #, python-format
 msgid ""
-"You do not have a verified email address to which notices can be sent. You "
-"can add one by going to <a href=\"%(email_url)s\">Account</a>."
+"\n"
+"        <p class=\"alert alert-warning\">\n"
+"            <span class=\"warning\">Note</span>:\n"
+"            You do not have a verified email address to which notices can be "
+"sent. <a href=\"%(email_url)s\">Add one</a> now.\n"
+"        </p>\n"
+"        "
 msgstr ""
-"អ្នក​មិន​មាន​អាសយដ្ឋាន​អ៊ីមែល​ដែល​បាន​ផ្ទៀងផ្ទាត់​ដែល​ជូនដំណឹង​អាច​ត្រូវ​បាន​ផ្ញើ​។ អ្នក​អាច​បន្ថែម​មួយ​ដោយ​ចូល​ទៅ​"
-"កាន់ <a href=\"%(email_url)s\">គណនី</a> ។"
 
-#: templates/notification/notice_settings.html:30
+#: templates/notification/notice_settings.html:27
 msgid "Notification Type"
 msgstr "ប្រភេទ​ជូន​ដំណឹង"
 
-#: templates/notification/notice_settings.html:48
+#: templates/notification/notice_settings.html:52
 msgid "Change"
 msgstr "ការ​ផ្លាស់​ប្តូ​រ"
 
-#: templates/notification/notices.html:16
-msgid "Mark all unseen notices seen"
-msgstr "លោក Mark ជូនដំណឹង​ដែល​មើល​មិនឃើញ​ទាំង​អស់​បាន​គេ​មើល​ឃើញ"
+#: templates/notification/account_active/full.txt:3
+msgid "Your account has been approved and is now active."
+msgstr ""
 
-#: templates/notification/notices.html:22
-msgid "MONTH_DAY_FORMAT"
-msgstr "MONTH_DAY_FORMAT"
+#: templates/notification/account_active/full.txt:5
+msgid "You can use the login form at"
+msgstr ""
 
-#: templates/notification/notices.html:33
-msgid "View Notice"
-msgstr "មើល​សេចក្តី​ជូនដំណឹង"
+#: templates/notification/account_active/short.txt:3
+msgid "Your account is now active"
+msgstr ""
 
-#: templates/notification/notices.html:41
-msgid "No notices."
-msgstr "គ្មាន​ការ​ជូនដំណឹង​។"
+#: templates/notification/account_approve/full.txt:1
+msgid "has requested access to the site."
+msgstr ""
 
-#: templates/notification/single.html:6 templates/notification/single.html:9
-msgid "Notice"
-msgstr "សេចក្តី​ជូនដំណឹង"
+#: templates/notification/account_approve/full.txt:1
+msgid ""
+"You can enable access by setting the user as active on the admin section"
+msgstr ""
+
+#: templates/notification/account_approve/short.txt:3
+msgid "A user has requested access to the site"
+msgstr ""
+
+#: templates/notification/document_comment/full.txt:3
+msgid "A comment has been posted for the document"
+msgstr ""
+
+#: templates/notification/document_comment/full.txt:3
+#: templates/notification/layer_comment/full.txt:3
+#: templates/notification/map_comment/full.txt:4
+msgid "by the user"
+msgstr ""
+
+#: templates/notification/document_comment/full.txt:5
+#: templates/notification/document_created/full.txt:6
+#: templates/notification/document_updated/full.txt:6
+msgid "You can visit the document's detail page here"
+msgstr ""
+
+#: templates/notification/document_comment/short.txt:3
+msgid "A comment has been posted for a document"
+msgstr ""
+
+#: templates/notification/document_created/full.txt:3
+#: templates/notification/document_rated/full.txt:3
+#: templates/notification/layer_created/full.txt:3
+#: templates/notification/layer_rated/full.txt:3
+#: templates/notification/map_created/full.txt:3
+#: templates/notification/map_rated/full.txt:3
+#: templates/notification/request_download_resourcebase/full.txt:3
+msgid "The user"
+msgstr ""
+
+#: templates/notification/document_created/full.txt:3
+msgid "uploaded the following document"
+msgstr ""
+
+#: templates/notification/document_created/short.txt:3
+msgid "A document has been uploaded"
+msgstr ""
+
+#: templates/notification/document_deleted/full.txt:3
+msgid "The following document was deleted"
+msgstr ""
+
+#: templates/notification/document_deleted/full.txt:4
+#: templates/notification/document_rated/full.txt:6
+#: templates/notification/document_updated/full.txt:4
+#: templates/notification/layer_deleted/full.txt:4
+#: templates/notification/layer_rated/full.txt:6
+#: templates/notification/layer_updated/full.txt:4
+#: templates/notification/map_deleted/full.txt:4
+#: templates/notification/map_rated/full.txt:6
+#: templates/notification/map_updated/full.txt:4
+msgid "owned by"
+msgstr ""
+
+#: templates/notification/document_deleted/short.txt:3
+msgid "A document has been deleted"
+msgstr ""
+
+#: templates/notification/document_rated/full.txt:4
+#: templates/notification/layer_rated/full.txt:4
+#: templates/notification/map_rated/full.txt:4
+msgid "rated"
+msgstr ""
+
+#: templates/notification/document_rated/full.txt:5
+msgid "the following document"
+msgstr ""
+
+#: templates/notification/document_rated/full.txt:8
+#: templates/notification/layer_comment/full.txt:5
+#: templates/notification/layer_created/full.txt:6
+#: templates/notification/layer_rated/full.txt:8
+#: templates/notification/layer_updated/full.txt:6
+msgid "You can visit the layer's detail page here"
+msgstr ""
+
+#: templates/notification/document_rated/short.txt:3
+msgid "A document has been rated"
+msgstr ""
+
+#: templates/notification/document_updated/full.txt:3
+msgid "The following document was updated"
+msgstr ""
+
+#: templates/notification/document_updated/short.txt:3
+msgid "A document has been updated"
+msgstr ""
+
+#: templates/notification/layer_comment/full.txt:3
+msgid "A comment has been posted for the layer"
+msgstr ""
+
+#: templates/notification/layer_comment/short.txt:3
+msgid "A comment has been posted for a layer"
+msgstr ""
+
+#: templates/notification/layer_created/full.txt:3
+msgid "uploaded the following layer"
+msgstr ""
+
+#: templates/notification/layer_created/short.txt:3
+msgid "A new layer has been uploaded"
+msgstr ""
+
+#: templates/notification/layer_deleted/full.txt:3
+msgid "The following layer was deleted"
+msgstr ""
+
+#: templates/notification/layer_deleted/short.txt:3
+msgid "A layer has been deleted"
+msgstr ""
+
+#: templates/notification/layer_rated/full.txt:5
+msgid "the following layer"
+msgstr ""
+
+#: templates/notification/layer_rated/short.txt:3
+msgid "A layer has been rated"
+msgstr ""
+
+#: templates/notification/layer_updated/full.txt:3
+msgid "The following layer was updated"
+msgstr ""
+
+#: templates/notification/layer_updated/short.txt:3
+msgid "A layer has been updated"
+msgstr ""
+
+#: templates/notification/map_comment/full.txt:3
+msgid "A comment has been posted for the map"
+msgstr ""
+
+#: templates/notification/map_comment/full.txt:6
+#: templates/notification/map_created/full.txt:6
+#: templates/notification/map_rated/full.txt:8
+#: templates/notification/map_updated/full.txt:6
+msgid "You can visit the map's detail page here"
+msgstr ""
+
+#: templates/notification/map_comment/short.txt:3
+msgid "A comment has been posted for a map"
+msgstr ""
+
+#: templates/notification/map_created/full.txt:3
+msgid "created the following map"
+msgstr ""
+
+#: templates/notification/map_created/short.txt:3
+msgid "A map has been created"
+msgstr ""
+
+#: templates/notification/map_deleted/full.txt:3
+msgid "The following map was deleted"
+msgstr ""
+
+#: templates/notification/map_deleted/short.txt:3
+msgid "A map has been deleted"
+msgstr ""
+
+#: templates/notification/map_rated/full.txt:5
+msgid "the following map"
+msgstr ""
+
+#: templates/notification/map_rated/short.txt:3
+msgid "A map has been rated"
+msgstr ""
+
+#: templates/notification/map_updated/full.txt:3
+msgid "The following map was updated"
+msgstr ""
+
+#: templates/notification/map_updated/short.txt:3
+msgid "A map has been updated"
+msgstr ""
+
+#: templates/notification/request_download_resourcebase/full.txt:3
+msgid "requested you to download this resource"
+msgstr ""
+
+#: templates/notification/request_download_resourcebase/full.txt:9
+msgid "Document"
+msgstr ""
+
+#: templates/notification/request_download_resourcebase/full.txt:12
+msgid ""
+"Please go to resource page and assign the download permissions if you wish"
+msgstr ""
+
+#: templates/notification/request_download_resourcebase/short.txt:3
+msgid "A resource's download has been requested"
+msgstr ""
 
 #: templates/relationships/_list_connections.html:3
 #: templates/relationships/_manage_connections.html:6
@@ -3718,15 +4018,15 @@ msgstr "YYYY​-MM​-DD"
 msgid "Date ends before:"
 msgstr "កាលបរិច្ឆេទ​បញ្ចប់​មុន​ពេល​:"
 
-#: templates/search/_search_content.html:10
+#: templates/search/_search_content.html:6
 msgid "Your selections"
 msgstr "ការ​ជ្រើសរើស​របស់​អ្នក"
 
-#: templates/search/_search_content.html:11
+#: templates/search/_search_content.html:7
 msgid "Clear all filters"
 msgstr "ជម្រះ​តម្រង​ទាំងអស់"
 
-#: templates/search/_sort_filters.html:13
+#: templates/search/_sort_filters.html:15
 msgid "Set permissions"
 msgstr "សិទ្ធិ​កំណត់"
 
@@ -3734,53 +4034,142 @@ msgstr "សិទ្ធិ​កំណត់"
 msgid "Text"
 msgstr "អត្ថបទ"
 
+#: templates/user_messages/_message_snippet.html:8
+msgid "With"
+msgstr "ជា​មួយ​នឹង​ការ"
+
+#: templates/user_messages/_message_snippet.html:9
+msgid "Subject"
+msgstr "ប្រធានបទ"
+
+#: templates/user_messages/_message_snippet.html:10
+msgid "Last Sender"
+msgstr "អ្នក​ផ្ញើ​ចុង​ក្រោយ"
+
+#: templates/user_messages/_message_snippet.html:11
+msgid "Preview"
+msgstr "មើល​ជា​មុន"
+
+#: templates/user_messages/_message_snippet.html:12
+msgid "Delete?"
+msgstr "លុប​?"
+
+#: templates/user_messages/_message_snippet.html:29
+#: templates/user_messages/thread_detail.html:14
+msgid "me"
+msgstr ""
+
 #: templates/user_messages/inbox.html:6
 msgid "Message Inbox"
 msgstr "ប្រអប់​ទទួល​សារ"
 
-#: templates/user_messages/inbox.html:12
-msgid "With"
-msgstr "ជា​មួយ​នឹង​ការ"
+#: templates/user_messages/inbox.html:11
+msgid "Messages"
+msgstr ""
 
-#: templates/user_messages/inbox.html:13
-msgid "Subject"
-msgstr "ប្រធានបទ"
-
-#: templates/user_messages/inbox.html:14
-msgid "Last Sender"
-msgstr "អ្នក​ផ្ញើ​ចុង​ក្រោយ"
-
-#: templates/user_messages/inbox.html:15
-msgid "Preview"
-msgstr "មើល​ជា​មុន"
-
-#: templates/user_messages/inbox.html:16
-msgid "Delete?"
-msgstr "លុប​?"
-
-#: templates/user_messages/inbox.html:33
-#: templates/user_messages/thread_detail.html:14
-msgid "you"
-msgstr "អ្នក"
-
-#: templates/user_messages/inbox.html:55
-#: templates/user_messages/message_create.html:5
-#: templates/user_messages/message_create.html:8
+#: templates/user_messages/inbox.html:38
+#: templates/user_messages/message_create.html:6
+#: templates/user_messages/message_create.html:9
 msgid "Create Message"
 msgstr "បង្កើត​សារ"
 
-#: templates/user_messages/message_create.html:14
+#: templates/user_messages/message_create.html:16
 msgid "Send message"
 msgstr "ផ្ញើ​រ​សារ"
 
-#: templates/user_messages/message_create.html:19
+#: templates/user_messages/message_create.html:22
 #: templates/user_messages/thread_detail.html:32
 msgid "Back to Inbox"
 msgstr "ត្រឡប់​ទៅ​ប្រអប់​ទទួល"
 
-#: templates/user_messages/thread_detail.html:25
+#: templates/user_messages/thread_detail.html:26
 msgid "Send Reply"
 msgstr "ផ្ញើ​ការ​ឆ្លើយ​តប"
 
+#~ msgid "Most shared"
+#~ msgstr "Most shared"
+
+#~ msgid "from"
+#~ msgstr "from"
+
+#~ msgid "view"
+#~ msgstr "view"
+
+#~ msgid "Average rating"
+#~ msgstr "Average rating"
+
+#~ msgid "votes"
+#~ msgstr "votes"
+
+#~ msgid "You do not have permission to view this document"
+#~ msgstr "You do not have permission to view this document"
+
 #~ msgid "Remote Thumbnail"
-#~ msgstr "កូន​រូបភាព​ពី​ចម្ងាយ"
+#~ msgstr "Remote Thumbnail"
+
+#~ msgid "Thumbnail"
+#~ msgstr "Thumbnail"
+
+#~ msgid "Group details"
+#~ msgstr "Group details"
+
+#~ msgid "Create a map"
+#~ msgstr "Create a map"
+
+#~ msgid "You do not have permission to view this layer"
+#~ msgstr "You do not have permission to view this layer"
+
+#~ msgid "View"
+#~ msgstr "View"
+
+#~ msgid "You do not have permission to view this map"
+#~ msgstr "You do not have permission to view this map"
+
+#~ msgid "Add to Favorites"
+#~ msgstr "Add to Favorites"
+
+#~ msgid "Add a Comment"
+#~ msgstr "Add a Comment"
+
+#~ msgid "Notices"
+#~ msgstr "Notices"
+
+#~ msgid "Notice settings"
+#~ msgstr "Notice settings"
+
+#~ msgid "Observed objects"
+#~ msgstr "Observed objects"
+
+#~ msgid "Primary email"
+#~ msgstr "Primary email"
+
+#~ msgid "change under <a href=\"%(email_url)s\">Account</a>"
+#~ msgstr "change under <a href=\"%(email_url)s\">Account</a>"
+
+#~ msgid "Note"
+#~ msgstr "Note"
+
+#~ msgid ""
+#~ "You do not have a verified email address to which notices can be sent. "
+#~ "You can add one by going to <a href=\"%(email_url)s\">Account</a>."
+#~ msgstr ""
+#~ "You do not have a verified email address to which notices can be sent. "
+#~ "You can add one by going to <a href=\"%(email_url)s\">Account</a>."
+
+#~ msgid "Mark all unseen notices seen"
+#~ msgstr "Mark all unseen notices seen"
+
+#~ msgid "MONTH_DAY_FORMAT"
+#~ msgstr "MONTH_DAY_FORMAT"
+
+#~ msgid "View Notice"
+#~ msgstr "View Notice"
+
+#~ msgid "No notices."
+#~ msgstr "No notices."
+
+#~ msgid "Notice"
+#~ msgstr "Notice"
+
+#~ msgid "you"
+#~ msgstr "you"
