@@ -46,29 +46,34 @@ def geoserver_pre_save(instance, sender, **kwargs):
         * Metadata Links,
         * Point of Contact name and url
     """
-    base_file = instance.get_base_file()
 
-    # There is no need to process it if there is not file.
-    if base_file is None:
+    # Don't run this signal if is a Layer from a remote service
+    if instance.workspace == 'remoteWorkspace':
         return
 
-    gs_name, workspace, values = geoserver_upload(instance,
-                                                  base_file.file.path,
-                                                  instance.owner,
-                                                  instance.name,
-                                                  overwrite=True,
-                                                  title=instance.title,
-                                                  abstract=instance.abstract,
-                                                  #               keywords=instance.keywords,
-                                                  charset=instance.charset)
+    # If the store in None then it's a new instance from an upload,
+    # only in this case run the geonode_uplaod method
+    if not instance.store or getattr(instance, 'overwrite', False):
+        base_file = instance.get_base_file()
 
-    # Set fields obtained via the geoserver upload.
-    instance.name = gs_name
-    instance.workspace = workspace
-
-    # Iterate over values from geoserver.
-    for key in ['typename', 'store', 'storeType']:
-        setattr(instance, key, values[key])
+        # There is no need to process it if there is not file.
+        if base_file is None:
+            return
+        gs_name, workspace, values = geoserver_upload(instance,
+                                                      base_file.file.path,
+                                                      instance.owner,
+                                                      instance.name,
+                                                      overwrite=True,
+                                                      title=instance.title,
+                                                      abstract=instance.abstract,
+                                                      # keywords=instance.keywords,
+                                                      charset=instance.charset)
+        # Set fields obtained via the geoserver upload.
+        instance.name = gs_name
+        instance.workspace = workspace
+        # Iterate over values from geoserver.
+        for key in ['typename', 'store', 'storeType']:
+            setattr(instance, key, values[key])
 
     gs_resource = gs_catalog.get_resource(
         instance.name,
