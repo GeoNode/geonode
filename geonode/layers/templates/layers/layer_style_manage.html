@@ -25,10 +25,10 @@
       <div class="col-md-6">
         <select id='default_style' name='default_style'>
           {% for style in layer_styles %}
-            {% if style = layer.default_style.name %}
-            <option value="{{ style }}" selected>{{ style }}</option>
+            {% if style = layer.default_style %}
+            <option value="{{ style.0 }}" selected>{{ style.1 }}</option>
             {% else %}
-            <option value="{{ style }}">{{ style }}</option>
+            <option value="{{ style.0 }}">{{ style.1 }}</option>
             {% endif %}
           {% endfor %}
         </select>
@@ -45,9 +45,9 @@
         <select multiple="multiple" id="style-select" name="style-select">
           {% for style in gs_styles %}
             {% if style in layer_styles %}
-            <option value='{{ style }}' selected>{{ style }}</option>
+            <option value='{{ style.0 }}' selected>{{ style.1 }}</option>
             {% else %}
-            <option value='{{ style }}'>{{ style }}</option>
+            <option value='{{ style.0 }}'>{{ style.1 }}</option>
             {% endif %}
           {% endfor %}
         </select>
