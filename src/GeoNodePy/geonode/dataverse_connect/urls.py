@@ -12,9 +12,13 @@ urlpatterns = patterns('geonode.dataverse_connect.views',
 
 
 urlpatterns += patterns('geonode.dataverse_connect.views_sld',
-       url(r'^describe-features/(?P<layer_name>[^/]*)/$', 'view_layer_feature_defn', name='view_layer_feature_defn'),
+
+#       url(r'^describe-features/(?P<layer_name>[^/]*)/$', 'view_layer_feature_defn', name='view_layer_feature_defn'),
 
        url(r'^classify-layer/$', 'view_create_new_layer_style', name='view_create_new_layer_style'),
+
+       url(r'^get-classify-attributes/$', 'view_layer_classification_attributes', name='view_layer_classification_attributes'),
+       
        
 )
 

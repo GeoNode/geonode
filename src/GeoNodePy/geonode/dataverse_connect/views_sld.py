@@ -6,7 +6,7 @@ from django.http import HttpResponse
 from django.conf import settings
 from django.views.decorators.csrf import csrf_exempt
 
-from shared_dataverse_information.layer_classification.forms_api import ClassifyRequestDataForm
+from shared_dataverse_information.layer_classification.forms_api import ClassifyRequestDataForm, LayerAttributeRequestForm
 from shared_dataverse_information.shared_form_util.format_form_errors import format_errors_as_text
 
 from geonode.dataverse_connect.layer_metadata import LayerMetadata
@@ -24,7 +24,8 @@ logger = logging.getLogger("geonode.dataverse_connect.views_sld")
 
 # http://localhost:8000/gs/rest/sldservice/geonode:boston_social_disorder_pbl/classify.xml?attribute=Violence_4&method=equalInterval&intervals=5&ramp=Gray&startColor=%23FEE5D9&endColor=%23A50F15&reverse=
 
-@csrf_exempt
+'''
+#@csrf_exempt
 def view_layer_feature_defn(request, layer_name):
     """
     Given a layer name, retrieve a desciption of the field names in values.
@@ -38,27 +39,40 @@ def view_layer_feature_defn(request, layer_name):
         
     json_msg = get_layer_features_definition(layer_name)
     return HttpResponse(content=json_msg, content_type="application/json")
+'''
 
 
 @csrf_exempt
-def view_layer_classify_params(request, layer_name):
+def view_layer_classification_attributes(request):
     """
-    Given a layer name, return attributes needed to run a GeoConnect classification form.
-    
-    This includes:
-        - attributes
-        - formulas
-        - colors
-    on Geo a desciption of the field names in values.
-    This will be in XML format.
-
-    example: http://localhost:8000/dvn/describe-features/income_4x5/
+    Given a layer name, return attributes for that layer to be used in the GeoConnect classification form.
     """    
-    if not has_proper_auth(request):
-        json_msg = MessageHelperJSON.get_json_msg(success=False, msg="Authentication failed.")
-        return HttpResponse(status=401, content=json_msg, content_type="application/json")
+    # Auth check embedded in params, handled by LayerAttributeRequestForm
     
-    json_msg = get_layer_features_definition(layer_name)
+    if not request.POST:
+        json_msg = MessageHelperJSON.get_json_msg(success=False, msg="use a POST request")    
+        return HttpResponse(status=405, content=json_msg, content_type="application/json")
+
+    api_form = LayerAttributeRequestForm(request.POST.dict())
+    if not api_form.is_valid():
+        #
+        #   Invalid, send back an error message
+        #
+        logger.error("Classfication error import error: \n%s" % format_errors_as_text(api_form))
+        json_msg = MessageHelperJSON.get_json_msg(success=False\
+                                , msg="Incorrect params for LayerAttributeRequestForm: <br />%s" % api_form.errors)
+        return HttpResponse(status=400, content=json_msg, content_type="application/json")
+    
+    if not api_form.is_signature_valid_check_post(request):
+        #
+        #   Invalid signature on request
+        #
+        logger.error("Invalid signature on request.  Failed validation with LayerAttributeRequestForm")
+        json_msg = MessageHelperJSON.get_json_msg(success=False\
+                                , msg="Invalid signature on request.  Failed validation with LayerAttributeRequestForm")
+        return HttpResponse(status=400, content=json_msg, content_type="application/json")
+    
+    json_msg = get_layer_features_definition(api_form.cleaned_data.get('layer_name', ''))
     return HttpResponse(content=json_msg, content_type="application/json")
             
     
