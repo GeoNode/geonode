@@ -204,7 +204,9 @@
                 <h4>Layer</h4>
                 {% if "change_resourcebase" in perms and not resource.service %}
                 <a class="btn btn-default btn-block btn-xs" href="{% url "layer_replace" resource.service_typename %}">{% trans "Replace" %}</a>
-                <a class="btn btn-default btn-block btn-xs" href="{% url "new_map" %}?layer={{resource.service_typename}}">{% trans "Edit geometries" %}</a>
+                {% if resource.storeType == 'dataStore'  %}
+                <a class="btn btn-default btn-block btn-xs" href="{% url "new_map" %}?layer={{resource.service_typename}}">{% trans "Edit data" %}</a>
+                {% endif %}
                 {% endif %}
                 {% if "delete_resourcebase" in perms %}
                 <a class="btn btn-danger btn-block btn-xs" href="{% url "layer_remove" resource.service_typename %}">{% trans "Remove" %}</a>
