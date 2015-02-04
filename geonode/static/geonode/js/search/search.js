@@ -29,6 +29,9 @@
   // Load categories and keywords
   module.load_categories = function ($http, $rootScope, $location){
         var params = typeof FILTER_TYPE == 'undefined' ? {} : {'type': FILTER_TYPE};
+        if ($location.search().hasOwnProperty('title__icontains')){
+          params['title__icontains'] = $location.search()['title__icontains'];
+        }
         $http.get(CATEGORIES_ENDPOINT, {params: params}).success(function(data){
             if($location.search().hasOwnProperty('category__identifier__in')){
                 data.objects = module.set_initial_filters_from_query(data.objects,
