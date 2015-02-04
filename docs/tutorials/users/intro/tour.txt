@@ -23,7 +23,7 @@ Without being logged in, you are limited to read-only access of public layers.
 
       *Welcome page*
 
-   This page shows a variety of information about the current GeoNode instance. At the top of the page is a toolbar showing quick links to view :ref:`layers <layers>`, :ref:`maps <maps>`, documents (metadata), people ADD LINK, and a search field.  Below this is a listing of recently updated layers, including abstract, owner, rating, and download button (if available).
+   This page shows a variety of information about the current GeoNode instance. At the top of the page is a toolbar showing quick links to view :ref:`layers <layers>`, :ref:`maps <maps>`, documents (metadata), :ref:`people <accounts>`, and a search field.  Below this is a listing of recently updated layers, including abstract, owner, rating, and download button (if available).
 
 #. Click the :guilabel:`Layers` link in the toolbar to go to the :guilabel:`Explore Layers` page.
 
