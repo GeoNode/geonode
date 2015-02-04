@@ -1,3 +1,50 @@
+geonode (2.4.0+beta19) trusty; urgency=high
+
+  [ Nicolas Dufrane ]
+  * [0e3955] Fix PEP8 Violations in Pavement.py #2002
+
+  [ Paolo Pasquali ]
+  * [a8e6df] Improve explore page for layers, maps and docs
+
+  [ eomwandho ]
+  * [c58ee4] Editing developer mode installation manual
+
+  [ Paolo Pasquali ]
+  * [5a760e] Fix IE9 45 rotation
+
+  [ eomwandho ]
+  * [b285d2] Added postgresql installation in devmode installtion
+
+  [ ilpise ]
+  * [757e8a] no create gropu button for no auth users
+
+  [ eomwandho ]
+  * [33826b] Added some titles to list
+
+  [ Jeffrey Johnson ]
+  * [c02e26] Remove print statements
+
+  [ ilpise ]
+  * [7426fe] fixed spaces
+
+  [ Simone Dalmasso ]
+  * [726264] add multi-select to grunt ad assets css
+  * [4b0bd4] remove the unneeded css rule for style manage page
+  * [f5892a] fix the legend update on layer detail page
+
+  [ Daniele Viganò ]
+  * [7f7a2d] Add SITEURL and CATALOGUE to local_settings.py.sample
+
+  [ Ariel Núñez ]
+  * [7dd349] Added incompatibility notice for IE users (before IE10)
+
+  [ Vivien Deparday ]
+  * [11a3e0] Update geoexplorer.txt
+
+  [ Simone Dalmasso ]
+
+ -- Simone Dalmasso <simone.dalmasso@gmail.com>  Wed, 04 Feb 2015 16:30:08 +0000
+
 geonode (2.4.0+beta18) trusty; urgency=high
 
   [ julien collaer ]
