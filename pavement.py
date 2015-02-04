@@ -360,20 +360,32 @@ def start_geoserver(options):
 
         # checking if our loggernullpath exists and if not, reset it to something manageable
         if loggernullpath == "nul":
-            open("../../downloaded/null.txt", 'w+').close()
+            try:
+                open("../../downloaded/null.txt", 'w+').close()
+            except IOError, e:
+                print "Chances are that you have Geoserver currently running.  You \
+                        can either stop all servers with paver stop or start only \
+                        the django application with paver start_django."
+                sys.exit(1)
             loggernullpath = "../../downloaded/null.txt"
 
         try:
             sh(('java -version'))
         except:
-            if not options.get('java_path', None):
-                msg = ("Paver cannot find java in the Windows Environment.  "
-                       "Please provide the --java_path flag with your full path to java.exe "
-                       "e.g. --java_path=C:/path/to/java/bin/java.exe")
-                print msg
+            print "Java was not found in your path.  Trying some other options: "
+            javapath_opt = None
+            if os.environ.get('JAVA_HOME', None):
+                print "Using the JAVA_HOME environment variable"
+                javapath_opt = os.path.join(os.path.abspath(os.environ['JAVA_HOME']), "bin", "java.exe")
+            elif options.get('java_path'):
+                javapath_opt = options.get('java_path')
+            else:
+                print "Paver cannot find java in the Windows Environment.  \
+                Please provide the --java_path flag with your full path to \
+                java.exe e.g. --java_path=C:/path/to/java/bin/java.exe"
                 sys.exit(1)
             # if there are spaces
-            javapath = 'START /B "" "' + options['java_path'] + '"'
+            javapath = 'START /B "" "' + javapath_opt + '"'
 
         sh((
             '%(javapath)s -Xmx512m -XX:MaxPermSize=256m'
