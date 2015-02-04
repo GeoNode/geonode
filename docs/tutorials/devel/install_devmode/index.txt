@@ -8,16 +8,19 @@ In order to install Geonode 2.0 in developing mode on Ubuntu 12.04 the following
 
 For Windows: (:ref:`_install_win_devmode`)
 
-#. install build tools and libraries
-#. install dependencies (Python and Java) and supporting tools
-#. add PPA repository
-#. set up a virtual environment (virtualenv)
-#. clone geonode from github and install it in the virtual environment
-#. run paver to get install geoserver and start the development servers
+#. Retrieve latest apt-get list
+#. Install build tools and libraries
+#. Install dependencies (Python, Postgresql and Java) and supporting tools
+#. Add Nodejs PPA and other tools required for static development
+#. Set up a virtual environment (virtualenv)
+#. Clone geonode from github and install it in the virtual environment
+#. Run paver to get install geoserver and start the development servers
+#. Compile and Start the server
+#. Start Geonode instance
 
 .. note:: The following steps have to be executed in your terminal. The steps have to be done as a root user, therefore don´t forget to type sudo in front!
 
-#. retrieve latest apt-get list
+#. Retrieve latest apt-get list
 
    .. code-block:: console
   
@@ -45,6 +48,14 @@ For Windows: (:ref:`_install_win_devmode`)
 
     $ sudo pip install virtualenvwrapper
 
+   *Postgresql*
+
+   .. code-block:: console
+
+    $ sudo apt-get install postgresql-9.3-postgis-2.1 postgresql-9.3-postgis-scripts
+
+
+
    *Java dependencies*
 
    .. code-block:: console
@@ -57,7 +68,7 @@ For Windows: (:ref:`_install_win_devmode`)
 
     $ sudo apt-get install -y git gettext
 
-#. Node and tools required for static development
+#. Add Nodejs PPA and other tools required for static development
 
    This is required for static development
 
@@ -73,7 +84,8 @@ For Windows: (:ref:`_install_win_devmode`)
 
    Here is where Geonode will later be running.
 
-   Add the virtualenvwrapper to your new environement
+   Add the virtualenvwrapper to your new environement.
+
 
       .. code-block:: console
 
@@ -82,7 +94,12 @@ For Windows: (:ref:`_install_win_devmode`)
        $ source /usr/local/bin/virtualenvwrapper.sh
        $ export PIP_DOWNLOAD_CACHE=$HOME/.pip-downloads
 
-   set up the local virtual environment for Geonode
+   On Ubuntu, you can add the above settings to your .bashrc file and reload the settings by logging out or running
+
+         .. code-block:: console
+         $ source ~/.bashrc
+
+   Set up the local virtual environment for Geonode
 
       .. code-block:: console
 
@@ -128,6 +145,12 @@ For Windows: (:ref:`_install_win_devmode`)
     $ paver start
 
    Visit the geonode site by typing http://localhost:8000 into your browser window.
+
+   If you are using a different IP address (1.1.1.1), the start paver using the command below.
+
+   .. code-block:: console
+
+    $ paver start -b 1.1.1.1:8000
    
    If the start fails because of an import error related to osgeo, then please consult the `GDAL for Development Guide <http://docs.geonode.org/en/latest/tutorials/devel/install_devmode/gdal_install.html>`_. 
 
