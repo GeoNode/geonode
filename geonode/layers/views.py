@@ -79,6 +79,9 @@ _PERMISSION_MSG_VIEW = _("You are not permitted to view this layer")
 
 
 def log_snippet(log_file):
+    if not os.path.isfile(log_file):
+        return "No log file at %s" % log_file
+
     with open(log_file, "r") as f:
         f.seek(0, 2)  # Seek @ EOF
         fsize = f.tell()  # Get Size
@@ -181,6 +184,9 @@ def layer_upload(request, template='upload/layer_upload.html'):
                     'layer_detail', args=[
                         saved_layer.service_typename])
 
+                upload_session = saved_layer.upload_session
+                upload_session.processed = True
+                upload_session.save()
                 permissions = form.cleaned_data["permissions"]
                 if permissions is not None and len(permissions.keys()) > 0:
                     saved_layer.set_permissions(permissions)
