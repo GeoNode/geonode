@@ -8,7 +8,9 @@
 
 {% block body %}
 <div class="page-header">
+  {% if user.is_authenticated %}
   <a href="{% url "group_create" %}" class="btn btn-primary pull-right">{% trans "Create a Group" %}</a>
+  {% endif %}
   <h2 class="page-title">{% trans "Explore Groups" %}</h2>
 </div>
 <div class="row">
@@ -42,3 +44,4 @@
   {% include 'search/search_scripts.html' %}
   {% endwith %}
 {% endblock extra_script %}
+
