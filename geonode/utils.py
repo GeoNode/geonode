@@ -594,7 +594,7 @@ def build_social_links(request, resourcebase):
         host=request.get_host(),
         path=request.get_full_path())
     date = datetime.datetime.strftime(resourcebase.date, "%m/%d/%Y") if resourcebase.date else None
-    abstract = build_abstract(resourcebase, url=social_url, includeURL=True),
+    abstract = build_abstract(resourcebase, url=social_url, includeURL=True)
     caveats = build_caveats(resourcebase)
     return format_urls(
         settings.SOCIAL_ORIGINS,
