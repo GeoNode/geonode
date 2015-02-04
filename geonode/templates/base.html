@@ -22,8 +22,15 @@
       {% block extra_head %}
       {% endblock %}
     {% endblock %}
-    <!--[if lt IE 9]>
+    <!--[if IE]>
       <script src="https://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+      <style>
+        #ieflag{
+            display: block !important;
+            height: 150px;
+            text-align: center;
+        }
+      </style>
     <![endif]-->
   </head>
   
@@ -100,6 +107,11 @@
     </nav>
     {% endblock header %}
 
+    <div class="alert alert-danger alert-dismissible" role="alert" id="ieflag" style="display:none">
+      <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+      <h1>You are using an outdated browser that is not supported by GeoNode.</h1>
+      <p>Please use a <strong>modern browser</strong> like Mozilla Firefox, Google Chrome or Safari.</p>
+    </div>
 
   <div id="wrap">
     {% block middle %}
