@@ -32,14 +32,13 @@ DATABASES = {
     },
     'datastore': {
         'ENGINE': 'django.contrib.gis.db.backends.postgis',
-        'NAME': DATABASE_NAME,
+        'NAME': 'geonode_data',
         'USER': DATABASE_USER,
         'PASSWORD': DATABASE_PASSWORD,
         'HOST': DATABASE_HOST,
         'PORT': DATABASE_PORT,
     }
 }
-
 
 GEOSERVER_URL = SITEURL + 'geoserver/'
 
@@ -58,6 +57,7 @@ OGC_SERVER = {
         'WMST_ENABLED' : False,
         'BACKEND_WRITE_ENABLED': True,
         'WPS_ENABLED' : True,
+        'LOG_FILE':'/usr/share/geoserver/data/logs/geoserver.log',
         # Set to name of database in DATABASES dictionary to enable
         'DATASTORE': 'datastore',
     }

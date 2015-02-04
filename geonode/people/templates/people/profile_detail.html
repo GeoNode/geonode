@@ -16,46 +16,67 @@
 <div class="row">
   <div class="col-xs-3 col-md-2 profile-avatar">
     {% avatar profile 140 %}
+    <a href="{% url "message_create" profile.pk %}" class="btn btn-primary btn-block" style="margin-top:4px;">{% trans "Message User" %}</a>
   </div>
   <div class="col-xs-9 col-md-6 profile-details">
-    <p>
-     {% if profile.position %}
-     <i class="fa fa-user"></i>
-     {{ profile.position }}<br />
-     {% endif %}
-     {% if profile.organization %}
-     <i class="fa fa-building"></i>
-     {{ profile.organization }}<br />
-     {% endif %}
-     {% if user.is_authenticated %}
-        {% if profile.location %}
-        <i class="fa fa-map-marker"></i>
-        {{ profile.location }}<br />
-        {% endif %}
-        {% if profile.voice %}
-        <i class="fa fa-phone"></i></dt>
-        <a href="tel:{{ profile.voice }}">{{ profile.voice }}</a><br />
-        {% endif %}
-        {% if profile.fax %}
-        <i class="fa fa-print"></i>
-        {{ profile.fax }}<br />
-        {% endif %}
-        {% if profile.email %}
-        <i class="fa fa-envelope-o"></i>
-        <a href="mailto:{{ profile.email }}">{{ profile.email }}</a><br />
-        {% endif %}
-        {% endif %}
-        {% if profile.keyword_list %}
-        <i class="fa fa-tag"></i>
-          {% for keyword in profile.keyword_list %}
-            {{ keyword }}
-          {% endfor %}<br />
-        {% endif %}
-        {% if object.email %}
-        <i class="fa fa-envelope-o"></i>
-        <a href="mailto:{{ object.email }}">{{ object.email }}</a>
-      {% endif %}
-    </p>
+    <table class="table table-user-profile">
+        <tbody>
+        <tr>
+            <td class="table-user-profile-attribute">{% trans 'Email' %}</td>
+            {% if profile.email %}
+                <td><a href="mailto:{{ profile.email }}">{{ profile.email }}</a></td>
+            {% else %}
+                <td>{% trans 'Not provided.' %}</td>
+            {% endif %}
+          </tr>
+          <tr>
+            <td class="table-user-profile-attribute">{% trans 'Name' %}</td>
+            <td>{{ profile.get_full_name | default:_('Not provided.') }}</td>
+          </tr>
+          <tr>
+            <td class="table-user-profile-attribute">{% trans 'Position' %}</td>
+            <td>{{ profile.position | default:_('Not provided.') }}</td>
+          </tr>
+          <tr>
+            <td class="table-user-profile-attribute">{% trans 'Organization'  %}</td>
+            <td>{{ profile.organization | default:_('Not provided.') }}</td>
+          </tr>
+          {% if user.is_authenticated %}
+          <tr>
+            <td class="table-user-profile-attribute">{% trans 'Location' %}</td>
+            <td>{{ profile.location | default:_('Not provided.') }}</td>
+          </tr>
+          <tr>
+            <td class="table-user-profile-attribute">{% trans 'Voice' %}</td>
+            {% if profile.voice %}
+                <td><a href="tel:{{ profile.voice }}">{{ profile.voice }}</a></td>
+            {% else %}
+                <td>Not provided.</td>
+            {% endif %}
+          </tr>
+          <tr>
+            <td class="table-user-profile-attribute">{% trans 'Fax' %}</td>
+            <td>{{ profile.fax | default:_('Not provided.') }}</td>
+          </tr>
+          <tr>
+            <td class="table-user-profile-attribute">{% trans 'Description' %}</td>
+            <td>{{ profile.profile | default:_('Not provided.') }}</td>
+          </tr>
+          {% endif %}
+          <tr>
+            <td class="table-user-profile-attribute">{% trans 'Keywords' %}</td>
+            <td>
+                {% if profile.keyword_list %}
+                    {% for keyword in profile.keyword_list %}
+                        <span class="label label-default">{{ keyword }}</span>
+                    {% endfor %}
+                {% else %}
+                    {% trans 'Not provided' %}
+                {% endif %}
+            </td>
+          </tr>
+        </tbody>
+      </table>
   </div>
 
   <div class="col-xs-12 col-md-4">

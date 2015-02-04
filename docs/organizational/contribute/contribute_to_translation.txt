@@ -15,14 +15,14 @@ Here you will see how easy it is to update the translations directly on the tran
 
    Go to `<https://www.transifex.com>`_ and, click *Try it for free* and enter the needed information to create your free account.
 
-   .. figure:: img/transifex_homepage.PNG
+   .. figure:: img/transifex_homepage.png
 
 
 #. Join our project
 
    After activating the link you've got you will be asked whether you want to start a new project or to join an existing project.
 
-   .. figure:: img/transifex_join_project.PNG
+   .. figure:: img/transifex_join_project.png
 
    Click *join an existing project* and type *geonode* into the search bar. You will be directed to the geonode project site on transifex. To join the team, click on the language you want to add a translation in. Then a button *Join the team* will appaer. Hit it, and you will submit for permission to join.
 
@@ -32,7 +32,7 @@ Here you will see how easy it is to update the translations directly on the tran
 
    Click on the language where you want to add a translation. You'll see some bars, e.g. *javascript* and *master*. Choose the one you want to add a translation and you will see a dialog window like this
 
-    .. figure:: img/download_translation.PNG
+    .. figure:: img/download_translation.png
 
    Now you have two options to start translating. Either you use the transifex interface (*option 1*) or you download the file to translate locally (*option 2*).
 
@@ -40,11 +40,11 @@ Here you will see how easy it is to update the translations directly on the tran
 
    To start translating using the Transifex interface, hit *Translate now*. You'll see an interface like this
 
-   .. figure:: img/transifex_interface.PNG
+   .. figure:: img/transifex_interface.png
 
    Click *untranslated* and add your translation like shown below
 
-   .. figure:: img/transifex_add_translation.PNG
+   .. figure:: img/transifex_add_translation.png
 
    When you stop translating, do not forget to hit the green *save* button at the top right!
 
@@ -89,11 +89,44 @@ Only for transifex maintainers
 
 .. note:: This section is only for the maintainers of a transifex group!
 
+For main Geonode localization files
+----------------------------------
+
+These files are generated using standard django-admin tools : makemessages and compilemessages command line tools.
+
+At first make sure to install transifex client and configure your .transifexrc with our credentials as::
+
+   [https://www.transifex.com]
+   username = YOURUSERNAME
+   token =
+   password = PUTYOURPW
+   hostname = https://www.transifex.com
+
+To prepare the PR in your branch, execute following steps.
+First go to the [yourpath]/geonode/geonode/ subdirectory and get all translations from transifex.com and force their replacement::
+
+   $ tx pull -a -s -f
+   
+Then update the messages in the po and compile the corresponding mo::
+
+   $ geonode makemessages --all
+   $ geonode makemessages -d djangojs --all
+   $ geonode compiliemessages
+
+Finally update ressources on transifex.com::
+
+   $ tx push -s -t
+
+For documentation localization
+------------------------------
+
+.. note:: Section below is deprecated, since the docs are no more translated, to much work to maintain them in every language.
+
 #. As a firt step, generate all of the needed .pot files (any time from master documentation changes)::
 
    $ cd docs
    $ sphinx-build -b gettext . i18n/pot
-  
+   
 #. Run the pre_translate.sh script to generate/merge (update) all of the .po files for each language::
 
    $ sh i18n/scripts/pre_translate.sh
@@ -120,4 +153,4 @@ How to add a new language
 
    To add a new language, click on *Request language* on the right top of the transifex webpage.
 
-   .. figure:: img/transifex_request_language.PNG
+   .. figure:: img/transifex_request_language.png

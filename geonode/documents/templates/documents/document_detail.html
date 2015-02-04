@@ -14,7 +14,6 @@
 {{ block.super }}
 {% endblock %}
 
-
 {% block body_class %}documents{% endblock %}
 
 {% block body_outer %}
@@ -79,44 +78,21 @@
       <li class="list-group-item">
       {% if "download_resourcebase" in perms %}
         {% if resource.extension|lower in imgtypes and resource.doc_file %}
-          <a style="text-decoration:none;" target="_blank" href="{% url "document_download" resource.id %}"><button class="btn btn-default btn-md btn-block">{% trans "Download Document" %}</button></a>
+          <a style="text-decoration:none;" target="_blank" href="{% url "document_download" resource.id %}"><button class="btn btn-primary btn-md btn-block">{% trans "Download Document" %}</button></a>
         {% elif resource.doc_file %}
-          <a style="text-decoration:none;" target="_blank" href="{% url "document_download" resource.id %}"><button class="btn btn-default btn-md btn-block">{% trans "Download Document" %}</button></a>
+          <a style="text-decoration:none;" target="_blank" href="{% url "document_download" resource.id %}"><button class="btn btn-primary btn-md btn-block">{% trans "Download Document" %}</button></a>
         {% elif  resource.doc_url %}
-          <a style="text-decoration:none;" target="_blank" href="{{ resource.doc_url }}"><button class="btn btn-default btn-md btn-block">{% trans "Download Document" %}</button></a>
+          <a style="text-decoration:none;" target="_blank" href="{{ resource.doc_url }}"><button class="btn btn-primary btn-md btn-block">{% trans "Download Document" %}</button></a>
         {%  endif %}
       {% else %}
         {% if request.user.is_authenticated %}
-        <button class="btn btn-default btn-md btn-block" id="request-download">{% trans "Request Download" %}</button>
+        <button class="btn btn-primary btn-md btn-block" id="request-download">{% trans "Request Download" %}</button>
         {%  endif %}
       {%  endif %}
       </li>
-      <li class="list-group-item">
-        <button class="btn btn-default btn-md btn-block" data-toggle="modal" data-target="#download-metadata">{% trans "Download Metadata" %}</button>
-      </li>
-      <div class="modal fade" id="download-metadata" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-          <div class="modal-content">
-            <div class="modal-header">
-              <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-              <h4 class="modal-title" id="myModalLabel">{% trans "Download Document" %}</h4>
-            </div>
-            <div class="modal-body">
-              <ul>
-                {% for link in resource.link_set.metadata %}
-                <li><a href="{{ link.url }}">{{ link.name }}</a></li>
-                {% endfor %}
-              </ul>
-            </div>
-            <div class="modal-footer">
-              <button type="button" class="btn btn-default" data-dismiss="modal">{% trans "Close" %}</button>
-            </div>
-          </div>
-        </div>
-      </div>
 
       <li class="list-group-item">
-        <button class="btn btn-default btn-md btn-block" data-toggle="modal" data-target="#edit-document">{% trans "Edit Document" %}</button>
+        <button class="btn btn-primary btn-md btn-block" data-toggle="modal" data-target="#edit-document">{% trans "Edit Document" %}</button>
       </li>
       <div class="modal fade" id="edit-document" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
         <div class="modal-dialog">
@@ -126,16 +102,51 @@
               <h4 class="modal-title" id="myModalLabel">{% trans "Edit Document" %}</h4>
             </div>
             <div class="modal-body">
-              <ul>
+
+              <div class="row edit-modal">
                 {% if "change_resourcebase_metadata" in perms %}
-                  <li><a href="{% url "document_metadata" resource.id %}">{% trans "Edit Metadata" %}</a></li>
+                <div class="col-sm-3">
+                  <i class="fa fa-list-alt fa-3x"></i>
+                  <h4>Metadata</h4>
+                  <a class="btn btn-default btn-block btn-xs" href="{% url "document_metadata" resource.id %}">{% trans "Edit" %}</a>
+                </div>
                 {% endif %}
-                {% if "change_resourcebase" in perms %}
-                  <li><a href="{% url "document_replace" resource.id %}">{% trans "Replace this Document" %}</a></li>
+                {% if "change_resourcebase" in perms or "delete_resourcebase" in perms %}
+                <div class="col-sm-3">
+                  <i class="fa fa-file-text-o fa-3x"></i>
+                  <h4>Document</h4>
+                  {% if "change_resourcebase" in perms %}
+                  <a class="btn btn-default btn-block btn-xs" href="{% url "document_replace" resource.id %}">{% trans "Replace" %}</a>
+                  {% endif %}
+                  {% if "delete_resourcebase" in perms %}
+                  <a class="btn btn-danger btn-block btn-xs" href="{% url "document_remove" resource.id %}">{% trans "Remove" %}</a>
+                  {% endif %}
+                </div>
                 {% endif %}
-                {% if "delete_resourcebase" in perms %}
-                  <li><a href="{% url "document_remove" resource.id %}">{% trans "Remove this Document" %}</a></li>
-                {% endif %}
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-default" data-dismiss="modal">{% trans "Close" %}</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <li class="list-group-item">
+        <button class="btn btn-default btn-md btn-block" data-toggle="modal" data-target="#download-metadata">{% trans "Download Metadata" %}</button>
+      </li>
+      <div class="modal fade" id="download-metadata" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+              <h4 class="modal-title" id="myModalLabel">{% trans "Download Metadata" %}</h4>
+            </div>
+            <div class="modal-body">
+              <ul>
+                {% for link in metadata %}
+                <li><a href="{{ link.url }}">{{ link.name }}</a></li>
+                {% endfor %}
               </ul>
             </div>
             <div class="modal-footer">
@@ -164,7 +175,7 @@
       <li class="list-group-item">
         <h4>{% trans "Permissions" %}</h4>
         <p>{% trans "Click the button below to change the permissions of this document." %}</p>
-        <p><a href="#modal_perms" data-toggle="modal" class="btn btn-default btn-block" data-target="#_permissions">{% trans "Change Document Permissions" %}</a></p>
+        <p><a href="#modal_perms" data-toggle="modal" class="btn btn-primary btn-block" data-target="#_permissions">{% trans "Change Document Permissions" %}</a></p>
       </li>
       {% include "_permissions_form.html" %}
       {% endif %}

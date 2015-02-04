@@ -36,7 +36,7 @@ from paver.easy import BuildFailure
 try:
     from geonode.settings import GEONODE_APPS
 except:
-    #probably trying to run install_win_deps.
+    # probably trying to run install_win_deps.
     pass
 
 try:
@@ -57,14 +57,27 @@ def grab(src, dest, name):
     else:
         download = False
     if download:
-        urllib.urlretrieve(str(src), str(dest))
+        if str(src).startswith("file://"):
+            src2 = src[7:]
+            if not os.path.exists(src2):
+                print "Source location (%s) does not exist" % str(src2)
+            else:
+                print "Copying local file from %s" % str(src2)
+                shutil.copyfile(str(src2), str(dest))
+        else:
+            urllib.urlretrieve(str(src), str(dest))
 
 GEOSERVER_URL = "http://build.geonode.org/geoserver/latest/geoserver.war"
 DATA_DIR_URL = "http://build.geonode.org/geoserver/latest/data.zip"
-JETTY_RUNNER_URL = "http://repo2.maven.org/maven2/org/mortbay/jetty/jetty-runner/8.1.8.v20121106/jetty-runner-8.1.8.v20121106.jar"
+JETTY_RUNNER_URL = ("http://repo2.maven.org/maven2/org/mortbay/jetty/jetty-runner/"
+                    "8.1.8.v20121106/jetty-runner-8.1.8.v20121106.jar")
 
 
 @task
+@cmdopts([
+    ('geoserver=', 'g', 'The location of the geoserver build (.war file).'),
+    ('jetty=', 'j', 'The location of the Jetty Runner (.jar file).'),
+])
 def setup_geoserver(options):
     """Prepare a testing instance of GeoServer."""
     download_dir = path('downloaded')
@@ -76,8 +89,8 @@ def setup_geoserver(options):
     geoserver_bin = download_dir / os.path.basename(GEOSERVER_URL)
     jetty_runner = download_dir / os.path.basename(JETTY_RUNNER_URL)
 
-    grab(GEOSERVER_URL, geoserver_bin, "geoserver binary")
-    grab(JETTY_RUNNER_URL, jetty_runner, "jetty runner")
+    grab(options.get('geoserver', GEOSERVER_URL), geoserver_bin, "geoserver binary")
+    grab(options.get('jetty', JETTY_RUNNER_URL), jetty_runner, "jetty runner")
 
     if not geoserver_dir.exists():
         geoserver_dir.makedirs()
@@ -129,7 +142,7 @@ def setup(options):
 
 
 def grab_winfiles(url, dest, packagename):
-    #~gohlke needs a user agent that is not python
+    # ~gohlke needs a user agent that is not python
     # Add your headers
     headers = {'User-Agent': 'Mozilla 5.10'}
     request = urllib2.Request(url, None, headers)
@@ -154,7 +167,8 @@ def win_install_deps(options):
         "GDAL": "https://s3.amazonaws.com/geonodedeps/GDAL-1.11.0.win32-py2.7.exe",
         "PyProj": "https://pyproj.googlecode.com/files/pyproj-1.9.3.win32-py2.7.exe",
         "Shapely": "https://pypi.python.org/packages/2.7/S/Shapely/Shapely-1.3.0.win32-py2.7.exe",
-        "Psycopg2": "http://www.stickpeople.com/projects/python/win-psycopg/psycopg2-2.4.5.win32-py2.7-pg9.1.3-release.exe"
+        "Psycopg2": ("http://www.stickpeople.com/projects/python/win-psycopg/"
+                     "psycopg2-2.4.5.win32-py2.7-pg9.1.3-release.exe")
     }
 
     for package, url in win_packages.iteritems():
@@ -192,7 +206,7 @@ def sync(options):
     Run the syncdb and migrate management commands to create and migrate a DB
     """
     sh("python manage.py syncdb --noinput")
-    #sh("python manage.py migrate --noinput")
+    # sh("python manage.py migrate --noinput")
     sh("python manage.py loaddata sample_admin.json")
 
 
@@ -201,7 +215,6 @@ def package(options):
     """
     Creates a tarball to use for building the system elsewhere
     """
-    import pkg_resources
     import tarfile
     import geonode
 
@@ -220,7 +233,7 @@ def package(options):
 
     with pushd('package'):
 
-        #Delete old tar files in that directory
+        # Delete old tar files in that directory
         for f in glob.glob('GeoNode*.tar.gz'):
             old_package = path(f)
             if old_package != out_pkg_tar:
@@ -297,7 +310,7 @@ def stop():
     """
     Stop GeoNode
     """
-    #windows needs to stop the geoserver first b/c we can't tell which python is running, so we kill everything
+    # windows needs to stop the geoserver first b/c we can't tell which python is running, so we kill everything
     stop_geoserver()
     info("Stopping GeoNode ...")
     stop_django()
@@ -347,17 +360,32 @@ def start_geoserver(options):
 
         # checking if our loggernullpath exists and if not, reset it to something manageable
         if loggernullpath == "nul":
-            open("../../downloaded/null.txt", 'w+').close()
+            try:
+                open("../../downloaded/null.txt", 'w+').close()
+            except IOError, e:
+                print "Chances are that you have Geoserver currently running.  You \
+                        can either stop all servers with paver stop or start only \
+                        the django application with paver start_django."
+                sys.exit(1)
             loggernullpath = "../../downloaded/null.txt"
 
         try:
             sh(('java -version'))
         except:
-            if not options.get('java_path', None):
-                print "Paver cannot find java in the Windows Environment.  Please provide the --java_path flag with your full path to java.exe e.g. --java_path=C:/path/to/java/bin/java.exe"
+            print "Java was not found in your path.  Trying some other options: "
+            javapath_opt = None
+            if os.environ.get('JAVA_HOME', None):
+                print "Using the JAVA_HOME environment variable"
+                javapath_opt = os.path.join(os.path.abspath(os.environ['JAVA_HOME']), "bin", "java.exe")
+            elif options.get('java_path'):
+                javapath_opt = options.get('java_path')
+            else:
+                print "Paver cannot find java in the Windows Environment.  \
+                Please provide the --java_path flag with your full path to \
+                java.exe e.g. --java_path=C:/path/to/java/bin/java.exe"
                 sys.exit(1)
             # if there are spaces
-            javapath = 'START /B "" "' + options['java_path'] + '"'
+            javapath = 'START /B "" "' + javapath_opt + '"'
 
         sh((
             '%(javapath)s -Xmx512m -XX:MaxPermSize=256m'
@@ -433,6 +461,7 @@ def test_integration(options):
     if not success:
         sys.exit(1)
 
+
 @task
 def run_tests():
     """
@@ -443,6 +472,7 @@ def run_tests():
     call_task('test_integration')
     call_task('test_integration', options={'name': 'geonode.tests.csw'})
     sh('flake8 geonode')
+
 
 @task
 @needs(['stop'])
@@ -519,7 +549,7 @@ def deb(options):
     with pushd('package'):
 
         # Install requirements
-        #sh('sudo apt-get -y install debhelper devscripts git-buildpackage')
+        # sh('sudo apt-get -y install debhelper devscripts git-buildpackage')
 
         sh(('git-dch --spawn-editor=snapshot --git-author --new-version=%s'
             ' --id-length=6 --ignore-branch --release' % (simple_version)))
@@ -528,7 +558,7 @@ def deb(options):
         for line in fileinput.input([deb_changelog], inplace=True):
             print line.replace("urgency=medium", "urgency=high"),
 
-        ## Revert workaround for git-dhc bug
+        # Revert workaround for git-dhc bug
         sh('rm -rf .git')
 
         if key is None and ppa is None:
@@ -618,7 +648,7 @@ def kill(arg1, arg2):
 
         running = False
         for line in lines:
-            #this kills all java.exe and python including self in windows
+            # this kills all java.exe and python including self in windows
             if ('%s' % arg2 in line) or (os.name == 'nt' and '%s' % arg1 in line):
                 running = True
 
