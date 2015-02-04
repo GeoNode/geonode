@@ -181,6 +181,7 @@ module.exports = function(grunt) {
             'lib/css/bootstrap.min.css',
             'lib/css/jquery-ui.css',
             'lib/css/bootstrap-datetimepicker.css',
+            'lib/css/multi-select.css'
           ]
         }
       }
