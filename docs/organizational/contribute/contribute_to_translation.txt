@@ -89,11 +89,44 @@ Only for transifex maintainers
 
 .. note:: This section is only for the maintainers of a transifex group!
 
+For main Geonode localization files
+----------------------------------
+
+These files are generated using standard django-admin tools : makemessages and compilemessages command line tools.
+
+At first make sure to install transifex client and configure your .transifexrc with our credentials as::
+
+   [https://www.transifex.com]
+   username = YOURUSERNAME
+   token =
+   password = PUTYOURPW
+   hostname = https://www.transifex.com
+
+To prepare the PR in your branch, execute following steps.
+First go to the [yourpath]/geonode/geonode/ subdirectory and get all translations from transifex.com and force their replacement::
+
+   $ tx pull -a -s -f
+   
+Then update the messages in the po and compile the corresponding mo::
+
+   $ geonode makemessages --all
+   $ geonode makemessages -d djangojs --all
+   $ geonode compiliemessages
+
+Finally update ressources on transifex.com::
+
+   $ tx push -s -t
+
+For documentation localization
+------------------------------
+
+.. note:: Section below is deprecated, since the docs are no more translated, to much work to maintain them in every language.
+
 #. As a firt step, generate all of the needed .pot files (any time from master documentation changes)::
 
    $ cd docs
    $ sphinx-build -b gettext . i18n/pot
-  
+   
 #. Run the pre_translate.sh script to generate/merge (update) all of the .po files for each language::
 
    $ sh i18n/scripts/pre_translate.sh
