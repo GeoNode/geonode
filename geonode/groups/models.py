@@ -30,7 +30,7 @@ class GroupProfile(models.Model):
     group = models.OneToOneField(Group)
     title = models.CharField(max_length=50)
     slug = models.SlugField(unique=True)
-    logo = models.FileField(upload_to="people_group", blank=True)
+    logo = models.ImageField(upload_to="people_group", blank=True)
     description = models.TextField()
     email = models.EmailField(
         _('email'),
