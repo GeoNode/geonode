@@ -666,7 +666,7 @@ SOCIAL_ORIGINS = [{
 #https://github.com/ckan/ckan/blob/2052628c4a450078d58fb26bd6dc239f3cc68c3e/ckan/logic/action/create.py#L43
 CKAN_ORIGINS = [{
     "label":"Humanitarian Data Exchange (HDX)",
-    "url":"https://data.hdx.rwlabs.org/dataset/new?title={name}&notes={abstract}",
+    "url":"https://data.hdx.rwlabs.org/dataset/new?title={name}&dataset_date={date}&notes={abstract}&caveats={caveats}",
     "css_class":"hdx"
 }]
 #SOCIAL_ORIGINS.extend(CKAN_ORIGINS)
