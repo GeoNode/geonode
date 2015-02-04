@@ -50,10 +50,29 @@ For Windows: (:ref:`_install_win_devmode`)
 
    *Postgresql*
 
-   .. code-block:: console
+     .. code-block:: console
 
-    $ sudo apt-get install postgresql-9.3-postgis-2.1 postgresql-9.3-postgis-scripts
+      $ sudo apt-get install postgresql-9.3-postgis-2.1 postgresql-9.3-postgis-scripts
 
+     Change postgres UNIX password
+
+     .. code-block:: console
+
+      $ sudo passwd -u postgres # change password expiry infromation
+      $ sudo passwd postgres # change unix password for postgres
+
+     Create geonode role and database
+
+     .. code-block:: console
+
+      $ su postgres
+      $ createdb geonode
+      $ psql
+      postgres=#
+      postgres=# \password postgres
+      postgres=# CREATE USER geonode WITH PASSWORD 'geonode'; # should be same as password in setting.py
+      postgres=# GRANT ALL PRIVILEGES ON DATABASE "geonode" to geonode;
+      postgres=# \q
 
 
    *Java dependencies*
@@ -94,10 +113,11 @@ For Windows: (:ref:`_install_win_devmode`)
        $ source /usr/local/bin/virtualenvwrapper.sh
        $ export PIP_DOWNLOAD_CACHE=$HOME/.pip-downloads
 
-   On Ubuntu, you can add the above settings to your .bashrc file and reload the settings by logging out or running
+   On Ubuntu, you can add the above settings to your .bashrc file and reload the settings running
 
-         .. code-block:: console
-         $ source ~/.bashrc
+   .. code-block:: console
+
+    $ source ~/.bashrc
 
    Set up the local virtual environment for Geonode
 
@@ -146,7 +166,7 @@ For Windows: (:ref:`_install_win_devmode`)
 
    Visit the geonode site by typing http://localhost:8000 into your browser window.
 
-   If you are using a different IP address (1.1.1.1), the start paver using the command below.
+   If you are using a different IP address (e.g 1.1.1.1), then start paver using the command below.
 
    .. code-block:: console
 
