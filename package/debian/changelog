@@ -1,3 +1,72 @@
+geonode (2.4.0+beta18) trusty; urgency=high
+
+  [ julien collaer ]
+  * [1275b8] refreshed from tx and compiled
+
+  [ capooti ]
+  * [a1481a] Added remote services sources in GXP
+
+  [ Paolo Pasquali ]
+  * [f22642] Add style to edit layer modal
+  * [568c3c] Close the edit layer modal when opening the styler
+  * [c6ca90] Add style to edit document modal
+  * [5c5ce2] Add style to edit map modal
+
+  [ julien collaer ]
+  * [43bf43] fr translations integrated'
+
+  [ ilpise ]
+  * [d8c3a3] moving the logo from file field to image field
+
+  [ Paolo Pasquali ]
+  * [028dc7] Remove html if group logo does not exist
+
+  [ menegon ]
+  * [4eeb1f] remove files and session if an upload error occurs
+  * [5b059f] added integration test in order to check if -uploaded- directory is clean
+
+  [ julien collaer ]
+  * [98ccb9] link added to accounts
+
+  [ Julien Collaer ]
+  * [c61274] Update contribute_to_translation.txt
+
+  [ nathanhilbert ]
+  * [07dfb5] Windows quick install update
+  * [5214a9] added some additional checks and messages for java_paths
+  * [23e4fb] adding logic to settings.py to check for GEOS and GDAL
+  * [01f604] updating based on PR #1996
+
+  [ state-hiu ]
+  * [9c8b45] CKAN Intents.  Added support for: date, caveats.
+  * [9c1c21] fix typo
+  * [c5e313] added jetty runner option to setup_geoserver
+  * [2975cd] Fix for document metadata links
+
+  [ Jeffrey Johnson ]
+  * [b6552f] Remove/rewrite some incredible stupidity from @jj0hns0n
+
+  [ capooti ]
+  * [3a6aad] Correctly set LOG_FILE in settings and handle the case where a LOG_FILE is not found
+
+  [ Ariel Núñez ]
+  * [495d2c] Added creation of geonode_data database.
+  * [86b6ad] Set 'geonode_data' as the 'datastore' for GeoServer
+
+  [ menegon ]
+  * [e4cf01] reverted changes
+
+  [ Ariel Núñez ]
+  * [cc8e35] Improved GeoServer performance
+
+  [ Jeffrey Johnson ]
+  * [a7c24c] Use the title in the Layer Style Manage page vs the name
+
+  [ Simone Dalmasso ]
+  * [b93fa0] rework the geoserver_pre_save signal to avoid upload every time, also fixes #1926
+
+ -- Simone Dalmasso <simone.dalmasso@gmail.com>  Wed, 04 Feb 2015 11:40:40 +0000
+
 geonode (2.4.0+beta17) trusty; urgency=high
 
   [ Tyler Garner ]
