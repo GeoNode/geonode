@@ -103,7 +103,7 @@
             </div>
             <div class="modal-body">
               <ul>
-                {% for link in resource.link_set.metadata %}
+                {% for link in metadata %}
                 <li><a href="{{ link.url }}">{{ link.name }}</a></li>
                 {% endfor %}
               </ul>
