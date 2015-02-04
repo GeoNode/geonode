@@ -182,8 +182,6 @@ def layer_style_manage(request, layername):
                 layer_styles.append((style.name, style.sld_title))
 
             # Render the form
-            print gs_styles
-            print layer_styles
             return render_to_response(
                 'layers/layer_style_manage.html',
                 RequestContext(request, {
