@@ -37,7 +37,7 @@ from guardian.shortcuts import assign_perm
 from geoserver.catalog import FailedRequestError, UploadError
 
 # from geonode.security.models import *
-from geonode.layers.models import Layer, LayerFile, UploadSession
+from geonode.layers.models import Layer
 from geonode.maps.models import Map
 from geonode import GeoNodeException
 from geonode.layers.utils import (
@@ -323,15 +323,7 @@ class GeoNodeMapTest(TestCase):
 
     def test_bad_shapefile(self):
         """Verifying GeoNode complains about a shapefile without .prj
-           Also verify uploaded dir doesn't contain files if an error occurs
         """
-
-        # get uploaded dir
-        f = LayerFile._meta.get_field('file')
-        upload_dir = os.path.join(settings.MEDIA_ROOT, f.get_directory_name())
-
-        files_before = set(os.listdir(upload_dir))
-        number_sessions_before = UploadSession.objects.count()
 
         thefile = os.path.join(gisdata.BAD_DATA, 'points_epsg2249_no_prj.shp')
         try:
@@ -345,12 +337,6 @@ class GeoNodeMapTest(TestCase):
             # msg = ('Was expecting a %s, got %s instead.' %
             #        (GeoNodeException, type(e)))
             # assert e is GeoNodeException, msg
-
-        files_after = set(os.listdir(upload_dir))
-        number_sessions_after = UploadSession.objects.count()
-
-        self.assertEqual(files_before, files_after)
-        self.assertEqual(number_sessions_before, number_sessions_after)
 
     def test_tiff(self):
         """Uploading a good .tiff
