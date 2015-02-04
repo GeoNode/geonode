@@ -75,6 +75,7 @@ JETTY_RUNNER_URL = "http://repo2.maven.org/maven2/org/mortbay/jetty/jetty-runner
 @task
 @cmdopts([
     ('geoserver=', 'g', 'The location of the geoserver build (.war file).'),
+    ('jetty=', 'j', 'The location of the Jetty Runner (.jar file).'),
 ])
 def setup_geoserver(options):
     """Prepare a testing instance of GeoServer."""
@@ -88,7 +89,7 @@ def setup_geoserver(options):
     jetty_runner = download_dir / os.path.basename(JETTY_RUNNER_URL)
 
     grab(options.get('geoserver', GEOSERVER_URL), geoserver_bin, "geoserver binary")
-    grab(JETTY_RUNNER_URL, jetty_runner, "jetty runner")
+    grab(options.get('jetty', JETTY_RUNNER_URL), jetty_runner, "jetty runner")
 
     if not geoserver_dir.exists():
         geoserver_dir.makedirs()
