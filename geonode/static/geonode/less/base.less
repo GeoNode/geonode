@@ -14,7 +14,7 @@
 @gray-dark:    lighten(#000, 20%);   // #333
 @gray:         lighten(#000, 33.5%); // #555
 @gray-light:   lighten(#000, 60%);   // #999
-@gray-lighter: lighten(#000, 93.5%); // #eee
+@gray-lighter: rgb(204,204,204);
 
 @body-bg:          #fff;
 @text-color:       @gray-dark;
@@ -77,7 +77,7 @@ form {
     margin-right: 2.5em;
   }
   input {
-    border: 1px solid @gray-light;
+    border: 1px solid @gray-lighter;
     padding: 5px;
   }
 }
@@ -199,24 +199,44 @@ body.groups li#nav_groups a {
 }
 
 .items-list {
-  border-bottom: 1px solid @gray-lighter;
-  border-top: 1px solid @gray-lighter;
-  margin-bottom: 10px;
+  .btn {
+    margin-right: 5px;
+    margin-top: 10px;
+  }
+  .item-info {
+    border-top: 1px solid @gray-lighter;
+  }
+  padding: 10px 0;
   h4 {
-    font-weight: 300;
+    font-weight: 400;
+    a {
+      color: @text-color;
+    }
     .owner {
-      color: @gray-light;
+      color: @text-color;
       font-size: 14px;
+    }
+  }
+  .thumb {
+    img {
+      border: 1px solid @gray-lighter;
+      width: 100%;
     }
   }
   .abstract {
     color: @gray-light;
     font-weight: 300;
+    min-height: 80px;
   }
   .actions {
     color: @gray-light;
+    font-weight: 300;
+    i {
+      margin-right: .75em;
+    }
     a {
       color: @gray-light;
+      margin-right: 0.5em;
       &:hover {
         color: @gray;
         text-decoration: none;
@@ -427,7 +447,7 @@ footer {
       -ms-transform: rotate(45deg);
        -o-transform: rotate(45deg);
           transform: rotate(45deg);
-  filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=1);
+  /*filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=1);*/
 }
 
 .select2-container-multi .select2-choices .select2-search-field input {
@@ -494,7 +514,7 @@ footer {
     -ms-transform: rotate(45deg);
     -o-transform: rotate(45deg);
     transform: rotate(45deg);
-    filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=1);
+    /*filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=1);*/
   }
   .layer:before {
     content: "\f096";
@@ -558,9 +578,9 @@ footer {
 }
 
 .resource_selected{
-  -moz-box-shadow: 0 0 5px #0033CC;
-  -webkit-box-shadow: 0 0 5px #0033CC;
-  box-shadow: 0px 0px 5px #0033CC;
+  -moz-box-shadow: 0 0 5px @brand-alternate;
+  -webkit-box-shadow: 0 0 5px @brand-alternate;
+  box-shadow: 0px 0px 5px @brand-alternate;
 }
 
 /* Sign In Modal
