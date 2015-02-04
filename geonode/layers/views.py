@@ -55,6 +55,7 @@ from geonode.people.forms import ProfileForm, PocForm
 from geonode.security.views import _perms_info_json
 from geonode.documents.models import get_related_documents
 from geonode.utils import build_social_links
+from geonode.geoserver.helpers import cascading_delete, gs_catalog
 
 CONTEXT_LOG_FILE = None
 
@@ -79,6 +80,9 @@ _PERMISSION_MSG_VIEW = _("You are not permitted to view this layer")
 
 
 def log_snippet(log_file):
+    if not os.path.isfile(log_file):
+        return "No log file at %s" % log_file
+
     with open(log_file, "r") as f:
         f.seek(0, 2)  # Seek @ EOF
         fsize = f.tell()  # Get Size
@@ -181,6 +185,9 @@ def layer_upload(request, template='upload/layer_upload.html'):
                     'layer_detail', args=[
                         saved_layer.service_typename])
 
+                upload_session = saved_layer.upload_session
+                upload_session.processed = True
+                upload_session.save()
                 permissions = form.cleaned_data["permissions"]
                 if permissions is not None and len(permissions.keys()) > 0:
                     saved_layer.set_permissions(permissions)
@@ -461,6 +468,9 @@ def layer_replace(request, layername, template='layers/layer_replace.html'):
                     out['success'] = False
                     out['errors'] = _("You are attempting to replace a raster layer with a vector.")
                 else:
+                    # delete geoserver's store before upload
+                    cat = gs_catalog
+                    cascading_delete(cat, layer.typename)
                     saved_layer = file_upload(
                         base_file,
                         name=layer.name,
