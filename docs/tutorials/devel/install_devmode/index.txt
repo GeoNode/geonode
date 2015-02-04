@@ -17,6 +17,8 @@ For Windows: (:ref:`_install_win_devmode`)
 #. Run paver to get install geoserver and start the development servers
 #. Compile and Start the server
 #. Start Geonode instance
+#. To stop the server
+#. Next create a superuser for your django geonode
 
 .. note:: The following steps have to be executed in your terminal. The steps have to be done as a root user, therefore don´t forget to type sudo in front!
 
