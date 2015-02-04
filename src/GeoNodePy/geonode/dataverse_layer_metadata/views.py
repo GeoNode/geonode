@@ -3,7 +3,6 @@ from django.http import HttpResponse
 
 from django.views.decorators.csrf import csrf_exempt
 
-from geonode.dataverse_connect.dataverse_auth import has_proper_auth
 from geonode.dataverse_connect.layer_metadata import LayerMetadata        # object with layer metadata
 from geonode.dataverse_layer_metadata.forms import CheckForExistingLayerFormWorldmap
 
@@ -21,12 +20,7 @@ def get_existing_layer_data(request):
 
     returns JSON
     """
-    #   Does it have proper auth?
-    #
     #   -Auth now checked by CheckForExistingLayerFormWorldmap
-    #if not has_proper_auth(request):
-    #    json_msg = MessageHelperJSON.get_json_msg(success=False, msg="Authentication failed.")
-    #    return HttpResponse(status=401, content=json_msg, content_type="application/json")
 
     #   Is it a POST?
     #

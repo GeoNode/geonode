@@ -11,7 +11,6 @@ from shared_dataverse_information.shared_form_util.format_form_errors import for
 
 from geonode.dataverse_connect.layer_metadata import LayerMetadata
 from geonode.dataverse_connect.dv_utils import MessageHelperJSON
-from geonode.dataverse_connect.dataverse_auth import has_proper_auth
 from geonode.dataverse_connect.geonode_get_services import get_layer_features_definition
 from geonode.dataverse_connect.sld_helper_form import SLDHelperForm
 from geonode.dataverse_connect.layer_styler import LayerStyler
@@ -24,22 +23,6 @@ logger = logging.getLogger("geonode.dataverse_connect.views_sld")
 
 # http://localhost:8000/gs/rest/sldservice/geonode:boston_social_disorder_pbl/classify.xml?attribute=Violence_4&method=equalInterval&intervals=5&ramp=Gray&startColor=%23FEE5D9&endColor=%23A50F15&reverse=
 
-'''
-#@csrf_exempt
-def view_layer_feature_defn(request, layer_name):
-    """
-    Given a layer name, retrieve a desciption of the field names in values.
-    This will be in XML format.
-    
-    example: http://localhost:8000/dvn/describe-features/income_4x5/
-    """    
-    if not has_proper_auth(request):
-        json_msg = MessageHelperJSON.get_json_msg(success=False, msg="Authentication failed.")
-        return HttpResponse(status=401, content=json_msg, content_type="application/json")
-        
-    json_msg = get_layer_features_definition(layer_name)
-    return HttpResponse(content=json_msg, content_type="application/json")
-'''
 
 
 @csrf_exempt
@@ -92,9 +75,6 @@ def view_create_new_layer_style(request):
     """
     
     # Auth check embedded in params, handled by ClassifyRequestDataForm
-    #if not has_proper_auth(request):
-    #    json_msg = MessageHelperJSON.get_json_msg(success=False, msg="Authentication failed.")
-    #    return HttpResponse(status=401, content=json_msg, content_type="application/json")
 
     if not request.POST:
         json_msg = MessageHelperJSON.get_json_msg(success=False, msg="use a POST request")    

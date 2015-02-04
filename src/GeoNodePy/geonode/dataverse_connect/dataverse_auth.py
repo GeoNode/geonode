@@ -10,7 +10,7 @@ TOKEN_KEY_NAME = 'geoconnect_token'
 
 logger = logging.getLogger("geonode.dataverse_connect.dataverse_auth")
 
-def has_proper_auth(request):
+def xhas_proper_auth(request):
     """For now, check for DV_TOKEN.
     Future: IP + DV_TOKEN
     Future: oauth

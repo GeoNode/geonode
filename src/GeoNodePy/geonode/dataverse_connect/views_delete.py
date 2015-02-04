@@ -10,7 +10,6 @@ from django.views.decorators.csrf import csrf_exempt
 from shared_dataverse_information.dataverse_info.forms_existing_layer import DataverseInfoValidationFormWithKey
 from shared_dataverse_information.shared_form_util.format_form_errors import format_errors_as_text
 
-from geonode.dataverse_connect.dataverse_auth import has_proper_auth
 from geonode.dataverse_layer_metadata.models import DataverseLayerMetadata
 
 from geonode.dataverse_connect.dv_utils import MessageHelperJSON          # format json response object

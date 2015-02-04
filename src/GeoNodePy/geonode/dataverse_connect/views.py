@@ -16,7 +16,6 @@ from geonode.utils import slugify
 
 #from geonode.dataverse_private_layer.permissions_helper import make_layer_private
 
-from geonode.dataverse_connect.dataverse_auth import has_proper_auth
 from geonode.dataverse_connect.layer_metadata import LayerMetadata        # object with layer metadata
 from geonode.dataverse_connect.dv_utils import MessageHelperJSON          # format json response object
 
