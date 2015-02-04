@@ -1,24 +1,24 @@
 {% verbatim %}
   <article ng-repeat="item in results" resource_id="{{ item.id }}" ng-cloak class="ng-cloak">
   	<div class="row items-list">
-  	  <div class="col-md-4">
-  	    <a href="{{ item.detail_url }}"><img class="thumb" ng-src="{{ item.thumbnail_url }}" /></a>
+  	  <div class="col-xs-4 thumb">
+  	    <a href="{{ item.detail_url }}"><img ng-src="{{ item.thumbnail_url }}" /></a>
   	  </div>
-      <div class="col-md-8">
-        <h4><a href="{{ item.detail_url }}">{{ item.title }}</a> by <span class="owner"><a href="/people/profile/{{ item.owner__username }}">{{ item.owner__username }}</a></span></h4>
-        <p>{{ item.category__gn_description }}</p>
-        <p class="abstract">{{ item.abstract|limitTo:250 }}...</p>
+      <div class="col-xs-8 item-info">
+        {% endverbatim %}{% if request.user.is_authenticated %}
+        <button class="btn btn-default btn-xs pull-right" ng-click="feature_select($event)">Select</button>
+        {% endif %}{% verbatim %}
+        <h4><a href="{{ item.detail_url }}">{{ item.title }}</a></h4>
+        <p>{{ item.category__gn_description }} <span class="owner">by <a href="/people/profile/{{ item.owner__username }}">{{ item.owner__username }}</a></span></p>
+        <p class="abstract">{{ item.abstract }}</p>
         <p class="actions">
-          <a ng-if="item.detail_url.indexOf('/layers/') > -1" 
-            href="{% endverbatim %}{% url "new_map" %}?layer={% verbatim %}{{ item.detail_url.substring(8) }}">
-            <i class="fa fa-map-marker"></i>Create a Map</a> |
           <a href="{{ item.detail_url }}#info"><i class="fa fa-calendar-o"></i>{{ item.date|date:'d MMM y' }}</a> |
           <a href="{{ item.detail_url }}"><i class="fa fa-eye"></i>{{ item.popular_count }}</a> |
           <a href="{{ item.detail_url }}#share"><i class="fa fa-share"></i>{{ item.share_count }}</a> |
           <a href="{{ item.detail_url }}#rate"><i class="fa fa-star"></i>{{ item.rating }}</a> 
-          {% endverbatim %}{% if request.user.is_authenticated %}
-          | <button class="btn btn-primary btn-xs" ng-click="feature_select($event)">Select</button>
-          {% endif %}{% verbatim %}
+          <a ng-if="item.detail_url.indexOf('/layers/') > -1" 
+            class="pull-right" href="{% endverbatim %}{% url "new_map" %}?layer={% verbatim %}{{ item.detail_url.substring(8) }}">
+            <i class="fa fa-map-marker"></i>Create a Map</a>
       </div>
     </div>
   </article>
