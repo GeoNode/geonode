@@ -9,12 +9,33 @@ GeoNode provides a number of facilities for interactivity in the web browser bui
 * `Bootstrap <http://getbootstrap.com/>`_ for GeoNode's front-end user interface and common user interaction.
 * `Bower <http://bower.io/>`_ for GeoNode's front-end package management.
 * `ExtJS <http://extjs.com/>`_ for component-based UI construction and data access
-* `OpenLayers <http://openlayers.org/>`_ for interactive mapping and other geospatial operations
+* `OpenLayers2 <http://openlayers.org/two/>`_ for interactive mapping and other geospatial operations
 * `GeoExt <http://geoext.org/>`_ for integrating ExtJS with OpenLayers
-* `Grunt <http://gruntjs.com/>`_ for front-end task automation.
 * `GXP <http://projects.opengeo.org/gxp>`_ for providing some higher-level application building facilities on top of GeoExt, as well
   as improving integration with GeoServer.
 * `jQuery <http://jquery.com>`_ to abstract javascript manipulation, event handling, animation and Ajax.
+
+GeoNode community is also beginning to use and test
+
+* `Angularjs <http://angularjs.com>`_ a javascript framework that allows dependencie injection and dynamic data binding between django and the javascript running in the client's browser.
+* `OpenLayers3 <http://openlayers.com>`_ a modern library built for mobile, speed, and support for numerous data formats, targeting the latest advancements in HTML5 and CSS3.
+
+JavaScript Packaging
+=======================
+
+Geonode uses `Grunt <http://gruntjs.com/>`_ for automating common tasks required to package javascript applications from human-readable source code to optimized code that can be run in a client's browser, some of these typical tasks include:typical tasks include:
+
+ * linting - similar to spell and/or grammer check but for checking/testing common mistakes, omissions, or errors in logic .
+ * minimizing - replacing human-readable named variable into variables with arbitary values (ex. foo = bar -> a = b) to save space.
+ * unit testing - testing discreet and singlar purposed javascript to ensure they continue to perform their intented purpose.
+ * compilaton - combining or compiling multiple javascript files into one file to reduce # of files requests sent to the server.
+
+If you are making changes to the source code for javascript applications and/or changes to the global stylesheet there are some steps required to rerun some grunt tasks so your changes will be contained in both the source code and production files.
+
+See :ref:`paver` for steps required when make these types of changes
+
+Custom JavaScript
+=====================
 
 GeoNode uses application-specific modules to handle pages and services that are unique to GeoNode.  This framework includes:
 
@@ -28,24 +49,30 @@ GeoNode uses application-specific modules to handle pages and services that are 
 * `Template files <https://github.com/GeoNode/geonode/tree/master/geonode/static/geonode/js/templates>`_ for generating commonly used html sections.
 * A `front-end testing module <https://github.com/GeoNode/geonode/tree/master/geonode/static/geonode/js/tests>`_ to test GeoNode javascript.
 
+Javascript Terminology
+====================================
+
 The following concepts are particularly important for developing on top of the
 GeoNode's JavaScript framework.
 
-* Components - Ext components handle most interactive functionality in
-  "regular" web pages.  For example, the scrollable/sortable/filterable table
-  on the default Search page is a Grid component.  While GeoNode does use some
-  custom components, familiarity with the idea of Components used by ExtJS is
-  applicable in GeoNode development.
+Components
+----------------------
 
-* Viewers - Viewers display interactive maps in web pages, optionally decorated
-  with Ext controls for toolbars, layer selection, etc.  Viewers in GeoNode use
-  the GeoExplorer base class, which builds on top of GXP's Viewer to provide
-  some common functionality such as respecting site-wide settings for
-  background layers. Viewers can be used as components embedded in pages, or
-  they can be full-page JavaScript applications.
+Ext components handle most interactive functionality in "regular" web pages.  For example, the scrollable/sortable/filterable table on the default Search page is a Grid component.  While GeoNode does use some
+custom components, familiarity with the idea of Components used by ExtJS is applicable in GeoNode development.
 
-* Controls - Controls are tools for use in OpenLayers maps (such as a freehand
-  control for drawing new geometries onto a map, or an identify control for
-  getting information about individual features on a map.)  GeoExt provides
-  tools for using these controls as ExtJS "Actions" - operations that can be
-  invoked as buttons or menu options or associated with other events.
+Viewers
+---------------
+
+Viewers display interactive maps in web pages, optionally decorated
+with Ext controls for toolbars, layer selection, etc.  Viewers in GeoNode use
+the GeoExplorer base class, which builds on top of GXP's Viewer to provide
+some common functionality such as respecting site-wide settings for
+background layers. Viewers can be used as components embedded in pages, or
+they can be full-page JavaScript applications.
+
+Controls
+-------------- 
+
+Controls are tools for use in OpenLayers maps (such as a freehand control for drawing new geometries onto a map, or an identify control for
+getting information about individual features on a map.)  GeoExt provides tools for using these controls as ExtJS "Actions" - operations that can be invoked as buttons or menu options or associated with other events.
