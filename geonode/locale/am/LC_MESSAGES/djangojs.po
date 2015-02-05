@@ -4,11 +4,14 @@
 #
 # Translators:
 # Translators:
+# Translators:
+# Translators:
+# Translators:
 msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-02-03 08:21-0600\n"
+"POT-Creation-Date: 2015-02-05 04:17-0600\n"
 "PO-Revision-Date: 2015-02-03 11:58+0000\n"
 "Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
 "Language-Team: Amharic (http://www.transifex.com/projects/p/geonode/language/"
@@ -59,7 +62,7 @@ msgstr ""
 msgid "Who can manage and edit this data?"
 msgstr ""
 
-#: static/geonode/js/search/search.js:298
+#: static/geonode/js/search/search.js:301
 #: static_root/geonode/js/search/search.js:298
 msgid "Enter your text here ..."
 msgstr ""
