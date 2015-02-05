@@ -142,8 +142,7 @@ def setup(options):
 
 
 def grab_winfiles(url, dest, packagename):
-    # ~gohlke needs a user agent that is not python
-    # Add your headers
+    # Add headers
     headers = {'User-Agent': 'Mozilla 5.10'}
     request = urllib2.Request(url, None, headers)
     response = urllib2.urlopen(request)
@@ -155,31 +154,36 @@ def grab_winfiles(url, dest, packagename):
 def win_install_deps(options):
     """
     Install all Windows Binary automatically
+    This can be removed as wheels become available for these packages
     """
     download_dir = path('downloaded').abspath()
     if not download_dir.exists():
         download_dir.makedirs()
     win_packages = {
-        "PIL": "https://pypi.python.org/packages/2.7/P/Pillow/Pillow-2.5.1.win32-py2.7.exe",
+        #required by transifex-client
         "Py2exe": "http://superb-dca2.dl.sourceforge.net/project/py2exe/py2exe/0.6.9/py2exe-0.6.9.win32-py2.7.exe",
         "Nose": "https://s3.amazonaws.com/geonodedeps/nose-1.3.3.win32-py2.7.exe",
-        "LXML": "https://pypi.python.org/packages/2.7/l/lxml/lxml-3.3.5.win32-py2.7.exe",
-        "GDAL": "https://s3.amazonaws.com/geonodedeps/GDAL-1.11.0.win32-py2.7.exe",
-        "PyProj": "https://pyproj.googlecode.com/files/pyproj-1.9.3.win32-py2.7.exe",
-        "Shapely": "https://pypi.python.org/packages/2.7/S/Shapely/Shapely-1.3.0.win32-py2.7.exe",
-        "Psycopg2": ("http://www.stickpeople.com/projects/python/win-psycopg/"
-                     "psycopg2-2.4.5.win32-py2.7-pg9.1.3-release.exe")
+        #the wheel 1.9.4 installs but pycsw wants 1.9.3, which fails to compile
+        #when pycsw bumps their pyproj to 1.9.4 this can be removed.
+        "PyProj": "https://pyproj.googlecode.com/files/pyproj-1.9.3.win32-py2.7.exe"
     }
-
+    failed = False
     for package, url in win_packages.iteritems():
         tempfile = download_dir / os.path.basename(url)
         grab_winfiles(url, tempfile, package)
         try:
             easy_install.main([tempfile])
-        except:
-            print "install failed"
+        except Exception, e:
+            failed = True
+            print "install failed with error: ", e
         os.remove(tempfile)
-    print "Windows dependencies now complete.  Run pip install -e geonode --use-mirrors"
+    if failed and sys.maxsize > 2**32:
+        print "64bit architecture is not currently supported"
+        print "try finding the 64 binaries for py2exe, nose, and pyproj"
+    elif failed:
+        print "install failed for py2exe, nose, and/or pyproj"
+    else:
+        print "Windows dependencies now complete.  Run pip install -e geonode --use-mirrors"
 
 
 @cmdopts([

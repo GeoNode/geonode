@@ -36,6 +36,7 @@ class TypeFilteredResource(ModelResource):
     count = fields.IntegerField()
 
     type_filter = None
+    title_filter = None
 
     def dehydrate_count(self, bundle):
         raise Exception('dehydrate_count not implemented in the child class')
@@ -48,6 +49,9 @@ class TypeFilteredResource(ModelResource):
             self.type_filter = FILTER_TYPES[filters['type']]
         else:
             self.type_filter = None
+        if 'title__icontains' in filters:
+            self.title_filter = filters['title__icontains']
+
         return orm_filters
 
 
@@ -67,14 +71,17 @@ class TagResource(TypeFilteredResource):
         if settings.RESOURCE_PUBLISHING:
             resources = resources.filter(is_published=True)
 
+        if self.title_filter:
+            resources = resources.filter(title__icontains=self.title_filter)
         resources_ids = resources.values_list('id', flat=True)
 
+        tags = bundle.obj.taggit_taggeditem_items
         if self.type_filter:
             ctype = ContentType.objects.get_for_model(self.type_filter)
-            count = bundle.obj.taggit_taggeditem_items.filter(
+            count = tags.filter(
                 content_type=ctype).filter(object_id__in=resources_ids).count()
         else:
-            count = bundle.obj.taggit_taggeditem_items.filter(object_id__in=resources_ids).count()
+            count = tags.filter(object_id__in=resources_ids).count()
 
         return count
 
@@ -97,6 +104,8 @@ class TopicCategoryResource(TypeFilteredResource):
             resources = resources.filter(is_published=True)
         if self.type_filter:
             resources = resources.instance_of(self.type_filter)
+        if self.title_filter:
+            resources = resources.filter(title__icontains=self.title_filter)
         if not settings.SKIP_PERMS_FILTER:
             permitted = get_objects_for_user(
                 bundle.request.user,
