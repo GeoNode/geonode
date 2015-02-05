@@ -33,6 +33,7 @@ from django.core.urlresolvers import reverse
 from geonode.base.models import ResourceBase, ResourceBaseManager, resourcebase_post_save
 from geonode.people.utils import get_valid_user
 from agon_ratings.models import OverallRating
+from geonode.utils import check_shp_columnnames
 
 logger = logging.getLogger("geonode.layers.models")
 
@@ -161,6 +162,7 @@ class Layer(ResourceBase):
     def get_base_file(self):
         """Get the shp or geotiff file for this layer.
         """
+
         # If there was no upload_session return None
         if self.upload_session is None:
             return None
@@ -177,6 +179,13 @@ class Layer(ResourceBase):
         msg = 'There should only be one main file (.shp or .geotiff), found %s' % base_files_count
         assert base_files_count == 1, msg
 
+        # we need to check, for shapefile, if column names are valid
+        if self.storeType == 'dataStore':
+            valid_shp, wrong_column_name = check_shp_columnnames(self)
+            msg = 'Shapefile has an invalid column name: %s' % wrong_column_name
+            assert valid_shp, msg
+
+        # no error, let's return the base files
         return base_files.get()
 
     def get_absolute_url(self):
