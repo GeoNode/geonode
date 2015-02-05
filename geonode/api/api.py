@@ -9,6 +9,7 @@ from guardian.shortcuts import get_objects_for_user
 
 from geonode.base.models import ResourceBase
 from geonode.base.models import TopicCategory
+from geonode.base.models import Region
 from geonode.layers.models import Layer
 from geonode.maps.models import Map
 from geonode.documents.models import Document
@@ -106,16 +107,15 @@ class RegionResource(TypeFilteredResource):
         resources_ids = resources.values_list('id', flat=True)
 
         if self.type_filter:
-            ctype = ContentType.objects.get_for_model(self.type_filter)
-            count = bundle.obj.taggit_taggeditem_items.filter(
-                content_type=ctype).filter(object_id__in=resources_ids).count()
+            count = bundle.obj.resourcebase_set.filter(
+                id__in=resources_ids).instance_of(self.type_filter).count()
         else:
-            count = bundle.obj.taggit_taggeditem_items.filter(object_id__in=resources_ids).count()
+            count = bundle.obj.resourcebase_set.filter(id__in=resources_ids).count()
 
         return count
 
     class Meta:
-        queryset = Tag.objects.all().order_by('name')
+        queryset = Region.objects.all().order_by('name')
         resource_name = 'regions'
         allowed_methods = ['get']
         filtering = {
