@@ -4,15 +4,18 @@
 #
 # Translators:
 # Translators:
-# Minpa Lee <mapplus@gmail.com>, 2013-2014
+# Translators:
+# Translators:
+# Translators:
+# Minpa Lee <mapplus@gmail.com>, 2013-2015
 # Minpa Lee <mapplus@gmail.com>, 2013
 msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-02-03 08:21-0600\n"
-"PO-Revision-Date: 2015-02-03 12:11+0000\n"
-"Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
+"POT-Creation-Date: 2015-02-05 04:17-0600\n"
+"PO-Revision-Date: 2015-02-05 05:20+0000\n"
+"Last-Translator: Minpa Lee <mapplus@gmail.com>\n"
 "Language-Team: Korean (http://www.transifex.com/projects/p/geonode/language/"
 "ko/)\n"
 "Language: ko\n"
@@ -61,10 +64,10 @@ msgstr "다음 사용자 또는 그룹 전용 :"
 msgid "Who can manage and edit this data?"
 msgstr "누가 이 데이터를 관리하고 편집 할 수 있습니까?"
 
-#: static/geonode/js/search/search.js:298
+#: static/geonode/js/search/search.js:301
 #: static_root/geonode/js/search/search.js:298
 msgid "Enter your text here ..."
-msgstr ""
+msgstr "여기에 텍스트를 입력하세요 ..."
 
 #: static/geonode/js/upload/FileType.js:33
 #: static_root/geonode/js/upload/FileType.js:33
@@ -161,13 +164,13 @@ msgstr "GeoServer에 레이어 파일 업로드 완료, 구성중"
 #: static/geonode/js/upload/LayerInfo.js:422
 #: static_root/geonode/js/upload/LayerInfo.js:422
 msgid "Select or create a Geogig repository."
-msgstr ""
+msgstr "Geogig 저장소를 선택하거나 생성합니다."
 
 #: static/geonode/js/upload/LayerInfo.js:517
 #: static_root/admin/js/SelectFilter2.js:69
 #: static_root/geonode/js/upload/LayerInfo.js:517
 msgid "Remove"
-msgstr "제거"
+msgstr "제거하기"
 
 #: static/geonode/js/upload/upload.js:125
 #: static_root/geonode/js/upload/upload.js:125
@@ -183,7 +186,7 @@ msgstr "불완전한 파일 세트를 업로드하려 합니다."
 #: static_root/admin/js/SelectFilter2.js:45
 #, c-format
 msgid "Available %s"
-msgstr ""
+msgstr "사용가능한 %s"
 
 #: static_root/admin/js/SelectFilter2.js:46
 #, c-format
@@ -191,33 +194,35 @@ msgid ""
 "This is the list of available %s. You may choose some by selecting them in "
 "the box below and then clicking the \"Choose\" arrow between the two boxes."
 msgstr ""
+"사용가능한 %s 목록입니다. 선택하기 위해 아래에서 선택한 후 \"선택하기\" 화살"
+"표를 눌러 선택할 수 있습니다."
 
 #: static_root/admin/js/SelectFilter2.js:53
 #, c-format
 msgid "Type into this box to filter down the list of available %s."
-msgstr ""
+msgstr "사용가능한 %s를 필터링하기 위해 여기에 입력하십시오."
 
 #: static_root/admin/js/SelectFilter2.js:57
 msgid "Filter"
-msgstr ""
+msgstr "필터"
 
 #: static_root/admin/js/SelectFilter2.js:61
 msgid "Choose all"
-msgstr ""
+msgstr "모두 선택"
 
 #: static_root/admin/js/SelectFilter2.js:61
 #, c-format
 msgid "Click to choose all %s at once."
-msgstr ""
+msgstr "%s를 한번에  선택하기 위해 클릭하십시오."
 
 #: static_root/admin/js/SelectFilter2.js:67
 msgid "Choose"
-msgstr ""
+msgstr "선택하기"
 
 #: static_root/admin/js/SelectFilter2.js:75
 #, c-format
 msgid "Chosen %s"
-msgstr ""
+msgstr "선택된 %s"
 
 #: static_root/admin/js/SelectFilter2.js:76
 #, c-format
@@ -225,26 +230,30 @@ msgid ""
 "This is the list of chosen %s. You may remove some by selecting them in the "
 "box below and then clicking the \"Remove\" arrow between the two boxes."
 msgstr ""
+"선택된 %s 목록입니다. 제거하기 위해 아래에서 선택한 후 \"제거하기\" 화살표를 "
+"눌러 제거할 수 있습니다."
 
 #: static_root/admin/js/SelectFilter2.js:80
 msgid "Remove all"
-msgstr ""
+msgstr "모두 제거"
 
 #: static_root/admin/js/SelectFilter2.js:80
 #, c-format
 msgid "Click to remove all chosen %s at once."
-msgstr ""
+msgstr "%s를 한번에  모두 제거하기 위해 클릭하십시오."
 
 #: static_root/admin/js/actions.js:18 static_root/admin/js/actions.min.js:1
 msgid "%(sel)s of %(cnt)s selected"
 msgid_plural "%(sel)s of %(cnt)s selected"
-msgstr[0] ""
+msgstr[0] "%(cnt)s 중 %(sel)s 선택됨"
 
 #: static_root/admin/js/actions.js:109 static_root/admin/js/actions.min.js:5
 msgid ""
 "You have unsaved changes on individual editable fields. If you run an "
 "action, your unsaved changes will be lost."
 msgstr ""
+"편집가능한 개별 필드의 변경사항을 저장하지 않았습니다. 작업을 실행하는 경우, "
+"저장되지 않은 변경 사항이 손실됩니다."
 
 #: static_root/admin/js/actions.js:121 static_root/admin/js/actions.min.js:5
 msgid ""
@@ -252,6 +261,8 @@ msgid ""
 "individual fields yet. Please click OK to save. You'll need to re-run the "
 "action."
 msgstr ""
+"작업을 선택했지만, 아직 개별 필드에 대한 변경사항을 저장하지 않았습니다. 저장"
+"하기 위해 확인 버튼을 눌러 저장하십시오. 작업을 다시 실행해야 합니다."
 
 #: static_root/admin/js/actions.js:123 static_root/admin/js/actions.min.js:6
 msgid ""
@@ -259,50 +270,52 @@ msgid ""
 "fields. You're probably looking for the Go button rather than the Save "
 "button."
 msgstr ""
+"작업을 선택했으며 개별 필드에 대한 변경 내용이 없습니다. 저장하기 버튼보다 이"
+"동하기 버튼을 사용하는 것이 좋습니다."
 
 #: static_root/admin/js/calendar.js:8
 msgid ""
 "January February March April May June July August September October November "
 "December"
-msgstr ""
+msgstr "1월 2월 3월 4월 5월 6월 7월 8월 9월 10월 11월 12월"
 
 #: static_root/admin/js/calendar.js:9
 msgid "S M T W T F S"
-msgstr ""
+msgstr "S M T W T F S"
 
 #: static_root/admin/js/collapse.js:8 static_root/admin/js/collapse.js.c:19
 #: static_root/admin/js/collapse.min.js:1
 msgid "Show"
-msgstr ""
+msgstr "보이기"
 
 #: static_root/admin/js/collapse.js:16 static_root/admin/js/collapse.min.js:1
 msgid "Hide"
-msgstr ""
+msgstr "숨기기"
 
 #: static_root/admin/js/admin/DateTimeShortcuts.js:52
 #: static_root/admin/js/admin/DateTimeShortcuts.js:88
 msgid "Now"
-msgstr ""
+msgstr "지금"
 
 #: static_root/admin/js/admin/DateTimeShortcuts.js:56
 msgid "Clock"
-msgstr ""
+msgstr "시계"
 
 #: static_root/admin/js/admin/DateTimeShortcuts.js:84
 msgid "Choose a time"
-msgstr ""
+msgstr "시간 선택"
 
 #: static_root/admin/js/admin/DateTimeShortcuts.js:89
 msgid "Midnight"
-msgstr ""
+msgstr "자정"
 
 #: static_root/admin/js/admin/DateTimeShortcuts.js:90
 msgid "6 a.m."
-msgstr ""
+msgstr "오전 6시"
 
 #: static_root/admin/js/admin/DateTimeShortcuts.js:91
 msgid "Noon"
-msgstr ""
+msgstr "정오"
 
 #: static_root/admin/js/admin/DateTimeShortcuts.js:95
 #: static_root/admin/js/admin/DateTimeShortcuts.js:208 templates/lang.js:9
@@ -313,19 +326,19 @@ msgstr "취소"
 #: static_root/admin/js/admin/DateTimeShortcuts.js:148
 #: static_root/admin/js/admin/DateTimeShortcuts.js:201
 msgid "Today"
-msgstr ""
+msgstr "오늘"
 
 #: static_root/admin/js/admin/DateTimeShortcuts.js:152
 msgid "Calendar"
-msgstr ""
+msgstr "캘린더"
 
 #: static_root/admin/js/admin/DateTimeShortcuts.js:199
 msgid "Yesterday"
-msgstr ""
+msgstr "어제"
 
 #: static_root/admin/js/admin/DateTimeShortcuts.js:203
 msgid "Tomorrow"
-msgstr ""
+msgstr "내일"
 
 #: templates/lang.js:10
 msgid "Save as Copy"
@@ -333,7 +346,7 @@ msgstr "복사본으로 저장"
 
 #: templates/lang.js:11
 msgid "About this Map"
-msgstr "이 지도 정보"
+msgstr "이 지도의 정보"
 
 #: templates/lang.js:12 templates/lang.js.c:96 templates/lang.js.c:165
 msgid "Abstract"
@@ -358,7 +371,7 @@ msgstr "서버가 오류를 반환했습니다"
 
 #: templates/lang.js:22
 msgid "Details..."
-msgstr "자세히..."
+msgstr "상세정보..."
 
 #: templates/lang.js:28 templates/lang.js.c:31
 msgid "Add Layers"
@@ -378,7 +391,7 @@ msgstr "완료"
 
 #: templates/lang.js:33
 msgid "Available Layers"
-msgstr "사용가능 레이어"
+msgstr "사용가능한 레이어"
 
 #: templates/lang.js:35 templates/lang.js.c:121
 msgid "Height"
@@ -486,11 +499,11 @@ msgstr "레이어 제거"
 
 #: templates/lang.js:63
 msgid "Sorry, your map could not be saved."
-msgstr "죄송합니다, 지도를 저장할 수 없습니다"
+msgstr "죄송합니다, 지도를 저장할 수 없습니다."
 
 #: templates/lang.js:64
 msgid "Error While Saving"
-msgstr "저장하는 동안 오류 "
+msgstr "저장하는 동안 오류 발생"
 
 #: templates/lang.js:65
 msgid "Save Map"
@@ -611,7 +624,7 @@ msgid ""
 "Your map is ready to be published to the web!  Simply copy the following "
 "HTML to embed the map in your website:"
 msgstr ""
-"지도를 웹에 발행할 준비가 되었습니다! 웹사이트에 지도를 추가하려면 다음 HTML"
+"지도를 웹에 게시할 준비가 되었습니다! 웹사이트에 지도를 추가하려면 다음 HTML"
 "을 복사하십시오."
 
 #: templates/lang.js:136 templates/lang.js.c:202

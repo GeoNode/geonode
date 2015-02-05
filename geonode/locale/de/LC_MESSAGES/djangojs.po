@@ -4,6 +4,9 @@
 #
 # Translators:
 # Translators:
+# Translators:
+# Translators:
+# Translators:
 # Andres Alfonso Lemon Gomez <lemon.andres@gmail.com>, 2014
 # Hermann Schwarting <hfs@gmx.de>, 2012
 # Michael Diener office@gomogi.com, 2012
@@ -11,7 +14,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-02-03 08:21-0600\n"
+"POT-Creation-Date: 2015-02-05 04:17-0600\n"
 "PO-Revision-Date: 2015-02-03 12:11+0000\n"
 "Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
 "Language-Team: German (http://www.transifex.com/projects/p/geonode/language/"
@@ -62,7 +65,7 @@ msgstr "Nur die folgenden Benutzer oder Gruppen:"
 msgid "Who can manage and edit this data?"
 msgstr "Wer darf diese Daten verwalten und bearbeiten?"
 
-#: static/geonode/js/search/search.js:298
+#: static/geonode/js/search/search.js:301
 #: static_root/geonode/js/search/search.js:298
 msgid "Enter your text here ..."
 msgstr ""
