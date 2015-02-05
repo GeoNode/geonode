@@ -101,6 +101,12 @@ article.tab-pane {
   white-space: normal;
   overflow: hidden;
 }
+.page-title {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
 /* Header
 ----------------------- */
 .navbar {
@@ -209,14 +215,29 @@ body.groups li#nav_groups a {
   padding: 10px 0;
   h4 {
     font-weight: 400;
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
     a {
       color: @text-color;
-    }
-    .owner {
-      color: @text-color;
-      font-size: 14px;
+      &:hover {
+        color: @brand-alternate;
+        text-decoration: none
+      };
     }
   }
+  .owner {
+      color: @text-color;
+      font-size: 14px;
+      a {
+        color: @text-color;
+        &:hover {
+          color: @brand-alternate;
+          text-decoration: none;
+        }
+      }
+    }
   .thumb {
     img {
       border: 1px solid @gray-lighter;
@@ -291,12 +312,17 @@ body.groups li#nav_groups a {
 }
 /* Documents
 ----------------------- */
+
 /* People
 ----------------------- */
 .profile-avatar {
   h5 a {
     color: @text-color;
     margin-left: -0.5em;
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
     &:hover {
       color: @brand-alternate;
       text-decoration: none;

@@ -4,14 +4,18 @@
 #
 # Translators:
 # Translators:
+# Translators:
+# Translators:
+# Translators:
 # Andres Alfonso Lemon Gomez <lemon.andres@gmail.com>, 2014
+# Nathan Wang <nwang@opengeo.org>, 2012
 # Nathan Wang <nwang@opengeo.org>, 2012
 # Nathan Wang <nwang@opengeo.org>, 2012
 msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-02-03 08:21-0600\n"
+"POT-Creation-Date: 2015-02-05 04:17-0600\n"
 "PO-Revision-Date: 2015-02-03 12:11+0000\n"
 "Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
 "Language-Team: Chinese (http://www.transifex.com/projects/p/geonode/language/"
@@ -62,7 +66,7 @@ msgstr "只有下列用户或组织："
 msgid "Who can manage and edit this data?"
 msgstr "谁能管理编辑此数据？"
 
-#: static/geonode/js/search/search.js:298
+#: static/geonode/js/search/search.js:301
 #: static_root/geonode/js/search/search.js:298
 msgid "Enter your text here ..."
 msgstr ""

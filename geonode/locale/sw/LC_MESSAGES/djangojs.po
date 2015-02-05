@@ -4,14 +4,17 @@
 #
 # Translators:
 # Translators:
+# Translators:
+# Translators:
+# Translators:
 # Andres Alfonso Lemon Gomez <lemon.andres@gmail.com>, 2014
 # Emil <bmachaku@gmail.com>, 2014-2015
 msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-02-03 08:21-0600\n"
-"PO-Revision-Date: 2015-02-03 12:11+0000\n"
+"POT-Creation-Date: 2015-02-05 04:17-0600\n"
+"PO-Revision-Date: 2015-02-04 16:31+0000\n"
 "Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
 "Language-Team: Swahili (http://www.transifex.com/projects/p/geonode/language/"
 "sw/)\n"
@@ -61,7 +64,7 @@ msgstr "Watumiaji au makundi yafuatayo pekee:"
 msgid "Who can manage and edit this data?"
 msgstr "Nani anaweza kusimamia na kuhariri data hii?"
 
-#: static/geonode/js/search/search.js:298
+#: static/geonode/js/search/search.js:301
 #: static_root/geonode/js/search/search.js:298
 msgid "Enter your text here ..."
 msgstr ""
