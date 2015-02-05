@@ -63,13 +63,32 @@ class CheckForExistingLayerFormWorldmap(CheckForExistingLayerForm):
         - Dataverse file id
         - Dataverse installation name
     """
-          
+         
+    def legitimate_layer_exists(self, post_dict):
+        """
+        Make sure that this layer has an associated DataverseLayerMetadata object.
+        
+        Note: the layer_name (for styling) does not contain the "geonode:" prefix.
+            This is the reason for the __endswith in the query
+        """
+        assert hasattr(self, 'cleaned_data'), 'Form is invalid.  cleaned_data is not available'
+        assert hasattr(post_dict, 'has_key'), "post_dict must be a dictionary-like object ('has_key' not found)"
+        assert post_dict.has_key('layer_name'), "post_dict must contain a layer_name key"
+
+        
+        if DataverseLayerMetadata.objects.filter(**self.cleaned_data\
+                        ).filter(map_layer__typename__endswith=post_dict.get('layer_name')\
+                        ).count() > 0:
+            return True
+             
+        return False
+
+         
     def get_latest_dataverse_layer_metadata(self):
         """
         Return DataverseLayerMetadata objects that match the given 'dataverse_installation_name' and 'datafile_id'
         """
-        if hasattr(self, 'cleaned_data') is False:
-            raise AssertionError('Form is invalid.  cleaned_data is not available')
+        assert hasattr(self, 'cleaned_data'), 'Form is invalid.  cleaned_data is not available'
 
         # using pre 1.6 version of Django, so can't use 'first()'
         #return DataverseLayerMetadata.objects.select_related('map_layer').filter(**self.cleaned_data).first()

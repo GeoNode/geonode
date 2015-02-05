@@ -7,6 +7,7 @@ from django.conf import settings
 from django.views.decorators.csrf import csrf_exempt
 
 from shared_dataverse_information.layer_classification.forms_api import ClassifyRequestDataForm, LayerAttributeRequestForm
+from geonode.dataverse_layer_metadata.forms import CheckForExistingLayerFormWorldmap
 from shared_dataverse_information.shared_form_util.format_form_errors import format_errors_as_text
 
 from geonode.dataverse_connect.layer_metadata import LayerMetadata
@@ -55,6 +56,24 @@ def view_layer_classification_attributes(request):
                                 , msg="Invalid signature on request.  Failed validation with LayerAttributeRequestForm")
         return HttpResponse(status=400, content=json_msg, content_type="application/json")
     
+    #-------------
+    # Make sure this is a WorldMap layer that we're classifying
+    #-------------
+    f = CheckForExistingLayerFormWorldmap(request.POST)
+    if not f.is_valid():    # This should always pass....
+        logger.error("Unexpected form validation error in CheckForExistingLayerFormWorldmap. Errors: %s" % f.errors)
+        json_msg = MessageHelperJSON.get_json_msg(success=False\
+                            , msg="Invalid data for classifying an existing layer.")
+        return HttpResponse(status=400, content=json_msg, content_type="application/json")
+
+    if not f.legitimate_layer_exists(request.POST):
+        err_msg = "The layer to classify could not be found.  This may not be a Dataverse-created layer."
+        logger.error(err_msg)
+        json_msg = MessageHelperJSON.get_json_msg(success=False\
+                            , msg=err_msg)
+        return HttpResponse(status=400, content=json_msg, content_type="application/json")
+
+
     json_msg = get_layer_features_definition(api_form.cleaned_data.get('layer_name', ''))
     return HttpResponse(content=json_msg, content_type="application/json")
             
@@ -104,7 +123,24 @@ def view_create_new_layer_style(request):
         return HttpResponse(status=400, content=json_msg, content_type="application/json")
     
 
-
+    #-------------
+    # Make sure this is a WorldMap layer that we're classifying
+    #-------------
+    f = CheckForExistingLayerFormWorldmap(request.POST)
+    if not f.is_valid():    # This should always pass....
+        logger.error("Unexpected form validation error in CheckForExistingLayerFormWorldmap. Errors: %s" % f.errors)
+        json_msg = MessageHelperJSON.get_json_msg(success=False\
+                            , msg="Invalid data for classifying an existing layer.")
+        return HttpResponse(status=400, content=json_msg, content_type="application/json")
+    
+    if not f.legitimate_layer_exists(request.POST):
+        err_msg = "The layer to classify could not be found.  This may not be a Dataverse-created layer."
+        logger.error(err_msg)
+        json_msg = MessageHelperJSON.get_json_msg(success=False\
+                            , msg=err_msg)
+        return HttpResponse(status=400, content=json_msg, content_type="application/json")
+        
+    
     ls = LayerStyler(request.POST)
     ls.style_layer()
 
