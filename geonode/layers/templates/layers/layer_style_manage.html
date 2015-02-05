@@ -23,7 +23,7 @@
         <h4>{% trans "Layer Default Style" %}</h4>
       </div>
       <div class="col-md-6">
-        <select id='default_style' name='default_style'>
+        <select id='default_style' name='default_style' required='required'>
           {% for style in layer_styles %}
             {% if style = layer.default_style %}
             <option value="{{ style.0 }}" selected>{{ style.1 }}</option>
