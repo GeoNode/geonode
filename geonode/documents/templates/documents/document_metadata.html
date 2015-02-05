@@ -19,9 +19,7 @@
 <div class="row">
   <div class="col-md-8">
     <p class="lead">
-      {% blocktrans with document.name_long as document_title %}
-        Editing details for {{ document_title }}
-      {% endblocktrans %}
+        {% trans "Editing details for" %} {{ document.title }}
     </p>
     <form class="form-horizontal" action="{% url "document_metadata" document.id %}" method="POST">
       {% if document_form.errors or category_form.errors %}
