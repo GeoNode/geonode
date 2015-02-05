@@ -619,7 +619,9 @@ def check_shp_columnnames(layer):
             shp_name = f.file.path
 
     # TODO we may need to improve this regexp
-    regex = r'^[a-zA-Z_][a-zA-Z_\d]*$'
+    # first character must be any letter or "_"
+    # following characters can be any letter, number, "#", ":"
+    regex = r'^[a-zA-Z,_][a-zA-Z,_,#,:\d]*$'
     a = re.compile(regex)
     shp = shapefile.Reader(shp_name)
     for field in shp.fields:
