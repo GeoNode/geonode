@@ -1,3 +1,64 @@
+geonode (2.4.0+beta20) trusty; urgency=high
+
+  [ Julien Collaer ]
+  * [503c96] adding an edit data link pointing to new map
+  * [4354fa] adding check to show edit data only when stortype is datastore"
+  * [84c74f] adding a check for the change_layer_data permission"
+
+  [ nathanhilbert ]
+  * [ec60bf] removed some required win_install_dep packages since wheels are now used
+
+  [ Julien Collaer ]
+  * [bb05ec] change_layer_data should be given to someone without change_resourcebase granted.
+
+  [ Paolo Pasquali ]
+  * [575922] Add some style to explore people page
+
+  [ capooti ]
+  * [bcf0b7] Fixes #1307 by avoiding invalid column names when uploading shapefiles
+
+  [ Julien Collaer ]
+  * [3d324e] changing links in homepage for registred and unregistred users
+
+  [ Simone Dalmasso ]
+  * [359692] add badges filter to respect the title search, fixes #1122
+  * [a80106] add conditional colon in search result
+
+  [ Nicolas Dufrane ]
+  * [d5328f] styler does not show up when not logged
+
+  [ capooti ]
+  * [11d54d] Now regex include "_"
+
+  [ nathanhilbert ]
+  * [5de107] added ms install instructions and scripts
+
+  [ Nathan Hilbert ]
+  * [8cd200] Update to readme for windows install build instructions
+
+  [ capooti ]
+  * [ffa5b9] Relaxing the regex for column names to include some more extra character such as #, :
+
+  [ Paolo Pasquali ]
+  * [e1ee2e] Truncate long title strings with ellipsis (CSS)
+
+  [ Simone Dalmasso ]
+  * [a12ebd] workaround for iso xml geoserver links
+
+  [ julien collaer ]
+  * [a32e21] latest sycing with transifex.com
+
+  [ Matteo Nastasi ]
+  * [f37500] refactored 'geonode.updateip' script to accomplish #1199 github issue
+
+  [ Geode Team ]
+  * [62252a] add required value
+
+  [ Simone Dalmasso ]
+  * [9a78cd] remove confusing id in edit doc metadata
+
+ -- Simone Dalmasso <simone.dalmasso@gmail.com>  Thu, 05 Feb 2015 16:58:12 +0000
+
 geonode (2.4.0+beta19) trusty; urgency=high
 
   [ Nicolas Dufrane ]
