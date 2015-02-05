@@ -454,6 +454,11 @@ def geoserver_post_save(instance, sender, **kwargs):
 
     # Save layer styles
     set_styles(instance, gs_catalog)
+    # NOTTODO by simod: we should not do this!
+    # need to be removed when fixing #2015
+    from geonode.catalogue.models import catalogue_post_save
+    from geonode.layers.models import Layer
+    catalogue_post_save(instance, Layer)
 
 
 def geoserver_pre_save_maplayer(instance, sender, **kwargs):
