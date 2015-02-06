@@ -26,7 +26,7 @@
         return data;
     }
 
-  // Load categories and keywords
+  // Load categories, keywords, and regions
   module.load_categories = function ($http, $rootScope, $location){
         var params = typeof FILTER_TYPE == 'undefined' ? {} : {'type': FILTER_TYPE};
         if ($location.search().hasOwnProperty('title__icontains')){
@@ -49,6 +49,17 @@
                     $location.search()['keywords__slug__in'], 'slug');
             }
             $rootScope.keywords = data.objects;
+            if (HAYSTACK_FACET_COUNTS && $rootScope.query_data) {
+                module.haystack_facets($http, $rootScope, $location);
+            }
+        });
+
+        $http.get(REGIONS_ENDPOINT, {params: params}).success(function(data){
+            if($location.search().hasOwnProperty('regions__name__in')){
+                data.objects = module.set_initial_filters_from_query(data.objects,
+                    $location.search()['regions__name__in'], 'name');
+            }
+            $rootScope.regions = data.objects;
             if (HAYSTACK_FACET_COUNTS && $rootScope.query_data) {
                 module.haystack_facets($http, $rootScope, $location);
             }
@@ -78,6 +89,18 @@
                   keyword.count = $rootScope.keyword_counts[keyword.slug]
               } else {
                   keyword.count = 0;
+              }
+          }
+      }	
+
+      if ("regions" in $rootScope) {
+          $rootScope.regions_counts = data.meta.facets.regions;
+          for (var id in $rootScope.regions) {
+              var region = $rootScope.regions[id];
+              if (region.name in $rootScope.region_counts) {
+                  region.count = $rootScope.region_counts[region.name]
+              } else {
+                  region.count = 0;
               }
           }
       }
@@ -293,7 +316,7 @@
     * Text search management
     */
     var text_autocomplete = $('#text_search_input').yourlabsAutocomplete({
-          url: AUTOCOMPLETE_URL,
+          url: AUTOCOMPLETE_URL_RESOURCEBASE,
           choiceSelector: 'span',
           hideAfter: 200,
           minimumCharacters: 1,
@@ -315,6 +338,31 @@
         query_api($scope.query);
     });
 
+    /*
+    * Region search management
+    */
+    var region_autocomplete = $('#region_search_input').yourlabsAutocomplete({
+          url: AUTOCOMPLETE_URL_REGION,
+          choiceSelector: 'span',
+          hideAfter: 200,
+          minimumCharacters: 1,
+          appendAutocomplete: $('#region_search_input'),
+          placeholder: gettext('Enter your region here ...')
+    });
+    $('#region_search_input').bind('selectChoice', function(e, choice, region_autocomplete) {
+          if(choice[0].children[0] == undefined) {
+              $('#region_search_input').val(choice[0].innerHTML);
+              $('#region_search_btn').click();
+          }
+    });
+
+    $('#region_search_btn').click(function(){
+        if (HAYSTACK_SEARCH)
+            $scope.query['q'] = $('#region_search_input').val();
+        else
+            $scope.query['regions__name__in'] = $('#region_search_input').val();
+        query_api($scope.query);
+    });
 
     $scope.feature_select = function($event){
       var element = $($event.target);
