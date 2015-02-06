@@ -1,3 +1,19 @@
+geonode (2.4.0+beta21) trusty; urgency=high
+
+  [ state-hiu ]
+  * [c515cc] Initial support for region filter
+  * [36fcb3] Collapsed on page load
+  * [3eebf4] removed binding
+  * [465c13] fixed count
+
+  [ menegon ]
+  * [606dd6] Added menegon to AUTHORS
+
+  [ Simone Dalmasso ]
+  * [8d0dd4] add pyshp to deb dependencies
+
+ -- Simone Dalmasso <simone.dalmasso@gmail.com>  Fri, 06 Feb 2015 09:13:18 +0000
+
 geonode (2.4.0+beta20) trusty; urgency=high
 
   [ Julien Collaer ]
