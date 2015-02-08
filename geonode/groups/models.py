@@ -210,7 +210,7 @@ class GroupInvitation(models.Model):
             ("accepted", _("Accepted")),
             ("declined", _("Declined")),
         ),
-        default = "sent",
+        default="sent",
     )
     created = models.DateTimeField(default=datetime.datetime.now)
 

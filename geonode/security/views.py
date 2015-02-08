@@ -25,11 +25,11 @@ from django.views.decorators.http import require_POST
 from django.shortcuts import get_object_or_404
 from django.conf import settings
 
-if "notification" in settings.INSTALLED_APPS:
-    from notification import models as notification
-
 from geonode.utils import resolve_object
 from geonode.base.models import ResourceBase
+
+if "notification" in settings.INSTALLED_APPS:
+    from notification import models as notification
 
 
 def _perms_info(obj):

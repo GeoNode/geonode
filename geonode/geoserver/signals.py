@@ -244,10 +244,10 @@ def geoserver_post_save(instance, sender, **kwargs):
                                                      )
                                        )
 
-            command_url = lambda command: "{repo_url}/{command}.json?{path}".format(
-                repo_url=repo_url,
-                path=path,
-                command=command)
+            def command_url(command):
+                return "{repo_url}/{command}.json?{path}".format(repo_url=repo_url,
+                                                                 path=path,
+                                                                 command=command)
 
             Link.objects.get_or_create(resource=instance.resourcebase_ptr,
                                        url=command_url('log'),
