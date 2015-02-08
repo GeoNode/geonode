@@ -15,8 +15,6 @@ from django.core.paginator import Paginator, InvalidPage
 from django.http import Http404
 
 from tastypie.utils.mime import build_content_type
-if settings.HAYSTACK_SEARCH:
-    from haystack.query import SearchQuerySet  # noqa
 
 from geonode.layers.models import Layer
 from geonode.maps.models import Map
@@ -28,6 +26,9 @@ from .authorization import GeoNodeAuthorization
 from .api import TagResource, RegionResource, ProfileResource, \
     TopicCategoryResource, \
     FILTER_TYPES
+
+if settings.HAYSTACK_SEARCH:
+    from haystack.query import SearchQuerySet  # noqa
 
 LAYER_SUBTYPES = {
     'vector': 'dataStore',
@@ -317,8 +318,8 @@ class CommonModelApi(ModelResource):
             # Do the query using the filterset and the query term. Facet the
             # results
             if len(filter_set) > 0:
-                sqs = sqs.filter(oid__in=filter_set_ids).facet('type').facet('subtype').facet('owner').facet('keywords')\
-                    .facet('regions').facet('category')
+                sqs = sqs.filter(oid__in=filter_set_ids).facet('type').facet('subtype').facet('owner')\
+                    .facet('keywords').facet('regions').facet('category')
             else:
                 sqs = None
         else:

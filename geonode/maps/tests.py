@@ -288,7 +288,8 @@ community."
 
         c = Client()
 
-        url = lambda id: reverse('resource_permissions', args=[id])
+        def url(id):
+            return reverse('resource_permissions', args=[id])
 
         # Test that an invalid layer.typename is handled for properly
         response = c.post(url(invalid_mapid),
