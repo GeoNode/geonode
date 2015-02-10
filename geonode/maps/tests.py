@@ -183,6 +183,7 @@ community."
         self.assertEquals(map_obj.abstract, "Abstract")
         self.assertEquals(map_obj.layer_set.all().count(), 1)
         self.assertEquals(map_obj.keyword_list(), [u"keywords", u"saving"])
+        self.assertNotEquals(map_obj.bbox_x0, None)
 
         # Test an invalid map creation request
         c.login(username=self.user, password=self.passwd)
