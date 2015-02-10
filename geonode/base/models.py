@@ -410,12 +410,6 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin):
         self.center_y = center_y
         self.zoom = zoom
 
-        # let's assume a resolution of 100 dpi
-        # 256 pixels are 0.065 meters on the screen
-        # let's assume a map of 1000 pixels of width and 700 of height
-        # the map on the screen is 0.254m of width and 0.178 m of height
-        # at zoom level 0 on the equator 360 degrees are 40075160 m
-
         deg_len_equator = 40075160 / 360
 
         # covert center in lat lon
@@ -439,13 +433,15 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin):
         # calculate the distance from the center of the map in degrees
         # we use the calculated degree length on the x axis and the
         # normal degree length on the y axis assumin that it does not change
-        dinstance_x_degrees = distance_per_pixel * 500 / deg_len()
-        dinstance_y_degrees = distance_per_pixel * 500 / deg_len_equator
 
-        self.bbox_x0 = lon - dinstance_x_degrees
-        self.bbox_x1 = lon + dinstance_x_degrees
-        self.bbox_y0 = lat - dinstance_y_degrees
-        self.bbox_y1 = lat + dinstance_y_degrees
+        # Assuming a map of 1000 px of width and 700 px of height
+        distance_x_degrees = distance_per_pixel * 500 / deg_len()
+        distance_y_degrees = distance_per_pixel * 350 / deg_len_equator
+
+        self.bbox_x0 = lon - distance_x_degrees
+        self.bbox_x1 = lon + distance_x_degrees
+        self.bbox_y0 = lat - distance_y_degrees
+        self.bbox_y1 = lat + distance_y_degrees
 
     def set_bounds_from_bbox(self, bbox):
         """
