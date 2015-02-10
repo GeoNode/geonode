@@ -4,41 +4,41 @@
 Patch Review criteria
 =====================
 
-When a patch is rejected in the [[Patch Review Process]], it should be given a valid review.
+When a patch is rejected in the Patch Review Process, it should be given a valid review.
 
 This review should point out issues with the patch where it fails to meet one or more of the following criteria.
 
-#. Major new features must be approved by the Improvement Process
+* Major new features must be approved by the Improvement Process
 
 GeoNode needs to be coherent software despite the diverse interests driving its development.  Therefor, major new features need to first be approved according to the [[Improvement Process]].
 
 If a patch fails by this criterion, then its developer is welcome to go through the improvement process to get approval.  Otherwise, they can refactor their patch into a GeoNode extension.
 
-#. Patches need sufficient documentation
+* Patches need sufficient documentation
 
 We strive to keep GeoNode well-documented.  If a patch contributes significant functionality to GeoNode that requires documentation to be understood, the patch review is an opportunity to hold the developer accountable for providing the adequate documentation.
 
-#. New functionality needs to be internationalized
+* New functionality needs to be internationalized
 
 We strive to build GeoNode in a way that can be used in many different localities, by all languages.  While there is no localization requirement for GeoNode besides providing default English text, new user-facing features need to be sufficiently internationalized so that others can write translations.
 
-#. Design consistency
+* Design consistency
 
 We strive to keep the default user interface for GeoNode appealing for new users and developer's approaching the project.  If a patch significantly diminishes the user experience of the software, then a patch may be rejected with a review of how to improve it. 
 
 .. note:: Good design can sometimes be in the eye of the beholder.  Developer's are encouraged to consult the community and/or a designer about the user interface design of their patches, and to be humble in their design criticisms of others.
 
-#. Code should be covered by automated tests
+* Code should be covered by automated tests
 
 To make development easier for others and guarantee software quality, we strive to have good automated test coverage in GeoNode.  Patches may fail a review for having insufficient unit and/or integration tests.
 
 Reviews saying that a patch has insufficient tests should offer actionable advice on how to improve those tests.  This advice could be to improve code coverage.  It may also be a list of possible cases that currently lack tests.
 
-#. Patches should not have known bugs
+* Patches should not have known bugs
 
    A patch may be rejected for having a known bug, (e.g.) one discovered by reading the code or testing it at the time of review.
 
-#. Patches should meet GeoNode's code style guidelines
+* Patches should meet GeoNode's code style guidelines
 
    New patches should meet GeoNode's code style guidelines.  We follow different conventions per language:
 
