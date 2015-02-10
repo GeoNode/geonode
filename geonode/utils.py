@@ -24,8 +24,8 @@ import math
 import copy
 import string
 import datetime
-import shapefile
 import re
+from osgeo import ogr
 
 from django.conf import settings
 from django.core.exceptions import PermissionDenied
@@ -618,14 +618,22 @@ def check_shp_columnnames(layer):
         if os.path.splitext(f.file.name)[1] == '.shp':
             shp_name = f.file.path
 
+    driver = ogr.GetDriverByName('ESRI Shapefile')
+    ds = driver.Open(shp_name, 0)
+    if ds is None:
+        print 'Could not open %s' % (shp_name)
+        return False, None
+    else:
+        layer = ds.GetLayer()
+
     # TODO we may need to improve this regexp
     # first character must be any letter or "_"
     # following characters can be any letter, number, "#", ":"
     regex = r'^[a-zA-Z,_][a-zA-Z,_,#,:\d]*$'
     a = re.compile(regex)
-    shp = shapefile.Reader(shp_name)
-    for field in shp.fields:
-        field_name = field[0]
+    layerDefinition = layer.GetLayerDefn()
+    for i in range(layerDefinition.GetFieldCount()):
+        field_name = layerDefinition.GetFieldDefn(i).GetName()
         if not a.match(field_name):
             print 'Shapefile has an invalid column name: %s' % field_name
             return False, field_name

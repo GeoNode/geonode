@@ -1,3 +1,26 @@
+geonode (2.4.0+beta22) trusty; urgency=high
+
+  [ capooti ]
+  * [111ace] In layer details page displaying the attributes label and description in place of WPS indicators when OGC WPS_ENABLED is set to False. By default, WPS_ENABLED is now set to False. Refs #1412
+  * [09c2ad] We always need to display label and description for layer attribute
+
+  [ Simone Dalmasso ]
+  * [ade9da] fix the wrong autocomplete box positioning in metadata pages
+
+  [ Jeffrey Johnson ]
+  * [2df84d] Initial work on describing GeoGig OSM functionality
+  * [d1f173] Added a new reference page on supported browsers and testing in IE
+
+  [ Simone Dalmasso ]
+  * [16c3a7] bump flake8 versions (2.2.5 seems to be available anymore) and fix pep8 violations
+
+  [ capooti ]
+  * [fba8d9] Removed the pyshp dependency, now using OGR
+
+  [ Simone Dalmasso ]
+
+ -- Simone Dalmasso <simone.dalmasso@gmail.com>  Mon, 09 Feb 2015 15:34:03 +0000
+
 geonode (2.4.0+beta21) trusty; urgency=high
 
   [ state-hiu ]
