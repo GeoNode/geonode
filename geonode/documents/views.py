@@ -121,6 +121,11 @@ class DocumentUploadView(CreateView):
     template_name = 'documents/document_upload.html'
     form_class = DocumentCreateForm
 
+    def get_context_data(self, **kwargs):
+        context = super(DocumentUploadView, self).get_context_data(**kwargs)
+        context['ALLOWED_DOC_TYPES'] = ALLOWED_DOC_TYPES
+        return context
+
     def form_valid(self, form):
         """
         If the form is valid, save the associated model.
