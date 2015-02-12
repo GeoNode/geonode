@@ -169,9 +169,6 @@ def pre_save_document(instance, sender, **kwargs):
 def create_thumbnail(sender, instance, created, **kwargs):
     from geonode.tasks.update import create_document_thumbnail
 
-    if not created:
-        return
-
     create_document_thumbnail.delay(object_id=instance.id)
 
 

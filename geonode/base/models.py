@@ -4,6 +4,7 @@ import os
 import logging
 
 from pyproj import transform, Proj
+from urlparse import urljoin
 
 from django.db import models
 from django.db.models import Q
@@ -551,11 +552,13 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin):
         upload_path = os.path.join(settings.MEDIA_ROOT, thumb_folder)
         if not os.path.exists(upload_path):
             os.makedirs(upload_path)
-        url = os.path.join(settings.MEDIA_URL, thumb_folder, filename)
 
         with open(os.path.join(upload_path, filename), 'w') as f:
             thumbnail = File(f)
             thumbnail.write(image)
+
+        url_path = os.path.join(settings.MEDIA_URL, thumb_folder, filename)
+        url = urljoin(settings.SITEURL, url_path)
 
         Link.objects.get_or_create(resource=self,
                                    url=url,
