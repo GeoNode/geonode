@@ -4,7 +4,7 @@ import os
 import logging
 
 from pyproj import transform, Proj
-from urlparse import urljoin
+from urlparse import urljoin, urlsplit
 
 from django.db import models
 from django.db.models import Q
@@ -717,7 +717,7 @@ def resourcebase_post_save(instance, *args, **kwargs):
 
     # we need to remove stale links
     for link in instance.link_set.all():
-        if settings.SITEURL not in link.url:
+        if urlsplit(settings.SITEURL).hostname not in link.url:
             link.delete()
 
 
