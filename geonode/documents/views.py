@@ -261,8 +261,7 @@ def document_metadata(
                 the_document.poc = new_poc
                 the_document.metadata_author = new_author
                 the_document.keywords.add(*new_keywords)
-                the_document.category = new_category
-                the_document.save()
+                Document.objects.filter(id=the_document.id).update(category=new_category)
                 return HttpResponseRedirect(
                     reverse(
                         'document_detail',
