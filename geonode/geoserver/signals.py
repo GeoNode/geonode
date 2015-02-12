@@ -30,7 +30,7 @@ def geoserver_pre_delete(instance, sender, **kwargs):
     # cascading_delete should only be called if
     # ogc_server_settings.BACKEND_WRITE_ENABLED == True
     if getattr(ogc_server_settings, "BACKEND_WRITE_ENABLED", True):
-        if instance.storeType != "remoteStore":
+        if not getattr(instance, "service", None):
             cascading_delete(gs_catalog, instance.typename)
 
 
@@ -48,7 +48,7 @@ def geoserver_pre_save(instance, sender, **kwargs):
     """
 
     # Don't run this signal if is a Layer from a remote service
-    if instance.workspace == 'remoteWorkspace':
+    if getattr(instance, "service", None) is not None:
         return
 
     # If the store in None then it's a new instance from an upload,
