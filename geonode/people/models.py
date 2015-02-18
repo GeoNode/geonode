@@ -23,6 +23,7 @@ from django.utils.translation import ugettext as _
 from django.core.urlresolvers import reverse
 from django.contrib.auth.models import AbstractUser
 from django.db.models import signals
+from django.conf import settings
 
 from taggit.managers import TaggableManager
 
@@ -30,9 +31,11 @@ from geonode.base.enumerations import COUNTRIES
 from geonode.groups.models import GroupProfile
 
 from account.models import EmailAddress
-from notification import models as notification
 
 from .utils import format_address
+
+if 'notification' in settings.INSTALLED_APPS:
+    from notification import models as notification
 
 
 class Profile(AbstractUser):
@@ -153,8 +156,8 @@ def profile_pre_save(instance, sender, **kw):
     matching_profiles = Profile.objects.filter(id=instance.id)
     if matching_profiles.count() == 0:
         return
-
-    if instance.is_active and not matching_profiles.get().is_active:
+    if instance.is_active and not matching_profiles.get().is_active and \
+            'notification' in settings.INSTALLED_APPS:
         notification.send([instance, ], "account_active")
 
 signals.pre_save.connect(profile_pre_save, sender=Profile)
