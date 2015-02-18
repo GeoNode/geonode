@@ -139,8 +139,8 @@ def file2pgtable(infile, table_name, srid=4326):
     coord_dim = 0
     # bizarre, mais les couches de polygones MapInfo ne sont pas détectées
     if geo_type == 'UNKNOWN' and (
-            infile.endswith('.TAB') or infile.endswith('.tab')
-            or infile.endswith('.MIF') or infile.endswith('.mif')):
+            infile.endswith('.TAB') or infile.endswith('.tab') or
+            infile.endswith('.MIF') or infile.endswith('.mif')):
         geo_type = 'POLYGON'
 
     sql = 'BEGIN;'
