@@ -363,8 +363,8 @@ def csv_step_view(request, upload_session):
     if request.method == 'POST':
         if not lat_field or not lng_field:
             error = 'Please choose which columns contain the latitude and longitude data.'
-        elif (lat_field not in point_candidates
-              or lng_field not in point_candidates):
+        elif (lat_field not in point_candidates or
+              lng_field not in point_candidates):
             error = 'Invalid latitude/longitude columns'
         elif lat_field == lng_field:
             error = 'You cannot select the same column for latitude and longitude data.'
