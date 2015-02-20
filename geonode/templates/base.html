@@ -283,8 +283,14 @@
             this.input.parents().filter(function() {
                 return $(this).css('overflow') === 'hidden';
             }).first().css('overflow', 'visible');
-
-            this.box.insertAfter(this.input).css({top: 0, left: 0});
+            if(this.input.attr('name') !== 'resource-keywords'){
+              this.box.insertAfter(this.input).css({top: 0, left: 0});
+            }else{
+              var pos = $.extend({}, this.input.position(), {
+                height: this.input.outerHeight()
+              });
+              this.box.insertAfter(this.input).css({top: pos.top + pos.height, left: pos.left});
+            }
         };
     </script>
     <script type="text/javascript" src="{% url "lang" %}"></script>
