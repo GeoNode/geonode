@@ -14,4 +14,5 @@ autocomplete_light.register(ResourceBase,
 
 autocomplete_light.register(Tag,
                             search_fields=['name', 'slug'],
-                            autocomplete_js_attributes={'placeholder': 'A space or comma-separated list of keywords', },)
+                            autocomplete_js_attributes={'placeholder':
+                                                        'A space or comma-separated list of keywords', },)
