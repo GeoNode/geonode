@@ -92,7 +92,7 @@ setup(name='GeoNode',
         "Paver==1.2.1", # python-paver
         "nose <=1.0, <=1.3.1", # python-nose
         "django-nose==1.2", # python-django-nose
-        "awesome-slugify",
+        "awesome-slugify==1.6.2",
 
         # Django Apps
         "django-pagination >=1.0.5, <=1.0.7", # python-django-pagination
