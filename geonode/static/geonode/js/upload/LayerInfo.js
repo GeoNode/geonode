@@ -231,8 +231,15 @@ define(function (require, exports) {
         var a = '<a href="' + resp.url + '" class="btn btn-success">' + gettext('Layer Info') + '</a>';
         var b = '<a href="' + resp.url + '/metadata" class="btn btn-warning">' + gettext('Edit Metadata') + '</a>';
         var c = '<a href="' + resp.url.replace(/^\/layers/, '/gs') + '/style/manage" class="btn btn-warning">' + gettext('Manage Styles') + '</a>';
+        var msg_col = "";
+        if (resp.info){
+            var msg_template = gettext('The column %1 was renamed to %2 <br/>');
+            for (var key in resp.info){
+               msg_col += format(msg_template,[key,resp.info[key]]);
+            }
+        }
         self.logStatus({
-            msg: '<p>' + gettext('Your layer was successfully uploaded') + '<br/><br/>' + a + '&nbsp;&nbsp;&nbsp;' + b + '&nbsp;&nbsp;&nbsp;' + c + '</p>',
+            msg: '<p>' + gettext('Your layer was successfully uploaded') + '<br/>' + msg_col + '<br/>' + a + '&nbsp;&nbsp;&nbsp;' + b + '&nbsp;&nbsp;&nbsp;' + c + '</p>',
             level: 'alert-success',
             empty: 'true'
         });
@@ -575,3 +582,9 @@ define(function (require, exports) {
 
     return LayerInfo;
 });
+
+function format(str, arr) {
+  return str.replace(/%(\d+)/g, function(_,m) {
+    return arr[--m];
+  });
+}
