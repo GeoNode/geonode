@@ -165,7 +165,7 @@ class Layer(ResourceBase):
 
         # If there was no upload_session return None
         if self.upload_session is None:
-            return None
+            return None, None
 
         base_exts = [x.replace('.', '') for x in cov_exts + vec_exts]
         base_files = self.upload_session.layerfile_set.filter(
@@ -174,12 +174,13 @@ class Layer(ResourceBase):
 
         # If there are no files in the upload_session return None
         if base_files_count == 0:
-            return None
+            return None, None
 
         msg = 'There should only be one main file (.shp or .geotiff), found %s' % base_files_count
         assert base_files_count == 1, msg
 
         # we need to check, for shapefile, if column names are valid
+        list_col = None
         if self.storeType == 'dataStore':
             valid_shp, wrong_column_name, list_col = check_shp_columnnames(self)
             if wrong_column_name:
