@@ -20,7 +20,6 @@
 
 import autocomplete_light
 from autocomplete_light.contrib.taggit_tagfield import TagField, TagWidget
-import taggit
 
 from django import forms
 from django.utils.translation import ugettext as _
