@@ -27,7 +27,7 @@ import string
 import datetime
 import re
 from osgeo import ogr
-from slugify import slugify, Slugify
+from slugify import Slugify
 
 from django.conf import settings
 from django.core.exceptions import PermissionDenied
@@ -51,7 +51,7 @@ SIGN_CHARACTER = '$'
 
 http_client = httplib2.Http()
 
-custom_slugify = Slugify(separator = '_')
+custom_slugify = Slugify(separator='_')
 
 
 def _get_basic_auth_info(request):
@@ -652,7 +652,6 @@ def check_shp_columnnames(layer):
     try:
         for i in range(0, inLayerDefn.GetFieldCount()):
             field_name = unicode(inLayerDefn.GetFieldDefn(i).GetName(), layer.charset)
-            field_Defn = inLayerDefn.GetFieldDefn(i)
 
             if not a.match(field_name):
                 new_field_name = custom_slugify(field_name)
@@ -661,12 +660,12 @@ def check_shp_columnnames(layer):
                     new_field_name = '_'+new_field_name
                 j = 0
                 while new_field_name in list_col_original or new_field_name in list_col.values():
-                    if j==0:
+                    if j == 0:
                         new_field_name += '_0'
                     if new_field_name.endswith('_'+str(j)):
                         j += 1
                         new_field_name = new_field_name[:-2]+'_'+str(j)
-                list_col.update({field_name:new_field_name})
+                list_col.update({field_name: new_field_name})
     except UnicodeDecodeError:
         return False, None, None
 
@@ -674,7 +673,7 @@ def check_shp_columnnames(layer):
         return True, None, None
     else:
         for key in list_col.keys():
-            qry = u"ALTER TABLE {0} RENAME COLUMN \"{1}\" TO \"{2}\"".format(inLayer.GetName(),key,list_col[key])
+            qry = u"ALTER TABLE {0} RENAME COLUMN \"{1}\" TO \"{2}\"".format(inLayer.GetName(), key, list_col[key])
             print qry
             inDataSource.ExecuteSQL(qry.encode(layer.charset))
     return True, None, list_col
