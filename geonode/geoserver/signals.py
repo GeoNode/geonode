@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import errno
 import logging
 import urllib
@@ -54,7 +55,7 @@ def geoserver_pre_save(instance, sender, **kwargs):
     # If the store in None then it's a new instance from an upload,
     # only in this case run the geonode_uplaod method
     if not instance.store or getattr(instance, 'overwrite', False):
-        base_file = instance.get_base_file()
+        base_file, info = instance.get_base_file()
 
         # There is no need to process it if there is not file.
         if base_file is None:

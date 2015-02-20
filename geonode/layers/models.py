@@ -181,12 +181,15 @@ class Layer(ResourceBase):
 
         # we need to check, for shapefile, if column names are valid
         if self.storeType == 'dataStore':
-            valid_shp, wrong_column_name = check_shp_columnnames(self)
-            msg = 'Shapefile has an invalid column name: %s' % wrong_column_name
+            valid_shp, wrong_column_name, list_col = check_shp_columnnames(self)
+            if wrong_column_name:
+                msg = 'Shapefile has an invalid column name: %s' % wrong_column_name
+            else:
+                msg = _('File cannot be opened, maybe check the encoding')
             assert valid_shp, msg
 
         # no error, let's return the base files
-        return base_files.get()
+        return base_files.get(), list_col
 
     def get_absolute_url(self):
         return reverse('layer_detail', args=(self.service_typename,))
@@ -423,7 +426,10 @@ def pre_save_layer(instance, sender, **kwargs):
         # Set a sensible default for the typename
         instance.typename = 'geonode:%s' % instance.name
 
-    base_file = instance.get_base_file()
+    base_file, info = instance.get_base_file()
+
+    if info:
+        instance.info = info
 
     if base_file is not None:
         extension = '.%s' % base_file.name
