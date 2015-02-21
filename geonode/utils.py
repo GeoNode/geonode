@@ -674,6 +674,5 @@ def check_shp_columnnames(layer):
     else:
         for key in list_col.keys():
             qry = u"ALTER TABLE {0} RENAME COLUMN \"{1}\" TO \"{2}\"".format(inLayer.GetName(), key, list_col[key])
-            print qry
             inDataSource.ExecuteSQL(qry.encode(layer.charset))
     return True, None, list_col
