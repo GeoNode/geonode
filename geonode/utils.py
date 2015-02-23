@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 #########################################################################
 #
 # Copyright (C) 2012 OpenPlans
@@ -26,6 +27,7 @@ import string
 import datetime
 import re
 from osgeo import ogr
+from slugify import Slugify
 
 from django.conf import settings
 from django.core.exceptions import PermissionDenied
@@ -48,6 +50,8 @@ BASE = len(ALPHABET)
 SIGN_CHARACTER = '$'
 
 http_client = httplib2.Http()
+
+custom_slugify = Slugify(separator='_')
 
 
 def _get_basic_auth_info(request):
@@ -611,31 +615,64 @@ def build_social_links(request, resourcebase):
 
 def check_shp_columnnames(layer):
     """ Check if shapefile for a given layer has valid column names.
+        If not, try to fix column names and warn the user
     """
+
     # TODO we may add in a better location this method
-    shp_name = ''
+    inShapefile = ''
     for f in layer.upload_session.layerfile_set.all():
         if os.path.splitext(f.file.name)[1] == '.shp':
-            shp_name = f.file.path
+            inShapefile = f.file.path
 
-    driver = ogr.GetDriverByName('ESRI Shapefile')
-    ds = driver.Open(shp_name, 0)
-    if ds is None:
-        print 'Could not open %s' % (shp_name)
-        return False, None
+    inDriver = ogr.GetDriverByName('ESRI Shapefile')
+    inDataSource = inDriver.Open(inShapefile, 1)
+    if inDataSource is None:
+        print 'Could not open %s' % (inShapefile)
+        return False, None, None
     else:
-        layer = ds.GetLayer()
+        inLayer = inDataSource.GetLayer()
 
     # TODO we may need to improve this regexp
     # first character must be any letter or "_"
     # following characters can be any letter, number, "#", ":"
     regex = r'^[a-zA-Z,_][a-zA-Z,_,#,:\d]*$'
     a = re.compile(regex)
-    layerDefinition = layer.GetLayerDefn()
-    for i in range(layerDefinition.GetFieldCount()):
-        field_name = layerDefinition.GetFieldDefn(i).GetName()
-        if not a.match(field_name):
-            print 'Shapefile has an invalid column name: %s' % field_name
-            return False, field_name
+    regex_first_char = r'[a-zA-Z,_]{1}'
+    b = re.compile(regex_first_char)
+    inLayerDefn = inLayer.GetLayerDefn()
 
-    return True, None
+    list_col_original = []
+    list_col = {}
+
+    for i in range(0, inLayerDefn.GetFieldCount()):
+        field_name = inLayerDefn.GetFieldDefn(i).GetName()
+
+        if a.match(field_name):
+            list_col_original.append(field_name)
+    try:
+        for i in range(0, inLayerDefn.GetFieldCount()):
+            field_name = unicode(inLayerDefn.GetFieldDefn(i).GetName(), layer.charset)
+
+            if not a.match(field_name):
+                new_field_name = custom_slugify(field_name)
+
+                if not b.match(new_field_name):
+                    new_field_name = '_'+new_field_name
+                j = 0
+                while new_field_name in list_col_original or new_field_name in list_col.values():
+                    if j == 0:
+                        new_field_name += '_0'
+                    if new_field_name.endswith('_'+str(j)):
+                        j += 1
+                        new_field_name = new_field_name[:-2]+'_'+str(j)
+                list_col.update({field_name: new_field_name})
+    except UnicodeDecodeError:
+        return False, None, None
+
+    if len(list_col) == 0:
+        return True, None, None
+    else:
+        for key in list_col.keys():
+            qry = u"ALTER TABLE {0} RENAME COLUMN \"{1}\" TO \"{2}\"".format(inLayer.GetName(), key, list_col[key])
+            inDataSource.ExecuteSQL(qry.encode(layer.charset))
+    return True, None, list_col

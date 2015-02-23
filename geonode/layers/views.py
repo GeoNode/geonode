@@ -181,6 +181,8 @@ def layer_upload(request, template='upload/layer_upload.html'):
                     out['upload_session'] = upload_session.id
             else:
                 out['success'] = True
+                if hasattr(saved_layer, 'info'):
+                    out['info'] = saved_layer.info
                 out['url'] = reverse(
                     'layer_detail', args=[
                         saved_layer.service_typename])
