@@ -165,7 +165,7 @@ class Layer(ResourceBase):
 
         # If there was no upload_session return None
         if self.upload_session is None:
-            return None
+            return None, None
 
         base_exts = [x.replace('.', '') for x in cov_exts + vec_exts]
         base_files = self.upload_session.layerfile_set.filter(
@@ -174,19 +174,23 @@ class Layer(ResourceBase):
 
         # If there are no files in the upload_session return None
         if base_files_count == 0:
-            return None
+            return None, None
 
         msg = 'There should only be one main file (.shp or .geotiff), found %s' % base_files_count
         assert base_files_count == 1, msg
 
         # we need to check, for shapefile, if column names are valid
+        list_col = None
         if self.storeType == 'dataStore':
-            valid_shp, wrong_column_name = check_shp_columnnames(self)
-            msg = 'Shapefile has an invalid column name: %s' % wrong_column_name
+            valid_shp, wrong_column_name, list_col = check_shp_columnnames(self)
+            if wrong_column_name:
+                msg = 'Shapefile has an invalid column name: %s' % wrong_column_name
+            else:
+                msg = _('File cannot be opened, maybe check the encoding')
             assert valid_shp, msg
 
         # no error, let's return the base files
-        return base_files.get()
+        return base_files.get(), list_col
 
     def get_absolute_url(self):
         return reverse('layer_detail', args=(self.service_typename,))
@@ -423,7 +427,10 @@ def pre_save_layer(instance, sender, **kwargs):
         # Set a sensible default for the typename
         instance.typename = 'geonode:%s' % instance.name
 
-    base_file = instance.get_base_file()
+    base_file, info = instance.get_base_file()
+
+    if info:
+        instance.info = info
 
     if base_file is not None:
         extension = '.%s' % base_file.name
