@@ -258,7 +258,10 @@ GEONODE_APPS = (
     # it's signals may rely on other apps' signals.
     'geonode.geoserver',
     'geonode.upload',
-    'geonode.tasks'
+    'geonode.tasks' , 
+    
+    #CUSTOM
+    'geonode.cephgoe',
 )
 
 INSTALLED_APPS = (
@@ -868,7 +871,7 @@ if os.name == 'nt':
 
 
 # define the urls after the settings are overridden
-if 'geonode.geoserver' in INSTALLED_APPS:
+if 'geonode.geoserver' in GEONODE_APPS:
     LOCAL_GEOSERVER = {
         "source": {
             "ptype": "gxp_wmscsource",
