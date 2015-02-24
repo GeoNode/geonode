@@ -2,6 +2,8 @@ from django.contrib import admin
 from django.conf import settings
 
 import autocomplete_light
+from autocomplete_light.contrib.taggit_tagfield import TagField, TagWidget
+
 from modeltranslation.admin import TranslationAdmin
 
 from geonode.base.models import (TopicCategory, SpatialRepresentationType, Region, RestrictionCodeType,
@@ -117,3 +119,7 @@ admin.site.register(ContactRole, ContactRoleAdmin)
 admin.site.register(ResourceBase, ResourceBaseAdmin)
 admin.site.register(Link, LinkAdmin)
 admin.site.register(License, LicenseAdmin)
+
+
+class ResourceBaseAdminForm(autocomplete_light.ModelForm):
+    keywords = TagField(widget=TagWidget('TagAutocomplete'), required=False)
