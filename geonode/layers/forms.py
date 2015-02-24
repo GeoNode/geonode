@@ -21,6 +21,8 @@
 import os
 import tempfile
 import autocomplete_light
+import zipfile
+
 
 from django import forms
 from django.utils import simplejson as json
@@ -110,15 +112,26 @@ class LayerUploadForm(forms.Form):
         return cleaned
 
     def write_files(self):
+
+        absolute_base_file = None
         tempdir = tempfile.mkdtemp()
-        for field in self.spatial_files:
-            f = self.cleaned_data[field]
-            if f is not None:
-                path = os.path.join(tempdir, f.name)
-                with open(path, 'wb') as writable:
-                    for c in f.chunks():
-                        writable.write(c)
-        absolute_base_file = os.path.join(tempdir,
+
+        if zipfile.is_zipfile(self.cleaned_data['base_file']):
+            the_zip = zipfile.ZipFile(self.cleaned_data['base_file'])
+            the_zip.extractall(tempdir)
+            for item in the_zip.namelist():
+                if item.endswith('.shp'):
+                    absolute_base_file = os.path.join(tempdir, item)
+
+        else:
+            for field in self.spatial_files:
+                f = self.cleaned_data[field]
+                if f is not None:
+                    path = os.path.join(tempdir, f.name)
+                    with open(path, 'wb') as writable:
+                        for c in f.chunks():
+                            writable.write(c)
+            absolute_base_file = os.path.join(tempdir,
                                           self.cleaned_data["base_file"].name)
         return tempdir, absolute_base_file
 
