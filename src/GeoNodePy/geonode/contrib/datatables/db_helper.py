@@ -2,8 +2,10 @@ from django.conf import settings
 from collections import OrderedDict
 
 DB_PARAM_NAMES = ['NAME', 'USER', 'PASSWORD', 'PORT','HOST']
-CHOSEN_DB_SETTING = 'default'
 
+CHOSEN_DB_SETTING = 'wmdata'
+
+# psql -d wmdata -U wmuser -W
 
 def get_database_connection_string(url_format=False):
     """

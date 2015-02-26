@@ -229,16 +229,24 @@ def setup_join(table_name, layer_typename, table_attribute_name, layer_attribute
         return None, msg
 
     layer_name = layer.typename.split(':')[1]
+    
     view_name = "join_%s_%s" % (layer_name, dt.table_name)
 
-    view_sql = 'create materialized view %s as select %s.the_geom, %s.* from %s inner join %s on %s."%s" = %s."%s";' %  (view_name, layer_name, dt.table_name, layer_name, dt.table_name, layer_name, layer_attribute.attribute, dt.table_name, table_attribute.attribute)
-    double_view_name = "view_%s" % view_name
-    double_view_sql = "create view %s as select * from %s" % (double_view_name, view_name)
+    view_sql = 'create view %s as select %s.the_geom, %s.* from %s inner join %s on %s."%s" = %s."%s";' %  (view_name, layer_name, dt.table_name, layer_name, dt.table_name, layer_name, layer_attribute.attribute, dt.table_name, table_attribute.attribute)
+    #view_sql = 'create materialized view %s as select %s.the_geom, %s.* from %s inner join %s on %s."%s" = %s."%s";' %  (view_name, layer_name, dt.table_name, layer_name, dt.table_name, layer_name, layer_attribute.attribute, dt.table_name, table_attribute.attribute)
+    
+    #double_view_name = "view_%s" % view_name
+    #double_view_sql = "create view %s as select * from %s" % (double_view_name, view_name)
+    
+    # Retrieve stats
+    #
     matched_count_sql = 'select count(%s) from %s where %s.%s in (select "%s" from %s);' % (table_attribute.attribute, dt.table_name, dt.table_name, table_attribute.attribute, layer_attribute.attribute, layer_name)
     unmatched_count_sql = 'select count(%s) from %s where %s.%s not in (select "%s" from %s);' % (table_attribute.attribute, dt.table_name, dt.table_name, table_attribute.attribute, layer_attribute.attribute, layer_name)
     unmatched_list_sql = 'select %s from %s where %s.%s not in (select "%s" from %s) limit 100;' % (table_attribute.attribute, dt.table_name, dt.table_name, table_attribute.attribute, layer_attribute.attribute, layer_name)
     
-    tj, created = TableJoin.objects.get_or_create(source_layer=layer,datatable=dt, table_attribute=table_attribute, layer_attribute=layer_attribute, view_name=double_view_name)
+    # Create a TableJoin object
+    #
+    tj, created = TableJoin.objects.get_or_create(source_layer=layer,datatable=dt, table_attribute=table_attribute, layer_attribute=layer_attribute)#, view_name=double_view_name)
     tj.view_sql = view_sql
 
     # Create the View (and double view)
@@ -261,10 +269,12 @@ def setup_join(table_name, layer_typename, table_attribute_name, layer_attribute
         conn = psycopg2.connect(get_database_connection_string())
             
         cur = conn.cursor()
-        cur.execute('drop view if exists %s;' % double_view_name) 
-        cur.execute('drop materialized view if exists %s;' % view_name) 
+        #cur.execute('drop view if exists %s;' % double_view_name)  # removing double view
+        cur.execute('drop view if exists %s;' % view_name) 
+        #cur.execute('drop materialized view if exists %s;' % view_name) 
+        print ('view_sql', view_sql)
         cur.execute(view_sql)
-        cur.execute(double_view_sql)
+        #cur.execute(double_view_sql)
         cur.execute(matched_count_sql)
         tj.matched_records_count = cur.fetchone()[0]
         cur.execute(unmatched_count_sql)
@@ -282,6 +292,10 @@ def setup_join(table_name, layer_typename, table_attribute_name, layer_attribute
         msg =  "Error Joining table %s to layer %s: %s" % (table_name, layer_typename, str(e[0]))
         return None, msg
 
+    """
+    # comment out b/c of double_view_name
+    
+    
     # Create the Layer in GeoServer from the view
     try:
         cat = Catalog("http://localhost:8080/geoserver/rest",
@@ -294,6 +308,7 @@ def setup_join(table_name, layer_typename, table_attribute_name, layer_attribute
             if datastore.name == "geonode_imports":
                 ds = datastore
         logger.error(str(ds))
+        # What about this?
         ft = cat.publish_featuretype(double_view_name, ds, layer.srs, srs=layer.srs)
         cat.save(ft)
     except Exception as e:
@@ -302,6 +317,7 @@ def setup_join(table_name, layer_typename, table_attribute_name, layer_attribute
         traceback.print_exc(sys.exc_info())
         msg = "Error creating GeoServer layer for %s: %s" % (view_name, str(e))
         return None, msg
+    """
 
     # Create the Layer in GeoNode from the GeoServer Layer
     try:

@@ -155,7 +155,7 @@ class TableJoin(models.Model):
         #conn = psycopg2.connect("dbname=geonode user=geonode")
         cur = conn.cursor()
         cur.execute('drop view if exists %s;' % self.view_name)
-        cur.execute('drop materialized view if exists %s;' % self.view_name.replace('view_', ''))
+        #cur.execute('drop materialized view if exists %s;' % self.view_name.replace('view_', ''))
         conn.commit()
         cur.close()
         conn.close() 
