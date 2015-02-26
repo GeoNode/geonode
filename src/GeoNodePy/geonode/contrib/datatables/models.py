@@ -1,16 +1,25 @@
 import psycopg2
 from django.db import models
 from django.db.models import signals
-from geonode.maps.models import ResourceBase
+#from geonode.maps.models import ResourceBase
 from geonode.maps.models import LayerAttribute, LayerAttributeManager
 from geonode.maps.models import Layer
 from django.template.defaultfilters import slugify
+from django.utils.translation import ugettext_lazy as _
 
 from .db_helper import get_database_connection_string
 
 TRANSFORMATION_FUNCTIONS = []
 
-class DataTable(ResourceBase):
+
+class DataTableAttributeManager(models.Manager):
+    """Helper class to access filtered attributes
+    """
+    def visible(self):
+        return self.get_query_set().filter(visible=True).order_by('display_order')
+
+
+class DataTable(models.Model):
 
     """
     DataTable (inherits ResourceBase fields)
@@ -26,8 +35,7 @@ class DataTable(ResourceBase):
     @property
     def attributes(self):
         return self.attribute_set.exclude(attribute='the_geom')
-
-    objects = LayerAttributeManager()
+    objects = DataTableAttributeManager()
 
     def __unicode__(self):
         return self.table_name
@@ -40,6 +48,40 @@ class DataTable(ResourceBase):
         conn.commit()
         cur.close()
         conn.close() 
+
+
+class DataTableAttribute(models.Model):
+    objects = DataTableAttributeManager()
+    
+    #layer = models.ForeignKey(Layer, blank=False, null=False, unique=False, related_name='attribute_set')
+    datatable = models.ForeignKey(DataTable, unique=False, related_name='attribute_set')
+    
+    attribute = models.CharField(_('Attribute Name'), max_length=255, blank=False, null=True, unique=False)
+    attribute_label = models.CharField(_('Attribute Label'), max_length=255, blank=False, null=True, unique=False)
+    attribute_type = models.CharField(_('Attribute Type'), max_length=50, blank=False, null=False, default='xsd:string', unique=False)
+    searchable = models.BooleanField(_('Searchable?'), default=False)
+    visible = models.BooleanField(_('Visible?'), default=True)
+    display_order = models.IntegerField(_('Display Order'), default=1)
+
+    #in_gazetteer = models.BooleanField(_('In Gazetteer?'), default=False)
+    #is_gaz_start_date = models.BooleanField(_('Gazetteer Start Date'), default=False)
+    #is_gaz_end_date = models.BooleanField(_('Gazetteer End Date'), default=False)
+    #date_format = models.CharField(_('Date Format'), max_length=255, blank=True, null=True)
+
+    # The date/time the object was created.    
+    created_dttm = models.DateTimeField(auto_now_add=True)
+
+    # The last time the object was modified.
+    last_modified = models.DateTimeField(auto_now=True)
+    
+    
+    def __str__(self):
+        return "%s" % self.attribute
+
+    def __unicode__(self):
+        return self.attribute
+
+
 
 class GeocodeType(models.Model):
     name = models.CharField(max_length=255, unique=True, help_text='Examples: US Census Block, US County FIPS code, US Zip code, etc')
@@ -96,7 +138,7 @@ class TableJoin(models.Model):
 
     datatable = models.ForeignKey(DataTable)
     source_layer = models.ForeignKey(Layer, related_name="source_layer")
-    table_attribute = models.ForeignKey(LayerAttribute, related_name="table_attribute")
+    table_attribute = models.ForeignKey(DataTableAttribute, related_name="table_attribute")
     layer_attribute = models.ForeignKey(LayerAttribute, related_name="layer_attribute")
     view_name = models.CharField(max_length=255, null=True, blank=True)
     view_sql = models.TextField(null=True, blank=True)
@@ -109,7 +151,8 @@ class TableJoin(models.Model):
         return self.view_name
 
     def remove_joins(self):
-        conn = psycopg2.connect("dbname=geonode user=geonode")
+        conn = psycopg2.connect(get_database_connection_string())
+        #conn = psycopg2.connect("dbname=geonode user=geonode")
         cur = conn.cursor()
         cur.execute('drop view if exists %s;' % self.view_name)
         cur.execute('drop materialized view if exists %s;' % self.view_name.replace('view_', ''))

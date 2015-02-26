@@ -23,8 +23,8 @@ from django.core.files import File
 from django.conf import settings
 from django.utils.translation import ugettext_lazy as _
 
-from geonode.maps.models import Layer, LayerAttribute
-from geonode.contrib.datatables.models import DataTable, TableJoin
+from geonode.maps.models import Layer
+from geonode.contrib.datatables.models import DataTable, DataTableAttribute, TableJoin
 
 from .db_helper import get_database_connection_string
 
@@ -53,17 +53,18 @@ def process_csv_file(instance, delimiter=",", no_header_row=False):
     f.close()
     print ('process_csv_file 2')
 
-    if 1:#try:
+    try:
         for column in csv_table:
-            print ('column', column)
+            #print ('column', column)
             column.name = slugify(unicode(column.name)).replace('-','_')
-            print ('column.name ', column.name )
-            attribute, created = LayerAttribute.objects.get_or_create(layer=instance, 
+            #print ('column.name ', column.name )
+
+            attribute, created = DataTableAttribute.objects.get_or_create(datatable=instance, 
                 attribute=column.name, 
                 attribute_label=column.name, 
                 attribute_type=column.type.__name__, 
                 display_order=column.order)
-    #except:
+    except:
         instance.delete()
         return None, str(sys.exc_info()[0])
 
@@ -79,7 +80,6 @@ def process_csv_file(instance, delimiter=",", no_header_row=False):
         instance.delete()
         return None, str(sys.exc_info()[0])
 
-    db = settings.DATABASES['default'] 
     conn = psycopg2.connect(get_database_connection_string())
 
     print ('process_csv_file 4')
@@ -220,7 +220,7 @@ def setup_join(table_name, layer_typename, table_attribute_name, layer_attribute
     try:
         dt = DataTable.objects.get(table_name=table_name)
         layer = Layer.objects.get(typename=layer_typename)
-        table_attribute = dt.attributes.get(layer=dt,attribute=table_attribute_name)
+        table_attribute = dt.attributes.get(datatable=dt,attribute=table_attribute_name)
         layer_attribute = layer.attributes.get(layer=layer, attribute=layer_attribute_name)
     except Exception as e:
         import traceback
@@ -237,6 +237,7 @@ def setup_join(table_name, layer_typename, table_attribute_name, layer_attribute
     matched_count_sql = 'select count(%s) from %s where %s.%s in (select "%s" from %s);' % (table_attribute.attribute, dt.table_name, dt.table_name, table_attribute.attribute, layer_attribute.attribute, layer_name)
     unmatched_count_sql = 'select count(%s) from %s where %s.%s not in (select "%s" from %s);' % (table_attribute.attribute, dt.table_name, dt.table_name, table_attribute.attribute, layer_attribute.attribute, layer_name)
     unmatched_list_sql = 'select %s from %s where %s.%s not in (select "%s" from %s) limit 100;' % (table_attribute.attribute, dt.table_name, dt.table_name, table_attribute.attribute, layer_attribute.attribute, layer_name)
+    
     tj, created = TableJoin.objects.get_or_create(source_layer=layer,datatable=dt, table_attribute=table_attribute, layer_attribute=layer_attribute, view_name=double_view_name)
     tj.view_sql = view_sql
 

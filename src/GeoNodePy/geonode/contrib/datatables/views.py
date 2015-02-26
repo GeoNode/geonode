@@ -114,46 +114,47 @@ def jointargets(request):
 @login_required
 @csrf_exempt
 def tablejoin_api(request):
-    if request.method == 'GET':
+    if not request.method == 'POST':
          return HttpResponse("Unsupported Method", mimetype="application/json", status=500) 
-    elif request.method == 'POST':
-        table_name = request.POST.get("table_name", None)
-        layer_typename = request.POST.get("layer_typename", None)
-        table_attribute = request.POST.get("table_attribute", None)
-        layer_attribute = request.POST.get("layer_attribute", None)
-        if table_name and layer_typename and table_attribute and layer_attribute:
-            try:
-                tj, msg = setup_join(table_name, layer_typename, table_attribute, layer_attribute)
-                if tj:
-                    return_dict = {
-                        'join_id': tj.pk,
-                        'view_name': tj.view_name,
-                        'matched_records': tj.matched_records_count,
-                        'unmatched_records': tj.unmatched_records_count,
-                        'unmatched_records_list': tj.unmatched_records_list,
-                        'datatable': tj.datatable.table_name,
-                        'source_layer': tj.source_layer.typename,
-                        'table_attribute': tj.table_attribute.attribute,
-                        'layer_attribute': tj.layer_attribute.attribute,
-                        'join_layer': tj.join_layer.typename,
-                        'layer_url': tj.join_layer.get_absolute_url()
-                    }
-                    return HttpResponse(json.dumps(return_dict), mimetype="application/json", status=200)
-                else:
-                    return_dict = {
-                        'success': False,
-                        'msg': "Error Creating Join: %s" % msg 
-                    }
-                    return HttpResponse(json.dumps(return_dict), mimetype="application/json", status=400)
-            except:
-                traceback.print_exc(sys.exc_info())
+         
+    table_name = request.POST.get("table_name", None)
+    layer_typename = request.POST.get("layer_typename", None)
+    table_attribute = request.POST.get("table_attribute", None)
+    layer_attribute = request.POST.get("layer_attribute", None)
+    if table_name and layer_typename and table_attribute and layer_attribute:
+        try:
+            tj, msg = setup_join(table_name, layer_typename, table_attribute, layer_attribute)
+            if tj:
+                return_dict = {
+                    'join_id': tj.pk,
+                    'view_name': tj.view_name,
+                    'matched_records': tj.matched_records_count,
+                    'unmatched_records': tj.unmatched_records_count,
+                    'unmatched_records_list': tj.unmatched_records_list,
+                    'datatable': tj.datatable.table_name,
+                    'source_layer': tj.source_layer.typename,
+                    'table_attribute': tj.table_attribute.attribute,
+                    'layer_attribute': tj.layer_attribute.attribute,
+                    'join_layer': tj.join_layer.typename,
+                    'layer_url': tj.join_layer.get_absolute_url()
+                }
+                return HttpResponse(json.dumps(return_dict), mimetype="application/json", status=200)
+            else:
                 return_dict = {
                     'success': False,
-                    'msg': "Error Creating Join: %s" % str(sys.exc_info()[0])
+                    'msg': "Error Creating Join: %s" % msg 
                 }
-                return HttpResponse(json.dumps(return_dict), mimetype="application/json", status=400) 
-        else:
-            return HttpResponse(json.dumps({'msg':'Invalid Request', 'success':False}), mimetype='application/json', status=400)
+                return HttpResponse(json.dumps(return_dict), mimetype="application/json", status=400)
+        except:
+            traceback.print_exc(sys.exc_info())
+            return_dict = {
+                'success': False,
+                'msg': "Error Creating Join: %s" % str(sys.exc_info()[0])
+            }
+            return HttpResponse(json.dumps(return_dict), mimetype="application/json", status=400) 
+    else:
+        return HttpResponse(json.dumps({'msg':'Invalid Request', 'success':False}), mimetype='application/json', status=400)
+
 
 @login_required
 @csrf_exempt
