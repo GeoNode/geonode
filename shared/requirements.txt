@@ -51,11 +51,18 @@ vectorformats
 #For autocomplete
 django-autocomplete-light==1.4.5
 
+# --------------------------------------------------
 # For the Dataverse/Geoconnect/WorldMap connection
+# --------------------------------------------------
 xmltodict
 shared_dataverse_information
-# ------------------
 
+# --------------------------------------------------
+# For Datatable app.  Tabular table joins to existing layers
+# --------------------------------------------------
+csvkit
+
+# --------------------------------------------------
 
 paste
 PasteDeploy

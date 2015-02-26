@@ -73,11 +73,14 @@ urlpatterns = patterns('',
     (r'^certification/', include('geonode.certification.urls')),    
     url(r'^autocomplete/', include('autocomplete_light.urls')),
     
+    # Dataverse/GeoConnect API
     (r'^dataverse-layer/', include('geonode.dataverse_layer_metadata.urls')),
     (r'^dataverse/', include('geonode.dataverse_connect.urls')),
     
+    # Datatables API
+    (r'^datatables/', include('geonode.contrib.datatables.urls')),
     
-    )
+)
 
 urlpatterns += geonode.proxy.urls.urlpatterns
 
