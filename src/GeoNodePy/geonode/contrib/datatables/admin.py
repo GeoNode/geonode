@@ -26,8 +26,8 @@ class JoinTargetAdmin(admin.ModelAdmin):
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         if db_field.name == 'attribute':
-            kwargs["queryset"] = LayerAttributeAttribute.objects.filter(
-                resource=request.GET.get('layer'))
+            kwargs["queryset"] = LayerAttribute.objects.filter(
+                layer=request.GET.get('layer'))
         return super(JoinTargetAdmin, self).formfield_for_foreignkey(
             db_field, request, **kwargs)
 

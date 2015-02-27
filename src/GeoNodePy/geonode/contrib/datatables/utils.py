@@ -1,4 +1,4 @@
-from __future__ import print_function
+#from __future__ import print_function
 import sys
 import os
 import os
@@ -23,7 +23,7 @@ from django.core.files import File
 from django.conf import settings
 from django.utils.translation import ugettext_lazy as _
 
-from geonode.maps.models import Layer
+from geonode.maps.models import Layer, LayerAttribute
 from geonode.contrib.datatables.models import DataTable, DataTableAttribute, TableJoin
 
 from .db_helper import get_datastore_connection_string
@@ -199,8 +199,15 @@ def create_point_col_from_lat_lon(table_name, lat_column, lon_column):
     
 
 def setup_join(table_name, layer_typename, table_attribute_name, layer_attribute_name):
-
-    # Setup the Table Join in GeoNode
+    """
+    Setup the Table Join in GeoNode
+    """
+    assert table_name is not None, "table_name cannot be None"
+    assert layer_typename is not None, "layer_typename cannot be None"
+    assert table_attribute_name is not None, "table_attribute_name cannot be None"
+    assert layer_attribute_name is not None, "layer_attribute_name cannot be None"
+    
+    
     try:
         dt = DataTable.objects.get(table_name=table_name)
         layer = Layer.objects.get(typename=layer_typename)
@@ -213,6 +220,7 @@ def setup_join(table_name, layer_typename, table_attribute_name, layer_attribute
         return None, msg
 
     layer_name = layer.typename.split(':')[1]
+    print 'setup_join 02'
     
     view_name = "join_%s_%s" % (layer_name, dt.table_name)
 
@@ -221,35 +229,29 @@ def setup_join(table_name, layer_typename, table_attribute_name, layer_attribute
     
     #double_view_name = "view_%s" % view_name
     #double_view_sql = "create view %s as select * from %s" % (double_view_name, view_name)
+    print 'setup_join 03'
     
+    # ------------------------------------------------------------------
     # Retrieve stats
-    #
+    # ------------------------------------------------------------------
     matched_count_sql = 'select count(%s) from %s where %s.%s in (select "%s" from %s);' % (table_attribute.attribute, dt.table_name, dt.table_name, table_attribute.attribute, layer_attribute.attribute, layer_name)
     unmatched_count_sql = 'select count(%s) from %s where %s.%s not in (select "%s" from %s);' % (table_attribute.attribute, dt.table_name, dt.table_name, table_attribute.attribute, layer_attribute.attribute, layer_name)
     unmatched_list_sql = 'select %s from %s where %s.%s not in (select "%s" from %s) limit 100;' % (table_attribute.attribute, dt.table_name, dt.table_name, table_attribute.attribute, layer_attribute.attribute, layer_name)
     
+    
+    # ------------------------------------------------------------------
     # Create a TableJoin object
-    #
-    tj, created = TableJoin.objects.get_or_create(source_layer=layer,datatable=dt, table_attribute=table_attribute, layer_attribute=layer_attribute)#, view_name=double_view_name)
+    # ------------------------------------------------------------------
+    print 'setup_join 04'
+    tj, created = TableJoin.objects.get_or_create(source_layer=layer, datatable=dt, table_attribute=table_attribute, layer_attribute=layer_attribute, view_name=view_name)#, view_name=double_view_name)
     tj.view_sql = view_sql
 
+    print 'setup_join 05'
+
+    # ------------------------------------------------------------------
     # Create the View (and double view)
+    # ------------------------------------------------------------------
     try:
-        """
-        db = settings.DATABASES['default'] 
-        conn = psycopg2.connect(
-            "dbname='" +
-            db['NAME'] +
-            "' user='" +
-            db['USER'] +
-            "'  password='" +
-            db['PASSWORD'] +
-            "' port=" +
-            db['PORT'] +
-            " host='" +
-            db['HOST'] +
-            "'")
-        """
         conn = psycopg2.connect(get_datastore_connection_string())
             
         cur = conn.cursor()
@@ -277,6 +279,7 @@ def setup_join(table_name, layer_typename, table_attribute_name, layer_attribute
         return None, msg
 
     
+    print 'setup_join 06'
     
     #--------------------------------------------------
     # Create the Layer in GeoServer from the view
@@ -289,15 +292,14 @@ def setup_join(table_name, layer_typename, table_attribute_name, layer_attribute
         datastores = [datastore_from_index(cat, workspace, n) for n in ds_list.findall("dataStore")]
         ds = None
         for datastore in datastores:
-            print ('datastore name:', datastore.name)
+            #print ('datastore name:', datastore.name)
             if datastore.name == settings.DB_DATASTORE_NAME: #"geonode_imports":
                 ds = datastore
         logger.error(str(ds))
         
-        # What about this? - Changed double_view_name to view_name
-        ft = cat.publish_featuretype(view_name, ds, layer.srs, srs=layer.srs)
-        
+        ft = cat.publish_featuretype(view_name, ds, layer.srs, srs=layer.srs)        
         #ft = cat.publish_featuretype(double_view_name, ds, layer.srs, srs=layer.srs)
+
         cat.save(ft)
     except Exception as e:
         tj.delete()
@@ -306,10 +308,13 @@ def setup_join(table_name, layer_typename, table_attribute_name, layer_attribute
         msg = "Error creating GeoServer layer for %s: %s" % (view_name, str(e))
         return None, msg
     
+    print 'setup_join 07'
 
+    # ------------------------------------------------------------------
     # Create the Layer in GeoNode from the GeoServer Layer
+    # ------------------------------------------------------------------
     try:
-        layer, created = Layer.objects.get_or_create(name=view_name, defaults={
+        layer_params = {
             "workspace": workspace.name,
             "store": ds.name,
             "storeType": ds.resource_type,
@@ -321,8 +326,12 @@ def setup_join(table_name, layer_typename, table_attribute_name, layer_attribute
             #"bbox_x1": Decimal(ft.latlon_bbox[1]),
             #"bbox_y0": Decimal(ft.latlon_bbox[2]),
             #"bbox_y1": Decimal(ft.latlon_bbox[3])
-        })
+        }
+        print 'layer_params', layer_params
+        print 'view_name', view_name
+        layer, created = Layer.objects.get_or_create(name=view_name, defaults=layer_params)
         #set_attributes(layer, overwrite=True)
+
         tj.join_layer = layer
         tj.save()
     except Exception as e:
@@ -331,5 +340,42 @@ def setup_join(table_name, layer_typename, table_attribute_name, layer_attribute
         traceback.print_exc(sys.exc_info())
         msg = "Error creating GeoNode layer for %s: %s" % (view_name, str(e))
         return None, msg
+        
+
+    print 'setup_join 08'        
+    # ------------------------------------------------------------------
+    # Create LayerAttributes for the new Layer (not done in GeoNode 2.x)
+    # ------------------------------------------------------------------
+    create_layer_attributes_from_datatable(dt, layer)
+
 
     return tj, ""
+    
+    
+def create_layer_attributes_from_datatable(datatable, layer):
+    """
+    When a new Layer has been created from a DataTable,
+    Create LayerAttribute objects from the DataTable's DataTableAttribute objects
+    """
+    assert isinstance(datatable, DataTable), "datatable must be a Datatable object"
+    assert isinstance(layer, Layer), "layer must be a Layer object"
+
+    names_of_attrs = ('attribute', 'attribute_label', 'attribute_type', 'searchable', 'visible', 'display_order')
+
+    # Iterate through the DataTable's DataTableAttribute objects
+    #   - For each one, create a new LayerAttribute
+    #
+    for dt_attribute in DataTableAttribute.objects.filter(datatable=datatable):
+
+        # Make key, value pairs of the DataTableAttribute's values
+        new_params = dict([ (attr_name, dt_attribute.__dict__.get(attr_name)) for attr_name in names_of_attrs ])
+        new_params['layer'] = layer
+        
+        # Creata or Retrieve a new LayerAttribute
+        layer_attribute_obj, created = LayerAttribute.objects.get_or_create(**new_params)
+
+        #if created:
+        #    print 'layer_attribute_obj created: %s' % layer_attribute_obj
+        #else:
+        #    print 'layer_attribute_obj EXISTS: %s' % layer_attribute_obj
+            
