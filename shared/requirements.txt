@@ -15,7 +15,10 @@ Django==1.4.13
 django-extensions==0.8
 httplib2==0.7.4
 psycopg2==2.4.1
--e git+https://github.com/cga-harvard/gsconfig.py.git#egg=gsconfig.py
+# gsconfig upgrade - 2/27/2015
+#-e git+https://github.com/cga-harvard/gsconfig.py.git#egg=gsconfig.py
+gsconfig==0.6.13
+
 django-registration==0.8
 django-profiles==0.2
 #-e git+https://github.com/mbertrand/django-avatar.git#egg=avatar
