@@ -140,22 +140,6 @@ def create_point_col_from_lat_lon(table_name, lat_column, lon_column):
     create_index_sql = "CREATE INDEX idx_%s_geom ON %s USING GIST(geom);" % (table_name, table_name)
 
     try:
-        #db = ogc_server_settings.datastore_db
-        #db = settings.DATABASES['default'] 
-        """
-        conn = psycopg2.connect(
-            "dbname='" +
-            db['NAME'] +
-            "' user='" +
-            db['USER'] +
-            "'  password='" +
-            db['PASSWORD'] +
-            "' port=" +
-            db['PORT'] +
-            " host='" +
-            db['HOST'] +
-            "'")
-        """
         conn = psycopg2.connect(get_datastore_connection_string())
         
         cur = conn.cursor()
@@ -292,11 +276,11 @@ def setup_join(table_name, layer_typename, table_attribute_name, layer_attribute
         msg =  "Error Joining table %s to layer %s: %s" % (table_name, layer_typename, str(e[0]))
         return None, msg
 
-    """
-    # comment out b/c of double_view_name
     
     
+    #--------------------------------------------------
     # Create the Layer in GeoServer from the view
+    #--------------------------------------------------
     try:
         cat = Catalog("http://localhost:8080/geoserver/rest",
                           "admin", "geoserver")
@@ -305,11 +289,15 @@ def setup_join(table_name, layer_typename, table_attribute_name, layer_attribute
         datastores = [datastore_from_index(cat, workspace, n) for n in ds_list.findall("dataStore")]
         ds = None
         for datastore in datastores:
-            if datastore.name == "geonode_imports":
+            print ('datastore name:', datastore.name)
+            if datastore.name == settings.DB_DATASTORE_NAME: #"geonode_imports":
                 ds = datastore
         logger.error(str(ds))
-        # What about this?
-        ft = cat.publish_featuretype(double_view_name, ds, layer.srs, srs=layer.srs)
+        
+        # What about this? - Changed double_view_name to view_name
+        ft = cat.publish_featuretype(view_name, ds, layer.srs, srs=layer.srs)
+        
+        #ft = cat.publish_featuretype(double_view_name, ds, layer.srs, srs=layer.srs)
         cat.save(ft)
     except Exception as e:
         tj.delete()
@@ -317,7 +305,7 @@ def setup_join(table_name, layer_typename, table_attribute_name, layer_attribute
         traceback.print_exc(sys.exc_info())
         msg = "Error creating GeoServer layer for %s: %s" % (view_name, str(e))
         return None, msg
-    """
+    
 
     # Create the Layer in GeoNode from the GeoServer Layer
     try:
