@@ -26,7 +26,7 @@ from django.utils.translation import ugettext_lazy as _
 from geonode.maps.models import Layer
 from geonode.contrib.datatables.models import DataTable, DataTableAttribute, TableJoin
 
-from .db_helper import get_database_connection_string
+from .db_helper import get_datastore_connection_string
 
 logger = logging.getLogger('geonode.contrib.datatables.utils')
 
@@ -80,7 +80,7 @@ def process_csv_file(instance, delimiter=",", no_header_row=False):
         instance.delete()
         return None, str(sys.exc_info()[0])
 
-    conn = psycopg2.connect(get_database_connection_string())
+    conn = psycopg2.connect(get_datastore_connection_string())
 
     print ('process_csv_file 4')
 
@@ -101,7 +101,7 @@ def process_csv_file(instance, delimiter=",", no_header_row=False):
 
     # Copy Data to postgres
     #connection_string = "postgresql://%s:%s@%s:%s/%s" % (db['USER'], db['PASSWORD'], db['HOST'], db['PORT'], db['NAME'])
-    connection_string = get_database_connection_string(url_format=True)
+    connection_string = get_datastore_connection_string(url_format=True)
     print ('process_csv_file 5')
     
     try:
@@ -156,7 +156,7 @@ def create_point_col_from_lat_lon(table_name, lat_column, lon_column):
             db['HOST'] +
             "'")
         """
-        conn = psycopg2.connect(get_database_connection_string())
+        conn = psycopg2.connect(get_datastore_connection_string())
         
         cur = conn.cursor()
         cur.execute(alter_table_sql)
@@ -266,7 +266,7 @@ def setup_join(table_name, layer_typename, table_attribute_name, layer_attribute
             db['HOST'] +
             "'")
         """
-        conn = psycopg2.connect(get_database_connection_string())
+        conn = psycopg2.connect(get_datastore_connection_string())
             
         cur = conn.cursor()
         #cur.execute('drop view if exists %s;' % double_view_name)  # removing double view

@@ -7,7 +7,7 @@ CHOSEN_DB_SETTING = 'wmdata'
 
 # psql -d wmdata -U wmuser -W
 
-def get_database_connection_string(url_format=False):
+def get_datastore_connection_string(url_format=False):
     """
     Create a connection string to access the database directly
     

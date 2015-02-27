@@ -7,7 +7,7 @@ from geonode.maps.models import Layer
 from django.template.defaultfilters import slugify
 from django.utils.translation import ugettext_lazy as _
 
-from .db_helper import get_database_connection_string
+from .db_helper import get_datastore_connection_string
 
 TRANSFORMATION_FUNCTIONS = []
 
@@ -42,7 +42,7 @@ class DataTable(models.Model):
 
     def remove_table(self):
         #conn = psycopg2.connect("dbname=geonode user=geonode")
-        conn = psycopg2.connect(get_database_connection_string())
+        conn = psycopg2.connect(get_datastore_connection_string())
         cur = conn.cursor()
         cur.execute('drop table if exists %s;' % self.table_name)
         conn.commit()
@@ -151,7 +151,7 @@ class TableJoin(models.Model):
         return self.view_name
 
     def remove_joins(self):
-        conn = psycopg2.connect(get_database_connection_string())
+        conn = psycopg2.connect(get_datastore_connection_string())
         #conn = psycopg2.connect("dbname=geonode user=geonode")
         cur = conn.cursor()
         cur.execute('drop view if exists %s;' % self.view_name)
