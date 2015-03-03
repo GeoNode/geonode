@@ -116,7 +116,7 @@ if 'notification' in settings.INSTALLED_APPS:
     urlpatterns += patterns('',
                             (r'^notifications/', include('notification.urls')),
                             )
-    
+
 # Set up proxy
 urlpatterns += geonode.proxy.urls.urlpatterns
 
