@@ -121,6 +121,11 @@ class DocumentUploadView(CreateView):
     template_name = 'documents/document_upload.html'
     form_class = DocumentCreateForm
 
+    def get_context_data(self, **kwargs):
+        context = super(DocumentUploadView, self).get_context_data(**kwargs)
+        context['ALLOWED_DOC_TYPES'] = ALLOWED_DOC_TYPES
+        return context
+
     def form_valid(self, form):
         """
         If the form is valid, save the associated model.
@@ -256,8 +261,7 @@ def document_metadata(
                 the_document.poc = new_poc
                 the_document.metadata_author = new_author
                 the_document.keywords.add(*new_keywords)
-                the_document.category = new_category
-                the_document.save()
+                Document.objects.filter(id=the_document.id).update(category=new_category)
                 return HttpResponseRedirect(
                     reverse(
                         'document_detail',

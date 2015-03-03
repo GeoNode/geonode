@@ -7,15 +7,16 @@
 # Translators:
 # Translators:
 # Translators:
+# Translators:
 # Minpa Lee <mapplus@gmail.com>, 2013-2015
 # Minpa Lee <mapplus@gmail.com>, 2013
 msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-02-05 04:17-0600\n"
-"PO-Revision-Date: 2015-02-05 05:20+0000\n"
-"Last-Translator: Minpa Lee <mapplus@gmail.com>\n"
+"POT-Creation-Date: 2015-03-02 23:16-0600\n"
+"PO-Revision-Date: 2015-03-03 05:10+0000\n"
+"Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
 "Language-Team: Korean (http://www.transifex.com/projects/p/geonode/language/"
 "ko/)\n"
 "Language: ko\n"
@@ -64,10 +65,14 @@ msgstr "다음 사용자 또는 그룹 전용 :"
 msgid "Who can manage and edit this data?"
 msgstr "누가 이 데이터를 관리하고 편집 할 수 있습니까?"
 
-#: static/geonode/js/search/search.js:301
+#: static/geonode/js/search/search.js:324
 #: static_root/geonode/js/search/search.js:298
 msgid "Enter your text here ..."
 msgstr "여기에 텍스트를 입력하세요 ..."
+
+#: static/geonode/js/search/search.js:350
+msgid "Enter your region here ..."
+msgstr ""
 
 #: static/geonode/js/upload/FileType.js:33
 #: static_root/geonode/js/upload/FileType.js:33
@@ -117,56 +122,60 @@ msgstr "메타데이터 편집"
 msgid "Manage Styles"
 msgstr "스타일 관리"
 
-#: static/geonode/js/upload/LayerInfo.js:235
+#: static/geonode/js/upload/LayerInfo.js:236
+msgid "The column %1 was renamed to %2 <br/>"
+msgstr ""
+
+#: static/geonode/js/upload/LayerInfo.js:242
 #: static_root/geonode/js/upload/LayerInfo.js:235
 msgid "Your layer was successfully uploaded"
 msgstr "레이어를 성공적으로 업로드했습니다"
 
-#: static/geonode/js/upload/LayerInfo.js:264
+#: static/geonode/js/upload/LayerInfo.js:271
 #: static_root/geonode/js/upload/LayerInfo.js:264
 msgid "Performing Final GeoServer Config Step"
 msgstr "마지막 GeoServer 구성 단계 수행"
 
-#: static/geonode/js/upload/LayerInfo.js:279
-#: static/geonode/js/upload/LayerInfo.js:305
+#: static/geonode/js/upload/LayerInfo.js:286
+#: static/geonode/js/upload/LayerInfo.js:312
 #: static_root/geonode/js/upload/LayerInfo.js:279
 #: static_root/geonode/js/upload/LayerInfo.js:305
 msgid "You need to specify more information in order to complete your upload"
 msgstr "업로드를 완료하기 위해 더 많은 정보를 설정해야 합니다"
 
-#: static/geonode/js/upload/LayerInfo.js:297
+#: static/geonode/js/upload/LayerInfo.js:304
 #: static_root/geonode/js/upload/LayerInfo.js:297
 msgid "You need to specify more information in order to complete your upload."
 msgstr "업로드를 완료하기 위해 더 많은 정보를 설정해야 합니다."
 
-#: static/geonode/js/upload/LayerInfo.js:297
+#: static/geonode/js/upload/LayerInfo.js:304
 #: static_root/geonode/js/upload/LayerInfo.js:297
 msgid "You can continue configuring your layer."
 msgstr "레이어를 계속해서 설정할 수 있습니다."
 
-#: static/geonode/js/upload/LayerInfo.js:315
-#: static/geonode/js/upload/LayerInfo.js:400
+#: static/geonode/js/upload/LayerInfo.js:322
+#: static/geonode/js/upload/LayerInfo.js:407
 #: static_root/geonode/js/upload/LayerInfo.js:315
 #: static_root/geonode/js/upload/LayerInfo.js:400
 msgid "Unexpected Error"
 msgstr "예기치 않은 오류"
 
-#: static/geonode/js/upload/LayerInfo.js:331
+#: static/geonode/js/upload/LayerInfo.js:338
 #: static_root/geonode/js/upload/LayerInfo.js:331
 msgid "Performing GeoServer Config Step"
 msgstr "GeoServer 구성 단계 수행"
 
-#: static/geonode/js/upload/LayerInfo.js:407
+#: static/geonode/js/upload/LayerInfo.js:414
 #: static_root/geonode/js/upload/LayerInfo.js:407
 msgid "Layer files uploaded, configuring in GeoServer"
 msgstr "GeoServer에 레이어 파일 업로드 완료, 구성중"
 
-#: static/geonode/js/upload/LayerInfo.js:422
+#: static/geonode/js/upload/LayerInfo.js:429
 #: static_root/geonode/js/upload/LayerInfo.js:422
 msgid "Select or create a Geogig repository."
 msgstr "Geogig 저장소를 선택하거나 생성합니다."
 
-#: static/geonode/js/upload/LayerInfo.js:517
+#: static/geonode/js/upload/LayerInfo.js:524
 #: static_root/admin/js/SelectFilter2.js:69
 #: static_root/geonode/js/upload/LayerInfo.js:517
 msgid "Remove"

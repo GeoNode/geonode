@@ -7,6 +7,7 @@
 # Translators:
 # Translators:
 # Translators:
+# Translators:
 # amir.rad <amir.rad@gmail.com>, 2014
 # amir.rad <amir.rad@gmail.com>, 2014
 # Andres Alfonso Lemon Gomez <lemon.andres@gmail.com>, 2014
@@ -14,8 +15,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-02-05 04:17-0600\n"
-"PO-Revision-Date: 2015-02-05 10:10+0000\n"
+"POT-Creation-Date: 2015-03-02 23:15-0600\n"
+"PO-Revision-Date: 2015-03-03 05:06+0000\n"
 "Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
 "Language-Team: Persian (Iran) (http://www.transifex.com/projects/p/geonode/"
 "language/fa_IR/)\n"
@@ -25,11 +26,11 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 
-#: utils.py:42
+#: utils.py:44
 msgid "Invalid permission level."
 msgstr "سطج دسترسی نامعتبر."
 
-#: utils.py:490
+#: utils.py:494
 msgid "Permission Denied"
 msgstr "دسترسی غیرمجاز"
 
@@ -149,48 +150,52 @@ msgstr "این داده هر سه ماه یکبار بروز رسانی می ش�
 msgid "No information provided"
 msgstr "اطلاعاتی تهیه نشده است"
 
-#: base/forms.py:35 base/templates/base/resourcebase_info_panel.html:46
-#: documents/templates/documents/document_metadata.html:60
+#: base/forms.py:43 base/templates/base/resourcebase_info_panel.html:46
+#: documents/templates/documents/document_metadata.html:58
 #: layers/templates/layers/layer_metadata.html:63
 #: maps/templates/maps/map_metadata.html:61
 msgid "Category"
 msgstr "طبقه بندی"
 
-#: base/forms.py:44
+#: base/forms.py:52
 msgid "Category is required."
 msgstr "رده مورد نیاز است."
 
-#: base/models.py:41 services/models.py:85
+#: base/forms.py:105 groups/models.py:42 people/forms.py:82
+msgid "A space or comma-separated list of keywords"
+msgstr "فضا و یا فهرست کاما جدا از کلمات کلیدی"
+
+#: base/models.py:44 services/models.py:85
 msgid "function performed by the responsible party"
 msgstr "تابع انجام شده توسط مسئول"
 
-#: base/models.py:209
+#: base/models.py:212
 msgid "reference date for the cited resource"
 msgstr "تاریخ مرجع برای منابع ذکر شده"
 
-#: base/models.py:210
+#: base/models.py:213
 msgid "identification of when a given event occurred"
 msgstr "احراز هویت زمانی که یک رویداد رخ داده است"
 
-#: base/models.py:211
+#: base/models.py:214
 msgid "version of the cited resource"
 msgstr "ویرایش منبع ذکر شده"
 
-#: base/models.py:212
+#: base/models.py:215
 msgid "brief narrative summary of the content of the resource(s)"
 msgstr "خلاصه مختصری از محتوای منابع"
 
-#: base/models.py:213
+#: base/models.py:216
 msgid "summary of the intentions with which the resource(s) was developed"
 msgstr "خلاصه روایت مختصری از محتوای منبع (منابع)"
 
-#: base/models.py:214
+#: base/models.py:217
 msgid ""
 "frequency with which modifications and deletions are made to the data after "
 "it is first produced"
 msgstr "تعداد دفعات تغییرات و حذف داده ها پس از اولین تولید"
 
-#: base/models.py:216
+#: base/models.py:219
 msgid ""
 "commonly used word(s) or formalised word(s) or phrase(s) used to describe "
 "the subject (space or comma-separated"
@@ -198,29 +203,29 @@ msgstr ""
 "کلمه(کلمات) یا عبارت(عبارات) مورد استفاده برای توصیف موضوع(با فاصله یا کاما "
 "از هم جدا شوند)"
 
-#: base/models.py:218
+#: base/models.py:221
 msgid "keyword identifies a location"
 msgstr "کلمات کلیدی تعیین کننده موقعیت مکانی"
 
-#: base/models.py:219
+#: base/models.py:222
 msgid "limitation(s) placed upon the access or use of the data."
 msgstr "محدودیت (های) دسترسی و استفاده از داده"
 
-#: base/models.py:220
+#: base/models.py:223
 msgid ""
 "other restrictions and legal prerequisites for accessing and using the "
 "resource or metadata"
 msgstr "دیگر محدودیت ها به منظور دستیابی به منابع و متادیتا"
 
-#: base/models.py:222
+#: base/models.py:225
 msgid "license of the dataset"
 msgstr "مجوز از مجموعه داده"
 
-#: base/models.py:223
+#: base/models.py:226
 msgid "language used within the dataset"
 msgstr "زبان مورد استفاده در دیتاست"
 
-#: base/models.py:224
+#: base/models.py:227
 msgid ""
 "high-level geographic data thematic classification to assist in the grouping "
 "and search of available geographic data sets."
@@ -228,19 +233,19 @@ msgstr ""
 "داده های مکانی سطح بالا و داری طبقه بندی موضوعی برای کمک به گروه بندی و "
 "جستجو از مجموعه داده های مکانی موجود"
 
-#: base/models.py:226
+#: base/models.py:229
 msgid "method used to represent geographic information in the dataset."
 msgstr "متد بکار برده شده به منظور نمایش اطلاعات مکانی در دیتاست"
 
-#: base/models.py:227
+#: base/models.py:230
 msgid "time period covered by the content of the dataset (start)"
 msgstr "مدت زمان تحت پوشش محتوای مجموعه داده (شروع)"
 
-#: base/models.py:228
+#: base/models.py:231
 msgid "time period covered by the content of the dataset (end)"
 msgstr "مدت زمان تحت پوشش محتوای مجموعه داده (پایان)"
 
-#: base/models.py:229
+#: base/models.py:232
 msgid ""
 "information about on-line sources from which the dataset, specification, or "
 "community profile name and extended metadata elements can be obtained"
@@ -248,141 +253,141 @@ msgstr ""
 "اطلاعات در مورد بر روی خط منابع که از آن مجموعه داده، مشخصات، و یا نام "
 "مشخصات جامعه و عناصر ابرداده طولانی را می توان به دست آمده"
 
-#: base/models.py:231
+#: base/models.py:234
 msgid "detailed text description of what the online resource is/does"
 msgstr "شرح متن مفصلی از آنچه منابع آنلاین است / می کند"
 
-#: base/models.py:232
+#: base/models.py:235
 msgid ""
 "general explanation of the data producer's knowledge about the lineage of a "
 "dataset"
 msgstr "توضیح کلی از دانش تولید داده در مورد اصل و نسب از مجموعه داده"
 
-#: base/models.py:238
+#: base/models.py:241
 msgid "title"
 msgstr "عنوان"
 
-#: base/models.py:238
+#: base/models.py:241
 msgid "name by which the cited resource is known"
 msgstr "نام ذکر شده در منبع ناشناش می باشد."
 
-#: base/models.py:239
+#: base/models.py:242
 msgid "date"
 msgstr "تاریخ"
 
-#: base/models.py:240
+#: base/models.py:243
 msgid "date type"
 msgstr "نوع تاریخ"
 
-#: base/models.py:242
+#: base/models.py:245
 msgid "edition"
 msgstr "ویرایش"
 
-#: base/models.py:243
+#: base/models.py:246
 msgid "abstract"
 msgstr "چکیده"
 
-#: base/models.py:244
+#: base/models.py:247
 msgid "purpose"
 msgstr "منظور"
 
-#: base/models.py:245
+#: base/models.py:248
 msgid "maintenance frequency"
 msgstr "روند نگهداری"
 
-#: base/models.py:248 groups/models.py:41 people/models.py:89
+#: base/models.py:251 groups/models.py:41 people/models.py:92
 msgid "keywords"
 msgstr "کلمات کلیدی"
 
-#: base/models.py:249
+#: base/models.py:252
 msgid "keywords region"
 msgstr "منطقه کلمات کلیدی"
 
-#: base/models.py:252
+#: base/models.py:255
 msgid "restrictions"
 msgstr "محدودیت ها"
 
-#: base/models.py:256
+#: base/models.py:259
 msgid "restrictions other"
 msgstr "دیگر محدودیت ها"
 
-#: base/models.py:261
+#: base/models.py:264
 msgid "language"
 msgstr "زبان"
 
-#: base/models.py:272
+#: base/models.py:275
 msgid "temporal extent start"
 msgstr "شروع محدوده زمانی"
 
-#: base/models.py:274
+#: base/models.py:277
 msgid "temporal extent end"
 msgstr "پایان محدوده زمانی"
 
-#: base/models.py:277
+#: base/models.py:280
 msgid "supplemental information"
 msgstr "اطلاعات تکمیلی"
 
-#: base/models.py:278
+#: base/models.py:281
 msgid "any other descriptive information about the dataset"
 msgstr "دیگر اطلاعات توصیفی در مورد دیتاست"
 
-#: base/models.py:281
+#: base/models.py:284
 msgid "distribution URL"
 msgstr "URL توزیع"
 
-#: base/models.py:283
+#: base/models.py:286
 msgid "distribution description"
 msgstr "توضیحات توزیع"
 
-#: base/models.py:287
+#: base/models.py:290
 msgid "data quality statement"
 msgstr "بیانیه کیفیت داده ها"
 
-#: base/models.py:302
+#: base/models.py:305
 msgid "CSW typename"
 msgstr "typename CSW"
 
-#: base/models.py:304
+#: base/models.py:307
 msgid "CSW schema"
 msgstr "طرح CSW"
 
-#: base/models.py:309
+#: base/models.py:312
 msgid "CSW source"
 msgstr "منبع CSW"
 
-#: base/models.py:310
+#: base/models.py:313
 msgid "CSW insert date"
 msgstr "CSW تاریخ درج"
 
-#: base/models.py:311
+#: base/models.py:314
 msgid "CSW type"
 msgstr "نوع CSW"
 
-#: base/models.py:312
+#: base/models.py:315
 msgid "CSW anytext"
 msgstr "anytext CSW"
 
-#: base/models.py:313
+#: base/models.py:316
 msgid "CSW WKT geometry"
 msgstr "هندسه CSW WKT"
 
-#: base/models.py:326
+#: base/models.py:329
 msgid "Should this resource be advertised in home page?"
 msgstr "باید این منابع در صفحه اصلی آگهی؟"
 
-#: base/models.py:327
+#: base/models.py:330
 msgid "Should this resource be published and searchable?"
 msgstr "باید این منابع منتشر شود و جستجو؟"
 
-#: base/models.py:660
+#: base/models.py:696
 msgid "For example \"kml\""
 msgstr "برای مثال \"kml\""
 
-#: base/models.py:662
+#: base/models.py:698
 msgid "For example \"View in Google Earth\""
 msgstr "برای مثال\"View in Google Earth\""
 
-#: base/models.py:663
+#: base/models.py:699
 msgid "For example \"text/xml\""
 msgstr "برای مثال \"text/xml\""
 
@@ -410,7 +415,7 @@ msgstr "مالک"
 
 #: base/templates/base/_resourcebase_contact_snippet.html:14
 #: base/templates/base/resourcebase_info_panel.html:66
-#: documents/templates/documents/document_metadata.html:50
+#: documents/templates/documents/document_metadata.html:48
 #: layers/templates/layers/layer_metadata.html:99
 #: maps/templates/maps/map_metadata.html:51
 msgid "Point of Contact"
@@ -440,7 +445,7 @@ msgid "Date"
 msgstr "تاریخ"
 
 #: base/templates/base/resourcebase_info_panel.html:34
-#: layers/templates/layers/layer_detail.html:329
+#: layers/templates/layers/layer_detail.html:337
 msgid "Type"
 msgstr "نوع"
 
@@ -451,6 +456,7 @@ msgid "Keywords"
 msgstr "کلمات کلیدی"
 
 #: base/templates/base/resourcebase_info_panel.html:56
+#: templates/search/_region_filter.html:5
 msgid "Regions"
 msgstr "نواحی"
 
@@ -491,28 +497,23 @@ msgstr "اطلاعات تکمیلی"
 msgid "Spatial Representation Type"
 msgstr "نوع نمایش مکانی"
 
-#: documents/forms.py:68 groups/models.py:42 layers/forms.py:95
-#: maps/forms.py:81 people/forms.py:82
-msgid "A space or comma-separated list of keywords"
-msgstr "فضا و یا فهرست کاما جدا از کلمات کلیدی"
-
-#: documents/forms.py:183 documents/forms.py:251
+#: documents/forms.py:92 documents/forms.py:160
 msgid "Document must be a file or url."
 msgstr "سند باید یک فایل یا URL باشد."
 
-#: documents/forms.py:187 documents/forms.py:255
+#: documents/forms.py:96 documents/forms.py:164
 msgid "A document cannot have both a file and a url."
 msgstr "یک سند می تواند هر دو یک فایل و یک آدرس را ندارد."
 
-#: documents/forms.py:200 documents/forms.py:268
+#: documents/forms.py:109 documents/forms.py:177
 msgid "This file type is not allowed"
 msgstr "این نوع فایل مجاز نیست"
 
-#: documents/forms.py:218
+#: documents/forms.py:127
 msgid "Link to"
 msgstr "پیوند به"
 
-#: documents/forms.py:240
+#: documents/forms.py:149
 msgid "Permissions must be valid JSON."
 msgstr "مجوز های باید JSON معتبر باشد."
 
@@ -552,7 +553,7 @@ msgstr "شما مجاز به مشاهده این سند نیستید"
 msgid "You are not allowed to view this document."
 msgstr "شما مجاز به مشاهده این سند نیستید"
 
-#: documents/views.py:196
+#: documents/views.py:201
 msgid "You are not allowed to edit this document."
 msgstr "شما امکان پذیر نیست ویرایش این سند است."
 
@@ -605,7 +606,7 @@ msgid "Rate this document"
 msgstr "امتیاز سند"
 
 #: documents/templates/documents/document_detail.html:65
-#: layers/templates/layers/layer_detail.html:110
+#: layers/templates/layers/layer_detail.html:118
 #: maps/templates/maps/map_detail.html:48
 msgid "Average Rating"
 msgstr "میانگین امتیاز"
@@ -617,7 +618,7 @@ msgid "Download Document"
 msgstr "دانلود مستند"
 
 #: documents/templates/documents/document_detail.html:89
-#: layers/templates/layers/layer_detail.html:131
+#: layers/templates/layers/layer_detail.html:139
 msgid "Request Download"
 msgstr ""
 
@@ -627,15 +628,15 @@ msgid "Edit Document"
 msgstr "ویرایش سند"
 
 #: documents/templates/documents/document_detail.html:111
-#: layers/templates/layers/layer_detail.html:179
-#: layers/templates/layers/layer_detail.html:188
+#: layers/templates/layers/layer_detail.html:187
+#: layers/templates/layers/layer_detail.html:196
 #: maps/templates/maps/map_detail.html:108
 #: maps/templates/maps/map_detail.html:122
 msgid "Edit"
 msgstr ""
 
 #: documents/templates/documents/document_detail.html:119
-#: layers/templates/layers/layer_detail.html:206
+#: layers/templates/layers/layer_detail.html:214
 msgid "Replace"
 msgstr ""
 
@@ -643,16 +644,16 @@ msgstr ""
 #: groups/templates/groups/group_members.html:33
 #: groups/templates/groups/group_members.html:59
 #: groups/templates/groups/group_members.html:86
-#: layers/templates/layers/layer_detail.html:212
+#: layers/templates/layers/layer_detail.html:220
 #: maps/templates/maps/map_detail.html:123
 msgid "Remove"
 msgstr "برداشتن"
 
 #: documents/templates/documents/document_detail.html:129
 #: documents/templates/documents/document_detail.html:153
-#: layers/templates/layers/layer_detail.html:153
-#: layers/templates/layers/layer_detail.html:219
-#: layers/templates/layers/layer_detail.html:245
+#: layers/templates/layers/layer_detail.html:161
+#: layers/templates/layers/layer_detail.html:227
+#: layers/templates/layers/layer_detail.html:253
 #: maps/templates/maps/map_detail.html:85
 #: maps/templates/maps/map_detail.html:129
 #: templates/_bulk_permissions_form.html:19
@@ -661,8 +662,8 @@ msgstr "نزدیک"
 
 #: documents/templates/documents/document_detail.html:136
 #: documents/templates/documents/document_detail.html:143
-#: layers/templates/layers/layer_detail.html:227
 #: layers/templates/layers/layer_detail.html:235
+#: layers/templates/layers/layer_detail.html:243
 msgid "Download Metadata"
 msgstr "دانلود متادیتا"
 
@@ -685,7 +686,7 @@ msgstr "این سند مربوط به هیچ نقشه و لایه ای نیست"
 #: documents/templates/documents/document_detail.html:176
 #: documents/templates/documents/document_upload.html:31
 #: groups/templates/groups/group_detail.html:60
-#: layers/templates/layers/layer_detail.html:318
+#: layers/templates/layers/layer_detail.html:326
 #: layers/templates/layers/layer_replace.html:94
 #: layers/templates/upload/layer_upload.html:93
 #: maps/templates/maps/map_detail.html:175 people/admin.py:55
@@ -719,23 +720,17 @@ msgid "Edit Metadata"
 msgstr "ویرایش متادیتا"
 
 #: documents/templates/documents/document_metadata.html:22
-#, python-format
-msgid ""
-"\n"
-"        Editing details for %(document_title)s\n"
-"      "
+msgid "Editing details for"
 msgstr ""
-"\n"
-"جزئیات حال ویرایش برای %(document_title)sبازدید کنندگان"
 
-#: documents/templates/documents/document_metadata.html:28
+#: documents/templates/documents/document_metadata.html:26
 #: layers/templates/layers/layer_metadata.html:29
 #: maps/templates/maps/map_metadata.html:29
 msgid "Error updating metadata.  Please check the following fields: "
 msgstr "خطا ابرداده به روز رسانی. لطفا فیلدهای زیر را چک کنید:"
 
-#: documents/templates/documents/document_metadata.html:43
-#: documents/templates/documents/document_metadata.html:77
+#: documents/templates/documents/document_metadata.html:41
+#: documents/templates/documents/document_metadata.html:75
 #: groups/templates/groups/group_update.html:26
 #: layers/templates/layers/layer_metadata.html:51
 #: layers/templates/layers/layer_metadata.html:110
@@ -744,7 +739,7 @@ msgstr "خطا ابرداده به روز رسانی. لطفا فیلدهای ز
 msgid "Update"
 msgstr "بروزرسانی"
 
-#: documents/templates/documents/document_metadata.html:55
+#: documents/templates/documents/document_metadata.html:53
 #: layers/templates/layers/layer_metadata.html:104
 #: maps/templates/maps/map_metadata.html:56
 msgid "Metadata Provider"
@@ -839,19 +834,19 @@ msgstr "PDF"
 msgid "PNG"
 msgstr "PNG"
 
-#: geoserver/signals.py:284
+#: geoserver/signals.py:285
 msgid "Could not create a download link for layer."
 msgstr "می تواند یک لینک دانلود برای لایه ایجاد کنید."
 
-#: geoserver/signals.py:315
+#: geoserver/signals.py:316
 msgid "KML"
 msgstr "KML"
 
-#: geoserver/signals.py:344
+#: geoserver/signals.py:345
 msgid "Tiles"
 msgstr "کاشی"
 
-#: geoserver/signals.py:391 layers/templates/layers/layer_detail.html:253
+#: geoserver/signals.py:392 layers/templates/layers/layer_detail.html:261
 #: services/views.py:1272
 msgid "Legend"
 msgstr "علائم و اختصارات"
@@ -1186,121 +1181,125 @@ msgstr "نسخه SLD"
 msgid "sld url"
 msgstr "آدرس SLD"
 
-#: layers/models.py:292
+#: layers/models.py:189
+msgid "File cannot be opened, maybe check the encoding"
+msgstr ""
+
+#: layers/models.py:296
 msgid "attribute name"
 msgstr "اطلاعات توصیفی"
 
-#: layers/models.py:293
+#: layers/models.py:297
 msgid "name of attribute as stored in shapefile/spatial database"
 msgstr "عنوان اطلاعات توصیفی ذخیره شده در پایگاه داده مکانی"
 
-#: layers/models.py:299
+#: layers/models.py:303
 msgid "attribute description"
 msgstr "توضیح اطلاعات توصیفی"
 
-#: layers/models.py:300
+#: layers/models.py:304
 msgid "description of attribute to be used in metadata"
 msgstr "شرح ویژگی که در ابرداده استفاده"
 
-#: layers/models.py:305
+#: layers/models.py:309
 msgid "attribute label"
 msgstr "برچسب اطلاعات توصیفی"
 
-#: layers/models.py:306
+#: layers/models.py:310
 msgid "title of attribute as displayed in GeoNode"
 msgstr "عنوانن نمایش اطلاعات توصیفی"
 
-#: layers/models.py:312
+#: layers/models.py:316
 msgid "attribute type"
 msgstr "نوع اطلاعات توصیفی"
 
-#: layers/models.py:313
+#: layers/models.py:317
 msgid "the data type of the attribute (integer, string, geometry, etc)"
 msgstr "نوع اطلاعات توصیفی(عددی، رشته ای، مکانی و غیره)"
 
-#: layers/models.py:320
+#: layers/models.py:324
 msgid "visible?"
 msgstr "آشکار؟"
 
-#: layers/models.py:321
+#: layers/models.py:325
 msgid "specifies if the attribute should be displayed in identify results"
 msgstr "مشخص اگر ویژگی باید نمایش داده شده در شناسایی نتایج"
 
-#: layers/models.py:324
+#: layers/models.py:328
 msgid "display order"
 msgstr "ترتیب نمایش"
 
-#: layers/models.py:325
+#: layers/models.py:329
 msgid ""
 "specifies the order in which attribute should be displayed in identify "
 "results"
 msgstr "تعیین ترتیب نمایش اطلاعات توصیفی در خروجی"
 
-#: layers/models.py:330
+#: layers/models.py:334
 msgid "count"
 msgstr "تعداد"
 
-#: layers/models.py:331
+#: layers/models.py:335
 msgid "count value for this field"
 msgstr "مقادیر این ستون"
 
-#: layers/models.py:334
+#: layers/models.py:338
 msgid "min"
 msgstr "حداقل"
 
-#: layers/models.py:335
+#: layers/models.py:339
 msgid "minimum value for this field"
 msgstr "حداقل مقادیر این ستون"
 
-#: layers/models.py:342
+#: layers/models.py:346
 msgid "max"
 msgstr "حداکثر"
 
-#: layers/models.py:343
+#: layers/models.py:347
 msgid "maximum value for this field"
 msgstr "حداکثر مقادیر این ستون"
 
-#: layers/models.py:350
+#: layers/models.py:354
 msgid "average"
 msgstr "میانگین"
 
-#: layers/models.py:351
+#: layers/models.py:355
 msgid "average value for this field"
 msgstr "میانگین مقادیر این ستون"
 
-#: layers/models.py:358
+#: layers/models.py:362
 msgid "median"
 msgstr "میانه"
 
-#: layers/models.py:359
+#: layers/models.py:363
 msgid "median value for this field"
 msgstr "میانه مقادیر این ستون"
 
-#: layers/models.py:366
+#: layers/models.py:370
 msgid "standard deviation"
 msgstr "انحراف معیار"
 
-#: layers/models.py:367
+#: layers/models.py:371
 msgid "standard deviation for this field"
 msgstr "انحراف معیار این ستون"
 
-#: layers/models.py:374
+#: layers/models.py:378
 msgid "sum"
 msgstr "مجموع"
 
-#: layers/models.py:375
+#: layers/models.py:379
 msgid "sum value for this field"
 msgstr "مجموع مقادیر این ستون"
 
-#: layers/models.py:382
+#: layers/models.py:386
 msgid "unique values for this field"
 msgstr "مقادیر یکتا در این ستون"
 
-#: layers/models.py:387
+#: layers/models.py:391
 msgid "last modified"
 msgstr "آخرین تغییرات"
 
-#: layers/models.py:389
+#: layers/models.py:393
 msgid "date when attribute statistics were last updated"
 msgstr "آخرین تاریخ بروزرسانی اطلاعات آماری"
 
@@ -1330,19 +1329,19 @@ msgstr "شما مجاز به تغییر متادیتای این لایه نیس�
 msgid "You are not permitted to view this layer"
 msgstr "شما مجاز به مشاهده این لایه نیستید."
 
-#: layers/views.py:466
+#: layers/views.py:469
 msgid "You are attempting to replace a vector layer with a raster."
 msgstr ""
 
-#: layers/views.py:469
+#: layers/views.py:472
 msgid "You are attempting to replace a raster layer with a vector."
 msgstr ""
 
-#: layers/views.py:525
+#: layers/views.py:528
 msgid "Unable to delete layer"
 msgstr ""
 
-#: layers/views.py:528
+#: layers/views.py:531
 msgid ""
 "This layer is a member of a layer group, you must remove the layer from the "
 "group before deleting."
@@ -1395,86 +1394,98 @@ msgid "Attribute Name"
 msgstr "عنوان اطلاعات توصیفی"
 
 #: layers/templates/layers/layer_detail.html:50
+#: layers/templates/layers/layer_metadata.html:82
+msgid "Label"
+msgstr "برچسب"
+
+#: layers/templates/layers/layer_detail.html:51
+#: layers/templates/layers/layer_metadata.html:83
+#: people/templates/people/profile_detail.html:62 services/forms.py:27
+#: services/templates/services/layers_register.html:28
+msgid "Description"
+msgstr "توصیف"
+
+#: layers/templates/layers/layer_detail.html:53
 msgid "Range"
 msgstr "محدوده"
 
-#: layers/templates/layers/layer_detail.html:51
+#: layers/templates/layers/layer_detail.html:54
 msgid "Average"
 msgstr "میانگین"
 
-#: layers/templates/layers/layer_detail.html:52
+#: layers/templates/layers/layer_detail.html:55
 msgid "Median"
 msgstr "میانه"
 
-#: layers/templates/layers/layer_detail.html:53
+#: layers/templates/layers/layer_detail.html:56
 msgid "Standard Deviation"
 msgstr "انحراف معیار"
 
-#: layers/templates/layers/layer_detail.html:106
+#: layers/templates/layers/layer_detail.html:114
 msgid "Rate this layer"
 msgstr "امتیاز این لایه"
 
-#: layers/templates/layers/layer_detail.html:128
-#: layers/templates/layers/layer_detail.html:141
+#: layers/templates/layers/layer_detail.html:136
+#: layers/templates/layers/layer_detail.html:149
 msgid "Download Layer"
 msgstr "دانلود لابه"
 
-#: layers/templates/layers/layer_detail.html:164
-#: layers/templates/layers/layer_detail.html:171
+#: layers/templates/layers/layer_detail.html:172
+#: layers/templates/layers/layer_detail.html:179
 msgid "Edit Layer"
 msgstr "ویرایش لایه"
 
-#: layers/templates/layers/layer_detail.html:190
+#: layers/templates/layers/layer_detail.html:198
 #: services/templates/services/service_detail.html:110
 msgid "Manage"
 msgstr "اداره کردن"
 
-#: layers/templates/layers/layer_detail.html:198
+#: layers/templates/layers/layer_detail.html:206
 #: maps/templates/maps/map_detail.html:115
 msgid "Set"
 msgstr ""
 
-#: layers/templates/layers/layer_detail.html:209
+#: layers/templates/layers/layer_detail.html:217
 msgid "Edit data"
 msgstr ""
 
-#: layers/templates/layers/layer_detail.html:263
+#: layers/templates/layers/layer_detail.html:271
 msgid "Maps using this layer"
 msgstr "نقشه هایی که از این لایه استفاده می کنند"
 
-#: layers/templates/layers/layer_detail.html:265
+#: layers/templates/layers/layer_detail.html:273
 msgid "List of maps using this layer:"
 msgstr "لیست نقشه هایی که از این لایه استفاده می کنند"
 
-#: layers/templates/layers/layer_detail.html:271
+#: layers/templates/layers/layer_detail.html:279
 msgid "This layer is not currently used in any maps."
 msgstr "این لایه در حال حاضر در هیچ نقشه ای استفاده نمی شود."
 
-#: layers/templates/layers/layer_detail.html:276
+#: layers/templates/layers/layer_detail.html:284
 msgid "Create a map using this layer"
 msgstr "ایجاد نقشه با استفاده از این لایه"
 
-#: layers/templates/layers/layer_detail.html:277
+#: layers/templates/layers/layer_detail.html:285
 msgid "Click the button below to generate a new map based on this layer."
 msgstr "با کلیک کردن بر روی دکمه زیر نقشه جدیدی بر اساس این لایه تولید کنید."
 
-#: layers/templates/layers/layer_detail.html:278
+#: layers/templates/layers/layer_detail.html:286
 msgid "Create a Map"
 msgstr "ایجاد نقشه"
 
-#: layers/templates/layers/layer_detail.html:283
+#: layers/templates/layers/layer_detail.html:291
 msgid "Documents related to this layer"
 msgstr "مستندات مربوط به این لایه"
 
-#: layers/templates/layers/layer_detail.html:284
+#: layers/templates/layers/layer_detail.html:292
 msgid "List of documents related to this layer:"
 msgstr "لیست مستندات مربوط به این لایه:"
 
-#: layers/templates/layers/layer_detail.html:295
+#: layers/templates/layers/layer_detail.html:303
 msgid "Styles"
 msgstr "نحوه نمایش"
 
-#: layers/templates/layers/layer_detail.html:296
+#: layers/templates/layers/layer_detail.html:304
 msgid ""
 "The following styles are associated with this layer. Choose a style to view "
 "it in the preview map."
@@ -1482,23 +1493,23 @@ msgstr ""
 "نحوه نمایش های زیر مربوط به این لایه است. یکی از آنها را به منظور پیش نمایش "
 "انتخاب کنید."
 
-#: layers/templates/layers/layer_detail.html:309
+#: layers/templates/layers/layer_detail.html:317
 msgid "No styles associated with this layer"
 msgstr "هیچ سبک در ارتباط با این لایه"
 
-#: layers/templates/layers/layer_detail.html:319
+#: layers/templates/layers/layer_detail.html:327
 msgid "Click the button below to change the permissions of this layer."
 msgstr "با کلیک کردن دکمه زیر مجوز دسترسی به این لایه را تغییر دهید."
 
-#: layers/templates/layers/layer_detail.html:320
+#: layers/templates/layers/layer_detail.html:328
 msgid "Change Layer Permissions"
 msgstr "تغییر مجوز لایه"
 
-#: layers/templates/layers/layer_detail.html:327
+#: layers/templates/layers/layer_detail.html:335
 msgid "External service layer"
 msgstr "لایه خدمات خارجی"
 
-#: layers/templates/layers/layer_detail.html:328
+#: layers/templates/layers/layer_detail.html:336
 msgid "Source"
 msgstr "منبع"
 
@@ -1545,16 +1556,6 @@ msgstr "اطلاعات توصیفی"
 #: layers/templates/layers/layer_metadata.html:81
 msgid "Attribute"
 msgstr "اطلاعات توصیفی"
-
-#: layers/templates/layers/layer_metadata.html:82
-msgid "Label"
-msgstr "برچسب"
-
-#: layers/templates/layers/layer_metadata.html:83
-#: people/templates/people/profile_detail.html:62 services/forms.py:27
-#: services/templates/services/layers_register.html:28
-msgid "Description"
-msgstr "توصیف"
 
 #: layers/templates/layers/layer_metadata.html:84
 msgid "Display Order"
@@ -2435,90 +2436,90 @@ msgstr ""
 msgid "This account is now active and can log in the site"
 msgstr ""
 
-#: people/models.py:43
+#: people/models.py:46
 msgid "Organization Name"
 msgstr "نام سازمان"
 
-#: people/models.py:47
+#: people/models.py:50
 msgid "name of the responsible organization"
 msgstr "نام سازمان مسئول"
 
-#: people/models.py:48 templates/500.html:76 templates/base.html:210
+#: people/models.py:51 templates/500.html:76 templates/base.html:210
 msgid "Profile"
 msgstr "نمایه"
 
-#: people/models.py:48
+#: people/models.py:51
 msgid "introduce yourself"
 msgstr "خودتان را معرفی کنید"
 
-#: people/models.py:50
+#: people/models.py:53
 msgid "Position Name"
 msgstr "موقعیت نام"
 
-#: people/models.py:54
+#: people/models.py:57
 msgid "role or position of the responsible person"
 msgstr "نقش و یا موقعیت فرد مسئول"
 
-#: people/models.py:55 people/templates/people/profile_detail.html:50
+#: people/models.py:58 people/templates/people/profile_detail.html:50
 msgid "Voice"
 msgstr "صدا"
 
-#: people/models.py:56
+#: people/models.py:59
 msgid ""
 "telephone number by which individuals can speak to the responsible "
 "organization or individual"
 msgstr ""
 "شماره تلفن های که افراد می توانند به سازمان مسئول و یا فردی صحبت می کنند"
 
-#: people/models.py:57
+#: people/models.py:60
 msgid "Facsimile"
 msgstr "رونوشت"
 
-#: people/models.py:58
+#: people/models.py:61
 msgid ""
 "telephone number of a facsimile machine for the responsible organization or "
 "individual"
 msgstr "شماره تلفن دستگاه فاکس برای سازمان مسئول و یا فردی"
 
-#: people/models.py:60
+#: people/models.py:63
 msgid "Delivery Point"
 msgstr "نقطه تحویل"
 
-#: people/models.py:64
+#: people/models.py:67
 msgid ""
 "physical and email address at which the organization or individual may be "
 "contacted"
 msgstr "آدرس فیزیکی و ایمیل که در آن سازمان و یا فردی ممکن است تماس"
 
-#: people/models.py:66
+#: people/models.py:69
 msgid "City"
 msgstr "شهرستان"
 
-#: people/models.py:70
+#: people/models.py:73
 msgid "city of the location"
 msgstr "شهرستان از محل"
 
-#: people/models.py:72
+#: people/models.py:75
 msgid "Administrative Area"
 msgstr "منطقه اداری"
 
-#: people/models.py:76
+#: people/models.py:79
 msgid "state, province of the location"
 msgstr "دولت، استان محل"
 
-#: people/models.py:78
+#: people/models.py:81
 msgid "Postal Code"
 msgstr "کد پستی"
 
-#: people/models.py:82
+#: people/models.py:85
 msgid "ZIP or other postal code"
 msgstr "ZIP و یا سایر کد پستی"
 
-#: people/models.py:88
+#: people/models.py:91
 msgid "country of the physical address"
 msgstr "کشور از آدرس فیزیکی"
 
-#: people/models.py:90
+#: people/models.py:93
 msgid ""
 "commonly used word(s) or formalised word(s) or phrase(s) used to describe "
 "the subject             (space or comma-separated"
@@ -4152,6 +4153,15 @@ msgstr "بازگشت به صندوق"
 #: templates/user_messages/thread_detail.html:26
 msgid "Send Reply"
 msgstr "فرستادن پاسخ"
+
+#~ msgid ""
+#~ "\n"
+#~ "        Editing details for %(document_title)s\n"
+#~ "      "
+#~ msgstr ""
+#~ "\n"
+#~ "        Editing details for %(document_title)s\n"
+#~ "      "
 
 #~ msgid "Replace this Document"
 #~ msgstr "Replace this Document"

@@ -181,6 +181,8 @@ def layer_upload(request, template='upload/layer_upload.html'):
                     out['upload_session'] = upload_session.id
             else:
                 out['success'] = True
+                if hasattr(saved_layer, 'info'):
+                    out['info'] = saved_layer.info
                 out['url'] = reverse(
                     'layer_detail', args=[
                         saved_layer.service_typename])
@@ -271,6 +273,7 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
         "documents": get_related_documents(layer),
         "metadata": metadata,
         "is_layer": True,
+        "wps_enabled": settings.OGC_SERVER['default']['WPS_ENABLED'],
     }
 
     context_dict["viewer"] = json.dumps(

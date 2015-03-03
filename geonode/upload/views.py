@@ -36,6 +36,8 @@ import json
 import logging
 import os
 import traceback
+
+from httplib import BadStatusLine
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
@@ -50,7 +52,8 @@ from geonode.upload import forms, upload, files
 from geonode.upload.forms import LayerUploadForm, UploadFileForm
 from geonode.upload.models import Upload, UploadFile
 from geonode.utils import json_response as do_json_response
-from httplib import BadStatusLine
+from geonode.geoserver.helpers import ogc_server_settings
+
 
 logger = logging.getLogger(__name__)
 
@@ -63,7 +66,6 @@ if _ALLOW_TIME_STEP:
         'TIME_ENABLED',
         False)
 
-from geonode.geoserver.helpers import ogc_server_settings
 _ASYNC_UPLOAD = True if ogc_server_settings and ogc_server_settings.DATASTORE else False
 
 # at the moment, the various time support transformations require the database
@@ -208,8 +210,9 @@ def _next_step_response(req, upload_session, force_ajax=True):
 
 def _create_time_form(import_session, form_data):
     feature_type = import_session.tasks[0].layer
-    filter_type = lambda b: [
-        att.name for att in feature_type.attributes if att.binding == b]
+
+    def filter_type(b):
+        return [att.name for att in feature_type.attributes if att.binding == b]
 
     args = dict(
         time_names=filter_type('java.util.Date'),
@@ -360,8 +363,8 @@ def csv_step_view(request, upload_session):
     if request.method == 'POST':
         if not lat_field or not lng_field:
             error = 'Please choose which columns contain the latitude and longitude data.'
-        elif (lat_field not in point_candidates
-              or lng_field not in point_candidates):
+        elif (lat_field not in point_candidates or
+              lng_field not in point_candidates):
             error = 'Invalid latitude/longitude columns'
         elif lat_field == lng_field:
             error = 'You cannot select the same column for latitude and longitude data.'
@@ -449,8 +452,12 @@ def time_step_view(request, upload_session):
     start_attribute_and_type = cleaned.get('start_attribute', None)
 
     if start_attribute_and_type:
-        tx = lambda type_name: None if type_name is None or type_name == 'Date' \
-            else 'DateFormatTransform'
+
+        def tx(type_name):
+
+            return None if type_name is None or type_name == 'Date' \
+                else 'DateFormatTransform'
+
         end_attribute, end_type = cleaned.get('end_attribute', (None, None))
         upload.time_step(
             upload_session,

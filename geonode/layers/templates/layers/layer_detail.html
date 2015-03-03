@@ -47,30 +47,38 @@
               <thead>
                 <tr>
                   <th>{% trans "Attribute Name" %}</th>
-                  <th>{% trans "Range" %}</th>
-                  <th>{% trans "Average" %}</th>
-                  <th>{% trans "Median" %}</th>
-                  <th>{% trans "Standard Deviation" %}</th>
+                  <th>{% trans "Label" %}</th>
+                  <th>{% trans "Description" %}</th>
+                  {% if wps_enabled %}
+                    <th>{% trans "Range" %}</th>
+                    <th>{% trans "Average" %}</th>
+                    <th>{% trans "Median" %}</th>
+                    <th>{% trans "Standard Deviation" %}</th>
+                  {% endif %}
                 </tr>
               </thead>
               <tbody>
                 {% for attribute in resource.attributes %}
                   <tr>
                     <td {% if attribute.attribute_label and attribute.attribute_label != attribute.attribute %}title="{{ attribute.attribute }}"{% endif %}>{{ attribute }}</td>
-                    {% if attribute.unique_values == "NA" %}
-                    <td>{{ attribute.unique_values }}</td>
-                    {% else %}
-                    <td>
-                      <select name="unique_values">
-                      {% for value in attribute.unique_values_as_list %}
-                        <option value="{{ value }}">{{ value }}</option>
-                      {% endfor %}
-                      </select>
-                    </td>
+                    <td>{{ attribute.attribute_label }}</td>
+                    <td>{{ attribute.description }}</td>
+                    {% if wps_enabled %}
+                      {% if attribute.unique_values == "NA" %}
+                      <td>{{ attribute.unique_values }}</td>
+                      {% else %}
+                      <td>
+                        <select name="unique_values">
+                        {% for value in attribute.unique_values_as_list %}
+                          <option value="{{ value }}">{{ value }}</option>
+                        {% endfor %}
+                        </select>
+                      </td>
+                      {% endif %}
+                      <td>{{ attribute.average|floatformat:"2" }}</td>
+                      <td>{{ attribute.median|floatformat:"2" }}</td>
+                      <td>{{ attribute.stddev|floatformat:"2" }}</td>
                     {% endif %}
-                    <td>{{ attribute.average|floatformat:"2" }}</td>
-                    <td>{{ attribute.median|floatformat:"2" }}</td>
-                    <td>{{ attribute.stddev|floatformat:"2" }}</td>
                   </tr>
                 {% endfor %}
               </tbody>

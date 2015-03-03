@@ -62,7 +62,9 @@ class LayerUploadForm(forms.Form):
             '.csv',
             '.kml')
         types = [t for t in files.types if t.code not in requires_datastore]
-        supported_type = lambda ext: any([t.matches(ext) for t in types])
+
+        def supported_type(ext):
+            return any([t.matches(ext) for t in types])
 
         cleaned = super(LayerUploadForm, self).clean()
         base_name, base_ext = os.path.splitext(cleaned["base_file"].name)

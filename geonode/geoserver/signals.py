@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import errno
 import logging
 import urllib
@@ -30,7 +31,7 @@ def geoserver_pre_delete(instance, sender, **kwargs):
     # cascading_delete should only be called if
     # ogc_server_settings.BACKEND_WRITE_ENABLED == True
     if getattr(ogc_server_settings, "BACKEND_WRITE_ENABLED", True):
-        if instance.storeType != "remoteStore":
+        if not getattr(instance, "service", None):
             cascading_delete(gs_catalog, instance.typename)
 
 
@@ -48,13 +49,13 @@ def geoserver_pre_save(instance, sender, **kwargs):
     """
 
     # Don't run this signal if is a Layer from a remote service
-    if instance.workspace == 'remoteWorkspace':
+    if getattr(instance, "service", None) is not None:
         return
 
     # If the store in None then it's a new instance from an upload,
     # only in this case run the geonode_uplaod method
     if not instance.store or getattr(instance, 'overwrite', False):
-        base_file = instance.get_base_file()
+        base_file, info = instance.get_base_file()
 
         # There is no need to process it if there is not file.
         if base_file is None:
@@ -244,10 +245,10 @@ def geoserver_post_save(instance, sender, **kwargs):
                                                      )
                                        )
 
-            command_url = lambda command: "{repo_url}/{command}.json?{path}".format(
-                repo_url=repo_url,
-                path=path,
-                command=command)
+            def command_url(command):
+                return "{repo_url}/{command}.json?{path}".format(repo_url=repo_url,
+                                                                 path=path,
+                                                                 command=command)
 
             Link.objects.get_or_create(resource=instance.resourcebase_ptr,
                                        url=command_url('log'),
