@@ -1164,7 +1164,14 @@ def layer_detail(request, layername):
                 _("You are not permitted to view this layer")})), status=401)
 
     metadata = layer.metadata_csw()
-
+    
+    print '-' * 40
+    print '\nlayer.typename', layer.typename
+    print 'settings.GEOSERVER_BASE_URL', settings.GEOSERVER_BASE_URL
+    print 'layer.default_style.name', layer.default_style.name
+    print 'layer.title', layer.title
+    print 'layer.attribute_config()', layer.attribute_config(), '\n'
+    print '-' * 40
     maplayer = MapLayer(name = layer.typename, styles=[layer.default_style.name], source_params = '{"ptype": "gxp_gnsource"}', ows_url = settings.GEOSERVER_BASE_URL + "wms",  layer_params= '{"tiled":true, "title":" '+ layer.title + '", ' + json.dumps(layer.attribute_config()) + '}')
 
     # center/zoom don't matter; the viewer will center on the layer bounds

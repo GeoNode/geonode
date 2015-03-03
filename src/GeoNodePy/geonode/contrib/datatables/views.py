@@ -191,6 +191,9 @@ def datatable_remove(request, dt_id):
 @login_required
 @csrf_exempt
 def datatable_upload_and_join_api(request):
+    """
+    Upload a datatable and join it to an existing Layer
+    """
     request_post_copy = request.POST.copy()
     join_props = request_post_copy
     try:

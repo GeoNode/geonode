@@ -153,9 +153,11 @@ def create_point_col_from_lat_lon(table_name, lat_column, lon_column):
         msg =  "Error Creating Point Column from Latitude and Longitude %s" % (str(e[0]))
         return None, msg
 
+    # ------------------------------------------------------
     # Create the Layer in GeoServer from the table 
-    try:
-        cat = Catalog("http://localhost:8080/geoserver/rest",
+    # ------------------------------------------------------
+    try:        
+        cat = Catalog(settings.GEOSERVER_BASE_URL + "rest",
                           "admin", "geoserver")
         workspace = cat.get_workspace("geonode")
         ds_list = cat.get_xml(workspace.datastore_url)
@@ -173,7 +175,9 @@ def create_point_col_from_lat_lon(table_name, lat_column, lon_column):
         msg = "Error creating GeoServer layer for %s: %s" % (table_name, str(e))
         return None, msg
 
+    # ------------------------------------------------------
     # Create the Layer in GeoNode from the GeoServer Layer
+    # ------------------------------------------------------
     try:
         layer, created = Layer.objects.get_or_create(name=table_name, defaults={
             "workspace": workspace.name,
@@ -194,6 +198,8 @@ def create_point_col_from_lat_lon(table_name, lat_column, lon_column):
         traceback.print_exc(sys.exc_info())
         msg = "Error creating GeoNode layer for %s: %s" % (table_name, str(e))
         return None, msg
+
+
 
     return layer, ""
     
@@ -234,9 +240,14 @@ def setup_join(table_name, layer_typename, table_attribute_name, layer_attribute
     # ------------------------------------------------------------------
     # Retrieve stats
     # ------------------------------------------------------------------
-    matched_count_sql = 'select count(%s) from %s where %s.%s in (select "%s" from %s);' % (table_attribute.attribute, dt.table_name, dt.table_name, table_attribute.attribute, layer_attribute.attribute, layer_name)
-    unmatched_count_sql = 'select count(%s) from %s where %s.%s not in (select "%s" from %s);' % (table_attribute.attribute, dt.table_name, dt.table_name, table_attribute.attribute, layer_attribute.attribute, layer_name)
-    unmatched_list_sql = 'select %s from %s where %s.%s not in (select "%s" from %s) limit 100;' % (table_attribute.attribute, dt.table_name, dt.table_name, table_attribute.attribute, layer_attribute.attribute, layer_name)
+    matched_count_sql = 'select count(%s) from %s where %s.%s in (select "%s" from %s);'\
+                        % (table_attribute.attribute, dt.table_name, dt.table_name, table_attribute.attribute, layer_attribute.attribute, layer_name)
+
+    unmatched_count_sql = 'select count(%s) from %s where %s.%s not in (select "%s" from %s);'\
+                        % (table_attribute.attribute, dt.table_name, dt.table_name, table_attribute.attribute, layer_attribute.attribute, layer_name)
+
+    unmatched_list_sql = 'select %s from %s where %s.%s not in (select "%s" from %s) limit 100;'\
+                        % (table_attribute.attribute, dt.table_name, dt.table_name, table_attribute.attribute, layer_attribute.attribute, layer_name)
     
     
     # ------------------------------------------------------------------
@@ -285,7 +296,7 @@ def setup_join(table_name, layer_typename, table_attribute_name, layer_attribute
     # Create the Layer in GeoServer from the view
     #--------------------------------------------------
     try:
-        cat = Catalog("http://localhost:8080/geoserver/rest",
+        cat = Catalog(settings.GEOSERVER_BASE_URL + "rest",
                           "admin", "geoserver")
         workspace = cat.get_workspace('geonode')
         ds_list = cat.get_xml(workspace.datastore_url)
@@ -309,6 +320,15 @@ def setup_join(table_name, layer_typename, table_attribute_name, layer_attribute
         return None, msg
     
     print 'setup_join 07'
+    # ------------------------------------------------------
+    # Set the Layer's default Style
+    # ------------------------------------------------------
+    gs_cat = Layer.objects.gs_catalog
+    sinfo = gs_cat.get_style(table_name)
+    print '-' *40
+    print '\nsinfo', sinfo
+    layer.default_style = gs_cat.get_style(table_name)
+    layer.save()
 
     # ------------------------------------------------------------------
     # Create the Layer in GeoNode from the GeoServer Layer
