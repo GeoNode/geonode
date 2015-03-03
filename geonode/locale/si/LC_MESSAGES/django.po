@@ -7,6 +7,7 @@
 # Translators:
 # Translators:
 # Translators:
+# Translators:
 # chandimathamali <thamalimampitiya@gmail.com>, 2013
 # Indunil <ricsdej@gmail.com>, 2013
 # Indunil <ricsdej@gmail.com>, 2013
@@ -18,8 +19,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-02-05 04:17-0600\n"
-"PO-Revision-Date: 2015-02-05 10:10+0000\n"
+"POT-Creation-Date: 2015-03-02 23:15-0600\n"
+"PO-Revision-Date: 2015-03-03 05:06+0000\n"
 "Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
 "Language-Team: Sinhala (http://www.transifex.com/projects/p/geonode/language/"
 "si/)\n"
@@ -29,11 +30,11 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: utils.py:42
+#: utils.py:44
 msgid "Invalid permission level."
 msgstr "වලංගු නොවන අවසර මට්ටම"
 
-#: utils.py:490
+#: utils.py:494
 msgid "Permission Denied"
 msgstr "අවසර ලබා දෙනු නොලැබේ"
 
@@ -153,48 +154,52 @@ msgstr "සෑම මාස තුනකට වරක්ම දත්ත යා�
 msgid "No information provided"
 msgstr "තොරතුරු සපයා නොමැත"
 
-#: base/forms.py:35 base/templates/base/resourcebase_info_panel.html:46
-#: documents/templates/documents/document_metadata.html:60
+#: base/forms.py:43 base/templates/base/resourcebase_info_panel.html:46
+#: documents/templates/documents/document_metadata.html:58
 #: layers/templates/layers/layer_metadata.html:63
 #: maps/templates/maps/map_metadata.html:61
 msgid "Category"
 msgstr "ප්‍රභේදය"
 
-#: base/forms.py:44
+#: base/forms.py:52
 msgid "Category is required."
 msgstr ""
 
-#: base/models.py:41 services/models.py:85
+#: base/forms.py:105 groups/models.py:42 people/forms.py:82
+msgid "A space or comma-separated list of keywords"
+msgstr "එක් එක් මුලපදය  එක හිස්තැනකින් හෝ කොමාවකින් වෙන් කර ඇතුලත් කරන්න"
+
+#: base/models.py:44 services/models.py:85
 msgid "function performed by the responsible party"
 msgstr "වගකිවයුතු පාර්ශවය විසින් සිදු කෙරෙන කාර්යය භාරය"
 
-#: base/models.py:209
+#: base/models.py:212
 msgid "reference date for the cited resource"
 msgstr "උපුටාගත් මූලාශ්‍රය පරිශීලනය කල දිනය"
 
-#: base/models.py:210
+#: base/models.py:213
 msgid "identification of when a given event occurred"
 msgstr "යම් සිද්ධියක් සිදු වූ අවස්ථාව හඳුනා ගැනීම"
 
-#: base/models.py:211
+#: base/models.py:214
 msgid "version of the cited resource"
 msgstr "උපුටාගත් මූලාශ්‍රය කී වෙනි සංස්කරණයද යන වග"
 
-#: base/models.py:212
+#: base/models.py:215
 msgid "brief narrative summary of the content of the resource(s)"
 msgstr "මූලාශ්‍රයේ (මූලාශ්‍ර වල) අන්තර්ගතය පිළිබඳ කෙටි සාරාංශගත විස්තරයක්"
 
-#: base/models.py:213
+#: base/models.py:216
 msgid "summary of the intentions with which the resource(s) was developed"
 msgstr "මූලාශ්‍රයේ (මූලාශ්‍ර වල) පරමාර්ථය පිළිබඳ සාරාංශයක්"
 
-#: base/models.py:214
+#: base/models.py:217
 msgid ""
 "frequency with which modifications and deletions are made to the data after "
 "it is first produced"
 msgstr "දත්ත නිපදවීමෙන් පසු ඒවාට සිදු කරන වෙනස්කම් සහ මකා දැමීම් වාර ගනන"
 
-#: base/models.py:216
+#: base/models.py:219
 msgid ""
 "commonly used word(s) or formalised word(s) or phrase(s) used to describe "
 "the subject (space or comma-separated"
@@ -202,15 +207,15 @@ msgstr ""
 "වස්තුව විස්තර කිරීමට යොදා ගන්නා පොදුවේ භාවිතා වන වචන(ය) හෝ රූපීකෘත වචන (ය) හෝ වාක්‍ය "
 "ඛණ්ඩ(ය) (හිස්තැනකින් හෝ කොමාවකින් වෙන් කර ලියන්න"
 
-#: base/models.py:218
+#: base/models.py:221
 msgid "keyword identifies a location"
 msgstr "මුලපදය ස්ථානයක් හඳුනාගනී"
 
-#: base/models.py:219
+#: base/models.py:222
 msgid "limitation(s) placed upon the access or use of the data."
 msgstr "දත්ත වලට පිවිසීම හෝ භාවිතය සම්බන්ධයෙන් පනවා ඇති සීමා කිරීම්"
 
-#: base/models.py:220
+#: base/models.py:223
 msgid ""
 "other restrictions and legal prerequisites for accessing and using the "
 "resource or metadata"
@@ -218,15 +223,15 @@ msgstr ""
 "සම්පත හෝ මෙටාදත්ත වලට පිවිසීමට හෝ ඒවා භාවිතා කිරීමට පනවා ඇති වෙනත් සම්බාධක සහ නීතිමය "
 "අවශ්‍යතා"
 
-#: base/models.py:222
+#: base/models.py:225
 msgid "license of the dataset"
 msgstr ""
 
-#: base/models.py:223
+#: base/models.py:226
 msgid "language used within the dataset"
 msgstr "දත්ත කට්ටලය තුල භාවිතා කර ඇති භාෂාව"
 
-#: base/models.py:224
+#: base/models.py:227
 msgid ""
 "high-level geographic data thematic classification to assist in the grouping "
 "and search of available geographic data sets."
@@ -234,19 +239,19 @@ msgstr ""
 "පවතින භූගෝලීය දත්ත කට්ටලයන් සමූහනයට සහ සෙවීමට සහය දැක්වීම සඳහා ඉහල මට්ටමේ භූගෝලීය දත්ත "
 "තේමානුගතව වර්ගීකරණය "
 
-#: base/models.py:226
+#: base/models.py:229
 msgid "method used to represent geographic information in the dataset."
 msgstr "දත්ත කට්ටලය තුල ඇති භූගෝලීය තොරතුරු නියෝජනය කිරීමට භාවිත කර ඇති ක්‍රමය"
 
-#: base/models.py:227
+#: base/models.py:230
 msgid "time period covered by the content of the dataset (start)"
 msgstr "දත්ත කට්ටලයේ අන්තර්ගතයෙන් ආවරණය වන කාල සීමාව (ආරම්භයේදී )"
 
-#: base/models.py:228
+#: base/models.py:231
 msgid "time period covered by the content of the dataset (end)"
 msgstr "දත්ත කට්ටලයේ අන්තර්ගතයෙන් ආවරණය වන කාල සීමාව (අවසානයේදී )"
 
-#: base/models.py:229
+#: base/models.py:232
 msgid ""
 "information about on-line sources from which the dataset, specification, or "
 "community profile name and extended metadata elements can be obtained"
@@ -254,141 +259,141 @@ msgstr ""
 "දත්ත කට්ටලය, විශේෂීකරණය හෝ ප්‍රජා පැතිකඩෙහි නම සහ දීර්ඝකරන ලද මෙටාදත්ත මූලාවයව ලබා ගත "
 "හැකි මාර්ගගත ප්‍රභව පිළිබඳ තොරතුරු"
 
-#: base/models.py:231
+#: base/models.py:234
 msgid "detailed text description of what the online resource is/does"
 msgstr "මාර්ගගත මූලාශ්‍රයේ /වල කාර්යය පිළිබඳව සවිස්තරාත්මක සටහනක්"
 
-#: base/models.py:232
+#: base/models.py:235
 msgid ""
 "general explanation of the data producer's knowledge about the lineage of a "
 "dataset"
 msgstr "දත්ත කට්ටලයක ආර පිළිබඳව දත්ත නිෂ්පාදකගේ දැනීම ගැන සාමාන්‍ය පැහැදිලි කිරීමක්"
 
-#: base/models.py:238
+#: base/models.py:241
 msgid "title"
 msgstr "මාතෘකාව"
 
-#: base/models.py:238
+#: base/models.py:241
 msgid "name by which the cited resource is known"
 msgstr "උපුටාගත් මූලාශ්‍රය හඳුන්වන නාමය"
 
-#: base/models.py:239
+#: base/models.py:242
 msgid "date"
 msgstr "දිනය"
 
-#: base/models.py:240
+#: base/models.py:243
 msgid "date type"
 msgstr "දින මාදිළිය"
 
-#: base/models.py:242
+#: base/models.py:245
 msgid "edition"
 msgstr "සංස්කරණය"
 
-#: base/models.py:243
+#: base/models.py:246
 msgid "abstract"
 msgstr "සාරාංශය"
 
-#: base/models.py:244
+#: base/models.py:247
 msgid "purpose"
 msgstr "අරමුණ"
 
-#: base/models.py:245
+#: base/models.py:248
 msgid "maintenance frequency"
 msgstr "නඩත්තු වාර ගණන"
 
-#: base/models.py:248 groups/models.py:41 people/models.py:89
+#: base/models.py:251 groups/models.py:41 people/models.py:92
 msgid "keywords"
 msgstr "මුලපදය"
 
-#: base/models.py:249
+#: base/models.py:252
 msgid "keywords region"
 msgstr "මුලපද කලාපය"
 
-#: base/models.py:252
+#: base/models.py:255
 msgid "restrictions"
 msgstr "බාධා කිරීම්"
 
-#: base/models.py:256
+#: base/models.py:259
 msgid "restrictions other"
 msgstr "වෙනත් සීමා කිරීම්"
 
-#: base/models.py:261
+#: base/models.py:264
 msgid "language"
 msgstr "භාෂාව"
 
-#: base/models.py:272
+#: base/models.py:275
 msgid "temporal extent start"
 msgstr ""
 
-#: base/models.py:274
+#: base/models.py:277
 msgid "temporal extent end"
 msgstr ""
 
-#: base/models.py:277
+#: base/models.py:280
 msgid "supplemental information"
 msgstr "අතිරේක තොරතුරු"
 
-#: base/models.py:278
+#: base/models.py:281
 msgid "any other descriptive information about the dataset"
 msgstr "දත්ත කට්ටලය පිළිබඳ වෙනත් ඕනෑම සවිස්තරාත්මක තොරතුරක්"
 
-#: base/models.py:281
+#: base/models.py:284
 msgid "distribution URL"
 msgstr "බෙදාහැරීමෙ URL එක"
 
-#: base/models.py:283
+#: base/models.py:286
 msgid "distribution description"
 msgstr "බෙදාහැරීමෙ විස්තරය"
 
-#: base/models.py:287
+#: base/models.py:290
 msgid "data quality statement"
 msgstr "දත්ත වල ගුණාත්මක භාවය"
 
-#: base/models.py:302
+#: base/models.py:305
 msgid "CSW typename"
 msgstr "CSW වර්ග නාමය"
 
-#: base/models.py:304
+#: base/models.py:307
 msgid "CSW schema"
 msgstr ""
 
-#: base/models.py:309
+#: base/models.py:312
 msgid "CSW source"
 msgstr "CSW ප්‍රභවය"
 
-#: base/models.py:310
+#: base/models.py:313
 msgid "CSW insert date"
 msgstr "CSW ඇතුලත් කරන දිනය"
 
-#: base/models.py:311
+#: base/models.py:314
 msgid "CSW type"
 msgstr "CSW වර්ගය"
 
-#: base/models.py:312
+#: base/models.py:315
 msgid "CSW anytext"
 msgstr ""
 
-#: base/models.py:313
+#: base/models.py:316
 msgid "CSW WKT geometry"
 msgstr "CSW WKT ජ්‍යාමිතිය"
 
-#: base/models.py:326
+#: base/models.py:329
 msgid "Should this resource be advertised in home page?"
 msgstr ""
 
-#: base/models.py:327
+#: base/models.py:330
 msgid "Should this resource be published and searchable?"
 msgstr ""
 
-#: base/models.py:660
+#: base/models.py:696
 msgid "For example \"kml\""
 msgstr "උදාහරණයක් ලෙස \"kml\""
 
-#: base/models.py:662
+#: base/models.py:698
 msgid "For example \"View in Google Earth\""
 msgstr "උදාහරණයක් ලෙස \"view in Google Earth\""
 
-#: base/models.py:663
+#: base/models.py:699
 msgid "For example \"text/xml\""
 msgstr "උදාහරණයක් ලෙස \"text/xml\""
 
@@ -416,7 +421,7 @@ msgstr "හිමිකරු"
 
 #: base/templates/base/_resourcebase_contact_snippet.html:14
 #: base/templates/base/resourcebase_info_panel.html:66
-#: documents/templates/documents/document_metadata.html:50
+#: documents/templates/documents/document_metadata.html:48
 #: layers/templates/layers/layer_metadata.html:99
 #: maps/templates/maps/map_metadata.html:51
 msgid "Point of Contact"
@@ -446,7 +451,7 @@ msgid "Date"
 msgstr "දිනය"
 
 #: base/templates/base/resourcebase_info_panel.html:34
-#: layers/templates/layers/layer_detail.html:329
+#: layers/templates/layers/layer_detail.html:337
 msgid "Type"
 msgstr "වර්ගය"
 
@@ -457,6 +462,7 @@ msgid "Keywords"
 msgstr "මුලපද"
 
 #: base/templates/base/resourcebase_info_panel.html:56
+#: templates/search/_region_filter.html:5
 msgid "Regions"
 msgstr "කලාප"
 
@@ -497,28 +503,23 @@ msgstr "අමතර විස්තර"
 msgid "Spatial Representation Type"
 msgstr ""
 
-#: documents/forms.py:68 groups/models.py:42 layers/forms.py:95
-#: maps/forms.py:81 people/forms.py:82
-msgid "A space or comma-separated list of keywords"
-msgstr "එක් එක් මුලපදය  එක හිස්තැනකින් හෝ කොමාවකින් වෙන් කර ඇතුලත් කරන්න"
-
-#: documents/forms.py:183 documents/forms.py:251
+#: documents/forms.py:92 documents/forms.py:160
 msgid "Document must be a file or url."
 msgstr ""
 
-#: documents/forms.py:187 documents/forms.py:255
+#: documents/forms.py:96 documents/forms.py:164
 msgid "A document cannot have both a file and a url."
 msgstr ""
 
-#: documents/forms.py:200 documents/forms.py:268
+#: documents/forms.py:109 documents/forms.py:177
 msgid "This file type is not allowed"
 msgstr ""
 
-#: documents/forms.py:218
+#: documents/forms.py:127
 msgid "Link to"
 msgstr "සම්බන්ධ කරන්න"
 
-#: documents/forms.py:240
+#: documents/forms.py:149
 msgid "Permissions must be valid JSON."
 msgstr ""
 
@@ -558,7 +559,7 @@ msgstr "මෙම ලේඛනය බැලීමට ඔබට අවසර න�
 msgid "You are not allowed to view this document."
 msgstr "මෙම ලේඛනය නැරඹීමට ඔබට අවසර නැත."
 
-#: documents/views.py:196
+#: documents/views.py:201
 msgid "You are not allowed to edit this document."
 msgstr ""
 
@@ -611,7 +612,7 @@ msgid "Rate this document"
 msgstr "මෙම ලේඛනය ප්‍රමාණනය කරන්න"
 
 #: documents/templates/documents/document_detail.html:65
-#: layers/templates/layers/layer_detail.html:110
+#: layers/templates/layers/layer_detail.html:118
 #: maps/templates/maps/map_detail.html:48
 msgid "Average Rating"
 msgstr "සමාන්‍ය ප්‍රමාණනයන්"
@@ -623,7 +624,7 @@ msgid "Download Document"
 msgstr ""
 
 #: documents/templates/documents/document_detail.html:89
-#: layers/templates/layers/layer_detail.html:131
+#: layers/templates/layers/layer_detail.html:139
 msgid "Request Download"
 msgstr ""
 
@@ -633,15 +634,15 @@ msgid "Edit Document"
 msgstr "ලේඛනය සංස්කරණය කරන්න"
 
 #: documents/templates/documents/document_detail.html:111
-#: layers/templates/layers/layer_detail.html:179
-#: layers/templates/layers/layer_detail.html:188
+#: layers/templates/layers/layer_detail.html:187
+#: layers/templates/layers/layer_detail.html:196
 #: maps/templates/maps/map_detail.html:108
 #: maps/templates/maps/map_detail.html:122
 msgid "Edit"
 msgstr ""
 
 #: documents/templates/documents/document_detail.html:119
-#: layers/templates/layers/layer_detail.html:206
+#: layers/templates/layers/layer_detail.html:214
 msgid "Replace"
 msgstr ""
 
@@ -649,16 +650,16 @@ msgstr ""
 #: groups/templates/groups/group_members.html:33
 #: groups/templates/groups/group_members.html:59
 #: groups/templates/groups/group_members.html:86
-#: layers/templates/layers/layer_detail.html:212
+#: layers/templates/layers/layer_detail.html:220
 #: maps/templates/maps/map_detail.html:123
 msgid "Remove"
 msgstr ""
 
 #: documents/templates/documents/document_detail.html:129
 #: documents/templates/documents/document_detail.html:153
-#: layers/templates/layers/layer_detail.html:153
-#: layers/templates/layers/layer_detail.html:219
-#: layers/templates/layers/layer_detail.html:245
+#: layers/templates/layers/layer_detail.html:161
+#: layers/templates/layers/layer_detail.html:227
+#: layers/templates/layers/layer_detail.html:253
 #: maps/templates/maps/map_detail.html:85
 #: maps/templates/maps/map_detail.html:129
 #: templates/_bulk_permissions_form.html:19
@@ -667,8 +668,8 @@ msgstr ""
 
 #: documents/templates/documents/document_detail.html:136
 #: documents/templates/documents/document_detail.html:143
-#: layers/templates/layers/layer_detail.html:227
 #: layers/templates/layers/layer_detail.html:235
+#: layers/templates/layers/layer_detail.html:243
 msgid "Download Metadata"
 msgstr "මෙටාදත්ත බාගත කරන්න"
 
@@ -691,7 +692,7 @@ msgstr "මෙම ලේඛනය කිසියම් සිතියමකට
 #: documents/templates/documents/document_detail.html:176
 #: documents/templates/documents/document_upload.html:31
 #: groups/templates/groups/group_detail.html:60
-#: layers/templates/layers/layer_detail.html:318
+#: layers/templates/layers/layer_detail.html:326
 #: layers/templates/layers/layer_replace.html:94
 #: layers/templates/upload/layer_upload.html:93
 #: maps/templates/maps/map_detail.html:175 people/admin.py:55
@@ -725,23 +726,17 @@ msgid "Edit Metadata"
 msgstr "මෙටා දත්ත සංස්කරණය කරන්න"
 
 #: documents/templates/documents/document_metadata.html:22
-#, python-format
-msgid ""
-"\n"
-"        Editing details for %(document_title)s\n"
-"      "
+msgid "Editing details for"
 msgstr ""
-"\n"
-"%(document_title)s සඳහා සංස්කරණ කටයුතු"
 
-#: documents/templates/documents/document_metadata.html:28
+#: documents/templates/documents/document_metadata.html:26
 #: layers/templates/layers/layer_metadata.html:29
 #: maps/templates/maps/map_metadata.html:29
 msgid "Error updating metadata.  Please check the following fields: "
 msgstr ""
 
-#: documents/templates/documents/document_metadata.html:43
-#: documents/templates/documents/document_metadata.html:77
+#: documents/templates/documents/document_metadata.html:41
+#: documents/templates/documents/document_metadata.html:75
 #: groups/templates/groups/group_update.html:26
 #: layers/templates/layers/layer_metadata.html:51
 #: layers/templates/layers/layer_metadata.html:110
@@ -750,7 +745,7 @@ msgstr ""
 msgid "Update"
 msgstr "යාවත්කාලීන කිරිම"
 
-#: documents/templates/documents/document_metadata.html:55
+#: documents/templates/documents/document_metadata.html:53
 #: layers/templates/layers/layer_metadata.html:104
 #: maps/templates/maps/map_metadata.html:56
 msgid "Metadata Provider"
@@ -845,19 +840,19 @@ msgstr "PDF"
 msgid "PNG"
 msgstr "PNG"
 
-#: geoserver/signals.py:284
+#: geoserver/signals.py:285
 msgid "Could not create a download link for layer."
 msgstr ""
 
-#: geoserver/signals.py:315
+#: geoserver/signals.py:316
 msgid "KML"
 msgstr "KML"
 
-#: geoserver/signals.py:344
+#: geoserver/signals.py:345
 msgid "Tiles"
 msgstr ""
 
-#: geoserver/signals.py:391 layers/templates/layers/layer_detail.html:253
+#: geoserver/signals.py:392 layers/templates/layers/layer_detail.html:261
 #: services/views.py:1272
 msgid "Legend"
 msgstr "විස්තර පාඨය"
@@ -1181,121 +1176,125 @@ msgstr ""
 msgid "sld url"
 msgstr ""
 
-#: layers/models.py:292
+#: layers/models.py:189
+msgid "File cannot be opened, maybe check the encoding"
+msgstr ""
+
+#: layers/models.py:296
 msgid "attribute name"
 msgstr "ගුණාංග නාමය"
 
-#: layers/models.py:293
+#: layers/models.py:297
 msgid "name of attribute as stored in shapefile/spatial database"
 msgstr ".shp ගොනුව/ අවකාශීය දත්ත ගබඩාව තුල ගබඩා කර ඇති පරිදි ගුණාංගයේ නම"
 
-#: layers/models.py:299
+#: layers/models.py:303
 msgid "attribute description"
 msgstr "ගුණාංගයේ විස්තරය"
 
-#: layers/models.py:300
+#: layers/models.py:304
 msgid "description of attribute to be used in metadata"
 msgstr ""
 
-#: layers/models.py:305
+#: layers/models.py:309
 msgid "attribute label"
 msgstr "ගුණාංගයේ ලේබලය"
 
-#: layers/models.py:306
+#: layers/models.py:310
 msgid "title of attribute as displayed in GeoNode"
 msgstr "GeoNode හි දිස්වන ආකාරයට ගුණාංගයේ මාතෘකාව"
 
-#: layers/models.py:312
+#: layers/models.py:316
 msgid "attribute type"
 msgstr "ගුණාංග වර්ගය"
 
-#: layers/models.py:313
+#: layers/models.py:317
 msgid "the data type of the attribute (integer, string, geometry, etc)"
 msgstr "ගුණාංගයේ දත්ත වර්ගය (පූර්ණ සංඛ්‍යා,තන්තු, ජ්‍යාමිතික යනාදී වශයෙන්)"
 
-#: layers/models.py:320
+#: layers/models.py:324
 msgid "visible?"
 msgstr "දිස්වේද?"
 
-#: layers/models.py:321
+#: layers/models.py:325
 msgid "specifies if the attribute should be displayed in identify results"
 msgstr "ප්‍රතිඵල හඳුනාගන්න තුල ගුණාංගය දිස්විය යුතු පිළිවෙල විශේෂීකරණය කරයි"
 
-#: layers/models.py:324
+#: layers/models.py:328
 msgid "display order"
 msgstr "දිස්වන පිළිවෙල"
 
-#: layers/models.py:325
+#: layers/models.py:329
 msgid ""
 "specifies the order in which attribute should be displayed in identify "
 "results"
 msgstr "ප්‍රතිඵල හඳුනාගන්න තුල ගුණාංගය දිස්විය යුතු පිළිවෙල විශේෂීකරණය කරයි"
 
-#: layers/models.py:330
+#: layers/models.py:334
 msgid "count"
 msgstr "ගණන"
 
-#: layers/models.py:331
+#: layers/models.py:335
 msgid "count value for this field"
 msgstr "මෙම ක්ෂේත්‍රය සඳහා අගය ගණනය කරන්න"
 
-#: layers/models.py:334
+#: layers/models.py:338
 msgid "min"
 msgstr "අවමය"
 
-#: layers/models.py:335
+#: layers/models.py:339
 msgid "minimum value for this field"
 msgstr "මෙම ක්ෂේත්‍රය සඳහා වන අවම අගය"
 
-#: layers/models.py:342
+#: layers/models.py:346
 msgid "max"
 msgstr "උපරිමය"
 
-#: layers/models.py:343
+#: layers/models.py:347
 msgid "maximum value for this field"
 msgstr "මෙම ක්ෂේත්‍රය සඳහා වන උපරිම අගය"
 
-#: layers/models.py:350
+#: layers/models.py:354
 msgid "average"
 msgstr "සාමාන්‍යය"
 
-#: layers/models.py:351
+#: layers/models.py:355
 msgid "average value for this field"
 msgstr "මෙම ක්ෂේත්‍රය සඳහා වන සාමාන්‍ය අගය"
 
-#: layers/models.py:358
+#: layers/models.py:362
 msgid "median"
 msgstr "මධ්‍යස්ථය"
 
-#: layers/models.py:359
+#: layers/models.py:363
 msgid "median value for this field"
 msgstr "මෙම ක්ෂේත්‍රය සඳහා මධ්‍යස්ථ අගය"
 
-#: layers/models.py:366
+#: layers/models.py:370
 msgid "standard deviation"
 msgstr "සම්මත අපගමනය"
 
-#: layers/models.py:367
+#: layers/models.py:371
 msgid "standard deviation for this field"
 msgstr "මෙම ක්ෂේත්‍රය සඳහා වන සම්මත අපගමනය"
 
-#: layers/models.py:374
+#: layers/models.py:378
 msgid "sum"
 msgstr "ඓක්‍යය"
 
-#: layers/models.py:375
+#: layers/models.py:379
 msgid "sum value for this field"
 msgstr "මෙම ක්ෂේත්‍රය සඳහා වන ඓක්‍යය"
 
-#: layers/models.py:382
+#: layers/models.py:386
 msgid "unique values for this field"
 msgstr "මෙම ක්ෂේත්‍රය සඳහා වන අනන්‍ය අගයන්"
 
-#: layers/models.py:387
+#: layers/models.py:391
 msgid "last modified"
 msgstr "අවසාන වරට වෙනස්කම් සිදු කලේ"
 
-#: layers/models.py:389
+#: layers/models.py:393
 msgid "date when attribute statistics were last updated"
 msgstr "ගුණාංගයේ සංඛ්‍යාලේඛන අවසන් වරට යාවත්කලීන කල දිනය"
 
@@ -1327,19 +1326,19 @@ msgstr "මෙම ස්ථරයේ මෙටා දත්ත වෙනස් �
 msgid "You are not permitted to view this layer"
 msgstr "මෙම ස්ථරය බැලීමට ඔබට අවසර නොමැත"
 
-#: layers/views.py:466
+#: layers/views.py:469
 msgid "You are attempting to replace a vector layer with a raster."
 msgstr ""
 
-#: layers/views.py:469
+#: layers/views.py:472
 msgid "You are attempting to replace a raster layer with a vector."
 msgstr ""
 
-#: layers/views.py:525
+#: layers/views.py:528
 msgid "Unable to delete layer"
 msgstr ""
 
-#: layers/views.py:528
+#: layers/views.py:531
 msgid ""
 "This layer is a member of a layer group, you must remove the layer from the "
 "group before deleting."
@@ -1392,109 +1391,121 @@ msgid "Attribute Name"
 msgstr "ගුණාංගයේ නම"
 
 #: layers/templates/layers/layer_detail.html:50
+#: layers/templates/layers/layer_metadata.html:82
+msgid "Label"
+msgstr "ලේබලය"
+
+#: layers/templates/layers/layer_detail.html:51
+#: layers/templates/layers/layer_metadata.html:83
+#: people/templates/people/profile_detail.html:62 services/forms.py:27
+#: services/templates/services/layers_register.html:28
+msgid "Description"
+msgstr "විස්තරය"
+
+#: layers/templates/layers/layer_detail.html:53
 msgid "Range"
 msgstr "පරාසය"
 
-#: layers/templates/layers/layer_detail.html:51
+#: layers/templates/layers/layer_detail.html:54
 msgid "Average"
 msgstr "සාමාන්‍යය"
 
-#: layers/templates/layers/layer_detail.html:52
+#: layers/templates/layers/layer_detail.html:55
 msgid "Median"
 msgstr "මධ්‍යනය"
 
-#: layers/templates/layers/layer_detail.html:53
+#: layers/templates/layers/layer_detail.html:56
 msgid "Standard Deviation"
 msgstr "සම්මත අපගමනය"
 
-#: layers/templates/layers/layer_detail.html:106
+#: layers/templates/layers/layer_detail.html:114
 msgid "Rate this layer"
 msgstr "මෙම ස්ථරය ප්‍රමාණනය කරන්න"
 
-#: layers/templates/layers/layer_detail.html:128
-#: layers/templates/layers/layer_detail.html:141
+#: layers/templates/layers/layer_detail.html:136
+#: layers/templates/layers/layer_detail.html:149
 msgid "Download Layer"
 msgstr "ස්ථරය බාගත කරන්න"
 
-#: layers/templates/layers/layer_detail.html:164
-#: layers/templates/layers/layer_detail.html:171
+#: layers/templates/layers/layer_detail.html:172
+#: layers/templates/layers/layer_detail.html:179
 msgid "Edit Layer"
 msgstr "ස්ථරය සංස්කරණය කරන්න"
 
-#: layers/templates/layers/layer_detail.html:190
+#: layers/templates/layers/layer_detail.html:198
 #: services/templates/services/service_detail.html:110
 msgid "Manage"
 msgstr ""
 
-#: layers/templates/layers/layer_detail.html:198
+#: layers/templates/layers/layer_detail.html:206
 #: maps/templates/maps/map_detail.html:115
 msgid "Set"
 msgstr ""
 
-#: layers/templates/layers/layer_detail.html:209
+#: layers/templates/layers/layer_detail.html:217
 msgid "Edit data"
 msgstr ""
 
-#: layers/templates/layers/layer_detail.html:263
+#: layers/templates/layers/layer_detail.html:271
 msgid "Maps using this layer"
 msgstr "මෙම ස්ථරය භාවිතා කරන සිතියම්"
 
-#: layers/templates/layers/layer_detail.html:265
+#: layers/templates/layers/layer_detail.html:273
 msgid "List of maps using this layer:"
 msgstr "මෙම ස්ථරය භවිතා කරන සිතියම් ලැයිස්තුව:"
 
-#: layers/templates/layers/layer_detail.html:271
+#: layers/templates/layers/layer_detail.html:279
 msgid "This layer is not currently used in any maps."
 msgstr "මෙම ස්ථරය දැනට කිසිම සිතියමක භාවිතා නොවේ"
 
-#: layers/templates/layers/layer_detail.html:276
+#: layers/templates/layers/layer_detail.html:284
 msgid "Create a map using this layer"
 msgstr "මෙම ස්ථරය භාවිතා කර සිතියමක් නිර්මාණය කරන්න"
 
-#: layers/templates/layers/layer_detail.html:277
+#: layers/templates/layers/layer_detail.html:285
 msgid "Click the button below to generate a new map based on this layer."
 msgstr "මෙම ස්ථරය මත පදනම්ව නව සිතියමක් නිර්මාණය කිරීමට පහත බොත්තම ක්ලික් කරන්න"
 
-#: layers/templates/layers/layer_detail.html:278
+#: layers/templates/layers/layer_detail.html:286
 msgid "Create a Map"
 msgstr "සිතියමක් නිර්මාණය කරන්න"
 
-#: layers/templates/layers/layer_detail.html:283
+#: layers/templates/layers/layer_detail.html:291
 msgid "Documents related to this layer"
 msgstr "මෙම ස්ථරයට සම්බන්ධ ලේඛන"
 
-#: layers/templates/layers/layer_detail.html:284
+#: layers/templates/layers/layer_detail.html:292
 msgid "List of documents related to this layer:"
 msgstr "මෙම ස්ථරයට සම්බන්ධ ලේඛන ලැයිස්තුව"
 
-#: layers/templates/layers/layer_detail.html:295
+#: layers/templates/layers/layer_detail.html:303
 msgid "Styles"
 msgstr "ශෛලීයන්"
 
-#: layers/templates/layers/layer_detail.html:296
+#: layers/templates/layers/layer_detail.html:304
 msgid ""
 "The following styles are associated with this layer. Choose a style to view "
 "it in the preview map."
 msgstr ""
 "පහත ශෛලීයන් මෙම ස්ථරය හා සම්බන්ධය. පූර්වදර්ශනය කරන සිතියමේ බැලීම සඳහා ශෛලියක් තෝරා ගන්න."
 
-#: layers/templates/layers/layer_detail.html:309
+#: layers/templates/layers/layer_detail.html:317
 msgid "No styles associated with this layer"
 msgstr "මෙම ස්ථරය හා සම්බන්ධ ශෛලීයන් නොමැත"
 
-#: layers/templates/layers/layer_detail.html:319
+#: layers/templates/layers/layer_detail.html:327
 msgid "Click the button below to change the permissions of this layer."
 msgstr "මෙම ස්ථරය සඳහා අවසරය වෙනස් කිරීමට පහත බොත්තම ක්ලික් කරන්න"
 
-#: layers/templates/layers/layer_detail.html:320
+#: layers/templates/layers/layer_detail.html:328
 msgid "Change Layer Permissions"
 msgstr "මෙම සිතියම සඳහා අවසරය වෙනස් කරන්න"
 
-#: layers/templates/layers/layer_detail.html:327
+#: layers/templates/layers/layer_detail.html:335
 msgid "External service layer"
 msgstr ""
 
-#: layers/templates/layers/layer_detail.html:328
+#: layers/templates/layers/layer_detail.html:336
 msgid "Source"
 msgstr ""
 
@@ -1541,16 +1552,6 @@ msgstr "ගුණාංග"
 #: layers/templates/layers/layer_metadata.html:81
 msgid "Attribute"
 msgstr "ගුණාංග"
-
-#: layers/templates/layers/layer_metadata.html:82
-msgid "Label"
-msgstr "ලේබලය"
-
-#: layers/templates/layers/layer_metadata.html:83
-#: people/templates/people/profile_detail.html:62 services/forms.py:27
-#: services/templates/services/layers_register.html:28
-msgid "Description"
-msgstr "විස්තරය"
 
 #: layers/templates/layers/layer_metadata.html:84
 msgid "Display Order"
@@ -2412,89 +2413,89 @@ msgstr ""
 msgid "This account is now active and can log in the site"
 msgstr ""
 
-#: people/models.py:43
+#: people/models.py:46
 msgid "Organization Name"
 msgstr "ආයතනයේ නම"
 
-#: people/models.py:47
+#: people/models.py:50
 msgid "name of the responsible organization"
 msgstr "වගකිවයුතු සංවිධානයේ නම"
 
-#: people/models.py:48 templates/500.html:76 templates/base.html:210
+#: people/models.py:51 templates/500.html:76 templates/base.html:210
 msgid "Profile"
 msgstr "පැතිකඩ"
 
-#: people/models.py:48
+#: people/models.py:51
 msgid "introduce yourself"
 msgstr ""
 
-#: people/models.py:50
+#: people/models.py:53
 msgid "Position Name"
 msgstr "තනතුර"
 
-#: people/models.py:54
+#: people/models.py:57
 msgid "role or position of the responsible person"
 msgstr "වගකිවයුතු පුද්ගලයාගේ භූමිකාව හෝ තත්ත්වය"
 
-#: people/models.py:55 people/templates/people/profile_detail.html:50
+#: people/models.py:58 people/templates/people/profile_detail.html:50
 msgid "Voice"
 msgstr "දුරකතන අංකය"
 
-#: people/models.py:56
+#: people/models.py:59
 msgid ""
 "telephone number by which individuals can speak to the responsible "
 "organization or individual"
 msgstr "වගකිවයුතු පුද්ගලයා හෝ සංවිධානය ඇමතිය හැකි දුරකතන අංකය"
 
-#: people/models.py:57
+#: people/models.py:60
 msgid "Facsimile"
 msgstr "ෆැක්ස් අංකය"
 
-#: people/models.py:58
+#: people/models.py:61
 msgid ""
 "telephone number of a facsimile machine for the responsible organization or "
 "individual"
 msgstr "වගකිවයුතු පුද්ගලයා හෝ සංවිධානය ඇමතිය හැකි වෙනත් දුරකතන අංක"
 
-#: people/models.py:60
+#: people/models.py:63
 msgid "Delivery Point"
 msgstr "ලිපිනය"
 
-#: people/models.py:64
+#: people/models.py:67
 msgid ""
 "physical and email address at which the organization or individual may be "
 "contacted"
 msgstr "අදාල සංවිධානය හෝ පුද්ගලයා වෙත යොමු විය හැකි ලිපිනය හෝ විද්‍යුත්-තැපැල් ලිපිනය "
 
-#: people/models.py:66
+#: people/models.py:69
 msgid "City"
 msgstr "නගරය"
 
-#: people/models.py:70
+#: people/models.py:73
 msgid "city of the location"
 msgstr "අදාල ස්ථානය පිහිටි නගරය"
 
-#: people/models.py:72
+#: people/models.py:75
 msgid "Administrative Area"
 msgstr "පළාත"
 
-#: people/models.py:76
+#: people/models.py:79
 msgid "state, province of the location"
 msgstr "අදාල ස්ථානය පිහිටි පළාත"
 
-#: people/models.py:78
+#: people/models.py:81
 msgid "Postal Code"
 msgstr "තැපැල් කේතය"
 
-#: people/models.py:82
+#: people/models.py:85
 msgid "ZIP or other postal code"
 msgstr "ZIP කේතය හෝ තැපැල් කේතය"
 
-#: people/models.py:88
+#: people/models.py:91
 msgid "country of the physical address"
 msgstr "ලිපිනයට අදාල රට"
 
-#: people/models.py:90
+#: people/models.py:93
 msgid ""
 "commonly used word(s) or formalised word(s) or phrase(s) used to describe "
 "the subject             (space or comma-separated"
@@ -4090,6 +4091,15 @@ msgstr ""
 #: templates/user_messages/thread_detail.html:26
 msgid "Send Reply"
 msgstr "පිළිතුරු යවන්න"
+
+#~ msgid ""
+#~ "\n"
+#~ "        Editing details for %(document_title)s\n"
+#~ "      "
+#~ msgstr ""
+#~ "\n"
+#~ "        Editing details for %(document_title)s\n"
+#~ "      "
 
 #~ msgid "Replace this Document"
 #~ msgstr "Replace this Document"

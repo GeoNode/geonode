@@ -7,13 +7,14 @@
 # Translators:
 # Translators:
 # Translators:
+# Translators:
 # Andres Alfonso Lemon Gomez <lemon.andres@gmail.com>, 2014
 msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-02-05 04:17-0600\n"
-"PO-Revision-Date: 2015-02-03 12:11+0000\n"
+"POT-Creation-Date: 2015-03-02 23:16-0600\n"
+"PO-Revision-Date: 2015-03-03 05:10+0000\n"
 "Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
 "Language-Team: Khmer (http://www.transifex.com/projects/p/geonode/language/"
 "km/)\n"
@@ -63,9 +64,13 @@ msgstr "មាន​តែ​អ្នក​ប្រើ​ប្រាស់​
 msgid "Who can manage and edit this data?"
 msgstr "តើ​នរណា​អាច​គ្រប់គ្រង​និង​កែសម្រួល​ទិន្នន័យ​នេះ​?"
 
-#: static/geonode/js/search/search.js:301
+#: static/geonode/js/search/search.js:324
 #: static_root/geonode/js/search/search.js:298
 msgid "Enter your text here ..."
+msgstr ""
+
+#: static/geonode/js/search/search.js:350
+msgid "Enter your region here ..."
 msgstr ""
 
 #: static/geonode/js/upload/FileType.js:33
@@ -116,56 +121,60 @@ msgstr "កែសម្រួល​ទិន្នន័យ​មេតា"
 msgid "Manage Styles"
 msgstr "គ្រប់គ្រង​រចនាប័ទ្ម"
 
-#: static/geonode/js/upload/LayerInfo.js:235
+#: static/geonode/js/upload/LayerInfo.js:236
+msgid "The column %1 was renamed to %2 <br/>"
+msgstr ""
+
+#: static/geonode/js/upload/LayerInfo.js:242
 #: static_root/geonode/js/upload/LayerInfo.js:235
 msgid "Your layer was successfully uploaded"
 msgstr "ស្រទាប់​របស់​អ្នក​ត្រូវ​បាន​ផ្ទុក​ឡើង​ដោយ​ជោគជ័យ"
 
-#: static/geonode/js/upload/LayerInfo.js:264
+#: static/geonode/js/upload/LayerInfo.js:271
 #: static_root/geonode/js/upload/LayerInfo.js:264
 msgid "Performing Final GeoServer Config Step"
 msgstr "ការ​ស​ម្តែ​ង GeoServer កំណត់​រចនាសម្ព័ន្ធ​ជំហាន​ចុងក្រោយ"
 
-#: static/geonode/js/upload/LayerInfo.js:279
-#: static/geonode/js/upload/LayerInfo.js:305
+#: static/geonode/js/upload/LayerInfo.js:286
+#: static/geonode/js/upload/LayerInfo.js:312
 #: static_root/geonode/js/upload/LayerInfo.js:279
 #: static_root/geonode/js/upload/LayerInfo.js:305
 msgid "You need to specify more information in order to complete your upload"
 msgstr "អ្នក​ត្រូវ​បញ្ជាក់​ព័​ត៌​មាន​បន្ថែម​ទៀត​នៅ​ក្នុង​គោល​បំណង​ដើម្បី​បញ្ចប់​ការ​ផ្ទុក​ឡើង​របស់​អ្នក"
 
-#: static/geonode/js/upload/LayerInfo.js:297
+#: static/geonode/js/upload/LayerInfo.js:304
 #: static_root/geonode/js/upload/LayerInfo.js:297
 msgid "You need to specify more information in order to complete your upload."
 msgstr "អ្នក​ត្រូវ​បញ្ជាក់​ព័​ត៌​មាន​បន្ថែម​ទៀត​នៅ​ក្នុង​គោល​បំណង​ដើម្បី​បញ្ចប់​ការ​ផ្ទុក​ឡើង​របស់​អ្នក​។"
 
-#: static/geonode/js/upload/LayerInfo.js:297
+#: static/geonode/js/upload/LayerInfo.js:304
 #: static_root/geonode/js/upload/LayerInfo.js:297
 msgid "You can continue configuring your layer."
 msgstr "អ្នក​អាច​បន្ត​ការ​កំណត់​រចនា​សម្ព័ន្ធ​ស្រទាប់​របស់​អ្នក​។"
 
-#: static/geonode/js/upload/LayerInfo.js:315
-#: static/geonode/js/upload/LayerInfo.js:400
+#: static/geonode/js/upload/LayerInfo.js:322
+#: static/geonode/js/upload/LayerInfo.js:407
 #: static_root/geonode/js/upload/LayerInfo.js:315
 #: static_root/geonode/js/upload/LayerInfo.js:400
 msgid "Unexpected Error"
 msgstr "មាន​កំហុស​ដែល​មិន​រំពឹង​ទុក"
 
-#: static/geonode/js/upload/LayerInfo.js:331
+#: static/geonode/js/upload/LayerInfo.js:338
 #: static_root/geonode/js/upload/LayerInfo.js:331
 msgid "Performing GeoServer Config Step"
 msgstr "ការ​ស​ម្តែ​ង GeoServer កំណត់​រចនាសម្ព័ន្ធ​ជំហាន​ទី"
 
-#: static/geonode/js/upload/LayerInfo.js:407
+#: static/geonode/js/upload/LayerInfo.js:414
 #: static_root/geonode/js/upload/LayerInfo.js:407
 msgid "Layer files uploaded, configuring in GeoServer"
 msgstr "ឯកសារ​ស្រទាប់​ដែល​បាន​ផ្ទុក​ឡើង​, កំណត់​រចនាសម្ព័ន្ធ​ក្នុង​ការ GeoServer"
 
-#: static/geonode/js/upload/LayerInfo.js:422
+#: static/geonode/js/upload/LayerInfo.js:429
 #: static_root/geonode/js/upload/LayerInfo.js:422
 msgid "Select or create a Geogig repository."
 msgstr ""
 
-#: static/geonode/js/upload/LayerInfo.js:517
+#: static/geonode/js/upload/LayerInfo.js:524
 #: static_root/admin/js/SelectFilter2.js:69
 #: static_root/geonode/js/upload/LayerInfo.js:517
 msgid "Remove"
