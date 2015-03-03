@@ -95,11 +95,11 @@
             for (var user in perms_users){
               var user_perms = perms_users[user];
               if (user === 'AnonymousUser'){
-                if(user_perms.indexOf('view_resourcebase') > -1){
-                  $('#perms_view_anyone').prop('checked', true);;
+                if(user_perms.indexOf('view_resourcebase') == -1){
+                  $('#perms_view_anyone').prop('checked', false);
                 }
-                if(user_perms.indexOf('download_resourcebase') > -1){
-                  $('#perms_download_resourcebase_anyone').prop('checked', true);;
+                if(user_perms.indexOf('download_resourcebase') == -1){
+                  $('#perms_download_resourcebase_anyone').prop('checked', false);
                 }
               }else{
                 for (var i=0;i<user_perms.length;i++){
@@ -116,8 +116,16 @@
               }          
             }
             // If "anyone" is checked then don't show all the users in the view perms field
-            if (perms_users.hasOwnProperty('AnonymousUser')){users.view_resourcebase=[]};
+            if (perms_users.hasOwnProperty('AnonymousUser') 
+              && perms_users['AnonymousUser'].indexOf('view_resourcebase') > -1){
+              users.view_resourcebase=[]
+            };
             
+            if (perms_users.hasOwnProperty('AnonymousUser') 
+              && perms_users['AnonymousUser'].indexOf('download_resourcebase') > -1){
+              users.download_resourcebase=[]
+            };
+
             for (var perm in users){
               if(['change_resourcebase', 'delete_resourcebase', 'change_resourcebase_permissions', 'publish_resourcebase'].indexOf(user_perms[i]) >= 0){
                 if(users['manage_resourcebase'].indexOf(user)<0){
