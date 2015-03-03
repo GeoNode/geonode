@@ -7,13 +7,14 @@
 # Translators:
 # Translators:
 # Translators:
+# Translators:
 # Andres Alfonso Lemon Gomez <lemon.andres@gmail.com>, 2014
 msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-02-05 04:17-0600\n"
-"PO-Revision-Date: 2015-02-03 12:11+0000\n"
+"POT-Creation-Date: 2015-03-02 23:16-0600\n"
+"PO-Revision-Date: 2015-03-03 05:10+0000\n"
 "Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
 "Language-Team: Hungarian (http://www.transifex.com/projects/p/geonode/"
 "language/hu/)\n"
@@ -63,9 +64,13 @@ msgstr "Csak a következő felhasználók vagy csoportok:"
 msgid "Who can manage and edit this data?"
 msgstr "Ki kezelheti és szerkesztheti az adatokat?"
 
-#: static/geonode/js/search/search.js:301
+#: static/geonode/js/search/search.js:324
 #: static_root/geonode/js/search/search.js:298
 msgid "Enter your text here ..."
+msgstr ""
+
+#: static/geonode/js/search/search.js:350
+msgid "Enter your region here ..."
 msgstr ""
 
 #: static/geonode/js/upload/FileType.js:33
@@ -116,56 +121,60 @@ msgstr "Metaadatok szerkesztése"
 msgid "Manage Styles"
 msgstr "Stílusok kezelése"
 
-#: static/geonode/js/upload/LayerInfo.js:235
+#: static/geonode/js/upload/LayerInfo.js:236
+msgid "The column %1 was renamed to %2 <br/>"
+msgstr ""
+
+#: static/geonode/js/upload/LayerInfo.js:242
 #: static_root/geonode/js/upload/LayerInfo.js:235
 msgid "Your layer was successfully uploaded"
 msgstr "A fázist sikeresen feltöltve"
 
-#: static/geonode/js/upload/LayerInfo.js:264
+#: static/geonode/js/upload/LayerInfo.js:271
 #: static_root/geonode/js/upload/LayerInfo.js:264
 msgid "Performing Final GeoServer Config Step"
 msgstr "Előadó Final GeoServer Config lépés"
 
-#: static/geonode/js/upload/LayerInfo.js:279
-#: static/geonode/js/upload/LayerInfo.js:305
+#: static/geonode/js/upload/LayerInfo.js:286
+#: static/geonode/js/upload/LayerInfo.js:312
 #: static_root/geonode/js/upload/LayerInfo.js:279
 #: static_root/geonode/js/upload/LayerInfo.js:305
 msgid "You need to specify more information in order to complete your upload"
 msgstr "Meg kell adnod több információt ahhoz, hogy a teljes feltöltés"
 
-#: static/geonode/js/upload/LayerInfo.js:297
+#: static/geonode/js/upload/LayerInfo.js:304
 #: static_root/geonode/js/upload/LayerInfo.js:297
 msgid "You need to specify more information in order to complete your upload."
 msgstr "Meg kell adnod több információt ahhoz, hogy befejezze a feltöltés."
 
-#: static/geonode/js/upload/LayerInfo.js:297
+#: static/geonode/js/upload/LayerInfo.js:304
 #: static_root/geonode/js/upload/LayerInfo.js:297
 msgid "You can continue configuring your layer."
 msgstr "Folytathatja konfigurálni a réteg."
 
-#: static/geonode/js/upload/LayerInfo.js:315
-#: static/geonode/js/upload/LayerInfo.js:400
+#: static/geonode/js/upload/LayerInfo.js:322
+#: static/geonode/js/upload/LayerInfo.js:407
 #: static_root/geonode/js/upload/LayerInfo.js:315
 #: static_root/geonode/js/upload/LayerInfo.js:400
 msgid "Unexpected Error"
 msgstr "Váratlan hiba"
 
-#: static/geonode/js/upload/LayerInfo.js:331
+#: static/geonode/js/upload/LayerInfo.js:338
 #: static_root/geonode/js/upload/LayerInfo.js:331
 msgid "Performing GeoServer Config Step"
 msgstr "Előadó GeoServer Config lépés"
 
-#: static/geonode/js/upload/LayerInfo.js:407
+#: static/geonode/js/upload/LayerInfo.js:414
 #: static_root/geonode/js/upload/LayerInfo.js:407
 msgid "Layer files uploaded, configuring in GeoServer"
 msgstr "Réteg feltöltött fájlok, konfigurálása a GeoServer"
 
-#: static/geonode/js/upload/LayerInfo.js:422
+#: static/geonode/js/upload/LayerInfo.js:429
 #: static_root/geonode/js/upload/LayerInfo.js:422
 msgid "Select or create a Geogig repository."
 msgstr ""
 
-#: static/geonode/js/upload/LayerInfo.js:517
+#: static/geonode/js/upload/LayerInfo.js:524
 #: static_root/admin/js/SelectFilter2.js:69
 #: static_root/geonode/js/upload/LayerInfo.js:517
 msgid "Remove"

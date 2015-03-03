@@ -7,13 +7,14 @@
 # Translators:
 # Translators:
 # Translators:
+# Translators:
 # Andres Alfonso Lemon Gomez <lemon.andres@gmail.com>, 2014
 msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-02-05 04:17-0600\n"
-"PO-Revision-Date: 2015-02-05 10:10+0000\n"
+"POT-Creation-Date: 2015-03-02 23:15-0600\n"
+"PO-Revision-Date: 2015-03-03 05:06+0000\n"
 "Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
 "Language-Team: Finnish (http://www.transifex.com/projects/p/geonode/language/"
 "fi/)\n"
@@ -23,11 +24,11 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: utils.py:42
+#: utils.py:44
 msgid "Invalid permission level."
 msgstr "Virheellinen lupaa tasolla."
 
-#: utils.py:490
+#: utils.py:494
 msgid "Permission Denied"
 msgstr "Ei lupaa"
 
@@ -147,49 +148,53 @@ msgstr "Tiedot päivitetään kolmen kuukauden välein"
 msgid "No information provided"
 msgstr "Ei tiedot"
 
-#: base/forms.py:35 base/templates/base/resourcebase_info_panel.html:46
-#: documents/templates/documents/document_metadata.html:60
+#: base/forms.py:43 base/templates/base/resourcebase_info_panel.html:46
+#: documents/templates/documents/document_metadata.html:58
 #: layers/templates/layers/layer_metadata.html:63
 #: maps/templates/maps/map_metadata.html:61
 msgid "Category"
 msgstr "Luokka"
 
-#: base/forms.py:44
+#: base/forms.py:52
 msgid "Category is required."
 msgstr "Luokka vaaditaan."
 
-#: base/models.py:41 services/models.py:85
+#: base/forms.py:105 groups/models.py:42 people/forms.py:82
+msgid "A space or comma-separated list of keywords"
+msgstr "Tilaa tai pilkulla erotettu lista avainsanoja"
+
+#: base/models.py:44 services/models.py:85
 msgid "function performed by the responsible party"
 msgstr "suorittama toiminto vastaava osapuoli"
 
-#: base/models.py:209
+#: base/models.py:212
 msgid "reference date for the cited resource"
 msgstr "viitepäiväksi mainittu resurssi"
 
-#: base/models.py:210
+#: base/models.py:213
 msgid "identification of when a given event occurred"
 msgstr "tunnistaminen, kun tietty tapahtuma sattui"
 
-#: base/models.py:211
+#: base/models.py:214
 msgid "version of the cited resource"
 msgstr "versio mainittu resurssi"
 
-#: base/models.py:212
+#: base/models.py:215
 msgid "brief narrative summary of the content of the resource(s)"
 msgstr "lyhyt kerronta yhteenveto sisällöstä resurssi (t)"
 
-#: base/models.py:213
+#: base/models.py:216
 msgid "summary of the intentions with which the resource(s) was developed"
 msgstr "Yhteenveto aikeet jolla resurssi (t) kehitettiin"
 
-#: base/models.py:214
+#: base/models.py:217
 msgid ""
 "frequency with which modifications and deletions are made to the data after "
 "it is first produced"
 msgstr ""
 "taajuus, jolla muutokset ja poistot tehdään tietoja, kun se on ensin tuotettu"
 
-#: base/models.py:216
+#: base/models.py:219
 msgid ""
 "commonly used word(s) or formalised word(s) or phrase(s) used to describe "
 "the subject (space or comma-separated"
@@ -197,15 +202,15 @@ msgstr ""
 "yleisesti käytetty sana (t) tai virallisesti sana (t) tai lauseke (t) "
 "käytetään kuvaamaan aihe (tilan tai pilkulla erotettuna"
 
-#: base/models.py:218
+#: base/models.py:221
 msgid "keyword identifies a location"
 msgstr "Hakusanalla tunnistaa sijainti"
 
-#: base/models.py:219
+#: base/models.py:222
 msgid "limitation(s) placed upon the access or use of the data."
 msgstr "rajoitus (s) asettaneet pääsy tai tietojen käyttöä."
 
-#: base/models.py:220
+#: base/models.py:223
 msgid ""
 "other restrictions and legal prerequisites for accessing and using the "
 "resource or metadata"
@@ -213,15 +218,15 @@ msgstr ""
 "muut rajoitukset ja oikeudelliset edellytykset ja käyttämällä resurssin tai "
 "metatiedon"
 
-#: base/models.py:222
+#: base/models.py:225
 msgid "license of the dataset"
 msgstr "lisenssi aineisto"
 
-#: base/models.py:223
+#: base/models.py:226
 msgid "language used within the dataset"
 msgstr "kieltä käytetään aineisto"
 
-#: base/models.py:224
+#: base/models.py:227
 msgid ""
 "high-level geographic data thematic classification to assist in the grouping "
 "and search of available geographic data sets."
@@ -229,19 +234,19 @@ msgstr ""
 "korkean tason paikkatieto temaattinen luokittelu auttaa ryhmittely ja "
 "etsimään käytettävissä paikkatiedon sarjaa."
 
-#: base/models.py:226
+#: base/models.py:229
 msgid "method used to represent geographic information in the dataset."
 msgstr "menetelmää käytetään edustamaan paikkatiedon aineisto."
 
-#: base/models.py:227
+#: base/models.py:230
 msgid "time period covered by the content of the dataset (start)"
 msgstr "ajanjaksoa, jota sisällöstä aineisto (alku)"
 
-#: base/models.py:228
+#: base/models.py:231
 msgid "time period covered by the content of the dataset (end)"
 msgstr "ajanjaksoa, jota sisällöstä aineisto (pää)"
 
-#: base/models.py:229
+#: base/models.py:232
 msgid ""
 "information about on-line sources from which the dataset, specification, or "
 "community profile name and extended metadata elements can be obtained"
@@ -249,141 +254,141 @@ msgstr ""
 "tietoa online-lähteitä, joista aineisto, erittely, tai yhteisön profiilin "
 "nimi ja laajennettu Metatietoelementtien voidaan saada"
 
-#: base/models.py:231
+#: base/models.py:234
 msgid "detailed text description of what the online resource is/does"
 msgstr "yksityiskohtaista tekstiä kuvaus siitä, mitä online-resurssi on / ei"
 
-#: base/models.py:232
+#: base/models.py:235
 msgid ""
 "general explanation of the data producer's knowledge about the lineage of a "
 "dataset"
 msgstr "yleinen selitys tietojen tuottajan tietoa sukujuuret aineisto"
 
-#: base/models.py:238
+#: base/models.py:241
 msgid "title"
 msgstr "otsikko"
 
-#: base/models.py:238
+#: base/models.py:241
 msgid "name by which the cited resource is known"
 msgstr "nimen, jolla mainittu resurssi tunnetaan"
 
-#: base/models.py:239
+#: base/models.py:242
 msgid "date"
 msgstr "päivämäärä"
 
-#: base/models.py:240
+#: base/models.py:243
 msgid "date type"
 msgstr "päivä tyyppi"
 
-#: base/models.py:242
+#: base/models.py:245
 msgid "edition"
 msgstr "painos"
 
-#: base/models.py:243
+#: base/models.py:246
 msgid "abstract"
 msgstr "abstrakti"
 
-#: base/models.py:244
+#: base/models.py:247
 msgid "purpose"
 msgstr "tarkoitus"
 
-#: base/models.py:245
+#: base/models.py:248
 msgid "maintenance frequency"
 msgstr "ylläpito taajuus"
 
-#: base/models.py:248 groups/models.py:41 people/models.py:89
+#: base/models.py:251 groups/models.py:41 people/models.py:92
 msgid "keywords"
 msgstr "avainsanoja"
 
-#: base/models.py:249
+#: base/models.py:252
 msgid "keywords region"
 msgstr "Avainsanat alue"
 
-#: base/models.py:252
+#: base/models.py:255
 msgid "restrictions"
 msgstr "rajoitukset"
 
-#: base/models.py:256
+#: base/models.py:259
 msgid "restrictions other"
 msgstr "muita rajoituksia"
 
-#: base/models.py:261
+#: base/models.py:264
 msgid "language"
 msgstr "kieli"
 
-#: base/models.py:272
+#: base/models.py:275
 msgid "temporal extent start"
 msgstr "ajallinen laajuus alku"
 
-#: base/models.py:274
+#: base/models.py:277
 msgid "temporal extent end"
 msgstr "ajallinen laajuus lopussa"
 
-#: base/models.py:277
+#: base/models.py:280
 msgid "supplemental information"
 msgstr "täydentävää tietoa"
 
-#: base/models.py:278
+#: base/models.py:281
 msgid "any other descriptive information about the dataset"
 msgstr "muita kuvailevia tietoja aineisto"
 
-#: base/models.py:281
+#: base/models.py:284
 msgid "distribution URL"
 msgstr "jakelu URL"
 
-#: base/models.py:283
+#: base/models.py:286
 msgid "distribution description"
 msgstr "jakelu kuvaus"
 
-#: base/models.py:287
+#: base/models.py:290
 msgid "data quality statement"
 msgstr "Tietojen laadun selvitys"
 
-#: base/models.py:302
+#: base/models.py:305
 msgid "CSW typename"
 msgstr "CSW typename"
 
-#: base/models.py:304
+#: base/models.py:307
 msgid "CSW schema"
 msgstr "CSW skeema"
 
-#: base/models.py:309
+#: base/models.py:312
 msgid "CSW source"
 msgstr "CSW lähde"
 
-#: base/models.py:310
+#: base/models.py:313
 msgid "CSW insert date"
 msgstr "CSW päivämäärä"
 
-#: base/models.py:311
+#: base/models.py:314
 msgid "CSW type"
 msgstr "CSW tyyppi"
 
-#: base/models.py:312
+#: base/models.py:315
 msgid "CSW anytext"
 msgstr "CSW anytext"
 
-#: base/models.py:313
+#: base/models.py:316
 msgid "CSW WKT geometry"
 msgstr "CSW WKT geometria"
 
-#: base/models.py:326
+#: base/models.py:329
 msgid "Should this resource be advertised in home page?"
 msgstr "Jos tämä resurssi on mainostettu etusivulle?"
 
-#: base/models.py:327
+#: base/models.py:330
 msgid "Should this resource be published and searchable?"
 msgstr "Jos tämä resurssi julkaistaan ​​haettavaksi?"
 
-#: base/models.py:660
+#: base/models.py:696
 msgid "For example \"kml\""
 msgstr "Esimerkiksi \"KML\""
 
-#: base/models.py:662
+#: base/models.py:698
 msgid "For example \"View in Google Earth\""
 msgstr "Esimerkiksi \"Näytä Google Earthissa\""
 
-#: base/models.py:663
+#: base/models.py:699
 msgid "For example \"text/xml\""
 msgstr "Esimerkiksi \"text / xml\""
 
@@ -411,7 +416,7 @@ msgstr "Omistaja"
 
 #: base/templates/base/_resourcebase_contact_snippet.html:14
 #: base/templates/base/resourcebase_info_panel.html:66
-#: documents/templates/documents/document_metadata.html:50
+#: documents/templates/documents/document_metadata.html:48
 #: layers/templates/layers/layer_metadata.html:99
 #: maps/templates/maps/map_metadata.html:51
 msgid "Point of Contact"
@@ -441,7 +446,7 @@ msgid "Date"
 msgstr "Päivämäärä"
 
 #: base/templates/base/resourcebase_info_panel.html:34
-#: layers/templates/layers/layer_detail.html:329
+#: layers/templates/layers/layer_detail.html:337
 msgid "Type"
 msgstr "Tyyppi"
 
@@ -452,6 +457,7 @@ msgid "Keywords"
 msgstr "Avainsanat"
 
 #: base/templates/base/resourcebase_info_panel.html:56
+#: templates/search/_region_filter.html:5
 msgid "Regions"
 msgstr "Alueet"
 
@@ -492,28 +498,23 @@ msgstr "Täydentävät tiedot"
 msgid "Spatial Representation Type"
 msgstr "Luovan Tyyppi"
 
-#: documents/forms.py:68 groups/models.py:42 layers/forms.py:95
-#: maps/forms.py:81 people/forms.py:82
-msgid "A space or comma-separated list of keywords"
-msgstr "Tilaa tai pilkulla erotettu lista avainsanoja"
-
-#: documents/forms.py:183 documents/forms.py:251
+#: documents/forms.py:92 documents/forms.py:160
 msgid "Document must be a file or url."
 msgstr "Asiakirja on tiedosto tai URL."
 
-#: documents/forms.py:187 documents/forms.py:255
+#: documents/forms.py:96 documents/forms.py:164
 msgid "A document cannot have both a file and a url."
 msgstr "Asiakirja ei voi olla sekä tiedostojen ja URL."
 
-#: documents/forms.py:200 documents/forms.py:268
+#: documents/forms.py:109 documents/forms.py:177
 msgid "This file type is not allowed"
 msgstr "Tämä tiedostotyyppi ei ole sallittu"
 
-#: documents/forms.py:218
+#: documents/forms.py:127
 msgid "Link to"
 msgstr "Linkki"
 
-#: documents/forms.py:240
+#: documents/forms.py:149
 msgid "Permissions must be valid JSON."
 msgstr "Oikeudet on oltava voimassa JSON."
 
@@ -553,7 +554,7 @@ msgstr "Sinulla ei ole oikeuksia tarkastella tätä asiakirjaa"
 msgid "You are not allowed to view this document."
 msgstr "Et voi tarkastella tätä asiakirjaa."
 
-#: documents/views.py:196
+#: documents/views.py:201
 msgid "You are not allowed to edit this document."
 msgstr "Sinulla ei ole lupaa muokata tätä asiakirjaa."
 
@@ -606,7 +607,7 @@ msgid "Rate this document"
 msgstr "Arvostele tämä asiakirja"
 
 #: documents/templates/documents/document_detail.html:65
-#: layers/templates/layers/layer_detail.html:110
+#: layers/templates/layers/layer_detail.html:118
 #: maps/templates/maps/map_detail.html:48
 msgid "Average Rating"
 msgstr "Keskiarvo"
@@ -618,7 +619,7 @@ msgid "Download Document"
 msgstr "Lataa tiedosto"
 
 #: documents/templates/documents/document_detail.html:89
-#: layers/templates/layers/layer_detail.html:131
+#: layers/templates/layers/layer_detail.html:139
 msgid "Request Download"
 msgstr ""
 
@@ -628,15 +629,15 @@ msgid "Edit Document"
 msgstr "Muokkaa dokumenttia"
 
 #: documents/templates/documents/document_detail.html:111
-#: layers/templates/layers/layer_detail.html:179
-#: layers/templates/layers/layer_detail.html:188
+#: layers/templates/layers/layer_detail.html:187
+#: layers/templates/layers/layer_detail.html:196
 #: maps/templates/maps/map_detail.html:108
 #: maps/templates/maps/map_detail.html:122
 msgid "Edit"
 msgstr ""
 
 #: documents/templates/documents/document_detail.html:119
-#: layers/templates/layers/layer_detail.html:206
+#: layers/templates/layers/layer_detail.html:214
 msgid "Replace"
 msgstr ""
 
@@ -644,16 +645,16 @@ msgstr ""
 #: groups/templates/groups/group_members.html:33
 #: groups/templates/groups/group_members.html:59
 #: groups/templates/groups/group_members.html:86
-#: layers/templates/layers/layer_detail.html:212
+#: layers/templates/layers/layer_detail.html:220
 #: maps/templates/maps/map_detail.html:123
 msgid "Remove"
 msgstr "Poistaa"
 
 #: documents/templates/documents/document_detail.html:129
 #: documents/templates/documents/document_detail.html:153
-#: layers/templates/layers/layer_detail.html:153
-#: layers/templates/layers/layer_detail.html:219
-#: layers/templates/layers/layer_detail.html:245
+#: layers/templates/layers/layer_detail.html:161
+#: layers/templates/layers/layer_detail.html:227
+#: layers/templates/layers/layer_detail.html:253
 #: maps/templates/maps/map_detail.html:85
 #: maps/templates/maps/map_detail.html:129
 #: templates/_bulk_permissions_form.html:19
@@ -662,8 +663,8 @@ msgstr "Lähellä"
 
 #: documents/templates/documents/document_detail.html:136
 #: documents/templates/documents/document_detail.html:143
-#: layers/templates/layers/layer_detail.html:227
 #: layers/templates/layers/layer_detail.html:235
+#: layers/templates/layers/layer_detail.html:243
 msgid "Download Metadata"
 msgstr "Lataa Metadata"
 
@@ -686,7 +687,7 @@ msgstr "Tämä asiakirja ei liity mitään karttoja tai kerroksia"
 #: documents/templates/documents/document_detail.html:176
 #: documents/templates/documents/document_upload.html:31
 #: groups/templates/groups/group_detail.html:60
-#: layers/templates/layers/layer_detail.html:318
+#: layers/templates/layers/layer_detail.html:326
 #: layers/templates/layers/layer_replace.html:94
 #: layers/templates/upload/layer_upload.html:93
 #: maps/templates/maps/map_detail.html:175 people/admin.py:55
@@ -720,23 +721,17 @@ msgid "Edit Metadata"
 msgstr "Edit Metadata"
 
 #: documents/templates/documents/document_metadata.html:22
-#, python-format
-msgid ""
-"\n"
-"        Editing details for %(document_title)s\n"
-"      "
+msgid "Editing details for"
 msgstr ""
-"\n"
-"Editointi tiedot %(document_title)s"
 
-#: documents/templates/documents/document_metadata.html:28
+#: documents/templates/documents/document_metadata.html:26
 #: layers/templates/layers/layer_metadata.html:29
 #: maps/templates/maps/map_metadata.html:29
 msgid "Error updating metadata.  Please check the following fields: "
 msgstr "Virhe päivitettäessä metatiedot. Tarkista seuraavat kentät:"
 
-#: documents/templates/documents/document_metadata.html:43
-#: documents/templates/documents/document_metadata.html:77
+#: documents/templates/documents/document_metadata.html:41
+#: documents/templates/documents/document_metadata.html:75
 #: groups/templates/groups/group_update.html:26
 #: layers/templates/layers/layer_metadata.html:51
 #: layers/templates/layers/layer_metadata.html:110
@@ -745,7 +740,7 @@ msgstr "Virhe päivitettäessä metatiedot. Tarkista seuraavat kentät:"
 msgid "Update"
 msgstr "Päivitys"
 
-#: documents/templates/documents/document_metadata.html:55
+#: documents/templates/documents/document_metadata.html:53
 #: layers/templates/layers/layer_metadata.html:104
 #: maps/templates/maps/map_metadata.html:56
 msgid "Metadata Provider"
@@ -840,19 +835,19 @@ msgstr "PDF"
 msgid "PNG"
 msgstr "PNG"
 
-#: geoserver/signals.py:284
+#: geoserver/signals.py:285
 msgid "Could not create a download link for layer."
 msgstr "Ei voinut luoda latauslinkki kerros."
 
-#: geoserver/signals.py:315
+#: geoserver/signals.py:316
 msgid "KML"
 msgstr "KML"
 
-#: geoserver/signals.py:344
+#: geoserver/signals.py:345
 msgid "Tiles"
 msgstr "Laatat"
 
-#: geoserver/signals.py:391 layers/templates/layers/layer_detail.html:253
+#: geoserver/signals.py:392 layers/templates/layers/layer_detail.html:261
 #: services/views.py:1272
 msgid "Legend"
 msgstr "Legenda"
@@ -1191,121 +1186,125 @@ msgstr "SLD versio"
 msgid "sld url"
 msgstr "SLD url"
 
-#: layers/models.py:292
+#: layers/models.py:189
+msgid "File cannot be opened, maybe check the encoding"
+msgstr ""
+
+#: layers/models.py:296
 msgid "attribute name"
 msgstr "määritteen nimi"
 
-#: layers/models.py:293
+#: layers/models.py:297
 msgid "name of attribute as stored in shapefile/spatial database"
 msgstr "nimeksi ominaisuuden tallennettu shapefile / spatiaalinen tietokanta"
 
-#: layers/models.py:299
+#: layers/models.py:303
 msgid "attribute description"
 msgstr "Yhdistän kuvaus"
 
-#: layers/models.py:300
+#: layers/models.py:304
 msgid "description of attribute to be used in metadata"
 msgstr "kuvaus ominaisuuden, jota käytetään metatietojen"
 
-#: layers/models.py:305
+#: layers/models.py:309
 msgid "attribute label"
 msgstr "Taito etiketti"
 
-#: layers/models.py:306
+#: layers/models.py:310
 msgid "title of attribute as displayed in GeoNode"
 msgstr "otsikko ominaisuuden näytetään GeoNode"
 
-#: layers/models.py:312
+#: layers/models.py:316
 msgid "attribute type"
 msgstr "Taito tyyppi"
 
-#: layers/models.py:313
+#: layers/models.py:317
 msgid "the data type of the attribute (integer, string, geometry, etc)"
 msgstr "tietotyyppi määrite (kokonaisluku, merkkijono, geometria, jne)"
 
-#: layers/models.py:320
+#: layers/models.py:324
 msgid "visible?"
 msgstr "näkyvissä?"
 
-#: layers/models.py:321
+#: layers/models.py:325
 msgid "specifies if the attribute should be displayed in identify results"
 msgstr "täsmennetään, jos määrite pitäisi näkyä tunnistaa tuloksia"
 
-#: layers/models.py:324
+#: layers/models.py:328
 msgid "display order"
 msgstr "näyttöjärjestystä"
 
-#: layers/models.py:325
+#: layers/models.py:329
 msgid ""
 "specifies the order in which attribute should be displayed in identify "
 "results"
 msgstr "Määrittää järjestyksen, jossa määrite pitäisi näkyä tunnistaa tuloksia"
 
-#: layers/models.py:330
+#: layers/models.py:334
 msgid "count"
 msgstr "laskea"
 
-#: layers/models.py:331
+#: layers/models.py:335
 msgid "count value for this field"
 msgstr "count arvo tällä alalla"
 
-#: layers/models.py:334
+#: layers/models.py:338
 msgid "min"
 msgstr "min"
 
-#: layers/models.py:335
+#: layers/models.py:339
 msgid "minimum value for this field"
 msgstr "minimiarvo tällä alalla"
 
-#: layers/models.py:342
+#: layers/models.py:346
 msgid "max"
 msgstr "Max"
 
-#: layers/models.py:343
+#: layers/models.py:347
 msgid "maximum value for this field"
 msgstr "enimmäisarvo tällä alalla"
 
-#: layers/models.py:350
+#: layers/models.py:354
 msgid "average"
 msgstr "keskimäärin"
 
-#: layers/models.py:351
+#: layers/models.py:355
 msgid "average value for this field"
 msgstr "keskiarvo tällä alalla"
 
-#: layers/models.py:358
+#: layers/models.py:362
 msgid "median"
 msgstr "mediaani"
 
-#: layers/models.py:359
+#: layers/models.py:363
 msgid "median value for this field"
 msgstr "mediaani tällä alalla"
 
-#: layers/models.py:366
+#: layers/models.py:370
 msgid "standard deviation"
 msgstr "keskihajonta"
 
-#: layers/models.py:367
+#: layers/models.py:371
 msgid "standard deviation for this field"
 msgstr "keskihajonta tällä alalla"
 
-#: layers/models.py:374
+#: layers/models.py:378
 msgid "sum"
 msgstr "summa"
 
-#: layers/models.py:375
+#: layers/models.py:379
 msgid "sum value for this field"
 msgstr "summa-arvo tällä alalla"
 
-#: layers/models.py:382
+#: layers/models.py:386
 msgid "unique values for this field"
 msgstr "ainutlaatuinen kentän arvoja"
 
-#: layers/models.py:387
+#: layers/models.py:391
 msgid "last modified"
 msgstr "viimeksi muutettu"
 
-#: layers/models.py:389
+#: layers/models.py:393
 msgid "date when attribute statistics were last updated"
 msgstr "jolloin määrite tilastoja on viimeksi päivitetty"
 
@@ -1337,19 +1336,19 @@ msgstr "Sinulla ei ole oikeutta muuttaa tätä kerrosta metatietoja"
 msgid "You are not permitted to view this layer"
 msgstr "Sinulla ei ole oikeuksia nähdäksesi tämän kerroksen"
 
-#: layers/views.py:466
+#: layers/views.py:469
 msgid "You are attempting to replace a vector layer with a raster."
 msgstr ""
 
-#: layers/views.py:469
+#: layers/views.py:472
 msgid "You are attempting to replace a raster layer with a vector."
 msgstr ""
 
-#: layers/views.py:525
+#: layers/views.py:528
 msgid "Unable to delete layer"
 msgstr ""
 
-#: layers/views.py:528
+#: layers/views.py:531
 msgid ""
 "This layer is a member of a layer group, you must remove the layer from the "
 "group before deleting."
@@ -1402,87 +1401,99 @@ msgid "Attribute Name"
 msgstr "Määritteen nimi"
 
 #: layers/templates/layers/layer_detail.html:50
+#: layers/templates/layers/layer_metadata.html:82
+msgid "Label"
+msgstr "Etiketti"
+
+#: layers/templates/layers/layer_detail.html:51
+#: layers/templates/layers/layer_metadata.html:83
+#: people/templates/people/profile_detail.html:62 services/forms.py:27
+#: services/templates/services/layers_register.html:28
+msgid "Description"
+msgstr "Kuvaus"
+
+#: layers/templates/layers/layer_detail.html:53
 msgid "Range"
 msgstr "Alue"
 
-#: layers/templates/layers/layer_detail.html:51
+#: layers/templates/layers/layer_detail.html:54
 msgid "Average"
 msgstr "Keskimäärin"
 
-#: layers/templates/layers/layer_detail.html:52
+#: layers/templates/layers/layer_detail.html:55
 msgid "Median"
 msgstr "Mediaani"
 
-#: layers/templates/layers/layer_detail.html:53
+#: layers/templates/layers/layer_detail.html:56
 msgid "Standard Deviation"
 msgstr "Keskihajonta"
 
-#: layers/templates/layers/layer_detail.html:106
+#: layers/templates/layers/layer_detail.html:114
 msgid "Rate this layer"
 msgstr "Arvostele tämä kerros"
 
-#: layers/templates/layers/layer_detail.html:128
-#: layers/templates/layers/layer_detail.html:141
+#: layers/templates/layers/layer_detail.html:136
+#: layers/templates/layers/layer_detail.html:149
 msgid "Download Layer"
 msgstr "Lataa Layer"
 
-#: layers/templates/layers/layer_detail.html:164
-#: layers/templates/layers/layer_detail.html:171
+#: layers/templates/layers/layer_detail.html:172
+#: layers/templates/layers/layer_detail.html:179
 msgid "Edit Layer"
 msgstr "Edit Layer"
 
-#: layers/templates/layers/layer_detail.html:190
+#: layers/templates/layers/layer_detail.html:198
 #: services/templates/services/service_detail.html:110
 msgid "Manage"
 msgstr "Hoitaa"
 
-#: layers/templates/layers/layer_detail.html:198
+#: layers/templates/layers/layer_detail.html:206
 #: maps/templates/maps/map_detail.html:115
 msgid "Set"
 msgstr ""
 
-#: layers/templates/layers/layer_detail.html:209
+#: layers/templates/layers/layer_detail.html:217
 msgid "Edit data"
 msgstr ""
 
-#: layers/templates/layers/layer_detail.html:263
+#: layers/templates/layers/layer_detail.html:271
 msgid "Maps using this layer"
 msgstr "Mapsiin tähän kerrokseen"
 
-#: layers/templates/layers/layer_detail.html:265
+#: layers/templates/layers/layer_detail.html:273
 msgid "List of maps using this layer:"
 msgstr "Luettelo karttoja tämän kerroksen:"
 
-#: layers/templates/layers/layer_detail.html:271
+#: layers/templates/layers/layer_detail.html:279
 msgid "This layer is not currently used in any maps."
 msgstr "Tämä kerros ei ole käytössä missään karttoja."
 
-#: layers/templates/layers/layer_detail.html:276
+#: layers/templates/layers/layer_detail.html:284
 msgid "Create a map using this layer"
 msgstr "Luo kartan tämän kerroksen"
 
-#: layers/templates/layers/layer_detail.html:277
+#: layers/templates/layers/layer_detail.html:285
 msgid "Click the button below to generate a new map based on this layer."
 msgstr ""
 "Klikkaa alla olevaa painiketta luoda uusi kartta perustuu tähän kerrokseen."
 
-#: layers/templates/layers/layer_detail.html:278
+#: layers/templates/layers/layer_detail.html:286
 msgid "Create a Map"
 msgstr "Luo Kartta"
 
-#: layers/templates/layers/layer_detail.html:283
+#: layers/templates/layers/layer_detail.html:291
 msgid "Documents related to this layer"
 msgstr "Asiakirjoja, jotka liittyvät tähän kerrokseen"
 
-#: layers/templates/layers/layer_detail.html:284
+#: layers/templates/layers/layer_detail.html:292
 msgid "List of documents related to this layer:"
 msgstr "Luettelo asiakirjoista, jotka liittyvät tähän kerrokseen:"
 
-#: layers/templates/layers/layer_detail.html:295
+#: layers/templates/layers/layer_detail.html:303
 msgid "Styles"
 msgstr "Tyylit"
 
-#: layers/templates/layers/layer_detail.html:296
+#: layers/templates/layers/layer_detail.html:304
 msgid ""
 "The following styles are associated with this layer. Choose a style to view "
 "it in the preview map."
@@ -1490,23 +1501,23 @@ msgstr ""
 "Seuraavat tyylit liittyvät tähän kerrokseen. Valitse tyyli, jonka haluat "
 "nähdä esikatselun kartalla."
 
-#: layers/templates/layers/layer_detail.html:309
+#: layers/templates/layers/layer_detail.html:317
 msgid "No styles associated with this layer"
 msgstr "Ei tyylit liittyvät tähän kerrokseen"
 
-#: layers/templates/layers/layer_detail.html:319
+#: layers/templates/layers/layer_detail.html:327
 msgid "Click the button below to change the permissions of this layer."
 msgstr "Klikkaa alla olevaa painiketta muuttaa oikeuksia tämän kerroksen."
 
-#: layers/templates/layers/layer_detail.html:320
+#: layers/templates/layers/layer_detail.html:328
 msgid "Change Layer Permissions"
 msgstr "Muuta Layer Oikeudet"
 
-#: layers/templates/layers/layer_detail.html:327
+#: layers/templates/layers/layer_detail.html:335
 msgid "External service layer"
 msgstr "Ulkoinen palveluntarjoaja kerros"
 
-#: layers/templates/layers/layer_detail.html:328
+#: layers/templates/layers/layer_detail.html:336
 msgid "Source"
 msgstr "Lähde"
 
@@ -1553,16 +1564,6 @@ msgstr "Attribuutteja"
 #: layers/templates/layers/layer_metadata.html:81
 msgid "Attribute"
 msgstr "Ominaisuus"
-
-#: layers/templates/layers/layer_metadata.html:82
-msgid "Label"
-msgstr "Etiketti"
-
-#: layers/templates/layers/layer_metadata.html:83
-#: people/templates/people/profile_detail.html:62 services/forms.py:27
-#: services/templates/services/layers_register.html:28
-msgid "Description"
-msgstr "Kuvaus"
 
 #: layers/templates/layers/layer_metadata.html:84
 msgid "Display Order"
@@ -2451,35 +2452,35 @@ msgstr ""
 msgid "This account is now active and can log in the site"
 msgstr ""
 
-#: people/models.py:43
+#: people/models.py:46
 msgid "Organization Name"
 msgstr "Organisaation nimi"
 
-#: people/models.py:47
+#: people/models.py:50
 msgid "name of the responsible organization"
 msgstr "nimi vastuuorganisaatiolle"
 
-#: people/models.py:48 templates/500.html:76 templates/base.html:210
+#: people/models.py:51 templates/500.html:76 templates/base.html:210
 msgid "Profile"
 msgstr "Profiili"
 
-#: people/models.py:48
+#: people/models.py:51
 msgid "introduce yourself"
 msgstr "Esittele itsesi"
 
-#: people/models.py:50
+#: people/models.py:53
 msgid "Position Name"
 msgstr "Sijainti Nimi"
 
-#: people/models.py:54
+#: people/models.py:57
 msgid "role or position of the responsible person"
 msgstr "rooli tai asema vastuuhenkilö"
 
-#: people/models.py:55 people/templates/people/profile_detail.html:50
+#: people/models.py:58 people/templates/people/profile_detail.html:50
 msgid "Voice"
 msgstr "Ääni"
 
-#: people/models.py:56
+#: people/models.py:59
 msgid ""
 "telephone number by which individuals can speak to the responsible "
 "organization or individual"
@@ -2487,22 +2488,22 @@ msgstr ""
 "puhelinnumero, johon ihmiset voivat puhua vastaavan organisaation tai "
 "yksittäisen"
 
-#: people/models.py:57
+#: people/models.py:60
 msgid "Facsimile"
 msgstr "Faksi"
 
-#: people/models.py:58
+#: people/models.py:61
 msgid ""
 "telephone number of a facsimile machine for the responsible organization or "
 "individual"
 msgstr ""
 "puhelinnumero faksimilekonetta vastuullista organisaation tai yksittäisen"
 
-#: people/models.py:60
+#: people/models.py:63
 msgid "Delivery Point"
 msgstr "Jakelupisteen"
 
-#: people/models.py:64
+#: people/models.py:67
 msgid ""
 "physical and email address at which the organization or individual may be "
 "contacted"
@@ -2510,35 +2511,35 @@ msgstr ""
 "fyysinen ja sähköpostiosoite, johon organisaatio tai henkilö voi ottaa "
 "yhteyttä"
 
-#: people/models.py:66
+#: people/models.py:69
 msgid "City"
 msgstr "Kaupunki"
 
-#: people/models.py:70
+#: people/models.py:73
 msgid "city of the location"
 msgstr "kaupungin sijainti"
 
-#: people/models.py:72
+#: people/models.py:75
 msgid "Administrative Area"
 msgstr "Hallinnollinen alue"
 
-#: people/models.py:76
+#: people/models.py:79
 msgid "state, province of the location"
 msgstr "valtion, maakunnan sijainti"
 
-#: people/models.py:78
+#: people/models.py:81
 msgid "Postal Code"
 msgstr "Postinumero"
 
-#: people/models.py:82
+#: people/models.py:85
 msgid "ZIP or other postal code"
 msgstr "ZIP tai muu postinumeron"
 
-#: people/models.py:88
+#: people/models.py:91
 msgid "country of the physical address"
 msgstr "maan fyysisen osoitteen"
 
-#: people/models.py:90
+#: people/models.py:93
 msgid ""
 "commonly used word(s) or formalised word(s) or phrase(s) used to describe "
 "the subject             (space or comma-separated"
@@ -4174,6 +4175,15 @@ msgstr "Takaisin postilaatikkoon"
 #: templates/user_messages/thread_detail.html:26
 msgid "Send Reply"
 msgstr "Lähetä vastaus"
+
+#~ msgid ""
+#~ "\n"
+#~ "        Editing details for %(document_title)s\n"
+#~ "      "
+#~ msgstr ""
+#~ "\n"
+#~ "        Editing details for %(document_title)s\n"
+#~ "      "
 
 #~ msgid "Replace this Document"
 #~ msgstr "Replace this Document"
