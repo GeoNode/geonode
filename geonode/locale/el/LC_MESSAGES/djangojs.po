@@ -7,6 +7,7 @@
 # Translators:
 # Translators:
 # Translators:
+# Translators:
 # Andres Alfonso Lemon Gomez <lemon.andres@gmail.com>, 2014
 # kalxas <gcpp.kalxas@gmail.com>, 2013
 # kalxas <gcpp.kalxas@gmail.com>, 2013
@@ -14,8 +15,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-02-05 04:17-0600\n"
-"PO-Revision-Date: 2015-02-03 12:11+0000\n"
+"POT-Creation-Date: 2015-03-02 23:16-0600\n"
+"PO-Revision-Date: 2015-03-03 05:10+0000\n"
 "Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
 "Language-Team: Greek (http://www.transifex.com/projects/p/geonode/language/"
 "el/)\n"
@@ -65,9 +66,13 @@ msgstr "Μόνο οι ακόλουθοι χρήστες ή ομάδες:"
 msgid "Who can manage and edit this data?"
 msgstr "Ποιός μπορεί να διαχειριστεί και να επεξεργαστεί αυτά τα δεδομένα;"
 
-#: static/geonode/js/search/search.js:301
+#: static/geonode/js/search/search.js:324
 #: static_root/geonode/js/search/search.js:298
 msgid "Enter your text here ..."
+msgstr ""
+
+#: static/geonode/js/search/search.js:350
+msgid "Enter your region here ..."
 msgstr ""
 
 #: static/geonode/js/upload/FileType.js:33
@@ -118,18 +123,22 @@ msgstr "Επεξεργασία Μεταδεδομένων"
 msgid "Manage Styles"
 msgstr "Διαχειριστείτε Στυλ"
 
-#: static/geonode/js/upload/LayerInfo.js:235
+#: static/geonode/js/upload/LayerInfo.js:236
+msgid "The column %1 was renamed to %2 <br/>"
+msgstr ""
+
+#: static/geonode/js/upload/LayerInfo.js:242
 #: static_root/geonode/js/upload/LayerInfo.js:235
 msgid "Your layer was successfully uploaded"
 msgstr "Στρώμα σας ανέβηκε με επιτυχία"
 
-#: static/geonode/js/upload/LayerInfo.js:264
+#: static/geonode/js/upload/LayerInfo.js:271
 #: static_root/geonode/js/upload/LayerInfo.js:264
 msgid "Performing Final GeoServer Config Step"
 msgstr "Εκτέλεση των Τελικών Βήμα GeoServer Config"
 
-#: static/geonode/js/upload/LayerInfo.js:279
-#: static/geonode/js/upload/LayerInfo.js:305
+#: static/geonode/js/upload/LayerInfo.js:286
+#: static/geonode/js/upload/LayerInfo.js:312
 #: static_root/geonode/js/upload/LayerInfo.js:279
 #: static_root/geonode/js/upload/LayerInfo.js:305
 msgid "You need to specify more information in order to complete your upload"
@@ -137,41 +146,41 @@ msgstr ""
 "Θα πρέπει να καθορίσετε περισσότερες πληροφορίες προκειμένου να ολοκληρωθεί "
 "η μεταφόρτωση"
 
-#: static/geonode/js/upload/LayerInfo.js:297
+#: static/geonode/js/upload/LayerInfo.js:304
 #: static_root/geonode/js/upload/LayerInfo.js:297
 msgid "You need to specify more information in order to complete your upload."
 msgstr ""
 "Θα πρέπει να καθορίσετε περισσότερες πληροφορίες προκειμένου να ολοκληρωθεί "
 "η μεταφόρτωση."
 
-#: static/geonode/js/upload/LayerInfo.js:297
+#: static/geonode/js/upload/LayerInfo.js:304
 #: static_root/geonode/js/upload/LayerInfo.js:297
 msgid "You can continue configuring your layer."
 msgstr "Μπορείτε να συνεχίσετε τη ρύθμιση παραμέτρων στρώμα σας."
 
-#: static/geonode/js/upload/LayerInfo.js:315
-#: static/geonode/js/upload/LayerInfo.js:400
+#: static/geonode/js/upload/LayerInfo.js:322
+#: static/geonode/js/upload/LayerInfo.js:407
 #: static_root/geonode/js/upload/LayerInfo.js:315
 #: static_root/geonode/js/upload/LayerInfo.js:400
 msgid "Unexpected Error"
 msgstr "Απροσδόκητη Σφάλμα"
 
-#: static/geonode/js/upload/LayerInfo.js:331
+#: static/geonode/js/upload/LayerInfo.js:338
 #: static_root/geonode/js/upload/LayerInfo.js:331
 msgid "Performing GeoServer Config Step"
 msgstr "Εκτέλεση GeoServer Config Βήμα"
 
-#: static/geonode/js/upload/LayerInfo.js:407
+#: static/geonode/js/upload/LayerInfo.js:414
 #: static_root/geonode/js/upload/LayerInfo.js:407
 msgid "Layer files uploaded, configuring in GeoServer"
 msgstr "Αρχεία Layer φορτωθεί, διαμόρφωση σε GeoServer"
 
-#: static/geonode/js/upload/LayerInfo.js:422
+#: static/geonode/js/upload/LayerInfo.js:429
 #: static_root/geonode/js/upload/LayerInfo.js:422
 msgid "Select or create a Geogig repository."
 msgstr ""
 
-#: static/geonode/js/upload/LayerInfo.js:517
+#: static/geonode/js/upload/LayerInfo.js:524
 #: static_root/admin/js/SelectFilter2.js:69
 #: static_root/geonode/js/upload/LayerInfo.js:517
 msgid "Remove"
