@@ -7,6 +7,7 @@
 # Translators:
 # Translators:
 # Translators:
+# Translators:
 # Andres Alfonso Lemon Gomez <lemon.andres@gmail.com>, 2014
 # dan, 2015
 # dan, 2015
@@ -14,9 +15,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-02-05 04:17-0600\n"
-"PO-Revision-Date: 2015-02-04 23:40+0000\n"
-"Last-Translator: dan\n"
+"POT-Creation-Date: 2015-03-02 23:16-0600\n"
+"PO-Revision-Date: 2015-03-03 05:10+0000\n"
+"Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
 "Language-Team: Russian (http://www.transifex.com/projects/p/geonode/language/"
 "ru/)\n"
 "Language: ru\n"
@@ -66,10 +67,14 @@ msgstr "Только следующие перечисленные пользо�
 msgid "Who can manage and edit this data?"
 msgstr "Кто может управлять и редактировать эти данные?"
 
-#: static/geonode/js/search/search.js:301
+#: static/geonode/js/search/search.js:324
 #: static_root/geonode/js/search/search.js:298
 msgid "Enter your text here ..."
 msgstr "Введите Ваш текст здесь ..."
+
+#: static/geonode/js/search/search.js:350
+msgid "Enter your region here ..."
+msgstr ""
 
 #: static/geonode/js/upload/FileType.js:33
 #: static_root/geonode/js/upload/FileType.js:33
@@ -119,18 +124,22 @@ msgstr "Редактирование метаданных"
 msgid "Manage Styles"
 msgstr "Управление стилями"
 
-#: static/geonode/js/upload/LayerInfo.js:235
+#: static/geonode/js/upload/LayerInfo.js:236
+msgid "The column %1 was renamed to %2 <br/>"
+msgstr ""
+
+#: static/geonode/js/upload/LayerInfo.js:242
 #: static_root/geonode/js/upload/LayerInfo.js:235
 msgid "Your layer was successfully uploaded"
 msgstr "Ваш слой успешно загружен"
 
-#: static/geonode/js/upload/LayerInfo.js:264
+#: static/geonode/js/upload/LayerInfo.js:271
 #: static_root/geonode/js/upload/LayerInfo.js:264
 msgid "Performing Final GeoServer Config Step"
 msgstr "Шаг выполнения окончательной настройки GeoServer"
 
-#: static/geonode/js/upload/LayerInfo.js:279
-#: static/geonode/js/upload/LayerInfo.js:305
+#: static/geonode/js/upload/LayerInfo.js:286
+#: static/geonode/js/upload/LayerInfo.js:312
 #: static_root/geonode/js/upload/LayerInfo.js:279
 #: static_root/geonode/js/upload/LayerInfo.js:305
 msgid "You need to specify more information in order to complete your upload"
@@ -138,41 +147,41 @@ msgstr ""
 "Вы должны указать дополнительную информацию для того, чтобы завершить свою "
 "загрузку"
 
-#: static/geonode/js/upload/LayerInfo.js:297
+#: static/geonode/js/upload/LayerInfo.js:304
 #: static_root/geonode/js/upload/LayerInfo.js:297
 msgid "You need to specify more information in order to complete your upload."
 msgstr ""
 "Вы должны указать дополнительную информацию для того, чтобы завершить свою "
 "загрузку."
 
-#: static/geonode/js/upload/LayerInfo.js:297
+#: static/geonode/js/upload/LayerInfo.js:304
 #: static_root/geonode/js/upload/LayerInfo.js:297
 msgid "You can continue configuring your layer."
 msgstr "Вы можете продолжить настройку вашего слоя."
 
-#: static/geonode/js/upload/LayerInfo.js:315
-#: static/geonode/js/upload/LayerInfo.js:400
+#: static/geonode/js/upload/LayerInfo.js:322
+#: static/geonode/js/upload/LayerInfo.js:407
 #: static_root/geonode/js/upload/LayerInfo.js:315
 #: static_root/geonode/js/upload/LayerInfo.js:400
 msgid "Unexpected Error"
 msgstr "Неожиданная ошибка"
 
-#: static/geonode/js/upload/LayerInfo.js:331
+#: static/geonode/js/upload/LayerInfo.js:338
 #: static_root/geonode/js/upload/LayerInfo.js:331
 msgid "Performing GeoServer Config Step"
 msgstr "Шаг выполнения настройки GeoServer"
 
-#: static/geonode/js/upload/LayerInfo.js:407
+#: static/geonode/js/upload/LayerInfo.js:414
 #: static_root/geonode/js/upload/LayerInfo.js:407
 msgid "Layer files uploaded, configuring in GeoServer"
 msgstr "Файлы слоёв загружены, настройка в GeoServer"
 
-#: static/geonode/js/upload/LayerInfo.js:422
+#: static/geonode/js/upload/LayerInfo.js:429
 #: static_root/geonode/js/upload/LayerInfo.js:422
 msgid "Select or create a Geogig repository."
 msgstr "Выберите или создайте хранилище Geogig"
 
-#: static/geonode/js/upload/LayerInfo.js:517
+#: static/geonode/js/upload/LayerInfo.js:524
 #: static_root/admin/js/SelectFilter2.js:69
 #: static_root/geonode/js/upload/LayerInfo.js:517
 msgid "Remove"
@@ -200,8 +209,8 @@ msgid ""
 "This is the list of available %s. You may choose some by selecting them in "
 "the box below and then clicking the \"Choose\" arrow between the two boxes."
 msgstr ""
-"Это список доступных %s. Вы можете выбрать несколько, выделив их в списке "
-"ниже и нажав стрелку \"Выбрать\" между двумя списками."
+"Это список доступных %s. Вы можете выбрать несколько строк, выделив их в "
+"списке ниже и нажав стрелку \"Выбрать\" между двумя списками."
 
 #: static_root/admin/js/SelectFilter2.js:53
 #, c-format
@@ -236,7 +245,7 @@ msgid ""
 "This is the list of chosen %s. You may remove some by selecting them in the "
 "box below and then clicking the \"Remove\" arrow between the two boxes."
 msgstr ""
-"Это список выбранного %s. Вы можете удалить некоторые объекты, выбрав их в "
+"Это список выбранных %s. Вы можете удалить некоторые объекты, выбрав их в "
 "списке ниже и нажав  стрелку \"Удалить\" между двумя списками."
 
 #: static_root/admin/js/SelectFilter2.js:80
@@ -260,8 +269,8 @@ msgid ""
 "You have unsaved changes on individual editable fields. If you run an "
 "action, your unsaved changes will be lost."
 msgstr ""
-"Вы не сохранили изменения в некоторых исправленных полях. Если вы запустите "
-"действие, Ваши не сохраненные изменения будут потеряны."
+"Вы не сохранили изменения в некоторых исправленных полях. Если Вы запустите "
+"это действие, Ваши не сохраненные изменения будут потеряны."
 
 #: static_root/admin/js/actions.js:121 static_root/admin/js/actions.min.js:5
 msgid ""
@@ -270,8 +279,8 @@ msgid ""
 "action."
 msgstr ""
 "Вы выбрали действие, но ещё не сохранили изменения в исправленных полях. "
-"Пожалуйста, нажмите ОК, чтобы сохранить. Вы должны будете повторно запустить "
-"действие."
+"Пожалуйста, нажмите ОК, чтобы сохранить их. После чего, Вы должны будете "
+"повторно запустить действие."
 
 #: static_root/admin/js/actions.js:123 static_root/admin/js/actions.min.js:6
 msgid ""
@@ -474,11 +483,11 @@ msgstr "Сместить карту"
 
 #: templates/lang.js:52
 msgid "Zoom to Next Extent"
-msgstr "Изменить масштаб до следующего экстента"
+msgstr "Масштабировать к следующей области"
 
 #: templates/lang.js:53
 msgid "Zoom to Previous Extent"
-msgstr "Вернуть масштаб к предыдущему экстенту"
+msgstr "Масштабировать к предыдущей области"
 
 #: templates/lang.js:54
 msgid "This map has not yet been saved."
@@ -510,7 +519,7 @@ msgstr "Удалить слой"
 
 #: templates/lang.js:63
 msgid "Sorry, your map could not be saved."
-msgstr "Извините, ваша карта не может быть сохранена"
+msgstr "Извините, Ваша карта не может быть сохранена"
 
 #: templates/lang.js:64
 msgid "Error While Saving"
@@ -561,7 +570,7 @@ msgid ""
 "The map that you are trying to load does not exist.  Creating a new map "
 "instead."
 msgstr ""
-"Карта, которую вы пытаетесь загрузить не существует. Создать вместо неё "
+"Карта, которую Вы пытаетесь загрузить не существует. Создайте вместо неё "
 "новую карту."
 
 #: templates/lang.js:75
@@ -606,7 +615,7 @@ msgstr "Создать карту"
 
 #: templates/lang.js:95
 msgid "Export Map"
-msgstr "Экспортировать карту"
+msgstr "Опубликовать карту"
 
 #: templates/lang.js:98
 msgid "Map"
@@ -638,7 +647,7 @@ msgid ""
 "HTML to embed the map in your website:"
 msgstr ""
 "Ваша карта готова для публикации в сети! Просто скопируйте следующий HTML-"
-"код для того, чтобы встроить карту в страницу вашего веб-сайта:"
+"код для того, чтобы встроить карту в страницу Вашего веб-сайта:"
 
 #: templates/lang.js:136 templates/lang.js.c:202
 msgid "Abstract:"
@@ -762,7 +771,7 @@ msgstr "Загрузка…"
 
 #: templates/lang.js:196
 msgid "You do not have permission to view this data"
-msgstr "У вас нет доступа для просмотра этих данных"
+msgstr "У Вас нет доступа для просмотра этих данных"
 
 #: templates/lang.js:197
 msgid "This data is stored on a remote server"

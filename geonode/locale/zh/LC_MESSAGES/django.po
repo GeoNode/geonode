@@ -7,6 +7,7 @@
 # Translators:
 # Translators:
 # Translators:
+# Translators:
 # Andres Alfonso Lemon Gomez <lemon.andres@gmail.com>, 2014
 # Nathan Wang <nwang@opengeo.org>, 2012-2013
 # Nathan Wang <nwang@opengeo.org>, 2012-2013
@@ -15,8 +16,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-02-05 04:17-0600\n"
-"PO-Revision-Date: 2015-02-05 10:10+0000\n"
+"POT-Creation-Date: 2015-03-02 23:15-0600\n"
+"PO-Revision-Date: 2015-03-03 05:06+0000\n"
 "Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
 "Language-Team: Chinese (http://www.transifex.com/projects/p/geonode/language/"
 "zh/)\n"
@@ -26,11 +27,11 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 
-#: utils.py:42
+#: utils.py:44
 msgid "Invalid permission level."
 msgstr "权限等级不够。"
 
-#: utils.py:490
+#: utils.py:494
 msgid "Permission Denied"
 msgstr "权限级别"
 
@@ -150,234 +151,238 @@ msgstr "数据每三个月更新一次"
 msgid "No information provided"
 msgstr "无信息提供"
 
-#: base/forms.py:35 base/templates/base/resourcebase_info_panel.html:46
-#: documents/templates/documents/document_metadata.html:60
+#: base/forms.py:43 base/templates/base/resourcebase_info_panel.html:46
+#: documents/templates/documents/document_metadata.html:58
 #: layers/templates/layers/layer_metadata.html:63
 #: maps/templates/maps/map_metadata.html:61
 msgid "Category"
 msgstr "类别"
 
-#: base/forms.py:44
+#: base/forms.py:52
 msgid "Category is required."
 msgstr "类别是必需的。"
 
-#: base/models.py:41 services/models.py:85
+#: base/forms.py:105 groups/models.py:42 people/forms.py:82
+msgid "A space or comma-separated list of keywords"
+msgstr "空格或者用逗号隔开的关键词"
+
+#: base/models.py:44 services/models.py:85
 msgid "function performed by the responsible party"
 msgstr "责任方履行职务"
 
-#: base/models.py:209
+#: base/models.py:212
 msgid "reference date for the cited resource"
 msgstr "资料引用日期"
 
-#: base/models.py:210
+#: base/models.py:213
 msgid "identification of when a given event occurred"
 msgstr "识别特定事件的发生"
 
-#: base/models.py:211
+#: base/models.py:214
 msgid "version of the cited resource"
 msgstr "引用文献的版本"
 
-#: base/models.py:212
+#: base/models.py:215
 msgid "brief narrative summary of the content of the resource(s)"
 msgstr "资料简介"
 
-#: base/models.py:213
+#: base/models.py:216
 msgid "summary of the intentions with which the resource(s) was developed"
 msgstr "总结生成资源的动机"
 
-#: base/models.py:214
+#: base/models.py:217
 msgid ""
 "frequency with which modifications and deletions are made to the data after "
 "it is first produced"
 msgstr "数据首次生成后的修改及删除频率"
 
-#: base/models.py:216
+#: base/models.py:219
 msgid ""
 "commonly used word(s) or formalised word(s) or phrase(s) used to describe "
 "the subject (space or comma-separated"
 msgstr "常用词汇或固定短语(用空格或逗号隔开"
 
-#: base/models.py:218
+#: base/models.py:221
 msgid "keyword identifies a location"
 msgstr "定位关键词"
 
-#: base/models.py:219
+#: base/models.py:222
 msgid "limitation(s) placed upon the access or use of the data."
 msgstr "限制（多个）放置在所述数据的访问或使用。"
 
-#: base/models.py:220
+#: base/models.py:223
 msgid ""
 "other restrictions and legal prerequisites for accessing and using the "
 "resource or metadata"
 msgstr "使用资料或元数据的限制及法律前提"
 
-#: base/models.py:222
+#: base/models.py:225
 msgid "license of the dataset"
 msgstr "数据集的许可"
 
-#: base/models.py:223
+#: base/models.py:226
 msgid "language used within the dataset"
 msgstr "数据组使用语言"
 
-#: base/models.py:224
+#: base/models.py:227
 msgid ""
 "high-level geographic data thematic classification to assist in the grouping "
 "and search of available geographic data sets."
 msgstr "用以助于地理信息搜集的高层次地理信息分类"
 
-#: base/models.py:226
+#: base/models.py:229
 msgid "method used to represent geographic information in the dataset."
 msgstr "方法用于表示数据集中的地理信息。"
 
-#: base/models.py:227
+#: base/models.py:230
 msgid "time period covered by the content of the dataset (start)"
 msgstr "数据组所覆盖时间段 (起始日期)"
 
-#: base/models.py:228
+#: base/models.py:231
 msgid "time period covered by the content of the dataset (end)"
 msgstr "数据组所覆盖时间段 (结束日期)"
 
-#: base/models.py:229
+#: base/models.py:232
 msgid ""
 "information about on-line sources from which the dataset, specification, or "
 "community profile name and extended metadata elements can be obtained"
 msgstr "关于数据，社区，元数据的网络信息"
 
-#: base/models.py:231
+#: base/models.py:234
 msgid "detailed text description of what the online resource is/does"
 msgstr "对网上资源的详细文字介绍"
 
-#: base/models.py:232
+#: base/models.py:235
 msgid ""
 "general explanation of the data producer's knowledge about the lineage of a "
 "dataset"
 msgstr "对于数据集沿袭的基本知识"
 
-#: base/models.py:238
+#: base/models.py:241
 msgid "title"
 msgstr "标题"
 
-#: base/models.py:238
+#: base/models.py:241
 msgid "name by which the cited resource is known"
 msgstr "用已知资源命名"
 
-#: base/models.py:239
+#: base/models.py:242
 msgid "date"
 msgstr "日期"
 
-#: base/models.py:240
+#: base/models.py:243
 msgid "date type"
 msgstr "日期类型"
 
-#: base/models.py:242
+#: base/models.py:245
 msgid "edition"
 msgstr "版本"
 
-#: base/models.py:243
+#: base/models.py:246
 msgid "abstract"
 msgstr "摘要"
 
-#: base/models.py:244
+#: base/models.py:247
 msgid "purpose"
 msgstr "目标"
 
-#: base/models.py:245
+#: base/models.py:248
 msgid "maintenance frequency"
 msgstr "维护频率"
 
-#: base/models.py:248 groups/models.py:41 people/models.py:89
+#: base/models.py:251 groups/models.py:41 people/models.py:92
 msgid "keywords"
 msgstr "关键字"
 
-#: base/models.py:249
+#: base/models.py:252
 msgid "keywords region"
 msgstr "关键词区域"
 
-#: base/models.py:252
+#: base/models.py:255
 msgid "restrictions"
 msgstr "限制"
 
-#: base/models.py:256
+#: base/models.py:259
 msgid "restrictions other"
 msgstr "其他限制"
 
-#: base/models.py:261
+#: base/models.py:264
 msgid "language"
 msgstr "语言"
 
-#: base/models.py:272
+#: base/models.py:275
 msgid "temporal extent start"
 msgstr "起始时间"
 
-#: base/models.py:274
+#: base/models.py:277
 msgid "temporal extent end"
 msgstr "结束时间"
 
-#: base/models.py:277
+#: base/models.py:280
 msgid "supplemental information"
 msgstr "补充信息"
 
-#: base/models.py:278
+#: base/models.py:281
 msgid "any other descriptive information about the dataset"
 msgstr "其他关于数据的描述性信息"
 
-#: base/models.py:281
+#: base/models.py:284
 msgid "distribution URL"
 msgstr "发布网址"
 
-#: base/models.py:283
+#: base/models.py:286
 msgid "distribution description"
 msgstr "发布描述"
 
-#: base/models.py:287
+#: base/models.py:290
 msgid "data quality statement"
 msgstr "数据质量描述"
 
-#: base/models.py:302
+#: base/models.py:305
 msgid "CSW typename"
 msgstr "CSW类型名称"
 
-#: base/models.py:304
+#: base/models.py:307
 msgid "CSW schema"
 msgstr "CSW 图解"
 
-#: base/models.py:309
+#: base/models.py:312
 msgid "CSW source"
 msgstr "CSW资源"
 
-#: base/models.py:310
+#: base/models.py:313
 msgid "CSW insert date"
 msgstr "CSW 插入日期"
 
-#: base/models.py:311
+#: base/models.py:314
 msgid "CSW type"
 msgstr "CSW类型"
 
-#: base/models.py:312
+#: base/models.py:315
 msgid "CSW anytext"
 msgstr "CSW文本"
 
-#: base/models.py:313
+#: base/models.py:316
 msgid "CSW WKT geometry"
 msgstr "CSW WKT图形"
 
-#: base/models.py:326
+#: base/models.py:329
 msgid "Should this resource be advertised in home page?"
 msgstr "应在主页上这个资源发布出去？"
 
-#: base/models.py:327
+#: base/models.py:330
 msgid "Should this resource be published and searchable?"
 msgstr "如果这个资源发布与检索？"
 
-#: base/models.py:660
+#: base/models.py:696
 msgid "For example \"kml\""
 msgstr "比如“kml”"
 
-#: base/models.py:662
+#: base/models.py:698
 msgid "For example \"View in Google Earth\""
 msgstr "比如“在谷歌地球中查看”"
 
-#: base/models.py:663
+#: base/models.py:699
 msgid "For example \"text/xml\""
 msgstr "比如“text/xml”"
 
@@ -405,7 +410,7 @@ msgstr "所有者"
 
 #: base/templates/base/_resourcebase_contact_snippet.html:14
 #: base/templates/base/resourcebase_info_panel.html:66
-#: documents/templates/documents/document_metadata.html:50
+#: documents/templates/documents/document_metadata.html:48
 #: layers/templates/layers/layer_metadata.html:99
 #: maps/templates/maps/map_metadata.html:51
 msgid "Point of Contact"
@@ -435,7 +440,7 @@ msgid "Date"
 msgstr "日期"
 
 #: base/templates/base/resourcebase_info_panel.html:34
-#: layers/templates/layers/layer_detail.html:329
+#: layers/templates/layers/layer_detail.html:337
 msgid "Type"
 msgstr "类型"
 
@@ -446,6 +451,7 @@ msgid "Keywords"
 msgstr "关键词"
 
 #: base/templates/base/resourcebase_info_panel.html:56
+#: templates/search/_region_filter.html:5
 msgid "Regions"
 msgstr "地区"
 
@@ -486,28 +492,23 @@ msgstr "补充信息"
 msgid "Spatial Representation Type"
 msgstr "空间呈现类型"
 
-#: documents/forms.py:68 groups/models.py:42 layers/forms.py:95
-#: maps/forms.py:81 people/forms.py:82
-msgid "A space or comma-separated list of keywords"
-msgstr "空格或者用逗号隔开的关键词"
-
-#: documents/forms.py:183 documents/forms.py:251
+#: documents/forms.py:92 documents/forms.py:160
 msgid "Document must be a file or url."
 msgstr "文档必须是一个文件或URL。"
 
-#: documents/forms.py:187 documents/forms.py:255
+#: documents/forms.py:96 documents/forms.py:164
 msgid "A document cannot have both a file and a url."
 msgstr "文档不可兼得的文件和网址。"
 
-#: documents/forms.py:200 documents/forms.py:268
+#: documents/forms.py:109 documents/forms.py:177
 msgid "This file type is not allowed"
 msgstr "该文件类型不允许"
 
-#: documents/forms.py:218
+#: documents/forms.py:127
 msgid "Link to"
 msgstr "链接"
 
-#: documents/forms.py:240
+#: documents/forms.py:149
 msgid "Permissions must be valid JSON."
 msgstr "权限必须是有效的JSON。"
 
@@ -547,7 +548,7 @@ msgstr "您无权以查看此文件"
 msgid "You are not allowed to view this document."
 msgstr "您不"
 
-#: documents/views.py:196
+#: documents/views.py:201
 msgid "You are not allowed to edit this document."
 msgstr "你不允许编辑此文档。"
 
@@ -600,7 +601,7 @@ msgid "Rate this document"
 msgstr "给此文件打分"
 
 #: documents/templates/documents/document_detail.html:65
-#: layers/templates/layers/layer_detail.html:110
+#: layers/templates/layers/layer_detail.html:118
 #: maps/templates/maps/map_detail.html:48
 msgid "Average Rating"
 msgstr "平均分数"
@@ -612,7 +613,7 @@ msgid "Download Document"
 msgstr "下载文档"
 
 #: documents/templates/documents/document_detail.html:89
-#: layers/templates/layers/layer_detail.html:131
+#: layers/templates/layers/layer_detail.html:139
 msgid "Request Download"
 msgstr ""
 
@@ -622,15 +623,15 @@ msgid "Edit Document"
 msgstr "编辑文件"
 
 #: documents/templates/documents/document_detail.html:111
-#: layers/templates/layers/layer_detail.html:179
-#: layers/templates/layers/layer_detail.html:188
+#: layers/templates/layers/layer_detail.html:187
+#: layers/templates/layers/layer_detail.html:196
 #: maps/templates/maps/map_detail.html:108
 #: maps/templates/maps/map_detail.html:122
 msgid "Edit"
 msgstr ""
 
 #: documents/templates/documents/document_detail.html:119
-#: layers/templates/layers/layer_detail.html:206
+#: layers/templates/layers/layer_detail.html:214
 msgid "Replace"
 msgstr ""
 
@@ -638,16 +639,16 @@ msgstr ""
 #: groups/templates/groups/group_members.html:33
 #: groups/templates/groups/group_members.html:59
 #: groups/templates/groups/group_members.html:86
-#: layers/templates/layers/layer_detail.html:212
+#: layers/templates/layers/layer_detail.html:220
 #: maps/templates/maps/map_detail.html:123
 msgid "Remove"
 msgstr "删除"
 
 #: documents/templates/documents/document_detail.html:129
 #: documents/templates/documents/document_detail.html:153
-#: layers/templates/layers/layer_detail.html:153
-#: layers/templates/layers/layer_detail.html:219
-#: layers/templates/layers/layer_detail.html:245
+#: layers/templates/layers/layer_detail.html:161
+#: layers/templates/layers/layer_detail.html:227
+#: layers/templates/layers/layer_detail.html:253
 #: maps/templates/maps/map_detail.html:85
 #: maps/templates/maps/map_detail.html:129
 #: templates/_bulk_permissions_form.html:19
@@ -656,8 +657,8 @@ msgstr "近"
 
 #: documents/templates/documents/document_detail.html:136
 #: documents/templates/documents/document_detail.html:143
-#: layers/templates/layers/layer_detail.html:227
 #: layers/templates/layers/layer_detail.html:235
+#: layers/templates/layers/layer_detail.html:243
 msgid "Download Metadata"
 msgstr "下载元数据"
 
@@ -680,7 +681,7 @@ msgstr "当前文件未被任何地图或图层使用"
 #: documents/templates/documents/document_detail.html:176
 #: documents/templates/documents/document_upload.html:31
 #: groups/templates/groups/group_detail.html:60
-#: layers/templates/layers/layer_detail.html:318
+#: layers/templates/layers/layer_detail.html:326
 #: layers/templates/layers/layer_replace.html:94
 #: layers/templates/upload/layer_upload.html:93
 #: maps/templates/maps/map_detail.html:175 people/admin.py:55
@@ -714,23 +715,17 @@ msgid "Edit Metadata"
 msgstr "修改元数据"
 
 #: documents/templates/documents/document_metadata.html:22
-#, python-format
-msgid ""
-"\n"
-"        Editing details for %(document_title)s\n"
-"      "
+msgid "Editing details for"
 msgstr ""
-"\n"
-" %(document_title)s 的细节修改"
 
-#: documents/templates/documents/document_metadata.html:28
+#: documents/templates/documents/document_metadata.html:26
 #: layers/templates/layers/layer_metadata.html:29
 #: maps/templates/maps/map_metadata.html:29
 msgid "Error updating metadata.  Please check the following fields: "
 msgstr "错误更新元数据。请检查以下字段："
 
-#: documents/templates/documents/document_metadata.html:43
-#: documents/templates/documents/document_metadata.html:77
+#: documents/templates/documents/document_metadata.html:41
+#: documents/templates/documents/document_metadata.html:75
 #: groups/templates/groups/group_update.html:26
 #: layers/templates/layers/layer_metadata.html:51
 #: layers/templates/layers/layer_metadata.html:110
@@ -739,7 +734,7 @@ msgstr "错误更新元数据。请检查以下字段："
 msgid "Update"
 msgstr "更新"
 
-#: documents/templates/documents/document_metadata.html:55
+#: documents/templates/documents/document_metadata.html:53
 #: layers/templates/layers/layer_metadata.html:104
 #: maps/templates/maps/map_metadata.html:56
 msgid "Metadata Provider"
@@ -835,19 +830,19 @@ msgstr "PDF"
 msgid "PNG"
 msgstr "PNG"
 
-#: geoserver/signals.py:284
+#: geoserver/signals.py:285
 msgid "Could not create a download link for layer."
 msgstr "无法创建一个下载链接层。"
 
-#: geoserver/signals.py:315
+#: geoserver/signals.py:316
 msgid "KML"
 msgstr "KML"
 
-#: geoserver/signals.py:344
+#: geoserver/signals.py:345
 msgid "Tiles"
 msgstr "网格"
 
-#: geoserver/signals.py:391 layers/templates/layers/layer_detail.html:253
+#: geoserver/signals.py:392 layers/templates/layers/layer_detail.html:261
 #: services/views.py:1272
 msgid "Legend"
 msgstr "图例"
@@ -1178,121 +1173,125 @@ msgstr "sld版本"
 msgid "sld url"
 msgstr "sld链接"
 
-#: layers/models.py:292
+#: layers/models.py:189
+msgid "File cannot be opened, maybe check the encoding"
+msgstr ""
+
+#: layers/models.py:296
 msgid "attribute name"
 msgstr "属性名称"
 
-#: layers/models.py:293
+#: layers/models.py:297
 msgid "name of attribute as stored in shapefile/spatial database"
 msgstr "在shapefile和空间数据库中使用的属性名称"
 
-#: layers/models.py:299
+#: layers/models.py:303
 msgid "attribute description"
 msgstr "属性说明"
 
-#: layers/models.py:300
+#: layers/models.py:304
 msgid "description of attribute to be used in metadata"
 msgstr "在元数据中所用的属性的描述"
 
-#: layers/models.py:305
+#: layers/models.py:309
 msgid "attribute label"
 msgstr "属性标签"
 
-#: layers/models.py:306
+#: layers/models.py:310
 msgid "title of attribute as displayed in GeoNode"
 msgstr "GeoNode中显示属性的标题"
 
-#: layers/models.py:312
+#: layers/models.py:316
 msgid "attribute type"
 msgstr "属性种类"
 
-#: layers/models.py:313
+#: layers/models.py:317
 msgid "the data type of the attribute (integer, string, geometry, etc)"
 msgstr "属性的数据种类(整数，字符串，几何图形等)"
 
-#: layers/models.py:320
+#: layers/models.py:324
 msgid "visible?"
 msgstr "可见？"
 
-#: layers/models.py:321
+#: layers/models.py:325
 msgid "specifies if the attribute should be displayed in identify results"
 msgstr "标明是否在identity中显示属性"
 
-#: layers/models.py:324
+#: layers/models.py:328
 msgid "display order"
 msgstr "显示顺序"
 
-#: layers/models.py:325
+#: layers/models.py:329
 msgid ""
 "specifies the order in which attribute should be displayed in identify "
 "results"
 msgstr "标明属性在identity中显示的顺序"
 
-#: layers/models.py:330
+#: layers/models.py:334
 msgid "count"
 msgstr "数目"
 
-#: layers/models.py:331
+#: layers/models.py:335
 msgid "count value for this field"
 msgstr "计算此列的值"
 
-#: layers/models.py:334
+#: layers/models.py:338
 msgid "min"
 msgstr "最小值"
 
-#: layers/models.py:335
+#: layers/models.py:339
 msgid "minimum value for this field"
 msgstr "此列最小值"
 
-#: layers/models.py:342
+#: layers/models.py:346
 msgid "max"
 msgstr "最大值"
 
-#: layers/models.py:343
+#: layers/models.py:347
 msgid "maximum value for this field"
 msgstr "此列最大值"
 
-#: layers/models.py:350
+#: layers/models.py:354
 msgid "average"
 msgstr "平均值"
 
-#: layers/models.py:351
+#: layers/models.py:355
 msgid "average value for this field"
 msgstr "此列平均值"
 
-#: layers/models.py:358
+#: layers/models.py:362
 msgid "median"
 msgstr "中间值"
 
-#: layers/models.py:359
+#: layers/models.py:363
 msgid "median value for this field"
 msgstr "此列中间值"
 
-#: layers/models.py:366
+#: layers/models.py:370
 msgid "standard deviation"
 msgstr "方差"
 
-#: layers/models.py:367
+#: layers/models.py:371
 msgid "standard deviation for this field"
 msgstr "此列方差"
 
-#: layers/models.py:374
+#: layers/models.py:378
 msgid "sum"
 msgstr "和"
 
-#: layers/models.py:375
+#: layers/models.py:379
 msgid "sum value for this field"
 msgstr "此列和"
 
-#: layers/models.py:382
+#: layers/models.py:386
 msgid "unique values for this field"
 msgstr "此列唯一值"
 
-#: layers/models.py:387
+#: layers/models.py:391
 msgid "last modified"
 msgstr "最后修改"
 
-#: layers/models.py:389
+#: layers/models.py:393
 msgid "date when attribute statistics were last updated"
 msgstr "上一次统计更新的时间"
 
@@ -1322,19 +1321,19 @@ msgstr "您无权修改此图层元数据"
 msgid "You are not permitted to view this layer"
 msgstr "您无权以查看此图层"
 
-#: layers/views.py:466
+#: layers/views.py:469
 msgid "You are attempting to replace a vector layer with a raster."
 msgstr ""
 
-#: layers/views.py:469
+#: layers/views.py:472
 msgid "You are attempting to replace a raster layer with a vector."
 msgstr ""
 
-#: layers/views.py:525
+#: layers/views.py:528
 msgid "Unable to delete layer"
 msgstr ""
 
-#: layers/views.py:528
+#: layers/views.py:531
 msgid ""
 "This layer is a member of a layer group, you must remove the layer from the "
 "group before deleting."
@@ -1387,108 +1386,120 @@ msgid "Attribute Name"
 msgstr "属性名称"
 
 #: layers/templates/layers/layer_detail.html:50
+#: layers/templates/layers/layer_metadata.html:82
+msgid "Label"
+msgstr "标签"
+
+#: layers/templates/layers/layer_detail.html:51
+#: layers/templates/layers/layer_metadata.html:83
+#: people/templates/people/profile_detail.html:62 services/forms.py:27
+#: services/templates/services/layers_register.html:28
+msgid "Description"
+msgstr "描述"
+
+#: layers/templates/layers/layer_detail.html:53
 msgid "Range"
 msgstr "范围"
 
-#: layers/templates/layers/layer_detail.html:51
+#: layers/templates/layers/layer_detail.html:54
 msgid "Average"
 msgstr "平均值"
 
-#: layers/templates/layers/layer_detail.html:52
+#: layers/templates/layers/layer_detail.html:55
 msgid "Median"
 msgstr "中值"
 
-#: layers/templates/layers/layer_detail.html:53
+#: layers/templates/layers/layer_detail.html:56
 msgid "Standard Deviation"
 msgstr "方差"
 
-#: layers/templates/layers/layer_detail.html:106
+#: layers/templates/layers/layer_detail.html:114
 msgid "Rate this layer"
 msgstr "为该图层评分"
 
-#: layers/templates/layers/layer_detail.html:128
-#: layers/templates/layers/layer_detail.html:141
+#: layers/templates/layers/layer_detail.html:136
+#: layers/templates/layers/layer_detail.html:149
 msgid "Download Layer"
 msgstr "下载图层"
 
-#: layers/templates/layers/layer_detail.html:164
-#: layers/templates/layers/layer_detail.html:171
+#: layers/templates/layers/layer_detail.html:172
+#: layers/templates/layers/layer_detail.html:179
 msgid "Edit Layer"
 msgstr "编辑图层"
 
-#: layers/templates/layers/layer_detail.html:190
+#: layers/templates/layers/layer_detail.html:198
 #: services/templates/services/service_detail.html:110
 msgid "Manage"
 msgstr "管理"
 
-#: layers/templates/layers/layer_detail.html:198
+#: layers/templates/layers/layer_detail.html:206
 #: maps/templates/maps/map_detail.html:115
 msgid "Set"
 msgstr ""
 
-#: layers/templates/layers/layer_detail.html:209
+#: layers/templates/layers/layer_detail.html:217
 msgid "Edit data"
 msgstr ""
 
-#: layers/templates/layers/layer_detail.html:263
+#: layers/templates/layers/layer_detail.html:271
 msgid "Maps using this layer"
 msgstr "使用此图层的地图"
 
-#: layers/templates/layers/layer_detail.html:265
+#: layers/templates/layers/layer_detail.html:273
 msgid "List of maps using this layer:"
 msgstr "列出使用此图层的地图"
 
-#: layers/templates/layers/layer_detail.html:271
+#: layers/templates/layers/layer_detail.html:279
 msgid "This layer is not currently used in any maps."
 msgstr "当前图层未被任何地图使用。"
 
-#: layers/templates/layers/layer_detail.html:276
+#: layers/templates/layers/layer_detail.html:284
 msgid "Create a map using this layer"
 msgstr "制作一张用此图层制作的地图"
 
-#: layers/templates/layers/layer_detail.html:277
+#: layers/templates/layers/layer_detail.html:285
 msgid "Click the button below to generate a new map based on this layer."
 msgstr "如果要使用该图层生成新地图，请点击下方按钮"
 
-#: layers/templates/layers/layer_detail.html:278
+#: layers/templates/layers/layer_detail.html:286
 msgid "Create a Map"
 msgstr "生成一张地图"
 
-#: layers/templates/layers/layer_detail.html:283
+#: layers/templates/layers/layer_detail.html:291
 msgid "Documents related to this layer"
 msgstr "与此图层相关的文件"
 
-#: layers/templates/layers/layer_detail.html:284
+#: layers/templates/layers/layer_detail.html:292
 msgid "List of documents related to this layer:"
 msgstr "列出与此图层相关的文件"
 
-#: layers/templates/layers/layer_detail.html:295
+#: layers/templates/layers/layer_detail.html:303
 msgid "Styles"
 msgstr "样式"
 
-#: layers/templates/layers/layer_detail.html:296
+#: layers/templates/layers/layer_detail.html:304
 msgid ""
 "The following styles are associated with this layer. Choose a style to view "
 "it in the preview map."
 msgstr "以下样式与此图层关联。选择一种样式以在"
 
-#: layers/templates/layers/layer_detail.html:309
+#: layers/templates/layers/layer_detail.html:317
 msgid "No styles associated with this layer"
 msgstr "此图层没有与任何样式关联"
 
-#: layers/templates/layers/layer_detail.html:319
+#: layers/templates/layers/layer_detail.html:327
 msgid "Click the button below to change the permissions of this layer."
 msgstr "点击下方按钮以改变该图层的使用权限"
 
-#: layers/templates/layers/layer_detail.html:320
+#: layers/templates/layers/layer_detail.html:328
 msgid "Change Layer Permissions"
 msgstr "改变图层访问权限"
 
-#: layers/templates/layers/layer_detail.html:327
+#: layers/templates/layers/layer_detail.html:335
 msgid "External service layer"
 msgstr "外部服务层"
 
-#: layers/templates/layers/layer_detail.html:328
+#: layers/templates/layers/layer_detail.html:336
 msgid "Source"
 msgstr "源"
 
@@ -1535,16 +1546,6 @@ msgstr "属性"
 #: layers/templates/layers/layer_metadata.html:81
 msgid "Attribute"
 msgstr "属性"
-
-#: layers/templates/layers/layer_metadata.html:82
-msgid "Label"
-msgstr "标签"
-
-#: layers/templates/layers/layer_metadata.html:83
-#: people/templates/people/profile_detail.html:62 services/forms.py:27
-#: services/templates/services/layers_register.html:28
-msgid "Description"
-msgstr "描述"
 
 #: layers/templates/layers/layer_metadata.html:84
 msgid "Display Order"
@@ -2413,89 +2414,89 @@ msgstr ""
 msgid "This account is now active and can log in the site"
 msgstr ""
 
-#: people/models.py:43
+#: people/models.py:46
 msgid "Organization Name"
 msgstr "组织名称"
 
-#: people/models.py:47
+#: people/models.py:50
 msgid "name of the responsible organization"
 msgstr "命名有关责任组织"
 
-#: people/models.py:48 templates/500.html:76 templates/base.html:210
+#: people/models.py:51 templates/500.html:76 templates/base.html:210
 msgid "Profile"
 msgstr "简介"
 
-#: people/models.py:48
+#: people/models.py:51
 msgid "introduce yourself"
 msgstr "介绍自己"
 
-#: people/models.py:50
+#: people/models.py:53
 msgid "Position Name"
 msgstr "位置名称"
 
-#: people/models.py:54
+#: people/models.py:57
 msgid "role or position of the responsible person"
 msgstr "责任人的作用"
 
-#: people/models.py:55 people/templates/people/profile_detail.html:50
+#: people/models.py:58 people/templates/people/profile_detail.html:50
 msgid "Voice"
 msgstr "发言"
 
-#: people/models.py:56
+#: people/models.py:59
 msgid ""
 "telephone number by which individuals can speak to the responsible "
 "organization or individual"
 msgstr "负责人或负责机构的联系电话"
 
-#: people/models.py:57
+#: people/models.py:60
 msgid "Facsimile"
 msgstr "传真"
 
-#: people/models.py:58
+#: people/models.py:61
 msgid ""
 "telephone number of a facsimile machine for the responsible organization or "
 "individual"
 msgstr "负责人或负责机构的传真联系号码"
 
-#: people/models.py:60
+#: people/models.py:63
 msgid "Delivery Point"
 msgstr "交付地点"
 
-#: people/models.py:64
+#: people/models.py:67
 msgid ""
 "physical and email address at which the organization or individual may be "
 "contacted"
 msgstr "可以联系到负责人或负责团体的地址及email地址"
 
-#: people/models.py:66
+#: people/models.py:69
 msgid "City"
 msgstr "城市"
 
-#: people/models.py:70
+#: people/models.py:73
 msgid "city of the location"
 msgstr "城市"
 
-#: people/models.py:72
+#: people/models.py:75
 msgid "Administrative Area"
 msgstr "行政区域"
 
-#: people/models.py:76
+#: people/models.py:79
 msgid "state, province of the location"
 msgstr "州或省"
 
-#: people/models.py:78
+#: people/models.py:81
 msgid "Postal Code"
 msgstr "邮政编码"
 
-#: people/models.py:82
+#: people/models.py:85
 msgid "ZIP or other postal code"
 msgstr "邮编"
 
-#: people/models.py:88
+#: people/models.py:91
 msgid "country of the physical address"
 msgstr "国家"
 
-#: people/models.py:90
+#: people/models.py:93
 msgid ""
 "commonly used word(s) or formalised word(s) or phrase(s) used to describe "
 "the subject             (space or comma-separated"
@@ -2551,7 +2552,7 @@ msgstr ""
 
 #: people/templates/people/profile_detail.html:25
 msgid "Email"
-msgstr ""
+msgstr "邮件"
 
 #: people/templates/people/profile_detail.html:29
 #: people/templates/people/profile_detail.html:34
@@ -2570,11 +2571,11 @@ msgstr "名称"
 
 #: people/templates/people/profile_detail.html:37
 msgid "Position"
-msgstr ""
+msgstr "位置"
 
 #: people/templates/people/profile_detail.html:41
 msgid "Organization"
-msgstr ""
+msgstr "组织"
 
 #: people/templates/people/profile_detail.html:46
 msgid "Location"
@@ -2582,7 +2583,7 @@ msgstr ""
 
 #: people/templates/people/profile_detail.html:58
 msgid "Fax"
-msgstr ""
+msgstr "传真"
 
 #: people/templates/people/profile_detail.html:74 services/views.py:542
 #: services/views.py:639 services/views.py:707 services/views.py:855
@@ -4108,6 +4109,15 @@ msgstr "回到收件箱"
 #: templates/user_messages/thread_detail.html:26
 msgid "Send Reply"
 msgstr "发送回复"
+
+#~ msgid ""
+#~ "\n"
+#~ "        Editing details for %(document_title)s\n"
+#~ "      "
+#~ msgstr ""
+#~ "\n"
+#~ "        Editing details for %(document_title)s\n"
+#~ "      "
 
 #~ msgid "Replace this Document"
 #~ msgstr "Replace this Document"
