@@ -7,13 +7,14 @@
 # Translators:
 # Translators:
 # Translators:
+# Translators:
 # Andres Alfonso Lemon Gomez <lemon.andres@gmail.com>, 2014
 msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-02-05 04:17-0600\n"
-"PO-Revision-Date: 2015-02-05 10:10+0000\n"
+"POT-Creation-Date: 2015-03-02 23:15-0600\n"
+"PO-Revision-Date: 2015-03-03 05:06+0000\n"
 "Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
 "Language-Team: Ukrainian (http://www.transifex.com/projects/p/geonode/"
 "language/uk/)\n"
@@ -24,11 +25,11 @@ msgstr ""
 "Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
 "%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
 
-#: utils.py:42
+#: utils.py:44
 msgid "Invalid permission level."
 msgstr "Невірний рівень дозволів."
 
-#: utils.py:490
+#: utils.py:494
 msgid "Permission Denied"
 msgstr "Доступ заборонений"
 
@@ -148,42 +149,46 @@ msgstr "Дані оновлюються раз на три місяці"
 msgid "No information provided"
 msgstr "Інформація відсутня"
 
-#: base/forms.py:35 base/templates/base/resourcebase_info_panel.html:46
-#: documents/templates/documents/document_metadata.html:60
+#: base/forms.py:43 base/templates/base/resourcebase_info_panel.html:46
+#: documents/templates/documents/document_metadata.html:58
 #: layers/templates/layers/layer_metadata.html:63
 #: maps/templates/maps/map_metadata.html:61
 msgid "Category"
 msgstr "Категорія"
 
-#: base/forms.py:44
+#: base/forms.py:52
 msgid "Category is required."
 msgstr "Категорія вимагається."
 
-#: base/models.py:41 services/models.py:85
+#: base/forms.py:105 groups/models.py:42 people/forms.py:82
+msgid "A space or comma-separated list of keywords"
+msgstr "Простір або розділений комами список ключових слів"
+
+#: base/models.py:44 services/models.py:85
 msgid "function performed by the responsible party"
 msgstr "Функція виконується відповідальною стороною"
 
-#: base/models.py:209
+#: base/models.py:212
 msgid "reference date for the cited resource"
 msgstr "Посилання дата цитованого ресурсу"
 
-#: base/models.py:210
+#: base/models.py:213
 msgid "identification of when a given event occurred"
 msgstr "ідентифікація, коли відбулося це подія"
 
-#: base/models.py:211
+#: base/models.py:214
 msgid "version of the cited resource"
 msgstr "версія ресурсу цитованої"
 
-#: base/models.py:212
+#: base/models.py:215
 msgid "brief narrative summary of the content of the resource(s)"
 msgstr "коротке резюме з викладом змісту ресурсу (и)"
 
-#: base/models.py:213
+#: base/models.py:216
 msgid "summary of the intentions with which the resource(s) was developed"
 msgstr "Короткий виклад намірів, з якої був розроблений ресурс (и)"
 
-#: base/models.py:214
+#: base/models.py:217
 msgid ""
 "frequency with which modifications and deletions are made to the data after "
 "it is first produced"
@@ -191,7 +196,7 @@ msgstr ""
 "Частота, з якою зміни і видалення виробляються в даних після того, як вперше "
 "виготовлений"
 
-#: base/models.py:216
+#: base/models.py:219
 msgid ""
 "commonly used word(s) or formalised word(s) or phrase(s) used to describe "
 "the subject (space or comma-separated"
@@ -199,15 +204,15 @@ msgstr ""
 "зазвичай використовується слово (а) або оформлено слово (а) або фраза (и), "
 "використовуваний для опису предмета (простір або через кому"
 
-#: base/models.py:218
+#: base/models.py:221
 msgid "keyword identifies a location"
 msgstr "Ключове слово ідентифікує місце розташування"
 
-#: base/models.py:219
+#: base/models.py:222
 msgid "limitation(s) placed upon the access or use of the data."
 msgstr "Обмеження (и) накладають на доступ або використання даних."
 
-#: base/models.py:220
+#: base/models.py:223
 msgid ""
 "other restrictions and legal prerequisites for accessing and using the "
 "resource or metadata"
@@ -215,15 +220,15 @@ msgstr ""
 "інші обмеження та правові передумови для доступу та використання ресурсу або "
 "метадані"
 
-#: base/models.py:222
+#: base/models.py:225
 msgid "license of the dataset"
 msgstr "Ліцензія набору даних"
 
-#: base/models.py:223
+#: base/models.py:226
 msgid "language used within the dataset"
 msgstr "мова, яка використовується в наборі даних"
 
-#: base/models.py:224
+#: base/models.py:227
 msgid ""
 "high-level geographic data thematic classification to assist in the grouping "
 "and search of available geographic data sets."
@@ -231,21 +236,21 @@ msgstr ""
 "географічні дані високого рівня тематична класифікація для надання допомоги "
 "в угруповання і пошуку доступних географічних наборів даних."
 
-#: base/models.py:226
+#: base/models.py:229
 msgid "method used to represent geographic information in the dataset."
 msgstr ""
 "Метод використовується для представлення географічної інформації в наборі "
 "даних."
 
-#: base/models.py:227
+#: base/models.py:230
 msgid "time period covered by the content of the dataset (start)"
 msgstr "Період часу, охоплений змісту набору даних (початок)"
 
-#: base/models.py:228
+#: base/models.py:231
 msgid "time period covered by the content of the dataset (end)"
 msgstr "Період часу, охоплений змісту набору даних (кінець)"
 
-#: base/models.py:229
+#: base/models.py:232
 msgid ""
 "information about on-line sources from which the dataset, specification, or "
 "community profile name and extended metadata elements can be obtained"
@@ -253,141 +258,141 @@ msgstr ""
 "Інформація про онлайн-джерел, з яких набір даних, специфікація або ім'я "
 "профілю співтовариство і розширені елементи метаданих можуть бути отримані"
 
-#: base/models.py:231
+#: base/models.py:234
 msgid "detailed text description of what the online resource is/does"
 msgstr "Детальний опис текст про те, що інтернет-ресурс є / робить"
 
-#: base/models.py:232
+#: base/models.py:235
 msgid ""
 "general explanation of the data producer's knowledge about the lineage of a "
 "dataset"
 msgstr "загальне пояснення знань виробник даних про про родовід набору даних"
 
-#: base/models.py:238
+#: base/models.py:241
 msgid "title"
 msgstr "назва"
 
-#: base/models.py:238
+#: base/models.py:241
 msgid "name by which the cited resource is known"
 msgstr "ім'я, під яким наводяться ресурс відомо"
 
-#: base/models.py:239
+#: base/models.py:242
 msgid "date"
 msgstr "дата"
 
-#: base/models.py:240
+#: base/models.py:243
 msgid "date type"
 msgstr "тип дата"
 
-#: base/models.py:242
+#: base/models.py:245
 msgid "edition"
 msgstr "видання"
 
-#: base/models.py:243
+#: base/models.py:246
 msgid "abstract"
 msgstr "абстрактний"
 
-#: base/models.py:244
+#: base/models.py:247
 msgid "purpose"
 msgstr "мета"
 
-#: base/models.py:245
+#: base/models.py:248
 msgid "maintenance frequency"
 msgstr "Частота обслуговування"
 
-#: base/models.py:248 groups/models.py:41 people/models.py:89
+#: base/models.py:251 groups/models.py:41 people/models.py:92
 msgid "keywords"
 msgstr "ключові слова"
 
-#: base/models.py:249
+#: base/models.py:252
 msgid "keywords region"
 msgstr "ключові слова область"
 
-#: base/models.py:252
+#: base/models.py:255
 msgid "restrictions"
 msgstr "обмеження"
 
-#: base/models.py:256
+#: base/models.py:259
 msgid "restrictions other"
 msgstr "інші обмеження"
 
-#: base/models.py:261
+#: base/models.py:264
 msgid "language"
 msgstr "мову"
 
-#: base/models.py:272
+#: base/models.py:275
 msgid "temporal extent start"
 msgstr "тимчасова старт ступеня"
 
-#: base/models.py:274
+#: base/models.py:277
 msgid "temporal extent end"
 msgstr "тимчасова кінець ступеня"
 
-#: base/models.py:277
+#: base/models.py:280
 msgid "supplemental information"
 msgstr "Довідкова інформація"
 
-#: base/models.py:278
+#: base/models.py:281
 msgid "any other descriptive information about the dataset"
 msgstr "будь-який інший описової інформації про набір даних"
 
-#: base/models.py:281
+#: base/models.py:284
 msgid "distribution URL"
 msgstr "Розподіл URL"
 
-#: base/models.py:283
+#: base/models.py:286
 msgid "distribution description"
 msgstr "Опис розподілу"
 
-#: base/models.py:287
+#: base/models.py:290
 msgid "data quality statement"
 msgstr "Якість даних заяву"
 
-#: base/models.py:302
+#: base/models.py:305
 msgid "CSW typename"
 msgstr "РКС Ьурепате"
 
-#: base/models.py:304
+#: base/models.py:307
 msgid "CSW schema"
 msgstr "РКС схеми"
 
-#: base/models.py:309
+#: base/models.py:312
 msgid "CSW source"
 msgstr "Джерело РКС"
 
-#: base/models.py:310
+#: base/models.py:313
 msgid "CSW insert date"
 msgstr "РКС вставити дату"
 
-#: base/models.py:311
+#: base/models.py:314
 msgid "CSW type"
 msgstr "Тип РКС"
 
-#: base/models.py:312
+#: base/models.py:315
 msgid "CSW anytext"
 msgstr "РКС anytext"
 
-#: base/models.py:313
+#: base/models.py:316
 msgid "CSW WKT geometry"
 msgstr "РКС WKT геометрія"
 
-#: base/models.py:326
+#: base/models.py:329
 msgid "Should this resource be advertised in home page?"
 msgstr "Якщо цей ресурс рекламуватися на головній сторінці?"
 
-#: base/models.py:327
+#: base/models.py:330
 msgid "Should this resource be published and searchable?"
 msgstr "Якщо цей ресурс опублікований і для пошуку?"
 
-#: base/models.py:660
+#: base/models.py:696
 msgid "For example \"kml\""
 msgstr "Наприклад, \"KML\""
 
-#: base/models.py:662
+#: base/models.py:698
 msgid "For example \"View in Google Earth\""
 msgstr "Наприклад, \"Перегляд в Google Планета Земля\""
 
-#: base/models.py:663
+#: base/models.py:699
 msgid "For example \"text/xml\""
 msgstr "Наприклад, \"текст / XML\""
 
@@ -415,7 +420,7 @@ msgstr "Власник"
 
 #: base/templates/base/_resourcebase_contact_snippet.html:14
 #: base/templates/base/resourcebase_info_panel.html:66
-#: documents/templates/documents/document_metadata.html:50
+#: documents/templates/documents/document_metadata.html:48
 #: layers/templates/layers/layer_metadata.html:99
 #: maps/templates/maps/map_metadata.html:51
 msgid "Point of Contact"
@@ -445,7 +450,7 @@ msgid "Date"
 msgstr "Дата"
 
 #: base/templates/base/resourcebase_info_panel.html:34
-#: layers/templates/layers/layer_detail.html:329
+#: layers/templates/layers/layer_detail.html:337
 msgid "Type"
 msgstr "Тип"
 
@@ -456,6 +461,7 @@ msgid "Keywords"
 msgstr "Ключові слова"
 
 #: base/templates/base/resourcebase_info_panel.html:56
+#: templates/search/_region_filter.html:5
 msgid "Regions"
 msgstr "Райони"
 
@@ -496,28 +502,23 @@ msgstr "Довідкова інформація"
 msgid "Spatial Representation Type"
 msgstr "Просторове уявлення Тип"
 
-#: documents/forms.py:68 groups/models.py:42 layers/forms.py:95
-#: maps/forms.py:81 people/forms.py:82
-msgid "A space or comma-separated list of keywords"
-msgstr "Простір або розділений комами список ключових слів"
-
-#: documents/forms.py:183 documents/forms.py:251
+#: documents/forms.py:92 documents/forms.py:160
 msgid "Document must be a file or url."
 msgstr "Документ повинен бути файл або URL."
 
-#: documents/forms.py:187 documents/forms.py:255
+#: documents/forms.py:96 documents/forms.py:164
 msgid "A document cannot have both a file and a url."
 msgstr "Документ не може мати як файл і URL."
 
-#: documents/forms.py:200 documents/forms.py:268
+#: documents/forms.py:109 documents/forms.py:177
 msgid "This file type is not allowed"
 msgstr "Цей тип файлу не допускається"
 
-#: documents/forms.py:218
+#: documents/forms.py:127
 msgid "Link to"
 msgstr "Посилання на"
 
-#: documents/forms.py:240
+#: documents/forms.py:149
 msgid "Permissions must be valid JSON."
 msgstr "Дозволи повинні бути дійсні JSON."
 
@@ -557,7 +558,7 @@ msgstr "Вам не дозволяється, щоб подивитися цей
 msgid "You are not allowed to view this document."
 msgstr "Ви не можете переглянути цей документ."
 
-#: documents/views.py:196
+#: documents/views.py:201
 msgid "You are not allowed to edit this document."
 msgstr "Ви не можете редагувати цей документ."
 
@@ -610,7 +611,7 @@ msgid "Rate this document"
 msgstr "Оцінити це документ"
 
 #: documents/templates/documents/document_detail.html:65
-#: layers/templates/layers/layer_detail.html:110
+#: layers/templates/layers/layer_detail.html:118
 #: maps/templates/maps/map_detail.html:48
 msgid "Average Rating"
 msgstr "Середній рейтинг"
@@ -622,7 +623,7 @@ msgid "Download Document"
 msgstr "Завантажити документ"
 
 #: documents/templates/documents/document_detail.html:89
-#: layers/templates/layers/layer_detail.html:131
+#: layers/templates/layers/layer_detail.html:139
 msgid "Request Download"
 msgstr ""
 
@@ -632,15 +633,15 @@ msgid "Edit Document"
 msgstr "Редагувати документ"
 
 #: documents/templates/documents/document_detail.html:111
-#: layers/templates/layers/layer_detail.html:179
-#: layers/templates/layers/layer_detail.html:188
+#: layers/templates/layers/layer_detail.html:187
+#: layers/templates/layers/layer_detail.html:196
 #: maps/templates/maps/map_detail.html:108
 #: maps/templates/maps/map_detail.html:122
 msgid "Edit"
 msgstr ""
 
 #: documents/templates/documents/document_detail.html:119
-#: layers/templates/layers/layer_detail.html:206
+#: layers/templates/layers/layer_detail.html:214
 msgid "Replace"
 msgstr ""
 
@@ -648,16 +649,16 @@ msgstr ""
 #: groups/templates/groups/group_members.html:33
 #: groups/templates/groups/group_members.html:59
 #: groups/templates/groups/group_members.html:86
-#: layers/templates/layers/layer_detail.html:212
+#: layers/templates/layers/layer_detail.html:220
 #: maps/templates/maps/map_detail.html:123
 msgid "Remove"
 msgstr "Видаляти"
 
 #: documents/templates/documents/document_detail.html:129
 #: documents/templates/documents/document_detail.html:153
-#: layers/templates/layers/layer_detail.html:153
-#: layers/templates/layers/layer_detail.html:219
-#: layers/templates/layers/layer_detail.html:245
+#: layers/templates/layers/layer_detail.html:161
+#: layers/templates/layers/layer_detail.html:227
+#: layers/templates/layers/layer_detail.html:253
 #: maps/templates/maps/map_detail.html:85
 #: maps/templates/maps/map_detail.html:129
 #: templates/_bulk_permissions_form.html:19
@@ -666,8 +667,8 @@ msgstr "Близько"
 
 #: documents/templates/documents/document_detail.html:136
 #: documents/templates/documents/document_detail.html:143
-#: layers/templates/layers/layer_detail.html:227
 #: layers/templates/layers/layer_detail.html:235
+#: layers/templates/layers/layer_detail.html:243
 msgid "Download Metadata"
 msgstr "Завантажити метаданих"
 
@@ -690,7 +691,7 @@ msgstr "Цей документ не має відношення до яких-�
 #: documents/templates/documents/document_detail.html:176
 #: documents/templates/documents/document_upload.html:31
 #: groups/templates/groups/group_detail.html:60
-#: layers/templates/layers/layer_detail.html:318
+#: layers/templates/layers/layer_detail.html:326
 #: layers/templates/layers/layer_replace.html:94
 #: layers/templates/upload/layer_upload.html:93
 #: maps/templates/maps/map_detail.html:175 people/admin.py:55
@@ -724,23 +725,17 @@ msgid "Edit Metadata"
 msgstr "Зміна метаданих"
 
 #: documents/templates/documents/document_metadata.html:22
-#, python-format
-msgid ""
-"\n"
-"        Editing details for %(document_title)s\n"
-"      "
+msgid "Editing details for"
 msgstr ""
-"\n"
-"Детальніше редагування для %(document_title)s"
 
-#: documents/templates/documents/document_metadata.html:28
+#: documents/templates/documents/document_metadata.html:26
 #: layers/templates/layers/layer_metadata.html:29
 #: maps/templates/maps/map_metadata.html:29
 msgid "Error updating metadata.  Please check the following fields: "
 msgstr "Помилка при оновленні метаданих. Будь ласка, перевірте наступні поля:"
 
-#: documents/templates/documents/document_metadata.html:43
-#: documents/templates/documents/document_metadata.html:77
+#: documents/templates/documents/document_metadata.html:41
+#: documents/templates/documents/document_metadata.html:75
 #: groups/templates/groups/group_update.html:26
 #: layers/templates/layers/layer_metadata.html:51
 #: layers/templates/layers/layer_metadata.html:110
@@ -749,7 +744,7 @@ msgstr "Помилка при оновленні метаданих. Будь л
 msgid "Update"
 msgstr "Оновлення"
 
-#: documents/templates/documents/document_metadata.html:55
+#: documents/templates/documents/document_metadata.html:53
 #: layers/templates/layers/layer_metadata.html:104
 #: maps/templates/maps/map_metadata.html:56
 msgid "Metadata Provider"
@@ -844,19 +839,19 @@ msgstr "PDF"
 msgid "PNG"
 msgstr "PNG"
 
-#: geoserver/signals.py:284
+#: geoserver/signals.py:285
 msgid "Could not create a download link for layer."
 msgstr "Не вдалося створити посилання для завантаження шару."
 
-#: geoserver/signals.py:315
+#: geoserver/signals.py:316
 msgid "KML"
 msgstr "KML"
 
-#: geoserver/signals.py:344
+#: geoserver/signals.py:345
 msgid "Tiles"
 msgstr "Плитка"
 
-#: geoserver/signals.py:391 layers/templates/layers/layer_detail.html:253
+#: geoserver/signals.py:392 layers/templates/layers/layer_detail.html:261
 #: services/views.py:1272
 msgid "Legend"
 msgstr "Легенда"
@@ -1195,52 +1190,56 @@ msgstr "SLD версія"
 msgid "sld url"
 msgstr "SLD гіперпосилання"
 
-#: layers/models.py:292
+#: layers/models.py:189
+msgid "File cannot be opened, maybe check the encoding"
+msgstr ""
+
+#: layers/models.py:296
 msgid "attribute name"
 msgstr "ім'я атрибута"
 
-#: layers/models.py:293
+#: layers/models.py:297
 msgid "name of attribute as stored in shapefile/spatial database"
 msgstr "ім'я атрибута, як зберігається в шейп / просторових даних"
 
-#: layers/models.py:299
+#: layers/models.py:303
 msgid "attribute description"
 msgstr "атрибутів опис"
 
-#: layers/models.py:300
+#: layers/models.py:304
 msgid "description of attribute to be used in metadata"
 msgstr "Опис атрибута, які використовуватимуться в метаданих"
 
-#: layers/models.py:305
+#: layers/models.py:309
 msgid "attribute label"
 msgstr "Етикетка атрибут"
 
-#: layers/models.py:306
+#: layers/models.py:310
 msgid "title of attribute as displayed in GeoNode"
 msgstr "Назва атрибута, як показано на GeoNode"
 
-#: layers/models.py:312
+#: layers/models.py:316
 msgid "attribute type"
 msgstr "Тип атрибута"
 
-#: layers/models.py:313
+#: layers/models.py:317
 msgid "the data type of the attribute (integer, string, geometry, etc)"
 msgstr "тип даних атрибута (ціле число, рядок, геометрії і т.д.)"
 
-#: layers/models.py:320
+#: layers/models.py:324
 msgid "visible?"
 msgstr "видно?"
 
-#: layers/models.py:321
+#: layers/models.py:325
 msgid "specifies if the attribute should be displayed in identify results"
 msgstr ""
 "визначає, якщо атрибут повинен відображатися в ідентифікації результатів"
 
-#: layers/models.py:324
+#: layers/models.py:328
 msgid "display order"
 msgstr "Порядок відображення"
 
-#: layers/models.py:325
+#: layers/models.py:329
 msgid ""
 "specifies the order in which attribute should be displayed in identify "
 "results"
@@ -1248,71 +1247,71 @@ msgstr ""
 "визначає порядок, в якому атрибут повинен бути відображений в ідентифікації "
 "результатів"
 
-#: layers/models.py:330
+#: layers/models.py:334
 msgid "count"
 msgstr "вважати"
 
-#: layers/models.py:331
+#: layers/models.py:335
 msgid "count value for this field"
 msgstr "розраховувати значення для цього поля"
 
-#: layers/models.py:334
+#: layers/models.py:338
 msgid "min"
 msgstr "хв"
 
-#: layers/models.py:335
+#: layers/models.py:339
 msgid "minimum value for this field"
 msgstr "Мінімальне значення цього поля"
 
-#: layers/models.py:342
+#: layers/models.py:346
 msgid "max"
 msgstr "Макс"
 
-#: layers/models.py:343
+#: layers/models.py:347
 msgid "maximum value for this field"
 msgstr "Максимальне значення цього поля"
 
-#: layers/models.py:350
+#: layers/models.py:354
 msgid "average"
 msgstr "середній"
 
-#: layers/models.py:351
+#: layers/models.py:355
 msgid "average value for this field"
 msgstr "Середнє значення для цього поля"
 
-#: layers/models.py:358
+#: layers/models.py:362
 msgid "median"
 msgstr "медіана"
 
-#: layers/models.py:359
+#: layers/models.py:363
 msgid "median value for this field"
 msgstr "середнє значення для цього поля"
 
-#: layers/models.py:366
+#: layers/models.py:370
 msgid "standard deviation"
 msgstr "стандартне відхилення"
 
-#: layers/models.py:367
+#: layers/models.py:371
 msgid "standard deviation for this field"
 msgstr "стандартне відхилення для цього поля"
 
-#: layers/models.py:374
+#: layers/models.py:378
 msgid "sum"
 msgstr "сума"
 
-#: layers/models.py:375
+#: layers/models.py:379
 msgid "sum value for this field"
 msgstr "сумарне значення для цього поля"
 
-#: layers/models.py:382
+#: layers/models.py:386
 msgid "unique values for this field"
 msgstr "Унікальні значення для цього поля"
 
-#: layers/models.py:387
+#: layers/models.py:391
 msgid "last modified"
 msgstr "Остання зміна"
 
-#: layers/models.py:389
+#: layers/models.py:393
 msgid "date when attribute statistics were last updated"
 msgstr "Дата, коли статистика атрибутів оновлені"
 
@@ -1344,19 +1343,19 @@ msgstr "Вам не дозволяється змінювати метадані
 msgid "You are not permitted to view this layer"
 msgstr "Вам не дозволяється, щоб подивитися цей шар"
 
-#: layers/views.py:466
+#: layers/views.py:469
 msgid "You are attempting to replace a vector layer with a raster."
 msgstr ""
 
-#: layers/views.py:469
+#: layers/views.py:472
 msgid "You are attempting to replace a raster layer with a vector."
 msgstr ""
 
-#: layers/views.py:525
+#: layers/views.py:528
 msgid "Unable to delete layer"
 msgstr ""
 
-#: layers/views.py:528
+#: layers/views.py:531
 msgid ""
 "This layer is a member of a layer group, you must remove the layer from the "
 "group before deleting."
@@ -1409,87 +1408,99 @@ msgid "Attribute Name"
 msgstr "Ім'я атрибута"
 
 #: layers/templates/layers/layer_detail.html:50
+#: layers/templates/layers/layer_metadata.html:82
+msgid "Label"
+msgstr "Етикетка"
+
+#: layers/templates/layers/layer_detail.html:51
+#: layers/templates/layers/layer_metadata.html:83
+#: people/templates/people/profile_detail.html:62 services/forms.py:27
+#: services/templates/services/layers_register.html:28
+msgid "Description"
+msgstr "Опис"
+
+#: layers/templates/layers/layer_detail.html:53
 msgid "Range"
 msgstr "Діапазон"
 
-#: layers/templates/layers/layer_detail.html:51
+#: layers/templates/layers/layer_detail.html:54
 msgid "Average"
 msgstr "Середній"
 
-#: layers/templates/layers/layer_detail.html:52
+#: layers/templates/layers/layer_detail.html:55
 msgid "Median"
 msgstr "Медіана"
 
-#: layers/templates/layers/layer_detail.html:53
+#: layers/templates/layers/layer_detail.html:56
 msgid "Standard Deviation"
 msgstr "Стандартне відхилення"
 
-#: layers/templates/layers/layer_detail.html:106
+#: layers/templates/layers/layer_detail.html:114
 msgid "Rate this layer"
 msgstr "Оцінити цей шар"
 
-#: layers/templates/layers/layer_detail.html:128
-#: layers/templates/layers/layer_detail.html:141
+#: layers/templates/layers/layer_detail.html:136
+#: layers/templates/layers/layer_detail.html:149
 msgid "Download Layer"
 msgstr "Скачати шар"
 
-#: layers/templates/layers/layer_detail.html:164
-#: layers/templates/layers/layer_detail.html:171
+#: layers/templates/layers/layer_detail.html:172
+#: layers/templates/layers/layer_detail.html:179
 msgid "Edit Layer"
 msgstr "Редагувати Layer"
 
-#: layers/templates/layers/layer_detail.html:190
+#: layers/templates/layers/layer_detail.html:198
 #: services/templates/services/service_detail.html:110
 msgid "Manage"
 msgstr "Управляти"
 
-#: layers/templates/layers/layer_detail.html:198
+#: layers/templates/layers/layer_detail.html:206
 #: maps/templates/maps/map_detail.html:115
 msgid "Set"
 msgstr ""
 
-#: layers/templates/layers/layer_detail.html:209
+#: layers/templates/layers/layer_detail.html:217
 msgid "Edit data"
 msgstr ""
 
-#: layers/templates/layers/layer_detail.html:263
+#: layers/templates/layers/layer_detail.html:271
 msgid "Maps using this layer"
 msgstr "Карти, що використовують цей шар"
 
-#: layers/templates/layers/layer_detail.html:265
+#: layers/templates/layers/layer_detail.html:273
 msgid "List of maps using this layer:"
 msgstr "Список карт, що використовують цей шар:"
 
-#: layers/templates/layers/layer_detail.html:271
+#: layers/templates/layers/layer_detail.html:279
 msgid "This layer is not currently used in any maps."
 msgstr "Цей шар в даний час не використовуються в будь-якому карт."
 
-#: layers/templates/layers/layer_detail.html:276
+#: layers/templates/layers/layer_detail.html:284
 msgid "Create a map using this layer"
 msgstr "Створіть карту, використовуючи цей шар"
 
-#: layers/templates/layers/layer_detail.html:277
+#: layers/templates/layers/layer_detail.html:285
 msgid "Click the button below to generate a new map based on this layer."
 msgstr ""
 "Натисніть на кнопку нижче, щоб створити нову карту, засновану на цьому шарі."
 
-#: layers/templates/layers/layer_detail.html:278
+#: layers/templates/layers/layer_detail.html:286
 msgid "Create a Map"
 msgstr "Створення карти"
 
-#: layers/templates/layers/layer_detail.html:283
+#: layers/templates/layers/layer_detail.html:291
 msgid "Documents related to this layer"
 msgstr "Документи, що відносяться до цього шару"
 
-#: layers/templates/layers/layer_detail.html:284
+#: layers/templates/layers/layer_detail.html:292
 msgid "List of documents related to this layer:"
 msgstr "Перелік документів, пов'язаних з цим шаром:"
 
-#: layers/templates/layers/layer_detail.html:295
+#: layers/templates/layers/layer_detail.html:303
 msgid "Styles"
 msgstr "Стилі"
 
-#: layers/templates/layers/layer_detail.html:296
+#: layers/templates/layers/layer_detail.html:304
 msgid ""
 "The following styles are associated with this layer. Choose a style to view "
 "it in the preview map."
@@ -1497,23 +1508,23 @@ msgstr ""
 "Наступні стилі пов'язані з цим шаром. Виберіть стиль, щоб переглянути його у "
 "вікні попереднього карті."
 
-#: layers/templates/layers/layer_detail.html:309
+#: layers/templates/layers/layer_detail.html:317
 msgid "No styles associated with this layer"
 msgstr "Ні стилі, пов'язані з цим шаром"
 
-#: layers/templates/layers/layer_detail.html:319
+#: layers/templates/layers/layer_detail.html:327
 msgid "Click the button below to change the permissions of this layer."
 msgstr "Натисніть на кнопку нижче, щоб змінити права доступу цього шару."
 
-#: layers/templates/layers/layer_detail.html:320
+#: layers/templates/layers/layer_detail.html:328
 msgid "Change Layer Permissions"
 msgstr "Зміна Layer Дозволи"
 
-#: layers/templates/layers/layer_detail.html:327
+#: layers/templates/layers/layer_detail.html:335
 msgid "External service layer"
 msgstr "Зовнішній шар служба"
 
-#: layers/templates/layers/layer_detail.html:328
+#: layers/templates/layers/layer_detail.html:336
 msgid "Source"
 msgstr "Джерело"
 
@@ -1560,16 +1571,6 @@ msgstr "Атрибути"
 #: layers/templates/layers/layer_metadata.html:81
 msgid "Attribute"
 msgstr "Атрибут"
-
-#: layers/templates/layers/layer_metadata.html:82
-msgid "Label"
-msgstr "Етикетка"
-
-#: layers/templates/layers/layer_metadata.html:83
-#: people/templates/people/profile_detail.html:62 services/forms.py:27
-#: services/templates/services/layers_register.html:28
-msgid "Description"
-msgstr "Опис"
 
 #: layers/templates/layers/layer_metadata.html:84
 msgid "Display Order"
@@ -2459,35 +2460,35 @@ msgstr ""
 msgid "This account is now active and can log in the site"
 msgstr ""
 
-#: people/models.py:43
+#: people/models.py:46
 msgid "Organization Name"
 msgstr "Назва організації"
 
-#: people/models.py:47
+#: people/models.py:50
 msgid "name of the responsible organization"
 msgstr "Назва відповідальної організації"
 
-#: people/models.py:48 templates/500.html:76 templates/base.html:210
+#: people/models.py:51 templates/500.html:76 templates/base.html:210
 msgid "Profile"
 msgstr "Профіль"
 
-#: people/models.py:48
+#: people/models.py:51
 msgid "introduce yourself"
 msgstr "представьтесь"
 
-#: people/models.py:50
+#: people/models.py:53
 msgid "Position Name"
 msgstr "Позиція Name"
 
-#: people/models.py:54
+#: people/models.py:57
 msgid "role or position of the responsible person"
 msgstr "Роль і позиція відповідальної особи"
 
-#: people/models.py:55 people/templates/people/profile_detail.html:50
+#: people/models.py:58 people/templates/people/profile_detail.html:50
 msgid "Voice"
 msgstr "Голос"
 
-#: people/models.py:56
+#: people/models.py:59
 msgid ""
 "telephone number by which individuals can speak to the responsible "
 "organization or individual"
@@ -2495,11 +2496,11 @@ msgstr ""
 "номер телефону, за яким люди можуть говорити з відповідальної організації "
 "або фізичної особи"
 
-#: people/models.py:57
+#: people/models.py:60
 msgid "Facsimile"
 msgstr "Факсиміле"
 
-#: people/models.py:58
+#: people/models.py:61
 msgid ""
 "telephone number of a facsimile machine for the responsible organization or "
 "individual"
@@ -2507,11 +2508,11 @@ msgstr ""
 "Номер телефону факсимільний апарат для відповідальної організації або "
 "індивідуального"
 
-#: people/models.py:60
+#: people/models.py:63
 msgid "Delivery Point"
 msgstr "Пункт доставки"
 
-#: people/models.py:64
+#: people/models.py:67
 msgid ""
 "physical and email address at which the organization or individual may be "
 "contacted"
@@ -2519,35 +2520,35 @@ msgstr ""
 "фізичне та адресу електронної пошти, на якому організація або приватна особа "
 "може зв'язатися"
 
-#: people/models.py:66
+#: people/models.py:69
 msgid "City"
 msgstr "Сіті"
 
-#: people/models.py:70
+#: people/models.py:73
 msgid "city of the location"
 msgstr "Місто розташування"
 
-#: people/models.py:72
+#: people/models.py:75
 msgid "Administrative Area"
 msgstr "Адміністративного округу"
 
-#: people/models.py:76
+#: people/models.py:79
 msgid "state, province of the location"
 msgstr "Держава, провінція місці"
 
-#: people/models.py:78
+#: people/models.py:81
 msgid "Postal Code"
 msgstr "Поштовий індекс"
 
-#: people/models.py:82
+#: people/models.py:85
 msgid "ZIP or other postal code"
 msgstr "ZIP або інший поштовий індекс"
 
-#: people/models.py:88
+#: people/models.py:91
 msgid "country of the physical address"
 msgstr "Країна фізичної адреси"
 
-#: people/models.py:90
+#: people/models.py:93
 msgid ""
 "commonly used word(s) or formalised word(s) or phrase(s) used to describe "
 "the subject             (space or comma-separated"
@@ -4194,6 +4195,15 @@ msgstr "Повернутися до Вхідні"
 #: templates/user_messages/thread_detail.html:26
 msgid "Send Reply"
 msgstr "Відправити Відповісти"
+
+#~ msgid ""
+#~ "\n"
+#~ "        Editing details for %(document_title)s\n"
+#~ "      "
+#~ msgstr ""
+#~ "\n"
+#~ "        Editing details for %(document_title)s\n"
+#~ "      "
 
 #~ msgid "Replace this Document"
 #~ msgstr "Replace this Document"

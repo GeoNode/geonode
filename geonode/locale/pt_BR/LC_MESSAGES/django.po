@@ -7,6 +7,7 @@
 # Translators:
 # Translators:
 # Translators:
+# Translators:
 # Andres Alfonso Lemon Gomez <lemon.andres@gmail.com>, 2014
 # Bibiana T. de Almeida <bibiana.almeida@embrapa.br>, 2013-2014
 # Davi de O Custodio <davicustodio@gmail.com>, 2014
@@ -16,8 +17,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-02-05 04:17-0600\n"
-"PO-Revision-Date: 2015-02-05 10:10+0000\n"
+"POT-Creation-Date: 2015-03-02 23:15-0600\n"
+"PO-Revision-Date: 2015-03-03 05:06+0000\n"
 "Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
 "Language-Team: Portuguese (Brazil) (http://www.transifex.com/projects/p/"
 "geonode/language/pt_BR/)\n"
@@ -27,11 +28,11 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
-#: utils.py:42
+#: utils.py:44
 msgid "Invalid permission level."
 msgstr "Nível de permissão inválido."
 
-#: utils.py:490
+#: utils.py:494
 msgid "Permission Denied"
 msgstr "Permissão negada"
 
@@ -151,42 +152,46 @@ msgstr "dados são atualizados a cada três meses"
 msgid "No information provided"
 msgstr "Nenhuma informação fornecida"
 
-#: base/forms.py:35 base/templates/base/resourcebase_info_panel.html:46
-#: documents/templates/documents/document_metadata.html:60
+#: base/forms.py:43 base/templates/base/resourcebase_info_panel.html:46
+#: documents/templates/documents/document_metadata.html:58
 #: layers/templates/layers/layer_metadata.html:63
 #: maps/templates/maps/map_metadata.html:61
 msgid "Category"
 msgstr "Categoria"
 
-#: base/forms.py:44
+#: base/forms.py:52
 msgid "Category is required."
 msgstr "Categoria é necessária."
 
-#: base/models.py:41 services/models.py:85
+#: base/forms.py:105 groups/models.py:42 people/forms.py:82
+msgid "A space or comma-separated list of keywords"
+msgstr "Uma lista de palavras-chave separadas por vírgula ou espaço"
+
+#: base/models.py:44 services/models.py:85
 msgid "function performed by the responsible party"
 msgstr "função desempenhada pela parte responsável"
 
-#: base/models.py:209
+#: base/models.py:212
 msgid "reference date for the cited resource"
 msgstr "data de referência para o recurso citado"
 
-#: base/models.py:210
+#: base/models.py:213
 msgid "identification of when a given event occurred"
 msgstr "identificação do momento de ocorrência de um determinado evento"
 
-#: base/models.py:211
+#: base/models.py:214
 msgid "version of the cited resource"
 msgstr "versão do recurso citado"
 
-#: base/models.py:212
+#: base/models.py:215
 msgid "brief narrative summary of the content of the resource(s)"
 msgstr "breve resumo narrativo do conteúdo do(s) recurso(s)"
 
-#: base/models.py:213
+#: base/models.py:216
 msgid "summary of the intentions with which the resource(s) was developed"
 msgstr "resumo das motivações para o desenvolvimento do(s) recurso(s)"
 
-#: base/models.py:214
+#: base/models.py:217
 msgid ""
 "frequency with which modifications and deletions are made to the data after "
 "it is first produced"
@@ -194,7 +199,7 @@ msgstr ""
 "frequência de ocorrência de modificações e exclusões nos dados após sua "
 "produção inicial"
 
-#: base/models.py:216
+#: base/models.py:219
 msgid ""
 "commonly used word(s) or formalised word(s) or phrase(s) used to describe "
 "the subject (space or comma-separated"
@@ -202,15 +207,15 @@ msgstr ""
 "palavra(s) comumente usada(s) ou palavra(s) ou frase(s) adotada(s) "
 "formalmente para descrever o assunto (separadas por espaços ou vírgulas)"
 
-#: base/models.py:218
+#: base/models.py:221
 msgid "keyword identifies a location"
 msgstr "palavra-chave identifica uma localização"
 
-#: base/models.py:219
+#: base/models.py:222
 msgid "limitation(s) placed upon the access or use of the data."
 msgstr "Há limitações de acesso ou uso dos dados."
 
-#: base/models.py:220
+#: base/models.py:223
 msgid ""
 "other restrictions and legal prerequisites for accessing and using the "
 "resource or metadata"
@@ -218,15 +223,15 @@ msgstr ""
 "outras restrições e pré-requisitos legais para o acesso e uso do recurso ou "
 "metadado"
 
-#: base/models.py:222
+#: base/models.py:225
 msgid "license of the dataset"
 msgstr "licença do conjunto de dados"
 
-#: base/models.py:223
+#: base/models.py:226
 msgid "language used within the dataset"
 msgstr "idioma usado no conjunto de dados"
 
-#: base/models.py:224
+#: base/models.py:227
 msgid ""
 "high-level geographic data thematic classification to assist in the grouping "
 "and search of available geographic data sets."
@@ -234,20 +239,20 @@ msgstr ""
 "classificação temática de alto nível dos dados geográficos para auxiliar no "
 "agrupamento e na pesquisa dos conjuntos de dados geográficos disponíveis."
 
-#: base/models.py:226
+#: base/models.py:229
 msgid "method used to represent geographic information in the dataset."
 msgstr ""
 "método usado para representar informações geográficas no conjunto de dados."
 
-#: base/models.py:227
+#: base/models.py:230
 msgid "time period covered by the content of the dataset (start)"
 msgstr "período de tempo coberto pelo conteúdo do conjunto de dados (início)"
 
-#: base/models.py:228
+#: base/models.py:231
 msgid "time period covered by the content of the dataset (end)"
 msgstr "período de tempo coberto pelo conteúdo do conjunto de dados (fim)"
 
-#: base/models.py:229
+#: base/models.py:232
 msgid ""
 "information about on-line sources from which the dataset, specification, or "
 "community profile name and extended metadata elements can be obtained"
@@ -256,11 +261,11 @@ msgstr ""
 "especificações ou o nome do perfil da comunidade e os elementos adicionais "
 "dos metadados podem ser obtidos"
 
-#: base/models.py:231
+#: base/models.py:234
 msgid "detailed text description of what the online resource is/does"
 msgstr "descrição textual detalhada do que o recurso on-line é ou faz"
 
-#: base/models.py:232
+#: base/models.py:235
 msgid ""
 "general explanation of the data producer's knowledge about the lineage of a "
 "dataset"
@@ -268,131 +273,131 @@ msgstr ""
 "esclarecimento geral sobre o conhecimento do produtor dos dados sobre a "
 "genealogia de um conjunto de dados"
 
-#: base/models.py:238
+#: base/models.py:241
 msgid "title"
 msgstr "título"
 
-#: base/models.py:238
+#: base/models.py:241
 msgid "name by which the cited resource is known"
 msgstr "nome pelo qual o recurso citado é conhecido"
 
-#: base/models.py:239
+#: base/models.py:242
 msgid "date"
 msgstr "data"
 
-#: base/models.py:240
+#: base/models.py:243
 msgid "date type"
 msgstr "tipo de data"
 
-#: base/models.py:242
+#: base/models.py:245
 msgid "edition"
 msgstr "edição"
 
-#: base/models.py:243
+#: base/models.py:246
 msgid "abstract"
 msgstr "resumo"
 
-#: base/models.py:244
+#: base/models.py:247
 msgid "purpose"
 msgstr "finalidade"
 
-#: base/models.py:245
+#: base/models.py:248
 msgid "maintenance frequency"
 msgstr "frequência de manutenção"
 
-#: base/models.py:248 groups/models.py:41 people/models.py:89
+#: base/models.py:251 groups/models.py:41 people/models.py:92
 msgid "keywords"
 msgstr "palavras-chave"
 
-#: base/models.py:249
+#: base/models.py:252
 msgid "keywords region"
 msgstr "palavras-chave de região"
 
-#: base/models.py:252
+#: base/models.py:255
 msgid "restrictions"
 msgstr "restrições"
 
-#: base/models.py:256
+#: base/models.py:259
 msgid "restrictions other"
 msgstr "outras restrições"
 
-#: base/models.py:261
+#: base/models.py:264
 msgid "language"
 msgstr "idioma"
 
-#: base/models.py:272
+#: base/models.py:275
 msgid "temporal extent start"
 msgstr "início da extensão temporal"
 
-#: base/models.py:274
+#: base/models.py:277
 msgid "temporal extent end"
 msgstr "fim da extensão temporal"
 
-#: base/models.py:277
+#: base/models.py:280
 msgid "supplemental information"
 msgstr "informações complementares"
 
-#: base/models.py:278
+#: base/models.py:281
 msgid "any other descriptive information about the dataset"
 msgstr "quaisquer outras informações descritivas sobre o conjunto de dados"
 
-#: base/models.py:281
+#: base/models.py:284
 msgid "distribution URL"
 msgstr "URL de distribuição"
 
-#: base/models.py:283
+#: base/models.py:286
 msgid "distribution description"
 msgstr "descrição de distribuição"
 
-#: base/models.py:287
+#: base/models.py:290
 msgid "data quality statement"
 msgstr "declaração de qualidade de dados"
 
-#: base/models.py:302
+#: base/models.py:305
 msgid "CSW typename"
 msgstr "typename CSW"
 
-#: base/models.py:304
+#: base/models.py:307
 msgid "CSW schema"
 msgstr "esquema CSW"
 
-#: base/models.py:309
+#: base/models.py:312
 msgid "CSW source"
 msgstr "fonte CSW"
 
-#: base/models.py:310
+#: base/models.py:313
 msgid "CSW insert date"
 msgstr "data de inserção CSW"
 
-#: base/models.py:311
+#: base/models.py:314
 msgid "CSW type"
 msgstr "tipo CSW"
 
-#: base/models.py:312
+#: base/models.py:315
 msgid "CSW anytext"
 msgstr "anytext CSW"
 
-#: base/models.py:313
+#: base/models.py:316
 msgid "CSW WKT geometry"
 msgstr "geometria WKT CSW"
 
-#: base/models.py:326
+#: base/models.py:329
 msgid "Should this resource be advertised in home page?"
 msgstr "Caso este recurso ser anunciado na página inicial?"
 
-#: base/models.py:327
+#: base/models.py:330
 msgid "Should this resource be published and searchable?"
 msgstr "Caso este recurso ser publicado e pesquisado?"
 
-#: base/models.py:660
+#: base/models.py:696
 msgid "For example \"kml\""
 msgstr "Por exemplo, \"kml\""
 
-#: base/models.py:662
+#: base/models.py:698
 msgid "For example \"View in Google Earth\""
 msgstr "Por exemplo, \"Visualizar no Google Earth\""
 
-#: base/models.py:663
+#: base/models.py:699
 msgid "For example \"text/xml\""
 msgstr "Por exemplo, \"texto/xml\""
 
@@ -420,7 +425,7 @@ msgstr "Proprietário"
 
 #: base/templates/base/_resourcebase_contact_snippet.html:14
 #: base/templates/base/resourcebase_info_panel.html:66
-#: documents/templates/documents/document_metadata.html:50
+#: documents/templates/documents/document_metadata.html:48
 #: layers/templates/layers/layer_metadata.html:99
 #: maps/templates/maps/map_metadata.html:51
 msgid "Point of Contact"
@@ -450,7 +455,7 @@ msgid "Date"
 msgstr "Data"
 
 #: base/templates/base/resourcebase_info_panel.html:34
-#: layers/templates/layers/layer_detail.html:329
+#: layers/templates/layers/layer_detail.html:337
 msgid "Type"
 msgstr "Tipo"
 
@@ -461,6 +466,7 @@ msgid "Keywords"
 msgstr "Palavras-chave"
 
 #: base/templates/base/resourcebase_info_panel.html:56
+#: templates/search/_region_filter.html:5
 msgid "Regions"
 msgstr "Regiões"
 
@@ -501,28 +507,23 @@ msgstr "Informações complementares"
 msgid "Spatial Representation Type"
 msgstr "Tipo de representação espacial"
 
-#: documents/forms.py:68 groups/models.py:42 layers/forms.py:95
-#: maps/forms.py:81 people/forms.py:82
-msgid "A space or comma-separated list of keywords"
-msgstr "Uma lista de palavras-chave separadas por vírgula ou espaço"
-
-#: documents/forms.py:183 documents/forms.py:251
+#: documents/forms.py:92 documents/forms.py:160
 msgid "Document must be a file or url."
 msgstr "Documento deve ser um arquivo ou url."
 
-#: documents/forms.py:187 documents/forms.py:255
+#: documents/forms.py:96 documents/forms.py:164
 msgid "A document cannot have both a file and a url."
 msgstr "Um documento não pode ter ambos um arquivo e uma url."
 
-#: documents/forms.py:200 documents/forms.py:268
+#: documents/forms.py:109 documents/forms.py:177
 msgid "This file type is not allowed"
 msgstr "Este tipo de arquivo não é permitido"
 
-#: documents/forms.py:218
+#: documents/forms.py:127
 msgid "Link to"
 msgstr "Vincular a"
 
-#: documents/forms.py:240
+#: documents/forms.py:149
 msgid "Permissions must be valid JSON."
 msgstr "As permissões devem ser JSON válido."
 
@@ -562,7 +563,7 @@ msgstr "Você não tem permissão para visualizar este documento"
 msgid "You are not allowed to view this document."
 msgstr "Você não tem permissão para visualizar este documento."
 
-#: documents/views.py:196
+#: documents/views.py:201
 msgid "You are not allowed to edit this document."
 msgstr "Você não tem permissão para editar este documento."
 
@@ -615,7 +616,7 @@ msgid "Rate this document"
 msgstr "Classificar este documento"
 
 #: documents/templates/documents/document_detail.html:65
-#: layers/templates/layers/layer_detail.html:110
+#: layers/templates/layers/layer_detail.html:118
 #: maps/templates/maps/map_detail.html:48
 msgid "Average Rating"
 msgstr "Média de classificação"
@@ -627,7 +628,7 @@ msgid "Download Document"
 msgstr "Documento download"
 
 #: documents/templates/documents/document_detail.html:89
-#: layers/templates/layers/layer_detail.html:131
+#: layers/templates/layers/layer_detail.html:139
 msgid "Request Download"
 msgstr ""
 
@@ -637,15 +638,15 @@ msgid "Edit Document"
 msgstr "Editar documento"
 
 #: documents/templates/documents/document_detail.html:111
-#: layers/templates/layers/layer_detail.html:179
-#: layers/templates/layers/layer_detail.html:188
+#: layers/templates/layers/layer_detail.html:187
+#: layers/templates/layers/layer_detail.html:196
 #: maps/templates/maps/map_detail.html:108
 #: maps/templates/maps/map_detail.html:122
 msgid "Edit"
 msgstr ""
 
 #: documents/templates/documents/document_detail.html:119
-#: layers/templates/layers/layer_detail.html:206
+#: layers/templates/layers/layer_detail.html:214
 msgid "Replace"
 msgstr ""
 
@@ -653,16 +654,16 @@ msgstr ""
 #: groups/templates/groups/group_members.html:33
 #: groups/templates/groups/group_members.html:59
 #: groups/templates/groups/group_members.html:86
-#: layers/templates/layers/layer_detail.html:212
+#: layers/templates/layers/layer_detail.html:220
 #: maps/templates/maps/map_detail.html:123
 msgid "Remove"
 msgstr "Remover"
 
 #: documents/templates/documents/document_detail.html:129
 #: documents/templates/documents/document_detail.html:153
-#: layers/templates/layers/layer_detail.html:153
-#: layers/templates/layers/layer_detail.html:219
-#: layers/templates/layers/layer_detail.html:245
+#: layers/templates/layers/layer_detail.html:161
+#: layers/templates/layers/layer_detail.html:227
+#: layers/templates/layers/layer_detail.html:253
 #: maps/templates/maps/map_detail.html:85
 #: maps/templates/maps/map_detail.html:129
 #: templates/_bulk_permissions_form.html:19
@@ -671,8 +672,8 @@ msgstr "Fechar"
 
 #: documents/templates/documents/document_detail.html:136
 #: documents/templates/documents/document_detail.html:143
-#: layers/templates/layers/layer_detail.html:227
 #: layers/templates/layers/layer_detail.html:235
+#: layers/templates/layers/layer_detail.html:243
 msgid "Download Metadata"
 msgstr "Baixar metadados"
 
@@ -695,7 +696,7 @@ msgstr "Este documento não está relacionado a nenhum mapa ou camada"
 #: documents/templates/documents/document_detail.html:176
 #: documents/templates/documents/document_upload.html:31
 #: groups/templates/groups/group_detail.html:60
-#: layers/templates/layers/layer_detail.html:318
+#: layers/templates/layers/layer_detail.html:326
 #: layers/templates/layers/layer_replace.html:94
 #: layers/templates/upload/layer_upload.html:93
 #: maps/templates/maps/map_detail.html:175 people/admin.py:55
@@ -729,24 +730,17 @@ msgid "Edit Metadata"
 msgstr "Editar metadados"
 
 #: documents/templates/documents/document_metadata.html:22
-#, python-format
-msgid ""
-"\n"
-"        Editing details for %(document_title)s\n"
-"      "
+msgid "Editing details for"
 msgstr ""
-"\n"
-"        Editando detalhes de %(document_title)s\n"
-"      "
 
-#: documents/templates/documents/document_metadata.html:28
+#: documents/templates/documents/document_metadata.html:26
 #: layers/templates/layers/layer_metadata.html:29
 #: maps/templates/maps/map_metadata.html:29
 msgid "Error updating metadata.  Please check the following fields: "
 msgstr "Erro ao atualizar os metadados. Verifique os campos a seguir:"
 
-#: documents/templates/documents/document_metadata.html:43
-#: documents/templates/documents/document_metadata.html:77
+#: documents/templates/documents/document_metadata.html:41
+#: documents/templates/documents/document_metadata.html:75
 #: groups/templates/groups/group_update.html:26
 #: layers/templates/layers/layer_metadata.html:51
 #: layers/templates/layers/layer_metadata.html:110
@@ -755,7 +749,7 @@ msgstr "Erro ao atualizar os metadados. Verifique os campos a seguir:"
 msgid "Update"
 msgstr "Atualizar"
 
-#: documents/templates/documents/document_metadata.html:55
+#: documents/templates/documents/document_metadata.html:53
 #: layers/templates/layers/layer_metadata.html:104
 #: maps/templates/maps/map_metadata.html:56
 msgid "Metadata Provider"
@@ -851,19 +845,19 @@ msgstr "PDF"
 msgid "PNG"
 msgstr "PNG"
 
-#: geoserver/signals.py:284
+#: geoserver/signals.py:285
 msgid "Could not create a download link for layer."
 msgstr "Não foi possível criar um link de download para a camada."
 
-#: geoserver/signals.py:315
+#: geoserver/signals.py:316
 msgid "KML"
 msgstr "KML"
 
-#: geoserver/signals.py:344
+#: geoserver/signals.py:345
 msgid "Tiles"
 msgstr "Tiles"
 
-#: geoserver/signals.py:391 layers/templates/layers/layer_detail.html:253
+#: geoserver/signals.py:392 layers/templates/layers/layer_detail.html:261
 #: services/views.py:1272
 msgid "Legend"
 msgstr "Lenda"
@@ -1201,52 +1195,56 @@ msgstr "versão do sld"
 msgid "sld url"
 msgstr "url do sld"
 
-#: layers/models.py:292
+#: layers/models.py:189
+msgid "File cannot be opened, maybe check the encoding"
+msgstr ""
+
+#: layers/models.py:296
 msgid "attribute name"
 msgstr "nome do atributo"
 
-#: layers/models.py:293
+#: layers/models.py:297
 msgid "name of attribute as stored in shapefile/spatial database"
 msgstr "nome do atributo como armazenado no shapefile/banco de dados espaciais"
 
-#: layers/models.py:299
+#: layers/models.py:303
 msgid "attribute description"
 msgstr "descrição do atributo"
 
-#: layers/models.py:300
+#: layers/models.py:304
 msgid "description of attribute to be used in metadata"
 msgstr "descrição do atributo a ser usado nos metadados"
 
-#: layers/models.py:305
+#: layers/models.py:309
 msgid "attribute label"
 msgstr "rótulo do atributo"
 
-#: layers/models.py:306
+#: layers/models.py:310
 msgid "title of attribute as displayed in GeoNode"
 msgstr "título do atributo como exibido no GeoNode"
 
-#: layers/models.py:312
+#: layers/models.py:316
 msgid "attribute type"
 msgstr "tipo de atributo"
 
-#: layers/models.py:313
+#: layers/models.py:317
 msgid "the data type of the attribute (integer, string, geometry, etc)"
 msgstr "tipo de dados do atributo (inteiro, cadeia, geometria, etc.)"
 
-#: layers/models.py:320
+#: layers/models.py:324
 msgid "visible?"
 msgstr "visível?"
 
-#: layers/models.py:321
+#: layers/models.py:325
 msgid "specifies if the attribute should be displayed in identify results"
 msgstr ""
 "especifica se o atributo deve ser exibido nos resultados da identificação"
 
-#: layers/models.py:324
+#: layers/models.py:328
 msgid "display order"
 msgstr "ordem de exibição"
 
-#: layers/models.py:325
+#: layers/models.py:329
 msgid ""
 "specifies the order in which attribute should be displayed in identify "
 "results"
@@ -1254,71 +1252,71 @@ msgstr ""
 "especifica a ordem segundo a qual os atributos serão mostrados nos "
 "resultados da identificação"
 
-#: layers/models.py:330
+#: layers/models.py:334
 msgid "count"
 msgstr "contagem"
 
-#: layers/models.py:331
+#: layers/models.py:335
 msgid "count value for this field"
 msgstr "valor da contagem para este campo"
 
-#: layers/models.py:334
+#: layers/models.py:338
 msgid "min"
 msgstr "mín."
 
-#: layers/models.py:335
+#: layers/models.py:339
 msgid "minimum value for this field"
 msgstr "valor mínimo para este campo"
 
-#: layers/models.py:342
+#: layers/models.py:346
 msgid "max"
 msgstr "máx."
 
-#: layers/models.py:343
+#: layers/models.py:347
 msgid "maximum value for this field"
 msgstr "valor máximo para este campo"
 
-#: layers/models.py:350
+#: layers/models.py:354
 msgid "average"
 msgstr "média"
 
-#: layers/models.py:351
+#: layers/models.py:355
 msgid "average value for this field"
 msgstr "valor médio para este campo"
 
-#: layers/models.py:358
+#: layers/models.py:362
 msgid "median"
 msgstr "mediana"
 
-#: layers/models.py:359
+#: layers/models.py:363
 msgid "median value for this field"
 msgstr "valor da mediana para este campo"
 
-#: layers/models.py:366
+#: layers/models.py:370
 msgid "standard deviation"
 msgstr "desvio padrão"
 
-#: layers/models.py:367
+#: layers/models.py:371
 msgid "standard deviation for this field"
 msgstr "desvio padrão para este campo"
 
-#: layers/models.py:374
+#: layers/models.py:378
 msgid "sum"
 msgstr "somatória"
 
-#: layers/models.py:375
+#: layers/models.py:379
 msgid "sum value for this field"
 msgstr "valor da somatória para este campo"
 
-#: layers/models.py:382
+#: layers/models.py:386
 msgid "unique values for this field"
 msgstr "valores exclusivos para este campo"
 
-#: layers/models.py:387
+#: layers/models.py:391
 msgid "last modified"
 msgstr "última modificação"
 
-#: layers/models.py:389
+#: layers/models.py:393
 msgid "date when attribute statistics were last updated"
 msgstr "data da última atualização das estatísticas do atributo"
 
@@ -1350,19 +1348,19 @@ msgstr "Você não tem permissão para modificar os metadados desta camada"
 msgid "You are not permitted to view this layer"
 msgstr "Você não tem permissão para visualizar esta camada"
 
-#: layers/views.py:466
+#: layers/views.py:469
 msgid "You are attempting to replace a vector layer with a raster."
 msgstr ""
 
-#: layers/views.py:469
+#: layers/views.py:472
 msgid "You are attempting to replace a raster layer with a vector."
 msgstr ""
 
-#: layers/views.py:525
+#: layers/views.py:528
 msgid "Unable to delete layer"
 msgstr ""
 
-#: layers/views.py:528
+#: layers/views.py:531
 msgid ""
 "This layer is a member of a layer group, you must remove the layer from the "
 "group before deleting."
@@ -1415,86 +1413,98 @@ msgid "Attribute Name"
 msgstr "Nome do atributo"
 
 #: layers/templates/layers/layer_detail.html:50
+#: layers/templates/layers/layer_metadata.html:82
+msgid "Label"
+msgstr "Rótulo"
+
+#: layers/templates/layers/layer_detail.html:51
+#: layers/templates/layers/layer_metadata.html:83
+#: people/templates/people/profile_detail.html:62 services/forms.py:27
+#: services/templates/services/layers_register.html:28
+msgid "Description"
+msgstr "Descrição"
+
+#: layers/templates/layers/layer_detail.html:53
 msgid "Range"
 msgstr "Intervalo"
 
-#: layers/templates/layers/layer_detail.html:51
+#: layers/templates/layers/layer_detail.html:54
 msgid "Average"
 msgstr "Média"
 
-#: layers/templates/layers/layer_detail.html:52
+#: layers/templates/layers/layer_detail.html:55
 msgid "Median"
 msgstr "Mediana"
 
-#: layers/templates/layers/layer_detail.html:53
+#: layers/templates/layers/layer_detail.html:56
 msgid "Standard Deviation"
 msgstr "Desvio padrão"
 
-#: layers/templates/layers/layer_detail.html:106
+#: layers/templates/layers/layer_detail.html:114
 msgid "Rate this layer"
 msgstr "Classificar esta camada"
 
-#: layers/templates/layers/layer_detail.html:128
-#: layers/templates/layers/layer_detail.html:141
+#: layers/templates/layers/layer_detail.html:136
+#: layers/templates/layers/layer_detail.html:149
 msgid "Download Layer"
 msgstr "Baixar camada"
 
-#: layers/templates/layers/layer_detail.html:164
-#: layers/templates/layers/layer_detail.html:171
+#: layers/templates/layers/layer_detail.html:172
+#: layers/templates/layers/layer_detail.html:179
 msgid "Edit Layer"
 msgstr "Editar camada"
 
-#: layers/templates/layers/layer_detail.html:190
+#: layers/templates/layers/layer_detail.html:198
 #: services/templates/services/service_detail.html:110
 msgid "Manage"
 msgstr "Gerir"
 
-#: layers/templates/layers/layer_detail.html:198
+#: layers/templates/layers/layer_detail.html:206
 #: maps/templates/maps/map_detail.html:115
 msgid "Set"
 msgstr ""
 
-#: layers/templates/layers/layer_detail.html:209
+#: layers/templates/layers/layer_detail.html:217
 msgid "Edit data"
 msgstr ""
 
-#: layers/templates/layers/layer_detail.html:263
+#: layers/templates/layers/layer_detail.html:271
 msgid "Maps using this layer"
 msgstr "Mapas usando esta camada"
 
-#: layers/templates/layers/layer_detail.html:265
+#: layers/templates/layers/layer_detail.html:273
 msgid "List of maps using this layer:"
 msgstr "Lista de mapas que estão usando esta camada:"
 
-#: layers/templates/layers/layer_detail.html:271
+#: layers/templates/layers/layer_detail.html:279
 msgid "This layer is not currently used in any maps."
 msgstr "Esta camada não é utilizada em nenhum mapa atualmente."
 
-#: layers/templates/layers/layer_detail.html:276
+#: layers/templates/layers/layer_detail.html:284
 msgid "Create a map using this layer"
 msgstr "Criar um mapa usando esta camada"
 
-#: layers/templates/layers/layer_detail.html:277
+#: layers/templates/layers/layer_detail.html:285
 msgid "Click the button below to generate a new map based on this layer."
 msgstr "Clique no botão abaixo para gerar um novo mapa com base nesta camada."
 
-#: layers/templates/layers/layer_detail.html:278
+#: layers/templates/layers/layer_detail.html:286
 msgid "Create a Map"
 msgstr "Criar um mapa"
 
-#: layers/templates/layers/layer_detail.html:283
+#: layers/templates/layers/layer_detail.html:291
 msgid "Documents related to this layer"
 msgstr "Documentos relacionados a esta camada"
 
-#: layers/templates/layers/layer_detail.html:284
+#: layers/templates/layers/layer_detail.html:292
 msgid "List of documents related to this layer:"
 msgstr "Lista de documentos relacionados a esta camada:"
 
-#: layers/templates/layers/layer_detail.html:295
+#: layers/templates/layers/layer_detail.html:303
 msgid "Styles"
 msgstr "Estilos"
 
-#: layers/templates/layers/layer_detail.html:296
+#: layers/templates/layers/layer_detail.html:304
 msgid ""
 "The following styles are associated with this layer. Choose a style to view "
 "it in the preview map."
@@ -1502,23 +1512,23 @@ msgstr ""
 "Os seguintes estilos estão associados com esta camada. Escolha um estilo "
 "para visualizá-lo no mapa de pré-visualização."
 
-#: layers/templates/layers/layer_detail.html:309
+#: layers/templates/layers/layer_detail.html:317
 msgid "No styles associated with this layer"
 msgstr "Nenhum estilo associado a esta camada"
 
-#: layers/templates/layers/layer_detail.html:319
+#: layers/templates/layers/layer_detail.html:327
 msgid "Click the button below to change the permissions of this layer."
 msgstr "Clique no botão abaixo para alterar as permissões para esta camada."
 
-#: layers/templates/layers/layer_detail.html:320
+#: layers/templates/layers/layer_detail.html:328
 msgid "Change Layer Permissions"
 msgstr "Mudar permissões da camada"
 
-#: layers/templates/layers/layer_detail.html:327
+#: layers/templates/layers/layer_detail.html:335
 msgid "External service layer"
 msgstr "Camada de serviço externo"
 
-#: layers/templates/layers/layer_detail.html:328
+#: layers/templates/layers/layer_detail.html:336
 msgid "Source"
 msgstr "Fonte"
 
@@ -1566,16 +1576,6 @@ msgstr "Atributos"
 #: layers/templates/layers/layer_metadata.html:81
 msgid "Attribute"
 msgstr "Atributo"
-
-#: layers/templates/layers/layer_metadata.html:82
-msgid "Label"
-msgstr "Rótulo"
-
-#: layers/templates/layers/layer_metadata.html:83
-#: people/templates/people/profile_detail.html:62 services/forms.py:27
-#: services/templates/services/layers_register.html:28
-msgid "Description"
-msgstr "Descrição"
 
 #: layers/templates/layers/layer_metadata.html:84
 msgid "Display Order"
@@ -2485,90 +2485,90 @@ msgstr ""
 msgid "This account is now active and can log in the site"
 msgstr ""
 
-#: people/models.py:43
+#: people/models.py:46
 msgid "Organization Name"
 msgstr "Empresa"
 
-#: people/models.py:47
+#: people/models.py:50
 msgid "name of the responsible organization"
 msgstr "nome da organização responsável"
 
-#: people/models.py:48 templates/500.html:76 templates/base.html:210
+#: people/models.py:51 templates/500.html:76 templates/base.html:210
 msgid "Profile"
 msgstr "Perfil"
 
-#: people/models.py:48
+#: people/models.py:51
 msgid "introduce yourself"
 msgstr "apresentar-se"
 
-#: people/models.py:50
+#: people/models.py:53
 msgid "Position Name"
 msgstr "Cargo"
 
-#: people/models.py:54
+#: people/models.py:57
 msgid "role or position of the responsible person"
 msgstr "Função ou cargo da pessoa responsável"
 
-#: people/models.py:55 people/templates/people/profile_detail.html:50
+#: people/models.py:58 people/templates/people/profile_detail.html:50
 msgid "Voice"
 msgstr "Voz"
 
-#: people/models.py:56
+#: people/models.py:59
 msgid ""
 "telephone number by which individuals can speak to the responsible "
 "organization or individual"
 msgstr ""
 "número do telefone para falar com a organização ou o indivíduo responsável"
 
-#: people/models.py:57
+#: people/models.py:60
 msgid "Facsimile"
 msgstr "Fax"
 
-#: people/models.py:58
+#: people/models.py:61
 msgid ""
 "telephone number of a facsimile machine for the responsible organization or "
 "individual"
 msgstr "número do telefone ou fax da organização ou do indivíduo responsável"
 
-#: people/models.py:60
+#: people/models.py:63
 msgid "Delivery Point"
 msgstr "Entrega"
 
-#: people/models.py:64
+#: people/models.py:67
 msgid ""
 "physical and email address at which the organization or individual may be "
 "contacted"
 msgstr "endereço físico e de e-mail para contatar a organização ou o indivíduo"
 
-#: people/models.py:66
+#: people/models.py:69
 msgid "City"
 msgstr "Cidade"
 
-#: people/models.py:70
+#: people/models.py:73
 msgid "city of the location"
 msgstr "cidade da localização"
 
-#: people/models.py:72
+#: people/models.py:75
 msgid "Administrative Area"
 msgstr "Área administrativa"
 
-#: people/models.py:76
+#: people/models.py:79
 msgid "state, province of the location"
 msgstr "estado ou província da localização"
 
-#: people/models.py:78
+#: people/models.py:81
 msgid "Postal Code"
 msgstr "CEP"
 
-#: people/models.py:82
+#: people/models.py:85
 msgid "ZIP or other postal code"
 msgstr "CEP"
 
-#: people/models.py:88
+#: people/models.py:91
 msgid "country of the physical address"
 msgstr "país do endereço físico"
 
-#: people/models.py:90
+#: people/models.py:93
 msgid ""
 "commonly used word(s) or formalised word(s) or phrase(s) used to describe "
 "the subject             (space or comma-separated"
@@ -4215,6 +4215,15 @@ msgstr "Voltar para a caixa de entrada"
 #: templates/user_messages/thread_detail.html:26
 msgid "Send Reply"
 msgstr "Enviar resposta"
+
+#~ msgid ""
+#~ "\n"
+#~ "        Editing details for %(document_title)s\n"
+#~ "      "
+#~ msgstr ""
+#~ "\n"
+#~ "        Editing details for %(document_title)s\n"
+#~ "      "
 
 #~ msgid "Replace this Document"
 #~ msgstr "Replace this Document"

@@ -23,6 +23,7 @@ from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 from django.conf.urls.static import static
 from geonode.sitemap import LayerSitemap, MapSitemap
 from django.views.generic import TemplateView
+from django.contrib import admin
 
 import geonode.proxy.urls
 
@@ -32,7 +33,7 @@ import autocomplete_light
 
 # Setup Django Admin
 autocomplete_light.autodiscover()
-from django.contrib import admin
+
 admin.autodiscover()
 
 js_info_dict = {

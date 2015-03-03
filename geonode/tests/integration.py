@@ -23,6 +23,8 @@ import datetime
 import urllib2
 import base64
 import time
+import logging
+import gisdata
 
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
@@ -53,12 +55,9 @@ from geonode.geoserver.helpers import cascading_delete, set_attributes
 # from geonode.geoserver.helpers import set_time_info
 from geonode.geoserver.signals import gs_catalog
 
-import gisdata
-
 
 LOGIN_URL = "/accounts/login/"
 
-import logging
 logging.getLogger("south").setLevel(logging.INFO)
 
 

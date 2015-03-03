@@ -203,7 +203,8 @@ def scan_file(file_name):
         zf.close()
 
     def dir_files():
-        abs = lambda *p: os.path.abspath(os.path.join(*p))
+        def abs(*p):
+            return os.path.abspath(os.path.join(*p))
         return [abs(dirname, f) for f in os.listdir(dirname)]
 
     if files is None:

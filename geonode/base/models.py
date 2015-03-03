@@ -3,6 +3,9 @@ import math
 import os
 import logging
 
+from pyproj import transform, Proj
+from urlparse import urljoin, urlsplit
+
 from django.db import models
 from django.db.models import Q
 from django.utils.translation import ugettext_lazy as _
@@ -408,7 +411,38 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin):
         self.center_y = center_y
         self.zoom = zoom
 
-        # FIXME(Ariel): How do we set the bbox with this information?
+        deg_len_equator = 40075160 / 360
+
+        # covert center in lat lon
+        def get_lon_lat():
+            wgs84 = Proj(init='epsg:4326')
+            mercator = Proj(init='epsg:3857')
+            lon, lat = transform(mercator, wgs84, center_x, center_y)
+            return lon, lat
+
+        # calculate the degree length at this latitude
+        def deg_len():
+            lon, lat = get_lon_lat()
+            return math.cos(lat) * deg_len_equator
+
+        lon, lat = get_lon_lat()
+
+        # taken from http://wiki.openstreetmap.org/wiki/Zoom_levels
+        # it might be not precise but enough for the purpose
+        distance_per_pixel = 40075160 * math.cos(lat)/2**(zoom+8)
+
+        # calculate the distance from the center of the map in degrees
+        # we use the calculated degree length on the x axis and the
+        # normal degree length on the y axis assumin that it does not change
+
+        # Assuming a map of 1000 px of width and 700 px of height
+        distance_x_degrees = distance_per_pixel * 500 / deg_len()
+        distance_y_degrees = distance_per_pixel * 350 / deg_len_equator
+
+        self.bbox_x0 = lon - distance_x_degrees
+        self.bbox_x1 = lon + distance_x_degrees
+        self.bbox_y0 = lat - distance_y_degrees
+        self.bbox_y1 = lat + distance_y_degrees
 
     def set_bounds_from_bbox(self, bbox):
         """
@@ -518,11 +552,13 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin):
         upload_path = os.path.join(settings.MEDIA_ROOT, thumb_folder)
         if not os.path.exists(upload_path):
             os.makedirs(upload_path)
-        url = os.path.join(settings.MEDIA_URL, thumb_folder, filename)
 
         with open(os.path.join(upload_path, filename), 'w') as f:
             thumbnail = File(f)
             thumbnail.write(image)
+
+        url_path = os.path.join(settings.MEDIA_URL, thumb_folder, filename)
+        url = urljoin(settings.SITEURL, url_path)
 
         Link.objects.get_or_create(resource=self,
                                    url=url,
@@ -681,7 +717,7 @@ def resourcebase_post_save(instance, *args, **kwargs):
 
     # we need to remove stale links
     for link in instance.link_set.all():
-        if settings.SITEURL not in link.url:
+        if urlsplit(settings.SITEURL).hostname not in link.url:
             link.delete()
 
 
