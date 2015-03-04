@@ -78,11 +78,6 @@
         "{% url "resource_permissions" resource.id %}",
         {
           success: function(data){
-            var perms = $.parseJSON($.parseJSON(data).permissions);
-
-            /*
-            * Compile the users fields after receiving the current permissions status from the server
-            */
             var users = {
               view_resourcebase: [],
               download_resourcebase: [],
@@ -91,15 +86,26 @@
               change_layer_style: [],
               manage_resourcebase: [],
             };
+
+            // let's initialize the anyone flags to false, if there's the AnonymousUser
+            // they will be chacked later
+            $('#perms_view_anyone').prop('checked', false);
+            $('#perms_download_resourcebase_anyone').prop('checked', false);
+
+            /*
+            * Compile the users fields after receiving the current permissions status from the server
+            */
+            var perms = $.parseJSON($.parseJSON(data).permissions);
+
             var perms_users = perms.users;
             for (var user in perms_users){
               var user_perms = perms_users[user];
               if (user === 'AnonymousUser'){
-                if(user_perms.indexOf('view_resourcebase') == -1){
-                  $('#perms_view_anyone').prop('checked', false);
+                if(user_perms.indexOf('view_resourcebase') > -1){
+                  $('#perms_view_anyone').prop('checked', true);
                 }
-                if(user_perms.indexOf('download_resourcebase') == -1){
-                  $('#perms_download_resourcebase_anyone').prop('checked', false);
+                if(user_perms.indexOf('download_resourcebase') > -1){
+                  $('#perms_download_resourcebase_anyone').prop('checked', true);
                 }
               }else{
                 for (var i=0;i<user_perms.length;i++){
