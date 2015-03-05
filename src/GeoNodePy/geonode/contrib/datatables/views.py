@@ -114,6 +114,9 @@ def jointargets(request):
 @login_required
 @csrf_exempt
 def tablejoin_api(request):
+    """
+    Join a DataTable to the Geometry of an existing layer
+    """
     if not request.method == 'POST':
          return HttpResponse("Unsupported Method", mimetype="application/json", status=500) 
          
@@ -121,9 +124,11 @@ def tablejoin_api(request):
     layer_typename = request.POST.get("layer_typename", None)
     table_attribute = request.POST.get("table_attribute", None)
     layer_attribute = request.POST.get("layer_attribute", None)
+    new_table_owner = request.user
+
     if table_name and layer_typename and table_attribute and layer_attribute:
         try:
-            tj, msg = setup_join(table_name, layer_typename, table_attribute, layer_attribute)
+            tj, msg = setup_join(new_table_owner, table_name, layer_typename, table_attribute, layer_attribute)
             if tj:
                 return_dict = {
                     'join_id': tj.pk,

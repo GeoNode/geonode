@@ -20,13 +20,15 @@ from psycopg2.extensions import QuotedString
 
 from django.template.defaultfilters import slugify
 from django.core.files import File
+from django.contrib.auth.models import User
 from django.conf import settings
 from django.utils.translation import ugettext_lazy as _
 
 from geonode.maps.models import Layer, LayerAttribute
 from geonode.contrib.datatables.models import DataTable, DataTableAttribute, TableJoin
+from geonode.contrib.msg_util import *
 
-from .db_helper import get_datastore_connection_string
+from geonode.contrib.datatables.db_helper import get_datastore_connection_string
 
 logger = logging.getLogger('geonode.contrib.datatables.utils')
 
@@ -204,10 +206,11 @@ def create_point_col_from_lat_lon(table_name, lat_column, lon_column):
     return layer, ""
     
 
-def setup_join(table_name, layer_typename, table_attribute_name, layer_attribute_name):
+def setup_join(new_table_owner, table_name, layer_typename, table_attribute_name, layer_attribute_name):
     """
     Setup the Table Join in GeoNode
     """
+    assert isinstance(new_table_owner, User), "new_table_owner must be a User object"
     assert table_name is not None, "table_name cannot be None"
     assert layer_typename is not None, "layer_typename cannot be None"
     assert table_attribute_name is not None, "table_attribute_name cannot be None"
@@ -323,12 +326,16 @@ def setup_join(table_name, layer_typename, table_attribute_name, layer_attribute
     # ------------------------------------------------------
     # Set the Layer's default Style
     # ------------------------------------------------------
-    gs_cat = Layer.objects.gs_catalog
-    sinfo = gs_cat.get_style(table_name)
-    print '-' *40
-    print '\nsinfo', sinfo
-    layer.default_style = gs_cat.get_style(table_name)
-    layer.save()
+
+    #new_layer = cat.get_layer(ft.name)
+    #new_layer._set_default_style('initial_style')
+    #cat.save(new_layer)
+    """
+    cat = Catalog("http://localhost:8080/geoserver/rest", "admin", "geoserver")
+layer = cat.get_layer("layer_name")
+layer._set_default_style("style_name")
+cat.save(layer)
+    """
 
     # ------------------------------------------------------------------
     # Create the Layer in GeoNode from the GeoServer Layer
@@ -342,6 +349,7 @@ def setup_join(table_name, layer_typename, table_attribute_name, layer_attribute
             "title": ft.title or 'No title provided',
             "abstract": ft.abstract or 'No abstract provided',
             "uuid": str(uuid.uuid4()),
+            "owner" : new_table_owner,
             #"bbox_x0": Decimal(ft.latlon_bbox[0]),
             #"bbox_x1": Decimal(ft.latlon_bbox[1]),
             #"bbox_y0": Decimal(ft.latlon_bbox[2]),
@@ -366,6 +374,10 @@ def setup_join(table_name, layer_typename, table_attribute_name, layer_attribute
     # ------------------------------------------------------------------
     # Create LayerAttributes for the new Layer (not done in GeoNode 2.x)
     # ------------------------------------------------------------------
+    print '-' *40
+    print layer, layer.__class__.__name__
+    print layer.abstract
+    print '-' *40
     create_layer_attributes_from_datatable(dt, layer)
 
 
@@ -394,8 +406,8 @@ def create_layer_attributes_from_datatable(datatable, layer):
         # Creata or Retrieve a new LayerAttribute
         layer_attribute_obj, created = LayerAttribute.objects.get_or_create(**new_params)
 
-        #if created:
-        #    print 'layer_attribute_obj created: %s' % layer_attribute_obj
-        #else:
-        #    print 'layer_attribute_obj EXISTS: %s' % layer_attribute_obj
+        if created:
+            print 'layer_attribute_obj created: %s' % layer_attribute_obj
+        else:
+            print 'layer_attribute_obj EXISTS: %s' % layer_attribute_obj
             

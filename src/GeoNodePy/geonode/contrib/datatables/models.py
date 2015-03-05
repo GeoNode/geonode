@@ -7,6 +7,7 @@ from geonode.maps.models import Layer
 from django.template.defaultfilters import slugify
 from django.utils.translation import ugettext_lazy as _
 
+
 from .db_helper import get_datastore_connection_string
 
 TRANSFORMATION_FUNCTIONS = []
