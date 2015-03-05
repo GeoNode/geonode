@@ -43,7 +43,7 @@ def process_csv_file(instance, delimiter=",", no_header_row=False):
     instance.save()
     f = open(csv_filename, 'rb')
     
-    print ('process_csv_file 1')
+    msg ('process_csv_file 1')
    
     try: 
         csv_table = table.Table.from_csv(f,name=table_name, no_header_row=no_header_row, delimiter=delimiter)
@@ -53,13 +53,13 @@ def process_csv_file(instance, delimiter=",", no_header_row=False):
 
     csv_file = File(f)
     f.close()
-    print ('process_csv_file 2')
+    msg ('process_csv_file 2')
 
     try:
         for column in csv_table:
-            #print ('column', column)
+            #msg ('column', column)
             column.name = slugify(unicode(column.name)).replace('-','_')
-            #print ('column.name ', column.name )
+            #msg ('column.name ', column.name )
 
             attribute, created = DataTableAttribute.objects.get_or_create(datatable=instance, 
                 attribute=column.name, 
@@ -71,7 +71,7 @@ def process_csv_file(instance, delimiter=",", no_header_row=False):
         return None, str(sys.exc_info()[0])
 
 
-    print ('process_csv_file 3')
+    msg ('process_csv_file 3')
     # Create Database Table
     try:
         sql_table = sql.make_table(csv_table,table_name)
@@ -84,7 +84,7 @@ def process_csv_file(instance, delimiter=",", no_header_row=False):
 
     conn = psycopg2.connect(get_datastore_connection_string())
 
-    print ('process_csv_file 4')
+    msg ('process_csv_file 4')
 
     try:
         cur = conn.cursor()
@@ -104,7 +104,7 @@ def process_csv_file(instance, delimiter=",", no_header_row=False):
     # Copy Data to postgres
     #connection_string = "postgresql://%s:%s@%s:%s/%s" % (db['USER'], db['PASSWORD'], db['HOST'], db['PORT'], db['NAME'])
     connection_string = get_datastore_connection_string(url_format=True)
-    print ('process_csv_file 5')
+    msg ('process_csv_file 5')
     
     try:
         engine, metadata = sql.get_connection(connection_string)
@@ -130,18 +130,27 @@ def process_csv_file(instance, delimiter=",", no_header_row=False):
     
     return instance, ""
 
-def create_point_col_from_lat_lon(table_name, lat_column, lon_column):
+def create_point_col_from_lat_lon(new_table_owner, table_name, lat_column, lon_column):
+    assert isinstance(new_table_owner, User), "new_table_owner must be a User object"
+    from geonode.contrib.msg_util import *
+
+    msg('create_point_col_from_lat_lon - 1')
     try:
         dt = DataTable.objects.get(table_name=table_name)
     except:
         msg = "Error: (%s) %s" % (str(e), table_name)
         return None, msg
 
-    alter_table_sql = "ALTER TABLE %s ADD COLUMN geom geometry(POINT,4326);" % (table_name)
+    msg('create_point_col_from_lat_lon - 2')
+
+    #alter_table_sql = "ALTER TABLE %s ADD COLUMN geom geometry(POINT,4326);" % (table_name) # postgi 2.x
+    alter_table_sql = "ALTER TABLE %s ADD COLUMN geom geometry;" % (table_name) # postgis 1.x
     update_table_sql = "UPDATE %s SET geom = ST_SetSRID(ST_MakePoint(%s,%s),4326);" % (table_name, lon_column, lat_column)
     create_index_sql = "CREATE INDEX idx_%s_geom ON %s USING GIST(geom);" % (table_name, table_name)
 
-    try:
+    msg('create_point_col_from_lat_lon - 3')
+
+    if 1: # try:
         conn = psycopg2.connect(get_datastore_connection_string())
         
         cur = conn.cursor()
@@ -150,10 +159,12 @@ def create_point_col_from_lat_lon(table_name, lat_column, lon_column):
         cur.execute(create_index_sql) 
         conn.commit()
         conn.close()
-    except Exception as e:
-        conn.close()
-        msg =  "Error Creating Point Column from Latitude and Longitude %s" % (str(e[0]))
-        return None, msg
+    #except Exception as e:
+    #    conn.close()
+    #    msg =  "Error Creating Point Column from Latitude and Longitude %s" % (str(e[0]))
+    #    return None, msg
+
+    msg('create_point_col_from_lat_lon - 4')
 
     # ------------------------------------------------------
     # Create the Layer in GeoServer from the table 
@@ -164,18 +175,28 @@ def create_point_col_from_lat_lon(table_name, lat_column, lon_column):
         workspace = cat.get_workspace("geonode")
         ds_list = cat.get_xml(workspace.datastore_url)
         datastores = [datastore_from_index(cat, workspace, n) for n in ds_list.findall("dataStore")]
+        #----------------------------
+        # Find the datastore
+        #----------------------------
         ds = None
         for datastore in datastores:
-            if datastore.name == "datastore":
+            #if datastore.name == "datastore":
+            if datastore.name == settings.DB_DATASTORE_NAME: #"geonode_imports":
                 ds = datastore
+
+        if ds is None:
+            msg = "Datastore '%s' not found" % (settings.DB_DATASTORE_NAME)
+            return None, msg
         ft = cat.publish_featuretype(table_name, ds, "EPSG:4326", srs="EPSG:4326")
         cat.save(ft)
     except Exception as e:
-        tj.delete()
+        #tj.delete()
         import traceback
         traceback.print_exc(sys.exc_info())
         msg = "Error creating GeoServer layer for %s: %s" % (table_name, str(e))
         return None, msg
+
+    msg('create_point_col_from_lat_lon - 5')
 
     # ------------------------------------------------------
     # Create the Layer in GeoNode from the GeoServer Layer
@@ -189,10 +210,11 @@ def create_point_col_from_lat_lon(table_name, lat_column, lon_column):
             "title": ft.title or 'No title provided',
             "abstract": ft.abstract or 'No abstract provided',
             "uuid": str(uuid.uuid4()),
-            "bbox_x0": Decimal(ft.latlon_bbox[0]),
-            "bbox_x1": Decimal(ft.latlon_bbox[1]),
-            "bbox_y0": Decimal(ft.latlon_bbox[2]),
-            "bbox_y1": Decimal(ft.latlon_bbox[3])
+            "owner" : new_table_owner,
+            #"bbox_x0": Decimal(ft.latlon_bbox[0]),
+            #"bbox_x1": Decimal(ft.latlon_bbox[1]),
+            #"bbox_y0": Decimal(ft.latlon_bbox[2]),
+            #"bbox_y1": Decimal(ft.latlon_bbox[3])
         })
         #set_attributes(layer, overwrite=True)
     except Exception as e:
@@ -201,6 +223,15 @@ def create_point_col_from_lat_lon(table_name, lat_column, lon_column):
         msg = "Error creating GeoNode layer for %s: %s" % (table_name, str(e))
         return None, msg
 
+    # ----------------------------------
+    # Set default permissions (public)
+    # ----------------------------------
+    layer.set_default_permissions()
+
+    # ------------------------------------------------------------------
+    # Create LayerAttributes for the new Layer (not done in GeoNode 2.x)
+    # ------------------------------------------------------------------
+    create_layer_attributes_from_datatable(dt, layer)
 
 
     return layer, ""
@@ -272,7 +303,7 @@ def setup_join(new_table_owner, table_name, layer_typename, table_attribute_name
         #cur.execute('drop view if exists %s;' % double_view_name)  # removing double view
         cur.execute('drop view if exists %s;' % view_name) 
         #cur.execute('drop materialized view if exists %s;' % view_name) 
-        print ('view_sql', view_sql)
+        msg ('view_sql', view_sql)
         cur.execute(view_sql)
         #cur.execute(double_view_sql)
         cur.execute(matched_count_sql)
@@ -304,13 +335,20 @@ def setup_join(new_table_owner, table_name, layer_typename, table_attribute_name
         workspace = cat.get_workspace('geonode')
         ds_list = cat.get_xml(workspace.datastore_url)
         datastores = [datastore_from_index(cat, workspace, n) for n in ds_list.findall("dataStore")]
+        #----------------------------
+        # Find the datastore
+        #----------------------------
         ds = None
         for datastore in datastores:
-            #print ('datastore name:', datastore.name)
+            #msg ('datastore name:', datastore.name)
             if datastore.name == settings.DB_DATASTORE_NAME: #"geonode_imports":
                 ds = datastore
-        logger.error(str(ds))
-        
+        if ds is None:
+            tj.delete()
+            msg = "Datastore name not found: %s" % settings.DB_DATASTORE_NAME
+            logger.error(str(ds))
+            return None, msg
+
         ft = cat.publish_featuretype(view_name, ds, layer.srs, srs=layer.srs)        
         #ft = cat.publish_featuretype(double_view_name, ds, layer.srs, srs=layer.srs)
 
@@ -377,10 +415,6 @@ cat.save(layer)
     # ------------------------------------------------------------------
     # Create LayerAttributes for the new Layer (not done in GeoNode 2.x)
     # ------------------------------------------------------------------
-    print '-' *40
-    print layer, layer.__class__.__name__
-    print layer.abstract
-    print '-' *40
     create_layer_attributes_from_datatable(dt, layer)
 
 
