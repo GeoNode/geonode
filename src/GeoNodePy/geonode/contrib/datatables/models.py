@@ -153,7 +153,6 @@ class TableJoin(models.Model):
 
     def remove_joins(self):
         conn = psycopg2.connect(get_datastore_connection_string())
-        #conn = psycopg2.connect("dbname=geonode user=geonode")
         cur = conn.cursor()
         cur.execute('drop view if exists %s;' % self.view_name)
         #cur.execute('drop materialized view if exists %s;' % self.view_name.replace('view_', ''))

@@ -34,6 +34,7 @@ logger = logging.getLogger('geonode.contrib.datatables.utils')
 
 
 def process_csv_file(instance, delimiter=",", no_header_row=False):
+
     csv_filename = instance.uploaded_file.path
     table_name = slugify(unicode(os.path.splitext(os.path.basename(csv_filename))[0])).replace('-','_')
     if table_name[:1].isdigit():
@@ -132,25 +133,26 @@ def process_csv_file(instance, delimiter=",", no_header_row=False):
 
 def create_point_col_from_lat_lon(new_table_owner, table_name, lat_column, lon_column):
     assert isinstance(new_table_owner, User), "new_table_owner must be a User object"
-    from geonode.contrib.msg_util import *
 
     msg('create_point_col_from_lat_lon - 1')
     try:
         dt = DataTable.objects.get(table_name=table_name)
     except:
-        msg = "Error: (%s) %s" % (str(e), table_name)
-        return None, msg
+        err_msg = "Error: (%s) %s" % (str(e), table_name)
+        return None, err_msg
 
     msg('create_point_col_from_lat_lon - 2')
 
     #alter_table_sql = "ALTER TABLE %s ADD COLUMN geom geometry(POINT,4326);" % (table_name) # postgi 2.x
     alter_table_sql = "ALTER TABLE %s ADD COLUMN geom geometry;" % (table_name) # postgis 1.x
     update_table_sql = "UPDATE %s SET geom = ST_SetSRID(ST_MakePoint(%s,%s),4326);" % (table_name, lon_column, lat_column)
+    #update_table_sql = "UPDATE %s SET geom = ST_SetSRID(ST_MakePoint(cast(%s AS float), cast(%s as float)),4326);" % (table_name, lon_column, lat_column)
+    msg('update_table_sql: %s' % update_table_sql)
     create_index_sql = "CREATE INDEX idx_%s_geom ON %s USING GIST(geom);" % (table_name, table_name)
 
     msg('create_point_col_from_lat_lon - 3')
 
-    if 1: # try:
+    if 1:
         conn = psycopg2.connect(get_datastore_connection_string())
         
         cur = conn.cursor()
@@ -161,8 +163,8 @@ def create_point_col_from_lat_lon(new_table_owner, table_name, lat_column, lon_c
         conn.close()
     #except Exception as e:
     #    conn.close()
-    #    msg =  "Error Creating Point Column from Latitude and Longitude %s" % (str(e[0]))
-    #    return None, msg
+    #    err_msg =  "Error Creating Point Column from Latitude and Longitude %s" % (str(e[0]))
+    #    return None, err_msg
 
     msg('create_point_col_from_lat_lon - 4')
 
@@ -185,16 +187,16 @@ def create_point_col_from_lat_lon(new_table_owner, table_name, lat_column, lon_c
                 ds = datastore
 
         if ds is None:
-            msg = "Datastore '%s' not found" % (settings.DB_DATASTORE_NAME)
-            return None, msg
+            err_msg = "Datastore '%s' not found" % (settings.DB_DATASTORE_NAME)
+            return None, err_msg
         ft = cat.publish_featuretype(table_name, ds, "EPSG:4326", srs="EPSG:4326")
         cat.save(ft)
     except Exception as e:
         #tj.delete()
         import traceback
         traceback.print_exc(sys.exc_info())
-        msg = "Error creating GeoServer layer for %s: %s" % (table_name, str(e))
-        return None, msg
+        err_msg = "Error creating GeoServer layer for %s: %s" % (table_name, str(e))
+        return None, err_msg
 
     msg('create_point_col_from_lat_lon - 5')
 
@@ -220,8 +222,8 @@ def create_point_col_from_lat_lon(new_table_owner, table_name, lat_column, lon_c
     except Exception as e:
         import traceback
         traceback.print_exc(sys.exc_info())
-        msg = "Error creating GeoNode layer for %s: %s" % (table_name, str(e))
-        return None, msg
+        err_msg = "Error creating GeoNode layer for %s: %s" % (table_name, str(e))
+        return None, err_msg
 
     # ----------------------------------
     # Set default permissions (public)
@@ -256,12 +258,12 @@ def setup_join(new_table_owner, table_name, layer_typename, table_attribute_name
     except Exception as e:
         import traceback
         traceback.print_exc(sys.exc_info())
-        msg = "Error: (%s) %s:%s:%s:%s" % (str(e), table_name, layer_typename, table_attribute_name, layer_attribute_name)
-        return None, msg
+        err_msg = "Error: (%s) %s:%s:%s:%s" % (str(e), table_name, layer_typename, table_attribute_name, layer_attribute_name)
+        return None, err_msg
 
     layer_name = layer.typename.split(':')[1]
-    print 'setup_join 02'
-    
+    msg('setup_join 02')
+
     view_name = "join_%s_%s" % (layer_name, dt.table_name)
 
     view_sql = 'create view %s as select %s.the_geom, %s.* from %s inner join %s on %s."%s" = %s."%s";' %  (view_name, layer_name, dt.table_name, layer_name, dt.table_name, layer_name, layer_attribute.attribute, dt.table_name, table_attribute.attribute)
@@ -269,8 +271,8 @@ def setup_join(new_table_owner, table_name, layer_typename, table_attribute_name
     
     #double_view_name = "view_%s" % view_name
     #double_view_sql = "create view %s as select * from %s" % (double_view_name, view_name)
-    print 'setup_join 03'
-    
+    msg('setup_join 03')
+
     # ------------------------------------------------------------------
     # Retrieve stats
     # ------------------------------------------------------------------
@@ -287,11 +289,11 @@ def setup_join(new_table_owner, table_name, layer_typename, table_attribute_name
     # ------------------------------------------------------------------
     # Create a TableJoin object
     # ------------------------------------------------------------------
-    print 'setup_join 04'
+    msg('setup_join 04')
     tj, created = TableJoin.objects.get_or_create(source_layer=layer, datatable=dt, table_attribute=table_attribute, layer_attribute=layer_attribute, view_name=view_name)#, view_name=double_view_name)
     tj.view_sql = view_sql
 
-    print 'setup_join 05'
+    msg('setup_join 05')
 
     # ------------------------------------------------------------------
     # Create the View (and double view)
@@ -303,7 +305,7 @@ def setup_join(new_table_owner, table_name, layer_typename, table_attribute_name
         #cur.execute('drop view if exists %s;' % double_view_name)  # removing double view
         cur.execute('drop view if exists %s;' % view_name) 
         #cur.execute('drop materialized view if exists %s;' % view_name) 
-        msg ('view_sql', view_sql)
+        msg ('view_sql: %s'% view_sql)
         cur.execute(view_sql)
         #cur.execute(double_view_sql)
         cur.execute(matched_count_sql)
@@ -320,12 +322,12 @@ def setup_join(new_table_owner, table_name, layer_typename, table_attribute_name
         tj.delete()
         import traceback
         traceback.print_exc(sys.exc_info())
-        msg =  "Error Joining table %s to layer %s: %s" % (table_name, layer_typename, str(e[0]))
-        return None, msg
+        err_msg =  "Error Joining table %s to layer %s: %s" % (table_name, layer_typename, str(e[0]))
+        return None, err_msg
 
     
-    print 'setup_join 06'
-    
+    msg('setup_join 06')
+
     #--------------------------------------------------
     # Create the Layer in GeoServer from the view
     #--------------------------------------------------
@@ -345,9 +347,9 @@ def setup_join(new_table_owner, table_name, layer_typename, table_attribute_name
                 ds = datastore
         if ds is None:
             tj.delete()
-            msg = "Datastore name not found: %s" % settings.DB_DATASTORE_NAME
+            err_msg = "Datastore name not found: %s" % settings.DB_DATASTORE_NAME
             logger.error(str(ds))
-            return None, msg
+            return None, err_msg
 
         ft = cat.publish_featuretype(view_name, ds, layer.srs, srs=layer.srs)        
         #ft = cat.publish_featuretype(double_view_name, ds, layer.srs, srs=layer.srs)
@@ -357,10 +359,10 @@ def setup_join(new_table_owner, table_name, layer_typename, table_attribute_name
         tj.delete()
         import traceback
         traceback.print_exc(sys.exc_info())
-        msg = "Error creating GeoServer layer for %s: %s" % (view_name, str(e))
-        return None, msg
+        err_msg = "Error creating GeoServer layer for %s: %s" % (view_name, str(e))
+        return None, err_msg
     
-    print 'setup_join 07'
+    msg('setup_join 07')
     # ------------------------------------------------------
     # Set the Layer's default Style
     # ------------------------------------------------------
@@ -407,8 +409,8 @@ cat.save(layer)
         tj.delete()
         import traceback
         traceback.print_exc(sys.exc_info())
-        msg = "Error creating GeoNode layer for %s: %s" % (view_name, str(e))
-        return None, msg
+        err_msg = "Error creating GeoNode layer for %s: %s" % (view_name, str(e))
+        return None, err_msg
         
 
     print 'setup_join 08'        

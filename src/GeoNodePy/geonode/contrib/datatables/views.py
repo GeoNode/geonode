@@ -239,7 +239,7 @@ def datatable_upload_lat_lon_api(request):
         return HttpResponse(json.dumps({'msg':'Uncaught error ingesting Data Table', 'success':False}), mimetype='application/json', status=400)
 
     try:
-        layer, msg = create_point_col_from_lat_lon(new_table_owner\
+        layer, result_msg = create_point_col_from_lat_lon(new_table_owner\
                     , upload_return_dict['datatable_name']
                     , request.POST.get('lat_column')
                     , request.POST.get('lon_column')\
