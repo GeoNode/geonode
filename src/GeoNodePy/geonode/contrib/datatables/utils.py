@@ -358,6 +358,9 @@ cat.save(layer)
         print 'layer_params', layer_params
         print 'view_name', view_name
         layer, created = Layer.objects.get_or_create(name=view_name, defaults=layer_params)
+
+        # Set default permissions (public)
+        layer.set_default_permissions()
         #set_attributes(layer, overwrite=True)
 
         tj.join_layer = layer
