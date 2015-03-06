@@ -252,16 +252,18 @@ GEONODE_APPS = (
     # GeoNode Contrib Apps
 
     # 'geonode.contrib.dynamic',
+    
+    #CEPH App
+    'geonode.cephgeo',
 
     # GeoServer Apps
     # Geoserver needs to come last because
     # it's signals may rely on other apps' signals.
     'geonode.geoserver',
     'geonode.upload',
-    'geonode.tasks' , 
-    
-    #CUSTOM
-    'geonode.cephgoe',
+    'geonode.tasks',
+
+
 )
 
 INSTALLED_APPS = (
@@ -459,6 +461,10 @@ REGISTRATION_OPEN = False
 ACCOUNT_EMAIL_CONFIRMATION_EMAIL = False
 ACCOUNT_EMAIL_CONFIRMATION_REQUIRED = False
 ACCOUNT_APPROVAL_REQUIRED = False
+
+# Mail Server Settings
+EMAIL_HOST = "mail.lan.dream.upd.edu.ph"
+EMAIL_PORT = 25
 
 # Email for users to contact admins.
 THEME_ACCOUNT_CONTACT_EMAIL = 'admin@example.com'
@@ -871,7 +877,7 @@ if os.name == 'nt':
 
 
 # define the urls after the settings are overridden
-if 'geonode.geoserver' in GEONODE_APPS:
+if 'geonode.geoserver' in INSTALLED_APPS:
     LOCAL_GEOSERVER = {
         "source": {
             "ptype": "gxp_wmscsource",
@@ -882,3 +888,12 @@ if 'geonode.geoserver' in GEONODE_APPS:
     baselayers = MAP_BASELAYERS
     MAP_BASELAYERS = [LOCAL_GEOSERVER]
     MAP_BASELAYERS.extend(baselayers)
+
+CEPH_OGW = {
+    'default' : {
+        'USER' : 'geonode:swift',
+        'KEY' : 'Ry3meRcVwVkff3G2O1vSy0PmUvUcXCzvWNZic04B',
+        'LOCATION' : 'https://cephclient.lan.dream.upd.edu.ph',
+        'CONTAINER' : 'geo-container',
+    }
+}

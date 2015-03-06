@@ -346,8 +346,9 @@ def start_geoserver(options):
     GEOSERVER_BASE_URL = OGC_SERVER['default']['LOCATION']
 
     url = "http://localhost:8080/geoserver/"
+    pub_url = OGC_SERVER['default']['PUBLIC_LOCATION']
     if GEOSERVER_BASE_URL != url:
-        print 'your GEOSERVER_BASE_URL does not match %s' % url
+        print 'your GEOSERVER_BASE_URL does not match %s [%s]' % (url, GEOSERVER_BASE_URL)
         sys.exit(1)
 
     download_dir = path('downloaded').abspath()
@@ -405,7 +406,8 @@ def start_geoserver(options):
     info('Starting GeoServer on %s' % url)
 
     # wait for GeoServer to start
-    started = waitfor(url)
+    #started = waitfor(url)
+    started = waitfor(pub_url)
     info('The logs are available at %s' % log_file)
 
     if not started:
@@ -688,6 +690,8 @@ def waitfor(url, timeout=300):
             if resp.getcode() == 200:
                 started = True
                 break
+            else:
+                print "GEOSERVER URL RESPONSE: " + str(resp.getcode())
         time.sleep(1)
     return started
 

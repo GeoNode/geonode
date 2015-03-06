@@ -26,6 +26,7 @@ from django.views.generic import TemplateView
 from django.contrib import admin
 
 import geonode.proxy.urls
+import geonode.cephgeo.urls
 
 from geonode.api.urls import api
 
@@ -82,6 +83,9 @@ urlpatterns = patterns('',
                        # Accounts
                        url(r'^account/ajax_login$', 'geonode.views.ajax_login', name='account_ajax_login'),
                        url(r'^account/ajax_lookup$', 'geonode.views.ajax_lookup', name='account_ajax_lookup'),
+					   
+					   # CephGeo
+					   url(r'^ceph/', include("geonode.cephgeo.urls")),
 
                        # Meta
                        url(r'^lang\.js$', TemplateView.as_view(template_name='lang.js', content_type='text/javascript'),
@@ -98,6 +102,8 @@ urlpatterns = patterns('',
                        (r'^documents/', include('geonode.documents.urls')),
                        (r'^services/', include('geonode.services.urls')),
                        url(r'', include(api.urls)),
+                       
+                       
                        )
 
 if "geonode.contrib.dynamic" in settings.INSTALLED_APPS:
