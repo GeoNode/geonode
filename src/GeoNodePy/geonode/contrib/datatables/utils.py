@@ -198,7 +198,19 @@ def create_point_col_from_lat_lon(new_table_owner, table_name, lat_column, lon_c
         err_msg = "Error creating GeoServer layer for %s: %s" % (table_name, str(e))
         return None, err_msg
 
-    msg('create_point_col_from_lat_lon - 5')
+    msg('create_point_col_from_lat_lon - 5 - add style')
+
+    # ------------------------------------------------------
+    # Set the Layer's default Style
+    # ------------------------------------------------------
+    """
+    new_layer = cat.get_layer(ft.name)
+    msg('new layer: %s' % new_layer)
+    msg('%s' % dir(new_layer))
+
+    new_layer._set_default_style('s-ll-%d' % dt.id)
+    cat.save(new_layer)
+    """
 
     # ------------------------------------------------------
     # Create the Layer in GeoNode from the GeoServer Layer
@@ -362,19 +374,16 @@ def setup_join(new_table_owner, table_name, layer_typename, table_attribute_name
         err_msg = "Error creating GeoServer layer for %s: %s" % (view_name, str(e))
         return None, err_msg
     
-    msg('setup_join 07')
+    msg('setup_join 07 - Default Style')
     # ------------------------------------------------------
     # Set the Layer's default Style
     # ------------------------------------------------------
-
-    #new_layer = cat.get_layer(ft.name)
-    #new_layer._set_default_style('initial_style')
-    #cat.save(new_layer)
     """
-    cat = Catalog("http://localhost:8080/geoserver/rest", "admin", "geoserver")
-layer = cat.get_layer("layer_name")
-layer._set_default_style("style_name")
-cat.save(layer)
+    new_layer = cat.get_layer(ft.name)
+    msg('new layer: %s' % new_layer)
+    msg('%s' % dir(new_layer))
+    new_layer._set_default_style('s-tj-%d' % dt.id)
+    cat.save(new_layer)
     """
 
     # ------------------------------------------------------------------
@@ -445,8 +454,9 @@ def create_layer_attributes_from_datatable(datatable, layer):
         # Creata or Retrieve a new LayerAttribute
         layer_attribute_obj, created = LayerAttribute.objects.get_or_create(**new_params)
 
+        """
         if created:
             print 'layer_attribute_obj created: %s' % layer_attribute_obj
         else:
             print 'layer_attribute_obj EXISTS: %s' % layer_attribute_obj
-            
+        """
