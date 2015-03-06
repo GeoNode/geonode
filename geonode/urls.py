@@ -86,6 +86,9 @@ urlpatterns = patterns('',
 					   
 					   # CephGeo
 					   url(r'^ceph/', include("geonode.cephgeo.urls")),
+					   
+					   #MapTiles
+					   url(r'^maptiles/',include("geonode.maptiles.urls")),
 
                        # Meta
                        url(r'^lang\.js$', TemplateView.as_view(template_name='lang.js', content_type='text/javascript'),

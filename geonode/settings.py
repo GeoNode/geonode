@@ -255,6 +255,10 @@ GEONODE_APPS = (
     
     #CEPH App
     'geonode.cephgeo',
+    
+    # Maptiles 
+    # Django app for selecting and highlighting tiles
+    'geonode.maptiles',
 
     # GeoServer Apps
     # Geoserver needs to come last because
