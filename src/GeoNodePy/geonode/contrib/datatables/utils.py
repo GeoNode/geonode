@@ -7,6 +7,8 @@ import uuid
 import csvkit
 import logging
 from decimal import Decimal
+import string
+from random import choice
 from csvkit import sql
 from csvkit import table
 from csvkit import CSVKitWriter
@@ -14,6 +16,7 @@ from csvkit.cli import CSVKitUtility
 
 from geoserver.catalog import Catalog
 from geoserver.store import datastore_from_index
+from geoserver.resource import FeatureType
 
 import psycopg2
 from psycopg2.extensions import QuotedString
@@ -25,6 +28,8 @@ from django.conf import settings
 from django.utils.translation import ugettext_lazy as _
 
 from geonode.maps.models import Layer, LayerAttribute
+from geonode.maps.gs_helpers import get_sld_for #fixup_style, cascading_delete, delete_from_postgis, get_postgis_bbox
+
 from geonode.contrib.datatables.models import DataTable, DataTableAttribute, TableJoin
 from geonode.contrib.msg_util import *
 
@@ -200,17 +205,11 @@ def create_point_col_from_lat_lon(new_table_owner, table_name, lat_column, lon_c
 
     msg('create_point_col_from_lat_lon - 5 - add style')
 
-    # ------------------------------------------------------
+     # ------------------------------------------------------
     # Set the Layer's default Style
     # ------------------------------------------------------
-    """
-    new_layer = cat.get_layer(ft.name)
-    msg('new layer: %s' % new_layer)
-    msg('%s' % dir(new_layer))
+    set_default_style_for_new_layer(cat, ft)
 
-    new_layer._set_default_style('s-ll-%d' % dt.id)
-    cat.save(new_layer)
-    """
 
     # ------------------------------------------------------
     # Create the Layer in GeoNode from the GeoServer Layer
@@ -375,16 +374,11 @@ def setup_join(new_table_owner, table_name, layer_typename, table_attribute_name
         return None, err_msg
     
     msg('setup_join 07 - Default Style')
+
     # ------------------------------------------------------
     # Set the Layer's default Style
     # ------------------------------------------------------
-    """
-    new_layer = cat.get_layer(ft.name)
-    msg('new layer: %s' % new_layer)
-    msg('%s' % dir(new_layer))
-    new_layer._set_default_style('s-tj-%d' % dt.id)
-    cat.save(new_layer)
-    """
+    set_default_style_for_new_layer(cat, ft)
 
     # ------------------------------------------------------------------
     # Create the Layer in GeoNode from the GeoServer Layer
@@ -431,7 +425,74 @@ def setup_join(new_table_owner, table_name, layer_typename, table_attribute_name
 
     return tj, ""
     
-    
+
+def set_default_style_for_new_layer(geoserver_catalog, feature_type):
+    """
+    For a newly created Geoserver layer in the Catalog, set a default style
+
+    :param catalog:
+    :param feature_type:
+
+    Returns success (True,False), err_msg (if False)
+    """
+    assert isinstance(geoserver_catalog, Catalog)
+    assert isinstance(feature_type, FeatureType)
+
+    # ----------------------------------------------------
+    # Retrieve the layer from the catalog
+    # ----------------------------------------------------
+    new_layer = geoserver_catalog.get_layer(feature_type.name)
+
+    # ----------------------------------------------------
+    # Retrieve the SLD for this layer
+    # ----------------------------------------------------
+    sld = get_sld_for(new_layer)
+    msgt('SLD retrieved: %s' % sld)
+
+    if sld is None:
+        err_msg = 'Failed to retrieve the SLD for the geoserver layer: %s' % feature_type.name
+        logger.error(err_msg)
+        return False, err_msg
+
+    # ----------------------------------------------------
+    # Create a new style name
+    # ----------------------------------------------------
+    random_ext = "".join([choice(string.ascii_lowercase + string.digits) for i in range(4)])
+    new_layer_stylename = '%s_%s' % (feature_type.name, random_ext)
+
+    msg('new_layer_stylename: %s' % new_layer_stylename)
+
+    # ----------------------------------------------------
+    # Add this new style to the catalog
+    # ----------------------------------------------------
+    try:
+        geoserver_catalog.create_style(new_layer_stylename, sld)
+        msg('created!')
+    except geoserver.catalog.ConflictingDataError, e:
+        err_msg = (_('There is already a style in GeoServer named ') +
+                        '"%s"' % (name))
+        logger.warn(msg)
+        return False, err_msg
+
+    # ----------------------------------------------------
+    # Use the new SLD as the layer's default style
+    # ----------------------------------------------------
+    try:
+        new_layer.default_style = geoserver_catalog.get_style(new_layer_stylename)
+        geoserver_catalog.save(new_layer)
+    except Exception as e:
+        import traceback
+        traceback.print_exc(sys.exc_info())
+        err_msg = "Error setting new default style for layer. %s" % (str(e))
+        #print err_msg
+        logger.error(err_msg)
+        return False, err_msg
+
+    msg('default saved')
+    msg('sname: %s' % new_layer.default_style )
+    return True
+
+
 def create_layer_attributes_from_datatable(datatable, layer):
     """
     When a new Layer has been created from a DataTable,
