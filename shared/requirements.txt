@@ -63,7 +63,7 @@ shared_dataverse_information
 # --------------------------------------------------
 # For Datatable app.  Tabular table joins to existing layers
 # --------------------------------------------------
-csvkit
+csvkit==0.9.0
 
 # --------------------------------------------------
 

@@ -16,7 +16,7 @@ from geonode.contrib.msg_util import *
 
 from .models import DataTable, JoinTarget, TableJoin 
 from .forms import UploadDataTableForm
-from .utils import process_csv_file, setup_join, create_point_col_from_lat_lon
+from .utils import process_csv_file, setup_join, create_point_col_from_lat_lon, standardize_name
 
 @login_required
 @csrf_exempt
@@ -41,7 +41,8 @@ def datatable_upload_api(request):
     print ('step 2')
 
     data = form.cleaned_data
-    table_name = slugify(unicode(os.path.splitext(os.path.basename(request.FILES['uploaded_file'].name))[0])).replace('-','_')
+    table_name = standardize_name(os.path.splitext(os.path.basename(request.FILES['uploaded_file'].name))[0], is_table_name=True)
+    #table_name = standardize_name(os.path.splitext(os.path.basename(csv_filename))[0], is_table_name=True)
     instance = DataTable(uploaded_file=request.FILES['uploaded_file'], table_name=table_name, title=table_name)
     delimiter = data['delimiter_type'] 
     no_header_row = data['no_header_row']
@@ -214,7 +215,7 @@ def datatable_upload_and_join_api(request):
         return HttpResponse(json.dumps({'msg':'Uncaught error ingesting Data Table', 'success':False}), mimetype='application/json', status=400)
     try:
         original_table_attribute = join_props['table_attribute']
-        sanitized_table_attribute = slugify(unicode(original_table_attribute)).replace('-','_') 
+        sanitized_table_attribute = standardize_name(original_table_attribute)
         join_props['table_attribute'] = sanitized_table_attribute
         request.POST = join_props
         resp = tablejoin_api(request)

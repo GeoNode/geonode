@@ -37,60 +37,114 @@ from geonode.contrib.datatables.db_helper import get_datastore_connection_string
 
 logger = logging.getLogger('geonode.contrib.datatables.utils')
 
+THE_GEOM_LAYER_COLUMN = 'the_geom'
+THE_GEOM_LAYER_COLUMN_REPLACEMENT = 'the_geom_col'
 
-def process_csv_file(instance, delimiter=",", no_header_row=False):
+def standardize_name(col_name, is_table_name=False):
+    """
+    Format table and column names in tabular files
+    """
+    assert col_name is not None, "col_name cannot be None"
 
-    csv_filename = instance.uploaded_file.path
-    table_name = slugify(unicode(os.path.splitext(os.path.basename(csv_filename))[0])).replace('-','_')
+    if is_table_name:
+       return slugify(unicode(col_name)).replace('-','_')
+
+    cname = slugify(unicode(col_name)).replace('-','_')
+    if cname == THE_GEOM_LAYER_COLUMN:
+        return THE_GEOM_LAYER_COLUMN_REPLACEMENT
+    return cname
+
+
+def process_csv_file(data_table, delimiter=",", no_header_row=False):
+    """
+    Transform csv file and add it to the postgres DataStore
+
+    :param instance:
+    :param delimiter:
+    :param no_header_row:
+    :return:
+    """
+    assert isinstance(data_table, DataTable), "instance must be a DataTable object"
+
+    # full path to csv file
+    #
+    csv_filename = data_table.uploaded_file.path
+
+    # Standardize table_name for the DataTable
+    #
+    table_name = standardize_name(os.path.splitext(os.path.basename(csv_filename))[0], is_table_name=True)
     if table_name[:1].isdigit():
-        table_name = 'x' + table_name
+        table_name = 't-' + table_name
+    #
+    data_table.table_name = table_name
+    data_table.save()
 
-    instance.table_name = table_name
-    instance.save()
+    # -----------------------------------------------------
+    # Transform csv file to csvkit Table
+    # -----------------------------------------------------
     f = open(csv_filename, 'rb')
-    
-    msg ('process_csv_file 1')
-   
-    try: 
-        csv_table = table.Table.from_csv(f,name=table_name, no_header_row=no_header_row, delimiter=delimiter)
-    except:
-        instance.delete()
-        return None, str(sys.exc_info()[0])
 
-    csv_file = File(f)
+    try: 
+        csv_table = table.Table.from_csv(f, name=table_name, no_header_row=no_header_row, delimiter=delimiter)
+    except:
+        data_table.delete()
+        err_msg = str(sys.exc_info()[0])
+        logger.error('Failed to convert csv file to table.  Error: %s' % err_msg)
+        return None, err_msg
+    #csv_file = File(f)
     f.close()
+
+
     msg ('process_csv_file 2')
 
+    # -----------------------------------------------------
+    # Create DataTableAttribute objects
+    # -----------------------------------------------------
     try:
+        # Iterate through header row
+        #
         for column in csv_table:
-            #msg ('column', column)
-            column.name = slugify(unicode(column.name)).replace('-','_')
-            #msg ('column.name ', column.name )
 
-            attribute, created = DataTableAttribute.objects.get_or_create(datatable=instance, 
+            # Standardize column name
+            #
+            column.name = standardize_name(column.name)
+
+            # Create DataTableAttribute object
+            #
+            attribute, created = DataTableAttribute.objects.get_or_create(datatable=data_table,
                 attribute=column.name, 
                 attribute_label=column.name, 
                 attribute_type=column.type.__name__, 
                 display_order=column.order)
     except:
-        instance.delete()
-        return None, str(sys.exc_info()[0])
+        data_table.delete()     # Deleting DataTable also deletes related DataTableAttribute objects
+        err_msg = 'Failed to convert csv file to table.  Error: %s' % str(sys.exc_info()[0])
+        logger.error(err_msg)
+        return None, err_msg
 
 
     msg ('process_csv_file 3')
-    # Create Database Table
+    # -----------------------------------------------------
+    # Generate SQL to create table from csv file
+    # -----------------------------------------------------
     try:
         sql_table = sql.make_table(csv_table,table_name)
         create_table_sql = sql.make_create_table_statement(sql_table, dialect="postgresql")
-        instance.create_table_sql = create_table_sql
-        instance.save()
+        data_table.create_table_sql = create_table_sql
+        data_table.save()
     except:
-        instance.delete()
-        return None, str(sys.exc_info()[0])
+        data_table.delete()
+        err_msg = 'Generate SQL to create table from csv file.  Error: %s' % str(sys.exc_info()[0])
+        logger.error(err_msg)
+        return None, err_msg
 
-    conn = psycopg2.connect(get_datastore_connection_string())
 
     msg ('process_csv_file 4')
+
+    # -----------------------------------------------------
+    # Execute the SQL and Create the Table (No data is loaded)
+    # -----------------------------------------------------
+    conn = psycopg2.connect(get_datastore_connection_string())
 
     try:
         cur = conn.cursor()
@@ -100,41 +154,59 @@ def process_csv_file(instance, delimiter=",", no_header_row=False):
     except Exception as e:
         import traceback
         traceback.print_exc(sys.exc_info())
-        logger.error(
-            "Error Creating table %s:%s",
-            instance.name,
-            str(e))
+        err_msg =  "Error Creating table %s:%s" % (data_table.name, str(e))
+        logger.error(err_msg)
+        return None, err_msg
+
     finally:
         conn.close()
 
-    # Copy Data to postgres
+    # -----------------------------------------------------
+    # Copy Data to postgres csv data to Postgres
+    # -----------------------------------------------------
     #connection_string = "postgresql://%s:%s@%s:%s/%s" % (db['USER'], db['PASSWORD'], db['HOST'], db['PORT'], db['NAME'])
+
     connection_string = get_datastore_connection_string(url_format=True)
-    msg ('process_csv_file 5')
-    
     try:
         engine, metadata = sql.get_connection(connection_string)
     except ImportError:
-        return None, str(sys.exc_info()[0])
+        err_msg =  "Failed to get SQL connection for copying csv data to database.\n%s" % str(sys.exc_info()[0])
+        logger.error(err_msg)
+        return None, err_msg
 
+
+    # -----------------------------------------------------
+    # Iterate through rows and add data
+    # -----------------------------------------------------
     conn = engine.connect()
     trans = conn.begin()
- 
+
     if csv_table.count_rows() > 0:
-        insert = sql_table.insert()
-        headers = csv_table.headers()
+        insert = sql_table.insert()     # Generate insert statement
+        headers = csv_table.headers()   # Pull table headers
         try:
-            conn.execute(insert, [dict(zip(headers, row)) for row in csv_table.to_rows()])
+            # create rows of { column : value } dict's
+            #
+            rows_to_add = [dict(zip(headers, row)) for row in csv_table.to_rows()]
+
+            # Add rows
+            conn.execute(insert, rows_to_add)
         except:
             # Clean up after ourselves
-            instance.delete() 
-            return None, str(sys.exc_info()[0])
+            instance.delete()
+            err_msg =  "Failed to add csv DATA to table %s.\n%s" % (table_name, (sys.exc_info()[0]))
+            logger.error(err_msg)
+            return None, err_msg
 
+
+    # Commit new rows and close connection
+    #
     trans.commit()
     conn.close()
     f.close()
     
-    return instance, ""
+    return data_table, ""
+
 
 def create_point_col_from_lat_lon(new_table_owner, table_name, lat_column, lon_column):
     assert isinstance(new_table_owner, User), "new_table_owner must be a User object"
@@ -277,7 +349,7 @@ def setup_join(new_table_owner, table_name, layer_typename, table_attribute_name
 
     view_name = "join_%s_%s" % (layer_name, dt.table_name)
 
-    view_sql = 'create view %s as select %s.the_geom, %s.* from %s inner join %s on %s."%s" = %s."%s";' %  (view_name, layer_name, dt.table_name, layer_name, dt.table_name, layer_name, layer_attribute.attribute, dt.table_name, table_attribute.attribute)
+    view_sql = 'create view %s as select %s.%s, %s.* from %s inner join %s on %s."%s" = %s."%s";' %  (view_name, layer_name, THE_GEOM_LAYER_COLUMN, dt.table_name, layer_name, dt.table_name, layer_name, layer_attribute.attribute, dt.table_name, table_attribute.attribute)
     #view_sql = 'create materialized view %s as select %s.the_geom, %s.* from %s inner join %s on %s."%s" = %s."%s";' %  (view_name, layer_name, dt.table_name, layer_name, dt.table_name, layer_name, layer_attribute.attribute, dt.table_name, table_attribute.attribute)
     
     #double_view_name = "view_%s" % view_name
