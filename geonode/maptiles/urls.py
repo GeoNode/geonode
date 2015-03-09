@@ -3,5 +3,5 @@ from django.contrib import admin
 from django.views.generic import TemplateView
 
 urlpatterns = patterns('',
-						url(r'^/?$',TemplateView.as_view(template_name='maptiles_base.html')),
+						url(r'^/?$',TemplateView.as_view(template_name='maptiles/maptiles_base.html')),
 						)
