@@ -10,12 +10,12 @@
 {% block title %}Map Tiles Selection — {{ block.super }}{% endblock %}
 
 {% block head %}
-{% if preview == 'geoext' %}
-  {% include "layers/layer_geoext_map.html" %}
-{% else %}
-  {% include "layers/layer_leaflet_map.html" %}
-{% endif %}
+{% include "maptiles/layer_leaflet_map.html" %}
 {{ block.super }}
 {% endblock %}
 
 {% block body_class %}layers{% endblock %}
+
+{% block body_outer %}
+Hello there!
+{% endblock%}
