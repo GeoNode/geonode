@@ -17,6 +17,7 @@
 {% block body_class %}layers{% endblock %}
 
 {% block body_outer %}
+{% block body %}
 < br />
 <div class="row">
 	<div class="col-md-8">
@@ -24,8 +25,13 @@
 		<div id="embedded_map" class="mrg-btm">
 			<div id="preview_map"></div>
 		</div>
+		
+		<div class="layer-actions">
+			{% include "_actions.html" %}
+		</div>
 	</div>
 </div>
 < br />
 Hello there!
-{% endblock%}
+{% endblock %}
+{% endblock %}
