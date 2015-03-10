@@ -1,6 +1,9 @@
 from django.shortcuts import render
+from django.utils.translation import ugettext as _
+
 from geonode.layers.models import Layer
 from geonode.utils import resolve_object, llbbox_to_mercator
+
 _PERMISSION_VIEW = _("You are not permitted to view this layer")
 _PERMISSION_GENERIC = _('You do not have permissions for this layer.')
 # Create your views here.
