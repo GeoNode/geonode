@@ -11,6 +11,7 @@ from geonode.utils import GXPLayer
 from geonode.utils import GXPMap
 from geonode.utils import default_map_config
 from geonode.security.views import _perms_info_json
+from geonode.documents.models import get_related_documents
 
 _PERMISSION_VIEW = _("You are not permitted to view this layer")
 _PERMISSION_GENERIC = _('You do not have permissions for this layer.')
