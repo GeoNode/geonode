@@ -19,7 +19,6 @@
 
 import os
 import math
-from django.test.client import Client
 from django.test import TestCase
 from django.core.urlresolvers import reverse
 

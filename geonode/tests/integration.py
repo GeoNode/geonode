@@ -29,7 +29,6 @@ import gisdata
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.management import call_command
-from django.test import Client
 from django.test import LiveServerTestCase as TestCase
 from django.core.urlresolvers import reverse
 from django.contrib.staticfiles.templatetags import staticfiles
