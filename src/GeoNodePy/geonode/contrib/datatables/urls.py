@@ -49,3 +49,4 @@ urlpatterns = patterns('geonode.contrib.datatables.views',
    url(r'^api/jointargets/?$', 'jointargets', name='jointargets'),
 
    )
+

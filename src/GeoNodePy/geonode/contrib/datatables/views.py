@@ -12,9 +12,11 @@ from django.contrib.auth.models import User
 from django.template.defaultfilters import slugify
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.translation import ugettext_lazy as _
+from geonode.dataverse_connect.dv_utils import MessageHelperJSON          # format json response object
 
 from shared_dataverse_information.worldmap_datatables.forms import TableJoinRequestForm\
-                                                            , TableJoinResultForm
+                                        , TableJoinResultForm\
+                                        , TableUploadAndJoinRequestForm
 
 from geonode.contrib.msg_util import *
 
@@ -28,21 +30,15 @@ def datatable_upload_api(request):
     if request.method != 'POST':
         return HttpResponse("Invalid Request", mimetype="text/plain", status=500)
 
+    # ---------------------------------------
     # Verify Request
-    #
+    # ---------------------------------------
     form = UploadDataTableForm(request.POST, request.FILES)
-    print ('step 1')
     if not form.is_valid():
-        print ('s1a', form.errors())
-        return_dict = {
-                'datatable_id': None,
-                'datatable_name': None,
-                'success': False,
-                'msg': "Form Errors: " + form.errors.as_text() 
-            }
-        return HttpResponse(json.dumps(return_dict), mimetype="application/json", status=400)
+        err_msg = "Form errors found." % form.errors#.as_json()#.as_text()
+        json_msg = MessageHelperJSON.get_json_fail_msg(err_msg, data_dict=form.errors)
+        return HttpResponse(json_msg, mimetype="application/json", status=400)
 
-    print ('step 2')
 
     data = form.cleaned_data
     table_name = standardize_name(os.path.splitext(os.path.basename(request.FILES['uploaded_file'].name))[0], is_table_name=True)
@@ -50,39 +46,35 @@ def datatable_upload_api(request):
     instance = DataTable(uploaded_file=request.FILES['uploaded_file'], table_name=table_name, title=table_name)
     delimiter = data['delimiter_type'] 
     no_header_row = data['no_header_row']
-    
-    instance.save()
-    print ('step 3')
 
-    dt, msg = process_csv_file(instance, delimiter=delimiter, no_header_row=no_header_row)
-    
-    print ('step 4')
-    
+    # save DataTable object
+    instance.save()
+
+    dt, result_msg = process_csv_file(instance, delimiter=delimiter, no_header_row=no_header_row)
+
+    # -----------------------------------------
+    #  Success, DataTable created
+    # -----------------------------------------
     if dt:
-        print ('step 4a')
-        return_dict = {
-            'datatable_id': dt.pk,
-            'datatable_name': dt.table_name,
-            'success': True,
-            'msg': ""
-        }
-        return HttpResponse(json.dumps(return_dict), mimetype="application/json", status=200) 
+        return_dict = dict(datatable_id=dt.pk, datatable_name=dt.table_name)
+        json_msg = MessageHelperJSON.get_json_success_msg(msg='', data_dict=return_dict)
+        return HttpResponse(json_msg, mimetype="application/json", status=200)
+
     else:
-        print ('step 4b')
-        return_dict = {
-            'datatable_id': None,
-            'datatable_name': None,
-            'success': False,
-            'msg': msg
-        } 
-        return HttpResponse(json.dumps(return_dict), mimetype="application/json", status=400) 
+        # -----------------------------------------
+        #  Failed, DataTable not created
+        # -----------------------------------------
+        json_msg = MessageHelperJSON.get_json_fail_msg(result_msg)
+        return HttpResponse(json_msg, mimetype="application/json", status=400)
 
        
 
 @login_required
 @csrf_exempt
 def datatable_detail(request, dt_id):
-    """For a given Datatable id, return its values as JSON"""
+    """
+    For a given Datatable id, return the Datatable values as JSON
+    """
 
     # -----------------------------------------
     # Retrieve object of raise Http404
@@ -95,10 +87,10 @@ def datatable_detail(request, dt_id):
     fields_to_return = ('uploaded_file', 'table_name','title')
 
     serialized = serializers.serialize("json", (dt,), fields=fields_to_return)
-    msg('serialized: %s' % serialized)
+    #msg('serialized: %s' % serialized)
 
     object = json.loads(serialized)[0]
-    msg('object: %s' % object)
+    #msg('object: %s' % object)
 
     # -----------------------------------------
     # Serialize DataTable attributes as JSON
@@ -113,7 +105,6 @@ def datatable_detail(request, dt_id):
 
     return HttpResponse(data, mimetype="application/json", status=200)
 
-    #return HttpResponse(data)
 
 
 @login_required
@@ -151,10 +142,9 @@ def tablejoin_api(request):
     Join a DataTable to the Geometry of an existing layer
     """
     if not request.method == 'POST':
-        return_dict = {
-                    'success': False,
-                    'msg': "Unsupported Method"
-                }
+        return_dict = dict(success=False\
+                            , msg="Unsupported Method"\
+                        )
         return HttpResponse(json.dumps(return_dict), mimetype="application/json", status=500)
 
     # ----------------------------------
@@ -162,10 +152,9 @@ def tablejoin_api(request):
     # ----------------------------------
     f = TableJoinRequestForm(request.POST)
     if not f.is_valid():
-        return_dict = {
-                    'success': False,
-                    'msg': "Invalid Data for Join: %s" % f.errors
-                }
+        return_dict = dict(success=False\
+                        , msg= "Invalid Data for Join: %s" % f.errors
+                    )
         return HttpResponse(json.dumps(return_dict), mimetype="application/json", status=400)
 
     # DataTable and join attribute
@@ -189,18 +178,16 @@ def tablejoin_api(request):
             join_result_info_dict = TableJoinResultForm.get_cleaned_data_from_table_join(tj)
             return HttpResponse(json.dumps(join_result_info_dict), mimetype="application/json", status=200)
         else:
-            return_dict = {
-                'success': False,
-                'msg': "Error Creating Join: %s" % result_msg
-            }
+            return_dict = dict(success=False\
+                , msg="Error Creating Join: %s" % result_msg
+                )
             return HttpResponse(json.dumps(return_dict), mimetype="application/json", status=400)
     except:
 
         traceback.print_exc(sys.exc_info())
-        return_dict = {
-            'success': False,
-            'msg': "Error Creating Join: %s" % str(sys.exc_info()[0])
-        }
+        return_dict = dict(success=False\
+                    , msg="Error Creating Join: %s" % str(sys.exc_info()[0])
+                )
         return HttpResponse(json.dumps(return_dict), mimetype="application/json", status=400)
 
 
@@ -243,10 +230,18 @@ def datatable_remove(request, dt_id):
 @csrf_exempt
 def datatable_upload_and_join_api(request):
     """
-    Upload a datatable and join it to an existing Layer
+    Upload a Datatable and join it to an existing Layer
     """
     request_post_copy = request.POST.copy()
     join_props = request_post_copy
+
+    f = TableUploadAndJoinRequestForm(join_props)
+    if not f.is_valid():
+        return_dict = dict(success=False\
+                         , msg="Invalid Data for Join: %s" % f.errors\
+                    )
+        return HttpResponse(json.dumps(return_dict), mimetype="application/json", status=400)
+
 
     # ----------------------------------------------------
     # Create a DataTable object from the file

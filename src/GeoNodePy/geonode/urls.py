@@ -76,7 +76,8 @@ urlpatterns = patterns('',
     # Dataverse/GeoConnect API
     (r'^dataverse-layer/', include('geonode.dataverse_layer_metadata.urls')),
     (r'^dataverse/', include('geonode.dataverse_connect.urls')),
-    
+    (r'^dataverse-tabular/', include('geonode.contrib.datatables.urls_dataverse')),
+
     # Datatables API
     (r'^datatables/', include('geonode.contrib.datatables.urls')),
     
