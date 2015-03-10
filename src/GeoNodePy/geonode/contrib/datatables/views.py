@@ -82,15 +82,39 @@ def datatable_upload_api(request):
 @login_required
 @csrf_exempt
 def datatable_detail(request, dt_id):
+    """For a given Datatable id, return its values as JSON"""
+
+    # -----------------------------------------
+    # Retrieve object of raise Http404
+    # -----------------------------------------
     dt = get_object_or_404(DataTable, pk=dt_id)
-    object = json.loads(serializers.serialize("json", (dt,), fields=('uploaded_file', 'table_name')))[0]
+
+    # -----------------------------------------
+    # Serialize DataTable as JSON
+    # -----------------------------------------
+    fields_to_return = ('uploaded_file', 'table_name','title')
+
+    serialized = serializers.serialize("json", (dt,), fields=fields_to_return)
+    msg('serialized: %s' % serialized)
+
+    object = json.loads(serialized)[0]
+    msg('object: %s' % object)
+
+    # -----------------------------------------
+    # Serialize DataTable attributes as JSON
+    # -----------------------------------------
     attributes = json.loads(serializers.serialize("json", dt.attributes.all()))
     attribute_list = []
     for attribute in attributes:
         attribute_list.append({'attribute':attribute['fields']['attribute'], 'type':attribute['fields']['attribute_type']})
+
     object["attributes"] = attribute_list
     data = json.dumps(object) 
-    return HttpResponse(data)
+
+    return HttpResponse(data, mimetype="application/json", status=200)
+
+    #return HttpResponse(data)
+
 
 @login_required
 def jointargets(request):
