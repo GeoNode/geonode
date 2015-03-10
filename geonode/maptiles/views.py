@@ -10,6 +10,7 @@ from geonode.utils import resolve_object, llbbox_to_mercator
 from geonode.utils import GXPLayer
 from geonode.utils import GXPMap
 from geonode.utils import default_map_config
+from geonode.security.views import _perms_info_json
 
 _PERMISSION_VIEW = _("You are not permitted to view this layer")
 _PERMISSION_GENERIC = _('You do not have permissions for this layer.')
