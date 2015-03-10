@@ -2,7 +2,7 @@ from django.shortcuts import render
 import geonode.utils
 
 
-_PERMISSION_MSG_VIEW = _("You are not permitted to view this layer")
+_PERMISSION_MSG_VIEW = ("You are not permitted to view this layer")
 # Create your views here.
 
 def tiled_view(request, overlay="geonode:index", template="maptiles/maptiles_base.html"):
