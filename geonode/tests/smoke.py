@@ -19,7 +19,6 @@
 
 import os
 import math
-from django.test.client import Client
 from django.test import TestCase
 from django.core.urlresolvers import reverse
 
@@ -44,36 +43,31 @@ class GeoNodeSmokeTests(TestCase):
 
     def test_home_page(self):
         '''Test if the homepage renders.'''
-        c = Client()
-        response = c.get(reverse('home'))
+        response = self.client.get(reverse('home'))
         self.failUnlessEqual(response.status_code, 200)
 
     def test_help_page(self):
         '''Test help page renders.'''
 
-        c = Client()
-        response = c.get(reverse('help'))
+        response = self.client.get(reverse('help'))
         self.failUnlessEqual(response.status_code, 200)
 
     def test_developer_page(self):
         '''Test help page renders.'''
 
-        c = Client()
-        response = c.get(reverse('help'))
+        response = self.client.get(reverse('help'))
         self.failUnlessEqual(response.status_code, 200)
 
     # Layer Pages #
 
     def test_layer_page(self):
         'Test if the data home page renders.'
-        c = Client()
-        response = c.get(reverse('layer_browse'))
+        response = self.client.get(reverse('layer_browse'))
         self.failUnlessEqual(response.status_code, 200)
 
     def test_layer_acls(self):
         'Test if the data/acls endpoint renders.'
-        c = Client()
-        response = c.get(reverse('layer_acls'))
+        response = self.client.get(reverse('layer_acls'))
         self.failUnlessEqual(response.status_code, 200)
 
     # Maps Pages #
@@ -81,15 +75,13 @@ class GeoNodeSmokeTests(TestCase):
     def test_maps_page(self):
         '''Test Maps page renders.'''
 
-        c = Client()
-        response = c.get(reverse('maps_browse'))
+        response = self.client.get(reverse('maps_browse'))
         self.failUnlessEqual(response.status_code, 200)
 
     def test_new_map_page(self):
         '''Test New Map page renders.'''
 
-        c = Client()
-        response = c.get(reverse('new_map'))
+        response = self.client.get(reverse('new_map'))
         self.failUnlessEqual(response.status_code, 200)
 
     # People Pages #
@@ -97,16 +89,14 @@ class GeoNodeSmokeTests(TestCase):
     def test_profile_list(self):
         '''Test the profiles page renders.'''
 
-        c = Client()
-        response = c.get(reverse('profile_browse'))
+        response = self.client.get(reverse('profile_browse'))
         self.failUnlessEqual(response.status_code, 200)
 
     def test_profiles(self):
         '''Test that user profile pages render.'''
-        c = Client()
-        response = c.get(reverse('profile_detail', args=['admin']))
+        response = self.client.get(reverse('profile_detail', args=['admin']))
         self.failUnlessEqual(response.status_code, 200)
-        response = c.get(reverse('profile_detail', args=['norman']))
+        response = self.client.get(reverse('profile_detail', args=['norman']))
         self.failUnlessEqual(response.status_code, 200)
 
 

@@ -22,7 +22,6 @@ from lxml import etree
 
 from django.core.urlresolvers import reverse
 from django.test import TestCase
-from django.test.client import Client
 from django.utils import simplejson as json
 from django.contrib.contenttypes.models import ContentType
 from agon_ratings.models import OverallRating
@@ -126,9 +125,8 @@ community."
         "groups": {}}
 
     def test_map_json(self):
-        c = Client()
         # Test that saving a map when not logged in gives 401
-        response = c.put(
+        response = self.client.put(
             reverse(
                 'map_json',
                 args=(
@@ -138,8 +136,8 @@ community."
             content_type="text/json")
         self.assertEqual(response.status_code, 401)
 
-        c.login(username=self.user, password=self.passwd)
-        response = c.put(
+        self.client.login(username=self.user, password=self.passwd)
+        response = self.client.put(
             reverse(
                 'map_json',
                 args=(
@@ -157,24 +155,23 @@ community."
     def test_map_save(self):
         """POST /maps/new/data -> Test saving a new map"""
 
-        c = Client()
         new_map = reverse("new_map_json")
         # Test that saving a map when not logged in gives 401
-        response = c.post(
+        response = self.client.post(
             new_map,
             data=self.viewer_config,
             content_type="text/json")
         self.assertEqual(response.status_code, 401)
 
         # Test successful new map creation
-        c.login(username=self.user, password=self.passwd)
-        response = c.post(
+        self.client.login(username=self.user, password=self.passwd)
+        response = self.client.post(
             new_map,
             data=self.viewer_config,
             content_type="text/json")
         self.assertEquals(response.status_code, 200)
         map_id = int(json.loads(response.content)['id'])
-        c.logout()
+        self.client.logout()
 
         # We have now 9 maps and 8 layers so the next pk will be 18
         self.assertEquals(map_id, 18)
@@ -186,20 +183,19 @@ community."
         self.assertNotEquals(map_obj.bbox_x0, None)
 
         # Test an invalid map creation request
-        c.login(username=self.user, password=self.passwd)
-        response = c.post(
+        self.client.login(username=self.user, password=self.passwd)
+        response = self.client.post(
             new_map,
             data="not a valid viewer config",
             content_type="text/json")
         self.assertEquals(response.status_code, 400)
-        c.logout()
+        self.client.logout()
 
     def test_map_fetch(self):
         """/maps/[id]/data -> Test fetching a map in JSON"""
         map_obj = Map.objects.get(id=1)
         map_obj.set_default_permissions()
-        c = Client()
-        response = c.get(reverse('map_json', args=(map_obj.id,)))
+        response = self.client.get(reverse('map_json', args=(map_obj.id,)))
         self.assertEquals(response.status_code, 200)
         cfg = json.loads(response.content)
         self.assertEquals(
@@ -232,8 +228,7 @@ community."
 
         map_obj = Map.objects.get(id=1)
         map_obj.set_default_permissions()
-        c = Client()
-        response = c.get(reverse('map_wmc', args=(map_obj.id,)))
+        response = self.client.get(reverse('map_wmc', args=(map_obj.id,)))
         self.assertEquals(response.status_code, 200)
 
         # check specific XPaths
@@ -252,7 +247,7 @@ community."
     def test_newmap_to_json(self):
         """ Make some assertions about the data structure produced for serialization
             to a new JSON map configuration"""
-        response = Client().get(reverse('new_map_json'))
+        response = self.client.get(reverse('new_map_json'))
         cfg = json.loads(response.content)
         self.assertEquals(cfg['defaultSourceType'], "gxp_wmscsource")
 
@@ -260,24 +255,20 @@ community."
         """/maps/1 -> Test accessing the map browse view function"""
         map_obj = Map.objects.get(id=1)
         map_obj.set_default_permissions()
-        c = Client()
-        response = c.get(reverse('map_detail', args=(map_obj.id,)))
+        response = self.client.get(reverse('map_detail', args=(map_obj.id,)))
         self.assertEquals(response.status_code, 200)
 
     def test_new_map_without_layers(self):
         # TODO: Should this test have asserts in it?
-        client = Client()
-        client.get(reverse('new_map'))
+        self.client.get(reverse('new_map'))
 
     def test_new_map_with_layer(self):
-        client = Client()
         layer = Layer.objects.all()[0]
-        client.get(reverse('new_map') + '?layer=' + layer.typename)
+        self.client.get(reverse('new_map') + '?layer=' + layer.typename)
 
     def test_new_map_with_empty_bbox_layer(self):
-        client = Client()
         layer = Layer.objects.all()[0]
-        client.get(reverse('new_map') + '?layer=' + layer.typename)
+        self.client.get(reverse('new_map') + '?layer=' + layer.typename)
 
     def test_ajax_map_permissions(self):
         """Verify that the ajax_layer_permissions view is behaving as expected
@@ -287,44 +278,46 @@ community."
         mapid = Map.objects.all()[0].pk
         invalid_mapid = "42"
 
-        c = Client()
-
         def url(id):
             return reverse('resource_permissions', args=[id])
 
         # Test that an invalid layer.typename is handled for properly
-        response = c.post(url(invalid_mapid),
-                          data=json.dumps(self.perm_spec),
-                          content_type="application/json")
+        response = self.client.post(
+            url(invalid_mapid),
+            data=json.dumps(self.perm_spec),
+            content_type="application/json")
         self.assertEquals(response.status_code, 404)
 
         # Test that GET returns permissions
-        response = c.get(url(mapid))
+        response = self.client.get(url(mapid))
         assert('permissions' in response.content)
 
         # Test that a user is required to have permissions
 
         # First test un-authenticated
-        response = c.post(url(mapid),
-                          data=json.dumps(self.perm_spec),
-                          content_type="application/json")
+        response = self.client.post(
+            url(mapid),
+            data=json.dumps(self.perm_spec),
+            content_type="application/json")
         self.assertEquals(response.status_code, 401)
 
         # Next Test with a user that does NOT have the proper perms
-        logged_in = c.login(username='bobby', password='bob')
+        logged_in = self.client.login(username='bobby', password='bob')
         self.assertEquals(logged_in, True)
-        response = c.post(url(mapid),
-                          data=json.dumps(self.perm_spec),
-                          content_type="application/json")
+        response = self.client.post(
+            url(mapid),
+            data=json.dumps(self.perm_spec),
+            content_type="application/json")
         self.assertEquals(response.status_code, 401)
 
         # Login as a user with the proper permission and test the endpoint
-        logged_in = c.login(username='admin', password='admin')
+        logged_in = self.client.login(username='admin', password='admin')
         self.assertEquals(logged_in, True)
 
-        response = c.post(url(mapid),
-                          data=json.dumps(self.perm_spec),
-                          content_type="application/json")
+        response = self.client.post(
+            url(mapid),
+            data=json.dumps(self.perm_spec),
+            content_type="application/json")
 
         # Test that the method returns 200
         self.assertEquals(response.status_code, 200)
@@ -335,39 +328,38 @@ community."
         """Test that map metadata can be properly rendered
         """
         # first create a map
-        c = Client()
 
         # Test successful new map creation
-        c.login(username=self.user, password=self.passwd)
+        self.client.login(username=self.user, password=self.passwd)
         new_map = reverse('new_map_json')
-        response = c.post(
+        response = self.client.post(
             new_map,
             data=self.viewer_config,
             content_type="text/json")
         self.assertEquals(response.status_code, 200)
         map_id = int(json.loads(response.content)['id'])
-        c.logout()
+        self.client.logout()
 
         url = reverse('map_metadata', args=(map_id,))
 
         # test unauthenticated user to modify map metadata
-        response = c.post(url)
+        response = self.client.post(url)
         self.assertEquals(response.status_code, 302)
 
         # test a user without metadata modify permission
-        c.login(username='norman', password='norman')
-        response = c.post(url)
+        self.client.login(username='norman', password='norman')
+        response = self.client.post(url)
         self.assertEquals(response.status_code, 302)
-        c.logout()
+        self.client.logout()
 
         # Now test with a valid user using GET method
-        c.login(username=self.user, password=self.passwd)
-        response = c.get(url)
+        self.client.login(username=self.user, password=self.passwd)
+        response = self.client.get(url)
         self.assertEquals(response.status_code, 200)
 
         # Now test with a valid user using POST method
-        c.login(username=self.user, password=self.passwd)
-        response = c.post(url)
+        self.client.login(username=self.user, password=self.passwd)
+        response = self.client.post(url)
         self.assertEquals(response.status_code, 200)
 
         # TODO: only invalid mapform is tested
@@ -376,44 +368,43 @@ community."
         """Test that map can be properly removed
         """
         # first create a map
-        c = Client()
 
         # Test successful new map creation
-        c.login(username=self.user, password=self.passwd)
+        self.client.login(username=self.user, password=self.passwd)
         new_map = reverse('new_map_json')
-        response = c.post(
+        response = self.client.post(
             new_map,
             data=self.viewer_config,
             content_type="text/json")
         self.assertEquals(response.status_code, 200)
         map_id = int(json.loads(response.content)['id'])
-        c.logout()
+        self.client.logout()
 
         url = reverse('map_remove', args=(map_id,))
 
         # test unauthenticated user to remove map
-        response = c.post(url)
+        response = self.client.post(url)
         self.assertEquals(response.status_code, 302)
 
         # test a user without map removal permission
-        c.login(username='norman', password='norman')
-        response = c.post(url)
+        self.client.login(username='norman', password='norman')
+        response = self.client.post(url)
         self.assertEquals(response.status_code, 302)
-        c.logout()
+        self.client.logout()
 
         # Now test with a valid user using GET method
-        c.login(username=self.user, password=self.passwd)
-        response = c.get(url)
+        self.client.login(username=self.user, password=self.passwd)
+        response = self.client.get(url)
         self.assertEquals(response.status_code, 200)
 
         # Now test with a valid user using POST method,
         # which removes map and associated layers, and redirects webpage
-        response = c.post(url)
+        response = self.client.post(url)
         self.assertEquals(response.status_code, 302)
         self.assertEquals(response['Location'], 'http://testserver/maps/')
 
         # After removal, map is not existent
-        response = c.get(url)
+        response = self.client.get(url)
         self.assertEquals(response.status_code, 404)
 
         # Prepare map object for later test that if it is completely removed
@@ -426,26 +417,25 @@ community."
         """Test that map can be properly embedded
         """
         # first create a map
-        c = Client()
 
         # Test successful new map creation
-        c.login(username=self.user, password=self.passwd)
+        self.client.login(username=self.user, password=self.passwd)
 
         new_map = reverse('new_map_json')
-        response = c.post(
+        response = self.client.post(
             new_map,
             data=self.viewer_config,
             content_type="text/json")
         self.assertEquals(response.status_code, 200)
         map_id = int(json.loads(response.content)['id'])
-        c.logout()
+        self.client.logout()
 
         url = reverse('map_embed', args=(map_id,))
         url_no_id = reverse('map_embed')
 
         # Now test with a map id
-        c.login(username=self.user, password=self.passwd)
-        response = c.get(url)
+        self.client.login(username=self.user, password=self.passwd)
+        response = self.client.get(url)
         self.assertEquals(response.status_code, 200)
 
         # The embedded map is exempt from X-FRAME-OPTIONS restrictions.
@@ -464,7 +454,7 @@ community."
             response_config_dict['about']['title'])
 
         # Now test without a map id
-        response = c.get(url_no_id)
+        response = self.client.get(url_no_id)
         self.assertEquals(response.status_code, 200)
         # Config equals to that of the default map
         config_default = default_map_config()[0]
@@ -480,37 +470,36 @@ community."
         """Test that map view can be properly rendered
         """
         # first create a map
-        c = Client()
 
         # Test successful new map creation
-        c.login(username=self.user, password=self.passwd)
+        self.client.login(username=self.user, password=self.passwd)
 
         new_map = reverse('new_map_json')
-        response = c.post(
+        response = self.client.post(
             new_map,
             data=self.viewer_config,
             content_type="text/json")
         self.assertEquals(response.status_code, 200)
         map_id = int(json.loads(response.content)['id'])
-        c.logout()
+        self.client.logout()
 
         url = reverse('map_view', args=(map_id,))
 
         # test unauthenticated user to view map
-        response = c.get(url)
+        response = self.client.get(url)
         self.assertEquals(response.status_code, 200)
         # TODO: unauthenticated user can still access the map view
 
         # test a user without map view permission
-        c.login(username='norman', password='norman')
-        response = c.get(url)
+        self.client.login(username='norman', password='norman')
+        response = self.client.get(url)
         self.assertEquals(response.status_code, 200)
-        c.logout()
+        self.client.logout()
         # TODO: the user can still access the map view without permission
 
         # Now test with a valid user using GET method
-        c.login(username=self.user, password=self.passwd)
-        response = c.get(url)
+        self.client.login(username=self.user, password=self.passwd)
+        response = self.client.get(url)
         self.assertEquals(response.status_code, 200)
 
         # Config equals to that of the map whose id is given
@@ -527,8 +516,7 @@ community."
     def test_new_map_config(self):
         """Test that new map config can be properly assigned
         """
-        c = Client()
-        c.login(username='admin', password='admin')
+        self.client.login(username='admin', password='admin')
 
         # Test successful new map creation
         m = Map()
@@ -537,12 +525,10 @@ community."
         m.create_from_layer_list(admin_user, [layer_name], "title", "abstract")
         map_id = m.id
 
-        c = Client()
-
         url = reverse('new_map_json')
 
         # Test GET method with COPY
-        response = c.get(url, {'copy': map_id})
+        response = self.client.get(url, {'copy': map_id})
         self.assertEquals(response.status_code, 200)
         map_obj = Map.objects.get(id=map_id)
         config_map = map_obj.viewer_json(None)
@@ -552,7 +538,7 @@ community."
             response_config_dict['map']['layers'])
 
         # Test GET method no COPY and no layer in params
-        response = c.get(url)
+        response = self.client.get(url)
         self.assertEquals(response.status_code, 200)
         config_default = default_map_config()[0]
         response_config_dict = json.loads(response.content)
@@ -564,24 +550,25 @@ community."
             response_config_dict['about']['title'])
 
         # Test GET method no COPY but with layer in params
-        response = c.get(url, {'layer': layer_name})
+        response = self.client.get(url, {'layer': layer_name})
         self.assertEquals(response.status_code, 200)
         response_dict = json.loads(response.content)
         self.assertEquals(response_dict['fromLayer'], True)
 
         # Test POST method without authentication
-        response = c.post(url, {'layer': layer_name})
+        self.client.logout()
+        response = self.client.post(url, {'layer': layer_name})
         self.assertEquals(response.status_code, 401)
 
         # Test POST method with authentication and a layer in params
-        c.login(username='admin', password='admin')
+        self.client.login(username='admin', password='admin')
 
-        response = c.post(url, {'layer': layer_name})
+        response = self.client.post(url, {'layer': layer_name})
         # Should not accept the request
         self.assertEquals(response.status_code, 400)
 
         # Test POST method with map data in json format
-        response = c.post(
+        response = self.client.post(
             url,
             data=self.viewer_config,
             content_type="text/json")
@@ -589,19 +576,18 @@ community."
         map_id = int(json.loads(response.content)['id'])
 
         # Test methods other than GET or POST and no layer in params
-        response = c.put(url)
+        response = self.client.put(url)
         self.assertEquals(response.status_code, 405)
 
     def test_rating_map_remove(self):
         """Test map rating is removed on map remove
         """
-        c = Client()
-        c.login(username=self.user, password=self.passwd)
+        self.client.login(username=self.user, password=self.passwd)
 
         new_map = reverse('new_map_json')
 
         # Create the map
-        response = c.post(
+        response = self.client.post(
             new_map,
             data=self.viewer_config,
             content_type="text/json")
@@ -616,7 +602,7 @@ community."
             rating=3)
 
         # Remove the map
-        response = c.post(reverse('map_remove', args=(map_id,)))
+        response = self.client.post(reverse('map_remove', args=(map_id,)))
         self.assertEquals(response.status_code, 302)
 
         # Check there are no ratings matching the removed map

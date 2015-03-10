@@ -3,7 +3,6 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Group
 from django.core.urlresolvers import reverse
 from django.test import TestCase
-from django.test.client import Client
 
 from guardian.shortcuts import get_anonymous_user
 
@@ -127,8 +126,8 @@ class SmokeTest(TestCase):
         """
         Tests that the client can get and set group permissions through the test_resource_permissions view.
         """
-        c = Client()
-        self.assertTrue(c.login(username="admin", password="admin"))
+
+        self.assertTrue(self.client.login(username="admin", password="admin"))
 
         layer = Layer.objects.all()[0]
         document = Document.objects.all()[0]
@@ -137,7 +136,7 @@ class SmokeTest(TestCase):
         objects = layer, document, map_obj
 
         for obj in objects:
-            response = c.get(reverse('resource_permissions', kwargs=dict(resource_id=obj.id)))
+            response = self.client.get(reverse('resource_permissions', kwargs=dict(resource_id=obj.id)))
             self.assertEqual(response.status_code, 200)
             js = json.loads(response.content)
             permissions = js.get('permissions', dict())
@@ -158,13 +157,16 @@ class SmokeTest(TestCase):
             }
 
             # Give the bar group permissions
-            response = c.post(reverse('resource_permissions', kwargs=dict(resource_id=obj.id)),
-                              data=json.dumps(permissions),
-                              content_type="application/json")
+            response = self.client.post(
+                reverse(
+                    'resource_permissions',
+                    kwargs=dict(resource_id=obj.id)),
+                data=json.dumps(permissions),
+                content_type="application/json")
 
             self.assertEqual(response.status_code, 200)
 
-            response = c.get(reverse('resource_permissions', kwargs=dict(resource_id=obj.id)))
+            response = self.client.get(reverse('resource_permissions', kwargs=dict(resource_id=obj.id)))
 
             js = json.loads(response.content)
             permissions = js.get('permissions', dict())
@@ -179,13 +181,16 @@ class SmokeTest(TestCase):
             permissions = {"users": {"admin": ['change_resourcebase']}}
 
             # Update the object's permissions to remove the bar group
-            response = c.post(reverse('resource_permissions', kwargs=dict(resource_id=obj.id)),
-                              data=json.dumps(permissions),
-                              content_type="application/json")
+            response = self.client.post(
+                reverse(
+                    'resource_permissions',
+                    kwargs=dict(resource_id=obj.id)),
+                data=json.dumps(permissions),
+                content_type="application/json")
 
             self.assertEqual(response.status_code, 200)
 
-            response = c.get(reverse('resource_permissions', kwargs=dict(resource_id=obj.id)))
+            response = self.client.get(reverse('resource_permissions', kwargs=dict(resource_id=obj.id)))
 
             js = json.loads(response.content)
             permissions = js.get('permissions', dict())
@@ -206,9 +211,8 @@ class SmokeTest(TestCase):
                  access='public',
                  keywords='testing, groups')
 
-        c = Client()
-        c.login(username="admin", password="admin")
-        response = c.post(reverse('group_create'), data=d)
+        self.client.login(username="admin", password="admin")
+        response = self.client.post(reverse('group_create'), data=d)
         # successful POSTS will redirect to the group's detail view.
         self.assertEqual(response.status_code, 302)
         self.assertTrue(GroupProfile.objects.get(title='TestGroup'))
@@ -221,11 +225,10 @@ class SmokeTest(TestCase):
         # Ensure the group exists
         self.assertTrue(GroupProfile.objects.get(id=self.bar.id))
 
-        c = Client()
-        c.login(username="admin", password="admin")
+        self.client.login(username="admin", password="admin")
 
         # Delete the group
-        response = c.post(reverse('group_remove', args=[self.bar.slug]))
+        response = self.client.post(reverse('group_remove', args=[self.bar.slug]))
 
         # successful POSTS will redirect to the group list view.
         self.assertEqual(response.status_code, 302)
@@ -239,11 +242,10 @@ class SmokeTest(TestCase):
         # Ensure the group exists
         self.assertTrue(GroupProfile.objects.get(id=self.bar.id))
 
-        c = Client()
-        c.login(username="norman", password="norman")
+        self.client.login(username="norman", password="norman")
 
         # Delete the group
-        response = c.post(reverse('group_remove', args=[self.bar.slug]))
+        response = self.client.post(reverse('group_remove', args=[self.bar.slug]))
 
         self.assertEqual(response.status_code, 403)
 
@@ -277,26 +279,24 @@ class SmokeTest(TestCase):
         Verify pages that do not require login load without internal error
         """
 
-        c = Client()
-
-        response = c.get("/groups/")
+        response = self.client.get("/groups/")
         self.assertEqual(200, response.status_code)
 
-        response = c.get("/groups/group/bar/")
+        response = self.client.get("/groups/group/bar/")
         self.assertEqual(200, response.status_code)
 
-        response = c.get("/groups/group/bar/members/")
+        response = self.client.get("/groups/group/bar/members/")
         self.assertEqual(200, response.status_code)
 
         # 302 for auth failure since we redirect to login page
-        response = c.get("/groups/create/")
+        response = self.client.get("/groups/create/")
         self.assertEqual(302, response.status_code)
 
-        response = c.get("/groups/group/bar/update/")
+        response = self.client.get("/groups/group/bar/update/")
         self.assertEqual(302, response.status_code)
 
         # 405 - json endpoint, doesn't support GET
-        response = c.get("/groups/group/bar/invite/")
+        response = self.client.get("/groups/group/bar/invite/")
         self.assertEqual(405, response.status_code)
 
     def test_protected_pages_render(self):
@@ -304,26 +304,25 @@ class SmokeTest(TestCase):
         Verify pages that require login load without internal error
         """
 
-        c = Client()
-        self.assertTrue(c.login(username="admin", password="admin"))
+        self.assertTrue(self.client.login(username="admin", password="admin"))
 
-        response = c.get("/groups/")
+        response = self.client.get("/groups/")
         self.assertEqual(200, response.status_code)
 
-        response = c.get("/groups/group/bar/")
+        response = self.client.get("/groups/group/bar/")
         self.assertEqual(200, response.status_code)
 
-        response = c.get("/groups/group/bar/members/")
+        response = self.client.get("/groups/group/bar/members/")
         self.assertEqual(200, response.status_code)
 
-        response = c.get("/groups/create/")
+        response = self.client.get("/groups/create/")
         self.assertEqual(200, response.status_code)
 
-        response = c.get("/groups/group/bar/update/")
+        response = self.client.get("/groups/group/bar/update/")
         self.assertEqual(200, response.status_code)
 
         # 405 - json endpoint, doesn't support GET
-        response = c.get("/groups/group/bar/invite/")
+        response = self.client.get("/groups/group/bar/invite/")
         self.assertEqual(405, response.status_code)
 
 
@@ -381,9 +380,8 @@ class InvitationTest(TestCase):
         invite = GroupInvitation.objects.get(user=normal, from_user=admin, group=group)
 
         # Test that the user can access the token url.
-        c = Client()
-        c.login(username="norman", password="norman")
-        response = c.get("/groups/group/{group}/invite/{token}/".format(group=group, token=invite.token))
+        self.client.login(username="norman", password="norman")
+        response = self.client.get("/groups/group/{group}/invite/{token}/".format(group=group, token=invite.token))
         self.assertEqual(200, response.status_code)
 
     def test_accept_invitation(self):
