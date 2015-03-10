@@ -12,6 +12,8 @@ from django.template.defaultfilters import slugify
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.translation import ugettext_lazy as _
 
+from shared_dataverse_information.worldmap_datatables.forms import TableJoinResultForm
+
 from geonode.contrib.msg_util import *
 
 from .models import DataTable, JoinTarget, TableJoin 
@@ -133,7 +135,8 @@ def tablejoin_api(request):
         try:
             tj, msg = setup_join(new_table_owner, table_name, layer_typename, table_attribute, layer_attribute)
             if tj:
-                return_dict = {
+                join_result_info_dict = TableJoinResultForm.get_cleaned_data_from_table_join(tj)
+                xreturn_dict = {
                     'join_id': tj.pk,
                     'view_name': tj.view_name,
                     'matched_records': tj.matched_records_count,
@@ -146,7 +149,7 @@ def tablejoin_api(request):
                     'join_layer': tj.join_layer.typename,
                     'layer_url': tj.join_layer.get_absolute_url()
                 }
-                return HttpResponse(json.dumps(return_dict), mimetype="application/json", status=200)
+                return HttpResponse(json.dumps(join_result_info_dict), mimetype="application/json", status=200)
             else:
                 return_dict = {
                     'success': False,
