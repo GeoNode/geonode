@@ -1,5 +1,6 @@
 from django.shortcuts import render
 from django.utils.translation import ugettext as _
+from django.utils import simplejson as json
 
 from geonode.services.models import Service
 from geonode.layers.models import Layer
