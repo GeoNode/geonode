@@ -6,9 +6,9 @@ _PERMISSION_MSG_VIEW = _("You are not permitted to view this layer")
 # Create your views here.
 
 def tiled_view(request, overlay="geonode:index", template="maptiles/maptiles_base.html"):
-	tiled_layer = _resolve_layer(request, overlay, "base.view_resourcebase", _PERMISSION_MSG_VIEW )
-	config = layer.attribute_config()
-	layer_bbox = layer.bbox
+    tiled_layer = _resolve_layer(request, overlay, "base.view_resourcebase", _PERMISSION_MSG_VIEW )
+    config = layer.attribute_config()
+    layer_bbox = layer.bbox
     bbox = [float(coord) for coord in list(layer_bbox[0:4])]
     srid = layer.srid
 
@@ -42,7 +42,7 @@ def tiled_view(request, overlay="geonode:index", template="maptiles/maptiles_bas
     if request.user != layer.owner and not request.user.is_superuser:
         Layer.objects.filter(
             id=layer.id).update(popular_count=F('popular_count') + 1)
-
+    
     # center/zoom don't matter; the viewer will center on the layer bounds
     map_obj = GXPMap(projection="EPSG:900913")
     NON_WMS_BASE_LAYERS = [
