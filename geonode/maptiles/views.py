@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from django.utils.translation import ugettext as _
 
+from geonode.services.models import Service
 from geonode.layers.models import Layer
 from geonode.utils import resolve_object, llbbox_to_mercator
 
