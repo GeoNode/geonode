@@ -35,7 +35,7 @@ def _resolve_layer(request, typename, permission='base.view_resourcebase',
                               **kwargs)
 
 def tiled_view(request, overlay="geonode:index", template="maptiles/maptiles_base.html"):
-    tiled_layer = _resolve_layer(request, overlay, "base.view_resourcebase", _PERMISSION_VIEW )
+    layer = _resolve_layer(request, overlay, "base.view_resourcebase", _PERMISSION_VIEW )
     config = layer.attribute_config()
     layer_bbox = layer.bbox
     bbox = [float(coord) for coord in list(layer_bbox[0:4])]
