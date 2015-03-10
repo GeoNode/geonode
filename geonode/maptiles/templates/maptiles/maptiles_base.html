@@ -10,7 +10,12 @@
 {% block title %}Map Tiles Selection — {{ block.super }}{% endblock %}
 
 {% block head %}
-{% include "maptiles/maptiles_leaflet_map.html" %}
+{% if preview == 'geoext' %}
+  {% include "maptiles/maptiles_geoext_map.html" %}
+{% else %}
+  {% include "maptiles/maptiles_leaflet_map.html" %}
+{% endif %}
+
 {{ block.super }}
 {% endblock %}
 
@@ -18,7 +23,7 @@
 
 {% block body_outer %}
 {% block body %}
-< br />
+
 <div class="row">
 	<div class="col-md-8">
 
@@ -27,7 +32,5 @@
 		</div>
 	</div>
 </div>
-< br />
-Hello there!
 {% endblock %}
 {% endblock %}
