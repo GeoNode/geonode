@@ -220,7 +220,7 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
         _PERMISSION_MSG_VIEW)
     # assert False, str(layer_bbox)
     config = layer.attribute_config()
-    print layername
+    #print layername
     # Add required parameters for GXP lazy-loading
     layer_bbox = layer.bbox
     bbox = [float(coord) for coord in list(layer_bbox[0:4])]
