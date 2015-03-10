@@ -7,7 +7,6 @@ import StringIO
 import json
 
 from django.test import TestCase
-from django.test.client import Client
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.contrib.auth import get_user_model
 from django.contrib.contenttypes.models import ContentType
