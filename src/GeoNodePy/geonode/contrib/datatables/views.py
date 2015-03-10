@@ -8,11 +8,13 @@ from django.core.serializers.json import Serializer
 from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponse, HttpResponseRedirect
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import User
 from django.template.defaultfilters import slugify
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.translation import ugettext_lazy as _
 
-from shared_dataverse_information.worldmap_datatables.forms import TableJoinResultForm
+from shared_dataverse_information.worldmap_datatables.forms import TableJoinRequestForm\
+                                                            , TableJoinResultForm
 
 from geonode.contrib.msg_util import *
 
@@ -116,6 +118,8 @@ def jointargets(request):
         results = [ob.as_json() for ob in jts] 
         return HttpResponse(json.dumps(results), mimetype="application/json")
 
+
+
 @login_required
 @csrf_exempt
 def tablejoin_api(request):
@@ -123,48 +127,58 @@ def tablejoin_api(request):
     Join a DataTable to the Geometry of an existing layer
     """
     if not request.method == 'POST':
-         return HttpResponse("Unsupported Method", mimetype="application/json", status=500) 
-         
-    table_name = request.POST.get("table_name", None)
-    layer_typename = request.POST.get("layer_typename", None)
-    table_attribute = request.POST.get("table_attribute", None)
-    layer_attribute = request.POST.get("layer_attribute", None)
-    new_table_owner = request.user
-
-    if table_name and layer_typename and table_attribute and layer_attribute:
-        try:
-            tj, msg = setup_join(new_table_owner, table_name, layer_typename, table_attribute, layer_attribute)
-            if tj:
-                join_result_info_dict = TableJoinResultForm.get_cleaned_data_from_table_join(tj)
-                xreturn_dict = {
-                    'join_id': tj.pk,
-                    'view_name': tj.view_name,
-                    'matched_records': tj.matched_records_count,
-                    'unmatched_records': tj.unmatched_records_count,
-                    'unmatched_records_list': tj.unmatched_records_list,
-                    'datatable': tj.datatable.table_name,
-                    'source_layer': tj.source_layer.typename,
-                    'table_attribute': tj.table_attribute.attribute,
-                    'layer_attribute': tj.layer_attribute.attribute,
-                    'join_layer': tj.join_layer.typename,
-                    'layer_url': tj.join_layer.get_absolute_url()
-                }
-                return HttpResponse(json.dumps(join_result_info_dict), mimetype="application/json", status=200)
-            else:
-                return_dict = {
+        return_dict = {
                     'success': False,
-                    'msg': "Error Creating Join: %s" % msg 
+                    'msg': "Unsupported Method"
                 }
-                return HttpResponse(json.dumps(return_dict), mimetype="application/json", status=400)
-        except:
-            traceback.print_exc(sys.exc_info())
+        return HttpResponse(json.dumps(return_dict), mimetype="application/json", status=500)
+
+    # ----------------------------------
+    # Validate the request
+    # ----------------------------------
+    f = TableJoinRequestForm(request.POST)
+    if not f.is_valid():
+        return_dict = {
+                    'success': False,
+                    'msg': "Invalid Data for Join: %s" % f.errors
+                }
+        return HttpResponse(json.dumps(return_dict), mimetype="application/json", status=400)
+
+    # DataTable and join attribute
+    table_name = f.cleaned_data['table_name']
+    table_attribute = f.cleaned_data['table_attribute']
+
+    # Layer and join attribute
+    layer_typename = f.cleaned_data['layer_typename']
+    layer_attribute = f.cleaned_data['layer_attribute']
+
+    # Set the owner
+    if isinstance(f.cleaned_data.get('new_layer_owner', None), User):
+        new_layer_owner = new_layer_owner
+    else:
+        new_layer_owner = request.user
+
+
+    try:
+        tj, result_msg = setup_join(new_layer_owner, table_name, layer_typename, table_attribute, layer_attribute)
+        if tj:
+            join_result_info_dict = TableJoinResultForm.get_cleaned_data_from_table_join(tj)
+            return HttpResponse(json.dumps(join_result_info_dict), mimetype="application/json", status=200)
+        else:
             return_dict = {
                 'success': False,
-                'msg': "Error Creating Join: %s" % str(sys.exc_info()[0])
+                'msg': "Error Creating Join: %s" % result_msg
             }
-            return HttpResponse(json.dumps(return_dict), mimetype="application/json", status=400) 
-    else:
-        return HttpResponse(json.dumps({'msg':'Invalid Request', 'success':False}), mimetype='application/json', status=400)
+            return HttpResponse(json.dumps(return_dict), mimetype="application/json", status=400)
+    except:
+
+        traceback.print_exc(sys.exc_info())
+        return_dict = {
+            'success': False,
+            'msg': "Error Creating Join: %s" % str(sys.exc_info()[0])
+        }
+        return HttpResponse(json.dumps(return_dict), mimetype="application/json", status=400)
+
 
 
 @login_required
@@ -199,6 +213,8 @@ def datatable_remove(request, dt_id):
     except:
         return HttpResponse(json.dumps({'success':False, 'msg': ('Error removing DataTable %s' % (sys.exc_info()[0]))}), mimetype='application/json', status=400)
 
+
+
 @login_required
 @csrf_exempt
 def datatable_upload_and_join_api(request):
@@ -207,6 +223,10 @@ def datatable_upload_and_join_api(request):
     """
     request_post_copy = request.POST.copy()
     join_props = request_post_copy
+
+    # ----------------------------------------------------
+    # Create a DataTable object from the file
+    # ----------------------------------------------------
     try:
         resp = datatable_upload_api(request)
         upload_return_dict = json.loads(resp.content)
@@ -216,6 +236,11 @@ def datatable_upload_and_join_api(request):
     except:
         traceback.print_exc(sys.exc_info())
         return HttpResponse(json.dumps({'msg':'Uncaught error ingesting Data Table', 'success':False}), mimetype='application/json', status=400)
+
+
+    # ----------------------------------------------------
+    # Attempt to join the new Datatable to a layer
+    # ----------------------------------------------------
     try:
         original_table_attribute = join_props['table_attribute']
         sanitized_table_attribute = standardize_name(original_table_attribute)
@@ -226,6 +251,7 @@ def datatable_upload_and_join_api(request):
     except:
         traceback.print_exc(sys.exc_info())
         return HttpResponse("Not yet")
+
 
 @login_required
 @csrf_exempt

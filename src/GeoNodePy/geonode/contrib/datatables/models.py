@@ -136,14 +136,17 @@ class TableJoin(models.Model):
     """
     TableJoin 
     """
-
     datatable = models.ForeignKey(DataTable)
-    source_layer = models.ForeignKey(Layer, related_name="source_layer")
     table_attribute = models.ForeignKey(DataTableAttribute, related_name="table_attribute")
+
+    source_layer = models.ForeignKey(Layer, related_name="source_layer")
     layer_attribute = models.ForeignKey(LayerAttribute, related_name="layer_attribute")
+
     view_name = models.CharField(max_length=255, null=True, blank=True)
     view_sql = models.TextField(null=True, blank=True)
+
     join_layer = models.ForeignKey(Layer, related_name="join_layer", null=True, blank=True)
+
     matched_records_count = models.IntegerField(null=True, blank=True)
     unmatched_records_count = models.IntegerField(null=True, blank=True)
     unmatched_records_list = models.TextField(null=True, blank=True)
