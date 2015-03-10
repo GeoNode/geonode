@@ -1,13 +1,12 @@
 from django.shortcuts import render
 from geonode.layers.models import Layer
 from geonode.utils import resolve_object, llbbox_to_mercator
-
-
-_PERMISSION_MSG_VIEW = ("You are not permitted to view this layer")
+_PERMISSION_VIEW = _("You are not permitted to view this layer")
+_PERMISSION_GENERIC = _('You do not have permissions for this layer.')
 # Create your views here.
 
 def _resolve_layer(request, typename, permission='base.view_resourcebase',
-                   msg=_PERMISSION_MSG_GENERIC, **kwargs):
+                   msg=_PERMISSION_GENERIC, **kwargs):
     """
     Resolve the layer by the provided typename (which may include service name) and check the optional permission.
     """
@@ -32,7 +31,7 @@ def _resolve_layer(request, typename, permission='base.view_resourcebase',
                               **kwargs)
 
 def tiled_view(request, overlay="geonode:index", template="maptiles/maptiles_base.html"):
-    tiled_layer = _resolve_layer(request, overlay, "base.view_resourcebase", _PERMISSION_MSG_VIEW )
+    tiled_layer = _resolve_layer(request, overlay, "base.view_resourcebase", _PERMISSION_VIEW )
     config = layer.attribute_config()
     layer_bbox = layer.bbox
     bbox = [float(coord) for coord in list(layer_bbox[0:4])]
