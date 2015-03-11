@@ -141,11 +141,13 @@
                                             + lonlat.lon + " E");
                     }
                 });
-            alert(app.mapPanel.map);
+            
+            var map_object = app.MapPanel.map;
+            alert(map_object.id);
             var tile_select_layer = new OpenLayers.Layer.Vector("selection_layer");
-            map.addLayer(tile_select_layer);
+            map_object.addLayer(tile_select_layer);
             click_select = new OpenLayers.Control.Click()
-            map.addControl(click_select);   
+            map_object.addControl(click_select);   
             click_select.activate();
         });
         
