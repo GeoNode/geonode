@@ -113,7 +113,6 @@
                     $('#legend_icon').attr('src', $('#legend_icon').attr('src')+'&'+Math.random());
                 }   
             }, this);
-            alert(map);
         
             OpenLayers.Control.Click = OpenLayers.Class(OpenLayers.Control, {
                 defaultHandlerOptions: {
@@ -142,7 +141,7 @@
                                             + lonlat.lon + " E");
                     }
                 });
-    
+            alert(app.mapPanel.map);
             var tile_select_layer = new OpenLayers.Layer.Vector("selection_layer");
             map.addLayer(tile_select_layer);
             click_select = new OpenLayers.Control.Click()
