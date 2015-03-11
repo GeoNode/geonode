@@ -164,10 +164,10 @@ def data_input(request):
                 ceph_obj.save()
             
             messages.success(request, "Data has been succesfully encoded!")
-            return HttpResponseRedirect('/cephgeo/list/nosort/')
+            return HttpResponseRedirect('/ceph/list/nosort/')
         else:
             messages.error(request, "Invalid input on data form")
-            return HttpResponseRedirect('/cephgeo/input/')
+            return HttpResponseRedirect('/ceph/input/')
     # if a GET (or any other method) we'll create a blank form
     else:
         form = DataInputForm()
