@@ -9,7 +9,8 @@
 				};
 	}
 	
-	var map = Ext.get("preview_map").panel.map;
+	var map = Ext.get("preview_map");
+	alert (map);
 	
 	OpenLayers.Control.Click = OpenLayers.Class(OpenLayers.Control, {
 		defaultHandlerOptions: {
