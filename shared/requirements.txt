@@ -18,7 +18,7 @@ psycopg2==2.4.1
 
 # gsconfig upgrade - 2/27/2015
 -e git+https://github.com/cga-harvard/gsconfig.py.git#egg=gsconfig.py
-gsconfig==0.6.13
+#gsconfig==0.6.13
 
 django-registration==0.8
 django-profiles==0.2
