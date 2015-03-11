@@ -11,8 +11,6 @@
 	
 	var map = document.getElementById("preview_map").mapPanel.map;
 	
-	var tile_select_layer = new OpenLayers.Layer.Vector("selection_layer");
-	
 	OpenLayers.Control.Click = OpenLayers.Class(OpenLayers.Control, {
 		defaultHandlerOptions: {
 			"single": true,
@@ -43,6 +41,7 @@
         } 
 	}
 	
+	var tile_select_layer = new OpenLayers.Layer.Vector("selection_layer");
 	map.addLayer(tile_select_layer);
 	click_select = new OpenLayers.Control.Click()
 	map.addControl(click_select);	
