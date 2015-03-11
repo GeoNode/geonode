@@ -4,6 +4,13 @@
 <script type="text/javascript" src="{{ STATIC_URL}}geonode/js/utils/thumbnail.js"></script>
 <script type="text/javascript">
 {% autoescape off %}
+		function get_corners( x, y) {
+			return { ul_x: Math.floor(x), ul_y: Math.ceil(y),
+					 ur_x: Math.ceil(x), ur_y: Math.ceil(y),
+					 ll_x: Math.floor(x), ll_y: Math.floor(y),
+					 lr_x: Math.ceil(x), lr_y: Math.floor(y)};
+		}
+		
         var app;
         Ext.onReady(function() {
             GeoExt.Lang.set("{{ LANGUAGE_CODE }}");
@@ -63,6 +70,16 @@
                            if(map.baseLayer){
                             map.zoomToExtent(extent, false);
                            }
+                           
+                           //adding click listener on the openlayers map
+                           var tile_select_ctrl = new OpenLayers.Control();
+                           OpenLayers.Util.extend(tile_select_ctrl, {
+							   draw: function (px){
+								   window.confirm(get_corners(px.x, px.y));
+								}
+						   }
+						   
+						   map.addControl(tile_select_ctrl);
                         }
                     },
                     "beforeunload": function() {
