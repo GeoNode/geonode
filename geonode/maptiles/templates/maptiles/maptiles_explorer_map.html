@@ -24,9 +24,7 @@
 			this.handlerOptions = OpenLayers.Util.extend(
 				{}, this.defaultHandlerOptions
 			);
-			OpenLayers.Control.prototype.initialize.apply(
-				this, arguments
-			); 
+			OpenLayers.Control.prototype.initialize.apply(this, arguments); 
 			this.handler = new OpenLayers.Handler.Click(
 				this, {
 					'click': this.trigger
@@ -38,7 +36,7 @@
                     var lonlat = map.getLonLatFromPixel(e.xy);
                     alert("You clicked near " + lonlat.lat + " N, " +
                                               + lonlat.lon + " E");
-        } 
+        }
 	};
 	
 	var tile_select_layer = new OpenLayers.Layer.Vector("selection_layer");
