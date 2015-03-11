@@ -86,19 +86,21 @@
             app = new GeoExplorer.Viewer(config);
             
             var map = app.mapPanel.map;
+            var layer = app.map.layers.slice(-1)[0];
             
-            var tile_select_ctrl = new OpenLayers.Control();
-            OpenLayers.Util.extend(tile_select_ctrl, {
-				draw: function () {
-					this.click = OpenLayers.Handler.Click( tile_select_ctrl,
-						{"done": this.notice});
-				},
-				notice: function (px) {
-					OpenLayers.Console.userError(px.x, px.y);
-				}
-			});
+            var tile_select = new OpenLayers.Control.SelectFeature(
+				layer,
+				{
+					clickout: false, toggle: false,
+					multiple: false, hover: false,
+					toggleKey: "ctrlKey", // ctrl key removes from selection
+					multipleKey: "shiftKey", // shift key adds to selection
+					box: true
+				});
 			
-			map.addControl(tile_select_ctrl);
+			map.addControl(tile_select);
+            
+			
 
             for (var key in app.tools) {
                 var tool = app.tools[key];
