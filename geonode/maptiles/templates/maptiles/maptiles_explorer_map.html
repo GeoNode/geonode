@@ -70,16 +70,7 @@
                            if(map.baseLayer){
                             map.zoomToExtent(extent, false);
                            }
-                           
-                           //adding click listener on the openlayers map
-                           var tile_select_ctrl = new OpenLayers.Control();
-                           OpenLayers.Util.extend(tile_select_ctrl, {
-							   draw: function (px){
-								   window.confirm(get_corners(px.x, px.y));
-								}
-						   });
-						   
-						   map.addControl(tile_select_ctrl);
+						
                         }
                     },
                     "beforeunload": function() {
@@ -93,6 +84,19 @@
 
             config = Ext.apply(config, {{ viewer|safe }});
             app = new GeoExplorer.Viewer(config);
+            
+            var map = app.mapPanel.map;
+            
+            var tile_select_ctrl = new OpenLayers.Control();
+            OpenLayers.Util.extend(tile_select_ctrl, {
+				draw: function () {
+					this.click = OpenLayers.Handler.Click( tile_select_ctrl,
+						{"done": this.notice});
+				},
+				notice: function (px) {
+					OpenLayers.Console.userError(px.x, px.y);
+				}
+			});
 
             for (var key in app.tools) {
                 var tool = app.tools[key];
