@@ -97,6 +97,8 @@
 					OpenLayers.Console.userError(px.x, px.y);
 				}
 			});
+			
+			map.addControl(tile_select_ctrl);
 
             for (var key in app.tools) {
                 var tool = app.tools[key];
