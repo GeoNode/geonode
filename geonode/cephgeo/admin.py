@@ -9,10 +9,13 @@ class CephDataObjectAdmin(admin.ModelAdmin):
         'id',
         'name',
         'file_hash',
+        'last_modified',
         'content_type',
+        'geo_type',
         'grid_ref',
         'size_in_bytes',)
-    list_filter = ('content_type', 'grid_ref')
+
+    list_filter = ('geo_type', 'grid_ref')
     search_fields = ('name', 'content_type', 'grid_ref',)
 
 class LayerToCephObjectMapAdmin(admin.ModelAdmin):

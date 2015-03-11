@@ -1,0 +1,27 @@
+{% extends "ceph_base.html" %}
+{% load i18n %}
+{% load url from future %}
+
+{% block title %}CephGeo File List{% endblock %}
+
+{% block body_outer %}
+  {% block body %}
+  
+  <div class="jumbotron">
+    <div class="container">
+		<h1>Error</h1>
+	</div>
+  </div>
+
+  
+  
+  <div class="container">
+    <p>An error was encountered:</p>
+    <p>{{ err_msg }}</p>
+  </div>
+{% endblock body %}
+ {% block sidebar %}{% endblock sidebar %}
+{% endblock body_outer %}
+
+
+

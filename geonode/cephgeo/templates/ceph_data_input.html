@@ -1,0 +1,30 @@
+{% extends "ceph_base.html" %}
+{% load i18n %}
+{% load url from future %}
+
+{% block title %}CephGeo File List{% endblock %}
+
+{% block body_outer %}
+  {% block body %}
+  
+  <div class="jumbotron">
+    <div class="container">
+		<h1>Data Input Form</h1>
+	</div>
+  </div>
+  
+  <!--
+  <form action="/your-name/" method="post">
+    {% csrf_token %}
+    {{ form }}
+    <input type="submit" value="Submit" />
+  </form>
+  -->
+  {% load crispy_forms_tags %}
+  {% crispy data_input_form %}
+{% endblock body %}
+ {% block sidebar %}{% endblock sidebar %}
+{% endblock body_outer %}
+
+
+
