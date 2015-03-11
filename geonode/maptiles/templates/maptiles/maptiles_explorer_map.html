@@ -1,5 +1,6 @@
 {% extends "layers/layer_geoext_map.html" %}
 <script type="text/javascript">
+{% autoescape off %}
 	function get_corners( x, y ){
 		return { "ul_x": Math.floor(x), "ul_y": Math.ceil(y),
 				 "ur_x": Math.ceil(x), "ur_y": Math.ceil(y),
@@ -46,4 +47,5 @@
 	click_select = new OpenLayers.Control.Click()
 	map.addControl(click_select);	
 	click_select.activate();
+{% endautoescape %}
 </script>
