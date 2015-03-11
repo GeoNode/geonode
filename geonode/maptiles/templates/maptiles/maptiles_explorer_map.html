@@ -9,7 +9,7 @@
 				};
 	}
 	
-	var map = Ext.get("preview_map");
+	var map = GeoExt.getCmp("preview_map").map;
 	alert (map);
 	
 	OpenLayers.Control.Click = OpenLayers.Class(OpenLayers.Control, {
