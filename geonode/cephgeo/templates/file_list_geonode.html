@@ -1,0 +1,63 @@
+{% extends "ceph_base.html" %}
+{% load i18n %}
+{% load url from future %}
+
+{% block title %}CephGeo File List{% endblock %}
+
+{% block body_outer %}
+  {% block body %}
+  
+  <div class="jumbotron">
+    <div class="container">
+		<h1>File List</h1>
+	</div>
+  </div>
+
+  Sort by:
+  {% for sort_type in sort_types %}
+	{% if sort_type == sort %}
+		<b>| {{ sort_type }} |</b>
+	{% elif grid_ref != None %}
+		<a href="{% url 'cephgeo.views.file_list_geonode' sort_type grid_ref %}">| {{ sort_type }} |</a>
+	{% else %}
+		<a href="{% url 'cephgeo.views.file_list_geonode' sort_type %}">| {{ sort_type }} |</a>
+	{% endif %}
+  {% endfor %}
+  {% if grid_ref != None %}
+	<a href="{% url 'cephgeo.views.file_list_geonode' 'nosort' %}">| all files |</a>
+  {% endif %}
+  <br /><br /><br />
+  
+  <ul>
+	{% for file in file_list %}
+		<li><b>{{ file.name }}</b>
+			<br />Grid Reference: <a href="{% url 'cephgeo.views.file_list_geonode' 'nosort' file.grid_ref %}">{{ file.grid_ref }}</a>
+			<br />File Hash: {{ file.file_hash }}
+			<br />Data Type: {{ file.geo_type }}
+			<br />Last Modified: {{ file.last_modified }}
+			<br />File size: {{ file.size_in_bytes|filesizeformat  }}
+		</li>
+	{% endfor %}
+  </ul>
+  
+  <div class="pagination">
+	<span class="step-links">
+		{% if file_list.has_previous %}
+			<a href="?page={{ file_list.previous_page_number }}">previous</a>
+		{% endif %}
+		
+		<span class="current">
+			Page {{ file_list.number }} of {{ file_list.paginator.num_pages }}
+		</span>
+		
+		{% if file_list.has_next %}
+			<a href="?page={{ file_list.next_page_number }}">next</a>
+		{% endif %}
+	</span>
+  </div>
+{% endblock body %}
+ {% block sidebar %}{% endblock sidebar %}
+{% endblock body_outer %}
+
+
+

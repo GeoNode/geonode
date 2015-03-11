@@ -320,6 +320,9 @@ INSTALLED_APPS = (
     'tastypie',
     'polymorphic',
     'guardian',
+    
+    # Crispy Forms
+    'crispy_forms',
 
 ) + GEONODE_APPS
 
