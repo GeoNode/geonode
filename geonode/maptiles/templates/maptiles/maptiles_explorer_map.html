@@ -120,10 +120,14 @@
                                map.events.unregister('changebaselayer', null, zoomToData);
                            };
                            map.events.register('changebaselayer',null,zoomToData);
+                           
                            var tile_select_layer = new OpenLayers.Layer.Vector("selection_layer");
                            map.addLayer(tile_select_layer);
+                           
                            if(map.baseLayer){
                             map.zoomToExtent(extent, false);
+                           }else{
+                            alert("Hello! Baselayer is not defined!");
                            }
                             
                         }
