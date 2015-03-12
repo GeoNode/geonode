@@ -84,9 +84,7 @@
         
                             trigger: function(e) {
                                 var lonlat = map.getLonLatFromPixel(e.xy);
-                                //alert("You clicked near " + floor_tile_size(lonlat.lat) + " N, " +
-                                //                + ceil_tile_size(lonlat.lon) + " E");
-
+                                
                                 var corners = get_corners(lonlat.lat, lonlat.lon);
                                 var corner_pts = [
                                     new OpenLayers.Geometry.Point(corners.ul_x, corners.ul_y),
@@ -97,17 +95,19 @@
                                 
                                 var ln = new OpenLayers.Geometry.LinearRing(corner_pts);
                                 var rectFeat = new OpenLayers.Feature.Vector(ln);
-                                //var vector_layer = map.getLayersByName("selection_layer")[0];
-                                //vector_layer.addFeatures([rectFeat]);
+                                alert("clicked!");
+                                var vector_layer = map.getLayersByName("selection_layer")[0];
+                                vector_layer.addFeatures([rectFeat]);
                             }
                                 
                         });
             
-                        //var tile_select_layer = new OpenLayers.Layer.Vector("selection_layer");
-                        //map.addLayer(tile_select_layer);
                         click_select = new OpenLayers.Control.Click()
                         map.addControl(click_select);   
                         click_select.activate();
+                        
+                        map = app.mapPanel.map;
+                        layer = app.map.layers.slice(-1)[0];
                         
                         var bbox = layer.bbox;
                         if (bbox != undefined)
@@ -134,8 +134,6 @@
                            
                            if(map.baseLayer){
                             map.zoomToExtent(extent, false);
-                           }else{
-                            alert("Hello! Baselayer is not defined!");
                            }
                             
                         }
