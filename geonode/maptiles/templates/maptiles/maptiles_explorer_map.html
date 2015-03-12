@@ -90,7 +90,7 @@
                                 var i;
                                 var count = 0
                                 for (i in map.layers){
-                                    layer_names[count] = i.id;
+                                    layer_names[count] = i.getZIndex();
                                     count++;
                                 }
                                 alert("Layers for this map"+layer_names.toString());
