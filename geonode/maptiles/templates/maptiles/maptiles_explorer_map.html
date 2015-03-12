@@ -86,18 +86,12 @@
                                 var lonlat = map.getLonLatFromPixel(e.xy);
                                 
                                 var corners = get_corners(lonlat.lat, lonlat.lon);
-                                var corner_pts = [
-                                    new OpenLayers.Geometry.Point(corners.ul_x, corners.ul_y),
-                                    new OpenLayers.Geometry.Point(corners.ur_x, corners.ur_y),
-                                    new OpenLayers.Geometry.Point(corners.lr_x, corners.lr_y),
-                                    new OpenLayers.Geometry.Point(corners.ll_x, corners.ll_y)
-                                    ];
                                 
-                                var ln = new OpenLayers.Geometry.LinearRing(corner_pts);
-                                var rectFeat = new OpenLayers.Feature.Vector(ln);
+                                //var ln = new OpenLayers.Geometry.LinearRing(corner_pts);
+                                //var rectFeat = new OpenLayers.Feature.Vector(ln);
                                 alert("clicked!");
-                                var vector_layer = map.getLayersByName("selection_layer")[0];
-                                vector_layer.addFeatures([rectFeat]);
+                                //var vector_layer = map.getLayersByName("selection_layer")[0];
+                                //vector_layer.addFeatures([rectFeat]);
                             }
                                 
                         });
