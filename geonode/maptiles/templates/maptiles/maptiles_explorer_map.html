@@ -80,11 +80,10 @@
                                 }
                         });
             
-                        var map_object = app.mapPanel.map;
                         var tile_select_layer = new OpenLayers.Layer.Vector("selection_layer");
-                        map_object.addLayer(tile_select_layer);
+                        map.addLayer(tile_select_layer);
                         click_select = new OpenLayers.Control.Click()
-                        map_object.addControl(click_select);   
+                        map.addControl(click_select);   
                         click_select.activate();
                         
                         var bbox = layer.bbox;
