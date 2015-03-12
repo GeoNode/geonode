@@ -87,10 +87,11 @@
                                 //alert("You clicked near " + floor_tile_size(lonlat.lat) + " N, " +
                                 //                + ceil_tile_size(lonlat.lon) + " E");
 
-                                //for (i in map.layers){
-                                //   alert("Layers for this map"+i.name);
-                                //}
-                                alert("Layers for this map " + map.getNumLayers());
+                                //var new_feature = new OpenLayers.Feature.Vector()
+                                for ( var i in map.layers ){
+                                    alert ( i.CLASS_NAME );
+                                }
+                                
                             }
                                 
                         });
