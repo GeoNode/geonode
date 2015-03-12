@@ -87,7 +87,7 @@
                                 //alert("You clicked near " + floor_tile_size(lonlat.lat) + " N, " +
                                 //                + ceil_tile_size(lonlat.lon) + " E");
 
-                                var corners = get_corners(lonlat.lat, loanlat.lon);
+                                var corners = get_corners(lonlat.lat, lonlat.lon);
                                 var corner_pts = [
                                     new OpenLayers.Geometry.Point(corners.ul_x, corners.ul_y),
                                     new OpenLayers.Geometry.Point(corners.ur_x, corners.ur_y),
@@ -97,8 +97,8 @@
                                 
                                 var ln = new OpenLayers.Geometry.LinearRing(corner_pts);
                                 var rectFeat = new OpenLayers.Feature.Vector(ln);
-                                var vector_layer = map.getLayersByName("selection_layer")[0];
-                                vector_layer.addFeatures([rectFeat]);
+                                //var vector_layer = map.getLayersByName("selection_layer")[0];
+                                //vector_layer.addFeatures([rectFeat]);
                             }
                                 
                         });
