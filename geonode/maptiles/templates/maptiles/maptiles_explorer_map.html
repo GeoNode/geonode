@@ -116,13 +116,14 @@
                                map.events.unregister('changebaselayer', null, zoomToData);
                            };
                            map.events.register('changebaselayer',null,zoomToData);
-                           if(map.baseLayer){
-                            map.zoomToExtent(extent, false);
-                           }
                            
                            var tile_select_layer = new OpenLayers.Layer.Vector("selection_layer")
                            //tile_select_layer.renderer.setExtent(extent);
                            map.addLayer(tile_select_layer);
+                           
+                           if(map.baseLayer){
+                            map.zoomToExtent(extent, false);
+                           }
 
                         }
                         
