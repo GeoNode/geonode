@@ -14,10 +14,10 @@
         }
         
         function get_corners( x, y ){
-            return { "ul_x": floor_tile_size(x), "ul_y": ceil_tile_size(y),
-                 "ur_x": ceil_tile_size(x), "ur_y": ceil_tile_size(y),
-                 "ll_x": floor_tile_size(x), "ll_y": floor_tile_size(y),
-                 "lr_x": ceil_tile_size(x), "lr_y": floor_tile_size(y)
+            return { ul_x: floor_tile_size(x), ul_y: ceil_tile_size(y),
+                 ur_x: ceil_tile_size(x), ur_y: ceil_tile_size(y),
+                 ll_x: floor_tile_size(x), ll_y: floor_tile_size(y),
+                 lr_x: ceil_tile_size(x), lr_y: floor_tile_size(y)
                 };
         }
 
@@ -87,13 +87,18 @@
                                 //alert("You clicked near " + floor_tile_size(lonlat.lat) + " N, " +
                                 //                + ceil_tile_size(lonlat.lon) + " E");
 
-                                //var new_feature = new OpenLayers.Feature.Vector()
-                                for ( var i in map.layers ){
-                                    if ( i instanceof OpenLayers.Layer.Vector ){
-                                        alert("Found vector layer!");
-                                    }
-                                }
+                                var corners = get_corners(lonlat.lat, loanlat.lon);
+                                var corner_pts = [
+                                    new OpenLayers.Geometry.Point(corners.ul_x, corners.ul_y),
+                                    new OpenLayers.Geometry.Point(corners.ur_x, corners.ur_y),
+                                    new OpenLayers.Geometry.Point(corners.lr_x, corners.lr_y),
+                                    new OpenLayers.Geometry.Point(corners.ll_x, corners.ll_y)
+                                    ];
                                 
+                                var ln = new OpenLayers.Geometry.LinearRing(corner_pts);
+                                var rectFeat = new OpenLayers.Feature.Vector(ln);
+                                var vector_layer = map.getLayersByName("selection_layer")[0];
+                                vector_layer.addFeatures([rectFeat]);
                             }
                                 
                         });
