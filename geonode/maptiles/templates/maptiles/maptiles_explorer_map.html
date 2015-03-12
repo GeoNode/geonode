@@ -52,6 +52,41 @@
                         // FIXME(Ariel): Zoom to extent until #1795 is fixed.
                         //map.zoomToExtent(layer.maxExtent, false)
                         
+                        OpenLayers.Control.Click = OpenLayers.Class(OpenLayers.Control, {
+                            defaultHandlerOptions: {
+                                "single": true,
+                                "double": false,
+                                "pixelTolerance": 0,
+                                "stopSingle": false,
+                                "stopDouble": false
+                            },
+        
+                            initialize: function(options) {
+                                this.handlerOptions = OpenLayers.Util.extend(
+                                    {}, this.defaultHandlerOptions
+                                );
+                            OpenLayers.Control.prototype.initialize.apply(this, arguments); 
+                                this.handler = new OpenLayers.Handler.Click(
+                                    this, {
+                                        'click': this.trigger
+                                    }, this.handlerOptions
+                                );
+                            },
+        
+                            trigger: function(e) {
+                                var lonlat = map.getLonLatFromPixel(e.xy);
+                                alert("You clicked near " + lonlat.lat + " N, " +
+                                                + lonlat.lon + " E");
+                                }
+                        });
+            
+                        var map_object = app.mapPanel.map;
+                        var tile_select_layer = new OpenLayers.Layer.Vector("selection_layer");
+                        map_object.addLayer(tile_select_layer);
+                        click_select = new OpenLayers.Control.Click()
+                        map_object.addControl(click_select);   
+                        click_select.activate();
+                        
                         var bbox = layer.bbox;
                         if (bbox != undefined)
                         {
@@ -114,41 +149,6 @@
                 }   
             }, this);
         
-            OpenLayers.Control.Click = OpenLayers.Class(OpenLayers.Control, {
-                defaultHandlerOptions: {
-                    "single": true,
-                    "double": false,
-                    "pixelTolerance": 0,
-                    "stopSingle": false,
-                    "stopDouble": false
-                },
-        
-                initialize: function(options) {
-                    this.handlerOptions = OpenLayers.Util.extend(
-                        {}, this.defaultHandlerOptions
-                    );
-                    OpenLayers.Control.prototype.initialize.apply(this, arguments); 
-                    this.handler = new OpenLayers.Handler.Click(
-                        this, {
-                            'click': this.trigger
-                            }, this.handlerOptions
-                    );
-                },
-        
-                trigger: function(e) {
-                    var lonlat = map.getLonLatFromPixel(e.xy);
-                    alert("You clicked near " + lonlat.lat + " N, " +
-                                            + lonlat.lon + " E");
-                    }
-                });
-            
-            var map_object = app.mapPanel.map;
-            alert(map_object.id);
-            var tile_select_layer = new OpenLayers.Layer.Vector("selection_layer");
-            map_object.addLayer(tile_select_layer);
-            click_select = new OpenLayers.Control.Click()
-            map_object.addControl(click_select);   
-            click_select.activate();
         });
         
     
