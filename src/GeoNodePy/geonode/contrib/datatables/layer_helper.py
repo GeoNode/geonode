@@ -1,6 +1,6 @@
 import logging
 from django.conf import settings
-from django.contrib.auth.models User
+from django.contrib.auth.models import User
 
 from geonode.maps.models import Layer
 from geonode.maps.utils import get_valid_layer_name, check_projection, create_django_record
@@ -96,34 +96,48 @@ def create_geoserver_layer(new_table_owner, view_name, datatable, data_store, jo
     try:
         logger.info("Create layer %s", name)
         msg('create_geoserver_layer 7')
-        layer = cat.create_native_layer(settings.DEFAULT_WORKSPACE,
+        new_feature_type = cat.create_native_layer(settings.DEFAULT_WORKSPACE,
                                   settings.DB_DATASTORE_NAME,
                                   name,
                                   name,
                                   datatable.title,
                                   join_layer.srs,
                                   attribute_list)
-
+        msg('LAYER 1 type: %s (%s)' % (new_feature_type.__class__.__name__, new_feature_type.name))
         logger.info("Create default style")
-        publishing = cat.get_layer(name)
-        msg('create_geoserver_layer 8')
-        msg('publishing: %s' % publishing)
 
-        sld = get_sld_for(publishing)
+        new_geoserver_layer = cat.get_layer(new_feature_type)
+
+        msg('create_geoserver_layer 8')
+        msg('publishing: %s' % new_geoserver_layer)
+        msg('LAYER 2 type: %s (%s)' % (new_geoserver_layer.__class__.__name__, new_geoserver_layer.name))
+
+         # ------------------------------------------------------
+        # Set the Layer's default Style
+        # ------------------------------------------------------
+        #set_default_style_for_new_layer(cat, ft)
+
+        sld = get_sld_for(new_geoserver_layer)
         msg('sld: %s' % sld)
         cat.create_style(name, sld)
         msg('create_geoserver_layer 9')
-        publishing.default_style = cat.get_style(name)
-        cat.save(publishing)
+        new_geoserver_layer.default_style = cat.get_style(name)
+        cat.save(new_geoserver_layer)
 
         logger.info("Check projection")
-        check_projection(name, layer)
+        check_projection(name, new_feature_type)
 
         logger.info("Create django record")
 
+        keywords_str = ''
+        abstract = '(abstract)'
         geonodeLayer = create_django_record(new_table_owner\
-                                    , datatable.title
-                                    , layer_form.cleaned_data['keywords'].strip().split(" "), layer_form.cleaned_data['abstract'], layer, permissions)
+                                    , datatable.title\
+                                    , keywords_str.split(" ")\
+                                    , abstract\
+                                    , new_feature_type\
+                                    , permissions\
+                                    )
         msg('geonodeLayer: %s' % geonodeLayer)
 
         return True, geonodeLayer
