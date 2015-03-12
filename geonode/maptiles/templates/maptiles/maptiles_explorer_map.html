@@ -84,9 +84,10 @@
         
                             trigger: function(e) {
                                 var lonlat = map.getLonLatFromPixel(e.xy);
-                                alert("You clicked near " + floor_tile_size(lonlat.lat) + " N, " +
-                                                + ceil_tile_size(lonlat.lon) + " E");
-                                }
+                                //alert("You clicked near " + floor_tile_size(lonlat.lat) + " N, " +
+                                //                + ceil_tile_size(lonlat.lon) + " E");
+                                //}
+                                alert("Layers for this map"+map.layers);
                         });
             
                         //var tile_select_layer = new OpenLayers.Layer.Vector("selection_layer");
