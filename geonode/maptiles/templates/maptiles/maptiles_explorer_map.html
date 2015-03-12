@@ -4,11 +4,20 @@
 <script type="text/javascript" src="{{ STATIC_URL}}geonode/js/utils/thumbnail.js"></script>
 <script type="text/javascript">
 {% autoescape off %}
+        var _TILE_SIZE = 1000;
+        function floor_tile_size(x){
+            return  (Math.floor(x/_TILE_SIZE) * _TILE_SIZE);
+        }
+        
+        function ceil_tile_size(x) {
+            return (Math.ceil(x/_TILE_SIZE) * _TILE_SIZE);
+        }
+        
         function get_corners( x, y ){
-            return { "ul_x": Math.floor(x), "ul_y": Math.ceil(y),
-                 "ur_x": Math.ceil(x), "ur_y": Math.ceil(y),
-                 "ll_x": Math.floor(x), "ll_y": Math.floor(y),
-                 "lr_x": Math.ceil(x), "lr_y": Math.floor(y)
+            return { "ul_x": floor_tile_size(x), "ul_y": ceil_tile_size(y),
+                 "ur_x": ceil_tile_size(x), "ur_y": ceil_tile_size(y),
+                 "ll_x": floor_tile_size(x), "ll_y": floor_tile_size(y),
+                 "lr_x": ceil_tile_size(x), "lr_y": floor_tile_size(y)
                 };
         }
 
@@ -75,8 +84,8 @@
         
                             trigger: function(e) {
                                 var lonlat = map.getLonLatFromPixel(e.xy);
-                                alert("You clicked near " + lonlat.lat + " N, " +
-                                                + lonlat.lon + " E");
+                                alert("You clicked near " + floor_tile_size(lonlat.lat) + " N, " +
+                                                + ceil_tile_size(lonlat.lon) + " E");
                                 }
                         });
             
