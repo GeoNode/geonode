@@ -89,7 +89,9 @@
 
                                 //var new_feature = new OpenLayers.Feature.Vector()
                                 for ( var i in map.layers ){
-                                    alert ( i.CLASS_NAME );
+                                    if ( i instanceof OpenLayers.Layer.Vector ){
+                                        alert("Found vector layer!");
+                                    }
                                 }
                                 
                             }
