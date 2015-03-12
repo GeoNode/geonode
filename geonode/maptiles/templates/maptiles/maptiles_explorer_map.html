@@ -56,9 +56,7 @@
                 listeners: {
                     "ready": function() {
                         var map = app.mapPanel.map;
-                        var tile_select_layer = new OpenLayers.Layer.Vector("selection_layer");
-                        map.addLayer(tile_select_layer);
-                        var layer = app.map.layers.slice(-1)[1];
+                        var layer = app.map.layers.slice(-1)[0];
 
                         // FIXME(Ariel): Zoom to extent until #1795 is fixed.
                         //map.zoomToExtent(layer.maxExtent, false)
@@ -122,10 +120,14 @@
                                map.events.unregister('changebaselayer', null, zoomToData);
                            };
                            map.events.register('changebaselayer',null,zoomToData);
+                           var tile_select_layer = new OpenLayers.Layer.Vector("selection_layer");
+                           map.addLayer(tile_select_layer);
                            if(map.baseLayer){
                             map.zoomToExtent(extent, false);
                            }
+                            
                         }
+                        
                     },
                     "beforeunload": function() {
                         if (modified) {
