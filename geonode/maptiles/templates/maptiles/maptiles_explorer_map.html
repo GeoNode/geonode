@@ -86,13 +86,11 @@
                                 var lonlat = map.getLonLatFromPixel(e.xy);
                                 //alert("You clicked near " + floor_tile_size(lonlat.lat) + " N, " +
                                 //                + ceil_tile_size(lonlat.lon) + " E");
-                                var layer_names = [];
-                                var i;
-                                var count = 0
-                                for (i in map.layers){
-                                   alert("Layers for this map"+i.name);
-                                }
-                                
+
+                                //for (i in map.layers){
+                                //   alert("Layers for this map"+i.name);
+                                //}
+                                alert("Layers for this map " + map.getNumLayers());
                             }
                                 
                         });
