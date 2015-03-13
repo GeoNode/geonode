@@ -59,12 +59,6 @@
                         var layer = app.map.layers.slice(-1)[0];
                         var bbox = layer.bbox;
                         
-                        var tile_select_layer = new OpenLayers.Layer.Vector("selection_layer",{
-                            renderer: new OpenLayers.Renderer()
-                        });
-                        tile_select_layer.setMap(map);
-                        map.addLayer(tile_select_layer);
-                        
                         OpenLayers.Control.Click = OpenLayers.Class(OpenLayers.Control, {
                             defaultHandlerOptions: {
                                 "single": true,
@@ -127,6 +121,11 @@
                                app.mapPanel.center = map.center;
                                app.mapPanel.zoom = map.zoom;
                                map.events.unregister('changebaselayer', null, zoomToData);
+                               var tile_select_layer = new OpenLayers.Layer.Vector("selection_layer",{
+                                    renderer: new OpenLayers.Renderer()
+                               });
+                               tile_select_layer.setMap(map);
+                               map.addLayer(tile_select_layer);
                            };
                            map.events.register('changebaselayer',null,zoomToData);
                            
