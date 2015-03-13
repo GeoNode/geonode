@@ -60,7 +60,7 @@
                         var tile_select_layer = new OpenLayers.Layer.Vector("selection_layer",{
                             renderer: new OpenLayers.Renderer()
                         });
-                        map.setMap(map);
+                        tile_select_layer.setMap(map);
                         map.addLayer(tile_select_layer);
                         
                         var layer = app.map.layers.slice(-1)[0];
