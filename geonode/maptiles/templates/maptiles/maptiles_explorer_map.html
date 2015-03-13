@@ -89,7 +89,7 @@
                                 
                                 //var ln = new OpenLayers.Geometry.LinearRing(corner_pts);
                                 //var rectFeat = new OpenLayers.Feature.Vector(ln);
-                                alert("clicked!");
+                                alert("clicked! "+lonlat.lat+"N"+lonlat.lon+"E");
                                 //var vector_layer = map.getLayersByName("selection_layer")[0];
                                 //vector_layer.addFeatures([rectFeat]);
                             }
@@ -128,7 +128,7 @@
                            console.log(map.baseLayer);
                            
                            if(map.baseLayer){
-                            console.log(extent);
+                            console.log(extent);    
                             map.zoomToExtent(extent, false);
                            }
 
