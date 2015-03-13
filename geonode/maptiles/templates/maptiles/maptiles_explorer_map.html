@@ -91,21 +91,24 @@
                                 };
                                 
                                 var corners = get_corners(lonlat.lat, lonlat.lon);
-                                var corner_pts = [
+                                var marker_box = [
                                     new OpenLayers.Geometry.Point(corners.ul_x, corners.ul_y),
                                     new OpenLayers.Geometry.Point(corners.ur_x, corners.ur_y),
                                     new OpenLayers.Geometry.Point(corners.lr_x, corners.lr_y),
                                     new OpenLayers.Geometry.Point(corners.ll_x, corners.ll_y),
-                                    new OpenLayers.Geometry.Point(corners.ul_x, corners.ul_y)
                                 ];
-                                
-                                var ring = new OpenLayers.Geometry.LinearRing(corner_pts);
-                                var rectFeat = new OpenLayers.Feature.Vector(ring);
+                                var tile_box = new OpenLayers.Bounds();
+                                for ( var pt in marker_box ){
+                                    tile_box.extend(pt);
+                                }
+                                //var ring = new OpenLayers.Geometry.LinearRing(corner_pts);
+                                //var rectFeat = new OpenLayers.Feature.Vector(ring);
                                 var vector_layer = map.getLayersByName("selection_layer")[0];
-                                
-                                console.log(vector_layer);
-                                vector_layer.addFeatures([rectFeat]);
-                                vector_layer.drawFeature(rectFeat, style);
+                                var marker = new OpenLayers.Marker.Box(tile_box);
+
+                                //vector_layer.addFeatures([rectFeat]);
+                                vector_layer.addMarker(marker);
+                                vector_layer.redraw();
                             }
                                 
                         });
@@ -129,10 +132,8 @@
                                app.mapPanel.center = map.center;
                                app.mapPanel.zoom = map.zoom;
                                map.events.unregister('changebaselayer', null, zoomToData);
-                               var tile_select_layer = new OpenLayers.Layer.Vector("selection_layer",{
-                                    renderer: new OpenLayers.Renderer()
-                               });
-                               tile_select_layer.setMap(map);
+                               var tile_select_layer = new OpenLayers.Layer.Markers("selection_layer")//,{
+                               //tile_select_layer.setMap(map);
                                tile_select_layer.display(true);
                                //tile_select_layer.
                                map.addLayer(tile_select_layer);
