@@ -139,12 +139,12 @@
                            tile_select_layer.setMap(map);
                            tile_select_layer.renderer.setExtent(extent);
                            //map.addLayer(tile_select_layer);
-                           
+                           console.log(extent);
+                           console.log("Zoom for extent (before zoom): "+map.getZoomForExtent(extent));
+                           console.log("Map extent (before zoom): "+ map.extent);
                            
                            if(map.baseLayer){
-                            console.log(extent);
-                            console.log("Zoom for extent (before zoom): "+map.getZoomForExtent(extent));
-                            console.log("Map extent (before zoom): "+ map.extent);
+                           
                             map.zoomToExtent(extent, false);
                             console.log("Zoom for extent: "+map.getZoomForExtent(extent));
                             console.log("Map extent: "+ map.extent);
