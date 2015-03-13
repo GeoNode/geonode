@@ -57,7 +57,11 @@
                     "ready": function() {
                         var map = app.mapPanel.map;
                         
-                        var tile_select_layer = new OpenLayers.Layer.Vector("selection_layer");
+                        var tile_select_layer = new OpenLayers.Layer.Vector("selection_layer",{
+                            renderer: new OpenLayers.Renderer()
+                        });
+                        map.setMap(map);
+                        map.addLayer(tile_select_layer);
                         
                         var layer = app.map.layers.slice(-1)[0];
                         var bbox = layer.bbox;
