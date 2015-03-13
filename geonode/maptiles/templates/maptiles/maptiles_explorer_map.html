@@ -133,7 +133,9 @@
                                 renderer: new OpenLayers.Renderer()
                            });
                            
-                           
+                           console.log("Zoom for extent: "+map.getZoomForExtent(extent));
+                           console.log("Map extent: "+ map.extent);
+                           //console.log("Current zoom: "+map.getZoom());
                            tile_select_layer.setMap(map);
                            tile_select_layer.renderer.setExtent(extent);
                            map.addLayer(tile_select_layer);
