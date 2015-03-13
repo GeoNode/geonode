@@ -57,9 +57,24 @@
                     "ready": function() {
                         var map = app.mapPanel.map;
                         var layer = app.map.layers.slice(-1)[0];
-
+                        var bbox = layer.bbox;
                         // FIXME(Ariel): Zoom to extent until #1795 is fixed.
                         //map.zoomToExtent(layer.maxExtent, false)
+                        
+                        var tile_select_layer = new OpenLayers.Layer.Vector("selection_layer",{
+                            renderer: new OpenLayers.Renderer()
+                        });
+                           
+                        //console.log("Zoom for extent (before adding layers): "+map.getZoomForExtent(extent));
+                        //console.log("Map extent (before adding layers): "+ map.extent);
+                        //console.log("Current zoom: "+map.getZoom());
+                        tile_select_layer.setMap(map);
+                        tile_select_layer.renderer.setExtent(extent);
+                        //map.addLayer(tile_select_layer);
+                        console.log(extent);
+                        console.log("Zoom for extent (before zoom): "+map.getZoomForExtent(extent));
+                        console.log("Map extent (before zoom): "+ map.extent);
+                        console.log("mapPanel zoom :" +app.mapPanel.zoom);
                         
                         OpenLayers.Control.Click = OpenLayers.Class(OpenLayers.Control, {
                             defaultHandlerOptions: {
@@ -111,7 +126,6 @@
                         map.addControl(click_select);   
                         click_select.activate();
                         
-                        var bbox = layer.bbox;
                         if (bbox != undefined)
                         {
                            if (!Array.isArray(bbox) && Object.keys(layer.srs) in bbox) {
@@ -120,32 +134,15 @@
 
                            var extent = OpenLayers.Bounds.fromArray(bbox);
                            console.log(extent)
-                            var tile_select_layer = new OpenLayers.Layer.Vector("selection_layer",{
-                                renderer: new OpenLayers.Renderer()
-                           });
-                           
-                           console.log("Zoom for extent (before adding layers): "+map.getZoomForExtent(extent));
-                           console.log("Map extent (before adding layers): "+ map.extent);
-                           //console.log("Current zoom: "+map.getZoom());
-                           tile_select_layer.setMap(map);
-                           tile_select_layer.renderer.setExtent(extent);
-                           map.addLayer(tile_select_layer);
-                           console.log(extent);
-                           console.log("Zoom for extent (before zoom): "+map.getZoomForExtent(extent));
-                           console.log("Map extent (before zoom): "+ map.extent);
-                           console.log("mapPanel zoom :" +app.mapPanel.zoom);
-                           
                            var zoomToData = function()
                            {
                                map.zoomToExtent(extent, false);
                                app.mapPanel.center = map.center;
                                app.mapPanel.zoom = map.zoom;
-                               console.log("ZoomToData: "+ map.zoom);
                                map.events.unregister('changebaselayer', null, zoomToData);
                            };
                            map.events.register('changebaselayer',null,zoomToData);
                            
-                          
                            if(map.baseLayer){
                            
                             map.zoomToExtent(extent, false);
