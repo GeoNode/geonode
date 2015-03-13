@@ -20,7 +20,8 @@ def check_for_existing_layer(dataverse_info):
     Yes:  return first matching DataverseLayerMetadata object
     No: return None
     """
-    assert type(dataverse_info) is dict, "dataverse_info must be type dict. Found type: %s" % type(dataverse_info)
+    assert isinstance(dataverse_info, dict)\
+            , "dataverse_info must be an instance of a dict. Found type: %s" % type(dataverse_info)
 
     # Validate the data
     f = DataverseLayerMetadataValidationForm(dataverse_info)

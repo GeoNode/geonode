@@ -162,7 +162,7 @@ def cascading_delete(cat, resource):
         except Exception as e:
             import traceback
             traceback.print_exc(sys.exc_info())
-            err_msg = "Error deleting resource.  Expected in Geoserver 2.4+\nError: %s" % (resource_name, str(e))
+            err_msg = 'Error deleting resource "%s".  Expected in Geoserver 2.4+\nError: %s' % (resource_name, str(e))
             #print err_msg
             logger.error(err_msg)
             # continue on....

@@ -33,6 +33,9 @@ class DataTable(models.Model):
     uploaded_file = models.FileField(upload_to="datatables")
     create_table_sql = models.TextField(null=True, blank=True)
 
+    created = models.DateTimeField(auto_now_add=True)
+    modified =models.DateTimeField(auto_now=True)
+
     @property
     def attributes(self):
         return self.attribute_set.exclude(attribute='the_geom')
@@ -69,12 +72,9 @@ class DataTableAttribute(models.Model):
     #is_gaz_end_date = models.BooleanField(_('Gazetteer End Date'), default=False)
     #date_format = models.CharField(_('Date Format'), max_length=255, blank=True, null=True)
 
-    # The date/time the object was created.    
-    created_dttm = models.DateTimeField(auto_now_add=True)
+    created = models.DateTimeField(auto_now_add=True)
+    modified =models.DateTimeField(auto_now=True)
 
-    # The last time the object was modified.
-    last_modified = models.DateTimeField(auto_now=True)
-    
     
     def __str__(self):
         return "%s" % self.attribute
@@ -88,6 +88,9 @@ class GeocodeType(models.Model):
     name = models.CharField(max_length=255, unique=True, help_text='Examples: US Census Block, US County FIPS code, US Zip code, etc')
     description = models.CharField(max_length=255, blank=True, help_text='Short description for end user')
     sort_order = models.IntegerField(default=10)
+
+    created = models.DateTimeField(auto_now_add=True)
+    modified =models.DateTimeField(auto_now=True)
 
     def __unicode__(self):
         return self.name
@@ -104,6 +107,9 @@ class JoinTargetFormatType(models.Model):
     python_code_snippet = models.TextField(blank=True)
     tranformation_function_name = models.CharField(max_length=255, blank=True, choices=TRANSFORMATION_FUNCTIONS)
 
+    created = models.DateTimeField(auto_now_add=True)
+    modified =models.DateTimeField(auto_now=True)
+
     def __unicode__(self):
         return self.name
 
@@ -117,7 +123,10 @@ class JoinTarget(models.Model):
     geocode_type = models.ForeignKey(GeocodeType, on_delete=models.PROTECT)
     type = models.ForeignKey(JoinTargetFormatType, null=True, blank=True)
     year = models.IntegerField(null=True, blank=True)
-    
+
+    created = models.DateTimeField(auto_now_add=True)
+    modified =models.DateTimeField(auto_now=True)
+
     def __unicode__(self):
         return self.layer.title
 
@@ -131,6 +140,24 @@ class JoinTarget(models.Model):
             attribute={'attribute':self.attribute.attribute, 'type':self.attribute.attribute_type},
             type=type,
             geocode_type=self.geocode_type.name)
+
+class TableLatLngMapping(models.Model):
+    datatable = models.ForeignKey(DataTable)
+
+    lat_attribute = models.ForeignKey(DataTableAttribute, related_name="lat_attribute")
+    lng_attribute = models.ForeignKey(DataTableAttribute, related_name="lng_attribute")
+
+    layer = models.ForeignKey(Layer, related_name="mapped_layer", null=True, blank=True)
+
+    mapped_record_count = models.IntegerField(default=0, help_text='Records mapped')
+    unmapped_record_count = models.IntegerField(default=0, help_text='Records that failed to map Lat/Lng')
+    unmapped_records_list = models.TextField(blank=True, help_text='Unmapped records')
+
+    created = models.DateTimeField(auto_now_add=True)
+    modified =models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name = 'Table Latitude/Longitude Mapping'
 
 class TableJoin(models.Model):
     """
@@ -150,6 +177,9 @@ class TableJoin(models.Model):
     matched_records_count = models.IntegerField(null=True, blank=True)
     unmatched_records_count = models.IntegerField(null=True, blank=True)
     unmatched_records_list = models.TextField(null=True, blank=True)
+
+    created = models.DateTimeField(auto_now_add=True)
+    modified =models.DateTimeField(auto_now=True)
 
     def __unicode__(self):
         return self.view_name

@@ -16,7 +16,8 @@ from geonode.dataverse_connect.dv_utils import MessageHelperJSON          # form
 
 from shared_dataverse_information.worldmap_datatables.forms import TableJoinRequestForm\
                                         , TableJoinResultForm\
-                                        , TableUploadAndJoinRequestForm
+                                        , TableUploadAndJoinRequestForm\
+                                        , MapLatLngLayerRequestForm
 
 from geonode.contrib.msg_util import *
 
@@ -251,7 +252,8 @@ def datatable_upload_and_join_api(request):
         upload_return_dict = json.loads(resp.content)
         if upload_return_dict['success'] != True:
             return HttpResponse(json.dumps(upload_return_dict), mimetype='application/json', status=400)
-        join_props['table_name'] = upload_return_dict['datatable_name']
+        print('upload_return_dict', upload_return_dict)
+        join_props['table_name'] = upload_return_dict['data']['datatable_name']
     except:
         traceback.print_exc(sys.exc_info())
         return HttpResponse(json.dumps({'msg':'Uncaught error ingesting Data Table', 'success':False}), mimetype='application/json', status=400)
@@ -275,6 +277,20 @@ def datatable_upload_and_join_api(request):
 @login_required
 @csrf_exempt
 def datatable_upload_lat_lon_api(request):
+    """
+    Join a DataTable to the Geometry of an existing layer
+    """
+
+    # Is it a POST
+    if not request.method == 'POST':
+        json_msg = MessageHelperJSON.get_json_fail_msg("Unsupported Method", data_dict=form.errors)
+        return HttpResponse(json_msg, mimetype="application/json", status=500)
+
+    form_map_lat_lng = MapLatLngLayerRequestForm(request.POST.dict())
+    if not form_map_lat_lng.is_valid():
+        json_msg = MessageHelperJSON.get_json_fail_msg("Invalid data in request", data_dict=form_map_lat_lng.errors)
+        return HttpResponse(json_msg, mimetype="application/json", status=400)
+
 
     new_table_owner = request.user
 
@@ -289,9 +305,9 @@ def datatable_upload_lat_lon_api(request):
 
     try:
         layer, result_msg = create_point_col_from_lat_lon(new_table_owner\
-                    , upload_return_dict['datatable_name']
-                    , request.POST.get('lat_column')
-                    , request.POST.get('lon_column')\
+                        , upload_return_dict['data']['datatable_name']\
+                        , form_map_lat_lng.cleaned_data['lat_attribute']\
+                        , form_map_lat_lng.cleaned_data['lng_attribute']\
                     )
         upload_return_dict['layer'] = layer.name
         return HttpResponse(json.dumps(upload_return_dict), mimetype='application/json', status=200)
