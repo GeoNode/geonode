@@ -65,12 +65,10 @@
                             renderer: new OpenLayers.Renderer()
                         });
                            
-                        //console.log("Zoom for extent (before adding layers): "+map.getZoomForExtent(extent));
-                        //console.log("Map extent (before adding layers): "+ map.extent);
-                        //console.log("Current zoom: "+map.getZoom());
                         tile_select_layer.setMap(map);
                         tile_select_layer.renderer.setExtent(extent);
-                        //map.addLayer(tile_select_layer);
+                        map.addLayer(tile_select_layer);
+                        
                         console.log(extent);
                         console.log("Zoom for extent (before zoom): "+map.getZoomForExtent(extent));
                         console.log("Map extent (before zoom): "+ map.extent);
