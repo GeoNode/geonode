@@ -58,10 +58,10 @@
                         var map = app.mapPanel.map;
                         
                         var tile_select_layer = new OpenLayers.Layer.Vector("selection_layer");
-                        map.addLayer(tile_select_layer);
                         
                         var layer = app.map.layers.slice(-1)[0];
                         var bbox = layer.bbox;
+                        
                         // FIXME(Ariel): Zoom to extent until #1795 is fixed.
                         //map.zoomToExtent(layer.maxExtent, false)
                         
@@ -77,6 +77,8 @@
                         //console.log("Zoom for extent (before zoom): "+map.getZoomForExtent(extent));
                         //console.log("Map extent (before zoom): "+ map.extent);
                         //console.log("mapPanel zoom :" +app.mapPanel.zoom);
+                        
+                        map.addLayer(tile_select_layer);
                         
                         OpenLayers.Control.Click = OpenLayers.Class(OpenLayers.Control, {
                             defaultHandlerOptions: {
@@ -113,9 +115,6 @@
                                 
                                 var ring = new OpenLayers.Geometry.LinearRing(corner_pts);
                                 var rectFeat = new OpenLayers.Feature.Vector(ring);
-                                for ( i in map.layers){
-                                    console.log(i.name);
-                                }
                                 var vector_layer = map.getLayersByName("selection_layer")[0];
                                 
                                 console.log(vector_layer);
