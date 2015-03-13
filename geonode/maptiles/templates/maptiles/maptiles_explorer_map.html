@@ -125,6 +125,7 @@
                                map.zoomToExtent(extent, false);
                                app.mapPanel.center = map.center;
                                app.mapPanel.zoom = map.zoom;
+                               console.log("ZoomToData: "+ map.zoom);
                                map.events.unregister('changebaselayer', null, zoomToData);
                            };
                            map.events.register('changebaselayer',null,zoomToData);
