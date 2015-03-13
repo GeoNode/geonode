@@ -83,13 +83,19 @@
                             trigger: function(e) {
                                 var lonlat = map.getLonLatFromPixel(e.xy);
                                 console.log("clicked! "+lonlat.lat+"N"+lonlat.lon+"E");
+                                var style = {
+                                    fillColor: "#00000ff",
+                                    fillOpacity: 0.2,
+                                    stroke: true,
+                                    strokeColor: "#000000",
+                                }
                                 
                                 var corners = get_corners(lonlat.lat, lonlat.lon);
                                 var corner_pts = [
                                     new OpenLayers.Geometry.Point(corners.ul_x, corners.ul_y),
                                     new OpenLayers.Geometry.Point(corners.ur_x, corners.ur_y),
                                     new OpenLayers.Geometry.Point(corners.lr_x, corners.lr_y),
-                                    new OpenLayers.Geometry.Point(corners.ll_x, corners.ll_y)
+                                    new OpenLayers.Geometry.Point(corners.ll_x, corners.ll_y).
                                 ];
                                 
                                 var ring = new OpenLayers.Geometry.LinearRing(corner_pts);
@@ -98,7 +104,7 @@
                                 
                                 console.log(vector_layer);
                                 //vector_layer.addFeatures([rectFeat]);
-                                vector_layer.drawFeature(rectFeat);
+                                vector_layer.drawFeature(rectFeat, style);
                             }
                                 
                         });
