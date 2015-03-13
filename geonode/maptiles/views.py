@@ -78,9 +78,9 @@ def tiled_view(request, overlay="geonode:index", template="maptiles/maptiles_bas
 
     # Update count for popularity ranking,
     # but do not includes admins or resource owners
-    if request.user != layer.owner and not request.user.is_superuser:
-        Layer.objects.filter(
-            id=layer.id).update(popular_count=F('popular_count') + 1)
+    #if request.user != layer.owner and not request.user.is_superuser:
+    #    Layer.objects.filter(
+    #        id=layer.id).update(popular_count=F('popular_count') + 1)
     
     # center/zoom don't matter; the viewer will center on the layer bounds
     map_obj = GXPMap(projection="EPSG:900913")
