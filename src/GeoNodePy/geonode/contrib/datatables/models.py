@@ -41,6 +41,19 @@ class DataTable(models.Model):
         return self.attribute_set.exclude(attribute='the_geom')
     objects = DataTableAttributeManager()
 
+    def get_attribute_by_name(self, attr_name):
+        """
+        Return a DataTable attribute or None
+        """
+        if attr_name is None:
+            return None
+
+        try:
+            return self.attribute_set.get(attribute=attr_name)
+        except DataTableAttribute.DoesNotExist:
+            return None
+
+
     def __unicode__(self):
         return self.table_name
 
@@ -141,7 +154,7 @@ class JoinTarget(models.Model):
             type=type,
             geocode_type=self.geocode_type.name)
 
-class TableLatLngMapping(models.Model):
+class LatLngTableMappingRecord(models.Model):
     datatable = models.ForeignKey(DataTable)
 
     lat_attribute = models.ForeignKey(DataTableAttribute, related_name="lat_attribute")
@@ -156,8 +169,33 @@ class TableLatLngMapping(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     modified =models.DateTimeField(auto_now=True)
 
+
+    def __unicode__(self):
+        return '%s' % self.datatable
+
+    def as_json(self):
+        data_dict = {}
+
+        straight_attrs = ('id', 'mapped_record_count', 'unmapped_record_count')#, 'created', 'modified')
+        for attr in straight_attrs:
+            data_dict[attr] = self.__dict__.get(attr)
+
+        data_dict.update( dict( datatable=self.datatable.table_name\
+                        , lat_attribute=dict(attribute=self.lat_attribute.attribute\
+                                    , type=self.lat_attribute.attribute_type)\
+                        , lng_attribute=dict(attribute=self.lng_attribute.attribute\
+                                    , type=self.lng_attribute.attribute_type)\
+                        , layer_name=self.layer.name\
+                        , layer_typename=self.layer.typename\
+                        , layer_link=self.layer.get_absolute_url()\
+                        )\
+                    )
+
+        return data_dict
+
+
     class Meta:
-        verbose_name = 'Table Latitude/Longitude Mapping'
+        verbose_name = 'Latitude/Longitude Table Mapping Record'
 
 class TableJoin(models.Model):
     """

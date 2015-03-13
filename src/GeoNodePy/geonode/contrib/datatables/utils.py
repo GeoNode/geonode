@@ -30,7 +30,8 @@ from django.utils.translation import ugettext_lazy as _
 from geonode.maps.models import Layer, LayerAttribute
 from geonode.maps.gs_helpers import get_sld_for #fixup_style, cascading_delete, delete_from_postgis, get_postgis_bbox
 
-from geonode.contrib.datatables.models import DataTable, DataTableAttribute, TableJoin
+from geonode.contrib.datatables.models import DataTable, DataTableAttribute, TableJoin, LatLngTableMappingRecord
+
 from geonode.contrib.msg_util import *
 
 from geonode.contrib.datatables.db_helper import get_datastore_connection_string
@@ -208,28 +209,106 @@ def process_csv_file(data_table, delimiter=",", no_header_row=False):
     return data_table, ""
 
 
-def create_point_col_from_lat_lon(new_table_owner, table_name, lat_column, lon_column):
-    assert isinstance(new_table_owner, User), "new_table_owner must be a User object"
+def is_valid_attribute_for_lat_lng(dt_attr, lng_check=False):
+    """
+    success: return True, None
+    fail: return False, err_msg
+    """
+    assert isinstance(dt_attr, DataTableAttribute)
 
-    msg('create_point_col_from_lat_lon - 1')
+    if dt_attr.attribute_type.find('float') > -1:
+        return True, None
+
+    if dt_attr.attribute_type.find('double') > -1:
+        return True, None
+
+    col_type = 'latitude'
+    if lng_check:
+        col_type = 'longitude'
+
+    err_msg = 'Not a valid %s column. Column "%s" is type "%s".  Must be a float or double.' \
+                                    % (col_type, dt_attr.attribute, dt_attr.attribute_type)
+    return False, err_msg
+
+
+def create_point_col_from_lat_lon(new_table_owner, table_name, lat_column, lng_column):
+    """
+    Using a new DataTable and specified lat/lng column names, map the points
+
+    :param new_table_owner:
+    :param table_name:
+    :param lat_column:
+    :param lng_column:
+    :return:
+    """
+    logger.info('create_point_col_from_lat_lon')
+    assert isinstance(new_table_owner, User), "new_table_owner must be a User object"
+    assert table_name is not None, "table_name cannot be None"
+    assert lat_column is not None, "lat_column cannot be None"
+    assert lng_column is not None, "lng_column cannot be None"
+
+    # ----------------------------------------------------
+    # Retrieve the DataTable and check for lat/lng columns
+    # ----------------------------------------------------
     try:
         dt = DataTable.objects.get(table_name=table_name)
     except:
-        err_msg = "Error: (%s) %s" % (str(e), table_name)
-        return None, err_msg
+        err_msg = "Could not find DataTable with name: %s" % (table_name)
+        logger.error(err_msg)
+        return False, err_msg
+
+    # ----------------------------------------------------
+    # Latitude attribute
+    # ----------------------------------------------------
+    lat_col_attr = dt.get_attribute_by_name(standardize_name(lat_column))
+    if lat_col_attr is None:
+        err_msg = 'DataTable "%s" does not have latitude column named "%s" (formatted: %s)'\
+                  % (table_name, lat_column, standardize_name(lat_column))
+        logger.error(err_msg)
+        return False, err_msg
+
+    is_valid, err_msg = is_valid_attribute_for_lat_lng(lat_col_attr)
+    if not is_valid:
+        logger.error(err_msg)
+        return False, err_msg
+
+
+    # ----------------------------------------------------
+    # Longitude attribute
+    # ----------------------------------------------------
+    lng_col_attr = dt.get_attribute_by_name(standardize_name(lng_column))
+    if lng_col_attr is None:
+        err_msg = 'DataTable "%s" does not have longitude column named "%s" (formatted: %s)'\
+                  % (table_name, lng_column, standardize_name(lng_column))
+        logger.error(err_msg)
+        return False, err_msg
+
+    is_valid, err_msg = is_valid_attribute_for_lat_lng(lng_col_attr, lng_check=True)
+    if not is_valid:
+        logger.error(err_msg)
+        return False, err_msg
+
+    # ----------------------------------------------------
+    # Start mapping record
+    # ----------------------------------------------------
+    lat_lnt_map_record = LatLngTableMappingRecord(datatable=dt\
+                                , lat_attribute=lat_col_attr\
+                                , lng_attribute=lng_col_attr\
+                                )
 
     msg('create_point_col_from_lat_lon - 2')
 
     #alter_table_sql = "ALTER TABLE %s ADD COLUMN geom geometry(POINT,4326);" % (table_name) # postgi 2.x
     alter_table_sql = "ALTER TABLE %s ADD COLUMN geom geometry;" % (table_name) # postgis 1.x
-    update_table_sql = "UPDATE %s SET geom = ST_SetSRID(ST_MakePoint(%s,%s),4326);" % (table_name, lon_column, lat_column)
-    #update_table_sql = "UPDATE %s SET geom = ST_SetSRID(ST_MakePoint(cast(%s AS float), cast(%s as float)),4326);" % (table_name, lon_column, lat_column)
+    update_table_sql = "UPDATE %s SET geom = ST_SetSRID(ST_MakePoint(%s,%s),4326);" \
+                    % (table_name, lng_col_attr.attribute, lat_col_attr.attribute)
+    #update_table_sql = "UPDATE %s SET geom = ST_SetSRID(ST_MakePoint(cast(%s AS float), cast(%s as float)),4326);" % (table_name, lng_column, lat_column)
     msg('update_table_sql: %s' % update_table_sql)
     create_index_sql = "CREATE INDEX idx_%s_geom ON %s USING GIST(geom);" % (table_name, table_name)
 
     msg('create_point_col_from_lat_lon - 3')
 
-    if 1:
+    try:
         conn = psycopg2.connect(get_datastore_connection_string())
         
         cur = conn.cursor()
@@ -238,10 +317,11 @@ def create_point_col_from_lat_lon(new_table_owner, table_name, lat_column, lon_c
         cur.execute(create_index_sql) 
         conn.commit()
         conn.close()
-    #except Exception as e:
-    #    conn.close()
-    #    err_msg =  "Error Creating Point Column from Latitude and Longitude %s" % (str(e[0]))
-    #    return None, err_msg
+    except Exception as e:
+        conn.close()
+        err_msg =  "Error Creating Point Column from Latitude and Longitude %s" % (str(e[0]))
+        logger.error(err_msg)
+        return False, err_msg
 
     msg('create_point_col_from_lat_lon - 4')
 
@@ -265,7 +345,7 @@ def create_point_col_from_lat_lon(new_table_owner, table_name, lat_column, lon_c
 
         if ds is None:
             err_msg = "Datastore '%s' not found" % (settings.DB_DATASTORE_NAME)
-            return None, err_msg
+            return False, err_msg
         ft = cat.publish_featuretype(table_name, ds, "EPSG:4326", srs="EPSG:4326")
         cat.save(ft)
     except Exception as e:
@@ -273,7 +353,7 @@ def create_point_col_from_lat_lon(new_table_owner, table_name, lat_column, lon_c
         import traceback
         traceback.print_exc(sys.exc_info())
         err_msg = "Error creating GeoServer layer for %s: %s" % (table_name, str(e))
-        return None, err_msg
+        return False, err_msg
 
     msg('create_point_col_from_lat_lon - 5 - add style')
 
@@ -306,7 +386,7 @@ def create_point_col_from_lat_lon(new_table_owner, table_name, lat_column, lon_c
         import traceback
         traceback.print_exc(sys.exc_info())
         err_msg = "Error creating GeoNode layer for %s: %s" % (table_name, str(e))
-        return None, err_msg
+        return False, err_msg
 
     # ----------------------------------
     # Set default permissions (public)
@@ -319,8 +399,14 @@ def create_point_col_from_lat_lon(new_table_owner, table_name, lat_column, lon_c
     create_layer_attributes_from_datatable(dt, layer)
 
 
-    return layer, ""
-    
+    # ----------------------------------
+    # Save a related LatLngTableMappingRecord
+    # ----------------------------------
+    lat_lnt_map_record.layer = layer
+    lat_lnt_map_record.save()
+
+    return True, lat_lnt_map_record
+
 
 def setup_join(new_table_owner, table_name, layer_typename, table_attribute_name, layer_attribute_name):
     """

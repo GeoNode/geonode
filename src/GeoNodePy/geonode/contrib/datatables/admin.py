@@ -1,6 +1,6 @@
 from django.contrib import admin
 from geonode.maps.models import LayerAttribute
-from .models import DataTable, DataTableAttribute, TableJoin, JoinTarget, JoinTargetFormatType, GeocodeType
+from .models import DataTable, DataTableAttribute, TableJoin, JoinTarget, JoinTargetFormatType, GeocodeType, LatLngTableMappingRecord
 
 class DataTableAdmin(admin.ModelAdmin):
     model = DataTable
@@ -15,6 +15,11 @@ class DataTableAdmin(admin.ModelAdmin):
 class DataTableAttributeAdmin(admin.ModelAdmin):
     list_display = ('attribute', 'attribute_label', 'datatable', 'attribute_type', 'searchable')
     list_filter  = ('datatable', 'searchable', 'attribute_type')
+
+class LatLngTableMappingRecordAdmin(admin.ModelAdmin):
+    list_display = ('datatable', 'lat_attribute', 'lng_attribute', 'layer', 'mapped_record_count', 'unmapped_record_count', 'created')
+    list_filter  = ('datatable', 'layer', )
+
 
 
 class TableJoinAdmin(admin.ModelAdmin):
@@ -38,3 +43,4 @@ admin.site.register(TableJoin, TableJoinAdmin)
 admin.site.register(JoinTarget, JoinTargetAdmin)
 admin.site.register(JoinTargetFormatType)
 admin.site.register(GeocodeType)
+admin.site.register(LatLngTableMappingRecord, LatLngTableMappingRecordAdmin)

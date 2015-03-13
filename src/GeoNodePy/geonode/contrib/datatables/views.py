@@ -21,7 +21,7 @@ from shared_dataverse_information.worldmap_datatables.forms import TableJoinRequ
 
 from geonode.contrib.msg_util import *
 
-from .models import DataTable, JoinTarget, TableJoin 
+from .models import DataTable, JoinTarget, TableJoin
 from .forms import UploadDataTableForm
 from .utils import process_csv_file, setup_join, create_point_col_from_lat_lon, standardize_name
 
@@ -281,19 +281,29 @@ def datatable_upload_lat_lon_api(request):
     Join a DataTable to the Geometry of an existing layer
     """
 
-    # Is it a POST
+    # Is it a POST?
+    #
+    #
     if not request.method == 'POST':
         json_msg = MessageHelperJSON.get_json_fail_msg("Unsupported Method", data_dict=form.errors)
         return HttpResponse(json_msg, mimetype="application/json", status=500)
 
+    # Is the request data valid?
+    # Check with the MapLatLngLayerRequestForm
+    #
     form_map_lat_lng = MapLatLngLayerRequestForm(request.POST.dict())
     if not form_map_lat_lng.is_valid():
         json_msg = MessageHelperJSON.get_json_fail_msg("Invalid data in request", data_dict=form_map_lat_lng.errors)
         return HttpResponse(json_msg, mimetype="application/json", status=400)
 
-
+    #   Set the new table/layer owner
+    #
     new_table_owner = request.user
+    msg('datatable_upload_lat_lon_api 1')
 
+    # --------------------------------------
+    # (1) Datatable Upload
+    # --------------------------------------
     try:
         resp = datatable_upload_api(request)
         upload_return_dict = json.loads(resp.content)
@@ -303,14 +313,37 @@ def datatable_upload_lat_lon_api(request):
         traceback.print_exc(sys.exc_info())
         return HttpResponse(json.dumps({'msg':'Uncaught error ingesting Data Table', 'success':False}), mimetype='application/json', status=400)
 
+
+    # --------------------------------------
+    # (2) Create layer using the Lat/Lng columns
+    # --------------------------------------
+    msg('datatable_upload_lat_lon_api 2')
     try:
-        layer, result_msg = create_point_col_from_lat_lon(new_table_owner\
+        success, latlng_record_or_err_msg = create_point_col_from_lat_lon(new_table_owner\
                         , upload_return_dict['data']['datatable_name']\
                         , form_map_lat_lng.cleaned_data['lat_attribute']\
                         , form_map_lat_lng.cleaned_data['lng_attribute']\
                     )
-        upload_return_dict['layer'] = layer.name
-        return HttpResponse(json.dumps(upload_return_dict), mimetype='application/json', status=200)
+
+
+        if not success:
+            msg('datatable_upload_lat_lon_api 2a - FAILED')
+
+            # FAILED
+            #
+            json_msg = MessageHelperJSON.get_json_fail_msg(latlng_record_or_err_msg)
+            return HttpResponse(json_msg, mimetype="application/json", status=400)
+        else:
+            # SUCCESS
+            #
+            msg('datatable_upload_lat_lon_api 2b - SUCCESS')
+
+            json_data = latlng_record_or_err_msg.as_json()
+            msg('json_data: %s' % json_data)
+            msg('json_data: %s' % json_data.__class__.__name__)
+            json_msg = MessageHelperJSON.get_json_success_msg(msg='New layer created', data_dict=json_data)
+            return HttpResponse(json_msg, mimetype="application/json", status=200)
     except:
         traceback.print_exc(sys.exc_info())
-        return HttpResponse(json.dumps({'msg':'Uncaught error ingesting Data Table', 'success':False}), mimetype='application/json', status=400)
+        json_msg = MessageHelperJSON.get_json_fail_msg('Uncaught error ingesting Data Table')
+        return HttpResponse(json_msg, mimetype="application/json", status=400)
