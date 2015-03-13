@@ -141,6 +141,7 @@
                            console.log(extent)
                            var zoomToData = function()
                            {
+                               console.log("zoom to data");
                                map.zoomToExtent(extent, false);
                                app.mapPanel.center = map.center;
                                app.mapPanel.zoom = map.zoom;
