@@ -57,8 +57,6 @@
                     "ready": function() {
                         var map = app.mapPanel.map;
                         var layer = app.map.layers.slice(-1)[0];
-                        
-                        console.log("base layer:"+map.baseLayer);
 
                         // FIXME(Ariel): Zoom to extent until #1795 is fixed.
                         //map.zoomToExtent(layer.maxExtent, false)
@@ -86,14 +84,21 @@
         
                             trigger: function(e) {
                                 var lonlat = map.getLonLatFromPixel(e.xy);
+                                console.log("clicked! "+lonlat.lat+"N"+lonlat.lon+"E");
                                 
                                 var corners = get_corners(lonlat.lat, lonlat.lon);
+                                var corner pts = [
+                                    new OpenLayers.Geometry.Point(corners.ul_x, corners.ul_y),
+                                    new OpenLayers.Geometry.Point(corners.ur_x, corners.ur_y),
+                                    new OpenLayers.Geometry.Point(corners.lr_x, corners.lr_y),
+                                    new OpenLayers.Geometry.Point(corners.ll_x, corners.ll_y)
+                                ];
                                 
-                                //var ln = new OpenLayers.Geometry.LinearRing(corner_pts);
-                                //var rectFeat = new OpenLayers.Feature.Vector(ln);
-                                alert("clicked! "+lonlat.lat+"N"+lonlat.lon+"E");
-                                //var vector_layer = map.getLayersByName("selection_layer")[0];
-                                //vector_layer.addFeatures([rectFeat]);
+                                var ring = new OpenLayers.Geometry.LinearRing(corner_pts);
+                                var rectFeat = new OpenLayers.Feature.Vector(ring);
+                                
+                                var vector_layer = map.getLayersByName("selection_layer")[0];
+                                vector_layer.addFeatures([rectFeat]);
                             }
                                 
                         });
@@ -126,8 +131,8 @@
                            
                            tile_select_layer.setMap(map);
                            tile_select_layer.renderer.setExtent(extent);
-                           map.addLayer(tile_select_layer);
-                           console.log(map.baseLayer);
+                           //map.addLayer(tile_select_layer);
+                           //console.log(map.baseLayer);
                            
                            if(map.baseLayer){
                             console.log(extent);    
