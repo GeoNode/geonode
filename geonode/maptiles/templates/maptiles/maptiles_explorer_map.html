@@ -96,8 +96,11 @@
                                 
                                 var ring = new OpenLayers.Geometry.LinearRing(corner_pts);
                                 var rectFeat = new OpenLayers.Feature.Vector(ring);
-                                
+                                for ( i in map.layers){
+                                    console.log(i.name);
+                                }
                                 var vector_layer = map.getLayersByName("selection_layer")[0];
+                                
                                 console.log(vector_layer);
                                 vector_layer.addFeatures([rectFeat]);
                             }
