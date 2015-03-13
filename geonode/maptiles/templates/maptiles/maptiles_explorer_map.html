@@ -124,7 +124,7 @@
                            }
 
                            var extent = OpenLayers.Bounds.fromArray(bbox);
-                           console.log(extent)
+                           console.log(extent);
                            var zoomToData = function()
                            {
                                console.log("zoom to data");
@@ -134,7 +134,6 @@
                                map.events.unregister('changebaselayer', null, zoomToData);
                                var tile_select_layer = new OpenLayers.Layer.Markers("selection_layer");//,{
                                //tile_select_layer.setMap(map);
-                               tile_select_layer.display(true);
                                //tile_select_layer.
                                map.addLayer(tile_select_layer);
                            };
