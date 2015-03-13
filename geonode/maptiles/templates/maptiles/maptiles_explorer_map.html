@@ -132,6 +132,7 @@
                                     renderer: new OpenLayers.Renderer()
                                });
                                tile_select_layer.setMap(map);
+                               tile_select_layer.display(true);
                                map.addLayer(tile_select_layer);
                            };
                            map.events.register('changebaselayer',null,zoomToData);
