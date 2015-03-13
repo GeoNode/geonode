@@ -120,17 +120,7 @@
 
                            var extent = OpenLayers.Bounds.fromArray(bbox);
                            console.log(extent)
-                           var zoomToData = function()
-                           {
-                               map.zoomToExtent(extent, false);
-                               app.mapPanel.center = map.center;
-                               app.mapPanel.zoom = map.zoom;
-                               console.log("ZoomToData: "+ map.zoom);
-                               map.events.unregister('changebaselayer', null, zoomToData);
-                           };
-                           map.events.register('changebaselayer',null,zoomToData);
-                           
-                           var tile_select_layer = new OpenLayers.Layer.Vector("selection_layer",{
+                            var tile_select_layer = new OpenLayers.Layer.Vector("selection_layer",{
                                 renderer: new OpenLayers.Renderer()
                            });
                            
@@ -145,6 +135,17 @@
                            console.log("Map extent (before zoom): "+ map.extent);
                            console.log("mapPanel zoom :" +app.mapPanel.zoom);
                            
+                           var zoomToData = function()
+                           {
+                               map.zoomToExtent(extent, false);
+                               app.mapPanel.center = map.center;
+                               app.mapPanel.zoom = map.zoom;
+                               console.log("ZoomToData: "+ map.zoom);
+                               map.events.unregister('changebaselayer', null, zoomToData);
+                           };
+                           map.events.register('changebaselayer',null,zoomToData);
+                           
+                          
                            if(map.baseLayer){
                            
                             map.zoomToExtent(extent, false);
