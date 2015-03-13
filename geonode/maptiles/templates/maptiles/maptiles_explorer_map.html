@@ -98,6 +98,7 @@
                                 var rectFeat = new OpenLayers.Feature.Vector(ring);
                                 
                                 var vector_layer = map.getLayersByName("selection_layer")[0];
+                                console.log(vector_layer);
                                 vector_layer.addFeatures([rectFeat]);
                             }
                                 
