@@ -1,4 +1,5 @@
 from __future__ import print_function
+import logging
 import sys
 import os
 import json
@@ -24,6 +25,9 @@ from geonode.contrib.msg_util import *
 from .models import DataTable, JoinTarget, TableJoin
 from .forms import UploadDataTableForm
 from .utils import process_csv_file, setup_join, create_point_col_from_lat_lon, standardize_name
+
+logger = logging.getLogger(__name__)
+
 
 @login_required
 @csrf_exempt
@@ -310,6 +314,8 @@ def datatable_upload_lat_lon_api(request):
         if upload_return_dict['success'] != True:
             return HttpResponse(json.dumps(upload_return_dict), mimetype='application/json', status=400)
     except:
+        logger.error('Failed Datatable Upload for map lat/lng table: %s' % latlng_record_or_err_msg)
+
         traceback.print_exc(sys.exc_info())
         return HttpResponse(json.dumps({'msg':'Uncaught error ingesting Data Table', 'success':False}), mimetype='application/json', status=400)
 
@@ -327,7 +333,7 @@ def datatable_upload_lat_lon_api(request):
 
 
         if not success:
-            msg('datatable_upload_lat_lon_api 2a - FAILED')
+            logger.error('Failed to (2) Create layer for map lat/lng table: %s' % latlng_record_or_err_msg)
 
             # FAILED
             #
@@ -336,14 +342,14 @@ def datatable_upload_lat_lon_api(request):
         else:
             # SUCCESS
             #
-            msg('datatable_upload_lat_lon_api 2b - SUCCESS')
 
             json_data = latlng_record_or_err_msg.as_json()
-            msg('json_data: %s' % json_data)
-            msg('json_data: %s' % json_data.__class__.__name__)
             json_msg = MessageHelperJSON.get_json_success_msg(msg='New layer created', data_dict=json_data)
             return HttpResponse(json_msg, mimetype="application/json", status=200)
     except:
         traceback.print_exc(sys.exc_info())
-        json_msg = MessageHelperJSON.get_json_fail_msg('Uncaught error ingesting Data Table')
+        err_msg = 'Uncaught error ingesting Data Table'
+        json_msg = MessageHelperJSON.get_json_fail_msg(err_msg)
+        logger.error(err_msg)
+
         return HttpResponse(json_msg, mimetype="application/json", status=400)

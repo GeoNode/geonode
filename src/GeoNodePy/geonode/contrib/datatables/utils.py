@@ -36,7 +36,7 @@ from geonode.contrib.msg_util import *
 
 from geonode.contrib.datatables.db_helper import get_datastore_connection_string
 
-logger = logging.getLogger('geonode.contrib.datatables.utils')
+logger = logging.getLogger(__name__)
 
 THE_GEOM_LAYER_COLUMN = 'the_geom'
 THE_GEOM_LAYER_COLUMN_REPLACEMENT = 'the_geom_col'
