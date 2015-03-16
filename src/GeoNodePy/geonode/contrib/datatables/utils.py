@@ -459,10 +459,14 @@ def setup_join(new_table_owner, table_name, layer_typename, table_attribute_name
     # Create a TableJoin object
     # ------------------------------------------------------------------
     msg('setup_join 04')
-    tj, created = TableJoin.objects.get_or_create(source_layer=layer, datatable=dt, table_attribute=table_attribute, layer_attribute=layer_attribute, view_name=view_name)#, view_name=double_view_name)
-    tj.view_sql = view_sql
-
-    msg('setup_join 05')
+    tj, created = TableJoin.objects.get_or_create(source_layer=layer\
+                            , datatable=dt\
+                            , table_attribute=table_attribute\
+                            , layer_attribute=layer_attribute\
+                            , view_name=view_name\
+                            , view_sql=view_sql)
+    tj.save()
+    msgt('table join created! %s' % tj.id )
 
     # ------------------------------------------------------------------
     # Create the View (and double view)
@@ -572,7 +576,6 @@ def setup_join(new_table_owner, table_name, layer_typename, table_attribute_name
         traceback.print_exc(sys.exc_info())
         err_msg = "Error creating GeoNode layer for %s: %s" % (view_name, str(e))
         return None, err_msg
-        
 
     print 'setup_join 08'        
     # ------------------------------------------------------------------
@@ -605,7 +608,7 @@ def set_default_style_for_new_layer(geoserver_catalog, feature_type):
     # Retrieve the SLD for this layer
     # ----------------------------------------------------
     sld = get_sld_for(new_layer)
-    msgt('SLD retrieved: %s' % sld)
+    #msgt('SLD retrieved: %s' % sld)
 
     if sld is None:
         err_msg = 'Failed to retrieve the SLD for the geoserver layer: %s' % feature_type.name

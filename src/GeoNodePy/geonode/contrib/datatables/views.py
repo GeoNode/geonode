@@ -15,10 +15,11 @@ from django.views.decorators.csrf import csrf_exempt
 from django.utils.translation import ugettext_lazy as _
 from geonode.dataverse_connect.dv_utils import MessageHelperJSON          # format json response object
 
-from shared_dataverse_information.worldmap_datatables.forms import TableJoinRequestForm\
-                                        , TableJoinResultForm\
-                                        , TableUploadAndJoinRequestForm\
-                                        , MapLatLngLayerRequestForm
+from shared_dataverse_information.worldmap_datatables.forms import\
+                                     TableJoinRequestForm\
+                                    , TableJoinResultForm\
+                                    , TableUploadAndJoinRequestForm\
+                                    , MapLatLngLayerRequestForm
 
 from geonode.contrib.msg_util import *
 
@@ -146,6 +147,7 @@ def tablejoin_api(request):
     """
     Join a DataTable to the Geometry of an existing layer
     """
+    logger.info(tablejoin_api)
     if not request.method == 'POST':
         return_dict = dict(success=False\
                             , msg="Unsupported Method"\
@@ -157,10 +159,11 @@ def tablejoin_api(request):
     # ----------------------------------
     f = TableJoinRequestForm(request.POST)
     if not f.is_valid():
-        return_dict = dict(success=False\
-                        , msg= "Invalid Data for Join: %s" % f.errors
-                    )
-        return HttpResponse(json.dumps(return_dict), mimetype="application/json", status=400)
+        err_msg = "Invalid Data for TableJoinRequestForm.  Errors: %s" % f.errors
+        logger.error(err_msg)
+        json_msg = MessageHelperJSON.get_json_fail_msg(err_msg, data_dict=f.errors)
+
+        return HttpResponse(json_msg, mimetype="application/json", status=400)
 
     # DataTable and join attribute
     table_name = f.cleaned_data['table_name']
@@ -180,27 +183,40 @@ def tablejoin_api(request):
     try:
         tj, result_msg = setup_join(new_layer_owner, table_name, layer_typename, table_attribute, layer_attribute)
         if tj:
+            # Successful Join
+            #
             join_result_info_dict = TableJoinResultForm.get_cleaned_data_from_table_join(tj)
             return HttpResponse(json.dumps(join_result_info_dict), mimetype="application/json", status=200)
+
         else:
-            return_dict = dict(success=False\
-                , msg="Error Creating Join: %s" % result_msg
-                )
-            return HttpResponse(json.dumps(return_dict), mimetype="application/json", status=400)
+            # Error!
+            #
+            err_msg = "Error Creating Join: %s" % result_msg
+            json_msg = MessageHelperJSON.get_json_fail_msg(err_msg)
+            return HttpResponse(json_msg, mimetype="application/json", status=400)
     except:
 
         traceback.print_exc(sys.exc_info())
-        return_dict = dict(success=False\
-                    , msg="Error Creating Join: %s" % str(sys.exc_info()[0])
-                )
-        return HttpResponse(json.dumps(return_dict), mimetype="application/json", status=400)
+        err_msg = "Error Creating Join: %s" % str(sys.exc_info()[0])
+        json_msg = MessageHelperJSON.get_json_fail_msg(err_msg)
+
+        return HttpResponse(json_msg, mimetype="application/json", status=400)
 
 
 
 @login_required
 @csrf_exempt
 def tablejoin_detail(request, tj_id):
-    tj = get_object_or_404(TableJoin, pk=tj_id)
+
+    # get TableJoin
+    try:
+        tj = TableJoin.objects.get(pk=tj_id)
+    except TableJoin.DoesNotExist:
+        err_msg = 'No TableJoin object found'
+        logger.error(err_msg + 'for id: %s' % tj_id)
+        json_msg = MessageHelperJSON.get_json_fail_msg(err_msg)
+        return HttpResponse(json_msg, mimetype='application/json', status=404)
+
     results = [ob.as_json() for ob in [tj]][0]
     data = json.dumps(results)
     return HttpResponse(data)
@@ -209,14 +225,25 @@ def tablejoin_detail(request, tj_id):
 @csrf_exempt
 def tablejoin_remove(request, tj_id):
     # TODO: Check Permissions!!
+
+    # get TableJoin
     try:
-        tj = get_object_or_404(TableJoin, pk=tj_id)
+        tj = TableJoin.objects.get(pk=tj_id)
+    except TableJoin.DoesNotExist:
+        err_msg = 'No TableJoin object found'
+        logger.error(err_msg + 'for id: %s' % tj_id)
+        json_msg = MessageHelperJSON.get_json_fail_msg(err_msg)
+
+        return HttpResponse(json_msg, mimetype='application/json', status=404)
+
+    try:
         tj.datatable.delete()
         tj.join_layer.delete()
         tj.delete()
         return HttpResponse(json.dumps({'success':True, 'msg': ('%s removed' % (tj.view_name))}), mimetype='application/json', status=200)
     except:
         return HttpResponse(json.dumps({'success':False, 'msg': ('Error removing Join %s' % (sys.exc_info()[0]))}), mimetype='application/json', status=400)
+
 
 @login_required
 @csrf_exempt
@@ -237,13 +264,17 @@ def datatable_upload_and_join_api(request):
     """
     Upload a Datatable and join it to an existing Layer
     """
+    logger.info('datatable_upload_and_join_api')
+
     request_post_copy = request.POST.copy()
     join_props = request_post_copy
 
     f = TableUploadAndJoinRequestForm(join_props)
     if not f.is_valid():
+        err_msg = "Invalid Data for Join: %s" % f.errors
+        logger.error(err_msg)
         return_dict = dict(success=False\
-                         , msg="Invalid Data for Join: %s" % f.errors\
+                         , msg=err_msg\
                     )
         return HttpResponse(json.dumps(return_dict), mimetype="application/json", status=400)
 
@@ -254,8 +285,10 @@ def datatable_upload_and_join_api(request):
     try:
         resp = datatable_upload_api(request)
         upload_return_dict = json.loads(resp.content)
-        if upload_return_dict['success'] != True:
+        if not upload_return_dict.get('success', None) is True:
+            # ERROR
             return HttpResponse(json.dumps(upload_return_dict), mimetype='application/json', status=400)
+
         print('upload_return_dict', upload_return_dict)
         join_props['table_name'] = upload_return_dict['data']['datatable_name']
     except:
