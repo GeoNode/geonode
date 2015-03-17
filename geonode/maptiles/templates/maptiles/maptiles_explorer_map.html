@@ -82,6 +82,7 @@
                             },
         
                             trigger: function(e) {
+                                console.log(map.getProjection());
                                 var lonlat = map.getLonLatFromPixel(e.xy);
                                
                                 var style = {
