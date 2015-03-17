@@ -83,7 +83,7 @@
         
                             trigger: function(e) {
                                 var lonlat = map.getLonLatFromPixel(e.xy);
-                                console.log("clicked! "+lonlat.lat+"N"+lonlat.lon+"E");
+                               
                                 var style = {
                                     fillColor: "#00000ff",
                                     fillOpacity: 0.2,
@@ -92,6 +92,7 @@
                                 };
                                 
                                 var corners = get_corners(lonlat.lat, lonlat.lon);
+                                console.log("Clicked! Georef:"+Math.floor(corners.ul_x/_TILE_SIZE)+"E"+Math.ceil(corners.ul_y/_TILE_SIZE)   +"N");
                                 var marker_box = [
                                     new OpenLayers.Geometry.Point(corners.ul_x, corners.ul_y),
                                     new OpenLayers.Geometry.Point(corners.ur_x, corners.ur_y),
