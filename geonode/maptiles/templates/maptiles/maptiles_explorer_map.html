@@ -91,7 +91,7 @@
                                     strokeColor: "#000000",
                                 };
                                 
-                                var corners = get_corners(lonlat.lat, lonlat.lon);
+                                var corners = get_corners(lonlat.lon, lonlat.lat);
                                 console.log("Coords are: "+lonlat.lat+","+lonlat.lon);
                                 console.log("Clicked! Georef:"+Math.floor(corners.ul_y/_TILE_SIZE)+"E"+Math.ceil(corners.ul_x/_TILE_SIZE)   +"N");
                                 for (var c in corners){
