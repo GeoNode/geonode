@@ -92,6 +92,7 @@
                                 };
                                 
                                 var corners = get_corners(lonlat.lat, lonlat.lon);
+                                console.log("Coords are: "+lonlat.lat+","+lonlat.lon);
                                 console.log("Clicked! Georef:"+Math.floor(corners.ul_y/_TILE_SIZE)+"E"+Math.ceil(corners.ul_x/_TILE_SIZE)   +"N");
                                 var marker_box = [
                                     new OpenLayers.Geometry.Point(corners.ul_x, corners.ul_y),
@@ -110,9 +111,6 @@
                                 tile_select_layer.addMarker(marker);
                                 map.addLayer(tile_select_layer);
                                 tile_select_layer.setMap(map);
-                                //vector_layer.redraw();
-                                
-                                
                             }
                                 
                         });
