@@ -95,7 +95,7 @@
                                 console.log("Coords are: "+lonlat.lat+","+lonlat.lon);
                                 console.log("Clicked! Georef:"+Math.floor(corners.ul_y/_TILE_SIZE)+"E"+Math.ceil(corners.ul_x/_TILE_SIZE)   +"N");
                                 for (var c in corners){
-                                    console.log(c);
+                                    console.log(c+":"+corners.c);
                                 }
                                 var marker_box = [
                                     new OpenLayers.Geometry.Point(corners.ul_x, corners.ul_y),
