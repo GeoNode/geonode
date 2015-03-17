@@ -106,9 +106,6 @@
                                 //var ring = new OpenLayers.Geometry.LinearRing(corner_pts);
                                 //var rectFeat = new OpenLayers.Feature.Vector(ring);
                                 var vector_layer = map.getLayersByName("selection_layer")[0];
-                                for ( var lyr in map.getLayersByName("selection_layer")){
-                                    console.log(lyr.name);
-                                }
                                 var marker = new OpenLayers.Marker.Box(tile_box);
 
                                 //vector_layer.addFeatures([rectFeat]);
@@ -142,6 +139,10 @@
                                //tile_select_layer.
                                map.addLayer(tile_select_layer);
                                tile_select_layer.setMap(map);
+                               
+                               for (var lyr in map.getLayersByName("selection_layer"){
+                                    console.log("Layer name: "+lyr.name);
+                               }
                            };
                            map.events.register('changebaselayer',null,zoomToData);
                            
