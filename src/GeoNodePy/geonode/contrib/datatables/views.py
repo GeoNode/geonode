@@ -5,23 +5,21 @@ import os
 import json
 import traceback
 from django.core import serializers
-from django.core.serializers.json import Serializer
-from django.shortcuts import render, get_object_or_404
-from django.http import HttpResponse, HttpResponseRedirect
+from django.shortcuts import get_object_or_404
+from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
-from django.template.defaultfilters import slugify
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.translation import ugettext_lazy as _
 from geonode.dataverse_connect.dv_utils import MessageHelperJSON          # format json response object
 
 from shared_dataverse_information.worldmap_datatables.forms import\
-                                     TableJoinRequestForm\
-                                    , TableJoinResultForm\
-                                    , TableUploadAndJoinRequestForm\
-                                    , MapLatLngLayerRequestForm
+    TableJoinRequestForm,\
+    TableJoinResultForm,\
+    TableUploadAndJoinRequestForm,\
+    MapLatLngLayerRequestForm
 
-from geonode.contrib.msg_util import *
+from geonode.contrib.msg_util import msg, msgt, msgn, msgx
 
 from .models import DataTable, JoinTarget, TableJoin
 from .forms import UploadDataTableForm
@@ -130,7 +128,8 @@ def jointargets(request):
             if request.GET.get('end_year').isdigit():
                 kwargs['year__lte'] = request.GET.get('end_year')
             else:
-                return HttpResponse(json.dumps({'success': False, 'msg':'Invalid End Year'}), mimetype="application/json")
+                return HttpResponse(json.dumps({'success': False, 'msg':'Invalid End Year'}),
+                        mimetype="application/json")
         jts = JoinTarget.objects.filter(**kwargs) 
         results = [ob.as_json() for ob in jts] 
         return HttpResponse(json.dumps(results), mimetype="application/json")
@@ -149,8 +148,8 @@ def tablejoin_api(request):
     """
     logger.info(tablejoin_api)
     if not request.method == 'POST':
-        return_dict = dict(success=False\
-                            , msg="Unsupported Method"\
+        return_dict = dict(success=False,
+                         msg="Unsupported Method"
                         )
         return HttpResponse(json.dumps(return_dict), mimetype="application/json", status=500)
 
@@ -175,7 +174,7 @@ def tablejoin_api(request):
 
     # Set the owner
     if isinstance(f.cleaned_data.get('new_layer_owner', None), User):
-        new_layer_owner = new_layer_owner
+        new_layer_owner = f.cleaned_data['new_layer_owner']
     else:
         new_layer_owner = request.user
 
@@ -217,16 +216,27 @@ def tablejoin_detail(request, tj_id):
         json_msg = MessageHelperJSON.get_json_fail_msg(err_msg)
         return HttpResponse(json_msg, mimetype='application/json', status=404)
 
+    if not request.user.has_perm('maps.view_layer', obj=tj.join_layer):
+        err_msg = "You are not permitted to view this TableJoin object"
+        logger.error(err_msg + ' (id: %s)' % tj_id)
+        json_msg = MessageHelperJSON.get_json_fail_msg(err_msg)
+        return HttpResponse(json_msg, mimetype='application/json', status=401)
+
     results = [ob.as_json() for ob in [tj]][0]
     data = json.dumps(results)
     return HttpResponse(data)
 
+
 @login_required
 @csrf_exempt
 def tablejoin_remove(request, tj_id):
-    # TODO: Check Permissions!!
+    """
+    Via the API, delete a TableJoin object
+    """
 
-    # get TableJoin
+    # -----------------------------------------------
+    # Retrieve the TableJoin object
+    # -----------------------------------------------
     try:
         tj = TableJoin.objects.get(pk=tj_id)
     except TableJoin.DoesNotExist:
@@ -236,13 +246,27 @@ def tablejoin_remove(request, tj_id):
 
         return HttpResponse(json_msg, mimetype='application/json', status=404)
 
+    # -----------------------------------------------
+    # Does the user have permissions to Delete it?
+    # -----------------------------------------------
+    if not request.user.has_perm('maps.delete_layer', obj=tj.join_layer):
+        err_msg = "You are not permitted to delete this TableJoin object"
+        logger.error(err_msg + ' (id: %s)' % tj_id)
+        json_msg = MessageHelperJSON.get_json_fail_msg(err_msg)
+        return HttpResponse(json_msg, mimetype='application/json', status=401)
+
+    # -----------------------------------------------
+    # Delete it!
+    # -----------------------------------------------
     try:
         tj.datatable.delete()
         tj.join_layer.delete()
         tj.delete()
-        return HttpResponse(json.dumps({'success':True, 'msg': ('%s removed' % (tj.view_name))}), mimetype='application/json', status=200)
+        return HttpResponse(json.dumps({'success':True, 'msg': ('%s removed' % (tj.view_name))}),
+            mimetype='application/json', status=200)
     except:
-        return HttpResponse(json.dumps({'success':False, 'msg': ('Error removing Join %s' % (sys.exc_info()[0]))}), mimetype='application/json', status=400)
+        return HttpResponse(json.dumps({'success':False, 'msg': ('Error removing Join %s' % (sys.exc_info()[0]))}),
+            mimetype='application/json', status=400)
 
 
 @login_required
@@ -273,11 +297,8 @@ def datatable_upload_and_join_api(request):
     if not f.is_valid():
         err_msg = "Invalid Data for Join: %s" % f.errors
         logger.error(err_msg)
-        return_dict = dict(success=False\
-                         , msg=err_msg\
-                    )
-        return HttpResponse(json.dumps(return_dict), mimetype="application/json", status=400)
-
+        json_msg = MessageHelperJSON.get_json_fail_msg(err_msg)
+        return HttpResponse(json_msg, mimetype="application/json", status=400)
 
     # ----------------------------------------------------
     # Create a DataTable object from the file
@@ -322,7 +343,7 @@ def datatable_upload_lat_lon_api(request):
     #
     #
     if not request.method == 'POST':
-        json_msg = MessageHelperJSON.get_json_fail_msg("Unsupported Method", data_dict=form.errors)
+        json_msg = MessageHelperJSON.get_json_fail_msg("Unsupported Method")
         return HttpResponse(json_msg, mimetype="application/json", status=500)
 
     # Is the request data valid?
@@ -344,13 +365,16 @@ def datatable_upload_lat_lon_api(request):
     try:
         resp = datatable_upload_api(request)
         upload_return_dict = json.loads(resp.content)
-        if upload_return_dict['success'] != True:
+        if upload_return_dict.get('success', None) is not True:
             return HttpResponse(json.dumps(upload_return_dict), mimetype='application/json', status=400)
+        else:
+            pass # keep going
     except:
-        logger.error('Failed Datatable Upload for map lat/lng table: %s' % latlng_record_or_err_msg)
-
+        err_msg = 'Uncaught error ingesting Data Table'
+        logger.error(err_msg)
+        json_msg = MessageHelperJSON.get_json_fail_msg(err_msg)
         traceback.print_exc(sys.exc_info())
-        return HttpResponse(json.dumps({'msg':'Uncaught error ingesting Data Table', 'success':False}), mimetype='application/json', status=400)
+        return HttpResponse(json_msg, mimetype='application/json', status=400)
 
 
     # --------------------------------------
@@ -358,10 +382,10 @@ def datatable_upload_lat_lon_api(request):
     # --------------------------------------
     msg('datatable_upload_lat_lon_api 2')
     try:
-        success, latlng_record_or_err_msg = create_point_col_from_lat_lon(new_table_owner\
-                        , upload_return_dict['data']['datatable_name']\
-                        , form_map_lat_lng.cleaned_data['lat_attribute']\
-                        , form_map_lat_lng.cleaned_data['lng_attribute']\
+        success, latlng_record_or_err_msg = create_point_col_from_lat_lon(new_table_owner
+                        , upload_return_dict['data']['datatable_name']
+                        , form_map_lat_lng.cleaned_data['lat_attribute']
+                        , form_map_lat_lng.cleaned_data['lng_attribute']
                     )
 
 
