@@ -96,23 +96,23 @@
                                 for (var c in corners){
                                     console.log(c+":"+corners[c]);
                                 }
-                                var marker_box = [
-                                    new OpenLayers.Geometry.Point(corners.ul_x, corners.ul_y),
-                                    new OpenLayers.Geometry.Point(corners.ur_x, corners.ur_y),
-                                    new OpenLayers.Geometry.Point(corners.lr_x, corners.lr_y),
-                                    new OpenLayers.Geometry.Point(corners.ll_x, corners.ll_y),
+                                var marker_ext = [
+                                    corners["ul_x"],
+                                    corners["ll_y"],
+                                    corners["lr_x"],
+                                    corners["ur_y"]
                                 ];
-                                var tile_box = new OpenLayers.Bounds();
-                                for ( var pt in marker_box ){
-                                    tile_box.extend(pt);
-                                }
-                                //var ring = new OpenLayers.Geometry.LinearRing(corner_pts);
-                                //var rectFeat = new OpenLayers.Feature.Vector(ring);
-                                var tile_select_layer = new OpenLayers.Layer.Boxes("selection_layer");
-                                var marker = new OpenLayers.Marker.Box(tile_box, style);
-                                tile_select_layer.addMarker(marker);
-                                map.addLayer(tile_select_layer);
-                                tile_select_layer.setVisibility(true);
+                                //var tile_box = new OpenLayers.Bounds();
+                                //for ( var pt in marker_box ){
+                                //    tile_box.extend(pt);
+                                //}
+                                var selection_layer = map.getLayersByName("selection_layer")[0];
+                                var marker_bounds = OpenLayers.Bounds.fromArray(marker_ext);
+                                var marker = new OpenLayers.Marker.Box(marker_bounds, style);
+                                selection_layer.addMarker(marker);
+                                //map.addLayer(tile_select_layer);
+                                selection_layer.setVisibility(true);
+                                selection_layer.redraw();
                                 //tile_select_layer.setMap(map);
                             }
                                 
@@ -143,7 +143,7 @@
                                //}
                            };
                            map.events.register('changebaselayer',null,zoomToData);
-                           
+                           var tile_select_layer = new OpenLayers.Layer.Boxes("selection_layer");
                            if(map.baseLayer){
                             map.zoomToExtent(extent, false);
                             console.log("Zoom for extent: "+map.getZoomForExtent(extent));
