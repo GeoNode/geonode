@@ -109,7 +109,7 @@
                                 //var ring = new OpenLayers.Geometry.LinearRing(corner_pts);
                                 //var rectFeat = new OpenLayers.Feature.Vector(ring);
                                 var tile_select_layer = new OpenLayers.Layer.Boxes("selection_layer");
-                                var marker = new OpenLayers.Marker.Box(tile_box, "#008DCF", 4);
+                                var marker = new OpenLayers.Marker.Box(tile_box, style);
                                 tile_select_layer.addMarker(marker);
                                 map.addLayer(tile_select_layer);
                                 tile_select_layer.setVisibility(true);
