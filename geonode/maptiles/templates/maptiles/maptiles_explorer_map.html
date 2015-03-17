@@ -92,7 +92,7 @@
                                 };
                                 
                                 var corners = get_corners(lonlat.lat, lonlat.lon);
-                                console.log("Clicked! Georef:"+Math.floor(corners.ul_x/_TILE_SIZE)+"E"+Math.ceil(corners.ul_y/_TILE_SIZE)   +"N");
+                                console.log("Clicked! Georef:"+Math.floor(corners.ul_y/_TILE_SIZE)+"E"+Math.ceil(corners.ul_x/_TILE_SIZE)   +"N");
                                 var marker_box = [
                                     new OpenLayers.Geometry.Point(corners.ul_x, corners.ul_y),
                                     new OpenLayers.Geometry.Point(corners.ur_x, corners.ur_y),
@@ -106,6 +106,9 @@
                                 //var ring = new OpenLayers.Geometry.LinearRing(corner_pts);
                                 //var rectFeat = new OpenLayers.Feature.Vector(ring);
                                 var vector_layer = map.getLayersByName("selection_layer")[0];
+                                for ( var lyr in map.getLayersByName("selection_layer"){
+                                    console.log(lyr.name);
+                                }
                                 var marker = new OpenLayers.Marker.Box(tile_box);
 
                                 //vector_layer.addFeatures([rectFeat]);
@@ -138,6 +141,7 @@
                                //tile_select_layer.setMap(map);
                                //tile_select_layer.
                                map.addLayer(tile_select_layer);
+                               tile_select_layer.setMap(map);
                            };
                            map.events.register('changebaselayer',null,zoomToData);
                            
