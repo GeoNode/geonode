@@ -84,7 +84,7 @@
                             trigger: function(e) {
                                 console.log(map.getProjection());
                                 var point = map.getLonLatFromPixel(e.xy);
-                                var reproj_point = point;
+                                var reproj_point = new OpenLayers.Lonlat(point.lon,point.lat);
                                 reproj_point.transform(new OpenLayers.Projection("EPSG:4326"), map.getProjectionObject());
                                 console.log("Coords are: "+reproj_point.lon+","+reproj_point.lat);
                                 var style = {
