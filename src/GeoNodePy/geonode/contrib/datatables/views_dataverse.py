@@ -23,8 +23,10 @@ from shared_dataverse_information.worldmap_datatables.forms import \
 from geonode.contrib.msg_util import *
 
 from .models import DataTable, JoinTarget, TableJoin
-from .forms import UploadDataTableForm
 from .utils import process_csv_file, setup_join, create_point_col_from_lat_lon, standardize_name
+
+import logging
+logger = logging.getLogger(__name__)
 
 """
 Connecting the Dataverse to the WorldMap's Tabular API
@@ -62,7 +64,7 @@ def view_upload_table_and_join_layer(request):
 
         json_msg = MessageHelperJSON.get_json_msg(success=False\
                             , msg=err_msg)
-        return HttpResponse(json.dumps(return_dict), mimetype="application/json", status=400)
+        return HttpResponse(json_msg, mimetype="application/json", status=400)
 
     # -------------------------------------------
     # Is the Dataverse Layer Metadata valid?

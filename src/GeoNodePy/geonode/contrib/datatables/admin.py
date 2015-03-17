@@ -7,6 +7,8 @@ class DataTableAdmin(admin.ModelAdmin):
     list_display = (
         'id',
         'title',
+        'owner',
+        'created',
         'table_name',
         'tablespace')
     list_display_links = ('title',)

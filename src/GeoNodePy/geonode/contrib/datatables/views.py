@@ -14,6 +14,7 @@ from django.utils.translation import ugettext_lazy as _
 from geonode.dataverse_connect.dv_utils import MessageHelperJSON          # format json response object
 
 from shared_dataverse_information.worldmap_datatables.forms import\
+    DataTableUploadForm,\
     TableJoinRequestForm,\
     TableJoinResultForm,\
     TableUploadAndJoinRequestForm,\
@@ -22,7 +23,6 @@ from shared_dataverse_information.worldmap_datatables.forms import\
 from geonode.contrib.msg_util import msg, msgt, msgn, msgx
 
 from .models import DataTable, JoinTarget, TableJoin
-from .forms import UploadDataTableForm
 from .utils import process_csv_file, setup_join, create_point_col_from_lat_lon, standardize_name
 
 logger = logging.getLogger(__name__)
@@ -37,7 +37,7 @@ def datatable_upload_api(request):
     # ---------------------------------------
     # Verify Request
     # ---------------------------------------
-    form = UploadDataTableForm(request.POST, request.FILES)
+    form = DataTableUploadForm(request.POST, request.FILES)
     if not form.is_valid():
         err_msg = "Form errors found." % form.errors#.as_json()#.as_text()
         json_msg = MessageHelperJSON.get_json_fail_msg(err_msg, data_dict=form.errors)
@@ -45,10 +45,16 @@ def datatable_upload_api(request):
 
 
     data = form.cleaned_data
-    table_name = standardize_name(os.path.splitext(os.path.basename(request.FILES['uploaded_file'].name))[0], is_table_name=True)
+    msgt('data: %s' % data)
+    table_name = standardize_name(os.path.splitext(os.path.basename(request.FILES['uploaded_file'].name))[0],
+                                  is_table_name=True)
     #table_name = standardize_name(os.path.splitext(os.path.basename(csv_filename))[0], is_table_name=True)
-    instance = DataTable(uploaded_file=request.FILES['uploaded_file'], table_name=table_name, title=table_name)
-    delimiter = data['delimiter_type'] 
+    instance = DataTable(uploaded_file=request.FILES['uploaded_file'],
+                         table_name=table_name,
+                         title=data['title'],
+                         abstract=data['abstract'],
+                         owner=request.user)
+    delimiter = data['delimiter']
     no_header_row = data['no_header_row']
 
     # save DataTable object
@@ -272,13 +278,45 @@ def tablejoin_remove(request, tj_id):
 @login_required
 @csrf_exempt
 def datatable_remove(request, dt_id):
-    # TODO: Check Permissions!!
+    """
+    Check if the user has 'delete_datatable' permissions
+    """
+
+    # -----------------------------------------------
+    # Retrieve the DataTable object
+    # -----------------------------------------------
     try:
-        dt = get_object_or_404(DataTable, pk=dt_id)
-        dt.delete()
-        return HttpResponse(json.dumps({'success':True, 'msg': ('%s removed' % (dt.table_name))}), mimetype='application/json', status=200)
+        datatable = DataTable.objects.get(pk=dt_id)
+    except DataTable.DoesNotExist:
+        err_msg = 'No DataTable object found'
+        logger.error(err_msg + ' for id: %s' % dt_id)
+        json_msg = MessageHelperJSON.get_json_fail_msg(err_msg)
+        return HttpResponse(json_msg, mimetype='application/json', status=404)
+
+    # -----------------------------------------------
+    # Does the user have permissions to Delete it?
+    # -----------------------------------------------
+    if not request.user.has_perm('datatables.delete_datatable', obj=datatable):
+        err_msg = "You are not permitted to delete this DataTable object"
+        logger.error(err_msg + ' (id: %s)' % dt_id)
+        json_msg = MessageHelperJSON.get_json_fail_msg(err_msg)
+        return HttpResponse(json_msg, mimetype='application/json', status=401)
+
+    # -----------------------------------------------
+    # Delete it!
+    # -----------------------------------------------
+    dt_name = str(datatable)
+    try:
+        datatable.delete()
+        success_msg = 'DataTable "%s" successfully deleted.' % (dt_name)
+        logger.info(success_msg)
+        json_msg = MessageHelperJSON.get_json_success_msg(success_msg)
+        return HttpResponse(json_msg, mimetype='application/json', status=200)
     except:
-        return HttpResponse(json.dumps({'success':False, 'msg': ('Error removing DataTable %s' % (sys.exc_info()[0]))}), mimetype='application/json', status=400)
+        err_msg = 'Failed to delete DataTable "%s" (id: %s)\nError: %s' % (dt_name, datatable.id, sys.exc_info()[0])
+        logger.info(err_msg)
+        json_msg = MessageHelperJSON.get_json_fail_msg(err_msg)
+        return HttpResponse(json_msg, mimetype='application/json', status=400)
 
 
 

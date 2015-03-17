@@ -85,8 +85,11 @@ def process_csv_file(data_table, delimiter=",", no_header_row=False):
     # -----------------------------------------------------
     f = open(csv_filename, 'rb')
 
-    try: 
-        csv_table = table.Table.from_csv(f, name=table_name, no_header_row=no_header_row, delimiter=delimiter)
+
+    csv_table = table.Table.from_csv(f, name=table_name, no_header_row=no_header_row, delimiter=delimiter)
+    try:
+        pass
+        #csv_table = table.Table.from_csv(f, name=table_name, no_header_row=no_header_row, delimiter=delimiter)
     except:
         data_table.delete()
         err_msg = str(sys.exc_info()[0])

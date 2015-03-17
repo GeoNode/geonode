@@ -6,7 +6,7 @@ from geonode.maps.models import LayerAttribute, LayerAttributeManager
 from geonode.maps.models import Layer
 from django.template.defaultfilters import slugify
 from django.utils.translation import ugettext_lazy as _
-
+from django.contrib.auth.models import User
 
 from .db_helper import get_datastore_connection_string
 
@@ -23,13 +23,19 @@ class DataTableAttributeManager(models.Manager):
 class DataTable(models.Model):
 
     """
-    DataTable (inherits ResourceBase fields)
+    DataTable
     """
     title = models.CharField('title', max_length=255)
+    abstract = models.TextField('abstract', blank=True)
+
+    delimiter = models.CharField(max_length=6, default='')
+
+    owner = models.ForeignKey(User, blank=True, null=True)
 
     # internal fields
     table_name = models.CharField(max_length=255, unique=True)
     tablespace = models.CharField(max_length=255)
+
     uploaded_file = models.FileField(upload_to="datatables")
     create_table_sql = models.TextField(null=True, blank=True)
 
