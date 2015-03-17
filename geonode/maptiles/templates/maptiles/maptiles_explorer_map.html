@@ -149,8 +149,8 @@
                            };
                            map.events.register('changebaselayer',null,zoomToData);
                            var tile_select_layer = new OpenLayers.Layer.Boxes("selection_layer");
-                           console.log("Z index: "+tile_select_layer.getZIndex());
                            map.addLayer(tile_select_layer);
+                           console.log("Z index: "+tile_select_layer.getZIndex());
                            if(map.baseLayer){
                             map.zoomToExtent(extent, false);
                             console.log("Zoom for extent: "+map.getZoomForExtent(extent));
