@@ -139,8 +139,8 @@
                                //tile_select_layer.
                                map.addLayer(tile_select_layer);
                                tile_select_layer.setMap(map);
-                               
-                               for (var lyr in map.getLayersByName("selection_layer")){
+                               var layers = map.getLayersByName("selection_layer"
+                               for (var lyr in layers )){
                                     console.log("Layer name: "+lyr.name);
                                }
                            };
