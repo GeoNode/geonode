@@ -106,9 +106,12 @@
                                 //for ( var pt in marker_box ){
                                 //    tile_box.extend(pt);
                                 //}
+                                var test_ext = [ 13840000, 817000, 13900000, 820000 ];
                                 var selection_layer = map.getLayersByName("selection_layer")[0];
-                                var marker_bounds = OpenLayers.Bounds.fromArray(marker_ext);
-                                var marker = new OpenLayers.Marker.Box(marker_bounds, style);
+                                //var marker_bounds = new OpenLayers.Bounds.fromArray(marker_ext);
+                                var test_bounds = new OpenLayers.Bounds.fromArray(test_ext);
+                                //var marker = new OpenLayers.Marker.Box(marker_bounds, style);
+                                var marker = new OpenLayers.Marker.Box(test_bounds, style);
                                 selection_layer.addMarker(marker);
                                 //map.addLayer(tile_select_layer);
                                 selection_layer.setVisibility(true);
