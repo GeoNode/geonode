@@ -83,8 +83,10 @@
         
                             trigger: function(e) {
                                 console.log(map.getProjection());
-                                var lonlat = map.getLonLatFromPixel(e.xy);
-                               
+                                var point = map.getLonLatFromPixel(e.xy);
+                                var reproj_point = lonlat;
+                                reproj_point.transform(new OpenLayers.Projection("EPSG:4326"), map.getProjectionObject());
+                                console.log("Coords are: "+reproj_point.lon+","+reproj_point.lat);
                                 var style = {
                                     fillColor: "#00000ff",
                                     fillOpacity: 0.2,
@@ -92,8 +94,8 @@
                                     strokeColor: "#000000",
                                 };
                                 
-                                var corners = get_corners(lonlat.lon, lonlat.lat);
-                                console.log("Coords are: "+lonlat.lon+","+lonlat.lat);
+                                var corners = get_corners(point.lon, point.lat);
+                                console.log("Coords are: "+point.lon+","+point.lat);
                                 console.log("Clicked! Georef:"+Math.floor(corners.ul_x/_TILE_SIZE)+"E"+Math.ceil(corners.ul_y/_TILE_SIZE)   +"N");
                                 //for (var c in corners){
                                 //    console.log(c+":"+corners[c]);
