@@ -115,7 +115,9 @@
                                 selection_layer.addMarker(marker);
                                 //map.addLayer(tile_select_layer);
                                 selection_layer.setVisibility(true);
-                                selection_layer.redraw();
+                                if (selection_layer.redraw()){
+                                    console.log("Layer redrawn!");
+                                }
                                 //tile_select_layer.setMap(map);
                             }
                                 
