@@ -2,207 +2,282 @@
 {% include "geonode/app_header.html" %}
 {% include "geonode/geo_header.html" %}
 <script type="text/javascript" src="{{ STATIC_URL}}geonode/js/utils/thumbnail.js"></script>
-<script type="text/javascript" src="http://dev.openlayers.org/OpenLayers.js"></script>
+<!--<script type="text/javascript" src="http://dev.openlayers.org/OpenLayers.js"></script>-->
 <script type="text/javascript">
 {% autoescape off %}
-        var _TILE_SIZE = 1000;
-        function floor_tile_size(x){
-            return  (Math.floor(x/_TILE_SIZE) * _TILE_SIZE);
-        }
-        
-        function ceil_tile_size(x) {
-            return (Math.ceil(x/_TILE_SIZE) * _TILE_SIZE);
-        }
-        
-        function get_corners( x, y ){
-            return { ul_x: floor_tile_size(x), ul_y: ceil_tile_size(y),
-                 ur_x: ceil_tile_size(x), ur_y: ceil_tile_size(y),
-                 ll_x: floor_tile_size(x), ll_y: floor_tile_size(y),
-                 lr_x: ceil_tile_size(x), lr_y: floor_tile_size(y)
-                };
-        }
 
-        var app;
-        Ext.onReady(function() {
-            GeoExt.Lang.set("{{ LANGUAGE_CODE }}");
-            var config = {
-                tools: [{
-                    ptype: "gxp_wmsgetfeatureinfo",
-                    format: "grid",
-                    actionTarget: "main.tbar",
-                    outputConfig: {width: 400, height: 200, panIn: false}
-                }],
-                {% if PROXY_URL %}
-                proxy: '{{ PROXY_URL }}',
-                {% endif %}
-                localGeoServerBaseUrl: "{{GEOSERVER_BASE_URL}}",
-                authorizedRoles: "{{ user.is_authenticated|yesno:"ROLE_ADMINISTRATOR,ROLE_ANONYMOUS" }}",
+var editingContainer, selectFeature;
 
-                /* The URL to a REST map configuration service.  This service 
-                 * provides listing and, with an authenticated user, saving of 
-                 * maps on the server for sharing and editing.
-                 */
-                rest: "/maps/",
-                {% if MAPFISH_PRINT_ENABLED %}
-                printService: "{{GEOSERVER_BASE_URL}}pdf/",
-                {% else %}
-                printService: "",
-                {% endif %}
+function closeEditing() {
+    // avoid reentrance
+    if(!arguments.callee._in) {
+        arguments.callee._in = true;
+        editingContainer.removeAll(true);
+        selectFeature.unselectAll();
+        delete arguments.callee._in;
+    }
+}
+
+function createVectorLayer() {
+
+    var styleDefault = Ext.applyIf({
+        graphicName: "${symbol}",
+        pointRadius: "${size}"
+    }, OpenLayers.Feature.Vector.style["default"]);
+
+    var styleSelect = Ext.applyIf({
+        graphicName: "${symbol}",
+        pointRadius: "${size}"
+    }, OpenLayers.Feature.Vector.style["select"]);
+
+    return new OpenLayers.Layer.Vector("vector", {
+        styleMap: new OpenLayers.StyleMap({
+            "default": styleDefault,
+            "select": styleSelect
+        }),
+        eventListeners: {
+            beforefeatureadded: function(e) {
+                closeEditing();
+                selectFeature.select(e.feature);
+            },
+            beforefeatureselected: function(e) {
+                addEditorGrid(e.feature);
+            },
+            featureunselected: function(e) {
+                closeEditing();
+            }
+        }
+    });
+}
+
+function addEditorGrid(feature) {
+
+    var store = new GeoExt.data.AttributeStore({
+        feature: feature,
+        fields: ["name", "type", "restriction", "label"],
+        data: [{
+            name: "symbol",
+            label: "Symbol",
+            type: {
+                xtype: "combo",
+                store: new Ext.data.ArrayStore({
+                    fields: ['symbol'],
+                    data: [['star'], ['square'], ['circle']]
+                }),
+                displayField: 'symbol',
+                valueField: 'symbol',
+                mode: 'local',
+                editable: false,
+                forceSelection: true,
+                triggerAction: 'all',
+                selectOnFocus: true
+            },
+            value: "star"
+        }, {
+            name: "size",
+            label: "Size",
+            type: "number",
+            value: 6,
+            restriction: {
+                "minInclusive": 0,
+                "maxInclusive": 10
+            }
+        }]
+    });
+
+    var editorGrid = new GeoExt.ux.FeatureEditorGrid({
+        nameField: "label",
+        store: store,
+        forceValidation: true,
+        allowSave: true,
+        allowCancel: true,
+        allowDelete: true,
+        border: false,
+        hideHeaders: true,
+        viewConfig: {
+            forceFit: true,
+            scrollOffset: 2 // the grid will never have scrollbars
+        },
+        listeners: {
+            done: function(panel, e) {
+                closeEditing();
+                var feature = e.feature, modified = e.modified;
+                if(feature.state != null) {
+                    // simulate save to server
+                    setTimeout(function() {
+                        if(feature.state === OpenLayers.State.DELETE) {
+                            feature.layer.destroyFeatures([feature]);
+                        } else {
+                            feature.state = null;
+                        }
+                    }, 1);
+                }
+            },
+            cancel: function(panel, e) {
+                var feature = e.feature, modified = e.modified;
+                panel.cancel();
+                closeEditing();
+                if(feature.state === OpenLayers.State.INSERT) {
+                    feature.layer.destroyFeatures([feature]);
+                }
+                // we call cancel() ourselves so return false here
+                return false;
+            }
+        }
+    });
+
+    editingContainer.add(editorGrid);
+    editingContainer.doLayout();
+
+    feature.layer.drawFeature(feature, "select");
+}
+
+var _TILE_SIZE = 1000;
+function floor_tile_size(x){
+    return  (Math.floor(x/_TILE_SIZE) * _TILE_SIZE);
+}
+
+function ceil_tile_size(x) {
+    return (Math.ceil(x/_TILE_SIZE) * _TILE_SIZE);
+}
+
+function get_corners( x, y ){
+    return { ul_x: floor_tile_size(x), ul_y: ceil_tile_size(y),
+         ur_x: ceil_tile_size(x), ur_y: ceil_tile_size(y),
+         ll_x: floor_tile_size(x), ll_y: floor_tile_size(y),
+         lr_x: ceil_tile_size(x), lr_y: floor_tile_size(y)
+        };
+}
+
+var app;
+Ext.onReady(function() {
+    GeoExt.Lang.set("{{ LANGUAGE_CODE }}");
+    
+    var config = {
+        tools: [{
+            ptype: "gxp_wmsgetfeatureinfo",
+            format: "grid",
+            actionTarget: "main.tbar",
+            outputConfig: {width: 400, height: 200, panIn: false}
+        },
+            new GeoExt.Action({
+                control: drawFeature,
+                map: map,
+                toggleGroup: "edit",
+                pressed: false,
+                allowDepress: false,
+                text: "Add feature"
+            })
+        ],
+        {% if PROXY_URL %}
+        proxy: '{{ PROXY_URL }}',
+        {% endif %}
+        localGeoServerBaseUrl: "{{GEOSERVER_BASE_URL}}",
+        authorizedRoles: "{{ user.is_authenticated|yesno:"ROLE_ADMINISTRATOR,ROLE_ANONYMOUS" }}",
+
+        /* The URL to a REST map configuration service.  This service 
+         * provides listing and, with an authenticated user, saving of 
+         * maps on the server for sharing and editing.
+         */
+        rest: "/maps/",
+        {% if MAPFISH_PRINT_ENABLED %}
+        printService: "{{GEOSERVER_BASE_URL}}pdf/",
+        {% else %}
+        printService: "",
+        {% endif %}
+        
+        portalConfig: {
+            renderTo: "preview_map",
+            height: 400 
+        },
+
+        listeners: {
+            "ready": function() {
+                var map = app.mapPanel.map;
+                var vecLayer = createVectorLayer();
+                var layer = app.map.layers.slice(-1)[0];
+                var bbox = layer.bbox;
                 
-                portalConfig: {
-                    renderTo: "preview_map",
-                    height: 400 
-                },
-
-                listeners: {
-                    "ready": function() {
-                        var map = app.mapPanel.map;
-                        var layer = app.map.layers.slice(-1)[0];
-                        var bbox = layer.bbox;
-                        
-                        OpenLayers.Control.Click = OpenLayers.Class(OpenLayers.Control, {
-                            defaultHandlerOptions: {
-                                "single": true,
-                                "double": false,
-                                "pixelTolerance": 0,
-                                "stopSingle": false,
-                                "stopDouble": false
-                            },
-        
-                            initialize: function(options) {
-                                this.handlerOptions = OpenLayers.Util.extend(
-                                    {}, this.defaultHandlerOptions
-                                );
-                                OpenLayers.Control.prototype.initialize.apply(this, arguments); 
-                                    this.handler = new OpenLayers.Handler.Click(
-                                        this, {
-                                            'click': this.trigger
-                                        }, this.handlerOptions
-                                    );
-                            },
-        
-                            trigger: function(e) {
-                                var point = map.getLonLatFromPixel(e.xy);
-                                var style = {
-                                    fillColor: "#00000ff",
-                                    fillOpacity: 1,
-                                    stroke: true,
-                                    strokeColor: "#000000",
-                                };
-                                
-                                var corners = get_corners(point.lon, point.lat);
-                                console.log("Coords are: "+point.lon+","+point.lat);
-                                console.log("Clicked! Georef:"+Math.floor(corners.ul_x/_TILE_SIZE)+"E"+Math.ceil(corners.ul_y/_TILE_SIZE)   +"N");
-                                for (var c in corners){
-                                    console.log(c+":"+corners[c]);
-                                }
-                                var marker_ext = [
-                                    corners["ul_x"],
-                                    corners["ll_y"],
-                                    corners["lr_x"],
-                                    corners["ur_y"]
-                                ];
-                                //var tile_box = new OpenLayers.Bounds();
-                                //for ( var pt in marker_box ){
-                                //    tile_box.extend(pt);
-                                //}
-                                var test_ext = [ 13840000, 817000, 13900000, 820000 ];
-                                var selection_layer = map.getLayersByName("selection_layer")[0];
-                                //var marker_bounds = new OpenLayers.Bounds.fromArray(marker_ext);
-                                var test_bounds = new OpenLayers.Bounds.fromArray(test_ext);
-                                //var marker = new OpenLayers.Marker.Box(marker_bounds, style);
-                                var marker = new OpenLayers.Marker.Box(test_bounds, style);
-                                selection_layer.addMarker(marker);
-                                //map.addLayer(tile_select_layer);
-                                selection_layer.setVisibility(true);
-                                if (selection_layer.redraw()){
-                                    console.log("Layer redrawn!");
-                                }
-                                //tile_select_layer.setMap(map);
-                            }
-                                
-                        });
-            
-                        click_select = new OpenLayers.Control.Click()
-                        map.addControl(click_select);   
-                        click_select.activate();
-                        
-                        if (bbox != undefined)
-                        {
-                           if (!Array.isArray(bbox) && Object.keys(layer.srs) in bbox) {
-                            bbox = bbox[Object.keys(layer.srs)].bbox;
-                           }
-
-                           var extent = OpenLayers.Bounds.fromArray(bbox);
-                           console.log(extent);
-                           var zoomToData = function()
-                           {
-                               console.log("zoom to data");
-                               map.zoomToExtent(extent, false);
-                               app.mapPanel.center = map.center;
-                               app.mapPanel.zoom = map.zoom;
-                               map.events.unregister('changebaselayer', null, zoomToData);
-                               //var layers = map.getLayersByName("selection_layer")
-                               //for (var lyr in layers){
-                               //     console.log("Layer name: "+lyr.name);
-                               //}
-                           };
-                           map.events.register('changebaselayer',null,zoomToData);
-                           var tile_select_layer = new OpenLayers.Layer.Boxes("selection_layer");
-                           map.addLayer(tile_select_layer);
-                           console.log("Z index: "+tile_select_layer.getZIndex());
-                           if(map.baseLayer){
-                            map.zoomToExtent(extent, false);
-                            console.log("Zoom for extent: "+map.getZoomForExtent(extent));
-                            console.log("Map extent: "+ map.extent);
-                            console.log("Current zoom: "+map.getZoom());
-                           }
-
+                var drawFeature = new OpenLayers.Control.DrawFeature(
+                    vecLayer, OpenLayers.Handler.Point, {
+                        eventListeners: {
+                            deactivate: closeEditing
                         }
-                        
-                    },
-                    "beforeunload": function() {
-                        if (modified) {
-                            styleEditor.show();
-                            return false;
-                        }
+                });
+                
+                selectFeature = new OpenLayers.Control.SelectFeature(vecLayer, {
+                    eventListeners: {
+                        deactivate: closeEditing
                     }
+                });
+                
+                if (bbox != undefined)
+                {
+                   if (!Array.isArray(bbox) && Object.keys(layer.srs) in bbox) {
+                    bbox = bbox[Object.keys(layer.srs)].bbox;
+                   }
+
+                   var extent = OpenLayers.Bounds.fromArray(bbox);
+                   console.log(extent);
+                   var zoomToData = function()
+                   {
+                       console.log("zoom to data");
+                       map.zoomToExtent(extent, false);
+                       app.mapPanel.center = map.center;
+                       app.mapPanel.zoom = map.zoom;
+                       map.events.unregister('changebaselayer', null, zoomToData);
+                   };
+                   map.events.register('changebaselayer',null,zoomToData);
+
+                   if(map.baseLayer){
+                    map.zoomToExtent(extent, false);
+                   }
+
                 }
-            };
-
-            config = Ext.apply(config, {{ viewer|safe }});
-            app = new GeoExplorer.Viewer(config);
-
-            for (var key in app.tools) {
-                var tool = app.tools[key];
-                if (tool.ptype == 'gxp_styler') {
-                    tool.rasterStyling = true;
-                };
-            };
-
-            // change style displayed in map
-            Ext.get(Ext.DomQuery.select("input[@name='style']")).on("click", function(evt, elem) {
-                app.selectedLayer.getLayer().mergeNewParams({
-                    "STYLES": elem.id,
-                    "_dc": Math.random()
-                }); 
-            });
-            
-            Ext.get(Ext.DomQuery.select(".style-edit")).on("click", function(evt, elem) {
-                for (var key in app.tools) {
-                    var tool = app.tools[key];
-                    if (tool.ptype == 'gxp_styler') {
-                        tool.actions[0].execute();
-                    };
+                
+            },
+            "beforeunload": function() {
+                if (modified) {
+                    styleEditor.show();
+                    return false;
                 }
-            });
-            Ext.Ajax.on('requestcomplete', function(req, cippa, opts){
-                if(opts.method == 'PUT'){
-                    $('#legend_icon').attr('src', $('#legend_icon').attr('src')+'&'+Math.random());
-                }   
-            }, this);
-        
-        });
+            }
+        }
+    };
+
+    config = Ext.apply(config, {{ viewer|safe }});
+    app = new GeoExplorer.Viewer(config);
+
+    for (var key in app.tools) {
+        var tool = app.tools[key];
+        if (tool.ptype == 'gxp_styler') {
+            tool.rasterStyling = true;
+        };
+    };
+
+    // change style displayed in map
+    Ext.get(Ext.DomQuery.select("input[@name='style']")).on("click", function(evt, elem) {
+        app.selectedLayer.getLayer().mergeNewParams({
+            "STYLES": elem.id,
+            "_dc": Math.random()
+        }); 
+    });
+    
+    Ext.get(Ext.DomQuery.select(".style-edit")).on("click", function(evt, elem) {
+        for (var key in app.tools) {
+            var tool = app.tools[key];
+            if (tool.ptype == 'gxp_styler') {
+                tool.actions[0].execute();
+            };
+        }
+    });
+    Ext.Ajax.on('requestcomplete', function(req, cippa, opts){
+        if(opts.method == 'PUT'){
+            $('#legend_icon').attr('src', $('#legend_icon').attr('src')+'&'+Math.random());
+        }   
+    }, this);
+
+});
         
     
 {% endautoescape %}
