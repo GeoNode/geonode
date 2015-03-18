@@ -5,133 +5,6 @@
 <!--<script type="text/javascript" src="http://dev.openlayers.org/OpenLayers.js"></script>-->
 <script type="text/javascript">
 {% autoescape off %}
-
-var map, drawFeature, editingContainer, selectFeature;
-
-function closeEditing() {
-    // avoid reentrance
-    if(!arguments.callee._in) {
-        arguments.callee._in = true;
-        editingContainer.removeAll(true);
-        selectFeature.unselectAll();
-        delete arguments.callee._in;
-    }
-}
-
-function createVectorLayer() {
-
-    var styleDefault = Ext.applyIf({
-        graphicName: "${symbol}",
-        pointRadius: "${size}"
-    }, OpenLayers.Feature.Vector.style["default"]);
-
-    var styleSelect = Ext.applyIf({
-        graphicName: "${symbol}",
-        pointRadius: "${size}"
-    }, OpenLayers.Feature.Vector.style["select"]);
-
-    return new OpenLayers.Layer.Vector("vector", {
-        styleMap: new OpenLayers.StyleMap({
-            "default": styleDefault,
-            "select": styleSelect
-        }),
-        eventListeners: {
-            beforefeatureadded: function(e) {
-                closeEditing();
-                selectFeature.select(e.feature);
-            },
-            beforefeatureselected: function(e) {
-                addEditorGrid(e.feature);
-            },
-            featureunselected: function(e) {
-                closeEditing();
-            }
-        }
-    });
-}
-
-function addEditorGrid(feature) {
-
-    var store = new GeoExt.data.AttributeStore({
-        feature: feature,
-        fields: ["name", "type", "restriction", "label"],
-        data: [{
-            name: "symbol",
-            label: "Symbol",
-            type: {
-                xtype: "combo",
-                store: new Ext.data.ArrayStore({
-                    fields: ['symbol'],
-                    data: [['star'], ['square'], ['circle']]
-                }),
-                displayField: 'symbol',
-                valueField: 'symbol',
-                mode: 'local',
-                editable: false,
-                forceSelection: true,
-                triggerAction: 'all',
-                selectOnFocus: true
-            },
-            value: "star"
-        }, {
-            name: "size",
-            label: "Size",
-            type: "number",
-            value: 6,
-            restriction: {
-                "minInclusive": 0,
-                "maxInclusive": 10
-            }
-        }]
-    });
-
-    var editorGrid = new GeoExt.ux.FeatureEditorGrid({
-        nameField: "label",
-        store: store,
-        forceValidation: true,
-        allowSave: true,
-        allowCancel: true,
-        allowDelete: true,
-        border: false,
-        hideHeaders: true,
-        viewConfig: {
-            forceFit: true,
-            scrollOffset: 2 // the grid will never have scrollbars
-        },
-        listeners: {
-            done: function(panel, e) {
-                closeEditing();
-                var feature = e.feature, modified = e.modified;
-                if(feature.state != null) {
-                    // simulate save to server
-                    setTimeout(function() {
-                        if(feature.state === OpenLayers.State.DELETE) {
-                            feature.layer.destroyFeatures([feature]);
-                        } else {
-                            feature.state = null;
-                        }
-                    }, 1);
-                }
-            },
-            cancel: function(panel, e) {
-                var feature = e.feature, modified = e.modified;
-                panel.cancel();
-                closeEditing();
-                if(feature.state === OpenLayers.State.INSERT) {
-                    feature.layer.destroyFeatures([feature]);
-                }
-                // we call cancel() ourselves so return false here
-                return false;
-            }
-        }
-    });
-
-    editingContainer.add(editorGrid);
-    editingContainer.doLayout();
-
-    feature.layer.drawFeature(feature, "select");
-}
-
 var _TILE_SIZE = 1000;
 function floor_tile_size(x){
     return  (Math.floor(x/_TILE_SIZE) * _TILE_SIZE);
@@ -148,29 +21,16 @@ function get_corners( x, y ){
          lr_x: ceil_tile_size(x), lr_y: floor_tile_size(y)
         };
 }
-
 var app;
 Ext.onReady(function() {
     GeoExt.Lang.set("{{ LANGUAGE_CODE }}");
-    
     var config = {
-        tools: [
-        "->",
-        {
+        tools: [{
             ptype: "gxp_wmsgetfeatureinfo",
             format: "grid",
             actionTarget: "main.tbar",
             outputConfig: {width: 400, height: 200, panIn: false}
-        },
-        new GeoExt.Action({
-            control: drawFeature,
-            map: map,
-            toggleGroup: "edit",
-            pressed: false,
-            allowDepress: false,
-            text: "Add feature"
-            })
-        ],
+        }],
         {% if PROXY_URL %}
         proxy: '{{ PROXY_URL }}',
         {% endif %}
@@ -195,26 +55,13 @@ Ext.onReady(function() {
 
         listeners: {
             "ready": function() {
-                map = app.mapPanel.map;
-                var vecLayer = createVectorLayer();
+                var map = app.mapPanel.map;
                 var layer = app.map.layers.slice(-1)[0];
+
+                // FIXME(Ariel): Zoom to extent until #1795 is fixed.
+                //map.zoomToExtent(layer.maxExtent, false)
+                
                 var bbox = layer.bbox;
-                
-                map.addLayer(vecLayer);
-                
-                drawFeature = new OpenLayers.Control.DrawFeature(
-                    vecLayer, OpenLayers.Handler.Point, {
-                        eventListeners: {
-                            deactivate: closeEditing
-                        }
-                });
-                
-                selectFeature = new OpenLayers.Control.SelectFeature(vecLayer, {
-                    eventListeners: {
-                        deactivate: closeEditing
-                    }
-                });
-                
                 if (bbox != undefined)
                 {
                    if (!Array.isArray(bbox) && Object.keys(layer.srs) in bbox) {
@@ -222,23 +69,18 @@ Ext.onReady(function() {
                    }
 
                    var extent = OpenLayers.Bounds.fromArray(bbox);
-                   console.log(extent);
                    var zoomToData = function()
                    {
-                       console.log("zoom to data");
                        map.zoomToExtent(extent, false);
                        app.mapPanel.center = map.center;
                        app.mapPanel.zoom = map.zoom;
                        map.events.unregister('changebaselayer', null, zoomToData);
                    };
                    map.events.register('changebaselayer',null,zoomToData);
-
                    if(map.baseLayer){
                     map.zoomToExtent(extent, false);
                    }
-
                 }
-                
             },
             "beforeunload": function() {
                 if (modified) {
@@ -280,9 +122,7 @@ Ext.onReady(function() {
             $('#legend_icon').attr('src', $('#legend_icon').attr('src')+'&'+Math.random());
         }   
     }, this);
-
 });
-        
-    
+
 {% endautoescape %}
 </script>
