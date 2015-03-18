@@ -34,7 +34,7 @@ class DataTable(models.Model):
 
     # internal fields
     table_name = models.CharField(max_length=255, unique=True)
-    tablespace = models.CharField(max_length=255)
+    tablespace = models.CharField('database', max_length=255) # not the actual tablespace, but the database
 
     uploaded_file = models.FileField(upload_to='datatables/%Y/%m/%d')
     create_table_sql = models.TextField(null=True, blank=True)

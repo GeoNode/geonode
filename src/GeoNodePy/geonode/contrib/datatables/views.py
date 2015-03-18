@@ -4,6 +4,7 @@ import sys
 from os.path import basename, splitext
 import json
 import traceback
+from django.conf import settings
 from django.core import serializers
 from django.shortcuts import get_object_or_404
 from django.http import HttpResponse
@@ -25,7 +26,7 @@ from geonode.contrib.msg_util import msg, msgt, msgn, msgx
 
 from .models import DataTable, JoinTarget, TableJoin
 from .utils import process_csv_file, setup_join, create_point_col_from_lat_lon, standardize_name, get_unique_tablename
-
+from .db_helper import CHOSEN_DB_SETTING
 logger = logging.getLogger(__name__)
 
 
@@ -46,15 +47,16 @@ def datatable_upload_api(request):
 
 
     data = form.cleaned_data
-    msgt('data: %s' % data)
 
     table_name = get_unique_tablename(splitext(basename(request.FILES['uploaded_file'].name))[0])
 
 
     instance = DataTable(uploaded_file=request.FILES['uploaded_file'],
                          table_name=table_name,
+                         tablespace=CHOSEN_DB_SETTING,
                          title=data['title'],
                          abstract=data['abstract'],
+                         delimiter=data['delimiter'],
                          owner=request.user)
     delimiter = data['delimiter']
     no_header_row = data['no_header_row']
