@@ -4,6 +4,6 @@ from django.views.generic import TemplateView
 import views
 
 urlpatterns = patterns('',
-						url(r'^/$',views.tiled_view),
+						url(r'^/?$',views.tiled_view),
                         url(r'^test/?$',TemplateView.as_view(template_name="maptiles/maptiles_geoext_test.html"))
 						)
