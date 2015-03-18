@@ -50,10 +50,52 @@ def standardize_name(col_name, is_table_name=False):
     if is_table_name:
        return slugify(unicode(col_name)).replace('-','_')
 
+    # Special case for columns named "the_geom", replace them
+    #
     cname = slugify(unicode(col_name)).replace('-','_')
     if cname == THE_GEOM_LAYER_COLUMN:
         return THE_GEOM_LAYER_COLUMN_REPLACEMENT
     return cname
+
+
+def get_unique_tablename(table_name):
+    """
+    Check the database to see if a table_name already exists.
+    If it does, generate a random extension and check again until an unused name is found.
+    """
+    assert table_name is not None, "table_name cannot be None"
+
+    # ------------------------------------------------
+    # slugify, change to unicode
+    # ------------------------------------------------
+    table_name = standardize_name(table_name, is_table_name=True)
+
+
+    # ------------------------------------------------
+    # Make 10 attempts to generate a unique table name
+    # ------------------------------------------------
+    unique_tname = table_name
+    attempts = []
+    for x in range(1, 11):
+        attempts.append(unique_tname)   # save the attempt
+
+        # Is this a unique name?  Yes, return it.
+        if DataTable.objects.filter(table_name=unique_tname).count() == 0:
+            return unique_tname
+
+        # Not unique. Add 2 to 11 random chars to end of table_name
+        #  attempts 1:-3 datatable_xx, datatable_xxx, datatable_xxxx where x is random char
+        #
+        random_chars = "".join([choice(string.ascii_lowercase + string.digits) for i in range(x+1)])
+        unique_tname = '%s_%s' % (table_name, random_chars)
+
+    # ------------------------------------------------
+    # Failed to generate a unique name, throw an error
+    # ------------------------------------------------
+    err_msg = """Failed to generate unique table_name attribute for a new DataTable object.
+Original: %s
+Attempts: %s""" % (table_name, ', '.join(attempts))
+    raise ValueError(err_msg)
 
 
 def process_csv_file(data_table, delimiter=",", no_header_row=False):

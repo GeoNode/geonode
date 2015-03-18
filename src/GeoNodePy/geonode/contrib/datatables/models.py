@@ -36,7 +36,7 @@ class DataTable(models.Model):
     table_name = models.CharField(max_length=255, unique=True)
     tablespace = models.CharField(max_length=255)
 
-    uploaded_file = models.FileField(upload_to="datatables")
+    uploaded_file = models.FileField(upload_to='datatables/%Y/%m/%d')
     create_table_sql = models.TextField(null=True, blank=True)
 
     created = models.DateTimeField(auto_now_add=True)

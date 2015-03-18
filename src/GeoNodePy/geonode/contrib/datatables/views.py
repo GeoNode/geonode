@@ -1,7 +1,7 @@
 from __future__ import print_function
 import logging
 import sys
-import os
+from os.path import basename, splitext
 import json
 import traceback
 from django.core import serializers
@@ -12,6 +12,7 @@ from django.contrib.auth.models import User
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.translation import ugettext_lazy as _
 from geonode.dataverse_connect.dv_utils import MessageHelperJSON          # format json response object
+from shared_dataverse_information.shared_form_util.format_form_errors import format_errors_as_text
 
 from shared_dataverse_information.worldmap_datatables.forms import\
     DataTableUploadForm,\
@@ -23,7 +24,7 @@ from shared_dataverse_information.worldmap_datatables.forms import\
 from geonode.contrib.msg_util import msg, msgt, msgn, msgx
 
 from .models import DataTable, JoinTarget, TableJoin
-from .utils import process_csv_file, setup_join, create_point_col_from_lat_lon, standardize_name
+from .utils import process_csv_file, setup_join, create_point_col_from_lat_lon, standardize_name, get_unique_tablename
 
 logger = logging.getLogger(__name__)
 
@@ -39,16 +40,17 @@ def datatable_upload_api(request):
     # ---------------------------------------
     form = DataTableUploadForm(request.POST, request.FILES)
     if not form.is_valid():
-        err_msg = "Form errors found." % form.errors#.as_json()#.as_text()
+        err_msg = "Form errors found. %s" % format_errors_as_text(form)#.as_json()#.as_text()
         json_msg = MessageHelperJSON.get_json_fail_msg(err_msg, data_dict=form.errors)
         return HttpResponse(json_msg, mimetype="application/json", status=400)
 
 
     data = form.cleaned_data
     msgt('data: %s' % data)
-    table_name = standardize_name(os.path.splitext(os.path.basename(request.FILES['uploaded_file'].name))[0],
-                                  is_table_name=True)
-    #table_name = standardize_name(os.path.splitext(os.path.basename(csv_filename))[0], is_table_name=True)
+
+    table_name = get_unique_tablename(splitext(basename(request.FILES['uploaded_file'].name))[0])
+
+
     instance = DataTable(uploaded_file=request.FILES['uploaded_file'],
                          table_name=table_name,
                          title=data['title'],
@@ -152,22 +154,21 @@ def tablejoin_api(request):
     """
     Join a DataTable to the Geometry of an existing layer
     """
-    logger.info(tablejoin_api)
+    logger.info('tablejoin_api')
     if not request.method == 'POST':
-        return_dict = dict(success=False,
-                         msg="Unsupported Method"
-                        )
-        return HttpResponse(json.dumps(return_dict), mimetype="application/json", status=500)
+        err_msg = "Unsupported Method"
+        json_msg = MessageHelperJSON.get_json_fail_msg(err_msg)
+        logger.error(err_msg)
+        return HttpResponse(json_msg, mimetype="application/json", status=500)
 
     # ----------------------------------
     # Validate the request
     # ----------------------------------
-    f = TableJoinRequestForm(request.POST)
+    f = TableJoinRequestForm(request.POST, request.FILES)
     if not f.is_valid():
-        err_msg = "Invalid Data for TableJoinRequestForm.  Errors: %s" % f.errors
+        err_msg = "Form errors found. %s" % format_errors_as_text(f)#.as_json()#.as_text()
         logger.error(err_msg)
         json_msg = MessageHelperJSON.get_json_fail_msg(err_msg, data_dict=f.errors)
-
         return HttpResponse(json_msg, mimetype="application/json", status=400)
 
     # DataTable and join attribute
@@ -331,12 +332,13 @@ def datatable_upload_and_join_api(request):
     request_post_copy = request.POST.copy()
     join_props = request_post_copy
 
-    f = TableUploadAndJoinRequestForm(join_props)
+    f = TableUploadAndJoinRequestForm(join_props, request.FILES)
     if not f.is_valid():
-        err_msg = "Invalid Data for Join: %s" % f.errors
+        err_msg = "Form errors found. %s" % format_errors_as_text(f)#.as_json()#.as_text()
         logger.error(err_msg)
-        json_msg = MessageHelperJSON.get_json_fail_msg(err_msg)
+        json_msg = MessageHelperJSON.get_json_fail_msg(err_msg, data_dict=f.errors)
         return HttpResponse(json_msg, mimetype="application/json", status=400)
+
 
     # ----------------------------------------------------
     # Create a DataTable object from the file
@@ -387,9 +389,11 @@ def datatable_upload_lat_lon_api(request):
     # Is the request data valid?
     # Check with the MapLatLngLayerRequestForm
     #
-    form_map_lat_lng = MapLatLngLayerRequestForm(request.POST.dict())
-    if not form_map_lat_lng.is_valid():
-        json_msg = MessageHelperJSON.get_json_fail_msg("Invalid data in request", data_dict=form_map_lat_lng.errors)
+    f = MapLatLngLayerRequestForm(request.POST, request.FILES)
+    if not f.is_valid():
+        err_msg = "Invalid data in request: %s" % format_errors_as_text(f)
+        logger.error("datatable_upload_lat_lon_api. %s" % err_msg)
+        json_msg = MessageHelperJSON.get_json_fail_msg(err_msg, data_dict=f.errors)
         return HttpResponse(json_msg, mimetype="application/json", status=400)
 
     #   Set the new table/layer owner
