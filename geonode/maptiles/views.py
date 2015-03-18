@@ -106,7 +106,7 @@ def tiled_view(request, overlay="geonode:index", template="maptiles/maptiles_bas
     context_dict["viewer"] = json.dumps(
         map_obj.viewer_json(request.user, * (NON_WMS_BASE_LAYERS + [maplayer])))
         
-    logger.info(context_dict["viewer"])
+    print context_dict["viewer"]
     
     context_dict["preview"] = getattr(
         settings,
