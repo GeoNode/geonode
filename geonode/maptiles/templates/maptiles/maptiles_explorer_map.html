@@ -198,6 +198,8 @@ Ext.onReady(function() {
                 var layer = app.map.layers.slice(-1)[0];
                 var bbox = layer.bbox;
                 
+                map.addLayer(vecLayer);
+                
                 drawFeature = new OpenLayers.Control.DrawFeature(
                     vecLayer, OpenLayers.Handler.Point, {
                         eventListeners: {
