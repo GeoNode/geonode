@@ -154,19 +154,21 @@ Ext.onReady(function() {
     GeoExt.Lang.set("{{ LANGUAGE_CODE }}");
     
     var config = {
-        tools: [{
+        tools: [
+        "->",
+        {
             ptype: "gxp_wmsgetfeatureinfo",
             format: "grid",
             actionTarget: "main.tbar",
             outputConfig: {width: 400, height: 200, panIn: false}
         },
-            new GeoExt.Action({
-                control: drawFeature,
-                map: map,
-                toggleGroup: "edit",
-                pressed: false,
-                allowDepress: false,
-                text: "Add feature"
+        new GeoExt.Action({
+            control: drawFeature,
+            map: map,
+            toggleGroup: "edit",
+            pressed: false,
+            allowDepress: false,
+            text: "Add feature"
             })
         ],
         {% if PROXY_URL %}
