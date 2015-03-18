@@ -19,6 +19,8 @@ _PERMISSION_VIEW = _("You are not permitted to view this layer")
 _PERMISSION_GENERIC = _('You do not have permissions for this layer.')
 # Create your views here.
 
+logger = logging.getLogger("geonode")
+
 def _resolve_layer(request, typename, permission='base.view_resourcebase',
                    msg=_PERMISSION_GENERIC, **kwargs):
     """
@@ -101,6 +103,9 @@ def tiled_view(request, overlay="geonode:index", template="maptiles/maptiles_bas
 
     context_dict["viewer"] = json.dumps(
         map_obj.viewer_json(request.user, * (NON_WMS_BASE_LAYERS + [maplayer])))
+        
+    logger.info(context_dict["viewer"])
+    
     context_dict["preview"] = getattr(
         settings,
         'LAYER_PREVIEW_LIBRARY',
