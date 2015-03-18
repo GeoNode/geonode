@@ -24,13 +24,19 @@ function get_corners( x, y ){
 var app;
 Ext.onReady(function() {
     GeoExt.Lang.set("{{ LANGUAGE_CODE }}");
+    
+    var drawFeature = new OpenLayers.Control.DrawFeature(
+        vecLayer, OpenLayers.Handler.Point);
+    
     var config = {
-        tools: [{
-            ptype: "gxp_wmsgetfeatureinfo",
-            format: "grid",
-            actionTarget: "main.tbar",
-            outputConfig: {width: 400, height: 200, panIn: false}
-        }],
+        tools: [ "->",
+            {
+                ptype: "gxp_wmsgetfeatureinfo",
+                format: "grid",
+                actionTarget: "main.tbar",
+                outputConfig: {width: 400, height: 200, panIn: false}
+            }
+        ],
         {% if PROXY_URL %}
         proxy: '{{ PROXY_URL }}',
         {% endif %}
