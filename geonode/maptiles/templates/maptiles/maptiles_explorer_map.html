@@ -6,7 +6,7 @@
 <script type="text/javascript">
 {% autoescape off %}
 
-var editingContainer, selectFeature;
+var drawFeature, editingContainer, selectFeature;
 
 function closeEditing() {
     // avoid reentrance
@@ -198,7 +198,7 @@ Ext.onReady(function() {
                 var layer = app.map.layers.slice(-1)[0];
                 var bbox = layer.bbox;
                 
-                var drawFeature = new OpenLayers.Control.DrawFeature(
+                drawFeature = new OpenLayers.Control.DrawFeature(
                     vecLayer, OpenLayers.Handler.Point, {
                         eventListeners: {
                             deactivate: closeEditing
