@@ -157,11 +157,16 @@ def process_csv_file(data_table, delimiter=",", no_header_row=False):
 
             # Create DataTableAttribute object
             #
+            is_visible = True
+            if column.name == '_unnamed':
+                is_visible = False
+
             attribute, created = DataTableAttribute.objects.get_or_create(datatable=data_table,
-                attribute=column.name, 
-                attribute_label=column.name, 
-                attribute_type=column.type.__name__, 
-                display_order=column.order)
+                    attribute=column.name,
+                    attribute_label=column.name,
+                    attribute_type=column.type.__name__,
+                    display_order=column.order,
+                    visible=is_visible)
     except:
         data_table.delete()     # Deleting DataTable also deletes related DataTableAttribute objects
         err_msg = 'Failed to convert csv file to table.  Error: %s' % str(sys.exc_info()[0])
@@ -462,18 +467,39 @@ def setup_join(new_table_owner, table_name, layer_typename, table_attribute_name
     assert layer_typename is not None, "layer_typename cannot be None"
     assert table_attribute_name is not None, "table_attribute_name cannot be None"
     assert layer_attribute_name is not None, "layer_attribute_name cannot be None"
-    
-    
+
     try:
         dt = DataTable.objects.get(table_name=table_name)
-        layer = Layer.objects.get(typename=layer_typename)
-        table_attribute = dt.attributes.get(datatable=dt,attribute=table_attribute_name)
-        layer_attribute = layer.attributes.get(layer=layer, attribute=layer_attribute_name)
-    except Exception as e:
-        import traceback
-        traceback.print_exc(sys.exc_info())
-        err_msg = "Error: (%s) %s:%s:%s:%s" % (str(e), table_name, layer_typename, table_attribute_name, layer_attribute_name)
+    except DataTable.DoesNotExist:
+        err_msg = 'No DataTable object found for table_name "%s"' % table_name
+        logger.error(err_msg)
         return None, err_msg
+
+    try:
+        layer = Layer.objects.get(typename=layer_typename)
+    except Layer.DoesNotExist:
+        err_msg = 'No Layer object found for layer_typename "%s"' % layer_typename
+        logger.error(err_msg)
+        return None, err_msg
+    msg('setup_join 01b')
+
+    try:
+        table_attribute = DataTableAttribute.objects.get(datatable=dt,attribute=table_attribute_name)
+    except DataTableAttribute.DoesNotExist:
+        err_msg = 'No DataTableAttribute object found for table/attribute (%s/%s)' \
+                  % (dt, table_attribute_name)
+        logger.error(err_msg)
+        return None, err_msg
+
+    try:
+        layer_attribute = LayerAttribute.objects.get(layer=layer, attribute=layer_attribute_name)
+    except LayerAttribute.DoesNotExist:
+        err_msg = 'No LayerAttribute object found for layer/attribute (%s/%s)' \
+                  % (layer, layer_attribute_name)
+        logger.error(err_msg)
+        return None, err_msg
+
+    msg('setup_join 01d')
 
     layer_name = layer.typename.split(':')[1]
     msg('setup_join 02')
@@ -541,6 +567,7 @@ def setup_join(new_table_owner, table_name, layer_typename, table_attribute_name
         import traceback
         traceback.print_exc(sys.exc_info())
         err_msg =  "Error Joining table %s to layer %s: %s" % (table_name, layer_typename, str(e[0]))
+        logger.error(err_msg)
         return None, err_msg
 
     
@@ -578,6 +605,7 @@ def setup_join(new_table_owner, table_name, layer_typename, table_attribute_name
         import traceback
         traceback.print_exc(sys.exc_info())
         err_msg = "Error creating GeoServer layer for %s: %s" % (view_name, str(e))
+        logger.error(err_msg)
         return None, err_msg
     
     msg('setup_join 07 - Default Style')
@@ -620,6 +648,7 @@ def setup_join(new_table_owner, table_name, layer_typename, table_attribute_name
         import traceback
         traceback.print_exc(sys.exc_info())
         err_msg = "Error creating GeoNode layer for %s: %s" % (view_name, str(e))
+        logger.error(err_msg)
         return None, err_msg
 
     print 'setup_join 08'        

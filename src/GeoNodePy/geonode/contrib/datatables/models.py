@@ -1,12 +1,15 @@
 import psycopg2
 from django.db import models
 from django.db.models import signals
-#from geonode.maps.models import ResourceBase
+
+from django.core import serializers
+
 from geonode.maps.models import LayerAttribute, LayerAttributeManager
 from geonode.maps.models import Layer
 from django.template.defaultfilters import slugify
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.models import User
+from shared_dataverse_information.worldmap_datatables.forms import DataTableResponseForm
 
 from .db_helper import get_datastore_connection_string
 
@@ -41,6 +44,44 @@ class DataTable(models.Model):
 
     created = models.DateTimeField(auto_now_add=True)
     modified =models.DateTimeField(auto_now=True)
+
+
+    def as_json(self):
+        """
+        For API call geonode.contrib.datatables.views.datatable_detail
+        """
+        assert self.id is not None,\
+            "This DataTable does not have an 'id'.  Please save it before calling" \
+            " 'as_json()'"
+
+        # Using form to help flag errors if WorldMap and/or GeoConnect change this data
+        #
+        f = DataTableResponseForm(self.__dict__)
+        if not f.is_valid():
+            err_msg = "Calling .as_json on DataTable object (id:%s) failed.  Validator" \
+                      " errors with DataTableResponseForm:\n %s" % (self.id, f.errors)
+            raise ValueError(err_msg)
+
+        json_info = f.cleaned_data
+        json_info['attributes'] = self.attributes_as_json()
+        return json_info
+
+    """python manage.py shell
+from geonode.contrib.datatables.models import DataTable
+dt = DataTable.objects.all()[0]
+dt.as_json()
+"""
+
+    def attributes_as_json(self):
+        """
+        Return list of attributes as json
+        (uses DataTableAttribute.as_json)
+        """
+        json_list = []
+        for attr in self.attributes.all():
+            json_list.append(attr.as_json())
+        return json_list
+
 
     @property
     def attributes(self):
@@ -94,7 +135,11 @@ class DataTableAttribute(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     modified =models.DateTimeField(auto_now=True)
 
-    
+    def as_json(self):
+        return dict(name=self.attribute,
+                    type=self.attribute_type,
+                    display_name=self.attribute_label)
+
     def __str__(self):
         return "%s" % self.attribute
 

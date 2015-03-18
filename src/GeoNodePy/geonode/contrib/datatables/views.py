@@ -89,35 +89,23 @@ def datatable_detail(request, dt_id):
     """
     For a given Datatable id, return the Datatable values as JSON
     """
+    # get Datatable
+    try:
+        datatable = DataTable.objects.get(pk=dt_id)
+    except DataTable.DoesNotExist:
+        err_msg = 'No DataTable object found'
+        logger.error(err_msg + 'for id: %s' % dt_id)
+        json_msg = MessageHelperJSON.get_json_fail_msg(err_msg)
+        return HttpResponse(json_msg, mimetype='application/json', status=404)
 
-    # -----------------------------------------
-    # Retrieve object of raise Http404
-    # -----------------------------------------
-    dt = get_object_or_404(DataTable, pk=dt_id)
+    if not request.user.has_perm('datatables.view_datatable', obj=datatable):
+        err_msg = "You are not permitted to view this TableJoin object"
+        logger.error(err_msg + ' (id: %s)' % dt_id)
+        json_msg = MessageHelperJSON.get_json_fail_msg(err_msg)
+        return HttpResponse(json_msg, mimetype='application/json', status=401)
 
-    # -----------------------------------------
-    # Serialize DataTable as JSON
-    # -----------------------------------------
-    fields_to_return = ('uploaded_file', 'table_name','title')
-
-    serialized = serializers.serialize("json", (dt,), fields=fields_to_return)
-    #msg('serialized: %s' % serialized)
-
-    object = json.loads(serialized)[0]
-    #msg('object: %s' % object)
-
-    # -----------------------------------------
-    # Serialize DataTable attributes as JSON
-    # -----------------------------------------
-    attributes = json.loads(serializers.serialize("json", dt.attributes.all()))
-    attribute_list = []
-    for attribute in attributes:
-        attribute_list.append({'attribute':attribute['fields']['attribute'], 'type':attribute['fields']['attribute_type']})
-
-    object["attributes"] = attribute_list
-    data = json.dumps(object) 
-
-    return HttpResponse(data, mimetype="application/json", status=200)
+    json_msg = MessageHelperJSON.get_json_success_msg(msg=None, data_dict=datatable.as_json())
+    return HttpResponse(json_msg, mimetype="application/json", status=200)
 
 
 
