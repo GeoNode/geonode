@@ -6,7 +6,7 @@
 <script type="text/javascript">
 {% autoescape off %}
 
-var drawFeature, editingContainer, selectFeature;
+var map, drawFeature, editingContainer, selectFeature;
 
 function closeEditing() {
     // avoid reentrance
@@ -193,7 +193,7 @@ Ext.onReady(function() {
 
         listeners: {
             "ready": function() {
-                var map = app.mapPanel.map;
+                map = app.mapPanel.map;
                 var vecLayer = createVectorLayer();
                 var layer = app.map.layers.slice(-1)[0];
                 var bbox = layer.bbox;
