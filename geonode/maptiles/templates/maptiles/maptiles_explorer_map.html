@@ -21,24 +21,56 @@ function get_corners( x, y ){
          lr_x: ceil_tile_size(x), lr_y: floor_tile_size(y)
         };
 }
-var app;
+var app, map;
+
+
+function createVectorLayer() {
+
+    var styleDefault = Ext.applyIf({
+        graphicName: "${symbol}",
+        pointRadius: "${size}"
+    }, OpenLayers.Feature.Vector.style["default"]);
+
+    var styleSelect = Ext.applyIf({
+        graphicName: "${symbol}",
+        pointRadius: "${size}"
+    }, OpenLayers.Feature.Vector.style["select"]);
+
+    return new OpenLayers.Layer.Vector("vector", {
+        styleMap: new OpenLayers.StyleMap({
+            "default": styleDefault,
+            "select": styleSelect
+        })
+    });
+}
+
 
 
 
 Ext.onReady(function() {
     GeoExt.Lang.set("{{ LANGUAGE_CODE }}");
     
+    var vecLayer = createVectorLayer();
+    
     var drawFeature = new OpenLayers.Control.DrawFeature(
         vecLayer, OpenLayers.Handler.Point);
     
     var config = {
         tools: [ "->",
+            new GeoExt.Action({
+                control: drawFeature,
+                map: app.mapPanel.map,
+                toggleGroup: "select",
+                allowDepress: false,
+                text: "Add feature"
+            }), 
             {
                 ptype: "gxp_wmsgetfeatureinfo",
                 format: "grid",
                 actionTarget: "main.tbar",
                 outputConfig: {width: 400, height: 200, panIn: false}
-            }
+            },
+            
         ],
         {% if PROXY_URL %}
         proxy: '{{ PROXY_URL }}',
