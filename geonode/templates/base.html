@@ -225,6 +225,8 @@
               {% if user.is_staff %}
               <li><a href="{% url "admin:index" %}"><i class="fa fa-cog"></i> {% trans "Admin" %}</a></li>
               {% endif %}
+              {% block extra_user_menu %}
+              {% endblock %}
               <li class="modal-divider"></li>
               <li><a title="Help" rel="tooltip" href="/help/"><i class="fa fa-question-circle"></i> {% trans "Help" %}</a></li>
             </ul>
