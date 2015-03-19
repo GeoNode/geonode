@@ -559,6 +559,12 @@ CATALOGUE = {
 PYCSW = {
     # pycsw configuration
     'CONFIGURATION': {
+        # uncomment / adjust to override server config system defaults
+        #'server': {
+        #    'maxrecords': '10',
+        #    'pretty_print': 'true',
+        #    'federatedcatalogues': 'http://catalog.data.gov/csw'
+        #},
         'metadata:main': {
             'identification_title': 'GeoNode Catalogue',
             'identification_abstract': 'GeoNode is an open source platform that facilitates the creation, sharing, \
