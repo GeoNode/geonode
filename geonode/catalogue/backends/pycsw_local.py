@@ -112,6 +112,9 @@ class CatalogueBackend(GenericCatalogueBackend):
         # serialize pycsw settings into SafeConfigParser
         # object for interaction with pycsw
         mdict = dict(settings.PYCSW['CONFIGURATION'], **CONFIGURATION)
+        if settings.PYCSW['CONFIGURATION'].has_key('server'):
+            # override server system defaults with user specified directives
+            mdict['server'].update(settings.PYCSW['CONFIGURATION']['server'])
         config = SafeConfigParser()
 
         for section, options in mdict.iteritems():
