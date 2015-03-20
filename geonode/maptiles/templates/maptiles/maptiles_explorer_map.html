@@ -49,9 +49,11 @@ Ext.onReady(function() {
     GeoExt.Lang.set("{{ LANGUAGE_CODE }}");
     
     var vecLayer = createVectorLayer();
+    map = new OpenLayers.Map( {{ viewer|safe }} );
     
     var config = {
-        tools: [{
+        tools: [
+            {
                 ptype: "gxp_wmsgetfeatureinfo",
                 format: "grid",
                 actionTarget: "main.tbar",
@@ -118,10 +120,11 @@ Ext.onReady(function() {
         }
     };
     
+    
+    
 
     config = Ext.apply(config, {{ viewer|safe }});
     
-    console.log({{viewer|safe}});
     app = new GeoExplorer.Viewer(config);
 
     for (var key in app.tools) {
