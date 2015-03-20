@@ -45,32 +45,18 @@ function createVectorLayer() {
 }
 
 
-
-
 Ext.onReady(function() {
     GeoExt.Lang.set("{{ LANGUAGE_CODE }}");
     
     var vecLayer = createVectorLayer();
     
-    var drawFeature = new OpenLayers.Control.DrawFeature(
-        vecLayer, OpenLayers.Handler.Point);
-    
     var config = {
-        tools: [ "->",
-            new GeoExt.Action({
-                control: drawFeature,
-                map: app.mapPanel.map,
-                toggleGroup: "select",
-                allowDepress: false,
-                text: "Add feature"
-            }), 
-            {
+        tools: [{
                 ptype: "gxp_wmsgetfeatureinfo",
                 format: "grid",
                 actionTarget: "main.tbar",
                 outputConfig: {width: 400, height: 200, panIn: false}
             },
-            
         ],
         {% if PROXY_URL %}
         proxy: '{{ PROXY_URL }}',
