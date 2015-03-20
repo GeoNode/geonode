@@ -10,8 +10,11 @@
 {% block title %}Map Tiles Selection — {{ block.super }}{% endblock %}
 
 {% block head %}
-{% include "maptiles/maptiles_leaflet_map.html" %}
-
+{% if preview == 'geoext' %}
+  {% include "maptiles/maptiles_explorer_map.html" %}
+{% else %}
+  {% include "maptiles/maptiles_leaflet_map.html" %}
+{% endif %}
 {{ block.super }}
 {% endblock %}
 

@@ -117,8 +117,11 @@ Ext.onReady(function() {
             }
         }
     };
+    
 
     config = Ext.apply(config, {{ viewer|safe }});
+    
+    console.log-(config);
     app = new GeoExplorer.Viewer(config);
 
     for (var key in app.tools) {
