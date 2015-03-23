@@ -44,6 +44,28 @@ function createVectorLayer() {
     });
 }
 
+GeoExplorer.Viewer.prototype.loadConfig = function(config) {
+        config.viewerTools.push(
+            {
+                ptype: "gxp_featuremanager",
+                id: "feature_mgr",
+                //actionTarget: "main.tbar",
+                //layer: this.map.layers.slice(-1)[0]
+                autoSetLayer: true,
+                checked: true
+            }
+        );
+        
+        config.viewerTools.push(
+            {
+                ptype: "gxp_featureeditor",
+                id: "feature_editor",
+                featureManager: "feature_mgr",
+                checked: true
+            }
+        );
+    GeoExplorer.Viewer.superclass.loadConfig.call(this, config);
+};
 
 Ext.onReady(function() {
     GeoExt.Lang.set("{{ LANGUAGE_CODE }}");
@@ -113,26 +135,12 @@ Ext.onReady(function() {
                 }
             }
         },
-        tools: ["->",
+        tools: [
             {
                 ptype: "gxp_wmsgetfeatureinfo",
                 format: "grid",
                 actionTarget: "main.tbar",
                 outputConfig: {width: 400, height: 200, panIn: false}
-            },
-            "-",
-            {
-                ptype: "gxp_featuremanager",
-                id: "gxp_feature_mgr",
-                actionTarget: "main.tbar"
-                layer: this.map.layers.slice(-1)[0]
-            },
-            "-",
-            {
-                ptype: "gxp_featureeditor",
-                id: "gxp_feature_editor",
-                actionTarget: "main.tbar",
-                featureManager: "gxp_feature_mgr"
             }
             ]
     });
@@ -142,6 +150,10 @@ Ext.onReady(function() {
         if (tool.ptype == 'gxp_styler') {
             tool.rasterStyling = true;
         };
+        if (tool.ptype == "gxp_featuremanager"){
+            console.log(tool.active);
+            console.log(tool.featureStore)
+        }
     };
 
     // change style displayed in map
