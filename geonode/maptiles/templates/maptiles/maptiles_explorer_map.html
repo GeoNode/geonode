@@ -51,7 +51,8 @@ GeoExplorer.Viewer.prototype.loadConfig = function(config) {
                 id: "feature_mgr",
                 //actionTarget: "main.tbar",
                 //layer: this.map.layers.slice(-1)[0]
-                autoSetLayer: true
+                autoSetLayer: true,
+                checked: true
             }
         );
         
@@ -59,7 +60,8 @@ GeoExplorer.Viewer.prototype.loadConfig = function(config) {
             {
                 ptype: "gxp_featureeditor",
                 id: "feature_editor",
-                featureManager: "feature_mgr"
+                featureManager: "feature_mgr",
+                checked: true
             }
         );
     GeoExplorer.Viewer.superclass.loadConfig.call(this, config);
