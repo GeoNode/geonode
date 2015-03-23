@@ -44,11 +44,6 @@ function createVectorLayer() {
     });
 }
 
-GeoExplorer.Viewer.prototype.loadConfig = function(config) {
-        
-    GeoExplorer.Viewer.superclass.loadConfig.call(this, config);
-};
-
 Ext.onReady(function() {
     GeoExt.Lang.set("{{ LANGUAGE_CODE }}");
     
