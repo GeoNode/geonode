@@ -26,6 +26,11 @@ import re
 #	"Orthophoto"	: ["_ortho"],
 #}
 SORT_TYPES = [ "name", "type", "uploaddate", "nosort"]
+PRICING = {
+	"LAZ file"      : 1.00,
+	"DEM TIF"       : 2.00,
+	"Orthophoto"    : 3.00,
+}
 
 TYPE_TO_IDENTIFIER_DICT = {
 	".laz"			: "LAZ file",
@@ -76,3 +81,20 @@ def grid_ref_2(grid_ref_string):
         return True
     else:
         return False
+
+def compute_price(geo_type):
+    try:
+        return PRICING[geo_type]
+    except KeyError as e:
+        raise KeyError("No valid pricing for geo-type [{0}]".format(geo_type))
+
+
+def ceph_object_ids_by_geotype(ceph_obj_list):
+    obj_name_dict = dict()
+    for obj in ceph_obj_list:
+        if obj.geo_type in obj_name_dict:
+            obj_name_dict[obj.geo_type.encode('utf8')].append(obj.name.encode('utf8'))
+        else:
+            obj_name_dict[obj.geo_type.encode('utf8')] = [obj.name.encode('utf8'),]
+        
+    return obj_name_dict

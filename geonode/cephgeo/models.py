@@ -1,5 +1,6 @@
 from django.db import models
 from geonode.layers.models import Layer
+import json
 
 class CephDataObject(models.Model):
     size_in_bytes   = models.IntegerField()

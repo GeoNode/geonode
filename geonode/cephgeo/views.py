@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, render_to_response
 from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
@@ -6,11 +6,16 @@ from django.utils.encoding import smart_str
 from django.contrib import messages
 from django.http import HttpResponseRedirect,HttpResponse
 from django.core import serializers
+from django.template import RequestContext
 
 from pprint import pprint
 
 from geonode.cephgeo.forms import DataInputForm
 from geonode.cephgeo.models import CephDataObject
+from geonode.tasks.ftp import process_ftp_request
+
+from changuito import CartProxy
+from changuito.proxy import ItemDoesNotExist
 
 import client, utils, local_settings, cPickle, unicodedata, time, operator, json
 
@@ -178,3 +183,103 @@ def data_input(request):
 def error(request):
     return render(request, "ceph_error.html",
                     {"err_msg"  : request.error,})
+
+@login_required
+def get_cart(request):
+    # DEBUG CALLS
+    if request.cart is not None:
+        remove_all_from_cart(request) # Clear cart for this user
+    for ceph_obj in CephDataObject.objects.all():
+        add_to_cart_unique(request, ceph_obj.id)
+    
+    # END DEBUG
+    return render_to_response('cart.html', 
+                                dict(cart=CartProxy(request)),
+                                context_instance=RequestContext(request))
+
+@login_required
+def get_cart_json(request):
+    cart = CartProxy(request)
+    #~ json_cart = dict()
+    #~ for item in cart:
+        #~ json_cart[str(item.pk)] = serializers.serialize('json', CephDataObject.objects.get(id=int(item.pk)))
+    #~ return HttpResponse(json.dumps(json_cart), content_type="application/json")
+    obj_name_dict = dict()
+    for item in cart:
+        obj = CephDataObject.objects.get(id=int(item.pk))
+        if obj.geo_type in obj_name_dict:
+            obj_name_dict[obj.geo_type.encode('utf8')].append(obj.name.encode('utf8'))
+        else:
+            obj_name_dict[obj.geo_type.encode('utf8')] = [obj.name.encode('utf8'),]
+    # obj_name_list = [CephDataObject.objects.get(id=int(item.pk)).name for item in cart]
+    return HttpResponse(json.dumps(obj_name_dict) , content_type="application/json")
+
+@login_required
+def get_obj_ids_json(request):
+    cart = CartProxy(request)
+    json_cart = dict()
+    ceph_objs = CephDataObject.objects.all()
+    ceph_objs_by_geotype = utils.ceph_object_ids_by_geotype(ceph_objs)
+    pprint(ceph_objs_by_geotype)
+    return HttpResponse(json.dumps(ceph_objs_by_geotype), content_type="application/json")
+
+@login_required
+def create_ftp_folder(request):
+    cart=CartProxy(request)
+    
+    #[CephDataObject.objects.get(id=int(item.pk)).name for item in cart]
+    
+    obj_name_dict = dict()
+    for item in cart:
+        obj = CephDataObject.objects.get(id=int(item.pk))
+        if obj.geo_type in obj_name_dict:
+            obj_name_dict[obj.geo_type.encode('utf8')].append(obj.name.encode('utf8'))
+        else:
+            obj_name_dict[obj.geo_type.encode('utf8')] = [obj.name.encode('utf8'),]
+    username = request.user.get_username()
+    
+    #Debug Step
+    if username == "admin":
+        username = "test-ftp-user"
+    email = request.user.email
+    request_name=time.strftime("ftp_request-%Y_%m_%d")
+    
+    # Call to celery
+    process_ftp_request.delay(username, email, request_name, obj_name_dict)
+    messages.add_message(request, messages.INFO, "FTP request is being processed")
+    
+    #~ tojson = (username, email, request_name, obj_name_dict)
+    #~ return HttpResponse(json.dumps(tojson), content_type="application/json")
+    return render_to_response('cart.html', 
+                                dict(cart=CartProxy(request)),
+                                context_instance=RequestContext(request))
+
+###
+# CART UTILS
+###
+@login_required
+def add_to_cart(request, ceph_obj_id, quantity=1):
+    product = CephDataObject.objects.get(id=ceph_obj_id)
+    cart = request.cart 
+    cart.add(product, utils.compute_price(product.geo_type), quantity)
+
+@login_required
+def add_to_cart_unique(request, ceph_obj_id):
+    product = CephDataObject.objects.get(id=ceph_obj_id)
+    cart = request.cart 
+    try:
+        cart.get_item(ceph_obj_id)
+    except ItemDoesNotExist:
+        cart.add(product, utils.compute_price(product.geo_type), 1)
+
+@login_required
+def remove_from_cart(request, ceph_obj_id):
+    cart = request.cart 
+    cart.remove_item(ceph_obj_id)
+    
+@login_required
+def remove_all_from_cart(request):
+    cart = request.cart 
+    if request.user.is_authenticated():
+        cart.delete_old_cart(request.user)
+    
