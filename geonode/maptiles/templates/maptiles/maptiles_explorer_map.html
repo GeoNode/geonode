@@ -114,6 +114,7 @@ Ext.onReady(function() {
             }
         },
         tools: [
+            "->",
             {
                 ptype: "gxp_wmsgetfeatureinfo",
                 format: "grid",
@@ -122,17 +123,18 @@ Ext.onReady(function() {
             },
             {
                 ptype: "gxp_featuremanager",
-                id: "gxp_feature_mgr",
+                id: "feature_mgr",
                 //actionTarget: "main.tbar",
                 //layer: this.map.layers.slice(-1)[0]
                 autoSetLayer: true
             },
             {
                 ptype: "gxp_featureeditor",
-                id: "gxp_feature_editor",
+                id: "feature_editor",
                 actionTarget: "main.tbar",
-                featureManager: "gxp_feature_mgr",
-                autoLoadFeature: true
+                featureManager: "feature_mgr",
+                autoLoadFeature: true,
+                autoActivate: true
             }
             ]
     });
