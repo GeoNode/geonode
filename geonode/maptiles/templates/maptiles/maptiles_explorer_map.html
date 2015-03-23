@@ -45,25 +45,7 @@ function createVectorLayer() {
 }
 
 GeoExplorer.Viewer.prototype.loadConfig = function(config) {
-        config.viewerTools.push(
-            {
-                ptype: "gxp_featuremanager",
-                id: "feature_mgr",
-                //actionTarget: "main.tbar",
-                //layer: this.map.layers.slice(-1)[0]
-                autoSetLayer: true,
-                checked: true
-            }
-        );
         
-        config.viewerTools.push(
-            {
-                ptype: "gxp_featureeditor",
-                id: "feature_editor",
-                featureManager: "feature_mgr",
-                checked: true
-            }
-        );
     GeoExplorer.Viewer.superclass.loadConfig.call(this, config);
 };
 
