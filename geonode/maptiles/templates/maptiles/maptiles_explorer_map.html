@@ -1,6 +1,6 @@
 {% include "geonode/ext_header.html" %}
 {% include "geonode/app_header.html" %}
-{% include "geonode/geo_header.html" %}
+{% include "geonode/geo_header_debug.html" %}
 <script type="text/javascript" src="{{ STATIC_URL}}geonode/js/utils/thumbnail.js"></script>
 <!--<script type="text/javascript" src="http://dev.openlayers.org/OpenLayers.js"></script>-->
 <script type="text/javascript">
@@ -53,6 +53,16 @@ Ext.onReady(function() {
             format: "grid",
             actionTarget: "main.tbar",
             outputConfig: {width: 400, height: 200, panIn: false}
+        },
+        {
+            ptype: "gxp_featuremanager",
+            id: "feature_manager",
+            autoSetLayer: true
+        },
+        {
+            ptype: "gxp_featureeditor",
+            id: "feature_manager",
+            autoLoadFeature: true
         }],
         {% if PROXY_URL %}
         proxy: '{{ PROXY_URL }}',
@@ -75,14 +85,13 @@ Ext.onReady(function() {
             renderTo: "preview_map",
             height: 400 
         },
-
         listeners: {
             "ready": function() {
                 var map = app.mapPanel.map;
                 var layer = app.map.layers.slice(-1)[0];
                 
                 var vec_layer = createVectorLayer();
-                map.add(vec_layer);
+                map.addLayer(vec_layer);
                 // FIXME(Ariel): Zoom to extent until #1795 is fixed.
                 //map.zoomToExtent(layer.maxExtent, false)
                 
