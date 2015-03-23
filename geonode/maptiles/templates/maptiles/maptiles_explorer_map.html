@@ -49,21 +49,17 @@ Ext.onReady(function() {
     GeoExt.Lang.set("{{ LANGUAGE_CODE }}");
     
     var vecLayer = createVectorLayer();
-    map = new OpenLayers.Map( {{ viewer|safe }} );
-    
-    var config = {
-        tools: [
-            {
-                ptype: "gxp_wmsgetfeatureinfo",
-                format: "grid",
-                actionTarget: "main.tbar",
-                outputConfig: {width: 400, height: 200, panIn: false}
-            },
-        ],
+    map = new OpenLayers.Map();
+    var viewer_options = {{ viewer|safe }};
+    app = new GeoExplorer.Viewer({
+        defaultSourceType: viewer_options["defaultSourceType"],
+        map: viewer_options["map"],
+        id: viewer_options["id"],
+        sources: viewer_options["sources"],
         {% if PROXY_URL %}
         proxy: '{{ PROXY_URL }}',
         {% endif %}
-        localGeoServerBaseUrl: "{{GEOSERVER_BASE_URL}}",
+         localGeoServerBaseUrl: "{{GEOSERVER_BASE_URL}}",
         authorizedRoles: "{{ user.is_authenticated|yesno:"ROLE_ADMINISTRATOR,ROLE_ANONYMOUS" }}",
 
         /* The URL to a REST map configuration service.  This service 
@@ -81,11 +77,10 @@ Ext.onReady(function() {
             renderTo: "preview_map",
             height: 400 
         },
-
         listeners: {
             "ready": function() {
-                var map = app.mapPanel.map;
-                var layer = app.map.layers.slice(-1)[0];
+                var map = this.mapPanel.map;
+                var layer = this.map.layers.slice(-1)[0];
 
                 // FIXME(Ariel): Zoom to extent until #1795 is fixed.
                 //map.zoomToExtent(layer.maxExtent, false)
@@ -117,15 +112,27 @@ Ext.onReady(function() {
                     return false;
                 }
             }
-        }
-    };
-    
-    
-    
-
-    config = Ext.apply(config, {{ viewer|safe }});
-    
-    app = new GeoExplorer.Viewer(config);
+        },
+        tools: [{
+                ptype: "gxp_wmsgetfeatureinfo",
+                format: "grid",
+                actionTarget: "main.tbar",
+                outputConfig: {width: 400, height: 200, panIn: false}
+            },
+            {
+                ptype: "gxp_featuremanager",
+                id: "gxp_feature_mgr",
+                actionTarget: "main.tbar"
+                layer: this.map.layers.slice(-1)[0];
+            },
+            {
+                ptype: "gxp_featureeditor",
+                id: "gxp_feature_editor",
+                actionTarget: "main.tbar",
+                featureManager: "gxp_feature_mgr"
+            },
+            ]
+    });
 
     for (var key in app.tools) {
         var tool = app.tools[key];
