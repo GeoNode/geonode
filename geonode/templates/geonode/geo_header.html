@@ -20,8 +20,22 @@ GeoExplorer.Viewer.prototype.loadConfig = function(config) {
         config.viewerTools.push( {
             ptype: "gxp_getfeedfeatureinfo",
             checked: true
+        },
+        {
+            ptype: "gxp_featuremanager",
+            id: "feature_mgr",
+            //actionTarget: "main.tbar",
+            //layer: this.map.layers.slice(-1)[0]
+            autoSetLayer: true,
+            checked: true
+        },
+        config.viewerTools.push(
+        {
+            ptype: "gxp_featureeditor",
+            id: "feature_editor",
+            featureManager: "feature_mgr",
+            checked: true
         });
-
     // Do not include the layer styler on the map-detail view.
     {% if not map %}
         {% if user.is_authenticated %}
