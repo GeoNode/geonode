@@ -189,11 +189,14 @@ def error(request):
 @login_required
 def get_cart(request):
     # DEBUG CALLS
-    if request.cart is not None:
+    cart=CartProxy(request)
+    if not cart.is_empty():
         remove_all_from_cart(request) # Clear cart for this user
         
     for ceph_obj in CephDataObject.objects.all():
+        print("Adding [{0}] to cart...".format(ceph_obj.name))
         add_to_cart_unique(request, ceph_obj.id)
+        #add_to_cart(request, ceph_obj.id)
     
     # END DEBUG
     return render_to_response('cart.html', 
@@ -214,7 +217,7 @@ def get_cart_json(request):
             obj_name_dict[obj.geo_type.encode('utf8')].append(obj.name.encode('utf8'))
         else:
             obj_name_dict[obj.geo_type.encode('utf8')] = [obj.name.encode('utf8'),]
-    # obj_name_list = [CephDataObject.objects.get(id=int(item.pk)).name for item in cart]
+    obj_name_dict = [CephDataObject.objects.get(id=int(item.pk)).name for item in cart]
     return HttpResponse(json.dumps(obj_name_dict) , content_type="application/json")
 
 @login_required
