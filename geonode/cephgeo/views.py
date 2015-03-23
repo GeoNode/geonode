@@ -187,7 +187,11 @@ def error(request):
 @login_required
 def get_cart(request):
     # DEBUG CALLS
-    remove_all_from_cart(request) # Clear cart for this user
+    try:
+        remove_all_from_cart(request) # Clear cart for this user
+    except OperationalError:
+        pass
+        
     for ceph_obj in CephDataObject.objects.all():
         add_to_cart_unique(request, ceph_obj.id)
     
