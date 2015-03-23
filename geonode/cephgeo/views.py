@@ -17,6 +17,8 @@ from geonode.tasks.ftp import process_ftp_request
 from changuito import CartProxy
 from changuito.proxy import ItemDoesNotExist
 
+from sqlite3 import OperationalError
+
 import client, utils, local_settings, cPickle, unicodedata, time, operator, json
 
 # Create your views here.
@@ -187,10 +189,8 @@ def error(request):
 @login_required
 def get_cart(request):
     # DEBUG CALLS
-    try:
+    if request.cart is not None:
         remove_all_from_cart(request) # Clear cart for this user
-    except OperationalError:
-        pass
         
     for ceph_obj in CephDataObject.objects.all():
         add_to_cart_unique(request, ceph_obj.id)
@@ -229,7 +229,11 @@ def get_obj_ids_json(request):
 @login_required
 def create_ftp_folder(request):
     cart=CartProxy(request)
-    
+    if cart.is_empty():
+        messages.add_message(request, messages.ERROR, "ERROR: Cart is empty, cannot process an empty FTP request!")
+        return render_to_response('cart.html', 
+                                    dict(cart=CartProxy(request)),
+                                    context_instance=RequestContext(request))
     #[CephDataObject.objects.get(id=int(item.pk)).name for item in cart]
     
     obj_name_dict = dict()
