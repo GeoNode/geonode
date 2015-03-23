@@ -21,8 +21,6 @@ function get_corners( x, y ){
          lr_x: ceil_tile_size(x), lr_y: floor_tile_size(y)
         };
 }
-var app, map;
-
 
 function createVectorLayer() {
 
@@ -44,96 +42,20 @@ function createVectorLayer() {
     });
 }
 
+var app, map, items=[];
+
 Ext.onReady(function() {
     GeoExt.Lang.set("{{ LANGUAGE_CODE }}");
-    
     var viewer_options = {{ viewer|safe }};
-    app = new GeoExplorer.Viewer({
-        defaultSourceType: viewer_options["defaultSourceType"],
-        map: viewer_options["map"],
-        id: viewer_options["id"],
-        sources: viewer_options["sources"],
-        {% if PROXY_URL %}
-        proxy: '{{ PROXY_URL }}',
-        {% endif %}
-         localGeoServerBaseUrl: "{{GEOSERVER_BASE_URL}}",
-        authorizedRoles: "{{ user.is_authenticated|yesno:"ROLE_ADMINISTRATOR,ROLE_ANONYMOUS" }}",
-
-        /* The URL to a REST map configuration service.  This service 
-         * provides listing and, with an authenticated user, saving of 
-         * maps on the server for sharing and editing.
-         */
-        rest: "/maps/",
-        {% if MAPFISH_PRINT_ENABLED %}
-        printService: "{{GEOSERVER_BASE_URL}}pdf/",
-        {% else %}
-        printService: "",
-        {% endif %}
-        
+    var app =  new GeoExplorer.Viewer()({
         portalConfig: {
             renderTo: "preview_map",
             height: 400 
         },
-        listeners: {
-            "ready": function() {
-                var map = this.mapPanel.map;
-                var layer = this.map.layers.slice(-1)[0];
-                var vecLayer = createVectorLayer();
-                map.addLayer(vecLayer);
-                // FIXME(Ariel): Zoom to extent until #1795 is fixed.
-                //map.zoomToExtent(layer.maxExtent, false)
-                
-                var bbox = layer.bbox;
-                if (bbox != undefined)
-                {
-                   if (!Array.isArray(bbox) && Object.keys(layer.srs) in bbox) {
-                    bbox = bbox[Object.keys(layer.srs)].bbox;
-                   }
-
-                   var extent = OpenLayers.Bounds.fromArray(bbox);
-                   var zoomToData = function()
-                   {
-                       map.zoomToExtent(extent, false);
-                       app.mapPanel.center = map.center;
-                       app.mapPanel.zoom = map.zoom;
-                       map.events.unregister('changebaselayer', null, zoomToData);
-                   };
-                   map.events.register('changebaselayer',null,zoomToData);
-                   if(map.baseLayer){
-                    map.zoomToExtent(extent, false);
-                   }
-                }
-            },
-            "beforeunload": function() {
-                if (modified) {
-                    styleEditor.show();
-                    return false;
-                }
-            }
-        },
-        tools: [
-            "->",
-            {
-                ptype: "gxp_wmsgetfeatureinfo",
-                format: "grid",
-                actionTarget: "main.tbar",
-                outputConfig: {width: 400, height: 200, panIn: false}
-            },
-            {
-                ptype: "gxp_featuremanager",
-                id: "feature_mgr",
-                //actionTarget: "main.tbar",
-                //layer: this.map.layers.slice(-1)[0]
-                autoSetLayer: true,
-                checked: true
-            },
-            {
-                ptype: "gxp_featureeditor",
-                id: "feature_editor",
-                featureManager: "feature_mgr",
-                checked: true
-            }]
-    });
+        items: items,
+        map: viewer_options["map"]
+    })
+    
 
     for (var key in app.tools) {
         var tool = app.tools[key];
