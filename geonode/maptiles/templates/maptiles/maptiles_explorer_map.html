@@ -53,8 +53,13 @@ Ext.onReady(function() {
             height: 400 
         },
         items: items,
-        map: viewer_options["map"]
-    })
+        map: viewer_options["map"],
+    {% if PROXY_URL %}
+        proxy: '{{ PROXY_URL }}',
+    {% endif %}
+        localGeoServerBaseUrl: "{{GEOSERVER_BASE_URL}}",
+        authorizedRoles: "{{ user.is_authenticated|yesno:"ROLE_ADMINISTRATOR,ROLE_ANONYMOUS" }}",
+    });
     
 
     for (var key in app.tools) {
@@ -90,6 +95,10 @@ Ext.onReady(function() {
         }   
     }, this);
 });
+
+items.push(
+
+);
 
 {% endautoescape %}
 </script>
