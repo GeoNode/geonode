@@ -47,8 +47,6 @@ function createVectorLayer() {
 Ext.onReady(function() {
     GeoExt.Lang.set("{{ LANGUAGE_CODE }}");
     
-    var vecLayer = createVectorLayer();
-    map = new OpenLayers.Map();
     var viewer_options = {{ viewer|safe }};
     app = new GeoExplorer.Viewer({
         defaultSourceType: viewer_options["defaultSourceType"],
@@ -80,7 +78,8 @@ Ext.onReady(function() {
             "ready": function() {
                 var map = this.mapPanel.map;
                 var layer = this.map.layers.slice(-1)[0];
-
+                var vecLayer = createVectorLayer();
+                map.addLayer(vecLayer);
                 // FIXME(Ariel): Zoom to extent until #1795 is fixed.
                 //map.zoomToExtent(layer.maxExtent, false)
                 
@@ -118,8 +117,21 @@ Ext.onReady(function() {
                 format: "grid",
                 actionTarget: "main.tbar",
                 outputConfig: {width: 400, height: 200, panIn: false}
-            }
-            ]
+            },
+            {
+                ptype: "gxp_featuremanager",
+                id: "feature_mgr",
+                //actionTarget: "main.tbar",
+                //layer: this.map.layers.slice(-1)[0]
+                autoSetLayer: true,
+                checked: true
+            },
+            {
+                ptype: "gxp_featureeditor",
+                id: "feature_editor",
+                featureManager: "feature_mgr",
+                checked: true
+            }]
     });
 
     for (var key in app.tools) {
