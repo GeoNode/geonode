@@ -142,6 +142,10 @@ Ext.onReady(function() {
         if (tool.ptype == 'gxp_styler') {
             tool.rasterStyling = true;
         };
+        if (tool.ptype == "gxp_featuremanager"){
+            console.log(tool.active);
+            console.log(tool.featureStore)
+        }
     };
 
     // change style displayed in map
