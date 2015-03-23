@@ -1,0 +1,41 @@
+{% extends "ceph_base.html" %}
+{% load i18n %}
+{% load staticfiles %}
+{% load url from future %}
+
+{% block title %}CephGeo Cart{% endblock %}
+
+{% block body_outer %}
+  {% block body %}
+  
+  <div class="jumbotron">
+    <div class="container">
+		<h1>Cart</h1>
+	</div>
+  </div>
+
+  <table border="3" style="width:100%">
+        <tr>
+            <th>Product</th>
+            <th>Size</th>
+            <th>Quantity</th>
+            <th>Total Price</th>
+        </tr>
+        {% for item in cart %}
+        <tr>
+            <td>  {{ item.product.name }}</td>
+            <td>  {{ item.product.size_in_bytes }}</td>
+            <td>  {{ item.quantity }}</td>
+            <td>  {{ item.total_price }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+    <div class="container">
+      <a href="{% url "cephgeo.views.create_ftp_folder" %}" class="btn btn-primary pull-right">{% trans "Create FTP Folder" %}</a>
+    </div>
+{% endblock body %}
+ {% block sidebar %}{% endblock sidebar %}
+{% endblock body_outer %}
+
+
+

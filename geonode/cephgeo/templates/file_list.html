@@ -27,8 +27,7 @@
 	{% for file in file_list %}
 		<li><b>{{ file.name }}</b>
 			<br />Last Modified: {{ file.last_modified }}
-			<br />File Size: {{ file.bytes|filesizeformat  }}
-			<br />File Type: {{ file.type }}
+			<br />File size: {{ file.bytes|filesizeformat  }}
 		</li>
 	{% endfor %}
   </ul>

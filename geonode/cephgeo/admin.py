@@ -14,7 +14,6 @@ class CephDataObjectAdmin(admin.ModelAdmin):
         'geo_type',
         'grid_ref',
         'size_in_bytes',)
-
     list_filter = ('geo_type', 'grid_ref')
     search_fields = ('name', 'content_type', 'grid_ref',)
 
