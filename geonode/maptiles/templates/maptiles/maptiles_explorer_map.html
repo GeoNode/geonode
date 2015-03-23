@@ -44,6 +44,26 @@ function createVectorLayer() {
     });
 }
 
+GeoExplorer.Viewer.prototype.loadConfig = function(config) {
+        config.viewerTools.push(
+            {
+                ptype: "gxp_featuremanager",
+                id: "feature_mgr",
+                //actionTarget: "main.tbar",
+                //layer: this.map.layers.slice(-1)[0]
+                autoSetLayer: true
+            }
+        });
+        
+        config.viewerTools.push(
+            {
+                ptype: "gxp_featureeditor",
+                id: "feature_editor",
+                featureManager: "feature_mgr"
+            }
+        });
+    GeoExplorer.Viewer.superclass.loadConfig.call(this, config);
+};
 
 Ext.onReady(function() {
     GeoExt.Lang.set("{{ LANGUAGE_CODE }}");
@@ -114,27 +134,11 @@ Ext.onReady(function() {
             }
         },
         tools: [
-            "->",
-            //{
-            //    ptype: "gxp_wmsgetfeatureinfo",
-            //    format: "grid",
-            //    actionTarget: "main.tbar",
-            //    outputConfig: {width: 400, height: 200, panIn: false}
-            //},
             {
-                ptype: "gxp_featuremanager",
-                id: "feature_mgr",
-                //actionTarget: "main.tbar",
-                //layer: this.map.layers.slice(-1)[0]
-                autoSetLayer: true
-            },
-            {
-                ptype: "gxp_featureeditor",
-                id: "feature_editor",
+                ptype: "gxp_wmsgetfeatureinfo",
+                format: "grid",
                 actionTarget: "main.tbar",
-                featureManager: "feature_mgr",
-                autoLoadFeature: true,
-                autoActivate: true
+                outputConfig: {width: 400, height: 200, panIn: false}
             }
             ]
     });
