@@ -53,7 +53,7 @@ GeoExplorer.Viewer.prototype.loadConfig = function(config) {
                 //layer: this.map.layers.slice(-1)[0]
                 autoSetLayer: true
             }
-        });
+        );
         
         config.viewerTools.push(
             {
@@ -61,7 +61,7 @@ GeoExplorer.Viewer.prototype.loadConfig = function(config) {
                 id: "feature_editor",
                 featureManager: "feature_mgr"
             }
-        });
+        );
     GeoExplorer.Viewer.superclass.loadConfig.call(this, config);
 };
 
