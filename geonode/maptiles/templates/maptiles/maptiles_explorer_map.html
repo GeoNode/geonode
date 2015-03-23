@@ -113,26 +113,26 @@ Ext.onReady(function() {
                 }
             }
         },
-        tools: ["->",
+        tools: [
             {
                 ptype: "gxp_wmsgetfeatureinfo",
                 format: "grid",
                 actionTarget: "main.tbar",
                 outputConfig: {width: 400, height: 200, panIn: false}
             },
-            "-",
             {
                 ptype: "gxp_featuremanager",
                 id: "gxp_feature_mgr",
                 actionTarget: "main.tbar",
-                layer: this.map.layers.slice(-1)[0]
+                //layer: this.map.layers.slice(-1)[0]
+                autoSetLayer: true
             },
-            "-",
             {
                 ptype: "gxp_featureeditor",
                 id: "gxp_feature_editor",
                 actionTarget: "main.tbar",
-                featureManager: "gxp_feature_mgr"
+                featureManager: "gxp_feature_mgr",
+                autoLoadFeature: true
             }
             ]
     });
