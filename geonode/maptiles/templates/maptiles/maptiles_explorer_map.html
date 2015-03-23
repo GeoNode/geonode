@@ -48,6 +48,12 @@ Ext.onReady(function() {
     GeoExt.Lang.set("{{ LANGUAGE_CODE }}");
     var viewer_options = {{ viewer|safe }};
     var app =  new GeoExplorer.Viewer()({
+        tools: [{
+                    ptype: "gxp_wmsgetfeatureinfo",
+                    format: "grid",
+                    actionTarget: "main.tbar",
+                    outputConfig: {width: 400, height: 200, panIn: false}
+                }],
         portalConfig: {
             renderTo: "preview_map",
             height: 400 
@@ -104,7 +110,6 @@ Ext.onReady(function() {
             }
         }
     });
-    
 
     for (var key in app.tools) {
         var tool = app.tools[key];
