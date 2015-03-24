@@ -117,11 +117,13 @@ Ext.onReady(function() {
         if (tool.ptype == 'gxp_styler') {
             tool.rasterStyling = true;
         };
-        if (tool.ptype == "gxp_featuremanager"){
-            console.log(tool.active);
-            console.log(tool.featureStore)
-        }
+        console.log(tool.ptype);
     };
+    
+    for (var key in app.portalItems){
+        var portalItem = app.portalItems[key];
+        console.log(portalItem.id);
+    }
 
     // change style displayed in map
     Ext.get(Ext.DomQuery.select("input[@name='style']")).on("click", function(evt, elem) {
