@@ -109,11 +109,11 @@ Ext.onReady(function() {
         }
     };
     
-    console.log(config);
+    console.log("after declaration:"+config);
 
     config = Ext.apply(config, {{ viewer|safe }});
     
-    console.log(config);
+    console.log("after Ext.apply"+config);
 
     app = new GeoExplorer.Viewer(config);
 
