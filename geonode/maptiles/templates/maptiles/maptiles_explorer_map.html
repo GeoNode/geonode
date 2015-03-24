@@ -120,10 +120,11 @@ Ext.onReady(function() {
         console.log("Ptype:" + tool.ptype + " ID: " + tool.id);
     };
     
-    for (var key in app.portalItems){
+    console.log(app.portalItems);
+    /*for (var key in app.portalItems){
         var portalItem = app.portalItems[key];
         console.log(portalItem.ptype);
-    }
+    }*/
 
     // change style displayed in map
     Ext.get(Ext.DomQuery.select("input[@name='style']")).on("click", function(evt, elem) {
