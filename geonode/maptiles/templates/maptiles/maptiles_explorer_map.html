@@ -122,6 +122,9 @@ Ext.onReady(function() {
     };
 
     config = Ext.apply(config, {{ viewer|safe }});
+    
+    console.log(config);
+
     app = new GeoExplorer.Viewer(config);
 
     for (var key in app.tools) {
@@ -131,7 +134,6 @@ Ext.onReady(function() {
         };
         //console.log("Ptype:" + tool.ptype + " ID: " + tool.id);
     };
-    delete app.tools;
     //console.log(app.tools);
     
     //console.log(app.portalItems);
