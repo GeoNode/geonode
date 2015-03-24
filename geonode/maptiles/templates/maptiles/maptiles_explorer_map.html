@@ -46,6 +46,7 @@ var app, map, items=[];
 
 var viewer_options = {{ viewer|safe }};
 Ext.onReady(function() {
+    
     GeoExt.Lang.set("{{ LANGUAGE_CODE }}");
     var config = {
         {% if PROXY_URL %}
@@ -108,6 +109,7 @@ Ext.onReady(function() {
             }
         }
     };
+    console.log(config);
     
     console.log("after declaration:"+JSON.stringify(config));
 
