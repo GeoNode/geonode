@@ -48,24 +48,6 @@ var viewer_options = {{ viewer|safe }};
 Ext.onReady(function() {
     GeoExt.Lang.set("{{ LANGUAGE_CODE }}");
     var config = {
-        tools: [{
-            ptype: "gxp_wmsgetfeatureinfo",
-            format: "grid",
-            actionTarget: "main.tbar",
-            outputConfig: {width: 400, height: 200, panIn: false}
-        },
-        {
-            ptype: "gxp_featuremanager",
-            id: "feature_manager",
-            autoSetLayer: true,
-            actionTarget: "main.tbar"
-        },
-        {
-            ptype: "gxp_featureeditor",
-            id: "feature_manager",
-            autoLoadFeature: true,
-            actionTarget: "main.tbar"
-        }],
         {% if PROXY_URL %}
         proxy: '{{ PROXY_URL }}',
         {% endif %}
