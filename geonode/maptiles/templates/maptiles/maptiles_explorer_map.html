@@ -27,9 +27,7 @@ function display_points(point_list, div_id){
         html_out += "<li>"+pt.x+"E"+pt.y+"N</li>";
     }
     html_out ="</ul>";
-    var e = document.createElement("div");
-    e.innerHTML=html_out;
-    document.getElementById(div_id).appendChild(e);
+    document.getElementById(div_id).innerHTML=html_out;
 }
 function createVectorLayer() {
 
