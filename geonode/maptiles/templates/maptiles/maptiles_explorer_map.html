@@ -44,13 +44,11 @@ function createVectorLayer() {
 
 var app;
 
-var config={};
-
 var viewer_options = {{ viewer|safe }};
 Ext.onReady(function() {
-    console.log(config);
+   console.log(config);
     
-    GeoExt.Lang.set("{{ LANGUAGE_CODE }}");
+   GeoExt.Lang.set("{{ LANGUAGE_CODE }}");
    var config = {
         tools: [
             {
@@ -119,7 +117,9 @@ Ext.onReady(function() {
             }
         }
     };
-
+    
+    console.log(config);
+    
     config = Ext.apply(config, {{ viewer|safe }});
 
     app = new GeoExplorer.Viewer(config);
