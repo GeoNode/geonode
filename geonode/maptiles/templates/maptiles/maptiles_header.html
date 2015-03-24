@@ -36,9 +36,23 @@ GeoExplorer.Viewer.prototype.loadConfig = function(config) {
     config.viewerTools.splice(7,0, {
         id: "feature_editor",
         ptype: "gxp_featureeditor",
-        featureManager: "featuremanager",
+        featureManager: "feature_manager",
         hidden: false
     });
+    
+    config.tools.push(
+        {
+            ptype: "gxp_featuremanager",
+            id: "feature_manager",
+            autoSetLayer: true
+            //actionTarget: "paneltbar"
+        },
+        {
+            ptype: "gxp_featureeditor",
+            id: "feature_manager",
+            autoLoadFeature: true,
+            actionTarget: "paneltbar"
+        });
 
     GeoExplorer.Viewer.superclass.loadConfig.call(this, config);
 };
