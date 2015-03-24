@@ -44,23 +44,6 @@ function createVectorLayer() {
 
 var app;
 
-/*var config = {tools:[
-        {
-            ptype: "gxp_getfeedfeatureinfo",
-            checked: true
-        },
-        {
-            id: "feature_manager",
-            ptype: "gxp_featuremanager",
-            autoSetLayer: true
-        },
-        {
-            ptype: "gxp_featureeditor",
-            id: "feature_manager",
-            autoLoadFeature: true,
-            actionTarget: "main.tbar"
-        }]};*/
-
 var config={};
 
 var viewer_options = {{ viewer|safe }};
@@ -68,73 +51,76 @@ Ext.onReady(function() {
     console.log(config);
     
     GeoExt.Lang.set("{{ LANGUAGE_CODE }}");
-    /*{% if PROXY_URL %}
-    config["proxy"]='{{ PROXY_URL }}';
-    {% endif %}
-    localGeoServerBaseUrl: "{{GEOSERVER_BASE_URL}}",
-    config["authorizedRoles"]="{{ user.is_authenticated|yesno:"ROLE_ADMINISTRATOR,ROLE_ANONYMOUS" }}";*/
-
-    /* The URL to a REST map configuration service.  This service 
-     * provides listing and, with an authenticated user, saving of 
-     * maps on the server for sharing and editing.
-     */
-    /*config["rest"]="/maps/";
-    {% if MAPFISH_PRINT_ENABLED %}
-    config["printService"]= "{{GEOSERVER_BASE_URL}}pdf/";
-    {% else %}
-    config["printService"]="";
-    {% endif %}
-    
-    config["portalConfig"] = {
-        renderTo: "preview_map",
-        height: 400 
-    };
-    config["listeners"]={
-        "ready": function() {
-            var map = app.mapPanel.map;
-            var layer = app.map.layers.slice(-1)[0];
-            
-            var vec_layer = createVectorLayer();
-            map.addLayer(vec_layer);
-            // FIXME(Ariel): Zoom to extent until #1795 is fixed.
-            //map.zoomToExtent(layer.maxExtent, false)
-            
-            var bbox = layer.bbox;
-            if (bbox != undefined)
+   var config = {
+        tools: [
             {
-               if (!Array.isArray(bbox) && Object.keys(layer.srs) in bbox) {
-                bbox = bbox[Object.keys(layer.srs)].bbox;
-               }
+                ptype: "gxp_wmsgetfeatureinfo",
+                format: "grid",
+                actionTarget: "main.tbar",
+                outputConfig: {width: 400, height: 200, panIn: false}
+            },
+        ],
+        {% if PROXY_URL %}
+        proxy: '{{ PROXY_URL }}',
+        {% endif %}
+        localGeoServerBaseUrl: "{{GEOSERVER_BASE_URL}}",
+        authorizedRoles: "{{ user.is_authenticated|yesno:"ROLE_ADMINISTRATOR,ROLE_ANONYMOUS" }}",
 
-               var extent = OpenLayers.Bounds.fromArray(bbox);
-               var zoomToData = function()
-               {
-                   map.zoomToExtent(extent, false);
-                   app.mapPanel.center = map.center;
-                   app.mapPanel.zoom = map.zoom;
-                   map.events.unregister('changebaselayer', null, zoomToData);
-               };
-               map.events.register('changebaselayer',null,zoomToData);
-               if(map.baseLayer){
-                map.zoomToExtent(extent, false);
-               }
-            }
+        /* The URL to a REST map configuration service.  This service 
+         * provides listing and, with an authenticated user, saving of 
+         * maps on the server for sharing and editing.
+         */
+        rest: "/maps/",
+        {% if MAPFISH_PRINT_ENABLED %}
+        printService: "{{GEOSERVER_BASE_URL}}pdf/",
+        {% else %}
+        printService: "",
+        {% endif %}
+        
+        portalConfig: {
+            renderTo: "preview_map",
+            height: 400 
         },
-        "beforeunload": function() {
-            if (modified) {
-                styleEditor.show();
-                return false;
+
+        listeners: {
+            "ready": function() {
+                var map = app.mapPanel.map;
+                var layer = app.map.layers.slice(-1)[0];
+
+                // FIXME(Ariel): Zoom to extent until #1795 is fixed.
+                //map.zoomToExtent(layer.maxExtent, false)
+                
+                var bbox = layer.bbox;
+                if (bbox != undefined)
+                {
+                   if (!Array.isArray(bbox) && Object.keys(layer.srs) in bbox) {
+                    bbox = bbox[Object.keys(layer.srs)].bbox;
+                   }
+
+                   var extent = OpenLayers.Bounds.fromArray(bbox);
+                   var zoomToData = function()
+                   {
+                       map.zoomToExtent(extent, false);
+                       app.mapPanel.center = map.center;
+                       app.mapPanel.zoom = map.zoom;
+                       map.events.unregister('changebaselayer', null, zoomToData);
+                   };
+                   map.events.register('changebaselayer',null,zoomToData);
+                   if(map.baseLayer){
+                    map.zoomToExtent(extent, false);
+                   }
+                }
+            },
+            "beforeunload": function() {
+                if (modified) {
+                    styleEditor.show();
+                    return false;
+                }
             }
         }
     };
-    
-    console.log(config);
-    
-    console.log("after declaration:"+JSON.stringify(config));
 
     config = Ext.apply(config, {{ viewer|safe }});
-    
-    console.log("after Ext.apply"+JSON.stringify(config));
 
     app = new GeoExplorer.Viewer(config);
 
@@ -148,13 +134,13 @@ Ext.onReady(function() {
     //console.log(app.tools);
     
     //console.log(app.portalItems);
-    /*for (var key in app.portalItems){
+    for (var key in app.portalItems){
         var portalItem = app.portalItems[key];
         console.log(portalItem.ptype);
-    }*/
+    }
 
-    // change style displayed in map
-    /*Ext.get(Ext.DomQuery.select("input[@name='style']")).on("click", function(evt, elem) {
+    //change style displayed in map
+    Ext.get(Ext.DomQuery.select("input[@name='style']")).on("click", function(evt, elem) {
         app.selectedLayer.getLayer().mergeNewParams({
             "STYLES": elem.id,
             "_dc": Math.random()
@@ -173,7 +159,7 @@ Ext.onReady(function() {
         if(opts.method == 'PUT'){
             $('#legend_icon').attr('src', $('#legend_icon').attr('src')+'&'+Math.random());
         }   
-    }, this);*/
+    }, this);
 });
 
 {% endautoescape %}
