@@ -14,6 +14,8 @@ OpenLayers.Request.DEFAULT_CONFIG.headers = {
 };
 
 GeoExplorer.Viewer.prototype.loadConfig = function(config) {
+    
+    console.log(config);
         config.viewerTools.push( {
             ptype: "gxp_getfeedfeatureinfo",
             checked: true
@@ -39,21 +41,6 @@ GeoExplorer.Viewer.prototype.loadConfig = function(config) {
         featureManager: "feature_manager",
         hidden: false
     });
-    
-    config["tools"].push(
-        {
-            ptype: "gxp_featuremanager",
-            id: "feature_manager",
-            autoSetLayer: true
-            //actionTarget: "paneltbar"
-        },
-        {
-            ptype: "gxp_featureeditor",
-            id: "feature_manager",
-            autoLoadFeature: true,
-            actionTarget: "paneltbar"
-        });
-
     GeoExplorer.Viewer.superclass.loadConfig.call(this, config);
 };
 </script>
