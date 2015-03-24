@@ -121,15 +121,20 @@ Ext.onReady(function() {
                         console.log("clicked! "+lonlat.lat+"N"+lonlat.lon+"E");
                         var computed_corners = get_corners(lonlat.lon, lonlat.lat);
                         var temp_pt = new OpenLayers.Geometry.Point(lonlat.lon, lonlat.lat)
-                        for (var pt in georef_list){
-                            if (pt.equals(temp_pt)){
-                                array.splice(georef_list.indexOf(pt),1);
-                                display_points(georef_list, "point_display");
-                                return;
+                        if (georef_list.length < 1){
+                            georef_list.push(temp_pt);
+                        }else{
+                            for (var pt in georef_list){
+                                if (pt.equals(temp_pt)){
+                                    array.splice(georef_list.indexOf(pt),1);
+                                    display_points(georef_list, "point_display");
+                                    return;
+                                }
                             }
+                            georef_list.push(temp_pt);
                         }
-                        georef_list.push(temp_pt);
-                        display_points();
+                        
+                        display_points(georef_list, "point_display");
                         
                         
                     }
