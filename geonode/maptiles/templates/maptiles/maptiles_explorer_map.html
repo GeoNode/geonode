@@ -22,10 +22,11 @@ function get_corners( x, y ){
         };
 }
 function display_points(point_list, div_id){
-    var html_out = "";
+    var html_out = "<ul>";
     for ( var pt in point_list){
-        html_out += pt.x+"E"+pt.y+"N<br/>";
+        html_out += "<li>"+pt.x+"E"+pt.y+"N</li>";
     }
+    html_out ="</ul>";
     var e = document.createElement("div");
     e.innerHTML=html_out;
     document.getElementById(div_id).appendChild(e);
