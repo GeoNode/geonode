@@ -179,8 +179,6 @@ Ext.onReady(function() {
         }
     };
     
-    console.log(config);
-    
     config = Ext.apply(config, {{ viewer|safe }});
 
     app = new GeoExplorer.Viewer(config);
@@ -193,12 +191,6 @@ Ext.onReady(function() {
         //console.log("Ptype:" + tool.ptype + " ID: " + tool.id);
     };
     //console.log(app.tools);
-    
-    //console.log(app.portalItems);
-    for (var key in app.portalItems){
-        var portalItem = app.portalItems[key];
-        console.log(portalItem.ptype);
-    }
 
     //change style displayed in map
     Ext.get(Ext.DomQuery.select("input[@name='style']")).on("click", function(evt, elem) {
