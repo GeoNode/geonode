@@ -61,8 +61,11 @@ var config = {tools:[
             actionTarget: "main.tbar"
         }]};
 
+var test_var={};
+
 var viewer_options = {{ viewer|safe }};
 Ext.onReady(function() {
+    console.log(test_var);
     
     GeoExt.Lang.set("{{ LANGUAGE_CODE }}");
     {% if PROXY_URL %}
