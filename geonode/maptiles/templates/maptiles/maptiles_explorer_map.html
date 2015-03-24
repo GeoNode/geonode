@@ -44,80 +44,80 @@ function createVectorLayer() {
 
 var app, map, items=[];
 
+var config = {tools:[
+        {
+            ptype: "gxp_getfeedfeatureinfo",
+            checked: true
+        },
+        {
+            id: "feature_manager",
+            ptype: "gxp_featuremanager",
+            autoSetLayer: true
+        }];
+
 var viewer_options = {{ viewer|safe }};
 Ext.onReady(function() {
     
     GeoExt.Lang.set("{{ LANGUAGE_CODE }}");
-    var config = {
-        {% if PROXY_URL %}
-        proxy: '{{ PROXY_URL }}',
-        {% endif %}
-        localGeoServerBaseUrl: "{{GEOSERVER_BASE_URL}}",
-        authorizedRoles: "{{ user.is_authenticated|yesno:"ROLE_ADMINISTRATOR,ROLE_ANONYMOUS" }}",
+    {% if PROXY_URL %}
+    config["proxy"]='{{ PROXY_URL }}';
+    {% endif %}
+    localGeoServerBaseUrl: "{{GEOSERVER_BASE_URL}}",
+    config["authorizedRoles"]="{{ user.is_authenticated|yesno:"ROLE_ADMINISTRATOR,ROLE_ANONYMOUS" }}";
 
-        /* The URL to a REST map configuration service.  This service 
-         * provides listing and, with an authenticated user, saving of 
-         * maps on the server for sharing and editing.
-         */
-        rest: "/maps/",
-        {% if MAPFISH_PRINT_ENABLED %}
-        printService: "{{GEOSERVER_BASE_URL}}pdf/",
-        {% else %}
-        printService: "",
-        {% endif %}
-        
-        portalConfig: {
-            renderTo: "preview_map",
-            height: 400 
+    /* The URL to a REST map configuration service.  This service 
+     * provides listing and, with an authenticated user, saving of 
+     * maps on the server for sharing and editing.
+     */
+    config["rest"]="/maps/";
+    {% if MAPFISH_PRINT_ENABLED %}
+    config["printService"]= "{{GEOSERVER_BASE_URL}}pdf/";
+    {% else %}
+    config["printService"]="";
+    {% endif %}
+    
+    config["portalConfig"] = {
+        renderTo: "preview_map",
+        height: 400 
+    };
+    config["listeners"]={
+        "ready": function() {
+            var map = app.mapPanel.map;
+            var layer = app.map.layers.slice(-1)[0];
+            
+            var vec_layer = createVectorLayer();
+            map.addLayer(vec_layer);
+            // FIXME(Ariel): Zoom to extent until #1795 is fixed.
+            //map.zoomToExtent(layer.maxExtent, false)
+            
+            var bbox = layer.bbox;
+            if (bbox != undefined)
+            {
+               if (!Array.isArray(bbox) && Object.keys(layer.srs) in bbox) {
+                bbox = bbox[Object.keys(layer.srs)].bbox;
+               }
+
+               var extent = OpenLayers.Bounds.fromArray(bbox);
+               var zoomToData = function()
+               {
+                   map.zoomToExtent(extent, false);
+                   app.mapPanel.center = map.center;
+                   app.mapPanel.zoom = map.zoom;
+                   map.events.unregister('changebaselayer', null, zoomToData);
+               };
+               map.events.register('changebaselayer',null,zoomToData);
+               if(map.baseLayer){
+                map.zoomToExtent(extent, false);
+               }
+            }
         },
-        listeners: {
-            "ready": function() {
-                var map = app.mapPanel.map;
-                var layer = app.map.layers.slice(-1)[0];
-                
-                var vec_layer = createVectorLayer();
-                map.addLayer(vec_layer);
-                // FIXME(Ariel): Zoom to extent until #1795 is fixed.
-                //map.zoomToExtent(layer.maxExtent, false)
-                
-                var bbox = layer.bbox;
-                if (bbox != undefined)
-                {
-                   if (!Array.isArray(bbox) && Object.keys(layer.srs) in bbox) {
-                    bbox = bbox[Object.keys(layer.srs)].bbox;
-                   }
-
-                   var extent = OpenLayers.Bounds.fromArray(bbox);
-                   var zoomToData = function()
-                   {
-                       map.zoomToExtent(extent, false);
-                       app.mapPanel.center = map.center;
-                       app.mapPanel.zoom = map.zoom;
-                       map.events.unregister('changebaselayer', null, zoomToData);
-                   };
-                   map.events.register('changebaselayer',null,zoomToData);
-                   if(map.baseLayer){
-                    map.zoomToExtent(extent, false);
-                   }
-                }
-            },
-            "beforeunload": function() {
-                if (modified) {
-                    styleEditor.show();
-                    return false;
-                }
+        "beforeunload": function() {
+            if (modified) {
+                styleEditor.show();
+                return false;
             }
         }
     };
-    config.tools.push({
-            ptype: "gxp_getfeedfeatureinfo",
-            checked: true
-        });
-        config.viewerTools.push( {
-            id: "feature_manager",
-            ptype: "gxp_featuremanager",
-            autoSetLayer: true
-        });
     
     console.log("after declaration:"+JSON.stringify(config));
 
