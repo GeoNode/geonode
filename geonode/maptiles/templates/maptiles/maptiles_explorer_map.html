@@ -26,13 +26,11 @@ var georef_list=[];
 
 function display_points(point_list, div_id){
     var html_out = "<ul>";
-    console.log("in");
     for (var i=0; i< point_list.length; i++){
         var pt = point_list[i];
         html_out="<li>"+pt.x+"E"+pt.y+"N</li>";
         //document.getElementById(div_id).appendChild(pt_e);
     }
-    console.log("out");
     html_out +="</ul>";
     document.getElementById(div_id).innerHTML=html_out;
     //console.log(html_out);
@@ -140,6 +138,7 @@ Ext.onReady(function() {
                                     georef_list.splice(i,1);
                                     //display_points(georef_list, "point_display");
                                     removed=true;
+                                    console.log("Removing point");
                                 }
                             }
                             if(!removed){
@@ -149,7 +148,6 @@ Ext.onReady(function() {
                         
                         display_points(georef_list, "point_display");
                         console.log(georef_list);
-                        
                     }
                 });
 
