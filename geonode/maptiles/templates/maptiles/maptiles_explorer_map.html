@@ -21,7 +21,15 @@ function get_corners( x, y ){
          lr_x: ceil_tile_size(x), lr_y: floor_tile_size(y)
         };
 }
-
+function display_points(point_list, div_id){
+    var html_out = "";
+    for ( var pt in point_list){
+        html_out += pt.x+"E"+pt.y+"N<br/>";
+    }
+    var e = document.createElement("div");
+    e.innerHTML=html_out;
+    document.getElementById(div_id).appendChild(e);
+}
 function createVectorLayer() {
 
     var styleDefault = Ext.applyIf({
@@ -112,7 +120,18 @@ Ext.onReady(function() {
                         var lonlat = map.getLonLatFromPixel(e.xy);
                         console.log("clicked! "+lonlat.lat+"N"+lonlat.lon+"E");
                         var computed_corners = get_corners(lonlat.lon, lonlat.lat);
-                        georef_list.push(new OpenLayers.Geometry.Point(lonlat.lon, lonlat.lat));
+                        var temp_pt = new OpenLayers.Geometry.Point(lonlat.lon, lonlat.lat)
+                        for (var pt in georef_list){
+                            if (pt.equals(temp_pt)){
+                                array.splice(georef_list.indexOf(pt),1);
+                                display_points(georef_list, "point_display");
+                                return;
+                            }
+                        }
+                        georef_list.push(temp_pt);
+                        display_points();
+                        
+                        
                     }
                 });
 
