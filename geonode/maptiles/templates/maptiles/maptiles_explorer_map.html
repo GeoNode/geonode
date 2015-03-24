@@ -117,12 +117,12 @@ Ext.onReady(function() {
         if (tool.ptype == 'gxp_styler') {
             tool.rasterStyling = true;
         };
-        console.log(tool.ptype);
+        console.log("Ptype:" + tool.ptype + " ID: " + tool.id);
     };
     
     for (var key in app.portalItems){
         var portalItem = app.portalItems[key];
-        console.log(portalItem.id);
+        console.log(portalItem.ptype);
     }
 
     // change style displayed in map
