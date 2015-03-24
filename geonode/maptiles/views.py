@@ -122,6 +122,6 @@ def tiled_view(request, overlay="geonode:index", template="maptiles/maptiles_bas
 
     #if settings.SOCIAL_ORIGINS:
     #    context_dict["social_links"] = build_social_links(request, layer)
-    //print context_dict
+    #print context_dict
     
     return render_to_response(template, RequestContext(request, context_dict))
