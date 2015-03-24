@@ -50,20 +50,20 @@ Ext.onReady(function() {
     var config = {tools: [{
             ptype: "gxp_wmsgetfeatureinfo",
             format: "grid",
-            actionTarget: "paneltbar",
+            actionTarget: "panel.tbar",
             outputConfig: {width: 400, height: 200, panIn: false}
         },
         {
             ptype: "gxp_featuremanager",
             id: "feature_manager",
             autoSetLayer: true,
-            actionTarget: "paneltbar"
+            actionTarget: "panel.tbar"
         },
         {
             ptype: "gxp_featureeditor",
             id: "feature_manager",
             autoLoadFeature: true,
-            actionTarget: "paneltbar"
+            actionTarget: "panel.tbar"
         }],
         {% if PROXY_URL %}
         proxy: '{{ PROXY_URL }}',
