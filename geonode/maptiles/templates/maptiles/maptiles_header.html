@@ -12,4 +12,33 @@ OpenLayers.ImgPath = "{{ STATIC_URL }}geoexplorer/externals/openlayers/theme/def
 OpenLayers.Request.DEFAULT_CONFIG.headers = {
     'X-CSRFToken': '{{ csrf_token|escapejs }}'
 };
+
+GeoExplorer.Viewer.prototype.loadConfig = function(config) {
+        config.viewerTools.push( {
+            ptype: "gxp_getfeedfeatureinfo",
+            checked: true
+        });
+    // Do not include the layer styler on the map-detail view.
+    {% if not map %}
+        {% if user.is_authenticated %}
+        config.viewerTools.splice(5, 0, {
+            id: "styler",
+            ptype: "gxp_styler",
+            checked: true
+        });
+        {% endif %}
+    {% endif %}
+    config.viewerTools.splice(6, 0, {
+        id: "feature_manager",
+        ptype: "gxp_featuremanager",
+        autoSetLayer: true
+    });
+    config.viewerTools.splice(7,0, {
+        id: "feature_editor"
+        ptype: "gxp_featureeditor",
+        featureManager: "gxp_featuremanager"
+    });
+
+    GeoExplorer.Viewer.superclass.loadConfig.call(this, config);
+};
 </script>
