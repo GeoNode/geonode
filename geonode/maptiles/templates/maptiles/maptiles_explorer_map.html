@@ -28,6 +28,7 @@ function display_points(point_list, div_id){
     }
     html_out ="</ul>";
     document.getElementById(div_id).innerHTML=html_out;
+    console.log(html_out);
 }
 function createVectorLayer() {
 
@@ -127,7 +128,7 @@ Ext.onReady(function() {
                             var removed=false;
                             for (var pt in georef_list){
                                 console.log(pt);
-                                if ( temp_pt.equals(pt) ){
+                                if ( temp_pt.x(pt) ){
                                     array.splice(georef_list.indexOf(pt),1);
                                     //display_points(georef_list, "point_display");
                                     removed=true;
