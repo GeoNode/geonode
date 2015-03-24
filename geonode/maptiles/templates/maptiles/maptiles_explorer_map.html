@@ -25,21 +25,16 @@ function get_corners( x, y ){
 var georef_list=[];
 
 function display_points(point_list, div_id){
-    //var html_out = document.create;
+    var html_out = "<ul>;
     console.log("in");
     for (var i=0; i< point_list.length; i++){
         var pt = point_list[i];
-        var pt_e = document.createElement("tr");
-        pt_e.innerHTML=pt.x+"E"+pt.y+"N";
-        pt_e.addEventListener("click",function(){
-                georef_list.splice(i,1);
-                display_points(point_list,div_id);
-            });
-        document.getElementById(div_id).appendChild(pt_e);
+        html_out="<li>"pt.x+"E"+pt.y+"N</li>";
+        //document.getElementById(div_id).appendChild(pt_e);
     }
     console.log("out");
-    //html_out +="</ul>";
-    //document.getElementById(div_id).innerHTML=html_out;
+    html_out +="</ul>";
+    document.getElementById(div_id).innerHTML=html_out;
     //console.log(html_out);
 }
 
