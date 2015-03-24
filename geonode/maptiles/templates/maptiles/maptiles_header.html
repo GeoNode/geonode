@@ -13,6 +13,8 @@ OpenLayers.Request.DEFAULT_CONFIG.headers = {
     'X-CSRFToken': '{{ csrf_token|escapejs }}'
 };
 
+console.log({{STATIC_URL}});
+
 GeoExplorer.Viewer.prototype.loadConfig = function(config) {
         console.log(config);
         config.viewerTools.push( {
