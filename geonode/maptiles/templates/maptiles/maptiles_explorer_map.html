@@ -28,7 +28,6 @@ function display_points(point_list, div_id){
         html_out += "<li>"+pt.x+"E"+pt.y+"N</li>";
     }
     html_out +="</ul>";
-    html_out = georef_header + html_out;
     document.getElementById(div_id).innerHTML=html_out;
     console.log(html_out);
 }
