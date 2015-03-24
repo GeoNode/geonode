@@ -126,7 +126,8 @@ Ext.onReady(function() {
                         }else{
                             var removed=false;
                             for (var pt in georef_list){
-                                if (pt.equals(temp_pt)){
+                                console.log(pt);
+                                if ( pt.equals(temp_pt) ){
                                     array.splice(georef_list.indexOf(pt),1);
                                     //display_points(georef_list, "point_display");
                                     removed=true;
@@ -138,7 +139,7 @@ Ext.onReady(function() {
                         }
                         
                         display_points(georef_list, "point_display");
-                        
+                        console.log(georef_list);
                         
                     }
                 });
