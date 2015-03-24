@@ -1,6 +1,6 @@
 {% include "geonode/ext_header.html" %}
 {% include "geonode/app_header.html" %}
-{% include "geonode/geo_header_debug.html" %}
+{% include "geonode/geo_header.html" %}
 <script type="text/javascript" src="{{ STATIC_URL}}geonode/js/utils/thumbnail.js"></script>
 <!--<script type="text/javascript" src="http://dev.openlayers.org/OpenLayers.js"></script>-->
 <script type="text/javascript">
@@ -57,12 +57,14 @@ Ext.onReady(function() {
         {
             ptype: "gxp_featuremanager",
             id: "feature_manager",
-            autoSetLayer: true
+            autoSetLayer: true,
+            actionTarget: "main.tbar"
         },
         {
             ptype: "gxp_featureeditor",
             id: "feature_manager",
-            autoLoadFeature: true
+            autoLoadFeature: true,
+            actionTarget: "main.tbar"
         }],
         {% if PROXY_URL %}
         proxy: '{{ PROXY_URL }}',
