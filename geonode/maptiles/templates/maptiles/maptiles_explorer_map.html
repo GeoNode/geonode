@@ -121,6 +121,7 @@ Ext.onReady(function() {
                         console.log("clicked! "+lonlat.lat+"N"+lonlat.lon+"E");
                         var computed_corners = get_corners(lonlat.lon, lonlat.lat);
                         var temp_pt = new OpenLayers.Geometry.Point(lonlat.lon, lonlat.lat)
+                        console.log(temp_pt);
                         if (georef_list.length < 1){
                             georef_list.push(temp_pt);
                         }else{
