@@ -23,13 +23,15 @@ function get_corners( x, y ){
 }
 function display_points(point_list, div_id){
     var html_out = "<ul>";
-    for ( var pt in point_list){
+    for (var i=0; i< point_list.length; i++){
+        var pt = point_list[i];
         html_out += "<li>"+pt.x+"E"+pt.y+"N</li>";
     }
     html_out +="</ul>";
     document.getElementById(div_id).innerHTML=html_out;
     console.log(html_out);
 }
+
 function createVectorLayer() {
 
     var styleDefault = Ext.applyIf({
@@ -126,9 +128,9 @@ Ext.onReady(function() {
                             georef_list.push(temp_pt);
                         }else{
                             var removed=false;
-                            for (var pt in georef_list){
-                                console.log(pt);
-                                if ( temp_pt.x(pt) ){
+                            for (var i =0; i<georef_list.length; i++){
+                                var pt = georef_list[i];
+                                if ( pt.x(temp_pt) ){
                                     array.splice(georef_list.indexOf(pt),1);
                                     //display_points(georef_list, "point_display");
                                     removed=true;
