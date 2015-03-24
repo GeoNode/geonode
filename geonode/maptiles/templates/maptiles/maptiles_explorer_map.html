@@ -26,6 +26,7 @@ var georef_list=[];
 
 function display_points(point_list, div_id){
     //var html_out = document.create;
+    console.log("in");
     for (var i=0; i< point_list.length; i++){
         var pt = point_list[i];
         var pt_e = document.createElement("tr");
@@ -35,6 +36,7 @@ function display_points(point_list, div_id){
             });
         document.getElementById(div_id).appendChild(pt_e);
     }
+    console.log("out");
     //html_out +="</ul>";
     //document.getElementById(div_id).innerHTML=html_out;
     //console.log(html_out);
