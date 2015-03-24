@@ -44,7 +44,7 @@ function createVectorLayer() {
 
 var app;
 
-var config = {tools:[
+/*var config = {tools:[
         {
             ptype: "gxp_getfeedfeatureinfo",
             checked: true
@@ -59,26 +59,26 @@ var config = {tools:[
             id: "feature_manager",
             autoLoadFeature: true,
             actionTarget: "main.tbar"
-        }]};
+        }]};*/
 
-var test_var={};
+var config={};
 
 var viewer_options = {{ viewer|safe }};
 Ext.onReady(function() {
     console.log(test_var);
     
     GeoExt.Lang.set("{{ LANGUAGE_CODE }}");
-    {% if PROXY_URL %}
+    /*{% if PROXY_URL %}
     config["proxy"]='{{ PROXY_URL }}';
     {% endif %}
     localGeoServerBaseUrl: "{{GEOSERVER_BASE_URL}}",
-    config["authorizedRoles"]="{{ user.is_authenticated|yesno:"ROLE_ADMINISTRATOR,ROLE_ANONYMOUS" }}";
+    config["authorizedRoles"]="{{ user.is_authenticated|yesno:"ROLE_ADMINISTRATOR,ROLE_ANONYMOUS" }}";*/
 
     /* The URL to a REST map configuration service.  This service 
      * provides listing and, with an authenticated user, saving of 
      * maps on the server for sharing and editing.
      */
-    config["rest"]="/maps/";
+    /*config["rest"]="/maps/";
     {% if MAPFISH_PRINT_ENABLED %}
     config["printService"]= "{{GEOSERVER_BASE_URL}}pdf/";
     {% else %}
@@ -154,7 +154,7 @@ Ext.onReady(function() {
     }*/
 
     // change style displayed in map
-    Ext.get(Ext.DomQuery.select("input[@name='style']")).on("click", function(evt, elem) {
+    /*Ext.get(Ext.DomQuery.select("input[@name='style']")).on("click", function(evt, elem) {
         app.selectedLayer.getLayer().mergeNewParams({
             "STYLES": elem.id,
             "_dc": Math.random()
@@ -173,7 +173,7 @@ Ext.onReady(function() {
         if(opts.method == 'PUT'){
             $('#legend_icon').attr('src', $('#legend_icon').attr('src')+'&'+Math.random());
         }   
-    }, this);
+    }, this);*/
 });
 
 {% endautoescape %}
