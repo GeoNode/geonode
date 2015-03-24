@@ -120,7 +120,7 @@ Ext.onReady(function() {
                         var lonlat = map.getLonLatFromPixel(e.xy);
                         console.log("clicked! "+lonlat.lat+"N"+lonlat.lon+"E");
                         var computed_corners = get_corners(lonlat.lon, lonlat.lat);
-                        var temp_pt = new OpenLayers.Geometry.Point(lonlat.lon, lonlat.lat)
+                        var temp_pt = new OpenLayers.Geometry.Point(computed_corners["ul_x"], computed_corners["ul_y"]);
                         console.log(temp_pt);
                         if (georef_list.length < 1){
                             georef_list.push(temp_pt);
