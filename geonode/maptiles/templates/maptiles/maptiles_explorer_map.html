@@ -109,7 +109,15 @@ Ext.onReady(function() {
             }
         }
     };
-    console.log(config);
+    config.tools.push({
+            ptype: "gxp_getfeedfeatureinfo",
+            checked: true
+        });
+        config.viewerTools.push( {
+            id: "feature_manager",
+            ptype: "gxp_featuremanager",
+            autoSetLayer: true
+        });
     
     console.log("after declaration:"+JSON.stringify(config));
 
