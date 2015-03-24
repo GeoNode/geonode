@@ -53,7 +53,13 @@ var config = {tools:[
             id: "feature_manager",
             ptype: "gxp_featuremanager",
             autoSetLayer: true
-        }];
+        },
+        {
+            ptype: "gxp_featureeditor",
+            id: "feature_manager",
+            autoLoadFeature: true,
+            actionTarget: "main.tbar"
+        }]};
 
 var viewer_options = {{ viewer|safe }};
 Ext.onReady(function() {
