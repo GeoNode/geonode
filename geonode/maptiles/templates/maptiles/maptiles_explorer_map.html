@@ -30,7 +30,7 @@ function display_points(point_list, div_id){
     for (var i=0; i< point_list.length; i++){
         var pt = point_list[i];
         var pt_e = document.createElement("tr");
-        pt_e.innerHTML=pt;
+        pt_e.innerHTML=pt.x+"E"+pt.y+"N";
         pt_e.addEventListener("click",function(){
                 georef_list.splice(i,1);
                 display_points(point_list,div_id);
