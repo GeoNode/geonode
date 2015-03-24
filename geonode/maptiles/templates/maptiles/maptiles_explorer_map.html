@@ -26,7 +26,7 @@ function display_points(point_list, div_id){
     for ( var pt in point_list){
         html_out += "<li>"+pt.x+"E"+pt.y+"N</li>";
     }
-    html_out ="</ul>";
+    html_out +="</ul>";
     document.getElementById(div_id).innerHTML=html_out;
     console.log(html_out);
 }
