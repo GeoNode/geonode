@@ -36,7 +36,8 @@ GeoExplorer.Viewer.prototype.loadConfig = function(config) {
     config.viewerTools.splice(7,0, {
         id: "feature_editor",
         ptype: "gxp_featureeditor",
-        featureManager: "gxp_featuremanager"
+        featureManager: "featuremanager",
+        hidden: false
     });
 
     GeoExplorer.Viewer.superclass.loadConfig.call(this, config);
