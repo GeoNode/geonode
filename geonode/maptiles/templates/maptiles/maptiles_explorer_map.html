@@ -43,11 +43,10 @@ function createVectorLayer() {
 }
 
 var app;
-
+var georef_list=[];
 var viewer_options = {{ viewer|safe }};
 Ext.onReady(function() {
-   console.log(config);
-    
+   
    GeoExt.Lang.set("{{ LANGUAGE_CODE }}");
    var config = {
         tools: [
@@ -89,6 +88,39 @@ Ext.onReady(function() {
                 //map.zoomToExtent(layer.maxExtent, false)
                 
                 var bbox = layer.bbox;
+                
+                OpenLayers.Control.Click = OpenLayers.Class(OpenLayers.Control, {
+                    defaultHandlerOptions: {
+                        "single": true,
+                        "double": false,
+                        "pixelTolerance": 0,
+                        "stopSingle": false,
+                        "stopDouble": false
+                    },
+                    
+                    initialize: function(options) {
+                        this.handlerOptions = OpenLayers.Util.extend(
+                            {}, this.defaultHandlerOptions);
+                        OpenLayers.Control.prototype.initialize.apply(this, arguments);
+                        
+                        this.handler = new OpenLayers.Handler.Click(
+                        this, {
+                            'click': this.trigger
+                        }, this.handlerOptions);
+                    },
+                    trigger: function(e) {
+                        var lonlat = map.getLonLatFromPixel(e.xy);
+                        console.log("clicked! "+lonlat.lat+"N"+lonlat.lon+"E");
+                        var computed_corners = get_corners(lonlat.lon, lonlat.lat);
+                        georef_list.push(new OpenLayers.Geometry.Point(lonlat.lon, lonlat.lat));
+                    }
+                });
+
+                click_select = new OpenLayers.Control.Click()
+                map.addControl(click_select);
+                click_select.activate();
+
+                
                 if (bbox != undefined)
                 {
                    if (!Array.isArray(bbox) && Object.keys(layer.srs) in bbox) {
