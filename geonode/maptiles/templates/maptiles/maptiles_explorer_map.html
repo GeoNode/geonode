@@ -47,19 +47,7 @@ var app, map, items=[];
 var viewer_options = {{ viewer|safe }};
 Ext.onReady(function() {
     GeoExt.Lang.set("{{ LANGUAGE_CODE }}");
-    var config = {tools: [
-        {
-            ptype: "gxp_featuremanager",
-            id: "feature_manager",
-            autoSetLayer: true
-            //actionTarget: "paneltbar"
-        },
-        {
-            ptype: "gxp_featureeditor",
-            id: "feature_manager",
-            autoLoadFeature: true,
-            actionTarget: "paneltbar"
-        }],
+    var config = {
         {% if PROXY_URL %}
         proxy: '{{ PROXY_URL }}',
         {% endif %}
