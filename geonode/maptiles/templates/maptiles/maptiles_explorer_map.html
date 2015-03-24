@@ -47,23 +47,18 @@ var app, map, items=[];
 var viewer_options = {{ viewer|safe }};
 Ext.onReady(function() {
     GeoExt.Lang.set("{{ LANGUAGE_CODE }}");
-    var config = {tools: [{
-            ptype: "gxp_wmsgetfeatureinfo",
-            format: "grid",
-            actionTarget: "panel.tbar",
-            outputConfig: {width: 400, height: 200, panIn: false}
-        },
+    var config = {tools: 
         {
             ptype: "gxp_featuremanager",
             id: "feature_manager",
-            autoSetLayer: true,
-            actionTarget: "panel.tbar"
+            autoSetLayer: true
+            //actionTarget: "paneltbar"
         },
         {
             ptype: "gxp_featureeditor",
             id: "feature_manager",
             autoLoadFeature: true,
-            actionTarget: "panel.tbar"
+            actionTarget: "paneltbar"
         }],
         {% if PROXY_URL %}
         proxy: '{{ PROXY_URL }}',
@@ -134,7 +129,7 @@ Ext.onReady(function() {
         if (tool.ptype == 'gxp_styler') {
             tool.rasterStyling = true;
         };
-        console.log("Ptype:" + tool.ptype + " ID: " + tool.id);
+        //console.log("Ptype:" + tool.ptype + " ID: " + tool.id);
     };
     console.log(app.tools);
     
