@@ -65,7 +65,7 @@ var config={};
 
 var viewer_options = {{ viewer|safe }};
 Ext.onReady(function() {
-    console.log(test_var);
+    console.log(config);
     
     GeoExt.Lang.set("{{ LANGUAGE_CODE }}");
     /*{% if PROXY_URL %}
