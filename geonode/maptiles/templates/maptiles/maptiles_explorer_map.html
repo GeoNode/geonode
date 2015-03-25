@@ -152,13 +152,13 @@ Ext.onReady(function() {
                         console.log(computed_corners["ul_x"],computed_corners["ul_y"]);
                         var temp_pt = new OpenLayers.Geometry.Point(computed_corners["ul_x"], computed_corners["ul_y"]);
                         console.log(temp_pt);
-                        var map_proj = map.getProjectionObject();
+                        /*var map_proj = map.getProjectionObject();
                         var georef_proj = new OpenLayers.Projection("EPSG:4326");
                         var georef_proj2 = new OpenLayers.Projection("EPSG:32651");
                         var transformed_pt = temp_pt.transform(map_proj, georef_proj);
                         console.log(transformed_pt);
                         transformed_pt = transformed_pt.transform(georef_proj, georef_proj2);
-                        console.log(transformed_pt);
+                        console.log(transformed_pt);*/
                         
                         if (georef_list.length < 1){
                             georef_list.push(temp_pt);
