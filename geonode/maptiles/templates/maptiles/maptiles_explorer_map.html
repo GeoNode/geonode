@@ -33,9 +33,16 @@ function display_points2(point_list,div_id){
     for (var i=0; i< point_list.length; i++){
         var pt = point_list[i];
         var item_element = document.createElement("li");
+        item_element.setAttribute("id",pt.id);
         item_element.innerHTML = pt.x+"E"+pt.y+"N";
+        /*item_element.onclick = function(){
+                this.parentNode.removeChild(this);
+            };*/
+            
         list_element.appendChild(item_element);
     }
+    
+    
 }
 
 function display_points(point_list, div_id){
