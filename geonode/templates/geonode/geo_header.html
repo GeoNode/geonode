@@ -21,6 +21,8 @@ GeoExplorer.Viewer.prototype.loadConfig = function(config) {
             ptype: "gxp_getfeedfeatureinfo",
             checked: true
         });
+        
+        config.viewerTools.splice(8, 1);
     // Do not include the layer styler on the map-detail view.
     {% if not map %}
         {% if user.is_authenticated %}
