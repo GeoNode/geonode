@@ -87,7 +87,7 @@ def tiled_view(request, overlay="geonode:index", template="maptiles/maptiles_bas
     #        id=layer.id).update(popular_count=F('popular_count') + 1)
     
     # center/zoom don't matter; the viewer will center on the layer bounds
-    map_obj = GXPMap(projection="EPSG:900913")
+    map_obj = GXPMap(projection="EPSG:32651")
     NON_WMS_BASE_LAYERS = [
         la for la in default_map_config()[1] if la.ows_url is None]
 
