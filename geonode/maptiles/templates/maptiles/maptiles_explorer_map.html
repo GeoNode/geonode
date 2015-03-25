@@ -126,10 +126,7 @@ Ext.onReady(function() {
                         console.log("clicked! "+lonlat.lon+"N"+lonlat.lat+"E");
                         var computed_corners = get_corners(lonlat.lon, lonlat.lat);
                         console.log(computed_corners["ul_x"],computed_corners["ul_y"]);
-                        var temp_pt = new OpenLayers.Geometry.Point(computed_corners["ul_x"], computed_corners["ul_y"],
-                                { 
-                                    id: computed_corners["ul_x"]+"E"+computed_corners["ul_y"]+"N"
-                                });
+                        var temp_pt = new OpenLayers.Geometry.Point(computed_corners["ul_x"], computed_corners["ul_y"]);
                         console.log(temp_pt);
                         if (georef_list.length < 1){
                             georef_list.push(temp_pt);
@@ -137,7 +134,7 @@ Ext.onReady(function() {
                             var removed=false;
                             for (var i =0; i<georef_list.length; i++){
                                 var pt = georef_list[i];
-                                if ( pt.id == temp_pt.id ){
+                                if ( pt.x == temp_pt.x && pt.y == temp_pt.y ){
                                     georef_list.splice(i,1);
                                     //display_points(georef_list, "point_display");
                                     removed=true;
