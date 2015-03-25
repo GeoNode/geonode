@@ -26,7 +26,7 @@ var georef_list=[];
 
 function display_points2(point_list,div_id){
     var container = document.getElementById(div_id);
-    container.removeChild(container.firstElementChild||elem.firstChild);
+    container.removeChild(container.firstElementChild||container.firstChild);
     var list_element = document.createElement("ul");
     container.appendChild(list_element);
     
