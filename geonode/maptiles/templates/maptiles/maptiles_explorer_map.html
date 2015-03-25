@@ -29,6 +29,7 @@ function display_points2(point_list,div_id){
     document.getElementById(div_id).appendChild(list_element);
     
     for (var i=0; i< point_list.length; i++){
+        var pt = point_list[i];
         var item_element = document.createElement("li");
         item_element.innerHTML = pt.x+"E"+pt.y+"N";
         list_element.appendChild(item_element);
