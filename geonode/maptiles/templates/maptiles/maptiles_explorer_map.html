@@ -154,7 +154,7 @@ Ext.onReady(function() {
                         var click_pt = new OpenLayers.Geometry.Point(lonlat.lon, lonlat.lat);
                         var transformed_pt = click_pt.transform(map.getProjectionObject(),new OpenLayers.Projection("EPSG:32651"));
                         console.log(transformed_pt);
-                        var computed_corners = get_corners(lonlat.lon, lonlat.lat);
+                        var computed_corners = get_corners(click_pt.x, click_pt.y);
                         console.log(computed_corners["ul_x"],computed_corners["ul_y"]);
                         
                         var temp_pt = new OpenLayers.Geometry.Point(computed_corners["ul_x"], computed_corners["ul_y"]);
