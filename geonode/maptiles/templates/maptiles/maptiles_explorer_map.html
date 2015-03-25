@@ -38,12 +38,11 @@ function display_points2(point_list,div_id){
         item_element.onclick = function(){
             georef_list.splice(georef_list.indexOf(this.id),1);
             this.parentNode.removeChild(this);
+            console.log("Removing point "+this.id);
         };
             
         list_element.appendChild(item_element);
     }
-    
-    
 }
 
 function display_points(point_list, div_id){
@@ -143,6 +142,7 @@ Ext.onReady(function() {
                             'click': this.trigger
                         }, this.handlerOptions);
                     },
+                    
                     trigger: function(e) {
                         var lonlat = map.getLonLatFromPixel(e.xy);
                         console.log("clicked! "+lonlat.lon+"N"+lonlat.lat+"E");
@@ -169,7 +169,6 @@ Ext.onReady(function() {
                         }
                         
                         display_points2(georef_list, "point_display");
-                        console.log(georef_list);
                     }
                 });
 
@@ -177,7 +176,6 @@ Ext.onReady(function() {
                 map.addControl(click_select);
                 click_select.activate();
 
-                
                 if (bbox != undefined)
                 {
                    if (!Array.isArray(bbox) && Object.keys(layer.srs) in bbox) {
@@ -192,9 +190,10 @@ Ext.onReady(function() {
                        app.mapPanel.zoom = map.zoom;
                        map.events.unregister('changebaselayer', null, zoomToData);
                    };
+                   
                    map.events.register('changebaselayer',null,zoomToData);
                    if(map.baseLayer){
-                    map.zoomToExtent(extent, false);
+                        map.zoomToExtent(extent, false);
                    }
                 }
             },
