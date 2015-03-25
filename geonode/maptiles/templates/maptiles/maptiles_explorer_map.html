@@ -35,9 +35,10 @@ function display_points2(point_list,div_id){
         var item_element = document.createElement("li");
         item_element.setAttribute("id",pt.id);
         item_element.innerHTML = pt.x+"E"+pt.y+"N";
-        /*item_element.onclick = function(){
-                this.parentNode.removeChild(this);
-            };*/
+        item_element.onclick = function(){
+            georef.splice(georef.indexOf(this.id),1);
+            this.parentNode.removeChild(this);
+        };
             
         list_element.appendChild(item_element);
     }
