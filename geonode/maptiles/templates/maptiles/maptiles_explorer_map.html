@@ -26,6 +26,7 @@ var georef_list=[];
 
 function display_points(point_list, div_id){
     var html_out = "<ul>";
+    console.log("List of points count: "+point_list.length);
     for (var i=0; i< point_list.length; i++){
         var pt = point_list[i];
         html_out="<li>"+pt.x+"E"+pt.y+"N</li>";
