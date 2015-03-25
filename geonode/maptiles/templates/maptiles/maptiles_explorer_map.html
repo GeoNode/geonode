@@ -2,6 +2,9 @@
 {% include "geonode/app_header.html" %}
 {% include "maptiles/maptiles_header.html" %}
 <script type="text/javascript" src="{{ STATIC_URL}}geonode/js/utils/thumbnail.js"></script>
+<script type="text/javascript" src="http://svn.osgeo.org/metacrs/proj4js/trunk/lib/proj4js-compressed.js"></script>
+<script type="text/javascript" src="http://spatialreference.org/ref/epsg/wgs-84-utm-zone-51n/proj4js/"></script>
+<!--<script type="text/javascript" src="{{ STATIC_URL }}static/lib/js/proj4.js"></script>-->
 <!--<script type="text/javascript" src="http://dev.openlayers.org/OpenLayers.js"></script>-->
 <script type="text/javascript">
 {% autoescape off %}
@@ -147,9 +150,13 @@ Ext.onReady(function() {
                     
                     trigger: function(e) {
                         var lonlat = map.getLonLatFromPixel(e.xy);
-                        console.log("clicked! "+lonlat.lon+"N"+lonlat.lat+"E");
+                        console.log("clicked! "+lonlat.lat+"N"+lonlat.lon+"E");
+                        var click_pt = new OpenLayers.Geometry.Point(lonlat.lon, lonlat.lat);
+                        var transformed_pt = click_pt.transform(map.getProjectionObject(),new OpenLayers.Projection("EPSG:32651"));
+                        console.log(transformed_pt);
                         var computed_corners = get_corners(lonlat.lon, lonlat.lat);
                         console.log(computed_corners["ul_x"],computed_corners["ul_y"]);
+                        
                         var temp_pt = new OpenLayers.Geometry.Point(computed_corners["ul_x"], computed_corners["ul_y"]);
                         console.log(temp_pt);
                         
@@ -161,7 +168,6 @@ Ext.onReady(function() {
                                 var pt = georef_list[i];
                                 if ( pt.x == temp_pt.x && pt.y == temp_pt.y ){
                                     georef_list.splice(i,1);
-                                    //display_points(georef_list, "point_display");
                                     removed=true;
                                     console.log("Removing point");
                                 }
