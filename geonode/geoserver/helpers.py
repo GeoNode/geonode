@@ -1394,11 +1394,12 @@ def style_update(request, url):
     """
     if request.method in ('POST', 'PUT'):  # we need to parse xml
         # Need to remove NSx from IE11
-        if ('Trident/7.0' in request.META['HTTP_USER_AGENT'] and
-            'rv:11.0' in request.META['HTTP_USER_AGENT']):
-            txml = re.sub(r'xmlns:NS[0-9]=""','',request.body)
-            txml = re.sub(r'NS[0-9]:','',txml)
-            request._body = txml
+        if request.META.has_key("HTTP_USER_AGENT"):
+            if ('Trident/7.0' in request.META['HTTP_USER_AGENT'] and
+                'rv:11.0' in request.META['HTTP_USER_AGENT']):
+                txml = re.sub(r'xmlns:NS[0-9]=""','',request.body)
+                txml = re.sub(r'NS[0-9]:','',txml)
+                request._body = txml
         tree = ET.ElementTree(ET.fromstring(request.body))
         elm_namedlayer_name = tree.findall(
             './/{http://www.opengis.net/sld}Name')[0]
