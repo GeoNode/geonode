@@ -15,8 +15,6 @@ OpenLayers.Request.DEFAULT_CONFIG.headers = {
 
 GeoExplorer.Viewer.prototype.loadConfig = function(config) {
     
-    console.log("{{STATIC_URL}}geoexplorer/script/GeoExplorer.js"); 
-    
     // Do not include the layer styler on the map-detail view.
     {% if not map %}
         {% if user.is_authenticated %}
