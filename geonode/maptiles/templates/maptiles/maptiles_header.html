@@ -19,6 +19,9 @@ GeoExplorer.Viewer.prototype.loadConfig = function(config) {
     
     config.viewerTools.splice(8, 1);
     config.tools.splice(8,1);
+    
+    console.log(config.tools);
+    
         config.viewerTools.push( {
             ptype: "gxp_getfeedfeatureinfo",
             checked: true
