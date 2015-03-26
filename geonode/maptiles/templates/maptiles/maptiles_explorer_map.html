@@ -29,17 +29,17 @@ function get_corners( x, y ){
 
 var georef_list=[];
 
-function display_points2(point_list,div_id){
+function display_points2(tile_list,div_id){
     var container = document.getElementById(div_id);
     container.removeChild(container.firstElementChild||container.firstChild);
     var list_element = document.createElement("ul");
     container.appendChild(list_element);
     
-    for (var i=0; i< point_list.length; i++){
-        var pt = point_list[i];
+    for (var i=0; i< tile_list.length; i++){
+        var tile = tile_list[i];
         var item_element = document.createElement("li");
-        item_element.setAttribute("id",pt.id);
-        item_element.innerHTML = pt.x+"E"+pt.y+"N";
+        item_element.setAttribute("id",tile.georef);
+        item_element.innerHTML = tile.georef;
         item_element.onclick = function(){
             georef_list.splice(georef_list.indexOf(this.id),1);
             this.parentNode.removeChild(this);
@@ -158,7 +158,7 @@ Ext.onReady(function() {
                         
                         var temp_pt = new OpenLayers.Geometry.Point(computed_corners["ul_x"], computed_corners["ul_y"]);
                         
-                        var tile = {
+                        var tmp_tile = {
                             georef: (computed_corners["ul_x"]/1000)+"E"+(computed_corners["ul_y"]/1000)+"N",
                             ul: new OpenLayers.Geometry.Point(computed_corners["ul_x"], computed_corners["ul_y"]),
                             ur: new OpenLayers.Geometry.Point(computed_corners["ur_x"], computed_corners["ur_y"]),
@@ -169,19 +169,19 @@ Ext.onReady(function() {
                         console.log(tile);
                         
                         if (georef_list.length < 1){
-                            georef_list.push(temp_pt);
+                            georef_list.push(tmp_tile);
                         }else{
                             var removed=false;
                             for (var i =0; i<georef_list.length; i++){
-                                var pt = georef_list[i];
-                                if ( pt.x == temp_pt.x && pt.y == temp_pt.y ){
+                                var tile = georef_list[i];
+                                if ( tile.georef == tmp_tile.georef ){
                                     georef_list.splice(i,1);
                                     removed=true;
                                     console.log("Removing point");
                                 }
                             }
                             if(!removed){
-                                georef_list.push(temp_pt);
+                                georef_list.push(tmp_tile);
                             }
                         }
                         
