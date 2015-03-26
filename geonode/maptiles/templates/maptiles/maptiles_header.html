@@ -17,12 +17,6 @@ GeoExplorer.Viewer.prototype.loadConfig = function(config) {
     
     console.log("{{STATIC_URL}}geoexplorer/script/GeoExplorer.js"); 
     
-    config.viewerTools.splice(0, config.tools.length);
-    config.tools.splice(0,config.tools.length);
-    
-    console.log(config.viewerTools);
-    console.log(config.tools);
-    
     // Do not include the layer styler on the map-detail view.
     {% if not map %}
         {% if user.is_authenticated %}

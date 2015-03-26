@@ -87,13 +87,24 @@ Ext.onReady(function() {
    
    GeoExt.Lang.set("{{ LANGUAGE_CODE }}");
    var config = {
-        tools: [
+        viewerTools: [
             {
                 ptype: "gxp_wmsgetfeatureinfo",
                 format: "grid",
                 actionTarget: "main.tbar",
                 outputConfig: {width: 400, height: 200, panIn: false}
             },
+            {
+                id: "feature_manager",
+                ptype: "gxp_featuremanager",
+                autoSetLayer: true
+            },
+            {
+                id: "feature_editor",
+                ptype: "gxp_featureeditor",
+                featureManager: "feature_manager",
+                hidden: false
+            }
         ],
         {% if PROXY_URL %}
         proxy: '{{ PROXY_URL }}',
