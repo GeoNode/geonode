@@ -18,8 +18,6 @@ OpenLayers.Request.DEFAULT_CONFIG.headers = {
  *  Add GetFeedFeatureInfo tool to GeoExplorer.Viewer
  */
 GeoExplorer.Viewer.prototype.loadConfig = function(config) {
-    
-    console.log("{{STATIC_URL}}geoexplorer/script/GeoExplorer.js");
         config.viewerTools.push( {
             ptype: "gxp_getfeedfeatureinfo",
             checked: true

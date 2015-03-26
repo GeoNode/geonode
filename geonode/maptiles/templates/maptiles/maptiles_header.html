@@ -13,7 +13,11 @@ OpenLayers.Request.DEFAULT_CONFIG.headers = {
     'X-CSRFToken': '{{ csrf_token|escapejs }}'
 };
 
+console.log("{{STATIC_URL}}geoexplorer/script/GeoExplorer.js");
+
 GeoExplorer.Viewer.prototype.loadConfig = function(config) {
+    
+    config.viewerTools.splice(8, 1);
         config.viewerTools.push( {
             ptype: "gxp_getfeedfeatureinfo",
             checked: true
