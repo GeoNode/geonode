@@ -17,27 +17,11 @@ GeoExplorer.Viewer.prototype.loadConfig = function(config) {
     
     console.log("{{STATIC_URL}}geoexplorer/script/GeoExplorer.js"); 
     
-    config.viewerTools.splice(8, 1);
-    config.tools.splice(8,1);
+    config.viewerTools.splice(0, config.tools.length);
+    config.tools.splice(0,config.tools.length);
     
     console.log(config.tools);
     
-        config.viewerTools.push( {
-            ptype: "gxp_getfeedfeatureinfo",
-            checked: true
-        });
-        config.viewerTools.push( {
-            id: "feature_manager",
-            ptype: "gxp_featuremanager",
-            autoSetLayer: true
-        });
-        
-        config.viewerTools.push( {
-            id: "feature_editor",
-            ptype: "gxp_featureeditor",
-            featureManager: "feature_manager",
-            hidden: false
-        });
     // Do not include the layer styler on the map-detail view.
     {% if not map %}
         {% if user.is_authenticated %}
