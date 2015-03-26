@@ -39,6 +39,8 @@ Ext.onReady(function() {
 
 
     app = new GeoNode.Composer(config);
+    
+    console.log(tools);
 {% endautoescape %}
 });
 </script>
