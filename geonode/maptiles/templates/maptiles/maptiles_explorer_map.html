@@ -29,7 +29,7 @@ function get_corners( x, y ){
 
 var georef_list=[];
 
-function display_points2(tile_list,div_id){
+function display_points(tile_list,div_id){
     var container = document.getElementById(div_id);
     container.removeChild(container.firstElementChild||container.firstChild);
     var list_element = document.createElement("ul");
@@ -47,18 +47,6 @@ function display_points2(tile_list,div_id){
             
         list_element.appendChild(item_element);
     }
-}
-
-function display_points(point_list, div_id){
-    var html_out = "<ul>";
-    for (var i=0; i< point_list.length; i++){
-        var pt = point_list[i];
-        html_out +="<li>"+pt.x+"E"+pt.y+"N</li>";
-        //document.getElementById(div_id).appendChild(pt_e);
-    }
-    html_out +="</ul>";
-    document.getElementById(div_id).innerHTML=html_out;
-    //console.log(html_out);
 }
 
 function createVectorLayer() {
@@ -193,12 +181,14 @@ Ext.onReady(function() {
                             }
                         }
                         
-                        display_points2(georef_list, "point_display");
+                        display_points(georef_list, "point_display");
                     }
                 });
 
                 click_select = new OpenLayers.Control.Click()
                 map.addControl(click_select);
+                map.addControl(new OpenLayers.Control.DrawFeature(createVectorLayer(),
+                        OpenLayers.Handler.Point));
                 click_select.activate();
                 
                 if (bbox != undefined)
