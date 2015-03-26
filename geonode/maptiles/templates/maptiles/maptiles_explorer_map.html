@@ -41,9 +41,8 @@ function display_points2(tile_list,div_id){
         item_element.setAttribute("id",tile.georef);
         item_element.innerHTML = tile.georef;
         item_element.onclick = function(){
-            georef_list.splice(georef_list.indexOf(this.id),1);
+            tile_list.splice(i,1);
             this.parentNode.removeChild(this);
-            console.log("Removing point "+this.id);
         };
             
         list_element.appendChild(item_element);
@@ -165,8 +164,6 @@ Ext.onReady(function() {
                             lr: new OpenLayers.Geometry.Point(computed_corners["lr_x"], computed_corners["lr_y"]),
                             ll: new OpenLayers.Geometry.Point(computed_corners["ll_x"], computed_corners["ll_y"])
                         }
-                        
-                        console.log(tile);
                         
                         if (georef_list.length < 1){
                             georef_list.push(tmp_tile);
