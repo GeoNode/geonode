@@ -479,7 +479,7 @@ EMAIL_HOST = "mail.lan.dream.upd.edu.ph"
 EMAIL_PORT = 25
 
 # Email for users to contact admins.
-THEME_ACCOUNT_CONTACT_EMAIL = 'admin@example.com'
+THEME_ACCOUNT_CONTACT_EMAIL = 'geonode-automailer@dream.upd.edu.ph'
 
 #
 # Test Settings
