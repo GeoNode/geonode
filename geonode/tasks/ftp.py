@@ -157,7 +157,7 @@ def mail_ftp_user(username, user_email, mail_subject, mail_msg):
     mail_subject = "Phil-LiDAR FTP Request [{0}] for User [{1}]".format(mail_subject,username)
     mail_body = "This is an automated mailer. DO NOT REPLY TO THIS MAIL! Send your e-mails to the site administrator.\n\n\
                 This is an e-mail regarding your FTP request from geonode.dream.upd.edu.ph. Details are found below:\n\n"+mail_msg
-    args_tup = (mail_subject, mail_msg, settings.THEME_ACCOUNT_CONTACT_EMAIL,
+    args_tup = (mail_subject, mail_body, settings.THEME_ACCOUNT_CONTACT_EMAIL,
                      user_email, False)
     pprint(args_tup)
     send_mail(mail_subject, mail_msg, settings.THEME_ACCOUNT_CONTACT_EMAIL,
