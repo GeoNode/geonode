@@ -244,9 +244,9 @@ def create_ftp_folder(request):
             obj_name_dict[obj.geo_type.encode('utf8')] = [obj.name.encode('utf8'),]
     username = request.user.get_username()
     
-    #Debug Step
-    if username == "admin":
-        username = "test-ftp-user"
+    # DEBUG: Debug username
+    username = "test-ftp-user"
+
     email = request.user.email
     request_name=time.strftime("ftp_request-%Y_%m_%d")
     
