@@ -1,10 +1,9 @@
 {% extends "ceph_base.html" %}
 {% load i18n %}
-
 {% load staticfiles %}
 {% load url from future %}
 
-{% block title %} {% trans "Cart" %} - {{ block.super }} {% endblock %}
+{% block title %} {% trans "FTP Request" %} - {{ block.super }} {% endblock %}
 
 {% block body_class %}Cephgeo cart{% endblock %}
 
@@ -12,14 +11,12 @@
   {% block body %}
   
   <div class="page-header">
-    <ul class="list-inline pull-right" id="sort">
-      <li></li><a href="{% url "cephgeo.views.create_ftp_folder" %}" class="btn btn-default">{% trans "Create FTP Folder" %}</a></li>
-      <li><a href="{% url "cephgeo.views.clear_cart" %}" class="btn btn-default">{% trans "Remove All Items" %}</a></li>
-    </ul>
-    <h2 class="page-title">{% trans "Cart" %}</h2>
-    
+    <h2 class="page-title">{% trans "FTP Request" %}</h2>
   </div>
-
+  <div>
+    <p class="block-quote">{{ result_msg }}</p>
+  </div>
+  <br /><br /><br />
   <table border="3" style="width:100%">
         <tr>
             <th>Product</th>
