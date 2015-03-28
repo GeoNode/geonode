@@ -302,6 +302,8 @@ INSTALLED_APPS = (
     'mptt',
     'modeltranslation',
     'djcelery',
+    'djkombu',
+
 
     # Theme
     "pinax_theme_bootstrap_account",
