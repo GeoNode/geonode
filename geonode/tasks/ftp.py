@@ -30,7 +30,9 @@ def fab_create_ftp_folder(username, user_email, request_name, ceph_obj_list_by_g
             print("Error on FTP request: A request has already been made this day. Please try again on the next day.")
             mail_msg = "An error was encountered on your FTP request named [{0}] for user [{1}]. \
             A request has already been made this day. Only 1 FTP request per user is allowed \
-            each day. Please try again on the next day.".format(request_name, username)
+            each day. Please try again on the next day.\
+            \n\n---RESULT TRACE---\n\n\
+            {2}".format(request_name, username, result)
             
             mail_ftp_user(username, user_email, request_name, mail_msg)
             return "ERROR: Max daily FTP request is 1. Limit reached."
@@ -39,21 +41,44 @@ def fab_create_ftp_folder(username, user_email, request_name, ceph_obj_list_by_g
         if result.return_code is 0:
             with cd(ftp_dir):
 
-                #TODO: Handle failed downloads from Ceph
                 for geotype, ceph_obj_list in ceph_obj_list_by_geotype.iteritems():
                     type_dir = geotype.replace(" ", "_")
-                    run("mkdir {0}".format(type_dir))    # Create a directory for each geo-type
-
+                    
+                    result = run("mkdir {0}".format(type_dir))      # Create a directory for each geo-type
+                    if result.return_code is not 0:                 #Handle error
+                        print("Error on FTP request: Failed to create FTP folder at [{0}]. Please notify the administrator of this error".format(ftp_dir))
+                        mail_msg = "An error was encountered on your FTP request named [{0}] for user [{1}]. \
+                        The system failed to create an geotype folder inside the FTP folder at location [{2}]. \
+                        Please e-mail the system administrator regarding this error.\
+                        \n\n---RESULT TRACE---\n\n\
+                        {3}".format(request_name, username, os.path.join(ftp_dir,type_dir), result)
+                        
+                        mail_ftp_user(username, user_email, request_name, mail_msg)
+                        return "ERROR: Failed to create internal folder [{0}].".format(os.path.join(ftp_dir,type_dir))
+                        
                     obj_dl_list = " ".join(map(str,ceph_obj_list))
-                    run("python {0} -d={1} {2}".format( dl_script_path,
+                    result = run("python {0} -d={1} {2}".format( dl_script_path,
                                                         os.path.join(ftp_dir,type_dir),
                                                         obj_dl_list)) # Download list of objects in corresponding geo-type folder
+                    if result.return_code is not 0:                 #Handle error
+                        print("Error on FTP request: Cannot access Ceph Data Store [{0}]. Please notify the administrator of this error".format(ftp_dir))
+                        mail_msg = "An error was encountered on your FTP request named [{0}] for user [{1}]. \
+                        The system failed to download the following files: [{2}]. Either the file/s do/es not exist,\
+                        or the Ceph Data Storage is down. Please e-mail the system administrator regarding this error.\
+                        \n\n---RESULT TRACE---\n\n\
+                        {3}".format(request_name, username, obj_dl_list, result)
+                        
+                        mail_ftp_user(username, user_email, request_name, mail_msg)
+                        return "ERROR: Failed to create folder [{0}].".format(ftp_dir)
+                    
         else:
             print("Error on FTP request: Failed to create FTP folder at [{0}]. Please notify the administrator of this error".format(ftp_dir))
             mail_msg = "An error was encountered on your FTP request named [{0}] for user [{1}]. \
             The system failed to create an FTP folder at location [{2}]. Please ensure that you \
             are a legitimate user and have permision to use this FTP service. If you are a \
-            legitimate user, please e-mail the system administrator regarding this error.".format(request_name, username, ftp_dir)
+            legitimate user, please e-mail the system administrator regarding this error.\
+            \n\n---RESULT TRACE---\n\n\
+            {3}".format(request_name, username, ftp_dir, result)
             
             mail_ftp_user(username, user_email, request_name, mail_msg)
             return "ERROR: Failed to create folder [{0}].".format(ftp_dir)
@@ -100,6 +125,15 @@ def process_ftp_request(username, user_email, request_name, ceph_obj_list_by_geo
     if isinstance(result.get(host_string, None), BaseException):
         raise Exception(result.get(host_string))
 
+@celery.task(name='geonode.tasks.ftp.check_cephaccess', queue='ftp')
+def check_cephaccess():
+    # NOTE: DO NOT CALL ASYNCHRONOUSLY (check_cephaccess.delay())
+    #       OTHERWISE, NO OUTPUT WILL BE MADE
+    test_file = '/home/cephaccess/testfolder/DL/test.txt'
+    result = run("touch {0} && rm -f {0}".format(test_file))
+    if result is not 0:
+        raise Exception("Unable to access {0}. Host may be down or there may be a network problem.".format(result.get(host_string)))
+    
 ###
 #   UTIL FUNCTIONS
 ###
