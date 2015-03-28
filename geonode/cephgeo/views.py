@@ -205,7 +205,7 @@ def get_cart_json(request):
     cart = CartProxy(request)
     #~ json_cart = dict()
     #~ for item in cart:
-        #~ json_cart[str(item.pk)] = serializers.serialize('json', CephDataObject.objects.get(id=int(item.pk)))
+        #~ json_cart[str(item.object_id)] = serializers.serialize('json', CephDataObject.objects.get(id=int(item.pk)))
     #~ return HttpResponse(json.dumps(json_cart), content_type="application/json")
     
     # TODO: debug serialization for CephDataObjects
@@ -233,11 +233,11 @@ def get_obj_ids_json(request):
 def create_ftp_folder(request):
     cart=CartProxy(request)
     
-    #[CephDataObject.objects.get(id=int(item.pk)).name for item in cart]
+    #[CephDataObject.objects.get(id=int(item.object_id)).name for item in cart]
     
     obj_name_dict = dict()
     for item in cart:
-        obj = CephDataObject.objects.get(id=int(item.pk))
+        obj = CephDataObject.objects.get(id=int(item.object_id))
         if obj.geo_type in obj_name_dict:
             obj_name_dict[obj.geo_type.encode('utf8')].append(obj.name.encode('utf8'))
         else:
