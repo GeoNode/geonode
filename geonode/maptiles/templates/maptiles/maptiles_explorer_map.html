@@ -32,7 +32,21 @@ var georef_list=[];
 function display_points(tile_list,div_id){
     var container = document.getElementById(div_id);
     container.removeChild(container.firstElementChild||container.firstChild);
+    
+    container.appendChild(form_e);
+    
+    var form_e = document.createElement("form");
+    var dummy_input = document.createElement("input");
+    dummy_input.setAttribute("type","text");
+    dummy_input.setAttribute("disabled","true");
+    dummy_input.style.display = "none";
+    
+    form_e.appendChild(dummy_input);
+    
     var list_element = document.createElement("ul");
+    
+    form_e.appendChild(list_element);
+    
     container.appendChild(list_element);
     
     for (var i=0; i< tile_list.length; i++){
