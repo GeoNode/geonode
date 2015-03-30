@@ -43,6 +43,11 @@ function display_points(tile_list,div_id){
     
     form_e.appendChild(dummy_input);
     
+    var submit = document.createElement("input");
+    submit.setAttribute("type","submit");
+    
+    form_e.appendChild(submit);
+    
     var list_element = document.createElement("ul");
     
     form_e.appendChild(list_element);
