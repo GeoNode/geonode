@@ -14,10 +14,7 @@ from geonode.cephgeo.forms import DataInputForm
 from geonode.cephgeo.models import CephDataObject
 from geonode.tasks.ftp import process_ftp_request
 
-from changuito import CartProxy
-from changuito.proxy import ItemDoesNotExist
-
-from sqlite3 import OperationalError
+from geonode.cephgeo.cart_utils import *
 
 import client, utils, local_settings, cPickle, unicodedata, time, operator, json
 
@@ -171,10 +168,10 @@ def data_input(request):
                 ceph_obj.save()
             
             messages.success(request, "Data has been succesfully encoded!")
-            return HttpResponseRedirect('/ceph/list/nosort/')
+            return HttpResponseRedirect('/cephgeo/list/nosort/')
         else:
             messages.error(request, "Invalid input on data form")
-            return HttpResponseRedirect('/ceph/input/')
+            return HttpResponseRedirect('/cephgeo/input/')
     # if a GET (or any other method) we'll create a blank form
     else:
         form = DataInputForm()
@@ -189,15 +186,15 @@ def error(request):
 @login_required
 def get_cart(request):
     # DEBUG CALLS
-    cart=CartProxy(request)
-    if not cart.is_empty():
-        remove_all_from_cart(request) # Clear cart for this user
-        
-    for ceph_obj in CephDataObject.objects.all():
-        print("Adding [{0}] to cart...".format(ceph_obj.name))
-        add_to_cart_unique(request, ceph_obj.id)
-        #add_to_cart(request, ceph_obj.id)
+    duplicates = []
     
+    for ceph_obj in CephDataObject.objects.all():
+        try:
+            add_to_cart_unique(request, ceph_obj.id)
+        except DuplicateCartItemException:
+            duplicates.append(ceph_obj.name)
+    if len(duplicates) > 0:
+        messages.warning(request, "WARNING: The following items are already in the cart and have not been added: \n{0}".format(str(duplicates)))
     # END DEBUG
     return render_to_response('cart.html', 
                                 dict(cart=CartProxy(request)),
@@ -208,16 +205,19 @@ def get_cart_json(request):
     cart = CartProxy(request)
     #~ json_cart = dict()
     #~ for item in cart:
-        #~ json_cart[str(item.pk)] = serializers.serialize('json', CephDataObject.objects.get(id=int(item.pk)))
+        #~ json_cart[str(item.object_id)] = serializers.serialize('json', CephDataObject.objects.get(id=int(item.pk)))
     #~ return HttpResponse(json.dumps(json_cart), content_type="application/json")
-    obj_name_dict = dict()
-    for item in cart:
-        obj = CephDataObject.objects.get(id=int(item.pk))
-        if obj.geo_type in obj_name_dict:
-            obj_name_dict[obj.geo_type.encode('utf8')].append(obj.name.encode('utf8'))
-        else:
-            obj_name_dict[obj.geo_type.encode('utf8')] = [obj.name.encode('utf8'),]
-    obj_name_dict = [CephDataObject.objects.get(id=int(item.pk)).name for item in cart]
+    
+    # TODO: debug serialization for CephDataObjects
+    #~ obj_name_dict = dict()
+    #~ for item in cart:
+        #~ obj = CephDataObject.objects.get(id=int(item.object_id))
+        #~ if obj.geo_type in obj_name_dict:
+            #~ obj_name_dict[obj.geo_type.encode('utf8')].append(obj.name.encode('utf8'))
+        #~ else:
+            #~ obj_name_dict[obj.geo_type.encode('utf8')] = [obj.name.encode('utf8'),]
+            #~ 
+    obj_name_dict = [CephDataObject.objects.get(id=int(item.object_id)).name for item in cart]
     return HttpResponse(json.dumps(obj_name_dict) , content_type="application/json")
 
 @login_required
@@ -232,64 +232,50 @@ def get_obj_ids_json(request):
 @login_required
 def create_ftp_folder(request):
     cart=CartProxy(request)
-    if cart.is_empty():
-        messages.add_message(request, messages.ERROR, "ERROR: Cart is empty, cannot process an empty FTP request!")
-        return render_to_response('cart.html', 
-                                    dict(cart=CartProxy(request)),
-                                    context_instance=RequestContext(request))
-    #[CephDataObject.objects.get(id=int(item.pk)).name for item in cart]
+    
+    #[CephDataObject.objects.get(id=int(item.object_id)).name for item in cart]
     
     obj_name_dict = dict()
     for item in cart:
-        obj = CephDataObject.objects.get(id=int(item.pk))
+        obj = CephDataObject.objects.get(id=int(item.object_id))
         if obj.geo_type in obj_name_dict:
             obj_name_dict[obj.geo_type.encode('utf8')].append(obj.name.encode('utf8'))
         else:
             obj_name_dict[obj.geo_type.encode('utf8')] = [obj.name.encode('utf8'),]
     username = request.user.get_username()
     
-    #Debug Step
-    if username == "admin":
-        username = "test-ftp-user"
+    # DEBUG: Debug username
+    username = "test-ftp-user"
+
     email = request.user.email
     request_name=time.strftime("ftp_request-%Y_%m_%d")
     
     # Call to celery
     process_ftp_request.delay(username, email, request_name, obj_name_dict)
-    messages.add_message(request, messages.INFO, "FTP request is being processed")
     
     #~ tojson = (username, email, request_name, obj_name_dict)
     #~ return HttpResponse(json.dumps(tojson), content_type="application/json")
-    return render_to_response('cart.html', 
+    return render_to_response('ftp_result.html', 
+                                {   "result_msg" : "Your FTP request is being processed. A notification \
+                                     will arrive via email regarding the completion of your request. The \
+                                     items you requested are listed below.",
+                                    "cart" : CartProxy(request),},
+                                context_instance=RequestContext(request))
+@login_required
+def clear_cart(request):
+    if request.cart is not None:
+        remove_all_from_cart(request) # Clear cart for this request
+    user = request.user
+    name = user.username
+    messages.add_message(request, messages.INFO, "Cart has been emptied for user[{0}] usertype[{1}]".format(name, type(user)))
+    response = render_to_response('cart.html', 
                                 dict(cart=CartProxy(request)),
                                 context_instance=RequestContext(request))
+    
+    response.delete_cookie("cart")
+    return response
 
 ###
 # CART UTILS
 ###
-@login_required
-def add_to_cart(request, ceph_obj_id, quantity=1):
-    product = CephDataObject.objects.get(id=ceph_obj_id)
-    cart = request.cart 
-    cart.add(product, utils.compute_price(product.geo_type), quantity)
-
-@login_required
-def add_to_cart_unique(request, ceph_obj_id):
-    product = CephDataObject.objects.get(id=ceph_obj_id)
-    cart = request.cart 
-    try:
-        cart.get_item(ceph_obj_id)
-    except ItemDoesNotExist:
-        cart.add(product, utils.compute_price(product.geo_type), 1)
-
-@login_required
-def remove_from_cart(request, ceph_obj_id):
-    cart = request.cart 
-    cart.remove_item(ceph_obj_id)
-    
-@login_required
-def remove_all_from_cart(request):
-    cart = request.cart 
-    if request.user.is_authenticated():
-        cart.delete_old_cart(request.user)
     
