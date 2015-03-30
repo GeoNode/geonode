@@ -2,30 +2,38 @@
 {% load i18n %}
 {% load url from future %}
 
-{% block title %}CephGeo File List{% endblock %}
+{% block title %} {% trans "File List" %} - {{ block.super }} {% endblock %}
+
+{% block body_class %}Cephgeo File List{% endblock %}
 
 {% block body_outer %}
   {% block body %}
   
-  <div class="jumbotron">
-    <div class="container">
-		<h1>File List</h1>
-	</div>
+  <div class="page-header">
+    {% if grid_ref != None %}
+	  <h2 class="page-title">File List for Grid Reference [{{ grid_ref }}]</h2>
+    {% else %}
+      <h2 class="page-title">File List</h2>
+    {% endif %}
   </div>
 
-  Sort by:
-  {% for sort_type in sort_types %}
-	{% if sort_type == sort %}
-		<b>| {{ sort_type }} |</b>
-	{% elif grid_ref != None %}
-		<a href="{% url 'cephgeo.views.file_list_geonode' sort_type grid_ref %}">| {{ sort_type }} |</a>
-	{% else %}
-		<a href="{% url 'cephgeo.views.file_list_geonode' sort_type %}">| {{ sort_type }} |</a>
-	{% endif %}
-  {% endfor %}
-  {% if grid_ref != None %}
-	<a href="{% url 'cephgeo.views.file_list_geonode' 'nosort' %}">| all files |</a>
-  {% endif %}
+  <div class="col-md-6">
+  <ul class="list-inline pull-left" id="sort">
+    <li><b>SORT BY:</b></li>
+    {% for sort_type in sort_types %}
+	  {% if sort_type == sort %}
+	  	<li><b class="selected" >{{ sort_type }}</b></li>
+	  {% elif grid_ref != None %}
+		<li><a href="{% url 'cephgeo.views.file_list_geonode' sort_type grid_ref %}" >{{ sort_type }}</a></li>
+	  {% else %}
+		<li><a href="{% url 'cephgeo.views.file_list_geonode' sort_type %}" >{{ sort_type }}</a></li>
+	  {% endif %}
+    {% endfor %}
+    {% if grid_ref != None %}
+	  <li><a href="{% url 'cephgeo.views.file_list_geonode' 'nosort' %}" >full list</a></li>
+    {% endif %}
+  </ul>  
+  </div>
   <br /><br /><br />
   
   <ul>
@@ -35,7 +43,7 @@
 			<br />File Hash: {{ file.file_hash }}
 			<br />Data Type: {{ file.geo_type }}
 			<br />Last Modified: {{ file.last_modified }}
-			<br />File size: {{ file.size_in_bytes|filesizeformat  }}
+			<br />File size: {{ file.size_in_bytes | filesizeformat  }}
 		</li>
 	{% endfor %}
   </ul>

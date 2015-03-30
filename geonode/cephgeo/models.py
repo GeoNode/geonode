@@ -20,4 +20,3 @@ class LayerToCephObjectMap(models.Model):
     
     def __unicode__(self):
         return "{0} -> {1}".format(self.shapefile, self.ceph_data_obj)
-
