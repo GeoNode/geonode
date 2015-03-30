@@ -33,9 +33,9 @@ function display_points(tile_list,div_id){
     var container = document.getElementById(div_id);
     container.removeChild(container.firstElementChild||container.firstChild);
     
+    var form_e = document.createElement("form");
     container.appendChild(form_e);
     
-    var form_e = document.createElement("form");
     var dummy_input = document.createElement("input");
     dummy_input.setAttribute("type","text");
     dummy_input.setAttribute("disabled","true");
