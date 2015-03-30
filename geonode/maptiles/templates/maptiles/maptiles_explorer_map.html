@@ -31,7 +31,7 @@ var georef_list=[];
 
 function display_points(tile_list,div_id){
     var container = document.getElementById(div_id);
-    container.removeChild(container.getElementByName("submission_form"));
+    container.removeChild(container.getElementsByName("submission_form")[0]);
     
     var form_e = document.createElement("form");
     form_e.setAttribute("name","submission_form");
