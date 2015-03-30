@@ -31,13 +31,13 @@ var georef_list=[];
 
 function display_points(tile_list,div_id){
     var container = document.getElementById(div_id);
-    container.removeChild(container.firstElementChild||container.firstChild);
+    container.removeChild(container.getElementByName("submission_form"));
     
     var form_e = document.createElement("form");
+    form_e.setAttribute("name","submission_form");
     container.appendChild(form_e);
     
     var list_element = document.createElement("ul");
-    
     form_e.appendChild(list_element);
     
     container.appendChild(list_element);
@@ -65,7 +65,7 @@ function display_points(tile_list,div_id){
         var submit = document.createElement("input");
         submit.setAttribute("type","submit");
         form_e.appendChild(submit);
-    }
+    }   
 }
 
 function createVectorLayer() {
