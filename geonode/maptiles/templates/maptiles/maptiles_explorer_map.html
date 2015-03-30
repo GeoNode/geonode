@@ -35,6 +35,18 @@ function display_points(tile_list,div_id){
     var list_element = document.createElement("ul");
     container.appendChild(list_element);
     
+    var form = document.createElement("form");
+    
+    var dummy_text_area = document.createElement("input");
+    dummy_text_area.setAttribute("type","text");
+    //dummy_text_area.setAttribute("style","display:none");
+    dummy_text_area.setAttribute("disabled","true");
+    
+    var submit = document.createElement("input");
+    submit.setAttribute("type","submit");
+    
+    var georef_string = "";
+    
     for (var i=0; i< tile_list.length; i++){
         var tile = tile_list[i];
         var item_element = document.createElement("li");
@@ -44,20 +56,11 @@ function display_points(tile_list,div_id){
             tile_list.splice(i,1);
             this.parentNode.removeChild(this);
         };
-            
         list_element.appendChild(item_element);
+        georef_string+="tile.georef,";
     }
     
-    var form = document.createElement("form");
-    
-    var dummy_text_area = document.createElement("input");
-    dummy_text_area.setAttribute("type","text");
-    dummy_text_area.setAttribute("style","display:none");
-    dummy_text_area.setAttribute("disabled","true");
-    
-    var submit = document.createElement("input");
-    submit.setAttribute("type","submit");
-    
+    dummy_text_area.value = georef_string;
     container.appendChild(form);
     form.appendChild(dummy_text_area);
     form.appendChild(submit);
