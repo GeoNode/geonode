@@ -36,11 +36,6 @@ function display_points(tile_list,div_id){
     var form_e = document.createElement("form");
     container.appendChild(form_e);
     
-    var dummy_input = document.createElement("input");
-    dummy_input.setAttribute("type","text");
-    dummy_input.setAttribute("disabled","true");
-    dummy_input.style.display = "none";
-    
     form_e.appendChild(dummy_input);
     
     var list_element = document.createElement("ul");
@@ -62,10 +57,16 @@ function display_points(tile_list,div_id){
         list_element.appendChild(item_element);
     }
     
-    var submit = document.createElement("input");
-    submit.setAttribute("type","submit");
+    var dummy_input = document.createElement("input");
+    dummy_input.setAttribute("type","text");
+    dummy_input.setAttribute("disabled","true");
+    dummy_input.style.display = "none";
     
-    form_e.appendChild(submit);
+    if (tile_list.length > 0){
+        var submit = document.createElement("input");
+        submit.setAttribute("type","submit");
+        form_e.appendChild(submit);
+    }
 }
 
 function createVectorLayer() {
