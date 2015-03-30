@@ -31,10 +31,15 @@ var georef_list=[];
 
 function display_points(tile_list,div_id){
     var container = document.getElementById(div_id);
-    container.removeChild(container.getElementsByName("submission_form")[0]);
-    
     var form_e = document.createElement("form");
-    form_e.setAttribute("name","submission_form");
+    if (container.name){
+        container.removeChild(container.getElementsByName("submission_form")[0]);
+        form_e.setAttribute("name","submission_form");
+    }else if (container.id){
+        container.removeChild(container.getElementById("submission_form"));
+        form_e.setAttribute("id","submission_form");
+    }
+    
     container.appendChild(form_e);
     
     var list_element = document.createElement("ul");
