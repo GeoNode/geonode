@@ -36,8 +36,6 @@ function display_points(tile_list,div_id){
     var form_e = document.createElement("form");
     container.appendChild(form_e);
     
-    form_e.appendChild(dummy_input);
-    
     var list_element = document.createElement("ul");
     
     form_e.appendChild(list_element);
@@ -61,6 +59,7 @@ function display_points(tile_list,div_id){
     dummy_input.setAttribute("type","text");
     dummy_input.setAttribute("disabled","true");
     dummy_input.style.display = "none";
+    form_e.appendChild(dummy_input);
     
     if (tile_list.length > 0){
         var submit = document.createElement("input");
