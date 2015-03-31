@@ -51,7 +51,7 @@ def _resolve_layer(request, typename, permission='base.view_resourcebase',
                               permission_msg=msg,
                               **kwargs)
 
-def tiled_view(request, overlay="geonode:index", template="maptiles/maptiles_map.html"):
+def tiled_view(request, overlay="geonode:index", template="maptiles/maptiles_map_form.html"):
     if request.method == "POST":
         pprint(request.POST)
     layer = _resolve_layer(request, overlay, "base.view_resourcebase", _PERMISSION_VIEW )
