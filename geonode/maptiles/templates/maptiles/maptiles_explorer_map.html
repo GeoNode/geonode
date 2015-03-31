@@ -160,7 +160,7 @@ Ext.onReady(function() {
                         var temp_pt = new OpenLayers.Geometry.Point(computed_corners["ul_x"], computed_corners["ul_y"]);
                         
                         var tmp_tile = {
-                            georef: (computed_corners["ul_x"]/1000)+"E"+(computed_corners["ul_y"]/1000)+"N",
+                            georef: "E"+(computed_corners["ul_x"]/1000)+"N"+(computed_corners["ul_y"]/1000),
                             ul: new OpenLayers.Geometry.Point(computed_corners["ul_x"], computed_corners["ul_y"]),
                             ur: new OpenLayers.Geometry.Point(computed_corners["ur_x"], computed_corners["ur_y"]),
                             lr: new OpenLayers.Geometry.Point(computed_corners["lr_x"], computed_corners["lr_y"]),
