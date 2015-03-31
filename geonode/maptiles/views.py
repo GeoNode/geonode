@@ -134,6 +134,7 @@ def tiled_view(request, overlay="geonode:index", template="maptiles/maptiles_map
 def process_georefs(request):
     if request.method == "POST":
         try:
+            pprint(request.POST)
             georef_area = request.POST['georef_area']
             georef_list = georef_area.split(",")
             pprint(georef_list)
