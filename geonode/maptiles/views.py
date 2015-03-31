@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.conf import settings
 from django.utils.translation import ugettext as _
 from django.utils import simplejson as json
@@ -51,7 +51,7 @@ def _resolve_layer(request, typename, permission='base.view_resourcebase',
                               permission_msg=msg,
                               **kwargs)
 
-def tiled_view(request, overlay="geonode:index", template="maptiles/maptiles_map_form.html"):
+def tiled_view(request, overlay="geonode:index", template="maptiles/maptiles_map.html"):
     if request.method == "POST":
         pprint(request.POST)
     layer = _resolve_layer(request, overlay, "base.view_resourcebase", _PERMISSION_VIEW )
@@ -134,8 +134,6 @@ def tiled_view(request, overlay="geonode:index", template="maptiles/maptiles_map
 def process_georefs(request):
     if request.method == "POST":
         try:
-            pprint(request.POST)
-            pprint(request.GET)
             georef_area = request.POST['georef_area']
             georef_list = georef_area.split(",")
             pprint(georef_list)
