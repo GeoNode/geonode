@@ -127,5 +127,6 @@ def tiled_view(request, overlay="geonode:index", template="maptiles/maptiles_bas
     return render_to_response(template, RequestContext(request, context_dict))
 
 def georef_list(request):
-    if request.method == "POST":
-        return 
+    #if request.method == "POST":
+    
+    return 
