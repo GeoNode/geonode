@@ -26,7 +26,7 @@ Ext.namespace("gxp.plugins");
  */
 gxp.plugins.GeoNodeAPICatalogueSource = Ext.extend(gxp.plugins.CatalogueSource, {
 
-    /** api: ptype = gxp_geonodecataloguesource */
+    /** api: ptype = gxp_geonodeapicataloguesource */
     ptype: "gxp_geonodeapicataloguesource",
 
     /** api: config[rootProperty]
