@@ -126,7 +126,17 @@ def tiled_view(request, overlay="geonode:index", template="maptiles/maptiles_bas
     
     return render_to_response(template, RequestContext(request, context_dict))
 
-def georef_list(request):
-    #if request.method == "POST":
-    
-    return 
+def process_georefs(request):
+    if request.method == "POST":
+        try:
+            
+            georef_area = request.POST['georef_area']
+            georef_list = georef_area.split(",")
+            pprint(georef_list)
+            return redirect('geonode.cephgeo.views.get_cart')
+        except ValidationError:
+            messages.error(request, "Invalid georefs list")
+            return HttpResponseRedirect('/maptiles/')
+            #return redirect('geonode.maptiles.views.tiled_view')
+    else:
+        raise Exception("HTTP method must be POST!")
