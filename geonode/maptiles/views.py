@@ -4,6 +4,7 @@ from django.utils.translation import ugettext as _
 from django.utils import simplejson as json
 from django.shortcuts import render_to_response
 from django.template import RequestContext
+from django.core.exceptions import ValidationError
 
 from geonode.services.models import Service
 from geonode.layers.models import Layer
