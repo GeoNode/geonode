@@ -144,5 +144,9 @@ def process_georefs(request):
             messages.error(request, "Invalid georefs list")
             return HttpResponseRedirect('/maptiles/')
             #return redirect('geonode.maptiles.views.tiled_view')
+    if request.method == "GET":
+        pprint(request.POST)
+        pprint(request.GET)
+        
     else:
         raise Exception("HTTP method must be POST!")
