@@ -1,4 +1,4 @@
-from django.shortcuts import render, render_to_response
+from django.shortcuts import render, render_to_response, redirect
 from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
@@ -169,10 +169,12 @@ def data_input(request):
                 ceph_obj.save()
             
             messages.success(request, "Data has been succesfully encoded!")
-            return HttpResponseRedirect('/ceph/list/nosort/')
+            #return HttpResponseRedirect('/cephgeo/list/nosort/')
+            return redirect('geonode.cephgeo.views.file_list_geonode',sort='uploaddate')
         else:
             messages.error(request, "Invalid input on data form")
-            return HttpResponseRedirect('/ceph/input/')
+            #return HttpResponseRedirect('/cephgeo/input/')
+            return redirect('geonode.cephgeo.views.data_input')
     # if a GET (or any other method) we'll create a blank form
     else:
         form = DataInputForm()
