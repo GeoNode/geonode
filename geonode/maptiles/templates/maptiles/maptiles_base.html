@@ -10,11 +10,12 @@
 {% block title %}Map Tiles Selection — {{ block.super }}{% endblock %}
 
 {% block head %}
-{% if preview == 'geoext' %}
+<!--{% if preview == 'geoext' %}
   {% include "maptiles/maptiles_explorer_map.html" %}
 {% else %}
   {% include "maptiles/maptiles_leaflet_map.html" %}
-{% endif %}
+{% endif %}-->
+{% include "maptiles/maptiles_geoext_test.html" %}
 {{ block.super }}
 {% endblock %}
 
@@ -46,7 +47,7 @@
  </div>
  <form action="addtocart" method="post">
     <input type="text" id="georef_area" style="display:none" disabled="true" >
-    <input type="submit" id=georef_submit value="Submit" >
+    <input type="submit" id=georef_submit value="Submit" class="btn btn-default" >
 </form>
   
 {% endblock %}
