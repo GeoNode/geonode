@@ -16,6 +16,8 @@ from geonode.utils import default_map_config
 from geonode.security.views import _perms_info_json
 from geonode.documents.models import get_related_documents
 
+from pprint import pprint
+
 import logging
 
 _PERMISSION_VIEW = _("You are not permitted to view this layer")
