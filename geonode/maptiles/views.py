@@ -136,8 +136,10 @@ def process_georefs(request):
         try:
             pprint(request.POST)
             georef_area = request.POST['georef_area']
-            georef_list = georef_area.split(",")
+            georef_list = filter(None, georef_area.split(","))
             pprint(georef_list)
+            #TODO: find all files with these georefs and add them to cart
+            
             return redirect('geonode.cephgeo.views.get_cart')
         except ValidationError:
             messages.error(request, "Invalid georefs list")
