@@ -1,4 +1,4 @@
-{% extends "maptiles/maptiles_base.html" %}
+{% extends "layers/layer_base.html" %}
 {% load i18n %}
 {% load dialogos_tags %}
 {% load agon_ratings_tags %}
@@ -10,11 +10,7 @@
 {% block title %}Map Tiles Selection — {{ block.super }}{% endblock %}
 
 {% block head %}
-{% if preview == 'geoext' %}
-  {% include "maptiles/maptiles_explorer_map.html" %}
-{% else %}
-  {% include "maptiles/maptiles_leaflet_map.html" %}
-{% endif %}
+{% include "maptiles/maptiles_geoext_test.html" %}
 {{ block.super }}
 {% endblock %}
 
@@ -47,7 +43,7 @@
  <form action="/maptiles/addtocart/" method="POST">
      {% csrf_token %}
     <input type="text" id="georef_area" name="georef_area" style="display:none" />
-    <input type="submit" id="georef_submit" name="georef_submit" value="Submit" />
+    <input type="submit" id="georef_submit" name="georef_submit" value="Submit" class="btn btn-default" />
 </form>
   
 {% endblock %}
