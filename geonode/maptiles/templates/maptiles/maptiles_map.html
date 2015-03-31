@@ -46,7 +46,7 @@
  </div>
  <form action="/maptiles/addtocart/" method="POST">
      {% csrf_token %}
-    <input type="text" id="georef_area" name="georef_area" />
+    <input type="text" id="georef_area" name="georef_area" disabled="true" style="display:none" />
     <input type="submit" id="georef_submit" name="georef_submit" value="Submit" />
 </form>
   
