@@ -135,6 +135,7 @@ def process_georefs(request):
     if request.method == "POST":
         try:
             pprint(request.POST)
+            pprint(request.GET)
             georef_area = request.POST['georef_area']
             georef_list = georef_area.split(",")
             pprint(georef_list)
