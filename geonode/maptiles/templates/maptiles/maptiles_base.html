@@ -47,9 +47,12 @@
 <!--
  <form action="addtocart" method="post">
 -->
-<form method="post">
+<form id="georef_form" method="post">
      {% csrf_token %}
-    <input type="text" id="georef_area" disabled="true" >
+<!--
+    <input type="text" id="georef_area" style="display:none" disabled="true" >
+-->
+    <input type="text" id="georef_area">
     <input type="submit" id=georef_submit value="Submit" >
 </form>
   
