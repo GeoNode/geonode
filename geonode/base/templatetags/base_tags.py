@@ -10,6 +10,7 @@ from geonode import settings
 from geonode.layers.models import Layer
 from geonode.maps.models import Map
 from geonode.documents.models import Document
+from geonode.groups.models import GroupProfile
 
 register = template.Library()
 
@@ -116,6 +117,9 @@ def facets(context):
         if facet_type == 'home':
             facets['user'] = get_user_model().objects.exclude(
                 username='AnonymousUser').count()
+
+            facets['group'] = GroupProfile.objects.exclude(
+                access="private").count()
 
             facets['layer'] = facets['raster'] + \
                 facets['vector'] + facets['remote']
