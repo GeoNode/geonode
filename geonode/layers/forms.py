@@ -26,7 +26,7 @@ import zipfile
 
 from django import forms
 from django.utils import simplejson as json
-
+from geonode.layers.utils import unzip_file
 from geonode.layers.models import Layer, Attribute
 from geonode.base.forms import ResourceBaseForm
 
@@ -143,11 +143,7 @@ class LayerUploadForm(forms.Form):
         tempdir = tempfile.mkdtemp()
 
         if zipfile.is_zipfile(self.cleaned_data['base_file']):
-            the_zip = zipfile.ZipFile(self.cleaned_data['base_file'])
-            the_zip.extractall(tempdir)
-            for item in the_zip.namelist():
-                if item.endswith('.shp'):
-                    absolute_base_file = os.path.join(tempdir, item)
+            absolute_base_file = unzip_file(self.cleaned_data['base_file'], '.shp', tempdir=tempdir)
 
         else:
             for field in self.spatial_files:
