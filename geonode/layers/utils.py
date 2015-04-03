@@ -27,6 +27,8 @@ import re
 import os
 import glob
 import sys
+import tempfile
+import zipfile
 
 from osgeo import gdal
 
@@ -287,6 +289,23 @@ def get_bbox(filename):
     return [bbox_x0, bbox_x1, bbox_y0, bbox_y1]
 
 
+def unzip_file(upload_file, extension='.shp', tempdir=None):
+    """
+    Unzips a zipfile into a temporary directory and returns the full path of the .shp file inside (if any)
+    """
+    absolute_base_file = None
+    if tempdir is None:
+        tempdir = tempfile.mkdtemp()
+
+    the_zip = zipfile.ZipFile(upload_file)
+    the_zip.extractall(tempdir)
+    for item in the_zip.namelist():
+        if item.endswith(extension):
+            absolute_base_file = os.path.join(tempdir, item)
+
+    return absolute_base_file
+
+
 def file_upload(filename, name=None, user=None, title=None, abstract=None,
                 skip=True, overwrite=False, keywords=[], charset='UTF-8'):
     """Saves a layer in GeoNode asking as little information as possible.
@@ -469,6 +488,9 @@ def upload(incoming, user=None, overwrite=False,
 
         if save_it:
             try:
+                if zipfile.is_zipfile(filename):
+                    filename = unzip_file(filename)
+
                 layer = file_upload(filename,
                                     user=user,
                                     overwrite=overwrite,
