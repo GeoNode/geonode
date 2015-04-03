@@ -42,7 +42,13 @@
                 module.haystack_facets($http, $rootScope, $location);
             }
         });
-
+    }
+    
+  module.load_keywords = function ($http, $rootScope, $location){
+        var params = typeof FILTER_TYPE == 'undefined' ? {} : {'type': FILTER_TYPE};
+        if ($location.search().hasOwnProperty('title__icontains')){
+          params['title__icontains'] = $location.search()['title__icontains'];
+        }
         $http.get(KEYWORDS_ENDPOINT, {params: params}).success(function(data){
             if($location.search().hasOwnProperty('keywords__slug__in')){
                 data.objects = module.set_initial_filters_from_query(data.objects,
@@ -53,7 +59,13 @@
                 module.haystack_facets($http, $rootScope, $location);
             }
         });
-
+    }
+    
+  module.load_regions = function ($http, $rootScope, $location){
+        var params = typeof FILTER_TYPE == 'undefined' ? {} : {'type': FILTER_TYPE};
+        if ($location.search().hasOwnProperty('title__icontains')){
+          params['title__icontains'] = $location.search()['title__icontains'];
+        }
         $http.get(REGIONS_ENDPOINT, {params: params}).success(function(data){
             if($location.search().hasOwnProperty('regions__name__in')){
                 data.objects = module.set_initial_filters_from_query(data.objects,
@@ -116,6 +128,12 @@
     */
     if ($('#categories').length > 0){
        module.load_categories($http, $rootScope, $location);
+    }
+    if ($('#keywords').length > 0){
+       module.load_keywords($http, $rootScope, $location);
+    }
+    if ($('#regions').length > 0){
+       module.load_regions($http, $rootScope, $location);
     }
 
     // Activate the type filters if in the url
