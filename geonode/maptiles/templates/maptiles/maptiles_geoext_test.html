@@ -10,6 +10,7 @@
     var options = {{ viewer|safe }};
     Ext.onReady(function (){
         var map = new OpenLayers.Map(options["map"]);
+        console.log(map);
         
         new GeoExt.MapPanel({
             renderTo: "preview_map",
