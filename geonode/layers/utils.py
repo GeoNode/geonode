@@ -307,7 +307,7 @@ def unzip_file(upload_file, extension='.shp', tempdir=None):
 
 
 def file_upload(filename, name=None, user=None, title=None, abstract=None,
-                skip=True, overwrite=False, keywords=[], charset='UTF-8'):
+                skip=True, overwrite=False, keywords=[], charset='UTF-8', category=None):
     """Saves a layer in GeoNode asking as little information as possible.
        Only filename is required, user and title are optional.
     """
@@ -328,6 +328,10 @@ def file_upload(filename, name=None, user=None, title=None, abstract=None,
     # Create a name from the title if it is not passed.
     if name is None:
         name = slugify(title).replace('-', '_')
+
+    if category is not None:
+        category = TopicCategory.objects.get(
+                    identifier=category)
 
     # Generate a name that is not taken if overwrite is False.
     valid_name = get_valid_layer_name(name, overwrite)
@@ -363,6 +367,7 @@ def file_upload(filename, name=None, user=None, title=None, abstract=None,
         'bbox_y0': bbox_y0,
         'bbox_y1': bbox_y1,
         'is_published': is_published,
+        'category': category
     }
 
     # set metadata
@@ -419,7 +424,7 @@ def file_upload(filename, name=None, user=None, title=None, abstract=None,
 
 def upload(incoming, user=None, overwrite=False,
            keywords=(), skip=True, ignore_errors=True,
-           verbosity=1, console=None):
+           verbosity=1, console=None, category=None, private=False):
     """Upload a directory of spatial data files to GeoNode
 
        This function also verifies that each layer is in GeoServer.
@@ -495,11 +500,17 @@ def upload(incoming, user=None, overwrite=False,
                                     user=user,
                                     overwrite=overwrite,
                                     keywords=keywords,
+                                    category=category
                                     )
                 if not existed:
                     status = 'created'
                 else:
                     status = 'updated'
+                if private and user:
+                    perm_spec= {"users": {"AnonymousUser": [],
+                    user.username :["change_resourcebase_metadata","change_layer_data","change_layer_style","change_resourcebase","delete_resourcebase","change_resourcebase_permissions","publish_resourcebase"]},"groups":{}}
+                    layer.set_permissions(perm_spec)
+
 
             except Exception as e:
                 if ignore_errors:
