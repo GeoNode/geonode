@@ -65,6 +65,9 @@ Ext.onReady(function (){
             height: 400 
         }};
         
+        config = Ext.apply(config, {{ viewer|safe }});
+        app = new GeoExplorer.Viewer(config);
+        
 });
 {% endautoescape %}
 </script>
