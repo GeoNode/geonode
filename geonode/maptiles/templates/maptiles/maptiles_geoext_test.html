@@ -9,6 +9,7 @@
 
     var options = {{ viewer|safe }};
     Ext.onReady(function (){
+        console.log(options);
         var map = new OpenLayers.Map(options["map"]);
         console.log(map);
         
