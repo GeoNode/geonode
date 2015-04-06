@@ -9,9 +9,13 @@
 
     var options = {{ viewer|safe }};
     Ext.onReady(function (){
-        console.log(options);
-        var map = new OpenLayers.Map(options["map"]);
-        console.log(map);
+        var map = new OpenLayers.Map();
+        var layer = new OpenLayers.Layer.WMS(
+            "Global Imagery",
+            "http://maps.opengeo.org/geowebcache/service/wms",
+            {layers: "bluemarble"}
+        );
+        map.addLayer(layer);
         
         new GeoExt.MapPanel({
             renderTo: "preview_map",
