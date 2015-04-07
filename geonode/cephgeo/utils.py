@@ -60,7 +60,7 @@ def sort_by(sort_key, object_list, descending=False):
 #def file_feature_classifier(file_name):
 #	pass
 
-def is_valid_grid_ref(grid_ref_string):
+def is_valid_grid_ref_old(grid_ref_string):
     ptn = re.compile('^[a-zA-Z]{2}[0-9]{4}$')
     if ptn.match(grid_ref_string) is not None:
         return True
@@ -74,7 +74,7 @@ def is_valid_grid_ref_range(grid_ref_string):
     else:
         return False
 
-def grid_ref_2(grid_ref_string):
+def is_valid_grid_ref(grid_ref_string):
     # E648N803_DSM
     ptn = re.compile('^[a-zA-Z]{1}[0-9]{3}[a-zA-Z]{1}[0-9]{3}$')
     if ptn.match(grid_ref_string) is not None:
