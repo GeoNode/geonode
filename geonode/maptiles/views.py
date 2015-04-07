@@ -5,6 +5,7 @@ from django.utils import simplejson as json
 from django.shortcuts import render_to_response
 from django.template import RequestContext
 from django.core.exceptions import ValidationError
+from django.contrib import messages
 
 from geonode.services.models import Service
 from geonode.layers.models import Layer
@@ -137,17 +138,32 @@ def process_georefs(request):
             pprint(request.POST)
             georef_area = request.POST['georef_area']
             georef_list = filter(None, georef_area.split(","))
-            pprint(georef_list)
+            #spprint(georef_list)
             #TODO: find all files with these georefs and add them to cart
+            count = 0
+            duplicates = []
+            
+            for georef in georef_list:      # Process each georef in list
+                objects = CephDataObject.objects.filter(name__startswith=grid_ref)
+                count += len(objects)
+                for ceph_obj in objects:    # Add each Ceph object to cart
+                    try:
+                        add_to_cart_unique(request, ceph_obj.id)
+                    except DuplicateCartItemException:  # List each duplicate object
+                        duplicates.append(ceph_obj.name)
+            
+            if len(duplicates) > 0:         # Warn on duplicates
+                messages.warning(request, "WARNING: The following items are already in the cart and have not been added: \n{0}".format(str(duplicates)))
+            
+            # Inform user of the number of processed georefs and objects
+            messages.info(request, "Processed [{0}] tiles/georefs. [{1}] objects added to cart".format(len(georef_list),(count - len(duplicates))))
             
             return redirect('geonode.cephgeo.views.get_cart')
-        except ValidationError:
-            messages.error(request, "Invalid georefs list")
+            
+        except ValidationError:             # Redirect and inform if an invalid georef is encountered
+            messages.error(request, "Invalid georefs list")s
             return HttpResponseRedirect('/maptiles/')
             #return redirect('geonode.maptiles.views.tiled_view')
-    if request.method == "GET":
-        pprint(request.POST)
-        pprint(request.GET)
-        
-    else:
+    
+    else:   # Must process HTTP POST method from form
         raise Exception("HTTP method must be POST!")
