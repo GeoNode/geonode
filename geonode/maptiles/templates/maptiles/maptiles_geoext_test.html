@@ -1,72 +1,35 @@
 {% include "geonode/ext_header.html" %}
-{% include "geonode/app_header.html" %} 
-{% include "maptiles/maptiles_header.html" %} 
-<!--<script type="text/javascript" src="{{ STATIC_URL }}lib/js/GeoExt.js"></script>-->
+{# {% include "geonode/app_header.html" %} #}
+{#  {% include "maptiles/maptiles_header.html" %} #}
+<script type="text/javascript" src="{{STATIC_URL}}lib/js/OpenLayers.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}lib/js/GeoExt.js"></script>
 <script type="text/javascript" src="{{ STATIC_URL}}geonode/js/utils/thumbnail.js"></script>
 <script type="text/javascript" >
+
 {% autoescape off %}
 
-var app;
 var options = {{ viewer|safe }};
 Ext.onReady(function (){
-        /*var map = new OpenLayers.Map(options);
-        var layer = new OpenLayers.Layer.WMS(
-            "Global Imagery",
-            "http://maps.opengeo.org/geowebcache/service/wms",
-            {layers: "bluemarble"}
-        );
-        map.addLayer(layer);*/
+        var map_options = options["map"];
+        var map = new OpenLayers.Map({
+            center: map_options["center"],
+            units: map_options["units"],
+            maxResolution: map_options["maxResolution"],
+            maxExtent: map_options["maxExtent"],
+            zoom: map_options["zoom"],
+            projection: map_options["projection"]
         
-        /*new GeoExt.MapPanel({
+        });
+        
+        //var layers_options = map_options["layers"];
+        
+        new GeoExt.MapPanel({
             renderTo: "preview_map",
             height: 400,
-            map: map,
-            title: "Test Map"
-        });*/
-    var config = {
-        viewerTools: [
-            {
-                ptype: "gxp_wmsgetfeatureinfo",
-                format: "grid",
-                actionTarget: "main.tbar",
-                outputConfig: {width: 400, height: 200, panIn: false}
-            },
-            {
-                id: "feature_manager",
-                ptype: "gxp_featuremanager",
-                autoSetLayer: true
-            },
-            {
-                id: "feature_editor",
-                ptype: "gxp_featureeditor",
-                featureManager: "feature_manager",
-                hidden: false
-            }
-        ],
-        {% if PROXY_URL %}
-        proxy: '{{ PROXY_URL }}',
-        {% endif %}
-        localGeoServerBaseUrl: "{{GEOSERVER_BASE_URL}}",
-        authorizedRoles: "{{ user.is_authenticated|yesno:"ROLE_ADMINISTRATOR,ROLE_ANONYMOUS" }}",
-
-        /* The URL to a REST map configuration service.  This service 
-         * provides listing and, with an authenticated user, saving of 
-         * maps on the server for sharing and editing.
-         */
-        rest: "/maps/",
-        {% if MAPFISH_PRINT_ENABLED %}
-        printService: "{{GEOSERVER_BASE_URL}}pdf/",
-        {% else %}
-        printService: "",
-        {% endif %}
-        
-        portalConfig: {
-            renderTo: "preview_map",
-            height: 400 
-        }};
-        
-        config = Ext.apply(config, {{ viewer|safe }});
-        app = new GeoExplorer.Viewer(config);
+            map: map//,
+            //title: "Test Map",
+            //layers: map_options["layers"]
+        });
         
 });
 {% endautoescape %}
