@@ -42,6 +42,7 @@ function reorganize_configuration() {
     cp -rp $INSTALL_DIR/support/geonode.wsgi $GEONODE_WWW/wsgi/
     cp -rp $INSTALL_DIR/support/geonode.robots $GEONODE_WWW/robots.txt
     cp -rp $INSTALL_DIR/support/geonode.binary $GEONODE_BIN/geonode
+    cp -rp $INSTALL_DIR/GeoNode*.zip $GEONODE_SHARE
     cp -rp $INSTALL_DIR/support/geonode.updateip $GEONODE_BIN/geonode-updateip
     cp -rp $INSTALL_DIR/support/geonode.admin $GEONODE_SHARE/admin.json
     cp -rp $INSTALL_DIR/support/geonode.local_settings $GEONODE_ETC/local_settings.py
@@ -82,6 +83,8 @@ function setup_django_once() {
 }
 
 function setup_django_every_time() {
+    pip install $GEONODE_SHARE/GeoNode-*.zip --no-dependencies --quiet
+
     geonodedir=`python -c "import geonode;import os;print os.path.dirname(geonode.__file__)"`
     
     ln -sf $GEONODE_ETC/local_settings.py $geonodedir/local_settings.py
@@ -136,8 +139,7 @@ function one_time_setup() {
     # it uses that to get the sitedir location
 }
 
-function setup_geonode() {
-    pip install ../
+function setup_geoserver() {
     pushd ../
     paver setup
     popd
@@ -195,7 +197,7 @@ case $stepval in
         echo "Running GeoNode installation ..."
         preinstall
         one_time_setup
-        setup_geonode
+        setup_geoserver
         postinstall
         setup_apache_once
         ;;
