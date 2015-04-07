@@ -1,3 +1,110 @@
+geonode (2.4.0+beta23) trusty; urgency=high
+
+  [ Allan Oware ]
+  * [92c13c] allowed document types list
+  * [caf46e] replaced numbered list with bullet points
+
+  [ Simone Dalmasso ]
+  * [c6dca9] calculate map extent based on a standard screen resolution
+  * [f78fb1] update comments and add an assertion in map tests
+
+  [ Geode Team ]
+  * [749872] Correct proxy fail for specifics characters
+
+  [ Allan Oware ]
+  * [1ffa10] passed array as context parameter in view
+
+  [ Simone Dalmasso ]
+  * [4eceea] use full url in thumbnail link generation, fixes #2074
+  * [603ce6] don't save document twice on metadata save
+  * [7c1d0b] don't consider the port in the link sanitizing loop (preserve the thumbnail remote link)
+  * [f1962f] bump gsconfig, fixes #2050
+  * [fdbd27] better sniff whether a layer is remote to not execute the signals
+  * [664e0b] DRY metadata forms
+  * [ea1d9d] fix new flake8 complains
+  * [31cda0] specify pep8 version to avoid continuous updates
+  * [d3d069] fix notification import for now
+
+  [ Geode Team ]
+  * [0768a0] Checking and editing column names for layer upload
+
+  [ Simone Dalmasso ]
+  * [4c9c66] add autocomplete for keywords, fixes #1325
+  * [170844] sorry flake8
+  * [f2b6c8] add o/c server log_file also in local settings sample
+
+  [ Geode Team ]
+  * [c04cb3] add awesome-slugify on pip install
+  * [6387dc] some correction for Travis
+  * [232835] flake8 correction
+
+  [ Tom Kralidis ]
+  * [561ece] fix ref (#2082)
+
+  [ GeodeTeam ]
+  * [0f9f04] remove print qry
+
+  [ Simone Dalmasso ]
+  * [c757ab] add awesome-slugify to deep packages and use it for groups name, fixes #2073
+  * [4e7d02] add autocomplete keywords in admin
+  * [e6bc8b] update the ubuntu_config_file to do more tasks and update docs
+  * [74b226] Add zip upload
+
+  [ julien collaer ]
+  * [1c5362] sycing with transifex month 2-2015
+
+  [ Simone Dalmasso ]
+  * [098c2f] fix permissions form js to reflect the default permissions
+
+  [ CORTI Paolo ]
+  * [0773d8] Notifications urls enabled only when necessary
+
+  [ capooti ]
+  * [558674] Notifications urls enabled only when necessary
+  * [836bc2] Sorry flake8!
+
+  [ Simone Dalmasso ]
+  * [df225a] fix js behavior on permissions widget when the anonymous user has no permissions at all
+  * [1d6277] re-trigger travis build
+
+  [ Stefano Menegon ]
+  * [1781dc] Fixed FieldError on admin search
+
+  [ capooti ]
+  * [6599d7] Now using the internal test client instance in tests instead than instantiating the client at every test
+  * [5ba7a3] Now flake8 does not complain of unused imports
+
+  [ Tom Kralidis ]
+  * [6b3bcb] update package descriptions
+
+  [ TeamGeode ]
+  * [64def6] adding extra_user_menu into user menu
+
+  [ Tom Kralidis ]
+  * [6223e5] add ability to override pycsw server settings in settings.py (#2099)
+  * [e7e59a] fix flake8 error
+
+  [ TeamGeode ]
+  * [1587a3] Resolve malformed XMLHttpRequest from in IE11
+  * [16f4f1] add has_key HTTP_USER_AGENT
+  * [84f11a] flake8
+
+  [ capooti ]
+  * [fbf520] Load categories, regions and keywords only if relative filters are available in the page
+
+  [ state-hiu ]
+  * [395cac] Added group to homepage facets
+
+  [ Matt Bertrand ]
+  * [db482d] Fix importlayers command for zip files
+
+  [ Ian Schneider ]
+  * [bd4e02] fix for case-sensitive extension comparison
+
+  [ Simone Dalmasso ]
+
+ -- Simone Dalmasso <simone.dalmasso@gmail.com>  Tue, 07 Apr 2015 06:40:13 +0000
+
 geonode (2.4.0+beta22) trusty; urgency=high
 
   [ capooti ]
