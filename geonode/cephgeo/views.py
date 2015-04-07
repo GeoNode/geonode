@@ -193,7 +193,7 @@ def get_cart(request):
     # DEBUG CALLS
     duplicates = []
     
-    for ceph_obj in CephDataObject.objects.filter(id<10):
+    for ceph_obj in CephDataObject.objects.filter(id__lte=10):
         try:
             add_to_cart_unique(request, ceph_obj.id)
         except DuplicateCartItemException:
