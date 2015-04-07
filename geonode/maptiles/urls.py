@@ -4,7 +4,7 @@ from django.views.generic import TemplateView
 import views
 
 urlpatterns = patterns('',
-						url(r'^/?$',views.tiled_view),
+						url(r'^/$',views.tiled_view),
                         url(r'^test/?$',views.tiled_view2),
                         url(r'^addtocart/?$',views.process_georefs)
 						)
