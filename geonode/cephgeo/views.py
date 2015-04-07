@@ -158,6 +158,8 @@ def data_input(request):
             
             #Save each ceph object
             for obj_meta_dict in uploaded_objects:
+                print("===SAVING OBJECT===")
+                pprint(obj_meta_dict)
                 ceph_obj = CephDataObject(  name = obj_meta_dict['name'],
                                             #last_modified = time.strptime(obj_meta_dict['last_modified'], "%Y-%m-%d %H:%M:%S"),
                                             last_modified = obj_meta_dict['last_modified'],
