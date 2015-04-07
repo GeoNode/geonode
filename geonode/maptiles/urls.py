@@ -5,6 +5,6 @@ import views
 
 urlpatterns = patterns('',
 						url(r'^/?$',views.tiled_view),
-                        url(r'^test/?$',TemplateView.as_view(template_name="maptiles/maptiles_geoext_test.html")),
+                        url(r'^test/?$',views.tiled_view2),
                         url(r'^addtocart/?$',views.process_georefs)
 						)

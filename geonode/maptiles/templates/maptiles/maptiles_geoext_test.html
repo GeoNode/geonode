@@ -20,14 +20,21 @@ Ext.onReady(function (){
             projection: map_options["projection"]
         
         });
-        
-        //var layers_options = map_options["layers"];
+        var layers_list = [];
+        for (var layer in map_options["layers"]){
+            var tmp_layer;
+            if (layer["type"]){
+                switch (layer["type"]){
+                    case "OpenLayers.Layer.OSM": 
+                }
+            }
+        }
         
         new GeoExt.MapPanel({
             renderTo: "preview_map",
             height: 400,
-            map: map//,
-            //title: "Test Map",
+            map: map,
+            title: "Test Map"
             //layers: map_options["layers"]
         });
         
