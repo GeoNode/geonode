@@ -35,7 +35,8 @@ PRICING = {
 TYPE_TO_IDENTIFIER_DICT = {
 	".laz"			: "LAZ file",
 	"_dem.tif" 		: "DEM TIF",
-	"_ortho.tif"	: "Orthophoto" 
+	"_dsm.tif" 		: "DSM TIF",
+	"_ortho.tif"	: "Orthophoto",
 }
 
 
