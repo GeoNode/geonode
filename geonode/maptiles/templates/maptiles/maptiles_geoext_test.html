@@ -12,7 +12,7 @@ var options = {{ viewer|safe }};
 Ext.onReady(function (){
         var map_options = options["map"];
         var map = new OpenLayers.Map({
-            center: map_options["center"][],
+            center: map_options["center"],
             units: map_options["units"],
             maxResolution: map_options["maxResolution"],
             maxExtent: map_options["maxExtent"],
