@@ -11,7 +11,6 @@
 var options = {{ viewer|safe }};
 Ext.onReady(function (){
     
-        console.log({{viewer}});
         var map_options = options["map"];
         var map = new OpenLayers.Map({
             center: map_options["center"],
@@ -37,16 +36,26 @@ Ext.onReady(function (){
             }
         );
         
+        var tile_layer = new OpenLayers.Layer.WMS("geonode:index",
+            "http://cephgeo.lan.dream.upd.edu.ph:8080/geoserver/wms/geonode",
+            {
+                 layers: "geonode:index",
+                 opacity:  0.5
+            },
+            {
+                isBaseLayer: false
+            });
+        
         var items = [{
             xtype: "gx_zoomslider",
-            aggressive: true,
+            aggressive: false,
             vertical: true,
             height: 100,
             x: 10,
             y: 20
         }];
         
-        map.addLayer(mq_layer);
+        map.addLayer(mq_layer, tile_layer);
         
         new GeoExt.MapPanel({
             renderTo: "preview_map",
