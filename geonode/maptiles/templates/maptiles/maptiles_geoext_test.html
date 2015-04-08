@@ -37,14 +37,14 @@ Ext.onReady(function (){
         );
         
         var tile_layer = new OpenLayers.Layer.WMS("geonode:index",
-            "http://cephgeo.lan.dream.upd.edu.ph:8080/geoserver/wms/geonode",
+            "http://cephgeo.lan.dream.upd.edu.ph:8080/geoserver/wms",
             {
                  layers: "geonode:index",
-                 opacity:  0.5
+                 opacity:  0.7,
+                 transparent: false
             },
-            {
-                isBaseLayer: false
-            });
+            { isBaseLayer: false }
+        );
         
         var items = [{
             xtype: "gx_zoomslider",
