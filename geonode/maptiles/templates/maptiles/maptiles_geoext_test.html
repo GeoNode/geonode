@@ -55,7 +55,7 @@ Ext.onReady(function (){
             y: 20
         }];
         
-        map.addLayer(mq_layer, tile_layer);
+        map.addLayer([mq_layer, tile_layer]);
         
         new GeoExt.MapPanel({
             renderTo: "preview_map",
