@@ -37,13 +37,22 @@ Ext.onReady(function (){
             }
         );
         
+        var items = [{
+            xtype: "gx_zoomslider",
+            aggressive: true,
+            vertical: true,
+            height: 100,
+            x: 10,
+            y: 20
+        }];
+        
         map.addLayer(mq_layer);
         
         new GeoExt.MapPanel({
             renderTo: "preview_map",
             height: 400,
             map: map,
-            title: "Test Map"
+            title: "Test Map",
             //layers: map_options["layers"]
         });
         
