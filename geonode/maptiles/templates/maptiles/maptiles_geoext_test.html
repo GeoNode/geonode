@@ -74,7 +74,13 @@ Ext.onReady(function (){
             ]
         });
         
-        console.log(map.layers.length);
+        for (var layer in map.layers){
+            if (layer.getVisibility()){
+                console.log( "Layer "+ layer.name + " is visible");
+            }else{
+                console.log( "Layer "+ layer.name + " is vinisible");
+            }
+        }
         
 });
 {% endautoescape %}
