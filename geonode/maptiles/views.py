@@ -241,7 +241,7 @@ def process_georefs(request):
             return redirect('geonode.cephgeo.views.get_cart')
             
         except ValidationError:             # Redirect and inform if an invalid georef is encountered
-            messages.error(request, "Invalid georefs list")s
+            messages.error(request, "Invalid georefs list")
             return HttpResponseRedirect('/maptiles/')
             #return redirect('geonode.maptiles.views.tiled_view')
     
