@@ -158,8 +158,6 @@ def data_input(request):
             
             #Save each ceph object
             for obj_meta_dict in uploaded_objects:
-                print("===SAVING OBJECT===")
-                pprint(obj_meta_dict)
                 ceph_obj = CephDataObject(  name = obj_meta_dict['name'],
                                             #last_modified = time.strptime(obj_meta_dict['last_modified'], "%Y-%m-%d %H:%M:%S"),
                                             last_modified = obj_meta_dict['last_modified'],
@@ -170,7 +168,7 @@ def data_input(request):
                                             grid_ref = obj_meta_dict['grid_ref'])
                 ceph_obj.save()
             
-            messages.success(request, "Data has been succesfully encoded!")
+            messages.success(request, "Data has been succesfully encoded. [{0}] files uploaded to Ceph.".format(len(uploaded_objects)))
             #return HttpResponseRedirect('/cephgeo/list/nosort/')
             return redirect('geonode.cephgeo.views.file_list_geonode',sort='uploaddate')
         else:
@@ -272,7 +270,7 @@ def clear_cart(request):
         remove_all_from_cart(request) # Clear cart for this request
     user = request.user
     name = user.username
-    messages.add_message(request, messages.INFO, "Cart has been emptied for user[{0}] usertype[{1}]".format(name, type(user)))
+    messages.add_message(request, messages.INFO, "Cart has been emptied for user [{0}]".format(name))
     response = render_to_response('cart.html', 
                                 dict(cart=CartProxy(request)),
                                 context_instance=RequestContext(request))
