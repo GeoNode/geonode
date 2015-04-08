@@ -188,17 +188,6 @@ def error(request):
 
 @login_required
 def get_cart(request):
-    # DEBUG CALLS
-    duplicates = []
-    
-    for ceph_obj in CephDataObject.objects.filter(id__lte=10):
-        try:
-            add_to_cart_unique(request, ceph_obj.id)
-        except DuplicateCartItemException:
-            duplicates.append(ceph_obj.name)
-    if len(duplicates) > 0:
-        messages.warning(request, "WARNING: The following items are already in the cart and have not been added: \n{0}".format(str(duplicates)))
-    # END DEBUG
     return render_to_response('cart.html', 
                                 dict(cart=CartProxy(request)),
                                 context_instance=RequestContext(request))
