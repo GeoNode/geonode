@@ -51,6 +51,8 @@ Ext.onReady(function (){
                 projection: 'EPSG:900913'}
         );
         
+        tile_layer.setZIndex(mq_layer.getZIndex+1);
+        
         var items = [{
             xtype: "gx_zoomslider",
             aggressive: false,
