@@ -225,7 +225,7 @@ def process_georefs(request):
             duplicates = []
             
             for georef in georef_list:      # Process each georef in list
-                objects = CephDataObject.objects.filter(name__startswith=grid_ref)
+                objects = CephDataObject.objects.filter(name__startswith=georef)
                 count += len(objects)
                 for ceph_obj in objects:    # Add each Ceph object to cart
                     try:
