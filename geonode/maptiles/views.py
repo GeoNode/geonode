@@ -16,7 +16,7 @@ from geonode.utils import GXPMap
 from geonode.utils import default_map_config
 from geonode.security.views import _perms_info_json
 from geonode.cephgeo.models import CephDataObject
-from geonode.cephgeo.cart_utils import DuplicateCartItemException
+from geonode.cephgeo.cart_utils import *
 from geonode.documents.models import get_related_documents
 
 from pprint import pprint
