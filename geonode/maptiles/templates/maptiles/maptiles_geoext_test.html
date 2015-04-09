@@ -18,7 +18,7 @@ Ext.onReady(function (){
             maxResolution: map_options["maxResolution"],
             maxExtent: map_options["maxExtent"],
             //zoom: map_options["zoom"],
-            //projection: map_options["projection"]
+            projection: map_options["projection"]
         
         });
         
@@ -44,10 +44,11 @@ Ext.onReady(function (){
             {
                  layers: "geonode:index",
                  opacity:  1,
+                 yx: "EPSG:900913"
             },
             {   
                 isBaseLayer: false, 
-                projection: 'EPSG:900913'
+                projection: "EPSG:900913"
             }
         );
         
