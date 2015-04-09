@@ -44,7 +44,7 @@ Ext.onReady(function (){
             {
                  layers: "geonode:index",
                  opacity:  1,
-                 yx: "EPSG:900913"
+                 yx: { "EPSG:900913":false }
             },
             {   
                 isBaseLayer: false, 
@@ -52,7 +52,7 @@ Ext.onReady(function (){
             }
         );
         
-        map.addLayers([mq_layer]);
+        map.addLayers([mq_layer, tile_layer]);
         
         var items = [{
             xtype: "gx_zoomslider",
