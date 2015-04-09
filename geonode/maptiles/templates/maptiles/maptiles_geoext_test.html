@@ -17,6 +17,7 @@ Ext.onReady(function (){
             units: map_options["units"],
             maxResolution: map_options["maxResolution"],
             maxExtent: map_options["maxExtent"],
+            allOverlays: true
             //zoom: map_options["zoom"],
             //projection: map_options["projection"]
         
@@ -69,7 +70,7 @@ Ext.onReady(function (){
             title: "Test Map",
             items: items,
             layers: [
-                tile_layer
+                tile_layer,
                 //mq_layer
             ]
         });
