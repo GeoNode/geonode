@@ -424,7 +424,7 @@ def file_upload(filename, name=None, user=None, title=None, abstract=None,
 
 def upload(incoming, user=None, overwrite=False,
            keywords=(), skip=True, ignore_errors=True,
-           verbosity=1, console=None, category=None, private=False):
+           verbosity=1, console=None, category=None, title=None, private=False):
     """Upload a directory of spatial data files to GeoNode
 
        This function also verifies that each layer is in GeoServer.
@@ -500,7 +500,8 @@ def upload(incoming, user=None, overwrite=False,
                                     user=user,
                                     overwrite=overwrite,
                                     keywords=keywords,
-                                    category=category
+                                    category=category,
+                                    title=title
                                     )
                 if not existed:
                     status = 'created'
