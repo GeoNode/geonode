@@ -164,4 +164,3 @@ class Command(BaseCommand):
             if len(output) > 0:
                 print "%f seconds per layer" % (duration * 1.0 / len(output))
 
-        return updated, created, skipped, failed
