@@ -70,8 +70,8 @@ Ext.onReady(function (){
         );
         
         map.addLayers([mq_layer,tile_layer]);
-        console.log("projection of mq_layer: " + mq_layer);
-        console.log("projection of tile_layer: " + tile_layer);
+        console.log("projection of mq_layer: " + mq_layer.projection);
+        console.log("projection of tile_layer: " + tile_layer.projection);
         map.zoomToMaxExtent();
         
         var items = [{
