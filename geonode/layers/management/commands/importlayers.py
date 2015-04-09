@@ -73,6 +73,15 @@ class Command(BaseCommand):
                     if multiple imports are done in one command"""
         ),
         make_option(
+            '-t',
+            '--title',
+            dest='title',
+            default=None,
+            help="""The title for the
+                    imported layer(s). Will be the same for all imported layers
+                    if multiple imports are done in one command"""
+        ),
+        make_option(
             '-p',
             '--private',
             dest='private',
@@ -90,6 +99,7 @@ class Command(BaseCommand):
         overwrite = options.get('overwrite')
         category = options.get('category', None)
         private = options.get('private', False)
+        title = options.get('title', None)
 
         if verbosity > 0:
             console = sys.stdout
@@ -116,6 +126,7 @@ class Command(BaseCommand):
                 verbosity=verbosity,
                 console=console,
                 category=category,
+                title=title,
                 private=private)
             output.extend(out)
 
@@ -152,3 +163,5 @@ class Command(BaseCommand):
 
             if len(output) > 0:
                 print "%f seconds per layer" % (duration * 1.0 / len(output))
+
+        return updated, created, skipped, failed
