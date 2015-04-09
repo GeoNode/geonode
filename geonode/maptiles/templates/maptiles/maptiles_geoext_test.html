@@ -39,7 +39,7 @@ Ext.onReady(function (){
             }
         );
         
-        var tile_layer = new OpenLayers.Layer.WMS("geonode:index",
+        /*var tile_layer = new OpenLayers.Layer.WMS("geonode:index",
             "http://cephgeo.lan.dream.upd.edu.ph:8080/geoserver/geonode/wms",
             {
                  layers: "geonode:index",
@@ -50,9 +50,24 @@ Ext.onReady(function (){
                 isBaseLayer: false, 
                 projection: "EPSG:900913"
             }
+        );*/
+        
+        var tile_layer = new OpenLayers.Layer.WMS(
+            "geonode:index - Tiled", "http://cephgeo.lan.dream.upd.edu.ph:8080/geoserver/geonode/wms",
+            {
+                LAYERS: 'geonode:index',
+                STYLES: '',
+                format: format
+            },
+            {
+                buffer: 0,
+                displayOutsideMaxExtent: true,
+                isBaseLayer: true,
+                yx : {'EPSG:32651' : false}
+            } 
         );
         
-        map.addLayers([mq_layer, tile_layer]);
+        map.addLayers([tile_layer]);
         
         var items = [{
             xtype: "gx_zoomslider",
