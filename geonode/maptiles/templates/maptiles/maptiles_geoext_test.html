@@ -41,7 +41,7 @@ Ext.onReady(function (){
         );
         
         var tile_layer = new OpenLayers.Layer.WMS("geonode:index",
-            "http://cephgeo.lan.dream.upd.edu.ph:8080/geoserver/wms",
+            "http://cephgeo.lan.dream.upd.edu.ph:8080/geoserver/geonode/wms",
             {
                  layers: "geonode:index",
                  opacity:  0.7,
@@ -71,7 +71,7 @@ Ext.onReady(function (){
             items: items,
             layers: [
                 tile_layer,
-                //mq_layer
+                mq_layer
             ]
         });
         
