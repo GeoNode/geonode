@@ -16,7 +16,7 @@ Ext.onReady(function (){
             center: map_options["center"],
             units: map_options["units"],
             maxResolution: map_options["maxResolution"],
-            maxExtent: map_options["maxExtent"],
+            //maxExtent: map_options["maxExtent"],
             //zoom: map_options["zoom"],
             projection: map_options["projection"]
         
@@ -57,18 +57,20 @@ Ext.onReady(function (){
             {
                 LAYERS: 'geonode:index',
                 STYLES: '',
-                format: format
+                format: format,
+                bbox: [13825393.814371249, 807566.643619642, 13852644.846474735, 817795.469341697]
             },
             {
                 buffer: 0,
                 displayOutsideMaxExtent: true,
                 isBaseLayer: true,
-                yx : {'EPSG:32651' : false}
+                projection: "EPSG:900913",
+                maxExtent: new OpenLayers.Bounds(13825393.814371249, 807566.643619642, 13852644.846474735, 817795.469341697)
             } 
         );
         
         map.addLayers([tile_layer]);
-        
+        map.zoomToMaxExtent();
         var items = [{
             xtype: "gx_zoomslider",
             aggressive: false,
