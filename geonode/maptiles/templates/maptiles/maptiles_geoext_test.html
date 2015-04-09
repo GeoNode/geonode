@@ -9,6 +9,7 @@
 {% autoescape off %}
 
 var options = {{ viewer|safe }};
+var app;
 Ext.onReady(function (){
     
         var map_options = options["map"];
@@ -85,17 +86,45 @@ Ext.onReady(function (){
             y: 20
         }];
         
-        new GeoExt.MapPanel({
+        var config = {
             renderTo: "preview_map",
             height: 400,
             map: map,
             title: "Tile Selection",
             items: items,
-           /* layers: [
-                tile_layer,
-                mq_layer
-            ]*/
-        });
+            listeners: {
+                    "ready": function() {
+                        var map = app.mapPanel.map;
+                        var layer = app.map.layers.slice(-1)[0];
+
+                        // FIXME(Ariel): Zoom to extent until #1795 is fixed.
+                        //map.zoomToExtent(layer.maxExtent, false)
+                        
+                        var bbox = layer.bbox;
+                        if (bbox != undefined)
+                        {
+                           if (!Array.isArray(bbox) && Object.keys(layer.srs) in bbox) {
+                            bbox = bbox[Object.keys(layer.srs)].bbox;
+                           }
+
+                           var extent = OpenLayers.Bounds.fromArray(bbox);
+                           var zoomToData = function()
+                           {
+                               map.zoomToExtent(extent, false);
+                               app.mapPanel.center = map.center;
+                               app.mapPanel.zoom = map.zoom;
+                               map.events.unregister('changebaselayer', null, zoomToData);
+                           };
+                           map.events.register('changebaselayer',null,zoomToData);
+                           if(map.baseLayer){
+                            map.zoomToExtent(extent, false);
+                           }
+                        }
+                    }
+            }
+        };
+        
+        app = new GeoExt.MapPanel(config);
         
         /*for (var layer in map.layers){
             if (layer.getVisibility()){
