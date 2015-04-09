@@ -63,13 +63,15 @@ Ext.onReady(function (){
             {
                 buffer: 0,
                 displayOutsideMaxExtent: true,
-                isBaseLayer: true,
+                isBaseLayer: false,
                 projection: "EPSG:900913",
                 maxExtent: new OpenLayers.Bounds(13825393.814371249, 807566.643619642, 13852644.846474735, 817795.469341697)
             } 
         );
         
         map.addLayers([mq_layer,tile_layer]);
+        console.log("projection of mq_layer: " + mq_layer);
+        console.log("projection of tile_layer: " + tile_layer);
         map.zoomToMaxExtent();
         
         var items = [{
