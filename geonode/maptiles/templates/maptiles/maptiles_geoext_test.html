@@ -51,7 +51,7 @@ Ext.onReady(function (){
                 projection: "EPSG:900913"
             }
         );*/
-        
+        var format = 'image/png';
         var tile_layer = new OpenLayers.Layer.WMS(
             "geonode:index - Tiled", "http://cephgeo.lan.dream.upd.edu.ph:8080/geoserver/geonode/wms",
             {
