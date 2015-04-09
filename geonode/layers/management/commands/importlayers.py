@@ -23,7 +23,6 @@ from geonode.layers.utils import upload
 from geonode.people.utils import get_valid_user
 import traceback
 import datetime
-import sys
 
 
 class Command(BaseCommand):
@@ -102,7 +101,7 @@ class Command(BaseCommand):
         title = options.get('title', None)
 
         if verbosity > 0:
-            console = sys.stdout
+            console = self.stdout
         else:
             console = None
 
@@ -163,4 +162,3 @@ class Command(BaseCommand):
 
             if len(output) > 0:
                 print "%f seconds per layer" % (duration * 1.0 / len(output))
-
