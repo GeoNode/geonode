@@ -93,7 +93,7 @@ Ext.onReady(function (){
             title: "Tile Selection",
             items: items,
             listeners: {
-                    "ready": function() {
+                    "afterrender": function() {
                         var map = app.mapPanel.map;
                         var layer = app.map.layers.slice(-1)[0];
                         
