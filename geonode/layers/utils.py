@@ -508,11 +508,12 @@ def upload(incoming, user=None, overwrite=False,
                 else:
                     status = 'updated'
                 if private and user:
-                    perm_spec= {"users": {"AnonymousUser": [],
-                    user.username :["change_resourcebase_metadata","change_layer_data","change_layer_style","change_resourcebase","delete_resourcebase","change_resourcebase_permissions","publish_resourcebase"]},"groups":{}}
+                    perm_spec = {"users": {"AnonymousUser": [],
+                                           user.username: ["change_resourcebase_metadata", "change_layer_data",
+                                                           "change_layer_style", "change_resourcebase",
+                                                           "delete_resourcebase", "change_resourcebase_permissions",
+                                                           "publish_resourcebase"]}, "groups": {}}
                     layer.set_permissions(perm_spec)
-
-
             except Exception as e:
                 if ignore_errors:
                     status = 'failed'
