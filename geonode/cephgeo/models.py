@@ -2,6 +2,15 @@ from django.db import models
 from geonode.layers.models import Layer
 import json
 
+try:
+    from django.conf import settings
+    User = settings.AUTH_USER_MODEL
+except ImportError:
+    from django.contrib.auth.models import User
+
+from django_enumfield import enum
+
+
 class CephDataObject(models.Model):
     size_in_bytes   = models.IntegerField()
     file_hash       = models.CharField(max_length=30)
@@ -14,9 +23,24 @@ class CephDataObject(models.Model):
     def __unicode__(self):
         return "{0}:{1}".format(self.name, self.geo_type)
 
-class LayerToCephObjectMap(models.Model):
-    shapefile     = models.ForeignKey(Layer)
-    ceph_data_obj = models.ForeignKey(CephDataObject)
+class FTPRequest(models.Model):
+    name        = models.CharField(max_length=30)
+    datetime    = models.DateTimeField()
+    user        = models.ForeignKey(User, null=False, blank=False)
+    status      = enum.EnumField(FTPStatus, default=FTPStatus.PENDING)
+
+class FTPStatus(enum.Enum):
+    SUCCESS = 0
+    PENDING = 1
+    ERROR = 2
+
+class EULA(models.Model):
+    user = models.ForeignKey(User, null=False, blank=False)
+    document = FileField()
     
-    def __unicode__(self):
-        return "{0} -> {1}".format(self.shapefile, self.ceph_data_obj)
+class FTPRequestToObjectIndex(models.Model)
+    # FTPRequest
+    ftprequest = models.ForeignKey(FTPRequest, null=False, blank=False)
+    # CephObject
+    cephobject = models.ForeignKey(CephDataObject, null=False, blank=False)
+    
