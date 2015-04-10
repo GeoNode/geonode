@@ -242,6 +242,9 @@ def create_ftp_folder(request):
     email = request.user.email
     request_name=time.strftime("ftp_request-%Y_%m_%d")
     
+    # Record FTP request to database
+    # DETAILS: user, request name, for item(ceph_obj) in cart, date, EULA?
+    
     # Call to celery
     process_ftp_request.delay(username, email, request_name, obj_name_dict)
     
