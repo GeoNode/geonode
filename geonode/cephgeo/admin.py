@@ -1,5 +1,5 @@
 from django.contrib import admin
-from geonode.cephgeo.models import CephDataObject, LayerToCephObjectMap
+from geonode.cephgeo.models import *
 from changuito.models import Cart, Item
 
 # Register your models here.
@@ -39,17 +39,6 @@ class CephDataObjectAdmin(admin.ModelAdmin):
     list_filter = ('content_type', 'grid_ref')
     search_fields = ('name', 'content_type', 'grid_ref',)
 
-class LayerToCephObjectMapAdmin(admin.ModelAdmin):
-    model = LayerToCephObjectMap
-    list_display_links = ('id',)
-    list_display = (
-        'id',
-        'shapefile',
-        'ceph_data_obj',)
-    list_filter = ('shapefile', 'ceph_data_obj')
-    search_fields = ('shapefile', 'ceph_data_obj')
-
 admin.site.register(Cart, CartAdmin)
 admin.site.register(CephDataObject, CephDataObjectAdmin)
-#admin.site.register(LayerToCephObjectMap, LayerToCephObjectMapAdmin)
 
