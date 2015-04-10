@@ -1,5 +1,6 @@
 from django.db import models
 from geonode.layers.models import Layer
+from geonode import settings
 import json
 
 try:
@@ -23,22 +24,22 @@ class CephDataObject(models.Model):
     def __unicode__(self):
         return "{0}:{1}".format(self.name, self.geo_type)
 
+class FTPStatus(enum.Enum):
+    SUCCESS = 0
+    PENDING = 1
+    ERROR = 2
+
 class FTPRequest(models.Model):
     name        = models.CharField(max_length=30)
     datetime    = models.DateTimeField()
     user        = models.ForeignKey(User, null=False, blank=False)
     status      = enum.EnumField(FTPStatus, default=FTPStatus.PENDING)
 
-class FTPStatus(enum.Enum):
-    SUCCESS = 0
-    PENDING = 1
-    ERROR = 2
-
 class EULA(models.Model):
     user = models.ForeignKey(User, null=False, blank=False)
-    document = FileField()
+    document = models.FileField(upload_to=settings.MEDIA_ROOT)
     
-class FTPRequestToObjectIndex(models.Model)
+class FTPRequestToObjectIndex(models.Model):
     # FTPRequest
     ftprequest = models.ForeignKey(FTPRequest, null=False, blank=False)
     # CephObject
