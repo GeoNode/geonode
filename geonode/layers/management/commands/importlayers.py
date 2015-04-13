@@ -23,7 +23,6 @@ from geonode.layers.utils import upload
 from geonode.people.utils import get_valid_user
 import traceback
 import datetime
-import sys
 
 
 class Command(BaseCommand):
@@ -61,8 +60,35 @@ class Command(BaseCommand):
             default="",
             help="""The default keywords, separated by comma, for the
                     imported layer(s). Will be the same for all imported layers
-                    if multiple imports are done in one command""")
+                    if multiple imports are done in one command"""
+        ),
+        make_option(
+            '-c',
+            '--category',
+            dest='category',
+            default=None,
+            help="""The category for the
+                    imported layer(s). Will be the same for all imported layers
+                    if multiple imports are done in one command"""
+        ),
+        make_option(
+            '-t',
+            '--title',
+            dest='title',
+            default=None,
+            help="""The title for the
+                    imported layer(s). Will be the same for all imported layers
+                    if multiple imports are done in one command"""
+        ),
+        make_option(
+            '-p',
+            '--private',
+            dest='private',
+            default=False,
+            action="store_true",
+            help="Make layer viewable only to owner"
         )
+    )
 
     def handle(self, *args, **options):
         verbosity = int(options.get('verbosity'))
@@ -70,9 +96,12 @@ class Command(BaseCommand):
         username = options.get('user')
         user = get_valid_user(username)
         overwrite = options.get('overwrite')
+        category = options.get('category', None)
+        private = options.get('private', False)
+        title = options.get('title', None)
 
         if verbosity > 0:
-            console = sys.stdout
+            console = self.stdout
         else:
             console = None
 
@@ -94,7 +123,10 @@ class Command(BaseCommand):
                 skip=skip,
                 keywords=keywords,
                 verbosity=verbosity,
-                console=console)
+                console=console,
+                category=category,
+                title=title,
+                private=private)
             output.extend(out)
 
         updated = [dict_['file']
