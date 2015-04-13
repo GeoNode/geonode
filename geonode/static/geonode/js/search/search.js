@@ -460,7 +460,7 @@
       });
 
       var leafletData = $injector.get('leafletData'),
-          map = leafletData.getMap();
+          map = leafletData.getMap('filter-map');
 
       map.then(function(map){
         map.on('moveend', function(){
