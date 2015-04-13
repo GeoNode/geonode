@@ -63,7 +63,7 @@ class TagResource(TypeFilteredResource):
     def dehydrate_count(self, bundle):
         count = 0
         if settings.SKIP_PERMS_FILTER:
-            resources = ResourceBase.published.all()
+            resources = ResourceBase.objects.all()
         else:
             resources = get_objects_for_user(
                 bundle.request.user,
@@ -102,7 +102,7 @@ class RegionResource(TypeFilteredResource):
     def dehydrate_count(self, bundle):
         count = 0
         if settings.SKIP_PERMS_FILTER:
-            resources = ResourceBase.published.all()
+            resources = ResourceBase.objects.all()
         else:
             resources = get_objects_for_user(
                 bundle.request.user,
