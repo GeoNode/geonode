@@ -1,5 +1,5 @@
 from __future__ import with_statement
-import celery, os, traceback
+import celery, os, traceback, re
 from fabric.api import *
 from fabric.contrib.console import confirm
 from fabric.tasks import execute
@@ -28,11 +28,14 @@ def fab_create_ftp_folder(username, user_email, request_name, ceph_obj_list_by_g
         result = run("[ -d {0} ]".format(ftp_dir))
         if result.return_code == 0:
             print("Error on FTP request: A request has already been made this day. Please try again on the next day.")
-            mail_msg = "An error was encountered on your FTP request named [{0}] for user [{1}]. \
-            A request has already been made this day. Only 1 FTP request per user is allowed \
-            each day. Please try again on the next day.\
-            \n\n---RESULT TRACE---\n\n\
-            {2}".format(request_name, username, result)
+            mail_msg = """\
+An error was encountered on your FTP request named [{0}] for user [{1}]. 
+A request has already been made this day. Only 1 FTP request per user is allowed 
+each day. Please try again on the next day.
+
+---RESULT TRACE---
+
+{2}""".format(request_name, username, result)
             
             mail_ftp_user(username, user_email, request_name, mail_msg)
             return "ERROR: Max daily FTP request is 1. Limit reached."
@@ -47,11 +50,14 @@ def fab_create_ftp_folder(username, user_email, request_name, ceph_obj_list_by_g
                     result = run("mkdir {0}".format(type_dir))      # Create a directory for each geo-type
                     if result.return_code is not 0:                 #Handle error
                         print("Error on FTP request: Failed to create FTP folder at [{0}]. Please notify the administrator of this error".format(ftp_dir))
-                        mail_msg = "An error was encountered on your FTP request named [{0}] for user [{1}]. \
-                        The system failed to create an geotype folder inside the FTP folder at location [{2}]. \
-                        Please e-mail the system administrator regarding this error.\
-                        \n\n---RESULT TRACE---\n\n\
-                        {3}".format(request_name, username, os.path.join(ftp_dir,type_dir), result)
+                        mail_msg = """\
+An error was encountered on your FTP request named [{0}] for user [{1}]. 
+The system failed to create an geotype folder inside the FTP folder at location [{2}]. 
+Please e-mail the system administrator regarding this error.
+
+---RESULT TRACE---
+
+{3}""".format(request_name, username, os.path.join(ftp_dir,type_dir), result)
                         
                         mail_ftp_user(username, user_email, request_name, mail_msg)
                         return "ERROR: Failed to create internal folder [{0}].".format(os.path.join(ftp_dir,type_dir))
@@ -61,24 +67,30 @@ def fab_create_ftp_folder(username, user_email, request_name, ceph_obj_list_by_g
                                                         os.path.join(ftp_dir,type_dir),
                                                         obj_dl_list)) # Download list of objects in corresponding geo-type folder
                     if result.return_code is not 0:                 #Handle error
-                        print("Error on FTP request: Cannot access Ceph Data Store [{0}]. Please notify the administrator of this error".format(ftp_dir))
-                        mail_msg = "An error was encountered on your FTP request named [{0}] for user [{1}]. \
-                        The system failed to download the following files: [{2}]. Either the file/s do/es not exist,\
-                        or the Ceph Data Storage is down. Please e-mail the system administrator regarding this error.\
-                        \n\n---RESULT TRACE---\n\n\
-                        {3}".format(request_name, username, obj_dl_list, result)
+                        print("""\
+Error on FTP request: Cannot access Ceph Data Store [{0}]. Please notify the administrator of this error".format(ftp_dir))
+mail_msg = "An error was encountered on your FTP request named [{0}] for user [{1}]. 
+The system failed to download the following files: [{2}]. Either the file/s do/es not exist,
+or the Ceph Data Storage is down. Please e-mail the system administrator regarding this error.
+
+---RESULT TRACE---
+
+{3}""".format(request_name, username, obj_dl_list, result)
                         
                         mail_ftp_user(username, user_email, request_name, mail_msg)
                         return "ERROR: Failed to create folder [{0}].".format(ftp_dir)
                     
         else:
             print("Error on FTP request: Failed to create FTP folder at [{0}]. Please notify the administrator of this error".format(ftp_dir))
-            mail_msg = "An error was encountered on your FTP request named [{0}] for user [{1}]. \
-            The system failed to create an FTP folder at location [{2}]. Please ensure that you \
-            are a legitimate user and have permision to use this FTP service. If you are a \
-            legitimate user, please e-mail the system administrator regarding this error.\
-            \n\n---RESULT TRACE---\n\n\
-            {3}".format(request_name, username, ftp_dir, result)
+            mail_msg = """\
+An error was encountered on your FTP request named [{0}] for user [{1}]. 
+The system failed to create an FTP folder at location [{2}]. Please ensure that you 
+are a legitimate user and have permision to use this FTP service. If you are a 
+legitimate user, please e-mail the system administrator regarding this error.
+
+---RESULT TRACE---
+
+{3}""".format(request_name, username, ftp_dir, result)
             
             mail_ftp_user(username, user_email, request_name, mail_msg)
             return "ERROR: Failed to create folder [{0}].".format(ftp_dir)
@@ -88,8 +100,9 @@ def fab_create_ftp_folder(username, user_email, request_name, ceph_obj_list_by_g
         # TODO
         # email user once the files have been downloaded
         print("Your FTP request has been completed. You may find your requested data under the DL directory with the name [{0}]".format(os.path.join("DL",request_name)))
-        mail_msg = "Your FTP request named [{0}] for user [{1}] has been succesfully completed. \
-        Please check your download folder for a new folder named [{0}].".format(request_name, username)
+        mail_msg = """\
+Your FTP request named [{0}] for user [{1}] has been succesfully completed.
+Please check your download folder for a new folder named [{0}].""".format(request_name, username)
         
         mail_ftp_user(username, user_email, request_name, mail_msg)
         return "SUCCESS: FTP request successfuly completed."
@@ -99,10 +112,11 @@ def fab_create_ftp_folder(username, user_email, request_name, ceph_obj_list_by_g
         # TODO
         # Email user stating that there is no assigned 
         print("Your FTP request has failed. No FTP folder was found for username [{0}]. Please ensure you have access rights to the FTP repository. Otherwise, please contact the system administrator regarding this error.".format(username))
-        mail_msg = "An error was encountered on your FTP request named [{0}] for user [{1}]. \
-        No FTP folder was found for username [{0}]. Please ensure you have \
-        access rights to the FTP repository. Otherwise, please contact the \
-        system administrator regarding this error.".format(request_name, username)
+        mail_msg = """
+An error was encountered on your FTP request named [{0}] for user [{1}]. 
+No FTP folder was found for username [{0}]. Please ensure you have 
+access rights to the FTP repository. Otherwise, please contact the 
+system administrator regarding this error.""".format(request_name, username)
         
         mail_ftp_user(username, user_email, request_name, mail_msg)
         return "ERROR: User [{0}] has no FTP folder: ".format(e.message)
@@ -137,7 +151,6 @@ def check_cephaccess():
 ###
 #   UTIL FUNCTIONS
 ###
-import re
 def get_folder_from_username(username):
     if not username:
         raise UsernameException(username)
@@ -155,11 +168,16 @@ def get_folder_from_username(username):
 def mail_ftp_user(username, user_email, mail_subject, mail_msg):
     #DEBUG
     mail_subject = "Phil-LiDAR FTP Request [{0}] for User [{1}]".format(mail_subject,username)
-    mail_body = "This is an automated mailer. DO NOT REPLY TO THIS MAIL! Send your e-mails to the site administrator.\n\n\
-                This is an e-mail regarding your FTP request from geonode.dream.upd.edu.ph. Details are found below:\n\n"+mail_msg
+    mail_body = """\
+
+This is an automated mailer. DO NOT REPLY TO THIS MAIL! Send your e-mails to the site administrator.
+
+This is an e-mail regarding your FTP request from geonode.dream.upd.edu.ph. Details are found below:
+
+"""+mail_msg
     args_tup = (mail_subject, mail_body, settings.THEME_ACCOUNT_CONTACT_EMAIL,
                      user_email, False)
     pprint(args_tup)
-    send_mail(mail_subject, mail_msg, settings.THEME_ACCOUNT_CONTACT_EMAIL,
+    send_mail(mail_subject, mail_body, settings.THEME_ACCOUNT_CONTACT_EMAIL,
                      user_email, fail_silently=False)
     #~ return
