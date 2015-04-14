@@ -26,10 +26,21 @@ Additional options::
 
  --user=USER           Name of the user account which should own the imported
                         layers
+ -k
  --keywords=KEYWORDS   The default keywords for the imported layer(s). Will
                         be the same for all imported layers if multiple
                         imports are done in one command
-
+ -c
+ --category=CATEGORY   The default keywords for the imported layer(s). Will
+                        be the same for all imported layers if multiple
+                        imports are done in one command
+ -t
+ --title=TITLE         The default keywords for the imported layer(s). Will
+                        be the same for all imported layers if multiple
+                        imports are done in one command
+ -p
+ --private             Will restrict view permissions for the layer(s)
+                        to the user specified by the --user option.
 
 updatelayers
 ============
