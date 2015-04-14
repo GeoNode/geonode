@@ -10,8 +10,34 @@
 
 var options = {{ viewer|safe }};
 var app;
-Ext.onReady(function (){
+
+function display_points(tile_list,div_id){
+    var container = document.getElementById(div_id);
+    container.removeChild(container.firstElementChild||container.firstChild);
+    var list_element = document.createElement("ul");
+    container.appendChild(list_element);
     
+    var georef_string = "";
+    
+    for (var i=0; i< tile_list.length; i++){
+        var tile = tile_list[i];
+        var item_element = document.createElement("li");
+        item_element.setAttribute("id",tile.georef);
+        item_element.innerHTML = tile.georef;
+        item_element.onclick = function(){
+            tile_list.splice(i,1);
+            this.parentNode.removeChild(this);
+        };
+        list_element.appendChild(item_element);
+        georef_string+=tile.georef+",";
+    }
+    
+   document.getElementById("georef_area").setAttribute("value",georef_string);
+   
+}
+
+Ext.onReady(function (){
+        // 2 EULA types: gov't and private sector
         var map_options = options["map"];
         var map = new OpenLayers.Map({
             center: map_options["center"],
@@ -40,18 +66,6 @@ Ext.onReady(function (){
             }
         );
         
-        /*var tile_layer = new OpenLayers.Layer.WMS("geonode:index",
-            "http://cephgeo.lan.dream.upd.edu.ph:8080/geoserver/geonode/wms",
-            {
-                 layers: "geonode:index",
-                 opacity:  1,
-                 yx: { "EPSG:900913":false }
-            },
-            {   
-                isBaseLayer: false, 
-                projection: "EPSG:900913"
-            }
-        );*/
         var format = 'image/png';
         var tile_layer = new OpenLayers.Layer.WMS(
             "geonode:index - Tiled", "http://cephgeo.lan.dream.upd.edu.ph:8080/geoserver/geonode/wms",
@@ -77,6 +91,12 @@ Ext.onReady(function (){
         console.log("projection of tile_layer: " + tile_layer.projection);
         map.zoomToMaxExtent();
         
+        var tile_list=[];
+        
+        var info = new OpenLayers.Control.WMSGetFeatureInfo(
+        
+        );
+        
         var items = [{
             xtype: "gx_zoomslider",
             aggressive: false,
@@ -92,49 +112,9 @@ Ext.onReady(function (){
             map: map,
             title: "Tile Selection",
             items: items,
-            listeners: {
-                    "afterrender": function() {
-                        var map = app.mapPanel.map;
-                        var layer = app.map.layers.slice(-1)[0];
-                        
-                        console.log(layer.name);
-
-                        // FIXME(Ariel): Zoom to extent until #1795 is fixed.
-                        //map.zoomToExtent(layer.maxExtent, false)
-                        
-                        var bbox = layer.bbox;
-                        if (bbox != undefined)
-                        {
-                           if (!Array.isArray(bbox) && Object.keys(layer.srs) in bbox) {
-                            bbox = bbox[Object.keys(layer.srs)].bbox;
-                           }
-
-                           var extent = OpenLayers.Bounds.fromArray(bbox);
-                           var zoomToData = function()
-                           {
-                               map.zoomToExtent(extent, false);
-                               app.mapPanel.center = map.center;
-                               app.mapPanel.zoom = map.zoom;
-                               map.events.unregister('changebaselayer', null, zoomToData);
-                           };
-                           map.events.register('changebaselayer',null,zoomToData);
-                           if(map.baseLayer){
-                            map.zoomToExtent(extent, false);
-                           }
-                        }
-                    }
-            }
         };
         
         app = new GeoExt.MapPanel(config);
-        
-        /*for (var layer in map.layers){
-            if (layer.getVisibility()){
-                console.log( "Layer "+ layer.name + " is visible");
-            }else{
-                console.log( "Layer "+ layer.name + " is vinisible");
-            }
-        }*/
         
 });
 {% endautoescape %}
