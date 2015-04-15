@@ -86,6 +86,7 @@ Ext.onReady(function (){
             } 
         );
         map.addLayers([mq_layer,tile_layer]);
+        map.adjustZoom(5);
         //map.zoomToExtent(tile_layer.maxExtent, false);
         //map.zoomToMaxExtent();
         
@@ -119,7 +120,7 @@ Ext.onReady(function (){
         };
         
         app = new GeoExt.MapPanel(config);
-        map.adjustZoom(8);
+    
         
         
         
