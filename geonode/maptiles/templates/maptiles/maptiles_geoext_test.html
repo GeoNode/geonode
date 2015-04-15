@@ -88,6 +88,7 @@ Ext.onReady(function (){
         
         map.addLayers([mq_layer,tile_layer]);
         map.zoomToExtent(tile_layer.getExtent(), false);
+        console.log(map.getCenter());
         console.log(map.getZoom());
         
         var tile_list=[];
