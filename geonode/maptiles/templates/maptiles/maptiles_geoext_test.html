@@ -1,6 +1,7 @@
 {% include "geonode/ext_header.html" %}
 {# {% include "geonode/app_header.html" %} #}
 {#  {% include "maptiles/maptiles_header.html" %} #}
+<link rel="stylesheet" type="text/css" href="{{ STATUC_URL }}geoext/css/popup.css">
 <script type="text/javascript" src="{{STATIC_URL}}lib/js/OpenLayers.js"></script>
 <script type="text/javascript" src="{{ STATIC_URL }}lib/js/GeoExt.js"></script>
 <script type="text/javascript" src="{{ STATIC_URL}}geonode/js/utils/thumbnail.js"></script>
@@ -37,7 +38,6 @@ function display_points(tile_list,div_id){
 }
 
 Ext.onReady(function (){
-        // 2 EULA types: gov't and private sector
         var map_options = options["map"];
         var map = new OpenLayers.Map({
             center: map_options["center"],
@@ -89,13 +89,18 @@ Ext.onReady(function (){
         map.addLayers([mq_layer,tile_layer]);
         console.log("projection of mq_layer: " + mq_layer.projection);
         console.log("projection of tile_layer: " + tile_layer.projection);
-        map.zoomToMaxExtent();
+        map.zoomToExtent(tile_layer.getExtent(), false);
         
         var tile_list=[];
         
-        var info = new OpenLayers.Control.WMSGetFeatureInfo(
-        
-        );
+        /*var info = new OpenLayers.Control.WMSGetFeatureInfo(
+            autoActivate: true,
+            maxFeature: 3,
+            eventListeners: {
+                "getfeatureinfo": function(e){
+                }
+            }
+        );*/ 
         
         var items = [{
             xtype: "gx_zoomslider",
