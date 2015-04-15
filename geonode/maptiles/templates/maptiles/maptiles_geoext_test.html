@@ -88,9 +88,9 @@ Ext.onReady(function (){
         map.addLayers([mq_layer,tile_layer]);
         console.log(tile_layer.maxExtent);
         console.log(tile_layer.getExtent());
-        var bounds = new OpenLayers.Bounds(tile_layer.maxExtent);
+        //var bounds = new OpenLayers.Bounds(tile_layer.maxExtent);
         console.log(bounds);
-        map.zoomToExtent(bounds, false);
+        map.zoomToExtent(tile_layer.maxExtent, false);
         
         var tile_list=[];
         
