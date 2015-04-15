@@ -87,9 +87,8 @@ Ext.onReady(function (){
         );
         
         map.addLayers([mq_layer,tile_layer]);
-        console.log("projection of mq_layer: " + mq_layer.projection);
-        console.log("projection of tile_layer: " + tile_layer.projection);
-        
+        map.zoomToExtent(tile_layer.getExtent(), false);
+        console.log(map.getZoom());
         
         var tile_list=[];
         
@@ -117,11 +116,13 @@ Ext.onReady(function (){
             map: map,
             title: "Tile Selection",
             items: items,
+            zoom: map.getZoom()
+            
         };
         
         app = new GeoExt.MapPanel(config);
         
-        map.zoomToExtent(tile_layer.getExtent(), false);
+        
         
 });
 {% endautoescape %}
