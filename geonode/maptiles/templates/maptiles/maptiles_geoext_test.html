@@ -7,6 +7,11 @@
 <script type="text/javascript" src="{{ STATIC_URL}}geonode/js/utils/thumbnail.js"></script>
 <script type="text/javascript" >
 
+OpenLayers.ImgPath = "{{ STATIC_URL }}geoexplorer/externals/openlayers/theme/default/img";
+OpenLayers.Request.DEFAULT_CONFIG.headers = {
+    'X-CSRFToken': '{{ csrf_token|escapejs }}'
+};
+
 {% autoescape off %}
 
 var options = {{ viewer|safe }};
