@@ -86,7 +86,9 @@ Ext.onReady(function (){
             } 
         );
         map.addLayers([mq_layer,tile_layer]);
-        var bounds = new OpenLayers.Bounds(tile_layer.bbox);
+        console.log(tile_layer.maxExtent);
+        console.log(tile_layer.getExtent());
+        var bounds = new OpenLayers.Bounds(tile_layer.maxExtent);
         console.log(bounds);
         map.zoomToExtent(bounds, false);
         
@@ -121,7 +123,7 @@ Ext.onReady(function (){
         };
         
         app = new GeoExt.MapPanel(config);
-        console.log(app.extent);
+        
         
         
 });
