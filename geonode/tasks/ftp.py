@@ -73,7 +73,7 @@ Please e-mail the system administrator regarding this error.
                                                         os.path.join(ftp_dir,type_dir),
                                                         obj_dl_list)) # Download list of objects in corresponding geo-type folder
                     if result.return_code is not 0:                 #Handle error
-                        print("""\
+                        mail_msg = """\
 Error on FTP request: Cannot access Ceph Data Store [{0}]. Please notify the administrator of this error".format(ftp_dir))
 mail_msg = "An error was encountered on your FTP request named [{0}] for user [{1}]. 
 The system failed to download the following files: [{2}]. Either the file/s do/es not exist,
