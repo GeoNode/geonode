@@ -116,8 +116,8 @@ Ext.onReady(function (){
             map: map,
             title: "Tile Selection",
             items: items,
-            zoom: map.getZoom()
-            
+            zoom: map.getZoom(),
+            center: map.getCenter()
         };
         
         app = new GeoExt.MapPanel(config);
