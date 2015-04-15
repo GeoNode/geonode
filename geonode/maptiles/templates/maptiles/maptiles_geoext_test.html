@@ -86,7 +86,8 @@ Ext.onReady(function (){
             } 
         );
         map.addLayers([mq_layer,tile_layer]);
-        map.zoomToMaxExtent();
+        //var bounds = new OpenLayers.Bounds(tile_layer.maxExtent);
+        map.zoomToExtent(tile_layer.maxExtent, false);
         
         var tile_list=[];
         
@@ -114,8 +115,8 @@ Ext.onReady(function (){
             map: map,
             title: "Tile Selection",
             items: items,
-            zoom: map.getZoom(),
-            center: map.getCenter()
+            zoom: map.zoom,
+            center: map.center
         };
         
         app = new GeoExt.MapPanel(config);
