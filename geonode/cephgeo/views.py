@@ -11,7 +11,7 @@ from django.template import RequestContext
 from pprint import pprint
 
 from geonode.cephgeo.forms import DataInputForm
-from geonode.cephgeo.models import CephDataObject
+from geonode.cephgeo.models import CephDataObject, FTPRequest, FTPStatus
 from geonode.tasks.ftp import process_ftp_request
 
 from geonode.cephgeo.cart_utils import *
@@ -244,6 +244,14 @@ def create_ftp_folder(request):
     
     # Record FTP request to database
     # DETAILS: user, request name, for item(ceph_obj) in cart, date, EULA?
+    ftp_request = FTPRequest(   name = time.strftime("ftp_request-%Y_%m_%d"),
+                                user = request.user)
+    
+    # Check for duplicates and handle accordingly
+    if count_duplicate_requests(ftp_request) > 0:
+        ftp_request.status = FTPStatus.DUPLICATE
+        
+    ftp_request.save()
     
     # Call to celery
     process_ftp_request.delay(username, email, request_name, obj_name_dict)
@@ -270,7 +278,7 @@ def clear_cart(request):
     response.delete_cookie("cart")
     return response
 
-###
-# CART UTILS
-###
-    
+### HELPER FUNCTIONS ###
+
+def count_duplicate_requests(ftp_request):
+    return len(FTPRequest.objects.filter(name=ftp_request))
