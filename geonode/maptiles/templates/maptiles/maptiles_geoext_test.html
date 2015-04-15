@@ -85,9 +85,8 @@ Ext.onReady(function (){
                 maxExtent: new OpenLayers.Bounds(13825393.814371249, 807566.643619642, 13852644.846474735, 817795.469341697)
             } 
         );
-        console.log(tile_layer.getExtent());
         map.addLayers([mq_layer,tile_layer]);
-        map.zoomToExtent(tile_layer.getExtent(), false);
+        map.zoomToExtent(tile_layer.getDataExtent(), false);
         console.log(tile_layer.getExtent());
         console.log(map.getCenter());
         console.log(map.getZoom());
