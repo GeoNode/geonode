@@ -66,7 +66,8 @@ Ext.onReady(function (){
         
         var format = 'image/png';
         var tile_layer = new OpenLayers.Layer.WMS(
-            "geonode:index - Tiled", "http://cephgeo.lan.dream.upd.edu.ph:8080/geoserver/geonode/wms",
+            //"geonode:index - Tiled", "http://cephgeo.lan.dream.upd.edu.ph:8080/geoserver/geonode/wms",
+            "geonode:index - Tiled", "http://192.168.56.100:8080/geoserver/geonode/wms",
             {
                 LAYERS: 'geonode:index',
                 STYLES: '',
