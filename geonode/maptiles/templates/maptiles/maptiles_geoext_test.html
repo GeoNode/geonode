@@ -86,10 +86,7 @@ Ext.onReady(function (){
             } 
         );
         map.addLayers([mq_layer,tile_layer]);
-        console.log(tile_layer.maxExtent);
-        console.log(tile_layer.getExtent());
-        //var bounds = new OpenLayers.Bounds(tile_layer.maxExtent);
-        map.zoomToExtent(tile_layer.maxExtent, false);
+        map.zoomToMaxExtent();
         
         var tile_list=[];
         
