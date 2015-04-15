@@ -43,7 +43,7 @@ Ext.onReady(function (){
             units: map_options["units"],
             maxResolution: map_options["maxResolution"],
             //maxExtent: map_options["maxExtent"],
-            center: new OpenLayers.LonLat(13469046.13,1642442.56),
+           // center: new OpenLayers.LonLat(13469046.13,1642442.56),
             projection: map_options["projection"]
         
         });
@@ -116,8 +116,8 @@ Ext.onReady(function (){
             map: map,
             title: "Tile Selection",
             items: items,
-            center: map.center
-            zoom: map.getZoom()
+            center: [13469046.13,1642442.56],
+            extent: [13825393.814371249, 807566.643619642, 13852644.846474735, 817795.469341697]
         };
         
         app = new GeoExt.MapPanel(config);
