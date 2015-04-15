@@ -121,7 +121,7 @@ Ext.onReady(function (){
         
         var getInfoCtrl = new OpenLayers.Control.WMSGetFeatureInfo({
             autoActivate: true,
-            infoFormat: "application/vnd.ogc.se_xml",
+            infoFormat: "text/html",
             maxFeatures: 3,
             eventListeners: {
                 "getFeatureInfo": function (e){
