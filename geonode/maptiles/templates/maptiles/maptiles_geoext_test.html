@@ -84,9 +84,6 @@ Ext.onReady(function (){
             } 
         );
         map.addLayers([mq_layer,tile_layer]);
-        map.adjustZoom(0);
-        //map.zoomToExtent(tile_layer.maxExtent, false);
-        //map.zoomToMaxExtent();
         
         var tile_list=[];
         
@@ -120,6 +117,33 @@ Ext.onReady(function (){
         
         app = new GeoExt.MapPanel(config);
         map.zoomToExtent(tile_layer.maxExtent, false);
+        
+        var getInfoCtrl = new OpenLayers.Control.WMSGetFeatureInfo({
+            autoActivate: true,
+            infoFormat: "application/vnd.ogc.gml",
+            maxFeatures: 3,
+            eventListeners: {
+                "getFeatureInfo": function (e){
+                    var items = [];
+                    Ext.each (e.features, function(feature) {
+                        items.push({
+                            xtype: "propertygrid",
+                            title: feature.fid,
+                            source: feature.attributes
+                        });
+                    });
+                    new GeoExt.Popup({
+                        title: "Tile Info",
+                        width: 200,
+                        height: 200,
+                        layout: "accordion",
+                        map: app,
+                        location: e.xy,
+                        items: items
+                    }).show();
+                }
+            }
+        });
         
         
 });
