@@ -1,7 +1,7 @@
 from django.db import models
 from geonode.layers.models import Layer
 from geonode import settings
-from date
+from datetime import datetime
 import json
 
 try:
@@ -33,7 +33,7 @@ class FTPStatus(enum.Enum):
 
 class FTPRequest(models.Model):
     name        = models.CharField(max_length=50)
-    datetime    = models.DateTimeField(default=datetime.now)
+    date_time   = models.DateTimeField(default=datetime.now)
     user        = models.ForeignKey(User, null=False, blank=False)
     status      = enum.EnumField(FTPStatus, default=FTPStatus.PENDING)
 

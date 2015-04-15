@@ -19,6 +19,12 @@ class UnauthenticatedUserException(Exception):
 
 @hosts('cephaccess@cephaccess.lan.dream.upd.edu.ph')
 def fab_create_ftp_folder(username, user_email, request_name, ceph_obj_list_by_geotype):
+    """
+        Creates an FTP folder for the requested tile data set
+        Records the request in the database
+        If an existing record already exists, counts the duplicates (?)
+    """
+    
     user_email = [user_email.encode('utf8'),]
     try:
         ftp_dir = os.path.join(get_folder_from_username(username), request_name)
@@ -67,7 +73,7 @@ Please e-mail the system administrator regarding this error.
                                                         os.path.join(ftp_dir,type_dir),
                                                         obj_dl_list)) # Download list of objects in corresponding geo-type folder
                     if result.return_code is not 0:                 #Handle error
-                        print("""\
+                        mail_msg = """\
 Error on FTP request: Cannot access Ceph Data Store [{0}]. Please notify the administrator of this error".format(ftp_dir))
 mail_msg = "An error was encountered on your FTP request named [{0}] for user [{1}]. 
 The system failed to download the following files: [{2}]. Either the file/s do/es not exist,
@@ -76,7 +82,6 @@ or the Ceph Data Storage is down. Please e-mail the system administrator regardi
 ---RESULT TRACE---
 
 {3}""".format(request_name, username, obj_dl_list, result)
-                        
                         mail_ftp_user(username, user_email, request_name, mail_msg)
                         return "ERROR: Failed to create folder [{0}].".format(ftp_dir)
                     
@@ -112,7 +117,7 @@ Please check your download folder for a new folder named [{0}].""".format(reques
         # TODO
         # Email user stating that there is no assigned 
         print("Your FTP request has failed. No FTP folder was found for username [{0}]. Please ensure you have access rights to the FTP repository. Otherwise, please contact the system administrator regarding this error.".format(username))
-        mail_msg = """
+        mail_msg = """\
 An error was encountered on your FTP request named [{0}] for user [{1}]. 
 No FTP folder was found for username [{0}]. Please ensure you have 
 access rights to the FTP repository. Otherwise, please contact the 
@@ -143,6 +148,15 @@ def process_ftp_request(username, user_email, request_name, ceph_obj_list_by_geo
 def check_cephaccess():
     # NOTE: DO NOT CALL ASYNCHRONOUSLY (check_cephaccess.delay())
     #       OTHERWISE, NO OUTPUT WILL BE MADE
+    """
+        Call to check if CephAccess is up and running
+    """
+    
+    #TODO: more detailed checks
+    ## DONE: Check if DL folder is writeable
+    ## Check from inside Cephaccess if Ceph Object Gateway is reachable
+    ## 
+    
     test_file = '/home/cephaccess/testfolder/DL/test.txt'
     result = run("touch {0} && rm -f {0}".format(test_file))
     if result is not 0:
@@ -164,6 +178,7 @@ def get_folder_from_username(username):
         return "/mnt/FTP/PL1/{0}1/DL/geonode_requests".format(suc_str)
     else:
         return "/mnt/FTP/PL{0}/{1}/DL/geonode_requests".format(nums[0],suc_str)
+  
 
 def mail_ftp_user(username, user_email, mail_subject, mail_msg):
     #DEBUG
