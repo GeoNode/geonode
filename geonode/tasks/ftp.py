@@ -82,7 +82,6 @@ or the Ceph Data Storage is down. Please e-mail the system administrator regardi
 ---RESULT TRACE---
 
 {3}""".format(request_name, username, obj_dl_list, result)
-                        
                         mail_ftp_user(username, user_email, request_name, mail_msg)
                         return "ERROR: Failed to create folder [{0}].".format(ftp_dir)
                     
