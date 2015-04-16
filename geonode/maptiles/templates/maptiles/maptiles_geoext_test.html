@@ -143,7 +143,14 @@ Ext.onReady(function (){
                             source: feature.attributes
                         });
                     });
-                    console.log(items);
+                    //console.log(items);
+                    var georef = {
+                        e: items[0].source.MINX,
+                        n: items[0].source.MAXY,
+                        name: "E"+this.e+"N"+this.n
+                    }
+                    console.log(georef);
+                    
                     new GeoExt.Popup({
                         title: "Tile Info",
                         width: 200,
