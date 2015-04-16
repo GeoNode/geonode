@@ -137,6 +137,8 @@ Ext.onReady(function (){
                     console.log(e.features);
                     var items = [];
                     Ext.each (e.features, function(feature) {
+                        delete feature.attributes["File_Path"];
+                        delete feature.attributes["GRID_REF"];
                         items.push({
                             xtype: "propertygrid",
                             title: feature.fid,
