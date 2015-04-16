@@ -131,6 +131,7 @@ Ext.onReady(function (){
             maxFeatures: 3,
             eventListeners: {
                 "getFeatureInfo": function (e){
+                    console.log(e.features);
                     var items = [];
                     Ext.each (e.features, function(feature) {
                         items.push({
@@ -148,8 +149,6 @@ Ext.onReady(function (){
                         location: e.xy,
                         items: items
                     }).show();
-                    console.log(e.request);
-                    console.log(e.text);
                 },
                 "beforegetfeatureinfo": function(e){
                     console.log(e.xy);
