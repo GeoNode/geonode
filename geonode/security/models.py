@@ -207,9 +207,9 @@ def clean_object_permissions(instance):
     """
     from guardian.models import UserObjectPermission, GroupObjectPermission
     UserObjectPermission.objects.filter(content_type=ContentType.objects.get_for_model(instance),
-                                object_pk=instance.id).delete()
+                                        object_pk=instance.id).delete()
     GroupObjectPermission.objects.filter(content_type=ContentType.objects.get_for_model(instance),
-                                 object_pk=instance.id).delete()
+                                         object_pk=instance.id).delete()
 
 
 # Logic to login a user automatically when it has successfully
