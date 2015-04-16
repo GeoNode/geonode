@@ -150,7 +150,9 @@ Ext.onReady(function (){
                     }).show();
                     console.log(e.request);
                     console.log(e.text);
-                    
+                },
+                "beforegetfeatureinfo": function(e){
+                    console.log(e.xy);
                 }
             }
         });
