@@ -132,7 +132,7 @@ Ext.onReady(function (){
             url: "http://192.168.56.100:8080/geoserver/geonode/wms",
             layers: [tile_layer],
             eventListeners: {
-                "getFeatureInfo": function (e){
+                "getfeatureinfo": function (e){
                     console.log(e.request);
                     console.log(e.features);
                     var items = [];
