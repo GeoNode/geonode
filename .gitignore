@@ -13,6 +13,9 @@ geonode/development.db
 /geoserver/
 downloaded
 
+# celery dirs
+celery/
+
 docs/i18n/pot/
 
 # Static media handling
