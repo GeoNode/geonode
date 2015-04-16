@@ -201,7 +201,7 @@ class PermissionLevelMixin(object):
                         assign_perm(perm, group, self.get_self_resource())
 
 
-def clean_object_permissions(instance):
+def remove_object_permissions(instance):
     """Remove object perimssions
        Must be called by Resourcebase children on pre_delete using the Resourcebase instance,
        for layer must also be called with Layer instance
