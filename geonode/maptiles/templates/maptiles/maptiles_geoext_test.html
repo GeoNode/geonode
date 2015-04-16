@@ -144,11 +144,9 @@ Ext.onReady(function (){
                         });
                     });
                     //console.log(items);
-                    var georef = {
-                        e: items[0].source.MINX,
-                        n: items[0].source.MAXY,
-                        name: "E"+this.e+"N"+this.n
-                    }
+                    var georef = "E"+
+                        items[0].source.MINX/1000+"N"+
+                        items[0].source.MAXY/1000;
                     console.log(georef);
                     
                     new GeoExt.Popup({
