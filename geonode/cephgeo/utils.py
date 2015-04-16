@@ -26,7 +26,7 @@ import re
 #	"Orthophoto"	: ["_ortho"],
 #}
 SORT_TYPES = [ "name", "type", "uploaddate", "nosort"]
-
+FTP_SORT_TYPES = [ "date", "status", "nosort" ]
 
 TYPE_TO_IDENTIFIER_DICT = {
 	".laz"			: "LAZ file",

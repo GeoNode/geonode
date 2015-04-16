@@ -265,6 +265,43 @@ def create_ftp_folder(request):
                                     "cart" : CartProxy(request),},
                                 context_instance=RequestContext(request))
 @login_required
+def ftp_request_list(request, sort=None):
+    
+    if sort not in utils.FTP_SORT_TYPES and sort != None:
+        return HttpResponse(status=404)
+    
+    ftp_list = []
+    sorted_list = []
+    
+    # Query all ftp requests for this user
+    ftp_list = FTPRequest.objects.filter(user=request.user)
+    
+    # Sort by specified attribute
+    if sort == 'date':
+        sorted_list = sorted(ftp_list.order_by('name'), key=operator.attrgetter('date_time'), reverse=True)
+    elif sort == 'status':
+        sorted_list = sorted(ftp_list.order_by('name'), key=operator.attrgetter('status'), reverse=True)
+        
+    else: # nosort
+        sorted_list = ftp_list
+    
+    paginator = Paginator(sorted_list, 10)
+    
+    page = request.GET.get('page')
+    
+    try:
+        paged_list = paginator.page(page)
+    except PageNotAnInteger:
+        paged_list = paginator.page(1)
+    except EmptyPage:
+        paged_list = paginator.page(paginator.num_pages)
+    
+    return render(request, "ftp_list.html",
+                    {"ftp_request_list"    : paged_list, 
+                    "sort_types"    : utils.FTP_SORT_TYPES, 
+                    "sort"          : sort,})
+
+@login_required
 def clear_cart(request):
     if request.cart is not None:
         remove_all_from_cart(request) # Clear cart for this request
