@@ -30,6 +30,12 @@ class FTPStatus(enum.Enum):
     PENDING = 1
     ERROR = 2
     DUPLICATE = 3
+    
+    labels = {
+        SUCCESS: 'Success',
+        PENDING: 'Pending',
+        ERROR:   'Error',
+        DUPLICATE: 'Duplicate',}
 
 class FTPRequest(models.Model):
     name        = models.CharField(max_length=50)
