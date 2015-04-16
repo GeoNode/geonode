@@ -299,6 +299,7 @@ def ftp_request_list(request, sort=None):
     return render(request, "ftp_list.html",
                     {"ftp_request_list"    : paged_list, 
                     "sort_types"    : utils.FTP_SORT_TYPES, 
+                    "status_labels"    : FTPStatus.labels, 
                     "sort"          : sort,})
 
 @login_required
