@@ -96,9 +96,9 @@ def _resolve_layer(request, typename, permission='base.view_resourcebase',
     Resolve the layer by the provided typename (which may include service name) and check the optional permission.
     """
     service_typename = typename.split(":", 1)
-    service = Service.objects.filter(name=service_typename[0])
 
-    if service.count() > 0:
+    if Service.objects.filter(name=service_typename[0]).exists():
+        service = Service.objects.filter(name=service_typename[0])
         return resolve_object(request,
                               Layer,
                               {'service': service[0],
