@@ -74,6 +74,16 @@ JETTY_RUNNER_URL = ("http://repo2.maven.org/maven2/org/mortbay/jetty/jetty-runne
 
 
 @task
+def setup_celery(options):
+    celery_pid_dir = path('celery/pid')
+    if not celery_pid_dir.exists():
+        celery_pid_dir.makedirs()
+    
+    celery_log_dir = path('celery/log')
+    if not celery_log_dir.exists():
+        celery_log_dir.makedirs()
+        
+@task
 @cmdopts([
     ('geoserver=', 'g', 'The location of the geoserver build (.war file).'),
     ('jetty=', 'j', 'The location of the Jetty Runner (.jar file).'),
@@ -132,6 +142,7 @@ def static(options):
 @task
 @needs([
     'setup_geoserver',
+    'setup_celery',
 ])
 def setup(options):
     """Get dependencies and prepare a GeoNode development environment."""
@@ -332,7 +343,7 @@ def start_django():
     bind = options.get('bind', '')
     foreground = '' if options.get('foreground', False) else '&'
     sh('python manage.py runserver %s %s' % (bind, foreground))
-    sh('python manage.py celeryd_detach')
+    sh('python manage.py celeryd_detach --pidfile="celery/pid/%n.pid" --logfile="celery/log/%n.log"')
 
 
 @cmdopts([
