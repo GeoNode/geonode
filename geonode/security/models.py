@@ -100,7 +100,7 @@ class PermissionLevelMixin(object):
     def get_self_resource(self):
         return self.resourcebase_ptr if hasattr(
             self,
-            'resourcebase_ptr') else self
+            'resourcebase_ptr_id') else self
 
     def remove_all_permissions(self):
         """
@@ -198,6 +198,18 @@ class PermissionLevelMixin(object):
                         assign_perm(perm, group, self.layer)
                     else:
                         assign_perm(perm, group, self.get_self_resource())
+
+
+def clean_object_permissions(instance):
+    """Remove object perimssions
+       Must be called by Resourcebase children on pre_delete using the Resourcebase instance,
+       for layer must also be called with Layer instance
+    """
+    from guardian.models import UserObjectPermission, GroupObjectPermission
+    UserObjectPermission.objects.filter(content_type=ContentType.objects.get_for_model(instance),
+                                object_pk=instance.id).delete()
+    GroupObjectPermission.objects.filter(content_type=ContentType.objects.get_for_model(instance),
+                                 object_pk=instance.id).delete()
 
 
 # Logic to login a user automatically when it has successfully

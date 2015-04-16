@@ -34,6 +34,7 @@ from geonode.base.models import ResourceBase, ResourceBaseManager, resourcebase_
 from geonode.people.utils import get_valid_user
 from agon_ratings.models import OverallRating
 from geonode.utils import check_shp_columnnames
+from geonode.security.models import clean_object_permissions
 
 logger = logging.getLogger("geonode.layers.models")
 
@@ -480,6 +481,10 @@ def pre_delete_layer(instance, sender, **kwargs):
         if style.layer_styles.all().count() == 1:
             if style != default_style:
                 style.delete()
+
+    # Delete object permissions
+    clean_object_permissions(instance)
+    clean_object_permissions(instance.get_self_resource())
 
 
 def post_delete_layer(instance, sender, **kwargs):
