@@ -143,6 +143,7 @@ Ext.onReady(function (){
                             source: feature.attributes
                         });
                     });
+                    console.log(e.feature.source);
                     new GeoExt.Popup({
                         title: "Tile Info",
                         width: 200,
@@ -152,9 +153,6 @@ Ext.onReady(function (){
                         location: e.xy,
                         items: items
                     }).show();
-                },
-                "beforegetfeatureinfo" : function(e){
-                    console.log(e.xy);
                 },
                 "nogetfeatureinfo": function(e){
                     console.log("No queryable layer found");
