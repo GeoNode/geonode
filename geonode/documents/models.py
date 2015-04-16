@@ -15,7 +15,7 @@ from geonode.layers.models import Layer
 from geonode.base.models import ResourceBase, resourcebase_post_save
 from geonode.maps.signals import map_changed_signal
 from geonode.maps.models import Map
-from geonode.security.models import clean_object_permissions
+from geonode.security.models import remove_object_permissions
 
 IMGTYPES = ['jpg', 'jpeg', 'tif', 'tiff', 'png', 'gif']
 
@@ -181,7 +181,7 @@ def update_documents_extent(sender, **kwargs):
 
 
 def pre_delete_document(instance, sender, **kwargs):
-    clean_object_permissions(instance.get_self_resource())
+    remove_object_permissions(instance.get_self_resource())
 
 
 signals.pre_save.connect(pre_save_document, sender=Document)
