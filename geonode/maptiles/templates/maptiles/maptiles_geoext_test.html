@@ -153,7 +153,10 @@ Ext.onReady(function (){
                 },
                 "beforegetfeatureinfo": function(e){
                     console.log(e.xy);
-                }
+                },
+                "nogetfeatureinfo": function(e){
+                    console.log("No queryable layer found");
+                };
             }
         });
         
