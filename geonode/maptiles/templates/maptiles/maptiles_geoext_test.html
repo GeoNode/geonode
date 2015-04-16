@@ -129,6 +129,7 @@ Ext.onReady(function (){
             autoActivate: true,
             infoFormat: "application/vnd.ogc.gml",
             maxFeatures: 3,
+            url: "http://192.168.56.100:8080/geoserver/geonode/wms",
             eventListeners: {
                 "getFeatureInfo": function (e){
                     console.log(e.features);
