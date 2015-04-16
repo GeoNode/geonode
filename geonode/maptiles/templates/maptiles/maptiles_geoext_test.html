@@ -130,12 +130,11 @@ Ext.onReady(function (){
         
         var getInfoCtrl = new OpenLayers.Control.WMSGetFeatureInfo({
             autoActivate: true,
-            infoFormat: "text/html",
+            infoFormat: "application/vnd.ogc.gml",
             maxFeatures: 3,
             eventListeners: {
                 "getFeatureInfo": function (e){
                     var items = [];
-                    console.log(e.text);
                     Ext.each (e.features, function(feature) {
                         items.push({
                             xtype: "propertygrid",
