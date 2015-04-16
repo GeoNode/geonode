@@ -125,9 +125,6 @@ Ext.onReady(function (){
             zoom: 5
         };
         
-        app = new GeoExt.MapPanel(config);
-        map.zoomToExtent(tile_layer.maxExtent, false);
-        
         var getInfoCtrl = new OpenLayers.Control.WMSGetFeatureInfo({
             autoActivate: true,
             infoFormat: "application/vnd.ogc.gml",
@@ -159,6 +156,8 @@ Ext.onReady(function (){
         });
         
         map.addControl(getInfoCtrl);
+        app = new GeoExt.MapPanel(config);
+        map.zoomToExtent(tile_layer.maxExtent, false);
         
 });
 {% endautoescape %}
