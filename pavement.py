@@ -299,6 +299,7 @@ def stop_django():
     Stop the GeoNode Django application
     """
     kill('python', 'runserver')
+    kill('python', 'celery')
 
 
 @task
@@ -331,6 +332,7 @@ def start_django():
     bind = options.get('bind', '')
     foreground = '' if options.get('foreground', False) else '&'
     sh('python manage.py runserver %s %s' % (bind, foreground))
+    sh('python manage.py celeryd_detach')
 
 
 @cmdopts([
