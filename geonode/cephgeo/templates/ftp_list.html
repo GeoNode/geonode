@@ -34,9 +34,11 @@
   
   <ul>
 	{% for ftp_req in ftp_request_list %}
-		<li><b>{{ ftp_req.name }}</b>
-			<br />Date and Time: {{ ftp_req.date_time }}
-			<br />Status: {{ ftp_req.status|get_ftp_status_label }}
+		<li><h4>
+              <b>{{ ftp_req.name }}</b>
+            </h4>
+			<br /><b>Date and Time:</b> {{ ftp_req.date_time }}
+			<br /><b>Status:</b> {{ ftp_req.status|get_ftp_status_label }}
 		</li>
 	{% endfor %}
   </ul>
