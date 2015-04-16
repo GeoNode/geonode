@@ -22,10 +22,10 @@ from django.contrib.auth import get_user_model
 
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.auth import login
-from django.contrib.auth.models import Group
+from django.contrib.auth.models import Group, Permission
+from guardian.utils import get_user_obj_perms_model
+from guardian.shortcuts import assign_perm, remove_perm, get_groups_with_perms
 
-from guardian.shortcuts import assign_perm, remove_perm, \
-    get_groups_with_perms, get_users_with_perms
 
 ADMIN_PERMISSIONS = [
     'view_resourcebase',
@@ -36,6 +36,35 @@ ADMIN_PERMISSIONS = [
     'change_resourcebase_permissions',
     'publish_resourcebase',
 ]
+
+
+def get_users_with_perms(obj):
+    """
+    Override of the Guardian get_users_with_perms
+    """
+    ctype = ContentType.objects.get_for_model(obj)
+    permissions = {}
+    PERMISSIONS_TO_FETCH = ADMIN_PERMISSIONS + ['change_layer_data', 'change_layer_style']
+
+    for perm in Permission.objects.filter(codename__in=PERMISSIONS_TO_FETCH, content_type_id=ctype.id):
+        permissions[perm.id] = perm.codename
+
+    user_model = get_user_obj_perms_model(obj)
+    users_with_perms = user_model.objects.filter(object_pk=obj.pk,
+                                                 content_type_id=ctype.id).values('user_id', 'permission_id')
+
+    users = {}
+    for item in users_with_perms:
+        if item['user_id'] in users:
+            users[item['user_id']].append(permissions[item['permission_id']])
+        else:
+            users[item['user_id']] = [permissions[item['permission_id']], ]
+
+    profiles = {}
+    for profile in get_user_model().objects.filter(id__in=users.keys()):
+        profiles[profile] = users[profile.id]
+
+    return profiles
 
 
 class PermissionLevelError(Exception):
@@ -56,9 +85,7 @@ class PermissionLevelMixin(object):
         resource = self.get_self_resource()
         info = {
             'users': get_users_with_perms(
-                resource,
-                attach_perms=True,
-                with_superusers=True),
+                resource),
             'groups': get_groups_with_perms(
                 resource,
                 attach_perms=True)}
@@ -68,9 +95,7 @@ class PermissionLevelMixin(object):
         if hasattr(self, "layer"):
             info_layer = {
                 'users': get_users_with_perms(
-                    self.layer,
-                    attach_perms=True,
-                    with_superusers=True),
+                    self.layer),
                 'groups': get_groups_with_perms(
                     self.layer,
                     attach_perms=True)}
@@ -109,7 +134,7 @@ class PermissionLevelMixin(object):
         """
         # TODO refactor this
         # first remove in resourcebase
-        for user, perms in get_users_with_perms(self.get_self_resource(), attach_perms=True).iteritems():
+        for user, perms in get_users_with_perms(self.get_self_resource()).iteritems():
             if not self.owner == user:
                 for perm in perms:
                     remove_perm(perm, user, self.get_self_resource())
@@ -120,7 +145,7 @@ class PermissionLevelMixin(object):
 
         # now remove in layer (if resource is layer
         if hasattr(self, "layer"):
-            for user, perms in get_users_with_perms(self.layer, attach_perms=True).iteritems():
+            for user, perms in get_users_with_perms(self.layer).iteritems():
                 if not self.owner == user:
                     for perm in perms:
                         remove_perm(perm, user, self.layer)
