@@ -154,7 +154,7 @@ Ext.onReady(function (){
                     }).show();
                 },
                 "beforegetfeatureinfo" : function(e){
-                    this.getInfoForClick(e);
+                    console.log(e.xy);
                 },
                 "nogetfeatureinfo": function(e){
                     console.log("No queryable layer found");
