@@ -15,6 +15,7 @@ downloaded
 
 # celery dirs
 celery/
+/celery/
 
 docs/i18n/pot/
 

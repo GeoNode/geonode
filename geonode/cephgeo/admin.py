@@ -39,6 +39,19 @@ class CephDataObjectAdmin(admin.ModelAdmin):
     list_filter = ('content_type', 'grid_ref')
     search_fields = ('name', 'content_type', 'grid_ref',)
 
+class FTPRequestAdmin(admin.ModelAdmin):
+    model = FTPRequest
+    list_display_links = ('id','name')
+    list_display = (
+        'id',
+        'name',
+        'date_time',
+        'user',
+        'status',)
+    list_filter = ('name', 'user', 'status',)
+    search_fields = ('name', 'user', 'status',)
+    
 admin.site.register(Cart, CartAdmin)
 admin.site.register(CephDataObject, CephDataObjectAdmin)
+admin.site.register(FTPRequest, FTPRequestAdmin)
 

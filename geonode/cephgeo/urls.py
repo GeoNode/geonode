@@ -17,4 +17,6 @@ urlpatterns = patterns('',
 	url(r'^cart_json/$', views.get_cart_json, ),
 	url(r'^geotypes/$', views.get_obj_ids_json, ),
 	url(r'^ftp/$', views.create_ftp_folder, ),
+	url(r'^ftprequests/$', views.ftp_request_list, ),
+	url(r'^ftprequests/(?P<sort>[A-Za-z]+)/$', views.ftp_request_list, ),
 )
