@@ -133,6 +133,7 @@ Ext.onReady(function (){
             layers: [tile_layer],
             eventListeners: {
                 "getFeatureInfo": function (e){
+                    console.log(e.request);
                     console.log(e.features);
                     var items = [];
                     Ext.each (e.features, function(feature) {
@@ -152,9 +153,8 @@ Ext.onReady(function (){
                         items: items
                     }).show();
                 },
-                "beforegetfeatureinfo": function(e){
-                    console.log(e.xy);
-                    this.request(e.xy);
+                "beforegetfeatureinfo" : function(e){
+                    this.getInfoForClick(e);
                 },
                 "nogetfeatureinfo": function(e){
                     console.log("No queryable layer found");
