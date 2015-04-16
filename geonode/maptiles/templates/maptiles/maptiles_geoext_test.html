@@ -135,7 +135,7 @@ Ext.onReady(function (){
             eventListeners: {
                 "getFeatureInfo": function (e){
                     var items = [];
-                    console.log(text);
+                    console.log(e.text);
                     Ext.each (e.features, function(feature) {
                         items.push({
                             xtype: "propertygrid",
