@@ -36,7 +36,7 @@ function display_points(georef_list,div_id){
         item_element.setAttribute("id",georef_list[i]);
         item_element.innerHTML = georef_list[i];
         item_element.onclick = function(){
-            georef_list = georef_list.splice(i,1);
+            georef_list.splice(i,1);
             console.log(georef_list);
             this.parentNode.removeChild(this);
         };
