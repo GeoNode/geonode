@@ -246,7 +246,8 @@ def create_ftp_folder(request):
     # Check for duplicates and handle accordingly
     if count_duplicate_requests(ftp_request) > 0:
         ftp_request.status = FTPStatus.DUPLICATE
-        
+    
+    ftp_request.size_in_bytes = total_size_in_bytes
     ftp_request.save()
     
     #TODO: Mapping of FTP Request to requested objects
