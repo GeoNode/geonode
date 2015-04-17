@@ -261,7 +261,8 @@ def create_ftp_folder(request):
                                 {   "result_msg" : "Your FTP request is being processed. A notification \
                                      will arrive via email regarding the completion of your request. The \
                                      items you requested are listed below.",
-                                    "cart" : CartProxy(request),},
+                                    "cart" : CartProxy(request),
+                                    "total_size" : total_size_in_bytes,},
                                 context_instance=RequestContext(request))
 @login_required
 def ftp_request_list(request, sort=None):
