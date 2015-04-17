@@ -143,18 +143,18 @@ Ext.onReady(function (){
                             xtype: "propertygrid",
                             title: feature.fid,
                             source: feature.attributes
+                        },
+                        {
+                            xtype: "button",
+                            text: "Add"
                         });
                     });
+                    
                     //console.log(items);
                     var georef = "E"+
                         items[0].source.MINX/1000+"N"+
                         items[0].source.MAXY/1000;
                     console.log(georef);
-                    
-                    items.push({
-                        xtype: "button",
-                        text: "Add"
-                    });
                     
                     new GeoExt.Popup({
                         title: georef,
