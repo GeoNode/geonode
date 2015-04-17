@@ -23,6 +23,11 @@ var app;
 var georef_list = [];
 var curr_popup;
 
+var curr_location = window.location.hostname;
+console.log(location);
+var geoserver = "http://"+curr_location+"/geoserver/geonode/wms";
+// added stuff
+
 function display_points(div_id){
     var container = document.getElementById(div_id);
     container.removeChild(container.firstElementChild||container.firstChild);
@@ -75,7 +80,7 @@ Ext.onReady(function (){
         var format = 'image/png';
         var tile_layer = new OpenLayers.Layer.WMS(
             //"geonode:index - Tiled", "http://cephgeo.lan.dream.upd.edu.ph:8080/geoserver/geonode/wms",
-            "geonode:index - Tiled", "http://192.168.56.100:8080/geoserver/geonode/wms",
+            "geonode:index - Tiled", geoserver//"http://192.168.56.100:8080/geoserver/geonode/wms",
             {
                 LAYERS: 'geonode:index',
                 STYLES: '',
@@ -128,7 +133,8 @@ Ext.onReady(function (){
             autoActivate: true,
             infoFormat: "application/vnd.ogc.gml",
             maxFeatures: 3,
-            url: "http://192.168.56.100:8080/geoserver/geonode/wms",
+            //url: "http://192.168.56.100:8080/geoserver/geonode/wms",
+            url: geoserver,
             layers: [tile_layer],
             eventListeners: {
                 "getfeatureinfo": function (e){
