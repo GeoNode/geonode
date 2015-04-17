@@ -156,12 +156,12 @@ Ext.onReady(function (){
                     //console.log(georef);
                     
                     georef_list.push(georef);
-                    console.log(georef_list);
+                    console.log("Georef list after adding: "+georef_list);
                     //display_points(georef_list, "point_display");
-                    //display_points("point_display");
-                    var div_id = "point_display";
+                    display_points("point_display");
+                   // var div_id = "point_display";
                     
-                   var container = document.getElementById(div_id);
+                   /*var container = document.getElementById(div_id);
                    container.removeChild(container.firstElementChild||container.firstChild);
                    var list_element = document.createElement("ul");
                    container.appendChild(list_element);
@@ -183,7 +183,7 @@ Ext.onReady(function (){
                        georef_string+=georef_list[i]+",";
                    }
                     
-                   document.getElementById("georef_area").setAttribute("value",georef_string);
+                   document.getElementById("georef_area").setAttribute("value",georef_string);*/
                                     
                    var newpopup = new GeoExt.Popup({
                         title: georef,
