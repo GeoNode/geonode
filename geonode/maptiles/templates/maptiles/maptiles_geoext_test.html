@@ -1,24 +1,55 @@
 {% include "geonode/ext_header.html" %}
 {# {% include "geonode/app_header.html" %} #}
 {#  {% include "maptiles/maptiles_header.html" %} #}
+<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}geoext/css/popup.css">
 <script type="text/javascript" src="{{STATIC_URL}}lib/js/OpenLayers.js"></script>
 <script type="text/javascript" src="{{ STATIC_URL }}lib/js/GeoExt.js"></script>
 <script type="text/javascript" src="{{ STATIC_URL}}geonode/js/utils/thumbnail.js"></script>
+<script type="text/javascript" src="http://svn.osgeo.org/metacrs/proj4js/trunk/lib/proj4js-compressed.js"></script>
+<script type="text/javascript" src="http://spatialreference.org/ref/epsg/wgs-84-utm-zone-51n/proj4js/"></script>
 <script type="text/javascript" >
+
+OpenLayers.ImgPath = "{{ STATIC_URL }}geoexplorer/externals/openlayers/theme/default/img";
+OpenLayers.Request.DEFAULT_CONFIG.headers = {
+    'X-CSRFToken': '{{ csrf_token|escapejs }}'
+};
+
+OpenLayers.ProxyHost = "/proxy?url=";
 
 {% autoescape off %}
 
 var options = {{ viewer|safe }};
 var app;
-Ext.onReady(function (){
+var georef_list = [];
+var curr_popup;
+
+function display_points(div_id){
+    var container = document.getElementById(div_id);
+    container.removeChild(container.firstElementChild||container.firstChild);
+    var list_element = document.createElement("ul");
+    container.appendChild(list_element);
     
+    var georef_string = "";
+    
+    for (var i=0; i< georef_list.length; i++){
+        var item_element = document.createElement("li");
+        item_element.setAttribute("id",georef_list[i]);
+        item_element.innerHTML = georef_list[i];
+        item_element.onclick = function(){
+            georef_list.splice(georef_list.indexOf(item_element.getAttribute("id"),1));
+            this.parentNode.removeChild(this);
+        };
+        list_element.appendChild(item_element);
+        georef_string+=georef_list[i]+",";
+    }
+   document.getElementById("georef_area").setAttribute("value",georef_string);
+}
+
+Ext.onReady(function (){
         var map_options = options["map"];
         var map = new OpenLayers.Map({
-            center: map_options["center"],
             units: map_options["units"],
             maxResolution: map_options["maxResolution"],
-            //maxExtent: map_options["maxExtent"],
-            //zoom: map_options["zoom"],
             projection: map_options["projection"]
         
         });
@@ -36,25 +67,15 @@ Ext.onReady(function (){
                 transitionEffect: "resize"
             },
             {
-                isBaseLayer: true
+                isBaseLayer: true,
+                wrapDateLine: true
             }
         );
         
-        /*var tile_layer = new OpenLayers.Layer.WMS("geonode:index",
-            "http://cephgeo.lan.dream.upd.edu.ph:8080/geoserver/geonode/wms",
-            {
-                 layers: "geonode:index",
-                 opacity:  1,
-                 yx: { "EPSG:900913":false }
-            },
-            {   
-                isBaseLayer: false, 
-                projection: "EPSG:900913"
-            }
-        );*/
         var format = 'image/png';
         var tile_layer = new OpenLayers.Layer.WMS(
-            "geonode:index - Tiled", "http://cephgeo.lan.dream.upd.edu.ph:8080/geoserver/geonode/wms",
+            //"geonode:index - Tiled", "http://cephgeo.lan.dream.upd.edu.ph:8080/geoserver/geonode/wms",
+            "geonode:index - Tiled", "http://192.168.56.100:8080/geoserver/geonode/wms",
             {
                 LAYERS: 'geonode:index',
                 STYLES: '',
@@ -71,11 +92,18 @@ Ext.onReady(function (){
                 maxExtent: new OpenLayers.Bounds(13825393.814371249, 807566.643619642, 13852644.846474735, 817795.469341697)
             } 
         );
-        
         map.addLayers([mq_layer,tile_layer]);
-        console.log("projection of mq_layer: " + mq_layer.projection);
-        console.log("projection of tile_layer: " + tile_layer.projection);
-        map.zoomToMaxExtent();
+        
+        var tile_list=[];
+        
+        /*var info = new OpenLayers.Control.WMSGetFeatureInfo(
+            autoActivate: true,
+            maxFeature: 3,
+            eventListeners: {
+                "getfeatureinfo": function(e){
+                }
+            }
+        );*/ 
         
         var items = [{
             xtype: "gx_zoomslider",
@@ -92,49 +120,70 @@ Ext.onReady(function (){
             map: map,
             title: "Tile Selection",
             items: items,
-            listeners: {
-                    "afterrender": function() {
-                        var map = app.mapPanel.map;
-                        var layer = app.map.layers.slice(-1)[0];
-                        
-                        console.log(layer.name);
-
-                        // FIXME(Ariel): Zoom to extent until #1795 is fixed.
-                        //map.zoomToExtent(layer.maxExtent, false)
-                        
-                        var bbox = layer.bbox;
-                        if (bbox != undefined)
-                        {
-                           if (!Array.isArray(bbox) && Object.keys(layer.srs) in bbox) {
-                            bbox = bbox[Object.keys(layer.srs)].bbox;
-                           }
-
-                           var extent = OpenLayers.Bounds.fromArray(bbox);
-                           var zoomToData = function()
-                           {
-                               map.zoomToExtent(extent, false);
-                               app.mapPanel.center = map.center;
-                               app.mapPanel.zoom = map.zoom;
-                               map.events.unregister('changebaselayer', null, zoomToData);
-                           };
-                           map.events.register('changebaselayer',null,zoomToData);
-                           if(map.baseLayer){
-                            map.zoomToExtent(extent, false);
-                           }
-                        }
-                    }
-            }
+            center: [13652590.86,1366919.96],
+            zoom: 5
         };
         
-        app = new GeoExt.MapPanel(config);
-        
-        /*for (var layer in map.layers){
-            if (layer.getVisibility()){
-                console.log( "Layer "+ layer.name + " is visible");
-            }else{
-                console.log( "Layer "+ layer.name + " is vinisible");
+        var getInfoCtrl = new OpenLayers.Control.WMSGetFeatureInfo({
+            autoActivate: true,
+            infoFormat: "application/vnd.ogc.gml",
+            maxFeatures: 3,
+            url: "http://192.168.56.100:8080/geoserver/geonode/wms",
+            layers: [tile_layer],
+            eventListeners: {
+                "getfeatureinfo": function (e){
+                    var items = [];
+                    Ext.each (e.features, function(feature) {
+                        delete feature.attributes["File_Path"];
+                        delete feature.attributes["GRID_REF"];
+                        delete feature.attributes["Tilename"];
+                        
+                        items.push({
+                            xtype: "propertygrid",
+                            title: feature.fid,
+                            source: feature.attributes
+                        });
+                    });
+                    
+                    //console.log(items);
+                    var georef = "E"+
+                        items[0].source.MINX/1000+"N"+
+                        items[0].source.MAXY/1000;
+                    
+                    if (georef_list.indexOf(georef)<0){
+                        georef_list.push(georef);
+                    }else{
+                        georef_list.splice(georef_list.indexOf(georef), 1);
+                    }
+                    
+                    console.log("Georef list after adding: "+georef_list);
+                    display_points("point_display");
+                                    
+                   var newpopup = new GeoExt.Popup({
+                        title: georef,
+                        width: 200,
+                        height: 200,
+                        layout: "accordion",
+                        map: map,
+                        location: e.xy,
+                        items: items
+                    });
+                    
+                    if(curr_popup != undefined){
+                        curr_popup.close()
+                    }
+                    curr_popup=newpopup;
+                    newpopup.show();
+                },
+                "nogetfeatureinfo": function(e){
+                    console.log("No queryable layer found");
+                }
             }
-        }*/
+        });
+        
+        map.addControl(getInfoCtrl);
+        app = new GeoExt.MapPanel(config);
+        map.zoomToExtent(tile_layer.maxExtent, false);
         
 });
 {% endautoescape %}

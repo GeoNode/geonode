@@ -54,26 +54,6 @@ function display_points(tile_list,div_id){
    
 }
 
-function createVectorLayer() {
-
-    var styleDefault = Ext.applyIf({
-        graphicName: "${symbol}",
-        pointRadius: "${size}"
-    }, OpenLayers.Feature.Vector.style["default"]);
-
-    var styleSelect = Ext.applyIf({
-        graphicName: "${symbol}",
-        pointRadius: "${size}"
-    }, OpenLayers.Feature.Vector.style["select"]);
-
-    return new OpenLayers.Layer.Vector("vector", {
-        styleMap: new OpenLayers.StyleMap({
-            "default": styleDefault,
-            "select": styleSelect
-        })
-    });
-}
-
 var app;
 var viewer_options = {{ viewer|safe }};
 Ext.onReady(function() {
@@ -190,8 +170,6 @@ Ext.onReady(function() {
 
                 click_select = new OpenLayers.Control.Click()
                 map.addControl(click_select);
-                map.addControl(new OpenLayers.Control.DrawFeature(createVectorLayer(),
-                        OpenLayers.Handler.Point));
                 click_select.activate();
                 
                 if (bbox != undefined)
