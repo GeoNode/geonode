@@ -21,6 +21,7 @@ OpenLayers.ProxyHost = "/proxy?url=";
 var options = {{ viewer|safe }};
 var app;
 var georef_list = [];
+var curr_popup;
 
 function display_points(georef_list,div_id){
     var container = document.getElementById(div_id);
@@ -155,7 +156,7 @@ Ext.onReady(function (){
                     georef_list.push(georef);
                     display_points(georef_list, "point_display");
                     
-                    new GeoExt.Popup({
+                    var newpopup = new GeoExt.Popup({
                         title: georef,
                         width: 200,
                         height: 200,
@@ -163,7 +164,13 @@ Ext.onReady(function (){
                         map: map,
                         location: e.xy,
                         items: items
-                    }).show();
+                    });
+                    
+                    if(curr_popup != undefined){
+                        curr_popup.close()
+                    }
+                    curr_popup=newpopup;
+                    newpopup.show();
                 },
                 "nogetfeatureinfo": function(e){
                     console.log("No queryable layer found");
