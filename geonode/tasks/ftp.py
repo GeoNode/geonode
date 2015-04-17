@@ -1,5 +1,5 @@
 from __future__ import with_statement
-import celery, os, traceback, re
+import celery, os, traceback, re, sys, traceback
 from fabric.api import *
 from fabric.contrib.console import confirm
 from fabric.tasks import execute
@@ -124,8 +124,6 @@ Please check your download folder for a new folder named [{0}].""".format(reques
 
 
     except UsernameException as e:
-        # TODO
-        # Email user stating that there is no assigned 
         print("Your FTP request has failed. No FTP folder was found for username [{0}]. Please ensure you have access rights to the FTP repository. Otherwise, please contact the system administrator regarding this error.".format(username))
         ftprequest.status = FTPStatus.ERROR
         mail_msg = """\
@@ -136,6 +134,21 @@ system administrator regarding this error.""".format(request_name, username)
         
         mail_ftp_user(username, user_email, request_name, mail_msg)
         return "ERROR: User [{0}] has no FTP folder: ".format(e.message)
+    
+    except Exception as e:
+        print("Your FTP request has failed. An unhandled error has occured. Please contact the system administrator regarding this error.")
+        ftprequest.status = FTPStatus.ERROR
+        mail_msg = """\
+An unexpected error was encountered on your FTP request named [{0}] for user [{1}]. 
+Please forward this mail to the system administrator.
+
+---ERROR TRACE---
+
+{2}""".format(request_name, username, traceback.format_exc())
+        
+        mail_ftp_user(username, user_email, request_name, mail_msg)
+        return "ERROR: User [{0}] has no FTP folder: ".format(e.message)
+    
         
     finally:
         ftp_request.save()
