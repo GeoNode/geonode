@@ -20,8 +20,9 @@ OpenLayers.ProxyHost = "/proxy?url=";
 
 var options = {{ viewer|safe }};
 var app;
+var georef_list = [];
 
-function display_points(tile_list,div_id){
+function display_points(georef_list,div_id){
     var container = document.getElementById(div_id);
     container.removeChild(container.firstElementChild||container.firstChild);
     var list_element = document.createElement("ul");
@@ -32,14 +33,14 @@ function display_points(tile_list,div_id){
     for (var i=0; i< tile_list.length; i++){
         var tile = tile_list[i];
         var item_element = document.createElement("li");
-        item_element.setAttribute("id",tile.georef);
-        item_element.innerHTML = tile.georef;
+        item_element.setAttribute("id",georef_list[i]);
+        item_element.innerHTML = georef_list[i];
         item_element.onclick = function(){
-            tile_list.splice(i,1);
+            georef_list.splice(i,1);
             this.parentNode.removeChild(this);
         };
         list_element.appendChild(item_element);
-        georef_string+=tile.georef+",";
+        georef_string+=georef_list[i]+",";
     }
     
    document.getElementById("georef_area").setAttribute("value",georef_string);
@@ -143,17 +144,17 @@ Ext.onReady(function (){
                             xtype: "propertygrid",
                             title: feature.fid,
                             source: feature.attributes
-                        },
-                        {
-                            xtype: "button"
-                        });
+                        }
                     });
                     
                     //console.log(items);
                     var georef = "E"+
                         items[0].source.MINX/1000+"N"+
                         items[0].source.MAXY/1000;
-                    console.log(georef);
+                    //console.log(georef);
+                    
+                    georef_list.push(georef);
+                    display_points(georef_list);
                     
                     new GeoExt.Popup({
                         title: georef,
