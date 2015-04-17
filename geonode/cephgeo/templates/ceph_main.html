@@ -1,0 +1,27 @@
+{% extends "ceph_base.html" %}
+{% load i18n %}
+{% load staticfiles %}
+{% load url from future %}
+
+{% block title %} {% trans "Ceph Datastore" %} - {{ block.super }} {% endblock %}
+
+{% block body_class %}Ceph Datastore{% endblock %}
+
+{% block body_outer %}
+{% block body %}
+    <div class="page-header">
+      <h2 class="page-title">Ceph Datastore</h2>
+    </div>
+    <div class="col-md-3">
+        <div class="selections">
+            <nav class="filter">
+                <h4><a href="{% url 'maptiles.views.tiled_view' %}" class="toggle toggle-nav"><i class="fa fa-chevron-right"></i>MapTiles</a></h4>
+                <h4><a href="{% url 'cephgeo.views.file_list_geonode' %}" class="toggle toggle-nav"><i class="fa fa-chevron-right"></i>Datastore Files</a></h4>
+                <h4><a href="{% url 'cephgeo.views.get_cart' %}" class="toggle toggle-nav"><i class="fa fa-chevron-right"></i>Data Cart</a></h4>
+                <h4><a href="{% url 'cephgeo.views.ftp_request_list' %}" class="toggle toggle-nav"><i class="fa fa-chevron-right"></i>FTP Requests</a></h4>
+            </nav>
+        </div>
+    </div>
+{% endblock %}
+ {% block sidebar %}{% endblock sidebar %}
+{% endblock body_outer %}

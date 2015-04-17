@@ -147,7 +147,7 @@ def file_list_json(request, sort=None, grid_ref=None):
 def data_input(request):
     if request.method == 'POST':
         # create a form instance and populate it with data from the request:
-        pprint(request.POST)
+        # pprint(request.POST)
         form = DataInputForm(request.POST)
         # check whether it's valid:
         if form.is_valid():
@@ -218,7 +218,7 @@ def get_obj_ids_json(request):
     json_cart = dict()
     ceph_objs = CephDataObject.objects.all()
     ceph_objs_by_geotype = utils.ceph_object_ids_by_geotype(ceph_objs)
-    pprint(ceph_objs_by_geotype)
+    #pprint(ceph_objs_by_geotype)
     return HttpResponse(json.dumps(ceph_objs_by_geotype), content_type="application/json")
 
 @login_required
