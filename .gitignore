@@ -1,4 +1,4 @@
-# 
+\# 
 build artifacts
 *.pyc
 *.egg-info
@@ -14,6 +14,10 @@ geonode/development.db
 downloaded
 
 docs/i18n/pot/
+
+# logfiles and pidfiles
+*.log
+*.pid
 
 # Static media handling
 *.jshintrc
