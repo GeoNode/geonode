@@ -35,11 +35,16 @@
     <dd>{{ resource.display_type }}</dd>
     {% endif %}
 
-    {% if resource.keyword_list %}
+    {% if resource.keywords %}
     <dt>{% trans "Keywords" %}</dt>
-    <dd>{% for keyword in resource.keyword_list %}
-        {{ keyword }}
-        {% endfor %}</dd>
+    <dd>
+      {% for keyword in resource.keywords.all %}
+        <a href="/search/?keywords__slug__in={{ keyword.slug }}">
+          {{ keyword.name }}
+        </a>
+        {% if not forloop.last %},{% endif %}
+      {% endfor %}
+    </dd>
     {% endif %}
           
     {% if resource.category %}
@@ -54,7 +59,14 @@
   
     {% if resource.regions.all %}
     <dt>{% trans "Regions" %}</dt>
-    <dd>{{ resource.regions.all|join:", " }}</dd>
+    <dd>
+      {% for region in resource.regions.all %}
+        <a href="/search/?regions__name__in={{ region.name }}">
+          {{ region.name }}
+        </a>
+        {% if not forloop.last %},{% endif %}
+      {% endfor %}
+    </dd>
     {% endif %}
   
     {% if resource.owner %}
