@@ -22,6 +22,8 @@ var options = {{ viewer|safe }};
 var app;
 var georef_list = [];
 var curr_popup;
+var curr_location = window.location.hostname;
+console.log(curr_location);
 
 function display_points(div_id){
     var container = document.getElementById(div_id);
