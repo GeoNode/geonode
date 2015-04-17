@@ -79,7 +79,6 @@ Ext.onReady(function (){
     
     var format = 'image/png';
     var tile_layer = new OpenLayers.Layer.WMS(
-        //"geonode:index - Tiled", "http://cephgeo.lan.dream.upd.edu.ph:8080/geoserver/geonode/wms",
         "geonode:index - Tiled", geoserver,
         {
             LAYERS: 'geonode:index',
@@ -179,9 +178,6 @@ Ext.onReady(function (){
     map.addControl(getInfoCtrl);
     app = new GeoExt.MapPanel(config);
     map.zoomToExtent(tile_layer.maxExtent, false);
-       
-                    
-        
 });
 {% endautoescape %}
 </script>
