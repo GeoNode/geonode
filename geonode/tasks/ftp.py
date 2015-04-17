@@ -38,7 +38,7 @@ def fab_create_ftp_folder(ftp_request, ceph_obj_list_by_geotype):
         result = run("[ -d {0} ]".format(ftp_dir))
         if result.return_code == 0:
             print("Error on FTP request: A request has already been made this day. Please try again on the next day.")
-            ftprequest.status = FTPStatus.ERROR
+            ftprequest.status = FTPStatus.DUPLICATE
             mail_msg = """\
 An error was encountered on your FTP request named [{0}] for user [{1}]. 
 A request has already been made this day. Only 1 FTP request per user is allowed 
