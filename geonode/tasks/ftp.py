@@ -38,7 +38,7 @@ def fab_create_ftp_folder(ftp_request, ceph_obj_list_by_geotype):
         result = run("[ -d {0} ]".format(ftp_dir))
         if result.return_code == 0:
             print("Error on FTP request: A request has already been made this day. Please try again on the next day.")
-            ftprequest.status = FTPStatus.DUPLICATE
+            ftp_request.status = FTPStatus.DUPLICATE
             mail_msg = """\
 An error was encountered on your FTP request named [{0}] for user [{1}]. 
 A request has already been made this day. Only 1 FTP request per user is allowed 
@@ -61,7 +61,7 @@ each day. Please try again on the next day.
                     result = run("mkdir {0}".format(type_dir))      # Create a directory for each geo-type
                     if result.return_code is not 0:                 #Handle error
                         print("Error on FTP request: Failed to create FTP folder at [{0}]. Please notify the administrator of this error".format(ftp_dir))
-                        ftprequest.status = FTPStatus.ERROR
+                        ftp_request.status = FTPStatus.ERROR
                         mail_msg = """\
 An error was encountered on your FTP request named [{0}] for user [{1}]. 
 The system failed to create an geotype folder inside the FTP folder at location [{2}]. 
@@ -80,7 +80,7 @@ Please e-mail the system administrator regarding this error.
                                                         obj_dl_list)) # Download list of objects in corresponding geo-type folder
                     if result.return_code is not 0:                 #Handle error
                         print("Error on FTP request: Failed to download file/s for geotype [{0}]. Please notify the administrator of this error".format(geotype))
-                        ftprequest.status = FTPStatus.ERROR
+                        ftp_request.status = FTPStatus.ERROR
                         mail_msg = """\
 Error on FTP request: Cannot access Ceph Data Store [{0}]. Please notify the administrator of this error".format(ftp_dir))
 mail_msg = "An error was encountered on your FTP request named [{0}] for user [{1}]. 
@@ -95,7 +95,7 @@ or the Ceph Data Storage is down. Please e-mail the system administrator regardi
                     
         else:
             print("Error on FTP request: Failed to create FTP folder at [{0}]. Please notify the administrator of this error".format(ftp_dir))
-            ftprequest.status = FTPStatus.ERROR
+            ftp_request.status = FTPStatus.ERROR
             mail_msg = """\
 An error was encountered on your FTP request named [{0}] for user [{1}]. 
 The system failed to create an FTP folder at location [{2}]. Please ensure that you 
@@ -114,7 +114,7 @@ legitimate user, please e-mail the system administrator regarding this error.
         # TODO
         # email user once the files have been downloaded
         print("Your FTP request has been completed. You may find your requested data under the DL directory with the name [{0}]".format(os.path.join("DL",request_name)))
-        ftprequest.status = FTPStatus.DONE
+        ftp_request.status = FTPStatus.DONE
         mail_msg = """\
 Your FTP request named [{0}] for user [{1}] has been succesfully completed.
 Please check your download folder for a new folder named [{0}].""".format(request_name, username)
@@ -125,7 +125,7 @@ Please check your download folder for a new folder named [{0}].""".format(reques
 
     except UsernameException as e:
         print("Your FTP request has failed. No FTP folder was found for username [{0}]. Please ensure you have access rights to the FTP repository. Otherwise, please contact the system administrator regarding this error.".format(username))
-        ftprequest.status = FTPStatus.ERROR
+        ftp_request.status = FTPStatus.ERROR
         mail_msg = """\
 An error was encountered on your FTP request named [{0}] for user [{1}]. 
 No FTP folder was found for username [{0}]. Please ensure you have 
@@ -137,7 +137,7 @@ system administrator regarding this error.""".format(request_name, username)
     
     except Exception as e:
         print("Your FTP request has failed. An unhandled error has occured. Please contact the system administrator regarding this error.")
-        ftprequest.status = FTPStatus.ERROR
+        ftp_request.status = FTPStatus.ERROR
         mail_msg = """\
 An unexpected error was encountered on your FTP request named [{0}] for user [{1}]. 
 Please forward this mail to the system administrator.
@@ -154,7 +154,7 @@ Please forward this mail to the system administrator.
         ftp_request.save()
         
 @celery.task(name='geonode.tasks.ftp.process_ftp_request', queue='ftp')
-def process_ftp_request(username, user_email, request_name, ceph_obj_list_by_geotype):
+def process_ftp_request(ftp_request, ceph_obj_list_by_geotype):
     """
         Create the a new folder containing the data requested inside 
         Geostorage-FTP directory
@@ -167,7 +167,7 @@ def process_ftp_request(username, user_email, request_name, ceph_obj_list_by_geo
     #~ except Exception as e:
         #~ traceback.print_exc()
         #~ raise Exception("task process_ftp_request terminated with exception -- %s" % e.message)
-    result = execute(fab_create_ftp_folder, username, user_email, request_name, ceph_obj_list_by_geotype )
+    result = execute(fab_create_ftp_folder, ftp_request, ceph_obj_list_by_geotype )
     if isinstance(result.get(host_string, None), BaseException):
         raise Exception(result.get(host_string))
 
