@@ -25,9 +25,11 @@
   
   <ul>
 	{% for file in file_list %}
-		<li><b>{{ file.name }}</b>
-			<br />Last Modified: {{ file.last_modified }}
-			<br />File size: {{ file.bytes|filesizeformat  }}
+		<li><h4>
+              <b>{{ file.name }}</b>
+            </h4>
+			<br /><b>Last Modified:</b> {{ file.last_modified }}
+			<br /><b>File size:<b> {{ file.bytes|filesizeformat  }}
 		</li>
 	{% endfor %}
   </ul>
