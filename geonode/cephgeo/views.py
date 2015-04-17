@@ -315,4 +315,4 @@ def clear_cart(request):
 ### HELPER FUNCTIONS ###
 
 def count_duplicate_requests(ftp_request):
-    return len(FTPRequest.objects.filter(name=ftp_request))
+    return len(FTPRequest.objects.filter(name=ftp_request.name,user=ftp_request.user))
