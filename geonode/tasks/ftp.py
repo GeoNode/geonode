@@ -195,7 +195,9 @@ def check_cephaccess():
 def get_folder_from_username(username):
     if not username:
         raise UsernameException(username)
-    if username == 'test-ftp-user':
+    
+    # DEBUG FTP FOLDER
+    if True:
         return "/mnt/FTP/PL1/testfolder/DL/geonode_requests"
         
     suc_str = username.split("-")[0].upper()

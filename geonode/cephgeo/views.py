@@ -236,12 +236,6 @@ def create_ftp_folder(request):
             obj_name_dict[obj.geo_type.encode('utf8')] = [obj.name.encode('utf8'),]
     username = request.user.get_username()
     
-    # DEBUG: Debug username
-    username = "test-ftp-user"
-
-    email = request.user.email
-    request_name=time.strftime("ftp_request-%Y_%m_%d")
-    
     # Record FTP request to database
     # DETAILS: user, request name, for item(ceph_obj) in cart, date, EULA?
     ftp_request = FTPRequest(   name = time.strftime("ftp_request-%Y_%m_%d"),
