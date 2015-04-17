@@ -150,7 +150,7 @@ Ext.onReady(function (){
                         items[0].source.MINX/1000+"N"+
                         items[0].source.MAXY/1000;
                     
-                    if (georef_list.indexOf(georef)>0){
+                    if (georef_list.indexOf(georef)<0){
                         georef_list.push(georef);
                     }else{
                         georef_list.splice(georef_list.indexOf(georef), 1);
