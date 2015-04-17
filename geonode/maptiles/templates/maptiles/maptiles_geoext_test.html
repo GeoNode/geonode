@@ -23,7 +23,7 @@ var app;
 var georef_list = [];
 var curr_popup;
 
-function display_points(georef_list,div_id){
+function display_points(div_id){
     var container = document.getElementById(div_id);
     container.removeChild(container.firstElementChild||container.firstChild);
     var list_element = document.createElement("ul");
@@ -156,7 +156,8 @@ Ext.onReady(function (){
                     
                     georef_list.push(georef);
                     console.log(georef_list);
-                    display_points(georef_list, "point_display");
+                    //display_points(georef_list, "point_display");
+                    display_points("point_display");
                     
                     var newpopup = new GeoExt.Popup({
                         title: georef,
