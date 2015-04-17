@@ -36,7 +36,7 @@ function display_points(div_id){
         item_element.setAttribute("id",georef_list[i]);
         item_element.innerHTML = georef_list[i];
         item_element.onclick = function(){
-            var list = georef_list.splice(i,1);
+            georef_list.splice(georef_list.indexOf(georef),1);
             console.log(i-1);
             console.log("current list of georefs:"+georef_list);
             console.log("removed items: "+list);
@@ -47,7 +47,6 @@ function display_points(div_id){
     }
     
    document.getElementById("georef_area").setAttribute("value",georef_string);
-   
 }
 
 Ext.onReady(function (){
@@ -159,9 +158,33 @@ Ext.onReady(function (){
                     georef_list.push(georef);
                     console.log(georef_list);
                     //display_points(georef_list, "point_display");
-                    display_points("point_display");
+                    //display_points("point_display");
                     
-                    var newpopup = new GeoExt.Popup({
+                   var container = document.getElementById(div_id);
+                   container.removeChild(container.firstElementChild||container.firstChild);
+                   var list_element = document.createElement("ul");
+                   container.appendChild(list_element);
+                    
+                   var georef_string = "";
+                    
+                   for (var i=0; i< georef_list.length; i++){
+                       var item_element = document.createElement("li");
+                       item_element.setAttribute("id",georef_list[i]);
+                       item_element.innerHTML = georef_list[i];
+                       item_element.onclick = function(){
+                           georef_list.splice(georef_list.indexOf(georef),1);
+                           console.log(i-1);
+                           console.log("current list of georefs:"+georef_list);
+                           console.log("removed items: "+list);
+                           this.parentNode.removeChild(this);
+                       };
+                       list_element.appendChild(item_element);
+                       georef_string+=georef_list[i]+",";
+                   }
+                    
+                   document.getElementById("georef_area").setAttribute("value",georef_string);
+                                    
+                   var newpopup = new GeoExt.Popup({
                         title: georef,
                         width: 200,
                         height: 200,
