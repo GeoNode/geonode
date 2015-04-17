@@ -36,7 +36,7 @@ function display_points(div_id){
         item_element.setAttribute("id",georef_list[i]);
         item_element.innerHTML = georef_list[i];
         item_element.onclick = function(){
-            georef_list.splice(georef_list.indexOf(item_element.getAttribute("id"),1);
+            georef_list.splice(georef_list.indexOf(item_element.getAttribute("id"),1));
             console.log("current list of georefs:"+georef_list);
             console.log("removed items: "+list);
             this.parentNode.removeChild(this);
