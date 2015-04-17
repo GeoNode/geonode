@@ -47,7 +47,8 @@ class FTPRequestAdmin(admin.ModelAdmin):
         'name',
         'date_time',
         'user',
-        'status',)
+        'status',
+        'size_in_bytes',)
     list_filter = ('name', 'user', 'status',)
     search_fields = ('name', 'user', 'status',)
     
