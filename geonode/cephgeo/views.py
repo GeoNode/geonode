@@ -253,8 +253,10 @@ def create_ftp_folder(request):
         
     ftp_request.save()
     
+    #TODO: Mapping of FTP Request to requested objects
+    
     # Call to celery
-    process_ftp_request.delay(username, email, request_name, obj_name_dict)
+    process_ftp_request.delay(ftp_request, obj_name_dict)
     
     #~ tojson = (username, email, request_name, obj_name_dict)
     #~ return HttpResponse(json.dumps(tojson), content_type="application/json")

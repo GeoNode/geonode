@@ -26,13 +26,13 @@ class CephDataObject(models.Model):
         return "{0}:{1}".format(self.name, self.geo_type)
 
 class FTPStatus(enum.Enum):
-    SUCCESS = 0
+    DONE = 0
     PENDING = 1
     ERROR = 2
     DUPLICATE = 3
     
     labels = {
-        SUCCESS: 'Success',
+        DONE: 'Done',
         PENDING: 'Pending',
         ERROR:   'Error',
         DUPLICATE: 'Duplicate',}
