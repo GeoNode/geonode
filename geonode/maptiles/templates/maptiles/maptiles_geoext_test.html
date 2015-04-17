@@ -133,12 +133,12 @@ Ext.onReady(function (){
             layers: [tile_layer],
             eventListeners: {
                 "getfeatureinfo": function (e){
-                    console.log(e.request);
-                    console.log(e.features);
                     var items = [];
                     Ext.each (e.features, function(feature) {
                         delete feature.attributes["File_Path"];
                         delete feature.attributes["GRID_REF"];
+                        delete feature.attributes["Tilename"];
+                        
                         items.push({
                             xtype: "propertygrid",
                             title: feature.fid,
@@ -151,8 +151,13 @@ Ext.onReady(function (){
                         items[0].source.MAXY/1000;
                     console.log(georef);
                     
+                    items.push({
+                        xtype: "button",
+                        text: "Add"
+                    })
+                    
                     new GeoExt.Popup({
-                        title: "Tile Info",
+                        title: georef,
                         width: 200,
                         height: 200,
                         layout: "accordion",
