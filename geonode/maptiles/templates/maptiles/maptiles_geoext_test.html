@@ -30,8 +30,7 @@ function display_points(georef_list,div_id){
     
     var georef_string = "";
     
-    for (var i=0; i< tile_list.length; i++){
-        var tile = tile_list[i];
+    for (var i=0; i< georef_list.length; i++){
         var item_element = document.createElement("li");
         item_element.setAttribute("id",georef_list[i]);
         item_element.innerHTML = georef_list[i];
