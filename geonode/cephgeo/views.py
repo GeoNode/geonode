@@ -279,6 +279,8 @@ def ftp_request_list(request, sort=None):
         sorted_list = sorted(ftp_list.order_by('name'), key=operator.attrgetter('date_time'), reverse=True)
     elif sort == 'status':
         sorted_list = sorted(ftp_list.order_by('name'), key=operator.attrgetter('status'), reverse=True)
+    elif sort == 'size':
+        sorted_list = sorted(ftp_list.order_by('name'), key=operator.attrgetter('size_in_bytes'), reverse=True)
         
     else: # nosort
         sorted_list = ftp_list
