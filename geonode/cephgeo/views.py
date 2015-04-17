@@ -228,8 +228,10 @@ def create_ftp_folder(request):
     #[CephDataObject.objects.get(id=int(item.object_id)).name for item in cart]
     
     obj_name_dict = dict()
+    total_size_in_bytes = 0
     for item in cart:
         obj = CephDataObject.objects.get(id=int(item.object_id))
+        total_size_in_bytes += obj.size_in_bytes
         if obj.geo_type in obj_name_dict:
             obj_name_dict[obj.geo_type.encode('utf8')].append(obj.name.encode('utf8'))
         else:
