@@ -68,6 +68,9 @@
             <li id="nav_groups">
               <a href="{% url "group_list" %}">{% trans "Groups" %}</a>
             </li>
+            <li id="nav_datastore">
+              <a href="{% url "ceph_main" %}">{% trans "Datastore" %}</a>
+            </li>
             {% endblock %}
           </ul>
           <form class="navbar-form" id="search" action="{% url "search" %}" >
