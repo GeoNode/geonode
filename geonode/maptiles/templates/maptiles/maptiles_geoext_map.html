@@ -97,7 +97,9 @@ Ext.onReady(function (){
     
     var highlight_layer = new OpenLayers.Layer.Vector(
         "Highlight Layer",
-        isBaseLayer: false
+        {
+            isBaseLayer: false  
+        }
     );
     
     map.addLayers([mq_layer,tile_layer,highlight_layer]);
