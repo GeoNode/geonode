@@ -37,7 +37,7 @@ FILTER_TYPES = {
 
 class CountJSONSerializer(Serializer):
     """Custom serializer to post process the api and add counts"""
-    
+
     def get_resources_counts(self, options):
         if settings.SKIP_PERMS_FILTER:
             resources = ResourceBase.objects.all()
@@ -134,7 +134,8 @@ class RegionResource(TypeFilteredResource):
         filtering = {
             'name': ALL,
         }
-        serializer = CountJSONSerializer()
+        # To activate the counts on regions uncomment the following line
+        # serializer = CountJSONSerializer()
 
 
 class TopicCategoryResource(TypeFilteredResource):
