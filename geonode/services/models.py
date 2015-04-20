@@ -9,7 +9,7 @@ from geonode.layers.models import Layer
 from django.utils.translation import ugettext_lazy as _
 from django.db.models import signals
 from geonode.people.enumerations import ROLE_VALUES
-from geonode.security.models import clean_object_permissions
+from geonode.security.models import remove_object_permissions
 
 STATUS_VALUES = [
     'pending',
@@ -132,7 +132,7 @@ def pre_delete_service(instance, sender, **kwargs):
         except FailedRequestError:
             logger.error(
                 "Could not delete cascading WMS Store for %s - maybe already gone" % instance.name)
-    clean_object_permissions(instance.get_self_resource())
+    remove_object_permissions(instance.get_self_resource())
 
 
 signals.pre_delete.connect(pre_delete_service, sender=Service)
