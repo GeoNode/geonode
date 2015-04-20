@@ -39,6 +39,7 @@
             </h4>
 			<br /><b>Date and Time:</b> {{ ftp_req.date_time }}
 			<br /><b>Status:</b> {{ ftp_req.status|get_ftp_status_label }}
+			<br /><b>Number of Tiles:</b> {{ ftp_req.num_tiles }}
 			<br /><b>Total Size:</b> {{ ftp_req.size_in_bytes | filesizeformat }}
 		</li>
 	{% endfor %}
