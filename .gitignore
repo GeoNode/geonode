@@ -1,4 +1,4 @@
-# 
+\# 
 build artifacts
 *.pyc
 *.egg-info
@@ -18,6 +18,10 @@ celery/
 /celery/
 
 docs/i18n/pot/
+
+# logfiles and pidfiles
+*.log
+*.pid
 
 # Static media handling
 *.jshintrc
