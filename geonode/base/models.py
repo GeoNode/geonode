@@ -585,9 +585,9 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin):
         no_custom_permissions = UserObjectPermission.objects.filter(
             content_type=ContentType.objects.get_for_model(self.get_self_resource()),
             object_pk=str(self.pk)
-            ).count()
+            ).exist()
 
-        if no_custom_permissions == 0:
+        if no_custom_permissions:
             logger.debug('There are no permissions for this object, setting default perms.')
             self.set_default_permissions()
 
