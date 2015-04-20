@@ -43,7 +43,7 @@ class FTPRequest(models.Model):
     user        = models.ForeignKey(User, null=False, blank=False)
     status      = enum.EnumField(FTPStatus, default=FTPStatus.PENDING)
     size_in_bytes   = models.IntegerField()
-    
+    num_tiles   = models.IntegerField()
 
 class EULA(models.Model):
     user = models.ForeignKey(User, null=False, blank=False)
