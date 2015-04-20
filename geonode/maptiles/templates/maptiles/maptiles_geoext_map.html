@@ -7,6 +7,7 @@
 <script type="text/javascript" src="{{ STATIC_URL}}geonode/js/utils/thumbnail.js"></script>
 <script type="text/javascript" src="http://svn.osgeo.org/metacrs/proj4js/trunk/lib/proj4js-compressed.js"></script>
 <script type="text/javascript" src="http://spatialreference.org/ref/epsg/wgs-84-utm-zone-51n/proj4js/"></script>
+<script type="text/javascript" src="http://spatialreference.org/ref/epsg/32651/proj4js/"></script>
 <script type="text/javascript" >
 
 OpenLayers.ImgPath = "{{ STATIC_URL }}geoexplorer/externals/openlayers/theme/default/img";
@@ -47,12 +48,14 @@ function display_points(div_id){
 }
 
 Ext.onReady(function (){
+    var curr_location = window.location.hostname;
+    var geoserver = "http://"+curr_location+":8080/geoserver/geonode/wms";
+    
     var map_options = options["map"];
     var map = new OpenLayers.Map({
         units: map_options["units"],
         maxResolution: map_options["maxResolution"],
         projection: map_options["projection"]
-    
     });
     
     var mq_layer = new OpenLayers.Layer.XYZ(
@@ -72,18 +75,13 @@ Ext.onReady(function (){
             wrapDateLine: true
         }
     );
-
-    var curr_location = window.location.hostname;
-    console.log(curr_location);
-    var geoserver = "http://"+curr_location+":8080/geoserver/geonode/wms";
     
-    var format = 'image/png';
     var tile_layer = new OpenLayers.Layer.WMS(
         "geonode:index - Tiled", geoserver,
         {
             LAYERS: 'geonode:index',
             STYLES: '',
-            format: format,
+            format:  'image/png',
             bbox: [13825393.814371249, 807566.643619642, 13852644.846474735, 817795.469341697],
             transparent: true,
             opacity: 0.3
@@ -96,7 +94,13 @@ Ext.onReady(function (){
             maxExtent: new OpenLayers.Bounds(13825393.814371249, 807566.643619642, 13852644.846474735, 817795.469341697)
         } 
     );
-    map.addLayers([mq_layer,tile_layer]);
+    
+    var highlight_layer = new OpenLayers.Layer.Vector(
+        "Highlight Layer",
+        isBaseLayer: false
+    );
+    
+    map.addLayers([mq_layer,tile_layer,highlight_layer]);
     
     var items = [{
         xtype: "gx_zoomslider",
@@ -143,6 +147,10 @@ Ext.onReady(function (){
                 var georef = "E"+
                     items[0].source.MINX/1000+"N"+
                     items[0].source.MAXY/1000;
+                
+                var highlight_feature = new OpenLayers.Feature.Vector(
+                    
+                );
                 
                 if (georef_list.indexOf(georef)<0){
                     georef_list.push(georef);
