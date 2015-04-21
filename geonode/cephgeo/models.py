@@ -44,6 +44,9 @@ class FTPRequest(models.Model):
     status      = enum.EnumField(FTPStatus, default=FTPStatus.PENDING)
     size_in_bytes   = models.IntegerField()
     num_tiles   = models.IntegerField()
+    
+    def __unicode__(self):
+        return "{0}:{1}".format(self.name, self.user.username)
 
 class EULA(models.Model):
     user = models.ForeignKey(User, null=False, blank=False)
