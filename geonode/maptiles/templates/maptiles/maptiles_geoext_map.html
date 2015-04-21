@@ -57,6 +57,8 @@ function highlightBox(feature_attribs, vec_layer){
     console.log(pts);
     var lr = new OpenLayers.Geometry.LinearRing(pts);
     var pf = new OpenLayers.Feature.Vector(pts, feature_attribs);
+    console.log(lr);
+    console.log(pf);
     
     vec_layer.addFeatures([pf]);
     return pf.getVisibility();
