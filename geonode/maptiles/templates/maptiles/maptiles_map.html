@@ -46,6 +46,13 @@
  </div>
  <form action="/maptiles/addtocart/" method="POST">
      {% csrf_token %}
+     <div class="col-md-4" align="right">
+     {% for key, label in data_classes %}
+       {% if key != 0 %}
+          <input type="checkbox" name={{ key }} value="Cheese"> {% trans label %}
+       {% endif %}
+     {% endfor %}
+     </div>
     <input type="text" id="georef_area" name="georef_area" style="display:none" />
     <input type="submit" id="georef_submit" name="georef_submit" value="Submit" class="btn btn-default" />
 </form>
