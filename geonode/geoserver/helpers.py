@@ -906,19 +906,21 @@ def cleanup(name, uuid):
                        'import for layer: %s', name)
 
 
-def _create_featurestore(name, data, overwrite=False, charset="UTF-8"):
+def _create_featurestore(name, data, overwrite=False, charset="UTF-8", workspace=None):
     cat = gs_catalog
     cat.create_featurestore(name, data, overwrite=overwrite, charset=charset)
-    return cat.get_store(name), cat.get_resource(name)
+    store = cat.get_store(name, workspace)
+    return store, cat.get_resource(name, store=store, workspace=workspace)
 
 
-def _create_coveragestore(name, data, overwrite=False, charset="UTF-8"):
+def _create_coveragestore(name, data, overwrite=False, charset="UTF-8", workspace=None):
     cat = gs_catalog
     cat.create_coveragestore(name, data, overwrite=overwrite)
-    return cat.get_store(name), cat.get_resource(name)
+    store = cat.get_store(name, workspace)
+    return store, cat.get_resource(name, store=store, workspace=workspace)
 
 
-def _create_db_featurestore(name, data, overwrite=False, charset="UTF-8"):
+def _create_db_featurestore(name, data, overwrite=False, charset="UTF-8", workspace=None):
     """Create a database store then use it to import a shapefile.
 
     If the import into the database fails then delete the store
@@ -949,7 +951,7 @@ def _create_db_featurestore(name, data, overwrite=False, charset="UTF-8"):
         cat.add_data_to_store(ds, name, data,
                               overwrite=overwrite,
                               charset=charset)
-        return ds, cat.get_resource(name, store=ds)
+        return ds, cat.get_resource(name, store=ds, workspace=workspace)
     except Exception:
         msg = _("An exception occurred loading data to PostGIS")
         msg += "- %s" % (sys.exc_info()[1])
@@ -1048,7 +1050,8 @@ def geoserver_upload(
         store, gs_resource = create_store_and_resource(name,
                                                        data,
                                                        charset=charset,
-                                                       overwrite=overwrite)
+                                                       overwrite=overwrite,
+                                                       workspace=cat.get_default_workspace())
     except UploadError as e:
         msg = ('Could not save the layer %s, there was an upload '
                'error: %s' % (name, str(e)))
