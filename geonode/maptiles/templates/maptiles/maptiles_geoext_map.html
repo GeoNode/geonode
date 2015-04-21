@@ -63,6 +63,7 @@ function highlightBox(feature_attribs, vec_layer){
     });
 
     vec_layer.addFeatures([pf]);
+    vec_layer.refresh();
     return pf.getVisibility();
 }
 
