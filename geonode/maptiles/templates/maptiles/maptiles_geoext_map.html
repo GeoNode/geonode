@@ -194,6 +194,7 @@ Ext.onReady(function (){
                     highlightBox(tile_attribs, highlight_layer);
                 }else{
                     georef_list.splice(georef_list.indexOf(georef), 1);
+                    removeHighlight(georef, highlight_layer);
                 }
                 
                 display_points("point_display");
