@@ -48,10 +48,10 @@ function display_points(div_id){
 }
 
 function highlightBox(feature_attribs, vec_layer){
-    var pt1 = new OpenLayers.Geometry.Point(feature_attribs.MINX, feature_attribs.MAXY).transform(new OpenLayers.Projection("EPSG:32651"), vec_layer.map.getProjectionObject());
-    var pt2 = new OpenLayers.Geometry.Point(feature_attribs.MINX, feature_attribs.MINY).transform(new OpenLayers.Projection("EPSG:32651"), vec_layer.map.getProjectionObject());
-    var pt3 = new OpenLayers.Geometry.Point(feature_attribs.MAXX, feature_attribs.MINY).transform(new OpenLayers.Projection("EPSG:32651"), vec_layer.map.getProjectionObject());
-    var pt4 = new OpenLayers.Geometry.Point(feature_attribs.MAXX, feature_attribs.MAXY).transform(new OpenLayers.Projection("EPSG:32651"), vec_layer.map.getProjectionObject());
+    var pt1 = new OpenLayers.Geometry.Point(feature_attribs.MINX, feature_attribs.MAXY).transform(new OpenLayers.Projection("EPSG:32651"), new OpenLayers.Projection("EPSG:900913"));
+    var pt2 = new OpenLayers.Geometry.Point(feature_attribs.MINX, feature_attribs.MINY).transform(new OpenLayers.Projection("EPSG:32651"), new OpenLayers.Projection("EPSG:900913"));
+    var pt3 = new OpenLayers.Geometry.Point(feature_attribs.MAXX, feature_attribs.MINY).transform(new OpenLayers.Projection("EPSG:32651"), new OpenLayers.Projection("EPSG:900913"));
+    var pt4 = new OpenLayers.Geometry.Point(feature_attribs.MAXX, feature_attribs.MAXY).transform(new OpenLayers.Projection("EPSG:32651"), new OpenLayers.Projection("EPSG:900913"));
     
     var pts = [pt1, pt2, pt3, pt4];
     var lr = new OpenLayers.Geometry.LinearRing(pts);
