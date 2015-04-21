@@ -253,12 +253,15 @@ def create_ftp_folder(request):
     ftp_request.num_tiles = num_tiles
     ftp_request.save()
     
-    #TODO: Mapping of FTP Request to requested objects
+    # Mapping of FTP Request to requested objects
+    ftp_objs = []
     for item in cart:
         obj = CephDataObject.objects.get(id=int(item.object_id))
+        ftp_objs.append(obj)
         ftp_obj_idx = FTPRequestToObjectIndex(  ftprequest = ftp_request, 
                                                 cephobject = obj)
         ftp_obj_idx.save()
+    
     
     # Call to celery
     process_ftp_request.delay(ftp_request, obj_name_dict)
@@ -266,11 +269,13 @@ def create_ftp_folder(request):
     # Clear cart items
     delete_all_items_from_cart(request)
     
+    
     return render_to_response('ftp_result.html', 
                                 {   "result_msg" : "Your FTP request is being processed. A notification \
                                      will arrive via email regarding the completion of your request. The \
                                      items you requested are listed below.",
                                     "cart" : CartProxy(request),
+                                    "ftp_objects" : ftp_objs,
                                     "total_size" : total_size_in_bytes,},
                                 context_instance=RequestContext(request))
 @login_required
