@@ -10,7 +10,7 @@ from django.template import RequestContext
 
 from pprint import pprint
 
-from geonode.cephgeo.forms import DataInputForm
+from geonode.cephgeo.forms import DataInputForm, RequestDataClassForm
 from geonode.cephgeo.models import CephDataObject, FTPRequest, FTPStatus, FTPRequestToObjectIndex
 from geonode.tasks.ftp import process_ftp_request
 
@@ -188,8 +188,9 @@ def error(request):
 
 @login_required
 def get_cart(request):
+    form = RequestDataClassForm()
     return render_to_response('cart.html', 
-                                dict(cart=CartProxy(request)),
+                                dict(cart=CartProxy(request),data_class_form=form}),
                                 context_instance=RequestContext(request))
 
 @login_required
