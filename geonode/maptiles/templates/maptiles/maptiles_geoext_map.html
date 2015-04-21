@@ -135,7 +135,7 @@ Ext.onReady(function (){
     );
     
     map.addLayers([mq_layer,tile_layer,highlight_layer]);
-    
+    console.log(hightlight_layer.getExtent());
     var items = [{
         xtype: "gx_zoomslider",
         aggressive: false,
@@ -154,6 +154,15 @@ Ext.onReady(function (){
         center: [13652590.86,1366919.96],
         zoom: 5
     };
+    
+    var select_ctrl = new OpenLayers.Control.GetFeature({
+        autoActivate: true,
+        protocol: OpenLayers.Protocol.WFS.fromWMSLayer(tile_layer),
+        box: true,
+        hover: false,
+        multipleKey: "shiftKey",
+        toggleKey: "ctrlKey",
+    });
     
     var getInfoCtrl = new OpenLayers.Control.WMSGetFeatureInfo({
         autoActivate: true,
@@ -219,7 +228,7 @@ Ext.onReady(function (){
             }
         }
     });
-    
+
     map.addControl(getInfoCtrl);
     app = new GeoExt.MapPanel(config);
     map.zoomToExtent(tile_layer.maxExtent, false);
