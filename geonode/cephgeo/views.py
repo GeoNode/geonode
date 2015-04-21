@@ -190,7 +190,7 @@ def error(request):
 def get_cart(request):
     form = RequestDataClassForm()
     return render_to_response('cart.html', 
-                                dict(cart=CartProxy(request),data_class_form=form}),
+                                dict(cart=CartProxy(request),data_class_form=form),
                                 context_instance=RequestContext(request))
 
 @login_required
