@@ -25,6 +25,39 @@ class CephDataObject(models.Model):
     def __unicode__(self):
         return "{0}:{1}".format(self.name, self.geo_type)
 
+class DataClassification(enum.Enum):
+    UNKNOWN = 0
+    LAZ = 1
+    DEM = 2
+    DTM = 3
+    DSM = 4
+    ORTHOPHOTO = 5
+    
+    labels = {
+        UNKNOWN     : "Unknown Type",
+        LAZ			: "LAZ file",
+        DEM 		: "DEM TIF",
+        DSM     	: "DSM TIF",
+        DTM 		: "DTM TIF",
+        ORTHOPHOTO  : "Orthophoto",}
+    
+    filename_suffixes = {
+        ".laz"			: LAZ,
+        "_dem.tif" 		: DEM,
+        "_dsm.tif" 		: DSM,
+        "_dtm.tif" 		: DTM,
+        "_ortho.tif"	: ORTHOPHOTO,}
+    
+    def get_label_from_filename(filename):
+        data_classification = labels[UNKNOWN]
+        
+        for x in filename_suffixes:
+            if len(file_name) > len(filename_suffixes[x]):
+                if file_name.lower().endswith(x):
+                    data_classification = filename_suffixes[x]
+            
+        return data_classification
+
 class FTPStatus(enum.Enum):
     DONE = 0
     PENDING = 1
