@@ -254,12 +254,18 @@ def create_ftp_folder(request):
     ftp_request.save()
     
     #TODO: Mapping of FTP Request to requested objects
+    for item in cart:
+        obj = CephDataObject.objects.get(id=int(item.object_id))
+        ftp_obj_idx = FTPRequestToObjectIndex(  ftprequest = ftp_request, 
+                                                cephobject = obj)
+        ftp_obj_idx.save()
     
     # Call to celery
     process_ftp_request.delay(ftp_request, obj_name_dict)
     
-    #~ tojson = (username, email, request_name, obj_name_dict)
-    #~ return HttpResponse(json.dumps(tojson), content_type="application/json")
+    # Clear cart items
+    delete_all_items_from_cart(request)
+    
     return render_to_response('ftp_result.html', 
                                 {   "result_msg" : "Your FTP request is being processed. A notification \
                                      will arrive via email regarding the completion of your request. The \
@@ -309,11 +315,7 @@ def ftp_request_list(request, sort=None):
 
 @login_required
 def clear_cart(request):
-    if request.cart is not None:
-        remove_all_from_cart(request) # Clear cart for this request
-    user = request.user
-    name = user.username
-    messages.add_message(request, messages.INFO, "Cart has been emptied for user [{0}]".format(name))
+    delete_all_items_from_cart(request)
     response = render_to_response('cart.html', 
                                 dict(cart=CartProxy(request)),
                                 context_instance=RequestContext(request))
@@ -322,6 +324,14 @@ def clear_cart(request):
     return response
 
 ### HELPER FUNCTIONS ###
+
+def delete_all_items_from_cart(request, warn_user=True):
+    if request.cart is not None:
+        remove_all_from_cart(request) # Clear cart for this request
+    user = request.user
+    name = user.username
+    if warn_user:
+        messages.add_message(request, messages.INFO, "Cart has been emptied for user [{0}]".format(name))
 
 def count_duplicate_requests(ftp_request):
     return len(FTPRequest.objects.filter(name=ftp_request.name,user=ftp_request.user))
