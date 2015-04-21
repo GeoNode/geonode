@@ -35,7 +35,7 @@ class DataClassification(enum.Enum):
     
     labels = {
         UNKNOWN     : "Unknown Type",
-        LAZ			: "LAZ file",
+        LAZ			: "LAZ",
         DEM 		: "DEM TIF",
         DSM     	: "DSM TIF",
         DTM 		: "DTM TIF",
