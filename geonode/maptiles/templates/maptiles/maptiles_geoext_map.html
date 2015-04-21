@@ -56,9 +56,10 @@ function highlightBox(feature_attribs, vec_layer){
     var pts = [pt1, pt2, pt3, pt4];
     console.log(pts);
     var lr = new OpenLayers.Geometry.LinearRing(pts);
-    var pf = new OpenLayers.Feature.Vector(pts, {
+    var pf = new OpenLayers.Feature.Vector({
+        geometry: lr
         fid: "feature_"+feature_attribs["georef"],
-        data: feature_attribs
+        attributes: feature_attribs
     });
     console.log(lr);
     console.log(pf);
