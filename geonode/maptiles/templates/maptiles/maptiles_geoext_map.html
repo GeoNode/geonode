@@ -61,9 +61,7 @@ function highlightBox(feature_attribs, vec_layer){
         fid: "feature_"+feature_attribs["georef"],
         attributes: feature_attribs
     });
-    console.log(lr);
-    console.log(pf);
-    console.log(vec_layer);
+
     vec_layer.addFeatures([pf]);
     return pf.getVisibility();
 }
@@ -166,7 +164,7 @@ Ext.onReady(function (){
                     });
                 });
                 
-                console.log(features);
+                console.log(e.features);
                 var georef = "E"+items[0].source.MINX/1000+
                     "N"+items[0].source.MAXY/1000;
                 var tile_attribs = items[0].source;
