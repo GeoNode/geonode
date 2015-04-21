@@ -25,7 +25,7 @@ var georef_list = [];
 var curr_popup;
 // added stuff
 
-function display_points(div_id){
+function display_points(div_id, vec_layer){
     var container = document.getElementById(div_id);
     container.removeChild(container.firstElementChild||container.firstChild);
     var list_element = document.createElement("ul");
@@ -35,14 +35,14 @@ function display_points(div_id){
     
     for (var i=0; i< georef_list.length; i++){
         var item_element = document.createElement("li");
-        item_element.setAttribute("id",georef_list[i]);
-        item_element.innerHTML = georef_list[i];
+        item_element.setAttribute("id",georef_list[i].georef);
+        item_element.innerHTML = georef_list[i].georef;
         item_element.onclick = function(){
-            georef_list.splice(georef_list.indexOf(item_element.getAttribute("id"),1));
+            removeHighlight(item_element.getAttribute("id"), vec_layer);
             this.parentNode.removeChild(this);
         };
         list_element.appendChild(item_element);
-        georef_string+=georef_list[i]+",";
+        georef_string+=georef_list[i].georef+",";
     }
    document.getElementById("georef_area").setAttribute("value",georef_string);
 }
@@ -61,15 +61,13 @@ function highlightBox(feature_attribs, vec_layer){
 
     vec_layer.addFeatures(polygon_feature);
     
-    console.log(polygon_feature.fid());
-    return polygon_feature.getVisibility();
+    return polygon_feature;
 }
 
 function removeHighlight(georef, vec_layer){
-    var feature = vec_layer.getFeatureByFid(georef);
-    vec_layer.removeFeatures([feature]);
-    
-    return feature.getVisibility();
+    var index= georef_list.map(function (x) { return x.georef }).indexOf(georef);
+    vec_layer.removeFeatures([georef_list[index].feature]);
+    georef_list.splice(index,1));
 }
 
 var vector_style = new OpenLayers.Style({
@@ -184,17 +182,21 @@ Ext.onReady(function (){
                     });
                 });
                 
-                var georef = "E"+items[0].source.MINX/1000+
-                    "N"+items[0].source.MAXY/1000;
+                var tile = {
+                    georef: "E"+items[0].source.MINX/1000+"N"+items[0].source.MAXY/1000;
+                }
+                
                 var tile_attribs = items[0].source;
                 
                 if (georef_list.indexOf(georef)<0){
                     georef_list.push(georef);
                     tile_attribs["georef"] = "feature_"+georef;
-                    highlightBox(tile_attribs, highlight_layer);
+                    georef.feature = highlightBox(tile_attribs, highlight_layer);
+                }else{
+                    removeHighlight(tile.georef, highlight_layer);
                 }
                 
-                display_points("point_display");
+                display_points("point_display", highlight_layer);
                                 
                 var newpopup = new GeoExt.Popup({
                     title: georef,
