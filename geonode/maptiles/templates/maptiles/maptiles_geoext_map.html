@@ -162,10 +162,11 @@ Ext.onReady(function (){
                 //console.log(items);
                 var georef = "E"+items[0].source.MINX/1000+
                     "N"+items[0].source.MAXY/1000;
+                var tile_attribs = items[0].source;
                 
                 if (georef_list.indexOf(georef)<0){
                     georef_list.push(georef);
-                    source["id"] = "feature_"+georef;
+                    tile_attribs["id"] = "feature_"+georef;
                     var visibility = highlightBox(items[0].source, highlight_layer);
                     console.log("Feature visibility is: "+ visibility)
                 }else{
