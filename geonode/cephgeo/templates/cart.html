@@ -36,6 +36,8 @@
         </tr>
         {% endfor %}
     </table>
+  {% load crispy_forms_tags %}
+  {% crispy data_class_form %}
 {% endblock body %}
  {% block sidebar %}{% endblock sidebar %}
 {% endblock body_outer %}
