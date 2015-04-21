@@ -47,6 +47,20 @@ function display_points(div_id){
    document.getElementById("georef_area").setAttribute("value",georef_string);
 }
 
+function highlightBox(feature_attribs, vec_layer){
+    var pt1 = new OpenLayers.Geometry.Point(feature_attribs.MINX, feature_attribs.MAXY).transform(new OpenLayers.Projection("EPSG:32651"), map.getProjectionObject());
+    var pt2 = new OpenLayers.Geometry.Point(feature_attribs.MINX, feature_attribs.MINY).transform(new OpenLayers.Projection("EPSG:32651"), map.getProjectionObject());
+    var pt3 = new OpenLayers.Geometry.Point(feature_attribs.MAXX, feature_attribs.MINY).transform(new OpenLayers.Projection("EPSG:32651"), map.getProjectionObject());
+    var pt4 = new OpenLayers.Geometry.Point(feature_attribs.MAXX, feature_attribs.MAXY).transform(new OpenLayers.Projection("EPSG:32651"), map.getProjectionObject());
+    
+    var pts = [pt1, pt2, pt3, pt4];
+    var lr = new OpenLayers.Geometry.LinearRing(pts);
+    var pf = new OpenLayers.Feature.Vector(pts, feature_attribs);
+    
+    vec_layer.add(pf);
+    return pf.getVisibility();
+}
+
 Ext.onReady(function (){
     var curr_location = window.location.hostname;
     var geoserver = "http://"+curr_location+":8080/geoserver/geonode/wms";
@@ -146,18 +160,18 @@ Ext.onReady(function (){
                 });
                 
                 //console.log(items);
-                var georef = "E"+
-                    items[0].source.MINX/1000+"N"+
-                    items[0].source.MAXY/1000;
-                
-                var highlight_feature = new OpenLayers.Feature.Vector(
-                    
-                );
+                var georef = "E"+items[0].source.MINX/1000+
+                    "N"+items[0].source.MAXY/1000;
                 
                 if (georef_list.indexOf(georef)<0){
                     georef_list.push(georef);
+                    source["id"] = "feature_"+georef;
+                    var visibility = highlightBox(items[0].source, highlight_layer);
+                    console.log("Feature visibility is: "+ visibility)
                 }else{
                     georef_list.splice(georef_list.indexOf(georef), 1);
+                    var feature_for_removal = highlight_layer.getFeatureById("feature_"+georef);
+                    highlight_layer.removeFeatures([feature_for_removal]);
                 }
                 
                 console.log("Georef list after adding: "+georef_list);
