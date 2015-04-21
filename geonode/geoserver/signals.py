@@ -117,7 +117,6 @@ def geoserver_pre_save(instance, sender, **kwargs):
        * Download links (WMS, WCS or WFS and KML)
        * Styles (SLD)
     """
-    gs_resource = gs_catalog.get_resource(instance.name)
 
     bbox = gs_resource.latlon_bbox
 

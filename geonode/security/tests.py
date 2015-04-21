@@ -264,7 +264,7 @@ class PermissionsTest(TestCase):
 
         # Test with a Layer object
         layer = Layer.objects.all()[0]
-
+        layer.set_default_permissions()
         # Test that the anonymous user can read
         self.assertTrue(
             self.anonymous_user.has_perm(
@@ -300,7 +300,7 @@ class PermissionsTest(TestCase):
 
         # grab a layer
         layer = Layer.objects.all()[0]
-
+        layer.set_default_permissions()
         # verify bobby has view/change permissions on it but not manage
         self.assertFalse(
             bob.has_perm(
@@ -399,7 +399,7 @@ class PermissionsTest(TestCase):
 
         # grab a layer
         layer = Layer.objects.all()[0]
-
+        layer.set_default_permissions()
         # 1. view_resourcebase
         # 1.1 has view_resourcebase: verify that anonymous user can access
         # the layer detail page

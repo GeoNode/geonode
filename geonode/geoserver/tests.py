@@ -47,6 +47,7 @@ class LayerTests(TestCase):
 
         # Setup some layer names to work with
         valid_layer_typename = Layer.objects.all()[0].typename
+        Layer.objects.all()[0].set_default_permissions()
         invalid_layer_typename = "n0ch@nc3"
 
         # Test that an invalid layer.typename is handled for properly
