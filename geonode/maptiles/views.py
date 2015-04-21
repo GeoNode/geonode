@@ -15,8 +15,7 @@ from geonode.utils import GXPLayer
 from geonode.utils import GXPMap
 from geonode.utils import default_map_config
 from geonode.security.views import _perms_info_json
-from geonode.cephgeo.models import CephDataObject
-from geonode.cephgeo.forms import RequestDataClassForm
+from geonode.cephgeo.models import CephDataObject, DataClassification
 from geonode.cephgeo.cart_utils import *
 from geonode.documents.models import get_related_documents
 
@@ -104,7 +103,7 @@ def tiled_view(request, overlay="geonode:index", template="maptiles/maptiles_map
         name__in=settings.DOWNLOAD_FORMATS_METADATA)
 
     context_dict = {
-        "data_class_form": RequestDataClassForm(),
+        "data_classes": DataClassification.labels,
         "resource": layer,
         "permissions_json": _perms_info_json(layer),
         "documents": get_related_documents(layer),
