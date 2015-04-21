@@ -62,13 +62,13 @@ function highlightBox(feature_attribs, vec_layer){
     vec_layer.addFeatures(polygon_feature);
     
     console.log(polygon_feature.onScreen());
-    return pf.getVisibility();
+    return polygonFeature.getVisibility();
 }
 
 var vector_style = new OpenLayers.Style({
     'fillColor': '#0000ff',
     'strokeColor': '#0000ff',
-    'strokeWidth': 10
+    'strokeWidth': 1
 });
 
 var vector_style_map = new OpenLayers.StyleMap({
@@ -154,15 +154,6 @@ Ext.onReady(function (){
         center: [13652590.86,1366919.96],
         zoom: 5
     };
-    
-    var select_ctrl = new OpenLayers.Control.GetFeature({
-        autoActivate: true,
-        protocol: OpenLayers.Protocol.WFS.fromWMSLayer(tile_layer),
-        box: true,
-        hover: false,
-        multipleKey: "shiftKey",
-        toggleKey: "ctrlKey",
-    });
     
     var getInfoCtrl = new OpenLayers.Control.WMSGetFeatureInfo({
         autoActivate: true,
