@@ -56,14 +56,15 @@ function highlightBox(feature_attribs, vec_layer){
     var pts = [pt1, pt2, pt3, pt4];
     console.log(pts);
     var lr = new OpenLayers.Geometry.LinearRing(pts);
-    var pf = new OpenLayers.Feature.Vector({
+    var polygon  = new OpenLayers.Geometry.Polygon([lr]);
+    var polygon_feature = new  OpenLayers.Feature.Vector(polygon);
+    /*var pf = new OpenLayers.Feature.Vector({
         geometry: lr,
         fid: "feature_"+feature_attribs["georef"],
         attributes: feature_attribs
-    });
+    });*/
 
-    vec_layer.addFeatures([pf]);
-    vec_layer.refresh();
+    vec_layer.addFeatures(polygon_feature);
     return pf.getVisibility();
 }
 
