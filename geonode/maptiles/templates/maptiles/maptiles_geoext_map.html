@@ -57,14 +57,11 @@ function highlightBox(feature_attribs, vec_layer){
     console.log(pts);
     var lr = new OpenLayers.Geometry.LinearRing(pts);
     var polygon  = new OpenLayers.Geometry.Polygon([lr]);
-    var polygon_feature = new  OpenLayers.Feature.Vector({
-        geometry: polygon,
-        fid: feature_attribs["georef"]
-    });
+    var polygon_feature = new  OpenLayers.Feature.Vector(polygon);
 
     vec_layer.addFeatures(polygon_feature);
     
-    console.log(polygon_feature.onScreen());
+    console.log(polygon_feature.fid());
     return polygon_feature.getVisibility();
 }
 
@@ -195,14 +192,11 @@ Ext.onReady(function (){
                     georef_list.push(georef);
                     tile_attribs["georef"] = "feature_"+georef;
                     highlightBox(tile_attribs, highlight_layer);
-                }else{
-                    georef_list.splice(georef_list.indexOf(georef), 1);
-                    removeHighlight(georef, highlight_layer);
                 }
                 
                 display_points("point_display");
                                 
-               var newpopup = new GeoExt.Popup({
+                var newpopup = new GeoExt.Popup({
                     title: georef,
                     width: 200,
                     height: 200,
