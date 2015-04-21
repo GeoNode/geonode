@@ -67,7 +67,7 @@ function highlightBox(feature_attribs, vec_layer){
 
 function removeHighlight(georef, vec_layer){
     var feature = vec_layer.getFeatureByFid(georef);
-    vec_layer.removeFeature([feature]);
+    vec_layer.removeFeatures([feature]);
     
     return feature.getVisibility();
 }
