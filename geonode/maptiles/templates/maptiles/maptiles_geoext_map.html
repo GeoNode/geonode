@@ -135,8 +135,6 @@ Ext.onReady(function (){
     );
     
     map.addLayers([mq_layer,tile_layer,highlight_layer]);
-    console.log(highlight_layer.getZIndex());
-    console.log(tile_layer.getZIndex());
     
     var items = [{
         xtype: "gx_zoomslider",
@@ -201,8 +199,6 @@ Ext.onReady(function (){
                     georef_list.splice(georef_list.indexOf(georef), 1);
                 }
                 
-                tile_layer.setVisibility(false);
-                console.log("Georef list after adding: "+georef_list);
                 display_points("point_display");
                                 
                var newpopup = new GeoExt.Popup({
