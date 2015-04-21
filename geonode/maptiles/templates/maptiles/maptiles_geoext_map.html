@@ -193,7 +193,8 @@ Ext.onReady(function (){
                 if (georef_list.indexOf(georef)<0){
                     georef_list.push(georef);
                     tile_attribs["georef"] = "feature_"+georef;
-                    highlight_layer.addFeatures([e.features[0]]);
+                    //highlight_layer.addFeatures([e.features[0]]);
+                    highlightBox(tile_attribs, highlight_layer);
                     
                 }else{
                     georef_list.splice(georef_list.indexOf(georef), 1);
