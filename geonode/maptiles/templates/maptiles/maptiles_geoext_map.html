@@ -176,6 +176,7 @@ Ext.onReady(function (){
                     //var visibility = highlightBox(items[0].source, highlight_layer);
                     //console.log("Feature visibility is: "+ visibility)
                     highlight_layer.addFeatures([e.features[0]]);
+                    console.log(highlight_layer.features);
                 }else{
                     georef_list.splice(georef_list.indexOf(georef), 1);
                     //var feature_for_removal = highlight_layer.getFeatureByFid("feature_"+georef);
