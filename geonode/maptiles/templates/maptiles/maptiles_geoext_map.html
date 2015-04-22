@@ -57,7 +57,7 @@ function createHighlightBox(feature_attribs){
     var pts = [pt1, pt2, pt3, pt4];
     var lr = new OpenLayers.Geometry.LinearRing(pts);
     var polygon  = new OpenLayers.Geometry.Polygon([lr]);
-    var polygon_feature = new  OpenLayers.Feature.Vector(polygon);h
+    var polygon_feature = new  OpenLayers.Feature.Vector(polygon);
     
     return polygon_feature;
 }
