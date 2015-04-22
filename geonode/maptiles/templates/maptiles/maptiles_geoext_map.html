@@ -64,8 +64,13 @@ function highlightBox(feature_attribs, vec_layer){
     return polygon_feature;
 }
 
+function find_georef(georef_list, georef){
+     var index= georef_list.map(function (x) { return x.georef }).indexOf(georef);
+     return index;
+}
+
 function removeHighlight(georef, vec_layer){
-    var index= georef_list.map(function (x) { return x.georef }).indexOf(georef);
+    var index= return find_georef(georef_list, georef);
     vec_layer.removeFeatures([georef_list[index].feature]);
     georef_list.splice(index,1);
 }
@@ -188,7 +193,7 @@ Ext.onReady(function (){
                 
                 var tile_attribs = items[0].source;
                 
-                if (georef_list.indexOf(georef)<0){
+                if (find_georef(georef_list, georef)<0){
                     georef_list.push(georef);
                     tile_attribs["georef"] = "feature_"+georef;
                     georef.feature = highlightBox(tile_attribs, highlight_layer);
