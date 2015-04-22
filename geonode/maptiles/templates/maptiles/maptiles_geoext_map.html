@@ -67,7 +67,7 @@ function highlightBox(feature_attribs, vec_layer){
 function removeHighlight(georef, vec_layer){
     var index= georef_list.map(function (x) { return x.georef }).indexOf(georef);
     vec_layer.removeFeatures([georef_list[index].feature]);
-    georef_list.splice(index,1));
+    georef_list.splice(index,1);
 }
 
 var vector_style = new OpenLayers.Style({
