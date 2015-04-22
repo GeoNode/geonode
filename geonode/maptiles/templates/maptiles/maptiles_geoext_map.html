@@ -70,7 +70,7 @@ function find_georef(georef_list, georef){
 }
 
 function removeHighlight(georef, vec_layer){
-    var index= return find_georef(georef_list, georef);
+    var index= find_georef(georef_list, georef);
     vec_layer.removeFeatures([georef_list[index].feature]);
     georef_list.splice(index,1);
 }
