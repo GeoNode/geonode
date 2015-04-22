@@ -35,6 +35,7 @@ function display_points(div_id, vec_layer){
     
     for (var i=0; i< georef_list.length; i++){
         var item_element = document.createElement("li");
+        console.log(georef_list[i]);
         item_element.setAttribute("id",georef_list[i].georef);
         item_element.innerHTML = georef_list[i].georef;
         item_element.onclick = function(){
