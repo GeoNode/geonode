@@ -21,7 +21,7 @@ OpenLayers.ProxyHost = "/proxy?url=";
 
 var options = {{ viewer|safe }};
 var app;
-var georef_list = [];
+var tile_list = [];
 var curr_popup;
 // added stuff
 
@@ -33,22 +33,22 @@ function display_points(div_id, vec_layer){
     
     var georef_string = "";
     
-    for (var i=0; i< georef_list.length; i++){
+    for (var i=0; i< tile_list.length; i++){
         var item_element = document.createElement("li");
-        console.log(georef_list[i]);
-        item_element.setAttribute("id",georef_list[i].georef);
-        item_element.innerHTML = georef_list[i].georef;
+        console.log(tile_list[i]);
+        item_element.setAttribute("id",tile_list[i].georef);
+        item_element.innerHTML = tile_list[i].georef;
         item_element.onclick = function(){
             removeHighlight(item_element.getAttribute("id"), vec_layer);
             this.parentNode.removeChild(this);
         };
         list_element.appendChild(item_element);
-        georef_string+=georef_list[i].georef+",";
+        georef_string+=tile_list[i].georef+",";
     }
    document.getElementById("georef_area").setAttribute("value",georef_string);
 }
 
-function highlightBox(feature_attribs, vec_layer){
+function createHighlightBox(feature_attribs){
     var pt1 = new OpenLayers.Geometry.Point(feature_attribs.MINX, feature_attribs.MAXY).transform(new OpenLayers.Projection("EPSG:32651"), new OpenLayers.Projection("EPSG:900913"));
     var pt2 = new OpenLayers.Geometry.Point(feature_attribs.MINX, feature_attribs.MINY).transform(new OpenLayers.Projection("EPSG:32651"), new OpenLayers.Projection("EPSG:900913"));
     var pt3 = new OpenLayers.Geometry.Point(feature_attribs.MAXX, feature_attribs.MINY).transform(new OpenLayers.Projection("EPSG:32651"), new OpenLayers.Projection("EPSG:900913"));
@@ -57,22 +57,20 @@ function highlightBox(feature_attribs, vec_layer){
     var pts = [pt1, pt2, pt3, pt4];
     var lr = new OpenLayers.Geometry.LinearRing(pts);
     var polygon  = new OpenLayers.Geometry.Polygon([lr]);
-    var polygon_feature = new  OpenLayers.Feature.Vector(polygon);
-
-    vec_layer.addFeatures(polygon_feature);
+    var polygon_feature = new  OpenLayers.Feature.Vector(polygon);h
     
     return polygon_feature;
 }
 
-function find_georef(georef_list, georef){
-     var index= georef_list.map(function (x) { return x.georef }).indexOf(georef);
+function find_georef(tile_list, georef){
+     var index= tile_list.map(function (x) { return x.georef }).indexOf(georef);
      return index;
 }
 
 function removeHighlight(georef, vec_layer){
-    var index= find_georef(georef_list, georef);
-    vec_layer.removeFeatures([georef_list[index].feature]);
-    georef_list.splice(index,1);
+    var index= find_georef(tile_list, georef);
+    vec_layer.removeFeatures([tile_list[index].feature]);
+    tile_list.splice(index,1);
 }
 
 var vector_style = new OpenLayers.Style({
@@ -189,15 +187,17 @@ Ext.onReady(function (){
                 
                 var tile = {
                     georef: "E"+items[0].source.MINX/1000+"N"+items[0].source.MAXY/1000,
-                    feature: null
+                    attribs: tile_attribs,
+                    feature: createHighlightBox(tile_attribs)
                 }
                 
                 var tile_attribs = items[0].source;
                 
-                if (find_georef(georef_list, tile.georef)<0){
-                    georef_list.push(tile.georef);
-                    tile_attribs["georef"] = "feature_"+tile.georef;
-                   tile.feature = highlightBox(tile_attribs, highlight_layer);
+                if (find_georef(tile_list, tile.georef)<0){
+                    tile_attribs["fid"] = "feature_"+tile.georef;
+                    tile_list.push(tile);
+                    highlight_layer.add(tile.feature);
+                    
                 }else{
                     removeHighlight(tile.georef, highlight_layer);
                 }
