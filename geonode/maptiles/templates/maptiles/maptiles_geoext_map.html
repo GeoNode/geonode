@@ -193,7 +193,7 @@ Ext.onReady(function (){
                 
                 var tile_attribs = items[0].source;
                 
-                if (find_georef(georef_list, georef)<0){
+                if (find_georef(georef_list, tile.georef)<0){
                     georef_list.push(georef);
                     tile_attribs["georef"] = "feature_"+georef;
                     georef.feature = highlightBox(tile_attribs, highlight_layer);
