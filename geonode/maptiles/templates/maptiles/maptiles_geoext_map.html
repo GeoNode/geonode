@@ -55,7 +55,6 @@ function highlightBox(feature_attribs, vec_layer){
     var pt4 = new OpenLayers.Geometry.Point(feature_attribs.MAXX, feature_attribs.MAXY).transform(new OpenLayers.Projection("EPSG:32651"), new OpenLayers.Projection("EPSG:900913"));
     
     var pts = [pt1, pt2, pt3, pt4];
-    console.log(pts);
     var lr = new OpenLayers.Geometry.LinearRing(pts);
     var polygon  = new OpenLayers.Geometry.Polygon([lr]);
     var polygon_feature = new  OpenLayers.Feature.Vector(polygon);
@@ -189,7 +188,8 @@ Ext.onReady(function (){
                 });
                 
                 var tile = {
-                    georef: "E"+items[0].source.MINX/1000+"N"+items[0].source.MAXY/1000
+                    georef: "E"+items[0].source.MINX/1000+"N"+items[0].source.MAXY/1000,
+                    feature: undefined
                 }
                 
                 var tile_attribs = items[0].source;
