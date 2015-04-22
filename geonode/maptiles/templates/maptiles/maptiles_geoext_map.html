@@ -6,7 +6,8 @@
 <script type="text/javascript" src="{{ STATIC_URL }}lib/js/GeoExt.js"></script>
 <script type="text/javascript" src="{{ STATIC_URL}}geonode/js/utils/thumbnail.js"></script>
 <script type="text/javascript" src="http://svn.osgeo.org/metacrs/proj4js/trunk/lib/proj4js-compressed.js"></script>
-<script type="text/javascript" src="http://spatialreference.org/ref/epsg/wgs-84-utm-zone-51n/proj4js/"></script>
+<!--<script type="text/javascript" src="http://spatialreference.org/ref/epsg/wgs-84-utm-zone-51n/proj4js/"></script>-->
+<script type="text/javascript" src="http://spatialreference.org/ref/epsg/32651/proj4js/"></script>
 <script type="text/javascript" >
 
 OpenLayers.ImgPath = "{{ STATIC_URL }}geoexplorer/externals/openlayers/theme/default/img";
@@ -20,11 +21,11 @@ OpenLayers.ProxyHost = "/proxy?url=";
 
 var options = {{ viewer|safe }};
 var app;
-var georef_list = [];
+var tile_list = [];
 var curr_popup;
 // added stuff
 
-function display_points(div_id){
+function display_points(div_id, vec_layer){
     var container = document.getElementById(div_id);
     container.removeChild(container.firstElementChild||container.firstChild);
     var list_element = document.createElement("ul");
@@ -32,27 +33,65 @@ function display_points(div_id){
     
     var georef_string = "";
     
-    for (var i=0; i< georef_list.length; i++){
+    for (var i=0; i< tile_list.length; i++){
         var item_element = document.createElement("li");
-        item_element.setAttribute("id",georef_list[i]);
-        item_element.innerHTML = georef_list[i];
+        console.log(tile_list[i]);
+        item_element.setAttribute("id",tile_list[i].georef);
+        item_element.innerHTML = tile_list[i].georef;
         item_element.onclick = function(){
-            georef_list.splice(georef_list.indexOf(item_element.getAttribute("id"),1));
+            removeHighlight(item_element.getAttribute("id"), vec_layer);
             this.parentNode.removeChild(this);
         };
         list_element.appendChild(item_element);
-        georef_string+=georef_list[i]+",";
+        georef_string+=tile_list[i].georef+",";
     }
    document.getElementById("georef_area").setAttribute("value",georef_string);
 }
 
+function createHighlightBox(feature_attribs){
+    var pt1 = new OpenLayers.Geometry.Point(feature_attribs.MINX, feature_attribs.MAXY).transform(new OpenLayers.Projection("EPSG:32651"), new OpenLayers.Projection("EPSG:900913"));
+    var pt2 = new OpenLayers.Geometry.Point(feature_attribs.MINX, feature_attribs.MINY).transform(new OpenLayers.Projection("EPSG:32651"), new OpenLayers.Projection("EPSG:900913"));
+    var pt3 = new OpenLayers.Geometry.Point(feature_attribs.MAXX, feature_attribs.MINY).transform(new OpenLayers.Projection("EPSG:32651"), new OpenLayers.Projection("EPSG:900913"));
+    var pt4 = new OpenLayers.Geometry.Point(feature_attribs.MAXX, feature_attribs.MAXY).transform(new OpenLayers.Projection("EPSG:32651"), new OpenLayers.Projection("EPSG:900913"));
+    
+    var pts = [pt1, pt2, pt3, pt4];
+    var lr = new OpenLayers.Geometry.LinearRing(pts);
+    var polygon  = new OpenLayers.Geometry.Polygon([lr]);
+    var polygon_feature = new  OpenLayers.Feature.Vector(polygon);
+    
+    return polygon_feature;
+}
+
+function find_georef(tile_list, georef){
+     var index= tile_list.map(function (x) { return x.georef }).indexOf(georef);
+     return index;
+}
+
+function removeHighlight(georef, vec_layer){
+    var index= find_georef(tile_list, georef);
+    vec_layer.removeFeatures([tile_list[index].feature]);
+    tile_list.splice(index,1);
+}
+
+var vector_style = new OpenLayers.Style({
+    'fillColor': '#0000ff',
+    'strokeColor': '#0000ff',
+    'strokeWidth': 1
+});
+
+var vector_style_map = new OpenLayers.StyleMap({
+    'default': vector_style
+});
+
 Ext.onReady(function (){
+    var curr_location = window.location.hostname;
+    var geoserver = "http://"+curr_location+":8080/geoserver/geonode/wms";
+    
     var map_options = options["map"];
     var map = new OpenLayers.Map({
         units: map_options["units"],
         maxResolution: map_options["maxResolution"],
         projection: map_options["projection"]
-    
     });
     
     var mq_layer = new OpenLayers.Layer.XYZ(
@@ -72,18 +111,13 @@ Ext.onReady(function (){
             wrapDateLine: true
         }
     );
-
-    var curr_location = window.location.hostname;
-    console.log(curr_location);
-    var geoserver = "http://"+curr_location+":8080/geoserver/geonode/wms";
     
-    var format = 'image/png';
     var tile_layer = new OpenLayers.Layer.WMS(
         "geonode:index - Tiled", geoserver,
         {
             LAYERS: 'geonode:index',
             STYLES: '',
-            format: format,
+            format:  'image/png',
             bbox: [13825393.814371249, 807566.643619642, 13852644.846474735, 817795.469341697],
             transparent: true,
             opacity: 0.3
@@ -96,7 +130,19 @@ Ext.onReady(function (){
             maxExtent: new OpenLayers.Bounds(13825393.814371249, 807566.643619642, 13852644.846474735, 817795.469341697)
         } 
     );
-    map.addLayers([mq_layer,tile_layer]);
+    
+    var highlight_layer = new OpenLayers.Layer.Vector(
+        "Highlight Layer",
+        {
+            isBaseLayer: false ,
+            //styleMap: new OpenLayers.Style(OpenLayers.Feature.Vector.style["select"])
+            styleMap: vector_style_map,
+            visibility: true,
+            transparent: true
+        }
+    );
+    
+    map.addLayers([mq_layer,tile_layer,highlight_layer]);
     
     var items = [{
         xtype: "gx_zoomslider",
@@ -139,22 +185,27 @@ Ext.onReady(function (){
                     });
                 });
                 
-                //console.log(items);
-                var georef = "E"+
-                    items[0].source.MINX/1000+"N"+
-                    items[0].source.MAXY/1000;
+                var tile_attribs = items[0].source;
                 
-                if (georef_list.indexOf(georef)<0){
-                    georef_list.push(georef);
-                }else{
-                    georef_list.splice(georef_list.indexOf(georef), 1);
+                var tile = {
+                    georef: "E"+items[0].source.MINX/1000+"N"+items[0].source.MAXY/1000,
+                    attribs: tile_attribs,
+                    feature: createHighlightBox(tile_attribs)
                 }
                 
-                console.log("Georef list after adding: "+georef_list);
-                display_points("point_display");
+                if (find_georef(tile_list, tile.georef)<0){
+                    tile_attribs["fid"] = "feature_"+tile.georef;
+                    tile_list.push(tile);
+                    highlight_layer.addFeatures([tile.feature]);
+                    
+                }else{
+                    removeHighlight(tile.georef, highlight_layer);
+                }
+                
+                display_points("point_display", highlight_layer);
                                 
-               var newpopup = new GeoExt.Popup({
-                    title: georef,
+                var newpopup = new GeoExt.Popup({
+                    title: tile.georef,
                     width: 200,
                     height: 200,
                     layout: "accordion",
@@ -174,7 +225,7 @@ Ext.onReady(function (){
             }
         }
     });
-    
+
     map.addControl(getInfoCtrl);
     app = new GeoExt.MapPanel(config);
     map.zoomToExtent(tile_layer.maxExtent, false);
