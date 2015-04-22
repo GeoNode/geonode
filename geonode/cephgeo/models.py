@@ -25,14 +25,47 @@ class CephDataObject(models.Model):
     def __unicode__(self):
         return "{0}:{1}".format(self.name, self.geo_type)
 
+class DataClassification(enum.Enum):
+    UNKNOWN = 0
+    LAZ = 1
+    DEM = 2
+    DTM = 3
+    DSM = 4
+    ORTHOPHOTO = 5
+    
+    labels = {
+        UNKNOWN     : "Unknown Type",
+        LAZ			: "LAZ",
+        DEM 		: "DEM TIF",
+        DSM     	: "DSM TIF",
+        DTM 		: "DTM TIF",
+        ORTHOPHOTO  : "Orthophoto",}
+    
+    filename_suffixes = {
+        ".laz"			: LAZ,
+        "_dem.tif" 		: DEM,
+        "_dsm.tif" 		: DSM,
+        "_dtm.tif" 		: DTM,
+        "_ortho.tif"	: ORTHOPHOTO,}
+    
+    def get_label_from_filename(filename):
+        data_classification = labels[UNKNOWN]
+        
+        for x in filename_suffixes:
+            if len(file_name) > len(filename_suffixes[x]):
+                if file_name.lower().endswith(x):
+                    data_classification = filename_suffixes[x]
+            
+        return data_classification
+
 class FTPStatus(enum.Enum):
-    SUCCESS = 0
+    DONE = 0
     PENDING = 1
     ERROR = 2
     DUPLICATE = 3
     
     labels = {
-        SUCCESS: 'Success',
+        DONE: 'Done',
         PENDING: 'Pending',
         ERROR:   'Error',
         DUPLICATE: 'Duplicate',}
@@ -42,6 +75,11 @@ class FTPRequest(models.Model):
     date_time   = models.DateTimeField(default=datetime.now)
     user        = models.ForeignKey(User, null=False, blank=False)
     status      = enum.EnumField(FTPStatus, default=FTPStatus.PENDING)
+    size_in_bytes   = models.IntegerField()
+    num_tiles   = models.IntegerField()
+    
+    def __unicode__(self):
+        return "{0}:{1}".format(self.name, self.user.username)
 
 class EULA(models.Model):
     user = models.ForeignKey(User, null=False, blank=False)
