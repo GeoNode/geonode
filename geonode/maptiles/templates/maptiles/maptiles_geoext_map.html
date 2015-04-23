@@ -88,7 +88,6 @@ Ext.onReady(function (){
     //var geoserver = "http://"+curr_location+":8080/geoserver/geonode/wms";
     
     var map_options = options["map"];
-    console.log(options);
     var map = new OpenLayers.Map({
         units: map_options["units"],
         maxResolution: map_options["maxResolution"],
@@ -116,7 +115,7 @@ Ext.onReady(function (){
     var stored_layer = map_options["layers"][0];
     var source_index = stored_layer["source"];
     console.log(source_index);
-    var geoserver_wms = map_options["sources"][source_index]["url"];
+    var geoserver_wms = options["sources"][source_index]["url"];
     var tile_layer = new OpenLayers.Layer.WMS(
         "geonode:index - Tiled", geoserver_wms,
         {
