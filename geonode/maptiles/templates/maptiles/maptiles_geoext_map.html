@@ -85,7 +85,7 @@ var vector_style_map = new OpenLayers.StyleMap({
 
 Ext.onReady(function (){
     var curr_location = window.location.hostname;
-    var geoserver = "http://"+curr_location+":8080/geoserver/geonode/wms";
+    //var geoserver = "http://"+curr_location+":8080/geoserver/geonode/wms";
     
     var map_options = options["map"];
     
@@ -114,8 +114,10 @@ Ext.onReady(function (){
     );
     
     var stored_layer = map_options["layers"][0];
-    console.log(stored_layer);
-    var tile_layer = new OpenLayers.Layer.WMS(
+    var source_index = stored_layer["source"];
+    var geoserver = map_options["sources"][source_index];
+    
+    var tile_layer = new OpenLayers.Layer.WMS(st
         "geonode:index - Tiled", geoserver,
         {
             LAYERS: stored_layer["name"],
@@ -169,7 +171,6 @@ Ext.onReady(function (){
         autoActivate: true,
         infoFormat: "application/vnd.ogc.gml",
         maxFeatures: 3,
-        //url: "http://192.168.56.100:8080/geoserver/geonode/wms",
         url: geoserver,
         layers: [tile_layer],
         eventListeners: {
