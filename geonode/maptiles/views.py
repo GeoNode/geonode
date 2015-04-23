@@ -191,7 +191,7 @@ def tiled_view2(request, overlay="geonode:index", template="maptiles/maptiles_ma
     }
 
     context_dict["viewer"] = json.dumps(
-        map_obj.viewer_json(request.user, * (maplayer)))
+        map_obj.viewer_json(request.user, * ([maplayer])))
         
     if request.user.has_perm('download_resourcebase', layer.get_self_resource()):
         if layer.storeType == 'dataStore':
