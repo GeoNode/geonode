@@ -89,8 +89,6 @@ Ext.onReady(function (){
     
     var map_options = options["map"];
     
-    console.log({{viewer}});
-    
     var map = new OpenLayers.Map({
         units: map_options["units"],
         maxResolution: map_options["maxResolution"],
@@ -115,13 +113,14 @@ Ext.onReady(function (){
         }
     );
     
+    var stored_layer = map_options["layers"][0];
+    console.log(stored_layer);
     var tile_layer = new OpenLayers.Layer.WMS(
         "geonode:index - Tiled", geoserver,
         {
-            LAYERS: 'geonode:index',
-            STYLES: '',
+            LAYERS: stored_layer["name"],
             format:  'image/png',
-            bbox: [13825393.814371249, 807566.643619642, 13852644.846474735, 817795.469341697],
+            bbox: stored_layer["bbox"],
             transparent: true,
             opacity: 0.3
         },
@@ -130,7 +129,7 @@ Ext.onReady(function (){
             displayOutsideMaxExtent: true,
             isBaseLayer: false,
             projection: "EPSG:900913",
-            maxExtent: new OpenLayers.Bounds(13825393.814371249, 807566.643619642, 13852644.846474735, 817795.469341697)
+            maxExtent: new OpenLayers.Bounds(stored_layer["bbox"]);
         } 
     );
     
