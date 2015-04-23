@@ -177,7 +177,9 @@ def tiled_view2(request, overlay="geonode:index", template="maptiles/maptiles_ma
     
     # center/zoom don't matter; the viewer will center on the layer bounds
     map_obj = GXPMap(projection="EPSG:900913")
-
+    NON_WMS_BASE_LAYERS = [
+        la for la in default_map_config()[1] if la.ows_url is None]
+        
     metadata = layer.link_set.metadata().filter(
         name__in=settings.DOWNLOAD_FORMATS_METADATA)
 
@@ -191,7 +193,7 @@ def tiled_view2(request, overlay="geonode:index", template="maptiles/maptiles_ma
     }
 
     context_dict["viewer"] = json.dumps(
-        map_obj.viewer_json(request.user, * ([maplayer])))
+        map_obj.viewer_json(request.user, * (NON_WMS_BASE_LAYERS + [maplayer])))
     
     return render_to_response(template, RequestContext(request, context_dict))
 
