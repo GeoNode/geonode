@@ -115,8 +115,7 @@ Ext.onReady(function (){
     
     var stored_layer = map_options["layers"][0];
     var source_index = stored_layer["source"];
-    var geoserver = map_options["sources"][source_index];
-    
+    var geoserver = map_options["sources"][source_index]["url"];
     var tile_layer = new OpenLayers.Layer.WMS(st
         "geonode:index - Tiled", geoserver,
         {
