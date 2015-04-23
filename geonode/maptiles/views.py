@@ -169,13 +169,8 @@ def tiled_view2(request, overlay="geonode:index", template="maptiles/maptiles_ma
             ows_url=layer.ows_url,
             layer_params=json.dumps(config))
 
-    # Update count for popularity ranking,
-    # but do not includes admins or resource owners
-    #if request.user != layer.owner and not request.user.is_superuser:
-    #    Layer.objects.filter(
-    #        id=layer.id).update(popular_count=F('popular_count') + 1)
-    
-    # center/zoom don't matter; the viewer will center on the layer bounds
+    pprint(maplayer.source_config())
+
     map_obj = GXPMap(projection="EPSG:900913")
     NON_WMS_BASE_LAYERS = [
         la for la in default_map_config()[1] if la.ows_url is None]
