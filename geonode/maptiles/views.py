@@ -185,7 +185,7 @@ def tiled_view2(request, overlay="geonode:index", template="maptiles/maptiles_ma
         "wps_enabled": settings.OGC_SERVER['default']['WPS_ENABLED'],
     }
     
-     context_dict["viewer"] = json.dumps(
+    context_dict["viewer"] = json.dumps(
         map_obj.viewer_json(request.user, * ([maplayer])))
 
     return render_to_response(template, RequestContext(request, context_dict))
