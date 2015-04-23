@@ -116,9 +116,9 @@ Ext.onReady(function (){
     var stored_layer = map_options["layers"][0];
     var source_index = stored_layer["source"];
     console.log(source_index);
-    var geoserver = map_options["sources"][source_index]["url"];
+    var geoserver_wms = map_options["sources"][source_index]["url"];
     var tile_layer = new OpenLayers.Layer.WMS(
-        "geonode:index - Tiled", geoserver,
+        "geonode:index - Tiled", geoserver_wms,
         {
             LAYERS: stored_layer["name"],
             format:  'image/png',
@@ -171,7 +171,7 @@ Ext.onReady(function (){
         autoActivate: true,
         infoFormat: "application/vnd.ogc.gml",
         maxFeatures: 3,
-        url: geoserver,
+        url: geoserver_wms,
         layers: [tile_layer],
         eventListeners: {
             "getfeatureinfo": function (e){
