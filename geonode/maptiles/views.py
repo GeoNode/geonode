@@ -136,9 +136,11 @@ def tiled_view(request, overlay="geonode:index", template="maptiles/maptiles_map
     return render_to_response(template, RequestContext(request, context_dict))
 
 def tiled_view2(request, overlay="geonode:index", template="maptiles/maptiles_map_test.html"):
-    if request.method == "POST":
-        pprint(request.POST)
-    layer = _resolve_layer(request, overlay, "base.view_resourcebase", _PERMISSION_VIEW )
+layer = _resolve_layer(
+        request,
+        overlay,
+        'base.view_resourcebase',
+        _PERMISSION_VIEW)
     config = layer.attribute_config()
     layer_bbox = layer.bbox
     bbox = [float(coord) for coord in list(layer_bbox[0:4])]
@@ -169,8 +171,7 @@ def tiled_view2(request, overlay="geonode:index", template="maptiles/maptiles_ma
             ows_url=layer.ows_url,
             layer_params=json.dumps(config))
 
-    pprint(maplayer.source_config())
-
+    # center/zoom don't matter; the viewer will center on the layer bounds
     map_obj = GXPMap(projection="EPSG:900913")
     NON_WMS_BASE_LAYERS = [
         la for la in default_map_config()[1] if la.ows_url is None]
@@ -189,12 +190,11 @@ def tiled_view2(request, overlay="geonode:index", template="maptiles/maptiles_ma
 
     context_dict["viewer"] = json.dumps(
         map_obj.viewer_json(request.user, * (NON_WMS_BASE_LAYERS + [maplayer])))
-    
     context_dict["preview"] = getattr(
         settings,
         'LAYER_PREVIEW_LIBRARY',
         'leaflet')
-        
+
     if request.user.has_perm('download_resourcebase', layer.get_self_resource()):
         if layer.storeType == 'dataStore':
             links = layer.link_set.download().filter(
@@ -203,7 +203,7 @@ def tiled_view2(request, overlay="geonode:index", template="maptiles/maptiles_ma
             links = layer.link_set.download().filter(
                 name__in=settings.DOWNLOAD_FORMATS_RASTER)
         context_dict["links"] = links
-    
+
     return render_to_response(template, RequestContext(request, context_dict))
 
 def process_georefs(request):
