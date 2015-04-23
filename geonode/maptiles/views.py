@@ -192,19 +192,6 @@ def tiled_view2(request, overlay="geonode:index", template="maptiles/maptiles_ma
 
     context_dict["viewer"] = json.dumps(
         map_obj.viewer_json(request.user, * ([maplayer])))
-        
-    if request.user.has_perm('download_resourcebase', layer.get_self_resource()):
-        if layer.storeType == 'dataStore':
-            links = layer.link_set.download().filter(
-                name__in=settings.DOWNLOAD_FORMATS_VECTOR)
-        else:
-            links = layer.link_set.download().filter(
-                name__in=settings.DOWNLOAD_FORMATS_RASTER)
-        context_dict["links"] = links
-
-    #if settings.SOCIAL_ORIGINS:
-    #    context_dict["social_links"] = build_social_links(request, layer)
-    #print context_dict
     
     return render_to_response(template, RequestContext(request, context_dict))
 
