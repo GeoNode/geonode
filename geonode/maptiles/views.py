@@ -180,7 +180,7 @@ def tiled_view2(request, overlay="geonode:index", template="maptiles/maptiles_ma
         "resource": layer,
         "permissions_json": _perms_info_json(layer),
         "documents": get_related_documents(layer),
-        "metadata": metadata
+        "metadata": metadata,
         "is_layer": True,
         "wps_enabled": settings.OGC_SERVER['default']['WPS_ENABLED'],
     }
