@@ -314,7 +314,7 @@ class CommonModelApi(ModelResource):
             if settings.RESOURCE_PUBLISHING:
                 filter_set = filter_set.filter(is_published=True)
 
-            filter_set_ids = filter_set.values_list('id', flat=True)
+            filter_set_ids = filter_set.values('id')
             # Do the query using the filterset and the query term. Facet the
             # results
             if len(filter_set) > 0:

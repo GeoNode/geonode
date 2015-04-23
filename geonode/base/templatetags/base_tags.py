@@ -31,7 +31,7 @@ def facets(context):
 
     if not settings.SKIP_PERMS_FILTER:
         authorized = get_objects_for_user(
-            request.user, 'base.view_resourcebase').values_list('id', flat=True)
+            request.user, 'base.view_resourcebase').values('id')
 
     if facet_type == 'documents':
 
