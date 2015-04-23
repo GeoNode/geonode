@@ -317,7 +317,7 @@ class GXPMapBase(object):
                       str(self.id) +
                       "_" +
                       str(0 if user is None else user.id), config)
-
+        pprint(config)
         return config
 
 
