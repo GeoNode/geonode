@@ -136,7 +136,7 @@ def tiled_view(request, overlay="geonode:index", template="maptiles/maptiles_map
     return render_to_response(template, RequestContext(request, context_dict))
 
 def tiled_view2(request, overlay="geonode:index", template="maptiles/maptiles_map_test.html"):
-layer = _resolve_layer(
+    layer = _resolve_layer(
         request,
         overlay,
         'base.view_resourcebase',
