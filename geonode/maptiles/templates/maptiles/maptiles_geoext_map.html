@@ -115,6 +115,7 @@ Ext.onReady(function (){
     var source_index = stored_layer["source"];
     var geoserver_wms = options["sources"][source_index]["url"];
     console.log(stored_layer);
+    console.log(geoserver_wms);
     var tile_layer = new OpenLayers.Layer.WMS(
         layer_name + "- Tiled", geoserver_wms,
         {
