@@ -117,7 +117,7 @@ def tiled_view(request, overlay=settings.TILE_LAYER, template="maptiles/maptiles
     context_dict["viewer"] = json.dumps(
         map_obj.viewer_json(request.user, * (NON_WMS_BASE_LAYERS + [maplayer])))
         
-    context_dict["layer"]  = TILE_LAYER
+    context_dict["layer"]  = settings.TILE_LAYER
 
     #if settings.SOCIAL_ORIGINS:
     #    context_dict["social_links"] = build_social_links(request, layer)
@@ -179,7 +179,7 @@ def tiled_view2(request, overlay=settings.TILE_LAYER_TEST, template="maptiles/ma
     context_dict["viewer"] = json.dumps(
         map_obj.viewer_json(request.user, * ([maplayer])))
         
-    context_dict["layer"]  = TILE_LAYER_TEST
+    context_dict["layer"]  = settings.TILE_LAYER_TEST
 
     return render_to_response(template, RequestContext(request, context_dict))
 
