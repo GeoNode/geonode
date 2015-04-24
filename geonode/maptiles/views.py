@@ -114,20 +114,6 @@ def tiled_view(request, overlay="geonode:index", template="maptiles/maptiles_map
 
     context_dict["viewer"] = json.dumps(
         map_obj.viewer_json(request.user, * (NON_WMS_BASE_LAYERS + [maplayer])))
-    
-    context_dict["preview"] = getattr(
-        settings,
-        'LAYER_PREVIEW_LIBRARY',
-        'leaflet')
-        
-    if request.user.has_perm('download_resourcebase', layer.get_self_resource()):
-        if layer.storeType == 'dataStore':
-            links = layer.link_set.download().filter(
-                name__in=settings.DOWNLOAD_FORMATS_VECTOR)
-        else:
-            links = layer.link_set.download().filter(
-                name__in=settings.DOWNLOAD_FORMATS_RASTER)
-        context_dict["links"] = links
 
     #if settings.SOCIAL_ORIGINS:
     #    context_dict["social_links"] = build_social_links(request, layer)

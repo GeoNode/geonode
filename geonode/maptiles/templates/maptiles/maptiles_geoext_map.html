@@ -35,7 +35,6 @@ function display_points(div_id, vec_layer){
     
     for (var i=0; i< tile_list.length; i++){
         var item_element = document.createElement("li");
-        console.log(tile_list[i]);
         item_element.setAttribute("id",tile_list[i].georef);
         item_element.innerHTML = tile_list[i].georef;
         item_element.onclick = function(){
@@ -114,8 +113,8 @@ Ext.onReady(function (){
     
     var stored_layer = map_options["layers"][0];
     var source_index = stored_layer["source"];
-    console.log(source_index);
     var geoserver_wms = options["sources"][source_index]["url"];
+    console.log(stored_layer);
     var tile_layer = new OpenLayers.Layer.WMS(
         "geonode:index - Tiled", geoserver_wms,
         {
