@@ -179,6 +179,8 @@ def tiled_view2(request, overlay=settings.TILE_LAYER_TEST, template="maptiles/ma
     context_dict["viewer"] = json.dumps(
         map_obj.viewer_json(request.user, * ([maplayer])))
         
+    pprint(context_dict["viewer"])
+        
     context_dict["layer"]  = settings.TILE_LAYER_TEST
 
     return render_to_response(template, RequestContext(request, context_dict))
