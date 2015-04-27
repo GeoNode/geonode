@@ -17,6 +17,9 @@ downloaded
 celery/
 /celery/
 
+#migrations
+geonode/*/migrations
+
 docs/i18n/pot/
 
 # logfiles and pidfiles
