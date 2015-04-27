@@ -990,9 +990,11 @@ def geoserver_upload(
     # Get a short handle to the gsconfig geoserver catalog
     cat = gs_catalog
 
+    workspace = cat.get_default_workspace()
+
     # Check if the store exists in geoserver
     try:
-        store = cat.get_store(name)
+        store = cat.get_store(name, name, workspace=workspace)
     except geoserver.catalog.FailedRequestError as e:
         # There is no store, ergo the road is clear
         pass
@@ -1057,7 +1059,7 @@ def geoserver_upload(
                                                        data,
                                                        charset=charset,
                                                        overwrite=overwrite,
-                                                       workspace=cat.get_default_workspace())
+                                                       workspace=workspace)
     except UploadError as e:
         msg = ('Could not save the layer %s, there was an upload '
                'error: %s' % (name, str(e)))
@@ -1144,7 +1146,7 @@ def geoserver_upload(
     # Step 10. Create the Django record for the layer
     logger.info('>>> Step 10. Creating Django record for [%s]', name)
     # FIXME: Do this inside the layer object
-    typename = gs_resource.store.workspace.name + ':' + gs_resource.name
+    typename = workspace.name + ':' + gs_resource.name
     layer_uuid = str(uuid.uuid1())
     defaults = dict(store=gs_resource.store.name,
                     storeType=gs_resource.store.resource_type,
@@ -1154,9 +1156,7 @@ def geoserver_upload(
                     abstract=abstract or gs_resource.abstract or '',
                     owner=user)
 
-    workspace = gs_resource.store.workspace.name
-
-    return name, workspace, defaults
+    return name, workspace.name, defaults, gs_resource
 
 
 class ServerDoesNotExist(Exception):
