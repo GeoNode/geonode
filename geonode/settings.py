@@ -33,7 +33,8 @@ PROJECT_ROOT = os.path.abspath(os.path.dirname(__file__))
 
 # Setting debug to true makes Django serve static media and
 # present pretty error pages.
-DEBUG = TEMPLATE_DEBUG = True
+#DEBUG = TEMPLATE_DEBUG = True
+DEBUG = TEMPLATE_DEBUG = False
 
 # Set to True to load non-minified versions of (static) client dependencies
 # Requires to set-up Node and tools that are required for static development
@@ -326,6 +327,8 @@ INSTALLED_APPS = (
     # Crispy Forms
     'crispy_forms',
     'changuito',
+    'djkombu',
+    'south',
 
 ) + GEONODE_APPS
 
@@ -479,7 +482,8 @@ EMAIL_HOST = "mail.lan.dream.upd.edu.ph"
 EMAIL_PORT = 25
 
 # Email for users to contact admins.
-THEME_ACCOUNT_CONTACT_EMAIL = 'geonode-automailer@dream.upd.edu.ph'
+THEME_ACCOUNT_CONTACT_EMAIL = 'support@dream.upd.edu.ph'
+FTP_AUTOMAIL = 'automailer@dream.upd.edu.ph'
 
 #
 # Test Settings
