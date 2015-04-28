@@ -704,7 +704,7 @@ def waitfor(url, timeout=300):
                 started = True
                 break
             else:
-                print "GEOSERVER URL RESPONSE: " + str(resp.getcode())
+                print "GEOSERVER URL[{0}] RESPONSE: {1}".format(url,str(resp.getcode()))
         time.sleep(1)
     return started
 

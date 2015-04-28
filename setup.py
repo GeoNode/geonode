@@ -141,8 +141,8 @@ setup(name='GeoNode',
 
         # datetimepicker widget
         "django-bootstrap3-datetimepicker==2.2.3",
-        "flake8==2.3.0"
-        
+        "flake8==2.3.0",
+
         # custom requirements
         "python-swiftclient==2.4.0",
         "django-crispy-forms==1.3.2",
