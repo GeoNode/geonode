@@ -219,9 +219,9 @@ This is an automated mailer. DO NOT REPLY TO THIS MAIL! Send your e-mails to the
 This is an e-mail regarding your FTP request from geonode.dream.upd.edu.ph. Details are found below:
 
 """+mail_msg
-    args_tup = (mail_subject, mail_body, settings.THEME_ACCOUNT_CONTACT_EMAIL,
+    args_tup = (mail_subject, mail_body, settings.FTP_AUTOMAIL,
                      user_email, False)
-    pprint(args_tup)
-    send_mail(mail_subject, mail_body, settings.THEME_ACCOUNT_CONTACT_EMAIL,
+    #pprint(args_tup)
+    send_mail(mail_subject, mail_body, settings.FTP_AUTOMAIL,
                      user_email, fail_silently=False)
     #~ return
