@@ -1,4 +1,4 @@
-\# 
+# 
 build artifacts
 *.pyc
 *.egg-info
@@ -16,6 +16,8 @@ downloaded
 # celery dirs
 celery/
 /celery/
+
+virtualenv/
 
 #migrations
 geonode/*/migrations
