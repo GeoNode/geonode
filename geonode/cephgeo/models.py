@@ -15,7 +15,7 @@ from django_enumfield import enum
 
 class CephDataObject(models.Model):
     size_in_bytes   = models.IntegerField()
-    file_hash       = models.CharField(max_length=30)
+    file_hash       = models.CharField(max_length=40)
     name            = models.CharField(max_length=100)
     last_modified   = models.DateTimeField()
     content_type    = models.CharField(max_length=20)
