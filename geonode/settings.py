@@ -892,7 +892,7 @@ if os.name == 'nt':
 
 
 # define the urls after the settings are overridden
-if 'geonode.geoserver' in INSTALLED_APPS:
+if 'geonode.geoserver' in GEONODE_APPS:
     LOCAL_GEOSERVER = {
         "source": {
             "ptype": "gxp_wmscsource",
