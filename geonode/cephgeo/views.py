@@ -11,7 +11,7 @@ from django.template import RequestContext
 from pprint import pprint
 
 from geonode.cephgeo.forms import DataInputForm
-from geonode.cephgeo.models import CephDataObject
+from geonode.cephgeo.models import CephDataObject, FTPRequest, FTPStatus, FTPRequestToObjectIndex
 from geonode.tasks.ftp import process_ftp_request
 
 from geonode.cephgeo.cart_utils import *
@@ -147,7 +147,7 @@ def file_list_json(request, sort=None, grid_ref=None):
 def data_input(request):
     if request.method == 'POST':
         # create a form instance and populate it with data from the request:
-        pprint(request.POST)
+        # pprint(request.POST)
         form = DataInputForm(request.POST)
         # check whether it's valid:
         if form.is_valid():
@@ -218,7 +218,7 @@ def get_obj_ids_json(request):
     json_cart = dict()
     ceph_objs = CephDataObject.objects.all()
     ceph_objs_by_geotype = utils.ceph_object_ids_by_geotype(ceph_objs)
-    pprint(ceph_objs_by_geotype)
+    #pprint(ceph_objs_by_geotype)
     return HttpResponse(json.dumps(ceph_objs_by_geotype), content_type="application/json")
 
 @login_required
@@ -228,41 +228,99 @@ def create_ftp_folder(request):
     #[CephDataObject.objects.get(id=int(item.object_id)).name for item in cart]
     
     obj_name_dict = dict()
+    total_size_in_bytes = 0
+    num_tiles = 0
     for item in cart:
         obj = CephDataObject.objects.get(id=int(item.object_id))
+        total_size_in_bytes += obj.size_in_bytes
+        num_tiles += 1
         if obj.geo_type in obj_name_dict:
             obj_name_dict[obj.geo_type.encode('utf8')].append(obj.name.encode('utf8'))
         else:
             obj_name_dict[obj.geo_type.encode('utf8')] = [obj.name.encode('utf8'),]
     username = request.user.get_username()
     
-    # DEBUG: Debug username
-    username = "test-ftp-user"
-
-    email = request.user.email
-    request_name=time.strftime("ftp_request-%Y_%m_%d")
-    
     # Record FTP request to database
     # DETAILS: user, request name, for item(ceph_obj) in cart, date, EULA?
+    ftp_request = FTPRequest(   name = time.strftime("ftp_request-%Y_%m_%d"),
+                                user = request.user)
+    
+    # Check for duplicates and handle accordingly
+    if count_duplicate_requests(ftp_request) > 0:
+        ftp_request.status = FTPStatus.DUPLICATE
+    
+    ftp_request.size_in_bytes = total_size_in_bytes
+    ftp_request.num_tiles = num_tiles
+    ftp_request.save()
+    
+    # Mapping of FTP Request to requested objects
+    ftp_objs = []
+    for item in cart:
+        obj = CephDataObject.objects.get(id=int(item.object_id))
+        ftp_objs.append(obj)
+        ftp_obj_idx = FTPRequestToObjectIndex(  ftprequest = ftp_request, 
+                                                cephobject = obj)
+        ftp_obj_idx.save()
+    
     
     # Call to celery
-    process_ftp_request.delay(username, email, request_name, obj_name_dict)
+    process_ftp_request.delay(ftp_request, obj_name_dict)
     
-    #~ tojson = (username, email, request_name, obj_name_dict)
-    #~ return HttpResponse(json.dumps(tojson), content_type="application/json")
+    # Clear cart items
+    delete_all_items_from_cart(request)
+    
+    
     return render_to_response('ftp_result.html', 
                                 {   "result_msg" : "Your FTP request is being processed. A notification \
                                      will arrive via email regarding the completion of your request. The \
                                      items you requested are listed below.",
-                                    "cart" : CartProxy(request),},
+                                    "cart" : CartProxy(request),
+                                    "ftp_objects" : ftp_objs,
+                                    "total_size" : total_size_in_bytes,},
                                 context_instance=RequestContext(request))
 @login_required
+def ftp_request_list(request, sort=None):
+    
+    if sort not in utils.FTP_SORT_TYPES and sort != None:
+        return HttpResponse(status=404)
+    
+    ftp_list = []
+    sorted_list = []
+    
+    # Query all ftp requests for this user
+    ftp_list = FTPRequest.objects.filter(user=request.user)
+    
+    # Sort by specified attribute
+    if sort == 'date':
+        sorted_list = sorted(ftp_list.order_by('name'), key=operator.attrgetter('date_time'), reverse=True)
+    elif sort == 'status':
+        sorted_list = sorted(ftp_list.order_by('name'), key=operator.attrgetter('status'), reverse=True)
+    elif sort == 'size':
+        sorted_list = sorted(ftp_list.order_by('name'), key=operator.attrgetter('size_in_bytes'), reverse=True)
+        
+    else: # nosort
+        sorted_list = ftp_list
+    
+    paginator = Paginator(sorted_list, 10)
+    
+    page = request.GET.get('page')
+    
+    try:
+        paged_list = paginator.page(page)
+    except PageNotAnInteger:
+        paged_list = paginator.page(1)
+    except EmptyPage:
+        paged_list = paginator.page(paginator.num_pages)
+    
+    return render(request, "ftp_list.html",
+                    {"ftp_request_list"    : paged_list, 
+                    "sort_types"    : utils.FTP_SORT_TYPES, 
+                    "status_labels"    : FTPStatus.labels, 
+                    "sort"          : sort,})
+
+@login_required
 def clear_cart(request):
-    if request.cart is not None:
-        remove_all_from_cart(request) # Clear cart for this request
-    user = request.user
-    name = user.username
-    messages.add_message(request, messages.INFO, "Cart has been emptied for user [{0}]".format(name))
+    delete_all_items_from_cart(request)
     response = render_to_response('cart.html', 
                                 dict(cart=CartProxy(request)),
                                 context_instance=RequestContext(request))
@@ -270,7 +328,15 @@ def clear_cart(request):
     response.delete_cookie("cart")
     return response
 
-###
-# CART UTILS
-###
-    
+### HELPER FUNCTIONS ###
+
+def delete_all_items_from_cart(request, warn_user=True):
+    if request.cart is not None:
+        remove_all_from_cart(request) # Clear cart for this request
+    user = request.user
+    name = user.username
+    if warn_user:
+        messages.add_message(request, messages.INFO, "Cart has been emptied for user [{0}]".format(name))
+
+def count_duplicate_requests(ftp_request):
+    return len(FTPRequest.objects.filter(name=ftp_request.name,user=ftp_request.user))

@@ -13,7 +13,20 @@ geonode/development.db
 /geoserver/
 downloaded
 
+# celery dirs
+celery/
+/celery/
+
+virtualenv/
+
+#migrations
+geonode/*/migrations
+
 docs/i18n/pot/
+
+# logfiles and pidfiles
+*.log
+*.pid
 
 # Static media handling
 *.jshintrc
