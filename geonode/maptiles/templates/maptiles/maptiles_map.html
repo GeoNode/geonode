@@ -10,11 +10,12 @@
 {% block title %}Map Tiles Selection — {{ block.super }}{% endblock %}
 
 {% block head %}
-{% if preview == 'geoext' %} 
-    {% include "maptiles/maptiles_explorer_map.html" %} 
- {% else %} 
-    {% include "maptiles/maptiles_leaflet_map.html" %} 
-{% endif %} 
+{# {% if preview == 'geoext' %}  #}
+    {# {% include "maptiles/maptiles_explorer_map.html" %} #}
+ {#{% else %} #}
+    {#{% include "maptiles/maptiles_leaflet_map.html" %} #}
+{% include "maptiles/maptiles_geoext_map.html" %}
+{# {% endif %} #}
 {{ block.super }}
 {% endblock %}
 
@@ -40,14 +41,29 @@
 	</ul>-->
  </div>
  <br />
- <h2 class="page-title">Selected Tiles</h2>
+ <h3 class="page-title">Selected Tiles</h3>
  <div class="row" id="point_display">
      
  </div>
+ <hr>
+ <h3 class="page-title">Data Class</h3>
  <form action="/maptiles/addtocart/" method="POST">
      {% csrf_token %}
-    <input type="text" id="georef_area" name="georef_area" style="display:none" />
-    <input type="submit" id="georef_submit" name="georef_submit" value="Submit" class="btn btn-default" />
+     <div class="col-md-4">
+       <nobr>
+         <ul class="list-inline pull-left">
+             {% for class in data_classes %}
+               {% if class != 'Unknown Type' %}
+                  <li><input type="checkbox" name="{{ class | slugify }}" > {{ class }}</input></li>
+               {% endif %}
+             {% endfor %}
+         </ul>
+       </nobr>
+     </div>
+    <div class="col-md-4" align="right">
+     <input type="text" id="georef_area" name="georef_area" style="display:none" />
+     <input type="submit" id="georef_submit" name="georef_submit" value="Submit" class="btn btn-default" />
+    </div>
 </form>
   
 {% endblock %}

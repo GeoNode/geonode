@@ -5,18 +5,20 @@
 
 {% block title %} {% trans "FTP Request" %} - {{ block.super }} {% endblock %}
 
-{% block body_class %}Cephgeo cart{% endblock %}
+{% block body_class %}Cephgeo FTP Request{% endblock %}
 
 {% block body_outer %}
   {% block body %}
   
   <div class="page-header">
-    <h2 class="page-title">{% trans "FTP Request" %}</h2>
+    <h2 class="page-title">{% trans "FTP Request Data List" %}</h2>
   </div>
   <div>
     <p class="block-quote">{{ result_msg }}</p>
   </div>
   <br /><br /><br />
+  <h4><b>Total Size: </b> {{ total_size | filesizeformat }}</h4>
+<!--
   <table border="3" style="width:100%">
         <tr>
             <th>Product</th>
@@ -30,6 +32,22 @@
             <td>  {{ item.product.size_in_bytes | filesizeformat }}</td>
             <td>  {{ item.quantity }}</td>
             <td>  {{ item.total_price }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+    <br /><br /><br />
+-->
+    <table border="3" style="width:100%">
+        <tr>
+            <th>Filename</th>
+            <th>Size</th>
+            <th>Last Modified</th>
+        </tr>
+        {% for object in ftp_objects %}
+        <tr>
+            <td>  {{ object.name }}</td>
+            <td>  {{ object.size_in_bytes | filesizeformat }}</td>
+            <td>  {{ object.last_modified }}</td>
         </tr>
         {% endfor %}
     </table>

@@ -1,0 +1,68 @@
+{% extends "ceph_base.html" %}
+{% load i18n %}
+{% load url from future %}
+{% load cephgeo_extras %}
+
+{% block title %} {% trans "FTP Requests" %} - {{ block.super }} {% endblock %}
+
+{% block body_class %}FTP Requests for {{user.get_username}} {% endblock %}
+
+{% block body_outer %}
+  {% block body %}
+  
+  <div class="page-header">
+    {% if grid_ref != None %}
+	  <h2 class="page-title">FTP Requests for {{user.get_username}} [{{ grid_ref }}]</h2>
+    {% else %}
+      <h2 class="page-title">FTP Requests</h2>
+    {% endif %}
+  </div>
+
+  <div class="col-md-6">
+  <ul class="list-inline pull-left" id="sort">
+    <li><b>SORT BY:</b></li>
+    {% for sort_type in sort_types %}
+	  {% if sort_type == sort %}
+	  	<li><b class="selected" >{{ sort_type }}</b></li>
+	  {% else %}
+		<li><a href="{% url 'cephgeo.views.ftp_request_list' sort_type %}" >{{ sort_type }}</a></li>
+	  {% endif %}
+    {% endfor %}
+  </ul>  
+  </div>
+  <br /><br /><br />
+  
+  <ul>
+	{% for ftp_req in ftp_request_list %}
+		<li><h4>
+              <b>{{ ftp_req.name }}</b>
+            </h4>
+			<br /><b>Date and Time:</b> {{ ftp_req.date_time }}
+			<br /><b>Status:</b> {{ ftp_req.status|get_ftp_status_label }}
+			<br /><b>Number of Tiles:</b> {{ ftp_req.num_tiles }}
+			<br /><b>Total Size:</b> {{ ftp_req.size_in_bytes | filesizeformat }}
+		</li>
+	{% endfor %}
+  </ul>
+  
+  <div class="pagination">
+	<span class="step-links">
+		{% if ftp_req.has_previous %}
+			<a href="?page={{ ftp_req.previous_page_number }}">previous</a>
+		{% endif %}
+		
+		<span class="current">
+			Page {{ ftp_req.number }} of {{ ftp_req.paginator.num_pages }}
+		</span>
+		
+		{% if ftp_req.has_next %}
+			<a href="?page={{ ftp_req.next_page_number }}">next</a>
+		{% endif %}
+	</span>
+  </div>
+{% endblock body %}
+ {% block sidebar %}{% endblock sidebar %}
+{% endblock body_outer %}
+
+
+
