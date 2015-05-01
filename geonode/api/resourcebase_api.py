@@ -146,7 +146,8 @@ class CommonModelApi(ModelResource):
             type_facets.append(resource_filter)
 
         # Publication date range (start,end)
-        date_range = parameters.get("date_range", ",").split(",")
+        date_end = parameters.get("date__lte", None)
+        date_start = parameters.get("date__gte", None)
 
         # Topic category filter
         category = parameters.getlist("category__identifier__in")
@@ -249,17 +250,17 @@ class CommonModelApi(ModelResource):
             for region in regions:
                 sqs = (
                     SearchQuerySet() if sqs is None else sqs).filter_or(
-                    regions_iexact=region)
+                    regions_exact=region)
 
         # filter by date
-        if date_range[0]:
+        if date_start:
             sqs = (SearchQuerySet() if sqs is None else sqs).filter(
-                SQ(date__gte=date_range[0])
+                SQ(modified__gte=date_start)
             )
 
-        if date_range[1]:
+        if date_end:
             sqs = (SearchQuerySet() if sqs is None else sqs).filter(
-                SQ(date__lte=date_range[1])
+                SQ(modified__lte=date_end)
             )
 
         # Filter by geographic bounding box
