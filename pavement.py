@@ -310,6 +310,11 @@ def stop_django():
     Stop the GeoNode Django application
     """
     kill('python', 'runserver')
+
+def stop_celery():
+    """
+    Stop the Celery worker daemon(s)
+    """
     kill('python', 'celery')
 
 
@@ -335,6 +340,7 @@ def stop():
 @cmdopts([
     ('bind=', 'b', 'Bind server to provided IP address and port number.')
 ])
+@needs(['start_celery',])
 @task
 def start_django():
     """
@@ -343,8 +349,13 @@ def start_django():
     bind = options.get('bind', '')
     foreground = '' if options.get('foreground', False) else '&'
     sh('python manage.py runserver %s %s' % (bind, foreground))
-    sh('python manage.py celeryd_detach --pidfile="celery/pid/%n.pid" --logfile="celery/log/%n.log"')
 
+@task
+def start_celery():
+    """
+    Start the Celery worker daemon(s)
+    """
+    sh('python manage.py celeryd_detach --pidfile="celery/pid/celery.pid" --logfile="celery/log/celery.log"')
 
 @cmdopts([
     ('java_path=', 'j', 'Full path to java install for Windows')
