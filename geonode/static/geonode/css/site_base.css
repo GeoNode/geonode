@@ -1,0 +1,31 @@
+body {
+	padding-top: 60px;
+}
+
+.navbar-brand {
+    height: 65px;
+    background: url(../img/DREAMlogo65x65.png) no-repeat;
+	width: inherit;
+	text-indent: 65px;
+	display: block;
+	font-size: 20px;
+}
+
+.navbar-brand small {
+	display: block;
+	font-size: 12px;
+	font-weight: 300;
+}
+
+/*
+.navbar-nav {
+	position: fixed;
+	background-color: #008CBA;
+}
+.navbar-right {
+	position: relative;
+}
+
+.navbar-inverse {
+	background-color: #fff;
+}*/
