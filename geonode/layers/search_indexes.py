@@ -38,7 +38,7 @@ class LayerIndex(indexes.SearchIndex, indexes.Indexable):
         null=True,
         faceted=True)
     regions = indexes.MultiValueField(
-        model_attr="region_slug_list",
+        model_attr="region_name_list",
         null=True,
         faceted=True)
     popular_count = indexes.IntegerField(
