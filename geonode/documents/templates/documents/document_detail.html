@@ -30,7 +30,7 @@
       {% if resource.extension|lower in imgtypes and resource.doc_file %}
       <div id="embedded_map">
         <a style="text-decoration:none;" href="{% url "document_download" resource.id %}" target="_blank">
-          <img src="{% url "document_download" resource.id %}" width='100%' />
+          <img src="{% url "document_download" resource.id %}" width='500' class="img-responsive" />
         </a>
       </div>
       {% elif resource.doc_file %}
