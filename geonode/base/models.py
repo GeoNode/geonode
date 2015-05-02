@@ -375,6 +375,9 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin):
     def keyword_slug_list(self):
         return [kw.slug for kw in self.keywords.all()]
 
+    def region_name_list(self):
+        return [region.name for region in self.regions.all()]
+
     def spatial_representation_type_string(self):
         if hasattr(self.spatial_representation_type, 'identifier'):
             return self.spatial_representation_type.identifier
