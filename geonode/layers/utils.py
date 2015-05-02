@@ -183,7 +183,7 @@ def get_valid_name(layer_name):
     name = _clean_string(layer_name)
     proposed_name = name
     count = 1
-    while Layer.objects.filter(name=proposed_name).count() > 0:
+    while Layer.objects.filter(name=proposed_name).exists():
         proposed_name = "%s_%d" % (name, count)
         count = count + 1
         logger.info('Requested name already used; adjusting name '

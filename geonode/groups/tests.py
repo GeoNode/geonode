@@ -110,6 +110,7 @@ class SmokeTest(TestCase):
         """
         # Add test to test perms being sent to the front end.
         layer = Layer.objects.all()[0]
+        layer.set_default_permissions()
         perms_info = layer.get_all_level_info()
 
         # Ensure there is only one group 'anonymous' by default
@@ -132,6 +133,9 @@ class SmokeTest(TestCase):
         layer = Layer.objects.all()[0]
         document = Document.objects.all()[0]
         map_obj = Map.objects.all()[0]
+        layer.set_default_permissions()
+        document.set_default_permissions()
+        map_obj.set_default_permissions()
 
         objects = layer, document, map_obj
 
