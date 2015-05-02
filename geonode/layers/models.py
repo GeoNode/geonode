@@ -484,7 +484,6 @@ def pre_delete_layer(instance, sender, **kwargs):
 
     # Delete object permissions
     remove_object_permissions(instance)
-    remove_object_permissions(instance.get_self_resource())
 
 
 def post_delete_layer(instance, sender, **kwargs):
