@@ -938,8 +938,9 @@ def _create_db_featurestore(name, data, overwrite=False, charset="UTF-8", worksp
     dsname = ogc_server_settings.DATASTORE
     try:
         ds = get_store(cat, dsname, workspace=workspace)
+
     except FailedRequestError:
-        ds = cat.create_datastore(dsname)
+        ds = cat.create_datastore(dsname, workspace=workspace)
         db = ogc_server_settings.datastore_db
         db_engine = 'postgis' if \
             'postgis' in db['ENGINE'] else db['ENGINE']
@@ -1020,10 +1021,12 @@ def geoserver_upload(
 
     # Get a short handle to the gsconfig geoserver catalog
     cat = gs_catalog
+
     workspace = cat.get_default_workspace()
     # Check if the store exists in geoserver
     try:
         store = get_store(cat, name, workspace=workspace)
+
     except geoserver.catalog.FailedRequestError as e:
         # There is no store, ergo the road is clear
         pass
