@@ -56,7 +56,8 @@ from agon_ratings.models import OverallRating
 
 from gsimporter import Client
 from owslib.wms import WebMapService
-from geoserver.store import CoverageStore, DataStore
+from geoserver.store import CoverageStore, DataStore, datastore_from_index,\
+    coveragestore_from_index, wmsstore_from_index
 from geoserver.workspace import Workspace
 from geoserver.catalog import Catalog
 from geoserver.catalog import FailedRequestError, UploadError
@@ -229,7 +230,7 @@ def cascading_delete(cat, layer_name):
             workspace, name = layer_name.split(':')
             ws = cat.get_workspace(workspace)
             try:
-                store = cat.get_store(name)
+                store = get_store(cat, name, workspace=ws)
             except FailedRequestError:
                 logger.debug(
                     'the store was not found in geoserver')
@@ -358,7 +359,7 @@ def gs_slurp(
             # obtain the store from within the workspace. if it exists, obtain resources
             # directly from store, otherwise return an empty list:
             if store is not None:
-                store = cat.get_store(store, workspace=workspace)
+                store = get_store(cat, store, workspace=workspace)
                 if store is None:
                     resources = []
                 else:
@@ -367,7 +368,7 @@ def gs_slurp(
                 resources = cat.get_resources(workspace=workspace)
 
     elif store is not None:
-        store = cat.get_store(store)
+        store = get_store(cat, store)
         resources = cat.get_resources(store=store)
     else:
         resources = cat.get_resources()
@@ -913,16 +914,17 @@ def cleanup(name, uuid):
 
 
 def _create_featurestore(name, data, overwrite=False, charset="UTF-8", workspace=None):
+
     cat = gs_catalog
     cat.create_featurestore(name, data, overwrite=overwrite, charset=charset)
-    store = cat.get_store(name, workspace)
+    store = get_store(cat, name, workspace=workspace)
     return store, cat.get_resource(name, store=store, workspace=workspace)
 
 
 def _create_coveragestore(name, data, overwrite=False, charset="UTF-8", workspace=None):
     cat = gs_catalog
     cat.create_coveragestore(name, data, overwrite=overwrite)
-    store = cat.get_store(name, workspace)
+    store = get_store(cat, name, workspace=workspace)
     return store, cat.get_resource(name, store=store, workspace=workspace)
 
 
@@ -934,9 +936,9 @@ def _create_db_featurestore(name, data, overwrite=False, charset="UTF-8", worksp
     """
     cat = gs_catalog
     dsname = ogc_server_settings.DATASTORE
-
     try:
-        ds = cat.get_store(dsname, workspace=workspace)
+        ds = get_store(cat, dsname, workspace=workspace)
+
     except FailedRequestError:
         ds = cat.create_datastore(dsname, workspace=workspace)
         db = ogc_server_settings.datastore_db
@@ -951,7 +953,7 @@ def _create_db_featurestore(name, data, overwrite=False, charset="UTF-8", worksp
             dbtype=db_engine
         )
         cat.save(ds)
-        ds = cat.get_store(dsname)
+        ds = get_store(cat, dsname, workspace=workspace)
 
     try:
         cat.add_data_to_store(ds, name, data,
@@ -967,6 +969,36 @@ def _create_db_featurestore(name, data, overwrite=False, charset="UTF-8", worksp
             msg += _(" Additionally an error occured during database cleanup")
             msg += "- %s" % (sys.exc_info()[1])
         raise GeoNodeException(msg)
+
+
+def get_store(cat, name, workspace=None):
+
+    # Make sure workspace is a workspace object and not a string.
+    # If the workspace does not exist, continue as if no workspace had been defined.
+    if isinstance(workspace, basestring):
+        workspace = cat.get_workspace(workspace)
+
+    if workspace is None:
+        workspace = cat.get_default_workspace()
+    try:
+        store = cat.get_xml('%s/%s.xml' % (workspace.datastore_url[:-4], name))
+    except FailedRequestError:
+        try:
+            store = cat.get_xml('%s/%s.xml' % (workspace.coveragestore_url[:-4], name))
+        except FailedRequestError:
+            try:
+                store = cat.get_xml('%s/%s.xml' % (workspace.wmsstore_url[:-4], name))
+            except FailedRequestError:
+                raise FailedRequestError("No store found named: " + name)
+
+    if store.tag == 'dataStore':
+        store = datastore_from_index(cat, workspace, store)
+    elif store.tag == 'coverageStore':
+        store = coveragestore_from_index(cat, workspace, store)
+    elif store.tag == 'wmsStore':
+        store = wmsstore_from_index(cat, workspace, store)
+
+    return store
 
 
 def geoserver_upload(
@@ -991,10 +1023,10 @@ def geoserver_upload(
     cat = gs_catalog
 
     workspace = cat.get_default_workspace()
-
     # Check if the store exists in geoserver
     try:
-        store = cat.get_store(name, workspace=workspace)
+        store = get_store(cat, name, workspace=workspace)
+
     except geoserver.catalog.FailedRequestError as e:
         # There is no store, ergo the road is clear
         pass
