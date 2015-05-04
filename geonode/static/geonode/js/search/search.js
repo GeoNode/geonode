@@ -375,10 +375,7 @@
     });
 
     $('#region_search_btn').click(function(){
-        if (HAYSTACK_SEARCH)
-            $scope.query['q'] = $('#region_search_input').val();
-        else
-            $scope.query['regions__name__in'] = $('#region_search_input').val();
+        $scope.query['regions__name__in'] = $('#region_search_input').val();
         query_api($scope.query);
     });
 
