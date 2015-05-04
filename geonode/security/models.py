@@ -56,7 +56,8 @@ def get_users_with_perms(obj):
 
     user_model = get_user_obj_perms_model(obj)
     users_with_perms = user_model.objects.filter(object_pk=obj.pk,
-                                                 content_type_id=ctype.id).values('user_id', 'permission_id')
+                                                 content_type_id=ctype.id,
+                                                 permission_id__in=permissions).values('user_id', 'permission_id')
 
     users = {}
     for item in users_with_perms:
