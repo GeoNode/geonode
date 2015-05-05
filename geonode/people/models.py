@@ -123,7 +123,7 @@ class Profile(AbstractUser):
         
     eula_signed = models.BooleanField(
         default=False,
-        help_text=_('whether or no this user has signed the EULA'))
+        help_text=_('Whether or not this user has signed the EULA'))
 
 
     def get_absolute_url(self):
