@@ -36,6 +36,8 @@ from django.http import HttpResponse
 from django.core.cache import cache
 from django.http import Http404
 
+from pprint import pprint
+
 DEFAULT_TITLE = ""
 DEFAULT_ABSTRACT = ""
 
