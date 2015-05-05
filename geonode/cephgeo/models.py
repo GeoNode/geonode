@@ -90,33 +90,5 @@ class FTPRequestToObjectIndex(models.Model):
     ftprequest = models.ForeignKey(FTPRequest, null=False, blank=False)
     # CephObject
     cephobject = models.ForeignKey(CephDataObject, null=False, blank=False)
-    
-class OrganizationType(enum.Enum):
-    PHIL_LIDAR_1 = 0
-    PHIL_LIDAR_2 = 1
-    GOVERNMENT_AGENCY = 2
-    ACADEMIC_OR_RESEARCH_INSTITUTION = 3
-    ACADEME = 4
-    NGO_INTERNATIONAL = 5
-    NGO_LOCAL = 6
-    PRIVATE = 7
-    OTHER = 8
 
-    
-    labels = {
-        PHIL_LIDAR_1 : 'Phil-LiDAR 1',
-        PHIL_LIDAR_2 : 'Phil-LiDAR 2',
-        GOVERNMENT_AGENCY : 'Government Agency',
-        ACADEMIC_OR_RESEARCH_INSTITUTION : 'Academic/Research Institution',
-        ACADEME : 'Academe',
-        NGO_INTERNATIONAL : 'International NGO',
-        NGO_LOCAL : 'Local NGO',
-        PRIVATE : 'Private Insitution',
-        OTHER : 'Other',
-    }
-
-class DatastoreProfile(models.MOdel):
-    user        = models.ForeignKey(User, null=False, blank=False)
-    org_type    = enum.EnumField(OrganizationType, default=OrganizationType.OTHER)
-    eula_signed = models.BooleanField(default=False)
     
