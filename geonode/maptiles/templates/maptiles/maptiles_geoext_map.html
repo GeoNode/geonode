@@ -143,7 +143,9 @@ Ext.onReady(function (){
         }
     );
     
-    map.addLayers([mq_layer,tile_layer,highlight_layer]);
+    var polygon_layer  = new OpenLayers.Layer.Vector("Group Layer");
+    
+    map.addLayers([mq_layer,tile_layer,highlight_layer, polygon_layer]);
     
     var items = [{
         xtype: "gx_zoomslider",
@@ -163,6 +165,16 @@ Ext.onReady(function (){
         center: [13652590.86,1366919.96],
         zoom: 5
     };
+    
+    polyOptions = {sides: 4,irregular:true};
+    var drawCtrl = new OpenLayers.Control.DrawFeature(
+        polygon_layer, OpenLayers.Handler.RegularPolygon,
+        { 
+            'done' : console.log("drawing done");
+            handlerOptions: polyOptions
+        },
+        { keyMask: OpenLayers.Handler.MOD_SHIFT }
+    );    
     
     var getInfoCtrl = new OpenLayers.Control.WMSGetFeatureInfo({
         autoActivate: true,
@@ -227,6 +239,8 @@ Ext.onReady(function (){
     });
 
     map.addControl(getInfoCtrl);
+    map.addControl(drawCtrl);
+    drawCtrl.activate();
     app = new GeoExt.MapPanel(config);
     map.zoomToExtent(tile_layer.maxExtent, false);
 });
