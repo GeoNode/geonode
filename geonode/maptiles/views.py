@@ -57,7 +57,7 @@ def _resolve_layer(request, typename, permission='base.view_resourcebase',
                               permission_msg=msg,
                               **kwargs)
 @login_required
-def tiled_view(request, overlay=settings.TILE_LAYER, template="maptiles/maptiles_map.html"):
+def tiled_view(request, overlay=settings.TILED_SHAPEFILE, template="maptiles/maptiles_map.html"):
     if request.method == "POST":
         pprint(request.POST)
     layer = _resolve_layer(request, overlay, "base.view_resourcebase", _PERMISSION_VIEW )
@@ -127,7 +127,7 @@ def tiled_view(request, overlay=settings.TILE_LAYER, template="maptiles/maptiles
     return render_to_response(template, RequestContext(request, context_dict))
 
 @login_required
-def tiled_view2(request, overlay=settings.TILE_SHAPEFILE_TEST, template="maptiles/maptiles_map_test.html"):
+def tiled_view2(request, overlay=settings.TILED_SHAPEFILE_TEST, template="maptiles/maptiles_map_test.html"):
     layer = _resolve_layer(
         request,
         overlay,
