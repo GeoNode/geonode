@@ -63,7 +63,7 @@ function createHighlightBox(feature_attribs){
 
 function find_georef(tile_list, georef){
      var tile_indeces= tile_list.map(function (x) { return x.georef });
-     console.log(tile_indeces);
+     console.log("Current list of georefs:"+tile_indeces);
      var index = tile_indeces.indexOf(georef)
      return index;
 }
@@ -213,7 +213,7 @@ Ext.onReady(function (){
                     tile_attribs["fid"] = "feature_"+tile.georef;
                     tile_list.push(tile);
                     highlight_layer.addFeatures([tile.feature]);
-                    
+                    console.log(tile_list);
                 }else{
                     removeHighlight(tile.georef, highlight_layer);
                 }
