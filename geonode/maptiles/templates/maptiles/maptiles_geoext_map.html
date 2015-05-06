@@ -170,7 +170,7 @@ Ext.onReady(function (){
     var drawCtrl = new OpenLayers.Control.DrawFeature(
         polygon_layer, OpenLayers.Handler.RegularPolygon,
         { 
-            'done' : console.log("drawing done");
+            'done' : console.log("drawing done"),
             handlerOptions: polyOptions
         },
         { keyMask: OpenLayers.Handler.MOD_SHIFT }
