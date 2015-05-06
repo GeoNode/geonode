@@ -7,6 +7,9 @@ from django.contrib.auth import get_user_model
 from django.db import models, IntegrityError
 from django.utils.translation import ugettext_lazy as _
 from django.db.models import signals
+from django.contrib.sites.models import Site
+from django.template.loader import render_to_string
+from django.core.mail import send_mail
 
 from taggit.managers import TaggableManager
 from guardian.shortcuts import get_objects_for_group
@@ -220,19 +223,20 @@ class GroupInvitation(models.Model):
     class Meta:
         unique_together = [("group", "email")]
 
-    # def send(self, from_user):
-    #     current_site = Site.objects.get_current()
-    #     domain = unicode(current_site.domain)
-        # ctx = {
-        #     "invite": self,
-        #     "group": self.group,
-        #     "from_user": from_user,
-        #     "domain": domain,
-        # }
-        # subject = render_to_string("groups/email/invite_user_subject.txt", ctx)
-        # message = render_to_string("groups/email/invite_user.txt", ctx)
+    def send(self, from_user):
+
+        current_site = Site.objects.get_current()
+        domain = unicode(current_site.domain)
+        ctx = {
+            "invite": self,
+            "group": self.group,
+            "from_user": from_user,
+            "domain": domain,
+        }
+        subject = render_to_string("groups/email/invite_user_subject.txt", ctx)
+        message = render_to_string("groups/email/invite_user.txt", ctx)
         # TODO Send a notification rather than a mail
-        # send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [self.email])
+        send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [self.email])
 
     def accept(self, user):
         if not user.is_authenticated() or user == user.get_anonymous():
