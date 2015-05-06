@@ -62,7 +62,9 @@ function createHighlightBox(feature_attribs){
 }
 
 function find_georef(tile_list, georef){
-     var index= tile_list.map(function (x) { console.log(x); return x.georef }).indexOf(georef);
+     var tile_indeces= tile_list.map(function (x) { return x.georef });
+     console.log(tile_indeces);
+     var index = tile_indeces.indexOf(georef)
      return index;
 }
 
