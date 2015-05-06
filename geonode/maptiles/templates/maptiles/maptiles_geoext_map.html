@@ -68,6 +68,8 @@ function find_georef(tile_list, georef){
 
 function removeHighlight(georef, vec_layer){
     var index= find_georef(tile_list, georef);
+    console.log(tile_list);
+    console.log(index);
     vec_layer.removeFeatures([tile_list[index].feature]);
     tile_list.splice(index,1);
 }
