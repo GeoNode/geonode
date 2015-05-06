@@ -113,7 +113,7 @@ Ext.onReady(function (){
     var stored_layer = map_options["layers"].filter(function(l){ return l["name"] == layer_name })[0];
     var source_index = stored_layer["source"];
     //var geoserver_wms = options["sources"][source_index]["url"];
-    var geoserver = "http://"+curr_location+":8080/geoserver/geonode/wms";
+    var geoserver_wms = "http://"+curr_location+":8080/geoserver/geonode/wms";
     console.log(options["sources"]);
     console.log(geoserver_wms);
     var tile_layer = new OpenLayers.Layer.WMS(
