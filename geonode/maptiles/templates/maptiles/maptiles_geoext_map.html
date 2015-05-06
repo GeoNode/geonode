@@ -169,14 +169,14 @@ Ext.onReady(function (){
     };
     
     polyOptions = {sides: 4,irregular:true};
-    var drawCtrl = new OpenLayers.Control.DrawFeature(
+    /*var drawCtrl = new OpenLayers.Control.DrawFeature(
         polygon_layer, OpenLayers.Handler.RegularPolygon,
         { 
             'done' : console.log("drawing done"),
             handlerOptions: polyOptions
         },
         { keyMask: OpenLayers.Handler.MOD_SHIFT }
-    );    
+    );*/    
     
     var getInfoCtrl = new OpenLayers.Control.WMSGetFeatureInfo({
         autoActivate: true,
