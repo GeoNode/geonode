@@ -62,14 +62,12 @@ function createHighlightBox(feature_attribs){
 }
 
 function find_georef(tile_list, georef){
-     var index= tile_list.map(function (x) { return x.georef }).indexOf(georef);
+     var index= tile_list.map(function (x) { console.log(x); return x.georef }).indexOf(georef);
      return index;
 }
 
 function removeHighlight(georef, vec_layer){
     var index= find_georef(tile_list, georef);
-    console.log(tile_list);
-    console.log(index);
     vec_layer.removeFeatures([tile_list[index].feature]);
     tile_list.splice(index,1);
 }
