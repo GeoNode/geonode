@@ -8,7 +8,7 @@
 <script type="text/javascript" src="http://svn.osgeo.org/metacrs/proj4js/trunk/lib/proj4js-compressed.js"></script>
 <!--<script type="text/javascript" src="http://spatialreference.org/ref/epsg/wgs-84-utm-zone-51n/proj4js/"></script>-->
 <style>
-.olControl {
+.zoomBox {
     strokeColor: "#ff0000";
     strokeWidth: "1";
 }
@@ -183,7 +183,11 @@ Ext.onReady(function (){
         draw: function (){
             this.box = new OpenLayers.Handler.Box( drawCtrl,
                 { "done": this.notice },
-                {keyMask: OpenLayers.Handler.MOD_SHIFT});
+                { 
+                    keyMask: OpenLayers.Handler.MOD_SHIFT,
+                    boxDivClassName: "zoomBox"
+                }
+            );
             this.box.activate();
         },
         
