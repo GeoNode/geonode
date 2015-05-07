@@ -4,16 +4,22 @@
 {% load staticfiles %}
 {% load url from future %}
 
+{% load eula_extras %}
+
 {% block title %} {% trans "Cart" %} - {{ block.super }} {% endblock %}
 
 {% block body_class %}Cephgeo cart{% endblock %}
 
 {% block body_outer %}
   {% block body %}
-  
+    <dialog id="eula_dialog">{% show_eula %}</dialog>
+    <script>
+    function show_modal_eula() { 
+        document.getElementById("eula_dialog").showModal(); 
+    }</script>
   <div class="page-header">
     <ul class="list-inline pull-right" id="sort">
-      <li></li><a href="{% url "cephgeo.views.create_ftp_folder" %}" class="btn btn-default">{% trans "Create FTP Folder" %}</a></li>
+      <li></li><a href="{% url "cephgeo.views.create_ftp_folder" %}" class="btn btn-default" onclick="show_modal_eula()">{% trans "Create FTP Folder" %}</a></li>
       <li><a href="{% url "cephgeo.views.clear_cart" %}" class="btn btn-default">{% trans "Remove All Items" %}</a></li>
     </ul>
     <h2 class="page-title">{% trans "Cart" %}</h2>
