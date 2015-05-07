@@ -178,8 +178,7 @@ Ext.onReady(function (){
             this.box = new OpenLayers.Handler.Box( drawCtrl,
                 { "done": this.notice },
                 { 
-                    keyMask: OpenLayers.Handler.MOD_SHIFT,
-                    boxDivClassName: "zoomBox"
+                    keyMask: OpenLayers.Handler.MOD_SHIFT
                 }
             );
             this.box.activate();
