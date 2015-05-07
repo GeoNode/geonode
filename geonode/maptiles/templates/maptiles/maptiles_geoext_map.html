@@ -148,9 +148,8 @@ Ext.onReady(function (){
         }
     );
     
-    var polygon_layer  = new OpenLayers.Layer.Vector("Group Layer");
-    
-    map.addLayers([mq_layer,tile_layer,highlight_layer, polygon_layer]);
+    //map.addLayers([mq_layer,tile_layer,highlight_layer]);
+    map.addLayers([mq_layer]);
     
     var items = [{
         xtype: "gx_zoomslider",
