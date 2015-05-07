@@ -1,0 +1,18 @@
+{% extends "site_base.html" %}
+
+{% load i18n %}
+{% block title %} {% trans "About GeoNode" %} — {{ block.super }} {% endblock %}
+
+{% block body_outer %}
+    {% eula_text %}
+    <form name="form_eula" action="/cephgeo/eula_form/" onsubmit="return checkForm(this);" method="POST">
+        {% csrf_token %}
+        
+        <hr/>
+        <ul class="list-inline pull-right" align="right">
+            <input type="checkbox" id="signed" required name="signed"> I accept the <b><u>End User License Agreement</u></b></p>
+            <input type="submit" value="Sign EULA">
+        </ul>
+    </form>
+
+{% endblock %}
