@@ -27,9 +27,6 @@ from django.template.response import TemplateResponse
 
 from geonode.groups.models import GroupProfile
 
-from django import template
-register = template.Library()
-
 class AjaxLoginForm(forms.Form):
     password = forms.CharField(widget=forms.PasswordInput)
     username = forms.CharField()
@@ -107,10 +104,3 @@ def err403(request):
     else:
         return TemplateResponse(request, '401.html', {}, status=401).render()
         
-@register.inclusion_tag('eula_text.html')(eula_text)
-def eula_form(request):
-    if request.method == 'POST':
-        #Handle form
-    else:
-        #Render form
-        return render(request, 'eula_form.html')
