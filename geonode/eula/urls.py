@@ -6,5 +6,5 @@ import views
 
 urlpatterns = patterns('',
     url(r'^$', TemplateView.as_view(template_name='eula.html'), name='eula'),
-    url(r'^form/$', 'views.eula_form', name='eula_form'),
+    url(r'^form/$', views.eula_form, name='eula_form'),
 )
