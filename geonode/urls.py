@@ -56,8 +56,7 @@ urlpatterns = patterns('',
                        url(r'^about/$', TemplateView.as_view(template_name='about.html'), name='about'), 
                        
                        # EULA URLs
-                       url(r'^eula/$', TemplateView.as_view(template_name='eula.html'), name='eula'),
-                       url(r'^eula_form/$', 'geonode.views.eula_form', name='eula_form'),
+                       url(r'^eula/', include('geonode.eula.urls'), name='eula'),
 
                        # Layer views
                        (r'^layers/', include('geonode.layers.urls')),
