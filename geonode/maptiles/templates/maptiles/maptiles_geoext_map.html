@@ -176,9 +176,18 @@ Ext.onReady(function (){
     OpenLayers.Util.extend(drawCtrl, {
         draw: function (){
             this.box = new OpenLayers.Handler.Box( drawCtrl,
-                { "done": console.log("done drawing")},
+                { "done": this.notice },
                 {keyMask: OpenLayers.Handler.MOD_SHIFT});
             this.box.activate();
+        },
+        
+        notice: function(bounds) {
+            var ll = map.getLonLatFromPixel(new OpenLayers.Pixel(bounds.left, bounds.bottom)); 
+            var ur = map.getLonLatFromPixel(new OpenLayers.Pixel(bounds.right, bounds.top)); 
+            alert(ll.lon.toFixed(4) + ", " + 
+                      ll.lat.toFixed(4) + ", " + 
+                      ur.lon.toFixed(4) + ", " + 
+                      ur.lat.toFixed(4));
         }
     });
     
