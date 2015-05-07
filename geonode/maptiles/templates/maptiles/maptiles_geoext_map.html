@@ -172,14 +172,15 @@ Ext.onReady(function (){
     };
     
     polyOptions = {sides: 4,irregular:true};
-    /*var drawCtrl = new OpenLayers.Control.DrawFeature(
-        polygon_layer, OpenLayers.Handler.RegularPolygon,
-        { 
-            'done' : console.log("drawing done"),
-            handlerOptions: polyOptions
-        },
-        { keyMask: OpenLayers.Handler.MOD_SHIFT }
-    );*/    
+    var drawCtrl = new OpenLayers.Control();
+    OpenLayers.Util.extend(drawCtrl, {
+        draw: function (){
+            this.box = new OpenLayers.Handler.Box( drawCtrl,
+                { "done": console.log("done drawing")},
+                {keyMask: OpenLayers.Handler.MOD_SHIFT});
+            this.box.activate();
+        }
+    });
     
     var getInfoCtrl = new OpenLayers.Control.WMSGetFeatureInfo({
         autoActivate: true,
@@ -244,8 +245,8 @@ Ext.onReady(function (){
     });
 
     map.addControl(getInfoCtrl);
-    /*map.addControl(drawCtrl);
-    drawCtrl.activate();*/
+    map.addControl(drawCtrl);
+    drawCtrl.activate();
     app = new GeoExt.MapPanel(config);
     map.zoomToExtent(tile_layer.maxExtent, false);
 });
