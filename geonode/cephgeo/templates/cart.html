@@ -12,20 +12,19 @@
 
 {% block body_outer %}
   {% block body %}
-    <dialog id="eula_dialog">{% show_eula %}</dialog>
-    <script>
-    function show_modal_eula() { 
-        document.getElementById("eula_dialog").showModal(); 
-    }</script>
-  <div class="page-header">
+  {% eula_modal_dialog "/ceph/ftp/" %} 
+<!--
+    #TODO: CHECK IF CART IS EMPTY BEFORE CREATING FTP REQUEST!
+-->
+      <div class="page-header">
     <ul class="list-inline pull-right" id="sort">
-      <li></li><a href="{% url "cephgeo.views.create_ftp_folder" %}" class="btn btn-default" onclick="show_modal_eula()">{% trans "Create FTP Folder" %}</a></li>
-      <li><a href="{% url "cephgeo.views.clear_cart" %}" class="btn btn-default">{% trans "Remove All Items" %}</a></li>
+      <li><button class="btn btn-default" data-toggle="modal" data-target="#eula-dialog">{% trans "Create FTP Folder" %}</a></li>
+      <li><a href="{% url 'cephgeo.views.clear_cart' %}"><button class="btn btn-default">{% trans "Remove All Items" %}</button></a></li>
     </ul>
     <h2 class="page-title">{% trans "Cart" %}</h2>
     
   </div>
-
+    
   <table border="3" style="width:100%">
         <tr>
             <th>Product</th>
