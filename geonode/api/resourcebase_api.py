@@ -2,7 +2,6 @@ import re
 from django.db.models import Q
 from django.http import HttpResponse
 from django.conf import settings
-from tastypie.authentication import BasicAuthentication
 
 from tastypie.constants import ALL, ALL_WITH_RELATIONS
 from tastypie.resources import ModelResource
