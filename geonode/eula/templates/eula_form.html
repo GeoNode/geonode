@@ -1,10 +1,11 @@
 {% extends "site_base.html" %}
 
 {% load i18n %}
+{% load eula_extras %}
 {% block title %} {% trans "About GeoNode" %} — {{ block.super }} {% endblock %}
 
 {% block body_outer %}
-    {% eula_text %}
+    {% show_eula %}
     <form name="form_eula" action="/cephgeo/eula_form/" onsubmit="return checkForm(this);" method="POST">
         {% csrf_token %}
         
