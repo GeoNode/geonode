@@ -6,7 +6,7 @@
 
 {% block body_outer %}
     {% show_eula %}
-    <form name="form_eula" action="/cephgeo/eula_form/" onsubmit="return checkForm(this);" method="POST">
+    <form name="form_eula" action={% target_url %} onsubmit="return checkForm(this);" method="POST">
         {% csrf_token %}
         
         <hr/>
