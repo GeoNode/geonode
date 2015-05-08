@@ -174,7 +174,7 @@ Ext.onReady(function (){
     var wfs_layer= new OpenLayers.Layer.Vector("WFS",{
         strategies: [new OpenLayers.Strategy.BBOX()],
         protocol: new OpenLayers.Protocol.WFS({
-            url: "http://"+curr_location+"/geoserver/geonode/wfs/",
+            url: "http://"+curr_location+"/geoserver/wfs",
             featureType: "index",
             featureNS: "http://www.geonode.org/"
         })
