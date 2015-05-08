@@ -50,7 +50,9 @@ def proxy(request):
         locator += '?' + url.query
     if url.fragment != "":
         locator += '#' + url.fragment
-
+    
+    print(raw_url)
+    
     if not settings.DEBUG:
         if not validate_host(url.hostname, PROXY_ALLOWED_HOSTS):
             return HttpResponse("DEBUG is set to False but the host of the path provided to the proxy service"
