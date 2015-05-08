@@ -1,5 +1,5 @@
 from django.shortcuts import render, render_to_response, redirect
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseForbidden
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.utils.encoding import smart_str
@@ -145,41 +145,43 @@ def file_list_json(request, sort=None, grid_ref=None):
     
 @login_required
 def data_input(request):
-    if request.method == 'POST':
-        # create a form instance and populate it with data from the request:
-        # pprint(request.POST)
-        form = DataInputForm(request.POST)
-        # check whether it's valid:
-        if form.is_valid():
-            data = form.cleaned_data['data']
-            uploaded_objects = cPickle.loads(smart_str(data))
-            #pprint(uploaded_objects)
-            is_pickled = form.cleaned_data['pickled']
-            
-            #Save each ceph object
-            for obj_meta_dict in uploaded_objects:
-                ceph_obj = CephDataObject(  name = obj_meta_dict['name'],
-                                            #last_modified = time.strptime(obj_meta_dict['last_modified'], "%Y-%m-%d %H:%M:%S"),
-                                            last_modified = obj_meta_dict['last_modified'],
-                                            size_in_bytes = obj_meta_dict['bytes'],
-                                            content_type = obj_meta_dict['content_type'],
-                                            geo_type = utils.file_classifier(obj_meta_dict['name']),
-                                            file_hash = obj_meta_dict['hash'],
-                                            grid_ref = obj_meta_dict['grid_ref'])
-                ceph_obj.save()
-            
-            messages.success(request, "Data has been succesfully encoded. [{0}] files uploaded to Ceph.".format(len(uploaded_objects)))
-            #return HttpResponseRedirect('/cephgeo/list/nosort/')
-            return redirect('geonode.cephgeo.views.file_list_geonode',sort='uploaddate')
+    if request.user.is_superuser:
+        if request.method == 'POST':
+            # create a form instance and populate it with data from the request:
+            # pprint(request.POST)
+            form = DataInputForm(request.POST)
+            # check whether it's valid:
+            if form.is_valid():
+                data = form.cleaned_data['data']
+                uploaded_objects = cPickle.loads(smart_str(data))
+                #pprint(uploaded_objects)
+                is_pickled = form.cleaned_data['pickled']
+                
+                #Save each ceph object
+                for obj_meta_dict in uploaded_objects:
+                    ceph_obj = CephDataObject(  name = obj_meta_dict['name'],
+                                                #last_modified = time.strptime(obj_meta_dict['last_modified'], "%Y-%m-%d %H:%M:%S"),
+                                                last_modified = obj_meta_dict['last_modified'],
+                                                size_in_bytes = obj_meta_dict['bytes'],
+                                                content_type = obj_meta_dict['content_type'],
+                                                geo_type = utils.file_classifier(obj_meta_dict['name']),
+                                                file_hash = obj_meta_dict['hash'],
+                                                grid_ref = obj_meta_dict['grid_ref'])
+                    ceph_obj.save()
+                
+                messages.success(request, "Data has been succesfully encoded. [{0}] files uploaded to Ceph.".format(len(uploaded_objects)))
+                #return HttpResponseRedirect('/cephgeo/list/nosort/')
+                return redirect('geonode.cephgeo.views.file_list_geonode',sort='uploaddate')
+            else:
+                messages.error(request, "Invalid input on data form")
+                #return HttpResponseRedirect('/cephgeo/input/')
+                return redirect('geonode.cephgeo.views.data_input')
+        # if a GET (or any other method) we'll create a blank form
         else:
-            messages.error(request, "Invalid input on data form")
-            #return HttpResponseRedirect('/cephgeo/input/')
-            return redirect('geonode.cephgeo.views.data_input')
-    # if a GET (or any other method) we'll create a blank form
+            form = DataInputForm()
+            return render(request, 'ceph_data_input.html', {'data_input_form': form})
     else:
-        form = DataInputForm()
-
-    return render(request, 'ceph_data_input.html', {'data_input_form': form})
+        return HttpResponseForbidden(u"You do not have permission to view this page!")
 
 @login_required
 def error(request):
