@@ -3,8 +3,8 @@ body {
 }
 
 .navbar-brand {
-    height: 65px;
-    background: url(../img/DREAMlogo65x65.png) no-repeat;
+	height: 65px;
+	background: url(../img/DREAMlogo65x65.png) no-repeat;
 	width: inherit;
 	text-indent: 65px;
 	display: block;
@@ -15,6 +15,10 @@ body {
 	display: block;
 	font-size: 12px;
 	font-weight: 300;
+}
+
+#wrap {
+	padding-top: 50px;
 }
 
 /*
