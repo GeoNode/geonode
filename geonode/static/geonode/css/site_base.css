@@ -3,8 +3,8 @@ body {
 }
 
 .navbar-brand {
-    height: 65px;
-    background: url(../img/DREAMlogo65x65.png) no-repeat;
+	height: 65px;
+	background: url(../img/DREAMlogo65x65.png) no-repeat;
 	width: inherit;
 	text-indent: 65px;
 	display: block;
@@ -16,16 +16,12 @@ body {
 	font-size: 12px;
 	font-weight: 300;
 }
-
-/*
-.navbar-nav {
-	position: fixed;
-	background-color: #008CBA;
-}
-.navbar-right {
-	position: relative;
+/* make room for new header size */
+#wrap {
+	padding-top: 50px;
 }
 
-.navbar-inverse {
-	background-color: #fff;
-}*/
+/* override map_geoexplorer.css to make room for new header size*/
+#paneltbar {
+	margin-top: 100px !important;
+}
