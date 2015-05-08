@@ -120,7 +120,7 @@ Ext.onReady(function (){
     var source_index = stored_layer["source"];
     //var geoserver_wms = options["sources"][source_index]["url"];
     var geoserver_wms = "http://"+curr_location+":8080/geoserver/geonode/wms";
-    console.log(geoserver_wms);
+    
     var tile_layer = new OpenLayers.Layer.WMS(
         layer_name + "- Tiled", geoserver_wms,
         {
@@ -173,11 +173,7 @@ Ext.onReady(function (){
     
     var wfs_layer= new OpenLayers.Layer.Vector("WFS",{
         strategies: [new OpenLayers.Strategy.BBOX()],
-        protocol: new OpenLayers.Protocol.WFS({
-            url: "http://"+curr_location+"/geoserver/wfs",
-            featureType: "index",
-            featureNS: "http://www.geonode.org/"
-        })
+        protocol: OpenLayers.Protocol.WFS.fromWMSLayer(tile_layer)
     });
     
     var drawCtrl = new OpenLayers.Control();
