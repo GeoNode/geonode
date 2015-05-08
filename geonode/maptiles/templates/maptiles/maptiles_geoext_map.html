@@ -173,7 +173,10 @@ Ext.onReady(function (){
     
     var wfs_layer= new OpenLayers.Layer.Vector("WFS",{
         strategies: [new OpenLayers.Strategy.BBOX()],
-        protocol: OpenLayers.Protocol.WFS.fromWMSLayer(tile_layer)
+        protocol: new OpenLayers.Protocol.WFS({
+            url: "http://"+curr_location+":8080/geoserver/geonode/ows",
+            featureType: stored_layer["name"]
+        })
     });
     
     var drawCtrl = new OpenLayers.Control();
