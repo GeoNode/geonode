@@ -22,6 +22,7 @@ OpenLayers.ProxyHost = "/proxy?url=";
 
 var options = {{ viewer| safe }};
 var app;
+var bounds_list = [];
 var tile_list = [];
 var curr_popup;
 // added stuff
@@ -150,7 +151,6 @@ Ext.onReady(function (){
     );
     
     map.addLayers([mq_layer,tile_layer,highlight_layer]);
-    //map.addLayers([mq_layer]);
     
     var items = [{
         xtype: "gx_zoomslider",
@@ -171,7 +171,15 @@ Ext.onReady(function (){
         zoom: 5
     };
     
-    polyOptions = {sides: 4,irregular:true};
+    var wfs_layer= new OpenLayers.Layer.Vector("WFS",{
+        strategies: [new OpenLayers.Strategy.BBOX()],
+        protocol: new OpenLayers.Protocol.WFS({
+            url: "http://"+curr_location+"/geoserver/geonode/wfs",
+            featureType: "index",
+            featureNS: "http://www.geonode.org/"
+        })
+    });
+    
     var drawCtrl = new OpenLayers.Control();
     OpenLayers.Util.extend(drawCtrl, {
         draw: function (){
@@ -185,16 +193,13 @@ Ext.onReady(function (){
         },
         
         notice: function(bounds) {
-            var ll = map.getLonLatFromPixel(new OpenLayers.Pixel(bounds.left, bounds.bottom)); 
-            var ur = map.getLonLatFromPixel(new OpenLayers.Pixel(bounds.right, bounds.top)); 
-            alert(ll.lon.toFixed(4) + ", " + 
-                      ll.lat.toFixed(4) + ", " + 
-                      ur.lon.toFixed(4) + ", " + 
-                      ur.lat.toFixed(4));
+            wfs_layer.filter = new OpenLayers.Filter.Spatial({
+                type: OpenLayers.Filter.Spatial.INTERSECTS,
+                value: bounds
+            });
+            map.addLayers([wfs_layer]);
         }
     });
-    
-    console.log(drawCtrl);
     
     var getInfoCtrl = new OpenLayers.Control.WMSGetFeatureInfo({
         autoActivate: true,
