@@ -84,7 +84,7 @@ def file_list_geonode(request, sort=None, grid_ref=None):
         #~ sorted_list = object_list.order_by('-last_modified')
     elif sort == 'name':
         sorted_list = sorted(object_list, key=operator.attrgetter('name'))
-    else: # nosort
+    else: # default
         sorted_list = object_list
     
     paginator = Paginator(sorted_list, 10)
@@ -133,7 +133,7 @@ def file_list_json(request, sort=None, grid_ref=None):
         #~ sorted_list = object_list.order_by('-last_modified')
     elif sort == 'name':
         sorted_list = sorted(object_list, key=operator.attrgetter('name'))
-    else: # nosort
+    else: # default
         sorted_list = object_list
     
     response_data = {"file_list"    : serializers.serialize('json', sorted_list), 
@@ -171,11 +171,9 @@ def data_input(request):
                     ceph_obj.save()
                 
                 messages.success(request, "Data has been succesfully encoded. [{0}] files uploaded to Ceph.".format(len(uploaded_objects)))
-                #return HttpResponseRedirect('/cephgeo/list/nosort/')
                 return redirect('geonode.cephgeo.views.file_list_geonode',sort='uploaddate')
             else:
                 messages.error(request, "Invalid input on data form")
-                #return HttpResponseRedirect('/cephgeo/input/')
                 return redirect('geonode.cephgeo.views.data_input')
         # if a GET (or any other method) we'll create a blank form
         else:
@@ -302,7 +300,7 @@ def ftp_request_list(request, sort=None):
     elif sort == 'size':
         sorted_list = sorted(ftp_list.order_by('name'), key=operator.attrgetter('size_in_bytes'), reverse=True)
         
-    else: # nosort
+    else: # default
         sorted_list = ftp_list
     
     paginator = Paginator(sorted_list, 10)
