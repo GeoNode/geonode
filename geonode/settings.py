@@ -928,3 +928,6 @@ CEPH_OGW = {
         'CONTAINER' : 'geo-container',
     }
 }
+
+TILED_SHAPEFILE = "geonode:cut_phl_001k_grid_utm_z51n"
+TILED_SHAPEFILE_TEST = "geonode:index"
