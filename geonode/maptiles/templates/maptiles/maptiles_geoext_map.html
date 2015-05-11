@@ -191,7 +191,7 @@ Ext.onReady(function (){
     };
 
     var drawControl = new OpenLayers.Control();
-        OpenLayers.Util.extend(control, {
+        OpenLayers.Util.extend(drawControl, {
             draw: function () {
                 // this Handler.Box will intercept the shift-mousedown
                 // before Control.MouseDefault gets to see it
