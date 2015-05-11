@@ -25,8 +25,8 @@ import re
 #	"DEM-DSM"		: ["_DSM"],
 #	"Orthophoto"	: ["_ortho"],
 #}
-SORT_TYPES = [ "name", "type", "uploaddate", "nosort"]
-FTP_SORT_TYPES = [ "date", "status", "nosort" ]
+SORT_TYPES = [ "name", "type", "uploaddate", "default"]
+FTP_SORT_TYPES = [ "date", "status", "default" ]
 
 TYPE_TO_IDENTIFIER_DICT = {
 	".laz"			: "LAZ file",
