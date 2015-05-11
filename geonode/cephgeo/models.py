@@ -90,4 +90,5 @@ class FTPRequestToObjectIndex(models.Model):
     ftprequest = models.ForeignKey(FTPRequest, null=False, blank=False)
     # CephObject
     cephobject = models.ForeignKey(CephDataObject, null=False, blank=False)
+
     

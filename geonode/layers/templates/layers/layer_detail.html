@@ -6,6 +6,7 @@
 {% load url from future %}
 {% load base_tags %}
 {% load guardian_tags %}
+{% load eula_extras %}
 
 {% block title %}{{ resource.title|default:resource.typename }} — {{ block.super }}{% endblock %}
 
@@ -124,16 +125,17 @@
     </div>
 
   </div>
-
+            
   <div class="col-md-4">
-
+    
     <ul class="list-group">
       {% if resource.storeType != "remoteStore" %}
         {% get_obj_perms request.user for resource.get_self_resource as "perms" %}
         
         <li class="list-group-item">
         {% if links %}
-           <button class="btn btn-primary btn-md btn-block" data-toggle="modal" data-target="#download-layer">{% trans "Download Layer" %}</button>
+            {% eula_nested_modal_dialog "download-layer" %}
+            <button class="btn btn-primary btn-md btn-block" data-toggle="modal" data-target="#eula-nested-dialog">{% trans "Download Layer" %}</button>
         {% else %}
           {% if request.user.is_authenticated %}
           <button class="btn btn-primary btn-md btn-block" id="request-download">{% trans "Request Download" %}</button>
@@ -164,6 +166,7 @@
       </div>
     </div>
 
+    
     {% if GEOSERVER_BASE_URL %}
       {% get_obj_perms request.user for resource.layer as "layer_perms" %}
     {% endif %}

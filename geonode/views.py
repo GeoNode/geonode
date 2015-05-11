@@ -27,7 +27,6 @@ from django.template.response import TemplateResponse
 
 from geonode.groups.models import GroupProfile
 
-
 class AjaxLoginForm(forms.Form):
     password = forms.CharField(widget=forms.PasswordInput)
     username = forms.CharField()
@@ -104,3 +103,4 @@ def err403(request):
             request.get_full_path())
     else:
         return TemplateResponse(request, '401.html', {}, status=401).render()
+        
