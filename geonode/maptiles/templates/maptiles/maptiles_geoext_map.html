@@ -176,7 +176,7 @@ Ext.onReady(function (){
     var wfs_layer= new OpenLayers.Layer.Vector("WFS",{
         strategies: [new OpenLayers.Strategy.BBOX()],
         protocol: new OpenLayers.Protocol.WFS({
-            url: "http://"+curr_location+":8080/geoserver/geonode/ows",
+            url: "http://"+curr_location+":8080/geoserver/geonode/wfs",
             featurePrefix: "geonode",
             featureType: layer_name.substring(layer_name.indexOf(":")+1,layer_name.length - 1),
             srsName: map.getProjection()
