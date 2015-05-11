@@ -16,7 +16,7 @@ OpenLayers.Request.DEFAULT_CONFIG.headers = {
     'X-CSRFToken': '{{ csrf_token|escapejs }}'
 };
 
-OpenLayers.ProxyHost = "proxy?url=";
+OpenLayers.ProxyHost = "http://192.168.56.100:8000/proxy?url=";
 
 {% autoescape off %}
 
@@ -173,12 +173,12 @@ Ext.onReady(function (){
     
     
     var http_proto = new OpenLayers.Protocol.HTTP({
-        url: "http://192.168.56.100:8080/geoserver/geonode/wfs?request=GetFeature&typeName=geonode:index&outputFormat=json",
-        /*params:{
+        url: "http://192.168.56.100:8080/geoserver/geonode/wfs?request=GetFeature&typeName=geonode:index&outputFormat=application/json",
+        params:{
             "request":"GetFeature",
             "typeName":"geonode:index",
             "outputFormat":"application/json"
-        }*/
+        }
     });
         
     
