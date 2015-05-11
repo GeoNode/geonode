@@ -68,10 +68,10 @@ function display_points(div_id, vec_layer){
 }
 
 function createHighlightBox(feature_attribs){
-    var pt1 = new OpenLayers.Geometry.Point(feature_attribs["ll_x"], feature_attribs["ll_y"]).transform(new OpenLayers.Projection("EPSG:32651"), new OpenLayers.Projection("EPSG:900913"));
-    var pt2 = new OpenLayers.Geometry.Point(feature_attribs["ll_x"], feature_attribs["ul_y"]).transform(new OpenLayers.Projection("EPSG:32651"), new OpenLayers.Projection("EPSG:900913"));
-    var pt3 = new OpenLayers.Geometry.Point(feature_attribs["ur_x"], feature_attribs["ll_y"]).transform(new OpenLayers.Projection("EPSG:32651"), new OpenLayers.Projection("EPSG:900913"));
-    var pt4 = new OpenLayers.Geometry.Point(feature_attribs["ur_x"], feature_attribs["ul_y"]).transform(new OpenLayers.Projection("EPSG:32651"), new OpenLayers.Projection("EPSG:900913"));
+    var pt1 = new OpenLayers.Geometry.Point(feature_attribs["ul_x"], feature_attribs["ul_y"]).transform(new OpenLayers.Projection("EPSG:32651"), new OpenLayers.Projection("EPSG:900913"));
+    var pt2 = new OpenLayers.Geometry.Point(feature_attribs["ur_x"], feature_attribs["ur_y"]).transform(new OpenLayers.Projection("EPSG:32651"), new OpenLayers.Projection("EPSG:900913"));
+    var pt3 = new OpenLayers.Geometry.Point(feature_attribs["lr_x"], feature_attribs["lr_y"]).transform(new OpenLayers.Projection("EPSG:32651"), new OpenLayers.Projection("EPSG:900913"));
+    var pt4 = new OpenLayers.Geometry.Point(feature_attribs["ll_x"], feature_attribs["ll_y"]).transform(new OpenLayers.Projection("EPSG:32651"), new OpenLayers.Projection("EPSG:900913"));
     
     var pts = [pt1, pt2, pt3, pt4];
     var lr = new OpenLayers.Geometry.LinearRing(pts);
@@ -247,7 +247,7 @@ Ext.onReady(function (){
                 removeHighlight(tile.georef, highlight_layer);
             }
             
-            display_points(georef_list, "point_display");
+            display_points(tile_list, "point_display");
         }
     });
 
