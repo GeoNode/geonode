@@ -152,14 +152,14 @@ Ext.onReady(function (){
     
     map.addLayers([mq_layer,tile_layer,highlight_layer]);
     
-    var items = [{
+    var items = [];/*{
         xtype: "gx_zoomslider",
         aggressive: false,
         vertical: true,
         height: 100,
         x: 10,
         y: 20
-    }];
+    }];*/
     
     var config = {
         renderTo: "preview_map",
@@ -172,39 +172,17 @@ Ext.onReady(function (){
     };
     
     
-    layer_name = stored_layer["name"];
-    var wfs_layer= new OpenLayers.Layer.Vector("WFS",{
-        strategies: [new OpenLayers.Strategy.BBOX()],
-        protocol: new OpenLayers.Protocol.WFS({
-            url: "http://"+curr_location+":8080/geoserver/geonode/wfs",
-            featurePrefix: "geonode",
-            featureType: layer_name.substring(layer_name.indexOf(":")+1,layer_name.length),
-            srsName: map.getProjection()
-        })
-    });
-    console.log(layer_name.substring(layer_name.indexOf(":")+1,layer_name.length ));
-    map.addLayers([wfs_layer]);
-    var drawCtrl = new OpenLayers.Control();
-    OpenLayers.Util.extend(drawCtrl, {
-        draw: function (){
-            this.box = new OpenLayers.Handler.Box( drawCtrl,
-                { "done": this.notice },
-                { 
-                    keyMask: OpenLayers.Handler.MOD_SHIFT
-                }
-            );
-            this.box.activate();
+    var wfs_proto = new OpenLayers.Protocol.WFS({
+        url: "http://192.168.56.100:8080/geoserver/geonode/wfs",
+        formatOptions: {
+                outputFormat: "json"
         },
-        
-        notice: function(bounds) {
-            wfs_layer.filter = new OpenLayers.Filter.Spatial({
-                type: OpenLayers.Filter.Spatial.INTERSECTS,
-                value: bounds
-            });
-            console.log(bounds);
-            console.log(wfs_layer.filter);
-        }
+        featureType: "index",
+        featurePrefix: "geonode",
+        geometryName: "the_geom"
     });
+    
+    var resp = wgs_proto.read();
     
     var getInfoCtrl = new OpenLayers.Control.WMSGetFeatureInfo({
         autoActivate: true,
@@ -216,7 +194,7 @@ Ext.onReady(function (){
             "getfeatureinfo": function (e){
                 var items = [];
                 Ext.each (e.features, function(feature) {
-                    delete feature.attributes["File_Path"];
+                    delete feature.attributes["File_Path"];http://192.168.56.100:8080/geoserver/geonode/wfs
                     delete feature.attributes["GRID_REF"];
                     delete feature.attributes["Tilename"];
                     
