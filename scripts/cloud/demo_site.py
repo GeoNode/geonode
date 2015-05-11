@@ -6,16 +6,23 @@ from six.moves.urllib.request import Request
 
 
 JENKINS_IP = 'http://52.5.141.226/'
-GEONODE_DEMO_DOMAIN = 'demo.geonode.org'
-NODE_LIST = 'computer/api/json'
-GEONODE_DEMO_JOB = 'geonode-aws'
+GEONODE_DEMO_DOMAIN = 'demo.geonode.org' # should match the jenkins configuration
+NODE_LIST = 'computer/api/json' # jenkins api backend
+GEONODE_DEMO_JOB = 'geonode-aws' # jenkins job name for demo site
 
 
 class DemoGeonode(object):
+    """
+    This class allows interaction with the Jenkins APIs to do several tasks,
+    for a more detailed guide on how to use self.j see
+    https://python-jenkins.readthedocs.org/en/latest/api.html
+    """
     def __init__(self, username, token):
         self.j = jenkins.Jenkins(JENKINS_IP, username, token)
 
     def redeployDemo(self):
+        """Delete the jenkins node on which runs the amazon VM,
+        this will both shutdown the VM and create a new one with a fresh geonode instance"""
         nodes_data = json.loads(self.j.jenkins_open(Request(self.j.server + NODE_LIST)))
         demo_node = self.getDemoNode(nodes_data)
         if demo_node is not None:
@@ -26,6 +33,8 @@ class DemoGeonode(object):
             print 'No demo.genode.org node found on jenkins'
 
     def getDemoNode(self, nodes_data):
+        """Commodity method to get the correct jenkins node name,
+        the name is composed by 'demo.geonode.org' and the VM id"""
         demo_node = None
         for node in nodes_data['computer']:
             if GEONODE_DEMO_DOMAIN in node['displayName']:
@@ -33,11 +42,13 @@ class DemoGeonode(object):
         return demo_node
 
     def deleteNode(self, node_name):
+        """Delete the jenkins node and shutdown the amazon VM"""
         print 'Deleting demo node'
         self.j.delete_node(node_name)
         print 'Deletion requested'
 
     def buildJob(self, job):
+        """Trigger a job build"""
         print 'Building %s job' % job
         self.j.build_job(job)
         print 'Build requested'
