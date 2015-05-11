@@ -16,20 +16,12 @@ body {
 	font-size: 12px;
 	font-weight: 300;
 }
-
+/* make room for new header size */
 #wrap {
 	padding-top: 50px;
 }
 
-/*
-.navbar-nav {
-	position: fixed;
-	background-color: #008CBA;
+/* override map_geoexplorer.css to make room for new header size*/
+#paneltbar {
+	margin-top: 100px !important;
 }
-.navbar-right {
-	position: relative;
-}
-
-.navbar-inverse {
-	background-color: #fff;
-}*/
