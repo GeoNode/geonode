@@ -254,6 +254,7 @@ Ext.onReady(function (){
     click_select = new OpenLayers.Control.Click()
 
     map.addControl(click_select);
+    click_select.activate();
     //map.addControl(drawCtrl);
     //drawCtrl.activate();
     app = new GeoExt.MapPanel(config);
