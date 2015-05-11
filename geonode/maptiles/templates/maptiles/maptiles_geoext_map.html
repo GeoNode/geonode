@@ -178,11 +178,11 @@ Ext.onReady(function (){
         protocol: new OpenLayers.Protocol.WFS({
             url: "http://"+curr_location+":8080/geoserver/geonode/wfs",
             featurePrefix: "geonode",
-            featureType: layer_name.substring(layer_name.indexOf(":")+1,layer_name.length - 1),
+            featureType: layer_name.substring(layer_name.indexOf(":")+1,layer_name.length),
             srsName: map.getProjection()
         })
     });
-    console.log(layer_name.substring(layer_name.indexOf(":")+1,layer_name.length - 1));
+    console.log(layer_name.substring(layer_name.indexOf(":")+1,layer_name.length ));
     map.addLayers([wfs_layer]);
     var drawCtrl = new OpenLayers.Control();
     OpenLayers.Util.extend(drawCtrl, {
