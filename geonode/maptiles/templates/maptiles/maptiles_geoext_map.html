@@ -27,6 +27,24 @@ var tile_list = [];
 var curr_popup;
 // added stuff
 
+var _TILE_SIZE = 1000;
+
+function floor_tile_size(x){
+    return  (Math.floor(x/_TILE_SIZE) * _TILE_SIZE);
+}
+
+function ceil_tile_size(x) {
+    return (Math.ceil(x/_TILE_SIZE) * _TILE_SIZE);
+}
+
+function get_corners( x, y ){
+    return { ul_x: floor_tile_size(x), ul_y: ceil_tile_size(y),
+         ur_x: ceil_tile_size(x), ur_y: ceil_tile_size(y),
+         ll_x: floor_tile_size(x), ll_y: floor_tile_size(y),
+         lr_x: ceil_tile_size(x), lr_y: floor_tile_size(y)
+        };
+}
+
 function display_points(div_id, vec_layer){
     var container = document.getElementById(div_id);
     container.removeChild(container.firstElementChild||container.firstChild);
@@ -50,10 +68,10 @@ function display_points(div_id, vec_layer){
 }
 
 function createHighlightBox(feature_attribs){
-    var pt1 = new OpenLayers.Geometry.Point(feature_attribs.MINX, feature_attribs.MAXY).transform(new OpenLayers.Projection("EPSG:32651"), new OpenLayers.Projection("EPSG:900913"));
-    var pt2 = new OpenLayers.Geometry.Point(feature_attribs.MINX, feature_attribs.MINY).transform(new OpenLayers.Projection("EPSG:32651"), new OpenLayers.Projection("EPSG:900913"));
-    var pt3 = new OpenLayers.Geometry.Point(feature_attribs.MAXX, feature_attribs.MINY).transform(new OpenLayers.Projection("EPSG:32651"), new OpenLayers.Projection("EPSG:900913"));
-    var pt4 = new OpenLayers.Geometry.Point(feature_attribs.MAXX, feature_attribs.MAXY).transform(new OpenLayers.Projection("EPSG:32651"), new OpenLayers.Projection("EPSG:900913"));
+    var pt1 = new OpenLayers.Geometry.Point(feature_attribs["ll_x"], feature_attribs["ll_y"]).transform(new OpenLayers.Projection("EPSG:32651"), new OpenLayers.Projection("EPSG:900913"));
+    var pt2 = new OpenLayers.Geometry.Point(feature_attribs["ll_x"], feature_attribs["ul_y"]).transform(new OpenLayers.Projection("EPSG:32651"), new OpenLayers.Projection("EPSG:900913"));
+    var pt3 = new OpenLayers.Geometry.Point(feature_attribs["ur_x"], feature_attribs["ll_y"]).transform(new OpenLayers.Projection("EPSG:32651"), new OpenLayers.Projection("EPSG:900913"));
+    var pt4 = new OpenLayers.Geometry.Point(feature_attribs["ur_x"], feature_attribs["ul_y"]).transform(new OpenLayers.Projection("EPSG:32651"), new OpenLayers.Projection("EPSG:900913"));
     
     var pts = [pt1, pt2, pt3, pt4];
     var lr = new OpenLayers.Geometry.LinearRing(pts);
@@ -186,52 +204,54 @@ Ext.onReady(function (){
             }
     });
 
-    var getInfoCtrl = new OpenLayers.Control.WMSGetFeatureInfo({
-        autoActivate: true,
-        infoFormat: "application/vnd.ogc.gml",
-        maxFeatures: 3,
-        url: geoserver_wms,
-        layers: [tile_layer],
-        eventListeners: {
-            "getfeatureinfo": function (e){
-                var items = [];
-                Ext.each (e.features, function(feature) {
-                    delete feature.attributes["File_Path"];http://192.168.56.100:8080/geoserver/geonode/wfs
-                    delete feature.attributes["GRID_REF"];
-                    delete feature.attributes["Tilename"];
-                    
-                    items.push({
-                        xtype: "propertygrid",
-                        title: feature.fid,
-                        source: feature.attributes
-                    });
-                });
-                
-                var tile_attribs = items[0].source;
-                
-                var tile = {
-                    georef: "E"+items[0].source.MINX/1000+"N"+items[0].source.MAXY/1000,
-                    attribs: tile_attribs,
-                    feature: createHighlightBox(tile_attribs)
-                }
-                
-                if (find_georef(tile_list, tile.georef)<0){
-                    tile_attribs["fid"] = "feature_"+tile.georef;
-                    tile_list.push(tile);
-                    highlight_layer.addFeatures([tile.feature]);
-                    console.log(tile_list);
-                }else{
-                    removeHighlight(tile.georef, highlight_layer);
-                }
-                
-                display_points("point_display", highlight_layer);
-                                
-            },
-            "nogetfeatureinfo": function(e){
-                console.log("No queryable layer found");
+    OpenLayers.Control.Click = OpenLayers.Class(OpenLayers.Control, {
+        defaultHandlerOptions: {
+            "single": true,
+            "double": false,
+            "pixelTolerance": 0,
+            "stopSingle": false,
+            "stopDouble": false
+        },
+        
+        initialize: function(options) {
+            this.handlerOptions = OpenLayers.Util.extend(
+                {}, this.defaultHandlerOptions);
+            OpenLayers.Control.prototype.initialize.apply(this, arguments);
+            
+            this.handler = new OpenLayers.Handler.Click(
+            this, {
+                'click': this.trigger
+            }, this.handlerOptions);
+        },
+        
+        trigger: function(e) {
+            var lonlat = map.getLonLatFromPixel(e.xy);
+            var click_pt = new OpenLayers.Geometry.Point(lonlat.lon, lonlat.lat);
+            var transformed_pt = click_pt.transform(map.getProjectionObject(),new OpenLayers.Projection("EPSG:32651"));
+            var computed_corners = get_corners(click_pt.x, click_pt.y);
+            
+            var temp_pt = new OpenLayers.Geometry.Point(computed_corners["ul_x"], computed_corners["ul_y"]);
+            
+            var tile = {
+                georef: "E"+(computed_corners["ul_x"]/1000)+"N"+(computed_corners["ul_y"]/1000),
+                corners: computed_corners,
+                feature: createHighlightBox(computed_corners)
             }
+            
+            if (find_georef(tile_list, tile.georef)<0){
+                tile_attribs["fid"] = "feature_"+tile.georef;
+                tile_list.push(tile);
+                highlight_layer.addFeatures([tile.feature]);
+                console.log(tile_list);
+            }else{
+                removeHighlight(tile.georef, highlight_layer);
+            }
+            
+            display_points(georef_list, "point_display");
         }
     });
+
+    click_select = new OpenLayers.Control.Click()
 
     map.addControl(getInfoCtrl);
     //map.addControl(drawCtrl);
