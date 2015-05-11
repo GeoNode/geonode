@@ -183,7 +183,7 @@ Ext.onReady(function (){
         
     
     var resp = http_proto.read();
-    console.log(resp);
+    console.log(resp.parseFeatures());
     
     var getInfoCtrl = new OpenLayers.Control.WMSGetFeatureInfo({
         autoActivate: true,
