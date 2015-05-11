@@ -269,8 +269,8 @@ Ext.onReady(function (){
     //map.addControl(drawCtrl);
     //drawCtrl.activate();
     map.addControls([
-        new OpenLayers.Control.PanZoomBar, 
-        new OpenLayers.Contro.Navigation
+        new OpenLayers.Control.PanZoomBar(), 
+        new OpenLayers.Control.Navigation()
     ]);
     app = new GeoExt.MapPanel(config);
     map.zoomToExtent(tile_layer.maxExtent, false);
