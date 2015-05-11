@@ -182,7 +182,7 @@ Ext.onReady(function (){
             srsName: map.getProjection()
         })
     });
-    
+    map.addLayers([wfs_layer]);
     var drawCtrl = new OpenLayers.Control();
     OpenLayers.Util.extend(drawCtrl, {
         draw: function (){
@@ -200,7 +200,7 @@ Ext.onReady(function (){
                 type: OpenLayers.Filter.Spatial.INTERSECTS,
                 value: bounds
             });
-            map.addLayers([wfs_layer]);
+            
             console.log(bounds);
         }
     });
