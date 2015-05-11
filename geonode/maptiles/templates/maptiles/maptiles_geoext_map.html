@@ -190,7 +190,7 @@ Ext.onReady(function (){
         zoom: 5
     };
 
-    var control = new OpenLayers.Control();
+    var drawControl = new OpenLayers.Control();
         OpenLayers.Util.extend(control, {
             draw: function () {
                 // this Handler.Box will intercept the shift-mousedown
@@ -266,6 +266,8 @@ Ext.onReady(function (){
 
     map.addControl(click_select);
     click_select.activate();
+    map.addControl(drawControl);
+    drawControl.activate();
     //map.addControl(drawCtrl);
     //drawCtrl.activate();
 
