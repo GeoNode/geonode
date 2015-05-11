@@ -170,22 +170,22 @@ Ext.onReady(function (){
         center: [13652590.86,1366919.96],
         zoom: 5
     };
-    
-    
-    var http_proto = new OpenLayers.Protocol.HTTP({
-        url: "http://192.168.56.100:8080/geoserver/geonode/wfs?request=GetFeature&typeName=geonode:index&outputFormat=application/json",
-        params:{
-            "request":"GetFeature",
-            "typeName":"geonode:index",
-            "outputFormat":"application/json"
-        }
+
+    var control = new OpenLayers.Control();
+        OpenLayers.Util.extend(control, {
+            draw: function () {
+                // this Handler.Box will intercept the shift-mousedown
+                // before Control.MouseDefault gets to see it
+                this.box = new OpenLayers.Handler.Box( control,
+                    {"done": this.notice},
+                    {keyMask: OpenLayers.Handler.MOD_SHIFT});
+                this.box.activate();
+            },
+
+            notice: function (bounds) {
+            }
     });
-        
-    
-    var resp = http_proto.read();
-    console.log(resp);
-    console.log(OpenLayers.Protocol.HTTP.parseFeatures(resp.priv));
-    
+
     var getInfoCtrl = new OpenLayers.Control.WMSGetFeatureInfo({
         autoActivate: true,
         infoFormat: "application/vnd.ogc.gml",
@@ -226,21 +226,6 @@ Ext.onReady(function (){
                 
                 display_points("point_display", highlight_layer);
                                 
-                var newpopup = new GeoExt.Popup({
-                    title: tile.georef,
-                    width: 200,
-                    height: 200,
-                    layout: "accordion",
-                    map: map,
-                    location: e.xy,
-                    items: items
-                });
-                
-                if(curr_popup != undefined){
-                    curr_popup.close()
-                }
-                curr_popup=newpopup;
-                newpopup.show();
             },
             "nogetfeatureinfo": function(e){
                 console.log("No queryable layer found");
