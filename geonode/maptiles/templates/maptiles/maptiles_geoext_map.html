@@ -170,13 +170,16 @@ Ext.onReady(function (){
         center: [13652590.86,1366919.96],
         zoom: 5
     };
-    console.log(stored_layer["name"]);
     
-;    var wfs_layer= new OpenLayers.Layer.Vector("WFS",{
+    
+    layer_name = stored_layer["name"];
+    var wfs_layer= new OpenLayers.Layer.Vector("WFS",{
         strategies: [new OpenLayers.Strategy.BBOX()],
         protocol: new OpenLayers.Protocol.WFS({
-            url: "http://"+curr_location+":8080/geoserver/geonode/ows?service=WFS",
-            featureType: stored_layer["name"]
+            url: "http://"+curr_location+":8080/geoserver/geonode/ows",
+            featurePrefix: "geonode",
+            featureType: layer_name.substring(layer_name.indexOf(":")+1,layer_name.length - 1),
+            srsName: map.getProjection()
         })
     });
     
