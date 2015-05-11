@@ -172,17 +172,18 @@ Ext.onReady(function (){
     };
     
     
-    var wfs_proto = new OpenLayers.Protocol.WFS({
+    var http_proto = new OpenLayers.Protocol.HTTP({
         url: "http://192.168.56.100:8080/geoserver/geonode/wfs",
-        formatOptions: {
-                outputFormat: "json"
-        },
-        featureType: "index",
-        featurePrefix: "geonode",
-        geometryName: "the_geom"
+        params:{
+            "request":"GetFeature",
+            "typeName":"geonode:index",
+            "outputFormat":"application/json"
+        }
     });
+        
     
-    var resp = wfs_proto.read();
+    var resp = http_proto.read();
+    console.log(resp);
     
     var getInfoCtrl = new OpenLayers.Control.WMSGetFeatureInfo({
         autoActivate: true,
