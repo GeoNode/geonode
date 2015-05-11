@@ -4,6 +4,7 @@ import sys
 from optparse import OptionParser
 from six.moves.urllib.request import Request
 
+
 JENKINS_IP = 'http://52.5.141.226/'
 GEONODE_DEMO_DOMAIN = 'demo.geonode.org'
 NODE_LIST = 'computer/api/json'
@@ -23,7 +24,6 @@ class DemoGeonode(object):
             print 're-deploy complete!'
         else:
             print 'No demo.genode.org node found on jenkins'
-        
 
     def getDemoNode(self, nodes_data):
         demo_node = None
@@ -32,12 +32,10 @@ class DemoGeonode(object):
                 demo_node = node['displayName']
         return demo_node
 
-
     def deleteNode(self, node_name):
         print 'Deleting demo node'
         self.j.delete_node(node_name)
         print 'Deletion requested'
-
 
     def buildJob(self, job):
         print 'Building %s job' % job
@@ -45,21 +43,21 @@ class DemoGeonode(object):
         print 'Build requested'
 
 
-
 if __name__ == "__main__":
     parser = OptionParser()
     parser.add_option("-u", "--username", dest="username",
-                  help="jenkins username")
-    parser.add_option("-t", "--token",
-                  dest="token",
-                  help="jenkins access token")
+                      help="jenkins username")
+    parser.add_option("-t", "--token", dest="token",
+                      help="jenkins access token")
+
     (options, args) = parser.parse_args()
+
     if options.username is not None and options.token is not None:
         task = sys.argv[-1]
         demo = DemoGeonode(options.username, options.token)
         if task == 'redeploy-demo-site':
             demo.redeployDemo()
-        if task == 'build-demo-job':
+        elif task == 'build-demo-job':
             demo.buildJob(GEONODE_DEMO_JOB)
         else:
             print 'Command not found'
