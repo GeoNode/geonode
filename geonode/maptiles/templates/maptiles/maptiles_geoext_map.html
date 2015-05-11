@@ -262,6 +262,10 @@ Ext.onReady(function (){
     click_select.activate();
     //map.addControl(drawCtrl);
     //drawCtrl.activate();
+    map.addControls([
+        new OpenLayers.Control.PanZoomBar, 
+        new OpenLayers.Contro.Navigation
+    ]);
     app = new GeoExt.MapPanel(config);
     map.zoomToExtent(tile_layer.maxExtent, false);
 });
