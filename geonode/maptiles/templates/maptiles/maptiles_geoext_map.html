@@ -182,6 +182,7 @@ Ext.onReady(function (){
             srsName: map.getProjection()
         })
     });
+    console.log(wfs_layer);
     map.addLayers([wfs_layer]);
     var drawCtrl = new OpenLayers.Control();
     OpenLayers.Util.extend(drawCtrl, {
