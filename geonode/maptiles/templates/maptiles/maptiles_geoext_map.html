@@ -46,6 +46,7 @@ function get_corners( x, y ){
 }
 
 function display_points(div_id, vec_layer){
+    console.log(div_id);
     var container = document.getElementById(div_id);
     container.removeChild(container.firstElementChild||container.firstChild);
     var list_element = document.createElement("ul");
