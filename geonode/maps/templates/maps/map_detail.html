@@ -5,6 +5,7 @@
 {% load url from future %}
 {% load base_tags %}
 {% load guardian_tags %}
+{% load eula_extras %}
 
 {% block title %}{{ resource.title }} — {{ block.super }}{% endblock %}
 
@@ -65,7 +66,8 @@
         {% get_obj_perms request.user for resource.get_self_resource as "perms" %}
         {% if "download_resourcebase" in perms %}
         <li class="list-group-item">
-          <button class="btn btn-primary btn-md btn-block" data-toggle="modal" data-target="#download-map">{% trans "Download Map" %}</button>
+          {% eula_nested_modal_dialog "download-map" %}
+          <button class="btn btn-primary btn-md btn-block" data-toggle="modal" data-target="#eula-nested-dialog">{% trans "Download Map" %}</button>
         </li>
         {% endif %}
         <div class="modal fade" id="download-map" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
