@@ -85,7 +85,7 @@ class Document(ResourceBase):
         if wand_available and self.extension and self.extension.lower(
         ) == 'pdf' and self.doc_file:
             logger.debug(
-                'Generating a thumbnail for document: {0}'.format(
+                u'Generating a thumbnail for document: {0}'.format(
                     self.title))
             with image.Image(filename=self.doc_file.path) as img:
                 img.sample(*size)
