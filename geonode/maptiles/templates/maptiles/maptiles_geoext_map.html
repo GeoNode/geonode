@@ -223,9 +223,8 @@ Ext.onReady(function (){
                     srsName: "EPSG:32651",
                 });              
                 var wfs_layer = new OpenLayers.Layer.Vector("WFS",{
-                    strategies: [new OpenLayers.Strategy.BBOX()],
+                    strategies: [new OpenLayers.Strategy.Filter(filter)],
                     protocol: wfs_proto,
-                    filter: filter
                 });
                 map.addLayers([wfs_layer]);
             }
