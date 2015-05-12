@@ -202,6 +202,7 @@ Ext.onReady(function (){
             notice: function (bounds) {
                 var filter = "Filter=";
                 console.log(bounds);
+                console.log("Height:"+bounds.getHeight());
                 var transformed_bounds = bounds.clone().transform( new OpenLayers.Projection("EPSG:900913"), new OpenLayers.Projection("EPSG:32651"));
                 console.log(transformed_bounds);
                 
