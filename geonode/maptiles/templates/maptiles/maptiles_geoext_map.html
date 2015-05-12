@@ -208,7 +208,6 @@ Ext.onReady(function (){
                 });
                 
                 var ogcFilter = new OpenLayers.Format.Filter();
-                console.log(ogcFilter.write(filter));
                 /*var http_proto = new OpenLayers.Protocol.HTTP({
                     //defaultFilter: filter,
                     url: "http://192.168.56.100:8080/geoserver/geonode/wfs?service=wfs&version=1.0.0&request=GetFeature&typeName=geonode:index&outputFormat=application/json"
@@ -222,11 +221,13 @@ Ext.onReady(function (){
                     featureNS: "http://www.geonode.org/",
                     geometryName: "the_geom",
                     srsName: "EPSG:32651",
-                    defaultFilter: filter
                 });              
-                //console.log(http_proto.url);
-                //console.log(http_proto.read({filter: filter}));
-                console.log(wfs_proto.read());
+                var wfs_layer = new OpenLayers.Layer.Vector("WFS",{
+                    strategies: [new OpenLayers.Strategy.BBOX()],
+                    protocol: wfs_proto,
+                    filter: filter
+                });
+                map.addLayers([wfs_layer]);
             }
     });
 
