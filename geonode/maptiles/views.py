@@ -214,7 +214,7 @@ def process_georefs(request):
             #    messages.warning(request, "WARNING: The following items are already in the cart and have not been added: \n{0}".format(str(duplicates)))
             
             if empty_georefs > 0:
-                messages.ERROR(request, "ERROR: [{0}] out of [{1}] georef tiles have no data \n".format(empty_georefs,len(georef_list)))
+                messages.error(request, "ERROR: [{0}] out of [{1}] georef tiles have no data \n".format(empty_georefs,len(georef_list)))
             
             # Inform user of the number of processed georefs and objects
             messages.info(request, "Processed [{0}] tiles/georefs. [{1}] objects added to cart".format(len(georef_list),(count - len(duplicates))))
