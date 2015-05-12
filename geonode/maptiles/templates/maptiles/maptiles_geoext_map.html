@@ -199,7 +199,8 @@ Ext.onReady(function (){
                 //value: transformed_bounds.toGeometry()
                 value: bounds.toGeometry()
             });
-            highlight_layer.addFeatures([new  OpenLayers.Feature.Vector(bounds.toGeometry())]);
+            var vector = new  OpenLayers.Feature.Vector(bounds.toGeometry());
+            highlight_layer.addFeatures([vector]);
             /*var http_proto = new OpenLayers.Protocol.HTTP({
                 //defaultFilter: filter,
                 url: "http://192.168.56.100:8080/geoserver/geonode/wfs?service=wfs&version=1.0.0&request=GetFeature&typeName=geonode:index&outputFormat=application/json"
