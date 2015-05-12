@@ -193,6 +193,8 @@ Ext.onReady(function (){
         
         notice: function (bounds) {
             
+            console.log("bounds:"+bounds);
+            
             var ll = map.getLonLatFromPixel(new OpenLayers.Pixel(bounds.left, bounds.bottom)); 
             var ur = map.getLonLatFromPixel(new OpenLayers.Pixel(bounds.right, bounds.top)); 
             var string_bounds = ll.lon.toFixed(4) + ", " + 
@@ -201,7 +203,7 @@ Ext.onReady(function (){
                   ur.lat.toFixed(4);
             
             console.log("string bounds:" + string_bounds);
-            console.log("bounds:"+bounds);
+            
             var transformed_bounds = bounds.clone().transform(new OpenLayers.Projection("EPSG:900913"), new OpenLayers.Projection("EPSG:32651"));
             console.log("transformed bounds:"+transformed_bounds);
             var filter = new OpenLayers.Filter.Spatial({
