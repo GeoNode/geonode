@@ -214,10 +214,9 @@ def process_georefs(request):
             #    messages.warning(request, "WARNING: The following items are already in the cart and have not been added: \n{0}".format(str(duplicates)))
             
             if empty_georefs > 0:
-                messages.error(request, "ERROR: [{0}] out of [{1}] georef tiles have no data \n".format(empty_georefs,len(georef_list)))
-            
-            # Inform user of the number of processed georefs and objects
-            messages.info(request, "Processed [{0}] tiles/georefs. [{1}] objects added to cart".format(len(georef_list),(count - len(duplicates))))
+                messages.error(request, "ERROR: [{0}] out of selected [{1}] georef tiles have no data! A total of [{2}] objects have been added to cart. \n".format(empty_georefs,len(georef_list),(count - len(duplicates))))
+            else: # Inform user of the number of processed georefs and objects
+                messages.info(request, "Processed [{0}] georefs tiles. A total of [{1}] objects have been added to cart.".format(len(georef_list),(count - len(duplicates))))
             
             return redirect('geonode.cephgeo.views.get_cart')
             
