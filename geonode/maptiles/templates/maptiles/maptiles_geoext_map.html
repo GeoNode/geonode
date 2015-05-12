@@ -204,7 +204,7 @@ Ext.onReady(function (){
                 var filter = new OpenLayers.Filter.Spatial({
                     type: OpenLayers.Filter.Spatial.INTERSECTS,
                     property: "the_geom",
-                    value: bounds.toGeometry()
+                    value: transformed_bounds.toGeometry()
                 });
                 
                 var ogcFilter = new OpenLayers.Format.Filter();
