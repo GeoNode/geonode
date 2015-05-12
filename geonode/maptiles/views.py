@@ -215,6 +215,8 @@ def process_georefs(request):
             
             if empty_georefs > 0:
                 messages.error(request, "ERROR: [{0}] out of selected [{1}] georef tiles have no data! A total of [{2}] objects have been added to cart. \n".format(empty_georefs,len(georef_list),(count - len(duplicates))))
+            elif len(duplicates)>0: # Inform user of the number of processed georefs and objects
+                messages.info(request, "Processed [{0}] georefs tiles. [{2}] duplicate objects found in cart have been skipped. A total of [{1}] objects have been added to cart. ".format(len(georef_list),(count - len(duplicates)),len(duplicates)))
             else: # Inform user of the number of processed georefs and objects
                 messages.info(request, "Processed [{0}] georefs tiles. A total of [{1}] objects have been added to cart.".format(len(georef_list),(count - len(duplicates))))
             
