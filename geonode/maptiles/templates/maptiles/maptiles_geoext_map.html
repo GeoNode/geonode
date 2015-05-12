@@ -200,13 +200,13 @@ Ext.onReady(function (){
             },
 
             notice: function (bounds) {
-                var transformed_bounds = bounds.clone().transform( new OpenLayers.Projection("EPSG:900913"), new OpenLayers.Projection("EPSG:32651"));
-                console.log(transformed_bounds.toString());
-                var filter = "&Filter" +"<ogc:Filter><ogc:BBOX><ogc:PropertyName>the_geom</ogc:PropertyName>" +
-                    "<gml: Box srsName=\"EPSG:32651\">"+transformed_bounds.toString()+"</gml:Box></ogc:BBOX></ogc:Filter>"
-                
+                var filter = new OpenLayers.Filter.Spatial({
+                    type: OpenLayers.Filter.Spatial.INTERSECTS,
+                    property: "the_geom",
+                    value: bounds.toGeometry()
+                });
                 var http_proto = new OpenLayers.Protocol.HTTP({
-                    url: "http://192.168.56.100:8080/geoserver/geonode/wfs?service=wfs&version=1.0.0&request=GetFeature&typeName=geonode:index&outputFormat=gml32"+filter
+                    url: "http://192.168.56.100:8080/geoserver/geonode/wfs?service=wfs&version=1.0.0&request=GetFeature&typeName=geonode:index&outputFormat=application/json"
 
                 });              
                 console.log(http_proto.url);
