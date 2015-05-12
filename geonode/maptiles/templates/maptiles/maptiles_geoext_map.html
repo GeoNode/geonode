@@ -230,27 +230,9 @@ Ext.onReady(function (){
                 strategies: [new OpenLayers.Strategy.Filter(filter)],
                 protocol: wfs_proto,
             });*/
-            var filtered_tile_layer = new OpenLayers.Layer.WMS(
-                layer_name + "- filtered", geoserver_wms,
-                {
-                    LAYERS: stored_layer["name"],
-                    format:  'image/png',
-                    bbox: stored_layer["bbox"],
-                    transparent: true,
-                    opacity: 0.3
-                },
-                {
-                    buffer: 0,
-                    displayOutsideMaxExtent: true,
-                    isBaseLayer: false,
-                    projection: "EPSG:900913",
-                    maxExtent: new OpenLayers.Bounds(stored_layer["bbox"]),
-                    singleTile: false
-                } 
-            );
-            filtered_tile_layer.params["FILTER"] = filterAsString;
+            tile_layer.params["FILTER"] = filterAsString;
             
-            map.addLayers([filtered_tile_layer]);
+            tile_layer.redraw();
             //console.log(wfs_layer);
         }
     });
