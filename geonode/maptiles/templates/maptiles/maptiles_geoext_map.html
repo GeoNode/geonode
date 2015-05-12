@@ -204,6 +204,7 @@ Ext.onReady(function (){
              var filterAsXml = parser.write(filter);
              var xml = new OpenLayers.Format.XML();
              var filterAsString = xml.write(filterAsXml);
+             console.log(filterAsString);
             /*var http_proto = new OpenLayers.Protocol.HTTP({
                 //defaultFilter: filter,
                 url: "http://192.168.56.100:8080/geoserver/geonode/wfs?service=wfs&version=1.0.0&request=GetFeature&typeName=geonode:index&outputFormat=application/json"
