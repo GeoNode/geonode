@@ -1,3 +1,7 @@
+#pydev
+.project
+.pydevproject
+
 # 
 build artifacts
 *.pyc
