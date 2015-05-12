@@ -1,11 +1,10 @@
 from django.shortcuts import render, render_to_response, redirect
-from django.http import HttpResponse, HttpResponseForbidden
+from django.http import HttpResponse, HttpResponseForbidden, HttpResponseRedirect, HttpResponse
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.utils.encoding import smart_str
 from django.contrib import messages
-from django.http import HttpResponseRedirect,HttpResponse
 from django.core import serializers
 from django.template import RequestContext
 
