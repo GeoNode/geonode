@@ -199,12 +199,7 @@ Ext.onReady(function (){
                 //value: transformed_bounds.toGeometry()
                 value: bounds.toGeometry()
             });
-            
-             var parser = new OpenLayers.Format.Filter.v1_1_0();
-             var filterAsXml = parser.write(filter);
-             var xml = new OpenLayers.Format.XML();
-             var filterAsString = xml.write(filterAsXml);
-             console.log(filterAsString);
+            highlight_layer.addFeatures([new  OpenLayers.Feature.Vector(bounds.toGeometry())]);
             /*var http_proto = new OpenLayers.Protocol.HTTP({
                 //defaultFilter: filter,
                 url: "http://192.168.56.100:8080/geoserver/geonode/wfs?service=wfs&version=1.0.0&request=GetFeature&typeName=geonode:index&outputFormat=application/json"
@@ -223,10 +218,7 @@ Ext.onReady(function (){
                 strategies: [new OpenLayers.Strategy.Filter(filter)],
                 protocol: wfs_proto,
             });*/
-            tile_layer.params.bbox = bounds;
-            tile_layer.params.transparent = false;
-            tile_layer.redraw();
-            //console.log(wfs_layer);
+            
         }
     });
 
