@@ -214,6 +214,7 @@ Ext.onReady(function (){
                 console.log(bounds);
                 var resp = http_proto.read({filter: filter});
                 console.log(resp.priv);
+                console.log(OpenLayers.Format.JSON(resp.priv.responseText));
             }
     });
 
