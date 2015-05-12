@@ -209,12 +209,9 @@ Ext.onReady(function (){
                     });
                 var http_proto = new OpenLayers.Protocol.HTTP({
                     url: "http://192.168.56.100:8080/geoserver/geonode/wfs?request=GetFeature&typeName=geonode:index&outputFormat=json",
-                    srsInBBOX: true
+                    srsInBBOX: true,
+                    filter: filter
                 });
-                console.log(bounds);
-                var resp = http_proto.read({filter: filter});
-                console.log(resp.priv);
-                console.log(OpenLayers.Format.JSON(resp.priv.responseText));
             }
     });
 
