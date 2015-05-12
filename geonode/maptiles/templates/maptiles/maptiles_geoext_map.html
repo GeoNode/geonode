@@ -202,15 +202,16 @@ Ext.onReady(function (){
             },
 
             notice: function (bounds) {
-                var ll = map.getLonLatFromPixel(new OpenLayers.Pixel(bounds.left, bounds.bottom)); 
-                var ur = map.getLonLatFromPixel(new OpenLayers.Pixel(bounds.right, bounds.top)); 
-                alert(ll.lon.toFixed(4) + ", " + 
-                    ll.lat.toFixed(4) + ", " + 
-                    ur.lon.toFixed(4) + ", " + 
-                    ur.lat.toFixed(4));
+                
+                var filter = new OpenLayers.Filter.Spatial({
+                    type: OpenLayers.Filter.Spatial.BBOX,
+                    value: bounds.transform(map.getProjectionObject(), new OpenLayers.Projection("EPSG:32651"));
+                    });
                 var http_proto = new OpenLayers.Protocol.HTTP({
                     url: "http://192.168.56.100:8080/geoserver/geonode/wfs?request=GetFeature&typeName=geonode:index&outputFormat=json"
+                    defaultFilter: filter
                 });
+                
                 var resp = http_proto.read();
                 console.log(resp);
             }
