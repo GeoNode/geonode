@@ -210,12 +210,12 @@ Ext.onReady(function (){
                 var ogcFilter = new OpenLayers.Format.Filter();
                 console.log(ogcFilter.write(filter));
                 var http_proto = new OpenLayers.Protocol.HTTP({
-                    defaultFilter: filter,
+                    //defaultFilter: filter,
                     url: "http://192.168.56.100:8080/geoserver/geonode/wfs?service=wfs&version=1.0.0&request=GetFeature&typeName=geonode:index&outputFormat=application/json"
 
                 });              
                 console.log(http_proto.url);
-                console.log(http_proto.read());
+                console.log(http_proto.read({filter: filter}));
             }
     });
 
