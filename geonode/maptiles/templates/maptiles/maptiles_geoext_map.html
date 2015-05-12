@@ -227,8 +227,9 @@ Ext.onReady(function (){
                     strategies: [new OpenLayers.Strategy.Filter(filter)],
                     protocol: wfs_proto,
                 });
-                map.addLayers([wfs_layer]);
-                console.log(wfs_layer);
+                //map.addLayers([wfs_layer]);
+                //console.log(wfs_layer);
+                console.log(wfs_layer.strategies[0].toString());
             }
     });
 
