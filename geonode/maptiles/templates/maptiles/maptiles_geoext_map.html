@@ -211,7 +211,7 @@ Ext.onReady(function (){
                     url: "http://192.168.56.100:8080/geoserver/geonode/wfs?request=GetFeature&typeName=geonode:index&outputFormat=json",
                     srsInBBOX: true
                 });
-                
+                console.log(http_proto.filterToParams(filter));
                 var resp = http_proto.read({filter: filter});
                 console.log(resp);
             }
