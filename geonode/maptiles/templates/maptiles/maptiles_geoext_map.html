@@ -169,15 +169,7 @@ Ext.onReady(function (){
     
     map.addLayers([mq_layer,tile_layer,highlight_layer]);
     
-    var items = [];/*{
-        xtype: "gx_zoomslider",
-        aggressive: false,
-        vertical: true,
-        height: 100,
-        x: 10,
-        y: 20
-    }];*/
-    
+    var items = [];
     var config = {
         renderTo: "preview_map",
         height: 400,
@@ -231,7 +223,7 @@ Ext.onReady(function (){
                 protocol: wfs_proto,
             });*/
             tile_layer.params.bbox = bounds;
-            
+            tile_layer.params.transparent = false;
             tile_layer.redraw();
             //console.log(wfs_layer);
         }
