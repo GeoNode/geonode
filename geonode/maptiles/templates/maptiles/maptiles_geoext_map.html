@@ -189,48 +189,71 @@ Ext.onReady(function (){
     };
 
     var drawControl = new OpenLayers.Control();
-        OpenLayers.Util.extend(drawControl, {
-            draw: function () {
-                // this Handler.Box will intercept the shift-mousedown
-                // before Control.MouseDefault gets to see it
-                this.box = new OpenLayers.Handler.Box( drawControl,
-                    {"done": this.notice},
-                    {keyMask: OpenLayers.Handler.MOD_SHIFT});
-                this.box.activate();
-            },
+    OpenLayers.Util.extend(drawControl, {
+        draw: function () {
+            // this Handler.Box will intercept the shift-mousedown
+            // before Control.MouseDefault gets to see it
+            this.box = new OpenLayers.Handler.Box( drawControl,
+                {"done": this.notice},
+                {keyMask: OpenLayers.Handler.MOD_SHIFT});
+            this.box.activate();
+        },
 
-            notice: function (bounds) {
-                var transformed_bounds = bounds.clone().transform(new OpenLayers.Projection("EPSG:900913"), new OpenLayers.Projection("EPSG:32651"));
-                var filter = new OpenLayers.Filter.Spatial({
-                    type: OpenLayers.Filter.Spatial.INTERSECTS,
-                    property: "the_geom",
-                    //value: transformed_bounds.toGeometry()
-                    value: bounds.toGeometry()
-                });
-                
-                var ogcFilter = new OpenLayers.Format.Filter();
-                /*var http_proto = new OpenLayers.Protocol.HTTP({
-                    //defaultFilter: filter,
-                    url: "http://192.168.56.100:8080/geoserver/geonode/wfs?service=wfs&version=1.0.0&request=GetFeature&typeName=geonode:index&outputFormat=application/json"
+        notice: function (bounds) {
+            var transformed_bounds = bounds.clone().transform(new OpenLayers.Projection("EPSG:900913"), new OpenLayers.Projection("EPSG:32651"));
+            var filter = new OpenLayers.Filter.Spatial({
+                type: OpenLayers.Filter.Spatial.INTERSECTS,
+                property: "the_geom",
+                //value: transformed_bounds.toGeometry()
+                value: bounds.toGeometry()
+            });
+            
+             var parser = new OpenLayers.Format.Filter.v1_1_0();
+             var filterAsXml = parser.write(filter);
+             var xml = new OpenLayers.Format.XML();
+             var filterAsString = xml.write(filterAsXml);
+            /*var http_proto = new OpenLayers.Protocol.HTTP({
+                //defaultFilter: filter,
+                url: "http://192.168.56.100:8080/geoserver/geonode/wfs?service=wfs&version=1.0.0&request=GetFeature&typeName=geonode:index&outputFormat=application/json"
 
-                });*/
-                var wfs_proto = new OpenLayers.Protocol.WFS({
-                    version: "1.0.0",
-                    url: "http://192.168.56.100:8080/geoserver/geonode/wfs",
-                    featurePrefix: "geonode",
-                    featureType: "index",
-                    featureNS: "http://www.geonode.org/",
-                    geometryName: "the_geom",
-                    srsName: "EPSG:32651",
-                });              
-                var wfs_layer = new OpenLayers.Layer.Vector("WFS",{
-                    strategies: [new OpenLayers.Strategy.Filter(filter)],
-                    protocol: wfs_proto,
-                });
-                //map.addLayers([wfs_layer]);
-                //console.log(wfs_layer);
-                console.log(wfs_layer.strategies[0].toString());
-            }
+            });*/
+            /*var wfs_proto = new OpenLayers.Protocol.WFS({
+                version: "1.0.0",
+                url: "http://192.168.56.100:8080/geoserver/geonode/wfs",
+                featurePrefix: "geonode",
+                featureType: "index",
+                featureNS: "http://www.geonode.org/",
+                geometryName: "the_geom",
+                srsName: "EPSG:32651",
+            });              
+            var wfs_layer = new OpenLayers.Layer.Vector("WFS",{
+                strategies: [new OpenLayers.Strategy.Filter(filter)],
+                protocol: wfs_proto,
+            });*/
+            var filtered_tile_layer = new OpenLayers.Layer.WMS(
+                layer_name + "- filtered", geoserver_wms,
+                {
+                    LAYERS: stored_layer["name"],
+                    format:  'image/png',
+                    bbox: stored_layer["bbox"],
+                    transparent: true,
+                    opacity: 0.3
+                },
+                {
+                    buffer: 0,
+                    displayOutsideMaxExtent: true,
+                    isBaseLayer: false,
+                    projection: "EPSG:900913",
+                    maxExtent: new OpenLayers.Bounds(stored_layer["bbox"]),
+                    singleTile: false
+                } 
+            );
+            filtered_tile_layer.params["FILTER"] = filterAsString;
+            
+            map.addLayers([filtered_tile_layer]);
+            //console.log(wfs_layer);
+            console.log(wfs_layer.strategies[0].toString());
+        }
     });
 
     OpenLayers.Control.Click = OpenLayers.Class(OpenLayers.Control, {
