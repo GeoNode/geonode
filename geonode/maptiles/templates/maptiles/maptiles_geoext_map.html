@@ -202,8 +202,7 @@ Ext.onReady(function (){
             notice: function (bounds) {
                 var filter = "Filter=";
                 console.log(bounds);
-                console.log(map.getProjection());
-                var transformed_bounds = bounds.transform( new OpenLayers.Projection(map.getProjection()), new OpenLayers.Projection("EPSG:32651"));
+                var transformed_bounds = bounds.transform( new OpenLayers.Projection("EPSG:900913"), new OpenLayers.Projection("EPSG:32651"));
                 console.log(transformed_bounds);
                 
                 var http_proto = new OpenLayers.Protocol.HTTP({
