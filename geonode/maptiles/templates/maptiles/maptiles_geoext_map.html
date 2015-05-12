@@ -230,7 +230,7 @@ Ext.onReady(function (){
                 strategies: [new OpenLayers.Strategy.Filter(filter)],
                 protocol: wfs_proto,
             });*/
-            tile_layer.params["FILTER"] = filterAsString;
+            tile_layer.params.bbox = bounds;
             
             tile_layer.redraw();
             //console.log(wfs_layer);
