@@ -7,6 +7,7 @@ from django.template import RequestContext
 from django.core.exceptions import ValidationError
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.http import HttpResponseRedirect
 
 from geonode.services.models import Service
 from geonode.layers.models import Layer
@@ -194,19 +195,26 @@ def process_georefs(request):
             #spprint(georef_list)
             #TODO: find all files with these georefs and add them to cart
             count = 0
+            empty_georefs = 0
             duplicates = []
             
             for georef in georef_list:      # Process each georef in list
                 objects = CephDataObject.objects.filter(name__startswith=georef)
                 count += len(objects)
-                for ceph_obj in objects:    # Add each Ceph object to cart
-                    try:
-                        add_to_cart_unique(request, ceph_obj.id)
-                    except DuplicateCartItemException:  # List each duplicate object
-                        duplicates.append(ceph_obj.name)
+                if len(objects) > 0:
+                    for ceph_obj in objects:    # Add each Ceph object to cart
+                        try:
+                            add_to_cart_unique(request, ceph_obj.id)
+                        except DuplicateCartItemException:  # List each duplicate object
+                            duplicates.append(ceph_obj.name)
+                else:
+                    empty_georefs += 1
             
-            if len(duplicates) > 0:         # Warn on duplicates
-                messages.warning(request, "WARNING: The following items are already in the cart and have not been added: \n{0}".format(str(duplicates)))
+            #if len(duplicates) > 0:         # Warn on duplicates
+            #    messages.warning(request, "WARNING: The following items are already in the cart and have not been added: \n{0}".format(str(duplicates)))
+            
+            if empty_georefs > 0:
+                messages.ERROR(request, "ERROR: [{0}] out of [{1}] georef tiles have no data \n".format(empty_georefs,len(georef_list)))
             
             # Inform user of the number of processed georefs and objects
             messages.info(request, "Processed [{0}] tiles/georefs. [{1}] objects added to cart".format(len(georef_list),(count - len(duplicates))))
