@@ -206,7 +206,7 @@ Ext.onReady(function (){
                     "<gml: Box srsName=\"EPSG:32651\">"+transformed_bounds.toString()+"</gml:Box></ogc:BBOX></ogc:Filter>"
                 
                 var http_proto = new OpenLayers.Protocol.HTTP({
-                    url: "http://192.168.56.100:8080/geoserver/geonode/wfs?request=GetFeature&typeName=geonode:index&outputFormat=gml32"+filter
+                    url: "http://192.168.56.100:8080/geoserver/geonode/wfs?service=wfs&version=1.0.0&request=GetFeature&typeName=geonode:index&outputFormat=gml32"+filter
                 });              
                 
                 console.log(http_proto.read());
