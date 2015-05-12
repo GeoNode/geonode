@@ -200,10 +200,10 @@ Ext.onReady(function (){
                   ur.lon.toFixed(4) + ", " + 
                   ur.lat.toFixed(4);
             
-            console.log(string_bounds);
-            console.log(bounds);
+            console.log("string bounds:" + string_bounds);
+            console.log("bounds:"+bounds);
             var transformed_bounds = bounds.clone().transform(new OpenLayers.Projection("EPSG:900913"), new OpenLayers.Projection("EPSG:32651"));
-            console.log(transformed_bounds);
+            console.log("transformed bounds:"+transformed_bounds);
             var filter = new OpenLayers.Filter.Spatial({
                 type: OpenLayers.Filter.Spatial.INTERSECTS,
                 property: "index",
