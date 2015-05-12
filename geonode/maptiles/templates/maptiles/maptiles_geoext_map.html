@@ -195,7 +195,7 @@ Ext.onReady(function (){
             var transformed_bounds = bounds.clone().transform(new OpenLayers.Projection("EPSG:900913"), new OpenLayers.Projection("EPSG:32651"));
             var filter = new OpenLayers.Filter.Spatial({
                 type: OpenLayers.Filter.Spatial.INTERSECTS,
-                property: "the_geom",
+                property: "index",
                 //value: transformed_bounds.toGeometry()
                 value: bounds.toGeometry()
             });
