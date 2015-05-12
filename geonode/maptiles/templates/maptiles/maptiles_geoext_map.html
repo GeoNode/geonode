@@ -209,8 +209,7 @@ Ext.onReady(function (){
                 
                 var http_proto = new OpenLayers.Protocol.HTTP({
                     url: "http://192.168.56.100:8080/geoserver/geonode/wfs?request=GetFeature&typeName=geonode:index&outputFormat=gml32",
-                });
-                console.log(http_proto.read());
+                });              
             }
     });
 
@@ -247,7 +246,7 @@ Ext.onReady(function (){
                 corners: computed_corners,
                 feature: createHighlightBox(computed_corners)
             }
-            
+            console.log(tile);
             if (find_georef(tile_list, tile.georef)<0){
                 //tile_attribs["fid"] = "feature_"+tile.georef;
                 tile_list.push(tile);
