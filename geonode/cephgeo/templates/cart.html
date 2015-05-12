@@ -24,7 +24,13 @@
     <h2 class="page-title">{% trans "Cart" %}</h2>
     
   </div>
-    
+  <div>
+	<ul>
+	  {% for message in messages %}
+	    {% if 'error' in message.tags %}<li>{{ message }}</li>{% endif %}
+	  {% endfor %}
+	</ul>
+  </div> 
   <table border="3" style="width:100%">
         <tr>
             <th>Product</th>
