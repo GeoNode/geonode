@@ -204,8 +204,9 @@ Ext.onReady(function (){
             notice: function (bounds) {
                 var filter = "Filter=";
                 console.log(bounds);
-                console.log(bounds.transform( new OpenLayers.Projection("EPSG:900913"), new OpenLayers.Projection("EPSG:32651")));
-                console.log(bounds.transform( new OpenLayers.Projection("EPSG:32651"), new OpenLayers.Projection("EPSG:900913")));
+                console.log(map.getProjection());
+                console.log(bounds.transform( new OpenLayers.Projection(map.getProjection()), new OpenLayers.Projection("EPSG:32651")));
+                
                 var http_proto = new OpenLayers.Protocol.HTTP({
                     url: "http://192.168.56.100:8080/geoserver/geonode/wfs?request=GetFeature&typeName=geonode:index&outputFormat=gml32",
                 });
