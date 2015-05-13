@@ -22,6 +22,6 @@ body {
 }
 
 /* override map_geoexplorer.css to make room for new header size*/
-#paneltbar {
+/*#paneltbar {
 	margin-top: 100px !important;
-}
+}*/
