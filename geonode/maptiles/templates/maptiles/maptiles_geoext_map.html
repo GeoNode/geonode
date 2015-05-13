@@ -216,14 +216,16 @@ Ext.onReady(function (){
                 srsName: "EPSG:32651",
                 outputFormat: "gml32"
             });              
-            
+            var response_txt;
             var wfs_resp = wfs_proto.read({
                 filter: filter,
                 callback: function(response){
                     console.log(response);
-                    console.log(response.priv.responseText);
+                    response_txt = response.responseText;
                 }
             });
+            console.log("response_txt:"+ response_txt);
+            console.log("wfs_resp:" +wfs_resp);
         }
     });
 
