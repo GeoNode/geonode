@@ -212,7 +212,7 @@ Ext.onReady(function (){
                 //value: transformed_bounds.toGeometry()
                 value: map_bounds.toGeometry()
             });
-
+            console.log(OpenLayers.Protocol.WFS.DEFAULTS);
             var wfs_proto = new OpenLayers.Protocol.WFS({
                 version: "1.0.0",
                 url: "http://192.168.56.100:8080/geoserver/geonode/wfs",
