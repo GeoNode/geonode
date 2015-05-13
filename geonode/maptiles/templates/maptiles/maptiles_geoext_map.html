@@ -214,9 +214,9 @@ Ext.onReady(function (){
                 featureType: "index",
                 featureNS: "http://www.geonode.org/",
                 srsName: "EPSG:32651",
-                outputFormat: "gml32"
+                outputFormat: "json"
             });              
-            var response_txt;
+
             var wfs_resp = wfs_proto.read({
                 filter: filter,
                 callback: function(response){
@@ -224,8 +224,7 @@ Ext.onReady(function (){
                     response_txt = response.responseText;
                 }
             });
-            console.log("response_txt:"+ response_txt);
-            console.log("wfs_resp:" +wfs_resp);
+
         }
     });
 
