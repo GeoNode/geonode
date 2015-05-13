@@ -218,7 +218,10 @@ Ext.onReady(function (){
             });              
             
             var wfs_resp = wfs_proto.read({
-                filter: filter
+                filter: filter,
+                callback: function(response){
+                    console.log(response.features);
+                }
             });
             console.log(wfs_resp);
         }
