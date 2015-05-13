@@ -158,6 +158,9 @@ class CommonModelApi(ModelResource):
         # Region filter
         regions = parameters.getlist("regions__name__in")
 
+        # Owner filter
+        owner = parameters.get("owner__username")
+
         # Sort order
         sort = parameters.get("order_by", "relevance")
 
@@ -251,6 +254,12 @@ class CommonModelApi(ModelResource):
                 sqs = (
                     SearchQuerySet() if sqs is None else sqs).filter_or(
                     regions_exact=region)
+
+        # filter by owner
+        if owner:
+            sqs = (
+                SearchQuerySet() if sqs is None else sqs).filter(
+                owner_exact=owner)
 
         # filter by date
         if date_start:
