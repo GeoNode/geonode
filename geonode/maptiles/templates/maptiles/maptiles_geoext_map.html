@@ -45,6 +45,14 @@ function get_corners( x, y ){
         };
 }
 
+function createTile(computed_corners){
+    return {
+                    georef: "E"+(computed_corners["ul_x"]/1000)+"N"+(computed_corners["ul_y"]/1000),
+                    corners: computed_corners,
+                    feature: null
+                };
+}
+
 function display_points(div_id, vec_layer){
     console.log(div_id);
     var container = document.getElementById(div_id);
@@ -224,15 +232,28 @@ Ext.onReady(function (){
                     console.log(response);
                     if(response.priv.responseText){
                         var json_parser = new OpenLayers.Format.JSON();
-                        feature_out = json_parser.read(response.priv.responseText);
-                        response_txt = response.priv.responseText
-                        console.log(feature_out);
+                        var feature_out = json_parser.read(response.priv.responseText);
+                        for ( f in feature_out.features ){
+                            var corners = {
+                                "ur_x": f.properties.MAXX, "ur_y": f.properties.MAXY,
+                                "ul_x": f.properties.MINX, "ul_y": f.properties.MAXY,
+                                "ll_x": f.properties.MINX, "ll_y": f.properties.MINY,
+                                "lr_x": f.properties.MAXX,"lr_y": f.properties.MINY
+                            }
+                            var tile = createTile(corners);
+                            if (find_georef(tile_list, tile.georef)<0){
+                                 tile_list.push(tile);
+                                 tile.feature = createHighlightBox(tile.corners);
+                                 highlight_layer.addFeatures([tile.feature]);
+                            }
+            
+                            display_points("point_display", highlight_layer);
+                        }
                     }else{
                         alert("No tiles/data found in that area");
                     }
                 }
             });
-            console.log(response_txt);
         }
     });
 
@@ -264,17 +285,12 @@ Ext.onReady(function (){
             
             var temp_pt = new OpenLayers.Geometry.Point(computed_corners["ul_x"], computed_corners["ul_y"]);
             
-            var tile = {
-                georef: "E"+(computed_corners["ul_x"]/1000)+"N"+(computed_corners["ul_y"]/1000),
-                corners: computed_corners,
-                feature: createHighlightBox(computed_corners)
-            }
-            console.log(tile);
+            var tile = createTile(computed_corners);
+
             if (find_georef(tile_list, tile.georef)<0){
-                //tile_attribs["fid"] = "feature_"+tile.georef;
                 tile_list.push(tile);
+                tile.feature = createHighlightBox(tile.corners);
                 highlight_layer.addFeatures([tile.feature]);
-                console.log(tile_list);
             }else{
                 removeHighlight(tile.georef, highlight_layer);
             }
