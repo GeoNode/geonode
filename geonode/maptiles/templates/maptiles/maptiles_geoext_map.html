@@ -202,7 +202,7 @@ Ext.onReady(function (){
             var map_bounds = new OpenLayers.Bounds();
             map_bounds.extend(ll);
             map_bounds.extend(ur);
-            
+            console.log(map_bounds);
             var transformed_bounds = map_bounds.clone().transform(new OpenLayers.Projection("EPSG:900913"), new OpenLayers.Projection("EPSG:32651"));
             console.log("transformed bounds:"+transformed_bounds);
             var filter = new OpenLayers.Filter.Spatial({
