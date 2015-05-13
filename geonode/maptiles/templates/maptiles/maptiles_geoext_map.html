@@ -224,7 +224,9 @@ Ext.onReady(function (){
                 defaultFilter: filter
             });              
             
-            var wfs_resp = wfs_proto.read();
+            var wfs_resp = wfs_proto.read({
+                filter: filter
+            });
             console.log(wfs_resp);
         }
     });
