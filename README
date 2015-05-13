@@ -2,9 +2,17 @@
     :alt: Build Status
     :target: http://travis-ci.org/GeoNode/geonode
 
-=========
- GeoNode
-=========
+
+GeoNode Support
+===============
+
+To get support, give feedbacks and suggestions please use the GeoNode official channels, the users mailing list: http://lists.osgeo.org/pipermail/geonode-users/ and the developers mailing list: http://lists.osgeo.org/pipermail/geonode-devel/.
+
+This repository is used to track code changes and GeoNode issues, please DON'T open new issues to ask for support.
+
+
+GeoNode Installation
+====================
 
 If you just want to try GeoNode, it is recommended to use Ubuntu 12.04 and install the python software properties.::
 
