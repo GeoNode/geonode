@@ -219,9 +219,8 @@ Ext.onReady(function (){
                 featurePrefix: "geonode",
                 featureType: "index",
                 featureNS: "http://www.geonode.org/",
-                geometryName: "the_geom",
                 srsName: "EPSG:32651",
-                defaultFilter: filter
+                outputFormat: "application/json"
             });              
             
             var wfs_resp = wfs_proto.read({
