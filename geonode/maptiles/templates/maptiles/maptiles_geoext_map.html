@@ -203,14 +203,13 @@ Ext.onReady(function (){
             map_bounds.extend(ll);
             map_bounds.extend(ur);
             
-            
             var transformed_bounds = map_bounds.clone().transform(new OpenLayers.Projection("EPSG:900913"), new OpenLayers.Projection("EPSG:32651"));
             console.log("transformed bounds:"+transformed_bounds);
             var filter = new OpenLayers.Filter.Spatial({
                 type: OpenLayers.Filter.Spatial.INTERSECTS,
                 property: "the_geom",
                 //value: transformed_bounds.toGeometry()
-                value: map_bounds.toGeometry()
+                value: transformed_bounds.toGeometry()
             });
             console.log(OpenLayers.Protocol.WFS.DEFAULTS);
             var wfs_proto = new OpenLayers.Protocol.WFS({
