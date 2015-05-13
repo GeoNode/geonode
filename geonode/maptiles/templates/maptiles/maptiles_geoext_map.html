@@ -208,7 +208,7 @@ Ext.onReady(function (){
             console.log("transformed bounds:"+transformed_bounds);
             var filter = new OpenLayers.Filter.Spatial({
                 type: OpenLayers.Filter.Spatial.INTERSECTS,
-                property: "index",
+                property: "geonode:index",
                 //value: transformed_bounds.toGeometry()
                 value: map_bounds.toGeometry()
             });
