@@ -192,9 +192,7 @@ Ext.onReady(function (){
         },
         
         notice: function (bounds) {
-            
-            
-            
+
             var ll = map.getLonLatFromPixel(new OpenLayers.Pixel(bounds.left, bounds.bottom)); 
             var ur = map.getLonLatFromPixel(new OpenLayers.Pixel(bounds.right, bounds.top)); 
            // var lr = map.getLonLatFromPixel(new OpenLayers.Pixel(bounds.right, bounds.bottom));
@@ -202,16 +200,18 @@ Ext.onReady(function (){
             var map_bounds = new OpenLayers.Bounds();
             map_bounds.extend(ll);
             map_bounds.extend(ur);
-            console.log(map_bounds);
+            
+            console.log("map bounds:"+map_bounds);
             var transformed_bounds = map_bounds.clone().transform(new OpenLayers.Projection("EPSG:900913"), new OpenLayers.Projection("EPSG:32651"));
             console.log("transformed bounds:"+transformed_bounds);
+            
             var filter = new OpenLayers.Filter.Spatial({
                 type: OpenLayers.Filter.Spatial.INTERSECTS,
                 property: "the_geom",
                 //value: transformed_bounds.toGeometry()
                 value: transformed_bounds.toGeometry()
             });
-            console.log(OpenLayers.Protocol.WFS.DEFAULTS);
+
             var wfs_proto = new OpenLayers.Protocol.WFS({
                 version: "1.0.0",
                 url: "http://192.168.56.100:8080/geoserver/geonode/wfs",
