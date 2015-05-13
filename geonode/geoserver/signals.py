@@ -321,7 +321,7 @@ def geoserver_post_save(instance, sender, **kwargs):
                                url=kml_reflector_link_download,
                                defaults=dict(
                                    extension='kml',
-                                   name=_("KML"),
+                                   name="KML",
                                    mime='text/xml',
                                    link_type='data',
                                )
@@ -350,7 +350,7 @@ def geoserver_post_save(instance, sender, **kwargs):
                                url=tile_url,
                                defaults=dict(
                                    extension='tiles',
-                                   name=_("Tiles"),
+                                   name="Tiles",
                                    mime='image/png',
                                    link_type='image',
                                )
@@ -397,7 +397,7 @@ def geoserver_post_save(instance, sender, **kwargs):
                                url=legend_url,
                                defaults=dict(
                                    extension='png',
-                                   name=_('Legend'),
+                                   name='Legend',
                                    url=legend_url,
                                    mime='image/png',
                                    link_type='image',
