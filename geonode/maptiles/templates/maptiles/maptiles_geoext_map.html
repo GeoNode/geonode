@@ -193,24 +193,24 @@ Ext.onReady(function (){
         
         notice: function (bounds) {
             
-            console.log("bounds:"+bounds);
+            
             
             var ll = map.getLonLatFromPixel(new OpenLayers.Pixel(bounds.left, bounds.bottom)); 
             var ur = map.getLonLatFromPixel(new OpenLayers.Pixel(bounds.right, bounds.top)); 
-            var string_bounds = ll.lon.toFixed(4) + ", " + 
-                  ll.lat.toFixed(4) + ", " + 
-                  ur.lon.toFixed(4) + ", " + 
-                  ur.lat.toFixed(4);
+           // var lr = map.getLonLatFromPixel(new OpenLayers.Pixel(bounds.right, bounds.bottom));
+            //var ul = map.getLonLatFromPixel(new OpenLayers.Pixel(bounds.left, bounds.top));
+            var map_bounds = new OpenLayers.Bounds();
+            map_bounds.extend(ll);
+            map_bounds.extend(ur);
             
-            console.log("string bounds:" + string_bounds);
             
-            var transformed_bounds = bounds.clone().transform(new OpenLayers.Projection("EPSG:900913"), new OpenLayers.Projection("EPSG:32651"));
+            var transformed_bounds = map_bounds.clone().transform(new OpenLayers.Projection("EPSG:900913"), new OpenLayers.Projection("EPSG:32651"));
             console.log("transformed bounds:"+transformed_bounds);
             var filter = new OpenLayers.Filter.Spatial({
                 type: OpenLayers.Filter.Spatial.INTERSECTS,
                 property: "index",
                 //value: transformed_bounds.toGeometry()
-                value: bounds.toGeometry()
+                value: map_bounds.toGeometry()
             });
 
             var wfs_proto = new OpenLayers.Protocol.WFS({
