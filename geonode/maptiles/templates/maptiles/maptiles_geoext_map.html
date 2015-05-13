@@ -195,20 +195,15 @@ Ext.onReady(function (){
 
             var ll = map.getLonLatFromPixel(new OpenLayers.Pixel(bounds.left, bounds.bottom)); 
             var ur = map.getLonLatFromPixel(new OpenLayers.Pixel(bounds.right, bounds.top)); 
-           // var lr = map.getLonLatFromPixel(new OpenLayers.Pixel(bounds.right, bounds.bottom));
-            //var ul = map.getLonLatFromPixel(new OpenLayers.Pixel(bounds.left, bounds.top));
             var map_bounds = new OpenLayers.Bounds();
             map_bounds.extend(ll);
             map_bounds.extend(ur);
             
-            console.log("map bounds:"+map_bounds);
             var transformed_bounds = map_bounds.clone().transform(new OpenLayers.Projection("EPSG:900913"), new OpenLayers.Projection("EPSG:32651"));
-            console.log("transformed bounds:"+transformed_bounds);
             
             var filter = new OpenLayers.Filter.Spatial({
                 type: OpenLayers.Filter.Spatial.INTERSECTS,
                 property: "the_geom",
-                //value: transformed_bounds.toGeometry()
                 value: transformed_bounds.toGeometry()
             });
 
@@ -225,7 +220,7 @@ Ext.onReady(function (){
             var wfs_resp = wfs_proto.read({
                 filter: filter
             });
-            console.log(wfs_resp);
+            console.log(wfs_resp.features);
         }
     });
 
