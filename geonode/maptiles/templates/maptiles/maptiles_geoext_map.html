@@ -220,10 +220,7 @@ Ext.onReady(function (){
             var wfs_resp = wfs_proto.read({
                 filter: filter
             });
-            console.log(wfs_resp.priv);
-            var httprequest = wfs_resp.priv;
-            httprequest.open();
-            console.log(httprequest.responseText);
+            console.log(wfs_resp);
         }
     });
 
