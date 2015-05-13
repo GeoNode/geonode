@@ -243,6 +243,7 @@ Ext.onReady(function (){
                                 "ll_x": f.properties.MINX, "ll_y": f.properties.MINY,
                                 "lr_x": f.properties.MAXX,"lr_y": f.properties.MINY
                             }
+                            console.log(corners);
                             var tile = createTile(corners);
                             if (find_georef(tile_list, tile.georef)<0){
                                  tile_list.push(tile);
