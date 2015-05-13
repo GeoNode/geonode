@@ -270,6 +270,9 @@ GEONODE_APPS = (
     # Django app for selecting and highlighting tiles
     'geonode.maptiles',
 
+    # EULA app
+    'geonode.eula',
+
     # GeoServer Apps
     # Geoserver needs to come last because
     # it's signals may rely on other apps' signals.

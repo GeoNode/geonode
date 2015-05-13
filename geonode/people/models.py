@@ -33,6 +33,31 @@ from account.models import EmailAddress
 from notification import models as notification
 
 from .utils import format_address
+from django_enumfield import enum
+    
+class OrganizationType(enum.Enum):
+    PHIL_LIDAR_1 = 0
+    PHIL_LIDAR_2 = 1
+    GOVERNMENT_AGENCY = 2
+    ACADEMIC_OR_RESEARCH_INSTITUTION = 3
+    ACADEME = 4
+    NGO_INTERNATIONAL = 5
+    NGO_LOCAL = 6
+    PRIVATE = 7
+    OTHER = 8
+
+    
+    labels = {
+        PHIL_LIDAR_1 : 'Phil-LiDAR 1 SUC',
+        PHIL_LIDAR_2 : 'Phil-LiDAR 2 SUC',
+        GOVERNMENT_AGENCY : 'Government Agency',
+        ACADEMIC_OR_RESEARCH_INSTITUTION : 'Academic/Research Institution',
+        ACADEME : 'Academe',
+        NGO_INTERNATIONAL : 'International NGO',
+        NGO_LOCAL : 'Local NGO',
+        PRIVATE : 'Private Insitution',
+        OTHER : 'Other',
+    }
 
 
 class Profile(AbstractUser):
@@ -90,6 +115,17 @@ class Profile(AbstractUser):
         'commonly used word(s) or formalised word(s) or phrase(s) used to describe the subject \
             (space or comma-separated'))
 
+    ### Custom Attribs
+    organization_type = enum.EnumField(
+        OrganizationType, 
+        default=OrganizationType.OTHER,
+        help_text=_('Organization type based on Phil-LiDAR1 Data Distribution Policy'))
+        
+    eula_signed = models.BooleanField(
+        default=False,
+        help_text=_('Whether or not this user has signed the EULA'))
+
+
     def get_absolute_url(self):
         return reverse('profile_detail', args=[self.username, ])
 
@@ -127,7 +163,6 @@ class Profile(AbstractUser):
     @property
     def location(self):
         return format_address(self.delivery, self.zipcode, self.city, self.area, self.country)
-
 
 def get_anonymous_user_instance(Profile):
     return Profile(username='AnonymousUser')

@@ -55,6 +55,7 @@ class ProfileAdmin(admin.ModelAdmin):
         (_('Permissions'), {'fields': ('is_active', 'is_staff', 'is_superuser',
                                        'groups')}),
         (_('Important dates'), {'fields': ('last_login', 'date_joined')}),
+        (_('Datastore attributes'), {'fields': ('organization_type', 'eula_signed')}),
     )
     add_fieldsets = (
         (None, {

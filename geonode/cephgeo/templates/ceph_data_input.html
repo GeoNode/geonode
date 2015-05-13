@@ -2,24 +2,17 @@
 {% load i18n %}
 {% load url from future %}
 
-{% block title %} {% trans "Data Input Form" %} - {{ block.super }} {% endblock %}
+{% block title %} {% trans "Metadata Input Form" %} - {{ block.super }} {% endblock %}
 
-{% block body_class %}Cephgeo Data Input{% endblock %}
+{% block body_class %}Cephgeo Metadata Input{% endblock %}
 
 {% block body_outer %}
   {% block body %}
   
   <div class="page-header">
-    <h2 class="page-title">{% trans "Data Input Form" %}</h2>
+    <h2 class="page-title">{% trans "Metadata Input Form" %}</h2>
   </div>
   
-  <!--
-  <form action="/your-name/" method="post">
-    {% csrf_token %}
-    {{ form }}
-    <input type="submit" value="Submit" />
-  </form>
-  -->
   {% load crispy_forms_tags %}
   {% crispy data_input_form %}
 {% endblock body %}
