@@ -30,7 +30,7 @@
 	  {% endif %}
     {% endfor %}
     {% if grid_ref != None %}
-	  <li><a href="{% url 'cephgeo.views.file_list_geonode' 'nosort' %}" >full list</a></li>
+	  <li><a href="{% url 'cephgeo.views.file_list_geonode' 'default' %}" >full list</a></li>
     {% endif %}
   </ul>  
   </div>
@@ -41,7 +41,7 @@
 		<li><h4>
               <b>{{ file.name }}</b>
             </h4>
-			<br /><b>Grid Reference:</b> <a href="{% url 'cephgeo.views.file_list_geonode' 'nosort' file.grid_ref %}">{{ file.grid_ref }}</a>
+			<br /><b>Grid Reference:</b> <a href="{% url 'cephgeo.views.file_list_geonode' 'default' file.grid_ref %}">{{ file.grid_ref }}</a>
 			<br /><b>File Hash:</b> {{ file.file_hash }}
 			<br /><b>Data Type:</b> {{ file.geo_type }}
 			<br /><b>Last Modified:</b> {{ file.last_modified }}

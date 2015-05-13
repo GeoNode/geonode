@@ -64,6 +64,7 @@ class FTPRequestToObjectIndexAdmin(admin.ModelAdmin):
     search_fields = ('cephobject', 'ftprequest',)
 
 admin.site.register(Cart, CartAdmin)
+admin.site.register(Item, ItemAdmin)
 admin.site.register(CephDataObject, CephDataObjectAdmin)
 admin.site.register(FTPRequest, FTPRequestAdmin)
 admin.site.register(FTPRequestToObjectIndex, FTPRequestToObjectIndexAdmin)

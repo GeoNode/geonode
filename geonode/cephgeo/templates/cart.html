@@ -4,22 +4,33 @@
 {% load staticfiles %}
 {% load url from future %}
 
+{% load eula_extras %}
+
 {% block title %} {% trans "Cart" %} - {{ block.super }} {% endblock %}
 
 {% block body_class %}Cephgeo cart{% endblock %}
 
 {% block body_outer %}
   {% block body %}
-  
-  <div class="page-header">
+  {% eula_modal_dialog "/ceph/ftp/" %} 
+<!--
+    #TODO: CHECK IF CART IS EMPTY BEFORE CREATING FTP REQUEST!
+-->
+      <div class="page-header">
     <ul class="list-inline pull-right" id="sort">
-      <li></li><a href="{% url "cephgeo.views.create_ftp_folder" %}" class="btn btn-default">{% trans "Create FTP Folder" %}</a></li>
-      <li><a href="{% url "cephgeo.views.clear_cart" %}" class="btn btn-default">{% trans "Remove All Items" %}</a></li>
+      <li><button class="btn btn-default" data-toggle="modal" data-target="#eula-dialog">{% trans "Create FTP Folder" %}</a></li>
+      <li><a href="{% url 'cephgeo.views.clear_cart' %}"><button class="btn btn-default">{% trans "Remove All Items" %}</button></a></li>
     </ul>
     <h2 class="page-title">{% trans "Cart" %}</h2>
     
   </div>
-
+  <div>
+	<ul>
+	  {% for message in messages %}
+	    {% if 'error' in message.tags %}<li>{{ message }}</li>{% endif %}
+	  {% endfor %}
+	</ul>
+  </div> 
   <table border="3" style="width:100%">
         <tr>
             <th>Product</th>

@@ -1,0 +1,11 @@
+{% extends "site_base.html" %}
+
+{% load i18n %}
+{% load eula_extras %}
+{% block title %} {% trans "About GeoNode" %} — {{ block.super }} {% endblock %}
+
+{% block body_outer %}
+    {% show_eula %}
+    {% block sign_form %}
+    {% endblock %}
+{% endblock %}
