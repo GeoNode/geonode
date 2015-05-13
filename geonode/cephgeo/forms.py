@@ -14,7 +14,7 @@ class DataInputForm(forms.Form):
         self.helper = FormHelper()
         self.helper.layout = Layout(
             Fieldset(
-                'Data output from bulk_upload.py:',
+                'Metadata output from bulk_upload.py:',
                 'data',
                 'pickled',
             ),
