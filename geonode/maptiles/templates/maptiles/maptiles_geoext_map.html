@@ -221,7 +221,14 @@ Ext.onReady(function (){
                 filter: filter,
                 callback: function(response){
                     console.log(response);
-                    response_txt = response.responseText;
+                    if(response_txt){
+                        var json_parser = new OpenLayers.Format.JSON();
+                        feature_out = json_parser.read(response_txt);
+                        console.log(feature_out);
+                    }else{
+                        alert("No tiles/data found in that area");
+                    }
+                    
                 }
             });
 
