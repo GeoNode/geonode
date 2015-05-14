@@ -229,3 +229,8 @@ def process_georefs(request):
     
     else:   # Must process HTTP POST method from form
         raise Exception("HTTP method must be POST!")
+
+def georefs_validation(request):
+    result = 0;
+    return result
+    
