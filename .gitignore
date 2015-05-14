@@ -1,6 +1,7 @@
-#pydev
+#eclipse & pydev
 .project
 .pydevproject
+.settings
 
 # 
 build artifacts
