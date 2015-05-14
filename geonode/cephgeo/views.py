@@ -277,7 +277,6 @@ def create_ftp_folder(request):
                                 {   "result_msg" : "Your FTP request is being processed. A notification \
                                      will arrive via email regarding the completion of your request. The \
                                      items you requested are listed below.",
-                                    "cart" : CartProxy(request),
                                     "ftp_objects" : ftp_objs,
                                     "total_size" : total_size_in_bytes,},
                                 context_instance=RequestContext(request))
