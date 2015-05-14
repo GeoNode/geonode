@@ -8,15 +8,6 @@
 
 {% block body_outer %}
   {% block body %}
-  <script type="text/javascript" >
-      function georef_validation(){
-          var georef_string = document.getElementById("georef_area").getAttribute("value");
-          console.log(georef_string);
-          return false;
-      }
-  </script>
-  
-  
   
   <div class="page-header">
     <h2 class="page-title">{% trans "Georef Input Form" %}</h2>
@@ -27,6 +18,15 @@
     <input type="textarea" name="georef_area" ></input>
     <input type="submit" name="georef_submit" value="Submit" onsubmit ="return georef_validation();" ></input>
 </form>
+ <script type="text/javascript" >
+      function georef_validation(){
+          var georef_string = document.getElementById("georef_area").getAttribute("value");
+          console.log(georef_string);
+          return false;
+      }
+  </script>
+  
+  
 {% endblock body %}
  {% block sidebar %}{% endblock sidebar %}
 {% endblock body_outer %}
