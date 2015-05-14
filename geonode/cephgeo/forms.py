@@ -71,5 +71,20 @@ class UserRegistrationForm1(forms.Form):
         choices = ((0, "Non-commercial"), (1, "Commercial")),
         required = True,
     )
-    
+    def __init__(self, *args, **kwargs):
+        self.helper = FormHelper()
+        self.helper.layout = Layout(
+            Fieldset(
+                'User Registration Form',
+                'name_of_requestor',
+                'organization',
+                'local_or_foreign',
+                'intended_use',
+            ),
+            FormActions(
+                Submit('submit', 'Submit', css_class='button white'),
+                Button('clear', 'Clear', css_class='button white')
+            )
+        )
+        super(RequestDataClassForm, self).__init__(*args, **kwargs)
     

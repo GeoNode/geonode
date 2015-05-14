@@ -10,7 +10,7 @@ from django.template import RequestContext
 
 from pprint import pprint
 
-from geonode.cephgeo.forms import DataInputForm
+from geonode.cephgeo.forms import DataInputForm, UserRegistrationForm1
 from geonode.cephgeo.models import CephDataObject, FTPRequest, FTPStatus, FTPRequestToObjectIndex
 from geonode.tasks.ftp import process_ftp_request
 
@@ -330,6 +330,22 @@ def clear_cart(request):
     response.delete_cookie("cart")
     return response
 
+def user_registration(request):
+    if request.method == 'POST':
+        # create a form instance and populate it with data from the request:
+        # pprint(request.POST)
+        form = UserRegistrationForm1(request.POST)
+        # check whether it's valid:
+        if form.is_valid():
+            messages.info(request, "User registration form completion success!")
+            return redirect('ceph_main')
+        else:
+            messages.error(request, "Invalid input on user registration form")
+            return redirect('ceph_main')
+    # if a GET (or any other method) we'll create a blank form
+    else:
+        form = UserRegistrationForm1()
+        return render(request, 'user_registration.html', {'user_reg_form': form})
 ### HELPER FUNCTIONS ###
 
 def delete_all_items_from_cart(request, warn_user=True):
