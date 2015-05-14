@@ -345,9 +345,9 @@ def user_registration(request, page=None):
     # if a GET (or any other method) we'll create a blank form
     else:
         form = UserRegistrationForm1()
-        if page is '1':
+        if page == '1':
             form = UserRegistrationForm1()
-        elif page is '2':
+        elif page == '2':
             form = UserRegistrationForm2()
         return render(request, 'user_registration.html', {'user_reg_form': form})
 ### HELPER FUNCTIONS ###
