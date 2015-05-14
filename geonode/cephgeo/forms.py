@@ -52,7 +52,7 @@ class RequestDataClassForm(forms.Form):
 
 class UserRegistrationForm1(forms.Form):
     name_of_requestor = forms.CharField(
-        label = "Name of requestor",
+        label = "Name of Requestor",
         max_length = 80,
         required = True,
     )
@@ -86,5 +86,5 @@ class UserRegistrationForm1(forms.Form):
                 Button('clear', 'Clear', css_class='button white')
             )
         )
-        super(RequestDataClassForm, self).__init__(*args, **kwargs)
+        super(UserRegistrationForm1, self).__init__(*args, **kwargs)
     
