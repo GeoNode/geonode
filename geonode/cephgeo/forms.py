@@ -1,6 +1,5 @@
 from django import forms
 from django.core.exceptions import ValidationError
-from geonode.cephgeo.models import DataClassification
 
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Fieldset, ButtonHolder, Submit, Button
@@ -75,7 +74,7 @@ class UserRegistrationForm1(forms.Form):
         self.helper = FormHelper()
         self.helper.layout = Layout(
             Fieldset(
-                'User Registration Form',
+                'Page 1',
                 'name_of_requestor',
                 'organization',
                 'local_or_foreign',
@@ -87,4 +86,42 @@ class UserRegistrationForm1(forms.Form):
             )
         )
         super(UserRegistrationForm1, self).__init__(*args, **kwargs)
+
+class UserRegistrationForm2(forms.Form):
+    project_summary = forms.CharField(
+        label = "Summary of Project/Program",
+        required = True,
+    )
+    organization_type = forms.TypedChoiceField(
+        label = "Type of Organization",
+        choices = ((2, "Government Agency/Local Government Unit"),
+                   (3, "Academic or Research Institution"),
+                   (4, "Academe"),
+                   (5, "International NGO"),
+                   (6, "Local NGO"),
+                   (7, "Private"),
+                   (8, "Other"),),
+        
+        required = True,
+    )
+    other_org_type = forms.CharField(
+        label = "If 'Type of Organization' is 'Other' please specify below:",
+        max_length = 80,
+        required = True,
+    )
+    def __init__(self, *args, **kwargs):
+        self.helper = FormHelper()
+        self.helper.layout = Layout(
+            Fieldset(
+                'Page 2',
+                'project_summary',
+                'organization_type',
+                'other_org_type',
+            ),
+            FormActions(
+                Submit('submit', 'Submit', css_class='button white'),
+                Button('clear', 'Clear', css_class='button white')
+            )
+        )
+        super(UserRegistrationForm2, self).__init__(*args, **kwargs)
     
