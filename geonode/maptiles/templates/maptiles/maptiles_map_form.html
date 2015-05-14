@@ -25,7 +25,7 @@
   <form id="georef_form" action="/maptiles/addtocart/"  method="POST">
      {% csrf_token %}
     <input type="textarea" name="georef_area" ></input>
-    <input type="submit" name="georef_submit" value="Submit" onsubmit ="return javascript:georef_validation();" ></input>
+    <input type="submit" name="georef_submit" value="Submit" onsubmit ="return georef_validation();" ></input>
 </form>
 {% endblock body %}
  {% block sidebar %}{% endblock sidebar %}
