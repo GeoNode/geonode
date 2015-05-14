@@ -49,3 +49,27 @@ class RequestDataClassForm(forms.Form):
             )
         )
         super(RequestDataClassForm, self).__init__(*args, **kwargs)
+
+class UserRegistrationForm1(forms.Form):
+    name_of_requestor = forms.CharField(
+        label = "Name of requestor",
+        max_length = 80,
+        required = True,
+    )
+    organization = forms.CharField(
+        label = "Office/Organization",
+        max_length = 80,
+        required = True,
+    )
+    local_or_foreign = forms.TypedChoiceField(
+        label = "Are you a local or foreign entity?",
+        choices = ((0, "Local"), (1, "Foreign")),
+        required = True,
+    )
+    intended_use = forms.TypedChoiceField(
+        label = "Intended use of dataset?",
+        choices = ((0, "Non-commercial"), (1, "Commercial")),
+        required = True,
+    )
+    
+    
