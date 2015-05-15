@@ -11,6 +11,7 @@
        $("#georef_form").submit(function(e) {
            var json_parser = new OpenLayers.Format.JSON()
            var georef_string = document.getElementById("georef_area").getAttribute("value");
+           console.log(georef_string);
            var json = json_parser.write(georef_string);
            console.log(json);
            $.post('validate/', json);
