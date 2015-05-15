@@ -231,6 +231,12 @@ def process_georefs(request):
         raise Exception("HTTP method must be POST!")
 
 def georefs_validation(request):
-    result = 0;
+    if request.method != 'POST':
+        return HttpResponse(
+            content='no data received from HTTP POST',
+            status=405,
+            mimetype='text/plain'
+        )
+    result=0;
     return result
     
