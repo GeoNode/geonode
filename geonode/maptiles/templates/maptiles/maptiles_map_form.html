@@ -22,7 +22,7 @@
     <h2 class="page-title">{% trans "Georef Input Form" %}</h2>
   </div>
   
-  <form id="georef_form" action="/maptiles/addtocart/"  method="POST">
+  <form id="georef_form" method="POST">
      {% csrf_token %}
     <input type="textarea" name="georef_area" ></input>
     <input id="georef_submit" type="submit" name="georef_submit" value="Submit"></input>
