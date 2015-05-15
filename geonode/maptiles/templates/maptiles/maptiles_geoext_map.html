@@ -7,13 +7,13 @@
 <script type="text/javascript" src="http://spatialreference.org/ref/epsg/32651/proj4js/"></script>
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7/jquery.js"></script>
 <script type="text/javascript" >
-/*$(document).ready(function(){
-       alert("hello world!");
+    $(document).ready(function(){
+        alert("hello world!");
        $("#georef_form").submit(function(e) {
            e.preventDefault(); 
            //$('#georef_submit').click();
        });
-  });*/
+    });
 </script>
 <script type="text/javascript" >
 
@@ -318,16 +318,6 @@ Ext.onReady(function (){
     app = new GeoExt.MapPanel(config);
     map.zoomToExtent(tile_layer.maxExtent, false);
     
-    /*$("#georef_form").submit(function(e) {
-        alert("hello ulit!");
-        e.preventDefault(); 
-        //$('#georef_submit').click();
-    });*/
-    $(".submit").click(function(e) {
-        alert("hello ulit!");
-        e.preventDefault(); 
-        //$('#georef_submit').click();
-    });
 });
 {% endautoescape %}
 </script>
