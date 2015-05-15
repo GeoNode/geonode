@@ -13,7 +13,7 @@
            var georef_string = document.getElementById("georef_area").getAttribute("value");
            var json = json_parser.write(georef_string);
            console.log(json);
-           $.post('validate', json);
+           $.post('validate/', json);
            e.preventDefault(); 
        });
     });
