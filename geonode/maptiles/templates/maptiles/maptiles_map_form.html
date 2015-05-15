@@ -19,18 +19,15 @@
     <input id="georef_submit" type="submit" name="georef_submit" value="Submit"></input>
 </form>
  <script type="text/javascript" >
-      $("#georef_form").submit(function(e) {
-            console.log(e);
+     $(document).ready(function(){
+        $("#georef_form").submit(function(e) {
             e.preventDefault();
             //$('#georef_submit').click();
-            return false;
         });
+    }
   </script>
   
   
 {% endblock body %}
  {% block sidebar %}{% endblock sidebar %}
 {% endblock body_outer %}
-
-
-
