@@ -7,7 +7,7 @@ from django.template import RequestContext
 from django.core.exceptions import ValidationError
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpResponse
 
 from geonode.services.models import Service
 from geonode.layers.models import Layer
@@ -230,6 +230,7 @@ def process_georefs(request):
     else:   # Must process HTTP POST method from form
         raise Exception("HTTP method must be POST!")
 
+@login_required
 def georefs_validation(request):
     if request.method != 'POST':
         return HttpResponse(
