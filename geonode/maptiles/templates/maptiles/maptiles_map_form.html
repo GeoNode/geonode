@@ -1,7 +1,16 @@
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7/jquery.js"></script>
 {% extends "ceph_base.html" %}
 {% load i18n %}
+<script type="text/javascript" >
+    $(document).ready(function(){
+       $("#georef_form").submit(function(e) {
+           e.preventDefault(); 
+           //$('#georef_submit').click();
+            alert("submit pressed");
+       });
+  }
+</script>
 {% load url from future %}
-<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7/jquery.js"></script>
 {% block title %} {% trans "Data Input Form" %} - {{ block.super }} {% endblock %}
 
 {% block body_class %}Cephgeo Data Input{% endblock %}
@@ -18,16 +27,6 @@
     <input type="textarea" name="georef_area" ></input>
     <input id="georef_submit" type="submit" name="georef_submit" value="Submit"></input>
 </form>
- <script type="text/javascript" >
-     $(document).ready(function(){
-        $("#georef_form").submit(function(e) {
-            e.preventDefault(); 
-            //$('#georef_submit').click();
-             alert("submit pressed");
-        });
-    }
-  </script>
-  
   
 {% endblock body %}
  {% block sidebar %}{% endblock sidebar %}
