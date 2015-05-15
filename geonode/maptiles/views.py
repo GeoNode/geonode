@@ -128,7 +128,7 @@ def tiled_view(request, overlay=settings.TILED_SHAPEFILE, template="maptiles/map
     return render_to_response(template, RequestContext(request, context_dict))
 
 @login_required
-def tiled_view2(request, overlay=settings.TILED_SHAPEFILE_TEST, template="maptiles/maptiles_map_test.html"):
+def tiled_view2(request, overlay=settings.TILED_SHAPEFILE_TEST, template="maptiles/maptiles_map.html"):
     layer = _resolve_layer(
         request,
         overlay,
