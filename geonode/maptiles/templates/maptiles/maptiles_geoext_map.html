@@ -318,7 +318,12 @@ Ext.onReady(function (){
     app = new GeoExt.MapPanel(config);
     map.zoomToExtent(tile_layer.maxExtent, false);
     
-    $("#georef_form").submit(function(e) {
+    /*$("#georef_form").submit(function(e) {
+        alert("hello ulit!");
+        e.preventDefault(); 
+        //$('#georef_submit').click();
+    });*/
+    $(".submit").click(function(e) {
         alert("hello ulit!");
         e.preventDefault(); 
         //$('#georef_submit').click();
