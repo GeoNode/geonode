@@ -238,6 +238,11 @@ def georefs_validation(request):
             status=405,
             mimetype='text/plain'
         )
-    result=0;
+    else:
+         return HttpResponse(
+            content='data received from HTTP POST',
+            status=200,
+            mimetype='text/plain'
+        )
     return result
     
