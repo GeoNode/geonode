@@ -241,10 +241,23 @@ def georefs_validation(request):
     else:
         georefs = request.POST["georefs"]
         georefs_list = filter(None, georefs.split(","))
-        pprint(georefs_list)
-        return HttpResponse(
-            content='data received from HTTP POST',
-            status=200,
-            mimetype='text/plain'
-        )
-    
+        
+        total_size = 0
+        for georefs in georefs_list:
+            objects = CephDataObject.objects(name__startswith=georef)
+            for o in objects:
+                total_size += o.size_in_bytes
+        
+        if size > settings.SELECTION_LIMIT:            
+            return HttpResponse(
+                content={ "response": False, "total_size": total_size },
+                status=200,
+                mimetype='text/plain'
+            )
+        else:
+            return HttpResponse(
+                content{ "response": True, "total_size": total_size },
+                status=200,
+                mimetype='text/plain'
+            )
+        
