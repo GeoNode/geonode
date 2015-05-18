@@ -8,14 +8,15 @@
 # Translators:
 # Translators:
 # Translators:
+# Translators:
 # Minpa Lee <mapplus@gmail.com>, 2013-2015
 # Minpa Lee <mapplus@gmail.com>, 2013
 msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-03-02 23:16-0600\n"
-"PO-Revision-Date: 2015-03-03 05:10+0000\n"
+"POT-Creation-Date: 2015-05-18 12:10-0500\n"
+"PO-Revision-Date: 2015-05-18 16:31+0000\n"
 "Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
 "Language-Team: Korean (http://www.transifex.com/projects/p/geonode/language/"
 "ko/)\n"
@@ -65,14 +66,14 @@ msgstr "다음 사용자 또는 그룹 전용 :"
 msgid "Who can manage and edit this data?"
 msgstr "누가 이 데이터를 관리하고 편집 할 수 있습니까?"
 
-#: static/geonode/js/search/search.js:324
+#: static/geonode/js/search/search.js:342
 #: static_root/geonode/js/search/search.js:298
 msgid "Enter your text here ..."
 msgstr "여기에 텍스트를 입력하세요 ..."
 
-#: static/geonode/js/search/search.js:350
+#: static/geonode/js/search/search.js:368
 msgid "Enter your region here ..."
-msgstr ""
+msgstr "여기에 지역을 입력하세요 ..."
 
 #: static/geonode/js/upload/FileType.js:33
 #: static_root/geonode/js/upload/FileType.js:33
@@ -103,6 +104,10 @@ msgid "Google Earth KML"
 msgstr "구글 어스 KML 파일"
 
 #: static/geonode/js/upload/FileTypes.js:38
+msgid "GeoJSON"
+msgstr ""
+
+#: static/geonode/js/upload/FileTypes.js:44
 #: static_root/geonode/js/upload/FileTypes.js:38
 msgid "Zip Archives"
 msgstr "Zip 압축 파일"
@@ -124,7 +129,7 @@ msgstr "스타일 관리"
 
 #: static/geonode/js/upload/LayerInfo.js:236
 msgid "The column %1 was renamed to %2 <br/>"
-msgstr ""
+msgstr "%1  컬럼이 %2 컬럼으로 변경되었습니다 <br/>"
 
 #: static/geonode/js/upload/LayerInfo.js:242
 #: static_root/geonode/js/upload/LayerInfo.js:235
