@@ -243,7 +243,7 @@ def georefs_validation(request):
         georefs_list = filter(None, georefs.split(","))
         
         total_size = 0
-        for georefs in georefs_list:
+        for georef in georefs_list:
             objects = CephDataObject.objects(name__startswith=georef)
             for o in objects:
                 total_size += o.size_in_bytes
