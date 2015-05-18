@@ -19,19 +19,12 @@
        $("#georef_form").submit(function(e) {
            var json_parser = new OpenLayers.Format.JSON()
            var georef_string = document.getElementById("georef_area").getAttribute("value");
-           $.post('validate/', {"georefs" : georef_string},
-                function(data, status, request){
-                        if (data.response){
-                            return true;
-                        }else{
-                            alert("The total file size of your request is "+formatBytes(data.total_size, 2)+" . Your request exceeds the 200MB download limit.")
-                            console.log(e);
-                            e.preventDefault();
-                            return false;
-                        }
-                },
-                "json"
-           );
+           $.post('validate/', 
+                {"georefs" : georef_string}).done(function(result){
+                   console.log(result); 
+                }).fail(function(result){
+                    console.log(result);
+                });
        });
     });
 </script>
