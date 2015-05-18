@@ -240,7 +240,7 @@ def georefs_validation(request):
         )
     else:
         georefs = request.POST["georefs"]
-        georefs_list = filter(None, georefs.split(",")
+        georefs_list = filter(None, georefs.split(","))
         pprint(georefs_list)
         return HttpResponse(
             content='data received from HTTP POST',
