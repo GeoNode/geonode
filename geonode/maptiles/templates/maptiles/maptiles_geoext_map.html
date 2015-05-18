@@ -7,20 +7,29 @@
 <script type="text/javascript" src="http://spatialreference.org/ref/epsg/32651/proj4js/"></script>
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7/jquery.js"></script>
 <script type="text/javascript" >
+    function formatBytes(bytes, decimals) {
+        if(bytes == 0) return '0 Byte';
+        var k = 1000;
+        var sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
+        var i = Math.floor(Math.log(bytes) / Math.log(k));
+        return (bytes / Math.pow(k, i)).toPrecision(decimals + 1) + ' ' + sizes[i];
+    }
+    
     $(document).ready(function(){
        $("#georef_form").submit(function(e) {
            var json_parser = new OpenLayers.Format.JSON()
            var georef_string = document.getElementById("georef_area").getAttribute("value");
            $.post('validate/', {"georefs" : georef_string},
                 function(data, status, request){
-                    console.log(data);
-                    console.log(status);
-                    console.log(request);
-                    
+                        if (data.response){
+                            return true;
+                        }else{
+                            alert("The total file size of your request is"+formatBytes(data.total_size, 2)+" . Your request exceeds the 200MB download limit.")
+                            return false;
+                        }
                 },
                 "json"
            );
-           e.preventDefault(); 
        });
     });
 </script>
