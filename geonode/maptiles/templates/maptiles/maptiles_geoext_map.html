@@ -24,8 +24,8 @@
                         if (data.response){
                             return true;
                         }else{
-                            alert("The total file size of your request is"+formatBytes(data.total_size, 2)+" . Your request exceeds the 200MB download limit.")
-                            return false;
+                            alert("The total file size of your request is "+formatBytes(data.total_size, 2)+" . Your request exceeds the 200MB download limit.")
+                            e.preventDefault();
                         }
                 },
                 "json"
