@@ -240,10 +240,9 @@ def georefs_validation(request):
         )
     else:
         pprint(request.POST)
-         return HttpResponse(
+        return HttpResponse(
             content='data received from HTTP POST',
             status=200,
             mimetype='text/plain'
-        )
-    return result
+    )
     
