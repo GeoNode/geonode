@@ -8,6 +8,7 @@
 # Translators:
 # Translators:
 # Translators:
+# Translators:
 # Andres Alfonso Lemon Gomez <lemon.andres@gmail.com>, 2014
 # dan, 2015
 # dan, 2015
@@ -15,8 +16,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-03-02 23:16-0600\n"
-"PO-Revision-Date: 2015-03-03 05:10+0000\n"
+"POT-Creation-Date: 2015-05-18 12:10-0500\n"
+"PO-Revision-Date: 2015-05-18 16:31+0000\n"
 "Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
 "Language-Team: Russian (http://www.transifex.com/projects/p/geonode/language/"
 "ru/)\n"
@@ -24,8 +25,9 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
-"%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+"Plural-Forms: nplurals=4; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
+"%10<=4 && (n%100<12 || n%100>14) ? 1 : n%10==0 || (n%10>=5 && n%10<=9) || (n"
+"%100>=11 && n%100<=14)? 2 : 3);\n"
 
 #: static/geonode/js/extjs/GeoNode.js:72
 #: static_root/geonode/js/extjs/GeoNode.js:72
@@ -67,14 +69,14 @@ msgstr "Только следующие перечисленные пользо�
 msgid "Who can manage and edit this data?"
 msgstr "Кто может управлять и редактировать эти данные?"
 
-#: static/geonode/js/search/search.js:324
+#: static/geonode/js/search/search.js:342
 #: static_root/geonode/js/search/search.js:298
 msgid "Enter your text here ..."
 msgstr "Введите Ваш текст здесь ..."
 
-#: static/geonode/js/search/search.js:350
+#: static/geonode/js/search/search.js:368
 msgid "Enter your region here ..."
-msgstr ""
+msgstr "Введите свой регион здесь ..."
 
 #: static/geonode/js/upload/FileType.js:33
 #: static_root/geonode/js/upload/FileType.js:33
@@ -105,6 +107,10 @@ msgid "Google Earth KML"
 msgstr "Google Earth KML"
 
 #: static/geonode/js/upload/FileTypes.js:38
+msgid "GeoJSON"
+msgstr ""
+
+#: static/geonode/js/upload/FileTypes.js:44
 #: static_root/geonode/js/upload/FileTypes.js:38
 msgid "Zip Archives"
 msgstr "Zip архив"
@@ -126,7 +132,7 @@ msgstr "Управление стилями"
 
 #: static/geonode/js/upload/LayerInfo.js:236
 msgid "The column %1 was renamed to %2 <br/>"
-msgstr ""
+msgstr "Колонка %1 была переименована в %2 <br/>"
 
 #: static/geonode/js/upload/LayerInfo.js:242
 #: static_root/geonode/js/upload/LayerInfo.js:235
@@ -263,6 +269,7 @@ msgid_plural "%(sel)s of %(cnt)s selected"
 msgstr[0] "%(sel) из %(cnt) выбран"
 msgstr[1] "%(sel) из %(cnt) выбраны"
 msgstr[2] "%(sel)s из %(cnt)s выбраны"
+msgstr[3] "%(sel)s из %(cnt)s выбраны"
 
 #: static_root/admin/js/actions.js:109 static_root/admin/js/actions.min.js:5
 msgid ""

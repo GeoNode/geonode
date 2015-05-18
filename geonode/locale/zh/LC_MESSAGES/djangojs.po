@@ -8,6 +8,7 @@
 # Translators:
 # Translators:
 # Translators:
+# Translators:
 # Andres Alfonso Lemon Gomez <lemon.andres@gmail.com>, 2014
 # Nathan Wang <nwang@opengeo.org>, 2012
 # Nathan Wang <nwang@opengeo.org>, 2012
@@ -16,8 +17,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-03-02 23:16-0600\n"
-"PO-Revision-Date: 2015-03-03 05:10+0000\n"
+"POT-Creation-Date: 2015-05-18 12:10-0500\n"
+"PO-Revision-Date: 2015-05-18 16:31+0000\n"
 "Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
 "Language-Team: Chinese (http://www.transifex.com/projects/p/geonode/language/"
 "zh/)\n"
@@ -67,12 +68,12 @@ msgstr "只有下列用户或组织："
 msgid "Who can manage and edit this data?"
 msgstr "谁能管理编辑此数据？"
 
-#: static/geonode/js/search/search.js:324
+#: static/geonode/js/search/search.js:342
 #: static_root/geonode/js/search/search.js:298
 msgid "Enter your text here ..."
 msgstr ""
 
-#: static/geonode/js/search/search.js:350
+#: static/geonode/js/search/search.js:368
 msgid "Enter your region here ..."
 msgstr ""
 
@@ -105,6 +106,10 @@ msgid "Google Earth KML"
 msgstr "谷歌地球KML"
 
 #: static/geonode/js/upload/FileTypes.js:38
+msgid "GeoJSON"
+msgstr ""
+
+#: static/geonode/js/upload/FileTypes.js:44
 #: static_root/geonode/js/upload/FileTypes.js:38
 msgid "Zip Archives"
 msgstr "ZIP压缩文件"
