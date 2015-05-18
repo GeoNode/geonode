@@ -256,7 +256,7 @@ def georefs_validation(request):
             )
         else:
             return HttpResponse(
-                content{ "response": True, "total_size": total_size },
+                content={ "response": True, "total_size": total_size },
                 status=200,
                 mimetype='text/plain'
             )
