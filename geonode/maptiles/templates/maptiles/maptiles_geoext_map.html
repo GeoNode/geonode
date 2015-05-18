@@ -25,6 +25,7 @@
                             return true;
                         }else{
                             alert("The total file size of your request is "+formatBytes(data.total_size, 2)+" . Your request exceeds the 200MB download limit.")
+                            console.log(e);
                             e.preventDefault();
                         }
                 },
