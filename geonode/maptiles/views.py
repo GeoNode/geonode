@@ -244,5 +244,5 @@ def georefs_validation(request):
             content='data received from HTTP POST',
             status=200,
             mimetype='text/plain'
-    )
+        )
     
