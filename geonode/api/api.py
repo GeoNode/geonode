@@ -55,7 +55,7 @@ class CountJSONSerializer(Serializer):
         if options['type_filter']:
             resources = resources.instance_of(options['type_filter'])
 
-        counts = resources.values(options['count_type']).annotate(count=Count(options['count_type']))
+        counts = list(resources.values(options['count_type']).annotate(count=Count(options['count_type'])))
 
         return dict([(c[options['count_type']], c['count']) for c in counts])
 
@@ -94,15 +94,19 @@ class TypeFilteredResource(ModelResource):
 
         return orm_filters
 
+    def serialize(self, request, data, format, options={}):
+        options['title_filter'] = self.title_filter
+        options['type_filter'] = self.type_filter
+        options['user'] = request.user
+
+        return super(TypeFilteredResource, self).serialize(request, data, format, options)
+
 
 class TagResource(TypeFilteredResource):
     """Tags api"""
 
     def serialize(self, request, data, format, options={}):
-        options['title_filter'] = self.title_filter
-        options['type_filter'] = self.type_filter
         options['count_type'] = 'keywords'
-        options['user'] = request.user
 
         return super(TagResource, self).serialize(request, data, format, options)
 
@@ -120,10 +124,7 @@ class RegionResource(TypeFilteredResource):
     """Regions api"""
 
     def serialize(self, request, data, format, options={}):
-        options['title_filter'] = self.title_filter
-        options['type_filter'] = self.type_filter
         options['count_type'] = 'regions'
-        options['user'] = request.user
 
         return super(RegionResource, self).serialize(request, data, format, options)
 
@@ -142,10 +143,7 @@ class TopicCategoryResource(TypeFilteredResource):
     """Category api"""
 
     def serialize(self, request, data, format, options={}):
-        options['title_filter'] = self.title_filter
-        options['type_filter'] = self.type_filter
         options['count_type'] = 'category'
-        options['user'] = request.user
 
         return super(TopicCategoryResource, self).serialize(request, data, format, options)
 
