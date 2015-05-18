@@ -11,7 +11,15 @@
        $("#georef_form").submit(function(e) {
            var json_parser = new OpenLayers.Format.JSON()
            var georef_string = document.getElementById("georef_area").getAttribute("value");
-           $.post('validate/', {"georefs" : georef_string} );
+           $.post('validate/', {"georefs" : georef_string},
+                function(data, status, request){
+                    console.log(data);
+                    console.log(status);
+                    console.log(request);
+                    
+                },
+                "json"
+           );
            e.preventDefault(); 
        });
     });
