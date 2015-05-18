@@ -248,7 +248,7 @@ def georefs_validation(request):
             for o in objects:
                 total_size += o.size_in_bytes
         
-        if size > settings.SELECTION_LIMIT:            
+        if total_size > settings.SELECTION_LIMIT:            
             return HttpResponse(
                 content={ "response": False, "total_size": total_size },
                 status=200,
