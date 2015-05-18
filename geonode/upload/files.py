@@ -129,6 +129,7 @@ types = [
     FileType("JPG", "jpg", raster,
              auxillary_file_exts=('prj',)),
     FileType("CSV", "csv", vector),
+    FileType("GeoJSON", "geojson", vector),
     FileType("KML", "kml", vector,
              aliases=('kmz',)),
 ]
