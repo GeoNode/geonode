@@ -250,7 +250,7 @@ def georefs_validation(request):
         
         if total_size > settings.SELECTION_LIMIT:            
             return HttpResponse(
-                content={ "response": False, "total_size": total_size },
+               content=json.dumps({ "response": False, "total_size": total_size }),
                 status=200,
                 #mimetype='text/plain'
                 content_type="application/json"
