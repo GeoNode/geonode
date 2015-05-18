@@ -17,13 +17,15 @@
     
     $(document).ready(function(){
        $("#georef_form").submit(function(e) {
+           e.preventDefault();
+           var self = this;
            var json_parser = new OpenLayers.Format.JSON()
            var georef_string = document.getElementById("georef_area").getAttribute("value");
            $.post('validate/', 
                 {"georefs" : georef_string}).done(function(result){
-                   console.log(result); 
+                   if (result.response) self.submit;
                 }).fail(function(result){
-                    console.log(result);
+                    alert("The total file size of your request is "+formatBytes(data.total_size, 2)+" . Your request exceeds the 200MB download limit.");
                 });
        });
     });
