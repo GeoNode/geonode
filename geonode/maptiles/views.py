@@ -239,7 +239,7 @@ def georefs_validation(request):
             mimetype='text/plain'
         )
     else:
-        pprint(request.POST)
+        georefs = request.POST["georefs"]
         return HttpResponse(
             content='data received from HTTP POST',
             status=200,
