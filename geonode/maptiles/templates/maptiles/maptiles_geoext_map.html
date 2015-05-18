@@ -12,7 +12,7 @@
            var json_parser = new OpenLayers.Format.JSON()
            var georef_string = document.getElementById("georef_area").getAttribute("value");
            
-           var json = json_parser.write("{georef_string:"+georef_string+"}");
+           var json = json_parser.write({ georef_string: georef_string });
            //
            console.log(json);
            $.post('validate/', json);
