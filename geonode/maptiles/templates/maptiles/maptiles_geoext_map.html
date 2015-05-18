@@ -81,7 +81,11 @@ function display_points(div_id, vec_layer){
             this.parentNode.removeChild(this);
         };
         list_element.appendChild(item_element);
-        georef_string+=","+tile_list[i].georef;
+        if(i == 0){
+            georef_string+=tile_list[i].georef;
+        }else{
+              georef_string+=","+tile_list[i].georef;
+        }
     }
    document.getElementById("georef_area").setAttribute("value",georef_string);
 }
