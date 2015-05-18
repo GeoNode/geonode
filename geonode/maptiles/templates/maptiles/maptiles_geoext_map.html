@@ -24,8 +24,9 @@
            $.post('validate/', 
                 {"georefs" : georef_string}).done(function(result){
                    if (result.response) self.submit;
+                   else alert("The total file size of your request is "+formatBytes(result.total_size, 2)+" . Your request exceeds the 200MB download limit.");
                 }).fail(function(result){
-                    alert("The total file size of your request is "+formatBytes(result.total_size, 2)+" . Your request exceeds the 200MB download limit.");
+                    
                 });
        });
     });
