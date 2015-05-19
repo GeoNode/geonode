@@ -18,6 +18,7 @@ from geonode.cephgeo.cart_utils import *
 
 import client, utils, local_settings, cPickle, unicodedata, time, operator, json
 from geonode.tasks.update import ceph_metadata_udate
+from geonode.cephgeo.utils import get_cart_datasize
 
 # Create your views here.
 @login_required
@@ -195,7 +196,7 @@ def error(request):
 @login_required
 def get_cart(request):
     return render_to_response('cart.html', 
-                                dict(cart=CartProxy(request)),
+                                dict(cart=CartProxy(request), cartsize=get_cart_datasize(request)),
                                 context_instance=RequestContext(request))
 
 @login_required
