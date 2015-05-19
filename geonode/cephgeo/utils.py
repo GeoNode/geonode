@@ -6,58 +6,58 @@ from geonode.cephgeo.models import CephDataObject
 ### For additional functions/definitions which may be needed by views
 
 ### Sample Ceph object entry:{'hash': '524f26771b90ccea598448b8b7a263b7', 
-### 					'name': 'JE3409_ortho.tif', 'bytes': 17299767, 
-###						'last_modified': '2015-02-24T07:23:11.000Z', 'content_type': 'image/tiff', 'type': 'Orthophoto'}
+###                     'name': 'JE3409_ortho.tif', 'bytes': 17299767, 
+###                     'last_modified': '2015-02-24T07:23:11.000Z', 'content_type': 'image/tiff', 'type': 'Orthophoto'}
 
 ### A mapping of file types to their associated file extensions
 
 #EXT_TO_TYPE_DICT = {
-#	".tif": "orthophoto/DEM",
-#	".csv":	"csv",
-#	".dbf": "shapefile",
-#	".prj": "shapefile",
-#	".sbn": "shapefile",
-#	".sbx": "shapefile",
-#	".shx": "shapefile",
-#	".kml": "kml",
-#	".laz": "laz"
+#   ".tif": "orthophoto/DEM",
+#   ".csv": "csv",
+#   ".dbf": "shapefile",
+#   ".prj": "shapefile",
+#   ".sbn": "shapefile",
+#   ".sbx": "shapefile",
+#   ".shx": "shapefile",
+#   ".kml": "kml",
+#   ".laz": "laz"
 
 #TYPE_TO_IDENTIFIER_DICT = {
-#	"DEM-DTM"		: ["_DTM"],
-#	"DEM-DSM"		: ["_DSM"],
-#	"Orthophoto"	: ["_ortho"],
+#   "DEM-DTM"       : ["_DTM"],
+#   "DEM-DSM"       : ["_DSM"],
+#   "Orthophoto"    : ["_ortho"],
 #}
 SORT_TYPES = [ "name", "type", "uploaddate", "default"]
 FTP_SORT_TYPES = [ "date", "status", "default" ]
 
 TYPE_TO_IDENTIFIER_DICT = {
-	".laz"			: "LAZ file",
-	"_dem.tif" 		: "DEM TIF",
-	"_dsm.tif" 		: "DSM TIF",
-	"_ortho.tif"	: "Orthophoto",
+    ".laz"          : "LAZ file",
+    "_dem.tif"      : "DEM TIF",
+    "_dsm.tif"      : "DSM TIF",
+    "_ortho.tif"    : "Orthophoto",
 }
 
 
 #### returns classification of the file based on file extension
 #### if no matches, result is an empty string
 def file_classifier(file_name):
-	
-	ext_classification = ''
-	for x in TYPE_TO_IDENTIFIER_DICT:
-		if len(file_name) > len(TYPE_TO_IDENTIFIER_DICT[x]):
-			if file_name.lower().endswith(x):
-				ext_classification = TYPE_TO_IDENTIFIER_DICT[x]
-		
-	return ext_classification
+    
+    ext_classification = ''
+    for x in TYPE_TO_IDENTIFIER_DICT:
+        if len(file_name) > len(TYPE_TO_IDENTIFIER_DICT[x]):
+            if file_name.lower().endswith(x):
+                ext_classification = TYPE_TO_IDENTIFIER_DICT[x]
+        
+    return ext_classification
 
 def sort_by(sort_key, object_list, descending=False):
-	if descending:
-		return sorted(object_list, 	key=itemgetter(sort_key), reverse=True)
-	else:
-		return sorted(object_list, 	key=itemgetter(sort_key))
+    if descending:
+        return sorted(object_list,  key=itemgetter(sort_key), reverse=True)
+    else:
+        return sorted(object_list,  key=itemgetter(sort_key))
 
 #def file_feature_classifier(file_name):
-#	pass
+#   pass
 
 def is_valid_grid_ref_old(grid_ref_string):
     ptn = re.compile('^[a-zA-Z]{2}[0-9]{4}$')
@@ -93,7 +93,6 @@ def ceph_object_ids_by_geotype(ceph_obj_list):
 
 def get_cart_datasize(request):
     cart = CartProxy(request)
-    obj_name_dict = dict()
     total_size = 0
     for item in cart:
         obj = CephDataObject.objects.get(id=int(item.object_id))
