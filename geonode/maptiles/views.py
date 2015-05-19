@@ -231,6 +231,18 @@ def process_georefs(request):
         raise Exception("HTTP method must be POST!")
 
 @login_required
+def get_cart_datasize(request):
+    cart = CartProxy(request)
+    obj_name_dict = dict()
+    total_size = 0
+    for item in cart:
+        obj = CephDataObject.objects.get(id=int(item.object_id))
+        total_size += obj.size_in_bytes
+    
+    return total_size
+    
+
+@login_required
 def georefs_validation(request):
     if request.method != 'POST':
         return HttpResponse(
@@ -242,13 +254,14 @@ def georefs_validation(request):
         georefs = request.POST["georefs"]
         georefs_list = filter(None, georefs.split(","))
         
+        cart_total_size = get_cart_datasize(request)
         total_size = 0
         for georef in georefs_list:
             objects = CephDataObject.objects.filter(name__startswith=georef)
             for o in objects:
                 total_size += o.size_in_bytes
         
-        if total_size > settings.SELECTION_LIMIT:            
+        if total_size + cart_total_size > settings.SELECTION_LIMIT:            
             return HttpResponse(
                content=json.dumps({ "response": False, "total_size": total_size }),
                 status=200,
