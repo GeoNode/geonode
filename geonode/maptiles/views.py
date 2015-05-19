@@ -253,7 +253,7 @@ def georefs_validation(request):
     else:
         georefs = request.POST["georefs"]
         georefs_list = filter(None, georefs.split(","))
-        
+        pprint(georefs)
         cart_total_size = get_cart_datasize(request)
         total_size = 0
         for georef in georefs_list:
