@@ -26,8 +26,8 @@
            $.post('validate/', 
                 {"georefs" : georef_string}).done(function(result){
                    if (result.response) 
-                        //self.submit();
-                        console.log(result);
+                        self.submit();
+                        //console.log(result);
                    else {
                         console.log(formatBytes(result.cart_size, 2));
                         alert("The total file size of this request is "+formatBytes(result.total_size, 2)+
