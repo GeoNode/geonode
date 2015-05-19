@@ -263,14 +263,14 @@ def georefs_validation(request):
         
         if total_size + cart_total_size > settings.SELECTION_LIMIT:            
             return HttpResponse(
-               content=json.dumps({ "response": False, "total_size": total_size }),
+               content=json.dumps({ "response": False, "total_size": total_size, "cart_size":cart_total_size }),
                 status=200,
                 #mimetype='text/plain'
                 content_type="application/json"
             )
         else:
             return HttpResponse(
-                content=json.dumps({ "response": True, "total_size": total_size }),
+                content=json.dumps({ "response": True, "total_size": total_size, "cart_size": cart_total_size }),
                 status=200,
                 #mimetype='text/plain'
                 content_type="application/json"

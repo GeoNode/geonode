@@ -26,7 +26,7 @@
                    if (result.response) 
                         self.submit();
                    else 
-                    alert("The total file size of your request is "+formatBytes(result.total_size, 2)+" . Your request exceeds the 200MB download limit.");
+                    alert("The total file size of this request is "+formatBytes(result.total_size, 2)+" . You also have a total of "+formatBytes(result.cart_total_size, 2)+"in the data cart. Your request exceeds the 200MB download limit. Please reduce number of selected tiles.");
                 }).fail(function(result){
                     
                 });
