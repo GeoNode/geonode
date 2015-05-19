@@ -161,15 +161,17 @@ def data_input(request):
                 #pprint(uploaded_objects)
                 is_pickled = form.cleaned_data['pickled']
                 for obj_meta_dict in uploaded_objects:
-                    ceph_obj = CephDataObject(  name = obj_meta_dict['name'],
-                                                #last_modified = time.strptime(obj_meta_dict['last_modified'], "%Y-%m-%d %H:%M:%S"),
-                                                last_modified = obj_meta_dict['last_modified'],
-                                                size_in_bytes = obj_meta_dict['bytes'],
-                                                content_type = obj_meta_dict['content_type'],
-                                                geo_type = utils.file_classifier(obj_meta_dict['name']),
-                                                file_hash = obj_meta_dict['hash'],
-                                                grid_ref = obj_meta_dict['grid_ref'])
-                    ceph_obj.save()
+                    #Check if object metadata has already been encoded
+                    if not CephDataObject.objects.filter(name=obj_meta_dict['name']).exists():
+                        ceph_obj = CephDataObject(  name = obj_meta_dict['name'],
+                                                    #last_modified = time.strptime(obj_meta_dict['last_modified'], "%Y-%m-%d %H:%M:%S"),
+                                                    last_modified = obj_meta_dict['last_modified'],
+                                                    size_in_bytes = obj_meta_dict['bytes'],
+                                                    content_type = obj_meta_dict['content_type'],
+                                                    geo_type = utils.file_classifier(obj_meta_dict['name']),
+                                                    file_hash = obj_meta_dict['hash'],
+                                                    grid_ref = obj_meta_dict['grid_ref'])
+                        ceph_obj.save()
                 
                 # Commented out until a way is figured out how to assign database writes/saves
                 #   to celery without throwing a 'database locked' error
