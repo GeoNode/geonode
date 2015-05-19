@@ -171,6 +171,7 @@ Ext.onReady(function (){
     );
     
     var stored_layer = map_options["layers"].filter(function(l){ return l["name"] == layer_name })[0];
+    console.log(stored_layer);
     var source_index = stored_layer["source"];
     //var geoserver_wms = options["sources"][source_index]["url"];
     var geoserver_wms = "http://"+curr_location+":8080/geoserver/geonode/wms";
