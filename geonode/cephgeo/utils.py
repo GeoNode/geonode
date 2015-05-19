@@ -1,5 +1,7 @@
 from operator import itemgetter, attrgetter
 import re
+from changuito.proxy import CartProxy
+from geonode.cephgeo.models import CephDataObject
 
 ### For additional functions/definitions which may be needed by views
 
@@ -79,9 +81,6 @@ def is_valid_grid_ref(grid_ref_string):
     else:
         return False
 
-
-
-
 def ceph_object_ids_by_geotype(ceph_obj_list):
     obj_name_dict = dict()
     for obj in ceph_obj_list:
@@ -91,3 +90,13 @@ def ceph_object_ids_by_geotype(ceph_obj_list):
             obj_name_dict[obj.geo_type.encode('utf8')] = [obj.name.encode('utf8'),]
         
     return obj_name_dict
+
+def get_cart_datasize(request):
+    cart = CartProxy(request)
+    obj_name_dict = dict()
+    total_size = 0
+    for item in cart:
+        obj = CephDataObject.objects.get(id=int(item.object_id))
+        total_size += obj.size_in_bytes
+    
+    return total_size
