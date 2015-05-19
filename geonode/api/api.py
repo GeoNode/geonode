@@ -78,11 +78,10 @@ class TypeFilteredResource(ModelResource):
 
     count = fields.IntegerField()
 
-    type_filter = None
-    title_filter = None
-
     def build_filters(self, filters={}):
-
+        self.type_filter = None
+        self.title_filter = None
+        
         orm_filters = super(TypeFilteredResource, self).build_filters(filters)
 
         if 'type' in filters and filters['type'] in FILTER_TYPES.keys():
