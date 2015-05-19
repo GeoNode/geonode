@@ -25,4 +25,5 @@ urlpatterns = patterns('',
 	url(r'^ftp/$', views.create_ftp_folder, ),
 	url(r'^ftprequests/$', views.ftp_request_list, ),
 	url(r'^ftprequests/(?P<sort>[A-Za-z]+)/$', views.ftp_request_list, ),
+    url(r'^registration/(?P<page>[A-Za-z0-9]+)/$', views.user_registration, ),
 )

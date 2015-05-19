@@ -42,11 +42,7 @@ def fab_create_ftp_folder(ftp_request, ceph_obj_list_by_geotype):
             mail_msg = """\
 An error was encountered on your FTP request named [{0}] for user [{1}]. 
 A request has already been made this day. Only 1 FTP request per user is allowed 
-each day. Please try again on the next day.
-
----RESULT TRACE---
-
-{2}""".format(request_name, username, result)
+each day. Please try again on the next day.""".format(request_name, username)
             
             mail_ftp_user(username, user_email, request_name, mail_msg)
             return "ERROR: Max daily FTP request is 1. Limit reached."
@@ -142,7 +138,7 @@ system administrator regarding this error.""".format(request_name, username)
 An unexpected error was encountered on your FTP request named [{0}] for user [{1}]. 
 Please forward this mail to the system administrator.
 
----ERROR TRACE---
+---RESULT TRACE---
 
 {2}""".format(request_name, username, traceback.format_exc())
         
