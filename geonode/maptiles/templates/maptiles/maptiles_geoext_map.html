@@ -8,7 +8,6 @@
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7/jquery.js"></script>
 <script type="text/javascript" >
     function formatBytes(bytes, decimals) {
-        console.log(bytes)
         if(bytes == 0) 
             return '0 Byte';
         var k = 1024;
@@ -27,9 +26,7 @@
                 {"georefs" : georef_string}).done(function(result){
                    if (result.response) 
                         self.submit();
-                        //console.log(result);
                    else {
-                        console.log(formatBytes(result.cart_size, 2));
                         alert("The total file size of this request is "+formatBytes(result.total_size, 2)+
                                 " . You also have a total of "+formatBytes(result.cart_size, 2)+
                                 " in the data cart. Your request exceeds the 200MB download limit. Please reduce number of selected tiles.");
@@ -94,10 +91,10 @@ function display_points(div_id, vec_layer){
         var item_element = document.createElement("li");
         item_element.setAttribute("id",tile_list[i].georef);
         item_element.innerHTML = tile_list[i].georef;
-        item_element.onclick = function(){
+        /*item_element.onclick = function(){
             removeHighlight(item_element.innerHTML, vec_layer);
             this.parentNode.removeChild(this);
-        };
+        };*/
         list_element.appendChild(item_element);
         if(i == 0){
             georef_string+=tile_list[i].georef;
