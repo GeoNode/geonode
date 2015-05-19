@@ -57,6 +57,7 @@ def _resolve_layer(request, typename, permission='base.view_resourcebase',
                               permission=permission,
                               permission_msg=msg,
                               **kwargs)
+
 @login_required
 def tiled_view(request, overlay=settings.TILED_SHAPEFILE, template="maptiles/maptiles_map.html"):
     if request.method == "POST":
@@ -125,65 +126,6 @@ def tiled_view(request, overlay=settings.TILED_SHAPEFILE, template="maptiles/map
     #    context_dict["social_links"] = build_social_links(request, layer)
     #print context_dict
     
-    return render_to_response(template, RequestContext(request, context_dict))
-
-@login_required
-def tiled_view2(request, overlay=settings.TILED_SHAPEFILE_TEST, template="maptiles/maptiles_map.html"):
-    layer = _resolve_layer(
-        request,
-        overlay,
-        'base.view_resourcebase',
-        _PERMISSION_VIEW)
-    config = layer.attribute_config()
-    layer_bbox = layer.bbox
-    bbox = [float(coord) for coord in list(layer_bbox[0:4])]
-    srid = layer.srid
-
-    # Transform WGS84 to Mercator.
-    config["srs"] = srid if srid != "EPSG:4326" else "EPSG:900913"
-    config["bbox"] = llbbox_to_mercator([float(coord) for coord in bbox])
-
-    config["title"] = layer.title
-    config["queryable"] = True
-
-    if layer.storeType == "remoteStore":
-        service = layer.service
-        source_params = {
-            "ptype": service.ptype,
-            "remote": True,
-            "url": service.base_url,
-            "name": service.name}
-        maplayer = GXPLayer(
-            name=layer.typename,
-            ows_url=layer.ows_url,
-            layer_params=json.dumps(config),
-            source_params=json.dumps(source_params))
-    else:
-        maplayer = GXPLayer(
-            name=layer.typename,
-            ows_url=layer.ows_url,
-            layer_params=json.dumps(config))
-
-    # center/zoom don't matter; the viewer will center on the layer bounds
-    map_obj = GXPMap(projection="EPSG:900913")
-    metadata = layer.link_set.metadata().filter(
-        name__in=settings.DOWNLOAD_FORMATS_METADATA)
-
-    context_dict = {
-        "data_classes": DataClassification.labels.values(),
-        "resource": layer,
-        "permissions_json": _perms_info_json(layer),
-        "documents": get_related_documents(layer),
-        "metadata": metadata,
-        "is_layer": True,
-        "wps_enabled": settings.OGC_SERVER['default']['WPS_ENABLED'],
-    }
-    
-    context_dict["viewer"] = json.dumps(
-        map_obj.viewer_json(request.user, * ([maplayer])))
-        
-    context_dict["layer"]  = overlay
-
     return render_to_response(template, RequestContext(request, context_dict))
 
 def process_georefs(request):
