@@ -1,14 +1,40 @@
 {% include "geonode/ext_header.html" %}
-{# {% include "geonode/app_header.html" %} #}
-{#  {% include "maptiles/maptiles_header.html" %} #}
 <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}geoext/css/popup.css">
 <script type="text/javascript" src="{{STATIC_URL}}lib/js/OpenLayers.js"></script>
 <script type="text/javascript" src="{{ STATIC_URL }}lib/js/GeoExt.js"></script>
 <script type="text/javascript" src="{{ STATIC_URL}}geonode/js/utils/thumbnail.js"></script>
 <script type="text/javascript" src="http://svn.osgeo.org/metacrs/proj4js/trunk/lib/proj4js-compressed.js"></script>
-<!--<script type="text/javascript" src="http://spatialreference.org/ref/epsg/wgs-84-utm-zone-51n/proj4js/"></script>-->
-
 <script type="text/javascript" src="http://spatialreference.org/ref/epsg/32651/proj4js/"></script>
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7/jquery.js"></script>
+<script type="text/javascript" >
+    function formatBytes(bytes, decimals) {
+        if(bytes == 0) 
+            return '0 Byte';
+        var k = 1024;
+        var sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
+        var i = Math.floor(Math.log(bytes) / Math.log(k));
+        return (bytes / Math.pow(k, i)).toPrecision(decimals + 1) + ' ' + sizes[i];
+    }
+    
+    $(document).ready(function(){
+       $("#georef_form").submit(function(e) {
+           e.preventDefault();
+           var self = this;
+           var json_parser = new OpenLayers.Format.JSON()
+           var georef_string = document.getElementById("georef_area").getAttribute("value");
+           $.post('validate/', 
+                {"georefs" : georef_string}).done(function(result){
+                   if (result.response) 
+                        self.submit();
+                   else {
+                        alert("The total file size of this request is "+formatBytes(result.total_size, 2)+
+                                " . You also have a total of "+formatBytes(result.cart_size, 2)+
+                                " in the data cart. Your request exceeds the 200MB download limit. Please reduce number of selected tiles.");
+                    }
+                })
+       });
+    });
+</script>
 <script type="text/javascript" >
 
 OpenLayers.ImgPath = "{{ STATIC_URL }}geoexplorer/externals/openlayers/theme/default/img";
@@ -65,12 +91,16 @@ function display_points(div_id, vec_layer){
         var item_element = document.createElement("li");
         item_element.setAttribute("id",tile_list[i].georef);
         item_element.innerHTML = tile_list[i].georef;
-        item_element.onclick = function(){
+        /*item_element.onclick = function(){
             removeHighlight(item_element.innerHTML, vec_layer);
             this.parentNode.removeChild(this);
-        };
+        };*/
         list_element.appendChild(item_element);
-        georef_string+=tile_list[i].georef+",";
+        if(i == 0){
+            georef_string+=tile_list[i].georef;
+        }else{
+              georef_string+=","+tile_list[i].georef;
+        }
     }
    document.getElementById("georef_area").setAttribute("value",georef_string);
 }
@@ -231,7 +261,7 @@ Ext.onReady(function (){
                     if(response.priv.responseText){
                         var json_parser = new OpenLayers.Format.JSON();
                         var feature_out = json_parser.read(response.priv.responseText);
-                        console.log(feature_out.features);
+
                         for ( var i=0; i<feature_out.totalFeatures; i++ ){
                             var f = feature_out.features[i];
                             var corners = {
@@ -240,7 +270,7 @@ Ext.onReady(function (){
                                 "ll_x": f.properties.MINX, "ll_y": f.properties.MINY,
                                 "lr_x": f.properties.MAXX,"lr_y": f.properties.MINY
                             }
-                            console.log(corners);
+
                             var tile = createTile(corners);
                             if (find_georef(tile_list, tile.georef)<0){
                                  tile_list.push(tile);
@@ -311,6 +341,7 @@ Ext.onReady(function (){
 
     app = new GeoExt.MapPanel(config);
     map.zoomToExtent(tile_layer.maxExtent, false);
+    
 });
 {% endautoescape %}
 </script>
