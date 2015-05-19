@@ -145,6 +145,7 @@ var vector_style_map = new OpenLayers.StyleMap({
 Ext.onReady(function (){
     var curr_location = window.location.hostname;
     var layer_name = "{{  layer }}";
+    console.log(layer_name);
     var map_options = options["map"];
     var map = new OpenLayers.Map({
         units: map_options["units"],
