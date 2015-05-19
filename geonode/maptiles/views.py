@@ -7,7 +7,7 @@ from django.template import RequestContext
 from django.core.exceptions import ValidationError
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpResponse
 
 from geonode.services.models import Service
 from geonode.layers.models import Layer
@@ -128,7 +128,7 @@ def tiled_view(request, overlay=settings.TILED_SHAPEFILE, template="maptiles/map
     return render_to_response(template, RequestContext(request, context_dict))
 
 @login_required
-def tiled_view2(request, overlay=settings.TILED_SHAPEFILE_TEST, template="maptiles/maptiles_map_test.html"):
+def tiled_view2(request, overlay=settings.TILED_SHAPEFILE_TEST, template="maptiles/maptiles_map.html"):
     layer = _resolve_layer(
         request,
         overlay,
@@ -229,3 +229,53 @@ def process_georefs(request):
     
     else:   # Must process HTTP POST method from form
         raise Exception("HTTP method must be POST!")
+
+@login_required
+def get_cart_datasize(request):
+    cart = CartProxy(request)
+    obj_name_dict = dict()
+    total_size = 0
+    for item in cart:
+        obj = CephDataObject.objects.get(id=int(item.object_id))
+        total_size += obj.size_in_bytes
+    
+    return total_size
+    
+
+@login_required
+def georefs_validation(request):
+    if request.method != 'POST':
+        return HttpResponse(
+            content='no data received from HTTP POST',
+            status=405,
+            mimetype='text/plain'
+        )
+    else:
+        georefs = request.POST["georefs"]
+        georefs_list = filter(None, georefs.split(","))
+        
+        cart_total_size = get_cart_datasize(request)
+        total_size = 0
+        for georef in georefs_list:
+            objects = CephDataObject.objects.filter(name__startswith=georef)
+            for o in objects:
+                total_size += o.size_in_bytes
+        
+        
+        pprint("cart size:" + str(cart_total_size))
+        pprint("total size:"+str(total_size))
+        if total_size + cart_total_size > settings.SELECTION_LIMIT:            
+            return HttpResponse(
+               content=json.dumps({ "response": False, "total_size": total_size, "cart_size":cart_total_size }),
+                status=200,
+                #mimetype='text/plain'
+                content_type="application/json"
+            )
+        else:
+            return HttpResponse(
+                content=json.dumps({ "response": True, "total_size": total_size, "cart_size": cart_total_size }),
+                status=200,
+                #mimetype='text/plain'
+                content_type="application/json"
+            )
+        
