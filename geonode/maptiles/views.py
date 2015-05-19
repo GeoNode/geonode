@@ -261,7 +261,9 @@ def georefs_validation(request):
             for o in objects:
                 total_size += o.size_in_bytes
         
-        pprint(cart_total_size)
+        
+        pprint("cart size:" + cart_total_size)
+        pprint("total size:"+total_size)
         if total_size + cart_total_size > settings.SELECTION_LIMIT:            
             return HttpResponse(
                content=json.dumps({ "response": False, "total_size": total_size, "cart_size":cart_total_size }),
