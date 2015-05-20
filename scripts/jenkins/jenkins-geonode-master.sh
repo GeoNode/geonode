@@ -12,7 +12,7 @@ fi
 
 # Setup the virtualenv
 virtualenv --system-site-packages $PYENV_HOME
-source $PYENV_HOME/bin/activate
+. $PYENV_HOME/bin/activate
 
 # Install build & test tools
 pip install --quiet paver
@@ -33,7 +33,7 @@ pip install -e .
 # Just in case
 paver stop
 paver setup
-#cp /var/lib/jenkins/local_settings_with_coverage.py geonode/local_settings.py
+cp /var/lib/jenkins/local_settings_with_coverage.py geonode/local_settings.py
 
 # Run the smoke tests
 python manage.py test geonode.tests.smoke
