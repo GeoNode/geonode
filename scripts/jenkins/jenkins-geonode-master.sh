@@ -37,47 +37,44 @@ cp /var/lib/jenkins/local_settings_with_coverage.py geonode/local_settings.py
 
 . $PYENV_HOME/bin/activate #double check its activated.
 
-paver run_tests
-
 # Run the smoke tests
-#python manage.py test geonode.tests.smoke
-#cp TEST-nose.xml smoke-TEST-nose.xml
-#cp coverage.xml smoke-coverage.xml
-#cp -R coverage smoke-coverage
+python manage.py test geonode.tests.smoke
+cp TEST-nose.xml smoke-TEST-nose.xml
+cp coverage.xml smoke-coverage.xml
+cp -R coverage smoke-coverage
 
 # Run the unit tests
-#python manage.py test
-#cp TEST-nose.xml unit-TEST-nose.xml
-#cp coverage.xml unit-coverage.xml
-#cp -R coverage unit-coverage
+python manage.py test
+cp TEST-nose.xml unit-TEST-nose.xml
+cp coverage.xml unit-coverage.xml
+cp -R coverage unit-coverage
 
 # Run the integration tests
-#paver reset
-#cp /var/lib/jenkins/local_settings_with_coverage.py geonode/local_settings.py
-#. $PYENV_HOME/bin/activate #double check its activated.
-
-#paver test_integration
-#cp TEST-nose.xml integration-TEST-nose.xml
-#cp coverage.xml integration-coverage.xml
-#cp -R coverage integration-coverage
+paver reset
+cp /var/lib/jenkins/local_settings_with_coverage.py geonode/local_settings.py
+. $PYENV_HOME/bin/activate #double check its activated.
+paver test_integration
+cp TEST-nose.xml integration-TEST-nose.xml
+cp coverage.xml integration-coverage.xml
+cp -R coverage integration-coverage
 
 # Run the catalogue tests
-#paver test_integration -n geonode.tests.csw
-#cp TEST-nose.xml csw-TEST-nose.xml
-#cp coverage.xml csw-coverage.xml
-#cp coverage -R csw-coverage
+paver test_integration -n geonode.tests.csw
+cp TEST-nose.xml csw-TEST-nose.xml
+cp coverage.xml csw-coverage.xml
+cp coverage -R csw-coverage
 
 # Run the javascript tests 
 #paver test_javascript
 #mv geonode/static/geonode/junit.xml ./javascript-TEST-nose.xml
 
 # Run Code Quality Tools
-#export DJANGO_SETTINGS_MODULE=geonode.settings
-#pylint -f parseable geonode/ | tee pylint.out
-#pep8 --repeat geonode | tee pep8.out
-#find . -type f -iname "*.py" | egrep -v '^./tests/'|xargs pyflakes  > pyflakes.out || :
-#clonedigger --cpd-output . || :
-#mv output.xml clonedigger.out
+export DJANGO_SETTINGS_MODULE=geonode.settings
+pylint -f parseable geonode/ | tee pylint.out
+pep8 --repeat geonode | tee pep8.out
+find . -type f -iname "*.py" | egrep -v '^./tests/'|xargs pyflakes  > pyflakes.out || :
+clonedigger --cpd-output . || :
+mv output.xml clonedigger.out
 
 # All done, clean up
 git reset --hard
