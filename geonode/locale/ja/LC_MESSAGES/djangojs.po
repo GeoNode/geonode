@@ -8,6 +8,7 @@
 # Translators:
 # Translators:
 # Translators:
+# Translators:
 # Andres Alfonso Lemon Gomez <lemon.andres@gmail.com>, 2014
 # tosseto <tosseto@gmail.com>, 2013
 # tosseto <tosseto@gmail.com>, 2013
@@ -15,8 +16,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-03-02 23:16-0600\n"
-"PO-Revision-Date: 2015-03-03 05:10+0000\n"
+"POT-Creation-Date: 2015-05-18 12:10-0500\n"
+"PO-Revision-Date: 2015-05-18 16:31+0000\n"
 "Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
 "Language-Team: Japanese (http://www.transifex.com/projects/p/geonode/"
 "language/ja/)\n"
@@ -66,12 +67,12 @@ msgstr "次のユーザーまたはグループのみ:"
 msgid "Who can manage and edit this data?"
 msgstr "誰がこのデータを管理･編集できますか?"
 
-#: static/geonode/js/search/search.js:324
+#: static/geonode/js/search/search.js:342
 #: static_root/geonode/js/search/search.js:298
 msgid "Enter your text here ..."
 msgstr ""
 
-#: static/geonode/js/search/search.js:350
+#: static/geonode/js/search/search.js:368
 msgid "Enter your region here ..."
 msgstr ""
 
@@ -104,6 +105,10 @@ msgid "Google Earth KML"
 msgstr "Google EarthのKML"
 
 #: static/geonode/js/upload/FileTypes.js:38
+msgid "GeoJSON"
+msgstr ""
+
+#: static/geonode/js/upload/FileTypes.js:44
 #: static_root/geonode/js/upload/FileTypes.js:38
 msgid "Zip Archives"
 msgstr "ZIPアーカイブ"

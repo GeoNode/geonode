@@ -8,14 +8,15 @@
 # Translators:
 # Translators:
 # Translators:
+# Translators:
 # Andres Alfonso Lemon Gomez <lemon.andres@gmail.com>, 2014
 # keeratipong petchadapong <jobcskku@hotmail.com>, 2014-2015
 msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-03-02 23:15-0600\n"
-"PO-Revision-Date: 2015-03-03 05:06+0000\n"
+"POT-Creation-Date: 2015-05-18 12:10-0500\n"
+"PO-Revision-Date: 2015-05-18 16:26+0000\n"
 "Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
 "Language-Team: Thai (http://www.transifex.com/projects/p/geonode/language/"
 "th/)\n"
@@ -149,7 +150,7 @@ msgstr "ข้อมูลมีการปรับปรุงทุก 3 เ
 msgid "No information provided"
 msgstr "ไม่มีการให้ข้อมูล"
 
-#: base/forms.py:43 base/templates/base/resourcebase_info_panel.html:46
+#: base/forms.py:43 base/templates/base/resourcebase_info_panel.html:51
 #: documents/templates/documents/document_metadata.html:58
 #: layers/templates/layers/layer_metadata.html:63
 #: maps/templates/maps/map_metadata.html:61
@@ -160,11 +161,11 @@ msgstr "หมวด"
 msgid "Category is required."
 msgstr "หมวดเป็นสิ่งที่จำเป็น"
 
-#: base/forms.py:105 groups/models.py:42 people/forms.py:82
+#: base/forms.py:105 groups/models.py:45 people/forms.py:82
 msgid "A space or comma-separated list of keywords"
 msgstr "แยกคำสำคัญแต่ละคำด้วยการเว้นวรรคหรือจุลภาค"
 
-#: base/models.py:44 services/models.py:85
+#: base/models.py:44 services/models.py:86
 msgid "function performed by the responsible party"
 msgstr "ฟังก์ชั่นดำเนินการโดยบุคคลที่รับผิดชอบ"
 
@@ -288,7 +289,7 @@ msgstr "วัตถุประสงค์"
 msgid "maintenance frequency"
 msgstr "ความถี่ในการดูแลรักษา"
 
-#: base/models.py:251 groups/models.py:41 people/models.py:92
+#: base/models.py:251 groups/models.py:44 people/models.py:92
 msgid "keywords"
 msgstr "คำสำคัญ"
 
@@ -372,28 +373,28 @@ msgstr "ควรให้แหล่งข้อมูลนี้แสดง
 msgid "Should this resource be published and searchable?"
 msgstr "ควรให้แหล่งข้อมูลนี้ถูกเผยแพร่และค้นหาได้หรือไม่?"
 
-#: base/models.py:696
+#: base/models.py:699
 msgid "For example \"kml\""
 msgstr "ตัวอย่าง เช่น \"kml\""
 
-#: base/models.py:698
+#: base/models.py:701
 msgid "For example \"View in Google Earth\""
 msgstr "ตัวอย่าง เช่น \"ดูใน Google Earth\""
 
-#: base/models.py:699
+#: base/models.py:702
 msgid "For example \"text/xml\""
 msgstr "ตัวอย่าง เช่น \"text/xml\""
 
 #: base/management/__init__.py:14
 msgid "Request to download a resource"
-msgstr ""
+msgstr "ร้องขอการดาวน์โหลดทรัพยากร"
 
 #: base/management/__init__.py:15
 msgid "A request for downloading a resource was sent"
-msgstr ""
+msgstr "ส่งคำร้องขอการดาวน์โหลดทรัพยากรแล้ว"
 
 #: base/templates/base/_resourcebase_contact_snippet.html:3
-#: templates/500.html:184 templates/base.html:143
+#: templates/500.html:151 templates/base.html:143
 msgid "About"
 msgstr "เกี่ยวกับ"
 
@@ -402,12 +403,12 @@ msgid "Owner, Point of Contact, Metadata Author"
 msgstr "เจ้าของ, ที่อยู่สำหรับติดต่อ, ผู้เขียนคำอธิบายข้อมูล"
 
 #: base/templates/base/_resourcebase_contact_snippet.html:10
-#: base/templates/base/resourcebase_info_panel.html:61
+#: base/templates/base/resourcebase_info_panel.html:73
 msgid "Owner"
 msgstr "เจ้าของ"
 
 #: base/templates/base/_resourcebase_contact_snippet.html:14
-#: base/templates/base/resourcebase_info_panel.html:66
+#: base/templates/base/resourcebase_info_panel.html:78
 #: documents/templates/documents/document_metadata.html:48
 #: layers/templates/layers/layer_metadata.html:99
 #: maps/templates/maps/map_metadata.html:51
@@ -424,7 +425,7 @@ msgid "Title"
 msgstr "ชื่อเรื่อง"
 
 #: base/templates/base/resourcebase_info_panel.html:11
-#: base/templates/base/resourcebase_info_panel.html:80
+#: base/templates/base/resourcebase_info_panel.html:92
 msgid "License"
 msgstr "ใบอนุญาต"
 
@@ -448,45 +449,45 @@ msgstr "ชนิด"
 msgid "Keywords"
 msgstr "คำสำคัญ"
 
-#: base/templates/base/resourcebase_info_panel.html:56
+#: base/templates/base/resourcebase_info_panel.html:61
 #: templates/search/_region_filter.html:5
 msgid "Regions"
 msgstr "ภูมิภาค"
 
-#: base/templates/base/resourcebase_info_panel.html:93
+#: base/templates/base/resourcebase_info_panel.html:105
 msgid "Maintenance Frequency"
 msgstr "ความถี่ในการดูแลรักษา"
 
-#: base/templates/base/resourcebase_info_panel.html:98
+#: base/templates/base/resourcebase_info_panel.html:110
 msgid "Restrictions"
 msgstr "ข้อจำกัด"
 
-#: base/templates/base/resourcebase_info_panel.html:107
+#: base/templates/base/resourcebase_info_panel.html:119
 msgid "Edition"
 msgstr "รุ่น"
 
-#: base/templates/base/resourcebase_info_panel.html:112
+#: base/templates/base/resourcebase_info_panel.html:124
 msgid "Purpose"
 msgstr "วัตถุประสงค์"
 
-#: base/templates/base/resourcebase_info_panel.html:117 templates/500.html:187
+#: base/templates/base/resourcebase_info_panel.html:129 templates/500.html:154
 #: templates/base.html:146
 msgid "Language"
 msgstr "ภาษา"
 
-#: base/templates/base/resourcebase_info_panel.html:122
+#: base/templates/base/resourcebase_info_panel.html:134
 msgid "Temporal Extent"
 msgstr "ขอบเขตชั่วขณะ"
 
-#: base/templates/base/resourcebase_info_panel.html:127
+#: base/templates/base/resourcebase_info_panel.html:139
 msgid "Data Quality"
 msgstr "คุณภาพของข้อมูล"
 
-#: base/templates/base/resourcebase_info_panel.html:132
+#: base/templates/base/resourcebase_info_panel.html:144
 msgid "Supplemental Information"
 msgstr "ข้อมูลเพิ่มเติม"
 
-#: base/templates/base/resourcebase_info_panel.html:137
+#: base/templates/base/resourcebase_info_panel.html:149
 msgid "Spatial Representation Type"
 msgstr "รูปแบบการแสดงข้อมูลเชิงพื้นที่"
 
@@ -510,15 +511,15 @@ msgstr "เชื่อมโยงกับ"
 msgid "Permissions must be valid JSON."
 msgstr "สิทธิ์จะต้องอยู่ในรูปแบบ JSON ที่ถูกต้อง"
 
-#: documents/models.py:38
+#: documents/models.py:39
 msgid "File"
 msgstr "ไฟล์"
 
-#: documents/models.py:47
+#: documents/models.py:48
 msgid "The URL of the document if it is external."
 msgstr "URL ของเอกสาร ถ้าหากมาจากภายนอก"
 
-#: documents/models.py:48
+#: documents/models.py:49
 msgid "URL"
 msgstr "URL"
 
@@ -576,11 +577,11 @@ msgstr "เอกสารถูกลบแล้ว"
 
 #: documents/management/__init__.py:26
 msgid "Comment on Document"
-msgstr ""
+msgstr "แสดงความคิดเห็นบนเอกสาร"
 
 #: documents/management/__init__.py:27
 msgid "A Document was commented on"
-msgstr ""
+msgstr "เอกสารได้รับการแสดงความคิดเห็น"
 
 #: documents/management/__init__.py:30
 msgid "Document for Map"
@@ -588,7 +589,7 @@ msgstr "เอกสารสำหรับแผนที่"
 
 #: documents/management/__init__.py:31
 msgid "A rating was given to a document"
-msgstr ""
+msgstr "เอกสารได้รับการให้คะแนนแล้ว"
 
 #: documents/templates/documents/document_detail.html:39
 msgid "External Resource"
@@ -613,7 +614,7 @@ msgstr "ดาวน์โหลดเอกสาร"
 #: documents/templates/documents/document_detail.html:89
 #: layers/templates/layers/layer_detail.html:139
 msgid "Request Download"
-msgstr ""
+msgstr "ร้องขอการดาวน์โหลด"
 
 #: documents/templates/documents/document_detail.html:95
 #: documents/templates/documents/document_detail.html:102
@@ -714,7 +715,7 @@ msgstr "แก้ไขคำอธิบายข้อมูล"
 
 #: documents/templates/documents/document_metadata.html:22
 msgid "Editing details for"
-msgstr ""
+msgstr "แก้ไขรายละเอียดสำหรับ"
 
 #: documents/templates/documents/document_metadata.html:26
 #: layers/templates/layers/layer_metadata.html:29
@@ -783,13 +784,13 @@ msgstr "ล้าง"
 msgid "Upload Document"
 msgstr "อัพโหลดเอกสาร"
 
-#: geoserver/helpers.py:944
+#: geoserver/helpers.py:964
 msgid "An exception occurred loading data to PostGIS"
-msgstr ""
+msgstr "เกิดข้อผิดพลาดระหว่างโหลดข้อมูลไปยัง PostGIS"
 
-#: geoserver/helpers.py:949
+#: geoserver/helpers.py:969
 msgid " Additionally an error occured during database cleanup"
-msgstr ""
+msgstr "เกิดข้อผิดพลาดในระหว่างการทำความสะอาดฐานข้อมูล"
 
 #: geoserver/ows.py:103
 msgid "Zipped Shapefile"
@@ -827,22 +828,9 @@ msgstr "PDF"
 msgid "PNG"
 msgstr "PNG"
 
-#: geoserver/signals.py:285
+#: geoserver/signals.py:293
 msgid "Could not create a download link for layer."
 msgstr "ไม่สามารถสร้างลิงค์ดาวน์โหลดสำหรับชั้นข้อมูลได้"
-
-#: geoserver/signals.py:316
-msgid "KML"
-msgstr "KML"
-
-#: geoserver/signals.py:345
-msgid "Tiles"
-msgstr "Tiles"
-
-#: geoserver/signals.py:392 layers/templates/layers/layer_detail.html:261
-#: services/views.py:1272
-msgid "Legend"
-msgstr "สัญลักษณ์"
 
 #: geoserver/views.py:335
 msgid "You don't have permissions to change style for this layer"
@@ -862,7 +850,7 @@ msgstr "อัพโหลดชั้นข้อมูลเสร็จแล
 
 #: geoserver/management/__init__.py:31 layers/management/__init__.py:45
 msgid "Comment on Layer"
-msgstr "แสดงความเห็นเกี่ยวกับชั้นข้อมูล"
+msgstr "แสดงความคิดเห็นเกี่ยวกับชั้นข้อมูล"
 
 #: geoserver/management/__init__.py:31 layers/management/__init__.py:46
 msgid "A layer was commented on"
@@ -890,19 +878,19 @@ msgstr "มีกลุ่มที่ใช้ slug นี้อยู่แล
 msgid "A group already exists with that name."
 msgstr "มีชื่อกลุ่มนี้อยู่ก่อนแล้ว"
 
-#: groups/models.py:17
+#: groups/models.py:20
 msgid "Public"
 msgstr "สาธารณะ"
 
-#: groups/models.py:18
+#: groups/models.py:21
 msgid "Public (invite-only)"
 msgstr "สาธารณะ (เฉพาะที่ได้รับเชิญ)"
 
-#: groups/models.py:19
+#: groups/models.py:22
 msgid "Private"
 msgstr "ส่วนบุคคล"
 
-#: groups/models.py:22
+#: groups/models.py:25
 msgid ""
 "Public: Any registered user can view and join a public group.<br>Public "
 "(invite-only):Any registered user can view the group.  Only invited users "
@@ -915,7 +903,7 @@ msgstr ""
 "ผู้ใช้ที่ลงทะเบียนไม่สามารถเห็นรายละเอียดใดๆเกี่ยวกับกลุ่ม รวมทั้งการเป็นสมาชิก "
 "เฉพาะผู้ใช้ที่ได้รับเชิญเท่านั้นที่สามารถเข้าร่วมได้"
 
-#: groups/models.py:27
+#: groups/models.py:30
 msgid ""
 "Email used to contact one or all group members, such as a mailing list, "
 "shared email, or exchange group."
@@ -923,30 +911,30 @@ msgstr ""
 "อีเมล์ที่สามารถใช้ติดต่อสมาชิกหรือทุกคนในกลุ่ม เช่น mailing list อีเมล์ที่ใช้ร่วมกัน "
 "หรือกลุ่มแลกเปลี่ยน"
 
-#: groups/models.py:36
+#: groups/models.py:39
 msgid "email"
 msgstr "อีเมล์"
 
-#: groups/models.py:184 groups/models.py:203
+#: groups/models.py:187 groups/models.py:206
 #: groups/templates/groups/group_members.html:28
 #: groups/templates/groups/group_members.html:54
 #: groups/templates/groups/group_members.html:81
 msgid "Manager"
 msgstr "ผู้ดูแล"
 
-#: groups/models.py:185 groups/models.py:204
+#: groups/models.py:188 groups/models.py:207
 msgid "Member"
 msgstr "สมาชิก"
 
-#: groups/models.py:209
+#: groups/models.py:212
 msgid "Sent"
 msgstr "ส่ง"
 
-#: groups/models.py:210
+#: groups/models.py:213
 msgid "Accepted"
 msgstr "ยอมรับ"
 
-#: groups/models.py:211
+#: groups/models.py:214
 msgid "Declined"
 msgstr "ปฏิเสธ"
 
@@ -966,14 +954,14 @@ msgstr "ทั้งหมด"
 #: groups/templates/groups/activity.html:25
 #: people/templates/people/_profile_filters.html:5
 #: services/templates/services/service_detail.html:64
-#: social/templates/social/activity_list.html:21 templates/500.html:39
+#: social/templates/social/activity_list.html:21 templates/500.html:55
 #: templates/base.html:55
 msgid "Layers"
 msgstr "ชั้นข้อมูล"
 
 #: groups/templates/groups/activity.html:26
 #: people/templates/people/_profile_filters.html:6
-#: social/templates/social/activity_list.html:22 templates/500.html:42
+#: social/templates/social/activity_list.html:22 templates/500.html:58
 #: templates/base.html:58
 msgid "Maps"
 msgstr "แผนที่"
@@ -1158,141 +1146,141 @@ msgstr "ลบแผนที่/ข้อมูลจากกลุ่ม"
 msgid "Remove selected maps/data"
 msgstr "ลบแผนที่/ข้อมูลที่เลือก"
 
-#: layers/models.py:52
+#: layers/models.py:53
 msgid "style name"
 msgstr "ชื่อสไตล์"
 
-#: layers/models.py:54
+#: layers/models.py:55
 msgid "sld text"
 msgstr "ข้อความ sld"
 
-#: layers/models.py:56
+#: layers/models.py:57
 msgid "sld version"
 msgstr "รุ่นของ sld"
 
-#: layers/models.py:60
+#: layers/models.py:61
 msgid "sld url"
 msgstr "url ของ sld"
 
-#: layers/models.py:189
+#: layers/models.py:190
 msgid "File cannot be opened, maybe check the encoding"
-msgstr ""
+msgstr "ไม่สามารถเปิดไฟล์ได้ ให้ลองตรวจสอบ encoding"
 
-#: layers/models.py:296
+#: layers/models.py:297
 msgid "attribute name"
 msgstr "ชื่อแอตทริบิวต์"
 
-#: layers/models.py:297
+#: layers/models.py:298
 msgid "name of attribute as stored in shapefile/spatial database"
 msgstr "ชื่อของแอตทริบิวต์ที่เก็บอยู่ใน shapefile/spatial database"
 
-#: layers/models.py:303
+#: layers/models.py:304
 msgid "attribute description"
 msgstr "คำอธิบายแอตทริบิวต์"
 
-#: layers/models.py:304
+#: layers/models.py:305
 msgid "description of attribute to be used in metadata"
 msgstr "คำอธิบายของแอตทริบิวต์ที่ใช้ในคำอธิบายข้อมูล"
 
-#: layers/models.py:309
+#: layers/models.py:310
 msgid "attribute label"
 msgstr "ป้ายชื่อแอตทริบิวต์"
 
-#: layers/models.py:310
+#: layers/models.py:311
 msgid "title of attribute as displayed in GeoNode"
 msgstr "ชื่อของแอตทริบิวต์ที่แสดงใน GeoNode"
 
-#: layers/models.py:316
+#: layers/models.py:317
 msgid "attribute type"
 msgstr "ชนิดของแอตทริบิวต์"
 
-#: layers/models.py:317
+#: layers/models.py:318
 msgid "the data type of the attribute (integer, string, geometry, etc)"
 msgstr "ชนิดข้อมูลของแอตทริบิวต์ (integer, string, geometry, อื่นๆ)"
 
-#: layers/models.py:324
+#: layers/models.py:325
 msgid "visible?"
 msgstr "สามารถมองเห็นได้?"
 
-#: layers/models.py:325
+#: layers/models.py:326
 msgid "specifies if the attribute should be displayed in identify results"
 msgstr "ระบุถ้าแอตทริบิวต์ควรถูกแสดงในการระบุผล"
 
-#: layers/models.py:328
+#: layers/models.py:329
 msgid "display order"
 msgstr "ลำดับการแสดงผล"
 
-#: layers/models.py:329
+#: layers/models.py:330
 msgid ""
 "specifies the order in which attribute should be displayed in identify "
 "results"
 msgstr "ระบุลำดับที่แอตทริบิวต์ควรถูกแสดงในการระบุผล"
 
-#: layers/models.py:334
+#: layers/models.py:335
 msgid "count"
 msgstr "นับจำนวน"
 
-#: layers/models.py:335
+#: layers/models.py:336
 msgid "count value for this field"
 msgstr "ค่าจำนวนของฟิลด์นี้"
 
-#: layers/models.py:338
+#: layers/models.py:339
 msgid "min"
 msgstr "ค่าต่ำสุด"
 
-#: layers/models.py:339
+#: layers/models.py:340
 msgid "minimum value for this field"
 msgstr "ค่าต่ำสุดของฟิลด์นี้"
 
-#: layers/models.py:346
+#: layers/models.py:347
 msgid "max"
 msgstr "ค่าสูงสุด"
 
-#: layers/models.py:347
+#: layers/models.py:348
 msgid "maximum value for this field"
 msgstr "ค่าสูงสุดของฟิลด์นี้"
 
-#: layers/models.py:354
+#: layers/models.py:355
 msgid "average"
 msgstr "เฉลี่ย"
 
-#: layers/models.py:355
+#: layers/models.py:356
 msgid "average value for this field"
 msgstr "ค่าเฉลี่ยของฟิลด์นี้"
 
-#: layers/models.py:362
+#: layers/models.py:363
 msgid "median"
 msgstr "มัธยฐาน"
 
-#: layers/models.py:363
+#: layers/models.py:364
 msgid "median value for this field"
 msgstr "ค่ามัธยฐานของฟิลด์นี้"
 
-#: layers/models.py:370
+#: layers/models.py:371
 msgid "standard deviation"
 msgstr "ค่าเบี่ยงเบนมาตรฐาน"
 
-#: layers/models.py:371
+#: layers/models.py:372
 msgid "standard deviation for this field"
 msgstr "ค่าเบี่ยงเบนมาตรฐานของฟิลด์นี้"
 
-#: layers/models.py:378
+#: layers/models.py:379
 msgid "sum"
 msgstr "ผลรวม"
 
-#: layers/models.py:379
+#: layers/models.py:380
 msgid "sum value for this field"
 msgstr "ค่าผลรวมของฟิลด์นี้"
 
-#: layers/models.py:386
+#: layers/models.py:387
 msgid "unique values for this field"
 msgstr "ค่าที่ไม่ซ้ำกันของฟิลด์นี้"
 
-#: layers/models.py:391
+#: layers/models.py:392
 msgid "last modified"
 msgstr "แก้ไขครั้งล่าสุด"
 
-#: layers/models.py:393
+#: layers/models.py:394
 msgid "date when attribute statistics were last updated"
 msgstr "วันที่สถิติเกี่ยวกับแอตทริบิวต์มีการปรับปรุงล่าสุด"
 
@@ -1325,11 +1313,11 @@ msgstr "คุณไม่มีสิทธิ์ดูชั้นข้อม
 
 #: layers/views.py:469
 msgid "You are attempting to replace a vector layer with a raster."
-msgstr ""
+msgstr "คุณกำลังพยายามที่จะแทนที่ชั้นข้อมูลเวกเตอร์ด้วยชั้นข้อมูลแรสเตอร์"
 
 #: layers/views.py:472
 msgid "You are attempting to replace a raster layer with a vector."
-msgstr ""
+msgstr "คุณกำลังพยายามที่จะแทนที่ชั้นข้อมูลแรสเตอร์ด้วยชั้นข้อมูลเวกเตอร์"
 
 #: layers/views.py:528
 msgid "Unable to delete layer"
@@ -1339,7 +1327,7 @@ msgstr "ไม่สามารถลบชั้นข้อมูลได้
 msgid ""
 "This layer is a member of a layer group, you must remove the layer from the "
 "group before deleting."
-msgstr ""
+msgstr "ชั้นข้อมูลนี้เป็นสมาชิกของกลุ่มชั้นข้อมูล คุณต้องนำชั้นข้อมูลออกจากกลุ่มก่อนที่จะทำการลบ"
 
 #: layers/management/__init__.py:33
 msgid "Layer Created"
@@ -1443,6 +1431,10 @@ msgstr ""
 msgid "Edit data"
 msgstr "แก้ไขข้อมูล"
 
+#: layers/templates/layers/layer_detail.html:261 services/views.py:1272
+msgid "Legend"
+msgstr "สัญลักษณ์"
+
 #: layers/templates/layers/layer_detail.html:271
 msgid "Maps using this layer"
 msgstr "แผนที่ที่ใช้ชั้นข้อมูลนี้"
@@ -1516,7 +1508,7 @@ msgstr "สำรวจชั้นข้อมูล"
 
 #: layers/templates/layers/layer_list.html:12
 #: layers/templates/upload/layer_upload.html:18
-#: layers/templates/upload/layer_upload_base.html:12 templates/500.html:74
+#: layers/templates/upload/layer_upload_base.html:12 templates/500.html:216
 #: templates/base.html:208
 msgid "Upload Layers"
 msgstr "อัพโหลดชั้นข้อมูล"
@@ -1539,6 +1531,9 @@ msgid ""
 "Dublin Core metadata elements.\n"
 "          Some of your original metadata may have been lost."
 msgstr ""
+"หมายเหตุ: คำอธิบายข้อมูลต้นฉบับของแผนที่นี้ถูกสร้างขึ้นโดยนำเข้าคำอธิบายข้อมูลในรูปแบบไฟล์ XML "
+"คำอธิบายข้อมูลของ GeoNode รองรับบางส่วนของมาตรฐาน ISO, FGDC, และ Dublin Core "
+"อาจจะทำให้มีบางส่วนของคำอธิบายต้นฉบับของคุณสูญเสียไป"
 
 #: layers/templates/layers/layer_metadata.html:37
 #: layers/templates/layers/layer_metadata.html:77 templates/_actions.html:5
@@ -1610,6 +1605,7 @@ msgstr "ประวัติย่อ"
 #: layers/templates/layers/layer_replace.html:38
 #: layers/templates/upload/layer_upload.html:31
 #: layers/templates/upload/layer_upload.html:38
+#: templates/announcements/announcement_confirm_delete.html:22
 #: templates/announcements/announcement_form.html:25
 #: templates/user_messages/_message_snippet.html:40
 msgid "Delete"
@@ -1624,6 +1620,7 @@ msgstr "คุณแน่ใจแล้วหรือว่าต้องก
 #: layers/templates/upload/layer_upload.html:39
 #: maps/templates/maps/map_download.html:58 templates/_comments.html:66
 #: templates/_permissions_form.html:15
+#: templates/announcements/announcement_confirm_delete.html:21
 #: templates/announcements/announcement_form.html:23
 msgid "Cancel"
 msgstr "ยกเลิก"
@@ -1987,79 +1984,79 @@ msgstr "หรือเพียงแค่ไป"
 msgid "now"
 msgstr "เดี๋ยวนี้"
 
-#: maps/models.py:57
+#: maps/models.py:58
 msgid "zoom"
 msgstr "ซูม"
 
-#: maps/models.py:61
+#: maps/models.py:62
 msgid "projection"
 msgstr "projection"
 
-#: maps/models.py:65
+#: maps/models.py:66
 msgid "center X"
 msgstr "จุดกึ่งกลาง X"
 
-#: maps/models.py:69
+#: maps/models.py:70
 msgid "center Y"
 msgstr "จุดกึ่งกลาง Y"
 
-#: maps/models.py:76
+#: maps/models.py:77
 msgid "Site URL"
 msgstr "URL ของเว็บไซต์"
 
-#: maps/models.py:81
+#: maps/models.py:82
 msgid "Featured Map URL"
 msgstr "URL ของแผนที่แนะนำ"
 
-#: maps/models.py:378
+#: maps/models.py:379
 msgid "stack order"
 msgstr "ลำดับการซ้อนทับ"
 
-#: maps/models.py:383
+#: maps/models.py:384
 msgid "format"
 msgstr "รูปแบบ"
 
-#: maps/models.py:390
+#: maps/models.py:391
 msgid "name"
 msgstr "ชื่อ"
 
-#: maps/models.py:397
+#: maps/models.py:398
 msgid "opacity"
 msgstr "ความทีบแสง"
 
-#: maps/models.py:401
+#: maps/models.py:402
 msgid "styles"
 msgstr "สไตล์"
 
-#: maps/models.py:407
+#: maps/models.py:408
 msgid "transparent"
 msgstr "ความโปร่งใส"
 
-#: maps/models.py:411
+#: maps/models.py:412
 msgid "fixed"
 msgstr "คงที่"
 
-#: maps/models.py:415
+#: maps/models.py:416
 msgid "group"
 msgstr "กลุ่ม"
 
-#: maps/models.py:419
+#: maps/models.py:420
 msgid "visibility"
 msgstr "การมองเห็น"
 
-#: maps/models.py:422
+#: maps/models.py:423
 msgid "ows URL"
 msgstr "URL ของ ows"
 
-#: maps/models.py:425
+#: maps/models.py:426
 msgid "layer params"
 msgstr "layer params"
 
-#: maps/models.py:432
+#: maps/models.py:433
 msgid "source params"
 msgstr "source params"
 
-#: maps/models.py:525
+#: maps/models.py:527
 msgid "JSON Configuration"
 msgstr "JSON การกำหนดค่า"
 
@@ -2414,19 +2411,19 @@ msgstr "ผู้ใช้คนอื่นเริ่มติดตามค
 
 #: people/management.py:36
 msgid "User requested access"
-msgstr ""
+msgstr "ผู้ใช้ได้ร้องขอการเข้าถึง"
 
 #: people/management.py:37
 msgid "A new user has requested access to the site"
-msgstr ""
+msgstr "ผู้ใช้ใหม่ได้ร้องขอการเข้าถึงเว็บไซต์"
 
 #: people/management.py:40
 msgid "Account activated"
-msgstr ""
+msgstr "บัญชีได้เปิดใช้งานแล้ว"
 
 #: people/management.py:41
 msgid "This account is now active and can log in the site"
-msgstr ""
+msgstr "บัญชีได้เปิดใช้งานแล้วและสามารถเข้าใช้งานเว็บไซต์ได้"
 
 #: people/models.py:46
 msgid "Organization Name"
@@ -2436,7 +2433,7 @@ msgstr "ชื่อองค์กร"
 msgid "name of the responsible organization"
 msgstr "ชื่อองค์กรที่รับผิดชอบ"
 
-#: people/models.py:51 templates/500.html:76 templates/base.html:210
+#: people/models.py:51 templates/500.html:218 templates/base.html:210
 msgid "Profile"
 msgstr "โปรไฟล์"
 
@@ -2537,7 +2534,7 @@ msgstr "ไม่มีกลุ่ม"
 msgid "All contents"
 msgstr "เนื้อหาทั้งหมด"
 
-#: people/templates/people/_profile_filters.html:7 templates/500.html:45
+#: people/templates/people/_profile_filters.html:7 templates/500.html:61
 #: templates/base.html:61
 msgid "Documents"
 msgstr "เอกสาร"
@@ -2577,7 +2574,7 @@ msgstr "อีเมล์"
 #: people/templates/people/profile_detail.html:59
 #: people/templates/people/profile_detail.html:63
 msgid "Not provided."
-msgstr ""
+msgstr "ไม่มีการระบุ"
 
 #: people/templates/people/profile_detail.html:33
 #: services/templates/services/layers_register.html:27
@@ -2625,33 +2622,34 @@ msgstr "สร้างแผนที่"
 msgid "My Activities"
 msgstr "กิจกรรมของฉัน"
 
-#: people/templates/people/profile_detail.html:97 templates/base.html:214
+#: people/templates/people/profile_detail.html:97 templates/500.html:222
+#: templates/base.html:214
 msgid "Notifications"
 msgstr "การแจ้งเตือน"
 
-#: people/templates/people/profile_detail.html:100 templates/500.html:80
+#: people/templates/people/profile_detail.html:100 templates/500.html:225
 #: templates/base.html:217 templates/announcements/announcement_list.html:6
 #: templates/announcements/announcement_list.html:13
 msgid "Announcements"
 msgstr "ประกาศ"
 
 #: people/templates/people/profile_detail.html:105
-#: services/templates/services/service_list.html:9 templates/500.html:83
+#: services/templates/services/service_list.html:9 templates/500.html:228
 #: templates/base.html:220
 msgid "Remote Services"
 msgstr "บริการระยะไกล"
 
-#: people/templates/people/profile_detail.html:106 templates/500.html:84
+#: people/templates/people/profile_detail.html:106 templates/500.html:229
 #: templates/base.html:221
 msgid "Invite User"
 msgstr "เชิญผู้ใช้"
 
-#: people/templates/people/profile_detail.html:107 templates/500.html:86
+#: people/templates/people/profile_detail.html:107 templates/500.html:231
 #: templates/base.html:223
 msgid "GeoServer"
 msgstr "GeoServer"
 
-#: people/templates/people/profile_detail.html:110 templates/500.html:89
+#: people/templates/people/profile_detail.html:110 templates/500.html:234
 #: templates/base.html:226
 msgid "Admin"
 msgstr "ผู้ดูแลระบบ"
@@ -2741,19 +2739,19 @@ msgstr "ชื่อเซอร์วิส"
 msgid "Service Type"
 msgstr "ชนิดของเซอร์วิส"
 
-#: services/models.py:91
+#: services/models.py:92
 msgid "Layer Name"
 msgstr "ชื่อชั้นข้อมูล"
 
-#: services/models.py:92
+#: services/models.py:93
 msgid "Layer Title"
 msgstr "ชื่อเรื่องของชั้นข้อมูล"
 
-#: services/models.py:93
+#: services/models.py:94
 msgid "Layer Description"
 msgstr "คำอธิบายชั้นข้อมูล"
 
-#: services/models.py:94
+#: services/models.py:95
 msgid "Layer Styles"
 msgstr "สไตล์ของชั้นข้อมูล"
 
@@ -2960,94 +2958,93 @@ msgstr ""
 "\n"
 "ไม่มีหน้าเว็บที่คุณเรียก ถ้าคุณใช้บุ๊คมาร์คบางทีลิงค์ที่เรียกอาจจะไม่มีอยู่แล้ว "
 
-#: templates/500.html:48 templates/base.html:66
+#: templates/500.html:66 templates/base.html:66
 msgid "People"
 msgstr "ผู้คน"
 
-#: templates/500.html:51 templates/base.html:69
+#: templates/500.html:69 templates/base.html:69
 msgid "Groups"
 msgstr "กลุ่ม"
 
-#: templates/500.html:56 templates/search/search.html:6
-#: templates/search/search.html.py:12
-msgid "Search"
-msgstr "ค้นหา"
+#: templates/500.html:89 templates/base.html:89
+msgid "Register"
+msgstr "ลงทะเบียน"
 
-#: templates/500.html:77 templates/base.html:211
+#: templates/500.html:100 templates/500.html.py:200 templates/base.html:100
+#: templates/base.html.py:192
+msgid "Sign in"
+msgstr "เข้าสู่ระบบ"
+
+#: templates/500.html:127
+msgid "There was a problem loading this page"
+msgstr "เกิดข้อผิดพลาดขณะกำลังโหลดหน้านี้"
+
+#: templates/500.html:129
+msgid ""
+"\n"
+"            Please contact your GeoNode administrator (he may have received "
+"an email automatically if he configured it properly).\n"
+"            If you are the site administrator, enable debug mode to see the "
+"actual error and fix it or file an issue in <a href=\"http://github.com/"
+"GeoNode/geonode/issues\">GeoNode's issue tracker</a>\n"
+"            "
+msgstr ""
+
+#: templates/500.html:149 templates/base.html:141
+msgid "Powered by"
+msgstr "ขับเคลื่อนด้วย"
+
+#: templates/500.html:149 templates/base.html:141
+msgid "GeoNode"
+msgstr "GeoNode"
+
+#: templates/500.html:149 templates/base.html:141
+msgid "version"
+msgstr "รุ่น"
+
+#: templates/500.html:150 templates/base.html:142
+msgid "Developers"
+msgstr "นักพัฒนา"
+
+#: templates/500.html:188 templates/500.html.py:189 templates/base.html:180
+#: templates/base.html.py:181
+msgid "Username"
+msgstr "ชื่อผู้ใช้"
+
+#: templates/500.html:192 templates/base.html:184
+msgid "Password"
+msgstr "รหัสผ่าน"
+
+#: templates/500.html:196 templates/base.html:188
+msgid "Remember Me"
+msgstr "จดจำ"
+
+#: templates/500.html:212 templates/base.html:204
+msgid "Menu"
+msgstr "เมนู"
+
+#: templates/500.html:219 templates/base.html:211
 msgid "Recent Activity"
 msgstr "กิจกรรมล่าสุด"
 
-#: templates/500.html:78 templates/base.html:212
+#: templates/500.html:220 templates/base.html:212
 #: templates/user_messages/inbox.html:15
 msgid "Inbox"
 msgstr "กล่องขาเข้า"
 
-#: templates/500.html:92 templates/base.html:229
+#: templates/500.html:239 templates/base.html:231
 msgid "Help"
 msgstr "ช่วยเหลือ"
 
-#: templates/500.html:97 templates/base.html:235
+#: templates/500.html:245 templates/base.html:237
 #: templates/account/logout.html:6 templates/account/logout.html.py:12
 #: templates/account/logout.html:17
 msgid "Log out"
 msgstr "ออกจากระบบ"
 
-#: templates/500.html:109 templates/base.html:180 templates/base.html.py:181
-msgid "Username"
-msgstr "ชื่อผู้ใช้"
-
-#: templates/500.html:113 templates/base.html:184
-msgid "Password"
-msgstr "รหัสผ่าน"
-
-#: templates/500.html:118 templates/base.html:188
-msgid "Remember Me"
-msgstr "จดจำ"
-
-#: templates/500.html:120 templates/base.html:100 templates/base.html.py:192
-msgid "Sign in"
-msgstr "เข้าสู่ระบบ"
-
-#: templates/500.html:128 templates/base.html:89
-msgid "Register"
-msgstr "ลงทะเบียน"
-
-#: templates/500.html:159
-msgid "There was a problem loading this page"
-msgstr "เกิดข้อผิดพลาดขณะกำลังโหลดหน้านี้"
-
-#: templates/500.html:161
-msgid ""
-"\n"
-"          Please contact your GeoNode administrator (he may have received an "
-"email automatically if he configured it properly).\n"
-"          If you are the site administrator, enable debug mode to see the "
-"actual error and fix it or file an issue in <a href=\"http://github.com/"
-"GeoNode/geonode/issues\">GeoNode's issue tracker</a>\n"
-"          "
-msgstr ""
-"\n"
-"โปรดติดต่อผู้ดูแลระบบ GeoNode ของท่าน "
-"(เขาอาจจะได้รับอีเมล์โดยอัตโนมัติแล้วถ้าเขาตั้งค่าไว้อย่างถูกต้อง)\n"
-"ถ้าคุณเป็นผู้ดูแลระบบ ให้เปิดใช้งาน debug mode "
-"เพื่อดูข้อผิดพลาดที่เกิดขึ้นแล้วแก้ไขมันหรือส่งปัญหาไปที่ <a href=\"http://github.com/GeoNode/"
-"geonode/issues\">GeoNode's issue tracker</a>"
-
-#: templates/500.html:182 templates/base.html:141
-msgid "Powered by"
-msgstr "ขับเคลื่อนด้วย"
-
-#: templates/500.html:182 templates/base.html:141
-msgid "GeoNode"
-msgstr "GeoNode"
-
-#: templates/500.html:182 templates/base.html:141
-msgid "version"
-msgstr "รุ่น"
-
-#: templates/500.html:183 templates/base.html:142
-msgid "Developers"
-msgstr "นักพัฒนา"
+#: templates/500.html:280 templates/base.html:274
+msgid "Type your search here ..."
+msgstr "พิมพ์คำค้นหาที่นี่ ..."
 
 #: templates/_actions.html:3
 msgid "Info"
@@ -3076,11 +3073,11 @@ msgstr "ใช้การเปลี่ยนแปลงนี้"
 
 #: templates/_comments.html:17 templates/_comments.html.py:58
 msgid "Add Comment"
-msgstr "เขียนความเห็น"
+msgstr "เขียนความคิดเห็น"
 
 #: templates/_comments.html:21
 msgid "Log in to add a comment"
-msgstr "เข้าสู่ระบบเพื่อเขียนความเห็น"
+msgstr "เข้าสู่ระบบเพื่อเขียนความคิดเห็น"
 
 #: templates/_comments.html:33
 msgid "By"
@@ -3088,7 +3085,7 @@ msgstr "โดย"
 
 #: templates/_comments.html:67
 msgid "Submit Comment"
-msgstr "ส่งความเห็น"
+msgstr "ส่งความคิดเห็น"
 
 #: templates/_permissions.html:8
 msgid "Who can view it?"
@@ -3135,11 +3132,11 @@ msgstr "ใครสามารถจัดการได้บ้าง? (ป
 msgid "Set permissions for this resource"
 msgstr "ตั้งค่าสิทธิ์ของแหล่งข้อมูลนี้"
 
-#: templates/_permissions_form_js.html:180
+#: templates/_permissions_form_js.html:204
 msgid "Choose users..."
 msgstr "เลือกผู้ใช้..."
 
-#: templates/_permissions_form_js.html:213
+#: templates/_permissions_form_js.html:237
 msgid "Choose groups..."
 msgstr "เลือกกลุ่ม..."
 
@@ -3150,14 +3147,6 @@ msgstr "เกี่ยวกับ GeoNode"
 #: templates/about.html:10
 msgid "About GeoNode."
 msgstr "เกี่ยวกับ GeoNode"
-
-#: templates/base.html:204
-msgid "Menu"
-msgstr "เมนู"
-
-#: templates/base.html:270
-msgid "Type your search here ..."
-msgstr "พิมพ์คำค้นหาที่นี่ ..."
 
 #: templates/developer.html:4 templates/developer.html.py:8
 msgid "Information for Developers"
@@ -3254,6 +3243,82 @@ msgid ""
 "</p>\n"
 "    "
 msgstr ""
+"\n"
+"<p><a href=\"http://geonode.org/\">GeoNode</a> "
+"เป็นโอเพ่นเซอร์วิสที่สร้างด้วยซอฟต์แวร์โอเพ่นซอร์ส "
+"เรารองรับคุณในการสร้างแอพพลิเคชันใหม่ได้โดยใช้คอมโพเนนต์และทรัพยากรที่มีให้ "
+"หน้านี้เป็นจุดเริ่มต้นสำหรับนักพัฒนาที่สนใจนการใช้ประโยชน์อย่างเต็มที่จาก GeoNode "
+"นอกจากนี้ยังมีลิงค์ไปยังซอร์สโค๊ดของโครงการ ซึ่งทำให้ทุกคนสามารถสร้างและปรับแก้ GeoNode "
+"ของตนเองได้</p>\n"
+"\n"
+" <h3>ซอฟต์แวร์ GeoNode</h3>\n"
+"\n"
+"<p>โค๊ดทั้งหมดที่รันอยู่ของ GeoNode เป็นโอเพ่นซอร์สทั้งหมด สามารถดูโค๊ดได้ที่ <a href=\"http://"
+"github.com/GeoNode/geonode\">http://github.com/GeoNode/geonode/</a> "
+"หน้าติดตามปัญหาของโครงการอยู่ที่ <a href=\"http://github.com/GeoNode/geonode/issues"
+"\">http://github.com/GeoNode/geonode/issues</a></p>\n"
+"\n"
+"<p>GeoNode สร้างขึ้นโดยใช้โครงการโอเพ่นซอร์สหลายโครงการ "
+"แต่ละโครงการก็มีชุมชนเป็นของตนเอง ถ้าหากคุณสนใจมีส่วนร่วมพัฒนาความสามารถใหม่ๆให้ GeoNode "
+"เราขอแนะนำคุณให้เข้าร่วมกับโครงการที่ใช้สร้างมันขึ้นมา:</p>\n"
+"<ul>\n"
+"<li><a href=\"http://geoext.org\">GeoExt</a> - ชุดเครื่องมือ JavaScript "
+"สำหรับสร้าง rich web mapping applications</li>\n"
+"<li><a href=\"http://geoserver.org\">GeoServer</a> - "
+"เซิร์ฟเวอร์ตามมาตรฐานสำหรับข้อมูลเชิงพื้นที่</li>\n"
+"<li><a href=\"http://geowebcache.org\">GeoWebCache</a> - Cache engine สำหรับ "
+"WMS Tiles</li>\n"
+"<li><a href=\"http://openlayers.org\">OpenLayers</a> - ไลบรารี่ภาษา JavaScript "
+"ซึ่งใช้ขับเคลื่อนแผนที่ของ GeoExt</li>\n"
+"<li><a href=\"http://pycsw.org\">pycsw</a> - เซิร์ฟเวอร์แคตตาล็อกคำอธิบายข้อมูล "
+"CSW</li> \n"
+"</ul>\n"
+"\n"
+"<h3>เซอร์วิส OGC คืออะไร?</h3>\n"
+"<p>ข้อมูลในแอพพลิเคชันนี้ให้บริการโดยใช้มาตรฐานเปิดซึ่งรับรองโดย <a href=\"http://"
+"opengeospatial.org/\">Open Geospatial Consortium</a> โดยเฉพาะ WMS (Web Map "
+"Service) ใช้ในการเข้าถึงแผนที่ WFS (Web Feature Service) ใช้สำหรับเข้าถึงข้อมูลเวกเตอร์ "
+"และ WCS (Web Coverage Service) ใช้ในการเข้าถึงข้อมูลแรสเตอร์. WMC (Web Map Context "
+"Documents) ใช้ในการแบ่งปันแผนที่ "
+"คุณสามารถใช้เซอร์วิสเหล่านี้ในแอพพลิเคชันของคุณเองโดยใช้ไลบรารี่เช่น OpenLayers, GeoTools, "
+"และ OGR (ซึ่งทั้งหมดเป็นซอฟต์แวร์โอเพ่นซอร์สและสามารถใช้ได้โดยไม่เสียค่าใช้จ่าย)</p>\n"
+"\n"
+"<h3>GeoWebCache คืออะไร?</h3>\n"
+"<p>GeoWebCache ให้บริการ mapping tiles ซึ่งเข้ากันได้กับเครื่องมือทำแผนที่หลายตัวรวมทั้ง "
+"Google Maps, Bing Maps และ OpenLayers ข้อมูลทั้งหมดที่อยู่บน GeoNode ก็สามารถใช้ผ่าน "
+"GeoWebCache ได้เช่นกัน GeoWebCache ช่วยเพิ่มประสิทธิภาพให้ WMS "
+"โดยเก็บแคชข้อมูลและทำให้แผนที่ตอบสนองดีขึ้น</p>\n"
+"\n"
+"<h3>โค๊ดตัวอย่างของ OpenLayers</h3>\n"
+"<p>การนำชั้นข้อมูลจาก GeoNode ไปใช้ในแผนที่ OpenLayers ขั้นตอนแรกคือหาชื่อของชั้นข้อมูลนั้น "
+"ซึ่งหาได้จากฟิลด์ <code>name</code> (ไม่ใช่ <code>title</code>) ของรายการชั้นข้อมูล "
+"สำหรับตัวอย่างนี้เราจะใช้ชั้นข้อมูลพื้นหลังขอบเขตการปกครองของนิการากัวซึ่งมีชื่อว่า <code>risk:"
+"nicaragua_admin</code> จากนั้นสร้าง instance ของ OpenLayers.Layer.WMS:</p> "
+"<p><code>var geonodeLayer = new OpenLayers.Layer.WMS(\"GeoNode Risk Data\", "
+"\"http://demo.geonode.org/geoserver/wms\",{ layers: \"risk:nicaragua_admin"
+"\" });</code></p> \n"
+"\n"
+"<h3>โค๊ดตัวอย่างของ Google Maps</h3>\n"
+"<p>การนำชั้นข้อมูลจาก GeoNode ไปใช้ใน Google Map ให้ใส่ชื่อชั้นข้อมูลเข้าไปใน URL "
+"template</p> <p><code>var tilelayer = new GTileLayer(null, null, null, "
+"{tileUrlTemplate: 'http://demo.geonode.org/geoserver/gwc/service/gmaps?"
+"layers=risk:nicaragua_admin&#38;zoom={Z}&#38;x={X}&#38;y={Y}', isPng:true, "
+"opacity:0.5 } );</code></p>\n"
+"\n"
+"<h3>ผลลัพธ์ Shapefile/GeoJSON/GML</h3>\n"
+"<p>การรับข้อมูลจากเว็บเซอร์วิสของ GeoNode โดยใช้โปรโตคอล WFS ตัวอย่างเช่น "
+"ต้องการขอบเขตการปกครองทั้งหมดของนิการากัว ให้ใช้:</p> <p><code>http://demo.geonode."
+"org/geoserver/wfs?request=GetFeature&#38;typeName=risk:nicaragua_admin&#38;"
+"outputformat=SHAPE-ZIP</code></p> <p>การเปลี่ยนรูปแบบผลลัพธ์เป็น <code>json</"
+"code>, <code>GML2</code>, <code>GML3</code>, หรือ <code>csv</code> "
+"จะทำให้ได้รับข้อมูลตามรูปแบบนั้น นอกจากนี้โปรโตคอล WFS "
+"ยังสามารถค้นหาข้อมูลได้เฉพาะเจาะจงมากขึ้น "
+"โดยระบุขอบเขตหรือตัวกรองเชิงพื้นที่และตัวกรองที่ไม่ใช่เชิงพื้นที่ตามลักษณะของแอตทริบิวต์ของข้อมูล</"
+"p>\n"
+"\n"
+"<h3>โค๊ดตัวอย่างของ GeoTools</h3>\n"
+"<p>สร้าง DataStore แล้วจึงสกัด FeatureType จากมัน จากนั้นเรียกใช้คำสั่ง Query "
+"ซึ่งทั้งหมดถูกทำเป็นเอกสารไว้บน wiki ที่ <code>http://geotools.org/</code></p>"
 
 #: templates/developer.html:55
 msgid "GeoNode's Web Services"
@@ -3432,10 +3497,9 @@ msgstr "GeoNode เป็นแพลทฟอร์มโอเพ่นซอ�
 #: templates/index.html:17
 msgid ""
 "If you have any questions about the software or service, join our <a href="
-"\"https://groups.google.com/d/forum/geonode-users\">mailing list</a>."
+"\"http://lists.osgeo.org/cgi-bin/mailman/listinfo/geonode-users\">mailing "
+"list</a>."
 msgstr ""
-"หากมีคำถามใดๆเกี่ยวกับซอฟต์แวร์หรือบริการ เข้าร่วม <a href=\"https://groups.google.com/"
-"d/forum/geonode-users\">กลุ่มรายชื่ออีเมล์</a> ของเรา"
 
 #: templates/index.html:18
 msgid "Need help?"
@@ -3512,7 +3576,7 @@ msgstr "ดูผู้ใช้"
 #: templates/account/admin_approval_sent.html:6
 #: templates/account/admin_approval_sent.html:9
 msgid "Account Pending Approval"
-msgstr ""
+msgstr "บัญชีผู้ใช้อยู่ระหว่างการอนุมัติ"
 
 #: templates/account/admin_approval_sent.html:11
 #, python-format
@@ -3654,6 +3718,14 @@ msgstr "ผู้ดูแลระบบ GeoNode"
 msgid "GeoNode administration"
 msgstr "การจัดการ GeoNode"
 
+#: templates/announcements/announcement_confirm_delete.html:10
+msgid "Delete Announcement?"
+msgstr ""
+
+#: templates/announcements/announcement_confirm_delete.html:13
+msgid "Are you sure you want to delete this announcement?"
+msgstr ""
+
 #: templates/announcements/announcement_form.html:11
 msgid "Edit Announcement"
 msgstr "แก้ไขประกาศ"
@@ -3668,7 +3740,7 @@ msgstr "ประกาศใหม่"
 
 #: templates/announcements/announcement_list.html:21
 msgid "Level"
-msgstr ""
+msgstr "ระดับ"
 
 #: templates/announcements/announcement_list.html:22
 msgid "Announcement"
@@ -3686,6 +3758,8 @@ msgid ""
 "b>.\n"
 "          "
 msgstr ""
+"\n"
+"เผยแพร่ตั้งแต่ <b>%(publish_start)s</b> ถึง <b>%(publish_end)s</b>"
 
 #: templates/announcements/detail.html:4
 #, python-format
@@ -3761,19 +3835,19 @@ msgstr "เปลี่ยน"
 
 #: templates/notification/account_active/full.txt:3
 msgid "Your account has been approved and is now active."
-msgstr ""
+msgstr "บัญชีผู้ใช้ของคุณได้รับการอนุมัติและเปิดใช้งานแล้ว"
 
 #: templates/notification/account_active/full.txt:5
 msgid "You can use the login form at"
-msgstr ""
+msgstr "คุณสามารถใช้ฟอร์มเข้าใช้งานได้ที่"
 
 #: templates/notification/account_active/short.txt:3
 msgid "Your account is now active"
-msgstr ""
+msgstr "บัญชีของคุณได้เปิดใช้งานแล้ว"
 
 #: templates/notification/account_approve/full.txt:1
 msgid "has requested access to the site."
-msgstr ""
+msgstr "ได้ร้องขอการเข้าถึงเว็บไซต์"
 
 #: templates/notification/account_approve/full.txt:1
 msgid ""
@@ -3782,11 +3856,11 @@ msgstr ""
 
 #: templates/notification/account_approve/short.txt:3
 msgid "A user has requested access to the site"
-msgstr ""
+msgstr "ผู้ใช้ได้ร้องขอการเข้าถึงเว็บไซต์"
 
 #: templates/notification/document_comment/full.txt:3
 msgid "A comment has been posted for the document"
-msgstr ""
+msgstr "โพสต์ความคิดเห็นเกี่ยวกับเอกสารแล้ว"
 
 #: templates/notification/document_comment/full.txt:3
 #: templates/notification/layer_comment/full.txt:3
@@ -3802,7 +3876,7 @@ msgstr "คุณสามารถดูหน้ารายละเอีย
 
 #: templates/notification/document_comment/short.txt:3
 msgid "A comment has been posted for a document"
-msgstr ""
+msgstr "โพสต์ความคิดเห็นเกี่ยวกับเอกสารแล้ว"
 
 #: templates/notification/document_created/full.txt:3
 #: templates/notification/document_rated/full.txt:3
@@ -3836,7 +3910,7 @@ msgstr "เอกสารดังต่อไปนี้ถูกลบแล
 #: templates/notification/map_rated/full.txt:6
 #: templates/notification/map_updated/full.txt:4
 msgid "owned by"
-msgstr ""
+msgstr "เป็นเจ้าของโดย"
 
 #: templates/notification/document_deleted/short.txt:3
 msgid "A document has been deleted"
@@ -3846,7 +3920,7 @@ msgstr "เอกสารถูกลบแล้ว"
 #: templates/notification/layer_rated/full.txt:4
 #: templates/notification/map_rated/full.txt:4
 msgid "rated"
-msgstr ""
+msgstr "ให้คะแนน"
 
 #: templates/notification/document_rated/full.txt:5
 msgid "the following document"
@@ -3862,7 +3936,7 @@ msgstr "คุณสามารถดูหน้ารายละเอีย
 
 #: templates/notification/document_rated/short.txt:3
 msgid "A document has been rated"
-msgstr ""
+msgstr "เอกสารได้รับการให้คะแนนแล้ว"
 
 #: templates/notification/document_updated/full.txt:3
 msgid "The following document was updated"
@@ -3874,11 +3948,11 @@ msgstr "เอกสารได้รับการปรับปรุงแ
 
 #: templates/notification/layer_comment/full.txt:3
 msgid "A comment has been posted for the layer"
-msgstr ""
+msgstr "โพสต์ความคิดเห็นเกี่ยวกับชั้นข้อมูลแล้ว"
 
 #: templates/notification/layer_comment/short.txt:3
 msgid "A comment has been posted for a layer"
-msgstr ""
+msgstr "โพสต์ความคิดเห็นเกี่ยวกับชั้นข้อมูลแล้ว"
 
 #: templates/notification/layer_created/full.txt:3
 msgid "uploaded the following layer"
@@ -3902,7 +3976,7 @@ msgstr "ชั้นข้อมูลดังต่อไปนี้"
 
 #: templates/notification/layer_rated/short.txt:3
 msgid "A layer has been rated"
-msgstr ""
+msgstr "ชั้นข้อมูลได้รับการให้คะแนนแล้ว"
 
 #: templates/notification/layer_updated/full.txt:3
 msgid "The following layer was updated"
@@ -3914,7 +3988,7 @@ msgstr "ชั้นข้อมูลได้รับการปรับป
 
 #: templates/notification/map_comment/full.txt:3
 msgid "A comment has been posted for the map"
-msgstr ""
+msgstr "โพสต์ความคิดเห็นเกี่ยวกับแผนที่แล้ว"
 
 #: templates/notification/map_comment/full.txt:6
 #: templates/notification/map_created/full.txt:6
@@ -3925,7 +3999,7 @@ msgstr "คุณสามารถดูหน้ารายละเอีย
 
 #: templates/notification/map_comment/short.txt:3
 msgid "A comment has been posted for a map"
-msgstr ""
+msgstr "โพสต์ความคิดเห็นเกี่ยวกับแผนที่แล้ว"
 
 #: templates/notification/map_created/full.txt:3
 msgid "created the following map"
@@ -3949,7 +4023,7 @@ msgstr "แผนที่ดังต่อไปนี้"
 
 #: templates/notification/map_rated/short.txt:3
 msgid "A map has been rated"
-msgstr ""
+msgstr "แผนที่ได้รับการให้คะแนนแล้ว"
 
 #: templates/notification/map_updated/full.txt:3
 msgid "The following map was updated"
@@ -3970,11 +4044,11 @@ msgstr "เอกสาร"
 #: templates/notification/request_download_resourcebase/full.txt:12
 msgid ""
 "Please go to resource page and assign the download permissions if you wish"
-msgstr ""
+msgstr "กรุณาไปที่หน้าทรัพยากรและกำหนดสิทธิ์การดาวน์โหลด ถ้าหากคุณต้องการ"
 
 #: templates/notification/request_download_resourcebase/short.txt:3
 msgid "A resource's download has been requested"
-msgstr ""
+msgstr "ได้รับการร้องขอการดาวน์โหลดทรัพยากรแล้ว"
 
 #: templates/relationships/_list_connections.html:3
 #: templates/relationships/_manage_connections.html:6
@@ -4087,6 +4161,10 @@ msgstr "ตั้งค่าสิทธิ์"
 msgid "Text"
 msgstr "ข้อความ"
 
+#: templates/search/search.html:6 templates/search/search.html.py:12
+msgid "Search"
+msgstr "ค้นหา"
+
 #: templates/user_messages/_message_snippet.html:8
 msgid "With"
 msgstr "โดย"
@@ -4138,6 +4216,12 @@ msgstr "กลับไปที่กล่องขาเข้า"
 #: templates/user_messages/thread_detail.html:26
 msgid "Send Reply"
 msgstr "ตอบกลับ"
+
+#~ msgid "KML"
+#~ msgstr "KML"
+
+#~ msgid "Tiles"
+#~ msgstr "Tiles"
 
 #~ msgid ""
 #~ "\n"
