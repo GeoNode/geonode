@@ -8,13 +8,14 @@
 # Translators:
 # Translators:
 # Translators:
+# Translators:
 # keeratipong petchadapong <jobcskku@hotmail.com>, 2014-2015
 msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-03-02 23:16-0600\n"
-"PO-Revision-Date: 2015-03-03 05:10+0000\n"
+"POT-Creation-Date: 2015-05-18 12:10-0500\n"
+"PO-Revision-Date: 2015-05-18 16:31+0000\n"
 "Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
 "Language-Team: Thai (http://www.transifex.com/projects/p/geonode/language/"
 "th/)\n"
@@ -64,14 +65,14 @@ msgstr "เฉพาะผู้ใช้หรือกลุ่มดังต
 msgid "Who can manage and edit this data?"
 msgstr "ใครสามารถจัดการและแก้ไขข้อมูลนี้ได้บ้าง?"
 
-#: static/geonode/js/search/search.js:324
+#: static/geonode/js/search/search.js:342
 #: static_root/geonode/js/search/search.js:298
 msgid "Enter your text here ..."
 msgstr "กรอกข้อความของคุณที่นี่ ..."
 
-#: static/geonode/js/search/search.js:350
+#: static/geonode/js/search/search.js:368
 msgid "Enter your region here ..."
-msgstr ""
+msgstr "กรอกภูมิภาคของคุณที่นี่..."
 
 #: static/geonode/js/upload/FileType.js:33
 #: static_root/geonode/js/upload/FileType.js:33
@@ -102,6 +103,10 @@ msgid "Google Earth KML"
 msgstr "Google Earth KML"
 
 #: static/geonode/js/upload/FileTypes.js:38
+msgid "GeoJSON"
+msgstr ""
+
+#: static/geonode/js/upload/FileTypes.js:44
 #: static_root/geonode/js/upload/FileTypes.js:38
 msgid "Zip Archives"
 msgstr "Zip Archives"
@@ -123,7 +128,7 @@ msgstr "จัดการสไตล์"
 
 #: static/geonode/js/upload/LayerInfo.js:236
 msgid "The column %1 was renamed to %2 <br/>"
-msgstr ""
+msgstr "คอลัมน์ %1 ถูกเปลี่ยนชื่อเป็น %2 <br/>"
 
 #: static/geonode/js/upload/LayerInfo.js:242
 #: static_root/geonode/js/upload/LayerInfo.js:235
@@ -238,6 +243,8 @@ msgid ""
 "This is the list of chosen %s. You may remove some by selecting them in the "
 "box below and then clicking the \"Remove\" arrow between the two boxes."
 msgstr ""
+"นี่คือรายการของ %s ที่ถูกเลือก คุณสามารถลบรายการโดยเลือกจากช่องด้านล่างแล้วคลิกลูกศร \"ลบ\" "
+"ที่อยู่ระหว่างทั้งสองช่อง  "
 
 #: static_root/admin/js/SelectFilter2.js:80
 msgid "Remove all"
@@ -251,13 +258,15 @@ msgstr "คลิกเพื่อลบ%sทั้งหมดที่เล�
 #: static_root/admin/js/actions.js:18 static_root/admin/js/actions.min.js:1
 msgid "%(sel)s of %(cnt)s selected"
 msgid_plural "%(sel)s of %(cnt)s selected"
-msgstr[0] ""
+msgstr[0] "เลือก %(sel) จาก %(cnt) "
 
 #: static_root/admin/js/actions.js:109 static_root/admin/js/actions.min.js:5
 msgid ""
 "You have unsaved changes on individual editable fields. If you run an "
 "action, your unsaved changes will be lost."
 msgstr ""
+"คุณยังไม่ได้บันทึกการเปลี่ยนแปลงในแต่ละฟิลด์ ถ้าคุณดำเนินการต่อไป "
+"การเปลี่ยนแปลงที่ยังไม่ได้บันทึกจะสูญหาย"
 
 #: static_root/admin/js/actions.js:121 static_root/admin/js/actions.min.js:5
 msgid ""

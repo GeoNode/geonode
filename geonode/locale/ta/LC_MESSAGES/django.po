@@ -8,6 +8,7 @@
 # Translators:
 # Translators:
 # Translators:
+# Translators:
 # Andres Alfonso Lemon Gomez <lemon.andres@gmail.com>, 2014
 # Sundaralingam Suthakaran <karansuthakaran@yahoo.com>, 2013-2014
 # zihan Zarouk <zihanzar@gmail.com>, 2013
@@ -15,8 +16,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-03-02 23:15-0600\n"
-"PO-Revision-Date: 2015-03-03 05:06+0000\n"
+"POT-Creation-Date: 2015-05-18 12:10-0500\n"
+"PO-Revision-Date: 2015-05-18 16:26+0000\n"
 "Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
 "Language-Team: Tamil (http://www.transifex.com/projects/p/geonode/language/"
 "ta/)\n"
@@ -150,7 +151,7 @@ msgstr "தரவுகள்  ஒவ்வொரு மூன்று மா�
 msgid "No information provided"
 msgstr "தகவல் தரப்படவில்லை"
 
-#: base/forms.py:43 base/templates/base/resourcebase_info_panel.html:46
+#: base/forms.py:43 base/templates/base/resourcebase_info_panel.html:51
 #: documents/templates/documents/document_metadata.html:58
 #: layers/templates/layers/layer_metadata.html:63
 #: maps/templates/maps/map_metadata.html:61
@@ -161,11 +162,11 @@ msgstr "வகை"
 msgid "Category is required."
 msgstr "வகை தேவைப்படுகிறது."
 
-#: base/forms.py:105 groups/models.py:42 people/forms.py:82
+#: base/forms.py:105 groups/models.py:45 people/forms.py:82
 msgid "A space or comma-separated list of keywords"
 msgstr "ஒரு இடம் அல்லது அரைப்புள்ளி-  பிரிக்கப்பட்ட முக்கிய வார்த்தைகள் பட்டியலில்"
 
-#: base/models.py:44 services/models.py:85
+#: base/models.py:44 services/models.py:86
 msgid "function performed by the responsible party"
 msgstr "பொறுப்புடைய தரப்பினரால் மேற்கொள்ளப்பட்ட செயற்பாடு"
 
@@ -300,7 +301,7 @@ msgstr "நோக்கம்"
 msgid "maintenance frequency"
 msgstr " பராமரித்தல் இடைவெளி "
 
-#: base/models.py:251 groups/models.py:41 people/models.py:92
+#: base/models.py:251 groups/models.py:44 people/models.py:92
 msgid "keywords"
 msgstr "சிறப்பு சொற்கள்"
 
@@ -384,15 +385,15 @@ msgstr "இந்த வள வீட்டில் பக்கம் வி�
 msgid "Should this resource be published and searchable?"
 msgstr "இந்த வள வெளியிடப்பட்ட, மற்றும் தேடப்படும்?"
 
-#: base/models.py:696
+#: base/models.py:699
 msgid "For example \"kml\""
 msgstr "உதாரணமாக \"kml\""
 
-#: base/models.py:698
+#: base/models.py:701
 msgid "For example \"View in Google Earth\""
 msgstr "உதாரணமாக \"குகல் ஏத் இல் காண்க\" "
 
-#: base/models.py:699
+#: base/models.py:702
 msgid "For example \"text/xml\""
 msgstr "உதாரணமாக \"text/xml\""
 
@@ -405,7 +406,7 @@ msgid "A request for downloading a resource was sent"
 msgstr ""
 
 #: base/templates/base/_resourcebase_contact_snippet.html:3
-#: templates/500.html:184 templates/base.html:143
+#: templates/500.html:151 templates/base.html:143
 msgid "About"
 msgstr "பற்றி"
 
@@ -414,12 +415,12 @@ msgid "Owner, Point of Contact, Metadata Author"
 msgstr "உரிமையாளர், தொடர்பு புள்ளி மெட்டாடேட்டா ஆசிரியர்"
 
 #: base/templates/base/_resourcebase_contact_snippet.html:10
-#: base/templates/base/resourcebase_info_panel.html:61
+#: base/templates/base/resourcebase_info_panel.html:73
 msgid "Owner"
 msgstr "உரிமையாளர்"
 
 #: base/templates/base/_resourcebase_contact_snippet.html:14
-#: base/templates/base/resourcebase_info_panel.html:66
+#: base/templates/base/resourcebase_info_panel.html:78
 #: documents/templates/documents/document_metadata.html:48
 #: layers/templates/layers/layer_metadata.html:99
 #: maps/templates/maps/map_metadata.html:51
@@ -436,7 +437,7 @@ msgid "Title"
 msgstr "தலைப்பு "
 
 #: base/templates/base/resourcebase_info_panel.html:11
-#: base/templates/base/resourcebase_info_panel.html:80
+#: base/templates/base/resourcebase_info_panel.html:92
 msgid "License"
 msgstr "உரிமம்"
 
@@ -460,45 +461,45 @@ msgstr "தட்டச்சிடுக"
 msgid "Keywords"
 msgstr " முக்கிய வசனங்கள்"
 
-#: base/templates/base/resourcebase_info_panel.html:56
+#: base/templates/base/resourcebase_info_panel.html:61
 #: templates/search/_region_filter.html:5
 msgid "Regions"
 msgstr "பிராந்தியங்களில்"
 
-#: base/templates/base/resourcebase_info_panel.html:93
+#: base/templates/base/resourcebase_info_panel.html:105
 msgid "Maintenance Frequency"
 msgstr "பராமரித்தல் இடைவெளிகள் "
 
-#: base/templates/base/resourcebase_info_panel.html:98
+#: base/templates/base/resourcebase_info_panel.html:110
 msgid "Restrictions"
 msgstr "கட்டுப்பாடுகள்"
 
-#: base/templates/base/resourcebase_info_panel.html:107
+#: base/templates/base/resourcebase_info_panel.html:119
 msgid "Edition"
 msgstr "பதிப்பு "
 
-#: base/templates/base/resourcebase_info_panel.html:112
+#: base/templates/base/resourcebase_info_panel.html:124
 msgid "Purpose"
 msgstr "நோக்கும் "
 
-#: base/templates/base/resourcebase_info_panel.html:117 templates/500.html:187
+#: base/templates/base/resourcebase_info_panel.html:129 templates/500.html:154
 #: templates/base.html:146
 msgid "Language"
 msgstr "மொழி "
 
-#: base/templates/base/resourcebase_info_panel.html:122
+#: base/templates/base/resourcebase_info_panel.html:134
 msgid "Temporal Extent"
 msgstr "பூகோள  விரிவாக்கம்"
 
-#: base/templates/base/resourcebase_info_panel.html:127
+#: base/templates/base/resourcebase_info_panel.html:139
 msgid "Data Quality"
 msgstr " தரவுகளின் தரம் "
 
-#: base/templates/base/resourcebase_info_panel.html:132
+#: base/templates/base/resourcebase_info_panel.html:144
 msgid "Supplemental Information"
 msgstr "மேலதிக தகவல்கள்"
 
-#: base/templates/base/resourcebase_info_panel.html:137
+#: base/templates/base/resourcebase_info_panel.html:149
 msgid "Spatial Representation Type"
 msgstr "பூகோள பிரதிநிதித்துவ தன்மை "
 
@@ -522,15 +523,15 @@ msgstr "இணைகின்றது "
 msgid "Permissions must be valid JSON."
 msgstr "அனுமதிகள் கச்சிதமாக JSON இருக்க வேண்டும்."
 
-#: documents/models.py:38
+#: documents/models.py:39
 msgid "File"
 msgstr "கோப்பு"
 
-#: documents/models.py:47
+#: documents/models.py:48
 msgid "The URL of the document if it is external."
 msgstr "ஆவணத்தின் URL அதை வெளி ஆகிறது என்றால்."
 
-#: documents/models.py:48
+#: documents/models.py:49
 msgid "URL"
 msgstr "URL ஐ"
 
@@ -795,11 +796,11 @@ msgstr "அழிக்குக "
 msgid "Upload Document"
 msgstr "ஆவணத்தை பதிவேற்றல்"
 
-#: geoserver/helpers.py:944
+#: geoserver/helpers.py:964
 msgid "An exception occurred loading data to PostGIS"
 msgstr ""
 
-#: geoserver/helpers.py:949
+#: geoserver/helpers.py:969
 msgid " Additionally an error occured during database cleanup"
 msgstr ""
 
@@ -839,22 +840,9 @@ msgstr "PDF "
 msgid "PNG"
 msgstr "PNG"
 
-#: geoserver/signals.py:285
+#: geoserver/signals.py:293
 msgid "Could not create a download link for layer."
 msgstr "அடுக்கு ஒரு இணைப்பை உருவாக்க முடியவில்லை."
-
-#: geoserver/signals.py:316
-msgid "KML"
-msgstr "KML "
-
-#: geoserver/signals.py:345
-msgid "Tiles"
-msgstr "தட்டு "
-
-#: geoserver/signals.py:392 layers/templates/layers/layer_detail.html:261
-#: services/views.py:1272
-msgid "Legend"
-msgstr "விளக்கம்"
 
 #: geoserver/views.py:335
 msgid "You don't have permissions to change style for this layer"
@@ -903,19 +891,19 @@ msgstr "ஒரு குழு ஏற்கனவே என்று ஸ்ல �
 msgid "A group already exists with that name."
 msgstr "ஒரு குழு ஏற்கனவே அந்த பெயரில் உள்ளது."
 
-#: groups/models.py:17
+#: groups/models.py:20
 msgid "Public"
 msgstr "பொது"
 
-#: groups/models.py:18
+#: groups/models.py:21
 msgid "Public (invite-only)"
 msgstr "பொது (அழைக்க மட்டும்)"
 
-#: groups/models.py:19
+#: groups/models.py:22
 msgid "Private"
 msgstr "தனியார்"
 
-#: groups/models.py:22
+#: groups/models.py:25
 msgid ""
 "Public: Any registered user can view and join a public group.<br>Public "
 "(invite-only):Any registered user can view the group.  Only invited users "
@@ -927,7 +915,7 @@ msgstr ""
 "பதிவு செய்த உறுப்பினர் உட்பட குழு, குறித்த விவரங்கள் பார்க்க முடியாது. அழைக்கப்பட்ட செய்த "
 "சேரலாம்."
 
-#: groups/models.py:27
+#: groups/models.py:30
 msgid ""
 "Email used to contact one or all group members, such as a mailing list, "
 "shared email, or exchange group."
@@ -935,30 +923,30 @@ msgstr ""
 "மின்னஞ்சல் போன்ற ஒரு அஞ்சல் பட்டியலை, பகிர்ந்து மின்னஞ்சல், அல்லது பரிமாற்றம் குழு ஒன்று "
 "அல்லது அனைத்து குழு உறுப்பினர்கள், தொடர்புகொள்ளும்."
 
-#: groups/models.py:36
+#: groups/models.py:39
 msgid "email"
 msgstr "மின்னஞ்சல்"
 
-#: groups/models.py:184 groups/models.py:203
+#: groups/models.py:187 groups/models.py:206
 #: groups/templates/groups/group_members.html:28
 #: groups/templates/groups/group_members.html:54
 #: groups/templates/groups/group_members.html:81
 msgid "Manager"
 msgstr "மேலாளர்"
 
-#: groups/models.py:185 groups/models.py:204
+#: groups/models.py:188 groups/models.py:207
 msgid "Member"
 msgstr "உறுப்பினர்"
 
-#: groups/models.py:209
+#: groups/models.py:212
 msgid "Sent"
 msgstr "அனுப்பப்பட்டது"
 
-#: groups/models.py:210
+#: groups/models.py:213
 msgid "Accepted"
 msgstr "ஏற்கப்பட்டது"
 
-#: groups/models.py:211
+#: groups/models.py:214
 msgid "Declined"
 msgstr "நிராகரிப்பு"
 
@@ -978,14 +966,14 @@ msgstr "அனைத்து"
 #: groups/templates/groups/activity.html:25
 #: people/templates/people/_profile_filters.html:5
 #: services/templates/services/service_detail.html:64
-#: social/templates/social/activity_list.html:21 templates/500.html:39
+#: social/templates/social/activity_list.html:21 templates/500.html:55
 #: templates/base.html:55
 msgid "Layers"
 msgstr "படுகை  "
 
 #: groups/templates/groups/activity.html:26
 #: people/templates/people/_profile_filters.html:6
-#: social/templates/social/activity_list.html:22 templates/500.html:42
+#: social/templates/social/activity_list.html:22 templates/500.html:58
 #: templates/base.html:58
 msgid "Maps"
 msgstr "வரைபடங்கள்"
@@ -1170,71 +1158,71 @@ msgstr "குழு இருந்து வரைபடங்கள் / ட�
 msgid "Remove selected maps/data"
 msgstr "தேர்ந்தெடுக்கப்பட்டுள்ளன வரைபடங்கள் / Remove தரவு"
 
-#: layers/models.py:52
+#: layers/models.py:53
 msgid "style name"
 msgstr "வடிவத்தின் பெயர் "
 
-#: layers/models.py:54
+#: layers/models.py:55
 msgid "sld text"
 msgstr " sld வாசகம் "
 
-#: layers/models.py:56
+#: layers/models.py:57
 msgid "sld version"
 msgstr "sld பதிப்புரு "
 
-#: layers/models.py:60
+#: layers/models.py:61
 msgid "sld url"
 msgstr "sld url"
 
-#: layers/models.py:189
+#: layers/models.py:190
 msgid "File cannot be opened, maybe check the encoding"
 msgstr ""
 
-#: layers/models.py:296
+#: layers/models.py:297
 msgid "attribute name"
 msgstr "பண்பியல்பின் பெயர்"
 
-#: layers/models.py:297
+#: layers/models.py:298
 msgid "name of attribute as stored in shapefile/spatial database"
 msgstr "வடிவக் கோப்பில் /புவியியல் தரவில் களஞ்சியப்படுத்தியதாக பண்பியல்பை பெயரிடுக"
 
-#: layers/models.py:303
+#: layers/models.py:304
 msgid "attribute description"
 msgstr "விளக்கம் பண்பு"
 
-#: layers/models.py:304
+#: layers/models.py:305
 msgid "description of attribute to be used in metadata"
 msgstr "பண்பு விளக்கம் மெட்டா பயன்படுத்தப்படும்"
 
-#: layers/models.py:309
+#: layers/models.py:310
 msgid "attribute label"
 msgstr "பண்பியல்பை அடையாளமிடுக"
 
-#: layers/models.py:310
+#: layers/models.py:311
 msgid "title of attribute as displayed in GeoNode"
 msgstr "ஜியோநோட் இல் வெளிப்படும் பண்பியல்பின் தலைப்பு "
 
-#: layers/models.py:316
+#: layers/models.py:317
 msgid "attribute type"
 msgstr "பண்பு வகை"
 
-#: layers/models.py:317
+#: layers/models.py:318
 msgid "the data type of the attribute (integer, string, geometry, etc)"
 msgstr " பண்பியல்பின் தரவூ வகை (இன்டஐர் ஸ்ரிங் ஐயோமெட்ரி போன்றன)"
 
-#: layers/models.py:324
+#: layers/models.py:325
 msgid "visible?"
 msgstr "தென்படுகின்றதா?  "
 
-#: layers/models.py:325
+#: layers/models.py:326
 msgid "specifies if the attribute should be displayed in identify results"
 msgstr "அடையாளங் காணப்பட்ட பெறுபேறுகளில் பண்பியல்புகளை காண்பிக்க வேண்டுமா என்பதை விளக்குக"
 
-#: layers/models.py:328
+#: layers/models.py:329
 msgid "display order"
 msgstr "காட்சி பொருட்டு"
 
-#: layers/models.py:329
+#: layers/models.py:330
 msgid ""
 "specifies the order in which attribute should be displayed in identify "
 "results"
@@ -1242,71 +1230,71 @@ msgstr ""
 "அடையாளங் காணப்பட்ட பெறுபேறுகளில் பண்பியல்புகள் எந்த ஒழுங்கில் முன்வைக்கப்பட வேண்டும் என்பதை "
 "விளக்குக "
 
-#: layers/models.py:334
+#: layers/models.py:335
 msgid "count"
 msgstr "எண்ண"
 
-#: layers/models.py:335
+#: layers/models.py:336
 msgid "count value for this field"
 msgstr "இந்த துறையில் மதிப்பு எண்ண"
 
-#: layers/models.py:338
+#: layers/models.py:339
 msgid "min"
 msgstr "நிமிடம்"
 
-#: layers/models.py:339
+#: layers/models.py:340
 msgid "minimum value for this field"
 msgstr "இந்த துறையில் குறைந்தபட்ச மதிப்பு"
 
-#: layers/models.py:346
+#: layers/models.py:347
 msgid "max"
 msgstr "அதிகபட்சம்"
 
-#: layers/models.py:347
+#: layers/models.py:348
 msgid "maximum value for this field"
 msgstr "இந்த துறையில் அதிகபட்ச மதிப்பு"
 
-#: layers/models.py:354
+#: layers/models.py:355
 msgid "average"
 msgstr "சராசரி"
 
-#: layers/models.py:355
+#: layers/models.py:356
 msgid "average value for this field"
 msgstr "இந்த துறையில் சராசரி மதிப்பு"
 
-#: layers/models.py:362
+#: layers/models.py:363
 msgid "median"
 msgstr "சராசரி"
 
-#: layers/models.py:363
+#: layers/models.py:364
 msgid "median value for this field"
 msgstr "இந்த துறையில் சராசரி மதிப்பு"
 
-#: layers/models.py:370
+#: layers/models.py:371
 msgid "standard deviation"
 msgstr "நியமச்சாய்வு"
 
-#: layers/models.py:371
+#: layers/models.py:372
 msgid "standard deviation for this field"
 msgstr "இந்த துறையில் நியமச்சாய்வு"
 
-#: layers/models.py:378
+#: layers/models.py:379
 msgid "sum"
 msgstr "தொகை"
 
-#: layers/models.py:379
+#: layers/models.py:380
 msgid "sum value for this field"
 msgstr "இந்த துறையில் தொகை மதிப்பு"
 
-#: layers/models.py:386
+#: layers/models.py:387
 msgid "unique values for this field"
 msgstr "இந்த துறையில் தனிப்பட்ட மதிப்புகள்"
 
-#: layers/models.py:391
+#: layers/models.py:392
 msgid "last modified"
 msgstr "கடைசியாக மாற்றப்பட்ட"
 
-#: layers/models.py:393
+#: layers/models.py:394
 msgid "date when attribute statistics were last updated"
 msgstr "பண்பு புள்ளிவிவரங்கள் கடந்த போது தேதி மேம்படுத்தப்பட்டது"
 
@@ -1458,6 +1446,10 @@ msgstr ""
 msgid "Edit data"
 msgstr ""
 
+#: layers/templates/layers/layer_detail.html:261 services/views.py:1272
+msgid "Legend"
+msgstr "விளக்கம்"
+
 #: layers/templates/layers/layer_detail.html:271
 msgid "Maps using this layer"
 msgstr "இந்த படுகையை பயன்படுத்தும் வரைபடங்கள் "
@@ -1534,7 +1526,7 @@ msgstr "படுகைகளை உலாவருதல்"
 
 #: layers/templates/layers/layer_list.html:12
 #: layers/templates/upload/layer_upload.html:18
-#: layers/templates/upload/layer_upload_base.html:12 templates/500.html:74
+#: layers/templates/upload/layer_upload_base.html:12 templates/500.html:216
 #: templates/base.html:208
 msgid "Upload Layers"
 msgstr "படிமங்களை பதிவேற்றுதல்"
@@ -1625,6 +1617,7 @@ msgstr "மீள வழங்குக "
 #: layers/templates/layers/layer_replace.html:38
 #: layers/templates/upload/layer_upload.html:31
 #: layers/templates/upload/layer_upload.html:38
+#: templates/announcements/announcement_confirm_delete.html:22
 #: templates/announcements/announcement_form.html:25
 #: templates/user_messages/_message_snippet.html:40
 msgid "Delete"
@@ -1639,6 +1632,7 @@ msgstr "உண்மையில் இந்த பதிவேற்றத்�
 #: layers/templates/upload/layer_upload.html:39
 #: maps/templates/maps/map_download.html:58 templates/_comments.html:66
 #: templates/_permissions_form.html:15
+#: templates/announcements/announcement_confirm_delete.html:21
 #: templates/announcements/announcement_form.html:23
 msgid "Cancel"
 msgstr "நீக்கு "
@@ -2010,79 +2004,79 @@ msgstr "அல்லது செல்லுங்கள்"
 msgid "now"
 msgstr "தற்போது"
 
-#: maps/models.py:57
+#: maps/models.py:58
 msgid "zoom"
 msgstr "உரு அளவ"
 
-#: maps/models.py:61
+#: maps/models.py:62
 msgid "projection"
 msgstr "முந்திட்டம்"
 
-#: maps/models.py:65
+#: maps/models.py:66
 msgid "center X"
 msgstr "மையம் X"
 
-#: maps/models.py:69
+#: maps/models.py:70
 msgid "center Y"
 msgstr "மையம் Y"
 
-#: maps/models.py:76
+#: maps/models.py:77
 msgid "Site URL"
 msgstr "தள URL"
 
-#: maps/models.py:81
+#: maps/models.py:82
 msgid "Featured Map URL"
 msgstr "சிறப்பு வரைபடம் URL"
 
-#: maps/models.py:378
+#: maps/models.py:379
 msgid "stack order"
 msgstr "குவியல் ஒழுங்கு"
 
-#: maps/models.py:383
+#: maps/models.py:384
 msgid "format"
 msgstr "ஒருங்கமைத்தல் "
 
-#: maps/models.py:390
+#: maps/models.py:391
 msgid "name"
 msgstr "பெயர் "
 
-#: maps/models.py:397
+#: maps/models.py:398
 msgid "opacity"
 msgstr "ஒளிபுகா நிலை"
 
-#: maps/models.py:401
+#: maps/models.py:402
 msgid "styles"
 msgstr "வடிவம் "
 
-#: maps/models.py:407
+#: maps/models.py:408
 msgid "transparent"
 msgstr "ஒளி புகவல்ல "
 
-#: maps/models.py:411
+#: maps/models.py:412
 msgid "fixed"
 msgstr "நிலைநிறுத்தப்பட்ட "
 
-#: maps/models.py:415
+#: maps/models.py:416
 msgid "group"
 msgstr "குழு "
 
-#: maps/models.py:419
+#: maps/models.py:420
 msgid "visibility"
 msgstr "கட்புலப்பாடு "
 
-#: maps/models.py:422
+#: maps/models.py:423
 msgid "ows URL"
 msgstr "ows URL"
 
-#: maps/models.py:425
+#: maps/models.py:426
 msgid "layer params"
 msgstr "படுகை முனைகள் "
 
-#: maps/models.py:432
+#: maps/models.py:433
 msgid "source params"
 msgstr "மூல முனைகள் "
 
-#: maps/models.py:525
+#: maps/models.py:527
 msgid "JSON Configuration"
 msgstr "JSON கட்டமைப்பு"
 
@@ -2466,7 +2460,7 @@ msgstr "நிறுவனத்தின் பெயர்"
 msgid "name of the responsible organization"
 msgstr "பொறுப்புடைய நிறுவனத்தின் பெயர்"
 
-#: people/models.py:51 templates/500.html:76 templates/base.html:210
+#: people/models.py:51 templates/500.html:218 templates/base.html:210
 msgid "Profile"
 msgstr "விபரத்திரட்டு "
 
@@ -2571,7 +2565,7 @@ msgstr "எந்த குழு"
 msgid "All contents"
 msgstr "அனைத்து உள்ளடக்கங்களை"
 
-#: people/templates/people/_profile_filters.html:7 templates/500.html:45
+#: people/templates/people/_profile_filters.html:7 templates/500.html:61
 #: templates/base.html:61
 msgid "Documents"
 msgstr "ஆவணங்கள் "
@@ -2659,33 +2653,34 @@ msgstr "புதிய வரைபடம் ஒன்றை உருவாக
 msgid "My Activities"
 msgstr "எனது செயல்பாடுகள்"
 
-#: people/templates/people/profile_detail.html:97 templates/base.html:214
+#: people/templates/people/profile_detail.html:97 templates/500.html:222
+#: templates/base.html:214
 msgid "Notifications"
 msgstr "அறிவித்தல்கள் "
 
-#: people/templates/people/profile_detail.html:100 templates/500.html:80
+#: people/templates/people/profile_detail.html:100 templates/500.html:225
 #: templates/base.html:217 templates/announcements/announcement_list.html:6
 #: templates/announcements/announcement_list.html:13
 msgid "Announcements"
 msgstr "அறிவித்தல்கள் "
 
 #: people/templates/people/profile_detail.html:105
-#: services/templates/services/service_list.html:9 templates/500.html:83
+#: services/templates/services/service_list.html:9 templates/500.html:228
 #: templates/base.html:220
 msgid "Remote Services"
 msgstr "தொலை சேவைகள்"
 
-#: people/templates/people/profile_detail.html:106 templates/500.html:84
+#: people/templates/people/profile_detail.html:106 templates/500.html:229
 #: templates/base.html:221
 msgid "Invite User"
 msgstr "பயனர் அழைக்கவும்"
 
-#: people/templates/people/profile_detail.html:107 templates/500.html:86
+#: people/templates/people/profile_detail.html:107 templates/500.html:231
 #: templates/base.html:223
 msgid "GeoServer"
 msgstr " ஜியொசேவர் "
 
-#: people/templates/people/profile_detail.html:110 templates/500.html:89
+#: people/templates/people/profile_detail.html:110 templates/500.html:234
 #: templates/base.html:226
 msgid "Admin"
 msgstr "நிர்வாகம் "
@@ -2775,19 +2770,19 @@ msgstr ""
 msgid "Service Type"
 msgstr "சேவை வகை"
 
-#: services/models.py:91
+#: services/models.py:92
 msgid "Layer Name"
 msgstr "அடுக்கு பெயர்"
 
-#: services/models.py:92
+#: services/models.py:93
 msgid "Layer Title"
 msgstr "லேயர் தலைப்பு"
 
-#: services/models.py:93
+#: services/models.py:94
 msgid "Layer Description"
 msgstr "அடுக்கு விளக்கம்"
 
-#: services/models.py:94
+#: services/models.py:95
 msgid "Layer Styles"
 msgstr "அடுக்கு பாங்குகள்"
 
@@ -2996,94 +2991,93 @@ msgstr ""
 "\n"
 "நீங்கள் கோரிய பக்கம் இல்லை. ஒருவேளை நீங்கள் ஒரு காலாவதியான புக்மார்க் பயன்படுத்துகிறீர்கள்?"
 
-#: templates/500.html:48 templates/base.html:66
+#: templates/500.html:66 templates/base.html:66
 msgid "People"
 msgstr "மக்கள் "
 
-#: templates/500.html:51 templates/base.html:69
+#: templates/500.html:69 templates/base.html:69
 msgid "Groups"
 msgstr "குழுக்கள்"
 
-#: templates/500.html:56 templates/search/search.html:6
-#: templates/search/search.html.py:12
-msgid "Search"
-msgstr "தேடுக "
+#: templates/500.html:89 templates/base.html:89
+msgid "Register"
+msgstr "பதிவசெய்தல் "
 
-#: templates/500.html:77 templates/base.html:211
+#: templates/500.html:100 templates/500.html.py:200 templates/base.html:100
+#: templates/base.html.py:192
+msgid "Sign in"
+msgstr "உட்செல்லல் "
+
+#: templates/500.html:127
+msgid "There was a problem loading this page"
+msgstr "இந்த பக்கம் ஏற்றுவதில் சிக்கல் ஏற்பட்டது"
+
+#: templates/500.html:129
+msgid ""
+"\n"
+"            Please contact your GeoNode administrator (he may have received "
+"an email automatically if he configured it properly).\n"
+"            If you are the site administrator, enable debug mode to see the "
+"actual error and fix it or file an issue in <a href=\"http://github.com/"
+"GeoNode/geonode/issues\">GeoNode's issue tracker</a>\n"
+"            "
+msgstr ""
+
+#: templates/500.html:149 templates/base.html:141
+msgid "Powered by"
+msgstr "வலுவேற்றப்பட்டுள்ளது "
+
+#: templates/500.html:149 templates/base.html:141
+msgid "GeoNode"
+msgstr "ஜியோநோட் "
+
+#: templates/500.html:149 templates/base.html:141
+msgid "version"
+msgstr "பதிப்புரு "
+
+#: templates/500.html:150 templates/base.html:142
+msgid "Developers"
+msgstr "டெவலப்பர்கள்"
+
+#: templates/500.html:188 templates/500.html.py:189 templates/base.html:180
+#: templates/base.html.py:181
+msgid "Username"
+msgstr "பயன்படுத்துனர் பெயர் "
+
+#: templates/500.html:192 templates/base.html:184
+msgid "Password"
+msgstr "இரகசிய குறியீடு "
+
+#: templates/500.html:196 templates/base.html:188
+msgid "Remember Me"
+msgstr "என்னை ஞாபகத்தில் வைத்திருங்கள் "
+
+#: templates/500.html:212 templates/base.html:204
+msgid "Menu"
+msgstr ""
+
+#: templates/500.html:219 templates/base.html:211
 msgid "Recent Activity"
 msgstr "அண்மைய செயற்பாடு"
 
-#: templates/500.html:78 templates/base.html:212
+#: templates/500.html:220 templates/base.html:212
 #: templates/user_messages/inbox.html:15
 msgid "Inbox"
 msgstr "இன்பாக்ஸ்"
 
-#: templates/500.html:92 templates/base.html:229
+#: templates/500.html:239 templates/base.html:231
 msgid "Help"
 msgstr "உதவி "
 
-#: templates/500.html:97 templates/base.html:235
+#: templates/500.html:245 templates/base.html:237
 #: templates/account/logout.html:6 templates/account/logout.html.py:12
 #: templates/account/logout.html:17
 msgid "Log out"
 msgstr "வெளியேறல் "
 
-#: templates/500.html:109 templates/base.html:180 templates/base.html.py:181
-msgid "Username"
-msgstr "பயன்படுத்துனர் பெயர் "
-
-#: templates/500.html:113 templates/base.html:184
-msgid "Password"
-msgstr "இரகசிய குறியீடு "
-
-#: templates/500.html:118 templates/base.html:188
-msgid "Remember Me"
-msgstr "என்னை ஞாபகத்தில் வைத்திருங்கள் "
-
-#: templates/500.html:120 templates/base.html:100 templates/base.html.py:192
-msgid "Sign in"
-msgstr "உட்செல்லல் "
-
-#: templates/500.html:128 templates/base.html:89
-msgid "Register"
-msgstr "பதிவசெய்தல் "
-
-#: templates/500.html:159
-msgid "There was a problem loading this page"
-msgstr "இந்த பக்கம் ஏற்றுவதில் சிக்கல் ஏற்பட்டது"
-
-#: templates/500.html:161
-msgid ""
-"\n"
-"          Please contact your GeoNode administrator (he may have received an "
-"email automatically if he configured it properly).\n"
-"          If you are the site administrator, enable debug mode to see the "
-"actual error and fix it or file an issue in <a href=\"http://github.com/"
-"GeoNode/geonode/issues\">GeoNode's issue tracker</a>\n"
-"          "
-msgstr ""
-"\n"
-"உங்கள் GeoNode நிர்வாகியைத் தொடர்பு கொள்ளவும் (அவர் ஒழுங்காக அது கட்டமைக்கப்பட்ட என்றால் "
-"அவர் தானாக ஒரு மின்னஞ்சல் கிடைத்தது). நீங்கள் தளத்தில் நிர்வாகியாக இருந்தால், உண்மையான "
-"பிழை பார்க்க சரிசெய்வதற்கான முறையில் செயல்படுத்த மற்றும் அதை சரி அல்லது ஒரு பிரச்சினை "
-"தாக்கல் <a href=\"http://github.com/GeoNode/geonode/issues\">GeoNode பிரச்சினை "
-"பரிதாபகரமான</a>"
-
-#: templates/500.html:182 templates/base.html:141
-msgid "Powered by"
-msgstr "வலுவேற்றப்பட்டுள்ளது "
-
-#: templates/500.html:182 templates/base.html:141
-msgid "GeoNode"
-msgstr "ஜியோநோட் "
-
-#: templates/500.html:182 templates/base.html:141
-msgid "version"
-msgstr "பதிப்புரு "
-
-#: templates/500.html:183 templates/base.html:142
-msgid "Developers"
-msgstr "டெவலப்பர்கள்"
+#: templates/500.html:280 templates/base.html:274
+msgid "Type your search here ..."
+msgstr "இங்கே உங்கள் தேடலைத் தட்டச்சு ..."
 
 #: templates/_actions.html:3
 msgid "Info"
@@ -3173,11 +3167,11 @@ msgstr ""
 msgid "Set permissions for this resource"
 msgstr "இந்த வள அமை அனுமதிகள்"
 
-#: templates/_permissions_form_js.html:180
+#: templates/_permissions_form_js.html:204
 msgid "Choose users..."
 msgstr "பயனர்கள் தேர்வு ..."
 
-#: templates/_permissions_form_js.html:213
+#: templates/_permissions_form_js.html:237
 msgid "Choose groups..."
 msgstr "குழுக்களை தேர்வு ..."
 
@@ -3188,14 +3182,6 @@ msgstr "GeoNode பற்றி"
 #: templates/about.html:10
 msgid "About GeoNode."
 msgstr "GeoNode பற்றி."
-
-#: templates/base.html:204
-msgid "Menu"
-msgstr ""
-
-#: templates/base.html:270
-msgid "Type your search here ..."
-msgstr "இங்கே உங்கள் தேடலைத் தட்டச்சு ..."
 
 #: templates/developer.html:4 templates/developer.html.py:8
 msgid "Information for Developers"
@@ -3472,10 +3458,9 @@ msgstr "GeoNode தாழ்த்தப்பட்ட மற்றும் �
 #: templates/index.html:17
 msgid ""
 "If you have any questions about the software or service, join our <a href="
-"\"https://groups.google.com/d/forum/geonode-users\">mailing list</a>."
+"\"http://lists.osgeo.org/cgi-bin/mailman/listinfo/geonode-users\">mailing "
+"list</a>."
 msgstr ""
-"நீங்கள் மென்பொருள் அல்லது சேவை பற்றி ஏதேனும் கேள்விகள் இருந்தால், எங்கள் சேர <a href="
-"\"https://groups.google.com/d/forum/geonode-users\">அஞ்சல் பட்டியலில்</a> ."
 
 #: templates/index.html:18
 msgid "Need help?"
@@ -3693,6 +3678,14 @@ msgstr "GeoNode தளம் நிர்வாகம்"
 #: templates/admin/base_site.html:6
 msgid "GeoNode administration"
 msgstr "GeoNode நிர்வாகம்"
+
+#: templates/announcements/announcement_confirm_delete.html:10
+msgid "Delete Announcement?"
+msgstr ""
+
+#: templates/announcements/announcement_confirm_delete.html:13
+msgid "Are you sure you want to delete this announcement?"
+msgstr ""
 
 #: templates/announcements/announcement_form.html:11
 msgid "Edit Announcement"
@@ -4127,6 +4120,10 @@ msgstr "அமை அனுமதிகள்"
 msgid "Text"
 msgstr "உரை"
 
+#: templates/search/search.html:6 templates/search/search.html.py:12
+msgid "Search"
+msgstr "தேடுக "
+
 #: templates/user_messages/_message_snippet.html:8
 msgid "With"
 msgstr "உடன் "
@@ -4178,6 +4175,12 @@ msgstr "உள்பெட்டிக்கு திரும்புதல�
 #: templates/user_messages/thread_detail.html:26
 msgid "Send Reply"
 msgstr "சென்ற அறிவித்தல் "
+
+#~ msgid "KML"
+#~ msgstr "KML"
+
+#~ msgid "Tiles"
+#~ msgstr "Tiles"
 
 #~ msgid ""
 #~ "\n"
