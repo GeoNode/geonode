@@ -13,15 +13,13 @@
 {% block body_outer %}
   {% block body %}
   {% eula_modal_dialog "/ceph/ftp/" %} 
-<!--
-    #TODO: CHECK IF CART IS EMPTY BEFORE CREATING FTP REQUEST!
--->
+
   <div class="page-header">
   {% if not cart.is_empty %}
     <ul class="list-inline pull-right" id="sort">
       <li><a href="{% url 'maptiles.views.tiled_view' %}"><button class="btn btn-default">{% trans "Return to Selection" %}</button></a></li>
       <li><button class="btn btn-default" data-toggle="modal" data-target="#eula-dialog">{% trans "Create FTP Folder" %}</a></li>
-      <li><a href="{% url 'cephgeo.views.clear_cart' %}"><button class="btn btn-default">{% trans "Remove All Items" %}</button></a></li>
+      <li><a href="{% url 'cephgeo.views.clear_cart' %}"><button class="btn btn-default">{% trans "Empty This Cart" %}</button></a></li>
     </ul>
   {% else %}
     <ul class="list-inline pull-right" id="sort">
@@ -43,7 +41,7 @@
 	  {% endfor %}
 	</ul>
   </div> 
-  <table border="3" style="width:100% ">
+  <table id="cart_table" border="3" style="width:100% ">
         <tr >
             <th style="text-align: center;">Tile Object</th>
             <th style="text-align: center;">Size</th>
@@ -54,17 +52,36 @@
 -->
         </tr>
         {% for item in cart %}
-        <tr style="text-align: center;">
+        <tr id="{{ item.product.name }}" name="{{ item.product.name }}" style="text-align: center;">
             <td>  {{ item.product.name }}</td>
             <td>  {{ item.product.size_in_bytes | filesizeformat }}</td>
             <td>  {{ item.quantity }}</td>
-            <td>  <input type="checkbox"/> </td>
+            <td width="100">
+              <label class="cell-label-remove"><input type='checkbox' /></label>
+            </td>
 <!--
             <td>  {{ item.total_price }}</td>
 -->
         </tr>
         {% endfor %}
     </table>
+    <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+	<style type="text/css">
+	    tr.highlight {
+		    background-color: #66CCFF;
+		    color: #000;
+		}
+		.cell-label-remove {
+			display: inline-block; 
+			width: 100%;
+		}
+	</style>
+	<script type="text/javascript">
+	    $('table[id="cart_table"] input[type=checkbox]').click(function () {
+		    $(this).closest('tr').toggleClass("highlight", this.checked);
+		});
+	</script>
+	    
 {% endblock body %}
  {% block sidebar %}{% endblock sidebar %}
 {% endblock body_outer %}
