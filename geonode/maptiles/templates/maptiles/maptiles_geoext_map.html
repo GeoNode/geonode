@@ -362,7 +362,7 @@ Ext.onReady(function (){
                 ]
             });
             
-           var interest_layer = new OpenLayers.Vector("Interest "+name, 
+           var interest_layer = new OpenLayers.Layer.Vector("Interest "+name, 
            {
                strategies: [new OpenLayers.Strategy.BBOX()],
                protocol: wfs_proto,
