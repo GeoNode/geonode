@@ -64,7 +64,7 @@ class CephDataObject(models.Model):
     name            = models.CharField(max_length=100)
     last_modified   = models.DateTimeField()
     content_type    = models.CharField(max_length=20)
-    geo_type        = models.CharField(max_length=20)
+    #geo_type        = models.CharField(max_length=20)
     data_class      = enum.EnumField(DataClassification, default=DataClassification.UNKNOWN)
     grid_ref        = models.CharField(max_length=10)
     
