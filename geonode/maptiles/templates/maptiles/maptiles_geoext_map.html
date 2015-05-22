@@ -368,6 +368,8 @@ Ext.onReady(function (){
                protocol: wfs_proto,
                filter: filter
            });
+           
+           map.addLayers([interest_layer]);
            console.log(interest_layer);
            console.log(interest_layer.getDataExtent());
     }
