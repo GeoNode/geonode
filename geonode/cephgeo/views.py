@@ -146,9 +146,34 @@ def file_list_json(request, sort=None, grid_ref=None):
                     "grid_ref"      : grid_ref,}
     
     return HttpResponse(json.dumps(response_data), content_type="application/json")
-    
+
 @login_required
 def data_input(request):
+    if request.user.is_superuser:
+        if request.method == 'POST':
+            # create a form instance and populate it with data from the request:
+            # pprint(request.POST)
+            form = DataInputForm(request.POST)
+            # check whether it's valid:
+            if form.is_valid():
+                # Commented out until a way is figured out how to assign database writes/saves
+                #   to celery without throwing a 'database locked' error
+                #ceph_metadata_udate.delay(uploaded_objects)
+                uploaded_objects = smart_str(form.cleaned_data['data'])
+                messages.success(request, "Processing metadata of [{0}] of objects in the background.".format(len(uploaded_objects)))
+                return redirect('geonode.cephgeo.views.file_list_geonode',sort='uploaddate')
+            else:
+                messages.error(request, "Invalid input on data form")
+                return redirect('geonode.cephgeo.views.data_input')
+        # if a GET (or any other method) we'll create a blank form
+        else:
+            form = DataInputForm()
+            return render(request, 'ceph_data_input.html', {'data_input_form': form})
+    else:
+        #return HttpResponseForbidden(u"You do not have permission to view this page!")
+        raise PermissionDenied()
+@login_required
+def data_input_old(request):
     if request.user.is_superuser:
         if request.method == 'POST':
             # create a form instance and populate it with data from the request:
