@@ -20,7 +20,7 @@ class UnauthenticatedUserException(Exception):
     pass
 
 @hosts('cephaccess@cephaccess.lan.dream.upd.edu.ph')
-def fab_create_ftp_folder(ftp_request, ceph_obj_list_by_geotype):
+def fab_create_ftp_folder(ftp_request, ceph_obj_list_by_data_class):
     """
         Creates an FTP folder for the requested tile data set
         Records the request in the database
@@ -51,8 +51,8 @@ each day. Please try again on the next day.""".format(request_name, username)
         if result.return_code is 0:
             with cd(ftp_dir):
 
-                for geotype, ceph_obj_list in ceph_obj_list_by_geotype.iteritems():
-                    type_dir = geotype.replace(" ", "_")
+                for data_class, ceph_obj_list in ceph_obj_list_by_data_class.iteritems():
+                    type_dir = data_class.replace(" ", "_")
                     
                     result = run("mkdir {0}".format(type_dir))      # Create a directory for each geo-type
                     if result.return_code is not 0:                 #Handle error
@@ -60,7 +60,7 @@ each day. Please try again on the next day.""".format(request_name, username)
                         ftp_request.status = FTPStatus.ERROR
                         mail_msg = """\
 An error was encountered on your FTP request named [{0}] for user [{1}]. 
-The system failed to create an geotype folder inside the FTP folder at location [{2}]. 
+The system failed to create an dataclass folder inside the FTP folder at location [{2}]. 
 Please e-mail the system administrator regarding this error.
 
 ---RESULT TRACE---
@@ -75,7 +75,7 @@ Please e-mail the system administrator regarding this error.
                                                         os.path.join(ftp_dir,type_dir),
                                                         obj_dl_list)) # Download list of objects in corresponding geo-type folder
                     if result.return_code is not 0:                 #Handle error
-                        print("Error on FTP request: Failed to download file/s for geotype [{0}]. Please notify the administrator of this error".format(geotype))
+                        print("Error on FTP request: Failed to download file/s for dataclass [{0}]. Please notify the administrator of this error".format(data_class))
                         ftp_request.status = FTPStatus.ERROR
                         mail_msg = """\
 Error on FTP request: Cannot access Ceph Data Store [{0}]. Please notify the administrator of this error".format(ftp_dir))
@@ -150,20 +150,20 @@ Please forward this mail to the system administrator.
         ftp_request.save()
         
 @celery.task(name='geonode.tasks.ftp.process_ftp_request', queue='ftp')
-def process_ftp_request(ftp_request, ceph_obj_list_by_geotype):
+def process_ftp_request(ftp_request, ceph_obj_list_by_data_class):
     """
         Create the a new folder containing the data requested inside 
         Geostorage-FTP directory
     """
     host_string='cephaccess@cephaccess.lan.dream.upd.edu.ph'
     #~ try:
-        #~ result = execute(fab_create_ftp_folder, username, user_email, request_name, ceph_obj_list_by_geotype )
+        #~ result = execute(fab_create_ftp_folder, username, user_email, request_name, ceph_obj_list_by_data_class )
         #~ if isinstance(result.get(host_string, None), BaseException):
             #~ raise Exception(result.get(host_string))
     #~ except Exception as e:
         #~ traceback.print_exc()
         #~ raise Exception("task process_ftp_request terminated with exception -- %s" % e.message)
-    result = execute(fab_create_ftp_folder, ftp_request, ceph_obj_list_by_geotype )
+    result = execute(fab_create_ftp_folder, ftp_request, ceph_obj_list_by_data_class )
     if isinstance(result.get(host_string, None), BaseException):
         raise Exception(result.get(host_string))
 
