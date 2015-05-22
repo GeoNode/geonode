@@ -36,7 +36,7 @@
   </ul>  
   </div>
   <br /><br /><br />
-    <table id="cart_table" border="3" style="width:100% ">
+    <table id="ceph_objects_table" border="3" style="width:100% ">
         <tr >
             <th style="text-align: center;">{% trans "File Name" %}</th>
             <th style="text-align: center;">{% trans "Grid Reference" %}</th>
@@ -49,7 +49,7 @@
     -->
         </tr>
         {% for file in file_list %}
-		<tr id="{{ item.product.name }}" name="{{ item.product.name }}" style="text-align: center;">
+		<tr id="{{ file.name }}" name="{{ file.name }}" style="text-align: center;">
             <td>{{ file.name }}</td>
             <td><a href="{% url 'cephgeo.views.file_list_geonode' 'default' file.grid_ref %}">{{ file.grid_ref }}</a></td>
 			<td>{{ file.file_hash }}</td>

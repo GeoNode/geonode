@@ -33,15 +33,15 @@ def file_list_ceph(request, sort=None):
         sorted_list = []
         
         for ceph_object in object_list:
-            ceph_object["type"] = utils.file_classifier(ceph_object["name"])
+            ceph_object["type"] = utils.get_data_class_from_filename(ceph_object["name"])
             ceph_object["uploaddate"] = ceph_object["last_modified"]
-        
+            
         ###sorting goes here
         if sort != None:
             sorted_list = utils.sort_by(sort, object_list)
-            paginator = Paginator(sorted_list, 10)
+            paginator = Paginator(sorted_list, 50)
         else:
-            paginator = Paginator(object_list, 10)
+            paginator = Paginator(object_list, 50)
         
         page = request.GET.get('page')
         
