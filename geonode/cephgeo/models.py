@@ -12,19 +12,6 @@ except ImportError:
 
 from django_enumfield import enum
 
-
-class CephDataObject(models.Model):
-    size_in_bytes   = models.IntegerField()
-    file_hash       = models.CharField(max_length=40)
-    name            = models.CharField(max_length=100)
-    last_modified   = models.DateTimeField()
-    content_type    = models.CharField(max_length=20)
-    geo_type        = models.CharField(max_length=20)
-    grid_ref        = models.CharField(max_length=10)
-    
-    def __unicode__(self):
-        return "{0}:{1}".format(self.name, self.geo_type)
-
 class DataClassification(enum.Enum):
     UNKNOWN = 0
     LAZ = 1
@@ -35,18 +22,18 @@ class DataClassification(enum.Enum):
     
     labels = {
         UNKNOWN     : "Unknown Type",
-        LAZ			: "LAZ",
-        DEM 		: "DEM TIF",
-        DSM     	: "DSM TIF",
-        DTM 		: "DTM TIF",
+        LAZ            : "LAZ",
+        DEM         : "DEM TIF",
+        DSM         : "DSM TIF",
+        DTM         : "DTM TIF",
         ORTHOPHOTO  : "Orthophoto",}
     
     filename_suffixes = {
-        ".laz"			: LAZ,
-        "_dem.tif" 		: DEM,
-        "_dsm.tif" 		: DSM,
-        "_dtm.tif" 		: DTM,
-        "_ortho.tif"	: ORTHOPHOTO,}
+        ".laz"            : LAZ,
+        "_dem.tif"         : DEM,
+        "_dsm.tif"         : DSM,
+        "_dtm.tif"         : DTM,
+        "_ortho.tif"    : ORTHOPHOTO,}
     
     def get_label_from_filename(filename):
         data_classification = labels[UNKNOWN]
@@ -69,6 +56,21 @@ class FTPStatus(enum.Enum):
         PENDING: 'Pending',
         ERROR:   'Error',
         DUPLICATE: 'Duplicate',}
+
+
+class CephDataObject(models.Model):
+    size_in_bytes   = models.IntegerField()
+    file_hash       = models.CharField(max_length=40)
+    name            = models.CharField(max_length=100)
+    last_modified   = models.DateTimeField()
+    content_type    = models.CharField(max_length=20)
+    geo_type        = models.CharField(max_length=20)
+    data_class      = enum.EnumField(DataClassification, default=DataClassification.UNKNOWN)
+    grid_ref        = models.CharField(max_length=10)
+    
+    def __unicode__(self):
+        return "{0}:{1}".format(self.name, self.geo_type)
+
 
 class FTPRequest(models.Model):
     name        = models.CharField(max_length=50)
