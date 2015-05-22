@@ -77,7 +77,9 @@ def file_list_geonode(request, sort=None, grid_ref=None):
         #1 Grid Ref or Grid Ref Range
         if utils.is_valid_grid_ref(grid_ref):
             # Query files with same grid reference
-            object_list = CephDataObject.objects.filter(name__startswith=grid_ref)
+            #object_list = CephDataObject.objects.filter(name__startswith=grid_ref)
+            object_list = CephDataObject.objects.filter(grid_ref=grid_ref)
+            
         else:
             return HttpResponse(status=404)
     
