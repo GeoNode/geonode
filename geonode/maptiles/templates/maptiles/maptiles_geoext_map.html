@@ -372,7 +372,6 @@ Ext.onReady(function (){
            });
            
            map.addLayers([interest_layer]);
-           console.log(interest_layer);
     }
     
     click_select = new OpenLayers.Control.Click()
@@ -385,7 +384,10 @@ Ext.onReady(function (){
 
     
     app = new GeoExt.MapPanel(config);
-    console.log(interest_layer.features[0]);
+    var features = interest_layer.features;
+    for (var f in features){
+        console.log(f);
+    }
     if(interest){
         map.zoomToExtent(interest_layer.features.geometry.bounds, false);
     }else{
