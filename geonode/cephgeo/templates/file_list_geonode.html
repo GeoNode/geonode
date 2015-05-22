@@ -43,7 +43,7 @@
             </h4>
 			<br /><b>Grid Reference:</b> <a href="{% url 'cephgeo.views.file_list_geonode' 'default' file.grid_ref %}">{{ file.grid_ref }}</a>
 			<br /><b>File Hash:</b> {{ file.file_hash }}
-			<br /><b>Data Type:</b> {{ file.geo_type }}
+			<br /><b>Data Type:</b> {{ file.data_class }}
 			<br /><b>Last Modified:</b> {{ file.last_modified }}
 			<br /><b>File size:</b> {{ file.size_in_bytes | filesizeformat  }}
 		</li>
