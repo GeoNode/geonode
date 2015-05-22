@@ -330,8 +330,47 @@ Ext.onReady(function (){
         }
     });
 
-    click_select = new OpenLayers.Control.Click()
+    var interest = "{{ interest }}";
+    if (interest ){
+             var wfs_proto = new OpenLayers.Protocol.WFS({
+                version: "1.0.0",
+                url: "http://192.168.56.100:8080/geoserver/geonode/wfs",
+                featurePrefix: "geonode",
+                featureType: "phl_adm2_municipalities_utm_z51n",
+                featureNS: "http://www.geonode.org/",
+                srsName: "EPSG:32651",
+                outputFormat: "json"
+            });              
+            
+            // assuming that interest is of the form "<municipality/city>,<province>
+            // split the interest string here
+            var name = interest.split(",");
+            
+            var filter = new OpenLayers.Filter.Logical({
+                type: "&&",
+                filters:[
+                    new OpenLayers.Filter.Comparison({
+                        type: "==",
+                        property: "NAME_1",
+                        value: name[0]
+                    }),
+                    new OpenLayers.Filter.Comparison({
+                        type: "==",
+                        property:"NAME_2",
+                        value: name[1]
+                    })
+                ]
+            });
+            var wfs_resp = wfs_proto.read({
+                filter: filter,
+                callback: function(response){
+                    console.log(response.priv.responseText);
+                }
+            });
+    }
+    
 
+    click_select = new OpenLayers.Control.Click()
     map.addControl(click_select);
     click_select.activate();
     map.addControl(drawControl);
@@ -339,6 +378,7 @@ Ext.onReady(function (){
     //map.addControl(drawCtrl);
     //drawCtrl.activate();
 
+    
     app = new GeoExt.MapPanel(config);
     map.zoomToExtent(tile_layer.maxExtent, false);
     
