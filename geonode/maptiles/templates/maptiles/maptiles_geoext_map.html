@@ -384,11 +384,11 @@ Ext.onReady(function (){
 
     
     app = new GeoExt.MapPanel(config);
-    var features = interest_layer.unrenderedFeatures;
-    console.log(interest_layer);
-    console.log(features);
+    //var features = interest_layer.unrenderedFeatures;
+    //console.log(interest_layer);
+    //console.log(features);
     if(interest){
-        map.zoomToExtent(interest_layer.features.geometry.bounds, false);
+        map.zoomToExtent(interest_layer.features[0].geometry.bounds, false);
     }else{
         map.zoomToExtent(tile_layer.maxExtent, false);
     }
