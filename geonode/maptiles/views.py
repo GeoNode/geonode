@@ -11,11 +11,12 @@ from django.http import HttpResponseRedirect, HttpResponse
 
 from geonode.services.models import Service
 from geonode.layers.models import Layer
+from geonode.layers.utils import is_vector, get_bbox
 from geonode.utils import resolve_object, llbbox_to_mercator
-
 from geonode.utils import GXPLayer
 from geonode.utils import GXPMap
 from geonode.utils import default_map_config
+
 from geonode.security.views import _perms_info_json
 from geonode.cephgeo.models import CephDataObject, DataClassification
 from geonode.cephgeo.cart_utils import *
@@ -59,7 +60,7 @@ def _resolve_layer(request, typename, permission='base.view_resourcebase',
                               **kwargs)
 
 @login_required
-def tiled_view(request, overlay=settings.TILED_SHAPEFILE, template="maptiles/maptiles_map.html"):
+def tiled_view(request, overlay=settings.TILED_SHAPEFILE, template="maptiles/maptiles_map.html", interest=None):
     if request.method == "POST":
         pprint(request.POST)
     layer = _resolve_layer(request, overlay, "base.view_resourcebase", _PERMISSION_VIEW )
@@ -93,13 +94,6 @@ def tiled_view(request, overlay=settings.TILED_SHAPEFILE, template="maptiles/map
             ows_url=layer.ows_url,
             layer_params=json.dumps(config))
 
-    # Update count for popularity ranking,
-    # but do not includes admins or resource owners
-    #if request.user != layer.owner and not request.user.is_superuser:
-    #    Layer.objects.filter(
-    #        id=layer.id).update(popular_count=F('popular_count') + 1)
-    
-    # center/zoom don't matter; the viewer will center on the layer bounds
     map_obj = GXPMap(projection="EPSG:900913")
     NON_WMS_BASE_LAYERS = [
         la for la in default_map_config()[1] if la.ows_url is None]
@@ -111,27 +105,24 @@ def tiled_view(request, overlay=settings.TILED_SHAPEFILE, template="maptiles/map
         "data_classes": DataClassification.labels.values(),
         "resource": layer,
         "permissions_json": _perms_info_json(layer),
-        "documents": get_related_documents(layer),
         "metadata": metadata,
         "is_layer": True,
         "wps_enabled": settings.OGC_SERVER['default']['WPS_ENABLED'],
     }
-
+    
     context_dict["viewer"] = json.dumps(
         map_obj.viewer_json(request.user, * (NON_WMS_BASE_LAYERS + [maplayer])))
         
     context_dict["layer"]  = overlay
-
-    #if settings.SOCIAL_ORIGINS:
-    #    context_dict["social_links"] = build_social_links(request, layer)
-    #print context_dict
+    
+    if interest is not None:
+        context_dict["interest"]=interest
     
     return render_to_response(template, RequestContext(request, context_dict))
 
 def process_georefs(request):
     if request.method == "POST":
         try:
-            #pprint(request.POST)
             georef_area = request.POST['georef_area']
             georef_list = filter(None, georef_area.split(","))
             #spprint(georef_list)
@@ -203,9 +194,6 @@ def georefs_validation(request):
             for o in objects:
                 total_size += o.size_in_bytes
         
-        
-        pprint("cart size:" + str(cart_total_size))
-        pprint("total size:"+str(total_size))
         if total_size + cart_total_size > settings.SELECTION_LIMIT:            
             return HttpResponse(
                content=json.dumps({ "response": False, "total_size": total_size, "cart_size":cart_total_size }),
@@ -220,4 +208,5 @@ def georefs_validation(request):
                 #mimetype='text/plain'
                 content_type="application/json"
             )
-        
+
+    
