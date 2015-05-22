@@ -1,7 +1,7 @@
 from operator import itemgetter, attrgetter
 import re
 from changuito.proxy import CartProxy
-from geonode.cephgeo.models import CephDataObject
+from geonode.cephgeo.models import CephDataObject, DataClassification
 
 ### For additional functions/definitions which may be needed by views
 
@@ -81,13 +81,13 @@ def is_valid_grid_ref(grid_ref_string):
     else:
         return False
 
-def ceph_object_ids_by_geotype(ceph_obj_list):
+def ceph_object_ids_by_data_class(ceph_obj_list):
     obj_name_dict = dict()
     for obj in ceph_obj_list:
-        if obj.geo_type in obj_name_dict:
-            obj_name_dict[obj.geo_type.encode('utf8')].append(obj.name.encode('utf8'))
+        if DataClassification.labels[obj.data_class] in obj_name_dict:
+            obj_name_dict[DataClassification.labels[obj.data_class].encode('utf8')].append(obj.name.encode('utf8'))
         else:
-            obj_name_dict[obj.geo_type.encode('utf8')] = [obj.name.encode('utf8'),]
+            obj_name_dict[DataClassification.labels[obj.data_class].encode('utf8')] = [obj.name.encode('utf8'),]
         
     return obj_name_dict
 

@@ -35,7 +35,7 @@ class DataClassification(enum.Enum):
         "_dtm.tif"         : DTM,
         "_ortho.tif"    : ORTHOPHOTO,}
     
-    def get_label_from_filename(filename):
+    def get_class_from_filename(filename):
         data_classification = labels[UNKNOWN]
         
         for x in filename_suffixes:
