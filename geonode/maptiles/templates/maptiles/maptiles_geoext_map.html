@@ -342,7 +342,7 @@ Ext.onReady(function (){
                 //outputFormat: "GML"
             });              
             
-            // assuming that interest is of the form "<municipality/city>,<province>
+            // assuming that interest is of the form "<province>,<municipality/city>"
             // split the interest string here
             var name = interest.split(",");
             
@@ -364,10 +364,10 @@ Ext.onReady(function (){
             
            var interest_layer = new OpenLayers.Layer.Vector("Interest "+name, 
            {
-               //strategies: [new OpenLayers.Strategy.BBOX()],
-               strategies: [new OpenLayers.Strategy.Filter({autoActivate: true, filter: filter})],
-               protocol: wfs_proto
-               //filter: filter
+               strategies: [new OpenLayers.Strategy.BBOX()],
+               //strategies: [new OpenLayers.Strategy.Filter({autoActivate: true, filter: filter})],
+               protocol: wfs_proto,
+               filter: filter
            });
            
            map.addLayers([interest_layer]);
