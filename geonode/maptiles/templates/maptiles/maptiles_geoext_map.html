@@ -331,6 +331,7 @@ Ext.onReady(function (){
     });
 
     var interest = "{{ interest }}";
+    var interest_layer;
     if (interest ){
              var wfs_proto = new OpenLayers.Protocol.WFS({
                 version: "1.0.0",
