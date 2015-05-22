@@ -371,8 +371,6 @@ Ext.onReady(function (){
            });
            
            map.addLayers([interest_layer]);
-           console.log(interest_layer);
-           console.log(interest_layer.getDataExtent());
     }
     
 
@@ -386,7 +384,12 @@ Ext.onReady(function (){
 
     
     app = new GeoExt.MapPanel(config);
-    map.zoomToExtent(tile_layer.maxExtent, false);
+    if(interest){
+        map.zoomToExtent(interest_layer.features[0].geometry.bounds);
+    }else{
+        map.zoomToExtent(tile_layer.maxExtent, false);
+    }
+    
     
 });
 {% endautoescape %}
