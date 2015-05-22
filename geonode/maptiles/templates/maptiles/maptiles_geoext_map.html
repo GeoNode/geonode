@@ -50,6 +50,7 @@ var options = {{ viewer| safe }};
 var app;
 var tile_list = [];
 var curr_popup;
+var interest_bounds; 
 // added stuff
 
 var _TILE_SIZE = 1000;
@@ -329,8 +330,14 @@ Ext.onReady(function (){
         }
     });
 
+   click_select = new OpenLayers.Control.Click()
+    map.addControl(click_select);
+    click_select.activate();
+    map.addControl(drawControl);
+    drawControl.activate();
+
     var interest = "{{ interest }}";
-    var interest_layer;
+    app = new GeoExt.MapPanel(config);
     if (interest ){
         var wfs_proto = new OpenLayers.Protocol.WFS({
             version: "1.0.0",
@@ -368,28 +375,17 @@ Ext.onReady(function (){
                 if(response.priv.responseText){
                     var json_parser = new OpenLayers.Format.GeoJSON();
                     var feature_out = json_parser.read(response.priv.responseText);
-                    console.log(feature_out);
                     feature_out[0].geometry.calculateBounds();
-                    console.log(feature_out[0].geometry);
-                    console.log(feature_out[0].geometry.getBounds());
+                    interest_bounds = feature_out[0].geometry.getBounds();
                 }
             }
         });
+        
+        map.zoomToExtent(interest_bounds, false);
+        
+    }else{
+        map.zoomToExtent(tile_layer.maxExtent, false);
     }
-    
-    click_select = new OpenLayers.Control.Click()
-    map.addControl(click_select);
-    click_select.activate();
-    map.addControl(drawControl);
-    drawControl.activate();
-    //map.addControl(drawCtrl);
-    //drawCtrl.activate();
-
-    app = new GeoExt.MapPanel(config);
-    map.zoomToExtent(tile_layer.maxExtent, false);
-    
-    
-    
 });
 {% endautoescape %}
 </script>
