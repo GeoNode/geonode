@@ -104,8 +104,7 @@ def get_data_class_from_filename(filename):
         data_classification = DataClassification.labels[DataClassification.UNKNOWN]
         
         for x in DataClassification.filename_suffixes:
-            if len(filename) > len(DataClassification.filename_suffixes[x]):
-                if filename.lower().endswith(x):
-                    data_classification = DataClassification.filename_suffixes[x]
+            if filename.lower().endswith(x):
+                data_classification = DataClassification.filename_suffixes[x]
             
         return data_classification

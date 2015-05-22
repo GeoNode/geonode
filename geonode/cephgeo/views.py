@@ -176,8 +176,8 @@ def data_input(request):
                     if len(metadata_list) is 6:
                         #try:
                             ceph_obj = CephDataObject(  name = metadata_list[0],
-                                                        #last_modified = time.strptime(obj_meta_dict['last_modified'], "%Y-%m-%d %H:%M:%S"),
-                                                        last_modified = time.strptime(metadata_list[1], "%Y-%m-%d %H:%M:%S"),
+                                                        #last_modified = time.strptime(metadata_list[1], "%Y-%m-%d %H:%M:%S"),
+                                                        last_modified = metadata_list[1],
                                                         size_in_bytes = metadata_list[2],
                                                         content_type = metadata_list[3],
                                                         data_class = get_data_class_from_filename(metadata_list[0]),
