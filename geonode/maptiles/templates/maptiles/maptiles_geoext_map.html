@@ -339,7 +339,7 @@ Ext.onReady(function (){
                 featureType: "phl_adm2_municipalities_utm_z51n",
                 featureNS: "http://www.geonode.org/",
                 srsName: "EPSG:32651",
-                outputFormat: "json"
+                //outputFormat: "GML"
             });              
             
             // assuming that interest is of the form "<municipality/city>,<province>
@@ -361,12 +361,13 @@ Ext.onReady(function (){
                     })
                 ]
             });
+            
             var wfs_resp = wfs_proto.read({
                 filter: filter,
                 callback: function(response){
                     console.log(response.priv.responseText);
                     if(response.priv.responseText){
-                        var json_parser = new OpenLayers.Format.JSON();
+                        var GML_parser = new OpenLayers.Format.GML();
                         var feature_out = json_parser.read(response.priv.responseText);
                         console.log(feature_out);
                     }
