@@ -385,9 +385,9 @@ Ext.onReady(function (){
 
     
     app = new GeoExt.MapPanel(config);
-    console.log(interest_layer.features.geometry);
+    console.log(interest_layer.features);
     if(interest){
-        map.zoomToExtent(interest_layer.features.geometry.bounds);
+        map.zoomToExtent(interest_layer.features.geometry.bounds, false);
     }else{
         map.zoomToExtent(tile_layer.maxExtent, false);
     }
