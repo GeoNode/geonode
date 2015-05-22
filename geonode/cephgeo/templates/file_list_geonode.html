@@ -1,6 +1,7 @@
 {% extends "ceph_base.html" %}
 {% load i18n %}
 {% load url from future %}
+{% load cephgeo_extras %}
 
 {% block title %} {% trans "File List" %} - {{ block.super }} {% endblock %}
 
@@ -43,7 +44,7 @@
             </h4>
 			<br /><b>Grid Reference:</b> <a href="{% url 'cephgeo.views.file_list_geonode' 'default' file.grid_ref %}">{{ file.grid_ref }}</a>
 			<br /><b>File Hash:</b> {{ file.file_hash }}
-			<br /><b>Data Type:</b> {{ file.data_class }}
+			<br /><b>Data Class:</b> {{ file.data_class | get_data_class_label}}
 			<br /><b>Last Modified:</b> {{ file.last_modified }}
 			<br /><b>File size:</b> {{ file.size_in_bytes | filesizeformat  }}
 		</li>
