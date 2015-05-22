@@ -91,7 +91,7 @@ def file_list_geonode(request, sort=None, grid_ref=None):
     else: # default
         sorted_list = object_list
     
-    paginator = Paginator(sorted_list, 10)
+    paginator = Paginator(sorted_list, 50)
     
     page = request.GET.get('page')
     
