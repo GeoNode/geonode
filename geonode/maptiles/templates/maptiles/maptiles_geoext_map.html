@@ -369,7 +369,7 @@ Ext.onReady(function (){
                     if(response.priv.responseText){
                         var GML_parser = new OpenLayers.Format.GML();
                         var feature_out = GML_parser.read(response.priv.responseText);
-                        console.log(feature_out);
+                        console.log(feature_out.geometry);
                         for (var geom in feature_out.geometry.components){
                             console.log("geometry bounds"+geom.getBounds());
                         }
