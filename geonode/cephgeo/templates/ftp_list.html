@@ -31,20 +31,28 @@
   </ul>  
   </div>
   <br /><br /><br />
-  
-  <ul>
-	{% for ftp_req in ftp_request_list %}
-		<li><h4>
-              <b>{{ ftp_req.name }}</b>
-            </h4>
-			<br /><b>Date and Time:</b> {{ ftp_req.date_time }}
-			<br /><b>Status:</b> {{ ftp_req.status|get_ftp_status_label }}
-			<br /><b>Number of Tiles:</b> {{ ftp_req.num_tiles }}
-			<br /><b>Total Size:</b> {{ ftp_req.size_in_bytes | filesizeformat }}
-		</li>
-	{% endfor %}
-  </ul>
-  
+  <table id="cart_table" border="3" style="width:100% ">
+    <tr >
+        <th style="text-align: center;">{% trans "Request Name" %}</th>
+        <th style="text-align: center;">{% trans "Date and Time" %}</th>
+        <th style="text-align: center;">{% trans "Status" %}</th>
+        <th style="text-align: center;">{% trans "Tiles" %}</th>
+        <th style="text-align: center;">{% trans "Total Size" %}</th>
+<!--
+        <th>Total Price</th>
+-->
+    </tr>
+    {% for ftp_req in ftp_request_list %}
+    <tr id="{{ ftp_req.name }}" name="{{ ftp_req.name }}" style="text-align: center;">
+        <td>{{ ftp_req.name }}</td>
+        <td>{{ ftp_req.date_time }}</td>
+        <td>{{ ftp_req.status|get_ftp_status_label }}</td>
+        <td>{{ ftp_req.num_tiles }}</td>
+        <td>{{ ftp_req.size_in_bytes | filesizeformat }}</td>
+    </tr>
+    {% endfor %}
+
+  </table>
   <div class="pagination">
 	<span class="step-links">
 		{% if ftp_req.has_previous %}
