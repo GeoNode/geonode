@@ -372,8 +372,10 @@ Ext.onReady(function (){
                         var components = feature_out[0].geometry.components;
                         console.log(components);
                         for (var c in components){
-                            c.calculateBounds()
+                            c['calculateBounds'] = OpenLayers.Geometry.calculateBounds;
+                            c['getBounds'] = OpenLayers.Geometry.getBounds;
                             console.log(c.getBounds());
+                            
                         }
                         
                     }
