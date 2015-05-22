@@ -384,7 +384,7 @@ Ext.onReady(function (){
 
     
     app = new GeoExt.MapPanel(config);
-    var features = interest_layer.features;
+    var features = interest_layer.unrenderedFeatures;
     for (var f in features){
         console.log(f);
     }
