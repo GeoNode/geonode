@@ -368,7 +368,7 @@ Ext.onReady(function (){
                     console.log(response.priv.responseText);
                     if(response.priv.responseText){
                         var GML_parser = new OpenLayers.Format.GML();
-                        var feature_out = GML_parser.parseGeometry.multiPolygon(response.priv.responseText);
+                        var feature_out = GML_parser.read(response.priv.responseText);
                         console.log(feature_out);
                     }
                 }
