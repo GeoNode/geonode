@@ -381,6 +381,8 @@ Ext.onReady(function (){
             }
         });
         
+        while(interest_bounds==undefined){}
+        
         map.zoomToExtent(interest_bounds.transform(new OpenLayers.Projection("EPSG:32651"), new OpenLayers.Projection("EPSG:900913")), false);
         
     }else{
