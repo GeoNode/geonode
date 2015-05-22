@@ -174,7 +174,7 @@ def data_input(request):
                     
                     # Check if metadata list is valid
                     if len(metadata_list) is 6:
-                        try:
+                        #try:
                             ceph_obj = CephDataObject(  name = metadata_list[0],
                                                         #last_modified = time.strptime(obj_meta_dict['last_modified'], "%Y-%m-%d %H:%M:%S"),
                                                         last_modified = time.strptime(metadata_list[1], "%Y-%m-%d %H:%M:%S"),
@@ -185,9 +185,8 @@ def data_input(request):
                                                         grid_ref = metadata_list[5])
                             ceph_obj.save()
                             object_count += 1
-                        except Exception as e:
-                            raise e
-                            print("Skipping invalid metadata list: {0}".format(metadata_list))
+                        #except Exception as e:
+                        #    print("Skipping invalid metadata list: {0}".format(metadata_list))
                     else:
                         print("Skipping invalid metadata list (invalid length): {0}".format(metadata_list))
                     
