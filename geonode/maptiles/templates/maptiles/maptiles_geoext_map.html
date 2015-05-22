@@ -372,6 +372,7 @@ Ext.onReady(function (){
                         var components = feature_out[0].geometry.components;
                         console.log(components);
                         for (var c in components){
+                            c.calculateBounds()
                             console.log(c.getBounds());
                         }
                         
