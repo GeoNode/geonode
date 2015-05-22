@@ -362,25 +362,14 @@ Ext.onReady(function (){
                 ]
             });
             
-            var wfs_resp = wfs_proto.read({
-                filter: filter,
-                callback: function(response){
-                    console.log(response.priv.responseText);
-                    if(response.priv.responseText){
-                        var GML_parser = new OpenLayers.Format.GML();
-                        var feature_out = GML_parser.read(response.priv.responseText);
-                        var components = feature_out[0].geometry.components;
-                        console.log(components);
-                        for (var c in components){
-                            c['calculateBounds'] = OpenLayers.Geometry.calculateBounds;
-                            c['getBounds'] = OpenLayers.Geometry.getBounds;
-                            console.log(c);
-                            
-                        }
-                        
-                    }
-                }
-            });
+           var interest_layer = new OpenLayers.Vector("Interest "+name, 
+           {
+               strategies: [new OpenLayers.Strategy.BBOX()],
+               protocol: wfs_proto,
+               filter: filter
+           }
+           
+           console.log(interest_layer.getDataExtent());
     }
     
 
