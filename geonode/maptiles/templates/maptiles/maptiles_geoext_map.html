@@ -383,6 +383,7 @@ Ext.onReady(function (){
     //map.addControl(drawCtrl);
     //drawCtrl.activate();
 
+    app = new GeoExt.MapPanel(config);
     map.zoomToExtent(tile_layer.maxExtent, false);
     
     
