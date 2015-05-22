@@ -12,7 +12,7 @@ from pprint import pprint
 
 from geonode.cephgeo.forms import DataInputForm
 from geonode.cephgeo.models import CephDataObject, FTPRequest, FTPStatus, FTPRequestToObjectIndex
-from geonode.cephgeo.models.DataClassification import get_class_from_filename
+from geonode.cephgeo.utils import get_data_class_from_filename
 from geonode.tasks.ftp import process_ftp_request
 
 from geonode.cephgeo.cart_utils import *
@@ -180,7 +180,7 @@ def data_input(request):
                                                         last_modified = time.strptime(metadata_list[1], "%Y-%m-%d %H:%M:%S"),
                                                         size_in_bytes = metadata_list[2],
                                                         content_type = metadata_list[3],
-                                                        data_class = get_class_from_filename(metadata_list[0]),
+                                                        data_class = get_data_class_from_filename(metadata_list[0]),
                                                         file_hash = metadata_list[4],
                                                         grid_ref = metadata_list[5])
                             ceph_obj.save()
@@ -225,7 +225,7 @@ def data_input_old(request):
                                                     last_modified = obj_meta_dict['last_modified'],
                                                     size_in_bytes = obj_meta_dict['bytes'],
                                                     content_type = obj_meta_dict['content_type'],
-                                                    data_class = DataClassification.get_class_from_filename(obj_meta_dict['name']),
+                                                    data_class = get_data_class_from_filename(obj_meta_dict['name']),
                                                     file_hash = obj_meta_dict['hash'],
                                                     grid_ref = obj_meta_dict['grid_ref'])
                         ceph_obj.save()

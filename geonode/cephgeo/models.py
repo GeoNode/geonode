@@ -35,15 +35,6 @@ class DataClassification(enum.Enum):
         "_dtm.tif"         : DTM,
         "_ortho.tif"    : ORTHOPHOTO,}
     
-    def get_class_from_filename(filename):
-        data_classification = labels[UNKNOWN]
-        
-        for x in filename_suffixes:
-            if len(filename) > len(filename_suffixes[x]):
-                if filename.lower().endswith(x):
-                    data_classification = filename_suffixes[x]
-            
-        return data_classification
 
 class FTPStatus(enum.Enum):
     DONE = 0

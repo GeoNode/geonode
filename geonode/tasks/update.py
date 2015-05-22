@@ -2,7 +2,7 @@ from celery.task import task
 from geonode.geoserver.helpers import gs_slurp
 from geonode.documents.models import Document
 from geonode.cephgeo.models import CephDataObject, DataClassification
-import geonode.cephgeo.utils
+from geonode.cephgeo.utils import get_data_class_from_filename
 
 
 @task(name='geonode.tasks.ceph_metadata_udate', queue='update')
@@ -19,7 +19,7 @@ def ceph_metadata_udate(uploaded_objects):
                                     last_modified = obj_meta_dict['last_modified'],
                                     size_in_bytes = obj_meta_dict['bytes'],
                                     content_type = obj_meta_dict['content_type'],
-                                    data_class = DataClassification.get_class_from_filename(obj_meta_dict['name']),
+                                    data_class = get_data_class_from_filename(obj_meta_dict['name']),
                                     file_hash = obj_meta_dict['hash'],
                                     grid_ref = obj_meta_dict['grid_ref'])
         ceph_obj.save()
