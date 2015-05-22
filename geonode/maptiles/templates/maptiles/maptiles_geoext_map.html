@@ -370,6 +370,7 @@ Ext.onReady(function (){
                         var GML_parser = new OpenLayers.Format.GML();
                         var feature_out = GML_parser.read(response.priv.responseText);
                         var components = feature_out[0].geometry.components;
+                        console.log(components);
                         for (var c in components){
                             console.log(c.getBounds());
                         }
