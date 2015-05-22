@@ -369,10 +369,11 @@ Ext.onReady(function (){
                     if(response.priv.responseText){
                         var GML_parser = new OpenLayers.Format.GML();
                         var feature_out = GML_parser.read(response.priv.responseText);
-                        while(feature_out == undefined){
-                            console.log("still undefined")
+                        var components = feature_out[0].geometry.components;
+                        for (var c in components){
+                            console.log(c.getBounds());
                         }
-                        console.log(feature_out);
+                        
                     }
                 }
             });
