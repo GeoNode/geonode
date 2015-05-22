@@ -52,8 +52,8 @@ class DataClassification(enum.Enum):
         data_classification = labels[UNKNOWN]
         
         for x in filename_suffixes:
-            if len(file_name) > len(filename_suffixes[x]):
-                if file_name.lower().endswith(x):
+            if len(filename) > len(filename_suffixes[x]):
+                if filename.lower().endswith(x):
                     data_classification = filename_suffixes[x]
             
         return data_classification
