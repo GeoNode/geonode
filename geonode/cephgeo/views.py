@@ -11,7 +11,8 @@ from django.template import RequestContext
 from pprint import pprint
 
 from geonode.cephgeo.forms import DataInputForm
-from geonode.cephgeo.models import CephDataObject, FTPRequest, FTPStatus, FTPRequestToObjectIndex, DataClassification
+from geonode.cephgeo.models import CephDataObject, FTPRequest, FTPStatus, FTPRequestToObjectIndex
+from geonode.cephgeo.models.DataClassification import get_class_from_filename
 from geonode.tasks.ftp import process_ftp_request
 
 from geonode.cephgeo.cart_utils import *
@@ -158,9 +159,39 @@ def data_input(request):
             if form.is_valid():
                 # Commented out until a way is figured out how to assign database writes/saves
                 #   to celery without throwing a 'database locked' error
-                #ceph_metadata_udate.delay(uploaded_objects)
-                uploaded_objects = smart_str(form.cleaned_data['data'])
-                messages.success(request, "Processing metadata of [{0}] of objects in the background.".format(len(uploaded_objects)))
+                #ceph_metadata_update.delay(uploaded_objects)
+                csv_delimiter=','
+                uploaded_objects_list = smart_str(form.cleaned_data['data']).splitlines()
+                
+                # Pop first line containing header
+                uploaded_objects_list.pop(0)
+                """NAME,LAST_MODIFIED,SIZE_IN_BYTES,CONTENT_TYPE,GEO_TYPE,FILE_HASH GRID_REF"""
+                
+                # Loop through each metadata element
+                object_count=0
+                for ceph_obj_metadata in uploaded_objects_list:
+                    metadata_list = ceph_obj_metadata.split(csv_delimiter)
+                    
+                    # Check if metadata list is valid
+                    if len(metadata_list) is 6:
+                        try:
+                            ceph_obj = CephDataObject(  name = metadata_list[0],
+                                                        #last_modified = time.strptime(obj_meta_dict['last_modified'], "%Y-%m-%d %H:%M:%S"),
+                                                        last_modified = time.strptime(metadata_list[1], "%Y-%m-%d %H:%M:%S"),
+                                                        size_in_bytes = metadata_list[2],
+                                                        content_type = metadata_list[3],
+                                                        data_class = get_class_from_filename(metadata_list[0]),
+                                                        file_hash = metadata_list[4],
+                                                        grid_ref = metadata_list[5])
+                            ceph_obj.save()
+                            object_count += 1
+                        except Exception as e:
+                            raise e
+                            print("Skipping invalid metadata list: {0}".format(metadata_list))
+                    else:
+                        print("Skipping invalid metadata list (invalid length): {0}".format(metadata_list))
+                    
+                messages.success(request, "Succesfully encoded metadata of [{0}] of objects.".format(object_count))
                 return redirect('geonode.cephgeo.views.file_list_geonode',sort='uploaddate')
             else:
                 messages.error(request, "Invalid input on data form")
@@ -172,6 +203,7 @@ def data_input(request):
     else:
         #return HttpResponseForbidden(u"You do not have permission to view this page!")
         raise PermissionDenied()
+    
 @login_required
 def data_input_old(request):
     if request.user.is_superuser:
