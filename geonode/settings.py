@@ -341,6 +341,7 @@ INSTALLED_APPS = (
     'changuito',
     'djkombu',
     'south',
+    'corsheaders',
 
 ) + GEONODE_APPS
 
@@ -411,6 +412,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
 )
 
 MIDDLEWARE_CLASSES = (
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
@@ -933,7 +935,3 @@ CEPH_OGW = {
     }
 }
 
-<<<<<<< HEAD
-=======
-
->>>>>>> 97fc2ac53daff7311f671b5aafe6188689677062

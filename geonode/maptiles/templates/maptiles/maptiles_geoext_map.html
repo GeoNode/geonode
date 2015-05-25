@@ -22,7 +22,7 @@
            var self = this;
            var json_parser = new OpenLayers.Format.JSON()
            var georef_string = document.getElementById("georef_area").getAttribute("value");
-           $.post('validate/', 
+           $.post('/maptiles/validate/', 
                 {"georefs" : georef_string}).done(function(result){
                    if (result.response) 
                         self.submit();
@@ -36,13 +36,16 @@
     });
 </script>
 <script type="text/javascript" >
+var curr_location = "lipad.lan.dream.upd.edu.ph";
 
 OpenLayers.ImgPath = "{{ STATIC_URL }}geoexplorer/externals/openlayers/theme/default/img";
 OpenLayers.Request.DEFAULT_CONFIG.headers = {
     'X-CSRFToken': '{{ csrf_token|escapejs }}'
 };
 
-OpenLayers.ProxyHost = "http://192.168.56.100:8000/proxy/?url=";
+//OpenLayers.ProxyHost = "http://192.168.20.53/proxy/?url=";
+OpenLayers.ProxyHost = "http://"+curr_location+"/proxy/?url=";
+
 
 {% autoescape off %}
 
@@ -143,7 +146,6 @@ var vector_style_map = new OpenLayers.StyleMap({
 });
 
 Ext.onReady(function (){
-    var curr_location = window.location.hostname;
     var layer_name = "{{  layer }}";
     var map_options = options["map"];
     var map = new OpenLayers.Map({
@@ -246,7 +248,9 @@ Ext.onReady(function (){
 
             var wfs_proto = new OpenLayers.Protocol.WFS({
                 version: "1.0.0",
-                url: "http://192.168.56.100:8080/geoserver/geonode/wfs",
+                //url: "http://192.168.20.53:8080/geoserver/geonode/wfs",
+		//url: "http://lipad.lan.dream.upd.edu.ph:8080/geoserver/geonode/wfs",
+		url: "http://localhost:8080/geoserver/geonode/wfs",
                 featurePrefix: "geonode",
                 featureType: "index",
                 featureNS: "http://www.geonode.org/",
