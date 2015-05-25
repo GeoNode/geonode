@@ -28,7 +28,12 @@
       <li><a href="{% url 'maptiles.views.tiled_view' %}"><button class="btn btn-default">{% trans "Return to Selection" %}</button></a></li>
     </ul>
   {% endif %}
-  <h2 class="page-title">{% trans "Cart" %}</h2>
+  
+  {% if not cartsize %}
+    <h2 class="page-title">{% trans "Cart" %}</h2>
+  {% else %}
+    <h2 class="page-title">{% trans "Cart" %} [ {{ cartsize | filesizeformat }} ] </h2>
+  {% endif %}
     
   </div>
   <div>

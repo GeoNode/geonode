@@ -18,6 +18,7 @@ from geonode.cephgeo.cart_utils import *
 
 import client, utils, local_settings, cPickle, unicodedata, time, operator, json
 from geonode.tasks.update import ceph_metadata_udate
+from geonode.cephgeo.utils import get_cart_datasize
 
 # Create your views here.
 @login_required
@@ -159,8 +160,20 @@ def data_input(request):
                 uploaded_objects = cPickle.loads(smart_str(data))
                 #pprint(uploaded_objects)
                 is_pickled = form.cleaned_data['pickled']
+                for obj_meta_dict in uploaded_objects:
+                    ceph_obj = CephDataObject(  name = obj_meta_dict['name'],
+                                                #last_modified = time.strptime(obj_meta_dict['last_modified'], "%Y-%m-%d %H:%M:%S"),
+                                                last_modified = obj_meta_dict['last_modified'],
+                                                size_in_bytes = obj_meta_dict['bytes'],
+                                                content_type = obj_meta_dict['content_type'],
+                                                geo_type = utils.file_classifier(obj_meta_dict['name']),
+                                                file_hash = obj_meta_dict['hash'],
+                                                grid_ref = obj_meta_dict['grid_ref'])
+                    ceph_obj.save()
                 
-                ceph_metadata_udate.delay(uploaded_objects)
+                # Commented out until a way is figured out how to assign database writes/saves
+                #   to celery without throwing a 'database locked' error
+                #ceph_metadata_udate.delay(uploaded_objects)
                 
                 messages.success(request, "Processing metadata of [{0}] of objects in the background.".format(len(uploaded_objects)))
                 return redirect('geonode.cephgeo.views.file_list_geonode',sort='uploaddate')
@@ -183,7 +196,7 @@ def error(request):
 @login_required
 def get_cart(request):
     return render_to_response('cart.html', 
-                                dict(cart=CartProxy(request)),
+                                dict(cart=CartProxy(request), cartsize=get_cart_datasize(request)),
                                 context_instance=RequestContext(request))
 
 @login_required
