@@ -42,7 +42,7 @@ OpenLayers.Request.DEFAULT_CONFIG.headers = {
     'X-CSRFToken': '{{ csrf_token|escapejs }}'
 };
 
-var curr_location =  window.location.hostname;
+var curr_location =  "{{siteurl}}";
 
 //OpenLayers.ProxyHost = "http://192.168.56.100:8000/proxy/?url=";
 OpenLayers.ProxyHost = "http://"+curr_location+"/proxy/?url=";
