@@ -7,6 +7,11 @@ import geonode.cephgeo.utils
 
 @task(name='geonode.tasks.ceph_metadata_udate', queue='update')
 def ceph_metadata_udate(uploaded_objects):
+    """
+        NOTE: DOES NOT WORK
+          Outputs error 'OperationalError: database is locked'
+          Need a better way of making celery write into the database
+    """
     #Save each ceph object
     for obj_meta_dict in uploaded_objects:
         ceph_obj = CephDataObject(  name = obj_meta_dict['name'],

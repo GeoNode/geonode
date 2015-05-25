@@ -27,6 +27,7 @@ import geonode.settings as settings
 from pprint import pprint
 
 import logging
+from geonode.cephgeo.utils import get_cart_datasize
 
 _PERMISSION_VIEW = _("You are not permitted to view this layer")
 _PERMISSION_GENERIC = _('You do not have permissions for this layer.')
@@ -165,19 +166,7 @@ def process_georefs(request):
             #return redirect('geonode.maptiles.views.tiled_view')
     
     else:   # Must process HTTP POST method from form
-        raise Exception("HTTP method must be POST!")
-
-@login_required
-def get_cart_datasize(request):
-    cart = CartProxy(request)
-    obj_name_dict = dict()
-    total_size = 0
-    for item in cart:
-        obj = CephDataObject.objects.get(id=int(item.object_id))
-        total_size += obj.size_in_bytes
-    
-    return total_size
-    
+        raise Exception("HTTP method must be POST!")    
 
 @login_required
 def georefs_validation(request):
