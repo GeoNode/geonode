@@ -22,7 +22,7 @@
            var self = this;
            var json_parser = new OpenLayers.Format.JSON()
            var georef_string = document.getElementById("georef_area").getAttribute("value");
-           $.post('validate/', 
+           $.post('/maptiles/validate/', 
                 {"georefs" : georef_string}).done(function(result){
                    if (result.response) 
                         self.submit();
@@ -42,12 +42,15 @@ OpenLayers.Request.DEFAULT_CONFIG.headers = {
     'X-CSRFToken': '{{ csrf_token|escapejs }}'
 };
 
-OpenLayers.ProxyHost = "http://192.168.56.100:8000/proxy/?url=";
+var curr_location =  window.location.hostname;
+
+//OpenLayers.ProxyHost = "http://192.168.56.100:8000/proxy/?url=";
+OpenLayers.ProxyHost = "http://"+curr_location+"/proxy/?url=";
 
 {% autoescape off %}
 
 var options = {{ viewer| safe }};
-var app;
+var app, map;
 var tile_list = [];
 var curr_popup;
 var interest_bounds; 
@@ -143,10 +146,9 @@ var vector_style_map = new OpenLayers.StyleMap({
 });
 
 Ext.onReady(function (){
-    var curr_location = window.location.hostname;
     var layer_name = "{{  layer }}";
     var map_options = options["map"];
-    var map = new OpenLayers.Map({
+    map = new OpenLayers.Map({
         units: map_options["units"],
         maxResolution: map_options["maxResolution"],
         projection: map_options["projection"]
@@ -172,18 +174,18 @@ Ext.onReady(function (){
     
     var stored_layer = map_options["layers"].filter(function(l){ return l["name"] == layer_name })[0];
     var source_index = stored_layer["source"];
-    //var geoserver_wms = options["sources"][source_index]["url"];
-    var geoserver_wms = "http://"+curr_location+":8080/geoserver/geonode/wms";
+    var geoserver = "{{geoserver}}";
     
     var tile_layer = new OpenLayers.Layer.WMS(
-        layer_name + "- Tiled", geoserver_wms,
+        layer_name + "- Tiled", geoserver+"geonode/wms",
         {
             LAYERS: stored_layer["name"],
             format:  'image/png',
             bbox: stored_layer["bbox"],
             transparent: true,
             opacity: 0.3
-        },
+        }
+        ,
         {
             buffer: 0,
             displayOutsideMaxExtent: true,
@@ -246,7 +248,8 @@ Ext.onReady(function (){
 
             var wfs_proto = new OpenLayers.Protocol.WFS({
                 version: "1.0.0",
-                url: "http://192.168.56.100:8080/geoserver/geonode/wfs",
+                //url: "http://192.168.56.100:8080/geoserver/geonode/wfs",
+                url: geoserver+"geonode/wfs",
                 featurePrefix: "geonode",
                 featureType: "index",
                 featureNS: "http://www.geonode.org/",
@@ -341,7 +344,8 @@ Ext.onReady(function (){
     if (interest ){
         var wfs_proto = new OpenLayers.Protocol.WFS({
             version: "1.0.0",
-            url: "http://192.168.56.100:8080/geoserver/geonode/wfs",
+            //url: "http://192.168.56.100:8080/geoserver/geonode/wfs",
+            url: geoserver+"geonode/wfs",
             featurePrefix: "geonode",
             featureType: "phl_adm2_municipalities_utm_z51n",
             featureNS: "http://www.geonode.org/",
@@ -380,8 +384,6 @@ Ext.onReady(function (){
                 }
             }
         });
-        
-        while(interest_bounds==undefined){}
         
         map.zoomToExtent(interest_bounds.transform(new OpenLayers.Projection("EPSG:32651"), new OpenLayers.Projection("EPSG:900913")), false);
         
