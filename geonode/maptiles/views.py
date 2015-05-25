@@ -117,6 +117,7 @@ def tiled_view(request, overlay=settings.TILED_SHAPEFILE, template="maptiles/map
     
     #context_dict["geoserver"] = settings.OGC_SERVER['default']['PUBLIC_LOCATION']
     context_dict["geoserver"] = settings.OGC_SERVER['default']['LOCATION']
+    context_dict["siteurl"] = settings.SITEURL
     
     if interest is not None:
         context_dict["interest"]=interest
