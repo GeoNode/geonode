@@ -887,6 +887,10 @@ CELERY_QUEUES = [
 import djcelery
 djcelery.setup_loader()
 
+TILED_SHAPEFILE = "geonode:cut_phl_001k_grid_utm_z51n"
+#TILED_SHAPEFILE = "geonode:index"
+TILED_SHAPEFILE_TEST = "geonode:index"
+
 # Load more settings from a file called local_settings.py if it exists
 try:
     from local_settings import *  # noqa
@@ -929,5 +933,3 @@ CEPH_OGW = {
     }
 }
 
-TILED_SHAPEFILE = "geonode:cut_phl_001k_grid_utm_z51n"
-TILED_SHAPEFILE_TEST = "geonode:index"
