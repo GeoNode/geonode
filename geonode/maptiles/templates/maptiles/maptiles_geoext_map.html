@@ -377,7 +377,6 @@ Ext.onReady(function (){
                 if(response.priv.responseText){
                     var json_parser = new OpenLayers.Format.GeoJSON();
                     var feature_out = json_parser.read(response.priv.responseText);
-                    console.log(feature_out);
                     feature_out[0].geometry.calculateBounds();
                     interest_bounds = feature_out[0].geometry.getBounds();
                     map.zoomToExtent(interest_bounds.transform(new OpenLayers.Projection("EPSG:32651"), new OpenLayers.Projection("EPSG:900913")), false);

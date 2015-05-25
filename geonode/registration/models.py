@@ -102,3 +102,16 @@ class AcademeProfile(models.Model):
 
 class CommercialProfile(models.Model):
     pass
+
+class AreaInterests(models.Model):
+    province = models.CharField(
+        label = "Province",
+        max_length = 255,
+        required = True
+    )
+    municipality = models.CharField(
+        label = "City/Municipality",
+        max_length = 255,
+        required = True
+    )
+    
