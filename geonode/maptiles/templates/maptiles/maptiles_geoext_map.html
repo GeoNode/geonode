@@ -247,8 +247,8 @@ Ext.onReady(function (){
             geoserver = geoserver.replace("http://","");
             var wfs_proto = new OpenLayers.Protocol.WFS({
                 version: "1.0.0",
-                //url: "http://192.168.56.100:8080/geoserver/geonode/wfs",
-                url: geoserver+"geonode/wfs",
+                url: "http://192.168.56.100:8080/geoserver/geonode/wfs",
+                //url: geoserver+"geonode/wfs",
                 featurePrefix: "geonode",
                 featureType: "index",
                 featureNS: "http://www.geonode.org/",
