@@ -305,12 +305,14 @@ def start():
 
 
 @task
+@needs(['stop_celery',])
 def stop_django():
     """
     Stop the GeoNode Django application
     """
     kill('python', 'runserver')
 
+@task
 def stop_celery():
     """
     Stop the Celery worker daemon(s)
