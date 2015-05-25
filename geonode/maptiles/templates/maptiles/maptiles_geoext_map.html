@@ -43,8 +43,6 @@ OpenLayers.Request.DEFAULT_CONFIG.headers = {
 };
 
 var curr_location =  "{{siteurl}}";
-console.log(curr_location);
-//OpenLayers.ProxyHost = "http://192.168.56.100:8000/proxy/?url=";
 OpenLayers.ProxyHost = curr_location+"/proxy/?url=";
 
 {% autoescape off %}
@@ -381,11 +379,10 @@ Ext.onReady(function (){
                     var feature_out = json_parser.read(response.priv.responseText);
                     feature_out[0].geometry.calculateBounds();
                     interest_bounds = feature_out[0].geometry.getBounds();
+                    map.zoomToExtent(interest_bounds.transform(new OpenLayers.Projection("EPSG:32651"), new OpenLayers.Projection("EPSG:900913")), false);
                 }
             }
         });
-        
-        map.zoomToExtent(interest_bounds.transform(new OpenLayers.Projection("EPSG:32651"), new OpenLayers.Projection("EPSG:900913")), false);
         
     }else{
         map.zoomToExtent(tile_layer.maxExtent, false);
