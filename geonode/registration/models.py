@@ -109,26 +109,31 @@ class Province(models.Model):
     province_name = models.CharField(
         #label = "Province",
         max_length = 255,
-        required = True
+        null = False,
+        blank = False
     )
 
 class Municipality(models.Model):
     municipality_name = models.CharField(
         #label = "City/Municipality",
         max_length = 255,
-        required = True
+        null = False,
+        blank = False
+        #required = True
     )
-    area_type = models.CharField(
+    area_type = models.BooleanField(
         #label = "City or Municipality",
-        choices = ((1,"City"), (0, "Municipality")),
-        coerce = lambda x: bool(int(x)),
-        initial = '0',
-        required = True
+        #choices = ((1,"City"), (0, "Municipality")),
+        #coerce = lambda x: bool(int(x)),
+        #initial = '0',
+        null = False, 
+        blank = False
     )
     alt_name = models.CharField(
         #label
         max_length = 255,
-        required = True
+        null  = False,
+        blank = True
     )
     province = models.ForeignKey(Province, null=False, blank=False)
     
