@@ -1,6 +1,7 @@
 from django.db import models
 
 # Create your models here.
+"""
 class BaseRegistrationProfile(models.Model):
     name_of_requestor = models.CharField(
         _("Name of Requestor"),
@@ -102,6 +103,7 @@ class AcademeProfile(models.Model):
 
 class CommercialProfile(models.Model):
     pass
+"""
 
 class Province(models.Model):
     province_name = models.CharField(
