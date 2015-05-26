@@ -32,6 +32,7 @@ class BaseRegistrationProfile(models.Model):
         max_length = 255,
         required = True,
     )
+    area_interest = models.ForeignKey(Municipality, null=False, blank=True)
     
     
 class NonCommercialProfile(models.Model):
@@ -103,15 +104,32 @@ class AcademeProfile(models.Model):
 class CommercialProfile(models.Model):
     pass
 
-class AreaInterests(models.Model):
-    province = models.CharField(
-        label = "Province",
+class Province(models.Model):
+    province_name = models.CharField(
+        #label = "Province",
         max_length = 255,
         required = True
     )
+
+class Municipality(models.Model):
     municipality = models.CharField(
-        label = "City/Municipality",
+        #label = "City/Municipality",
         max_length = 255,
         required = True
     )
+    area_type = models.CharField(
+        #label = "City or Municipality",
+        choices = ((1,"City"), (0, "Municipality")),
+        coerce = lambda x: bool(int(x)),
+        initial = '0',
+        required = True
+    )
+    alt_name = models.CharField(
+        #label
+        max_length = 255,
+        required = True
+    )
+    province = models.ForeignKey(Province, null=False, blank=False)
     
+
+
