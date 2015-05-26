@@ -112,7 +112,7 @@ class Province(models.Model):
     )
 
 class Municipality(models.Model):
-    municipality = models.CharField(
+    municipality_name = models.CharField(
         #label = "City/Municipality",
         max_length = 255,
         required = True
