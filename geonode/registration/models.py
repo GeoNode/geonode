@@ -83,8 +83,7 @@ class AcademeProfile(models.Model):
         label = "Level of request",
         choices = ((0, "Institution"),
                    (1, "Faculty"),
-                   (2, "Student"),
-        
+                   (2, "Student")),
         required = True,
     )
     funding_source = models.CharField(
