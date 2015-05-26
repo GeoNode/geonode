@@ -62,7 +62,7 @@ class NonCommercialProfile(models.Model):
     )
     
     #Page 2
-    data_type_requested models.TypedChoiceField(
+    data_type_requested=models.TypedChoiceField(
         label = "Type of data requested",
         choices = ((0, "Interpreted"), 
                    (1, "Raw"), 
