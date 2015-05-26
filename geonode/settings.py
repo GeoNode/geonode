@@ -269,7 +269,10 @@ GEONODE_APPS = (
     # Maptiles 
     # Django app for selecting and highlighting tiles
     'geonode.maptiles',
-
+    
+    #Registration app
+    'geonode.registration',
+    
     # EULA app
     'geonode.eula',
 
