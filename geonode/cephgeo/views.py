@@ -16,7 +16,8 @@ from geonode.tasks.ftp import process_ftp_request
 
 from geonode.cephgeo.cart_utils import *
 
-import client, utils, local_settings, cPickle, unicodedata, time, operator, json
+import client, utils, cPickle, unicodedata, time, operator, json
+import geonode.local_settings as settings
 from geonode.tasks.update import ceph_metadata_udate
 from geonode.cephgeo.utils import get_cart_datasize
 
@@ -27,8 +28,8 @@ def file_list_ceph(request, sort=None):
         if sort not in utils.SORT_TYPES and sort != None:
             return HttpResponse(status=404)
             
-        cephclient = client.CephStorageClient(local_settings.CEPH_USER,local_settings.CEPH_KEY,local_settings.CEPH_URL) 
-        object_list = cephclient.list_files(container_name=local_settings.DEFAULT_CONTAINER)
+        cephclient = client.CephStorageClient(settings.CEPH_OGW['default']['USER'], settings.CEPH_OGW['default']['KEY'], settings.CEPH_OGW['default']['LOCATION']) 
+        object_list = cephclient.list_files(container_name=settings.CEPH_OGW['default']['CONTAINER'])
         sorted_list = []
         
         for ceph_object in object_list:
