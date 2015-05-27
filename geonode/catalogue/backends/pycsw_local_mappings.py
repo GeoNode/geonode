@@ -36,7 +36,7 @@ MD_CORE_MODEL = {
         'pycsw:Format': 'spatial_representation_type_string',
         'pycsw:Source': 'source',
         'pycsw:Date': 'date',
-        'pycsw:Modified': 'last_modified',
+        'pycsw:Modified': 'date',
         'pycsw:Type': 'csw_type',
         'pycsw:BoundingBox': 'csw_wkt_geometry',
         'pycsw:CRS': 'crs',
