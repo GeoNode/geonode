@@ -33,7 +33,7 @@ class BaseRegistrationProfile(models.Model):
         max_length = 255,
         required = True,
     )
-    area_interest = models.ForeignKey(Municipality, null=False, blank=True)
+   province_interest = models.ForeignKey(Municipality, null=False, blank=True)
     
     
 class NonCommercialProfile(models.Model):
@@ -110,7 +110,8 @@ class Province(models.Model):
         #label = "Province",
         max_length = 255,
         null = False,
-        blank = False
+        blank = False,
+        unique = True
     )
 
 class Municipality(models.Model):
@@ -121,11 +122,8 @@ class Municipality(models.Model):
         blank = False
         #required = True
     )
-    area_type = models.BooleanField(
-        #label = "City or Municipality",
-        #choices = ((1,"City"), (0, "Municipality")),
-        #coerce = lambda x: bool(int(x)),
-        #initial = '0',
+    is_municipality = models.BooleanField(
+        # if True, area is a municipality, else a city
         null = False, 
         blank = False
     )

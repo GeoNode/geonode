@@ -1,0 +1,60 @@
+<html>
+    <head>
+        <script type="text/javascript" >
+            
+            function remove(id) {
+                console.log("removing:"+id);
+                var elem=document.getElementById(id);
+                return elem.parentNode.removeChild(elem);
+            }
+            function start(){
+                var array_test = [0,1,2]
+                for ( var i = 0; i<array_test.length; i++)
+                {
+                    var item_element = document.getElementById("delete"+i);
+                    item_element.onclick = function(){
+                        console.log("clicked!");
+                        remove(item_element.value);
+                        array_test.splice(array_test.indexOf(i), 1);
+                    }
+                    console.log(item_element.onclick)
+                }
+            }
+        </script>
+    </head>
+    <body onload="start()">
+       <ul>
+        <li id="item0">
+             <tr>
+                <td>
+                0
+                </td>
+                <td>
+                    <input type="submit" value="delete0" id="delete0">
+                </td>
+            </tr>
+        </li>
+        <li id="item1">
+             <tr>
+                <td>
+                1
+                </td>
+                <td>
+                    <input type="submit" value="delete1" id="delete1">
+                </td>
+            </tr>
+        </li>
+        <li id="item2">
+             <tr>
+                <td>
+                2
+                </td>
+                <td>
+                    <input type="submit" value="delete2" id="delete2">
+                </td>
+            </tr>
+        </li>
+    </ul>
+
+    </body>
+</html>

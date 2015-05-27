@@ -1,0 +1,39 @@
+1,4c1,7
+< def tiled_view2(request, overlay="geonode:index", template="maptiles/maptiles_map_test.html"):
+<     if request.method == "POST":
+<         pprint(request.POST)
+<     layer = _resolve_layer(request, overlay, "base.view_resourcebase", _PERMISSION_VIEW )
+---
+> def layer_detail(request, layername, template='layers/layer_detail.html'):
+>     layer = _resolve_layer(
+>         request,
+>         layername,
+>         'base.view_resourcebase',
+>         _PERMISSION_MSG_VIEW)
+>     # assert False, str(layer_bbox)
+5a9,10
+>     #print layername
+>     # Add required parameters for GXP lazy-loading
+37,40c42,45
+<     #if request.user != layer.owner and not request.user.is_superuser:
+<     #    Layer.objects.filter(
+<     #        id=layer.id).update(popular_count=F('popular_count') + 1)
+<     
+---
+>     if request.user != layer.owner and not request.user.is_superuser:
+>         Layer.objects.filter(
+>             id=layer.id).update(popular_count=F('popular_count') + 1)
+> 
+60d64
+<     
+65c69
+<         
+---
+> 
+74c78,81
+<     
+---
+> 
+>     if settings.SOCIAL_ORIGINS:
+>         context_dict["social_links"] = build_social_links(request, layer)
+> 

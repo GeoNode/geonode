@@ -1,0 +1,50 @@
+var getInfoCtrl = new OpenLayers.Control.WMSGetFeatureInfo({
+        autoActivate: true,
+        infoFormat: "application/vnd.ogc.gml",
+        maxFeatures: 3,
+        url: geoserver_wms,
+        layers: [tile_layer],
+        eventListeners: {
+            "getfeatureinfo": function (e){
+                var items = [];
+                Ext.each (e.features, function(feature) {
+                    delete feature.attributes["File_Path"];http://192.168.56.100:8080/geoserver/geonode/wfs
+                    delete feature.attributes["GRID_REF"];
+                    delete feature.attributes["Tilename"];
+                    
+                    items.push({
+                        xtype: "propertygrid",
+                        title: feature.fid,
+                        source: feature.attributes
+                    });
+                });
+                
+                var tile_attribs = items[0].source;
+                
+                var tile = {
+                    georef: "E"+items[0].source.MINX/1000+"N"+items[0].source.MAXY/1000,
+                    attribs: tile_attribs,
+                    feature: createHighlightBox(tile_attribs)
+                }
+                
+                if (find_georef(tile_list, tile.georef)<0){
+                    tile_attribs["fid"] = "feature_"+tile.georef;
+                    tile_list.push(tile);
+                    highlight_layer.addFeatures([tile.feature]);
+                    console.log(tile_list);
+                }else{
+                    removeHighlight(tile.georef, highlight_layer);
+                }
+                
+                display_points("point_display", highlight_layer);
+                                
+            },
+            "nogetfeatureinfo": function(e){
+                console.log("No queryable layer found");
+            }
+        }
+    });
+    
+http://192.168.56.100:8080/geoserver/geonode/wfs?request=GetFeature&typeName=geonode:index&outputFormat=json
+&bbox= 
+&filter=<Filter xmlns:gml="http://www.opengis.net/gml"><BBOX><PropertyName>the_geom</PropertyName><gml:Point srsName="4326"><gml:coordinates>-74.817265,40.5296504</gml:coordinates></gml:Point></Intersects></Filter>

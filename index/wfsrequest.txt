@@ -1,0 +1,1 @@
+http://cephgeo.lan.dream.upd.edu.ph:8080/geoserver/wfs?format_options=charset%3AUTF-8&typename=geonode%3Aindex&outputFormat=SHAPE-ZIP&version=1.0.0&service=WFS&request=GetFeature
