@@ -5,8 +5,7 @@
 <script type="text/javascript" src="{{ STATIC_URL}}geonode/js/utils/thumbnail.js"></script>
 <script type="text/javascript" src="{{ STATIC_URL}}geonode/js/utils/proj4js-compressed.js"></script>
 <script type="text/javascript" src="{{ STATIC_URL}}geonode/js/utils/proj4js-EPSG32651.js"></script>
-<!--<script type="text/javascript" src="http://svn.osgeo.org/metacrs/proj4js/trunk/lib/proj4js-compressed.js"></script>-->
-<!--<script type="text/javascript" src="http://spatialreference.org/ref/epsg/32651/proj4js/"></script>-->
+
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7/jquery.js"></script>
 <script type="text/javascript" >
     function formatBytes(bytes, decimals) {
@@ -38,21 +37,18 @@
     });
 </script>
 <script type="text/javascript" >
-var curr_location = "lipad.lan.dream.upd.edu.ph";
 
 OpenLayers.ImgPath = "{{ STATIC_URL }}geoexplorer/externals/openlayers/theme/default/img";
 OpenLayers.Request.DEFAULT_CONFIG.headers = {
     'X-CSRFToken': '{{ csrf_token|escapejs }}'
 };
 
-<<<<<<< HEAD
-//OpenLayers.ProxyHost = "http://192.168.20.53/proxy/?url=";
-OpenLayers.ProxyHost = "http://"+curr_location+"/proxy/?url=";
-
-=======
 var curr_location =  "{{siteurl}}";
 OpenLayers.ProxyHost = curr_location+"/proxy/?url=";
->>>>>>> master
+<<<<<<< HEAD
+
+=======
+>>>>>>> fe0902e9b87c27e9d027ddb85eb62dd0b4399d34
 
 {% autoescape off %}
 
@@ -255,14 +251,12 @@ Ext.onReady(function (){
             
             var wfs_proto = new OpenLayers.Protocol.WFS({
                 version: "1.0.0",
-<<<<<<< HEAD
-                //url: "http://192.168.20.53:8080/geoserver/geonode/wfs",
-		//url: "http://lipad.lan.dream.upd.edu.ph:8080/geoserver/geonode/wfs",
-		url: "http://localhost:8080/geoserver/geonode/wfs",
-=======
                 //url: "http://192.168.56.100:8080/geoserver/geonode/wfs",
                 url: geoserver+"geonode/wfs",
->>>>>>> master
+<<<<<<< HEAD
+		
+=======
+>>>>>>> fe0902e9b87c27e9d027ddb85eb62dd0b4399d34
                 featurePrefix: "geonode",
                 featureType: "index",
                 featureNS: "http://www.geonode.org/",
