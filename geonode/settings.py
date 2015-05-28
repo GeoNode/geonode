@@ -269,7 +269,10 @@ GEONODE_APPS = (
     # Maptiles 
     # Django app for selecting and highlighting tiles
     'geonode.maptiles',
-
+    
+    #Registration app
+    #'geonode.registration',
+    
     # EULA app
     'geonode.eula',
 
@@ -310,6 +313,7 @@ INSTALLED_APPS = (
     'geoexplorer',
     'leaflet',
     'django_extensions',
+    'corsheaders',
     # 'haystack',
     'autocomplete_light',
     'mptt',
@@ -341,6 +345,7 @@ INSTALLED_APPS = (
     'changuito',
     'djkombu',
     'south',
+    'corsheaders',
 
 ) + GEONODE_APPS
 
@@ -411,6 +416,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
 )
 
 MIDDLEWARE_CLASSES = (
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
@@ -887,7 +893,8 @@ CELERY_QUEUES = [
 import djcelery
 djcelery.setup_loader()
 
-TILED_SHAPEFILE = "geonode:cut_phl_001k_grid_utm_z51n"
+#TILED_SHAPEFILE = "geonode:cut_phl_001k_grid_utm_z51n"
+TILED_SHAPEFILE = "geonode:index"
 TILED_SHAPEFILE_TEST = "geonode:index"
 
 # Load more settings from a file called local_settings.py if it exists
@@ -931,5 +938,4 @@ CEPH_OGW = {
         'CONTAINER' : 'geo-container',
     }
 }
-
 
