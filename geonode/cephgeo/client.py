@@ -3,8 +3,6 @@ from pprint import pprint
 from os import listdir
 from os.path import isfile, join
 
-user = 'geonode:swift'
-key = 'Ry3meRcVwVkff3G2O1vSy0PmUvUcXCzvWNZic04B'
 
 original_filters = warnings.filters[:]
 
@@ -34,8 +32,8 @@ class CephStorageClient(object):
     
     def __connect(self):
         return swiftclient.Connection(
-            user=user,
-            key=key,
+            user=self.user,
+            key=self.key,
             authurl=self.ceph_radosgw_url+"/auth",
             insecure=True,
         )
