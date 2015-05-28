@@ -1,7 +1,7 @@
 from changuito import CartProxy
 from changuito import models as cartmodels
 from changuito.proxy import ItemDoesNotExist
-from geonode.cephgeo.models import CephDataObject
+from geonode.cephgeo.models import CephDataObject, DataClassification
 from django.contrib import messages
 import utils
 
@@ -9,22 +9,22 @@ class DuplicateCartItemException(Exception):
     pass
 
 PRICING = {
-	"LAZ file"      : 1.00,
-	"DEM TIF"       : 2.00,
-	"DSM TIF"       : 2.00,
-	"Orthophoto"    : 3.00,
+	DataClassification.LAZ         : 1.00,
+	DataClassification.DEM         : 2.00,
+	DataClassification.DSM         : 3.00,
+	DataClassification.ORTHOPHOTO  : 4.00,
 }
 
-def compute_price(geo_type):
+def compute_price(data_class):
     try:
-        return PRICING[geo_type]
+        return PRICING[data_class]
     except KeyError as e:
-        raise KeyError("No valid pricing for geo-type [{0}]".format(geo_type))
+        raise KeyError("No valid pricing for geo-type [{0}]".format(data_class))
 
 def add_to_cart(request, ceph_obj_id, quantity=1):
     product = CephDataObject.objects.get(id=ceph_obj_id)
     cart = CartProxy(request) 
-    cart.add(product, compute_price(product.geo_type), quantity)
+    cart.add(product, compute_price(product.data_class), quantity)
 
 def add_to_cart_unique(request, ceph_obj_id):
     product = CephDataObject.objects.get(id=ceph_obj_id)
@@ -33,7 +33,7 @@ def add_to_cart_unique(request, ceph_obj_id):
     if check_dup_cart_item(cart, ceph_obj_id):
         raise DuplicateCartItemException("Item [{0}] already in cart".format(product.name))
     else:
-        cart.add(product, compute_price(product.geo_type), 1)
+        cart.add(product, compute_price(product.data_class), 1)
         
 def remove_from_cart(request, ceph_obj_id):
     cart = CartProxy(request) 

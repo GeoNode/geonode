@@ -84,6 +84,16 @@ def setup_celery(options):
         celery_log_dir.makedirs()
         
 @task
+def setup_ceph_client(options):
+    ceph_client_log_dir = path('geonode/cephgeo/logs')
+    if not ceph_client_log_dir.exists():
+        ceph_client_log_dir.makedirs()
+    
+    ceph_client_log_file = path('geonode/cephgeo/logs/ceph_storage.log')
+    if not ceph_client_log_file.isfile():
+        ceph_client_log_file.touch()
+
+@task
 @cmdopts([
     ('geoserver=', 'g', 'The location of the geoserver build (.war file).'),
     ('jetty=', 'j', 'The location of the Jetty Runner (.jar file).'),
@@ -143,6 +153,7 @@ def static(options):
 @needs([
     'setup_geoserver',
     'setup_celery',
+    'setup_ceph_client',
 ])
 def setup(options):
     """Get dependencies and prepare a GeoNode development environment."""

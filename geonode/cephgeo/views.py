@@ -12,6 +12,7 @@ from pprint import pprint
 
 from geonode.cephgeo.forms import DataInputForm
 from geonode.cephgeo.models import CephDataObject, FTPRequest, FTPStatus, FTPRequestToObjectIndex
+from geonode.cephgeo.utils import get_data_class_from_filename
 from geonode.tasks.ftp import process_ftp_request
 
 from geonode.cephgeo.cart_utils import *
@@ -33,15 +34,15 @@ def file_list_ceph(request, sort=None):
         sorted_list = []
         
         for ceph_object in object_list:
-            ceph_object["type"] = utils.file_classifier(ceph_object["name"])
+            ceph_object["type"] = utils.get_data_class_from_filename(ceph_object["name"])
             ceph_object["uploaddate"] = ceph_object["last_modified"]
-        
+            
         ###sorting goes here
         if sort != None:
             sorted_list = utils.sort_by(sort, object_list)
-            paginator = Paginator(sorted_list, 10)
+            paginator = Paginator(sorted_list, 50)
         else:
-            paginator = Paginator(object_list, 10)
+            paginator = Paginator(object_list, 50)
         
         page = request.GET.get('page')
         
@@ -77,12 +78,14 @@ def file_list_geonode(request, sort=None, grid_ref=None):
         #1 Grid Ref or Grid Ref Range
         if utils.is_valid_grid_ref(grid_ref):
             # Query files with same grid reference
-            object_list = CephDataObject.objects.filter(name__startswith=grid_ref)
+            #object_list = CephDataObject.objects.filter(name__startswith=grid_ref)
+            object_list = CephDataObject.objects.filter(grid_ref=grid_ref)
+            
         else:
             return HttpResponse(status=404)
     
     if sort == 'type':
-        sorted_list = sorted(object_list.order_by('name'), key=operator.attrgetter('geo_type'))
+        sorted_list = sorted(object_list.order_by('name'), key=operator.attrgetter('data_class'))
     elif sort == 'uploaddate':
         sorted_list = sorted(object_list.order_by('name'), key=operator.attrgetter('last_modified'), reverse=True)
         #~ sorted_list = object_list.order_by('-last_modified')
@@ -91,7 +94,7 @@ def file_list_geonode(request, sort=None, grid_ref=None):
     else: # default
         sorted_list = object_list
     
-    paginator = Paginator(sorted_list, 10)
+    paginator = Paginator(sorted_list, 50)
     
     page = request.GET.get('page')
     
@@ -131,7 +134,7 @@ def file_list_json(request, sort=None, grid_ref=None):
             return HttpResponse(status=404)
     
     if sort == 'type':
-        sorted_list = sorted(object_list.order_by('name'), key=operator.attrgetter('geo_type'))
+        sorted_list = sorted(object_list.order_by('name'), key=operator.attrgetter('data_class'))
     elif sort == 'uploaddate':
         sorted_list = sorted(object_list.order_by('name'), key=operator.attrgetter('last_modified'), reverse=True)
         #~ sorted_list = object_list.order_by('-last_modified')
@@ -147,9 +150,64 @@ def file_list_json(request, sort=None, grid_ref=None):
                     "grid_ref"      : grid_ref,}
     
     return HttpResponse(json.dumps(response_data), content_type="application/json")
-    
+
 @login_required
 def data_input(request):
+    if request.user.is_superuser:
+        if request.method == 'POST':
+            # create a form instance and populate it with data from the request:
+            # pprint(request.POST)
+            form = DataInputForm(request.POST)
+            # check whether it's valid:
+            if form.is_valid():
+                # Commented out until a way is figured out how to assign database writes/saves
+                #   to celery without throwing a 'database locked' error
+                #ceph_metadata_update.delay(uploaded_objects)
+                csv_delimiter=','
+                uploaded_objects_list = smart_str(form.cleaned_data['data']).splitlines()
+                
+                # Pop first line containing header
+                uploaded_objects_list.pop(0)
+                """NAME,LAST_MODIFIED,SIZE_IN_BYTES,CONTENT_TYPE,GEO_TYPE,FILE_HASH GRID_REF"""
+                
+                # Loop through each metadata element
+                object_count=0
+                for ceph_obj_metadata in uploaded_objects_list:
+                    metadata_list = ceph_obj_metadata.split(csv_delimiter)
+                    
+                    # Check if metadata list is valid
+                    if len(metadata_list) is 6:
+                        #try:
+                            ceph_obj = CephDataObject(  name = metadata_list[0],
+                                                        #last_modified = time.strptime(metadata_list[1], "%Y-%m-%d %H:%M:%S"),
+                                                        last_modified = metadata_list[1],
+                                                        size_in_bytes = metadata_list[2],
+                                                        content_type = metadata_list[3],
+                                                        data_class = get_data_class_from_filename(metadata_list[0]),
+                                                        file_hash = metadata_list[4],
+                                                        grid_ref = metadata_list[5])
+                            ceph_obj.save()
+                            object_count += 1
+                        #except Exception as e:
+                        #    print("Skipping invalid metadata list: {0}".format(metadata_list))
+                    else:
+                        print("Skipping invalid metadata list (invalid length): {0}".format(metadata_list))
+                    
+                messages.success(request, "Succesfully encoded metadata of [{0}] of objects.".format(object_count))
+                return redirect('geonode.cephgeo.views.file_list_geonode',sort='uploaddate')
+            else:
+                messages.error(request, "Invalid input on data form")
+                return redirect('geonode.cephgeo.views.data_input')
+        # if a GET (or any other method) we'll create a blank form
+        else:
+            form = DataInputForm()
+            return render(request, 'ceph_data_input.html', {'data_input_form': form})
+    else:
+        #return HttpResponseForbidden(u"You do not have permission to view this page!")
+        raise PermissionDenied()
+    
+@login_required
+def data_input_old(request):
     if request.user.is_superuser:
         if request.method == 'POST':
             # create a form instance and populate it with data from the request:
@@ -169,7 +227,7 @@ def data_input(request):
                                                     last_modified = obj_meta_dict['last_modified'],
                                                     size_in_bytes = obj_meta_dict['bytes'],
                                                     content_type = obj_meta_dict['content_type'],
-                                                    geo_type = utils.file_classifier(obj_meta_dict['name']),
+                                                    data_class = get_data_class_from_filename(obj_meta_dict['name']),
                                                     file_hash = obj_meta_dict['hash'],
                                                     grid_ref = obj_meta_dict['grid_ref'])
                         ceph_obj.save()
@@ -211,14 +269,7 @@ def get_cart_json(request):
     #~ return HttpResponse(json.dumps(json_cart), content_type="application/json")
     
     # TODO: debug serialization for CephDataObjects
-    #~ obj_name_dict = dict()
-    #~ for item in cart:
-        #~ obj = CephDataObject.objects.get(id=int(item.object_id))
-        #~ if obj.geo_type in obj_name_dict:
-            #~ obj_name_dict[obj.geo_type.encode('utf8')].append(obj.name.encode('utf8'))
-        #~ else:
-            #~ obj_name_dict[obj.geo_type.encode('utf8')] = [obj.name.encode('utf8'),]
-            #~ 
+    
     obj_name_dict = [CephDataObject.objects.get(id=int(item.object_id)).name for item in cart]
     return HttpResponse(json.dumps(obj_name_dict) , content_type="application/json")
 
@@ -227,9 +278,9 @@ def get_obj_ids_json(request):
     cart = CartProxy(request)
     json_cart = dict()
     ceph_objs = CephDataObject.objects.all()
-    ceph_objs_by_geotype = utils.ceph_object_ids_by_geotype(ceph_objs)
-    #pprint(ceph_objs_by_geotype)
-    return HttpResponse(json.dumps(ceph_objs_by_geotype), content_type="application/json")
+    ceph_objs_by_data_class = utils.ceph_object_ids_by_data_class(ceph_objs)
+    #pprint(ceph_objs_by_data_class)
+    return HttpResponse(json.dumps(ceph_objs_by_data_class), content_type="application/json")
 
 @login_required
 def create_ftp_folder(request):
@@ -244,10 +295,10 @@ def create_ftp_folder(request):
         obj = CephDataObject.objects.get(id=int(item.object_id))
         total_size_in_bytes += obj.size_in_bytes
         num_tiles += 1
-        if obj.geo_type in obj_name_dict:
-            obj_name_dict[obj.geo_type.encode('utf8')].append(obj.name.encode('utf8'))
+        if DataClassification.labels[obj.data_class] in obj_name_dict:
+            obj_name_dict[DataClassification.labels[obj.data_class].encode('utf8')].append(obj.name.encode('utf8'))
         else:
-            obj_name_dict[obj.geo_type.encode('utf8')] = [obj.name.encode('utf8'),]
+            obj_name_dict[DataClassification.labels[obj.data_class].encode('utf8')] = [obj.name.encode('utf8'),]
     username = request.user.get_username()
     
     # Record FTP request to database

@@ -1,6 +1,7 @@
 {% extends "ceph_base.html" %}
 {% load i18n %}
 {% load url from future %}
+{% load cephgeo_extras %}
 
 {% block title %} {% trans "File List" %} - {{ block.super }} {% endblock %}
 
@@ -23,16 +24,26 @@
   {% endfor %}
   <br /><br /><br />
   
-  <ul>
-	{% for file in file_list %}
-		<li><h4>
-              <b>{{ file.name }}</b>
-            </h4>
-			<br /><b>Last Modified:</b> {{ file.last_modified }}
-			<br /><b>File size:<b> {{ file.bytes|filesizeformat  }}
-		</li>
-	{% endfor %}
-  </ul>
+    <table id="cart_table" border="3" style="width:100% ">
+        <tr >
+            <th style="text-align: center;">{% trans "File Name" %}</th>
+            <th style="text-align: center;">{% trans "Data Class" %}</th>
+            <th style="text-align: center;">{% trans "Last Modified" %}</th>
+            <th style="text-align: center;">{% trans "File Size" %}</th>
+    <!--
+            <th>Total Price</th>
+    -->
+        </tr>
+        {% for file in file_list %}
+		<tr id="{{ file.name }}" name="{{ file.name }}" style="text-align: center;">
+            <td>{{ file.name }}</td>
+            <td>{{ file.type | get_data_class_label }}</td>
+            <td>{{ file.last_modified }}</td>
+			<td>{{ file.bytes | filesizeformat  }}</td>
+        </tr>
+        {% endfor %}
+
+    </table>
   
   <div class="pagination">
 	<span class="step-links">
