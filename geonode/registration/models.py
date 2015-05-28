@@ -1,6 +1,7 @@
 from django.db import models
 
 # Create your models here.
+"""
 class BaseRegistrationProfile(models.Model):
     name_of_requestor = models.CharField(
         _("Name of Requestor"),
@@ -61,7 +62,7 @@ class NonCommercialProfile(models.Model):
     )
     
     #Page 2
-    data_type_requested models.TypedChoiceField(
+    data_type_requested=models.TypedChoiceField(
         label = "Type of data requested",
         choices = ((0, "Interpreted"), 
                    (1, "Raw"), 
@@ -82,8 +83,7 @@ class AcademeProfile(models.Model):
         label = "Level of request",
         choices = ((0, "Institution"),
                    (1, "Faculty"),
-                   (2, "Student"),
-        
+                   (2, "Student")),
         required = True,
     )
     funding_source = models.CharField(
@@ -102,3 +102,39 @@ class AcademeProfile(models.Model):
 
 class CommercialProfile(models.Model):
     pass
+"""
+
+class Province(models.Model):
+    province_name = models.CharField(
+        #label = "Province",
+        max_length = 255,
+        null = False,
+        blank = False
+    )
+
+class Municipality(models.Model):
+    municipality_name = models.CharField(
+        #label = "City/Municipality",
+        max_length = 255,
+        null = False,
+        blank = False
+        #required = True
+    )
+    area_type = models.BooleanField(
+        #label = "City or Municipality",
+        #choices = ((1,"City"), (0, "Municipality")),
+        #coerce = lambda x: bool(int(x)),
+        #initial = '0',
+        null = False, 
+        blank = False
+    )
+    alt_name = models.CharField(
+        #label
+        max_length = 255,
+        null  = False,
+        blank = True
+    )
+    province = models.ForeignKey(Province, null=False, blank=False)
+    
+
+
