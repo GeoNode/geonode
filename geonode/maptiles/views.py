@@ -11,11 +11,12 @@ from django.http import HttpResponseRedirect, HttpResponse
 
 from geonode.services.models import Service
 from geonode.layers.models import Layer
+from geonode.layers.utils import is_vector, get_bbox
 from geonode.utils import resolve_object, llbbox_to_mercator
-
 from geonode.utils import GXPLayer
 from geonode.utils import GXPMap
 from geonode.utils import default_map_config
+
 from geonode.security.views import _perms_info_json
 from geonode.cephgeo.models import CephDataObject, DataClassification
 from geonode.cephgeo.cart_utils import *
@@ -58,8 +59,9 @@ def _resolve_layer(request, typename, permission='base.view_resourcebase',
                               permission=permission,
                               permission_msg=msg,
                               **kwargs)
+
 @login_required
-def tiled_view(request, overlay=settings.TILED_SHAPEFILE, template="maptiles/maptiles_map.html"):
+def tiled_view(request, overlay=settings.TILED_SHAPEFILE, template="maptiles/maptiles_map.html", interest=None):
     if request.method == "POST":
         pprint(request.POST)
     layer = _resolve_layer(request, overlay, "base.view_resourcebase", _PERMISSION_VIEW )
@@ -93,13 +95,6 @@ def tiled_view(request, overlay=settings.TILED_SHAPEFILE, template="maptiles/map
             ows_url=layer.ows_url,
             layer_params=json.dumps(config))
 
-    # Update count for popularity ranking,
-    # but do not includes admins or resource owners
-    #if request.user != layer.owner and not request.user.is_superuser:
-    #    Layer.objects.filter(
-    #        id=layer.id).update(popular_count=F('popular_count') + 1)
-    
-    # center/zoom don't matter; the viewer will center on the layer bounds
     map_obj = GXPMap(projection="EPSG:900913")
     NON_WMS_BASE_LAYERS = [
         la for la in default_map_config()[1] if la.ows_url is None]
@@ -111,86 +106,28 @@ def tiled_view(request, overlay=settings.TILED_SHAPEFILE, template="maptiles/map
         "data_classes": DataClassification.labels.values(),
         "resource": layer,
         "permissions_json": _perms_info_json(layer),
-        "documents": get_related_documents(layer),
         "metadata": metadata,
         "is_layer": True,
         "wps_enabled": settings.OGC_SERVER['default']['WPS_ENABLED'],
     }
-
+    
     context_dict["viewer"] = json.dumps(
         map_obj.viewer_json(request.user, * (NON_WMS_BASE_LAYERS + [maplayer])))
         
-    context_dict["layer"]  = settings.TILED_SHAPEFILE
-
-    #if settings.SOCIAL_ORIGINS:
-    #    context_dict["social_links"] = build_social_links(request, layer)
-    #print context_dict
+    context_dict["layer"]  = overlay
     
-    return render_to_response(template, RequestContext(request, context_dict))
-
-@login_required
-def tiled_view2(request, overlay=settings.TILED_SHAPEFILE_TEST, template="maptiles/maptiles_map.html"):
-    layer = _resolve_layer(
-        request,
-        overlay,
-        'base.view_resourcebase',
-        _PERMISSION_VIEW)
-    config = layer.attribute_config()
-    layer_bbox = layer.bbox
-    bbox = [float(coord) for coord in list(layer_bbox[0:4])]
-    srid = layer.srid
-
-    # Transform WGS84 to Mercator.
-    config["srs"] = srid if srid != "EPSG:4326" else "EPSG:900913"
-    config["bbox"] = llbbox_to_mercator([float(coord) for coord in bbox])
-
-    config["title"] = layer.title
-    config["queryable"] = True
-
-    if layer.storeType == "remoteStore":
-        service = layer.service
-        source_params = {
-            "ptype": service.ptype,
-            "remote": True,
-            "url": service.base_url,
-            "name": service.name}
-        maplayer = GXPLayer(
-            name=layer.typename,
-            ows_url=layer.ows_url,
-            layer_params=json.dumps(config),
-            source_params=json.dumps(source_params))
-    else:
-        maplayer = GXPLayer(
-            name=layer.typename,
-            ows_url=layer.ows_url,
-            layer_params=json.dumps(config))
-
-    # center/zoom don't matter; the viewer will center on the layer bounds
-    map_obj = GXPMap(projection="EPSG:900913")
-    metadata = layer.link_set.metadata().filter(
-        name__in=settings.DOWNLOAD_FORMATS_METADATA)
-
-    context_dict = {
-        "data_classes": DataClassification.labels.values(),
-        "resource": layer,
-        "permissions_json": _perms_info_json(layer),
-        "documents": get_related_documents(layer),
-        "metadata": metadata,
-        "is_layer": True,
-        "wps_enabled": settings.OGC_SERVER['default']['WPS_ENABLED'],
-    }
+    #context_dict["geoserver"] = settings.OGC_SERVER['default']['PUBLIC_LOCATION']
+    context_dict["geoserver"] = settings.OGC_SERVER['default']['PUBLIC_LOCATION']
+    context_dict["siteurl"] = settings.SITEURL
     
-    context_dict["viewer"] = json.dumps(
-        map_obj.viewer_json(request.user, * ([maplayer])))
-        
-    context_dict["layer"]  = settings.TILED_SHAPEFILE_TEST
-
+    if interest is not None:
+        context_dict["interest"]=interest
+    
     return render_to_response(template, RequestContext(request, context_dict))
 
 def process_georefs(request):
     if request.method == "POST":
         try:
-            #pprint(request.POST)
             georef_area = request.POST['georef_area']
             georef_list = filter(None, georef_area.split(","))
             #spprint(georef_list)
@@ -242,7 +179,7 @@ def georefs_validation(request):
     else:
         georefs = request.POST["georefs"]
         georefs_list = filter(None, georefs.split(","))
-        
+        pprint(georefs)
         cart_total_size = get_cart_datasize(request)
         total_size = 0
         for georef in georefs_list:
@@ -250,9 +187,6 @@ def georefs_validation(request):
             for o in objects:
                 total_size += o.size_in_bytes
         
-        
-        pprint("cart size:" + str(cart_total_size))
-        pprint("total size:"+str(total_size))
         if total_size + cart_total_size > settings.SELECTION_LIMIT:            
             return HttpResponse(
                content=json.dumps({ "response": False, "total_size": total_size, "cart_size":cart_total_size }),
@@ -267,4 +201,5 @@ def georefs_validation(request):
                 #mimetype='text/plain'
                 content_type="application/json"
             )
-        
+
+    
