@@ -5,6 +5,15 @@ from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Fieldset, ButtonHolder, Submit, Button
 from crispy_forms.bootstrap import FormActions
 
+from geonode.registration.models import province 
+
+def get_province_choices():
+    provinces = Province.objects
+    choices = []
+    for p in provinces:
+        choices.append((p.id, p.province_name))
+    return choices
+
 class UserRegistrationForm1(forms.Form):
     name_of_requestor = forms.CharField(
         label = "Name of Requestor",
@@ -25,6 +34,11 @@ class UserRegistrationForm1(forms.Form):
         label = "Intended use of dataset?",
         choices = ((0, "Non-commercial"), (1, "Commercial")),
         required = True,
+    )
+    province_interest = forms.TypedChoiceField(
+        label = "Province of interest",
+        choices = get_province_choices(),
+        required = True
     )
     def __init__(self, *args, **kwargs):
         self.helper = FormHelper()
