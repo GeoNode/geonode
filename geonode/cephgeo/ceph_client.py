@@ -31,8 +31,8 @@ class CephStorageClient(object):
     
     def __connect(self):
         return swiftclient.Connection(
-            user=user,
-            key=key,
+            user=self.user,
+            key=self.key,
             authurl=self.ceph_radosgw_url+"/auth",
             insecure=True,
         )
