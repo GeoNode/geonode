@@ -269,7 +269,10 @@ GEONODE_APPS = (
     # Maptiles 
     # Django app for selecting and highlighting tiles
     'geonode.maptiles',
-
+    
+    #Registration app
+    #'geonode.registration',
+    
     # EULA app
     'geonode.eula',
 
@@ -310,6 +313,7 @@ INSTALLED_APPS = (
     'geoexplorer',
     'leaflet',
     'django_extensions',
+    'corsheaders',
     # 'haystack',
     'autocomplete_light',
     'mptt',
