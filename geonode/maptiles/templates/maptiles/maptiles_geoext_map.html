@@ -46,7 +46,6 @@ OpenLayers.Request.DEFAULT_CONFIG.headers = {
 var curr_location =  "{{siteurl}}";
 OpenLayers.ProxyHost = curr_location+"/proxy/?url=";
 
-
 {% autoescape off %}
 
 var options = {{ viewer| safe }};
@@ -250,7 +249,6 @@ Ext.onReady(function (){
                 version: "1.0.0",
                 //url: "http://192.168.56.100:8080/geoserver/geonode/wfs",
                 url: geoserver+"geonode/wfs",
-		
                 featurePrefix: "geonode",
                 featureType: "index",
                 featureNS: "http://www.geonode.org/",
