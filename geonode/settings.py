@@ -271,7 +271,7 @@ GEONODE_APPS = (
     'geonode.maptiles',
     
     #Registration app
-    'geonode.registration',
+    #'geonode.registration',
     
     # EULA app
     'geonode.eula',
