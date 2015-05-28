@@ -33,7 +33,6 @@ class BaseRegistrationProfile(models.Model):
         max_length = 255,
         required = True,
     )
-    area_interest = models.ForeignKey(Municipality, null=False, blank=True)
     
     
 class NonCommercialProfile(models.Model):
