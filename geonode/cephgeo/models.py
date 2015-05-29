@@ -28,6 +28,14 @@ class DataClassification(enum.Enum):
         DTM         : "DTM TIF",
         ORTHOPHOTO  : "Orthophoto",}
     
+    gs_feature_labels = {
+        UNKNOWN     : "UNSUPPORTED",
+        LAZ         : "UNSUPPORTED",
+        DEM         : "UNSUPPORTED",
+        DSM         : "DSM",
+        DTM         : "DTM",
+        ORTHOPHOTO  : "ORTHO",}
+    
     filename_suffixes = {
         ".laz"            : LAZ,
         "_dem.tif"         : DEM,
@@ -60,7 +68,7 @@ class CephDataObject(models.Model):
     grid_ref        = models.CharField(max_length=10)
     
     def __unicode__(self):
-        return "{0}:{1}".format(self.name, self.data_class)
+        return "{0}:{1}".format(self.name, DataClassification.label[self.data_class])
 
 
 class FTPRequest(models.Model):
