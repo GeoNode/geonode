@@ -14,7 +14,7 @@ from geonode.cephgeo.forms import DataInputForm
 from geonode.cephgeo.models import CephDataObject, FTPRequest, FTPStatus, FTPRequestToObjectIndex
 from geonode.cephgeo.utils import get_data_class_from_filename
 from geonode.tasks.ftp import process_ftp_request
-from geonode.tasks.udpate import grid_feature_update
+from geonode.tasks.update import grid_feature_update
 
 from geonode.cephgeo.cart_utils import *
 
