@@ -1,3 +1,4 @@
+from pprint import pprint
 from celery.task import task
 from geonode.geoserver.helpers import gs_slurp
 from geonode.documents.models import Document
@@ -31,7 +32,7 @@ def grid_feature_update(gridref_dict_by_data_class, field_value=1):
         :param field_value: [1] or [0]
         Update the grid shapefile feature attribute specified by [feature_attr] on gridrefs in [gridref_list]
     """
-    for feature_attr, grid_ref_list in gridref_dict_by_data_class:
+    for feature_attr, grid_ref_list in gridref_dict_by_data_class.iteritems():
         nested_grid_update(grid_ref_list, feature_attr, field_value)
 
 @task(name='geonode.tasks.update.geoserver_update_layers', queue='update')
