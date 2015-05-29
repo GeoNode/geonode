@@ -8,9 +8,9 @@ import geonode.settings as settings
 _version = "0.2.2"
 print os.path.basename(__file__) + ": v" + _version
 _logger = logging.getLogger()
-GEOSERVER_URL = settings.OGC_SERVER["LOCATION"]
-GEOSERVER_USER = settings.OGC_SERVER["USER"]
-GEOSERVER_PASSWD = settings.OGC_SERVER["PASSWORD"]
+GEOSERVER_URL = settings.OGC_SERVER["default"]["LOCATION"]
+GEOSERVER_USER = settings.OGC_SERVER["default"]["USER"]
+GEOSERVER_PASSWD = settings.OGC_SERVER["default"]["PASSWORD"]
 #GRID_SHAPEFILE = settings.TILED_SHAPEFILE
 GRID_SHAPEFILE = "geonode:philgrid"
 NAMESPACES = {"gml": "http://www.opengis.net/gml",
