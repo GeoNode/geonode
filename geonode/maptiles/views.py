@@ -71,6 +71,7 @@ def tiled_view(request, overlay=settings.TILED_SHAPEFILE, template="maptiles/map
         layer = _resolve_layer(request, overlay, "base.view_resourcebase", _PERMISSION_VIEW )
     except Exception as e:
         layer = _resolve_layer(request, settings.MUNICIPALITY_SHAPEFILE, _PERMISSION_VIEW)
+        overlay = MUNICIPALITY_SHAPEFILE
             
     config = layer.attribute_config()
     layer_bbox = layer.bbox
