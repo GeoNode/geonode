@@ -122,6 +122,9 @@ def tiled_view(request, overlay=settings.TILED_SHAPEFILE, template="maptiles/map
     
     if interest is not None:
         context_dict["interest"]=interest
+        
+    context_dict["feature_municipality"]  = settings.MUNICIPALITY_SHAPEFILE.split(":")[1]
+    context_dict["feature_tiled"] = overlay.split(":")[1]
     
     return render_to_response(template, RequestContext(request, context_dict))
 
