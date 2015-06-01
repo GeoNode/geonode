@@ -250,7 +250,7 @@ Ext.onReady(function (){
                 //url: "http://192.168.56.100:8080/geoserver/geonode/wfs",
                 url: geoserver+"geonode/wfs",
                 featurePrefix: "geonode",
-                featureType: "index",
+                featureType: "{{feature_tiled}}",
                 featureNS: "http://www.geonode.org/",
                 srsName: "EPSG:32651",
                 outputFormat: "json"
@@ -346,7 +346,7 @@ Ext.onReady(function (){
             //url: "http://192.168.56.100:8080/geoserver/geonode/wfs",
             url: geoserver+"geonode/wfs",
             featurePrefix: "geonode",
-            featureType: "phl_adm2_municipalities_utm_z51n",
+            featureType: "{{ feature_municipality }}",
             featureNS: "http://www.geonode.org/",
             srsName: "EPSG:32651",
             outputFormat: "application/json"
