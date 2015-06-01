@@ -22,6 +22,7 @@ import client, utils, cPickle, unicodedata, time, operator, json
 import geonode.local_settings as settings
 from geonode.tasks.update import ceph_metadata_udate
 from geonode.cephgeo.utils import get_cart_datasize
+from datetime import datetime
 
 # Create your views here.
 @login_required
@@ -315,8 +316,18 @@ def get_obj_ids_json(request):
 
 @login_required
 def create_ftp_folder(request):
-    cart=CartProxy(request)
+    # Check time difference between this request and the next most recent request
+    # If within 5 minutes/300 secs, inform the user to wait
+    latest_request = FTPRequest.objects.latest('date_time') 
+    time_diff = datetime.now() -latest_request.date_time
+    if time_diff.total_seconds() < 300:
+        return render_to_response('ftp_result.html', 
+                                {   "result_msg" : "There was a problem with your request. A previous FTP request \
+                                     was recorded within the last 5 minutes. Please wait at least 5 minutes in \
+                                     between submitting FTP requests.",},
+                                context_instance=RequestContext(request))
     
+    cart=CartProxy(request)
     #[CephDataObject.objects.get(id=int(item.object_id)).name for item in cart]
     
     obj_name_dict = dict()
@@ -330,16 +341,11 @@ def create_ftp_folder(request):
             obj_name_dict[DataClassification.labels[obj.data_class].encode('utf8')].append(obj.name.encode('utf8'))
         else:
             obj_name_dict[DataClassification.labels[obj.data_class].encode('utf8')] = [obj.name.encode('utf8'),]
-    username = request.user.get_username()
     
     # Record FTP request to database
     # DETAILS: user, request name, for item(ceph_obj) in cart, date, EULA?
-    ftp_request = FTPRequest(   name = time.strftime("ftp_request-%Y_%m_%d"),
+    ftp_request = FTPRequest(   name = time.strftime("ftprequest_%Y-%m-%d_%H%M"),
                                 user = request.user)
-    
-    # Check for duplicates and handle accordingly
-    if count_duplicate_requests(ftp_request) > 0:
-        ftp_request.status = FTPStatus.DUPLICATE
     
     ftp_request.size_in_bytes = total_size_in_bytes
     ftp_request.num_tiles = num_tiles
