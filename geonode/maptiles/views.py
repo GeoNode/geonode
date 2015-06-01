@@ -5,6 +5,7 @@ from django.utils import simplejson as json
 from django.shortcuts import render_to_response
 from django.template import RequestContext
 from django.core.exceptions import ValidationError
+from django.core.exceptions import PermissionDenied
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseRedirect, HttpResponse
@@ -64,13 +65,17 @@ def _resolve_layer(request, typename, permission='base.view_resourcebase',
 def tiled_view(request, overlay=settings.TILED_SHAPEFILE, template="maptiles/maptiles_map.html", interest=None):
     if request.method == "POST":
         pprint(request.POST)
-    layer = _resolve_layer(request, overlay, "base.view_resourcebase", _PERMISSION_VIEW )
+    
+    layer = {}
+    try:
+        layer = _resolve_layer(request, overlay, "base.view_resourcebase", _PERMISSION_VIEW )
+    except Exception as e:
+        layer = _resolve_layer(request, settings.MUNICIPALITY_SHAPEFILE, _PERMISSION_VIEW)
+            
     config = layer.attribute_config()
     layer_bbox = layer.bbox
     bbox = [float(coord) for coord in list(layer_bbox[0:4])]
     srid = layer.srid
-    
-    pprint("SHAPE FILE:"+overlay)
     
     # Transform WGS84 to Mercator.
     config["srs"] = srid if srid != "EPSG:4326" else "EPSG:900913"
