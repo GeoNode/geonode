@@ -69,7 +69,9 @@ def tiled_view(request, overlay=settings.TILED_SHAPEFILE, template="maptiles/map
     layer_bbox = layer.bbox
     bbox = [float(coord) for coord in list(layer_bbox[0:4])]
     srid = layer.srid
-
+    
+    pprint("SHAPE FILE:"+overlay)
+    
     # Transform WGS84 to Mercator.
     config["srs"] = srid if srid != "EPSG:4326" else "EPSG:900913"
     config["bbox"] = llbbox_to_mercator([float(coord) for coord in bbox])
