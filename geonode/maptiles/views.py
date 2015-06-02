@@ -28,6 +28,7 @@ import geonode.settings as settings
 from pprint import pprint
 
 import logging
+import datetime
 from geonode.cephgeo.utils import get_cart_datasize
 
 _PERMISSION_VIEW = _("You are not permitted to view this layer")
@@ -181,6 +182,9 @@ def process_georefs(request):
 
 @login_required
 def georefs_validation(request):
+    """
+    Note: does not check yet if tiles to be added are unique (or are not yet included in the cart)
+    """
     if request.method != 'POST':
         return HttpResponse(
             content='no data received from HTTP POST',
@@ -190,17 +194,26 @@ def georefs_validation(request):
     else:
         georefs = request.POST["georefs"]
         georefs_list = filter(None, georefs.split(","))
-        pprint(georefs)
         cart_total_size = get_cart_datasize(request)
+        
+        yesterday = datetime.now() - timedelta(days=1)
+        
+        requests_last24h = FTPRequest.objects.filter(date_time__gt=yesterday)
+        
         total_size = 0
         for georef in georefs_list:
             objects = CephDataObject.objects.filter(name__startswith=georef)
             for o in objects:
                 total_size += o.size_in_bytes
+                
+        request_size_last24h = 0
         
-        if total_size + cart_total_size > settings.SELECTION_LIMIT:            
+        for r in requests_last24h:
+            request_size_last24h += r.size_in_bytes
+        
+        if total_size + cart_total_size + request_size_last24h > settings.SELECTION_LIMIT:            
             return HttpResponse(
-               content=json.dumps({ "response": False, "total_size": total_size, "cart_size":cart_total_size }),
+               content=json.dumps({ "response": False, "total_size": total_size, "cart_size":cart_total_size, "recent_requests_size": request_size_last24h }),
                 status=200,
                 #mimetype='text/plain'
                 content_type="application/json"

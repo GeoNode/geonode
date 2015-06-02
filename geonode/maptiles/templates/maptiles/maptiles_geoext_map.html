@@ -6,7 +6,7 @@
 <script type="text/javascript" src="{{ STATIC_URL}}geonode/js/utils/proj4js-compressed.js"></script>
 <script type="text/javascript" src="{{ STATIC_URL}}geonode/js/utils/proj4js-EPSG32651.js"></script>
 
-<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7/jquery.js"></script>
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.7/jquery.js"></script>
 <script type="text/javascript" >
     function formatBytes(bytes, decimals) {
         if(bytes == 0) 
@@ -30,7 +30,8 @@
                    else {
                         alert("The total file size of this request is "+formatBytes(result.total_size, 2)+
                                 " . You also have a total of "+formatBytes(result.cart_size, 2)+
-                                " in the data cart. Your request exceeds the 200MB download limit. Please reduce number of selected tiles.");
+                                " in the data cart and FTP requests with a total of "+formatBytes(result.recent_requests_size, 2)+
+                                ". Your request exceeds the 200MB download limit. Please reduce number of selected tiles.");
                     }
                 })
        });
@@ -255,8 +256,7 @@ Ext.onReady(function (){
                 srsName: "EPSG:32651",
                 outputFormat: "json"
             });              
-            
-            var response_txt;
+
             var wfs_resp = wfs_proto.read({
                 filter: filter,
                 callback: function(response){
@@ -280,8 +280,8 @@ Ext.onReady(function (){
                                  highlight_layer.addFeatures([tile.feature]);
                             }
             
-                            display_points("point_display", highlight_layer);
                         }
+                        display_points("point_display", highlight_layer);
                     }else{
                         alert("Server did not respond.");
                     }
