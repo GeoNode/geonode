@@ -197,7 +197,7 @@ def georefs_validation(request):
         georefs_list = filter(None, georefs.split(","))
         cart_total_size = get_cart_datasize(request)
         
-        yesterday = datetime.now() - timedelta(days=1)
+        yesterday = datetime.now() - datetime.timedelta(days=1)
         
         requests_last24h = FTPRequest.objects.filter(date_time__gt=yesterday)
         
