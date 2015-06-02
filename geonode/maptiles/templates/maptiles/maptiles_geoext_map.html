@@ -101,7 +101,7 @@ function display_points(div_id, vec_layer){
             //list_element.appendChild(item_element);
             var georef_element = document.createElement("td");
             georef_element.setAttribute("id",tile_list[i*5+j].georef);
-            var container_width = document.getElementById("embedded_map").getOffsetWidth
+            var container_width = document.getElementById("embedded_map").offsetWidth
             console.log(container_width);
             georef_element.setAttribute("style", "width: "+container_width/5+"px");
             georef_element.innerHTML  = tile_list[i*5+j].georef;
