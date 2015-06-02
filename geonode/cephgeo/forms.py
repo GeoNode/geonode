@@ -15,7 +15,7 @@ class DataInputForm(forms.Form):
             Fieldset(
                 'Metadata output from bulk_upload.py:',
                 'data',
-                'Update grid shapefile',
+                'update_grid',
             ),
             ButtonHolder(
                 Submit('submit', 'Submit', css_class='button white')
