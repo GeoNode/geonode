@@ -103,7 +103,7 @@ function display_points(div_id, vec_layer){
             georef_element.setAttribute("id",tile_list[i*5+j].georef);
             var container_width = document.getElementById("embedded_map").offsetWidth
             georef_element.setAttribute("style", "width: "+container_width/5+"px; height: 30px;");
-            georef_element.innerHTML  = "<font size=1>"+tile_list[i*5+j].georef+"</font>";
+            georef_element.innerHTML  = "<font size=2>"+tile_list[i*5+j].georef+"</font>";
             /*var font_element = document.createElement("font");
             font_element.setAttribute("size", 8);
             font_element.innerHTML = tile_list[i*5+j].georef;
