@@ -24,6 +24,26 @@ class CephAccessException(Exception):
     pass
 
 @hosts(settings.CEPHACCESS_HOST)
+def check_cephaccess():
+    # NOTE: DO NOT CALL ASYNCHRONOUSLY (check_cephaccess.delay())
+    #       OTHERWISE, NO OUTPUT WILL BE MADE
+    """
+        Call to check if CephAccess is up and running
+    """
+    
+    #TODO: more detailed checks
+    ## DONE: Check if DL folder is writeable
+    ## Check from inside Cephaccess if Ceph Object Gateway is reachable
+    ## 
+    
+    test_file = '/home/cephaccess/testfolder/DL/test.txt'
+    result = run("touch {0} && rm -f {0}".format(test_file))
+    if result is not 0:
+        logger.error("Unable to access {0}. Host may be down or there may be a network problem.".format(result.get(host_string)))
+        raise CephAccessException("Unable to access {0}. Host may be down or there may be a network problem.".format(result.get(host_string)))
+
+
+@hosts(settings.CEPHACCESS_HOST)
 def fab_create_ftp_folder(ftp_request, ceph_obj_list_by_data_class):
     """
         Creates an FTP folder for the requested tile data set
@@ -190,30 +210,14 @@ def process_ftp_request(ftp_request, ceph_obj_list_by_data_class):
         #~ traceback.print_exc()
         #~ raise Exception("task process_ftp_request terminated with exception -- %s" % e.message)
         
-    check_cephaccess()
-    
+    result = execute(check_cephaccess)
+    if isinstance(result.get(host_string, None), BaseException):
+        raise Exception(result.get(host_string))
+
     result = execute(fab_create_ftp_folder, ftp_request, ceph_obj_list_by_data_class )
     if isinstance(result.get(host_string, None), BaseException):
         raise Exception(result.get(host_string))
 
-@celery.task(name='geonode.tasks.ftp.check_cephaccess', queue='ftp')
-def check_cephaccess():
-    # NOTE: DO NOT CALL ASYNCHRONOUSLY (check_cephaccess.delay())
-    #       OTHERWISE, NO OUTPUT WILL BE MADE
-    """
-        Call to check if CephAccess is up and running
-    """
-    
-    #TODO: more detailed checks
-    ## DONE: Check if DL folder is writeable
-    ## Check from inside Cephaccess if Ceph Object Gateway is reachable
-    ## 
-    
-    test_file = '/home/cephaccess/testfolder/DL/test.txt'
-    result = run("touch {0} && rm -f {0}".format(test_file))
-    if result is not 0:
-        logger.error("Unable to access {0}. Host may be down or there may be a network problem.".format(result.get(host_string)))
-        raise CephAccessException("Unable to access {0}. Host may be down or there may be a network problem.".format(result.get(host_string)))
     
 ###
 #   UTIL FUNCTIONS
