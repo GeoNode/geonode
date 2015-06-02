@@ -167,6 +167,7 @@ def data_input(request):
                 #ceph_metadata_update.delay(uploaded_objects)
                 csv_delimiter=','
                 uploaded_objects_list = smart_str(form.cleaned_data['data']).splitlines()
+                update_grid = form.cleaned_data['update_grid']
                 
                 # Pop first line containing header
                 uploaded_objects_list.pop(0)
@@ -224,7 +225,8 @@ def data_input(request):
                         print("Skipping invalid metadata list (invalid length): {0}".format(metadata_list))
                 
                 # Pass to celery the task of updating the gird shapefile
-                grid_feature_update.delay(gridref_dict_by_data_class)
+                if update_grid:
+                    grid_feature_update.delay(gridref_dict_by_data_class)
                 messages.success(request, "Succesfully encoded metadata of [{0}] of objects. Inserted [{1}], updated [{2}].".format(objects_inserted+objects_updated, objects_inserted, objects_updated))
                 return redirect('geonode.cephgeo.views.file_list_geonode',sort='uploaddate')
             else:
@@ -250,7 +252,7 @@ def data_input_old(request):
                 data = form.cleaned_data['data']
                 uploaded_objects = cPickle.loads(smart_str(data))
                 #pprint(uploaded_objects)
-                is_pickled = form.cleaned_data['pickled']
+                update_grid = form.cleaned_data['update_grid']
                 for obj_meta_dict in uploaded_objects:
                     #Check if object metadata has already been encoded
                     if not CephDataObject.objects.filter(name=obj_meta_dict['name']).exists():
