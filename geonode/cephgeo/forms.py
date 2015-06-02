@@ -7,7 +7,7 @@ from crispy_forms.bootstrap import FormActions
 
 class DataInputForm(forms.Form):
     data = forms.CharField(widget=forms.Textarea(attrs={'style' : 'resize:none; width:100%; height:60%;', 'wrap' : 'virtual'}))
-    pickled = forms.BooleanField()
+    update_grid = forms.BooleanField()
 
     def __init__(self, *args, **kwargs):
         self.helper = FormHelper()
@@ -15,14 +15,14 @@ class DataInputForm(forms.Form):
             Fieldset(
                 'Metadata output from bulk_upload.py:',
                 'data',
-                'pickled',
+                'Update grid shapefile',
             ),
             ButtonHolder(
                 Submit('submit', 'Submit', css_class='button white')
             )
         )
         super(DataInputForm, self).__init__(*args, **kwargs)
-        self.fields['pickled'].initial  = True
+        self.fields['update_grid'].initial  = True
 
 class RequestDataClassForm(forms.Form):
     LAZ = forms.BooleanField()
