@@ -10,7 +10,7 @@
 <script type="text/javascript" >
     function formatBytes(bytes, decimals) {
         if(bytes == 0) 
-            return '0 Byte';
+            return '0 Bytes';
         var k = 1024;
         var sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
         var i = Math.floor(Math.log(bytes) / Math.log(k));
@@ -85,29 +85,23 @@ function createTile(computed_corners){
 function display_points(div_id, vec_layer){
     var container = document.getElementById(div_id);
     container.removeChild(container.firstElementChild||container.firstChild);
-    //var list_element = document.createElement("li");
     var table_element = document.createElement("table");
+    table_element.className += "georef_table";
     container.appendChild(table_element);
     
     var georef_string = "";
     
     for (var i=0; i< tile_list.length/5; i++){
         var row_element = document.createElement("tr");
+        row_element.className += "georef_tr";
         table_element.appendChild(row_element);
         for (var j = 0; j< 5; j++){
-            //var item_element = document.createElement("li");
-            //item_element.setAttribute("id",tile_list[i].georef);
-            //item_element.innerHTML = tile_list[i].georef;
-            //list_element.appendChild(item_element);
+
             var georef_element = document.createElement("td");
             georef_element.setAttribute("id",tile_list[i*5+j].georef);
             var container_width = document.getElementById("embedded_map").offsetWidth
             georef_element.setAttribute("style", "width: "+container_width/5+"px; height: 30px;");
             georef_element.innerHTML  = "<font size=3.5>"+tile_list[i*5+j].georef+"</font>";
-            /*var font_element = document.createElement("font");
-            font_element.setAttribute("size", 8);
-            font_element.innerHTML = tile_list[i*5+j].georef;
-            georef_element.appendChild(font_element);*/
             
             row_element.appendChild(georef_element);
             if(i == 0){
