@@ -322,15 +322,17 @@ def get_obj_ids_json(request):
 def create_ftp_folder(request):
     # Check time difference between this request and the next most recent request
     # If within 5 minutes/300 secs, inform the user to wait
-    latest_request = FTPRequest.objects.latest('date_time') 
-    time_diff = datetime.now() -latest_request.date_time
-    if time_diff.total_seconds() < 300:
-        return render_to_response('ftp_result.html', 
-                                {   "result_msg" : "There was a problem with your request. A previous FTP request \
-                                     was recorded within the last 5 minutes. Please wait at least 5 minutes in \
-                                     between submitting FTP requests.",},
-                                context_instance=RequestContext(request))
-    
+    try:
+        latest_request = FTPRequest.objects.latest('date_time') 
+        time_diff = datetime.now() -latest_request.date_time
+        if time_diff.total_seconds() < 300:
+            return render_to_response('ftp_result.html', 
+                                    {   "result_msg" : "There was a problem with your request. A previous FTP request \
+                                         was recorded within the last 5 minutes. Please wait at least 5 minutes in \
+                                         between submitting FTP requests.",},
+                                    context_instance=RequestContext(request))
+    except ObjectDoesNotExist:
+        pass
     cart=CartProxy(request)
     #[CephDataObject.objects.get(id=int(item.object_id)).name for item in cart]
     
