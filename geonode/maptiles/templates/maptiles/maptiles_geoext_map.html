@@ -87,7 +87,6 @@ function display_points(div_id, vec_layer){
     container.removeChild(container.firstElementChild||container.firstChild);
     //var list_element = document.createElement("li");
     var table_element = document.createElement("table");
-    //table_element.setAttribute("border", 3);
     container.appendChild(table_element);
     
     var georef_string = "";
@@ -102,7 +101,8 @@ function display_points(div_id, vec_layer){
             //list_element.appendChild(item_element);
             var georef_element = document.createElement("td");
             georef_element.setAttribute("id",tile_list[i*5+j].georef);
-            georef_element.setAttribute("style", "width:200px");
+            var container_width = document.getElementById("embedded_map").getOffsetWidth
+            georef_element.setAttribute("style", "width: "+container_width/5+"px");
             georef_element.innerHTML  = tile_list[i*5+j].georef;
             row_element.appendChild(georef_element);
             if(i == 0){
