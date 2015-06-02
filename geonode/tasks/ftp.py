@@ -8,6 +8,7 @@ from geonode import settings
 from geonode.cephgeo.models import FTPRequest, FTPStatus
 
 import logging
+import pprint
 
 logger = logging.getLogger("geonode.tasks.ftp")
 FTP_USERS_DIRS = {  "test-ftp-user" : "/mnt/FTP/PL1/testfolder", }
@@ -24,7 +25,7 @@ class CephAccessException(Exception):
     pass
 
 @hosts(settings.CEPHACCESS_HOST)
-def check_cephaccess():
+def fab_check_cephaccess(username, user_email, request_name):
     # NOTE: DO NOT CALL ASYNCHRONOUSLY (check_cephaccess.delay())
     #       OTHERWISE, NO OUTPUT WILL BE MADE
     """
@@ -38,9 +39,18 @@ def check_cephaccess():
     
     test_file = '/home/cephaccess/testfolder/DL/test.txt'
     result = run("touch {0} && rm -f {0}".format(test_file))
-    if result is not 0:
-        logger.error("Unable to access {0}. Host may be down or there may be a network problem.".format(result.get(host_string)))
-        raise CephAccessException("Unable to access {0}. Host may be down or there may be a network problem.".format(result.get(host_string)))
+    if result.failed:
+        logger.error("Unable to access {0}. Host may be down or there may be a network problem.".format(env.hosts))
+        mail_msg = """\
+An error was encountered on your FTP request named [{0}] for user [{1}]. 
+A duplicate FTP request toplevel directory was found. Please wait 
+5 minutes in between submitting FTP requests and creating FTP folders.
+If error still persists, forward this email to [{2}]""".format( request_name, 
+                                                                username, 
+                                                                settings.FTP_SUPPORT_MAIL,)
+            
+        mail_ftp_user(username, user_email, request_name, mail_msg)
+        raise CephAccessException("Unable to access {0}. Host may be down or there may be a network problem.".format(env.hosts))
 
 
 @hosts(settings.CEPHACCESS_HOST)
@@ -210,13 +220,13 @@ def process_ftp_request(ftp_request, ceph_obj_list_by_data_class):
         #~ traceback.print_exc()
         #~ raise Exception("task process_ftp_request terminated with exception -- %s" % e.message)
         
-    result = execute(check_cephaccess)
+    result = execute(fab_check_cephaccess, ftp_request.user.username, [ftp_request.user.email.encode('utf8'),], ftp_request.name )
     if isinstance(result.get(host_string, None), BaseException):
         raise Exception(result.get(host_string))
-
-    result = execute(fab_create_ftp_folder, ftp_request, ceph_obj_list_by_data_class )
-    if isinstance(result.get(host_string, None), BaseException):
-        raise Exception(result.get(host_string))
+    else:
+        result = execute(fab_create_ftp_folder, ftp_request, ceph_obj_list_by_data_class )
+        if isinstance(result.get(host_string, None), BaseException):
+            raise Exception(result.get(host_string))
 
     
 ###
