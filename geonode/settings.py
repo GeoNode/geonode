@@ -903,6 +903,16 @@ SELECTION_LIMIT=209715200
 
 CEPHACCESS_HOST = 'cephaccess@cephaccess'
 CEPHACCESS_DL_SCRIPT = '/path/to/download.py'
+
+CEPH_OGW = {
+    'default' : {
+        'USER' : 'geonode:swift',
+        'KEY' : 'Ry3meRcVwVkff3G2O1vSy0PmUvUcXCzvWNZic04B',
+        'LOCATION' : 'https://cephclient.lan.dream.upd.edu.ph',
+        'CONTAINER' : 'geo-container',
+    }
+}
+
 # Load more settings from a file called local_settings.py if it exists
 try:
     from local_settings import *  # noqa
@@ -935,13 +945,3 @@ if 'geonode.geoserver' in GEONODE_APPS:
     baselayers = MAP_BASELAYERS
     MAP_BASELAYERS = [LOCAL_GEOSERVER]
     MAP_BASELAYERS.extend(baselayers)
-
-CEPH_OGW = {
-    'default' : {
-        'USER' : 'geonode:swift',
-        'KEY' : 'Ry3meRcVwVkff3G2O1vSy0PmUvUcXCzvWNZic04B',
-        'LOCATION' : 'https://cephclient.lan.dream.upd.edu.ph',
-        'CONTAINER' : 'geo-container',
-    }
-}
-
