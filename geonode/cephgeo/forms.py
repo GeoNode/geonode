@@ -7,7 +7,7 @@ from crispy_forms.bootstrap import FormActions
 
 class DataInputForm(forms.Form):
     data = forms.CharField(widget=forms.Textarea(attrs={'style' : 'resize:none; width:100%; height:60%;', 'wrap' : 'virtual'}))
-    update_grid = forms.BooleanField()
+    update_grid = forms.BooleanField(required=False)
 
     def __init__(self, *args, **kwargs):
         self.helper = FormHelper()
