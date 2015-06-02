@@ -107,6 +107,7 @@ function display_points(div_id, vec_layer){
             var font_element = document.createElement("font");
             font_element.setAttribute("size", 24);
             font_element.innerHTML = tile_list[i*5+j].georef;
+            georef_element.appendChild(font_element);
             
             row_element.appendChild(georef_element);
             if(i == 0){
