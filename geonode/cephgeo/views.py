@@ -225,9 +225,11 @@ def data_input(request):
                         print("Skipping invalid metadata list (invalid length): {0}".format(metadata_list))
                 
                 # Pass to celery the task of updating the gird shapefile
+                result_msg = "Succesfully encoded metadata of [{0}] of objects. Inserted [{1}], updated [{2}].".format(objects_inserted+objects_updated, objects_inserted, objects_updated)
                 if update_grid:
+                    result_msg += " Grid shapefile has been updated."
                     grid_feature_update.delay(gridref_dict_by_data_class)
-                messages.success(request, "Succesfully encoded metadata of [{0}] of objects. Inserted [{1}], updated [{2}].".format(objects_inserted+objects_updated, objects_inserted, objects_updated))
+                messages.success(request, result_msg)
                 return redirect('geonode.cephgeo.views.file_list_geonode',sort='uploaddate')
             else:
                 messages.error(request, "Invalid input on data form")
