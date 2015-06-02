@@ -22,6 +22,7 @@ import client, utils, cPickle, unicodedata, time, operator, json
 import geonode.local_settings as settings
 from geonode.tasks.update import ceph_metadata_udate
 from geonode.cephgeo.utils import get_cart_datasize
+from datetime import datetime
 
 # Create your views here.
 @login_required
@@ -166,6 +167,7 @@ def data_input(request):
                 #ceph_metadata_update.delay(uploaded_objects)
                 csv_delimiter=','
                 uploaded_objects_list = smart_str(form.cleaned_data['data']).splitlines()
+                update_grid = form.cleaned_data['update_grid']
                 
                 # Pop first line containing header
                 uploaded_objects_list.pop(0)
@@ -223,8 +225,11 @@ def data_input(request):
                         print("Skipping invalid metadata list (invalid length): {0}".format(metadata_list))
                 
                 # Pass to celery the task of updating the gird shapefile
-                grid_feature_update.delay(gridref_dict_by_data_class)
-                messages.success(request, "Succesfully encoded metadata of [{0}] of objects. Inserted [{1}], updated [{2}].".format(objects_inserted+objects_updated, objects_inserted, objects_updated))
+                result_msg = "Succesfully encoded metadata of [{0}] of objects. Inserted [{1}], updated [{2}].".format(objects_inserted+objects_updated, objects_inserted, objects_updated)
+                if update_grid:
+                    result_msg += " Grid shapefile has been updated."
+                    grid_feature_update.delay(gridref_dict_by_data_class)
+                messages.success(request, result_msg)
                 return redirect('geonode.cephgeo.views.file_list_geonode',sort='uploaddate')
             else:
                 messages.error(request, "Invalid input on data form")
@@ -249,7 +254,7 @@ def data_input_old(request):
                 data = form.cleaned_data['data']
                 uploaded_objects = cPickle.loads(smart_str(data))
                 #pprint(uploaded_objects)
-                is_pickled = form.cleaned_data['pickled']
+                update_grid = form.cleaned_data['update_grid']
                 for obj_meta_dict in uploaded_objects:
                     #Check if object metadata has already been encoded
                     if not CephDataObject.objects.filter(name=obj_meta_dict['name']).exists():
@@ -315,8 +320,20 @@ def get_obj_ids_json(request):
 
 @login_required
 def create_ftp_folder(request):
+    # Check time difference between this request and the next most recent request
+    # If within 5 minutes/300 secs, inform the user to wait
+    try:
+        latest_request = FTPRequest.objects.latest('date_time') 
+        time_diff = datetime.now() -latest_request.date_time
+        if time_diff.total_seconds() < 300:
+            return render_to_response('ftp_result.html', 
+                                    {   "result_msg" : "There was a problem with your request. A previous FTP request \
+                                         was recorded within the last 5 minutes. Please wait at least 5 minutes in \
+                                         between submitting FTP requests.",},
+                                    context_instance=RequestContext(request))
+    except ObjectDoesNotExist:
+        pass
     cart=CartProxy(request)
-    
     #[CephDataObject.objects.get(id=int(item.object_id)).name for item in cart]
     
     obj_name_dict = dict()
@@ -330,16 +347,11 @@ def create_ftp_folder(request):
             obj_name_dict[DataClassification.labels[obj.data_class].encode('utf8')].append(obj.name.encode('utf8'))
         else:
             obj_name_dict[DataClassification.labels[obj.data_class].encode('utf8')] = [obj.name.encode('utf8'),]
-    username = request.user.get_username()
     
     # Record FTP request to database
     # DETAILS: user, request name, for item(ceph_obj) in cart, date, EULA?
-    ftp_request = FTPRequest(   name = time.strftime("ftp_request-%Y_%m_%d"),
+    ftp_request = FTPRequest(   name = time.strftime("ftprequest_%Y-%m-%d_%H%M"),
                                 user = request.user)
-    
-    # Check for duplicates and handle accordingly
-    if count_duplicate_requests(ftp_request) > 0:
-        ftp_request.status = FTPStatus.DUPLICATE
     
     ftp_request.size_in_bytes = total_size_in_bytes
     ftp_request.num_tiles = num_tiles
