@@ -26,9 +26,10 @@ from geonode.documents.models import get_related_documents
 import geonode.settings as settings
 
 from pprint import pprint
+from datetime import datetime
 
 import logging
-import datetime
+
 from geonode.cephgeo.utils import get_cart_datasize
 
 _PERMISSION_VIEW = _("You are not permitted to view this layer")
