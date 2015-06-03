@@ -1,0 +1,26 @@
+{% extends "ceph_base.html" %}
+{% load i18n %}
+{% load staticfiles %}
+{% load url from future %}
+
+{% block title %} {% trans "Ceph Data Management" %} {% endblock %}
+
+{% block body_class %}Ceph Data Management{% endblock %}
+
+{% block body_outer %}
+{% block body %}
+    <div class="page-header">
+      <h2 class="page-title">Ceph Data Management</h2>
+    </div>
+    <div class="col-md-3">
+        <div class="selections">
+            <nav class="filter">
+                <h4><a href="{% url 'cephgeo.views.file_list_geonode' %}" class="toggle toggle-nav"><i class="fa fa-server"></i>Datastore Files</a></h4>
+                <h4><a href="{% url 'cephgeo.views.file_list_ceph' %}" class="toggle toggle-nav"><i class="fa fa-server"></i>Ceph Data Objects</a></h4>
+                <h4><a href="{% url 'cephgeo.views.data_input' %}" class="toggle toggle-nav"><i class="fa fa-server"></i>Metadata Input</a></h4>
+            </nav>
+        </div>
+    </div>
+{% endblock %}
+ {% block sidebar %}{% endblock sidebar %}
+{% endblock body_outer %}
