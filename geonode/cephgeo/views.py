@@ -23,6 +23,7 @@ import geonode.local_settings as settings
 from geonode.tasks.update import ceph_metadata_udate
 from geonode.cephgeo.utils import get_cart_datasize
 from datetime import datetime
+from django.core.urlresolvers import reverse
 
 # Create your views here.
 @login_required
@@ -438,7 +439,7 @@ def count_duplicate_requests(ftp_request):
     return len(FTPRequest.objects.filter(name=ftp_request.name,user=ftp_request.user))
 
 @login_required
-@user_passes_test(lambda u: u.is_superuser)
+@user_passes_test(lambda u: u.is_superuser, login_url='/forbidden/', redirect_field_name='')
 def management(request):
     return render_to_response('ceph_manager.html',context_instance=RequestContext(request))
 
