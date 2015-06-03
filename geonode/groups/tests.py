@@ -3,6 +3,7 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Group
 from django.core.urlresolvers import reverse
 from django.test import TestCase
+from django.conf import settings
 
 from guardian.shortcuts import get_anonymous_user
 
@@ -149,7 +150,13 @@ class SmokeTest(TestCase):
                 permissions = json.loads(permissions)
 
             # Ensure the groups value is empty by default
-            self.assertDictEqual(permissions.get('groups'), {u'anonymous': [u'view_resourcebase']})
+            expected_permissions = {}
+            if settings.DEFAULT_ANONYMOUS_DOWNLOAD_PERMISSION:
+                expected_permissions.setdefault(u'anonymous', []).append(u'download_resourcebase')
+            if settings.DEFAULT_ANONYMOUS_VIEW_PERMISSION:
+                expected_permissions.setdefault(u'anonymous', []).append(u'view_resourcebase')
+
+            self.assertDictEqual(permissions.get('groups'), expected_permissions)
 
             permissions = {
                 'groups': {

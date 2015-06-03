@@ -465,6 +465,8 @@ class PermissionsTest(TestCase):
         bobby = Profile.objects.get(username='bobby')
         the_layer = Layer.objects.get(typename='geonode:CA')
         remove_perm('download_resourcebase', bobby, the_layer.get_self_resource())
+        remove_perm('download_resourcebase', Group.objects.get(name='anonymous'),
+                    the_layer.get_self_resource())
         assign_perm('view_resourcebase', bobby, the_layer.get_self_resource())
         assign_perm('download_resourcebase', bobby, the_map.get_self_resource())
 
