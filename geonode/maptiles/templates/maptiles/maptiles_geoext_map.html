@@ -100,14 +100,16 @@ function display_points(div_id, vec_layer){
 
             var georef_column = document.createElement("td");
             georef_column.setAttribute("id",tile_list[i*5+j].georef);
+            georef_column.className += "georef_td"
+            georef_column.innerHTML = tile_list[i*5+j].georef
             //var container_width = document.getElementById("embedded_map").offsetWidth
             //georef_element.setAttribute("style", "width: "+container_width/5+"px; height: 30px;");
             //georef_element.innerHTML  = "<font size=3.5>"+tile_list[i*5+j].georef+"</font>";
-            var georef_data = document.createElement("font");
-            georef_data.className += "georef_font"
-            georef_data.innerHTML = tile_list[i*5+j].georef
+            //var georef_data = document.createElement("font");
+            //georef_data.className += "georef_font"
+            //georef_data.innerHTML = tile_list[i*5+j].georef
             
-            georef_column.appendChild(georef_data);
+            //georef_column.appendChild(georef_data);
             row_element.appendChild(georef_column);
             
             if(i == 0){
