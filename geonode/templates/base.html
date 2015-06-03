@@ -71,6 +71,12 @@
             <li id="nav_datastore">
               <a href="{% url "ceph_main" %}">{% trans "Datastore" %}</a>
             </li>
+            {% if request.user.is_superuser %}
+	            <li id="nav_datastore">
+	              <a href="{% url "data_management" %}">{% trans "Data Management" %}</a>
+	            </li>
+            {% endif %}
+            
             {% endblock %}
           </ul>
           <form class="navbar-form" id="search" action="{% url "search" %}" >
