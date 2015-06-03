@@ -5,6 +5,7 @@ from django.utils import simplejson as json
 from django.shortcuts import render_to_response
 from django.template import RequestContext
 from django.core.exceptions import ValidationError
+from django.core.exceptions import PermissionDenied
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseRedirect, HttpResponse
@@ -18,15 +19,17 @@ from geonode.utils import GXPMap
 from geonode.utils import default_map_config
 
 from geonode.security.views import _perms_info_json
-from geonode.cephgeo.models import CephDataObject, DataClassification
+from geonode.cephgeo.models import CephDataObject, DataClassification, FTPRequest
 from geonode.cephgeo.cart_utils import *
 from geonode.documents.models import get_related_documents
 
 import geonode.settings as settings
 
 from pprint import pprint
+from datetime import datetime, timedelta
 
 import logging
+
 from geonode.cephgeo.utils import get_cart_datasize
 
 _PERMISSION_VIEW = _("You are not permitted to view this layer")
@@ -64,12 +67,19 @@ def _resolve_layer(request, typename, permission='base.view_resourcebase',
 def tiled_view(request, overlay=settings.TILED_SHAPEFILE, template="maptiles/maptiles_map.html", interest=None):
     if request.method == "POST":
         pprint(request.POST)
-    layer = _resolve_layer(request, overlay, "base.view_resourcebase", _PERMISSION_VIEW )
+    
+    layer = {}
+    try:
+        layer = _resolve_layer(request, overlay, "base.view_resourcebase", _PERMISSION_VIEW )
+    except Exception as e:
+        layer = _resolve_layer(request, settings.MUNICIPALITY_SHAPEFILE, _PERMISSION_VIEW)
+        overlay = settings.MUNICIPALITY_SHAPEFILE
+            
     config = layer.attribute_config()
     layer_bbox = layer.bbox
     bbox = [float(coord) for coord in list(layer_bbox[0:4])]
     srid = layer.srid
-
+    
     # Transform WGS84 to Mercator.
     config["srs"] = srid if srid != "EPSG:4326" else "EPSG:900913"
     config["bbox"] = llbbox_to_mercator([float(coord) for coord in bbox])
@@ -122,6 +132,9 @@ def tiled_view(request, overlay=settings.TILED_SHAPEFILE, template="maptiles/map
     
     if interest is not None:
         context_dict["interest"]=interest
+        
+    context_dict["feature_municipality"]  = settings.MUNICIPALITY_SHAPEFILE.split(":")[1]
+    context_dict["feature_tiled"] = overlay.split(":")[1]
     
     return render_to_response(template, RequestContext(request, context_dict))
 
@@ -170,6 +183,9 @@ def process_georefs(request):
 
 @login_required
 def georefs_validation(request):
+    """
+    Note: does not check yet if tiles to be added are unique (or are not yet included in the cart)
+    """
     if request.method != 'POST':
         return HttpResponse(
             content='no data received from HTTP POST',
@@ -179,17 +195,26 @@ def georefs_validation(request):
     else:
         georefs = request.POST["georefs"]
         georefs_list = filter(None, georefs.split(","))
-        pprint(georefs)
         cart_total_size = get_cart_datasize(request)
+        
+        yesterday = datetime.now() -  timedelta(days=1)
+        
+        requests_last24h = FTPRequest.objects.filter(date_time__gt=yesterday)
+        
         total_size = 0
         for georef in georefs_list:
             objects = CephDataObject.objects.filter(name__startswith=georef)
             for o in objects:
                 total_size += o.size_in_bytes
+                
+        request_size_last24h = 0
         
-        if total_size + cart_total_size > settings.SELECTION_LIMIT:            
+        for r in requests_last24h:
+            request_size_last24h += r.size_in_bytes
+        
+        if total_size + cart_total_size + request_size_last24h > settings.SELECTION_LIMIT:            
             return HttpResponse(
-               content=json.dumps({ "response": False, "total_size": total_size, "cart_size":cart_total_size }),
+               content=json.dumps({ "response": False, "total_size": total_size, "cart_size":cart_total_size, "recent_requests_size": request_size_last24h }),
                 status=200,
                 #mimetype='text/plain'
                 content_type="application/json"
