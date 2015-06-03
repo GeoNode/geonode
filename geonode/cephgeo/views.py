@@ -436,3 +436,10 @@ def delete_all_items_from_cart(request, warn_user=True):
 
 def count_duplicate_requests(ftp_request):
     return len(FTPRequest.objects.filter(name=ftp_request.name,user=ftp_request.user))
+
+@login_required
+@user_passes_test(lambda u: u.is_superuser)
+def management(request):
+    return render_to_response('ceph_manager.html',context_instance=RequestContext(request))
+
+
