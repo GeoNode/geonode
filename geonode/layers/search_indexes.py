@@ -15,7 +15,6 @@ class LayerIndex(indexes.SearchIndex, indexes.Indexable):
     detail_url = indexes.CharField(model_attr="get_absolute_url")
     distribution_description = indexes.CharField(model_attr="distribution_description", null=True)
     distribution_url = indexes.CharField(model_attr="distribution_url", null=True)
-    owner = indexes.CharField(model_attr="owner", faceted=True, null=True, stored=False)
     owner__username = indexes.CharField(model_attr="owner", faceted=True, null=True)
     popular_count = indexes.IntegerField(
         model_attr="popular_count",
@@ -31,7 +30,7 @@ class LayerIndex(indexes.SearchIndex, indexes.Indexable):
     date = indexes.DateTimeField(model_attr="date")
 
     text = indexes.EdgeNgramField(document=True, use_template=True, stored=False)
-    type = indexes.CharField(faceted=True, stored=False)
+    type = indexes.CharField(faceted=True)
     subtype = indexes.CharField(faceted=True)
     typename = indexes.CharField(model_attr='typename')
     title_sortable = indexes.CharField(indexed=False, stored=False)  # Necessary for sorting
@@ -39,7 +38,7 @@ class LayerIndex(indexes.SearchIndex, indexes.Indexable):
         model_attr="category__identifier",
         faceted=True,
         null=True,
-        stored=False)
+        stored=True)
     bbox_left = indexes.FloatField(model_attr="bbox_x0", null=True, stored=False)
     bbox_right = indexes.FloatField(model_attr="bbox_x1", null=True, stored=False)
     bbox_bottom = indexes.FloatField(model_attr="bbox_y0", null=True, stored=False)
@@ -56,12 +55,18 @@ class LayerIndex(indexes.SearchIndex, indexes.Indexable):
         model_attr="keyword_slug_list",
         null=True,
         faceted=True,
-        stored=False)
+        stored=True)
     regions = indexes.MultiValueField(
         model_attr="region_name_list",
         null=True,
         faceted=True,
-        stored=False)
+        stored=True)
+    popular_count = indexes.IntegerField(
+        model_attr="popular_count",
+        default=0,
+        boost=20)
+    share_count = indexes.IntegerField(model_attr="share_count", default=0)
+    rating = indexes.IntegerField(null=True)
     num_ratings = indexes.IntegerField(stored=False)
     num_comments = indexes.IntegerField(stored=False)
 
@@ -78,21 +83,6 @@ class LayerIndex(indexes.SearchIndex, indexes.Indexable):
             return "raster"
         elif obj.storeType == "remoteStore":
             return "remote"
-
-    def prepare_download_links(self, obj):
-        try:
-            links = obj.download_links()
-            prepped = [(ext, name.encode(), extra)
-                       for ext, name, extra in links]
-            return prepped
-        except:
-            return None
-
-    def prepare_metadata_links(self, obj):
-        try:
-            return obj.metadata_links
-        except:
-            return None
 
     def prepare_rating(self, obj):
         ct = ContentType.objects.get_for_model(obj)
