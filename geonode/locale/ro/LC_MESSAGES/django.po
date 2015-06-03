@@ -8,13 +8,14 @@
 # Translators:
 # Translators:
 # Translators:
+# Translators:
 # Andres Alfonso Lemon Gomez <lemon.andres@gmail.com>, 2014
 msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-03-02 23:15-0600\n"
-"PO-Revision-Date: 2015-03-03 05:06+0000\n"
+"POT-Creation-Date: 2015-05-18 12:10-0500\n"
+"PO-Revision-Date: 2015-05-18 16:26+0000\n"
 "Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
 "Language-Team: Romanian (http://www.transifex.com/projects/p/geonode/"
 "language/ro/)\n"
@@ -149,7 +150,7 @@ msgstr "de date este actualizată la fiecare trei luni"
 msgid "No information provided"
 msgstr "Nu există informații furnizate"
 
-#: base/forms.py:43 base/templates/base/resourcebase_info_panel.html:46
+#: base/forms.py:43 base/templates/base/resourcebase_info_panel.html:51
 #: documents/templates/documents/document_metadata.html:58
 #: layers/templates/layers/layer_metadata.html:63
 #: maps/templates/maps/map_metadata.html:61
@@ -160,11 +161,11 @@ msgstr "Categorie"
 msgid "Category is required."
 msgstr "Este necesară categorie."
 
-#: base/forms.py:105 groups/models.py:42 people/forms.py:82
+#: base/forms.py:105 groups/models.py:45 people/forms.py:82
 msgid "A space or comma-separated list of keywords"
 msgstr "Un spațiu sau lista separata cu virgule de cuvinte cheie"
 
-#: base/models.py:44 services/models.py:85
+#: base/models.py:44 services/models.py:86
 msgid "function performed by the responsible party"
 msgstr "Funcția realizată de către partea responsabilă"
 
@@ -303,7 +304,7 @@ msgstr "scop"
 msgid "maintenance frequency"
 msgstr "frecvență întreținere"
 
-#: base/models.py:251 groups/models.py:41 people/models.py:92
+#: base/models.py:251 groups/models.py:44 people/models.py:92
 msgid "keywords"
 msgstr "cuvinte-cheie"
 
@@ -387,15 +388,15 @@ msgstr "În cazul în care această resursă să fie anunțate în pagina de aca
 msgid "Should this resource be published and searchable?"
 msgstr "În cazul în care această resursă publică și căutat?"
 
-#: base/models.py:696
+#: base/models.py:699
 msgid "For example \"kml\""
 msgstr "De exemplu \"kml\""
 
-#: base/models.py:698
+#: base/models.py:701
 msgid "For example \"View in Google Earth\""
 msgstr "De exemplu, \"Vizualizati în Google Earth\""
 
-#: base/models.py:699
+#: base/models.py:702
 msgid "For example \"text/xml\""
 msgstr "De exemplu, \"text / xml\""
 
@@ -408,7 +409,7 @@ msgid "A request for downloading a resource was sent"
 msgstr ""
 
 #: base/templates/base/_resourcebase_contact_snippet.html:3
-#: templates/500.html:184 templates/base.html:143
+#: templates/500.html:151 templates/base.html:143
 msgid "About"
 msgstr "Despre"
 
@@ -417,12 +418,12 @@ msgid "Owner, Point of Contact, Metadata Author"
 msgstr "Proprietar, Punct de Contact, metadate Autor"
 
 #: base/templates/base/_resourcebase_contact_snippet.html:10
-#: base/templates/base/resourcebase_info_panel.html:61
+#: base/templates/base/resourcebase_info_panel.html:73
 msgid "Owner"
 msgstr "Proprietar"
 
 #: base/templates/base/_resourcebase_contact_snippet.html:14
-#: base/templates/base/resourcebase_info_panel.html:66
+#: base/templates/base/resourcebase_info_panel.html:78
 #: documents/templates/documents/document_metadata.html:48
 #: layers/templates/layers/layer_metadata.html:99
 #: maps/templates/maps/map_metadata.html:51
@@ -439,7 +440,7 @@ msgid "Title"
 msgstr "Titlu"
 
 #: base/templates/base/resourcebase_info_panel.html:11
-#: base/templates/base/resourcebase_info_panel.html:80
+#: base/templates/base/resourcebase_info_panel.html:92
 msgid "License"
 msgstr "Licență"
 
@@ -463,45 +464,45 @@ msgstr "Tip"
 msgid "Keywords"
 msgstr "Cuvinte cheie"
 
-#: base/templates/base/resourcebase_info_panel.html:56
+#: base/templates/base/resourcebase_info_panel.html:61
 #: templates/search/_region_filter.html:5
 msgid "Regions"
 msgstr "Regiuni"
 
-#: base/templates/base/resourcebase_info_panel.html:93
+#: base/templates/base/resourcebase_info_panel.html:105
 msgid "Maintenance Frequency"
 msgstr "Frecvența de întreținere"
 
-#: base/templates/base/resourcebase_info_panel.html:98
+#: base/templates/base/resourcebase_info_panel.html:110
 msgid "Restrictions"
 msgstr "Restricții"
 
-#: base/templates/base/resourcebase_info_panel.html:107
+#: base/templates/base/resourcebase_info_panel.html:119
 msgid "Edition"
 msgstr "Ediție"
 
-#: base/templates/base/resourcebase_info_panel.html:112
+#: base/templates/base/resourcebase_info_panel.html:124
 msgid "Purpose"
 msgstr "Scop"
 
-#: base/templates/base/resourcebase_info_panel.html:117 templates/500.html:187
+#: base/templates/base/resourcebase_info_panel.html:129 templates/500.html:154
 #: templates/base.html:146
 msgid "Language"
 msgstr "Limbă"
 
-#: base/templates/base/resourcebase_info_panel.html:122
+#: base/templates/base/resourcebase_info_panel.html:134
 msgid "Temporal Extent"
 msgstr "Întinderea temporal"
 
-#: base/templates/base/resourcebase_info_panel.html:127
+#: base/templates/base/resourcebase_info_panel.html:139
 msgid "Data Quality"
 msgstr "Calitatea datelor"
 
-#: base/templates/base/resourcebase_info_panel.html:132
+#: base/templates/base/resourcebase_info_panel.html:144
 msgid "Supplemental Information"
 msgstr "Informații suplimentare"
 
-#: base/templates/base/resourcebase_info_panel.html:137
+#: base/templates/base/resourcebase_info_panel.html:149
 msgid "Spatial Representation Type"
 msgstr "Spațială tipul de reprezentare"
 
@@ -525,15 +526,15 @@ msgstr "Link catre"
 msgid "Permissions must be valid JSON."
 msgstr "Permisiuni trebuie să fie JSON valid."
 
-#: documents/models.py:38
+#: documents/models.py:39
 msgid "File"
 msgstr "Fișier"
 
-#: documents/models.py:47
+#: documents/models.py:48
 msgid "The URL of the document if it is external."
 msgstr "Adresa URL a documentului în cazul în care este extern."
 
-#: documents/models.py:48
+#: documents/models.py:49
 msgid "URL"
 msgstr "URL"
 
@@ -802,11 +803,11 @@ msgstr "Clar"
 msgid "Upload Document"
 msgstr "Încărcați documente"
 
-#: geoserver/helpers.py:944
+#: geoserver/helpers.py:964
 msgid "An exception occurred loading data to PostGIS"
 msgstr ""
 
-#: geoserver/helpers.py:949
+#: geoserver/helpers.py:969
 msgid " Additionally an error occured during database cleanup"
 msgstr ""
 
@@ -846,22 +847,9 @@ msgstr "PDF"
 msgid "PNG"
 msgstr "PNG"
 
-#: geoserver/signals.py:285
+#: geoserver/signals.py:293
 msgid "Could not create a download link for layer."
 msgstr "Nu ar putea crea un link de download pentru strat."
-
-#: geoserver/signals.py:316
-msgid "KML"
-msgstr "KML"
-
-#: geoserver/signals.py:345
-msgid "Tiles"
-msgstr "Tiles"
-
-#: geoserver/signals.py:392 layers/templates/layers/layer_detail.html:261
-#: services/views.py:1272
-msgid "Legend"
-msgstr "Legendă"
 
 #: geoserver/views.py:335
 msgid "You don't have permissions to change style for this layer"
@@ -911,19 +899,19 @@ msgstr "Un grup există deja cu melc."
 msgid "A group already exists with that name."
 msgstr "Un grup există deja cu acest nume."
 
-#: groups/models.py:17
+#: groups/models.py:20
 msgid "Public"
 msgstr "Public"
 
-#: groups/models.py:18
+#: groups/models.py:21
 msgid "Public (invite-only)"
 msgstr "Public (invita-numai)"
 
-#: groups/models.py:19
+#: groups/models.py:22
 msgid "Private"
 msgstr "Privat"
 
-#: groups/models.py:22
+#: groups/models.py:25
 msgid ""
 "Public: Any registered user can view and join a public group.<br>Public "
 "(invite-only):Any registered user can view the group.  Only invited users "
@@ -936,7 +924,7 @@ msgstr ""
 "Private: Utilizatorii înregistrați nu pot vedea detalii despre grup, "
 "inclusiv calitatea de membru. Doar utilizatorii invitați se pot alătura."
 
-#: groups/models.py:27
+#: groups/models.py:30
 msgid ""
 "Email used to contact one or all group members, such as a mailing list, "
 "shared email, or exchange group."
@@ -944,30 +932,30 @@ msgstr ""
 "E-mail utilizate pentru a contacta membrii una sau toate de grup, cum ar fi "
 "o listă de corespondență, e-mail comun, sau grup de schimb."
 
-#: groups/models.py:36
+#: groups/models.py:39
 msgid "email"
 msgstr "e-mail"
 
-#: groups/models.py:184 groups/models.py:203
+#: groups/models.py:187 groups/models.py:206
 #: groups/templates/groups/group_members.html:28
 #: groups/templates/groups/group_members.html:54
 #: groups/templates/groups/group_members.html:81
 msgid "Manager"
 msgstr "Manager"
 
-#: groups/models.py:185 groups/models.py:204
+#: groups/models.py:188 groups/models.py:207
 msgid "Member"
 msgstr "Membru"
 
-#: groups/models.py:209
+#: groups/models.py:212
 msgid "Sent"
 msgstr "Trimite"
 
-#: groups/models.py:210
+#: groups/models.py:213
 msgid "Accepted"
 msgstr "Acceptate"
 
-#: groups/models.py:211
+#: groups/models.py:214
 msgid "Declined"
 msgstr "A scăzut"
 
@@ -987,14 +975,14 @@ msgstr "Toate"
 #: groups/templates/groups/activity.html:25
 #: people/templates/people/_profile_filters.html:5
 #: services/templates/services/service_detail.html:64
-#: social/templates/social/activity_list.html:21 templates/500.html:39
+#: social/templates/social/activity_list.html:21 templates/500.html:55
 #: templates/base.html:55
 msgid "Layers"
 msgstr "Straturi"
 
 #: groups/templates/groups/activity.html:26
 #: people/templates/people/_profile_filters.html:6
-#: social/templates/social/activity_list.html:22 templates/500.html:42
+#: social/templates/social/activity_list.html:22 templates/500.html:58
 #: templates/base.html:58
 msgid "Maps"
 msgstr "Hărți"
@@ -1179,73 +1167,73 @@ msgstr "Scoateți Hărți / date de la Grupul"
 msgid "Remove selected maps/data"
 msgstr "Scoateți hărți selectate / date"
 
-#: layers/models.py:52
+#: layers/models.py:53
 msgid "style name"
 msgstr "Numele de stil"
 
-#: layers/models.py:54
+#: layers/models.py:55
 msgid "sld text"
 msgstr "Text SLD"
 
-#: layers/models.py:56
+#: layers/models.py:57
 msgid "sld version"
 msgstr "Versiune SLD"
 
-#: layers/models.py:60
+#: layers/models.py:61
 msgid "sld url"
 msgstr "url SLD"
 
-#: layers/models.py:189
+#: layers/models.py:190
 msgid "File cannot be opened, maybe check the encoding"
 msgstr ""
 
-#: layers/models.py:296
+#: layers/models.py:297
 msgid "attribute name"
 msgstr "nume de atribut"
 
-#: layers/models.py:297
+#: layers/models.py:298
 msgid "name of attribute as stored in shapefile/spatial database"
 msgstr ""
 "Numele atribut așa cum este stocată în shapefile / bază de date spațiale"
 
-#: layers/models.py:303
+#: layers/models.py:304
 msgid "attribute description"
 msgstr "Descriere atribut"
 
-#: layers/models.py:304
+#: layers/models.py:305
 msgid "description of attribute to be used in metadata"
 msgstr "descrierea atribut pentru a fi utilizate în metadate"
 
-#: layers/models.py:309
+#: layers/models.py:310
 msgid "attribute label"
 msgstr "eticheta atribut"
 
-#: layers/models.py:310
+#: layers/models.py:311
 msgid "title of attribute as displayed in GeoNode"
 msgstr "Titlul de atribut așa cum sunt afișate în GeoNode"
 
-#: layers/models.py:316
+#: layers/models.py:317
 msgid "attribute type"
 msgstr "Tipul de atribut"
 
-#: layers/models.py:317
+#: layers/models.py:318
 msgid "the data type of the attribute (integer, string, geometry, etc)"
 msgstr "tipul de date al atributului (întreg, șir, geometrie, etc)"
 
-#: layers/models.py:324
+#: layers/models.py:325
 msgid "visible?"
 msgstr "vizibil?"
 
-#: layers/models.py:325
+#: layers/models.py:326
 msgid "specifies if the attribute should be displayed in identify results"
 msgstr ""
 "specifică dacă trebuie să fie afișate atributul din identifica rezultatele"
 
-#: layers/models.py:328
+#: layers/models.py:329
 msgid "display order"
 msgstr "ordinea de afișare"
 
-#: layers/models.py:329
+#: layers/models.py:330
 msgid ""
 "specifies the order in which attribute should be displayed in identify "
 "results"
@@ -1253,71 +1241,71 @@ msgstr ""
 "Specifică ordinea în care atribut trebuie să fie afișate în identificarea "
 "rezultatelor"
 
-#: layers/models.py:334
+#: layers/models.py:335
 msgid "count"
 msgstr "conta"
 
-#: layers/models.py:335
+#: layers/models.py:336
 msgid "count value for this field"
 msgstr "Numar de valoare pentru acest câmp"
 
-#: layers/models.py:338
+#: layers/models.py:339
 msgid "min"
 msgstr "min"
 
-#: layers/models.py:339
+#: layers/models.py:340
 msgid "minimum value for this field"
 msgstr "Valoarea minimă pentru acest domeniu"
 
-#: layers/models.py:346
+#: layers/models.py:347
 msgid "max"
 msgstr "max"
 
-#: layers/models.py:347
+#: layers/models.py:348
 msgid "maximum value for this field"
 msgstr "Valoarea maximă pentru acest domeniu"
 
-#: layers/models.py:354
+#: layers/models.py:355
 msgid "average"
 msgstr "mediu"
 
-#: layers/models.py:355
+#: layers/models.py:356
 msgid "average value for this field"
 msgstr "Valoarea medie pentru acest domeniu"
 
-#: layers/models.py:362
+#: layers/models.py:363
 msgid "median"
 msgstr "median"
 
-#: layers/models.py:363
+#: layers/models.py:364
 msgid "median value for this field"
 msgstr "Valoarea medie pentru acest domeniu"
 
-#: layers/models.py:370
+#: layers/models.py:371
 msgid "standard deviation"
 msgstr "abatere standard"
 
-#: layers/models.py:371
+#: layers/models.py:372
 msgid "standard deviation for this field"
 msgstr "deviația standard pentru acest domeniu"
 
-#: layers/models.py:378
+#: layers/models.py:379
 msgid "sum"
 msgstr "sumă"
 
-#: layers/models.py:379
+#: layers/models.py:380
 msgid "sum value for this field"
 msgstr "Valoarea sumă pentru acest domeniu"
 
-#: layers/models.py:386
+#: layers/models.py:387
 msgid "unique values for this field"
 msgstr "valori unice pentru acest domeniu"
 
-#: layers/models.py:391
+#: layers/models.py:392
 msgid "last modified"
 msgstr "modificată ultima dată"
 
-#: layers/models.py:393
+#: layers/models.py:394
 msgid "date when attribute statistics were last updated"
 msgstr ""
 "Data atunci când statisticile de atribute au fost actualizată ultima dată"
@@ -1470,6 +1458,10 @@ msgstr ""
 msgid "Edit data"
 msgstr ""
 
+#: layers/templates/layers/layer_detail.html:261 services/views.py:1272
+msgid "Legend"
+msgstr "Legendă"
+
 #: layers/templates/layers/layer_detail.html:271
 msgid "Maps using this layer"
 msgstr "Hărți folosind acest strat"
@@ -1548,7 +1540,7 @@ msgstr "Exploreaza Straturi"
 
 #: layers/templates/layers/layer_list.html:12
 #: layers/templates/upload/layer_upload.html:18
-#: layers/templates/upload/layer_upload_base.html:12 templates/500.html:74
+#: layers/templates/upload/layer_upload_base.html:12 templates/500.html:216
 #: templates/base.html:208
 msgid "Upload Layers"
 msgstr "Straturi de încărcare"
@@ -1639,6 +1631,7 @@ msgstr "Relua"
 #: layers/templates/layers/layer_replace.html:38
 #: layers/templates/upload/layer_upload.html:31
 #: layers/templates/upload/layer_upload.html:38
+#: templates/announcements/announcement_confirm_delete.html:22
 #: templates/announcements/announcement_form.html:25
 #: templates/user_messages/_message_snippet.html:40
 msgid "Delete"
@@ -1653,6 +1646,7 @@ msgstr "Sunteți sigur că doriți să ștergeți această încărcare?"
 #: layers/templates/upload/layer_upload.html:39
 #: maps/templates/maps/map_download.html:58 templates/_comments.html:66
 #: templates/_permissions_form.html:15
+#: templates/announcements/announcement_confirm_delete.html:21
 #: templates/announcements/announcement_form.html:23
 msgid "Cancel"
 msgstr "Anula"
@@ -2031,79 +2025,79 @@ msgstr "Sau du-te"
 msgid "now"
 msgstr "acum"
 
-#: maps/models.py:57
+#: maps/models.py:58
 msgid "zoom"
 msgstr "zoom"
 
-#: maps/models.py:61
+#: maps/models.py:62
 msgid "projection"
 msgstr "proeminență"
 
-#: maps/models.py:65
+#: maps/models.py:66
 msgid "center X"
 msgstr "Centrul X"
 
-#: maps/models.py:69
+#: maps/models.py:70
 msgid "center Y"
 msgstr "Centrul Y"
 
-#: maps/models.py:76
+#: maps/models.py:77
 msgid "Site URL"
 msgstr "URL-ul site-ului"
 
-#: maps/models.py:81
+#: maps/models.py:82
 msgid "Featured Map URL"
 msgstr "Featured Harta URL"
 
-#: maps/models.py:378
+#: maps/models.py:379
 msgid "stack order"
 msgstr "Pentru stivă"
 
-#: maps/models.py:383
+#: maps/models.py:384
 msgid "format"
 msgstr "format"
 
-#: maps/models.py:390
+#: maps/models.py:391
 msgid "name"
 msgstr "nume"
 
-#: maps/models.py:397
+#: maps/models.py:398
 msgid "opacity"
 msgstr "opacitate"
 
-#: maps/models.py:401
+#: maps/models.py:402
 msgid "styles"
 msgstr "stiluri"
 
-#: maps/models.py:407
+#: maps/models.py:408
 msgid "transparent"
 msgstr "transparent"
 
-#: maps/models.py:411
+#: maps/models.py:412
 msgid "fixed"
 msgstr "fix"
 
-#: maps/models.py:415
+#: maps/models.py:416
 msgid "group"
 msgstr "grup"
 
-#: maps/models.py:419
+#: maps/models.py:420
 msgid "visibility"
 msgstr "vizibilitate"
 
-#: maps/models.py:422
+#: maps/models.py:423
 msgid "ows URL"
 msgstr "OWS URL"
 
-#: maps/models.py:425
+#: maps/models.py:426
 msgid "layer params"
 msgstr "params strat"
 
-#: maps/models.py:432
+#: maps/models.py:433
 msgid "source params"
 msgstr "params sursă"
 
-#: maps/models.py:525
+#: maps/models.py:527
 msgid "JSON Configuration"
 msgstr "JSON de configurare"
 
@@ -2490,7 +2484,7 @@ msgstr "Numele organizației"
 msgid "name of the responsible organization"
 msgstr "numele organizației responsabile"
 
-#: people/models.py:51 templates/500.html:76 templates/base.html:210
+#: people/models.py:51 templates/500.html:218 templates/base.html:210
 msgid "Profile"
 msgstr "Profil"
 
@@ -2598,7 +2592,7 @@ msgstr "Nu Group"
 msgid "All contents"
 msgstr "Toate conținut"
 
-#: people/templates/people/_profile_filters.html:7 templates/500.html:45
+#: people/templates/people/_profile_filters.html:7 templates/500.html:61
 #: templates/base.html:61
 msgid "Documents"
 msgstr "Documente"
@@ -2686,33 +2680,34 @@ msgstr "Creați o nouă hartă"
 msgid "My Activities"
 msgstr "Activități mele"
 
-#: people/templates/people/profile_detail.html:97 templates/base.html:214
+#: people/templates/people/profile_detail.html:97 templates/500.html:222
+#: templates/base.html:214
 msgid "Notifications"
 msgstr ""
 
-#: people/templates/people/profile_detail.html:100 templates/500.html:80
+#: people/templates/people/profile_detail.html:100 templates/500.html:225
 #: templates/base.html:217 templates/announcements/announcement_list.html:6
 #: templates/announcements/announcement_list.html:13
 msgid "Announcements"
 msgstr "Anunturi"
 
 #: people/templates/people/profile_detail.html:105
-#: services/templates/services/service_list.html:9 templates/500.html:83
+#: services/templates/services/service_list.html:9 templates/500.html:228
 #: templates/base.html:220
 msgid "Remote Services"
 msgstr "Servicii de la distanță"
 
-#: people/templates/people/profile_detail.html:106 templates/500.html:84
+#: people/templates/people/profile_detail.html:106 templates/500.html:229
 #: templates/base.html:221
 msgid "Invite User"
 msgstr "Invita-ti de utilizare"
 
-#: people/templates/people/profile_detail.html:107 templates/500.html:86
+#: people/templates/people/profile_detail.html:107 templates/500.html:231
 #: templates/base.html:223
 msgid "GeoServer"
 msgstr "GeoServer"
 
-#: people/templates/people/profile_detail.html:110 templates/500.html:89
+#: people/templates/people/profile_detail.html:110 templates/500.html:234
 #: templates/base.html:226
 msgid "Admin"
 msgstr "Admin"
@@ -2802,19 +2797,19 @@ msgstr ""
 msgid "Service Type"
 msgstr "Tip de serviciu"
 
-#: services/models.py:91
+#: services/models.py:92
 msgid "Layer Name"
 msgstr "Strat Nume"
 
-#: services/models.py:92
+#: services/models.py:93
 msgid "Layer Title"
 msgstr "Strat Titlu"
 
-#: services/models.py:93
+#: services/models.py:94
 msgid "Layer Description"
 msgstr "Strat Descriere"
 
-#: services/models.py:94
+#: services/models.py:95
 msgid "Layer Styles"
 msgstr "Stiluri Layer"
 
@@ -3025,94 +3020,93 @@ msgstr ""
 "Pagina pe care ați solicitat nu există. Poate că utilizați un marcaj "
 "învechit?"
 
-#: templates/500.html:48 templates/base.html:66
+#: templates/500.html:66 templates/base.html:66
 msgid "People"
 msgstr "Oameni"
 
-#: templates/500.html:51 templates/base.html:69
+#: templates/500.html:69 templates/base.html:69
 msgid "Groups"
 msgstr "Grupuri"
 
-#: templates/500.html:56 templates/search/search.html:6
-#: templates/search/search.html.py:12
-msgid "Search"
-msgstr "Căutare"
+#: templates/500.html:89 templates/base.html:89
+msgid "Register"
+msgstr "Inregistrare"
 
-#: templates/500.html:77 templates/base.html:211
+#: templates/500.html:100 templates/500.html.py:200 templates/base.html:100
+#: templates/base.html.py:192
+msgid "Sign in"
+msgstr "Conectați-vă"
+
+#: templates/500.html:127
+msgid "There was a problem loading this page"
+msgstr "A apărut o problemă la încărcarea această pagină"
+
+#: templates/500.html:129
+msgid ""
+"\n"
+"            Please contact your GeoNode administrator (he may have received "
+"an email automatically if he configured it properly).\n"
+"            If you are the site administrator, enable debug mode to see the "
+"actual error and fix it or file an issue in <a href=\"http://github.com/"
+"GeoNode/geonode/issues\">GeoNode's issue tracker</a>\n"
+"            "
+msgstr ""
+
+#: templates/500.html:149 templates/base.html:141
+msgid "Powered by"
+msgstr "Powered by"
+
+#: templates/500.html:149 templates/base.html:141
+msgid "GeoNode"
+msgstr "GeoNode"
+
+#: templates/500.html:149 templates/base.html:141
+msgid "version"
+msgstr "versiune"
+
+#: templates/500.html:150 templates/base.html:142
+msgid "Developers"
+msgstr "Dezvoltatori"
+
+#: templates/500.html:188 templates/500.html.py:189 templates/base.html:180
+#: templates/base.html.py:181
+msgid "Username"
+msgstr "Nume de utilizator"
+
+#: templates/500.html:192 templates/base.html:184
+msgid "Password"
+msgstr "Parolă"
+
+#: templates/500.html:196 templates/base.html:188
+msgid "Remember Me"
+msgstr "Ține-mă minte"
+
+#: templates/500.html:212 templates/base.html:204
+msgid "Menu"
+msgstr ""
+
+#: templates/500.html:219 templates/base.html:211
 msgid "Recent Activity"
 msgstr "Activitate recentă"
 
-#: templates/500.html:78 templates/base.html:212
+#: templates/500.html:220 templates/base.html:212
 #: templates/user_messages/inbox.html:15
 msgid "Inbox"
 msgstr "Inbox"
 
-#: templates/500.html:92 templates/base.html:229
+#: templates/500.html:239 templates/base.html:231
 msgid "Help"
 msgstr "Ajutor"
 
-#: templates/500.html:97 templates/base.html:235
+#: templates/500.html:245 templates/base.html:237
 #: templates/account/logout.html:6 templates/account/logout.html.py:12
 #: templates/account/logout.html:17
 msgid "Log out"
 msgstr "Ieși"
 
-#: templates/500.html:109 templates/base.html:180 templates/base.html.py:181
-msgid "Username"
-msgstr "Nume de utilizator"
-
-#: templates/500.html:113 templates/base.html:184
-msgid "Password"
-msgstr "Parolă"
-
-#: templates/500.html:118 templates/base.html:188
-msgid "Remember Me"
-msgstr "Ține-mă minte"
-
-#: templates/500.html:120 templates/base.html:100 templates/base.html.py:192
-msgid "Sign in"
-msgstr "Conectați-vă"
-
-#: templates/500.html:128 templates/base.html:89
-msgid "Register"
-msgstr "Inregistrare"
-
-#: templates/500.html:159
-msgid "There was a problem loading this page"
-msgstr "A apărut o problemă la încărcarea această pagină"
-
-#: templates/500.html:161
-msgid ""
-"\n"
-"          Please contact your GeoNode administrator (he may have received an "
-"email automatically if he configured it properly).\n"
-"          If you are the site administrator, enable debug mode to see the "
-"actual error and fix it or file an issue in <a href=\"http://github.com/"
-"GeoNode/geonode/issues\">GeoNode's issue tracker</a>\n"
-"          "
-msgstr ""
-"\n"
-"Vă rugăm să contactați administratorul GeoNode (el poate fi primit un e-mail "
-"automat dacă nu e configurat corect). \n"
-"Dacă sunteți administratorul site-ului, permite modul de depanare pentru a "
-"vedea eroarea reală și o rezolvi sau depune o problemă în <a href=\"http://"
-"github.com/GeoNode/geonode/issues\">GeoNode de cauză tracker</a>"
-
-#: templates/500.html:182 templates/base.html:141
-msgid "Powered by"
-msgstr "Powered by"
-
-#: templates/500.html:182 templates/base.html:141
-msgid "GeoNode"
-msgstr "GeoNode"
-
-#: templates/500.html:182 templates/base.html:141
-msgid "version"
-msgstr "versiune"
-
-#: templates/500.html:183 templates/base.html:142
-msgid "Developers"
-msgstr "Dezvoltatori"
+#: templates/500.html:280 templates/base.html:274
+msgid "Type your search here ..."
+msgstr "Tastați căutarea aici ..."
 
 #: templates/_actions.html:3
 msgid "Info"
@@ -3202,11 +3196,11 @@ msgstr ""
 msgid "Set permissions for this resource"
 msgstr "Setarea permisiunilor pentru această resursă"
 
-#: templates/_permissions_form_js.html:180
+#: templates/_permissions_form_js.html:204
 msgid "Choose users..."
 msgstr "Alege utilizatori ..."
 
-#: templates/_permissions_form_js.html:213
+#: templates/_permissions_form_js.html:237
 msgid "Choose groups..."
 msgstr "Alege grupuri de ..."
 
@@ -3217,14 +3211,6 @@ msgstr "Despre GeoNode"
 #: templates/about.html:10
 msgid "About GeoNode."
 msgstr "Despre GeoNode."
-
-#: templates/base.html:204
-msgid "Menu"
-msgstr ""
-
-#: templates/base.html:270
-msgid "Type your search here ..."
-msgstr "Tastați căutarea aici ..."
 
 #: templates/developer.html:4 templates/developer.html.py:8
 msgid "Information for Developers"
@@ -3503,11 +3489,9 @@ msgstr ""
 #: templates/index.html:17
 msgid ""
 "If you have any questions about the software or service, join our <a href="
-"\"https://groups.google.com/d/forum/geonode-users\">mailing list</a>."
+"\"http://lists.osgeo.org/cgi-bin/mailman/listinfo/geonode-users\">mailing "
+"list</a>."
 msgstr ""
-"Dacă aveți orice întrebări despre software-ul sau serviciul, se alăture "
-"nostru <a href=\"https://groups.google.com/d/forum/geonode-users\">lista de "
-"discuții</a> ."
 
 #: templates/index.html:18
 msgid "Need help?"
@@ -3731,6 +3715,14 @@ msgstr "GeoNode site-ul admin"
 #: templates/admin/base_site.html:6
 msgid "GeoNode administration"
 msgstr "Administrarea GeoNode"
+
+#: templates/announcements/announcement_confirm_delete.html:10
+msgid "Delete Announcement?"
+msgstr ""
+
+#: templates/announcements/announcement_confirm_delete.html:13
+msgid "Are you sure you want to delete this announcement?"
+msgstr ""
 
 #: templates/announcements/announcement_form.html:11
 msgid "Edit Announcement"
@@ -4165,6 +4157,10 @@ msgstr "Setarea permisiunilor"
 msgid "Text"
 msgstr "Text"
 
+#: templates/search/search.html:6 templates/search/search.html.py:12
+msgid "Search"
+msgstr "Căutare"
+
 #: templates/user_messages/_message_snippet.html:8
 msgid "With"
 msgstr "Cu"
@@ -4216,6 +4212,12 @@ msgstr "Înapoi la Inbox"
 #: templates/user_messages/thread_detail.html:26
 msgid "Send Reply"
 msgstr "Trimite Reply"
+
+#~ msgid "KML"
+#~ msgstr "KML"
+
+#~ msgid "Tiles"
+#~ msgstr "Tiles"
 
 #~ msgid ""
 #~ "\n"
