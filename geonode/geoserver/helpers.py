@@ -449,14 +449,15 @@ def gs_slurp(
             set_attributes(layer, overwrite=True)
 
             # Fix metadata links if the ip has changed
-            if not created and settings.SITEURL not in layer.link_set.metadata()[0].url:
-                layer.link_set.metadata().delete()
-                layer.save()
-                metadata_links = []
-                for link in layer.link_set.metadata():
-                    metadata_links.append((link.mime, link.name, link.url))
-                resource.metadata_links = metadata_links
-                cat.save(resource)
+            if layer.link_set.metadata().count() > 0:
+                if not created and settings.SITEURL not in layer.link_set.metadata()[0].url:
+                    layer.link_set.metadata().delete()
+                    layer.save()
+                    metadata_links = []
+                    for link in layer.link_set.metadata():
+                        metadata_links.append((link.mime, link.name, link.url))
+                    resource.metadata_links = metadata_links
+                    cat.save(resource)
 
         except Exception as e:
             if ignore_errors:
