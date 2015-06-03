@@ -19,7 +19,7 @@ urlpatterns = patterns('',
 	url(r'^ftprequests/$', views.ftp_request_list, ),
 	url(r'^ftprequests/(?P<sort>[A-Za-z]+)/$', views.ftp_request_list, ),
     # Data Management Views
-    url(r'^datamanager/$', views.management,name='data_management'),
+    url(r'^datamanager/$', views.management, name='data_management'),
     url(r'^datamanager/input/$', views.data_input ),
     url(r'^datamanager/input_old/$', views.data_input_old ),
     url(r'^datamanager/list/$', views.file_list_geonode ),
