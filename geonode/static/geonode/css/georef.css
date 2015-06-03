@@ -1,5 +1,6 @@
 table.georef_table {
     width: 100%
+    
 }
 
 tr.georef_tr {
@@ -7,10 +8,7 @@ tr.georef_tr {
     height: 30px 
 }
 
-td.georef_td{
-    width: 15%
-}
-
-font.georef_font {
-    size: 3.5
+table.georef_table td.georef_td {
+    width: 20%,
+    font-size: 45px
 }
