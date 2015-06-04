@@ -253,7 +253,7 @@ class CommonModelApi(ModelResource):
             for region in regions:
                 sqs = (
                     SearchQuerySet() if sqs is None else sqs).filter_or(
-                    regions_exact=region)
+                    regions_exact__exact=region)
 
         # filter by owner
         if owner:
