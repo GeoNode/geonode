@@ -68,7 +68,7 @@ class CephDataObject(models.Model):
     grid_ref        = models.CharField(max_length=10)
     
     def __unicode__(self):
-        return "{0}:{1}".format(self.name, DataClassification.label[self.data_class])
+        return "{0}:{1}".format(self.name, DataClassification.labels[self.data_class])
 
 
 class FTPRequest(models.Model):
