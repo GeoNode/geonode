@@ -33,8 +33,8 @@ PROJECT_ROOT = os.path.abspath(os.path.dirname(__file__))
 
 # Setting debug to true makes Django serve static media and
 # present pretty error pages.
-#DEBUG = TEMPLATE_DEBUG = True
-DEBUG = TEMPLATE_DEBUG = False
+DEBUG = TEMPLATE_DEBUG = True
+#DEBUG = TEMPLATE_DEBUG = False
 
 # Set to True to load non-minified versions of (static) client dependencies
 # Requires to set-up Node and tools that are required for static development
@@ -67,7 +67,7 @@ DATABASES = {
 # although not all choices may be available on all operating systems.
 # If running in a Windows environment this must be set to the same as your
 # system time zone.
-TIME_ZONE = 'America/Chicago'
+TIME_ZONE = 'Asia/Manila'
 
 # Language code for this installation. All choices can be found here:
 # http://www.i18nguy.com/unicode/language-identifiers.html
@@ -269,6 +269,12 @@ GEONODE_APPS = (
     # Maptiles 
     # Django app for selecting and highlighting tiles
     'geonode.maptiles',
+    
+    #Registration app
+    #'geonode.registration',
+    
+    # EULA app
+    'geonode.eula',
 
     # GeoServer Apps
     # Geoserver needs to come last because
@@ -307,6 +313,7 @@ INSTALLED_APPS = (
     'geoexplorer',
     'leaflet',
     'django_extensions',
+    'corsheaders',
     # 'haystack',
     'autocomplete_light',
     'mptt',
@@ -338,6 +345,7 @@ INSTALLED_APPS = (
     'changuito',
     'djkombu',
     'south',
+    'corsheaders',
 
 ) + GEONODE_APPS
 
@@ -408,6 +416,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
 )
 
 MIDDLEWARE_CLASSES = (
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
@@ -491,7 +500,9 @@ EMAIL_HOST = "mail.lan.dream.upd.edu.ph"
 EMAIL_PORT = 25
 
 # Email for users to contact admins.
-THEME_ACCOUNT_CONTACT_EMAIL = 'support@dream.upd.edu.ph'
+THEME_ACCOUNT_CONTACT_EMAIL = 'lipad-support@dream.upd.edu.ph'
+LIPAD_SUPPORT_MAIL = 'lipad-support@dream.upd.edu.ph'
+FTP_SUPPORT_MAIL = 'support@dream.upd.edu.ph'
 FTP_AUTOMAIL = 'automailer@dream.upd.edu.ph'
 
 #
@@ -884,6 +895,24 @@ CELERY_QUEUES = [
 import djcelery
 djcelery.setup_loader()
 
+#TILED_SHAPEFILE = "geonode:cut_phl_001k_grid_utm_z51n"
+TILED_SHAPEFILE = "geonode:index"
+TILED_SHAPEFILE_TEST = "geonode:index"
+EULA_URL = '/eula/eula_form/'
+SELECTION_LIMIT=209715200
+
+CEPHACCESS_HOST = 'cephaccess@cephaccess'
+CEPHACCESS_DL_SCRIPT = '/path/to/download.py'
+
+CEPH_OGW = {
+    'default' : {
+        'USER' : 'geonode:swift',
+        'KEY' : 'Ry3meRcVwVkff3G2O1vSy0PmUvUcXCzvWNZic04B',
+        'LOCATION' : 'https://cephclient.lan.dream.upd.edu.ph',
+        'CONTAINER' : 'geo-container',
+    }
+}
+
 # Load more settings from a file called local_settings.py if it exists
 try:
     from local_settings import *  # noqa
@@ -916,12 +945,3 @@ if 'geonode.geoserver' in GEONODE_APPS:
     baselayers = MAP_BASELAYERS
     MAP_BASELAYERS = [LOCAL_GEOSERVER]
     MAP_BASELAYERS.extend(baselayers)
-
-CEPH_OGW = {
-    'default' : {
-        'USER' : 'geonode:swift',
-        'KEY' : 'Ry3meRcVwVkff3G2O1vSy0PmUvUcXCzvWNZic04B',
-        'LOCATION' : 'https://cephclient.lan.dream.upd.edu.ph',
-        'CONTAINER' : 'geo-container',
-    }
-}

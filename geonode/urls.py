@@ -31,6 +31,7 @@ import geonode.cephgeo.urls
 from geonode.api.urls import api
 
 import autocomplete_light
+from geonode.views import err403
 
 # Setup Django Admin
 autocomplete_light.autodiscover()
@@ -53,8 +54,14 @@ urlpatterns = patterns('',
                        url(r'^/?$', TemplateView.as_view(template_name='index.html'), name='home'),
                        url(r'^help/$', TemplateView.as_view(template_name='help.html'), name='help'),
                        url(r'^developer/$', TemplateView.as_view(template_name='developer.html'), name='developer'),
-                       url(r'^about/$', TemplateView.as_view(template_name='about.html'), name='about'),
-
+                       url(r'^about/$', TemplateView.as_view(template_name='about.html'), name='about'), 
+                       
+                       # EULA URLs
+                       url(r'^eula/', include('geonode.eula.urls'), name='eula'),
+                       
+                       # Permission denied handler
+                       url(r'^forbidden/$', err403, name='forbidden'),
+                       
                        # Layer views
                        (r'^layers/', include('geonode.layers.urls')),
 

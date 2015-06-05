@@ -28,27 +28,29 @@
   <h2 class="page-title">Map Tiles</h2>
 </div>
 <div class="row">
-	<div class="col-md-8">
 
 		<div id="embedded_map" class="mrg-btm">
 			<div id="preview_map"></div>
 		</div>
-	</div>
 </div>
- <div class="col-md-4">
 
     <!--<ul class="list-group">
 	</ul>-->
- </div>
+
  <br />
- <h3 class="page-title">Selected Tiles</h3>
+ <div  class ="page-header">
+    <h3 class="page-title">Selected Tiles</h3>
+ </div>
  <div class="row" id="point_display">
      
  </div>
  <hr>
+<!--
  <h3 class="page-title">Data Class</h3>
- <form action="/maptiles/addtocart/" method="POST">
+-->
+ <form name="georef_form" id="georef_form" action="/maptiles/addtocart/" method="POST" >
      {% csrf_token %}
+<!--
      <div class="col-md-4">
        <nobr>
          <ul class="list-inline pull-left">
@@ -60,6 +62,7 @@
          </ul>
        </nobr>
      </div>
+-->
     <div class="col-md-4" align="right">
      <input type="text" id="georef_area" name="georef_area" style="display:none" />
      <input type="submit" id="georef_submit" name="georef_submit" value="Submit" class="btn btn-default" />
