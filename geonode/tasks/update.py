@@ -1,7 +1,39 @@
+from pprint import pprint
 from celery.task import task
 from geonode.geoserver.helpers import gs_slurp
 from geonode.documents.models import Document
+from geonode.cephgeo.models import CephDataObject, DataClassification
+from geonode.cephgeo.utils import get_data_class_from_filename
+from geonode.cephgeo.gsquery import nested_grid_update
 
+@task(name='geonode.tasks.update.ceph_metadata_udate', queue='update')
+def ceph_metadata_udate(uploaded_objects):
+    """
+        NOTE: DOES NOT WORK
+          Outputs error 'OperationalError: database is locked'
+          Need a better way of making celery write into the database
+    """
+    #Save each ceph object
+    for obj_meta_dict in uploaded_objects:
+        ceph_obj = CephDataObject(  name = obj_meta_dict['name'],
+                                    #last_modified = time.strptime(obj_meta_dict['last_modified'], "%Y-%m-%d %H:%M:%S"),
+                                    last_modified = obj_meta_dict['last_modified'],
+                                    size_in_bytes = obj_meta_dict['bytes'],
+                                    content_type = obj_meta_dict['content_type'],
+                                    data_class = get_data_class_from_filename(obj_meta_dict['name']),
+                                    file_hash = obj_meta_dict['hash'],
+                                    grid_ref = obj_meta_dict['grid_ref'])
+        ceph_obj.save()
+
+@task(name='geonode.tasks.update.grid_feature_update', queue='update')
+def grid_feature_update(gridref_dict_by_data_class, field_value=1):
+    """
+        :param gridref_dict_by_data_class: contains mapping of [feature_attr] to [grid_ref_list]
+        :param field_value: [1] or [0]
+        Update the grid shapefile feature attribute specified by [feature_attr] on gridrefs in [gridref_list]
+    """
+    for feature_attr, grid_ref_list in gridref_dict_by_data_class.iteritems():
+        nested_grid_update(grid_ref_list, feature_attr, field_value)
 
 @task(name='geonode.tasks.update.geoserver_update_layers', queue='update')
 def geoserver_update_layers(*args, **kwargs):

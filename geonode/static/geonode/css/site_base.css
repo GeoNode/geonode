@@ -1,0 +1,27 @@
+body {
+	padding-top: 60px;
+}
+
+.navbar-brand {
+	height: 65px;
+	background: url(../img/DREAMlogo65x65.png) no-repeat;
+	width: inherit;
+	text-indent: 65px;
+	display: block;
+	font-size: 20px;
+}
+
+.navbar-brand small {
+	display: block;
+	font-size: 12px;
+	font-weight: 300;
+}
+/* make room for new header size */
+#wrap {
+	padding-top: 50px;
+}
+
+/* override map_geoexplorer.css to make room for new header size*/
+/*#paneltbar {
+	margin-top: 100px !important;
+}*/

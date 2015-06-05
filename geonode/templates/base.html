@@ -46,7 +46,7 @@
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </button>
-          <a class="navbar-brand" href="{% url "home" %}">GeoNode</a>
+          <a class="navbar-brand" href="{% url "home" %}">LiDAR Portal for Archiving and Distribution<small>Phil LiDAR 1: Hazard Mapping of the Philippines Using LiDAR</small></a>
         </div>
         <div id="navbar" class="navbar-collapse collapse">
           <ul class="nav navbar-nav">
@@ -71,6 +71,12 @@
             <li id="nav_datastore">
               <a href="{% url "ceph_main" %}">{% trans "Datastore" %}</a>
             </li>
+            {% if request.user.is_superuser %}
+	            <li id="nav_datastore">
+	              <a href="{% url "data_management" %}">{% trans "Data Management" %}</a>
+	            </li>
+            {% endif %}
+            
             {% endblock %}
           </ul>
           <form class="navbar-form" id="search" action="{% url "search" %}" >
@@ -141,9 +147,8 @@
       <div class="container">
         <div class="row">
           <div class="col-md-8">
-            {% trans "Powered by" %} <a href="http://geonode.org">{% trans "GeoNode" %}</a> <em>{% trans "version" %} {{ VERSION }}</em> |
-            <a href="{% url "developer" %}">{% trans "Developers" %}</a> |
-            <a href="{% url "about" %}">{% trans "About" %}</a>
+            &copy; {% trans "2015 UP-DOST Phil LiDAR 1 Program. All Rights Reserved" %} |
+            <a href="{% url "about" %}">{% trans "About LiPAD" %}</a>
           </div>
           <div class="col-md-4">
             <label class="hidden">{% trans "Language" %}</label>

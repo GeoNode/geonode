@@ -12,19 +12,6 @@ except ImportError:
 
 from django_enumfield import enum
 
-
-class CephDataObject(models.Model):
-    size_in_bytes   = models.IntegerField()
-    file_hash       = models.CharField(max_length=40)
-    name            = models.CharField(max_length=100)
-    last_modified   = models.DateTimeField()
-    content_type    = models.CharField(max_length=20)
-    geo_type        = models.CharField(max_length=20)
-    grid_ref        = models.CharField(max_length=10)
-    
-    def __unicode__(self):
-        return "{0}:{1}".format(self.name, self.geo_type)
-
 class DataClassification(enum.Enum):
     UNKNOWN = 0
     LAZ = 1
@@ -35,28 +22,27 @@ class DataClassification(enum.Enum):
     
     labels = {
         UNKNOWN     : "Unknown Type",
-        LAZ			: "LAZ",
-        DEM 		: "DEM TIF",
-        DSM     	: "DSM TIF",
-        DTM 		: "DTM TIF",
+        LAZ            : "LAZ",
+        DEM         : "DEM TIF",
+        DSM         : "DSM TIF",
+        DTM         : "DTM TIF",
         ORTHOPHOTO  : "Orthophoto",}
     
-    filename_suffixes = {
-        ".laz"			: LAZ,
-        "_dem.tif" 		: DEM,
-        "_dsm.tif" 		: DSM,
-        "_dtm.tif" 		: DTM,
-        "_ortho.tif"	: ORTHOPHOTO,}
+    gs_feature_labels = {
+        UNKNOWN     : "UNSUPPORTED",
+        LAZ         : "UNSUPPORTED",
+        DEM         : "UNSUPPORTED",
+        DSM         : "DSM",
+        DTM         : "DTM",
+        ORTHOPHOTO  : "ORTHO",}
     
-    def get_label_from_filename(filename):
-        data_classification = labels[UNKNOWN]
-        
-        for x in filename_suffixes:
-            if len(file_name) > len(filename_suffixes[x]):
-                if file_name.lower().endswith(x):
-                    data_classification = filename_suffixes[x]
-            
-        return data_classification
+    filename_suffixes = {
+        ".laz"            : LAZ,
+        "_dem.tif"         : DEM,
+        "_dsm.tif"         : DSM,
+        "_dtm.tif"         : DTM,
+        "_ortho.tif"    : ORTHOPHOTO,}
+    
 
 class FTPStatus(enum.Enum):
     DONE = 0
@@ -69,6 +55,21 @@ class FTPStatus(enum.Enum):
         PENDING: 'Pending',
         ERROR:   'Error',
         DUPLICATE: 'Duplicate',}
+
+
+class CephDataObject(models.Model):
+    size_in_bytes   = models.IntegerField()
+    file_hash       = models.CharField(max_length=40)
+    name            = models.CharField(max_length=100)
+    last_modified   = models.DateTimeField()
+    content_type    = models.CharField(max_length=20)
+    #geo_type        = models.CharField(max_length=20)
+    data_class      = enum.EnumField(DataClassification, default=DataClassification.UNKNOWN)
+    grid_ref        = models.CharField(max_length=10)
+    
+    def __unicode__(self):
+        return "{0}:{1}".format(self.name, DataClassification.labels[self.data_class])
+
 
 class FTPRequest(models.Model):
     name        = models.CharField(max_length=50)
@@ -90,4 +91,5 @@ class FTPRequestToObjectIndex(models.Model):
     ftprequest = models.ForeignKey(FTPRequest, null=False, blank=False)
     # CephObject
     cephobject = models.ForeignKey(CephDataObject, null=False, blank=False)
+
     

@@ -33,11 +33,11 @@ class CephDataObjectAdmin(admin.ModelAdmin):
         'file_hash',
         'last_modified',
         'content_type',
-        'geo_type',
+        'data_class',
         'grid_ref',
         'size_in_bytes',)
-    list_filter = ('content_type', 'grid_ref')
-    search_fields = ('name', 'content_type', 'grid_ref',)
+    list_filter = ('data_class','content_type', 'grid_ref')
+    search_fields = ('name', 'data_class', 'content_type', 'grid_ref',)
 
 class FTPRequestAdmin(admin.ModelAdmin):
     model = FTPRequest
@@ -64,6 +64,7 @@ class FTPRequestToObjectIndexAdmin(admin.ModelAdmin):
     search_fields = ('cephobject', 'ftprequest',)
 
 admin.site.register(Cart, CartAdmin)
+admin.site.register(Item, ItemAdmin)
 admin.site.register(CephDataObject, CephDataObjectAdmin)
 admin.site.register(FTPRequest, FTPRequestAdmin)
 admin.site.register(FTPRequestToObjectIndex, FTPRequestToObjectIndexAdmin)

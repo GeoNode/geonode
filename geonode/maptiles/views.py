@@ -5,23 +5,32 @@ from django.utils import simplejson as json
 from django.shortcuts import render_to_response
 from django.template import RequestContext
 from django.core.exceptions import ValidationError
+from django.core.exceptions import PermissionDenied
 from django.contrib import messages
+from django.contrib.auth.decorators import login_required
+from django.http import HttpResponseRedirect, HttpResponse
 
 from geonode.services.models import Service
 from geonode.layers.models import Layer
+from geonode.layers.utils import is_vector, get_bbox
 from geonode.utils import resolve_object, llbbox_to_mercator
-
 from geonode.utils import GXPLayer
 from geonode.utils import GXPMap
 from geonode.utils import default_map_config
+
 from geonode.security.views import _perms_info_json
-from geonode.cephgeo.models import CephDataObject, DataClassification
+from geonode.cephgeo.models import CephDataObject, DataClassification, FTPRequest
 from geonode.cephgeo.cart_utils import *
 from geonode.documents.models import get_related_documents
 
+import geonode.settings as settings
+
 from pprint import pprint
+from datetime import datetime, timedelta
 
 import logging
+
+from geonode.cephgeo.utils import get_cart_datasize
 
 _PERMISSION_VIEW = _("You are not permitted to view this layer")
 _PERMISSION_GENERIC = _('You do not have permissions for this layer.')
@@ -54,15 +63,23 @@ def _resolve_layer(request, typename, permission='base.view_resourcebase',
                               permission_msg=msg,
                               **kwargs)
 
-def tiled_view(request, overlay="geonode:index", template="maptiles/maptiles_map.html"):
+@login_required
+def tiled_view(request, overlay=settings.TILED_SHAPEFILE, template="maptiles/maptiles_map.html", interest=None):
     if request.method == "POST":
         pprint(request.POST)
-    layer = _resolve_layer(request, overlay, "base.view_resourcebase", _PERMISSION_VIEW )
+    
+    layer = {}
+    try:
+        layer = _resolve_layer(request, overlay, "base.view_resourcebase", _PERMISSION_VIEW )
+    except Exception as e:
+        layer = _resolve_layer(request, settings.MUNICIPALITY_SHAPEFILE, _PERMISSION_VIEW)
+        overlay = settings.MUNICIPALITY_SHAPEFILE
+            
     config = layer.attribute_config()
     layer_bbox = layer.bbox
     bbox = [float(coord) for coord in list(layer_bbox[0:4])]
     srid = layer.srid
-
+    
     # Transform WGS84 to Mercator.
     config["srs"] = srid if srid != "EPSG:4326" else "EPSG:900913"
     config["bbox"] = llbbox_to_mercator([float(coord) for coord in bbox])
@@ -88,13 +105,6 @@ def tiled_view(request, overlay="geonode:index", template="maptiles/maptiles_map
             ows_url=layer.ows_url,
             layer_params=json.dumps(config))
 
-    # Update count for popularity ranking,
-    # but do not includes admins or resource owners
-    #if request.user != layer.owner and not request.user.is_superuser:
-    #    Layer.objects.filter(
-    #        id=layer.id).update(popular_count=F('popular_count') + 1)
-    
-    # center/zoom don't matter; the viewer will center on the layer bounds
     map_obj = GXPMap(projection="EPSG:900913")
     NON_WMS_BASE_LAYERS = [
         la for la in default_map_config()[1] if la.ows_url is None]
@@ -106,140 +116,60 @@ def tiled_view(request, overlay="geonode:index", template="maptiles/maptiles_map
         "data_classes": DataClassification.labels.values(),
         "resource": layer,
         "permissions_json": _perms_info_json(layer),
-        "documents": get_related_documents(layer),
         "metadata": metadata,
         "is_layer": True,
         "wps_enabled": settings.OGC_SERVER['default']['WPS_ENABLED'],
     }
-
+    
     context_dict["viewer"] = json.dumps(
         map_obj.viewer_json(request.user, * (NON_WMS_BASE_LAYERS + [maplayer])))
-    
-    context_dict["preview"] = getattr(
-        settings,
-        'LAYER_PREVIEW_LIBRARY',
-        'leaflet')
         
-    if request.user.has_perm('download_resourcebase', layer.get_self_resource()):
-        if layer.storeType == 'dataStore':
-            links = layer.link_set.download().filter(
-                name__in=settings.DOWNLOAD_FORMATS_VECTOR)
-        else:
-            links = layer.link_set.download().filter(
-                name__in=settings.DOWNLOAD_FORMATS_RASTER)
-        context_dict["links"] = links
-
-    #if settings.SOCIAL_ORIGINS:
-    #    context_dict["social_links"] = build_social_links(request, layer)
-    #print context_dict
+    context_dict["layer"]  = overlay
     
-    return render_to_response(template, RequestContext(request, context_dict))
-
-def tiled_view2(request, overlay="geonode:index", template="maptiles/maptiles_map_test.html"):
-    if request.method == "POST":
-        pprint(request.POST)
-    layer = _resolve_layer(request, overlay, "base.view_resourcebase", _PERMISSION_VIEW )
-    config = layer.attribute_config()
-    layer_bbox = layer.bbox
-    bbox = [float(coord) for coord in list(layer_bbox[0:4])]
-    srid = layer.srid
-
-    # Transform WGS84 to Mercator.
-    config["srs"] = srid if srid != "EPSG:4326" else "EPSG:900913"
-    config["bbox"] = llbbox_to_mercator([float(coord) for coord in bbox])
-
-    config["title"] = layer.title
-    config["queryable"] = True
-
-    if layer.storeType == "remoteStore":
-        service = layer.service
-        source_params = {
-            "ptype": service.ptype,
-            "remote": True,
-            "url": service.base_url,
-            "name": service.name}
-        maplayer = GXPLayer(
-            name=layer.typename,
-            ows_url=layer.ows_url,
-            layer_params=json.dumps(config),
-            source_params=json.dumps(source_params))
-    else:
-        maplayer = GXPLayer(
-            name=layer.typename,
-            ows_url=layer.ows_url,
-            layer_params=json.dumps(config))
-
-    # Update count for popularity ranking,
-    # but do not includes admins or resource owners
-    #if request.user != layer.owner and not request.user.is_superuser:
-    #    Layer.objects.filter(
-    #        id=layer.id).update(popular_count=F('popular_count') + 1)
+    #context_dict["geoserver"] = settings.OGC_SERVER['default']['PUBLIC_LOCATION']
+    context_dict["geoserver"] = settings.OGC_SERVER['default']['PUBLIC_LOCATION']
+    context_dict["siteurl"] = settings.SITEURL
     
-    # center/zoom don't matter; the viewer will center on the layer bounds
-    map_obj = GXPMap(projection="EPSG:900913")
-    NON_WMS_BASE_LAYERS = [
-        la for la in default_map_config()[1] if la.ows_url is None]
-
-    metadata = layer.link_set.metadata().filter(
-        name__in=settings.DOWNLOAD_FORMATS_METADATA)
-
-    context_dict = {
-        "resource": layer,
-        "permissions_json": _perms_info_json(layer),
-        "documents": get_related_documents(layer),
-        "metadata": metadata,
-        "is_layer": True,
-        "wps_enabled": settings.OGC_SERVER['default']['WPS_ENABLED'],
-    }
-
-    context_dict["viewer"] = json.dumps(
-        map_obj.viewer_json(request.user, * (NON_WMS_BASE_LAYERS + [maplayer])))
-    
-    context_dict["preview"] = getattr(
-        settings,
-        'LAYER_PREVIEW_LIBRARY',
-        'leaflet')
+    if interest is not None:
+        context_dict["interest"]=interest
         
-    if request.user.has_perm('download_resourcebase', layer.get_self_resource()):
-        if layer.storeType == 'dataStore':
-            links = layer.link_set.download().filter(
-                name__in=settings.DOWNLOAD_FORMATS_VECTOR)
-        else:
-            links = layer.link_set.download().filter(
-                name__in=settings.DOWNLOAD_FORMATS_RASTER)
-        context_dict["links"] = links
-
-    #if settings.SOCIAL_ORIGINS:
-    #    context_dict["social_links"] = build_social_links(request, layer)
-    #print context_dict
+    context_dict["feature_municipality"]  = settings.MUNICIPALITY_SHAPEFILE.split(":")[1]
+    context_dict["feature_tiled"] = overlay.split(":")[1]
     
     return render_to_response(template, RequestContext(request, context_dict))
 
 def process_georefs(request):
     if request.method == "POST":
         try:
-            #pprint(request.POST)
             georef_area = request.POST['georef_area']
             georef_list = filter(None, georef_area.split(","))
             #spprint(georef_list)
             #TODO: find all files with these georefs and add them to cart
             count = 0
+            empty_georefs = 0
             duplicates = []
             
             for georef in georef_list:      # Process each georef in list
                 objects = CephDataObject.objects.filter(name__startswith=georef)
                 count += len(objects)
-                for ceph_obj in objects:    # Add each Ceph object to cart
-                    try:
-                        add_to_cart_unique(request, ceph_obj.id)
-                    except DuplicateCartItemException:  # List each duplicate object
-                        duplicates.append(ceph_obj.name)
+                if len(objects) > 0:
+                    for ceph_obj in objects:    # Add each Ceph object to cart
+                        try:
+                            add_to_cart_unique(request, ceph_obj.id)
+                        except DuplicateCartItemException:  # List each duplicate object
+                            duplicates.append(ceph_obj.name)
+                else:
+                    empty_georefs += 1
             
-            if len(duplicates) > 0:         # Warn on duplicates
-                messages.warning(request, "WARNING: The following items are already in the cart and have not been added: \n{0}".format(str(duplicates)))
+            #if len(duplicates) > 0:         # Warn on duplicates
+            #    messages.warning(request, "WARNING: The following items are already in the cart and have not been added: \n{0}".format(str(duplicates)))
             
-            # Inform user of the number of processed georefs and objects
-            messages.info(request, "Processed [{0}] tiles/georefs. [{1}] objects added to cart".format(len(georef_list),(count - len(duplicates))))
+            if empty_georefs > 0:
+                messages.error(request, "ERROR: [{0}] out of selected [{1}] georef tiles have no data! A total of [{2}] objects have been added to cart. \n".format(empty_georefs,len(georef_list),(count - len(duplicates))))
+            elif len(duplicates)>0: # Inform user of the number of processed georefs and objects
+                messages.info(request, "Processed [{0}] georefs tiles. [{2}] duplicate objects found in cart have been skipped. A total of [{1}] objects have been added to cart. ".format(len(georef_list),(count - len(duplicates)),len(duplicates)))
+            else: # Inform user of the number of processed georefs and objects
+                messages.info(request, "Processed [{0}] georefs tiles. A total of [{1}] objects have been added to cart.".format(len(georef_list),(count - len(duplicates))))
             
             return redirect('geonode.cephgeo.views.get_cart')
             
@@ -249,4 +179,52 @@ def process_georefs(request):
             #return redirect('geonode.maptiles.views.tiled_view')
     
     else:   # Must process HTTP POST method from form
-        raise Exception("HTTP method must be POST!")
+        raise Exception("HTTP method must be POST!")    
+
+@login_required
+def georefs_validation(request):
+    """
+    Note: does not check yet if tiles to be added are unique (or are not yet included in the cart)
+    """
+    if request.method != 'POST':
+        return HttpResponse(
+            content='no data received from HTTP POST',
+            status=405,
+            mimetype='text/plain'
+        )
+    else:
+        georefs = request.POST["georefs"]
+        georefs_list = filter(None, georefs.split(","))
+        cart_total_size = get_cart_datasize(request)
+        
+        yesterday = datetime.now() -  timedelta(days=1)
+        
+        requests_last24h = FTPRequest.objects.filter(date_time__gt=yesterday)
+        
+        total_size = 0
+        for georef in georefs_list:
+            objects = CephDataObject.objects.filter(name__startswith=georef)
+            for o in objects:
+                total_size += o.size_in_bytes
+                
+        request_size_last24h = 0
+        
+        for r in requests_last24h:
+            request_size_last24h += r.size_in_bytes
+        
+        if total_size + cart_total_size + request_size_last24h > settings.SELECTION_LIMIT:            
+            return HttpResponse(
+               content=json.dumps({ "response": False, "total_size": total_size, "cart_size":cart_total_size, "recent_requests_size": request_size_last24h }),
+                status=200,
+                #mimetype='text/plain'
+                content_type="application/json"
+            )
+        else:
+            return HttpResponse(
+                content=json.dumps({ "response": True, "total_size": total_size, "cart_size": cart_total_size }),
+                status=200,
+                #mimetype='text/plain'
+                content_type="application/json"
+            )
+
+    

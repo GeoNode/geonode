@@ -73,7 +73,8 @@
                     }
                 }
             };
-
+            
+            console.log({{viewer|safe}});
             config = Ext.apply(config, {{ viewer|safe }});
             app = new GeoExplorer.Viewer(config);
 

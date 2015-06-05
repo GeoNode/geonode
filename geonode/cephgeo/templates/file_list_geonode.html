@@ -1,6 +1,7 @@
 {% extends "ceph_base.html" %}
 {% load i18n %}
 {% load url from future %}
+{% load cephgeo_extras %}
 
 {% block title %} {% trans "File List" %} - {{ block.super }} {% endblock %}
 
@@ -30,25 +31,50 @@
 	  {% endif %}
     {% endfor %}
     {% if grid_ref != None %}
-	  <li><a href="{% url 'cephgeo.views.file_list_geonode' 'nosort' %}" >full list</a></li>
+	  <li><a href="{% url 'cephgeo.views.file_list_geonode' 'default' %}" >full list</a></li>
     {% endif %}
   </ul>  
   </div>
   <br /><br /><br />
-  
+    <table id="ceph_objects_table" border="3" style="width:100% ">
+        <tr >
+            <th style="text-align: center;">{% trans "File Name" %}</th>
+            <th style="text-align: center;">{% trans "Grid Reference" %}</th>
+            <th style="text-align: center;">{% trans "File Hash" %}</th>
+            <th style="text-align: center;">{% trans "Data Class" %}</th>
+            <th style="text-align: center;">{% trans "Last Modified" %}</th>
+            <th style="text-align: center;">{% trans "File Size" %}</th>
+    <!--
+            <th>Total Price</th>
+    -->
+        </tr>
+        {% for file in file_list %}
+		<tr id="{{ file.name }}" name="{{ file.name }}" style="text-align: center;">
+            <td>{{ file.name }}</td>
+            <td><a href="{% url 'cephgeo.views.file_list_geonode' 'default' file.grid_ref %}">{{ file.grid_ref }}</a></td>
+			<td>{{ file.file_hash }}</td>
+			<td>{{ file.data_class | get_data_class_label}}</td>
+			<td>{{ file.last_modified }}</td>
+			<td>{{ file.size_in_bytes | filesizeformat  }}</td>
+        </tr>
+        {% endfor %}
+
+    </table>
+<!--
   <ul>
 	{% for file in file_list %}
 		<li><h4>
               <b>{{ file.name }}</b>
             </h4>
-			<br /><b>Grid Reference:</b> <a href="{% url 'cephgeo.views.file_list_geonode' 'nosort' file.grid_ref %}">{{ file.grid_ref }}</a>
+			<br /><b>Grid Reference:</b> <a href="{% url 'cephgeo.views.file_list_geonode' 'default' file.grid_ref %}">{{ file.grid_ref }}</a>
 			<br /><b>File Hash:</b> {{ file.file_hash }}
-			<br /><b>Data Type:</b> {{ file.geo_type }}
+			<br /><b>Data Class:</b> {{ file.data_class | get_data_class_label}}
 			<br /><b>Last Modified:</b> {{ file.last_modified }}
 			<br /><b>File size:</b> {{ file.size_in_bytes | filesizeformat  }}
 		</li>
 	{% endfor %}
   </ul>
+-->
   
   <div class="pagination">
 	<span class="step-links">

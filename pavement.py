@@ -84,6 +84,16 @@ def setup_celery(options):
         celery_log_dir.makedirs()
         
 @task
+def setup_ceph_client(options):
+    ceph_client_log_dir = path('geonode/cephgeo/logs')
+    if not ceph_client_log_dir.exists():
+        ceph_client_log_dir.makedirs()
+    
+    ceph_client_log_file = path('geonode/cephgeo/logs/ceph_storage.log')
+    if not ceph_client_log_file.isfile():
+        ceph_client_log_file.touch()
+
+@task
 @cmdopts([
     ('geoserver=', 'g', 'The location of the geoserver build (.war file).'),
     ('jetty=', 'j', 'The location of the Jetty Runner (.jar file).'),
@@ -143,6 +153,7 @@ def static(options):
 @needs([
     'setup_geoserver',
     'setup_celery',
+    'setup_ceph_client',
 ])
 def setup(options):
     """Get dependencies and prepare a GeoNode development environment."""
@@ -305,11 +316,18 @@ def start():
 
 
 @task
+@needs(['stop_celery',])
 def stop_django():
     """
     Stop the GeoNode Django application
     """
     kill('python', 'runserver')
+
+@task
+def stop_celery():
+    """
+    Stop the Celery worker daemon(s)
+    """
     kill('python', 'celery')
 
 
@@ -335,6 +353,7 @@ def stop():
 @cmdopts([
     ('bind=', 'b', 'Bind server to provided IP address and port number.')
 ])
+@needs(['start_celery',])
 @task
 def start_django():
     """
@@ -343,8 +362,13 @@ def start_django():
     bind = options.get('bind', '')
     foreground = '' if options.get('foreground', False) else '&'
     sh('python manage.py runserver %s %s' % (bind, foreground))
-    sh('python manage.py celeryd_detach --pidfile="celery/pid/%n.pid" --logfile="celery/log/%n.log"')
 
+@task
+def start_celery():
+    """
+    Start the Celery worker daemon(s)
+    """
+    sh('python manage.py celeryd_detach --pidfile="celery/pid/celery.pid" --logfile="celery/log/celery.log"')
 
 @cmdopts([
     ('java_path=', 'j', 'Full path to java install for Windows')
