@@ -21,20 +21,22 @@
 	<ul class="list-inline pull-right" id="sort">
 	  <li><a href="{% url 'ceph_main' %}"><button class="btn btn-default">{% trans "Return to Datastore Main Page" %}</button></a></li>
 	</ul>
-    <table border="3" style="width:100%">
-        <tr>
-            <th>Filename</th>
-            <th>Size</th>
-            <th>Last Modified</th>
-        </tr>
-        {% for object in ftp_objects %}
-        <tr>
-            <td>  {{ object.name }}</td>
-            <td>  {{ object.size_in_bytes | filesizeformat }}</td>
-            <td>  {{ object.last_modified }}</td>
-        </tr>
-        {% endfor %}
-    </table>
+    {% if ftp_objects %}
+	    <table border="3" style="width:100%">
+	        <tr>
+	            <th>Filename</th>
+	            <th>Size</th>
+	            <th>Last Modified</th>
+	        </tr>
+	        {% for object in ftp_objects %}
+	        <tr>
+	            <td>  {{ object.name }}</td>
+	            <td>  {{ object.size_in_bytes | filesizeformat }}</td>
+	            <td>  {{ object.last_modified }}</td>
+	        </tr>
+	        {% endfor %}
+	    </table>
+    {% endif %}
 {% endblock body %}
  {% block sidebar %}{% endblock sidebar %}
 {% endblock body_outer %}

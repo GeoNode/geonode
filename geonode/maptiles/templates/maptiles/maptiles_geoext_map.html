@@ -10,7 +10,7 @@
 <script type="text/javascript" >
     function formatBytes(bytes, decimals) {
         if(bytes == 0) 
-            return '0 Byte';
+            return '0 Bytes';
         var k = 1024;
         var sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
         var i = Math.floor(Math.log(bytes) / Math.log(k));
@@ -30,7 +30,8 @@
                    else {
                         alert("The total file size of this request is "+formatBytes(result.total_size, 2)+
                                 " . You also have a total of "+formatBytes(result.cart_size, 2)+
-                                " in the data cart. Your request exceeds the 200MB download limit. Please reduce number of selected tiles.");
+                                " in the data cart and FTP requests with a total of "+formatBytes(result.recent_requests_size, 2)+
+                                ". Your request exceeds the 200MB download limit. Please reduce number of selected tiles.");
                     }
                 })
        });
@@ -84,24 +85,30 @@ function createTile(computed_corners){
 function display_points(div_id, vec_layer){
     var container = document.getElementById(div_id);
     container.removeChild(container.firstElementChild||container.firstChild);
-    var list_element = document.createElement("ul");
-    container.appendChild(list_element);
+    var table_element = document.createElement("table");
+    table_element.className += "georef_table";
+    container.appendChild(table_element);
     
     var georef_string = "";
     
-    for (var i=0; i< tile_list.length; i++){
-        var item_element = document.createElement("li");
-        item_element.setAttribute("id",tile_list[i].georef);
-        item_element.innerHTML = tile_list[i].georef;
-        /*item_element.onclick = function(){
-            removeHighlight(item_element.innerHTML, vec_layer);
-            this.parentNode.removeChild(this);
-        };*/
-        list_element.appendChild(item_element);
-        if(i == 0){
-            georef_string+=tile_list[i].georef;
-        }else{
-              georef_string+=","+tile_list[i].georef;
+    for (var i=0; i< tile_list.length/5; i++){
+        var row_element = document.createElement("tr");
+        row_element.className += "georef_tr";
+        table_element.appendChild(row_element);
+        for (var j = 0; j< 5; j++){
+
+            var georef_element = document.createElement("td");
+            georef_element.setAttribute("id",tile_list[i*5+j].georef);
+            var container_width = document.getElementById("embedded_map").offsetWidth
+            georef_element.setAttribute("style", "width: "+container_width/5+"px; height: 30px;");
+            georef_element.innerHTML  = "<font size=3.5>"+tile_list[i*5+j].georef+"</font>";
+            
+            row_element.appendChild(georef_element);
+            if(i == 0){
+                georef_string+=tile_list[i].georef;
+            }else{
+                  georef_string+=","+tile_list[i].georef;
+            }
         }
     }
    document.getElementById("georef_area").setAttribute("value",georef_string);
@@ -211,6 +218,7 @@ Ext.onReady(function (){
     var config = {
         renderTo: "preview_map",
         height: 400,
+        width: "100%",
         map: map,
         title: "Tile Selection",
         items: items,
@@ -250,13 +258,12 @@ Ext.onReady(function (){
                 //url: "http://192.168.56.100:8080/geoserver/geonode/wfs",
                 url: geoserver+"geonode/wfs",
                 featurePrefix: "geonode",
-                featureType: "index",
+                featureType: "{{feature_tiled}}",
                 featureNS: "http://www.geonode.org/",
                 srsName: "EPSG:32651",
                 outputFormat: "json"
             });              
-            
-            var response_txt;
+
             var wfs_resp = wfs_proto.read({
                 filter: filter,
                 callback: function(response){
@@ -280,8 +287,8 @@ Ext.onReady(function (){
                                  highlight_layer.addFeatures([tile.feature]);
                             }
             
-                            display_points("point_display", highlight_layer);
                         }
+                        display_points("point_display", highlight_layer);
                     }else{
                         alert("Server did not respond.");
                     }
@@ -346,7 +353,7 @@ Ext.onReady(function (){
             //url: "http://192.168.56.100:8080/geoserver/geonode/wfs",
             url: geoserver+"geonode/wfs",
             featurePrefix: "geonode",
-            featureType: "phl_adm2_municipalities_utm_z51n",
+            featureType: "{{ feature_municipality }}",
             featureNS: "http://www.geonode.org/",
             srsName: "EPSG:32651",
             outputFormat: "application/json"

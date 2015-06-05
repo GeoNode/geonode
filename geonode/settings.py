@@ -67,7 +67,7 @@ DATABASES = {
 # although not all choices may be available on all operating systems.
 # If running in a Windows environment this must be set to the same as your
 # system time zone.
-TIME_ZONE = 'America/Chicago'
+TIME_ZONE = 'Asia/Manila'
 
 # Language code for this installation. All choices can be found here:
 # http://www.i18nguy.com/unicode/language-identifiers.html
@@ -500,7 +500,9 @@ EMAIL_HOST = "mail.lan.dream.upd.edu.ph"
 EMAIL_PORT = 25
 
 # Email for users to contact admins.
-THEME_ACCOUNT_CONTACT_EMAIL = 'support@dream.upd.edu.ph'
+THEME_ACCOUNT_CONTACT_EMAIL = 'lipad-support@dream.upd.edu.ph'
+LIPAD_SUPPORT_MAIL = 'lipad-support@dream.upd.edu.ph'
+FTP_SUPPORT_MAIL = 'support@dream.upd.edu.ph'
 FTP_AUTOMAIL = 'automailer@dream.upd.edu.ph'
 
 #
@@ -896,6 +898,20 @@ djcelery.setup_loader()
 #TILED_SHAPEFILE = "geonode:cut_phl_001k_grid_utm_z51n"
 TILED_SHAPEFILE = "geonode:index"
 TILED_SHAPEFILE_TEST = "geonode:index"
+EULA_URL = '/eula/eula_form/'
+SELECTION_LIMIT=209715200
+
+CEPHACCESS_HOST = 'cephaccess@cephaccess'
+CEPHACCESS_DL_SCRIPT = '/path/to/download.py'
+
+CEPH_OGW = {
+    'default' : {
+        'USER' : 'geonode:swift',
+        'KEY' : 'Ry3meRcVwVkff3G2O1vSy0PmUvUcXCzvWNZic04B',
+        'LOCATION' : 'https://cephclient.lan.dream.upd.edu.ph',
+        'CONTAINER' : 'geo-container',
+    }
+}
 
 # Load more settings from a file called local_settings.py if it exists
 try:
@@ -929,5 +945,3 @@ if 'geonode.geoserver' in GEONODE_APPS:
     baselayers = MAP_BASELAYERS
     MAP_BASELAYERS = [LOCAL_GEOSERVER]
     MAP_BASELAYERS.extend(baselayers)
-
-

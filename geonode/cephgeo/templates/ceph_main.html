@@ -15,16 +15,9 @@
     <div class="col-md-3">
         <div class="selections">
             <nav class="filter">
-                <h4><a href="{% url 'maptiles.views.tiled_view' %}" class="toggle toggle-nav"><i class="fa fa-circle-o-notch fa-rotate-90"></i>MapTiles</a></h4>
-                <h4><a href="{% url 'cephgeo.views.file_list_geonode' %}" class="toggle toggle-nav"><i class="fa fa-circle-o-notch fa-rotate-90"></i>Datastore Files</a></h4>
-                {% if request.user.is_superuser %}
-                    <h4><a href="{% url 'cephgeo.views.file_list_ceph' %}" class="toggle toggle-nav"><i class="fa fa-circle-o-notch fa-rotate-90"></i>Ceph Data Objects</a></h4>
-                {% endif %}
-                <h4><a href="{% url 'cephgeo.views.get_cart' %}" class="toggle toggle-nav"><i class="fa fa-circle-o-notch fa-rotate-90"></i>Data Cart</a></h4>
-                <h4><a href="{% url 'cephgeo.views.ftp_request_list' %}" class="toggle toggle-nav"><i class="fa fa-circle-o-notch fa-rotate-90"></i>FTP Requests</a></h4>
-                {% if request.user.is_superuser %}
-                    <h4><a href="{% url 'cephgeo.views.data_input' %}" class="toggle toggle-nav"><i class="fa fa-circle-o-notch fa-rotate-90"></i>Metadata Input</a></h4>
-                {% endif %}
+                <h4><a href="{% url 'maptiles.views.tiled_view' %}" class="toggle toggle-nav"><i class="fa fa-globe"></i>MapTiles</a></h4>
+                <h4><a href="{% url 'cephgeo.views.get_cart' %}" class="toggle toggle-nav"><i class="fa fa-shopping-cart"></i>Data Cart</a></h4>
+                <h4><a href="{% url 'cephgeo.views.ftp_request_list' %}" class="toggle toggle-nav"><i class="fa fa-database"></i>FTP Requests</a></h4>
             </nav>
         </div>
     </div>
