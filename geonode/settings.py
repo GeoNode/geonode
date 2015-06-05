@@ -930,12 +930,4 @@ if 'geonode.geoserver' in GEONODE_APPS:
     MAP_BASELAYERS = [LOCAL_GEOSERVER]
     MAP_BASELAYERS.extend(baselayers)
 
-CEPH_OGW = {
-    'default' : {
-        'USER' : 'geonode:swift',
-        'KEY' : 'Ry3meRcVwVkff3G2O1vSy0PmUvUcXCzvWNZic04B',
-        'LOCATION' : 'https://cephclient.lan.dream.upd.edu.ph',
-        'CONTAINER' : 'geo-container',
-    }
-}
 
