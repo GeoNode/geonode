@@ -315,31 +315,13 @@
       query_api($scope.query);
     }
 
-    $scope.single_choice_listener = function($event){
-      var element = $($event.target);
-      var query_entry = [];
-      var data_filter = element.attr('data-filter');
-      var value = element.attr('data-value');
-
-      // If the query object has the record then grab it 
-      if ($scope.query.hasOwnProperty(data_filter)){
-        query_entry = $scope.query[data_filter];
-      }
-
-      if(!element.hasClass('selected')){
-        // Add the entry in the correct query
-        query_entry = value;
-
-        // clear the active class from it
-        element.parents('ul').find('a').removeClass('selected');
-
-        element.addClass('selected');
-
-        //save back the new query entry to the scope query
-        $scope.query[data_filter] = query_entry;
-
-        query_api($scope.query);
-      }     
+    /*
+    * Setting the query to a single element - replaces single_choice_listener
+    */
+    $scope.set_query = function(filter, value) {
+      $scope.query = {};
+      $scope.query[filter] = value;
+      query_api($scope.query);
     }
 
     /*
