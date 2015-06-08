@@ -36,8 +36,14 @@
     <div class="col-md-3">
         <ul class="list-group">
             <li class="list-group-item">
-                Bounding box selection
-                <input type="submit" id="bbox_submit" name="bbox_submit" value="Submit Bounding Box limits" class="btn btn-default" />
+                <form id="bbox_form">
+                    Bounding box selection <br />
+                    Upper limit: <input type="text" name="upperlimit"/><br />
+                    Left limit: <input type="text" name="leftlimit"/><br />
+                    Right limit: <input type="text" name="rightlimit"/><br />
+                    Lower limit:<input type="text" name="lowerlimit"/><br />
+                    <input type="submit" id="bbox_submit" name="bbox_submit" value="Submit Bounding Box" class="btn btn-default" />
+                </form>
             </li>
             <li class="list-group-item">
                 Area of Interest
