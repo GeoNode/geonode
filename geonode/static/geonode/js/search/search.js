@@ -212,6 +212,10 @@
       });
     }
 
+    $scope.get_url = function() {
+      return Configs.url;
+    }
+
     /*
     * Pagination 
     */
