@@ -171,7 +171,7 @@
 
     //Get data from apis and make them available to the page
     function query_api(data){
-      $http.get(Configs.url, {params: data || {}}).success(function(data){
+      return $http.get(Configs.url, {params: data || {}}).success(function(data){
         $scope.results = data.objects;
         $scope.total_counts = data.meta.total_count;
         $scope.$root.query_data = data;
@@ -203,6 +203,14 @@
     };
     query_api($scope.query);
 
+    $scope.change_api = function(api_endpoint) {
+      Configs.url = "/api/" + api_endpoint + "/";
+      $scope.query.limit = 100;
+      $scope.query.offset = 0;
+      return query_api($scope.query).then(function(result) {
+        return result;
+      });
+    }
 
     /*
     * Pagination 
