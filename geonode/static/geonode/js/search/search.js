@@ -448,18 +448,14 @@
           hideAfter: 200,
           minimumCharacters: 1,
           appendAutocomplete: $('#region_search_input'),
-          placeholder: gettext('Enter your region here ...')
+          placeholder: gettext('Enter region here ...')
     });
+
     $('#region_search_input').bind('selectChoice', function(e, choice, region_autocomplete) {
           if(choice[0].children[0] == undefined) {
               $('#region_search_input').val(choice[0].innerHTML);
-              $('#region_search_btn').click();
+              $scope.region_query = choice[0].innerHTML;
           }
-    });
-
-    $('#region_search_btn').click(function(){
-        $scope.query['regions__name__in'] = $('#region_search_input').val();
-        query_api($scope.query);
     });
 
     $scope.feature_select = function($event){
