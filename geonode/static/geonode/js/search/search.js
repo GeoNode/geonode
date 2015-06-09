@@ -325,6 +325,80 @@
     }
 
     /*
+    * Add the query, replacing any current query
+    */
+    $scope.add_single_query = function(filter, value) {
+      $scope.query[filter] = value;
+      query_api($scope.query);
+    }
+
+    /*
+    * Add the query, appending it to any current query
+    */
+    $scope.add_query = function(filter, value) {
+      var query_entry = [];
+      if ($scope.query.hasOwnProperty(filter)) {
+        if ($scope.query[filter] instanceof Array) {
+          query_entry = $scope.query[filter];
+        } else {
+          query_entry.push($scope.query[filter]);
+        }
+        // Only add it if this value doesn't already exist
+        // Apparently this doesn't exactly work...
+        if ($scope.query[filter].indexOf(value) == -1) {
+          query_entry.push(value);
+        }
+      } else {
+        query_entry = [value];
+      }
+      $scope.query[filter] = query_entry;
+      query_api($scope.query);
+    }
+
+    /*
+    * Toggle adding/removing this filter
+    */
+    $scope.toggle_query = function(toggle, filter, value) {
+      if (toggle) {
+        $scope.add_query(filter, value);
+      } else {
+        $scope.remove_query(filter, value);
+      }
+    }
+
+    /*
+    * Remove the query
+    */
+    $scope.remove_query = function(filter, value) {
+      var query_entry = [];
+      // First check if this even exists to remove
+      if ($scope.query.hasOwnProperty(filter)) {
+        // Grab the current query
+        if ($scope.query[filter] instanceof Array) {
+          query_entry = $scope.query[filter];
+        } else {
+          query_entry.push($scope.query[filter]);
+        }
+        // Remove this value
+        query_entry.splice(query_entry.indexOf(value), 1);
+        // Update and run the query
+        $scope.query[filter] = query_entry;
+        query_api($scope.query);
+      }
+    }
+
+    /*
+    * Delete all parts of this filter
+    */
+    $scope.delete_query = function(filter) {
+      // First check if this even exists to remove
+      if ($scope.query.hasOwnProperty(filter)) {
+        $scope.query[filter] = [];
+        query_api($scope.query);
+      }
+    }
+
+    /*
     * Text search management
     */
     var text_autocomplete = $('#text_search_input').yourlabsAutocomplete({
