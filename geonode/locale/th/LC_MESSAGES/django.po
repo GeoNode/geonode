@@ -15,9 +15,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-05-18 12:10-0500\n"
-"PO-Revision-Date: 2015-05-18 16:26+0000\n"
-"Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
+"POT-Creation-Date: 2015-06-09 15:38-0500\n"
+"PO-Revision-Date: 2015-05-26 06:50+0000\n"
+"Last-Translator: keeratipong petchadapong <jobcskku@hotmail.com>\n"
 "Language-Team: Thai (http://www.transifex.com/projects/p/geonode/language/"
 "th/)\n"
 "Language: th\n"
@@ -64,7 +64,7 @@ msgstr "ข้อมูลที่ไม่ใช่ข้อมูลทาง
 
 #: base/enumerations.py:34
 msgid "property type"
-msgstr "ประเภทอสังหาริมทรัพย์"
+msgstr "ประเภทคุณสมบัติ"
 
 #: base/enumerations.py:35
 msgid "field session"
@@ -784,11 +784,11 @@ msgstr "ล้าง"
 msgid "Upload Document"
 msgstr "อัพโหลดเอกสาร"
 
-#: geoserver/helpers.py:964
+#: geoserver/helpers.py:973
 msgid "An exception occurred loading data to PostGIS"
 msgstr "เกิดข้อผิดพลาดระหว่างโหลดข้อมูลไปยัง PostGIS"
 
-#: geoserver/helpers.py:969
+#: geoserver/helpers.py:978
 msgid " Additionally an error occured during database cleanup"
 msgstr "เกิดข้อผิดพลาดในระหว่างการทำความสะอาดฐานข้อมูล"
 
@@ -2560,7 +2560,7 @@ msgstr "โปรไฟล์ของ"
 
 #: people/templates/people/profile_detail.html:19
 msgid "Message User"
-msgstr "ส่งข้อความหาผู้ใช้"
+msgstr "ส่งข้อความถึงผู้ใช้"
 
 #: people/templates/people/profile_detail.html:25
 msgid "Email"
@@ -2591,7 +2591,7 @@ msgstr "องค์กร"
 
 #: people/templates/people/profile_detail.html:46
 msgid "Location"
-msgstr ""
+msgstr "ตำแหน่ง"
 
 #: people/templates/people/profile_detail.html:58
 msgid "Fax"
@@ -2989,6 +2989,11 @@ msgid ""
 "GeoNode/geonode/issues\">GeoNode's issue tracker</a>\n"
 "            "
 msgstr ""
+"\n"
+"โปรดติดต่อผู้ดูแลระบบ GeoNode ของท่าน "
+"(เขาอาจจะได้รับอีเมล์โดยอัตโนมัติแล้วถ้าเขาตั้งค่าไว้อย่างถูกต้อง) ถ้าคุณเป็นผู้ดูแลระบบ "
+"ให้เปิดใช้งาน debug mode เพื่อดูข้อผิดพลาดที่เกิดขึ้นแล้วแก้ไขมันหรือส่งปัญหาไปที่ <a href="
+"\"http://github.com/GeoNode/geonode/issues\">GeoNode's issue tracker</a>"
 
 #: templates/500.html:149 templates/base.html:141
 msgid "Powered by"
@@ -3720,11 +3725,11 @@ msgstr "การจัดการ GeoNode"
 
 #: templates/announcements/announcement_confirm_delete.html:10
 msgid "Delete Announcement?"
-msgstr ""
+msgstr "ลบประกาศ?"
 
 #: templates/announcements/announcement_confirm_delete.html:13
 msgid "Are you sure you want to delete this announcement?"
-msgstr ""
+msgstr "คุณแน่ใจแล้วหรือว่าต้องการลบประกาศนี้?"
 
 #: templates/announcements/announcement_form.html:11
 msgid "Edit Announcement"
@@ -4035,7 +4040,7 @@ msgstr "แผนที่ได้รับการปรับปรุงแ
 
 #: templates/notification/request_download_resourcebase/full.txt:3
 msgid "requested you to download this resource"
-msgstr ""
+msgstr "ร้องขอการดาวน์โหลดทรัพยากรนี้"
 
 #: templates/notification/request_download_resourcebase/full.txt:9
 msgid "Document"

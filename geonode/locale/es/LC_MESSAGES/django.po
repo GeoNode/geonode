@@ -22,14 +22,14 @@
 # Scott Clark <sctevl@gmail.com>, 2013
 # Scott Clark <sctevl@gmail.com>, 2013
 # Sergio Luis Arnal <sergioarnal@gmail.com>, 2013
-# Sergio Luis Arnal <sergioarnal@gmail.com>, 2013-2014
+# Sergio Luis Arnal <sergioarnal@gmail.com>, 2013-2015
 msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-05-18 12:10-0500\n"
-"PO-Revision-Date: 2015-05-18 16:26+0000\n"
-"Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
+"POT-Creation-Date: 2015-06-09 15:38-0500\n"
+"PO-Revision-Date: 2015-06-03 20:50+0000\n"
+"Last-Translator: Sergio Luis Arnal <sergioarnal@gmail.com>\n"
 "Language-Team: Spanish (http://www.transifex.com/projects/p/geonode/language/"
 "es/)\n"
 "Language: es\n"
@@ -416,11 +416,11 @@ msgstr "Por ejemplo \"text/xml\""
 
 #: base/management/__init__.py:14
 msgid "Request to download a resource"
-msgstr ""
+msgstr "Solicitud para descargar un recurso"
 
 #: base/management/__init__.py:15
 msgid "A request for downloading a resource was sent"
-msgstr ""
+msgstr "Se envió una solicitud para descargar un recurso"
 
 #: base/templates/base/_resourcebase_contact_snippet.html:3
 #: templates/500.html:151 templates/base.html:143
@@ -582,43 +582,43 @@ msgstr "Usted no esta autorizado para editar este documento."
 
 #: documents/management/__init__.py:14
 msgid "Document Created"
-msgstr ""
+msgstr "Documento Creado"
 
 #: documents/management/__init__.py:15
 msgid "A Document was created"
-msgstr ""
+msgstr "Un documento fue creado"
 
 #: documents/management/__init__.py:18
 msgid "Document Updated"
-msgstr ""
+msgstr "Documento Actualizado"
 
 #: documents/management/__init__.py:19
 msgid "A Document was updated"
-msgstr ""
+msgstr "Un documento fue actualizado"
 
 #: documents/management/__init__.py:22
 msgid "Document Deleted"
-msgstr ""
+msgstr "Documento eliminado"
 
 #: documents/management/__init__.py:23
 msgid "A Document was deleted"
-msgstr ""
+msgstr "Un documento fué eliminado "
 
 #: documents/management/__init__.py:26
 msgid "Comment on Document"
-msgstr ""
+msgstr "Opinión sobre el documento"
 
 #: documents/management/__init__.py:27
 msgid "A Document was commented on"
-msgstr ""
+msgstr "Un documento fue comentado"
 
 #: documents/management/__init__.py:30
 msgid "Document for Map"
-msgstr ""
+msgstr "Documento para el Mapa"
 
 #: documents/management/__init__.py:31
 msgid "A rating was given to a document"
-msgstr ""
+msgstr "Una calificación se le dio a un documento"
 
 #: documents/templates/documents/document_detail.html:39
 msgid "External Resource"
@@ -643,7 +643,7 @@ msgstr "Descargar Documento"
 #: documents/templates/documents/document_detail.html:89
 #: layers/templates/layers/layer_detail.html:139
 msgid "Request Download"
-msgstr ""
+msgstr "Solicitud de descarga"
 
 #: documents/templates/documents/document_detail.html:95
 #: documents/templates/documents/document_detail.html:102
@@ -656,12 +656,12 @@ msgstr "Editar Documento"
 #: maps/templates/maps/map_detail.html:108
 #: maps/templates/maps/map_detail.html:122
 msgid "Edit"
-msgstr ""
+msgstr "Edición"
 
 #: documents/templates/documents/document_detail.html:119
 #: layers/templates/layers/layer_detail.html:214
 msgid "Replace"
-msgstr ""
+msgstr "Remplaza"
 
 #: documents/templates/documents/document_detail.html:122
 #: groups/templates/groups/group_members.html:33
@@ -745,7 +745,7 @@ msgstr "Editar Metadatos"
 
 #: documents/templates/documents/document_metadata.html:22
 msgid "Editing details for"
-msgstr ""
+msgstr "Detalles de edición para"
 
 #: documents/templates/documents/document_metadata.html:26
 #: layers/templates/layers/layer_metadata.html:29
@@ -815,11 +815,11 @@ msgstr "Borrar"
 msgid "Upload Document"
 msgstr "Carga Documento"
 
-#: geoserver/helpers.py:964
+#: geoserver/helpers.py:973
 msgid "An exception occurred loading data to PostGIS"
 msgstr ""
 
-#: geoserver/helpers.py:969
+#: geoserver/helpers.py:978
 msgid " Additionally an error occured during database cleanup"
 msgstr ""
 
