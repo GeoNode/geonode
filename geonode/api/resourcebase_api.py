@@ -48,7 +48,7 @@ class CommonMetaApi:
                  'owner': ALL_WITH_RELATIONS,
                  'date': ALL,
                  }
-    ordering = ['date', 'title', 'popular_count']
+    ordering = ['date', 'title', 'popular_count', 'rating']
     max_limit = None
 
 
