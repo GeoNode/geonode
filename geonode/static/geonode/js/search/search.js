@@ -458,6 +458,24 @@
           }
     });
 
+    /*
+    * Keyword search management
+    */
+    var keyword_autocomplete = $('#keyword_search_input').yourlabsAutocomplete({
+          url: AUTOCOMPLETE_URL_KEYWORD,
+          choiceSelector: 'span',
+          hideAfter: 200,
+          minimumCharacters: 1,
+          appendAutocomplete: $('#keyword_search_input'),
+          placeholder: gettext('Enter keyword here ...')
+    });
+    $('#keyword_search_input').bind('selectChoice', function(e, choice, keyword_autocomplete) {
+          if(choice[0].children[0] == undefined) {
+              $('#keyword_search_input').val(choice[0].innerHTML);
+              $scope.keyword_query = choice[0].innerHTML;
+          }
+    });
+
     $scope.feature_select = function($event){
       var element = $($event.target);
       var article = $(element.parents('article')[0]);
