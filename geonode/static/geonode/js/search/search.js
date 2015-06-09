@@ -398,6 +398,21 @@
       }
     }
 
+    $scope.add_search = function(filter, value, array) {
+      if (array.indexOf(value) == -1) {
+        array.push(value);
+        $scope.add_query(filter, value);
+      }
+    }
+
+    $scope.remove_search = function(filter, value, array) {
+      var index = array.indexOf(value);
+      if (index != -1) {
+        array.splice(index, 1);
+        $scope.remove_query(filter, value);
+      }
+    }
+
     /*
     * Text search management
     */
