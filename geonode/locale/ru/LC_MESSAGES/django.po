@@ -16,8 +16,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-05-18 12:10-0500\n"
-"PO-Revision-Date: 2015-05-18 16:26+0000\n"
+"POT-Creation-Date: 2015-06-09 15:38-0500\n"
+"PO-Revision-Date: 2015-05-18 18:18+0000\n"
 "Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
 "Language-Team: Russian (http://www.transifex.com/projects/p/geonode/language/"
 "ru/)\n"
@@ -802,11 +802,11 @@ msgstr "Очистить"
 msgid "Upload Document"
 msgstr "Загрузить документ"
 
-#: geoserver/helpers.py:964
+#: geoserver/helpers.py:973
 msgid "An exception occurred loading data to PostGIS"
 msgstr "Произошла ошибка при загрузке данных в PostGIS"
 
-#: geoserver/helpers.py:969
+#: geoserver/helpers.py:978
 msgid " Additionally an error occured during database cleanup"
 msgstr "Также произошла ошибка при очистке базы данных"
 

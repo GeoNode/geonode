@@ -18,9 +18,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-05-18 12:10-0500\n"
-"PO-Revision-Date: 2015-05-18 16:26+0000\n"
-"Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
+"POT-Creation-Date: 2015-06-09 15:38-0500\n"
+"PO-Revision-Date: 2015-05-26 11:21+0000\n"
+"Last-Translator: Minpa Lee <mapplus@gmail.com>\n"
 "Language-Team: Korean (http://www.transifex.com/projects/p/geonode/language/"
 "ko/)\n"
 "Language: ko\n"
@@ -795,11 +795,11 @@ msgstr "취소"
 msgid "Upload Document"
 msgstr "문서 업로드"
 
-#: geoserver/helpers.py:964
+#: geoserver/helpers.py:973
 msgid "An exception occurred loading data to PostGIS"
 msgstr "PostGIS에 데이터를 로딩하는 중 오류가 발생했습니다"
 
-#: geoserver/helpers.py:969
+#: geoserver/helpers.py:978
 msgid " Additionally an error occured during database cleanup"
 msgstr "추가적으로 데이터베이스를 정리하는 중 오류가 발생했습니다"
 
@@ -845,7 +845,7 @@ msgstr "레이어의 다운로드 링크를 생성할 수 없습니다."
 
 #: geoserver/views.py:335
 msgid "You don't have permissions to change style for this layer"
-msgstr "이 레이어의 스타일을 변경할 수있는 권한이 없습니다"
+msgstr "이 레이어의 스타일을 변경할 수 있는 권한이 없습니다"
 
 #: geoserver/views.py:422 geoserver/views.py:477
 msgid "Bad HTTP Authorization Credentials."
@@ -1418,7 +1418,7 @@ msgstr "표준편차"
 
 #: layers/templates/layers/layer_detail.html:114
 msgid "Rate this layer"
-msgstr "이 레이어 평가"
+msgstr "레이어 평점 주기"
 
 #: layers/templates/layers/layer_detail.html:136
 #: layers/templates/layers/layer_detail.html:149
@@ -3017,6 +3017,12 @@ msgid ""
 "GeoNode/geonode/issues\">GeoNode's issue tracker</a>\n"
 "            "
 msgstr ""
+"\n"
+"GeoNode 관리자에게 문의하십시오(제대로 설정한 경우 자동으로 관리자가 이메일"
+"을 받을 수 있습니다). \n"
+"당신이 사이트 관리자인 경우, 디버그 모드를 활성화하고 실제 오류를 확인 후 수"
+"정하거나 또는 <a href=\"http://github.com/GeoNode/geonode/issues\">GeoNode 이"
+"슈 트래커</a>에 문제를 보고할 수 있습니다."
 
 #: templates/500.html:149 templates/base.html:141
 msgid "Powered by"
@@ -3137,7 +3143,7 @@ msgstr "다음 그룹:"
 
 #: templates/_permissions.html:40
 msgid "Who can download it?"
-msgstr "누구를 다운로드 할 수 있습니까?"
+msgstr "누가 다운로드 할 수 있습니까?"
 
 #: templates/_permissions.html:72
 msgid "Who can change metadata for it?"
@@ -3586,6 +3592,9 @@ msgid ""
 "\"http://lists.osgeo.org/cgi-bin/mailman/listinfo/geonode-users\">mailing "
 "list</a>."
 msgstr ""
+"소프트웨어나 서비스에 대한 문의 사항이 있으면, GeoNode  <a href=\"http://"
+"lists.osgeo.org/cgi-bin/mailman/listinfo/geonode-users\">메일 링리스트</a>에 "
+"가입하십시오 ."
 
 #: templates/index.html:18
 msgid "Need help?"
@@ -3610,8 +3619,8 @@ msgid ""
 "Click to search for geospatial data published by other users, organizations "
 "and public sources. Download data in standard formats."
 msgstr ""
-"다른 사용자 단체와 공개 된 자료에 의해 출판 지리 공간 데이터를 검색하려면 클"
-"릭합니다. 표준 형식의 데이터 다운로드."
+"타 사용자, 기관, 공개된 자료에 의해 게시된 지리공간 데이터를 검색하려면 클릭"
+"합니다. 표준 형식으로 데이터를 다운로드합니다."
 
 #: templates/index.html:33
 msgid "Add layers"
@@ -3631,8 +3640,8 @@ msgid ""
 "Data is available for browsing, aggregating and styling to generate maps "
 "which can be shared publicly or restricted to specific users only."
 msgstr ""
-"데이터는 특정 사용자에게 공개적으로 공유하거나 제한 할 수 있습니다지도를 생성"
-"하는 검색, 집계 및 스타일 사용할 수 있습니다."
+"공개적으로 공유하거나 특정 사용자에게만 공유를 제한하기 위한 지도를 생성하기 "
+"위해서, 데이터는 탐색, 집계 및 스타일링을 사용할 수 있습니다."
 
 #: templates/index.html:43
 msgid "Create maps"
@@ -3652,8 +3661,8 @@ msgid ""
 "GeoNode allows registered users to easily upload geospatial data in several "
 "formats including shapefile and GeoTiff."
 msgstr ""
-"GeoNode 등록 된 사용자가 쉽게 Shape 파일과 GEOTIFF 등 여러 가지 형식으로 지"
-"리 공간 데이터를 업로드 할 수 있습니다."
+"GeoNode는 등록된 사용자가 쉽게 Shape 파일과 GEOTIFF 등 여러 가지 형식의 지리"
+"공간 데이터를 업로드 할 수 있습니다."
 
 #: templates/index.html:52
 msgid "See users"
@@ -3809,11 +3818,11 @@ msgstr "GeoNode 관리"
 
 #: templates/announcements/announcement_confirm_delete.html:10
 msgid "Delete Announcement?"
-msgstr ""
+msgstr "공지사항을 삭제하시겠습니까?"
 
 #: templates/announcements/announcement_confirm_delete.html:13
 msgid "Are you sure you want to delete this announcement?"
-msgstr ""
+msgstr "이 공지사항을 정말로 삭제하시겠습니까?"
 
 #: templates/announcements/announcement_form.html:11
 msgid "Edit Announcement"

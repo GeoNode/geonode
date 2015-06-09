@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-05-18 12:10-0500\n"
+"POT-Creation-Date: 2015-06-09 15:38-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -773,11 +773,11 @@ msgstr ""
 msgid "Upload Document"
 msgstr ""
 
-#: geoserver/helpers.py:964
+#: geoserver/helpers.py:973
 msgid "An exception occurred loading data to PostGIS"
 msgstr ""
 
-#: geoserver/helpers.py:969
+#: geoserver/helpers.py:978
 msgid " Additionally an error occured during database cleanup"
 msgstr ""
 
