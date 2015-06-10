@@ -35,7 +35,7 @@
     <dd>{{ resource.display_type }}</dd>
     {% endif %}
 
-    {% if resource.keywords %}
+    {% if resource.keywords.count > 0 %}
     <dt>{% trans "Keywords" %}</dt>
     <dd>
       {% for keyword in resource.keywords.all %}
