@@ -200,7 +200,7 @@ def georefs_validation(request):
         
         yesterday = datetime.now() -  timedelta(days=1)
         
-        requests_last24h = FTPRequest.objects.filter(date_time__gt=yesterday)
+        requests_last24h = FTPRequest.objects.filter(date_time__gt=yesterday, user=request.user)
         
         total_size = 0
         for georef in georefs_list:
