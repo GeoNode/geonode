@@ -8,10 +8,11 @@ import views
 
 
 urlpatterns = patterns('',
-						url(r'^/?$',views.tiled_view,name='maptiles_main'),
-                        url(r'^test/?$',views.tiled_view, { "overlay": settings.TILED_SHAPEFILE_TEST } ),
-                        url(r'^interest/(?P<interest>[^/]*)$', views.tiled_view, {"overlay": settings.TILED_SHAPEFILE_TEST}),
-                        url(r'^addtocart/?$',views.process_georefs),
-                        url(r'^validate/?$',views.georefs_validation)
-                        
+						url(r'^/?$', views.tiled_view, name='maptiles_main'),
+                        url(r'^test/?$', views.tiled_view, { "overlay": settings.TILED_SHAPEFILE_TEST } ),
+                        url(r'^interest=(?P<interest>[^/]*)$', views.tiled_view, {"overlay": settings.TILED_SHAPEFILE_TEST}),
+                        url(r'^addtocart/?$', views.process_georefs),
+                        url(r'^validate/?$', views.georefs_validation),
+                        url(r'^provinces/?$', views.province),
+                        url(r'^provinces/?P<province>[^/]*)$', views.province),
 						)
