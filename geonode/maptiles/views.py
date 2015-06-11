@@ -22,6 +22,7 @@ from geonode.security.views import _perms_info_json
 from geonode.cephgeo.models import CephDataObject, DataClassification, FTPRequest
 from geonode.cephgeo.cart_utils import *
 from geonode.documents.models import get_related_documents
+from geonode.registration.models import province, municipality 
 
 import geonode.settings as settings
 
@@ -226,5 +227,30 @@ def georefs_validation(request):
                 #mimetype='text/plain'
                 content_type="application/json"
             )
+
+@login_required
+def province(request, province=""):
+    if province="":
+        provinces = []
+        for p in Province.objects.all():
+            p.append(p.province_name)
+            
+        return HttpResponse(
+            content=json.dumps({"provinces":provinces}),
+            status=200,
+            content_type="application/json"
+        )
+    else:
+        provinceObject = Province.objects.get(province_name=province)
+        municipalities = []
+        for m in Municipality.objects.filter(province__province_name="province"):
+            m.append(m.municipality_name)
+            
+        return HTTPResponse(
+            content=json.dumps({"province":province, "municipalities": municipalities }),
+            status=200
+            content_type="application/json"
+        )
+    
 
     
