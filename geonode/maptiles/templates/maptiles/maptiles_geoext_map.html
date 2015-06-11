@@ -123,10 +123,10 @@ function display_points(div_id, vec_layer){
             georef_column.innerHTML = tile_list[i*5+j].georef
             row_element.appendChild(georef_column);
             
-            if(i == 0){
-                georef_string+=tile_list[i].georef;
+            if(i*5+j == 0){
+                georef_string+=tile_list[i*5+j].georef;
             }else{
-                  georef_string+=","+tile_list[i].georef;
+                georef_string+=","+tile_list[i*5+j].georef;
             }
         }
     }
