@@ -17,7 +17,7 @@
   <div class="page-header">
   {% if not cart.is_empty %}
     <ul class="list-inline pull-right" id="sort">
-      <li><a href="{% url 'maptiles.views.tiled_view' %}"><button class="btn btn-default">{% trans "Return to Selection" %}</button></a></li>
+      <li><a href="{% url 'maptiles_main' %}"><button class="btn btn-default">{% trans "Return to Selection" %}</button></a></li>
       <li><button class="btn btn-default" data-toggle="modal" data-target="#eula-dialog">{% trans "Create FTP Folder" %}</a></li>
       <li><a href="{% url 'cephgeo.views.clear_cart' %}"><button class="btn btn-default">{% trans "Empty This Cart" %}</button></a></li>
     </ul>
