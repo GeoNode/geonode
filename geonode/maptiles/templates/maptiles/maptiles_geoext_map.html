@@ -110,13 +110,14 @@ function display_points(div_id, vec_layer){
     container.appendChild(table_element);
     
     var georef_string = "";
-    
+    console.log(tile_list);
     for (var i=0; i< tile_list.length/5; i++){
         var row_element = document.createElement("tr");
         row_element.className += "georef_tr";
         table_element.appendChild(row_element);
-        for (var j = 0; j< 5; j++){
-
+        for (var j = 0; j< Math.min(5, tile_list.length - i*5 ); j++){
+            console.log("current index:"+(i*5+j));
+            console.log("tile list length:"+tile_list.length);
             var georef_column = document.createElement("td");
             georef_column.setAttribute("id",tile_list[i*5+j].georef);
             georef_column.className += "georef_td"
