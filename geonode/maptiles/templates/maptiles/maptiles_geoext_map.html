@@ -130,7 +130,8 @@ function display_points(div_id, vec_layer){
             }
         }
     }
-   document.getElementById("georef_area").setAttribute("value",georef_string);
+    console.log(georef_string);
+    document.getElementById("georef_area").setAttribute("value",georef_string);
 }
 
 function createHighlightBox(feature_attribs){
