@@ -14,8 +14,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-05-18 12:10-0500\n"
-"PO-Revision-Date: 2015-05-18 16:31+0000\n"
+"POT-Creation-Date: 2015-06-09 15:38-0500\n"
+"PO-Revision-Date: 2015-05-18 18:18+0000\n"
 "Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
 "Language-Team: Tamil (http://www.transifex.com/projects/p/geonode/language/"
 "ta/)\n"
@@ -104,7 +104,7 @@ msgstr "கூகிள் எர்த் செய்"
 
 #: static/geonode/js/upload/FileTypes.js:38
 msgid "GeoJSON"
-msgstr ""
+msgstr "GeoJSON "
 
 #: static/geonode/js/upload/FileTypes.js:44
 #: static_root/geonode/js/upload/FileTypes.js:38
