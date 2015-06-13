@@ -10,6 +10,7 @@
 # Translators:
 # Translators:
 # Andres Alfonso Lemon Gomez <lemon.andres@gmail.com>, 2014
+# Bibiana T. de Almeida <bibiana.almeida@embrapa.br>, 2015
 # Davi de O Custodio <davicustodio@gmail.com>, 2015
 # Luiz Fernando Barbosa Vital <luiz.vital@znc.com.br>, 2015
 # Pedro Romildo da Costa <p2pdao@gmail.com>, 2015
@@ -17,9 +18,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-05-18 12:10-0500\n"
-"PO-Revision-Date: 2015-05-18 16:31+0000\n"
-"Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
+"POT-Creation-Date: 2015-06-09 15:38-0500\n"
+"PO-Revision-Date: 2015-06-08 17:30+0000\n"
+"Last-Translator: Bibiana T. de Almeida <bibiana.almeida@embrapa.br>\n"
 "Language-Team: Portuguese (Brazil) (http://www.transifex.com/projects/p/"
 "geonode/language/pt_BR/)\n"
 "Language: pt_BR\n"
@@ -36,7 +37,7 @@ msgstr "Adicionar o usuário ..."
 #: static/geonode/js/extjs/GeoNode.js:72
 #: static_root/geonode/js/extjs/GeoNode.js:72
 msgid "Who can view and download this data?"
-msgstr "Quem pode visualizar e baixar estes dados?"
+msgstr "Quem pode visualizar e fazer download destes dados?"
 
 #: static/geonode/js/extjs/GeoNode.js:72
 #: static_root/geonode/js/extjs/GeoNode.js:72
@@ -75,25 +76,25 @@ msgstr "Entre seu texto aqui ..."
 
 #: static/geonode/js/search/search.js:368
 msgid "Enter your region here ..."
-msgstr "Entre com sua região aqui ..."
+msgstr "Insira sua região aqui ..."
 
 #: static/geonode/js/upload/FileType.js:33
 #: static_root/geonode/js/upload/FileType.js:33
 #, c-format
 msgid "Missing a %s file, which is required"
-msgstr "Faltando um arquivo %s, que é necessário"
+msgstr "Falta um arquivo %s que é necessário"
 
 #: static/geonode/js/upload/FileTypes.js:7
 #: static_root/geonode/js/upload/FileTypes.js:7
 msgid "ESRI Shapefile"
-msgstr "ESRI Shapefile"
+msgstr "Shapefile da ESRI"
 
 #: static/geonode/js/upload/FileTypes.js:13
 #: static/geonode/js/upload/FileTypes.js:19
 #: static_root/geonode/js/upload/FileTypes.js:13
 #: static_root/geonode/js/upload/FileTypes.js:19
 msgid "GeoTiff File"
-msgstr "GeoTiff Arquivo"
+msgstr "Arquivo GeoTiff"
 
 #: static/geonode/js/upload/FileTypes.js:26
 #: static_root/geonode/js/upload/FileTypes.js:26
@@ -103,11 +104,11 @@ msgstr "Arquivo separado por vírgulas"
 #: static/geonode/js/upload/FileTypes.js:32
 #: static_root/geonode/js/upload/FileTypes.js:32
 msgid "Google Earth KML"
-msgstr "Google Earth KML"
+msgstr "KML do Google Earth"
 
 #: static/geonode/js/upload/FileTypes.js:38
 msgid "GeoJSON"
-msgstr ""
+msgstr "GeoJSON"
 
 #: static/geonode/js/upload/FileTypes.js:44
 #: static_root/geonode/js/upload/FileTypes.js:38
@@ -117,7 +118,7 @@ msgstr "Arquivos Zip"
 #: static/geonode/js/upload/LayerInfo.js:231
 #: static_root/geonode/js/upload/LayerInfo.js:231
 msgid "Layer Info"
-msgstr "Camada de Informações"
+msgstr "Informações da camada"
 
 #: static/geonode/js/upload/LayerInfo.js:232
 #: static_root/geonode/js/upload/LayerInfo.js:232
@@ -136,26 +137,25 @@ msgstr "A coluna %1 foi renomeada para %2 <br/>"
 #: static/geonode/js/upload/LayerInfo.js:242
 #: static_root/geonode/js/upload/LayerInfo.js:235
 msgid "Your layer was successfully uploaded"
-msgstr "Sua camada foi enviada com sucesso"
+msgstr "O upload da camada foi feito com sucesso"
 
 #: static/geonode/js/upload/LayerInfo.js:271
 #: static_root/geonode/js/upload/LayerInfo.js:264
 msgid "Performing Final GeoServer Config Step"
-msgstr "Realizando último passo GeoServer config"
+msgstr "Realizando último passo de configuração do GeoServer"
 
 #: static/geonode/js/upload/LayerInfo.js:286
 #: static/geonode/js/upload/LayerInfo.js:312
 #: static_root/geonode/js/upload/LayerInfo.js:279
 #: static_root/geonode/js/upload/LayerInfo.js:305
 msgid "You need to specify more information in order to complete your upload"
-msgstr ""
-"Você precisa especificar mais informações a fim de completar o seu upload"
+msgstr "Você precisa especificar mais informações a fim de completar o upload"
 
 #: static/geonode/js/upload/LayerInfo.js:304
 #: static_root/geonode/js/upload/LayerInfo.js:297
 msgid "You need to specify more information in order to complete your upload."
 msgstr ""
-"Você precisa especificar mais informações, a fim de completar o seu upload."
+"Você precisa especificar mais informações, a fim de completar o upload."
 
 #: static/geonode/js/upload/LayerInfo.js:304
 #: static_root/geonode/js/upload/LayerInfo.js:297
@@ -172,17 +172,17 @@ msgstr "Erro inesperado"
 #: static/geonode/js/upload/LayerInfo.js:338
 #: static_root/geonode/js/upload/LayerInfo.js:331
 msgid "Performing GeoServer Config Step"
-msgstr "Realizando GeoServer config Etapa"
+msgstr "Realizando passo de configuração do GeoServer"
 
 #: static/geonode/js/upload/LayerInfo.js:414
 #: static_root/geonode/js/upload/LayerInfo.js:407
 msgid "Layer files uploaded, configuring in GeoServer"
-msgstr "Arquivos camada carregado, configurando em GeoServer"
+msgstr "Upload de arquivos de camada concluído, em configuração no GeoServer"
 
 #: static/geonode/js/upload/LayerInfo.js:429
 #: static_root/geonode/js/upload/LayerInfo.js:422
 msgid "Select or create a Geogig repository."
-msgstr "Selecione o crie um repositório Geogig"
+msgstr "Selecione ou crie um repositório Geogig."
 
 #: static/geonode/js/upload/LayerInfo.js:524
 #: static_root/admin/js/SelectFilter2.js:69
@@ -195,18 +195,18 @@ msgstr "Remover"
 #, c-format
 msgid "The file %s is an unsupported file type, please select another file."
 msgstr ""
-"O arquivo %s é um tipo de arquivo não suportado, por favor selecione outro "
-"arquivo."
+"O arquivo %s é de um tipo de arquivo não suportado, por favor selecione "
+"outro arquivo."
 
 #: static/geonode/js/upload/upload.js:260
 #: static_root/geonode/js/upload/upload.js:260
 msgid "You are uploading an incomplete set of files."
-msgstr "Você está carregando um conjunto incompleto de arquivos."
+msgstr "Você está fazendo upload de um conjunto incompleto de arquivos."
 
 #: static_root/admin/js/SelectFilter2.js:45
 #, c-format
 msgid "Available %s"
-msgstr "Disponível %s"
+msgstr "%s disponível"
 
 #: static_root/admin/js/SelectFilter2.js:46
 #, c-format
@@ -250,8 +250,9 @@ msgid ""
 "This is the list of chosen %s. You may remove some by selecting them in the "
 "box below and then clicking the \"Remove\" arrow between the two boxes."
 msgstr ""
-"Esta é a lista de %s escolhidos. Você pode remover algum ítem selecionando "
-"na caixa abaixo e clicando na seta \"Remover\" entre as duas caixas."
+"Esta é a lista de %s escolhidos(as). Você pode remover algum ítem "
+"selecionando-o na caixa abaixo e clicando na seta \"Remover\" entre as duas "
+"caixas."
 
 #: static_root/admin/js/SelectFilter2.js:80
 msgid "Remove all"
@@ -260,7 +261,7 @@ msgstr "Remover todos"
 #: static_root/admin/js/SelectFilter2.js:80
 #, c-format
 msgid "Click to remove all chosen %s at once."
-msgstr "Clique para remover todos %s de uma vez."
+msgstr "Clique para remover todos(as) %s selecionados(as) de uma vez."
 
 #: static_root/admin/js/actions.js:18 static_root/admin/js/actions.min.js:1
 msgid "%(sel)s of %(cnt)s selected"
@@ -273,8 +274,8 @@ msgid ""
 "You have unsaved changes on individual editable fields. If you run an "
 "action, your unsaved changes will be lost."
 msgstr ""
-"Você tem modificações não gravadas em campos individuais editáveis. Se você "
-"executar esta ação, suas modificações não gravadas serão perdidas."
+"Há modificações não gravadas em campos editáveis individuais. Se você "
+"executar uma ação, as modificações não gravadas serão perdidas."
 
 #: static_root/admin/js/actions.js:121 static_root/admin/js/actions.min.js:5
 msgid ""
@@ -292,8 +293,8 @@ msgid ""
 "fields. You're probably looking for the Go button rather than the Save "
 "button."
 msgstr ""
-"Você selecionou uma ação, e não fez modificações em campos individuais. Você "
-"provavelmente está procurando pelo botão Avançar ao invés do botão Gravar."
+"Você selecionou uma ação, mas não fez modificações em campos individuais. "
+"Você provavelmente está procurando pelo botão Ir em vez do botão Salvar."
 
 #: static_root/admin/js/calendar.js:8
 msgid ""
@@ -370,7 +371,7 @@ msgstr "Salvar como cópia"
 
 #: templates/lang.js:11
 msgid "About this Map"
-msgstr "Sobre este Mapa"
+msgstr "Sobre este mapa"
 
 #: templates/lang.js:12 templates/lang.js.c:96 templates/lang.js.c:165
 msgid "Abstract"
@@ -399,7 +400,7 @@ msgstr "Detalhes ..."
 
 #: templates/lang.js:28 templates/lang.js.c:31
 msgid "Add Layers"
-msgstr "Adicionar Camadas"
+msgstr "Adicionar camadas"
 
 #: templates/lang.js:29
 msgid "Area"
@@ -423,7 +424,7 @@ msgstr "Altura"
 
 #: templates/lang.js:36
 msgid "Get Feature Info"
-msgstr "Seja Recurso Informações"
+msgstr "Obter informações do recurso"
 
 #: templates/lang.js:37 templates/lang.js.c:122
 msgid "Large"
@@ -439,7 +440,7 @@ msgstr "Camadas do mapa"
 
 #: templates/lang.js:40
 msgid "View available data from:"
-msgstr "Ver dados disponíveis a partir de:"
+msgstr "Visualizar dados disponíveis a partir de:"
 
 #: templates/lang.js:41
 msgid "Data"
@@ -451,7 +452,7 @@ msgstr "Camadas"
 
 #: templates/lang.js:43
 msgid "Legend"
-msgstr "Lenda"
+msgstr "Legenda"
 
 #: templates/lang.js:44
 msgid "Length"
@@ -463,7 +464,7 @@ msgstr "Carregando mapa ..."
 
 #: templates/lang.js:46 templates/lang.js.c:123
 msgid "Map Size"
-msgstr "Mapa Tamanho"
+msgstr "Tamanho do mapa"
 
 #: templates/lang.js:47
 msgid "Measure"
@@ -483,31 +484,31 @@ msgstr "Mini"
 
 #: templates/lang.js:51
 msgid "Pan Map"
-msgstr "Pan Mapa"
+msgstr "Movimentar mapa (panorâmica)"
 
 #: templates/lang.js:52
 msgid "Zoom to Next Extent"
-msgstr "Amplie a próxima extensão"
+msgstr "Zoom para próxima extensão"
 
 #: templates/lang.js:53
 msgid "Zoom to Previous Extent"
-msgstr "Zoom na Extensão Anterior"
+msgstr "Zoom para extensão anterior"
 
 #: templates/lang.js:54
 msgid "This map has not yet been saved."
-msgstr "O mapa ainda não foi salvo."
+msgstr "Este mapa ainda não foi salvo."
 
 #: templates/lang.js:56 templates/lang.js.c:125
 msgid "Premium"
-msgstr "Prêmio"
+msgstr "Premium"
 
 #: templates/lang.js:57
 msgid "Print Map"
-msgstr "Imprimir Mapa"
+msgstr "Imprimir mapa"
 
 #: templates/lang.js:58
 msgid "Print Preview"
-msgstr "Visualização de Impressão"
+msgstr "Visualização da impressão"
 
 #: templates/lang.js:59
 msgid "Properties"
@@ -515,15 +516,15 @@ msgstr "Propriedades"
 
 #: templates/lang.js:60 templates/lang.js.c:126
 msgid "Publish Map"
-msgstr "Publicar Mapa"
+msgstr "Publicar mapa"
 
 #: templates/lang.js:61 templates/lang.js.c:62
 msgid "Remove Layer"
-msgstr "Remover Camada"
+msgstr "Remover camada"
 
 #: templates/lang.js:63
 msgid "Sorry, your map could not be saved."
-msgstr "Desculpe, seu mapa não pôde ser salvo."
+msgstr "Seu mapa não pôde ser salvo."
 
 #: templates/lang.js:64
 msgid "Error While Saving"
@@ -531,7 +532,7 @@ msgstr "Erro ao salvar"
 
 #: templates/lang.js:65
 msgid "Save Map"
-msgstr "Salvar Mapa"
+msgstr "Salvar mapa"
 
 #: templates/lang.js:66
 msgid "You must be logged in to save this map."
@@ -546,15 +547,15 @@ msgid ""
 "Error contacting server.\n"
 " Please check the url and try again."
 msgstr ""
-"Erro ao contactar servidor. Por favor, verifique o URL e tente novamente."
+"Erro ao contatar servidor. Por favor, verifique o URL e tente novamente."
 
 #: templates/lang.js:69
 msgid "Layer Properties"
-msgstr "Propriedades da Camada"
+msgstr "Propriedades da camada"
 
 #: templates/lang.js:70
 msgid "Change layer format and style"
-msgstr "Formato camada mudança e estilo"
+msgstr "Mudar formato e estilo da camada"
 
 #: templates/lang.js:71
 msgid "Edit Styles"
@@ -566,19 +567,17 @@ msgstr "Editar estilos de camada"
 
 #: templates/lang.js:73
 msgid "Switch to Google Earth 3D Viewer"
-msgstr "Mudar para o Google Earth 3D Visualizador"
+msgstr "Mudar para o Visualizador 3D do Google Earth"
 
 #: templates/lang.js:74
 msgid ""
 "The map that you are trying to load does not exist.  Creating a new map "
 "instead."
-msgstr ""
-"O mapa que você está tentando carregar não existe. Criando um novo mapa em "
-"seu lugar."
+msgstr "O mapa que você está tentando carregar não existe. Crie um novo mapa."
 
 #: templates/lang.js:75
 msgid "Unknown Map"
-msgstr "Desconhecido Mapa"
+msgstr "Mapa desconhecido"
 
 #: templates/lang.js:76 templates/lang.js.c:129
 msgid "Width"
@@ -586,11 +585,11 @@ msgstr "Largura"
 
 #: templates/lang.js:77
 msgid "Zoom In"
-msgstr "Zoom In"
+msgstr "Aumentar zoom"
 
 #: templates/lang.js:78
 msgid "Zoom Out"
-msgstr "Zoom Out"
+msgstr "Diminuir zoom"
 
 #: templates/lang.js:79
 msgid "Zoom level"
@@ -602,23 +601,23 @@ msgstr "Nível de zoom"
 
 #: templates/lang.js:81
 msgid "Zoom to Layer Extent"
-msgstr "Zoom para Layer Extensão"
+msgstr "Zoom para a extensão da camada"
 
 #: templates/lang.js:82
 msgid "Zoom to Visible Extent"
-msgstr "Zoom na Extensão Visível"
+msgstr "Zoom para a extensão visível"
 
 #: templates/lang.js:88
 msgid "Zoom Level {zoom}"
-msgstr "Nível de zoom zoom {}"
+msgstr "Nível de zoom {zoom}"
 
 #: templates/lang.js:94
 msgid "Create Map"
-msgstr "Criar Mapa"
+msgstr "Criar mapa"
 
 #: templates/lang.js:95
 msgid "Export Map"
-msgstr "Exportação do Mapa"
+msgstr "Exportar mapa"
 
 #: templates/lang.js:98
 msgid "Map"
@@ -626,11 +625,11 @@ msgstr "Mapa"
 
 #: templates/lang.js:99 templates/lang.js.c:166
 msgid "View this Map"
-msgstr "Veja este mapa"
+msgstr "Visualizar este mapa"
 
 #: templates/lang.js:101
 msgid "Open Map"
-msgstr "Abrir Mapa"
+msgstr "Abrir mapa"
 
 #: templates/lang.js:107 templates/lang.js.c:183
 msgid "Name"
@@ -638,11 +637,11 @@ msgstr "Nome"
 
 #: templates/lang.js:108
 msgid "Queryable"
-msgstr "Queryable"
+msgstr "Consultável"
 
 #: templates/lang.js:115
 msgid "No background"
-msgstr "No fundo"
+msgstr "Sem fundo"
 
 #: templates/lang.js:127
 msgid ""
@@ -650,7 +649,7 @@ msgid ""
 "HTML to embed the map in your website:"
 msgstr ""
 "Seu mapa está pronto para ser publicado na web! Basta copiar o seguinte "
-"código HTML para incorporar o mapa em seu site:"
+"código HTML para incorporar o mapa ao seu site:"
 
 #: templates/lang.js:136 templates/lang.js.c:202
 msgid "Abstract:"
@@ -658,7 +657,7 @@ msgstr "Resumo:"
 
 #: templates/lang.js:137 templates/lang.js.c:204
 msgid "No attribution information is provided for this layer."
-msgstr "Nenhuma informação atribuição está prevista para essa camada."
+msgstr "Nenhuma informação de atribuição foi fornecida para esta camada."
 
 #: templates/lang.js:138 templates/lang.js.c:205
 msgid "Provided by:"
@@ -666,11 +665,11 @@ msgstr "Fornecido por:"
 
 #: templates/lang.js:139 templates/lang.js.c:206
 msgid "Download:"
-msgstr "Download:"
+msgstr "Fazer download:"
 
 #: templates/lang.js:140 templates/lang.js.c:208
 msgid "No keywords are listed for this layer."
-msgstr "Nenhuma palavra-chave estão listados para essa camada."
+msgstr "Não há palavras-chave listadas para esta camada."
 
 #: templates/lang.js:141 templates/lang.js.c:209
 msgid "Keywords:"
@@ -678,7 +677,7 @@ msgstr "Palavras-chave:"
 
 #: templates/lang.js:142 templates/lang.js.c:210
 msgid "No metadata URLs are defined for this layer."
-msgstr "Não URLs de metadados são definidos para esta camada."
+msgstr "Não há URLs de metadados definidos para esta camada."
 
 #: templates/lang.js:143 templates/lang.js.c:211
 msgid "Metadata Links:"
@@ -694,23 +693,23 @@ msgstr "Resolução:"
 
 #: templates/lang.js:151
 msgid "Print"
-msgstr "Impressão"
+msgstr "Imprimir"
 
 #: templates/lang.js:152
 msgid "Enter map title here."
-msgstr "Digite o título do mapa aqui."
+msgstr "Insira o título do mapa aqui."
 
 #: templates/lang.js:153
 msgid "Include legend?"
-msgstr "Incluir lenda?"
+msgstr "Incluir legenda?"
 
 #: templates/lang.js:154
 msgid "Enter comments here."
-msgstr "Digite comentários aqui."
+msgstr "Insira comentários aqui."
 
 #: templates/lang.js:155
 msgid "Creating PDF..."
-msgstr "Criar PDF ..."
+msgstr "Criando PDF ..."
 
 #: templates/lang.js:164
 msgid "Last Modified"
@@ -730,11 +729,11 @@ msgstr "de"
 
 #: templates/lang.js:170 templates/lang.js.c:191
 msgid "Your search did not match any items."
-msgstr "Não foram encontrados itens a sua pesquisa."
+msgstr "Sua pesquisa não encontrou nenhum item."
 
 #: templates/lang.js:171
 msgid "Search Maps"
-msgstr "Search Maps"
+msgstr "Pesquisar mapas"
 
 #: templates/lang.js:172 templates/lang.js.c:192
 msgid "Search"
@@ -746,7 +745,7 @@ msgstr "Mostrando"
 
 #: templates/lang.js:174
 msgid "Loading"
-msgstr "Carregamento"
+msgstr "Carregando"
 
 #: templates/lang.js:175 templates/lang.js.c:195
 msgid "permalink"
@@ -758,15 +757,15 @@ msgstr "Selecionar"
 
 #: templates/lang.js:185
 msgid "Select:"
-msgstr "Selecione:"
+msgstr "Selecionar:"
 
 #: templates/lang.js:186
 msgid "All"
-msgstr "Todos"
+msgstr "Todos(as)"
 
 #: templates/lang.js:187
 msgid "None"
-msgstr "Nenhum"
+msgstr "Nenhum(a)"
 
 #: templates/lang.js:194
 msgid "Loading..."
@@ -774,19 +773,19 @@ msgstr "Carregando ..."
 
 #: templates/lang.js:196
 msgid "You do not have permission to view this data"
-msgstr "Você não tem permissão para ver estes dados"
+msgstr "Você não tem permissão para visualizar estes dados"
 
 #: templates/lang.js:197
 msgid "This data is stored on a remote server"
-msgstr "Esses dados são armazenados em um servidor remoto"
+msgstr "Estes dados são armazenados em um servidor remoto"
 
 #: templates/lang.js:203
 msgid "No abstract is provided for this layer."
-msgstr "No resumo é fornecido para essa camada."
+msgstr "Nenhum resumo foi fornecido para esta camada."
 
 #: templates/lang.js:207
 msgid "No download URLs are definied for this layer."
-msgstr "Não URLs de download sao definidas para essa camada."
+msgstr "Não foram definidos URLs de download para esta camada."
 
 #: templates/lang.js:217
 msgid "Selected Layers"
@@ -794,15 +793,15 @@ msgstr "Camadas selecionadas"
 
 #: templates/lang.js:218
 msgid "No Layers Selected"
-msgstr "Não Camadas selecionadas"
+msgstr "Nenhuma camada selecionada"
 
 #: templates/lang.js:220
 msgid "Clear Selected"
-msgstr "Apagar seleção"
+msgstr "Limpar seleção"
 
 #: templates/lang.js:221
 msgid "Clear All"
-msgstr "Limpar Tudo"
+msgstr "Limpar tudo"
 
 #: templates/lang.js:227
 msgid "Operation Failed"
@@ -810,15 +809,15 @@ msgstr "Falha na operação"
 
 #: templates/lang.js:228
 msgid "No layers are currently selected."
-msgstr "Não camadas são atualmente selecionado."
+msgstr "Não há camadas selecionadas atualmente."
 
 #: templates/lang.js:235
 msgid "Downloading..."
-msgstr "Baixando ..."
+msgstr "Fazendo download..."
 
 #: templates/lang.js:237
 msgid "Please wait"
-msgstr "Por favor, aguarde"
+msgstr "Aguarde"
 
 #~ msgid "No error message supplied"
 #~ msgstr "No error message supplied"
