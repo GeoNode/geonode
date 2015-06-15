@@ -227,12 +227,12 @@ class UtilsTests(TestCase):
                 'MAPFISH_PRINT_ENABLED': True,
                 'PRINT_NG_ENABLED': True,
                 'GEONODE_SECURITY_ENABLED': True,
-                'GEOGIG_ENABLED': False,
+                'GEOGIT_ENABLED': False,
                 'WMST_ENABLED': False,
                 'BACKEND_WRITE_ENABLED': True,
                 'WPS_ENABLED': False,
                 'DATASTORE': str(),
-                'GEOGIG_DATASTORE_DIR': str(),
+                'GEOGIT_DATASTORE_DIR': str(),
             }
         }
 
@@ -240,7 +240,7 @@ class UtilsTests(TestCase):
             'BACKEND': 'geonode.rest',
             'OPTIONS': {
                 'TIME_ENABLED': False,
-                'GEOGIG_ENABLED': False}}
+                'GEOGIT_ENABLED': False}}
 
         self.DATABASE_DEFAULT_SETTINGS = {
             'default': {
@@ -272,7 +272,7 @@ class UtilsTests(TestCase):
             self.assertTrue(ogc_settings.MAPFISH_PRINT_ENABLED)
             self.assertTrue(ogc_settings.PRINT_NG_ENABLED)
             self.assertTrue(ogc_settings.GEONODE_SECURITY_ENABLED)
-            self.assertFalse(ogc_settings.GEOGIG_ENABLED)
+            self.assertFalse(ogc_settings.GEOGIT_ENABLED)
             self.assertFalse(ogc_settings.WMST_ENABLED)
             self.assertTrue(ogc_settings.BACKEND_WRITE_ENABLED)
             self.assertFalse(ogc_settings.WPS_ENABLED)
