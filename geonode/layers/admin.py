@@ -23,6 +23,13 @@ from django.contrib import admin
 from geonode.base.admin import MediaTranslationAdmin, ResourceBaseAdminForm
 from geonode.layers.models import Layer, Attribute, Style
 from geonode.layers.models import LayerFile, UploadSession
+from geonode.tasks.update import fix_layer_thumbnail
+
+
+def fix_thumbnail(modeladmin, request, queryset):
+    for layer in queryset:
+            fix_layer_thumbnail.delay(object_id=layer.id)        
+fix_thumbnail.short_description = "Fix Thumbnails"
 
 
 class AttributeInline(admin.TabularInline):
@@ -43,10 +50,11 @@ class LayerAdmin(MediaTranslationAdmin):
         'service_type',
         'title',
         'date',
-        'category')
+        'category',
+        'is_published')
     list_display_links = ('id',)
-    list_editable = ('title', 'category')
-    list_filter = ('storeType', 'owner', 'category',
+    list_editable = ('title', 'category', 'is_published')
+    list_filter = ('owner', 'category',
                    'restriction_code_type__identifier', 'date', 'date_type')
     search_fields = ('typename', 'title', 'abstract', 'purpose',)
     filter_horizontal = ('contacts',)
@@ -54,6 +62,7 @@ class LayerAdmin(MediaTranslationAdmin):
     readonly_fields = ('uuid', 'typename', 'workspace')
     inlines = [AttributeInline]
     form = LayerAdminForm
+    actions = [fix_thumbnail]
 
 
 class AttributeAdmin(admin.ModelAdmin):

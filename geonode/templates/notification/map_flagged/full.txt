@@ -1,0 +1,9 @@
+{% load i18n %}
+
+{% trans "The user" %} {{ extra_content.sender.username }}
+{% trans "flagged" %} for {{ extra_content.instance.flag_type }}
+{% trans "the following map" %}:
+{{ extra_content.instance.flagged_content.content_object.title }}, {% trans "owned by" %} {{ extra_content.instance.flagged_content.content_object.owner.username }}
+{% trans "with comment" %}: {{ extra_content.instance.comment }}
+
+{% trans "You can visit the maps's detail page here" %}: http://{{ current_site }}{% url "map_detail" extra_content.instance.flagged_content.content_object.id %}

@@ -45,6 +45,7 @@ from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
 from django.core.urlresolvers import reverse
 from django.http import HttpResponse, HttpResponseRedirect
+from django.utils.text import slugify
 from django.utils.html import escape
 from django.shortcuts import get_object_or_404, render_to_response
 from django.template import RequestContext
@@ -55,7 +56,7 @@ from geonode.upload.forms import LayerUploadForm, UploadFileForm
 from geonode.upload.models import Upload, UploadFile
 from geonode.utils import json_response as do_json_response
 from geonode.geoserver.helpers import ogc_server_settings
-
+import random
 
 logger = logging.getLogger(__name__)
 
@@ -214,7 +215,8 @@ def _next_step_response(req, upload_session, force_ajax=True):
     # has no corresponding view served by the 'view' function.
     if next == 'run':
         upload_session.completed_step = next
-        if _ASYNC_UPLOAD and req.is_ajax():
+        # Also run asynchronously if the force_ajax=True.
+        if _ASYNC_UPLOAD and req.is_ajax() or force_ajax:
             return run_response(req, upload_session)
         else:
             # on sync we want to run the import and advance to the next step
@@ -292,6 +294,19 @@ def save_step_view(req, session):
             sld = base_file[0].sld_files[0]
 
         logger.info('provided sld is %s' % sld)
+        geogig_store = form.cleaned_data.get('geogig_store')
+
+        if not geogig_store:
+            geogig_store = slugify(' '.join([req.user.username, name]))
+
+        if form.cleaned_data.get('is_private', False):
+            permissions = {u'users': {u'AnonymousUser': []}, u'groups': {}}
+        else:
+            # Use default permissions
+            permissions = None
+
+
+
         # upload_type = get_upload_type(base_file)
         upload_session = req.session[_SESSION_KEY] = upload.UploaderSession(
             tempdir=tempdir,
@@ -300,18 +315,12 @@ def save_step_view(req, session):
             import_session=import_session,
             layer_abstract=form.cleaned_data["abstract"],
             layer_title=form.cleaned_data["layer_title"],
-            permissions=form.cleaned_data["permissions"],
+            permissions=permissions,
             import_sld_file=sld,
             upload_type=base_file[0].file_type.code,
             geogig=form.cleaned_data['geogig'],
-            geogig_store=form.cleaned_data['geogig_store'],
-            time=form.cleaned_data['time'],
-            mosaic=form.cleaned_data['mosaic'],
-            append_to_mosaic_opts=form.cleaned_data['append_to_mosaic_opts'],
-            append_to_mosaic_name=form.cleaned_data['append_to_mosaic_name'],
-            mosaic_time_regex=form.cleaned_data['mosaic_time_regex'],
-            mosaic_time_value=form.cleaned_data['mosaic_time_value'],
-            user=req.user
+            geogig_store=geogig_store,
+            time=form.cleaned_data['time']
         )
         return _next_step_response(req, upload_session, force_ajax=True)
     else:
@@ -478,11 +487,16 @@ def time_step_view(request, upload_session):
     elif request.method != 'POST':
         raise Exception()
 
-    form = _create_time_form(import_session, request.POST)
+    request_data = request.POST
+
+    if 'application/json' in request.META['CONTENT_TYPE']:
+        request_data = json.loads(request.body)
+
+    form = _create_time_form(import_session, request_data)
 
     if not form.is_valid():
         logger.warning('Invalid upload form: %s', form.errors)
-        return _error_response(request, errors=["Invalid Submission"])
+        return _error_response(request, errors=["Invalid Submission", form.errors])
 
     cleaned = form.cleaned_data
 
@@ -500,7 +514,7 @@ def time_step_view(request, upload_session):
             upload_session,
             time_attribute=start_attribute_and_type[0],
             time_transform_type=tx(start_attribute_and_type[1]),
-            time_format=cleaned.get('attribute_format', None),
+            time_format=cleaned.get('text_attribute_format', None),
             end_time_attribute=end_attribute,
             end_time_transform_type=tx(end_type),
             end_time_format=cleaned.get('end_attribute_format', None),
@@ -539,7 +553,7 @@ def final_step_view(req, upload_session):
     # this response is different then all of the other views in the
     # upload as it does not return a response as a json object
     return json_response(
-        {'url': saved_layer.get_absolute_url(),
+        {'url': reverse('layer_upload_metadata', kwargs={'layername': saved_layer.typename}),
          'success': True
          }
     )

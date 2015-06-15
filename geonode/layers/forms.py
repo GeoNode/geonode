@@ -174,6 +174,7 @@ class NewLayerUploadForm(LayerUploadForm):
     permissions = JSONField()
     charset = forms.CharField(required=False)
     metadata_uploaded_preserve = forms.BooleanField(required=False)
+    is_not_published = forms.BooleanField(required=False)
 
     spatial_files = (
         "base_file",

@@ -34,6 +34,10 @@ from django.core.mail import send_mail
 from taggit.managers import TaggableManager
 from guardian.shortcuts import get_objects_for_group
 
+from django.utils import timezone
+from geonode.base.enumerations import COUNTRIES
+from taggit.models import TaggedItemBase
+
 
 class GroupProfile(models.Model):
     GROUP_CHOICES = [
@@ -49,7 +53,16 @@ class GroupProfile(models.Model):
                          'Only invited users can join.')
     email_help_text = _('Email used to contact one or all group members, '
                         'such as a mailing list, shared email, or exchange group.')
-
+    social_twitter = models.CharField(_('Twitter Handle'),
+        help_text=_('Provide your Twitter handle or URL'),
+        max_length=255,
+        null=True,
+        blank=True)
+    social_facebook = models.CharField(_('Facebook Profile'),
+        help_text=_('Provide your Facebook handle or URL'),
+        max_length=255,
+        null=True,
+        blank=True) 
     group = models.OneToOneField(Group)
     title = models.CharField(_('Title'), max_length=50)
     slug = models.SlugField(unique=True)
@@ -63,7 +76,8 @@ class GroupProfile(models.Model):
     keywords = TaggableManager(
         _('Keywords'),
         help_text=_("A space or comma-separated list of keywords"),
-        blank=True)
+        blank=True,
+        related_name='group_keywords')
     access = models.CharField(
         _('Access'),
         max_length=15,
@@ -71,6 +85,22 @@ class GroupProfile(models.Model):
         choices=GROUP_CHOICES,
         help_text=access_help_text)
     last_modified = models.DateTimeField(auto_now=True)
+    date_joined = models.DateTimeField(_('date joined'), default=timezone.now)
+    city = models.CharField(
+        _('City'),
+        max_length=255,
+        blank=True,
+        null=True,
+        help_text=_('city of the location'))
+    country = models.CharField(
+        choices=COUNTRIES,
+        max_length=3,
+        blank=True,
+        null=True,
+        help_text=_('country of the physical address'))
+    tasks = models.TextField(null=True, blank=True)
+    profile_type = models.CharField(choices=[['org', 'Organization'],['ini', 'Initiative']], max_length=255)
+    featured = models.BooleanField(default=False, help_text=_('Should this resource be advertised in home page?'))
 
     def save(self, *args, **kwargs):
         group, created = Group.objects.get_or_create(name=self.slug)
@@ -100,6 +130,11 @@ class GroupProfile(models.Model):
         Returns a list of the Group's keywords.
         """
         return [kw.name for kw in self.keywords.all()]
+    def interest_list(self):
+        """
+        Returns a list of the Group's interests.
+        """
+        return [interest.name for interest in self.interests.all()]
 
     def resources(self, resource_type=None):
         """

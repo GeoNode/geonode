@@ -1,0 +1,6 @@
+{% load i18n %}
+
+{% trans "The user" %} {{ extra_content.sender.username }}
+{% trans "favorited your layer" %}: {{ extra_content.instance.content_object.title }}
+
+{% trans "You can visit the layer's detail page here" %}: http://{{ current_site }}{% url "layer_detail" extra_content.instance.content_object.service_typename %}

@@ -43,12 +43,21 @@ if "notification" in settings.INSTALLED_APPS:
                 _("A Map was deleted"))
             notification.models.NoticeType.create(
                 "map_comment",
-                _("Comment on Map"),
-                _("A map was commented on"))
+                _("Comment on MapStory"),
+                _("A MapStory was commented on"))
             notification.models.NoticeType.create(
                 "map_rated",
-                _("Rating for Map"),
-                _("A rating was given to a map"))
+                _("Rating for MapStory"),
+                _("A rating was given to a MapStory"))
+            notification.models.NoticeType.create(
+                "map_favorited",
+                _("MapStory favorited"),
+                _("A MapStory was favorited"))
+            notification.models.NoticeType.create(
+                "map_flagged",
+                _("MapStory flagged"),
+                _("A flag was given to a MapStory"))
+
 
         signals.post_syncdb.connect(
             create_notice_types,

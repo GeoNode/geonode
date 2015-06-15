@@ -40,6 +40,10 @@ if "notification" in settings.INSTALLED_APPS:
             "account_active",
             _("Account activated"),
             _("This account is now active and can log in the site"))
+        notification.models.NoticeType.create(
+            "message_received",
+            _("Message received"),
+            _("You have received a new message"))
 
     signals.post_syncdb.connect(
         create_notice_types,

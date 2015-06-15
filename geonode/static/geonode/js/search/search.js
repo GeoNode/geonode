@@ -203,7 +203,7 @@
    
     //Get data from apis and make them available to the page
     function query_api(data){
-      $http.get(Configs.url, {params: data || {}}).success(function(data){
+      return $http.get(Configs.url, {params: data || {}}).success(function(data){
         $scope.results = data.objects;
         $scope.total_counts = data.meta.total_count;
         $scope.$root.query_data = data;
@@ -235,6 +235,18 @@
     };
     query_api($scope.query);
 
+    $scope.change_api = function(api_endpoint) {
+      Configs.url = "/api/" + api_endpoint + "/";
+      $scope.query.limit = 100;
+      $scope.query.offset = 0;
+      return query_api($scope.query).then(function(result) {
+        return result;
+      });
+    }
+
+    $scope.get_url = function() {
+      return Configs.url;
+    }
 
     /*
     * Pagination
@@ -360,6 +372,242 @@
 
         query_api($scope.query);
       }
+    /*
+    * Setting the query to a single element - replaces single_choice_listener
+    */
+    $scope.set_query = function(filter, value) {
+      $scope.query = {};
+      $scope.query[filter] = value;
+      query_api($scope.query);
+    }
+
+    /*
+    * Add the query, replacing any current query
+    */
+    $scope.add_single_query = function(filter, value) {
+      $scope.query[filter] = value;
+      query_api($scope.query);
+    }
+
+    /*
+    * Add the query, appending it to any current query
+    */
+    $scope.add_query = function(filter, value) {
+      var query_entry = [];
+      if ($scope.query.hasOwnProperty(filter)) {
+        if ($scope.query[filter] instanceof Array) {
+          query_entry = $scope.query[filter];
+        } else {
+          query_entry.push($scope.query[filter]);
+        }
+        // Only add it if this value doesn't already exist
+        // Apparently this doesn't exactly work...
+        if ($scope.query[filter].indexOf(value) == -1) {
+          query_entry.push(value);
+        }
+      } else {
+        query_entry = [value];
+      }
+      $scope.query[filter] = query_entry;
+      query_api($scope.query);
+    }
+
+    /*
+    * Toggle adding/removing this filter
+    */
+    $scope.toggle_query = function(toggle, filter, value) {
+      if (toggle) {
+        $scope.add_query(filter, value);
+      } else {
+        $scope.remove_query(filter, value);
+      }
+    }
+
+    /*
+    * Remove the query
+    */
+    $scope.remove_query = function(filter, value) {
+      var query_entry = [];
+      // First check if this even exists to remove
+      if ($scope.query.hasOwnProperty(filter)) {
+        // Grab the current query
+        if ($scope.query[filter] instanceof Array) {
+          query_entry = $scope.query[filter];
+        } else {
+          query_entry.push($scope.query[filter]);
+        }
+        // Remove this value
+        query_entry.splice(query_entry.indexOf(value), 1);
+        // Update and run the query
+        $scope.query[filter] = query_entry;
+        query_api($scope.query);
+      }
+    }
+
+    /*
+    * Delete all parts of this filter
+    */
+    $scope.delete_query = function(filter) {
+      // First check if this even exists to remove
+      if ($scope.query.hasOwnProperty(filter)) {
+        $scope.query[filter] = [];
+        query_api($scope.query);
+      }
+    }
+
+    $scope.add_search = function(filter, value, array) {
+      if (array.indexOf(value) == -1) {
+        array.push(value);
+        $scope.add_query(filter, value);
+      }
+    }
+
+    $scope.remove_search = function(filter, value, array) {
+      var index = array.indexOf(value);
+      if (index != -1) {
+        array.splice(index, 1);
+        $scope.remove_query(filter, value);
+      }
+    }
+
+
+    var location_promise = function() {
+      var highest = 1;
+      var popular = {};
+      // Query the users
+      Configs.url = '/api/profiles/';
+      $scope.query = {limit: 100, offset: 0};
+      return query_api($scope.query).then(function() {
+        var results = $scope.results;
+        results.forEach(function(element) {
+          if (popular[element.city] != null) {
+            popular[element.city]++;
+            if (highest < popular[element.city]) {
+              highest = popular[element.city];
+              $scope.most_popular_location = element.city;
+            }
+          } else {
+            if (element.city != "" && element.city != null) {
+              popular[element.city] = 1;
+              if (highest == 1) {
+                $scope.most_popular_location = element.city;
+              }
+            }
+          }
+        });
+        // Query the groups
+        Configs.url = '/api/groups/';
+        $scope.query = {limit: 100, offset: 0};
+        return query_api($scope.query).then(function() {
+          var results = $scope.results;
+          results.forEach(function(element) {
+            if (popular[element.city] != null) {
+              popular[element.city]++;
+              if (highest < popular[element.city]) {
+                highest = popular[element.city];
+                $scope.most_popular_location = element.city;
+              }
+            } else {
+              if (element.city != "" && element.city != null) {
+                popular[element.city] = 1;
+                if (highest == 1) {
+                  $scope.most_popular_location = element.city;
+                }
+              }
+            }
+          });
+          return results;
+        });
+      });
+    }
+
+    // Need to use both the users and groups api
+    var calculate_most_popular_location = function() {
+      // Store the current api requests
+      var url = Configs.url;
+      var query = $scope.query;
+
+      // Calculate it and then return things to normal
+      location_promise().then(function() {
+        Configs.url = url;
+        $scope.query = query;
+        query_api($scope.query);
+      });
+    }
+
+    var interest_promise = function() {
+      var highest = 1;
+      var popular = {};
+      // Query the users
+      Configs.url = '/api/profiles/';
+      $scope.query = {limit: 100, offset: 0};
+      return query_api($scope.query).then(function() {
+        var results = $scope.results;
+        results.forEach(function(element) {
+          if (element.interests != null) {
+            element.interests.forEach(function(interest) {
+              if (popular[interest] != null) {
+                popular[interest]++;
+                if (highest < popular[interest]) {
+                  highest = popular[interest]
+                  $scope.most_popular_interest = interest;
+                }
+              } else {
+                if (interest != "" && interest != null) {
+                  popular[interest] = 1;
+                  if (highest == 1) {
+                    $scope.most_popular_interest = interest;
+                  }
+                }
+              }
+            });
+          }
+        });
+        // Query the groups
+        Configs.url = '/api/groups/';
+        $scope.query = {limit: 100, offset: 0};
+        return query_api($scope.query).then(function() {
+          var results = $scope.results;
+          results.forEach(function(element) {
+            if (element.interests != null) {
+              element.interests.forEach(function(interest) {
+                if (popular[interest] != null) {
+                  popular[interest]++;
+                  if (highest < popular[interest]) {
+                    highest = popular[interest]
+                    $scope.most_popular_interest = interest;
+                  }
+                } else {
+                  if (interest != "" && interest != null) {
+                    popular[interest] = 1;
+                    if (highest == 1) {
+                      $scope.most_popular_interest = interest;
+                    }
+                  }
+                }
+              });
+            }
+          });
+          return results;
+        });
+      });      
+    }
+
+    var calculate_most_popular_interest = function() {
+      // Store the current api requests
+      var url = Configs.url;
+      var query = $scope.query;
+
+      interest_promise().then(function() {
+        Configs.url = url;
+        $scope.query = query;
+        query_api($scope.query);
+      });
+    }
+
+    $scope.calculate_popular_items = function() {
+      calculate_most_popular_interest();
+      calculate_most_popular_location();
     }
 
     /*
@@ -383,8 +631,19 @@
 
     $('#text_search_input').bind('selectChoice', function(e, choice, text_autocomplete) {
           if(choice[0].children[0] == undefined) {
-              $('#text_search_input').val($(choice[0]).text());
-              $('#text_search_btn').click();
+
+              var term = choice[0].innerHTML;
+
+              $('#text_search_input').val(term);
+
+              //ng-model is not updating when using jquery element.val()
+              //This will force update the scope to keep in sync
+
+               var model = $('#text_search_input').attr("ng-model");
+                $scope[model] = term;
+                $scope.$apply();
+
+                $('#text_search_btn').click();
           }
     });
 
@@ -397,6 +656,35 @@
     });
 
     /*
+    * User search management
+    */
+    $('#user_search_input').bind('selectChoice', function(e, choice, text_autocomplete) {
+          if(choice[0].children[0] == undefined) {
+
+              var term = choice[0].innerHTML;
+
+              $('#user_search_input').val(term);
+
+              //ng-model is not updating when using jquery element.val()
+              //This will force update the scope to keep in sync
+
+               var model = $('#user_search_input').attr("ng-model");
+                $scope[model] = term;
+                $scope.$apply();
+
+                $('#user_search_btn').click();
+          }
+    });
+
+    $('#user_search_btn').click(function(){
+        if (HAYSTACK_SEARCH)
+            $scope.query['q'] = $('#user_search_input').val();
+        else
+            $scope.query['username'] = $('#user_search_input').val();
+        query_api($scope.query);
+    });
+
+    /*
     * Region search management
     */
     var region_autocomplete = $('#region_search_input').yourlabsAutocomplete({
@@ -405,18 +693,32 @@
           hideAfter: 200,
           minimumCharacters: 1,
           appendAutocomplete: $('#region_search_input'),
-          placeholder: gettext('Enter your region here ...')
+          placeholder: gettext('Enter region here ...')
     });
+
     $('#region_search_input').bind('selectChoice', function(e, choice, region_autocomplete) {
           if(choice[0].children[0] == undefined) {
               $('#region_search_input').val(choice[0].innerHTML);
-              $('#region_search_btn').click();
+              $scope.region_query = choice[0].innerHTML;
           }
     });
 
-    $('#region_search_btn').click(function(){
-        $scope.query['regions__name__in'] = $('#region_search_input').val();
-        query_api($scope.query);
+    /*
+    * Keyword search management
+    */
+    var keyword_autocomplete = $('#keyword_search_input').yourlabsAutocomplete({
+          url: AUTOCOMPLETE_URL_KEYWORD,
+          choiceSelector: 'span',
+          hideAfter: 200,
+          minimumCharacters: 1,
+          appendAutocomplete: $('#keyword_search_input'),
+          placeholder: gettext('Enter keyword here ...')
+    });
+    $('#keyword_search_input').bind('selectChoice', function(e, choice, keyword_autocomplete) {
+          if(choice[0].children[0] == undefined) {
+              $('#keyword_search_input').val(choice[0].innerHTML);
+              $scope.keyword_query = choice[0].innerHTML;
+          }
     });
 
     $scope.feature_select = function($event){

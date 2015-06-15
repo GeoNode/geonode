@@ -1,0 +1,7 @@
+{% load i18n %}
+
+{% trans "The user" %} {{ extra_content.requester.username }}
+{% trans "downloaded" %}
+{% trans "the following layer" %}:
+{{ extra_content.instance.title }} as {{ extra_content.requested_format }}
+

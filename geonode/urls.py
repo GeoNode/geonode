@@ -58,6 +58,9 @@ urlpatterns = patterns('',
                        # Layer views
                        (r'^layers/', include('geonode.layers.urls')),
 
+                       # annotations views
+                       (r'', include('geonode.annotations.urls')),
+
                        # Map views
                        (r'^maps/', include('geonode.maps.urls')),
 
@@ -103,6 +106,7 @@ urlpatterns = patterns('',
                        (r'^groups/', include('geonode.groups.urls')),
                        (r'^documents/', include('geonode.documents.urls')),
                        (r'^services/', include('geonode.services.urls')),
+                       (r'^collections/', include('geonode.contrib.collections.urls')),
                        url(r'', include(api.urls)),
                        )
 

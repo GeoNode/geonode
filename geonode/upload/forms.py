@@ -47,7 +47,6 @@ class LayerUploadForm(forms.Form):
     geogig = forms.BooleanField(required=False)
     geogig_store = forms.CharField(required=False)
     time = forms.BooleanField(required=False)
-
     mosaic = forms.BooleanField(required=False)
     append_to_mosaic_opts = forms.BooleanField(required=False)
     append_to_mosaic_name = forms.CharField(required=False)
@@ -57,7 +56,7 @@ class LayerUploadForm(forms.Form):
     time_presentation_res = forms.IntegerField(required=False)
     time_presentation_default_value = forms.CharField(required=False)
     time_presentation_reference_value = forms.CharField(required=False)
-
+    is_private = forms.BooleanField(required=False, initial=False)
     abstract = forms.CharField(required=False)
     layer_title = forms.CharField(required=False)
     permissions = JSONField()

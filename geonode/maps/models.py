@@ -36,7 +36,7 @@ from django.template.defaultfilters import slugify
 from django.core.cache import cache
 
 from geonode.layers.models import Layer
-from geonode.base.models import ResourceBase, resourcebase_post_save
+from geonode.base.models import ResourceBase, resourcebase_post_save, TopicCategory
 from geonode.maps.signals import map_changed_signal
 from geonode.utils import GXPMapBase
 from geonode.utils import GXPLayerBase
@@ -50,12 +50,83 @@ from agon_ratings.models import OverallRating
 logger = logging.getLogger("geonode.maps.models")
 
 
+class MapStory(ResourceBase):
+
+    def get_absolute_url(self):
+        return reverse('mapstory.views.map_detail', None, [str(self.id)])
+
+    @property
+    def chapters(self):
+        return self.chapter_list.order_by('chapter_index')
+
+    def update_from_viewer(self, conf):
+
+        if isinstance(conf, basestring):
+            conf = json.loads(conf)
+
+        self.title = conf['title']
+        self.abstract = conf['abstract']
+        self.is_published = conf['is_published']
+        self.category = TopicCategory(conf['category'])
+
+        if self.uuid is None or self.uuid == '':
+            self.uuid = str(uuid.uuid1())
+
+        removed_chapter_ids = conf['removed_chapters']
+        if removed_chapter_ids is not None and len(removed_chapter_ids) > 0:
+            for chapter_id in removed_chapter_ids:
+                map_obj = Map.objects.get(id=chapter_id)
+                self.chapter_list.remove(map_obj)
+
+
+
+        #self.keywords.add(*conf['map'].get('keywords', []))
+
+        self.save()
+
+    def viewer_json(self, user):
+
+        about = {
+            'title': self.title,
+            'abstract': self.abstract,
+            'owner': self.owner.name_long
+        }
+
+        config = {
+            'id': self.id,
+            'about': about,
+            'chapters': [chapter.viewer_json(user) for chapter in self.chapters],
+            'thumbnail_url': '/static/geonode/img/missing_thumb.png'
+        }
+
+        return config
+
+    def update_thumbnail(self, first_chapter_obj):
+        if first_chapter_obj.chapter_index != 0:
+            return
+
+        chapter_base = ResourceBase.objects.get(id=first_chapter_obj.id)
+        ResourceBase.objects.filter(id=self.id).update(
+            thumbnail_url=chapter_base.thumbnail_url
+        )
+
+
+    class Meta(ResourceBase.Meta):
+        verbose_name_plural = 'MapStories'
+        db_table = 'maps_mapstory'
+        pass
+
+
+
 class Map(ResourceBase, GXPMapBase):
 
     """
     A Map aggregates several layers together and annotates them with a viewport
     configuration.
     """
+    story = models.ForeignKey(MapStory, related_name='chapter_list', blank=True, null=True)
+
+    chapter_index = models.IntegerField(_('chapter index'), null=True, blank=True)
 
     # viewer configuration
     zoom = models.IntegerField(_('zoom'))
@@ -109,6 +180,7 @@ class Map(ResourceBase, GXPMapBase):
         layer_names = MapLayer.objects.filter(map__id=self.id).values('name')
         return Layer.objects.filter(typename__in=layer_names) | \
             Layer.objects.filter(name__in=layer_names)
+
 
     def json(self, layer_filter):
         """
@@ -181,7 +253,17 @@ class Map(ResourceBase, GXPMapBase):
             self.uuid = str(uuid.uuid1())
 
         def source_for(layer):
-            return conf["sources"][layer["source"]]
+
+            if 'sources' in conf:
+                return conf["sources"][layer["source"]]
+            else:
+                # TODO: This is a work in progress will refactor
+                # Handle special case for OL3 config model in storytools as source and sources may not available
+
+                if layer['type'] == 'WMS':
+                    return {"restUrl": "/gs/rest", "title": "", "baseParams": {"VERSION": "1.1.1", "REQUEST": "GetCapabilities", "TILED": 'true', "SERVICE": "WMS"}, "ptype": "gxp_wmscsource", "id": "local"}
+                else:
+                    return layer["source"]
 
         layers = [l for l in conf["map"]["layers"]]
         layer_names = set([l.typename for l in self.local_layers])
@@ -197,6 +279,10 @@ class Map(ResourceBase, GXPMapBase):
                     MapLayer, layer, source_for(layer), ordering
                 ))
 
+        self.chapter_index = conf['chapter_index']
+        story_id = conf.get('story_id',0)
+        story_obj = MapStory.objects.get(id=story_id)
+        self.story = story_obj
         self.save()
 
         if layer_names != set([l.typename for l in self.local_layers]):
@@ -368,6 +454,7 @@ class Map(ResourceBase, GXPMapBase):
         return lg_name
 
     class Meta(ResourceBase.Meta):
+        verbose_name_plural = 'MapStory Chapters'
         pass
 
 
@@ -555,3 +642,4 @@ class MapSnapshot(models.Model):
 
 signals.pre_delete.connect(pre_delete_map, sender=Map)
 signals.post_save.connect(resourcebase_post_save, sender=Map)
+signals.post_save.connect(resourcebase_post_save, sender=MapStory)

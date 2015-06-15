@@ -35,7 +35,7 @@ from geonode.base.models import ResourceBase
 from geonode.base.models import TopicCategory
 from geonode.base.models import Region
 from geonode.layers.models import Layer
-from geonode.maps.models import Map
+from geonode.maps.models import Map, MapStory
 from geonode.documents.models import Document
 from geonode.groups.models import GroupProfile
 
@@ -47,8 +47,10 @@ from tastypie.resources import ModelResource
 from tastypie.constants import ALL
 from tastypie.utils import trailing_slash
 
+from django.db.models import Q
 
 FILTER_TYPES = {
+    'mapstory': MapStory,
     'layer': Layer,
     'map': Map,
     'document': Document
@@ -184,6 +186,7 @@ class GroupResource(ModelResource):
     detail_url = fields.CharField()
     member_count = fields.IntegerField()
     manager_count = fields.IntegerField()
+    keywords = fields.CharField(null=True, attribute='keywords')
 
     def dehydrate_member_count(self, bundle):
         return bundle.obj.member_queryset().count()
@@ -194,14 +197,19 @@ class GroupResource(ModelResource):
     def dehydrate_detail_url(self, bundle):
         return reverse('group_detail', args=[bundle.obj.slug])
 
+    def dehydrate_keywords(self, bundle):
+        return bundle.obj.keyword_list()
+
     class Meta:
         queryset = GroupProfile.objects.all()
         resource_name = 'groups'
         allowed_methods = ['get']
         filtering = {
-            'name': ALL
+            'name': ALL,
+            'city': ALL,
+            'id': ALL
         }
-        ordering = ['title', 'last_modified']
+        ordering = ['title', 'last_modified', 'date_joined']
 
 
 class ProfileResource(TypeFilteredResource):
@@ -210,11 +218,13 @@ class ProfileResource(TypeFilteredResource):
     avatar_100 = fields.CharField(null=True)
     profile_detail_url = fields.CharField()
     email = fields.CharField(default='')
-    layers_count = fields.IntegerField(default=0)
+    layers_count = fields.IntegerField(default=0, attribute='layers_count')
     maps_count = fields.IntegerField(default=0)
     documents_count = fields.IntegerField(default=0)
     current_user = fields.BooleanField(default=False)
     activity_stream_url = fields.CharField(null=True)
+    keywords = fields.CharField(null=True, attribute='keywords')
+    is_active = fields.BooleanField(attribute='is_active')
 
     def build_filters(self, filters={}):
         """adds filtering by group functionality"""
@@ -223,6 +233,12 @@ class ProfileResource(TypeFilteredResource):
 
         if 'group' in filters:
             orm_filters['group'] = filters['group']
+        if 'interest_list' in filters:
+            query = filters['interest_list']
+            qset =(Q(keywords__slug__iexact=query))
+            orm_filters['interest_list'] = qset
+        if 'q' in filters:
+            orm_filters['q'] = filters['q']
 
         return orm_filters
 
@@ -230,6 +246,12 @@ class ProfileResource(TypeFilteredResource):
         """filter by group if applicable by group functionality"""
 
         group = applicable_filters.pop('group', None)
+        q = applicable_filters.pop('q', None)
+
+        if 'interest_list' in applicable_filters:
+            interest_list = applicable_filters.pop('interest_list')
+        else:
+            interest_list = None
 
         semi_filtered = super(
             ProfileResource,
@@ -240,6 +262,12 @@ class ProfileResource(TypeFilteredResource):
         if group is not None:
             semi_filtered = semi_filtered.filter(
                 groupmember__group__slug=group)
+
+        if interest_list is not None:
+            semi_filtered = semi_filtered.filter(interest_list)
+        
+        if q:
+            semi_filtered = semi_filtered.filter(username__icontains=q)
 
         return semi_filtered
 
@@ -281,6 +309,9 @@ class ProfileResource(TypeFilteredResource):
                     bundle.obj).pk,
                 'object_id': bundle.obj.pk})
 
+    def dehydrate_keywords(self, bundle):
+        return bundle.obj.keyword_list()
+
     def prepend_urls(self):
         if settings.HAYSTACK_SEARCH:
             return [
@@ -297,16 +328,37 @@ class ProfileResource(TypeFilteredResource):
 
         return super(ProfileResource, self).serialize(request, data, format, options)
 
+    def get_object_list(self, request):
+        result = super(ProfileResource, self).get_object_list(request)
+
+        # support custom ordering by how many layers viewable by current user
+        order_by = request.GET.getlist('order_by')
+        if any([att.endswith('layers_count') for att in order_by]):
+            # build a query of viewable layers
+            user = request.user
+            obj_with_perms = get_objects_for_user(user, 'base.view_resourcebase').instance_of(Layer)
+            # add custom where clause that will access a field joined later
+            obj_with_perms = obj_with_perms.extra(where=['"base_resourcebase"."owner_id"="people_profile"."id"'])
+            layer_count = obj_with_perms.values('id').distinct()
+            # make this subquery into an aggregate
+            count = 'SELECT COUNT(*) AS layers_count FROM (%s)' % layer_count.query
+            # and annotate with a new column for use in ordering
+            result = result.extra(select={'layers_count': count})
+        return result
+
     class Meta:
         queryset = get_user_model().objects.exclude(username='AnonymousUser')
         resource_name = 'profiles'
         allowed_methods = ['get']
-        ordering = ['username', 'date_joined']
-        excludes = ['is_staff', 'password', 'is_superuser',
-                    'is_active', 'last_login']
+        ordering = ['username', 'date_joined', 'layers_count', 'first_name']
+        excludes = ['is_staff', 'password', 'is_superuser', 'last_login']
 
         filtering = {
             'username': ALL,
+            'city': ALL,
+            'country': ALL,
+            'first_name': ALL,
+            'last_name': ALL
         }
         serializer = CountJSONSerializer()
 
@@ -319,13 +371,57 @@ class OwnersResource(TypeFilteredResource):
 
         return super(OwnersResource, self).serialize(request, data, format, options)
 
+    def build_filters(self, filters={}):
+        """adds filtering by group functionality"""
+
+        orm_filters = super(OwnersResource, self).build_filters(filters)
+
+        if 'group' in filters:
+            orm_filters['group'] = filters['group']
+        if 'interest_list' in filters:
+            query = filters['interest_list']
+            qset =(Q(keywords__slug__iexact=query))
+            orm_filters['interest_list'] = qset
+        if 'q' in filters:
+            orm_filters['q'] = filters['q']
+
+        return orm_filters
+
+    def apply_filters(self, request, applicable_filters):
+        """filter by group if applicable by group functionality"""
+
+        group = applicable_filters.pop('group', None)
+        q = applicable_filters.pop('q', None)
+
+        if 'interest_list' in applicable_filters:
+            interest_list = applicable_filters.pop('interest_list')
+        else:
+            interest_list = None
+
+        semi_filtered = super(
+            OwnersResource,
+            self).apply_filters(
+            request,
+            applicable_filters)
+
+        if group is not None:
+            semi_filtered = semi_filtered.filter(
+                groupmember__group__slug=group)
+
+        if interest_list is not None:
+            semi_filtered = semi_filtered.filter(interest_list)
+        
+        if q:
+            semi_filtered = semi_filtered.filter(username__icontains=q)
+
+        return semi_filtered
+        
     class Meta:
         queryset = get_user_model().objects.exclude(username='AnonymousUser')
         resource_name = 'owners'
         allowed_methods = ['get']
         ordering = ['username', 'date_joined']
-        excludes = ['is_staff', 'password', 'is_superuser',
-                    'is_active', 'last_login']
+        excludes = ['is_staff', 'password', 'is_superuser', 'last_login']
 
         filtering = {
             'username': ALL,

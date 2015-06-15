@@ -37,7 +37,7 @@ from django.http import Http404
 from tastypie.utils.mime import build_content_type
 
 from geonode.layers.models import Layer
-from geonode.maps.models import Map
+from geonode.maps.models import Map, MapStory
 from geonode.documents.models import Document
 from geonode.base.models import ResourceBase
 
@@ -67,8 +67,10 @@ class CommonMetaApi:
                  'category': ALL_WITH_RELATIONS,
                  'owner': ALL_WITH_RELATIONS,
                  'date': ALL,
+                 'is_published': ALL,
+                 'featured': ALL,
                  }
-    ordering = ['date', 'title', 'popular_count']
+    ordering = ['date', 'title', 'popular_count', 'rating']
     max_limit = None
 
 
@@ -181,6 +183,12 @@ class CommonModelApi(ModelResource):
         # Owner filters
         owner = parameters.getlist("owner__username__in")
 
+        # Published filter
+        published = parameters.get("is_published", None)
+
+        # Featured filter
+        featured = parameters.get("featured", None)
+
         # Sort order
         sort = parameters.get("order_by", "relevance")
 
@@ -194,7 +202,7 @@ class CommonModelApi(ModelResource):
             subtypes = []
 
             for type in type_facets:
-                if type in ["map", "layer", "document", "user"]:
+                if type in ["map", "mapstory", "layer", "document", "user", "group"]:
                     # Type is one of our Major Types (not a sub type)
                     types.append(type)
                 elif type in LAYER_SUBTYPES.keys():
@@ -223,7 +231,7 @@ class CommonModelApi(ModelResource):
                 )
             else:
                 words = [
-                    w for w in re.split(
+                    '*{0}*'.format(w) for w in re.split(
                         '\W',
                         query,
                         flags=re.UNICODE) if w]
@@ -280,6 +288,18 @@ class CommonModelApi(ModelResource):
             sqs = (
                 SearchQuerySet() if sqs is None else sqs).narrow(
                     "owner__username:%s" % ','.join(map(str, owner)))
+
+        # filter by publishing status
+        if published:
+            sqs = (SearchQuerySet() if sqs is None else sqs).filter(
+                SQ(is_published=published)
+                )
+
+        # filter by featured status
+        if featured:
+            sqs = (SearchQuerySet() if sqs is None else sqs).filter(
+                SQ(featured=featured)
+                )
 
         # filter by date
         if date_start:
@@ -360,12 +380,12 @@ class CommonModelApi(ModelResource):
                     facets[facet][item[0]] = item[1]
 
             # Paginate the results
-            paginator = Paginator(sqs, request.GET.get('limit'))
+            paginator = Paginator(sqs, request.GET.get('limit', 1))
 
             try:
                 page = paginator.page(
-                    int(request.GET.get('offset')) /
-                    int(request.GET.get('limit'), 0) + 1)
+                    int(request.GET.get('offset', 0)) /
+                    int(request.GET.get('limit', 1)) + 1)
             except InvalidPage:
                 raise Http404("Sorry, no results on that page.")
 
@@ -455,6 +475,8 @@ class CommonModelApi(ModelResource):
             'abstract',
             'csw_wkt_geometry',
             'csw_type',
+            'distribution_description',
+            'distribution_url',
             'owner__username',
             'share_count',
             'popular_count',
@@ -527,6 +549,16 @@ class LayerResource(CommonModelApi):
             queryset = queryset.filter(is_published=True)
         resource_name = 'layers'
         excludes = ['csw_anytext', 'metadata_xml']
+
+
+class MapStoryResource(CommonModelApi):
+    """MapStory API"""
+
+    class Meta(CommonMetaApi):
+        queryset = MapStory.objects.distinct().order_by('-date')
+        if settings.RESOURCE_PUBLISHING:
+            queryset = queryset.filter(is_published=True)
+        resource_name = 'mapstories'
 
 
 class MapResource(CommonModelApi):

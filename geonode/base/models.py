@@ -35,9 +35,9 @@ from django.contrib.staticfiles.templatetags import staticfiles
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.auth import get_user_model
 from django.db.models import signals
+from django.core.files import File
 from django.core.files.storage import default_storage as storage
 from django.core.files.base import ContentFile
-
 from mptt.models import MPTTModel, TreeForeignKey
 
 from polymorphic.models import PolymorphicModel
@@ -344,10 +344,8 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin):
     popular_count = models.IntegerField(default=0)
     share_count = models.IntegerField(default=0)
 
-    featured = models.BooleanField(_("Featured"), default=False,
-                                   help_text=_('Should this resource be advertised in home page?'))
-    is_published = models.BooleanField(_("Is Published"), default=True,
-                                       help_text=_('Should this resource be published and searchable?'))
+    featured = models.BooleanField(default=False, help_text=_('Should this resource be advertised in home page?'))
+    is_published = models.BooleanField(default=False, help_text=_('Should this resource be published and searchable?'))
 
     # fields necessary for the apis
     thumbnail_url = models.TextField(null=True, blank=True)
@@ -583,7 +581,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin):
 
         storage.save(upload_path, ContentFile(image))
 
-        url_path = os.path.join(settings.MEDIA_URL, upload_to, filename).replace('\\', '/')
+        url_path = os.path.join(settings.MEDIA_URL, upload_to, filename)
         url = urljoin(settings.SITEURL, url_path)
 
         Link.objects.get_or_create(resource=self,
@@ -756,6 +754,15 @@ def rating_post_save(instance, *args, **kwargs):
     """
     Used to fill the average rating field on OverallRating change.
     """
-    ResourceBase.objects.filter(id=instance.object_id).update(rating=instance.rating)
+
+    # MapStory change: This was changed from an update statement to a filter so that the save method could be run and
+    # the post-save signals would be executed, specifically the django-haystack post-save signal.
+
+    objs = ResourceBase.objects.filter(id=instance.object_id)
+
+    for obj in objs:
+        obj.rating = instance.rating
+        obj.save()
+
 
 signals.post_save.connect(rating_post_save, sender=OverallRating)

@@ -214,6 +214,7 @@ MAX_DOCUMENT_SIZE = 2  # MB
 # need to be uncommented if adding other types
 # to settings.ALLOWED_DOCUMENT_TYPES
 
+
 # DOCUMENT_TYPE_MAP = {}
 # DOCUMENT_MIMETYPE_MAP = {}
 
@@ -231,7 +232,9 @@ GEONODE_APPS = (
     'geonode.api',
     'geonode.groups',
     'geonode.services',
-
+    'geonode.annotations',
+    # GeoNode Contrib Apps
+    # 'geonode.contrib.dynamic',
     # GeoServer Apps
     # Geoserver needs to come last because
     # it's signals may rely on other apps' signals.
@@ -250,6 +253,7 @@ GEONODE_CONTRIB_APPS = (
     'geonode.contrib.nlp',
     'geonode.contrib.slack',
     'geonode.contrib.metadataxsl'
+    'geonode.contrib.collections'
 )
 
 # Uncomment the following line to enable contrib apps
@@ -301,7 +305,7 @@ INSTALLED_APPS = (
     'avatar',
     'dialogos',
     'agon_ratings',
-    #'notification',
+    'notification',
     'announcements',
     'actstream',
     'user_messages',
@@ -608,7 +612,7 @@ DEFAULT_MAP_CENTER = (0, 0)
 # How tightly zoomed should newly created maps be?
 # 0 = entire world;
 # maximum zoom is between 12 and 15 (for Google Maps, coverage varies by area)
-DEFAULT_MAP_ZOOM = 0
+DEFAULT_MAP_ZOOM = 3
 
 ALT_OSM_BASEMAPS = os.environ.get('ALT_OSM_BASEMAPS', False)
 CARTODB_BASEMAPS = os.environ.get('CARTODB_BASEMAPS', False)

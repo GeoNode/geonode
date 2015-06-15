@@ -297,11 +297,17 @@ class GXPMapBase(object):
                 index += 1
                 sources[index] = remote_source
 
+        layer_owner = ""
+
+        if hasattr(self,"poc") and hasattr(self.poc,"name_long"):
+            layer_owner = self.poc.name_long
+
         config = {
             'id': self.id,
             'about': {
                 'title': self.title,
-                'abstract': self.abstract
+                'abstract': self.abstract,
+                'owner': layer_owner
             },
             'defaultSourceType': "gxp_wmscsource",
             'sources': sources,

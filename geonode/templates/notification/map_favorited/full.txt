@@ -1,0 +1,6 @@
+{% load i18n %}
+
+{% trans "The user" %} {{ extra_content.sender.username }}
+{% trans "favorited your MapStory" %}: {{ extra_content.instance.content_object.title }}
+
+{% trans "You can visit the map's detail page here" %}: http://{{ current_site }}{% url "map_detail" extra_content.instance.content_object.id %}

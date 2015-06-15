@@ -20,13 +20,17 @@
 
 import autocomplete_light
 
-from geonode.maps.models import Map, MapLayer, MapSnapshot
+from geonode.maps.models import Map, MapLayer, MapSnapshot, MapStory
 from geonode.base.admin import MediaTranslationAdmin, ResourceBaseAdminForm
 from django.contrib import admin
 
 
 class MapLayerInline(admin.TabularInline):
     model = MapLayer
+
+
+class MapChapterInline(admin.TabularInline):
+    model = Map
 
 
 class MapAdminForm(ResourceBaseAdminForm):
@@ -36,13 +40,29 @@ class MapAdminForm(ResourceBaseAdminForm):
         fields = '__all__'
 
 
+class MapStoryAdminForm(ResourceBaseAdminForm):
+
+    class Meta:
+        model = MapStory
+
+
 class MapAdmin(MediaTranslationAdmin):
     inlines = [MapLayerInline, ]
     list_display_links = ('title',)
-    list_display = ('id', 'title', 'owner',)
+    list_display = ('id', 'title', 'owner', 'category', 'is_published')
+    list_editable = ('category', 'is_published')
     list_filter = ('owner', 'category',)
     search_fields = ('title', 'abstract', 'purpose',)
     form = MapAdminForm
+
+
+class MapStoryAdmin(MediaTranslationAdmin):
+    list_display_links = ('title',)
+    list_display = ('id', 'title', 'owner', 'category', 'is_published')
+    list_editable = ('category', 'is_published')
+    list_filter = ('owner', 'category',)
+    search_fields = ('title', 'abstract', 'purpose',)
+    form = MapStoryAdminForm
 
 
 class MapLayerAdmin(admin.ModelAdmin):
@@ -51,6 +71,7 @@ class MapLayerAdmin(admin.ModelAdmin):
     search_fields = ('map__title', 'name',)
     form = autocomplete_light.modelform_factory(MapLayer, fields='__all__')
 
+admin.site.register(MapStory)
 admin.site.register(Map, MapAdmin)
 admin.site.register(MapLayer, MapLayerAdmin)
 admin.site.register(MapSnapshot)

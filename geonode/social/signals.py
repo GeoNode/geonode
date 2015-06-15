@@ -173,29 +173,12 @@ if notification_app:
         recipients = get_notification_recipients(notice_type_label)
         notification.send(recipients, notice_type_label, {'resource': instance})
         send_queued_notifications.delay()
-
-    def rating_post_save(instance, sender, created, **kwargs):
-        """ Send a notification when rating a layer, map or document
-        """
-        notice_type_label = '%s_rated' % instance.content_object.class_name.lower()
-        recipients = get_notification_recipients(notice_type_label, instance.user)
-        notification.send(recipients, notice_type_label, {"instance": instance})
-        send_queued_notifications.delay()
-
-    def comment_post_save(instance, sender, created, **kwargs):
-        """ Send a notification when a comment to a layer, map or document has
-        been submitted
-        """
-        notice_type_label = '%s_comment' % instance.content_object.class_name.lower()
-        recipients = get_notification_recipients(notice_type_label, instance.author)
-        notification.send(recipients, notice_type_label, {"instance": instance})
-        send_queued_notifications.delay()
-
+    
     def get_notification_recipients(notice_type_label, exclude_user=None):
         """ Get notification recipients
         """
         recipients_ids = NoticeSetting.objects \
-            .filter(notice_type__label=notice_type_label) \
+            .filter(notice_type__label=notice_type_label, send=True) \
             .values('user')
         profiles = Profile.objects.filter(id__in=recipients_ids)
         if exclude_user:
@@ -208,11 +191,6 @@ if notification_app:
         signals.post_save.connect(notification_post_save_resource, sender=resource)
         signals.post_delete.connect(notification_post_delete_resource, sender=resource)
 
-    signals.post_save.connect(comment_post_save, sender=Comment)
-
-    # rating notifications
-    if ratings and notification_app:
-        signals.post_save.connect(rating_post_save, sender=Rating)
 
 if relationships and activity:
     signals.post_save.connect(relationship_post_save_actstream, sender=Relationship)

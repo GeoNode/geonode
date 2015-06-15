@@ -1,0 +1,4 @@
+{% load i18n %}
+
+{% trans "Your MapStory" %} {{ extra_content.instance.title }}
+{% trans "was featured on MapStory.org homepage" %}
