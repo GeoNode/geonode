@@ -98,11 +98,11 @@
         {% endwith %}
       </article>
 
-      {% if GEOGIG_ENABLED and resource.link_set.geogig %}
-        {% with "_geogig_layer_detail.html" as geogig_template %}
-        <article id="geogig" class="tab-pane">
+      {% if GEOGIT_ENABLED and resource.link_set.geogit %}
+        {% with "_geogit_layer_detail.html" as geogit_template %}
+        <article id="geogit" class="tab-pane">
           {% with resource as obj %}
-            {% include geogig_template %}
+            {% include geogit_template %}
           {% endwith %}
         </article>
         {% endwith %}
@@ -214,7 +214,7 @@
                 <a class="btn btn-default btn-block btn-xs" href="{% url "layer_replace" resource.service_typename %}">{% trans "Replace" %}</a>
                 {% endif %}
                 {% if resource.storeType == 'dataStore' and "change_layer_data" in layer_perms %}
-                <a class="btn btn-default btn-block btn-xs" href="{% url "new_map" %}?layer={{resource.service_typename}}">{% trans "Edit data" %}</a>
+                <a class="btn btn-default btn-block btn-xs" href="{% url "map-new2" %}?layer={{resource.service_typename}}">{% trans "Edit data" %}</a>
                 {% endif %}
                 {% if "delete_resourcebase" in perms %}
                 <a class="btn btn-danger btn-block btn-xs" href="{% url "layer_remove" resource.service_typename %}">{% trans "Remove" %}</a>
@@ -352,9 +352,9 @@
 
 {% block extra_script %}
 
-    {% if GEOGIG_ENABLED and resource.link_set.geogig %}
-        {% with "_geogig_scripts.html" as geogig_scripts_template %}
-            {% include  geogig_scripts_template %}
+    {% if GEOGIT_ENABLED and resource.link_set.geogit %}
+        {% with "_geogit_scripts.html" as geogit_scripts_template %}
+            {% include  geogit_scripts_template %}
         {% endwith %}
     {% endif %}
 
