@@ -591,7 +591,7 @@ def map_download(request, mapid, template='maps/map_download.html'):
             else:
                 ownable_layer = Layer.objects.get(typename=lyr.name)
                 if not request.user.has_perm(
-                        'view_resourcebase',
+                        'download_resourcebase',
                         obj=ownable_layer.get_self_resource()):
                     locked_layers.append(lyr)
                 else:

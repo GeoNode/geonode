@@ -12,7 +12,7 @@ fi
 
 # Setup the virtualenv
 virtualenv --system-site-packages $PYENV_HOME
-source $PYENV_HOME/bin/activate
+. $PYENV_HOME/bin/activate
 
 # Install build & test tools
 pip install --quiet paver
@@ -33,7 +33,9 @@ pip install -e .
 # Just in case
 paver stop
 paver setup
-#cp /var/lib/jenkins/local_settings_with_coverage.py geonode/local_settings.py
+cp /var/lib/jenkins/local_settings_with_coverage.py geonode/local_settings.py
+
+. $PYENV_HOME/bin/activate #double check its activated.
 
 # Run the smoke tests
 python manage.py test geonode.tests.smoke
@@ -50,8 +52,7 @@ cp -R coverage unit-coverage
 # Run the integration tests
 paver reset
 cp /var/lib/jenkins/local_settings_with_coverage.py geonode/local_settings.py
-source $PYENV_HOME/bin/activate #double check its activated.
-
+. $PYENV_HOME/bin/activate #double check its activated.
 paver test_integration
 cp TEST-nose.xml integration-TEST-nose.xml
 cp coverage.xml integration-coverage.xml
@@ -68,12 +69,12 @@ cp coverage -R csw-coverage
 #mv geonode/static/geonode/junit.xml ./javascript-TEST-nose.xml
 
 # Run Code Quality Tools
-#export DJANGO_SETTINGS_MODULE=geonode.settings
-#pylint -f parseable geonode/ | tee pylint.out
-#pep8 --repeat geonode | tee pep8.out
-#find . -type f -iname "*.py" | egrep -v '^./tests/'|xargs pyflakes  > pyflakes.out || :
-#clonedigger --cpd-output . || :
-#mv output.xml clonedigger.out
+export DJANGO_SETTINGS_MODULE=geonode.settings
+pylint -f parseable geonode/ | tee pylint.out
+pep8 --repeat geonode | tee pep8.out
+find . -type f -iname "*.py" | egrep -v '^./tests/'|xargs pyflakes  > pyflakes.out || :
+clonedigger --cpd-output . || :
+mv output.xml clonedigger.out
 
 # All done, clean up
 git reset --hard

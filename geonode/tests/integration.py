@@ -114,7 +114,7 @@ class NormalUserTest(TestCase):
             user=norman,
             overwrite=True,
         )
-
+        saved_layer.set_default_permissions()
         url = reverse('layer_metadata', args=[saved_layer.service_typename])
         resp = self.client.get(url)
         self.assertEquals(resp.status_code, 200)
@@ -511,6 +511,7 @@ class GeoNodeMapTest(TestCase):
         """Regression-test for failures caused by zero-width bounding boxes"""
         thefile = os.path.join(gisdata.VECTOR_DATA, 'single_point.shp')
         uploaded = file_upload(thefile, overwrite=True)
+        uploaded.set_default_permissions()
         self.client.login(username='norman', password='norman')
         resp = self.client.get(uploaded.get_absolute_url())
         self.assertEquals(resp.status_code, 200)
@@ -728,6 +729,7 @@ xsi:schemaLocation="http://www.opengis.net/sld http://schemas.opengis.net/sld/1.
             gisdata.VECTOR_DATA,
             'san_andres_y_providencia_poi.shp')
         layer = file_upload(thefile, overwrite=True)
+        layer.set_default_permissions()
         check_layer(layer)
 
         # we need some time to have the service up and running
@@ -756,6 +758,7 @@ xsi:schemaLocation="http://www.opengis.net/sld http://schemas.opengis.net/sld/1.
                 gisdata.VECTOR_DATA,
                 'san_andres_y_providencia_administrative.shp')
             layer = file_upload(thefile, overwrite=True)
+            layer.set_default_permissions()
             check_layer(layer)
 
             # we need some time to have the service up and running
@@ -833,7 +836,7 @@ class GeoNodeThumbnailTest(TestCase):
             user=norman,
             overwrite=True,
         )
-
+        saved_layer.set_default_permissions()
         map_obj = Map(owner=norman, zoom=0,
                       center_x=0, center_y=0)
         map_obj.create_from_layer_list(norman, [saved_layer], 'title', '')

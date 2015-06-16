@@ -7,10 +7,19 @@ from django.contrib.auth import get_user_model
 from django.db import models, IntegrityError
 from django.utils.translation import ugettext_lazy as _
 from django.db.models import signals
+from django.contrib.sites.models import Site
+from django.template.loader import render_to_string
+from django.core.mail import send_mail
 
 from taggit.managers import TaggableManager
 from guardian.shortcuts import get_objects_for_group
 
+from django.utils import timezone
+from geonode.base.enumerations import COUNTRIES
+from taggit.models import TaggedItemBase
+
+class TaggedInterests(TaggedItemBase):
+    content_object = models.ForeignKey('GroupProfile')
 
 class GroupProfile(models.Model):
     GROUP_CHOICES = [
@@ -40,13 +49,29 @@ class GroupProfile(models.Model):
     keywords = TaggableManager(
         _('keywords'),
         help_text=_("A space or comma-separated list of keywords"),
-        blank=True)
+        blank=True,
+        related_name='group_keywords')
     access = models.CharField(
         max_length=15,
         default="public'",
         choices=GROUP_CHOICES,
         help_text=access_help_text)
     last_modified = models.DateTimeField(auto_now=True)
+    date_joined = models.DateTimeField(_('date joined'), default=timezone.now)
+    city = models.CharField(
+        _('City'),
+        max_length=255,
+        blank=True,
+        null=True,
+        help_text=_('city of the location'))
+    country = models.CharField(
+        choices=COUNTRIES,
+        max_length=3,
+        blank=True,
+        null=True,
+        help_text=_('country of the physical address'))
+    interests = TaggableManager(_('interests'), blank=True, help_text=_(
+        'a list of personal interests'), through=TaggedInterests, related_name='group_interests')
 
     def save(self, *args, **kwargs):
         group, created = Group.objects.get_or_create(name=self.slug)
@@ -76,6 +101,11 @@ class GroupProfile(models.Model):
         Returns a list of the Group's keywords.
         """
         return [kw.name for kw in self.keywords.all()]
+    def interest_list(self):
+        """
+        Returns a list of the Group's interests.
+        """
+        return [interest.name for interest in self.interests.all()]
 
     def resources(self, resource_type=None):
         """
@@ -220,19 +250,20 @@ class GroupInvitation(models.Model):
     class Meta:
         unique_together = [("group", "email")]
 
-    # def send(self, from_user):
-    #     current_site = Site.objects.get_current()
-    #     domain = unicode(current_site.domain)
-        # ctx = {
-        #     "invite": self,
-        #     "group": self.group,
-        #     "from_user": from_user,
-        #     "domain": domain,
-        # }
-        # subject = render_to_string("groups/email/invite_user_subject.txt", ctx)
-        # message = render_to_string("groups/email/invite_user.txt", ctx)
+    def send(self, from_user):
+
+        current_site = Site.objects.get_current()
+        domain = unicode(current_site.domain)
+        ctx = {
+            "invite": self,
+            "group": self.group,
+            "from_user": from_user,
+            "domain": domain,
+        }
+        subject = render_to_string("groups/email/invite_user_subject.txt", ctx)
+        message = render_to_string("groups/email/invite_user.txt", ctx)
         # TODO Send a notification rather than a mail
-        # send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [self.email])
+        send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [self.email])
 
     def accept(self, user):
         if not user.is_authenticated() or user == user.get_anonymous():

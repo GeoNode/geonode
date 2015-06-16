@@ -36,12 +36,18 @@ from .utils import format_address
 
 if 'notification' in settings.INSTALLED_APPS:
     from notification import models as notification
+    
+from taggit.models import TaggedItemBase
 
+class TaggedInterests(TaggedItemBase):
+    content_object = models.ForeignKey('Profile')
 
 class Profile(AbstractUser):
 
     """Fully featured Geonode user"""
 
+    interests = TaggableManager(_('interests'), blank=True, help_text=_(
+        'a list of personal interests'), through=TaggedInterests, related_name='profile_interests')
     organization = models.CharField(
         _('Organization Name'),
         max_length=255,
@@ -91,7 +97,7 @@ class Profile(AbstractUser):
         help_text=_('country of the physical address'))
     keywords = TaggableManager(_('keywords'), blank=True, help_text=_(
         'commonly used word(s) or formalised word(s) or phrase(s) used to describe the subject \
-            (space or comma-separated'))
+            (space or comma-separated'), related_name='profile_keywords')
 
     def get_absolute_url(self):
         return reverse('profile_detail', args=[self.username, ])
@@ -115,6 +121,12 @@ class Profile(AbstractUser):
         Returns a list of the Profile's keywords.
         """
         return [kw.name for kw in self.keywords.all()]
+
+    def interest_list(self):
+        """
+        Returns a list of the Profile's interests.
+        """
+        return [interest.name for interest in self.interests.all()]
 
     @property
     def name_long(self):

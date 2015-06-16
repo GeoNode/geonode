@@ -19,10 +19,10 @@ Community Contact
 Contact members and ask questions
 
 * Mailing Lists
-    * Users Forum https://groups.google.com/forum/#!forum/geonode-users
-    * Developers Forum https://groups.google.com/a/opengeo.org/group/geonode-dev/topics
-* Announcements https://groups.google.com/a/opengeo.org/forum/#!forum/geonode-announcements
-* IRC irc://irc.freenode.net/geonode (logs?)
+    * Users List http://lists.osgeo.org/cgi-bin/mailman/listinfo/geonode-users
+    * Developers List http://lists.osgeo.org/cgi-bin/mailman/listinfo/geonode-devel
+* IRC irc://irc.freenode.net/geonode
+* WebChat: http://webchat.freenode.net/?channels=#geonode
 * Social Media
     * Blog http://geonode.org/blog/
     * Twitter https://twitter.com/geonode

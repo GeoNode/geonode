@@ -8,13 +8,14 @@
 # Translators:
 # Translators:
 # Translators:
+# Translators:
 # Andres Alfonso Lemon Gomez <lemon.andres@gmail.com>, 2014
 msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-03-02 23:15-0600\n"
-"PO-Revision-Date: 2015-03-03 05:06+0000\n"
+"POT-Creation-Date: 2015-05-18 12:10-0500\n"
+"PO-Revision-Date: 2015-05-18 16:26+0000\n"
 "Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
 "Language-Team: Arabic (http://www.transifex.com/projects/p/geonode/language/"
 "ar/)\n"
@@ -149,7 +150,7 @@ msgstr "يتم تحديث البيانات كل ثلاثة أشهر"
 msgid "No information provided"
 msgstr "لم تقدم أية معلومات"
 
-#: base/forms.py:43 base/templates/base/resourcebase_info_panel.html:46
+#: base/forms.py:43 base/templates/base/resourcebase_info_panel.html:51
 #: documents/templates/documents/document_metadata.html:58
 #: layers/templates/layers/layer_metadata.html:63
 #: maps/templates/maps/map_metadata.html:61
@@ -160,11 +161,11 @@ msgstr "فئة"
 msgid "Category is required."
 msgstr "مطلوب الفئة."
 
-#: base/forms.py:105 groups/models.py:42 people/forms.py:82
+#: base/forms.py:105 groups/models.py:45 people/forms.py:82
 msgid "A space or comma-separated list of keywords"
 msgstr "مساحة أو قائمة مفصولة بفواصل من الكلمات الرئيسية"
 
-#: base/models.py:44 services/models.py:85
+#: base/models.py:44 services/models.py:86
 msgid "function performed by the responsible party"
 msgstr "الوظيفة التي تؤديها الجهة المسؤولة"
 
@@ -295,7 +296,7 @@ msgstr "هدف"
 msgid "maintenance frequency"
 msgstr "تردد الصيانة"
 
-#: base/models.py:251 groups/models.py:41 people/models.py:92
+#: base/models.py:251 groups/models.py:44 people/models.py:92
 msgid "keywords"
 msgstr "الكلمات الرئيسية"
 
@@ -379,15 +380,15 @@ msgstr "يجب أن يتم الإعلان عن هذا المورد في الصف
 msgid "Should this resource be published and searchable?"
 msgstr "وينبغي نشر هذه الموارد والبحث فيها؟"
 
-#: base/models.py:696
+#: base/models.py:699
 msgid "For example \"kml\""
 msgstr "على سبيل المثال \"كمل\""
 
-#: base/models.py:698
+#: base/models.py:701
 msgid "For example \"View in Google Earth\""
 msgstr "على سبيل المثال \"عرض في Google Earth\""
 
-#: base/models.py:699
+#: base/models.py:702
 msgid "For example \"text/xml\""
 msgstr "على سبيل المثال \"نص / XML\""
 
@@ -400,7 +401,7 @@ msgid "A request for downloading a resource was sent"
 msgstr ""
 
 #: base/templates/base/_resourcebase_contact_snippet.html:3
-#: templates/500.html:184 templates/base.html:143
+#: templates/500.html:151 templates/base.html:143
 msgid "About"
 msgstr "حول"
 
@@ -409,12 +410,12 @@ msgid "Owner, Point of Contact, Metadata Author"
 msgstr "المالك، نقطة الاتصال، الفوقية الكاتب"
 
 #: base/templates/base/_resourcebase_contact_snippet.html:10
-#: base/templates/base/resourcebase_info_panel.html:61
+#: base/templates/base/resourcebase_info_panel.html:73
 msgid "Owner"
 msgstr "مالك"
 
 #: base/templates/base/_resourcebase_contact_snippet.html:14
-#: base/templates/base/resourcebase_info_panel.html:66
+#: base/templates/base/resourcebase_info_panel.html:78
 #: documents/templates/documents/document_metadata.html:48
 #: layers/templates/layers/layer_metadata.html:99
 #: maps/templates/maps/map_metadata.html:51
@@ -431,7 +432,7 @@ msgid "Title"
 msgstr "لقب"
 
 #: base/templates/base/resourcebase_info_panel.html:11
-#: base/templates/base/resourcebase_info_panel.html:80
+#: base/templates/base/resourcebase_info_panel.html:92
 msgid "License"
 msgstr "رخصة"
 
@@ -455,45 +456,45 @@ msgstr "نوع"
 msgid "Keywords"
 msgstr "الكلمات الرئيسية"
 
-#: base/templates/base/resourcebase_info_panel.html:56
+#: base/templates/base/resourcebase_info_panel.html:61
 #: templates/search/_region_filter.html:5
 msgid "Regions"
 msgstr "المناطق"
 
-#: base/templates/base/resourcebase_info_panel.html:93
+#: base/templates/base/resourcebase_info_panel.html:105
 msgid "Maintenance Frequency"
 msgstr "صيانة التردد"
 
-#: base/templates/base/resourcebase_info_panel.html:98
+#: base/templates/base/resourcebase_info_panel.html:110
 msgid "Restrictions"
 msgstr "قيود"
 
-#: base/templates/base/resourcebase_info_panel.html:107
+#: base/templates/base/resourcebase_info_panel.html:119
 msgid "Edition"
 msgstr "طبعة"
 
-#: base/templates/base/resourcebase_info_panel.html:112
+#: base/templates/base/resourcebase_info_panel.html:124
 msgid "Purpose"
 msgstr "هدف"
 
-#: base/templates/base/resourcebase_info_panel.html:117 templates/500.html:187
+#: base/templates/base/resourcebase_info_panel.html:129 templates/500.html:154
 #: templates/base.html:146
 msgid "Language"
 msgstr "لغة"
 
-#: base/templates/base/resourcebase_info_panel.html:122
+#: base/templates/base/resourcebase_info_panel.html:134
 msgid "Temporal Extent"
 msgstr "مدى الزمني"
 
-#: base/templates/base/resourcebase_info_panel.html:127
+#: base/templates/base/resourcebase_info_panel.html:139
 msgid "Data Quality"
 msgstr "جودة البيانات"
 
-#: base/templates/base/resourcebase_info_panel.html:132
+#: base/templates/base/resourcebase_info_panel.html:144
 msgid "Supplemental Information"
 msgstr "معلومات إضافية"
 
-#: base/templates/base/resourcebase_info_panel.html:137
+#: base/templates/base/resourcebase_info_panel.html:149
 msgid "Spatial Representation Type"
 msgstr "نوع التمثيل المكاني"
 
@@ -517,15 +518,15 @@ msgstr "رابط ل"
 msgid "Permissions must be valid JSON."
 msgstr "يجب أن يكون أذونات JSON صالح."
 
-#: documents/models.py:38
+#: documents/models.py:39
 msgid "File"
 msgstr "ملف"
 
-#: documents/models.py:47
+#: documents/models.py:48
 msgid "The URL of the document if it is external."
 msgstr "عنوان الوثيقة إذا كانت خارجية."
 
-#: documents/models.py:48
+#: documents/models.py:49
 msgid "URL"
 msgstr "URL"
 
@@ -790,11 +791,11 @@ msgstr "واضح"
 msgid "Upload Document"
 msgstr "تحميل الوثيقة"
 
-#: geoserver/helpers.py:944
+#: geoserver/helpers.py:964
 msgid "An exception occurred loading data to PostGIS"
 msgstr ""
 
-#: geoserver/helpers.py:949
+#: geoserver/helpers.py:969
 msgid " Additionally an error occured during database cleanup"
 msgstr ""
 
@@ -834,22 +835,9 @@ msgstr "PDF"
 msgid "PNG"
 msgstr "PNG"
 
-#: geoserver/signals.py:285
+#: geoserver/signals.py:293
 msgid "Could not create a download link for layer."
 msgstr "لا يمكن إنشاء رابط التحميل لطبقة."
-
-#: geoserver/signals.py:316
-msgid "KML"
-msgstr "KML"
-
-#: geoserver/signals.py:345
-msgid "Tiles"
-msgstr "البلاط"
-
-#: geoserver/signals.py:392 layers/templates/layers/layer_detail.html:261
-#: services/views.py:1272
-msgid "Legend"
-msgstr "أسطورة"
 
 #: geoserver/views.py:335
 msgid "You don't have permissions to change style for this layer"
@@ -897,19 +885,19 @@ msgstr "مجموعة موجودة بالفعل مع أن عريانة."
 msgid "A group already exists with that name."
 msgstr "مجموعة موجود بالفعل بهذا الاسم."
 
-#: groups/models.py:17
+#: groups/models.py:20
 msgid "Public"
 msgstr "جمهور"
 
-#: groups/models.py:18
+#: groups/models.py:21
 msgid "Public (invite-only)"
 msgstr "جمهور (دعوة فقط)"
 
-#: groups/models.py:19
+#: groups/models.py:22
 msgid "Private"
 msgstr "خاص"
 
-#: groups/models.py:22
+#: groups/models.py:25
 msgid ""
 "Public: Any registered user can view and join a public group.<br>Public "
 "(invite-only):Any registered user can view the group.  Only invited users "
@@ -921,7 +909,7 @@ msgstr ""
 "الانضمام. <br> خاص: لا يمكن للمستخدمين المسجلين ترى أي تفاصيل حول المجموعة، "
 "بما في ذلك العضوية. يمكن فقط للمستخدمين دعوة الانضمام."
 
-#: groups/models.py:27
+#: groups/models.py:30
 msgid ""
 "Email used to contact one or all group members, such as a mailing list, "
 "shared email, or exchange group."
@@ -929,30 +917,30 @@ msgstr ""
 "البريد الإلكتروني المستخدم في الاتصال واحد أو كل أعضاء المجموعة، مثل القائمة "
 "البريدية، والبريد الإلكتروني مشتركة، أو مجموعة الصرف."
 
-#: groups/models.py:36
+#: groups/models.py:39
 msgid "email"
 msgstr "البريد الإلكتروني"
 
-#: groups/models.py:184 groups/models.py:203
+#: groups/models.py:187 groups/models.py:206
 #: groups/templates/groups/group_members.html:28
 #: groups/templates/groups/group_members.html:54
 #: groups/templates/groups/group_members.html:81
 msgid "Manager"
 msgstr "مدير"
 
-#: groups/models.py:185 groups/models.py:204
+#: groups/models.py:188 groups/models.py:207
 msgid "Member"
 msgstr "عضو"
 
-#: groups/models.py:209
+#: groups/models.py:212
 msgid "Sent"
 msgstr "أرسلت"
 
-#: groups/models.py:210
+#: groups/models.py:213
 msgid "Accepted"
 msgstr "المقبولة"
 
-#: groups/models.py:211
+#: groups/models.py:214
 msgid "Declined"
 msgstr "رفض"
 
@@ -972,14 +960,14 @@ msgstr "جميع"
 #: groups/templates/groups/activity.html:25
 #: people/templates/people/_profile_filters.html:5
 #: services/templates/services/service_detail.html:64
-#: social/templates/social/activity_list.html:21 templates/500.html:39
+#: social/templates/social/activity_list.html:21 templates/500.html:55
 #: templates/base.html:55
 msgid "Layers"
 msgstr "طبقات"
 
 #: groups/templates/groups/activity.html:26
 #: people/templates/people/_profile_filters.html:6
-#: social/templates/social/activity_list.html:22 templates/500.html:42
+#: social/templates/social/activity_list.html:22 templates/500.html:58
 #: templates/base.html:58
 msgid "Maps"
 msgstr "خرائط"
@@ -1164,141 +1152,141 @@ msgstr "إزالة خرائط / بيانات من المجموعة"
 msgid "Remove selected maps/data"
 msgstr "إزالة خرائط اختيار / بيانات"
 
-#: layers/models.py:52
+#: layers/models.py:53
 msgid "style name"
 msgstr "اسم النمط"
 
-#: layers/models.py:54
+#: layers/models.py:55
 msgid "sld text"
 msgstr "نص الحزب الديمقراطي اليساري"
 
-#: layers/models.py:56
+#: layers/models.py:57
 msgid "sld version"
 msgstr "النسخة الحزب الديمقراطي اليساري"
 
-#: layers/models.py:60
+#: layers/models.py:61
 msgid "sld url"
 msgstr "رابط الحزب الديمقراطي اليساري"
 
-#: layers/models.py:189
+#: layers/models.py:190
 msgid "File cannot be opened, maybe check the encoding"
 msgstr ""
 
-#: layers/models.py:296
+#: layers/models.py:297
 msgid "attribute name"
 msgstr "اسم السمة"
 
-#: layers/models.py:297
+#: layers/models.py:298
 msgid "name of attribute as stored in shapefile/spatial database"
 msgstr "اسم السمة كما المخزنة في بحلقات / قاعدة البيانات المكانية"
 
-#: layers/models.py:303
+#: layers/models.py:304
 msgid "attribute description"
 msgstr "السمة وصف"
 
-#: layers/models.py:304
+#: layers/models.py:305
 msgid "description of attribute to be used in metadata"
 msgstr "وصف السمة التي ستستخدم في الفوقية"
 
-#: layers/models.py:309
+#: layers/models.py:310
 msgid "attribute label"
 msgstr "التسمية السمة"
 
-#: layers/models.py:310
+#: layers/models.py:311
 msgid "title of attribute as displayed in GeoNode"
 msgstr "عنوان السمة كما هو معروض في GeoNode"
 
-#: layers/models.py:316
+#: layers/models.py:317
 msgid "attribute type"
 msgstr "نوع السمة"
 
-#: layers/models.py:317
+#: layers/models.py:318
 msgid "the data type of the attribute (integer, string, geometry, etc)"
 msgstr "نوع بيانات السمة (عدد صحيح، سلسلة، والهندسة، وغيرها)"
 
-#: layers/models.py:324
+#: layers/models.py:325
 msgid "visible?"
 msgstr "مرئية؟"
 
-#: layers/models.py:325
+#: layers/models.py:326
 msgid "specifies if the attribute should be displayed in identify results"
 msgstr "تحدد ما إذا كان ينبغي عرض السمة في تحديد النتائج"
 
-#: layers/models.py:328
+#: layers/models.py:329
 msgid "display order"
 msgstr "ترتيب العرض"
 
-#: layers/models.py:329
+#: layers/models.py:330
 msgid ""
 "specifies the order in which attribute should be displayed in identify "
 "results"
 msgstr "يحدد الترتيب الذي يجب أن يتم عرض السمة في تحديد النتائج"
 
-#: layers/models.py:334
+#: layers/models.py:335
 msgid "count"
 msgstr "عد"
 
-#: layers/models.py:335
+#: layers/models.py:336
 msgid "count value for this field"
 msgstr "عد قيمة لهذا الحقل"
 
-#: layers/models.py:338
+#: layers/models.py:339
 msgid "min"
 msgstr "دقيقة"
 
-#: layers/models.py:339
+#: layers/models.py:340
 msgid "minimum value for this field"
 msgstr "قيمة الحد الأدنى لهذا الحقل"
 
-#: layers/models.py:346
+#: layers/models.py:347
 msgid "max"
 msgstr "ماكس"
 
-#: layers/models.py:347
+#: layers/models.py:348
 msgid "maximum value for this field"
 msgstr "القيمة القصوى لهذا الحقل"
 
-#: layers/models.py:354
+#: layers/models.py:355
 msgid "average"
 msgstr "متوسط"
 
-#: layers/models.py:355
+#: layers/models.py:356
 msgid "average value for this field"
 msgstr "متوسط ​​قيمة لهذا الحقل"
 
-#: layers/models.py:362
+#: layers/models.py:363
 msgid "median"
 msgstr "متوسط"
 
-#: layers/models.py:363
+#: layers/models.py:364
 msgid "median value for this field"
 msgstr "متوسط ​​قيمة لهذا الحقل"
 
-#: layers/models.py:370
+#: layers/models.py:371
 msgid "standard deviation"
 msgstr "الانحراف المعياري"
 
-#: layers/models.py:371
+#: layers/models.py:372
 msgid "standard deviation for this field"
 msgstr "الانحراف المعياري لهذا الحقل"
 
-#: layers/models.py:378
+#: layers/models.py:379
 msgid "sum"
 msgstr "مجموع"
 
-#: layers/models.py:379
+#: layers/models.py:380
 msgid "sum value for this field"
 msgstr "قيمة المبلغ لهذا الحقل"
 
-#: layers/models.py:386
+#: layers/models.py:387
 msgid "unique values for this field"
 msgstr "قيم فريدة لهذا الحقل"
 
-#: layers/models.py:391
+#: layers/models.py:392
 msgid "last modified"
 msgstr "آخر تعديل"
 
-#: layers/models.py:393
+#: layers/models.py:394
 msgid "date when attribute statistics were last updated"
 msgstr "تاريخ عندما كانت الإحصاءات السمة آخر تحديث"
 
@@ -1450,6 +1438,10 @@ msgstr ""
 msgid "Edit data"
 msgstr ""
 
+#: layers/templates/layers/layer_detail.html:261 services/views.py:1272
+msgid "Legend"
+msgstr "أسطورة"
+
 #: layers/templates/layers/layer_detail.html:271
 msgid "Maps using this layer"
 msgstr "خرائط باستخدام هذه الطبقة"
@@ -1524,7 +1516,7 @@ msgstr "استكشاف الطبقات"
 
 #: layers/templates/layers/layer_list.html:12
 #: layers/templates/upload/layer_upload.html:18
-#: layers/templates/upload/layer_upload_base.html:12 templates/500.html:74
+#: layers/templates/upload/layer_upload_base.html:12 templates/500.html:216
 #: templates/base.html:208
 msgid "Upload Layers"
 msgstr "تحميل الطبقات"
@@ -1615,6 +1607,7 @@ msgstr "سيرة ذاتية"
 #: layers/templates/layers/layer_replace.html:38
 #: layers/templates/upload/layer_upload.html:31
 #: layers/templates/upload/layer_upload.html:38
+#: templates/announcements/announcement_confirm_delete.html:22
 #: templates/announcements/announcement_form.html:25
 #: templates/user_messages/_message_snippet.html:40
 msgid "Delete"
@@ -1629,6 +1622,7 @@ msgstr "هل أنت متأكد أنك تريد حذف هذا التحميل؟"
 #: layers/templates/upload/layer_upload.html:39
 #: maps/templates/maps/map_download.html:58 templates/_comments.html:66
 #: templates/_permissions_form.html:15
+#: templates/announcements/announcement_confirm_delete.html:21
 #: templates/announcements/announcement_form.html:23
 msgid "Cancel"
 msgstr "إلغاء"
@@ -1993,79 +1987,79 @@ msgstr "أو الذهاب فقط"
 msgid "now"
 msgstr "الآن"
 
-#: maps/models.py:57
+#: maps/models.py:58
 msgid "zoom"
 msgstr "زوم"
 
-#: maps/models.py:61
+#: maps/models.py:62
 msgid "projection"
 msgstr "إسقاط"
 
-#: maps/models.py:65
+#: maps/models.py:66
 msgid "center X"
 msgstr "مركز X"
 
-#: maps/models.py:69
+#: maps/models.py:70
 msgid "center Y"
 msgstr "مركز Y"
 
-#: maps/models.py:76
+#: maps/models.py:77
 msgid "Site URL"
 msgstr "عنوان الموقع"
 
-#: maps/models.py:81
+#: maps/models.py:82
 msgid "Featured Map URL"
 msgstr "شارك خريطة URL"
 
-#: maps/models.py:378
+#: maps/models.py:379
 msgid "stack order"
 msgstr "أجل كومة"
 
-#: maps/models.py:383
+#: maps/models.py:384
 msgid "format"
 msgstr "شكل"
 
-#: maps/models.py:390
+#: maps/models.py:391
 msgid "name"
 msgstr "اسم"
 
-#: maps/models.py:397
+#: maps/models.py:398
 msgid "opacity"
 msgstr "غموض"
 
-#: maps/models.py:401
+#: maps/models.py:402
 msgid "styles"
 msgstr "الأساليب"
 
-#: maps/models.py:407
+#: maps/models.py:408
 msgid "transparent"
 msgstr "شفاف"
 
-#: maps/models.py:411
+#: maps/models.py:412
 msgid "fixed"
 msgstr "ثابت"
 
-#: maps/models.py:415
+#: maps/models.py:416
 msgid "group"
 msgstr "مجموعة"
 
-#: maps/models.py:419
+#: maps/models.py:420
 msgid "visibility"
 msgstr "وضوح"
 
-#: maps/models.py:422
+#: maps/models.py:423
 msgid "ows URL"
 msgstr "URL الدودة الحلزونية"
 
-#: maps/models.py:425
+#: maps/models.py:426
 msgid "layer params"
 msgstr "بارامس طبقة"
 
-#: maps/models.py:432
+#: maps/models.py:433
 msgid "source params"
 msgstr "بارامس مصدر"
 
-#: maps/models.py:525
+#: maps/models.py:527
 msgid "JSON Configuration"
 msgstr "تكوين JSON"
 
@@ -2444,7 +2438,7 @@ msgstr "اسم المؤسسة"
 msgid "name of the responsible organization"
 msgstr "اسم المنظمة المسؤولة"
 
-#: people/models.py:51 templates/500.html:76 templates/base.html:210
+#: people/models.py:51 templates/500.html:218 templates/base.html:210
 msgid "Profile"
 msgstr "الملف الشخصي"
 
@@ -2546,7 +2540,7 @@ msgstr "أي مجموعة"
 msgid "All contents"
 msgstr "جميع المحتويات"
 
-#: people/templates/people/_profile_filters.html:7 templates/500.html:45
+#: people/templates/people/_profile_filters.html:7 templates/500.html:61
 #: templates/base.html:61
 msgid "Documents"
 msgstr "الوثائق"
@@ -2634,33 +2628,34 @@ msgstr "إنشاء خريطة جديدة"
 msgid "My Activities"
 msgstr "نشاطاتي"
 
-#: people/templates/people/profile_detail.html:97 templates/base.html:214
+#: people/templates/people/profile_detail.html:97 templates/500.html:222
+#: templates/base.html:214
 msgid "Notifications"
 msgstr ""
 
-#: people/templates/people/profile_detail.html:100 templates/500.html:80
+#: people/templates/people/profile_detail.html:100 templates/500.html:225
 #: templates/base.html:217 templates/announcements/announcement_list.html:6
 #: templates/announcements/announcement_list.html:13
 msgid "Announcements"
 msgstr "الإعلانات"
 
 #: people/templates/people/profile_detail.html:105
-#: services/templates/services/service_list.html:9 templates/500.html:83
+#: services/templates/services/service_list.html:9 templates/500.html:228
 #: templates/base.html:220
 msgid "Remote Services"
 msgstr "الخدمات عن بعد"
 
-#: people/templates/people/profile_detail.html:106 templates/500.html:84
+#: people/templates/people/profile_detail.html:106 templates/500.html:229
 #: templates/base.html:221
 msgid "Invite User"
 msgstr "دعوة العضو"
 
-#: people/templates/people/profile_detail.html:107 templates/500.html:86
+#: people/templates/people/profile_detail.html:107 templates/500.html:231
 #: templates/base.html:223
 msgid "GeoServer"
 msgstr "GeoServer"
 
-#: people/templates/people/profile_detail.html:110 templates/500.html:89
+#: people/templates/people/profile_detail.html:110 templates/500.html:234
 #: templates/base.html:226
 msgid "Admin"
 msgstr "المشرف"
@@ -2750,19 +2745,19 @@ msgstr ""
 msgid "Service Type"
 msgstr "نوع الخدمة"
 
-#: services/models.py:91
+#: services/models.py:92
 msgid "Layer Name"
 msgstr "اسم طبقة"
 
-#: services/models.py:92
+#: services/models.py:93
 msgid "Layer Title"
 msgstr "طبقة اللقب"
 
-#: services/models.py:93
+#: services/models.py:94
 msgid "Layer Description"
 msgstr "طبقة الوصف"
 
-#: services/models.py:94
+#: services/models.py:95
 msgid "Layer Styles"
 msgstr "أنماط طبقة"
 
@@ -2972,93 +2967,93 @@ msgstr ""
 "\n"
 "غير موجود على الصفحة المطلوبة. ربما كنت تستخدم المرجعية التي عفا عليها الزمن؟"
 
-#: templates/500.html:48 templates/base.html:66
+#: templates/500.html:66 templates/base.html:66
 msgid "People"
 msgstr "الناس"
 
-#: templates/500.html:51 templates/base.html:69
+#: templates/500.html:69 templates/base.html:69
 msgid "Groups"
 msgstr "مجموعات"
 
-#: templates/500.html:56 templates/search/search.html:6
-#: templates/search/search.html.py:12
-msgid "Search"
-msgstr "تفتيش"
+#: templates/500.html:89 templates/base.html:89
+msgid "Register"
+msgstr "تسجيل"
 
-#: templates/500.html:77 templates/base.html:211
+#: templates/500.html:100 templates/500.html.py:200 templates/base.html:100
+#: templates/base.html.py:192
+msgid "Sign in"
+msgstr "توقيع في"
+
+#: templates/500.html:127
+msgid "There was a problem loading this page"
+msgstr "كانت هناك مشكلة تحميل هذه الصفحة"
+
+#: templates/500.html:129
+msgid ""
+"\n"
+"            Please contact your GeoNode administrator (he may have received "
+"an email automatically if he configured it properly).\n"
+"            If you are the site administrator, enable debug mode to see the "
+"actual error and fix it or file an issue in <a href=\"http://github.com/"
+"GeoNode/geonode/issues\">GeoNode's issue tracker</a>\n"
+"            "
+msgstr ""
+
+#: templates/500.html:149 templates/base.html:141
+msgid "Powered by"
+msgstr "مدعوم من"
+
+#: templates/500.html:149 templates/base.html:141
+msgid "GeoNode"
+msgstr "GeoNode"
+
+#: templates/500.html:149 templates/base.html:141
+msgid "version"
+msgstr "نسخة"
+
+#: templates/500.html:150 templates/base.html:142
+msgid "Developers"
+msgstr "المطورين"
+
+#: templates/500.html:188 templates/500.html.py:189 templates/base.html:180
+#: templates/base.html.py:181
+msgid "Username"
+msgstr "اسم المستخدم"
+
+#: templates/500.html:192 templates/base.html:184
+msgid "Password"
+msgstr "كلمة المرور"
+
+#: templates/500.html:196 templates/base.html:188
+msgid "Remember Me"
+msgstr "حفظ البيانات"
+
+#: templates/500.html:212 templates/base.html:204
+msgid "Menu"
+msgstr ""
+
+#: templates/500.html:219 templates/base.html:211
 msgid "Recent Activity"
 msgstr "آخر الزوار"
 
-#: templates/500.html:78 templates/base.html:212
+#: templates/500.html:220 templates/base.html:212
 #: templates/user_messages/inbox.html:15
 msgid "Inbox"
 msgstr "البريد الوارد"
 
-#: templates/500.html:92 templates/base.html:229
+#: templates/500.html:239 templates/base.html:231
 msgid "Help"
 msgstr "مساعدة"
 
-#: templates/500.html:97 templates/base.html:235
+#: templates/500.html:245 templates/base.html:237
 #: templates/account/logout.html:6 templates/account/logout.html.py:12
 #: templates/account/logout.html:17
 msgid "Log out"
 msgstr "تسجيل الخروج"
 
-#: templates/500.html:109 templates/base.html:180 templates/base.html.py:181
-msgid "Username"
-msgstr "اسم المستخدم"
-
-#: templates/500.html:113 templates/base.html:184
-msgid "Password"
-msgstr "كلمة المرور"
-
-#: templates/500.html:118 templates/base.html:188
-msgid "Remember Me"
-msgstr "حفظ البيانات"
-
-#: templates/500.html:120 templates/base.html:100 templates/base.html.py:192
-msgid "Sign in"
-msgstr "توقيع في"
-
-#: templates/500.html:128 templates/base.html:89
-msgid "Register"
-msgstr "تسجيل"
-
-#: templates/500.html:159
-msgid "There was a problem loading this page"
-msgstr "كانت هناك مشكلة تحميل هذه الصفحة"
-
-#: templates/500.html:161
-msgid ""
-"\n"
-"          Please contact your GeoNode administrator (he may have received an "
-"email automatically if he configured it properly).\n"
-"          If you are the site administrator, enable debug mode to see the "
-"actual error and fix it or file an issue in <a href=\"http://github.com/"
-"GeoNode/geonode/issues\">GeoNode's issue tracker</a>\n"
-"          "
-msgstr ""
-"\n"
-"يرجى الاتصال بمسؤول GeoNode الخاص بك (انه قد يكون تلقى رسالة بالبريد "
-"الالكتروني تلقائيا إذا كان تكوينه بشكل صحيح). إذا كنت المسؤول عن الموقع، "
-"وتمكين وضع التصحيح لرؤية الخطأ الفعلي وإصلاحه أو ملف قضية في <a href="
-"\"http://github.com/GeoNode/geonode/issues\">قضية تعقب GeoNode ل</a>"
-
-#: templates/500.html:182 templates/base.html:141
-msgid "Powered by"
-msgstr "مدعوم من"
-
-#: templates/500.html:182 templates/base.html:141
-msgid "GeoNode"
-msgstr "GeoNode"
-
-#: templates/500.html:182 templates/base.html:141
-msgid "version"
-msgstr "نسخة"
-
-#: templates/500.html:183 templates/base.html:142
-msgid "Developers"
-msgstr "المطورين"
+#: templates/500.html:280 templates/base.html:274
+msgid "Type your search here ..."
+msgstr "اكتب بحثك هنا ..."
 
 #: templates/_actions.html:3
 msgid "Info"
@@ -3147,11 +3142,11 @@ msgstr ""
 msgid "Set permissions for this resource"
 msgstr "تعيين أذونات لهذا المورد"
 
-#: templates/_permissions_form_js.html:180
+#: templates/_permissions_form_js.html:204
 msgid "Choose users..."
 msgstr "اختيار المستخدمين ..."
 
-#: templates/_permissions_form_js.html:213
+#: templates/_permissions_form_js.html:237
 msgid "Choose groups..."
 msgstr "اختيار مجموعات ..."
 
@@ -3162,14 +3157,6 @@ msgstr "حول GeoNode"
 #: templates/about.html:10
 msgid "About GeoNode."
 msgstr "حول GeoNode."
-
-#: templates/base.html:204
-msgid "Menu"
-msgstr ""
-
-#: templates/base.html:270
-msgid "Type your search here ..."
-msgstr "اكتب بحثك هنا ..."
 
 #: templates/developer.html:4 templates/developer.html.py:8
 msgid "Information for Developers"
@@ -3445,10 +3432,9 @@ msgstr "GeoNode هو منصة مفتوحة المصدر لتبادل البيا�
 #: templates/index.html:17
 msgid ""
 "If you have any questions about the software or service, join our <a href="
-"\"https://groups.google.com/d/forum/geonode-users\">mailing list</a>."
+"\"http://lists.osgeo.org/cgi-bin/mailman/listinfo/geonode-users\">mailing "
+"list</a>."
 msgstr ""
-"إذا كان لديك أي أسئلة حول البرنامج أو الخدمة، والانضمام لدينا <a href="
-"\"https://groups.google.com/d/forum/geonode-users\">قائمة بريدية</a> ."
 
 #: templates/index.html:18
 msgid "Need help?"
@@ -3679,6 +3665,14 @@ msgstr "GeoNode الإداري للموقع"
 #: templates/admin/base_site.html:6
 msgid "GeoNode administration"
 msgstr "إدارة GeoNode"
+
+#: templates/announcements/announcement_confirm_delete.html:10
+msgid "Delete Announcement?"
+msgstr ""
+
+#: templates/announcements/announcement_confirm_delete.html:13
+msgid "Are you sure you want to delete this announcement?"
+msgstr ""
 
 #: templates/announcements/announcement_form.html:11
 msgid "Edit Announcement"
@@ -4113,6 +4107,10 @@ msgstr "تعيين أذونات"
 msgid "Text"
 msgstr "نص"
 
+#: templates/search/search.html:6 templates/search/search.html.py:12
+msgid "Search"
+msgstr "تفتيش"
+
 #: templates/user_messages/_message_snippet.html:8
 msgid "With"
 msgstr "مع"
@@ -4164,6 +4162,12 @@ msgstr "العودة إلى علبة الوارد"
 #: templates/user_messages/thread_detail.html:26
 msgid "Send Reply"
 msgstr "أرسل الرد"
+
+#~ msgid "KML"
+#~ msgstr "KML"
+
+#~ msgid "Tiles"
+#~ msgstr "Tiles"
 
 #~ msgid ""
 #~ "\n"

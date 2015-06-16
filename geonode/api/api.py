@@ -1,8 +1,12 @@
+import json
+import time
+
 from django.conf.urls import url
 from django.contrib.auth import get_user_model
 from django.core.urlresolvers import reverse
 from django.contrib.contenttypes.models import ContentType
 from django.conf import settings
+from django.db.models import Count
 
 from avatar.templatetags.avatar_tags import avatar_url
 from guardian.shortcuts import get_objects_for_user
@@ -16,11 +20,14 @@ from geonode.documents.models import Document
 from geonode.groups.models import GroupProfile
 
 from taggit.models import Tag
-
+from django.core.serializers.json import DjangoJSONEncoder
+from tastypie.serializers import Serializer
 from tastypie import fields
 from tastypie.resources import ModelResource
 from tastypie.constants import ALL
 from tastypie.utils import trailing_slash
+
+from django.db.models import Q
 
 FILTER_TYPES = {
     'layer': Layer,
@@ -29,20 +36,52 @@ FILTER_TYPES = {
 }
 
 
-class TypeFilteredResource(ModelResource):
+class CountJSONSerializer(Serializer):
+    """Custom serializer to post process the api and add counts"""
 
+    def get_resources_counts(self, options):
+        if settings.SKIP_PERMS_FILTER:
+            resources = ResourceBase.objects.all()
+        else:
+            resources = get_objects_for_user(
+                options['user'],
+                'base.view_resourcebase'
+            )
+        if settings.RESOURCE_PUBLISHING:
+            resources = resources.filter(is_published=True)
+
+        if options['title_filter']:
+            resources = resources.filter(title__icontains=options['title_filter'])
+
+        if options['type_filter']:
+            resources = resources.instance_of(options['type_filter'])
+
+        counts = list(resources.values(options['count_type']).annotate(count=Count(options['count_type'])))
+
+        return dict([(c[options['count_type']], c['count']) for c in counts])
+
+    def to_json(self, data, options=None):
+        options = options or {}
+        data = self.to_simple(data, options)
+        counts = self.get_resources_counts(options)
+        for item in data['objects']:
+            item['count'] = counts.get(item['id'], 0)
+        # Add in the current time.
+        data['requested_time'] = time.time()
+
+        return json.dumps(data, cls=DjangoJSONEncoder, sort_keys=True)
+
+
+class TypeFilteredResource(ModelResource):
     """ Common resource used to apply faceting to categories, keywords, and
     regions based on the type passed as query parameter in the form
     type:layer/map/document"""
+
     count = fields.IntegerField()
 
-    type_filter = None
-    title_filter = None
-
-    def dehydrate_count(self, bundle):
-        raise Exception('dehydrate_count not implemented in the child class')
-
     def build_filters(self, filters={}):
+        self.type_filter = None
+        self.title_filter = None
 
         orm_filters = super(TypeFilteredResource, self).build_filters(filters)
 
@@ -55,36 +94,21 @@ class TypeFilteredResource(ModelResource):
 
         return orm_filters
 
+    def serialize(self, request, data, format, options={}):
+        options['title_filter'] = self.title_filter
+        options['type_filter'] = self.type_filter
+        options['user'] = request.user
+
+        return super(TypeFilteredResource, self).serialize(request, data, format, options)
+
 
 class TagResource(TypeFilteredResource):
-
     """Tags api"""
 
-    def dehydrate_count(self, bundle):
-        count = 0
-        if settings.SKIP_PERMS_FILTER:
-            resources = ResourceBase.objects.all()
-        else:
-            resources = get_objects_for_user(
-                bundle.request.user,
-                'base.view_resourcebase'
-            )
-        if settings.RESOURCE_PUBLISHING:
-            resources = resources.filter(is_published=True)
+    def serialize(self, request, data, format, options={}):
+        options['count_type'] = 'keywords'
 
-        if self.title_filter:
-            resources = resources.filter(title__icontains=self.title_filter)
-        resources_ids = resources.values_list('id', flat=True)
-
-        tags = bundle.obj.taggit_taggeditem_items
-        if self.type_filter:
-            ctype = ContentType.objects.get_for_model(self.type_filter)
-            count = tags.filter(
-                content_type=ctype).filter(object_id__in=resources_ids).count()
-        else:
-            count = tags.filter(object_id__in=resources_ids).count()
-
-        return count
+        return super(TagResource, self).serialize(request, data, format, options)
 
     class Meta:
         queryset = Tag.objects.all().order_by('name')
@@ -93,33 +117,16 @@ class TagResource(TypeFilteredResource):
         filtering = {
             'slug': ALL,
         }
+        serializer = CountJSONSerializer()
 
 
 class RegionResource(TypeFilteredResource):
-
     """Regions api"""
 
-    def dehydrate_count(self, bundle):
-        count = 0
-        if settings.SKIP_PERMS_FILTER:
-            resources = ResourceBase.objects.all()
-        else:
-            resources = get_objects_for_user(
-                bundle.request.user,
-                'base.view_resourcebase'
-            )
-        if settings.RESOURCE_PUBLISHING:
-            resources = resources.filter(is_published=True)
+    def serialize(self, request, data, format, options={}):
+        options['count_type'] = 'regions'
 
-        resources_ids = resources.values_list('id', flat=True)
-
-        if self.type_filter:
-            count = bundle.obj.resourcebase_set.filter(
-                id__in=resources_ids).instance_of(self.type_filter).count()
-        else:
-            count = bundle.obj.resourcebase_set.filter(id__in=resources_ids).count()
-
-        return count
+        return super(RegionResource, self).serialize(request, data, format, options)
 
     class Meta:
         queryset = Region.objects.all().order_by('name')
@@ -128,29 +135,17 @@ class RegionResource(TypeFilteredResource):
         filtering = {
             'name': ALL,
         }
+        # To activate the counts on regions uncomment the following line
+        # serializer = CountJSONSerializer()
 
 
 class TopicCategoryResource(TypeFilteredResource):
-
     """Category api"""
 
-    def dehydrate_count(self, bundle):
-        resources = bundle.obj.resourcebase_set.all()
-        if settings.RESOURCE_PUBLISHING:
-            resources = resources.filter(is_published=True)
-        if self.type_filter:
-            resources = resources.instance_of(self.type_filter)
-        if self.title_filter:
-            resources = resources.filter(title__icontains=self.title_filter)
-        if not settings.SKIP_PERMS_FILTER:
-            permitted = get_objects_for_user(
-                bundle.request.user,
-                'base.view_resourcebase').values_list(
-                'id',
-                flat=True)
-            resources = resources.filter(id__in=permitted)
+    def serialize(self, request, data, format, options={}):
+        options['count_type'] = 'category'
 
-        return resources.count()
+        return super(TopicCategoryResource, self).serialize(request, data, format, options)
 
     class Meta:
         queryset = TopicCategory.objects.all()
@@ -159,15 +154,16 @@ class TopicCategoryResource(TypeFilteredResource):
         filtering = {
             'identifier': ALL,
         }
+        serializer = CountJSONSerializer()
 
 
 class GroupResource(ModelResource):
-
     """Groups api"""
 
     detail_url = fields.CharField()
     member_count = fields.IntegerField()
     manager_count = fields.IntegerField()
+    interests = fields.CharField(null=True, attribute='interests')
 
     def dehydrate_member_count(self, bundle):
         return bundle.obj.member_queryset().count()
@@ -178,27 +174,32 @@ class GroupResource(ModelResource):
     def dehydrate_detail_url(self, bundle):
         return reverse('group_detail', args=[bundle.obj.slug])
 
+    def dehydrate_interests(self, bundle):
+        return bundle.obj.interest_list()
+
     class Meta:
         queryset = GroupProfile.objects.all()
         resource_name = 'groups'
         allowed_methods = ['get']
         filtering = {
-            'name': ALL
+            'name': ALL,
+            'city': ALL,
         }
-        ordering = ['title', 'last_modified']
+        ordering = ['title', 'last_modified', 'date_joined']
 
 
 class ProfileResource(ModelResource):
-
     """Profile api"""
+
     avatar_100 = fields.CharField(null=True)
     profile_detail_url = fields.CharField()
     email = fields.CharField(default='')
-    layers_count = fields.IntegerField(default=0)
+    layers_count = fields.IntegerField(default=0, attribute='layers_count')
     maps_count = fields.IntegerField(default=0)
     documents_count = fields.IntegerField(default=0)
     current_user = fields.BooleanField(default=False)
     activity_stream_url = fields.CharField(null=True)
+    interests = fields.CharField(null=True, attribute='interests')
 
     def build_filters(self, filters={}):
         """adds filtering by group functionality"""
@@ -207,6 +208,10 @@ class ProfileResource(ModelResource):
 
         if 'group' in filters:
             orm_filters['group'] = filters['group']
+        if 'interest_list' in filters:
+            query = filters['interest_list']
+            qset = (Q(interests__slug__iexact=query))
+            orm_filters['interest_list'] = qset
 
         return orm_filters
 
@@ -214,6 +219,11 @@ class ProfileResource(ModelResource):
         """filter by group if applicable by group functionality"""
 
         group = applicable_filters.pop('group', None)
+
+        if 'interest_list' in applicable_filters:
+            interest_list = applicable_filters.pop('interest_list')
+        else:
+            interest_list = None
 
         semi_filtered = super(
             ProfileResource,
@@ -224,6 +234,9 @@ class ProfileResource(ModelResource):
         if group is not None:
             semi_filtered = semi_filtered.filter(
                 groupmember__group__slug=group)
+
+        if interest_list is not None:
+            semi_filtered = semi_filtered.filter(interest_list)
 
         return semi_filtered
 
@@ -236,17 +249,17 @@ class ProfileResource(ModelResource):
     def dehydrate_layers_count(self, bundle):
         obj_with_perms = get_objects_for_user(bundle.request.user,
                                               'base.view_resourcebase').instance_of(Layer)
-        return bundle.obj.resourcebase_set.filter(id__in=obj_with_perms.values_list('id', flat=True)).distinct().count()
+        return bundle.obj.resourcebase_set.filter(id__in=obj_with_perms.values('id')).distinct().count()
 
     def dehydrate_maps_count(self, bundle):
         obj_with_perms = get_objects_for_user(bundle.request.user,
                                               'base.view_resourcebase').instance_of(Map)
-        return bundle.obj.resourcebase_set.filter(id__in=obj_with_perms.values_list('id', flat=True)).distinct().count()
+        return bundle.obj.resourcebase_set.filter(id__in=obj_with_perms.values('id')).distinct().count()
 
     def dehydrate_documents_count(self, bundle):
         obj_with_perms = get_objects_for_user(bundle.request.user,
                                               'base.view_resourcebase').instance_of(Document)
-        return bundle.obj.resourcebase_set.filter(id__in=obj_with_perms.values_list('id', flat=True)).distinct().count()
+        return bundle.obj.resourcebase_set.filter(id__in=obj_with_perms.values('id')).distinct().count()
 
     def dehydrate_avatar_100(self, bundle):
         return avatar_url(bundle.obj, 100)
@@ -265,6 +278,9 @@ class ProfileResource(ModelResource):
                     bundle.obj).pk,
                 'object_id': bundle.obj.pk})
 
+    def dehydrate_interests(self, bundle):
+        return bundle.obj.interest_list()
+
     def prepend_urls(self):
         if settings.HAYSTACK_SEARCH:
             return [
@@ -276,14 +292,33 @@ class ProfileResource(ModelResource):
         else:
             return []
 
+    def get_object_list(self, request):
+        result = super(ProfileResource, self).get_object_list(request)
+
+        # support custom ordering by how many layers viewable by current user
+        order_by = request.GET.getlist('order_by')
+        if any([att.endswith('layers_count') for att in order_by]):
+            # build a query of viewable layers
+            user = request.user
+            obj_with_perms = get_objects_for_user(user, 'base.view_resourcebase').instance_of(Layer)
+            # add custom where clause that will access a field joined later
+            obj_with_perms = obj_with_perms.extra(where=['"base_resourcebase"."owner_id"="people_profile"."id"'])
+            layer_count = obj_with_perms.values('id').distinct()
+            # make this subquery into an aggregate
+            count = 'SELECT COUNT(*) AS layers_count FROM (%s)' % layer_count.query
+            # and annotate with a new column for use in ordering
+            result = result.extra(select={'layers_count': count})
+        return result
+
     class Meta:
         queryset = get_user_model().objects.exclude(username='AnonymousUser')
         resource_name = 'profiles'
         allowed_methods = ['get']
-        ordering = ['username', 'date_joined']
+        ordering = ['username', 'date_joined', 'layers_count', 'first_name']
         excludes = ['is_staff', 'password', 'is_superuser',
                     'is_active', 'last_login']
 
         filtering = {
             'username': ALL,
+            'city': ALL,
         }

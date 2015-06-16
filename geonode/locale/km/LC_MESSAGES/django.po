@@ -8,13 +8,14 @@
 # Translators:
 # Translators:
 # Translators:
+# Translators:
 # Andres Alfonso Lemon Gomez <lemon.andres@gmail.com>, 2014
 msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-03-02 23:15-0600\n"
-"PO-Revision-Date: 2015-03-03 05:06+0000\n"
+"POT-Creation-Date: 2015-05-18 12:10-0500\n"
+"PO-Revision-Date: 2015-05-18 16:26+0000\n"
 "Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
 "Language-Team: Khmer (http://www.transifex.com/projects/p/geonode/language/"
 "km/)\n"
@@ -148,7 +149,7 @@ msgstr "ទិន្នន័យ​ត្រូវ​បាន​ធ្វើ​
 msgid "No information provided"
 msgstr "គ្មាន​ព័ត៌មាន​ដែល​បាន​ផ្តល់"
 
-#: base/forms.py:43 base/templates/base/resourcebase_info_panel.html:46
+#: base/forms.py:43 base/templates/base/resourcebase_info_panel.html:51
 #: documents/templates/documents/document_metadata.html:58
 #: layers/templates/layers/layer_metadata.html:63
 #: maps/templates/maps/map_metadata.html:61
@@ -159,11 +160,11 @@ msgstr "ប្រភេទ"
 msgid "Category is required."
 msgstr "ប្រភេទ​ត្រូវ​បាន​ទាមទារ​។"
 
-#: base/forms.py:105 groups/models.py:42 people/forms.py:82
+#: base/forms.py:105 groups/models.py:45 people/forms.py:82
 msgid "A space or comma-separated list of keywords"
 msgstr "លំហ​មួយ​ឬ​បញ្ជី​បំបែក​ដោយ​សញ្ញា​ក្បៀស​ពាក្យគន្លឹះ"
 
-#: base/models.py:44 services/models.py:85
+#: base/models.py:44 services/models.py:86
 msgid "function performed by the responsible party"
 msgstr "មុខងារ​បាន​អនុវត្ត​ដោយ​ភាគី​ទទួល​ខុស​ត្រូវ"
 
@@ -294,7 +295,7 @@ msgstr "គោលបំណង"
 msgid "maintenance frequency"
 msgstr "ប្រេកង់​ថែទាំ"
 
-#: base/models.py:251 groups/models.py:41 people/models.py:92
+#: base/models.py:251 groups/models.py:44 people/models.py:92
 msgid "keywords"
 msgstr "ពាក្យគន្លឹះ"
 
@@ -378,15 +379,15 @@ msgstr "គួរ​ធនធាន​នេះ​ត្រូវ​បាន​
 msgid "Should this resource be published and searchable?"
 msgstr "គួរ​ធនធាន​នេះ​ត្រូវ​បាន​បោះ​ពុម្ព​ផ្សាយ​និង​ការ​ស្វែងរក​បាន​?"
 
-#: base/models.py:696
+#: base/models.py:699
 msgid "For example \"kml\""
 msgstr "ឧទាហរណ៍ \"KML​\""
 
-#: base/models.py:698
+#: base/models.py:701
 msgid "For example \"View in Google Earth\""
 msgstr "ឧទាហរណ៍ \"មើល​ក្នុង Google Earth​\""
 
-#: base/models.py:699
+#: base/models.py:702
 msgid "For example \"text/xml\""
 msgstr "ឧទាហរណ៍ \"អត្ថបទ / XML​\""
 
@@ -399,7 +400,7 @@ msgid "A request for downloading a resource was sent"
 msgstr ""
 
 #: base/templates/base/_resourcebase_contact_snippet.html:3
-#: templates/500.html:184 templates/base.html:143
+#: templates/500.html:151 templates/base.html:143
 msgid "About"
 msgstr "អំពី"
 
@@ -408,12 +409,12 @@ msgid "Owner, Point of Contact, Metadata Author"
 msgstr "ម្ចាស់​ចំណុច​នៃ​ការ​ទំនាក់ទំនង​, អ្នក​និពន្ធ​ទិន្នន័យ​មេតា"
 
 #: base/templates/base/_resourcebase_contact_snippet.html:10
-#: base/templates/base/resourcebase_info_panel.html:61
+#: base/templates/base/resourcebase_info_panel.html:73
 msgid "Owner"
 msgstr "ម្ចាស់"
 
 #: base/templates/base/_resourcebase_contact_snippet.html:14
-#: base/templates/base/resourcebase_info_panel.html:66
+#: base/templates/base/resourcebase_info_panel.html:78
 #: documents/templates/documents/document_metadata.html:48
 #: layers/templates/layers/layer_metadata.html:99
 #: maps/templates/maps/map_metadata.html:51
@@ -430,7 +431,7 @@ msgid "Title"
 msgstr "ចំណងជើង"
 
 #: base/templates/base/resourcebase_info_panel.html:11
-#: base/templates/base/resourcebase_info_panel.html:80
+#: base/templates/base/resourcebase_info_panel.html:92
 msgid "License"
 msgstr "អាជ្ញាប័ណ្ណ"
 
@@ -454,45 +455,45 @@ msgstr "ប្រភេទ"
 msgid "Keywords"
 msgstr "ពាក្យ​គន្លឹះ"
 
-#: base/templates/base/resourcebase_info_panel.html:56
+#: base/templates/base/resourcebase_info_panel.html:61
 #: templates/search/_region_filter.html:5
 msgid "Regions"
 msgstr "តំបន់"
 
-#: base/templates/base/resourcebase_info_panel.html:93
+#: base/templates/base/resourcebase_info_panel.html:105
 msgid "Maintenance Frequency"
 msgstr "ភព​ញឹក​ញ​ប់​ការ​ថែទាំ"
 
-#: base/templates/base/resourcebase_info_panel.html:98
+#: base/templates/base/resourcebase_info_panel.html:110
 msgid "Restrictions"
 msgstr "ការ​រឹត​បន្តឹង"
 
-#: base/templates/base/resourcebase_info_panel.html:107
+#: base/templates/base/resourcebase_info_panel.html:119
 msgid "Edition"
 msgstr "បោះពុម្ព​លើក"
 
-#: base/templates/base/resourcebase_info_panel.html:112
+#: base/templates/base/resourcebase_info_panel.html:124
 msgid "Purpose"
 msgstr "គោលបំណង"
 
-#: base/templates/base/resourcebase_info_panel.html:117 templates/500.html:187
+#: base/templates/base/resourcebase_info_panel.html:129 templates/500.html:154
 #: templates/base.html:146
 msgid "Language"
 msgstr "ភាសា"
 
-#: base/templates/base/resourcebase_info_panel.html:122
+#: base/templates/base/resourcebase_info_panel.html:134
 msgid "Temporal Extent"
 msgstr "វិសាលភាព​ខាង​សាច់ឈាម"
 
-#: base/templates/base/resourcebase_info_panel.html:127
+#: base/templates/base/resourcebase_info_panel.html:139
 msgid "Data Quality"
 msgstr "គុណភាព​ទិន្នន័យ"
 
-#: base/templates/base/resourcebase_info_panel.html:132
+#: base/templates/base/resourcebase_info_panel.html:144
 msgid "Supplemental Information"
 msgstr "ព័ត៌មាន​បន្ថែម"
 
-#: base/templates/base/resourcebase_info_panel.html:137
+#: base/templates/base/resourcebase_info_panel.html:149
 msgid "Spatial Representation Type"
 msgstr "ប្រភេទ​តំណាង spatial"
 
@@ -516,15 +517,15 @@ msgstr "តំណ​ទៅ"
 msgid "Permissions must be valid JSON."
 msgstr "សិទ្ធិ​ត្រូវ​តែ​ជា JSON ត្រឹមត្រូវ​។"
 
-#: documents/models.py:38
+#: documents/models.py:39
 msgid "File"
 msgstr "ឯកសារ"
 
-#: documents/models.py:47
+#: documents/models.py:48
 msgid "The URL of the document if it is external."
 msgstr "URL របស់​ឯកសារ​នេះ​ប្រសិន​បើ​វា​គឺ​ជា​ការ​ខាង​ក្រៅ​។"
 
-#: documents/models.py:48
+#: documents/models.py:49
 msgid "URL"
 msgstr "URL ដែល"
 
@@ -789,11 +790,11 @@ msgstr "ច្បាស់​លាស់"
 msgid "Upload Document"
 msgstr "ផ្ទុក​ឡើង​ឯកសារ"
 
-#: geoserver/helpers.py:944
+#: geoserver/helpers.py:964
 msgid "An exception occurred loading data to PostGIS"
 msgstr ""
 
-#: geoserver/helpers.py:949
+#: geoserver/helpers.py:969
 msgid " Additionally an error occured during database cleanup"
 msgstr ""
 
@@ -833,22 +834,9 @@ msgstr "ជា PDF"
 msgid "PNG"
 msgstr "PNG & ‧​;"
 
-#: geoserver/signals.py:285
+#: geoserver/signals.py:293
 msgid "Could not create a download link for layer."
 msgstr "មិន​អាច​បង្កើត​តំណ​ទាញ​យក​សម្រាប់​ស្រទាប់​។"
-
-#: geoserver/signals.py:316
-msgid "KML"
-msgstr "ឯកសារ KML"
-
-#: geoserver/signals.py:345
-msgid "Tiles"
-msgstr "ក្បឿង"
-
-#: geoserver/signals.py:392 layers/templates/layers/layer_detail.html:261
-#: services/views.py:1272
-msgid "Legend"
-msgstr "តាង"
 
 #: geoserver/views.py:335
 msgid "You don't have permissions to change style for this layer"
@@ -896,19 +884,19 @@ msgstr "ក្រុម​មួយ​មាន​រួច​ហើយ​ជា
 msgid "A group already exists with that name."
 msgstr "ក្រុម​មួយ​មាន​រួច​ហើយ​ដែល​មាន​ឈ្មោះ​ថា​។"
 
-#: groups/models.py:17
+#: groups/models.py:20
 msgid "Public"
 msgstr "សាធារណៈ"
 
-#: groups/models.py:18
+#: groups/models.py:21
 msgid "Public (invite-only)"
 msgstr "សាធារណៈ (អញ្ជើញ​តែ​)"
 
-#: groups/models.py:19
+#: groups/models.py:22
 msgid "Private"
 msgstr "ឯកជន"
 
-#: groups/models.py:22
+#: groups/models.py:25
 msgid ""
 "Public: Any registered user can view and join a public group.<br>Public "
 "(invite-only):Any registered user can view the group.  Only invited users "
@@ -920,7 +908,7 @@ msgstr ""
 "<br> ឯកជន​: អ្នកប្រើប្រាស់​ដែល​បាន​ចុះឈ្មោះ​មិន​អាច​មើល​ឃើញ​ព័​ត៌​មាន​លម្អិត​ណា​មួយ​អំពី​ក្រុម​នេះ​រួម​បញ្ចូល​ទាំង​"
 "សមាជិក​ភាព​។ មាន​តែ​អ្នក​ប្រើ​ដែល​បាន​អញ្ជើញ​អាច​ចូលរួម​។"
 
-#: groups/models.py:27
+#: groups/models.py:30
 msgid ""
 "Email used to contact one or all group members, such as a mailing list, "
 "shared email, or exchange group."
@@ -928,30 +916,30 @@ msgstr ""
 "អ៊ី​ម៉ែ​ល​បាន​ប្រើ​ដើម្បី​ទាក់ទង​មក​សមាជិក​ម្នាក់​ឬ​ក្រុម​ទាំង​អស់​ដូច​ជា​បញ្ជី​សំបុត្រ​រួម​អ៊ីមែល​ចែក​រំលែក​ឬ​ក្រុម​ការ​ផ្លាស់​ប្តូ​រ​"
 "។"
 
-#: groups/models.py:36
+#: groups/models.py:39
 msgid "email"
 msgstr "អ៊ី​ម៉ែ​ល"
 
-#: groups/models.py:184 groups/models.py:203
+#: groups/models.py:187 groups/models.py:206
 #: groups/templates/groups/group_members.html:28
 #: groups/templates/groups/group_members.html:54
 #: groups/templates/groups/group_members.html:81
 msgid "Manager"
 msgstr "កម្មវិធី​គ្រប់​គ្រង"
 
-#: groups/models.py:185 groups/models.py:204
+#: groups/models.py:188 groups/models.py:207
 msgid "Member"
 msgstr "សមាជិក"
 
-#: groups/models.py:209
+#: groups/models.py:212
 msgid "Sent"
 msgstr "ផ្ញើ​រ"
 
-#: groups/models.py:210
+#: groups/models.py:213
 msgid "Accepted"
 msgstr "បាន​ទទួល​យក"
 
-#: groups/models.py:211
+#: groups/models.py:214
 msgid "Declined"
 msgstr "បាន​បដិសេធ"
 
@@ -971,14 +959,14 @@ msgstr "ទាំងអស់"
 #: groups/templates/groups/activity.html:25
 #: people/templates/people/_profile_filters.html:5
 #: services/templates/services/service_detail.html:64
-#: social/templates/social/activity_list.html:21 templates/500.html:39
+#: social/templates/social/activity_list.html:21 templates/500.html:55
 #: templates/base.html:55
 msgid "Layers"
 msgstr "ស្រទាប់"
 
 #: groups/templates/groups/activity.html:26
 #: people/templates/people/_profile_filters.html:6
-#: social/templates/social/activity_list.html:22 templates/500.html:42
+#: social/templates/social/activity_list.html:22 templates/500.html:58
 #: templates/base.html:58
 msgid "Maps"
 msgstr "ផែនទី"
@@ -1163,141 +1151,141 @@ msgstr "យក​ផែនទី / ទិន្នន័យ​ពី​ក្រ
 msgid "Remove selected maps/data"
 msgstr "យក​ផែនទី​ដែល​បាន​ជ្រើសរើស / ទិន្នន័យ"
 
-#: layers/models.py:52
+#: layers/models.py:53
 msgid "style name"
 msgstr "ឈ្មោះ​របស់​រចនាប័ទ្ម"
 
-#: layers/models.py:54
+#: layers/models.py:55
 msgid "sld text"
 msgstr "អត្ថបទ sld"
 
-#: layers/models.py:56
+#: layers/models.py:57
 msgid "sld version"
 msgstr "កំណែ sld"
 
-#: layers/models.py:60
+#: layers/models.py:61
 msgid "sld url"
 msgstr "URL sld"
 
-#: layers/models.py:189
+#: layers/models.py:190
 msgid "File cannot be opened, maybe check the encoding"
 msgstr ""
 
-#: layers/models.py:296
+#: layers/models.py:297
 msgid "attribute name"
 msgstr "ឈ្មោះ Attribute"
 
-#: layers/models.py:297
+#: layers/models.py:298
 msgid "name of attribute as stored in shapefile/spatial database"
 msgstr "ឈ្មោះ​គុណលក្ខណៈ​ដូច​ដែល​បាន​រក្សា​ទុក​ក្នុង shapefile មូលដ្ឋាន​ទិន្នន័យ / ទំហំ"
 
-#: layers/models.py:303
+#: layers/models.py:304
 msgid "attribute description"
 msgstr "ចាត់ទុក​ការ​ពិពណ៌នា"
 
-#: layers/models.py:304
+#: layers/models.py:305
 msgid "description of attribute to be used in metadata"
 msgstr "ការ​ពិពណ៌នា​អំពី​គុណ​លក្ខណៈ​ដែល​នឹង​ត្រូវ​បាន​ប្រើ​ក្នុង​ទិន្នន័យ​មេតា"
 
-#: layers/models.py:309
+#: layers/models.py:310
 msgid "attribute label"
 msgstr "ស្លាក​គុណលក្ខណៈ"
 
-#: layers/models.py:310
+#: layers/models.py:311
 msgid "title of attribute as displayed in GeoNode"
 msgstr "ចំណង​ជើង​នៃ​គុណ​លក្ខណៈ​ជា​ការ​បង្ហាញ​នៅ​ក្នុង GeoNode"
 
-#: layers/models.py:316
+#: layers/models.py:317
 msgid "attribute type"
 msgstr "ប្រភេទ​គុណលក្ខណៈ"
 
-#: layers/models.py:317
+#: layers/models.py:318
 msgid "the data type of the attribute (integer, string, geometry, etc)"
 msgstr "ប្រភេទ​ទិន្នន័យ​នៃ​គុណលក្ខណៈ​នេះ (ចំនួន​គត់​ខ្សែ​អក្សរ​, ធរណីមាត្រ​, ល​)"
 
-#: layers/models.py:324
+#: layers/models.py:325
 msgid "visible?"
 msgstr "ដែល​អាច​មើល​ឃើញ​?"
 
-#: layers/models.py:325
+#: layers/models.py:326
 msgid "specifies if the attribute should be displayed in identify results"
 msgstr "បញ្ជាក់​ប្រសិន​បើ​មាន​គុណ​លក្ខណៈ​ដែល​គួរ​តែ​ត្រូវ​បាន​បង្ហាញ​នៅ​ក្នុង​កំណត់​ពី​លទ្ធផល"
 
-#: layers/models.py:328
+#: layers/models.py:329
 msgid "display order"
 msgstr "គោល​បំណង​បង្ហាញ"
 
-#: layers/models.py:329
+#: layers/models.py:330
 msgid ""
 "specifies the order in which attribute should be displayed in identify "
 "results"
 msgstr "បញ្ជាក់​លំដាប់​ដែល​គុណលក្ខណៈ​គួរ​ត្រូវ​បាន​បង្ហាញ​នៅ​ក្នុង​កំណត់​អត្តសញ្ញាណ​លទ្ធផល"
 
-#: layers/models.py:334
+#: layers/models.py:335
 msgid "count"
 msgstr "រាប់"
 
-#: layers/models.py:335
+#: layers/models.py:336
 msgid "count value for this field"
 msgstr "រាប់​តម្លៃ​សម្រាប់​វាល​នេះ"
 
-#: layers/models.py:338
+#: layers/models.py:339
 msgid "min"
 msgstr "នាទី"
 
-#: layers/models.py:339
+#: layers/models.py:340
 msgid "minimum value for this field"
 msgstr "តម្លៃ​អប្បបរមា​សម្រាប់​វាល​នេះ"
 
-#: layers/models.py:346
+#: layers/models.py:347
 msgid "max"
 msgstr "អតិបរមា"
 
-#: layers/models.py:347
+#: layers/models.py:348
 msgid "maximum value for this field"
 msgstr "តម្លៃ​អតិបរមា​សម្រាប់​វាល​នេះ"
 
-#: layers/models.py:354
+#: layers/models.py:355
 msgid "average"
 msgstr "មធ្យម"
 
-#: layers/models.py:355
+#: layers/models.py:356
 msgid "average value for this field"
 msgstr "តម្លៃ​ជា​មធ្យម​សម្រាប់​វាល​នេះ"
 
-#: layers/models.py:362
+#: layers/models.py:363
 msgid "median"
 msgstr "មធ្យម"
 
-#: layers/models.py:363
+#: layers/models.py:364
 msgid "median value for this field"
 msgstr "តម្លៃ​ជា​មធ្យម​សម្រាប់​វាល​នេះ"
 
-#: layers/models.py:370
+#: layers/models.py:371
 msgid "standard deviation"
 msgstr "គម្លាត​គំរូ"
 
-#: layers/models.py:371
+#: layers/models.py:372
 msgid "standard deviation for this field"
 msgstr "គម្លាត​គំរូ​សម្រាប់​វាល​នេះ"
 
-#: layers/models.py:378
+#: layers/models.py:379
 msgid "sum"
 msgstr "ផលបូក"
 
-#: layers/models.py:379
+#: layers/models.py:380
 msgid "sum value for this field"
 msgstr "តម្លៃ​ផលបូក​សម្រាប់​វាល​នេះ"
 
-#: layers/models.py:386
+#: layers/models.py:387
 msgid "unique values for this field"
 msgstr "តម្លៃ​តែ​មួយ​គត់​សម្រាប់​វាល​នេះ"
 
-#: layers/models.py:391
+#: layers/models.py:392
 msgid "last modified"
 msgstr "បាន​កែប្រែ​ចុង​ក្រោយ"
 
-#: layers/models.py:393
+#: layers/models.py:394
 msgid "date when attribute statistics were last updated"
 msgstr "កាលបរិច្ឆេទ​នៅពេល​ដែល​ស្ថិតិ​គុណលក្ខណៈ​ត្រូវ​បាន​ធ្វើ​ឱ្យ​ទាន់​សម័យ​ចុង​ក្រោយ"
 
@@ -1449,6 +1437,10 @@ msgstr ""
 msgid "Edit data"
 msgstr ""
 
+#: layers/templates/layers/layer_detail.html:261 services/views.py:1272
+msgid "Legend"
+msgstr "តាង"
+
 #: layers/templates/layers/layer_detail.html:271
 msgid "Maps using this layer"
 msgstr "ផែនទី​ការ​ប្រើ​ស្រទាប់​នេះ"
@@ -1524,7 +1516,7 @@ msgstr "រុករក​ស្រទាប់"
 
 #: layers/templates/layers/layer_list.html:12
 #: layers/templates/upload/layer_upload.html:18
-#: layers/templates/upload/layer_upload_base.html:12 templates/500.html:74
+#: layers/templates/upload/layer_upload_base.html:12 templates/500.html:216
 #: templates/base.html:208
 msgid "Upload Layers"
 msgstr "ស្រទាប់​ផ្ទុក​ឡើង"
@@ -1615,6 +1607,7 @@ msgstr "បន្ត"
 #: layers/templates/layers/layer_replace.html:38
 #: layers/templates/upload/layer_upload.html:31
 #: layers/templates/upload/layer_upload.html:38
+#: templates/announcements/announcement_confirm_delete.html:22
 #: templates/announcements/announcement_form.html:25
 #: templates/user_messages/_message_snippet.html:40
 msgid "Delete"
@@ -1629,6 +1622,7 @@ msgstr "តើ​អ្នក​ប្រាកដ​ជា​ចង់​លុ
 #: layers/templates/upload/layer_upload.html:39
 #: maps/templates/maps/map_download.html:58 templates/_comments.html:66
 #: templates/_permissions_form.html:15
+#: templates/announcements/announcement_confirm_delete.html:21
 #: templates/announcements/announcement_form.html:23
 msgid "Cancel"
 msgstr "បោះបង់"
@@ -1992,79 +1986,79 @@ msgstr "ឬ​គ្រាន់​តែ​ទៅ"
 msgid "now"
 msgstr "ឥឡូវ​នេះ"
 
-#: maps/models.py:57
+#: maps/models.py:58
 msgid "zoom"
 msgstr "ពង្រីក"
 
-#: maps/models.py:61
+#: maps/models.py:62
 msgid "projection"
 msgstr "ការ​ព្យាករ"
 
-#: maps/models.py:65
+#: maps/models.py:66
 msgid "center X"
 msgstr "ក​ណ្តា​ល X បាន"
 
-#: maps/models.py:69
+#: maps/models.py:70
 msgid "center Y"
 msgstr "ក​ណ្តា​ល​អ៊ី"
 
-#: maps/models.py:76
+#: maps/models.py:77
 msgid "Site URL"
 msgstr "តំបន់​ប​ណ្តា​ញ URL ដែល"
 
-#: maps/models.py:81
+#: maps/models.py:82
 msgid "Featured Map URL"
 msgstr "URL ដែល​ផែនទី​លក្ខណៈ​ពិសេស"
 
-#: maps/models.py:378
+#: maps/models.py:379
 msgid "stack order"
 msgstr "តាម​លំដាប់​ជង់"
 
-#: maps/models.py:383
+#: maps/models.py:384
 msgid "format"
 msgstr "ទ្រង់ទ្រាយ"
 
-#: maps/models.py:390
+#: maps/models.py:391
 msgid "name"
 msgstr "ឈ្មោះ​របស់"
 
-#: maps/models.py:397
+#: maps/models.py:398
 msgid "opacity"
 msgstr "ភាព​ស្រអាប់"
 
-#: maps/models.py:401
+#: maps/models.py:402
 msgid "styles"
 msgstr "រចនាប័ទ្ម"
 
-#: maps/models.py:407
+#: maps/models.py:408
 msgid "transparent"
 msgstr "តម្លាភាព"
 
-#: maps/models.py:411
+#: maps/models.py:412
 msgid "fixed"
 msgstr "ថេរ"
 
-#: maps/models.py:415
+#: maps/models.py:416
 msgid "group"
 msgstr "ក្រុម"
 
-#: maps/models.py:419
+#: maps/models.py:420
 msgid "visibility"
 msgstr "ភាព​មើលឃើញ"
 
-#: maps/models.py:422
+#: maps/models.py:423
 msgid "ows URL"
 msgstr "URL ដែល ows"
 
-#: maps/models.py:425
+#: maps/models.py:426
 msgid "layer params"
 msgstr "ប៉ារ៉ាម៉ែត្រ​ស្រទាប់"
 
-#: maps/models.py:432
+#: maps/models.py:433
 msgid "source params"
 msgstr "ប៉ារ៉ាម៉ែត្រ​ប្រភព"
 
-#: maps/models.py:525
+#: maps/models.py:527
 msgid "JSON Configuration"
 msgstr "ការ​កំណត់​រចនា​សម្ព័ន្ធ JSON"
 
@@ -2442,7 +2436,7 @@ msgstr "ឈ្មោះ​អង្គភាព"
 msgid "name of the responsible organization"
 msgstr "ឈ្មោះ​របស់​អង្គការ​ទទួល​ខុស​ត្រូវ"
 
-#: people/models.py:51 templates/500.html:76 templates/base.html:210
+#: people/models.py:51 templates/500.html:218 templates/base.html:210
 msgid "Profile"
 msgstr "ព​ត៌​មាន"
 
@@ -2544,7 +2538,7 @@ msgstr "គ្មាន​ក្រុម"
 msgid "All contents"
 msgstr "មាតិកា​ទាំងអស់"
 
-#: people/templates/people/_profile_filters.html:7 templates/500.html:45
+#: people/templates/people/_profile_filters.html:7 templates/500.html:61
 #: templates/base.html:61
 msgid "Documents"
 msgstr "ឯកសារ"
@@ -2632,33 +2626,34 @@ msgstr "បង្កើត​ផែនទី​ថ្មី​មួយ"
 msgid "My Activities"
 msgstr "សកម្មភាព​របស់​យើង"
 
-#: people/templates/people/profile_detail.html:97 templates/base.html:214
+#: people/templates/people/profile_detail.html:97 templates/500.html:222
+#: templates/base.html:214
 msgid "Notifications"
 msgstr ""
 
-#: people/templates/people/profile_detail.html:100 templates/500.html:80
+#: people/templates/people/profile_detail.html:100 templates/500.html:225
 #: templates/base.html:217 templates/announcements/announcement_list.html:6
 #: templates/announcements/announcement_list.html:13
 msgid "Announcements"
 msgstr "សេចក្តី​ប្រកាស"
 
 #: people/templates/people/profile_detail.html:105
-#: services/templates/services/service_list.html:9 templates/500.html:83
+#: services/templates/services/service_list.html:9 templates/500.html:228
 #: templates/base.html:220
 msgid "Remote Services"
 msgstr "សេវាកម្ម​ពី​ចម្ងាយ"
 
-#: people/templates/people/profile_detail.html:106 templates/500.html:84
+#: people/templates/people/profile_detail.html:106 templates/500.html:229
 #: templates/base.html:221
 msgid "Invite User"
 msgstr "អញ្ជើញ​អ្នក​ប្រើប្រាស់"
 
-#: people/templates/people/profile_detail.html:107 templates/500.html:86
+#: people/templates/people/profile_detail.html:107 templates/500.html:231
 #: templates/base.html:223
 msgid "GeoServer"
 msgstr "GeoServer"
 
-#: people/templates/people/profile_detail.html:110 templates/500.html:89
+#: people/templates/people/profile_detail.html:110 templates/500.html:234
 #: templates/base.html:226
 msgid "Admin"
 msgstr "admin"
@@ -2748,19 +2743,19 @@ msgstr ""
 msgid "Service Type"
 msgstr "ប្រភេទ​សេវាកម្ម"
 
-#: services/models.py:91
+#: services/models.py:92
 msgid "Layer Name"
 msgstr "ឈ្មោះ​ស្រទាប់"
 
-#: services/models.py:92
+#: services/models.py:93
 msgid "Layer Title"
 msgstr "ចំណងជើង​ស្រទាប់"
 
-#: services/models.py:93
+#: services/models.py:94
 msgid "Layer Description"
 msgstr "ស្រទាប់​ការ​ពិពណ៌នា​សង្ខេប"
 
-#: services/models.py:94
+#: services/models.py:95
 msgid "Layer Styles"
 msgstr "រចនាប័ទ្ម​ស្រទាប់"
 
@@ -2967,93 +2962,93 @@ msgstr ""
 "\n"
 "ទំព័រ​ដែល​អ្នក​បាន​ស្នើ​មិន​មាន​ទេ​។ ប្រហែល​ជា​អ្នក​កំពុង​ប្រើ​កំណត់​ចំណាំ​ហួស​សម័យ​មួយ​?"
 
-#: templates/500.html:48 templates/base.html:66
+#: templates/500.html:66 templates/base.html:66
 msgid "People"
 msgstr "ប្រជាជន"
 
-#: templates/500.html:51 templates/base.html:69
+#: templates/500.html:69 templates/base.html:69
 msgid "Groups"
 msgstr "ក្រុម"
 
-#: templates/500.html:56 templates/search/search.html:6
-#: templates/search/search.html.py:12
-msgid "Search"
-msgstr "ស្វែងរក"
+#: templates/500.html:89 templates/base.html:89
+msgid "Register"
+msgstr "ចុះឈ្មោះ"
 
-#: templates/500.html:77 templates/base.html:211
+#: templates/500.html:100 templates/500.html.py:200 templates/base.html:100
+#: templates/base.html.py:192
+msgid "Sign in"
+msgstr "ចុះ​ឈ្មោះ​ចូល"
+
+#: templates/500.html:127
+msgid "There was a problem loading this page"
+msgstr "មាន​បញ្ហា​ក្នុង​ការ​ផ្ទុក​ទំព័រ​នេះ​គឺ"
+
+#: templates/500.html:129
+msgid ""
+"\n"
+"            Please contact your GeoNode administrator (he may have received "
+"an email automatically if he configured it properly).\n"
+"            If you are the site administrator, enable debug mode to see the "
+"actual error and fix it or file an issue in <a href=\"http://github.com/"
+"GeoNode/geonode/issues\">GeoNode's issue tracker</a>\n"
+"            "
+msgstr ""
+
+#: templates/500.html:149 templates/base.html:141
+msgid "Powered by"
+msgstr "ឧបត្ថម្ភ​ដោយ"
+
+#: templates/500.html:149 templates/base.html:141
+msgid "GeoNode"
+msgstr "GeoNode"
+
+#: templates/500.html:149 templates/base.html:141
+msgid "version"
+msgstr "កំណែ"
+
+#: templates/500.html:150 templates/base.html:142
+msgid "Developers"
+msgstr "អ្នក​អភិវឌ្ឍ"
+
+#: templates/500.html:188 templates/500.html.py:189 templates/base.html:180
+#: templates/base.html.py:181
+msgid "Username"
+msgstr "ឈ្មោះ​អ្នក​ប្រើ"
+
+#: templates/500.html:192 templates/base.html:184
+msgid "Password"
+msgstr "ពាក្យ​សម្ងាត់"
+
+#: templates/500.html:196 templates/base.html:188
+msgid "Remember Me"
+msgstr "ចងចាំ​ខ្ញុំ"
+
+#: templates/500.html:212 templates/base.html:204
+msgid "Menu"
+msgstr ""
+
+#: templates/500.html:219 templates/base.html:211
 msgid "Recent Activity"
 msgstr "សកម្មភាព​ថ្មី"
 
-#: templates/500.html:78 templates/base.html:212
+#: templates/500.html:220 templates/base.html:212
 #: templates/user_messages/inbox.html:15
 msgid "Inbox"
 msgstr "ប្រអប់​ទទួល"
 
-#: templates/500.html:92 templates/base.html:229
+#: templates/500.html:239 templates/base.html:231
 msgid "Help"
 msgstr "ជួយ"
 
-#: templates/500.html:97 templates/base.html:235
+#: templates/500.html:245 templates/base.html:237
 #: templates/account/logout.html:6 templates/account/logout.html.py:12
 #: templates/account/logout.html:17
 msgid "Log out"
 msgstr "ចេញ"
 
-#: templates/500.html:109 templates/base.html:180 templates/base.html.py:181
-msgid "Username"
-msgstr "ឈ្មោះ​អ្នក​ប្រើ"
-
-#: templates/500.html:113 templates/base.html:184
-msgid "Password"
-msgstr "ពាក្យ​សម្ងាត់"
-
-#: templates/500.html:118 templates/base.html:188
-msgid "Remember Me"
-msgstr "ចងចាំ​ខ្ញុំ"
-
-#: templates/500.html:120 templates/base.html:100 templates/base.html.py:192
-msgid "Sign in"
-msgstr "ចុះ​ឈ្មោះ​ចូល"
-
-#: templates/500.html:128 templates/base.html:89
-msgid "Register"
-msgstr "ចុះឈ្មោះ"
-
-#: templates/500.html:159
-msgid "There was a problem loading this page"
-msgstr "មាន​បញ្ហា​ក្នុង​ការ​ផ្ទុក​ទំព័រ​នេះ​គឺ"
-
-#: templates/500.html:161
-msgid ""
-"\n"
-"          Please contact your GeoNode administrator (he may have received an "
-"email automatically if he configured it properly).\n"
-"          If you are the site administrator, enable debug mode to see the "
-"actual error and fix it or file an issue in <a href=\"http://github.com/"
-"GeoNode/geonode/issues\">GeoNode's issue tracker</a>\n"
-"          "
-msgstr ""
-"\n"
-"សូម​ទាក់ទង​អ្នក​គ្រប់គ្រង GeoNode របស់​អ្នក (គាត់​អាច​បាន​ទទួល​អ៊ី​ម៉ែ​ល​មួយ​ដោយ​ស្វ័យ​ប្រវត្តិ​ប្រសិន​បើ​លោក​បាន​កំណត់​"
-"រចនា​សម្ព័ន្ធ​វា​ឱ្យ​បាន​ត្រឹមត្រូវ​) ។ ប្រសិន​បើ​អ្នក​ជា​អ្នក​គ្រប់គ្រង​តំបន់​បណ្ដាញ​ដែល​បាន​អនុញ្ញាត​របៀប​បំបាត់​កំហុស​"
-"ឃើញ​កំហុស​ពិត​ប្រាកដ​និង​ការ​ជួសជុល​វា​ឬ​ឯកសារ​ដែល​ជា​បញ្ហា​មួយ​នៅក្នុង <a href=\"http://github.com/"
-"GeoNode/geonode/issues\">កម្មវិធី​តាមដាន​បញ្ហា GeoNode របស់</a>"
-
-#: templates/500.html:182 templates/base.html:141
-msgid "Powered by"
-msgstr "ឧបត្ថម្ភ​ដោយ"
-
-#: templates/500.html:182 templates/base.html:141
-msgid "GeoNode"
-msgstr "GeoNode"
-
-#: templates/500.html:182 templates/base.html:141
-msgid "version"
-msgstr "កំណែ"
-
-#: templates/500.html:183 templates/base.html:142
-msgid "Developers"
-msgstr "អ្នក​អភិវឌ្ឍ"
+#: templates/500.html:280 templates/base.html:274
+msgid "Type your search here ..."
+msgstr "វាយ​ការ​ស្វែងរក​របស់​អ្នក​នៅ​ទីនេះ ..."
 
 #: templates/_actions.html:3
 msgid "Info"
@@ -3142,11 +3137,11 @@ msgstr ""
 msgid "Set permissions for this resource"
 msgstr "កំណត់​សិទ្ធិ​សម្រាប់​ធនធាន​នេះ"
 
-#: templates/_permissions_form_js.html:180
+#: templates/_permissions_form_js.html:204
 msgid "Choose users..."
 msgstr "ជ្រើស​អ្នក​ប្រើ​ប្រាស់ ..."
 
-#: templates/_permissions_form_js.html:213
+#: templates/_permissions_form_js.html:237
 msgid "Choose groups..."
 msgstr "ជ្រើស​ក្រុម ..."
 
@@ -3157,14 +3152,6 @@ msgstr "អំពី GeoNode"
 #: templates/about.html:10
 msgid "About GeoNode."
 msgstr "អំពី GeoNode ។"
-
-#: templates/base.html:204
-msgid "Menu"
-msgstr ""
-
-#: templates/base.html:270
-msgid "Type your search here ..."
-msgstr "វាយ​ការ​ស្វែងរក​របស់​អ្នក​នៅ​ទីនេះ ..."
 
 #: templates/developer.html:4 templates/developer.html.py:8
 msgid "Information for Developers"
@@ -3440,10 +3427,9 @@ msgstr "GeoNode ជា​វេទិកា​ប្រភព​បើក​ច�
 #: templates/index.html:17
 msgid ""
 "If you have any questions about the software or service, join our <a href="
-"\"https://groups.google.com/d/forum/geonode-users\">mailing list</a>."
+"\"http://lists.osgeo.org/cgi-bin/mailman/listinfo/geonode-users\">mailing "
+"list</a>."
 msgstr ""
-"ប្រសិន​បើ​លោក​អ្នក​មាន​សំណួរ​ណា​មួយ​អំពី​កម្មវិធី​ឬ​សេវាកម្ម​របស់​យើង​ចូល​រួម​ក្នុង <a href=\"https://groups."
-"google.com/d/forum/geonode-users\">បញ្ជី​សំបុត្រ​រួម</a> ។"
 
 #: templates/index.html:18
 msgid "Need help?"
@@ -3656,6 +3642,14 @@ msgstr "GeoNode អ្នក​គ្រប់គ្រង​វែ​ប​ស�
 #: templates/admin/base_site.html:6
 msgid "GeoNode administration"
 msgstr "រដ្ឋបាល GeoNode"
+
+#: templates/announcements/announcement_confirm_delete.html:10
+msgid "Delete Announcement?"
+msgstr ""
+
+#: templates/announcements/announcement_confirm_delete.html:13
+msgid "Are you sure you want to delete this announcement?"
+msgstr ""
 
 #: templates/announcements/announcement_form.html:11
 msgid "Edit Announcement"
@@ -4089,6 +4083,10 @@ msgstr "សិទ្ធិ​កំណត់"
 msgid "Text"
 msgstr "អត្ថបទ"
 
+#: templates/search/search.html:6 templates/search/search.html.py:12
+msgid "Search"
+msgstr "ស្វែងរក"
+
 #: templates/user_messages/_message_snippet.html:8
 msgid "With"
 msgstr "ជា​មួយ​នឹង​ការ"
@@ -4140,6 +4138,12 @@ msgstr "ត្រឡប់​ទៅ​ប្រអប់​ទទួល"
 #: templates/user_messages/thread_detail.html:26
 msgid "Send Reply"
 msgstr "ផ្ញើ​ការ​ឆ្លើយ​តប"
+
+#~ msgid "KML"
+#~ msgstr "KML"
+
+#~ msgid "Tiles"
+#~ msgstr "Tiles"
 
 #~ msgid ""
 #~ "\n"

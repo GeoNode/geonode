@@ -2,9 +2,17 @@
     :alt: Build Status
     :target: http://travis-ci.org/GeoNode/geonode
 
-=========
- GeoNode
-=========
+
+GeoNode Support
+===============
+
+To get support, give feedbacks and suggestions please use the GeoNode official channels, the users mailing list: http://lists.osgeo.org/pipermail/geonode-users/ and the developers mailing list: http://lists.osgeo.org/pipermail/geonode-devel/.
+
+This repository is used to track code changes and GeoNode issues, please DON'T open new issues to ask for support.
+
+
+GeoNode Installation
+====================
 
 If you just want to try GeoNode, it is recommended to use Ubuntu 12.04 and install the python software properties.::
 
@@ -190,7 +198,7 @@ Geonode's development roadmap is documented in a series of Geonode Improvement P
 They are documented here: https://github.com/GeoNode/geonode/wiki/GeoNode-Improvement-Proposals.
 GNIPS are considered to be large undertakings which will add a large amount of features to the project. 
 As such they are the topic of community dicussion and guidance.
-The community discusses these on the developer mailing list: https://groups.google.com/a/opengeo.org/forum/#!forum/geonode-dev
+The community discusses these on the developer mailing list: http://lists.osgeo.org/pipermail/geonode-devel/
 Github issues tracks features and bugs, for new developers the tag 'easy-pick' indicates an 
 issue that should be relatively easy for new developers to understand and complete. Once you have completed an issue
 a pull request should be submitted. This will then be reviewed by the community.
