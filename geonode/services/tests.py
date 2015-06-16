@@ -23,7 +23,6 @@ import sys
 import traceback
 
 from django.test import TestCase
-from django.test.client import Client
 from django.core.urlresolvers import reverse
 from .models import Service
 
@@ -42,14 +41,14 @@ class ServicesTests(TestCase):
     def test_register_indexed_wms(self):
         """Test registering an indexed WMS
         """
-        c = Client()
-        c.login(username='admin', password='admin')
+        self.client.login(username='admin', password='admin')
 
-        response = c.post(reverse('register_service'),
-                          {
-            'type': 'WMS',
-                    'url': 'http://metaspatial.net/cgi-bin/ogc-wms.xml',
-        })
+        response = self.client.post(
+            reverse('register_service'),
+            {
+             'type': 'WMS',
+             'url': 'http://metaspatial.net/cgi-bin/ogc-wms.xml',
+            })
         self.assertEqual(response.status_code, 200)
         service_dict = json.loads(response.content)[0]
 
@@ -67,13 +66,13 @@ class ServicesTests(TestCase):
     def test_register_arcrest(self):
         """Test registering an arcrest service
         """
-        c = Client()
-        c.login(username='admin', password='admin')
-        response = c.post(reverse('register_service'),
-                          {
-                              'type': 'REST',
-                              'url': 'http://maps1.arcgisonline.com/ArcGIS/rest/services/EPA_Facilities/MapServer',
-        })
+        self.client.login(username='admin', password='admin')
+        response = self.client.post(
+            reverse('register_service'),
+            {
+             'type': 'REST',
+             'url': 'http://maps1.arcgisonline.com/ArcGIS/rest/services/EPA_Facilities/MapServer',
+            })
         self.assertEqual(response.status_code, 200)
         service_dict = json.loads(response.content)[0]
 
@@ -89,9 +88,8 @@ class ServicesTests(TestCase):
 
     # Disabled the test below because it uses an external service and fails randomly.
     # def test_register_csw(self):
-    #    c = Client()
-    #    c.login(username='admin', password='admin')
-    #    response = c.post(reverse('register_service'),
+    #    self.client.login(username='admin', password='admin')
+    #    response = self.client.post(reverse('register_service'),
     #                  {
     #                      'type':'CSW',
     #                      'url':'http://demo.pycsw.org/cite/csw',

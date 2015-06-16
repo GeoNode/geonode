@@ -18,21 +18,31 @@
 #########################################################################
 
 from django.conf import settings
-from geonode import get_version
-from geonode.catalogue import default_catalogue_backend
-from django.contrib.sites.models import Site
 from django.core.urlresolvers import reverse
 from geonode.geoserver.helpers import ogc_server_settings
+
 
 def geoserver_urls(request):
     """Global values to pass to templates"""
     defaults = dict(
-            GEOSERVER_BASE_URL=ogc_server_settings.public_url,
-            UPLOADER_URL=reverse('data_upload') if getattr(settings, 'UPLOADER', dict()).get('BACKEND', 'geonode.rest') == 'geonode.importer' else reverse('layer_upload'),
-            MAPFISH_PRINT_ENABLED=ogc_server_settings.MAPFISH_PRINT_ENABLED,
-            PRINT_NG_ENABLED=ogc_server_settings.PRINT_NG_ENABLED,
-            GEONODE_SECURITY_ENABLED=ogc_server_settings.GEONODE_SECURITY_ENABLED,
-            GEOGIT_ENABLED=ogc_server_settings.GEOGIT_ENABLED,
-            TIME_ENABLED=getattr(settings, 'UPLOADER', dict()).get('OPTIONS', dict()).get('TIME_ENABLED', False),
-            )
+        GEOSERVER_BASE_URL=ogc_server_settings.public_url,
+        UPLOADER_URL=reverse('data_upload') if getattr(
+            settings,
+            'UPLOADER',
+            dict()).get(
+            'BACKEND',
+            'geonode.rest') == 'geonode.importer' else reverse('layer_upload'),
+        MAPFISH_PRINT_ENABLED=ogc_server_settings.MAPFISH_PRINT_ENABLED,
+        PRINT_NG_ENABLED=ogc_server_settings.PRINT_NG_ENABLED,
+        GEONODE_SECURITY_ENABLED=ogc_server_settings.GEONODE_SECURITY_ENABLED,
+        GEOGIT_ENABLED=ogc_server_settings.GEOGIT_ENABLED,
+        TIME_ENABLED=getattr(
+                settings,
+                'UPLOADER',
+                dict()).get(
+                    'OPTIONS',
+                    dict()).get(
+                        'TIME_ENABLED',
+                        False),
+    )
     return defaults

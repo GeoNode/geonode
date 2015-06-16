@@ -15,20 +15,19 @@
 {% endcomment %}
 
 {% block body %}
+<div class="page-header">
+  <h2>{%  trans "Activity Feed for"  %} {{ actor }}</h2>
+</div>
+
 <div class="row">
   <div class="col-md-12">
-    <h2 class="page-title">{%  trans "Activity Feed for"  %} {{ actor }}</h2>
-    <div class="row">
-      <div class="col-md-12">
-        <ul class="no-style-list">
-	        {% for action in action_list %}
-          {% activity_item action %}
-          {% empty %}
-          <p>{% trans "No actions yet" %}</p>
-          {% endfor %}
-        </ul>
-      </div>
-    </div>
+    <ul class="no-style-list">
+      {% for action in action_list %}
+      {% activity_item action %}
+      {% empty %}
+      <p>{% trans "No actions yet" %}</p>
+      {% endfor %}
+    </ul>
   </div>
 </div>
 {% endblock %}

@@ -54,7 +54,7 @@ Ext.onReady(function() {
             <tr><th style="width:50%">Title</th><th>Description</th></tr>
             {% for service in services %}
                     <tr>
-                        <td><a href='{%  url service_detail service.id %}'>{{service.title}}</a></td>
+                        <td><a href='{%  url "service_detail" service.id %}'>{{service.title}}</a></td>
                         <td>{{service.abstract}}</td>
                     </tr>
             {% endfor %}
@@ -66,7 +66,7 @@ Ext.onReady(function() {
     <table>
         <tr><th style="width:50%">Title</th><th>Description</th></tr>
         {% for layer in layers %}
-            {% if not layer.group == "background" %}
+            {% if layer.group != "background" %}
             <tr>
                 <td><a href='{{ layer.get_absolute_url }}'>{{layer.title}}</a></td>
                 <td>{{layer.abstract}}</td>
@@ -101,19 +101,25 @@ Ext.onReady(function() {
 </div>
 {% endblock %}
 {% block sidebar %}
-<div id="sidebar" class="threecol">
+
+
     {% get_obj_perms request.user for service as "resource_perms" %}
 
     {% if "change_service" in resource_perms or "remove_service" in resource_perms or "change_service_permissions" in resource_perms %}
-        <h3>{% trans "Manage" %}</h3>
-        <ul>
-        {% if can_change %}
-            <li><a href="{% url "edit_service" service.id %}">{% trans "Edit Service Metadata" %}</a></li>
+    <ul class="list-group">
+        <li class="list-group-item"><h3>{% trans "Manage" %}</h3></li>
+
+        {% if "change_service" in resource_perms %}
+            <li class="list-group-item"><a class="btn btn-default btn-md btn-block" href="{% url "edit_service" service.id %}">{% trans "Edit Service Metadata" %}</a></li>
         {% endif %}
-        {% if can_remove %}
-            <li><a href="{% url "remove_service" service.id %}">{% trans "Remove Service" %}</a></li>
+        {% if  "remove_service" or "delete_service" in resource_perms %}
+            <li class="list-group-item"><a class="btn btn-default btn-md btn-block" href="{% url "remove_service" service.id %}">{% trans "Remove Service" %}</a></li>
         {% endif %}
-        </ul>
+      </ul>
     {% endif %}
-</div>
+
+
+
+
+
 {% endblock %}

@@ -34,4 +34,5 @@ if "notification" in settings.INSTALLED_APPS:
     signals.post_syncdb.connect(create_notice_types, sender=notification)
     logger.info("Notifications Configured for geonode.layers.managment.commands")
 else:
-    logger.info("Skipping creation of NoticeTypes for geonode.layers.management.commands, since notification app was not found.")
+    logger.info("Skipping creation of NoticeTypes for geonode.layers.management.commands, since notification app was \
+        not found.")

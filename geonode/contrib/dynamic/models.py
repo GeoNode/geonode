@@ -4,11 +4,11 @@ import keyword
 import re
 
 from django.utils.datastructures import SortedDict
-from django.db.models.loading import get_model
 from django.conf import settings
 from django.contrib.gis.utils import LayerMapping
 from django.contrib.gis.db import models
 from django.contrib.gis import admin
+from django.core.exceptions import ValidationError
 from django import db
 
 from geonode.layers.models import Layer
@@ -16,6 +16,7 @@ from geonode.layers.models import Layer
 from .postgis import file2pgtable
 
 DYNAMIC_DATASTORE = 'datastore'
+
 
 class ModelDescription(models.Model):
     name = models.CharField(max_length=255)
@@ -32,7 +33,7 @@ class ModelDescription(models.Model):
                             module='geonode.contrib.dynamic',
                             options={'db_table': self.name,
                                      'managed': False
-                                    },
+                                     },
                             with_admin=with_admin,
                             )
 
@@ -44,7 +45,13 @@ class ModelDescription(models.Model):
 
 
 def is_valid_field(self, field_data, all_data):
-    if hasattr(models, field_data) and issubclass(getattr(models, field_data), models.Field):
+    if hasattr(
+            models,
+            field_data) and issubclass(
+            getattr(
+                models,
+                field_data),
+            models.Field):
         # It exists and is a proper field type
         return
     raise ValidationError("This is not a valid field type.")
@@ -59,7 +66,7 @@ class Field(models.Model):
     def get_django_field(self):
         "Returns the correct field type, instantiated with applicable settings"
         # Get all associated settings into a list ready for dict()
-        settings = [(s.name, s.value) for s in self.settings.all()]
+        settings = [(s.name, s.value) for s in self.settings.all()]  # noqa
 
         field_type = getattr(models, self.type)
 
@@ -79,7 +86,14 @@ class Setting(models.Model):
         unique_together = (('field', 'name'),)
 
 
-def create_model(name, fields=None, app_label='', module='', options=None, admin_opts=None, with_admin=False):
+def create_model(
+        name,
+        fields=None,
+        app_label='',
+        module='',
+        options=None,
+        admin_opts=None,
+        with_admin=False):
     """
     Create specified model
     """
@@ -103,11 +117,11 @@ def create_model(name, fields=None, app_label='', module='', options=None, admin
     if fields:
         attrs.update(fields)
 
-
     # Create the class, which automatically triggers ModelBase processing
     model = type(str(name), (models.Model,), attrs)
 
     class Admin(admin.OSMGeoAdmin):
+
         """Takes into account multi-db queries.
         """
         using = DYNAMIC_DATASTORE
@@ -124,22 +138,31 @@ def create_model(name, fields=None, app_label='', module='', options=None, admin
             # Tell Django to look for objects on the 'other' database.
             return super(Admin, self).get_queryset(request).using(self.using)
 
-
         def queryset(self, request):
             # Tell Django to look for objects on the 'other' database.
             return super(Admin, self).queryset(request).using(self.using)
 
-
         def formfield_for_foreignkey(self, db_field, request=None, **kwargs):
             # Tell Django to populate ForeignKey widgets using a query
             # on the 'other' database.
-            return super(Admin, self).formfield_for_foreignkey(db_field, request=request, using=self.using, **kwargs)
+            return super(
+                Admin,
+                self).formfield_for_foreignkey(
+                db_field,
+                request=request,
+                using=self.using,
+                **kwargs)
 
         def formfield_for_manytomany(self, db_field, request=None, **kwargs):
             # Tell Django to populate ManyToMany widgets using a query
             # on the 'other' database.
-            return super(Admin, self).formfield_for_manytomany(db_field, request=request, using=self.using, **kwargs)
-
+            return super(
+                Admin,
+                self).formfield_for_manytomany(
+                db_field,
+                request=request,
+                using=self.using,
+                **kwargs)
 
     # Create an Admin class if admin options were provided
     if admin_opts is not None:
@@ -161,9 +184,6 @@ def generate_model(model_description, mapping, db_key=''):
 
     table_name = model_description.name
 
-    table2model = lambda table_name: table_name.title().replace('_', '').replace(' ', '').replace('-', '')
-    strip_prefix = lambda s: s[1:] if s.startswith("u'") else s
-
     try:
         relations = connection.introspection.get_relations(cursor, table_name)
     except NotImplementedError:
@@ -172,10 +192,12 @@ def generate_model(model_description, mapping, db_key=''):
         indexes = connection.introspection.get_indexes(cursor, table_name)
     except NotImplementedError:
         indexes = {}
-    used_column_names = [] # Holds column names used in the table so far
-    for i,row in enumerate(connection.introspection.get_table_description(cursor, table_name)):
-        comment_notes = [] # Holds Field notes, to be displayed in a Python comment.
-        extra_params = SortedDict() # Holds Field parameters such as 'db_column'.
+    used_column_names = []  # Holds column names used in the table so far
+    for i, row in enumerate(connection.introspection.get_table_description(cursor, table_name)):
+        # Holds Field notes, to be displayed in a Python comment.
+        comment_notes = []
+        # Holds Field parameters such as 'db_column'.
+        extra_params = SortedDict()
         column_name = row[0]
         is_relation = i in relations
 
@@ -198,7 +220,8 @@ def generate_model(model_description, mapping, db_key=''):
 
         # Calling `get_field_type` to get the field type string and any
         # additional parameters and notes
-        field_type, field_params, field_notes = get_field_type(connection, table_name, row)
+        field_type, field_params, field_notes = get_field_type(
+            connection, table_name, row)
         extra_params.update(field_params)
         comment_notes.extend(field_notes)
 
@@ -226,18 +249,17 @@ def generate_model(model_description, mapping, db_key=''):
 
         # Add 'null' and 'blank', if the 'null_ok' flag was present in the
         # table description.
-        if row[6]: # If it's NULL...
+        if row[6]:  # If it's NULL...
             if field_type == 'BooleanField':
                 field_type = 'NullBooleanField'
             else:
                 extra_params['blank'] = True
-                if not field_type in ('TextField', 'CharField'):
+                if field_type not in ('TextField', 'CharField'):
                     extra_params['null'] = True
 
-        field_desc = (att_name, field_type, extra_params)
-
         if any(field_type) and column_name != 'id':
-            field, __ = Field.objects.get_or_create(model=model_description, name=att_name)
+            field, __ = Field.objects.get_or_create(
+                model=model_description, name=att_name)
             field.type = field_type
             field.original_name = mapping[column_name]
 
@@ -245,8 +267,10 @@ def generate_model(model_description, mapping, db_key=''):
 
             for name, value in extra_params.items():
                 if any(name):
-                    Setting.objects.get_or_create(field=field, name=name, value=value)
-
+                    Setting.objects.get_or_create(
+                        field=field,
+                        name=name,
+                        value=value)
 
 
 def normalize_col_name(col_name, used_column_names, is_relation):
@@ -274,8 +298,10 @@ def normalize_col_name(col_name, used_column_names, is_relation):
         while new_name.find('__') >= 0:
             new_name = new_name.replace('__', '_')
         if col_name.lower().find('__') >= 0:
-            # Only add the comment if the double underscore was in the original name
-            field_notes.append("Field renamed because it contained more than one '_' in a row.")
+            # Only add the comment if the double underscore was in the original
+            # name
+            field_notes.append(
+                "Field renamed because it contained more than one '_' in a row.")
 
     if new_name.startswith('_'):
         new_name = 'field%s' % new_name
@@ -287,11 +313,13 @@ def normalize_col_name(col_name, used_column_names, is_relation):
 
     if keyword.iskeyword(new_name):
         new_name += '_field'
-        field_notes.append('Field renamed because it was a Python reserved word.')
+        field_notes.append(
+            'Field renamed because it was a Python reserved word.')
 
     if new_name[0].isdigit():
         new_name = 'number_%s' % new_name
-        field_notes.append("Field renamed because it wasn't a valid Python identifier.")
+        field_notes.append(
+            "Field renamed because it wasn't a valid Python identifier.")
 
     if new_name in used_column_names:
         num = 0
@@ -304,6 +332,7 @@ def normalize_col_name(col_name, used_column_names, is_relation):
         field_params['db_column'] = col_name
 
     return new_name, field_params, field_notes
+
 
 def get_field_type(connection, table_name, row):
     """
@@ -322,7 +351,7 @@ def get_field_type(connection, table_name, row):
 
     # This is a hook for DATA_TYPES_REVERSE to return a tuple of
     # (field_type, field_params_dict).
-    if type(field_type) is tuple:
+    if isinstance(field_type, tuple):
         field_type, new_params = field_type
         field_params.update(new_params)
 
@@ -333,7 +362,6 @@ def get_field_type(connection, table_name, row):
     if field_type == 'DecimalField':
         field_params['max_digits'] = row[4]
         field_params['decimal_places'] = row[5]
-
 
     return field_type, field_params, field_notes
 
@@ -357,7 +385,8 @@ def pre_save_layer(instance, sender, **kwargs):
     mapping = file2pgtable(filename, instance.name)
 
     # Get a dynamic model with the same name as the layer.
-    model_description, __ = ModelDescription.objects.get_or_create(name=instance.name)
+    model_description, __ = ModelDescription.objects.get_or_create(
+        name=instance.name)
 
     # Set up the fields with the postgis table
     generate_model(model_description, mapping, db_key=DYNAMIC_DATASTORE)
@@ -374,12 +403,11 @@ def pre_save_layer(instance, sender, **kwargs):
     lm.save()
 
 
-
 def post_save_layer(instance, sender, **kwargs):
     """Assign layer instance to the dynamic model.
     """
     # Assign this layer model to all ModelDescriptions with the same name.
-    mds = ModelDescription.objects.filter(name=instance.name).update(layer=instance)
+    ModelDescription.objects.filter(name=instance.name).update(layer=instance)
 
 
 models.signals.pre_save.connect(pre_save_layer, sender=Layer)

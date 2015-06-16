@@ -9,6 +9,7 @@ from geonode.layers.models import Layer
 from django.utils.translation import ugettext_lazy as _
 from django.db.models import signals
 from geonode.people.enumerations import ROLE_VALUES
+from geonode.security.models import remove_object_permissions
 
 STATUS_VALUES = [
     'pending',
@@ -39,7 +40,7 @@ class Service(ResourceBase):
     description = models.CharField(max_length=255, null=True, blank=True)
     online_resource = models.URLField(False, null=True, blank=True)
     fees = models.CharField(max_length=1000, null=True, blank=True)
-    access_contraints = models.CharField(max_length=255, null=True, blank=True)
+    access_constraints = models.CharField(max_length=255, null=True, blank=True)
     connection_params = models.TextField(null=True, blank=True)
     username = models.CharField(max_length=50, null=True, blank=True)
     password = models.CharField(max_length=50, null=True, blank=True)
@@ -131,6 +132,7 @@ def pre_delete_service(instance, sender, **kwargs):
         except FailedRequestError:
             logger.error(
                 "Could not delete cascading WMS Store for %s - maybe already gone" % instance.name)
+    remove_object_permissions(instance.get_self_resource())
 
 
 signals.pre_delete.connect(pre_delete_service, sender=Service)

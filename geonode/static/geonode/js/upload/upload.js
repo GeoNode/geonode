@@ -12,7 +12,7 @@ define(['underscore',
         'upload/FileTypes',
         'upload/path',
         'upload/common',
-        'text!templates/upload.html'], function (_, LayerInfo, fileTypes, path, common, upload) {
+        'text!templates/upload.html'], function (_, LayerInfo, fileTypes, path, common, uploadTemplate) {
 
     var templates = {},
         findFileType,
@@ -24,7 +24,6 @@ define(['underscore',
         displayFiles,
         init_geogit_stores,
         doUploads,
-        doTime,
         doSrs,
         doDelete,
         doResume,
@@ -33,7 +32,7 @@ define(['underscore',
         checkFiles,
         fileTypes = fileTypes;
 
-    $('body').append(upload);
+    $('body').append(uploadTemplate);
 
     templates.errorTemplate = _.template($('#errorTemplate').html());
 
@@ -123,7 +122,7 @@ define(['underscore',
             if (!info.type) {
                 log_error({
                     title: 'Unsupported type',
-                    message: 'File ' + info.files[0].name + ' is an unsupported file type, please select another file.'
+                    message: interpolate(gettext('The file %s is an unsupported file type, please select another file.',[info.files[0].name]))
                 });
                 delete layers[name];
             } else {
@@ -146,7 +145,7 @@ define(['underscore',
         var files = layers[Object.keys(layers)[0]]['files'];
         var types = [];
         for (var i = 0; i<files.length; i++){
-            var ext = files[i].name.split('.').pop();
+            var ext = files[i].name.split('.').pop().toLowerCase();
             if ($.inArray(ext,types) == -1){
                 types.push(ext);
             }
@@ -200,19 +199,19 @@ define(['underscore',
                     url: data.redirect_to,
                     async: false,
                     failure: function (resp, status) {
-                        self.markError(resp, status); 
+                        common.logError(resp, status);
                     },
                     success: function (resp, status) {
                         window.location = resp.url;
-                    },
+                    }
                 });
             } else if ('url' in data) {
                 window.location = data.url;
             } else {
-                self.markError(resp, status); 
+                common.logError("unexpected response");
             }
         }).fail(function (resp) {
-            self.markError(resp, status); 
+            common.logError(resp);
         });
     };
 
@@ -228,62 +227,37 @@ define(['underscore',
                     common.make_request({
                         url: data.redirect_to,
                         async: false,
-                        failure: function (resp, status) {self.markError(resp, status); },
+                        failure: function (resp, status) {common.logError(resp); },
                         success: function (resp, status) {
                             window.location = resp.url;
-                        },
+                        }
                     });
                 } else if ('url' in data) {
                     window.location = data.url; 
                 } else {
-                    self.markError(resp, status); 
+                    common.logError("unexpected response");
                 }
            },
            failure: function (resp, status) {
-                self.markError(resp, status); 
-           },
+                common.logError(resp);
+           }
         });
         return false; 
     };
 
-    doTime = function (event) {
-        var form = $("#timeForm")
-        $.ajaxQueue({
-           type: "POST",
-           url: '/upload/time',
-           data: form.serialize(), // serializes the form's elements.
-           success: function(data)
-           {
-               if('redirect_to' in data) {
-                    common.make_request({
-                        url: data.redirect_to,
-                        async: false,
-                        failure: function (resp, status) {self.markError(resp, status); },
-                        success: function (resp, status) {
-                            window.location = resp.url;
-                        },
-                    });
-                } else if ('url' in data) {
-                    window.location = data.url; 
-                } else {
-                    self.markError(resp, status); 
-                }
-           },
-           failure: function (resp, status) {
-                    self.markError(resp, status); 
-           },
-        });
-        return false;        
-    };
 
     /** Function to Upload the selected files to the server
      *
      *  @returns false
      */
     doUploads = function () {
+        if ($.isEmptyObject(layers)) {
+            common.logError('Please provide some files');
+            return false;
+        }
         var checked = checkFiles();
         if ($.isEmptyObject(layers) || !checked) {
-            alert('You are uploading an incomplete set of files.');
+            alert(gettext('You are uploading an incomplete set of files.'));
         } else {
             $.each(layers, function (name, layerinfo) {
                 layerinfo.uploadFiles();
@@ -319,6 +293,9 @@ define(['underscore',
             dropZone = document.querySelector(options.dropZone),
             file_queue = $(options.file_queue),
             doClearState = function () {
+                // http://stackoverflow.com/questions/1043957/clearing-input-type-file-using-jquery/13351234#13351234
+                $("#file-input").wrap('<form>').closest('form').get(0).reset();
+                $("#file-input").unwrap();
                 // set the global layer object to empty
                 layers = {};
                 // redraw the file display view
@@ -354,14 +331,15 @@ define(['underscore',
         $(options.upload_button).on('click', doUploads);
         $("[id^=delete]").on('click', doDelete);
         $("[id^=resume]").on('click', doResume);
-        init_geogit_stores();
+        if (geogit_enabled) {
+            init_geogit_stores();
+        }
     };
 
     // public api
 
     return {
         initialize: initialize,
-        doTime: doTime,
         doSrs: doSrs,
         doDelete: doDelete,
         doResume: doResume

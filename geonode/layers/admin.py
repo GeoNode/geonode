@@ -20,15 +20,19 @@
 
 from django.contrib import admin
 
-from geonode.base.admin import MediaTranslationAdmin
+from geonode.base.admin import MediaTranslationAdmin, ResourceBaseAdminForm
 from geonode.layers.models import Layer, Attribute, Style
 from geonode.layers.models import LayerFile, UploadSession
-
-import autocomplete_light
 
 
 class AttributeInline(admin.TabularInline):
     model = Attribute
+
+
+class LayerAdminForm(ResourceBaseAdminForm):
+
+    class Meta:
+        model = Layer
 
 
 class LayerAdmin(MediaTranslationAdmin):
@@ -48,7 +52,7 @@ class LayerAdmin(MediaTranslationAdmin):
     date_hierarchy = 'date'
     readonly_fields = ('uuid', 'typename', 'workspace')
     inlines = [AttributeInline]
-    form = autocomplete_light.modelform_factory(Layer)
+    form = LayerAdminForm
 
 
 class AttributeAdmin(admin.ModelAdmin):

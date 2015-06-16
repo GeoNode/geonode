@@ -38,7 +38,7 @@ METADATA_FORMATS = {'Atom': ('atom:entry', 'http://www.w3.org/2005/Atom'),
                     'Dublin Core': ('csw:Record', 'http://www.opengis.net/cat/csw/2.0.2'),
                     'ebRIM': ('rim:RegistryObject', 'urn:oasis:names:tc:ebxml-regrep:xsd:rim:3.0'),
                     'FGDC': ('fgdc:metadata', 'http://www.opengis.net/cat/csw/csdgm'),
-                    'TC211': ('gmd:MD_Metadata', 'http://www.isotc211.org/2005/gmd')
+                    'ISO': ('gmd:MD_Metadata', 'http://www.isotc211.org/2005/gmd')
                     }
 
 
@@ -357,8 +357,8 @@ class Catalogue(CatalogueServiceWeb):
         result['download_links'] = self.extract_links(rec)
 
         # construct the link to the Catalogue metadata record (not self-indexed)
-        result['metadata_links'] = [("text/xml", "TC211", self.url_for_uuid(rec.identifier,
-                                                                            'http://www.isotc211.org/2005/gmd'))]
+        result['metadata_links'] = [("text/xml", "ISO", self.url_for_uuid(rec.identifier,
+                                                                          'http://www.isotc211.org/2005/gmd'))]
 
         return result
 
@@ -431,6 +431,6 @@ class CatalogueBackend(BaseCatalogueBackend):
             record = self.catalogue.get_by_uuid(item.uuid)
             if record is None:
                 md_link = self.catalogue.create_from_layer(item)
-                item.metadata_links = [("text/xml", "TC211", md_link)]
+                item.metadata_links = [("text/xml", "ISO", md_link)]
             else:
                 self.catalogue.update_layer(item)

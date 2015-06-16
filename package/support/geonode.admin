@@ -1,7 +1,7 @@
 [
     {
         "pk": 9999,
-        "model": "auth.user",
+        "model": "people.Profile",
         "fields": {
             "username": "geonode",
             "first_name": "",

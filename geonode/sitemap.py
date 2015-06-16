@@ -18,7 +18,8 @@
 #########################################################################
 
 from django.contrib.sitemaps import Sitemap
-from geonode.maps.models import Layer, Map 
+from geonode.maps.models import Layer, Map
+
 
 class LayerSitemap(Sitemap):
     changefreq = "never"
@@ -29,6 +30,7 @@ class LayerSitemap(Sitemap):
 
     def lastmod(self, obj):
         return obj.date
+
 
 class MapSitemap(Sitemap):
     changefreq = "never"

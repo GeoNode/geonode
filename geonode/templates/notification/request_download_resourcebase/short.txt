@@ -1,0 +1,3 @@
+{% load i18n %}
+
+{% trans "A resource's download has been requested" %}

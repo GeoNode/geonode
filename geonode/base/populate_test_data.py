@@ -122,8 +122,9 @@ def create_fixtures():
 
 
 def create_models(type=None):
+    from django.contrib.auth.models import Group
     map_data, user_data, people_data, layer_data, document_data = create_fixtures()
-
+    anonymous_group, created = Group.objects.get_or_create(name='anonymous')
     u, _ = get_user_model().objects.get_or_create(username='admin', is_superuser=True, first_name='admin')
     u.set_password('admin')
     u.save()
@@ -136,7 +137,10 @@ def create_models(type=None):
             u.first_name = first_name
             u.last_name = last_name
             u.save()
+        u.groups.add(anonymous_group)
         users.append(u)
+
+    get_user_model().objects.get(username='AnonymousUser').groups.add(anonymous_group)
 
     if not type or type == 'map':
         for md, user in zip(map_data, cycle(users)):

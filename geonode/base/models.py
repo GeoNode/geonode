@@ -1,19 +1,21 @@
 import datetime
 import math
 import os
-import hashlib
 import logging
+
+from pyproj import transform, Proj
+from urlparse import urljoin, urlsplit
 
 from django.db import models
 from django.db.models import Q
 from django.utils.translation import ugettext_lazy as _
 from django.core.exceptions import ValidationError
-from django.core.files.base import ContentFile
 from django.conf import settings
 from django.contrib.staticfiles.templatetags import staticfiles
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.auth import get_user_model
 from django.db.models import signals
+from django.core.files import File
 
 from mptt.models import MPTTModel, TreeForeignKey
 
@@ -28,7 +30,6 @@ from geonode.utils import forward_mercator
 from geonode.security.models import PermissionLevelMixin
 from taggit.managers import TaggableManager
 
-from geonode.people.models import Profile
 from geonode.people.enumerations import ROLE_VALUES
 
 logger = logging.getLogger(__name__)
@@ -76,7 +77,7 @@ class TopicCategory(models.Model):
     <CodeListDictionary gml:id="MD_MD_TopicCategoryCode">
     """
     identifier = models.CharField(max_length=255, default='location')
-    description = models.TextField()
+    description = models.TextField(default='')
     gn_description = models.TextField('GeoNode description', default='', null=True)
     is_choice = models.BooleanField(default=True)
 
@@ -151,34 +152,6 @@ class RestrictionCodeType(models.Model):
         verbose_name_plural = 'Metadata Restriction Code Types'
 
 
-class Thumbnail(models.Model):
-
-    thumb_file = models.FileField(upload_to='thumbs')
-    thumb_spec = models.TextField(null=True, blank=True)
-    version = models.PositiveSmallIntegerField(null=True, default=0)
-
-    def save_thumb(self, image, id):
-        """image must be png data in a string for now"""
-        self._delete_thumb()
-        md5 = hashlib.md5()
-        md5.update(id + str(self.version))
-        self.version = self.version + 1
-        self.thumb_file.save(md5.hexdigest() + ".png", ContentFile(image))
-
-    def _delete_thumb(self):
-        try:
-            self.thumb_file.delete()
-        except OSError:
-            pass
-
-    def delete(self):
-        self._delete_thumb()
-        super(Thumbnail, self).delete()
-
-    def __unicode__(self):
-        return self.thumb_file.name
-
-
 class License(models.Model):
     identifier = models.CharField(max_length=255, editable=False)
     name = models.CharField(max_length=100)
@@ -220,9 +193,7 @@ class ResourceBaseManager(PolymorphicManager):
         if superusers.count() == 0:
             raise RuntimeError('GeoNode needs at least one admin/superuser set')
 
-        contact = Profile.objects.get_or_create(user=superusers[0],
-                                                defaults={"name": "Geonode Admin"})[0]
-        return contact
+        return superusers[0]
 
     def get_queryset(self):
         return super(ResourceBaseManager, self).get_queryset().non_polymorphic()
@@ -251,6 +222,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin):
     restriction_code_type_help_text = _('limitation(s) placed upon the access or use of the data.')
     constraints_other_help_text = _('other restrictions and legal prerequisites for accessing and using the resource or'
                                     ' metadata')
+    license_help_text = _('license of the dataset')
     language_help_text = _('language used within the dataset')
     category_help_text = _('high-level geographic data thematic classification to assist in the grouping and search of '
                            'available geographic data sets.')
@@ -287,7 +259,8 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin):
     constraints_other = models.TextField(_('restrictions other'), blank=True, null=True,
                                          help_text=constraints_other_help_text)
 
-    license = models.ForeignKey(License, null=True, blank=True)
+    license = models.ForeignKey(License, null=True, blank=True,
+                                help_text=license_help_text)
     language = models.CharField(_('language'), max_length=3, choices=ALL_LANGUAGES, default='eng',
                                 help_text=language_help_text)
 
@@ -299,10 +272,10 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin):
                                                     help_text=spatial_representation_type_help_text)
 
     # Section 5
-    temporal_extent_start = models.DateField(_('temporal extent start'), blank=True, null=True,
-                                             help_text=temporal_extent_start_help_text)
-    temporal_extent_end = models.DateField(_('temporal extent end'), blank=True, null=True,
-                                           help_text=temporal_extent_end_help_text)
+    temporal_extent_start = models.DateTimeField(_('temporal extent start'), blank=True, null=True,
+                                                 help_text=temporal_extent_start_help_text)
+    temporal_extent_end = models.DateTimeField(_('temporal extent end'), blank=True, null=True,
+                                               help_text=temporal_extent_end_help_text)
 
     supplemental_information = models.TextField(_('supplemental information'), default=DEFAULT_SUPPLEMENTAL_INFORMATION,
                                                 help_text=_('any other descriptive information about the dataset'))
@@ -350,20 +323,16 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin):
                                     default='<gmd:MD_Metadata xmlns:gmd="http://www.isotc211.org/2005/gmd"/>',
                                     blank=True)
 
-    thumbnail = models.ForeignKey(Thumbnail, null=True, blank=True, on_delete=models.SET_NULL)
     popular_count = models.IntegerField(default=0)
     share_count = models.IntegerField(default=0)
 
     featured = models.BooleanField(default=False, help_text=_('Should this resource be advertised in home page?'))
+    is_published = models.BooleanField(default=True, help_text=_('Should this resource be published and searchable?'))
 
     # fields necessary for the apis
-    thumbnail_url = models.CharField(max_length=255, null=True, blank=True)
+    thumbnail_url = models.TextField(null=True, blank=True)
     detail_url = models.CharField(max_length=255, null=True, blank=True)
-    rating = models.IntegerField(default=0)
-
-    def delete(self, *args, **kwargs):
-        super(ResourceBase, self).delete(*args, **kwargs)
-        resourcebase_post_delete(self)
+    rating = models.IntegerField(default=0, null=True)
 
     def __unicode__(self):
         return self.title
@@ -442,7 +411,38 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin):
         self.center_y = center_y
         self.zoom = zoom
 
-        # FIXME(Ariel): How do we set the bbox with this information?
+        deg_len_equator = 40075160 / 360
+
+        # covert center in lat lon
+        def get_lon_lat():
+            wgs84 = Proj(init='epsg:4326')
+            mercator = Proj(init='epsg:3857')
+            lon, lat = transform(mercator, wgs84, center_x, center_y)
+            return lon, lat
+
+        # calculate the degree length at this latitude
+        def deg_len():
+            lon, lat = get_lon_lat()
+            return math.cos(lat) * deg_len_equator
+
+        lon, lat = get_lon_lat()
+
+        # taken from http://wiki.openstreetmap.org/wiki/Zoom_levels
+        # it might be not precise but enough for the purpose
+        distance_per_pixel = 40075160 * math.cos(lat)/2**(zoom+8)
+
+        # calculate the distance from the center of the map in degrees
+        # we use the calculated degree length on the x axis and the
+        # normal degree length on the y axis assumin that it does not change
+
+        # Assuming a map of 1000 px of width and 700 px of height
+        distance_x_degrees = distance_per_pixel * 500 / deg_len()
+        distance_y_degrees = distance_per_pixel * 350 / deg_len_equator
+
+        self.bbox_x0 = lon - distance_x_degrees
+        self.bbox_x1 = lon + distance_x_degrees
+        self.bbox_y0 = lat - distance_y_degrees
+        self.bbox_y1 = lat + distance_y_degrees
 
     def set_bounds_from_bbox(self, bbox):
         """
@@ -521,7 +521,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin):
         """Return URL for OGC WMS server None if it does not exist.
         """
         try:
-            ows_link = self.link_set.get(name='OWS')
+            ows_link = self.link_set.get(name='OGC:WMS')
         except Link.DoesNotExist:
             return None
         else:
@@ -545,13 +545,33 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin):
 
     def has_thumbnail(self):
         """Determine if the thumbnail object exists and an image exists"""
-        if self.thumbnail is None:
-            return False
+        return self.link_set.filter(name='Thumbnail').exists()
 
-        if not hasattr(self.thumbnail.thumb_file, 'path'):
-            return False
+    def save_thumbnail(self, filename, image):
+        thumb_folder = 'thumbs'
+        upload_path = os.path.join(settings.MEDIA_ROOT, thumb_folder)
+        if not os.path.exists(upload_path):
+            os.makedirs(upload_path)
 
-        return os.path.exists(self.thumbnail.thumb_file.path)
+        with open(os.path.join(upload_path, filename), 'w') as f:
+            thumbnail = File(f)
+            thumbnail.write(image)
+
+        url_path = os.path.join(settings.MEDIA_URL, thumb_folder, filename)
+        url = urljoin(settings.SITEURL, url_path)
+
+        Link.objects.get_or_create(resource=self,
+                                   url=url,
+                                   defaults=dict(
+                                       name='Thumbnail',
+                                       extension='png',
+                                       mime='image/png',
+                                       link_type='image',
+                                   ))
+
+        ResourceBase.objects.filter(id=self.id).update(
+            thumbnail_url=url
+        )
 
     def set_missing_info(self):
         """Set default permissions and point of contacts.
@@ -621,9 +641,14 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin):
 
     class Meta:
         # custom permissions,
-        # change and delete are standard in django
-        permissions = (('view_resourcebase', 'Can view'),
-                       ('change_resourcebase_permissions', "Can change permissions"), )
+        # add, change and delete are standard in django-guardian
+        permissions = (
+            ('view_resourcebase', 'Can view resource'),
+            ('change_resourcebase_permissions', 'Can change resource permissions'),
+            ('download_resourcebase', 'Can download resource'),
+            ('publish_resourcebase', 'Can publish resource'),
+            ('change_resourcebase_metadata', 'Can change resource metadata'),
+        )
 
 
 class LinkManager(models.Manager):
@@ -648,6 +673,9 @@ class LinkManager(models.Manager):
     def geogit(self):
         return self.get_queryset().filter(name__icontains='geogit')
 
+    def ows(self):
+        return self.get_queryset().filter(link_type__in=['OGC:WMS', 'OGC:WFS', 'OGC:WCS'])
+
 
 class Link(models.Model):
     """Auxiliary model for storing links for resources.
@@ -660,6 +688,9 @@ class Link(models.Model):
         * data: For WFS and WCS links that allow access to raw data
         * image: For WMS and TMS links
         * metadata: For CSW links
+        * OGC:WMS: for WMS service links
+        * OGC:WFS: for WFS service links
+        * OGC:WCS: for WCS service links
     """
     resource = models.ForeignKey(ResourceBase)
     extension = models.CharField(max_length=255, help_text=_('For example "kml"'))
@@ -670,10 +701,8 @@ class Link(models.Model):
 
     objects = LinkManager()
 
-
-def resourcebase_post_delete(instance):
-    if instance.thumbnail is not None:
-        instance.thumbnail.delete()
+    def __str__(self):
+        return '%s link' % self.link_type
 
 
 def resourcebase_post_save(instance, *args, **kwargs):
@@ -685,6 +714,11 @@ def resourcebase_post_save(instance, *args, **kwargs):
         thumbnail_url=instance.get_thumbnail_url(),
         detail_url=instance.get_absolute_url())
     instance.set_missing_info()
+
+    # we need to remove stale links
+    for link in instance.link_set.all():
+        if urlsplit(settings.SITEURL).hostname not in link.url:
+            link.delete()
 
 
 def rating_post_save(instance, *args, **kwargs):

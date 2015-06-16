@@ -21,7 +21,11 @@
 
       {% if target %}
         {{ preposition|default:"to" }}
-        <a href="{{ target.get_absolute_url }}">{{ target }}</a>
+        {% if fragment %}
+          <a href="{{ target.get_absolute_url }}#{{ fragment }}">{{ target }}</a>
+        {% else %}
+          <a href="{{ target.get_absolute_url }}">{{ target }}</a>
+        {% endif %}
       {% endif %}
     </p>
     <p class="activity-timestamp">{{ timestamp|timesince }} {% trans "ago" %}</p>

@@ -24,11 +24,13 @@ GeoExplorer.Viewer.prototype.loadConfig = function(config) {
 
     // Do not include the layer styler on the map-detail view.
     {% if not map %}
+        {% if user.is_authenticated %}
         config.viewerTools.splice(5, 0, {
             id: "styler",
             ptype: "gxp_styler",
             checked: true
         });
+        {% endif %}
     {% endif %}
 
     GeoExplorer.Viewer.superclass.loadConfig.call(this, config);

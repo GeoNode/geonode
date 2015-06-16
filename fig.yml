@@ -1,0 +1,6 @@
+app:
+  build: .
+  volumes:
+    - .:/geonode
+  ports:
+    - "8111:8000"

@@ -20,6 +20,7 @@ Welcome to the GeoNode Administrators Workshop! This workshop will teach how to 
    deploy/index
    data/index
    admin_panel/index
+   applications/index
    commands
    csw
    customize_admin/index
@@ -61,6 +62,9 @@ Welcome to the GeoNode Administrators Workshop! This workshop will teach how to 
 :ref:`admin_panel`
   Manage users and data through the administration panel
 
+:ref:`applications`
+  Manage external Django applications
+  
 :ref:`commands`
   Review GeoNode's management commands
 

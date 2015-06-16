@@ -1,0 +1,6 @@
+{% load i18n %}
+
+{% trans "The following document was updated" %}:
+{{ resource.title }}, {% trans "owned by" %} {{ resource.owner.username }}
+
+{% trans "You can visit the document's detail page here" %}: http://{{ current_site }}{% url "document_detail" resource.id %}

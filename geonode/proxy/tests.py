@@ -25,41 +25,39 @@ unittest). These will both pass when you run "manage.py test".
 Replace these with more appropriate tests for your application.
 """
 from django.contrib.auth import get_user_model
-from django.core.urlresolvers import reverse
-from django.test import TestCase, Client
-from django.test.utils import override_settings, str_prefix
-from geonode.proxy.views import validate_host
+from django.test import TestCase
+from django.test.utils import override_settings
 
 
-TEST_DOMAIN='.github.com'
-TEST_URL='https://help%s/' % TEST_DOMAIN
+TEST_DOMAIN = '.github.com'
+TEST_URL = 'https://help%s/' % TEST_DOMAIN
+
 
 class ProxyTest(TestCase):
 
     def setUp(self):
-        self.admin, created = get_user_model().objects.get_or_create(username='admin', password='admin', is_superuser=True)
+        self.admin, created = get_user_model().objects.get_or_create(username='admin',
+                                                                     password='admin',
+                                                                     is_superuser=True)
+
         # FIXME(Ariel): These tests do not work when the computer is offline.
         self.url = TEST_URL
 
     @override_settings(DEBUG=True, PROXY_ALLOWED_HOSTS=())
     def test_validate_host_disabled_in_debug(self):
         """If PROXY_ALLOWED_HOSTS is empty and DEBUG is True, all hosts pass the proxy."""
-        c = Client()
-        response = c.get('/proxy?url=%s' % self.url, follow=True)
+        response = self.client.get('/proxy?url=%s' % self.url, follow=True)
         self.assertEqual(response.status_code, 200)
 
     @override_settings(DEBUG=False, PROXY_ALLOWED_HOSTS=())
     def test_validate_host_disabled_not_in_debug(self):
         """If PROXY_ALLOWED_HOSTS is empty and DEBUG is False requests should return 403."""
-        c = Client()
-        response = c.get('/proxy?url=%s' % self.url, follow=True)
+        response = self.client.get('/proxy?url=%s' % self.url, follow=True)
         self.assertEqual(response.status_code, 403)
-
 
     @override_settings(DEBUG=False, PROXY_ALLOWED_HOSTS=('.google.com',))
     @override_settings(DEBUG=False, PROXY_ALLOWED_HOSTS=(TEST_DOMAIN,))
     def test_proxy_allowed_host(self):
         """If PROXY_ALLOWED_HOSTS is empty and DEBUG is False requests should return 403."""
-        c = Client()
-        response = c.get('/proxy?url=%s' % self.url, follow=True)
+        response = self.client.get('/proxy?url=%s' % self.url, follow=True)
         self.assertEqual(response.status_code, 200)

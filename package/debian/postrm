@@ -8,7 +8,6 @@ set -e
 case "$1" in
     remove|deconfigure)
 	a2dissite geonode
-	a2ensite default
 
 	rm -rf /var/lib/geonode
 	rm -rf /var/www/geonode/wsgi

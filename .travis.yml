@@ -8,25 +8,20 @@ virtualenv:
 
 branches:
   only:
-    - master 
+    - master
 
 install:
   - sudo apt-get -qq -y update
+  - sudo apt-get install -y libgdal1h python-gdal
   - sudo apt-get install -y python-virtualenv python-imaging python-lxml python-pyproj python-shapely python-nose python-httplib2 python-httplib2 gettext
   - sudo apt-get install -y --force-yes openjdk-6-jdk ant maven2 libjai-imageio-core-java --no-install-recommends
-  - sudo apt-get install -y python-gdal
   - pip install -e . --use-mirrors
 
 before_script:
   - paver setup
-  - paver static
 
 script:
-  - python manage.py test geonode.tests.smoke
-  - paver test
-  - paver test_integration
-  - paver test_integration -n geonode.tests.csw
-#  - paver test_javascript
+  - paver run_tests
 
 after_script:
   - paver reset_hard
@@ -37,5 +32,7 @@ notifications:
       - "irc.freenode.org#geonode"
     use_notice: true
   email:
-    - geonode-dev@opengeo.org
+    - geonode-dev@boundlessgeo.com
     - ingenieroariel@gmail.com
+    - simone.dalmasso@gmail.com
+  slack: geonode-sprint:oQylJRkU9feZ8JruGi6czWwe

@@ -38,11 +38,11 @@ function setup_directories() {
 }
 
 function reorganize_configuration() {
-    cp -rp $INSTALL_DIR/support/geonode.apache $APACHE_SITES/geonode
+    cp -rp $INSTALL_DIR/support/geonode.apache $APACHE_SITES/geonode.conf
     cp -rp $INSTALL_DIR/support/geonode.wsgi $GEONODE_WWW/wsgi/
     cp -rp $INSTALL_DIR/support/geonode.robots $GEONODE_WWW/robots.txt
-    cp -rp $INSTALL_DIR/GeoNode*.zip $GEONODE_SHARE
     cp -rp $INSTALL_DIR/support/geonode.binary $GEONODE_BIN/geonode
+    cp -rp $INSTALL_DIR/GeoNode*.zip $GEONODE_SHARE
     cp -rp $INSTALL_DIR/support/geonode.updateip $GEONODE_BIN/geonode-updateip
     cp -rp $INSTALL_DIR/support/geonode.admin $GEONODE_SHARE/admin.json
     cp -rp $INSTALL_DIR/support/geonode.local_settings $GEONODE_ETC/local_settings.py
@@ -65,16 +65,9 @@ function randpass() {
 function setup_postgres_once() {
     su - postgres <<EOF
 createdb -E UTF8 -l en_US.UTF8 -T template0 geonode
-createlang -d geonode plpgsql
-psql -d geonode -f $POSTGIS_SQL_PATH/$POSTGIS_SQL
-psql -d geonode -f $POSTGIS_SQL_PATH/spatial_ref_sys.sql
-psql -d geonode -c 'GRANT ALL ON geometry_columns TO PUBLIC;'
-psql -d geonode -c 'GRANT ALL ON spatial_ref_sys TO PUBLIC;'
+createdb -E UTF8 -l en_US.UTF8 -T template0 geonode_data
+psql -d geonode_data -c 'CREATE EXTENSION postgis'
 EOF
-if ((GEOGRAPHY))
-then
-    su - postgres -c "psql -d geonode -c 'GRANT ALL ON geography_columns TO PUBLIC;'"
-fi
 su - postgres -c "psql" <<EOF
 CREATE ROLE geonode WITH LOGIN PASSWORD '$psqlpass' SUPERUSER INHERIT;
 EOF
@@ -90,7 +83,7 @@ function setup_django_once() {
 }
 
 function setup_django_every_time() {
-    pip install $GEONODE_SHARE/GeoNode-*.zip --no-dependencies
+    pip install $GEONODE_SHARE/GeoNode-*.zip --no-dependencies --quiet
 
     geonodedir=`python -c "import geonode;import os;print os.path.dirname(geonode.__file__)"`
     
@@ -101,12 +94,8 @@ function setup_django_every_time() {
 
     export DJANGO_SETTINGS_MODULE=geonode.settings
 
-    # django-admin is what should be used for debian packages
-    # django-admin.py is what should be used for manual installations
-    # I am putting django-admin by default and filing a ticket:
-    # https://github.com/GeoNode/geonode/issues/1180
-    geonode syncdb --noinput --all
-    geonode collectstatic --noinput
+    geonode syncdb --noinput --verbosity 0
+    geonode collectstatic --noinput --verbosity 0
 
     # Create an empty uploads dir
     mkdir -p $GEONODE_WWW/uploaded
@@ -117,22 +106,21 @@ function setup_django_every_time() {
     # processes like updatelayers and collectstatic can write here
     chmod 777 -R $GEONODE_WWW/uploaded
     chmod 777 -R $GEONODE_WWW/static
-    popd
 }
 
 function setup_apache_once() {
     chown www-data -R $GEONODE_WWW
     a2enmod proxy_http
         
-    sed -i '1d' $APACHE_SITES/geonode
-    sed -i "1i WSGIDaemonProcess geonode user=www-data threads=15 processes=2" $APACHE_SITES/geonode
+    sed -i '1d' $APACHE_SITES/geonode.conf
+    sed -i "1i WSGIDaemonProcess geonode user=www-data threads=15 processes=2" $APACHE_SITES/geonode.conf
 
     #FIXME: This could be removed if setup_apache_every_time is called after setup_apache_once
     $APACHE_SERVICE restart
 }
 
 function setup_apache_every_time() {
-    a2dissite default
+    a2dissite 000-default
 
     #FIXME: This could be removed if setup_apache_every_time is called after setup_apache_once
     a2enmod proxy_http
@@ -149,6 +137,13 @@ function one_time_setup() {
     setup_django_once
     # setup_apache_once # apache setup needs the every_time django setup since
     # it uses that to get the sitedir location
+}
+
+function setup_geoserver() {
+    pushd ../
+    paver setup
+    popd
+    mv ../downloaded/geoserver.war $TOMCAT_WEBAPPS
 }
 
 function postinstall() {
@@ -202,6 +197,7 @@ case $stepval in
         echo "Running GeoNode installation ..."
         preinstall
         one_time_setup
+        setup_geoserver
         postinstall
         setup_apache_once
         ;;

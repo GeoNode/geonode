@@ -18,27 +18,28 @@
 #########################################################################
 
 from django import forms
-from django.conf import settings
 from django.contrib.auth import authenticate, login, get_user_model
 from django.http import HttpResponse, HttpResponseRedirect
 from django.core.urlresolvers import reverse
 from django.utils import simplejson as json
 from django.db.models import Q
-from django.template import RequestContext
-from geonode.utils import resolve_object
+from django.template.response import TemplateResponse
+
 from geonode.groups.models import GroupProfile
+
 
 class AjaxLoginForm(forms.Form):
     password = forms.CharField(widget=forms.PasswordInput)
     username = forms.CharField()
 
+
 def ajax_login(request):
     if request.method != 'POST':
         return HttpResponse(
-                content="ajax login requires HTTP POST",
-                status=405,
-                mimetype="text/plain"
-            )
+            content="ajax login requires HTTP POST",
+            status=405,
+            mimetype="text/plain"
+        )
     form = AjaxLoginForm(data=request.POST)
     if form.is_valid():
         username = form.cleaned_data['username']
@@ -46,25 +47,25 @@ def ajax_login(request):
         user = authenticate(username=username, password=password)
         if user is None or not user.is_active:
             return HttpResponse(
-                    content="bad credentials or disabled user",
-                    status=400,
-                    mimetype="text/plain"
-                )
+                content="bad credentials or disabled user",
+                status=400,
+                mimetype="text/plain"
+            )
         else:
             login(request, user)
             if request.session.test_cookie_worked():
                 request.session.delete_test_cookie()
             return HttpResponse(
-                    content="successful login",
-                    status=200,
-                    mimetype="text/plain"
-                )
+                content="successful login",
+                status=200,
+                mimetype="text/plain"
+            )
     else:
         return HttpResponse(
-                "The form you submitted doesn't look like a username/password combo.",
-                mimetype="text/plain",
-                status=400
-            )
+            "The form you submitted doesn't look like a username/password combo.",
+            mimetype="text/plain",
+            status=400)
+
 
 def ajax_lookup(request):
     if request.method != 'POST':
@@ -76,20 +77,19 @@ def ajax_lookup(request):
     elif 'query' not in request.POST:
         return HttpResponse(
             content='use a field named "query" to specify a prefix to filter usernames',
-            mimetype='text/plain'
-        )
+            mimetype='text/plain')
     keyword = request.POST['query']
-    users = get_user_model().objects.filter(Q(username__startswith=keyword) |
-        Q(first_name__contains=keyword) | 
-        Q(organization__contains=keyword))
-    groups = GroupProfile.objects.filter(Q(title__startswith=keyword) |
-        Q(description__contains=keyword))
+    users = get_user_model().objects.filter(Q(username__istartswith=keyword) |
+                                            Q(first_name__icontains=keyword) |
+                                            Q(organization__icontains=keyword)).exclude(username='AnonymousUser')
+    groups = GroupProfile.objects.filter(Q(title__istartswith=keyword) |
+                                         Q(description__icontains=keyword))
     json_dict = {
         'users': [({'username': u.username}) for u in users],
         'count': users.count(),
     }
-    
-    json_dict['groups'] = [({'name': g.slug}) for g in groups]
+
+    json_dict['groups'] = [({'name': g.slug, 'title': g.title}) for g in groups]
     return HttpResponse(
         content=json.dumps(json_dict),
         mimetype='text/plain'
@@ -97,4 +97,10 @@ def ajax_lookup(request):
 
 
 def err403(request):
-    return HttpResponseRedirect(reverse('account_login') + '?next=' + request.get_full_path())
+    if not request.user.is_authenticated():
+        return HttpResponseRedirect(
+            reverse('account_login') +
+            '?next=' +
+            request.get_full_path())
+    else:
+        return TemplateResponse(request, '401.html', {}, status=401).render()

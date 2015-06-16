@@ -57,6 +57,16 @@ As you can see now, the documentation is written in *reStructeredText*, a lightw
 By hitting the *preview* button you will be able to see how your text it is going to look like on the web. To save your changes, click on *Commit Changes* at the bottom of the site. Now you've saved the changes in your repository, but the original geonode repository still doesn't know anything about that!
 In order to tell them that you have made some changes you have to send a *pull request* (as described below).
 
+To see your modifications for validation purpose just make sure you installed sphinx tools as::
+
+    pip install sphinx
+    pip install sphinx_rtd_theme
+
+Just go to the docs subdirectory and use the make command with the html option, after you can open the result in your browser as::
+
+   cd [yourpath]/geonode/docs
+   make html
+   #you can open the index.html in _build subdirectory
 
 **Create a new branch**
 

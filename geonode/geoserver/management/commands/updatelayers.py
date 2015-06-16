@@ -22,42 +22,67 @@ from optparse import make_option
 from geonode.people.utils import get_valid_user
 from geonode.geoserver.helpers import gs_slurp
 import traceback
-import datetime
 import sys
 
 
 class Command(BaseCommand):
     help = 'Update the GeoNode application with data from GeoServer'
     option_list = BaseCommand.option_list + (
-        make_option('-i', '--ignore-errors',
+        make_option(
+            '-i',
+            '--ignore-errors',
             action='store_true',
             dest='ignore_errors',
             default=False,
             help='Stop after any errors are encountered.'),
-        make_option('--skip-unadvertised',
+        make_option(
+            '--skip-unadvertised',
             action='store_true',
             dest='skip_unadvertised',
             default=False,
             help='Skip processing unadvertised layers from GeoSever.'),
-        make_option('--remove-deleted',
+        make_option(
+            '--skip-geonode-registered',
+            action='store_true',
+            dest='skip_geonode_registered',
+            default=False,
+            help='Just processing GeoServer layers still not registered in GeoNode.'),
+        make_option(
+            '--remove-deleted',
             action='store_true',
             dest='remove_deleted',
             default=False,
             help='Remove GeoNode layers that have been deleted from GeoSever.'),
-        make_option('-u', '--user', dest="user", default=None,
+        make_option(
+            '-u',
+            '--user',
+            dest="user",
+            default=None,
             help="Name of the user account which should own the imported layers"),
-        make_option('-f', '--filter', dest="filter", default=None,
+        make_option(
+            '-f',
+            '--filter',
+            dest="filter",
+            default=None,
             help="Only update data the layers that match the given filter"),
-        make_option('-s', '--store', dest="store", default=None,
+        make_option(
+            '-s',
+            '--store',
+            dest="store",
+            default=None,
             help="Only update data the layers for the given geoserver store name"),
-        make_option('-w', '--workspace', dest="workspace", default=None,
-            help="Only update data on specified workspace")
-        )
+        make_option(
+            '-w',
+            '--workspace',
+            dest="workspace",
+            default=None,
+            help="Only update data on specified workspace"))
 
     def handle(self, **options):
         ignore_errors = options.get('ignore_errors')
         skip_unadvertised = options.get('skip_unadvertised')
-        remove_deleted = options.get('remove_deleted') 
+        skip_geonode_registered = options.get('skip_geonode_registered')
+        remove_deleted = options.get('remove_deleted')
         verbosity = int(options.get('verbosity'))
         user = options.get('user')
         owner = get_valid_user(user)
@@ -70,8 +95,17 @@ class Command(BaseCommand):
         else:
             console = None
 
-        output = gs_slurp(ignore_errors, verbosity=verbosity,
-                owner=owner, console=console, workspace=workspace, store=store, filter=filter, skip_unadvertised=skip_unadvertised, remove_deleted=remove_deleted)
+        output = gs_slurp(
+            ignore_errors,
+            verbosity=verbosity,
+            owner=owner,
+            console=console,
+            workspace=workspace,
+            store=store,
+            filter=filter,
+            skip_unadvertised=skip_unadvertised,
+            skip_geonode_registered=skip_geonode_registered,
+            remove_deleted=remove_deleted)
 
         if verbosity > 1:
             print "\nDetailed report of failures:"
@@ -92,16 +126,16 @@ class Command(BaseCommand):
 
         if verbosity > 0:
             print "\n\nFinished processing %d layers in %s seconds.\n" % (
-                                              len(output['layers']), round(output['stats']['duration_sec'],2))
+                len(output['layers']), round(output['stats']['duration_sec'], 2))
             print "%d Created layers" % output['stats']['created']
             print "%d Updated layers" % output['stats']['updated']
             print "%d Failed layers" % output['stats']['failed']
             try:
-                duration_layer = round(output['stats']['duration_sec'] * 1.0 / len(output['layers']),2)
+                duration_layer = round(
+                    output['stats']['duration_sec'] * 1.0 / len(output['layers']), 2)
             except ZeroDivisionError:
                 duration_layer = 0
             if len(output) > 0:
                 print "%f seconds per layer" % duration_layer
-            if remove_deleted: print "\n%d Deleted layers" % output['stats']['deleted']
-            
-
+            if remove_deleted:
+                print "\n%d Deleted layers" % output['stats']['deleted']

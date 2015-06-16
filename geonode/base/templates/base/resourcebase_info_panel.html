@@ -9,16 +9,16 @@
 
     {% if LICENSES_ENABLED and LICENSES_DETAIL == 'above' and resource.license %}
     <dt>{% trans "License" %}</dt>
-    <dd>{{ resource.license.name_long }} <a href="#license-more" data-toggle="collapse" data-target=".license-more"><i class="fa fa-info-circle"></i></a></dd>
+    <dd>{{ resource.license.name_long }} <a href="#license-more-above" data-toggle="collapse" data-target=".license-more-above"><i class="fa fa-info-circle"></i></a></dd>
     {% endif %}
-    <div class="license-more collapse">
+    <dd class="license-more-above collapse">
       {% for bullet in resource.license.description_bullets %}
-        {{ bullet }}
+        {{ bullet }}<br/><br/>
       {% endfor %}
       {% if resource.license.url %}
         + For more info see <a href="{{ resource.license.url }}">{{ resource.license.url }}</a>.
       {% endif %}
-    </div>
+    </dd>
 
     {% if resource.abstract %}
     <dt>{% trans "Abstract" %}</dt>
@@ -35,21 +35,38 @@
     <dd>{{ resource.display_type }}</dd>
     {% endif %}
 
-    {% if resource.keyword_list %}
+    {% if resource.keywords %}
     <dt>{% trans "Keywords" %}</dt>
-    <dd>{% for keyword in resource.keyword_list %}
-        {{ keyword }}
-        {% endfor %}</dd>
+    <dd>
+      {% for keyword in resource.keywords.all %}
+        <a href="/search/?keywords__slug__in={{ keyword.slug }}">
+          {{ keyword.name }}
+        </a>
+        {% if not forloop.last %},{% endif %}
+      {% endfor %}
+    </dd>
     {% endif %}
           
     {% if resource.category %}
     <dt>{% trans "Category" %}</dt>
-    <dd>{{ resource.category }}</dd>
+    <dd><a href="/search/?category__identifier__in={{ resource.category.identifier }}">{{ resource.category }}</a> {% if resource.category.description %}<a href="#category-more" data-toggle="collapse" data-target=".category-more"><i class="fa fa-info-circle"></i></a>{% endif %}</dd>
+      {% if resource.category.description %}
+      <dd class="category-more collapse">
+        {{ resource.category.description }}
+      </dd>
+      {% endif %}
     {% endif %}
   
     {% if resource.regions.all %}
     <dt>{% trans "Regions" %}</dt>
-    <dd>{{ resource.regions.all|join:", " }}</dd>
+    <dd>
+      {% for region in resource.regions.all %}
+        <a href="/search/?regions__name__in={{ region.name }}">
+          {{ region.name }}
+        </a>
+        {% if not forloop.last %},{% endif %}
+      {% endfor %}
+    </dd>
     {% endif %}
   
     {% if resource.owner %}
@@ -73,15 +90,15 @@
 
     {% if LICENSES_ENABLED and LICENSES_DETAIL == 'below' and resource.license %}
     <dt>{% trans "License" %}</dt>
-    <dd>{{ resource.license.name_long }} <a href="#license-more" data-toggle="collapse" data-target=".license-more"><i class="fa fa-info-circle"></i></a></dd>
-      <div class="license-more collapse">
+    <dd>{{ resource.license.name_long }} <a href="#license-more-below" data-toggle="collapse" data-target=".license-more-below"><i class="fa fa-info-circle"></i></a></dd>
+      <dd class="license-more-below collapse">
         {% for bullet in resource.license.description_bullets %}
           {{ bullet }}<br/><br/>
         {% endfor %}
         {% if resource.license.url %}
           + For more info see <a href="{{ resource.license.url }}">{{ resource.license.url }}</a>.
         {% endif %}
-      </div>
+      </dd>
     {% endif %}
 
     {% if resource.maintenance_frequency %}

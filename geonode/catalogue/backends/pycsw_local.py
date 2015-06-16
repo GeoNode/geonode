@@ -53,7 +53,7 @@ CONFIGURATION = {
 class CatalogueBackend(GenericCatalogueBackend):
     def __init__(self, *args, **kwargs):
         super(CatalogueBackend, self).__init__(*args, **kwargs)
-        self.catalogue.formats = ['Atom', 'DIF', 'Dublin Core', 'ebRIM', 'FGDC', 'TC211']
+        self.catalogue.formats = ['Atom', 'DIF', 'Dublin Core', 'ebRIM', 'FGDC', 'ISO']
         self.catalogue.local = True
 
     def remove_record(self, uuid):
@@ -112,6 +112,9 @@ class CatalogueBackend(GenericCatalogueBackend):
         # serialize pycsw settings into SafeConfigParser
         # object for interaction with pycsw
         mdict = dict(settings.PYCSW['CONFIGURATION'], **CONFIGURATION)
+        if 'server' in settings.PYCSW['CONFIGURATION']:
+            # override server system defaults with user specified directives
+            mdict['server'].update(settings.PYCSW['CONFIGURATION']['server'])
         config = SafeConfigParser()
 
         for section, options in mdict.iteritems():

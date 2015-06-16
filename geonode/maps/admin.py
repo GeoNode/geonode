@@ -18,25 +18,34 @@
 #
 #########################################################################
 
+import autocomplete_light
+
 from geonode.maps.models import Map, MapLayer, MapSnapshot
-from geonode.base.admin import MediaTranslationAdmin
+from geonode.base.admin import MediaTranslationAdmin, ResourceBaseAdminForm
 from django.contrib import admin
 
-import autocomplete_light
 
 class MapLayerInline(admin.TabularInline):
     model = MapLayer
 
+
+class MapAdminForm(ResourceBaseAdminForm):
+
+    class Meta:
+        model = Map
+
+
 class MapAdmin(MediaTranslationAdmin):
-    inlines = [MapLayerInline,]
+    inlines = [MapLayerInline, ]
     list_display_links = ('title',)
-    list_display = ('id','title', 'owner')
+    list_display = ('id', 'title', 'owner',)
     list_filter = ('owner', 'category',)
-    search_fields = ('title', 'abstract', 'purpose', 'owner__profile__name',)
-    form = autocomplete_light.modelform_factory(Map)
-    
+    search_fields = ('title', 'abstract', 'purpose',)
+    form = MapAdminForm
+
+
 class MapLayerAdmin(admin.ModelAdmin):
-    list_display = ('id','map', 'name')
+    list_display = ('id', 'map', 'name')
     list_filter = ('map',)
     search_fields = ('map__title', 'name',)
     form = autocomplete_light.modelform_factory(MapLayer)

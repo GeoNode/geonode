@@ -6,42 +6,34 @@
  GeoNode
 =========
 
-If you just want to try GeoNode, it is recommended to use Ubuntu 12.04 and install the latest stable release::
+If you just want to try GeoNode, it is recommended to use Ubuntu 12.04 and install the python software properties.::
+
+    sudo apt-get install python-software-properties
+
+For 12.04 with python software properties installed, install the latest stable release of GeoNode.::
 
     sudo add-apt-repository ppa:geonode/release
     sudo apt-get update
     sudo apt-get install geonode
 
-If instead, you are interested in doing development on the source code, here are the instructions for Ubuntu 14.04::
+If instead, you are interested in doing development on the source code, here are the instructions: http://docs.geonode.org/en/master/tutorials/devel/install_devmode/index.html#install-devmode.
 
-    # retrieve latest apt-get list
-    sudo apt-get update
+Docker Usage
+If you want to use Docker you can now:
 
-    # Essential build tools and libraries
-    sudo apt-get install -y build-essential libxml2-dev libxslt1-dev libjpeg-dev gettext git python-dev python-pip
+    # build the docker container
+    docker build -t geonode .
 
-    # Python and Django dependencies with official packages
-    sudo apt-get install python-pillow python-lxml python-psycopg2 python-django python-bs4 python-multipartposthandler transifex-client python-paver python-nose python-django-nose python-gdal python-django-pagination python-django-jsonfield python-django-extensions python-django-taggit python-httplib2
-    
-    # Java dependencies
-    sudo apt-get install -y --force-yes openjdk-6-jdk ant maven2 --no-install-recommends
+    # run the docker container
+    docker run -d -p 8111:8000 geonode
 
-    # Clone GeoNode
-    git clone https://github.com/GeoNode/geonode.git
+Or if you use fig:
 
-    # Install GeoNode in editable mode
-    sudo pip install -e geonode
-    cd geonode
+    # build the container
+    fig build
 
-    # Compile GeoServer
-    paver setup
-
-    # Start the development servers
-    paver start
-
-    # Visit the development geonode site
-    http://localhost:8000
-
+    # run the container
+    fig up
 
 openSUSE Development Build Instructions::
 
@@ -86,40 +78,38 @@ Windows Development Build Instructions::
 
     Prerequisites:
     # Java JDK
-    # Python 2.6+
+    # Python 2.7
     # ant (bin directory must be on system PATH)
     # maven2 (bin directory must be on system PATH)
     # Python distutils (easy_install)
+    # GDAL Core Libraries
     # git
 
     # Install and configure from the windows command prompt
     If you don't already have python virtualenv installed, then do it now:
-         easy_install virtualenv
+    easy_install virtualenv
 
     # Create virtualenv and activate it
     cd <Directory to install the virtualenv & geonode into>
     virtualenv venv
     venv\scripts\activate
 
-    # Install Python native dependencies
-    easy_install PIL lxml==2.3
-    # this command will look for and install binary distributions (pip install will attempt to build and fail)
-
     # Clone GeoNode
     git clone https://github.com/GeoNode/geonode.git
     
-    # Install GeoNode in the local virtualenv
-    pip install -e geonode --use-mirrors
-
+    # Install compiled packages for Python 2.7 Win32
     cd geonode
-
+    pip install paver
+    paver win_install_deps
+    
+    # Install GeoNode in the local virtualenv
+    pip install -e . --use-mirrors
+    
     # Compile GeoServer
     paver setup
     
     # Start the servers
-    # This WON'T work on windows without changes to pavement.py 
-    # and a windows batch script for starting jetty    
-    paver start
+    paver start --java_path=C:/path/to/java/bin/java.exe
 
 Mac OSX Development Build Instructions::
     
@@ -158,9 +148,12 @@ Mac OSX Development Build Instructions::
 Once fully started, you should see a message indicating the address of your geonode.
 The default username and password are ``admin`` and ``admin``::
   
-  Development GeoNode is running at http://localhost:8000/
-  The GeoNode is an unstoppable machine
-  Press CTRL-C to shut down
+  Development Geonode is running at http://localhost:8000/
+  To stop the GeoNode machine run:
+  paver stop
+
+  Or quit the server by pressing
+  CTRL-C to shut down
 
 Before starting GeoNode (paver start), you could test your installation by running tests::
 
@@ -170,10 +163,11 @@ Before starting GeoNode (paver start), you could test your installation by runni
 In case you want to build yourself the documentation, you need to install Sphinx and the run 'make html' from within the docs directory::
 
     pip install Sphinx
+    pip install sphinx_rtd_theme
     cd docs
     make html
     
-You can eventually generate a pdf containing the whole documentation set. For this purpose, if using Ubuntu 12.4 you will need to install the texlive-full package::
+You can eventually generate a pdf containing the whole documentation set. For this purpose, if using Ubuntu you will need to install the texlive-full package::
 
     sudo apt-get install texlive-full
     make latexpdf

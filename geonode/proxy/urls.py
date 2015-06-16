@@ -20,6 +20,4 @@
 
 from django.conf.urls import patterns
 
-urlpatterns = patterns('geonode.proxy.views',
-    (r'^proxy/', 'proxy'),
-)
+urlpatterns = patterns('geonode.proxy.views', (r'^proxy/', 'proxy'),)

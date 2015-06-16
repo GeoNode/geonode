@@ -1,0 +1,4 @@
+{% load i18n %}
+
+{% trans "The following map was deleted" %}:
+{{ resource.title }}, {% trans "owned by" %} {{ resource.owner.username }}

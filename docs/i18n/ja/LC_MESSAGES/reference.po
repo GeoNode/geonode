@@ -1,12 +1,14 @@
 # 
 # Translators:
+# nyampire <nyampire@gmail.com>, 2014
+# tosseto <tosseto@gmail.com>, 2014
 msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-09-04 20:42\n"
-"PO-Revision-Date: 2013-09-05 02:01+0000\n"
-"Last-Translator: geonode <geonode-transifex@opengeo.org>\n"
+"PO-Revision-Date: 2014-10-17 14:11+0000\n"
+"Last-Translator: nyampire <nyampire@gmail.com>\n"
 "Language-Team: Japanese (http://www.transifex.com/projects/p/geonode/language/ja/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -16,44 +18,44 @@ msgstr ""
 
 #: ../../reference/architecture.txt:5
 msgid "GeoNode Architecture"
-msgstr ""
+msgstr "GeoNodeアーキテクチャ"
 
 #: ../../reference/architecture.txt:8
 msgid "The Big Picture"
-msgstr ""
+msgstr "長期目標"
 
 #: ../../reference/architecture.txt:18
 msgid "Django Architecture"
-msgstr ""
+msgstr "Djangoアーキテクチャ"
 
 #: ../../reference/architecture.txt:21
 msgid "MVC/MVT"
-msgstr ""
+msgstr "MVC/MVT"
 
 #: ../../reference/architecture.txt:23
 msgid "MVC"
-msgstr ""
+msgstr "MVC"
 
 #: ../../reference/architecture.txt:24
 msgid "Model, View, Controller"
-msgstr ""
+msgstr "Model, View, Controller"
 
 #: ../../reference/architecture.txt:26
 msgid "MVT"
-msgstr ""
+msgstr "MVT"
 
 #: ../../reference/architecture.txt:26
 msgid "Model, View, Template"
-msgstr ""
+msgstr "Model, View, Template"
 
 #: ../../reference/architecture.txt:28
 msgid "Model represents application data and provides rich ORM functionality"
-msgstr ""
+msgstr "モデルとは、アプリケーションのデータを意味し、多くのORM機能を提供します。"
 
 #: ../../reference/architecture.txt:29
 msgid ""
 "Views are a rendering of a Model most often using the Django template engine"
-msgstr ""
+msgstr "ビュー、およびモデルのレンダリングの多くはDjangoテンプレートエンジンを利用しています。"
 
 #: ../../reference/architecture.txt:30
 msgid ""
@@ -67,96 +69,96 @@ msgstr ""
 msgid ""
 "More: http://reinout.vanrees.org/weblog/2011/12/13/django-mvc-"
 "explanation.html"
-msgstr ""
+msgstr "さらに: http://reinout.vanrees.org/weblog/2011/12/13/django-mvc-explanation.html"
 
 #: ../../reference/architecture.txt:37 ../../reference/architecture.txt:41
 msgid "WSGI"
-msgstr ""
+msgstr "WSGI"
 
 #: ../../reference/architecture.txt:40
 msgid "Web Server Gateway Interface (whis-gey)"
-msgstr ""
+msgstr "Web Server Gateway Interface (whis-gey)"
 
 #: ../../reference/architecture.txt:43
 msgid ""
 "This is a python specification for supporting a common interface between all"
 " of the various web frameworks and an application (Apache, for example) that"
 " is 'serving'."
-msgstr ""
+msgstr "これはさまざまなウェブフレームワークと、それを'サーブ'するアプリケーション(Apacheなど)に対して共通のインターフェースをサポートするpython実装です。"
 
 #: ../../reference/architecture.txt:45
 msgid ""
 "This allows any WSGI compliant framework to be hosted in any WSGI compliant "
 "server."
-msgstr ""
+msgstr "これを利用することで、WSGI互換のサーバに対し、WSGI互換フレームワークをホストさせることが可能となります。"
 
 #: ../../reference/architecture.txt:46
 msgid ""
 "For most GeoNode development, the details of this specification may be "
 "ignored."
-msgstr ""
+msgstr "GeoNodeの開発を行なうにあたり、この実装の詳細部分は多くが利用されません。"
 
 #: ../../reference/architecture.txt:48
 msgid "More: http://en.wikipedia.org/wiki/Wsgi"
-msgstr ""
+msgstr "さらに: http://en.wikipedia.org/wiki/Wsgi"
 
 #: ../../reference/architecture.txt:52
 msgid "GeoNode and GeoServer"
-msgstr ""
+msgstr "GeoNodeとGeoServer"
 
 #: ../../reference/architecture.txt:54
 msgid "GeoNode uses GeoServer for providing OGC services."
-msgstr ""
+msgstr "GeoNodeは、OGCサービスを提供するためにGeoServerを使います。"
 
 #: ../../reference/architecture.txt:56
 msgid "GeoNode configures GeoServer via the REST API"
-msgstr ""
+msgstr "GeoNodeは、REST APIを通してGeoServerを設定します。"
 
 #: ../../reference/architecture.txt:57
 msgid ""
 "GeoNode retreives and caches spatial information from GeoServer. This "
 "includes relevant OGC service links, spatial metadata, and attribute "
 "information."
-msgstr ""
+msgstr "GeoNodeは空間情報の読み込みとキャッシュをGeoServerから行います。これにはOGCサービスリンク、空間メタデータ、属性情報が関連します。"
 
 #: ../../reference/architecture.txt:60
 msgid ""
 "In summary, GeoServer contains the layer's data and GeoNode's layer model "
 "extends what metadata is present in GeoServer with it's own."
-msgstr ""
+msgstr "端的にいうと、GeoServerにはレイヤのデータが格納され、GeoNodeのレイヤモデルはGeoServer内に存在するメタデータを拡張して利用します。"
 
 #: ../../reference/architecture.txt:62
 msgid ""
 "GeoNode can discover existing layers published in a GeoServer via the WMS "
 "capabilities document"
-msgstr ""
+msgstr "GeoNodeは、WMSキャパビリティドキュメントを使って、GeoServerで公開されている既存レイヤを認識します。"
 
 #: ../../reference/architecture.txt:64
 msgid "GeoServer delegates authentication and authorization to GeoNode"
-msgstr ""
+msgstr "GeoServerは、GeoNodeへの認証および権限付与を代行処理します。"
 
 #: ../../reference/architecture.txt:65
 msgid ""
 "Data uploaded to GeoNode is first processed in GeoNode and finally published"
 " to GeoServer (or ingested into the spatial database)"
-msgstr ""
+msgstr "GeoNodeにアップロードされたデータはまずGeoNode内で処理が行われますが、最終的な公開はGeoServer (あるいは空間データベース) を使って行われます。"
 
 #: ../../reference/architecture.txt:70
 msgid "GeoNode and PostgreSQL/PostGIS"
-msgstr ""
+msgstr "GeoNode と PostgreSQL/PostGIS"
 
 #: ../../reference/architecture.txt:72
 msgid ""
 "In production, GeoNode is configured to use PostgreSQL/PostGIS for it's "
 "persistent store. In development and testing mode, often an embedded sqlite "
 "database is used. The latter is not suggested for production."
-msgstr ""
+msgstr "商用利用する際には、GeoNodeのデータをPostgreSQL/PostGISへ格納するよう設定します。開発やテストが目的の場合は、sqliteデータベースが機能として組み込まれているので、そちらが使われることが多いです。商用利用する際には、後者の環境は非推奨です。"
 
 #: ../../reference/architecture.txt:76
 msgid ""
 "The database stores configuration and application information. This includes"
 " users, layers, maps, etc."
-msgstr ""
+msgstr "データベースへは、設定、およびアプリケーションの情報が格納されます。これには、ユーザやレイヤー、地図の情報が含まれます。"
 
 #: ../../reference/architecture.txt:78
 msgid ""
@@ -165,20 +167,20 @@ msgid ""
 "allows for adequate performance in many cases, storing features in the "
 "database allows for better performance especially when using complex style "
 "rules based on attributes."
-msgstr ""
+msgstr "またGeoNodeでは、ベクタファイルの格納する際にもPostgreSQL/PostGISを利用する設定が推奨です。多くの場合、shapefileからのレイヤー直接表示でも充分なパフォーマンスを保持することができますが、データベースにデータを格納することにより、特に属性を使った複雑なスタイル定義を行なう際によりよいパフォーマンスを得ることが可能となります。"
 
 #: ../../reference/architecture.txt:86
 msgid "GeoNode and pycsw"
-msgstr ""
+msgstr "GeoNodeとpycsw"
 
 #: ../../reference/architecture.txt:88
 msgid ""
 "GeoNode is built with pycsw embedded as the default CSW server component."
-msgstr ""
+msgstr "GeoNodeはデフォルトのサーバコンポーネントとして pycsw を使って構築されています。"
 
 #: ../../reference/architecture.txt:91
 msgid "Publishing"
-msgstr ""
+msgstr "発行"
 
 #: ../../reference/architecture.txt:93
 msgid ""
@@ -186,11 +188,11 @@ msgid ""
 "automatically published to pycsw and discoverable via CSW.  No additional "
 "configuration or actions are required to publish layers, maps or documents "
 "to pycsw."
-msgstr ""
+msgstr "pycswがGeoNodeに組み込まれているため、GeoNode内で公開されたレイヤーは自動的に pycsw へ公開され、CSW 上でディスカバリ可能な状態となります。レイヤや地図、ドキュメントを pycsw への公開する際に、特別な設定や操作は必要ありません。"
 
 #: ../../reference/architecture.txt:98
 msgid "Discovery"
-msgstr ""
+msgstr "発見"
 
 #: ../../reference/architecture.txt:100
 msgid ""
@@ -198,17 +200,17 @@ msgid ""
 "``http://localhost:8000/catalogue/csw`` and is available for clients to use "
 "for standards-based discovery.  See http://pycsw.org/docs/tools.html for a "
 "list of CSW clients and tools."
-msgstr ""
+msgstr "GeoNodeのCSWエンドポイントは ``http://localhost:8000/catalogue/csw`` にデプロイされ、クライアントは標準ベースのディスカバリを通して利用することが可能です。CSWクライアントとツールは http://pycsw.org/docs/tools.html に一覧があります。"
 
 #: ../../reference/architecture.txt:105
 msgid "Javascript in GeoNode"
-msgstr ""
+msgstr "GeoNodeのJavascript"
 
 #: ../../reference/architecture.txt:107
 msgid ""
 "GeoExplorer runs in the browser and talks with GeoNode and GeoServer's APIs "
 "using AJAX."
-msgstr ""
+msgstr "GeoExplorerはブラウザ上で動作し、GeoNodeとGeoServerのAPIをAJAXを使って処理することができます。"
 
 #: ../../reference/architecture.txt:109
 msgid ""
@@ -235,7 +237,7 @@ msgstr ""
 
 #: ../../reference/components.txt:11
 msgid "Django"
-msgstr ""
+msgstr "Django"
 
 #: ../../reference/components.txt:13
 msgid ""
@@ -250,7 +252,7 @@ msgstr ""
 
 #: ../../reference/components.txt:21
 msgid "GeoServer"
-msgstr ""
+msgstr "GeoServer"
 
 #: ../../reference/components.txt:23
 msgid ""
@@ -264,7 +266,7 @@ msgstr ""
 
 #: ../../reference/components.txt:28
 msgid "GeoExplorer"
-msgstr ""
+msgstr "GeoExplorer"
 
 #: ../../reference/components.txt:30
 msgid ""
@@ -276,7 +278,7 @@ msgstr ""
 
 #: ../../reference/components.txt:36
 msgid "PostgreSQL and PostGIS"
-msgstr ""
+msgstr "PostgreSQLとPostGIS"
 
 #: ../../reference/components.txt:38
 msgid ""
@@ -290,7 +292,7 @@ msgstr ""
 
 #: ../../reference/components.txt:44
 msgid "pycsw"
-msgstr ""
+msgstr "pycsw"
 
 #: ../../reference/components.txt:46
 msgid ""
@@ -302,7 +304,7 @@ msgstr ""
 
 #: ../../reference/components.txt:51
 msgid "Geospatial Python Libraries"
-msgstr ""
+msgstr "地理空間Pythonライブラリ"
 
 #: ../../reference/components.txt:53
 msgid ""
@@ -330,7 +332,7 @@ msgstr ""
 
 #: ../../reference/components.txt:64
 msgid "jQuery"
-msgstr ""
+msgstr "jQuery"
 
 #: ../../reference/components.txt:66
 msgid ""
@@ -343,7 +345,7 @@ msgstr ""
 
 #: ../../reference/components.txt:71
 msgid "Bootstrap"
-msgstr ""
+msgstr "Bootstrap"
 
 #: ../../reference/components.txt:73
 msgid ""
@@ -357,7 +359,7 @@ msgstr ""
 
 #: ../../reference/developers/django-apps.txt:5
 msgid "GeoNode Django Apps"
-msgstr ""
+msgstr "GeoNode Djangoアプリ"
 
 #: ../../reference/developers/django-apps.txt:7
 msgid ""
@@ -783,7 +785,7 @@ msgstr ""
 
 #: ../../reference/localization.txt:5
 msgid "Localization"
-msgstr ""
+msgstr "ローカル化"
 
 #: ../../reference/localization.txt:7
 msgid "To enable a new language in GeoNode you have to do the following:"
@@ -842,7 +844,7 @@ msgstr ""
 
 #: ../../reference/security.txt:12 ../../reference/security.txt:49
 msgid "Users"
-msgstr ""
+msgstr "ユーザー"
 
 #: ../../reference/security.txt:14
 msgid "superuser permissions"
@@ -854,7 +856,7 @@ msgstr ""
 
 #: ../../reference/security.txt:18 ../../reference/security.txt:75
 msgid "Layers"
-msgstr ""
+msgstr "レイヤー"
 
 #: ../../reference/security.txt:20
 msgid "view and download a layer"
@@ -870,7 +872,7 @@ msgstr ""
 
 #: ../../reference/security.txt:26 ../../reference/security.txt:147
 msgid "Maps"
-msgstr ""
+msgstr "地図"
 
 #: ../../reference/security.txt:28
 msgid "view and download a map"
@@ -886,7 +888,7 @@ msgstr ""
 
 #: ../../reference/security.txt:34 ../../reference/security.txt:163
 msgid "Documents"
-msgstr ""
+msgstr "ドキュメント"
 
 #: ../../reference/security.txt:36
 msgid "view and download a document"
@@ -1024,7 +1026,7 @@ msgstr ""
 
 #: ../../reference/security.txt:92
 msgid "Any registered user"
-msgstr ""
+msgstr "あらゆる登録ユーザー"
 
 #: ../../reference/security.txt:93
 msgid "Only a certain user or group"
@@ -1072,15 +1074,15 @@ msgstr ""
 
 #: ../../reference/security.txt:113
 msgid "Owner"
-msgstr ""
+msgstr "オーナー"
 
 #: ../../reference/security.txt:114
 msgid "Title"
-msgstr ""
+msgstr "タイトル"
 
 #: ../../reference/security.txt:115
 msgid "Date"
-msgstr ""
+msgstr "日"
 
 #: ../../reference/security.txt:116
 msgid "Data type"
@@ -1088,15 +1090,15 @@ msgstr ""
 
 #: ../../reference/security.txt:117
 msgid "Edition"
-msgstr ""
+msgstr "変更履歴"
 
 #: ../../reference/security.txt:118
 msgid "Abstract"
-msgstr ""
+msgstr "概要"
 
 #: ../../reference/security.txt:119
 msgid "Purpose"
-msgstr ""
+msgstr "目的"
 
 #: ../../reference/security.txt:120
 msgid "Maintainance frequency"
@@ -1108,7 +1110,7 @@ msgstr ""
 
 #: ../../reference/security.txt:122
 msgid "Restrictions"
-msgstr ""
+msgstr "制約"
 
 #: ../../reference/security.txt:123
 msgid "Restrictions other"
@@ -1116,11 +1118,11 @@ msgstr ""
 
 #: ../../reference/security.txt:124
 msgid "Language"
-msgstr ""
+msgstr "言語"
 
 #: ../../reference/security.txt:125
 msgid "Category"
-msgstr ""
+msgstr "カテゴリ"
 
 #: ../../reference/security.txt:126
 msgid "Spatial representation type"
@@ -1140,27 +1142,27 @@ msgstr ""
 
 #: ../../reference/security.txt:130
 msgid "Distribution URL"
-msgstr ""
+msgstr "配布URL"
 
 #: ../../reference/security.txt:131
 msgid "Distribution description"
-msgstr ""
+msgstr "配布に関する説明"
 
 #: ../../reference/security.txt:132
 msgid "Data quality statement"
-msgstr ""
+msgstr "データ品質の提示"
 
 #: ../../reference/security.txt:133
 msgid "Keywords"
-msgstr ""
+msgstr "キーワード"
 
 #: ../../reference/security.txt:134
 msgid "Point of contact"
-msgstr ""
+msgstr "連絡先"
 
 #: ../../reference/security.txt:135
 msgid "Metadata author"
-msgstr ""
+msgstr "メタデータ作成者"
 
 #: ../../reference/security.txt:136
 msgid "Attributes (those can though not be changed!)"
@@ -1192,15 +1194,15 @@ msgstr ""
 
 #: ../../reference/security.txt:151
 msgid "Edit map metadata"
-msgstr ""
+msgstr "地図のメタデータを編集"
 
 #: ../../reference/security.txt:152
 msgid "Set map thumbnail"
-msgstr ""
+msgstr "地図のサムネイル設定"
 
 #: ../../reference/security.txt:153
 msgid "Remove the map"
-msgstr ""
+msgstr "この地図を削除"
 
 #: ../../reference/security.txt:155
 msgid ""
@@ -1210,11 +1212,11 @@ msgstr ""
 
 #: ../../reference/security.txt:157
 msgid "Metadata XML"
-msgstr ""
+msgstr "メタデータXML"
 
 #: ../../reference/security.txt:158
 msgid "Thumbnail"
-msgstr ""
+msgstr "サムネイル"
 
 #: ../../reference/security.txt:160
 msgid "In *Set map thumbnail* the thumbnail of the map can be set."
@@ -1228,7 +1230,7 @@ msgstr ""
 
 #: ../../reference/security.txt:170
 msgid "Groups"
-msgstr ""
+msgstr "グループ"
 
 #: ../../reference/security.txt:172
 msgid ""

@@ -131,6 +131,11 @@ To allow new user registration:
 5. Restart apache::
 
        $ sudo service apache2 restart
+
+6. (Optional) Disable automatic approval of new users. Administrators would receive an email and need to manually approve new accounts. For this option to work, an email backed has to be defined in order to email the users with Staff status the notification to approve the new account::
+
+       ACCOUNT_APPROVAL_REQUIRED = True
+
        
 To register as a new user, click the ''Register'' link in the GeoNode index header.
 

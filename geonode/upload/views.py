@@ -35,8 +35,9 @@ import gsimporter
 import json
 import logging
 import os
-import re
 import traceback
+
+from httplib import BadStatusLine
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
@@ -51,21 +52,26 @@ from geonode.upload import forms, upload, files
 from geonode.upload.forms import LayerUploadForm, UploadFileForm
 from geonode.upload.models import Upload, UploadFile
 from geonode.utils import json_response as do_json_response
-from httplib import BadStatusLine
+from geonode.geoserver.helpers import ogc_server_settings
+
 
 logger = logging.getLogger(__name__)
 
 _SESSION_KEY = 'geonode_upload_session'
 _ALLOW_TIME_STEP = getattr(settings, 'UPLOADER', False)
 if _ALLOW_TIME_STEP:
-    _ALLOW_TIME_STEP = _ALLOW_TIME_STEP.get('OPTIONS', False).get('TIME_ENABLED', False)
+    _ALLOW_TIME_STEP = _ALLOW_TIME_STEP.get(
+        'OPTIONS',
+        False).get(
+        'TIME_ENABLED',
+        False)
 
-from geonode.geoserver.helpers import ogc_server_settings
 _ASYNC_UPLOAD = True if ogc_server_settings and ogc_server_settings.DATASTORE else False
 
 # at the moment, the various time support transformations require the database
 if _ALLOW_TIME_STEP and not _ASYNC_UPLOAD:
-    raise Exception("To support the time step, you must enable the OGC_SERVER DATASTORE option")
+    raise Exception(
+        "To support the time step, you must enable the OGC_SERVER DATASTORE option")
 
 _geoserver_down_error_msg = """
 GeoServer is not responding. Please try again later and sorry for the inconvenience.
@@ -79,15 +85,16 @@ That information can help us identify the cause of the problem and help us with
 fixing it.  Thank you!
 """
 
+
 def _is_async_step(upload_session):
     return _ASYNC_UPLOAD and get_next_step(upload_session, offset=2) == 'run'
 
 
 def _progress_redirect(step):
     return json_response(dict(
-        success = True,
-        redirect_to= reverse('data_upload', args=[step]),
-        progress = reverse('data_upload_progress')
+        success=True,
+        redirect_to=reverse('data_upload', args=[step]),
+        progress=reverse('data_upload_progress')
     ))
 
 
@@ -98,7 +105,9 @@ def json_response(*args, **kw):
 
 
 class JSONResponse(HttpResponse):
+
     """JSON response class."""
+
     def __init__(self,
                  obj='',
                  json_opts={},
@@ -107,21 +116,27 @@ class JSONResponse(HttpResponse):
         content = json.dumps(obj, **json_opts)
         super(JSONResponse, self).__init__(content, mimetype, *args, **kwargs)
 
+
 def _error_response(req, exception=None, errors=None, force_ajax=True):
     if exception:
         logger.exception('Unexpected error in upload step')
     else:
-        logger.warning('upload error: %s', errors)
+        logger.error('upload error: %s', errors)
     if req.is_ajax() or force_ajax:
         content_type = 'text/html' if not req.is_ajax() else None
         return json_response(exception=exception, errors=errors,
-                             content_type=content_type, status=500)
+                             content_type=content_type, status=400)
     # not sure if any responses will (ideally) ever be non-ajax
     if errors:
         exception = "<br>".join(errors)
-    return render_to_response('upload/layer_upload_error.html', RequestContext(req,{
-        'error_msg' : 'Unexpected error : %s,' % exception
-    }))
+    return render_to_response(
+        'upload/layer_upload_error.html',
+        RequestContext(
+            req,
+            {
+                'error_msg': 'Unexpected error : %s,' %
+                exception}))
+
 
 def _next_step_response(req, upload_session, force_ajax=True):
     # if the current step is the view POST for this step, advance one
@@ -140,7 +155,8 @@ def _next_step_response(req, upload_session, force_ajax=True):
         if store_type == 'coverageStore':
             upload_session.completed_step = 'time'
             return _next_step_response(req, upload_session, force_ajax)
-    if next == 'time' and (upload_session.time == None or upload_session.time == False):
+    if next == 'time' and (
+            upload_session.time is None or not upload_session.time):
         upload_session.completed_step = 'time'
         return _next_step_response(req, upload_session, force_ajax)
     if next == 'time' and force_ajax:
@@ -148,30 +164,30 @@ def _next_step_response(req, upload_session, force_ajax=True):
         url = reverse('data_upload') + "?id=%s" % import_session.id
         return json_response(
             {'url': url,
-            'status': 'incomplete',
-            'success': True,
-            'redirect_to': '/upload/time',
-            }
+             'status': 'incomplete',
+             'success': True,
+             'redirect_to': '/upload/time',
+             }
         )
     if next == 'srs' and force_ajax:
         import_session = upload_session.import_session
         url = reverse('data_upload') + "?id=%s" % import_session.id
         return json_response(
             {'url': url,
-            'status': 'incomplete',
-            'success': True,
-            'redirect_to': '/upload/srs',
-            }
+             'status': 'incomplete',
+             'success': True,
+             'redirect_to': '/upload/srs',
+             }
         )
     if next == 'csv' and force_ajax:
         import_session = upload_session.import_session
         url = reverse('data_upload') + "?id=%s" % import_session.id
         return json_response(
             {'url': url,
-            'status': 'incomplete',
-            'success': True,
-            'redirect_to': '/upload/csv',
-            }
+             'status': 'incomplete',
+             'success': True,
+             'redirect_to': '/upload/csv',
+             }
         )
 
     # @todo this is not handled cleanly - run is not a real step in that it
@@ -189,19 +205,21 @@ def _next_step_response(req, upload_session, force_ajax=True):
         content_type = 'text/html' if not req.is_ajax() else None
         return json_response(redirect_to=reverse('data_upload', args=[next]),
                              content_type=content_type)
-    #return HttpResponseRedirect(reverse('data_upload', args=[next]))
+    # return HttpResponseRedirect(reverse('data_upload', args=[next]))
 
 
 def _create_time_form(import_session, form_data):
     feature_type = import_session.tasks[0].layer
-    filter_type = lambda b : [ att.name for att in feature_type.attributes if att.binding == b]
+
+    def filter_type(b):
+        return [att.name for att in feature_type.attributes if att.binding == b]
 
     args = dict(
         time_names=filter_type('java.util.Date'),
         text_names=filter_type('java.lang.String'),
         year_names=filter_type('java.lang.Integer') +
-          filter_type('java.lang.Long') +
-          filter_type('java.lang.Double')
+        filter_type('java.lang.Long') +
+        filter_type('java.lang.Double')
     )
     if form_data:
         return forms.TimeForm(form_data, **args)
@@ -210,12 +228,15 @@ def _create_time_form(import_session, form_data):
 
 def save_step_view(req, session):
     if req.method == 'GET':
-        return render_to_response('upload/layer_upload.html',
-            RequestContext(req, {
-            'async_upload' : _ASYNC_UPLOAD,
-            'incomplete' : Upload.objects.get_incomplete_uploads(req.user),
-            'charsets': CHARSETS
-        }))
+        return render_to_response(
+            'upload/layer_upload.html',
+            RequestContext(
+                req,
+                {
+                    'async_upload': _ASYNC_UPLOAD,
+                    'incomplete': Upload.objects.get_incomplete_uploads(
+                        req.user),
+                    'charsets': CHARSETS}))
 
     assert session is None
 
@@ -229,14 +250,18 @@ def save_step_view(req, session):
         logger.debug('Name: {0}, ext: {1}'.format(name, ext))
         base_file = files.scan_file(base_file)
         logger.debug(base_file)
-        import_session = upload.save_step(req.user, name, base_file, overwrite=False)
+        import_session = upload.save_step(
+            req.user,
+            name,
+            base_file,
+            overwrite=False)
         sld = None
 
         if base_file[0].sld_files:
             sld = base_file[0].sld_files[0]
 
         logger.info('provided sld is %s' % sld)
-        #upload_type = get_upload_type(base_file)
+        # upload_type = get_upload_type(base_file)
         upload_session = req.session[_SESSION_KEY] = upload.UploaderSession(
             tempdir=tempdir,
             base_file=base_file,
@@ -245,8 +270,8 @@ def save_step_view(req, session):
             layer_abstract=form.cleaned_data["abstract"],
             layer_title=form.cleaned_data["layer_title"],
             permissions=form.cleaned_data["permissions"],
-            import_sld_file = sld,
-            upload_type = base_file[0].file_type.code,
+            import_sld_file=sld,
+            upload_type=base_file[0].file_type.code,
             geogit=form.cleaned_data['geogit'],
             geogit_store=form.cleaned_data['geogit_store'],
             time=form.cleaned_data['time']
@@ -291,10 +316,10 @@ def srs_step_view(req, upload_session):
     if form:
         name = task.layer.name
         return render_to_response('upload/layer_upload_crs.html',
-                                  RequestContext(req,{
-                                        'native_crs' : native_crs,
-                                        'form' : form,
-                                        'layer_name' : name
+                                  RequestContext(req, {
+                                      'native_crs': native_crs,
+                                      'form': form,
+                                      'layer_name': name
                                   }))
     # mark this completed since there is no post-back when skipping
     upload_session.completed_step = 'srs'
@@ -326,9 +351,8 @@ def csv_step_view(request, upload_session):
 
     # no geometry found, let's find all the numerical columns
     number_names = ['java.lang.Integer', 'java.lang.Double']
-    point_candidates = [attr.name for attr in attributes
-                        if attr.binding in number_names]
-    point_candidates.sort()
+    point_candidates = sorted([attr.name for attr in attributes
+                               if attr.binding in number_names])
 
     # form errors to display to user
     error = None
@@ -339,8 +363,8 @@ def csv_step_view(request, upload_session):
     if request.method == 'POST':
         if not lat_field or not lng_field:
             error = 'Please choose which columns contain the latitude and longitude data.'
-        elif (lat_field not in point_candidates
-              or lng_field not in point_candidates):
+        elif (lat_field not in point_candidates or
+              lng_field not in point_candidates):
             error = 'Invalid latitude/longitude columns'
         elif lat_field == lng_field:
             error = 'You cannot select the same column for latitude and longitude data.'
@@ -397,17 +421,20 @@ def time_step_view(request, upload_session):
         store_type = import_session.tasks[0].target.store_type
         if store_type == 'dataStore':
             layer = import_session.tasks[0].layer
-            invalid = filter(lambda a: str(a.name).find(' ') >= 0, layer.attributes)
+            invalid = filter(
+                lambda a: str(
+                    a.name).find(' ') >= 0,
+                layer.attributes)
             if invalid:
-                att_list = "<pre>%s</pre>" % '. '.join([a.name for a in invalid])
+                att_list = "<pre>%s</pre>" % '. '.join(
+                    [a.name for a in invalid])
                 msg = "Attributes with spaces are not supported : %s" % att_list
-                return render_to_response('upload/layer_upload_error.html', RequestContext(request,{
-                    'error_msg' : msg
-                }))
+                return render_to_response(
+                    'upload/layer_upload_error.html', RequestContext(request, {'error_msg': msg}))
         context = {
             'time_form': _create_time_form(import_session, None),
             'layer_name': import_session.tasks[0].layer.name,
-            'async_upload' : _is_async_step(upload_session)
+            'async_upload': _is_async_step(upload_session)
         }
         return render_to_response('upload/layer_upload_time.html',
                                   RequestContext(request, context))
@@ -422,33 +449,23 @@ def time_step_view(request, upload_session):
 
     cleaned = form.cleaned_data
 
-    time_attribute_name, time_transform_type = None, None
-    end_time_attribute_name, end_time_transform_type = None, None
+    start_attribute_and_type = cleaned.get('start_attribute', None)
 
-    time_attribute = cleaned.get('attribute', None)
-    end_time_attribute = cleaned.get('end_attribute', None)
+    if start_attribute_and_type:
 
-    # submitted values will be in the form of '<name> [<type>]'
-    name_pat = re.compile('^\S+')
-    type_pat = re.compile('\[(.*)\]')
+        def tx(type_name):
 
-    if time_attribute:
-        time_attribute_name = name_pat.search(time_attribute).group(0)
-        time_attribute_type = type_pat.search(time_attribute).group(1)
-        time_transform_type = None if time_attribute_type == 'Date' else 'DateFormatTransform'
-    if end_time_attribute:
-        end_time_attribute_name = name_pat.search(end_time_attribute).group(0)
-        end_time_attribute_type = type_pat.search(end_time_attribute).group(1)
-        end_time_transform_type = None if end_time_attribute_type == 'Date' else 'DateFormatTransform'
+            return None if type_name is None or type_name == 'Date' \
+                else 'DateFormatTransform'
 
-    if time_attribute:
+        end_attribute, end_type = cleaned.get('end_attribute', (None, None))
         upload.time_step(
             upload_session,
-            time_attribute=time_attribute_name,
-            time_transform_type=time_transform_type,
+            time_attribute=start_attribute_and_type[0],
+            time_transform_type=tx(start_attribute_and_type[1]),
             time_format=cleaned.get('attribute_format', None),
-            end_time_attribute=end_time_attribute_name,
-            end_time_transform_type=end_time_transform_type,
+            end_time_attribute=end_attribute,
+            end_time_transform_type=tx(end_type),
             end_time_format=cleaned.get('end_attribute_format', None),
             presentation_strategy=cleaned['presentation_strategy'],
             precision_value=cleaned['precision_value'],
@@ -474,7 +491,14 @@ def run_response(req, upload_session):
 
 
 def final_step_view(req, upload_session):
-    saved_layer = upload.final_step(upload_session, req.user)
+    try:
+        saved_layer = upload.final_step(upload_session, req.user)
+
+    except upload.LayerNotReady:
+        return json_response({'status': 'pending',
+                              'success': True,
+                              'redirect_to': '/upload/final'})
+
     # this response is different then all of the other views in the
     # upload as it does not return a response as a json object
     return json_response(
@@ -512,7 +536,7 @@ def get_next_step(upload_session, offset=1):
     assert upload_session.upload_type is not None
     try:
         pages = _pages[upload_session.upload_type]
-    except KeyError, e:
+    except KeyError as e:
         raise Exception('Unsupported file type: %s' % e.message)
     index = -1
     if upload_session.completed_step and upload_session.completed_step != 'save':
@@ -544,7 +568,10 @@ def view(req, step):
     if step is None:
         if 'id' in req.GET:
             # upload recovery
-            upload_obj = get_object_or_404(Upload, import_id=req.GET['id'], user=req.user)
+            upload_obj = get_object_or_404(
+                Upload,
+                import_id=req.GET['id'],
+                user=req.user)
             session = upload_obj.get_session()
             if session:
                 req.session[_SESSION_KEY] = session
@@ -557,8 +584,12 @@ def view(req, step):
             del req.session[_SESSION_KEY]
 
     else:
-        if not _SESSION_KEY in req.session:
-            return render_to_response("upload/layer_upload_invalid.html", RequestContext(req, {}))
+        if _SESSION_KEY not in req.session:
+            return render_to_response(
+                "upload/layer_upload_invalid.html",
+                RequestContext(
+                    req,
+                    {}))
         upload_session = req.session[_SESSION_KEY]
 
     try:
@@ -566,16 +597,26 @@ def view(req, step):
             # set the current step to match the requested page - this
             # could happen if the form is ajax w/ progress monitoring as
             # the advance would have already happened @hacky
-            upload_session.completed_step = get_previous_step(upload_session, step)
+            upload_session.completed_step = get_previous_step(
+                upload_session,
+                step)
 
         resp = _steps[step](req, upload_session)
         # must be put back to update object in session
         if upload_session:
             if step == 'final':
-                # we're done with this session, wax it
-                Upload.objects.update_from_session(upload_session)
-                upload_session = None
-                del req.session[_SESSION_KEY]
+                delete_session = True
+                try:
+                    resp_js = json.loads(resp.content)
+                    delete_session = resp_js.get('status') != 'pending'
+                except:
+                    pass
+
+                if delete_session:
+                    # we're done with this session, wax it
+                    Upload.objects.update_from_session(upload_session)
+                    upload_session = None
+                    del req.session[_SESSION_KEY]
             else:
                 req.session[_SESSION_KEY] = upload_session
         elif _SESSION_KEY in req.session:
@@ -586,18 +627,18 @@ def view(req, step):
     except BadStatusLine:
         logger.exception('bad status line, geoserver down?')
         return _error_response(req, errors=[_geoserver_down_error_msg])
-    except gsimporter.RequestFailed, e:
+    except gsimporter.RequestFailed as e:
         logger.exception('request failed')
         errors = e.args
         # http bad gateway or service unavailable
         if int(errors[0]) in (502, 503):
             errors = [_geoserver_down_error_msg]
         return _error_response(req, errors=errors)
-    except gsimporter.BadRequest, e:
+    except gsimporter.BadRequest as e:
         logger.exception('bad request')
         return _error_response(req, errors=e.args)
-    except Exception, e:
-        return _error_response(req, errors=e.args)
+    except Exception as e:
+        return _error_response(req, exception=e)
 
 
 @login_required
@@ -618,12 +659,24 @@ class UploadFileCreateView(CreateView):
     def form_valid(self, form):
         self.object = form.save()
         f = self.request.FILES.get('file')
-        data = [{
-            'name': f.name,
-            'url': settings.MEDIA_URL + "uploads/" + f.name.replace(" ", "_"),
-            'thumbnail_url': settings.MEDIA_URL + "pictures/" + f.name.replace(" ", "_"),
-            'delete_url': reverse('data_upload_remove', args=[self.object.id]), 'delete_type': "DELETE"}
-        ]
+        data = [
+            {
+                'name': f.name,
+                'url': settings.MEDIA_URL +
+                "uploads/" +
+                f.name.replace(
+                    " ",
+                    "_"),
+                'thumbnail_url': settings.MEDIA_URL +
+                "pictures/" +
+                f.name.replace(
+                    " ",
+                    "_"),
+                'delete_url': reverse(
+                    'data_upload_remove',
+                    args=[
+                        self.object.id]),
+                'delete_type': "DELETE"}]
         response = JSONResponse(data, {}, response_mimetype(self.request))
         response['Content-Disposition'] = 'inline; filename=files.json'
         return response

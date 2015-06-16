@@ -10,4 +10,5 @@ GeoNode is primarily a *social* platform, and thus a primary component of any Ge
 
    registration
    profile
+   notifications
    users

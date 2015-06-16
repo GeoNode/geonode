@@ -1,11 +1,8 @@
 {% load i18n %}
-{% load url from future %}
 
-<ul class="nav nav-pills filter">
-  <li><a href="{% url "profile_detail" profile.username %}" {% if content_filter  == "all" %}class="selected"{% endif %}>{% trans "All contents" %}</a></li>
-  <li><a href="{% url "profile_detail" profile.username %}?content=layers"{% if content_filter == "layers" %} class="selected"{% endif %}>{% trans "Layers" %}</a></li>
-  <li><a href="{% url "profile_detail" profile.username %}?content=maps"{% if content_filter == "maps" %} class="selected"{% endif %}>{% trans "Maps" %}</a></li>
-  <li><a href="{% url "profile_detail" profile.username %}?content=documents"{% if content_filter == "documents" %} class="selected"{% endif %}>{% trans "Documents" %}</a></li>
-  <li><a href="{% url "profile_detail" profile.username %}?content={{ content_filter }}&sortby=date"{% if sortby_field == "date" %} class="selected"{% endif %}>{% trans "Sort by date" %}</a></li>
-  <li><a href="{% url "profile_detail" profile.username %}?content={{ content_filter }}&sortby=title"{% if sortby_field == "title" %} class="selected"{% endif %}>{% trans "Sort by title" %}</a></li>
+<ul class="nav nav-pills filter pull-left" id="sort">
+  <li><a data-value="all" data-filter="type__in" class="selected" ng-click="single_choice_listener($event)">{% trans "All contents" %}</a></li>
+  <li><a data-value="layer" data-filter="type__in" ng-click="single_choice_listener($event)">{% trans "Layers" %}</a></li>
+  <li><a data-value="map" data-filter="type__in" ng-click="single_choice_listener($event)">{% trans "Maps" %}</a></li>
+  <li><a data-value="document" data-filter="type__in" ng-click="single_choice_listener($event)">{% trans "Documents" %}</a></li>
 </ul>

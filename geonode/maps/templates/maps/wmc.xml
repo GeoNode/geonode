@@ -41,11 +41,11 @@
     </General>
     <LayerList>
     {% for layer in map.layers %}        
-        {% if layer.get_ows_url != None %}        
+        {% if layer.ows_url != None %}        
         {% with layer.layer_config as lc %}
         <Layer queryable="{{ lc.capability.queryable|lower }}" hidden="{% if lc.visibility == False %}true{%else%}false{%endif%}">
             <Server service="OGC:WMS" version="1.1.1">
-                <OnlineResource xlink:type="simple" xlink:href="{{ layer.get_ows_url }}"/>
+                <OnlineResource xlink:type="simple" xlink:href="{{ layer.ows_url }}"/>
             </Server>
             <Name>{{ layer.name }}</Name>
             <Title>{{ lc.capability.title }}</Title>

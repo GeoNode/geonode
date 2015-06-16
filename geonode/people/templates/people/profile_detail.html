@@ -9,61 +9,114 @@
 {% block body_class %}people explore{% endblock %}
 
 {% block body %}
+
+<div class="page-header">
+  <h2 class="page-title">{{ profile.name_long }}</h2>
+</div>
 <div class="row">
-  <div class="col-md-12">
-    <h2 class="page-title">{{ profile.first_name|default_if_none:profile.username }}</h2>
-  </div>
-  <div class="col-md-2">
+  <div class="col-xs-3 col-md-2 profile-avatar">
     {% avatar profile 140 %}
+    <a href="{% url "message_create" profile.pk %}" class="btn btn-primary btn-block" style="margin-top:4px;">{% trans "Message User" %}</a>
   </div>
-  <div class="col-md-6">
-    <dl class="dl-horizontal profile-details">
-      <dt><i class="fa fa-user"></i></dt>
-      <dd>{{ profile.username }}
-        {% if profile.position %} | {{ profile.position }}{% endif %}
-        {% if profile.organization %} @ {{ profile.organization }}{% endif %}
-        {% if profile.profile %}<br />{{ profile.profile }}{% endif %}</dd>
-        <dt><i class="fa fa-map-marker"></i></dt>
-        <dd>{% if profile.delivery %}{{ profile.delivery }}, {% endif %}
-          {% if profile.profile %}{{ profile.zipcode }} {% endif %}
-          {% if profile.city %}{{ profile.city }} {% endif %}
-          {% if profile.area %}{{ profile.area }} {% endif %}
-          {{ profile.country|default_if_none:"not available" }}</dd>
-        {% if user.is_authenticated %}
-        {% if profile.voice %}
-        <dt><i class="fa fa-phone"></i></dt>
-        <dd>{{ profile.voice }}</dd>
-        {% endif %}
-        {% if profile.fax %}
-        <dt><i class="fa fa-print"></i></dt>
-        <dd>{{ profile.fax }}</dd>
-        {% endif %}
-        {% endif %}
-        <dt><i class="fa fa-tag"></i></dt>
-        <dd>{% for tag in profile.keywords.all %}
-              {{ tag.name }}
-            {% endfor %}
-        </dd>
-      </dl>
+  <div class="col-xs-9 col-md-6 profile-details">
+    <table class="table table-user-profile">
+        <tbody>
+        <tr>
+            <td class="table-user-profile-attribute">{% trans 'Email' %}</td>
+            {% if profile.email %}
+                <td><a href="mailto:{{ profile.email }}">{{ profile.email }}</a></td>
+            {% else %}
+                <td>{% trans 'Not provided.' %}</td>
+            {% endif %}
+          </tr>
+          <tr>
+            <td class="table-user-profile-attribute">{% trans 'Name' %}</td>
+            <td>{{ profile.get_full_name | default:_('Not provided.') }}</td>
+          </tr>
+          <tr>
+            <td class="table-user-profile-attribute">{% trans 'Position' %}</td>
+            <td>{{ profile.position | default:_('Not provided.') }}</td>
+          </tr>
+          <tr>
+            <td class="table-user-profile-attribute">{% trans 'Organization'  %}</td>
+            <td>{{ profile.organization | default:_('Not provided.') }}</td>
+          </tr>
+          {% if user.is_authenticated %}
+          <tr>
+            <td class="table-user-profile-attribute">{% trans 'Location' %}</td>
+            <td>{{ profile.location | default:_('Not provided.') }}</td>
+          </tr>
+          <tr>
+            <td class="table-user-profile-attribute">{% trans 'Voice' %}</td>
+            {% if profile.voice %}
+                <td><a href="tel:{{ profile.voice }}">{{ profile.voice }}</a></td>
+            {% else %}
+                <td>Not provided.</td>
+            {% endif %}
+          </tr>
+          <tr>
+            <td class="table-user-profile-attribute">{% trans 'Fax' %}</td>
+            <td>{{ profile.fax | default:_('Not provided.') }}</td>
+          </tr>
+          <tr>
+            <td class="table-user-profile-attribute">{% trans 'Description' %}</td>
+            <td>{{ profile.profile | default:_('Not provided.') }}</td>
+          </tr>
+          {% endif %}
+          <tr>
+            <td class="table-user-profile-attribute">{% trans 'Keywords' %}</td>
+            <td>
+                {% if profile.keyword_list %}
+                    {% for keyword in profile.keyword_list %}
+                        <span class="label label-default">{{ keyword }}</span>
+                    {% endfor %}
+                {% else %}
+                    {% trans 'Not provided' %}
+                {% endif %}
+            </td>
+          </tr>
+        </tbody>
+      </table>
   </div>
 
-  <div class="col-md-4">
-    
+  <div class="col-xs-12 col-md-4">
     {% if user == profile %}
-    <ul class="list-group">
-      <li class="list-group-item"><a href="{% url "profile_edit" user.username %}">{% trans "Edit profile" %}</a></li>
-      <li class="list-group-item"><a href="{% url "account_settings" %}">{% trans "Account Settings" %}</a></li>
-      <li class="list-group-item"><a href="{% url "account_password" %}">{% trans "Change password" %}</a></li>
-      <li class="list-group-item"><a href="{% url "layer_upload" %}">{% trans "Upload new layers" %}</a></li>
-      <li class="list-group-item"><a href="{% url "new_map" %}">{% trans "Create a new map" %}</a></li>
-      {% if_has_tag actor_url %}
-      <li class="list-group-item"><a href="{% actor_url profile %}">{% trans "My Activities" %}</a></li>
-      {% endif_has_tag %}
-    </ul>
+      <ul class="list-group">
+        <li class="list-group-item"><a href="{% url "profile_edit" user.username %}"><i class="fa fa-edit"></i> {% trans "Edit profile" %}</a></li>
+        <li class="list-group-item"><a href="{% url "account_password" %}"><i class="fa fa-lock"></i> {% trans "Change password" %}</a></li>
+      </ul>
+      <ul class="list-group">
+        <li class="list-group-item"><a href="{% url "layer_upload" %}"><i class="fa fa-cloud-upload"></i> {% trans "Upload new layers" %}</a></li>
+        <li class="list-group-item"><a href="{% url "new_map" %}"><i class="fa fa-map-marker"></i> {% trans "Create a new map" %}</a></li>
+        {% if_has_tag actor_url %}
+        <li class="list-group-item"><a href="{% actor_url profile %}"><i class="fa fa-fire"></i> {% trans "My Activities" %}</a></li>
+        {% endif_has_tag %}
+      </ul>
+      <ul class="list-group">
+        {% if USE_NOTIFICATIONS %}
+        <li class="list-group-item"><a href="{% url "notification_notice_settings" %}"><i class="fa fa-bell"></i> {% trans "Notifications" %}</a></li>
+        {% endif %}
+        {% if perms.announcements.can_manage %}
+        <li class="list-group-item"><a href="{% url "announcements_list" %}"><i class="fa fa-bullhorn"></i> {% trans "Announcements" %}</a></li>
+        {% endif %}
+      </ul>
+        {% if user.is_superuser %}
+      <ul class="list-group">
+        <li class="list-group-item"><a href="{% url "services" %}"><i class="fa fa-globe"></i> {% trans "Remote Services" %}</a></li>
+        <li class="list-group-item"><a href="{% url "account_invite_user" %}"><i class="fa fa-edit"></i> {% trans "Invite User" %}</a></li>
+        <li class="list-group-item"><a href="{{ GEOSERVER_BASE_URL }}"><i class="fa fa-gears"></i> {% trans "GeoServer" %}</a></li>
+        {% endif %}
+        {% if user.is_staff %}
+        <li class="list-group-item"><a href="{% url "admin:index" %}"><i class="fa fa-cog"></i> {% trans "Admin" %}</a></li>
+        {% endif %}
+      </ul>
       {% if_has_tag if_relationship %}
         {% include "relationships/_manage_connections.html" %}
       {% endif_has_tag %}
     {% else %}
+      <ul class="list-group">
+        <li class="list-group-item"><a href="{% actor_url profile %}"><i class="fa fa-fire"></i> {% trans "User Activities" %}</a></li>
+      </ul>
       {% if_has_tag if_relationship %}
         {% include "relationships/_profile_follow.html" %}
       {% endif_has_tag %}
@@ -72,59 +125,84 @@
     {% if_has_tag if_relationship %}
       {% include "relationships/_list_connections.html" %}
     {% endif_has_tag %}
-
   </div>
-
 </div>
 
-<div class="col-md-8">
-  <h3>Resources</h3>
-  {% include "people/_profile_filters.html" %}
-</div>
+{% if user.is_authenticated %}
 
 <div class="col-md-8">
-    <div class="tab-content span12 paginate paginate-auto">
-      {% if object_list|length > 0 %}
-      <div class="tab-pane active list paginate-contents" id="all">
-          {% autopaginate object_list 5 %}
-            {% for obj in object_list %}
-            <article>
-              <div class="content">
-                <div class="item-header">
-                <img class="thumb" src="{{ obj.thumbnail_url}}" />
-                {% if obj.class_name = 'Map' %}
-                <h3><i class="fa fa-map-marker"></i>
-                {% endif %}
-                {% if obj.class_name = 'Layer' %}
-                <h3><i class="fa fa-square-o rotate-45"></i>
-                {% endif %}
-                {% if obj.class_name = 'Document' %}
-                <h3><i class="fa fa-file-text-alt"></i>
-                {% endif %}
-                  <a href="{{ obj.detail_url }}">{{ obj.title }}</a>
-                </h3>
-              </div>
-              <div class="details">
-                <div class="meta">
-                  <p class="resources-abstract">{{ obj.abstract }}</p>
-                  <p class="sharing-date">{% trans "Shared on" %} {{ obj.date|date:"d b Y" }}</p>
-                </div>
-              </div>
-            </article>
-            {% endfor %}
-        </div>
-          {% paginate %}
-      </div>
-      {% else %}
-      </div>
+  <h3>Groups</h3>
+  {% if user == profile %}
+    {% for group in profile.group_list_all %}
       <article>
-        <p>{% trans "No contents found." %}</p>
-      </article>
-    {% endif %}
-    </div>
-  </div>
+        <div class="row">
+           <div ng-if="group.logo != ''" class="col-xs-3 col-md-2 group-logo">
+             <a href="{{ group.get_absolute_url }}" ><img src="/uploaded/{{ group.logo }}" alt="{{ group.title }}" class="group-logo" /></a>
+           </div>
+           <div class="col-xs-9 col-md-10">
+             <h5>
+               <i class="fa fa-group"></i> <a href="{{ group.get_absolute_url }}">{{ group.title }}</a>
+               {% if group.email %} <a href="mailto:{{ group.email }}"><i class="fa fa-envelope-o"></i></a>{% endif %}
+             </h5>
+             <p>{{ group.description}}</p>
+           </div>
+         </div>
+     </article>
+    {% endfor %}
+  {% else %}
+    {% for group in profile.group_list_public %}
+      <article>
+        <div class="row">
+           <div ng-if="group.logo != ''" class="col-md-2">
+             <a href="{{ group.get_absolute_url }}" ><img src="/uploaded/{{ group.logo }}" alt="{{ group.title }}" class="group-logo" /></a>
+           </div>
+           <div class="col-md-10">
+             <h5>
+               <i class="fa fa-group"></i> <a href="{{ group.get_absolute_url }}">{{ group.title }}</a>
+               {% if group.email %} <a href="mailto:{{ group.email }}"><i class="fa fa-envelope-o"></i></a>{% endif %}
+             </h5>
+             <p>{{ group.description}}</p>
+           </div>
+         </div>
+     </article>
+    {% endfor %}
+  {% endif %} 
+</div>
+{% endif %}
+
+
+<div class="col-md-12">
+  <h3>{% trans "Resources" %}</h3>
+  <div class="col-md-12">
+  {% include "people/_profile_filters.html" %}
+  </div> 
+  <div class="col-md-12">
+  {% include "search/_sort_filters.html" %}
+  </div> 
+  <div class="col-md-12">
+    {% include 'search/_pagination.html' %}
+  </div> 
 </div>
 
+  <div class="col-md-12">
+  {% include 'base/_resourcebase_snippet.html' %}
+  </div>
+
+  {% include "_bulk_permissions_form.html" %}
+{% endblock %}
+
+{% block extra_script %}
+  {% if GEONODE_SECURITY_ENABLED %}
+    {% include "_permissions_form_js.html" %}
+  {% endif %}
+  <script type="text/javascript">
+      {% if HAYSTACK_SEARCH %}
+          SEARCH_URL = '{% url 'api_get_search' api_name='api' resource_name='base' %}?owner__username={{profile.username}}'
+      {% else %}
+          SEARCH_URL = '{% url 'api_dispatch_list' api_name='api' resource_name='base' %}?owner__username={{profile.username}}';
+      {% endif %}
+  </script>
+  {% include 'search/search_scripts.html' %}
 {% endblock %}
 
 

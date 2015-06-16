@@ -1,0 +1,13 @@
+{% load i18n %}
+
+{% trans "The user" %} {{ from_user.username }} {% trans "requested you to download this resource" %}:
+{{ resource.title }}
+
+{% if resource.polymorphic_ctype.name = 'layer' %}
+{% trans "Layer" %}: {{ current_site }}{% url "layer_detail" resource.layer.service_typename %}
+{% else %}
+{% trans "Document" %}: {{ current_site }}{% url "document_detail" resource.document.id %}
+{% endif %}
+
+{% trans "Please go to resource page and assign the download permissions if you wish" %}.
+

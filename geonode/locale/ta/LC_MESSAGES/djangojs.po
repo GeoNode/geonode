@@ -1,0 +1,798 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+#
+# Translators:
+# Translators:
+# Translators:
+# Translators:
+# Translators:
+# Translators:
+# Andres Alfonso Lemon Gomez <lemon.andres@gmail.com>, 2014
+msgid ""
+msgstr ""
+"Project-Id-Version: GeoNode\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2015-03-02 23:16-0600\n"
+"PO-Revision-Date: 2015-03-03 05:10+0000\n"
+"Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
+"Language-Team: Tamil (http://www.transifex.com/projects/p/geonode/language/"
+"ta/)\n"
+"Language: ta\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: static/geonode/js/extjs/GeoNode.js:72
+#: static_root/geonode/js/extjs/GeoNode.js:72
+msgid "Add user..."
+msgstr "பயனர் சேர்க்க ..."
+
+#: static/geonode/js/extjs/GeoNode.js:72
+#: static_root/geonode/js/extjs/GeoNode.js:72
+msgid "Who can view and download this data?"
+msgstr "யார் இந்த தகவலை பார்க்க முடியூம் மற்றும் தரவிரக்கம் செய்ய முடியம் "
+
+#: static/geonode/js/extjs/GeoNode.js:72
+#: static_root/geonode/js/extjs/GeoNode.js:72
+msgid "Anyone"
+msgstr "யாராவது"
+
+#: static/geonode/js/extjs/GeoNode.js:72
+#: static_root/geonode/js/extjs/GeoNode.js:72
+msgid "Any registered user"
+msgstr "பதிவ செய்த பயன்படுத்துனர் எவராவது "
+
+#: static/geonode/js/extjs/GeoNode.js:72
+#: static_root/geonode/js/extjs/GeoNode.js:72
+msgid "Only users who can edit"
+msgstr "திருத்தம் செய்ய முடிகின்ற பயன்படுத்துனர் மட்டும்  "
+
+#: static/geonode/js/extjs/GeoNode.js:72
+#: static_root/geonode/js/extjs/GeoNode.js:72
+msgid "Who can edit this data?"
+msgstr "இத்தரவகளை யார் திருத்தம் செய்ய முடியம்?"
+
+#: static/geonode/js/extjs/GeoNode.js:72
+#: static_root/geonode/js/extjs/GeoNode.js:72
+msgid "Only the following users or groups:"
+msgstr "பின்வரும் பயன்படுத்துனர்கள் அல்லது குழுக்கள்"
+
+#: static/geonode/js/extjs/GeoNode.js:72
+#: static_root/geonode/js/extjs/GeoNode.js:72
+msgid "Who can manage and edit this data?"
+msgstr "இத்தரவகளை யார் திருத்தம் செய்ய மற்றும் முகாமை செய்ய முடியம்?"
+
+#: static/geonode/js/search/search.js:324
+#: static_root/geonode/js/search/search.js:298
+msgid "Enter your text here ..."
+msgstr ""
+
+#: static/geonode/js/search/search.js:350
+msgid "Enter your region here ..."
+msgstr ""
+
+#: static/geonode/js/upload/FileType.js:33
+#: static_root/geonode/js/upload/FileType.js:33
+#, c-format
+msgid "Missing a %s file, which is required"
+msgstr "தேவைப்படும் ஒரு %s மிஸ்ஸிங்"
+
+#: static/geonode/js/upload/FileTypes.js:7
+#: static_root/geonode/js/upload/FileTypes.js:7
+msgid "ESRI Shapefile"
+msgstr "ESRI ஷேப்ஃபைல்"
+
+#: static/geonode/js/upload/FileTypes.js:13
+#: static/geonode/js/upload/FileTypes.js:19
+#: static_root/geonode/js/upload/FileTypes.js:13
+#: static_root/geonode/js/upload/FileTypes.js:19
+msgid "GeoTiff File"
+msgstr "GeoTiff கோப்பு"
+
+#: static/geonode/js/upload/FileTypes.js:26
+#: static_root/geonode/js/upload/FileTypes.js:26
+msgid "Comma Separated File"
+msgstr "கமா பிரிக்கப்பட்ட கோப்பு"
+
+#: static/geonode/js/upload/FileTypes.js:32
+#: static_root/geonode/js/upload/FileTypes.js:32
+msgid "Google Earth KML"
+msgstr "கூகிள் எர்த் செய்"
+
+#: static/geonode/js/upload/FileTypes.js:38
+#: static_root/geonode/js/upload/FileTypes.js:38
+msgid "Zip Archives"
+msgstr "Zip சென்னை"
+
+#: static/geonode/js/upload/LayerInfo.js:231
+#: static_root/geonode/js/upload/LayerInfo.js:231
+msgid "Layer Info"
+msgstr "அடுக்கு தகவல்"
+
+#: static/geonode/js/upload/LayerInfo.js:232
+#: static_root/geonode/js/upload/LayerInfo.js:232
+msgid "Edit Metadata"
+msgstr "நுண்தரவுகளை சரிசெய்க"
+
+#: static/geonode/js/upload/LayerInfo.js:233
+#: static_root/geonode/js/upload/LayerInfo.js:233
+msgid "Manage Styles"
+msgstr "பாங்குகள் நிர்வகிக்கவும்"
+
+#: static/geonode/js/upload/LayerInfo.js:236
+msgid "The column %1 was renamed to %2 <br/>"
+msgstr ""
+
+#: static/geonode/js/upload/LayerInfo.js:242
+#: static_root/geonode/js/upload/LayerInfo.js:235
+msgid "Your layer was successfully uploaded"
+msgstr "உங்கள் அடுக்கு வெற்றிகரமாக பதிவேற்றப்பட்டது"
+
+#: static/geonode/js/upload/LayerInfo.js:271
+#: static_root/geonode/js/upload/LayerInfo.js:264
+msgid "Performing Final GeoServer Config Step"
+msgstr "இறுதி ஜியோ கட்டமைப்பு படி அரங்கேற்றக்"
+
+#: static/geonode/js/upload/LayerInfo.js:286
+#: static/geonode/js/upload/LayerInfo.js:312
+#: static_root/geonode/js/upload/LayerInfo.js:279
+#: static_root/geonode/js/upload/LayerInfo.js:305
+msgid "You need to specify more information in order to complete your upload"
+msgstr "உங்கள் பதிவேற்ற முடிக்க பொருட்டு மேலும் தகவலுக்கு குறிப்பிட வேண்டும்"
+
+#: static/geonode/js/upload/LayerInfo.js:304
+#: static_root/geonode/js/upload/LayerInfo.js:297
+msgid "You need to specify more information in order to complete your upload."
+msgstr "உங்கள் பதிவேற்ற முடிக்க பொருட்டு மேலும் தகவலுக்கு குறிப்பிட வேண்டும்."
+
+#: static/geonode/js/upload/LayerInfo.js:304
+#: static_root/geonode/js/upload/LayerInfo.js:297
+msgid "You can continue configuring your layer."
+msgstr "நீங்கள் உங்கள் அடுக்கு கட்டமைக்கும் தொடரலாம்."
+
+#: static/geonode/js/upload/LayerInfo.js:322
+#: static/geonode/js/upload/LayerInfo.js:407
+#: static_root/geonode/js/upload/LayerInfo.js:315
+#: static_root/geonode/js/upload/LayerInfo.js:400
+msgid "Unexpected Error"
+msgstr "எதிர்பாராத பிழை"
+
+#: static/geonode/js/upload/LayerInfo.js:338
+#: static_root/geonode/js/upload/LayerInfo.js:331
+msgid "Performing GeoServer Config Step"
+msgstr "செயற்பாட்டு ஜியோ அமைப்பு படி"
+
+#: static/geonode/js/upload/LayerInfo.js:414
+#: static_root/geonode/js/upload/LayerInfo.js:407
+msgid "Layer files uploaded, configuring in GeoServer"
+msgstr "அடுக்கு கோப்புகளை, பதிவேற்றிய ஜியோ கட்டமைத்தல்"
+
+#: static/geonode/js/upload/LayerInfo.js:429
+#: static_root/geonode/js/upload/LayerInfo.js:422
+msgid "Select or create a Geogig repository."
+msgstr ""
+
+#: static/geonode/js/upload/LayerInfo.js:524
+#: static_root/admin/js/SelectFilter2.js:69
+#: static_root/geonode/js/upload/LayerInfo.js:517
+msgid "Remove"
+msgstr "அகற்று"
+
+#: static/geonode/js/upload/upload.js:125
+#: static_root/geonode/js/upload/upload.js:125
+#, c-format
+msgid "The file %s is an unsupported file type, please select another file."
+msgstr ""
+"கோப்பு %s ள் ஆதரிக்கப்படாத கோப்பு வகை, மற்றொரு கோப்பைத் தேர்ந்தெடுத்து ஆகிறது."
+
+#: static/geonode/js/upload/upload.js:260
+#: static_root/geonode/js/upload/upload.js:260
+msgid "You are uploading an incomplete set of files."
+msgstr "நீங்கள் கோப்புகளை ஒரு முழுமையடையாத அமைப்பு பதிவேற்றப்படுகின்றன."
+
+#: static_root/admin/js/SelectFilter2.js:45
+#, c-format
+msgid "Available %s"
+msgstr ""
+
+#: static_root/admin/js/SelectFilter2.js:46
+#, c-format
+msgid ""
+"This is the list of available %s. You may choose some by selecting them in "
+"the box below and then clicking the \"Choose\" arrow between the two boxes."
+msgstr ""
+
+#: static_root/admin/js/SelectFilter2.js:53
+#, c-format
+msgid "Type into this box to filter down the list of available %s."
+msgstr ""
+
+#: static_root/admin/js/SelectFilter2.js:57
+msgid "Filter"
+msgstr ""
+
+#: static_root/admin/js/SelectFilter2.js:61
+msgid "Choose all"
+msgstr ""
+
+#: static_root/admin/js/SelectFilter2.js:61
+#, c-format
+msgid "Click to choose all %s at once."
+msgstr ""
+
+#: static_root/admin/js/SelectFilter2.js:67
+msgid "Choose"
+msgstr ""
+
+#: static_root/admin/js/SelectFilter2.js:75
+#, c-format
+msgid "Chosen %s"
+msgstr ""
+
+#: static_root/admin/js/SelectFilter2.js:76
+#, c-format
+msgid ""
+"This is the list of chosen %s. You may remove some by selecting them in the "
+"box below and then clicking the \"Remove\" arrow between the two boxes."
+msgstr ""
+
+#: static_root/admin/js/SelectFilter2.js:80
+msgid "Remove all"
+msgstr ""
+
+#: static_root/admin/js/SelectFilter2.js:80
+#, c-format
+msgid "Click to remove all chosen %s at once."
+msgstr ""
+
+#: static_root/admin/js/actions.js:18 static_root/admin/js/actions.min.js:1
+msgid "%(sel)s of %(cnt)s selected"
+msgid_plural "%(sel)s of %(cnt)s selected"
+msgstr[0] ""
+msgstr[1] ""
+
+#: static_root/admin/js/actions.js:109 static_root/admin/js/actions.min.js:5
+msgid ""
+"You have unsaved changes on individual editable fields. If you run an "
+"action, your unsaved changes will be lost."
+msgstr ""
+
+#: static_root/admin/js/actions.js:121 static_root/admin/js/actions.min.js:5
+msgid ""
+"You have selected an action, but you haven't saved your changes to "
+"individual fields yet. Please click OK to save. You'll need to re-run the "
+"action."
+msgstr ""
+
+#: static_root/admin/js/actions.js:123 static_root/admin/js/actions.min.js:6
+msgid ""
+"You have selected an action, and you haven't made any changes on individual "
+"fields. You're probably looking for the Go button rather than the Save "
+"button."
+msgstr ""
+
+#: static_root/admin/js/calendar.js:8
+msgid ""
+"January February March April May June July August September October November "
+"December"
+msgstr ""
+
+#: static_root/admin/js/calendar.js:9
+msgid "S M T W T F S"
+msgstr ""
+
+#: static_root/admin/js/collapse.js:8 static_root/admin/js/collapse.js.c:19
+#: static_root/admin/js/collapse.min.js:1
+msgid "Show"
+msgstr ""
+
+#: static_root/admin/js/collapse.js:16 static_root/admin/js/collapse.min.js:1
+msgid "Hide"
+msgstr ""
+
+#: static_root/admin/js/admin/DateTimeShortcuts.js:52
+#: static_root/admin/js/admin/DateTimeShortcuts.js:88
+msgid "Now"
+msgstr ""
+
+#: static_root/admin/js/admin/DateTimeShortcuts.js:56
+msgid "Clock"
+msgstr ""
+
+#: static_root/admin/js/admin/DateTimeShortcuts.js:84
+msgid "Choose a time"
+msgstr ""
+
+#: static_root/admin/js/admin/DateTimeShortcuts.js:89
+msgid "Midnight"
+msgstr ""
+
+#: static_root/admin/js/admin/DateTimeShortcuts.js:90
+msgid "6 a.m."
+msgstr ""
+
+#: static_root/admin/js/admin/DateTimeShortcuts.js:91
+msgid "Noon"
+msgstr ""
+
+#: static_root/admin/js/admin/DateTimeShortcuts.js:95
+#: static_root/admin/js/admin/DateTimeShortcuts.js:208 templates/lang.js:9
+#: templates/lang.js.c:236
+msgid "Cancel"
+msgstr "நீக்கு "
+
+#: static_root/admin/js/admin/DateTimeShortcuts.js:148
+#: static_root/admin/js/admin/DateTimeShortcuts.js:201
+msgid "Today"
+msgstr ""
+
+#: static_root/admin/js/admin/DateTimeShortcuts.js:152
+msgid "Calendar"
+msgstr ""
+
+#: static_root/admin/js/admin/DateTimeShortcuts.js:199
+msgid "Yesterday"
+msgstr ""
+
+#: static_root/admin/js/admin/DateTimeShortcuts.js:203
+msgid "Tomorrow"
+msgstr ""
+
+#: templates/lang.js:10
+msgid "Save as Copy"
+msgstr "நகலாக சேமி"
+
+#: templates/lang.js:11
+msgid "About this Map"
+msgstr "இந்த வரைபடம் பற்றி"
+
+#: templates/lang.js:12 templates/lang.js.c:96 templates/lang.js.c:165
+msgid "Abstract"
+msgstr "சுருக்கம்"
+
+#: templates/lang.js:13
+msgid "Save"
+msgstr "சேமி"
+
+#: templates/lang.js:14 templates/lang.js.c:100 templates/lang.js.c:109
+#: templates/lang.js:162 templates/lang.js.c:184 templates/lang.js.c:219
+msgid "Title"
+msgstr "தலைப்பு "
+
+#: templates/lang.js:20
+msgid "Connection Error"
+msgstr "இணைப்பு பிழை"
+
+#: templates/lang.js:21
+msgid "The server returned an error"
+msgstr "சேவையகம் ஒரு பிழையை"
+
+#: templates/lang.js:22
+msgid "Details..."
+msgstr "விவரங்கள் ..."
+
+#: templates/lang.js:28 templates/lang.js.c:31
+msgid "Add Layers"
+msgstr "அடுக்குகள் சேர்"
+
+#: templates/lang.js:29
+msgid "Area"
+msgstr "பகுதி"
+
+#: templates/lang.js:30
+msgid "Background"
+msgstr "பின்னணி"
+
+#: templates/lang.js:32
+msgid "Done"
+msgstr "முடிந்தது"
+
+#: templates/lang.js:33
+msgid "Available Layers"
+msgstr "கிடைக்கும் அடுக்குகள்"
+
+#: templates/lang.js:35 templates/lang.js.c:121
+msgid "Height"
+msgstr "உயரம்"
+
+#: templates/lang.js:36
+msgid "Get Feature Info"
+msgstr "தகவல் வசதியை பெற"
+
+#: templates/lang.js:37 templates/lang.js.c:122
+msgid "Large"
+msgstr "பெரிய"
+
+#: templates/lang.js:38
+msgid "or add a new server."
+msgstr "அல்லது ஒரு புதிய சர்வர் சேர்க்க."
+
+#: templates/lang.js:39
+msgid "Map Layers"
+msgstr "வரைபட படுகைகள் "
+
+#: templates/lang.js:40
+msgid "View available data from:"
+msgstr "காண்க தரவிலிருந்து:"
+
+#: templates/lang.js:41
+msgid "Data"
+msgstr "டேட்டா"
+
+#: templates/lang.js:42
+msgid "Layers"
+msgstr "படுகை  "
+
+#: templates/lang.js:43
+msgid "Legend"
+msgstr "விளக்கம்"
+
+#: templates/lang.js:44
+msgid "Length"
+msgstr "நீளம்"
+
+#: templates/lang.js:45
+msgid "Loading Map..."
+msgstr "ஏற்றுகிறது வரைபடம் ..."
+
+#: templates/lang.js:46 templates/lang.js.c:123
+msgid "Map Size"
+msgstr "வரைபடத்தின் அளவு"
+
+#: templates/lang.js:47
+msgid "Measure"
+msgstr "நடவடிக்கை"
+
+#: templates/lang.js:48 templates/lang.js.c:97 templates/lang.js.c:163
+msgid "Contact"
+msgstr "தொடர்பு"
+
+#: templates/lang.js:49 templates/lang.js.c:55
+msgid "Permalink"
+msgstr "அதன்"
+
+#: templates/lang.js:50 templates/lang.js.c:124
+msgid "Mini"
+msgstr "மினி"
+
+#: templates/lang.js:51
+msgid "Pan Map"
+msgstr "பான் வரைபடம்"
+
+#: templates/lang.js:52
+msgid "Zoom to Next Extent"
+msgstr "அடுத்த விஸ்தீரணம் பெரிதாக்கவும்"
+
+#: templates/lang.js:53
+msgid "Zoom to Previous Extent"
+msgstr "முந்தைய விஸ்தீரணம் பெரிதாக்கவும்"
+
+#: templates/lang.js:54
+msgid "This map has not yet been saved."
+msgstr "இந்த வரைபடத்தை இன்னும் சேமிக்கப்படும்."
+
+#: templates/lang.js:56 templates/lang.js.c:125
+msgid "Premium"
+msgstr "பிரீமியம்"
+
+#: templates/lang.js:57
+msgid "Print Map"
+msgstr "அச்சு வரைபடம்"
+
+#: templates/lang.js:58
+msgid "Print Preview"
+msgstr "அச்சு முன்னோட்டம்"
+
+#: templates/lang.js:59
+msgid "Properties"
+msgstr "பண்புகள்"
+
+#: templates/lang.js:60 templates/lang.js.c:126
+msgid "Publish Map"
+msgstr "வரைபடம் வெளியிடு"
+
+#: templates/lang.js:61 templates/lang.js.c:62
+msgid "Remove Layer"
+msgstr "அடுக்கு நீக்க"
+
+#: templates/lang.js:63
+msgid "Sorry, your map could not be saved."
+msgstr "மன்னிக்கவும், உங்கள் வரைபடத்தை சேமிக்க முடியவில்லை."
+
+#: templates/lang.js:64
+msgid "Error While Saving"
+msgstr "பிழை போது சேமிப்பு"
+
+#: templates/lang.js:65
+msgid "Save Map"
+msgstr "சேமி வரைபடம்"
+
+#: templates/lang.js:66
+msgid "You must be logged in to save this map."
+msgstr "இந்த வரைபடம் காப்பாற்ற வெளியேற்ற வேண்டும்."
+
+#: templates/lang.js:67 templates/lang.js.c:128
+msgid "Small"
+msgstr "சிறிய"
+
+#: templates/lang.js:68
+msgid ""
+"Error contacting server.\n"
+" Please check the url and try again."
+msgstr "சர்வர் தொடர்பு பிழை. URL ஐ சரிபார்க்க மற்றும் மீண்டும் முயற்சிக்கவும்."
+
+#: templates/lang.js:69
+msgid "Layer Properties"
+msgstr "அடுக்கு குணங்கள்"
+
+#: templates/lang.js:70
+msgid "Change layer format and style"
+msgstr "மாற்றம் அடுக்கு வடிவமைப்பு மற்றும் பாணி"
+
+#: templates/lang.js:71
+msgid "Edit Styles"
+msgstr "வடிவத்தை சரிசெய்க "
+
+#: templates/lang.js:72
+msgid "Edit layer styles"
+msgstr "திருத்த அடுக்கு பாணிகள்"
+
+#: templates/lang.js:73
+msgid "Switch to Google Earth 3D Viewer"
+msgstr "கூகிள் எர்த் 3D பார்வையாளர் மாற"
+
+#: templates/lang.js:74
+msgid ""
+"The map that you are trying to load does not exist.  Creating a new map "
+"instead."
+msgstr ""
+"நீங்கள் இல்லை ஏற்ற முயற்சி என்று வரைபடம். அதற்கு பதிலாக ஒரு புதிய வரைபடத்தை உருவாக்குதல்."
+
+#: templates/lang.js:75
+msgid "Unknown Map"
+msgstr "தெரியாத வரைபடம்"
+
+#: templates/lang.js:76 templates/lang.js.c:129
+msgid "Width"
+msgstr "அகலம்"
+
+#: templates/lang.js:77
+msgid "Zoom In"
+msgstr "பெரிதாக்கு"
+
+#: templates/lang.js:78
+msgid "Zoom Out"
+msgstr "சிறிதாக்கு"
+
+#: templates/lang.js:79
+msgid "Zoom level"
+msgstr "ஜூம் நிலை"
+
+#: templates/lang.js:80
+msgid "Zoom Level"
+msgstr "பெரிதாக்கு நிலை"
+
+#: templates/lang.js:81
+msgid "Zoom to Layer Extent"
+msgstr "விஸ்தீரணம் அடுக்கு பெரிதாக்கவும்"
+
+#: templates/lang.js:82
+msgid "Zoom to Visible Extent"
+msgstr "தெரியும் விஸ்தீரணம் பெரிதாக்கவும்"
+
+#: templates/lang.js:88
+msgid "Zoom Level {zoom}"
+msgstr "ஜூம் நிலை {ஜூம்}"
+
+#: templates/lang.js:94
+msgid "Create Map"
+msgstr "வரைபடம் உருவாக்குவது"
+
+#: templates/lang.js:95
+msgid "Export Map"
+msgstr "ஏற்றுமதி வரைபடம்"
+
+#: templates/lang.js:98
+msgid "Map"
+msgstr "வரைபடம்"
+
+#: templates/lang.js:99 templates/lang.js.c:166
+msgid "View this Map"
+msgstr "இந்த வரைபடம் காண்க"
+
+#: templates/lang.js:101
+msgid "Open Map"
+msgstr "திறந்த வரைபடம்"
+
+#: templates/lang.js:107 templates/lang.js.c:183
+msgid "Name"
+msgstr "பெயர்"
+
+#: templates/lang.js:108
+msgid "Queryable"
+msgstr "Queryable"
+
+#: templates/lang.js:115
+msgid "No background"
+msgstr "இல்லை பின்னணி"
+
+#: templates/lang.js:127
+msgid ""
+"Your map is ready to be published to the web!  Simply copy the following "
+"HTML to embed the map in your website:"
+msgstr ""
+"உங்கள் வரைபடத்தை வலையில் வெளியிடப்படலாம் தயாராக உள்ளது! வெறுமனே உங்கள் இணையதளத்தில் "
+"வரைபடம் பதித்துள்ளது பின்வரும் HTML நகலெடுக்க:"
+
+#: templates/lang.js:136 templates/lang.js.c:202
+msgid "Abstract:"
+msgstr "சுருக்கம்:"
+
+#: templates/lang.js:137 templates/lang.js.c:204
+msgid "No attribution information is provided for this layer."
+msgstr "இல்லை பண்பு தகவலுக்கு இந்த அடுக்கு வழங்கப்படும்."
+
+#: templates/lang.js:138 templates/lang.js.c:205
+msgid "Provided by:"
+msgstr "வழங்கியவர்:"
+
+#: templates/lang.js:139 templates/lang.js.c:206
+msgid "Download:"
+msgstr "பதிவிறக்க:"
+
+#: templates/lang.js:140 templates/lang.js.c:208
+msgid "No keywords are listed for this layer."
+msgstr "முக்கிய வார்த்தைகள் இல்லை இந்த அடுக்கு பட்டியலிடப்பட்டுள்ளது."
+
+#: templates/lang.js:141 templates/lang.js.c:209
+msgid "Keywords:"
+msgstr "முக்கிய வார்த்தைகள்:"
+
+#: templates/lang.js:142 templates/lang.js.c:210
+msgid "No metadata URLs are defined for this layer."
+msgstr "இல்லை மெட்டாடேட்டா களை இந்த அடுக்கு வரையறுக்கப்படுகிறது."
+
+#: templates/lang.js:143 templates/lang.js.c:211
+msgid "Metadata Links:"
+msgstr "ளன இணைப்புகள்:"
+
+#: templates/lang.js:149
+msgid "Paper size:"
+msgstr "காகித அளவு:"
+
+#: templates/lang.js:150
+msgid "Resolution:"
+msgstr "தீர்மானம்:"
+
+#: templates/lang.js:151
+msgid "Print"
+msgstr "அச்சு"
+
+#: templates/lang.js:152
+msgid "Enter map title here."
+msgstr "இங்கே வரைபடத்தின் தலைப்பை உள்ளிடவும்."
+
+#: templates/lang.js:153
+msgid "Include legend?"
+msgstr "புராண சேர்க்கவும்?"
+
+#: templates/lang.js:154
+msgid "Enter comments here."
+msgstr "இங்கே கருத்துக்கள் உள்ளிடவும்."
+
+#: templates/lang.js:155
+msgid "Creating PDF..."
+msgstr "PDF உருவாக்கி ..."
+
+#: templates/lang.js:164
+msgid "Last Modified"
+msgstr "கடைசியாக மாற்றப்பட்டது"
+
+#: templates/lang.js:167 templates/lang.js.c:188
+msgid "Prev"
+msgstr "முன்"
+
+#: templates/lang.js:168 templates/lang.js.c:189
+msgid "Next"
+msgstr "அடுத்தது "
+
+#: templates/lang.js:169 templates/lang.js.c:190
+msgid "of"
+msgstr "என்ற"
+
+#: templates/lang.js:170 templates/lang.js.c:191
+msgid "Your search did not match any items."
+msgstr "உங்கள் தேடல் எந்த உருப்படிகள் பொருந்த."
+
+#: templates/lang.js:171
+msgid "Search Maps"
+msgstr "தேடல் வரைப்படங்கள்"
+
+#: templates/lang.js:172 templates/lang.js.c:192
+msgid "Search"
+msgstr "தேடுக "
+
+#: templates/lang.js:173 templates/lang.js.c:193
+msgid "Showing"
+msgstr "காட்டும்"
+
+#: templates/lang.js:174
+msgid "Loading"
+msgstr "ஏற்றுகிறது"
+
+#: templates/lang.js:175 templates/lang.js.c:195
+msgid "permalink"
+msgstr "பெர்மாலின்க்"
+
+#: templates/lang.js:182
+msgid "Select"
+msgstr "வாய்ப்புகள்"
+
+#: templates/lang.js:185
+msgid "Select:"
+msgstr "தேர்வு:"
+
+#: templates/lang.js:186
+msgid "All"
+msgstr "அனைத்து"
+
+#: templates/lang.js:187
+msgid "None"
+msgstr "எதுவும்"
+
+#: templates/lang.js:194
+msgid "Loading..."
+msgstr "ஏற்றுகிறது ..."
+
+#: templates/lang.js:196
+msgid "You do not have permission to view this data"
+msgstr "நீங்கள் இந்த தரவு பார்க்க அனுமதி இல்லை"
+
+#: templates/lang.js:197
+msgid "This data is stored on a remote server"
+msgstr "இந்த தரவு ஒரு தொலை சர்வரில் சேமிக்கப்படும்"
+
+#: templates/lang.js:203
+msgid "No abstract is provided for this layer."
+msgstr "இல்லை சுருக்க இந்த அடுக்கு வழங்கப்படும்."
+
+#: templates/lang.js:207
+msgid "No download URLs are definied for this layer."
+msgstr "இல்லை பதிவிறக்க URL இந்த அடுக்கு definied."
+
+#: templates/lang.js:217
+msgid "Selected Layers"
+msgstr "தேர்ந்தெடுக்கப்பட்ட அடுக்குகள்"
+
+#: templates/lang.js:218
+msgid "No Layers Selected"
+msgstr "லேயர்கள் எதுவும் தேர்ந்தெடுக்கப்படவில்லை"
+
+#: templates/lang.js:220
+msgid "Clear Selected"
+msgstr "தேர்ந்தெடுத்ததை"
+
+#: templates/lang.js:221
+msgid "Clear All"
+msgstr "அழி"
+
+#: templates/lang.js:227
+msgid "Operation Failed"
+msgstr "செயல்பாடு தோல்வி"
+
+#: templates/lang.js:228
+msgid "No layers are currently selected."
+msgstr "லேயர்கள் தற்போது தேர்வு."
+
+#: templates/lang.js:235
+msgid "Downloading..."
+msgstr "பதிவிறக்குகிறது ..."
+
+#: templates/lang.js:237
+msgid "Please wait"
+msgstr "தயவு செய்து, காத்திருக்க"
+
+#~ msgid "No error message supplied"
+#~ msgstr "No error message supplied"

@@ -15,7 +15,6 @@
 {% block body %}
 
 <div class="col-md-8">
-
   <form id="upload_form"  method="post" enctype="multipart/form-data" action="{% url "document_upload" %}">
     <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}" />
     {{ form|as_bootstrap }}
@@ -43,7 +42,7 @@
 <script type="text/javascript">
     $('#id_doc_file').on('change', function(){
         if($('#id_title').val() == ''){
-            $('#id_title').val($('#id_doc_file').val());
+            $('#id_title').val($('#id_doc_file').val().replace("C:\\fakepath\\", ""));
         }
     });
     $("#resource").select2({
@@ -51,23 +50,23 @@
         placeholder: 'Select layer, map or empty',
         width: 'element',
         ajax: {
+          traditional: true,
           url: '{% url 'api_dispatch_list' api_name='api' resource_name='base' %}',
           data: function(term,page){
             return {
-              type: 'layer,map',
-              q: term.replace(/[`~!@#$%^&*()_|+\-=?;:'",.<>\{\}\[\]\\\/]/gi, '')
+              type__in: ['layer','map'],
+              title__contains: term.replace(/[`~!@#$%^&*()_|+\-=?;:'",.<>\{\}\[\]\\\/]/gi, '')
             }
           },
           results: function(data) {
             return {
-              results: $.map(data.results,function(object){
-                return {id: object.id, text: object.title, type: object._type};
+              results: $.map(data.objects,function(object){
+                return {id: object.id, text: object.title};
               })
             }
           }          
         }
       });
-    $('#resource').on('change',function(e){$('#resource_type').val($('#resource').select2('data').type)});
     $('#upload_form').submit(function(){
       $('#permissions').val(JSON.stringify(permissionsString($('#permission_form'),'base')));
     });

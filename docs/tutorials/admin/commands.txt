@@ -26,10 +26,21 @@ Additional options::
 
  --user=USER           Name of the user account which should own the imported
                         layers
+ -k
  --keywords=KEYWORDS   The default keywords for the imported layer(s). Will
                         be the same for all imported layers if multiple
                         imports are done in one command
-
+ -c
+ --category=CATEGORY   The default keywords for the imported layer(s). Will
+                        be the same for all imported layers if multiple
+                        imports are done in one command
+ -t
+ --title=TITLE         The default keywords for the imported layer(s). Will
+                        be the same for all imported layers if multiple
+                        imports are done in one command
+ -p
+ --private             Will restrict view permissions for the layer(s)
+                        to the user specified by the --user option.
 
 updatelayers
 ============
@@ -47,6 +58,10 @@ Additional options::
   --ignore-errors       Do not stop if errors are encountered.
   
   --skip-unadvertised   Skip processing any layers that are marked 'advertised=False' in GeoServer
+  
+  --skip-geonode-registered   Just processing GeoServer layers still not registered in GeoNode.
+                        Useful if you are importing layers through GeoServer and not through GeoNode
+                        and you don't want to run updatelayers on every GeoServer layer but just on the new ones.
   
   --remove-deleted      Remove layers from GeoNode that have been deleted (or marked unavailable) from GeoServer.  
                          Note: this option can be combined with --workspace and --store to only check

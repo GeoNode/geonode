@@ -2,7 +2,7 @@
 Reference documentation
 =======================
 
-Here you will find information about each and every component of Geonode, for example geoserver, geonode settings, security, etc.
+In this section, you will find information about each and every component of Geonode, for example geoserver, geonode settings, security, etc.
 
 :ref:`architecture`
 
@@ -20,6 +20,8 @@ Here you will find information about each and every component of Geonode, for ex
 
 :ref:`settings`
 
+:ref:`browsers`
+
 .. toctree::
     :hidden:
     :maxdepth: 3
@@ -30,6 +32,7 @@ Here you will find information about each and every component of Geonode, for ex
     api
     localization
     settings
+    browsers
     developers/index
     developers/django-apps
     developers/javascript

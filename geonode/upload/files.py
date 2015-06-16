@@ -25,7 +25,6 @@ scattered over the codebase
 import os.path
 from geoserver.resource import FeatureType
 from geoserver.resource import Coverage
-from tempfile import mkstemp
 
 from UserList import UserList
 import zipfile
@@ -72,13 +71,19 @@ class SpatialFile(object):
         return [self.base_file] + self.auxillary_files
 
     def __repr__(self):
-        return "<SpatialFile base_file=%s file_type=%s aux=%s sld=%s xml=%s>" % \
-               (self.base_file, self.file_type, self.auxillary_files, self.sld_files, self.xml_files)
+        return "<SpatialFile base_file=%s file_type=%s aux=%s sld=%s xml=%s>" % (
+            self.base_file, self.file_type, self.auxillary_files, self.sld_files, self.xml_files)
 
 
 class FileType(object):
 
-    def __init__(self, name, code, layer_type, aliases=None, auxillary_file_exts=None):
+    def __init__(
+            self,
+            name,
+            code,
+            layer_type,
+            aliases=None,
+            auxillary_file_exts=None):
         self.name = name
         self.code = code
         self.layer_type = layer_type
@@ -100,9 +105,11 @@ class FileType(object):
 
     def find_auxillary_files(self, base, others):
         base_name = os.path.splitext(base)[0]
-        base_matches = [ f for f in others if os.path.splitext(f)[0] == base_name ]
+        base_matches = [
+            f for f in others if os.path.splitext(f)[0] == base_name]
         slds = _find_file_type(base_matches, extension='.sld')
-        aux_files = [ f for f in others if os.path.splitext(f)[1][1:].lower() in self.auxillary_file_exts ]
+        aux_files = [f for f in others if os.path.splitext(f)[1][1:].lower()
+                     in self.auxillary_file_exts]
         xmls = _find_file_type(base_matches, extension='.xml')
         return aux_files, slds, xmls
 
@@ -113,22 +120,29 @@ class FileType(object):
 TYPE_UNKNOWN = FileType("unknown", None, None)
 
 types = [
-    FileType("Shapefile", "shp", vector, auxillary_file_exts=('dbf', 'shx', 'prj')),
-    FileType("GeoTIFF", "tif", raster, aliases=('tiff', 'geotif', 'geotiff')),
-    FileType("PNG", "png", raster, auxillary_file_exts=('prj',)),
-    FileType("JPG", "jpg", raster, auxillary_file_exts=('prj',)),
+    FileType("Shapefile", "shp", vector,
+             auxillary_file_exts=('dbf', 'shx', 'prj')),
+    FileType("GeoTIFF", "tif", raster,
+             aliases=('tiff', 'geotif', 'geotiff')),
+    FileType("PNG", "png", raster,
+             auxillary_file_exts=('prj',)),
+    FileType("JPG", "jpg", raster,
+             auxillary_file_exts=('prj',)),
     FileType("CSV", "csv", vector),
-    FileType("KML", "kml", vector, aliases=('kmz',)),
+    FileType("KML", "kml", vector,
+             aliases=('kmz',)),
 ]
 
 
 def _contains_bad_names(file_names):
     '''return True if the list of names contains a bad one'''
-    xml_unsafe = re.compile(r"(^[^a-zA-Z\._]+)|([^a-zA-Z\._0-9]+)")
     return any([xml_unsafe.search(f) for f in file_names])
 
 
-def _clean_string(str, regex=r"(^[^a-zA-Z\._]+)|([^a-zA-Z\._0-9]+)", replace="_"):
+def _clean_string(
+        str,
+        regex=r"(^[^a-zA-Z\._]+)|([^a-zA-Z\._0-9]+)",
+        replace="_"):
     """
     Replaces a string that matches the regex with the replacement.
     """
@@ -154,24 +168,6 @@ def _rename_files(file_names):
     return files
 
 
-def _rename_zip(old_name, valid_name):
-    """Rename files inside zip """
-    handle, tempfile = mkstemp()
-    old_zip = zipfile.ZipFile(old_name, 'r')
-    new_zip = zipfile.ZipFile(open(tempfile, "wb"), "w")
-
-    files_zip = old_zip.namelist()
-    files = ['.shp', '.prj', '.shx', '.dbf', '.sld']
-    for file in files_zip:
-        name, ext = os.path.splitext(file)
-        if ext.lower() in files:
-            files.remove(ext) #OS X creates hidden subdirectory with garbage files having same extensions; ignore.
-            new_zip.writestr(valid_name + ext, old_zip.read(file))
-    old_zip.close()
-    new_zip.close()
-    os.rename(tempfile, old_name)
-
-
 def _find_file_type(file_names, extension):
     """
     Returns files that end with the given extension from a list of file names.
@@ -184,7 +180,6 @@ def scan_file(file_name):
 
     dirname = os.path.dirname(file_name)
     files = None
-    is_compressed = False
 
     archive = None
 
@@ -208,7 +203,8 @@ def scan_file(file_name):
         zf.close()
 
     def dir_files():
-        abs = lambda *p: os.path.abspath(os.path.join(*p))
+        def abs(*p):
+            return os.path.abspath(os.path.join(*p))
         return [abs(dirname, f) for f in os.listdir(dirname)]
 
     if files is None:

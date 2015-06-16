@@ -1,12 +1,11 @@
-from django.conf import settings
-
 from haystack import indexes
-from geonode.maps.models import  Map
+from geonode.maps.models import Map
+
 
 class MapIndex(indexes.SearchIndex, indexes.Indexable):
     text = indexes.CharField(document=True, use_template=True)
     title = indexes.CharField(model_attr="title", boost=2)
-    #https://github.com/toastdriven/django-haystack/issues/569 - Necessary for sorting
+    # https://github.com/toastdriven/django-haystack/issues/569 - Necessary for sorting
     title_sortable = indexes.CharField(model_attr="title", indexed=False)
     oid = indexes.IntegerField(model_attr='id')
     type = indexes.CharField(faceted=True)
@@ -14,7 +13,7 @@ class MapIndex(indexes.SearchIndex, indexes.Indexable):
     bbox_right = indexes.FloatField(model_attr="bbox_x1", null=True)
     bbox_top = indexes.FloatField(model_attr="bbox_y0", null=True)
     bbox_bottom = indexes.FloatField(model_attr="bbox_y1", null=True)
-    abstract = indexes.CharField(model_attr='abstract',boost=1.5)
+    abstract = indexes.CharField(model_attr='abstract', boost=1.5)
     owner = indexes.CharField(model_attr="owner", faceted=True, null=True)
     modified = indexes.DateTimeField(model_attr="last_modified")
     detail_url = indexes.CharField(model_attr="get_absolute_url")

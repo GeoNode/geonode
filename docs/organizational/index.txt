@@ -10,19 +10,19 @@ This is information on existing projects, contributing to GeoNode (code, documen
 
 :ref:`roadmap` - How GeoNode can move ahead into the future.
 
-:ref:`community_resources` - Lots of links, think of it like your personal GeoNode bookmarks
+:ref:`community_resources` - Lots of links, think of it like your personal GeoNode bookmarks.
 
-:ref:`comm_bylaws` - Some rules to keeps us stronger
+:ref:`comm_bylaws` - Some rules to keeps us stronger.
 
-`GeoNode Projects`_ - Who else is doing cool stuff with GeoNode
+`GeoNode Projects`_ - Who else is doing cool stuff with GeoNode.
 
-GNIPS_  GeoNode Improvement Proposals
+GNIPS_  GeoNode Improvement Proposals.
 
 
 Contributing
 ============
 
-Helping out the GeoNode project is great and by contributing we all benefit and here is how.
+Helping out the GeoNode project is great and by contributing we all benefit and here is how:
 
 :ref:`contrib`  is the best way to help out and here we show you how.
 

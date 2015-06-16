@@ -3,8 +3,8 @@
 {% load bootstrap_tags %}
 
 {% block body %}
-    <a href="{% url "profile_edit" user.username %}">{% trans "Back to edit your profile information" %}</a>
-    <p>{% trans "Your current avatar: " %}</p>
+    <h4 class="page-header"><a href="{% url "profile_edit" user.username %}">{% trans "Back to edit your profile information" %}</a></h4>
+    <h5>{% trans "Your current avatar: " %}</h5>
     {% avatar user %}
     {% if not avatars %}
         <p>{% trans "You haven't uploaded an avatar yet. Please upload one now." %}</p>
@@ -20,5 +20,5 @@
         {{ upload_avatar_form.as_p }}
         <p>{% csrf_token %}<input type="submit" class="btn btn-primary" value="{% trans "Upload New Image" %}" /></p>
     </form>
-    <a href="{% url 'avatar_delete' %}">{% trans "Delete your avatars" %}</a>
+    <a class="btn btn-primary btn-danger" href="{% url 'avatar_delete' %}">{% trans "Delete Your Avatar" %}</a>
 {% endblock %}

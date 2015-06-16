@@ -1,7 +1,7 @@
 {% include "geonode/ext_header.html" %}
 {% include "geonode/app_header.html" %}
 {% include "geonode/geo_header.html" %}
-
+<script type="text/javascript" src="{{ STATIC_URL}}geonode/js/utils/thumbnail.js"></script>
 <script type="text/javascript">
 {% autoescape off %}
         var app;
@@ -38,8 +38,32 @@
 
                 listeners: {
                     "ready": function() {
-                        map = app.mapPanel.map;
-                        map.zoomToExtent(map.layers.slice(-1)[0].maxExtent);
+                        var map = app.mapPanel.map;
+                        var layer = app.map.layers.slice(-1)[0];
+
+                        // FIXME(Ariel): Zoom to extent until #1795 is fixed.
+                        //map.zoomToExtent(layer.maxExtent, false)
+                        
+                        var bbox = layer.bbox;
+                        if (bbox != undefined)
+                        {
+                           if (!Array.isArray(bbox) && Object.keys(layer.srs) in bbox) {
+                            bbox = bbox[Object.keys(layer.srs)].bbox;
+                           }
+
+                           var extent = OpenLayers.Bounds.fromArray(bbox);
+                           var zoomToData = function()
+                           {
+                               map.zoomToExtent(extent, false);
+                               app.mapPanel.center = map.center;
+                               app.mapPanel.zoom = map.zoom;
+                               map.events.unregister('changebaselayer', null, zoomToData);
+                           };
+                           map.events.register('changebaselayer',null,zoomToData);
+                           if(map.baseLayer){
+                            map.zoomToExtent(extent, false);
+                           }
+                        }
                     },
                     "beforeunload": function() {
                         if (modified) {
@@ -76,7 +100,11 @@
                     };
                 }
             });
-
+            Ext.Ajax.on('requestcomplete', function(req, cippa, opts){
+                if(opts.method == 'PUT'){
+                    $('#legend_icon').attr('src', $('#legend_icon').attr('src')+'&'+Math.random());
+                }   
+            }, this);
         });
     
     {% endautoescape %}

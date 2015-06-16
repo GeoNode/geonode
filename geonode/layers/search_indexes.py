@@ -37,6 +37,10 @@ class LayerIndex(indexes.SearchIndex, indexes.Indexable):
         model_attr="keyword_slug_list",
         null=True,
         faceted=True)
+    regions = indexes.MultiValueField(
+        model_attr="region_slug_list",
+        null=True,
+        faceted=True)
     popular_count = indexes.IntegerField(
         model_attr="popular_count",
         default=0,

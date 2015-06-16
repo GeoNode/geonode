@@ -8,7 +8,7 @@ Firebug of Chromium Developer toolbar, you may do the following:
 
 Install Boundless Suite::
 
-    $ git clone git://github.com/boundlessgeo/suite.git
+    $ git clone git://github.com/GeoNode/suite.git
     $ cd suite
     $ git submodule update --init --recursive
 

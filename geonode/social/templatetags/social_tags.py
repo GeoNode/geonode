@@ -1,8 +1,7 @@
 from django import template
-from django.contrib.contenttypes.models import ContentType
-from django.shortcuts import get_object_or_404
 from django.utils.translation import ugettext as _
 register = template.Library()
+
 
 def get_data(action, key, default=None):
     """
@@ -13,6 +12,7 @@ def get_data(action, key, default=None):
         return action.data.get(key, default)
     else:
         return default
+
 
 @register.inclusion_tag('social/_activity_item.html')
 def activity_item(action, **kwargs):
@@ -30,12 +30,13 @@ def activity_item(action, **kwargs):
     raw_action = get_data(action, 'raw_action')
     object_name = get_data(action, 'object_name')
     preposition = _("to")
+    fragment = None
 
     if object:
         object_type = object.__class__._meta.object_name.lower()
 
     if target:
-        target_type = target.__class__._meta.object_name.lower()
+        target_type = target.__class__._meta.object_name.lower()  # noqa
 
     if actor is None:
         return str()
@@ -46,6 +47,7 @@ def activity_item(action, **kwargs):
             activity_class = 'comment'
             preposition = _("on")
             object = None
+            fragment = "comments"
 
         if object_type == 'map':
             activity_class = 'map'
@@ -70,5 +72,6 @@ def activity_item(action, **kwargs):
         timestamp=action.timestamp,
         username=username,
         verb=verb,
+        fragment=fragment
     )
     return ctx

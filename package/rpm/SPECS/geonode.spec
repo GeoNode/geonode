@@ -23,7 +23,7 @@ Conflicts: mod_python
     /usr/lib/rpm/brp-python-bytecompile;
 
 %description
-At its core, the GeoNode has a stack based on GeoServer,
+At its core, the GeoNode has a stack based on GeoServer, pycsw,
 Django, and GeoExt that provides a platform for sophisticated
 web browser spatial visualization and analysis. Atop this stack,
 the project has built a map composer and viewer, tools for

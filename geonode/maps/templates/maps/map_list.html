@@ -1,20 +1,23 @@
 {% extends "maps/map_base.html" %}
 {% load i18n %}
-{% load taggit_extras %}
 {% load staticfiles %}
 {% load url from future %}
 
 {% block body_class %}maps explore{% endblock %}
 
 {% block body %}
-  <div class="col-md-12">
-    <a href="{% url "new_map" %}" class="btn btn-primary pull-right">{% trans "Create a New Map" %}</a>
-    <h2 class="page-title">{% trans "Explore Maps" %}</h2>
-  </div>
+<div class="page-header">
+  <a href="{% url "new_map" %}" class="btn btn-primary pull-right">{% trans "Create a New Map" %}</a>
+  <h2>{% trans "Explore Maps" %}</h2>
+</div>
   {% include "search/_search_content.html" %}
+  {% include "_bulk_permissions_form.html" %}
 {% endblock %}
 
 {% block extra_script %}
+  {% if GEONODE_SECURITY_ENABLED %}
+    {% include "_permissions_form_js.html" %}
+  {% endif %}
   <script type="text/javascript">
       {% if HAYSTACK_SEARCH %}
           SEARCH_URL = '{% url 'api_get_search' api_name='api' resource_name='base' %}?type__in=map'

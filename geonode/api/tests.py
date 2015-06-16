@@ -90,6 +90,17 @@ class PermissionsApiTests(ResourceTestCase):
         resp = self.api_client.get(self.list_url + str(layer.id) + '/')
         self.assertValidJSONResponse(resp)
 
+    def test_new_user_has_access_to_old_layers(self):
+        """Test that a new user can access the public available layers"""
+        from geonode.people.models import Profile
+        Profile.objects.create(username='imnew',
+                               password='pbkdf2_sha256$12000$UE4gAxckVj4Z$N\
+            6NbOXIQWWblfInIoq/Ta34FdRiPhawCIZ+sOO3YQs=')
+        self.api_client.client.login(username='imnew', password='thepwd')
+        resp = self.api_client.get(self.list_url)
+        self.assertValidJSONResponse(resp)
+        self.assertEquals(len(self.deserialize(resp)['objects']), 8)
+
 
 class SearchApiTests(ResourceTestCase):
 
@@ -111,6 +122,8 @@ class SearchApiTests(ResourceTestCase):
     def test_category_filters(self):
         """Test category filtering"""
 
+        # check we get the correct layers number returnered filtering on one
+        # and then two different categories
         filter_url = self.list_url + '?category__identifier=location'
 
         resp = self.api_client.get(filter_url)
@@ -127,6 +140,8 @@ class SearchApiTests(ResourceTestCase):
     def test_tag_filters(self):
         """Test keywords filtering"""
 
+        # check we get the correct layers number returnered filtering on one
+        # and then two different keywords
         filter_url = self.list_url + '?keywords__slug=layertagunique'
 
         resp = self.api_client.get(filter_url)
@@ -143,6 +158,8 @@ class SearchApiTests(ResourceTestCase):
     def test_owner_filters(self):
         """Test owner filtering"""
 
+        # check we get the correct layers number returnered filtering on one
+        # and then two different owners
         filter_url = self.list_url + '?owner__username=user1'
 
         resp = self.api_client.get(filter_url)
@@ -159,6 +176,8 @@ class SearchApiTests(ResourceTestCase):
     def test_title_filter(self):
         """Test title filtering"""
 
+        # check we get the correct layers number returnered filtering on the
+        # title
         filter_url = self.list_url + '?title=layer2'
 
         resp = self.api_client.get(filter_url)
@@ -168,6 +187,8 @@ class SearchApiTests(ResourceTestCase):
     def test_date_filter(self):
         """Test date filtering"""
 
+        # check we get the correct layers number returnered filtering on the
+        # title
         filter_url = self.list_url + '?date__exact=1985-01-01'
 
         resp = self.api_client.get(filter_url)

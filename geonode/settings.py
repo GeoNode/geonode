@@ -20,6 +20,8 @@
 
 # Django settings for the GeoNode project.
 import os
+from kombu import Queue
+from celery_app import app  # flake8: noqa
 
 #
 # General Django development settings
@@ -34,7 +36,7 @@ PROJECT_ROOT = os.path.abspath(os.path.dirname(__file__))
 DEBUG = TEMPLATE_DEBUG = True
 
 # Set to True to load non-minified versions of (static) client dependencies
-# Requires to set-up Node and tools that are required for static development 
+# Requires to set-up Node and tools that are required for static development
 # otherwise it will raise errors for the missing non-minified dependencies
 DEBUG_STATIC = False
 
@@ -49,14 +51,14 @@ DATABASES = {
         'NAME': os.path.join(PROJECT_ROOT, 'development.db'),
     },
     # vector datastore for uploads
-    #'datastore' : {
+    # 'datastore' : {
     #    'ENGINE': 'django.contrib.gis.db.backends.postgis',
     #    'NAME': '',
     #    'USER' : '',
     #    'PASSWORD' : '',
     #    'HOST' : '',
     #    'PORT' : '',
-    #}
+    # }
 }
 
 # Local time zone for this installation. Choices can be found here:
@@ -81,12 +83,53 @@ LANGUAGES = (
     ('zh-cn', '中文'),
     ('ja', '日本語'),
     ('fa', 'Persian'),
+    ('ar', 'Arabic'),
+    ('bn', 'Bengali'),
+    ('ne', 'Nepali'),
+    ('sq', 'Albanian'),
+    ('af', 'Afrikaans'),
+    ('sw', 'Swahili'),
     ('pt', 'Portuguese'),
     ('ru', 'Russian'),
     ('vi', 'Vietnamese'),
-    #('fil', 'Filipino'),
-    
+    ('ko', '한국어'),
+    ('am', 'Amharic'),
+    ('km', 'Khmer'),
+    ('pl', 'Polish'),
+    ('sv', 'Swedish'),
+    ('th', 'Thai'),
+    ('uk', 'Ukranian'),
+    ('si', 'Sinhala'),
+    ('ta', 'Tamil'),
+    ('tl', 'Tagalog'),
 )
+
+EXTRA_LANG_INFO = {
+    'am': {
+        'bidi': False,
+        'code': 'am',
+        'name': 'Amharic',
+        'name_local': 'Amharic',
+        },
+    'tl': {
+        'bidi': False,
+        'code': 'tl',
+        'name': 'Tagalog',
+        'name_local': 'tagalog',
+        },
+    'ta': {
+        'bidi': False,
+        'code': 'ta',
+        'name': 'Tamil',
+        'name_local': u'tamil',
+        },
+    'si': {
+        'bidi': False,
+        'code': 'si',
+        'name': 'Sinhala',
+        'name_local': 'sinhala',
+        },
+}
 
 AUTH_USER_MODEL = 'people.Profile'
 
@@ -94,9 +137,11 @@ AUTH_USER_MODEL = 'people.Profile'
 # to load the internationalization machinery.
 USE_I18N = True
 
+MODELTRANSLATION_LANGUAGES = ['en', ]
+
 MODELTRANSLATION_DEFAULT_LANGUAGE = 'en'
 
-MODELTRANSLATION_LANGUAGES = ('en', 'es', )
+MODELTRANSLATION_FALLBACK_LANGUAGES = ('en',)
 
 # Absolute path to the directory that holds media.
 # Example: "/home/media/media.lawrence.com/"
@@ -125,7 +170,7 @@ STATICFILES_DIRS = [
 STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.FileSystemFinder',
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
-#    'django.contrib.staticfiles.finders.DefaultStorageFinder',
+    #    'django.contrib.staticfiles.finders.DefaultStorageFinder',
 )
 
 # Note that Django automatically includes the "templates" dir in all the
@@ -154,10 +199,37 @@ LOGOUT_URL = '/account/logout/'
 
 # Documents application
 ALLOWED_DOCUMENT_TYPES = [
-    'doc', 'docx','gif', 'jpg', 'jpeg', 'ods', 'odt', 'pdf', 'png', 'ppt', 
-    'rar', 'tif', 'tiff', 'txt', 'xls', 'xlsx', 'xml', 'zip', 
+    'doc', 'docx', 'gif', 'jpg', 'jpeg', 'ods', 'odt', 'odp', 'pdf', 'png', 'ppt',
+    'pptx', 'rar', 'tif', 'tiff', 'txt', 'xls', 'xlsx', 'xml', 'zip', 'gz'
 ]
-MAX_DOCUMENT_SIZE = 2 # MB
+MAX_DOCUMENT_SIZE = 2  # MB
+DOCUMENT_TYPE_MAP = {
+    'txt': 'text',
+    'log': 'text',
+    'doc': 'text',
+    'docx': 'text',
+    'ods': 'text',
+    'odt': 'text',
+    'xls': 'text',
+    'xlsx': 'text',
+    'xml': 'text',
+
+    'gif': 'image',
+    'jpg': 'image',
+    'jpeg': 'image',
+    'png': 'image',
+    'tif': 'image',
+    'tiff': 'image',
+
+    'odp': 'presentation',
+    'ppt': 'presentation',
+    'pptx': 'presentation',
+    'pdf': 'presentation',
+
+    'rar': 'archive',
+    'gz': 'archive',
+    'zip': 'archive',
+}
 
 
 GEONODE_APPS = (
@@ -178,14 +250,15 @@ GEONODE_APPS = (
     'geonode.services',
 
     # GeoNode Contrib Apps
-    
-    #'geonode.contrib.dynamic',
+
+    # 'geonode.contrib.dynamic',
 
     # GeoServer Apps
     # Geoserver needs to come last because
     # it's signals may rely on other apps' signals.
     'geonode.geoserver',
     'geonode.upload',
+    'geonode.tasks'
 )
 
 INSTALLED_APPS = (
@@ -211,15 +284,15 @@ INSTALLED_APPS = (
     # Utility
     'pagination',
     'taggit',
-    'taggit_templatetags',
     'friendlytagloader',
     'geoexplorer',
     'leaflet',
     'django_extensions',
-    #'haystack',
+    # 'haystack',
     'autocomplete_light',
     'mptt',
     'modeltranslation',
+    'djcelery',
 
     # Theme
     "pinax_theme_bootstrap_account",
@@ -231,7 +304,7 @@ INSTALLED_APPS = (
     'avatar',
     'dialogos',
     'agon_ratings',
-    'notification',
+    #'notification',
     'announcements',
     'actstream',
     'user_messages',
@@ -249,53 +322,42 @@ LOGGING = {
             'format': '%(levelname)s %(asctime)s %(module)s %(process)d %(thread)d %(message)s'
         },
         'simple': {
-            'format': '%(message)s',        },
+            'format': '%(message)s',
+        },
     },
     'filters': {
         'require_debug_false': {
             '()': 'django.utils.log.RequireDebugFalse'
-     }
+        }
     },
     'handlers': {
         'null': {
-            'level':'ERROR',
-            'class':'django.utils.log.NullHandler',
+            'level': 'ERROR',
+            'class': 'django.utils.log.NullHandler',
         },
-        'console':{
-            'level':'ERROR',
-            'class':'logging.StreamHandler',
+        'console': {
+            'level': 'ERROR',
+            'class': 'logging.StreamHandler',
             'formatter': 'simple'
         },
         'mail_admins': {
-            'level': 'ERROR',
-            'filters': ['require_debug_false'],
+            'level': 'ERROR', 'filters': ['require_debug_false'],
             'class': 'django.utils.log.AdminEmailHandler',
         }
     },
     "loggers": {
         "django": {
-            "handlers": ["console"],
-            "level": "ERROR",
-        },
+            "handlers": ["console"], "level": "ERROR", },
         "geonode": {
-            "handlers": ["console"],
-            "level": "ERROR",
-        },
-
+            "handlers": ["console"], "level": "ERROR", },
         "gsconfig.catalog": {
-            "handlers": ["console"],
-            "level": "ERROR",
-        },
+            "handlers": ["console"], "level": "ERROR", },
         "owslib": {
-            "handlers": ["console"],
-            "level": "ERROR",
-        },
+            "handlers": ["console"], "level": "ERROR", },
         "pycsw": {
-            "handlers": ["console"],
-            "level": "ERROR",
+            "handlers": ["console"], "level": "ERROR", },
         },
-    },
-}
+    }
 
 #
 # Customizations to built in Django settings required by GeoNode
@@ -328,15 +390,28 @@ MIDDLEWARE_CLASSES = (
     'pagination.middleware.PaginationMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    # This middleware allows to print private layers for the users that have 
+    # the permissions to view them.
+    # It sets temporary the involved layers as public before restoring the permissions.
+    # Beware that for few seconds the involved layers are public there could be risks.
+    # 'geonode.middleware.PrintProxyMiddleware',
 )
 
 
 # Replacement of default authentication backend in order to support
 # permissions per object.
-AUTHENTICATION_BACKENDS = ('django.contrib.auth.backends.ModelBackend','guardian.backends.ObjectPermissionBackend',)
+AUTHENTICATION_BACKENDS = (
+    'django.contrib.auth.backends.ModelBackend',
+    'guardian.backends.ObjectPermissionBackend',
+)
 
 ANONYMOUS_USER_ID = -1
 GUARDIAN_GET_INIT_ANONYMOUS_USER = 'geonode.people.models.get_anonymous_user_instance'
+
+# Whether the uplaoded resources should be public and downloadable by default or not
+DEFAULT_ANONYMOUS_VIEW_PERMISSION = True
+DEFAULT_ANONYMOUS_DOWNLOAD_PERMISSION = True
 
 #
 # Settings for default search size
@@ -363,7 +438,13 @@ AGON_RATINGS_CATEGORY_CHOICES = {
 
 # Activity Stream
 ACTSTREAM_SETTINGS = {
-    'MODELS': ('people.Profile', 'layers.layer', 'maps.map', 'dialogos.comment', 'documents.document', 'services.service'),
+    'MODELS': (
+        'people.Profile',
+        'layers.layer',
+        'maps.map',
+        'dialogos.comment',
+        'documents.document',
+        'services.service'),
     'FETCH_RELATIONS': True,
     'USE_PREFETCH': False,
     'USE_JSONFIELD': True,
@@ -371,8 +452,10 @@ ACTSTREAM_SETTINGS = {
 }
 
 # Settings for Social Apps
-AUTH_PROFILE_MODULE = 'people.Profile'
 REGISTRATION_OPEN = False
+ACCOUNT_EMAIL_CONFIRMATION_EMAIL = False
+ACCOUNT_EMAIL_CONFIRMATION_REQUIRED = False
+ACCOUNT_APPROVAL_REQUIRED = False
 
 # Email for users to contact admins.
 THEME_ACCOUNT_CONTACT_EMAIL = 'admin@example.com'
@@ -387,9 +470,9 @@ TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
 
 # Arguments for the test runner
 NOSE_ARGS = [
-      '--nocapture',
-      '--detailed-errors',
-      ]
+    '--nocapture',
+    '--detailed-errors',
+]
 
 #
 # GeoNode specific settings
@@ -404,44 +487,45 @@ CASCADE_WORKSPACE = 'geonode'
 
 OGP_URL = "http://geodata.tufts.edu/solr/select"
 
-# Topic Categories list should not be modified (they are ISO). In case you 
+# Topic Categories list should not be modified (they are ISO). In case you
 # absolutely need it set to True this variable
 MODIFY_TOPICCATEGORY = False
 
 MISSING_THUMBNAIL = 'geonode/img/missing_thumb.png'
 
 # Search Snippet Cache Time in Seconds
-CACHE_TIME=0
+CACHE_TIME = 0
 
 # OGC (WMS/WFS/WCS) Server Settings
 # OGC (WMS/WFS/WCS) Server Settings
 OGC_SERVER = {
-    'default' : {
-        'BACKEND' : 'geonode.geoserver',
-        'LOCATION' : 'http://localhost:8080/geoserver/',
+    'default': {
+        'BACKEND': 'geonode.geoserver',
+        'LOCATION': 'http://localhost:8080/geoserver/',
         # PUBLIC_LOCATION needs to be kept like this because in dev mode
         # the proxy won't work and the integration tests will fail
         # the entire block has to be overridden in the local_settings
-        'PUBLIC_LOCATION' : 'http://localhost:8080/geoserver/',
-        'USER' : 'admin',
-        'PASSWORD' : 'geoserver',
-        'MAPFISH_PRINT_ENABLED' : True,
-        'PRINT_NG_ENABLED' : True,
-        'GEONODE_SECURITY_ENABLED' : True,
-        'GEOGIT_ENABLED' : False,
-        'WMST_ENABLED' : False,
+        'PUBLIC_LOCATION': 'http://localhost:8080/geoserver/',
+        'USER': 'admin',
+        'PASSWORD': 'geoserver',
+        'MAPFISH_PRINT_ENABLED': True,
+        'PRINT_NG_ENABLED': True,
+        'GEONODE_SECURITY_ENABLED': True,
+        'GEOGIT_ENABLED': False,
+        'WMST_ENABLED': False,
         'BACKEND_WRITE_ENABLED': True,
-        'WPS_ENABLED' : True,
+        'WPS_ENABLED': False,
+        'LOG_FILE': '%s/geoserver/data/logs/geoserver.log' % os.path.abspath(os.path.join(PROJECT_ROOT, os.pardir)),
         # Set to name of database in DATABASES dictionary to enable
-        'DATASTORE': '', #'datastore',
+        'DATASTORE': '',  # 'datastore',
         'TIMEOUT': 10  # number of seconds to allow for HTTP requests
     }
 }
 
 # Uploader Settings
 UPLOADER = {
-    'BACKEND' : 'geonode.rest',
-    'OPTIONS' : {
+    'BACKEND': 'geonode.rest',
+    'OPTIONS': {
         'TIME_ENABLED': False,
         'GEOGIT_ENABLED': False,
     }
@@ -454,16 +538,16 @@ CATALOGUE = {
         # default is pycsw in local mode (tied directly to GeoNode Django DB)
         'ENGINE': 'geonode.catalogue.backends.pycsw_local',
         # pycsw in non-local mode
-        #'ENGINE': 'geonode.catalogue.backends.pycsw_http',
+        # 'ENGINE': 'geonode.catalogue.backends.pycsw_http',
         # GeoNetwork opensource
-        #'ENGINE': 'geonode.catalogue.backends.geonetwork',
+        # 'ENGINE': 'geonode.catalogue.backends.geonetwork',
         # deegree and others
-        #'ENGINE': 'geonode.catalogue.backends.generic',
+        # 'ENGINE': 'geonode.catalogue.backends.generic',
 
         # The FULLY QUALIFIED base url to the CSW instance for this GeoNode
         'URL': '%scatalogue/csw' % SITEURL,
-        #'URL': 'http://localhost:8080/geonetwork/srv/en/csw',
-        #'URL': 'http://localhost:8080/deegree-csw-demo-3.0.4/services',
+        # 'URL': 'http://localhost:8080/geonetwork/srv/en/csw',
+        # 'URL': 'http://localhost:8080/deegree-csw-demo-3.0.4/services',
 
         # login credentials (for GeoNetwork)
         'USER': 'admin',
@@ -475,9 +559,16 @@ CATALOGUE = {
 PYCSW = {
     # pycsw configuration
     'CONFIGURATION': {
+        # uncomment / adjust to override server config system defaults
+        #'server': {
+        #    'maxrecords': '10',
+        #    'pretty_print': 'true',
+        #    'federatedcatalogues': 'http://catalog.data.gov/csw'
+        #},
         'metadata:main': {
             'identification_title': 'GeoNode Catalogue',
-            'identification_abstract': 'GeoNode is an open source platform that facilitates the creation, sharing, and collaborative use of geospatial data',
+            'identification_abstract': 'GeoNode is an open source platform that facilitates the creation, sharing, \
+             and collaborative use of geospatial data',
             'identification_keywords': 'sdi,catalogue,discovery,metadata,GeoNode',
             'identification_keywords_type': 'theme',
             'identification_fees': 'None',
@@ -525,72 +616,89 @@ DEFAULT_MAP_ZOOM = 0
 
 MAP_BASELAYERS = [{
     "source": {"ptype": "gxp_olsource"},
-    "type":"OpenLayers.Layer",
-    "args":["No background"],
+    "type": "OpenLayers.Layer",
+    "args": ["No background"],
     "visibility": False,
     "fixed": True,
     "group":"background"
-  }, {
+}, {
     "source": {"ptype": "gxp_osmsource"},
-    "type":"OpenLayers.Layer.OSM",
-    "name":"mapnik",
+    "type": "OpenLayers.Layer.OSM",
+    "name": "mapnik",
     "visibility": False,
     "fixed": True,
-    "group":"background"
-  }, {
+    "group": "background"
+}, {
     "source": {"ptype": "gxp_mapquestsource"},
-    "name":"osm",
-    "group":"background",
+    "name": "osm",
+    "group": "background",
     "visibility": True
-  }, {
+}, {
     "source": {"ptype": "gxp_mapquestsource"},
-    "name":"naip",
-    "group":"background",
+    "name": "naip",
+    "group": "background",
     "visibility": False
-  }, {
+}, {
     "source": {"ptype": "gxp_bingsource"},
     "name": "AerialWithLabels",
     "fixed": True,
     "visibility": False,
-    "group":"background"
-  },{
+    "group": "background"
+}, {
     "source": {"ptype": "gxp_mapboxsource"},
 }]
 
-if 'geonode.geoserver' in INSTALLED_APPS:
-    LOCAL_GEOSERVER = {
-        "source": {
-            "ptype": "gxp_wmscsource",
-            "url": OGC_SERVER['default']['PUBLIC_LOCATION'] + "wms",
-            "restUrl": "/gs/rest"
-        }
-    }
-    baselayers = MAP_BASELAYERS
-    MAP_BASELAYERS = [LOCAL_GEOSERVER]
-    MAP_BASELAYERS.extend(baselayers)
-
-
-
 SOCIAL_BUTTONS = True
 
-#Enable Licenses User Interface
-#Regardless of selection, license field stil exists as a field in the Resourcebase model.
-#Detail Display: above, below, never
-#Metadata Options: verbose, light, never
+SOCIAL_ORIGINS = [{
+    "label":"Email",
+    "url":"mailto:?subject={name}&body={url}",
+    "css_class":"email"
+}, {
+    "label":"Facebook",
+    "url":"http://www.facebook.com/sharer.php?u={url}",
+    "css_class":"fb"
+}, {
+    "label":"Twitter",
+    "url":"https://twitter.com/share?url={url}",
+    "css_class":"tw"
+}, {
+    "label":"Google +",
+    "url":"https://plus.google.com/share?url={url}",
+    "css_class":"gp"
+}]
+
+#CKAN Query String Parameters names pulled from
+#https://github.com/ckan/ckan/blob/2052628c4a450078d58fb26bd6dc239f3cc68c3e/ckan/logic/action/create.py#L43
+CKAN_ORIGINS = [{
+    "label":"Humanitarian Data Exchange (HDX)",
+    "url":"https://data.hdx.rwlabs.org/dataset/new?title={name}&dataset_date={date}&notes={abstract}&caveats={caveats}",
+    "css_class":"hdx"
+}]
+#SOCIAL_ORIGINS.extend(CKAN_ORIGINS)
+
+# Enable Licenses User Interface
+# Regardless of selection, license field stil exists as a field in the Resourcebase model.
+# Detail Display: above, below, never
+# Metadata Options: verbose, light, never
 LICENSES = {
     'ENABLED': True,
     'DETAIL': 'above',
     'METADATA': 'verbose',
 }
 
+SESSION_SERIALIZER = 'django.contrib.sessions.serializers.PickleSerializer'
+
 # Require users to authenticate before using Geonode
 LOCKDOWN_GEONODE = False
 
-# Add additional paths (as regular expressions) that don't require authentication.
+# Add additional paths (as regular expressions) that don't require
+# authentication.
 AUTH_EXEMPT_URLS = ()
 
 if LOCKDOWN_GEONODE:
-    MIDDLEWARE_CLASSES = MIDDLEWARE_CLASSES + ('geonode.security.middleware.LoginRequiredMiddleware',)
+    MIDDLEWARE_CLASSES = MIDDLEWARE_CLASSES + \
+        ('geonode.security.middleware.LoginRequiredMiddleware',)
 
 
 # A tuple of hosts the proxy can send requests to.
@@ -605,31 +713,39 @@ PROXY_URL = '/proxy/?url=' if DEBUG else None
 # Set HAYSTACK_SEARCH to True
 # Run "python manage.py rebuild_index"
 HAYSTACK_SEARCH = False
-#Avoid permissions prefiltering
+# Avoid permissions prefiltering
 SKIP_PERMS_FILTER = False
-#Update facet counts from Haystack
+# Update facet counts from Haystack
 HAYSTACK_FACET_COUNTS = False
-#HAYSTACK_CONNECTIONS = {
+# HAYSTACK_CONNECTIONS = {
 #    'default': {
 #        'ENGINE': 'haystack.backends.elasticsearch_backend.ElasticsearchSearchEngine',
 #        'URL': 'http://127.0.0.1:9200/',
 #        'INDEX_NAME': 'geonode',
 #        },
 #    }
-#HAYSTACK_SIGNAL_PROCESSOR = 'haystack.signals.RealtimeSignalProcessor'
-#HAYSTACK_SEARCH_RESULTS_PER_PAGE = 20
+# HAYSTACK_SIGNAL_PROCESSOR = 'haystack.signals.RealtimeSignalProcessor'
+# HAYSTACK_SEARCH_RESULTS_PER_PAGE = 20
 
 # Available download formats
 DOWNLOAD_FORMATS_METADATA = [
-    'Atom', 'DIF', 'Dublin Core', 'ebRIM', 'FGDC', 'TC211',
+    'Atom', 'DIF', 'Dublin Core', 'ebRIM', 'FGDC', 'ISO',
 ]
 DOWNLOAD_FORMATS_VECTOR = [
-    'JPEG', 'PDF', 'PNG', 'Zipped Shapefile', 'GML 2.0', 'GML 3.1.1', 'CSV', 
+    'JPEG', 'PDF', 'PNG', 'Zipped Shapefile', 'GML 2.0', 'GML 3.1.1', 'CSV',
     'Excel', 'GeoJSON', 'KML', 'View in Google Earth', 'Tiles',
 ]
 DOWNLOAD_FORMATS_RASTER = [
-    'JPEG', 'PDF', 'PNG', 'ArcGrid', 'GeoTIFF', 'Gtopo30', 'ImageMosaic', 'KML',
-    'View in Google Earth', 'Tiles',
+    'JPEG',
+    'PDF',
+    'PNG',
+    'ArcGrid',
+    'GeoTIFF',
+    'Gtopo30',
+    'ImageMosaic',
+    'KML',
+    'View in Google Earth',
+    'Tiles',
 ]
 
 ACCOUNT_NOTIFY_ON_PASSWORD_CHANGE = False
@@ -637,7 +753,10 @@ ACCOUNT_NOTIFY_ON_PASSWORD_CHANGE = False
 TASTYPIE_DEFAULT_FORMATS = ['json']
 
 # gravatar settings
-AUTO_GENERATE_AVATAR_SIZES = (20,32,80,100,140,200)
+AUTO_GENERATE_AVATAR_SIZES = (20, 32, 80, 100, 140, 200)
+
+# notification settings
+NOTIFICATION_LANGUAGE_MODULE = "account.Account"
 
 # Number of results per page listed in the GeoNode search pages
 CLIENT_RESULTS_LIMIT = 100
@@ -646,41 +765,123 @@ CLIENT_RESULTS_LIMIT = 100
 API_LIMIT_PER_PAGE = 0
 
 LEAFLET_CONFIG = {
-'TILES': [
-    # Find tiles at:
-    # http://leaflet-extras.github.io/leaflet-providers/preview/
+    'TILES': [
+        # Find tiles at:
+        # http://leaflet-extras.github.io/leaflet-providers/preview/
 
-    # Stamen toner lite.
-    ('Watercolor', 'http://{s}.tile.stamen.com/watercolor/{z}/{x}/{y}.png', 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a> &mdash; Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>'),
-    ('Toner Lite', 'http://{s}.tile.stamen.com/toner-lite/{z}/{x}/{y}.png', 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a> &mdash; Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>'),
-],
-'PLUGINS': {
-    'esri-leaflet': {
-        'js': 'lib/js/esri-leaflet.js',
-        'auto-include': True,
+        # Stamen toner lite.
+        ('Watercolor',
+         'http://{s}.tile.stamen.com/watercolor/{z}/{x}/{y}.png',
+         'Map tiles by <a href="http://stamen.com">Stamen Design</a>, \
+         <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a> &mdash; Map data &copy; \
+         <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, \
+         <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>'),
+        ('Toner Lite',
+         'http://{s}.tile.stamen.com/toner-lite/{z}/{x}/{y}.png',
+         'Map tiles by <a href="http://stamen.com">Stamen Design</a>, \
+         <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a> &mdash; Map data &copy; \
+         <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, \
+         <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>'),
+    ],
+    'PLUGINS': {
+        'esri-leaflet': {
+            'js': 'lib/js/esri-leaflet.js',
+            'auto-include': True,
+        },
+        'leaflet-fullscreen': {
+            'css': 'lib/css/leaflet.fullscreen.css',
+            'js': 'lib/js/Leaflet.fullscreen.min.js',
+            'auto-include': True,
         },
     }
 }
 
+# option to enable/disable resource unpublishing for administrators
+RESOURCE_PUBLISHING = False
+
 CACHES = {
-    #DUMMY CACHE FOR DEVELOPMENT
+    # DUMMY CACHE FOR DEVELOPMENT
     'default': {
         'BACKEND': 'django.core.cache.backends.dummy.DummyCache',
-        },
-    #MEMCACHED EXAMPLE
+    },
+    # MEMCACHED EXAMPLE
     # 'default': {
     #     'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
     #     'LOCATION': '127.0.0.1:11211',
     #     },
-    #FILECACHE EXAMPLE
+    # FILECACHE EXAMPLE
     # 'default': {
     #     'BACKEND': 'django.core.cache.backends.filebased.FileBasedCache',
     #     'LOCATION': '/tmp/django_cache',
     #     }
 }
 
+LAYER_PREVIEW_LIBRARY = 'geoext'
+
+SERVICE_UPDATE_INTERVAL = 0
+
+# Queue non-blocking notifications.
+NOTIFICATION_QUEUE_ALL = False
+
+BROKER_URL = "django://"
+CELERY_ALWAYS_EAGER = True
+CELERY_EAGER_PROPAGATES_EXCEPTIONS = True
+CELERY_IGNORE_RESULT = True
+CELERY_SEND_EVENTS = False
+CELERY_RESULT_BACKEND = None
+CELERY_TASK_RESULT_EXPIRES = 1
+CELERY_DISABLE_RATE_LIMITS = True
+CELERY_DEFAULT_QUEUE = "default"
+CELERY_DEFAULT_EXCHANGE = "default"
+CELERY_DEFAULT_EXCHANGE_TYPE = "direct"
+CELERY_DEFAULT_ROUTING_KEY = "default"
+CELERY_CREATE_MISSING_QUEUES = True
+CELERY_IMPORTS = (
+    'geonode.tasks.deletion',
+    'geonode.tasks.update',
+    'geonode.tasks.email'
+)
+
+
+CELERY_QUEUES = [
+    Queue('default', routing_key='default'),
+    Queue('cleanup', routing_key='cleanup'),
+    Queue('update', routing_key='update'),
+    Queue('email', routing_key='email'),
+]
+
+import djcelery
+djcelery.setup_loader()
+
 # Load more settings from a file called local_settings.py if it exists
 try:
-    from local_settings import *
+    from local_settings import *  # noqa
 except ImportError:
     pass
+
+
+#for windows users check if they didn't set GEOS and GDAL in local_settings.py
+#maybe they set it as a windows environment
+if os.name == 'nt':
+    if not "GEOS_LIBRARY_PATH" in locals() or not "GDAL_LIBRARY_PATH" in locals():
+        if os.environ.get("GEOS_LIBRARY_PATH", None) \
+            and os.environ.get("GDAL_LIBRARY_PATH", None):
+            GEOS_LIBRARY_PATH = os.environ.get('GEOS_LIBRARY_PATH') 
+            GDAL_LIBRARY_PATH = os.environ.get('GDAL_LIBRARY_PATH')
+        else:
+            #maybe it will be found regardless if not it will throw 500 error
+            from django.contrib.gis.geos import GEOSGeometry
+
+
+# define the urls after the settings are overridden
+if 'geonode.geoserver' in INSTALLED_APPS:
+    LOCAL_GEOSERVER = {
+        "source": {
+            "ptype": "gxp_wmscsource",
+            "url": OGC_SERVER['default']['PUBLIC_LOCATION'] + "wms",
+            "restUrl": "/gs/rest"
+        }
+    }
+    baselayers = MAP_BASELAYERS
+    MAP_BASELAYERS = [LOCAL_GEOSERVER]
+    MAP_BASELAYERS.extend(baselayers)
