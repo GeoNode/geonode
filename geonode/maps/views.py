@@ -471,13 +471,10 @@ def new_map_config(request):
                 config = layer.attribute_config()
 
                 # Add required parameters for GXP lazy-loading
-                config["srs"] = layer.srid
                 config["title"] = layer.title
-                config["bbox"] = [
-                    float(coord) for coord in bbox] if layer.srid == "EPSG:4326" else llbbox_to_mercator(
-                    [
-                        float(coord) for coord in bbox])
                 config["queryable"] = True
+                config["srs"] = layer.srid if layer.srid != "EPSG:4326" else "EPSG:900913"
+                config["bbox"] = llbbox_to_mercator([float(coord) for coord in bbox])
 
                 if layer.storeType == "remoteStore":
                     service = layer.service
