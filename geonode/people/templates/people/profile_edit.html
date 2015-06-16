@@ -6,12 +6,18 @@
 
 {% block body %}
 <div class="page-header">
-  <h2 class="page-title">{% trans "Edit Your Profile" %}</h2>
+  {% if user == profile %}
+    <h2 class="page-title">{% trans "Edit Your Profile" %}</h2>
+  {% else %}
+    <h2 class="page-title">{% trans "Edit Profile for" %} {{ profile.username }}</h2>
+  {% endif %}
 </div>
 <div class="row">
   <div class="col-xs-3 col-md-2 profile-avatar">
     {% avatar user 140 %}
+    {% if user == profile %}
     <p><a class="btn btn-primary btn-block" href="{% url 'avatar_change' %}">{% trans "Change your avatar" %}</a></p>
+    {% endif %}
   </div>
   <div class="col-xs-9 col-md-10">
     <form action="" method="post" class="form-horizontal">

@@ -45,7 +45,7 @@ def profile_edit(request, username=None):
     else:
         profile = get_object_or_404(Profile, username=username)
 
-    if username == request.user.username:
+    if username == request.user.username or request.user.is_superuser:
         if request.method == "POST":
             form = ProfileForm(request.POST, request.FILES, instance=profile)
             if form.is_valid():
@@ -55,11 +55,12 @@ def profile_edit(request, username=None):
                     reverse(
                         'profile_detail',
                         args=[
-                            request.user.username]))
+                            username]))
         else:
             form = ProfileForm(instance=profile)
 
         return render(request, "people/profile_edit.html", {
+            "profile": profile,
             "form": form,
         })
     else:
