@@ -79,7 +79,7 @@
      </gmd:CI_ResponsibleParty>
    </gmd:contact> {% endwith %}
    <gmd:dateStamp>
-     <gco:DateTime>{{layer.date|date:"Y-m-d\TH:i:s\Z"}}</gco:DateTime>
+     <gco:DateTime>{{layer.csw_insert_date|date:"Y-m-d\TH:i:s\Z"}}</gco:DateTime>
    </gmd:dateStamp>
    <gmd:metadataStandardName>
      <gco:CharacterString>ISO 19115:2003 - Geographic information - Metadata</gco:CharacterString>

@@ -715,7 +715,8 @@ def resourcebase_post_save(instance, *args, **kwargs):
     """
     ResourceBase.objects.filter(id=instance.id).update(
         thumbnail_url=instance.get_thumbnail_url(),
-        detail_url=instance.get_absolute_url())
+        detail_url=instance.get_absolute_url(),
+        csw_insert_date=datetime.datetime.now())
     instance.set_missing_info()
 
     # we need to remove stale links
