@@ -27,6 +27,7 @@ from tastypie.resources import ModelResource
 from tastypie.constants import ALL
 from tastypie.utils import trailing_slash
 
+from django.db.models import Q
 
 FILTER_TYPES = {
     'layer': Layer,
@@ -162,6 +163,7 @@ class GroupResource(ModelResource):
     detail_url = fields.CharField()
     member_count = fields.IntegerField()
     manager_count = fields.IntegerField()
+    interests = fields.CharField(null=True, attribute='interests')
 
     def dehydrate_member_count(self, bundle):
         return bundle.obj.member_queryset().count()
@@ -172,14 +174,18 @@ class GroupResource(ModelResource):
     def dehydrate_detail_url(self, bundle):
         return reverse('group_detail', args=[bundle.obj.slug])
 
+    def dehydrate_interests(self, bundle):
+        return bundle.obj.interest_list()
+
     class Meta:
         queryset = GroupProfile.objects.all()
         resource_name = 'groups'
         allowed_methods = ['get']
         filtering = {
-            'name': ALL
+            'name': ALL,
+            'city': ALL,
         }
-        ordering = ['title', 'last_modified']
+        ordering = ['title', 'last_modified', 'date_joined']
 
 
 class ProfileResource(ModelResource):
@@ -188,11 +194,12 @@ class ProfileResource(ModelResource):
     avatar_100 = fields.CharField(null=True)
     profile_detail_url = fields.CharField()
     email = fields.CharField(default='')
-    layers_count = fields.IntegerField(default=0)
+    layers_count = fields.IntegerField(default=0, attribute='layers_count')
     maps_count = fields.IntegerField(default=0)
     documents_count = fields.IntegerField(default=0)
     current_user = fields.BooleanField(default=False)
     activity_stream_url = fields.CharField(null=True)
+    interests = fields.CharField(null=True, attribute='interests')
 
     def build_filters(self, filters={}):
         """adds filtering by group functionality"""
@@ -201,6 +208,10 @@ class ProfileResource(ModelResource):
 
         if 'group' in filters:
             orm_filters['group'] = filters['group']
+        if 'interest_list' in filters:
+            query = filters['interest_list']
+            qset = (Q(interests__slug__iexact=query))
+            orm_filters['interest_list'] = qset
 
         return orm_filters
 
@@ -208,6 +219,11 @@ class ProfileResource(ModelResource):
         """filter by group if applicable by group functionality"""
 
         group = applicable_filters.pop('group', None)
+
+        if 'interest_list' in applicable_filters:
+            interest_list = applicable_filters.pop('interest_list')
+        else:
+            interest_list = None
 
         semi_filtered = super(
             ProfileResource,
@@ -218,6 +234,9 @@ class ProfileResource(ModelResource):
         if group is not None:
             semi_filtered = semi_filtered.filter(
                 groupmember__group__slug=group)
+
+        if interest_list is not None:
+            semi_filtered = semi_filtered.filter(interest_list)
 
         return semi_filtered
 
@@ -259,6 +278,9 @@ class ProfileResource(ModelResource):
                     bundle.obj).pk,
                 'object_id': bundle.obj.pk})
 
+    def dehydrate_interests(self, bundle):
+        return bundle.obj.interest_list()
+
     def prepend_urls(self):
         if settings.HAYSTACK_SEARCH:
             return [
@@ -270,14 +292,33 @@ class ProfileResource(ModelResource):
         else:
             return []
 
+    def get_object_list(self, request):
+        result = super(ProfileResource, self).get_object_list(request)
+
+        # support custom ordering by how many layers viewable by current user
+        order_by = request.GET.getlist('order_by')
+        if any([att.endswith('layers_count') for att in order_by]):
+            # build a query of viewable layers
+            user = request.user
+            obj_with_perms = get_objects_for_user(user, 'base.view_resourcebase').instance_of(Layer)
+            # add custom where clause that will access a field joined later
+            obj_with_perms = obj_with_perms.extra(where=['"base_resourcebase"."owner_id"="people_profile"."id"'])
+            layer_count = obj_with_perms.values('id').distinct()
+            # make this subquery into an aggregate
+            count = 'SELECT COUNT(*) AS layers_count FROM (%s)' % layer_count.query
+            # and annotate with a new column for use in ordering
+            result = result.extra(select={'layers_count': count})
+        return result
+
     class Meta:
         queryset = get_user_model().objects.exclude(username='AnonymousUser')
         resource_name = 'profiles'
         allowed_methods = ['get']
-        ordering = ['username', 'date_joined']
+        ordering = ['username', 'date_joined', 'layers_count', 'first_name']
         excludes = ['is_staff', 'password', 'is_superuser',
                     'is_active', 'last_login']
 
         filtering = {
             'username': ALL,
+            'city': ALL,
         }

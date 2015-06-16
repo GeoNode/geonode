@@ -23,6 +23,7 @@ from django.contrib.auth import get_user_model
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.auth import login
 from django.contrib.auth.models import Group, Permission
+from django.conf import settings
 from guardian.utils import get_user_obj_perms_model
 from guardian.shortcuts import assign_perm, get_groups_with_perms
 
@@ -143,7 +144,10 @@ class PermissionLevelMixin(object):
 
         # default permissions for anonymous users
         anonymous_group, created = Group.objects.get_or_create(name='anonymous')
-        assign_perm('view_resourcebase', anonymous_group, self.get_self_resource())
+        if settings.DEFAULT_ANONYMOUS_VIEW_PERMISSION:
+            assign_perm('view_resourcebase', anonymous_group, self.get_self_resource())
+        if settings.DEFAULT_ANONYMOUS_DOWNLOAD_PERMISSION:
+            assign_perm('download_resourcebase', anonymous_group, self.get_self_resource())
 
         # default permissions for resource owner
         set_owner_permissions(self)

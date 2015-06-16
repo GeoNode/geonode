@@ -48,7 +48,7 @@ class CommonMetaApi:
                  'owner': ALL_WITH_RELATIONS,
                  'date': ALL,
                  }
-    ordering = ['date', 'title', 'popular_count']
+    ordering = ['date', 'title', 'popular_count', 'rating']
     max_limit = None
 
 
@@ -253,7 +253,7 @@ class CommonModelApi(ModelResource):
             for region in regions:
                 sqs = (
                     SearchQuerySet() if sqs is None else sqs).filter_or(
-                    regions_exact=region)
+                    regions_exact__exact=region)
 
         # filter by owner
         if owner:
