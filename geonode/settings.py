@@ -200,37 +200,17 @@ LOGOUT_URL = '/account/logout/'
 # Documents application
 ALLOWED_DOCUMENT_TYPES = [
     'doc', 'docx', 'gif', 'jpg', 'jpeg', 'ods', 'odt', 'odp', 'pdf', 'png', 'ppt',
-    'pptx', 'rar', 'tif', 'tiff', 'txt', 'xls', 'xlsx', 'xml', 'zip', 'gz'
+    'pptx', 'rar', 'sld', 'tif', 'tiff', 'txt', 'xls', 'xlsx', 'xml', 'zip', 'gz'
 ]
 MAX_DOCUMENT_SIZE = 2  # MB
-DOCUMENT_TYPE_MAP = {
-    'txt': 'text',
-    'log': 'text',
-    'doc': 'text',
-    'docx': 'text',
-    'ods': 'text',
-    'odt': 'text',
-    'xls': 'text',
-    'xlsx': 'text',
-    'xml': 'text',
 
-    'gif': 'image',
-    'jpg': 'image',
-    'jpeg': 'image',
-    'png': 'image',
-    'tif': 'image',
-    'tiff': 'image',
+# DOCUMENT_TYPE_MAP and DOCUMENT_MIMETYPE_MAP update enumerations in
+# documents/enumerations.py and should only
+# need to be uncommented if adding other types
+# to settings.ALLOWED_DOCUMENT_TYPES
 
-    'odp': 'presentation',
-    'ppt': 'presentation',
-    'pptx': 'presentation',
-    'pdf': 'presentation',
-
-    'rar': 'archive',
-    'gz': 'archive',
-    'zip': 'archive',
-}
-
+# DOCUMENT_TYPE_MAP = {}
+# DOCUMENT_MIMETYPE_MAP = {}
 
 GEONODE_APPS = (
 
