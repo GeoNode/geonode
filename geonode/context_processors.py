@@ -63,6 +63,12 @@ def resource_urls(request):
             settings,
             'CLIENT_RESULTS_LIMIT',
             10),
+        SRID_DETAIL=getattr(
+            settings,
+            'SRID',
+            dict()).get(
+            'DETAIL',
+            'never'),
         LICENSES_ENABLED=getattr(
             settings,
             'LICENSES',

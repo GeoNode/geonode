@@ -687,6 +687,10 @@ LICENSES = {
     'METADATA': 'verbose',
 }
 
+SRID = {
+    'DETAIL': 'never',
+}
+
 SESSION_SERIALIZER = 'django.contrib.sessions.serializers.PickleSerializer'
 
 # Require users to authenticate before using Geonode
