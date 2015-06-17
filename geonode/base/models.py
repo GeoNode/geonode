@@ -726,8 +726,12 @@ def resourcebase_post_save(instance, *args, **kwargs):
 
     # we need to remove stale links
     for link in instance.link_set.all():
-        if urlsplit(settings.SITEURL).hostname not in link.url:
-            link.delete()
+        if link.name == "External Document":
+            if link.resource.doc_url != link.url:
+                link.delete()
+        else:
+            if urlsplit(settings.SITEURL).hostname not in link.url:
+                link.delete()
 
 
 def rating_post_save(instance, *args, **kwargs):
