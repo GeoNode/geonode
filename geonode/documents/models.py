@@ -131,13 +131,11 @@ def pre_save_document(instance, sender, **kwargs):
         base_name, extension = os.path.splitext(instance.doc_file.name)
         instance.extension = extension[1:]
         doc_type_map = DOCUMENT_TYPE_MAP
+        doc_type_map.update(getattr(settings, 'DOCUMENT_TYPE_MAP', {}))
         if doc_type_map is None:
             doc_type = 'other'
         else:
-            if instance.extension in doc_type_map:
-                doc_type = doc_type_map[''+instance.extension]
-            else:
-                doc_type = 'other'
+            doc_type = doc_type_map.get(instance.extension, 'other')
         instance.doc_type = doc_type
 
     elif instance.doc_url:
@@ -172,7 +170,9 @@ def post_save_document(instance, *args, **kwargs):
 
     name = None
     ext = instance.extension
-    mime = DOCUMENT_MIMETYPE_MAP[ext]
+    mime_type_map = DOCUMENT_MIMETYPE_MAP
+    mime_type_map.update(getattr(settings, 'DOCUMENT_MIMETYPE_MAP', {}))
+    mime = mime_type_map.get(ext, 'text/plain')
     url = None
 
     if instance.doc_file:
