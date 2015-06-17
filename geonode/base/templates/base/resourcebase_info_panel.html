@@ -7,6 +7,11 @@
     <dd>{{ resource.title|truncatechars:80 }}</dd>
     {% endif %}
 
+    {% if resource.srid and SRID_DETAIL == 'above' %}
+    <dt>{% trans "SRID" %}</dt>
+    <dd>{{ resource.srid }}</dd>
+    {% endif %}
+
     {% if LICENSES_ENABLED and LICENSES_DETAIL == 'above' and resource.license %}
     <dt>{% trans "License" %}</dt>
     <dd>{{ resource.license.name_long }} <a href="#license-more-above" data-toggle="collapse" data-target=".license-more-above"><i class="fa fa-info-circle"></i></a></dd>
@@ -87,6 +92,11 @@
 
   <dl class="dl-horizontal">
     <div class="more collapse">
+
+    {% if resource.srid and SRID_DETAIL == 'below' %}
+    <dt>{% trans "SRID" %}</dt>
+    <dd>{{ resource.srid }}</dd>
+    {% endif %}
 
     {% if LICENSES_ENABLED and LICENSES_DETAIL == 'below' and resource.license %}
     <dt>{% trans "License" %}</dt>
