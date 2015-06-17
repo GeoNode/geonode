@@ -27,7 +27,7 @@ OpenLayers.Request.DEFAULT_CONFIG.headers = {
     'X-CSRFToken': '{{ csrf_token|escapejs }}'
 };
 
-var curr_location =  "{{siteurl}}";
+var curr_location =  window.location.protocol+"//"+window.location.hostname+":"+window.location.port;
 OpenLayers.ProxyHost = curr_location+"/proxy/?url=";
 
 {% autoescape off %}
@@ -36,7 +36,8 @@ var options = {{ viewer| safe }};
 var app, map;
 var tile_list = [];
 var interest_bounds; 
-var geoserver = "{{geoserver}}";
+//var geoserver = "{{geoserver}}";
+var geoserver = curr_location+"/geoserver/";
 // added stuff
 
 var _TILE_SIZE = 1000;
