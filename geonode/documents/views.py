@@ -159,6 +159,11 @@ class DocumentUpdateView(UpdateView):
     queryset = Document.objects.all()
     context_object_name = 'document'
 
+    def get_context_data(self, **kwargs):
+        context = super(DocumentUpdateView, self).get_context_data(**kwargs)
+        context['ALLOWED_DOC_TYPES'] = ALLOWED_DOC_TYPES
+        return context
+
     def form_valid(self, form):
         """
         If the form is valid, save the associated model.
