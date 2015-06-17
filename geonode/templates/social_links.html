@@ -1,3 +1,4 @@
+{% load i18n %}
 {% block extra_head %}
 <link href="{{ STATIC_URL }}geonode/css/social_twitter.css" rel="stylesheet" />
 {% endblock %}
@@ -6,7 +7,7 @@
 	<article class="tab-pane" id="share">
         <!-- TODO: Move this to a reusable template snippet -->
         <header>
-            <h3>Share This {{ resource.class_name }} </h3>
+            <h3>{% trans "Share This" %} {% trans resource.class_name %} </h3>
         </header>
         <div>
               <ul class="social">

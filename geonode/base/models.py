@@ -236,7 +236,8 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin):
                                          ' dataset')
     # internal fields
     uuid = models.CharField(max_length=36)
-    owner = models.ForeignKey(settings.AUTH_USER_MODEL, blank=True, null=True, related_name='owned_resource')
+    owner = models.ForeignKey(settings.AUTH_USER_MODEL, blank=True, null=True, related_name='owned_resource',
+                              verbose_name=_("Owner"))
     contacts = models.ManyToManyField(settings.AUTH_USER_MODEL, through='ContactRole')
     title = models.CharField(_('title'), max_length=255, help_text=_('name by which the cited resource is known'))
     date = models.DateTimeField(_('date'), default=datetime.datetime.now, help_text=date_help_text)
@@ -260,6 +261,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin):
                                          help_text=constraints_other_help_text)
 
     license = models.ForeignKey(License, null=True, blank=True,
+                                verbose_name=_("License"),
                                 help_text=license_help_text)
     language = models.CharField(_('language'), max_length=3, choices=ALL_LANGUAGES, default='eng',
                                 help_text=language_help_text)
@@ -269,6 +271,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin):
 
     spatial_representation_type = models.ForeignKey(SpatialRepresentationType, null=True, blank=True,
                                                     limit_choices_to=Q(is_choice=True),
+                                                    verbose_name=_("spatial representation type"),
                                                     help_text=spatial_representation_type_help_text)
 
     # Section 5
@@ -326,8 +329,10 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin):
     popular_count = models.IntegerField(default=0)
     share_count = models.IntegerField(default=0)
 
-    featured = models.BooleanField(default=False, help_text=_('Should this resource be advertised in home page?'))
-    is_published = models.BooleanField(default=True, help_text=_('Should this resource be published and searchable?'))
+    featured = models.BooleanField(_("Featured"), default=False,
+                                   help_text=_('Should this resource be advertised in home page?'))
+    is_published = models.BooleanField(_("Is Published"), default=True,
+                                       help_text=_('Should this resource be published and searchable?'))
 
     # fields necessary for the apis
     thumbnail_url = models.TextField(null=True, blank=True)
