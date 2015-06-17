@@ -204,6 +204,14 @@ ALLOWED_DOCUMENT_TYPES = [
 ]
 MAX_DOCUMENT_SIZE = 2  # MB
 
+# DOCUMENT_TYPE_MAP and DOCUMENT_MIMETYPE_MAP update enumerations in
+# documents/enumerations.py and should only
+# need to be uncommented if adding other types
+# to settings.ALLOWED_DOCUMENT_TYPES
+
+# DOCUMENT_TYPE_MAP = {}
+# DOCUMENT_MIMETYPE_MAP = {}
+
 GEONODE_APPS = (
 
 
