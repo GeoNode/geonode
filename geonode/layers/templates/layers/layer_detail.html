@@ -10,11 +10,24 @@
 {% block title %}{{ resource.title|default:resource.typename }} — {{ block.super }}{% endblock %}
 
 {% block head %}
-{% if preview == 'geoext' %}
-  {% include "layers/layer_geoext_map.html" %}
-{% else %}
-  {% include "layers/layer_leaflet_map.html" %}
-{% endif %}
+
+  {% if TWITTER_CARD %}
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:site" content="{{ TWITTER_SITE }}" />
+    <meta name="twitter:title" content="{{ resource.title }}" />
+    {% if resource.abstract %}
+      <meta name="twitter:description" content="{{ resource.abstract|escape|safe|truncatechars:100 }}" />
+    {% else %}
+      <meta name="twitter:description" content="{{ resource.title }}" />
+    {% endif %}
+    <meta name="twitter:image" content="{{ resource.thumbnail_url }}" />
+  {% endif %}
+
+  {% if preview == 'geoext' %}
+    {% include "layers/layer_geoext_map.html" %}
+  {% else %}
+    {% include "layers/layer_leaflet_map.html" %}
+  {% endif %}
 {{ block.super }}
 {% endblock %}
 

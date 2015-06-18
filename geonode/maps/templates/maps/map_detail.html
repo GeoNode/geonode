@@ -9,8 +9,19 @@
 {% block title %}{{ resource.title }} — {{ block.super }}{% endblock %}
 
 {% block head %}
-{% include "maps/map_include.html" %}
-{{ block.super }}
+  {% if TWITTER_CARD %}
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:site" content="{{ TWITTER_SITE }}" />
+    <meta name="twitter:title" content="{{ resource.title }}" />
+    {% if resource.abstract %}
+      <meta name="twitter:description" content="{{ resource.abstract|escape|safe|truncatechars:100 }}" />
+    {% else %}
+      <meta name="twitter:description" content="{{ resource.title }}" />
+    {% endif %}
+    <meta name="twitter:image" content="{{ resource.thumbnail_url }}" />
+  {% endif %}
+  {% include "maps/map_include.html" %}
+  {{ block.super }}
 {% endblock %}
 
 {% block body_class %}maps{% endblock %}
