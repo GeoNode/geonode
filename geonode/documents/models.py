@@ -88,11 +88,14 @@ class Document(ResourceBase):
             logger.debug(
                 u'Generating a thumbnail for document: {0}'.format(
                     self.title))
-            with image.Image(filename=self.doc_file.path) as img:
-                img.sample(*size)
-                return img.make_blob('png')
-        elif self.extension and self.extension.lower() in IMGTYPES and self.doc_file:
-
+            try:
+                with image.Image(filename=self.doc_file.path) as img:
+                    img.sample(*size)
+                    return img.make_blob('png')
+            except:
+                logger.debug('Error generating the thumbnail with Wand, cascading to a default image...')
+        # if we are still here, we use a default image thumb
+        if self.extension and self.extension.lower() in IMGTYPES and self.doc_file:
             img = Image.open(self.doc_file.path)
             img = ImageOps.fit(img, size, Image.ANTIALIAS)
         else:
