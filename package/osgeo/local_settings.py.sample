@@ -26,7 +26,7 @@ OGC_SERVER = {
         'MAPFISH_PRINT_ENABLED' : True,
         'PRINT_NG_ENABLED' : True,
         'GEONODE_SECURITY_ENABLED' : True,
-        'GEOGIT_ENABLED' : False,
+        'GEOGIG_ENABLED' : False,
         'WMST_ENABLED' : False,
         # Set to name of database in DATABASES dictionary to enable
         'DATASTORE': 'datastore',
@@ -40,9 +40,9 @@ OGC_SERVER = {
 
 UPLOADER_BACKEND_URL = 'rest'
 
-# Import uploaded shapefiles into a GeoGit repository
-GEOGIT_DATASTORE = False
-GEOGIT_DATASTORE_NAME = 'geogit-repo'
+# Import uploaded shapefiles into a GeoGig repository
+GEOGIG_DATASTORE = False
+GEOGIG_DATASTORE_NAME = 'geogig-repo'
 
 UPLOADER_SHOW_TIME_STEP=False
 

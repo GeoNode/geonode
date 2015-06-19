@@ -35,7 +35,7 @@ def geoserver_urls(request):
         MAPFISH_PRINT_ENABLED=ogc_server_settings.MAPFISH_PRINT_ENABLED,
         PRINT_NG_ENABLED=ogc_server_settings.PRINT_NG_ENABLED,
         GEONODE_SECURITY_ENABLED=ogc_server_settings.GEONODE_SECURITY_ENABLED,
-        GEOGIT_ENABLED=ogc_server_settings.GEOGIT_ENABLED,
+        GEOGIG_ENABLED=ogc_server_settings.GEOGIG_ENABLED,
         TIME_ENABLED=getattr(
                 settings,
                 'UPLOADER',

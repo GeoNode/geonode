@@ -1,4 +1,4 @@
-{% load geogit_tags %}
+{% load geogig_tags %}
 
 {% if DEBUG_STATIC %}
     <script src="{{ STATIC_URL }}lib/js/jquery.min.js"></script>
@@ -7,19 +7,19 @@
     <script src="{{ STATIC_URL }}lib/js/ZeroClipboard.min.js"></script>
     <script src="{{ STATIC_URL }}lib/js/moment.min.js"></script>
 {% endif %}
-<script src="{{ STATIC_URL }}geogit/geogit.js"></script>
-<link href="{{ STATIC_URL }}geogit/css/geogit.css" rel="stylesheet"/>
+<script src="{{ STATIC_URL }}geogig/geogig.js"></script>
+<link href="{{ STATIC_URL }}geogig/css/geogig.css" rel="stylesheet"/>
 
 <script type="text/javascript">
-  var module = angular.module('g', ['geogit']);
-  module.constant('geogitConfig', {
+  var module = angular.module('g', ['geogig']);
+  module.constant('geogigConfig', {
     workspace: '{{ resource.workspace }}',
     store: '{{ resource.store }}',
     typename: '{{ resource.typename }}',
     geoserverURL: '{{ GEOSERVER_BASE_URL }}',
-    statisticsURL: '{%  geogit_statistics_url resource %}',
-    logURL: '{% geogit_log_url resource %}',
-    repoURL: '{% geogit_repo_url resource %}'
+    statisticsURL: '{%  geogig_statistics_url resource %}',
+    logURL: '{% geogig_log_url resource %}',
+    repoURL: '{% geogig_repo_url resource %}'
   });
   angular.bootstrap(document, ['g']);
 

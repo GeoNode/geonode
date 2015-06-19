@@ -9,7 +9,7 @@
   {% endif %}
   <li><a href="#rate" data-toggle="tab"><i class="fa fa-star"></i>{% trans "Ratings" %}</a></li>
   <li><a href="#comments" data-toggle="tab"><i class="fa fa-comment-o"></i> {% trans "Comments" %}</a></li>
-  {% if GEOGIT_ENABLED and resource.link_set.geogit %}
-  <li><a href="#geogit" data-toggle="tab"><i class="fa fa-code-fork"></i> {% trans "GeoGit" %}</a></li>
+  {% if GEOGIG_ENABLED and resource.link_set.geogig %}
+  <li><a href="#geogig" data-toggle="tab"><i class="fa fa-code-fork"></i> {% trans "GeoGig" %}</a></li>
   {% endif %}
 </ul>
