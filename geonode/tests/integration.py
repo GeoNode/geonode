@@ -285,7 +285,7 @@ class GeoNodeMapTest(TestCase):
         )), 5, 'Expected specific number of keywords from uploaded layer XML metadata')
 
         self.assertEqual(uploaded.keyword_csv,
-                        'Airport,Runway,Runways,Airports,Landing Strips',
+                        'Runways,Landing Strips,Airport,Airports,Runway',
                         'Expected CSV of keywords from uploaded layer XML metadata')
 
         self.assertTrue(
