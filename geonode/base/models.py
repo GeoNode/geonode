@@ -396,7 +396,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin):
 
     @property
     def keyword_csv(self):
-        keywords_qs = self.keywords.all()
+        keywords_qs = self.get_real_instance().keywords.all()
         if keywords_qs:
             return ','.join([kw.name for kw in keywords_qs])
         else:
