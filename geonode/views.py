@@ -104,3 +104,5 @@ def err403(request):
     else:
         return TemplateResponse(request, '401.html', {}, status=401).render()
         
+def forbidden(request):
+    return TemplateResponse(request, '401.html', {}, status=401).render()

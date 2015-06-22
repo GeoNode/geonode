@@ -1,5 +1,6 @@
 {% include "geonode/ext_header.html" %}
 <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}geoext/css/popup.css">
+<link rel="stylesheet" type="text/css" href="{{STATIC_URL}}geonode/css/georef.css">
 <script type="text/javascript" src="{{STATIC_URL}}lib/js/OpenLayers.js"></script>
 <script type="text/javascript" src="{{ STATIC_URL }}lib/js/GeoExt.js"></script>
 <script type="text/javascript" src="{{ STATIC_URL}}geonode/js/utils/thumbnail.js"></script>
@@ -17,7 +18,30 @@
         return (bytes / Math.pow(k, i)).toPrecision(decimals + 1) + ' ' + sizes[i];
     }
     
-    $(document).ready(function(){
+    
+</script>
+<script type="text/javascript" >
+
+OpenLayers.ImgPath = "{{ STATIC_URL }}geoexplorer/externals/openlayers/theme/default/img";
+OpenLayers.Request.DEFAULT_CONFIG.headers = {
+    'X-CSRFToken': '{{ csrf_token|escapejs }}'
+};
+
+var curr_location =  "{{siteurl}}";
+OpenLayers.ProxyHost = curr_location+"/proxy/?url=";
+
+{% autoescape off %}
+
+var options = {{ viewer| safe }};
+var app, map;
+var tile_list = [];
+var interest_bounds; 
+var geoserver = "{{geoserver}}";
+// added stuff
+
+var _TILE_SIZE = 1000;
+
+$(document).ready(function(){
        $("#georef_form").submit(function(e) {
            e.preventDefault();
            var self = this;
@@ -35,28 +59,24 @@
                     }
                 })
        });
-    });
-</script>
-<script type="text/javascript" >
+       
+       $("#bbox_form").submit(function(e){
+           e.preventDefault();
+           var self= this;
+           var highlight_layer = map.getLayersByName("Highlight Layer")[0];
+           selection_bounds(
+                new OpenLayers.Bounds(
+                    $('#leftlimit').val(),
+                    $('#lowerlimit').val(),
+                    $('#rightlimit').val(),
+                    $('#upperlimit').val()
+                ),
+                highlight_layer
+            );
+        });
+       
+});
 
-OpenLayers.ImgPath = "{{ STATIC_URL }}geoexplorer/externals/openlayers/theme/default/img";
-OpenLayers.Request.DEFAULT_CONFIG.headers = {
-    'X-CSRFToken': '{{ csrf_token|escapejs }}'
-};
-
-var curr_location =  "{{siteurl}}";
-OpenLayers.ProxyHost = curr_location+"/proxy/?url=";
-
-{% autoescape off %}
-
-var options = {{ viewer| safe }};
-var app, map;
-var tile_list = [];
-var curr_popup;
-var interest_bounds; 
-// added stuff
-
-var _TILE_SIZE = 1000;
 
 function floor_tile_size(x){
     return  (Math.floor(x/_TILE_SIZE) * _TILE_SIZE);
@@ -90,28 +110,29 @@ function display_points(div_id, vec_layer){
     container.appendChild(table_element);
     
     var georef_string = "";
-    
+    console.log(tile_list);
     for (var i=0; i< tile_list.length/5; i++){
         var row_element = document.createElement("tr");
         row_element.className += "georef_tr";
         table_element.appendChild(row_element);
-        for (var j = 0; j< 5; j++){
-
-            var georef_element = document.createElement("td");
-            georef_element.setAttribute("id",tile_list[i*5+j].georef);
-            var container_width = document.getElementById("embedded_map").offsetWidth
-            georef_element.setAttribute("style", "width: "+container_width/5+"px; height: 30px;");
-            georef_element.innerHTML  = "<font size=3.5>"+tile_list[i*5+j].georef+"</font>";
+        for (var j = 0; j< Math.min(5, tile_list.length - i*5 ); j++){
+            console.log("current index:"+(i*5+j));
+            console.log("tile list length:"+tile_list.length);
+            var georef_column = document.createElement("td");
+            georef_column.setAttribute("id",tile_list[i*5+j].georef);
+            georef_column.className += "georef_td"
+            georef_column.innerHTML = tile_list[i*5+j].georef
+            row_element.appendChild(georef_column);
             
-            row_element.appendChild(georef_element);
-            if(i == 0){
-                georef_string+=tile_list[i].georef;
+            if(i*5+j == 0){
+                georef_string+=tile_list[i*5+j].georef;
             }else{
-                  georef_string+=","+tile_list[i].georef;
+                georef_string+=","+tile_list[i*5+j].georef;
             }
         }
     }
-   document.getElementById("georef_area").setAttribute("value",georef_string);
+    console.log(georef_string);
+    document.getElementById("georef_area").setAttribute("value",georef_string);
 }
 
 function createHighlightBox(feature_attribs){
@@ -133,6 +154,101 @@ function find_georef(tile_list, georef){
      
      var index = tile_indeces.indexOf(georef);
      return index;
+}
+
+function selection_bounds(map_bounds, highlight_layer) {
+    
+    var transformed_bounds = map_bounds.clone().transform(new OpenLayers.Projection("EPSG:900913"), new OpenLayers.Projection("EPSG:32651"));
+    
+    var filter = new OpenLayers.Filter.Spatial({
+        type: OpenLayers.Filter.Spatial.INTERSECTS,
+        property: "the_geom",
+        value: transformed_bounds.toGeometry()
+    });
+    
+    var wfs_proto = new OpenLayers.Protocol.WFS({
+        version: "1.0.0",
+        //url: "http://192.168.56.100:8080/geoserver/geonode/wfs",
+        url: geoserver+"geonode/wfs",
+        featurePrefix: "geonode",
+        featureType: "{{feature_tiled}}",
+        featureNS: "http://www.geonode.org/",
+        srsName: "EPSG:32651",
+        outputFormat: "json"
+    });              
+
+    var wfs_resp = wfs_proto.read({
+        filter: filter,
+        callback: function(response){
+            if(response.priv.responseText){
+                var json_parser = new OpenLayers.Format.JSON();
+                var feature_out = json_parser.read(response.priv.responseText);
+
+                for ( var i=0; i<feature_out.totalFeatures; i++ ){
+                    var f = feature_out.features[i];
+                    var corners = {
+                        "ur_x": f.properties.MAXX, "ur_y": f.properties.MAXY,
+                        "ul_x": f.properties.MINX, "ul_y": f.properties.MAXY,
+                        "ll_x": f.properties.MINX, "ll_y": f.properties.MINY,
+                        "lr_x": f.properties.MAXX,"lr_y": f.properties.MINY
+                    }
+
+                    var tile = createTile(corners);
+                    if (find_georef(tile_list, tile.georef)<0){
+                         tile_list.push(tile);
+                         tile.feature = createHighlightBox(tile.corners);
+                         highlight_layer.addFeatures([tile.feature]);
+                    }
+    
+                }
+                display_points("point_display", highlight_layer);
+            }else{
+                alert("Server did not respond.");
+            }
+        }
+    });
+}
+
+function areaInterestZoom(province, municipality){
+    var wfs_proto = new OpenLayers.Protocol.WFS({
+            version: "1.0.0",
+            //url: "http://192.168.56.100:8080/geoserver/geonode/wfs",
+            url: geoserver+"geonode/wfs",
+            featurePrefix: "geonode",
+            featureType: "{{ feature_municipality }}",
+            featureNS: "http://www.geonode.org/",
+            srsName: "EPSG:32651",
+            outputFormat: "application/json"
+        });              
+        
+        var filter = new OpenLayers.Filter.Logical({
+            type: "&&",
+            filters:[
+                new OpenLayers.Filter.Comparison({
+                    type: "==",
+                    property: "NAME_2",
+                    value: municipality
+                }),
+                new OpenLayers.Filter.Comparison({
+                    type: "==",
+                    property:"NAME_1",
+                    value: province
+                })
+            ]
+        });
+        
+        var wfs_resp  = wfs_proto.read({
+            filter: filter,
+            callback: function(response){
+                if(response.priv.responseText){
+                    var json_parser = new OpenLayers.Format.GeoJSON();
+                    var feature_out = json_parser.read(response.priv.responseText);
+                    feature_out[0].geometry.calculateBounds();
+                    interest_bounds = feature_out[0].geometry.getBounds();
+                    map.zoomToExtent(interest_bounds.transform(new OpenLayers.Projection("EPSG:32651"), new OpenLayers.Projection("EPSG:900913")), false);
+                }
+            }
+        });
 }
 
 function removeHighlight(georef, vec_layer){
@@ -180,7 +296,6 @@ Ext.onReady(function (){
     
     var stored_layer = map_options["layers"].filter(function(l){ return l["name"] == layer_name })[0];
     var source_index = stored_layer["source"];
-    var geoserver = "{{geoserver}}";
     
     var tile_layer = new OpenLayers.Layer.WMS(
         layer_name + "- Tiled", geoserver+"geonode/wms",
@@ -237,63 +352,17 @@ Ext.onReady(function (){
             this.box.activate();
         },
         
-        notice: function (bounds) {
-
+        highlight_layer: highlight_layer,
+        
+        notice: function (bounds){ 
+            
             var ll = map.getLonLatFromPixel(new OpenLayers.Pixel(bounds.left, bounds.bottom)); 
             var ur = map.getLonLatFromPixel(new OpenLayers.Pixel(bounds.right, bounds.top)); 
             var map_bounds = new OpenLayers.Bounds();
             map_bounds.extend(ll);
             map_bounds.extend(ur);
-            
-            var transformed_bounds = map_bounds.clone().transform(new OpenLayers.Projection("EPSG:900913"), new OpenLayers.Projection("EPSG:32651"));
-            
-            var filter = new OpenLayers.Filter.Spatial({
-                type: OpenLayers.Filter.Spatial.INTERSECTS,
-                property: "the_geom",
-                value: transformed_bounds.toGeometry()
-            });
-            
-            var wfs_proto = new OpenLayers.Protocol.WFS({
-                version: "1.0.0",
-                //url: "http://192.168.56.100:8080/geoserver/geonode/wfs",
-                url: geoserver+"geonode/wfs",
-                featurePrefix: "geonode",
-                featureType: "{{feature_tiled}}",
-                featureNS: "http://www.geonode.org/",
-                srsName: "EPSG:32651",
-                outputFormat: "json"
-            });              
-
-            var wfs_resp = wfs_proto.read({
-                filter: filter,
-                callback: function(response){
-                    if(response.priv.responseText){
-                        var json_parser = new OpenLayers.Format.JSON();
-                        var feature_out = json_parser.read(response.priv.responseText);
-
-                        for ( var i=0; i<feature_out.totalFeatures; i++ ){
-                            var f = feature_out.features[i];
-                            var corners = {
-                                "ur_x": f.properties.MAXX, "ur_y": f.properties.MAXY,
-                                "ul_x": f.properties.MINX, "ul_y": f.properties.MAXY,
-                                "ll_x": f.properties.MINX, "ll_y": f.properties.MINY,
-                                "lr_x": f.properties.MAXX,"lr_y": f.properties.MINY
-                            }
-
-                            var tile = createTile(corners);
-                            if (find_georef(tile_list, tile.georef)<0){
-                                 tile_list.push(tile);
-                                 tile.feature = createHighlightBox(tile.corners);
-                                 highlight_layer.addFeatures([tile.feature]);
-                            }
-            
-                        }
-                        display_points("point_display", highlight_layer);
-                    }else{
-                        alert("Server did not respond.");
-                    }
-                }
-            });
+            console.log(map_bounds);
+            selection_bounds(map_bounds, this.highlight_layer);
         }
     });
 
@@ -347,51 +416,11 @@ Ext.onReady(function (){
 
     var interest = "{{ interest }}";
     app = new GeoExt.MapPanel(config);
+    
     if (interest ){
-        var wfs_proto = new OpenLayers.Protocol.WFS({
-            version: "1.0.0",
-            //url: "http://192.168.56.100:8080/geoserver/geonode/wfs",
-            url: geoserver+"geonode/wfs",
-            featurePrefix: "geonode",
-            featureType: "{{ feature_municipality }}",
-            featureNS: "http://www.geonode.org/",
-            srsName: "EPSG:32651",
-            outputFormat: "application/json"
-        });              
-        
-        // assuming that interest is of the form "<province>,<municipality/city>"
-        // split the interest string here
-        var name = interest.split(",");
-        
-        var filter = new OpenLayers.Filter.Logical({
-            type: "&&",
-            filters:[
-                new OpenLayers.Filter.Comparison({
-                    type: "==",
-                    property: "NAME_2",
-                    value: name[1]
-                }),
-                new OpenLayers.Filter.Comparison({
-                    type: "==",
-                    property:"NAME_1",
-                    value: name[0]
-                })
-            ]
-        });
-        
-        var wfs_resp  = wfs_proto.read({
-            filter: filter,
-            callback: function(response){
-                if(response.priv.responseText){
-                    var json_parser = new OpenLayers.Format.GeoJSON();
-                    var feature_out = json_parser.read(response.priv.responseText);
-                    feature_out[0].geometry.calculateBounds();
-                    interest_bounds = feature_out[0].geometry.getBounds();
-                    map.zoomToExtent(interest_bounds.transform(new OpenLayers.Projection("EPSG:32651"), new OpenLayers.Projection("EPSG:900913")), false);
-                }
-            }
-        });
-        
+        province = interest.split(",")[0];
+        municipaity = interest.split(",")[1];
+        areaInterestZoom(province,municipality, map);
     }else{
         map.zoomToExtent(tile_layer.maxExtent, false);
     }
