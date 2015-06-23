@@ -664,6 +664,8 @@ TWITTER_CARD = False
 TWITTER_SITE = '@GeoNode'
 TWITTER_HASHTAGS = ['geonode'] 
 
+OPENGRAPH_ENABLED = False
+
 # Enable Licenses User Interface
 # Regardless of selection, license field stil exists as a field in the Resourcebase model.
 # Detail Display: above, below, never
