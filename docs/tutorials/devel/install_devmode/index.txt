@@ -138,6 +138,10 @@ For Windows: (:ref:`_install_win_devmode`)
     $ sudo apt-get update
     $ sudo apt-get install -y nodejs
     $ cd geonode/static
+    $ npm install --save-dev
+
+    # If the last command does not work, you can run it manually like this:
+
     $ npm install bower --save-dev
     $ npm install grunt-cli --save-dev
     $ npm install grunt-contrib-jshint --save-dev
@@ -150,7 +154,7 @@ For Windows: (:ref:`_install_win_devmode`)
     $ npm install grunt-contrib-watch --save-dev
 
     
-   Every time you want to update the static files after making changes to the sources, go to geonode/static and run 'grunt'.
+   Every time you want to update the static files after making changes to the sources, go to geonode/static and run 'grunt production'.
 
 #. Install GeoNode in the new active local virtualenv
 
