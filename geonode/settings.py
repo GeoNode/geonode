@@ -21,7 +21,7 @@
 # Django settings for the GeoNode project.
 import os
 from kombu import Queue
-from celery_app import app  # flake8: noqa
+from geonode.celery_app import app  # flake8: noqa
 
 #
 # General Django development settings
