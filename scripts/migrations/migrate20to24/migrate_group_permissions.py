@@ -18,7 +18,6 @@ authenticated_group_id = dst_cur.next()[0]
 sql = """
 select object_ct_id, object_id, subject, title from security_genericobjectrolemapping rl
 join security_objectrole r on rl.role_id = r.id
-where object_ct_id = 58
 """
 
 src_cur.execute(sql)
