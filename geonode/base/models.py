@@ -561,7 +561,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin):
         if not os.path.exists(upload_path):
             os.makedirs(upload_path)
 
-        with open(os.path.join(upload_path, filename), 'w') as f:
+        with open(os.path.join(upload_path, filename), 'wb') as f:
             thumbnail = File(f)
             thumbnail.write(image)
 
