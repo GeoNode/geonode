@@ -273,7 +273,6 @@ def map_embed(
 # MAPS VIEWER #
 
 
-@login_required
 def map_view(request, mapid, snapshot=None, template='maps/map_view.html'):
     """
     The view that returns the map composer opened to
@@ -298,7 +297,6 @@ def map_view_js(request, mapid):
     return HttpResponse(json.dumps(config), mimetype="application/javascript")
 
 
-@login_required
 def map_json(request, mapid, snapshot=None):
     if request.method == 'GET':
         map_obj = _resolve_map(request, mapid, 'base.view_resourcebase', _PERMISSION_MSG_VIEW)
@@ -843,7 +841,6 @@ def ajax_url_lookup(request):
     )
 
 
-@login_required
 def map_thumbnail(request, mapid):
     if request.method == 'POST':
         map_obj = _resolve_map(request, mapid)
