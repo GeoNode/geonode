@@ -95,7 +95,6 @@ def _resolve_map(request, id, permission='base.change_resourcebase',
 
 # BASIC MAP VIEWS #
 
-@login_required
 def map_detail(request, mapid, snapshot=None, template='maps/map_detail.html'):
     '''
     The view that show details of each map
