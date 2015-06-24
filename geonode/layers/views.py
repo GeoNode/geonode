@@ -223,17 +223,22 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
     # assert False, str(layer_bbox)
     config = layer.attribute_config()
 
+    # TODO (Mapstory): This has been commented out to force the client to make a getCapabilities request in order
+    # to pull in the time dimension data.  Ideally we would cache time data just like the srs and bbox data to prevent
+    # making the getCapabilities request.
+
     # Add required parameters for GXP lazy-loading
-    layer_bbox = layer.bbox
-    bbox = [float(coord) for coord in list(layer_bbox[0:4])]
-    srid = layer.srid
+    #layer_bbox = layer.bbox
+    #bbox = [float(coord) for coord in list(layer_bbox[0:4])]
+    #srid = layer.srid
 
     # Transform WGS84 to Mercator.
-    config["srs"] = srid if srid != "EPSG:4326" else "EPSG:900913"
-    config["bbox"] = llbbox_to_mercator([float(coord) for coord in bbox])
+    #config["srs"] = srid if srid != "EPSG:4326" else "EPSG:900913"
+    #config["bbox"] = llbbox_to_mercator([float(coord) for coord in bbox])
 
-    config["title"] = layer.title
-    config["queryable"] = True
+    #config["title"] = layer.title
+    #config["queryable"] = True
+
 
     if layer.storeType == "remoteStore":
         service = layer.service
