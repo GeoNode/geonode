@@ -337,7 +337,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin):
     # fields necessary for the apis
     thumbnail_url = models.TextField(null=True, blank=True)
     detail_url = models.CharField(max_length=255, null=True, blank=True)
-    rating = models.IntegerField(default=0, null=True)
+    rating = models.IntegerField(default=0, null=True, blank=True)
 
     def __unicode__(self):
         return self.title
