@@ -59,6 +59,10 @@ def resource_urls(request):
             settings,
             'TWITTER_HASHTAGS',
             []),
+        OPENGRAPH_ENABLED=getattr(
+            settings,
+            'OPENGRAPH_ENABLED',
+            False),
         HAYSTACK_SEARCH=getattr(
             settings,
             'HAYSTACK_SEARCH',
