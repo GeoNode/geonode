@@ -18,7 +18,6 @@ from geonode.layers.models import Layer
 from geonode.maps.models import Map
 from geonode.documents.models import Document
 from geonode.groups.models import GroupProfile
-from geonode.people.models import Profile
 
 from taggit.models import Tag
 from django.core.serializers.json import DjangoJSONEncoder
@@ -157,24 +156,6 @@ class TopicCategoryResource(TypeFilteredResource):
         serializer = CountJSONSerializer()
 
 
-class OwnerResource(TypeFilteredResource):
-    """Owners api"""
-
-    def serialize(self, request, data, format, options={}):
-        options['count_type'] = 'owner'
-
-        return super(OwnerResource, self).serialize(request, data, format, options)
-
-    class Meta:
-        queryset = Profile.objects.all().order_by('username')
-        resource_name = 'owners'
-        allowed_methods = ['get']
-        filtering = {
-            'name': ALL,
-        }
-        serializer = CountJSONSerializer()
-
-
 class GroupResource(ModelResource):
     """Groups api"""
 
@@ -201,7 +182,7 @@ class GroupResource(ModelResource):
         ordering = ['title', 'last_modified']
 
 
-class ProfileResource(ModelResource):
+class ProfileResource(TypeFilteredResource):
     """Profile api"""
 
     avatar_100 = fields.CharField(null=True)
@@ -289,6 +270,11 @@ class ProfileResource(ModelResource):
         else:
             return []
 
+    def serialize(self, request, data, format, options={}):
+        options['count_type'] = 'owner'
+
+        return super(ProfileResource, self).serialize(request, data, format, options)
+
     class Meta:
         queryset = get_user_model().objects.exclude(username='AnonymousUser')
         resource_name = 'profiles'
@@ -300,3 +286,4 @@ class ProfileResource(ModelResource):
         filtering = {
             'username': ALL,
         }
+        serializer = CountJSONSerializer()
