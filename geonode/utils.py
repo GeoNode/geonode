@@ -603,7 +603,7 @@ def build_social_links(request, resourcebase):
     date = datetime.datetime.strftime(resourcebase.date, "%m/%d/%Y") if resourcebase.date else None
     abstract = build_abstract(resourcebase, url=social_url, includeURL=True)
     caveats = build_caveats(resourcebase)
-    hashtags = ",".join(getattr(settings,'TWITTER_HASHTAGS',[]))
+    hashtags = ",".join(getattr(settings, 'TWITTER_HASHTAGS', []))
     return format_urls(
         settings.SOCIAL_ORIGINS,
         {
