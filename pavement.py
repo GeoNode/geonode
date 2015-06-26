@@ -126,7 +126,7 @@ def _install_data_dir():
 @task
 def static(options):
     with pushd('geonode/static'):
-        sh('make')
+        sh('grunt production')
 
 
 @task
