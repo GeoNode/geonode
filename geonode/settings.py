@@ -660,11 +660,11 @@ CKAN_ORIGINS = [{
 # Setting TWITTER_CARD to True will enable Twitter Cards
 # https://dev.twitter.com/cards/getting-started
 # Be sure to replace @GeoNode with your organization or site's twitter handle.
-TWITTER_CARD = False
+TWITTER_CARD = True
 TWITTER_SITE = '@GeoNode'
 TWITTER_HASHTAGS = ['geonode'] 
 
-OPENGRAPH_ENABLED = False
+OPENGRAPH_ENABLED = True
 
 # Enable Licenses User Interface
 # Regardless of selection, license field stil exists as a field in the Resourcebase model.
