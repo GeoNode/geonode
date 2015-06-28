@@ -783,6 +783,9 @@ LEAFLET_CONFIG = {
 # option to enable/disable resource unpublishing for administrators
 RESOURCE_PUBLISHING = False
 
+# Settings for EXIF contrib app
+EXIF_ENABLED = False
+
 CACHES = {
     # DUMMY CACHE FOR DEVELOPMENT
     'default': {

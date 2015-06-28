@@ -142,8 +142,48 @@ class DocumentUploadView(CreateView):
         if settings.RESOURCE_PUBLISHING:
             is_published = False
         self.object.is_published = is_published
+
         self.object.save()
         self.object.set_permissions(form.cleaned_data['permissions'])
+
+        abstract = None
+        date = None
+        keywords = []
+        bbox = None
+
+        if getattr(settings, 'EXIF_ENABLED', False):
+            try:
+                from geonode.contrib.exif.utils import exif_extract_metadata_doc
+                exif_metadata = exif_extract_metadata_doc(self.object)
+                if exif_metadata:
+                    date = exif_metadata.get('date', None)
+                    keywords.extend(exif_metadata.get('keywords', []))
+                    bbox = exif_metadata.get('bbox', None)
+                    abstract = exif_metadata.get('abstract', None)
+            except Exception, e:
+                print "Exif extraction failed."
+                raise e
+
+        if abstract:
+            self.object.abstract = abstract
+            self.object.save()
+
+        if date:
+            self.object.date = date
+            self.object.date_type = "Creation"
+            self.object.save()
+
+        if len(keywords) > 0:
+            self.object.keywords.add(*keywords)
+
+        if bbox:
+            bbox_x0, bbox_x1, bbox_y0, bbox_y1 = bbox
+            Document.objects.filter(id=self.object.pk).update(
+                bbox_x0=bbox_x0,
+                bbox_x1=bbox_x1,
+                bbox_y0=bbox_y0,
+                bbox_y1=bbox_y1)
+
         return HttpResponseRedirect(
             reverse(
                 'document_metadata',
