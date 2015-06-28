@@ -254,7 +254,7 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
             source_params=json.dumps(source_params))
     else:
         maplayer = GXPLayer(
-            name=layer.typename,
+            name=layer.name,
             ows_url=layer.ows_url,
             layer_params=json.dumps(config))
 

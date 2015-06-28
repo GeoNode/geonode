@@ -140,7 +140,9 @@ class Layer(ResourceBase):
         if self.storeType == "remoteStore":
             return self.service.base_url
         else:
-            return settings.OGC_SERVER['default']['PUBLIC_LOCATION'] + "wms"
+            return '{0}{1}/{2}/wms'.format(settings.OGC_SERVER['default']['PUBLIC_LOCATION'],
+                                             self.workspace,
+                                             self.name)
 
     @property
     def ptype(self):
