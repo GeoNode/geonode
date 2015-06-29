@@ -98,8 +98,9 @@
             </p>
         </div>
     </div>
-    
-    <input id='next' type="button" value="{% trans "Next" %}"/>
+    <button id='next' class="btn btn-default" type="submit" value="{% trans 'Next' %}"> Next
+        <i id="next-spinner" class="fa fa-spinner fa-spin hide"></i>
+    </button>
     <div id="upload-status"></div>
   </form>
 </div>

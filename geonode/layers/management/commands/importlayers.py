@@ -27,8 +27,8 @@ import datetime
 
 class Command(BaseCommand):
     help = ("Brings a data file or a directory full of data files into a"
-            "GeoNode site.  Layers are added to the Django database, the"
-            "GeoServer configuration, and the GeoNetwork metadata index.")
+            " GeoNode site.  Layers are added to the Django database, the"
+            " GeoServer configuration, and the GeoNetwork metadata index.")
 
     args = 'path [path...]'
 
@@ -68,6 +68,15 @@ class Command(BaseCommand):
             dest='category',
             default=None,
             help="""The category for the
+                    imported layer(s). Will be the same for all imported layers
+                    if multiple imports are done in one command"""
+        ),
+        make_option(
+            '-r',
+            '--regions',
+            dest='regions',
+            default="",
+            help="""The default regions, separated by comma, for the
                     imported layer(s). Will be the same for all imported layers
                     if multiple imports are done in one command"""
         ),
@@ -113,6 +122,13 @@ class Command(BaseCommand):
         keywords = options.get('keywords').split(',')
         if len(keywords) == 1 and keywords[0] == '':
             keywords = []
+        else:
+            keywords = map(str.strip, keywords)
+        regions = options.get('regions').split(',')
+        if len(regions) == 1 and regions[0] == '':
+            regions = []
+        else:
+            regions = map(str.strip, regions)
         start = datetime.datetime.now()
         output = []
         for path in args:
@@ -125,6 +141,7 @@ class Command(BaseCommand):
                 verbosity=verbosity,
                 console=console,
                 category=category,
+                regions=regions,
                 title=title,
                 private=private)
             output.extend(out)
