@@ -42,8 +42,8 @@
             <th style="text-align: center;">Tile Object</th>
             <th style="text-align: center;">Size</th>
             <th style="text-align: center;">Quantity</th>
-            <th style="text-align: center;"><i class="fa fa-minus-square"></i> {% trans "Remove" %} </th>
 <!--
+            <th style="text-align: center;"><i class="fa fa-minus-square"></i> {% trans "Remove" %} </th>
             <th>Total Price</th>
 -->
         </tr>
@@ -52,10 +52,10 @@
             <td>  {{ item.product.name }}</td>
             <td>  {{ item.product.size_in_bytes | filesizeformat }}</td>
             <td>  {{ item.quantity }}</td>
+<!--
             <td width="100">
               <label class="cell-label-remove"><input type='checkbox' /></label>
             </td>
-<!--
             <td>  {{ item.total_price }}</td>
 -->
         </tr>
