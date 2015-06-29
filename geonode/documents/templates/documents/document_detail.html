@@ -76,10 +76,11 @@
         <!-- TODO: Add display of who gave what rating based -->
       </article>
 
-      {% block exif %}
-        {% include "exif/_exif_document_detail.html" %}
-      {% endblock %}
-
+      {% if EXIF_ENABLED and exif_data %}
+        {% block exif %}
+          {% include "exif/_exif_document_detail.html" %}
+        {% endblock %}
+      {% endif %}
     </div>
   </div>
 
