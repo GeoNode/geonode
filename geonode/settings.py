@@ -874,7 +874,8 @@ EULA_URL = '/eula/eula_form/'
 SELECTION_LIMIT=209715200
 
 CEPHACCESS_HOST = 'cephaccess@cephaccess'
-CEPHACCESS_DL_SCRIPT = '/path/to/download.py'
+#CEPHACCESS_DL_SCRIPT = '/path/to/download.py'
+CEPHACCESS_DL_SCRIPT = '~/ftp_scripts/download.py'
 
 CEPH_OGW = {
     'default' : {
