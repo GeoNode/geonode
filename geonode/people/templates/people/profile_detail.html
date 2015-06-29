@@ -6,6 +6,17 @@
 
 {% block title %} {% trans "Profile of " %}{{ profile.first_name|default_if_none:profile.username }}{% endblock %}
 
+{% block head %}
+  {% if TWITTER_CARD %}
+    {% include "people/_profile_twittercard.html" %}
+  {% endif %}
+  {% if OPENGRAPH_ENABLED %}
+    {% include "people/_profile_opengraph.html" %}
+  {% endif %}
+  {{ block.super }}
+{% endblock %}
+
+
 {% block body_class %}people explore{% endblock %}
 
 {% block body %}

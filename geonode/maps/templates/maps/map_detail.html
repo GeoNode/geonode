@@ -9,8 +9,14 @@
 {% block title %}{{ resource.title }} — {{ block.super }}{% endblock %}
 
 {% block head %}
-{% include "maps/map_include.html" %}
-{{ block.super }}
+  {% if TWITTER_CARD %}
+    {% include "base/_resourcebase_twittercard.html" %}
+  {% endif %}
+  {% if OPENGRAPH_ENABLED %}
+    {% include "base/_resourcebase_opengraph.html" %}
+  {% endif %}
+  {% include "maps/map_include.html" %}
+  {{ block.super }}
 {% endblock %}
 
 {% block body_class %}maps{% endblock %}
