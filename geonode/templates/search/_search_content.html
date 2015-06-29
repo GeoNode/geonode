@@ -7,14 +7,20 @@
         <a href="." id="clear-search" class="pull-right">{% trans "Clear all filters" %}</a>
       </h5>
       </div>
-        {% include "search/_text_filter.html" %}
+        {% if SEARCH_FILTERS.TEXT_ENABLED %}
+          {% include "search/_text_filter.html" %}
+        {% endif  %}
       <div id="slide-pane">
-        {% if include_type_filter == 'true' %}
-        {% include "search/_type_filters.html" %}
+        {% if SEARCH_FILTERS.TYPE_ENABLED and include_type_filter == 'true' %}
+          {% include "search/_type_filters.html" %}
         {% endif %}
         {% include "search/_general_filters.html" %}
-        {% include "search/_region_filter.html" %}
-        {% include "search/_extent_filter.html" %}
+        {% if SEARCH_FILTERS.REGION_ENABLED %}
+          {% include "search/_region_filter.html" %}
+        {% endif %}
+        {% if SEARCH_FILTERS.EXTENT_ENABLED %}
+          {% include "search/_extent_filter.html" %}
+        {% endif %}
       </div>
   </div>
   <div class="col-md-9">
