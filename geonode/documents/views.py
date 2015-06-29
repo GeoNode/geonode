@@ -105,7 +105,7 @@ def document_detail(request, docid):
                 exif = exif_extract_dict(document)
                 if exif:
                     context_dict['exif_data'] = exif
-            except Exception, e:
+            except:
                 print "Exif extraction failed."
 
         return render_to_response(
@@ -169,7 +169,7 @@ class DocumentUploadView(CreateView):
                     keywords.extend(exif_metadata.get('keywords', []))
                     bbox = exif_metadata.get('bbox', None)
                     abstract = exif_metadata.get('abstract', None)
-            except Exception, e:
+            except:
                 print "Exif extraction failed."
 
         if abstract:
