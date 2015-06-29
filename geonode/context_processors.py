@@ -47,6 +47,22 @@ def resource_urls(request):
             settings,
             'SOCIAL_BUTTONS',
             False),
+        TWITTER_CARD=getattr(
+            settings,
+            'TWITTER_CARD',
+            False),
+        TWITTER_SITE=getattr(
+            settings,
+            'TWITTER_SITE',
+            '@GeoNode'),
+        TWITTER_HASHTAGS=getattr(
+            settings,
+            'TWITTER_HASHTAGS',
+            []),
+        OPENGRAPH_ENABLED=getattr(
+            settings,
+            'OPENGRAPH_ENABLED',
+            False),
         HAYSTACK_SEARCH=getattr(
             settings,
             'HAYSTACK_SEARCH',

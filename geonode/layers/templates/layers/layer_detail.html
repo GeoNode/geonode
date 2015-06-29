@@ -10,11 +10,20 @@
 {% block title %}{{ resource.title|default:resource.typename }} — {{ block.super }}{% endblock %}
 
 {% block head %}
-{% if preview == 'geoext' %}
-  {% include "layers/layer_geoext_map.html" %}
-{% else %}
-  {% include "layers/layer_leaflet_map.html" %}
-{% endif %}
+
+  {% if TWITTER_CARD %}
+    {% include "base/_resourcebase_twittercard.html" %}
+  {% endif %}
+
+  {% if OPENGRAPH_ENABLED %}
+    {% include "base/_resourcebase_opengraph.html" %}
+  {% endif %}
+
+  {% if preview == 'geoext' %}
+    {% include "layers/layer_geoext_map.html" %}
+  {% else %}
+    {% include "layers/layer_leaflet_map.html" %}
+  {% endif %}
 {{ block.super }}
 {% endblock %}
 

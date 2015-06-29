@@ -11,6 +11,13 @@
 
 {% block head %}
 
+  {% if TWITTER_CARD %}
+    {% include "base/_resourcebase_twittercard.html" %}
+  {% endif %}
+  {% if OPENGRAPH_ENABLED %}
+    {% include "base/_resourcebase_opengraph.html" %}
+  {% endif %}
+
 {{ block.super }}
 {% endblock %}
 
