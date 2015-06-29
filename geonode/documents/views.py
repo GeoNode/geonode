@@ -99,6 +99,15 @@ def document_detail(request, docid):
         if settings.SOCIAL_ORIGINS:
             context_dict["social_links"] = build_social_links(request, document)
 
+        if getattr(settings, 'EXIF_ENABLED', False):
+            try:
+                from geonode.contrib.exif.utils import exif_extract_dict
+                exif = exif_extract_dict(document)
+                if exif:
+                    context_dict['exif_data'] = exif
+            except Exception, e:
+                print "Exif extraction failed."
+
         return render_to_response(
             "documents/document_detail.html",
             RequestContext(request, context_dict))
@@ -162,7 +171,6 @@ class DocumentUploadView(CreateView):
                     abstract = exif_metadata.get('abstract', None)
             except Exception, e:
                 print "Exif extraction failed."
-                raise e
 
         if abstract:
             self.object.abstract = abstract
