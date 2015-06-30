@@ -1,10 +1,10 @@
 {% load i18n %}
 
-<article class="description tab-pane active" id="info">
+<article itemscope itemtype="http://schema.org/Dataset" class="description tab-pane active" id="info">
   <dl class="dl-horizontal">
     {% if resource.title %}
     <dt>{% trans "Title" %}</dt>
-    <dd>{{ resource.title|truncatechars:80 }}</dd>
+    <dd itemprop="name">{{ resource.title|truncatechars:80 }}</dd>
     {% endif %}
 
     {% if resource.srid and SRID_DETAIL == 'above' %}
@@ -14,7 +14,7 @@
 
     {% if LICENSES_ENABLED and LICENSES_DETAIL == 'above' and resource.license %}
     <dt>{% trans "License" %}</dt>
-    <dd>{{ resource.license.name_long }} <a href="#license-more-above" data-toggle="collapse" data-target=".license-more-above"><i class="fa fa-info-circle"></i></a></dd>
+    <dd itemprop="license">{{ resource.license.name_long }} <a href="#license-more-above" data-toggle="collapse" data-target=".license-more-above"><i class="fa fa-info-circle"></i></a></dd>
     {% endif %}
     <dd class="license-more-above collapse">
       {% for bullet in resource.license.description_bullets %}
@@ -27,12 +27,18 @@
 
     {% if resource.abstract %}
     <dt>{% trans "Abstract" %}</dt>
-    <dd>{{ resource.abstract|escape|urlize|linebreaks|safe|truncatechars:500 }}</dd>
+    <dd itemprop="description">{{ resource.abstract|escape|urlize|linebreaks|safe|truncatechars:500 }}</dd>
     {% endif %}
     
     {% if resource.date %}
     <dt>{% trans resource.date_type|title %} {% trans "Date" %}</dt>
-    <dd>{{ resource.date }}</dd>
+      {% if resource.date_type == 'creation' %}
+        <dd itemprop="dateCreated" datetime="{{ resource.date|date:"c"}}">{{ resource.date }}</dd>
+      {% elif resource.date_type == 'publication' %}
+        <dd itemprop="datePublished" datetime="{{ resource.date|date:"c"}}">{{ resource.date }}</dd>
+      {% else %}
+        <dd itemprop="dateModified" datetime="{{ resource.date|date:"c"}}">{{ resource.date }}</dd>
+      {% endif %}
     {% endif %}
 
     {% if resource.display_type %}
@@ -42,9 +48,9 @@
 
     {% if resource.keywords.count > 0 %}
     <dt>{% trans "Keywords" %}</dt>
-    <dd>
+    <dd itemprop="keywords">
       {% for keyword in resource.keywords.all %}
-	<a href="{% url "search" %}?keywords__slug__in={{ keyword.slug }}" >
+	<a itemscope itemtype="http://schema.org/Text" href="{% url "search" %}?keywords__slug__in={{ keyword.slug }}" >
           {{ keyword.name }}
         </a>
         {% if not forloop.last %},{% endif %}
@@ -64,9 +70,9 @@
   
     {% if resource.regions.all %}
     <dt>{% trans "Regions" %}</dt>
-    <dd>
+    <dd itemprop="keywords">
       {% for region in resource.regions.all %}
-        <a href="{% url "search" %}?regions__name__in={{ region.name }}">
+        <a itemscope itemtype="http://schema.org/Text" href="{% url "search" %}?regions__name__in={{ region.name }}">
           {{ region.name }}
         </a>
         {% if not forloop.last %},{% endif %}
@@ -76,7 +82,7 @@
   
     {% if resource.owner %}
     <dt>{% trans "Owner" %}</dt>
-    <dd><a href="{{ resource.owner.get_absolute_url }}">{{ resource.owner.username }}</a></dd>
+    <dd><a itemprop="author" href="{{ resource.owner.get_absolute_url }}">{{ resource.owner.username }}</a></dd>
     {% endif %}
 
     {% if resource.poc.user %}
