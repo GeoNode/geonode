@@ -1,0 +1,26 @@
+{% load i18n %}
+
+{% block exif_tags %}
+  <article class="tab-pane" id="exif">
+    <dl class="dl-horizontal">
+      <dt>{% trans 'Width' %}</dt>
+      <dd>{{ exif_data.width }}</dd>
+      <dt>{% trans 'Height' %}</dt>
+      <dd>{{ exif_data.height }}</dd>
+      <dt>{% trans 'Make' %}</dt>
+      <dd>{{ exif_data.make }}</dd>
+      <dt>{% trans 'Model' %}</dt>
+      <dd>{{ exif_data.model }}</dd>
+      <dt>{% trans 'Date' %}</dt>
+      <dd>{{ exif_data.date }}</dd>
+      <dt>{% trans 'Latitude' %}</dt>
+      <dd>{% if exif_data.lat %}{{ exif_data.lat }}{% else %}{% trans 'Not specified' %}{% endif %}</dd>
+      <dt>{% trans 'Longitude' %}</dt>
+      <dd>{% if exif_data.lon %}{{ exif_data.lon }}{% else %}{% trans 'Not specified' %}{% endif %}</dd>
+      <dt>{% trans 'Flash' %}</dt>
+      <dd>{% if exif_data.flash %}{% trans 'True' %}{% else %}{% trans 'False'%}{% endif %}</dd>
+      <dt>{% trans 'Speed Rating' %}</dt>
+      <dd>{{ exif_data.speed }}</dd>
+    </dl>
+  </article>
+{% endblock %}

@@ -549,4 +549,12 @@ Default::
         'JPEG', 'PDF', 'PNG' 'Tiles',
     ]
 
+Contrib settings
+=================
+
+EXIF_ENABED
+...........
+Default: ``False``
+
+A boolean that specifies whether the Exif contrib app is enabled.  If enabled, metadata is generated from Exif tags when documents are uploaded.
 
