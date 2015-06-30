@@ -416,6 +416,30 @@ Default::
 
 A list of dictionaries that is used to generate the links to CKAN instances displayed in the Share tab.  For each origin, the name and and abstract format parameters are replaced by the actual values of the ResourceBase object (layer, map, document).  This is not enabled by default.  To enabled, uncomment the following line: SOCIAL_ORIGINS.extend(CKAN_ORIGINS).
 
+TWITTER_CARD
+--------------
+Default:: ``True``
+
+A boolean that specifies whether Twitter cards are enabled.
+
+TWITTER_SITE
+--------------
+Default:: ``'@GeoNode'``
+
+A string that specifies the site to for the twitter:site meta tag for Twitter Cards.
+
+TWITTER_HASHTAGS
+--------------
+Default:: ``['geonode']``
+
+A list that specifies the hastags to use when sharing a resource when clicking on a social link.
+
+OPENGRAPH_ENABLED
+--------------
+Default:: ``True``
+
+A boolean that specifies whether Open Graph is enabled.  Open Graph is used by Facebook and Slack.
+
 Upload settings
 ===============
 

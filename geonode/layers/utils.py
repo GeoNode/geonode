@@ -28,7 +28,6 @@ import os
 import glob
 import sys
 import tempfile
-import zipfile
 
 from osgeo import gdal
 
@@ -37,17 +36,20 @@ from django.contrib.auth import get_user_model
 from django.template.defaultfilters import slugify
 from django.core.files import File
 from django.conf import settings
+from django.db.models import Q
 
 # Geonode functionality
 from geonode import GeoNodeException
 from geonode.people.utils import get_valid_user
 from geonode.layers.models import Layer, UploadSession
-from geonode.base.models import Link, SpatialRepresentationType, TopicCategory
+from geonode.base.models import Link, SpatialRepresentationType, TopicCategory, Region
 from geonode.layers.models import shp_exts, csv_exts, vec_exts, cov_exts
 from geonode.layers.metadata import set_metadata
 from geonode.utils import http_client
 
-from zipfile import ZipFile
+import tarfile
+
+from zipfile import ZipFile, is_zipfile
 
 logger = logging.getLogger('geonode.layers.utils')
 
@@ -165,6 +167,17 @@ def layer_type(filename):
                     extension = e
         finally:
             zf.close()
+
+    if extension.lower() == '.tar' or filename.endswith('.tar.gz'):
+        tf = tarfile.open(filename)
+        # TarFile doesn't support with statement in 2.6, so don't do it
+        try:
+            for n in tf.getnames():
+                b, e = os.path.splitext(n.lower())
+                if e in shp_exts or e in cov_exts or e in csv_exts:
+                    extension = e
+        finally:
+            tf.close()
 
     if extension.lower() in vec_exts:
         return 'vector'
@@ -297,7 +310,7 @@ def unzip_file(upload_file, extension='.shp', tempdir=None):
     if tempdir is None:
         tempdir = tempfile.mkdtemp()
 
-    the_zip = zipfile.ZipFile(upload_file)
+    the_zip = ZipFile(upload_file)
     the_zip.extractall(tempdir)
     for item in the_zip.namelist():
         if item.endswith(extension):
@@ -306,8 +319,26 @@ def unzip_file(upload_file, extension='.shp', tempdir=None):
     return absolute_base_file
 
 
+def extract_tarfile(upload_file, extension='.shp', tempdir=None):
+    """
+    Extracts a tarfile into a temporary directory and returns the full path of the .shp file inside (if any)
+    """
+    absolute_base_file = None
+    if tempdir is None:
+        tempdir = tempfile.mkdtemp()
+
+    the_tar = tarfile.open(upload_file)
+    the_tar.extractall(tempdir)
+    for item in the_tar.getnames():
+        if item.endswith(extension):
+            absolute_base_file = os.path.join(tempdir, item)
+
+    return absolute_base_file
+
+
 def file_upload(filename, name=None, user=None, title=None, abstract=None,
-                skip=True, overwrite=False, keywords=[], charset='UTF-8', category=None):
+                keywords=[], category=None, regions=[],
+                skip=True, overwrite=False, charset='UTF-8'):
     """Saves a layer in GeoNode asking as little information as possible.
        Only filename is required, user and title are optional.
     """
@@ -330,8 +361,11 @@ def file_upload(filename, name=None, user=None, title=None, abstract=None,
         name = slugify(title).replace('-', '_')
 
     if category is not None:
-        category = TopicCategory.objects.get(
-                    identifier=category)
+        categories = TopicCategory.objects.filter(Q(identifier__iexact=category) | Q(gn_description__iexact=category))
+        if len(categories) == 1:
+            category = categories[0]
+        else:
+            category = None
 
     # Generate a name that is not taken if overwrite is False.
     valid_name = get_valid_layer_name(name, overwrite)
@@ -416,20 +450,32 @@ def file_upload(filename, name=None, user=None, title=None, abstract=None,
         layer.save()
 
     # Assign the keywords (needs to be done after saving)
-    if len(keywords) > 0:
-        layer.keywords.add(*keywords)
+    if keywords:
+        if len(keywords) > 0:
+            layer.keywords.add(*keywords)
+
+    # Assign the regions (needs to be done after saving)
+    if regions:
+        if len(regions) > 0:
+            regions_to_add = Region.objects.filter(
+                reduce(
+                    lambda x, y: x | y,
+                    [Q(name__iexact=region) | Q(code__iexact=region) for region in regions]))
+            if len(regions_to_add) > 0:
+                layer.regions.add(*regions_to_add)
 
     return layer
 
 
 def upload(incoming, user=None, overwrite=False,
-           keywords=(), skip=True, ignore_errors=True,
-           verbosity=1, console=None, category=None, title=None, private=False):
+           keywords=(), category=None, regions=(),
+           skip=True, ignore_errors=True,
+           verbosity=1, console=None, title=None, private=False):
     """Upload a directory of spatial data files to GeoNode
 
        This function also verifies that each layer is in GeoServer.
 
-       Supported extensions are: .shp, .tif, and .zip (of a shapefile).
+       Supported extensions are: .shp, .tif, .tar, .tar.gz, and .zip (of a shapefile).
        It catches GeoNodeExceptions and gives a report per file
     """
     if verbosity > 1:
@@ -444,7 +490,9 @@ def upload(incoming, user=None, overwrite=False,
         basename, extension = os.path.splitext(short_filename)
         filename = incoming
 
-        if extension in ['.tif', '.shp', '.zip']:
+        if extension in ['.tif', '.shp', '.tar', '.zip']:
+            potential_files.append((basename, filename))
+        elif short_filename.endswith('.tar.gz'):
             potential_files.append((basename, filename))
 
     elif not os.path.isdir(incoming):
@@ -458,7 +506,9 @@ def upload(incoming, user=None, overwrite=False,
             for short_filename in files:
                 basename, extension = os.path.splitext(short_filename)
                 filename = os.path.join(root, short_filename)
-                if extension in ['.tif', '.shp', '.zip']:
+                if extension in ['.tif', '.shp', '.tar', '.zip']:
+                    potential_files.append((basename, filename))
+                elif short_filename.endswith('.tar.gz'):
                     potential_files.append((basename, filename))
 
     # After gathering the list of potential files,
@@ -493,14 +543,18 @@ def upload(incoming, user=None, overwrite=False,
 
         if save_it:
             try:
-                if zipfile.is_zipfile(filename):
+                if is_zipfile(filename):
                     filename = unzip_file(filename)
+
+                if tarfile.is_tarfile(filename):
+                    filename = extract_tarfile(filename)
 
                 layer = file_upload(filename,
                                     user=user,
                                     overwrite=overwrite,
                                     keywords=keywords,
                                     category=category,
+                                    regions=regions,
                                     title=title
                                     )
                 if not existed:

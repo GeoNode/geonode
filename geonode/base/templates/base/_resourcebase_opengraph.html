@@ -1,0 +1,7 @@
+<meta property="og:title" content="{{ resource.title }}" />
+<meta property="og:site_name" content="{{ SITE_NAME }}" />
+<meta property="og:url" content="http://{{ SITE_DOMAIN }}{{ resource.detail_url }}" />
+<meta property="og:description" content="{{ resource.class_name }} on {{ SITE_NAME }} by {{ resource.owner.get_full_name | default:resource.owner.username }}" />
+<meta name="og:image" content="{{ resource.thumbnail_url }}" />
+<meta name="og:image:width" content="200" />
+<meta name="og:image:height" content="150" />

@@ -21,7 +21,7 @@
 # Django settings for the GeoNode project.
 import os
 from kombu import Queue
-from celery_app import app  # flake8: noqa
+from geonode.celery_app import app  # flake8: noqa
 
 #
 # General Django development settings
@@ -371,7 +371,7 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    # This middleware allows to print private layers for the users that have 
+    # This middleware allows to print private layers for the users that have
     # the permissions to view them.
     # It sets temporary the involved layers as public before restoring the permissions.
     # Beware that for few seconds the involved layers are public there could be risks.
@@ -640,7 +640,7 @@ SOCIAL_ORIGINS = [{
     "css_class":"fb"
 }, {
     "label":"Twitter",
-    "url":"https://twitter.com/share?url={url}",
+    "url":"https://twitter.com/share?url={url}&hashtags={hashtags}",
     "css_class":"tw"
 }, {
     "label":"Google +",
@@ -656,6 +656,15 @@ CKAN_ORIGINS = [{
     "css_class":"hdx"
 }]
 #SOCIAL_ORIGINS.extend(CKAN_ORIGINS)
+
+# Setting TWITTER_CARD to True will enable Twitter Cards
+# https://dev.twitter.com/cards/getting-started
+# Be sure to replace @GeoNode with your organization or site's twitter handle.
+TWITTER_CARD = True
+TWITTER_SITE = '@GeoNode'
+TWITTER_HASHTAGS = ['geonode'] 
+
+OPENGRAPH_ENABLED = True
 
 # Enable Licenses User Interface
 # Regardless of selection, license field stil exists as a field in the Resourcebase model.
@@ -804,6 +813,17 @@ LAYER_PREVIEW_LIBRARY = 'geoext'
 
 SERVICE_UPDATE_INTERVAL = 0
 
+SEARCH_FILTERS = {
+    'TEXT_ENABLED': True,
+    'TYPE_ENABLED': True,
+    'CATEGORIES_ENABLED': True,
+    'OWNERS_ENABLED': True,
+    'KEYWORDS_ENABLED': True,
+    'DATE_ENABLED': True,
+    'REGION_ENABLED': True,
+    'EXTENT_ENABLED': True,
+}
+
 # Queue non-blocking notifications.
 NOTIFICATION_QUEUE_ALL = False
 
@@ -850,7 +870,7 @@ if os.name == 'nt':
     if not "GEOS_LIBRARY_PATH" in locals() or not "GDAL_LIBRARY_PATH" in locals():
         if os.environ.get("GEOS_LIBRARY_PATH", None) \
             and os.environ.get("GDAL_LIBRARY_PATH", None):
-            GEOS_LIBRARY_PATH = os.environ.get('GEOS_LIBRARY_PATH') 
+            GEOS_LIBRARY_PATH = os.environ.get('GEOS_LIBRARY_PATH')
             GDAL_LIBRARY_PATH = os.environ.get('GDAL_LIBRARY_PATH')
         else:
             #maybe it will be found regardless if not it will throw 500 error
