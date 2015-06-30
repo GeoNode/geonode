@@ -35,7 +35,7 @@ EOF
          fi
 
      mkdir -p /var/www/geonode/uploaded
-     chown -R /var/www/geonode/uploaded www-data:www-data
+     chown -R www-data:www-data /var/www/geonode/uploaded
 # ALWAYS run the postinstall tasks
 	 /usr/share/geonode/install.sh -s post /usr/share/geonode/config-post.sh
 
