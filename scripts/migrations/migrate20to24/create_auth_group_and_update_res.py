@@ -2,8 +2,8 @@ import os, sys, ConfigParser
 
 config = ConfigParser.ConfigParser()
 config.read(os.path.join(os.path.abspath(os.path.dirname(__file__)), 'gn_migration.cfg'))
-geonode_path = config.get('venv', 'geonode_path')
-settings_path = config.get('venv', 'settings_path')
+geonode_path = config.get('path', 'geonode_path')
+settings_path = config.get('path', 'settings_path')
 sys.path.append(geonode_path)
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", settings_path)
 

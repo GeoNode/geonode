@@ -4,22 +4,23 @@ Procedure to migrate a GeoNode 2.0 instance to 2.4
 To migrate your GeoNode 2.0 instance to a fresh 2.4 instance the following steps are needed:
 
 * backup everything
-* database migration
-* restore Django media files
+* database migration first part
 * migrate GeoServer data directory
+* database migration second part
+* restore Django media files
 
 Backup everything
 -----------------
 
-Things to backup before proceeding with the other steps:
+Things to backup before proceeding with the other steps (the scripts will not alter them, but just in case):
 
 * GeoNode Django database
 * GeoNode uploads database
 * GeoServer data directory
 * Django media files
 
-Database migration
-------------------
+Database migration first part
+-----------------------------
 
 Warning 1
 +++++++++
@@ -83,9 +84,22 @@ You will need to set the settings relative to your GeoNode path::
     geonode_path = /home/capooti/git/github/geonode
     settings_path = geonode.local_settings
 
-Now run the migrate.sh script::
+Now run the first migration script, migrate.sh::
 
     $ ./migrate.sh
+
+Migrate GeoServer data directory
+--------------------------------
+
+Copy GeoServer data directory to the GeoServer instance included with GeoNode 2.4.
+Login with the GeoServer admin user to check if everything is working properly.
+
+Database migration second part
+------------------------------
+
+Run the second migration script::
+
+    $ ./migrate2.sh
 
 Consideration on permissions migration
 ++++++++++++++++++++++++++++++++++++++
@@ -101,7 +115,3 @@ Restore Django media files
 
 Restore the Django media files from backup.
 
-Migrate GeoServer data directory
---------------------------------
-
-Copy GeoServer data directory to the GeoServer instance included with GeoNode 2.4

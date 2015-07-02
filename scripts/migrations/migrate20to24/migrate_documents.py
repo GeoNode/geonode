@@ -7,7 +7,7 @@ dst = utils.get_dst()
 src_cur = src.cursor()
 dst_cur = dst.cursor()
 
-src_cur.execute("select resourcebase_ptr_id, content_type_id, object_id, doc_file, extension, popular_count, share_count from documents_document where resourcebase_ptr_id not in (select document_id from wfpdocs_wfpdocument)")
+src_cur.execute("select resourcebase_ptr_id, content_type_id, object_id, doc_file, extension, popular_count, share_count from documents_document")
 
 for src_row in src_cur:
     assignments = []
