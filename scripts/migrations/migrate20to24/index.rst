@@ -75,7 +75,7 @@ For the purpose of these instructions, we will suppose that your Postgres server
 Make a copy of the gn_migration.cfg.tmpl file and edit it accordingly to your database and virtual environment settings::
 
     $ cd scripts/migrations/migrate20to24/
-    $ cp gn_migration.cfg gn_migration.cfg
+    $ cp gn_migration.cfg.tmpl gn_migration.cfg
     $ vi gn_migration.cfg
 
 You will need to set the settings relative to your GeoNode path::
