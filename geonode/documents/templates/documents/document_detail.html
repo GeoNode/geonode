@@ -31,9 +31,7 @@
 
 <div class="row">
   <div class="col-md-8">
-
-    {% get_obj_perms request.user for resource.get_self_resource as "perms" %}
-    {% if "download_resourcebase" in perms %}
+    {% if "download_resourcebase" in perms_list %}
       {% if resource.extension|lower in imgtypes and resource.doc_file %}
       <div id="embedded_map">
         <a style="text-decoration:none;" href="{% url "document_download" resource.id %}" target="_blank">
@@ -81,9 +79,8 @@
   <div class="col-md-4">
 
     <ul class="list-group">
-      {% get_obj_perms request.user for resource.get_self_resource as "perms" %}
       <li class="list-group-item">
-      {% if "download_resourcebase" in perms %}
+      {% if "download_resourcebase" in perms_list %}
         {% if resource.extension|lower in imgtypes and resource.doc_file %}
           <a style="text-decoration:none;" target="_blank" href="{% url "document_download" resource.id %}"><button class="btn btn-primary btn-md btn-block">{% trans "Download Document" %}</button></a>
         {% elif resource.doc_file %}
@@ -111,21 +108,21 @@
             <div class="modal-body">
 
               <div class="row edit-modal">
-                {% if "change_resourcebase_metadata" in perms %}
+                {% if "change_resourcebase_metadata" in perms_list %}
                 <div class="col-sm-3">
                   <i class="fa fa-list-alt fa-3x"></i>
                   <h4>{% trans "Metadata" %}</h4>
                   <a class="btn btn-default btn-block btn-xs" href="{% url "document_metadata" resource.id %}">{% trans "Edit" %}</a>
                 </div>
                 {% endif %}
-                {% if "change_resourcebase" in perms or "delete_resourcebase" in perms %}
+                {% if "change_resourcebase" in perms_list or "delete_resourcebase" in perms_list %}
                 <div class="col-sm-3">
                   <i class="fa fa-file-text-o fa-3x"></i>
                   <h4>{% trans "Document" %}</h4>
-                  {% if "change_resourcebase" in perms %}
+                  {% if "change_resourcebase" in perms_list %}
                   <a class="btn btn-default btn-block btn-xs" href="{% url "document_replace" resource.id %}">{% trans "Replace" %}</a>
                   {% endif %}
-                  {% if "delete_resourcebase" in perms %}
+                  {% if "delete_resourcebase" in perms_list %}
                   <a class="btn btn-danger btn-block btn-xs" href="{% url "document_remove" resource.id %}">{% trans "Remove" %}</a>
                   {% endif %}
                 </div>
@@ -178,7 +175,7 @@
         </ul>
       </li>
 
-      {% if "change_resourcebase_permissions" in perms %}
+      {% if "change_resourcebase_permissions" in perms_list %}
       <li class="list-group-item">
         <h4>{% trans "Permissions" %}</h4>
         <p>{% trans "Click the button below to change the permissions of this document." %}</p>
