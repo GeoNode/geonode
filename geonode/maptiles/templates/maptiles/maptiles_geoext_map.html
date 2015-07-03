@@ -29,6 +29,13 @@ OpenLayers.Request.DEFAULT_CONFIG.headers = {
 
 var curr_location =  window.location.protocol+"//"+window.location.hostname+":"+window.location.port;
 OpenLayers.ProxyHost = curr_location+"/proxy/?url=";
+var geoserver = "";
+if ("{{test_mode}}"=="True"){
+    geoserver = window.location.protocol+"//"+window.location.hostname+":8080/geoserver/";
+}else{
+    curr_location =  window.location.protocol+"//"+window.location.hostname;
+    geoserver = curr_location+"/geoserver/" ;
+}
 
 {% autoescape off %}
 
@@ -38,12 +45,7 @@ var tile_list = [];
 var interest_bounds; 
 //var geoserver = "{{geoserver}}";
 //var geoserver = curr_location+"/geoserver/";
-var geoserver = ""
-if ("{{test_mode}}"=="True"){
-    geoserver = window.location.protocol+"//"+window.location.hostname+":8080/geoserver/";
-}else{
-    geoserver = curr_location+"/geoserver/" ;
-}
+
 
 // added stuff
 
