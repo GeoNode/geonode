@@ -566,8 +566,19 @@
     });
     $('#text_search_input').bind('selectChoice', function(e, choice, text_autocomplete) {
           if(choice[0].children[0] == undefined) {
-              $('#text_search_input').val(choice[0].innerHTML);
-              $('#text_search_btn').click();
+
+              var term = choice[0].innerHTML;
+
+              $('#text_search_input').val(term);
+
+              //ng-model is not updating when using jquery element.val()
+              //This will force update the scope to keep in sync
+
+               var model = $('#text_search_input').attr("ng-model");
+                $scope[model] = term;
+                $scope.$apply();
+
+                $('#text_search_btn').click();
           }
     });
 
