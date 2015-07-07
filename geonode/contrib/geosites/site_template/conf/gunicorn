@@ -1,0 +1,20 @@
+
+# This template uses the following variables to be filled in
+#  SITE_ROOT	    - path to main project (used to store logs, uploaded, static, virtual env)
+#  SERVE_PATH
+#  PORTNUM	 	- Port number to use for wsgi app: use 80XX where XX is SITE_ID
+
+CONFIG = {
+    #'mode': 'wsgi',
+    'working_dir': '$SITE_ROOT',
+    'python': '$SERVE_PATH/venv/bin/python',
+    'args': (
+        '--bind=127.0.0.1:$PORTNUM',
+        '--workers=4',
+        '--timeout=300',
+	'--access-logfile=$SERVE_PATH/logs/$SITE_NAME-gunicorn-access.log',
+	'--error-logfile=$SERVE_PATH/logs/$SITE_NAME-gunicorn-error.log',
+        'wsgi',
+        #'--log-level=debug',
+    ),
+}
