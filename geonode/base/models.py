@@ -565,7 +565,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin):
             thumbnail = File(f)
             thumbnail.write(image)
 
-        url_path = os.path.join(settings.MEDIA_URL, thumb_folder, filename)
+        url_path = os.path.join(settings.MEDIA_URL, thumb_folder, filename).replace('\\', '/')
         url = urljoin(settings.SITEURL, url_path)
 
         Link.objects.get_or_create(resource=self,
