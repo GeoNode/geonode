@@ -138,8 +138,6 @@
 
     <ul class="list-group">
       {% if resource.storeType != "remoteStore" %}
-        {% get_obj_perms request.user for resource.get_self_resource as "perms" %}
-        
         <li class="list-group-item">
         {% if links %}
            <button class="btn btn-primary btn-md btn-block" data-toggle="modal" data-target="#download-layer">{% trans "Download Layer" %}</button>
@@ -176,7 +174,7 @@
     {% if GEOSERVER_BASE_URL %}
       {% get_obj_perms request.user for resource.layer as "layer_perms" %}
     {% endif %}
-    {% if "change_resourcebase_metadata" in perms or "change_resourcebase" in perms or "delete_resourcebase" in perms or "change_layer_style" in layer_perms %}
+    {% if "change_resourcebase_metadata" in perms_list or "change_resourcebase" in perms_list or "delete_resourcebase" in perms_list or "change_layer_style" in layer_perms %}
     <li class="list-group-item"> 
       <button class="btn btn-primary btn-md btn-block" data-toggle="modal" data-target="#edit-layer">{% trans "Edit Layer" %}</button>
     </li>
@@ -189,7 +187,7 @@
           </div>
           <div class="modal-body">
             <div class="row edit-modal">
-              {% if "change_resourcebase_metadata" in perms %}
+              {% if "change_resourcebase_metadata" in perms_list %}
               <div class="col-sm-3">
                 <i class="fa fa-list-alt fa-3x"></i>
                 <h4>{% trans "Metadata" %}</h4>
@@ -208,24 +206,24 @@
                 </div>
                 {% endif %}
               {% endif %}
-              {% if "change_resourcebase" in perms %}
+              {% if "change_resourcebase" in perms_list %}
               <div class="col-sm-3">
                 <i class="fa fa-photo fa-3x"></i>
                 <h4>{% trans "Thumbnail" %}</h4>
                 <a class="btn btn-default btn-block btn-xs" href="#" id="set_thumbnail">{% trans "Set" %}</a>
               </div>
               {% endif %}
-              {% if "change_resourcebase" in perms or "delete_resourcebase" in perms or "change_layer_data" in layer_perms %}
+              {% if "change_resourcebase" in perms_list or "delete_resourcebase" in perms_list or "change_layer_data" in layer_perms %}
               <div class="col-sm-3">
                 <i class="fa fa-square-o fa-3x rotate-45"></i>
                 <h4>{% trans "Layer" %}</h4>
-                {% if "change_resourcebase" in perms and not resource.service %}
+                {% if "change_resourcebase" in perms_list and not resource.service %}
                 <a class="btn btn-default btn-block btn-xs" href="{% url "layer_replace" resource.service_typename %}">{% trans "Replace" %}</a>
                 {% endif %}
                 {% if resource.storeType == 'dataStore' and "change_layer_data" in layer_perms %}
                 <a class="btn btn-default btn-block btn-xs" href="{% url "new_map" %}?layer={{resource.service_typename}}">{% trans "Edit data" %}</a>
                 {% endif %}
-                {% if "delete_resourcebase" in perms %}
+                {% if "delete_resourcebase" in perms_list %}
                 <a class="btn btn-danger btn-block btn-xs" href="{% url "layer_remove" resource.service_typename %}">{% trans "Remove" %}</a>
                 {% endif %}
               </div>
@@ -330,7 +328,7 @@
     {% endif %}
 
     {% if GEONODE_SECURITY_ENABLED %}
-    {% if "change_resourcebase_permissions" in perms %}
+    {% if "change_resourcebase_permissions" in perms_list %}
     <li class="list-group-item">
       <h4>{% trans "Permissions" %}</h4>
       <p>{% trans "Click the button below to change the permissions of this layer." %}</p>

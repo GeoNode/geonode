@@ -1,4 +1,5 @@
 import json
+from guardian.shortcuts import get_perms
 
 from django.shortcuts import render_to_response, get_object_or_404
 from django.http import HttpResponse, HttpResponseRedirect, Http404
@@ -25,7 +26,7 @@ from geonode.utils import build_social_links
 ALLOWED_DOC_TYPES = settings.ALLOWED_DOCUMENT_TYPES
 
 _PERMISSION_MSG_DELETE = _("You are not permitted to delete this document")
-_PERMISSION_MSG_GENERIC = _('You do not have permissions for this document.')
+_PERMISSION_MSG_GENERIC = _("You do not have permissions for this document.")
 _PERMISSION_MSG_MODIFY = _("You are not permitted to modify this document")
 _PERMISSION_MSG_METADATA = _(
     "You are not permitted to modify this document's metadata")
@@ -90,6 +91,7 @@ def document_detail(request, docid):
             name__in=settings.DOWNLOAD_FORMATS_METADATA)
 
         context_dict = {
+            'perms_list': get_perms(request.user, document.get_self_resource()),
             'permissions_json': _perms_info_json(document),
             'resource': document,
             'metadata': metadata,
