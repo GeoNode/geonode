@@ -20,6 +20,7 @@
 
 import math
 import logging
+from guardian.shortcuts import get_perms
 
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ObjectDoesNotExist
@@ -119,6 +120,7 @@ def map_detail(request, mapid, snapshot=None, template='maps/map_detail.html'):
         'config': config,
         'resource': map_obj,
         'layers': layers,
+        'perms_list': get_perms(request.user, map_obj.get_self_resource()),
         'permissions_json': _perms_info_json(map_obj),
         "documents": get_related_documents(map_obj),
     }
