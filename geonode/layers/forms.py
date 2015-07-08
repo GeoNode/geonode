@@ -22,7 +22,7 @@ import os
 import tempfile
 import autocomplete_light
 import zipfile
-
+import logging
 
 from django import forms
 from django.utils import simplejson as json
@@ -30,6 +30,7 @@ from geonode.layers.utils import unzip_file
 from geonode.layers.models import Layer, Attribute
 from geonode.base.forms import ResourceBaseForm
 
+logger = logging.getLogger("geonode.layers.forms")
 
 class JSONField(forms.CharField):
 
@@ -134,7 +135,12 @@ class LayerUploadForm(forms.Form):
                     if xml_file.find('.shp') != -1:
                         # force rename of file so that file.shp.xml doesn't
                         # overwrite as file.shp
-                        cleaned["xml_file"].name = '%s.xml' % base_name
+                        if cleaned.get("xml_file"):
+                            cleaned["xml_file"].name = '%s.xml' % base_name
+                        else:
+                            # xml file was extracted from a zip file
+                            pass
+
         return cleaned
 
     def write_files(self):
