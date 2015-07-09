@@ -591,6 +591,35 @@
     });
 
     /*
+    * User search management
+    */
+    $('#user_search_input').bind('selectChoice', function(e, choice, text_autocomplete) {
+          if(choice[0].children[0] == undefined) {
+
+              var term = choice[0].innerHTML;
+
+              $('#user_search_input').val(term);
+
+              //ng-model is not updating when using jquery element.val()
+              //This will force update the scope to keep in sync
+
+               var model = $('#user_search_input').attr("ng-model");
+                $scope[model] = term;
+                $scope.$apply();
+
+                $('#user_search_btn').click();
+          }
+    });
+
+    $('#user_search_btn').click(function(){
+        if (HAYSTACK_SEARCH)
+            $scope.query['q'] = $('#user_search_input').val();
+        else
+            $scope.query['username'] = $('#user_search_input').val();
+        query_api($scope.query);
+    });
+
+    /*
     * Region search management
     */
     var region_autocomplete = $('#region_search_input').yourlabsAutocomplete({
