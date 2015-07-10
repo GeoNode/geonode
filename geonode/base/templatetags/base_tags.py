@@ -3,6 +3,7 @@ from django import template
 from agon_ratings.models import Rating
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.auth import get_user_model
+from django.db.models import Count
 
 from guardian.shortcuts import get_objects_for_user
 from geonode import settings
@@ -10,6 +11,7 @@ from geonode import settings
 from geonode.layers.models import Layer
 from geonode.maps.models import Map
 from geonode.documents.models import Document
+from geonode.groups.models import GroupProfile
 
 register = template.Library()
 
@@ -24,98 +26,67 @@ def num_ratings(obj):
 def facets(context):
     request = context['request']
     title_filter = request.GET.get('title__icontains', '')
-    facets = {}
 
     facet_type = context['facet_type'] if 'facet_type' in context else 'all'
+
+    if not settings.SKIP_PERMS_FILTER:
+        authorized = get_objects_for_user(
+            request.user, 'base.view_resourcebase').values('id')
+
     if facet_type == 'documents':
 
-        facets = {
-            'text': 0,
-            'image': 0,
-            'presentation': 0,
-            'archive': 0,
-            'other': 0
-        }
+        documents = Document.objects.filter(title__icontains=title_filter)
 
-        text = Document.objects.filter(doc_type='text').filter(
-            title__icontains=title_filter).values_list('id', flat=True)
-        image = Document.objects.filter(doc_type='image').filter(
-            title__icontains=title_filter).values_list('id', flat=True)
-        presentation = Document.objects.filter(doc_type='presentation').filter(
-            title__icontains=title_filter).values_list('id', flat=True)
-        archive = Document.objects.filter(doc_type='archive').filter(
-            title__icontains=title_filter).values_list('id', flat=True)
-        other = Document.objects.filter(doc_type='other').filter(
-            title__icontains=title_filter).values_list('id', flat=True)
+        if settings.RESOURCE_PUBLISHING:
+            documents = documents.filter(is_published=True)
 
-        if settings.SKIP_PERMS_FILTER:
-            facets['text'] = text.count()
-            facets['image'] = image.count()
-            facets['presentation'] = presentation.count()
-            facets['archive'] = archive.count()
-            facets['other'] = other.count()
-        else:
-            resources = get_objects_for_user(
-                request.user, 'base.view_resourcebase')
-            facets['text'] = resources.filter(id__in=text).count()
-            facets['image'] = resources.filter(id__in=image).count()
-            facets['presentation'] = resources.filter(
-                id__in=presentation).count()
-            facets['archive'] = resources.filter(id__in=archive).count()
-            facets['other'] = resources.filter(id__in=other).count()
+        if not settings.SKIP_PERMS_FILTER:
+            documents = documents.filter(id__in=authorized)
 
-            return facets
+        counts = documents.values('doc_type').annotate(count=Count('doc_type'))
+        facets = dict([(count['doc_type'], count['count']) for count in counts])
+
+        return facets
 
     else:
 
-        facets = {
-            'raster': 0,
-            'vector': 0,
-        }
-
-        vectors = Layer.objects.filter(storeType='dataStore').filter(
-            title__icontains=title_filter).values_list('id', flat=True)
-        rasters = Layer.objects.filter(storeType='coverageStore').filter(
-            title__icontains=title_filter).values_list('id', flat=True)
-        remote = Layer.objects.filter(storeType='remoteStore').filter(
-            title__icontains=title_filter).values_list('id', flat=True)
+        layers = Layer.objects.filter(title__icontains=title_filter)
 
         if settings.RESOURCE_PUBLISHING:
-            vectors = vectors.filter(is_published=True)
-            rasters = rasters.filter(is_published=True)
-            remote = remote.filter(is_published=True)
+            layers = layers.filter(is_published=True)
 
-        if settings.SKIP_PERMS_FILTER:
-            facets['raster'] = rasters.count()
-            facets['vector'] = vectors.count()
-            facets['remote'] = remote.count()
-        else:
-            resources = get_objects_for_user(
-                request.user, 'base.view_resourcebase').filter(title__icontains=title_filter)
-            facets['raster'] = resources.filter(id__in=rasters).count()
-            facets['vector'] = resources.filter(id__in=vectors).count()
-            facets['remote'] = resources.filter(id__in=remote).count()
+        if not settings.SKIP_PERMS_FILTER:
+            layers = layers.filter(id__in=authorized)
 
-        facet_type = context[
-            'facet_type'] if 'facet_type' in context else 'all'
+        counts = layers.values('storeType').annotate(count=Count('storeType'))
+        count_dict = dict([(count['storeType'], count['count']) for count in counts])
+
+        facets = {
+            'raster': count_dict.get('coverageStore', 0),
+            'vector': count_dict.get('dataStore', 0),
+            'remote': count_dict.get('remoteStore', 0),
+        }
+
         # Break early if only_layers is set.
         if facet_type == 'layers':
             return facets
 
-        if settings.SKIP_PERMS_FILTER:
-            facets['map'] = Map.objects.filter(
-                title__icontains=title_filter).count()
-            facets['document'] = Document.objects.filter(
-                title__icontains=title_filter).count()
-        else:
-            facets['map'] = resources.filter(title__icontains=title_filter).filter(
-                id__in=Map.objects.values_list('id', flat=True)).count()
-            facets['document'] = resources.filter(title__icontains=title_filter).filter(
-                id__in=Document.objects.values_list('id', flat=True)).count()
+        maps = Map.objects.filter(title__icontains=title_filter)
+        documents = Document.objects.filter(title__icontains=title_filter)
+
+        if not settings.SKIP_PERMS_FILTER:
+            maps = maps.filter(id__in=authorized)
+            documents = documents.filter(id__in=authorized)
+
+        facets['map'] = maps.count()
+        facets['document'] = documents.count()
 
         if facet_type == 'home':
             facets['user'] = get_user_model().objects.exclude(
                 username='AnonymousUser').count()
+
+            facets['group'] = GroupProfile.objects.exclude(
+                access="private").count()
 
             facets['layer'] = facets['raster'] + \
                 facets['vector'] + facets['remote']

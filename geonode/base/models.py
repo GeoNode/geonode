@@ -236,7 +236,8 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin):
                                          ' dataset')
     # internal fields
     uuid = models.CharField(max_length=36)
-    owner = models.ForeignKey(settings.AUTH_USER_MODEL, blank=True, null=True, related_name='owned_resource')
+    owner = models.ForeignKey(settings.AUTH_USER_MODEL, blank=True, null=True, related_name='owned_resource',
+                              verbose_name=_("Owner"))
     contacts = models.ManyToManyField(settings.AUTH_USER_MODEL, through='ContactRole')
     title = models.CharField(_('title'), max_length=255, help_text=_('name by which the cited resource is known'))
     date = models.DateTimeField(_('date'), default=datetime.datetime.now, help_text=date_help_text)
@@ -260,6 +261,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin):
                                          help_text=constraints_other_help_text)
 
     license = models.ForeignKey(License, null=True, blank=True,
+                                verbose_name=_("License"),
                                 help_text=license_help_text)
     language = models.CharField(_('language'), max_length=3, choices=ALL_LANGUAGES, default='eng',
                                 help_text=language_help_text)
@@ -269,6 +271,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin):
 
     spatial_representation_type = models.ForeignKey(SpatialRepresentationType, null=True, blank=True,
                                                     limit_choices_to=Q(is_choice=True),
+                                                    verbose_name=_("spatial representation type"),
                                                     help_text=spatial_representation_type_help_text)
 
     # Section 5
@@ -326,13 +329,15 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin):
     popular_count = models.IntegerField(default=0)
     share_count = models.IntegerField(default=0)
 
-    featured = models.BooleanField(default=False, help_text=_('Should this resource be advertised in home page?'))
-    is_published = models.BooleanField(default=True, help_text=_('Should this resource be published and searchable?'))
+    featured = models.BooleanField(_("Featured"), default=False,
+                                   help_text=_('Should this resource be advertised in home page?'))
+    is_published = models.BooleanField(_("Is Published"), default=True,
+                                       help_text=_('Should this resource be published and searchable?'))
 
     # fields necessary for the apis
     thumbnail_url = models.TextField(null=True, blank=True)
     detail_url = models.CharField(max_length=255, null=True, blank=True)
-    rating = models.IntegerField(default=0, null=True)
+    rating = models.IntegerField(default=0, null=True, blank=True)
 
     def __unicode__(self):
         return self.title
@@ -375,6 +380,9 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin):
     def keyword_slug_list(self):
         return [kw.slug for kw in self.keywords.all()]
 
+    def region_name_list(self):
+        return [region.name for region in self.regions.all()]
+
     def spatial_representation_type_string(self):
         if hasattr(self.spatial_representation_type, 'identifier'):
             return self.spatial_representation_type.identifier
@@ -388,7 +396,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin):
 
     @property
     def keyword_csv(self):
-        keywords_qs = self.keywords.all()
+        keywords_qs = self.get_real_instance().keywords.all()
         if keywords_qs:
             return ','.join([kw.name for kw in keywords_qs])
         else:
@@ -553,11 +561,11 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin):
         if not os.path.exists(upload_path):
             os.makedirs(upload_path)
 
-        with open(os.path.join(upload_path, filename), 'w') as f:
+        with open(os.path.join(upload_path, filename), 'wb') as f:
             thumbnail = File(f)
             thumbnail.write(image)
 
-        url_path = os.path.join(settings.MEDIA_URL, thumb_folder, filename)
+        url_path = os.path.join(settings.MEDIA_URL, thumb_folder, filename).replace('\\', '/')
         url = urljoin(settings.SITEURL, url_path)
 
         Link.objects.get_or_create(resource=self,
@@ -585,9 +593,9 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin):
         no_custom_permissions = UserObjectPermission.objects.filter(
             content_type=ContentType.objects.get_for_model(self.get_self_resource()),
             object_pk=str(self.pk)
-            ).count()
+            ).exists()
 
-        if no_custom_permissions == 0:
+        if not no_custom_permissions:
             logger.debug('There are no permissions for this object, setting default perms.')
             self.set_default_permissions()
 
@@ -712,13 +720,18 @@ def resourcebase_post_save(instance, *args, **kwargs):
     """
     ResourceBase.objects.filter(id=instance.id).update(
         thumbnail_url=instance.get_thumbnail_url(),
-        detail_url=instance.get_absolute_url())
+        detail_url=instance.get_absolute_url(),
+        csw_insert_date=datetime.datetime.now())
     instance.set_missing_info()
 
     # we need to remove stale links
     for link in instance.link_set.all():
-        if urlsplit(settings.SITEURL).hostname not in link.url:
-            link.delete()
+        if link.name == "External Document":
+            if link.resource.doc_url != link.url:
+                link.delete()
+        else:
+            if urlsplit(settings.SITEURL).hostname not in link.url:
+                link.delete()
 
 
 def rating_post_save(instance, *args, **kwargs):

@@ -56,7 +56,8 @@ from agon_ratings.models import OverallRating
 
 from gsimporter import Client
 from owslib.wms import WebMapService
-from geoserver.store import CoverageStore, DataStore
+from geoserver.store import CoverageStore, DataStore, datastore_from_index,\
+    coveragestore_from_index, wmsstore_from_index
 from geoserver.workspace import Workspace
 from geoserver.catalog import Catalog
 from geoserver.catalog import FailedRequestError, UploadError
@@ -228,11 +229,25 @@ def cascading_delete(cat, layer_name):
         if layer_name.find(':') != -1:
             workspace, name = layer_name.split(':')
             ws = cat.get_workspace(workspace)
+            try:
+                store = get_store(cat, name, workspace=ws)
+            except FailedRequestError:
+                if ogc_server_settings.DATASTORE:
+                    try:
+                        store = get_store(cat, ogc_server_settings.DATASTORE, workspace=ws)
+                    except FailedRequestError:
+                        logger.debug(
+                            'the store was not found in geoserver')
+                        return
+                else:
+                    logger.debug(
+                        'the store was not found in geoserver')
+                    return
             if ws is None:
                 logger.debug(
                     'cascading delete was called on a layer where the workspace was not found')
                 return
-            resource = cat.get_resource(name, workspace=workspace)
+            resource = cat.get_resource(name, store=store, workspace=workspace)
         else:
             resource = cat.get_resource(layer_name)
     except EnvironmentError as e:
@@ -352,7 +367,7 @@ def gs_slurp(
             # obtain the store from within the workspace. if it exists, obtain resources
             # directly from store, otherwise return an empty list:
             if store is not None:
-                store = cat.get_store(store, workspace=workspace)
+                store = get_store(cat, store, workspace=workspace)
                 if store is None:
                     resources = []
                 else:
@@ -361,7 +376,7 @@ def gs_slurp(
                 resources = cat.get_resources(workspace=workspace)
 
     elif store is not None:
-        store = cat.get_store(store)
+        store = get_store(cat, store)
         resources = cat.get_resources(store=store)
     else:
         resources = cat.get_resources()
@@ -372,18 +387,18 @@ def gs_slurp(
         # enabled = true, if --skip-unadvertised: advertised = true, but
         # disregard the filter parameter in the case of deleting layers
         resources_for_delete_compare = [
-            k for k in resources_for_delete_compare if k.enabled == "true"]
+            k for k in resources_for_delete_compare if k.enabled in ["true", True]]
         if skip_unadvertised:
             resources_for_delete_compare = [
-                k for k in resources_for_delete_compare if k.advertised != "false"]
+                k for k in resources_for_delete_compare if k.advertised in ["true", True]]
 
     if filter:
         resources = [k for k in resources if filter in k.name]
 
     # filter out layers depending on enabled, advertised status:
-    resources = [k for k in resources if k.enabled == "true"]
+    resources = [k for k in resources if k.enabled in ["true", True]]
     if skip_unadvertised:
-        resources = [k for k in resources if k.advertised != "false"]
+        resources = [k for k in resources if k.advertised in ["true", True]]
 
     # filter out layers already registered in geonode
     layer_names = Layer.objects.all().values_list('typename', flat=True)
@@ -432,6 +447,17 @@ def gs_slurp(
 
             # recalculate the layer statistics
             set_attributes(layer, overwrite=True)
+
+            # Fix metadata links if the ip has changed
+            if layer.link_set.metadata().count() > 0:
+                if not created and settings.SITEURL not in layer.link_set.metadata()[0].url:
+                    layer.link_set.metadata().delete()
+                    layer.save()
+                    metadata_links = []
+                    for link in layer.link_set.metadata():
+                        metadata_links.append((link.mime, link.name, link.url))
+                    resource.metadata_links = metadata_links
+                    cat.save(resource)
 
         except Exception as e:
             if ignore_errors:
@@ -896,19 +922,22 @@ def cleanup(name, uuid):
                        'import for layer: %s', name)
 
 
-def _create_featurestore(name, data, overwrite=False, charset="UTF-8"):
+def _create_featurestore(name, data, overwrite=False, charset="UTF-8", workspace=None):
+
     cat = gs_catalog
     cat.create_featurestore(name, data, overwrite=overwrite, charset=charset)
-    return cat.get_store(name), cat.get_resource(name)
+    store = get_store(cat, name, workspace=workspace)
+    return store, cat.get_resource(name, store=store, workspace=workspace)
 
 
-def _create_coveragestore(name, data, overwrite=False, charset="UTF-8"):
+def _create_coveragestore(name, data, overwrite=False, charset="UTF-8", workspace=None):
     cat = gs_catalog
     cat.create_coveragestore(name, data, overwrite=overwrite)
-    return cat.get_store(name), cat.get_resource(name)
+    store = get_store(cat, name, workspace=workspace)
+    return store, cat.get_resource(name, store=store, workspace=workspace)
 
 
-def _create_db_featurestore(name, data, overwrite=False, charset="UTF-8"):
+def _create_db_featurestore(name, data, overwrite=False, charset="UTF-8", workspace=None):
     """Create a database store then use it to import a shapefile.
 
     If the import into the database fails then delete the store
@@ -916,11 +945,11 @@ def _create_db_featurestore(name, data, overwrite=False, charset="UTF-8"):
     """
     cat = gs_catalog
     dsname = ogc_server_settings.DATASTORE
-
     try:
-        ds = cat.get_store(dsname)
+        ds = get_store(cat, dsname, workspace=workspace)
+
     except FailedRequestError:
-        ds = cat.create_datastore(dsname)
+        ds = cat.create_datastore(dsname, workspace=workspace)
         db = ogc_server_settings.datastore_db
         db_engine = 'postgis' if \
             'postgis' in db['ENGINE'] else db['ENGINE']
@@ -933,13 +962,13 @@ def _create_db_featurestore(name, data, overwrite=False, charset="UTF-8"):
             dbtype=db_engine
         )
         cat.save(ds)
-        ds = cat.get_store(dsname)
+        ds = get_store(cat, dsname, workspace=workspace)
 
     try:
         cat.add_data_to_store(ds, name, data,
                               overwrite=overwrite,
                               charset=charset)
-        return ds, cat.get_resource(name, store=ds)
+        return ds, cat.get_resource(name, store=ds, workspace=workspace)
     except Exception:
         msg = _("An exception occurred loading data to PostGIS")
         msg += "- %s" % (sys.exc_info()[1])
@@ -949,6 +978,36 @@ def _create_db_featurestore(name, data, overwrite=False, charset="UTF-8"):
             msg += _(" Additionally an error occured during database cleanup")
             msg += "- %s" % (sys.exc_info()[1])
         raise GeoNodeException(msg)
+
+
+def get_store(cat, name, workspace=None):
+
+    # Make sure workspace is a workspace object and not a string.
+    # If the workspace does not exist, continue as if no workspace had been defined.
+    if isinstance(workspace, basestring):
+        workspace = cat.get_workspace(workspace)
+
+    if workspace is None:
+        workspace = cat.get_default_workspace()
+    try:
+        store = cat.get_xml('%s/%s.xml' % (workspace.datastore_url[:-4], name))
+    except FailedRequestError:
+        try:
+            store = cat.get_xml('%s/%s.xml' % (workspace.coveragestore_url[:-4], name))
+        except FailedRequestError:
+            try:
+                store = cat.get_xml('%s/%s.xml' % (workspace.wmsstore_url[:-4], name))
+            except FailedRequestError:
+                raise FailedRequestError("No store found named: " + name)
+
+    if store.tag == 'dataStore':
+        store = datastore_from_index(cat, workspace, store)
+    elif store.tag == 'coverageStore':
+        store = coveragestore_from_index(cat, workspace, store)
+    elif store.tag == 'wmsStore':
+        store = wmsstore_from_index(cat, workspace, store)
+
+    return store
 
 
 def geoserver_upload(
@@ -972,9 +1031,11 @@ def geoserver_upload(
     # Get a short handle to the gsconfig geoserver catalog
     cat = gs_catalog
 
+    workspace = cat.get_default_workspace()
     # Check if the store exists in geoserver
     try:
-        store = cat.get_store(name)
+        store = get_store(cat, name, workspace=workspace)
+
     except geoserver.catalog.FailedRequestError as e:
         # There is no store, ergo the road is clear
         pass
@@ -1038,7 +1099,8 @@ def geoserver_upload(
         store, gs_resource = create_store_and_resource(name,
                                                        data,
                                                        charset=charset,
-                                                       overwrite=overwrite)
+                                                       overwrite=overwrite,
+                                                       workspace=workspace)
     except UploadError as e:
         msg = ('Could not save the layer %s, there was an upload '
                'error: %s' % (name, str(e)))
@@ -1125,7 +1187,7 @@ def geoserver_upload(
     # Step 10. Create the Django record for the layer
     logger.info('>>> Step 10. Creating Django record for [%s]', name)
     # FIXME: Do this inside the layer object
-    typename = gs_resource.store.workspace.name + ':' + gs_resource.name
+    typename = workspace.name + ':' + gs_resource.name
     layer_uuid = str(uuid.uuid1())
     defaults = dict(store=gs_resource.store.name,
                     storeType=gs_resource.store.resource_type,
@@ -1135,9 +1197,7 @@ def geoserver_upload(
                     abstract=abstract or gs_resource.abstract or '',
                     owner=user)
 
-    workspace = gs_resource.store.workspace.name
-
-    return name, workspace, defaults
+    return name, workspace.name, defaults, gs_resource
 
 
 class ServerDoesNotExist(Exception):
@@ -1393,6 +1453,13 @@ def style_update(request, url):
     request.body, which is in this format:
     """
     if request.method in ('POST', 'PUT'):  # we need to parse xml
+        # Need to remove NSx from IE11
+        if "HTTP_USER_AGENT" in request.META:
+            if ('Trident/7.0' in request.META['HTTP_USER_AGENT'] and
+               'rv:11.0' in request.META['HTTP_USER_AGENT']):
+                txml = re.sub(r'xmlns:NS[0-9]=""', '', request.body)
+                txml = re.sub(r'NS[0-9]:', '', txml)
+                request._body = txml
         tree = ET.ElementTree(ET.fromstring(request.body))
         elm_namedlayer_name = tree.findall(
             './/{http://www.opengis.net/sld}Name')[0]

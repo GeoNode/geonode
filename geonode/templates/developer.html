@@ -23,7 +23,7 @@
       <li><a href="http://geoext.org">GeoExt</a> - The JavaScript toolkit for rich web mapping applications</li>
       <li><a href="http://geoserver.org">GeoServer</a> - Standards based server for geospatial information</li>
       <li><a href="http://geowebcache.org">GeoWebCache</a> - Cache engine for WMS Tiles</li><li><a href="http://openlayers.org">OpenLayers</a> - Pure JavaScript library powering the maps of GeoExt</li>
-      <li><a href="http://pycsw.org">pycsw</a> - CSW metadata catalogue server</li>
+      <li><a href="http://pycsw.org">pycsw</a> - CSW, OpenSearch and OAI-PMH metadata catalogue server</li>
     </ul>
 
     <h3>What are OGC Services?</h3>
@@ -70,6 +70,14 @@
       <tr>
         <td><strong>{% trans "Metadata search via CSW:" %}</strong></td>
         <td><a href="{{CATALOGUE_BASE_URL}}?service=CSW&version=2.0.2&request=GetCapabilities">CSW 2.0.2</a></td>
+      </tr>
+      <tr>
+        <td><strong>{% trans "Metadata search via OpenSearch:" %}</strong></td>
+        <td><a href="{{CATALOGUE_BASE_URL}}?mode=opensearch&service=CSW&version=2.0.2&request=GetCapabilities">OpenSearch 1.0</a></td>
+      </tr>
+      <tr>
+        <td><strong>{% trans "Metadata search via OAI-PMH:" %}</strong></td>
+        <td><a href="{{CATALOGUE_BASE_URL}}?mode=oaipmh&verb=Identify">OAI-PMH 2.0</a></td>
       </tr>
       <tr>
         <td><strong>{% trans "Cached tiles via WMTS:" %}</strong></td>

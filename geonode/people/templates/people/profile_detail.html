@@ -6,6 +6,17 @@
 
 {% block title %} {% trans "Profile of " %}{{ profile.first_name|default_if_none:profile.username }}{% endblock %}
 
+{% block head %}
+  {% if TWITTER_CARD %}
+    {% include "people/_profile_twittercard.html" %}
+  {% endif %}
+  {% if OPENGRAPH_ENABLED %}
+    {% include "people/_profile_opengraph.html" %}
+  {% endif %}
+  {{ block.super }}
+{% endblock %}
+
+
 {% block body_class %}people explore{% endblock %}
 
 {% block body %}
@@ -114,6 +125,11 @@
         {% include "relationships/_manage_connections.html" %}
       {% endif_has_tag %}
     {% else %}
+      {% if user.is_superuser %}
+      <ul class="list-group">
+        <li class="list-group-item"><a href="{% url "profile_edit" profile.username %}"><i class="fa fa-edit"></i> {% trans "Edit profile" %}</a></li>
+      </ul>
+      {% endif %}
       <ul class="list-group">
         <li class="list-group-item"><a href="{% actor_url profile %}"><i class="fa fa-fire"></i> {% trans "User Activities" %}</a></li>
       </ul>
@@ -166,7 +182,7 @@
          </div>
      </article>
     {% endfor %}
-  {% endif %} 
+  {% endif %}
 </div>
 {% endif %}
 
@@ -175,13 +191,13 @@
   <h3>{% trans "Resources" %}</h3>
   <div class="col-md-12">
   {% include "people/_profile_filters.html" %}
-  </div> 
+  </div>
   <div class="col-md-12">
   {% include "search/_sort_filters.html" %}
-  </div> 
+  </div>
   <div class="col-md-12">
     {% include 'search/_pagination.html' %}
-  </div> 
+  </div>
 </div>
 
   <div class="col-md-12">
@@ -204,5 +220,3 @@
   </script>
   {% include 'search/search_scripts.html' %}
 {% endblock %}
-
-

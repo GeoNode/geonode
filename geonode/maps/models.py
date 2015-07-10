@@ -40,6 +40,7 @@ from geonode.utils import GXPLayerBase
 from geonode.utils import layer_from_viewer_config
 from geonode.utils import default_map_config
 from geonode.utils import num_encode
+from geonode.security.models import remove_object_permissions
 
 from agon_ratings.models import OverallRating
 
@@ -514,6 +515,7 @@ def pre_delete_map(instance, sender, **kwrargs):
     OverallRating.objects.filter(
         content_type=ct,
         object_id=instance.id).delete()
+    remove_object_permissions(instance.get_self_resource())
 
 
 class MapSnapshot(models.Model):

@@ -98,6 +98,15 @@
             var perms = $.parseJSON($.parseJSON(data).permissions);
 
             var perms_users = perms.users;
+
+            /*
+            * If there is the group anonymous then treas it as it is the AnonymousUser
+            * since the server doesn't explicitly send the users that belongs to a group with permissions
+            */
+            if (perms.groups.hasOwnProperty('anonymous')){
+              perms_users.AnonymousUser = perms.groups.anonymous;
+            }
+
             for (var user in perms_users){
               var user_perms = perms_users[user];
               if (user === 'AnonymousUser'){
@@ -123,15 +132,15 @@
             }
             
             // If "anyone" is checked then don't show all the users in the view perms field
-            if (perms_users.hasOwnProperty('AnonymousUser') 
-              && perms_users['AnonymousUser'].indexOf('view_resourcebase') > -1){
-              users.view_resourcebase=[]
-            };
+            // if (perms_users.hasOwnProperty('AnonymousUser') 
+            //   && perms_users['AnonymousUser'].indexOf('view_resourcebase') > -1){
+            //   users.view_resourcebase=[]
+            // };
             
-            if (perms_users.hasOwnProperty('AnonymousUser') 
-              && perms_users['AnonymousUser'].indexOf('download_resourcebase') > -1){
-              users.download_resourcebase=[]
-            };
+            // if (perms_users.hasOwnProperty('AnonymousUser') 
+            //   && perms_users['AnonymousUser'].indexOf('download_resourcebase') > -1){
+            //   users.download_resourcebase=[]
+            // };
 
             for (var perm in users){
               if(['change_resourcebase', 'delete_resourcebase', 'change_resourcebase_permissions', 'publish_resourcebase'].indexOf(user_perms[i]) >= 0){

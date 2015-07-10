@@ -171,7 +171,7 @@
         <div class="modal-content">
           <div class="modal-header">
             <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-            <h4 class="modal-title" id="myModalLabel">Sign in</h4>
+            <h4 class="modal-title" id="myModalLabel">{% trans "Sign in" %}</h4>
           </div>
           <form class="form-signin" role="form" action="{% url "account_login" %}?next={{ request.path }}" method="post">
             <div class="modal-body">
@@ -225,6 +225,8 @@
               {% if user.is_staff %}
               <li><a href="{% url "admin:index" %}"><i class="fa fa-cog"></i> {% trans "Admin" %}</a></li>
               {% endif %}
+              {% block extra_user_menu %}
+              {% endblock %}
               <li class="modal-divider"></li>
               <li><a title="Help" rel="tooltip" href="/help/"><i class="fa fa-question-circle"></i> {% trans "Help" %}</a></li>
             </ul>
@@ -250,6 +252,8 @@
     <script src="{{ STATIC_URL }}lib/js/jquery-ui.custom.js"></script>
     <script src="{{ STATIC_URL }}lib/js/jquery.raty.js"></script>
     <script src="{{ STATIC_URL }}lib/js/bootstrap.min.js"></script>
+    <script src="{{ STATIC_URL }}lib/js/moment-with-locales.min.js"></script>
+    <script src="{{ STATIC_URL }}lib/js/bootstrap-datetimepicker.min.js"></script>
     <script src="{{ STATIC_URL }}lib/js/json2.js"></script>
     <script src="{{ STATIC_URL }}lib/js/select2.js"></script>
     <script src="{{ STATIC_URL }}lib/js/waypoints.js"></script>

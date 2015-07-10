@@ -480,12 +480,12 @@ def layer_acls(request):
 
     # Include permissions on the anonymous user
     # use of polymorphic selectors/functions to optimize performances
-    layer_readable = get_objects_for_user(acl_user, 'view_resourcebase',
-                                          ResourceBase.objects.instance_of(Layer))
+    resources_readable = get_objects_for_user(acl_user, 'view_resourcebase',
+                                              ResourceBase.objects.instance_of(Layer)).values_list('id', flat=True)
     layer_writable = get_objects_for_user(acl_user, 'change_layer_data',
                                           Layer.objects.all())
 
-    _read = set([l.typename for l in layer_readable.get_real_instances()])
+    _read = set(Layer.objects.filter(id__in=resources_readable).values_list('typename', flat=True))
     _write = set(layer_writable.values_list('typename', flat=True))
 
     read_only = _read ^ _write

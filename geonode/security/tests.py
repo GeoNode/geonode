@@ -7,8 +7,10 @@ from django.contrib.auth import get_user_model
 from guardian.shortcuts import get_anonymous_user, assign_perm, remove_perm
 
 from geonode.base.populate_test_data import create_models, all_public
+from geonode.maps.tests_populate_maplayers import create_maplayers
 from geonode.people.models import Profile
 from geonode.layers.models import Layer
+from geonode.maps.models import Map
 from geonode.layers.populate_layers_data import create_layer_data
 from geonode.groups.models import Group
 
@@ -264,7 +266,7 @@ class PermissionsTest(TestCase):
 
         # Test with a Layer object
         layer = Layer.objects.all()[0]
-
+        layer.set_default_permissions()
         # Test that the anonymous user can read
         self.assertTrue(
             self.anonymous_user.has_perm(
@@ -300,7 +302,7 @@ class PermissionsTest(TestCase):
 
         # grab a layer
         layer = Layer.objects.all()[0]
-
+        layer.set_default_permissions()
         # verify bobby has view/change permissions on it but not manage
         self.assertFalse(
             bob.has_perm(
@@ -399,7 +401,7 @@ class PermissionsTest(TestCase):
 
         # grab a layer
         layer = Layer.objects.all()[0]
-
+        layer.set_default_permissions()
         # 1. view_resourcebase
         # 1.1 has view_resourcebase: verify that anonymous user can access
         # the layer detail page
@@ -442,3 +444,33 @@ class PermissionsTest(TestCase):
         # the layer style page but redirected to login
         response = self.client.get(reverse('layer_style_manage', args=(layer.typename,)))
         self.assertEquals(response.status_code, 302)
+
+    def test_map_download(self):
+        """Test the correct permissions on layers on map download"""
+        create_models(type='map')
+        create_maplayers()
+        # Get a Map
+        the_map = Map.objects.get(title='GeoNode Default Map')
+
+        # Get a MapLayer and set the parameters as it is local and not a background
+        # and leave it alone in the map
+        map_layer = the_map.layer_set.get(name='geonode:CA')
+        map_layer.local = True
+        map_layer.group = 'overlay'
+        map_layer.save()
+        the_map.layer_set.all().delete()
+        the_map.layer_set.add(map_layer)
+
+        # Get the Layer and set the permissions for bobby to it and the map
+        bobby = Profile.objects.get(username='bobby')
+        the_layer = Layer.objects.get(typename='geonode:CA')
+        remove_perm('download_resourcebase', bobby, the_layer.get_self_resource())
+        remove_perm('download_resourcebase', Group.objects.get(name='anonymous'),
+                    the_layer.get_self_resource())
+        assign_perm('view_resourcebase', bobby, the_layer.get_self_resource())
+        assign_perm('download_resourcebase', bobby, the_map.get_self_resource())
+
+        self.client.login(username='bobby', password='bob')
+
+        response = self.client.get(reverse('map_download', args=(the_map.id,)))
+        self.assertTrue('Could not find downloadable layers for this map' in response.content)

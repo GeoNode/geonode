@@ -20,6 +20,7 @@
 
 import math
 import logging
+from guardian.shortcuts import get_perms
 
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ObjectDoesNotExist
@@ -119,6 +120,7 @@ def map_detail(request, mapid, snapshot=None, template='maps/map_detail.html'):
         'config': config,
         'resource': map_obj,
         'layers': layers,
+        'perms_list': get_perms(request.user, map_obj.get_self_resource()),
         'permissions_json': _perms_info_json(map_obj),
         "documents": get_related_documents(map_obj),
     }
@@ -471,13 +473,10 @@ def new_map_config(request):
                 config = layer.attribute_config()
 
                 # Add required parameters for GXP lazy-loading
-                config["srs"] = layer.srid
                 config["title"] = layer.title
-                config["bbox"] = [
-                    float(coord) for coord in bbox] if layer.srid == "EPSG:4326" else llbbox_to_mercator(
-                    [
-                        float(coord) for coord in bbox])
                 config["queryable"] = True
+                config["srs"] = layer.srid if layer.srid != "EPSG:4326" else "EPSG:900913"
+                config["bbox"] = llbbox_to_mercator([float(coord) for coord in bbox])
 
                 if layer.storeType == "remoteStore":
                     service = layer.service
@@ -591,7 +590,7 @@ def map_download(request, mapid, template='maps/map_download.html'):
             else:
                 ownable_layer = Layer.objects.get(typename=lyr.name)
                 if not request.user.has_perm(
-                        'view_resourcebase',
+                        'download_resourcebase',
                         obj=ownable_layer.get_self_resource()):
                     locked_layers.append(lyr)
                 else:

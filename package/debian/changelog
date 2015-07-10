@@ -1,3 +1,209 @@
+geonode (2.4.0+beta25) trusty; urgency=high
+
+  [ Nicolas Dufrane ]
+  * [235d80] Fix issue 2022, layer searcher is back
+  * [6f9267] fix typo
+
+  [ Matt Bertrand ]
+  * [b8cd4f] Add options to specify layer category and restricted view permissions
+
+  [ capooti ]
+  * [1bcdf7] Truncates category description in categories filter. Otherwise the menu is messed up from long category names
+
+  [ Simone Dalmasso ]
+  * [623f05] check whether the ip has changed in update layers and fix the metadata links
+  * [fe2a73] don't load announcements tags in 500.html
+  * [90344b] check both for boolean and string as gsconfig can return either one or the other. (will be cleaned out when gs is fixed). fixes #1889
+  * [48c1de] listen for pagination on the outer element
+
+  [ Matt Bertrand ]
+  * [ea2d49] Add option for specifying title
+  * [35aa6d] Get rid of return line
+  * [90ff92] Formatting
+  * [b8bec9] use self.stdout; fix newline
+  * [5cc937] Update commands.txt
+  * [73027a] Update commands.txt
+  * [366fd8] Update options for importlayers command
+
+  [ Simone Dalmasso ]
+  * [56406c] add missing closing paragraph
+  * [71ac63] don't apply the map height to all leaflet maps
+  * [fbff59] restrict the spatial filter listener to the filter map
+
+  [ Matt Bertrand ]
+  * [255cb1] Fix error with keyword filtering when settings.SKIP_PERMS_FILTER=True
+
+  [ TeamGeode ]
+  * [37e3ed] add and custome announcement_confirm_delete.html
+
+  [ Simone Dalmasso ]
+  * [4d96ee] update template 500
+  * [875949] Delete object permissions on resource delete and simplify some queries
+  * [db452c] make flake8 happy
+  * [c906a6] forgot ContentType
+  * [f22948] rewrite the guardian get_users_with_perms
+  * [dac4f8] rename to remove_object_permissions
+
+  [ capooti ]
+  * [7d8599] Now the keywords and regions in resource info panel are linkified with the api search string
+  * [997f8d] Added a script to generate a full GeoNode instance to test performance with
+
+  [ Simone Dalmasso ]
+  * [e8b123] do post process counts instead of per resource count
+  * [3e2f50] remove resource base from admin
+  * [183dbd] optimize some queries
+  * [a91b1d] fix typo
+  * [116aeb] make better use of gsconfig to avoid too many geoserver calls
+  * [ff0611] fix permissions management
+  * [cf0849] no need to call remove_objet_permissions twice anymore
+  * [20aa44] improve layer_acs performances
+  * [e1d92a] fix indentation
+
+  [ Ian Schneider ]
+  * [6752f9] add missing libraries for DEBUG_STATIC mode
+
+  [ Simone Dalmasso ]
+  * [451c98] call gsconfig with the store in cascading delete
+  * [67bf0c] fix the no_custom_permissions check
+
+  [ TeamGeode ]
+  * [df1bfd] improve visual of document_detail page
+
+  [ Simone Dalmasso ]
+  * [c82a82] optimize resources faceting
+  * [5a9f00] use values instead of values_list, thanks @ischneider
+  * [c6ca25] add direct link to map view in map snippet
+
+  [ TeamGeode ]
+  * [86479b] add responsive tag
+
+  [ Simone Dalmasso ]
+  * [edc374] override the gs_config get_store to avoid request of all the stores
+  * [2d4b55] reuse the gs_resource between signals if available
+  * [b4db40] reuse the workspace in geoserver_upload
+  * [567c4b] fix error and better use of workspace
+  * [75ad7e] add the featured name to featured maps urls
+
+  [ Matt Bertrand ]
+  * [a7e295] Fix issues with Haystack search (date, regions)
+
+  [ Simone Dalmasso ]
+
+ -- Simone Dalmasso <simone.dalmasso@gmail.com>  Mon, 04 May 2015 14:12:34 +0000
+
+geonode (2.4.0+beta24) trusty; urgency=high
+
+  * [30dc9e] add back the geonode.zip install step
+
+ -- Simone Dalmasso <simone.dalmasso@gmail.com>  Tue, 07 Apr 2015 09:14:17 +0000
+
+geonode (2.4.0+beta23) trusty; urgency=high
+
+  [ Allan Oware ]
+  * [92c13c] allowed document types list
+  * [caf46e] replaced numbered list with bullet points
+
+  [ Simone Dalmasso ]
+  * [c6dca9] calculate map extent based on a standard screen resolution
+  * [f78fb1] update comments and add an assertion in map tests
+
+  [ Geode Team ]
+  * [749872] Correct proxy fail for specifics characters
+
+  [ Allan Oware ]
+  * [1ffa10] passed array as context parameter in view
+
+  [ Simone Dalmasso ]
+  * [4eceea] use full url in thumbnail link generation, fixes #2074
+  * [603ce6] don't save document twice on metadata save
+  * [7c1d0b] don't consider the port in the link sanitizing loop (preserve the thumbnail remote link)
+  * [f1962f] bump gsconfig, fixes #2050
+  * [fdbd27] better sniff whether a layer is remote to not execute the signals
+  * [664e0b] DRY metadata forms
+  * [ea1d9d] fix new flake8 complains
+  * [31cda0] specify pep8 version to avoid continuous updates
+  * [d3d069] fix notification import for now
+
+  [ Geode Team ]
+  * [0768a0] Checking and editing column names for layer upload
+
+  [ Simone Dalmasso ]
+  * [4c9c66] add autocomplete for keywords, fixes #1325
+  * [170844] sorry flake8
+  * [f2b6c8] add o/c server log_file also in local settings sample
+
+  [ Geode Team ]
+  * [c04cb3] add awesome-slugify on pip install
+  * [6387dc] some correction for Travis
+  * [232835] flake8 correction
+
+  [ Tom Kralidis ]
+  * [561ece] fix ref (#2082)
+
+  [ GeodeTeam ]
+  * [0f9f04] remove print qry
+
+  [ Simone Dalmasso ]
+  * [c757ab] add awesome-slugify to deep packages and use it for groups name, fixes #2073
+  * [4e7d02] add autocomplete keywords in admin
+  * [e6bc8b] update the ubuntu_config_file to do more tasks and update docs
+  * [74b226] Add zip upload
+
+  [ julien collaer ]
+  * [1c5362] sycing with transifex month 2-2015
+
+  [ Simone Dalmasso ]
+  * [098c2f] fix permissions form js to reflect the default permissions
+
+  [ CORTI Paolo ]
+  * [0773d8] Notifications urls enabled only when necessary
+
+  [ capooti ]
+  * [558674] Notifications urls enabled only when necessary
+  * [836bc2] Sorry flake8!
+
+  [ Simone Dalmasso ]
+  * [df225a] fix js behavior on permissions widget when the anonymous user has no permissions at all
+  * [1d6277] re-trigger travis build
+
+  [ Stefano Menegon ]
+  * [1781dc] Fixed FieldError on admin search
+
+  [ capooti ]
+  * [6599d7] Now using the internal test client instance in tests instead than instantiating the client at every test
+  * [5ba7a3] Now flake8 does not complain of unused imports
+
+  [ Tom Kralidis ]
+  * [6b3bcb] update package descriptions
+
+  [ TeamGeode ]
+  * [64def6] adding extra_user_menu into user menu
+
+  [ Tom Kralidis ]
+  * [6223e5] add ability to override pycsw server settings in settings.py (#2099)
+  * [e7e59a] fix flake8 error
+
+  [ TeamGeode ]
+  * [1587a3] Resolve malformed XMLHttpRequest from in IE11
+  * [16f4f1] add has_key HTTP_USER_AGENT
+  * [84f11a] flake8
+
+  [ capooti ]
+  * [fbf520] Load categories, regions and keywords only if relative filters are available in the page
+
+  [ state-hiu ]
+  * [395cac] Added group to homepage facets
+
+  [ Matt Bertrand ]
+  * [db482d] Fix importlayers command for zip files
+
+  [ Ian Schneider ]
+  * [bd4e02] fix for case-sensitive extension comparison
+
+  [ Simone Dalmasso ]
+
+ -- Simone Dalmasso <simone.dalmasso@gmail.com>  Tue, 07 Apr 2015 06:40:13 +0000
+
 geonode (2.4.0+beta22) trusty; urgency=high
 
   [ capooti ]

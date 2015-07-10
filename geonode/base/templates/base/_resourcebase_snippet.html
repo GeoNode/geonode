@@ -19,6 +19,10 @@
           <a ng-if="item.detail_url.indexOf('/layers/') > -1" 
             class="pull-right" href="{% endverbatim %}{% url "new_map" %}?layer={% verbatim %}{{ item.detail_url.substring(8) }}">
             <i class="fa fa-map-marker"></i>Create a Map</a>
+          <a ng-if="item.detail_url.indexOf('/maps/') > -1" 
+            class="pull-right" href="/maps/{{item.id}}/view">
+            <i class="fa fa-map-marker"></i>View Map</a>
+          </p>
       </div>
     </div>
   </article>

@@ -41,8 +41,8 @@ function reorganize_configuration() {
     cp -rp $INSTALL_DIR/support/geonode.apache $APACHE_SITES/geonode.conf
     cp -rp $INSTALL_DIR/support/geonode.wsgi $GEONODE_WWW/wsgi/
     cp -rp $INSTALL_DIR/support/geonode.robots $GEONODE_WWW/robots.txt
-    cp -rp $INSTALL_DIR/GeoNode*.zip $GEONODE_SHARE
     cp -rp $INSTALL_DIR/support/geonode.binary $GEONODE_BIN/geonode
+    cp -rp $INSTALL_DIR/GeoNode*.zip $GEONODE_SHARE
     cp -rp $INSTALL_DIR/support/geonode.updateip $GEONODE_BIN/geonode-updateip
     cp -rp $INSTALL_DIR/support/geonode.admin $GEONODE_SHARE/admin.json
     cp -rp $INSTALL_DIR/support/geonode.local_settings $GEONODE_ETC/local_settings.py
@@ -66,8 +66,6 @@ function setup_postgres_once() {
     su - postgres <<EOF
 createdb -E UTF8 -l en_US.UTF8 -T template0 geonode
 createdb -E UTF8 -l en_US.UTF8 -T template0 geonode_data
-createlang -d geonode plpgsql
-createlang -d geonode_data plpgsql
 psql -d geonode_data -c 'CREATE EXTENSION postgis'
 EOF
 su - postgres -c "psql" <<EOF
@@ -141,6 +139,13 @@ function one_time_setup() {
     # it uses that to get the sitedir location
 }
 
+function setup_geoserver() {
+    pushd ../
+    paver setup
+    popd
+    mv ../downloaded/geoserver.war $TOMCAT_WEBAPPS
+}
+
 function postinstall() {
     setup_postgres_every_time
     setup_django_every_time
@@ -192,6 +197,7 @@ case $stepval in
         echo "Running GeoNode installation ..."
         preinstall
         one_time_setup
+        setup_geoserver
         postinstall
         setup_apache_once
         ;;

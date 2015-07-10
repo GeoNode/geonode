@@ -9,8 +9,14 @@
 {% block title %}{{ resource.title }} — {{ block.super }}{% endblock %}
 
 {% block head %}
-{% include "maps/map_include.html" %}
-{{ block.super }}
+  {% if TWITTER_CARD %}
+    {% include "base/_resourcebase_twittercard.html" %}
+  {% endif %}
+  {% if OPENGRAPH_ENABLED %}
+    {% include "base/_resourcebase_opengraph.html" %}
+  {% endif %}
+  {% include "maps/map_include.html" %}
+  {{ block.super }}
 {% endblock %}
 
 {% block body_class %}maps{% endblock %}
@@ -61,9 +67,7 @@
 
     <div class="col-md-4">
       <ul class="list-group">
-
-        {% get_obj_perms request.user for resource.get_self_resource as "perms" %}
-        {% if "download_resourcebase" in perms %}
+        {% if "download_resourcebase" in perms_list %}
         <li class="list-group-item">
           <button class="btn btn-primary btn-md btn-block" data-toggle="modal" data-target="#download-map">{% trans "Download Map" %}</button>
         </li>
@@ -87,8 +91,7 @@
             </div>
           </div>
         </div>
-        {% get_obj_perms request.user for resource.get_self_resource as "perms" %}
-        {% if "change_resourcebase" in perms  or "change_resourcebase_metadata" in perms %}
+        {% if "change_resourcebase" in perms_list  or "change_resourcebase_metadata" in perms_list %}
         <li class="list-group-item">
           <button class="btn btn-primary btn-md btn-block" data-toggle="modal" data-target="#edit-map">{% trans "Edit Map" %}</button>
         </li>
@@ -101,24 +104,24 @@
               </div>
               <div class="modal-body">
                 <div class="row edit-modal">
-                  {% if "change_resourcebase_metadata" in perms %}
+                  {% if "change_resourcebase_metadata" in perms_list %}
                   <div class="col-sm-3">
                     <i class="fa fa-list-alt fa-3x"></i>
-                    <h4>Metadata</h4>
+                    <h4>{% trans "Metadata" %}</h4>
                     <a class="btn btn-default btn-block btn-xs" href="{% url "map_metadata" resource.id %}">{% trans "Edit" %}</a>
                   </div>
                   {% endif %}
-                  {% if "change_resourcebase" in perms %}
+                  {% if "change_resourcebase" in perms_list %}
                   <div class="col-sm-3">
                     <i class="fa fa-photo fa-3x"></i>
-                    <h4>Thumbnail</h4>
+                    <h4>{% trans "Thumbnail" %}</h4>
                     <a class="btn btn-default btn-block btn-xs" href="#" id="set_thumbnail">{% trans "Set" %}</a>
                   </div>
                   {% endif %}
-                  {% if "change_resourcebase" in perms %}
+                  {% if "change_resourcebase" in perms_list %}
                   <div class="col-sm-3">
                     <i class="fa fa-map-marker fa-3x"></i>
-                    <h4>Map</h4>
+                    <h4>{% trans "Map" %}</h4>
                     <a class="btn btn-default btn-block btn-xs" href="{% url "map_view" resource.id %}">{% trans "Edit" %}</a>
                     <a class="btn btn-danger btn-block btn-xs" href="{% url "map_remove" resource.id %}">{% trans "Remove" %}</a>
                   </div>
@@ -169,7 +172,7 @@
         </li>
         {% endif %}
 
-        {% if "change_resourcebase_permissions" in perms %}
+        {% if "change_resourcebase_permissions" in perms_list %}
         <li class="list-group-item">
           <h4>{% trans "Permissions" %}</h4>
           <p>{% trans "Specify which users can view or modify this map" %}</p>
@@ -184,14 +187,14 @@
           <a href="{% url "new_map" %}?copy={{ resource.id }}" class="btn btn-default btn-md btn-block">{% trans "Create a New Map" %}</a>
         </li>
 
-        {% if resource.is_public and "change_resourcebase" in perms or resource.layer_group %}
+        {% if resource.is_public and "change_resourcebase" in perms_list or resource.layer_group %}
         <li class="list-group-item">
           <h4>{% trans "Map WMS" %}</h4>
           <dl>{% if resource.layer_group %}
             <dt>{% trans "WMS layer group for local map layers" %}:</dt>
             <dd><em>{{ resource.layer_group.name }}</em> ({% trans "on" %} <a href="{{ ows }}?service=WMS&request=GetCapabilities">{% trans "local OWS" %}</a>)</dd>
             {% endif %}</dl>
-          {% if "change_resourcebase" in perms %}
+          {% if "change_resourcebase" in perms_list %}
           <p>{% trans "Publish local map layers as WMS layer group" %}</p>
           <a href="{%url "map_wms" resource.id %}" class="btn btn-default btn-md btn-block">{% trans "Publish Map WMS" %}</a>
           {% endif %}
