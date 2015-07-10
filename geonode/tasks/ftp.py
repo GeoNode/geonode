@@ -9,7 +9,6 @@ from geonode.cephgeo.models import FTPRequest, FTPStatus
 
 import logging
 import pprint
-from keystoneclient.v3 import groups
 from geonode.groups.models import GroupProfile
 
 logger = logging.getLogger("geonode.tasks.ftp")
