@@ -178,7 +178,17 @@ class Map(ResourceBase, GXPMapBase):
             self.uuid = str(uuid.uuid1())
 
         def source_for(layer):
-            return conf["sources"][layer["source"]]
+
+            if 'sources' in conf:
+                return conf["sources"][layer["source"]]
+            else:
+                # TODO: This is a work in progress will refactor
+                # Handle special case for OL3 config model in storytools as source and sources may not available
+
+                if layer['type'] == 'WMS':
+                    return {"restUrl": "/gs/rest", "title": "", "baseParams": {"VERSION": "1.1.1", "REQUEST": "GetCapabilities", "TILED": 'true', "SERVICE": "WMS"}, "ptype": "gxp_wmscsource", "id": "local"}
+                else:
+                    return layer["source"]
 
         layers = [l for l in conf["map"]["layers"]]
         layer_names = set([l.typename for l in self.local_layers])
