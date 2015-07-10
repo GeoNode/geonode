@@ -42,7 +42,13 @@
                 module.haystack_facets($http, $rootScope, $location);
             }
         });
+    }
 
+  module.load_keywords = function ($http, $rootScope, $location){
+        var params = typeof FILTER_TYPE == 'undefined' ? {} : {'type': FILTER_TYPE};
+        if ($location.search().hasOwnProperty('title__icontains')){
+          params['title__icontains'] = $location.search()['title__icontains'];
+        }
         $http.get(KEYWORDS_ENDPOINT, {params: params}).success(function(data){
             if($location.search().hasOwnProperty('keywords__slug__in')){
                 data.objects = module.set_initial_filters_from_query(data.objects,
@@ -53,13 +59,36 @@
                 module.haystack_facets($http, $rootScope, $location);
             }
         });
+    }
 
+  module.load_regions = function ($http, $rootScope, $location){
+        var params = typeof FILTER_TYPE == 'undefined' ? {} : {'type': FILTER_TYPE};
+        if ($location.search().hasOwnProperty('title__icontains')){
+          params['title__icontains'] = $location.search()['title__icontains'];
+        }
         $http.get(REGIONS_ENDPOINT, {params: params}).success(function(data){
             if($location.search().hasOwnProperty('regions__name__in')){
                 data.objects = module.set_initial_filters_from_query(data.objects,
                     $location.search()['regions__name__in'], 'name');
             }
             $rootScope.regions = data.objects;
+            if (HAYSTACK_FACET_COUNTS && $rootScope.query_data) {
+                module.haystack_facets($http, $rootScope, $location);
+            }
+        });
+    }
+
+    module.load_owners = function ($http, $rootScope, $location){
+        var params = typeof FILTER_TYPE == 'undefined' ? {} : {'type': FILTER_TYPE};
+        if ($location.search().hasOwnProperty('title__icontains')){
+            params['title__icontains'] = $location.search()['title__icontains'];
+        }
+        $http.get(OWNERS_ENDPOINT, {params: params}).success(function(data){
+            if($location.search().hasOwnProperty('owner__username__in')){
+                data.objects = module.set_initial_filters_from_query(data.objects,
+                    $location.search()['owner__username__in'], 'identifier');
+            }
+            $rootScope.owners = data.objects;
             if (HAYSTACK_FACET_COUNTS && $rootScope.query_data) {
                 module.haystack_facets($http, $rootScope, $location);
             }
@@ -91,7 +120,7 @@
                   keyword.count = 0;
               }
           }
-      }	
+      }
 
       if ("regions" in $rootScope) {
           $rootScope.regions_counts = data.meta.facets.regions;
@@ -101,6 +130,18 @@
                   region.count = $rootScope.region_counts[region.name]
               } else {
                   region.count = 0;
+              }
+          }
+      }
+
+      if ("owners" in $rootScope) {
+          $rootScope.owner_counts = data.meta.facets.owners;
+          for (var id in $rootScope.owners) {
+              var owner = $rootScope.owners[id];
+              if (owner.name in $rootScope.owner_counts) {
+                  owner.count = $rootScope.owner_counts[owner.name]
+              } else {
+                  owner.count = 0;
               }
           }
       }
@@ -117,6 +158,16 @@
     if ($('#categories').length > 0){
        module.load_categories($http, $rootScope, $location);
     }
+    if ($('#keywords').length > 0){
+       module.load_keywords($http, $rootScope, $location);
+    }
+    if ($('#regions').length > 0){
+       module.load_regions($http, $rootScope, $location);
+    }
+    if ($('#owners').length > 0){
+       module.load_owners($http, $rootScope, $location);
+    }
+
 
     // Activate the type filters if in the url
     if($location.search().hasOwnProperty('type__in')){
@@ -187,7 +238,7 @@
 
 
     /*
-    * Pagination 
+    * Pagination
     */
     // Control what happens when the total results change
     $scope.$watch('total_counts', function(){
@@ -195,8 +246,8 @@
         ($scope.total_counts / $scope.query.limit) + 0.49
       );
 
-      // In case the user is viewing a page > 1 and a 
-      // subsequent query returns less pages, then 
+      // In case the user is viewing a page > 1 and a
+      // subsequent query returns less pages, then
       // reset the page to one and search again.
       if($scope.numpages < $scope.page){
         $scope.page = 1;
@@ -213,7 +264,7 @@
         $scope.page -= 1;
         $scope.query.offset =  $scope.query.limit * ($scope.page - 1);
         query_api($scope.query);
-      }   
+      }
     }
 
     $scope.paginate_up = function(){
@@ -239,13 +290,13 @@
     * Add the selection behavior to the element, it adds/removes the 'active' class
     * and pushes/removes the value of the element from the query object
     */
-    $scope.multiple_choice_listener = function($event){    
+    $scope.multiple_choice_listener = function($event){
       var element = $($event.target);
       var query_entry = [];
       var data_filter = element.attr('data-filter');
       var value = element.attr('data-value');
 
-      // If the query object has the record then grab it 
+      // If the query object has the record then grab it
       if ($scope.query.hasOwnProperty(data_filter)){
 
         // When in the location are passed two filters of the same
@@ -254,7 +305,7 @@
           query_entry = $scope.query[data_filter];
         }else{
           query_entry.push($scope.query[data_filter]);
-        }     
+        }
       }
 
       // If the element is active active then deactivate it
@@ -263,15 +314,15 @@
         element.removeClass('active');
 
         // Remove the entry from the correct query in scope
-        
+
         query_entry.splice(query_entry.indexOf(value), 1);
       }
       // if is not active then activate it
       else if(!element.hasClass('active')){
         // Add the entry in the correct query
         if (query_entry.indexOf(value) == -1){
-          query_entry.push(value);  
-        }         
+          query_entry.push(value);
+        }
         element.addClass('active');
       }
 
@@ -291,7 +342,7 @@
       var data_filter = element.attr('data-filter');
       var value = element.attr('data-value');
 
-      // If the query object has the record then grab it 
+      // If the query object has the record then grab it
       if ($scope.query.hasOwnProperty(data_filter)){
         query_entry = $scope.query[data_filter];
       }
@@ -309,7 +360,7 @@
         $scope.query[data_filter] = query_entry;
 
         query_api($scope.query);
-      }     
+      }
     }
 
     /*
@@ -357,10 +408,7 @@
     });
 
     $('#region_search_btn').click(function(){
-        if (HAYSTACK_SEARCH)
-            $scope.query['q'] = $('#region_search_input').val();
-        else
-            $scope.query['regions__name__in'] = $('#region_search_input').val();
+        $scope.query['regions__name__in'] = $('#region_search_input').val();
         query_api($scope.query);
     });
 
@@ -374,7 +422,7 @@
       else{
         element.html('Deselect');
         article.addClass('resource_selected');
-      } 
+      }
     };
 
     /*
@@ -409,7 +457,7 @@
       }else{
         init_date = false;
       }
-      
+
     }, true);
 
     /*
@@ -442,7 +490,7 @@
       });
 
       var leafletData = $injector.get('leafletData'),
-          map = leafletData.getMap();
+          map = leafletData.getMap('filter-map');
 
       map.then(function(map){
         map.on('moveend', function(){

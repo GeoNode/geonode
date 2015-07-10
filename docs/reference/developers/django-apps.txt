@@ -290,7 +290,8 @@ PYCSW
   A dict with pycsw's configuration.  Of note are the sections
   ``metadata:main`` to set CSW server metadata and ``metadata:inspire``
   to set INSPIRE options.  Setting ``metadata:inspire['enabled']`` to ``true``
-  will enable INSPIRE support.  See http://pycsw.org/docs/configuration.html
+  will enable INSPIRE support.  Server level configurations can be overridden
+  in the ``server`` section.  See http://pycsw.org/docs/configuration.html
   for full pycsw configuration details.
 
 SITEURL

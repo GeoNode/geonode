@@ -12,9 +12,11 @@ from django.contrib.staticfiles import finders
 from django.utils.translation import ugettext_lazy as _
 
 from geonode.layers.models import Layer
-from geonode.base.models import ResourceBase, resourcebase_post_save
+from geonode.base.models import ResourceBase, resourcebase_post_save, Link
+from geonode.documents.enumerations import DOCUMENT_TYPE_MAP, DOCUMENT_MIMETYPE_MAP
 from geonode.maps.signals import map_changed_signal
 from geonode.maps.models import Map
+from geonode.security.models import remove_object_permissions
 
 IMGTYPES = ['jpg', 'jpeg', 'tif', 'tiff', 'png', 'gif']
 
@@ -84,13 +86,16 @@ class Document(ResourceBase):
         if wand_available and self.extension and self.extension.lower(
         ) == 'pdf' and self.doc_file:
             logger.debug(
-                'Generating a thumbnail for document: {0}'.format(
+                u'Generating a thumbnail for document: {0}'.format(
                     self.title))
-            with image.Image(filename=self.doc_file.path) as img:
-                img.sample(*size)
-                return img.make_blob('png')
-        elif self.extension and self.extension.lower() in IMGTYPES and self.doc_file:
-
+            try:
+                with image.Image(filename=self.doc_file.path) as img:
+                    img.sample(*size)
+                    return img.make_blob('png')
+            except:
+                logger.debug('Error generating the thumbnail with Wand, cascading to a default image...')
+        # if we are still here, we use a default image thumb
+        if self.extension and self.extension.lower() in IMGTYPES and self.doc_file:
             img = Image.open(self.doc_file.path)
             img = ImageOps.fit(img, size, Image.ANTIALIAS)
         else:
@@ -128,14 +133,12 @@ def pre_save_document(instance, sender, **kwargs):
     if instance.doc_file:
         base_name, extension = os.path.splitext(instance.doc_file.name)
         instance.extension = extension[1:]
-        doc_type_map = settings.DOCUMENT_TYPE_MAP
+        doc_type_map = DOCUMENT_TYPE_MAP
+        doc_type_map.update(getattr(settings, 'DOCUMENT_TYPE_MAP', {}))
         if doc_type_map is None:
             doc_type = 'other'
         else:
-            if instance.extension in doc_type_map:
-                doc_type = doc_type_map[''+instance.extension]
-            else:
-                doc_type = 'other'
+            doc_type = doc_type_map.get(instance.extension, 'other')
         instance.doc_type = doc_type
 
     elif instance.doc_url:
@@ -166,6 +169,36 @@ def pre_save_document(instance, sender, **kwargs):
         instance.bbox_y1 = 90
 
 
+def post_save_document(instance, *args, **kwargs):
+
+    name = None
+    ext = instance.extension
+    mime_type_map = DOCUMENT_MIMETYPE_MAP
+    mime_type_map.update(getattr(settings, 'DOCUMENT_MIMETYPE_MAP', {}))
+    mime = mime_type_map.get(ext, 'text/plain')
+    url = None
+
+    if instance.doc_file:
+        name = "Hosted Document"
+        url = '%s%s' % (
+            settings.SITEURL[:-1],
+            reverse('document_download', args=(instance.id,)))
+    elif instance.doc_url:
+        name = "External Document"
+        url = instance.doc_url
+
+    if name and url:
+        Link.objects.get_or_create(
+            resource=instance.resourcebase_ptr,
+            url=url,
+            defaults=dict(
+                extension=ext,
+                name=name,
+                mime=mime,
+                url=url,
+                link_type='data',))
+
+
 def create_thumbnail(sender, instance, created, **kwargs):
     from geonode.tasks.update import create_document_thumbnail
 
@@ -179,7 +212,13 @@ def update_documents_extent(sender, **kwargs):
         document.save()
 
 
+def pre_delete_document(instance, sender, **kwargs):
+    remove_object_permissions(instance.get_self_resource())
+
+
 signals.pre_save.connect(pre_save_document, sender=Document)
 signals.post_save.connect(create_thumbnail, sender=Document)
+signals.post_save.connect(post_save_document, sender=Document)
 signals.post_save.connect(resourcebase_post_save, sender=Document)
+signals.pre_delete.connect(pre_delete_document, sender=Document)
 map_changed_signal.connect(update_documents_extent)

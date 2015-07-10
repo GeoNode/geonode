@@ -1,0 +1,55 @@
+{% extends "site_base.html" %}
+{% load i18n %}
+
+{% block title %} Favorites -- {{ block.super }} {% endblock %}
+
+{% block body_outer %}
+<div class="page-header">
+    <h2>{% trans "Favorites for" %} {{ user.username }}</h2>
+</div>
+
+{# list of user's current favorites #}
+<div class="twocol">
+    {% if favorites %}
+    <table id="favoritesListId" class="table">
+        <thead>
+            <th>Item</th>
+            <th>Type</th>
+            <th>&nbsp;</th>
+        </thead>
+        {% for favorite in favorites %}
+        <tr>
+            <td><a href='{{ favorite.content_object.detail_url }}' >{{ favorite.content_object.title }}</a></td>
+            <td>{{ favorite.content_type }}</td>
+            <td><button data-url="{% url 'delete_favorite' favorite.pk %}" class="btn btn-primary delete-btn">Delete from Favorites</button></td>
+        </tr>
+        {% endfor %}
+    </table>
+    {% else %}
+    <h4>No favorites</h4>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_script %}
+<script type="text/javascript">
+    // add click behavior to the Delete Favorite button.
+    // ajax call to delete favorite and remove row on success.
+    $("#favoritesListId .delete-btn").click(function(event) {
+        var deleteUrl = this.dataset.url;
+        var tr = $(this).closest('tr');
+        $.post(
+            deleteUrl,
+            function(data) {
+                removeDomElementWithFade(tr);
+        });
+    });
+
+    function removeDomElementWithFade(elem) {
+        elem.fadeOut(800, function(){
+            elem.remove();
+        });
+    }
+</script>
+{% endblock extra_script %}
+

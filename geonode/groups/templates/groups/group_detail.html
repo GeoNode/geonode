@@ -3,6 +3,16 @@
 
 {% block title %}{{ object.title|default:object.slug }} — {{ block.super }}{% endblock %}
 
+{% block head %}
+  {% if TWITTER_CARD %}
+    {% include "groups/_group_twittercard.html" %}
+  {% endif %}
+  {% if OPENGRAPH_ENABLED %}
+    {% include "groups/_group_opengraph.html" %}
+  {% endif %}
+  {{ block.super }}
+{% endblock %}
+
 {% block body_class %}groups{% endblock %}
 
 {% block body_outer %}

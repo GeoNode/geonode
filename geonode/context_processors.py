@@ -47,6 +47,22 @@ def resource_urls(request):
             settings,
             'SOCIAL_BUTTONS',
             False),
+        TWITTER_CARD=getattr(
+            settings,
+            'TWITTER_CARD',
+            False),
+        TWITTER_SITE=getattr(
+            settings,
+            'TWITTER_SITE',
+            '@GeoNode'),
+        TWITTER_HASHTAGS=getattr(
+            settings,
+            'TWITTER_HASHTAGS',
+            []),
+        OPENGRAPH_ENABLED=getattr(
+            settings,
+            'OPENGRAPH_ENABLED',
+            False),
         HAYSTACK_SEARCH=getattr(
             settings,
             'HAYSTACK_SEARCH',
@@ -63,6 +79,12 @@ def resource_urls(request):
             settings,
             'CLIENT_RESULTS_LIMIT',
             10),
+        SRID_DETAIL=getattr(
+            settings,
+            'SRID',
+            dict()).get(
+            'DETAIL',
+            'never'),
         LICENSES_ENABLED=getattr(
             settings,
             'LICENSES',
@@ -84,6 +106,11 @@ def resource_urls(request):
         USE_NOTIFICATIONS=('notification' in settings.INSTALLED_APPS),
         DEFAULT_ANONYMOUS_VIEW_PERMISSION=getattr(settings, 'DEFAULT_ANONYMOUS_VIEW_PERMISSION', False),
         DEFAULT_ANONYMOUS_DOWNLOAD_PERMISSION=getattr(settings, 'DEFAULT_ANONYMOUS_DOWNLOAD_PERMISSION', False),
+        SEARCH_FILTERS=getattr(
+            settings,
+            'SEARCH_FILTERS',
+            False
+        ),
     )
 
     return defaults

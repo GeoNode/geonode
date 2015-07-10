@@ -6,7 +6,7 @@
 
 {% if include_spatial == 'true' %}
 <style>
-  .leaflet-container {  /* all maps */
+  .filter-map-container {  /* filter map */
     height: 300px;
   }
 </style>
@@ -21,6 +21,7 @@
   CATEGORIES_ENDPOINT = '{% url 'api_dispatch_list' api_name='api' resource_name='categories' %}';
   KEYWORDS_ENDPOINT = '{% url 'api_dispatch_list' api_name='api' resource_name='keywords' %}';
   REGIONS_ENDPOINT = '{% url 'api_dispatch_list' api_name='api' resource_name='regions' %}';
+  OWNERS_ENDPOINT = '{% url 'api_dispatch_list' api_name='api' resource_name='profiles' %}';
   HAYSTACK_SEARCH = "{{ HAYSTACK_SEARCH }}".toLowerCase() === "true";
   HAYSTACK_FACET_COUNTS = "{{ HAYSTACK_FACET_COUNTS }}".toLowerCase() === "true";
   CLIENT_RESULTS_LIMIT = {{ CLIENT_RESULTS_LIMIT }};

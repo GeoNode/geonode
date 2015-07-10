@@ -21,7 +21,7 @@
 # Django settings for the GeoNode project.
 import os
 from kombu import Queue
-from celery_app import app  # flake8: noqa
+from geonode.celery_app import app  # flake8: noqa
 
 #
 # General Django development settings
@@ -200,37 +200,17 @@ LOGOUT_URL = '/account/logout/'
 # Documents application
 ALLOWED_DOCUMENT_TYPES = [
     'doc', 'docx', 'gif', 'jpg', 'jpeg', 'ods', 'odt', 'odp', 'pdf', 'png', 'ppt',
-    'pptx', 'rar', 'tif', 'tiff', 'txt', 'xls', 'xlsx', 'xml', 'zip', 'gz'
+    'pptx', 'rar', 'sld', 'tif', 'tiff', 'txt', 'xls', 'xlsx', 'xml', 'zip', 'gz'
 ]
 MAX_DOCUMENT_SIZE = 2  # MB
-DOCUMENT_TYPE_MAP = {
-    'txt': 'text',
-    'log': 'text',
-    'doc': 'text',
-    'docx': 'text',
-    'ods': 'text',
-    'odt': 'text',
-    'xls': 'text',
-    'xlsx': 'text',
-    'xml': 'text',
 
-    'gif': 'image',
-    'jpg': 'image',
-    'jpeg': 'image',
-    'png': 'image',
-    'tif': 'image',
-    'tiff': 'image',
+# DOCUMENT_TYPE_MAP and DOCUMENT_MIMETYPE_MAP update enumerations in
+# documents/enumerations.py and should only
+# need to be uncommented if adding other types
+# to settings.ALLOWED_DOCUMENT_TYPES
 
-    'odp': 'presentation',
-    'ppt': 'presentation',
-    'pptx': 'presentation',
-    'pdf': 'presentation',
-
-    'rar': 'archive',
-    'gz': 'archive',
-    'zip': 'archive',
-}
-
+# DOCUMENT_TYPE_MAP = {}
+# DOCUMENT_MIMETYPE_MAP = {}
 
 GEONODE_APPS = (
 
@@ -391,7 +371,7 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    # This middleware allows to print private layers for the users that have 
+    # This middleware allows to print private layers for the users that have
     # the permissions to view them.
     # It sets temporary the involved layers as public before restoring the permissions.
     # Beware that for few seconds the involved layers are public there could be risks.
@@ -559,6 +539,12 @@ CATALOGUE = {
 PYCSW = {
     # pycsw configuration
     'CONFIGURATION': {
+        # uncomment / adjust to override server config system defaults
+        #'server': {
+        #    'maxrecords': '10',
+        #    'pretty_print': 'true',
+        #    'federatedcatalogues': 'http://catalog.data.gov/csw'
+        #},
         'metadata:main': {
             'identification_title': 'GeoNode Catalogue',
             'identification_abstract': 'GeoNode is an open source platform that facilitates the creation, sharing, \
@@ -654,7 +640,7 @@ SOCIAL_ORIGINS = [{
     "css_class":"fb"
 }, {
     "label":"Twitter",
-    "url":"https://twitter.com/share?url={url}",
+    "url":"https://twitter.com/share?url={url}&hashtags={hashtags}",
     "css_class":"tw"
 }, {
     "label":"Google +",
@@ -671,6 +657,15 @@ CKAN_ORIGINS = [{
 }]
 #SOCIAL_ORIGINS.extend(CKAN_ORIGINS)
 
+# Setting TWITTER_CARD to True will enable Twitter Cards
+# https://dev.twitter.com/cards/getting-started
+# Be sure to replace @GeoNode with your organization or site's twitter handle.
+TWITTER_CARD = True
+TWITTER_SITE = '@GeoNode'
+TWITTER_HASHTAGS = ['geonode'] 
+
+OPENGRAPH_ENABLED = True
+
 # Enable Licenses User Interface
 # Regardless of selection, license field stil exists as a field in the Resourcebase model.
 # Detail Display: above, below, never
@@ -679,6 +674,10 @@ LICENSES = {
     'ENABLED': True,
     'DETAIL': 'above',
     'METADATA': 'verbose',
+}
+
+SRID = {
+    'DETAIL': 'never',
 }
 
 SESSION_SERIALIZER = 'django.contrib.sessions.serializers.PickleSerializer'
@@ -814,6 +813,17 @@ LAYER_PREVIEW_LIBRARY = 'geoext'
 
 SERVICE_UPDATE_INTERVAL = 0
 
+SEARCH_FILTERS = {
+    'TEXT_ENABLED': True,
+    'TYPE_ENABLED': True,
+    'CATEGORIES_ENABLED': True,
+    'OWNERS_ENABLED': True,
+    'KEYWORDS_ENABLED': True,
+    'DATE_ENABLED': True,
+    'REGION_ENABLED': True,
+    'EXTENT_ENABLED': True,
+}
+
 # Queue non-blocking notifications.
 NOTIFICATION_QUEUE_ALL = False
 
@@ -860,7 +870,7 @@ if os.name == 'nt':
     if not "GEOS_LIBRARY_PATH" in locals() or not "GDAL_LIBRARY_PATH" in locals():
         if os.environ.get("GEOS_LIBRARY_PATH", None) \
             and os.environ.get("GDAL_LIBRARY_PATH", None):
-            GEOS_LIBRARY_PATH = os.environ.get('GEOS_LIBRARY_PATH') 
+            GEOS_LIBRARY_PATH = os.environ.get('GEOS_LIBRARY_PATH')
             GDAL_LIBRARY_PATH = os.environ.get('GDAL_LIBRARY_PATH')
         else:
             #maybe it will be found regardless if not it will throw 500 error

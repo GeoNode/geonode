@@ -46,7 +46,8 @@ PYCSW
   A dict with pycsw's configuration.  Of note are the sections
   ``metadata:main`` to set CSW server metadata and ``metadata:inspire``
   to set INSPIRE options.  Setting ``metadata:inspire['enabled']`` to ``true``
-  will enable INSPIRE support.  See http://docs.pycsw.org/en/latest/configuration.html
+  will enable INSPIRE support.   Server level configurations can be overridden
+  in the ``server`` section.  See http://docs.pycsw.org/en/latest/configuration.html
   for full pycsw configuration details.
   
 DEFAULT_TOPICCATEGORY
@@ -414,6 +415,30 @@ Default::
     }]
 
 A list of dictionaries that is used to generate the links to CKAN instances displayed in the Share tab.  For each origin, the name and and abstract format parameters are replaced by the actual values of the ResourceBase object (layer, map, document).  This is not enabled by default.  To enabled, uncomment the following line: SOCIAL_ORIGINS.extend(CKAN_ORIGINS).
+
+TWITTER_CARD
+--------------
+Default:: ``True``
+
+A boolean that specifies whether Twitter cards are enabled.
+
+TWITTER_SITE
+--------------
+Default:: ``'@GeoNode'``
+
+A string that specifies the site to for the twitter:site meta tag for Twitter Cards.
+
+TWITTER_HASHTAGS
+--------------
+Default:: ``['geonode']``
+
+A list that specifies the hastags to use when sharing a resource when clicking on a social link.
+
+OPENGRAPH_ENABLED
+--------------
+Default:: ``True``
+
+A boolean that specifies whether Open Graph is enabled.  Open Graph is used by Facebook and Slack.
 
 Upload settings
 ===============

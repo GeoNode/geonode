@@ -21,6 +21,8 @@
 import os
 import shutil
 import tempfile
+import zipfile
+import StringIO
 
 from django.test import TestCase
 from django.core.files.uploadedfile import SimpleUploadedFile
@@ -263,6 +265,19 @@ class LayersTest(TestCase):
         files = dict(base_file=SimpleUploadedFile('foo.GEOTIF', ' '))
         self.assertTrue(LayerUploadForm(dict(), files).is_valid())
 
+    def testZipValidation(self):
+        the_zip = zipfile.ZipFile('test_upload.zip', 'w')
+        in_memory_file = StringIO.StringIO()
+        in_memory_file.write('test')
+        the_zip.writestr('foo.shp', in_memory_file.getvalue())
+        the_zip.writestr('foo.dbf', in_memory_file.getvalue())
+        the_zip.writestr('foo.shx', in_memory_file.getvalue())
+        the_zip.writestr('foo.prj', in_memory_file.getvalue())
+        the_zip.close()
+        files = dict(base_file=SimpleUploadedFile('test_upload.zip', open('test_upload.zip').read()))
+        self.assertTrue(LayerUploadForm(dict(), files).is_valid())
+        os.remove('test_upload.zip')
+
     def testWriteFiles(self):
         files = dict(
             base_file=SimpleUploadedFile('foo.shp', ' '),
@@ -275,6 +290,22 @@ class LayersTest(TestCase):
         tempdir = form.write_files()[0]
         self.assertEquals(set(os.listdir(tempdir)),
                           set(['foo.shp', 'foo.shx', 'foo.dbf', 'foo.prj']))
+
+        the_zip = zipfile.ZipFile('test_upload.zip', 'w')
+        in_memory_file = StringIO.StringIO()
+        in_memory_file.write('test')
+        the_zip.writestr('foo.shp', in_memory_file.getvalue())
+        the_zip.writestr('foo.dbf', in_memory_file.getvalue())
+        the_zip.writestr('foo.shx', in_memory_file.getvalue())
+        the_zip.writestr('foo.prj', in_memory_file.getvalue())
+        the_zip.close()
+        files = dict(base_file=SimpleUploadedFile('test_upload.zip', open('test_upload.zip').read()))
+        form = LayerUploadForm(dict(), files)
+        self.assertTrue(form.is_valid())
+        tempdir = form.write_files()[0]
+        self.assertEquals(set(os.listdir(tempdir)),
+                          set(['foo.shp', 'foo.shx', 'foo.dbf', 'foo.prj']))
+        os.remove('test_upload.zip')
 
     def test_layer_type(self):
         self.assertEquals(layer_type('foo.shp'), 'vector')

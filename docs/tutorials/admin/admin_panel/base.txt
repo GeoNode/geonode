@@ -30,7 +30,7 @@ Restriction Code Types
 
 Being GeoNode strictly tied to the standards, the restrictions cannot be added/deleted or modified in their identifier. This behavior is necessary to keep the consistency in case of federation with the CSW catalogues.
 
-The Restrictions GeoNode description field can in any case be modified is some kind of customisation is necessary, since it's just the string that will appear on the layer metadata page. If some of the restrictions are not needed within the GeoNode instance, it is possible to hide them by unchecking the "Is choice" field.
+The Restrictions GeoNode description field can in any case be modified if some kind of customisation is necessary, since it's just the string that will appear on the layer metadata page. If some of the restrictions are not needed within the GeoNode instance, it is possible to hide them by unchecking the "Is choice" field.
 
 .. figure:: img/admin-base-restriction-list.png
 
