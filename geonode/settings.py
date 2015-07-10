@@ -249,6 +249,7 @@ GEONODE_APPS = (
     'geonode.groups',
     'geonode.services',
 
+    'geonode.annotations',
     # GeoNode Contrib Apps
 
     # 'geonode.contrib.dynamic',

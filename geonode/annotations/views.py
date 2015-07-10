@@ -53,11 +53,8 @@ def _annotations_get(req, mapid):
         for res in query_set:
             feature = { 'id' : res.id}
             if res.the_geom:
-                geometry = {}
-                geometry['type'] = res.the_geom.geom_type
-                geometry['coordinates'] = res.the_geom.coords
-                feature['geometry'] = geometry
-		#feature['geometry'] = res.the_geom #json.loads(res.the_geom)
+                feature['geometry'] = res.the_geom
+
             fp = feature['properties'] = {}
             for p in props:
                 val = getattr(res, p)

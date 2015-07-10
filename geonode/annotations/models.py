@@ -27,7 +27,7 @@ class Annotation(models.Model):
     map = models.ForeignKey(Map)
     title = models.TextField()
     content = models.TextField(blank=True, null=True)
-    the_geom = gis.GeometryField(blank=True, null=True)
+    the_geom = models.TextField(blank=True, null=True)
     start_time = models.BigIntegerField(blank=True, null=True)
     end_time = models.BigIntegerField(blank=True, null=True)
     in_timeline = models.BooleanField(default=False)
