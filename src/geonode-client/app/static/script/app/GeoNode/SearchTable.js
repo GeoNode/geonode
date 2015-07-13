@@ -18,8 +18,10 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
     permalinkText: 'UT: permalink',
     unviewableTooltip: 'UT: Unviewable Data',
     remoteTooltip: 'UT: Remote Data',
+    invalidQueryText: 'Invalid Query', 
+    searchTermRequired: 'You need to specify a search term',
 
-    searchOnLoad: true,
+    searchOnLoad: false,
     linkableTitle: true,
 
     constructor: function(config) {
@@ -87,6 +89,10 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
     doSearch: function() {
         /* updates parameters from constraints and 
            permforms a new search */
+        if (!this.queryInput.getValue()) {
+            Ext.Msg.alert(this.invalidQueryText, this.searchTermRequired);
+            return;
+        }
         this.searchParams.start = 0;
         if (this.constraints) {
             for (var i = 0; i < this.constraints.length; i++) {
@@ -100,6 +106,7 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
     _search: function(params) {
        /* search with given parameters */  
         this.disableControls();
+        this.pagerLabel.setText(this.loadingText);
         this.searchStore.load({params: params});
         this.updatePermalink(params);
     },
@@ -120,7 +127,6 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
     disableControls: function() {
         this.nextButton.setDisabled(true);
         this.prevButton.setDisabled(true);
-        this.pagerLabel.setText(this.loadingText);
     },
 
     updateControls: function() {
@@ -321,7 +327,7 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
         this.queryInput = new Ext.form.TextField({
                         fieldLabel: this.searchLabelText,
                         name: 'search',
-                        allowBlank:true,
+                        allowBlank:false,
                         width: 350
                      });
         

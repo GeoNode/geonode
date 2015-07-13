@@ -2161,7 +2161,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             viewerConfig:this.getBoundingBoxConfig(),
             renderTo: 'refine',
             height: 275,
-            isEnabled: true,
+            isEnabled: false,
             useGxpViewer: true
         });
 
@@ -2268,7 +2268,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
         }
         this.searchWindow.show();
         this.searchWindow.alignTo(document, 'tl-tl');
-        this.searchTable.doSearch();
+        //this.searchTable.doSearch();
 
         // Don't show the window if >70 layers on map (due to z-index issue with OpenLayers maps)
         if (this.mapPanel.layers.data.items.length > this.maxMapLayers) {
