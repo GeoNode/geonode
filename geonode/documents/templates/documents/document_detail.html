@@ -73,6 +73,12 @@
         <div class="overall_rating" style="float:left" data-score="{{ document_rating }}"></div> ({{num_votes}})
         <!-- TODO: Add display of who gave what rating based -->
       </article>
+
+      {% if EXIF_ENABLED and exif_data %}
+        {% block exif %}
+          {% include "exif/_exif_document_detail.html" %}
+        {% endblock %}
+      {% endif %}
     </div>
   </div>
 

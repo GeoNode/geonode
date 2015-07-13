@@ -101,6 +101,15 @@ def document_detail(request, docid):
         if settings.SOCIAL_ORIGINS:
             context_dict["social_links"] = build_social_links(request, document)
 
+        if getattr(settings, 'EXIF_ENABLED', False):
+            try:
+                from geonode.contrib.exif.utils import exif_extract_dict
+                exif = exif_extract_dict(document)
+                if exif:
+                    context_dict['exif_data'] = exif
+            except:
+                print "Exif extraction failed."
+
         return render_to_response(
             "documents/document_detail.html",
             RequestContext(request, context_dict))
@@ -144,8 +153,47 @@ class DocumentUploadView(CreateView):
         if settings.RESOURCE_PUBLISHING:
             is_published = False
         self.object.is_published = is_published
+
         self.object.save()
         self.object.set_permissions(form.cleaned_data['permissions'])
+
+        abstract = None
+        date = None
+        keywords = []
+        bbox = None
+
+        if getattr(settings, 'EXIF_ENABLED', False):
+            try:
+                from geonode.contrib.exif.utils import exif_extract_metadata_doc
+                exif_metadata = exif_extract_metadata_doc(self.object)
+                if exif_metadata:
+                    date = exif_metadata.get('date', None)
+                    keywords.extend(exif_metadata.get('keywords', []))
+                    bbox = exif_metadata.get('bbox', None)
+                    abstract = exif_metadata.get('abstract', None)
+            except:
+                print "Exif extraction failed."
+
+        if abstract:
+            self.object.abstract = abstract
+            self.object.save()
+
+        if date:
+            self.object.date = date
+            self.object.date_type = "Creation"
+            self.object.save()
+
+        if len(keywords) > 0:
+            self.object.keywords.add(*keywords)
+
+        if bbox:
+            bbox_x0, bbox_x1, bbox_y0, bbox_y1 = bbox
+            Document.objects.filter(id=self.object.pk).update(
+                bbox_x0=bbox_x0,
+                bbox_x1=bbox_x1,
+                bbox_y0=bbox_y0,
+                bbox_y1=bbox_y1)
+
         return HttpResponseRedirect(
             reverse(
                 'document_metadata',

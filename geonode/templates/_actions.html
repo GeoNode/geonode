@@ -12,4 +12,7 @@
   {% if GEOGIG_ENABLED and resource.link_set.geogig %}
   <li><a href="#geogig" data-toggle="tab"><i class="fa fa-code-fork"></i> {% trans "GeoGig" %}</a></li>
   {% endif %}
+  {% if EXIF_ENABLED and resource.polymorphic_ctype.name == 'document' and exif_data %}
+  <li><a href="#exif" data-toggle="tab"><i class="fa fa-photo"></i> {% trans "Exif" %}</a></li>
+  {% endif %}
 </ul>
