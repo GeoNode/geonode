@@ -110,6 +110,10 @@ def resource_urls(request):
             settings,
             "EXIF_ENABLED",
             False),
+        NLP_ENABLED=getattr(
+            settings,
+            "NLP_ENABLED",
+            False),
         SEARCH_FILTERS=getattr(
             settings,
             'SEARCH_FILTERS',

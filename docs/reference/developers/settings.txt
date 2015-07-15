@@ -558,6 +558,30 @@ Default: ``False``
 
 A boolean that specifies whether the Exif contrib app is enabled.  If enabled, metadata is generated from Exif tags when documents are uploaded.
 
+NLP_ENABED
+...........
+Default: ``False``
+
+A boolean that specifies whether the NLP (Natural Language Processing) contrib app is enabled.  If enabled, NLP (specifically MITIE) is used to infer additional metadata from uploaded documents to help fill metadata gaps.
+
+NLP_LOCATION_THRESHOLD
+-------------------
+Default: ``1.0``
+
+A float that specifies the threshold for location matches.
+
+NLP_LIBRARY_PATH
+--------------
+Default:: ``'/opt/MITIE/mitielib'``
+
+A string that specifies the location of the MITIE library
+
+NLP_MODEL_PATH
+--------------
+Default:: ``'/opt/MITIE/MITIE-models/english/ner_model.dat'``
+
+A string that specifies the location of the NER (Named Entity Resolver).  MITIE comes with English and Spanish NER models.  Other models can be trained.
+
 SLACK_ENABED
 ...........
 Default: ``False``
