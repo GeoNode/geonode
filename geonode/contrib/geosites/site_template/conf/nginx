@@ -1,0 +1,73 @@
+
+# This template uses the following variables to be filled in
+#  DOMAIN  	    - base url
+#  SITE_NAME	- name of site
+#  SERVE_PATH	- path to main project (used to store logs, uploaded, static)
+#  GSURL		- GeoServer machine URL (can be localhost)
+#  PORTNUM		- Port number to use for wsgi app: use 80XX where XX is SITE_ID
+
+# If virtual host responds to multiple names this server block ensures request 
+# domain is always same or else cookies have problems between GeoServer and main site
+#server {
+#    server_name ALTERNATENAMES $SITEURL;
+#    return 301 $scheme://$SITEURL$request_uri;
+#}
+
+server {
+    listen 80;
+    server_name $DOMAIN;
+
+    client_max_body_size 1G;
+    send_timeout 120;
+
+    access_log $SERVE_PATH/logs/$SITE_NAME-nginx-access.log;
+    error_log $SERVE_PATH/logs/$SITE_NAME-nginx-error.log;
+
+    location /static {
+        alias $SERVE_PATH/static;
+        gzip_static on;
+    }
+
+    location /media {
+        alias $SERVE_PATH/media;
+    }
+
+    location /uploaded {
+        alias $SERVE_PATH/uploaded;
+    }
+
+    location /favicon.ico {
+        alias /static/geonode/img/favicon.ico;
+    }
+
+    location / {
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header Host $http_host;
+        proxy_redirect off;
+
+        proxy_set_header X-Real-IP $remote_addr;
+
+        # pass SSL protocol info to gunicorn
+        #proxy_set_header X-Forwarded-Proto $scheme;
+
+        proxy_pass http://127.0.0.1:$PORTNUM/;
+
+        proxy_read_timeout 10m;
+        proxy_send_timeout 10m;
+    }
+
+    location /geoserver/ {
+        proxy_set_header    Host $host;
+        proxy_set_header    X-Forwarded-Host $host;
+        proxy_set_header    X-Forwarded-Server $host;
+        proxy_set_header    X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_pass          http://$DOMAIN:8080/geoserver/;
+        proxy_set_header    X-Real-IP $remote_addr;
+        proxy_redirect  default;
+        proxy_pass_header   Set-Cookie;
+        proxy_read_timeout 10m;
+        proxy_send_timeout 10m;
+
+    add_header Access-Control-Allow-Origin *;
+    }
+}
