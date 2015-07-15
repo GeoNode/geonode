@@ -27,15 +27,15 @@ For 12.04 with python software properties installed, install the latest stable r
 If instead, you are interested in doing development on the source code, here are the instructions: http://docs.geonode.org/en/master/tutorials/devel/install_devmode/index.html#install-devmode.
 
 Docker Usage
-If you want to use Docker you can now:
+If you want to use Docker you can now::
 
     # build the docker container
     docker build -t geonode .
 
     # run the docker container
-    docker run -d -p 8111:8000 geonode
+    docker run -d -p 8111:8000 -p 8181:8080 geonode
 
-Or if you use fig:
+Or if you use fig::
 
     # build the container
     fig build
