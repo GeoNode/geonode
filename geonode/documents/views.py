@@ -159,6 +159,7 @@ class DocumentUploadView(CreateView):
 
         abstract = None
         date = None
+        regions = []
         keywords = []
         bbox = None
 
@@ -174,6 +175,16 @@ class DocumentUploadView(CreateView):
             except:
                 print "Exif extraction failed."
 
+        if getattr(settings, 'NLP_ENABLED', False):
+            try:
+                from geonode.contrib.nlp.utils import nlp_extract_metadata_doc
+                nlp_metadata = nlp_extract_metadata_doc(self.object)
+                if nlp_metadata:
+                    regions.extend(nlp_metadata.get('regions', []))
+                    keywords.extend(nlp_metadata.get('keywords', []))
+            except:
+                print "NLP extraction failed."
+
         if abstract:
             self.object.abstract = abstract
             self.object.save()
@@ -182,6 +193,9 @@ class DocumentUploadView(CreateView):
             self.object.date = date
             self.object.date_type = "Creation"
             self.object.save()
+
+        if len(regions) > 0:
+            self.object.regions.add(*regions)
 
         if len(keywords) > 0:
             self.object.keywords.add(*keywords)

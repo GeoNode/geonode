@@ -9,17 +9,19 @@
 # Translators:
 # Translators:
 # Translators:
+# Translators:
+# Translators:
+# Barun Paudel <paudel.barun4@gmail.com>, 2015
 # Indunil <ricsdej@gmail.com>, 2013
 # Indunil <ricsdej@gmail.com>, 2013
 msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-06-09 15:38-0500\n"
-"PO-Revision-Date: 2015-05-18 18:18+0000\n"
-"Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
-"Language-Team: Sinhala (http://www.transifex.com/projects/p/geonode/language/"
-"si/)\n"
+"POT-Creation-Date: 2015-07-16 05:46-0500\n"
+"PO-Revision-Date: 2015-07-03 16:32+0000\n"
+"Last-Translator: Barun Paudel <paudel.barun4@gmail.com>\n"
+"Language-Team: Sinhala (http://www.transifex.com/p/geonode/language/si/)\n"
 "Language: si\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -66,42 +68,42 @@ msgstr "පහත පරිශීලකයන් හෝ කණ්ඩායම්
 msgid "Who can manage and edit this data?"
 msgstr "මෙම දත්ත කළමනාකරණය කිරීමට සහ සංස්කරණය කිරීමට හැකියාව ඇත්තේ කාටද?"
 
-#: static/geonode/js/search/search.js:342
+#: static/geonode/js/search/search.js:375
 #: static_root/geonode/js/search/search.js:298
 msgid "Enter your text here ..."
-msgstr ""
+msgstr "මෙන්න ඔබේ පෙළ ඇතුලත් කරන්න ..."
 
-#: static/geonode/js/search/search.js:368
+#: static/geonode/js/search/search.js:401
 msgid "Enter your region here ..."
-msgstr ""
+msgstr "ඔබේ ප්රදේශය මෙහි ඇතුලත් කරන්න ..."
 
 #: static/geonode/js/upload/FileType.js:33
 #: static_root/geonode/js/upload/FileType.js:33
 #, c-format
 msgid "Missing a %s file, which is required"
-msgstr ""
+msgstr "ගොනු අතුරුදහන් ,%s අවශ්ය"
 
 #: static/geonode/js/upload/FileTypes.js:7
 #: static_root/geonode/js/upload/FileTypes.js:7
 msgid "ESRI Shapefile"
-msgstr ""
+msgstr "ESRI Shapefile"
 
 #: static/geonode/js/upload/FileTypes.js:13
 #: static/geonode/js/upload/FileTypes.js:19
 #: static_root/geonode/js/upload/FileTypes.js:13
 #: static_root/geonode/js/upload/FileTypes.js:19
 msgid "GeoTiff File"
-msgstr ""
+msgstr "GeoTiff File"
 
 #: static/geonode/js/upload/FileTypes.js:26
 #: static_root/geonode/js/upload/FileTypes.js:26
 msgid "Comma Separated File"
-msgstr ""
+msgstr "කොමා මගින් වෙන් වෙන් File"
 
 #: static/geonode/js/upload/FileTypes.js:32
 #: static_root/geonode/js/upload/FileTypes.js:32
 msgid "Google Earth KML"
-msgstr ""
+msgstr "Google Earth KML"
 
 #: static/geonode/js/upload/FileTypes.js:38
 msgid "GeoJSON"
@@ -110,12 +112,12 @@ msgstr "GeoJSON"
 #: static/geonode/js/upload/FileTypes.js:44
 #: static_root/geonode/js/upload/FileTypes.js:38
 msgid "Zip Archives"
-msgstr ""
+msgstr "Zip Archives"
 
 #: static/geonode/js/upload/LayerInfo.js:231
 #: static_root/geonode/js/upload/LayerInfo.js:231
 msgid "Layer Info"
-msgstr ""
+msgstr "ස්ථරය තොරතුරු"
 
 #: static/geonode/js/upload/LayerInfo.js:232
 #: static_root/geonode/js/upload/LayerInfo.js:232
@@ -129,78 +131,78 @@ msgstr "ශෛලීයන් කළමනාකරණය කරන්න"
 
 #: static/geonode/js/upload/LayerInfo.js:236
 msgid "The column %1 was renamed to %2 <br/>"
-msgstr ""
+msgstr "තීරුව % 1 % 2 <br/> කිරීමට නම් කරන ලදී"
 
 #: static/geonode/js/upload/LayerInfo.js:242
 #: static_root/geonode/js/upload/LayerInfo.js:235
 msgid "Your layer was successfully uploaded"
-msgstr ""
+msgstr "ඔබේ ස්ථරය සාර්තකව"
 
 #: static/geonode/js/upload/LayerInfo.js:271
 #: static_root/geonode/js/upload/LayerInfo.js:264
 msgid "Performing Final GeoServer Config Step"
-msgstr ""
+msgstr "අවසන් GeoServer වින්යාස පියවර රංග"
 
 #: static/geonode/js/upload/LayerInfo.js:286
 #: static/geonode/js/upload/LayerInfo.js:312
 #: static_root/geonode/js/upload/LayerInfo.js:279
 #: static_root/geonode/js/upload/LayerInfo.js:305
 msgid "You need to specify more information in order to complete your upload"
-msgstr ""
+msgstr "ඔබ ඔබේ උඩුගත සම්පූර්ණ කිරීම සඳහා වැඩි විස්තර සඳහන් කිරීමට අවශ්ය"
 
 #: static/geonode/js/upload/LayerInfo.js:304
 #: static_root/geonode/js/upload/LayerInfo.js:297
 msgid "You need to specify more information in order to complete your upload."
-msgstr ""
+msgstr "ඔබ ඔබේ උඩුගත සම්පූර්ණ කිරීම සඳහා වැඩි විස්තර සඳහන් කිරීමට අවශ්ය"
 
 #: static/geonode/js/upload/LayerInfo.js:304
 #: static_root/geonode/js/upload/LayerInfo.js:297
 msgid "You can continue configuring your layer."
-msgstr ""
+msgstr "ඔබ ඔබේ ස්ථරය මානකර දිගටම කරගෙන යා හැක."
 
 #: static/geonode/js/upload/LayerInfo.js:322
 #: static/geonode/js/upload/LayerInfo.js:407
 #: static_root/geonode/js/upload/LayerInfo.js:315
 #: static_root/geonode/js/upload/LayerInfo.js:400
 msgid "Unexpected Error"
-msgstr ""
+msgstr "අනපේක්ෂිත දෝෂයක්"
 
 #: static/geonode/js/upload/LayerInfo.js:338
 #: static_root/geonode/js/upload/LayerInfo.js:331
 msgid "Performing GeoServer Config Step"
-msgstr ""
+msgstr "GeoServer Config Step රංග"
 
 #: static/geonode/js/upload/LayerInfo.js:414
 #: static_root/geonode/js/upload/LayerInfo.js:407
 msgid "Layer files uploaded, configuring in GeoServer"
-msgstr ""
+msgstr "ස්ථරය ගොනු GeoServer දී මානකර , උඩුගත"
 
 #: static/geonode/js/upload/LayerInfo.js:429
 #: static_root/geonode/js/upload/LayerInfo.js:422
 msgid "Select or create a Geogig repository."
-msgstr ""
+msgstr "තෝරන්න හෝ නිර්මාණය Geogig repository."
 
 #: static/geonode/js/upload/LayerInfo.js:524
 #: static_root/admin/js/SelectFilter2.js:69
 #: static_root/geonode/js/upload/LayerInfo.js:517
 msgid "Remove"
-msgstr ""
+msgstr "ඉවත් කරන්න"
 
 #: static/geonode/js/upload/upload.js:125
 #: static_root/geonode/js/upload/upload.js:125
 #, c-format
 msgid "The file %s is an unsupported file type, please select another file."
-msgstr ""
+msgstr "සහය නොදක්වන ගොනු වර්ගය %s .තවත් ගොනුවක් ක්ලික් කරන්න."
 
 #: static/geonode/js/upload/upload.js:260
 #: static_root/geonode/js/upload/upload.js:260
 msgid "You are uploading an incomplete set of files."
-msgstr ""
+msgstr "ඔබ ගොනු අසම්පූර්ණ කට්ටලයක් උඩුගත කර ඇත."
 
 #: static_root/admin/js/SelectFilter2.js:45
 #, c-format
 msgid "Available %s"
-msgstr ""
+msgstr "දැනට පවතින %s"
 
 #: static_root/admin/js/SelectFilter2.js:46
 #, c-format
@@ -208,33 +210,35 @@ msgid ""
 "This is the list of available %s. You may choose some by selecting them in "
 "the box below and then clicking the \"Choose\" arrow between the two boxes."
 msgstr ""
+"මෙම ලබා ගත  %s ලැයිස්තුවයි. ඔබ , පහත ඇති කොටුව තුල ඔවුන් තෝරාගැනීම මගින් සමහර තෝරා ඉන්පසු "
+"දෙක පෙට්ටි අතර ඊතල \"තෝරා ගන්නවා\" ක්ලික් හැක."
 
 #: static_root/admin/js/SelectFilter2.js:53
 #, c-format
 msgid "Type into this box to filter down the list of available %s."
-msgstr ""
+msgstr "ලබා ගත %s ලැයිස්තුව විහිද යාම සඳහා මෙම කොටුව තුලට ටයිප් කරන්න."
 
 #: static_root/admin/js/SelectFilter2.js:57
 msgid "Filter"
-msgstr ""
+msgstr "පෙරහන"
 
 #: static_root/admin/js/SelectFilter2.js:61
 msgid "Choose all"
-msgstr ""
+msgstr "සියලු තෝරන්න"
 
 #: static_root/admin/js/SelectFilter2.js:61
 #, c-format
 msgid "Click to choose all %s at once."
-msgstr ""
+msgstr "එකවර සියලු %s තෝරා ගැනීමට ක්ලික් කරන්න."
 
 #: static_root/admin/js/SelectFilter2.js:67
 msgid "Choose"
-msgstr ""
+msgstr "තෝරන්න"
 
 #: static_root/admin/js/SelectFilter2.js:75
 #, c-format
 msgid "Chosen %s"
-msgstr ""
+msgstr "තෝරාගත් %s"
 
 #: static_root/admin/js/SelectFilter2.js:76
 #, c-format
@@ -242,15 +246,17 @@ msgid ""
 "This is the list of chosen %s. You may remove some by selecting them in the "
 "box below and then clicking the \"Remove\" arrow between the two boxes."
 msgstr ""
+"මෙම තෝරා %s ලැයිස්තුවයි. ඔබ , පහත ඇති කොටුව තුල ඔවුන් තෝරා ඉන්පසු දෙක පෙට්ටි අතර ඊතල \" "
+"ඉවත් කරන්න\" ක්ලික් කිරීම මගින් සමහර ඉවත් කළ හැකිය."
 
 #: static_root/admin/js/SelectFilter2.js:80
 msgid "Remove all"
-msgstr ""
+msgstr "සියලු ඉවත් කරන්න"
 
 #: static_root/admin/js/SelectFilter2.js:80
 #, c-format
 msgid "Click to remove all chosen %s at once."
-msgstr ""
+msgstr "එකවර සියලු තෝරා %s ඉවත් කිරීමට ක්ලික් කරන්න."
 
 #: static_root/admin/js/actions.js:18 static_root/admin/js/actions.min.js:1
 msgid "%(sel)s of %(cnt)s selected"
@@ -263,6 +269,8 @@ msgid ""
 "You have unsaved changes on individual editable fields. If you run an "
 "action, your unsaved changes will be lost."
 msgstr ""
+"ඔබ තනි සංස්කරණය ක්ෂේත්රවල වෙනස්කිරීම් සුරැකීම ඇත. ඔබ පියවර ක්රියාත්මක නම්, ඔබේ නොලබපු වෙනස්කම් "
+"නැති වී යයි."
 
 #: static_root/admin/js/actions.js:121 static_root/admin/js/actions.min.js:5
 msgid ""
@@ -270,6 +278,8 @@ msgid ""
 "individual fields yet. Please click OK to save. You'll need to re-run the "
 "action."
 msgstr ""
+"ඔබ යම් ක්රියාවක් තෝරාගෙන ඇති , නමුත් ඔබට නමුත් පෞද්ගලික ක්ෂේත්ර වලට ඔබේ වෙනස්කම් ගැලවීම නැත. "
+"ඉතිරි කිරීම සඳහා OK ක්ලික් කරන්න. ඔබ නැවත ක්රියාත්මක ක්රියා කිරීමට අවශ්ය වනු ඇත."
 
 #: static_root/admin/js/actions.js:123 static_root/admin/js/actions.min.js:6
 msgid ""
@@ -277,50 +287,54 @@ msgid ""
 "fields. You're probably looking for the Go button rather than the Save "
 "button."
 msgstr ""
+"ඔබ යම් ක්රියාවක් තෝරාගෙන ඇති අතර, ඔබ තනි තනි ක්ෂේත්ර පිළිබඳ යම් වෙනස් කර නැත. ඔබ සමහර විට "
+"යන්න බොත්තම වඩා සුරකින්න බොත්තම සොයන ."
 
 #: static_root/admin/js/calendar.js:8
 msgid ""
 "January February March April May June July August September October November "
 "December"
 msgstr ""
+"January February March April May June July August September October November "
+"December"
 
 #: static_root/admin/js/calendar.js:9
 msgid "S M T W T F S"
-msgstr ""
+msgstr "S M T W T F S"
 
 #: static_root/admin/js/collapse.js:8 static_root/admin/js/collapse.js.c:19
 #: static_root/admin/js/collapse.min.js:1
 msgid "Show"
-msgstr ""
+msgstr "පෙන්වන්න"
 
 #: static_root/admin/js/collapse.js:16 static_root/admin/js/collapse.min.js:1
 msgid "Hide"
-msgstr ""
+msgstr "සඟවන්න"
 
 #: static_root/admin/js/admin/DateTimeShortcuts.js:52
 #: static_root/admin/js/admin/DateTimeShortcuts.js:88
 msgid "Now"
-msgstr ""
+msgstr "දැන්"
 
 #: static_root/admin/js/admin/DateTimeShortcuts.js:56
 msgid "Clock"
-msgstr ""
+msgstr "ඔරලෝසු"
 
 #: static_root/admin/js/admin/DateTimeShortcuts.js:84
 msgid "Choose a time"
-msgstr ""
+msgstr "කාලයක් තෝරන්න"
 
 #: static_root/admin/js/admin/DateTimeShortcuts.js:89
 msgid "Midnight"
-msgstr ""
+msgstr "මධ්යම රාත්රියේ"
 
 #: static_root/admin/js/admin/DateTimeShortcuts.js:90
 msgid "6 a.m."
-msgstr ""
+msgstr "6 a.m."
 
 #: static_root/admin/js/admin/DateTimeShortcuts.js:91
 msgid "Noon"
-msgstr ""
+msgstr "මධ්යාහ්නය"
 
 #: static_root/admin/js/admin/DateTimeShortcuts.js:95
 #: static_root/admin/js/admin/DateTimeShortcuts.js:208 templates/lang.js:9
@@ -331,19 +345,19 @@ msgstr "අවලංගු කරන්න"
 #: static_root/admin/js/admin/DateTimeShortcuts.js:148
 #: static_root/admin/js/admin/DateTimeShortcuts.js:201
 msgid "Today"
-msgstr ""
+msgstr "අද"
 
 #: static_root/admin/js/admin/DateTimeShortcuts.js:152
 msgid "Calendar"
-msgstr ""
+msgstr "දින දර්ශනය"
 
 #: static_root/admin/js/admin/DateTimeShortcuts.js:199
 msgid "Yesterday"
-msgstr ""
+msgstr "ඊයේ"
 
 #: static_root/admin/js/admin/DateTimeShortcuts.js:203
 msgid "Tomorrow"
-msgstr ""
+msgstr "හෙට"
 
 #: templates/lang.js:10
 msgid "Save as Copy"
@@ -372,7 +386,7 @@ msgstr "සම්බන්ධතාවයේ දෝශයකි"
 
 #: templates/lang.js:21
 msgid "The server returned an error"
-msgstr ""
+msgstr "සේවාදායකය දෝෂයක් ආපසු"
 
 #: templates/lang.js:22
 msgid "Details..."
@@ -392,7 +406,7 @@ msgstr "පසුතලය"
 
 #: templates/lang.js:32
 msgid "Done"
-msgstr ""
+msgstr "හරි"
 
 #: templates/lang.js:33
 msgid "Available Layers"
@@ -420,7 +434,7 @@ msgstr "සිතියම් ස්ථර"
 
 #: templates/lang.js:40
 msgid "View available data from:"
-msgstr ""
+msgstr "සිට දැක්ම ලබාගත හැකි දත්ත"
 
 #: templates/lang.js:41
 msgid "Data"
@@ -452,27 +466,27 @@ msgstr "මනින්න"
 
 #: templates/lang.js:48 templates/lang.js.c:97 templates/lang.js.c:163
 msgid "Contact"
-msgstr ""
+msgstr "අමතන්න"
 
 #: templates/lang.js:49 templates/lang.js.c:55
 msgid "Permalink"
-msgstr ""
+msgstr "මානාපය පළකර"
 
 #: templates/lang.js:50 templates/lang.js.c:124
 msgid "Mini"
-msgstr ""
+msgstr "මිනි"
 
 #: templates/lang.js:51
 msgid "Pan Map"
-msgstr ""
+msgstr " Pan සිතියම"
 
 #: templates/lang.js:52
 msgid "Zoom to Next Extent"
-msgstr ""
+msgstr "Next  Extent යන්න විශාලනය"
 
 #: templates/lang.js:53
 msgid "Zoom to Previous Extent"
-msgstr ""
+msgstr "Previous Extent යන්න විශාලනය"
 
 #: templates/lang.js:54
 msgid "This map has not yet been saved."
@@ -480,7 +494,7 @@ msgstr "මෙම සිතියම තවම සුරක්ශිත කර �
 
 #: templates/lang.js:56 templates/lang.js.c:125
 msgid "Premium"
-msgstr ""
+msgstr "Premium"
 
 #: templates/lang.js:57
 msgid "Print Map"
@@ -488,7 +502,7 @@ msgstr "සිතියම මුද්‍රණය කරන්න"
 
 #: templates/lang.js:58
 msgid "Print Preview"
-msgstr ""
+msgstr "Print Preview"
 
 #: templates/lang.js:59
 msgid "Properties"
@@ -496,7 +510,7 @@ msgstr "ගුණංග"
 
 #: templates/lang.js:60 templates/lang.js.c:126
 msgid "Publish Map"
-msgstr ""
+msgstr "සිතියම ප්රකාශයට පත් කරනු ලබයි"
 
 #: templates/lang.js:61 templates/lang.js.c:62
 msgid "Remove Layer"
@@ -508,7 +522,7 @@ msgstr "සමාවෙන්න, ඔබගේ සිතියම සුරැ�
 
 #: templates/lang.js:64
 msgid "Error While Saving"
-msgstr ""
+msgstr "දෝෂ සුරකිමින් අතර"
 
 #: templates/lang.js:65
 msgid "Save Map"
@@ -516,7 +530,7 @@ msgstr "සිතියම සුරකින්න"
 
 #: templates/lang.js:66
 msgid "You must be logged in to save this map."
-msgstr ""
+msgstr "ඔබ මෙම සිතියම බේරා ගැනීමට ලොගින් වී ගත යුතු ය."
 
 #: templates/lang.js:67 templates/lang.js.c:128
 msgid "Small"
@@ -527,6 +541,9 @@ msgid ""
 "Error contacting server.\n"
 " Please check the url and try again."
 msgstr ""
+"දෝෂ හා සම්බන්ධ server.\n"
+"\n"
+"URL එක පරික්ෂා කර, යළි උත්සාහ කරන්න."
 
 #: templates/lang.js:69
 msgid "Layer Properties"
@@ -546,7 +563,7 @@ msgstr "ස්ථරයේ ශෛලිය සංස්කරණය කරන්
 
 #: templates/lang.js:73
 msgid "Switch to Google Earth 3D Viewer"
-msgstr ""
+msgstr "ගූගල් අර්ත් 3D ප්රේකෂක මාරුවෙන්න"
 
 #: templates/lang.js:74
 msgid ""
@@ -580,11 +597,11 @@ msgstr "සූමකරණ මට්ටම "
 
 #: templates/lang.js:81
 msgid "Zoom to Layer Extent"
-msgstr ""
+msgstr "විශාලනය Layer Extent"
 
 #: templates/lang.js:82
 msgid "Zoom to Visible Extent"
-msgstr ""
+msgstr "විශාලනය Visible Extent"
 
 #: templates/lang.js:88
 msgid "Zoom Level {zoom}"
@@ -596,7 +613,7 @@ msgstr "සිතියමක් නිර්මාණය කරන්න"
 
 #: templates/lang.js:95
 msgid "Export Map"
-msgstr ""
+msgstr "අපනයන සිතියම"
 
 #: templates/lang.js:98
 msgid "Map"
@@ -616,7 +633,7 @@ msgstr "නම"
 
 #: templates/lang.js:108
 msgid "Queryable"
-msgstr ""
+msgstr "Queryable"
 
 #: templates/lang.js:115
 msgid "No background"
@@ -627,6 +644,8 @@ msgid ""
 "Your map is ready to be published to the web!  Simply copy the following "
 "HTML to embed the map in your website:"
 msgstr ""
+"ඔබගේ සිතියම වෙබ් කිරීමට ප්රකාශයට පත් කිරීමට සූදානම් ! සරලව ඔබේ වෙබ් අඩවිය තුළ සිතියම සටහන් "
+"කිරීමට පහත සඳහන් ලද HTML පිටපත් :"
 
 #: templates/lang.js:136 templates/lang.js.c:202
 msgid "Abstract:"
@@ -634,7 +653,7 @@ msgstr "සාරාංශය:"
 
 #: templates/lang.js:137 templates/lang.js.c:204
 msgid "No attribution information is provided for this layer."
-msgstr ""
+msgstr "මෙයට ආරෝපණය තොරතුරු මෙම ස්ථරය සඳහා සපයා ඇත."
 
 #: templates/lang.js:138 templates/lang.js.c:205
 msgid "Provided by:"
@@ -654,11 +673,11 @@ msgstr "මුල්පද:"
 
 #: templates/lang.js:142 templates/lang.js.c:210
 msgid "No metadata URLs are defined for this layer."
-msgstr ""
+msgstr "මෙයට පාරදත්ත URL ලිපින මෙම ස්ථරය සඳහා අර්ථ දක්වා ඇත."
 
 #: templates/lang.js:143 templates/lang.js.c:211
 msgid "Metadata Links:"
-msgstr ""
+msgstr "Metadata වෙබ් අඩවි :"
 
 #: templates/lang.js:149
 msgid "Paper size:"
@@ -666,7 +685,7 @@ msgstr "පත්‍රිකාවේ ප්‍රමාණය:"
 
 #: templates/lang.js:150
 msgid "Resolution:"
-msgstr ""
+msgstr "යෝජනාව :"
 
 #: templates/lang.js:151
 msgid "Print"
@@ -678,7 +697,7 @@ msgstr "සිතියමෙහි මාතෘකාව මෙහි ඇතු
 
 #: templates/lang.js:153
 msgid "Include legend?"
-msgstr ""
+msgstr "legend? ඇතුළත් කරන්න ?"
 
 #: templates/lang.js:154
 msgid "Enter comments here."
@@ -686,7 +705,7 @@ msgstr "විවරණ මෙහි ඇතුලත් කරන්න."
 
 #: templates/lang.js:155
 msgid "Creating PDF..."
-msgstr ""
+msgstr "නිර්මාණය PDF"
 
 #: templates/lang.js:164
 msgid "Last Modified"
@@ -694,7 +713,7 @@ msgstr "අවසාන වරට වෙනස්කම් සිදු කල�
 
 #: templates/lang.js:167 templates/lang.js.c:188
 msgid "Prev"
-msgstr ""
+msgstr "පෙර"
 
 #: templates/lang.js:168 templates/lang.js.c:189
 msgid "Next"
@@ -702,7 +721,7 @@ msgstr "මීළඟ"
 
 #: templates/lang.js:169 templates/lang.js.c:190
 msgid "of"
-msgstr ""
+msgstr "පිළිබඳ"
 
 #: templates/lang.js:170 templates/lang.js.c:191
 msgid "Your search did not match any items."
@@ -718,7 +737,7 @@ msgstr "සොයන්න"
 
 #: templates/lang.js:173 templates/lang.js.c:193
 msgid "Showing"
-msgstr ""
+msgstr "නිකං ටෙක්විලා"
 
 #: templates/lang.js:174
 msgid "Loading"
@@ -726,7 +745,7 @@ msgstr "ප්‍රවේශනය වීම"
 
 #: templates/lang.js:175 templates/lang.js.c:195
 msgid "permalink"
-msgstr ""
+msgstr "permalink"
 
 #: templates/lang.js:182
 msgid "Select"
@@ -742,7 +761,7 @@ msgstr "සියල්ල"
 
 #: templates/lang.js:187
 msgid "None"
-msgstr ""
+msgstr "කිසිවක් නැත"
 
 #: templates/lang.js:194
 msgid "Loading..."
