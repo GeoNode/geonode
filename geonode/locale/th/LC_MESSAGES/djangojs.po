@@ -9,16 +9,17 @@
 # Translators:
 # Translators:
 # Translators:
+# Translators:
+# Translators:
 # keeratipong petchadapong <jobcskku@hotmail.com>, 2014-2015
 msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-06-09 15:38-0500\n"
-"PO-Revision-Date: 2015-05-18 18:18+0000\n"
-"Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
-"Language-Team: Thai (http://www.transifex.com/projects/p/geonode/language/"
-"th/)\n"
+"POT-Creation-Date: 2015-07-16 05:46-0500\n"
+"PO-Revision-Date: 2015-07-04 03:59+0000\n"
+"Last-Translator: keeratipong petchadapong <jobcskku@hotmail.com>\n"
+"Language-Team: Thai (http://www.transifex.com/p/geonode/language/th/)\n"
 "Language: th\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -65,12 +66,12 @@ msgstr "เฉพาะผู้ใช้หรือกลุ่มดังต
 msgid "Who can manage and edit this data?"
 msgstr "ใครสามารถจัดการและแก้ไขข้อมูลนี้ได้บ้าง?"
 
-#: static/geonode/js/search/search.js:342
+#: static/geonode/js/search/search.js:375
 #: static_root/geonode/js/search/search.js:298
 msgid "Enter your text here ..."
 msgstr "กรอกข้อความของคุณที่นี่ ..."
 
-#: static/geonode/js/search/search.js:368
+#: static/geonode/js/search/search.js:401
 msgid "Enter your region here ..."
 msgstr "กรอกภูมิภาคของคุณที่นี่..."
 
@@ -274,6 +275,8 @@ msgid ""
 "individual fields yet. Please click OK to save. You'll need to re-run the "
 "action."
 msgstr ""
+"คุณเลือกการกระทำแต่คุณยังไม่ได้บันทึกการเปลี่ยนแปลงไปยังฟิลด์ โปรดคลิกปุ่ม OK เพื่อบันทึก "
+"คุณต้องทำอีกครั้ง"
 
 #: static_root/admin/js/actions.js:123 static_root/admin/js/actions.min.js:6
 msgid ""
@@ -281,6 +284,7 @@ msgid ""
 "fields. You're probably looking for the Go button rather than the Save "
 "button."
 msgstr ""
+"คุณเลือกการกระทำและคุณยังไม่ได้เปลี่ยนแปลงฟิลด์คุณอาจจะกำลังมองหาปุ่ม \"ไป\" มากกว่าปุ่มบันทึก"
 
 #: static_root/admin/js/calendar.js:8
 msgid ""

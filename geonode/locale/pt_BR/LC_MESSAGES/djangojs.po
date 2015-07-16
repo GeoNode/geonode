@@ -9,6 +9,8 @@
 # Translators:
 # Translators:
 # Translators:
+# Translators:
+# Translators:
 # Andres Alfonso Lemon Gomez <lemon.andres@gmail.com>, 2014
 # Bibiana T. de Almeida <bibiana.almeida@embrapa.br>, 2015
 # Davi de O Custodio <davicustodio@gmail.com>, 2015
@@ -18,11 +20,11 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-06-09 15:38-0500\n"
+"POT-Creation-Date: 2015-07-16 05:46-0500\n"
 "PO-Revision-Date: 2015-06-08 17:30+0000\n"
 "Last-Translator: Bibiana T. de Almeida <bibiana.almeida@embrapa.br>\n"
-"Language-Team: Portuguese (Brazil) (http://www.transifex.com/projects/p/"
-"geonode/language/pt_BR/)\n"
+"Language-Team: Portuguese (Brazil) (http://www.transifex.com/p/geonode/"
+"language/pt_BR/)\n"
 "Language: pt_BR\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -69,12 +71,12 @@ msgstr "Apenas os usuários ou grupos a seguir:"
 msgid "Who can manage and edit this data?"
 msgstr "Quem pode gerenciar e editar estes dados?"
 
-#: static/geonode/js/search/search.js:342
+#: static/geonode/js/search/search.js:375
 #: static_root/geonode/js/search/search.js:298
 msgid "Enter your text here ..."
 msgstr "Entre seu texto aqui ..."
 
-#: static/geonode/js/search/search.js:368
+#: static/geonode/js/search/search.js:401
 msgid "Enter your region here ..."
 msgstr "Insira sua região aqui ..."
 

@@ -9,6 +9,8 @@
 # Translators:
 # Translators:
 # Translators:
+# Translators:
+# Translators:
 # amir.rad <amir.rad@gmail.com>, 2014
 # amir.rad <amir.rad@gmail.com>, 2014
 # Andres Alfonso Lemon Gomez <lemon.andres@gmail.com>, 2014
@@ -16,11 +18,11 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-06-09 15:38-0500\n"
-"PO-Revision-Date: 2015-05-18 18:18+0000\n"
+"POT-Creation-Date: 2015-07-16 05:46-0500\n"
+"PO-Revision-Date: 2015-07-16 10:35+0000\n"
 "Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
-"Language-Team: Persian (Iran) (http://www.transifex.com/projects/p/geonode/"
-"language/fa_IR/)\n"
+"Language-Team: Persian (Iran) (http://www.transifex.com/p/geonode/language/"
+"fa_IR/)\n"
 "Language: fa_IR\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -151,7 +153,7 @@ msgstr "این داده هر سه ماه یکبار بروز رسانی می ش�
 msgid "No information provided"
 msgstr "اطلاعاتی تهیه نشده است"
 
-#: base/forms.py:43 base/templates/base/resourcebase_info_panel.html:51
+#: base/forms.py:43 base/templates/base/resourcebase_info_panel.html:62
 #: documents/templates/documents/document_metadata.html:58
 #: layers/templates/layers/layer_metadata.html:63
 #: maps/templates/maps/map_metadata.html:61
@@ -264,131 +266,154 @@ msgid ""
 "dataset"
 msgstr "توضیح کلی از دانش تولید داده در مورد اصل و نسب از مجموعه داده"
 
-#: base/models.py:241
+#: base/models.py:240
+#: base/templates/base/_resourcebase_contact_snippet.html:10
+#: base/templates/base/resourcebase_info_panel.html:84
+msgid "Owner"
+msgstr "مالک"
+
+#: base/models.py:242
 msgid "title"
 msgstr "عنوان"
 
-#: base/models.py:241
+#: base/models.py:242
 msgid "name by which the cited resource is known"
 msgstr "نام ذکر شده در منبع ناشناش می باشد."
 
-#: base/models.py:242
+#: base/models.py:243
 msgid "date"
 msgstr "تاریخ"
 
-#: base/models.py:243
+#: base/models.py:244
 msgid "date type"
 msgstr "نوع تاریخ"
 
-#: base/models.py:245
+#: base/models.py:246
 msgid "edition"
 msgstr "ویرایش"
 
-#: base/models.py:246
+#: base/models.py:247
 msgid "abstract"
 msgstr "چکیده"
 
-#: base/models.py:247
+#: base/models.py:248
 msgid "purpose"
 msgstr "منظور"
 
-#: base/models.py:248
+#: base/models.py:249
 msgid "maintenance frequency"
 msgstr "روند نگهداری"
 
-#: base/models.py:251 groups/models.py:44 people/models.py:92
+#: base/models.py:252 people/models.py:92
 msgid "keywords"
 msgstr "کلمات کلیدی"
 
-#: base/models.py:252
+#: base/models.py:253
 msgid "keywords region"
 msgstr "منطقه کلمات کلیدی"
 
-#: base/models.py:255
+#: base/models.py:256
 msgid "restrictions"
 msgstr "محدودیت ها"
 
-#: base/models.py:259
+#: base/models.py:260
 msgid "restrictions other"
 msgstr "دیگر محدودیت ها"
 
-#: base/models.py:264
+#: base/models.py:264 base/templates/base/resourcebase_info_panel.html:16
+#: base/templates/base/resourcebase_info_panel.html:108
+msgid "License"
+msgstr "پروانه"
+
+#: base/models.py:266
 msgid "language"
 msgstr "زبان"
 
-#: base/models.py:275
+#: base/models.py:274
+msgid "spatial representation type"
+msgstr ""
+
+#: base/models.py:278
 msgid "temporal extent start"
 msgstr "شروع محدوده زمانی"
 
-#: base/models.py:277
+#: base/models.py:280
 msgid "temporal extent end"
 msgstr "پایان محدوده زمانی"
 
-#: base/models.py:280
+#: base/models.py:283
 msgid "supplemental information"
 msgstr "اطلاعات تکمیلی"
 
-#: base/models.py:281
+#: base/models.py:284
 msgid "any other descriptive information about the dataset"
 msgstr "دیگر اطلاعات توصیفی در مورد دیتاست"
 
-#: base/models.py:284
+#: base/models.py:287
 msgid "distribution URL"
 msgstr "URL توزیع"
 
-#: base/models.py:286
+#: base/models.py:289
 msgid "distribution description"
 msgstr "توضیحات توزیع"
 
-#: base/models.py:290
+#: base/models.py:293
 msgid "data quality statement"
 msgstr "بیانیه کیفیت داده ها"
 
-#: base/models.py:305
+#: base/models.py:308
 msgid "CSW typename"
 msgstr "typename CSW"
 
-#: base/models.py:307
+#: base/models.py:310
 msgid "CSW schema"
 msgstr "طرح CSW"
 
-#: base/models.py:312
+#: base/models.py:315
 msgid "CSW source"
 msgstr "منبع CSW"
 
-#: base/models.py:313
+#: base/models.py:316
 msgid "CSW insert date"
 msgstr "CSW تاریخ درج"
 
-#: base/models.py:314
+#: base/models.py:317
 msgid "CSW type"
 msgstr "نوع CSW"
 
-#: base/models.py:315
+#: base/models.py:318
 msgid "CSW anytext"
 msgstr "anytext CSW"
 
-#: base/models.py:316
+#: base/models.py:319
 msgid "CSW WKT geometry"
 msgstr "هندسه CSW WKT"
 
-#: base/models.py:329
+#: base/models.py:332
+msgid "Featured"
+msgstr ""
+
+#: base/models.py:333
 msgid "Should this resource be advertised in home page?"
 msgstr "باید این منابع در صفحه اصلی آگهی؟"
 
-#: base/models.py:330
+#: base/models.py:334
+msgid "Is Published"
+msgstr ""
+
+#: base/models.py:335
 msgid "Should this resource be published and searchable?"
 msgstr "باید این منابع منتشر شود و جستجو؟"
 
-#: base/models.py:699
+#: base/models.py:704
 msgid "For example \"kml\""
 msgstr "برای مثال \"kml\""
 
-#: base/models.py:701
+#: base/models.py:706
 msgid "For example \"View in Google Earth\""
 msgstr "برای مثال\"View in Google Earth\""
 
-#: base/models.py:702
+#: base/models.py:707
 msgid "For example \"text/xml\""
 msgstr "برای مثال \"text/xml\""
 
@@ -409,13 +434,8 @@ msgstr "درباره"
 msgid "Owner, Point of Contact, Metadata Author"
 msgstr "مالک، نقطه تماس، متاداده نویسنده"
 
-#: base/templates/base/_resourcebase_contact_snippet.html:10
-#: base/templates/base/resourcebase_info_panel.html:73
-msgid "Owner"
-msgstr "مالک"
-
 #: base/templates/base/_resourcebase_contact_snippet.html:14
-#: base/templates/base/resourcebase_info_panel.html:78
+#: base/templates/base/resourcebase_info_panel.html:89
 #: documents/templates/documents/document_metadata.html:48
 #: layers/templates/layers/layer_metadata.html:99
 #: maps/templates/maps/map_metadata.html:51
@@ -426,77 +446,261 @@ msgstr "نقطه تماس"
 msgid "Metadata Author"
 msgstr "نویسنده متادیتا"
 
-#: base/templates/base/resourcebase_info_panel.html:6 services/forms.py:24
-#: templates/announcements/announcement_list.html:20
+#: base/templates/base/resourcebase_info_panel.html:6 groups/models.py:34
+#: services/forms.py:24 templates/announcements/announcement_list.html:20
 msgid "Title"
 msgstr "عنوان"
 
 #: base/templates/base/resourcebase_info_panel.html:11
-#: base/templates/base/resourcebase_info_panel.html:92
-msgid "License"
-msgstr "پروانه"
+#: base/templates/base/resourcebase_info_panel.html:103
+msgid "SRID"
+msgstr ""
 
-#: base/templates/base/resourcebase_info_panel.html:24 services/forms.py:29
+#: base/templates/base/resourcebase_info_panel.html:29 services/forms.py:29
 msgid "Abstract"
 msgstr "چکیده"
 
-#: base/templates/base/resourcebase_info_panel.html:29
-#: templates/search/_general_filters.html:28
+#: base/templates/base/resourcebase_info_panel.html:34
+#: contrib/exif/templates/exif/_exif_document_detail.html:14
+#: templates/search/_general_filters.html:47
 msgid "Date"
 msgstr "تاریخ"
 
-#: base/templates/base/resourcebase_info_panel.html:34
-#: layers/templates/layers/layer_detail.html:337
+#: base/templates/base/resourcebase_info_panel.html:45
+#: layers/templates/layers/layer_detail.html:344
 msgid "Type"
 msgstr "نوع"
 
-#: base/templates/base/resourcebase_info_panel.html:39
-#: people/templates/people/profile_detail.html:67
-#: templates/search/_general_filters.html:16
+#: base/templates/base/resourcebase_info_panel.html:50 groups/models.py:44
+#: people/templates/people/profile_detail.html:78
+#: templates/search/_general_filters.html:19
 msgid "Keywords"
 msgstr "کلمات کلیدی"
 
-#: base/templates/base/resourcebase_info_panel.html:61
+#: base/templates/base/resourcebase_info_panel.html:72
 #: templates/search/_region_filter.html:5
 msgid "Regions"
 msgstr "نواحی"
 
-#: base/templates/base/resourcebase_info_panel.html:105
+#: base/templates/base/resourcebase_info_panel.html:95
+msgid "More info"
+msgstr ""
+
+#: base/templates/base/resourcebase_info_panel.html:121
 msgid "Maintenance Frequency"
 msgstr "روند نگهداری"
 
-#: base/templates/base/resourcebase_info_panel.html:110
+#: base/templates/base/resourcebase_info_panel.html:126
 msgid "Restrictions"
 msgstr "محدودیت ها"
 
-#: base/templates/base/resourcebase_info_panel.html:119
+#: base/templates/base/resourcebase_info_panel.html:135
 msgid "Edition"
 msgstr "ویرایش"
 
-#: base/templates/base/resourcebase_info_panel.html:124
+#: base/templates/base/resourcebase_info_panel.html:140
 msgid "Purpose"
 msgstr "منظور"
 
-#: base/templates/base/resourcebase_info_panel.html:129 templates/500.html:154
+#: base/templates/base/resourcebase_info_panel.html:145 templates/500.html:154
 #: templates/base.html:146
 msgid "Language"
 msgstr "زبان"
 
-#: base/templates/base/resourcebase_info_panel.html:134
+#: base/templates/base/resourcebase_info_panel.html:150
 msgid "Temporal Extent"
 msgstr "محدوده زمانی"
 
-#: base/templates/base/resourcebase_info_panel.html:139
+#: base/templates/base/resourcebase_info_panel.html:155
 msgid "Data Quality"
 msgstr "کیفیت داده"
 
-#: base/templates/base/resourcebase_info_panel.html:144
+#: base/templates/base/resourcebase_info_panel.html:160
 msgid "Supplemental Information"
 msgstr "اطلاعات تکمیلی"
 
-#: base/templates/base/resourcebase_info_panel.html:149
+#: base/templates/base/resourcebase_info_panel.html:165
 msgid "Spatial Representation Type"
 msgstr "نوع نمایش مکانی"
+
+#: contrib/exif/templates/exif/_exif_document_detail.html:6
+msgid "Width"
+msgstr "عرض"
+
+#: contrib/exif/templates/exif/_exif_document_detail.html:8
+msgid "Height"
+msgstr "ارتفاع"
+
+#: contrib/exif/templates/exif/_exif_document_detail.html:10
+msgid "Make"
+msgstr ""
+
+#: contrib/exif/templates/exif/_exif_document_detail.html:12
+msgid "Model"
+msgstr ""
+
+#: contrib/exif/templates/exif/_exif_document_detail.html:16
+#: layers/templates/upload/layer_upload_csv.html:24
+msgid "Latitude"
+msgstr "عرض جغرافیایی"
+
+#: contrib/exif/templates/exif/_exif_document_detail.html:17
+#: contrib/exif/templates/exif/_exif_document_detail.html:19
+msgid "Not specified"
+msgstr ""
+
+#: contrib/exif/templates/exif/_exif_document_detail.html:18
+#: layers/templates/upload/layer_upload_csv.html:37
+msgid "Longitude"
+msgstr "طول جغرافیایی"
+
+#: contrib/exif/templates/exif/_exif_document_detail.html:20
+msgid "Flash"
+msgstr ""
+
+#: contrib/exif/templates/exif/_exif_document_detail.html:21
+msgid "True"
+msgstr ""
+
+#: contrib/exif/templates/exif/_exif_document_detail.html:21
+msgid "False"
+msgstr ""
+
+#: contrib/exif/templates/exif/_exif_document_detail.html:22
+msgid "Speed Rating"
+msgstr ""
+
+#: contrib/favorite/readme.txt:38
+#: contrib/favorite/templates/favorite/_favorite.html:5
+msgid "Favorite"
+msgstr ""
+
+#: contrib/favorite/readme.txt:68 contrib/favorite/readme.txt.py:76
+msgid "Favorites"
+msgstr ""
+
+#: contrib/favorite/templates/favorite/_favorite.html:17
+msgid "Log in to add/delete Favorites."
+msgstr ""
+
+#: contrib/favorite/templates/favorite/_favorite_js.html:23
+msgid "Delete from Favorites"
+msgstr ""
+
+#: contrib/favorite/templates/favorite/_favorite_js.html:26
+msgid "Add to Favorites"
+msgstr "Add to Favorites"
+
+#: contrib/favorite/templates/favorite/favorite_list.html:8
+msgid "Favorites for"
+msgstr ""
+
+#: contrib/geosites/views.py:106 geoserver/views.py:422 geoserver/views.py:477
+msgid "Bad HTTP Authorization Credentials."
+msgstr "بد مدارک HTTP مجوز."
+
+#: contrib/geosites/site_template/templates/site_index.html:9
+#: contrib/geosites/templates/master_index.html:10 templates/index.html:15
+msgid "Welcome"
+msgstr "خوش آمدید"
+
+#: contrib/geosites/site_template/templates/site_index.html:10
+#: contrib/geosites/templates/master_index.html:11 templates/index.html:16
+msgid ""
+"GeoNode is an open source platform for sharing geospatial data and maps."
+msgstr ""
+"GeoNode پلت فرم منبع باز برای به اشتراک گذاری داده ها و نقشه های جغرافیایی "
+"است."
+
+#: contrib/geosites/site_template/templates/site_index.html:11
+#: contrib/geosites/templates/master_index.html:12
+msgid ""
+"If you have any questions about the software or service, join our <a href="
+"\"https://groups.google.com/d/forum/geonode-users\">mailing list</a>."
+msgstr ""
+"اگر شما هر گونه سوال در مورد نرم افزار یا سرویس، پیوستن به ما <a href="
+"\"https://groups.google.com/d/forum/geonode-users\">لیست پستی</a> ."
+
+#: contrib/geosites/site_template/templates/site_index.html:12
+#: contrib/geosites/templates/master_index.html:13 templates/index.html:18
+msgid "Need help?"
+msgstr "نیاز به کمک دارید؟"
+
+#: contrib/geosites/site_template/templates/site_index.html:12
+#: contrib/geosites/templates/master_index.html:13 templates/index.html:18
+msgid "Getting Started"
+msgstr "شروع"
+
+#: contrib/geosites/templates/master_index.html:25
+#: contrib/geosites/templates/master_index.html:35
+#: contrib/geosites/templates/master_index.html:45 templates/index.html:30
+#: templates/index.html.py:40 templates/index.html:50
+msgid "No"
+msgstr "بدون"
+
+#: contrib/geosites/templates/master_index.html:25
+#: layers/templates/layers/layer_detail.html:219 templates/index.html:30
+#: templates/notification/request_download_resourcebase/full.txt:7
+msgid "Layer"
+msgid_plural "Layers"
+msgstr[0] ""
+
+#: contrib/geosites/templates/master_index.html:26 templates/index.html:31
+msgid ""
+"Click to search for geospatial data published by other users, organizations "
+"and public sources. Download data in standard formats."
+msgstr ""
+"برای جستجوی داده های جغرافیایی منتشر شده توسط کاربران دیگر، سازمان ها و "
+"منابع عمومی کلیک کنید. دانلود داده ها در فرمت های استاندارد."
+
+#: contrib/geosites/templates/master_index.html:28 templates/index.html:33
+msgid "Add layers"
+msgstr ""
+
+#: contrib/geosites/templates/master_index.html:30 templates/index.html:35
+msgid "Explore layers"
+msgstr ""
+
+#: contrib/geosites/templates/master_index.html:35
+#: maps/templates/maps/map_detail.html:124 templates/index.html:40
+msgid "Map"
+msgid_plural "Maps"
+msgstr[0] ""
+
+#: contrib/geosites/templates/master_index.html:36 templates/index.html:41
+msgid ""
+"Data is available for browsing, aggregating and styling to generate maps "
+"which can be shared publicly or restricted to specific users only."
+msgstr ""
+"اطلاعات موجود برای مرور، جمع آوری و یک ظاهر طراحی شده برای تولید نقشه های "
+"است که می تواند برای عموم به اشتراک گذاشته و یا تنها منحصر به کاربران خاص "
+"است."
+
+#: contrib/geosites/templates/master_index.html:38 templates/index.html:43
+msgid "Create maps"
+msgstr "ایجاد نقشه"
+
+#: contrib/geosites/templates/master_index.html:40 templates/index.html:45
+msgid "Explore maps"
+msgstr ""
+
+#: contrib/geosites/templates/master_index.html:45 templates/index.html:50
+#: templates/notification/account_approve/full.txt:1
+msgid "User"
+msgid_plural "Users"
+msgstr[0] ""
+
+#: contrib/geosites/templates/master_index.html:46 templates/index.html:51
+msgid ""
+"GeoNode allows registered users to easily upload geospatial data in several "
+"formats including shapefile and GeoTiff."
+msgstr ""
+"GeoNode اجازه می دهد تا کاربران ثبت نام شده که به راحتی آپلود داده های "
+"جغرافیایی در فرمت های مختلف از جمله shapefile و GeoTiff."
+
+#: contrib/geosites/templates/master_index.html:47 templates/index.html:52
+msgid "See users"
+msgstr ""
 
 #: documents/forms.py:92 documents/forms.py:160
 msgid "Document must be a file or url."
@@ -518,43 +722,43 @@ msgstr "پیوند به"
 msgid "Permissions must be valid JSON."
 msgstr "مجوز های باید JSON معتبر باشد."
 
-#: documents/models.py:39
+#: documents/models.py:40
 msgid "File"
 msgstr "پرونده"
 
-#: documents/models.py:48
+#: documents/models.py:49
 msgid "The URL of the document if it is external."
 msgstr "URL از سند اگر آن خارجی است."
 
-#: documents/models.py:49
+#: documents/models.py:50
 msgid "URL"
 msgstr "URL"
 
-#: documents/views.py:27
+#: documents/views.py:28
 msgid "You are not permitted to delete this document"
 msgstr "شما مجاز به پاک کردن این سند نیستید"
 
-#: documents/views.py:28
+#: documents/views.py:29
 msgid "You do not have permissions for this document."
 msgstr "شما اجازه دسترسی به این سند را ندارید"
 
-#: documents/views.py:29
+#: documents/views.py:30
 msgid "You are not permitted to modify this document"
 msgstr "شما مجاز به ایجاد تغییرات در این سند نیستید"
 
-#: documents/views.py:31
+#: documents/views.py:32
 msgid "You are not permitted to modify this document's metadata"
 msgstr "شما مجاز به ایجاد تغییرات در متادیتای این سند نیستید"
 
-#: documents/views.py:32
+#: documents/views.py:33
 msgid "You are not permitted to view this document"
 msgstr "شما مجاز به مشاهده این سند نیستید"
 
-#: documents/views.py:68 documents/views.py:116
+#: documents/views.py:69 documents/views.py:127
 msgid "You are not allowed to view this document."
 msgstr "شما مجاز به مشاهده این سند نیستید"
 
-#: documents/views.py:201
+#: documents/views.py:263
 msgid "You are not allowed to edit this document."
 msgstr "شما امکان پذیر نیست ویرایش این سند است."
 
@@ -598,107 +802,118 @@ msgstr ""
 msgid "A rating was given to a document"
 msgstr ""
 
-#: documents/templates/documents/document_detail.html:39
+#: documents/templates/documents/document_detail.html:44
 msgid "External Resource"
 msgstr "منابع خارجی"
 
-#: documents/templates/documents/document_detail.html:61
+#: documents/templates/documents/document_detail.html:66
 msgid "Rate this document"
 msgstr "امتیاز سند"
 
-#: documents/templates/documents/document_detail.html:65
-#: layers/templates/layers/layer_detail.html:118
-#: maps/templates/maps/map_detail.html:48
+#: documents/templates/documents/document_detail.html:70
+#: layers/templates/layers/layer_detail.html:127
+#: maps/templates/maps/map_detail.html:54
 msgid "Average Rating"
 msgstr "میانگین امتیاز"
 
-#: documents/templates/documents/document_detail.html:81
-#: documents/templates/documents/document_detail.html:83
-#: documents/templates/documents/document_detail.html:85
+#: documents/templates/documents/document_detail.html:91
+#: documents/templates/documents/document_detail.html:93
+#: documents/templates/documents/document_detail.html:95
 msgid "Download Document"
 msgstr "دانلود مستند"
 
-#: documents/templates/documents/document_detail.html:89
-#: layers/templates/layers/layer_detail.html:139
+#: documents/templates/documents/document_detail.html:99
+#: layers/templates/layers/layer_detail.html:146
 msgid "Request Download"
 msgstr ""
 
-#: documents/templates/documents/document_detail.html:95
-#: documents/templates/documents/document_detail.html:102
+#: documents/templates/documents/document_detail.html:105
+#: documents/templates/documents/document_detail.html:112
 msgid "Edit Document"
 msgstr "ویرایش سند"
 
-#: documents/templates/documents/document_detail.html:111
-#: layers/templates/layers/layer_detail.html:187
-#: layers/templates/layers/layer_detail.html:196
-#: maps/templates/maps/map_detail.html:108
-#: maps/templates/maps/map_detail.html:122
+#: documents/templates/documents/document_detail.html:120
+#: layers/templates/layers/layer_detail.html:193
+#: maps/templates/maps/map_detail.html:110
+msgid "Metadata"
+msgstr ""
+
+#: documents/templates/documents/document_detail.html:121
+#: layers/templates/layers/layer_detail.html:194
+#: layers/templates/layers/layer_detail.html:203
+#: maps/templates/maps/map_detail.html:111
+#: maps/templates/maps/map_detail.html:125
 msgid "Edit"
 msgstr ""
 
-#: documents/templates/documents/document_detail.html:119
-#: layers/templates/layers/layer_detail.html:214
+#: documents/templates/documents/document_detail.html:127
+#: templates/notification/request_download_resourcebase/full.txt:9
+msgid "Document"
+msgstr ""
+
+#: documents/templates/documents/document_detail.html:129
+#: layers/templates/layers/layer_detail.html:221
 msgid "Replace"
 msgstr ""
 
-#: documents/templates/documents/document_detail.html:122
+#: documents/templates/documents/document_detail.html:132
 #: groups/templates/groups/group_members.html:33
 #: groups/templates/groups/group_members.html:59
 #: groups/templates/groups/group_members.html:86
-#: layers/templates/layers/layer_detail.html:220
-#: maps/templates/maps/map_detail.html:123
+#: layers/templates/layers/layer_detail.html:227
+#: maps/templates/maps/map_detail.html:126
 msgid "Remove"
 msgstr "برداشتن"
 
-#: documents/templates/documents/document_detail.html:129
-#: documents/templates/documents/document_detail.html:153
-#: layers/templates/layers/layer_detail.html:161
-#: layers/templates/layers/layer_detail.html:227
-#: layers/templates/layers/layer_detail.html:253
-#: maps/templates/maps/map_detail.html:85
-#: maps/templates/maps/map_detail.html:129
+#: documents/templates/documents/document_detail.html:139
+#: documents/templates/documents/document_detail.html:163
+#: layers/templates/layers/layer_detail.html:168
+#: layers/templates/layers/layer_detail.html:234
+#: layers/templates/layers/layer_detail.html:260
+#: maps/templates/maps/map_detail.html:89
+#: maps/templates/maps/map_detail.html:132
 #: templates/_bulk_permissions_form.html:19
 msgid "Close"
 msgstr "نزدیک"
 
-#: documents/templates/documents/document_detail.html:136
-#: documents/templates/documents/document_detail.html:143
-#: layers/templates/layers/layer_detail.html:235
-#: layers/templates/layers/layer_detail.html:243
+#: documents/templates/documents/document_detail.html:146
+#: documents/templates/documents/document_detail.html:153
+#: layers/templates/layers/layer_detail.html:242
+#: layers/templates/layers/layer_detail.html:250
 msgid "Download Metadata"
 msgstr "دانلود متادیتا"
 
-#: documents/templates/documents/document_detail.html:160
+#: documents/templates/documents/document_detail.html:170
 msgid "Resource using this document"
 msgstr "منبع مورد استفاده این سند"
 
-#: documents/templates/documents/document_detail.html:162
+#: documents/templates/documents/document_detail.html:172
 msgid "List of resources using this document:"
 msgstr "لیست منابع مورد استفاده این سند"
 
-#: documents/templates/documents/document_detail.html:166
+#: documents/templates/documents/document_detail.html:176
 msgid "This document is related to a "
 msgstr "این سند مربوط است به"
 
-#: documents/templates/documents/document_detail.html:169
+#: documents/templates/documents/document_detail.html:179
 msgid "This document is not related to any maps or layers"
 msgstr "این سند مربوط به هیچ نقشه و لایه ای نیست"
 
-#: documents/templates/documents/document_detail.html:176
+#: documents/templates/documents/document_detail.html:186
 #: documents/templates/documents/document_upload.html:31
-#: groups/templates/groups/group_detail.html:60
-#: layers/templates/layers/layer_detail.html:326
+#: groups/templates/groups/group_detail.html:70
+#: layers/templates/layers/layer_detail.html:333
 #: layers/templates/layers/layer_replace.html:94
 #: layers/templates/upload/layer_upload.html:93
-#: maps/templates/maps/map_detail.html:175 people/admin.py:55
+#: maps/templates/maps/map_detail.html:178 people/admin.py:55
 msgid "Permissions"
 msgstr "مجوزها"
 
-#: documents/templates/documents/document_detail.html:177
+#: documents/templates/documents/document_detail.html:187
 msgid "Click the button below to change the permissions of this document."
 msgstr "با کلیک کردن دکمه زیر مجوز دسترسی به این سند را تغییر دهید."
 
-#: documents/templates/documents/document_detail.html:178
+#: documents/templates/documents/document_detail.html:188
 msgid "Change Document Permissions"
 msgstr "تغییر مجوز سند"
 
@@ -843,10 +1058,6 @@ msgstr "می تواند یک لینک دانلود برای لایه ایجاد 
 msgid "You don't have permissions to change style for this layer"
 msgstr "شما اجازه تغییر سبک برای این لایه ندارد"
 
-#: geoserver/views.py:422 geoserver/views.py:477
-msgid "Bad HTTP Authorization Credentials."
-msgstr "بد مدارک HTTP مجوز."
-
 #: geoserver/management/__init__.py:30
 msgid "Layer Uploaded"
 msgstr "لایه آپلود شده"
@@ -918,30 +1129,45 @@ msgstr ""
 "ایمیل استفاده می شود به تماس اعضای یک یا تمام گروه، مانند یک لیست پستی، "
 "ایمیل مشترک، و یا گروه ارز."
 
-#: groups/models.py:39
-msgid "email"
-msgstr "ایمیل"
+#: groups/models.py:36
+msgid "Logo"
+msgstr ""
 
-#: groups/models.py:187 groups/models.py:206
+#: groups/models.py:37 layers/templates/layers/layer_detail.html:60
+#: layers/templates/layers/layer_metadata.html:83
+#: people/templates/people/profile_detail.html:73 services/forms.py:27
+#: services/templates/services/layers_register.html:28
+msgid "Description"
+msgstr "توصیف"
+
+#: groups/models.py:39 people/templates/people/profile_detail.html:36
+msgid "Email"
+msgstr ""
+
+#: groups/models.py:48
+msgid "Access"
+msgstr ""
+
+#: groups/models.py:188 groups/models.py:207
 #: groups/templates/groups/group_members.html:28
 #: groups/templates/groups/group_members.html:54
 #: groups/templates/groups/group_members.html:81
 msgid "Manager"
 msgstr "مدیر"
 
-#: groups/models.py:188 groups/models.py:207
+#: groups/models.py:189 groups/models.py:208
 msgid "Member"
 msgstr "عضو"
 
-#: groups/models.py:212
+#: groups/models.py:213
 msgid "Sent"
 msgstr "فرستاده"
 
-#: groups/models.py:213
+#: groups/models.py:214
 msgid "Accepted"
 msgstr "پذیرفته"
 
-#: groups/models.py:214
+#: groups/models.py:215
 msgid "Declined"
 msgstr "کاهش یافته است"
 
@@ -1022,34 +1248,34 @@ msgstr "ایجاد گروه"
 msgid "Create"
 msgstr "ساختن"
 
-#: groups/templates/groups/group_detail.html:19
+#: groups/templates/groups/group_detail.html:29
 msgid "This group has not created a logo."
 msgstr "این گروه آرم نمی شده است."
 
-#: groups/templates/groups/group_detail.html:41
+#: groups/templates/groups/group_detail.html:51
 #: groups/templates/groups/group_invite_response.html:7
 #: groups/templates/groups/group_members.html:9
 #: groups/templates/groups/group_members.html:15
 msgid "Members"
 msgstr "کاربران"
 
-#: groups/templates/groups/group_detail.html:52
+#: groups/templates/groups/group_detail.html:62
 msgid "Edit Group Details"
 msgstr "ویرایش جزئیات گروه"
 
-#: groups/templates/groups/group_detail.html:53
+#: groups/templates/groups/group_detail.html:63
 msgid "Manage Group Members"
 msgstr "مدیریت کاربران گروه"
 
-#: groups/templates/groups/group_detail.html:54
+#: groups/templates/groups/group_detail.html:64
 msgid "Delete this Group"
 msgstr "حذف این گروه"
 
-#: groups/templates/groups/group_detail.html:57
+#: groups/templates/groups/group_detail.html:67
 msgid "Group Activities"
 msgstr "فعالیت های گروه"
 
-#: groups/templates/groups/group_detail.html:62
+#: groups/templates/groups/group_detail.html:72
 #, python-format
 msgid ""
 "\n"
@@ -1059,19 +1285,19 @@ msgstr ""
 "\n"
 "این گروه است <strong>%(access)s</strong>"
 
-#: groups/templates/groups/group_detail.html:66
+#: groups/templates/groups/group_detail.html:76
 msgid "Anyone may join this group."
 msgstr "همه ممکن است این گروه بپیوندید."
 
-#: groups/templates/groups/group_detail.html:74
+#: groups/templates/groups/group_detail.html:84
 msgid "Anyone may view this group but membership is by invitation only."
 msgstr "همه ممکن است این گروه را مشاهده اما عضویت تنها دعوت."
 
-#: groups/templates/groups/group_detail.html:76
+#: groups/templates/groups/group_detail.html:86
 msgid "Membership is by invitation only."
 msgstr "عضویت فقط توسط دعوت نامه."
 
-#: groups/templates/groups/group_detail.html:81
+#: groups/templates/groups/group_detail.html:91
 #: groups/templates/groups/group_members.html:14
 msgid "Managers"
 msgstr "مدیران"
@@ -1291,45 +1517,45 @@ msgstr "آخرین تغییرات"
 msgid "date when attribute statistics were last updated"
 msgstr "آخرین تاریخ بروزرسانی اطلاعات آماری"
 
-#: layers/views.py:71
+#: layers/views.py:72
 msgid ""
 "There was an error while attempting to upload your data. Please try again, "
 "or contact and administrator if the problem continues."
 msgstr "خطا در آپلود داده، مجددا سعی کنید."
 
-#: layers/views.py:74
+#: layers/views.py:75
 msgid "You are not permitted to delete this layer"
 msgstr "شما مجاز به پاک کردن این لایه نیستید."
 
-#: layers/views.py:75
+#: layers/views.py:76
 msgid "You do not have permissions for this layer."
 msgstr "شما مجوز دسترسی به این لایه را ندارید."
 
-#: layers/views.py:76
+#: layers/views.py:77
 msgid "You are not permitted to modify this layer"
 msgstr "شما مجاز به تغییر این لایه نیستید."
 
-#: layers/views.py:78
+#: layers/views.py:79
 msgid "You are not permitted to modify this layer's metadata"
 msgstr "شما مجاز به تغییر متادیتای این لایه نیستید."
 
-#: layers/views.py:79
+#: layers/views.py:80
 msgid "You are not permitted to view this layer"
 msgstr "شما مجاز به مشاهده این لایه نیستید."
 
-#: layers/views.py:469
+#: layers/views.py:479
 msgid "You are attempting to replace a vector layer with a raster."
 msgstr ""
 
-#: layers/views.py:472
+#: layers/views.py:482
 msgid "You are attempting to replace a raster layer with a vector."
 msgstr ""
 
-#: layers/views.py:528
+#: layers/views.py:538
 msgid "Unable to delete layer"
 msgstr ""
 
-#: layers/views.py:531
+#: layers/views.py:541
 msgid ""
 "This layer is a member of a layer group, you must remove the layer from the "
 "group before deleting."
@@ -1377,107 +1603,106 @@ msgstr "اختصاص یک نقطه نظر جدید تماس با به لایه �
 msgid "Submit"
 msgstr "ثبت"
 
-#: layers/templates/layers/layer_detail.html:49
+#: layers/templates/layers/layer_detail.html:58
 msgid "Attribute Name"
 msgstr "عنوان اطلاعات توصیفی"
 
-#: layers/templates/layers/layer_detail.html:50
+#: layers/templates/layers/layer_detail.html:59
 #: layers/templates/layers/layer_metadata.html:82
 msgid "Label"
 msgstr "برچسب"
 
-#: layers/templates/layers/layer_detail.html:51
-#: layers/templates/layers/layer_metadata.html:83
-#: people/templates/people/profile_detail.html:62 services/forms.py:27
-#: services/templates/services/layers_register.html:28
-msgid "Description"
-msgstr "توصیف"
-
-#: layers/templates/layers/layer_detail.html:53
+#: layers/templates/layers/layer_detail.html:62
 msgid "Range"
 msgstr "محدوده"
 
-#: layers/templates/layers/layer_detail.html:54
+#: layers/templates/layers/layer_detail.html:63
 msgid "Average"
 msgstr "میانگین"
 
-#: layers/templates/layers/layer_detail.html:55
+#: layers/templates/layers/layer_detail.html:64
 msgid "Median"
 msgstr "میانه"
 
-#: layers/templates/layers/layer_detail.html:56
+#: layers/templates/layers/layer_detail.html:65
 msgid "Standard Deviation"
 msgstr "انحراف معیار"
 
-#: layers/templates/layers/layer_detail.html:114
+#: layers/templates/layers/layer_detail.html:123
 msgid "Rate this layer"
 msgstr "امتیاز این لایه"
 
-#: layers/templates/layers/layer_detail.html:136
-#: layers/templates/layers/layer_detail.html:149
+#: layers/templates/layers/layer_detail.html:143
+#: layers/templates/layers/layer_detail.html:156
 msgid "Download Layer"
 msgstr "دانلود لابه"
 
-#: layers/templates/layers/layer_detail.html:172
 #: layers/templates/layers/layer_detail.html:179
+#: layers/templates/layers/layer_detail.html:186
 msgid "Edit Layer"
 msgstr "ویرایش لایه"
 
-#: layers/templates/layers/layer_detail.html:198
+#: layers/templates/layers/layer_detail.html:201
+#: layers/templates/layers/layer_detail.html:310
+msgid "Styles"
+msgstr "نحوه نمایش"
+
+#: layers/templates/layers/layer_detail.html:205
 #: services/templates/services/service_detail.html:110
 msgid "Manage"
 msgstr "اداره کردن"
 
-#: layers/templates/layers/layer_detail.html:206
-#: maps/templates/maps/map_detail.html:115
+#: layers/templates/layers/layer_detail.html:212
+#: maps/templates/maps/map_detail.html:117
+msgid "Thumbnail"
+msgstr "Thumbnail"
+
+#: layers/templates/layers/layer_detail.html:213
+#: maps/templates/maps/map_detail.html:118
 msgid "Set"
 msgstr ""
 
-#: layers/templates/layers/layer_detail.html:217
+#: layers/templates/layers/layer_detail.html:224
 msgid "Edit data"
 msgstr ""
 
-#: layers/templates/layers/layer_detail.html:261 services/views.py:1272
+#: layers/templates/layers/layer_detail.html:268 services/views.py:1272
 msgid "Legend"
 msgstr "علائم و اختصارات"
 
-#: layers/templates/layers/layer_detail.html:271
+#: layers/templates/layers/layer_detail.html:278
 msgid "Maps using this layer"
 msgstr "نقشه هایی که از این لایه استفاده می کنند"
 
-#: layers/templates/layers/layer_detail.html:273
+#: layers/templates/layers/layer_detail.html:280
 msgid "List of maps using this layer:"
 msgstr "لیست نقشه هایی که از این لایه استفاده می کنند"
 
-#: layers/templates/layers/layer_detail.html:279
+#: layers/templates/layers/layer_detail.html:286
 msgid "This layer is not currently used in any maps."
 msgstr "این لایه در حال حاضر در هیچ نقشه ای استفاده نمی شود."
 
-#: layers/templates/layers/layer_detail.html:284
+#: layers/templates/layers/layer_detail.html:291
 msgid "Create a map using this layer"
 msgstr "ایجاد نقشه با استفاده از این لایه"
 
-#: layers/templates/layers/layer_detail.html:285
+#: layers/templates/layers/layer_detail.html:292
 msgid "Click the button below to generate a new map based on this layer."
 msgstr "با کلیک کردن بر روی دکمه زیر نقشه جدیدی بر اساس این لایه تولید کنید."
 
-#: layers/templates/layers/layer_detail.html:286
+#: layers/templates/layers/layer_detail.html:293
 msgid "Create a Map"
 msgstr "ایجاد نقشه"
 
-#: layers/templates/layers/layer_detail.html:291
+#: layers/templates/layers/layer_detail.html:298
 msgid "Documents related to this layer"
 msgstr "مستندات مربوط به این لایه"
 
-#: layers/templates/layers/layer_detail.html:292
+#: layers/templates/layers/layer_detail.html:299
 msgid "List of documents related to this layer:"
 msgstr "لیست مستندات مربوط به این لایه:"
 
-#: layers/templates/layers/layer_detail.html:303
-msgid "Styles"
-msgstr "نحوه نمایش"
-
-#: layers/templates/layers/layer_detail.html:304
+#: layers/templates/layers/layer_detail.html:311
 msgid ""
 "The following styles are associated with this layer. Choose a style to view "
 "it in the preview map."
@@ -1485,23 +1710,23 @@ msgstr ""
 "نحوه نمایش های زیر مربوط به این لایه است. یکی از آنها را به منظور پیش نمایش "
 "انتخاب کنید."
 
-#: layers/templates/layers/layer_detail.html:317
+#: layers/templates/layers/layer_detail.html:324
 msgid "No styles associated with this layer"
 msgstr "هیچ سبک در ارتباط با این لایه"
 
-#: layers/templates/layers/layer_detail.html:327
+#: layers/templates/layers/layer_detail.html:334
 msgid "Click the button below to change the permissions of this layer."
 msgstr "با کلیک کردن دکمه زیر مجوز دسترسی به این لایه را تغییر دهید."
 
-#: layers/templates/layers/layer_detail.html:328
+#: layers/templates/layers/layer_detail.html:335
 msgid "Change Layer Permissions"
 msgstr "تغییر مجوز لایه"
 
-#: layers/templates/layers/layer_detail.html:335
+#: layers/templates/layers/layer_detail.html:342
 msgid "External service layer"
 msgstr "لایه خدمات خارجی"
 
-#: layers/templates/layers/layer_detail.html:336
+#: layers/templates/layers/layer_detail.html:343
 msgid "Source"
 msgstr "منبع"
 
@@ -1723,7 +1948,7 @@ msgstr ""
 
 #: layers/templates/upload/layer_upload_crs.html:32
 #: layers/templates/upload/layer_upload_csv.html:49
-#: layers/templates/upload/layer_upload_time.html:102
+#: layers/templates/upload/layer_upload_time.html:101
 msgid "Next"
 msgstr "بعدی"
 
@@ -1757,18 +1982,10 @@ msgstr ""
 "با استفاده از این داده ها، GeoNode قادر به حدس زدن که ویژگی باشد طول و عرض "
 "جغرافیایی مختصات، اما لطفا تأیید کنید که ویژگی های درست در زیر انتخاب بود."
 
-#: layers/templates/upload/layer_upload_csv.html:24
-msgid "Latitude"
-msgstr "عرض جغرافیایی"
-
 #: layers/templates/upload/layer_upload_csv.html:26
 #: layers/templates/upload/layer_upload_csv.html:39
 msgid "Select an attribute"
 msgstr "انتخاب اطلاعات توصیفی"
-
-#: layers/templates/upload/layer_upload_csv.html:37
-msgid "Longitude"
-msgstr "طول جغرافیایی"
 
 #: layers/templates/upload/layer_upload_csv.html:57
 msgid ""
@@ -1873,15 +2090,15 @@ msgstr "برای اطلاعات است که اغلب به روز شده، قطع
 msgid "Resolution of time attribute"
 msgstr "قطعنامه از ویژگی زمان"
 
-#: layers/templates/upload/layer_upload_time.html:107
+#: layers/templates/upload/layer_upload_time.html:108
 msgid "Need Help?"
 msgstr "راهنمایی؟"
 
-#: layers/templates/upload/layer_upload_time.html:108
+#: layers/templates/upload/layer_upload_time.html:109
 msgid "Enabling Time"
 msgstr "فعال کردن زمان"
 
-#: layers/templates/upload/layer_upload_time.html:109
+#: layers/templates/upload/layer_upload_time.html:110
 msgid ""
 "A feature can currently support one or two time attributes. If a single\n"
 "    attribute is used, the feature is considered relevant at that single "
@@ -1895,27 +2112,27 @@ msgstr ""
 "نقطه در زمان. اگر دو ویژگی استفاده می شود، ویژگی دوم نشان دهنده پایان یک "
 "دوره معتبر برای ویژگی."
 
-#: layers/templates/upload/layer_upload_time.html:113
+#: layers/templates/upload/layer_upload_time.html:114
 msgid "Selecting an Attribute"
 msgstr "انتخاب اطلاعات توصیفی"
 
-#: layers/templates/upload/layer_upload_time.html:114
+#: layers/templates/upload/layer_upload_time.html:115
 msgid "A time attribute can be one of"
 msgstr "ویژگی زمان می تواند یکی از"
 
-#: layers/templates/upload/layer_upload_time.html:116
+#: layers/templates/upload/layer_upload_time.html:117
 msgid "An existing date"
 msgstr "تاریخ موجود"
 
-#: layers/templates/upload/layer_upload_time.html:117
+#: layers/templates/upload/layer_upload_time.html:118
 msgid "Text that can be converted to a timestamp"
 msgstr "متن است که می تواند به یک زمان تبدیل"
 
-#: layers/templates/upload/layer_upload_time.html:118
+#: layers/templates/upload/layer_upload_time.html:119
 msgid "A number representing a year"
 msgstr "تعداد نمایندگی یک سال"
 
-#: layers/templates/upload/layer_upload_time.html:121
+#: layers/templates/upload/layer_upload_time.html:122
 msgid ""
 "\n"
 "    For text attributes, one can specify a custom format or use the 'best "
@@ -1927,36 +2144,36 @@ msgstr ""
 "برای ویژگی های متن، می توان یک قالب مشخص و یا استفاده از \"بهترین حدس\" روش. "
 "پرچم قالب های شایع:"
 
-#: layers/templates/upload/layer_upload_time.html:127
+#: layers/templates/upload/layer_upload_time.html:128
 msgid "year"
 msgstr "سال"
 
-#: layers/templates/upload/layer_upload_time.html:128
+#: layers/templates/upload/layer_upload_time.html:129
 msgid "month"
 msgstr "ماه"
 
-#: layers/templates/upload/layer_upload_time.html:129
+#: layers/templates/upload/layer_upload_time.html:130
 msgid "day of month"
 msgstr "روز از ماه"
 
-#: layers/templates/upload/layer_upload_time.html:130
 #: layers/templates/upload/layer_upload_time.html:131
+#: layers/templates/upload/layer_upload_time.html:132
 msgid "hour of day"
 msgstr "ساعتی از روز"
 
-#: layers/templates/upload/layer_upload_time.html:132
+#: layers/templates/upload/layer_upload_time.html:133
 msgid "minute in hour"
 msgstr "دقیقه در ساعت"
 
-#: layers/templates/upload/layer_upload_time.html:133
+#: layers/templates/upload/layer_upload_time.html:134
 msgid "second in minute"
 msgstr "ثانیه در دقیقه"
 
-#: layers/templates/upload/layer_upload_time.html:136
+#: layers/templates/upload/layer_upload_time.html:137
 msgid "Note that single quotes represent a literal character."
 msgstr "توجه داشته باشید که نقل قول تکی نشان دهنده شخصیت تحت اللفظی."
 
-#: layers/templates/upload/layer_upload_time.html:137
+#: layers/templates/upload/layer_upload_time.html:138
 msgid ""
 "To remove ambiguity, repeat a code to represent the maximum number of digits "
 "- for example yyyy"
@@ -1964,11 +2181,11 @@ msgstr ""
 "برای حذف ابهام، تکرار یک کد برای نشان دادن حداکثر تعداد ارقام - به عنوان "
 "مثال YYYY"
 
-#: layers/templates/upload/layer_upload_time.html:139
+#: layers/templates/upload/layer_upload_time.html:140
 msgid "The 'best guess' will handle date and optional time variants of"
 msgstr "\"بهترین حدس خواهد تاریخ و زمان اختیاری انواع دسته"
 
-#: layers/templates/upload/layer_upload_time.html:140
+#: layers/templates/upload/layer_upload_time.html:141
 msgid "In terms of the formatting flags noted above, these are"
 msgstr "از لحاظ پرچم قالب بندی در بالا ذکر شد، این ها"
 
@@ -2062,31 +2279,31 @@ msgstr "پارامترهای منبع"
 msgid "JSON Configuration"
 msgstr "JSON پیکربندی"
 
-#: maps/views.py:73
+#: maps/views.py:74
 msgid "You are not permitted to delete this map."
 msgstr "شما مجاز به پاک کردن این نقشه نیستید."
 
-#: maps/views.py:74
+#: maps/views.py:75
 msgid "You do not have permissions for this map."
 msgstr "شما مجوز دسترسی به این نقشه را ندارید."
 
-#: maps/views.py:75
+#: maps/views.py:76
 msgid "You must be logged in to save this map"
 msgstr "به منظور ذحیره کردن این نقشه باید به سیستم وارد شوید"
 
-#: maps/views.py:76
+#: maps/views.py:77
 msgid "You are not permitted to save or edit this map."
 msgstr "شما مجاز به ذخیره یا ویرایش این نقشه."
 
-#: maps/views.py:78
+#: maps/views.py:79
 msgid "You are not allowed to modify this map's metadata."
 msgstr "شما مجاز به تغییر متادیتای این نقشه نمی باشید."
 
-#: maps/views.py:79
+#: maps/views.py:80
 msgid "You are not allowed to view this map."
 msgstr "شما مجاز به مشاهده این نقشه نمی باشید."
 
-#: maps/views.py:80
+#: maps/views.py:81
 msgid "An unknown error has occured."
 msgstr "یک خطای ناشناخته رخ داده است."
 
@@ -2136,91 +2353,91 @@ msgstr "امتیاز داده شده به نقشه"
 msgid "Explore Maps"
 msgstr "مرور نقشه"
 
-#: maps/templates/maps/map_detail.html:44
+#: maps/templates/maps/map_detail.html:50
 msgid "Rate this Map"
 msgstr "امتیاز این نقشه"
 
-#: maps/templates/maps/map_detail.html:68
-#: maps/templates/maps/map_detail.html:76
+#: maps/templates/maps/map_detail.html:72
+#: maps/templates/maps/map_detail.html:80
 msgid "Download Map"
 msgstr "دانلود نقشه"
 
-#: maps/templates/maps/map_detail.html:80
+#: maps/templates/maps/map_detail.html:84
 msgid "Download Data Layers"
 msgstr "دانلود لایه های دیتا"
 
-#: maps/templates/maps/map_detail.html:81
+#: maps/templates/maps/map_detail.html:85
 msgid "Download Web Map Context"
 msgstr "دانلود نقشه وب متن"
 
-#: maps/templates/maps/map_detail.html:93
-#: maps/templates/maps/map_detail.html:100
+#: maps/templates/maps/map_detail.html:96
+#: maps/templates/maps/map_detail.html:103
 msgid "Edit Map"
 msgstr "ویرایش نقشه"
 
-#: maps/templates/maps/map_detail.html:136
+#: maps/templates/maps/map_detail.html:139
 msgid "View Map"
 msgstr "مشاهده نقشه"
 
-#: maps/templates/maps/map_detail.html:146
+#: maps/templates/maps/map_detail.html:149
 msgid "Map Layers"
 msgstr "لایه های نقشه"
 
-#: maps/templates/maps/map_detail.html:147
+#: maps/templates/maps/map_detail.html:150
 msgid "This map uses the following layers:"
 msgstr "این نقشه شامل لایه های زیر است:"
 
-#: maps/templates/maps/map_detail.html:163
+#: maps/templates/maps/map_detail.html:166
 msgid "Documents related to this map"
 msgstr "مستندات وابسته به این نقشه"
 
-#: maps/templates/maps/map_detail.html:164
+#: maps/templates/maps/map_detail.html:167
 msgid "List of documents related to this map:"
 msgstr "لیست مستندات وابسته به این نقشه:"
 
-#: maps/templates/maps/map_detail.html:176
+#: maps/templates/maps/map_detail.html:179
 msgid "Specify which users can view or modify this map"
 msgstr "تخصیص کاربرانی که می توانند این نقشه را مشاهده و تغییر دهند"
 
-#: maps/templates/maps/map_detail.html:177
+#: maps/templates/maps/map_detail.html:180
 msgid "Change Permissions of this Map"
 msgstr "تغییر مجوز دسترسی به این نقشه"
 
-#: maps/templates/maps/map_detail.html:183
+#: maps/templates/maps/map_detail.html:186
 msgid "Copy this map"
 msgstr "کپی این نقشه"
 
-#: maps/templates/maps/map_detail.html:184
+#: maps/templates/maps/map_detail.html:187
 msgid "Duplicate this map and modify it for your own purposes"
 msgstr "ایجاد نسخه کپی از این نقشه برای ایجاد تغییرات متناسب با نیاز خود"
 
-#: maps/templates/maps/map_detail.html:185
+#: maps/templates/maps/map_detail.html:188
 #: maps/templates/maps/map_list.html:10
 msgid "Create a New Map"
 msgstr "ایجاد نقشه جدید"
 
-#: maps/templates/maps/map_detail.html:190
+#: maps/templates/maps/map_detail.html:193
 msgid "Map WMS"
 msgstr "نقشه WMS"
 
-#: maps/templates/maps/map_detail.html:192
+#: maps/templates/maps/map_detail.html:195
 msgid "WMS layer group for local map layers"
 msgstr "گروه لایه WMS برای لایه های نقشه محلی"
 
-#: maps/templates/maps/map_detail.html:193 social/tests.py:103
+#: maps/templates/maps/map_detail.html:196 social/tests.py:103
 #: social/templatetags/social_tags.py:48
 msgid "on"
 msgstr "بر"
 
-#: maps/templates/maps/map_detail.html:193
+#: maps/templates/maps/map_detail.html:196
 msgid "local OWS"
 msgstr "OWS محلی"
 
-#: maps/templates/maps/map_detail.html:196
+#: maps/templates/maps/map_detail.html:199
 msgid "Publish local map layers as WMS layer group"
 msgstr "انتشار لایه های نقشه محلی برای گروه لایه WMS"
 
-#: maps/templates/maps/map_detail.html:197
+#: maps/templates/maps/map_detail.html:200
 msgid "Publish Map WMS"
 msgstr "انتشار نقشه WMS"
 
@@ -2341,11 +2558,15 @@ msgstr "اطلاعات شخصی"
 msgid "Important dates"
 msgstr "تاریخ های مهم"
 
-#: people/admin.py:150
+#: people/admin.py:58
+msgid "Extended profile"
+msgstr ""
+
+#: people/admin.py:155
 msgid "Password changed successfully."
 msgstr "رمز عبور با موفقیت تغییر."
 
-#: people/admin.py:160
+#: people/admin.py:165
 #, python-format
 msgid "Change password: %s"
 msgstr "تغییر رمز عبور: %s را"
@@ -2454,7 +2675,7 @@ msgstr "موقعیت نام"
 msgid "role or position of the responsible person"
 msgstr "نقش و یا موقعیت فرد مسئول"
 
-#: people/models.py:58 people/templates/people/profile_detail.html:50
+#: people/models.py:58 people/templates/people/profile_detail.html:61
 msgid "Voice"
 msgstr "صدا"
 
@@ -2521,15 +2742,15 @@ msgstr ""
 "کلمه معمول (ها) و یا کلمه رسمی (بازدید کنندگان) یا عبارت (بازدید کنندگان) "
 "مورد استفاده برای توصیف موضوع (فضا یا کاما از هم جدا"
 
-#: people/views.py:89
+#: people/views.py:90
 msgid "Your username for "
 msgstr "نام کاربری برای"
 
-#: people/views.py:103
+#: people/views.py:104
 msgid "Your username has been emailed to you."
 msgstr "نام کاربری شما به شما ایمیل فرستاده."
 
-#: people/views.py:105
+#: people/views.py:106
 msgid "No user could be found with that email address."
 msgstr "بدون کاربر می تواند با این آدرس ایمیل در بر داشت."
 
@@ -2565,120 +2786,121 @@ msgstr "ایجاد پروفایل"
 msgid "Profile of "
 msgstr "پروفایل"
 
-#: people/templates/people/profile_detail.html:19
+#: people/templates/people/profile_detail.html:30
 msgid "Message User"
 msgstr ""
 
-#: people/templates/people/profile_detail.html:25
-msgid "Email"
-msgstr ""
-
-#: people/templates/people/profile_detail.html:29
-#: people/templates/people/profile_detail.html:34
-#: people/templates/people/profile_detail.html:38
-#: people/templates/people/profile_detail.html:42
-#: people/templates/people/profile_detail.html:47
-#: people/templates/people/profile_detail.html:59
-#: people/templates/people/profile_detail.html:63
+#: people/templates/people/profile_detail.html:40
+#: people/templates/people/profile_detail.html:45
+#: people/templates/people/profile_detail.html:49
+#: people/templates/people/profile_detail.html:53
+#: people/templates/people/profile_detail.html:58
+#: people/templates/people/profile_detail.html:70
+#: people/templates/people/profile_detail.html:74
 msgid "Not provided."
 msgstr ""
 
-#: people/templates/people/profile_detail.html:33
+#: people/templates/people/profile_detail.html:44
 #: services/templates/services/layers_register.html:27
 msgid "Name"
 msgstr "نام"
 
-#: people/templates/people/profile_detail.html:37
+#: people/templates/people/profile_detail.html:48
 msgid "Position"
 msgstr ""
 
-#: people/templates/people/profile_detail.html:41
+#: people/templates/people/profile_detail.html:52
 msgid "Organization"
 msgstr ""
 
-#: people/templates/people/profile_detail.html:46
+#: people/templates/people/profile_detail.html:57
 msgid "Location"
 msgstr ""
 
-#: people/templates/people/profile_detail.html:58
+#: people/templates/people/profile_detail.html:69
 msgid "Fax"
 msgstr ""
 
-#: people/templates/people/profile_detail.html:74 services/views.py:542
+#: people/templates/people/profile_detail.html:85 services/views.py:542
 #: services/views.py:639 services/views.py:707 services/views.py:855
 msgid "Not provided"
 msgstr "ارائه نشده است"
 
-#: people/templates/people/profile_detail.html:85
+#: people/templates/people/profile_detail.html:96
+#: people/templates/people/profile_detail.html:130
 msgid "Edit profile"
 msgstr "ویرایش مشخصات"
 
-#: people/templates/people/profile_detail.html:86
+#: people/templates/people/profile_detail.html:97
 msgid "Change password"
 msgstr "تغییر رمز عبور"
 
-#: people/templates/people/profile_detail.html:89
+#: people/templates/people/profile_detail.html:100
 msgid "Upload new layers"
 msgstr "آپلود لایه جدید"
 
-#: people/templates/people/profile_detail.html:90
+#: people/templates/people/profile_detail.html:101
 msgid "Create a new map"
 msgstr "ایجاد نقشه جدید"
 
-#: people/templates/people/profile_detail.html:92
+#: people/templates/people/profile_detail.html:103
 msgid "My Activities"
 msgstr "فعالیت های من"
 
-#: people/templates/people/profile_detail.html:97 templates/500.html:222
+#: people/templates/people/profile_detail.html:108 templates/500.html:222
 #: templates/base.html:214
 msgid "Notifications"
 msgstr ""
 
-#: people/templates/people/profile_detail.html:100 templates/500.html:225
+#: people/templates/people/profile_detail.html:111 templates/500.html:225
 #: templates/base.html:217 templates/announcements/announcement_list.html:6
 #: templates/announcements/announcement_list.html:13
 msgid "Announcements"
 msgstr "اعلانات"
 
-#: people/templates/people/profile_detail.html:105
+#: people/templates/people/profile_detail.html:116
 #: services/templates/services/service_list.html:9 templates/500.html:228
 #: templates/base.html:220
 msgid "Remote Services"
 msgstr "خدمات از راه دور"
 
-#: people/templates/people/profile_detail.html:106 templates/500.html:229
+#: people/templates/people/profile_detail.html:117 templates/500.html:229
 #: templates/base.html:221
 msgid "Invite User"
 msgstr "دعوت از کاربر"
 
-#: people/templates/people/profile_detail.html:107 templates/500.html:231
+#: people/templates/people/profile_detail.html:118 templates/500.html:231
 #: templates/base.html:223
 msgid "GeoServer"
 msgstr "GeoServer"
 
-#: people/templates/people/profile_detail.html:110 templates/500.html:234
+#: people/templates/people/profile_detail.html:121 templates/500.html:234
 #: templates/base.html:226
 msgid "Admin"
 msgstr "مدیر"
 
-#: people/templates/people/profile_detail.html:118
+#: people/templates/people/profile_detail.html:134
 msgid "User Activities"
 msgstr "فعالیت کاربر"
 
-#: people/templates/people/profile_detail.html:175
+#: people/templates/people/profile_detail.html:191
 msgid "Resources"
 msgstr "منابع"
 
-#: people/templates/people/profile_edit.html:9
-#: people/templates/people/profile_edit.html:18
+#: people/templates/people/profile_edit.html:10
+#: people/templates/people/profile_edit.html:24
 msgid "Edit Your Profile"
 msgstr "تغییر اطلاعات شخصی"
 
-#: people/templates/people/profile_edit.html:14
+#: people/templates/people/profile_edit.html:12
+msgid "Edit Profile for"
+msgstr ""
+
+#: people/templates/people/profile_edit.html:19
 msgid "Change your avatar"
 msgstr "تعویض عکس"
 
-#: people/templates/people/profile_edit.html:24
+#: people/templates/people/profile_edit.html:30
 msgid "Update profile"
 msgstr "بروز رسانی اطلاعات شخصی"
 
@@ -2980,7 +3202,7 @@ msgid "Register"
 msgstr "ثبت نام"
 
 #: templates/500.html:100 templates/500.html.py:200 templates/base.html:100
-#: templates/base.html.py:192
+#: templates/base.html.py:174 templates/base.html:192
 msgid "Sign in"
 msgstr "ثبت"
 
@@ -3069,6 +3291,10 @@ msgstr "امتیازدهی"
 
 #: templates/_actions.html:13
 msgid "GeoGig"
+msgstr ""
+
+#: templates/_actions.html:16
+msgid "Exif"
 msgstr ""
 
 #: templates/_bulk_permissions_form.html:9
@@ -3196,8 +3422,8 @@ msgid ""
 "      <li><a href=\"http://geowebcache.org\">GeoWebCache</a> - Cache engine "
 "for WMS Tiles</li><li><a href=\"http://openlayers.org\">OpenLayers</a> - "
 "Pure JavaScript library powering the maps of GeoExt</li>\n"
-"      <li><a href=\"http://pycsw.org\">pycsw</a> - CSW metadata catalogue "
-"server</li>\n"
+"      <li><a href=\"http://pycsw.org\">pycsw</a> - CSW, OpenSearch and OAI-"
+"PMH metadata catalogue server</li>\n"
 "    </ul>\n"
 "\n"
 "    <h3>What are OGC Services?</h3>\n"
@@ -3279,6 +3505,14 @@ msgid "Metadata search via CSW:"
 msgstr "جستجو متاداده از طریق CSW:"
 
 #: templates/developer.html:75
+msgid "Metadata search via OpenSearch:"
+msgstr ""
+
+#: templates/developer.html:79
+msgid "Metadata search via OAI-PMH:"
+msgstr ""
+
+#: templates/developer.html:83
 msgid "Cached tiles via WMTS:"
 msgstr "کاشی ذخیره سازی از طریق WMTS:"
 
@@ -3421,17 +3655,6 @@ msgstr "Remixing نقشه"
 msgid "Welcome!"
 msgstr "خوش آمدید!"
 
-#: templates/index.html:15
-msgid "Welcome"
-msgstr "خوش آمدید"
-
-#: templates/index.html:16
-msgid ""
-"GeoNode is an open source platform for sharing geospatial data and maps."
-msgstr ""
-"GeoNode پلت فرم منبع باز برای به اشتراک گذاری داده ها و نقشه های جغرافیایی "
-"است."
-
 #: templates/index.html:17
 msgid ""
 "If you have any questions about the software or service, join our <a href="
@@ -3439,77 +3662,8 @@ msgid ""
 "list</a>."
 msgstr ""
 
-#: templates/index.html:18
-msgid "Need help?"
-msgstr "نیاز به کمک دارید؟"
-
-#: templates/index.html:18
-msgid "Getting Started"
-msgstr "شروع"
-
-#: templates/index.html:30 templates/index.html.py:40 templates/index.html:50
-msgid "No"
-msgstr "بدون"
-
-#: templates/index.html:30
-#: templates/notification/request_download_resourcebase/full.txt:7
-msgid "Layer"
-msgid_plural "Layers"
-msgstr[0] ""
-
-#: templates/index.html:31
-msgid ""
-"Click to search for geospatial data published by other users, organizations "
-"and public sources. Download data in standard formats."
-msgstr ""
-"برای جستجوی داده های جغرافیایی منتشر شده توسط کاربران دیگر، سازمان ها و "
-"منابع عمومی کلیک کنید. دانلود داده ها در فرمت های استاندارد."
-
-#: templates/index.html:33
-msgid "Add layers"
-msgstr ""
-
-#: templates/index.html:35
-msgid "Explore layers"
-msgstr ""
-
-#: templates/index.html:40
-msgid "Map"
-msgid_plural "Maps"
-msgstr[0] ""
-
-#: templates/index.html:41
-msgid ""
-"Data is available for browsing, aggregating and styling to generate maps "
-"which can be shared publicly or restricted to specific users only."
-msgstr ""
-"اطلاعات موجود برای مرور، جمع آوری و یک ظاهر طراحی شده برای تولید نقشه های "
-"است که می تواند برای عموم به اشتراک گذاشته و یا تنها منحصر به کاربران خاص "
-"است."
-
-#: templates/index.html:43
-msgid "Create maps"
-msgstr "ایجاد نقشه"
-
-#: templates/index.html:45
-msgid "Explore maps"
-msgstr ""
-
-#: templates/index.html:50 templates/notification/account_approve/full.txt:1
-msgid "User"
-msgid_plural "Users"
-msgstr[0] ""
-
-#: templates/index.html:51
-msgid ""
-"GeoNode allows registered users to easily upload geospatial data in several "
-"formats including shapefile and GeoTiff."
-msgstr ""
-"GeoNode اجازه می دهد تا کاربران ثبت نام شده که به راحتی آپلود داده های "
-"جغرافیایی در فرمت های مختلف از جمله shapefile و GeoTiff."
-
-#: templates/index.html:52
-msgid "See users"
+#: templates/social_links.html:10
+msgid "Share This"
 msgstr ""
 
 #: templates/account/admin_approval_sent.html:6
@@ -3972,10 +4126,6 @@ msgstr ""
 msgid "requested you to download this resource"
 msgstr ""
 
-#: templates/notification/request_download_resourcebase/full.txt:9
-msgid "Document"
-msgstr ""
-
 #: templates/notification/request_download_resourcebase/full.txt:12
 msgid ""
 "Please go to resource page and assign the download permissions if you wish"
@@ -4063,20 +4213,24 @@ msgstr "%(to_user_username)s پروفایل را"
 msgid "Extent"
 msgstr "حد"
 
-#: templates/search/_general_filters.html:3
+#: templates/search/_general_filters.html:4
 msgid "Categories"
 msgstr "دسته بندی ها"
 
-#: templates/search/_general_filters.html:30
+#: templates/search/_general_filters.html:33
+msgid "Owners"
+msgstr ""
+
+#: templates/search/_general_filters.html:49
 msgid "Date begins after:"
 msgstr "تاریخ پس از شروع:"
 
-#: templates/search/_general_filters.html:31
-#: templates/search/_general_filters.html:35
+#: templates/search/_general_filters.html:50
+#: templates/search/_general_filters.html:54
 msgid "yyyy-mm-dd"
 msgstr "YYYY-MM-DD"
 
-#: templates/search/_general_filters.html:34
+#: templates/search/_general_filters.html:53
 msgid "Date ends before:"
 msgstr "تاریخ به پایان می رسد قبل از:"
 
@@ -4152,6 +4306,9 @@ msgstr "بازگشت به صندوق"
 msgid "Send Reply"
 msgstr "فرستادن پاسخ"
 
+#~ msgid "email"
+#~ msgstr "email"
+
 #~ msgid "KML"
 #~ msgstr "KML"
 
@@ -4218,9 +4375,6 @@ msgstr "فرستادن پاسخ"
 #~ msgid "Remote Thumbnail"
 #~ msgstr "Remote Thumbnail"
 
-#~ msgid "Thumbnail"
-#~ msgstr "Thumbnail"
-
 #~ msgid "Group details"
 #~ msgstr "Group details"
 
@@ -4235,9 +4389,6 @@ msgstr "فرستادن پاسخ"
 
 #~ msgid "You do not have permission to view this map"
 #~ msgstr "You do not have permission to view this map"
-
-#~ msgid "Add to Favorites"
-#~ msgstr "Add to Favorites"
 
 #~ msgid "Add a Comment"
 #~ msgstr "Add a Comment"
