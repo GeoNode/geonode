@@ -246,11 +246,15 @@ The location of the proper static directory can then be found in the templates s
 By default data added to GeoNode is publicly available. In the case of GeoSites, new data will be publicly available, but only for the site it was added to, and the master site (all data is added to the master site). 
 
 ##### Users per site
-
+Users are added by default to the site on where they are created and they belong to that site only.
+It is although possible to assign users to sites in a second time through the Site People admin panel located under the geosites app admin/geosites/sitepeople/. Select the desired site and move people from the left to the right panel through the arrow, that way the user will gain access to the selected site.
+To remove people move them from the right to the left.
 
 ##### Data per site
-
-
+Data belong by default to the site from where they are uploaded and to the master site.
+In a very similar way to the users it is possible to assign data to a site in a second time by accessing the Site Resources admin panel under the geosites app admin/geosites/siteresources/. 
+Under each site is possible to move resources from the left to the right panel, after the save the resource will be accessible from the selected site as well.
+To remove a resource from a site, move it from the right to the left.
 
 
 
