@@ -9,6 +9,9 @@
 # Translators:
 # Translators:
 # Translators:
+# Translators:
+# Translators:
+# Barun Paudel <paudel.barun4@gmail.com>, 2015
 # chandimathamali <thamalimampitiya@gmail.com>, 2013
 # Indunil <ricsdej@gmail.com>, 2013
 # Indunil <ricsdej@gmail.com>, 2013
@@ -20,11 +23,10 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-06-09 15:38-0500\n"
-"PO-Revision-Date: 2015-05-18 18:18+0000\n"
+"POT-Creation-Date: 2015-07-16 05:46-0500\n"
+"PO-Revision-Date: 2015-07-16 10:36+0000\n"
 "Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
-"Language-Team: Sinhala (http://www.transifex.com/projects/p/geonode/language/"
-"si/)\n"
+"Language-Team: Sinhala (http://www.transifex.com/p/geonode/language/si/)\n"
 "Language: si\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -57,11 +59,11 @@ msgstr "පවතින හෝ කල්පිත වස්තුවක් ප�
 
 #: base/enumerations.py:31
 msgid "collection hardware"
-msgstr ""
+msgstr "එකතුව දෘඩාංග"
 
 #: base/enumerations.py:32
 msgid "collection session"
-msgstr ""
+msgstr "එකතුව සැසිය"
 
 #: base/enumerations.py:33
 msgid "non-geographic data"
@@ -73,7 +75,7 @@ msgstr "ගුණාංගය"
 
 #: base/enumerations.py:35
 msgid "field session"
-msgstr ""
+msgstr "ක්ෂේත්රයේ සැසිය"
 
 #: base/enumerations.py:36
 msgid "dataset"
@@ -93,7 +95,7 @@ msgstr "අංගයක ගති ලක්ෂණ"
 
 #: base/enumerations.py:40
 msgid "tile or spatial subset of geographic data"
-msgstr ""
+msgstr "උළු හෝ භූගෝලීය දත්ත අවකාශ උප කුලකයක්"
 
 #: base/enumerations.py:41
 msgid "feature"
@@ -155,7 +157,7 @@ msgstr "සෑම මාස තුනකට වරක්ම දත්ත යා�
 msgid "No information provided"
 msgstr "තොරතුරු සපයා නොමැත"
 
-#: base/forms.py:43 base/templates/base/resourcebase_info_panel.html:51
+#: base/forms.py:43 base/templates/base/resourcebase_info_panel.html:62
 #: documents/templates/documents/document_metadata.html:58
 #: layers/templates/layers/layer_metadata.html:63
 #: maps/templates/maps/map_metadata.html:61
@@ -164,7 +166,7 @@ msgstr "ප්‍රභේදය"
 
 #: base/forms.py:52
 msgid "Category is required."
-msgstr ""
+msgstr "ප්රවර්ගය අවශ්ය වේ."
 
 #: base/forms.py:105 groups/models.py:45 people/forms.py:82
 msgid "A space or comma-separated list of keywords"
@@ -226,7 +228,7 @@ msgstr ""
 
 #: base/models.py:225
 msgid "license of the dataset"
-msgstr ""
+msgstr "මේ දත්ත සමුදාය බලපත්රය"
 
 #: base/models.py:226
 msgid "language used within the dataset"
@@ -270,141 +272,164 @@ msgid ""
 "dataset"
 msgstr "දත්ත කට්ටලයක ආර පිළිබඳව දත්ත නිෂ්පාදකගේ දැනීම ගැන සාමාන්‍ය පැහැදිලි කිරීමක්"
 
-#: base/models.py:241
+#: base/models.py:240
+#: base/templates/base/_resourcebase_contact_snippet.html:10
+#: base/templates/base/resourcebase_info_panel.html:84
+msgid "Owner"
+msgstr "හිමිකරු"
+
+#: base/models.py:242
 msgid "title"
 msgstr "මාතෘකාව"
 
-#: base/models.py:241
+#: base/models.py:242
 msgid "name by which the cited resource is known"
 msgstr "උපුටාගත් මූලාශ්‍රය හඳුන්වන නාමය"
 
-#: base/models.py:242
+#: base/models.py:243
 msgid "date"
 msgstr "දිනය"
 
-#: base/models.py:243
+#: base/models.py:244
 msgid "date type"
 msgstr "දින මාදිළිය"
 
-#: base/models.py:245
+#: base/models.py:246
 msgid "edition"
 msgstr "සංස්කරණය"
 
-#: base/models.py:246
+#: base/models.py:247
 msgid "abstract"
 msgstr "සාරාංශය"
 
-#: base/models.py:247
+#: base/models.py:248
 msgid "purpose"
 msgstr "අරමුණ"
 
-#: base/models.py:248
+#: base/models.py:249
 msgid "maintenance frequency"
 msgstr "නඩත්තු වාර ගණන"
 
-#: base/models.py:251 groups/models.py:44 people/models.py:92
+#: base/models.py:252 people/models.py:92
 msgid "keywords"
 msgstr "මුලපදය"
 
-#: base/models.py:252
+#: base/models.py:253
 msgid "keywords region"
 msgstr "මුලපද කලාපය"
 
-#: base/models.py:255
+#: base/models.py:256
 msgid "restrictions"
 msgstr "බාධා කිරීම්"
 
-#: base/models.py:259
+#: base/models.py:260
 msgid "restrictions other"
 msgstr "වෙනත් සීමා කිරීම්"
 
-#: base/models.py:264
+#: base/models.py:264 base/templates/base/resourcebase_info_panel.html:16
+#: base/templates/base/resourcebase_info_panel.html:108
+msgid "License"
+msgstr "බලපත්ර"
+
+#: base/models.py:266
 msgid "language"
 msgstr "භාෂාව"
 
-#: base/models.py:275
-msgid "temporal extent start"
+#: base/models.py:274
+msgid "spatial representation type"
 msgstr ""
 
-#: base/models.py:277
-msgid "temporal extent end"
-msgstr ""
+#: base/models.py:278
+msgid "temporal extent start"
+msgstr "ලෞකික දුරට ආරම්භ"
 
 #: base/models.py:280
+msgid "temporal extent end"
+msgstr "ලෞකික දුරට අවසන්"
+
+#: base/models.py:283
 msgid "supplemental information"
 msgstr "අතිරේක තොරතුරු"
 
-#: base/models.py:281
+#: base/models.py:284
 msgid "any other descriptive information about the dataset"
 msgstr "දත්ත කට්ටලය පිළිබඳ වෙනත් ඕනෑම සවිස්තරාත්මක තොරතුරක්"
 
-#: base/models.py:284
+#: base/models.py:287
 msgid "distribution URL"
 msgstr "බෙදාහැරීමෙ URL එක"
 
-#: base/models.py:286
+#: base/models.py:289
 msgid "distribution description"
 msgstr "බෙදාහැරීමෙ විස්තරය"
 
-#: base/models.py:290
+#: base/models.py:293
 msgid "data quality statement"
 msgstr "දත්ත වල ගුණාත්මක භාවය"
 
-#: base/models.py:305
+#: base/models.py:308
 msgid "CSW typename"
 msgstr "CSW වර්ග නාමය"
 
-#: base/models.py:307
+#: base/models.py:310
 msgid "CSW schema"
-msgstr ""
+msgstr "අතිකරන්නන් schema"
 
-#: base/models.py:312
+#: base/models.py:315
 msgid "CSW source"
 msgstr "CSW ප්‍රභවය"
 
-#: base/models.py:313
+#: base/models.py:316
 msgid "CSW insert date"
 msgstr "CSW ඇතුලත් කරන දිනය"
 
-#: base/models.py:314
+#: base/models.py:317
 msgid "CSW type"
 msgstr "CSW වර්ගය"
 
-#: base/models.py:315
+#: base/models.py:318
 msgid "CSW anytext"
-msgstr ""
+msgstr "අතිකරන්නන් anytext"
 
-#: base/models.py:316
+#: base/models.py:319
 msgid "CSW WKT geometry"
 msgstr "CSW WKT ජ්‍යාමිතිය"
 
-#: base/models.py:329
+#: base/models.py:332
+msgid "Featured"
+msgstr ""
+
+#: base/models.py:333
 msgid "Should this resource be advertised in home page?"
+msgstr "මෙම resource මුල් පිටුව ප්රචාරය කළ යුතුද?"
+
+#: base/models.py:334
+msgid "Is Published"
 msgstr ""
 
-#: base/models.py:330
+#: base/models.py:335
 msgid "Should this resource be published and searchable?"
-msgstr ""
+msgstr "මෙම resource මුල් පිටුව ප්රචාරය කළ යුතුද?"
 
-#: base/models.py:699
+#: base/models.py:704
 msgid "For example \"kml\""
 msgstr "උදාහරණයක් ලෙස \"kml\""
 
-#: base/models.py:701
+#: base/models.py:706
 msgid "For example \"View in Google Earth\""
 msgstr "උදාහරණයක් ලෙස \"view in Google Earth\""
 
-#: base/models.py:702
+#: base/models.py:707
 msgid "For example \"text/xml\""
 msgstr "උදාහරණයක් ලෙස \"text/xml\""
 
 #: base/management/__init__.py:14
 msgid "Request to download a resource"
-msgstr ""
+msgstr "resource බාගත කිරීම සඳහා ඉල්ලුම් කිරීම"
 
 #: base/management/__init__.py:15
 msgid "A request for downloading a resource was sent"
-msgstr ""
+msgstr "resource බාගත කිරීම සඳහා ඉල්ලීමක් යවන ලදී"
 
 #: base/templates/base/_resourcebase_contact_snippet.html:3
 #: templates/500.html:151 templates/base.html:143
@@ -413,15 +438,10 @@ msgstr "ගැන"
 
 #: base/templates/base/_resourcebase_contact_snippet.html:5
 msgid "Owner, Point of Contact, Metadata Author"
-msgstr ""
-
-#: base/templates/base/_resourcebase_contact_snippet.html:10
-#: base/templates/base/resourcebase_info_panel.html:73
-msgid "Owner"
-msgstr "හිමිකරු"
+msgstr "හිමිකරු, point of Contact. Meta data කර්තෘ"
 
 #: base/templates/base/_resourcebase_contact_snippet.html:14
-#: base/templates/base/resourcebase_info_panel.html:78
+#: base/templates/base/resourcebase_info_panel.html:89
 #: documents/templates/documents/document_metadata.html:48
 #: layers/templates/layers/layer_metadata.html:99
 #: maps/templates/maps/map_metadata.html:51
@@ -432,89 +452,271 @@ msgstr "විමසීමි"
 msgid "Metadata Author"
 msgstr "ලේඛනයේ අයිතිකරු"
 
-#: base/templates/base/resourcebase_info_panel.html:6 services/forms.py:24
-#: templates/announcements/announcement_list.html:20
+#: base/templates/base/resourcebase_info_panel.html:6 groups/models.py:34
+#: services/forms.py:24 templates/announcements/announcement_list.html:20
 msgid "Title"
 msgstr "මාතෘකාව"
 
 #: base/templates/base/resourcebase_info_panel.html:11
-#: base/templates/base/resourcebase_info_panel.html:92
-msgid "License"
+#: base/templates/base/resourcebase_info_panel.html:103
+msgid "SRID"
 msgstr ""
 
-#: base/templates/base/resourcebase_info_panel.html:24 services/forms.py:29
+#: base/templates/base/resourcebase_info_panel.html:29 services/forms.py:29
 msgid "Abstract"
 msgstr "සාරාංශය"
 
-#: base/templates/base/resourcebase_info_panel.html:29
-#: templates/search/_general_filters.html:28
+#: base/templates/base/resourcebase_info_panel.html:34
+#: contrib/exif/templates/exif/_exif_document_detail.html:14
+#: templates/search/_general_filters.html:47
 msgid "Date"
 msgstr "දිනය"
 
-#: base/templates/base/resourcebase_info_panel.html:34
-#: layers/templates/layers/layer_detail.html:337
+#: base/templates/base/resourcebase_info_panel.html:45
+#: layers/templates/layers/layer_detail.html:344
 msgid "Type"
 msgstr "වර්ගය"
 
-#: base/templates/base/resourcebase_info_panel.html:39
-#: people/templates/people/profile_detail.html:67
-#: templates/search/_general_filters.html:16
+#: base/templates/base/resourcebase_info_panel.html:50 groups/models.py:44
+#: people/templates/people/profile_detail.html:78
+#: templates/search/_general_filters.html:19
 msgid "Keywords"
 msgstr "මුලපද"
 
-#: base/templates/base/resourcebase_info_panel.html:61
+#: base/templates/base/resourcebase_info_panel.html:72
 #: templates/search/_region_filter.html:5
 msgid "Regions"
 msgstr "කලාප"
 
-#: base/templates/base/resourcebase_info_panel.html:105
+#: base/templates/base/resourcebase_info_panel.html:95
+msgid "More info"
+msgstr ""
+
+#: base/templates/base/resourcebase_info_panel.html:121
 msgid "Maintenance Frequency"
 msgstr "නඩත්තු වාර ගණන"
 
-#: base/templates/base/resourcebase_info_panel.html:110
+#: base/templates/base/resourcebase_info_panel.html:126
 msgid "Restrictions"
 msgstr "සීමා කිරීම්"
 
-#: base/templates/base/resourcebase_info_panel.html:119
+#: base/templates/base/resourcebase_info_panel.html:135
 msgid "Edition"
 msgstr "සංස්කරණය"
 
-#: base/templates/base/resourcebase_info_panel.html:124
+#: base/templates/base/resourcebase_info_panel.html:140
 msgid "Purpose"
 msgstr "අරමුණ"
 
-#: base/templates/base/resourcebase_info_panel.html:129 templates/500.html:154
+#: base/templates/base/resourcebase_info_panel.html:145 templates/500.html:154
 #: templates/base.html:146
 msgid "Language"
 msgstr "භාෂාව"
 
-#: base/templates/base/resourcebase_info_panel.html:134
+#: base/templates/base/resourcebase_info_panel.html:150
 msgid "Temporal Extent"
-msgstr ""
+msgstr "ලෞකික ෙහ"
 
-#: base/templates/base/resourcebase_info_panel.html:139
+#: base/templates/base/resourcebase_info_panel.html:155
 msgid "Data Quality"
 msgstr "දත්ත වල ගුණාත්මකභාවය"
 
-#: base/templates/base/resourcebase_info_panel.html:144
+#: base/templates/base/resourcebase_info_panel.html:160
 msgid "Supplemental Information"
 msgstr "අමතර විස්තර"
 
-#: base/templates/base/resourcebase_info_panel.html:149
+#: base/templates/base/resourcebase_info_panel.html:165
 msgid "Spatial Representation Type"
+msgstr "අවකාශ නිරූපණය වර්ගය"
+
+#: contrib/exif/templates/exif/_exif_document_detail.html:6
+msgid "Width"
+msgstr "පළල"
+
+#: contrib/exif/templates/exif/_exif_document_detail.html:8
+msgid "Height"
+msgstr "උස"
+
+#: contrib/exif/templates/exif/_exif_document_detail.html:10
+msgid "Make"
 msgstr ""
+
+#: contrib/exif/templates/exif/_exif_document_detail.html:12
+msgid "Model"
+msgstr ""
+
+#: contrib/exif/templates/exif/_exif_document_detail.html:16
+#: layers/templates/upload/layer_upload_csv.html:24
+msgid "Latitude"
+msgstr "අක්ෂාංශය"
+
+#: contrib/exif/templates/exif/_exif_document_detail.html:17
+#: contrib/exif/templates/exif/_exif_document_detail.html:19
+msgid "Not specified"
+msgstr ""
+
+#: contrib/exif/templates/exif/_exif_document_detail.html:18
+#: layers/templates/upload/layer_upload_csv.html:37
+msgid "Longitude"
+msgstr "දේශාංශය"
+
+#: contrib/exif/templates/exif/_exif_document_detail.html:20
+msgid "Flash"
+msgstr ""
+
+#: contrib/exif/templates/exif/_exif_document_detail.html:21
+msgid "True"
+msgstr ""
+
+#: contrib/exif/templates/exif/_exif_document_detail.html:21
+msgid "False"
+msgstr ""
+
+#: contrib/exif/templates/exif/_exif_document_detail.html:22
+msgid "Speed Rating"
+msgstr ""
+
+#: contrib/favorite/readme.txt:38
+#: contrib/favorite/templates/favorite/_favorite.html:5
+msgid "Favorite"
+msgstr ""
+
+#: contrib/favorite/readme.txt:68 contrib/favorite/readme.txt.py:76
+msgid "Favorites"
+msgstr ""
+
+#: contrib/favorite/templates/favorite/_favorite.html:17
+msgid "Log in to add/delete Favorites."
+msgstr ""
+
+#: contrib/favorite/templates/favorite/_favorite_js.html:23
+msgid "Delete from Favorites"
+msgstr ""
+
+#: contrib/favorite/templates/favorite/_favorite_js.html:26
+msgid "Add to Favorites"
+msgstr "Add to Favorites"
+
+#: contrib/favorite/templates/favorite/favorite_list.html:8
+msgid "Favorites for"
+msgstr ""
+
+#: contrib/geosites/views.py:106 geoserver/views.py:422 geoserver/views.py:477
+msgid "Bad HTTP Authorization Credentials."
+msgstr "නිවැරදි නොවන HTTP අවසර දීමේ සහතික"
+
+#: contrib/geosites/site_template/templates/site_index.html:9
+#: contrib/geosites/templates/master_index.html:10 templates/index.html:15
+msgid "Welcome"
+msgstr "ආයුබෝවන්"
+
+#: contrib/geosites/site_template/templates/site_index.html:10
+#: contrib/geosites/templates/master_index.html:11 templates/index.html:16
+msgid ""
+"GeoNode is an open source platform for sharing geospatial data and maps."
+msgstr "GeoNode භුමිය පිලිබඳ දත්ත සහ සිතියම් බෙදා සඳහා විවෘත කේත පදනම වේ."
+
+#: contrib/geosites/site_template/templates/site_index.html:11
+#: contrib/geosites/templates/master_index.html:12
+msgid ""
+"If you have any questions about the software or service, join our <a href="
+"\"https://groups.google.com/d/forum/geonode-users\">mailing list</a>."
+msgstr ""
+
+#: contrib/geosites/site_template/templates/site_index.html:12
+#: contrib/geosites/templates/master_index.html:13 templates/index.html:18
+msgid "Need help?"
+msgstr "උදව් අවශ්යයි?"
+
+#: contrib/geosites/site_template/templates/site_index.html:12
+#: contrib/geosites/templates/master_index.html:13 templates/index.html:18
+msgid "Getting Started"
+msgstr "ඇරඹේ"
+
+#: contrib/geosites/templates/master_index.html:25
+#: contrib/geosites/templates/master_index.html:35
+#: contrib/geosites/templates/master_index.html:45 templates/index.html:30
+#: templates/index.html.py:40 templates/index.html:50
+msgid "No"
+msgstr "නැත"
+
+#: contrib/geosites/templates/master_index.html:25
+#: layers/templates/layers/layer_detail.html:219 templates/index.html:30
+#: templates/notification/request_download_resourcebase/full.txt:7
+msgid "Layer"
+msgid_plural "Layers"
+msgstr[0] "ස්ථරය"
+msgstr[1] "ලේයර්"
+
+#: contrib/geosites/templates/master_index.html:26 templates/index.html:31
+msgid ""
+"Click to search for geospatial data published by other users, organizations "
+"and public sources. Download data in standard formats."
+msgstr ""
+"වෙනත් භාවිතා කරන්නන් , සංවිධාන හා රාජ්ය ආරංචි මාර්ග විසින් ප්රකාශයට පත් කර භුමිය පිලිබඳ දත්ත "
+"සඳහා ගවේශනය කිරීම ක්ලික් කරන්න. සම්මත ආකෘති දත්ත බාගත කරන්න"
+
+#: contrib/geosites/templates/master_index.html:28 templates/index.html:33
+msgid "Add layers"
+msgstr "ස්ථර එක් කරන්න"
+
+#: contrib/geosites/templates/master_index.html:30 templates/index.html:35
+msgid "Explore layers"
+msgstr "ස්ථර ගවේෂණය"
+
+#: contrib/geosites/templates/master_index.html:35
+#: maps/templates/maps/map_detail.html:124 templates/index.html:40
+msgid "Map"
+msgid_plural "Maps"
+msgstr[0] "සිතියම"
+msgstr[1] "සිතියම"
+
+#: contrib/geosites/templates/master_index.html:36 templates/index.html:41
+msgid ""
+"Data is available for browsing, aggregating and styling to generate maps "
+"which can be shared publicly or restricted to specific users only."
+msgstr ""
+"දත්ත aggregating ප්රසිද්ධියේ හවුල් හෝ පමණක් විශේෂිත පරිශීලකයන් පමණක් සීමා කළ හැකි සිතියම් "
+"නිර්මාණය හැඩගැන්වීම්, කෑම සඳහා ලබා ගත හැක."
+
+#: contrib/geosites/templates/master_index.html:38 templates/index.html:43
+msgid "Create maps"
+msgstr "සිතියම් නිර්මාණය කරන්න ."
+
+#: contrib/geosites/templates/master_index.html:40 templates/index.html:45
+msgid "Explore maps"
+msgstr "සිතියම් ගවේෂණය"
+
+#: contrib/geosites/templates/master_index.html:45 templates/index.html:50
+#: templates/notification/account_approve/full.txt:1
+msgid "User"
+msgid_plural "Users"
+msgstr[0] "පරිශීලක"
+msgstr[1] "පරිශීලකයන්"
+
+#: contrib/geosites/templates/master_index.html:46 templates/index.html:51
+msgid ""
+"GeoNode allows registered users to easily upload geospatial data in several "
+"formats including shapefile and GeoTiff."
+msgstr ""
+"GeoNode ලියාපදිංචි පහසුවෙන් shapefile හා GeoTiff ඇතුළු ආකෘති දී භුමිය පිලිබඳ දත්ත උඩුගත "
+"කිරීමට ඉඩ ලබා දේ."
+
+#: contrib/geosites/templates/master_index.html:47 templates/index.html:52
+msgid "See users"
+msgstr "පරිශීලකයන් බලන්න"
 
 #: documents/forms.py:92 documents/forms.py:160
 msgid "Document must be a file or url."
-msgstr ""
+msgstr "ලේඛන හෝ ගොනුවකට විය යුතුය url"
 
 #: documents/forms.py:96 documents/forms.py:164
 msgid "A document cannot have both a file and a url."
-msgstr ""
+msgstr "කරන ලද ලියවිල්ලක් ගොනු හා URL එකක් දෙකම කරන්න බැහැ."
 
 #: documents/forms.py:109 documents/forms.py:177
 msgid "This file type is not allowed"
-msgstr ""
+msgstr "This file type is not allowed"
 
 #: documents/forms.py:127
 msgid "Link to"
@@ -522,189 +724,200 @@ msgstr "සම්බන්ධ කරන්න"
 
 #: documents/forms.py:149
 msgid "Permissions must be valid JSON."
-msgstr ""
+msgstr "අවසර වලංගු JSON විය යුතුය."
 
-#: documents/models.py:39
+#: documents/models.py:40
 msgid "File"
-msgstr ""
-
-#: documents/models.py:48
-msgid "The URL of the document if it is external."
-msgstr ""
+msgstr "ගොනුව"
 
 #: documents/models.py:49
-msgid "URL"
-msgstr ""
+msgid "The URL of the document if it is external."
+msgstr "එය බාහිර නම් ලේඛනයේ මෙම URL එක."
 
-#: documents/views.py:27
+#: documents/models.py:50
+msgid "URL"
+msgstr "URL"
+
+#: documents/views.py:28
 msgid "You are not permitted to delete this document"
 msgstr "මෙම ලේඛනය මකා දැමීමට ඔබට අවසර නැත"
 
-#: documents/views.py:28
+#: documents/views.py:29
 msgid "You do not have permissions for this document."
 msgstr "මෙම ලේඛනය සඳහා ඔබට අවසර නැත"
 
-#: documents/views.py:29
+#: documents/views.py:30
 msgid "You are not permitted to modify this document"
 msgstr "මෙම ලේඛනයට වෙනස්කම් සිදු කිරීමට ඔබට අවසර නැත"
 
-#: documents/views.py:31
+#: documents/views.py:32
 msgid "You are not permitted to modify this document's metadata"
 msgstr "මෙම ලෙඛනයේ වෙනස්කම් කිරීමට ඔබට අවසර නැත"
 
-#: documents/views.py:32
+#: documents/views.py:33
 msgid "You are not permitted to view this document"
 msgstr "මෙම ලේඛනය බැලීමට ඔබට අවසර නැත"
 
-#: documents/views.py:68 documents/views.py:116
+#: documents/views.py:69 documents/views.py:127
 msgid "You are not allowed to view this document."
 msgstr "මෙම ලේඛනය නැරඹීමට ඔබට අවසර නැත."
 
-#: documents/views.py:201
+#: documents/views.py:263
 msgid "You are not allowed to edit this document."
-msgstr ""
+msgstr "ඔබ මෙම ලිපිය සංස්කරණය කිරීමට අවසර නැත."
 
 #: documents/management/__init__.py:14
 msgid "Document Created"
-msgstr ""
+msgstr "ලේඛන Created"
 
 #: documents/management/__init__.py:15
 msgid "A Document was created"
-msgstr ""
+msgstr "ලියවිල්ලක් නිර්මිතය"
 
 #: documents/management/__init__.py:18
 msgid "Document Updated"
-msgstr ""
+msgstr "ලේඛන යාවත්කාලීන කිරීම"
 
 #: documents/management/__init__.py:19
 msgid "A Document was updated"
-msgstr ""
+msgstr "ලියවිල්ලක් යාවත්කාලීන කර"
 
 #: documents/management/__init__.py:22
 msgid "Document Deleted"
-msgstr ""
+msgstr "ලේඛන මකාදැමුවා"
 
 #: documents/management/__init__.py:23
 msgid "A Document was deleted"
-msgstr ""
+msgstr "ලියවිල්ලක් මකා"
 
 #: documents/management/__init__.py:26
 msgid "Comment on Document"
-msgstr ""
+msgstr "ලේඛන පිළිබඳව නොදනිති"
 
 #: documents/management/__init__.py:27
 msgid "A Document was commented on"
-msgstr ""
+msgstr "ලියවිල්ලක් පිළිබඳව අදහස් විය"
 
 #: documents/management/__init__.py:30
 msgid "Document for Map"
-msgstr ""
+msgstr "සිතියම සඳහා ලේඛන"
 
 #: documents/management/__init__.py:31
 msgid "A rating was given to a document"
-msgstr ""
+msgstr "ශ්රේණිය ලියවිල්ලක් ලබා දෙන ලදී"
 
-#: documents/templates/documents/document_detail.html:39
+#: documents/templates/documents/document_detail.html:44
 msgid "External Resource"
-msgstr ""
+msgstr "බාහිර resource"
 
-#: documents/templates/documents/document_detail.html:61
+#: documents/templates/documents/document_detail.html:66
 msgid "Rate this document"
 msgstr "මෙම ලේඛනය ප්‍රමාණනය කරන්න"
 
-#: documents/templates/documents/document_detail.html:65
-#: layers/templates/layers/layer_detail.html:118
-#: maps/templates/maps/map_detail.html:48
+#: documents/templates/documents/document_detail.html:70
+#: layers/templates/layers/layer_detail.html:127
+#: maps/templates/maps/map_detail.html:54
 msgid "Average Rating"
 msgstr "සමාන්‍ය ප්‍රමාණනයන්"
 
-#: documents/templates/documents/document_detail.html:81
-#: documents/templates/documents/document_detail.html:83
-#: documents/templates/documents/document_detail.html:85
-msgid "Download Document"
-msgstr ""
-
-#: documents/templates/documents/document_detail.html:89
-#: layers/templates/layers/layer_detail.html:139
-msgid "Request Download"
-msgstr ""
-
+#: documents/templates/documents/document_detail.html:91
+#: documents/templates/documents/document_detail.html:93
 #: documents/templates/documents/document_detail.html:95
-#: documents/templates/documents/document_detail.html:102
+msgid "Download Document"
+msgstr "බාගත ලේඛන"
+
+#: documents/templates/documents/document_detail.html:99
+#: layers/templates/layers/layer_detail.html:146
+msgid "Request Download"
+msgstr "ඉල්ලීම් බාගත"
+
+#: documents/templates/documents/document_detail.html:105
+#: documents/templates/documents/document_detail.html:112
 msgid "Edit Document"
 msgstr "ලේඛනය සංස්කරණය කරන්න"
 
-#: documents/templates/documents/document_detail.html:111
-#: layers/templates/layers/layer_detail.html:187
-#: layers/templates/layers/layer_detail.html:196
-#: maps/templates/maps/map_detail.html:108
-#: maps/templates/maps/map_detail.html:122
+#: documents/templates/documents/document_detail.html:120
+#: layers/templates/layers/layer_detail.html:193
+#: maps/templates/maps/map_detail.html:110
+msgid "Metadata"
+msgstr ""
+
+#: documents/templates/documents/document_detail.html:121
+#: layers/templates/layers/layer_detail.html:194
+#: layers/templates/layers/layer_detail.html:203
+#: maps/templates/maps/map_detail.html:111
+#: maps/templates/maps/map_detail.html:125
 msgid "Edit"
-msgstr ""
+msgstr "සංස්කරණය"
 
-#: documents/templates/documents/document_detail.html:119
-#: layers/templates/layers/layer_detail.html:214
+#: documents/templates/documents/document_detail.html:127
+#: templates/notification/request_download_resourcebase/full.txt:9
+msgid "Document"
+msgstr "ලේඛන"
+
+#: documents/templates/documents/document_detail.html:129
+#: layers/templates/layers/layer_detail.html:221
 msgid "Replace"
-msgstr ""
+msgstr "ආදේශ කරන්න"
 
-#: documents/templates/documents/document_detail.html:122
+#: documents/templates/documents/document_detail.html:132
 #: groups/templates/groups/group_members.html:33
 #: groups/templates/groups/group_members.html:59
 #: groups/templates/groups/group_members.html:86
-#: layers/templates/layers/layer_detail.html:220
-#: maps/templates/maps/map_detail.html:123
-msgid "Remove"
-msgstr ""
-
-#: documents/templates/documents/document_detail.html:129
-#: documents/templates/documents/document_detail.html:153
-#: layers/templates/layers/layer_detail.html:161
 #: layers/templates/layers/layer_detail.html:227
-#: layers/templates/layers/layer_detail.html:253
-#: maps/templates/maps/map_detail.html:85
-#: maps/templates/maps/map_detail.html:129
+#: maps/templates/maps/map_detail.html:126
+msgid "Remove"
+msgstr "ඉවත් කරන්න"
+
+#: documents/templates/documents/document_detail.html:139
+#: documents/templates/documents/document_detail.html:163
+#: layers/templates/layers/layer_detail.html:168
+#: layers/templates/layers/layer_detail.html:234
+#: layers/templates/layers/layer_detail.html:260
+#: maps/templates/maps/map_detail.html:89
+#: maps/templates/maps/map_detail.html:132
 #: templates/_bulk_permissions_form.html:19
 msgid "Close"
-msgstr ""
+msgstr "වසන්න"
 
-#: documents/templates/documents/document_detail.html:136
-#: documents/templates/documents/document_detail.html:143
-#: layers/templates/layers/layer_detail.html:235
-#: layers/templates/layers/layer_detail.html:243
+#: documents/templates/documents/document_detail.html:146
+#: documents/templates/documents/document_detail.html:153
+#: layers/templates/layers/layer_detail.html:242
+#: layers/templates/layers/layer_detail.html:250
 msgid "Download Metadata"
 msgstr "මෙටාදත්ත බාගත කරන්න"
 
-#: documents/templates/documents/document_detail.html:160
+#: documents/templates/documents/document_detail.html:170
 msgid "Resource using this document"
 msgstr "මෙම ලේඛනය භාවිතා කරන සම්පත"
 
-#: documents/templates/documents/document_detail.html:162
+#: documents/templates/documents/document_detail.html:172
 msgid "List of resources using this document:"
 msgstr "මෙම ලේඛනය භාවිතා කරන සම්පත් ලැයිස්තුව"
 
-#: documents/templates/documents/document_detail.html:166
+#: documents/templates/documents/document_detail.html:176
 msgid "This document is related to a "
-msgstr ""
+msgstr "මෙම ලේඛනය සම්බන්ධ වේ"
 
-#: documents/templates/documents/document_detail.html:169
+#: documents/templates/documents/document_detail.html:179
 msgid "This document is not related to any maps or layers"
 msgstr "මෙම ලේඛනය කිසියම් සිතියමකට හෝ ස්ථරයකට සම්බන්ධ නොවේ."
 
-#: documents/templates/documents/document_detail.html:176
+#: documents/templates/documents/document_detail.html:186
 #: documents/templates/documents/document_upload.html:31
-#: groups/templates/groups/group_detail.html:60
-#: layers/templates/layers/layer_detail.html:326
+#: groups/templates/groups/group_detail.html:70
+#: layers/templates/layers/layer_detail.html:333
 #: layers/templates/layers/layer_replace.html:94
 #: layers/templates/upload/layer_upload.html:93
-#: maps/templates/maps/map_detail.html:175 people/admin.py:55
+#: maps/templates/maps/map_detail.html:178 people/admin.py:55
 msgid "Permissions"
 msgstr "අවසර"
 
-#: documents/templates/documents/document_detail.html:177
+#: documents/templates/documents/document_detail.html:187
 msgid "Click the button below to change the permissions of this document."
 msgstr "මෙම ලේඛනයේ අවසරය වෙනස් කිරීමට පහත බොත්තම ක්ලික් කරන්න"
 
-#: documents/templates/documents/document_detail.html:178
+#: documents/templates/documents/document_detail.html:188
 msgid "Change Document Permissions"
 msgstr "ලේඛනයේ අවසරය වෙනස් කරන්න"
 
@@ -728,13 +941,13 @@ msgstr "මෙටා දත්ත සංස්කරණය කරන්න"
 
 #: documents/templates/documents/document_metadata.html:22
 msgid "Editing details for"
-msgstr ""
+msgstr "සඳහා සංස්කරණය විස්තර"
 
 #: documents/templates/documents/document_metadata.html:26
 #: layers/templates/layers/layer_metadata.html:29
 #: maps/templates/maps/map_metadata.html:29
 msgid "Error updating metadata.  Please check the following fields: "
-msgstr ""
+msgstr "යාවත්කාලීන කිරීමේ දෝෂය metadata.පහත සඳහන් ක්ෂේත්ර පරීක්ෂා කරන්න:"
 
 #: documents/templates/documents/document_metadata.html:41
 #: documents/templates/documents/document_metadata.html:75
@@ -799,11 +1012,11 @@ msgstr "ලේඛනය උඩුගත කරන්න"
 
 #: geoserver/helpers.py:973
 msgid "An exception occurred loading data to PostGIS"
-msgstr ""
+msgstr "ව්යතිරේකයක් PostGIS කිරීමට පැටවීම දත්ත සිදු"
 
 #: geoserver/helpers.py:978
 msgid " Additionally an error occured during database cleanup"
-msgstr ""
+msgstr "මීට අමතරව දෝෂයක් දත්ත සමුදාය තුළ පිරිසිදු කිරීමේ සිදුවිය"
 
 #: geoserver/ows.py:103
 msgid "Zipped Shapefile"
@@ -843,15 +1056,11 @@ msgstr "PNG"
 
 #: geoserver/signals.py:293
 msgid "Could not create a download link for layer."
-msgstr ""
+msgstr "Download link ස්ථරය සඳහා සිදු කල නොහැක "
 
 #: geoserver/views.py:335
 msgid "You don't have permissions to change style for this layer"
-msgstr ""
-
-#: geoserver/views.py:422 geoserver/views.py:477
-msgid "Bad HTTP Authorization Credentials."
-msgstr "නිවැරදි නොවන HTTP අවසර දීමේ සහතික"
+msgstr "ඔබට මෙම ස්ථරය සඳහා ශෛලිය වෙනස් කිරීමට අවසර නොමැත"
 
 #: geoserver/management/__init__.py:30
 msgid "Layer Uploaded"
@@ -881,27 +1090,27 @@ msgstr "ස්ථරයක් සඳහා ප්‍රමාණනයක් ද
 msgid ""
 "a short version of the name consisting only of letters, numbers, underscores "
 "and hyphens."
-msgstr ""
+msgstr "අකුරු, අංක , යටි සහ හයිපනය පමණක් සමන්විත නම කෙටි අනුවාදයක් ."
 
 #: groups/forms.py:23
 msgid "A group already exists with that slug."
-msgstr ""
+msgstr "පිරිසක් දැනටමත් Slug මත පවතී."
 
 #: groups/forms.py:30 groups/forms.py:57
 msgid "A group already exists with that name."
-msgstr ""
+msgstr "පිරිසක් මේ වන විටත් එම නම මත පවතී."
 
 #: groups/models.py:20
 msgid "Public"
-msgstr ""
+msgstr "පොදු"
 
 #: groups/models.py:21
 msgid "Public (invite-only)"
-msgstr ""
+msgstr "පොදු ( ආරාධනා - පමණි)"
 
 #: groups/models.py:22
 msgid "Private"
-msgstr ""
+msgstr "පුද්ගලික"
 
 #: groups/models.py:25
 msgid ""
@@ -910,45 +1119,66 @@ msgid ""
 "can join.<br>Private: Registered users cannot see any details about the "
 "group, including membership.  Only invited users can join."
 msgstr ""
+"රාජ්ය ඕනෑම ලියාපදිංචි පරිශීලක මහජන කණ්ඩායමක් නැරඹීමට හා සම්බන්ධ විය හැක <br> රාජ්ය "
+"( ආරාධනා පමණක් ): . යම් ලියාපදිංචි පරිශීලක සමූහය බැලිය හැක. ආරාධනා පරිශීලකයන් පමණක් සම්බන්ධ "
+"විය හැක පුද්ගලික විශ්වකෝෂය : . ලියාපදිංචි පරිශීලකයන් සාමාජිකත්වය ඇතුළු පිරිසක් ගැන කිසිදු විස්තරයක් "
+"පේන්නේ නැහැ. පමණක් ආරාධනා කරන්නන් සමග එක්විය හැකියි ."
 
 #: groups/models.py:30
 msgid ""
 "Email used to contact one or all group members, such as a mailing list, "
 "shared email, or exchange group."
 msgstr ""
+"විද්යුත් එවැනි ලිපි ලැයිස්තුවක් , බෙදා ඊ-තැපැල්, හෝ විනිමය කණ්ඩායමක් ලෙස කෙනෙකු හෝ සියලු කණ්ඩායම් "
+"සාමාජිකයන්, සම්බන්ධ කර ගැනීමට යොදා ගත්තේය."
 
-#: groups/models.py:39
-msgid "email"
+#: groups/models.py:36
+msgid "Logo"
 msgstr ""
 
-#: groups/models.py:187 groups/models.py:206
+#: groups/models.py:37 layers/templates/layers/layer_detail.html:60
+#: layers/templates/layers/layer_metadata.html:83
+#: people/templates/people/profile_detail.html:73 services/forms.py:27
+#: services/templates/services/layers_register.html:28
+msgid "Description"
+msgstr "විස්තරය"
+
+#: groups/models.py:39 people/templates/people/profile_detail.html:36
+msgid "Email"
+msgstr "Email"
+
+#: groups/models.py:48
+msgid "Access"
+msgstr ""
+
+#: groups/models.py:188 groups/models.py:207
 #: groups/templates/groups/group_members.html:28
 #: groups/templates/groups/group_members.html:54
 #: groups/templates/groups/group_members.html:81
 msgid "Manager"
-msgstr ""
+msgstr "කළමනාකරු"
 
-#: groups/models.py:188 groups/models.py:207
+#: groups/models.py:189 groups/models.py:208
 msgid "Member"
-msgstr ""
-
-#: groups/models.py:212
-msgid "Sent"
-msgstr ""
+msgstr "සාමාජික"
 
 #: groups/models.py:213
-msgid "Accepted"
-msgstr ""
+msgid "Sent"
+msgstr "ඵම"
 
 #: groups/models.py:214
+msgid "Accepted"
+msgstr "පිළිගත්"
+
+#: groups/models.py:215
 msgid "Declined"
-msgstr ""
+msgstr "අඩු"
 
 #: groups/templates/groups/activity.html:7
 #: groups/templates/groups/activity.html:8
 #: groups/templates/groups/activity.html:20 templates/actstream/actor.html:19
 msgid "Activity Feed for"
-msgstr ""
+msgstr "සඳහා ක්රියාකාරකම් සංග්රහය"
 
 #: groups/templates/groups/activity.html:24
 #: groups/templates/groups/group_members.html:13
@@ -994,96 +1224,98 @@ msgstr "තවම ක්‍රියාවක් සිදු කර නැත"
 #: groups/templates/groups/group_list.html:5
 #: groups/templates/groups/group_list.html:14
 msgid "Explore Groups"
-msgstr ""
+msgstr "කණ්ඩායම් ගවේෂණය"
 
 #: groups/templates/groups/group_base.html:14
 #: groups/templates/groups/group_create.html:11
 #: groups/templates/groups/group_list.html:12
 msgid "Create a Group"
-msgstr ""
+msgstr "පිරිසක් බිහි"
 
 #: groups/templates/groups/group_base.html:16
 #: groups/templates/groups/group_update.html:11
 msgid "Update Group"
-msgstr ""
+msgstr "යාවත්කාලීන සමූහ"
 
 #: groups/templates/groups/group_base.html:17
 msgid "Remove Group"
-msgstr ""
+msgstr "සමූහ ඉවත් කරන්න"
 
 #: groups/templates/groups/group_create.html:5
 #: groups/templates/groups/group_update.html:5
 msgid "Create Group"
-msgstr ""
+msgstr "සමූහ නිර්මාණය"
 
 #: groups/templates/groups/group_create.html:26
 #: services/templates/services/service_register.html:19
 msgid "Create"
-msgstr ""
+msgstr "නිර්මාණය කරන්න"
 
-#: groups/templates/groups/group_detail.html:19
+#: groups/templates/groups/group_detail.html:29
 msgid "This group has not created a logo."
-msgstr ""
+msgstr "මෙම කණ්ඩායම ලාංඡනයක් නිර්මාණය කර නැත."
 
-#: groups/templates/groups/group_detail.html:41
+#: groups/templates/groups/group_detail.html:51
 #: groups/templates/groups/group_invite_response.html:7
 #: groups/templates/groups/group_members.html:9
 #: groups/templates/groups/group_members.html:15
 msgid "Members"
-msgstr ""
-
-#: groups/templates/groups/group_detail.html:52
-msgid "Edit Group Details"
-msgstr ""
-
-#: groups/templates/groups/group_detail.html:53
-msgid "Manage Group Members"
-msgstr ""
-
-#: groups/templates/groups/group_detail.html:54
-msgid "Delete this Group"
-msgstr ""
-
-#: groups/templates/groups/group_detail.html:57
-msgid "Group Activities"
-msgstr ""
+msgstr "සාමාජිකයින්"
 
 #: groups/templates/groups/group_detail.html:62
+msgid "Edit Group Details"
+msgstr "සංස්කරණය කරන්න කණ්ඩායම් තොරතුරු"
+
+#: groups/templates/groups/group_detail.html:63
+msgid "Manage Group Members"
+msgstr "කණ්ඩායම් සාමාජික කළමනාකරණය"
+
+#: groups/templates/groups/group_detail.html:64
+msgid "Delete this Group"
+msgstr "මෙම කණ්ඩායම මැකිය"
+
+#: groups/templates/groups/group_detail.html:67
+msgid "Group Activities"
+msgstr "සමූහ ක්රියාකාරකම්"
+
+#: groups/templates/groups/group_detail.html:72
 #, python-format
 msgid ""
 "\n"
 "            This group is <strong>%(access)s</strong>.\n"
 "          "
 msgstr ""
-
-#: groups/templates/groups/group_detail.html:66
-msgid "Anyone may join this group."
-msgstr ""
-
-#: groups/templates/groups/group_detail.html:74
-msgid "Anyone may view this group but membership is by invitation only."
-msgstr ""
+"\n"
+"මෙම කණ්ඩායම <strong> %(access)s</ strong>"
 
 #: groups/templates/groups/group_detail.html:76
-msgid "Membership is by invitation only."
-msgstr ""
+msgid "Anyone may join this group."
+msgstr "ඕනෑම කෙනෙකුට මෙම කණ්ඩායම එක්වන හැක."
 
-#: groups/templates/groups/group_detail.html:81
+#: groups/templates/groups/group_detail.html:84
+msgid "Anyone may view this group but membership is by invitation only."
+msgstr "ඕනෑම කෙනෙකුට මෙම කණ්ඩායම සක්රීය විය හැකි නමුත්, සාමාජිකත්වය පමණක් ආරාධනා කිරීමයි."
+
+#: groups/templates/groups/group_detail.html:86
+msgid "Membership is by invitation only."
+msgstr "සාමාජිකත්වය පමණක් ආරාධනා කිරීමයි."
+
+#: groups/templates/groups/group_detail.html:91
 #: groups/templates/groups/group_members.html:14
 msgid "Managers"
-msgstr ""
+msgstr "කළමනාකරුවන්"
 
 #: groups/templates/groups/group_invite_response.html:10
 msgid "Membership Request"
-msgstr ""
+msgstr "සාමාජිකත්වය ඉල්ලීම්"
 
 #: groups/templates/groups/group_invite_response.html:14
 msgid "Don't Join"
-msgstr ""
+msgstr "එක්වන්න එපා"
 
 #: groups/templates/groups/group_invite_response.html:15
 msgid "Join Group"
-msgstr ""
+msgstr "සමූහ එක්වන්න"
 
 #: groups/templates/groups/group_list.html:19
 #: people/templates/people/profile_list.html:13
@@ -1095,7 +1327,7 @@ msgstr "වඩාත්ම මෑතකදී සිදු වූ"
 #: people/templates/people/profile_list.html:14
 #: templates/search/_sort_filters.html:6
 msgid "Less recent"
-msgstr ""
+msgstr "අඩු මෑත"
 
 #: groups/templates/groups/group_list.html:21
 #: people/templates/people/profile_list.html:15
@@ -1116,21 +1348,21 @@ msgstr "වඩාත්ම ප්‍රසිද්ධ"
 
 #: groups/templates/groups/group_members.html:8
 msgid "Edit Members for"
-msgstr ""
+msgstr "සංස්කරණය කරන්න මන්ත්රීවරුන් සඳහා"
 
 #: groups/templates/groups/group_members.html:37
 #: groups/templates/groups/group_members.html:63
 #: groups/templates/groups/group_members.html:90
 msgid "Role"
-msgstr ""
+msgstr "කාර්යභාරය"
 
 #: groups/templates/groups/group_members.html:99
 msgid "Add members"
-msgstr ""
+msgstr "සාමාජිකයන් එකතු කරන්න"
 
 #: groups/templates/groups/group_members.html:110
 msgid "Invite people"
-msgstr ""
+msgstr "ජනතාවට ආරාධනා කරනවා"
 
 #: groups/templates/groups/group_remove.html:12
 #, python-format
@@ -1139,14 +1371,18 @@ msgid ""
 "          Are you sure you want to remove the group: %(group_title)s?\n"
 "        "
 msgstr ""
+"\n"
+"ඔබ කණ්ඩායම ඉවත් කිරීමට අවශ්ය බව ඔබට විශ්වාසද  %(group_title)s? \n"
+"\n"
+" "
 
 #: groups/templates/groups/group_remove_maps_data.html:6
 msgid "Remove Maps/Data from Group"
-msgstr ""
+msgstr "සමූහ සිතියම් / දත්ත ඉවත් කරන්න"
 
 #: groups/templates/groups/group_remove_maps_data.html:15
 msgid "Remove selected maps/data"
-msgstr ""
+msgstr "තෝරාගත් සිතියම් / දත්ත ඉවත් කරන්න"
 
 #: layers/models.py:53
 msgid "style name"
@@ -1154,19 +1390,19 @@ msgstr "ශෛලයේ නම"
 
 #: layers/models.py:55
 msgid "sld text"
-msgstr ""
+msgstr "sld පෙළ"
 
 #: layers/models.py:57
 msgid "sld version"
-msgstr ""
+msgstr "sld අනුවාදය"
 
 #: layers/models.py:61
 msgid "sld url"
-msgstr ""
+msgstr "sld url එක"
 
 #: layers/models.py:190
 msgid "File cannot be opened, maybe check the encoding"
-msgstr ""
+msgstr "ගොනුව විවෘත කල නොහැක ,maybe check the encoding"
 
 #: layers/models.py:297
 msgid "attribute name"
@@ -1182,7 +1418,7 @@ msgstr "ගුණාංගයේ විස්තරය"
 
 #: layers/models.py:305
 msgid "description of attribute to be used in metadata"
-msgstr ""
+msgstr "පාරදත්ත භාවිතා කළ වර්ණනා පිළිබඳ විස්තරය"
 
 #: layers/models.py:310
 msgid "attribute label"
@@ -1286,7 +1522,7 @@ msgstr "අවසාන වරට වෙනස්කම් සිදු කල�
 msgid "date when attribute statistics were last updated"
 msgstr "ගුණාංගයේ සංඛ්‍යාලේඛන අවසන් වරට යාවත්කලීන කල දිනය"
 
-#: layers/views.py:71
+#: layers/views.py:72
 msgid ""
 "There was an error while attempting to upload your data. Please try again, "
 "or contact and administrator if the problem continues."
@@ -1294,67 +1530,68 @@ msgstr ""
 "ඔබේ දත්ත උඩුගත කිරීමේදී යම් දෝෂයක් මතු විය. කරුණාකර නැවත උත්සාහ කරන්න. ගැටළුව තවදුරටත් පවතී "
 "නම් පාලක වෙත දැනුම් දෙන්න"
 
-#: layers/views.py:74
+#: layers/views.py:75
 msgid "You are not permitted to delete this layer"
 msgstr "මෙම ස්ථරය මකා දැමීමට ඔබට අවසර නොමැත"
 
-#: layers/views.py:75
+#: layers/views.py:76
 msgid "You do not have permissions for this layer."
 msgstr "මෙම ස්ථරය සඳහා ඔබට අවසර නැත."
 
-#: layers/views.py:76
+#: layers/views.py:77
 msgid "You are not permitted to modify this layer"
 msgstr "මෙම ස්ථරය වෙනස් කිරීමට ඔබට අවසර නැත"
 
-#: layers/views.py:78
+#: layers/views.py:79
 msgid "You are not permitted to modify this layer's metadata"
 msgstr "මෙම ස්ථරයේ මෙටා දත්ත වෙනස් කිරීමට ඔබට අවසර නැත"
 
-#: layers/views.py:79
+#: layers/views.py:80
 msgid "You are not permitted to view this layer"
 msgstr "මෙම ස්ථරය බැලීමට ඔබට අවසර නොමැත"
 
-#: layers/views.py:469
+#: layers/views.py:479
 msgid "You are attempting to replace a vector layer with a raster."
-msgstr ""
+msgstr "ඔබ වෙනුවට උත්සාහ කරන්නේ a vector layer with a raster."
 
-#: layers/views.py:472
+#: layers/views.py:482
 msgid "You are attempting to replace a raster layer with a vector."
-msgstr ""
+msgstr "ඔබ වෙනුවට උත්සාහ කරන්නේ a raster layer with a vector."
 
-#: layers/views.py:528
+#: layers/views.py:538
 msgid "Unable to delete layer"
-msgstr ""
+msgstr "ස්ථරය ඉවත් කිරීමට නොහැකි විය"
 
-#: layers/views.py:531
+#: layers/views.py:541
 msgid ""
 "This layer is a member of a layer group, you must remove the layer from the "
 "group before deleting."
 msgstr ""
+"මෙම ස්ථරය තට්ටුවක් කණ්ඩායමේ සාමාජිකයකු වන , ඔබ මකාදැමීමට පෙර කණ්ඩායමේ ස්තරය ඉවත් කළ යුතුයි."
 
 #: layers/management/__init__.py:33
 msgid "Layer Created"
-msgstr ""
+msgstr "තට්ටුවක් නිර්මානය"
 
 #: layers/management/__init__.py:34
 msgid "A Layer was created"
-msgstr ""
+msgstr "තට්ටුවක් නිර්මිතය"
 
 #: layers/management/__init__.py:37
 msgid "Layer Updated"
-msgstr ""
+msgstr "ස්ථරය යාවත්කාලීන කිරීම"
 
 #: layers/management/__init__.py:38
 msgid "A Layer was updated"
-msgstr ""
+msgstr "A Layer was updated"
 
 #: layers/management/__init__.py:41
 msgid "Layer Deleted"
-msgstr ""
+msgstr "ස්ථරය වන සංස්කරණයන්"
 
 #: layers/management/__init__.py:42
 msgid "A Layer was deleted"
-msgstr ""
+msgstr "තට්ටුවක් මකා"
 
 #: layers/templates/layers/layer_change_poc.html:5
 msgid "Home"
@@ -1367,139 +1604,138 @@ msgstr "ලිපිනය වෙනස් කිරීම"
 
 #: layers/templates/layers/layer_change_poc.html:10
 msgid "Assign a new point of contact to the layers below:"
-msgstr ""
+msgstr "පහත ස්ථර සබඳතා නව ස්ථානය ලබා සදනන :"
 
 #: layers/templates/layers/layer_change_poc.html:17
 #: people/templates/people/forgot_username_form.html:15
 msgid "Submit"
 msgstr "යොමු කරන්න"
 
-#: layers/templates/layers/layer_detail.html:49
+#: layers/templates/layers/layer_detail.html:58
 msgid "Attribute Name"
 msgstr "ගුණාංගයේ නම"
 
-#: layers/templates/layers/layer_detail.html:50
+#: layers/templates/layers/layer_detail.html:59
 #: layers/templates/layers/layer_metadata.html:82
 msgid "Label"
 msgstr "ලේබලය"
 
-#: layers/templates/layers/layer_detail.html:51
-#: layers/templates/layers/layer_metadata.html:83
-#: people/templates/people/profile_detail.html:62 services/forms.py:27
-#: services/templates/services/layers_register.html:28
-msgid "Description"
-msgstr "විස්තරය"
-
-#: layers/templates/layers/layer_detail.html:53
+#: layers/templates/layers/layer_detail.html:62
 msgid "Range"
 msgstr "පරාසය"
 
-#: layers/templates/layers/layer_detail.html:54
+#: layers/templates/layers/layer_detail.html:63
 msgid "Average"
 msgstr "සාමාන්‍යය"
 
-#: layers/templates/layers/layer_detail.html:55
+#: layers/templates/layers/layer_detail.html:64
 msgid "Median"
 msgstr "මධ්‍යනය"
 
-#: layers/templates/layers/layer_detail.html:56
+#: layers/templates/layers/layer_detail.html:65
 msgid "Standard Deviation"
 msgstr "සම්මත අපගමනය"
 
-#: layers/templates/layers/layer_detail.html:114
+#: layers/templates/layers/layer_detail.html:123
 msgid "Rate this layer"
 msgstr "මෙම ස්ථරය ප්‍රමාණනය කරන්න"
 
-#: layers/templates/layers/layer_detail.html:136
-#: layers/templates/layers/layer_detail.html:149
+#: layers/templates/layers/layer_detail.html:143
+#: layers/templates/layers/layer_detail.html:156
 msgid "Download Layer"
 msgstr "ස්ථරය බාගත කරන්න"
 
-#: layers/templates/layers/layer_detail.html:172
 #: layers/templates/layers/layer_detail.html:179
+#: layers/templates/layers/layer_detail.html:186
 msgid "Edit Layer"
 msgstr "ස්ථරය සංස්කරණය කරන්න"
 
-#: layers/templates/layers/layer_detail.html:198
-#: services/templates/services/service_detail.html:110
-msgid "Manage"
-msgstr ""
-
-#: layers/templates/layers/layer_detail.html:206
-#: maps/templates/maps/map_detail.html:115
-msgid "Set"
-msgstr ""
-
-#: layers/templates/layers/layer_detail.html:217
-msgid "Edit data"
-msgstr ""
-
-#: layers/templates/layers/layer_detail.html:261 services/views.py:1272
-msgid "Legend"
-msgstr "විස්තර පාඨය"
-
-#: layers/templates/layers/layer_detail.html:271
-msgid "Maps using this layer"
-msgstr "මෙම ස්ථරය භාවිතා කරන සිතියම්"
-
-#: layers/templates/layers/layer_detail.html:273
-msgid "List of maps using this layer:"
-msgstr "මෙම ස්ථරය භවිතා කරන සිතියම් ලැයිස්තුව:"
-
-#: layers/templates/layers/layer_detail.html:279
-msgid "This layer is not currently used in any maps."
-msgstr "මෙම ස්ථරය දැනට කිසිම සිතියමක භාවිතා නොවේ"
-
-#: layers/templates/layers/layer_detail.html:284
-msgid "Create a map using this layer"
-msgstr "මෙම ස්ථරය භාවිතා කර සිතියමක් නිර්මාණය කරන්න"
-
-#: layers/templates/layers/layer_detail.html:285
-msgid "Click the button below to generate a new map based on this layer."
-msgstr "මෙම ස්ථරය මත පදනම්ව නව සිතියමක් නිර්මාණය කිරීමට පහත බොත්තම ක්ලික් කරන්න"
-
-#: layers/templates/layers/layer_detail.html:286
-msgid "Create a Map"
-msgstr "සිතියමක් නිර්මාණය කරන්න"
-
-#: layers/templates/layers/layer_detail.html:291
-msgid "Documents related to this layer"
-msgstr "මෙම ස්ථරයට සම්බන්ධ ලේඛන"
-
-#: layers/templates/layers/layer_detail.html:292
-msgid "List of documents related to this layer:"
-msgstr "මෙම ස්ථරයට සම්බන්ධ ලේඛන ලැයිස්තුව"
-
-#: layers/templates/layers/layer_detail.html:303
+#: layers/templates/layers/layer_detail.html:201
+#: layers/templates/layers/layer_detail.html:310
 msgid "Styles"
 msgstr "ශෛලීයන්"
 
-#: layers/templates/layers/layer_detail.html:304
+#: layers/templates/layers/layer_detail.html:205
+#: services/templates/services/service_detail.html:110
+msgid "Manage"
+msgstr "කළමනාකරණය"
+
+#: layers/templates/layers/layer_detail.html:212
+#: maps/templates/maps/map_detail.html:117
+msgid "Thumbnail"
+msgstr "Thumbnail"
+
+#: layers/templates/layers/layer_detail.html:213
+#: maps/templates/maps/map_detail.html:118
+msgid "Set"
+msgstr "කට්ටලයක්"
+
+#: layers/templates/layers/layer_detail.html:224
+msgid "Edit data"
+msgstr "සංස්කරණය කරන්න දත්ත"
+
+#: layers/templates/layers/layer_detail.html:268 services/views.py:1272
+msgid "Legend"
+msgstr "විස්තර පාඨය"
+
+#: layers/templates/layers/layer_detail.html:278
+msgid "Maps using this layer"
+msgstr "මෙම ස්ථරය භාවිතා කරන සිතියම්"
+
+#: layers/templates/layers/layer_detail.html:280
+msgid "List of maps using this layer:"
+msgstr "මෙම ස්ථරය භවිතා කරන සිතියම් ලැයිස්තුව:"
+
+#: layers/templates/layers/layer_detail.html:286
+msgid "This layer is not currently used in any maps."
+msgstr "මෙම ස්ථරය දැනට කිසිම සිතියමක භාවිතා නොවේ"
+
+#: layers/templates/layers/layer_detail.html:291
+msgid "Create a map using this layer"
+msgstr "මෙම ස්ථරය භාවිතා කර සිතියමක් නිර්මාණය කරන්න"
+
+#: layers/templates/layers/layer_detail.html:292
+msgid "Click the button below to generate a new map based on this layer."
+msgstr "මෙම ස්ථරය මත පදනම්ව නව සිතියමක් නිර්මාණය කිරීමට පහත බොත්තම ක්ලික් කරන්න"
+
+#: layers/templates/layers/layer_detail.html:293
+msgid "Create a Map"
+msgstr "සිතියමක් නිර්මාණය කරන්න"
+
+#: layers/templates/layers/layer_detail.html:298
+msgid "Documents related to this layer"
+msgstr "මෙම ස්ථරයට සම්බන්ධ ලේඛන"
+
+#: layers/templates/layers/layer_detail.html:299
+msgid "List of documents related to this layer:"
+msgstr "මෙම ස්ථරයට සම්බන්ධ ලේඛන ලැයිස්තුව"
+
+#: layers/templates/layers/layer_detail.html:311
 msgid ""
 "The following styles are associated with this layer. Choose a style to view "
 "it in the preview map."
 msgstr ""
 "පහත ශෛලීයන් මෙම ස්ථරය හා සම්බන්ධය. පූර්වදර්ශනය කරන සිතියමේ බැලීම සඳහා ශෛලියක් තෝරා ගන්න."
 
-#: layers/templates/layers/layer_detail.html:317
+#: layers/templates/layers/layer_detail.html:324
 msgid "No styles associated with this layer"
 msgstr "මෙම ස්ථරය හා සම්බන්ධ ශෛලීයන් නොමැත"
 
-#: layers/templates/layers/layer_detail.html:327
+#: layers/templates/layers/layer_detail.html:334
 msgid "Click the button below to change the permissions of this layer."
 msgstr "මෙම ස්ථරය සඳහා අවසරය වෙනස් කිරීමට පහත බොත්තම ක්ලික් කරන්න"
 
-#: layers/templates/layers/layer_detail.html:328
+#: layers/templates/layers/layer_detail.html:335
 msgid "Change Layer Permissions"
 msgstr "මෙම සිතියම සඳහා අවසරය වෙනස් කරන්න"
 
-#: layers/templates/layers/layer_detail.html:335
+#: layers/templates/layers/layer_detail.html:342
 msgid "External service layer"
-msgstr ""
+msgstr "බාහිර service layer"
 
-#: layers/templates/layers/layer_detail.html:336
+#: layers/templates/layers/layer_detail.html:343
 msgid "Source"
-msgstr ""
+msgstr "මූලාශ්රය"
 
 #: layers/templates/layers/layer_list.html:6
 #: layers/templates/layers/layer_list.html:13
@@ -1535,6 +1771,11 @@ msgid ""
 "Dublin Core metadata elements.\n"
 "          Some of your original metadata may have been lost."
 msgstr ""
+"සටහන: මෙම ස්ථරය විසින් අවශ්ය් පාරදත්ත වූ පාරදත්ත XML යක file.\n"
+" ආනයනය ජනාවාසී වූ\n"
+"GeoNode පාර-දත්ත ආනයනය තිබෙන ISO, FGDC , සහ ඩබ්ලින් මූලික පාරදත්ත elements.\n"
+"උප ඒකකයකි සහය\n"
+"ඔබේ මුල් පාරදත්ත සමහර අහිමි වන්නට ඇත."
 
 #: layers/templates/layers/layer_metadata.html:37
 #: layers/templates/layers/layer_metadata.html:77 templates/_actions.html:5
@@ -1551,7 +1792,7 @@ msgstr "දිස්වන පිළිවල"
 
 #: layers/templates/layers/layer_remove.html:9
 msgid "Remove Layers"
-msgstr ""
+msgstr "ලේයර් ඉවත් කරන්න"
 
 #: layers/templates/layers/layer_remove.html:14
 #, python-format
@@ -1561,6 +1802,9 @@ msgid ""
 "\"%(layer.get_absolute_url)s\">%(layer_title)s</a>?\n"
 "        "
 msgstr ""
+"\n"
+"ඔබ ඉවත් කිරීමට අවශ්ය බව ඔබට විශ්වාස ද<a href=\"%(layer.get_absolute_url)s\">"
+"%(layer_title)s"
 
 #: layers/templates/layers/layer_remove.html:30
 msgid "This action affects the following maps:"
@@ -1666,7 +1910,7 @@ msgstr ""
 
 #: layers/templates/layers/layer_style_manage.html:23
 msgid "Layer Default Style"
-msgstr ""
+msgstr "ස්ථරය පෙරනිමි ස්ටයිල්"
 
 #: layers/templates/layers/layer_style_manage.html:41
 msgid "Available styles"
@@ -1700,7 +1944,7 @@ msgstr "සඳහා CRS සපයන්න"
 
 #: layers/templates/upload/layer_upload_crs.html:14
 msgid "Coordinate Reference System"
-msgstr ""
+msgstr "විමර්ශන ඛණ්ඩාංක පද්ධතිය"
 
 #: layers/templates/upload/layer_upload_crs.html:17
 msgid ""
@@ -1713,10 +1957,17 @@ msgid ""
 "        and enter the following:\n"
 "    "
 msgstr ""
+"\n"
+"ඒ සඳහා මෙම සමාජ ස්තරය ෙයොමු පද්ධතියක් determined.\n"
+"කළ නොහැකි සම්බන්ධීකරණය\n"
+"මෙම ස්ථරය සඳහා සුදුසු ESPG කේතය පිහිටි තැන හෝ ඇතුල් below.\n"
+"මෙය කිරීමට එක් ක්රමයක් වෙත කරන්න ය: \n"
+"<a href=\"http://prj2epsg.org/search\" target=\"_\"> prj2epsg </a> \n"
+"පහත සඳහන් ඇතුල් කරන්න:"
 
 #: layers/templates/upload/layer_upload_crs.html:32
 #: layers/templates/upload/layer_upload_csv.html:49
-#: layers/templates/upload/layer_upload_time.html:102
+#: layers/templates/upload/layer_upload_time.html:101
 msgid "Next"
 msgstr "මීළඟ"
 
@@ -1733,7 +1984,7 @@ msgstr ""
 
 #: layers/templates/upload/layer_upload_csv.html:11
 msgid "Geospatial Data"
-msgstr ""
+msgstr "භුමිය පිලිබඳ දත්ත"
 
 #: layers/templates/upload/layer_upload_csv.html:12
 msgid ""
@@ -1751,18 +2002,10 @@ msgstr ""
 "මෙම දත්ත ආශ්‍රයෙන් කුමන ගුණාංගයේ අක්ෂාංශය හෝ දේශාංශය අඩංගු වේදැයි GeoNode ට \n"
 "අනුමාන කිරීමට හැකි විය. නමුත් නිවැරදි ගුණාංගය පහත තෝරාගෙන ඇත්දැයි කරුණාකර සහතික වන්න"
 
-#: layers/templates/upload/layer_upload_csv.html:24
-msgid "Latitude"
-msgstr "අක්ෂාංශය"
-
 #: layers/templates/upload/layer_upload_csv.html:26
 #: layers/templates/upload/layer_upload_csv.html:39
 msgid "Select an attribute"
 msgstr "ගුණාංගයක් තෝරා ගන්න"
-
-#: layers/templates/upload/layer_upload_csv.html:37
-msgid "Longitude"
-msgstr "දේශාංශය"
 
 #: layers/templates/upload/layer_upload_csv.html:57
 msgid ""
@@ -1784,7 +2027,7 @@ msgstr ""
 
 #: layers/templates/upload/layer_upload_invalid.html:7
 msgid "Return to"
-msgstr ""
+msgstr "වෙත ආපසු"
 
 #: layers/templates/upload/layer_upload_invalid.html:7
 msgid "Upload Form"
@@ -1796,7 +2039,7 @@ msgstr "ස්ථරය උඩුගත කිරීම පියවර 2"
 
 #: layers/templates/upload/layer_upload_time.html:15
 msgid "Editing details for "
-msgstr ""
+msgstr "සඳහා සංස්කරණය විස්තර"
 
 #: layers/templates/upload/layer_upload_time.html:19
 msgid "Time Options"
@@ -1852,7 +2095,7 @@ msgstr "කාල ප්‍රාන්තර"
 
 #: layers/templates/upload/layer_upload_time.html:88
 msgid "defined by the resolution"
-msgstr ""
+msgstr "යෝජනාව මගින් අර්ථ දක්වා ඇති"
 
 #: layers/templates/upload/layer_upload_time.html:92
 msgid "Continuous Intervals"
@@ -1862,21 +2105,21 @@ msgstr "අඛණ්ඩ කාල ප්‍රාන්තර"
 msgid ""
 "for data that is frequently updated, resolution describes the frequency of "
 "updates"
-msgstr ""
+msgstr "නිරන්තර නවීකරණයන්ගෙන් යාවත්කාලීන වූ බව දත්ත සඳහා , යෝජනාව යාවත්කාලීන සංඛ්යාත විස්තර"
 
 #: layers/templates/upload/layer_upload_time.html:96
 msgid "Resolution of time attribute"
-msgstr ""
+msgstr "කාලය නාලවල යෝජනාව"
 
-#: layers/templates/upload/layer_upload_time.html:107
+#: layers/templates/upload/layer_upload_time.html:108
 msgid "Need Help?"
 msgstr "අධාර අවශ්‍යද?"
 
-#: layers/templates/upload/layer_upload_time.html:108
+#: layers/templates/upload/layer_upload_time.html:109
 msgid "Enabling Time"
 msgstr "කාලය බල ගැන්වීම"
 
-#: layers/templates/upload/layer_upload_time.html:109
+#: layers/templates/upload/layer_upload_time.html:110
 msgid ""
 "A feature can currently support one or two time attributes. If a single\n"
 "    attribute is used, the feature is considered relevant at that single "
@@ -1885,28 +2128,34 @@ msgid ""
 "period for the\n"
 "    feature."
 msgstr ""
+"ඒ ලක්ෂණය දැනට එකක් හෝ දෙකක් කාලය ගුණාංග උපකාර කළ හැකිය. එය single\n"
+" විශේෂණය භාවිතා කරනු ලැබුවේ නම්, එම පහසුකම කාලයේදී තනි අවස්ථාවක දී අදාළ ලෙස සැලකේ. "
+"Two\n"
+" ගුණාංග භාවිතා කරන්නේ නම්, දෙවන ගුණාංගය \n"
+"the ලක්ෂණය සඳහා වලංගු කාලය අවසන් නියෝජනය කරයි.\n"
+"390"
 
-#: layers/templates/upload/layer_upload_time.html:113
+#: layers/templates/upload/layer_upload_time.html:114
 msgid "Selecting an Attribute"
 msgstr "ගුණාංගයක් තෝරා ගැනීම"
 
-#: layers/templates/upload/layer_upload_time.html:114
+#: layers/templates/upload/layer_upload_time.html:115
 msgid "A time attribute can be one of"
-msgstr ""
+msgstr "කාල ගුණාංගය එක් විය හැකි"
 
-#: layers/templates/upload/layer_upload_time.html:116
+#: layers/templates/upload/layer_upload_time.html:117
 msgid "An existing date"
 msgstr "පවතින දිනයක්"
 
-#: layers/templates/upload/layer_upload_time.html:117
-msgid "Text that can be converted to a timestamp"
-msgstr ""
-
 #: layers/templates/upload/layer_upload_time.html:118
+msgid "Text that can be converted to a timestamp"
+msgstr "කාල මුද්රාව බවට පරිවර්තනය කළ හැකි බව පෙළ"
+
+#: layers/templates/upload/layer_upload_time.html:119
 msgid "A number representing a year"
 msgstr "වසරක් නියෝජනය කරන අංකයක්"
 
-#: layers/templates/upload/layer_upload_time.html:121
+#: layers/templates/upload/layer_upload_time.html:122
 msgid ""
 "\n"
 "    For text attributes, one can specify a custom format or use the 'best "
@@ -1914,49 +2163,56 @@ msgid ""
 "    The most common formatting flags are:\n"
 "    "
 msgstr ""
+"\n"
+"පෙළ ලක්ෂණ සඳහා , එක් චාරිත්රයක් ආකෘතිය නියම හෝ ' හොදම අනුමානය ' භාවිතා කළ හැකි "
+"approach.\n"
+"\n"
+"ඉතාමත් ම පොදු හැඩතල කොඩි වේ: "
 
-#: layers/templates/upload/layer_upload_time.html:127
+#: layers/templates/upload/layer_upload_time.html:128
 msgid "year"
 msgstr "වසර"
 
-#: layers/templates/upload/layer_upload_time.html:128
+#: layers/templates/upload/layer_upload_time.html:129
 msgid "month"
 msgstr "මාසය"
 
-#: layers/templates/upload/layer_upload_time.html:129
+#: layers/templates/upload/layer_upload_time.html:130
 msgid "day of month"
 msgstr "මාසයේ දවස"
 
-#: layers/templates/upload/layer_upload_time.html:130
 #: layers/templates/upload/layer_upload_time.html:131
+#: layers/templates/upload/layer_upload_time.html:132
 msgid "hour of day"
 msgstr "දවසේ හෝරාව"
 
-#: layers/templates/upload/layer_upload_time.html:132
+#: layers/templates/upload/layer_upload_time.html:133
 msgid "minute in hour"
 msgstr "හෝරාවේ මිනිත්තු ගණන"
 
-#: layers/templates/upload/layer_upload_time.html:133
+#: layers/templates/upload/layer_upload_time.html:134
 msgid "second in minute"
 msgstr "මිනිත්තුවේ තත්පර ගණන"
 
-#: layers/templates/upload/layer_upload_time.html:136
-msgid "Note that single quotes represent a literal character."
-msgstr ""
-
 #: layers/templates/upload/layer_upload_time.html:137
+msgid "Note that single quotes represent a literal character."
+msgstr "තනි මිල කැඳවීම් සත්ය ස්වභාවය නියෝජනය බව සටහන් කර ගන්න."
+
+#: layers/templates/upload/layer_upload_time.html:138
 msgid ""
 "To remove ambiguity, repeat a code to represent the maximum number of digits "
 "- for example yyyy"
 msgstr ""
-
-#: layers/templates/upload/layer_upload_time.html:139
-msgid "The 'best guess' will handle date and optional time variants of"
-msgstr ""
+"අවුල් සහගත ඉවත් කිරීම සඳහා, අකුරු උපරිම සංඛ්යාව නියෝජනය කිරීම සඳහා කේත නැවත - උදාහරණයක් "
+"yyyy"
 
 #: layers/templates/upload/layer_upload_time.html:140
+msgid "The 'best guess' will handle date and optional time variants of"
+msgstr "හොඳම අනුමානය ' දිනය හා විකල්ප කාලය ප්රභේද්යයන් කරනව"
+
+#: layers/templates/upload/layer_upload_time.html:141
 msgid "In terms of the formatting flags noted above, these are"
-msgstr ""
+msgstr "ඉහත සඳහන් වූ ෆෝමැට් කොඩි අනුව , මෙම"
 
 #: layers/templates/upload/no_upload.html:7
 msgid ""
@@ -1990,11 +2246,11 @@ msgstr "Y මධ්‍ය ලක්ෂය"
 
 #: maps/models.py:77
 msgid "Site URL"
-msgstr ""
+msgstr "අඩවිය URL එක"
 
 #: maps/models.py:82
 msgid "Featured Map URL"
-msgstr ""
+msgstr "විශේෂාංග සිතියම URL එක"
 
 #: maps/models.py:379
 msgid "stack order"
@@ -2046,35 +2302,35 @@ msgstr "ප්‍රභව පරාමිති"
 
 #: maps/models.py:527
 msgid "JSON Configuration"
-msgstr ""
+msgstr "JSON Configuration"
 
-#: maps/views.py:73
+#: maps/views.py:74
 msgid "You are not permitted to delete this map."
 msgstr "මෙම සිතියම මකා දැමීමට ඔබට අවසර නැත"
 
-#: maps/views.py:74
+#: maps/views.py:75
 msgid "You do not have permissions for this map."
 msgstr "මෙම සිතියම සඳහා ඔබට අවරස නැත."
 
-#: maps/views.py:75
+#: maps/views.py:76
 msgid "You must be logged in to save this map"
 msgstr "මෙම සිතියම save කිරීමට ඔබ ලොග් විය යුතුය"
 
-#: maps/views.py:76
+#: maps/views.py:77
 msgid "You are not permitted to save or edit this map."
-msgstr ""
+msgstr "ඔබ මෙම සිතියම බේරා හෝ සංස්කරණය කිරීමට අවසර නැත."
 
-#: maps/views.py:78
+#: maps/views.py:79
 msgid "You are not allowed to modify this map's metadata."
 msgstr "මෙම සිතියමේ මෙටා දත්ත වෙනස් කිරීමට ඔබට අවසර නොමැත"
 
-#: maps/views.py:79
+#: maps/views.py:80
 msgid "You are not allowed to view this map."
 msgstr "මෙම සිතියම බැලීමට ඔබට අවසර නැත"
 
-#: maps/views.py:80
+#: maps/views.py:81
 msgid "An unknown error has occured."
-msgstr ""
+msgstr "නාඳුනන දෝෂයක් සිදු කර ඇත."
 
 #: maps/management/__init__.py:33
 msgid "Map Created"
@@ -2086,19 +2342,19 @@ msgstr "සිතියමක් නිර්මාණය කරන ලදී"
 
 #: maps/management/__init__.py:37
 msgid "Map Updated"
-msgstr ""
+msgstr "සිතියම යාවත්කාලීන කිරීම"
 
 #: maps/management/__init__.py:38
 msgid "A Map was updated"
-msgstr ""
+msgstr "සිතියමක් යාවත්කාලීන කර"
 
 #: maps/management/__init__.py:41
 msgid "Map Deleted"
-msgstr ""
+msgstr "සිතියම මකාදැමුවා"
 
 #: maps/management/__init__.py:42
 msgid "A Map was deleted"
-msgstr ""
+msgstr "සිතියමක් මකා"
 
 #: maps/management/__init__.py:45
 msgid "Comment on Map"
@@ -2122,92 +2378,92 @@ msgstr "සිතියමක් සඳහා ප්‍රමාණනයක් 
 msgid "Explore Maps"
 msgstr "සිතියම් සොයන්න"
 
-#: maps/templates/maps/map_detail.html:44
+#: maps/templates/maps/map_detail.html:50
 msgid "Rate this Map"
 msgstr "සිතියම ප්‍රමාණනය කරන්න"
 
-#: maps/templates/maps/map_detail.html:68
-#: maps/templates/maps/map_detail.html:76
+#: maps/templates/maps/map_detail.html:72
+#: maps/templates/maps/map_detail.html:80
 msgid "Download Map"
 msgstr "සිතියම බාගත කරන්න"
 
-#: maps/templates/maps/map_detail.html:80
+#: maps/templates/maps/map_detail.html:84
 msgid "Download Data Layers"
 msgstr "දත්ත ස්ථර බාගත කරන්න"
 
-#: maps/templates/maps/map_detail.html:81
+#: maps/templates/maps/map_detail.html:85
 msgid "Download Web Map Context"
-msgstr ""
+msgstr "වෙබ් සිතියම සංදර්භය බාගත"
 
-#: maps/templates/maps/map_detail.html:93
-#: maps/templates/maps/map_detail.html:100
+#: maps/templates/maps/map_detail.html:96
+#: maps/templates/maps/map_detail.html:103
 msgid "Edit Map"
 msgstr "සිතියම සංස්කරණය කරන්න"
 
-#: maps/templates/maps/map_detail.html:136
+#: maps/templates/maps/map_detail.html:139
 msgid "View Map"
 msgstr "සිතියම බලන්න"
 
-#: maps/templates/maps/map_detail.html:146
+#: maps/templates/maps/map_detail.html:149
 msgid "Map Layers"
 msgstr "සිතියම් ස්ථර"
 
-#: maps/templates/maps/map_detail.html:147
+#: maps/templates/maps/map_detail.html:150
 msgid "This map uses the following layers:"
 msgstr "මෙම සිතියමේ පහත ස්ථර භාවිතා වේ:"
 
-#: maps/templates/maps/map_detail.html:163
+#: maps/templates/maps/map_detail.html:166
 msgid "Documents related to this map"
 msgstr "මෙම සිතියමට සම්බන්ධ ලේඛන"
 
-#: maps/templates/maps/map_detail.html:164
+#: maps/templates/maps/map_detail.html:167
 msgid "List of documents related to this map:"
 msgstr "මෙම සිතියමට සම්බන්ධ ලේඛන ලැයිස්තුව"
 
-#: maps/templates/maps/map_detail.html:176
+#: maps/templates/maps/map_detail.html:179
 msgid "Specify which users can view or modify this map"
 msgstr ""
 "මෙම සිතියම බැලීමට හෝ ඊට වෙනස්කම් සිදු කිරීමට හැකියාව ඇත්තේ කුමන පරිශීලකයන්ටදැයි විශේෂීකරණය කරන්න"
 
-#: maps/templates/maps/map_detail.html:177
+#: maps/templates/maps/map_detail.html:180
 msgid "Change Permissions of this Map"
 msgstr "මෙම සිතියම සඳහා අවසරය වෙනස් කරන්න"
 
-#: maps/templates/maps/map_detail.html:183
+#: maps/templates/maps/map_detail.html:186
 msgid "Copy this map"
 msgstr "මෙම සිතියම පිටපත් කරන්න"
 
-#: maps/templates/maps/map_detail.html:184
+#: maps/templates/maps/map_detail.html:187
 msgid "Duplicate this map and modify it for your own purposes"
 msgstr "මෙම සිතියමේ අනුපිටපතක් ගෙන එය ඔබේ අරමුණු අනුව වෙනස් කරන්න"
 
-#: maps/templates/maps/map_detail.html:185
+#: maps/templates/maps/map_detail.html:188
 #: maps/templates/maps/map_list.html:10
 msgid "Create a New Map"
 msgstr "නව සිතියමක් නිර්මාණය කරන්න"
 
-#: maps/templates/maps/map_detail.html:190
+#: maps/templates/maps/map_detail.html:193
 msgid "Map WMS"
 msgstr "සිතියමේ WMS"
 
-#: maps/templates/maps/map_detail.html:192
+#: maps/templates/maps/map_detail.html:195
 msgid "WMS layer group for local map layers"
 msgstr "දේශීය සිතියම් ස්ථර WMS ස්ථර පන්තියක් ලෙස ප්‍රකාශනය කරන්න"
 
-#: maps/templates/maps/map_detail.html:193 social/tests.py:103
+#: maps/templates/maps/map_detail.html:196 social/tests.py:103
 #: social/templatetags/social_tags.py:48
 msgid "on"
-msgstr ""
+msgstr "මත"
 
-#: maps/templates/maps/map_detail.html:193
+#: maps/templates/maps/map_detail.html:196
 msgid "local OWS"
 msgstr "දේශීය OWS"
 
-#: maps/templates/maps/map_detail.html:196
+#: maps/templates/maps/map_detail.html:199
 msgid "Publish local map layers as WMS layer group"
 msgstr "දේශීය සිතියම් ස්ථර WMS ස්ථර පන්තියක් ලෙස ප්‍රකාශනය කරන්න"
 
-#: maps/templates/maps/map_detail.html:197
+#: maps/templates/maps/map_detail.html:200
 msgid "Publish Map WMS"
 msgstr "සිතියම් WMS ප්‍රකාශනය"
 
@@ -2222,6 +2478,9 @@ msgid ""
 "      are hosted on this GeoNode.\n"
 "    "
 msgstr ""
+"\n"
+"මෙහිදී ඔබට මෙම සිතියම සියලු ස්ථර බාගත කරගත හැක that\n"
+"මෙම GeoNode.හොස්ට් ඇත."
 
 #: maps/templates/maps/map_download.html:22
 msgid ""
@@ -2284,6 +2543,8 @@ msgid ""
 "        Editing details for %(map_title)s\n"
 "      "
 msgstr ""
+"\n"
+"ක් සඳහා සංස්කරණය විස්තර %(map_title)s"
 
 #: maps/templates/maps/map_metadata.html:23
 msgid ""
@@ -2293,6 +2554,11 @@ msgid ""
 "Core metadata elements.\n"
 "        Some of your original metadata may have been lost."
 msgstr ""
+"සටහන: මෙම සිතියමේ අවශ්ය් පාරදත්ත වූ පාරදත්ත XML යක file.\n"
+"ආනයනය ජනාවාසී වූ\n"
+"GeoNode පාර-දත්ත ආනයනය තිබෙන ISO, FGDC , සහ ඩබ්ලින් මූලික පාරදත්ත elements.\n"
+" උප ඒකකයකි සහය\n"
+"ඔබේ මුල් පාරදත්ත සමහර අහිමි වන්නට ඇත."
 
 #: maps/templates/maps/map_remove.html:6
 msgid "Deleting"
@@ -2314,20 +2580,24 @@ msgstr "GeoExplorer"
 
 #: people/admin.py:54
 msgid "Personal info"
-msgstr ""
+msgstr "පෞද්ගලික තොරතුරු"
 
 #: people/admin.py:57
 msgid "Important dates"
+msgstr "වැදගත් දින"
+
+#: people/admin.py:58
+msgid "Extended profile"
 msgstr ""
 
-#: people/admin.py:150
+#: people/admin.py:155
 msgid "Password changed successfully."
-msgstr ""
+msgstr "Password සාර්ථකව වෙනස් විය."
 
-#: people/admin.py:160
+#: people/admin.py:165
 #, python-format
 msgid "Change password: %s"
-msgstr ""
+msgstr "වෙනස් password: %s"
 
 #: people/enumerations.py:39
 msgid "party who authored the resource"
@@ -2347,7 +2617,7 @@ msgstr "සම්පත ප්‍රකාශනයට පත් කල පා�
 msgid ""
 "party that accepts accountability and responsibility for the data and "
 "ensures         appropriate care and maintenance of the resource"
-msgstr ""
+msgstr "දත්ත සඳහා වගවීම සහ වගකීම භාර හා සම්පත් සුදුසු පහසුකම් හා නඩත්තු සහතික බව පක්ෂ"
 
 #: people/enumerations.py:44
 msgid ""
@@ -2385,27 +2655,27 @@ msgstr "විද්‍යුත්-තැපැල් ලිපිනය"
 
 #: people/management.py:32
 msgid "User following you"
-msgstr ""
+msgstr "ඔබ පහත සඳහන් පරිශීලක"
 
 #: people/management.py:33
 msgid "Another user has started following you"
-msgstr ""
+msgstr "තවත් පරිශීලක ඔබ ආරම්භ කර ඇති පහත සඳහන්"
 
 #: people/management.py:36
 msgid "User requested access"
-msgstr ""
+msgstr "පරිශීලක ප්රවේශ ඉල්ලා"
 
 #: people/management.py:37
 msgid "A new user has requested access to the site"
-msgstr ""
+msgstr "නව පරිශීලක වෙබ් අඩවිය වෙත ප්රවේශ ඉල්ලීමක් කර තිබේ"
 
 #: people/management.py:40
 msgid "Account activated"
-msgstr ""
+msgstr "ගිණුම සක්රිය"
 
 #: people/management.py:41
 msgid "This account is now active and can log in the site"
-msgstr ""
+msgstr "මෙම ගිණුම දැන් සක්රීය වන අතර, එම වෙබ් අඩවිය පිවිසිය හැකි"
 
 #: people/models.py:46
 msgid "Organization Name"
@@ -2421,7 +2691,7 @@ msgstr "පැතිකඩ"
 
 #: people/models.py:51
 msgid "introduce yourself"
-msgstr ""
+msgstr "ඔබව හදුන්වාදෙන්න"
 
 #: people/models.py:53
 msgid "Position Name"
@@ -2431,7 +2701,7 @@ msgstr "තනතුර"
 msgid "role or position of the responsible person"
 msgstr "වගකිවයුතු පුද්ගලයාගේ භූමිකාව හෝ තත්ත්වය"
 
-#: people/models.py:58 people/templates/people/profile_detail.html:50
+#: people/models.py:58 people/templates/people/profile_detail.html:61
 msgid "Voice"
 msgstr "දුරකතන අංකය"
 
@@ -2494,16 +2764,18 @@ msgid ""
 "commonly used word(s) or formalised word(s) or phrase(s) used to describe "
 "the subject             (space or comma-separated"
 msgstr ""
+"පොදුවේ භාවිතා වචනය (න් ) හෝ විධිමත් වචනය (න් ) හෝ වාක්ය ඛණ්ඩයක් (ව) විෂය (අවකාශය හෝ "
+"කොමා - වෙන් විස්තර කිරීමට භාවිතා"
 
-#: people/views.py:89
+#: people/views.py:90
 msgid "Your username for "
 msgstr "ඔබගේ පරිශීලක නාමය සඳහා"
 
-#: people/views.py:103
+#: people/views.py:104
 msgid "Your username has been emailed to you."
 msgstr "ඔබගේ පරිශීලක නාමය ඔබට ඊමේල් කරන ලදී."
 
-#: people/views.py:105
+#: people/views.py:106
 msgid "No user could be found with that email address."
 msgstr "එවන් විද්‍යුත්-තැපැල් ලිපිනයක් සහිත පරිශීලකයෙකු නොමැත."
 
@@ -2529,6 +2801,8 @@ msgid ""
 "Enter your email address and click the submit button. <br />Your username "
 "will be sent to you."
 msgstr ""
+"ඔබගේ ඊ-තැපැල් ලිපිනය ඇතුලත් කරන්න සහ ඉදිරිපත් බොත්තම ක්ලික් කරන්න. ඔබගේ පරිශීලක නාමය /> <br "
+"ඔබ වෙත යවනු ඇත."
 
 #: people/templates/people/profile_create.html:8
 #: people/templates/people/profile_create.html:14
@@ -2539,120 +2813,121 @@ msgstr "පැතිකඩක් නිර්මාණය කරන්න"
 msgid "Profile of "
 msgstr "ගේ පැතිකඩ"
 
-#: people/templates/people/profile_detail.html:19
+#: people/templates/people/profile_detail.html:30
 msgid "Message User"
-msgstr ""
+msgstr "පණිවුඩය පරිශීලක"
 
-#: people/templates/people/profile_detail.html:25
-msgid "Email"
-msgstr ""
-
-#: people/templates/people/profile_detail.html:29
-#: people/templates/people/profile_detail.html:34
-#: people/templates/people/profile_detail.html:38
-#: people/templates/people/profile_detail.html:42
-#: people/templates/people/profile_detail.html:47
-#: people/templates/people/profile_detail.html:59
-#: people/templates/people/profile_detail.html:63
+#: people/templates/people/profile_detail.html:40
+#: people/templates/people/profile_detail.html:45
+#: people/templates/people/profile_detail.html:49
+#: people/templates/people/profile_detail.html:53
+#: people/templates/people/profile_detail.html:58
+#: people/templates/people/profile_detail.html:70
+#: people/templates/people/profile_detail.html:74
 msgid "Not provided."
-msgstr ""
+msgstr "සපයා නැත."
 
-#: people/templates/people/profile_detail.html:33
+#: people/templates/people/profile_detail.html:44
 #: services/templates/services/layers_register.html:27
 msgid "Name"
 msgstr "නම"
 
-#: people/templates/people/profile_detail.html:37
+#: people/templates/people/profile_detail.html:48
 msgid "Position"
-msgstr ""
+msgstr "තත්ත්වය ."
 
-#: people/templates/people/profile_detail.html:41
+#: people/templates/people/profile_detail.html:52
 msgid "Organization"
-msgstr ""
+msgstr "සංවිධානය"
 
-#: people/templates/people/profile_detail.html:46
+#: people/templates/people/profile_detail.html:57
 msgid "Location"
-msgstr ""
+msgstr "ස්ථානය"
 
-#: people/templates/people/profile_detail.html:58
+#: people/templates/people/profile_detail.html:69
 msgid "Fax"
-msgstr ""
+msgstr "Fax"
 
-#: people/templates/people/profile_detail.html:74 services/views.py:542
+#: people/templates/people/profile_detail.html:85 services/views.py:542
 #: services/views.py:639 services/views.py:707 services/views.py:855
 msgid "Not provided"
-msgstr ""
+msgstr "සපයනු නොලැබේ"
 
-#: people/templates/people/profile_detail.html:85
+#: people/templates/people/profile_detail.html:96
+#: people/templates/people/profile_detail.html:130
 msgid "Edit profile"
-msgstr ""
+msgstr "සංස්කරණය කරන්න  Profile"
 
-#: people/templates/people/profile_detail.html:86
+#: people/templates/people/profile_detail.html:97
 msgid "Change password"
 msgstr "මුරපදය වෙනස් කරන්න"
 
-#: people/templates/people/profile_detail.html:89
+#: people/templates/people/profile_detail.html:100
 msgid "Upload new layers"
 msgstr "නව ස්ථරයන් උඩුගත කරන්න"
 
-#: people/templates/people/profile_detail.html:90
+#: people/templates/people/profile_detail.html:101
 msgid "Create a new map"
 msgstr "නව සිතියමක් නිර්මාණය කරන්න"
 
-#: people/templates/people/profile_detail.html:92
+#: people/templates/people/profile_detail.html:103
 msgid "My Activities"
 msgstr "මගේ ක්‍රියාකාරකම්"
 
-#: people/templates/people/profile_detail.html:97 templates/500.html:222
+#: people/templates/people/profile_detail.html:108 templates/500.html:222
 #: templates/base.html:214
 msgid "Notifications"
 msgstr "නිවේදන"
 
-#: people/templates/people/profile_detail.html:100 templates/500.html:225
+#: people/templates/people/profile_detail.html:111 templates/500.html:225
 #: templates/base.html:217 templates/announcements/announcement_list.html:6
 #: templates/announcements/announcement_list.html:13
 msgid "Announcements"
 msgstr "නිවේදන"
 
-#: people/templates/people/profile_detail.html:105
+#: people/templates/people/profile_detail.html:116
 #: services/templates/services/service_list.html:9 templates/500.html:228
 #: templates/base.html:220
 msgid "Remote Services"
-msgstr ""
+msgstr "දුරස්ථ සේවා"
 
-#: people/templates/people/profile_detail.html:106 templates/500.html:229
+#: people/templates/people/profile_detail.html:117 templates/500.html:229
 #: templates/base.html:221
 msgid "Invite User"
-msgstr ""
+msgstr "පරිශීලක ආරාධනා කරන්න"
 
-#: people/templates/people/profile_detail.html:107 templates/500.html:231
+#: people/templates/people/profile_detail.html:118 templates/500.html:231
 #: templates/base.html:223
 msgid "GeoServer"
 msgstr "GeoServer"
 
-#: people/templates/people/profile_detail.html:110 templates/500.html:234
+#: people/templates/people/profile_detail.html:121 templates/500.html:234
 #: templates/base.html:226
 msgid "Admin"
 msgstr "පාලක"
 
-#: people/templates/people/profile_detail.html:118
+#: people/templates/people/profile_detail.html:134
 msgid "User Activities"
-msgstr ""
+msgstr "පරිශීලක ක්රියාකාරකම්"
 
-#: people/templates/people/profile_detail.html:175
+#: people/templates/people/profile_detail.html:191
 msgid "Resources"
-msgstr ""
+msgstr "සම්පත්"
 
-#: people/templates/people/profile_edit.html:9
-#: people/templates/people/profile_edit.html:18
+#: people/templates/people/profile_edit.html:10
+#: people/templates/people/profile_edit.html:24
 msgid "Edit Your Profile"
 msgstr "ඔබේ පැතිකඩ සංස්කරණය කරන්න"
 
-#: people/templates/people/profile_edit.html:14
+#: people/templates/people/profile_edit.html:12
+msgid "Edit Profile for"
+msgstr ""
+
+#: people/templates/people/profile_edit.html:19
 msgid "Change your avatar"
 msgstr "ඔබගේ ඡායාරූපය වෙනස් කරන්න"
 
-#: people/templates/people/profile_edit.html:24
+#: people/templates/people/profile_edit.html:30
 msgid "Update profile"
 msgstr "පැතිකඩ යාවත්කාලීන කරන්න"
 
@@ -2662,79 +2937,79 @@ msgstr "මිනිසුන් සොයන්න"
 
 #: services/enumerations.py:24
 msgid "Auto-detect"
-msgstr ""
+msgstr "වාහන - හඳුනා"
 
 #: services/enumerations.py:25
 msgid "Paired WMS/WFS/WCS"
-msgstr ""
+msgstr "නීපාරක්ෂක WMS / WFS / WCS"
 
 #: services/enumerations.py:26
 msgid "Web Map Service"
-msgstr ""
+msgstr "වෙබ් සිතියම සේවා"
 
 #: services/enumerations.py:27
 msgid "Catalogue Service"
-msgstr ""
+msgstr "කැටලොග් සේවා"
 
 #: services/enumerations.py:28
 msgid "ArcGIS REST Service"
-msgstr ""
+msgstr "ArcGIS REST  සේවා"
 
 #: services/enumerations.py:29 services/enumerations.py:39
 msgid "OpenGeoPortal"
-msgstr ""
+msgstr "OpenGeoPortal"
 
 #: services/enumerations.py:30
 msgid "Harvard Geospatial Library"
-msgstr ""
+msgstr "Harvard Geospatial Library"
 
 #: services/enumerations.py:34
 msgid "Local"
-msgstr ""
+msgstr "දේශීය"
 
 #: services/enumerations.py:35
 msgid "Cascaded"
-msgstr ""
+msgstr "Cascaded"
 
 #: services/enumerations.py:36
 msgid "Harvested"
-msgstr ""
+msgstr "Harvested"
 
 #: services/enumerations.py:37
 msgid "Indexed"
-msgstr ""
+msgstr "Indexed"
 
 #: services/enumerations.py:38
 msgid "Live"
-msgstr ""
+msgstr "Live"
 
 #: services/forms.py:12
 msgid "Service URL"
-msgstr ""
+msgstr "සේවා URL එක"
 
 #: services/forms.py:15
 msgid "Service name"
-msgstr ""
+msgstr "සේවා නාමය"
 
 #: services/forms.py:19
 msgid "Service Type"
-msgstr ""
+msgstr "සේවා වර්ගය"
 
 #: services/models.py:92
 msgid "Layer Name"
-msgstr ""
+msgstr "ස්ථරය නම"
 
 #: services/models.py:93
 msgid "Layer Title"
-msgstr ""
+msgstr "ස්ථරය සිරැසිය"
 
 #: services/models.py:94
 msgid "Layer Description"
-msgstr ""
+msgstr "ස්ථරය විස්තරය"
 
 #: services/models.py:95
 msgid "Layer Styles"
-msgstr ""
+msgstr "Layer Styles"
 
 #: services/views.py:63
 msgid ""
@@ -2750,14 +3025,27 @@ msgid ""
 "maps, metadata, and development resources through a single common "
 "interface.\n"
 msgstr ""
+"\n"
+"මෙම විවෘත Geoportal help\n"
+" කිහිපයක් විශ්ව විද්යාල සහ සංවිධාන දායකත්වයන් සමන්විත වූ සුසංධානය\n"
+"බොහෝ සංවිධාන හා වේදිකා පුරා භුමිය පිලිබඳ දත්ත සොයා ගැනීම සහ අත්පත් කර ගැනීම සඳහා පහසුකම් . "
+"වත්මන් partners\n"
+"\n"
+"ඇතුළත් වනුයේ: හාවඩ් , MIT, , MassGIS , ප්රින්ස්ටන්, කොලොම්බියා , ස්ටැන්ෆර්ඩ් , නගර සභා "
+"බර්ක්ලි , මූලාවස්ථික , සේල් හා UConn . විවෘත source\n"
+" ඉදිකරන ලද\n"
+"තාක්ෂණය, විවෘත Geoportal , සංවිධාන භුමිය පිලිබඳ දත්ත ස්ථර දහස් ගණනක් බෙදා ගැනීමට අවස්ථාව "
+"ලබා \n"
+"\n"
+"තනි පොදු අතුරු මුහුණත හරහා සිතියම්, පාරදත්ත හා සංවර්ධනය, සම්පත්\n"
 
 #: services/views.py:278
 msgid "This is an existing service"
-msgstr ""
+msgstr "මෙය දැනට පවතින සේවාවක්"
 
 #: services/views.py:807
 msgid "Could not find any layers in a compatible projection."
-msgstr ""
+msgstr "  compatible projection. තුල ඕනෑම ස්ථර මම සොයා ගැනීමට නොහැක "
 
 #: services/views.py:952
 #, python-format
@@ -2765,14 +3053,16 @@ msgid ""
 "Could not find any layers in a compatible projection:                 The "
 "spatial id was: %(srs)s and the url %(url)s"
 msgstr ""
+"ඊට ගැළපෙන ප්රක්ෂේපනය ඕනෑම ස්ථර සොයාගත නොහැකි විය : ද අවකාශ හැඳුනුම් අංකය :%(srs)s නම් "
+"සහ URL %(url)s"
 
 #: services/views.py:1214
 msgid "You are not permitted to remove this service."
-msgstr ""
+msgstr "ඔබ මෙම සේවාව ඉවත් කිරීමට අවසර නැත."
 
 #: services/templates/services/layers_register.html:26
 msgid "All/None"
-msgstr ""
+msgstr "සියලුම / නැත"
 
 #: services/templates/services/layers_register.html:42
 msgid "Add Layers"
@@ -2780,11 +3070,11 @@ msgstr "ස්ථර එක් කරන්න"
 
 #: services/templates/services/service_detail.html:43
 msgid "Name:"
-msgstr ""
+msgstr "නම:"
 
 #: services/templates/services/service_detail.html:44
 msgid "URL:"
-msgstr ""
+msgstr "URL"
 
 #: services/templates/services/service_detail.html:45
 msgid "Abstract:"
@@ -2796,31 +3086,31 @@ msgstr "මුල්පද:"
 
 #: services/templates/services/service_detail.html:47
 msgid "Contact:"
-msgstr ""
+msgstr "අමතන්න:"
 
 #: services/templates/services/service_detail.html:51
 msgid "Services"
-msgstr ""
+msgstr "සේවා"
 
 #: services/templates/services/service_detail.html:52
 msgid "This CSW server contains the following services"
-msgstr ""
+msgstr "මෙම අතිකරන්නන් සේවාදායකය පහත සඳහන් සේවාවන් අඩංගු"
 
 #: services/templates/services/service_detail.html:65
 msgid "This Service contains the following layers"
-msgstr ""
+msgstr "මෙම සේවාව පහත සඳහන් ස්ථර"
 
 #: services/templates/services/service_detail.html:113
 msgid "Edit Service Metadata"
-msgstr ""
+msgstr "සංස්කරණය කරන්න සේවා පාරදත්ත"
 
 #: services/templates/services/service_detail.html:116
 msgid "Remove Service"
-msgstr ""
+msgstr "සේවා ඉවත් කරන්න"
 
 #: services/templates/services/service_edit.html:15
 msgid "Edit Service"
-msgstr ""
+msgstr "සංස්කරණය කරන්න සේවා"
 
 #: services/templates/services/service_edit.html:21
 #: templates/announcements/announcement_form.html:27
@@ -2829,35 +3119,35 @@ msgstr "සුරකින්න"
 
 #: services/templates/services/service_layers.html:3
 msgid "Service:"
-msgstr ""
+msgstr "සේවා:"
 
 #: services/templates/services/service_layers.html:5
 msgid "The following layers will soon be added to the data catalog:"
-msgstr ""
+msgstr "පහත දැක්වෙන ස්ථර ඉක්මනින් දත්ත නාමාවලිය එකතු වනු ඇත:"
 
 #: services/templates/services/service_list.html:8
 msgid "Register a new Service"
-msgstr ""
+msgstr "නව සේවා ලියාපදිංචි"
 
 #: services/templates/services/service_register.html:13
 msgid "Register New Service"
-msgstr ""
+msgstr "නව සේවා ලියාපදිංචි"
 
 #: services/templates/services/service_register.html:23
 msgid "Service has been created:"
-msgstr ""
+msgstr "සේවා නිර්මාණය කර ඇත :"
 
 #: services/templates/services/service_register.html:30
 msgid "The following layers will be imported"
-msgstr ""
+msgstr "පහත දැක්වෙන ස්ථර ද ආනයනය කෙරේ"
 
 #: services/templates/services/service_remove.html:8
 msgid "Remove Remote Service"
-msgstr ""
+msgstr "දුරස්ථ සේවා ඉවත් කරන්න"
 
 #: services/templates/services/service_remove.html:12
 msgid "Are you sure you want to remove"
-msgstr ""
+msgstr "ඔබ ඉවත් කිරීමට අවශ්ය බව ඔබට විශ්වාස ද"
 
 #: social/signals.py:85
 msgid "created"
@@ -2928,6 +3218,8 @@ msgid ""
 "outdated bookmark?\n"
 "  "
 msgstr ""
+"\n"
+"ඔබ ඉල්ලු පිටුව නොපවතියි. සමහරවිට ඔබ යල් පැන ගිය Bookmark භාවිතා කරන්නේ ? "
 
 #: templates/500.html:66 templates/base.html:66
 msgid "People"
@@ -2935,14 +3227,14 @@ msgstr "පුද්ගලයන්"
 
 #: templates/500.html:69 templates/base.html:69
 msgid "Groups"
-msgstr ""
+msgstr "කණ්ඩායම්"
 
 #: templates/500.html:89 templates/base.html:89
 msgid "Register"
 msgstr "ලියාපදිංචි වන්න"
 
 #: templates/500.html:100 templates/500.html.py:200 templates/base.html:100
-#: templates/base.html.py:192
+#: templates/base.html.py:174 templates/base.html:192
 msgid "Sign in"
 msgstr "අලුත් ගිණුමක් තනන්න"
 
@@ -2960,6 +3252,13 @@ msgid ""
 "GeoNode/geonode/issues\">GeoNode's issue tracker</a>\n"
 "            "
 msgstr ""
+"\n"
+"(ඔහු එය නිසියාකාරව මානකරනු නම් ඔහු ස්වයංක්රීයව ඊමේල් ලැබී ඇත) ඔබගේ GeoNode පරිපාලක "
+"අමතන්න .\n"
+"\n"
+"ඔබට වෙබ් අඩවිය පරිපාලක නම්, සැබෑ දෝෂයක් දැක විසින් අදාල කරුණ නිවැරදි හෝ <a href="
+"\"http://github.com/GeoNode/geonode/issues\"> GeoNode ගේ ප්රශ්නය ට්රැකර් </a> දී "
+"ප්රශ්නය ගොනු කිරීමට දෝශනිරාකරණ වාර්ථා මාදිලිය සක්රීය "
 
 #: templates/500.html:149 templates/base.html:141
 msgid "Powered by"
@@ -2992,7 +3291,7 @@ msgstr "මාව මතක තබා ගන්න"
 
 #: templates/500.html:212 templates/base.html:204
 msgid "Menu"
-msgstr ""
+msgstr "මෙනුව"
 
 #: templates/500.html:219 templates/base.html:211
 msgid "Recent Activity"
@@ -3001,7 +3300,7 @@ msgstr "මෑතකදී සිදුකරන ලද ක්‍රියාක
 #: templates/500.html:220 templates/base.html:212
 #: templates/user_messages/inbox.html:15
 msgid "Inbox"
-msgstr ""
+msgstr "Inbox"
 
 #: templates/500.html:239 templates/base.html:231
 msgid "Help"
@@ -3015,7 +3314,7 @@ msgstr "පිට වන්න"
 
 #: templates/500.html:280 templates/base.html:274
 msgid "Type your search here ..."
-msgstr ""
+msgstr "මෙහි ඔබේ සෙවුම ටයිප් ..."
 
 #: templates/_actions.html:3
 msgid "Info"
@@ -3031,11 +3330,15 @@ msgstr "ප්‍රමාණන"
 
 #: templates/_actions.html:13
 msgid "GeoGig"
+msgstr "GeoGig"
+
+#: templates/_actions.html:16
+msgid "Exif"
 msgstr ""
 
 #: templates/_bulk_permissions_form.html:9
 msgid "Set permissions on selected resources"
-msgstr ""
+msgstr "තෝරාගත් සම්පත් තබා අවසර"
 
 #: templates/_bulk_permissions_form.html:20
 #: templates/_permissions_form.html:16
@@ -3052,15 +3355,15 @@ msgstr "අදහස් දැක්වීම සඳහා ..."
 
 #: templates/_comments.html:33
 msgid "By"
-msgstr ""
+msgstr "විසින්"
 
 #: templates/_comments.html:67
 msgid "Submit Comment"
-msgstr ""
+msgstr "පරිකථනය ඉදිරිපත්"
 
 #: templates/_permissions.html:8
 msgid "Who can view it?"
-msgstr ""
+msgstr "කවුද එය නැරඹීමට හැක ;"
 
 #: templates/_permissions.html:17 templates/_permissions.html.py:49
 msgid "Anyone"
@@ -3070,46 +3373,48 @@ msgstr "ඕනෑම කෙනෙකුට"
 #: templates/_permissions.html:80 templates/_permissions.html.py:107
 #: templates/_permissions.html:133 templates/_permissions.html.py:160
 msgid "The following users:"
-msgstr ""
+msgstr "පහත දැක්වෙන පරිශීලකයන්:"
 
 #: templates/_permissions.html:28 templates/_permissions.html.py:60
 #: templates/_permissions.html:86 templates/_permissions.html.py:113
 #: templates/_permissions.html:139 templates/_permissions.html.py:166
 msgid "The following groups:"
-msgstr ""
+msgstr "පහත දැක්වෙන කණ්ඩායම් :"
 
 #: templates/_permissions.html:40
 msgid "Who can download it?"
-msgstr ""
+msgstr "කවුද ඒක බාගත කළ හැක්කේ කෙසේද?"
 
 #: templates/_permissions.html:72
 msgid "Who can change metadata for it?"
-msgstr ""
+msgstr "කවුද ඒ සඳහා පාරදත්ත වෙනස් කළ හැක්කේ කෙසේද?"
 
 #: templates/_permissions.html:99
 msgid "Who can edit data for this layer?"
-msgstr ""
+msgstr "කවුද මේ ස්ථරය සඳහා දත්ත සංස්කරණය කළ හැක්කේ කෙසේද?"
 
 #: templates/_permissions.html:125
 msgid "Who can edit styles for this layer?"
-msgstr ""
+msgstr "කවුද මේ ස්ථරය සඳහා ශෛලීන් සංස්කරණය කළ හැක්කේ කෙසේද?"
 
 #: templates/_permissions.html:152
 msgid ""
 "Who can manage it? (update, delete, change permissions, publish/unpublish it)"
 msgstr ""
+"කවුද ඒක කළමනාකරණය කළ හැක්කේ කෙසේද? ( යාවත්කාලීන කිරීම, මකා දැමීම, වෙනස් අවසර , "
+"ප්රකාශයට පත් කරනු ලබයි / එය කාශනය )"
 
 #: templates/_permissions_form.html:9
 msgid "Set permissions for this resource"
-msgstr ""
+msgstr "මෙම සම්පත් සඳහා වූ අවසරයන්"
 
 #: templates/_permissions_form_js.html:204
 msgid "Choose users..."
-msgstr ""
+msgstr "පරිශීලකයන් තෝරන්න ..."
 
 #: templates/_permissions_form_js.html:237
 msgid "Choose groups..."
-msgstr ""
+msgstr "කණ්ඩායම් තෝරාගන්න ..."
 
 #: templates/about.html:4 templates/about.html.py:8
 msgid "About GeoNode"
@@ -3157,8 +3462,8 @@ msgid ""
 "      <li><a href=\"http://geowebcache.org\">GeoWebCache</a> - Cache engine "
 "for WMS Tiles</li><li><a href=\"http://openlayers.org\">OpenLayers</a> - "
 "Pure JavaScript library powering the maps of GeoExt</li>\n"
-"      <li><a href=\"http://pycsw.org\">pycsw</a> - CSW metadata catalogue "
-"server</li>\n"
+"      <li><a href=\"http://pycsw.org\">pycsw</a> - CSW, OpenSearch and OAI-"
+"PMH metadata catalogue server</li>\n"
 "    </ul>\n"
 "\n"
 "    <h3>What are OGC Services?</h3>\n"
@@ -3225,7 +3530,7 @@ msgstr "පහත URL හරහා GeoNode හි වෙබ් සේවා ල�
 
 #: templates/developer.html:59
 msgid "Dynamic tiles via WMS:"
-msgstr ""
+msgstr "WMS හරහා ඩයිනමික් උළු :"
 
 #: templates/developer.html:63
 msgid "Vector data via WFS:"
@@ -3233,15 +3538,23 @@ msgstr "WFS හරහා vector දත්ත"
 
 #: templates/developer.html:67
 msgid "Raster data via WCS:"
-msgstr ""
+msgstr "WCS හරහා Raster දත්ත :"
 
 #: templates/developer.html:71
 msgid "Metadata search via CSW:"
 msgstr "CSW හරහා මෙටාදත්ත සෙවුම් "
 
 #: templates/developer.html:75
-msgid "Cached tiles via WMTS:"
+msgid "Metadata search via OpenSearch:"
 msgstr ""
+
+#: templates/developer.html:79
+msgid "Metadata search via OAI-PMH:"
+msgstr ""
+
+#: templates/developer.html:83
+msgid "Cached tiles via WMTS:"
+msgstr "WMTS හරහා හැඹිලිගත උළු :"
 
 #: templates/help.html:4
 msgid "User Guide"
@@ -3381,95 +3694,24 @@ msgstr "සිතියම් නැවත සංකලනය කිරීම"
 msgid "Welcome!"
 msgstr "ආයුබෝවන්!"
 
-#: templates/index.html:15
-msgid "Welcome"
-msgstr "ආයුබෝවන්"
-
-#: templates/index.html:16
-msgid ""
-"GeoNode is an open source platform for sharing geospatial data and maps."
-msgstr ""
-
 #: templates/index.html:17
 msgid ""
 "If you have any questions about the software or service, join our <a href="
 "\"http://lists.osgeo.org/cgi-bin/mailman/listinfo/geonode-users\">mailing "
 "list</a>."
 msgstr ""
+"ඔබ මෘදුකාංග හෝ සේවාව ගැන කිසිදු ප්රශ්න තිබේ නම්, අපගේ <a href=\"http://lists.osgeo."
+"org/cgi-bin/mailman/listinfo/geonode-users\"> තැපැල් ලැයිස්තුව </a> සම්බන්ධ වන "
+"ලෙසයි."
 
-#: templates/index.html:18
-msgid "Need help?"
-msgstr ""
-
-#: templates/index.html:18
-msgid "Getting Started"
-msgstr ""
-
-#: templates/index.html:30 templates/index.html.py:40 templates/index.html:50
-msgid "No"
-msgstr ""
-
-#: templates/index.html:30
-#: templates/notification/request_download_resourcebase/full.txt:7
-msgid "Layer"
-msgid_plural "Layers"
-msgstr[0] ""
-msgstr[1] ""
-
-#: templates/index.html:31
-msgid ""
-"Click to search for geospatial data published by other users, organizations "
-"and public sources. Download data in standard formats."
-msgstr ""
-
-#: templates/index.html:33
-msgid "Add layers"
-msgstr ""
-
-#: templates/index.html:35
-msgid "Explore layers"
-msgstr ""
-
-#: templates/index.html:40
-msgid "Map"
-msgid_plural "Maps"
-msgstr[0] ""
-msgstr[1] ""
-
-#: templates/index.html:41
-msgid ""
-"Data is available for browsing, aggregating and styling to generate maps "
-"which can be shared publicly or restricted to specific users only."
-msgstr ""
-
-#: templates/index.html:43
-msgid "Create maps"
-msgstr ""
-
-#: templates/index.html:45
-msgid "Explore maps"
-msgstr ""
-
-#: templates/index.html:50 templates/notification/account_approve/full.txt:1
-msgid "User"
-msgid_plural "Users"
-msgstr[0] ""
-msgstr[1] ""
-
-#: templates/index.html:51
-msgid ""
-"GeoNode allows registered users to easily upload geospatial data in several "
-"formats including shapefile and GeoTiff."
-msgstr ""
-
-#: templates/index.html:52
-msgid "See users"
+#: templates/social_links.html:10
+msgid "Share This"
 msgstr ""
 
 #: templates/account/admin_approval_sent.html:6
 #: templates/account/admin_approval_sent.html:9
 msgid "Account Pending Approval"
-msgstr ""
+msgstr "ගිණුම Pending අනුමැතිය"
 
 #: templates/account/admin_approval_sent.html:11
 #, python-format
@@ -3478,11 +3720,13 @@ msgid ""
 "with <b>%(email)s</b>. If the account is approved, you will receive a "
 "confirmation notice."
 msgstr ""
+".අපි පරිපාලකයන් ඔබේ ගිණුම අනුමත කිරීමට දැනුම්දීමක් යවා ඇ. <b>%(email)s</b>. ගිණුම් අනුමත කරයි "
+"නම්, ඔබ ඒ බව සනාථ කරන දැනුම් ලැබෙනු ඇත."
 
 #: templates/account/email_confirmation_sent.html:6
 #: templates/account/email_confirmation_sent.html:9
 msgid "Confirm your email address"
-msgstr ""
+msgstr "ඔබේ විද්යුත් තැපැල් ලිපිනය තහවුරු කරන්න"
 
 #: templates/account/email_confirmation_sent.html:11
 #, python-format
@@ -3490,14 +3734,16 @@ msgid ""
 "We have sent you an email to <b>%(email)s</b> for verification. Follow the "
 "link provided to finalize the signup process."
 msgstr ""
+"අපි සත්යාපනය  <b>%(email)s</b> සඳහා ඔබ ඊ- යවා ඇත.මෙම ලියාපදිංචි වීමේ ක්රියාවලිය අවසන් "
+"කිරීම සඳහා ලබා දී ඇති ලින්ක් එක අනුගමනය කරන්න."
 
 #: templates/account/login.html:7 templates/account/login.html.py:25
 msgid "Log in"
-msgstr ""
+msgstr "Log in "
 
 #: templates/account/login.html:11
 msgid "Log in to an existing account"
-msgstr ""
+msgstr "Log in to an දැනට පවතින ගිණුම"
 
 #: templates/account/login.html:22
 msgid "Forgot your username?"
@@ -3509,25 +3755,26 @@ msgstr "ඔබගේ මුරපදය අමතකද?"
 
 #: templates/account/logout.html:15
 msgid "Are you sure you want to log out?"
-msgstr ""
+msgstr "ඔබ ඉවත් විමට අවශ්ය බව ඔබට විශ්වාස ද?"
 
 #: templates/account/password_reset.html:8
 msgid "Password reset"
-msgstr "මුරපදය නැවත පිහිටුවන්න"
+msgstr "Password නැවත සකසන්න"
 
 #: templates/account/password_reset.html:14
 msgid "Password Reset"
-msgstr ""
+msgstr "Password නැවත සකසන්න"
 
 #: templates/account/password_reset.html:18
 msgid "Forgotten your password?"
-msgstr ""
+msgstr "ඔබගේ password අමතක වී ඇත්ද?"
 
 #: templates/account/password_reset.html:19
 msgid ""
 "Enter your email address below, and we'll send you an email allowing you to "
 "reset it."
 msgstr ""
+"ඔබගේ ඊ-තැපැල් ලිපිනය ඇතුලත් කරන්න පහත , අප ඔබ එය නැවත සකස් කිරීමට ඉඩ ඊ-තැපෑලක් එවන්නෙමු ."
 
 #: templates/account/password_reset.html:25
 msgid "Reset my password"
@@ -3547,11 +3794,11 @@ msgstr ""
 #: templates/account/signup.html:7 templates/account/signup.html.py:14
 #: templates/account/signup.html:22
 msgid "Sign up"
-msgstr ""
+msgstr "Sign up"
 
 #: templates/account/signup.html:27
 msgid "Sorry, registrations are not open at this time."
-msgstr ""
+msgstr "සමාවන්න, ලියාපදිංචිය මේ කාලය වන විට විවෘත නොවේ"
 
 #: templates/account/email/email_confirmation_message.txt:1
 #, python-format
@@ -3562,11 +3809,15 @@ msgid ""
 "\n"
 "If you did not sign up for this site, you can ignore this message.\n"
 msgstr ""
+"පරිශීලකයෙක් මෙම %(site_name)s ඊ-තැපැල් ලිපිනය භාවිතා ගිණුමක් නිර්මාණය කර ඇත.\n"
+"මෙම ඊ-තැපැල් ලිපිනය තහවුරු කිරීම සඳහා, මෙහි යන්න %(activate_url)s\n"
+"ඔබ මෙම වෙබ් අඩවිය සඳහා ලියාපදිංචි නොවේ නම් , ඔබ විසින් මෙම පණිවුඩය නොසලකා හැරිය හැක.\n"
+"\n"
 
 #: templates/account/email/email_confirmation_subject.txt:1
 #, python-format
 msgid "Confirm email address for %(site_name)s"
-msgstr ""
+msgstr "ඊතැපැල් ලිපිනය තහවුරු කරන්න  %(site_name)s"
 
 #: templates/account/email/password_reset.txt:1
 #, python-format
@@ -3578,35 +3829,40 @@ msgid ""
 "\n"
 "%(password_reset_url)s\n"
 msgstr ""
+"ඔබ හෝ වෙන කෙනෙක් ඔබගේ පරිශීලක ගිණුම සඳහා මුරපදයක් ඉල්ලා ඇත නිසා ඔබට මෙම විද්යුත් තැපැල් "
+"ලබමින් කරනවා   %(site_name)s\n"
+"ඔබ මුරපද යළි ඉල්ලා නෑ නම් එය ආරක්ෂිතව නොසලකා හැරිය හැක . ඔබේ මුරවචනය නැවත සකස් කිරීම "
+"සඳහා පහත ලින්ක් එක ක්ලික් කරන්න .\n"
+"%(password_reset_url)s\n"
 
 #: templates/account/email/password_reset_subject.txt:1
 #, python-format
 msgid "[%(site_name)s] Password reset"
-msgstr ""
+msgstr "[%(site_name)s]   Password yaḷai"
 
 #: templates/actstream/actor.html:7 templates/actstream/actor.html.py:8
 msgid "My Activity feed"
-msgstr ""
+msgstr "මගේ ක්රියාකාරකම් පෝෂණය"
 
 #: templates/actstream/actor.html:7 templates/actstream/actor.html.py:8
 msgid "Activity Feed"
-msgstr ""
+msgstr "ක්රියාකාරකම් සංග්රහය"
 
 #: templates/admin/base_site.html:3
 msgid "GeoNode site admin"
-msgstr ""
+msgstr "GeoNode අඩවිය පරිපාලක"
 
 #: templates/admin/base_site.html:6
 msgid "GeoNode administration"
-msgstr ""
+msgstr "GeoNode පරිපාලනය"
 
 #: templates/announcements/announcement_confirm_delete.html:10
 msgid "Delete Announcement?"
-msgstr ""
+msgstr "නිවේදනය මකන්නද?"
 
 #: templates/announcements/announcement_confirm_delete.html:13
 msgid "Are you sure you want to delete this announcement?"
-msgstr ""
+msgstr "ඔබ මෙම නිවේදනය ඉවත් කිරීමට අවශ්ය බව ඔබට විශ්වාස ද?"
 
 #: templates/announcements/announcement_form.html:11
 msgid "Edit Announcement"
@@ -3622,7 +3878,7 @@ msgstr "නව නිවේදනය"
 
 #: templates/announcements/announcement_list.html:21
 msgid "Level"
-msgstr ""
+msgstr "පෙළ"
 
 #: templates/announcements/announcement_list.html:22
 msgid "Announcement"
@@ -3640,6 +3896,10 @@ msgid ""
 "b>.\n"
 "          "
 msgstr ""
+"\n"
+"සිට Published <b>%(publish_start)s</b>  \n"
+"\n"
+"<b>%(publish_end)s</b> ලෙස"
 
 #: templates/announcements/detail.html:4
 #, python-format
@@ -3649,7 +3909,7 @@ msgstr "ප්‍රකාශන: %(announcement)s"
 #: templates/avatar/add.html:6 templates/avatar/change.html:6
 #: templates/avatar/confirm_delete.html:5
 msgid "Back to edit your profile information"
-msgstr ""
+msgstr "නැවතත් ඔබේ පැතිකඩ තොරතුරු සංස්කරණය කිරීමට"
 
 #: templates/avatar/add.html:7 templates/avatar/change.html:7
 msgid "Your current avatar: "
@@ -3665,11 +3925,11 @@ msgstr "නව සේයාරුවක් උඩුගත කරන්න"
 
 #: templates/avatar/change.html:16
 msgid "Choose new Default"
-msgstr ""
+msgstr "නව පෙරනිමි තෝරන්න"
 
 #: templates/avatar/change.html:23
 msgid "Delete Your Avatar"
-msgstr ""
+msgstr "ඔබේ Avatar  Delete"
 
 #: templates/avatar/confirm_delete.html:6
 msgid "Please select the avatars that you would like to delete."
@@ -3691,7 +3951,7 @@ msgstr "මේවා මකාදමන්න"
 #: templates/notification/notice_settings.html:8
 #: templates/notification/notice_settings.html:11
 msgid "Notification Settings"
-msgstr ""
+msgstr "Notification සැකසුම්"
 
 #: templates/notification/notice_settings.html:15
 #, python-format
@@ -3704,6 +3964,12 @@ msgid ""
 "        </p>\n"
 "        "
 msgstr ""
+"\n"
+"<p class=\"alert alert-warning\">\n"
+"<span class=\"warning\">Note</span>:\n"
+"\n"
+"ඔබ නිවේදන දැන් යොමු කළ හැකි සඳහා සත්යාපනය ඊ-තැපැල් ලිපිනයක් නැහැ.<a href="
+"\"%(email_url)s\">Add one</a>.now"
 
 #: templates/notification/notice_settings.html:27
 msgid "Notification Type"
@@ -3715,48 +3981,48 @@ msgstr "වෙනස් කරන්න"
 
 #: templates/notification/account_active/full.txt:3
 msgid "Your account has been approved and is now active."
-msgstr ""
+msgstr "ඔබගේ ගිණුම අනුමත හා දැන් සක්රීය කර ඇත."
 
 #: templates/notification/account_active/full.txt:5
 msgid "You can use the login form at"
-msgstr ""
+msgstr "ඔබ ට ලොගින් පෝරම භාවිතා කළ හැක"
 
 #: templates/notification/account_active/short.txt:3
 msgid "Your account is now active"
-msgstr ""
+msgstr "ඔබගේ ගිණුම දැන් සක්රීය"
 
 #: templates/notification/account_approve/full.txt:1
 msgid "has requested access to the site."
-msgstr ""
+msgstr "එම වෙබ් අඩවිය වෙත ප්රවේශ ඉල්ලීමක් කර තිබේ."
 
 #: templates/notification/account_approve/full.txt:1
 msgid ""
 "You can enable access by setting the user as active on the admin section"
-msgstr ""
+msgstr "ඔබ පරිපාලක කොටස සක්රීය ලෙස පරිශීලක සැකසීමෙන් ප්රවේශ සක්රීය කල හැක"
 
 #: templates/notification/account_approve/short.txt:3
 msgid "A user has requested access to the site"
-msgstr ""
+msgstr "පරිශීලකයෙක් වෙබ් අඩවිය වෙත ප්රවේශ ඉල්ලීමක් කර තිබේ"
 
 #: templates/notification/document_comment/full.txt:3
 msgid "A comment has been posted for the document"
-msgstr ""
+msgstr "A comment දත්තගොනුව සඳහා පල කර නැත"
 
 #: templates/notification/document_comment/full.txt:3
 #: templates/notification/layer_comment/full.txt:3
 #: templates/notification/map_comment/full.txt:4
 msgid "by the user"
-msgstr ""
+msgstr "පරිශීලක විසින්"
 
 #: templates/notification/document_comment/full.txt:5
 #: templates/notification/document_created/full.txt:6
 #: templates/notification/document_updated/full.txt:6
 msgid "You can visit the document's detail page here"
-msgstr ""
+msgstr "ඔබ මෙතනයි ලේඛනයේ විස්තර පිටුව වෙත හැකි"
 
 #: templates/notification/document_comment/short.txt:3
 msgid "A comment has been posted for a document"
-msgstr ""
+msgstr "A comment ලියවිල්ලක් සඳහා පල කර නැත"
 
 #: templates/notification/document_created/full.txt:3
 #: templates/notification/document_rated/full.txt:3
@@ -3766,19 +4032,19 @@ msgstr ""
 #: templates/notification/map_rated/full.txt:3
 #: templates/notification/request_download_resourcebase/full.txt:3
 msgid "The user"
-msgstr ""
+msgstr "පරිශීලකයා"
 
 #: templates/notification/document_created/full.txt:3
 msgid "uploaded the following document"
-msgstr ""
+msgstr "පහත සඳහන් ලේඛන උඩුගත"
 
 #: templates/notification/document_created/short.txt:3
 msgid "A document has been uploaded"
-msgstr ""
+msgstr "කරන ලද ලියවිල්ලක් උඩුගත කර ඇත"
 
 #: templates/notification/document_deleted/full.txt:3
 msgid "The following document was deleted"
-msgstr ""
+msgstr "පහත දැක්වෙන ලේඛනය මකා"
 
 #: templates/notification/document_deleted/full.txt:4
 #: templates/notification/document_rated/full.txt:6
@@ -3790,21 +4056,21 @@ msgstr ""
 #: templates/notification/map_rated/full.txt:6
 #: templates/notification/map_updated/full.txt:4
 msgid "owned by"
-msgstr ""
+msgstr "අයත්"
 
 #: templates/notification/document_deleted/short.txt:3
 msgid "A document has been deleted"
-msgstr ""
+msgstr "කරන ලද ලියවිල්ලක් මකාදමා ඇත"
 
 #: templates/notification/document_rated/full.txt:4
 #: templates/notification/layer_rated/full.txt:4
 #: templates/notification/map_rated/full.txt:4
 msgid "rated"
-msgstr ""
+msgstr "ණය ශ්රේණියක්"
 
 #: templates/notification/document_rated/full.txt:5
 msgid "the following document"
-msgstr ""
+msgstr "පහත සඳහන් ලේඛන"
 
 #: templates/notification/document_rated/full.txt:8
 #: templates/notification/layer_comment/full.txt:5
@@ -3812,123 +4078,119 @@ msgstr ""
 #: templates/notification/layer_rated/full.txt:8
 #: templates/notification/layer_updated/full.txt:6
 msgid "You can visit the layer's detail page here"
-msgstr ""
+msgstr "ඔබ මෙතනයි ස්තරයෙහි විස්තර පිටුව වෙත හැකි"
 
 #: templates/notification/document_rated/short.txt:3
 msgid "A document has been rated"
-msgstr ""
+msgstr "කරන ලද ලියවිල්ලක් ශ්රේණිගත කර ඇත"
 
 #: templates/notification/document_updated/full.txt:3
 msgid "The following document was updated"
-msgstr ""
+msgstr "පහත දැක්වෙන ලේඛනය යාවත්කාලීන කර"
 
 #: templates/notification/document_updated/short.txt:3
 msgid "A document has been updated"
-msgstr ""
+msgstr "කරන ලද ලියවිල්ලක් යාවත්කාලීන කර ඇත"
 
 #: templates/notification/layer_comment/full.txt:3
 msgid "A comment has been posted for the layer"
-msgstr ""
+msgstr "A comment ස්තරය සඳහා පල කර නැත"
 
 #: templates/notification/layer_comment/short.txt:3
 msgid "A comment has been posted for a layer"
-msgstr ""
+msgstr "A comment තට්ටුවක් සඳහා පල කර නැත"
 
 #: templates/notification/layer_created/full.txt:3
 msgid "uploaded the following layer"
-msgstr ""
+msgstr "පහත සඳහන් ස්ථරය උඩුගත"
 
 #: templates/notification/layer_created/short.txt:3
 msgid "A new layer has been uploaded"
-msgstr ""
+msgstr "නව ස්ථරය උඩුගත කර ඇත"
 
 #: templates/notification/layer_deleted/full.txt:3
 msgid "The following layer was deleted"
-msgstr ""
+msgstr "පහත දැක්වෙන ස්තරය මකා"
 
 #: templates/notification/layer_deleted/short.txt:3
 msgid "A layer has been deleted"
-msgstr ""
+msgstr "තට්ටුවක් මකාදමා ඇත"
 
 #: templates/notification/layer_rated/full.txt:5
 msgid "the following layer"
-msgstr ""
+msgstr "පහත සඳහන් ස්ථරය"
 
 #: templates/notification/layer_rated/short.txt:3
 msgid "A layer has been rated"
-msgstr ""
+msgstr "තට්ටුවක් ශ්රේණිගත කර ඇත"
 
 #: templates/notification/layer_updated/full.txt:3
 msgid "The following layer was updated"
-msgstr ""
+msgstr "පහත දැක්වෙන ස්තරය යාවත්කාලීන කර"
 
 #: templates/notification/layer_updated/short.txt:3
 msgid "A layer has been updated"
-msgstr ""
+msgstr "තට්ටුවක් යාවත්කාලීන කර ඇත"
 
 #: templates/notification/map_comment/full.txt:3
 msgid "A comment has been posted for the map"
-msgstr ""
+msgstr "A comment සිතියම සඳහා පල කර නැත"
 
 #: templates/notification/map_comment/full.txt:6
 #: templates/notification/map_created/full.txt:6
 #: templates/notification/map_rated/full.txt:8
 #: templates/notification/map_updated/full.txt:6
 msgid "You can visit the map's detail page here"
-msgstr ""
+msgstr "ඔබ මෙතනයි සිතියමේ විස්තර පිටුව වෙත හැකි"
 
 #: templates/notification/map_comment/short.txt:3
 msgid "A comment has been posted for a map"
-msgstr ""
+msgstr "A comment සිතියමක් සඳහා පල කර නැත"
 
 #: templates/notification/map_created/full.txt:3
 msgid "created the following map"
-msgstr ""
+msgstr "පහත සඳහන් සිතියම නිර්මාණය"
 
 #: templates/notification/map_created/short.txt:3
 msgid "A map has been created"
-msgstr ""
+msgstr "සිතියමක් නිර්මාණය කර ඇත"
 
 #: templates/notification/map_deleted/full.txt:3
 msgid "The following map was deleted"
-msgstr ""
+msgstr "පහත දැක්වෙන සිතියම මකා"
 
 #: templates/notification/map_deleted/short.txt:3
 msgid "A map has been deleted"
-msgstr ""
+msgstr "සිතියමක් මකාදමා ඇත"
 
 #: templates/notification/map_rated/full.txt:5
 msgid "the following map"
-msgstr ""
+msgstr "පහත සඳහන් සිතියම"
 
 #: templates/notification/map_rated/short.txt:3
 msgid "A map has been rated"
-msgstr ""
+msgstr "සිතියමක් ශ්රේණිගත කර ඇත"
 
 #: templates/notification/map_updated/full.txt:3
 msgid "The following map was updated"
-msgstr ""
+msgstr "පහත දැක්වෙන සිතියම යාවත්කාලීන කර"
 
 #: templates/notification/map_updated/short.txt:3
 msgid "A map has been updated"
-msgstr ""
+msgstr "සිතියමක් යාවත්කාලීන කර ඇත"
 
 #: templates/notification/request_download_resourcebase/full.txt:3
 msgid "requested you to download this resource"
-msgstr ""
-
-#: templates/notification/request_download_resourcebase/full.txt:9
-msgid "Document"
-msgstr ""
+msgstr "මෙම සම්පත් බාගත කිරීම සඳහා ඔබ විසින් ඉල්ලා"
 
 #: templates/notification/request_download_resourcebase/full.txt:12
 msgid ""
 "Please go to resource page and assign the download permissions if you wish"
-msgstr ""
+msgstr "ඔබ කැමති නම්, පිටුව සම්පත් හා බාගත අවසර ලබා දිය යන්න කරුණාකර"
 
 #: templates/notification/request_download_resourcebase/short.txt:3
 msgid "A resource's download has been requested"
-msgstr ""
+msgstr "ඒ සම්පත් ගේ බාගත ඉල්ලා තිබෙනවා"
 
 #: templates/relationships/_list_connections.html:3
 #: templates/relationships/_manage_connections.html:6
@@ -3985,7 +4247,7 @@ msgstr "සහතික කිරීම"
 #: templates/relationships/relationship_list.html:26
 #, python-format
 msgid "You're not %(status_slug)s anyone!"
-msgstr ""
+msgstr "ඔබ%(status_slug)s ඕනෑම නෑ!"
 
 #: templates/relationships/success.html:5
 msgid "Success"
@@ -4006,24 +4268,28 @@ msgstr "%(to_user_username)sගේ පැතිකඩ"
 
 #: templates/search/_extent_filter.html:3
 msgid "Extent"
-msgstr ""
+msgstr "ෙහ"
 
-#: templates/search/_general_filters.html:3
+#: templates/search/_general_filters.html:4
 msgid "Categories"
 msgstr "වර්ග"
 
-#: templates/search/_general_filters.html:30
+#: templates/search/_general_filters.html:33
+msgid "Owners"
+msgstr ""
+
+#: templates/search/_general_filters.html:49
 msgid "Date begins after:"
-msgstr ""
+msgstr "දිනය පසු ආරම්භ :"
 
-#: templates/search/_general_filters.html:31
-#: templates/search/_general_filters.html:35
+#: templates/search/_general_filters.html:50
+#: templates/search/_general_filters.html:54
 msgid "yyyy-mm-dd"
-msgstr ""
+msgstr "yyyy-mm-dd"
 
-#: templates/search/_general_filters.html:34
+#: templates/search/_general_filters.html:53
 msgid "Date ends before:"
-msgstr ""
+msgstr "දිනට පෙර අවසන් :"
 
 #: templates/search/_search_content.html:6
 msgid "Your selections"
@@ -4031,15 +4297,15 @@ msgstr "ඔබගේ තේරීම්"
 
 #: templates/search/_search_content.html:7
 msgid "Clear all filters"
-msgstr ""
+msgstr "සියලු දේ ඉවත් filters"
 
 #: templates/search/_sort_filters.html:15
 msgid "Set permissions"
-msgstr ""
+msgstr "කට්ටලයක් අවසර"
 
 #: templates/search/_text_filter.html:5
 msgid "Text"
-msgstr ""
+msgstr "පෙළ"
 
 #: templates/search/search.html:6 templates/search/search.html.py:12
 msgid "Search"
@@ -4068,11 +4334,11 @@ msgstr "මකා දමන්නද?"
 #: templates/user_messages/_message_snippet.html:29
 #: templates/user_messages/thread_detail.html:14
 msgid "me"
-msgstr ""
+msgstr "මා"
 
 #: templates/user_messages/inbox.html:6
 msgid "Message Inbox"
-msgstr ""
+msgstr "පණිවුඩය එන ලිපි"
 
 #: templates/user_messages/inbox.html:11
 msgid "Messages"
@@ -4091,11 +4357,14 @@ msgstr "පිළිතුරු යවන්න"
 #: templates/user_messages/message_create.html:22
 #: templates/user_messages/thread_detail.html:32
 msgid "Back to Inbox"
-msgstr ""
+msgstr "නැවතත් Inbox"
 
 #: templates/user_messages/thread_detail.html:26
 msgid "Send Reply"
 msgstr "පිළිතුරු යවන්න"
+
+#~ msgid "email"
+#~ msgstr "email"
 
 #~ msgid "KML"
 #~ msgstr "KML"
@@ -4163,9 +4432,6 @@ msgstr "පිළිතුරු යවන්න"
 #~ msgid "Remote Thumbnail"
 #~ msgstr "Remote Thumbnail"
 
-#~ msgid "Thumbnail"
-#~ msgstr "Thumbnail"
-
 #~ msgid "Group details"
 #~ msgstr "Group details"
 
@@ -4180,9 +4446,6 @@ msgstr "පිළිතුරු යවන්න"
 
 #~ msgid "You do not have permission to view this map"
 #~ msgstr "You do not have permission to view this map"
-
-#~ msgid "Add to Favorites"
-#~ msgstr "Add to Favorites"
 
 #~ msgid "Add a Comment"
 #~ msgstr "Add a Comment"
