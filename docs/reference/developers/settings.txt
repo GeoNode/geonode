@@ -558,3 +558,20 @@ Default: ``False``
 
 A boolean that specifies whether the Exif contrib app is enabled.  If enabled, metadata is generated from Exif tags when documents are uploaded.
 
+SLACK_ENABED
+...........
+Default: ``False``
+
+A boolean that specifies whether the Slack contrib app is enabled.  If enabled, GeoNode will send messages to the slack channels specified in SLACK_WEBHOOK_URLS when a document is uploaded, metadata is updated, etc.  Coverage of events is still incomplete.
+
+SLACK_WEBHOOK_URLS
+-------------------------
+
+A list that specifies the urls to post Slack messages to.  Each url is for a different channel.  The default url should be replaced when slack integration is enabled.
+
+Default::
+
+    SLACK_WEBHOOK_URLS = [
+        "https://hooks.slack.com/services/T000/B000/XX"
+    ]
+
