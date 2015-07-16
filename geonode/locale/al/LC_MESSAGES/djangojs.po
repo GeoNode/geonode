@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-06-09 15:38-0500\n"
+"POT-Creation-Date: 2015-07-16 05:46-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -57,12 +57,12 @@ msgstr ""
 msgid "Who can manage and edit this data?"
 msgstr ""
 
-#: static/geonode/js/search/search.js:342
+#: static/geonode/js/search/search.js:375
 #: static_root/geonode/js/search/search.js:298
 msgid "Enter your text here ..."
 msgstr ""
 
-#: static/geonode/js/search/search.js:368
+#: static/geonode/js/search/search.js:401
 msgid "Enter your region here ..."
 msgstr ""
 
