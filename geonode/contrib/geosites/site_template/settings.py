@@ -30,7 +30,7 @@ SITE_DATABASES = {}
 # Below are some common GeoNode settings that might be overridden for site
 
 # base urls for all sites
-# ROOT_URLCONF = 'geonode.urls'
+# ROOT_URLCONF = 'geosites.urls'
 
 # admin email
 # THEME_ACCOUNT_CONTACT_EMAIL = ''
@@ -41,9 +41,9 @@ SITE_DATABASES = {}
 # Allow users to register
 # REGISTRATION_OPEN = True
 
-# These are some production settings that should be changed here or in local_settings
+# These are some production settings that should be uncommented
 # SITEURL = 'http://geonode.org'
-# OGC_SERVER['default']['LOCATION'] = os.path.join(SITEURL, 'geoserver/')
+# OGC_SERVER['default']['LOCATION'] = os.path.join(GEOSERVER_URL, 'geoserver/')
 # OGC_SERVER['default']['PUBLIC_LOCATION'] = os.path.join(SITEURL, 'geoserver/')
 
 

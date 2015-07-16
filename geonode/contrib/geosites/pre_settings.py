@@ -29,6 +29,9 @@ INSTALLED_APPS = INSTALLED_APPS + ('geonode.contrib.geosites',)
 # put development database in common location for all sites
 DATABASES['default']['NAME'] = os.path.join(SITE_ROOT, '..', 'development.db')
 
+# internal url to GeoServer
+GEOSERVER_URL = 'http://localhost:8080/geoserver/'
+
 ##### Global Overrides
 # Below are some common GeoNode settings that might be overridden to provide
 # global setting acrosss all sites. Can be overridden in a sites settings.
