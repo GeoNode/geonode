@@ -213,8 +213,6 @@ MAX_DOCUMENT_SIZE = 2  # MB
 # DOCUMENT_MIMETYPE_MAP = {}
 
 GEONODE_APPS = (
-
-
     # GeoNode internal apps
     'geonode.people',
     'geonode.base',
@@ -229,18 +227,23 @@ GEONODE_APPS = (
     'geonode.groups',
     'geonode.services',
 
-    # GeoNode Contrib Apps
-
-    # 'geonode.contrib.dynamic',
-    'geonode.contrib.exif',
-    'geonode.contrib.slack',
-
     # GeoServer Apps
     # Geoserver needs to come last because
     # it's signals may rely on other apps' signals.
     'geonode.geoserver',
     'geonode.upload',
     'geonode.tasks'
+)
+
+GEONODE_CONTRIB_APPS = (
+    # GeoNode Contrib Apps
+    'geonode.contrib.dynamic',
+    'geonode.contrib.exif',
+    'geonode.contrib.favorite',
+    'geonode.contrib.geogig',
+    'geonode.contrib.geosites',
+    'geonode.contrib.nlp',
+    'geonode.contrib.slack'
 )
 
 INSTALLED_APPS = (
