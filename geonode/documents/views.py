@@ -194,6 +194,13 @@ class DocumentUploadView(CreateView):
                 bbox_y0=bbox_y0,
                 bbox_y1=bbox_y1)
 
+        if getattr(settings, 'SLACK_ENABLED', False):
+            try:
+                from geonode.contrib.slack.utils import build_slack_message_document, send_slack_message
+                send_slack_message(build_slack_message_document("document_new", self.object))
+            except:
+                print "Could not send slack message for new document."
+
         return HttpResponseRedirect(
             reverse(
                 'document_metadata',
@@ -317,6 +324,14 @@ def document_metadata(
                 the_document.metadata_author = new_author
                 the_document.keywords.add(*new_keywords)
                 Document.objects.filter(id=the_document.id).update(category=new_category)
+
+                if getattr(settings, 'SLACK_ENABLED', False):
+                    try:
+                        from geonode.contrib.slack.utils import build_slack_message_document, send_slack_messages
+                        send_slack_messages(build_slack_message_document("document_edit", the_document))
+                    except:
+                        print "Could not send slack message for modified document."
+
                 return HttpResponseRedirect(
                     reverse(
                         'document_detail',
@@ -389,8 +404,27 @@ def document_remove(request, docid, template='documents/document_remove.html'):
             return render_to_response(template, RequestContext(request, {
                 "document": document
             }))
+
         if request.method == 'POST':
-            document.delete()
+
+            if getattr(settings, 'SLACK_ENABLED', False):
+                slack_message = None
+                try:
+                    from geonode.contrib.slack.utils import build_slack_message_document
+                    slack_message = build_slack_message_document("document_delete", document)
+                except:
+                    print "Could not build slack message for delete document."
+
+                document.delete()
+
+                try:
+                    from geonode.contrib.slack.utils import send_slack_messages
+                    send_slack_messages(slack_message)
+                except:
+                    print "Could not send slack message for delete document."
+            else:
+                document.delete()
+
             return HttpResponseRedirect(reverse("document_browse"))
         else:
             return HttpResponse("Not allowed", status=403)

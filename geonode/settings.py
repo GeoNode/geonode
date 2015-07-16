@@ -233,6 +233,7 @@ GEONODE_APPS = (
 
     # 'geonode.contrib.dynamic',
     'geonode.contrib.exif',
+    'geonode.contrib.slack',
 
     # GeoServer Apps
     # Geoserver needs to come last because
@@ -795,6 +796,12 @@ RESOURCE_PUBLISHING = False
 
 # Settings for EXIF contrib app
 EXIF_ENABLED = False
+
+# Settings for Slack contrib app
+SLACK_ENABLED = False
+SLACK_WEBHOOK_URLS = [
+    "https://hooks.slack.com/services/T000/B000/XX"
+]
 
 CACHES = {
     # DUMMY CACHE FOR DEVELOPMENT

@@ -389,6 +389,13 @@ def layer_metadata(request, layername, template='layers/layer_metadata.html'):
                 category=new_category
                 )
 
+            if getattr(settings, 'SLACK_ENABLED', False):
+                try:
+                    from geonode.contrib.slack.utils import build_slack_message_layer, send_slack_messages
+                    send_slack_messages(build_slack_message_layer("layer_edit", the_layer))
+                except:
+                    print "Could not send slack message."
+
             return HttpResponseRedirect(
                 reverse(
                     'layer_detail',
