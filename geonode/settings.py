@@ -797,6 +797,12 @@ RESOURCE_PUBLISHING = False
 # Settings for EXIF contrib app
 EXIF_ENABLED = False
 
+# Settings for NLP contrib app
+NLP_ENABLED = False
+NLP_LOCATION_THRESHOLD = 1.0
+NLP_LIBRARY_PATH = "/opt/MITIE/mitielib"
+NLP_MODEL_PATH = "/opt/MITIE/MITIE-models/english/ner_model.dat"
+
 # Settings for Slack contrib app
 SLACK_ENABLED = False
 SLACK_WEBHOOK_URLS = [
