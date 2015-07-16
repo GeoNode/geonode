@@ -1,0 +1,799 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+#
+# Translators:
+# Translators:
+# Translators:
+# Translators:
+# Translators:
+# Translators:
+# Translators:
+# Translators:
+# Translators:
+msgid ""
+msgstr ""
+"Project-Id-Version: GeoNode\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2015-07-16 05:46-0500\n"
+"PO-Revision-Date: 2012-09-13 04:34+0000\n"
+"Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
+"Language-Team: Khmer (Cambodia) (http://www.transifex.com/p/geonode/language/"
+"km_KH/)\n"
+"Language: km_KH\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#: static/geonode/js/extjs/GeoNode.js:72
+#: static_root/geonode/js/extjs/GeoNode.js:72
+msgid "Add user..."
+msgstr ""
+
+#: static/geonode/js/extjs/GeoNode.js:72
+#: static_root/geonode/js/extjs/GeoNode.js:72
+msgid "Who can view and download this data?"
+msgstr ""
+
+#: static/geonode/js/extjs/GeoNode.js:72
+#: static_root/geonode/js/extjs/GeoNode.js:72
+msgid "Anyone"
+msgstr ""
+
+#: static/geonode/js/extjs/GeoNode.js:72
+#: static_root/geonode/js/extjs/GeoNode.js:72
+msgid "Any registered user"
+msgstr ""
+
+#: static/geonode/js/extjs/GeoNode.js:72
+#: static_root/geonode/js/extjs/GeoNode.js:72
+msgid "Only users who can edit"
+msgstr ""
+
+#: static/geonode/js/extjs/GeoNode.js:72
+#: static_root/geonode/js/extjs/GeoNode.js:72
+msgid "Who can edit this data?"
+msgstr ""
+
+#: static/geonode/js/extjs/GeoNode.js:72
+#: static_root/geonode/js/extjs/GeoNode.js:72
+msgid "Only the following users or groups:"
+msgstr ""
+
+#: static/geonode/js/extjs/GeoNode.js:72
+#: static_root/geonode/js/extjs/GeoNode.js:72
+msgid "Who can manage and edit this data?"
+msgstr ""
+
+#: static/geonode/js/search/search.js:375
+#: static_root/geonode/js/search/search.js:298
+msgid "Enter your text here ..."
+msgstr ""
+
+#: static/geonode/js/search/search.js:401
+msgid "Enter your region here ..."
+msgstr ""
+
+#: static/geonode/js/upload/FileType.js:33
+#: static_root/geonode/js/upload/FileType.js:33
+#, c-format
+msgid "Missing a %s file, which is required"
+msgstr ""
+
+#: static/geonode/js/upload/FileTypes.js:7
+#: static_root/geonode/js/upload/FileTypes.js:7
+msgid "ESRI Shapefile"
+msgstr ""
+
+#: static/geonode/js/upload/FileTypes.js:13
+#: static/geonode/js/upload/FileTypes.js:19
+#: static_root/geonode/js/upload/FileTypes.js:13
+#: static_root/geonode/js/upload/FileTypes.js:19
+msgid "GeoTiff File"
+msgstr ""
+
+#: static/geonode/js/upload/FileTypes.js:26
+#: static_root/geonode/js/upload/FileTypes.js:26
+msgid "Comma Separated File"
+msgstr ""
+
+#: static/geonode/js/upload/FileTypes.js:32
+#: static_root/geonode/js/upload/FileTypes.js:32
+msgid "Google Earth KML"
+msgstr ""
+
+#: static/geonode/js/upload/FileTypes.js:38
+msgid "GeoJSON"
+msgstr ""
+
+#: static/geonode/js/upload/FileTypes.js:44
+#: static_root/geonode/js/upload/FileTypes.js:38
+msgid "Zip Archives"
+msgstr ""
+
+#: static/geonode/js/upload/LayerInfo.js:231
+#: static_root/geonode/js/upload/LayerInfo.js:231
+msgid "Layer Info"
+msgstr ""
+
+#: static/geonode/js/upload/LayerInfo.js:232
+#: static_root/geonode/js/upload/LayerInfo.js:232
+msgid "Edit Metadata"
+msgstr ""
+
+#: static/geonode/js/upload/LayerInfo.js:233
+#: static_root/geonode/js/upload/LayerInfo.js:233
+msgid "Manage Styles"
+msgstr ""
+
+#: static/geonode/js/upload/LayerInfo.js:236
+msgid "The column %1 was renamed to %2 <br/>"
+msgstr ""
+
+#: static/geonode/js/upload/LayerInfo.js:242
+#: static_root/geonode/js/upload/LayerInfo.js:235
+msgid "Your layer was successfully uploaded"
+msgstr ""
+
+#: static/geonode/js/upload/LayerInfo.js:271
+#: static_root/geonode/js/upload/LayerInfo.js:264
+msgid "Performing Final GeoServer Config Step"
+msgstr ""
+
+#: static/geonode/js/upload/LayerInfo.js:286
+#: static/geonode/js/upload/LayerInfo.js:312
+#: static_root/geonode/js/upload/LayerInfo.js:279
+#: static_root/geonode/js/upload/LayerInfo.js:305
+msgid "You need to specify more information in order to complete your upload"
+msgstr ""
+
+#: static/geonode/js/upload/LayerInfo.js:304
+#: static_root/geonode/js/upload/LayerInfo.js:297
+msgid "You need to specify more information in order to complete your upload."
+msgstr ""
+
+#: static/geonode/js/upload/LayerInfo.js:304
+#: static_root/geonode/js/upload/LayerInfo.js:297
+msgid "You can continue configuring your layer."
+msgstr ""
+
+#: static/geonode/js/upload/LayerInfo.js:322
+#: static/geonode/js/upload/LayerInfo.js:407
+#: static_root/geonode/js/upload/LayerInfo.js:315
+#: static_root/geonode/js/upload/LayerInfo.js:400
+msgid "Unexpected Error"
+msgstr ""
+
+#: static/geonode/js/upload/LayerInfo.js:338
+#: static_root/geonode/js/upload/LayerInfo.js:331
+msgid "Performing GeoServer Config Step"
+msgstr ""
+
+#: static/geonode/js/upload/LayerInfo.js:414
+#: static_root/geonode/js/upload/LayerInfo.js:407
+msgid "Layer files uploaded, configuring in GeoServer"
+msgstr ""
+
+#: static/geonode/js/upload/LayerInfo.js:429
+#: static_root/geonode/js/upload/LayerInfo.js:422
+msgid "Select or create a Geogig repository."
+msgstr ""
+
+#: static/geonode/js/upload/LayerInfo.js:524
+#: static_root/admin/js/SelectFilter2.js:69
+#: static_root/geonode/js/upload/LayerInfo.js:517
+msgid "Remove"
+msgstr ""
+
+#: static/geonode/js/upload/upload.js:125
+#: static_root/geonode/js/upload/upload.js:125
+#, c-format
+msgid "The file %s is an unsupported file type, please select another file."
+msgstr ""
+
+#: static/geonode/js/upload/upload.js:260
+#: static_root/geonode/js/upload/upload.js:260
+msgid "You are uploading an incomplete set of files."
+msgstr ""
+
+#: static_root/admin/js/SelectFilter2.js:45
+#, c-format
+msgid "Available %s"
+msgstr ""
+
+#: static_root/admin/js/SelectFilter2.js:46
+#, c-format
+msgid ""
+"This is the list of available %s. You may choose some by selecting them in "
+"the box below and then clicking the \"Choose\" arrow between the two boxes."
+msgstr ""
+
+#: static_root/admin/js/SelectFilter2.js:53
+#, c-format
+msgid "Type into this box to filter down the list of available %s."
+msgstr ""
+
+#: static_root/admin/js/SelectFilter2.js:57
+msgid "Filter"
+msgstr ""
+
+#: static_root/admin/js/SelectFilter2.js:61
+msgid "Choose all"
+msgstr ""
+
+#: static_root/admin/js/SelectFilter2.js:61
+#, c-format
+msgid "Click to choose all %s at once."
+msgstr ""
+
+#: static_root/admin/js/SelectFilter2.js:67
+msgid "Choose"
+msgstr ""
+
+#: static_root/admin/js/SelectFilter2.js:75
+#, c-format
+msgid "Chosen %s"
+msgstr ""
+
+#: static_root/admin/js/SelectFilter2.js:76
+#, c-format
+msgid ""
+"This is the list of chosen %s. You may remove some by selecting them in the "
+"box below and then clicking the \"Remove\" arrow between the two boxes."
+msgstr ""
+
+#: static_root/admin/js/SelectFilter2.js:80
+msgid "Remove all"
+msgstr ""
+
+#: static_root/admin/js/SelectFilter2.js:80
+#, c-format
+msgid "Click to remove all chosen %s at once."
+msgstr ""
+
+#: static_root/admin/js/actions.js:18 static_root/admin/js/actions.min.js:1
+msgid "%(sel)s of %(cnt)s selected"
+msgid_plural "%(sel)s of %(cnt)s selected"
+msgstr[0] ""
+
+#: static_root/admin/js/actions.js:109 static_root/admin/js/actions.min.js:5
+msgid ""
+"You have unsaved changes on individual editable fields. If you run an "
+"action, your unsaved changes will be lost."
+msgstr ""
+
+#: static_root/admin/js/actions.js:121 static_root/admin/js/actions.min.js:5
+msgid ""
+"You have selected an action, but you haven't saved your changes to "
+"individual fields yet. Please click OK to save. You'll need to re-run the "
+"action."
+msgstr ""
+
+#: static_root/admin/js/actions.js:123 static_root/admin/js/actions.min.js:6
+msgid ""
+"You have selected an action, and you haven't made any changes on individual "
+"fields. You're probably looking for the Go button rather than the Save "
+"button."
+msgstr ""
+
+#: static_root/admin/js/calendar.js:8
+msgid ""
+"January February March April May June July August September October November "
+"December"
+msgstr ""
+
+#: static_root/admin/js/calendar.js:9
+msgid "S M T W T F S"
+msgstr ""
+
+#: static_root/admin/js/collapse.js:8 static_root/admin/js/collapse.js.c:19
+#: static_root/admin/js/collapse.min.js:1
+msgid "Show"
+msgstr ""
+
+#: static_root/admin/js/collapse.js:16 static_root/admin/js/collapse.min.js:1
+msgid "Hide"
+msgstr ""
+
+#: static_root/admin/js/admin/DateTimeShortcuts.js:52
+#: static_root/admin/js/admin/DateTimeShortcuts.js:88
+msgid "Now"
+msgstr ""
+
+#: static_root/admin/js/admin/DateTimeShortcuts.js:56
+msgid "Clock"
+msgstr ""
+
+#: static_root/admin/js/admin/DateTimeShortcuts.js:84
+msgid "Choose a time"
+msgstr ""
+
+#: static_root/admin/js/admin/DateTimeShortcuts.js:89
+msgid "Midnight"
+msgstr ""
+
+#: static_root/admin/js/admin/DateTimeShortcuts.js:90
+msgid "6 a.m."
+msgstr ""
+
+#: static_root/admin/js/admin/DateTimeShortcuts.js:91
+msgid "Noon"
+msgstr ""
+
+#: static_root/admin/js/admin/DateTimeShortcuts.js:95
+#: static_root/admin/js/admin/DateTimeShortcuts.js:208 templates/lang.js:9
+#: templates/lang.js.c:236
+msgid "Cancel"
+msgstr ""
+
+#: static_root/admin/js/admin/DateTimeShortcuts.js:148
+#: static_root/admin/js/admin/DateTimeShortcuts.js:201
+msgid "Today"
+msgstr ""
+
+#: static_root/admin/js/admin/DateTimeShortcuts.js:152
+msgid "Calendar"
+msgstr ""
+
+#: static_root/admin/js/admin/DateTimeShortcuts.js:199
+msgid "Yesterday"
+msgstr ""
+
+#: static_root/admin/js/admin/DateTimeShortcuts.js:203
+msgid "Tomorrow"
+msgstr ""
+
+#: templates/lang.js:10
+msgid "Save as Copy"
+msgstr ""
+
+#: templates/lang.js:11
+msgid "About this Map"
+msgstr ""
+
+#: templates/lang.js:12 templates/lang.js.c:96 templates/lang.js.c:165
+msgid "Abstract"
+msgstr ""
+
+#: templates/lang.js:13
+msgid "Save"
+msgstr ""
+
+#: templates/lang.js:14 templates/lang.js.c:100 templates/lang.js.c:109
+#: templates/lang.js:162 templates/lang.js.c:184 templates/lang.js.c:219
+msgid "Title"
+msgstr ""
+
+#: templates/lang.js:20
+msgid "Connection Error"
+msgstr ""
+
+#: templates/lang.js:21
+msgid "The server returned an error"
+msgstr ""
+
+#: templates/lang.js:22
+msgid "Details..."
+msgstr ""
+
+#: templates/lang.js:28 templates/lang.js.c:31
+msgid "Add Layers"
+msgstr ""
+
+#: templates/lang.js:29
+msgid "Area"
+msgstr ""
+
+#: templates/lang.js:30
+msgid "Background"
+msgstr ""
+
+#: templates/lang.js:32
+msgid "Done"
+msgstr ""
+
+#: templates/lang.js:33
+msgid "Available Layers"
+msgstr ""
+
+#: templates/lang.js:35 templates/lang.js.c:121
+msgid "Height"
+msgstr ""
+
+#: templates/lang.js:36
+msgid "Get Feature Info"
+msgstr ""
+
+#: templates/lang.js:37 templates/lang.js.c:122
+msgid "Large"
+msgstr ""
+
+#: templates/lang.js:38
+msgid "or add a new server."
+msgstr ""
+
+#: templates/lang.js:39
+msgid "Map Layers"
+msgstr ""
+
+#: templates/lang.js:40
+msgid "View available data from:"
+msgstr ""
+
+#: templates/lang.js:41
+msgid "Data"
+msgstr ""
+
+#: templates/lang.js:42
+msgid "Layers"
+msgstr ""
+
+#: templates/lang.js:43
+msgid "Legend"
+msgstr ""
+
+#: templates/lang.js:44
+msgid "Length"
+msgstr ""
+
+#: templates/lang.js:45
+msgid "Loading Map..."
+msgstr ""
+
+#: templates/lang.js:46 templates/lang.js.c:123
+msgid "Map Size"
+msgstr ""
+
+#: templates/lang.js:47
+msgid "Measure"
+msgstr ""
+
+#: templates/lang.js:48 templates/lang.js.c:97 templates/lang.js.c:163
+msgid "Contact"
+msgstr ""
+
+#: templates/lang.js:49 templates/lang.js.c:55
+msgid "Permalink"
+msgstr ""
+
+#: templates/lang.js:50 templates/lang.js.c:124
+msgid "Mini"
+msgstr ""
+
+#: templates/lang.js:51
+msgid "Pan Map"
+msgstr ""
+
+#: templates/lang.js:52
+msgid "Zoom to Next Extent"
+msgstr ""
+
+#: templates/lang.js:53
+msgid "Zoom to Previous Extent"
+msgstr ""
+
+#: templates/lang.js:54
+msgid "This map has not yet been saved."
+msgstr ""
+
+#: templates/lang.js:56 templates/lang.js.c:125
+msgid "Premium"
+msgstr ""
+
+#: templates/lang.js:57
+msgid "Print Map"
+msgstr ""
+
+#: templates/lang.js:58
+msgid "Print Preview"
+msgstr ""
+
+#: templates/lang.js:59
+msgid "Properties"
+msgstr ""
+
+#: templates/lang.js:60 templates/lang.js.c:126
+msgid "Publish Map"
+msgstr ""
+
+#: templates/lang.js:61 templates/lang.js.c:62
+msgid "Remove Layer"
+msgstr ""
+
+#: templates/lang.js:63
+msgid "Sorry, your map could not be saved."
+msgstr ""
+
+#: templates/lang.js:64
+msgid "Error While Saving"
+msgstr ""
+
+#: templates/lang.js:65
+msgid "Save Map"
+msgstr ""
+
+#: templates/lang.js:66
+msgid "You must be logged in to save this map."
+msgstr ""
+
+#: templates/lang.js:67 templates/lang.js.c:128
+msgid "Small"
+msgstr ""
+
+#: templates/lang.js:68
+msgid ""
+"Error contacting server.\n"
+" Please check the url and try again."
+msgstr ""
+
+#: templates/lang.js:69
+msgid "Layer Properties"
+msgstr ""
+
+#: templates/lang.js:70
+msgid "Change layer format and style"
+msgstr ""
+
+#: templates/lang.js:71
+msgid "Edit Styles"
+msgstr ""
+
+#: templates/lang.js:72
+msgid "Edit layer styles"
+msgstr ""
+
+#: templates/lang.js:73
+msgid "Switch to Google Earth 3D Viewer"
+msgstr ""
+
+#: templates/lang.js:74
+msgid ""
+"The map that you are trying to load does not exist.  Creating a new map "
+"instead."
+msgstr ""
+
+#: templates/lang.js:75
+msgid "Unknown Map"
+msgstr ""
+
+#: templates/lang.js:76 templates/lang.js.c:129
+msgid "Width"
+msgstr ""
+
+#: templates/lang.js:77
+msgid "Zoom In"
+msgstr ""
+
+#: templates/lang.js:78
+msgid "Zoom Out"
+msgstr ""
+
+#: templates/lang.js:79
+msgid "Zoom level"
+msgstr ""
+
+#: templates/lang.js:80
+msgid "Zoom Level"
+msgstr ""
+
+#: templates/lang.js:81
+msgid "Zoom to Layer Extent"
+msgstr ""
+
+#: templates/lang.js:82
+msgid "Zoom to Visible Extent"
+msgstr ""
+
+#: templates/lang.js:88
+msgid "Zoom Level {zoom}"
+msgstr ""
+
+#: templates/lang.js:94
+msgid "Create Map"
+msgstr ""
+
+#: templates/lang.js:95
+msgid "Export Map"
+msgstr ""
+
+#: templates/lang.js:98
+msgid "Map"
+msgstr ""
+
+#: templates/lang.js:99 templates/lang.js.c:166
+msgid "View this Map"
+msgstr ""
+
+#: templates/lang.js:101
+msgid "Open Map"
+msgstr ""
+
+#: templates/lang.js:107 templates/lang.js.c:183
+msgid "Name"
+msgstr ""
+
+#: templates/lang.js:108
+msgid "Queryable"
+msgstr ""
+
+#: templates/lang.js:115
+msgid "No background"
+msgstr ""
+
+#: templates/lang.js:127
+msgid ""
+"Your map is ready to be published to the web!  Simply copy the following "
+"HTML to embed the map in your website:"
+msgstr ""
+
+#: templates/lang.js:136 templates/lang.js.c:202
+msgid "Abstract:"
+msgstr ""
+
+#: templates/lang.js:137 templates/lang.js.c:204
+msgid "No attribution information is provided for this layer."
+msgstr ""
+
+#: templates/lang.js:138 templates/lang.js.c:205
+msgid "Provided by:"
+msgstr ""
+
+#: templates/lang.js:139 templates/lang.js.c:206
+msgid "Download:"
+msgstr ""
+
+#: templates/lang.js:140 templates/lang.js.c:208
+msgid "No keywords are listed for this layer."
+msgstr ""
+
+#: templates/lang.js:141 templates/lang.js.c:209
+msgid "Keywords:"
+msgstr ""
+
+#: templates/lang.js:142 templates/lang.js.c:210
+msgid "No metadata URLs are defined for this layer."
+msgstr ""
+
+#: templates/lang.js:143 templates/lang.js.c:211
+msgid "Metadata Links:"
+msgstr ""
+
+#: templates/lang.js:149
+msgid "Paper size:"
+msgstr ""
+
+#: templates/lang.js:150
+msgid "Resolution:"
+msgstr ""
+
+#: templates/lang.js:151
+msgid "Print"
+msgstr ""
+
+#: templates/lang.js:152
+msgid "Enter map title here."
+msgstr ""
+
+#: templates/lang.js:153
+msgid "Include legend?"
+msgstr ""
+
+#: templates/lang.js:154
+msgid "Enter comments here."
+msgstr ""
+
+#: templates/lang.js:155
+msgid "Creating PDF..."
+msgstr ""
+
+#: templates/lang.js:164
+msgid "Last Modified"
+msgstr ""
+
+#: templates/lang.js:167 templates/lang.js.c:188
+msgid "Prev"
+msgstr ""
+
+#: templates/lang.js:168 templates/lang.js.c:189
+msgid "Next"
+msgstr ""
+
+#: templates/lang.js:169 templates/lang.js.c:190
+msgid "of"
+msgstr ""
+
+#: templates/lang.js:170 templates/lang.js.c:191
+msgid "Your search did not match any items."
+msgstr ""
+
+#: templates/lang.js:171
+msgid "Search Maps"
+msgstr ""
+
+#: templates/lang.js:172 templates/lang.js.c:192
+msgid "Search"
+msgstr ""
+
+#: templates/lang.js:173 templates/lang.js.c:193
+msgid "Showing"
+msgstr ""
+
+#: templates/lang.js:174
+msgid "Loading"
+msgstr ""
+
+#: templates/lang.js:175 templates/lang.js.c:195
+msgid "permalink"
+msgstr ""
+
+#: templates/lang.js:182
+msgid "Select"
+msgstr ""
+
+#: templates/lang.js:185
+msgid "Select:"
+msgstr ""
+
+#: templates/lang.js:186
+msgid "All"
+msgstr ""
+
+#: templates/lang.js:187
+msgid "None"
+msgstr ""
+
+#: templates/lang.js:194
+msgid "Loading..."
+msgstr ""
+
+#: templates/lang.js:196
+msgid "You do not have permission to view this data"
+msgstr ""
+
+#: templates/lang.js:197
+msgid "This data is stored on a remote server"
+msgstr ""
+
+#: templates/lang.js:203
+msgid "No abstract is provided for this layer."
+msgstr ""
+
+#: templates/lang.js:207
+msgid "No download URLs are definied for this layer."
+msgstr ""
+
+#: templates/lang.js:217
+msgid "Selected Layers"
+msgstr ""
+
+#: templates/lang.js:218
+msgid "No Layers Selected"
+msgstr ""
+
+#: templates/lang.js:220
+msgid "Clear Selected"
+msgstr ""
+
+#: templates/lang.js:221
+msgid "Clear All"
+msgstr ""
+
+#: templates/lang.js:227
+msgid "Operation Failed"
+msgstr ""
+
+#: templates/lang.js:228
+msgid "No layers are currently selected."
+msgstr ""
+
+#: templates/lang.js:235
+msgid "Downloading..."
+msgstr ""
+
+#: templates/lang.js:237
+msgid "Please wait"
+msgstr ""
+
+#~ msgid "No error message supplied"
+#~ msgstr "No error message supplied"
