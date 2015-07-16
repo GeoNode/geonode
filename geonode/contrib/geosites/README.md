@@ -6,12 +6,22 @@ GeoSites is a contrib module to GeoNode starting with 2.4. The GeoSites app is a
 
 A GeoSites installation uses a 'master' GeoNode website that has access to all users, groups, and data. Through the Django admin page, Layers, Maps, Documents, Users, and Groups can be added and removed from all sites.  Users can be given access to any number of sites, and data may appear on only a single site, or all of them.  The master site need not be accessible from the outside so that it can be used as an internal tool to the organization. Users created on a site are created with access to just that site (but not the master site).  Data uploaded to a site is given permission on that site as well as the master site.
 
-GeoSites works via a hierarchy: first default GeoNode, then GeoSites settings, then project settings, then site specific settings. This hierachy is used for settings, templates, and static files.
+
+GeoSites Contrib App
+============================
+
+The GeoSites contrib app makes full use of the Django Site framework to separate the content between different GeoNode sites.
+The Association of a resource to a site is done through a OneToMany table named “SiteResources” (a record for each site).
+The table has two fields:
+* site: a one to one relation with the Django Site
+* resources: a many to many relation to the GeoNode ResourceBase model
+
+This table is used by GeoSites to filter the resources per site. GeoSites also overrides all GeoNode data related endpoints (e.g., APIs, detail page, faceting facilities) to provide full multiple site support. Signals (post_save, post_delete) are used to ensure that when a Resource (layer, map, document) is saved (or deleted) it is added (or removed) to the SiteResource entry for the current site and for the Master site.
 
 
 GeoSites Project
 ============================
-A GeoSites project looks similar to a normal GeoNode project, but with additional folders for sites, and more settings files. In the project there is a directory for each site: 'master' and 'site2' in the example listing below. Each site folder contains a settings file (and optionally local_settings) with site specific settings, as well as directories for static files and Django templates. In addition are configuration files necessary to serve the site: nginx, gunicorn, and wsgi.py.
+A GeoSites project looks similar to a normal GeoNode project, but with additional folders for sites, and more settings files. In the project there is a directory for each site: 'master' and 'site2' in the example listing below. Each site folder contains a settings file (and optionally local_settings) with site specific settings, as well as directories for static files and Django templates. In addition are configuration files necessary to serve the site: nginx, gunicorn, and wsgi.py. GeoSites works via a hierarchy: first default GeoNode, then GeoSites settings, then project settings, then site specific settings. This hierachy is used for settings, templates, and static files.
 
 The project_name folder contains common settings in the pre_settings.py, post_settings.py, and optionally local_settings.py files.  There is also a sites.json file, which is a JSON file of the sites database table.  This is for convenience, as the file will contain the site IDs and names for all currently enabled sites.  The urls file is a common urls file, although each site could have their own urls file if needed (by creating one and setting it in the site specific settings file).
 
@@ -219,42 +229,18 @@ This will create a new directory of files:
 
 #### Templates and Static Files
 
-The TEMPLATE_DIRS, and STATICFILES_DIRS will then include all three directories as shown:
-
-    TEMPLATE_DIRS = (
-        os.path.join(SITE_ROOT, 'templates/'),
-        os.path.join(PROJECT_ROOT,'templates/'),
-        os.path.join(GEONODE_ROOT, 'templates/')
-    )
-
-    STATICFILES_DIRS = (
-        os.path.join(SITE_ROOT, 'static/'),
-        os.path.join(PROJECT_ROOT, 'static/'),
-        os.path.join(GEONODE_ROOT, 'static/')
-    )
-
-As mentioned above for each website there will be three directories used for template and static files.  The first template file found will be the one used so templates in the SITE_ROOT/templates directory will override those in PROJECT_ROOT/templates, which will override those in GEONODE_ROOT/templates.
-
-Static files use a hierarchy similar to the the template directories.  However, they work differently because (on a production server) they are collected and stored in a single location.  Because of this care must be taken to avoid clobbering of files between sites, so each site directory should contain all static files in a subdirectory with the name of the site (e.g., static/siteA/logo.png )
+As mentioned above, GeoSites uses a hierachy for static files and templates. The first template file found will be the one used so templates in the SITE_ROOT/templates directory will override those in PROJECT_ROOT/templates, which will override those in GEONODE_ROOT/templates.  Static files use a hierarchy similar to the the template directories.  However, they work differently because (on a production server) they are collected and stored in a single location.  Because of this care must be taken to avoid clobbering of files between sites, so each site directory should contain all static files in a subdirectory with the name of the site (e.g., static/siteA/logo.png )
 
 The location of the proper static directory can then be found in the templates syntax such as:
 
     {{ STATIC_URL }}{{ SITENAME|lower }}/logo.png
 
 
-#### Permissions
-By default data added to GeoNode is publicly available. In the case of GeoSites, new data will be publicly available, but only for the site it was added to, and the master site (all data is added to the master site). 
+#### Permissions by Site
 
-##### Users per site
-Users are added by default to the site on where they are created and they belong to that site only.
-It is although possible to assign users to sites in a second time through the Site People admin panel located under the geosites app admin/geosites/sitepeople/. Select the desired site and move people from the left to the right panel through the arrow, that way the user will gain access to the selected site.
-To remove people move them from the right to the left.
+Users are added by default to the site on where they are created and they belong to that site only. However, an admin can add or remvoe people from sites through the "Site People" admin panel (Admin->GeoSites->sitepeople). Select the desired site and move people between the boxes to enable or disable them from the site. 
 
-##### Data per site
-Data belong by default to the site from where they are uploaded and to the master site.
-In a very similar way to the users it is possible to assign data to a site in a second time by accessing the Site Resources admin panel under the geosites app admin/geosites/siteresources/. 
-Under each site is possible to move resources from the left to the right panel, after the save the resource will be accessible from the selected site as well.
-To remove a resource from a site, move it from the right to the left.
+By default data added to GeoNode is publicly available. In the case of GeoSites, new data will be publicly available, but only for the site it was added to, and the master site (all data is added to the master site). Sharing a resource with other sites involved altering the SiteResource table in the admin panel (Admin->GeoSites->SiteResource).  Add available data to a site or remove by moving resources between the two panels.  Once the changes are saved the sites will have the new resources added (or removed).
 
 
 
