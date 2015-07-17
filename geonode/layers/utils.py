@@ -423,6 +423,27 @@ def file_upload(filename, name=None, user=None, title=None, abstract=None,
             else:
                 defaults[key] = value
 
+    regions_resolved = []
+    if regions:
+        if len(regions) > 0:
+            regions_resolved = Region.objects.filter(
+                reduce(
+                    lambda x, y: x | y,
+                    [Q(name__iexact=region) | Q(code__iexact=region) for region in regions]))
+
+    if getattr(settings, 'NLP_ENABLED', False):
+        try:
+            from geonode.contrib.nlp.utils import nlp_extract_metadata_dict
+            nlp_metadata = nlp_extract_metadata_dict({
+                'title': defaults.get('title', None),
+                'abstract': defaults.get('abstract', None),
+                'purpose': defaults.get('purpose', None)})
+            if nlp_metadata:
+                regions_resolved.extend(nlp_metadata.get('regions', []))
+                keywords.extend(nlp_metadata.get('keywords', []))
+        except:
+            print "NLP extraction failed."
+
     # If it is a vector file, create the layer in postgis.
     if is_vector(filename):
         defaults['storeType'] = 'dataStore'
@@ -455,14 +476,9 @@ def file_upload(filename, name=None, user=None, title=None, abstract=None,
             layer.keywords.add(*keywords)
 
     # Assign the regions (needs to be done after saving)
-    if regions:
-        if len(regions) > 0:
-            regions_to_add = Region.objects.filter(
-                reduce(
-                    lambda x, y: x | y,
-                    [Q(name__iexact=region) | Q(code__iexact=region) for region in regions]))
-            if len(regions_to_add) > 0:
-                layer.regions.add(*regions_to_add)
+    if regions_resolved:
+        if len(regions_resolved) > 0:
+            layer.regions.add(*regions_resolved)
 
     return layer
 
