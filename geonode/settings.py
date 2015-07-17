@@ -246,6 +246,9 @@ GEONODE_CONTRIB_APPS = (
     'geonode.contrib.slack'
 )
 
+# Uncomment the following line to enable contrib apps
+# GEONODE_APPS = GEONODE_APPS + GEONODE_CONTRIB_APPS
+
 INSTALLED_APPS = (
 
     # Boostrap admin theme
