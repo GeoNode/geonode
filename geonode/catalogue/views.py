@@ -21,6 +21,7 @@
 import os
 from django.conf import settings
 from django.http import HttpResponse, HttpResponseRedirect
+from django.shortcuts import render_to_response
 from django.views.decorators.csrf import csrf_exempt
 from pycsw import server
 from geonode.catalogue.backends.pycsw_local import CONFIGURATION
@@ -46,3 +47,21 @@ def csw_global_dispatch(request):
     content = csw.dispatch_wsgi()
 
     return HttpResponse(content, content_type=csw.contenttype)
+
+
+@csrf_exempt
+def opensearch_dispatch(request):
+    """OpenSearch wrapper"""
+
+    ctx = {
+        'shortname': settings.PYCSW['CONFIGURATION']['metadata:main']['identification_title'],
+        'description': settings.PYCSW['CONFIGURATION']['metadata:main']['identification_abstract'],
+        'developer': settings.PYCSW['CONFIGURATION']['metadata:main']['contact_name'],
+        'contact': settings.PYCSW['CONFIGURATION']['metadata:main']['contact_email'],
+        'attribution': settings.PYCSW['CONFIGURATION']['metadata:main']['provider_name'],
+        'tags': settings.PYCSW['CONFIGURATION']['metadata:main']['identification_keywords'].replace(',', ' '),
+        'url': settings.SITEURL.rstrip('/')
+    }
+
+    return render_to_response('catalogue/opensearch_description.xml', ctx,
+                              content_type='application/opensearchdescription+xml')
