@@ -48,6 +48,7 @@ def csw_global_dispatch(request):
 
     return HttpResponse(content, content_type=csw.contenttype)
 
+
 @csrf_exempt
 def opensearch_dispatch(request):
     """OpenSearch wrapper"""
@@ -62,17 +63,5 @@ def opensearch_dispatch(request):
         'url': settings.SITEURL.rstrip('/')
     }
 
-    return render_to_response('catalogue/opensearch_description.xml',
-                              ctx,
+    return render_to_response('catalogue/opensearch_description.xml', ctx,
                               content_type='application/opensearchdescription+xml')
-
-
-
-
-
-
-
-
-
-
-

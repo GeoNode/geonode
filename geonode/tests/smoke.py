@@ -109,6 +109,7 @@ class GeoNodeSmokeTests(TestCase):
         response = self.client.get(reverse('opensearch_dispatch'))
         self.failUnlessEqual(response.status_code, 200)
 
+
 class GeoNodeUtilsTests(TestCase):
 
     def setUp(self):
