@@ -81,8 +81,8 @@ def nlp_extract_metadata_dict(d):
     for key in d:
         if d[key]:
             new_metadata = _nlp_extract_metadata_core(d[key])
-            m['keywords'] = m['keywords'] + set(new_metadata['keywords'])
-            m['regions'] = m['regions'] + set(new_metadata['regions'])
+            m['keywords'] = m['keywords'].union(set(new_metadata['keywords']))
+            m['regions'] = m['regions'].union(set(new_metadata['regions']))
 
     return {'keywords': list(m['keywords']), 'regions': list(m['regions'])}
 
@@ -107,6 +107,7 @@ def _nlp_extract_metadata_core(text=None):
                 locations.append((entity_text, score))
             elif tag == "ORGANIZATION":
                 organizations.append((entity_text, score))
+            # print tag+" : "+entity_text+" : "+score_text
 
         # Remove Duplicates
         locations = removeDuplicateEntities(locations)
