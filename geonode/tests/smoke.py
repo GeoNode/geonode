@@ -99,6 +99,16 @@ class GeoNodeSmokeTests(TestCase):
         response = self.client.get(reverse('profile_detail', args=['norman']))
         self.failUnlessEqual(response.status_code, 200)
 
+    def test_csw_endpoint(self):
+        '''Test that the CSW endpoint is correctly configured.'''
+        response = self.client.get(reverse('csw_global_dispatch'))
+        self.failUnlessEqual(response.status_code, 200)
+
+    def test_opensearch_description(self):
+        '''Test that the local OpenSearch endpoint is correctly configured.'''
+        response = self.client.get(reverse('opensearch_dispatch'))
+        self.failUnlessEqual(response.status_code, 200)
+
 
 class GeoNodeUtilsTests(TestCase):
 
