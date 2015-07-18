@@ -31,7 +31,7 @@ or return response objects.
 State is stored in a UploaderSession object stored in the user's session.
 This needs to be made more stateful by adding a model.
 """
-from geonode.layers.utils import get_valid_layer_name
+from geonode.layers.utils import get_valid_layer_name, resolve_regions
 from geonode.layers.metadata import set_metadata
 from geonode.layers.models import Layer
 from geonode import GeoNodeException
@@ -588,9 +588,19 @@ def final_step(upload_session, user):
     if xml_file:
         saved_layer.metadata_uploaded = True
         # get model properties from XML
-        vals, keywords = set_metadata(open(xml_file[0]).read())
+        vals, regions, keywords = set_metadata(open(xml_file[0]).read())
+
+        regions_resolved, regions_unresolved = resolve_regions(regions)
+        keywords.extend(regions_unresolved)
+
+        # set regions
+        regions_resolved = list(set(regions_resolved))
+        if regions:
+            if len(regions) > 0:
+                saved_layer.regions.add(*regions_resolved)
 
         # set taggit keywords
+        keywords = list(set(keywords))
         saved_layer.keywords.add(*keywords)
 
         # set model properties
