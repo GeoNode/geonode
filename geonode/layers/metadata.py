@@ -162,7 +162,7 @@ def fgdc2dict(exml):
 
         if mdata.idinfo.keywords.place:
             for place in mdata.idinfo.keywords.place:
-                if place['placekt'] is not None:
+                if 'placekey' in place:
                     regions.extend(place['placekey'])
 
     if hasattr(mdata.idinfo.timeperd, 'timeinfo'):
