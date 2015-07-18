@@ -20,7 +20,7 @@
   {% csrf_token %}
   {{ form|as_bootstrap }}
   <div class="form-actions">
-    <a href="{% url "announcements_list" %}" class="btn">{% trans "Cancel" %}</a>
+    <a href="{% url "announcements_list" %}" class="btn btn-default">{% trans "Cancel" %}</a>
     {% if announcement %}
     <a href="{% url "announcements_delete" pk=announcement.pk %}" class="btn btn-danger">{% trans "Delete" %}</a>
     {% endif %}
