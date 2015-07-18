@@ -160,6 +160,11 @@ def fgdc2dict(exml):
 
                     keywords.extend(theme['themekey'])
 
+        if mdata.idinfo.keywords.place:
+            for place in mdata.idinfo.keywords.place:
+                if place['placekt'] is not None:
+                    regions.extend(place['placekey'])
+
     if hasattr(mdata.idinfo.timeperd, 'timeinfo'):
         if hasattr(mdata.idinfo.timeperd.timeinfo, 'rngdates'):
             vals['temporal_extent_start'] = \
@@ -186,6 +191,7 @@ def dc2dict(exml):
     vals['language'] = mdata.language
     vals['spatial_representation_type'] = mdata.type
     keywords = mdata.subjects
+    regions = [mdata.spatial]
     vals['temporal_extent_start'] = mdata.temporal
     vals['temporal_extent_end'] = mdata.temporal
     vals['constraints_other'] = mdata.license
