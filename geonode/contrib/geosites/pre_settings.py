@@ -9,6 +9,12 @@ import geonode
 GEONODE_ROOT = os.path.realpath(os.path.dirname(geonode.__file__))
 execfile(os.path.join(GEONODE_ROOT, 'settings.py'))
 
+# project location
+PROJECT_ROOT = os.path.realpath(os.path.join(os.path.dirname(__file__), '../'))
+
+# site location (current settings file)
+SITE_ROOT = os.path.realpath(os.path.dirname(__file__))
+
 ###############################################
 # Master Geosite settings
 ###############################################
