@@ -13,7 +13,7 @@ SITE_ROOT = os.path.dirname(__file__)
 
 try:
     # read in project pre_settings
-    execfile(os.path.join(SITE_ROOT, 'pre_settings.py'))
+    execfile(os.path.join(SITE_ROOT, '../', 'pre_settings.py'))
 except:
     # if not available, read in GeoSites pre_settings
     execfile(os.path.join(GEOSITES_ROOT, 'pre_settings.py'))
@@ -48,7 +48,7 @@ SITE_DATABASES = {}
 # Read in GeoSites post_settings
 try:
     # read in project pre_settings
-    execfile(os.path.join(SITE_ROOT, 'post_settings.py'))
+    execfile(os.path.join(SITE_ROOT, '../', 'post_settings.py'))
 except:
     # if not available, read in GeoSites pre_settings
     execfile(os.path.join(GEOSITES_ROOT, 'post_settings.py'))
