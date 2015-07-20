@@ -53,7 +53,7 @@ from geonode.upload.forms import LayerUploadForm, UploadFileForm
 from geonode.upload.models import Upload, UploadFile
 from geonode.utils import json_response as do_json_response
 from geonode.geoserver.helpers import ogc_server_settings
-
+import random
 
 logger = logging.getLogger(__name__)
 
@@ -261,6 +261,21 @@ def save_step_view(req, session):
             sld = base_file[0].sld_files[0]
 
         logger.info('provided sld is %s' % sld)
+
+        geogig_store = form.cleaned_data.get('geogig_store')
+
+        if not geogig_store:
+            geogig_store = ''.join(random.sample('abcdefghijklmnopqrstuvwxyz', 5))
+
+
+        if form.cleaned_data.get('is_private', False):
+            permissions = {u'users': {u'AnonymousUser': []}, u'groups': {}}
+        else:
+            # Use default permissions
+            permissions = None
+
+
+
         # upload_type = get_upload_type(base_file)
         upload_session = req.session[_SESSION_KEY] = upload.UploaderSession(
             tempdir=tempdir,
@@ -269,11 +284,11 @@ def save_step_view(req, session):
             import_session=import_session,
             layer_abstract=form.cleaned_data["abstract"],
             layer_title=form.cleaned_data["layer_title"],
-            permissions=form.cleaned_data["permissions"],
+            permissions=permissions,
             import_sld_file=sld,
             upload_type=base_file[0].file_type.code,
             geogig=form.cleaned_data['geogig'],
-            geogig_store=form.cleaned_data['geogig_store'],
+            geogig_store=geogig_store,
             time=form.cleaned_data['time']
         )
         return _next_step_response(req, upload_session, force_ajax=True)
@@ -441,11 +456,16 @@ def time_step_view(request, upload_session):
     elif request.method != 'POST':
         raise Exception()
 
-    form = _create_time_form(import_session, request.POST)
+    request_data = request.POST
+
+    if 'application/json' in request.META['CONTENT_TYPE']:
+        request_data = json.loads(request.body)
+
+    form = _create_time_form(import_session, request_data)
 
     if not form.is_valid():
         logger.warning('Invalid upload form: %s', form.errors)
-        return _error_response(request, errors=["Invalid Submission"])
+        return _error_response(request, errors=["Invalid Submission", form.errors])
 
     cleaned = form.cleaned_data
 
@@ -502,7 +522,7 @@ def final_step_view(req, upload_session):
     # this response is different then all of the other views in the
     # upload as it does not return a response as a json object
     return json_response(
-        {'url': saved_layer.get_absolute_url(),
+        {'url': reverse('layer_upload_metadata', kwargs={'layername': saved_layer.typename}),
          'success': True
          }
     )

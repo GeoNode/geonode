@@ -420,36 +420,13 @@ define(function (require, exports) {
         });
     };
 
-    LayerInfo.prototype.setupGeogigDropdown = function(selector){
-        function format(item){return item.name;};
-        $(selector).select2({
-           data: {results:geogig_stores, text:'name'},
-           formatSelection: format,
-           formatResult: format,
-           placeholder: gettext('Select or create a Geogig repository.'),
-
-            id: function(object) {
-             return object.name;
-           },
-            createSearchChoice:function(term, data) {
-             if ($(data).filter( function() {
-               return this.name.localeCompare(term)===0;
-             }).length===0) {
-               return {name:term.replace(/[`~!@#$%^&*()|+\-=?;:'",.<>\{\}\[\]\\\/]/gi, '')};
-             }
-           }
-          });
-
-
-    }
-
     /** Function to display the layers collected from the files
      * selected for uploading 
      *
      *  @params {file_queue}
      *  @returns {string}
      */
-    LayerInfo.prototype.display = function (file_queue) {
+    LayerInfo.prototype.display = function (file_queue, index) {
         var layerTemplate = _.template($('#layerTemplate').html()),
             li = layerTemplate({
                 name: this.name,
@@ -457,7 +434,9 @@ define(function (require, exports) {
                 type: this.type.name,
                 format: this.type.format,
                 geogig: geogig_enabled,
-                time: time_enabled
+                time: time_enabled,
+                index: index
+
             });
         file_queue.append(li);
         this.errors = this.collectErrors();
@@ -466,10 +445,6 @@ define(function (require, exports) {
         this.element = $(this.selector);
 
         $('#' + this.name + '\\:geogig_toggle').on('change', this.doGeoGigToggle);
-
-        // Add values to the geogig store dropdown and hide.
-        this.setupGeogigDropdown($('#' + this.main.name.slice(0, -4) + '\\:geogig_store'));
-        $("#s2id_" + this.name + "\\:geogig_store").hide()
 
         return li;
     };
