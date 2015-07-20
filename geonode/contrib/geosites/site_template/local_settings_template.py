@@ -19,10 +19,3 @@ SITE_DATABASES = {
     },
 }
 """
-
-# update settings set in geonode settings now that some have been overwritten
-# note next 2 lines will prevent dev server from running properly
-OGC_SERVER['default']['PUBLIC_LOCATION'] = os.path.join(SITEURL, 'geoserver/')
-CATALOGUE['default']['URL'] = '%scatalogue/csw' % SITEURL
-PYCSW['CONFIGURATION']['metadata:main']['provider_url'] = SITEURL
-LOCAL_GEOSERVER['source']['url'] = OGC_SERVER['default']['PUBLIC_LOCATION'] + 'wms'
