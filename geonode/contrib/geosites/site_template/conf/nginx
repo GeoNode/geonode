@@ -1,9 +1,9 @@
 
 # This template uses the following variables to be filled in
 #  DOMAIN  	    - base url
-#  SITE_NAME	- name of site
+#  SITE_NAME		- name of site
 #  SERVE_PATH	- path to main project (used to store logs, uploaded, static)
-#  GSURL		- GeoServer machine URL (can be localhost)
+#  GEOSERVER_URL - GeoServer machine URL (can be localhost)
 #  PORTNUM		- Port number to use for wsgi app: use 80XX where XX is SITE_ID
 
 # If virtual host responds to multiple names this server block ensures request 
@@ -61,7 +61,7 @@ server {
         proxy_set_header    X-Forwarded-Host $host;
         proxy_set_header    X-Forwarded-Server $host;
         proxy_set_header    X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_pass          http://$DOMAIN:8080/geoserver/;
+        proxy_pass          $GEOSERVER_URL;
         proxy_set_header    X-Real-IP $remote_addr;
         proxy_redirect  default;
         proxy_pass_header   Set-Cookie;

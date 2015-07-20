@@ -57,11 +57,15 @@ def add_site(name, domain):
         '$SITE_ROOT': site_dir,
         '$SERVE_PATH': settings.SERVE_PATH,
         '$PORTNUM': '8%s' % str(site_id).zfill(3),
+	'$GEOSERVER_URL': settings.GEOSERVER_URL,
+	'$PROJECT_NAME': os.path.basename(os.path.dirname(settings.PROJECT_ROOT)),
     }
+
     sed(os.path.join(site_dir, 'conf/gunicorn'), change_dict)
     sed(os.path.join(site_dir, 'conf/nginx'), change_dict)
     sed(os.path.join(site_dir, 'settings.py'), change_dict)
     sed(os.path.join(site_dir, 'local_settings_template.py'), change_dict)
+    sed(os.path.join(site_dir, 'wsgi.py'), change_dict)
 
     # add site to database
     site = Site(id=site_id, name=name, domain=domain)
