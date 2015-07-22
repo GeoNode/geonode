@@ -174,7 +174,7 @@ class CommonModelApi(ModelResource):
             subtypes = []
 
             for type in type_facets:
-                if type in ["map", "layer", "document", "user"]:
+                if type in ["map", "layer", "document", "user", "group"]:
                     # Type is one of our Major Types (not a sub type)
                     types.append(type)
                 elif type in LAYER_SUBTYPES.keys():
@@ -203,7 +203,7 @@ class CommonModelApi(ModelResource):
                 )
             else:
                 words = [
-                    w for w in re.split(
+                    '*{0}*'.format(w) for w in re.split(
                         '\W',
                         query,
                         flags=re.UNICODE) if w]
