@@ -163,9 +163,9 @@ administrator ({3}) regarding this error.
         ftp_request.status = FTPStatus.DONE
         mail_msg = """\
 Your FTP request named [{0}] for user [{1}] has been succesfully completed.
-Please login to ftpes://ftp.dream.upd.edu.ph using an FTPES client and
+Please login using an FTPES client (e.g. FileZilla) to ftpes://ftp.dream.upd.edu.ph and
 check your download folder for a new folder named [{0}] under the directory [DL/DAD/].
-Please refer to FTP access instructions document for further information.""".format(request_name, username)
+Please refer to the FTP access instructions document for further information.""".format(request_name, username)
         
         mail_ftp_user(username, user_email, request_name, mail_msg)
         return "SUCCESS: FTP request successfuly completed."
