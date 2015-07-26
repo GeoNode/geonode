@@ -327,7 +327,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin):
     share_count = models.IntegerField(default=0)
 
     featured = models.BooleanField(default=False, help_text=_('Should this resource be advertised in home page?'))
-    is_published = models.BooleanField(default=True, help_text=_('Should this resource be published and searchable?'))
+    is_published = models.BooleanField(default=False, help_text=_('Should this resource be published and searchable?'))
 
     # fields necessary for the apis
     thumbnail_url = models.TextField(null=True, blank=True)
