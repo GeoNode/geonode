@@ -43,6 +43,7 @@ from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
 from django.core.urlresolvers import reverse
 from django.http import HttpResponse, HttpResponseRedirect
+from django.utils.text import slugify
 from django.utils.html import escape
 from django.shortcuts import get_object_or_404, render_to_response
 from django.template import RequestContext
@@ -261,12 +262,10 @@ def save_step_view(req, session):
             sld = base_file[0].sld_files[0]
 
         logger.info('provided sld is %s' % sld)
-
         geogig_store = form.cleaned_data.get('geogig_store')
 
         if not geogig_store:
-            geogig_store = ''.join(random.sample('abcdefghijklmnopqrstuvwxyz', 5))
-
+            geogig_store = slugify(' '.join([req.user.username, name]))
 
         if form.cleaned_data.get('is_private', False):
             permissions = {u'users': {u'AnonymousUser': []}, u'groups': {}}
