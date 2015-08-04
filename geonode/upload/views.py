@@ -482,7 +482,7 @@ def time_step_view(request, upload_session):
             upload_session,
             time_attribute=start_attribute_and_type[0],
             time_transform_type=tx(start_attribute_and_type[1]),
-            time_format=cleaned.get('attribute_format', None),
+            time_format=cleaned.get('text_attribute_format', None),
             end_time_attribute=end_attribute,
             end_time_transform_type=tx(end_type),
             end_time_format=cleaned.get('end_attribute_format', None),
