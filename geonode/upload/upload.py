@@ -500,6 +500,10 @@ def final_step(upload_session, user):
     # FIXME: Put this in gsconfig.py
 
     task = import_session.tasks[0]
+    
+    # check if the task has an error, if it does, present it to the user
+    if task.state == 'ERROR':
+        raise UploadException(task.get_progress().get('message'))
 
     # @todo see above in save_step, regarding computed unique name
     name = task.layer.name
