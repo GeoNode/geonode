@@ -195,7 +195,8 @@ def _next_step_response(req, upload_session, force_ajax=True):
     # has no corresponding view served by the 'view' function.
     if next == 'run':
         upload_session.completed_step = next
-        if _ASYNC_UPLOAD and req.is_ajax():
+        # Also run asynchronously if the force_ajax=True.
+        if _ASYNC_UPLOAD and req.is_ajax() or force_ajax:
             return run_response(req, upload_session)
         else:
             # on sync we want to run the import and advance to the next step
