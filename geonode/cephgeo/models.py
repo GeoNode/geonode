@@ -3,6 +3,8 @@ from geonode.layers.models import Layer
 from geonode import settings
 from datetime import datetime
 import json
+from geonode.people.models import Profile
+from geonode.groups.models import GroupProfile
 
 try:
     from django.conf import settings
@@ -93,3 +95,6 @@ class FTPRequestToObjectIndex(models.Model):
     cephobject = models.ForeignKey(CephDataObject, null=False, blank=False)
 
     
+class UserJurisdiction(models.Model):
+    user = models.ForeignKey(Profile, null=False, blank=False)
+    jurisdiction_shapefile = models.ForeignKey(Layer, null=False, blank=False)
