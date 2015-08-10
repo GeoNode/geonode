@@ -65,7 +65,7 @@ def _resolve_layer(request, typename, permission='base.view_resourcebase',
                               **kwargs)
 
 @login_required
-def tiled_view(request, overlay=settings.TILED_SHAPEFILE, template="maptiles/maptiles_map.html", interest=None, test_mode=False):
+def tiled_view(request, overlay=settings.TILED_SHAPEFILE, template="maptiles/maptiles_map.html", interest=None, test_mode=False, jurisdiction=None):
     if request.method == "POST":
         pprint(request.POST)
     
@@ -137,6 +137,7 @@ def tiled_view(request, overlay=settings.TILED_SHAPEFILE, template="maptiles/map
     context_dict["feature_municipality"]  = settings.MUNICIPALITY_SHAPEFILE.split(":")[1]
     context_dict["feature_tiled"] = overlay.split(":")[1]
     context_dict["test_mode"]=test_mode
+    context_dict["jurisdiction"]= 
     
     return render_to_response(template, RequestContext(request, context_dict))
 
