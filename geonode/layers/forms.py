@@ -23,7 +23,6 @@ import tempfile
 import autocomplete_light
 import zipfile
 
-
 from django import forms
 from django.utils import simplejson as json
 from geonode.layers.utils import unzip_file
@@ -134,7 +133,9 @@ class LayerUploadForm(forms.Form):
                     if xml_file.find('.shp') != -1:
                         # force rename of file so that file.shp.xml doesn't
                         # overwrite as file.shp
-                        cleaned["xml_file"].name = '%s.xml' % base_name
+                        if cleaned.get("xml_file"):
+                            cleaned["xml_file"].name = '%s.xml' % base_name
+
         return cleaned
 
     def write_files(self):
