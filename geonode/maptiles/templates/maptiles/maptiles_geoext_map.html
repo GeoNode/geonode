@@ -237,6 +237,8 @@ var vector_style_map = new OpenLayers.StyleMap({
     'default': vector_style
 });
 
+var jurisdiction = "{{jurisdiction_}}";
+
 Ext.onReady(function (){
     var layer_name = "{{  layer }}";
     var map_options = options["map"];
@@ -266,23 +268,31 @@ Ext.onReady(function (){
 
     var stored_layer = map_options["layers"].filter(function(l){ return l["name"] == layer_name })[0];
     var source_index = stored_layer["source"];
-    
-    var jurisdiction_layer = new OpenLayers.Layer.WMS(
-        "Jurisdiction Layer", geoserver+"geonode/wms",
-        {
-            LAYERS: "{{jurisdiction}}",
-            format: "image/png",
-            transparent: true
-        },
-        {
-            buffer: 0,
-            displayOutsideMaxExtent: true,
-            isBaseLayer: false,
-            projection: "EPSG:900913",
-            visibility: false
-        }
-    );
-    map.addLayer(jurisdiction_layer);
+    var jurisdiction_filter=null;
+
+    if(jurisdiction != "" ){
+        jurisdiction_layer = new OpenLayers.Layer.WMS(
+            "Jurisdiction Layer", geoserver+"geonode/wms",
+            {
+                LAYERS: "{{jurisdiction}}",
+                format: "image/png",
+                transparent: true
+            },
+            {
+                buffer: 0,
+                displayOutsideMaxExtent: true,
+                isBaseLayer: false,
+                projection: "EPSG:900913",
+                visibility: false
+            }
+        );
+        map.addLayer(jurisdiction_layer);
+        jurisdiction_filter = new OpenLayers.Filter.Spatial({
+                type: OpenLayers.Filter.Spatial.INTERSECTS,
+                 property: "the_geom",
+                 value: jurisdiction_layer.getExtent().toGeometry()
+            });
+    }
     
     var tile_layer = new OpenLayers.Layer.WMS(
         layer_name + "- Tiled", geoserver+"geonode/wms",
@@ -292,11 +302,7 @@ Ext.onReady(function (){
             bbox: stored_layer["bbox"],
             transparent: true,
             opacity: 0.3.
-            filter: new OpenLayers.Filter.Spatial({
-                type: OpenLayers.Filter.Spatial.INTERSECTS,
-                 property: "the_geom",
-                 value: jurisdiction_layer.getExtent().toGeometry()
-            })
+            filter: jurisdiction_filter
         },
         {
             buffer: 0,
