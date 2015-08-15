@@ -75,34 +75,6 @@ LANGUAGE_CODE = 'en'
 
 LANGUAGES = (
     ('en', 'English'),
-    ('es', 'Español'),
-    ('it', 'Italiano'),
-    ('fr', 'Français'),
-    ('de', 'Deutsch'),
-    ('el', 'Ελληνικά'),
-    ('id', 'Bahasa Indonesia'),
-    ('zh-cn', '中文'),
-    ('ja', '日本語'),
-    ('fa', 'Persian'),
-    ('ar', 'Arabic'),
-    ('bn', 'Bengali'),
-    ('ne', 'Nepali'),
-    ('sq', 'Albanian'),
-    ('af', 'Afrikaans'),
-    ('sw', 'Swahili'),
-    ('pt', 'Portuguese'),
-    ('ru', 'Russian'),
-    ('vi', 'Vietnamese'),
-    ('ko', '한국어'),
-    ('am', 'Amharic'),
-    ('km', 'Khmer'),
-    ('pl', 'Polish'),
-    ('sv', 'Swedish'),
-    ('th', 'Thai'),
-    ('uk', 'Ukranian'),
-    ('si', 'Sinhala'),
-    ('ta', 'Tamil'),
-    ('tl', 'Tagalog'),
 )
 
 EXTRA_LANG_INFO = {
@@ -332,7 +304,7 @@ INSTALLED_APPS = (
     'avatar',
     'dialogos',
     'agon_ratings',
-    #'notification',
+    'notification',
     'announcements',
     'actstream',
     'user_messages',
@@ -902,7 +874,8 @@ EULA_URL = '/eula/eula_form/'
 SELECTION_LIMIT=209715200
 
 CEPHACCESS_HOST = 'cephaccess@cephaccess'
-CEPHACCESS_DL_SCRIPT = '/path/to/download.py'
+#CEPHACCESS_DL_SCRIPT = '/path/to/download.py'
+CEPHACCESS_DL_SCRIPT = '~/ftp_scripts/download.py'
 
 CEPH_OGW = {
     'default' : {

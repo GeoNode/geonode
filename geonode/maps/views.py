@@ -247,6 +247,7 @@ def map_remove(request, mapid, template='maps/map_remove.html'):
         return HttpResponseRedirect(reverse("maps_browse"))
 
 
+@login_required
 @xframe_options_exempt
 def map_embed(
         request,
@@ -354,6 +355,7 @@ def clean_config(conf):
         return conf
 
 
+@login_required
 def new_map(request, template='maps/map_view.html'):
     config = new_map_config(request)
     if isinstance(config, HttpResponse):
@@ -364,6 +366,7 @@ def new_map(request, template='maps/map_view.html'):
         }))
 
 
+@login_required
 def new_map_json(request):
 
     if request.method == 'GET':
@@ -412,6 +415,7 @@ def new_map_json(request):
         return HttpResponse(status=405)
 
 
+@login_required
 def new_map_config(request):
     '''
     View that creates a new map.
@@ -541,6 +545,7 @@ def new_map_config(request):
 
 # MAPS DOWNLOAD #
 
+@login_required
 def map_download(request, mapid, template='maps/map_download.html'):
     """
     Download all the layers of a map as a batch
@@ -611,6 +616,7 @@ def map_download(request, mapid, template='maps/map_download.html'):
     }))
 
 
+@login_required
 def map_download_check(request):
     """
     this is an endpoint for monitoring map downloads
@@ -636,6 +642,7 @@ def map_download_check(request):
     return HttpResponse(content=content, status=status)
 
 
+@login_required
 def map_wmc(request, mapid, template="maps/wmc.xml"):
     """Serialize an OGC Web Map Context Document (WMC) 1.1"""
     map_obj = _resolve_map(request, mapid, 'base.view_resourcebase', _PERMISSION_MSG_VIEW)
@@ -646,6 +653,7 @@ def map_wmc(request, mapid, template="maps/wmc.xml"):
     }), mimetype='text/xml')
 
 
+@login_required
 def map_wms(request, mapid):
     """
     Publish local map layers as group layer in local OWS.
@@ -680,6 +688,7 @@ def map_wms(request, mapid):
     return HttpResponseNotAllowed(['PUT', 'GET'])
 
 
+@login_required
 def maplayer_attributes(request, layername):
     # Return custom layer attribute labels/order in JSON format
     layer = Layer.objects.get(typename=layername)
@@ -775,6 +784,7 @@ def featured_map_info(request, site):
     return map_detail(request, str(map_obj.id))
 
 
+@login_required
 def snapshot_create(request):
     """
     Create a permalinked map
@@ -792,12 +802,14 @@ def snapshot_create(request):
         return HttpResponse("Invalid JSON", mimetype="text/plain", status=500)
 
 
+@login_required
 def ajax_snapshot_history(request, mapid):
     map_obj = _resolve_map(request, mapid, 'base.view_resourcebase', _PERMISSION_MSG_VIEW)
     history = [snapshot.json() for snapshot in map_obj.snapshots]
     return HttpResponse(json.dumps(history), mimetype="text/plain")
 
 
+@login_required
 def ajax_url_lookup(request):
     if request.method != 'POST':
         return HttpResponse(

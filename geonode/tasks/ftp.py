@@ -9,13 +9,14 @@ from geonode.cephgeo.models import FTPRequest, FTPStatus
 
 import logging
 import pprint
+from geonode.groups.models import GroupProfile
 
 logger = logging.getLogger("geonode.tasks.ftp")
 FTP_USERS_DIRS = {  "test-ftp-user" : "/mnt/FTP/PL1/testfolder", }
 env.skip_bad_hosts = True
 env.warn_only = True
 
-class UsernameException(Exception):
+class UserEmptyException(Exception):
     pass
 
 class UnauthenticatedUserException(Exception):
@@ -64,7 +65,7 @@ def fab_create_ftp_folder(ftp_request, ceph_obj_list_by_data_class):
     request_name = ftp_request.name
     user_email = [ftp_request.user.email.encode('utf8'),]
     try:
-        ftp_dir = os.path.join(get_folder_from_username(username), request_name)
+        ftp_dir = os.path.join(get_folder_for_user(ftp_request.user), request_name)
         dl_script_path = settings.CEPHACCESS_DL_SCRIPT
         email = None
         
@@ -162,13 +163,15 @@ administrator ({3}) regarding this error.
         ftp_request.status = FTPStatus.DONE
         mail_msg = """\
 Your FTP request named [{0}] for user [{1}] has been succesfully completed.
-Please check your download folder for a new folder named [{0}].""".format(request_name, username)
+Please login using an FTPES client (e.g. FileZilla) to ftpes://ftp.dream.upd.edu.ph and
+check your download folder for a new folder named [{0}] under the directory [DL/DAD/].
+Please refer to the FTP access instructions document for further information.""".format(request_name, username)
         
         mail_ftp_user(username, user_email, request_name, mail_msg)
         return "SUCCESS: FTP request successfuly completed."
 
 
-    except UsernameException as e:
+    except UserEmptyException as e:
         logger.error("FTP request has failed. No FTP folder was found for username [{0}]. User may not have proper access rights to the FTP repository.".format(username))
         ftp_request.status = FTPStatus.ERROR
         mail_msg = """\
@@ -232,22 +235,22 @@ def process_ftp_request(ftp_request, ceph_obj_list_by_data_class):
 ###
 #   UTIL FUNCTIONS
 ###
-def get_folder_from_username(username):
-    if not username:
-        raise UsernameException(username)
+def get_folder_for_user(user):
+    if not user:
+        raise UserEmptyException(user)
     
-    # DEBUG FTP FOLDER
-    if True:
-        return "/mnt/FTP/PL1/testfolder/DL/geonode_requests"
-        
-    suc_str = username.split("-")[0].upper()
-    nums = re.findall(r'\d+',suc_str)
+    # Filter group if [PL1, PL2, Others, Test] ##
+    groups = GroupProfile.objects.filter(groupmember__user=user,groupmember__role='member')
     
-    if not nums:
-        return "/mnt/FTP/PL1/{0}1/DL/geonode_requests".format(suc_str)
-    else:
-        return "/mnt/FTP/PL{0}/{1}/DL/geonode_requests".format(nums[0],suc_str)
-  
+    for group in groups:
+        if group.slug == u'phil-lidar-1-sucs':
+            return "/mnt/FTP/PL1/{0}/DL/DAD/geonode_requests".format(user.username)
+        elif group.slug == u'phil-lidar-2-sucs':
+            return "/mnt/FTP/PL2/{0}/DL/DAD/geonode_requests".format(user.username)
+        elif group.slug == u'other-data-requesters':
+            return "/mnt/FTP/Others/{0}/DL/DAD/geonode_requests".format(user.username)
+        else:
+            return "/mnt/FTP/PL1/testfolder/DL/DAD/geonode_requests"
 
 def mail_ftp_user(username, user_email, mail_subject, mail_msg):
     #DEBUG
