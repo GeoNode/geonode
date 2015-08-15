@@ -187,17 +187,7 @@ function selection_bounds(map_bounds, highlight_layer) {
         value: transformed_bounds.toGeometry()
     });
     
-    var wfs_proto = wfs_proto_creator("{{feature_tiled}}");
-    /*var wfs_proto = new OpenLayers.Protocol.WFS({
-        version: "1.0.0",
-        //url: "http://192.168.56.100:8080/geoserver/geonode/wfs",
-        url: geoserver+"geonode/wfs",
-        featurePrefix: "geonode",
-        featureType: "{{feature_tiled}}",
-        featureNS: "http://www.geonode.org/",
-        srsName: "EPSG:32651",
-        outputFormat: "json"
-    });*/              
+    var wfs_proto = wfs_proto_creator("{{feature_tiled}}");         
 
     var wfs_resp = wfs_proto.read({
         filter: filter,
@@ -226,49 +216,6 @@ function selection_bounds(map_bounds, highlight_layer) {
                 display_points("point_display", highlight_layer);
             }else{
                 alert("Server did not respond.");
-            }
-        }
-    });
-}
-
-function jurisdictionZoom(province, municipality){
-    var wfs_proto = wfs_proto_creator( "{{ feature_municipality }}");
-    /*var wfs_proto = new OpenLayers.Protocol.WFS({
-            version: "1.0.0",
-            //url: "http://192.168.56.100:8080/geoserver/geonode/wfs",
-            url: geoserver+"geonode/wfs",
-            featurePrefix: "geonode",
-            featureType: "{{ feature_municipality }}",
-            featureNS: "http://www.geonode.org/",
-            srsName: "EPSG:32651",
-            outputFormat: "application/json"
-        });*/              
-        
-    var filter = new OpenLayers.Filter.Logical({
-        type: "&&",
-        filters:[
-            new OpenLayers.Filter.Comparison({
-                type: "==",
-                property: "NAME_2",
-                value: municipality
-            }),
-            new OpenLayers.Filter.Comparison({
-                type: "==",
-                property:"NAME_1",
-                value: province
-            })
-        ]
-    });
-        
-    var wfs_resp  = wfs_proto.read({
-        filter: filter,
-        callback: function(response){
-            if(response.priv.responseText){
-                var json_parser = new OpenLayers.Format.GeoJSON();
-                var feature_out = json_parser.read(response.priv.responseText);
-                feature_out[0].geometry.calculateBounds();
-                interest_bounds = feature_out[0].geometry.getBounds();
-                map.zoomToExtent(interest_bounds.transform(new OpenLayers.Projection("EPSG:32651"), new OpenLayers.Projection("EPSG:900913")), false);
             }
         }
     });
@@ -316,9 +263,26 @@ Ext.onReady(function (){
             wrapDateLine: true
         }
     );
-    
+
     var stored_layer = map_options["layers"].filter(function(l){ return l["name"] == layer_name })[0];
     var source_index = stored_layer["source"];
+    
+    var jurisdiction_layer = new OpenLayers.Layer.WMS(
+        "Jurisdiction Layer", geoserver+"geonode/wms",
+        {
+            LAYERS: "{{jurisdiction}}",
+            format: "image/png",
+            transparent: true
+        },
+        {
+            buffer: 0,
+            displayOutsideMaxExtent: true,
+            isBaseLayer: false,
+            projection: "EPSG:900913",
+            visibility: false
+        }
+    );
+    map.addLayer(jurisdiction_layer);
     
     var tile_layer = new OpenLayers.Layer.WMS(
         layer_name + "- Tiled", geoserver+"geonode/wms",
@@ -327,9 +291,13 @@ Ext.onReady(function (){
             format:  'image/png',
             bbox: stored_layer["bbox"],
             transparent: true,
-            opacity: 0.3
-        }
-        ,
+            opacity: 0.3.
+            filter: new OpenLayers.Filter.Spatial({
+                type: OpenLayers.Filter.Spatial.INTERSECTS,
+                 property: "the_geom",
+                 value: jurisdiction_layer.getExtent().toGeometry()
+            })
+        },
         {
             buffer: 0,
             displayOutsideMaxExtent: true,
@@ -338,6 +306,7 @@ Ext.onReady(function (){
             maxExtent: new OpenLayers.Bounds(stored_layer["bbox"])
         } 
     );
+    map.addLayer(tile_layer);
     
     var highlight_layer = new OpenLayers.Layer.Vector(
         "Highlight Layer",
@@ -349,8 +318,10 @@ Ext.onReady(function (){
             transparent: true
         }
     );
+    map.addLayer(highlight_layer);
+    //map.addLayers([mq_layer,tile_layer,highlight_layer, jurisdiction_layer]);
     
-    map.addLayers([mq_layer,tile_layer,highlight_layer]);
+    map.zoomToExtent(jurisdiction_layer.getExtent());
     
     var items = [];
     var config = {
@@ -437,13 +408,9 @@ Ext.onReady(function (){
     map.addControl(drawControl);
     drawControl.activate();
 
-    var interest = "{{ interest }}";
     app = new GeoExt.MapPanel(config);
-    
-    if (interest ){
-        province = interest.split(",")[0];
-        municipaity = interest.split(",")[1];
-        areaInterestZoom(province,municipality, map);
+    if (jurisdiction){
+        jurisdictionZoom(province,municipality, map);
     }else{
         map.zoomToExtent(tile_layer.maxExtent, false);
     }
