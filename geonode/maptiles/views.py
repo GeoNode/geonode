@@ -134,8 +134,9 @@ def tiled_view(request, overlay=settings.TILED_SHAPEFILE, template="maptiles/map
     context_dict["feature_municipality"]  = settings.MUNICIPALITY_SHAPEFILE.split(":")[1]
     context_dict["feature_tiled"] = overlay.split(":")[1]
     context_dict["test_mode"]=test_mode
-    if UserJurisdiction.objects.filter(user=request.user).length == 1:
-        context_dict["jurisdiction"]=UserJurisdiction.objects.filter(user=request.user)[0].jurisdiction_shapefile.get_shapefile_typename()
+    jurisdiction = UserJurisdiction.objects.get(user=request.user)
+    if jurisdiction:
+        context_dict["jurisdiction"]=jurisdiction.get_shapefile_typename()
     else:
         context_dict["jurisdiction"]=""
         
