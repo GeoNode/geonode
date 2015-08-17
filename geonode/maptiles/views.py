@@ -5,7 +5,7 @@ from django.utils import simplejson as json
 from django.shortcuts import render_to_response
 from django.template import RequestContext
 from django.core.exceptions import ValidationError
-from django.core.exceptions import PermissionDenied
+from django.core.exceptions import PermissionDenied, ObjectDoesNotExist
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseRedirect, HttpResponse
@@ -137,7 +137,7 @@ def tiled_view(request, overlay=settings.TILED_SHAPEFILE, template="maptiles/map
     try:
         jurisdiction = UserJurisdiction.objects.get(user=request.user)
         context_dict["jurisdiction"]=jurisdiction.get_shapefile_typename()
-    except DoesNotExist:
+    except ObjectDoesNotExist:
         context_dict["jurisdiction"]=""
         
     return render_to_response(template, RequestContext(request, context_dict))
