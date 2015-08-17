@@ -266,6 +266,8 @@ Ext.onReady(function (){
             wrapDateLine: true
         }
     );
+    
+    map.addLayer(mq_layer);
 
     var stored_layer = map_options["layers"].filter(function(l){ return l["name"] == layer_name })[0];
     var source_index = stored_layer["source"];
@@ -293,7 +295,7 @@ Ext.onReady(function (){
                 property: "the_geom",
                 value: jurisdiction_layer.getExtent().toGeometry()
             });
-    }
+    }*/
     
     var tile_layer = new OpenLayers.Layer.WMS(
         layer_name + "- Tiled", geoserver+"geonode/wms",
@@ -421,7 +423,7 @@ Ext.onReady(function (){
     app = new GeoExt.MapPanel(config);
     
     if(jurisdiction != "" ){
-       // map.zoomToExtent(jurisdiction_layer.getExtent());
+       map.zoomToExtent(jurisdiction_layer.getExtent());
     }else{
         map.zoomToExtent(tile_layer.getExtent());
     }
