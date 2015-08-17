@@ -54,6 +54,8 @@ from geonode.people.forms import ProfileForm
 from geonode.utils import num_encode, num_decode
 from geonode.utils import build_social_links
 
+from geonode.base.forms import KeywordsForm
+
 if 'geonode.geoserver' in settings.INSTALLED_APPS:
     # FIXME: The post service providing the map_status object
     # should be moved to geonode.geoserver.
@@ -115,12 +117,30 @@ def map_detail(request, mapid, snapshot=None, template='maps/map_detail.html'):
     config = json.dumps(config)
     layers = MapLayer.objects.filter(map=map_obj.id)
 
+    if request.method == "POST":
+        keywords_form = KeywordsForm(request.POST, instance=map_obj)
+
+        if keywords_form.is_valid():
+            new_keywords = keywords_form.cleaned_data['keywords']
+            map_obj.keywords.clear()
+            map_obj.keywords.add(*new_keywords)
+            map_obj.save()
+            return HttpResponseRedirect(
+                reverse(
+                    'map_detail',
+                    args=(
+                        map_obj.id,
+                    )))
+    else:
+        keywords_form = KeywordsForm(instance=map_obj)
+
     context_dict = {
         'config': config,
         'resource': map_obj,
         'layers': layers,
         'permissions_json': _perms_info_json(map_obj),
         "documents": get_related_documents(map_obj),
+        "keywords_form": keywords_form,
     }
 
     if settings.SOCIAL_ORIGINS:

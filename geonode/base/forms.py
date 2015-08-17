@@ -18,6 +18,7 @@
 #
 #########################################################################
 
+import taggit
 import autocomplete_light
 from autocomplete_light.contrib.taggit_tagfield import TagField, TagWidget
 
@@ -28,7 +29,7 @@ from mptt.forms import TreeNodeMultipleChoiceField
 from bootstrap3_datetime.widgets import DateTimePicker
 from modeltranslation.forms import TranslationModelForm
 
-from geonode.base.models import TopicCategory, Region
+from geonode.base.models import TopicCategory, Region, ResourceBase
 from geonode.people.models import Profile
 
 
@@ -151,3 +152,13 @@ class ResourceBaseForm(TranslationModelForm):
             'rating',
             'detail_url'
             )
+
+# A form for just keywords
+class KeywordsForm(forms.ModelForm):
+    #keywords = taggit.forms.TagField(
+    #    required=False,
+    #    help_text=_("A space or comma-separated list of keywords"))
+
+    class Meta:
+        model = ResourceBase
+        fields = ['keywords']
