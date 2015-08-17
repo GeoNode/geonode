@@ -270,7 +270,7 @@ Ext.onReady(function (){
     var source_index = stored_layer["source"];
     var jurisdiction_filter=null;
 
-    if(jurisdiction= "" ){
+    if(jurisdiction != "" ){
         jurisdiction_layer = new OpenLayers.Layer.WMS(
             "Jurisdiction Layer", geoserver+"geonode/wms",
             {
@@ -302,7 +302,6 @@ Ext.onReady(function (){
             bbox: stored_layer["bbox"],
             transparent: true,
             opacity: 0.3.
-            filter: jurisdiction_filter
         },
         {
             buffer: 0,
@@ -312,6 +311,11 @@ Ext.onReady(function (){
             maxExtent: new OpenLayers.Bounds(stored_layer["bbox"])
         } 
     );
+    
+    if(jurisdiction != "" ){
+        tile_layer.params["FILTER"]=jurisdiction_filter;
+    }
+    
     map.addLayer(tile_layer);
     
     var highlight_layer = new OpenLayers.Layer.Vector(
