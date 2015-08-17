@@ -332,7 +332,11 @@ Ext.onReady(function (){
     map.addLayer(highlight_layer);
     //map.addLayers([mq_layer,tile_layer,highlight_layer, jurisdiction_layer]);
     
-    map.zoomToExtent(jurisdiction_layer.getExtent());
+    if(jurisdiction != "" ){
+        map.zoomToExtent(jurisdiction_layer.getExtent());
+    }else{
+        map.zoomToExtent(tile_layer.getExtent());
+    }
     
     var items = [];
     var config = {
