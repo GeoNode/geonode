@@ -69,10 +69,12 @@ class UserJurisdictionAdmin(admin.ModelAdmin):
     list_display = (
         'id',
         'user',
-        'group',
+#        'group',
         'jurisdiction_shapefile',)
-    list_filter = ('group',)
-    search_fields = ('user', 'group', 'jurisdiction_shapefile',)
+#    list_filter = ('group',)
+    search_fields = ('user', 
+#                     'group', 
+                     'jurisdiction_shapefile',)
 
 admin.site.register(Cart, CartAdmin)
 admin.site.register(Item, ItemAdmin)
