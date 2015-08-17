@@ -332,12 +332,6 @@ Ext.onReady(function (){
     map.addLayer(highlight_layer);
     //map.addLayers([mq_layer,tile_layer,highlight_layer, jurisdiction_layer]);
     
-    if(jurisdiction != "" ){
-        //map.zoomToExtent(jurisdiction_layer.getExtent());
-    }else{
-        map.zoomToExtent(tile_layer.getExtent());
-    }
-    
     var items = [];
     var config = {
         renderTo: "preview_map",
@@ -424,6 +418,12 @@ Ext.onReady(function (){
     drawControl.activate();
 
     app = new GeoExt.MapPanel(config);
+    
+    if(jurisdiction != "" ){
+        map.zoomToExtent(jurisdiction_layer.getExtent());
+    }else{
+        map.zoomToExtent(tile_layer.getExtent());
+    }
 
 });
 {% endautoescape %}
