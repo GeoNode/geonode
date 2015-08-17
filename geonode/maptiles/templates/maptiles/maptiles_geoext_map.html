@@ -314,6 +314,7 @@ Ext.onReady(function (){
     );
     
     if(jurisdiction != "" ){
+        console.log("hai thar adding filter");
         tile_layer.params["FILTER"]=jurisdiction_filter;
     }
     
@@ -420,7 +421,7 @@ Ext.onReady(function (){
     app = new GeoExt.MapPanel(config);
     
     if(jurisdiction != "" ){
-        map.zoomToExtent(jurisdiction_layer.getExtent());
+       // map.zoomToExtent(jurisdiction_layer.getExtent());
     }else{
         map.zoomToExtent(tile_layer.getExtent());
     }
