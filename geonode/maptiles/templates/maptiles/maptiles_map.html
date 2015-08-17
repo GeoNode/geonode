@@ -36,8 +36,9 @@
     <div class="col-md-3">
         <ul class="list-group">
             <li class="list-group-item">
+		<h4 class="list-group-item-heading">Bounding Box Selection</h4>
                 <form id="bbox_form">
-                    <b>Bounding box selection</b> (EPSG:900913 decimal degrees) <br />
+                    (EPSG:900913 decimal degrees) <br />
                     <table>
                         <tr><td>Upper limit: </td><td><input type="number" id="upperlimit" name="upperlimit" value=0 step="any" /></td></tr>
                         <tr><td>Left limit: </td><td><input type="number" id="leftlimit" name="leftlimit"value=0 step="any"/></td></tr>
@@ -48,9 +49,13 @@
                 </form>
             </li>
             <li class="list-group-item">
-                Area of Interest
+               	<h4 class="list-group-item-heading">Area of Interest</h4>
             <input type="submit" id="interest_submit" name="interest_submit" value="Submit Area of Interest" class="btn btn-default" />
             </li>
+	    <li>
+		<h4 class="list-group-item-heading">Legend</h4>
+		<img id="legend_icon" src="https://lipad.dream.upd.edu.ph/geoserver/wms?request=GetLegendGraphic&amp;format=image/png&amp;LAYER=geonode:philgrid">
+	    </li>
         </ul>
     </div>
 </div>
