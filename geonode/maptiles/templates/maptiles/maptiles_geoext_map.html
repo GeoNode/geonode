@@ -270,7 +270,7 @@ Ext.onReady(function (){
     var source_index = stored_layer["source"];
     var jurisdiction_filter=null;
 
-    if(jurisdiction != "" ){
+    if(jurisdiction= "" ){
         jurisdiction_layer = new OpenLayers.Layer.WMS(
             "Jurisdiction Layer", geoserver+"geonode/wms",
             {
@@ -289,8 +289,8 @@ Ext.onReady(function (){
         map.addLayer(jurisdiction_layer);
         jurisdiction_filter = new OpenLayers.Filter.Spatial({
                 type: OpenLayers.Filter.Spatial.INTERSECTS,
-                 property: "the_geom",
-                 value: jurisdiction_layer.getExtent().toGeometry()
+                property: "the_geom",
+                value: jurisdiction_layer.getExtent().toGeometry()
             });
     }
     
