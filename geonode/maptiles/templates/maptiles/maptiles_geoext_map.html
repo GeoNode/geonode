@@ -238,6 +238,7 @@ var vector_style_map = new OpenLayers.StyleMap({
 });
 
 var jurisdiction = "{{jurisdiction_}}";
+var jurisdiction_layer = null;
 
 Ext.onReady(function (){
     var layer_name = "{{  layer }}";
@@ -419,11 +420,7 @@ Ext.onReady(function (){
     drawControl.activate();
 
     app = new GeoExt.MapPanel(config);
-    if (jurisdiction){
-        jurisdictionZoom(province,municipality, map);
-    }else{
-        map.zoomToExtent(tile_layer.maxExtent, false);
-    }
+
 });
 {% endautoescape %}
 </script>
