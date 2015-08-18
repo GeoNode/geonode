@@ -57,6 +57,8 @@ from geonode.documents.models import get_related_documents
 from geonode.utils import build_social_links
 from geonode.geoserver.helpers import cascading_delete, gs_catalog
 
+from geonode.base.forms import KeywordsForm
+
 CONTEXT_LOG_FILE = None
 
 if 'geonode.geoserver' in settings.INSTALLED_APPS:
@@ -272,6 +274,17 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
     metadata = layer.link_set.metadata().filter(
         name__in=settings.DOWNLOAD_FORMATS_METADATA)
 
+    if request.method == "POST":
+        keywords_form = KeywordsForm(request.POST, instance=layer)
+
+        if keywords_form.is_valid():
+            new_keywords = keywords_form.cleaned_data['keywords']
+            layer.keywords.clear()
+            layer.keywords.add(*new_keywords)
+            
+    else:
+        keywords_form = KeywordsForm(instance=layer)
+
     context_dict = {
         "resource": layer,
         "permissions_json": _perms_info_json(layer),
@@ -279,6 +292,7 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
         "metadata": metadata,
         "is_layer": True,
         "wps_enabled": settings.OGC_SERVER['default']['WPS_ENABLED'],
+        "keywords_form": keywords_form,
     }
 
     context_dict["viewer"] = json.dumps(
