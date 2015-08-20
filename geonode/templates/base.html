@@ -51,14 +51,20 @@
         <div id="navbar" class="navbar-collapse collapse">
           <ul class="nav navbar-nav">
             {% block tabs %}
-            <li id="nav_layers">
-              <a href="{% url "layer_browse" %}">{% trans "Layers" %}</a>
-            </li>
-            <li id="nav_maps">
-              <a href="{% url "maps_browse" %}">{% trans "Maps" %}</a>
-            </li>
-            <li id="nav_documents">
-              <a href="{% url "document_browse" %}">{% trans "Documents" %}</a>
+	    <li id="nav_datastore" class="dropdown">
+  	    	<a href="{% url "maptiles_main" %}" class="dropdown-toggle" data-toggle="dropdown">{% trans "Data Store" %} <span class="caret"></span></a>
+                <ul class="dropdown-menu">
+		  <li><a href="{% url "maptiles_main" %}">{% trans "Data Tiles" %}</a></li>
+		  <li><a href="{% url "layer_browse" %}">{% trans "Layers" %}</a></li>
+		  <li><a href="{% url "maps_browse" %}">{% trans "Maps" %}</a></li>
+		</ul>
+	    </li>
+            <li id="nav_documents" class="dropdown">
+              <a href="{% url "document_browse" %}" class="dropdown-toggle" data-toggle="dropdown">{% trans "Documents" %} <span class="caret"></span></a>
+	      <ul class="dropdown-menu">
+		<li><a href="{% url "document_browse" %}">{% trans "Documents" %}</a></li>
+		<li><a href="{% url "eula" %}">{% trans "EULA" %}</a></li>
+	      </ul>
             </li>
            {% block extra_tab %}
            {% endblock %}
@@ -67,9 +73,6 @@
             </li>
             <li id="nav_groups">
               <a href="{% url "group_list" %}">{% trans "Groups" %}</a>
-            </li>
-            <li id="nav_datastore">
-              <a href="{% url "ceph_main" %}">{% trans "Datastore" %}</a>
             </li>
             {% if request.user.is_superuser %}
 	            <li id="nav_datastore">
