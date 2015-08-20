@@ -728,6 +728,15 @@ def rating_post_save(instance, *args, **kwargs):
     """
     Used to fill the average rating field on OverallRating change.
     """
-    ResourceBase.objects.filter(id=instance.object_id).update(rating=instance.rating)
+
+    # MapStory change: This was changed from an update statement to a filter so that the save method could be run and
+    # the post-save signals would be executed, specifically the django-haystack post-save signal.
+
+    objs = ResourceBase.objects.filter(id=instance.object_id)
+
+    for obj in objs:
+        obj.rating = instance.rating
+        obj.save()
+
 
 signals.post_save.connect(rating_post_save, sender=OverallRating)
