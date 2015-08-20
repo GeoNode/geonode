@@ -5,7 +5,7 @@ from django.utils import simplejson as json
 from django.shortcuts import render_to_response
 from django.template import RequestContext
 from django.core.exceptions import ValidationError
-from django.core.exceptions import PermissionDenied
+from django.core.exceptions import PermissionDenied, ObjectDoesNotExist
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseRedirect, HttpResponse
@@ -19,7 +19,7 @@ from geonode.utils import GXPMap
 from geonode.utils import default_map_config
 
 from geonode.security.views import _perms_info_json
-from geonode.cephgeo.models import CephDataObject, DataClassification, FTPRequest
+from geonode.cephgeo.models import CephDataObject, DataClassification, FTPRequest, UserJurisdiction
 from geonode.cephgeo.cart_utils import *
 from geonode.documents.models import get_related_documents
 from geonode.registration.models import Province, Municipality 
@@ -65,7 +65,7 @@ def _resolve_layer(request, typename, permission='base.view_resourcebase',
                               **kwargs)
 
 @login_required
-def tiled_view(request, overlay=settings.TILED_SHAPEFILE, template="maptiles/maptiles_map.html", interest=None, test_mode=False):
+def tiled_view(request, overlay=settings.TILED_SHAPEFILE, template="maptiles/maptiles_map.html",test_mode=False, jurisdiction=None):
     if request.method == "POST":
         pprint(request.POST)
     
@@ -130,15 +130,18 @@ def tiled_view(request, overlay=settings.TILED_SHAPEFILE, template="maptiles/map
     #context_dict["geoserver"] = settings.OGC_SERVER['default']['PUBLIC_LOCATION']
     context_dict["geoserver"] = settings.OGC_SERVER['default']['PUBLIC_LOCATION']
     context_dict["siteurl"] = settings.SITEURL
-    
-    if interest is not None:
-        context_dict["interest"]=interest
         
     context_dict["feature_municipality"]  = settings.MUNICIPALITY_SHAPEFILE.split(":")[1]
     context_dict["feature_tiled"] = overlay.split(":")[1]
     context_dict["test_mode"]=test_mode
-    
+    try:
+        jurisdiction = UserJurisdiction.objects.get(user=request.user)
+        context_dict["jurisdiction"]=jurisdiction.get_shapefile_typename()
+    except ObjectDoesNotExist:
+        context_dict["jurisdiction"]=""
+        
     return render_to_response(template, RequestContext(request, context_dict))
+
 
 def process_georefs(request):
     if request.method == "POST":

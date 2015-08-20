@@ -873,19 +873,6 @@ TILED_SHAPEFILE_TEST = "geonode:index"
 EULA_URL = '/eula/eula_form/'
 SELECTION_LIMIT=209715200
 
-CEPHACCESS_HOST = 'cephaccess@cephaccess'
-#CEPHACCESS_DL_SCRIPT = '/path/to/download.py'
-CEPHACCESS_DL_SCRIPT = '~/ftp_scripts/download.py'
-
-CEPH_OGW = {
-    'default' : {
-        'USER' : 'geonode:swift',
-        'KEY' : 'Ry3meRcVwVkff3G2O1vSy0PmUvUcXCzvWNZic04B',
-        'LOCATION' : 'https://cephclient.lan.dream.upd.edu.ph',
-        'CONTAINER' : 'geo-container',
-    }
-}
-
 MUNICIPALITY_SHAPEFILE = 'geonode:phl_adm2_municipalities_utm_z51n'
 
 # Load more settings from a file called local_settings.py if it exists
