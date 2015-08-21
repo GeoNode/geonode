@@ -32,6 +32,7 @@ except:
     pass
 
 OGC_SERVER['default']['LOCATION'] = GEOSERVER_URL
+#OGC_SERVER['default']['LOCATION'] = os.path.join(SITEURL, 'geoserver/')
 OGC_SERVER['default']['PUBLIC_LOCATION'] = os.path.join(SITEURL, 'geoserver/')
 CATALOGUE['default']['URL'] = '%scatalogue/csw' % SITEURL
 PYCSW['CONFIGURATION']['metadata:main']['provider_url'] = SITEURL
@@ -65,7 +66,7 @@ STATIC_ROOT = os.path.join(SERVE_PATH, 'static')
 # Put media files in root
 MEDIA_ROOT = os.path.join(SERVE_PATH, 'uploaded')
 
-OGC_SERVER['default']['LOCATION'] = os.path.join(GEOSERVER_URL, 'geoserver/')
+#OGC_SERVER['default']['LOCATION'] = os.path.join(GEOSERVER_URL, 'geoserver/')
 
 
 # add datastore if defined
