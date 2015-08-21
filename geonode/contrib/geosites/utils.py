@@ -57,8 +57,8 @@ def add_site(name, domain):
         '$SITE_ROOT': site_dir,
         '$SERVE_PATH': settings.SERVE_PATH,
         '$PORTNUM': '8%s' % str(site_id).zfill(3),
-	'$GEOSERVER_URL': settings.GEOSERVER_URL,
-	'$PROJECT_NAME': os.path.basename(os.path.dirname(settings.PROJECT_ROOT)),
+        '$GEOSERVER_URL': settings.GEOSERVER_URL,
+        '$PROJECT_NAME': os.path.basename(os.path.dirname(settings.PROJECT_ROOT)),
     }
 
     sed(os.path.join(site_dir, 'conf/gunicorn'), change_dict)
