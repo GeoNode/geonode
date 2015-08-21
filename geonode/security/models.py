@@ -108,25 +108,16 @@ class PermissionLevelMixin(object):
                     attach_perms=True)}
 
             for user in info_layer['users']:
-                permissions = []
                 if user in info['users']:
-                    permissions = info['users'][user]
+                    info['users'][user] = info['users'][user] + info_layer['users'][user]
                 else:
-                    info['users'][user] = []
-
-                for perm in info_layer['users'][user]:
-                    if perm not in permissions:
-                        permissions.append(perm)
+                    info['users'][user] = info_layer['users'][user]
 
             for group in info_layer['groups']:
-                permissions = []
                 if group in info['groups']:
-                    permissions = info['groups'][group]
+                    info['groups'][group] = info['groups'][group] + info_layer['groups'][group]
                 else:
-                    info['groups'][group] = []
-                for perm in info_layer['groups'][group]:
-                    if perm not in permissions:
-                        permissions.append(perm)
+                    info['groups'][group] = info_layer['groups'][group]
 
         return info
 
