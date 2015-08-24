@@ -161,7 +161,7 @@ function find_georef(tile_list, georef){
      return index;
 }
 
-function wfs_proto_creator(layer_request, srs){
+function wfs_proto_creator(layer_request, srs, outformat){
     return new OpenLayers.Protocol.WFS({
         version: "1.0.0",
         url: geoserver+"geonode/wfs",
@@ -169,7 +169,7 @@ function wfs_proto_creator(layer_request, srs){
         featureType: layer_request,
         featureNS: "http://www.geonode.org/",
         srsName: srs,
-        outputFormat: "json",
+        outputFormat: outformat,
         async: true
     });
 }
@@ -184,7 +184,7 @@ function selection_bounds(map_bounds, highlight_layer) {
         value: transformed_bounds.toGeometry()
     });
     
-    var wfs_proto = wfs_proto_creator("{{feature_tiled}}", "EPSG:32651");         
+    var wfs_proto = wfs_proto_creator("{{feature_tiled}}", "EPSG:32651","json");         
 
     var wfs_resp = wfs_proto.read({
         filter: filter,
@@ -273,7 +273,7 @@ Ext.onReady(function (){
     var jurisdiction_extent=new OpenLayers.Bounds();
 
     if(jurisdiction != "" ){
-        var juris_wfs = wfs_proto_creator("{{feature_juris}}", "EPSG:4326");
+        var juris_wfs = wfs_proto_creator("{{feature_juris}}", "EPSG:4326", "GeoJSON");
         
         juris_wfs.read({
           callback: function(response){
