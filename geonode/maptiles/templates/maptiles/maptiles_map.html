@@ -23,13 +23,16 @@
 
 {% block body_outer %}
 {% block body %}
+<script type='type/javascript'>
+    init();
+</script>
 
 <div class="page-header">
   <h2 class="page-title">Map Tiles</h2>
 </div>
 <div class="row">
     <div class="col-md-9">
-		<div id="embedded_map" class="mrg-btm" onload="init();">
+		<div id="embedded_map" class="mrg-btm">
 			<div id="preview_map" ></div>
 		</div>
     </div>
