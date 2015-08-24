@@ -125,8 +125,6 @@ function display_points(div_id, vec_layer){
         row_element.className += "georef_tr";
         table_element.appendChild(row_element);
         for (var j = 0; j< Math.min(5, tile_list.length - i*5 ); j++){
-            console.log("current index:"+(i*5+j));
-            console.log("tile list length:"+tile_list.length);
             var georef_column = document.createElement("td");
             georef_column.setAttribute("id",tile_list[i*5+j].georef);
             georef_column.className += "georef_td"
@@ -140,7 +138,6 @@ function display_points(div_id, vec_layer){
             }
         }
     }
-    console.log(georef_string);
     document.getElementById("georef_area").setAttribute("value",georef_string);
 }
 
@@ -160,7 +157,6 @@ function createHighlightBox(feature_attribs){
 
 function find_georef(tile_list, georef){
      var tile_indeces= tile_list.map(function (x) { return x.georef });
-     
      var index = tile_indeces.indexOf(georef);
      return index;
 }
@@ -230,6 +226,7 @@ function init(){
     if (jurisdiction != ""){
         var jurisdiction_wfs = wfs_proto_creator(jurisdiction, "EPSG:900913");
         var wfs_resp = jurisdiction_wfs.read({
+            async:true,
             callback: function(resp){
                 if(response.priv.responseText){
                     var json_parser = new OpenLayers.Format.JSON();
@@ -258,6 +255,7 @@ var vector_style_map = new OpenLayers.StyleMap({
 });
 
 Ext.onReady(function (){
+    init();
     var layer_name = "{{  layer }}";
     var map_options = options["map"];
     map = new OpenLayers.Map({
