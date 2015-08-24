@@ -274,7 +274,16 @@ Ext.onReady(function (){
         jurisdiction_layer = new OpenLayers.Layer.Vector(
             jurisdiction, 
             {strategies: [ new OpenLayers.Strategy.BBOX() ],
-            protocol: wfs_proto_creator(jurisdiction, "EPSG:900913"),
+            protocol: OpenLayers.Protocol.WFS({
+                    version: "1.0.0",
+                    url: geoserver+"geonode/wfs",
+                    featurePrefix: "geonode",
+                    featureType: jurisdiction,
+                    featureNS: "http://www.geonode.org/",
+                    srsName: "EPSG:900913",
+                    outputFormat: "json",
+                    extractAttributes: true
+                }),
             visibility: true,
             transparent: true,
             isBaseLayer: false
