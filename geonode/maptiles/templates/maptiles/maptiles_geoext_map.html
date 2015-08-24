@@ -227,7 +227,7 @@ function init(){
         var jurisdiction_wfs = wfs_proto_creator(jurisdiction, "EPSG:900913");
         var wfs_resp = jurisdiction_wfs.read({
             async:true,
-            callback: function(resp){
+            callback: function(response){
                 if(response.priv.responseText){
                     var json_parser = new OpenLayers.Format.JSON();
                     jurisdiction_features = json_parser.read(response.priv.responseText);
