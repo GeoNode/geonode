@@ -282,7 +282,8 @@ Ext.onReady(function (){
                     var feature_out = json_parser.read(response.priv.responseText);
 
                     for ( var i=0; i<feature_out.totalFeatures; i++ ){
-                        jurisdiction_features.push(new OpenLayers.Geometry.MultiPolygon(feature_out.features[i].geometry));
+                        jurisdiction_features.push(new OpenLayers.Geometry.MultiPolygon(feature_out.features[i].geometry.coordinates));
+                        console.log(feature_out.features[i]);
                         console.log(jurisdiction_features[i]);
                     }
                 }  
@@ -408,7 +409,7 @@ Ext.onReady(function (){
 
     app = new GeoExt.MapPanel(config);
     if(jurisdiction != "" ){
-        map.zoomToExtent();
+        map.zoomToExtent(new OpenLayers.Bounds({{j_bbox}}));
     }else{
         map.zoomToExtent(tile_layer.getExtent());
     }
