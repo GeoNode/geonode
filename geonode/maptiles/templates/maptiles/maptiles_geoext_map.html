@@ -226,6 +226,7 @@ var jurisdiction_layer = null;
 var jurisdiction_features = [];
 
 function init(){
+    console.log(jurisdiction);
     if (jurisdiction != ""){
         var jurisdiction_wfs = wfs_proto_creator(jurisdiction, "EPSG:900913");
         var wfs_resp = jurisdiction_wfs.read({
