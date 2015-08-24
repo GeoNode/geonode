@@ -187,8 +187,8 @@ To create the databases (the geonode one and the spatial for shapefile imports):
     $ sudo -u postgres createdb -O geonode geonode_data
     $ sudo su postgres
     $ psql -d geonode_data -c 'CREATE EXTENSION postgis;'
-    $ psql -d geonode-imports -c 'GRANT ALL ON geometry_columns TO PUBLIC;'
-    $ psql -d geonode-imports -c 'GRANT ALL ON spatial_ref_sys TO PUBLIC;'
+    $ psql -d geonode_data -c 'GRANT ALL ON geometry_columns TO PUBLIC;'
+    $ psql -d geonode_data -c 'GRANT ALL ON spatial_ref_sys TO PUBLIC;'
     $ exit
 
 This creates databases called *geonode* and *geonode_data* 
@@ -252,7 +252,7 @@ Rename the file to ``local_settings.py``.
 Uncomment line 10 and modify line 12 as follows::
 
     'ENGINE': 'django.contrib.gis.db.backends.postgis',
-    'NAME': 'geonode-imports',
+    'NAME': 'geonode_data',
 
 .. note:: If you do not use *geonode* as password for your database,
         then you have to edit the local_settings.py and change your password in
