@@ -141,7 +141,7 @@ def tiled_view(request, overlay=settings.TILED_SHAPEFILE, template="maptiles/map
         juris_layer = _resolve_layer(request, context_dict["jurisdiction"], "base.view_resourcebase", _PERMISSION_VIEW )
         juris_bbox = juris_layer.bbox
         j_bbox = [float(coord) for coord in list(juris_bbox[0:4])]
-        context_dict["j_bbox"] = llbbox_to_mercator([float(coord) for coord in j_bbox])
+        context_dict["j_bbox"] = json.dumps(llbbox_to_mercator([float(coord) for coord in j_bbox]))
     except ObjectDoesNotExist:
         context_dict["jurisdiction"]=""
         
