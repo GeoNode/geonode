@@ -290,6 +290,8 @@ Ext.onReady(function (){
             }
         );
         map.addLayer(jurisdiction_layer);
+        console.log(jurisdiction_layer);
+        console.log(jurisdiction_layer.getExtent());
         jurisdiction_filter = new OpenLayers.Filter.Spatial({
                 type: OpenLayers.Filter.Spatial.INTERSECTS,
                 property: "the_geom",
@@ -316,7 +318,6 @@ Ext.onReady(function (){
     );
     
     if(jurisdiction != "" ){
-        console.log("hai thar adding filter");
         tile_layer.params["FILTER"]=jurisdiction_filter;
     }
     
