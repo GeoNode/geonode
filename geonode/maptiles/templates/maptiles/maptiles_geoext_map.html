@@ -228,7 +228,6 @@ var jurisdiction_features = [];
 function init(){
     if (jurisdiction != ""){
         var jurisdiction_wfs = wfs_proto_creator(jurisdiction, "EPSG:900913");
-        
         var wfs_resp = wfs_proto.read({
             callback: function(resp){
                 if(response.priv.responseText){
@@ -237,6 +236,7 @@ function init(){
                 }
             }
         });
+        console.log(jurisdiction_features);
     }
 }
 
@@ -257,9 +257,6 @@ var vector_style_map = new OpenLayers.StyleMap({
 });
 
 Ext.onReady(function (){
-    if (jurisdiction != ""){
-        while (jurisdiction_features.length == 0){}
-    }
     var layer_name = "{{  layer }}";
     var map_options = options["map"];
     map = new OpenLayers.Map({
