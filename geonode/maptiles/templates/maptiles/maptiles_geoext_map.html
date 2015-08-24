@@ -172,7 +172,7 @@ function wfs_proto_creator(layer_request, srs){
         featurePrefix: "geonode",
         featureType: layer_request,
         featureNS: "http://www.geonode.org/",
-        srsName: ,
+        srsName: srs,
         outputFormat: "json"
     });
 }
@@ -227,7 +227,7 @@ var jurisdiction_features = [];
 
 function init(){
     if (jurisdiction != ""){
-        var jurisdiction_wfs = wfs_proto_creator(jurisdiction, "EPSG:32651");
+        var jurisdiction_wfs = wfs_proto_creator(jurisdiction, "EPSG:900913");
         
         var wfs_resp = wfs_proto.read({
             callback: function(resp){
