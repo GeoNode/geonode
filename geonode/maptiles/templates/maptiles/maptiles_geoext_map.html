@@ -165,14 +165,14 @@ function find_georef(tile_list, georef){
      return index;
 }
 
-function wfs_proto_creator(layer_request){
+function wfs_proto_creator(layer_request, srs){
     return new OpenLayers.Protocol.WFS({
         version: "1.0.0",
         url: geoserver+"geonode/wfs",
         featurePrefix: "geonode",
         featureType: layer_request,
         featureNS: "http://www.geonode.org/",
-        srsName: "EPSG:32651",
+        srsName: ,
         outputFormat: "json"
     });
 }
@@ -187,7 +187,7 @@ function selection_bounds(map_bounds, highlight_layer) {
         value: transformed_bounds.toGeometry()
     });
     
-    var wfs_proto = wfs_proto_creator("{{feature_tiled}}");         
+    var wfs_proto = wfs_proto_creator("{{feature_tiled}}", "EPSG:32651");         
 
     var wfs_resp = wfs_proto.read({
         filter: filter,
@@ -221,6 +221,25 @@ function selection_bounds(map_bounds, highlight_layer) {
     });
 }
 
+var jurisdiction = "{{jurisdiction}}";
+var jurisdiction_layer = null;
+var jurisdiction_features = [];
+
+function init(){
+    if (jurisdiction != ""){
+        var jurisdiction_wfs = wfs_proto_creator(jurisdiction, "EPSG:32651");
+        
+        var wfs_resp = wfs_proto.read({
+            callback: function(resp){
+                if(response.priv.responseText){
+                    var json_parser = new OpenLayers.Format.JSON();
+                    jurisdiction_features = json_parser.read(response.priv.responseText);
+                }
+            }
+        });
+    }
+}
+
 function removeHighlight(georef, vec_layer){
     var index= find_georef(tile_list, georef);
     vec_layer.removeFeatures([tile_list[index].feature]);
@@ -237,10 +256,10 @@ var vector_style_map = new OpenLayers.StyleMap({
     'default': vector_style
 });
 
-var jurisdiction = "{{jurisdiction}}";
-var jurisdiction_layer = null;
-
 Ext.onReady(function (){
+    if (jurisdiction != ""){
+        while (jurisdiction_features.length == 0){}
+    }
     var layer_name = "{{  layer }}";
     var map_options = options["map"];
     map = new OpenLayers.Map({
