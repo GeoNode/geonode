@@ -48,14 +48,20 @@
                     <input type="submit" id="bbox_submit" name="bbox_submit" value="Submit Bounding Box" class="btn btn-default" />
                 </form>
             </li>
-            <li class="list-group-item">
+            <!--<li class="list-group-item">
                	<h4 class="list-group-item-heading">Area of Interest</h4>
             <input type="submit" id="interest_submit" name="interest_submit" value="Submit Area of Interest" class="btn btn-default" />
-            </li>
-	    <li>
-		<h4 class="list-group-item-heading">Legend</h4>
-		<img id="legend_icon" src="https://lipad.dream.upd.edu.ph/geoserver/wms?request=GetLegendGraphic&amp;format=image/png&amp;LAYER=geonode:philgrid">
+            </li>-->
+	    <li class="list-group-item">
+		<h4 class="list-group-item-heading">{%trans "Legend" %}</h4>
+		<img id="legend_icon" src="{{ resource.get_legend.url }}">
 	    </li>
+	    <li class="list-group-item">
+		<div class="selections"><nav class="filter">
+		<h4><a href="{% url 'cephgeo.views.get_cart' %}" class="toggle toggle-nav"><i class="fa fa-shopping-cart"></i>Data Cart</a></h4>
+                <h4><a href="{% url 'cephgeo.views.ftp_request_list' %}" class="toggle toggle-nav"><i class="fa fa-database"></i>FTP Requests</a></h4>
+		</nav></div>
+   	   </li>
         </ul>
     </div>
 </div>
