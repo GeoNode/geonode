@@ -274,11 +274,11 @@ Ext.onReady(function (){
     if(jurisdiction != "" ){
         jurisdiction_layer = new OpenLayers.Layer.Vector(
             jurisdiction, 
-            strategies: [new OpenLayers.Strategy.BBOX()],
+            {strategies: [ new OpenLayers.Strategy.BBOX() ],
             protocol: wfs_proto_creator(jurisdiction, "EPSG:900913"),
             visibility: false,
             isBaseLayer: false
-        );
+        });
         map.addLayer(jurisdiction_layer);
         console.log(jurisdiction_layer);
         console.log(jurisdiction_layer.getExtent());
