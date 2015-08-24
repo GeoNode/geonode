@@ -221,6 +221,8 @@ var jurisdiction = "{{jurisdiction}}";
 var jurisdiction_layer = null;
 var jurisdiction_features = [];
 
+console.log("{{jurisresource}}");
+
 function removeHighlight(georef, vec_layer){
     var index= find_georef(tile_list, georef);
     vec_layer.removeFeatures([tile_list[index].feature]);
@@ -273,20 +275,21 @@ Ext.onReady(function (){
     if(jurisdiction != "" ){
         jurisdiction_layer = new OpenLayers.Layer.Vector(
             jurisdiction, 
-            {strategies: [ new OpenLayers.Strategy.BBOX() ],
-            protocol: OpenLayers.Protocol.WFS({
-                    version: "1.0.0",
-                    url: geoserver+"geonode/wfs",
-                    featurePrefix: "geonode",
-                    featureType: jurisdiction,
-                    featureNS: "http://www.geonode.org/",
-                    srsName: "EPSG:900913",
-                    outputFormat: "json",
-                    extractAttributes: true
-                }),
-            visibility: true,
-            transparent: true,
-            isBaseLayer: false
+            {
+                strategies: [ new OpenLayers.Strategy.BBOX() ],
+                protocol: OpenLayers.Protocol.WFS({
+                        version: "1.0.0",
+                        url: geoserver+"geonode/wfs",
+                        featurePrefix: "geonode",
+                        featureType: jurisdiction,
+                        featureNS: "http://www.geonode.org/",
+                        srsName: "EPSG:900913",
+                        outputFormat: "json",
+                        extractAttributes: true
+                    }),
+                visibility: true,
+                transparent: true,
+                isBaseLayer: false
         });
         map.addLayer(jurisdiction_layer);
         console.log(jurisdiction_layer);
