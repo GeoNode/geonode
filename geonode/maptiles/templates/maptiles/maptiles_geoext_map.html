@@ -282,7 +282,7 @@ Ext.onReady(function (){
                     var feature_out = json_parser.read(response.priv.responseText);
 
                     for ( var i=0; i<feature_out.totalFeatures; i++ ){
-                        jurisdiction_features.push(new OpenLayers.Geometry.MultiPolygon(feature_out.features[i].geometry.coordinates));
+                        jurisdiction_features.push(new OpenLayers.Geometry.MultiPolygon(feature_out.features[i].geometry.coordinates[0]));
                         console.log(feature_out.features[i]);
                         console.log(jurisdiction_features[i]);
                     }
