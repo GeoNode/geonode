@@ -275,7 +275,7 @@ Ext.onReady(function (){
     if(jurisdiction != "" ){
         var juris_wfs = wfs_proto_creator("{{feature_juris}}", "EPSG:4326", "json");
         
-        juris_wfs.read({
+        var response = juris_wfs.read({
           callback: function(response){
                 if (response.priv.responseText){
                     var json_parser = new OpenLayers.Format.GeoJSON();
@@ -289,6 +289,7 @@ Ext.onReady(function (){
                 }  
             }
         }); 
+        console.log(response);
     }
     
     var tile_layer = new OpenLayers.Layer.WMS(
