@@ -275,17 +275,19 @@ Ext.onReady(function (){
             jurisdiction, 
             {strategies: [ new OpenLayers.Strategy.BBOX() ],
             protocol: wfs_proto_creator(jurisdiction, "EPSG:900913"),
-            visibility: false,
+            visibility: true,
+            transparent: true,
             isBaseLayer: false
         });
         map.addLayer(jurisdiction_layer);
         console.log(jurisdiction_layer);
         console.log(jurisdiction_layer.getExtent());
-        jurisdiction_filter = new OpenLayers.Filter.Spatial({
+        console.log(jurisdiction_layer.features);
+        /*jurisdiction_filter = new OpenLayers.Filter.Spatial({
                 type: OpenLayers.Filter.Spatial.INTERSECTS,
                 property: "the_geom",
                 value: jurisdiction_layer.getExtent().toGeometry()
-            });
+            });*/
     }
     
     var tile_layer = new OpenLayers.Layer.WMS(
