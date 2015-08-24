@@ -273,7 +273,7 @@ Ext.onReady(function (){
     var jurisdiction_extent=new OpenLayers.Bounds();
 
     if(jurisdiction != "" ){
-        var juris_wfs = wfs_proto_creator("{{feature_juris}}", "EPSG:4326", "GeoJSON");
+        var juris_wfs = wfs_proto_creator("{{feature_juris}}", "EPSG:4326", "json");
         
         juris_wfs.read({
           callback: function(response){
