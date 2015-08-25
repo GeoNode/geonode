@@ -280,10 +280,9 @@ Ext.onReady(function (){
                 if (response.priv.responseText){
                     var parser = new OpenLayers.Format.GeoJSON();
                     var feature_out =parser.read(response.priv.responseText);
-                    console.log(feature_out);
                     
                     for ( x in feature_out){
-                        console.log(x.geometry.components);
+                        console.log(x.initialize());
                     }
                     /*for ( var i=0; i<feature_out.totalFeatures; i++ ){
                         //jurisdiction_features.push(parser.parseFeature(feature_out));
