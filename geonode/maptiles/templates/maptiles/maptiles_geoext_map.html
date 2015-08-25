@@ -285,8 +285,8 @@ Ext.onReady(function (){
                     var feature_out =parser.read(response.priv.responseText);
                     juris_vec_layer.addFeatures(feature_out);
                     console.log(juris_vec_layer.features);
-                    for (x in juris_vec_layer.features){
-                        console.log(x.geometry.bounds);
+                    for (var i = 0; i < juris_vec_layer.features.length; i++){
+                        console.log(juris_vec_layer.features[i]);
                     }
                     /*for ( var i=0; i<feature_out.totalFeatures; i++ ){
                         //jurisdiction_features.push(parser.parseFeature(feature_out));
