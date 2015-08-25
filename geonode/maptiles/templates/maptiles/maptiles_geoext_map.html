@@ -279,7 +279,7 @@ Ext.onReady(function (){
           callback: function(response){
                 if (response.priv.responseText){
                     var parser = new OpenLayers.Format.GeoJSON();
-                    var feature_out =parser.parseCoords.multipolygon(response.priv.responseText);
+                    var feature_out =parser.parseCoords.polygon(response.priv.responseText);
                     
                     for ( x in feature_out){
                         console.log(x);
