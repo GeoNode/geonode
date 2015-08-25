@@ -297,19 +297,14 @@ Ext.onReady(function (){
                     for (var i = 0; i < juris_vec_layer.features.length; i++){
                         console.log(juris_vec_layer.features[i].geometry.bounds.transform(new OpenLayers.Bounds("EPSG:4326"), new OpenLayers.Bounds("EPSG:900913")));
                     }
-                    /*for ( var i=0; i<feature_out.totalFeatures; i++ ){
-                        //jurisdiction_features.push(parser.parseFeature(feature_out));
-                        console.log(parser.parseFeature(feature_out));
-                        console.log(feature_out.features[i]);
-                        console.log(jurisdiction_features[i]);
-                    }*/
                 }
                 juris_done=true;  
             }
         }); 
-        while( !juris_done){
+        console.log(juris_done);
+        /*while( !juris_done){
             sleep(100);
-        }
+        }*/
     }
     
     var tile_layer = new OpenLayers.Layer.WMS(
