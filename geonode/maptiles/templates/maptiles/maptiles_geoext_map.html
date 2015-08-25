@@ -18,6 +18,15 @@
         return (bytes / Math.pow(k, i)).toPrecision(decimals + 1) + ' ' + sizes[i];
     }
     
+    function sleep(milliseconds) {
+      var start = new Date().getTime();
+      for (var i = 0; i < 1e7; i++) {
+        if ((new Date().getTime() - start) > milliseconds){
+          break;
+        }
+      }
+    }
+    
     
 </script>
 <script type="text/javascript" >
@@ -277,7 +286,7 @@ Ext.onReady(function (){
 
     if(jurisdiction != "" ){
         var juris_wfs = wfs_proto_creator("{{feature_juris}}", "EPSG:4326", "json");
-        
+        var juris_done = false;
         var response = juris_wfs.read({
           callback: function(response){
                 if (response.priv.responseText){
@@ -286,7 +295,7 @@ Ext.onReady(function (){
                     juris_vec_layer.addFeatures(feature_out);
                     console.log(juris_vec_layer.features);
                     for (var i = 0; i < juris_vec_layer.features.length; i++){
-                        console.log(juris_vec_layer.features[i].geometry.bounds).transform(new OpenLayers.Bounds("EPSG:4326"), new OpenLayers.Bounds("EPSG:900913"));
+                        console.log(juris_vec_layer.features[i].geometry.bounds.transform(new OpenLayers.Bounds("EPSG:4326"), new OpenLayers.Bounds("EPSG:900913")));
                     }
                     /*for ( var i=0; i<feature_out.totalFeatures; i++ ){
                         //jurisdiction_features.push(parser.parseFeature(feature_out));
@@ -297,6 +306,9 @@ Ext.onReady(function (){
                 }  
             }
         }); 
+        while( !juris_done){
+            sleep(100);
+        }
     }
     
     var tile_layer = new OpenLayers.Layer.WMS(
