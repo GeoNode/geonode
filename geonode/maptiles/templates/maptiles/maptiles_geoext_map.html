@@ -209,6 +209,7 @@ function selection_bounds(map_bounds, highlight_layer) {
                     value: new OpenLayers.Geometry.LinearRing(linear_ring)
                 })
             );
+            console.log(geom_filters);
         }
         if (geom_filters.length > 0){
             or_filter = new OpenLayers.Filter.Logical({
