@@ -196,7 +196,7 @@ function selection_bounds(map_bounds, highlight_layer) {
     var wfs_proto = wfs_proto_creator("{{feature_tiled}}", "EPSG:32651","json");         
 
     var wfs_resp = wfs_proto.read({
-        filter: filter,
+        filter: filter/*,
         callback: function(response){
             if(response.priv.responseText){
                 var json_parser = new OpenLayers.Format.JSON();
@@ -223,13 +223,25 @@ function selection_bounds(map_bounds, highlight_layer) {
             }else{
                 alert("Server did not respond.");
             }
-        }
+        }*/
     });
+    console.log("selection bounds");
+    console.log(wfs_resp);
 }
 
-var jurisdiction = "{{jurisdiction}}";
-var jurisdiction_layer = null;
-var jurisdiction_features = [];
+function blocking_wfs_getfeature(layer_name, geoserver, outFormat ){
+    var request = OpenLayers.Request.Get({
+        url: geoserver,
+        async: false,
+        params: {
+            request: "GetFeature",
+            service: "wfs",
+            version: "1.0.0",
+            typeName: layer_name,
+            outputFormat: outFormat
+        }
+    return request;
+}
 
 function removeHighlight(georef, vec_layer){
     var index= find_georef(tile_list, georef);
@@ -248,8 +260,12 @@ var vector_style_map = new OpenLayers.StyleMap({
 });
 
 Ext.onReady(function (){
+    var jurisdiction = "{{jurisdiction}}";
+    var jurisdiction_features = [];
+    var juris_vec_layer = new OpenLayers.Layer.Vector();
     var layer_name = "{{  layer }}";
     var map_options = options["map"];
+    
     map = new OpenLayers.Map({
         units: map_options["units"],
         maxResolution: map_options["maxResolution"],
@@ -281,31 +297,7 @@ Ext.onReady(function (){
     var jurisdiction_filter=null;
     var jurisdiction_extent=new OpenLayers.Bounds();
     
-    var juris_vec_layer = new OpenLayers.Layer.Vector();
     map.addLayer(juris_vec_layer);
-
-    if(jurisdiction != "" ){
-        var juris_wfs = wfs_proto_creator("{{feature_juris}}", "EPSG:4326", "json");
-        var juris_done = false;
-        var response = juris_wfs.read({
-          callback: function(response){
-                if (response.priv.responseText){
-                    var parser = new OpenLayers.Format.GeoJSON();
-                    var feature_out =parser.read(response.priv.responseText);
-                    juris_vec_layer.addFeatures(feature_out);
-                    console.log(juris_vec_layer.features);
-                    for (var i = 0; i < juris_vec_layer.features.length; i++){
-                        console.log(juris_vec_layer.features[i].geometry.bounds.transform(new OpenLayers.Bounds("EPSG:4326"), new OpenLayers.Bounds("EPSG:900913")));
-                    }
-                }
-                juris_done=true;  
-            }
-        }); 
-        console.log(juris_done);
-        /*while( !juris_done){
-            sleep(100);
-        }*/
-    }
     
     var tile_layer = new OpenLayers.Layer.WMS(
         layer_name + "- Tiled", geoserver+"geonode/wms",
@@ -326,6 +318,12 @@ Ext.onReady(function (){
     );
     
     map.addLayer(tile_layer);
+    
+    if (jurisdiction != ""){
+        var juris_request = blocking_wfs_getfeature(jurisdiction, geoserver, "applicaton/json");
+        console.log("jurisdiction request");
+        console.log(juris_request.responseXML);
+    }
     
     var highlight_layer = new OpenLayers.Layer.Vector(
         "Highlight Layer",
@@ -360,11 +358,9 @@ Ext.onReady(function (){
                 {keyMask: OpenLayers.Handler.MOD_SHIFT});
             this.box.activate();
         },
-        
         highlight_layer: highlight_layer,
-        
+        jurisdiction: jurisdiction,
         notice: function (bounds){ 
-            
             var ll = map.getLonLatFromPixel(new OpenLayers.Pixel(bounds.left, bounds.bottom)); 
             var ur = map.getLonLatFromPixel(new OpenLayers.Pixel(bounds.right, bounds.top)); 
             var map_bounds = new OpenLayers.Bounds();
