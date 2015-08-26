@@ -148,9 +148,9 @@ define(function (require, exports) {
         }
 
         if (geogig_enabled) {
-            geogig = $('#' + this.main.name.slice(0, -4) + '\\:geogig_toggle').is(':checked');
+            geogig = $('#' + this.main.name.split('.')[0] + '\\:geogig_toggle').is(':checked');
             if (geogig) {
-                geogig_store = $('#' + this.main.name.slice(0, -4) + '\\:geogig_store').val();
+                geogig_store = $('#' + this.main.name.split('.')[0] + '\\:geogig_store').val();
                 form_data.append('geogig_store', geogig_store);
             } else {
                 form_data.append('geogig_store', "");
@@ -158,7 +158,7 @@ define(function (require, exports) {
             form_data.append('geogig', geogig);
         }
         if (time_enabled) {
-            time = $('#' + this.main.name.slice(0, -4) + '-time').is(':checked');
+            time = $('#' + this.main.name.split('.')[0] + '-time').is(':checked');
             form_data.append('time', time);
         } 
 
@@ -468,7 +468,7 @@ define(function (require, exports) {
         $('#' + this.name + '\\:geogig_toggle').on('change', this.doGeoGigToggle);
 
         // Add values to the geogig store dropdown and hide.
-        this.setupGeogigDropdown($('#' + this.main.name.slice(0, -4) + '\\:geogig_store'));
+        this.setupGeogigDropdown($('#' + this.main.name.split('.')[0] + '\\:geogig_store'));
         $("#s2id_" + this.name + "\\:geogig_store").hide()
 
         return li;
