@@ -230,7 +230,7 @@ function selection_bounds(map_bounds, highlight_layer) {
 }
 
 function blocking_wfs_getfeature(layer_name, geoserver, outFormat ){
-    var request = OpenLayers.Request.Get({
+    var request = OpenLayers.Request.GET({
         url: geoserver,
         async: false,
         params: {
