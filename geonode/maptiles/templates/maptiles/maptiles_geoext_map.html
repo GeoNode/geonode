@@ -202,7 +202,7 @@ function selection_bounds(map_bounds, highlight_layer) {
     if (jurisdiction_geoms.length > 0){
         for ( var i=0; i < jurisdiction_geoms.length; i++){
             var linear_ring = jurisdiction_geoms[i].geometry.components[0].components[0].components;
-            geom_filter.push( 
+            geom_filters.push( 
                 new OpenLayers.Filter.Spatial({
                     type: OpenLayers.Filter.Spatial.INTERSECTS,
                     property: "the_geom",
