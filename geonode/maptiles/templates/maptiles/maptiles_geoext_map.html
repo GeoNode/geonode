@@ -186,6 +186,10 @@ function wfs_proto_creator(layer_request, srs, outformat){
 
 function selection_bounds(map_bounds, highlight_layer) {
     
+    for (var i = 0; i < jurisdiction_geoms.length; i++){
+        console.log(jurisdiction_geoms[i]);
+    }
+    
     var transformed_bounds = map_bounds.clone().transform(new OpenLayers.Projection("EPSG:900913"), new OpenLayers.Projection("EPSG:32651"));
     
     var filter = new OpenLayers.Filter.Spatial({
@@ -247,9 +251,6 @@ function getJurisdictionGeom(jurisdiction, juris_vec_layer){
             }
         }
     });
-     for (var i = 0; i < jurisdiction_geoms.length; i++){
-        console.log(jurisdiction_geoms[i]);
-    }
 }
 
 function removeHighlight(georef, vec_layer){
