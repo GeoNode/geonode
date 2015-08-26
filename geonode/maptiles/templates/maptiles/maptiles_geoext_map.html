@@ -51,6 +51,7 @@ if ("{{test_mode}}"=="True"){
 var options = {{ viewer| safe }};
 var app, map;
 var tile_list = [];
+ var jurisdiction_geoms = [];
 var interest_bounds; 
 //var geoserver = "{{geoserver}}";
 //var geoserver = curr_location+"/geoserver/";
@@ -196,7 +197,7 @@ function selection_bounds(map_bounds, highlight_layer) {
     var wfs_proto = wfs_proto_creator("{{feature_tiled}}", "EPSG:32651","json");         
 
     var wfs_resp = wfs_proto.read({
-        filter: filter/*,
+        filter: filter,
         callback: function(response){
             if(response.priv.responseText){
                 var json_parser = new OpenLayers.Format.JSON();
@@ -223,46 +224,28 @@ function selection_bounds(map_bounds, highlight_layer) {
             }else{
                 alert("Server did not respond.");
             }
-        }*/
+        }
     });
-    //console.log("selection bounds");
-    //console.log(wfs_resp);
-    var json_parser = new OpenLayers.Format.JSON();
-    console.log(wfs_resp);
-    var feature_out = json_parser.read(wfs_resp.priv.responseText);
-    for ( var i=0; i<feature_out.totalFeatures; i++ ){
-        var f = feature_out.features[i];
-        var corners = {
-            "ur_x": f.properties.MAXX, "ur_y": f.properties.MAXY,
-            "ul_x": f.properties.MINX, "ul_y": f.properties.MAXY,
-            "ll_x": f.properties.MINX, "ll_y": f.properties.MINY,
-            "lr_x": f.properties.MAXX,"lr_y": f.properties.MINY
-        }
-
-        var tile = createTile(corners);
-        if (find_georef(tile_list, tile.georef)<0){
-             tile_list.push(tile);
-             tile.feature = createHighlightBox(tile.corners);
-             highlight_layer.addFeatures([tile.feature]);
-        }
-
-    }
-    display_points("point_display", highlight_layer);
 }
 
-function blocking_wfs_getfeature(layer_name, geoserver, outFormat ){
-    var request = OpenLayers.Request.GET({
-        url: geoserver,
-        async: false,
-        params: {
-            request: "GetFeature",
-            service: "wfs",
-            version: "1.0.0",
-            typeName: layer_name,
-            outputFormat: outFormat
+function getJurisdictionGeom(jurisdiction, juris_vec_layer){
+    var juris_wfs = wfs_proto_creator("{{feature_juris}}", "EPSG:4326", "json");
+    var response = juris_wfs.read({
+      callback: function(response){
+            if (response.priv.responseText){
+                var parser = new OpenLayers.Format.GeoJSON();
+                var feature_out =parser.read(response.priv.responseText);
+                juris_vec_layer.addFeatures(feature_out);
+                console.log(juris_vec_layer.features);
+                jurisdiction_geoms = juris_vec_layer.features;
+                for (var i = 0; i < juris_vec_layer.features.length; i++){
+                    //console.log(juris_vec_layer.features[i].geometry.bounds.transform(new OpenLayers.Bounds("EPSG:4326"), new OpenLayers.Bounds("EPSG:900913")));
+                    //console.log(jurisdiction_geoms[i].features);
+                }
+            }
         }
     });
-    return request;
+    console.log(jurisdiction_geoms[i].features);
 }
 
 function removeHighlight(georef, vec_layer){
@@ -283,7 +266,7 @@ var vector_style_map = new OpenLayers.StyleMap({
 
 Ext.onReady(function (){
     var jurisdiction = "{{jurisdiction}}";
-    var jurisdiction_features = [];
+   
     var juris_vec_layer = new OpenLayers.Layer.Vector();
     var layer_name = "{{  layer }}";
     var map_options = options["map"];
@@ -316,8 +299,6 @@ Ext.onReady(function (){
 
     var stored_layer = map_options["layers"].filter(function(l){ return l["name"] == layer_name })[0];
     var source_index = stored_layer["source"];
-    var jurisdiction_filter=null;
-    var jurisdiction_extent=new OpenLayers.Bounds();
     
     map.addLayer(juris_vec_layer);
     
@@ -340,12 +321,6 @@ Ext.onReady(function (){
     );
     
     map.addLayer(tile_layer);
-    
-    if (jurisdiction != ""){
-        var juris_request = blocking_wfs_getfeature(jurisdiction, geoserver, "applicaton/json");
-        console.log("jurisdiction request");
-        console.log(juris_request.responseXML);
-    }
     
     var highlight_layer = new OpenLayers.Layer.Vector(
         "Highlight Layer",
@@ -444,6 +419,7 @@ Ext.onReady(function (){
     app = new GeoExt.MapPanel(config);
     if(jurisdiction != "" ){
         map.zoomToExtent(new OpenLayers.Bounds({{j_bbox}}));
+        getJurisdictionGeom(jurisdiction, juris_vec_layer);
     }else{
         map.zoomToExtent(tile_layer.getExtent());
     }
