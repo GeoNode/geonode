@@ -212,6 +212,7 @@ function selection_bounds(map_bounds, highlight_layer) {
             console.log(geom_filters[i]);
         }
         if (geom_filters.length > 0){
+            console.log(geom_filters.length);
             or_filter = new OpenLayers.Filter.Logical({
                 type: OpenLayers.Filter.Logical.OR,
                 filters: geom_filters
