@@ -51,7 +51,7 @@ if ("{{test_mode}}"=="True"){
 var options = {{ viewer| safe }};
 var app, map;
 var tile_list = [];
- var jurisdiction_geoms = [];
+var jurisdiction_geoms = [];
 var interest_bounds; 
 //var geoserver = "{{geoserver}}";
 //var geoserver = curr_location+"/geoserver/";
@@ -186,18 +186,41 @@ function wfs_proto_creator(layer_request, srs, outformat){
 
 function selection_bounds(map_bounds, highlight_layer) {
     
-    for (var i = 0; i < jurisdiction_geoms.length; i++){
-        console.log(jurisdiction_geoms[i]);
-    }
-    console.log(jurisdiction_geoms);
-    
     var transformed_bounds = map_bounds.clone().transform(new OpenLayers.Projection("EPSG:900913"), new OpenLayers.Projection("EPSG:32651"));
     
-    var filter = new OpenLayers.Filter.Spatial({
+    var box_filter = new OpenLayers.Filter.Spatial({
         type: OpenLayers.Filter.Spatial.INTERSECTS,
         property: "the_geom",
         value: transformed_bounds.toGeometry()
     });
+    
+    var jurisdiction_filter;
+    var geom_filters=[];
+    var or_filter=null;
+    var filter = box_filter;
+    
+    if (jurisdiction_geoms.length > 0){
+        for ( var i=0; i < jurisdiction_geoms.length; i++){
+            var linear_ring = jurisdiction_geoms[i].geometry.components[0].components[0].components;
+            geom_filter.push( 
+                new OpenLayers.Filter.Spatial({
+                    type: OpenLayers.Filter.Spatial.INTERSECTS,
+                    property: "the_geom",
+                    value: linear_ring
+                })
+            );
+        }
+        if (geom_filters.length > 0){
+            or_filter = new OpenLayers.Filter.Logical({
+                type: OpenLayers.Filter.Logical.OR,
+                filters: geom_filters
+            });
+            filter = new OpenLayers.Filter.Logical({
+                type: OpenLayers.Filter.Logical.AND,
+                filters: [box_filter, or_filter]
+            });
+        }
+    }
     
     var wfs_proto = wfs_proto_creator("{{feature_tiled}}", "EPSG:32651","json");         
 
@@ -239,16 +262,9 @@ function getJurisdictionGeom(jurisdiction, juris_vec_layer){
       callback: function(response){
             if (response.priv.responseText){
                 var parser = new OpenLayers.Format.GeoJSON();
-                var feature_out =parser.read(response.priv.responseText);
+                var feature_out =parser.(response.priv.responseText);
                 juris_vec_layer.addFeatures(feature_out);
-                //console.log(juris_vec_layer.features);
                 jurisdiction_geoms = juris_vec_layer.features;
-                //console.log(jurisdiction_geoms);
-               /*for (var i = 0; i <juris_vec_layer.features.length; i++){
-                 jurisdiction 
-               }*/
-                    //console.log(juris_vec_layer.features[i].geometry.bounds.transform(new OpenLayers.Bounds("EPSG:4326"), new OpenLayers.Bounds("EPSG:900913")));
-                    //console.log(jurisdiction_geoms[i].features);
             }
         }
     });
