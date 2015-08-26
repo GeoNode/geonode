@@ -241,12 +241,11 @@ function getJurisdictionGeom(jurisdiction, juris_vec_layer){
                
                     //console.log(juris_vec_layer.features[i].geometry.bounds.transform(new OpenLayers.Bounds("EPSG:4326"), new OpenLayers.Bounds("EPSG:900913")));
                     //console.log(jurisdiction_geoms[i].features);
-                }
             }
         }
     });
      for (var i = 0; i < juris_vec_layer.features.length; i++){
-        console.log(jurisdiction_geoms[i].features);
+        console.log(jurisdiction_geoms.features[i]);
     }
 }
 
