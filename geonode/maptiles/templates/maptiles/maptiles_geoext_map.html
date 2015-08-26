@@ -209,7 +209,6 @@ function selection_bounds(map_bounds, highlight_layer) {
                     value: new OpenLayers.Geometry.LinearRing(linear_ring)
                 })
             );
-            console.log(geom_filters[i]);
         }
         if (geom_filters.length > 0){
             or_filter = new OpenLayers.Filter.Logical({
@@ -220,12 +219,10 @@ function selection_bounds(map_bounds, highlight_layer) {
                 type: OpenLayers.Filter.Logical.AND,
                 filters: [box_filter, or_filter]
             });
-            console.log(geom_filters.length);
         }
     }
-    
     var wfs_proto = wfs_proto_creator("{{feature_tiled}}", "EPSG:32651","json");         
-
+    console.log(geom_filters.length);
     var wfs_resp = wfs_proto.read({
         filter: filter,
         callback: function(response){
