@@ -228,8 +228,9 @@ function selection_bounds(map_bounds, highlight_layer) {
     //console.log("selection bounds");
     //console.log(wfs_resp);
     var json_parser = new OpenLayers.Format.JSON();
+    console.log(wfs_resp);
     var feature_out = json_parser.read(wfs_resp.priv.responseText);
-     for ( var i=0; i<feature_out.totalFeatures; i++ ){
+    for ( var i=0; i<feature_out.totalFeatures; i++ ){
         var f = feature_out.features[i];
         var corners = {
             "ur_x": f.properties.MAXX, "ur_y": f.properties.MAXY,
