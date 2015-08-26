@@ -221,6 +221,7 @@ function selection_bounds(map_bounds, highlight_layer) {
                 type: OpenLayers.Filter.Logical.AND,
                 filters: [box_filter, or_filter]
             });
+            console.log(filter);
         }
     }
     var wfs_proto = wfs_proto_creator("{{feature_tiled}}", "EPSG:32651","json");         
