@@ -236,16 +236,18 @@ function getJurisdictionGeom(jurisdiction, juris_vec_layer){
                 var parser = new OpenLayers.Format.GeoJSON();
                 var feature_out =parser.read(response.priv.responseText);
                 juris_vec_layer.addFeatures(feature_out);
-                console.log(juris_vec_layer.features);
+                //console.log(juris_vec_layer.features);
                 jurisdiction_geoms = juris_vec_layer.features;
-                for (var i = 0; i < juris_vec_layer.features.length; i++){
+               
                     //console.log(juris_vec_layer.features[i].geometry.bounds.transform(new OpenLayers.Bounds("EPSG:4326"), new OpenLayers.Bounds("EPSG:900913")));
                     //console.log(jurisdiction_geoms[i].features);
                 }
             }
         }
     });
-    console.log(jurisdiction_geoms[i].features);
+     for (var i = 0; i < juris_vec_layer.features.length; i++){
+        console.log(jurisdiction_geoms[i].features);
+    }
 }
 
 function removeHighlight(georef, vec_layer){
