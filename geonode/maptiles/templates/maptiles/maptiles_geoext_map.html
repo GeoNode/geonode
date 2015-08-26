@@ -196,7 +196,7 @@ function selection_bounds(map_bounds, highlight_layer) {
     
     var jurisdiction_filter;
     var geom_filters=[];
-    var or_filter=null;
+    var or_filter;
     var filter = box_filter;
     
     if (jurisdiction_geoms.length > 0){
@@ -215,7 +215,7 @@ function selection_bounds(map_bounds, highlight_layer) {
                 type: OpenLayers.Filter.Logical.OR,
                 filters: geom_filters
             });
-            console.log(or_filter);
+            
             filter = new OpenLayers.Filter.Logical({
                 type: OpenLayers.Filter.Logical.AND,
                 filters: [box_filter, or_filter]
