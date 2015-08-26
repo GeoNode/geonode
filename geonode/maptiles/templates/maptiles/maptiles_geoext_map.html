@@ -189,6 +189,7 @@ function selection_bounds(map_bounds, highlight_layer) {
     for (var i = 0; i < jurisdiction_geoms.length; i++){
         console.log(jurisdiction_geoms[i]);
     }
+    console.log(jurisdiction_geoms);
     
     var transformed_bounds = map_bounds.clone().transform(new OpenLayers.Projection("EPSG:900913"), new OpenLayers.Projection("EPSG:32651"));
     
@@ -242,7 +243,7 @@ function getJurisdictionGeom(jurisdiction, juris_vec_layer){
                 juris_vec_layer.addFeatures(feature_out);
                 //console.log(juris_vec_layer.features);
                 jurisdiction_geoms = juris_vec_layer.features;
-                console.log(jurisdiction_geoms);
+                //console.log(jurisdiction_geoms);
                /*for (var i = 0; i <juris_vec_layer.features.length; i++){
                  jurisdiction 
                }*/
