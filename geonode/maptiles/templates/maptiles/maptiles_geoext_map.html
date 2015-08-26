@@ -206,7 +206,7 @@ function selection_bounds(map_bounds, highlight_layer) {
                 new OpenLayers.Filter.Spatial({
                     type: OpenLayers.Filter.Spatial.INTERSECTS,
                     property: "the_geom",
-                    value: linear_ring
+                    value: new OpenLayers.Geometry.LinearRing(linear_ring)
                 })
             );
             console.log(geom_filters[i]);
