@@ -209,14 +209,14 @@ function selection_bounds(map_bounds, highlight_layer) {
                     value: new OpenLayers.Geometry.LinearRing(linear_ring)
                 })
             );
-            console.log(geom_filters);
         }
+         console.log(geom_filters);
         if (geom_filters.length > 0){
             or_filter = new OpenLayers.Filter.Logical({
                 type: OpenLayers.Filter.Logical.OR,
                 filters: geom_filters
             });
-            
+            console.log(or_filter);
             filter = new OpenLayers.Filter.Logical({
                 type: OpenLayers.Filter.Logical.AND,
                 filters: [box_filter, or_filter]
