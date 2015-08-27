@@ -208,7 +208,7 @@ function selection_bounds(map_bounds, highlight_layer) {
                     value: new OpenLayers.Geometry.LinearRing(linear_ring)
                 });
             node = new OpenLayers.Format.Filter({version: "1.0.0"}).write(spatial_filter);
-            console.log(node)
+            console.log(node);
             geom_filters.push( 
                spatial_filter
             );
