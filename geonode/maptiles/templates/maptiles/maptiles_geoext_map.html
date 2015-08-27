@@ -201,11 +201,11 @@ function selection_bounds(map_bounds, highlight_layer) {
     
    if (jurisdiction_geoms.length > 0){
         for ( var i=0; i < jurisdiction_geoms.length; i++){
-            var linear_ring_pts = jurisdiction_geoms[i].geometry.components[0].components[0].components;
+            //var linear_ring_pts = jurisdiction_geoms[i].geometry.components[0].components[0].components;
             var spatial_filter = new OpenLayers.Filter.Spatial({
                     type: OpenLayers.Filter.Spatial.INTERSECTS,
                     property: "the_geom",
-                    value: new OpenLayers.Geometry.Polygon({components: [new OpenLayers.Geometry.LinearRing(linear_ring_pts)]})
+                    value: jurisdiction_geoms[i].geometry.components[0]
                 });
             console.log(spatial_filter);
             console.log("halothar");
