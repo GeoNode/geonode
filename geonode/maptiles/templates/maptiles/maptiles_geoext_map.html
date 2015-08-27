@@ -205,7 +205,7 @@ function selection_bounds(map_bounds, highlight_layer) {
             var spatial_filter = new OpenLayers.Filter.Spatial({
                     type: OpenLayers.Filter.Spatial.INTERSECTS,
                     property: "the_geom",
-                    value: new OpenLayers.Geometry.Polygon({components: [new OpenLayers.Geometry.LinearRing(linear_ring)]})
+                    value: new OpenLayers.Geometry.Polygon({components: [new OpenLayers.Geometry.LinearRing(linear_ring_pts)]})
                 });
             console.log(spatial_filter);
             console.log("halothar");
