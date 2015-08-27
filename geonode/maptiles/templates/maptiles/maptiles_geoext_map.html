@@ -129,7 +129,7 @@ function display_points(div_id, vec_layer){
     container.appendChild(table_element);
     
     var georef_string = "";
-    console.log(tile_list);
+    //console.log(tile_list);
     for (var i=0; i< tile_list.length/5; i++){
         var row_element = document.createElement("tr");
         row_element.className += "georef_tr";
@@ -199,7 +199,7 @@ function selection_bounds(map_bounds, highlight_layer) {
     var or_filter;
     var filter = box_filter;
     
-    if (jurisdiction_geoms.length > 0){
+   /* if (jurisdiction_geoms.length > 0){
         for ( var i=0; i < jurisdiction_geoms.length; i++){
             var linear_ring = jurisdiction_geoms[i].geometry.components[0].components[0].components;
             geom_filters.push( 
@@ -223,7 +223,7 @@ function selection_bounds(map_bounds, highlight_layer) {
             });
             console.log(filter);
         }
-    }
+    }*/
     var wfs_proto = wfs_proto_creator("{{feature_tiled}}", "EPSG:32651","json");         
     console.log(geom_filters.length);
     var wfs_resp = wfs_proto.read({
