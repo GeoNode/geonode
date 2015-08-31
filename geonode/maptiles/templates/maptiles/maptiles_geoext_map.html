@@ -225,7 +225,7 @@ function selection_bounds(map_bounds, highlight_layer) {
             var spatial_filter = new OpenLayers.Filter.Spatial({
                     type: OpenLayers.Filter.Spatial.INTERSECTS,
                     property: "the_geom",
-                    value: jurisdiction_geoms[i].geometry.components[0]
+                    value: jurisdiction_geoms[i].geometry
                 });
             console.log(spatial_filter);
             node = new OpenLayers.Format.Filter({version: "1.0.0"}).write(spatial_filter);
