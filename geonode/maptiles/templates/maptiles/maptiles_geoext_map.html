@@ -228,8 +228,9 @@ function selection_bounds(map_bounds, highlight_layer) {
                     value: jurisdiction_geoms[i].geometry.components[0]
                 });
             console.log(spatial_filter);
-            node = new OpenLayers.Format.Filter({version: "1.0.0"}).write(spatial_filter);
-            console.log("["+i+"]"+node);
+            var node = new OpenLayers.Format.Filter({version: "1.0.0"}).write(spatial_filter);
+            console.log("["+i+"]");
+            console.log(node);
             geom_filters.push( 
                spatial_filter
             );
