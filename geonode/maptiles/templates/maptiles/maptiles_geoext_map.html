@@ -196,7 +196,7 @@ function selection_bounds(map_bounds, highlight_layer) {
     
     var geom_filters=[];
     var or_filter;
-    var conditional_filter = new OpenLayers.Filter.Logical({
+    var data_filter = new OpenLayers.Filter.Logical({
         type: "||",
         filters: [
             new OpenLayers.Filter.Comparison({
@@ -250,7 +250,7 @@ function selection_bounds(map_bounds, highlight_layer) {
     }
     var wfs_proto = wfs_proto_creator("{{feature_tiled}}", "EPSG:32651","json");         
     var wfs_resp = wfs_proto.read({
-        filter: geom_filters[2],
+        filter: data_filter,
         callback: function(response){
             if(response.priv.responseText){
                 var json_parser = new OpenLayers.Format.JSON();
