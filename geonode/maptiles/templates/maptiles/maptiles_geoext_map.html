@@ -264,7 +264,7 @@ function selection_bounds(map_bounds, highlight_layer) {
 }
 
 function getJurisdictionGeom(jurisdiction, juris_vec_layer){
-    var juris_wfs = wfs_proto_creator("{{feature_juris}}", "EPSG:4326", "json");
+    var juris_wfs = wfs_proto_creator("{{feature_juris}}", "EPSG:32651", "json");
     var response = juris_wfs.read({
       callback: function(response){
             if (response.priv.responseText){
