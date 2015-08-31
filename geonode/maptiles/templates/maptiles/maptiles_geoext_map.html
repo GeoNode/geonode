@@ -225,7 +225,7 @@ function selection_bounds(map_bounds, highlight_layer) {
             var spatial_filter = new OpenLayers.Filter.Spatial({
                     type: OpenLayers.Filter.Spatial.INTERSECTS,
                     property: "the_geom",
-                    value: jurisdiction_geoms[i].geometry
+                    value: jurisdiction_geoms[i].geometry.components[0]
                 });
             console.log(spatial_filter);
             node = new OpenLayers.Format.Filter({version: "1.0.0"}).write(spatial_filter);
@@ -245,7 +245,6 @@ function selection_bounds(map_bounds, highlight_layer) {
                 type: OpenLayers.Filter.Logical.AND,
                 filters: [box_filter, or_filter]
             });
-            console.log(filter);
         }
     }
     var wfs_proto = wfs_proto_creator("{{feature_tiled}}", "EPSG:32651","json");         
