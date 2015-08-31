@@ -248,7 +248,7 @@ function selection_bounds(map_bounds, highlight_layer) {
     }
     var wfs_proto = wfs_proto_creator("{{feature_tiled}}", "EPSG:32651","json");         
     var wfs_resp = wfs_proto.read({
-        filter: geom_filters[1],
+        filter: geom_filters[2],
         callback: function(response){
             if(response.priv.responseText){
                 var json_parser = new OpenLayers.Format.JSON();
