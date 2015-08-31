@@ -197,6 +197,26 @@ function selection_bounds(map_bounds, highlight_layer) {
     var jurisdiction_filter;
     var geom_filters=[];
     var or_filter;
+    var conditional_filter = new OpenLayers.Filter.Logical({
+        type: "||",
+        filters: [
+            new OpenLayers.Filter.Comparison({
+                type: "==",
+                property: "DSM",
+                value: "1"
+            }),
+            new OpenLayers.Filter.Comparison({
+                type: "==",
+                property: "DTM",
+                value: "1"
+            }),
+            new OpenLayers.Filter.Comparison({
+                type: "==",
+                property: "Ortho",
+                value: "1"
+            }),
+        ]
+    });
     var filter = box_filter;
     
    if (jurisdiction_geoms.length > 0){
@@ -215,7 +235,7 @@ function selection_bounds(map_bounds, highlight_layer) {
                spatial_filter
             );
         }
-         console.log(geom_filters);
+        
         if (geom_filters.length > 0){
             or_filter = new OpenLayers.Filter.Logical({
                 type: OpenLayers.Filter.Logical.OR,
@@ -232,7 +252,7 @@ function selection_bounds(map_bounds, highlight_layer) {
     var wfs_proto = wfs_proto_creator("{{feature_tiled}}", "EPSG:32651","json");         
     console.log(geom_filters.length);
     var wfs_resp = wfs_proto.read({
-        filter: filter,
+        filter: geom_filters,
         callback: function(response){
             if(response.priv.responseText){
                 var json_parser = new OpenLayers.Format.JSON();
@@ -364,7 +384,7 @@ Ext.onReady(function (){
             buffer: 0,
             displayOutsideMaxExtent: true,
             isBaseLayer: false,
-            projection: "EPSG:4326",
+            projection: "EPSG:32651",
             maxExtent: new OpenLayers.Bounds({{j_bbox}})
         } 
     );
