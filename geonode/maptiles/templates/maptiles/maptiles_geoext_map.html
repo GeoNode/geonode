@@ -234,7 +234,7 @@ function selection_bounds(map_bounds, highlight_layer) {
                spatial_filter
             );
         }
-        
+        console.log(geom_filters);
         if (geom_filters.length > 0){
             or_filter = new OpenLayers.Filter.Logical({
                 type: OpenLayers.Filter.Logical.OR,
@@ -249,7 +249,6 @@ function selection_bounds(map_bounds, highlight_layer) {
         }
     }
     var wfs_proto = wfs_proto_creator("{{feature_tiled}}", "EPSG:32651","json");         
-    console.log(geom_filters.length);
     var wfs_resp = wfs_proto.read({
         filter: geom_filters,
         callback: function(response){
