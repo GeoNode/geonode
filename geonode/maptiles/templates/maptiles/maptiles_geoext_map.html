@@ -276,11 +276,10 @@ function selection_bounds(map_bounds, highlight_layer) {
         geom_filters: geom_filters,
         callback: function(response){
             if(response.priv.responseText){
-                console.log(geom_filters.length);
                 var json_parser = new OpenLayers.Format.JSON();
                 var feature_out = json_parser.read(response.priv.responseText);
                 var tiles = hasData(jurisdictionFilter(this.geom_filters, feature_out));
-                
+                console.log(feature_out);
                 for ( var i=0; i<tiles.length; i++ ){
                     var f = tiles[i];
                     var corners = {
@@ -318,36 +317,6 @@ function getJurisdictionGeom(jurisdiction, juris_vec_layer){
             }
         }
     });
-}
-
-function hasData( f_list){
-   var data_filter = new OpenLayers.Filter.Logical({
-        type: "||",
-        filters: [
-            new OpenLayers.Filter.Comparison({
-                type: "==",
-                property: "DSM",
-                value: "1"
-            }),
-            new OpenLayers.Filter.Comparison({
-                type: "==",
-                property: "DTM",
-                value: "1"
-            }),
-            new OpenLayers.Filter.Comparison({
-                type: "==",
-                property: "ORTHO",
-                value: "1"
-            }),
-        ]
-    });
-    var tile_list = [];
-    for (f in f_list){
-        if(data_filter.evaluate(f)){
-            tile_list.push(f);
-        }
-    }
-    return tile_list;
 }
 
 function removeHighlight(georef, vec_layer){
