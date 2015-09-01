@@ -484,28 +484,29 @@ Ext.onReady(function (){
                         var feature_out = json_parser.read(response.priv.responseText);
                         var tiles = hasData(jurisdictionFilter(jurisdiction_geoms, feature_out));
                         console.log(feature_out);
-                      for ( var i=0; i<tiles.length; i++ ){
-                        var f = tiles[i];
-                        var corners = {
-                            "ur_x": f.data.MAXX, "ur_y": f.data.MAXY,
-                            "ul_x": f.data.MINX, "ul_y": f.data.MAXY,
-                            "ll_x": f.data.MINX, "ll_y": f.data.MINY,
-                            "lr_x": f.data.MAXX,"lr_y": f.data.MINY
-                        }
-                        var tile = createTile(corners);
+                        for ( var i=0; i<tiles.length; i++ ){
+                            var f = tiles[i];
+                            var corners = {
+                                "ur_x": f.data.MAXX, "ur_y": f.data.MAXY,
+                                "ul_x": f.data.MINX, "ul_y": f.data.MAXY,
+                                "ll_x": f.data.MINX, "ll_y": f.data.MINY,
+                                "lr_x": f.data.MAXX,"lr_y": f.data.MINY
+                            }
+                            var tile = createTile(corners);
 
-                        if (find_georef(tile_list, tile.georef)<0){
-                            tile_list.push(tile);
-                            tile.feature = createHighlightBox(tile.corners);
-                            highlight_layer.addFeatures([tile.feature]);
-                        }else{
-                            removeHighlight(tile.georef, highlight_layer);
+                            if (find_georef(tile_list, tile.georef)<0){
+                                tile_list.push(tile);
+                                tile.feature = createHighlightBox(tile.corners);
+                                highlight_layer.addFeatures([tile.feature]);
+                            }else{
+                                removeHighlight(tile.georef, highlight_layer);
+                            }
+                            display_points("point_display", highlight_layer);
                         }
-                        display_points("point_display", highlight_layer);
                     }
                 }
-            }
-        });
+            });
+        }
     });
 
    click_select = new OpenLayers.Control.Click()
