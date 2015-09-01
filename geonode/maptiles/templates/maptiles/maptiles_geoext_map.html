@@ -466,13 +466,13 @@ Ext.onReady(function (){
             var transformed_pt = click_pt.transform(map.getProjectionObject(),new OpenLayers.Projection("EPSG:32651"));
             var computed_corners = get_corners(click_pt.x, click_pt.y);
             
-            var tmp_tile = new OpenLayers.Geometry.Polygon(
-                new OpenLayers.Geometry.LinearRing(
+            var tmp_tile = new OpenLayers.Geometry.MultiPolygon(
+               [new OpenLayers.Geometry.Polygon(new OpenLayers.Geometry.LinearRing(
                     new OpenLayers.Geometry.Point(computed_corners["ul_x"], computed_corners["ul_y"] ),
                     new OpenLayers.Geometry.Point(computed_corners["ur_x"], computed_corners["ur_y"]),
                     new OpenLayers.Geometry.Point(computed_corners["lr_x"], computed_corners["lr_y"] ),
                     new OpenLayers.Geometry.Point(computed_corners["ll_x"], computed_corners["ll_y"] )
-                )
+                ))]
             );
             
             console.log(tmp_tile);
