@@ -190,7 +190,7 @@ function jurisdictionFilter(jurisdiction_filters, feature_list){
     var tile_list = [];
     for (j in jurisdiction_filters){
         for (f in feature_list){
-            if(jurisdiction_filters.evaluate(f)){
+            if(j.evaluate(f)){
                 tile_list.push(f);
             }
         }
