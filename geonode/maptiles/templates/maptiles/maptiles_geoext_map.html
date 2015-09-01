@@ -249,25 +249,9 @@ function selection_bounds(map_bounds, highlight_layer) {
                     property: "the_geom",
                     value: jurisdiction_geoms[i].geometry.components[0]
                 });
-            console.log(spatial_filter);
-            var node = new OpenLayers.Format.Filter({version: "1.0.0"}).write(spatial_filter);
-            console.log("["+i+"]");
-            console.log(node);
             geom_filters.push( 
                spatial_filter
             );
-        }
-        if (geom_filters.length > 0){
-            or_filter = new OpenLayers.Filter.Logical({
-                type: OpenLayers.Filter.Logical.OR,
-                filters: geom_filters
-            });
-            var node = new OpenLayers.Format.Filter({version: "1.0.0"}).write(or_filter);
-            console.log(node);
-            filter = new OpenLayers.Filter.Logical({
-                type: OpenLayers.Filter.Logical.AND,
-                filters: [box_filter, or_filter]
-            });
         }
     }
     var wfs_proto = wfs_proto_creator("{{feature_tiled}}", "EPSG:32651","json");         
@@ -276,7 +260,7 @@ function selection_bounds(map_bounds, highlight_layer) {
         geom_filters: geom_filters,
         callback: function(response){
             if(response.priv.responseText){
-                var json_parser = new OpenLayers.Format.JSON();
+                var json_parser = new OpenLayers.Format.GeoJSON();
                 var feature_out = json_parser.read(response.priv.responseText);
                 var tiles = hasData(jurisdictionFilter(this.geom_filters, feature_out.features));
                 for ( var i=0; i<tiles.length; i++ ){
