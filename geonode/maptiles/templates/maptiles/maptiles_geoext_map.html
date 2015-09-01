@@ -184,14 +184,14 @@ function wfs_proto_creator(layer_request, srs, outformat){
     });
 }
 
-function jurisdictionFilter(jurisdiction_geoms, feature_list){
+function jurisdictionFilterggeoms, feature_list){
     console.log("feature_list.length="+feature_list.length);
     var tile_list = [];
     
-    for ( jg in jurisdiction_geoms){
-        console.log(jg);
-        for (var f in feature_list){
-            if(jg.intersects(f.geometry)){
+    for ( g in geoms){
+        console.log(g);
+        for (f in feature_list){
+            if(g.intersects(f.geometry)){
                 tile_list.push(f);
             }
         }
@@ -259,7 +259,6 @@ function selection_bounds(map_bounds, highlight_layer) {
     var wfs_proto = wfs_proto_creator("{{feature_tiled}}", "EPSG:32651","json");         
     var wfs_resp = wfs_proto.read({
         filter: box_filter,
-       //jurisdiction_geoms: jurisdiction_geoms,
         callback: function(response){
             if(response.priv.responseText){
                 var json_parser = new OpenLayers.Format.GeoJSON();
@@ -287,8 +286,7 @@ function selection_bounds(map_bounds, highlight_layer) {
                 alert("Server did not respond.");
             }
         }
-    },
-    {jurisdiction_geoms: jurisdiction_geoms});
+    };
 }
 
 function getJurisdictionGeom(jurisdiction, juris_vec_layer){
