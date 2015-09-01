@@ -267,11 +267,12 @@ function selection_bounds(map_bounds, highlight_layer) {
                 var tiles = hasData(jurisdictionFilter(jurisdiction_geoms, feature_out));
                 for ( var i=0; i<tiles.length; i++ ){
                     var f = tiles[i];
+                    console.log(f);
                     var corners = {
-                        "ur_x": f.properties.MAXX, "ur_y": f.properties.MAXY,
-                        "ul_x": f.properties.MINX, "ul_y": f.properties.MAXY,
-                        "ll_x": f.properties.MINX, "ll_y": f.properties.MINY,
-                        "lr_x": f.properties.MAXX,"lr_y": f.properties.MINY
+                        "ur_x": f.data.MAXX, "ur_y": f.data.MAXY,
+                        "ul_x": f.data.MINX, "ul_y": f.data.MAXY,
+                        "ll_x": f.data.MINX, "ll_y": f.data.MINY,
+                        "lr_x": f.data.MAXX,"lr_y": f.data.MINY
                     }
 
                     var tile = createTile(corners);
