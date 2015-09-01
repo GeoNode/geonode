@@ -189,8 +189,7 @@ function jurisdictionFilter(geoms, feature_list){
     var tile_list = [];
     for (var i=0;i<feature_list.length;i++){
          for ( var j=0; j<geoms.length;j++){
-            if(feature_list[i].geometry.components[0].intersects(geoms[j].geometry)
-                console.log(feature_list[i]);
+            if(feature_list[i].geometry.components[0].intersects(geoms[j].geometry))
                 tile_list.push(feature_list[i]);
             }
         }
@@ -468,39 +467,12 @@ Ext.onReady(function (){
             var computed_corners = get_corners(click_pt.x, click_pt.y);
             
             var tile = createTile(computed_corners);
-            
-            var data_filter = new OpenLayers.Filter.Logical({
-                type: "||",
-                filters: [
-                    new OpenLayers.Filter.Comparison({
-                        type: "==",
-                        property: "DSM",
-                        value: "1"
-                    }),
-                    new OpenLayers.Filter.Comparison({
-                        type: "==",
-                        property: "DTM",
-                        value: "1"
-                    }),
-                    new OpenLayers.Filter.Comparison({
-                        type: "==",
-                        property: "ORTHO",
-                        value: "1"
-                    }),
-                ]
-            });
-            
-            var filter = new OpenLayers.Filters.Logical({
-                type: '&&',
-                filters: [
-                    new OpenLayers. Filters.Comparison({
-                        type: "==",
-                        property: "GEOREF",
-                        matchCase: true,
-                        value: tile.georef
-                    }),
-                    data_filter
-                ]
+
+            var filter = new OpenLayers. Filters.Comparison({
+                    type: "==",
+                    property: "GEOREF",
+                    matchCase: true,
+                    value: tile.georef
             });
             
             var wfs_proto = wfs_proto_creator("{{feature_tiled}}", "EPSG:32651","json");         
@@ -510,15 +482,18 @@ Ext.onReady(function (){
                      if(response.priv.responseText){
                         var json_parser = new OpenLayers.Format.GeoJSON();
                         var feature_out = json_parser.read(response.priv.responseText);
+                        var tiles = hasData(jurisdictionFilter(jurisdiction_geoms, feature_out));
+                        console.log(feature_out);
+                      for ( var i=0; i<tiles.length; i++ ){
+                        var f = tiles[i];
                         var corners = {
                             "ur_x": f.data.MAXX, "ur_y": f.data.MAXY,
                             "ul_x": f.data.MINX, "ul_y": f.data.MAXY,
                             "ll_x": f.data.MINX, "ll_y": f.data.MINY,
                             "lr_x": f.data.MAXX,"lr_y": f.data.MINY
                         }
-
                         var tile = createTile(corners);
-                    
+
                         if (find_georef(tile_list, tile.georef)<0){
                             tile_list.push(tile);
                             tile.feature = createHighlightBox(tile.corners);
@@ -530,8 +505,6 @@ Ext.onReady(function (){
                     }
                 }
             });
-
-           
         }
     });
 
