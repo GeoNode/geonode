@@ -287,7 +287,8 @@ function selection_bounds(map_bounds, highlight_layer) {
                 alert("Server did not respond.");
             }
         }
-    });
+    },
+    {jurisdiction_geoms: jurisdiction_geoms});
 }
 
 function getJurisdictionGeom(jurisdiction, juris_vec_layer){
