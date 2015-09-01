@@ -255,6 +255,7 @@ function selection_bounds(map_bounds, highlight_layer) {
             );
         }
     }
+    console.log(geom_filters);
     var wfs_proto = wfs_proto_creator("{{feature_tiled}}", "EPSG:32651","json");         
     var wfs_resp = wfs_proto.read({
         filter: box_filter,
