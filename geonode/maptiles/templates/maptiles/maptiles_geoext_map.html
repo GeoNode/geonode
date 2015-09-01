@@ -189,6 +189,7 @@ function jurisdictionFilter(geoms, feature_list){
     var tile_list = [];
     for ( g in geoms){
         for (f in feature_list){
+            console.log(f);
             if(f.geometry.intersects(g.geometry)){
                 tile_list.push(f);
             }
