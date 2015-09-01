@@ -187,6 +187,7 @@ function wfs_proto_creator(layer_request, srs, outformat){
 function jurisdictionFilter(jurisdiction_geoms, feature_list){
     console.log("feature_list.length="+feature_list.length);
     var tile_list = [];
+    console.log(jg);
     for ( jg in jurisdiction_geoms){
         for (var f in feature_list){
             if(jg.intersects(f.geometry)){
