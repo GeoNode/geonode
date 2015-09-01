@@ -188,7 +188,9 @@ function jurisdictionFilter(jurisdiction_filters, feature_list){
     console.log("feature_list.length="+feature_list.length);
     var tile_list = [];
     for (j in jurisdiction_filters){
+        console.log(j);
         for (f in feature_list){
+            console.log("features");
             console.log(f);
             if(jurisdiction_filters.evaluate(f)){
                 tile_list.push(f);
