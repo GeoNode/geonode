@@ -222,9 +222,9 @@ function hasData( f_list){
         ]
     });
     var tile_list = [];
-    for (f in f_list){
-        if(data_filter.evaluate(f)){
-            tile_list.push(f);
+    for (var i=0;i<f_list.length;i++){
+        if(data_filter.evaluate(f_list[i[)){
+            tile_list.push(f_list[i]);
         }
     }
     return tile_list;
