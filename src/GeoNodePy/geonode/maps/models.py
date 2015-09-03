@@ -1286,8 +1286,8 @@ class Layer(models.Model, PermissionLevelMixin):
             try:
                 store = cat.get_store(self.store, ws)
                 self._resource_cache = cat.get_resource(self.name, store)
-            except:
-                logger.error("Store for %s does not exist", self.name)
+            except Exception as e:
+                logger.error("Store for %s does not exist: %s" % (self.name, str(e)))
                 return None
         return self._resource_cache
 
@@ -1550,7 +1550,9 @@ class Layer(models.Model, PermissionLevelMixin):
         bboxes = get_postgis_bbox(self.name)
         if len(bboxes) != 1 and len(bboxes[0]) != 2:
             return
-
+        if bboxes[0][0] is None or bboxes[0][1] is None:
+            return 
+       
         bbox = re.findall(r"[+-]?(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][+-]?\d+)?", bboxes[0][0])
         llbbox = re.findall(r"[+-]?(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][+-]?\d+)?", bboxes[0][1])
 
