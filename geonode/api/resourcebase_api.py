@@ -440,6 +440,8 @@ class CommonModelApi(ModelResource):
             'csw_type',
             'distribution_description',
             'distribution_url',
+            'owner__first_name',
+            'owner__last_name',
             'owner__username',
             'share_count',
             'popular_count',
@@ -449,6 +451,7 @@ class CommonModelApi(ModelResource):
             'thumbnail_url',
             'detail_url',
             'rating',
+            'is_published',
         ]
 
         if isinstance(
