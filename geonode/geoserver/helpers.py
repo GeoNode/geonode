@@ -820,6 +820,7 @@ def get_attribute_statistics(layer_name, field):
 def get_wcs_record(instance, retry=True):
     wcs = WebCoverageService(ogc_server_settings.LOCATION + 'wcs', '1.0.0')
     key = instance.workspace + ':' + instance.name
+    logger.debug(wcs.contents)
     if key in wcs.contents:
         return wcs.contents[key]
     else:
