@@ -291,7 +291,11 @@ def geoserver_post_save(instance, sender, **kwargs):
             covWidth, covHeight = get_coverage_grid_extent(instance)[:2]
         except GeoNodeException as e:
             msg = _('Could not create a download link for layer.')
-            logger.warn(msg, e)
+            try:
+                # HACK: The logger on signals throws an exception
+                logger.warn(msg, e)
+            except:
+                pass
         else:
 
             links = wcs_links(ogc_server_settings.public_url + 'wcs?',
@@ -484,7 +488,11 @@ def geoserver_pre_save_maplayer(instance, sender, **kwargs):
     except EnvironmentError as e:
         if e.errno == errno.ECONNREFUSED:
             msg = 'Could not connect to catalog to verify if layer %s was local' % instance.name
-            logger.warn(msg, e)
+            try:
+                # HACK: The logger on signals throws an exception
+                logger.warn(msg, e)
+            except:
+                pass
         else:
             raise e
 
