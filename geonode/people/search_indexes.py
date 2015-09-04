@@ -10,6 +10,7 @@ class ProfileIndex(indexes.SearchIndex, indexes.Indexable):
     organization = indexes.CharField(model_attr='organization', null=True)
     position = indexes.CharField(model_attr='position', null=True)
     # Adding these attributes so that the search page functions with elastic search
+    is_active = indexes.BooleanField(model_attr='is_active')
     city = indexes.CharField(model_attr='city', null=True)
     country = indexes.CharField(model_attr='country', null=True)
     profile_detail_url = indexes.CharField(model_attr='get_absolute_url', null=True)
