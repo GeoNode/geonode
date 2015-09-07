@@ -1226,13 +1226,13 @@ def remove_service(request, service_id):
 
         # Delete nested workspace structure from GeoServer for this service.
         if workspace:
-          for store in cat.get_stores(workspace):
-            for resource in cat.get_resources(store):
-              for layer in cat.get_layers(resource):
-                cat.delete(layer)
-              cat.delete(resource)
-            cat.delete(store)
-          cat.delete(workspace)
+            for store in cat.get_stores(workspace):
+                for resource in cat.get_resources(store):
+                    for layer in cat.get_layers(resource):
+                        cat.delete(layer)
+                    cat.delete(resource)
+                cat.delete(store)
+            cat.delete(workspace)
 
         # Delete service from GeoNode.
         service_obj.delete()
