@@ -1219,6 +1219,22 @@ def remove_service(request, service_id):
             "service": service_obj
         }))
     elif request.method == 'POST':
+        # Retrieve this service's workspace from the GeoServer catalog.
+        cat = Catalog(settings.OGC_SERVER['default']['LOCATION'] + "rest",
+                      _user, _password)
+        workspace = cat.get_workspace(service_obj.name)
+
+        # Delete nested workspace structure from GeoServer for this service.
+        if workspace:
+          for store in cat.get_stores(workspace):
+            for resource in cat.get_resources(store):
+              for layer in cat.get_layers(resource):
+                cat.delete(layer)
+              cat.delete(resource)
+            cat.delete(store)
+          cat.delete(workspace)
+
+        # Delete service from GeoNode.
         service_obj.delete()
         return HttpResponseRedirect(reverse("services"))
 
