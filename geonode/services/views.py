@@ -345,7 +345,7 @@ def _register_cascaded_service(url, type, name, username, password, wms=None, ow
         cascade_ws = cat.get_workspace(name)
         if cascade_ws is None:
             cascade_ws = cat.create_workspace(
-                name, "http://geonode.org/cascade")
+                name, "http://geonode.org/" + name)
 
         # TODO: Make sure there isn't an existing store with that name, and
         # deal with it if there is
