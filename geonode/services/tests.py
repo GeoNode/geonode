@@ -46,8 +46,8 @@ class ServicesTests(TestCase):
         response = self.client.post(
             reverse('register_service'),
             {
-             'type': 'WMS',
-             'url': 'http://metaspatial.net/cgi-bin/ogc-wms.xml',
+                'type': 'WMS',
+                'url': 'http://metaspatial.net/cgi-bin/ogc-wms.xml',
             })
         self.assertEqual(response.status_code, 200)
         service_dict = json.loads(response.content)[0]
@@ -70,8 +70,8 @@ class ServicesTests(TestCase):
         response = self.client.post(
             reverse('register_service'),
             {
-             'type': 'REST',
-             'url': 'http://maps1.arcgisonline.com/ArcGIS/rest/services/EPA_Facilities/MapServer',
+                'type': 'REST',
+                'url': 'http://maps1.arcgisonline.com/ArcGIS/rest/services/EPA_Facilities/MapServer',
             })
         self.assertEqual(response.status_code, 200)
         service_dict = json.loads(response.content)[0]
