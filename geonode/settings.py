@@ -97,7 +97,7 @@ LANGUAGES = (
     ('km', 'Khmer'),
     ('pl', 'Polish'),
     ('sv', 'Swedish'),
-    ('th', 'Thai'),
+    ('th', 'ไทย'),
     ('uk', 'Ukranian'),
     ('si', 'Sinhala'),
     ('ta', 'Tamil'),
