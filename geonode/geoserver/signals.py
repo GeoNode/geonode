@@ -21,6 +21,7 @@ from geonode.layers.utils import create_thumbnail
 from geonode.people.models import Profile
 
 from geoserver.layer import Layer as GsLayer
+from mapstory.search.utils import update_es_index
 
 logger = logging.getLogger("geonode.geoserver.signals")
 
@@ -469,6 +470,12 @@ def geoserver_post_save(instance, sender, **kwargs):
     from geonode.layers.models import Layer
     catalogue_post_save(instance, Layer)
 
+    try:
+        # update the elastic search index for the object after post_save triggers have fired.
+        update_es_index(sender, sender.objects.get(id=instance.id))
+    except:
+        pass
+
 
 def geoserver_pre_save_maplayer(instance, sender, **kwargs):
     # If this object was saved via fixtures,
@@ -522,3 +529,10 @@ def geoserver_post_save_map(instance, sender, **kwargs):
             "wms/reflect?" + p
 
         create_thumbnail(instance, thumbnail_remote_url, thumbnail_create_url, check_bbox=False)
+
+        try:
+            # update the elastic search index for the object after post_save triggers have fired.
+            # TODO: this should be done asynchronously!
+            update_es_index(sender, sender.objects.get(id=instance.id))
+        except:
+            pass
