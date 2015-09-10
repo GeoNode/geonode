@@ -128,7 +128,6 @@ GeoNode.BoundingBoxWidget = Ext.extend(Ext.util.Observable, {
                         map.events.unregister("moveend", this, arguments.callee);
                         map.zoomToExtent(bounds, true);
                     });
-                    this.enable();
                 };
                 if (this._ready) {
                     setMapExtent.call(this);

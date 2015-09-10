@@ -1,7 +1,0 @@
-{
-    "radius": 12,
-    "geometry": {"type": "Point", "coordinates": [145.5, -41]},
-    "datalayers": [
-        "wcs:DEM"
-    ]
-}

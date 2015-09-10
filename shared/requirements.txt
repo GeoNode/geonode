@@ -15,17 +15,18 @@ Django==1.4.13
 django-extensions==0.8
 httplib2==0.7.4
 psycopg2==2.4.1
-# -----------------------------------
-# gsconfig upgrade - 3/15/2015
-#   - gsconfig improvements use "publish_featuretype" from gsconfig==0.6.13
-# -----------------------------------
+
+# ---------------------------------------------------------
+# Use Matt's gsconfig with publish_featuretype - 3/15/2015
+#   - Appears in 'pip freeze' as 'gsconfig.py==1.1wm'
+#   - publish_featuretype needed for tabular mapping API
+# ---------------------------------------------------------
+#-e git+https://github.com/cga-harvard/gsconfig.py.git#egg=gsconfig.py
 -e git+https://github.com/cga-harvard/gsconfig.py.git@publish_featuretype#egg=gsconfig.py
-# OLD: -e git+https://github.com/cga-harvard/gsconfig.py.git#egg=gsconfig.py
-# CURRENT (not CGA compatible): gsconfig==0.6.13
 
 django-registration==0.8
 django-profiles==0.2
-#-e git+https://github.com/mbertrand/django-avatar.git#egg=avatar
+-e git+https://github.com/mbertrand/django-avatar.git#egg=avatar
 geonode-avatar==2.1.1
 dialogos==0.1
 agon-ratings==0.2

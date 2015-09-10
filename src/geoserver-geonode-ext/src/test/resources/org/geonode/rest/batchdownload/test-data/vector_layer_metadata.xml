@@ -1,8 +1,0 @@
-<?xml version="1.0"?>
-	<!--
-		This is a fake metadata record that's referenced by
-		BatchDownloadTestData in order to help testing the metadata record for
-		a vector layer is actually downloaded and zipped given its URL is
-		provided by the JSON request
-	-->
-<MD_Metadata />
