@@ -47,6 +47,7 @@ class CommonMetaApi:
                  'category': ALL_WITH_RELATIONS,
                  'owner': ALL_WITH_RELATIONS,
                  'date': ALL,
+                 'is_published': ALL,
                  }
     ordering = ['date', 'title', 'popular_count', 'rating']
     max_limit = None
@@ -161,6 +162,9 @@ class CommonModelApi(ModelResource):
         # Owner filters
         owner = parameters.getlist("owner__username__in")
 
+        # Published filter
+        published = parameters.get("is_published", None)
+
         # Sort order
         sort = parameters.get("order_by", "relevance")
 
@@ -260,6 +264,12 @@ class CommonModelApi(ModelResource):
             sqs = (
                 SearchQuerySet() if sqs is None else sqs).narrow(
                     "owner__username:%s" % ','.join(map(str, owner)))
+
+        # filter by publishing status
+        if published:
+            sqs = (SearchQuerySet() if sqs is None else sqs).filter(
+                SQ(is_published=published)
+                )
 
         # filter by date
         if date_start:
