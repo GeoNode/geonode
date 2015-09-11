@@ -45,9 +45,12 @@ class TaggedInterests(TaggedItemBase):
 class Profile(AbstractUser):
 
     """Fully featured Geonode user"""
-
+    # Mapstory stuff
+    Volunteer_Technical_Community = models.BooleanField(_('Volunteer Technical Community'),
+        help_text=_('indicates membership of the Volunteer Technical Comunity'))
     interests = TaggableManager(_('interests'), blank=True, help_text=_(
         'a list of personal interests'), through=TaggedInterests, related_name='profile_interests')
+    # End mapstory stuff
     organization = models.CharField(
         _('Organization Name'),
         max_length=255,
