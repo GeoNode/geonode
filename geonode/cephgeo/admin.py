@@ -63,9 +63,23 @@ class FTPRequestToObjectIndexAdmin(admin.ModelAdmin):
     list_filter = ('cephobject', 'ftprequest',)
     search_fields = ('cephobject', 'ftprequest',)
 
+class UserJurisdictionAdmin(admin.ModelAdmin):
+    model = UserJurisdiction
+    list_display_links = ('id',)
+    list_display = (
+        'id',
+        'user',
+#        'group',
+        'jurisdiction_shapefile',)
+#    list_filter = ('group',)
+    search_fields = ('user', 
+#                     'group', 
+                     'jurisdiction_shapefile',)
+
 admin.site.register(Cart, CartAdmin)
 admin.site.register(Item, ItemAdmin)
 admin.site.register(CephDataObject, CephDataObjectAdmin)
 admin.site.register(FTPRequest, FTPRequestAdmin)
 admin.site.register(FTPRequestToObjectIndex, FTPRequestToObjectIndexAdmin)
+admin.site.register(UserJurisdiction, UserJurisdictionAdmin)
 
