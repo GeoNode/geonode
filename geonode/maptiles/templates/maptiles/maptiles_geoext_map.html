@@ -187,10 +187,12 @@ function wfs_proto_creator(layer_request, srs, outformat){
 function jurisdictionFilter(geoms, feature_list){
     console.log("feature_list.length="+feature_list.length);
     var tile_list = [];
+    var inJurisdiction = false;
     for (var i=0;i<feature_list.length;i++){
          for ( var j=0; j<geoms.length;j++){
             if(feature_list[i].geometry.components[0].intersects(geoms[j].geometry)){
                 tile_list.push(feature_list[i]);
+                break;
             }
         }
     }
@@ -198,7 +200,6 @@ function jurisdictionFilter(geoms, feature_list){
 }
 
 function hasData( f_list){
-    console.log("f_list.length="+f_list.length);
    var data_filter = new OpenLayers.Filter.Logical({
         type: "||",
         filters: [
@@ -261,7 +262,12 @@ function selection_bounds(map_bounds, highlight_layer) {
             if(response.priv.responseText){
                 var json_parser = new OpenLayers.Format.GeoJSON();
                 var feature_out = json_parser.read(response.priv.responseText);
-                var tiles = hasData(jurisdictionFilter(jurisdiction_geoms, feature_out));
+                var tiles;
+                if (jurisdiction_geoms.length > 0){
+                    tiles = hasData(jurisdictionFilter(jurisdiction_geoms, feature_out));
+                }else{
+                    tiles = hasData(feature_out);
+                }
                 for ( var i=0; i<tiles.length; i++ ){
                     var f = tiles[i];
                     var corners = {
@@ -466,7 +472,7 @@ Ext.onReady(function (){
             var transformed_pt = click_pt.transform(map.getProjectionObject(),new OpenLayers.Projection("EPSG:32651"));
             var computed_corners = get_corners(click_pt.x, click_pt.y);
             
-            var tile = createTile(computed_corners);
+            var tile = createTile(computed_corners);// this is a pointless piece of code
 
             var filter = new OpenLayers. Filter.Comparison({
                     type: "==",
@@ -482,8 +488,12 @@ Ext.onReady(function (){
                      if(response.priv.responseText){
                         var json_parser = new OpenLayers.Format.GeoJSON();
                         var feature_out = json_parser.read(response.priv.responseText);
-                        var tiles = hasData(jurisdictionFilter(jurisdiction_geoms, feature_out));
-                        console.log(feature_out);
+                        var tiles;
+                        if (jurisdiction_geoms.length > 0){
+                            tiles = hasData(jurisdictionFilter(jurisdiction_geoms, feature_out));
+                        }else{
+                            tiles = hasData(feature_out);
+                        }
                         for ( var i=0; i<tiles.length; i++ ){
                             var f = tiles[i];
                             var corners = {
