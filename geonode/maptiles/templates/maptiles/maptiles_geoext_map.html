@@ -381,26 +381,29 @@ Ext.onReady(function (){
     
     map.addLayer(tile_layer);
     
-    var jurisdiction_view_layer = new OpenLayers.Layer.WMS(
-        jurisdiction, geoserver+"geonode/wms",
-        {
-            LAYERS: jurisdiction,
-            format: "image/png",
-            bbox: new OpenLayers.Bounds({{j_bbox}}),
-            transparent: true,
-            opacity: 0.3
-        },
-        {
-            buffer: 0,
-            displayOutsideMaxExtent: true,
-            isBaseLayer: false,
-            projection: "EPSG:32651",
-            maxExtent: new OpenLayers.Bounds({{j_bbox}})
-        } 
-    );
-    
-    map.addLayer(jurisdiction_view_layer);
-    
+    var jurisdiction_view_layer;
+    if(jurisdiction){
+        jurisdiction_view_layer = new OpenLayers.Layer.WMS(
+            jurisdiction, geoserver+"geonode/wms",
+            {
+                LAYERS: jurisdiction,
+                format: "image/png",
+                bbox: new OpenLayers.Bounds({{j_bbox}}),
+                transparent: true,
+                opacity: 0.3
+            },
+            {
+                buffer: 0,
+                displayOutsideMaxExtent: true,
+                isBaseLayer: false,
+                projection: "EPSG:32651",
+                maxExtent: new OpenLayers.Bounds({{j_bbox}})
+            } 
+        );
+        
+        map.addLayer(jurisdiction_view_layer);
+    }
+
     var highlight_layer = new OpenLayers.Layer.Vector(
         "Highlight Layer",
         {
