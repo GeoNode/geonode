@@ -534,7 +534,7 @@ Ext.onReady(function (){
                     type: "==",
                     property: "GRIDREF",
                     matchCase: true,
-                    value: tile.georef
+                    value: createTile(computed_corners).georef//tile.georef
             });
             
             filterSelectedTiles(filter, true, true);
