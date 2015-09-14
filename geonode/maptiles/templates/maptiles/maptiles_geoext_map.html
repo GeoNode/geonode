@@ -232,10 +232,6 @@ function hasData( f_list){
 
 function filterSelectedTiles(tile_filter, single_click, send_notice){
      var wfs_proto = wfs_proto_creator("{{feature_tiled}}", "EPSG:32651","json"); 
-     OpenLayers.Util.extend(wfs_proto, {
-          single_click: single_click,
-          send_notice: send_notice
-     });
      var arg_obj = {
          filter: tile_filter,
          single_click: single_click,
@@ -273,8 +269,8 @@ function filterSelectedTiles(tile_filter, single_click, send_notice){
                     display_points("point_display", highlight_layer);
                   }
                   
-                  if (tiles.length < feature_out.length && this.send_notice ){
-                      if (this.single_click){
+                  if (tiles.length < feature_out.length){
+                      if (feature_out.length==1){
                         alert("Selected tile either lacks data or is out of bounds. ");
                       }else{
                           alert("Some selected tiles have not been included in the list due to lack of data or being outside the jurisdictio boundaries");
