@@ -232,10 +232,12 @@ function hasData( f_list){
 
 function filterSelectedTiles(tile_filter, single_click, send_notice){
      var wfs_proto = wfs_proto_creator("{{feature_tiled}}", "EPSG:32651","json"); 
+     OpenLayers.Util.extend(wfs_proto, {
+          singe_click: single_click,
+          send_notice: send_notice
+     });
      var arg_obj = {
          filter: tile_filter,
-         singe_click: single_click,
-         send_notice: send_notice,
          callback: function(response){
              if(response.priv.responseText){
                  json_parser = new OpenLayers.Format.GeoJSON();
@@ -291,59 +293,6 @@ function selection_bounds(map_bounds, highlight_layer) {
     });
     
     filterSelectedTiles(box_filter, false, true);
-    
-    /*var geom_filters=[];
-    var filter = box_filter;
-    
-   if (jurisdiction_geoms.length > 0){
-        for ( var i=0; i < jurisdiction_geoms.length; i++){
-            //var linear_ring_pts = jurisdiction_geoms[i].geometry.components[0].components[0].components;
-            var spatial_filter = new OpenLayers.Filter.Spatial({
-                    type: OpenLayers.Filter.Spatial.INTERSECTS,
-                    property: "the_geom",
-                    value: jurisdiction_geoms[i].geometry.components[0]
-                });
-            geom_filters.push( 
-               spatial_filter
-            );
-        }
-    }
-    var wfs_proto = wfs_proto_creator("{{feature_tiled}}", "EPSG:32651","json");         
-    var wfs_resp = wfs_proto.read({
-        filter: box_filter,
-        callback: function(response){
-            if(response.priv.responseText){
-                var json_parser = new OpenLayers.Format.GeoJSON();
-                var feature_out = json_parser.read(response.priv.responseText);
-                var tiles;
-                if (jurisdiction_geoms.length > 0){
-                    tiles = hasData(jurisdictionFilter(jurisdiction_geoms, feature_out));
-                }else{
-                    tiles = hasData(feature_out);
-                }
-                for ( var i=0; i<tiles.length; i++ ){
-                    var f = tiles[i];
-                    var corners = {
-                        "ur_x": f.data.MAXX, "ur_y": f.data.MAXY,
-                        "ul_x": f.data.MINX, "ul_y": f.data.MAXY,
-                        "ll_x": f.data.MINX, "ll_y": f.data.MINY,
-                        "lr_x": f.data.MAXX,"lr_y": f.data.MINY
-                    }
-
-                    var tile = createTile(corners);
-                    if (find_georef(tile_list, tile.georef)<0){
-                         tile_list.push(tile);
-                         tile.feature = createHighlightBox(tile.corners);
-                         highlight_layer.addFeatures([tile.feature]);
-                    }
-    
-                }
-                display_points("point_display", highlight_layer);
-            }else{
-                alert("Server did not respond.");
-            }
-        }
-    });*/
 }
 
 function getJurisdictionGeom(jurisdiction, juris_vec_layer){
@@ -538,41 +487,6 @@ Ext.onReady(function (){
             });
             
             filterSelectedTiles(filter, true, true);
-            /*var wfs_proto = wfs_proto_creator("{{feature_tiled}}", "EPSG:32651","json");         
-            var wfs_resp = wfs_proto.read({
-                filter: filter,
-                callback: function(response){
-                     if(response.priv.responseText){
-                        var json_parser = new OpenLayers.Format.GeoJSON();
-                        var feature_out = json_parser.read(response.priv.responseText);
-                        var tiles;
-                        if (jurisdiction_geoms.length > 0){
-                            tiles = hasData(jurisdictionFilter(jurisdiction_geoms, feature_out));
-                        }else{
-                            tiles = hasData(feature_out);
-                        }
-                        for ( var i=0; i<tiles.length; i++ ){
-                            var f = tiles[i];
-                            var corners = {
-                                "ur_x": f.data.MAXX, "ur_y": f.data.MAXY,
-                                "ul_x": f.data.MINX, "ul_y": f.data.MAXY,
-                                "ll_x": f.data.MINX, "ll_y": f.data.MINY,
-                                "lr_x": f.data.MAXX,"lr_y": f.data.MINY
-                            }
-                            var tile = createTile(corners);
-
-                            if (find_georef(tile_list, tile.georef)<0){
-                                tile_list.push(tile);
-                                tile.feature = createHighlightBox(tile.corners);
-                                highlight_layer.addFeatures([tile.feature]);
-                            }else{
-                                removeHighlight(tile.georef, highlight_layer);
-                            }
-                            display_points("point_display", highlight_layer);
-                        }
-                    }
-                }
-            });*/
         }
     });
 
