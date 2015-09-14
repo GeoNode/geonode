@@ -229,6 +229,56 @@ function hasData( f_list){
     return tile_list;
 }
 
+function filterSelectedTiles(tile_filter, single_click, send_notice){
+     var wfs_proto = wfs_proto_creator("{{feature_tiled}}", "EPSG:32651","json"); 
+     var arg_obj = {
+         filter: tile_filter,
+         singe_click: single_click,
+         send_notice: send_notice,
+         callback: function(response){
+             if(response.priv.responseText){
+                 json_parser = new OpenLayers.Format.GeoJSON();
+                 feature_out = json_parser.read(response.priv.responseText);
+                 var tiles;
+                  if (jurisdiction_geoms.length > 0){
+                      tiles = hasData(jurisdictionFilter(jurisdiction_geoms, feature_out));
+                  }else{
+                      tiles = hasData(feature_out);
+                  }
+                  
+                  for (var i=0; i<tiles.length; i++){
+                    var f = tiles[i];
+                    var corners = {
+                        "ur_x": f.data.MAXX, "ur_y": f.data.MAXY,
+                        "ul_x": f.data.MINX, "ul_y": f.data.MAXY,
+                        "ll_x": f.data.MINX, "ll_y": f.data.MINY,
+                        "lr_x": f.data.MAXX,"lr_y": f.data.MINY
+                    }
+                    var tile = createTile(corners);
+
+                    if (find_georef(tile_list, tile.georef)<0){
+                        tile_list.push(tile);
+                        tile.feature = createHighlightBox(tile.corners);
+                        highlight_layer.addFeatures([tile.feature]);
+                    }else{
+                        removeHighlight(tile.georef, highlight_layer);
+                    }
+                    display_points("point_display", highlight_layer);
+                  }
+                  
+                  if (tiles.length < feature_out.length && this.send_notice ){
+                      if (this.single_click){
+                        alert("Selected tile either lacks data or is out of bounds. ");
+                      }else{
+                          alert("Some selected tiles have not been included in the list due to lack of data or being outside the jurisdictio boundaries");
+                      }
+                  }
+             }
+         }
+     };
+     var wfs_resp = wfs_proto.read(arg_obj);
+}
+
 function selection_bounds(map_bounds, highlight_layer) {
     
     var transformed_bounds = map_bounds.clone().transform(new OpenLayers.Projection("EPSG:900913"), new OpenLayers.Projection("EPSG:32651"));
@@ -239,7 +289,9 @@ function selection_bounds(map_bounds, highlight_layer) {
         value: transformed_bounds.toGeometry()
     });
     
-    var geom_filters=[];
+    filterSelectedTiles(box_filter, false, true);
+    
+    /*var geom_filters=[];
     var filter = box_filter;
     
    if (jurisdiction_geoms.length > 0){
@@ -290,7 +342,7 @@ function selection_bounds(map_bounds, highlight_layer) {
                 alert("Server did not respond.");
             }
         }
-    });
+    });*/
 }
 
 function getJurisdictionGeom(jurisdiction, juris_vec_layer){
@@ -475,7 +527,7 @@ Ext.onReady(function (){
             var transformed_pt = click_pt.transform(map.getProjectionObject(),new OpenLayers.Projection("EPSG:32651"));
             var computed_corners = get_corners(click_pt.x, click_pt.y);
             
-            var tile = createTile(computed_corners);// this is a pointless piece of code
+            //var tile = createTile(computed_corners);// this is a pointless piece of code
 
             var filter = new OpenLayers. Filter.Comparison({
                     type: "==",
@@ -484,7 +536,8 @@ Ext.onReady(function (){
                     value: tile.georef
             });
             
-            var wfs_proto = wfs_proto_creator("{{feature_tiled}}", "EPSG:32651","json");         
+            filterSelectedTiles(filter, true, true);
+            /*var wfs_proto = wfs_proto_creator("{{feature_tiled}}", "EPSG:32651","json");         
             var wfs_resp = wfs_proto.read({
                 filter: filter,
                 callback: function(response){
@@ -518,7 +571,7 @@ Ext.onReady(function (){
                         }
                     }
                 }
-            });
+            });*/
         }
     });
 
