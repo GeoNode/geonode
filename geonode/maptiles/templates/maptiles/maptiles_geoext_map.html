@@ -239,6 +239,8 @@ function filterSelectedTiles(tile_filter, single_click, send_notice){
      var arg_obj = {
          filter: tile_filter,
          callback: function(response){
+             console.log(this.single_click);
+             console.log(this.send_notice);
              if(response.priv.responseText){
                  json_parser = new OpenLayers.Format.GeoJSON();
                  feature_out = json_parser.read(response.priv.responseText);
