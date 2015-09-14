@@ -51,6 +51,7 @@ if ("{{test_mode}}"=="True"){
 var options = {{ viewer| safe }};
 var app, map;
 var tile_list = [];
+var highlight_layer;
 var jurisdiction_geoms = [];
 var interest_bounds; 
 //var geoserver = "{{geoserver}}";
@@ -456,7 +457,7 @@ Ext.onReady(function (){
         map.addLayer(jurisdiction_view_layer);
     }
 
-    var highlight_layer = new OpenLayers.Layer.Vector(
+    highlight_layer = new OpenLayers.Layer.Vector(
         "Highlight Layer",
         {
             isBaseLayer: false ,
