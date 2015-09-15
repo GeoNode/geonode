@@ -158,7 +158,8 @@ function display_message(div_id, text_container_id, message){
     var text = document.getElementById(text_container_id);
     console.log(text);
     text.innerHTML = message;
-    container.setAttribute("hidden","false");
+    //container.setAttribute("hidden","false");
+    container.style.visibility="visible";
     //container.setAttribute("visibility", "visible");
 }
 
@@ -282,10 +283,10 @@ function filterSelectedTiles(tile_filter, single_click, send_notice){
                   if (tiles.length < feature_out.length){
                       if (feature_out.length==1){
                             //alert("Selected tile either lacks data or is out of bounds. ");
-                            display_message("status-message","status-message-text-body","Selected tile either lacks data or is out of bounds." );
+                            display_message("status-message","status-message-text","Selected tile either lacks data or is out of bounds." );
                       }else{
                             //alert("Some selected tiles have not been included in the list due to lack of data or being outside the jurisdiction boundaries");
-                            display_message("status-message","status-message-text-body","Some selected tiles have not been included in the list due to lack of data or being outside the jurisdiction boundaries");
+                            display_message("status-message","status-message-text","Some selected tiles have not been included in the list due to lack of data or being outside the jurisdiction boundaries");
                       }
                   }else{
                       /*document.getElementById("warning").style.visibilty =  "visible";
