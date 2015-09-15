@@ -20,6 +20,7 @@ from datetime import datetime
 from django.contrib.auth.models import User, Permission
 from django.utils.translation import ugettext_lazy as _
 from django.core.exceptions import ValidationError
+from django.core.urlresolvers import reverse
 from lxml import etree
 from geonode.maps.gs_helpers import cascading_delete, get_postgis_bbox
 import logging
@@ -979,6 +980,13 @@ class Layer(models.Model, PermissionLevelMixin):
 
     # Section 9
     # see metadata_author property definition below
+    def add_as_join_target(self):
+        if not self.id:
+            return 'n/a'
+        admin_url = reverse('admin:datatables_jointarget_add', args=())
+        add_as_target_link = '%s?layer=%s' % (admin_url, self.id)
+        return '<a href="%s">Add as Join Target</a>' % (add_as_target_link)
+    add_as_join_target.allow_tags = True
 
     def llbbox_coords(self):
         try:

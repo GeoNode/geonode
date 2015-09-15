@@ -10,6 +10,7 @@ from django.template.defaultfilters import slugify
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.models import User
 from shared_dataverse_information.worldmap_datatables.forms import DataTableResponseForm
+from django.core.urlresolvers import reverse
 
 from .db_helper import get_datastore_connection_string
 
@@ -181,7 +182,6 @@ class JoinTarget(models.Model):
     """
     JoinTarget
     """
-
     layer = models.ForeignKey(Layer)
     attribute = models.ForeignKey(LayerAttribute)
     geocode_type = models.ForeignKey(GeocodeType, on_delete=models.PROTECT)
@@ -194,6 +194,14 @@ class JoinTarget(models.Model):
     def __unicode__(self):
         return self.layer.title
 
+    def return_to_layer_admin(self):
+        if not self.id or not self.layer:
+            return 'n/a'
+        layer_admin_link = reverse('admin:maps_layer_change', args=(self.layer.id,))
+        return '<a href="%s">View Layer Admin</a>' % (layer_admin_link)
+    return_to_layer_admin.allow_tags = True
+
+
     def as_json(self):
         if self.type:
             type = {'name':self.type.name, 'description':self.type.description_shorthand, 'clean_steps':self.type.clean_steps}
@@ -204,6 +212,10 @@ class JoinTarget(models.Model):
             attribute={'attribute':self.attribute.attribute, 'type':self.attribute.attribute_type},
             type=type,
             geocode_type=self.geocode_type.name)
+
+    class Meta:
+        unique_together = ('layer', 'attribute',)
+
 
 class LatLngTableMappingRecord(models.Model):
     datatable = models.ForeignKey(DataTable)

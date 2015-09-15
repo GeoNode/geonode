@@ -25,16 +25,19 @@ class LatLngTableMappingRecordAdmin(admin.ModelAdmin):
 
 
 class TableJoinAdmin(admin.ModelAdmin):
-    model = TableJoin 
+    model = TableJoin
 
 
 class JoinTargetAdmin(admin.ModelAdmin):
     model = JoinTarget
+    list_display = ('layer', 'attribute', 'geocode_type', 'type', 'year')
+    readonly_fields = ('return_to_layer_admin', )
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         if db_field.name == 'attribute':
-            kwargs["queryset"] = LayerAttribute.objects.filter(
-                layer=request.GET.get('layer'))
+            if request.GET.get('layer', None) is not None:
+                kwargs["queryset"] = LayerAttribute.objects.filter(
+                                        layer=request.GET.get('layer'))
         return super(JoinTargetAdmin, self).formfield_for_foreignkey(
             db_field, request, **kwargs)
 
