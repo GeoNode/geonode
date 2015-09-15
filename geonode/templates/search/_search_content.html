@@ -1,5 +1,5 @@
 {% load i18n %}
-<div class="row">
+<div class="row" ng-controller="CartList">
   <div class="col-md-3">
     <div class="selections">
       <h5>
@@ -24,12 +24,13 @@
       </div>
   </div>
   <div class="col-md-9">
-    <div class="col-md-3">
+    <div class="col-md-2">
       <span>Total: </span>
       <span ng-bind="total_counts"></span>
     </div>
     {% include "search/_sort_filters.html" %}
     <div class="col-md-12 grid-spacer">
+    <resource-cart></resource-cart>
     {% include 'base/_resourcebase_snippet.html' %}
     {% include 'search/_pagination.html' %}
     </div>
