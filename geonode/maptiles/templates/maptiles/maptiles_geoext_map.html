@@ -152,6 +152,12 @@ function display_points(div_id, vec_layer){
     document.getElementById("georef_area").setAttribute("value",georef_string);
 }
 
+function display_message(div_id, message){
+    var container=document.getElementById(div_id);
+    container.innerHTML = message;
+    container.setAttribtue("visibility", "visible");
+}
+
 function createHighlightBox(feature_attribs){
     var pt1 = new OpenLayers.Geometry.Point(feature_attribs["ul_x"], feature_attribs["ul_y"]).transform(new OpenLayers.Projection("EPSG:32651"), new OpenLayers.Projection("EPSG:900913"));
     var pt2 = new OpenLayers.Geometry.Point(feature_attribs["ur_x"], feature_attribs["ur_y"]).transform(new OpenLayers.Projection("EPSG:32651"), new OpenLayers.Projection("EPSG:900913"));
@@ -271,10 +277,14 @@ function filterSelectedTiles(tile_filter, single_click, send_notice){
                   
                   if (tiles.length < feature_out.length){
                       if (feature_out.length==1){
-                        alert("Selected tile either lacks data or is out of bounds. ");
+                            //alert("Selected tile either lacks data or is out of bounds. ");
+                            display_message("warning","Selected tile either lacks data or is out of bounds." );
                       }else{
-                          alert("Some selected tiles have not been included in the list due to lack of data or being outside the jurisdictio boundaries");
+                            //alert("Some selected tiles have not been included in the list due to lack of data or being outside the jurisdiction boundaries");
+                            display_message("warning","Some selected tiles have not been included in the list due to lack of data or being outside the jurisdiction boundaries");
                       }
+                  }else{
+                      document.getElementById(div_id).setAttribtue("visibility", "visible");
                   }
              }
          }
