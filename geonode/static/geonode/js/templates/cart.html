@@ -1,0 +1,11 @@
+<div id="composerCart" class="pull-right col-md-3">
+    <h4>Cart</h4>
+    <p ng-show="!cart.getCart().items.length">
+        Add layers from the "layers" buttons on the left
+    </p>
+    <table class="table table-striped">
+        <tr ng-repeat="resource in cart.getCart().items">
+            <td>{{ resource.title }}<button class="btn btn-default btn-xs pull-right" ng-click="cart.removeItem(resource.id)">X</button></td>
+        </tr>
+    </table>
+</div>

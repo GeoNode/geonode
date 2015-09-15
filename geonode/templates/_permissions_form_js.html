@@ -316,9 +316,9 @@
     $("#permission_form").submit(perms_submit);
     {% endif %}
 
-    var bulk_perms_submit = function(){
+    var bulk_perms_submit = function(items){
        var permissions = permissionsString($('#permission_form'), 'base');
-       var selected_ids = $.map($('.resource_selected'), function(elem){return $(elem).attr('resource_id')});
+       var selected_ids = $.map(items, function(item){return item.id});
        var message = $('#bulk_perms_message');
        if(selected_ids.length == 0){
         message.find('.message').html('Please select at least one resource to set the permissions');
@@ -353,11 +353,6 @@
         }
       );
     };
-
-    $("#bulk_perms_submit").click(function(e){
-        e.preventDefault();
-        bulk_perms_submit();
-    });
 
     $("#_bulk_permissions").on('hidden.bs.modal', function (e) {
       $('#bulk_perms_message').addClass("hidden");
