@@ -155,7 +155,9 @@ function display_points(div_id, vec_layer){
 function display_message(div_id, message){
     var container=document.getElementById(div_id);
     container.innerHTML = message;
-    container.setAttribtue("visibility", "visible");
+    container.style.visibillity = "visible";
+    container.style.display = "inline";
+    //container.setAttribute("visibility", "visible");
 }
 
 function createHighlightBox(feature_attribs){
@@ -284,7 +286,8 @@ function filterSelectedTiles(tile_filter, single_click, send_notice){
                             display_message("warning","Some selected tiles have not been included in the list due to lack of data or being outside the jurisdiction boundaries");
                       }
                   }else{
-                      document.getElementById(div_id).setAttribtue("visibility", "visible");
+                      document.getElementById("warning").style.visibilty =  "visible";
+                      document.getElementById("warning").style.display =  "inline";
                   }
              }
          }
