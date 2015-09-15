@@ -23,7 +23,10 @@
 
 {% block body_outer %}
 {% block body %}
-
+<div class="alert alert-warn" id="status-message" style="visibility: hidden>
+    <a class="close" onclick="$('.alert').hide()">×</a>
+    <strong><p id="status-message-text">Placeholder for status-message</p></strong>  
+</div>
 <div class="page-header">
   <h2 class="page-title">Map Tiles</h2>
 </div>
