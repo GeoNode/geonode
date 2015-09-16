@@ -255,7 +255,7 @@ def view_add_worldmap_shapefile(request):
             return HttpResponse(status=400, content=json_msg, content_type="application/json")
 
 
-        # Prepare a JSON reponse
+        # Prepare a JSON response
         #
         layer_metadata_obj = LayerMetadata(saved_layer)
 

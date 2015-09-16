@@ -12,9 +12,11 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.translation import ugettext_lazy as _
+from django.views.decorators.http import require_GET
 from geonode.dataverse_connect.dv_utils import MessageHelperJSON          # format json response object
 from shared_dataverse_information.shared_form_util.format_form_errors import format_errors_as_text
 
+from geonode.contrib.datatables.forms import JoinTargetForm
 from shared_dataverse_information.worldmap_datatables.forms import\
     DataTableUploadForm,\
     TableJoinRequestForm,\
@@ -108,33 +110,33 @@ def datatable_detail(request, dt_id):
     return HttpResponse(json_msg, mimetype="application/json", status=200)
 
 
-
+"""
+from contrib.datatables.forms import JoinTargetForm
+d = {}
+f = JoinTargetForm(d)
+f.is_valid()
+"""
+@require_GET
 @login_required
 def jointargets(request):
-    if len(request.GET.keys()) > 0:
-        kwargs = {}
-        if request.GET.get('title'):
-            kwargs['layer__title__icontains'] = request.GET.get('title')
-        if request.GET.get('type'):
-            kwargs['geocode_type__name__icontains'] = request.GET.get('type')
-        if request.GET.get('start_year'):
-            if request.GET.get('start_year').isdigit():
-                kwargs['year__gte'] = request.GET.get('start_year')
-            else:
-                return HttpResponse(json.dumps({'success': False, 'msg':'Invalid Start Year'}), mimetype="application/json")
-        if request.GET.get('end_year'):
-            if request.GET.get('end_year').isdigit():
-                kwargs['year__lte'] = request.GET.get('end_year')
-            else:
-                return HttpResponse(json.dumps({'success': False, 'msg':'Invalid End Year'}),
-                        mimetype="application/json")
-        jts = JoinTarget.objects.filter(**kwargs) 
-        results = [ob.as_json() for ob in jts] 
-        return HttpResponse(json.dumps(results), mimetype="application/json")
-    else:
-        jts = JoinTarget.objects.all()
-        results = [ob.as_json() for ob in jts] 
-        return HttpResponse(json.dumps(results), mimetype="application/json")
+    """"
+    Return the JoinTarget objects in JSON formats
+
+    Filters may be applied for:
+        - title
+        - type
+        - start_year
+        - end_year
+    These filters are validated through the JoinTargetForm
+    """"
+    f = JoinTargetForm(request.GET)
+    if not f.is_valid():
+        fail_dict = dict(success=False, msg=f.get_error_messages_as_html_string())
+        return HttpResponse(json.dumps(fail_dict), mimetype='application/json')
+
+    jts = JoinTarget.objects.filter(**f.get_join_target_filter_kwargs())
+    results = [ob.as_json() for ob in jts]
+    return HttpResponse(json.dumps(results), mimetype="application/json")
 
 
 
