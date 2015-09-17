@@ -158,13 +158,11 @@ function display_points(div_id, vec_layer){
 
 function display_message(div_id, text_container_id, message){
     var container=document.getElementById(div_id);
-    console.log(container);
     var text = document.getElementById(text_container_id);
     //console.log(text);
     text.innerHTML = message;
     //container.setAttribute("hidden","false");
-    //container.style.visibility="visible";
-    $(div_id).show();
+    container.style.visibility="visible";
     //container.setAttribute("visibility", "visible");
 }
 
