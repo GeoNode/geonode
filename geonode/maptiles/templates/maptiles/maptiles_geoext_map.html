@@ -98,8 +98,8 @@ $(document).ready(function(){
         
         $("#selection-message-close").click(function(e){
             //$("#selection-message").hide();
-            //document.getElementById("status-message").style.visibility="hidden";
-            document.getElementById("status-message").style.display="none";
+            document.getElementById("status-message").style.visibility="collapse";
+            //document.getElementById("status-message").style.display="none";
         });
        
 });
@@ -164,9 +164,7 @@ function display_message(div_id, text_container_id, message){
     //console.log(text);
     text.innerHTML = message;
     //container.setAttribute("hidden","false");
-    //container.style.visibility="visible";
-    container.style.display="block";
-    //container.setAttribute("visibility", "visible");
+    container.style.visibility="visible";
 }
 
 function createHighlightBox(feature_attribs){
