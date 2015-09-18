@@ -13,9 +13,9 @@ from django.template.defaultfilters import slugify
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.translation import ugettext_lazy as _
 
-from geonode.dataverse_connect.dv_utils import MessageHelperJSON          # format json response object
+from geonode.contrib.dataverse_connect.dv_utils import MessageHelperJSON          # format json response object
 
-from geonode.dataverse_layer_metadata.forms import DataverseLayerMetadataValidationForm
+from geonode.contrib.dataverse_layer_metadata.forms import DataverseLayerMetadataValidationForm
 from shared_dataverse_information.worldmap_datatables.forms import \
                                                     TableUploadAndJoinRequestForm
 

@@ -1,12 +1,28 @@
 """
 Run tests for the WorldMap Tabular API
 
-python manage.py test contrib.datatables.tests.run_test_tabular_api.TestWorldMapTabularAPI --settings=geonode.no_db_settings
-"""
-import os
-import sys
+python manage.py test datatables.TestWorldMapTabularAPI --settings=geonode.no_db_settings
+
+What these tests do:
+    (Note: Setup takes several seconds)
+
+    Setup at the ~class~ level: Uploads a shapefile to use as an existing Layer
+
+        Test:
+        - Try JoinTarget API with good and bad params
+        - Try the Upload and Join API with bad params
+            test_01a_fail_upload_join_with_no_file
+            test_01b_fail_upload_join_with_blank_title
+            test_01c_fail_upload_join_with_blank_abstract
+        - Use the Upload and Join API with good params
+        - Try to retrieve details and delete TableJoin object with bad params
+            test_04_non_existent_tablejoin
+
+    Teardown at the ~class~ level: Deletes the shapefile used as an existing Layer
 
 """
+"""
+import os, sys
 if __name__=='__main__':
     sys.path.append('/Users/rmp553/Documents/github-worldmap/cga-worldmap/src/GeoNodePy')
     sys.path.append('/Users/rmp553/Documents/github-worldmap/cga-worldmap/src/GeoNodePy/geonode')
@@ -24,29 +40,24 @@ from unittest import skip
 
 from django.utils import unittest
 
-#from django.test import TestCase
-
-# API path(s) are here
-#
 from django.core.urlresolvers import reverse
-
-#from shared_dataverse_information.shapefile_import.forms import ShapefileImportDataForm
 from geonode.contrib.dataverse_connect.forms import ShapefileImportDataForm
-#from shared_dataverse_information.map_layer_metadata.forms import MapLayerMetadataValidationForm
+from geonode.contrib.msg_util import *
+
+from geonode.contrib.datatables.forms import TableJoinRequestForm,\
+                                        TableUploadAndJoinRequestForm,\
+                                        DataTableUploadForm
+
 from shared_dataverse_information.dataverse_info.forms_existing_layer import DataverseInfoValidationFormWithKey
-from shared_dataverse_information.worldmap_datatables.forms import DataTableUploadForm,\
-        DataTableResponseForm,\
-        TableJoinResultForm,\
-        TableUploadAndJoinRequestForm
+
+# need to remove these:
+from shared_dataverse_information.worldmap_datatables.forms import DataTableResponseForm,\
+        TableJoinResultForm
+        #TableUploadAndJoinRequestForm
+        #DataTableUploadForm
 from shared_dataverse_information.map_layer_metadata.forms import WorldMapToGeoconnectMapLayerMetadataValidationForm
 
 
-#from shared_dataverse_information.worldmap_api_helper.url_helper import CLASSIFY_LAYER_API_PATH\
-#                , GET_LAYER_INFO_BY_DATAVERSE_INSTALLATION_AND_FILE_API_PATH\
-#                , GET_CLASSIFY_ATTRIBUTES_API_PATH
-
-
-from geonode.contrib.msg_util import *
 
 # --------------------------------------------------
 # Load up the Worldmap server url and username
@@ -66,14 +77,14 @@ def setUpModule():
     """
     Module Set Up placeholder
     """
-    msg('---- Module setup ---- ')
+    pass
 
 
 def tearDownModule():
     """
     Module tear down placeholder
     """
-    msg('---- Module teardown ---- ')
+    pass
 
 
 class TestWorldMapTabularAPI(unittest.TestCase):
@@ -87,50 +98,15 @@ class TestWorldMapTabularAPI(unittest.TestCase):
     URL_ID_ATTR = 'URL_ID'
 
 
-    #@skip('(not a real test) test_grab_detail')
-    def test_grab_detail(self):
-        msgn('(not a real test) test_grab_detail')
-        """
-        Working on changing datatable detail response
-        """
-        table_id = 39
-        api_detail_url = self.datatable_detail.replace(self.URL_ID_ATTR, str(table_id))
-
-        self.login_for_cookie()
-
-        r = None
-        try:
-            r = self.client.get(api_detail_url)
-        except RequestsConnectionError as e:
-            msgx('Connection error: %s' % e.message); return
-        except:
-            msgx("Unexpected error: %s" % sys.exc_info()[0])
-
-        msg(r.text)
-        msg(r.status_code)
-        self.assertTrue(r.status_code == 200,
-                "Expected status code of 200.  Received: %s\n%s" % (r.status_code, r.text))
-
-        rjson = r.json()
-
-        self.assertTrue('data' in rjson,
-                        "'data' key not found in rjson. Found: %s" % rjson)
-
-        f = DataTableResponseForm(rjson['data'])
-
-        self.assertTrue(f.is_valid(), "DataTableResponseForm validation failed: %s" % f.errors)
-
-
-
     @classmethod
     def tearDownClass(cls):
         msg('\n>> tearDownClass')
+
         cls.delete_ma_tigerlines_shapefile()
 
     @classmethod
     def setUpClass(cls):
         msg('\n>>> setUpClass')
-
         # Verify/load MA tigerlines test info
         #
         tab_ma_dataverse_info_fname = join(cls.TEST_FILE_DIR, 'tab_ma_dv_info.json')
@@ -173,6 +149,7 @@ class TestWorldMapTabularAPI(unittest.TestCase):
         self.csv_upload_url = self.base_url + '/datatables/api/upload'
         # self.shp_layer_upload_url = self.base_url + '/layers/upload'
 
+        self.join_target_url = self.base_url + '/datatables/api/jointargets'
         self.join_datatable_url = self.base_url + '/datatables/api/join'
         self.upload_and_join_datatable_url = self.base_url + '/datatables/api/upload_and_join'
         self.upload_lat_lng_url = self.base_url + '/datatables/api/upload_lat_lon'
@@ -354,6 +331,96 @@ class TestWorldMapTabularAPI(unittest.TestCase):
         msg('Layer deleted: %s\n%s' % (r.status_code, r.text))
 
 
+
+    #@skip('test_get_join_targets')
+    def test_get_join_targets(self):
+        """
+        Return the JoinTargets.
+
+        Expect a 200 response, may be empty list or whatever is in db, so don't check exact content
+
+        :return:
+        """
+        msgn('test_get_join_targets')
+
+        self.login_for_cookie()
+
+        try:
+            r = self.client.get(self.join_target_url)
+        except RequestsConnectionError as e:
+            msgx('Connection error: %s' % e.message); return
+        except:
+            msgx("Unexpected error: %s" % sys.exc_info()[0]); return
+
+        #msg(r.text)
+        #msg(r.status_code)
+        self.assertTrue(r.status_code == 200,
+                "Expected status code of 200.  Received: %s\n%s" % (r.status_code, r.text))
+
+        rjson = r.json()
+        self.assertTrue('success' in rjson,
+                        "'success' key not found in rjson. Found: %s" % rjson)
+        self.assertTrue(rjson.get('success') is True,
+                        "rjson.get('success') was not True, instead was: %s" % rjson.get('success'))
+        self.assertTrue('data' in rjson,
+                        "'data' key not found in rjson. Found: %s" % rjson)
+
+        # ------------------------------
+        # Bad info...end_year before start_year
+        # ------------------------------
+        try:
+            r = self.client.get(self.join_target_url + '/?start_year=1982&end_year=1967')
+        except RequestsConnectionError as e:
+            msgx('Connection error: %s' % e.message); return
+        except:
+            msgx("Unexpected error: %s" % sys.exc_info()[0]); return
+
+        #msg(r.text)
+        #msg(r.status_code)
+        rjson = r.json()
+        self.assertTrue(r.status_code == 400,
+                "Expected status code of 400.  Received: %s\n%s" % (r.status_code, r.text))
+
+        self.assertTrue('success' in rjson,
+                        "'success' key not found in rjson. Found: %s" % rjson)
+        self.assertTrue(rjson.get('success') is False,
+                        "rjson.get('success') was not False, instead was: %s" % rjson.get('success'))
+
+    @skip('(not a real test) test_grab_detail')
+    def test_grab_detail(self):
+        msgn('(not a real test) test_grab_detail')
+        """
+        Working on changing datatable detail response
+        """
+        table_id = 39
+        api_detail_url = self.datatable_detail.replace(self.URL_ID_ATTR, str(table_id))
+
+        self.login_for_cookie()
+
+        r = None
+        try:
+            r = self.client.get(api_detail_url)
+        except RequestsConnectionError as e:
+            msgx('Connection error: %s' % e.message); return
+        except:
+            msgx("Unexpected error: %s" % sys.exc_info()[0])
+
+        msg(r.text)
+        msg(r.status_code)
+        self.assertTrue(r.status_code == 200,
+                "Expected status code of 200.  Received: %s\n%s" % (r.status_code, r.text))
+
+        rjson = r.json()
+
+        self.assertTrue('data' in rjson,
+                        "'data' key not found in rjson. Found: %s" % rjson)
+
+        f = DataTableResponseForm(rjson['data'])
+
+        self.assertTrue(f.is_valid(), "DataTableResponseForm validation failed: %s" % f.errors)
+
+
+
     def is_attribute_in_ma_layer(self, attr_name):
         if attr_name is None:
             return False
@@ -373,7 +440,7 @@ class TestWorldMapTabularAPI(unittest.TestCase):
                       abstract='(abstract)',
                       table_attribute='tract',
 
-                      layer_typename=self.existing_layer_name,
+                      layer_name=self.existing_layer_name,
                       layer_attribute='TRACTCE',
 
                       delimiter=',',
@@ -387,7 +454,7 @@ class TestWorldMapTabularAPI(unittest.TestCase):
         return params
 
 
-    @skip('skipping test_01a_fail_upload_join_with_no_file')
+    #@skip('skipping test_01a_fail_upload_join_with_no_file')
     def test_01a_fail_upload_join_with_no_file(self):
 
         msgt('(1) test_01_datatable_fail_tests')
@@ -442,7 +509,7 @@ class TestWorldMapTabularAPI(unittest.TestCase):
                 "Response text should have error of 'This field is required.'  Found: %s" % rjson)
 
 
-    @skip('skipping test_01b_fail_upload_join_with_blank_title')
+    #@skip('skipping test_01b_fail_upload_join_with_blank_title')
     def test_01b_fail_upload_join_with_blank_title(self):
         # -----------------------------------------------------------
         msgn('(1b) Fail with blank title')
@@ -494,7 +561,7 @@ class TestWorldMapTabularAPI(unittest.TestCase):
         self.assertTrue(r.text.find('This field is required.') > -1\
                         , "Response text should have error of 'This field is required.'  Found: %s" % rjson)
 
-    @skip('skipping test_01c_fail_upload_join_with_blank_abstract')
+    #@skip('skipping test_01c_fail_upload_join_with_blank_abstract')
     def test_01c_fail_upload_join_with_blank_abstract(self):
         # -----------------------------------------------------------
         msgn('(1c) Fail with blank title')
@@ -547,13 +614,13 @@ class TestWorldMapTabularAPI(unittest.TestCase):
                         , "Response text should have error of 'This field is required.'  Found: %s" % rjson)
 
 
-    @skip('test_04_non_existent_tablejoin')
+    #@skip('test_04_non_existent_tablejoin')
     def test_04_non_existent_tablejoin(self):
 
         # -----------------------------------------------------------
         msgn("(4) TableJoin - try to see details and delete with bad id")
         # -----------------------------------------------------------
-        table_join_id = 8723552 # test will fail is this id exists
+        table_join_id = 8723552 # test will fail if this id exists
 
         # -----------------------------------------------------------
         msgn("(4a) Try to view with bad id")
@@ -633,18 +700,21 @@ class TestWorldMapTabularAPI(unittest.TestCase):
                                         , files=files\
                                     )
         except RequestsConnectionError as e:
-            msgx('Connection error: %s' % e.message); return
+            msgx('Connection error: %s' % e.message)
+            return
         except:
             msgx("Unexpected error: %s" % sys.exc_info()[0])
+            return
 
         msg(r.status_code)
-        msg(r.text)
+        msg('r.text: %s' % r.text)
 
         if r.status_code == 200:
             msg('DataTable uploaded and joined!')
         else:
             self.assertTrue(False,
                 "Should receive 200 message.  Received: %s\n%s" % (r.status_code, r.text))
+
 
         try:
             rjson = r.json()
@@ -657,7 +727,7 @@ class TestWorldMapTabularAPI(unittest.TestCase):
         f = TableJoinResultForm(rjson)
         self.assertTrue(f.is_valid(), "Validation failed with TableJoinResultForm: %s" % f.errors)
 
-
+        return
         # -----------------------------------------------------------
         # Pull out table_id and tablejoin_id
         #   for detail and delete tests
@@ -818,7 +888,7 @@ class TestWorldMapTabularAPI(unittest.TestCase):
 
 
 
-    #@skip('skipping test_03_upload_join_boston_income')
+    @skip('skipping test_03_upload_join_boston_income')
     def test_03_upload_join_boston_income(self):
         """
         Upload DataTable, Join it to a Layer, and Delete it

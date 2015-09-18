@@ -1,7 +1,6 @@
 from django import forms
-from django.utils.translation import ugettext, ugettext_lazy as _
 from django.core.validators import MaxValueValidator
-
+from django.core.files.uploadedfile import SimpleUploadedFile
 
 MAX_ALLOWED_YEAR = 9999
 ERR_MSG_START_YEAR_CANNOT_BE_GREATER = "The start year cannot be greater than the end year."
@@ -9,7 +8,9 @@ ERR_MSG_YEAR_TOO_HIGH = 'Ensure this value is less than or equal to %d.' % (MAX_
 
 
 class JoinTargetForm(forms.Form):
-
+    """
+    Used to validate parameters passed to the views.jointargets API call
+    """
     title = forms.CharField(required=False)
     type = forms.CharField(required=False)
     start_year = forms.IntegerField(label='Start Year', required=False, validators=[MaxValueValidator(MAX_ALLOWED_YEAR)])
@@ -68,3 +69,59 @@ class JoinTargetForm(forms.Form):
             kwargs['year__lte'] = self.cleaned_data['end_year']
 
         return kwargs
+
+
+class DataTableUploadForm(forms.Form):
+    #        fields = ('title', 'abstract', 'delimiter', 'no_header_row')
+    title = forms.CharField(max_length=255, help_text='Title for New DataTable')
+    abstract = forms.CharField(widget=forms.Textarea, initial='(no abstract)')
+    delimiter = forms.CharField(max_length=10, initial=',')
+    no_header_row = forms.BooleanField(initial=False, required=False,
+            help_text='Specify "True" if the first row is not a header')
+    uploaded_file = forms.FileField()#upload_to='datatables/%Y/%m/%d')
+
+    def clean_delimiter(self):
+        """
+        Return 1-string delimiter value.
+        """
+        delim_value = self.cleaned_data.get('delimiter', None)
+
+        if delim_value is None:
+            raise forms.ValidationError(_('Invalid value'))
+
+        if len(delim_value) > 1:
+            delim_value = delim_value[0]
+
+        return str(delim_value)
+
+class TableJoinRequestForm(forms.Form):
+
+    table_name = forms.CharField(max_length=255, help_text='DataTable name')
+    table_attribute = forms.CharField(max_length=255\
+                                    , help_text='DataTable attribute name to join on')
+
+    layer_name = forms.CharField(max_length=255, help_text='Layer name')
+    layer_attribute = forms.CharField(max_length=255\
+                                    , help_text='Layer attribute name to join on')
+
+    #new_layer_owner = models.ForeignKey(User, blank=True, null=True, help_text='Optional owner')
+
+
+class TableUploadAndJoinRequestForm(DataTableUploadForm):#forms.Form):
+    """
+    title = forms.CharField(max_length=255, help_text='Title for New DataTable')
+    abstract = forms.CharField(widget=forms.Textarea, initial='(no abstract)')
+    delimiter = forms.CharField(max_length=10, initial=',')
+    no_header_row = forms.BooleanField(initial=False, required=False,
+            help_text='Specify "True" if the first row is not a header')
+
+    uploaded_file = forms.FileField()#upload_to='datatables/%Y/%m/%d')
+    """
+
+    table_attribute = forms.CharField(max_length=255,
+                                     help_text='DataTable attribute name to join on')
+    layer_name = forms.CharField(max_length=255, help_text='Layer name')
+    layer_attribute = forms.CharField(max_length=255,
+                                    help_text='Layer attribute name to join on')
+
+    #new_layer_owner = forms.ForeignKey(User, blank=True, null=True, help_text='Optional owner')

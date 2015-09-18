@@ -171,8 +171,8 @@ INSTALLED_APPS = (
     #DVN apps
     'shared_dataverse_information.dataverse_info',           # external repository: https://github.com/IQSS/shared-dataverse-information
     'shared_dataverse_information.layer_classification',     # external repository: https://github.com/IQSS/shared-dataverse-information
-    'geonode.dataverse_layer_metadata', # uses the dataverse_info repository models
-    'geonode.dataverse_connect',
+    'geonode.contrib.dataverse_layer_metadata', # uses the dataverse_info repository models
+    'geonode.contrib.dataverse_connect',
 
 )
 LOGGING = {

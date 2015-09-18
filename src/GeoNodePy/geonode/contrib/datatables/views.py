@@ -13,16 +13,18 @@ from django.contrib.auth.models import User
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.translation import ugettext_lazy as _
 from django.views.decorators.http import require_GET
-from geonode.dataverse_connect.dv_utils import MessageHelperJSON          # format json response object
+from geonode.contrib.dataverse_connect.dv_utils import MessageHelperJSON          # format json response object
 from shared_dataverse_information.shared_form_util.format_form_errors import format_errors_as_text
 
-from geonode.contrib.datatables.forms import JoinTargetForm
+from geonode.contrib.datatables.forms import JoinTargetForm,\
+                                        TableJoinRequestForm,\
+                                        TableUploadAndJoinRequestForm,\
+                                        DataTableUploadForm
 from shared_dataverse_information.worldmap_datatables.forms import\
-    DataTableUploadForm,\
-    TableJoinRequestForm,\
     TableJoinResultForm,\
-    TableUploadAndJoinRequestForm,\
     MapLatLngLayerRequestForm
+    #DataTableUploadForm,\
+    #TableUploadAndJoinRequestForm,\
 
 from geonode.contrib.msg_util import msg, msgt, msgn, msgx
 
@@ -110,17 +112,12 @@ def datatable_detail(request, dt_id):
     return HttpResponse(json_msg, mimetype="application/json", status=200)
 
 
-"""
-from contrib.datatables.forms import JoinTargetForm
-d = {}
-f = JoinTargetForm(d)
-f.is_valid()
-"""
+
 @require_GET
 @login_required
 def jointargets(request):
     """"
-    Return the JoinTarget objects in JSON formats
+    Return the JoinTarget objects in JSON format
 
     Filters may be applied for:
         - title
@@ -128,15 +125,30 @@ def jointargets(request):
         - start_year
         - end_year
     These filters are validated through the JoinTargetForm
-    """"
+    """
     f = JoinTargetForm(request.GET)
     if not f.is_valid():
-        fail_dict = dict(success=False, msg=f.get_error_messages_as_html_string())
-        return HttpResponse(json.dumps(fail_dict), mimetype='application/json')
+
+        err_msg = f.get_error_messages_as_html_string()
+        json_msg = MessageHelperJSON.get_json_fail_msg(err_msg, data_dict=f.errors)
+
+        #fail_dict = dict(success=False, msg=f.get_error_messages_as_html_string())
+        return HttpResponse(json_msg,
+                            mimetype='application/json',
+                            status=400)
 
     jts = JoinTarget.objects.filter(**f.get_join_target_filter_kwargs())
-    results = [ob.as_json() for ob in jts]
-    return HttpResponse(json.dumps(results), mimetype="application/json")
+    json_data = [ob.as_json() for ob in jts]
+    json_msg = MessageHelperJSON.get_json_success_msg(msg='', data_dict=json_data)
+
+    return HttpResponse(json_msg,
+                            mimetype='application/json',
+                            status=200)
+"""
+join_result_info_dict = TableJoinResultForm.get_cleaned_data_from_table_join(tj)
+            return HttpResponse(json.dumps(join_result_info_dict), mimetype="application/json", status=200)"""
+
+    #return HttpResponse(json.dumps(results), mimetype="application/json")
 
 
 
@@ -168,7 +180,7 @@ def tablejoin_api(request):
     table_attribute = f.cleaned_data['table_attribute']
 
     # Layer and join attribute
-    layer_typename = f.cleaned_data['layer_typename']
+    layer_typename = f.cleaned_data['layer_name']
     layer_attribute = f.cleaned_data['layer_attribute']
 
     # Set the owner
