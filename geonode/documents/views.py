@@ -12,6 +12,7 @@ from django.core.exceptions import PermissionDenied
 from django_downloadview.response import DownloadResponse
 from django.views.generic.edit import UpdateView, CreateView
 from django.db.models import F
+from django.forms.util import ErrorList
 
 from geonode.utils import resolve_object
 from geonode.security.views import _perms_info_json
@@ -313,13 +314,19 @@ def document_metadata(
                 id=category_form.cleaned_data['category_choice_field'])
 
             if new_poc is None:
-                if poc.user is None:
+                if poc is None:
                     poc_form = ProfileForm(
                         request.POST,
                         prefix="poc",
                         instance=poc)
                 else:
                     poc_form = ProfileForm(request.POST, prefix="poc")
+                if poc_form.is_valid():
+                    if len(poc_form.cleaned_data['profile']) == 0:
+                        # FIXME use form.add_error in django > 1.7
+                        errors = poc_form._errors.setdefault('profile', ErrorList())
+                        errors.append(_('You must set a point of contact for this resource'))
+                        poc = None
                 if poc_form.has_changed and poc_form.is_valid():
                     new_poc = poc_form.save()
 
@@ -329,6 +336,12 @@ def document_metadata(
                                               instance=metadata_author)
                 else:
                     author_form = ProfileForm(request.POST, prefix="author")
+                if author_form.is_valid():
+                    if len(author_form.cleaned_data['profile']) == 0:
+                        # FIXME use form.add_error in django > 1.7
+                        errors = author_form._errors.setdefault('profile', ErrorList())
+                        errors.append(_('You must set an author for this resource'))
+                        metadata_author = None
                 if author_form.has_changed and author_form.is_valid():
                     new_author = author_form.save()
 
@@ -353,28 +366,15 @@ def document_metadata(
                             document.id,
                         )))
 
-        if poc is None:
-            poc_form = ProfileForm(request.POST, prefix="poc")
-        else:
-            if poc is None:
-                poc_form = ProfileForm(instance=poc, prefix="poc")
-            else:
-                document_form.fields['poc'].initial = poc.id
-                poc_form = ProfileForm(prefix="poc")
-                poc_form.hidden = True
+        if poc is not None:
+            document_form.fields['poc'].initial = poc.id
+            poc_form = ProfileForm(prefix="poc")
+            poc_form.hidden = True
 
-        if metadata_author is None:
-            author_form = ProfileForm(request.POST, prefix="author")
-        else:
-            if metadata_author is None:
-                author_form = ProfileForm(
-                    instance=metadata_author,
-                    prefix="author")
-            else:
-                document_form.fields[
-                    'metadata_author'].initial = metadata_author.id
-                author_form = ProfileForm(prefix="author")
-                author_form.hidden = True
+        if metadata_author is not None:
+            document_form.fields['metadata_author'].initial = metadata_author.id
+            author_form = ProfileForm(prefix="author")
+            author_form.hidden = True
 
         return render_to_response(template, RequestContext(request, {
             "document": document,
