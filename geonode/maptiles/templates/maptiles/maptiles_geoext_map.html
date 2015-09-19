@@ -157,11 +157,11 @@ function display_points(div_id, vec_layer){
     document.getElementById("georef_area").setAttribute("value",georef_string);
 }
 
-function display_message(div_id, text_container_id, message){
+function display_message(div_id, message){
     
     var container=document.getElementById(div_id);
-    container.innerHTML = "<div class=\"alert alert-block announcement alert-warning\" id=\"selection-message\" style=\"visibility: hidden\">\n"+
-        "<a type=\"button\" class=\"close\" data-dismiss=\"alert\" data-dismiss-url=\"#\" href=\"#\" id=\"selection-message\">×</a>\n"+
+    container.innerHTML = "<div class=\"alert alert-block announcement alert-warning\" style=\"visibility: hidden\">\n"+
+        "<a type=\"button\" class=\"close\" data-dismiss=\"alert\" data-dismiss-url=\"#\" href=\"#\">×</a>\n"+
         "<p id=\"selection-message-text\">"+message+"</p>\n;"
     //console.log(text);
     //text.innerHTML = message;
@@ -287,10 +287,10 @@ function filterSelectedTiles(tile_filter, single_click, send_notice){
                   if (tiles.length < feature_out.length){
                       if (feature_out.length==1){
                             //alert("Selected tile either lacks data or is out of bounds. ");
-                            display_message("selection-message","selection-message-text","Selected tile either lacks data or is out of bounds." );
+                            display_message("notif","Selected tile either lacks data or is out of bounds." );
                       }else{
                             //alert("Some selected tiles have not been included in the list due to lack of data or being outside the jurisdiction boundaries");
-                            display_message("selection-message","selection-message-text","Some selected tiles have not been included in the list due to lack of data or being outside the jurisdiction boundaries");
+                            display_message("notif","Some selected tiles have not been included in the list due to lack of data or being outside the jurisdiction boundaries");
                       }
                   }else{
                       /*document.getElementById("warning").style.visibilty =  "visible";
