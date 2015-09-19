@@ -73,7 +73,11 @@ $(document).ready(function(){
                    if (result.response) 
                         self.submit();
                    else {
-                        alert("The total file size of this request is "+formatBytes(result.total_size, 2)+
+                        /*alert("The total file size of this request is "+formatBytes(result.total_size, 2)+
+                                " . You also have a total of "+formatBytes(result.cart_size, 2)+
+                                " in the data cart and FTP requests with a total of "+formatBytes(result.recent_requests_size, 2)+
+                                ". Your request exceeds the 200MB download limit. Please reduce number of selected tiles.");*/
+                        display_message("notif", "The total file size of this request is "+formatBytes(result.total_size, 2)+
                                 " . You also have a total of "+formatBytes(result.cart_size, 2)+
                                 " in the data cart and FTP requests with a total of "+formatBytes(result.recent_requests_size, 2)+
                                 ". Your request exceeds the 200MB download limit. Please reduce number of selected tiles.");
@@ -162,7 +166,7 @@ function display_message(div_id, message){
     var container=document.getElementById(div_id);
     container.innerHTML = "<div class=\"alert alert-block announcement alert-warning\" style=\"visibility: visible\">\n"+
         "<a type=\"button\" class=\"close\" data-dismiss=\"alert\" data-dismiss-url=\"#\" href=\"#\">×</a>\n"+
-        "<p id=\"selection-message-text\">"+message+"</p>\n;"
+        "<p id=\"selection-message-text\">"+message+"</p>\n";
     //console.log(text);
     //text.innerHTML = message;
     //container.setAttribute("hidden","false");
