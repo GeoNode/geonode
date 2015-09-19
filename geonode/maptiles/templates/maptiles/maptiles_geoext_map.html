@@ -99,7 +99,6 @@ $(document).ready(function(){
         $("#selection-message-close").click(function(e){
             //$("#selection-message").hide();
             document.getElementById("selection-message").style.visibility="collapse";
-            //document.getElementById("status-message").style.display="none";
         });
        
 });
@@ -159,10 +158,13 @@ function display_points(div_id, vec_layer){
 }
 
 function display_message(div_id, text_container_id, message){
+    
     var container=document.getElementById(div_id);
-    var text = document.getElementById(text_container_id);
+    container.innerHTML = "<div class=\"alert alert-block announcement alert-warning\" id=\"selection-message\" style=\"visibility: hidden\">\n"+
+        "<a type=\"button\" class=\"close\" data-dismiss=\"alert\" data-dismiss-url=\"#\" href=\"#\" id=\"selection-message\">×</a>\n"+
+        "<p id=\"selection-message-text\">"+message+"</p>\n;"
     //console.log(text);
-    text.innerHTML = message;
+    //text.innerHTML = message;
     //container.setAttribute("hidden","false");
     container.style.visibility="visible";
 }
