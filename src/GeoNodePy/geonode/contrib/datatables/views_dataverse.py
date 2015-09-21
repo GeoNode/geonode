@@ -22,8 +22,8 @@ from shared_dataverse_information.worldmap_datatables.forms import \
 
 from geonode.contrib.msg_util import *
 
-from .models import DataTable, JoinTarget, TableJoin
-from .utils import process_csv_file, setup_join, create_point_col_from_lat_lon, standardize_name
+#from .models import DataTable, JoinTarget, TableJoin
+#from .utils import process_csv_file, setup_join, create_point_col_from_lat_lon, standardize_name
 
 import logging
 logger = logging.getLogger(__name__)

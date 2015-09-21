@@ -48,7 +48,7 @@ from geonode.contrib.datatables.forms import TableJoinRequestForm,\
                                         TableUploadAndJoinRequestForm,\
                                         DataTableUploadForm
 
-from shared_dataverse_information.dataverse_info.forms_existing_layer import DataverseInfoValidationFormWithKey
+from geonode.contrib.dataverse_connect.forms import DataverseLayerIndentityForm
 
 # need to remove these:
 from shared_dataverse_information.worldmap_datatables.forms import DataTableResponseForm,\
@@ -303,12 +303,13 @@ class TestWorldMapTabularAPI(unittest.TestCase):
         msgt("--- TEAR DOWN: Delete MA Tigerlines Shapefile ---")
         # -----------------------------------------------------------
 
-        api_prep_form = DataverseInfoValidationFormWithKey(cls.tab_ma_dv_info)
+        api_prep_form = DataverseLayerIndentityForm(cls.tab_ma_dv_info)
         assert api_prep_form.is_valid()\
-           , "Error.  Validation failed. (DataverseInfoValidationFormWithKey):\n%s"\
+           , "Error.  Validation failed. (DataverseLayerIndentityForm):\n%s"\
              % api_prep_form.errors
 
-        data_params = api_prep_form.get_api_params_with_signature()
+        data_params = api_prep_form.cleaned_data
+        #data_params = api_prep_form.get_api_params_with_signature()
 
         delete_api_url = GEONODE_SERVER + reverse('view_delete_dataverse_map_layer', kwargs={})
 
@@ -325,6 +326,9 @@ class TestWorldMapTabularAPI(unittest.TestCase):
         except:
             msgx("Unexpected error: %s" % sys.exc_info()[0])
             return
+
+        print 'status_code', r.status_code
+        print 'text', r.text
 
         assert r.status_code == 200,\
             "Expected status code 200 but received '%s'" % r.status_code

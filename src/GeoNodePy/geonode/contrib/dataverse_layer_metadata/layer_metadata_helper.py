@@ -46,6 +46,33 @@ def check_for_existing_layer(dataverse_info):
     return None
 
 
+def retrieve_dataverse_layer_metadata_by_installation_and_file_id(datafile_id, dataverse_installation_name):
+    """
+    Retrieve a GeoNode layer by an associated DataverseInfo object identified by:
+        - datafile_id
+        - dataverse_installation_name
+
+    :param kwargs:
+    :return:
+    """
+    if datafile_id is None or dataverse_installation_name is None:
+        return None
+
+    l = DataverseLayerMetadata.objects.filter(datafile_id=datafile_id,
+                                        dataverse_installation_name=dataverse_installation_name
+                                    )
+
+    # If DataverseLayerMetadata objects match, return the 1st one
+    #  - Should only be 1 layer
+    #
+    if l.count() > 0:
+        return l[0]
+
+    return None
+
+
+
+
 def update_the_layer_metadata(dv_layer_metadata, dataverse_info):
 
     assert type(dv_layer_metadata) is DataverseLayerMetadata, "dv_layer_metadata must be a DataverseLayerMetadata object.  Found type: %s" % type(dv_layer_metadata)

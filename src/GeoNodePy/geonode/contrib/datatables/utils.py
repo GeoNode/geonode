@@ -41,21 +41,28 @@ logger = logging.getLogger(__name__)
 THE_GEOM_LAYER_COLUMN = 'the_geom'
 THE_GEOM_LAYER_COLUMN_REPLACEMENT = 'the_geom_col'
 
-def standardize_name(col_name, is_table_name=False):
+
+def standardize_name(col_name):
     """
-    Format table and column names in tabular files
+    Format column names in tabular files
+     - Special case for columns named "the_geom", replace them
     """
     assert col_name is not None, "col_name cannot be None"
 
-    if is_table_name:
-       return slugify(unicode(col_name)).replace('-','_')
-
-    # Special case for columns named "the_geom", replace them
-    #
     cname = slugify(unicode(col_name)).replace('-','_')
     if cname == THE_GEOM_LAYER_COLUMN:
         return THE_GEOM_LAYER_COLUMN_REPLACEMENT
     return cname
+
+
+def standardize_table_name(tbl_name):
+    assert tbl_name is not None, "tbl_name cannot be None"
+    assert len(tbl_name) > 0, "tbl_name must be a least 1-char long, not zero"
+
+    if tbl_name[:1].isdigit():
+        tbl_name = 't-' + tbl_name
+
+    return slugify(unicode(tbl_name)).replace('-','_')
 
 
 def get_unique_tablename(table_name):
@@ -68,8 +75,7 @@ def get_unique_tablename(table_name):
     # ------------------------------------------------
     # slugify, change to unicode
     # ------------------------------------------------
-    table_name = standardize_name(table_name, is_table_name=True)
-
+    table_name = standardize_table_name(table_name)
 
     # ------------------------------------------------
     # Make 10 attempts to generate a unique table name
@@ -88,7 +94,6 @@ def get_unique_tablename(table_name):
         #
         random_chars = "".join([choice(string.ascii_lowercase + string.digits) for i in range(x+1)])
         unique_tname = '%s_%s' % (table_name, random_chars)
-
     # ------------------------------------------------
     # Failed to generate a unique name, throw an error
     # ------------------------------------------------
@@ -115,9 +120,9 @@ def process_csv_file(data_table, delimiter=",", no_header_row=False):
 
     # Standardize table_name for the DataTable
     #
-    table_name = standardize_name(os.path.splitext(os.path.basename(csv_filename))[0], is_table_name=True)
-    if table_name[:1].isdigit():
-        table_name = 't-' + table_name
+    table_name = os.path.splitext(os.path.basename(csv_filename))[0]
+    table_name = standardize_table_name(table_name)
+
     #
     data_table.table_name = table_name
     data_table.save()

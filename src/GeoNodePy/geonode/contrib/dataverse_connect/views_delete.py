@@ -7,14 +7,15 @@ from django.http import HttpResponse, Http404
 from django.conf import settings
 from django.views.decorators.csrf import csrf_exempt
 
-from shared_dataverse_information.dataverse_info.forms_existing_layer import DataverseInfoValidationFormWithKey
 from shared_dataverse_information.shared_form_util.format_form_errors import format_errors_as_text
 
 from geonode.contrib.dataverse_layer_metadata.models import DataverseLayerMetadata
 
 from geonode.contrib.dataverse_connect.dv_utils import MessageHelperJSON          # format json response object
+from geonode.contrib.dataverse_connect.forms import DataverseLayerIndentityForm
 
-from geonode.contrib.dataverse_layer_metadata.layer_metadata_helper import check_for_existing_layer
+from geonode.contrib.dataverse_layer_metadata.layer_metadata_helper import retrieve_dataverse_layer_metadata_by_installation_and_file_id,\
+    check_for_existing_layer
 from geonode.maps.models import Layer
 
 from geoserver.catalog import FailedRequestError
@@ -75,63 +76,41 @@ print r.status_code
 @login_required
 def view_delete_dataverse_map_layer(request):
     """
-    Allows a Dataverse user to delete a **Dataverse-created** layer.
-    
-    Dataverse-created layers have a DataverseLayerMetadata object
-    
+    Allows a Dataverse user to delete a **Dataverse-created** layer by specifying:
+        - dataverse installation name
+        - datafile id
+
+    TO DO: Verify that dataverse named in the params has originated the message...
+
     """
-    #print "-- view_delete_dataverse_map_layer --"
     if not request.POST:
-        # Not a POST, pretend it's not here and throw a 404
-        json_msg = MessageHelperJSON.get_json_msg(success=False, msg="Not a POST.")        
+        # Not a POST, throw a 401
+        json_msg = MessageHelperJSON.get_json_msg(success=False, msg="Not a POST.")
         return HttpResponse(status=401, content=json_msg, content_type="application/json")
 
     
-    # Has proper auth?
-    # Replaced by DataverseInfoValidationFormWithKey
-
-    Post_Data_As_Dict = request.POST.dict()
-
     """
     Validate the Data in the API call
     """
-    api_validation_form = DataverseInfoValidationFormWithKey(Post_Data_As_Dict)
-    if not api_validation_form.is_valid():
+    delete_form = DataverseLayerIndentityForm(request.POST)
+    if not delete_form.is_valid():
         #
         #   Invalid, send back an error message
         #
-        logger.error("Delete API. Error: \n%s" % format_errors_as_text(api_validation_form))
+        logger.error("Delete API. Error: \n%s" % format_errors_as_text(delete_form))
         json_msg = MessageHelperJSON.get_json_msg(success=False\
                             , msg="Invalid data for delete request.")
         return HttpResponse(status=400, content=json_msg, content_type="application/json")
 
-        
-        
-    if not api_validation_form.is_signature_valid_check_post(request):
-        logger.error("Delete API. Error: Invalid signature key")
-        json_msg = MessageHelperJSON.get_json_msg(success=False, msg="Authentication failed.")
-        return HttpResponse(status=401, content=json_msg, content_type="application/json")
-    
-
 
     logger.info("pre existing layer check")
 
-    try:
-        existing_dv_layer_metadata = check_for_existing_layer(Post_Data_As_Dict)
-        logger.info("found existing layer")
-        #print "found existing layer"
-    except ValidationError as e:
-        error_msg = "The dataverse information failed validation: %s" % Post_Data_As_Dict
-        logger.error(error_msg)
-        json_msg = MessageHelperJSON.get_json_msg(success=False, msg="(The WorldMap could not verify the data.)")
-        logger.info("found existing layer")
-        
-        return HttpResponse(status=200, content=json_msg, content_type="application/json")
-
+    existing_dv_layer_metadata = retrieve_dataverse_layer_metadata_by_installation_and_file_id(
+                                                    delete_form.cleaned_data['datafile_id'],
+                                                    delete_form.cleaned_data['dataverse_installation_name']
+                                                )
     if existing_dv_layer_metadata is None:
-        #print "existing layer is None (?)"
-        
-        json_msg = MessageHelperJSON.get_json_msg(success=False, msg="Existing layer not found.")        
+        json_msg = MessageHelperJSON.get_json_msg(success=False, msg="Existing layer not found.")
         return HttpResponse(status=404, content=json_msg, content_type="application/json")
         
     map_layer = existing_dv_layer_metadata.map_layer

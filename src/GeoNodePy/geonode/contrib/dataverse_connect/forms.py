@@ -17,3 +17,9 @@ class ShapefileImportDataForm(forms.Form):
 
     def __unicode__(self):
         return '%s (%s)' % (self.title, self.shapefile_name)
+
+class DataverseLayerIndentityForm(forms.Form):
+
+    dataverse_installation_name = forms.CharField(help_text='url to Harvard Dataverse, Odum Institute Dataverse, etc')
+    datafile_id = forms.IntegerField(help_text='id in database')  # for API calls.
+    #geonode_layer_name = forms.CharField('layer_typename')
