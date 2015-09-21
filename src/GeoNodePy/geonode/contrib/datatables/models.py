@@ -9,8 +9,9 @@ from geonode.maps.models import Layer
 from django.template.defaultfilters import slugify
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.models import User
-from shared_dataverse_information.worldmap_datatables.forms import DataTableResponseForm
 from django.core.urlresolvers import reverse
+
+from geonode.contrib.datatables.forms import DataTableResponseForm
 
 from .db_helper import get_datastore_connection_string
 

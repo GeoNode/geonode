@@ -1,11 +1,10 @@
 from django import forms
-from django.core.validators import MaxValueValidator
+from django.core.validators import MaxValueValidator, RegexValidator
 from django.core.files.uploadedfile import SimpleUploadedFile
 
 MAX_ALLOWED_YEAR = 9999
 ERR_MSG_START_YEAR_CANNOT_BE_GREATER = "The start year cannot be greater than the end year."
 ERR_MSG_YEAR_TOO_HIGH = 'Ensure this value is less than or equal to %d.' % (MAX_ALLOWED_YEAR)
-
 
 class JoinTargetForm(forms.Form):
     """
@@ -104,24 +103,26 @@ class TableJoinRequestForm(forms.Form):
     layer_attribute = forms.CharField(max_length=255\
                                     , help_text='Layer attribute name to join on')
 
-    #new_layer_owner = models.ForeignKey(User, blank=True, null=True, help_text='Optional owner')
 
 
-class TableUploadAndJoinRequestForm(DataTableUploadForm):#forms.Form):
+class TableUploadAndJoinRequestForm(DataTableUploadForm):
     """
-    title = forms.CharField(max_length=255, help_text='Title for New DataTable')
-    abstract = forms.CharField(widget=forms.Textarea, initial='(no abstract)')
-    delimiter = forms.CharField(max_length=10, initial=',')
-    no_header_row = forms.BooleanField(initial=False, required=False,
-            help_text='Specify "True" if the first row is not a header')
-
-    uploaded_file = forms.FileField()#upload_to='datatables/%Y/%m/%d')
+    DataTableUploadForm + additional attributes
     """
-
     table_attribute = forms.CharField(max_length=255,
                                      help_text='DataTable attribute name to join on')
     layer_name = forms.CharField(max_length=255, help_text='Layer name')
     layer_attribute = forms.CharField(max_length=255,
                                     help_text='Layer attribute name to join on')
 
-    #new_layer_owner = forms.ForeignKey(User, blank=True, null=True, help_text='Optional owner')
+
+
+class DataTableResponseForm(forms.Form):
+    """
+    Response from the DataTable API
+    """
+    id = forms.IntegerField()
+    title = forms.CharField()
+    abstract = forms.CharField(widget=forms.Textarea, required=False)
+    delimiter = forms.CharField()
+    table_name = forms.CharField()
