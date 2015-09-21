@@ -519,7 +519,7 @@ _steps = {
 # and 'save' is the implied first step :P
 _pages = {
     'shp': ('srs', 'time', 'run', 'final'),
-    'tif': ('time', 'run', 'final'),
+    'tif': ('run', 'final'),
     'kml': ('run', 'final'),
     'csv': ('csv', 'time', 'run', 'final'),
     'geojson': ('run', 'final')
