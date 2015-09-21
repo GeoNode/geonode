@@ -102,7 +102,6 @@ def view_delete_dataverse_map_layer(request):
                             , msg="Invalid data for delete request.")
         return HttpResponse(status=400, content=json_msg, content_type="application/json")
 
-
     logger.info("pre existing layer check")
 
     existing_dv_layer_metadata = retrieve_dataverse_layer_metadata_by_installation_and_file_id(
@@ -114,7 +113,15 @@ def view_delete_dataverse_map_layer(request):
         return HttpResponse(status=404, content=json_msg, content_type="application/json")
         
     map_layer = existing_dv_layer_metadata.map_layer
-    
+
+
+    if not request.user.has_perm('maps.delete_layer', obj=map_layer):
+        err_msg = "You are not permitted to delete this Map Layer"
+        logger.error(err_msg + ' (id: %s)' % map_layer.id)
+        json_msg = MessageHelperJSON.get_json_fail_msg(err_msg)
+        return HttpResponse(json_msg, mimetype='application/json', status=401)
+
+
     #--------------------------------------
     #print "delete map_layer: %s" % map_layer
     #print "id, type", map_layer.id, type(map_layer)

@@ -46,15 +46,16 @@ from geonode.contrib.msg_util import *
 
 from geonode.contrib.datatables.forms import TableJoinRequestForm,\
                                         TableUploadAndJoinRequestForm,\
-                                        DataTableUploadForm
+                                        DataTableUploadForm,\
+                                        DataTableResponseForm
 
 from geonode.contrib.dataverse_connect.forms import DataverseLayerIndentityForm
 
 # need to remove these:
-from shared_dataverse_information.worldmap_datatables.forms import DataTableResponseForm,\
-        TableJoinResultForm
+from shared_dataverse_information.worldmap_datatables.forms import TableJoinResultForm
         #TableUploadAndJoinRequestForm
         #DataTableUploadForm
+        #DataTableResponseForm,\
 from shared_dataverse_information.map_layer_metadata.forms import WorldMapToGeoconnectMapLayerMetadataValidationForm
 
 
@@ -731,7 +732,7 @@ class TestWorldMapTabularAPI(unittest.TestCase):
         f = TableJoinResultForm(rjson)
         self.assertTrue(f.is_valid(), "Validation failed with TableJoinResultForm: %s" % f.errors)
 
-        return
+
         # -----------------------------------------------------------
         # Pull out table_id and tablejoin_id
         #   for detail and delete tests
@@ -835,7 +836,6 @@ class TestWorldMapTabularAPI(unittest.TestCase):
         # -----------------------------------------------------------
         msgn('(2e) TableJoin Delete (Fail: User w/o perms)')
         # -----------------------------------------------------------
-
         api_del_tablejoin_url = self.delete_tablejoin_url.replace(self.URL_ID_ATTR, str(tablejoin_id))
         msg('api_del_tablejoin_url: %s' % api_del_tablejoin_url)
 
