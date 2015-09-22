@@ -11,16 +11,19 @@
 # Translators:
 # Translators:
 # Translators:
+# Translators:
+# Translators:
 # Minpa Lee <mapplus@gmail.com>, 2013-2015
 # Minpa Lee <mapplus@gmail.com>, 2013
 msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-07-16 05:46-0500\n"
+"POT-Creation-Date: 2015-09-22 03:42-0500\n"
 "PO-Revision-Date: 2015-05-18 18:18+0000\n"
 "Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
-"Language-Team: Korean (http://www.transifex.com/p/geonode/language/ko/)\n"
+"Language-Team: Korean (http://www.transifex.com/geonode/geonode/language/"
+"ko/)\n"
 "Language: ko\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
