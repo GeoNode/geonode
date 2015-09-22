@@ -250,9 +250,8 @@ def save_step(user, layer, spatial_files, overwrite=True):
         # which potentially may reset the id - hopefully prevent this...
         upload_next_id = Upload.objects.all().aggregate(Max('import_id')).values()[0]
         upload_next_id = upload_next_id if upload_next_id else 0
-        #next_id = next_id + 1 if next_id else 1
+        # next_id = next_id + 1 if next_id else 1
         importer_sessions = gs_uploader.get_sessions()
-        
         last_importer_session = importer_sessions[len(importer_sessions)-1].id if importer_sessions else 0
         next_id = max(int(last_importer_session), int(upload_next_id)) + 1
 
@@ -327,7 +326,6 @@ def run_import(upload_session, async):
     if import_session.state == 'INCOMPLETE':
         if task.state != 'ERROR':
             raise Exception('unknown item state: %s' % task.state)
-            
     elif import_session.state == 'PENDING' and task.target.store_type == 'coverageStore':
         if task.state == 'READY':
             import_session.commit(async)
