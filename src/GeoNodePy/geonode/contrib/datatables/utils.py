@@ -638,8 +638,7 @@ def setup_join(new_table_owner, table_name, layer_typename, table_attribute_name
             #"bbox_y0": Decimal(ft.latlon_bbox[2]),
             #"bbox_y1": Decimal(ft.latlon_bbox[3])
         }
-        print 'layer_params', layer_params
-        print 'view_name', view_name
+
         layer, created = Layer.objects.get_or_create(name=view_name, defaults=layer_params)
 
         # Set default permissions (public)
@@ -656,7 +655,6 @@ def setup_join(new_table_owner, table_name, layer_typename, table_attribute_name
         logger.error(err_msg)
         return None, err_msg
 
-    print 'setup_join 08'        
     # ------------------------------------------------------------------
     # Create LayerAttributes for the new Layer (not done in GeoNode 2.x)
     # ------------------------------------------------------------------

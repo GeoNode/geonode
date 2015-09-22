@@ -2,6 +2,8 @@ from django import forms
 from django.core.validators import MaxValueValidator, RegexValidator
 from django.core.files.uploadedfile import SimpleUploadedFile
 
+from geonode.contrib.datatables.models import DataTable, TableJoin, TableJoinResult, TABLE_JOIN_TO_RESULT_MAP
+
 MAX_ALLOWED_YEAR = 9999
 ERR_MSG_START_YEAR_CANNOT_BE_GREATER = "The start year cannot be greater than the end year."
 ERR_MSG_YEAR_TOO_HIGH = 'Ensure this value is less than or equal to %d.' % (MAX_ALLOWED_YEAR)
@@ -126,3 +128,94 @@ class DataTableResponseForm(forms.Form):
     abstract = forms.CharField(widget=forms.Textarea, required=False)
     delimiter = forms.CharField()
     table_name = forms.CharField()
+
+    @staticmethod
+    def getDataTableAsJson(data_table):
+        """
+        For API call geonode.contrib.datatables.views.datatable_detail
+        """
+        assert isinstance(data_table, DataTable), "data_table must be a DataTable object"
+        assert data_table.id is not None,\
+            "This DataTable does not have an 'id'.  Please save it before calling" \
+            " 'as_json()'"
+
+        # Using form to help flag errors if WorldMap and/or GeoConnect change this data
+        #
+        f = DataTableResponseForm(data_table.__dict__)
+        if not f.is_valid():
+            err_msg = "Calling .as_json on DataTable object (id:%s) failed.  Validator" \
+                      " errors with DataTableResponseForm:\n %s" % (data_table.id, f.errors)
+            raise ValueError(err_msg)
+
+        json_info = f.cleaned_data
+        json_info['attributes'] = data_table.attributes_as_json()
+        return json_info
+
+
+class TableJoinResultForm(forms.ModelForm):
+    """
+    Used to validate incoming from WorldMap
+    """
+    class Meta:
+        model = TableJoinResult
+
+
+    @staticmethod
+    def get_cleaned_data_from_table_join(table_join):
+        """
+        Given a WorldMap TableJoin* object:
+            - Evaluate it against the TableJoinResultForm
+            - Return the form's cleaned_data
+
+        Method used to return WorldMap join results--expected to evaluate cleanly
+            e.g. It works or throws an assertion error
+        """
+        if not isinstance(table_join, TableJoin):
+            raise ValueError("table_join must be TableJoin object")
+
+        f = TableJoinResultForm.create_form_from_table_join(table_join)
+
+        assert f.is_valid(), "Data for TableJoinResultForm is not valid.  \nErrors:%s" % f.errors()
+
+        return f.cleaned_data
+
+    @staticmethod
+    def create_form_from_table_join(table_join):
+        """
+        Format parameters TableJoin object
+        """
+        assert isinstance(table_join, TableJoin), "table_join must be TableJoin object"
+
+        # ----------------------------------------------------------------------
+        # Iterate through the dict linking TableJoin attributes
+        #   to TableJoinResult fields
+        #
+        # ----------------------------------------------------------------------
+        params = {}
+        for new_key, attr_name in TABLE_JOIN_TO_RESULT_MAP.items():
+            # ----------------------------------------------------------------------
+            # Make sure the table_join object has all the appropriate attributes
+            #
+            #   e.g. This should blow up if the TableJoin object changes in the future
+            #       and doesn't have the required attributes
+            # ----------------------------------------------------------------------
+            #print 'new_key/attr_name', new_key, attr_name
+            attr_parts = attr_name.split('.')
+            for idx in range(0, len(attr_parts)):
+                obj_name = '.'.join(['table_join',] + attr_parts[0:idx] )
+                #print 'check: %s - %s' % (obj_name, attr_parts[idx])
+                assert hasattr(eval(obj_name), attr_parts[idx])\
+                        , '%s object does not have a "%s" attribute.' % (obj_name, attr_parts[idx])
+
+            # ----------------------------------------------------------------------
+            # Add the attribute to the params dict
+            # ----------------------------------------------------------------------
+            param_val = eval('table_join.%s' % (attr_name))
+            if hasattr(param_val, '__call__'):
+                # We want the result of the function, e.g. join_layer.get_absolute_url
+                params[new_key] = param_val.__call__()
+            else:
+                params[new_key] = param_val
+
+        print 'params', params
+        return TableJoinResultForm(params)

@@ -47,15 +47,11 @@ from geonode.contrib.msg_util import *
 from geonode.contrib.datatables.forms import TableJoinRequestForm,\
                                         TableUploadAndJoinRequestForm,\
                                         DataTableUploadForm,\
-                                        DataTableResponseForm
+                                        DataTableResponseForm,\
+                                        TableJoinResultForm
 
 from geonode.contrib.dataverse_connect.forms import DataverseLayerIndentityForm
 
-# need to remove these:
-from shared_dataverse_information.worldmap_datatables.forms import TableJoinResultForm
-        #TableUploadAndJoinRequestForm
-        #DataTableUploadForm
-        #DataTableResponseForm,\
 from shared_dataverse_information.map_layer_metadata.forms import WorldMapToGeoconnectMapLayerMetadataValidationForm
 
 
@@ -892,7 +888,7 @@ class TestWorldMapTabularAPI(unittest.TestCase):
 
 
 
-    @skip('skipping test_03_upload_join_boston_income')
+    #@skip('skipping test_03_upload_join_boston_income')
     def test_03_upload_join_boston_income(self):
         """
         Upload DataTable, Join it to a Layer, and Delete it

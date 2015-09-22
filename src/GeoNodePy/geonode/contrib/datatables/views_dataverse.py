@@ -16,8 +16,7 @@ from django.utils.translation import ugettext_lazy as _
 from geonode.contrib.dataverse_connect.dv_utils import MessageHelperJSON          # format json response object
 
 from geonode.contrib.dataverse_layer_metadata.forms import DataverseLayerMetadataValidationForm
-from shared_dataverse_information.worldmap_datatables.forms import \
-                                                    TableUploadAndJoinRequestForm
+from geonode.contrib.datatables.forms import TableUploadAndJoinRequestForm
 
 
 from geonode.contrib.msg_util import *
@@ -33,6 +32,8 @@ Connecting the Dataverse to the WorldMap's Tabular API
 - APIs using GeoConnect for authentication
     (Dataverse <-> GeoConnect <-> WorldMap)
 """
+# check login!
+# check user perms!
 def view_upload_table_and_join_layer(request):
     """
     http://127.0.0.1:8000/dataverse-tabular/api/upload-join/
@@ -57,7 +58,7 @@ def view_upload_table_and_join_layer(request):
     # -------------------------------------------
     # Is the Dataverse Layer Metadata valid?
     # -------------------------------------------
-
+    """
     if not form_upload_and_join.is_signature_valid_check_post(request):
         err_msg = "Invalid signature on request.  Failed validation with TableUploadAndJoinRequestForm"
         logger.error(err_msg)
@@ -65,6 +66,7 @@ def view_upload_table_and_join_layer(request):
         json_msg = MessageHelperJSON.get_json_msg(success=False\
                             , msg=err_msg)
         return HttpResponse(json_msg, mimetype="application/json", status=400)
+    """
 
     # -------------------------------------------
     # Is the Dataverse Layer Metadata valid?

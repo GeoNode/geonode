@@ -9,6 +9,8 @@ from django.core import serializers
 from django.shortcuts import get_object_or_404
 from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
+from geonode.contrib.basic_auth_decorator import http_basic_auth
+
 from django.contrib.auth.models import User
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.translation import ugettext_lazy as _
@@ -19,10 +21,11 @@ from shared_dataverse_information.shared_form_util.format_form_errors import for
 from geonode.contrib.datatables.forms import JoinTargetForm,\
                                         TableJoinRequestForm,\
                                         TableUploadAndJoinRequestForm,\
-                                        DataTableUploadForm
-from shared_dataverse_information.worldmap_datatables.forms import\
-    TableJoinResultForm,\
-    MapLatLngLayerRequestForm
+                                        DataTableUploadForm,\
+                                        DataTableResponseForm,\
+                                        TableJoinResultForm
+
+from shared_dataverse_information.worldmap_datatables.forms import MapLatLngLayerRequestForm#, TableJoinResultForm
     #DataTableUploadForm,\
     #TableUploadAndJoinRequestForm,\
 
@@ -34,6 +37,7 @@ from .db_helper import CHOSEN_DB_SETTING
 logger = logging.getLogger(__name__)
 
 
+@http_basic_auth
 @login_required
 @csrf_exempt
 def datatable_upload_api(request):
@@ -86,7 +90,7 @@ def datatable_upload_api(request):
         return HttpResponse(json_msg, mimetype="application/json", status=400)
 
        
-
+@http_basic_auth
 @login_required
 @csrf_exempt
 def datatable_detail(request, dt_id):
@@ -108,12 +112,15 @@ def datatable_detail(request, dt_id):
         json_msg = MessageHelperJSON.get_json_fail_msg(err_msg)
         return HttpResponse(json_msg, mimetype='application/json', status=401)
 
-    json_msg = MessageHelperJSON.get_json_success_msg(msg=None, data_dict=datatable.as_json())
+    datatable_info = DataTableResponseForm.getDataTableAsJson(datatable)
+
+    json_msg = MessageHelperJSON.get_json_success_msg(msg=None, data_dict=datatable_info)
     return HttpResponse(json_msg, mimetype="application/json", status=200)
 
 
 
 @require_GET
+@http_basic_auth
 @login_required
 def jointargets(request):
     """"
@@ -152,6 +159,7 @@ join_result_info_dict = TableJoinResultForm.get_cleaned_data_from_table_join(tj)
 
 
 
+@http_basic_auth
 @login_required
 @csrf_exempt
 def tablejoin_api(request):
@@ -196,6 +204,8 @@ def tablejoin_api(request):
             # Successful Join
             #
             join_result_info_dict = TableJoinResultForm.get_cleaned_data_from_table_join(tj)
+
+
             return HttpResponse(json.dumps(join_result_info_dict), mimetype="application/json", status=200)
 
         else:
@@ -213,7 +223,7 @@ def tablejoin_api(request):
         return HttpResponse(json_msg, mimetype="application/json", status=400)
 
 
-
+@http_basic_auth
 @login_required
 @csrf_exempt
 def tablejoin_detail(request, tj_id):
@@ -280,6 +290,7 @@ def tablejoin_remove(request, tj_id):
             mimetype='application/json', status=400)
 
 
+@http_basic_auth
 @login_required
 @csrf_exempt
 def datatable_remove(request, dt_id):
@@ -325,6 +336,7 @@ def datatable_remove(request, dt_id):
 
 
 
+@http_basic_auth
 @login_required
 @csrf_exempt
 def datatable_upload_and_join_api(request):
@@ -376,6 +388,7 @@ def datatable_upload_and_join_api(request):
         return HttpResponse("Not yet")
 
 
+@http_basic_auth
 @login_required
 @csrf_exempt
 def datatable_upload_lat_lon_api(request):

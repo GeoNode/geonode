@@ -11,8 +11,6 @@ from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 
-from geonode.contrib.datatables.forms import DataTableResponseForm
-
 from .db_helper import get_datastore_connection_string
 
 TRANSFORMATION_FUNCTIONS = []
@@ -48,25 +46,6 @@ class DataTable(models.Model):
     modified =models.DateTimeField(auto_now=True)
 
 
-    def as_json(self):
-        """
-        For API call geonode.contrib.datatables.views.datatable_detail
-        """
-        assert self.id is not None,\
-            "This DataTable does not have an 'id'.  Please save it before calling" \
-            " 'as_json()'"
-
-        # Using form to help flag errors if WorldMap and/or GeoConnect change this data
-        #
-        f = DataTableResponseForm(self.__dict__)
-        if not f.is_valid():
-            err_msg = "Calling .as_json on DataTable object (id:%s) failed.  Validator" \
-                      " errors with DataTableResponseForm:\n %s" % (self.id, f.errors)
-            raise ValueError(err_msg)
-
-        json_info = f.cleaned_data
-        json_info['attributes'] = self.attributes_as_json()
-        return json_info
 
     """python manage.py shell
 from geonode.contrib.datatables.models import DataTable
@@ -178,6 +157,8 @@ class JoinTargetFormatType(models.Model):
 
     def __unicode__(self):
         return self.name
+
+
 
 class JoinTarget(models.Model):
     """
@@ -304,6 +285,66 @@ class TableJoin(models.Model):
             matched_records_count=self.matched_records_count,
             unmatched_records_count=self.unmatched_records_count,
             unmatched_records_list=self.unmatched_records_list)
+
+# Used to generate Django form for JSON output and result evaluation
+#  - a bit verbose, but easier to test with
+#
+TABLE_JOIN_TO_RESULT_MAP = dict(tablejoin_id='pk',
+                             tablejoin_view_name='view_name',
+                             join_layer_id='join_layer.id',
+                             join_layer_typename='join_layer.typename',
+                             join_layer_url='join_layer.get_absolute_url',
+                             matched_record_count='matched_records_count',
+                             unmatched_record_count='unmatched_records_count',
+                             unmatched_records_list='unmatched_records_list',
+                             table_id='datatable.id',
+                             table_name='datatable.table_name',
+                             table_join_attribute='table_attribute.attribute',
+                             layer_typename='join_layer.typename',
+                             layer_join_attribute='layer_attribute.attribute')
+
+class TableJoinResult(models.Model):
+    """
+    Abstract model to return after a successful table join.
+
+    """
+    tablejoin_id = models.IntegerField(help_text='TableJoin pk')
+
+    tablejoin_view_name = models.CharField(max_length=255, help_text='TableJoin view_name')
+
+    # New Join Layer
+    #
+    join_layer_id = models.CharField(max_length=255\
+                        , help_text='TableJoin join_layer.id')
+
+    join_layer_typename = models.CharField(max_length=255\
+                        , help_text='TableJoin join_layer.typename')
+
+    join_layer_url = models.CharField(max_length=255\
+                        , help_text='TableJoin join_layer.get_absolute_url()')
+
+
+    matched_record_count = models.IntegerField(default=0, help_text='TableJoin matched_records_count')
+    unmatched_record_count = models.IntegerField(default=0, help_text='TableJoin unmatched_records_count')
+    unmatched_records_list = models.TextField(blank=True, help_text='TableJoin unmatched_records_list')
+
+    table_id = models.IntegerField(help_text='TableJoin datatable.id')
+    table_name = models.CharField(max_length=255, help_text='TableJoin datatable.table_name')
+    table_join_attribute = models.CharField(max_length=255\
+                        , help_text='TableJoin table_attribute.attribute')
+
+    layer_typename = models.CharField(max_length=255, help_text='TableJoin join_layer.typename')
+    layer_join_attribute = models.CharField(max_length=255\
+                        , help_text='TableJoin layer_attribute.attribute')
+
+
+    def __unicode__(self):
+        return self.join_layer_typename
+
+    class Meta:
+        abstract = True
+
+
 
 def pre_delete_datatable(instance, sender, **kwargs):
     """
