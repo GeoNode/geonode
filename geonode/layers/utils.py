@@ -52,6 +52,8 @@ import tarfile
 
 from zipfile import ZipFile, is_zipfile
 
+from datetime import datetime
+
 logger = logging.getLogger('geonode.layers.utils')
 
 _separator = '\n' + ('-' * 100) + '\n'
@@ -354,8 +356,9 @@ def extract_tarfile(upload_file, extension='.shp', tempdir=None):
 
 
 def file_upload(filename, name=None, user=None, title=None, abstract=None,
-                keywords=[], category=None, regions=[],
-                skip=True, overwrite=False, charset='UTF-8'):
+                keywords=[], category=None, regions=[], date=None,
+                skip=True, overwrite=False, charset='UTF-8',
+                metadata_uploaded_preserve=False):
     """Saves a layer in GeoNode asking as little information as possible.
        Only filename is required, user and title are optional.
     """
@@ -423,10 +426,17 @@ def file_upload(filename, name=None, user=None, title=None, abstract=None,
 
     # set metadata
     if 'xml' in files:
-        xml_file = open(files['xml'])
+        with open(files['xml']) as f:
+            xml_file = f.read()
         defaults['metadata_uploaded'] = True
+        defaults['metadata_uploaded_preserve'] = metadata_uploaded_preserve
+
         # get model properties from XML
-        vals, regions, keywords = set_metadata(xml_file.read())
+        identifier, vals, regions, keywords = set_metadata(xml_file)
+
+        if defaults['metadata_uploaded_preserve']:
+            defaults['metadata_xml'] = xml_file
+            defaults['uuid'] = identifier
 
         for key, value in vals.items():
             if key == 'spatial_representation_type':
@@ -494,13 +504,18 @@ def file_upload(filename, name=None, user=None, title=None, abstract=None,
         if len(regions_resolved) > 0:
             layer.regions.add(*regions_resolved)
 
+    if date is not None:
+        layer.date = datetime.strptime(date, '%Y-%m-%d %H:%M:%S')
+        layer.save()
+
     return layer
 
 
 def upload(incoming, user=None, overwrite=False,
            keywords=(), category=None, regions=(),
            skip=True, ignore_errors=True,
-           verbosity=1, console=None, title=None, private=False):
+           verbosity=1, console=None, title=None, date=None,
+           private=False, metadata_uploaded_preserve=False):
     """Upload a directory of spatial data files to GeoNode
 
        This function also verifies that each layer is in GeoServer.
@@ -585,7 +600,9 @@ def upload(incoming, user=None, overwrite=False,
                                     keywords=keywords,
                                     category=category,
                                     regions=regions,
-                                    title=title
+                                    title=title,
+                                    date=date,
+                                    metadata_uploaded_preserve=metadata_uploaded_preserve
                                     )
                 if not existed:
                     status = 'created'
@@ -598,6 +615,16 @@ def upload(incoming, user=None, overwrite=False,
                                                            "delete_resourcebase", "change_resourcebase_permissions",
                                                            "publish_resourcebase"]}, "groups": {}}
                     layer.set_permissions(perm_spec)
+
+                if getattr(settings, 'SLACK_ENABLED', False):
+                    try:
+                        from geonode.contrib.slack.utils import build_slack_message_layer, send_slack_messages
+                        send_slack_messages(build_slack_message_layer(
+                            ("layer_new" if status == "created" else "layer_edit"),
+                            layer))
+                    except:
+                        print "Could not send slack message."
+
             except Exception as e:
                 if ignore_errors:
                     status = 'failed'

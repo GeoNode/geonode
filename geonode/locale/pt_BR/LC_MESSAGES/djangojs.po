@@ -13,6 +13,7 @@
 # Translators:
 # Translators:
 # Translators:
+# Translators:
 # Andres Alfonso Lemon Gomez <lemon.andres@gmail.com>, 2014
 # Bibiana T. de Almeida <bibiana.almeida@embrapa.br>, 2015
 # Davi de O Custodio <davicustodio@gmail.com>, 2015
@@ -22,9 +23,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-09-22 03:42-0500\n"
-"PO-Revision-Date: 2015-06-08 17:30+0000\n"
-"Last-Translator: Bibiana T. de Almeida <bibiana.almeida@embrapa.br>\n"
+"POT-Creation-Date: 2015-10-29 04:22-0500\n"
+"PO-Revision-Date: 2015-10-29 09:06+0000\n"
+"Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
 "Language-Team: Portuguese (Brazil) (http://www.transifex.com/geonode/geonode/"
 "language/pt_BR/)\n"
 "Language: pt_BR\n"
@@ -73,12 +74,12 @@ msgstr "Apenas os usuários ou grupos a seguir:"
 msgid "Who can manage and edit this data?"
 msgstr "Quem pode gerenciar e editar estes dados?"
 
-#: static/geonode/js/search/search.js:375
+#: static/geonode/js/search/search.js:374
 #: static_root/geonode/js/search/search.js:298
 msgid "Enter your text here ..."
 msgstr "Entre seu texto aqui ..."
 
-#: static/geonode/js/search/search.js:401
+#: static/geonode/js/search/search.js:409
 msgid "Enter your region here ..."
 msgstr "Insira sua região aqui ..."
 
@@ -119,76 +120,76 @@ msgstr "GeoJSON"
 msgid "Zip Archives"
 msgstr "Arquivos Zip"
 
-#: static/geonode/js/upload/LayerInfo.js:231
+#: static/geonode/js/upload/LayerInfo.js:235
 #: static_root/geonode/js/upload/LayerInfo.js:231
 msgid "Layer Info"
 msgstr "Informações da camada"
 
-#: static/geonode/js/upload/LayerInfo.js:232
+#: static/geonode/js/upload/LayerInfo.js:236
 #: static_root/geonode/js/upload/LayerInfo.js:232
 msgid "Edit Metadata"
 msgstr "Editar metadados"
 
-#: static/geonode/js/upload/LayerInfo.js:233
+#: static/geonode/js/upload/LayerInfo.js:237
 #: static_root/geonode/js/upload/LayerInfo.js:233
 msgid "Manage Styles"
 msgstr "Gerenciar estilos"
 
-#: static/geonode/js/upload/LayerInfo.js:236
+#: static/geonode/js/upload/LayerInfo.js:240
 msgid "The column %1 was renamed to %2 <br/>"
 msgstr "A coluna %1 foi renomeada para %2 <br/>"
 
-#: static/geonode/js/upload/LayerInfo.js:242
+#: static/geonode/js/upload/LayerInfo.js:246
 #: static_root/geonode/js/upload/LayerInfo.js:235
 msgid "Your layer was successfully uploaded"
 msgstr "O upload da camada foi feito com sucesso"
 
-#: static/geonode/js/upload/LayerInfo.js:271
+#: static/geonode/js/upload/LayerInfo.js:275
 #: static_root/geonode/js/upload/LayerInfo.js:264
 msgid "Performing Final GeoServer Config Step"
 msgstr "Realizando último passo de configuração do GeoServer"
 
-#: static/geonode/js/upload/LayerInfo.js:286
-#: static/geonode/js/upload/LayerInfo.js:312
+#: static/geonode/js/upload/LayerInfo.js:290
+#: static/geonode/js/upload/LayerInfo.js:316
 #: static_root/geonode/js/upload/LayerInfo.js:279
 #: static_root/geonode/js/upload/LayerInfo.js:305
 msgid "You need to specify more information in order to complete your upload"
 msgstr "Você precisa especificar mais informações a fim de completar o upload"
 
-#: static/geonode/js/upload/LayerInfo.js:304
+#: static/geonode/js/upload/LayerInfo.js:308
 #: static_root/geonode/js/upload/LayerInfo.js:297
 msgid "You need to specify more information in order to complete your upload."
 msgstr ""
 "Você precisa especificar mais informações, a fim de completar o upload."
 
-#: static/geonode/js/upload/LayerInfo.js:304
+#: static/geonode/js/upload/LayerInfo.js:308
 #: static_root/geonode/js/upload/LayerInfo.js:297
 msgid "You can continue configuring your layer."
 msgstr "Você pode continuar a configurar a sua camada."
 
-#: static/geonode/js/upload/LayerInfo.js:322
-#: static/geonode/js/upload/LayerInfo.js:407
+#: static/geonode/js/upload/LayerInfo.js:326
+#: static/geonode/js/upload/LayerInfo.js:412
 #: static_root/geonode/js/upload/LayerInfo.js:315
 #: static_root/geonode/js/upload/LayerInfo.js:400
 msgid "Unexpected Error"
 msgstr "Erro inesperado"
 
-#: static/geonode/js/upload/LayerInfo.js:338
+#: static/geonode/js/upload/LayerInfo.js:342
 #: static_root/geonode/js/upload/LayerInfo.js:331
 msgid "Performing GeoServer Config Step"
 msgstr "Realizando passo de configuração do GeoServer"
 
-#: static/geonode/js/upload/LayerInfo.js:414
+#: static/geonode/js/upload/LayerInfo.js:419
 #: static_root/geonode/js/upload/LayerInfo.js:407
 msgid "Layer files uploaded, configuring in GeoServer"
 msgstr "Upload de arquivos de camada concluído, em configuração no GeoServer"
 
-#: static/geonode/js/upload/LayerInfo.js:429
+#: static/geonode/js/upload/LayerInfo.js:434
 #: static_root/geonode/js/upload/LayerInfo.js:422
 msgid "Select or create a Geogig repository."
 msgstr "Selecione ou crie um repositório Geogig."
 
-#: static/geonode/js/upload/LayerInfo.js:524
+#: static/geonode/js/upload/LayerInfo.js:528
 #: static_root/admin/js/SelectFilter2.js:69
 #: static_root/geonode/js/upload/LayerInfo.js:517
 msgid "Remove"
@@ -202,10 +203,13 @@ msgstr ""
 "O arquivo %s é de um tipo de arquivo não suportado, por favor selecione "
 "outro arquivo."
 
-#: static/geonode/js/upload/upload.js:260
-#: static_root/geonode/js/upload/upload.js:260
-msgid "You are uploading an incomplete set of files."
-msgstr "Você está fazendo upload de um conjunto incompleto de arquivos."
+#: static/geonode/js/upload/upload.js:280
+msgid ""
+"You are trying to upload an incomplete set of files or not all mandatory "
+"options have been validated.\n"
+"\n"
+"Please check for errors in the form!"
+msgstr ""
 
 #: static_root/admin/js/SelectFilter2.js:45
 #, c-format
@@ -368,6 +372,10 @@ msgstr "Ontem"
 #: static_root/admin/js/admin/DateTimeShortcuts.js:203
 msgid "Tomorrow"
 msgstr "Amanhã"
+
+#: static_root/geonode/js/upload/upload.js:260
+msgid "You are uploading an incomplete set of files."
+msgstr "Você está fazendo upload de um conjunto incompleto de arquivos."
 
 #: templates/lang.js:10
 msgid "Save as Copy"

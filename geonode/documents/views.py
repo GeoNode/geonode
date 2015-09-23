@@ -72,7 +72,7 @@ def document_detail(request, docid):
     if document is None:
         return HttpResponse(
             'An unknown error has occured.',
-            mimetype="text/plain",
+            content_type="text/plain",
             status=401
         )
 
@@ -280,7 +280,7 @@ def document_metadata(
     if document is None:
         return HttpResponse(
             'An unknown error has occured.',
-            mimetype="text/plain",
+            content_type="text/plain",
             status=401
         )
 
@@ -446,6 +446,19 @@ def document_remove(request, docid, template='documents/document_remove.html'):
     except PermissionDenied:
         return HttpResponse(
             'You are not allowed to delete this document',
-            mimetype="text/plain",
+            content_type="text/plain",
             status=401
         )
+
+
+def document_metadata_detail(request, docid, template='documents/document_metadata_detail.html'):
+    document = _resolve_document(
+        request,
+        docid,
+        'view_resourcebase',
+        _PERMISSION_MSG_METADATA)
+    return render_to_response(template, RequestContext(request, {
+        "layer": document,
+        "docid": docid,
+        'SITEURL': settings.SITEURL[:-1]
+    }))

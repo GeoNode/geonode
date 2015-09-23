@@ -19,7 +19,7 @@
 #########################################################################
 
 import autocomplete_light
-from autocomplete_light.contrib.taggit_tagfield import TagField, TagWidget
+from autocomplete_light.contrib.taggit_field import TaggitField, TaggitWidget
 
 from django import forms
 from django.utils.translation import ugettext as _
@@ -58,10 +58,19 @@ class CategoryForm(forms.Form):
 
 class ResourceBaseForm(TranslationModelForm):
     """Base form for metadata, should be inherited by childres classes of ResourceBase"""
+
+    owner = forms.ModelChoiceField(
+        empty_label="Owner",
+        label=_("Owner"),
+        required=False,
+        queryset=Profile.objects.exclude(
+            username='AnonymousUser'),
+        widget=autocomplete_light.ChoiceWidget('ProfileAutocomplete'))
+
     _date_widget_options = {
         "icon_attrs": {"class": "fa fa-calendar"},
         "attrs": {"class": "form-control input-sm"},
-        "format": "%Y-%m-%d %H:%M",
+        "format": "%Y-%m-%d %I:%M %p",
         # Options for the datetimepickers are not set here on purpose.
         # They are set in the metadata_form_js.html template because
         # bootstrap-datetimepicker uses jquery for its initialization
@@ -70,42 +79,50 @@ class ResourceBaseForm(TranslationModelForm):
         "options": False,
         }
     date = forms.DateTimeField(
+        label=_("Date"),
         localize=True,
+        input_formats=['%Y-%m-%d %I:%M %p'],
         widget=DateTimePicker(**_date_widget_options)
     )
     temporal_extent_start = forms.DateTimeField(
+        label=_("temporal extent start"),
         required=False,
         localize=True,
+        input_formats=['%Y-%m-%d %I:%M %p'],
         widget=DateTimePicker(**_date_widget_options)
     )
     temporal_extent_end = forms.DateTimeField(
+        label=_("temporal extent end"),
         required=False,
         localize=True,
+        input_formats=['%Y-%m-%d %I:%M %p'],
         widget=DateTimePicker(**_date_widget_options)
     )
 
     poc = forms.ModelChoiceField(
-        empty_label="Person outside GeoNode (fill form)",
-        label="Point Of Contact",
+        empty_label=_("Person outside GeoNode (fill form)"),
+        label=_("Point of Contact"),
         required=False,
         queryset=Profile.objects.exclude(
             username='AnonymousUser'),
         widget=autocomplete_light.ChoiceWidget('ProfileAutocomplete'))
 
     metadata_author = forms.ModelChoiceField(
-        empty_label="Person outside GeoNode (fill form)",
-        label="Metadata Author",
+        empty_label=_("Person outside GeoNode (fill form)"),
+        label=_("Metadata Author"),
         required=False,
         queryset=Profile.objects.exclude(
             username='AnonymousUser'),
         widget=autocomplete_light.ChoiceWidget('ProfileAutocomplete'))
 
-    keywords = TagField(
+    keywords = TaggitField(
+        label=_("Keywords"),
         required=False,
         help_text=_("A space or comma-separated list of keywords"),
-        widget=TagWidget('TagAutocomplete'))
+        widget=TaggitWidget('TagAutocomplete'))
 
     regions = TreeNodeMultipleChoiceField(
+        label=_("Regions"),
         required=False,
         queryset=Region.objects.all(),
         level_indicator=u'___')

@@ -315,10 +315,7 @@ class CommonModelApi(ModelResource):
 
         if not settings.SKIP_PERMS_FILTER:
             # Get the list of objects the user has access to
-            filter_set = get_objects_for_user(
-                    request.user,
-                    'base.view_resourcebase'
-            )
+            filter_set = get_objects_for_user(request.user, 'base.view_resourcebase')
             if settings.RESOURCE_PUBLISHING:
                 filter_set = filter_set.filter(is_published=True)
 
@@ -438,8 +435,6 @@ class CommonModelApi(ModelResource):
             'abstract',
             'csw_wkt_geometry',
             'csw_type',
-            'distribution_description',
-            'distribution_url',
             'owner__username',
             'share_count',
             'popular_count',

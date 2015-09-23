@@ -13,13 +13,14 @@
 # Translators:
 # Translators:
 # Translators:
+# Translators:
 # Andres Alfonso Lemon Gomez <lemon.andres@gmail.com>, 2014
 msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-09-22 03:42-0500\n"
-"PO-Revision-Date: 2015-09-22 08:17+0000\n"
+"POT-Creation-Date: 2015-10-29 04:21-0500\n"
+"PO-Revision-Date: 2015-10-29 09:05+0000\n"
 "Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
 "Language-Team: Afrikaans (http://www.transifex.com/geonode/geonode/language/"
 "af/)\n"
@@ -29,11 +30,11 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: utils.py:44
+#: utils.py:43
 msgid "Invalid permission level."
 msgstr "Ongeldig toestemming vlak."
 
-#: utils.py:494
+#: utils.py:496
 msgid "Permission Denied"
 msgstr "Toestemming geweier"
 
@@ -155,7 +156,8 @@ msgstr "Geen inligting verskaf"
 
 #: base/forms.py:43 base/templates/base/resourcebase_info_panel.html:62
 #: documents/templates/documents/document_metadata.html:65
-#: layers/templates/layers/layer_metadata.html:71
+#: layers/templates/layers/layer_metadata.html:70
+#: layers/templates/upload/layer_upload.html:89
 #: maps/templates/maps/map_metadata.html:61
 msgid "Category"
 msgstr "Kategorie"
@@ -164,7 +166,7 @@ msgstr "Kategorie"
 msgid "Category is required."
 msgstr "Kategorie word vereis."
 
-#: base/forms.py:105 groups/models.py:45 people/forms.py:82
+#: base/forms.py:114 groups/models.py:45 people/forms.py:82
 msgid "A space or comma-separated list of keywords"
 msgstr "'N spasie of komma-geskeide lys van dokumente"
 
@@ -716,23 +718,23 @@ msgstr ""
 msgid "See users"
 msgstr ""
 
-#: documents/forms.py:92 documents/forms.py:160
+#: documents/forms.py:96 documents/forms.py:164
 msgid "Document must be a file or url."
 msgstr "Dokument moet 'n lêer of url wees."
 
-#: documents/forms.py:96 documents/forms.py:164
+#: documents/forms.py:100 documents/forms.py:168
 msgid "A document cannot have both a file and a url."
 msgstr "'N dokument kan nie beide 'n lêer en 'n url."
 
-#: documents/forms.py:109 documents/forms.py:177
+#: documents/forms.py:113 documents/forms.py:181
 msgid "This file type is not allowed"
 msgstr "Hierdie lêer tipe is nie toegelaat"
 
-#: documents/forms.py:127
+#: documents/forms.py:131
 msgid "Link to"
 msgstr "Link na"
 
-#: documents/forms.py:149
+#: documents/forms.py:153
 msgid "Permissions must be valid JSON."
 msgstr "Regte moet geldig into wees."
 
@@ -776,11 +778,11 @@ msgstr "Jy word nie toegelaat om hierdie dokument te besigtig."
 msgid "You are not allowed to edit this document."
 msgstr "Jy word nie toegelaat om hierdie dokument te wysig."
 
-#: documents/views.py:328 layers/views.py:363
+#: documents/views.py:328 layers/views.py:358
 msgid "You must set a point of contact for this resource"
 msgstr ""
 
-#: documents/views.py:343 layers/views.py:378
+#: documents/views.py:343 layers/views.py:373
 msgid "You must set an author for this resource"
 msgstr ""
 
@@ -926,7 +928,7 @@ msgstr "Hierdie dokument is nie verwant aan enige kaarte of lae"
 #: groups/templates/groups/group_detail.html:70
 #: layers/templates/layers/layer_detail.html:334
 #: layers/templates/layers/layer_replace.html:94
-#: layers/templates/upload/layer_upload.html:93
+#: layers/templates/upload/layer_upload.html:112
 #: maps/templates/maps/map_detail.html:178 people/admin.py:55
 msgid "Permissions"
 msgstr "Permissions"
@@ -983,28 +985,36 @@ msgstr "Werk"
 msgid "Metadata Provider"
 msgstr "Metadata Verskaffer"
 
-#: documents/templates/documents/document_remove.html:11
+#: documents/templates/documents/document_remove.html:4
+#: maps/templates/maps/map_remove.html:6
+msgid "Deleting"
+msgstr "Skrap"
+
+#: documents/templates/documents/document_remove.html:8
+msgid "Remove Document"
+msgstr ""
+
+#: documents/templates/documents/document_remove.html:13
 #, python-format
 msgid ""
 "\n"
-"          Are you sure you want to remove %(document_title)s?\n"
+"          Are you sure you want to remove <a href="
+"\"%(document.get_absolute_url)s\">%(document_title)s</a>?\n"
 "        "
 msgstr ""
-"\n"
-"Is jy seker jy wil %(document_title)s te verwyder?"
 
-#: documents/templates/documents/document_remove.html:18
+#: documents/templates/documents/document_remove.html:20
 #: groups/templates/groups/group_remove.html:19
 #: layers/templates/layers/layer_remove.html:22
-#: maps/templates/maps/map_remove.html:19
+#: maps/templates/maps/map_remove.html:22
 #: services/templates/services/service_remove.html:17
 msgid "Yes, I am sure"
 msgstr "Ja, ek is seker"
 
-#: documents/templates/documents/document_remove.html:19
+#: documents/templates/documents/document_remove.html:21
 #: groups/templates/groups/group_remove.html:20
 #: layers/templates/layers/layer_remove.html:23
-#: maps/templates/maps/map_remove.html:20
+#: maps/templates/maps/map_remove.html:23
 #: services/templates/services/service_remove.html:18
 msgid "No, don't remove it"
 msgstr "Nee, moenie dit verwyder nie"
@@ -1020,7 +1030,7 @@ msgstr "Vervang"
 
 #: documents/templates/documents/document_replace.html:27
 #: layers/templates/layers/layer_replace.html:84
-#: layers/templates/upload/layer_upload.html:86
+#: layers/templates/upload/layer_upload.html:105
 msgid "Clear"
 msgstr "Duidelik"
 
@@ -1028,11 +1038,11 @@ msgstr "Duidelik"
 msgid "Upload Document"
 msgstr "Oplaai Document"
 
-#: geoserver/helpers.py:974
+#: geoserver/helpers.py:987
 msgid "An exception occurred loading data to PostGIS"
 msgstr ""
 
-#: geoserver/helpers.py:979
+#: geoserver/helpers.py:992
 msgid " Additionally an error occured during database cleanup"
 msgstr ""
 
@@ -1072,7 +1082,7 @@ msgstr "PDF"
 msgid "PNG"
 msgstr "PNG"
 
-#: geoserver/signals.py:293
+#: geoserver/signals.py:294
 msgid "Could not create a download link for layer."
 msgstr "Kon nie 'n aflaai skakel vir laag."
 
@@ -1573,19 +1583,19 @@ msgstr "Jy word nie toegelaat om hierdie laag se metadata te verander"
 msgid "You are not permitted to view this layer"
 msgstr "Jy word nie toegelaat om hierdie laag te sien"
 
-#: layers/views.py:488
+#: layers/views.py:486
 msgid "You are attempting to replace a vector layer with a raster."
 msgstr ""
 
-#: layers/views.py:491
+#: layers/views.py:489
 msgid "You are attempting to replace a raster layer with a vector."
 msgstr ""
 
-#: layers/views.py:547
+#: layers/views.py:545
 msgid "Unable to delete layer"
 msgstr ""
 
-#: layers/views.py:550
+#: layers/views.py:548
 msgid ""
 "This layer is a member of a layer group, you must remove the layer from the "
 "group before deleting."
@@ -1951,7 +1961,7 @@ msgstr "Werk Beskikbaar Styles"
 msgid "Upload Layer"
 msgstr "Oplaai Layer"
 
-#: layers/templates/upload/layer_upload.html:87
+#: layers/templates/upload/layer_upload.html:106
 msgid "Upload files"
 msgstr "Lêers oplaai"
 
@@ -2580,19 +2590,18 @@ msgstr ""
 "Core metadata elemente. \n"
 "Sommige van jou oorspronklike metadata verlore gewees het."
 
-#: maps/templates/maps/map_remove.html:6
-msgid "Deleting"
-msgstr "Skrap"
+#: maps/templates/maps/map_remove.html:10
+msgid "Remove Map"
+msgstr ""
 
-#: maps/templates/maps/map_remove.html:13
+#: maps/templates/maps/map_remove.html:15
 #, python-format
 msgid ""
 "\n"
-"        Are you sure you want to remove %(map_title)s?\n"
-"    "
+"          Are you sure you want to remove <a href=\"%(map.get_absolute_url)s"
+"\">%(map_title)s</a>?\n"
+"        "
 msgstr ""
-"\n"
-"Is jy seker jy wil %(map_title)s te verwyder?"
 
 #: maps/templates/maps/map_view.html:5
 msgid "GeoExplorer"
@@ -2799,15 +2808,15 @@ msgstr ""
 "algemeen gebruik woord (e) of geformaliseer woord (e) of frase (s) gebruik "
 "word om die vak (ruimte of komma geskei te beskryf"
 
-#: people/views.py:90
+#: people/views.py:91
 msgid "Your username for "
 msgstr "Jou gebruikersnaam vir"
 
-#: people/views.py:104
+#: people/views.py:105
 msgid "Your username has been emailed to you."
 msgstr "Jou gebruikersnaam is per e-pos aan jou."
 
-#: people/views.py:106
+#: people/views.py:107
 msgid "No user could be found with that email address."
 msgstr "Geen gebruiker gevind kon word met die e-pos adres."
 
@@ -2922,7 +2931,8 @@ msgid "Remote Services"
 msgstr "Afgeleë Services"
 
 #: people/templates/people/profile_detail.html:117 templates/500.html:229
-#: templates/base.html:222
+#: templates/base.html:222 templates/account/invite_user.html:8
+#: templates/account/invite_user.html:15
 msgid "Invite User"
 msgstr "Nooi gebruiker"
 
@@ -3727,11 +3737,11 @@ msgid "Share This"
 msgstr ""
 
 #: templates/account/admin_approval_sent.html:6
-#: templates/account/admin_approval_sent.html:9
+#: templates/account/admin_approval_sent.html:11
 msgid "Account Pending Approval"
 msgstr ""
 
-#: templates/account/admin_approval_sent.html:11
+#: templates/account/admin_approval_sent.html:14
 #, python-format
 msgid ""
 "We have sent the administrators a notice to approve your account associated "
@@ -3740,11 +3750,11 @@ msgid ""
 msgstr ""
 
 #: templates/account/email_confirmation_sent.html:6
-#: templates/account/email_confirmation_sent.html:9
+#: templates/account/email_confirmation_sent.html:11
 msgid "Confirm your email address"
 msgstr ""
 
-#: templates/account/email_confirmation_sent.html:11
+#: templates/account/email_confirmation_sent.html:14
 #, python-format
 msgid ""
 "We have sent you an email to <b>%(email)s</b> for verification. Follow the "
@@ -3770,6 +3780,22 @@ msgstr "Jy jou wagwoord vergeet?"
 #: templates/account/logout.html:15
 msgid "Are you sure you want to log out?"
 msgstr "Is jy seker jy wil hê om aan te meld nie?"
+
+#: templates/account/password_change.html:8
+msgid "Password change"
+msgstr ""
+
+#: templates/account/password_change.html:14
+msgid "Password Change"
+msgstr ""
+
+#: templates/account/password_change.html:18
+msgid "Change your password here"
+msgstr ""
+
+#: templates/account/password_change.html:24
+msgid "Change my password"
+msgstr ""
 
 #: templates/account/password_reset.html:8
 msgid "Password reset"
@@ -3803,12 +3829,12 @@ msgstr ""
 "As jy enige probleme om jou wagwoord, kontak ons by <a href=\"mailto:"
 "%(THEME_ACCOUNT_CONTACT_EMAIL)s\">%(THEME_ACCOUNT_CONTACT_EMAIL)s</a>."
 
-#: templates/account/signup.html:7 templates/account/signup.html.py:14
-#: templates/account/signup.html:22
+#: templates/account/signup.html:7 templates/account/signup.html.py:11
+#: templates/account/signup.html:17 templates/account/signup.html.py:25
 msgid "Sign up"
 msgstr "Sluit aan"
 
-#: templates/account/signup.html:27
+#: templates/account/signup.html:30
 msgid "Sorry, registrations are not open at this time."
 msgstr "Jammer, registrasies is nie oop op hierdie tyd."
 
@@ -4295,11 +4321,11 @@ msgstr "yyyy-mm-dd"
 msgid "Date ends before:"
 msgstr "Datum eindig voor:"
 
-#: templates/search/_search_content.html:6
+#: templates/search/_search_content.html:5
 msgid "Your selections"
 msgstr "Jou keuses"
 
-#: templates/search/_search_content.html:7
+#: templates/search/_search_content.html:6
 msgid "Clear all filters"
 msgstr "Duidelik al filters"
 
@@ -4367,6 +4393,24 @@ msgstr "Terug na Inbox"
 msgid "Send Reply"
 msgstr "Stuur Antwoord"
 
+#~ msgid ""
+#~ "\n"
+#~ "          Are you sure you want to remove %(document_title)s?\n"
+#~ "        "
+#~ msgstr ""
+#~ "\n"
+#~ "          Are you sure you want to remove %(document_title)s?\n"
+#~ "        "
+
+#~ msgid ""
+#~ "\n"
+#~ "        Are you sure you want to remove %(map_title)s?\n"
+#~ "    "
+#~ msgstr ""
+#~ "\n"
+#~ "        Are you sure you want to remove %(map_title)s?\n"
+#~ "    "
+
 #~ msgid "email"
 #~ msgstr "email"
 
@@ -4388,9 +4432,6 @@ msgstr "Stuur Antwoord"
 #~ msgid "Replace this Document"
 #~ msgstr "Replace this Document"
 
-#~ msgid "Remove this Document"
-#~ msgstr "Remove this Document"
-
 #~ msgid "Edit Styles"
 #~ msgstr "Edit Styles"
 
@@ -4405,9 +4446,6 @@ msgstr "Stuur Antwoord"
 
 #~ msgid "Edit Map Metadata"
 #~ msgstr "Edit Map Metadata"
-
-#~ msgid "Remove this Map"
-#~ msgstr "Remove this Map"
 
 #~ msgid "Profile Menu"
 #~ msgstr "Profile Menu"

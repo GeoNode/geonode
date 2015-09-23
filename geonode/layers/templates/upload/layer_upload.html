@@ -16,6 +16,22 @@
 <div class="page-header">
   <a href="{% url "layer_browse" %}" class="btn btn-primary pull-right">{% trans "Explore Layers" %}</a>
   <h2 class="page-title">{% trans "Upload Layers" %}</h2>
+  
+  <script language="javascript">
+    var json_mosaics = [
+          {% for mosaic in mosaics %}
+            {
+                "name" : "{{mosaic.name}}",
+                "workspace" : "{{mosaic.workspace}}",
+                "is_mosaic" : "{{mosaic.is_mosaic}}",
+                "has_time" : "{{mosaic.has_time}}",
+                "has_elevation" : "{{mosaic.has_elevation}}",
+                "time_regex" : "{{mosaic.time_regex}}",
+                "elevation_regex" : "{{mosaic.elevation_regex}}"
+            },
+          {% endfor %}
+    ]
+  </script>
 </div>
 <div class="row">
   <div class="col-md-8">
@@ -67,6 +83,9 @@
       <ul id="global-errors"></ul>
       <h4>{% trans "Files to be uploaded" %}</h4>
       <div id="file-queue"></div>
+      <div class="checkbox" style="display:none;" id="metadata_uploaded_preserve_check">
+          Preserve Metadata XML <input type="checkbox" name="metadata_uploaded_preserve" id="id_metadata_uploaded_preserve"/>
+      </div>
     </section>
 
     <section class="charset">
@@ -81,7 +100,7 @@
         {% endfor %}
       </select>
     </section>
-
+    
     <section>
       <a href="#" id="clear-button" class="btn btn-default">{% trans "Clear" %}</a>
       <a href="#" id="upload-button" class="btn btn-danger">{% trans "Upload files" %}</a>
@@ -104,7 +123,7 @@
 <script data-main="{% static 'geonode/js/upload/main' %}" 
   src="{% static 'lib/js/require.js' %}">
 </script>
-
+<script type="text/javascript" src="{% static 'geonode/js/upload/cookie.js' %}"></script>
 <script type="text/javascript">
 {% autoescape off %}
 
@@ -112,6 +131,7 @@
   form_target = "{{ UPLOADER_URL }}",
   geogig_enabled = {{ GEOGIG_ENABLED|lower  }},
   time_enabled = {{ TIME_ENABLED|lower  }},
+  mosaic_enabled = {{ MOSAIC_ENABLED|lower  }},
   userLookup = "{% url "geonode.views.ajax_lookup" %}"
 
 {% endautoescape %}

@@ -45,6 +45,18 @@ vec_exts = shp_exts + csv_exts + kml_exts
 
 cov_exts = ['.tif', '.tiff', '.geotiff', '.geotif']
 
+TIME_REGEX = (
+    ('[0-9]{8}', _('YYYYMMDD')),
+    ('[0-9]{8}T[0-9]{6}', _("YYYYMMDD'T'hhmmss")),
+    ('[0-9]{8}T[0-9]{6}Z', _("YYYYMMDD'T'hhmmss'Z'")),
+)
+
+TIME_REGEX_FORMAT = {
+    '[0-9]{8}': '%Y%m%d',
+    '[0-9]{8}T[0-9]{6}': '%Y%m%dT%H%M%S',
+    '[0-9]{8}T[0-9]{6}Z': '%Y%m%dT%H%M%SZ'
+}
+
 
 class Style(models.Model):
 
@@ -63,6 +75,9 @@ class Style(models.Model):
 
     def __str__(self):
         return "%s" % self.name.encode('utf-8')
+
+    def absolute_url(self):
+        return self.sld_url.split('geoserver/', 1)[1]
 
 
 class LayerManager(ResourceBaseManager):
@@ -84,6 +99,18 @@ class Layer(ResourceBase):
     storeType = models.CharField(max_length=128)
     name = models.CharField(max_length=128)
     typename = models.CharField(max_length=128, null=True, blank=True)
+
+    is_mosaic = models.BooleanField(default=False)
+    has_time = models.BooleanField(default=False)
+    has_elevation = models.BooleanField(default=False)
+    time_regex = models.CharField(max_length=128, null=True, blank=True, choices=TIME_REGEX)
+    elevation_regex = models.CharField(max_length=128, null=True, blank=True)
+
+    is_mosaic = models.BooleanField(default=False)
+    has_time = models.BooleanField(default=False)
+    has_elevation = models.BooleanField(default=False)
+    time_regex = models.CharField(max_length=128, null=True, blank=True, choices=TIME_REGEX)
+    elevation_regex = models.CharField(max_length=128, null=True, blank=True)
 
     default_style = models.ForeignKey(
         Style,
@@ -413,7 +440,7 @@ def pre_save_layer(instance, sender, **kwargs):
         instance.bbox_y1 = instance.resourcebase_ptr.bbox_y1
 
     if instance.abstract == '' or instance.abstract is None:
-        instance.abstract = 'No abstract provided'
+        instance.abstract = unicode(_('No abstract provided'))
     if instance.title == '' or instance.title is None:
         instance.title = instance.name
 
@@ -492,18 +519,20 @@ def post_delete_layer(instance, sender, **kwargs):
     Remove the layer default style.
     """
     from geonode.maps.models import MapLayer
-    logger.debug(
-        "Going to delete associated maplayers for [%s]",
-        instance.typename.encode('utf-8'))
-    MapLayer.objects.filter(
-        name=instance.typename,
-        ows_url=instance.ows_url).delete()
+    if instance.typename:
+        logger.debug(
+            "Going to delete associated maplayers for [%s]",
+            instance.typename.encode('utf-8'))
+        MapLayer.objects.filter(
+            name=instance.typename,
+            ows_url=instance.ows_url).delete()
 
     if instance.service:
         return
-    logger.debug(
-        "Going to delete the default style for [%s]",
-        instance.typename.encode('utf-8'))
+    if instance.typename:
+        logger.debug(
+            "Going to delete the default style for [%s]",
+            instance.typename.encode('utf-8'))
 
     if instance.default_style and Layer.objects.filter(
             default_style__id=instance.default_style.id).count() == 0:

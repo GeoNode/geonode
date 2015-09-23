@@ -59,7 +59,7 @@ def resource_permissions(request, resource_id):
         return HttpResponse(
             'You are not allowed to change permissions for this resource',
             status=401,
-            mimetype='text/plain')
+            content_type='text/plain')
 
     if request.method == 'POST':
         permission_spec = json.loads(request.body)
@@ -68,7 +68,7 @@ def resource_permissions(request, resource_id):
         return HttpResponse(
             json.dumps({'success': True}),
             status=200,
-            mimetype='text/plain'
+            content_type='text/plain'
         )
 
     elif request.method == 'GET':
@@ -76,13 +76,13 @@ def resource_permissions(request, resource_id):
         return HttpResponse(
             json.dumps({'success': True, 'permissions': permission_spec}),
             status=200,
-            mimetype='text/plain'
+            content_type='text/plain'
         )
     else:
         return HttpResponse(
             'No methods other than get and post are allowed',
             status=401,
-            mimetype='text/plain')
+            content_type='text/plain')
 
 
 @require_POST
@@ -106,13 +106,13 @@ def set_bulk_permissions(request):
         return HttpResponse(
             json.dumps({'success': 'ok', 'not_changed': not_permitted}),
             status=200,
-            mimetype='text/plain'
+            content_type='text/plain'
         )
     else:
         return HttpResponse(
             json.dumps({'error': 'Wrong permissions specification'}),
             status=400,
-            mimetype='text/plain')
+            content_type='text/plain')
 
 
 @require_POST
@@ -130,9 +130,9 @@ def request_permissions(request):
         return HttpResponse(
             json.dumps({'success': 'ok', }),
             status=200,
-            mimetype='text/plain')
+            content_type='text/plain')
     except:
         return HttpResponse(
             json.dumps({'error': 'error delivering notification'}),
             status=400,
-            mimetype='text/plain')
+            content_type='text/plain')

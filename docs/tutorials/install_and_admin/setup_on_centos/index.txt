@@ -1,0 +1,18 @@
+.. _setup_on_centos:
+
+===============================================
+GeoNode (v\ |release|) installation on CentOS 7
+===============================================
+
+This part of the documentation describes the complete setup process for GeoNode
+on a CentOS 7 machine.
+
+.. toctree::
+   :maxdepth: 2
+
+   setup_centos
+   install_geonode
+   install_base_tomcat
+   install_base_httpd
+   install_base_postgresql
+   devmode_install_centos

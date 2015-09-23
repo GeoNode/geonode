@@ -66,6 +66,14 @@ if _ALLOW_TIME_STEP:
         'TIME_ENABLED',
         False)
 
+_ALLOW_MOSAIC_STEP = getattr(settings, 'UPLOADER', False)
+if _ALLOW_MOSAIC_STEP:
+    _ALLOW_MOSAIC_STEP = _ALLOW_MOSAIC_STEP.get(
+        'OPTIONS',
+        False).get(
+        'MOSAIC_ENABLED',
+        False)
+
 _ASYNC_UPLOAD = True if ogc_server_settings and ogc_server_settings.DATASTORE else False
 
 # at the moment, the various time support transformations require the database
@@ -169,6 +177,16 @@ def _next_step_response(req, upload_session, force_ajax=True):
              'redirect_to': '/upload/time',
              }
         )
+    if next == 'mosaic' and force_ajax:
+        import_session = upload_session.import_session
+        url = reverse('data_upload') + "?id=%s" % import_session.id
+        return json_response(
+            {'url': url,
+             'status': 'incomplete',
+             'success': True,
+             'redirect_to': '/upload/mosaic',
+             }
+        )
     if next == 'srs' and force_ajax:
         import_session = upload_session.import_session
         url = reverse('data_upload') + "?id=%s" % import_session.id
@@ -254,7 +272,18 @@ def save_step_view(req, session):
             req.user,
             name,
             base_file,
-            overwrite=False)
+            overwrite=False,
+            mosaic=form.cleaned_data['mosaic'],
+            append_to_mosaic_opts=form.cleaned_data['append_to_mosaic_opts'],
+            append_to_mosaic_name=form.cleaned_data['append_to_mosaic_name'],
+            mosaic_time_regex=form.cleaned_data['mosaic_time_regex'],
+            mosaic_time_value=form.cleaned_data['mosaic_time_value'],
+            time_presentation=form.cleaned_data['time_presentation'],
+            time_presentation_res=form.cleaned_data['time_presentation_res'],
+            time_presentation_default_value=form.cleaned_data['time_presentation_default_value'],
+            time_presentation_reference_value=form.cleaned_data['time_presentation_reference_value']
+        )
+
         sld = None
 
         if base_file[0].sld_files:
@@ -274,7 +303,12 @@ def save_step_view(req, session):
             upload_type=base_file[0].file_type.code,
             geogig=form.cleaned_data['geogig'],
             geogig_store=form.cleaned_data['geogig_store'],
-            time=form.cleaned_data['time']
+            time=form.cleaned_data['time'],
+            mosaic=form.cleaned_data['mosaic'],
+            append_to_mosaic_opts=form.cleaned_data['append_to_mosaic_opts'],
+            append_to_mosaic_name=form.cleaned_data['append_to_mosaic_name'],
+            mosaic_time_regex=form.cleaned_data['mosaic_time_regex'],
+            mosaic_time_value=form.cleaned_data['mosaic_time_value']
         )
         return _next_step_response(req, upload_session, force_ajax=True)
     else:
@@ -519,10 +553,24 @@ _steps = {
 # and 'save' is the implied first step :P
 _pages = {
     'shp': ('srs', 'time', 'run', 'final'),
-    'tif': ('time', 'run', 'final'),
+    'tif': ('run', 'final'),
     'kml': ('run', 'final'),
     'csv': ('csv', 'time', 'run', 'final'),
-    'geojson': ('run', 'final')
+    'geojson': ('run', 'final'),
+    'ntf': ('run', 'final'),  # NITF
+    'img': ('run', 'final'),  # ERDAS Imagine
+    'i41': ('run', 'final'),  # CIB01 RPF
+    'i21': ('run', 'final'),  # CIB05 RPF
+    'i11': ('run', 'final'),  # CIB10 RPF
+    'gn1': ('run', 'final'),  # GNC RPF
+    'jn1': ('run', 'final'),  # JNC RPF
+    'on1': ('run', 'final'),  # ONC RPF
+    'tp1': ('run', 'final'),  # TPC RPF
+    'ja1': ('run', 'final'),  # JOG RPF
+    'tc1': ('run', 'final'),  # TLM100 RPF
+    'tl1': ('run', 'final'),  # TLM50 RPF
+    'jp2': ('run', 'final'),  # JPEG2000 MrSID
+    'sid': ('run', 'final'),  # MrSID
 }
 
 if not _ALLOW_TIME_STEP:
@@ -530,6 +578,20 @@ if not _ALLOW_TIME_STEP:
         steps = list(steps)
         if 'time' in steps:
             steps.remove('time')
+        _pages[t] = tuple(steps)
+
+if not _ALLOW_MOSAIC_STEP:
+    for t, steps in _pages.items():
+        steps = list(steps)
+        if 'mosaic' in steps:
+            steps.remove('mosaic')
+        _pages[t] = tuple(steps)
+
+if not _ALLOW_MOSAIC_STEP:
+    for t, steps in _pages.items():
+        steps = list(steps)
+        if 'mosaic' in steps:
+            steps.remove('mosaic')
         _pages[t] = tuple(steps)
 
 
@@ -678,18 +740,18 @@ class UploadFileCreateView(CreateView):
                     args=[
                         self.object.id]),
                 'delete_type': "DELETE"}]
-        response = JSONResponse(data, {}, response_mimetype(self.request))
+        response = JSONResponse(data, {}, response_content_type(self.request))
         response['Content-Disposition'] = 'inline; filename=files.json'
         return response
 
     def form_invalid(self, form):
         data = [{}]
-        response = JSONResponse(data, {}, response_mimetype(self.request))
+        response = JSONResponse(data, {}, response_content_type(self.request))
         response['Content-Disposition'] = 'inline; filename=files.json'
         return response
 
 
-def response_mimetype(request):
+def response_content_type(request):
     if "application/json" in request.META['HTTP_ACCEPT']:
         return "application/json"
     else:
@@ -707,7 +769,7 @@ class UploadFileDeleteView(DeleteView):
         self.object = self.get_object()
         self.object.delete()
         if request.is_ajax():
-            response = JSONResponse(True, {}, response_mimetype(self.request))
+            response = JSONResponse(True, {}, response_content_type(self.request))
             response['Content-Disposition'] = 'inline; filename=files.json'
             return response
         else:

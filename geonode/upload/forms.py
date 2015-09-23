@@ -45,9 +45,21 @@ class LayerUploadForm(forms.Form):
     geogig_store = forms.CharField(required=False)
     time = forms.BooleanField(required=False)
 
+    mosaic = forms.BooleanField(required=False)
+    append_to_mosaic_opts = forms.BooleanField(required=False)
+    append_to_mosaic_name = forms.CharField(required=False)
+    mosaic_time_regex = forms.CharField(required=False)
+    mosaic_time_value = forms.CharField(required=False)
+    time_presentation = forms.CharField(required=False)
+    time_presentation_res = forms.IntegerField(required=False)
+    time_presentation_default_value = forms.CharField(required=False)
+    time_presentation_reference_value = forms.CharField(required=False)
+
     abstract = forms.CharField(required=False)
     layer_title = forms.CharField(required=False)
     permissions = JSONField()
+
+    metadata_uploaded_preserve = forms.BooleanField(required=False)
 
     spatial_files = (
         "base_file",

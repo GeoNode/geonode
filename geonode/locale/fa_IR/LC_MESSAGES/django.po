@@ -13,6 +13,7 @@
 # Translators:
 # Translators:
 # Translators:
+# Translators:
 # amir.rad <amir.rad@gmail.com>, 2014
 # amir.rad <amir.rad@gmail.com>, 2014
 # Andres Alfonso Lemon Gomez <lemon.andres@gmail.com>, 2014
@@ -20,8 +21,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-09-22 03:42-0500\n"
-"PO-Revision-Date: 2015-09-22 08:17+0000\n"
+"POT-Creation-Date: 2015-10-29 04:21-0500\n"
+"PO-Revision-Date: 2015-10-29 09:05+0000\n"
 "Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
 "Language-Team: Persian (Iran) (http://www.transifex.com/geonode/geonode/"
 "language/fa_IR/)\n"
@@ -31,11 +32,11 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 
-#: utils.py:44
+#: utils.py:43
 msgid "Invalid permission level."
 msgstr "سطج دسترسی نامعتبر."
 
-#: utils.py:494
+#: utils.py:496
 msgid "Permission Denied"
 msgstr "دسترسی غیرمجاز"
 
@@ -157,7 +158,8 @@ msgstr "اطلاعاتی تهیه نشده است"
 
 #: base/forms.py:43 base/templates/base/resourcebase_info_panel.html:62
 #: documents/templates/documents/document_metadata.html:65
-#: layers/templates/layers/layer_metadata.html:71
+#: layers/templates/layers/layer_metadata.html:70
+#: layers/templates/upload/layer_upload.html:89
 #: maps/templates/maps/map_metadata.html:61
 msgid "Category"
 msgstr "طبقه بندی"
@@ -166,7 +168,7 @@ msgstr "طبقه بندی"
 msgid "Category is required."
 msgstr "رده مورد نیاز است."
 
-#: base/forms.py:105 groups/models.py:45 people/forms.py:82
+#: base/forms.py:114 groups/models.py:45 people/forms.py:82
 msgid "A space or comma-separated list of keywords"
 msgstr "فضا و یا فهرست کاما جدا از کلمات کلیدی"
 
@@ -708,23 +710,23 @@ msgstr ""
 msgid "See users"
 msgstr ""
 
-#: documents/forms.py:92 documents/forms.py:160
+#: documents/forms.py:96 documents/forms.py:164
 msgid "Document must be a file or url."
 msgstr "سند باید یک فایل یا URL باشد."
 
-#: documents/forms.py:96 documents/forms.py:164
+#: documents/forms.py:100 documents/forms.py:168
 msgid "A document cannot have both a file and a url."
 msgstr "یک سند می تواند هر دو یک فایل و یک آدرس را ندارد."
 
-#: documents/forms.py:109 documents/forms.py:177
+#: documents/forms.py:113 documents/forms.py:181
 msgid "This file type is not allowed"
 msgstr "این نوع فایل مجاز نیست"
 
-#: documents/forms.py:127
+#: documents/forms.py:131
 msgid "Link to"
 msgstr "پیوند به"
 
-#: documents/forms.py:149
+#: documents/forms.py:153
 msgid "Permissions must be valid JSON."
 msgstr "مجوز های باید JSON معتبر باشد."
 
@@ -768,11 +770,11 @@ msgstr "شما مجاز به مشاهده این سند نیستید"
 msgid "You are not allowed to edit this document."
 msgstr "شما امکان پذیر نیست ویرایش این سند است."
 
-#: documents/views.py:328 layers/views.py:363
+#: documents/views.py:328 layers/views.py:358
 msgid "You must set a point of contact for this resource"
 msgstr ""
 
-#: documents/views.py:343 layers/views.py:378
+#: documents/views.py:343 layers/views.py:373
 msgid "You must set an author for this resource"
 msgstr ""
 
@@ -918,7 +920,7 @@ msgstr "این سند مربوط به هیچ نقشه و لایه ای نیست"
 #: groups/templates/groups/group_detail.html:70
 #: layers/templates/layers/layer_detail.html:334
 #: layers/templates/layers/layer_replace.html:94
-#: layers/templates/upload/layer_upload.html:93
+#: layers/templates/upload/layer_upload.html:112
 #: maps/templates/maps/map_detail.html:178 people/admin.py:55
 msgid "Permissions"
 msgstr "مجوزها"
@@ -975,28 +977,36 @@ msgstr "بروزرسانی"
 msgid "Metadata Provider"
 msgstr "تامین کننده متادیتا"
 
-#: documents/templates/documents/document_remove.html:11
+#: documents/templates/documents/document_remove.html:4
+#: maps/templates/maps/map_remove.html:6
+msgid "Deleting"
+msgstr "پاک کردن"
+
+#: documents/templates/documents/document_remove.html:8
+msgid "Remove Document"
+msgstr ""
+
+#: documents/templates/documents/document_remove.html:13
 #, python-format
 msgid ""
 "\n"
-"          Are you sure you want to remove %(document_title)s?\n"
+"          Are you sure you want to remove <a href="
+"\"%(document.get_absolute_url)s\">%(document_title)s</a>?\n"
 "        "
 msgstr ""
-"\n"
-"آیا مطمئن هستید که می خواهید %(document_title)sبه حذف کنم؟"
 
-#: documents/templates/documents/document_remove.html:18
+#: documents/templates/documents/document_remove.html:20
 #: groups/templates/groups/group_remove.html:19
 #: layers/templates/layers/layer_remove.html:22
-#: maps/templates/maps/map_remove.html:19
+#: maps/templates/maps/map_remove.html:22
 #: services/templates/services/service_remove.html:17
 msgid "Yes, I am sure"
 msgstr "بله، مطمئنم"
 
-#: documents/templates/documents/document_remove.html:19
+#: documents/templates/documents/document_remove.html:21
 #: groups/templates/groups/group_remove.html:20
 #: layers/templates/layers/layer_remove.html:23
-#: maps/templates/maps/map_remove.html:20
+#: maps/templates/maps/map_remove.html:23
 #: services/templates/services/service_remove.html:18
 msgid "No, don't remove it"
 msgstr "خیر،‌ پاک نشود"
@@ -1012,7 +1022,7 @@ msgstr "جایگزین"
 
 #: documents/templates/documents/document_replace.html:27
 #: layers/templates/layers/layer_replace.html:84
-#: layers/templates/upload/layer_upload.html:86
+#: layers/templates/upload/layer_upload.html:105
 msgid "Clear"
 msgstr "واضح"
 
@@ -1020,11 +1030,11 @@ msgstr "واضح"
 msgid "Upload Document"
 msgstr "آپلود سند"
 
-#: geoserver/helpers.py:974
+#: geoserver/helpers.py:987
 msgid "An exception occurred loading data to PostGIS"
 msgstr ""
 
-#: geoserver/helpers.py:979
+#: geoserver/helpers.py:992
 msgid " Additionally an error occured during database cleanup"
 msgstr ""
 
@@ -1064,7 +1074,7 @@ msgstr "PDF"
 msgid "PNG"
 msgstr "PNG"
 
-#: geoserver/signals.py:293
+#: geoserver/signals.py:294
 msgid "Could not create a download link for layer."
 msgstr "می تواند یک لینک دانلود برای لایه ایجاد کنید."
 
@@ -1557,19 +1567,19 @@ msgstr "شما مجاز به تغییر متادیتای این لایه نیس�
 msgid "You are not permitted to view this layer"
 msgstr "شما مجاز به مشاهده این لایه نیستید."
 
-#: layers/views.py:488
+#: layers/views.py:486
 msgid "You are attempting to replace a vector layer with a raster."
 msgstr ""
 
-#: layers/views.py:491
+#: layers/views.py:489
 msgid "You are attempting to replace a raster layer with a vector."
 msgstr ""
 
-#: layers/views.py:547
+#: layers/views.py:545
 msgid "Unable to delete layer"
 msgstr ""
 
-#: layers/views.py:550
+#: layers/views.py:548
 msgid ""
 "This layer is a member of a layer group, you must remove the layer from the "
 "group before deleting."
@@ -1932,7 +1942,7 @@ msgstr "به روز رسانی سبک موجود"
 msgid "Upload Layer"
 msgstr "لایه های آپلود"
 
-#: layers/templates/upload/layer_upload.html:87
+#: layers/templates/upload/layer_upload.html:106
 msgid "Upload files"
 msgstr "فایل های آپلود"
 
@@ -2546,19 +2556,18 @@ msgstr ""
 "بود. واردات ابرداده GeoNode پشتیبانی زیر مجموعه ای از عناصر ابرداده ISO، "
 "FGDC و هسته دوبلین. برخی از ابرداده اصلی خود را ممکن است از دست داده است."
 
-#: maps/templates/maps/map_remove.html:6
-msgid "Deleting"
-msgstr "پاک کردن"
+#: maps/templates/maps/map_remove.html:10
+msgid "Remove Map"
+msgstr ""
 
-#: maps/templates/maps/map_remove.html:13
+#: maps/templates/maps/map_remove.html:15
 #, python-format
 msgid ""
 "\n"
-"        Are you sure you want to remove %(map_title)s?\n"
-"    "
+"          Are you sure you want to remove <a href=\"%(map.get_absolute_url)s"
+"\">%(map_title)s</a>?\n"
+"        "
 msgstr ""
-"\n"
-"آیا مطمئن هستید که می خواهید %(map_title)sبه حذف؟"
 
 #: maps/templates/maps/map_view.html:5
 msgid "GeoExplorer"
@@ -2756,15 +2765,15 @@ msgstr ""
 "کلمه معمول (ها) و یا کلمه رسمی (بازدید کنندگان) یا عبارت (بازدید کنندگان) "
 "مورد استفاده برای توصیف موضوع (فضا یا کاما از هم جدا"
 
-#: people/views.py:90
+#: people/views.py:91
 msgid "Your username for "
 msgstr "نام کاربری برای"
 
-#: people/views.py:104
+#: people/views.py:105
 msgid "Your username has been emailed to you."
 msgstr "نام کاربری شما به شما ایمیل فرستاده."
 
-#: people/views.py:106
+#: people/views.py:107
 msgid "No user could be found with that email address."
 msgstr "بدون کاربر می تواند با این آدرس ایمیل در بر داشت."
 
@@ -2879,7 +2888,8 @@ msgid "Remote Services"
 msgstr "خدمات از راه دور"
 
 #: people/templates/people/profile_detail.html:117 templates/500.html:229
-#: templates/base.html:222
+#: templates/base.html:222 templates/account/invite_user.html:8
+#: templates/account/invite_user.html:15
 msgid "Invite User"
 msgstr "دعوت از کاربر"
 
@@ -3681,11 +3691,11 @@ msgid "Share This"
 msgstr ""
 
 #: templates/account/admin_approval_sent.html:6
-#: templates/account/admin_approval_sent.html:9
+#: templates/account/admin_approval_sent.html:11
 msgid "Account Pending Approval"
 msgstr ""
 
-#: templates/account/admin_approval_sent.html:11
+#: templates/account/admin_approval_sent.html:14
 #, python-format
 msgid ""
 "We have sent the administrators a notice to approve your account associated "
@@ -3694,11 +3704,11 @@ msgid ""
 msgstr ""
 
 #: templates/account/email_confirmation_sent.html:6
-#: templates/account/email_confirmation_sent.html:9
+#: templates/account/email_confirmation_sent.html:11
 msgid "Confirm your email address"
 msgstr ""
 
-#: templates/account/email_confirmation_sent.html:11
+#: templates/account/email_confirmation_sent.html:14
 #, python-format
 msgid ""
 "We have sent you an email to <b>%(email)s</b> for verification. Follow the "
@@ -3724,6 +3734,22 @@ msgstr "رمز عبور خود را فراموش کردید؟"
 #: templates/account/logout.html:15
 msgid "Are you sure you want to log out?"
 msgstr "آیا مطمئن هستید که می خواهید از سیستم خارج شوید؟"
+
+#: templates/account/password_change.html:8
+msgid "Password change"
+msgstr ""
+
+#: templates/account/password_change.html:14
+msgid "Password Change"
+msgstr ""
+
+#: templates/account/password_change.html:18
+msgid "Change your password here"
+msgstr ""
+
+#: templates/account/password_change.html:24
+msgid "Change my password"
+msgstr ""
 
 #: templates/account/password_reset.html:8
 msgid "Password reset"
@@ -3758,12 +3784,12 @@ msgstr ""
 "\"mailto:%(THEME_ACCOUNT_CONTACT_EMAIL)s\">%(THEME_ACCOUNT_CONTACT_EMAIL)s</"
 "a>."
 
-#: templates/account/signup.html:7 templates/account/signup.html.py:14
-#: templates/account/signup.html:22
+#: templates/account/signup.html:7 templates/account/signup.html.py:11
+#: templates/account/signup.html:17 templates/account/signup.html.py:25
 msgid "Sign up"
 msgstr "ثبت نام"
 
-#: templates/account/signup.html:27
+#: templates/account/signup.html:30
 msgid "Sorry, registrations are not open at this time."
 msgstr "با عرض پوزش، ثبت نام در این زمان باز نمی شود."
 
@@ -4248,11 +4274,11 @@ msgstr "YYYY-MM-DD"
 msgid "Date ends before:"
 msgstr "تاریخ به پایان می رسد قبل از:"
 
-#: templates/search/_search_content.html:6
+#: templates/search/_search_content.html:5
 msgid "Your selections"
 msgstr "انتخاب های شما"
 
-#: templates/search/_search_content.html:7
+#: templates/search/_search_content.html:6
 msgid "Clear all filters"
 msgstr "پاک کردن تمام فیلتر"
 
@@ -4320,6 +4346,24 @@ msgstr "بازگشت به صندوق"
 msgid "Send Reply"
 msgstr "فرستادن پاسخ"
 
+#~ msgid ""
+#~ "\n"
+#~ "          Are you sure you want to remove %(document_title)s?\n"
+#~ "        "
+#~ msgstr ""
+#~ "\n"
+#~ "          Are you sure you want to remove %(document_title)s?\n"
+#~ "        "
+
+#~ msgid ""
+#~ "\n"
+#~ "        Are you sure you want to remove %(map_title)s?\n"
+#~ "    "
+#~ msgstr ""
+#~ "\n"
+#~ "        Are you sure you want to remove %(map_title)s?\n"
+#~ "    "
+
 #~ msgid "email"
 #~ msgstr "email"
 
@@ -4341,9 +4385,6 @@ msgstr "فرستادن پاسخ"
 #~ msgid "Replace this Document"
 #~ msgstr "Replace this Document"
 
-#~ msgid "Remove this Document"
-#~ msgstr "Remove this Document"
-
 #~ msgid "Edit Styles"
 #~ msgstr "Edit Styles"
 
@@ -4358,9 +4399,6 @@ msgstr "فرستادن پاسخ"
 
 #~ msgid "Edit Map Metadata"
 #~ msgstr "Edit Map Metadata"
-
-#~ msgid "Remove this Map"
-#~ msgstr "Remove this Map"
 
 #~ msgid "Profile Menu"
 #~ msgstr "Profile Menu"

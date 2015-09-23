@@ -40,7 +40,7 @@ CONFIGURATION = {
         #  'federatedcatalogues': 'http://geo.data.gov/geoportal/csw/discovery',
         #  'pretty_print': 'true',
         #  'domainquerytype': 'range',
-        #  'domaincounts': 'true',
+        'domaincounts': 'true',
         'profiles': 'apiso,ebrim',
     },
     'repository': {

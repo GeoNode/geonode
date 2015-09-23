@@ -230,7 +230,7 @@ class Map(ResourceBase, GXPMapBase):
         self.owner = user
         self.title = title
         self.abstract = abstract
-        self.projection = "EPSG:900913"
+        self.projection = getattr(settings, 'DEFAULT_MAP_CRS', 'EPSG:900913')
         self.zoom = 0
         self.center_x = 0
         self.center_y = 0
@@ -318,7 +318,7 @@ class Map(ResourceBase, GXPMapBase):
         """
         Publishes local map layers as WMS layer group on local OWS.
         """
-        if 'geonode.geoserver' not in settings.INSTALLED_APPS:
+        if 'geonode.geoserver' in settings.INSTALLED_APPS:
             from geonode.geoserver.helpers import gs_catalog
             from geoserver.layergroup import UnsavedLayerGroup as GsUnsavedLayerGroup
         else:
@@ -385,7 +385,7 @@ class MapLayer(models.Model, GXPLayerBase):
         null=True,
         max_length=200,
         blank=True)
-    # The mimetype of the image format to use for tiles (image/png, image/jpeg,
+    # The content_type of the image format to use for tiles (image/png, image/jpeg,
     # image/gif...)
 
     name = models.CharField(_('name'), null=True, max_length=200)

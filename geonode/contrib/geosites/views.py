@@ -98,14 +98,14 @@ def layer_acls(request):
                 }
                 return HttpResponse(
                     json.dumps(result),
-                    mimetype="application/json")
+                    content_type="application/json")
         except Exception:
             pass
 
         if acl_user is None:
             return HttpResponse(_("Bad HTTP Authorization Credentials."),
                                 status=401,
-                                mimetype="text/plain")
+                                content_type="text/plain")
 
     # Include permissions on the anonymous user
     # use of polymorphic selectors/functions to optimize performances
@@ -132,7 +132,7 @@ def layer_acls(request):
         result['fullname'] = acl_user.get_full_name()
         result['email'] = acl_user.email
 
-    return HttpResponse(json.dumps(result), mimetype="application/json")
+    return HttpResponse(json.dumps(result), content_type="application/json")
 
 
 def ajax_login(request):
@@ -140,7 +140,7 @@ def ajax_login(request):
         return HttpResponse(
             content="ajax login requires HTTP POST",
             status=405,
-            mimetype="text/plain"
+            content_type="text/plain"
         )
     form = AjaxLoginForm(data=request.POST)
     if form.is_valid():
@@ -150,14 +150,14 @@ def ajax_login(request):
             return HttpResponse(
                 content="bad credentials or disabled user",
                 status=400,
-                mimetype="text/plain"
+                content_type="text/plain"
             )
         user = authenticate(username=username, password=password)
         if user is None or not user.is_active:
             return HttpResponse(
                 content="bad credentials or disabled user",
                 status=400,
-                mimetype="text/plain"
+                content_type="text/plain"
             )
         else:
             login(request, user)
@@ -166,12 +166,12 @@ def ajax_login(request):
             return HttpResponse(
                 content="successful login",
                 status=200,
-                mimetype="text/plain"
+                content_type="text/plain"
             )
     else:
         return HttpResponse(
             "The form you submitted doesn't look like a username/password combo.",
-            mimetype="text/plain",
+            content_type="text/plain",
             status=400)
 
 
@@ -180,12 +180,12 @@ def ajax_lookup(request):
         return HttpResponse(
             content='ajax user lookup requires HTTP POST',
             status=405,
-            mimetype='text/plain'
+            content_type='text/plain'
         )
     elif 'query' not in request.POST:
         return HttpResponse(
             content='use a field named "query" to specify a prefix to filter usernames',
-            mimetype='text/plain')
+            content_type='text/plain')
     keyword = request.POST['query']
     users = get_user_model().objects.filter(id__in=users_for_site())
     users = users.filter(Q(username__istartswith=keyword) |
@@ -202,7 +202,7 @@ def ajax_lookup(request):
     json_dict['groups'] = [({'name': g.slug, 'title': g.title}) for g in groups]
     return HttpResponse(
         content=json.dumps(json_dict),
-        mimetype='text/plain'
+        content_type='text/plain'
     )
 
 

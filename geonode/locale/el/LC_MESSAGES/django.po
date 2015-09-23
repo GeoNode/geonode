@@ -13,6 +13,7 @@
 # Translators:
 # Translators:
 # Translators:
+# Translators:
 # Andres Alfonso Lemon Gomez <lemon.andres@gmail.com>, 2014
 # kalxas <gcpp.kalxas@gmail.com>, 2013
 # kalxas <gcpp.kalxas@gmail.com>, 2013
@@ -20,8 +21,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-09-22 03:42-0500\n"
-"PO-Revision-Date: 2015-09-22 08:17+0000\n"
+"POT-Creation-Date: 2015-10-29 04:21-0500\n"
+"PO-Revision-Date: 2015-10-29 09:05+0000\n"
 "Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
 "Language-Team: Greek (http://www.transifex.com/geonode/geonode/language/"
 "el/)\n"
@@ -31,11 +32,11 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: utils.py:44
+#: utils.py:43
 msgid "Invalid permission level."
 msgstr "Άκυρο επίπεδο δικαιωμάτων."
 
-#: utils.py:494
+#: utils.py:496
 msgid "Permission Denied"
 msgstr "Πρόσβαση Απορρίφθηκε"
 
@@ -157,7 +158,8 @@ msgstr "Δεν παρέχεται καμία πληροφορία"
 
 #: base/forms.py:43 base/templates/base/resourcebase_info_panel.html:62
 #: documents/templates/documents/document_metadata.html:65
-#: layers/templates/layers/layer_metadata.html:71
+#: layers/templates/layers/layer_metadata.html:70
+#: layers/templates/upload/layer_upload.html:89
 #: maps/templates/maps/map_metadata.html:61
 msgid "Category"
 msgstr "Κατηγορία"
@@ -166,7 +168,7 @@ msgstr "Κατηγορία"
 msgid "Category is required."
 msgstr "Απαιτείται Κατηγορία."
 
-#: base/forms.py:105 groups/models.py:45 people/forms.py:82
+#: base/forms.py:114 groups/models.py:45 people/forms.py:82
 msgid "A space or comma-separated list of keywords"
 msgstr "Μια λίστα λέξεων κλειδιών χωρισμένες με κόμμα ή κενό "
 
@@ -728,23 +730,23 @@ msgstr ""
 msgid "See users"
 msgstr ""
 
-#: documents/forms.py:92 documents/forms.py:160
+#: documents/forms.py:96 documents/forms.py:164
 msgid "Document must be a file or url."
 msgstr "Το έγγραφο θα πρέπει να είναι ένα αρχείο ή URL."
 
-#: documents/forms.py:96 documents/forms.py:164
+#: documents/forms.py:100 documents/forms.py:168
 msgid "A document cannot have both a file and a url."
 msgstr "Ένα έγγραφο δεν μπορεί να έχει τόσο ένα αρχείο και μια διεύθυνση URL."
 
-#: documents/forms.py:109 documents/forms.py:177
+#: documents/forms.py:113 documents/forms.py:181
 msgid "This file type is not allowed"
 msgstr "Αυτός ο τύπος αρχείου δεν επιτρέπεται"
 
-#: documents/forms.py:127
+#: documents/forms.py:131
 msgid "Link to"
 msgstr "Σχέση με"
 
-#: documents/forms.py:149
+#: documents/forms.py:153
 msgid "Permissions must be valid JSON."
 msgstr "Δικαιώματα πρέπει να είναι έγκυρη JSON."
 
@@ -788,11 +790,11 @@ msgstr "Δεν έχετε δικαιώματα να δείτε αυτό το χ�
 msgid "You are not allowed to edit this document."
 msgstr "Δεν επιτρέπεται να επεξεργαστείτε αυτό το έγγραφο."
 
-#: documents/views.py:328 layers/views.py:363
+#: documents/views.py:328 layers/views.py:358
 msgid "You must set a point of contact for this resource"
 msgstr ""
 
-#: documents/views.py:343 layers/views.py:378
+#: documents/views.py:343 layers/views.py:373
 msgid "You must set an author for this resource"
 msgstr ""
 
@@ -938,7 +940,7 @@ msgstr "Αυτό το έγγραφο δεν σχετίζεται με οποιο
 #: groups/templates/groups/group_detail.html:70
 #: layers/templates/layers/layer_detail.html:334
 #: layers/templates/layers/layer_replace.html:94
-#: layers/templates/upload/layer_upload.html:93
+#: layers/templates/upload/layer_upload.html:112
 #: maps/templates/maps/map_detail.html:178 people/admin.py:55
 msgid "Permissions"
 msgstr "Δικαιώματα"
@@ -999,28 +1001,36 @@ msgstr "Ενημέρωση"
 msgid "Metadata Provider"
 msgstr "Πάροχος Μεταδεδομένων"
 
-#: documents/templates/documents/document_remove.html:11
+#: documents/templates/documents/document_remove.html:4
+#: maps/templates/maps/map_remove.html:6
+msgid "Deleting"
+msgstr "Διαγραφή"
+
+#: documents/templates/documents/document_remove.html:8
+msgid "Remove Document"
+msgstr ""
+
+#: documents/templates/documents/document_remove.html:13
 #, python-format
 msgid ""
 "\n"
-"          Are you sure you want to remove %(document_title)s?\n"
+"          Are you sure you want to remove <a href="
+"\"%(document.get_absolute_url)s\">%(document_title)s</a>?\n"
 "        "
 msgstr ""
-"\n"
-"Είστε βέβαιοι ότι θέλετε να αφαιρέσετε %(document_title)s?"
 
-#: documents/templates/documents/document_remove.html:18
+#: documents/templates/documents/document_remove.html:20
 #: groups/templates/groups/group_remove.html:19
 #: layers/templates/layers/layer_remove.html:22
-#: maps/templates/maps/map_remove.html:19
+#: maps/templates/maps/map_remove.html:22
 #: services/templates/services/service_remove.html:17
 msgid "Yes, I am sure"
 msgstr "Ναι, είμαι βέβαιος"
 
-#: documents/templates/documents/document_remove.html:19
+#: documents/templates/documents/document_remove.html:21
 #: groups/templates/groups/group_remove.html:20
 #: layers/templates/layers/layer_remove.html:23
-#: maps/templates/maps/map_remove.html:20
+#: maps/templates/maps/map_remove.html:23
 #: services/templates/services/service_remove.html:18
 msgid "No, don't remove it"
 msgstr "Όχι, μην το αφαιρέσετε"
@@ -1036,7 +1046,7 @@ msgstr "Αντικαταστήστε"
 
 #: documents/templates/documents/document_replace.html:27
 #: layers/templates/layers/layer_replace.html:84
-#: layers/templates/upload/layer_upload.html:86
+#: layers/templates/upload/layer_upload.html:105
 msgid "Clear"
 msgstr "Σαφής"
 
@@ -1044,11 +1054,11 @@ msgstr "Σαφής"
 msgid "Upload Document"
 msgstr "Ανεβάστε Έγγραφα"
 
-#: geoserver/helpers.py:974
+#: geoserver/helpers.py:987
 msgid "An exception occurred loading data to PostGIS"
 msgstr ""
 
-#: geoserver/helpers.py:979
+#: geoserver/helpers.py:992
 msgid " Additionally an error occured during database cleanup"
 msgstr ""
 
@@ -1088,7 +1098,7 @@ msgstr "PDF"
 msgid "PNG"
 msgstr "PNG"
 
-#: geoserver/signals.py:293
+#: geoserver/signals.py:294
 msgid "Could not create a download link for layer."
 msgstr "Δεν μπόρεσα να δημιουργήσω ένα download link για το στρώμα."
 
@@ -1601,19 +1611,19 @@ msgstr "Δεν επιτρέπεται να τροποποιήσετε τα με�
 msgid "You are not permitted to view this layer"
 msgstr "Δεν σας επιτρέπεται να δείτε αυτή την επιφάνεια"
 
-#: layers/views.py:488
+#: layers/views.py:486
 msgid "You are attempting to replace a vector layer with a raster."
 msgstr ""
 
-#: layers/views.py:491
+#: layers/views.py:489
 msgid "You are attempting to replace a raster layer with a vector."
 msgstr ""
 
-#: layers/views.py:547
+#: layers/views.py:545
 msgid "Unable to delete layer"
 msgstr ""
 
-#: layers/views.py:550
+#: layers/views.py:548
 msgid ""
 "This layer is a member of a layer group, you must remove the layer from the "
 "group before deleting."
@@ -1983,7 +1993,7 @@ msgstr "Ενημέρωση Διαθέσιμο Στυλ"
 msgid "Upload Layer"
 msgstr "Ανεβάστε Επιφάνεια"
 
-#: layers/templates/upload/layer_upload.html:87
+#: layers/templates/upload/layer_upload.html:106
 msgid "Upload files"
 msgstr "Ανεβάστε αρχεία"
 
@@ -2619,20 +2629,18 @@ msgstr ""
 "μεταδεδομένα. Μερικά από τα πρωτότυπα μεταδεδομένων σας μπορεί να έχουν "
 "χαθεί."
 
-#: maps/templates/maps/map_remove.html:6
-msgid "Deleting"
-msgstr "Διαγραφή"
+#: maps/templates/maps/map_remove.html:10
+msgid "Remove Map"
+msgstr ""
 
-#: maps/templates/maps/map_remove.html:13
+#: maps/templates/maps/map_remove.html:15
 #, python-format
 msgid ""
 "\n"
-"        Are you sure you want to remove %(map_title)s?\n"
-"    "
+"          Are you sure you want to remove <a href=\"%(map.get_absolute_url)s"
+"\">%(map_title)s</a>?\n"
+"        "
 msgstr ""
-"\n"
-"        Σίγουρα θέλετε να διαγράψετε %(map_title)s;\n"
-"    "
 
 #: maps/templates/maps/map_view.html:5
 msgid "GeoExplorer"
@@ -2842,15 +2850,15 @@ msgstr ""
 "χρησιμοποιείται για να περιγράψει το αντικείμενο (χώρος ή διαχωρισμένες με "
 "κόμμα"
 
-#: people/views.py:90
+#: people/views.py:91
 msgid "Your username for "
 msgstr "Το όνομα χρήστη για"
 
-#: people/views.py:104
+#: people/views.py:105
 msgid "Your username has been emailed to you."
 msgstr "Το όνομα χρήστη σας έχει σταλεί με ηλεκτρονικό ταχυδρομείο."
 
-#: people/views.py:106
+#: people/views.py:107
 msgid "No user could be found with that email address."
 msgstr ""
 "Κανένας χρήστης δεν βρεθηκε με την διεύθυνση ηλεκτρονικού ταχυδρομείου."
@@ -2966,7 +2974,8 @@ msgid "Remote Services"
 msgstr "Υπηρεσίες απομακρυσμένης"
 
 #: people/templates/people/profile_detail.html:117 templates/500.html:229
-#: templates/base.html:222
+#: templates/base.html:222 templates/account/invite_user.html:8
+#: templates/account/invite_user.html:15
 msgid "Invite User"
 msgstr "Πρόσκληση χρήστη"
 
@@ -3778,11 +3787,11 @@ msgid "Share This"
 msgstr ""
 
 #: templates/account/admin_approval_sent.html:6
-#: templates/account/admin_approval_sent.html:9
+#: templates/account/admin_approval_sent.html:11
 msgid "Account Pending Approval"
 msgstr ""
 
-#: templates/account/admin_approval_sent.html:11
+#: templates/account/admin_approval_sent.html:14
 #, python-format
 msgid ""
 "We have sent the administrators a notice to approve your account associated "
@@ -3791,11 +3800,11 @@ msgid ""
 msgstr ""
 
 #: templates/account/email_confirmation_sent.html:6
-#: templates/account/email_confirmation_sent.html:9
+#: templates/account/email_confirmation_sent.html:11
 msgid "Confirm your email address"
 msgstr ""
 
-#: templates/account/email_confirmation_sent.html:11
+#: templates/account/email_confirmation_sent.html:14
 #, python-format
 msgid ""
 "We have sent you an email to <b>%(email)s</b> for verification. Follow the "
@@ -3821,6 +3830,22 @@ msgstr "Ξεχάσατε τον κωδικό σας;"
 #: templates/account/logout.html:15
 msgid "Are you sure you want to log out?"
 msgstr "Είστε σίγουροι ότι θέλετε να αποσυνδεθείτε;"
+
+#: templates/account/password_change.html:8
+msgid "Password change"
+msgstr ""
+
+#: templates/account/password_change.html:14
+msgid "Password Change"
+msgstr ""
+
+#: templates/account/password_change.html:18
+msgid "Change your password here"
+msgstr ""
+
+#: templates/account/password_change.html:24
+msgid "Change my password"
+msgstr ""
 
 #: templates/account/password_reset.html:8
 msgid "Password reset"
@@ -3855,12 +3880,12 @@ msgstr ""
 "μαζί μας στο <a href=\"mailto:%(THEME_ACCOUNT_CONTACT_EMAIL)s\">"
 "%(THEME_ACCOUNT_CONTACT_EMAIL)s</a>."
 
-#: templates/account/signup.html:7 templates/account/signup.html.py:14
-#: templates/account/signup.html:22
+#: templates/account/signup.html:7 templates/account/signup.html.py:11
+#: templates/account/signup.html:17 templates/account/signup.html.py:25
 msgid "Sign up"
 msgstr "Εγγραφείτε"
 
-#: templates/account/signup.html:27
+#: templates/account/signup.html:30
 msgid "Sorry, registrations are not open at this time."
 msgstr "Δυστυχώς, οι εγγραφές δεν είναι ανοιχτά αυτή τη στιγμή."
 
@@ -4347,11 +4372,11 @@ msgstr "εεεε-μμ-ηη"
 msgid "Date ends before:"
 msgstr "Ημερομηνία τελειώνει πριν από:"
 
-#: templates/search/_search_content.html:6
+#: templates/search/_search_content.html:5
 msgid "Your selections"
 msgstr "Οι επιλογές σας"
 
-#: templates/search/_search_content.html:7
+#: templates/search/_search_content.html:6
 msgid "Clear all filters"
 msgstr "Εκκαθάριση όλων των φίλτρων"
 
@@ -4419,6 +4444,24 @@ msgstr "Επιστροφή στα Εισερχόμενα"
 msgid "Send Reply"
 msgstr "Αποστολή Απάντησης"
 
+#~ msgid ""
+#~ "\n"
+#~ "          Are you sure you want to remove %(document_title)s?\n"
+#~ "        "
+#~ msgstr ""
+#~ "\n"
+#~ "          Are you sure you want to remove %(document_title)s?\n"
+#~ "        "
+
+#~ msgid ""
+#~ "\n"
+#~ "        Are you sure you want to remove %(map_title)s?\n"
+#~ "    "
+#~ msgstr ""
+#~ "\n"
+#~ "        Are you sure you want to remove %(map_title)s?\n"
+#~ "    "
+
 #~ msgid "email"
 #~ msgstr "email"
 
@@ -4440,9 +4483,6 @@ msgstr "Αποστολή Απάντησης"
 #~ msgid "Replace this Document"
 #~ msgstr "Replace this Document"
 
-#~ msgid "Remove this Document"
-#~ msgstr "Remove this Document"
-
 #~ msgid "Edit Styles"
 #~ msgstr "Edit Styles"
 
@@ -4457,9 +4497,6 @@ msgstr "Αποστολή Απάντησης"
 
 #~ msgid "Edit Map Metadata"
 #~ msgstr "Edit Map Metadata"
-
-#~ msgid "Remove this Map"
-#~ msgstr "Remove this Map"
 
 #~ msgid "Profile Menu"
 #~ msgstr "Profile Menu"

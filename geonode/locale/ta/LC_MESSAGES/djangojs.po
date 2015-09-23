@@ -13,13 +13,14 @@
 # Translators:
 # Translators:
 # Translators:
+# Translators:
 # Andres Alfonso Lemon Gomez <lemon.andres@gmail.com>, 2014
 msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-09-22 03:42-0500\n"
-"PO-Revision-Date: 2015-05-18 18:18+0000\n"
+"POT-Creation-Date: 2015-10-29 04:22-0500\n"
+"PO-Revision-Date: 2015-10-29 09:06+0000\n"
 "Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
 "Language-Team: Tamil (http://www.transifex.com/geonode/geonode/language/"
 "ta/)\n"
@@ -69,12 +70,12 @@ msgstr "பின்வரும் பயன்படுத்துனர்�
 msgid "Who can manage and edit this data?"
 msgstr "இத்தரவகளை யார் திருத்தம் செய்ய மற்றும் முகாமை செய்ய முடியம்?"
 
-#: static/geonode/js/search/search.js:375
+#: static/geonode/js/search/search.js:374
 #: static_root/geonode/js/search/search.js:298
 msgid "Enter your text here ..."
 msgstr ""
 
-#: static/geonode/js/search/search.js:401
+#: static/geonode/js/search/search.js:409
 msgid "Enter your region here ..."
 msgstr ""
 
@@ -115,75 +116,75 @@ msgstr "GeoJSON "
 msgid "Zip Archives"
 msgstr "Zip சென்னை"
 
-#: static/geonode/js/upload/LayerInfo.js:231
+#: static/geonode/js/upload/LayerInfo.js:235
 #: static_root/geonode/js/upload/LayerInfo.js:231
 msgid "Layer Info"
 msgstr "அடுக்கு தகவல்"
 
-#: static/geonode/js/upload/LayerInfo.js:232
+#: static/geonode/js/upload/LayerInfo.js:236
 #: static_root/geonode/js/upload/LayerInfo.js:232
 msgid "Edit Metadata"
 msgstr "நுண்தரவுகளை சரிசெய்க"
 
-#: static/geonode/js/upload/LayerInfo.js:233
+#: static/geonode/js/upload/LayerInfo.js:237
 #: static_root/geonode/js/upload/LayerInfo.js:233
 msgid "Manage Styles"
 msgstr "பாங்குகள் நிர்வகிக்கவும்"
 
-#: static/geonode/js/upload/LayerInfo.js:236
+#: static/geonode/js/upload/LayerInfo.js:240
 msgid "The column %1 was renamed to %2 <br/>"
 msgstr ""
 
-#: static/geonode/js/upload/LayerInfo.js:242
+#: static/geonode/js/upload/LayerInfo.js:246
 #: static_root/geonode/js/upload/LayerInfo.js:235
 msgid "Your layer was successfully uploaded"
 msgstr "உங்கள் அடுக்கு வெற்றிகரமாக பதிவேற்றப்பட்டது"
 
-#: static/geonode/js/upload/LayerInfo.js:271
+#: static/geonode/js/upload/LayerInfo.js:275
 #: static_root/geonode/js/upload/LayerInfo.js:264
 msgid "Performing Final GeoServer Config Step"
 msgstr "இறுதி ஜியோ கட்டமைப்பு படி அரங்கேற்றக்"
 
-#: static/geonode/js/upload/LayerInfo.js:286
-#: static/geonode/js/upload/LayerInfo.js:312
+#: static/geonode/js/upload/LayerInfo.js:290
+#: static/geonode/js/upload/LayerInfo.js:316
 #: static_root/geonode/js/upload/LayerInfo.js:279
 #: static_root/geonode/js/upload/LayerInfo.js:305
 msgid "You need to specify more information in order to complete your upload"
 msgstr "உங்கள் பதிவேற்ற முடிக்க பொருட்டு மேலும் தகவலுக்கு குறிப்பிட வேண்டும்"
 
-#: static/geonode/js/upload/LayerInfo.js:304
+#: static/geonode/js/upload/LayerInfo.js:308
 #: static_root/geonode/js/upload/LayerInfo.js:297
 msgid "You need to specify more information in order to complete your upload."
 msgstr "உங்கள் பதிவேற்ற முடிக்க பொருட்டு மேலும் தகவலுக்கு குறிப்பிட வேண்டும்."
 
-#: static/geonode/js/upload/LayerInfo.js:304
+#: static/geonode/js/upload/LayerInfo.js:308
 #: static_root/geonode/js/upload/LayerInfo.js:297
 msgid "You can continue configuring your layer."
 msgstr "நீங்கள் உங்கள் அடுக்கு கட்டமைக்கும் தொடரலாம்."
 
-#: static/geonode/js/upload/LayerInfo.js:322
-#: static/geonode/js/upload/LayerInfo.js:407
+#: static/geonode/js/upload/LayerInfo.js:326
+#: static/geonode/js/upload/LayerInfo.js:412
 #: static_root/geonode/js/upload/LayerInfo.js:315
 #: static_root/geonode/js/upload/LayerInfo.js:400
 msgid "Unexpected Error"
 msgstr "எதிர்பாராத பிழை"
 
-#: static/geonode/js/upload/LayerInfo.js:338
+#: static/geonode/js/upload/LayerInfo.js:342
 #: static_root/geonode/js/upload/LayerInfo.js:331
 msgid "Performing GeoServer Config Step"
 msgstr "செயற்பாட்டு ஜியோ அமைப்பு படி"
 
-#: static/geonode/js/upload/LayerInfo.js:414
+#: static/geonode/js/upload/LayerInfo.js:419
 #: static_root/geonode/js/upload/LayerInfo.js:407
 msgid "Layer files uploaded, configuring in GeoServer"
 msgstr "அடுக்கு கோப்புகளை, பதிவேற்றிய ஜியோ கட்டமைத்தல்"
 
-#: static/geonode/js/upload/LayerInfo.js:429
+#: static/geonode/js/upload/LayerInfo.js:434
 #: static_root/geonode/js/upload/LayerInfo.js:422
 msgid "Select or create a Geogig repository."
 msgstr ""
 
-#: static/geonode/js/upload/LayerInfo.js:524
+#: static/geonode/js/upload/LayerInfo.js:528
 #: static_root/admin/js/SelectFilter2.js:69
 #: static_root/geonode/js/upload/LayerInfo.js:517
 msgid "Remove"
@@ -196,10 +197,13 @@ msgid "The file %s is an unsupported file type, please select another file."
 msgstr ""
 "கோப்பு %s ள் ஆதரிக்கப்படாத கோப்பு வகை, மற்றொரு கோப்பைத் தேர்ந்தெடுத்து ஆகிறது."
 
-#: static/geonode/js/upload/upload.js:260
-#: static_root/geonode/js/upload/upload.js:260
-msgid "You are uploading an incomplete set of files."
-msgstr "நீங்கள் கோப்புகளை ஒரு முழுமையடையாத அமைப்பு பதிவேற்றப்படுகின்றன."
+#: static/geonode/js/upload/upload.js:280
+msgid ""
+"You are trying to upload an incomplete set of files or not all mandatory "
+"options have been validated.\n"
+"\n"
+"Please check for errors in the form!"
+msgstr ""
 
 #: static_root/admin/js/SelectFilter2.js:45
 #, c-format
@@ -348,6 +352,10 @@ msgstr ""
 #: static_root/admin/js/admin/DateTimeShortcuts.js:203
 msgid "Tomorrow"
 msgstr ""
+
+#: static_root/geonode/js/upload/upload.js:260
+msgid "You are uploading an incomplete set of files."
+msgstr "நீங்கள் கோப்புகளை ஒரு முழுமையடையாத அமைப்பு பதிவேற்றப்படுகின்றன."
 
 #: templates/lang.js:10
 msgid "Save as Copy"

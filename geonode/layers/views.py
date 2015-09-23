@@ -73,6 +73,9 @@ MAX_SEARCH_BATCH_SIZE = 25
 GENERIC_UPLOAD_ERROR = _("There was an error while attempting to upload your data. \
 Please try again, or contact and administrator if the problem continues.")
 
+METADATA_UPLOADED_PRESERVE_ERROR = _("Note: this layer's orginal metadata was \
+populated and preserved by importing a metadata XML file. This metadata cannot be edited.")
+
 _PERMISSION_MSG_DELETE = _("You are not permitted to delete this layer")
 _PERMISSION_MSG_GENERIC = _('You do not have permissions for this layer.')
 _PERMISSION_MSG_MODIFY = _("You are not permitted to modify this layer")
@@ -124,21 +127,20 @@ def _resolve_layer(request, typename, permission='base.view_resourcebase',
 @login_required
 def layer_upload(request, template='upload/layer_upload.html'):
     if request.method == 'GET':
+        mosaics = Layer.objects.filter(is_mosaic=True).order_by('name')
         ctx = {
+            'mosaics': mosaics,
             'charsets': CHARSETS,
             'is_layer': True,
         }
-        return render_to_response(template,
-                                  RequestContext(request, ctx))
+        return render_to_response(template, RequestContext(request, ctx))
     elif request.method == 'POST':
         form = NewLayerUploadForm(request.POST, request.FILES)
         tempdir = None
         errormsgs = []
         out = {'success': False}
-
         if form.is_valid():
             title = form.cleaned_data["layer_title"]
-
             # Replace dots in filename - GeoServer REST API upload bug
             # and avoid any other invalid characters.
             # Use the title if possible, otherwise default to the filename
@@ -147,9 +149,7 @@ def layer_upload(request, template='upload/layer_upload.html'):
             else:
                 name_base, __ = os.path.splitext(
                     form.cleaned_data["base_file"].name)
-
             name = slugify(name_base.replace(".", "_"))
-
             try:
                 # Moved this inside the try/except block because it can raise
                 # exceptions when unicode characters are present.
@@ -163,8 +163,8 @@ def layer_upload(request, template='upload/layer_upload.html'):
                     charset=form.cleaned_data["charset"],
                     abstract=form.cleaned_data["abstract"],
                     title=form.cleaned_data["layer_title"],
+                    metadata_uploaded_preserve=form.cleaned_data["metadata_uploaded_preserve"]
                 )
-
             except Exception as e:
                 exception_type, error, tb = sys.exc_info()
                 logger.exception(e)
@@ -188,31 +188,27 @@ def layer_upload(request, template='upload/layer_upload.html'):
                 out['url'] = reverse(
                     'layer_detail', args=[
                         saved_layer.service_typename])
-
                 upload_session = saved_layer.upload_session
                 upload_session.processed = True
                 upload_session.save()
                 permissions = form.cleaned_data["permissions"]
                 if permissions is not None and len(permissions.keys()) > 0:
                     saved_layer.set_permissions(permissions)
-
             finally:
                 if tempdir is not None:
                     shutil.rmtree(tempdir)
         else:
             for e in form.errors.values():
                 errormsgs.extend([escape(v) for v in e])
-
             out['errors'] = form.errors
             out['errormsgs'] = errormsgs
-
         if out['success']:
             status_code = 200
         else:
             status_code = 400
         return HttpResponse(
             json.dumps(out),
-            mimetype='application/json',
+            content_type='application/json',
             status=status_code)
 
 
@@ -229,12 +225,9 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
     # Add required parameters for GXP lazy-loading
     layer_bbox = layer.bbox
     bbox = [float(coord) for coord in list(layer_bbox[0:4])]
-    srid = layer.srid
-
-    # Transform WGS84 to Mercator.
-    config["srs"] = srid if srid != "EPSG:4326" else "EPSG:900913"
-    config["bbox"] = llbbox_to_mercator([float(coord) for coord in bbox])
-
+    config["srs"] = getattr(settings, 'DEFAULT_MAP_CRS', 'EPSG:900913')
+    config["bbox"] = bbox if config["srs"] != 'EPSG:900913' \
+        else llbbox_to_mercator([float(coord) for coord in bbox])
     config["title"] = layer.title
     config["queryable"] = True
 
@@ -263,12 +256,38 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
             id=layer.id).update(popular_count=F('popular_count') + 1)
 
     # center/zoom don't matter; the viewer will center on the layer bounds
-    map_obj = GXPMap(projection="EPSG:900913")
+    map_obj = GXPMap(projection=getattr(settings, 'DEFAULT_MAP_CRS', 'EPSG:900913'))
+
     NON_WMS_BASE_LAYERS = [
         la for la in default_map_config()[1] if la.ows_url is None]
 
     metadata = layer.link_set.metadata().filter(
         name__in=settings.DOWNLOAD_FORMATS_METADATA)
+
+    granules = None
+    all_granules = None
+    filter = None
+    if layer.is_mosaic:
+        try:
+            cat = gs_catalog
+            cat._cache.clear()
+            store = cat.get_store(layer.name)
+            coverages = cat.mosaic_coverages(store)
+
+            filter = None
+            try:
+                if request.GET["filter"]:
+                    filter = request.GET["filter"]
+            except:
+                pass
+
+            offset = 10 * (request.page - 1)
+            granules = cat.mosaic_granules(coverages['coverages']['coverage'][0]['name'], store, limit=10,
+                                           offset=offset, filter=filter)
+            all_granules = cat.mosaic_granules(coverages['coverages']['coverage'][0]['name'], store, filter=filter)
+        except:
+            granules = {"features": []}
+            all_granules = {"features": []}
 
     context_dict = {
         "resource": layer,
@@ -278,6 +297,9 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
         "metadata": metadata,
         "is_layer": True,
         "wps_enabled": settings.OGC_SERVER['default']['WPS_ENABLED'],
+        "granules": granules,
+        "all_granules": all_granules,
+        "filter": filter,
     }
 
     context_dict["viewer"] = json.dumps(
@@ -321,6 +343,16 @@ def layer_metadata(request, layername, template='layers/layer_metadata.html'):
     metadata_author = layer.metadata_author
 
     if request.method == "POST":
+        if layer.metadata_uploaded_preserve:  # layer metadata cannot be edited
+            out = {
+                'success': False,
+                'errors': METADATA_UPLOADED_PRESERVE_ERROR
+            }
+            return HttpResponse(
+                json.dumps(out),
+                content_type='application/json',
+                status=400)
+
         layer_form = LayerForm(request.POST, instance=layer, prefix="resource")
         attribute_form = layer_attribute_set(
             request.POST,
@@ -332,6 +364,7 @@ def layer_metadata(request, layername, template='layers/layer_metadata.html'):
             prefix="category_choice_field",
             initial=int(
                 request.POST["category_choice_field"]) if "category_choice_field" in request.POST else None)
+
     else:
         layer_form = LayerForm(instance=layer, prefix="resource")
         attribute_form = layer_attribute_set(
@@ -396,6 +429,9 @@ def layer_metadata(request, layername, template='layers/layer_metadata.html'):
             layer.keywords.clear()
             layer.keywords.add(*new_keywords)
             the_layer = layer_form.save()
+            up_sessions = UploadSession.objects.filter(layer=the_layer.id)
+            if up_sessions.count() > 0 and up_sessions[0].user != the_layer.owner:
+                up_sessions.update(user=the_layer.owner)
             the_layer.poc = new_poc
             the_layer.metadata_author = new_author
             Layer.objects.filter(id=the_layer.id).update(
@@ -524,7 +560,7 @@ def layer_replace(request, layername, template='layers/layer_replace.html'):
             status_code = 400
         return HttpResponse(
             json.dumps(out),
-            mimetype='application/json',
+            content_type='application/json',
             status=status_code)
 
 
@@ -557,9 +593,44 @@ def layer_remove(request, layername, template='layers/layer_remove.html'):
         return HttpResponse("Not allowed", status=403)
 
 
+@login_required
+def layer_granule_remove(request, granule_id, layername, template='layers/layer_granule_remove.html'):
+    layer = _resolve_layer(
+        request,
+        layername,
+        'base.delete_resourcebase',
+        _PERMISSION_MSG_DELETE)
+
+    if (request.method == 'GET'):
+        return render_to_response(template, RequestContext(request, {
+            "granule_id": granule_id,
+            "layer": layer
+        }))
+    if (request.method == 'POST'):
+        try:
+            cat = gs_catalog
+            cat._cache.clear()
+            store = cat.get_store(layer.name)
+            coverages = cat.mosaic_coverages(store)
+            cat.mosaic_delete_granule(coverages['coverages']['coverage'][0]['name'], store, granule_id)
+        except Exception as e:
+            message = '{0}: {1}.'.format(_('Unable to delete layer'), layer.typename)
+
+            if 'referenced by layer group' in getattr(e, 'message', ''):
+                message = _('This layer is a member of a layer group, you must remove the layer from the group '
+                            'before deleting.')
+
+            messages.error(request, message)
+            return render_to_response(template, RequestContext(request, {"layer": layer}))
+        return HttpResponseRedirect(reverse('layer_detail', args=(layer.service_typename,)))
+    else:
+        return HttpResponse("Not allowed", status=403)
+
+
 def layer_thumbnail(request, layername):
     if request.method == 'POST':
         layer_obj = _resolve_layer(request, layername)
+
         try:
             image = _render_thumbnail(request.body)
 
@@ -573,5 +644,13 @@ def layer_thumbnail(request, layername):
             return HttpResponse(
                 content='error saving thumbnail',
                 status=500,
-                mimetype='text/plain'
+                content_type='text/plain'
             )
+
+
+def layer_metadata_detail(request, layername, template='layers/layer_metadata_detail.html'):
+    layer = _resolve_layer(request, layername, 'view_resourcebase', _PERMISSION_MSG_METADATA)
+    return render_to_response(template, RequestContext(request, {
+        "layer": layer,
+        'SITEURL': settings.SITEURL[:-1]
+    }))

@@ -17,10 +17,12 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-
 import autocomplete_light
 
 from geonode.maps.models import Map
+
+autocomplete_light.autodiscover() # flake8: noqa
+
 from geonode.base.forms import ResourceBaseForm
 
 
@@ -34,4 +36,3 @@ class MapForm(ResourceBaseForm):
             'center_x',
             'center_y',
         )
-        widgets = autocomplete_light.get_widgets_dict(Map)

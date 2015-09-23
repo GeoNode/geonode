@@ -145,10 +145,34 @@ define(['underscore',
         var files = layers[Object.keys(layers)[0]]['files'];
         var types = [];
         for (var i = 0; i<files.length; i++){
+            var base_name = files[i].name.split('.')[0];
             var ext = files[i].name.split('.').pop().toLowerCase();
             if ($.inArray(ext,types) == -1){
                 types.push(ext);
             }
+
+            var mosaic_is_valid = true;
+            var is_granule = $('#' + base_name + '-mosaic').is(':checked');
+            
+            var is_time_enabled = $('#' + base_name + '-timedim').is(':checked');
+            var is_time_valid = is_time_enabled && !$('#' + base_name + '-timedim-value-valid').is(':visible');
+
+            if (is_granule && is_time_enabled) {
+                mosaic_is_valid = is_time_valid;
+            }
+
+            var is_adv_options_enabled = $('#' + base_name + '-timedim-presentation').is(':checked');
+            var default_value = $('#' + base_name + '-timedim-defaultvalue-format-select').val();
+            
+            if (default_value == 'NEAREST' || default_value == 'FIXED') {
+                var is_reference_value_valid = is_adv_options_enabled && !$('#' + base_name + '-timedim-defaultvalue-ref-value-valid').is(':visible')
+                mosaic_is_valid = is_time_valid && is_reference_value_valid;
+            }
+            
+            if (is_granule && !mosaic_is_valid) {
+                return false;
+            }
+
         }
         var matched = false;
         for (var file_type in fileTypes){
@@ -255,9 +279,10 @@ define(['underscore',
             common.logError('Please provide some files');
             return false;
         }
+
         var checked = checkFiles();
         if ($.isEmptyObject(layers) || !checked) {
-            alert(gettext('You are uploading an incomplete set of files.'));
+            alert(gettext('You are trying to upload an incomplete set of files or not all mandatory options have been validated.\n\nPlease check for errors in the form!'));
         } else {
             $.each(layers, function (name, layerinfo) {
                 layerinfo.uploadFiles();

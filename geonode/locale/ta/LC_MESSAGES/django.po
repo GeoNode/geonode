@@ -13,6 +13,7 @@
 # Translators:
 # Translators:
 # Translators:
+# Translators:
 # Andres Alfonso Lemon Gomez <lemon.andres@gmail.com>, 2014
 # Sundaralingam Suthakaran <karansuthakaran@yahoo.com>, 2013-2014
 # zihan Zarouk <zihanzar@gmail.com>, 2013
@@ -20,8 +21,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-09-22 03:42-0500\n"
-"PO-Revision-Date: 2015-09-22 08:17+0000\n"
+"POT-Creation-Date: 2015-10-29 04:21-0500\n"
+"PO-Revision-Date: 2015-10-29 09:05+0000\n"
 "Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
 "Language-Team: Tamil (http://www.transifex.com/geonode/geonode/language/"
 "ta/)\n"
@@ -31,11 +32,11 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: utils.py:44
+#: utils.py:43
 msgid "Invalid permission level."
 msgstr "பெறுமதியற்ற அனுமதி மட்டம்"
 
-#: utils.py:494
+#: utils.py:496
 msgid "Permission Denied"
 msgstr "அனுமதி மறுக்கப்பட்டுள்ளது "
 
@@ -157,7 +158,8 @@ msgstr "தகவல் தரப்படவில்லை"
 
 #: base/forms.py:43 base/templates/base/resourcebase_info_panel.html:62
 #: documents/templates/documents/document_metadata.html:65
-#: layers/templates/layers/layer_metadata.html:71
+#: layers/templates/layers/layer_metadata.html:70
+#: layers/templates/upload/layer_upload.html:89
 #: maps/templates/maps/map_metadata.html:61
 msgid "Category"
 msgstr "வகை"
@@ -166,7 +168,7 @@ msgstr "வகை"
 msgid "Category is required."
 msgstr "வகை தேவைப்படுகிறது."
 
-#: base/forms.py:105 groups/models.py:45 people/forms.py:82
+#: base/forms.py:114 groups/models.py:45 people/forms.py:82
 msgid "A space or comma-separated list of keywords"
 msgstr "ஒரு இடம் அல்லது அரைப்புள்ளி-  பிரிக்கப்பட்ட முக்கிய வார்த்தைகள் பட்டியலில்"
 
@@ -713,23 +715,23 @@ msgstr ""
 msgid "See users"
 msgstr ""
 
-#: documents/forms.py:92 documents/forms.py:160
+#: documents/forms.py:96 documents/forms.py:164
 msgid "Document must be a file or url."
 msgstr "ஆவண ஒரு கோப்பு அல்லது URL ஆக இருக்க வேண்டும்."
 
-#: documents/forms.py:96 documents/forms.py:164
+#: documents/forms.py:100 documents/forms.py:168
 msgid "A document cannot have both a file and a url."
 msgstr "ஒரு ஆவணம் ஒரு கோப்பு மற்றும் ஒரு URL இருவரும் முடியாது."
 
-#: documents/forms.py:109 documents/forms.py:177
+#: documents/forms.py:113 documents/forms.py:181
 msgid "This file type is not allowed"
 msgstr "இந்த கோப்பு வகை அனுமதிக்கப்படவில்லை"
 
-#: documents/forms.py:127
+#: documents/forms.py:131
 msgid "Link to"
 msgstr "இணைகின்றது "
 
-#: documents/forms.py:149
+#: documents/forms.py:153
 msgid "Permissions must be valid JSON."
 msgstr "அனுமதிகள் கச்சிதமாக JSON இருக்க வேண்டும்."
 
@@ -773,11 +775,11 @@ msgstr "இந்த ஆவணத்தை பார்ப்பதற்கு 
 msgid "You are not allowed to edit this document."
 msgstr "நீங்கள் இந்த ஆவணத்தை திருத்த அனுமதி."
 
-#: documents/views.py:328 layers/views.py:363
+#: documents/views.py:328 layers/views.py:358
 msgid "You must set a point of contact for this resource"
 msgstr ""
 
-#: documents/views.py:343 layers/views.py:378
+#: documents/views.py:343 layers/views.py:373
 msgid "You must set an author for this resource"
 msgstr ""
 
@@ -923,7 +925,7 @@ msgstr "இந்த ஆவணம் எந்தவொரு வரைபடத
 #: groups/templates/groups/group_detail.html:70
 #: layers/templates/layers/layer_detail.html:334
 #: layers/templates/layers/layer_replace.html:94
-#: layers/templates/upload/layer_upload.html:93
+#: layers/templates/upload/layer_upload.html:112
 #: maps/templates/maps/map_detail.html:178 people/admin.py:55
 msgid "Permissions"
 msgstr "அனுமதி"
@@ -980,28 +982,36 @@ msgstr "இயல்நிலைப்படுத்தல் "
 msgid "Metadata Provider"
 msgstr "நுண் தரவ வழங்கல் "
 
-#: documents/templates/documents/document_remove.html:11
+#: documents/templates/documents/document_remove.html:4
+#: maps/templates/maps/map_remove.html:6
+msgid "Deleting"
+msgstr "அழித்தல் "
+
+#: documents/templates/documents/document_remove.html:8
+msgid "Remove Document"
+msgstr ""
+
+#: documents/templates/documents/document_remove.html:13
 #, python-format
 msgid ""
 "\n"
-"          Are you sure you want to remove %(document_title)s?\n"
+"          Are you sure you want to remove <a href="
+"\"%(document.get_absolute_url)s\">%(document_title)s</a>?\n"
 "        "
 msgstr ""
-"\n"
-"நீங்கள் %(document_title)s ங்கள் நீக்க வேண்டுமா?"
 
-#: documents/templates/documents/document_remove.html:18
+#: documents/templates/documents/document_remove.html:20
 #: groups/templates/groups/group_remove.html:19
 #: layers/templates/layers/layer_remove.html:22
-#: maps/templates/maps/map_remove.html:19
+#: maps/templates/maps/map_remove.html:22
 #: services/templates/services/service_remove.html:17
 msgid "Yes, I am sure"
 msgstr "ஆம் எனக்கு உறுதியானது "
 
-#: documents/templates/documents/document_remove.html:19
+#: documents/templates/documents/document_remove.html:21
 #: groups/templates/groups/group_remove.html:20
 #: layers/templates/layers/layer_remove.html:23
-#: maps/templates/maps/map_remove.html:20
+#: maps/templates/maps/map_remove.html:23
 #: services/templates/services/service_remove.html:18
 msgid "No, don't remove it"
 msgstr "இல்லை அகற்ற வேண்டாம் "
@@ -1017,7 +1027,7 @@ msgstr "மாற்றவும்"
 
 #: documents/templates/documents/document_replace.html:27
 #: layers/templates/layers/layer_replace.html:84
-#: layers/templates/upload/layer_upload.html:86
+#: layers/templates/upload/layer_upload.html:105
 msgid "Clear"
 msgstr "அழிக்குக "
 
@@ -1025,11 +1035,11 @@ msgstr "அழிக்குக "
 msgid "Upload Document"
 msgstr "ஆவணத்தை பதிவேற்றல்"
 
-#: geoserver/helpers.py:974
+#: geoserver/helpers.py:987
 msgid "An exception occurred loading data to PostGIS"
 msgstr ""
 
-#: geoserver/helpers.py:979
+#: geoserver/helpers.py:992
 msgid " Additionally an error occured during database cleanup"
 msgstr ""
 
@@ -1069,7 +1079,7 @@ msgstr "PDF "
 msgid "PNG"
 msgstr "PNG"
 
-#: geoserver/signals.py:293
+#: geoserver/signals.py:294
 msgid "Could not create a download link for layer."
 msgstr "அடுக்கு ஒரு இணைப்பை உருவாக்க முடியவில்லை."
 
@@ -1566,19 +1576,19 @@ msgstr "இந்த படிமத்தின் நுண்தரவூக�
 msgid "You are not permitted to view this layer"
 msgstr "இந்த படுகையை பார்வையிட உங்களுக்கு அனுமதியில்லை"
 
-#: layers/views.py:488
+#: layers/views.py:486
 msgid "You are attempting to replace a vector layer with a raster."
 msgstr ""
 
-#: layers/views.py:491
+#: layers/views.py:489
 msgid "You are attempting to replace a raster layer with a vector."
 msgstr ""
 
-#: layers/views.py:547
+#: layers/views.py:545
 msgid "Unable to delete layer"
 msgstr ""
 
-#: layers/views.py:550
+#: layers/views.py:548
 msgid ""
 "This layer is a member of a layer group, you must remove the layer from the "
 "group before deleting."
@@ -1943,7 +1953,7 @@ msgstr "புதுப்பிக்கப்பட்டது கிடை�
 msgid "Upload Layer"
 msgstr "படுகையை பதிவேற்றுக "
 
-#: layers/templates/upload/layer_upload.html:87
+#: layers/templates/upload/layer_upload.html:106
 msgid "Upload files"
 msgstr "ஆவணத்தை பதிவேற்றுக"
 
@@ -2566,19 +2576,18 @@ msgstr ""
 "GeoNode மீத்தரவைத் இறக்குமதி, ISO, FGDC, மற்றும் டப்ளின் கோர் மெட்டா கூறுகள் ஒரு "
 "துணைக்குழு ஆதரிக்கிறது. உங்கள் அசல் மெட்டாடேட்டாவை இழந்தது."
 
-#: maps/templates/maps/map_remove.html:6
-msgid "Deleting"
-msgstr "அழித்தல் "
+#: maps/templates/maps/map_remove.html:10
+msgid "Remove Map"
+msgstr ""
 
-#: maps/templates/maps/map_remove.html:13
+#: maps/templates/maps/map_remove.html:15
 #, python-format
 msgid ""
 "\n"
-"        Are you sure you want to remove %(map_title)s?\n"
-"    "
+"          Are you sure you want to remove <a href=\"%(map.get_absolute_url)s"
+"\">%(map_title)s</a>?\n"
+"        "
 msgstr ""
-"\n"
-"நீங்கள் %(map_title)s கள் நீக்க வேண்டுமா?"
 
 #: maps/templates/maps/map_view.html:5
 msgid "GeoExplorer"
@@ -2780,15 +2789,15 @@ msgstr ""
 "சொற்றொடர் (ங்கள்) பொருள் (இடைவெளி அல்லது காற்புள்ளியால் பிரிக்கப்பட்ட விவரிக்க "
 "பயன்படுத்தப்படுகிறது"
 
-#: people/views.py:90
+#: people/views.py:91
 msgid "Your username for "
 msgstr "இற்கான உங்களின் பயன்பாட்டுப் பெயர் "
 
-#: people/views.py:104
+#: people/views.py:105
 msgid "Your username has been emailed to you."
 msgstr "உங்களின் பயன்பாட்டுப் பெயர் உங்களுக்கு மின்அஞ்சலிடப்பட்டுள்ளது"
 
-#: people/views.py:106
+#: people/views.py:107
 msgid "No user could be found with that email address."
 msgstr "அந்த மின்அஞ்சல் முகவரிக்குரிய பயன்படுத்துனர் ஒருரையேனும் கண்டறிய முடியவில்லை"
 
@@ -2903,7 +2912,8 @@ msgid "Remote Services"
 msgstr "தொலை சேவைகள்"
 
 #: people/templates/people/profile_detail.html:117 templates/500.html:229
-#: templates/base.html:222
+#: templates/base.html:222 templates/account/invite_user.html:8
+#: templates/account/invite_user.html:15
 msgid "Invite User"
 msgstr "பயனர் அழைக்கவும்"
 
@@ -3706,11 +3716,11 @@ msgid "Share This"
 msgstr ""
 
 #: templates/account/admin_approval_sent.html:6
-#: templates/account/admin_approval_sent.html:9
+#: templates/account/admin_approval_sent.html:11
 msgid "Account Pending Approval"
 msgstr ""
 
-#: templates/account/admin_approval_sent.html:11
+#: templates/account/admin_approval_sent.html:14
 #, python-format
 msgid ""
 "We have sent the administrators a notice to approve your account associated "
@@ -3719,11 +3729,11 @@ msgid ""
 msgstr ""
 
 #: templates/account/email_confirmation_sent.html:6
-#: templates/account/email_confirmation_sent.html:9
+#: templates/account/email_confirmation_sent.html:11
 msgid "Confirm your email address"
 msgstr ""
 
-#: templates/account/email_confirmation_sent.html:11
+#: templates/account/email_confirmation_sent.html:14
 #, python-format
 msgid ""
 "We have sent you an email to <b>%(email)s</b> for verification. Follow the "
@@ -3749,6 +3759,22 @@ msgstr "உங்கள் கடவுச்சொல்லை மறந்�
 #: templates/account/logout.html:15
 msgid "Are you sure you want to log out?"
 msgstr "நீங்கள் வெளியேற்றுவோம் என்பதில் உறுதியாக இருக்கிறீர்களா?"
+
+#: templates/account/password_change.html:8
+msgid "Password change"
+msgstr ""
+
+#: templates/account/password_change.html:14
+msgid "Password Change"
+msgstr ""
+
+#: templates/account/password_change.html:18
+msgid "Change your password here"
+msgstr ""
+
+#: templates/account/password_change.html:24
+msgid "Change my password"
+msgstr ""
 
 #: templates/account/password_reset.html:8
 msgid "Password reset"
@@ -3783,12 +3809,12 @@ msgstr ""
 "href=\"mailto:%(THEME_ACCOUNT_CONTACT_EMAIL)s\">"
 "%(THEME_ACCOUNT_CONTACT_EMAIL)s</a>."
 
-#: templates/account/signup.html:7 templates/account/signup.html.py:14
-#: templates/account/signup.html:22
+#: templates/account/signup.html:7 templates/account/signup.html.py:11
+#: templates/account/signup.html:17 templates/account/signup.html.py:25
 msgid "Sign up"
 msgstr "பதிவு"
 
-#: templates/account/signup.html:27
+#: templates/account/signup.html:30
 msgid "Sorry, registrations are not open at this time."
 msgstr "மன்னிக்கவும், பதிவு இந்த நேரத்தில் திறந்த இருந்தால்."
 
@@ -4272,11 +4298,11 @@ msgstr "இந்த yyyy-mm-dd"
 msgid "Date ends before:"
 msgstr "முந்தைய தேதி முடிவடைகிறது:"
 
-#: templates/search/_search_content.html:6
+#: templates/search/_search_content.html:5
 msgid "Your selections"
 msgstr " உங்கள்  தெரிவு "
 
-#: templates/search/_search_content.html:7
+#: templates/search/_search_content.html:6
 msgid "Clear all filters"
 msgstr "அனைத்து வடிகட்டிகள் அழி"
 
@@ -4344,6 +4370,24 @@ msgstr "உள்பெட்டிக்கு திரும்புதல�
 msgid "Send Reply"
 msgstr "சென்ற அறிவித்தல் "
 
+#~ msgid ""
+#~ "\n"
+#~ "          Are you sure you want to remove %(document_title)s?\n"
+#~ "        "
+#~ msgstr ""
+#~ "\n"
+#~ "          Are you sure you want to remove %(document_title)s?\n"
+#~ "        "
+
+#~ msgid ""
+#~ "\n"
+#~ "        Are you sure you want to remove %(map_title)s?\n"
+#~ "    "
+#~ msgstr ""
+#~ "\n"
+#~ "        Are you sure you want to remove %(map_title)s?\n"
+#~ "    "
+
 #~ msgid "email"
 #~ msgstr "email"
 
@@ -4365,9 +4409,6 @@ msgstr "சென்ற அறிவித்தல் "
 #~ msgid "Replace this Document"
 #~ msgstr "Replace this Document"
 
-#~ msgid "Remove this Document"
-#~ msgstr "Remove this Document"
-
 #~ msgid "Edit Styles"
 #~ msgstr "Edit Styles"
 
@@ -4382,9 +4423,6 @@ msgstr "சென்ற அறிவித்தல் "
 
 #~ msgid "Edit Map Metadata"
 #~ msgstr "Edit Map Metadata"
-
-#~ msgid "Remove this Map"
-#~ msgstr "Remove this Map"
 
 #~ msgid "Profile Menu"
 #~ msgstr "Profile Menu"

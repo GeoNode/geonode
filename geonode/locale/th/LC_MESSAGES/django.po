@@ -13,14 +13,15 @@
 # Translators:
 # Translators:
 # Translators:
+# Translators:
 # Andres Alfonso Lemon Gomez <lemon.andres@gmail.com>, 2014
 # keeratipong petchadapong <jobcskku@hotmail.com>, 2014-2015
 msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-09-22 03:42-0500\n"
-"PO-Revision-Date: 2015-09-22 08:17+0000\n"
+"POT-Creation-Date: 2015-10-29 04:21-0500\n"
+"PO-Revision-Date: 2015-10-29 09:05+0000\n"
 "Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
 "Language-Team: Thai (http://www.transifex.com/geonode/geonode/language/th/)\n"
 "Language: th\n"
@@ -29,11 +30,11 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 
-#: utils.py:44
+#: utils.py:43
 msgid "Invalid permission level."
 msgstr "ระดับการอนุญาตไม่ถูกต้อง"
 
-#: utils.py:494
+#: utils.py:496
 msgid "Permission Denied"
 msgstr "ไม่ได้รับอนุญาต"
 
@@ -155,7 +156,8 @@ msgstr "ไม่มีการให้ข้อมูล"
 
 #: base/forms.py:43 base/templates/base/resourcebase_info_panel.html:62
 #: documents/templates/documents/document_metadata.html:65
-#: layers/templates/layers/layer_metadata.html:71
+#: layers/templates/layers/layer_metadata.html:70
+#: layers/templates/upload/layer_upload.html:89
 #: maps/templates/maps/map_metadata.html:61
 msgid "Category"
 msgstr "หมวด"
@@ -164,7 +166,7 @@ msgstr "หมวด"
 msgid "Category is required."
 msgstr "หมวดเป็นสิ่งที่จำเป็น"
 
-#: base/forms.py:105 groups/models.py:45 people/forms.py:82
+#: base/forms.py:114 groups/models.py:45 people/forms.py:82
 msgid "A space or comma-separated list of keywords"
 msgstr "แยกคำสำคัญแต่ละคำด้วยการเว้นวรรคหรือจุลภาค"
 
@@ -697,23 +699,23 @@ msgstr ""
 msgid "See users"
 msgstr "ดูผู้ใช้"
 
-#: documents/forms.py:92 documents/forms.py:160
+#: documents/forms.py:96 documents/forms.py:164
 msgid "Document must be a file or url."
 msgstr "เอกสารจะต้องเป็นไฟล์หรือ url ของไฟล์"
 
-#: documents/forms.py:96 documents/forms.py:164
+#: documents/forms.py:100 documents/forms.py:168
 msgid "A document cannot have both a file and a url."
 msgstr "เอกสารไม่สามารถเป็นได้ทั้งไฟล์และ url"
 
-#: documents/forms.py:109 documents/forms.py:177
+#: documents/forms.py:113 documents/forms.py:181
 msgid "This file type is not allowed"
 msgstr "ไฟล์ชนิดนี้ไม่ได้รับอนุญาต"
 
-#: documents/forms.py:127
+#: documents/forms.py:131
 msgid "Link to"
 msgstr "เชื่อมโยงกับ"
 
-#: documents/forms.py:149
+#: documents/forms.py:153
 msgid "Permissions must be valid JSON."
 msgstr "สิทธิ์จะต้องอยู่ในรูปแบบ JSON ที่ถูกต้อง"
 
@@ -757,11 +759,11 @@ msgstr "คุณไม่ได้รับอนุญาตให้ดูเ
 msgid "You are not allowed to edit this document."
 msgstr "คุณไม่ได้รับอนุญาตให้แก้ไขเอกสารนี้"
 
-#: documents/views.py:328 layers/views.py:363
+#: documents/views.py:328 layers/views.py:358
 msgid "You must set a point of contact for this resource"
 msgstr ""
 
-#: documents/views.py:343 layers/views.py:378
+#: documents/views.py:343 layers/views.py:373
 msgid "You must set an author for this resource"
 msgstr ""
 
@@ -907,7 +909,7 @@ msgstr "เอกสารนี้ไม่มีเกี่ยวข้อง
 #: groups/templates/groups/group_detail.html:70
 #: layers/templates/layers/layer_detail.html:334
 #: layers/templates/layers/layer_replace.html:94
-#: layers/templates/upload/layer_upload.html:93
+#: layers/templates/upload/layer_upload.html:112
 #: maps/templates/maps/map_detail.html:178 people/admin.py:55
 msgid "Permissions"
 msgstr "สิทธิ์"
@@ -964,28 +966,36 @@ msgstr "แก้ไข"
 msgid "Metadata Provider"
 msgstr "ผู้ให้คำอธิบายข้อมูล"
 
-#: documents/templates/documents/document_remove.html:11
+#: documents/templates/documents/document_remove.html:4
+#: maps/templates/maps/map_remove.html:6
+msgid "Deleting"
+msgstr "กำลังลบ"
+
+#: documents/templates/documents/document_remove.html:8
+msgid "Remove Document"
+msgstr ""
+
+#: documents/templates/documents/document_remove.html:13
 #, python-format
 msgid ""
 "\n"
-"          Are you sure you want to remove %(document_title)s?\n"
+"          Are you sure you want to remove <a href="
+"\"%(document.get_absolute_url)s\">%(document_title)s</a>?\n"
 "        "
 msgstr ""
-"\n"
-"คุณแน่ใจแล้วหรือว่าจะลบ %(document_title)s?"
 
-#: documents/templates/documents/document_remove.html:18
+#: documents/templates/documents/document_remove.html:20
 #: groups/templates/groups/group_remove.html:19
 #: layers/templates/layers/layer_remove.html:22
-#: maps/templates/maps/map_remove.html:19
+#: maps/templates/maps/map_remove.html:22
 #: services/templates/services/service_remove.html:17
 msgid "Yes, I am sure"
 msgstr "ใช่ ฉันแน่ใจ"
 
-#: documents/templates/documents/document_remove.html:19
+#: documents/templates/documents/document_remove.html:21
 #: groups/templates/groups/group_remove.html:20
 #: layers/templates/layers/layer_remove.html:23
-#: maps/templates/maps/map_remove.html:20
+#: maps/templates/maps/map_remove.html:23
 #: services/templates/services/service_remove.html:18
 msgid "No, don't remove it"
 msgstr "ไม่ อย่าลบมัน"
@@ -1001,7 +1011,7 @@ msgstr "แทนที่"
 
 #: documents/templates/documents/document_replace.html:27
 #: layers/templates/layers/layer_replace.html:84
-#: layers/templates/upload/layer_upload.html:86
+#: layers/templates/upload/layer_upload.html:105
 msgid "Clear"
 msgstr "ล้าง"
 
@@ -1009,11 +1019,11 @@ msgstr "ล้าง"
 msgid "Upload Document"
 msgstr "อัพโหลดเอกสาร"
 
-#: geoserver/helpers.py:974
+#: geoserver/helpers.py:987
 msgid "An exception occurred loading data to PostGIS"
 msgstr "เกิดข้อผิดพลาดระหว่างโหลดข้อมูลไปยัง PostGIS"
 
-#: geoserver/helpers.py:979
+#: geoserver/helpers.py:992
 msgid " Additionally an error occured during database cleanup"
 msgstr "เกิดข้อผิดพลาดในระหว่างการทำความสะอาดฐานข้อมูล"
 
@@ -1053,7 +1063,7 @@ msgstr "PDF"
 msgid "PNG"
 msgstr "PNG"
 
-#: geoserver/signals.py:293
+#: geoserver/signals.py:294
 msgid "Could not create a download link for layer."
 msgstr "ไม่สามารถสร้างลิงค์ดาวน์โหลดสำหรับชั้นข้อมูลได้"
 
@@ -1546,19 +1556,19 @@ msgstr "คุณไม่มีสิทธิ์แก้ไขคำอธิ
 msgid "You are not permitted to view this layer"
 msgstr "คุณไม่มีสิทธิ์ดูชั้นข้อมูลนี้"
 
-#: layers/views.py:488
+#: layers/views.py:486
 msgid "You are attempting to replace a vector layer with a raster."
 msgstr "คุณกำลังพยายามที่จะแทนที่ชั้นข้อมูลเวกเตอร์ด้วยชั้นข้อมูลแรสเตอร์"
 
-#: layers/views.py:491
+#: layers/views.py:489
 msgid "You are attempting to replace a raster layer with a vector."
 msgstr "คุณกำลังพยายามที่จะแทนที่ชั้นข้อมูลแรสเตอร์ด้วยชั้นข้อมูลเวกเตอร์"
 
-#: layers/views.py:547
+#: layers/views.py:545
 msgid "Unable to delete layer"
 msgstr "ไม่สามารถลบชั้นข้อมูลได้"
 
-#: layers/views.py:550
+#: layers/views.py:548
 msgid ""
 "This layer is a member of a layer group, you must remove the layer from the "
 "group before deleting."
@@ -1925,7 +1935,7 @@ msgstr "แก้ไขสไตล์ที่สามารถใช้ได
 msgid "Upload Layer"
 msgstr "อัพโหลดชั้นข้อมูล"
 
-#: layers/templates/upload/layer_upload.html:87
+#: layers/templates/upload/layer_upload.html:106
 msgid "Upload files"
 msgstr "อัพโหลดไฟล์"
 
@@ -2538,19 +2548,18 @@ msgstr ""
 "คำอธิบายข้อมูลของ GeoNode รองรับบางส่วนของมาตรฐาน ISO, FGDC, และ Dublin Core\n"
 "อาจจะทำให้มีบางส่วนของคำอธิบายต้นฉบับของคุณสูญเสียไป"
 
-#: maps/templates/maps/map_remove.html:6
-msgid "Deleting"
-msgstr "กำลังลบ"
+#: maps/templates/maps/map_remove.html:10
+msgid "Remove Map"
+msgstr ""
 
-#: maps/templates/maps/map_remove.html:13
+#: maps/templates/maps/map_remove.html:15
 #, python-format
 msgid ""
 "\n"
-"        Are you sure you want to remove %(map_title)s?\n"
-"    "
+"          Are you sure you want to remove <a href=\"%(map.get_absolute_url)s"
+"\">%(map_title)s</a>?\n"
+"        "
 msgstr ""
-"\n"
-"คุณแน่ใจแล้วหรือว่าจะลบ %(map_title)s?"
 
 #: maps/templates/maps/map_view.html:5
 msgid "GeoExplorer"
@@ -2744,15 +2753,15 @@ msgid ""
 msgstr ""
 "คำที่ใช้ทั่วไป หรือคำทางการ หรือวลี ที่ใช้สำหรับอธิบายหัวเรื่อง (เว้นวรรค หรือคั่นด้วยจุลภาค)"
 
-#: people/views.py:90
+#: people/views.py:91
 msgid "Your username for "
 msgstr "ชื่อผู้ใช้ของคุณสำหรับ"
 
-#: people/views.py:104
+#: people/views.py:105
 msgid "Your username has been emailed to you."
 msgstr "ชื่อผู้ใช้งานจะถูกส่งถึงคุณผ่านอีเมล์"
 
-#: people/views.py:106
+#: people/views.py:107
 msgid "No user could be found with that email address."
 msgstr "ไม่พบผู้ใช้ที่มีอีเมล์แอดเดรสนั้นเลย"
 
@@ -2867,7 +2876,8 @@ msgid "Remote Services"
 msgstr "บริการระยะไกล"
 
 #: people/templates/people/profile_detail.html:117 templates/500.html:229
-#: templates/base.html:222
+#: templates/base.html:222 templates/account/invite_user.html:8
+#: templates/account/invite_user.html:15
 msgid "Invite User"
 msgstr "เชิญผู้ใช้"
 
@@ -3743,11 +3753,11 @@ msgid "Share This"
 msgstr "แบ่งปันสิ่งนี้"
 
 #: templates/account/admin_approval_sent.html:6
-#: templates/account/admin_approval_sent.html:9
+#: templates/account/admin_approval_sent.html:11
 msgid "Account Pending Approval"
 msgstr "บัญชีผู้ใช้อยู่ระหว่างการอนุมัติ"
 
-#: templates/account/admin_approval_sent.html:11
+#: templates/account/admin_approval_sent.html:14
 #, python-format
 msgid ""
 "We have sent the administrators a notice to approve your account associated "
@@ -3758,11 +3768,11 @@ msgstr ""
 "ถ้าบัญชีได้รับการอนุมัติแล้วคุณจะได้รับการแจ้งเตือนเพื่อยืนยัน"
 
 #: templates/account/email_confirmation_sent.html:6
-#: templates/account/email_confirmation_sent.html:9
+#: templates/account/email_confirmation_sent.html:11
 msgid "Confirm your email address"
 msgstr "ยืนยันอีเมล์แอดเดรสของคุณ"
 
-#: templates/account/email_confirmation_sent.html:11
+#: templates/account/email_confirmation_sent.html:14
 #, python-format
 msgid ""
 "We have sent you an email to <b>%(email)s</b> for verification. Follow the "
@@ -3790,6 +3800,22 @@ msgstr "คุณลืมรหัสผ่าน?"
 #: templates/account/logout.html:15
 msgid "Are you sure you want to log out?"
 msgstr "คุณแน่ใจแล้วหรือว่าจะออกจากระบบ?"
+
+#: templates/account/password_change.html:8
+msgid "Password change"
+msgstr ""
+
+#: templates/account/password_change.html:14
+msgid "Password Change"
+msgstr ""
+
+#: templates/account/password_change.html:18
+msgid "Change your password here"
+msgstr ""
+
+#: templates/account/password_change.html:24
+msgid "Change my password"
+msgstr ""
 
 #: templates/account/password_reset.html:8
 msgid "Password reset"
@@ -3823,12 +3849,12 @@ msgstr ""
 "หากคุณพบปัญหาใดๆในการตั้งรหัสผ่านใหม่ ติดต่อเราได้ที่ <a href=\"mailto:"
 "%(THEME_ACCOUNT_CONTACT_EMAIL)s\">%(THEME_ACCOUNT_CONTACT_EMAIL)s</a>"
 
-#: templates/account/signup.html:7 templates/account/signup.html.py:14
-#: templates/account/signup.html:22
+#: templates/account/signup.html:7 templates/account/signup.html.py:11
+#: templates/account/signup.html:17 templates/account/signup.html.py:25
 msgid "Sign up"
 msgstr "ลงทะเบียน"
 
-#: templates/account/signup.html:27
+#: templates/account/signup.html:30
 msgid "Sorry, registrations are not open at this time."
 msgstr "ขออภัย ขณะนี้ยังไม่เปิดรับลงทะเบียน"
 
@@ -4322,11 +4348,11 @@ msgstr "ปปปป-ดด-วว"
 msgid "Date ends before:"
 msgstr "ก่อนวันที่"
 
-#: templates/search/_search_content.html:6
+#: templates/search/_search_content.html:5
 msgid "Your selections"
 msgstr "สิ่งที่คุณเลือก"
 
-#: templates/search/_search_content.html:7
+#: templates/search/_search_content.html:6
 msgid "Clear all filters"
 msgstr "ล้างตัวกรองทั้งหมด"
 
@@ -4394,6 +4420,24 @@ msgstr "กลับไปที่กล่องขาเข้า"
 msgid "Send Reply"
 msgstr "ตอบกลับ"
 
+#~ msgid ""
+#~ "\n"
+#~ "          Are you sure you want to remove %(document_title)s?\n"
+#~ "        "
+#~ msgstr ""
+#~ "\n"
+#~ "          Are you sure you want to remove %(document_title)s?\n"
+#~ "        "
+
+#~ msgid ""
+#~ "\n"
+#~ "        Are you sure you want to remove %(map_title)s?\n"
+#~ "    "
+#~ msgstr ""
+#~ "\n"
+#~ "        Are you sure you want to remove %(map_title)s?\n"
+#~ "    "
+
 #~ msgid "email"
 #~ msgstr "email"
 
@@ -4415,9 +4459,6 @@ msgstr "ตอบกลับ"
 #~ msgid "Replace this Document"
 #~ msgstr "Replace this Document"
 
-#~ msgid "Remove this Document"
-#~ msgstr "Remove this Document"
-
 #~ msgid "Edit Styles"
 #~ msgstr "Edit Styles"
 
@@ -4432,9 +4473,6 @@ msgstr "ตอบกลับ"
 
 #~ msgid "Edit Map Metadata"
 #~ msgstr "Edit Map Metadata"
-
-#~ msgid "Remove this Map"
-#~ msgstr "Remove this Map"
 
 #~ msgid "Profile Menu"
 #~ msgstr "Profile Menu"
