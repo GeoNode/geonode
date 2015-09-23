@@ -145,6 +145,7 @@ define(['underscore',
         var files = layers[Object.keys(layers)[0]]['files'];
         var types = [];
         for (var i = 0; i<files.length; i++){
+            var base_name = files[i].name.split('.')[0];
             var ext = files[i].name.split('.').pop().toLowerCase();
             if ($.inArray(ext,types) == -1){
                 types.push(ext);
@@ -257,7 +258,7 @@ define(['underscore',
         }
         var checked = checkFiles();
         if ($.isEmptyObject(layers) || !checked) {
-            alert(gettext('You are uploading an incomplete set of files.'));
+            alert(gettext('You are trying to upload an incomplete set of files or not all mandatory options have been validated.\n\nPlease check for errors in the form!'));
         } else {
             $.each(layers, function (name, layerinfo) {
                 layerinfo.uploadFiles();
