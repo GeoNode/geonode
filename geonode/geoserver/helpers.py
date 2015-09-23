@@ -277,15 +277,17 @@ def cascading_delete(cat, layer_name):
         for s in styles:
             if s is not None and s.name not in _default_style_names:
                 try:
-                    cat.delete(s, purge=True)
+                    cat.delete(s, purge='true')
                 except FailedRequestError as e:
                     # Trying to delete a shared style will fail
                     # We'll catch the exception and log it.
                     logger.debug(e)
 
         # Due to a possible bug of geoserver, we need this trick for now
+        # TODO: inspect the issue reported by this hack. Should be solved
+        #       with GS 2.7+
         try:
-            cat.delete(resource)  # This will fail
+            cat.delete(resource, recurse=True)  # This may fail
         except:
             cat.reload()  # this preservers the integrity of geoserver
 
@@ -297,12 +299,23 @@ def cascading_delete(cat, layer_name):
             # GeoGig repository.
             return
         else:
-            try:
-                if not store.get_resources():
-                    cat.delete(store, recurse=True)
-            except FailedRequestError as e:
-                # Catch the exception and log it.
-                logger.debug(e)
+            if store.resource_type == 'coverageStore':
+                try:
+                    logger.info(" - Going to purge the " + store.resource_type + " : " + store.href)
+                    cat.reset()  # this resets the coverage readers and unlocks the files
+                    cat.delete(store, purge='all', recurse=True)
+                    cat.reload()  # this preservers the integrity of geoserver
+                except FailedRequestError as e:
+                    # Trying to recursively purge a store may fail
+                    # We'll catch the exception and log it.
+                    logger.debug(e)
+            else:
+                try:
+                    if not store.get_resources():
+                        cat.delete(store, recurse=True)
+                except FailedRequestError as e:
+                    # Catch the exception and log it.
+                    logger.debug(e)
 
 
 def delete_from_postgis(resource_name):
