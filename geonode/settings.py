@@ -697,11 +697,6 @@ LOCKDOWN_GEONODE = False
 # authentication.
 AUTH_EXEMPT_URLS = ()
 
-if LOCKDOWN_GEONODE:
-    MIDDLEWARE_CLASSES = MIDDLEWARE_CLASSES + \
-        ('geonode.security.middleware.LoginRequiredMiddleware',)
-
-
 # A tuple of hosts the proxy can send requests to.
 PROXY_ALLOWED_HOSTS = ()
 
@@ -886,6 +881,11 @@ try:
 except ImportError:
     pass
 
+
+# Require users to authenticate before using Geonode
+if LOCKDOWN_GEONODE:
+    MIDDLEWARE_CLASSES = MIDDLEWARE_CLASSES + \
+        ('geonode.security.middleware.LoginRequiredMiddleware',)
 
 #for windows users check if they didn't set GEOS and GDAL in local_settings.py
 #maybe they set it as a windows environment
