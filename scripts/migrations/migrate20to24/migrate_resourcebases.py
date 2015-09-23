@@ -23,7 +23,6 @@ def migrate_resourcebase(resource_type):
     polymorphic_ctype_id = utils.get_content_type_id(resource_type)
 
     src_cur.execute(sql)
-    print sql
 
     for src_row in src_cur:
         assignments = []

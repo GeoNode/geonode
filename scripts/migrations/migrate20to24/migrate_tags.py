@@ -43,7 +43,6 @@ for src_row in src_cur:
         assignments.append(utils.get_content_type_id_by_oldid(src_row[2]))
 
         try:
-            print assignments
             dst_cur.execute("insert into taggit_taggeditem(tag_id, object_id, content_type_id) values (%s, %s, %s)", assignments)
             dst.commit()
         except Exception as error:

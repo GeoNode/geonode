@@ -19,7 +19,8 @@ for src_row in src_cur:
     #format
     assignments.append(src_row[2])
     #name
-    assignments.append(src_row[3])
+    name = src_row[3]
+    assignments.append(name)
     #opacity
     assignments.append(src_row[4])
     #styles
@@ -42,6 +43,7 @@ for src_row in src_cur:
     assignments.append(src_row[13])
 
     try:
+        print 'Migrating map layer named %s' % name
         dst_cur.execute("insert into maps_maplayer(map_id, stack_order, format, name, opacity, styles, transparent, fixed, \"group\", visibility, ows_url, layer_params, source_params, local) values (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)", assignments)
         dst.commit()
     except Exception as error:

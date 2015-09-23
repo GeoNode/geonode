@@ -14,20 +14,22 @@ for src_row in src_cur:
     #resourcebase_ptr_id
     id = utils.get_resourceid_by_oldid(src_row[0])
     assignments.append(id)
+    # _en fields
+    en_fields = utils.get_en_fields(id)
     #title_en
-    assignments.append(utils.get_en_fields(id)[0])
+    assignments.append(en_fields[0])
     #abstract_en
-    assignments.append(utils.get_en_fields(id)[1])
+    assignments.append(en_fields[1])
     #purpose_en
-    assignments.append(utils.get_en_fields(id)[2])
+    assignments.append(en_fields[2])
     #constraints_other_en
-    assignments.append(utils.get_en_fields(id)[3])
+    assignments.append(en_fields[3])
     #supplemental_information_en
-    assignments.append(utils.get_en_fields(id)[4])
+    assignments.append(en_fields[4])
     #distribution_description_en
-    assignments.append(utils.get_en_fields(id)[5])
+    assignments.append(en_fields[5])
     #data_quality_statement_en
-    assignments.append(utils.get_en_fields(id)[6])
+    assignments.append(en_fields[6])
     #workspace
     assignments.append(src_row[1])
     #store

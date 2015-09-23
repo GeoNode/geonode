@@ -15,7 +15,8 @@ for src_row in src_cur:
     id = utils.get_resourceid_by_oldid(src_row[0])
     assignments.append(id)
     #title_en
-    assignments.append(utils.get_en_fields(id)[0])
+    title_en = utils.get_en_fields(id)[0]
+    assignments.append(title_en)
     #abstract_en
     assignments.append(utils.get_en_fields(id)[1])
     #purpose_en
@@ -44,7 +45,7 @@ for src_row in src_cur:
     assignments.append("unknown")
 
     try:
-        print assignments
+        print 'Migrating map titled %s' % title_en
         dst_cur.execute("insert into maps_map(resourcebase_ptr_id, title_en, abstract_en, purpose_en, constraints_other_en, supplemental_information_en, distribution_description_en, data_quality_statement_en, zoom, projection, center_x, center_y, last_modified, urlsuffix, featuredurl) values (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)", assignments)
         dst.commit()
     except Exception as error:

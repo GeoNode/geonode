@@ -12,18 +12,21 @@ from geonode.people.models import Profile
 from geonode.base.models import ResourceBase
 
 print 'Creating the authenticated group...'
-gp = GroupProfile.objects.create(
+gp = GroupProfile.objects.get_or_create(
     title='Authenticated GeoNode Users',
     slug='authenticated',
     description='Group containg all of the registered GeoNode users',
     access='public',
-)
+)[0]
 # assign all existing users to this group
 print 'Now adding all users to the group...'
 for profile in Profile.objects.all():
     if profile.username != 'AnonymousUser':
         print 'Adding %s to the group' % profile.username
-        gp.join(profile)
+        if gp.user_is_member(profile):
+            print 'this user is already member of the group!'
+        else:
+            gp.join(profile)
 
 # updates resources
 print 'Updating resources...'

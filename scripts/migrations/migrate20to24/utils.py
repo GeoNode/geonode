@@ -33,6 +33,7 @@ def get_dst():
 
 def get_userid_by_oldid(id):
     """Get an username id by old id"""
+    print 'Getting new user id for user id %s' % id
     src = get_src()
     dst = get_dst()
     src_cur = src.cursor()
