@@ -281,7 +281,7 @@ def is_valid_attribute_for_lat_lng(dt_attr, lng_check=False):
     if lng_check:
         col_type = 'longitude'
 
-    err_msg = 'Not a valid %s column. Column "%s" is type "%s".  Must be a float or double.' \
+    err_msg = 'Not a valid %s column. Column "%s" is type "%s".   All data in the column must be a float or double.' \
                                     % (col_type, dt_attr.attribute, dt_attr.attribute_type)
     return False, err_msg
 
@@ -317,7 +317,7 @@ def create_point_col_from_lat_lon(new_table_owner, table_name, lat_column, lng_c
     # ----------------------------------------------------
     lat_col_attr = dt.get_attribute_by_name(standardize_name(lat_column))
     if lat_col_attr is None:
-        err_msg = 'DataTable "%s" does not have latitude column named "%s" (formatted: %s)'\
+        err_msg = 'DataTable "%s" does not have a latitude column named "%s" (formatted: %s)'\
                   % (table_name, lat_column, standardize_name(lat_column))
         logger.error(err_msg)
         return False, err_msg
@@ -333,7 +333,7 @@ def create_point_col_from_lat_lon(new_table_owner, table_name, lat_column, lng_c
     # ----------------------------------------------------
     lng_col_attr = dt.get_attribute_by_name(standardize_name(lng_column))
     if lng_col_attr is None:
-        err_msg = 'DataTable "%s" does not have longitude column named "%s" (formatted: %s)'\
+        err_msg = 'DataTable "%s" does not have a longitude column named "%s" (formatted: %s)'\
                   % (table_name, lng_column, standardize_name(lng_column))
         logger.error(err_msg)
         return False, err_msg
@@ -427,8 +427,9 @@ def create_point_col_from_lat_lon(new_table_owner, table_name, lat_column, lng_c
             "store": ds.name,
             "storeType": ds.resource_type,
             "typename": "%s:%s" % (workspace.name.encode('utf-8'), ft.name.encode('utf-8')),
-            "title": ft.title or 'No title provided',
-            "abstract": ft.abstract or 'No abstract provided',
+            "title": dt.title or 'No title provided',
+            #"name" : dt.title or 'No title provided',
+            "abstract": dt.abstract or 'No abstract provided',
             "uuid": str(uuid.uuid4()),
             "owner" : new_table_owner,
             #"bbox_x0": Decimal(ft.latlon_bbox[0]),

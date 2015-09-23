@@ -73,7 +73,9 @@ class JoinTargetForm(forms.Form):
 
 
 class DataTableUploadForm(forms.Form):
-    #        fields = ('title', 'abstract', 'delimiter', 'no_header_row')
+    """
+    Used to validate DataTable upload requests
+    """
     title = forms.CharField(max_length=255, help_text='Title for New DataTable')
     abstract = forms.CharField(widget=forms.Textarea, initial='(no abstract)')
     delimiter = forms.CharField(max_length=10, initial=',')
@@ -94,6 +96,16 @@ class DataTableUploadForm(forms.Form):
             delim_value = delim_value[0]
 
         return str(delim_value)
+
+
+class DataTableUploadFormLatLng(DataTableUploadForm):
+    """
+    Used to validate DataTable upload requests with Longitude/Latitude Columns
+    """
+    lng_attribute = forms.CharField(help_text='Longitude column name')
+    lat_attribute = forms.CharField(help_text='Latitude column name')
+
+
 
 class TableJoinRequestForm(forms.Form):
 
@@ -219,3 +231,20 @@ class TableJoinResultForm(forms.ModelForm):
 
         print 'params', params
         return TableJoinResultForm(params)
+
+"""
+lat lng result form
+TABLE_JOIN_TO_RESULT_MAP = dict(tablejoin_id='pk',
+                             tablejoin_view_name='view_name',
+                             join_layer_id='join_layer.id',
+                             join_layer_typename='join_layer.typename',
+                             join_layer_url='join_layer.get_absolute_url',
+                             matched_record_count='matched_records_count',
+                             unmatched_record_count='unmatched_records_count',
+                             unmatched_records_list='unmatched_records_list',
+                             table_id='datatable.id',
+                             table_name='datatable.table_name',
+                             table_join_attribute='table_attribute.attribute',
+                             layer_typename='join_layer.typename',
+                             layer_join_attribute='layer_attribute.attribute')
+"""

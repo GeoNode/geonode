@@ -23,7 +23,8 @@ from geonode.contrib.datatables.forms import JoinTargetForm,\
                                         TableUploadAndJoinRequestForm,\
                                         DataTableUploadForm,\
                                         DataTableResponseForm,\
-                                        TableJoinResultForm
+                                        TableJoinResultForm,\
+                                        DataTableUploadFormLatLng
 
 from shared_dataverse_information.worldmap_datatables.forms import MapLatLngLayerRequestForm#, TableJoinResultForm
     #DataTableUploadForm,\
@@ -406,7 +407,8 @@ def datatable_upload_lat_lon_api(request):
     # Is the request data valid?
     # Check with the MapLatLngLayerRequestForm
     #
-    f = MapLatLngLayerRequestForm(request.POST, request.FILES)
+    #f = MapLatLngLayerRequestForm(request.POST, request.FILES)
+    f = DataTableUploadFormLatLng(request.POST, request.FILES)
     if not f.is_valid():
         err_msg = "Invalid data in request: %s" % format_errors_as_text(f)
         logger.error("datatable_upload_lat_lon_api. %s" % err_msg)
@@ -443,8 +445,8 @@ def datatable_upload_lat_lon_api(request):
     try:
         success, latlng_record_or_err_msg = create_point_col_from_lat_lon(new_table_owner
                         , upload_return_dict['data']['datatable_name']
-                        , form_map_lat_lng.cleaned_data['lat_attribute']
-                        , form_map_lat_lng.cleaned_data['lng_attribute']
+                        , f.cleaned_data['lat_attribute']
+                        , f.cleaned_data['lng_attribute']
                     )
 
 
