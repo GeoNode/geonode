@@ -11,18 +11,21 @@
 # Translators:
 # Translators:
 # Translators:
+# Translators:
+# Translators:
 # amir.rad <amir.rad@gmail.com>, 2014
 # amir.rad <amir.rad@gmail.com>, 2014
 # Andres Alfonso Lemon Gomez <lemon.andres@gmail.com>, 2014
+# nimaghasemloo <nsm_n63@yahoo.com>, 2015
 msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-07-16 05:46-0500\n"
-"PO-Revision-Date: 2015-05-18 18:18+0000\n"
-"Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
-"Language-Team: Persian (Iran) (http://www.transifex.com/p/geonode/language/"
-"fa_IR/)\n"
+"POT-Creation-Date: 2015-09-22 03:42-0500\n"
+"PO-Revision-Date: 2015-09-01 05:48+0000\n"
+"Last-Translator: nimaghasemloo <nsm_n63@yahoo.com>\n"
+"Language-Team: Persian (Iran) (http://www.transifex.com/geonode/geonode/"
+"language/fa_IR/)\n"
 "Language: fa_IR\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -72,7 +75,7 @@ msgstr "چه کسی می تواند این داده را ویراش و یا مد
 #: static/geonode/js/search/search.js:375
 #: static_root/geonode/js/search/search.js:298
 msgid "Enter your text here ..."
-msgstr ""
+msgstr "جستجوی خود را اینجا وارد کنید ..."
 
 #: static/geonode/js/search/search.js:401
 msgid "Enter your region here ..."

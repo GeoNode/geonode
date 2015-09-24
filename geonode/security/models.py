@@ -135,6 +135,10 @@ class PermissionLevelMixin(object):
 
         # default permissions for anonymous users
         anonymous_group, created = Group.objects.get_or_create(name='anonymous')
+
+        if not anonymous_group:
+            raise Exception("Could not acquire 'anonymous' Group.")
+
         if settings.DEFAULT_ANONYMOUS_VIEW_PERMISSION:
             assign_perm('view_resourcebase', anonymous_group, self.get_self_resource())
         if settings.DEFAULT_ANONYMOUS_DOWNLOAD_PERMISSION:
