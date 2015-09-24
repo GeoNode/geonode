@@ -11,6 +11,8 @@
 # Translators:
 # Translators:
 # Translators:
+# Translators:
+# Translators:
 # Andres Alfonso Lemon Gomez <lemon.andres@gmail.com>, 2014
 # Bibiana T. de Almeida <bibiana.almeida@embrapa.br>, 2015
 # Davi de O Custodio <davicustodio@gmail.com>, 2015
@@ -20,10 +22,10 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-07-16 05:46-0500\n"
+"POT-Creation-Date: 2015-09-22 03:42-0500\n"
 "PO-Revision-Date: 2015-06-08 17:30+0000\n"
 "Last-Translator: Bibiana T. de Almeida <bibiana.almeida@embrapa.br>\n"
-"Language-Team: Portuguese (Brazil) (http://www.transifex.com/p/geonode/"
+"Language-Team: Portuguese (Brazil) (http://www.transifex.com/geonode/geonode/"
 "language/pt_BR/)\n"
 "Language: pt_BR\n"
 "MIME-Version: 1.0\n"

@@ -11,17 +11,22 @@
 # Translators:
 # Translators:
 # Translators:
+# Translators:
+# Translators:
 # Barun Paudel <paudel.barun4@gmail.com>, 2015
 # Indunil <ricsdej@gmail.com>, 2013
 # Indunil <ricsdej@gmail.com>, 2013
+# srimalsl <srimalsl@yahoo.com>, 2015
+# srimalsl <srimalsl@yahoo.com>, 2015
 msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-07-16 05:46-0500\n"
-"PO-Revision-Date: 2015-07-03 16:32+0000\n"
-"Last-Translator: Barun Paudel <paudel.barun4@gmail.com>\n"
-"Language-Team: Sinhala (http://www.transifex.com/p/geonode/language/si/)\n"
+"POT-Creation-Date: 2015-09-22 03:42-0500\n"
+"PO-Revision-Date: 2015-09-07 01:40+0000\n"
+"Last-Translator: srimalsl <srimalsl@yahoo.com>\n"
+"Language-Team: Sinhala (http://www.transifex.com/geonode/geonode/language/"
+"si/)\n"
 "Language: si\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -31,7 +36,7 @@ msgstr ""
 #: static/geonode/js/extjs/GeoNode.js:72
 #: static_root/geonode/js/extjs/GeoNode.js:72
 msgid "Add user..."
-msgstr "පරිශීලක එක් කරන්න..."
+msgstr "පරිශීලකයන් තෝරන්න ..."
 
 #: static/geonode/js/extjs/GeoNode.js:72
 #: static_root/geonode/js/extjs/GeoNode.js:72
@@ -117,7 +122,7 @@ msgstr "Zip Archives"
 #: static/geonode/js/upload/LayerInfo.js:231
 #: static_root/geonode/js/upload/LayerInfo.js:231
 msgid "Layer Info"
-msgstr "ස්ථරය තොරතුරු"
+msgstr "ස්ථර තොරතුරු"
 
 #: static/geonode/js/upload/LayerInfo.js:232
 #: static_root/geonode/js/upload/LayerInfo.js:232
@@ -127,7 +132,7 @@ msgstr "මෙටා දත්ත සංස්කරණය කරන්න"
 #: static/geonode/js/upload/LayerInfo.js:233
 #: static_root/geonode/js/upload/LayerInfo.js:233
 msgid "Manage Styles"
-msgstr "ශෛලීයන් කළමනාකරණය කරන්න"
+msgstr "Style කළමනාකරණය කරන්න"
 
 #: static/geonode/js/upload/LayerInfo.js:236
 msgid "The column %1 was renamed to %2 <br/>"
@@ -136,7 +141,7 @@ msgstr "තීරුව % 1 % 2 <br/> කිරීමට නම් කරන ල
 #: static/geonode/js/upload/LayerInfo.js:242
 #: static_root/geonode/js/upload/LayerInfo.js:235
 msgid "Your layer was successfully uploaded"
-msgstr "ඔබේ ස්ථරය සාර්තකව"
+msgstr "නව ස්ථරය උඩුගත කර ඇත"
 
 #: static/geonode/js/upload/LayerInfo.js:271
 #: static_root/geonode/js/upload/LayerInfo.js:264
@@ -224,7 +229,7 @@ msgstr "පෙරහන"
 
 #: static_root/admin/js/SelectFilter2.js:61
 msgid "Choose all"
-msgstr "සියලු තෝරන්න"
+msgstr "සියල්ල තෝරන්න"
 
 #: static_root/admin/js/SelectFilter2.js:61
 #, c-format
@@ -251,7 +256,7 @@ msgstr ""
 
 #: static_root/admin/js/SelectFilter2.js:80
 msgid "Remove all"
-msgstr "සියලු ඉවත් කරන්න"
+msgstr "සියල්ල ඉවත් කරන්න"
 
 #: static_root/admin/js/SelectFilter2.js:80
 #, c-format

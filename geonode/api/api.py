@@ -63,8 +63,9 @@ class CountJSONSerializer(Serializer):
         options = options or {}
         data = self.to_simple(data, options)
         counts = self.get_resources_counts(options)
-        for item in data['objects']:
-            item['count'] = counts.get(item['id'], 0)
+        if 'objects' in data:
+            for item in data['objects']:
+                item['count'] = counts.get(item['id'], 0)
         # Add in the current time.
         data['requested_time'] = time.time()
 
@@ -94,8 +95,8 @@ class TypeFilteredResource(ModelResource):
         return orm_filters
 
     def serialize(self, request, data, format, options={}):
-        options['title_filter'] = self.title_filter
-        options['type_filter'] = self.type_filter
+        options['title_filter'] = getattr(self, 'title_filter', None)
+        options['type_filter'] = getattr(self, 'type_filter', None)
         options['user'] = request.user
 
         return super(TypeFilteredResource, self).serialize(request, data, format, options)
