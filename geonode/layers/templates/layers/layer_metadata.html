@@ -67,8 +67,8 @@
         
         <div class="row">
           <div class="col-md-12">
+            <label class="control-label required-field">{% trans "Category" %}</label>
             <fieldset id="category_form">
-              <label class="control-label required-field">{% trans "Category" %}</label>
               {% autoescape off %}
               {% for choice in category_form.category_choice_field.field.choices %}
               <div class="radio col-md-6">
