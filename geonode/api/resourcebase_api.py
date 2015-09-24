@@ -18,6 +18,7 @@ from tastypie.utils.mime import build_content_type
 
 from geonode.layers.models import Layer
 from geonode.maps.models import Map
+from geonode.maps.models import MapLayer
 from geonode.documents.models import Document
 from geonode.base.models import ResourceBase
 
@@ -523,6 +524,25 @@ class MapResource(CommonModelApi):
         if settings.RESOURCE_PUBLISHING:
             queryset = queryset.filter(is_published=True)
         resource_name = 'maps'
+
+
+class MapLayersResource(CommonModelApi):
+
+    """Maps API with layer data for each layer in map"""
+
+    class Meta(CommonMetaApi):
+        queryset = Map.objects.distinct().order_by('-date')
+        if settings.RESOURCE_PUBLISHING:
+            queryset = queryset.filter(is_published=True)
+        resource_name = 'maplayers'
+
+    def dehydrate(self, bundle):
+        map_id = bundle.data['id']
+        layers = []
+        for maplayer in MapLayer.objects.filter(map_id=map_id):
+            layers.append(maplayer.layer_config())
+        bundle.data['layers'] = layers
+        return bundle
 
 
 class DocumentResource(CommonModelApi):
