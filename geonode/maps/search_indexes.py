@@ -71,6 +71,8 @@ class MapIndex(indexes.SearchIndex, indexes.Indexable):
     owner__first_name = indexes.CharField(model_attr="owner__first_name", faceted=True, null=True)
     owner__last_name = indexes.CharField(model_attr="owner__last_name", faceted=True, null=True)
     is_published = indexes.BooleanField(model_attr="is_published")
+    # Featured status for front page carousel
+    featured = indexes.BooleanField(model_attr="featured")
 
     def get_model(self):
         return Map

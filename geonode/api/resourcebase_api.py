@@ -48,6 +48,7 @@ class CommonMetaApi:
                  'owner': ALL_WITH_RELATIONS,
                  'date': ALL,
                  'is_published': ALL,
+                 'featured': ALL,
                  }
     ordering = ['date', 'title', 'popular_count', 'rating']
     max_limit = None
@@ -165,6 +166,9 @@ class CommonModelApi(ModelResource):
         # Published filter
         published = parameters.get("is_published", None)
 
+        # Featured filter
+        featured = parameters.get("featured", None)
+
         # Sort order
         sort = parameters.get("order_by", "relevance")
 
@@ -269,6 +273,12 @@ class CommonModelApi(ModelResource):
         if published:
             sqs = (SearchQuerySet() if sqs is None else sqs).filter(
                 SQ(is_published=published)
+                )
+
+        # filter by featured status
+        if featured:
+            sqs = (SearchQuerySet() if sqs is None else sqs).filter(
+                SQ(featured=featured)
                 )
 
         # filter by date
