@@ -126,8 +126,8 @@ setup(name='GeoNode',
         "geonode-arcrest==10.2",
         "geonode-notification==1.1.1",
         "geonode-dialogos==0.4",
-        "gsconfig==0.6.13",
-        "gsimporter==0.1",
+        "gsconfig==1.0.0",
+        "gsimporter==1.0.0",
         "gisdata==0.5.4",
 
         # geopython dependencies
