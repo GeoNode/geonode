@@ -151,6 +151,7 @@ setup(name='GeoNode',
         "django-enumfield==1.2",
         "south==1.0.2",
         "fabric==1.8.1",
+        "django-cors-headers==1.1.0",
 
         ],
       zip_safe=False,
