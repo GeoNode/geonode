@@ -1,40 +1,35 @@
 from __future__ import print_function
 import logging
 import sys
-from os.path import basename, splitext
 import json
 import traceback
-from django.conf import settings
-from django.core import serializers
-from django.shortcuts import get_object_or_404
 from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
 from geonode.contrib.basic_auth_decorator import http_basic_auth
 
-from django.contrib.auth.models import User
 from django.views.decorators.csrf import csrf_exempt
-from django.utils.translation import ugettext_lazy as _
 from django.views.decorators.http import require_GET
 from geonode.contrib.dataverse_connect.dv_utils import MessageHelperJSON          # format json response object
 from shared_dataverse_information.shared_form_util.format_form_errors import format_errors_as_text
 
 from geonode.contrib.datatables.forms import JoinTargetForm,\
-                                        TableJoinRequestForm,\
                                         TableUploadAndJoinRequestForm,\
-                                        DataTableUploadForm,\
                                         DataTableResponseForm,\
                                         TableJoinResultForm,\
                                         DataTableUploadFormLatLng
 
-from shared_dataverse_information.worldmap_datatables.forms import MapLatLngLayerRequestForm#, TableJoinResultForm
-    #DataTableUploadForm,\
-    #TableUploadAndJoinRequestForm,\
+from shared_dataverse_information.worldmap_datatables.forms import MapLatLngLayerRequestForm
+# , TableJoinResultForm
+# DataTableUploadForm,\
+# TableUploadAndJoinRequestForm,\
 
 from geonode.contrib.msg_util import msg, msgt, msgn, msgx
 
 from .models import DataTable, JoinTarget, TableJoin
-from .utils import process_csv_file, setup_join, create_point_col_from_lat_lon, standardize_name, get_unique_tablename
-from .db_helper import CHOSEN_DB_SETTING
+from .utils import create_point_col_from_lat_lon,\
+    standardize_name,\
+    attempt_tablejoin_from_request_params,\
+    attempt_datatable_upload_from_request_params
 logger = logging.getLogger(__name__)
 
 
@@ -43,52 +38,19 @@ logger = logging.getLogger(__name__)
 @csrf_exempt
 def datatable_upload_api(request):
     if request.method != 'POST':
-        return HttpResponse("Invalid Request", mimetype="text/plain", status=500)
+        return HttpResponse("Invalid Request", mimetype="text/plain", status=405)
 
-    # ---------------------------------------
-    # Verify Request
-    # ---------------------------------------
-    form = DataTableUploadForm(request.POST, request.FILES)
-    if not form.is_valid():
-        err_msg = "Form errors found. %s" % format_errors_as_text(form)#.as_json()#.as_text()
-        json_msg = MessageHelperJSON.get_json_fail_msg(err_msg, data_dict=form.errors)
+    (success, data_table_or_error) = attempt_datatable_upload_from_request_params(request, request.user)
+    if not success:
+        json_msg = MessageHelperJSON.get_json_fail_msg(data_table_or_error)
         return HttpResponse(json_msg, mimetype="application/json", status=400)
 
+    return_dict = dict(datatable_id=data_table_or_error.pk,
+                       datatable_name=data_table_or_error.table_name)
+    json_msg = MessageHelperJSON.get_json_success_msg(msg='Success, DataTable created',
+                                                      data_dict=return_dict)
+    return HttpResponse(json_msg, mimetype="application/json", status=200)
 
-    data = form.cleaned_data
-
-    table_name = get_unique_tablename(splitext(basename(request.FILES['uploaded_file'].name))[0])
-
-
-    instance = DataTable(uploaded_file=request.FILES['uploaded_file'],
-                         table_name=table_name,
-                         tablespace=CHOSEN_DB_SETTING,
-                         title=data['title'],
-                         abstract=data['abstract'],
-                         delimiter=data['delimiter'],
-                         owner=request.user)
-    delimiter = data['delimiter']
-    no_header_row = data['no_header_row']
-
-    # save DataTable object
-    instance.save()
-
-    dt, result_msg = process_csv_file(instance, delimiter=delimiter, no_header_row=no_header_row)
-
-    # -----------------------------------------
-    #  Success, DataTable created
-    # -----------------------------------------
-    if dt:
-        return_dict = dict(datatable_id=dt.pk, datatable_name=dt.table_name)
-        json_msg = MessageHelperJSON.get_json_success_msg(msg='', data_dict=return_dict)
-        return HttpResponse(json_msg, mimetype="application/json", status=200)
-
-    else:
-        # -----------------------------------------
-        #  Failed, DataTable not created
-        # -----------------------------------------
-        json_msg = MessageHelperJSON.get_json_fail_msg(result_msg)
-        return HttpResponse(json_msg, mimetype="application/json", status=400)
 
        
 @http_basic_auth
@@ -152,12 +114,6 @@ def jointargets(request):
     return HttpResponse(json_msg,
                             mimetype='application/json',
                             status=200)
-"""
-join_result_info_dict = TableJoinResultForm.get_cleaned_data_from_table_join(tj)
-            return HttpResponse(json.dumps(join_result_info_dict), mimetype="application/json", status=200)"""
-
-    #return HttpResponse(json.dumps(results), mimetype="application/json")
-
 
 
 @http_basic_auth
@@ -172,56 +128,23 @@ def tablejoin_api(request):
         err_msg = "Unsupported Method"
         json_msg = MessageHelperJSON.get_json_fail_msg(err_msg)
         logger.error(err_msg)
-        return HttpResponse(json_msg, mimetype="application/json", status=500)
+        return HttpResponse(json_msg, mimetype="application/json", status=405)
 
-    # ----------------------------------
-    # Validate the request
-    # ----------------------------------
-    f = TableJoinRequestForm(request.POST, request.FILES)
-    if not f.is_valid():
-        err_msg = "Form errors found. %s" % format_errors_as_text(f)#.as_json()#.as_text()
-        logger.error(err_msg)
-        json_msg = MessageHelperJSON.get_json_fail_msg(err_msg, data_dict=f.errors)
+    (success, tablejoin_obj_or_err_msg) = attempt_tablejoin_from_request_params(request, request.user)
+
+    # ---------------------------------
+    # Failed, return an error message
+    # ---------------------------------
+    if not success:
+        json_msg = MessageHelperJSON.get_json_fail_msg(tablejoin_obj_or_err_msg)
         return HttpResponse(json_msg, mimetype="application/json", status=400)
 
-    # DataTable and join attribute
-    table_name = f.cleaned_data['table_name']
-    table_attribute = f.cleaned_data['table_attribute']
+    # ----------------------------------
+    # Success, return TableJoin params
+    # ----------------------------------
+    join_result_info_dict = TableJoinResultForm.get_cleaned_data_from_table_join(tablejoin_obj_or_err_msg)
+    return HttpResponse(json.dumps(join_result_info_dict), mimetype="application/json", status=200)
 
-    # Layer and join attribute
-    layer_typename = f.cleaned_data['layer_name']
-    layer_attribute = f.cleaned_data['layer_attribute']
-
-    # Set the owner
-    if isinstance(f.cleaned_data.get('new_layer_owner', None), User):
-        new_layer_owner = f.cleaned_data['new_layer_owner']
-    else:
-        new_layer_owner = request.user
-
-
-    try:
-        tj, result_msg = setup_join(new_layer_owner, table_name, layer_typename, table_attribute, layer_attribute)
-        if tj:
-            # Successful Join
-            #
-            join_result_info_dict = TableJoinResultForm.get_cleaned_data_from_table_join(tj)
-
-
-            return HttpResponse(json.dumps(join_result_info_dict), mimetype="application/json", status=200)
-
-        else:
-            # Error!
-            #
-            err_msg = "Error Creating Join: %s" % result_msg
-            json_msg = MessageHelperJSON.get_json_fail_msg(err_msg)
-            return HttpResponse(json_msg, mimetype="application/json", status=400)
-    except:
-
-        traceback.print_exc(sys.exc_info())
-        err_msg = "Error Creating Join: %s" % str(sys.exc_info()[0])
-        json_msg = MessageHelperJSON.get_json_fail_msg(err_msg)
-
-        return HttpResponse(json_msg, mimetype="application/json", status=400)
 
 
 @http_basic_auth
@@ -360,33 +283,39 @@ def datatable_upload_and_join_api(request):
     # ----------------------------------------------------
     # Create a DataTable object from the file
     # ----------------------------------------------------
-    try:
-        resp = datatable_upload_api(request)
-        upload_return_dict = json.loads(resp.content)
-        if not upload_return_dict.get('success', None) is True:
-            # ERROR
-            return HttpResponse(json.dumps(upload_return_dict), mimetype='application/json', status=400)
-
-        print('upload_return_dict', upload_return_dict)
-        join_props['table_name'] = upload_return_dict['data']['datatable_name']
-    except:
-        traceback.print_exc(sys.exc_info())
-        return HttpResponse(json.dumps({'msg':'Uncaught error ingesting Data Table', 'success':False}), mimetype='application/json', status=400)
-
+    (success, data_table_or_error) = attempt_datatable_upload_from_request_params(request, request.user)
+    if not success:
+        json_msg = MessageHelperJSON.get_json_fail_msg(data_table_or_error)
+        return HttpResponse(json_msg, mimetype="application/json", status=400)
 
     # ----------------------------------------------------
     # Attempt to join the new Datatable to a layer
     # ----------------------------------------------------
-    try:
-        original_table_attribute = join_props['table_attribute']
-        sanitized_table_attribute = standardize_name(original_table_attribute)
-        join_props['table_attribute'] = sanitized_table_attribute
-        request.POST = join_props
-        resp = tablejoin_api(request)
-        return resp 
-    except:
-        traceback.print_exc(sys.exc_info())
-        return HttpResponse("Not yet")
+
+    # The table has been loaded, update the join properties
+    # to include the new table name
+    #
+    join_props['table_name'] = data_table_or_error.table_name
+    original_table_attribute = join_props['table_attribute']
+    sanitized_table_attribute = standardize_name(original_table_attribute)
+    join_props['table_attribute'] = sanitized_table_attribute
+
+    (success, tablejoin_obj_or_err_msg) = attempt_tablejoin_from_request_params(join_props, request.user)
+    # ---------------------------------
+    # Failed, return an error message
+    # ---------------------------------
+    if not success:
+        msg('Failed join!: %s' % tablejoin_obj_or_err_msg)
+        json_msg = MessageHelperJSON.get_json_fail_msg(tablejoin_obj_or_err_msg)
+        return HttpResponse(json_msg, mimetype="application/json", status=400)
+
+    msg('Good join!')
+
+    # ----------------------------------
+    # Success, return TableJoin params
+    # ----------------------------------
+    join_result_info_dict = TableJoinResultForm.get_cleaned_data_from_table_join(tablejoin_obj_or_err_msg)
+    return HttpResponse(json.dumps(join_result_info_dict), mimetype="application/json", status=200)
 
 
 @http_basic_auth

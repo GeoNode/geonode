@@ -147,6 +147,7 @@ class TestTabularAPIBase(unittest.TestCase):
         self.tablejoin_detail = self.base_url + '/datatables/api/join/%s' % self.URL_ID_ATTR
         self.delete_tablejoin_url = self.base_url + '/datatables/api/join/%s/remove' % self.URL_ID_ATTR
 
+        self.dataverse_upload_and_join_datatable_url = self.base_url + '/dataverse-tabular/api/upload-join'
 
     def refresh_session(self):
         """
@@ -251,7 +252,7 @@ class TestTabularAPIBase(unittest.TestCase):
 
         msg(r.status_code)
         msg('%s (truncated) ...' % r.text[:50])
-
+        msg(r.text)
         assert r.status_code == 200,\
             "Should receive 200 message.  Received: %s\n%s" % (r.status_code, r.text)
 

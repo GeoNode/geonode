@@ -46,6 +46,15 @@ def check_for_existing_layer(dataverse_info):
     return None
 
 
+def retrieve_dataverse_layer_metadata_by_kwargs_installation_and_file_id(**kwargs):
+    if kwargs is None:
+        return None
+
+    datafile_id = kwargs.get('datafile_id', None)
+    dataverse_installation_name = kwargs.get('dataverse_installation_name', None)
+
+    return retrieve_dataverse_layer_metadata_by_installation_and_file_id(datafile_id, dataverse_installation_name)
+
 def retrieve_dataverse_layer_metadata_by_installation_and_file_id(datafile_id, dataverse_installation_name):
     """
     Retrieve a GeoNode layer by an associated DataverseInfo object identified by:

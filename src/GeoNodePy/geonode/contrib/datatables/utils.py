@@ -1,40 +1,37 @@
 #from __future__ import print_function
-import sys
 import os
-import os
-import glob
 import uuid
-import csvkit
+import traceback
 import logging
-from decimal import Decimal
 import string
 from random import choice
 from csvkit import sql
 from csvkit import table
-from csvkit import CSVKitWriter
-from csvkit.cli import CSVKitUtility
 
 from geoserver.catalog import Catalog
 from geoserver.store import datastore_from_index
 from geoserver.resource import FeatureType
 
 import psycopg2
-from psycopg2.extensions import QuotedString
 
 from django.template.defaultfilters import slugify
-from django.core.files import File
 from django.contrib.auth.models import User
 from django.conf import settings
 from django.utils.translation import ugettext_lazy as _
+
+from os.path import basename, splitext
 
 from geonode.maps.models import Layer, LayerAttribute
 from geonode.maps.gs_helpers import get_sld_for #fixup_style, cascading_delete, delete_from_postgis, get_postgis_bbox
 
 from geonode.contrib.datatables.models import DataTable, DataTableAttribute, TableJoin, LatLngTableMappingRecord
-
+from geonode.contrib.datatables.forms import DataTable, DataTableUploadForm, TableJoinRequestForm
 from geonode.contrib.msg_util import *
 
 from geonode.contrib.datatables.db_helper import get_datastore_connection_string
+
+from shared_dataverse_information.shared_form_util.format_form_errors import format_errors_as_text
+from .db_helper import CHOSEN_DB_SETTING
 
 logger = logging.getLogger(__name__)
 
@@ -111,6 +108,8 @@ def process_csv_file(data_table, delimiter=",", no_header_row=False):
     :param delimiter:
     :param no_header_row:
     :return:
+        success:  (datatable, None)
+        err:    (None, error message)
     """
     assert isinstance(data_table, DataTable), "instance must be a DataTable object"
 
@@ -536,11 +535,11 @@ def setup_join(new_table_owner, table_name, layer_typename, table_attribute_name
     # Create a TableJoin object
     # ------------------------------------------------------------------
     msg('setup_join 04')
-    tj, created = TableJoin.objects.get_or_create(source_layer=layer\
-                            , datatable=dt\
-                            , table_attribute=table_attribute\
-                            , layer_attribute=layer_attribute\
-                            , view_name=view_name\
+    tj, created = TableJoin.objects.get_or_create(source_layer=layer
+                            , datatable=dt
+                            , table_attribute=table_attribute
+                            , layer_attribute=layer_attribute
+                            , view_name=view_name
                             , view_sql=view_sql)
     tj.save()
     msgt('table join created! %s' % tj.id )
@@ -760,3 +759,112 @@ def create_layer_attributes_from_datatable(datatable, layer):
         else:
             print 'layer_attribute_obj EXISTS: %s' % layer_attribute_obj
         """
+
+
+def attempt_datatable_upload_from_request_params(request, new_layer_owner):
+    """
+    Using request parameters, attempt a TableJoin
+
+    Error:  (False, Error Message)
+    Success: (True, TableJoin object)
+    """
+    if not isinstance(new_layer_owner, User):
+        return (False, "Please specify an owner for the new layer.")
+
+    logger.info('attempt_tablejoin_from_request_params')
+
+    # ----------------------------------
+    # Is this a POST?
+    # ----------------------------------
+    if not request.method == 'POST':
+        err_msg = "Unsupported Method"
+        return (False, err_msg)
+
+    # ---------------------------------------
+    # Verify Request
+    # ---------------------------------------
+    form = DataTableUploadForm(request.POST, request.FILES)
+    if not form.is_valid():
+        err_msg = "Form errors found. %s" % format_errors_as_text(form)#.as_json()#.as_text()
+        return (False, err_msg)
+
+
+    data = form.cleaned_data
+
+    table_name = get_unique_tablename(splitext(basename(request.FILES['uploaded_file'].name))[0])
+
+    instance = DataTable(uploaded_file=request.FILES['uploaded_file'],
+                         table_name=table_name,
+                         tablespace=CHOSEN_DB_SETTING,
+                         title=data['title'],
+                         abstract=data['abstract'],
+                         delimiter=data['delimiter'],
+                         owner=request.user)
+    delimiter = data['delimiter']
+    no_header_row = data['no_header_row']
+
+    # save DataTable object
+    instance.save()
+
+    (new_datatable_obj, result_msg) = process_csv_file(instance, delimiter=delimiter, no_header_row=no_header_row)
+
+    if new_datatable_obj:
+        # -----------------------------------------
+        #  Success, DataTable created
+        # -----------------------------------------
+        return (True, new_datatable_obj)
+    else:
+        # -----------------------------------------
+        #  Failed, DataTable not created
+        # -----------------------------------------
+        return (False, result_msg)
+
+
+def attempt_tablejoin_from_request_params(table_join_params, new_layer_owner):
+    """
+    Using request parameters, attempt a TableJoin
+
+    Error:  (False, Error Message)
+    Success: (True, TableJoin object)
+    """
+    msgt('attempt_tablejoin_from_request_params')
+    if not isinstance(new_layer_owner, User):
+        return (False, "Please specify an owner for the new layer.")
+
+    logger.info('attempt_tablejoin_from_request_params')
+
+
+    # ----------------------------------
+    # Validate the request an pull params
+    # ----------------------------------
+    f = TableJoinRequestForm(table_join_params)
+    if not f.is_valid():
+        err_msg = "Form errors found. %s" % format_errors_as_text(f)
+        return (False, err_msg)
+
+    # DataTable and join attribute
+    table_name = f.cleaned_data['table_name']
+    table_attribute = f.cleaned_data['table_attribute']
+
+    # Layer and join attribute
+    layer_typename = f.cleaned_data['layer_name']
+    layer_attribute = f.cleaned_data['layer_attribute']
+
+
+    # ----------------------------------
+    # Attempt to Join the table to an existing layer
+    # ----------------------------------
+    try:
+        table_join_obj, result_msg = setup_join(new_layer_owner, table_name, layer_typename, table_attribute, layer_attribute)
+        if table_join_obj:
+            # Successful Join
+            return (True, table_join_obj)
+        else:
+            # Error!
+            err_msg = "Error Creating Join: %s" % result_msg
+            return (False, err_msg)
+    except:
+        traceback.print_exc(sys.exc_info())
+        err_msg = "Error Creating Join: %s" % str(sys.exc_info()[0])
+        return (False, err_msg)
+
