@@ -23,6 +23,10 @@ from geonode.contrib.datatables.forms import DataTableResponseForm,\
 
 from tabular_test_base import TestTabularAPIBase
 from shared_dataverse_information.map_layer_metadata.forms import MapLayerMetadataValidationForm
+from geonode.contrib.datatables.utils import create_point_col_from_lat_lon,\
+    standardize_name,\
+    attempt_tablejoin_from_request_params,\
+    attempt_datatable_upload_from_request_params
 
 import time
 
@@ -147,4 +151,6 @@ class TestDataverseTabularAPI(TestTabularAPIBase):
                         , "Failed to validate JSON data using MapLayerMetadataValidationForm.  Found errors: %s"\
                         % f3_dataverse_info.errors \
                 )
+
+        print json_resp
 

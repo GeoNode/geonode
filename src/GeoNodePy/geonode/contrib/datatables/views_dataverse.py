@@ -1,16 +1,12 @@
 from __future__ import print_function
 
 import traceback
-import json
 from django.http import HttpResponse, HttpResponseRedirect
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.decorators import login_required
 from geonode.contrib.basic_auth_decorator import http_basic_auth
 
-from geonode.maps.models import Layer
-
-from geonode.contrib.datatables.forms import TableUploadAndJoinRequestForm
 from geonode.contrib.dataverse_connect.dv_utils import MessageHelperJSON          # format json response object
 from geonode.contrib.dataverse_connect.layer_metadata import LayerMetadata        # object with layer metadata
 
@@ -19,11 +15,15 @@ from geonode.contrib.dataverse_layer_metadata.layer_metadata_helper import add_d
                 retrieve_dataverse_layer_metadata_by_kwargs_installation_and_file_id
 
 
-from geonode.contrib.datatables.views import datatable_upload_and_join_api
+
+from geonode.contrib.datatables.forms import TableUploadAndJoinRequestForm,\
+                                        TableJoinResultForm
+from geonode.contrib.datatables.utils import standardize_name,\
+    attempt_tablejoin_from_request_params,\
+    attempt_datatable_upload_from_request_params
+
 from geonode.contrib.msg_util import *
 
-#from .models import DataTable, JoinTarget, TableJoin
-#from .utils import process_csv_file, setup_join, create_point_col_from_lat_lon, standardize_name
 
 import logging
 logger = logging.getLogger(__name__)
@@ -90,7 +90,7 @@ def view_upload_table_and_join_layer(request):
 
         layer_metadata_obj = LayerMetadata(existing_dv_layer_metadata.map_layer)
 
-        json_msg = MessageHelperJSON.get_json_msg(success=True, msg='worked', data_dict=layer_metadata_obj.get_metadata_dict())
+        json_msg = MessageHelperJSON.get_json_msg(success=True, msg='A layer already exists for the join.', data_dict=layer_metadata_obj.get_metadata_dict())
         return HttpResponse(status=200, content=json_msg, content_type="application/json")
 
 
@@ -109,45 +109,44 @@ def view_upload_table_and_join_layer(request):
 
 
     # ----------------------------------------------------
-    # Attempt to upload and join the table
+    # Attempt to upload the table
     # ----------------------------------------------------
     msg('step 4')
-
-    try:
-        resp = datatable_upload_and_join_api(request)   # A bit hackish, view calling a view
-        upload_response_dict = json.loads(resp.content)
-        if not upload_response_dict.get('success', None) is True:
-            # Note the "upload_response_dict" already contains a formatted response
-            #
-            return HttpResponse(json.dumps(upload_response_dict), mimetype='application/json', status=400)
-    except:
-        traceback.print_exc(sys.exc_info())
-        return HttpResponse(json.dumps({'msg':'Uncaught error ingesting Data Table', 'success':False}), mimetype='application/json', status=400)
-
+    (success, data_table_or_error) = attempt_datatable_upload_from_request_params(request, request.user)
+    if not success:
+        json_msg = MessageHelperJSON.get_json_fail_msg(data_table_or_error)
+        return HttpResponse(json_msg, mimetype="application/json", status=400)
 
     # ----------------------------------------------------
-    # Get the new layer just created--in a bit of a ham-handed/long-winded way...
+    # Attempt to join the table
     # ----------------------------------------------------
-    msg('step 5')
+    msg('step 4')
+    new_datatable = data_table_or_error
+    join_props = request.POST.copy()
 
-    # (1) Pull the layer name from the dict
+    # Update attributes for the join, including the name of the new DataTable
     #
-    new_layer_type_name = upload_response_dict.get('data', {}).get('layer_typename', None)
-    if not new_layer_type_name:
-        json_msg = MessageHelperJSON.get_json_fail_msg(
-                        "Invalid Data for Upload and Join.  'layer_typename' not found: %s" % upload_response_dict)
-        return HttpResponse(status=400, content=json_msg, content_type="application/json")
+    join_props['table_name'] = data_table_or_error.table_name
+    original_table_attribute = join_props['table_attribute']
+    sanitized_table_attribute = standardize_name(original_table_attribute)
+    join_props['table_attribute'] = sanitized_table_attribute
 
-    # (2) Get the layer from the db
+    # ---------------------------------
+    # Make the join!
+    # ---------------------------------
+    (success, tablejoin_obj_or_err_msg) = attempt_tablejoin_from_request_params(join_props, request.user)
+
+    if not success: # FAILED!
+        new_datatable.delete()  # remove the datatable
+
+        msg('Failed join!: %s' % tablejoin_obj_or_err_msg)
+        json_msg = MessageHelperJSON.get_json_fail_msg(tablejoin_obj_or_err_msg)
+        return HttpResponse(json_msg, mimetype="application/json", status=400)
+
+    # SUCCESS!
     #
-    try:
-        new_layer = Layer.objects.get(typename=new_layer_type_name)
-    except Layer.DoesNotExist:
-        err_msg = "Error. Join appeared successful but the new map layer was not found: %s" % new_layer_type_name
-        logger.error(err_msg)
-        logger.error("Could not find data['layer_typename'] in this dict: %s" % upload_return_dict)
-        json_msg = MessageHelperJSON.get_json_fail_msg(err_msg)
-        return HttpResponse(status=400, content=json_msg, content_type="application/json")
+    new_tablejoin = tablejoin_obj_or_err_msg
+    new_layer = new_tablejoin.join_layer
 
     # ----------------------------------------------------
     #  Make a new DataverseInfo object and attach it to the Layer
@@ -161,7 +160,9 @@ def view_upload_table_and_join_layer(request):
         logger.error(err_msg)
         logger.error("New map had name/id %s/%s" % (new_layer_type_name, new_layer.id))
 
-        # Delete the layer
+        # --------------------
+        # Delete the new layer, also remove the TableJoin
+        # --------------------
         new_layer.delete()
 
         json_msg = MessageHelperJSON.get_json_fail_msg(err_msg)
@@ -177,8 +178,8 @@ def view_upload_table_and_join_layer(request):
     msg('step 7a')
 
     response_params = layer_metadata_obj.get_metadata_dict()
+    response_params.update(TableJoinResultForm.get_cleaned_data_from_table_join(new_tablejoin))
 
-    #TableJoinResultForm
 
     # Return the response!
     json_msg = MessageHelperJSON.get_json_msg(success=True, msg='worked', data_dict=response_params)
