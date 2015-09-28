@@ -152,6 +152,7 @@ setup(name='GeoNode',
         "south==1.0.2",
         "fabric==1.8.1",
         "django-cors-headers==1.1.0",
+        "psycopg2==2.6.1"
 
         ],
       zip_safe=False,
