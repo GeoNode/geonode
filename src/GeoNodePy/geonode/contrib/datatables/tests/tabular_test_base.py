@@ -82,7 +82,7 @@ class TestTabularAPIBase(unittest.TestCase):
     existing_layer_data = None
     layer_attribute_info = None
 
-    URL_ID_ATTR = 'URL_ID'
+    URL_ID_ATTR = '987654310'
 
 
     @classmethod
@@ -133,21 +133,28 @@ class TestTabularAPIBase(unittest.TestCase):
         # self.login_url =  self.base_url + "/account/login/" # GeoNode
 
         self.login_url = self.base_url + "/accounts/login/" # WorldMap
-        self.csv_upload_url = self.base_url + '/datatables/api/upload'
-        # self.shp_layer_upload_url = self.base_url + '/layers/upload'
+        self.csv_upload_url = self.base_url +  reverse('datatable_upload_api', kwargs={})
 
-        self.join_target_url = self.base_url + '/datatables/api/jointargets'
-        self.join_datatable_url = self.base_url + '/datatables/api/join'
-        self.upload_and_join_datatable_url = self.base_url + '/datatables/api/upload_and_join'
-        self.upload_lat_lng_url = self.base_url + '/datatables/api/upload_lat_lon'
+        self.join_target_url = self.base_url + reverse('jointargets', kwargs={}) #'/datatables/api/jointargets'
+        self.join_datatable_url = self.base_url + reverse('tablejoin_api', kwargs={}) #
+        self.upload_and_join_datatable_url = self.base_url +  reverse('datatable_upload_and_join_api', kwargs={})
+        self.upload_lat_lng_url = self.base_url + reverse('datatable_upload_lat_lon_api', kwargs={})
 
-        self.datatable_detail = self.base_url + '/datatables/api/%s' % self.URL_ID_ATTR
-        self.delete_datatable_url = self.base_url + '/datatables/api/%s/remove' % self.URL_ID_ATTR
+        self.datatable_detail = self.base_url + reverse('datatable_detail',
+                    kwargs={'dt_id':self.URL_ID_ATTR} )
 
-        self.tablejoin_detail = self.base_url + '/datatables/api/join/%s' % self.URL_ID_ATTR
-        self.delete_tablejoin_url = self.base_url + '/datatables/api/join/%s/remove' % self.URL_ID_ATTR
+        self.delete_datatable_url = self.base_url + reverse('datatable_remove',
+                    kwargs={'dt_id':self.URL_ID_ATTR} )
 
-        self.dataverse_upload_and_join_datatable_url = self.base_url + '/dataverse-tabular/api/upload-join'
+        self.tablejoin_detail = self.base_url + reverse('tablejoin_detail',
+                    kwargs={'tj_id':self.URL_ID_ATTR} )
+
+        self.delete_tablejoin_url = self.base_url + reverse('tablejoin_remove',
+                    kwargs={'tj_id':self.URL_ID_ATTR} )
+
+        self.dataverse_upload_and_join_datatable_url = self.base_url + reverse('view_upload_table_and_join_layer', kwargs={})
+
+        self.delete_dataverse_layer_url = self.base_url + reverse('view_delete_dataverse_map_layer', kwargs={})
 
     def refresh_session(self):
         """

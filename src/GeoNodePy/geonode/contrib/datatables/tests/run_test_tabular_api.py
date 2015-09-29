@@ -641,12 +641,9 @@ class TestWorldMapTabularAPI(TestTabularAPIBase):
         except:
             msgx("Unexpected error: %s" % sys.exc_info()[0])
 
-        if r.status_code == 200:
-            msg('DataTable detail: %s' % r.text)
-        else:
-            self.assertTrue(False\
-                   , "Should receive 200 message.  Received: %s\n%s" % (r.status_code, r.text))
-            return
+        self.assertTrue(r.status_code == 200,
+                    "Should receive 200 message.  Received: %s\n%s" % (r.status_code, r.text))
+        msg('DataTable detail: %s' % r.text)
 
         try:
             rjson = r.json()
@@ -676,11 +673,9 @@ class TestWorldMapTabularAPI(TestTabularAPIBase):
         except:
             msgx("Unexpected error: %s" % sys.exc_info()[0])
 
-        if r.status_code == 200:
-            msg('TableJoin detail: %s' % r.text)
-        else:
-            self.assertTrue(False
-                   , "Should receive 200 message.  Received: %s\n%s" % (r.status_code, r.text))
+        self.assertTrue(r.status_code == 200,
+                   "Should receive 200 message.  Received: %s\n%s" % (r.status_code, r.text))
+        msg('TableJoin detail: %s' % r.text)
 
 
        # -----------------------------------------------------------
@@ -760,15 +755,4 @@ class TestWorldMapTabularAPI(TestTabularAPIBase):
         self.assertTrue(r.status_code == 200
                         , "Should receive 200 message.  Received: %s\n%s" % (r.status_code, r.text))
 
-        if r.status_code == 200:
-            msg('DataTable deleted: %s' % r.text)
-        else:
-            self.assertTrue(False\
-                   , "Should receive 200 message.  Received: %s\n%s" % (r.status_code, r.text))
-
-
-    @skip("skipping")
-    def test_it2(self):
-        msgt('------------ TEST IT 2------------')
-        msg('Still got it? existing_layer_name: %s' % self.existing_layer_name)
-        msg('Still got it? ex*isting_layer_data: %s (truncated) ...' % str(self.existing_layer_data)[:100])
+        msg('DataTable deleted: %s' % r.text)

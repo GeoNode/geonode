@@ -23,10 +23,6 @@ from geonode.contrib.datatables.forms import DataTableResponseForm,\
 
 from tabular_test_base import TestTabularAPIBase
 from shared_dataverse_information.map_layer_metadata.forms import MapLayerMetadataValidationForm
-from geonode.contrib.datatables.utils import create_point_col_from_lat_lon,\
-    standardize_name,\
-    attempt_tablejoin_from_request_params,\
-    attempt_datatable_upload_from_request_params
 
 import time
 
@@ -34,9 +30,9 @@ import time
 class TestDataverseTabularAPI(TestTabularAPIBase):
 
 
-    @classmethod
-    def tearDownClass(cls):
-        pass
+    #@classmethod
+    #def tearDownClass(cls):
+    #    pass
 
     @classmethod
     def setUpClass(cls):
@@ -84,8 +80,8 @@ class TestDataverseTabularAPI(TestTabularAPIBase):
         assert isfile(fname_to_upload), "File not found: %s" % fname_to_upload
 
         layer_attribute_name = 'TRACTCE'
-        self.assertTrue(self.is_attribute_in_ma_layer(layer_attribute_name)\
-                    , "Attribute '%s' not found in layer '%s'" % (layer_attribute_name, self.existing_layer_name))
+        self.assertTrue(self.is_attribute_in_ma_layer(layer_attribute_name),
+                    "Attribute '%s' not found in layer '%s'" % (layer_attribute_name, self.existing_layer_name))
 
         params = self.get_join_datatable_params()
         params.update(self.get_dataverse_csv_test_info())
@@ -99,9 +95,9 @@ class TestDataverseTabularAPI(TestTabularAPIBase):
 
         files = {'uploaded_file': open(fname_to_upload,'rb')}
         try:
-            r = self.client.post(self.dataverse_upload_and_join_datatable_url\
-                                        , data=params\
-                                        , files=files\
+            r = self.client.post(self.dataverse_upload_and_join_datatable_url,
+                                        data=params,
+                                        files=files
                                     )
         except RequestsConnectionError as e:
             msgx('Connection error: %s' % e.message)
@@ -113,11 +109,10 @@ class TestDataverseTabularAPI(TestTabularAPIBase):
         msg(r.status_code)
         msg('r.text: %s' % r.text)
 
-        if r.status_code == 200:
-            msg('DataTable uploaded and joined!')
-        else:
-            self.assertTrue(False,
-                "Should receive 200 message.  Received: %s\n%s" % (r.status_code, r.text))
+        self.assertEqual(r.status_code, 200, "Should receive 200 message.  Received: %s\n%s" % (r.status_code, r.text))
+        msg('DataTable uploaded and joined!')
+
+
 
         # -----------------------------------------------------------
         msgn('(1b) Check result of join')
@@ -139,18 +134,68 @@ class TestDataverseTabularAPI(TestTabularAPIBase):
         #
         self.assertTrue(json_resp.has_key('data'), 'JSON should have key "data".  But found keys: %s' % json_resp.keys())
 
+        self.assertTrue('table_id' in json_resp.get('data', {}), 'JSON should have key "data[\'table_id\']".  But found keys: %s' % json_resp.get('data', {}).keys())
+
+        new_table_id = json_resp['data']['table_id']
+
         #-----------------------------------------------------------
-        msgn("(2c) Use MapLayerMetadataValidationForm to validate JSON result from WorldMap shapefile import API")
+        msgn("(1c) Use MapLayerMetadataValidationForm to validate JSON result from WorldMap shapefile import API")
         #-----------------------------------------------------------
         #   Validate JSON data using MapLayerMetadataValidationForm
         #
         map_layer_metadata_data = json_resp.get('data')
         f3_dataverse_info = MapLayerMetadataValidationForm(map_layer_metadata_data)
 
-        self.assertTrue(f3_dataverse_info.is_valid()\
-                        , "Failed to validate JSON data using MapLayerMetadataValidationForm.  Found errors: %s"\
-                        % f3_dataverse_info.errors \
-                )
+        self.assertTrue(f3_dataverse_info.is_valid(),
+                        "Failed to validate JSON data using MapLayerMetadataValidationForm.  Found errors: %s"
+                        % f3_dataverse_info.errors)
 
-        print json_resp
+
+        datatable_id = json_resp.get('data').get('table_id', None)
+        self.assertTrue(datatable_id is not None, "The JSON response did not include data['table_id']")
+
+        #-----------------------------------------------------------
+        msgt('(1d) Delete dataverse created layer (test_02_delete_dataverse_created_layer)')
+        #-----------------------------------------------------------
+
+        params = dict(dataverse_installation_name=self.get_dataverse_csv_test_info()['dataverse_installation_name'],
+                      datafile_id=self.get_dataverse_csv_test_info()['datafile_id'])
+
+        try:
+            r = self.client.post(self.delete_dataverse_layer_url
+                                        , data=params
+                                    )
+        except RequestsConnectionError as e:
+            msgx('Connection error: %s' % e.message)
+            return
+        except:
+            msgx("Unexpected error: %s" % sys.exc_info()[0])
+            return
+
+
+        self.assertEqual(r.status_code, 200, "Should receive 200 message.  Received: %s\n%s" % (r.status_code, r.text))
+        msgn('Delete successful.')
+
+        #-----------------------------------------------------------
+        msgt('(1e) Delete the uploaded table')
+        #-----------------------------------------------------------
+
+        api_del_url = self.delete_datatable_url.replace(self.URL_ID_ATTR, str(datatable_id))
+        msg('Delete datatable url: %s' % api_del_url)
+
+        self.login_for_cookie()
+        r = None
+        try:
+            r = self.client.get(api_del_url)
+        except RequestsConnectionError as e:
+            msgx('Connection error: %s' % e.message); return
+        except:
+            msgx("Unexpected error: %s" % sys.exc_info()[0])
+
+
+
+        self.assertEqual(r.status_code, 200, "Should receive 200 message.  Received: %s\n%s" % (r.status_code, r.text))
+        msgn('Datatable Delete successful.')
+        msg('returned json: %s' % r.text)
+
 
