@@ -37,6 +37,7 @@ class Document(ResourceBase):
     doc_file = models.FileField(upload_to='documents',
                                 null=True,
                                 blank=True,
+                                max_length=255,
                                 verbose_name=_('File'))
 
     extension = models.CharField(max_length=128, blank=True, null=True)
@@ -46,6 +47,7 @@ class Document(ResourceBase):
     doc_url = models.URLField(
         blank=True,
         null=True,
+        max_length=255,
         help_text=_('The URL of the document if it is external.'),
         verbose_name=_('URL'))
 
