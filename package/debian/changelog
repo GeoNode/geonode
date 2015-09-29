@@ -1,3 +1,49 @@
+geonode (2.4.0+beta27) trusty; urgency=high
+
+  [ Simone Dalmasso ]
+  * [355de3] add owners api, faster version of profiles for filtering purpose
+
+  [ capooti ]
+  * [d2db06] Added storeType as filter in layer admin page
+  * [b1913a] Fixes #2269 in layers and documents metadata pages
+
+  [ Stefano Menegon ]
+  * [e775a6] Case insensitive search on GeoExplorer Find Layers
+
+  [ root ]
+  * [c17fa0]  - Fix for Issue #2273
+
+  [ julien collaer ]
+  * [dac658] sycing with transifex and removing 5 unused translations fr_FR us_US
+
+  [ afabiani ]
+  * [3a856c]  - Improvements for the management of the Importer Session next ID
+
+  [ root ]
+  * [1382e8]  - fix pep8 violations and typos
+  * [d66de1]  - removing celery kwargs, need more investigation
+
+  [ Jonáš Veselka ]
+  * [17b6b2] Fix LOCKDOWN_GEONODE not working
+
+  [ afabiani ]
+  * [fdcdff]  - Fix for 2279
+
+  [ Sarin Kesphanich ]
+  * [084b50] Fix When choose Window-cp-874 encoding Use 'cp874' https://docs.python.org/2/library/codecs.html#standard-encodings
+
+  [ capooti ]
+  * [c779f2] Moving the category field label to the correct place in the layer metadata form
+  * [32d5e1] Upgrade font awesome to 4.4.0
+  * [3317a1] Fixing a string concatenation for pycsw description in settings
+
+  [ Ariel Nunez ]
+  * [38e2cf] Upgrade gsconfig and gsimporter to 1.0.0
+
+  [ Simone Dalmasso ]
+
+ -- Simone Dalmasso <simone.dalmasso@gmail.com>  Tue, 29 Sep 2015 15:08:39 +0000
+
 geonode (2.4.0+beta26) trusty; urgency=high
 
   [ Matt Bertrand ]
