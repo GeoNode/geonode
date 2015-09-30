@@ -129,7 +129,7 @@ def layer_upload(request, template='upload/layer_upload.html'):
         }
         category_form=CategoryForm(prefix="category_choice_field",initial=None)
         return render_to_response(template,
-                                  {"category_form" : category_form}, 
+                                  {"category_form" : category_form},
                                   RequestContext(request, ctx))
     elif request.method == 'POST':
         form = NewLayerUploadForm(request.POST, request.FILES)
@@ -157,18 +157,18 @@ def layer_upload(request, template='upload/layer_upload.html'):
                 # This should be followed up in upstream Django.
                 tempdir, base_file = form.write_files()
 
-                topic_id=form.cleaned_data["category"]
-                if topic_id=="":
+                topic_id = form.cleaned_data["category"]
+                if topic_id == "":
                     try:
-                        topic_id=request.META.get("HTTP_COOKIE")
-                        topic_id=string.split(topic_id," ")[0]
-                        topic_id=string.split(topic_id,":")[1]
-                        topic_id=string.split(topic_id,";")[0]
+                        topic_id = request.META.get("HTTP_COOKIE")
+                        topic_id = string.split(topic_id, " ")[0]
+                        topic_id = string.split(topic_id, ":")[1]
+                        topic_id = string.split(topic_id, ";")[0]
                     except:
-                        topic_id="1"
+                        topic_id = "1"
 
                 topic_category = TopicCategory.objects.get(
-                    id=topic_id
+                    id = topic_id
                 )
 
                 saved_layer = file_upload(
