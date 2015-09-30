@@ -160,16 +160,16 @@ def layer_upload(request, template='upload/layer_upload.html'):
                 topic_id=form.cleaned_data["category"]
                 if topic_id=="":
                     try:
-                        //logging.debug(type(request.META.get("HTTP_COOKIE")))
+                        #logging.debug(type(request.META.get("HTTP_COOKIE")))
                         topic_id=request.META.get("HTTP_COOKIE")
                         topic_id=string.split(topic_id," ")[0]
                         topic_id=string.split(topic_id,":")[1]
                         topic_id=string.split(topic_id,";")[0]
                         
-                        //logging.debug("setting topid_id from cookie: %s"%topic_id)
+                        #logging.debug("setting topid_id from cookie: %s"%topic_id)
                     except:
                         topic_id="1"
-                        //logging.exception("setting topic_id = 1 due to exception")
+                        #logging.exception("setting topic_id = 1 due to exception")
                         
                 topic_category = TopicCategory.objects.get(
                     id=topic_id
