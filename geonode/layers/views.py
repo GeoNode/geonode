@@ -128,8 +128,7 @@ def layer_upload(request, template='upload/layer_upload.html'):
             'is_layer': True,
         }
         category_form=CategoryForm(prefix="category_choice_field",initial=None)
-        return render_to_response(template,
-                                  {"category_form" : category_form},
+        return render_to_response(template, {"category_form": category_form}, 
                                   RequestContext(request, ctx))
     elif request.method == 'POST':
         form = NewLayerUploadForm(request.POST, request.FILES)
@@ -171,7 +170,7 @@ def layer_upload(request, template='upload/layer_upload.html'):
                     id = topic_id
                 )
 
-                saved_layer = file_upload(
+                saved_layer=file_upload(
                     base_file,
                     name=name,
                     user=request.user,
