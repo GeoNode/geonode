@@ -30,7 +30,7 @@ import requests
 from django.utils import unittest
 
 from django.core.urlresolvers import reverse
-from geonode.contrib.dataverse_connect.forms import ShapefileImportDataForm
+
 from geonode.contrib.msg_util import *
 
 from geonode.contrib.datatables.forms import TableJoinRequestForm,\
@@ -42,6 +42,8 @@ from geonode.contrib.datatables.forms import TableJoinRequestForm,\
 
 from geonode.contrib.dataverse_connect.forms import DataverseLayerIndentityForm
 
+#from geonode.contrib.dataverse_connect.forms import ShapefileImportDataForm
+from shared_dataverse_information.shapefile_import.forms import ShapefileImportDataForm
 from shared_dataverse_information.map_layer_metadata.forms import WorldMapToGeoconnectMapLayerMetadataValidationForm
 
 
@@ -163,6 +165,17 @@ class TestTabularAPIBase(unittest.TestCase):
         self.client = requests.session()
 
 
+    def get_creds_for_http_basic_auth(self, custom_username=None):
+        if custom_username is not None:
+            username = custom_username
+        else:
+            username = self.geonode_username
+
+        return (username, self.geonode_password)
+        #return dict(username=username,
+        #          password=self.geonode_password)
+
+
     def login_for_cookie(self, **kwargs):
 
         msg('login_for_cookie: %s' % self.login_url)
@@ -222,6 +235,7 @@ class TestTabularAPIBase(unittest.TestCase):
 
         # add dv info
         test_shapefile_info.update(cls.tab_ma_dv_info)
+        #test_shapefile_info.update(dict(username=GEONODE_USERNAME, password=GEONODE_PASSWORD))
 
         # prep file
         files = {'file': open( cls.tab_shp_ma_tigerlines_fname, 'rb')}
@@ -231,24 +245,11 @@ class TestTabularAPIBase(unittest.TestCase):
         msg('api url: %s' % api_url)
 
 
-        #self.login_for_cookie(username='pubuser')
-        """
-        client = requests.session()
-        login_url = GEONODE_SERVER + "/account/login/"
-        client.get(login_url)  # sets the cookie
-        csrftoken = client.cookies['csrftoken']
-        login_data = dict(username=GEONODE_USERNAME, password=GEONODE_PASSWORD, csrfmiddlewaretoken=csrftoken)
-        r = client.post(login_url, data=login_data, headers={"Referer": "test-client"})
-         'csrfmiddlewaretoken':csrftoken
-        """
-        #c = Client()
-        #response = c.get('/my-protected-url/', **auth_headers)
-
         try:
             r = requests.post(api_url,
                               data=test_shapefile_info,
                               files=files,
-                              auth=(GEONODE_USERNAME, GEONODE_PASSWORD),
+                              auth=(GEONODE_USERNAME, GEONODE_PASSWORD)
                               )
         except RequestsConnectionError as e:
             msgx('Connection error: %s' % e.message)

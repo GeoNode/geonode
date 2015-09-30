@@ -5,7 +5,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.decorators import login_required
-from geonode.contrib.basic_auth_decorator import http_basic_auth
+from geonode.contrib.basic_auth_decorator import http_basic_auth_for_api
 
 from geonode.contrib.dataverse_connect.dv_utils import MessageHelperJSON          # format json response object
 from geonode.contrib.dataverse_connect.layer_metadata import LayerMetadata        # object with layer metadata
@@ -35,8 +35,7 @@ Connecting the Dataverse to the WorldMap's Tabular API
 """
 from django.views.decorators.http import require_POST
 
-@http_basic_auth
-@login_required
+@http_basic_auth_for_api
 @csrf_exempt
 def view_upload_table_and_join_layer(request):
     """

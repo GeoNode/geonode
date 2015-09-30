@@ -15,10 +15,9 @@ from geonode.maps.views import _create_new_user
 from geonode.utils import slugify
 
 #from geonode.dataverse_private_layer.permissions_helper import make_layer_private
-from django.views.decorators.http import require_GET, require_POST
 from django.contrib.auth.decorators import login_required
 
-from geonode.contrib.basic_auth_decorator import http_basic_auth
+from geonode.contrib.basic_auth_decorator import http_basic_auth_for_api
 from geonode.contrib.dataverse_connect.layer_metadata import LayerMetadata        # object with layer metadata
 from geonode.contrib.dataverse_connect.dv_utils import MessageHelperJSON          # format json response object
 
@@ -27,8 +26,8 @@ from geonode.contrib.dataverse_layer_metadata.layer_metadata_helper import add_d
 
 from shared_dataverse_information.shared_form_util.format_form_errors import format_errors_as_text
 
-from geonode.contrib.dataverse_connect.forms import ShapefileImportDataForm
-#from shared_dataverse_information.shapefile_import.forms import ShapefileImportDataForm
+#from geonode.contrib.dataverse_connect.forms import ShapefileImportDataForm
+from shared_dataverse_information.shapefile_import.forms import ShapefileImportDataForm
 
 logger = logging.getLogger("geonode.contrib.dataverse_connect.views")
 
@@ -95,11 +94,8 @@ def view_check_for_existing_layer(request):
     return HttpResponse(status=200, content=json_msg, content_type="application/json")
 '''
 
-
-@require_POST
-@http_basic_auth
-@login_required
 @csrf_exempt
+@http_basic_auth_for_api
 def view_add_worldmap_shapefile(request):
     """
     Process a Dataverse POST request to create a Layer with an accompanying LayerMetadata object

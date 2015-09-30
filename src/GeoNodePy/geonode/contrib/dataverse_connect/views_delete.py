@@ -19,9 +19,8 @@ from geonode.contrib.dataverse_layer_metadata.layer_metadata_helper import retri
 from geonode.maps.models import Layer
 
 from geoserver.catalog import FailedRequestError
-from django.contrib.auth.decorators import login_required
 
-from geonode.contrib.basic_auth_decorator import http_basic_auth
+from geonode.contrib.basic_auth_decorator import http_basic_auth_for_api
 logger = logging.getLogger(__name__)
 
 '''
@@ -72,8 +71,7 @@ print r.status_code
     
 
 @csrf_exempt
-@http_basic_auth
-@login_required
+@http_basic_auth_for_api
 def view_delete_dataverse_map_layer(request):
     """
     Allows a Dataverse user to delete a **Dataverse-created** layer by specifying:

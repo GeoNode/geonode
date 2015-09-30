@@ -10,7 +10,7 @@ from geonode.contrib.datatables.forms import DataTableResponseForm#,\
 from tabular_test_base import TestTabularAPIBase
 
 class TestLatLngTabularAPI(TestTabularAPIBase):
-
+    """
     @classmethod
     def tearDownClass(cls):
         pass
@@ -18,7 +18,7 @@ class TestLatLngTabularAPI(TestTabularAPIBase):
     @classmethod
     def setUpClass(cls):
         pass
-
+    """
     def get_lat_lng_upload_params(self):
         return dict(title="New Haven, CT Crime, October 2008",
                     abstract="Data with unchecked geocoding",
@@ -40,13 +40,13 @@ class TestLatLngTabularAPI(TestTabularAPIBase):
 
         params = self.get_lat_lng_upload_params()
 
-
-        self.login_for_cookie()
+        #self.login_for_cookie()
 
         files = {'uploaded_file': open(fname_to_upload,'rb')}
         try:
             r = self.client.post(self.upload_lat_lng_url,
                                     data=params,
+                                    auth=(self.geonode_username, self.geonode_password),
                                     files=files)
         except RequestsConnectionError as e:
             msgx('Connection error: %s' % e.message)

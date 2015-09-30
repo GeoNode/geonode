@@ -91,14 +91,12 @@ class TestDataverseTabularAPI(TestTabularAPIBase):
         # -----------------------------------------------------------
         print 'dataverse_upload_and_join_datatable_url',  self.dataverse_upload_and_join_datatable_url
 
-        self.login_for_cookie()
-
         files = {'uploaded_file': open(fname_to_upload,'rb')}
         try:
             r = self.client.post(self.dataverse_upload_and_join_datatable_url,
-                                        data=params,
-                                        files=files
-                                    )
+                                data=params,
+                                files=files,
+                                auth=self.get_creds_for_http_basic_auth())
         except RequestsConnectionError as e:
             msgx('Connection error: %s' % e.message)
             return
@@ -162,9 +160,9 @@ class TestDataverseTabularAPI(TestTabularAPIBase):
                       datafile_id=self.get_dataverse_csv_test_info()['datafile_id'])
 
         try:
-            r = self.client.post(self.delete_dataverse_layer_url
-                                        , data=params
-                                    )
+            r = self.client.post(self.delete_dataverse_layer_url,
+                                data=params,
+                                auth=self.get_creds_for_http_basic_auth())
         except RequestsConnectionError as e:
             msgx('Connection error: %s' % e.message)
             return
@@ -183,16 +181,13 @@ class TestDataverseTabularAPI(TestTabularAPIBase):
         api_del_url = self.delete_datatable_url.replace(self.URL_ID_ATTR, str(datatable_id))
         msg('Delete datatable url: %s' % api_del_url)
 
-        self.login_for_cookie()
-        r = None
         try:
-            r = self.client.get(api_del_url)
+            r = self.client.get(api_del_url,
+                                auth=self.get_creds_for_http_basic_auth())
         except RequestsConnectionError as e:
             msgx('Connection error: %s' % e.message); return
         except:
-            msgx("Unexpected error: %s" % sys.exc_info()[0])
-
-
+            msgx("Unexpected error: %s" % sys.exc_info()[0]); return
 
         self.assertEqual(r.status_code, 200, "Should receive 200 message.  Received: %s\n%s" % (r.status_code, r.text))
         msgn('Datatable Delete successful.')

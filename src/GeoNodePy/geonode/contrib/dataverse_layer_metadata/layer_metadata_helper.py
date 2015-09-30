@@ -4,7 +4,7 @@ import logging
 from django import forms
 from geonode.contrib.dataverse_layer_metadata.models import DataverseLayerMetadata
 from geonode.contrib.dataverse_layer_metadata.forms import DataverseLayerMetadataValidationForm
-from geonode.contrib.dataverse_connect.forms import ShapefileImportDataForm
+from shared_dataverse_information.shapefile_import.forms import ShapefileImportDataForm
 
 from geonode.maps.models import Layer
 

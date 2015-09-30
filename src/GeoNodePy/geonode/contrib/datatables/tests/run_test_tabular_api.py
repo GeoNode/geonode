@@ -47,10 +47,8 @@ class TestWorldMapTabularAPI(TestTabularAPIBase):
         """
         msgn('test_get_join_targets')
 
-        self.login_for_cookie()
-
         try:
-            r = self.client.get(self.join_target_url)
+            r = self.client.get(self.join_target_url, auth=self.get_creds_for_http_basic_auth())
         except RequestsConnectionError as e:
             msgx('Connection error: %s' % e.message); return
         except:
@@ -73,7 +71,8 @@ class TestWorldMapTabularAPI(TestTabularAPIBase):
         # Bad info...end_year before start_year
         # ------------------------------
         try:
-            r = self.client.get(self.join_target_url + '/?start_year=1982&end_year=1967')
+            r = self.client.get(self.join_target_url + '/?start_year=1982&end_year=1967',
+                                auth=self.get_creds_for_http_basic_auth())
         except RequestsConnectionError as e:
             msgx('Connection error: %s' % e.message); return
         except:
@@ -99,15 +98,13 @@ class TestWorldMapTabularAPI(TestTabularAPIBase):
         table_id = 39
         api_detail_url = self.datatable_detail.replace(self.URL_ID_ATTR, str(table_id))
 
-        self.login_for_cookie()
-
-        r = None
         try:
-            r = self.client.get(api_detail_url)
+            r = self.client.get(api_detail_url, auth=self.get_creds_for_http_basic_auth())
         except RequestsConnectionError as e:
             msgx('Connection error: %s' % e.message); return
         except:
             msgx("Unexpected error: %s" % sys.exc_info()[0])
+            return
 
         msg(r.text)
         msg(r.status_code)
@@ -142,14 +139,15 @@ class TestWorldMapTabularAPI(TestTabularAPIBase):
         # -----------------------------------------------------------
         msgn('(1a) Fail with no file')
         # -----------------------------------------------------------
-        self.login_for_cookie()
 
         try:
-            r = self.client.post(self.upload_and_join_datatable_url, data=params)
+            r = self.client.post(self.upload_and_join_datatable_url,
+                                 data=params,
+                                 auth=self.get_creds_for_http_basic_auth())
         except RequestsConnectionError as e:
             msgx('Connection error: %s' % e.message); return
         except Exception as e:
-            msgx("Unexpected error: %s" % str(e))
+            msgx("Unexpected error: %s" % str(e)); return
 
         msgn(r.status_code)
         msgn(r.text)
@@ -190,13 +188,12 @@ class TestWorldMapTabularAPI(TestTabularAPIBase):
 
         params = self.get_join_datatable_params(title='')
 
-        self.login_for_cookie()
-
         files = {'uploaded_file': open(fname_to_upload,'rb')}
         try:
             r = self.client.post(self.upload_and_join_datatable_url,
-                                    data=params,
-                                    files=files)
+                                 data=params,
+                                 files=files,
+                                 auth=self.get_creds_for_http_basic_auth())
         except RequestsConnectionError as e:
             msgx('Connection error: %s' % e.message); return
         except:
@@ -242,13 +239,12 @@ class TestWorldMapTabularAPI(TestTabularAPIBase):
 
         params = self.get_join_datatable_params(abstract='')
 
-        self.login_for_cookie()
-
         files = {'uploaded_file': open(fname_to_upload,'rb')}
         try:
             r = self.client.post(self.upload_and_join_datatable_url,
-                                    data=params,
-                                    files=files)
+                                data=params,
+                                files=files,
+                                auth=self.get_creds_for_http_basic_auth())
         except RequestsConnectionError as e:
             msgx('Connection error: %s' % e.message); return
         except:
@@ -299,10 +295,10 @@ class TestWorldMapTabularAPI(TestTabularAPIBase):
         api_tj_detail_url = self.tablejoin_detail.replace(self.URL_ID_ATTR, str(table_join_id))
         msg('api_tj_detail_url: %s' % api_tj_detail_url)
 
-        self.login_for_cookie()
-
         try:
-            r = self.client.get(api_tj_detail_url)
+            r = self.client.get(api_tj_detail_url,
+                                auth=self.get_creds_for_http_basic_auth())
+
         except RequestsConnectionError as e:
             msgx('Connection error: %s' % e.message); return
         except:
@@ -324,10 +320,9 @@ class TestWorldMapTabularAPI(TestTabularAPIBase):
         api_del_tablejoin_url = self.delete_tablejoin_url.replace(self.URL_ID_ATTR, str(table_join_id))
         msg('api_del_tablejoin_url: %s' % api_del_tablejoin_url)
 
-        self.login_for_cookie()
-
         try:
-            r = self.client.get(api_del_tablejoin_url)
+            r = self.client.get(api_del_tablejoin_url,
+                               auth=self.get_creds_for_http_basic_auth())
         except RequestsConnectionError as e:
             msgx('Connection error: %s' % e.message); return
         except:
@@ -362,14 +357,13 @@ class TestWorldMapTabularAPI(TestTabularAPIBase):
         # -----------------------------------------------------------
         msgn('(2a) Upload table and join layer')
         # -----------------------------------------------------------
-        self.login_for_cookie()
-
         files = {'uploaded_file': open(fname_to_upload,'rb')}
         try:
-            r = self.client.post(self.upload_and_join_datatable_url\
-                                        , data=params\
-                                        , files=files\
-                                    )
+            r = self.client.post(self.upload_and_join_datatable_url
+                                        , data=params
+                                        , files=files,
+                                        auth=self.get_creds_for_http_basic_auth())
+
         except RequestsConnectionError as e:
             msgx('Connection error: %s' % e.message)
             return
@@ -417,15 +411,12 @@ class TestWorldMapTabularAPI(TestTabularAPIBase):
         # -----------------------------------------------------------
         api_detail_url = self.datatable_detail.replace(self.URL_ID_ATTR, str(table_id))
 
-        self.login_for_cookie()
-
-        r = None
         try:
-            r = self.client.get(api_detail_url)
+            r = self.client.get(api_detail_url, auth=self.get_creds_for_http_basic_auth())
         except RequestsConnectionError as e:
             msgx('Connection error: %s' % e.message); return
         except:
-            msgx("Unexpected error: %s" % sys.exc_info()[0])
+            msgx("Unexpected error: %s" % sys.exc_info()[0]); return
 
         self.assertTrue(r.status_code == 200,
                 "Should receive 200 message.  Received: %s\n%s" % (r.status_code, r.text))
@@ -454,15 +445,13 @@ class TestWorldMapTabularAPI(TestTabularAPIBase):
         # -----------------------------------------------------------
         api_detail_url = self.tablejoin_detail.replace(self.URL_ID_ATTR, str(tablejoin_id))
 
-        self.login_for_cookie()
-
-        r = None
         try:
-            r = self.client.get(api_detail_url)
+            r = self.client.get(api_detail_url,
+                                auth=self.get_creds_for_http_basic_auth())
         except RequestsConnectionError as e:
             msgx('Connection error: %s' % e.message); return
         except:
-            msgx("Unexpected error: %s" % sys.exc_info()[0])
+            msgx("Unexpected error: %s" % sys.exc_info()[0]); return
 
         self.assertTrue(r.status_code == 200,
                 "Should receive 200 message.  Received: %s\n%s" % (r.status_code, r.text))
@@ -481,10 +470,10 @@ class TestWorldMapTabularAPI(TestTabularAPIBase):
         api_del_tablejoin_url = self.delete_tablejoin_url.replace(self.URL_ID_ATTR, str(tablejoin_id))
         msg('api_del_tablejoin_url: %s' % api_del_tablejoin_url)
 
-        self.login_for_cookie(**dict(custom_username='user-456-doesnt-exist', refresh_session=True))
-
         try:
-            r = self.client.get(api_del_tablejoin_url)
+            r = self.client.get(api_del_tablejoin_url,
+                                auth=self.get_creds_for_http_basic_auth(custom_username='user-456-doesnt-exist')
+                                )
         except RequestsConnectionError as e:
             msgx('Connection error: %s' % e.message); return
         except:
@@ -492,11 +481,23 @@ class TestWorldMapTabularAPI(TestTabularAPIBase):
 
         msg('status_code: %s' % r.status_code)
 
-        self.assertTrue(r.status_code == 200,
-                "Expected status code 200, not: %s\nError: %s" % (r.status_code, r.text))
+        self.assertTrue(r.status_code == 401,
+                "Expected status code 401, not: %s\nError: %s" % (r.status_code, r.text))
 
-        self.assertTrue(r.text.find('<form method="post" action="/accounts/login/">') > -1,
-                 "Expected to be redirected to login page")
+        try:
+            rjson = r.json()
+        except:
+            self.assertTrue(False, "Failed to convert response to JSON: %s" % r.text)
+
+
+        self.assertTrue('success' in rjson,
+                 "Expected to find 'success' key in JSON response: %s" % r.text)
+
+        self.assertTrue(rjson['success'] == False,
+                 "Expected to find 'success' with value of 'false' in JSON response: %s" % r.text)
+
+        self.assertTrue('message' in rjson,
+                 "Expected to find 'message' key in JSON response: %s" % r.text)
 
 
         # -----------------------------------------------------------
@@ -505,14 +506,14 @@ class TestWorldMapTabularAPI(TestTabularAPIBase):
         api_del_tablejoin_url = self.delete_tablejoin_url.replace(self.URL_ID_ATTR, str(tablejoin_id))
         msg('api_del_tablejoin_url: %s' % api_del_tablejoin_url)
 
-        self.login_for_cookie(**dict(custom_username='pubuser', refresh_session=True))
 
         try:
-            r = self.client.get(api_del_tablejoin_url)
+            r = self.client.get(api_del_tablejoin_url,
+                                auth=self.get_creds_for_http_basic_auth(custom_username='pubuser'))
         except RequestsConnectionError as e:
             msgx('Connection error: %s' % e.message); return
         except:
-            msgx("Unexpected error: %s" % sys.exc_info()[0])
+            msgx("Unexpected error: %s" % sys.exc_info()[0]); return
 
         msg('status_code: %s' % r.status_code)
 
@@ -536,10 +537,9 @@ class TestWorldMapTabularAPI(TestTabularAPIBase):
         api_del_tablejoin_url = self.delete_tablejoin_url.replace(self.URL_ID_ATTR, str(tablejoin_id))
         msg('api_del_tablejoin_url: %s' % api_del_tablejoin_url)
 
-        self.login_for_cookie(**dict(refresh_session=True))
-
         try:
-            r = self.client.get(api_del_tablejoin_url)
+            r = self.client.get(api_del_tablejoin_url,
+                                auth=self.get_creds_for_http_basic_auth())
         except RequestsConnectionError as e:
             msgx('Connection error: %s' % e.message); return
         except:
@@ -580,13 +580,12 @@ class TestWorldMapTabularAPI(TestTabularAPIBase):
         # -----------------------------------------------------------
         msgn('(3a) Upload table and join layer')
         # -----------------------------------------------------------
-        self.login_for_cookie()
-
         files = {'uploaded_file': open(fname_to_upload,'rb')}
         try:
             r = self.client.post(self.upload_and_join_datatable_url,
                                     data=params,
-                                    files=files)
+                                    files=files,
+                                    auth=self.get_creds_for_http_basic_auth())
         except RequestsConnectionError as e:
             msgx('Connection error: %s' % e.message); return
         except:
@@ -631,15 +630,13 @@ class TestWorldMapTabularAPI(TestTabularAPIBase):
         # -----------------------------------------------------------
         api_detail_url = self.datatable_detail.replace(self.URL_ID_ATTR, str(table_id))
 
-        self.login_for_cookie()
-
-        r = None
         try:
-            r = self.client.get(api_detail_url)
+            r = self.client.get(api_detail_url,
+                                auth=self.get_creds_for_http_basic_auth())
         except RequestsConnectionError as e:
             msgx('Connection error: %s' % e.message); return
         except:
-            msgx("Unexpected error: %s" % sys.exc_info()[0])
+            msgx("Unexpected error: %s" % sys.exc_info()[0]); return
 
         self.assertTrue(r.status_code == 200,
                     "Should receive 200 message.  Received: %s\n%s" % (r.status_code, r.text))
@@ -663,15 +660,13 @@ class TestWorldMapTabularAPI(TestTabularAPIBase):
         # -----------------------------------------------------------
         api_detail_url = self.tablejoin_detail.replace(self.URL_ID_ATTR, str(tablejoin_id))
 
-        self.login_for_cookie()
-
-        r = None
         try:
-            r = self.client.get(api_detail_url)
+            r = self.client.get(api_detail_url,
+                                auth=self.get_creds_for_http_basic_auth())
         except RequestsConnectionError as e:
             msgx('Connection error: %s' % e.message); return
         except:
-            msgx("Unexpected error: %s" % sys.exc_info()[0])
+            msgx("Unexpected error: %s" % sys.exc_info()[0]); return
 
         self.assertTrue(r.status_code == 200,
                    "Should receive 200 message.  Received: %s\n%s" % (r.status_code, r.text))
@@ -685,14 +680,13 @@ class TestWorldMapTabularAPI(TestTabularAPIBase):
         api_del_url = self.delete_datatable_url.replace(self.URL_ID_ATTR, str(bad_table_id))
         msg('api_del_url: %s' % api_del_url)
 
-        self.login_for_cookie()
-        r = None
         try:
-            r = self.client.get(api_del_url)
+            r = self.client.get(api_del_url,
+                                auth=self.get_creds_for_http_basic_auth())
         except RequestsConnectionError as e:
             msgx('Connection error: %s' % e.message); return
         except:
-            msgx("Unexpected error: %s" % sys.exc_info()[0])
+            msgx("Unexpected error: %s" % sys.exc_info()[0]); return
 
 
         self.assertTrue(r.status_code == 404
@@ -706,12 +700,10 @@ class TestWorldMapTabularAPI(TestTabularAPIBase):
         api_del_url = self.delete_datatable_url.replace(self.URL_ID_ATTR, str(table_id))
         msg('api_del_url: %s' % api_del_url)
 
-        #self.login_for_cookie(username='pubuser')
-        #self.login_for_cookie(**dict(custom_username='pubuser', refresh_session=True))
-        self.login_for_cookie(custom_username='pubuser', refresh_session=True)
-
         try:
-            r = self.client.get(api_del_url)
+            r = self.client.get(api_del_url,
+                                auth=self.get_creds_for_http_basic_auth(custom_username='pubuser'))
+
         except RequestsConnectionError as e:
             msgx('Connection error: %s' % e.message); return
         except:
@@ -740,14 +732,13 @@ class TestWorldMapTabularAPI(TestTabularAPIBase):
         api_del_url = self.delete_datatable_url.replace(self.URL_ID_ATTR, str(table_id))
         msg('api_del_url: %s' % api_del_url)
 
-        self.login_for_cookie()
-        r = None
         try:
-            r = self.client.get(api_del_url)
+            r = self.client.get(api_del_url, auth=self.get_creds_for_http_basic_auth())
         except RequestsConnectionError as e:
             msgx('Connection error: %s' % e.message); return
         except:
             msgx("Unexpected error: %s" % sys.exc_info()[0])
+            return
 
         #msg(r.status_code)
         #msg(r.text)

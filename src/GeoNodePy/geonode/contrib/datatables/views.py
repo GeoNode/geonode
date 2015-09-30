@@ -5,7 +5,7 @@ import json
 import traceback
 from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
-from geonode.contrib.basic_auth_decorator import http_basic_auth
+from geonode.contrib.basic_auth_decorator import http_basic_auth_for_api
 
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_GET
@@ -34,8 +34,8 @@ from .utils import create_point_col_from_lat_lon,\
 logger = logging.getLogger(__name__)
 
 
-@http_basic_auth
-@login_required
+@http_basic_auth_for_api
+#@login_required
 @csrf_exempt
 def datatable_upload_api(request):
     if request.method != 'POST':
@@ -54,8 +54,7 @@ def datatable_upload_api(request):
 
 
        
-@http_basic_auth
-@login_required
+@http_basic_auth_for_api
 @csrf_exempt
 def datatable_detail(request, dt_id):
     """
@@ -84,8 +83,7 @@ def datatable_detail(request, dt_id):
 
 
 @require_GET
-@http_basic_auth
-@login_required
+@http_basic_auth_for_api
 def jointargets(request):
     """"
     Return the JoinTarget objects in JSON format
@@ -117,8 +115,7 @@ def jointargets(request):
                             status=200)
 
 
-@http_basic_auth
-@login_required
+@http_basic_auth_for_api
 @csrf_exempt
 def tablejoin_api(request):
     """
@@ -148,8 +145,7 @@ def tablejoin_api(request):
 
 
 
-@http_basic_auth
-@login_required
+@http_basic_auth_for_api
 @csrf_exempt
 def tablejoin_detail(request, tj_id):
 
@@ -173,7 +169,7 @@ def tablejoin_detail(request, tj_id):
     return HttpResponse(data)
 
 
-@login_required
+@http_basic_auth_for_api
 @csrf_exempt
 def tablejoin_remove(request, tj_id):
     """
@@ -215,8 +211,7 @@ def tablejoin_remove(request, tj_id):
             mimetype='application/json', status=400)
 
 
-@http_basic_auth
-@login_required
+@http_basic_auth_for_api
 @csrf_exempt
 def datatable_remove(request, dt_id):
     """
@@ -261,8 +256,7 @@ def datatable_remove(request, dt_id):
 
 
 
-@http_basic_auth
-@login_required
+@http_basic_auth_for_api
 @csrf_exempt
 def datatable_upload_and_join_api(request):
     """
@@ -319,8 +313,7 @@ def datatable_upload_and_join_api(request):
     return HttpResponse(json.dumps(join_result_info_dict), mimetype="application/json", status=200)
 
 
-@http_basic_auth
-@login_required
+@http_basic_auth_for_api
 @csrf_exempt
 def datatable_upload_lat_lon_api(request):
     """
