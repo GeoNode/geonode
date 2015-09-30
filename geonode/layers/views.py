@@ -127,7 +127,7 @@ def layer_upload(request, template='upload/layer_upload.html'):
             'charsets': CHARSETS,
             'is_layer': True,
         }
-        category_form=CategoryForm(prefix = "category_choice_field", initial= None)
+        category_form = CategoryForm(prefix="category_choice_field", initial=None)
         return render_to_response(template, {"category_form": category_form}, RequestContext(request, ctx))
     elif request.method == 'POST':
         form = NewLayerUploadForm(request.POST, request.FILES)
@@ -160,20 +160,20 @@ def layer_upload(request, template='upload/layer_upload.html'):
                     except:
                         topic_id = "1"
                 topic_category = TopicCategory.objects.get(
-                    id = topic_id
+                    id=topic_id
                 )
                 saved_layer = file_upload(
                     base_file,
                     name=name,
-                    user = request.user,
-                    overwrite = False,
-                    charset = form.cleaned_data["charset"],
-                    category = topic_category,
-                    abstract = form.cleaned_data["abstract"],
+                    user=request.user,
+                    overwrite=False,
+                    charset=form.cleaned_data["charset"],
+                    category=topic_category,
+                    abstract=form.cleaned_data["abstract"],
                     title=form.cleaned_data["layer_title"],
                 )
                 Layer.objects.filter(name=name).update(
-                    category = topic_category
+                    category=topic_category
                 )
             except Exception as e:
                 exception_type, error, tb = sys.exc_info()
