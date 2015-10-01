@@ -2,10 +2,8 @@
 <div class="row">
   <div class="col-md-3">
     <div class="selections">
-      <h5>
         {% trans "Your selections" %}
         <a href="." id="clear-search" class="pull-right">{% trans "Clear all filters" %}</a>
-      </h5>
       </div>
         {% if SEARCH_FILTERS.TEXT_ENABLED %}
           {% include "search/_text_filter.html" %}
