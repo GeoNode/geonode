@@ -1,7 +1,7 @@
 from django.http import HttpResponse
 from django.contrib.auth import authenticate, login
 from functools import wraps
-from geonode.contrib.dataverse_connect.dv_utils import MessageHelperJSON          # format json response object
+from geonode.contrib.dataverse_connect.dv_utils import MessageHelperJSON
 
 
 def http_basic_auth_for_api(view_func):
@@ -21,6 +21,7 @@ def http_basic_auth_for_api(view_func):
         # (1) Does this request have HTTP_AUTHORIZATION?
         #
         if not 'HTTP_AUTHORIZATION' in request.META:
+            # json_msg = json.dumps(dict(success=False, message="Login required"))
             json_msg = MessageHelperJSON.get_json_fail_msg("Login required")
             return HttpResponse(status=401, content=json_msg, content_type="application/json")
 
@@ -34,7 +35,7 @@ def http_basic_auth_for_api(view_func):
             # (2a) Attempt to authenticate
             #
             user = authenticate(username=username, password=password)
-            if user:
+            if user is not None and user.is_active:
                 # (2b) Authentication success, now log in
                 #
                 login(request, user)
@@ -44,7 +45,9 @@ def http_basic_auth_for_api(view_func):
                 return view_func(request, *args, **kwargs)
 
         # Nope, the log in Failed
-        json_msg = MessageHelperJSON.get_json_fail_msg("Login Failed")
+        #
+        json_msg = MessageHelperJSON.get_json_fail_msg("Login failed")
+        #json_msg = json.dumps(dict(success=False, message="Login failed"))
         return HttpResponse(status=401, content=json_msg, content_type="application/json")
 
     return _decorator

@@ -16,6 +16,7 @@ from geonode.contrib.dataverse_connect.geonode_get_services import get_layer_fea
 from geonode.contrib.dataverse_connect.sld_helper_form import SLDHelperForm
 from geonode.contrib.dataverse_connect.layer_styler import LayerStyler
 from geonode.contrib.dataverse_connect.layer_metadata import LayerMetadata
+from geonode.contrib.basic_auth_decorator import http_basic_auth_for_api
 
 
 logger = logging.getLogger("geonode.contrib.dataverse_connect.views_sld")
@@ -27,6 +28,7 @@ logger = logging.getLogger("geonode.contrib.dataverse_connect.views_sld")
 
 
 @csrf_exempt
+@http_basic_auth_for_api
 def view_layer_classification_attributes(request):
     """
     Given a layer name, return attributes for that layer to be used in the GeoConnect classification form.
@@ -46,7 +48,7 @@ def view_layer_classification_attributes(request):
         json_msg = MessageHelperJSON.get_json_msg(success=False\
                                 , msg="Incorrect params for LayerAttributeRequestForm: <br />%s" % api_form.errors)
         return HttpResponse(status=400, content=json_msg, content_type="application/json")
-    
+    """
     if not api_form.is_signature_valid_check_post(request):
         #
         #   Invalid signature on request
@@ -55,7 +57,7 @@ def view_layer_classification_attributes(request):
         json_msg = MessageHelperJSON.get_json_msg(success=False\
                                 , msg="Invalid signature on request.  Failed validation with LayerAttributeRequestForm")
         return HttpResponse(status=400, content=json_msg, content_type="application/json")
-    
+    """
     #-------------
     # Make sure this is a WorldMap layer that we're classifying
     #-------------
@@ -80,6 +82,7 @@ def view_layer_classification_attributes(request):
     
 
 @csrf_exempt
+@http_basic_auth_for_api
 def view_create_new_layer_style(request):
     """
     Send in a POST request with parameters that conform to the attributes in the sld_helper_form.SLDHelperForm
@@ -112,7 +115,7 @@ def view_create_new_layer_style(request):
 
         return HttpResponse(status=400, content=json_msg, content_type="application/json")
         
-
+    """
     if not api_form.is_signature_valid_check_post(request):
         #
         #   Invalid signature on request
@@ -121,7 +124,7 @@ def view_create_new_layer_style(request):
         json_msg = MessageHelperJSON.get_json_msg(success=False\
                                 , msg="Invalid signature on request.  Failed validation with ClassifyRequestDataForm")
         return HttpResponse(status=400, content=json_msg, content_type="application/json")
-    
+    """
 
     #-------------
     # Make sure this is a WorldMap layer that we're classifying
