@@ -251,7 +251,6 @@ class TestWorldMapShapefileImport(TestTabularAPIBase):
         shapefile_api_form = ShapefileImportDataForm(self.shapefile_test_info)
         self.assertTrue(shapefile_api_form.is_valid())
 
-        #test_shapefile_info = shapefile_api_form.get_api_params_with_signature()
         test_shapefile_info = shapefile_api_form.cleaned_data
 
         # add dv info
@@ -400,6 +399,41 @@ class TestWorldMapShapefileImport(TestTabularAPIBase):
                         "Failed to validate JSON data using MapLayerMetadataValidationForm.  Found errors: %s" \
                         % f3_dataverse_info.errors
                 )
+
+        #-----------------------------------------------------------
+        msgn("(2d) Retrieve layer details - successfully")
+        #-----------------------------------------------------------
+        #   Validate JSON data using MapLayerMetadataValidationForm
+        #
+        existing_layer_form = CheckForExistingLayerForm(self.dataverse_test_info)
+        self.assertTrue(existing_layer_form.is_valid()\
+                        , "Error.  Validation failed:\n%s" % existing_layer_form.errors)
+
+        data_params = existing_layer_form.cleaned_data
+
+        try:
+            r = requests.post(self.dataverse_map_layer_detail,
+                              data=data_params,
+                              auth=self.get_creds_for_http_basic_auth())
+        except requests.exceptions.ConnectionError as e:
+            msgx('Connection error: %s' % e.message)
+            return
+        except:
+            msgx("Unexpected error: %s" % sys.exc_info()[0])
+            return
+
+        msg(r.text)
+
+        self.assertEqual(r.status_code, 200, "Expected status code 200 but received '%s'" % r.status_code)
+
+        try:
+            json_resp = r.json()
+        except:
+            self.assertTrue(False, "Failed to convert response to JSON. Received: %s" % r.text)
+
+        self.assertTrue('success' in json_resp, 'JSON should include key "success".  But found keys: %s' % json_resp.keys())
+        self.assertTrue(json_resp.get('success', False) is True, "'success' value should be 'True'")
+        self.assertTrue('data' in json_resp, 'JSON should include key "data".  But found keys: %s' % json_resp.keys())
 
 
     def test03_bad_delete_shapefile_from_worldmap(self):

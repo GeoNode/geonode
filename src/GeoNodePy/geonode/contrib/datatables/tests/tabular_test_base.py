@@ -142,6 +142,9 @@ class TestTabularAPIBase(unittest.TestCase):
         self.upload_and_join_datatable_url = self.base_url +  reverse('datatable_upload_and_join_api', kwargs={})
         self.upload_lat_lng_url = self.base_url + reverse('datatable_upload_lat_lon_api', kwargs={})
 
+        self.dataverse_map_layer_detail = self.base_url + reverse('get_existing_layer_data',
+                    kwargs={} )
+
         self.datatable_detail = self.base_url + reverse('datatable_detail',
                     kwargs={'dt_id':self.URL_ID_ATTR} )
 
@@ -308,7 +311,6 @@ class TestTabularAPIBase(unittest.TestCase):
              % api_prep_form.errors
 
         data_params = api_prep_form.cleaned_data
-        #data_params = api_prep_form.get_api_params_with_signature()
 
         delete_api_url = GEONODE_SERVER + reverse('view_delete_dataverse_map_layer', kwargs={})
 

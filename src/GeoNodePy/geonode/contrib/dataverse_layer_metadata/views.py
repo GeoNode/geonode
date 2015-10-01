@@ -4,14 +4,18 @@ from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 
 from geonode.contrib.dataverse_connect.layer_metadata import LayerMetadata        # object with layer metadata
-from geonode.contrib.dataverse_layer_metadata.forms import CheckForExistingLayerFormWorldmap
-
 from geonode.contrib.dataverse_connect.dv_utils import MessageHelperJSON          # format json response object
+from geonode.contrib.dataverse_layer_metadata.layer_metadata_helper import                retrieve_dataverse_layer_metadata_by_kwargs_installation_and_file_id
+
+from shared_dataverse_information.dataverse_info.forms_existing_layer import CheckForExistingLayerForm
+
 
 logger = logging.getLogger("geonode.contrib.dataverse_layer_metadata.views")
+from geonode.contrib.basic_auth_decorator import http_basic_auth_for_api
 
 
 @csrf_exempt
+@http_basic_auth_for_api
 def get_existing_layer_data(request):
     """
     Given a POST with a 'dataverse_installation_name' and 'datafile_id'
@@ -20,7 +24,6 @@ def get_existing_layer_data(request):
 
     returns JSON
     """
-    #   -Auth now checked by CheckForExistingLayerFormWorldmap
 
     #   Is it a POST?
     #
@@ -31,7 +34,7 @@ def get_existing_layer_data(request):
 
     #   Does the request contain the correct params?
     #
-    f = CheckForExistingLayerFormWorldmap(request.POST)
+    f = CheckForExistingLayerForm(request.POST)
 
     if not f.is_valid():
         logger.error("Unexpected form validation error in CheckForExistingLayerFormWorldmap. Errors: %s" % f.errors)
@@ -39,17 +42,9 @@ def get_existing_layer_data(request):
                             , msg="Invalid data for retrieving an existing layer.")
         return HttpResponse(status=400, content=json_msg, content_type="application/json")
 
-
-    if not f.is_signature_valid_check_post(request):
-        logger.error("Get existing layer API. Error: Invalid signature key")
-        json_msg = MessageHelperJSON.get_json_msg(success=False, msg="Authentication failed.")
-        return HttpResponse(status=401, content=json_msg, content_type="application/json")
-
-
-
     #   Does a DataverseLayerMetadata object exist for the given params?
     #
-    dataverse_layer_metadata = f.get_latest_dataverse_layer_metadata()
+    dataverse_layer_metadata = retrieve_dataverse_layer_metadata_by_kwargs_installation_and_file_id(**request.POST.dict())
 
     #   Nope, we are mapping a new file to the WorldMap
     #
@@ -66,15 +61,3 @@ def get_existing_layer_data(request):
 
     return HttpResponse(status=200, content=json_msg, content_type="application/json")
 
-
-
-# REMOVED: THE DV_USER_ID ISN'T A GOOD MEASURE.  
-#   E.G. DV USER 1 MAKES MAP
-#        DV USER 2 WITH EDITING PERMISSIONS MAY NOT BE SEEN AS THE LAYER CREATOR
-#
-#def view_get_dataverse_user_layers(request):
-#    """
-#    Send a POST with a 'dv_user_id'
-#    
-#    Check if a DataverseLayerMetadata record exists for this information.
-#    """

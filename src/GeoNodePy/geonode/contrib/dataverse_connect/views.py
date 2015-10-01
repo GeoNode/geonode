@@ -100,7 +100,7 @@ def view_add_worldmap_shapefile(request):
     """
     Process a Dataverse POST request to create a Layer with an accompanying LayerMetadata object
     """
-    print request.POST.values()
+    #print request.POST.values()
 
     #   Is this request a POST?
     #
