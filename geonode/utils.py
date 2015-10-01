@@ -599,6 +599,8 @@ def build_social_links(request, resourcebase):
         protocol=("https" if request.is_secure() else "http"),
         host=request.get_host(),
         path=request.get_full_path())
+    # Don't use datetime strftime() because it requires year >= 1900
+    # see https://docs.python.org/2/library/datetime.html#strftime-strptime-behavior
     date = '{0.month:02d}/{0.day:02d}/{0.year:4d}'.format(resourcebase.date) if resourcebase.date else None
     abstract = build_abstract(resourcebase, url=social_url, includeURL=True)
     caveats = build_caveats(resourcebase)
