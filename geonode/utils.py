@@ -24,7 +24,6 @@ import base64
 import math
 import copy
 import string
-import datetime
 import re
 from osgeo import ogr
 from slugify import Slugify
