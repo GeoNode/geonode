@@ -322,6 +322,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin):
 
     # metadata XML specific fields
     metadata_uploaded = models.BooleanField(default=False)
+    metadata_uploaded_preserve = models.BooleanField(default=False)
     metadata_xml = models.TextField(null=True,
                                     default='<gmd:MD_Metadata xmlns:gmd="http://www.isotc211.org/2005/gmd"/>',
                                     blank=True)

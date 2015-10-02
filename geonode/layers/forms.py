@@ -64,6 +64,7 @@ class LayerUploadForm(forms.Form):
     xml_file = forms.FileField(required=False)
 
     charset = forms.CharField(required=False)
+    metadata_uploaded_preserve = forms.BooleanField(required=False)
 
     spatial_files = (
         "base_file",
@@ -167,6 +168,7 @@ class NewLayerUploadForm(LayerUploadForm):
     layer_title = forms.CharField(required=False)
     permissions = JSONField()
     charset = forms.CharField(required=False)
+    metadata_uploaded_preserve = forms.BooleanField(required=False)
 
     spatial_files = (
         "base_file",
