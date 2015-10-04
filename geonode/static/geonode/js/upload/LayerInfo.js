@@ -177,9 +177,6 @@ define(function (require, exports) {
         }
 
         form_data.append('charset', $('#charset').val());
-        if ($('#id_metadata_uploaded_preserve').prop('checked')) {
-             form_data.append('metadata_uploaded_preserve', true);
-        }
         return form_data;
     };
 
@@ -525,15 +522,10 @@ define(function (require, exports) {
         ul.empty();
 
         $.each(this.files, function (idx, file) {
-            var file_ext = file.name.substr(file.name.lastIndexOf('.') + 1);
-
             var li = $('<li/>').appendTo(ul),
                 p = $('<p/>', {text: file.name}).appendTo(li),
                 a  = $('<a/>', {text: ' ' + gettext('Remove')});
 
-            if (file_ext === 'xml') {
-                $('#metadata_uploaded_preserve_check').show();
-            }
             a.data('layer', self.name);
             a.data('file',  file.name);
             a.appendTo(p);
@@ -543,9 +535,6 @@ define(function (require, exports) {
                     layer_name = target.data('layer'),
                     file_name  = target.data('file');
                 self.removeFile(file_name);
-                if (file_ext === 'xml') {
-                    $('#metadata_uploaded_preserve_check').hide();
-                }
                 self.displayRefresh();
             });
         });
