@@ -18,12 +18,9 @@
         Editing details for {{ layer_title }}
       {% endblocktrans %}
     </p>
-    <form id="layer_metadata_update" class="form-horizontal" action="{% url "layer_metadata" layer.service_typename %}" method="POST">
-      {% if layer.metadata_uploaded_preserve %}
-        <p class="bg-warning">{% blocktrans %}Note: this layer's orginal metadata was populated and preserved by importing a metadata XML file.
-          This metadata cannot be edited.{% endblocktrans %}</p>
-      {% elif layer.metadata_uploaded %}
-        <p class="bg-warning">{% blocktrans %}Note: this layer's orginal metadata was populated by importing a metadata XML file.
+    <form class="form-horizontal" action="{% url "layer_metadata" layer.service_typename %}" method="POST">
+      {% if layer.metadata_uploaded %}
+    	<p class="bg-warning">{% blocktrans %}Note: this layer's orginal metadata was populated by importing a metadata XML file.
           GeoNode's metadata import supports a subset of ISO, FGDC, and Dublin Core metadata elements.
           Some of your original metadata may have been lost.{% endblocktrans %}</p>
       {% endif %}
@@ -58,11 +55,9 @@
           </ul>
         {% endif %}
 
-        {% if not layer.metadata_uploaded_preserve %}
         <div class="form-actions">
           <input type="submit" class="btn btn-primary" value="{% trans "Update" %}"/>
         </div>
-        {% endif %}
 
 
         {% csrf_token %}
@@ -119,11 +114,9 @@
               <button type='button' class="modal-cloose-btn btn btn-primary">Done</button>
             </fieldset>
 
-            {% if not layer.metadata_uploaded_preserve %}
             <div class="form-actions">
               <input type="submit" class="btn btn-primary" value="{% trans "Update" %}"/>
             </div>
-            {% endif %}
           </div>
         </div>
       </form>

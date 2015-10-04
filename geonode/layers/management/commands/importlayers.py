@@ -28,7 +28,7 @@ import datetime
 class Command(BaseCommand):
     help = ("Brings a data file or a directory full of data files into a"
             " GeoNode site.  Layers are added to the Django database, the"
-            " GeoServer configuration, and the pycsw metadata index.")
+            " GeoServer configuration, and the GeoNetwork metadata index.")
 
     args = 'path [path...]'
 
@@ -96,14 +96,6 @@ class Command(BaseCommand):
             default=False,
             action="store_true",
             help="Make layer viewable only to owner"
-        ),
-        make_option(
-            '-m',
-            '--metadata_uploaded_preserve',
-            dest='metadata_uploaded_preserve',
-            default=False,
-            action="store_true",
-            help="Force metadata XML to be preserved"
         )
     )
 
@@ -116,8 +108,6 @@ class Command(BaseCommand):
         category = options.get('category', None)
         private = options.get('private', False)
         title = options.get('title', None)
-        metadata_uploaded_preserve = options.get('metadata_uploaded_preserve',
-                                                 False)
 
         if verbosity > 0:
             console = self.stdout
@@ -153,9 +143,7 @@ class Command(BaseCommand):
                 category=category,
                 regions=regions,
                 title=title,
-                private=private,
-                metadata_uploaded_preserve=metadata_uploaded_preserve)
-
+                private=private)
             output.extend(out)
 
         updated = [dict_['file']
