@@ -42,6 +42,9 @@
     });
 
     $(document).ready(function() {
+        {% if layer.metadata_uploaded_preserve %}
+        $('#layer_metadata_update :input').attr('readonly','readonly');
+        {% endif %}
         $('.has-popover').popover({'trigger':'hover'});
     });
 {% endautoescape %}
