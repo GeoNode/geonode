@@ -976,7 +976,7 @@ class GeoNodeMapPrintTest(TestCase):
                 'layout': 'A4 portrait',
                 'mapTitle': 'test',
                 'outputFilename': 'print',
-                'srs': 'EPSG:900913',
+                'srs': getattr(settings, 'DEFAULT_MAP_CRS', 'EPSG:900913'),
                 'units': 'm'}
 
             self.client.post(print_url, post_payload)
