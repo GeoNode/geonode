@@ -594,6 +594,10 @@ PYCSW = {
 
 # GeoNode javascript client configuration
 
+# default map projection
+# Note: If set to EPSG:4326, then only EPSG:4326 basemaps will work.
+DEFAULT_MAP_CRS = "EPSG:900913"
+
 # Where should newly created maps be focused?
 DEFAULT_MAP_CENTER = (0, 0)
 
@@ -670,7 +674,7 @@ CKAN_ORIGINS = [{
 # Be sure to replace @GeoNode with your organization or site's twitter handle.
 TWITTER_CARD = True
 TWITTER_SITE = '@GeoNode'
-TWITTER_HASHTAGS = ['geonode'] 
+TWITTER_HASHTAGS = ['geonode']
 
 OPENGRAPH_ENABLED = True
 
