@@ -15,9 +15,12 @@ anonymous_group_id = dst_cur.next()[0]
 dst_cur.execute("SELECT id FROM auth_group WHERE name = 'authenticated'")
 authenticated_group_id = dst_cur.next()[0]
 
+dst_cur.execute('TRUNCATE TABLE guardian_groupobjectpermission;')
+
 sql = """
-select object_ct_id, object_id, subject, title from security_genericobjectrolemapping rl
-join security_objectrole r on rl.role_id = r.id
+SELECT object_ct_id, object_id, subject, title FROM security_genericobjectrolemapping rl
+JOIN security_objectrole r ON rl.role_id = r.id
+WHERE object_id IN (SELECT id FROM base_resourcebase)
 """
 
 src_cur.execute(sql)

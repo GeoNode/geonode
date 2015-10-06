@@ -9,10 +9,13 @@ dst_cur = dst.cursor()
 
 permissions = utils.get_permissions_dict()
 
+dst_cur.execute('TRUNCATE TABLE guardian_userobjectpermission;')
+
 sql = """
-select user_id, object_ct_id, object_id, title, username from security_userobjectrolemapping uor
-join security_objectrole r on uor.role_id = r.id
-join auth_user u on uor.user_id = u.id
+SELECT user_id, object_ct_id, object_id, title, username FROM security_userobjectrolemapping uor
+JOIN security_objectrole r ON uor.role_id = r.id
+JOIN auth_user u ON uor.user_id = u.id
+WHERE object_id IN (SELECT id FROM base_resourcebase)
 """
 
 src_cur.execute(sql)
