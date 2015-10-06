@@ -79,6 +79,8 @@ _PERMISSION_MSG_METADATA = _(
     "You are not permitted to modify this layer's metadata")
 _PERMISSION_MSG_VIEW = _("You are not permitted to view this layer")
 
+FORMAT = '%(asctime)-15s %(message)s'
+logging.basicConfig(filename='/var/log/gimu/gimu.log',level=logging.DEBUG, format=FORMAT)
 
 def log_snippet(log_file):
     if not os.path.isfile(log_file):
@@ -150,15 +152,12 @@ def layer_upload(request, template='upload/layer_upload.html'):
                 # exceptions when unicode characters are present.
                 # This should be followed up in upstream Django.
                 tempdir, base_file = form.write_files()
-                topic_id = form.cleaned_data["category"]
-                if topic_id == "":
-                    try:
-                        topic_id = request.META.get("HTTP_COOKIE")
-                        topic_id = string.split(topic_id, " ")[0]
-                        topic_id = string.split(topic_id, ":")[1]
-                        topic_id = string.split(topic_id, ";")[0]
-                    except:
-                        topic_id = "1"
+                logging.debug(request)
+                topic_id = request.META.get("HTTP_COOKIE")
+                topic_id = string.split(topic_id, " ")[0]
+                topic_id = string.split(topic_id, ":")[1]
+                topic_id = string.split(topic_id, ";")[0]
+                logging.debug(topic_id)
                 topic_category = TopicCategory.objects.get(
                     id=topic_id
                 )
@@ -168,7 +167,6 @@ def layer_upload(request, template='upload/layer_upload.html'):
                     user=request.user,
                     overwrite=False,
                     charset=form.cleaned_data["charset"],
-                    category=topic_category,
                     abstract=form.cleaned_data["abstract"],
                     title=form.cleaned_data["layer_title"],
                 )
