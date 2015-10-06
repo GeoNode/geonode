@@ -7,7 +7,7 @@ dst = utils.get_dst()
 src_cur = src.cursor()
 dst_cur = dst.cursor()
 
-src_cur.execute("select layer_id, attribute, description, attribute_label, attribute_type, visible, display_order, count, min, max, average, median, stddev, sum, unique_values, last_stats_updated from layers_attribute")
+src_cur.execute("select layer_id, attribute, description, attribute_label, attribute_type, visible, display_order, count, min, max, average, median, stddev, sum, unique_values, last_stats_updated from layers_attribute a join layers_layer l on a.layer_id = l.resourcebase_ptr_id")
 
 dst_cur.execute("delete from layers_attribute")
 
@@ -47,6 +47,7 @@ for src_row in src_cur:
     assignments.append(src_row[15])
 
     try:
+        print assignments
         dst_cur.execute("insert into layers_attribute(layer_id, attribute, description, attribute_label, attribute_type, visible, display_order, count, min, max, average, median, stddev, sum, unique_values, last_stats_updated) values (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)", assignments)
         dst.commit()
     except Exception as error:

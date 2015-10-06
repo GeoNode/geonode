@@ -66,16 +66,18 @@ def get_resourceid_by_oldid(id):
     src = get_src()
     dst = get_dst()
     src_cur = src.cursor()
-    src_cur.execute('SELECT uuid FROM base_resourcebase WHERE id = %s;' % id)
+    src_cur.execute('SELECT uuid, title FROM base_resourcebase WHERE id = %s;' % id)
     if src_cur.rowcount == 0:
         return None
-    uuid = src_cur.next()[0]
+    src_row = src_cur.next()
+    uuid = src_row[0]
+    title = src_row[1]
     dst_cur = dst.cursor()
     dst_cur.execute("SELECT id FROM base_resourcebase WHERE uuid = '%s';" % uuid)
     if dst_cur.rowcount == 0:
         return None
     new_id = dst_cur.next()[0]
-    print 'Resource id %s is now %s' % (id, new_id)
+    print 'Resource id %s (%s) is now %s' % (id, title, new_id)
     return new_id
 
 
