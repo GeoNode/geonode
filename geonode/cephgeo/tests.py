@@ -14,17 +14,21 @@ class UtilsTestCase(TestCase):
     
     fixtures = ['bobby']
     
-    def setUp(self, username):
-        self.user = get_user_model().objects.get_or_create(username=username, is_superuser=True)
+    def setUp(self):
+        self.user = get_user_model().objects.get_or_create(username="geoadmin", is_superuser=True)
         self.password = 'genericsemistrongpassword'
         self.anonymous_user = get_anonymous_user()
-        self.cart= 
         self.item_list = []
-        
+    
         r = HttpRequest()
         r.session = {}
         r.user = self.user
-        self.request =r
+        
+        cart = cartProxy(r)
+        self.cart=cart
+        self.car_model = cart.get_cart(r)
+        
+        self.request = r
         
     
     def _setup_cart(self, numberOfItems):
