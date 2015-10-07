@@ -22,7 +22,24 @@ downloaded
 celery/
 /celery/
 
+#virtualenv
 virtualenv/
+
+#static file symlinks
+geonode/static/admin
+geonode/static/agon_ratings
+geonode/static/autocomplete_light
+geonode/static/bootstrap
+geonode/static/bootstrap3_datetime
+geonode/static/django_extensions
+geonode/static/font-awesome
+geonode/static/geoexplorer
+geonode/static/gis
+geonode/static/leaflet
+geonode/static/modeltranslation
+geonode/static/pinax
+geonode/static/uni_form
+
 
 #migrations
 geonode/*/migrations

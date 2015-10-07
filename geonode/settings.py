@@ -840,7 +840,7 @@ CELERY_EAGER_PROPAGATES_EXCEPTIONS = True
 CELERY_IGNORE_RESULT = True
 CELERY_SEND_EVENTS = False
 CELERY_RESULT_BACKEND = None
-CELERY_TASK_RESULT_EXPIRES = 1
+CELERY_TASK_RESULT_EXPIRES = 18000
 CELERY_DISABLE_RATE_LIMITS = True
 CELERY_DEFAULT_QUEUE = "default"
 CELERY_DEFAULT_EXCHANGE = "default"
@@ -874,6 +874,8 @@ EULA_URL = '/eula/eula_form/'
 SELECTION_LIMIT=209715200
 
 MUNICIPALITY_SHAPEFILE = 'geonode:phl_adm2_municipalities_utm_z51n'
+#Upload permissions on file
+FILE_UPLOAD_PERMISSIONS = 0664
 
 # Load more settings from a file called local_settings.py if it exists
 try:
