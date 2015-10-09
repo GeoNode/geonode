@@ -21,4 +21,5 @@
 from django.conf.urls import patterns, url
 
 urlpatterns = patterns('geonode.catalogue.views',
-                       url(r'^csw$', 'csw_global_dispatch', name='csw_global_dispatch'))
+                       url(r'^csw$', 'csw_global_dispatch', name='csw_global_dispatch'),
+                       url(r'^opensearch$', 'opensearch_dispatch', name='opensearch_dispatch'))

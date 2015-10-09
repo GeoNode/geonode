@@ -117,7 +117,7 @@ setup(name='GeoNode',
         "django-modeltranslation==0.8",
 
         # GeoNode org maintained apps.
-        "django-geoexplorer==4.0.4",
+        "django-geoexplorer==4.0.5",
         "geonode-user-messages==0.1.2",
         "geonode-avatar==2.1.4",
         "geonode-announcements==1.0.5",
@@ -126,8 +126,8 @@ setup(name='GeoNode',
         "geonode-arcrest==10.2",
         "geonode-notification==1.1.1",
         "geonode-dialogos==0.4",
-        "gsconfig==0.6.13",
-        "gsimporter==0.1",
+        "gsconfig==1.0.0",
+        "gsimporter==1.0.0",
         "gisdata==0.5.4",
 
         # geopython dependencies

@@ -108,25 +108,16 @@ class PermissionLevelMixin(object):
                     attach_perms=True)}
 
             for user in info_layer['users']:
-                permissions = []
                 if user in info['users']:
-                    permissions = info['users'][user]
+                    info['users'][user] = info['users'][user] + info_layer['users'][user]
                 else:
-                    info['users'][user] = []
-
-                for perm in info_layer['users'][user]:
-                    if perm not in permissions:
-                        permissions.append(perm)
+                    info['users'][user] = info_layer['users'][user]
 
             for group in info_layer['groups']:
-                permissions = []
                 if group in info['groups']:
-                    permissions = info['groups'][group]
+                    info['groups'][group] = info['groups'][group] + info_layer['groups'][group]
                 else:
-                    info['groups'][group] = []
-                for perm in info_layer['groups'][group]:
-                    if perm not in permissions:
-                        permissions.append(perm)
+                    info['groups'][group] = info_layer['groups'][group]
 
         return info
 
@@ -144,6 +135,10 @@ class PermissionLevelMixin(object):
 
         # default permissions for anonymous users
         anonymous_group, created = Group.objects.get_or_create(name='anonymous')
+
+        if not anonymous_group:
+            raise Exception("Could not acquire 'anonymous' Group.")
+
         if settings.DEFAULT_ANONYMOUS_VIEW_PERMISSION:
             assign_perm('view_resourcebase', anonymous_group, self.get_self_resource())
         if settings.DEFAULT_ANONYMOUS_DOWNLOAD_PERMISSION:

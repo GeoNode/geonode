@@ -145,6 +145,7 @@ define(['underscore',
         var files = layers[Object.keys(layers)[0]]['files'];
         var types = [];
         for (var i = 0; i<files.length; i++){
+            var base_name = files[i].name.split('.')[0];
             var ext = files[i].name.split('.').pop().toLowerCase();
             if ($.inArray(ext,types) == -1){
                 types.push(ext);
@@ -255,9 +256,28 @@ define(['underscore',
             common.logError('Please provide some files');
             return false;
         }
+        
+        //Start:Category Check
+        var cs=document.getElementsByClassName("category");
+        var category_selected=false;
+        for(var idx=0;idx<cs.length;idx++){
+            var checked="0";
+            if(cs[idx].checked){
+                category_selected=true;
+                var category_cookie=new Cookie(document,"CategoryCookie");
+                category_cookie.category=cs[idx].value;
+                category_cookie.store();
+            }
+        }
+        if(!category_selected){
+            common.logError('Please choose a category');
+            return false;
+        }
+        //END:Category Check
+
         var checked = checkFiles();
         if ($.isEmptyObject(layers) || !checked) {
-            alert(gettext('You are uploading an incomplete set of files.'));
+            alert(gettext('You are trying to upload an incomplete set of files or not all mandatory options have been validated.\n\nPlease check for errors in the form!'));
         } else {
             $.each(layers, function (name, layerinfo) {
                 layerinfo.uploadFiles();

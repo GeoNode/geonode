@@ -97,7 +97,7 @@ LANGUAGES = (
     ('km', 'Khmer'),
     ('pl', 'Polish'),
     ('sv', 'Swedish'),
-    ('th', 'Thai'),
+    ('th', 'ไทย'),
     ('uk', 'Ukranian'),
     ('si', 'Sinhala'),
     ('ta', 'Tamil'),
@@ -213,8 +213,6 @@ MAX_DOCUMENT_SIZE = 2  # MB
 # DOCUMENT_MIMETYPE_MAP = {}
 
 GEONODE_APPS = (
-
-
     # GeoNode internal apps
     'geonode.people',
     'geonode.base',
@@ -229,10 +227,6 @@ GEONODE_APPS = (
     'geonode.groups',
     'geonode.services',
 
-    # GeoNode Contrib Apps
-
-    # 'geonode.contrib.dynamic',
-
     # GeoServer Apps
     # Geoserver needs to come last because
     # it's signals may rely on other apps' signals.
@@ -240,6 +234,20 @@ GEONODE_APPS = (
     'geonode.upload',
     'geonode.tasks'
 )
+
+GEONODE_CONTRIB_APPS = (
+    # GeoNode Contrib Apps
+    'geonode.contrib.dynamic',
+    'geonode.contrib.exif',
+    'geonode.contrib.favorite',
+    'geonode.contrib.geogig',
+    'geonode.contrib.geosites',
+    'geonode.contrib.nlp',
+    'geonode.contrib.slack'
+)
+
+# Uncomment the following line to enable contrib apps
+# GEONODE_APPS = GEONODE_APPS + GEONODE_CONTRIB_APPS
 
 INSTALLED_APPS = (
 
@@ -530,8 +538,8 @@ CATALOGUE = {
         # 'URL': 'http://localhost:8080/deegree-csw-demo-3.0.4/services',
 
         # login credentials (for GeoNetwork)
-        'USER': 'admin',
-        'PASSWORD': 'admin',
+        # 'USER': 'admin',
+        # 'PASSWORD': 'admin',
     }
 }
 
@@ -547,8 +555,8 @@ PYCSW = {
         #},
         'metadata:main': {
             'identification_title': 'GeoNode Catalogue',
-            'identification_abstract': 'GeoNode is an open source platform that facilitates the creation, sharing, \
-             and collaborative use of geospatial data',
+            'identification_abstract': 'GeoNode is an open source platform that facilitates the creation, sharing, ' \
+            'and collaborative use of geospatial data',
             'identification_keywords': 'sdi,catalogue,discovery,metadata,GeoNode',
             'identification_keywords_type': 'theme',
             'identification_fees': 'None',
@@ -586,6 +594,10 @@ PYCSW = {
 
 # GeoNode javascript client configuration
 
+# default map projection
+# Note: If set to EPSG:4326, then only EPSG:4326 basemaps will work.
+DEFAULT_MAP_CRS = "EPSG:900913"
+
 # Where should newly created maps be focused?
 DEFAULT_MAP_CENTER = (0, 0)
 
@@ -618,13 +630,15 @@ MAP_BASELAYERS = [{
     "name": "naip",
     "group": "background",
     "visibility": False
-}, {
-    "source": {"ptype": "gxp_bingsource"},
-    "name": "AerialWithLabels",
-    "fixed": True,
-    "visibility": False,
-    "group": "background"
-}, {
+}, 
+# {    
+#     "source": {"ptype": "gxp_bingsource"},
+#     "name": "AerialWithLabels",
+#     "fixed": True,
+#     "visibility": False,
+#     "group": "background"
+# }, 
+{
     "source": {"ptype": "gxp_mapboxsource"},
 }]
 
@@ -662,7 +676,7 @@ CKAN_ORIGINS = [{
 # Be sure to replace @GeoNode with your organization or site's twitter handle.
 TWITTER_CARD = True
 TWITTER_SITE = '@GeoNode'
-TWITTER_HASHTAGS = ['geonode'] 
+TWITTER_HASHTAGS = ['geonode']
 
 OPENGRAPH_ENABLED = True
 
@@ -688,11 +702,6 @@ LOCKDOWN_GEONODE = False
 # Add additional paths (as regular expressions) that don't require
 # authentication.
 AUTH_EXEMPT_URLS = ()
-
-if LOCKDOWN_GEONODE:
-    MIDDLEWARE_CLASSES = MIDDLEWARE_CLASSES + \
-        ('geonode.security.middleware.LoginRequiredMiddleware',)
-
 
 # A tuple of hosts the proxy can send requests to.
 PROXY_ALLOWED_HOSTS = ()
@@ -792,6 +801,21 @@ LEAFLET_CONFIG = {
 # option to enable/disable resource unpublishing for administrators
 RESOURCE_PUBLISHING = False
 
+# Settings for EXIF contrib app
+EXIF_ENABLED = False
+
+# Settings for NLP contrib app
+NLP_ENABLED = False
+NLP_LOCATION_THRESHOLD = 1.0
+NLP_LIBRARY_PATH = "/opt/MITIE/mitielib"
+NLP_MODEL_PATH = "/opt/MITIE/MITIE-models/english/ner_model.dat"
+
+# Settings for Slack contrib app
+SLACK_ENABLED = False
+SLACK_WEBHOOK_URLS = [
+    "https://hooks.slack.com/services/T000/B000/XX"
+]
+
 CACHES = {
     # DUMMY CACHE FOR DEVELOPMENT
     'default': {
@@ -863,6 +887,11 @@ try:
 except ImportError:
     pass
 
+
+# Require users to authenticate before using Geonode
+if LOCKDOWN_GEONODE:
+    MIDDLEWARE_CLASSES = MIDDLEWARE_CLASSES + \
+        ('geonode.security.middleware.LoginRequiredMiddleware',)
 
 #for windows users check if they didn't set GEOS and GDAL in local_settings.py
 #maybe they set it as a windows environment

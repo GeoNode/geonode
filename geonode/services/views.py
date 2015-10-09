@@ -296,7 +296,7 @@ def _process_wms_service(url, name, type, username, password, wms=None, owner=No
         supported_crs = ','.join(wms.contents.itervalues().next().crsOptions)
     except:
         supported_crs = None
-    if supported_crs and re.search('EPSG:900913|EPSG:3857|EPSG:102100', supported_crs):
+    if supported_crs and re.search('EPSG:900913|EPSG:3857|EPSG:102100|EPSG:102113', supported_crs):
         return _register_indexed_service(type, url, name, username, password, wms=wms, owner=owner, parent=parent)
     else:
         return _register_cascaded_service(url, type, name, username, password, wms=wms, owner=owner, parent=parent)
@@ -345,7 +345,7 @@ def _register_cascaded_service(url, type, name, username, password, wms=None, ow
         cascade_ws = cat.get_workspace(name)
         if cascade_ws is None:
             cascade_ws = cat.create_workspace(
-                name, "http://geonode.org/cascade")
+                name, "http://geonode.org/" + name)
 
         # TODO: Make sure there isn't an existing store with that name, and
         # deal with it if there is
@@ -801,7 +801,7 @@ def _register_arcgis_url(url, name, username, password, owner=None, parent=None)
     if re.search("\/MapServer\/*(f=json)*", baseurl):
         # This is a MapService
         arcserver = ArcMapService(baseurl)
-        if isinstance(arcserver, ArcMapService) and arcserver.spatialReference.wkid in [102100, 3857, 900913]:
+        if isinstance(arcserver, ArcMapService) and arcserver.spatialReference.wkid in [102100, 3857, 900913, 102113]:
             return_json = [_process_arcgis_service(arcserver, name, owner=owner, parent=parent)]
         else:
             return_json = [{'msg':  _("Could not find any layers in a compatible projection.")}]
@@ -945,7 +945,7 @@ def _process_arcgis_folder(folder, name, services=[], owner=None, parent=None):
             return_dict[
                 'msg'] = 'Service could not be identified as an ArcMapService, URL: %s' % service.url
         else:
-            if service.spatialReference.wkid in [102100, 3857, 900913]:
+            if service.spatialReference.wkid in [102100, 3857, 900913, 102113]:
                 return_dict = _process_arcgis_service(
                     service, name, owner, parent=parent)
             else:
@@ -1219,6 +1219,22 @@ def remove_service(request, service_id):
             "service": service_obj
         }))
     elif request.method == 'POST':
+        # Retrieve this service's workspace from the GeoServer catalog.
+        cat = Catalog(settings.OGC_SERVER['default']['LOCATION'] + "rest",
+                      _user, _password)
+        workspace = cat.get_workspace(service_obj.name)
+
+        # Delete nested workspace structure from GeoServer for this service.
+        if workspace:
+            for store in cat.get_stores(workspace):
+                for resource in cat.get_resources(store):
+                    for layer in cat.get_layers(resource):
+                        cat.delete(layer)
+                    cat.delete(resource)
+                cat.delete(store)
+            cat.delete(workspace)
+
+        # Delete service from GeoNode.
         service_obj.delete()
         return HttpResponseRedirect(reverse("services"))
 
