@@ -5,7 +5,7 @@ from optparse import OptionParser
 from six.moves.urllib.request import Request
 
 
-JENKINS_IP = 'http://52.5.141.226/'
+JENKINS_IP = 'http://52.7.139.177/'
 GEONODE_DEMO_DOMAIN = 'demo.geonode.org' # should match the jenkins configuration
 NODE_LIST = 'computer/api/json' # jenkins api backend
 GEONODE_DEMO_JOB = 'geonode-aws' # jenkins job name for demo site

@@ -1,0 +1,15 @@
+{% extends 'master_index.html' %}
+{% load i18n %}
+{% comment %}
+This is where you can override the hero area block. You can simply modify the content below or replace it wholesale to meet your own needs. 
+{% endcomment %}
+  {% block hero %}
+  <div class="jumbotron">
+    <div class="container">
+      <h1>{% trans "Welcome" %}</h1>
+      <p>{% blocktrans %}GeoNode is an open source platform for sharing geospatial data and maps.{% endblocktrans %}</p>
+      <p>{% blocktrans %}If you have any questions about the software or service, join our <a href="https://groups.google.com/d/forum/geonode-users">mailing list</a>.{% endblocktrans %}</p>
+      <span>{% trans 'Need help?' %} <a href="http://docs.geonode.org/en/latest/tutorials/users/quickstart/index.html">{% trans 'Getting Started' %}</a></span>
+    </div>
+  </div>
+  {% endblock %}

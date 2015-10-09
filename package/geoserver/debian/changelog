@@ -1,4 +1,4 @@
-geoserver-geonode (2.0) precise; urgency=low
+geoserver-geonode (2.4+beta25) precise; urgency=low
 
   * Updates for Geonode 2.0
 

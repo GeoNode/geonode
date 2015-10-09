@@ -34,6 +34,7 @@ from osgeo import gdal
 # Django functionality
 from django.contrib.auth import get_user_model
 from django.template.defaultfilters import slugify
+from django.core.exceptions import ObjectDoesNotExist
 from django.core.files import File
 from django.conf import settings
 from django.db.models import Q
@@ -69,6 +70,22 @@ def _clean_string(
         str = replace + str
 
     return regex.sub(replace, str)
+
+
+def resolve_regions(regions):
+
+    regions_resolved = []
+    regions_unresolved = []
+    if regions:
+        if len(regions) > 0:
+            for region in regions:
+                try:
+                    region_resolved = Region.objects.get(Q(name__iexact=region) | Q(code__iexact=region))
+                    regions_resolved.append(region_resolved)
+                except ObjectDoesNotExist:
+                    regions_unresolved.append(region)
+
+    return regions_resolved, regions_unresolved
 
 
 def get_files(filename):
@@ -409,7 +426,7 @@ def file_upload(filename, name=None, user=None, title=None, abstract=None,
         xml_file = open(files['xml'])
         defaults['metadata_uploaded'] = True
         # get model properties from XML
-        vals, keywords = set_metadata(xml_file.read())
+        vals, regions, keywords = set_metadata(xml_file.read())
 
         for key, value in vals.items():
             if key == 'spatial_representation_type':
@@ -422,6 +439,22 @@ def file_upload(filename, name=None, user=None, title=None, abstract=None,
                 defaults[key] = value
             else:
                 defaults[key] = value
+
+    regions_resolved, regions_unresolved = resolve_regions(regions)
+    keywords.extend(regions_unresolved)
+
+    if getattr(settings, 'NLP_ENABLED', False):
+        try:
+            from geonode.contrib.nlp.utils import nlp_extract_metadata_dict
+            nlp_metadata = nlp_extract_metadata_dict({
+                'title': defaults.get('title', None),
+                'abstract': defaults.get('abstract', None),
+                'purpose': defaults.get('purpose', None)})
+            if nlp_metadata:
+                regions_resolved.extend(nlp_metadata.get('regions', []))
+                keywords.extend(nlp_metadata.get('keywords', []))
+        except:
+            print "NLP extraction failed."
 
     # If it is a vector file, create the layer in postgis.
     if is_vector(filename):
@@ -450,19 +483,16 @@ def file_upload(filename, name=None, user=None, title=None, abstract=None,
         layer.save()
 
     # Assign the keywords (needs to be done after saving)
+    keywords = list(set(keywords))
     if keywords:
         if len(keywords) > 0:
             layer.keywords.add(*keywords)
 
     # Assign the regions (needs to be done after saving)
-    if regions:
-        if len(regions) > 0:
-            regions_to_add = Region.objects.filter(
-                reduce(
-                    lambda x, y: x | y,
-                    [Q(name__iexact=region) | Q(code__iexact=region) for region in regions]))
-            if len(regions_to_add) > 0:
-                layer.regions.add(*regions_to_add)
+    regions_resolved = list(set(regions_resolved))
+    if regions_resolved:
+        if len(regions_resolved) > 0:
+            layer.regions.add(*regions_resolved)
 
     return layer
 

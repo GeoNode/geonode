@@ -1,3 +1,410 @@
+geonode (2.4.0+beta27) trusty; urgency=high
+
+  [ Simone Dalmasso ]
+  * [355de3] add owners api, faster version of profiles for filtering purpose
+
+  [ capooti ]
+  * [d2db06] Added storeType as filter in layer admin page
+  * [b1913a] Fixes #2269 in layers and documents metadata pages
+
+  [ Stefano Menegon ]
+  * [e775a6] Case insensitive search on GeoExplorer Find Layers
+
+  [ root ]
+  * [c17fa0]  - Fix for Issue #2273
+
+  [ julien collaer ]
+  * [dac658] sycing with transifex and removing 5 unused translations fr_FR us_US
+
+  [ afabiani ]
+  * [3a856c]  - Improvements for the management of the Importer Session next ID
+
+  [ root ]
+  * [1382e8]  - fix pep8 violations and typos
+  * [d66de1]  - removing celery kwargs, need more investigation
+
+  [ Jonáš Veselka ]
+  * [17b6b2] Fix LOCKDOWN_GEONODE not working
+
+  [ afabiani ]
+  * [fdcdff]  - Fix for 2279
+
+  [ Sarin Kesphanich ]
+  * [084b50] Fix When choose Window-cp-874 encoding Use 'cp874' https://docs.python.org/2/library/codecs.html#standard-encodings
+
+  [ capooti ]
+  * [c779f2] Moving the category field label to the correct place in the layer metadata form
+  * [32d5e1] Upgrade font awesome to 4.4.0
+  * [3317a1] Fixing a string concatenation for pycsw description in settings
+
+  [ Ariel Nunez ]
+  * [38e2cf] Upgrade gsconfig and gsimporter to 1.0.0
+
+  [ Simone Dalmasso ]
+
+ -- Simone Dalmasso <simone.dalmasso@gmail.com>  Tue, 29 Sep 2015 15:08:39 +0000
+
+geonode (2.4.0+beta26) trusty; urgency=high
+
+  [ Matt Bertrand ]
+  * [468086] Filter out any user permissions that are not in the PERMISSIONS_TO_FETCH list
+  * [d58fdf] Fix issue with permissions filter when HAYSTACK_SEARCH = True and SKIP_PERMS_FILTER = False
+
+  [ Simone Dalmasso ]
+  * [e58d92] fix map_download permissions check, fixes #2145
+
+  [ = ]
+  * [39d86b] Reversing some url that were hard coded
+
+  [ Simone Dalmasso ]
+  * [d49556] add back the GroupInvitation send method
+  * [d38e02] fix remove deb package
+  * [1e1e83] convert indentation to spaces
+
+  [ Matt Bertrand ]
+  * [096684] Proxy for API - use appropriate search method depending on whether haystack is enabled or not
+  * [db6635] Revert "Proxy for API - use appropriate search method depending on whether haystack is enabled or not"
+
+  [ = ]
+  * [e6a6ff] Fixes an unicode issues with a logged string
+
+  [ Matt Bertrand ]
+  * [ebeac4] Make haystack search results look more similar to standard API search results
+
+  [ Simone Dalmasso ]
+  * [7867e8] demo.geonode.org management script
+  * [b89809] fix errors and add single build
+  * [d7acd0] make it pep8 compliant and fix small issues
+  * [e9a7c3] add some inline documentation to the demo_site script
+  * [5f3c0d] update home page mailing list ref
+  * [757bd4] assign geonode/uploaded to the apache user in post installation
+  * [9e0947] don't translate link names
+  * [549c2a] update level mailing list in readme
+  * [85e635] add geonode support in Readme
+
+  [ Tyler Garner ]
+  * [98d398] support GeoJSON upload through importer. Relies on 2.6+ fix https://github.com/geoserver/geoserver/commit/a7efe793d3b1025eceb41c899f381a5b16df5b9b
+
+  [ Matt Bertrand ]
+  * [7fd2d6] Add owner filter to haystack search
+
+  [ Alessandro Sarretta ]
+  * [ca97f2] Update base.txt
+
+  [ Simone Dalmasso ]
+  * [e089d0] some optimizations to the api
+
+  [ julien collaer ]
+  * [31f61e] latest sycing with transifex.com
+
+  [ Simone Dalmasso ]
+  * [e06c89] don't use class attributes to store api filters
+  * [9bb1bb] fix flake8...
+
+  [ Matt Bertrand ]
+  * [9fd28b] Make Haystack search indexes more consistent across layers, maps, documents
+
+  [ Jeffrey Johnson ]
+  * [1348ef] Update jenkins script
+  * [ec8c38] more work on jenkins setup
+  * [6def1c] more work on jenkins
+
+  [ John Jediny ]
+  * [4857c6] Fix for autocomplete for Search UI Issue #2152
+
+  [ Matt Bertrand ]
+  * [1f0bf7] Fix silent failure of cascading_delete when a PostGIS datastore is being used.
+
+  [ Tom Kralidis ]
+  * [7f0be6] Update pycsw_local_mappings.py
+
+  [ = ]
+  * [a49f96] Updated the mailing lists endpoints
+  * [b19842] Updated the mailing lists endpoints
+
+  [ Tom Kralidis ]
+  * [afc6a9] hardwire dates (#2170)
+
+  [ capooti ]
+  * [9b8e9c] Now people list page is paginated
+  * [5b9f07] Fix a potential error
+
+  [ Simone Dalmasso ]
+  * [8f7d16] make set_default_permissions respect settings
+
+  [ Matt Bertrand ]
+  * [c4d457] Fix Haystack search issue with regions containing spaces.
+
+  [ pjdufour ]
+  * [8edcd9] Fix #2175
+
+  [ Cristian Zamar ]
+  * [3c3b50] fix encoding problem when using Spanish lang (accents)
+
+  [ julien collaer ]
+  * [73025e] sycing with Transifex
+
+  [ Stefano Menegon ]
+  * [40f1d7] Fixed checking for keywords
+
+  [ Paolo Corti ]
+  * [41a054] Readding South Sudan to region list. Fixes #2117
+
+  [ capooti ]
+  * [9cbeca] Readding South Sudan to region list. Fixes #2117
+
+  [ Tom Kralidis ]
+  * [8a9a87] update gmd:dateStamp on metadata save (2187)
+
+  [ Matt Bertrand ]
+  * [bb3afc] Make lazyloading code consistent between layer detail and new map views
+
+  [ Stefano Menegon ]
+  * [2944e0] allow admin user to edit other users profiles
+
+  [ pjdufour ]
+  * [62d63d] incorporated suggestions
+  * [1b59c4] Translation fixes
+  * [87cd42] Added SRID Flag
+  * [4b5b23] Initial twitter work
+
+  [ capooti ]
+  * [411394] Handling Wand fails. Refs #2194
+
+  [ Tom Kralidis ]
+  * [9dd12b] fix keyword_csv (https://github.com/geopython/pycsw/issues/339)
+  * [0e9d73] update ordering in csv test
+  * [197049] fix flake8
+
+  [ Ariel Núñez ]
+  * [51a42a] Updated instructions for static development
+  * [e1cfbf] Added more grunt modules to the docs.
+
+  [ Guillermo Solano ]
+  * [f9dbd9] Fixed paver static task and removed unneeded Makefiles
+
+  [ pjdufour ]
+  * [de3be8] OpenGraph meta
+
+  [ Simone Dalmasso ]
+  * [67a48b] use binary in save thumbnail
+
+  [ Guillermo Solano ]
+  * [0f4409] Only grunt production generates the correct CSS
+
+  [ Ariel Nunez ]
+  * [da3573] Updated all assets after running grunt production
+
+  [ Matthew Hanson ]
+  * [c2cb55] import geonode.celery_app instead of celery_app as it fails in production
+
+  [ pjdufour ]
+  * [02e405] Refractored
+
+  [ capooti ]
+  * [13bd98] agon rating can be blank in admin
+
+  [ Stefano Menegon ]
+  * [8f91a6] added filter by owner and SEARCH_FILTERS configuration
+
+  [ etj ]
+  * [7627e5] Fix log message in upload.js. Closes #2199.
+
+  [ Stefano Menegon ]
+  * [392d09] reused ProfileResource
+
+  [ Tom Kralidis ]
+  * [289843] update pycsw dependency
+
+  [ pjdufour ]
+  * [da4f63] Added twittercard and opengraph support to profiles and groups
+  * [d78d3a] added to docs
+
+  [ Patrick Dufour ]
+  * [1cd2b1] Added pjdufour to AUTHORS
+
+  [ pjdufour ]
+  * [49265e] Added regions and tarfile support to importlayers
+
+  [ Tyler Garner ]
+  * [00a2fb] Fix JS error that causes the upload to forward the user to /upload/undefined after configuring time.
+
+  [ pjdufour ]
+  * [2e1856] initial schema.org implementation
+
+  [ Simone Dalmasso ]
+  * [d78469] fix wrong apache ownership assignment
+
+  [ pjdufour ]
+  * [a19092] Fix #2209
+
+  [ Simone Dalmasso ]
+  * [525c0e] make sure the thumbnails links always use forward slashes
+
+  [ Clarence Davis Jr ]
+  * [31e38d] port Favorites from MapStory to GeoNode contrib module.  see readme.txt for more info.
+
+  [ Tom Kralidis ]
+  * [78c14d] add OpenSearch and OAI links [ci skip]
+
+  [ etj ]
+  * [892c69] Fix for upload of zipped shapefiles. Closes #2220.
+
+  [ pjdufour ]
+  * [35a299] EXIF Support
+
+  [ Tom Kralidis ]
+  * [9bce33] comment out unused values for default CSW
+
+  [ capooti ]
+  * [a663ed] Uploadsession can be empty under certain circomstancies, ie layer cascade delete when removing an user
+
+  [ pjdufour ]
+  * [bd3a64] Initial Slack integration via contrib app
+
+  [ Simone Dalmasso ]
+  * [740af8] added geosites as contrib module
+
+  [ nathanhilbert ]
+  * [9a32f3] expose geoserver in docker
+
+  [ Matthew Hanson ]
+  * [45cca1] geosites settings updates
+
+  [ pjdufour ]
+  * [9ab7e1] Initial NLP work
+
+  [ Matthew Hanson ]
+  * [9f40f7] removed old code from geosites site_template
+  * [0aff80] updated GeoSites documentation
+
+  [ Simone Dalmasso ]
+  * [9f963a] no flake 8 on gusset local settings
+  * [08ef6e] update demo site ip in jenkins script
+  * [119f7f] added resources and users management to the geosites doc
+
+  [ julien collaer ]
+  * [3c367c] latest sycing with transifex.com
+
+  [ Jeffrey Johnson ]
+  * [4baca0] dont enable contrib apps by default
+
+  [ Matthew Hanson ]
+  * [0a3e2e] updated GeoSites README
+
+  [ Tom Kralidis ]
+  * [659a43] implement OpenSearch autodiscovery
+  * [1bd369] implement OpenSearch autodiscovery
+
+  [ pjdufour ]
+  * [58b5ff] fix to exif
+  * [0a1b3c] Added NLP hook for layer upload
+
+  [ Patrick Dufour ]
+  * [7441e5] Added README to Slack Contrib App
+
+  [ Tom Kralidis ]
+  * [4f7ec9] fix flake8 errors
+
+  [ Patrick Dufour ]
+  * [156e20] Add README to NLP Contrib App
+
+  [ Matthew Hanson ]
+  * [a3da40] geosites settings adjusted
+
+  [ Simone Dalmasso ]
+  * [e73078] fix flake8
+
+  [ pjdufour ]
+  * [1d6969] Extract regions from ISO metadata
+  * [38de64] Fix #2166
+  * [6f6d9b] minor ui fix for announcements
+
+  [ Tom Kralidis ]
+  * [70cb5f] add region support for FGDC and Dublin Core uploads (#2237)
+  * [e62a82] fix ref
+  * [0b8f83] s/PyCSW/pycsw/
+
+  [ Matthew Hanson ]
+  * [fda8d1] geosites, properly adjust gs location in post_settings
+  * [dd4fa5] geosites - add GS url and project name to auto-generated site directory
+  * [30909f] fixed geosites reading settings template
+  * [624573] geosites readme update
+
+  [ etj ]
+  * [b28ead] Cleanup fix for #2220.
+
+  [ Tyler Garner ]
+  * [93a21d] Profile index can directly access user methods.
+
+  [ Ariel Núñez ]
+  * [6732b9] Added missing import
+
+  [ Simone Dalmasso ]
+  * [30c6e3] fix indentation to spaces
+
+  [ Ariel Nunez ]
+  * [920d41] Switch to black and white geoexplorer
+
+  [ jwood ]
+  * [3d9345] doc only change - update readme file.
+
+  [ Maungu Oware ]
+  * [8afd5f] added hyperlinks to downstream projects
+
+  [ Matthew Hanson ]
+  * [8a0280] fix template and static folder paths
+
+  [ Patrick Dufour ]
+  * [a478df] Create README.md
+  * [859da4] update to exif readme
+
+  [ Ariel Núñez ]
+  * [80c220] Update changelog
+
+  [ Simone Dalmasso ]
+  * [6e455d] update the permissions layer instead of loop over permissions, fixes #2247
+
+  [ Ariel Núñez ]
+  * [c01c6f] Added missing PROJECT_ROOT in local_settings.py
+
+  [ Craig Stephenson ]
+  * [0d33bd] Validate remote service name to comply with GeoServer workspace name restrictions.
+
+  [ Simone Dalmasso ]
+  * [950ca9] add missing ul
+
+  [ Matthew Hanson ]
+  * [9ed64f] remove resetting of geoserver url
+  * [93cb6e] WCS should use internal geoserver location not public url
+
+  [ Dimitri Justeau ]
+  * [e40d4a]   [doc] Only one datastore name in custom_install
+
+  [ Syrus Mesdaghi ]
+  * [d242c3] fixes issue 2254 where any file type that has and ext longer than 3 characters cannot be uploaded into a geogig repo
+
+  [ Simone Dalmasso ]
+  * [845cee] fix api detail url for non resourcebase
+
+  [ Craig Stephenson ]
+  * [41dfbe] Use workspace name in namespace URI for WMS services to avoid collisions.
+  * [33b75f] Delete remote services from GeoServer when they are deleted from GeoNode.
+  * [16313e] Made indentations multiples of four to fix PEP8 violations.
+
+  [ Simone Dalmasso ]
+  * [fb1fa1] support the 102113, old esri definition for 3857
+
+  [ GistdaDev ]
+  * [948a28] Change language name
+
+  [ afabiani ]
+  * [05195d]  - Issue #2258
+
+  [ Simone Dalmasso ]
+
+ -- Simone Dalmasso <simone.dalmasso@gmail.com>  Mon, 14 Sep 2015 06:37:52 +0000
+
 geonode (2.4.0+beta25) trusty; urgency=high
 
   [ Nicolas Dufrane ]

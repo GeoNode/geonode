@@ -24,7 +24,6 @@ import base64
 import math
 import copy
 import string
-import datetime
 import re
 from osgeo import ogr
 from slugify import Slugify
@@ -415,12 +414,15 @@ class GXPLayer(GXPLayerBase):
 
 
 def default_map_config():
-    _DEFAULT_MAP_CENTER = forward_mercator(settings.DEFAULT_MAP_CENTER)
+    if getattr(settings, 'DEFAULT_MAP_CRS', 'EPSG:900913') == "EPSG:4326":
+        _DEFAULT_MAP_CENTER = inverse_mercator(settings.DEFAULT_MAP_CENTER)
+    else:
+        _DEFAULT_MAP_CENTER = forward_mercator(settings.DEFAULT_MAP_CENTER)
 
     _default_map = GXPMap(
         title=DEFAULT_TITLE,
         abstract=DEFAULT_ABSTRACT,
-        projection="EPSG:900913",
+        projection=getattr(settings, 'DEFAULT_MAP_CRS', 'EPSG:900913'),
         center_x=_DEFAULT_MAP_CENTER[0],
         center_y=_DEFAULT_MAP_CENTER[1],
         zoom=settings.DEFAULT_MAP_ZOOM
@@ -600,7 +602,9 @@ def build_social_links(request, resourcebase):
         protocol=("https" if request.is_secure() else "http"),
         host=request.get_host(),
         path=request.get_full_path())
-    date = datetime.datetime.strftime(resourcebase.date, "%m/%d/%Y") if resourcebase.date else None
+    # Don't use datetime strftime() because it requires year >= 1900
+    # see https://docs.python.org/2/library/datetime.html#strftime-strptime-behavior
+    date = '{0.month:02d}/{0.day:02d}/{0.year:4d}'.format(resourcebase.date) if resourcebase.date else None
     abstract = build_abstract(resourcebase, url=social_url, includeURL=True)
     caveats = build_caveats(resourcebase)
     hashtags = ",".join(getattr(settings, 'TWITTER_HASHTAGS', []))

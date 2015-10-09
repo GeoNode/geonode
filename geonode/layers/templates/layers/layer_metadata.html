@@ -25,15 +25,23 @@
           Some of your original metadata may have been lost.{% endblocktrans %}</p>
       {% endif %}
 
-      {% if layer_form.errors or attribute_form.errors or category_form.errors %}
+      {% if layer_form.errors or attribute_form.errors or category_form.errors or author_form.errors or poc.errors %}
     	  <p class="bg-danger">{% blocktrans %}Error updating metadata.  Please check the following fields: {% endblocktrans %}</p>
-        <ul class="bg-danger">
+          <ul class="bg-danger">
+          {% if author_form.errors %}
+            <li>{% trans "Metadata Author" %}</li>
+            {{ author_form.errors }}
+          {% endif %}
+          {% if poc_form.errors %}
+            <li>{% trans "Point of Contact" %}</li>
+            {{ poc_form.errors }}
+          {% endif %}
           {% for field in layer_form %}
             {% if field.errors %}
             <li>{{ field.label }}</li>
             {% endif %}
           {% endfor %}
-          {% if attribute_form.errors %}
+          {% if not attribute_form.is_valid %}
             <li>{% trans "Attributes" %}</li>
             {% for field in attribute_form %}
             {% if field.errors %}
@@ -59,8 +67,8 @@
         
         <div class="row">
           <div class="col-md-12">
+            <label class="control-label required-field">{% trans "Category" %}</label>
             <fieldset id="category_form">
-              <label class="control-label required-field">{% trans "Category" %}</label>
               {% autoescape off %}
               {% for choice in category_form.category_choice_field.field.choices %}
               <div class="radio col-md-6">

@@ -45,11 +45,11 @@ Steps to enable Favorites in GeoNode:
 
     in map_detail method:
     if request.user.is_authenticated():
-        context_dict["favorite_info"] = get_favorite_info(request.user, layer)
+        context_dict["favorite_info"] = get_favorite_info(request.user, map_obj)
 
 3c. template - include the Favorite html and js.  Using Map as example, geonode/maps/templates/maps/map_detail.html: 
 
-    after the social_links block for map (or after ratings block for document/layer), add:
+    after the social_links block for map (or after ratings block for document/map), add:
 
     <article class="tab-pane" id="favorite">
       {% include "favorite/_favorite.html" %}
@@ -57,10 +57,10 @@ Steps to enable Favorites in GeoNode:
 
     in the {% block extra_script %}, add:
 
-    {% include "favorite/-favorite_js.html" %}
+    {% include "favorite/_favorite_js.html" %}
 
 
-4. Add link to Favorites list from user profile page, geonode/templates/people/profile_detail.html:
+4. Add link to Favorites list from user profile page, geonode/people/templates/people/profile_detail.html:
 
     after My Activities, approx ln 95, add:
 
@@ -74,3 +74,6 @@ Steps to enable Favorites in GeoNode:
     after notifications, approx ln 216, add:
 
     <li><a href="{% url "favorite_list" %}"><i class="fa fa-star"></i> {% trans "Favorites" %}</a></li> 
+
+
+6. Run syncdb to create the new favorite_favorite table.

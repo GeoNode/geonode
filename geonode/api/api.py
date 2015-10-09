@@ -63,8 +63,9 @@ class CountJSONSerializer(Serializer):
         options = options or {}
         data = self.to_simple(data, options)
         counts = self.get_resources_counts(options)
-        for item in data['objects']:
-            item['count'] = counts.get(item['id'], 0)
+        if 'objects' in data:
+            for item in data['objects']:
+                item['count'] = counts.get(item['id'], 0)
         # Add in the current time.
         data['requested_time'] = time.time()
 
@@ -94,8 +95,8 @@ class TypeFilteredResource(ModelResource):
         return orm_filters
 
     def serialize(self, request, data, format, options={}):
-        options['title_filter'] = self.title_filter
-        options['type_filter'] = self.type_filter
+        options['title_filter'] = getattr(self, 'title_filter', None)
+        options['type_filter'] = getattr(self, 'type_filter', None)
         options['user'] = request.user
 
         return super(TypeFilteredResource, self).serialize(request, data, format, options)
@@ -278,6 +279,28 @@ class ProfileResource(TypeFilteredResource):
     class Meta:
         queryset = get_user_model().objects.exclude(username='AnonymousUser')
         resource_name = 'profiles'
+        allowed_methods = ['get']
+        ordering = ['username', 'date_joined']
+        excludes = ['is_staff', 'password', 'is_superuser',
+                    'is_active', 'last_login']
+
+        filtering = {
+            'username': ALL,
+        }
+        serializer = CountJSONSerializer()
+
+
+class OwnersResource(TypeFilteredResource):
+    """Owners api, lighter and faster version of the profiles api"""
+
+    def serialize(self, request, data, format, options={}):
+        options['count_type'] = 'owner'
+
+        return super(OwnersResource, self).serialize(request, data, format, options)
+
+    class Meta:
+        queryset = get_user_model().objects.exclude(username='AnonymousUser')
+        resource_name = 'owners'
         allowed_methods = ['get']
         ordering = ['username', 'date_joined']
         excludes = ['is_staff', 'password', 'is_superuser',
