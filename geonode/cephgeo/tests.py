@@ -5,6 +5,7 @@ from geonode import settings
 from changuito import CartProxy
 from changuito import models as cartmodels
 
+import geonode.base.populate_test_data
 import geonode.cephgeo.models
 import geonode.cephgeo.utils
 import geonode.layers.models
@@ -13,10 +14,56 @@ import random
 class UtilsTestCase(TestCase):
     
     fixtures = ['bobby']
+    comodel = ("NAME","LAST_MODIFIED","SIZE_IN_BYTES","CONTENT_TYPE","GEO_TYPE","FILE_HASH","GRID_REF")
+    cephobjects = [
+        ("E240N1782_ORTHO.tif","2015-06-25 15:36:24","12000344","image/tiff","cdcfb5297fea40a067ea8b50351205a7","E240N1782"),
+        ("E211N1749_ORTHO.tif","2015-06-25 15:36:25","12000344","image/tiff","c8fcf62ce2f0a9f84e28a8d93eb82b3c","E211N1749"),
+        ("E233N1748_ORTHO.tif","2015-06-25 15:36:26","12000344","image/tiff","d4d147cbe294dfabdb4b1c5785e3523b","E233N1748"),
+        ("E230N1752_ORTHO.tif","2015-06-25 15:36:28","12000344","image/tiff","b9af27d72275e815a2b638c7f5d0f5b3","E230N1752"),
+        ("E238N1781_ORTHO.tif","2015-06-25 15:36:29","12000344","image/tiff","caaa4a9c7ff0ffa6a5f2c49e60fc0fee","E238N1781"),
+        ("E226N1781_ORTHO.tif","2015-06-25 15:36:30","12000344","image/tiff","baba7239ea528a9caf86238a5471e3a2","E226N1781"),
+        ("E256N1751_ORTHO.tif","2015-06-25 15:36:32","12000344","image/tiff","da02435810a3329bb7ef58710df07a4e","E256N1751"),
+        ("E248N1751_ORTHO.tif","2015-06-25 15:36:33","12000344","image/tiff","caa5482711eb7a60612e38490242d913","E248N1751"),
+        ("E234N1762_ORTHO.tif","2015-06-25 15:36:34","12000344","image/tiff","b124aadc292a889b5d7716eda524c6a7","E234N1762"),
+        ("E232N1771_ORTHO.tif","2015-06-25 15:36:35","12000344","image/tiff","053d2882a8470932425742551999a4b7","E232N1771"),
+        ("E215N1779_ORTHO.tif","2015-06-25 15:36:37","12000344","image/tiff","e70dba3321084b86045af0a1d0b4c9f7","E215N1779"),
+        ("E220N1757_ORTHO.tif","2015-06-25 15:36:38","12000344","image/tiff","8d74f2813e50de9e6f8282de5f039952","E220N1757"),
+        ("E249N1768_ORTHO.tif","2015-06-25 15:36:40","12000344","image/tiff","a806b5ade9d4a3bb55b00c5797f3b906","E249N1768"),
+        ("E254N1772_ORTHO.tif","2015-06-25 15:36:41","12000344","image/tiff","4ac1c85e1ccee7fc9d404c52d4c5a1fb","E254N1772"),
+        ("E257N1768_ORTHO.tif","2015-06-25 15:36:42","12000344","image/tiff","f3f19bb9b5dcc89118d230f3ed8a329e","E257N1768"),
+        ("E252N1749_ORTHO.tif","2015-06-25 15:36:43","12000344","image/tiff","a111de769ba0f3504674c2f14bd2c913","E252N1749"),
+        ("E232N1759_ORTHO.tif","2015-06-25 15:36:45","12000344","image/tiff","54dd45b597b2cf32558f14caad50badb","E232N1759"),
+        ("E215N1751_ORTHO.tif","2015-06-25 15:36:46","12000344","image/tiff","1083fda9188dbb16feaeb1bb7259df76","E215N1751"),
+        ("E229N1750_ORTHO.tif","2015-06-25 15:36:47","12000344","image/tiff","1d5917a4e85cfee6c5d8145c4a384858","E229N1750"),
+        ("E237N1750_ORTHO.tif","2015-06-25 15:36:48","12000344","image/tiff","e03265b08ea32cb8fc539be2e646d883","E237N1750"),
+        ("E210N1758_ORTHO.tif","2015-06-25 15:36:50","12000344","image/tiff","3982a04b64baeae0d7232c3b373055be","E210N1758"),
+        ("E253N1770_ORTHO.tif","2015-06-25 15:36:51","12000344","image/tiff","4d2c2583dd80a51f771734b3d83a17fb","E253N1770")
+    ]
+    
+    def _populate_test_data(self):
+        for o in cephobjects:
+            cephObject = CephDataObject(
+                name=o[comodel.index("NAME")],
+                size_in_bytes= o[comodel.index("SIZE_IN_BYTES")],
+                file_hash        = o[comodel.index("FILE_HASH")],
+                last_modified= o[comodel.index("LAST_MODIFIED")], 
+                 content_type= o[comodel.index("CONTENT_TYPE")],
+                data_class     = 5,   
+                grid_ref          = o[comodel.index("GRID_REF")]
+            )
+            o.save()
+
+    
+    def _setup_cart(self, numberOfItems):
+        self.item_list = random.sample(CephDataObject.objects.all(), numberOfItems)
+        
+        for x in item_list:
+            self.cart.add(x, 1, 1)
     
     def setUp(self):
-        self.user = get_user_model().objects.get_or_create(username="geoadmin", is_superuser=True)
-        self.password = 'genericsemistrongpassword'
+        create_models()
+        self.user = get_user_model().objects.get_or_create(username="admin", is_superuser=True)
+        self.password = 'admin'
         self.anonymous_user = get_anonymous_user()
         self.item_list = []
     
@@ -26,17 +73,9 @@ class UtilsTestCase(TestCase):
         
         cart = cartProxy(r)
         self.cart=cart
-        self.car_model = cart.get_cart(r)
+        self.cart_model = cart.get_cart(r)
         
         self.request = r
-        
-    
-    def _setup_cart(self, numberOfItems):
-        self.item_list = random.sample(CephDataObject.objects.all(), numberOfItems)
-        
-        for x in item_list:
-            self.cart.add(x, 1, 1)
-        
         
     def get_data_class_from_filename_test(self):
         test1 = "name_ends_with.laz"
