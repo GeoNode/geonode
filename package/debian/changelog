@@ -1,3 +1,67 @@
+geonode (2.4.0+beta28) trusty; urgency=high
+
+  [ Charles Cosse ]
+  * [994e60] 1. Pass category_form from views.layer_upload to layer_upload.html 2. Require user to choose category before uploading (upload.js) 3. Pass chosen category via cookie (cookie.js, upload.js) 4. Parse category_id from cookie in POST section of views.layer_upload
+  * [b88195] 1. Pass category_form from views.layer_upload to layer_upload.html 2. Require user to choose category before uploading (upload.js) 3. Pass chosen category via cookie (cookie.js, upload.js) 4. Parse category_id from cookie in POST section of views.layer_upload
+  * [cc3844] Chage "//" to "#" for .py comment
+  * [71bf5d] Coding style fixes based on Travis CL output
+  * [7e19e1] Whitespace fixes as per Travis Cl output:
+  * [8d6fb5] More whitespace nonsense
+  * [d11feb] Whitespace hell
+  * [ae591f] Whitespace hell 4real
+  * [643d64] Consistent use of whitespaces
+
+  [ capooti ]
+  * [de29e6] Correctly aligned "Your selections" and "Clear all filters" button to the rest of the page
+
+  [ Stefano Menegon ]
+  * [49334c] fixed issue with years before 1900
+  * [a9d794] removed unused package
+  * [6dbce4] added comment on strftime issue
+
+  [ Charles Cosse ]
+  * [206165] Added explicit import of cookie.js
+
+  [ Tom Kralidis ]
+  * [d08265] add support for preserving XML metadata with upload (#2250)
+
+  [ Jeffrey Johnson ]
+  * [4801a8] Revert "(Hold for 2.5.x) add support for preserving XML metadata with upload (#2250)"
+
+  [ Charles Cosse ]
+  * [c2ee05] Using geonode-supplied {% static %} to accomodate non-root install
+
+  [ Daniel Berry ]
+  * [dbb214] add wgs84 map viewer support
+
+  [ afabiani ]
+  * [9822c1]  - Adding afabiani among AUTHORS list
+
+  [ Charles Cosse ]
+  * [801c03] removal of old references to form.cleaned_data["category"] which are not used (yet) because passing chosen category via cookie rather than adding category form to formset at submission.
+  * [c9b386] remove logging statements ... ooops.
+
+  [ Simone Dalmasso ]
+  * [3ae8de] explicitly create the uploaded directories and assign them to apache
+  * [f2707e] exclude bing until we figure out what changed
+
+  [ pjdufour ]
+  * [9891f5] More resilient layer delete
+
+  [ Simone Dalmasso ]
+  * [09c0c2] fixed issues with alternative map projection
+
+  [ Tyler Garner ]
+  * [04ff6d] PEP8 fixes.
+  * [0f31fc] Bump Django to include latest security patch.
+
+  [ capooti ]
+  * [8b4e46] Includes a API_INCLUDE_REGIONS_COUNT setting to enable region facets count. It also add region code to the api filtering fields
+
+  [ Simone Dalmasso ]
+
+ -- Simone Dalmasso <simone.dalmasso@gmail.com>  Wed, 14 Oct 2015 11:34:35 +0000
+
 geonode (2.4.0+beta27) trusty; urgency=high
 
   [ Simone Dalmasso ]
