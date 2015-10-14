@@ -342,6 +342,21 @@ Default: ``10``
 
 An integer that specifies the default search size when using ``geonode.search`` for querying data.
 
+API settings
+============
+
+API_LIMIT_PER_PAGE
+------------------
+Default: ``0``
+
+Number of items returned by the API. 0 equals no limit
+
+API_INCLUDE_REGIONS_COUNT
+-------------------------
+Default: ``False``
+
+Specifies if to include facets count for regions.
+
 Security settings
 =================
 
