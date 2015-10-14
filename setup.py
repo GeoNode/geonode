@@ -82,7 +82,7 @@ setup(name='GeoNode',
         "pillow", # python-pillow
         "lxml", # python-lxml
         # "psycopg2==2.4.5", # python-psycopg2
-        "Django==1.6.10", # python-django
+        "Django==1.6.11", # python-django
 
         # Other
         "beautifulsoup4==4.2.1", # python-bs4
