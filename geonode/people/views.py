@@ -39,7 +39,8 @@ from geonode.tasks.email import send_email
 def profile_edit(request, username=None):
     if username is None:
         try:
-            profile = request.user.profile
+            profile = request.user
+            username = profile.username
         except Profile.DoesNotExist:
             return redirect("profile_browse")
     else:
