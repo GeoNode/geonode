@@ -19,14 +19,14 @@ class DataClassification(enum.Enum):
     LAZ = 1
     DEM = 2
     DTM = 3
-    DSM = 4
+#    DSM = 4
     ORTHOPHOTO = 5
     
     labels = {
         UNKNOWN     : "Unknown Type",
         LAZ            : "LAZ",
         DEM         : "DEM TIF",
-        DSM         : "DSM TIF",
+#        DSM         : "DSM TIF",
         DTM         : "DTM TIF",
         ORTHOPHOTO  : "Orthophoto",}
     
@@ -34,14 +34,14 @@ class DataClassification(enum.Enum):
         UNKNOWN     : "UNSUPPORTED",
         LAZ         : "UNSUPPORTED",
         DEM         : "UNSUPPORTED",
-        DSM         : "DSM",
+#        DSM         : "DSM",
         DTM         : "DTM",
         ORTHOPHOTO  : "ORTHO",}
     
     filename_suffixes = {
         ".laz"            : LAZ,
         "_dem.tif"         : DEM,
-        "_dsm.tif"         : DSM,
+#        "_dsm.tif"         : DSM,
         "_dtm.tif"         : DTM,
         "_ortho.tif"    : ORTHOPHOTO,}
     
