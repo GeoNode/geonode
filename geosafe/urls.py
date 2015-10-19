@@ -1,7 +1,7 @@
 __author__ = 'ismailsunni'
 from django.conf.urls import patterns, url
 
-from geosafe.views import MetadataListView, MetadataCreate
+from geosafe.views import MetadataListView, MetadataCreate, MetadataDetailView
 
 urlpatterns = patterns(
     '',
@@ -15,8 +15,12 @@ urlpatterns = patterns(
         MetadataCreate.as_view(),
         name='metadata-create'
     ),
-    
+    url(
+        r'^geosafe/metadata/view/(?P<pk>\d+)$',
+        MetadataDetailView.as_view(),
+        name='metadata-detail'
+    ),
+
     # url(r'^geosafe/listing/$', 'geosafe.views.listing'),  # same as index
-    # url(r'^geosafe/view/(?P<layer_id>\d+)$', 'geosafe.views.view'),
 
 )

@@ -2,8 +2,7 @@ from django.shortcuts import render
 from django.shortcuts import render_to_response
 from django.template import RequestContext, loader
 from django.core.urlresolvers import reverse
-from django.views.generic.list import ListView
-from django.views.generic.edit import CreateView
+from django.views.generic import DetailView, ListView, CreateView
 
 from geosafe.models import Metadata
 from geosafe.forms.metadata import MetadataUploadForm
@@ -32,3 +31,11 @@ class MetadataCreate(CreateView):
         kwargs.update({'user': self.request.user})
         return kwargs
 
+class MetadataDetailView(DetailView):
+    model = Metadata
+    template_name = 'geosafe/metadata_detail.html'
+
+
+    def get_object(self, queryset=None):
+        obj = super(MetadataDetailView, self).get_object(queryset)
+        return obj
