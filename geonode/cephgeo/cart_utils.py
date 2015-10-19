@@ -11,7 +11,7 @@ class DuplicateCartItemException(Exception):
 PRICING = {
 	DataClassification.LAZ         : 1.00,
 	DataClassification.DTM         : 1.00,
-    DataClassification.DSM         : 1.00,
+#    DataClassification.DSM         : 1.00,
 	DataClassification.ORTHOPHOTO  : 1.00,
     DataClassification.UNKNOWN     : 0.00,
 }
