@@ -154,10 +154,14 @@ def process_georefs(request):
         try:
             georef_area = request.POST['georef_area']
             georef_list = filter(None, georef_area.split(","))
+            print("[POST]")
+            pprint(request.POST)
             data_classes = list()
             for data_class in DataClassification.labels.values():
                 if request.POST[data_class]:
                     data_class.append(data_class)
+            
+            print("[DATACLASSES]: "+str(data_classes))
             #spprint(georef_list)
             #TODO: find all files with these georefs and add them to cart
             count = 0
