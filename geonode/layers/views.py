@@ -163,7 +163,7 @@ def layer_upload(request, template='upload/layer_upload.html'):
                     charset=form.cleaned_data["charset"],
                     abstract=form.cleaned_data["abstract"],
                     title=form.cleaned_data["layer_title"],
-                    category=topic_category
+                    category=topic_category.identifier
                 )
             except Exception as e:
                 exception_type, error, tb = sys.exc_info()
