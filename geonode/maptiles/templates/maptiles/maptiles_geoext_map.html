@@ -68,10 +68,30 @@ $(document).ready(function(){
            var self = this;
            var json_parser = new OpenLayers.Format.JSON()
            var georef_string = document.getElementById("georef_area").getAttribute("value");
+           /*alert("VALUES:"
+                    +"\nLAZ: "+document.getElementById("laz").checked
+                    +"\nDTM: "+document.getElementById("dtm-tif").checked
+                    +"\nDSM: "+document.getElementById("dsm-tif").checked
+                    +"\nORTHOPHOTO: "+document.getElementById("orthophoto").checked)*/
+           var data_classes = []
+           if(document.getElementById("laz").checked){
+               data_classes.push("LAZ");
+           }
+           if(document.getElementById("dtm-tif").checked){
+               data_classes.push("DTM");
+           }
+           if(document.getElementById("dsm-tif").checked){
+               data_classes.push("DSM");
+           }
+           if(document.getElementById("orthophoto").checked){
+               data_classes.push("ORTHO");
+           }
            $.post('/maptiles/validate/', 
-                {"georefs" : georef_string}).done(function(result){
+                {"georefs" : georef_string, "dataclasses": data_classes}).done(function(result){
                    if (result.response) 
                         self.submit();
+                        /*$.post('/maptiles/addtocart/',  {   "georef_area" : document.getElementById("georef_area").getAttribute("value"), 
+                                                            "dataclasses" : data_classes});*/
                    else {
                         /*alert("The total file size of this request is "+formatBytes(result.total_size, 2)+
                                 " . You also have a total of "+formatBytes(result.cart_size, 2)+
