@@ -1,0 +1,8 @@
+<h1>Metadata</h1>
+<ul>
+{% for metadata in object_list %}
+    <li>{{ metadata.layer.name }}</li>
+{% empty %}
+    <li>No metadata yet.</li>
+{% endfor %}
+</ul>
