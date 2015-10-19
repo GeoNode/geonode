@@ -20,7 +20,6 @@
 
 import os
 import sys
-import string
 import logging
 import shutil
 import traceback
@@ -152,10 +151,7 @@ def layer_upload(request, template='upload/layer_upload.html'):
                 # exceptions when unicode characters are present.
                 # This should be followed up in upstream Django.
                 tempdir, base_file = form.write_files()
-                topic_id = request.META.get("HTTP_COOKIE")
-                topic_id = string.split(topic_id, " ")[0]
-                topic_id = string.split(topic_id, ":")[1]
-                topic_id = string.split(topic_id, ";")[0]
+                topic_id = request.POST['category']
                 topic_category = TopicCategory.objects.get(
                     id=topic_id
                 )
@@ -167,8 +163,6 @@ def layer_upload(request, template='upload/layer_upload.html'):
                     charset=form.cleaned_data["charset"],
                     abstract=form.cleaned_data["abstract"],
                     title=form.cleaned_data["layer_title"],
-                )
-                Layer.objects.filter(name=name).update(
                     category=topic_category
                 )
             except Exception as e:
