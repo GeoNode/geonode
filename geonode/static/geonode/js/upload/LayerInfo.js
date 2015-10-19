@@ -177,6 +177,7 @@ define(function (require, exports) {
         }
 
         form_data.append('charset', $('#charset').val());
+        form_data.append('category', $("#category_form :radio:checked").val());
         return form_data;
     };
 
