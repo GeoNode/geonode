@@ -9,6 +9,7 @@ from django.core.exceptions import PermissionDenied, ObjectDoesNotExist
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseRedirect, HttpResponse
+from django.db.models import Q
 
 from geonode.services.models import Service
 from geonode.layers.models import Layer
@@ -153,6 +154,10 @@ def process_georefs(request):
         try:
             georef_area = request.POST['georef_area']
             georef_list = filter(None, georef_area.split(","))
+            data_classes = list()
+            for data_class in DataClassification.labels.values():
+                if request.POST[data_class]:
+                    data_class.append(data_class)
             #spprint(georef_list)
             #TODO: find all files with these georefs and add them to cart
             count = 0
@@ -160,7 +165,7 @@ def process_georefs(request):
             duplicates = []
             
             for georef in georef_list:      # Process each georef in list
-                objects = CephDataObject.objects.filter(name__startswith=georef)
+                objects = CephDataObject.objects.filter(Q(name__startswith=georef))
                 count += len(objects)
                 if len(objects) > 0:
                     for ceph_obj in objects:    # Add each Ceph object to cart
