@@ -300,6 +300,10 @@ INSTALLED_APPS = (
     'polymorphic',
     'guardian',
 
+    # Geosafe
+    'geosafe',
+    'south',
+
 ) + GEONODE_APPS
 
 LOGGING = {
