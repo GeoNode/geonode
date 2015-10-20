@@ -59,7 +59,9 @@ def _build_state_layer(layer):
 
     state = _build_state_resourcebase(layer)
 
-    url_detail = "{base}{context}".format(base=settings.SITEURL[:-1], context=layer.detail_url)
+    url_detail = "{base}{context}".format(
+        base=settings.SITEURL[:-1],
+        context=reverse('layer_detail', args=(layer.service_typename,)))
     link_shp = Link.objects.get(resource=layer.get_self_resource(), name='Zipped Shapefile')
     link_geojson = Link.objects.get(resource=layer.get_self_resource(), name='GeoJSON')
     link_netkml = Link.objects.get(resource=layer.get_self_resource(), name='View in Google Earth')
