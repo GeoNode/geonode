@@ -10,7 +10,7 @@ from geosafe.forms import MetadataUploadForm, MetadataUpdateForm
 
 class MetadataListView(ListView):
     model = Metadata
-    template_name = 'geosafe/metadata_list.html'
+    template_name = 'geosafe/metadata/list.html'
     context_object_name = 'metadata_list'
 
     def get_context_data(self, **kwargs):
@@ -21,7 +21,7 @@ class MetadataListView(ListView):
 class MetadataCreate(CreateView):
     model = Metadata
     form_class = MetadataUploadForm
-    template_name = 'geosafe/metadata_form.html'
+    template_name = 'geosafe/metadata/form.html'
     context_object_name = 'metadata'
 
     def get_success_url(self):
@@ -35,7 +35,7 @@ class MetadataCreate(CreateView):
 
 class MetadataDetailView(DetailView):
     model = Metadata
-    template_name = 'geosafe/metadata_detail.html'
+    template_name = 'geosafe/metadata/detail.html'
     context_object_name = 'metadata'
 
     def get_object(self, queryset=None):
@@ -45,7 +45,7 @@ class MetadataDetailView(DetailView):
 class MetadataUpdateView(UpdateView):
     model = Metadata
     form_class = MetadataUpdateForm
-    template_name = 'geosafe/metadata_update.html'
+    template_name = 'geosafe/metadata/update.html'
     context_object_name = 'metadata'
     # fields = ['metadata_file']
 
@@ -60,7 +60,7 @@ class MetadataUpdateView(UpdateView):
 
 class MetadataDeleteView(DeleteView):
     model = Metadata
-    template_name = 'geosafe/metadata_delete.html'
+    template_name = 'geosafe/metadata/delete.html'
     context_object_name = 'metadata'
 
     def get_success_url(self):
