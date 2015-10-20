@@ -1,12 +1,9 @@
-from django.shortcuts import render
-from django.shortcuts import render_to_response
-from django.template import RequestContext, loader
 from django.core.urlresolvers import reverse
 from django.views.generic import (
     DetailView, ListView, CreateView, UpdateView, DeleteView)
 
 from geosafe.models import Metadata
-from geosafe.forms.metadata import MetadataUploadForm, MetadataUpdateForm
+from geosafe.forms import MetadataUploadForm, MetadataUpdateForm
 
 
 # Create your views here.
