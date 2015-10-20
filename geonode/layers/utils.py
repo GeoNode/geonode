@@ -598,6 +598,16 @@ def upload(incoming, user=None, overwrite=False,
                                                            "delete_resourcebase", "change_resourcebase_permissions",
                                                            "publish_resourcebase"]}, "groups": {}}
                     layer.set_permissions(perm_spec)
+
+                if getattr(settings, 'SLACK_ENABLED', False):
+                    try:
+                        from geonode.contrib.slack.utils import build_slack_message_layer, send_slack_messages
+                        send_slack_messages(build_slack_message_layer(
+                            ("layer_new" if status == "created" else "layer_edit"),
+                            layer))
+                    except:
+                        print "Could not send slack message."
+
             except Exception as e:
                 if ignore_errors:
                     status = 'failed'
