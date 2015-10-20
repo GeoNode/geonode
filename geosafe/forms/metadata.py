@@ -53,3 +53,33 @@ class MetadataUploadForm(models.ModelForm):
         instance.date_created = datetime.utcnow()
         instance.save()
         return instance
+
+
+class MetadataUpdateForm(models.ModelForm):
+    """A form for creating an event."""
+
+    class Meta:
+        model = Metadata
+        fields = (
+            'metadata_file',
+        )
+
+    metadata_file = forms.FileField(
+        widget=forms.FileInput(
+            attrs={
+                'class': 'form-control'
+            }
+        )
+    )
+
+    def __init__(self, *args, **kwargs):
+        self.user = kwargs.pop('user', None)
+        super(MetadataUpdateForm, self).__init__(*args, **kwargs)
+
+    def save(self, commit=True):
+        instance = super(MetadataUpdateForm, self).save(commit=False)
+        LOG.error(instance)
+        instance.user = self.user
+        # instance.date_created = datetime.utcnow()
+        instance.save()
+        return instance

@@ -24,10 +24,10 @@
                     {{ metadata.metadata_file.url }}
                 </td>
                 <td>
-                    Edit
+                    <a href="{% url 'metadata-update' pk=metadata.layer.id %}">Edit</a>
                 </td>
                 <td>
-                    Delete
+                    <a href="{% url 'metadata-delete' pk=metadata.layer.id %}">Delete</a>
                 </td>
             </tr>
         {% empty %}

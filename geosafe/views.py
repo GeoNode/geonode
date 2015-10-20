@@ -2,10 +2,11 @@ from django.shortcuts import render
 from django.shortcuts import render_to_response
 from django.template import RequestContext, loader
 from django.core.urlresolvers import reverse
-from django.views.generic import DetailView, ListView, CreateView
+from django.views.generic import (
+    DetailView, ListView, CreateView, UpdateView, DeleteView)
 
 from geosafe.models import Metadata
-from geosafe.forms.metadata import MetadataUploadForm
+from geosafe.forms.metadata import MetadataUploadForm, MetadataUpdateForm
 
 
 # Create your views here.
@@ -43,3 +44,27 @@ class MetadataDetailView(DetailView):
     def get_object(self, queryset=None):
         obj = super(MetadataDetailView, self).get_object(queryset)
         return obj
+
+class MetadataUpdateView(UpdateView):
+    model = Metadata
+    form_class = MetadataUpdateForm
+    template_name = 'geosafe/metadata_update.html'
+    context_object_name = 'metadata'
+    # fields = ['metadata_file']
+
+    def get_form_kwargs(self):
+        kwargs = super(MetadataUpdateView, self).get_form_kwargs()
+        kwargs.update({'user': self.request.user})
+        return kwargs
+
+    def get_success_url(self):
+        return reverse('metadata-detail', kwargs={'pk': self.object.layer.id})
+
+
+class MetadataDeleteView(DeleteView):
+    model = Metadata
+    template_name = 'geosafe/metadata_delete.html'
+    context_object_name = 'metadata'
+
+    def get_success_url(self):
+        return reverse('metadata-list')
