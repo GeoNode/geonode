@@ -273,11 +273,12 @@
             hideAfter: 200,
             minimumCharacters: 1,
             placeholder: '{% trans 'Type your search here ...' %}',
-            appendAutocomplete: $('#search_input')
+            appendAutocomplete: $('#search_input'),
+            autoHilightFirst: false
         });
         $('#search_input').bind('selectChoice', function(e, choice, autocomplete) {
             if(choice[0].children[0] == undefined) {
-                $('#search_input').val(choice[0].innerHTML);
+                $('#search_input').val($(choice[0]).text());
                 $('#search').submit();
             }
         });

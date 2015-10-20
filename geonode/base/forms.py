@@ -19,7 +19,7 @@
 #########################################################################
 
 import autocomplete_light
-from autocomplete_light.contrib.taggit_tagfield import TagField, TagWidget
+from autocomplete_light.contrib.taggit_field import TaggitField, TaggitWidget
 
 from django import forms
 from django.utils.translation import ugettext as _
@@ -100,10 +100,10 @@ class ResourceBaseForm(TranslationModelForm):
             username='AnonymousUser'),
         widget=autocomplete_light.ChoiceWidget('ProfileAutocomplete'))
 
-    keywords = TagField(
+    keywords = TaggitField(
         required=False,
         help_text=_("A space or comma-separated list of keywords"),
-        widget=TagWidget('TagAutocomplete'))
+        widget=TaggitWidget('TagAutocomplete'))
 
     regions = TreeNodeMultipleChoiceField(
         required=False,
