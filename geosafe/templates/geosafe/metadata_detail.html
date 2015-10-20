@@ -1,9 +1,11 @@
 <h1>Metadata</h1>
 <div>
-    {% if object %}
-        Layer: {{ object.layer.name }}
-        Uploader: {{ object.user.name }}
-        Upload date: {{ object.date_created|date }}
+    {% if metadata %}
+        <ul>
+            <li>Layer: {{ metadata.layer.name }}</li>
+            <li>Uploader: {{ metadata.user.first_name }} {{ metadata.user.last_name }}</li>
+            <li>Upload date: {{ metadata.date_created|date }}</li>
+        </ul>
     {% else %}
         No metadata for this layer.
     {% endif %}

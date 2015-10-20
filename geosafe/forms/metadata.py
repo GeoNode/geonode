@@ -14,6 +14,7 @@ LOG = logging.getLogger(__name__)
 
 class MetadataUploadForm(models.ModelForm):
     """A form for creating an event."""
+
     class Meta:
         model = Metadata
         fields = (
