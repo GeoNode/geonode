@@ -7,6 +7,7 @@ from changuito import models as cartmodels
 
 from django.contrib.auth import get_user_model
 from geonode.base.populate_test_data import create_models
+from guardian.shortcuts import get_anonymous_user
 
 import geonode.cephgeo.models
 import geonode.cephgeo.utils
