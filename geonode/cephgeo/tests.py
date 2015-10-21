@@ -66,8 +66,8 @@ class UtilsTestCase(TestCase):
             self.cart.add(x, 1, 1)
     
     def setUp(self):
-        #create_models()
-        self.user = get_user_model().objects.get_or_create(username="admin", is_superuser=True)
+        create_models()
+        self.user = get_user_model().objects.create(username="admin",password="admin", is_superuser=True)
         pprint(self.user)
         self.password = 'admin'
         self.anonymous_user = get_anonymous_user()
@@ -77,7 +77,7 @@ class UtilsTestCase(TestCase):
         r.session = {}
         r.user = self.user
         
-        cart = CartProxy(r.user)
+        cart = CartProxy(r)
         self.cart=cart
         self.cart_model = cart.get_cart(r)
         
