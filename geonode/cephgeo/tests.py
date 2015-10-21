@@ -5,7 +5,9 @@ from geonode import settings
 from changuito import CartProxy
 from changuito import models as cartmodels
 
-import geonode.base.populate_test_data
+from django.contrib.auth import get_user_model
+from geonode.base.populate_test_data import create_models
+
 import geonode.cephgeo.models
 import geonode.cephgeo.utils
 import geonode.layers.models
