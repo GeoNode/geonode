@@ -9,6 +9,8 @@ from django.contrib.auth import get_user_model
 from geonode.base.populate_test_data import create_models
 from guardian.shortcuts import get_anonymous_user
 
+from pprint import pprint
+
 import geonode.cephgeo.models
 import geonode.cephgeo.utils
 import geonode.layers.models
