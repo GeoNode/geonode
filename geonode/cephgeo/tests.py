@@ -46,7 +46,7 @@ class UtilsTestCase(TestCase):
     ]
     
     def _populate_test_data(self):
-        for o in cephobjects:
+        for o in self.cephobjects:
             cephObject = CephDataObject(
                 name=o[comodel.index("NAME")],
                 size_in_bytes= o[comodel.index("SIZE_IN_BYTES")],
