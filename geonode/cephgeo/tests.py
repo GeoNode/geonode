@@ -61,7 +61,7 @@ class UtilsTestCase(TestCase):
             self.cart.add(x, 1, 1)
     
     def setUp(self):
-        create_models()
+        #create_models()
         self.user = get_user_model().objects.get_or_create(username="admin", is_superuser=True)
         self.password = 'admin'
         self.anonymous_user = get_anonymous_user()
