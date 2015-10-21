@@ -74,7 +74,7 @@ class UtilsTestCase(TestCase):
         r.session = {}
         r.user = self.user
         
-        cart = cartProxy(r)
+        cart = CartProxy(r)
         self.cart=cart
         self.cart_model = cart.get_cart(r)
         
