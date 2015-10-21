@@ -58,6 +58,15 @@ class CategoryForm(forms.Form):
 
 class ResourceBaseForm(TranslationModelForm):
     """Base form for metadata, should be inherited by childres classes of ResourceBase"""
+
+    owner = forms.ModelChoiceField(
+        empty_label="Owner",
+        label="Owner",
+        required=False,
+        queryset=Profile.objects.exclude(
+            username='AnonymousUser'),
+        widget=autocomplete_light.ChoiceWidget('ProfileAutocomplete'))
+
     _date_widget_options = {
         "icon_attrs": {"class": "fa fa-calendar"},
         "attrs": {"class": "form-control input-sm"},
