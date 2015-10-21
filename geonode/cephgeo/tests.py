@@ -113,7 +113,7 @@ class UtilsTestCase(TestCase):
         test11="E1000!N2000"
         test12="E1000N2000!"
         
-        self.assertEqual(is_valid_grid_ref(test1), True)
+        self.assertEqual(is_valid_grid_ref(test1), False)
         self.assertEqual(is_valid_grid_ref(test2), True)
         self.assertEqual(is_valid_grid_ref(test3), True)
         self.assertEqual(is_valid_grid_ref(test4), False)
