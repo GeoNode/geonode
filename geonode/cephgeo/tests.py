@@ -82,6 +82,7 @@ class UtilsTestCase(TestCase):
         self.cart_model = cart.get_cart(r)
         
         self.request = r
+        self._populate_test_data()
         
     def get_data_class_from_filename_test(self):
         test1 = "name_ends_with.laz"
@@ -144,7 +145,7 @@ class UtilsTestCase(TestCase):
                 self.assertEqual(y.endswith(x), True)
     
     def get_cart_datasize_test(self):
-        self. _setup_cart(5)
+        self._setup_cart(5)
         item_list_tot_size = 0
         for x in self.item_list:
             item_list_tot_size += x.size_in_bytes
