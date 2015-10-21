@@ -12,7 +12,7 @@ from guardian.shortcuts import get_anonymous_user
 from pprint import pprint
 
 import geonode.cephgeo.models
-import geonode.cephgeo.utils
+from geonode.cephgeo.utils import *
 import geonode.layers.models
 import random
 
