@@ -62,7 +62,7 @@ class UtilsTestCase(TestCase):
     def _setup_cart(self, numberOfItems):
         self.item_list = random.sample(CephDataObject.objects.all(), numberOfItems)
         
-        for x in item_list:
+        for x in self.item_list:
             self.cart.add(x, 1, 1)
     
     def setUp(self):
@@ -146,7 +146,7 @@ class UtilsTestCase(TestCase):
     
     def get_cart_datasize_test(self):
         self._setup_cart(5)
-        item_list_tot_size = 0
+        item_list_tot_size = 0.0
         for x in self.item_list:
             item_list_tot_size += x.size_in_bytes
 
