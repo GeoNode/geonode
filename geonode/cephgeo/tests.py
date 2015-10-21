@@ -56,7 +56,7 @@ class UtilsTestCase(TestCase):
                 data_class     = 5,   
                 grid_ref          = o[self.comodel.index("GRID_REF")]
             )
-            o.save()
+            cephObject.save()
 
     
     def _setup_cart(self, numberOfItems):
