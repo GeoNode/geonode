@@ -1,3 +1,32 @@
+geonode (2.4.0+rc1) trusty; urgency=high
+
+  [ Simone Dalmasso ]
+  * [c60705] remove base layers from package local_settings.
+
+  [ Ariel Núñez ]
+  * [9bd18c] Added gsolat to AUTHORS
+
+  [ capooti ]
+  * [62e706] Fixes #2310
+  * [0c3c13] Better handles topic category pick in layer upload form
+  * [71da95] In layer upload topic category must be passed as string
+  * [e7097e] Adding geonode version number to static files in order to force reload in browser every time there is a new geonode version
+
+  [ Tom Kralidis ]
+  * [d0362d] bump pycsw / OWSLib
+
+  [ Simone Dalmasso ]
+  * [896f62] fix some text search issues, special characters, positioning and free search
+
+  [ capooti ]
+  * [541d8e] Fixes layout for some pages
+
+  [ Simone Dalmasso ]
+  * [ab009d] add owner autocomplete in metadata page
+  * [3f9a7a] assign upload session to owner on metadata save, fixes #2222
+
+ -- Simone Dalmasso <simone.dalmasso@gmail.com>  Wed, 21 Oct 2015 11:37:46 +0000
+
 geonode (2.4.0+beta28) trusty; urgency=high
 
   [ Charles Cosse ]
