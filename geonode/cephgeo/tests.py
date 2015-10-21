@@ -48,13 +48,13 @@ class UtilsTestCase(TestCase):
     def _populate_test_data(self):
         for o in self.cephobjects:
             cephObject = CephDataObject(
-                name=o[comodel.index("NAME")],
-                size_in_bytes= o[comodel.index("SIZE_IN_BYTES")],
-                file_hash        = o[comodel.index("FILE_HASH")],
-                last_modified= o[comodel.index("LAST_MODIFIED")], 
-                 content_type= o[comodel.index("CONTENT_TYPE")],
+                name=o[self.comodel.index("NAME")],
+                size_in_bytes= o[self.comodel.index("SIZE_IN_BYTES")],
+                file_hash        = o[self.comodel.index("FILE_HASH")],
+                last_modified= o[self.comodel.index("LAST_MODIFIED")], 
+                 content_type= o[self.comodel.index("CONTENT_TYPE")],
                 data_class     = 5,   
-                grid_ref          = o[comodel.index("GRID_REF")]
+                grid_ref          = o[self.comodel.index("GRID_REF")]
             )
             o.save()
 
