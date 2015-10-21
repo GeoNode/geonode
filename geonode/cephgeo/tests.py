@@ -66,6 +66,7 @@ class UtilsTestCase(TestCase):
     def setUp(self):
         #create_models()
         self.user = get_user_model().objects.get_or_create(username="admin", is_superuser=True)
+        pprint(self.user)
         self.password = 'admin'
         self.anonymous_user = get_anonymous_user()
         self.item_list = []
