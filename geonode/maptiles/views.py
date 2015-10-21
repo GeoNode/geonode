@@ -65,6 +65,10 @@ def _resolve_layer(request, typename, permission='base.view_resourcebase',
                               permission_msg=msg,
                               **kwargs)
 
+#
+#This function generates the layer configuration details required for the map view.
+#Returns the template with the configuration details as context
+#
 @login_required
 def tiled_view(request, overlay=settings.TILED_SHAPEFILE, template="maptiles/maptiles_map.html",test_mode=False, jurisdiction=None):
     if request.method == "POST":
@@ -127,8 +131,6 @@ def tiled_view(request, overlay=settings.TILED_SHAPEFILE, template="maptiles/map
         map_obj.viewer_json(request.user, * (NON_WMS_BASE_LAYERS + [maplayer])))
         
     context_dict["layer"]  = overlay
-    
-    #context_dict["geoserver"] = settings.OGC_SERVER['default']['PUBLIC_LOCATION']
     context_dict["geoserver"] = settings.OGC_SERVER['default']['PUBLIC_LOCATION']
     context_dict["siteurl"] = settings.SITEURL
         
@@ -148,7 +150,9 @@ def tiled_view(request, overlay=settings.TILED_SHAPEFILE, template="maptiles/map
         
     return render_to_response(template, RequestContext(request, context_dict))
 
-
+#
+# Function for processing the georefs submitted by the user
+#
 def process_georefs(request):
     if request.method == "POST":
         try:
@@ -200,6 +204,9 @@ def process_georefs(request):
     else:   # Must process HTTP POST method from form
         raise Exception("HTTP method must be POST!")    
 
+#
+# Validates if the total file size requested is less than the limit specified in local settings
+#
 @login_required
 def georefs_validation(request):
     """
@@ -246,6 +253,9 @@ def georefs_validation(request):
                 content_type="application/json"
             )
 
+#
+# Function for looking up the municipalities within a province
+#
 @login_required
 def province_lookup(request, province=""):
     if province=="":

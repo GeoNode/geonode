@@ -63,6 +63,8 @@ var interest_bounds;
 var _TILE_SIZE = 1000;
 
 $(document).ready(function(){
+    
+        // adds the total request size filtering
        $("#georef_form").submit(function(e) {
            e.preventDefault();
            var self = this;
@@ -85,6 +87,7 @@ $(document).ready(function(){
                 })
        });
        
+       // enables the submission of bounding box coordinates for selecting tiles 
        $("#bbox_form").submit(function(e){
            e.preventDefault();
            var self= this;
@@ -107,14 +110,23 @@ $(document).ready(function(){
        
 });
 
+/*
+Computes the floor for the GeoRef coordinates based on the tile size
+*/
 function floor_tile_size(x){
     return  (Math.floor(x/_TILE_SIZE) * _TILE_SIZE);
 }
 
+/*
+Computes the ceiling for the GeoRef coordinates based on the tile size
+*/
 function ceil_tile_size(x) {
     return (Math.ceil(x/_TILE_SIZE) * _TILE_SIZE);
 }
 
+/*
+Computes the coordinates of a tile based on a coordinate on the map
+*/
 function get_corners( x, y ){
     return { ul_x: floor_tile_size(x), ul_y: ceil_tile_size(y),
          ur_x: ceil_tile_size(x), ur_y: ceil_tile_size(y),
@@ -123,6 +135,9 @@ function get_corners( x, y ){
         };
 }
 
+/*
+Creates a tile object based on four points
+*/
 function createTile(computed_corners){
     return {
                     georef: "E"+(computed_corners["ul_x"]/1000)+"N"+(computed_corners["ul_y"]/1000),
@@ -131,6 +146,9 @@ function createTile(computed_corners){
                 };
 }
 
+/*
+Function for displaying the georefs of selected tiles at the bottom of the page
+*/
 function display_points(div_id, vec_layer){
     var container = document.getElementById(div_id);
     container.removeChild(container.firstElementChild||container.firstChild);
@@ -161,6 +179,9 @@ function display_points(div_id, vec_layer){
     document.getElementById("georef_area").setAttribute("value",georef_string);
 }
 
+/*
+Function for displaying messages for notifying the user
+*/
 function display_message(div_id, message){
     
     var container=document.getElementById(div_id);
@@ -173,6 +194,9 @@ function display_message(div_id, message){
     container.style.visibility="visible";
 }
 
+/*
+Function for creating a box for highlighting a selected tile
+*/
 function createHighlightBox(feature_attribs){
     var pt1 = new OpenLayers.Geometry.Point(feature_attribs["ul_x"], feature_attribs["ul_y"]).transform(new OpenLayers.Projection("EPSG:32651"), new OpenLayers.Projection("EPSG:900913"));
     var pt2 = new OpenLayers.Geometry.Point(feature_attribs["ur_x"], feature_attribs["ur_y"]).transform(new OpenLayers.Projection("EPSG:32651"), new OpenLayers.Projection("EPSG:900913"));
@@ -187,12 +211,18 @@ function createHighlightBox(feature_attribs){
     return polygon_feature;
 }
 
+/*
+Function returns the index of a tile with a matching georef
+*/
 function find_georef(tile_list, georef){
      var tile_indeces= tile_list.map(function (x) { return x.georef });
      var index = tile_indeces.indexOf(georef);
      return index;
 }
 
+/*
+Function for creating a WFS Protocol object
+*/
 function wfs_proto_creator(layer_request, srs, outformat){
     return new OpenLayers.Protocol.WFS({
         version: "1.0.0",
@@ -206,6 +236,9 @@ function wfs_proto_creator(layer_request, srs, outformat){
     });
 }
 
+/*
+Filters tiles if they intersect the geometries which are part of the jurisdiction
+*/
 function jurisdictionFilter(geoms, feature_list){
     console.log("feature_list.length="+feature_list.length);
     var tile_list = [];
@@ -221,6 +254,9 @@ function jurisdictionFilter(geoms, feature_list){
     return tile_list;
 }
 
+/*
+Creates a nested filter object which checks if  a tile has any data available
+*/
 function hasData( f_list){
    var data_filter = new OpenLayers.Filter.Logical({
         type: "||",
@@ -251,6 +287,9 @@ function hasData( f_list){
     return tile_list;
 }
 
+/*
+Function which retrieves selected tiles and filters them if  they don't have data or they are outside the jurisdiction
+*/
 function filterSelectedTiles(tile_filter, single_click, send_notice){
      var wfs_proto = wfs_proto_creator("{{feature_tiled}}", "EPSG:32651","json"); 
      var arg_obj = {
@@ -307,6 +346,9 @@ function filterSelectedTiles(tile_filter, single_click, send_notice){
      var wfs_resp = wfs_proto.read(arg_obj);
 }
 
+/*
+ Function which is used for selecting tiles given a rectangular selection
+*/
 function selection_bounds(map_bounds, highlight_layer) {
     
     var transformed_bounds = map_bounds.clone().transform(new OpenLayers.Projection("EPSG:900913"), new OpenLayers.Projection("EPSG:32651"));
@@ -320,6 +362,9 @@ function selection_bounds(map_bounds, highlight_layer) {
     filterSelectedTiles(box_filter, false, true);
 }
 
+/*
+Function retrieves the list of jurisdiction geometries and puts them into a list for future use
+*/
 function getJurisdictionGeom(jurisdiction, juris_vec_layer){
     var juris_wfs = wfs_proto_creator("{{feature_juris}}", "EPSG:32651", "json");
     var response = juris_wfs.read({
@@ -334,12 +379,18 @@ function getJurisdictionGeom(jurisdiction, juris_vec_layer){
     });
 }
 
+/*
+Function which removes the highlight of a tile
+*/
 function removeHighlight(georef, vec_layer){
     var index= find_georef(tile_list, georef);
     vec_layer.removeFeatures([tile_list[index].feature]);
     tile_list.splice(index,1);
 }
 
+/*
+Defines the style for the highlight tiles
+*/
 var vector_style = new OpenLayers.Style({
     'fillColor': '#0000ff',
     'strokeColor': '#0000ff',
@@ -350,19 +401,27 @@ var vector_style_map = new OpenLayers.StyleMap({
     'default': vector_style
 });
 
+/*
+Initialization of the map UI
+*/
 Ext.onReady(function (){
+    //definition of the jurisdiction layer name
     var jurisdiction = "{{jurisdiction}}";
    
     var juris_vec_layer = new OpenLayers.Layer.Vector();
-    var layer_name = "{{  layer }}";
-    var map_options = options["map"];
     
+    //definition of the Philippine grid layer
+    var layer_name = "{{  layer }}";
+    
+    //definition of the map object
+    var map_options = options["map"];
     map = new OpenLayers.Map({
         units: map_options["units"],
         maxResolution: map_options["maxResolution"],
         projection: map_options["projection"]
     });
     
+    //definition of the world map layer
     var mq_layer = new OpenLayers.Layer.XYZ(
         "OpenStreetMap",
         [
@@ -388,6 +447,7 @@ Ext.onReady(function (){
     
     map.addLayer(juris_vec_layer);
     
+    // definition of the tiled layer
     var tile_layer = new OpenLayers.Layer.WMS(
         layer_name + "- Tiled", geoserver+"geonode/wms",
         {
@@ -408,6 +468,7 @@ Ext.onReady(function (){
     
     map.addLayer(tile_layer);
     
+    // initialization of the jurisdiction display layer
     var jurisdiction_view_layer;
     if(jurisdiction){
         jurisdiction_view_layer = new OpenLayers.Layer.WMS(
@@ -431,6 +492,7 @@ Ext.onReady(function (){
         map.addLayer(jurisdiction_view_layer);
     }
 
+    //declaration of the highlight vector layer
     highlight_layer = new OpenLayers.Layer.Vector(
         "Highlight Layer",
         {
@@ -442,7 +504,6 @@ Ext.onReady(function (){
         }
     );
     map.addLayer(highlight_layer);
-    //map.addLayers([mq_layer,tile_layer,highlight_layer, jurisdiction_layer]);
     
     var items = [];
     var config = {
@@ -456,6 +517,7 @@ Ext.onReady(function (){
         zoom: 7
     };
 
+    //declaration of the draw control to enable drawing a rectangle using SHIFT+Click and d
     var drawControl = new OpenLayers.Control();
     OpenLayers.Util.extend(drawControl, {
         draw: function () {
@@ -476,6 +538,7 @@ Ext.onReady(function (){
         }
     });
 
+    //declaration of click behavior on the map
     OpenLayers.Control.Click = OpenLayers.Class(OpenLayers.Control, {
         defaultHandlerOptions: {
             "single": true,
