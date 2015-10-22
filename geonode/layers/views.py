@@ -392,7 +392,7 @@ def layer_metadata(request, layername, template='layers/layer_metadata.html'):
             layer.keywords.add(*new_keywords)
             the_layer = layer_form.save()
             up_sessions = UploadSession.objects.filter(layer=the_layer.id)
-            if up_sessions[0].user != the_layer.owner:
+            if up_sessions.count() > 0 and up_sessions[0].user != the_layer.owner:
                 up_sessions.update(user=the_layer.owner)
             the_layer.poc = new_poc
             the_layer.metadata_author = new_author
