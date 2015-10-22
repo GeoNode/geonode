@@ -1,3 +1,15 @@
+geonode (2.4.0+rc2) trusty; urgency=high
+
+  [ Simone Dalmasso ]
+  * [7ed091] make sure there are upload sessions before updating the user
+
+  [ capooti ]
+  * [29800b] Fixes html layout in some account pages
+
+  [ Simone Dalmasso ]
+
+ -- Simone Dalmasso <simone.dalmasso@gmail.com>  Thu, 22 Oct 2015 13:32:21 +0000
+
 geonode (2.4.0+rc1) trusty; urgency=high
 
   [ Simone Dalmasso ]
