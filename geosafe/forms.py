@@ -7,7 +7,7 @@ from django import forms
 
 from geonode.layers.models import Layer
 
-from geosafe.models import Metadata
+from geosafe.models import Metadata, Analysis
 
 LOG = logging.getLogger(__name__)
 
@@ -83,3 +83,8 @@ class MetadataUpdateForm(models.ModelForm):
         # instance.date_created = datetime.utcnow()
         instance.save()
         return instance
+
+class AnalysisCreationForm(models.ModelForm):
+    """A form for creating an event."""
+    class Meta:
+        model = Analysis

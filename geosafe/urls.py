@@ -6,7 +6,8 @@ from geosafe.views import (
     MetadataCreate,
     MetadataDetailView,
     MetadataUpdateView,
-    MetadataDeleteView)
+    MetadataDeleteView,
+    AnalysisCreateView)
 
 urlpatterns = patterns(
     '',
@@ -35,5 +36,9 @@ urlpatterns = patterns(
         MetadataDeleteView.as_view(),
         name='metadata-delete'
     ),
-
+    url(
+        r'^geosafe/analysis/create/$',
+        AnalysisCreateView.as_view(),
+        name='analysis-create'
+    ),
 )
