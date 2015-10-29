@@ -374,7 +374,7 @@ def pre_save_layer(instance, sender, **kwargs):
         return
 
     # Do not process if there is no table.
-    base_file = instance.get_base_file()
+    base_file = instance.get_base_file()[0]
     if base_file is None or base_file.name != 'shp':
         return
 
