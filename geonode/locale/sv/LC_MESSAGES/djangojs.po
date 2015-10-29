@@ -13,13 +13,14 @@
 # Translators:
 # Translators:
 # Translators:
+# Translators:
 # Andres Alfonso Lemon Gomez <lemon.andres@gmail.com>, 2014
 msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-09-22 03:42-0500\n"
-"PO-Revision-Date: 2015-05-18 18:18+0000\n"
+"POT-Creation-Date: 2015-10-29 04:22-0500\n"
+"PO-Revision-Date: 2015-10-29 09:06+0000\n"
 "Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
 "Language-Team: Swedish (http://www.transifex.com/geonode/geonode/language/"
 "sv/)\n"
@@ -69,12 +70,12 @@ msgstr "Endast följande användare eller grupper:"
 msgid "Who can manage and edit this data?"
 msgstr "Vem kan hantera och redigera dessa data?"
 
-#: static/geonode/js/search/search.js:375
+#: static/geonode/js/search/search.js:374
 #: static_root/geonode/js/search/search.js:298
 msgid "Enter your text here ..."
 msgstr ""
 
-#: static/geonode/js/search/search.js:401
+#: static/geonode/js/search/search.js:409
 msgid "Enter your region here ..."
 msgstr ""
 
@@ -115,75 +116,75 @@ msgstr "GeoJSON"
 msgid "Zip Archives"
 msgstr "Zip arkiv"
 
-#: static/geonode/js/upload/LayerInfo.js:231
+#: static/geonode/js/upload/LayerInfo.js:235
 #: static_root/geonode/js/upload/LayerInfo.js:231
 msgid "Layer Info"
 msgstr "Layer info"
 
-#: static/geonode/js/upload/LayerInfo.js:232
+#: static/geonode/js/upload/LayerInfo.js:236
 #: static_root/geonode/js/upload/LayerInfo.js:232
 msgid "Edit Metadata"
 msgstr "Redigera metadata"
 
-#: static/geonode/js/upload/LayerInfo.js:233
+#: static/geonode/js/upload/LayerInfo.js:237
 #: static_root/geonode/js/upload/LayerInfo.js:233
 msgid "Manage Styles"
 msgstr "Hantera format"
 
-#: static/geonode/js/upload/LayerInfo.js:236
+#: static/geonode/js/upload/LayerInfo.js:240
 msgid "The column %1 was renamed to %2 <br/>"
 msgstr ""
 
-#: static/geonode/js/upload/LayerInfo.js:242
+#: static/geonode/js/upload/LayerInfo.js:246
 #: static_root/geonode/js/upload/LayerInfo.js:235
 msgid "Your layer was successfully uploaded"
 msgstr "Din Skiktet laddats upp"
 
-#: static/geonode/js/upload/LayerInfo.js:271
+#: static/geonode/js/upload/LayerInfo.js:275
 #: static_root/geonode/js/upload/LayerInfo.js:264
 msgid "Performing Final GeoServer Config Step"
 msgstr "Performing Slutlig GeoServer Config Steg"
 
-#: static/geonode/js/upload/LayerInfo.js:286
-#: static/geonode/js/upload/LayerInfo.js:312
+#: static/geonode/js/upload/LayerInfo.js:290
+#: static/geonode/js/upload/LayerInfo.js:316
 #: static_root/geonode/js/upload/LayerInfo.js:279
 #: static_root/geonode/js/upload/LayerInfo.js:305
 msgid "You need to specify more information in order to complete your upload"
 msgstr "Du måste ange mer information för att slutföra din uppladdning"
 
-#: static/geonode/js/upload/LayerInfo.js:304
+#: static/geonode/js/upload/LayerInfo.js:308
 #: static_root/geonode/js/upload/LayerInfo.js:297
 msgid "You need to specify more information in order to complete your upload."
 msgstr "Du måste ange mer information för att slutföra din uppladdning."
 
-#: static/geonode/js/upload/LayerInfo.js:304
+#: static/geonode/js/upload/LayerInfo.js:308
 #: static_root/geonode/js/upload/LayerInfo.js:297
 msgid "You can continue configuring your layer."
 msgstr "Du kan fortsätta att konfigurera ditt lager."
 
-#: static/geonode/js/upload/LayerInfo.js:322
-#: static/geonode/js/upload/LayerInfo.js:407
+#: static/geonode/js/upload/LayerInfo.js:326
+#: static/geonode/js/upload/LayerInfo.js:412
 #: static_root/geonode/js/upload/LayerInfo.js:315
 #: static_root/geonode/js/upload/LayerInfo.js:400
 msgid "Unexpected Error"
 msgstr "Oväntat fel"
 
-#: static/geonode/js/upload/LayerInfo.js:338
+#: static/geonode/js/upload/LayerInfo.js:342
 #: static_root/geonode/js/upload/LayerInfo.js:331
 msgid "Performing GeoServer Config Step"
 msgstr "Performing GeoServer Config Steg"
 
-#: static/geonode/js/upload/LayerInfo.js:414
+#: static/geonode/js/upload/LayerInfo.js:419
 #: static_root/geonode/js/upload/LayerInfo.js:407
 msgid "Layer files uploaded, configuring in GeoServer"
 msgstr "Lager filer uppladdade, konfigurera i GeoServer"
 
-#: static/geonode/js/upload/LayerInfo.js:429
+#: static/geonode/js/upload/LayerInfo.js:434
 #: static_root/geonode/js/upload/LayerInfo.js:422
 msgid "Select or create a Geogig repository."
 msgstr ""
 
-#: static/geonode/js/upload/LayerInfo.js:524
+#: static/geonode/js/upload/LayerInfo.js:528
 #: static_root/admin/js/SelectFilter2.js:69
 #: static_root/geonode/js/upload/LayerInfo.js:517
 msgid "Remove"
@@ -195,10 +196,13 @@ msgstr "Ta bort"
 msgid "The file %s is an unsupported file type, please select another file."
 msgstr "Filen %s är en typ som inte hanteras, välj en annan fil."
 
-#: static/geonode/js/upload/upload.js:260
-#: static_root/geonode/js/upload/upload.js:260
-msgid "You are uploading an incomplete set of files."
-msgstr "Du laddar upp en ofullständig uppsättning filer."
+#: static/geonode/js/upload/upload.js:280
+msgid ""
+"You are trying to upload an incomplete set of files or not all mandatory "
+"options have been validated.\n"
+"\n"
+"Please check for errors in the form!"
+msgstr ""
 
 #: static_root/admin/js/SelectFilter2.js:45
 #, c-format
@@ -347,6 +351,10 @@ msgstr ""
 #: static_root/admin/js/admin/DateTimeShortcuts.js:203
 msgid "Tomorrow"
 msgstr ""
+
+#: static_root/geonode/js/upload/upload.js:260
+msgid "You are uploading an incomplete set of files."
+msgstr "Du laddar upp en ofullständig uppsättning filer."
 
 #: templates/lang.js:10
 msgid "Save as Copy"

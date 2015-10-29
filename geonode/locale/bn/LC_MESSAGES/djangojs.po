@@ -13,13 +13,16 @@
 # Translators:
 # Translators:
 # Translators:
+# Translators:
 # Andres Alfonso Lemon Gomez <lemon.andres@gmail.com>, 2014
+# Eva Marium <evamarion.bcc@gmail.com>, 2015
+# Md. Shafiqul Islam <exploreshafiq@gmail.com>, 2015
 msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-09-22 03:42-0500\n"
-"PO-Revision-Date: 2015-05-18 18:18+0000\n"
+"POT-Creation-Date: 2015-10-29 04:22-0500\n"
+"PO-Revision-Date: 2015-10-29 09:06+0000\n"
 "Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
 "Language-Team: Bengali (http://www.transifex.com/geonode/geonode/language/"
 "bn/)\n"
@@ -69,14 +72,14 @@ msgstr "শুধু নিচের ব্যবহারকারী বা �
 msgid "Who can manage and edit this data?"
 msgstr "কে পরিচালনা করতে পারেন এবং এই তথ্য সম্পাদনা?"
 
-#: static/geonode/js/search/search.js:375
+#: static/geonode/js/search/search.js:374
 #: static_root/geonode/js/search/search.js:298
 msgid "Enter your text here ..."
-msgstr ""
+msgstr "এখানে আপনার টেক্সট লিখুন ..."
 
-#: static/geonode/js/search/search.js:401
+#: static/geonode/js/search/search.js:409
 msgid "Enter your region here ..."
-msgstr ""
+msgstr "এখানে আপনার অঞ্চলের লিখুন "
 
 #: static/geonode/js/upload/FileType.js:33
 #: static_root/geonode/js/upload/FileType.js:33
@@ -115,75 +118,75 @@ msgstr "GeoJSON"
 msgid "Zip Archives"
 msgstr "জিপ আর্কাইভ"
 
-#: static/geonode/js/upload/LayerInfo.js:231
+#: static/geonode/js/upload/LayerInfo.js:235
 #: static_root/geonode/js/upload/LayerInfo.js:231
 msgid "Layer Info"
 msgstr "লেয়ার তথ্য"
 
-#: static/geonode/js/upload/LayerInfo.js:232
+#: static/geonode/js/upload/LayerInfo.js:236
 #: static_root/geonode/js/upload/LayerInfo.js:232
 msgid "Edit Metadata"
 msgstr "সম্পাদনা মেটাডেটা"
 
-#: static/geonode/js/upload/LayerInfo.js:233
+#: static/geonode/js/upload/LayerInfo.js:237
 #: static_root/geonode/js/upload/LayerInfo.js:233
 msgid "Manage Styles"
-msgstr "শৈলী পরিচালনা"
+msgstr "Styles পরিচালনা"
 
-#: static/geonode/js/upload/LayerInfo.js:236
+#: static/geonode/js/upload/LayerInfo.js:240
 msgid "The column %1 was renamed to %2 <br/>"
-msgstr ""
+msgstr "কলাম %1 পুনঃনামকরণ করা হয় %2 <br/>"
 
-#: static/geonode/js/upload/LayerInfo.js:242
+#: static/geonode/js/upload/LayerInfo.js:246
 #: static_root/geonode/js/upload/LayerInfo.js:235
 msgid "Your layer was successfully uploaded"
 msgstr "তোমার স্তর সফলভাবে আপলোড করা হয় নি"
 
-#: static/geonode/js/upload/LayerInfo.js:271
+#: static/geonode/js/upload/LayerInfo.js:275
 #: static_root/geonode/js/upload/LayerInfo.js:264
 msgid "Performing Final GeoServer Config Step"
 msgstr "ফাইনাল GeoServer কনফিগ ধাপ পারফর্মিং"
 
-#: static/geonode/js/upload/LayerInfo.js:286
-#: static/geonode/js/upload/LayerInfo.js:312
+#: static/geonode/js/upload/LayerInfo.js:290
+#: static/geonode/js/upload/LayerInfo.js:316
 #: static_root/geonode/js/upload/LayerInfo.js:279
 #: static_root/geonode/js/upload/LayerInfo.js:305
 msgid "You need to specify more information in order to complete your upload"
 msgstr "আপনি আপনার আপলোড সম্পন্ন করার জন্য আরো তথ্য নির্দিষ্ট করতে হবে"
 
-#: static/geonode/js/upload/LayerInfo.js:304
+#: static/geonode/js/upload/LayerInfo.js:308
 #: static_root/geonode/js/upload/LayerInfo.js:297
 msgid "You need to specify more information in order to complete your upload."
 msgstr "আপনি আপনার আপলোড সম্পন্ন করার জন্য আরো তথ্য নির্দিষ্ট করতে হবে."
 
-#: static/geonode/js/upload/LayerInfo.js:304
+#: static/geonode/js/upload/LayerInfo.js:308
 #: static_root/geonode/js/upload/LayerInfo.js:297
 msgid "You can continue configuring your layer."
 msgstr "আপনি আপনার স্তর কনফিগার চালিয়ে যেতে পারেন."
 
-#: static/geonode/js/upload/LayerInfo.js:322
-#: static/geonode/js/upload/LayerInfo.js:407
+#: static/geonode/js/upload/LayerInfo.js:326
+#: static/geonode/js/upload/LayerInfo.js:412
 #: static_root/geonode/js/upload/LayerInfo.js:315
 #: static_root/geonode/js/upload/LayerInfo.js:400
 msgid "Unexpected Error"
 msgstr "অপ্রত্যাশিত ত্রুটি"
 
-#: static/geonode/js/upload/LayerInfo.js:338
+#: static/geonode/js/upload/LayerInfo.js:342
 #: static_root/geonode/js/upload/LayerInfo.js:331
 msgid "Performing GeoServer Config Step"
 msgstr "পারফর্মিং GeoServer কনফিগ ধাপ"
 
-#: static/geonode/js/upload/LayerInfo.js:414
+#: static/geonode/js/upload/LayerInfo.js:419
 #: static_root/geonode/js/upload/LayerInfo.js:407
 msgid "Layer files uploaded, configuring in GeoServer"
 msgstr "লেয়ার ফাইল আপলোড GeoServer মধ্যে কনফিগার"
 
-#: static/geonode/js/upload/LayerInfo.js:429
+#: static/geonode/js/upload/LayerInfo.js:434
 #: static_root/geonode/js/upload/LayerInfo.js:422
 msgid "Select or create a Geogig repository."
-msgstr ""
+msgstr "নির্বাচন করুন অথবা একটি Geogig repository তৈরি করুন "
 
-#: static/geonode/js/upload/LayerInfo.js:524
+#: static/geonode/js/upload/LayerInfo.js:528
 #: static_root/admin/js/SelectFilter2.js:69
 #: static_root/geonode/js/upload/LayerInfo.js:517
 msgid "Remove"
@@ -195,15 +198,18 @@ msgstr "অপসারণ"
 msgid "The file %s is an unsupported file type, please select another file."
 msgstr "ফাই %s এর একটি অসমর্থিত ফাইল টাইপ, অন্য ফাইল নির্বাচন করুন হল."
 
-#: static/geonode/js/upload/upload.js:260
-#: static_root/geonode/js/upload/upload.js:260
-msgid "You are uploading an incomplete set of files."
-msgstr "আপনি ফাইল একটি অসম্পূর্ণ সেট আপলোড করা হয়."
+#: static/geonode/js/upload/upload.js:280
+msgid ""
+"You are trying to upload an incomplete set of files or not all mandatory "
+"options have been validated.\n"
+"\n"
+"Please check for errors in the form!"
+msgstr ""
 
 #: static_root/admin/js/SelectFilter2.js:45
 #, c-format
 msgid "Available %s"
-msgstr ""
+msgstr "প্রাপ্তিসাধ্য %s"
 
 #: static_root/admin/js/SelectFilter2.js:46
 #, c-format
@@ -219,11 +225,11 @@ msgstr ""
 
 #: static_root/admin/js/SelectFilter2.js:57
 msgid "Filter"
-msgstr ""
+msgstr "ফিল্টার"
 
 #: static_root/admin/js/SelectFilter2.js:61
 msgid "Choose all"
-msgstr ""
+msgstr "সব চয়ন করুন"
 
 #: static_root/admin/js/SelectFilter2.js:61
 #, c-format
@@ -232,7 +238,7 @@ msgstr ""
 
 #: static_root/admin/js/SelectFilter2.js:67
 msgid "Choose"
-msgstr ""
+msgstr "নির্বাচন করা"
 
 #: static_root/admin/js/SelectFilter2.js:75
 #, c-format
@@ -280,12 +286,15 @@ msgid ""
 "fields. You're probably looking for the Go button rather than the Save "
 "button."
 msgstr ""
+"আপনি একটি কর্ম নির্বাচন করেছেন, এবং আপনি স্বতন্ত্র ক্ষেত্র উপর কোন পরিবর্তন করেন নি. "
+"আপনি সম্ভবত Save বাটন বদলে Go বাটন খুঁজছেন. "
 
 #: static_root/admin/js/calendar.js:8
 msgid ""
 "January February March April May June July August September October November "
 "December"
 msgstr ""
+"জানুয়ারি ফেব্রুয়ারি মার্চ এপ্রিল মে জুন জুলাই আগস্ট সেপ্টেম্বর অক্টোবর নভেম্বর ডিসেম্বর"
 
 #: static_root/admin/js/calendar.js:9
 msgid "S M T W T F S"
@@ -294,36 +303,36 @@ msgstr ""
 #: static_root/admin/js/collapse.js:8 static_root/admin/js/collapse.js.c:19
 #: static_root/admin/js/collapse.min.js:1
 msgid "Show"
-msgstr ""
+msgstr "প্রদর্শন করান"
 
 #: static_root/admin/js/collapse.js:16 static_root/admin/js/collapse.min.js:1
 msgid "Hide"
-msgstr ""
+msgstr "লুকান"
 
 #: static_root/admin/js/admin/DateTimeShortcuts.js:52
 #: static_root/admin/js/admin/DateTimeShortcuts.js:88
 msgid "Now"
-msgstr ""
+msgstr "এখন"
 
 #: static_root/admin/js/admin/DateTimeShortcuts.js:56
 msgid "Clock"
-msgstr ""
+msgstr "ঘড়ি"
 
 #: static_root/admin/js/admin/DateTimeShortcuts.js:84
 msgid "Choose a time"
-msgstr ""
+msgstr "একটি সময় বেছে নিন"
 
 #: static_root/admin/js/admin/DateTimeShortcuts.js:89
 msgid "Midnight"
-msgstr ""
+msgstr "মধ্যরাত্রি"
 
 #: static_root/admin/js/admin/DateTimeShortcuts.js:90
 msgid "6 a.m."
-msgstr ""
+msgstr "সকাল ছয়টা"
 
 #: static_root/admin/js/admin/DateTimeShortcuts.js:91
 msgid "Noon"
-msgstr ""
+msgstr "দুপুর"
 
 #: static_root/admin/js/admin/DateTimeShortcuts.js:95
 #: static_root/admin/js/admin/DateTimeShortcuts.js:208 templates/lang.js:9
@@ -334,19 +343,23 @@ msgstr "বাতিল করুন"
 #: static_root/admin/js/admin/DateTimeShortcuts.js:148
 #: static_root/admin/js/admin/DateTimeShortcuts.js:201
 msgid "Today"
-msgstr ""
+msgstr "আজ"
 
 #: static_root/admin/js/admin/DateTimeShortcuts.js:152
 msgid "Calendar"
-msgstr ""
+msgstr "ক্যালেন্ডার"
 
 #: static_root/admin/js/admin/DateTimeShortcuts.js:199
 msgid "Yesterday"
-msgstr ""
+msgstr "গতকাল"
 
 #: static_root/admin/js/admin/DateTimeShortcuts.js:203
 msgid "Tomorrow"
-msgstr ""
+msgstr "আগামীকাল"
+
+#: static_root/geonode/js/upload/upload.js:260
+msgid "You are uploading an incomplete set of files."
+msgstr "আপনি ফাইল একটি অসম্পূর্ণ সেট আপলোড করা হয়."
 
 #: templates/lang.js:10
 msgid "Save as Copy"
