@@ -84,7 +84,33 @@ class MetadataUpdateForm(models.ModelForm):
         instance.save()
         return instance
 
+
 class AnalysisCreationForm(models.ModelForm):
     """A form for creating an event."""
+
     class Meta:
         model = Analysis
+
+    exposure_layer = forms.ModelChoiceField(
+        label='Exposure Layer',
+        required=True,
+        queryset=Layer.objects.filter(metadata__layer_purpose='exposure'),
+        widget=forms.Select(
+            attrs={'class': 'form-control'})
+    )
+
+    hazard_layer = forms.ModelChoiceField(
+        label='Exposure Layer',
+        required=True,
+        queryset=Layer.objects.filter(metadata__layer_purpose='hazard'),
+        widget=forms.Select(
+            attrs={'class': 'form-control'})
+    )
+
+    aggregation_layer = forms.ModelChoiceField(
+        label='Exposure Layer',
+        required=True,
+        queryset=Layer.objects.filter(metadata__layer_purpose='aggregation'),
+        widget=forms.Select(
+            attrs={'class': 'form-control'})
+    )

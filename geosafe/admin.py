@@ -6,8 +6,6 @@ from geosafe.models import Metadata
 class MetadataAdmin(admin.ModelAdmin):
     list_display = (
         'layer',
-        'user',
-        'date_created'
     )
 
 
