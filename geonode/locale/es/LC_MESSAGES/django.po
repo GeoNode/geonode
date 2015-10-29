@@ -13,6 +13,7 @@
 # Translators:
 # Translators:
 # Translators:
+# Translators:
 # aaizemberg <ariel.aizemberg@gmail.com>, 2013
 # Andres Alfonso Lemon Gomez <lemon.andres@gmail.com>, 2014
 # aaizemberg <ariel.aizemberg@gmail.com>, 2013
@@ -32,9 +33,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-10-29 04:00-0500\n"
-"PO-Revision-Date: 2015-10-15 07:06+0000\n"
-"Last-Translator: ingenieroariel <ingenieroariel@gmail.com>\n"
+"POT-Creation-Date: 2015-10-29 04:21-0500\n"
+"PO-Revision-Date: 2015-10-29 09:05+0000\n"
+"Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
 "Language-Team: Spanish (http://www.transifex.com/geonode/geonode/language/"
 "es/)\n"
 "Language: es\n"
@@ -1010,22 +1011,17 @@ msgid "Deleting"
 msgstr "Eliminando"
 
 #: documents/templates/documents/document_remove.html:8
-#, fuzzy
 msgid "Remove Document"
-msgstr "Remove this Document"
+msgstr ""
 
 #: documents/templates/documents/document_remove.html:13
-#, fuzzy, python-format
+#, python-format
 msgid ""
 "\n"
 "          Are you sure you want to remove <a href="
 "\"%(document.get_absolute_url)s\">%(document_title)s</a>?\n"
 "        "
 msgstr ""
-"\n"
-"         Estás seguro de que desea borrar <a href="
-"\"%(layer.get_absolute_url)s\">%(layer_title)s</a>?\n"
-"        "
 
 #: documents/templates/documents/document_remove.html:20
 #: groups/templates/groups/group_remove.html:19
@@ -2640,22 +2636,17 @@ msgstr ""
 "Algunos de sus metadatos originales pueden haberse perdido. "
 
 #: maps/templates/maps/map_remove.html:10
-#, fuzzy
 msgid "Remove Map"
-msgstr "Remove this Map"
+msgstr ""
 
 #: maps/templates/maps/map_remove.html:15
-#, fuzzy, python-format
+#, python-format
 msgid ""
 "\n"
 "          Are you sure you want to remove <a href=\"%(map.get_absolute_url)s"
 "\">%(map_title)s</a>?\n"
 "        "
 msgstr ""
-"\n"
-"         Estás seguro de que desea borrar <a href="
-"\"%(layer.get_absolute_url)s\">%(layer_title)s</a>?\n"
-"        "
 
 #: maps/templates/maps/map_view.html:5
 msgid "GeoExplorer"
@@ -4032,24 +4023,20 @@ msgid "Are you sure you want to log out?"
 msgstr "¿Está seguro que desea cerrar la sesión?"
 
 #: templates/account/password_change.html:8
-#, fuzzy
 msgid "Password change"
-msgstr "Clave"
+msgstr ""
 
 #: templates/account/password_change.html:14
-#, fuzzy
 msgid "Password Change"
-msgstr "Clave"
+msgstr ""
 
 #: templates/account/password_change.html:18
-#, fuzzy
 msgid "Change your password here"
-msgstr "Cambiar contraseña"
+msgstr ""
 
 #: templates/account/password_change.html:24
-#, fuzzy
 msgid "Change my password"
-msgstr "Cambiar contraseña"
+msgstr ""
 
 #: templates/account/password_reset.html:8
 msgid "Password reset"
@@ -4672,7 +4659,7 @@ msgstr "Enviar Respuesta"
 #~ "        "
 #~ msgstr ""
 #~ "\n"
-#~ "          ¿Esta seguro de eliminar %(document_title)s?\n"
+#~ "          Are you sure you want to remove %(document_title)s?\n"
 #~ "        "
 
 #~ msgid ""
@@ -4681,7 +4668,7 @@ msgstr "Enviar Respuesta"
 #~ "    "
 #~ msgstr ""
 #~ "\n"
-#~ "¿Estás seguro que quieres quitar %(map_title)s?\n"
+#~ "        Are you sure you want to remove %(map_title)s?\n"
 #~ "    "
 
 #~ msgid "email"

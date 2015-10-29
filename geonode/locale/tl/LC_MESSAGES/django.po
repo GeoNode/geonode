@@ -13,12 +13,13 @@
 # Translators:
 # Translators:
 # Translators:
+# Translators:
 msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-10-29 04:00-0500\n"
-"PO-Revision-Date: 2015-09-22 08:17+0000\n"
+"POT-Creation-Date: 2015-10-29 04:21-0500\n"
+"PO-Revision-Date: 2015-10-29 09:05+0000\n"
 "Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
 "Language-Team: Tagalog (http://www.transifex.com/geonode/geonode/language/"
 "tl/)\n"
@@ -965,9 +966,8 @@ msgid "Deleting"
 msgstr ""
 
 #: documents/templates/documents/document_remove.html:8
-#, fuzzy
 msgid "Remove Document"
-msgstr "Remove this Document"
+msgstr ""
 
 #: documents/templates/documents/document_remove.html:13
 #, python-format
@@ -2483,9 +2483,8 @@ msgid ""
 msgstr ""
 
 #: maps/templates/maps/map_remove.html:10
-#, fuzzy
 msgid "Remove Map"
-msgstr "Remove this Map"
+msgstr ""
 
 #: maps/templates/maps/map_remove.html:15
 #, python-format
@@ -4235,6 +4234,24 @@ msgstr ""
 #: templates/user_messages/thread_detail.html:26
 msgid "Send Reply"
 msgstr ""
+
+#~ msgid ""
+#~ "\n"
+#~ "          Are you sure you want to remove %(document_title)s?\n"
+#~ "        "
+#~ msgstr ""
+#~ "\n"
+#~ "          Are you sure you want to remove %(document_title)s?\n"
+#~ "        "
+
+#~ msgid ""
+#~ "\n"
+#~ "        Are you sure you want to remove %(map_title)s?\n"
+#~ "    "
+#~ msgstr ""
+#~ "\n"
+#~ "        Are you sure you want to remove %(map_title)s?\n"
+#~ "    "
 
 #~ msgid "email"
 #~ msgstr "email"

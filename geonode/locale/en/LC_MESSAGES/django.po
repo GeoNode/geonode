@@ -13,12 +13,13 @@
 # Translators:
 # Translators:
 # Translators:
+# Translators:
 msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-10-29 04:00-0500\n"
-"PO-Revision-Date: 2015-09-22 08:17+0000\n"
+"POT-Creation-Date: 2015-10-29 04:21-0500\n"
+"PO-Revision-Date: 2015-10-29 09:05+0000\n"
 "Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
 "Language-Team: English (http://www.transifex.com/geonode/geonode/language/"
 "en/)\n"
@@ -986,12 +987,11 @@ msgid "Deleting"
 msgstr "Deleting"
 
 #: documents/templates/documents/document_remove.html:8
-#, fuzzy
 msgid "Remove Document"
-msgstr "Remove this Document"
+msgstr "Remove Document"
 
 #: documents/templates/documents/document_remove.html:13
-#, fuzzy, python-format
+#, python-format
 msgid ""
 "\n"
 "          Are you sure you want to remove <a href="
@@ -1000,7 +1000,7 @@ msgid ""
 msgstr ""
 "\n"
 "          Are you sure you want to remove <a href="
-"\"%(layer.get_absolute_url)s\">%(layer_title)s</a>?\n"
+"\"%(document.get_absolute_url)s\">%(document_title)s</a>?\n"
 "        "
 
 #: documents/templates/documents/document_remove.html:20
@@ -2611,12 +2611,11 @@ msgstr ""
 "        Some of your original metadata may have been lost."
 
 #: maps/templates/maps/map_remove.html:10
-#, fuzzy
 msgid "Remove Map"
-msgstr "Remove this Map"
+msgstr "Remove Map"
 
 #: maps/templates/maps/map_remove.html:15
-#, fuzzy, python-format
+#, python-format
 msgid ""
 "\n"
 "          Are you sure you want to remove <a href=\"%(map.get_absolute_url)s"
@@ -2624,8 +2623,8 @@ msgid ""
 "        "
 msgstr ""
 "\n"
-"          Are you sure you want to remove <a href="
-"\"%(layer.get_absolute_url)s\">%(layer_title)s</a>?\n"
+"          Are you sure you want to remove <a href=\"%(map.get_absolute_url)s"
+"\">%(map_title)s</a>?\n"
 "        "
 
 #: maps/templates/maps/map_view.html:5
@@ -3997,24 +3996,20 @@ msgid "Are you sure you want to log out?"
 msgstr "Are you sure you want to log out?"
 
 #: templates/account/password_change.html:8
-#, fuzzy
 msgid "Password change"
-msgstr "Password"
+msgstr "Password change"
 
 #: templates/account/password_change.html:14
-#, fuzzy
 msgid "Password Change"
-msgstr "Password"
+msgstr "Password Change"
 
 #: templates/account/password_change.html:18
-#, fuzzy
 msgid "Change your password here"
-msgstr "Change password"
+msgstr "Change your password here"
 
 #: templates/account/password_change.html:24
-#, fuzzy
 msgid "Change my password"
-msgstr "Change password"
+msgstr "Change my password"
 
 #: templates/account/password_reset.html:8
 msgid "Password reset"

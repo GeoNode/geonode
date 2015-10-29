@@ -13,6 +13,7 @@
 # Translators:
 # Translators:
 # Translators:
+# Translators:
 # amir.rad <amir.rad@gmail.com>, 2014
 # amir.rad <amir.rad@gmail.com>, 2014
 # Andres Alfonso Lemon Gomez <lemon.andres@gmail.com>, 2014
@@ -21,9 +22,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-10-29 04:00-0500\n"
-"PO-Revision-Date: 2015-09-01 05:48+0000\n"
-"Last-Translator: nimaghasemloo <nsm_n63@yahoo.com>\n"
+"POT-Creation-Date: 2015-10-29 04:22-0500\n"
+"PO-Revision-Date: 2015-10-29 09:06+0000\n"
+"Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
 "Language-Team: Persian (Iran) (http://www.transifex.com/geonode/geonode/"
 "language/fa_IR/)\n"
 "Language: fa_IR\n"
