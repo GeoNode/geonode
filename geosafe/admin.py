@@ -6,6 +6,7 @@ from geosafe.models import Metadata
 class MetadataAdmin(admin.ModelAdmin):
     list_display = (
         'layer',
+        'layer_purpose'
     )
 
 

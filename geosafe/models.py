@@ -8,6 +8,29 @@ from django.dispatch import receiver
 
 from geonode.layers.models import Layer
 
+# geosafe
+import os
+from xml.etree import ElementTree
+from ast import literal_eval
+from collections import OrderedDict
+
+
+# geosafe
+# list of tags to get to the InaSAFE keywords.
+# this is stored in a list so it can be easily used in a for loop
+ISO_METADATA_KEYWORD_NESTING = [
+    '{http://www.isotc211.org/2005/gmd}identificationInfo',
+    '{http://www.isotc211.org/2005/gmd}MD_DataIdentification',
+    '{http://www.isotc211.org/2005/gmd}supplementalInformation',
+    'inasafe_keywords']
+
+# flat xpath for the keyword container tag
+ISO_METADATA_KEYWORD_TAG = '/'.join(ISO_METADATA_KEYWORD_NESTING)
+
+
+class GeoSAFEException(BaseException):
+    pass
+
 
 # Create your models here.
 class Metadata(models.Model):
@@ -27,6 +50,90 @@ class Metadata(models.Model):
         default=''
     )
 
+    def get_metadata_file_path(self):
+        """Obtain metadata (.xml) file path of the layer."""
+        base_file, _ = self.layer.get_base_file()
+        if not base_file:
+            return ''
+        base_file_path = base_file.file.path
+        xml_file_path = base_file_path.split('.')[0] + '.xml'
+        if not os.path.exists(xml_file_path):
+            return ''
+        return xml_file_path
+
+    def inasafe_metadata(self):
+        """Return dictionary of inasafe metadata."""
+        xml_file_path = self.get_metadata_file_path()
+        keywords = self.read_iso_metadata(xml_file_path)
+        keywords = keywords['keywords']
+        # remove empty line
+        keywords = [x for x in keywords if x]
+        keyword_dict = {}
+        for item in keywords:
+            if ':' not in item:
+                key = item.strip()
+                val = None
+            else:
+                # Get splitting point
+                idx = item.find(':')
+
+                # Take key as everything up to the first ':'
+                key = item[:idx]
+
+                # Take value as everything after the first ':'
+                textval = item[idx + 1:].strip()
+                try:
+                    # Take care of python structures like
+                    # booleans, None, lists, dicts etc
+                    val = literal_eval(textval)
+                except (ValueError, SyntaxError):
+                    if 'OrderedDict(' == textval[:12]:
+                        try:
+                            val = OrderedDict(
+                                literal_eval(textval[12:-1]))
+                        except (ValueError, SyntaxError, TypeError):
+                            val = textval
+                    else:
+                        val = textval
+
+            # Add entry to dictionary
+            keyword_dict[key] = val
+        return keyword_dict
+
+    def set_layer_purpose(self):
+        """Obtain layer's purpose"""
+        keywords = self.inasafe_metadata()
+        self.layer_purpose = keywords.get('layer_purpose', '')
+
+    @staticmethod
+    def read_iso_metadata(keyword_filename):
+        """Try to extract keywords from an xml file
+
+        :param keyword_filename: Name of keywords file.
+        :type keyword_filename: str
+
+        :returns: metadata: a dictionary containing the metadata.
+            the keywords element contains the content of the ISO_METADATA_KW_TAG
+            as list so that it can be read line per line as if it was a file.
+
+        :raises: ReadMetadataError, IOError
+        """
+
+        basename, _ = os.path.splitext(keyword_filename)
+        xml_filename = basename + '.xml'
+
+        # this raises a IOError if the file doesn't exist
+        tree = ElementTree.parse(xml_filename)
+        root = tree.getroot()
+
+        keyword_element = root.find(ISO_METADATA_KEYWORD_TAG)
+        # we have an xml file but it has no valid container
+        if keyword_element is None:
+            raise GeoSAFEException
+
+        metadata = {'keywords': keyword_element.text.split('\n')}
+
+        return metadata
 
 class Analysis(models.Model):
     """Represent GeoSAFE analysis"""
@@ -112,6 +219,7 @@ def get_metadata_url(layer):
 def create_metadata_object(sender, instance, created, **kwargs):
     metadata = Metadata()
     metadata.layer = instance
-    metadata.layer_purpose = instance.layer_purpose()
+    metadata.set_layer_purpose()
+    # metadata.layer_purpose = instance.layer_purpose()
 
     metadata.save()
