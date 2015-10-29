@@ -110,8 +110,10 @@ def create_model(
         for key, value in options.iteritems():
             setattr(Meta, key, value)
 
+    setattr(Meta, 'verbose_name_plural', name)
+
     # Set up a dictionary to simulate declarations within a class
-    attrs = {'__module__': module, 'Meta': Meta}
+    attrs = {'__module__': module, 'Meta': Meta, 'objects': models.GeoManager()}
 
     # Add in any fields that were provided
     if fields:
