@@ -13,6 +13,7 @@
 # Translators:
 # Translators:
 # Translators:
+# Translators:
 # BJ Jang <qgis.tr.kr@gmail.com>, 2014
 # HANJIN LEE <jinifor@gmail.com>, 2015
 # ingenieroariel <ingenieroariel@gmail.com>, 2014
@@ -23,8 +24,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-09-22 03:42-0500\n"
-"PO-Revision-Date: 2015-09-22 08:17+0000\n"
+"POT-Creation-Date: 2015-10-29 04:21-0500\n"
+"PO-Revision-Date: 2015-10-29 09:05+0000\n"
 "Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
 "Language-Team: Korean (http://www.transifex.com/geonode/geonode/language/"
 "ko/)\n"
@@ -34,11 +35,11 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 
-#: utils.py:44
+#: utils.py:43
 msgid "Invalid permission level."
 msgstr "유효하지 않은 권한 수준."
 
-#: utils.py:494
+#: utils.py:496
 msgid "Permission Denied"
 msgstr "사용 권한이 거부되었습니다"
 
@@ -160,7 +161,8 @@ msgstr "제공된 정보가 없습니다"
 
 #: base/forms.py:43 base/templates/base/resourcebase_info_panel.html:62
 #: documents/templates/documents/document_metadata.html:65
-#: layers/templates/layers/layer_metadata.html:71
+#: layers/templates/layers/layer_metadata.html:70
+#: layers/templates/upload/layer_upload.html:89
 #: maps/templates/maps/map_metadata.html:61
 msgid "Category"
 msgstr "카테고리"
@@ -169,7 +171,7 @@ msgstr "카테고리"
 msgid "Category is required."
 msgstr "카테고리가 필요합니다."
 
-#: base/forms.py:105 groups/models.py:45 people/forms.py:82
+#: base/forms.py:114 groups/models.py:45 people/forms.py:82
 msgid "A space or comma-separated list of keywords"
 msgstr "공백 또는 쉼표로 구분된 키워드 목록"
 
@@ -711,23 +713,23 @@ msgstr ""
 msgid "See users"
 msgstr "사용자 보기"
 
-#: documents/forms.py:92 documents/forms.py:160
+#: documents/forms.py:96 documents/forms.py:164
 msgid "Document must be a file or url."
 msgstr "문서는 파일 또는 URL이어야 합니다."
 
-#: documents/forms.py:96 documents/forms.py:164
+#: documents/forms.py:100 documents/forms.py:168
 msgid "A document cannot have both a file and a url."
 msgstr "문서는 파일과 URL을 동시에 적용할 수 없습니다."
 
-#: documents/forms.py:109 documents/forms.py:177
+#: documents/forms.py:113 documents/forms.py:181
 msgid "This file type is not allowed"
 msgstr "이 파일 유형은 허용되지 않습니다"
 
-#: documents/forms.py:127
+#: documents/forms.py:131
 msgid "Link to"
 msgstr "링크 "
 
-#: documents/forms.py:149
+#: documents/forms.py:153
 msgid "Permissions must be valid JSON."
 msgstr "권한은 유효한 JSON이어야 합니다."
 
@@ -771,13 +773,13 @@ msgstr "이 문서를 볼 권한이 없습니다."
 msgid "You are not allowed to edit this document."
 msgstr "이 문서를 편집할 권한이 없습니다."
 
-#: documents/views.py:328 layers/views.py:363
+#: documents/views.py:328 layers/views.py:358
 msgid "You must set a point of contact for this resource"
-msgstr ""
+msgstr "이 자원에 대한 담당자를 설정"
 
-#: documents/views.py:343 layers/views.py:378
+#: documents/views.py:343 layers/views.py:373
 msgid "You must set an author for this resource"
-msgstr ""
+msgstr "이 자원에 대한 저자를 설정"
 
 #: documents/management/__init__.py:14
 msgid "Document Created"
@@ -921,7 +923,7 @@ msgstr "이 문서는 지도나 레이어와 연결되어 있지 않습니다"
 #: groups/templates/groups/group_detail.html:70
 #: layers/templates/layers/layer_detail.html:334
 #: layers/templates/layers/layer_replace.html:94
-#: layers/templates/upload/layer_upload.html:93
+#: layers/templates/upload/layer_upload.html:112
 #: maps/templates/maps/map_detail.html:178 people/admin.py:55
 msgid "Permissions"
 msgstr "권한"
@@ -978,28 +980,36 @@ msgstr "갱신"
 msgid "Metadata Provider"
 msgstr "메타데이터 공급자"
 
-#: documents/templates/documents/document_remove.html:11
+#: documents/templates/documents/document_remove.html:4
+#: maps/templates/maps/map_remove.html:6
+msgid "Deleting"
+msgstr "삭제중"
+
+#: documents/templates/documents/document_remove.html:8
+msgid "Remove Document"
+msgstr ""
+
+#: documents/templates/documents/document_remove.html:13
 #, python-format
 msgid ""
 "\n"
-"          Are you sure you want to remove %(document_title)s?\n"
+"          Are you sure you want to remove <a href="
+"\"%(document.get_absolute_url)s\">%(document_title)s</a>?\n"
 "        "
 msgstr ""
-"\n"
-"%(document_title)s? 를 정말로 삭제하시겠습니까?"
 
-#: documents/templates/documents/document_remove.html:18
+#: documents/templates/documents/document_remove.html:20
 #: groups/templates/groups/group_remove.html:19
 #: layers/templates/layers/layer_remove.html:22
-#: maps/templates/maps/map_remove.html:19
+#: maps/templates/maps/map_remove.html:22
 #: services/templates/services/service_remove.html:17
 msgid "Yes, I am sure"
 msgstr "예, 제거합니다"
 
-#: documents/templates/documents/document_remove.html:19
+#: documents/templates/documents/document_remove.html:21
 #: groups/templates/groups/group_remove.html:20
 #: layers/templates/layers/layer_remove.html:23
-#: maps/templates/maps/map_remove.html:20
+#: maps/templates/maps/map_remove.html:23
 #: services/templates/services/service_remove.html:18
 msgid "No, don't remove it"
 msgstr "아니오, 제거하지 않습니다."
@@ -1015,7 +1025,7 @@ msgstr "교체"
 
 #: documents/templates/documents/document_replace.html:27
 #: layers/templates/layers/layer_replace.html:84
-#: layers/templates/upload/layer_upload.html:86
+#: layers/templates/upload/layer_upload.html:105
 msgid "Clear"
 msgstr "취소"
 
@@ -1023,11 +1033,11 @@ msgstr "취소"
 msgid "Upload Document"
 msgstr "문서 업로드"
 
-#: geoserver/helpers.py:974
+#: geoserver/helpers.py:987
 msgid "An exception occurred loading data to PostGIS"
 msgstr "PostGIS에 데이터를 로딩하는 중 오류가 발생했습니다"
 
-#: geoserver/helpers.py:979
+#: geoserver/helpers.py:992
 msgid " Additionally an error occured during database cleanup"
 msgstr "추가적으로 데이터베이스를 정리하는 중 오류가 발생했습니다"
 
@@ -1067,7 +1077,7 @@ msgstr "PDF"
 msgid "PNG"
 msgstr "PNG"
 
-#: geoserver/signals.py:293
+#: geoserver/signals.py:294
 msgid "Could not create a download link for layer."
 msgstr "레이어의 다운로드 링크를 생성할 수 없습니다."
 
@@ -1561,19 +1571,19 @@ msgstr "이 레이어의 메타데이터를 수정할 권한이 없습니다."
 msgid "You are not permitted to view this layer"
 msgstr "이 레이어를 볼 수 있는 권한이 없습니다."
 
-#: layers/views.py:488
+#: layers/views.py:486
 msgid "You are attempting to replace a vector layer with a raster."
 msgstr "벡터 레이어를 래스터 레이어로 변경하려 합니다."
 
-#: layers/views.py:491
+#: layers/views.py:489
 msgid "You are attempting to replace a raster layer with a vector."
 msgstr "래스터 레이어를 벡터 레이어로 변경하려 합니다."
 
-#: layers/views.py:547
+#: layers/views.py:545
 msgid "Unable to delete layer"
 msgstr "레이어를 삭제할 수 없습니다"
 
-#: layers/views.py:550
+#: layers/views.py:548
 msgid ""
 "This layer is a member of a layer group, you must remove the layer from the "
 "group before deleting."
@@ -1947,7 +1957,7 @@ msgstr "사용가능한 스타일 갱신"
 msgid "Upload Layer"
 msgstr "레이어 업로드"
 
-#: layers/templates/upload/layer_upload.html:87
+#: layers/templates/upload/layer_upload.html:106
 msgid "Upload files"
 msgstr "파일 업로드하기"
 
@@ -2564,19 +2574,18 @@ msgstr ""
 "다. GeoNode의 메타데이터 가져오기는 ISO, FGDC, 더블린 코어 메타 데이터 요소"
 "의 일부를 지원합니다. 원래 메타데이터의 일부가 손실되었을 수 있습니다."
 
-#: maps/templates/maps/map_remove.html:6
-msgid "Deleting"
-msgstr "삭제중"
+#: maps/templates/maps/map_remove.html:10
+msgid "Remove Map"
+msgstr ""
 
-#: maps/templates/maps/map_remove.html:13
+#: maps/templates/maps/map_remove.html:15
 #, python-format
 msgid ""
 "\n"
-"        Are you sure you want to remove %(map_title)s?\n"
-"    "
+"          Are you sure you want to remove <a href=\"%(map.get_absolute_url)s"
+"\">%(map_title)s</a>?\n"
+"        "
 msgstr ""
-"\n"
-" 정말로 %(map_title)s 를 제거하시겠습니까?"
 
 #: maps/templates/maps/map_view.html:5
 msgid "GeoExplorer"
@@ -2773,15 +2782,15 @@ msgstr ""
 "일반적으로 사용 된 단어 (들) 또는 공식화 할 단어 나 구 (들)은 피사체 (공간 또"
 "는 쉼표로 구분을 설명하기 위해 사용"
 
-#: people/views.py:90
+#: people/views.py:91
 msgid "Your username for "
 msgstr "사용자 이름 "
 
-#: people/views.py:104
+#: people/views.py:105
 msgid "Your username has been emailed to you."
 msgstr "사용자 아이디가 이메일로 발송되었습니다."
 
-#: people/views.py:106
+#: people/views.py:107
 msgid "No user could be found with that email address."
 msgstr "해당 이메일 주소에 해당하는 사용자가 없습니다."
 
@@ -2898,7 +2907,8 @@ msgid "Remote Services"
 msgstr "원격 서비스"
 
 #: people/templates/people/profile_detail.html:117 templates/500.html:229
-#: templates/base.html:222
+#: templates/base.html:222 templates/account/invite_user.html:8
+#: templates/account/invite_user.html:15
 msgid "Invite User"
 msgstr "사용자 초대"
 
@@ -3837,11 +3847,11 @@ msgid "Share This"
 msgstr "공유하기"
 
 #: templates/account/admin_approval_sent.html:6
-#: templates/account/admin_approval_sent.html:9
+#: templates/account/admin_approval_sent.html:11
 msgid "Account Pending Approval"
 msgstr "승인 보류 계정"
 
-#: templates/account/admin_approval_sent.html:11
+#: templates/account/admin_approval_sent.html:14
 #, python-format
 msgid ""
 "We have sent the administrators a notice to approve your account associated "
@@ -3852,11 +3862,11 @@ msgstr ""
 "다. 계정이 승인되면, 당신은 확인 통지를 받게 될 것입니다."
 
 #: templates/account/email_confirmation_sent.html:6
-#: templates/account/email_confirmation_sent.html:9
+#: templates/account/email_confirmation_sent.html:11
 msgid "Confirm your email address"
 msgstr "이메일 주소 확인"
 
-#: templates/account/email_confirmation_sent.html:11
+#: templates/account/email_confirmation_sent.html:14
 #, python-format
 msgid ""
 "We have sent you an email to <b>%(email)s</b> for verification. Follow the "
@@ -3884,6 +3894,22 @@ msgstr "비밀번호를 잊으셨나요?"
 #: templates/account/logout.html:15
 msgid "Are you sure you want to log out?"
 msgstr "정말로 로그아웃 하시겠습니까?"
+
+#: templates/account/password_change.html:8
+msgid "Password change"
+msgstr ""
+
+#: templates/account/password_change.html:14
+msgid "Password Change"
+msgstr ""
+
+#: templates/account/password_change.html:18
+msgid "Change your password here"
+msgstr ""
+
+#: templates/account/password_change.html:24
+msgid "Change my password"
+msgstr ""
 
 #: templates/account/password_reset.html:8
 msgid "Password reset"
@@ -3920,12 +3946,12 @@ msgstr ""
 "%(THEME_ACCOUNT_CONTACT_EMAIL)s\">%(THEME_ACCOUNT_CONTACT_EMAIL)s</a>로 문의"
 "하십시오."
 
-#: templates/account/signup.html:7 templates/account/signup.html.py:14
-#: templates/account/signup.html:22
+#: templates/account/signup.html:7 templates/account/signup.html.py:11
+#: templates/account/signup.html:17 templates/account/signup.html.py:25
 msgid "Sign up"
 msgstr "가입"
 
-#: templates/account/signup.html:27
+#: templates/account/signup.html:30
 msgid "Sorry, registrations are not open at this time."
 msgstr "죄송합니다, 지금 등록할 수 없습니다."
 
@@ -4417,11 +4443,11 @@ msgstr "yyyy-mm-dd"
 msgid "Date ends before:"
 msgstr "종료 날짜:"
 
-#: templates/search/_search_content.html:6
+#: templates/search/_search_content.html:5
 msgid "Your selections"
 msgstr "선택"
 
-#: templates/search/_search_content.html:7
+#: templates/search/_search_content.html:6
 msgid "Clear all filters"
 msgstr "모든 필터 제거"
 
@@ -4439,7 +4465,7 @@ msgstr "검색"
 
 #: templates/user_messages/_message_snippet.html:8
 msgid "With"
-msgstr "넓이"
+msgstr ":"
 
 #: templates/user_messages/_message_snippet.html:9
 msgid "Subject"
@@ -4489,6 +4515,24 @@ msgstr "보관함으로 돌아가기"
 msgid "Send Reply"
 msgstr "답장 보내기"
 
+#~ msgid ""
+#~ "\n"
+#~ "          Are you sure you want to remove %(document_title)s?\n"
+#~ "        "
+#~ msgstr ""
+#~ "\n"
+#~ "          Are you sure you want to remove %(document_title)s?\n"
+#~ "        "
+
+#~ msgid ""
+#~ "\n"
+#~ "        Are you sure you want to remove %(map_title)s?\n"
+#~ "    "
+#~ msgstr ""
+#~ "\n"
+#~ "        Are you sure you want to remove %(map_title)s?\n"
+#~ "    "
+
 #~ msgid "email"
 #~ msgstr "email"
 
@@ -4510,9 +4554,6 @@ msgstr "답장 보내기"
 #~ msgid "Replace this Document"
 #~ msgstr "Replace this Document"
 
-#~ msgid "Remove this Document"
-#~ msgstr "Remove this Document"
-
 #~ msgid "Edit Styles"
 #~ msgstr "Edit Styles"
 
@@ -4527,9 +4568,6 @@ msgstr "답장 보내기"
 
 #~ msgid "Edit Map Metadata"
 #~ msgstr "Edit Map Metadata"
-
-#~ msgid "Remove this Map"
-#~ msgstr "Remove this Map"
 
 #~ msgid "Profile Menu"
 #~ msgstr "Profile Menu"
