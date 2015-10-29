@@ -13,6 +13,7 @@
 # Translators:
 # Translators:
 # Translators:
+# Translators:
 # Alessandro Fanna <alex@rospus.org>, 2013-2015
 # andrea vianello <andrea.vianello@ve.ismar.cnr.it>, 2015
 # Antonio <anto.opro@gmail.com>, 2013
@@ -31,9 +32,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-10-29 04:00-0500\n"
-"PO-Revision-Date: 2015-10-04 20:24+0000\n"
-"Last-Translator: Alessandro Fanna <alex@rospus.org>\n"
+"POT-Creation-Date: 2015-10-29 04:21-0500\n"
+"PO-Revision-Date: 2015-10-29 09:05+0000\n"
+"Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
 "Language-Team: Italian (http://www.transifex.com/geonode/geonode/language/"
 "it/)\n"
 "Language: it\n"
@@ -1009,22 +1010,17 @@ msgid "Deleting"
 msgstr "Cancellando"
 
 #: documents/templates/documents/document_remove.html:8
-#, fuzzy
 msgid "Remove Document"
-msgstr "Remove this Document"
+msgstr ""
 
 #: documents/templates/documents/document_remove.html:13
-#, fuzzy, python-format
+#, python-format
 msgid ""
 "\n"
 "          Are you sure you want to remove <a href="
 "\"%(document.get_absolute_url)s\">%(document_title)s</a>?\n"
 "        "
 msgstr ""
-"\n"
-"          Sei sicuro di voler eliminare <a href=\"%(layer.get_absolute_url)s"
-"\">%(layer_title)s</a>?\n"
-"        "
 
 #: documents/templates/documents/document_remove.html:20
 #: groups/templates/groups/group_remove.html:19
@@ -2631,22 +2627,17 @@ msgstr ""
 "originale Potrebbero essere state compromesse."
 
 #: maps/templates/maps/map_remove.html:10
-#, fuzzy
 msgid "Remove Map"
-msgstr "Remove this Map"
+msgstr ""
 
 #: maps/templates/maps/map_remove.html:15
-#, fuzzy, python-format
+#, python-format
 msgid ""
 "\n"
 "          Are you sure you want to remove <a href=\"%(map.get_absolute_url)s"
 "\">%(map_title)s</a>?\n"
 "        "
 msgstr ""
-"\n"
-"          Sei sicuro di voler eliminare <a href=\"%(layer.get_absolute_url)s"
-"\">%(layer_title)s</a>?\n"
-"        "
 
 #: maps/templates/maps/map_view.html:5
 msgid "GeoExplorer"
@@ -3833,24 +3824,20 @@ msgid "Are you sure you want to log out?"
 msgstr "Sei sicuro di voler uscire?"
 
 #: templates/account/password_change.html:8
-#, fuzzy
 msgid "Password change"
-msgstr "Password"
+msgstr ""
 
 #: templates/account/password_change.html:14
-#, fuzzy
 msgid "Password Change"
-msgstr "Password"
+msgstr ""
 
 #: templates/account/password_change.html:18
-#, fuzzy
 msgid "Change your password here"
-msgstr "Cambia password"
+msgstr ""
 
 #: templates/account/password_change.html:24
-#, fuzzy
 msgid "Change my password"
-msgstr "Cambia password"
+msgstr ""
 
 #: templates/account/password_reset.html:8
 msgid "Password reset"
@@ -4455,7 +4442,7 @@ msgstr "Invia risposta"
 #~ "        "
 #~ msgstr ""
 #~ "\n"
-#~ "         Sei sicuro di voler rimuovere %(document_title)s?\n"
+#~ "          Are you sure you want to remove %(document_title)s?\n"
 #~ "        "
 
 #~ msgid ""
@@ -4464,7 +4451,7 @@ msgstr "Invia risposta"
 #~ "    "
 #~ msgstr ""
 #~ "\n"
-#~ "        Sei sicuro di voler rimuovere %(map_title)s?\n"
+#~ "        Are you sure you want to remove %(map_title)s?\n"
 #~ "    "
 
 #~ msgid "email"
