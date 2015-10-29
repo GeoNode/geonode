@@ -1,0 +1,40 @@
+{% extends 'site_base.html' %}
+{% block body %}
+    <h1>Analysis</h1>
+    <div>
+        <table>
+            <thead>
+            <tr>
+                <th>Exposure</th>
+                <th>Hazard</th>
+                <th>Aggregation</th>
+                <th>Extent</th>
+                <th>Impact Function ID</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for analysis in analysis_list %}
+                <tr>
+                    <td>
+                        {{ analysis.exposure_layer.name }}
+                    </td>
+                    <td>
+                        {{ analysis.hazard_layer }}
+                    </td>
+                    <td>
+                        {{ analysis.aggregation_layer }}
+                    </td>
+                    <td>
+                        {{ analysis.extent_option }}
+                    </td>
+                    <td>
+                        {{ analysis.impact_function_id }}
+                    </td>
+                </tr>
+            {% empty %}
+                <li>No analysis yet.</li>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}

@@ -187,7 +187,7 @@ class Analysis(models.Model):
     )
     extent_option = models.IntegerField(
         choices=EXTENT_CHOICES,
-        default=HAZARD_EXPOSURE_CURRENT_VIEW_CODE,
+        default=HAZARD_EXPOSURE_CODE,
         verbose_name='Analysis extent',
         help_text='Extent option for analysis.'
     )
@@ -199,27 +199,10 @@ class Analysis(models.Model):
         pass
 
 
-def get_metadata_url(layer):
-    """Obtain the url of xml file of a layer.
-
-    :param layer: A Layer object
-    :type layer: Layer
-
-    :returns: A url to the metadata file
-    :rtype: str
-    """
-    xml_files = layer.upload_session.layerfile_set.filter(name='xml')
-    xml_file_object = xml_files[len(xml_files) - 1] # get the latest index
-    xml_file_url = xml_file_object.file.url
-
-    return xml_file_url
-
-
 @receiver(post_save, sender=Layer)
 def create_metadata_object(sender, instance, created, **kwargs):
     metadata = Metadata()
     metadata.layer = instance
     metadata.set_layer_purpose()
-    # metadata.layer_purpose = instance.layer_purpose()
 
     metadata.save()
