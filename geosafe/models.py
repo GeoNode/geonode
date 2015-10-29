@@ -192,12 +192,25 @@ class Analysis(models.Model):
         help_text='Extent option for analysis.'
     )
 
-    @classmethod
-    def get_exposure_layers(cls):
-        """
-        """
-        pass
+    def generate_cli(self):
+        """Generating CLI command to run analysis in InaSAFE headless.
 
+        inasafe --hazard=HAZARD_FILE (--download --layers=LAYER_NAME [LAYER_NAME...] | --exposure=EXP_FILE)
+            --impact-function=IF_ID --report-template=TEMPLATE --output-file=FILE [--extent=XMIN:YMIN:XMAX:YMAX]
+        """
+        hazard_file_path = self.hazard_layer.get_base_file()[0].file.path
+        exposure_file_path = self.exposure_layer.get_base_file()[0].file.path
+        # Save for later.
+        # aggregation_file_path = self.aggregation_layer.get_base_file()[0].file.path
+
+        command = 'inasafe '
+        command += '--hazard=' + hazard_file_path + ' '
+        command += '--exposure=' + exposure_file_path + ' '
+        command += '--impact-function=' + self.impact_function_id + ' '
+        # command += '--report-template'  # later
+        command += '--output-file' + ''
+
+        return command
 
 @receiver(post_save, sender=Layer)
 def create_metadata_object(sender, instance, created, **kwargs):
@@ -206,3 +219,11 @@ def create_metadata_object(sender, instance, created, **kwargs):
     metadata.set_layer_purpose()
 
     metadata.save()
+
+
+@receiver(post_save, sender=Analysis)
+def run_analysis(sender, instance, created, **kwargs):
+    """Call InaSAFE headless here"""
+    command = instance.generate_cli()
+    # RUN(command)
+    pass
