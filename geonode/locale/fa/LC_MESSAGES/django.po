@@ -13,6 +13,7 @@
 # Translators:
 # Translators:
 # Translators:
+# Translators:
 # Andres Alfonso Lemon Gomez <lemon.andres@gmail.com>, 2014
 # Seyed Mohammad Hosseini <PersianPolaris@Gmail.com>, 2013
 # Seyed Mohammad Hosseini <PersianPolaris@Gmail.com>, 2013
@@ -20,8 +21,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-10-29 04:00-0500\n"
-"PO-Revision-Date: 2015-09-22 08:17+0000\n"
+"POT-Creation-Date: 2015-10-29 04:21-0500\n"
+"PO-Revision-Date: 2015-10-29 09:05+0000\n"
 "Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
 "Language-Team: Persian (http://www.transifex.com/geonode/geonode/language/"
 "fa/)\n"
@@ -985,20 +986,17 @@ msgid "Deleting"
 msgstr "حذف"
 
 #: documents/templates/documents/document_remove.html:8
-#, fuzzy
 msgid "Remove Document"
-msgstr "Remove this Document"
+msgstr ""
 
 #: documents/templates/documents/document_remove.html:13
-#, fuzzy, python-format
+#, python-format
 msgid ""
 "\n"
 "          Are you sure you want to remove <a href="
 "\"%(document.get_absolute_url)s\">%(document_title)s</a>?\n"
 "        "
 msgstr ""
-"\n"
-"آیا مطمئن هستید که می خواهید %(document_title)s به حذف؟"
 
 #: documents/templates/documents/document_remove.html:20
 #: groups/templates/groups/group_remove.html:19
@@ -2565,20 +2563,17 @@ msgstr ""
 "FGDC و هسته دوبلین. برخی از ابرداده اصلی خود را ممکن است از دست داده است."
 
 #: maps/templates/maps/map_remove.html:10
-#, fuzzy
 msgid "Remove Map"
-msgstr "Remove this Map"
+msgstr ""
 
 #: maps/templates/maps/map_remove.html:15
-#, fuzzy, python-format
+#, python-format
 msgid ""
 "\n"
 "          Are you sure you want to remove <a href=\"%(map.get_absolute_url)s"
 "\">%(map_title)s</a>?\n"
 "        "
 msgstr ""
-"\n"
-"آیا مطمئن هستید که می خواهید به حذف گروه: %(group_title)s خبر؟"
 
 #: maps/templates/maps/map_view.html:5
 msgid "GeoExplorer"
@@ -3746,24 +3741,20 @@ msgid "Are you sure you want to log out?"
 msgstr "آیا مطمئن هستید که می خواهید به سیستم خارج شوید؟"
 
 #: templates/account/password_change.html:8
-#, fuzzy
 msgid "Password change"
-msgstr "رمز عبور"
+msgstr ""
 
 #: templates/account/password_change.html:14
-#, fuzzy
 msgid "Password Change"
-msgstr "رمز عبور"
+msgstr ""
 
 #: templates/account/password_change.html:18
-#, fuzzy
 msgid "Change your password here"
-msgstr "تغییر رمز عبور"
+msgstr ""
 
 #: templates/account/password_change.html:24
-#, fuzzy
 msgid "Change my password"
-msgstr "تغییر رمز عبور"
+msgstr ""
 
 #: templates/account/password_reset.html:8
 msgid "Password reset"
@@ -4362,11 +4353,21 @@ msgstr "ارسال پاسخ"
 
 #~ msgid ""
 #~ "\n"
+#~ "          Are you sure you want to remove %(document_title)s?\n"
+#~ "        "
+#~ msgstr ""
+#~ "\n"
+#~ "          Are you sure you want to remove %(document_title)s?\n"
+#~ "        "
+
+#~ msgid ""
+#~ "\n"
 #~ "        Are you sure you want to remove %(map_title)s?\n"
 #~ "    "
 #~ msgstr ""
 #~ "\n"
-#~ "آیا مطمئن هستید که می خواهید %(map_title)s به حذف؟"
+#~ "        Are you sure you want to remove %(map_title)s?\n"
+#~ "    "
 
 #~ msgid "email"
 #~ msgstr "email"

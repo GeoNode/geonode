@@ -13,14 +13,15 @@
 # Translators:
 # Translators:
 # Translators:
+# Translators:
 # Julien Collaer <julien.collaer@opengeode.be>, 2014-2015
 # Vincent BONNAL <vincent.bonnal@cirad.fr>, 2013-2014
 msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-10-29 04:00-0500\n"
-"PO-Revision-Date: 2015-09-22 08:38+0000\n"
+"POT-Creation-Date: 2015-10-29 04:21-0500\n"
+"PO-Revision-Date: 2015-10-29 09:20+0000\n"
 "Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
 "Language-Team: French (http://www.transifex.com/geonode/geonode/language/"
 "fr/)\n"
@@ -1007,12 +1008,11 @@ msgid "Deleting"
 msgstr "Supprimer"
 
 #: documents/templates/documents/document_remove.html:8
-#, fuzzy
 msgid "Remove Document"
-msgstr "Remove this Document"
+msgstr "Supprimer le document"
 
 #: documents/templates/documents/document_remove.html:13
-#, fuzzy, python-format
+#, python-format
 msgid ""
 "\n"
 "          Are you sure you want to remove <a href="
@@ -1020,8 +1020,8 @@ msgid ""
 "        "
 msgstr ""
 "\n"
-"          Etes-vous certain de vouloir supprimer <a href="
-"\"%(layer.get_absolute_url)s\">%(layer_title)s</a>?\n"
+"          Etes vous certain de vouloir supprimer <a href="
+"\"%(document.get_absolute_url)s\">%(document_title)s</a>?\n"
 "        "
 
 #: documents/templates/documents/document_remove.html:20
@@ -2665,12 +2665,11 @@ msgstr ""
 "Certaines parties des métadonnées originales peuvent donc avoir été perdues"
 
 #: maps/templates/maps/map_remove.html:10
-#, fuzzy
 msgid "Remove Map"
-msgstr "Remove this Map"
+msgstr "Supprimer la carte"
 
 #: maps/templates/maps/map_remove.html:15
-#, fuzzy, python-format
+#, python-format
 msgid ""
 "\n"
 "          Are you sure you want to remove <a href=\"%(map.get_absolute_url)s"
@@ -2678,8 +2677,8 @@ msgid ""
 "        "
 msgstr ""
 "\n"
-"          Etes-vous certain de vouloir supprimer <a href="
-"\"%(layer.get_absolute_url)s\">%(layer_title)s</a>?\n"
+"          Are you sure you want to remove <a href=\"%(map.get_absolute_url)s"
+"\">%(map_title)s</a>?\n"
 "        "
 
 #: maps/templates/maps/map_view.html:5
@@ -3887,24 +3886,20 @@ msgid "Are you sure you want to log out?"
 msgstr "Êtes-vous sûr de vouloir vous déconnecter? "
 
 #: templates/account/password_change.html:8
-#, fuzzy
 msgid "Password change"
-msgstr "Mot de passe"
+msgstr "Changement de mot de passe"
 
 #: templates/account/password_change.html:14
-#, fuzzy
 msgid "Password Change"
-msgstr "Mot de passe"
+msgstr "Changement de mot de passe"
 
 #: templates/account/password_change.html:18
-#, fuzzy
 msgid "Change your password here"
-msgstr "Modifier votre mot de passe"
+msgstr "Changer votre mot de passe ici"
 
 #: templates/account/password_change.html:24
-#, fuzzy
 msgid "Change my password"
-msgstr "Modifier votre mot de passe"
+msgstr "Changer mon mot de passe"
 
 #: templates/account/password_reset.html:8
 msgid "Password reset"
@@ -4535,7 +4530,7 @@ msgstr "Envoyer une réponse"
 #~ "        "
 #~ msgstr ""
 #~ "\n"
-#~ "          Êtes-vous certain de vouloir retirer %(document_title)s?\n"
+#~ "          Are you sure you want to remove %(document_title)s?\n"
 #~ "        "
 
 #~ msgid ""
@@ -4544,7 +4539,7 @@ msgstr "Envoyer une réponse"
 #~ "    "
 #~ msgstr ""
 #~ "\n"
-#~ "        Êtes-vous certain de vouloir supprimer %(map_title)s?\n"
+#~ "        Are you sure you want to remove %(map_title)s?\n"
 #~ "    "
 
 #~ msgid "email"

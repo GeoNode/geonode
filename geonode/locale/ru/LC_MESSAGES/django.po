@@ -13,6 +13,7 @@
 # Translators:
 # Translators:
 # Translators:
+# Translators:
 # Andres Alfonso Lemon Gomez <lemon.andres@gmail.com>, 2014
 # dan, 2015
 # dan, 2015
@@ -20,8 +21,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-10-29 04:00-0500\n"
-"PO-Revision-Date: 2015-09-22 08:17+0000\n"
+"POT-Creation-Date: 2015-10-29 04:21-0500\n"
+"PO-Revision-Date: 2015-10-29 09:05+0000\n"
 "Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
 "Language-Team: Russian (http://www.transifex.com/geonode/geonode/language/"
 "ru/)\n"
@@ -1004,21 +1005,17 @@ msgid "Deleting"
 msgstr "Удаление"
 
 #: documents/templates/documents/document_remove.html:8
-#, fuzzy
 msgid "Remove Document"
-msgstr "Remove this Document"
+msgstr ""
 
 #: documents/templates/documents/document_remove.html:13
-#, fuzzy, python-format
+#, python-format
 msgid ""
 "\n"
 "          Are you sure you want to remove <a href="
 "\"%(document.get_absolute_url)s\">%(document_title)s</a>?\n"
 "        "
 msgstr ""
-"\n"
-"Вы уверены, что хотите удалить <a href=\"%(layer.get_absolute_url)s\">"
-"%(layer_title)s</a>?"
 
 #: documents/templates/documents/document_remove.html:20
 #: groups/templates/groups/group_remove.html:19
@@ -2625,21 +2622,17 @@ msgstr ""
 "Некоторые из элементов исходных метаданных могут быть потеряны."
 
 #: maps/templates/maps/map_remove.html:10
-#, fuzzy
 msgid "Remove Map"
-msgstr "Remove this Map"
+msgstr ""
 
 #: maps/templates/maps/map_remove.html:15
-#, fuzzy, python-format
+#, python-format
 msgid ""
 "\n"
 "          Are you sure you want to remove <a href=\"%(map.get_absolute_url)s"
 "\">%(map_title)s</a>?\n"
 "        "
 msgstr ""
-"\n"
-"Вы уверены, что хотите удалить <a href=\"%(layer.get_absolute_url)s\">"
-"%(layer_title)s</a>?"
 
 #: maps/templates/maps/map_view.html:5
 msgid "GeoExplorer"
@@ -3934,24 +3927,20 @@ msgid "Are you sure you want to log out?"
 msgstr "Вы уверены, что хотите выйти?"
 
 #: templates/account/password_change.html:8
-#, fuzzy
 msgid "Password change"
-msgstr "Пароль"
+msgstr ""
 
 #: templates/account/password_change.html:14
-#, fuzzy
 msgid "Password Change"
-msgstr "Пароль"
+msgstr ""
 
 #: templates/account/password_change.html:18
-#, fuzzy
 msgid "Change your password here"
-msgstr "Изменить пароль"
+msgstr ""
 
 #: templates/account/password_change.html:24
-#, fuzzy
 msgid "Change my password"
-msgstr "Изменить пароль"
+msgstr ""
 
 #: templates/account/password_reset.html:8
 msgid "Password reset"
@@ -4570,7 +4559,7 @@ msgstr "Послать ответ"
 #~ "        "
 #~ msgstr ""
 #~ "\n"
-#~ "          Вы уверены, что хотите удалить %(document_title)s?\n"
+#~ "          Are you sure you want to remove %(document_title)s?\n"
 #~ "        "
 
 #~ msgid ""
@@ -4579,7 +4568,7 @@ msgstr "Послать ответ"
 #~ "    "
 #~ msgstr ""
 #~ "\n"
-#~ "        Вы уверены, что хотите удалить %(map_title)s?\n"
+#~ "        Are you sure you want to remove %(map_title)s?\n"
 #~ "    "
 
 #~ msgid "email"

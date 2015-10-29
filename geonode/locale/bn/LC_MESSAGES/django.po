@@ -13,6 +13,7 @@
 # Translators:
 # Translators:
 # Translators:
+# Translators:
 # Andres Alfonso Lemon Gomez <lemon.andres@gmail.com>, 2014
 # fakhar uddin al helal <helal.bcc@gmail.com>, 2015
 # Freelance Developer <annachow_hg@yahoo.com>, 2015
@@ -25,9 +26,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-10-29 04:00-0500\n"
-"PO-Revision-Date: 2015-10-20 04:46+0000\n"
-"Last-Translator: Freelance Developer <annachow_hg@yahoo.com>\n"
+"POT-Creation-Date: 2015-10-29 04:21-0500\n"
+"PO-Revision-Date: 2015-10-29 09:05+0000\n"
+"Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
 "Language-Team: Bengali (http://www.transifex.com/geonode/geonode/language/"
 "bn/)\n"
 "Language: bn\n"
@@ -991,20 +992,17 @@ msgid "Deleting"
 msgstr "মোছা"
 
 #: documents/templates/documents/document_remove.html:8
-#, fuzzy
 msgid "Remove Document"
-msgstr "Remove this Document"
+msgstr ""
 
 #: documents/templates/documents/document_remove.html:13
-#, fuzzy, python-format
+#, python-format
 msgid ""
 "\n"
 "          Are you sure you want to remove <a href="
 "\"%(document.get_absolute_url)s\">%(document_title)s</a>?\n"
 "        "
 msgstr ""
-"\n"
-"আপনি %(document_title)s এর সরানোর বিষয়ে নিশ্চিত?"
 
 #: documents/templates/documents/document_remove.html:20
 #: groups/templates/groups/group_remove.html:19
@@ -2573,20 +2571,17 @@ msgstr ""
 "একটি উপসেট সমর্থন করে. আপনার মূল মেটাডাটা কিছু হারিয়ে হয়ে থাকতে পারে."
 
 #: maps/templates/maps/map_remove.html:10
-#, fuzzy
 msgid "Remove Map"
-msgstr "Remove this Map"
+msgstr ""
 
 #: maps/templates/maps/map_remove.html:15
-#, fuzzy, python-format
+#, python-format
 msgid ""
 "\n"
 "          Are you sure you want to remove <a href=\"%(map.get_absolute_url)s"
 "\">%(map_title)s</a>?\n"
 "        "
 msgstr ""
-"\n"
-"আপনি গ্রুপ মুছে ফেলার ব্যাপারে নিশ্চিত: %(group_title)s?"
 
 #: maps/templates/maps/map_view.html:5
 msgid "GeoExplorer"
@@ -3755,24 +3750,20 @@ msgid "Are you sure you want to log out?"
 msgstr "আপনি লগ আউট করার ব্যাপারে নিশ্চিত?"
 
 #: templates/account/password_change.html:8
-#, fuzzy
 msgid "Password change"
-msgstr "পাসওয়ার্ড"
+msgstr ""
 
 #: templates/account/password_change.html:14
-#, fuzzy
 msgid "Password Change"
-msgstr "পাসওয়ার্ড"
+msgstr ""
 
 #: templates/account/password_change.html:18
-#, fuzzy
 msgid "Change your password here"
-msgstr "পাসওয়ার্ড পরিবর্তন করুন"
+msgstr ""
 
 #: templates/account/password_change.html:24
-#, fuzzy
 msgid "Change my password"
-msgstr "পাসওয়ার্ড পরিবর্তন করুন"
+msgstr ""
 
 #: templates/account/password_reset.html:8
 msgid "Password reset"
@@ -4372,11 +4363,21 @@ msgstr "উত্তর পাঠান"
 
 #~ msgid ""
 #~ "\n"
+#~ "          Are you sure you want to remove %(document_title)s?\n"
+#~ "        "
+#~ msgstr ""
+#~ "\n"
+#~ "          Are you sure you want to remove %(document_title)s?\n"
+#~ "        "
+
+#~ msgid ""
+#~ "\n"
 #~ "        Are you sure you want to remove %(map_title)s?\n"
 #~ "    "
 #~ msgstr ""
 #~ "\n"
-#~ "আপনি %(map_title)s সরানোর বিষয়ে নিশ্চিত?"
+#~ "        Are you sure you want to remove %(map_title)s?\n"
+#~ "    "
 
 #~ msgid "email"
 #~ msgstr "email"
