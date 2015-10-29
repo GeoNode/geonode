@@ -13,6 +13,7 @@
 # Translators:
 # Translators:
 # Translators:
+# Translators:
 # BJ Jang <qgis.tr.kr@gmail.com>, 2014
 # HANJIN LEE <jinifor@gmail.com>, 2015
 # ingenieroariel <ingenieroariel@gmail.com>, 2014
@@ -23,9 +24,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-10-29 04:00-0500\n"
-"PO-Revision-Date: 2015-10-20 12:19+0000\n"
-"Last-Translator: Minpa Lee <mapplus@gmail.com>\n"
+"POT-Creation-Date: 2015-10-29 04:21-0500\n"
+"PO-Revision-Date: 2015-10-29 09:05+0000\n"
+"Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
 "Language-Team: Korean (http://www.transifex.com/geonode/geonode/language/"
 "ko/)\n"
 "Language: ko\n"
@@ -985,21 +986,17 @@ msgid "Deleting"
 msgstr "삭제중"
 
 #: documents/templates/documents/document_remove.html:8
-#, fuzzy
 msgid "Remove Document"
-msgstr "Remove this Document"
+msgstr ""
 
 #: documents/templates/documents/document_remove.html:13
-#, fuzzy, python-format
+#, python-format
 msgid ""
 "\n"
 "          Are you sure you want to remove <a href="
 "\"%(document.get_absolute_url)s\">%(document_title)s</a>?\n"
 "        "
 msgstr ""
-"\n"
-"정말로 <a href=\"%(layer.get_absolute_url)s\">%(layer_title)s</a> 를 제거하시"
-"겠습니까?"
 
 #: documents/templates/documents/document_remove.html:20
 #: groups/templates/groups/group_remove.html:19
@@ -2578,21 +2575,17 @@ msgstr ""
 "의 일부를 지원합니다. 원래 메타데이터의 일부가 손실되었을 수 있습니다."
 
 #: maps/templates/maps/map_remove.html:10
-#, fuzzy
 msgid "Remove Map"
-msgstr "Remove this Map"
+msgstr ""
 
 #: maps/templates/maps/map_remove.html:15
-#, fuzzy, python-format
+#, python-format
 msgid ""
 "\n"
 "          Are you sure you want to remove <a href=\"%(map.get_absolute_url)s"
 "\">%(map_title)s</a>?\n"
 "        "
 msgstr ""
-"\n"
-"정말로 <a href=\"%(layer.get_absolute_url)s\">%(layer_title)s</a> 를 제거하시"
-"겠습니까?"
 
 #: maps/templates/maps/map_view.html:5
 msgid "GeoExplorer"
@@ -3903,24 +3896,20 @@ msgid "Are you sure you want to log out?"
 msgstr "정말로 로그아웃 하시겠습니까?"
 
 #: templates/account/password_change.html:8
-#, fuzzy
 msgid "Password change"
-msgstr "비밀번호"
+msgstr ""
 
 #: templates/account/password_change.html:14
-#, fuzzy
 msgid "Password Change"
-msgstr "비밀번호"
+msgstr ""
 
 #: templates/account/password_change.html:18
-#, fuzzy
 msgid "Change your password here"
-msgstr "비밀번호 변경"
+msgstr ""
 
 #: templates/account/password_change.html:24
-#, fuzzy
 msgid "Change my password"
-msgstr "비밀번호 변경"
+msgstr ""
 
 #: templates/account/password_reset.html:8
 msgid "Password reset"
@@ -4532,7 +4521,8 @@ msgstr "답장 보내기"
 #~ "        "
 #~ msgstr ""
 #~ "\n"
-#~ "%(document_title)s? 를 정말로 삭제하시겠습니까?"
+#~ "          Are you sure you want to remove %(document_title)s?\n"
+#~ "        "
 
 #~ msgid ""
 #~ "\n"
@@ -4540,7 +4530,8 @@ msgstr "답장 보내기"
 #~ "    "
 #~ msgstr ""
 #~ "\n"
-#~ " 정말로 %(map_title)s 를 제거하시겠습니까?"
+#~ "        Are you sure you want to remove %(map_title)s?\n"
+#~ "    "
 
 #~ msgid "email"
 #~ msgstr "email"
