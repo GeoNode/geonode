@@ -539,8 +539,11 @@ class MapLayersResource(CommonModelApi):
     def dehydrate(self, bundle):
         map_id = bundle.data['id']
         layers = []
-        for maplayer in MapLayer.objects.filter(map_id=map_id):
-            layers.append(maplayer.layer_config())
+        for maplayerObj in MapLayer.objects.filter(map_id=map_id):
+            layerObj = Layer.objects.filter(typename=maplayerObj.name)[0]
+            layer = maplayerObj.layer_config()
+            layer['id'] = layerObj.id
+            layers.append(layer)
         bundle.data['layers'] = layers
         return bundle
 
