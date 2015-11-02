@@ -303,6 +303,7 @@ INSTALLED_APPS = (
     # Geosafe
     'geosafe',
     'south',
+    'djcelery',
 
 ) + GEONODE_APPS
 
@@ -922,3 +923,8 @@ if 'geonode.geoserver' in INSTALLED_APPS:
     baselayers = MAP_BASELAYERS
     MAP_BASELAYERS = [LOCAL_GEOSERVER]
     MAP_BASELAYERS.extend(baselayers)
+
+
+# App specific
+# Geosafe - Celery
+BROKER_URL = 'redis://localhost:6379/0'

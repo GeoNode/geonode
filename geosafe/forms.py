@@ -1,3 +1,5 @@
+from geosafe.tasks.analysis import if_list
+
 __author__ = 'ismailsunni'
 from datetime import datetime
 import logging
@@ -27,7 +29,7 @@ class AnalysisCreationForm(models.ModelForm):
     )
 
     hazard_layer = forms.ModelChoiceField(
-        label='Exposure Layer',
+        label='Hazard Layer',
         required=True,
         queryset=Layer.objects.filter(metadata__layer_purpose='hazard'),
         widget=forms.Select(
@@ -35,9 +37,17 @@ class AnalysisCreationForm(models.ModelForm):
     )
 
     aggregation_layer = forms.ModelChoiceField(
-        label='Exposure Layer',
+        label='Aggregation Layer',
         required=True,
         queryset=Layer.objects.filter(metadata__layer_purpose='aggregation'),
         widget=forms.Select(
             attrs={'class': 'form-control'})
+    )
+
+    if_id_list = if_list()
+
+    impact_function_id = forms.ChoiceField(
+        label='Impact Function ID',
+        required=True,
+        choices=[(id, id) for id in if_id_list]
     )
