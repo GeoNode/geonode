@@ -38,7 +38,7 @@ class AnalysisCreationForm(models.ModelForm):
 
     aggregation_layer = forms.ModelChoiceField(
         label='Aggregation Layer',
-        required=True,
+        required=False,
         queryset=Layer.objects.filter(metadata__layer_purpose='aggregation'),
         widget=forms.Select(
             attrs={'class': 'form-control'})
