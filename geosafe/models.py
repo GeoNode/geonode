@@ -5,6 +5,7 @@ from datetime import datetime
 
 from django.db.models.signals import post_save
 from django.dispatch import receiver
+import tempfile
 
 from geonode.layers.models import Layer
 
@@ -13,6 +14,7 @@ import os
 from xml.etree import ElementTree
 from ast import literal_eval
 from collections import OrderedDict
+from geosafe.tasks.analysis import run_analysis_docker
 
 
 # geosafe
@@ -135,6 +137,7 @@ class Metadata(models.Model):
 
         return metadata
 
+
 class Analysis(models.Model):
     """Represent GeoSAFE analysis"""
     HAZARD_EXPOSURE_CURRENT_VIEW_CODE = 1
@@ -203,14 +206,22 @@ class Analysis(models.Model):
         # Save for later.
         # aggregation_file_path = self.aggregation_layer.get_base_file()[0].file.path
 
-        command = 'inasafe '
-        command += '--hazard=' + hazard_file_path + ' '
-        command += '--exposure=' + exposure_file_path + ' '
-        command += '--impact-function=' + self.impact_function_id + ' '
-        # command += '--report-template'  # later
-        command += '--output-file' + ''
+        arguments = ''
+        arguments += '--hazard=' + hazard_file_path + ' '
+        arguments += '--exposure=' + exposure_file_path + ' '
+        arguments += '--impact-function=' + self.impact_function_id + ' '
+        arguments += '--report-template= '  # later
+        _, exposure_extension = os.path.splitext(exposure_file_path)
+        if exposure_extension == '.shp':
+            output_extension = '.shp'
+        else:
+            output_extension = '.tif'
+        temp_file = os.path.join(
+            tempfile._get_default_tempdir(),
+            tempfile._get_candidate_names().next())+output_extension
+        arguments += '--output-file=' + temp_file
 
-        return command
+        return arguments, temp_file, os.path.dirname(hazard_file_path), os.path.dirname(temp_file)
 
 @receiver(post_save, sender=Layer)
 def create_metadata_object(sender, instance, created, **kwargs):
@@ -222,8 +233,7 @@ def create_metadata_object(sender, instance, created, **kwargs):
 
 
 @receiver(post_save, sender=Analysis)
-def run_analysis(sender, instance, created, **kwargs):
+def run_analysis_post_save(sender, instance, created, **kwargs):
     """Call InaSAFE headless here"""
-    command = instance.generate_cli()
-    # RUN(command)
-    pass
+    arguments, output_file, layer_folder, output_folder = instance.generate_cli()
+    run_analysis_docker.delay(arguments=arguments, output_file=output_file, layer_folder=layer_folder, output_folder=output_folder)
