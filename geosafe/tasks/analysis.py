@@ -1,7 +1,7 @@
 import os
 from subprocess import call, Popen, PIPE
 from celery.task import task
-
+from geonode.layers.utils import file_upload
 
 __author__ = 'lucernae'
 
@@ -16,6 +16,11 @@ def run_analysis_docker(arguments, output_file, layer_folder, output_folder):
     # call system function
     call(["inasafe", arguments, layer_folder, output_folder])
     # TODO: Save the layer file and all info to geonode (upload?)
+    saved_layer = file_upload(
+        output_file,
+        overwrite=True,
+    )
+    saved_layer.set_default_permissions()
 
 
 @task(name='geosafe.tasks.analysis.run_analysis_cli', queue='cleanup')
