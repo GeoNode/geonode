@@ -51,3 +51,14 @@ class AnalysisCreationForm(models.ModelForm):
         required=True,
         choices=[(id, id) for id in if_id_list]
     )
+
+    def __init__(self, *args, **kwargs):
+        self.user = kwargs.pop('user', None)
+        super(AnalysisCreationForm, self).__init__(*args, **kwargs)
+
+    def save(self, commit=True):
+        instance = super(AnalysisCreationForm, self).save(commit=False)
+        LOG.error(instance)
+        instance.user = self.user
+        instance.save()
+        return instance

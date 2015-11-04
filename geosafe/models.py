@@ -8,6 +8,7 @@ from django.dispatch import receiver
 import tempfile
 
 from geonode.layers.models import Layer
+from geonode.people.models import Profile
 from geonode.layers.utils import file_upload
 
 # geosafe
@@ -196,6 +197,23 @@ class Analysis(models.Model):
         help_text='Extent option for analysis.'
     )
 
+    impact_layer = models.ForeignKey(
+        Layer,
+        verbose_name='Impact Layer',
+        help_text='Impact layer from this analysis.',
+        blank=True,
+        null=True,
+        related_name='impact_layer'
+    )
+
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        verbose_name='Author',
+        help_text='The author of the analysis',
+        blank=True,
+        null=True
+    )
+
     def generate_cli(self):
         """Generating CLI command to run analysis in InaSAFE headless.
 
@@ -239,8 +257,10 @@ def run_analysis_post_save(sender, instance, created, **kwargs):
     arguments, output_file, layer_folder, output_folder = instance.generate_cli()
     run_analysis_docker.delay(arguments=arguments, output_file=output_file, layer_folder=layer_folder, output_folder=output_folder)
 
-    saved_layer = file_upload(
+    impact_layer = file_upload(
         output_file,
         overwrite=True,
     )
-    saved_layer.set_default_permissions()
+    impact_layer.set_default_permissions()
+    instance.impact_layer = impact_layer
+    instance.save()

@@ -17,6 +17,7 @@ class AnalysisCreateView(CreateView):
 
     def get_form_kwargs(self):
         kwargs = super(AnalysisCreateView, self).get_form_kwargs()
+        kwargs.update({'user': self.request.user})
         return kwargs
 
 

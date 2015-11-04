@@ -10,25 +10,29 @@
                 <th>Aggregation</th>
                 <th>Extent</th>
                 <th>Impact Function ID</th>
+                <th>Impact Layer</th>
             </tr>
             </thead>
             <tbody>
             {% for analysis in analysis_list %}
                 <tr>
                     <td>
-                        {{ analysis.exposure_layer.name }}
+                        <a href="{% url 'layer_detail' layername=analysis.exposure_layer.typename %}">{{ analysis.exposure_layer.name }}</a>
                     </td>
                     <td>
-                        {{ analysis.hazard_layer }}
+                        <a href="{% url 'layer_detail' layername=analysis.hazard_layer.typename %}">{{ analysis.hazard_layer.name }}</a>
                     </td>
                     <td>
-                        {{ analysis.aggregation_layer }}
+                        <a href="{% url 'layer_detail' layername=analysis.aggregation_layer.typename %}">{{ analysis.aggregation_layer.name }}</a>
                     </td>
                     <td>
-                        {{ analysis.extent_option }}
+                        {{ analysis.get_extent_option_display }}
                     </td>
                     <td>
                         {{ analysis.impact_function_id }}
+                    </td>
+                    <td>
+                        <a href="{% url 'layer_detail' layername=analysis.impact_layer.typename %}">{{ analysis.impact_layer.name }}</a>
                     </td>
                 </tr>
             {% empty %}
