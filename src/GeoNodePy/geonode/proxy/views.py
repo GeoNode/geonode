@@ -19,7 +19,12 @@ logger = logging.getLogger("geonode.proxy.views")
 
 HGL_URL = 'http://hgl.harvard.edu:8080/HGL'
 
-_valid_tags = "\{http\:\/\/www\.opengis\.net\/wms\}WMS_Capabilities|WMT_MS_Capabilities|WMS_DescribeLayerResponse|\{http\:\/\/www\.opengis\.net\/gml\}FeatureCollection|msGMLOutput|\{http\:\/\/www.opengis\.net\/wfs\}FeatureCollection"
+_valid_tags = "\{http\:\/\/www\.opengis\.net\/wms\}WMS_Capabilities|\
+WMT_MS_Capabilities|WMS_DescribeLayerResponse|\
+\{http\:\/\/www\.opengis\.net\/gml\}FeatureCollection|msGMLOutput|\
+\{http\:\/\/www.opengis\.net\/wfs\}FeatureCollection|\
+rss|{http://www.w3.org/2005/Atom}feed|\
+{http://www.w3.org/1999/02/22-rdf-syntax-ns#}RDF"
 
 _user, _password = settings.GEOSERVER_CREDENTIALS
 h = httplib2.Http()
