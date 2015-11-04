@@ -9,7 +9,6 @@ import tempfile
 
 from geonode.layers.models import Layer
 from geonode.people.models import Profile
-from geonode.layers.utils import file_upload
 
 # geosafe
 import os
@@ -256,11 +255,3 @@ def run_analysis_post_save(sender, instance, created, **kwargs):
     """Call InaSAFE headless here"""
     arguments, output_file, layer_folder, output_folder = instance.generate_cli()
     run_analysis_docker.delay(arguments=arguments, output_file=output_file, layer_folder=layer_folder, output_folder=output_folder)
-
-    impact_layer = file_upload(
-        output_file,
-        overwrite=True,
-    )
-    impact_layer.set_default_permissions()
-    instance.impact_layer = impact_layer
-    instance.save()
