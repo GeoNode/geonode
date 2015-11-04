@@ -19,6 +19,13 @@ class AnalysisCreationForm(models.ModelForm):
 
     class Meta:
         model = Analysis
+        fields = (
+            'exposure_layer',
+            'hazard_layer',
+            'aggregation_layer',
+            'impact_function_id',
+            'extent_option'
+        )
 
     exposure_layer = forms.ModelChoiceField(
         label='Exposure Layer',
