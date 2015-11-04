@@ -8,6 +8,7 @@ from django.dispatch import receiver
 import tempfile
 
 from geonode.layers.models import Layer
+from geonode.layers.utils import file_upload
 
 # geosafe
 import os
@@ -237,3 +238,9 @@ def run_analysis_post_save(sender, instance, created, **kwargs):
     """Call InaSAFE headless here"""
     arguments, output_file, layer_folder, output_folder = instance.generate_cli()
     run_analysis_docker.delay(arguments=arguments, output_file=output_file, layer_folder=layer_folder, output_folder=output_folder)
+
+    saved_layer = file_upload(
+        output_file,
+        overwrite=True,
+    )
+    saved_layer.set_default_permissions()
