@@ -148,7 +148,7 @@ def file2pgtable(infile, table_name, srid=4326):
             infile.endswith('.MIF') or infile.endswith('.mif')):
         geo_type = 'POLYGON'
 
-    if has_datastore and not geo_type.startswith('MULTI'):
+    if has_datastore and not geo_type.startswith('MULTI') and geo_type != 'POINT':
         geo_type = 'MULTI' + geo_type
     pk_name = 'fid' if has_datastore else 'id'
     geo_column_name = 'the_geom' if has_datastore else 'geom'
