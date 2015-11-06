@@ -290,6 +290,7 @@ AGON_RATINGS_CATEGORY_CHOICES = {
 SOUTH_MIGRATION_MODULES = {
     'registration': 'geonode.migrations.registration',
     'avatar': 'geonode.migrations.avatar',
+    'djcelery': 'djcelery.south_migrations',
 }
 
 # For django-profiles
