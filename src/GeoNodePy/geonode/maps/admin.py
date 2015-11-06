@@ -39,7 +39,7 @@ class MapAdmin(admin.ModelAdmin):
     list_display = ('id', 'title','owner','created_dttm', 'last_modified')
     list_filter  = ('created_dttm','owner')
     date_hierarchy = 'created_dttm'
-    search_fields = ['title','keywords']
+    search_fields = ['title','keywords__name']
     ordering = ('-created_dttm',)
     form = autocomplete_light.modelform_factory(Map)
 
