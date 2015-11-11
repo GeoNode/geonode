@@ -1,6 +1,7 @@
 import logging
 import os
 import uuid
+from urlparse import urlparse
 
 from django.db import models
 from django.db.models import signals
@@ -142,8 +143,8 @@ def pre_save_document(instance, sender, **kwargs):
         instance.doc_type = doc_type
 
     elif instance.doc_url:
-        if len(instance.doc_url) > 4 and instance.doc_url[-4] == '.':
-            instance.extension = instance.doc_url[-3:]
+        if '.' in urlparse(instance.doc_url).path:
+            instance.extension = urlparse(instance.doc_url).path.rsplit('.')[-1]
 
     if not instance.uuid:
         instance.uuid = str(uuid.uuid1())
