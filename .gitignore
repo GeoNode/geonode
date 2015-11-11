@@ -86,3 +86,6 @@ uploaded
 development.db
 master
 slave
+
+# virtual env
+venv

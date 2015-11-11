@@ -6,3 +6,35 @@
     <input type="submit" value="Run"/>
 </form>
 {% endblock %}
+
+{% block extra_script %}
+<script type="text/javascript">
+$(document).ready(function(){
+    {# listen to change handler #}
+    var retrieve_if_list = function(evt){
+        var chosen_combination = {
+            'exposure_id': $("#id_exposure_layer").val(),
+            'hazard_id': $("#id_hazard_layer").val()
+        };
+
+        $.get('{% url 'impact-function-filter' %}', chosen_combination, function(data){
+            console.log(data);
+            var select=$("#id_impact_function_id");
+            if(data.length>0){
+                $("#id_impact_function_id").empty();
+            }
+            else{
+                $("<option></option>").text("No matching Impact Function").appendTo(select);
+            }
+            for(var i=0;i<data.length;i++){
+                var id=data[i];
+                $("<option></option>").val(id).text(id).appendTo(select);
+            }
+        });
+    }
+
+    $("#id_exposure_layer").change(retrieve_if_list);
+    $("#id_hazard_layer").change(retrieve_if_list);
+});
+</script>
+{% endblock %}

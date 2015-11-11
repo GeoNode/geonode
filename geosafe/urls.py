@@ -1,9 +1,9 @@
 __author__ = 'ismailsunni'
 from django.conf.urls import patterns, url
 
-from geosafe.views import (
+from geosafe.views.analysis import (
     AnalysisListView,
-    AnalysisCreateView)
+    AnalysisCreateView, impact_function_filter)
 
 urlpatterns = patterns(
     '',
@@ -16,5 +16,10 @@ urlpatterns = patterns(
         r'^geosafe/analysis/$',
         AnalysisListView.as_view(),
         name='analysis-list'
+    ),
+    url(
+        r'^geosafe/analysis/impact-function-filter$',
+        impact_function_filter,
+        name='impact-function-filter'
     ),
 )

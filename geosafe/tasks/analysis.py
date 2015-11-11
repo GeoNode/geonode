@@ -36,7 +36,8 @@ def run_analysis_cli(arguments, output_file):
 
 
 @task(name='geosafe.tasks.analysis.if_list', queue='cleanup')
-def if_list(hazard_file=None, exposure_file=None):
+def if_list(hazard_file=None, exposure_file=None,
+            layer_folder=None, output_folder=None):
     """
     Show possible IF list
 
@@ -46,9 +47,12 @@ def if_list(hazard_file=None, exposure_file=None):
     """
     # call system function
     if hazard_file and exposure_file:
-        p = Popen(["inasafe", "--hazard=%s --exposure=%s --list-functions" % (
-            hazard_file, exposure_file
-        )], stdout=PIPE)
+        arguments = [
+            "inasafe", "--hazard=%s --exposure=%s --list-functions" % (
+                hazard_file, exposure_file)]
+        if layer_folder:
+            arguments.append(layer_folder)
+        p = Popen(arguments, stdout=PIPE)
     else:
         p = Popen(["inasafe", "--list-functions"], stdout=PIPE)
 
