@@ -7,7 +7,7 @@ __author__ = 'lucernae'
 
 
 @task(name='geosafe.tasks.analysis.run_analysis_docker', queue='cleanup')
-def run_analysis_docker(arguments, output_file, layer_folder, output_folder):
+def run_analysis_docker(arguments, output_file, layer_folder, output_folder, analysis):
     """
     Running an analysis via InaSAFE cli in docker container
 
@@ -21,6 +21,7 @@ def run_analysis_docker(arguments, output_file, layer_folder, output_folder):
         overwrite=True,
     )
     saved_layer.set_default_permissions()
+    analysis.impact_layer = saved_layer
 
 
 @task(name='geosafe.tasks.analysis.run_analysis_cli', queue='cleanup')

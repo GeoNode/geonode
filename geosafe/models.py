@@ -241,6 +241,19 @@ class Analysis(models.Model):
 
         return arguments, temp_file, os.path.dirname(hazard_file_path), os.path.dirname(temp_file)
 
+    def save(self, force_insert=False, force_update=False, using=None,
+             update_fields=None):
+        if not self.pk:
+            arguments, output_file, layer_folder, output_folder = self.generate_cli()
+            run_analysis_docker.delay(
+                arguments=arguments,
+                output_file=output_file,
+                layer_folder=layer_folder,
+                output_folder=output_folder,
+                analysis=self)
+        super(Analysis, self).save(
+            force_insert=force_insert, force_update=force_update, using=using, update_fields=update_fields)
+
 @receiver(post_save, sender=Layer)
 def create_metadata_object(sender, instance, created, **kwargs):
     metadata = Metadata()
@@ -248,10 +261,3 @@ def create_metadata_object(sender, instance, created, **kwargs):
     metadata.set_layer_purpose()
 
     metadata.save()
-
-
-@receiver(post_save, sender=Analysis)
-def run_analysis_post_save(sender, instance, created, **kwargs):
-    """Call InaSAFE headless here"""
-    arguments, output_file, layer_folder, output_folder = instance.generate_cli()
-    run_analysis_docker.delay(arguments=arguments, output_file=output_file, layer_folder=layer_folder, output_folder=output_folder)
