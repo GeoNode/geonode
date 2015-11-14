@@ -1,9 +1,11 @@
 {% extends 'site_base.html' %}
+{% load bootstrap_tags %}
 {% block body %}
     <h1>Create Analysis</h1>
-<form action="" method="post" enctype="multipart/form-data">{% csrf_token %}
-    {{ form.as_p }}
-    <input type="submit" value="Run"/>
+<form action="" method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    {{ form|as_bootstrap }}
+    <button type="submit" class="btn btn-primary">Run</button>
 </form>
 {% endblock %}
 

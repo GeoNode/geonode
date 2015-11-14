@@ -1,44 +1,46 @@
 {% extends 'site_base.html' %}
 {% block body %}
-    <h1>Analysis</h1>
+    <h1>List of Analysis</h1>
     <div>
-        <table>
-            <thead>
-            <tr>
-                <th>Exposure</th>
-                <th>Hazard</th>
-                <th>Aggregation</th>
-                <th>Extent</th>
-                <th>Impact Function ID</th>
-                <th>Impact Layer</th>
-            </tr>
-            </thead>
-            <tbody>
-            {% for analysis in analysis_list %}
+        {% if analysis_list %}
+            <table class="table table-striped">
+                <thead>
                 <tr>
-                    <td>
-                        <a href="{% url 'layer_detail' layername=analysis.exposure_layer.typename %}">{{ analysis.exposure_layer.name }}</a>
-                    </td>
-                    <td>
-                        <a href="{% url 'layer_detail' layername=analysis.hazard_layer.typename %}">{{ analysis.hazard_layer.name }}</a>
-                    </td>
-                    <td>
-                        <a href="{% url 'layer_detail' layername=analysis.aggregation_layer.typename %}">{{ analysis.aggregation_layer.name }}</a>
-                    </td>
-                    <td>
-                        {{ analysis.get_extent_option_display }}
-                    </td>
-                    <td>
-                        {{ analysis.impact_function_id }}
-                    </td>
-                    <td>
-                        <a href="{% url 'layer_detail' layername=analysis.impact_layer.typename %}">{{ analysis.impact_layer.name }}</a>
-                    </td>
+                    <th>Exposure</th>
+                    <th>Hazard</th>
+                    <th>Aggregation</th>
+                    <th>Extent</th>
+                    <th>Impact Function ID</th>
+                    <th>Impact Layer</th>
                 </tr>
-            {% empty %}
-                <li>No analysis yet.</li>
-            {% endfor %}
-            </tbody>
-        </table>
+                </thead>
+                <tbody>
+                {% for analysis in analysis_list %}
+                    <tr>
+                        <td>
+                            <a href="{% url 'layer_detail' layername=analysis.exposure_layer.typename %}">{{ analysis.exposure_layer.name }}</a>
+                        </td>
+                        <td>
+                            <a href="{% url 'layer_detail' layername=analysis.hazard_layer.typename %}">{{ analysis.hazard_layer.name }}</a>
+                        </td>
+                        <td>
+                            <a href="{% url 'layer_detail' layername=analysis.aggregation_layer.typename %}">{{ analysis.aggregation_layer.name }}</a>
+                        </td>
+                        <td>
+                            {{ analysis.get_extent_option_display }}
+                        </td>
+                        <td>
+                            {{ analysis.impact_function_id }}
+                        </td>
+                        <td>
+                            <a href="{% url 'layer_detail' layername=analysis.impact_layer.typename %}">{{ analysis.impact_layer.name }}</a>
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p>No analysis yet. <a href="{% url "analysis-create" %}">Why not creating one?</a></p>
+        {% endif %}
     </div>
 {% endblock %}
