@@ -92,15 +92,15 @@ dt.as_json()
         cur.execute('drop table if exists %s;' % self.table_name)
         conn.commit()
         cur.close()
-        conn.close() 
+        conn.close()
 
 
 class DataTableAttribute(models.Model):
     objects = DataTableAttributeManager()
-    
+
     #layer = models.ForeignKey(Layer, blank=False, null=False, unique=False, related_name='attribute_set')
     datatable = models.ForeignKey(DataTable, unique=False, related_name='attribute_set')
-    
+
     attribute = models.CharField(_('Attribute Name'), max_length=255, blank=False, null=True, unique=False)
     attribute_label = models.CharField(_('Attribute Label'), max_length=255, blank=False, null=True, unique=False)
     attribute_type = models.CharField(_('Attribute Type'), max_length=50, blank=False, null=False, default='xsd:string', unique=False)
@@ -144,8 +144,8 @@ class GeocodeType(models.Model):
         ordering = ('sort_order', 'name')
 
 class JoinTargetFormatType(models.Model):
-    name = models.CharField(max_length=255, help_text='Census Tract (6 digits, no decimal)') 
-    description_shorthand = models.CharField(max_length=255, help_text='dddddd') 
+    name = models.CharField(max_length=255, help_text='Census Tract (6 digits, no decimal)')
+    description_shorthand = models.CharField(max_length=255, help_text='dddddd')
     clean_steps = models.TextField(help_text='verbal description. e.g. Remove non integers. Check for empty string. Pad with zeros until 6 digits.')
     regex_replacement_string = models.CharField(help_text='"[^0-9]"; Usage: re.sub("[^0-9]", "", "1234.99"'\
                                 , max_length=255)
@@ -185,15 +185,21 @@ class JoinTarget(models.Model):
 
 
     def as_json(self):
+        """Return the object in dict format"""
+
         if self.type:
-            type = {'name':self.type.name, 'description':self.type.description_shorthand, 'clean_steps':self.type.clean_steps}
+            type = {'name':self.type.name,\
+                'description':self.type.description_shorthand,\
+                'clean_steps':self.type.clean_steps}
         else:
             type = None
-        return dict(
-            id=self.id, layer=self.layer.typename,
-            attribute={'attribute':self.attribute.attribute, 'type':self.attribute.attribute_type},
-            type=type,
-            geocode_type=self.geocode_type.name)
+
+        return dict(id=self.id,\
+            layer=self.layer.typename,\
+            attribute={'attribute':self.attribute.attribute, 'type':self.attribute.attribute_type},\
+            type=type,\
+            geocode_type=self.geocode_type.name,\
+            year=self.year)
 
     class Meta:
         unique_together = ('layer', 'attribute',)
@@ -244,7 +250,7 @@ class LatLngTableMappingRecord(models.Model):
 
 class TableJoin(models.Model):
     """
-    TableJoin 
+    TableJoin
     """
     datatable = models.ForeignKey(DataTable)
     table_attribute = models.ForeignKey(DataTableAttribute, related_name="table_attribute")
@@ -274,14 +280,14 @@ class TableJoin(models.Model):
         #cur.execute('drop materialized view if exists %s;' % self.view_name.replace('view_', ''))
         conn.commit()
         cur.close()
-        conn.close() 
+        conn.close()
 
     def as_json(self):
         return dict(
             id=self.id, datable=self.datatable.table_name, source_layer=self.source_layer.typename, join_layer=self.join_layer.typename,
             table_attribute={'attribute':self.table_attribute.attribute, 'type':self.table_attribute.attribute_type},
             layer_attribute={'attribute':self.layer_attribute.attribute, 'type':self.layer_attribute.attribute_type},
-            view_name=self.view_name, 
+            view_name=self.view_name,
             matched_records_count=self.matched_records_count,
             unmatched_records_count=self.unmatched_records_count,
             unmatched_records_list=self.unmatched_records_list)
@@ -350,7 +356,7 @@ def pre_delete_datatable(instance, sender, **kwargs):
     """
     Remove the table from the Database
     """
-    instance.remove_table()    
+    instance.remove_table()
 
 
 def pre_delete_tablejoin(instance, sender, **kwargs):
