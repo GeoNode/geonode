@@ -41,6 +41,10 @@ class AnalysisDetailView(DetailView):
     template_name = 'geosafe/analysis/detail.html'
     context_object_name = 'analysis'
 
+    def get_context_data(self, **kwargs):
+        context = super(AnalysisDetailView, self).get_context_data(**kwargs)
+        return context
+
 def impact_function_filter(request):
     """Ajax Request for filtered available IF
     """

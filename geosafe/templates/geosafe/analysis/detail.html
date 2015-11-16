@@ -1,10 +1,91 @@
 {% extends 'site_base.html' %}
+{% load bootstrap_tags %}
+{% block extra_head %}
+    <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.css"/>
+{% endblock extra_head %}
 {% block body %}
-    <h1>Analysis Detail</h1>
-    <p>Exposure Layer: {{ analysis.exposure_layer }}</p>
-    <p>Hazard Layer: {{ analysis.hazard_layer }}</p>
-    <p>Aggregation Layer: {{ analysis.aggregation_layer }}</p>
-    <p>Impact Function ID: {{ analysis.impact_function_id }}</p>
-    <p>Extent: {{ analysis.get_extent_option_display }}</p>
-    <p>Impact Layer: {{ analysis.impact_layer }}</p>
+    <h1>Analysis Details</h1>
+    <div id="map" style="width: 600px; height: 400px"></div>
+    <div>
+        <p>Exposure Layer: <a
+                href="{% url 'layer_detail' layername=analysis.exposure_layer.typename %}">{{ analysis.exposure_layer }}</a>
+        </p>
+
+        <p>Hazard Layer: <a
+                href="{% url 'layer_detail' layername=analysis.hazard_layer.typename %}">{{ analysis.hazard_layer }}</a>
+        </p>
+
+        <p>Aggregation Layer: <a
+                href="{% url 'layer_detail' layername=analysis.aggregation_layer.typename %}">{{ analysis.aggregation_layer }}</a>
+        </p>
+
+        <p>Impact Function ID: {{ analysis.impact_function_id }}</p>
+
+        <p>Extent: {{ analysis.get_extent_option_display }}</p>
+
+        <p>Impact Layer: <a
+                href="{% url 'layer_detail' layername=analysis.impact_layer.typename %}">{{ analysis.impact_layer }}</a>
+        </p>
+    </div>
 {% endblock %}
+
+{% block extra_script %}
+    <script src="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.js"></script>
+    <script>
+        (function () {
+            // your page initialization code here
+            // the DOM will be available here
+            console.log("ready!");
+
+            var map = L.map('map');
+
+            function zoom_to_box(map, bbox) {
+                var bounds = [
+                    [bbox[1], bbox[0]],
+                    [bbox[3], bbox[2]]
+                ];
+                map.fitBounds(bounds);
+            }
+
+            function add_layer(map, layer) {
+                console.log(layer);
+                tile_layer = L.tileLayer(layer['get_titles_url'],
+                        {
+                            'opacity': 0.8
+                        });
+                if (tile_layer != null) {
+                    map.addLayer(tile_layer);
+                }
+            }
+
+            var osm = L.tileLayer('http://otile{s}.mqcdn.com/tiles/1.0.0/{type}/{z}/{x}/{y}.{ext}', {
+                type: 'map',
+                ext: 'jpg',
+                attribution: 'Tiles Courtesy of <a href="http://www.mapquest.com/">MapQuest</a> &mdash; Map data &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+                subdomains: '1234'
+            });
+            map.addLayer(osm);
+            var exposure_layer = [];
+            var hazard_layer = [];
+            var aggregation_layer = [];
+            var impact_layer = [];
+
+            exposure_layer['get_titles_url'] = "{{ analysis.exposure_layer.get_tiles_url|safe }}";
+            hazard_layer['get_titles_url'] = "{{ analysis.hazard_layer.get_tiles_url|safe }}";
+            aggregation_layer['get_titles_url'] = "{{ analysis.aggregation_layer.get_tiles_url|safe }}";
+            impact_layer['get_titles_url'] = "{{ analysis.impact_layer.get_tiles_url|safe }}";
+
+
+            add_layer(map, exposure_layer);
+            add_layer(map, hazard_layer);
+            add_layer(map, aggregation_layer);
+            add_layer(map, impact_layer);
+            {% if analysis.aggregation_layer.bbox_string %}
+                zoom_to_box(map, [{{ analysis.aggregation_layer.bbox_string }}]);
+            {% else %}
+                zoom_to_box(map, [{{ analysis.exposure_layer.bbox_string }}]);
+            {% endif %}
+        })();
+
+    </script>
+{% endblock extra_script %}
