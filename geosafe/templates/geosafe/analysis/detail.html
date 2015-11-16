@@ -1,0 +1,10 @@
+{% extends 'site_base.html' %}
+{% block body %}
+    <h1>Analysis Detail</h1>
+    <p>Exposure Layer: {{ analysis.exposure_layer }}</p>
+    <p>Hazard Layer: {{ analysis.hazard_layer }}</p>
+    <p>Aggregation Layer: {{ analysis.aggregation_layer }}</p>
+    <p>Impact Function ID: {{ analysis.impact_function_id }}</p>
+    <p>Extent: {{ analysis.get_extent_option_display }}</p>
+    <p>Impact Layer: {{ analysis.impact_layer }}</p>
+{% endblock %}

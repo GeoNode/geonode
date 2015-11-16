@@ -12,6 +12,7 @@
                     <th>Extent</th>
                     <th>Impact Function ID</th>
                     <th>Impact Layer</th>
+                    <th>Detail</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -34,6 +35,9 @@
                         </td>
                         <td>
                             <a href="{% url 'layer_detail' layername=analysis.impact_layer.typename %}">{{ analysis.impact_layer.name }}</a>
+                        </td>
+                        <td>
+                            <a href="{% url 'analysis-detail' pk=analysis.pk %}">Go</a>
                         </td>
                     </tr>
                 {% endfor %}

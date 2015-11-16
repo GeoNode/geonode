@@ -4,7 +4,7 @@ import os
 from django.core.urlresolvers import reverse
 from django.http.response import HttpResponseServerError, HttpResponse
 from django.views.generic import (
-    ListView, CreateView)
+    ListView, CreateView, DetailView)
 from geonode.layers.models import Layer
 from geosafe.models import Analysis
 from geosafe.forms import (AnalysisCreationForm)
@@ -19,7 +19,7 @@ class AnalysisCreateView(CreateView):
     context_object_name = 'analysis'
 
     def get_success_url(self):
-        return reverse('analysis-list')
+        return reverse('analysis-detail', kwargs={'pk':self.object.pk})
 
     def get_form_kwargs(self):
         kwargs = super(AnalysisCreateView, self).get_form_kwargs()
@@ -36,6 +36,10 @@ class AnalysisListView(ListView):
         context = super(AnalysisListView, self).get_context_data(**kwargs)
         return context
 
+class AnalysisDetailView(DetailView):
+    model = Analysis
+    template_name = 'geosafe/analysis/detail.html'
+    context_object_name = 'analysis'
 
 def impact_function_filter(request):
     """Ajax Request for filtered available IF
