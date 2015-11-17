@@ -1,4 +1,4 @@
-.. _install_win_devmode:
+.. _win_devinstall:
 
 Install GeoNode for Development (Windows)
 =========================================

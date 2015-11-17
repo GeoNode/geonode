@@ -120,7 +120,7 @@ or if you set your JAVA_HOME environment variables (e.g. JAVA_HOME="C:\Program F
 
     paver start
 
-Once the package is installed, please consult :ref:`configure_installation` to learn how to create an account for the admin user and tweak the settings to get more performance.
+Once the package is installed, please consult :ref:`custom_install` to learn how to create an account for the admin user and tweak the settings to get more performance.
 
 OSX
 ---
@@ -214,5 +214,5 @@ CentOS/RHEL and other \*nix distros
 
 We recommend you to download the latest release and modify the included ``install.sh`` and ``support/config.sh``. GeoNode has been installed in CentOS/RHEL using this mechanism.
 
-Once the package is installed, please consult the :ref:`configure_installation` to learn how to create the admin user and tweak the settings to get more performance.
+Once the package is installed, please consult the :ref:`custom_install` to learn how to create the admin user and tweak the settings to get more performance.
 
