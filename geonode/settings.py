@@ -596,56 +596,6 @@ PYCSW = {
     }
 }
 
-# GeoNode javascript client configuration
-
-# default map projection
-# Note: If set to EPSG:4326, then only EPSG:4326 basemaps will work.
-DEFAULT_MAP_CRS = "EPSG:900913"
-
-# Where should newly created maps be focused?
-DEFAULT_MAP_CENTER = (0, 0)
-
-# How tightly zoomed should newly created maps be?
-# 0 = entire world;
-# maximum zoom is between 12 and 15 (for Google Maps, coverage varies by area)
-DEFAULT_MAP_ZOOM = 0
-
-MAP_BASELAYERS = [{
-    "source": {"ptype": "gxp_olsource"},
-    "type": "OpenLayers.Layer",
-    "args": ["No background"],
-    "visibility": False,
-    "fixed": True,
-    "group":"background"
-}, {
-    "source": {"ptype": "gxp_osmsource"},
-    "type": "OpenLayers.Layer.OSM",
-    "name": "mapnik",
-    "visibility": False,
-    "fixed": True,
-    "group": "background"
-}, {
-    "source": {"ptype": "gxp_mapquestsource"},
-    "name": "osm",
-    "group": "background",
-    "visibility": True
-}, {
-    "source": {"ptype": "gxp_mapquestsource"},
-    "name": "naip",
-    "group": "background",
-    "visibility": False
-}, 
-# {    
-#     "source": {"ptype": "gxp_bingsource"},
-#     "name": "AerialWithLabels",
-#     "fixed": True,
-#     "visibility": False,
-#     "group": "background"
-# }, 
-{
-    "source": {"ptype": "gxp_mapboxsource"},
-}]
-
 SOCIAL_BUTTONS = True
 
 SOCIAL_ORIGINS = [{
@@ -892,6 +842,65 @@ try:
 except ImportError:
     pass
 
+# GeoNode javascript client configuration
+
+# default map projection
+# Note: If set to EPSG:4326, then only EPSG:4326 basemaps will work.
+DEFAULT_MAP_CRS = "EPSG:900913"
+
+# Where should newly created maps be focused?
+DEFAULT_MAP_CENTER = (0, 0)
+
+# How tightly zoomed should newly created maps be?
+# 0 = entire world;
+# maximum zoom is between 12 and 15 (for Google Maps, coverage varies by area)
+DEFAULT_MAP_ZOOM = 0
+
+MAP_BASELAYERS = [{
+    "source": {"ptype": "gxp_olsource"},
+    "type": "OpenLayers.Layer",
+    "args": ["No background"],
+    "visibility": False,
+    "fixed": True,
+    "group":"background"
+}, {
+    "source": {"ptype": "gxp_osmsource"},
+    "type": "OpenLayers.Layer.OSM",
+    "name": "mapnik",
+    "visibility": False,
+    "fixed": True,
+    "group": "background"
+}, {
+    "source": {"ptype": "gxp_mapquestsource"},
+    "name": "osm",
+    "group": "background",
+    "visibility": True
+}, {
+    "source": {"ptype": "gxp_mapquestsource"},
+    "name": "naip",
+    "group": "background",
+    "visibility": False
+}, 
+{
+    "source": {"ptype": "gxp_mapboxsource"},
+}]
+
+try:
+    BING_API_KEY
+except NameError:
+    print "Not enabling BingMaps base layer as a BING_API_KEY is not defined in local_settings.py file."
+else:
+    BING_LAYER = {    
+        "source": {
+            "ptype": "gxp_bingsource",
+            "apiKey": BING_API_KEY
+        },
+        "name": "AerialWithLabels",
+        "fixed": True,
+        "visibility": False,
+        "group": "background"
+    }
+    MAP_BASELAYERS.append(BING_LAYER)
 
 # Require users to authenticate before using Geonode
 if LOCKDOWN_GEONODE:
