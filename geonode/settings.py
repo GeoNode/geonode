@@ -630,7 +630,14 @@ MAP_BASELAYERS = [{
     "name": "naip",
     "group": "background",
     "visibility": False
-}, 
+}, {
+    "source": {"ptype": "gxp_mapboxsource"},
+    "name": "world-light",
+    "title": "Light base layer",
+    "fixed": True,
+    "visibility": False,
+    "group":"background"
+  },
 # {    
 #     "source": {"ptype": "gxp_bingsource"},
 #     "name": "AerialWithLabels",
