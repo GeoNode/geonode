@@ -371,12 +371,20 @@
           choiceSelector: 'span',
           hideAfter: 200,
           minimumCharacters: 1,
-          appendAutocomplete: $('#text_search_input'),
-          placeholder: gettext('Enter your text here ...')
+          placeholder: gettext('Enter your text here ...'),
+          autoHilightFirst: false
     });
+
+    $('#text_search_input').keypress(function(e) {
+      if(e.which == 13) {
+        $('#text_search_btn').click();
+        $('.yourlabs-autocomplete').hide();
+      }
+    });
+
     $('#text_search_input').bind('selectChoice', function(e, choice, text_autocomplete) {
           if(choice[0].children[0] == undefined) {
-              $('#text_search_input').val(choice[0].innerHTML);
+              $('#text_search_input').val($(choice[0]).text());
               $('#text_search_btn').click();
           }
     });

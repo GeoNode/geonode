@@ -19,7 +19,7 @@
 #########################################################################
 
 import autocomplete_light
-from autocomplete_light.contrib.taggit_tagfield import TagField, TagWidget
+from autocomplete_light.contrib.taggit_field import TaggitField, TaggitWidget
 
 from django import forms
 from django.utils.translation import ugettext as _
@@ -58,6 +58,15 @@ class CategoryForm(forms.Form):
 
 class ResourceBaseForm(TranslationModelForm):
     """Base form for metadata, should be inherited by childres classes of ResourceBase"""
+
+    owner = forms.ModelChoiceField(
+        empty_label="Owner",
+        label="Owner",
+        required=False,
+        queryset=Profile.objects.exclude(
+            username='AnonymousUser'),
+        widget=autocomplete_light.ChoiceWidget('ProfileAutocomplete'))
+
     _date_widget_options = {
         "icon_attrs": {"class": "fa fa-calendar"},
         "attrs": {"class": "form-control input-sm"},
@@ -100,10 +109,10 @@ class ResourceBaseForm(TranslationModelForm):
             username='AnonymousUser'),
         widget=autocomplete_light.ChoiceWidget('ProfileAutocomplete'))
 
-    keywords = TagField(
+    keywords = TaggitField(
         required=False,
         help_text=_("A space or comma-separated list of keywords"),
-        widget=TagWidget('TagAutocomplete'))
+        widget=TaggitWidget('TagAutocomplete'))
 
     regions = TreeNodeMultipleChoiceField(
         required=False,

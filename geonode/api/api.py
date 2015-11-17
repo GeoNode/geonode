@@ -134,9 +134,10 @@ class RegionResource(TypeFilteredResource):
         allowed_methods = ['get']
         filtering = {
             'name': ALL,
+            'code': ALL,
         }
-        # To activate the counts on regions uncomment the following line
-        # serializer = CountJSONSerializer()
+        if settings.API_INCLUDE_REGIONS_COUNT:
+            serializer = CountJSONSerializer()
 
 
 class TopicCategoryResource(TypeFilteredResource):

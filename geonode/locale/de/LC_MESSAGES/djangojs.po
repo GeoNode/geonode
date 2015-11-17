@@ -13,7 +13,9 @@
 # Translators:
 # Translators:
 # Translators:
+# Translators:
 # Andres Alfonso Lemon Gomez <lemon.andres@gmail.com>, 2014
+# Florian Hoedt <gannebamm@gmail.com>, 2015
 # Hermann Schwarting <hfs@gmx.de>, 2012
 # Michael Diener office@gomogi.com, 2012
 # Ray <rainerlissewski@gmail.com>, 2015
@@ -21,8 +23,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-09-22 03:42-0500\n"
-"PO-Revision-Date: 2015-05-18 18:18+0000\n"
+"POT-Creation-Date: 2015-10-29 04:22-0500\n"
+"PO-Revision-Date: 2015-10-29 09:06+0000\n"
 "Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
 "Language-Team: German (http://www.transifex.com/geonode/geonode/language/"
 "de/)\n"
@@ -72,12 +74,12 @@ msgstr "Nur die folgenden Benutzer oder Gruppen:"
 msgid "Who can manage and edit this data?"
 msgstr "Wer darf diese Daten verwalten und bearbeiten?"
 
-#: static/geonode/js/search/search.js:375
+#: static/geonode/js/search/search.js:374
 #: static_root/geonode/js/search/search.js:298
 msgid "Enter your text here ..."
 msgstr "Geben Sie Ihren Text hier ein..."
 
-#: static/geonode/js/search/search.js:401
+#: static/geonode/js/search/search.js:409
 msgid "Enter your region here ..."
 msgstr "Geben Sie Ihre Region hier ein..."
 
@@ -118,77 +120,77 @@ msgstr "GeoJSON"
 msgid "Zip Archives"
 msgstr "Zip-Archive"
 
-#: static/geonode/js/upload/LayerInfo.js:231
+#: static/geonode/js/upload/LayerInfo.js:235
 #: static_root/geonode/js/upload/LayerInfo.js:231
 msgid "Layer Info"
 msgstr "Schicht Info"
 
-#: static/geonode/js/upload/LayerInfo.js:232
+#: static/geonode/js/upload/LayerInfo.js:236
 #: static_root/geonode/js/upload/LayerInfo.js:232
 msgid "Edit Metadata"
 msgstr "Metadaten bearbeiten"
 
-#: static/geonode/js/upload/LayerInfo.js:233
+#: static/geonode/js/upload/LayerInfo.js:237
 #: static_root/geonode/js/upload/LayerInfo.js:233
 msgid "Manage Styles"
 msgstr "Stilverwaltung"
 
-#: static/geonode/js/upload/LayerInfo.js:236
+#: static/geonode/js/upload/LayerInfo.js:240
 msgid "The column %1 was renamed to %2 <br/>"
 msgstr "Die Spalte %1 wurde umbenannt in %2 <br/>"
 
-#: static/geonode/js/upload/LayerInfo.js:242
+#: static/geonode/js/upload/LayerInfo.js:246
 #: static_root/geonode/js/upload/LayerInfo.js:235
 msgid "Your layer was successfully uploaded"
 msgstr "Ihre Schicht wurde erfolgreich hochgeladen"
 
-#: static/geonode/js/upload/LayerInfo.js:271
+#: static/geonode/js/upload/LayerInfo.js:275
 #: static_root/geonode/js/upload/LayerInfo.js:264
 msgid "Performing Final GeoServer Config Step"
 msgstr "Darstellende Schluss GeoServer Config Schritt"
 
-#: static/geonode/js/upload/LayerInfo.js:286
-#: static/geonode/js/upload/LayerInfo.js:312
+#: static/geonode/js/upload/LayerInfo.js:290
+#: static/geonode/js/upload/LayerInfo.js:316
 #: static_root/geonode/js/upload/LayerInfo.js:279
 #: static_root/geonode/js/upload/LayerInfo.js:305
 msgid "You need to specify more information in order to complete your upload"
 msgstr ""
 "Sie benötigen weitere Informationen, um Ihre Upload abzuschließen angeben"
 
-#: static/geonode/js/upload/LayerInfo.js:304
+#: static/geonode/js/upload/LayerInfo.js:308
 #: static_root/geonode/js/upload/LayerInfo.js:297
 msgid "You need to specify more information in order to complete your upload."
 msgstr ""
 "Sie benötigen weitere Informationen, um Ihre Upload abzuschließen angeben."
 
-#: static/geonode/js/upload/LayerInfo.js:304
+#: static/geonode/js/upload/LayerInfo.js:308
 #: static_root/geonode/js/upload/LayerInfo.js:297
 msgid "You can continue configuring your layer."
 msgstr "Sie können weiterhin die Konfiguration Ihres Schicht."
 
-#: static/geonode/js/upload/LayerInfo.js:322
-#: static/geonode/js/upload/LayerInfo.js:407
+#: static/geonode/js/upload/LayerInfo.js:326
+#: static/geonode/js/upload/LayerInfo.js:412
 #: static_root/geonode/js/upload/LayerInfo.js:315
 #: static_root/geonode/js/upload/LayerInfo.js:400
 msgid "Unexpected Error"
 msgstr "Unerwarteter Fehler"
 
-#: static/geonode/js/upload/LayerInfo.js:338
+#: static/geonode/js/upload/LayerInfo.js:342
 #: static_root/geonode/js/upload/LayerInfo.js:331
 msgid "Performing GeoServer Config Step"
 msgstr "Darstellende GeoServer Config Schritt"
 
-#: static/geonode/js/upload/LayerInfo.js:414
+#: static/geonode/js/upload/LayerInfo.js:419
 #: static_root/geonode/js/upload/LayerInfo.js:407
 msgid "Layer files uploaded, configuring in GeoServer"
 msgstr "Layer-Dateien hochgeladen, die Konfiguration in GeoServer"
 
-#: static/geonode/js/upload/LayerInfo.js:429
+#: static/geonode/js/upload/LayerInfo.js:434
 #: static_root/geonode/js/upload/LayerInfo.js:422
 msgid "Select or create a Geogig repository."
 msgstr "Wählen Sie ein Geogig repository aus oder erstellen Sie eines."
 
-#: static/geonode/js/upload/LayerInfo.js:524
+#: static/geonode/js/upload/LayerInfo.js:528
 #: static_root/admin/js/SelectFilter2.js:69
 #: static_root/geonode/js/upload/LayerInfo.js:517
 msgid "Remove"
@@ -202,10 +204,13 @@ msgstr ""
 "Die Datei %s ist ein nicht unterstütztes Dateityp, wählen Sie bitte eine "
 "andere Datei."
 
-#: static/geonode/js/upload/upload.js:260
-#: static_root/geonode/js/upload/upload.js:260
-msgid "You are uploading an incomplete set of files."
-msgstr "Du Hochladen eines unvollständigen Satz von Dateien."
+#: static/geonode/js/upload/upload.js:280
+msgid ""
+"You are trying to upload an incomplete set of files or not all mandatory "
+"options have been validated.\n"
+"\n"
+"Please check for errors in the form!"
+msgstr ""
 
 #: static_root/admin/js/SelectFilter2.js:45
 #, c-format
@@ -314,7 +319,7 @@ msgstr ""
 
 #: static_root/admin/js/calendar.js:9
 msgid "S M T W T F S"
-msgstr ""
+msgstr "S M D M D F S"
 
 #: static_root/admin/js/collapse.js:8 static_root/admin/js/collapse.js.c:19
 #: static_root/admin/js/collapse.min.js:1
@@ -372,6 +377,10 @@ msgstr "Gestern"
 #: static_root/admin/js/admin/DateTimeShortcuts.js:203
 msgid "Tomorrow"
 msgstr "Morgen"
+
+#: static_root/geonode/js/upload/upload.js:260
+msgid "You are uploading an incomplete set of files."
+msgstr "Du Hochladen eines unvollständigen Satz von Dateien."
 
 #: templates/lang.js:10
 msgid "Save as Copy"

@@ -13,13 +13,14 @@
 # Translators:
 # Translators:
 # Translators:
+# Translators:
 # Andres Alfonso Lemon Gomez <lemon.andres@gmail.com>, 2014
 msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-09-22 03:42-0500\n"
-"PO-Revision-Date: 2015-09-22 08:17+0000\n"
+"POT-Creation-Date: 2015-10-29 04:21-0500\n"
+"PO-Revision-Date: 2015-10-29 09:05+0000\n"
 "Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
 "Language-Team: Khmer (http://www.transifex.com/geonode/geonode/language/"
 "km/)\n"
@@ -29,11 +30,11 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 
-#: utils.py:44
+#: utils.py:43
 msgid "Invalid permission level."
 msgstr "កម្រិត​នៃ​ការ​អនុ​ញ្ញា​ត្តិ​មិន​ត្រឹមត្រូវ​។"
 
-#: utils.py:494
+#: utils.py:496
 msgid "Permission Denied"
 msgstr "សិទ្ធិ​ត្រូវ​បាន​បដិសេធ"
 
@@ -155,7 +156,8 @@ msgstr "គ្មាន​ព័ត៌មាន​ដែល​បាន​ផ្
 
 #: base/forms.py:43 base/templates/base/resourcebase_info_panel.html:62
 #: documents/templates/documents/document_metadata.html:65
-#: layers/templates/layers/layer_metadata.html:71
+#: layers/templates/layers/layer_metadata.html:70
+#: layers/templates/upload/layer_upload.html:89
 #: maps/templates/maps/map_metadata.html:61
 msgid "Category"
 msgstr "ប្រភេទ"
@@ -164,7 +166,7 @@ msgstr "ប្រភេទ"
 msgid "Category is required."
 msgstr "ប្រភេទ​ត្រូវ​បាន​ទាមទារ​។"
 
-#: base/forms.py:105 groups/models.py:45 people/forms.py:82
+#: base/forms.py:114 groups/models.py:45 people/forms.py:82
 msgid "A space or comma-separated list of keywords"
 msgstr "លំហ​មួយ​ឬ​បញ្ជី​បំបែក​ដោយ​សញ្ញា​ក្បៀស​ពាក្យគន្លឹះ"
 
@@ -704,23 +706,23 @@ msgstr ""
 msgid "See users"
 msgstr ""
 
-#: documents/forms.py:92 documents/forms.py:160
+#: documents/forms.py:96 documents/forms.py:164
 msgid "Document must be a file or url."
 msgstr "ឯកសារ​ត្រូវ​តែ​ជា​ឯកសារ​ឬ URL ។"
 
-#: documents/forms.py:96 documents/forms.py:164
+#: documents/forms.py:100 documents/forms.py:168
 msgid "A document cannot have both a file and a url."
 msgstr "ឯកសារ​មួយ​មិន​អាច​មាន​ទាំង​ឯកសារ​និង URL មួយ​។"
 
-#: documents/forms.py:109 documents/forms.py:177
+#: documents/forms.py:113 documents/forms.py:181
 msgid "This file type is not allowed"
 msgstr "ប្រភេទ​ឯកសារ​នេះ​មិន​ត្រូវ​បាន​អនុញ្ញាត"
 
-#: documents/forms.py:127
+#: documents/forms.py:131
 msgid "Link to"
 msgstr "តំណ​ទៅ"
 
-#: documents/forms.py:149
+#: documents/forms.py:153
 msgid "Permissions must be valid JSON."
 msgstr "សិទ្ធិ​ត្រូវ​តែ​ជា JSON ត្រឹមត្រូវ​។"
 
@@ -764,11 +766,11 @@ msgstr "អ្នក​មិន​ត្រូវ​បាន​អនុញ្
 msgid "You are not allowed to edit this document."
 msgstr "អ្នក​មិន​ត្រូវ​បាន​អនុញ្ញាត​ឱ្យ​កែ​សម្រួល​ឯកសារ​នេះ​។"
 
-#: documents/views.py:328 layers/views.py:363
+#: documents/views.py:328 layers/views.py:358
 msgid "You must set a point of contact for this resource"
 msgstr ""
 
-#: documents/views.py:343 layers/views.py:378
+#: documents/views.py:343 layers/views.py:373
 msgid "You must set an author for this resource"
 msgstr ""
 
@@ -914,7 +916,7 @@ msgstr "ឯកសារ​នេះ​មិន​ត្រូវ​បាន​
 #: groups/templates/groups/group_detail.html:70
 #: layers/templates/layers/layer_detail.html:334
 #: layers/templates/layers/layer_replace.html:94
-#: layers/templates/upload/layer_upload.html:93
+#: layers/templates/upload/layer_upload.html:112
 #: maps/templates/maps/map_detail.html:178 people/admin.py:55
 msgid "Permissions"
 msgstr "សិទ្ធិ"
@@ -971,28 +973,36 @@ msgstr "ធ្វើ​ឱ្យ​ទាន់សម័យ"
 msgid "Metadata Provider"
 msgstr "ក្រុមហ៊ុន​ផ្ដល់​ទិន្នន័យ​មេតា"
 
-#: documents/templates/documents/document_remove.html:11
+#: documents/templates/documents/document_remove.html:4
+#: maps/templates/maps/map_remove.html:6
+msgid "Deleting"
+msgstr "ការ​លុប"
+
+#: documents/templates/documents/document_remove.html:8
+msgid "Remove Document"
+msgstr ""
+
+#: documents/templates/documents/document_remove.html:13
 #, python-format
 msgid ""
 "\n"
-"          Are you sure you want to remove %(document_title)s?\n"
+"          Are you sure you want to remove <a href="
+"\"%(document.get_absolute_url)s\">%(document_title)s</a>?\n"
 "        "
 msgstr ""
-"\n"
-"តើ​អ្នក​ពិត​ជា​ចង់​យក​ %(document_title)s?"
 
-#: documents/templates/documents/document_remove.html:18
+#: documents/templates/documents/document_remove.html:20
 #: groups/templates/groups/group_remove.html:19
 #: layers/templates/layers/layer_remove.html:22
-#: maps/templates/maps/map_remove.html:19
+#: maps/templates/maps/map_remove.html:22
 #: services/templates/services/service_remove.html:17
 msgid "Yes, I am sure"
 msgstr "បាទ​, ខ្ញុំ​ប្រាកដ"
 
-#: documents/templates/documents/document_remove.html:19
+#: documents/templates/documents/document_remove.html:21
 #: groups/templates/groups/group_remove.html:20
 #: layers/templates/layers/layer_remove.html:23
-#: maps/templates/maps/map_remove.html:20
+#: maps/templates/maps/map_remove.html:23
 #: services/templates/services/service_remove.html:18
 msgid "No, don't remove it"
 msgstr "គ្មាន​, មិន​យក​វា​ចេញ"
@@ -1008,7 +1018,7 @@ msgstr "ជំនួស"
 
 #: documents/templates/documents/document_replace.html:27
 #: layers/templates/layers/layer_replace.html:84
-#: layers/templates/upload/layer_upload.html:86
+#: layers/templates/upload/layer_upload.html:105
 msgid "Clear"
 msgstr "ច្បាស់​លាស់"
 
@@ -1016,11 +1026,11 @@ msgstr "ច្បាស់​លាស់"
 msgid "Upload Document"
 msgstr "ផ្ទុក​ឡើង​ឯកសារ"
 
-#: geoserver/helpers.py:974
+#: geoserver/helpers.py:987
 msgid "An exception occurred loading data to PostGIS"
 msgstr ""
 
-#: geoserver/helpers.py:979
+#: geoserver/helpers.py:992
 msgid " Additionally an error occured during database cleanup"
 msgstr ""
 
@@ -1060,7 +1070,7 @@ msgstr "ជា PDF"
 msgid "PNG"
 msgstr "PNG & ‧​;"
 
-#: geoserver/signals.py:293
+#: geoserver/signals.py:294
 msgid "Could not create a download link for layer."
 msgstr "មិន​អាច​បង្កើត​តំណ​ទាញ​យក​សម្រាប់​ស្រទាប់​។"
 
@@ -1554,19 +1564,19 @@ msgstr "អ្នក​មិន​ត្រូវ​បាន​អនុញ្
 msgid "You are not permitted to view this layer"
 msgstr "អ្នក​មិន​ត្រូវ​បាន​អនុញ្ញាត​ឱ្យ​មើល​ស្រទាប់​នេះ"
 
-#: layers/views.py:488
+#: layers/views.py:486
 msgid "You are attempting to replace a vector layer with a raster."
 msgstr ""
 
-#: layers/views.py:491
+#: layers/views.py:489
 msgid "You are attempting to replace a raster layer with a vector."
 msgstr ""
 
-#: layers/views.py:547
+#: layers/views.py:545
 msgid "Unable to delete layer"
 msgstr ""
 
-#: layers/views.py:550
+#: layers/views.py:548
 msgid ""
 "This layer is a member of a layer group, you must remove the layer from the "
 "group before deleting."
@@ -1930,7 +1940,7 @@ msgstr "ធ្វើ​ឱ្យ​ទាន់សម័យ​រចនាប័
 msgid "Upload Layer"
 msgstr "ស្រទាប់​ផ្ទុក​ឡើង"
 
-#: layers/templates/upload/layer_upload.html:87
+#: layers/templates/upload/layer_upload.html:106
 msgid "Upload files"
 msgstr "ផ្ទុក​ឯកសារ​ឡើង"
 
@@ -2541,19 +2551,18 @@ msgstr ""
 "XML ។ ការ​នាំ​ចូល​ទិន្នន័យ​មេតា GeoNode គាំទ្រ​របស់​សំណុំ​រង​របស់​អាយ​អេ​ស​អូ​, FGDC​, និង​ទីក្រុង Dublin ស្នូល​"
 "ធាតុ​ទិន្នន័យ​មេតា​មួយ​។ មួយ​ចំនួន​នៃ​ទិន្នន័យ​មេតា​ដើម​របស់​អ្នក​អាច​ត្រូវ​បាន​បាត់​បង់​។"
 
-#: maps/templates/maps/map_remove.html:6
-msgid "Deleting"
-msgstr "ការ​លុប"
+#: maps/templates/maps/map_remove.html:10
+msgid "Remove Map"
+msgstr ""
 
-#: maps/templates/maps/map_remove.html:13
+#: maps/templates/maps/map_remove.html:15
 #, python-format
 msgid ""
 "\n"
-"        Are you sure you want to remove %(map_title)s?\n"
-"    "
+"          Are you sure you want to remove <a href=\"%(map.get_absolute_url)s"
+"\">%(map_title)s</a>?\n"
+"        "
 msgstr ""
-"\n"
-"តើ​អ្នក​ពិត​ជា​ចង់​យក​ %(map_title)s​?"
 
 #: maps/templates/maps/map_view.html:5
 msgid "GeoExplorer"
@@ -2750,15 +2759,15 @@ msgstr ""
 "ពាក្យ​ដែល​បាន​ប្រើ​ជា​ទូទៅ (s​) បាន​ឬ​ពាក្យ​ផ្លូវការ (s​) បាន​ឬ​ឃ្លា (s​) បាន​ត្រូវ​បាន​គេ​ប្រើ​ដើម្បី​ពិពណ៌នា​"
 "អំពី​ប្រធានបទ (ចន្លោះ​ឬ​បំបែក​ដោយ​សញ្ញា​ក្បៀស"
 
-#: people/views.py:90
+#: people/views.py:91
 msgid "Your username for "
 msgstr "ឈ្មោះ​អ្នក​ប្រើ​របស់​អ្នក​សម្រាប់"
 
-#: people/views.py:104
+#: people/views.py:105
 msgid "Your username has been emailed to you."
 msgstr "ឈ្មោះ​អ្នក​ប្រើ​របស់​អ្នក​ត្រូវ​បាន​ផ្ញើ​អ៊ីមែល​ទៅ​អ្ន​​ក​។"
 
-#: people/views.py:106
+#: people/views.py:107
 msgid "No user could be found with that email address."
 msgstr "គ្មាន​អ្នក​ប្រើ​ដែល​អាច​ត្រូវ​បាន​រក​ឃើញ​ដែល​មាន​អាសយដ្ឋាន​អ៊ី​ម៉ែ​ល​នោះ​។"
 
@@ -2873,7 +2882,8 @@ msgid "Remote Services"
 msgstr "សេវាកម្ម​ពី​ចម្ងាយ"
 
 #: people/templates/people/profile_detail.html:117 templates/500.html:229
-#: templates/base.html:222
+#: templates/base.html:222 templates/account/invite_user.html:8
+#: templates/account/invite_user.html:15
 msgid "Invite User"
 msgstr "អញ្ជើញ​អ្នក​ប្រើប្រាស់"
 
@@ -3672,11 +3682,11 @@ msgid "Share This"
 msgstr ""
 
 #: templates/account/admin_approval_sent.html:6
-#: templates/account/admin_approval_sent.html:9
+#: templates/account/admin_approval_sent.html:11
 msgid "Account Pending Approval"
 msgstr ""
 
-#: templates/account/admin_approval_sent.html:11
+#: templates/account/admin_approval_sent.html:14
 #, python-format
 msgid ""
 "We have sent the administrators a notice to approve your account associated "
@@ -3685,11 +3695,11 @@ msgid ""
 msgstr ""
 
 #: templates/account/email_confirmation_sent.html:6
-#: templates/account/email_confirmation_sent.html:9
+#: templates/account/email_confirmation_sent.html:11
 msgid "Confirm your email address"
 msgstr ""
 
-#: templates/account/email_confirmation_sent.html:11
+#: templates/account/email_confirmation_sent.html:14
 #, python-format
 msgid ""
 "We have sent you an email to <b>%(email)s</b> for verification. Follow the "
@@ -3715,6 +3725,22 @@ msgstr "ភ្លេច​ពាក្យសម្ងាត់​របស់​
 #: templates/account/logout.html:15
 msgid "Are you sure you want to log out?"
 msgstr "តើ​អ្នក​ពិត​ជា​ចង់​ចេញ​?"
+
+#: templates/account/password_change.html:8
+msgid "Password change"
+msgstr ""
+
+#: templates/account/password_change.html:14
+msgid "Password Change"
+msgstr ""
+
+#: templates/account/password_change.html:18
+msgid "Change your password here"
+msgstr ""
+
+#: templates/account/password_change.html:24
+msgid "Change my password"
+msgstr ""
 
 #: templates/account/password_reset.html:8
 msgid "Password reset"
@@ -3749,12 +3775,12 @@ msgstr ""
 "\"mailto:%(THEME_ACCOUNT_CONTACT_EMAIL)s\">%(THEME_ACCOUNT_CONTACT_EMAIL)s</"
 "a>."
 
-#: templates/account/signup.html:7 templates/account/signup.html.py:14
-#: templates/account/signup.html:22
+#: templates/account/signup.html:7 templates/account/signup.html.py:11
+#: templates/account/signup.html:17 templates/account/signup.html.py:25
 msgid "Sign up"
 msgstr "ចុះឈ្មោះ"
 
-#: templates/account/signup.html:27
+#: templates/account/signup.html:30
 msgid "Sorry, registrations are not open at this time."
 msgstr "សូម​អភ័យ​ទោស​, ការ​ចុះ​បញ្ជី​គឺ​មិន​បើក​ចំហ​នៅ​ពេល​នេះ​។"
 
@@ -4235,11 +4261,11 @@ msgstr "YYYY​-MM​-DD"
 msgid "Date ends before:"
 msgstr "កាលបរិច្ឆេទ​បញ្ចប់​មុន​ពេល​:"
 
-#: templates/search/_search_content.html:6
+#: templates/search/_search_content.html:5
 msgid "Your selections"
 msgstr "ការ​ជ្រើសរើស​របស់​អ្នក"
 
-#: templates/search/_search_content.html:7
+#: templates/search/_search_content.html:6
 msgid "Clear all filters"
 msgstr "ជម្រះ​តម្រង​ទាំងអស់"
 
@@ -4307,6 +4333,24 @@ msgstr "ត្រឡប់​ទៅ​ប្រអប់​ទទួល"
 msgid "Send Reply"
 msgstr "ផ្ញើ​ការ​ឆ្លើយ​តប"
 
+#~ msgid ""
+#~ "\n"
+#~ "          Are you sure you want to remove %(document_title)s?\n"
+#~ "        "
+#~ msgstr ""
+#~ "\n"
+#~ "          Are you sure you want to remove %(document_title)s?\n"
+#~ "        "
+
+#~ msgid ""
+#~ "\n"
+#~ "        Are you sure you want to remove %(map_title)s?\n"
+#~ "    "
+#~ msgstr ""
+#~ "\n"
+#~ "        Are you sure you want to remove %(map_title)s?\n"
+#~ "    "
+
 #~ msgid "email"
 #~ msgstr "email"
 
@@ -4328,9 +4372,6 @@ msgstr "ផ្ញើ​ការ​ឆ្លើយ​តប"
 #~ msgid "Replace this Document"
 #~ msgstr "Replace this Document"
 
-#~ msgid "Remove this Document"
-#~ msgstr "Remove this Document"
-
 #~ msgid "Edit Styles"
 #~ msgstr "Edit Styles"
 
@@ -4345,9 +4386,6 @@ msgstr "ផ្ញើ​ការ​ឆ្លើយ​តប"
 
 #~ msgid "Edit Map Metadata"
 #~ msgstr "Edit Map Metadata"
-
-#~ msgid "Remove this Map"
-#~ msgstr "Remove this Map"
 
 #~ msgid "Profile Menu"
 #~ msgstr "Profile Menu"

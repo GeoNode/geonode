@@ -13,14 +13,15 @@
 # Translators:
 # Translators:
 # Translators:
+# Translators:
 # Julien Collaer <julien.collaer@opengeode.be>, 2014-2015
 # Vincent BONNAL <vincent.bonnal@cirad.fr>, 2013-2014
 msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-09-22 03:42-0500\n"
-"PO-Revision-Date: 2015-09-22 08:38+0000\n"
+"POT-Creation-Date: 2015-10-29 04:21-0500\n"
+"PO-Revision-Date: 2015-10-29 09:20+0000\n"
 "Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
 "Language-Team: French (http://www.transifex.com/geonode/geonode/language/"
 "fr/)\n"
@@ -30,11 +31,11 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
-#: utils.py:44
+#: utils.py:43
 msgid "Invalid permission level."
 msgstr "Niveau d'autorisation non valide."
 
-#: utils.py:494
+#: utils.py:496
 msgid "Permission Denied"
 msgstr "Autorisation refusée"
 
@@ -156,7 +157,8 @@ msgstr "Auncune information fournie"
 
 #: base/forms.py:43 base/templates/base/resourcebase_info_panel.html:62
 #: documents/templates/documents/document_metadata.html:65
-#: layers/templates/layers/layer_metadata.html:71
+#: layers/templates/layers/layer_metadata.html:70
+#: layers/templates/upload/layer_upload.html:89
 #: maps/templates/maps/map_metadata.html:61
 msgid "Category"
 msgstr "Catégorie"
@@ -165,7 +167,7 @@ msgstr "Catégorie"
 msgid "Category is required."
 msgstr "Une catégorie est requise"
 
-#: base/forms.py:105 groups/models.py:45 people/forms.py:82
+#: base/forms.py:114 groups/models.py:45 people/forms.py:82
 msgid "A space or comma-separated list of keywords"
 msgstr "Liste de mots-clés séparés par des espaces ou des virgules"
 
@@ -728,23 +730,23 @@ msgstr ""
 msgid "See users"
 msgstr "Voir les utilisateurs"
 
-#: documents/forms.py:92 documents/forms.py:160
+#: documents/forms.py:96 documents/forms.py:164
 msgid "Document must be a file or url."
 msgstr "Le document doit être un fichier ou une URL."
 
-#: documents/forms.py:96 documents/forms.py:164
+#: documents/forms.py:100 documents/forms.py:168
 msgid "A document cannot have both a file and a url."
 msgstr "Un document ne peut-être à la fois un fichier et une URL."
 
-#: documents/forms.py:109 documents/forms.py:177
+#: documents/forms.py:113 documents/forms.py:181
 msgid "This file type is not allowed"
 msgstr "Ce type de fichier n'est pas autorisé"
 
-#: documents/forms.py:127
+#: documents/forms.py:131
 msgid "Link to"
 msgstr "Lien vers"
 
-#: documents/forms.py:149
+#: documents/forms.py:153
 msgid "Permissions must be valid JSON."
 msgstr "Les permissions doivent respecter le format JSON"
 
@@ -789,11 +791,11 @@ msgstr "Vous n'êtes pas autorisé à voir ce document"
 msgid "You are not allowed to edit this document."
 msgstr "Vous n'etes pas autorisé à modifier ce document"
 
-#: documents/views.py:328 layers/views.py:363
+#: documents/views.py:328 layers/views.py:358
 msgid "You must set a point of contact for this resource"
 msgstr "Vous devez renseigner un point de contact pour cette ressource"
 
-#: documents/views.py:343 layers/views.py:378
+#: documents/views.py:343 layers/views.py:373
 msgid "You must set an author for this resource"
 msgstr "Vous devez renseigner l'auteur de cette ressource"
 
@@ -939,7 +941,7 @@ msgstr "Ce document ne concerne pas des cartes ou des couches"
 #: groups/templates/groups/group_detail.html:70
 #: layers/templates/layers/layer_detail.html:334
 #: layers/templates/layers/layer_replace.html:94
-#: layers/templates/upload/layer_upload.html:93
+#: layers/templates/upload/layer_upload.html:112
 #: maps/templates/maps/map_detail.html:178 people/admin.py:55
 msgid "Permissions"
 msgstr "Autorisations"
@@ -1000,29 +1002,40 @@ msgstr "Mise à jour"
 msgid "Metadata Provider"
 msgstr "Fournisseur de métadonnées"
 
-#: documents/templates/documents/document_remove.html:11
+#: documents/templates/documents/document_remove.html:4
+#: maps/templates/maps/map_remove.html:6
+msgid "Deleting"
+msgstr "Supprimer"
+
+#: documents/templates/documents/document_remove.html:8
+msgid "Remove Document"
+msgstr "Supprimer le document"
+
+#: documents/templates/documents/document_remove.html:13
 #, python-format
 msgid ""
 "\n"
-"          Are you sure you want to remove %(document_title)s?\n"
+"          Are you sure you want to remove <a href="
+"\"%(document.get_absolute_url)s\">%(document_title)s</a>?\n"
 "        "
 msgstr ""
 "\n"
-"          Êtes-vous certain de vouloir retirer %(document_title)s?\n"
+"          Etes vous certain de vouloir supprimer <a href="
+"\"%(document.get_absolute_url)s\">%(document_title)s</a>?\n"
 "        "
 
-#: documents/templates/documents/document_remove.html:18
+#: documents/templates/documents/document_remove.html:20
 #: groups/templates/groups/group_remove.html:19
 #: layers/templates/layers/layer_remove.html:22
-#: maps/templates/maps/map_remove.html:19
+#: maps/templates/maps/map_remove.html:22
 #: services/templates/services/service_remove.html:17
 msgid "Yes, I am sure"
 msgstr "Oui, je confirme"
 
-#: documents/templates/documents/document_remove.html:19
+#: documents/templates/documents/document_remove.html:21
 #: groups/templates/groups/group_remove.html:20
 #: layers/templates/layers/layer_remove.html:23
-#: maps/templates/maps/map_remove.html:20
+#: maps/templates/maps/map_remove.html:23
 #: services/templates/services/service_remove.html:18
 msgid "No, don't remove it"
 msgstr "Non, ne pas supprimer"
@@ -1038,7 +1051,7 @@ msgstr "Remplacer"
 
 #: documents/templates/documents/document_replace.html:27
 #: layers/templates/layers/layer_replace.html:84
-#: layers/templates/upload/layer_upload.html:86
+#: layers/templates/upload/layer_upload.html:105
 msgid "Clear"
 msgstr "Vider"
 
@@ -1046,11 +1059,11 @@ msgstr "Vider"
 msgid "Upload Document"
 msgstr "Ajouter un document"
 
-#: geoserver/helpers.py:974
+#: geoserver/helpers.py:987
 msgid "An exception occurred loading data to PostGIS"
 msgstr "Une erreur s'est produite pendant le chargement des données en PostGIS"
 
-#: geoserver/helpers.py:979
+#: geoserver/helpers.py:992
 msgid " Additionally an error occured during database cleanup"
 msgstr ""
 "Une erreur s'est également produite pendant le nettoyage de la base de "
@@ -1092,7 +1105,7 @@ msgstr "PDF"
 msgid "PNG"
 msgstr "PNG"
 
-#: geoserver/signals.py:293
+#: geoserver/signals.py:294
 msgid "Could not create a download link for layer."
 msgstr "Impossible de créer le lien de téléchargement pour cette couche."
 
@@ -1604,23 +1617,23 @@ msgstr "Vous n'êtes pas autorisé à modifier les métadonnées de cette couche
 msgid "You are not permitted to view this layer"
 msgstr "Vous n'êtes pas autorisé à modifier cette couche."
 
-#: layers/views.py:488
+#: layers/views.py:486
 msgid "You are attempting to replace a vector layer with a raster."
 msgstr ""
 "Vous essayer de remplacer une couche vectorielle par une couche raster "
 "(image)"
 
-#: layers/views.py:491
+#: layers/views.py:489
 msgid "You are attempting to replace a raster layer with a vector."
 msgstr ""
 "Vous essayer de remplacer une couche raster (image) par une couche "
 "vectorielle"
 
-#: layers/views.py:547
+#: layers/views.py:545
 msgid "Unable to delete layer"
 msgstr "Impossible de supprimer la couche"
 
-#: layers/views.py:550
+#: layers/views.py:548
 msgid ""
 "This layer is a member of a layer group, you must remove the layer from the "
 "group before deleting."
@@ -2002,7 +2015,7 @@ msgstr "Mise à jour des styles disponibles"
 msgid "Upload Layer"
 msgstr "Téléchargez couche"
 
-#: layers/templates/upload/layer_upload.html:87
+#: layers/templates/upload/layer_upload.html:106
 msgid "Upload files"
 msgstr "Ajouter des fichiers"
 
@@ -2651,20 +2664,22 @@ msgstr ""
 "des formats ISO, FGDC et Dublin Core.\n"
 "Certaines parties des métadonnées originales peuvent donc avoir été perdues"
 
-#: maps/templates/maps/map_remove.html:6
-msgid "Deleting"
-msgstr "Supprimer"
+#: maps/templates/maps/map_remove.html:10
+msgid "Remove Map"
+msgstr "Supprimer la carte"
 
-#: maps/templates/maps/map_remove.html:13
+#: maps/templates/maps/map_remove.html:15
 #, python-format
 msgid ""
 "\n"
-"        Are you sure you want to remove %(map_title)s?\n"
-"    "
+"          Are you sure you want to remove <a href=\"%(map.get_absolute_url)s"
+"\">%(map_title)s</a>?\n"
+"        "
 msgstr ""
 "\n"
-"        Êtes-vous certain de vouloir supprimer %(map_title)s?\n"
-"    "
+"          Are you sure you want to remove <a href=\"%(map.get_absolute_url)s"
+"\">%(map_title)s</a>?\n"
+"        "
 
 #: maps/templates/maps/map_view.html:5
 msgid "GeoExplorer"
@@ -2872,15 +2887,15 @@ msgstr ""
 "terme(s) utilisés courrament ou terme(s) légaux ou phrase(s) utilisées pour "
 "décrire le sujet (à séparer par des espaces ou des virgules"
 
-#: people/views.py:90
+#: people/views.py:91
 msgid "Your username for "
 msgstr "Votre nom d'utilisateur"
 
-#: people/views.py:104
+#: people/views.py:105
 msgid "Your username has been emailed to you."
 msgstr "Votre nom d'utilisateur vous a été envoyé par email."
 
-#: people/views.py:106
+#: people/views.py:107
 msgid "No user could be found with that email address."
 msgstr "Aucun utilisateur ne peut être trouvé avec cet adresse email."
 
@@ -2997,7 +3012,8 @@ msgid "Remote Services"
 msgstr "Services distants"
 
 #: people/templates/people/profile_detail.html:117 templates/500.html:229
-#: templates/base.html:222
+#: templates/base.html:222 templates/account/invite_user.html:8
+#: templates/account/invite_user.html:15
 msgid "Invite User"
 msgstr "Inviter un utilisateur"
 
@@ -3819,11 +3835,11 @@ msgid "Share This"
 msgstr "Partagez ceci :"
 
 #: templates/account/admin_approval_sent.html:6
-#: templates/account/admin_approval_sent.html:9
+#: templates/account/admin_approval_sent.html:11
 msgid "Account Pending Approval"
 msgstr "Comptes en attente d'approbation"
 
-#: templates/account/admin_approval_sent.html:11
+#: templates/account/admin_approval_sent.html:14
 #, python-format
 msgid ""
 "We have sent the administrators a notice to approve your account associated "
@@ -3835,11 +3851,11 @@ msgstr ""
 "de confirmation."
 
 #: templates/account/email_confirmation_sent.html:6
-#: templates/account/email_confirmation_sent.html:9
+#: templates/account/email_confirmation_sent.html:11
 msgid "Confirm your email address"
 msgstr "Confirmer votre adresse mail"
 
-#: templates/account/email_confirmation_sent.html:11
+#: templates/account/email_confirmation_sent.html:14
 #, python-format
 msgid ""
 "We have sent you an email to <b>%(email)s</b> for verification. Follow the "
@@ -3868,6 +3884,22 @@ msgstr "Vous avez oublié votre mot de passe?"
 #: templates/account/logout.html:15
 msgid "Are you sure you want to log out?"
 msgstr "Êtes-vous sûr de vouloir vous déconnecter? "
+
+#: templates/account/password_change.html:8
+msgid "Password change"
+msgstr "Changement de mot de passe"
+
+#: templates/account/password_change.html:14
+msgid "Password Change"
+msgstr "Changement de mot de passe"
+
+#: templates/account/password_change.html:18
+msgid "Change your password here"
+msgstr "Changer votre mot de passe ici"
+
+#: templates/account/password_change.html:24
+msgid "Change my password"
+msgstr "Changer mon mot de passe"
 
 #: templates/account/password_reset.html:8
 msgid "Password reset"
@@ -3904,12 +3936,12 @@ msgstr ""
 "nous à <a href=\"mailto:%(THEME_ACCOUNT_CONTACT_EMAIL)s\">"
 "%(THEME_ACCOUNT_CONTACT_EMAIL)s</a>."
 
-#: templates/account/signup.html:7 templates/account/signup.html.py:14
-#: templates/account/signup.html:22
+#: templates/account/signup.html:7 templates/account/signup.html.py:11
+#: templates/account/signup.html:17 templates/account/signup.html.py:25
 msgid "Sign up"
 msgstr "S'identifier"
 
-#: templates/account/signup.html:27
+#: templates/account/signup.html:30
 msgid "Sorry, registrations are not open at this time."
 msgstr ""
 "Désolé, les inscriptions de nouveaux utilisateurs ne sont pas ouvertes pour "
@@ -4420,11 +4452,11 @@ msgstr "aaaa-mm-jj"
 msgid "Date ends before:"
 msgstr "Jusqu'à :"
 
-#: templates/search/_search_content.html:6
+#: templates/search/_search_content.html:5
 msgid "Your selections"
 msgstr "Vos selections"
 
-#: templates/search/_search_content.html:7
+#: templates/search/_search_content.html:6
 msgid "Clear all filters"
 msgstr "Réinitialiser"
 
@@ -4492,6 +4524,24 @@ msgstr "Retour à la boîte de réception"
 msgid "Send Reply"
 msgstr "Envoyer une réponse"
 
+#~ msgid ""
+#~ "\n"
+#~ "          Are you sure you want to remove %(document_title)s?\n"
+#~ "        "
+#~ msgstr ""
+#~ "\n"
+#~ "          Are you sure you want to remove %(document_title)s?\n"
+#~ "        "
+
+#~ msgid ""
+#~ "\n"
+#~ "        Are you sure you want to remove %(map_title)s?\n"
+#~ "    "
+#~ msgstr ""
+#~ "\n"
+#~ "        Are you sure you want to remove %(map_title)s?\n"
+#~ "    "
+
 #~ msgid "email"
 #~ msgstr "email"
 
@@ -4513,9 +4563,6 @@ msgstr "Envoyer une réponse"
 #~ msgid "Replace this Document"
 #~ msgstr "Replace this Document"
 
-#~ msgid "Remove this Document"
-#~ msgstr "Remove this Document"
-
 #~ msgid "Edit Styles"
 #~ msgstr "Edit Styles"
 
@@ -4530,9 +4577,6 @@ msgstr "Envoyer une réponse"
 
 #~ msgid "Edit Map Metadata"
 #~ msgstr "Edit Map Metadata"
-
-#~ msgid "Remove this Map"
-#~ msgstr "Remove this Map"
 
 #~ msgid "Profile Menu"
 #~ msgstr "Profile Menu"

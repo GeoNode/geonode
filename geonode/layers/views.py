@@ -20,7 +20,6 @@
 
 import os
 import sys
-import string
 import logging
 import shutil
 import traceback
@@ -152,10 +151,7 @@ def layer_upload(request, template='upload/layer_upload.html'):
                 # exceptions when unicode characters are present.
                 # This should be followed up in upstream Django.
                 tempdir, base_file = form.write_files()
-                topic_id = request.META.get("HTTP_COOKIE")
-                topic_id = string.split(topic_id, " ")[0]
-                topic_id = string.split(topic_id, ":")[1]
-                topic_id = string.split(topic_id, ";")[0]
+                topic_id = request.POST['category']
                 topic_category = TopicCategory.objects.get(
                     id=topic_id
                 )
@@ -167,9 +163,7 @@ def layer_upload(request, template='upload/layer_upload.html'):
                     charset=form.cleaned_data["charset"],
                     abstract=form.cleaned_data["abstract"],
                     title=form.cleaned_data["layer_title"],
-                )
-                Layer.objects.filter(name=name).update(
-                    category=topic_category
+                    category=topic_category.identifier
                 )
             except Exception as e:
                 exception_type, error, tb = sys.exc_info()
@@ -231,7 +225,6 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
     # Add required parameters for GXP lazy-loading
     layer_bbox = layer.bbox
     bbox = [float(coord) for coord in list(layer_bbox[0:4])]
-    srid = layer.srid
     config["srs"] = getattr(settings, 'DEFAULT_MAP_CRS', 'EPSG:900913')
     config["bbox"] = bbox if config["srs"] != 'EPSG:900913' \
         else llbbox_to_mercator([float(coord) for coord in bbox])
@@ -333,6 +326,7 @@ def layer_metadata(request, layername, template='layers/layer_metadata.html'):
             prefix="category_choice_field",
             initial=int(
                 request.POST["category_choice_field"]) if "category_choice_field" in request.POST else None)
+
     else:
         layer_form = LayerForm(instance=layer, prefix="resource")
         attribute_form = layer_attribute_set(
@@ -397,6 +391,9 @@ def layer_metadata(request, layername, template='layers/layer_metadata.html'):
             layer.keywords.clear()
             layer.keywords.add(*new_keywords)
             the_layer = layer_form.save()
+            up_sessions = UploadSession.objects.filter(layer=the_layer.id)
+            if up_sessions.count() > 0 and up_sessions[0].user != the_layer.owner:
+                up_sessions.update(user=the_layer.owner)
             the_layer.poc = new_poc
             the_layer.metadata_author = new_author
             Layer.objects.filter(id=the_layer.id).update(
