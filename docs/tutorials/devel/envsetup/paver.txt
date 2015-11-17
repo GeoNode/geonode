@@ -107,7 +107,7 @@ stop_django
 Stops the GeoNode development web server.
 
 stop_geoserver
------------
+--------------
 ```paver stop_geoserver```
 
 Stops Geoserver.
@@ -119,7 +119,7 @@ sync
 Synchronizes the database according the GeoNode models and loads the GeoNode sample data.
 
 static
--------------
+------
 ```paver static```
 
 .. note:: This task requires the `Node Package Manager <https://npmjs.org/>`_ to be installed.
