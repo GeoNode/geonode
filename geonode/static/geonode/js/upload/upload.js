@@ -256,24 +256,6 @@ define(['underscore',
             common.logError('Please provide some files');
             return false;
         }
-        
-        //Start:Category Check
-        var cs=document.getElementsByClassName("category");
-        var category_selected=false;
-        for(var idx=0;idx<cs.length;idx++){
-            var checked="0";
-            if(cs[idx].checked){
-                category_selected=true;
-                var category_cookie=new Cookie(document,"CategoryCookie");
-                category_cookie.category=cs[idx].value;
-                category_cookie.store();
-            }
-        }
-        if(!category_selected){
-            common.logError('Please choose a category');
-            return false;
-        }
-        //END:Category Check
 
         var checked = checkFiles();
         if ($.isEmptyObject(layers) || !checked) {
