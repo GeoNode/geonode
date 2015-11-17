@@ -128,8 +128,7 @@ def layer_upload(request, template='upload/layer_upload.html'):
             'charsets': CHARSETS,
             'is_layer': True,
         }
-        category_form = CategoryForm(prefix="category_choice_field", initial=None)
-        return render_to_response(template, {"category_form": category_form}, RequestContext(request, ctx))
+        return render_to_response(template, RequestContext(request, ctx))
     elif request.method == 'POST':
         form = NewLayerUploadForm(request.POST, request.FILES)
         tempdir = None
@@ -151,10 +150,6 @@ def layer_upload(request, template='upload/layer_upload.html'):
                 # exceptions when unicode characters are present.
                 # This should be followed up in upstream Django.
                 tempdir, base_file = form.write_files()
-                topic_id = request.POST['category']
-                topic_category = TopicCategory.objects.get(
-                    id=topic_id
-                )
                 saved_layer = file_upload(
                     base_file,
                     name=name,
@@ -163,7 +158,6 @@ def layer_upload(request, template='upload/layer_upload.html'):
                     charset=form.cleaned_data["charset"],
                     abstract=form.cleaned_data["abstract"],
                     title=form.cleaned_data["layer_title"],
-                    category=topic_category.identifier
                 )
             except Exception as e:
                 exception_type, error, tb = sys.exc_info()
