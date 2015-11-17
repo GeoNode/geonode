@@ -14,3 +14,7 @@ This section will guide you through the steps necessary to install GeoNode. Basi
 
 :ref:`custom_install`
   How to install GeoNode manually.
+
+:ref:`dependencies`
+  How to satisfy GeoNode's dependencies
+  
