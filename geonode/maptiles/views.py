@@ -153,6 +153,7 @@ def tiled_view(request, overlay=settings.TILED_SHAPEFILE, template="maptiles/map
 def process_georefs(request):
     if request.method == "POST":
         try:
+            ### HERE ###
             georef_area = request.POST['georef_area']
             georef_list = filter(None, georef_area.split(","))
             print("[POST]")
