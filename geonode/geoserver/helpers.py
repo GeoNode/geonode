@@ -968,12 +968,16 @@ def _create_db_featurestore(name, data, overwrite=False, charset="UTF-8", worksp
         db_engine = 'postgis' if \
             'postgis' in db['ENGINE'] else db['ENGINE']
         ds.connection_parameters.update(
-            host=db['HOST'],
-            port=db['PORT'],
-            database=db['NAME'],
-            user=db['USER'],
-            passwd=db['PASSWORD'],
-            dbtype=db_engine
+            {'validate connections': 'true',
+             'max connections': '10',
+             'min connections': '1',
+             'fetch size': '1000',
+             'host': db['HOST'],
+             'port': db['PORT'],
+             'database': db['NAME'],
+             'user': db['USER'],
+             'passwd': db['PASSWORD'],
+             'dbtype': db_engine}
         )
         cat.save(ds)
         ds = get_store(cat, dsname, workspace=workspace)
