@@ -886,10 +886,6 @@ MAP_BASELAYERS = [{
 }]
 
 try:
-    BING_API_KEY
-except NameError:
-    print "Not enabling BingMaps base layer as a BING_API_KEY is not defined in local_settings.py file."
-else:
     BING_LAYER = {    
         "source": {
             "ptype": "gxp_bingsource",
@@ -901,6 +897,8 @@ else:
         "group": "background"
     }
     MAP_BASELAYERS.append(BING_LAYER)
+except NameError:
+    print "Not enabling BingMaps base layer as a BING_API_KEY is not defined in local_settings.py file."
 
 # Require users to authenticate before using Geonode
 if LOCKDOWN_GEONODE:
