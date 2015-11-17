@@ -2,7 +2,7 @@ from django.contrib import admin
 from django.conf import settings
 
 import autocomplete_light
-from autocomplete_light.contrib.taggit_tagfield import TagField, TagWidget
+from autocomplete_light.contrib.taggit_field import TaggitField, TaggitWidget
 
 from modeltranslation.admin import TranslationAdmin
 
@@ -110,4 +110,4 @@ admin.site.register(License, LicenseAdmin)
 
 
 class ResourceBaseAdminForm(autocomplete_light.ModelForm):
-    keywords = TagField(widget=TagWidget('TagAutocomplete'), required=False)
+    keywords = TaggitField(widget=TaggitWidget('TagAutocomplete'), required=False)

@@ -21,11 +21,15 @@
 # Django settings for the GeoNode project.
 import os
 from kombu import Queue
+import geonode
 from geonode.celery_app import app  # flake8: noqa
 
 #
 # General Django development settings
 #
+
+# GeoNode Version
+VERSION = geonode.get_version()
 
 # Defines the directory that contains the settings file as the PROJECT_ROOT
 # It is used for relative settings elsewhere.
@@ -772,6 +776,7 @@ CLIENT_RESULTS_LIMIT = 100
 
 # Number of items returned by the apis 0 equals no limit
 API_LIMIT_PER_PAGE = 0
+API_INCLUDE_REGIONS_COUNT = False
 
 LEAFLET_CONFIG = {
     'TILES': [
@@ -794,12 +799,12 @@ LEAFLET_CONFIG = {
     ],
     'PLUGINS': {
         'esri-leaflet': {
-            'js': 'lib/js/esri-leaflet.js',
+            'js': 'lib/js/esri-leaflet.js?v=%s' % VERSION,
             'auto-include': True,
         },
         'leaflet-fullscreen': {
-            'css': 'lib/css/leaflet.fullscreen.css',
-            'js': 'lib/js/Leaflet.fullscreen.min.js',
+            'css': 'lib/css/leaflet.fullscreen.css?v=%s' % VERSION,
+            'js': 'lib/js/Leaflet.fullscreen.min.js?v=%s' % VERSION,
             'auto-include': True,
         },
     }
