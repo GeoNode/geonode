@@ -198,8 +198,8 @@ You can eventually generate a pdf containing the whole documentation set. For th
   this option out.
 
 
-  Vagrant
-  -------
+Vagrant
+-------
 
 http://docs.vagrantup.com/v2/getting-started/index.html
 

@@ -1,7 +1,7 @@
 .. _install_win_devmode:
 
 Install GeoNode for Development (Windows)
-===============================
+=========================================
 
 
 In order to install Geonode 2.0 in developing mode on Windows 2008r2 the following steps are required:
@@ -25,7 +25,8 @@ In order to install Geonode 2.0 in developing mode on Windows 2008r2 the followi
     * Install core components of GDAL http://www.gisinternals.com/sdk/PackageList.aspx?file=release-1600-gdal-1-11-mapserver-6-4.zip gdal-111-1600-core.msi 
 
     .. code-block:: console
-     > easy_install virtualenv
+    
+        easy_install virtualenv
 
 #. Install Java for Geoserver.  If you already have java installed 32 or 64 bit versions work.
 
@@ -47,28 +48,30 @@ In order to install Geonode 2.0 in developing mode on Windows 2008r2 the followi
 
     .. code-block:: console
 
-    > npm install -y -g bower
+        npm install -y -g bower
     
     .. code-block:: console
 
-    > npm install -y -g grunt-cli
+        npm install -y -g grunt-cli
 
 #. Get the GeoNode Code using Git.  
     Open the Git bash or use your command prompt depending on how git was installed
     This command will download the latest version of GeoNode.  For the most recent stable version type number 2.
 
-    .. code-block:: 
+    .. code-block:: console
 
-      git clone https://github.com/GeoNode/geonode.git
+        git clone https://github.com/GeoNode/geonode.git
 
-    .. code-block::
-      git clone -b 2.0.x https://github.com/GeoNode/geonode.git
+    .. code-block:: console
+      
+        git clone -b 2.0.x https://github.com/GeoNode/geonode.git
 
 #. Install all Dependencies in a new virtual environment
     In the command prompt, navigate to where you want your python to be installed.  
 
-    .. code-block::
-      virtualenv geonode
+    .. code-block:: console
+    
+        virtualenv geonode
 
     .. note:: Command not found?  Try adding your python scripts folder to the path environment variable.  In most cases it is C:\Python27\Scripts.  You will need to start a fresh command prompt to register the variables.  See next common error message to add the C:\Python27 path
 
@@ -78,34 +81,41 @@ In order to install Geonode 2.0 in developing mode on Windows 2008r2 the followi
 
     After you activate the virtual environment, run the following:
 
-    .. code-block::
-    > pip install paver
+    .. code-block:: console
+    
+        pip install paver
 
     Navigate to your geonode code install and run
 
-    .. code-block::
-    > paver win_install_deps
+    .. code-block:: console
+        
+        paver win_install_deps
 
     *Back to the parent directory*
 
-    .. code-block::
-    > cd ..
+    .. code-block:: console
+    
+        cd ..
 
-    .. code-block::
-    pip install -e geonode -–use-mirrors
+    .. code-block:: console
+    
+        pip install -e geonode -–use-mirrors
 
-    .. code-block::
-    cd geonode
+    .. code-block:: console
+    
+        cd geonode
 
 #. Set up the Geoserver with command
 
-    .. code-block::
-    > paver setup
+    .. code-block:: console
+    
+        paver setup
 
 #. Now we can start our geonode instance
 
-    .. code-block::
-    > paver start -–java_path="C:\path\to\java\java.exe"
+    .. code-block:: console
+    
+        paver start -–java_path="C:\path\to\java\java.exe"
 
 Visit the geonode site by typing http://localhost:8000 into your browser window.
 
@@ -117,12 +127,15 @@ Visit the geonode site by typing http://localhost:8000 into your browser windo
 
     type hold Ctrl c on your keyboard to stop the server
 
-    .. code-block::
-    > paver stop    # to stop all django, geoserver services
+    .. code-block:: console
+    
+        paver stop    # to stop all django, geoserver services
 
 #. Next create a superuser for your django geonode
 
     Create a superuser so you can log on to your local geonode installation at http://localhost:8000
 
-    .. code-block::
-    > django-admin.py createsuperuser –-settings=geonode.settings
+    .. code-block:: console
+    
+        django-admin.py createsuperuser –-settings=geonode.settings
+
