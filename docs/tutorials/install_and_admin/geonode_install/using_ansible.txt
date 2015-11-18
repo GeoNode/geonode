@@ -1,0 +1,38 @@
+.. _using_ansible:
+
+===================
+Setup Using Ansible
+===================
+
+Using `Ansible <http://www.ansible.com/>`_ we can automate the installation and
+configuration of GeoNode on local or remote machines. If you never used Ansible
+before take a look at the `Running Ansible scripts` section of the documentation
+or `Ansible official docmumentation <https://docs.ansible.com/>`_
+
+GeoNode setup with Ansible
+==========================
+
+In the Virtual Machines we provided for the training come with Ansible preinstalled.
+In the `geo` user home folder ( /home/geo/ ) you will find a simple Ansible playbook
+we wrote for demonstration along with some resource files used by the playbook itself.
+
+To start the installation with Ansible open a terminal and navigate to the `ansible`
+folder inside geo's home folder::
+
+    cd /home/geo/ansible
+
+Then run the playbook using the `ansible-playbook` command::
+
+    ansible-playbook playbook.yml
+
+Ansible will run through the instructions in the playbook and setup GeoNode on your
+local machine.
+
+Ansible will print information about each step executed. The whole setup is going
+to take a few minutes.
+
+At the end of the execution of the playbook all you need to do is set GeoNode
+administrator's password::
+
+    cd /home/geonode/geonode
+    python manage.py changepassword sysadmin

@@ -1,0 +1,47 @@
+.. _gsimporter_api:
+
+==========
+gsimporter
+==========
+
+gsimporter is a python library for using GeoServer's importer API.
+
+Installing
+==========
+
+pip install gsconfig
+
+or
+
+git clone https://github.com/boundlessgeo/gsimporter.git
+cd gsimporter
+pip install .
+
+Getting Help
+============
+
+Please use the Github project at http://github.com/boundlessgeo/gsimporter for any bug reports (and pull requests are welcome, but please include tests where possible.)
+
+Running Tests
+=============
+
+The tests are integration tests. These require having a running GeoServer instance with the community/importer modules installed. Because some of the tests use a postgres database, a data base is required to run. **It is strongly advised to run with a data directory you don't care about.**
+
+The test suite will first attempt to verify a connection to GeoServer and a connection to the database. If the default values are not appropriate, provide them via environment variables on the command line or via `export`. For example::
+
+  GEOSERVER_BASE_URL=http://localhost:8080 python setup.py test
+
+A convenient way to deal with connection or other settings (besides setting things up to use the defaults) is to put them all in a bash (or other shell) script.
+
+The tests are designed to create a workspace named `importer` and `importer2` for use in testing. `importer` will be set to the default workspace. As much as possible, things are cleaned up after test execution.
+
+To run all of the tests, one way is via `setup.py`. `python setup.py test` should do the trick.
+
+If developing and finer grained control is desired, specific tests and other flags can be provided using `python test/uploadtests.py`. Supported arguments are:
+
+* **--clean** delete layers and stores in the test workspaces. useful for cleanup.
+* **--skip-teardown** don't delete things after running. may cause errors but useful for a single test.
+
+To run a single case (or drop the method name to run the whole class)::
+
+  python test/uploadtests.py ErrorTests.test_invalid_file
