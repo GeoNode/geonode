@@ -424,11 +424,11 @@
       var element = $($event.target);
       var article = $(element.parents('article')[0]);
       if (article.hasClass('resource_selected')){
-        element.html('<i class="fa fa-square-o"></i> Select');
+        element.html('Select');
         article.removeClass('resource_selected');
       }
       else{
-        element.html('<i class="fa fa-check-square-o"></i>');
+        element.html('Deselect');
         article.addClass('resource_selected');
       }
     };
