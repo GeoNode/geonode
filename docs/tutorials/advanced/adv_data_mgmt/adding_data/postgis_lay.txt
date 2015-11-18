@@ -1,0 +1,76 @@
+.. module:: geoserver.postgis_lay
+   :synopsis: Learn how to adding a Postgis layer.
+
+.. _geoserver.postgis_lay:
+
+Adding a Postgis layer
+----------------------
+
+This task shows how to add a PostGIS layer into GeoServer:
+
+
+#. Navigate to the GeoServer `Welcome Page <http://localhost:8083/geoserver/web/>`_.
+
+#. If you are not already logged in, on the Welcome page locate the :guilabel:`Login` form located at the top right corner, and enter the username "admin" and password "Geos".
+
+   .. figure:: img/vector1.png
+      :width: 600
+
+      GeoServer Login
+
+#. Click the :guilabel:`Add stores` link.
+
+   .. figure:: img/vector2.png
+
+      Add stores link
+
+#. Select the :guilabel:`PostGIS` link and click it.
+
+
+   .. figure:: img/postgis_lay1.png
+
+      Add new PostGIS Store
+
+#. On the :guilabel:`New Vector Data Source` page fill the following parameter:
+
+   - :guilabel:`Data source name`, 'shape'
+   - :guilabel:`port`, '5434'
+   - :guilabel:`database`, 'shape' the name of the database created in previous workshop step.
+   - :guilabel:`user`, 'geonode' the name of the user database owner.
+   - :guilabel:`password`, 'geonode' the user password.
+   
+   and click :guilabel:`Save`.
+   
+   .. figure:: img/postgis_lay2.png
+   
+   .. figure:: img/postgis_lay2b.png
+
+      Setting database connection parameters
+
+#. After saving, you will be taken to a page that lists all the layers in the PostGIS database and gives you the option to publish any of them. Click :guilabel:`Publish`.
+
+   .. figure:: img/postgis_lay4.png
+
+      Publishing a layer from the PostGIS table
+
+#. The :guilabel:`Name` and :guilabel:`Title` fields should be automatically populated. Fill the :guilabel:`Declared SRS` field to set the Coordinate Reference Systems and generate the bounds for the layer by clicking the :guilabel:`Compute from data` and :guilabel:`Compute from native bounds` buttons in the :guilabel:`Bounding Boxes` section
+
+
+   .. figure:: img/postgis_lay5.png
+   .. figure:: img/postgis_lay6.png
+
+      Populating fields and generating the layer bounding box
+
+#. Scroll to the bottom of the page, notice the read only :guilabel:`Feature Type Detail` table and then click :guilabel:`Save`.
+
+   .. figure:: img/postgis_lay7.png
+
+      Submitting the layer configuration
+
+#. If all went well, you should see something like this:
+
+   .. figure:: img/postgis_lay8.png
+
+      After a successful save
+
+#. At this point the PostGIS layer has been added and is ready to be served by GeoServer. Use the layer preview to view its contents, filtering on the 'main_road' name.
