@@ -1,0 +1,151 @@
+.. module:: geoserver.add_sqllayers
+   :synopsis: Learn how to add a SQL Parametric View based Layer.
+
+.. _geoserver.add_sqllayers:
+
+Adding a SQL Parametric View based Layer
+----------------------------------------
+
+The traditional way to use database backed data is to configure either a table or a database view as a new layer in GeoServer. 
+Starting with GeoServer 2.1.0 the user can also create a new layer by specifying a raw SQL query, without the need to actually creating a view in the database. 
+The SQL can also be parametrized, and parameter values passed in along with a WMS or WFS request.
+
+**Creating a plain SQL view**
+
+#. In order to create an SQL view the administrator can go into the :guilabel:`Add a new resource` from the :guilabel:`Layers` page. 
+
+   .. figure:: img/sqlviews_addlayer.png
+      
+   
+#. Upon selection of a database backed store a list of tables and views available for publication will appear, but at the bottom of if a new link, :guilabel:`Configure new SQL view`, will appear:
+
+   .. figure:: img/sqlviews_postgrestore.png
+      
+   
+   .. figure:: img/sqlviews_addsqllayer.png
+      
+   
+#. Selecting the link :guilabel:`Configure new SQL view` will open a new page where the SQL statement can be specified:
+
+   .. figure:: img/sqlviews_plainsql_params.png
+	  
+	 Plain SQL View configuration
+
+   .. code-block:: sql
+
+    SELECT st.obs_year, 
+				st.storm_num, 
+				st.storm_name,
+				min(st.obs_datetime)
+				AS storm_start, max(st.obs_datetime)
+				AS storm_end, max(st.wind)
+				AS max_wind, st_makeline(st.geom) 
+				AS the_route
+    FROM ( SELECT storm_obs.storm_num, 
+				storm_obs.storm_name,
+				storm_obs.wind, 
+				storm_obs.press, 
+				storm_obs.obs_datetime, 
+				date_part('year'::text, storm_obs.obs_datetime)
+				AS obs_year, storm_obs.geom
+           FROM storm_obs
+          ORDER BY date_part('year'::text, storm_obs.obs_datetime),
+					storm_obs.storm_num, 
+					storm_obs.obs_datetime) st
+    GROUP BY st.obs_year, st.storm_num, st.storm_name
+    ORDER BY st.obs_year, st.storm_num
+
+   .. note:: The query can be any SQL statement that can be validly executed as part of a subquery in the FROM clauses, that is ``select * from (<the sql view>) [as] vtable``. This is true for most SQL statements, but specific syntax might be needed to call onto a stored procedure depending on the database. Also, all the columns returned by the SQL statement must have a name, in some databases aliasing is required when calling function names
+
+#. Once a valid SQL statement has been specified press the :guilabel:`refresh` link in the Attributes table to get a list of the feature type attributes:
+
+   .. figure:: img/sqlviews_plainsql_refresh.png
+      
+   
+   .. note:: GeoServer will do its best to figure out automatically the geometry type and the native srid, but they should always be double checked and eventually corrected. In particular having the right SRID (spatial reference id) is key to have spatial queries actually work. In many spatial databases the SRID is equal to the EPSG code for the specific spatial reference system, but that is not always true (e.g., Oracle has a number of non EPSG SRID codes).
+   
+#. Specify a valid SRID. 
+
+   .. figure:: img/sqlviews_plainsql_refresh_srid.png
+
+     Forcing manually 4326 SRID in this case
+
+   .. note:: If stable feature ids are desired for the view's features one or more column providing a unique identification for the features should be checked in the ``Indentifier`` column. Always make sure those attributes generate a actually unique key, or filtering and WFS clients will mishbehave.
+
+#. Once the query and the attribute details are set press :guilabel:`Save` and the usual new layer configuration page will show up. That page will have a link to a SQL view editor at the bottom of the ``Data`` tab:
+
+   .. figure:: img/sqlviews_plainsql_featuretype.png
+      
+	 
+#. Make sure the CRS is ``EPSG:4326`` and **write manually** ``(-180,-90,180,90)`` values in the :guilabel:`Bounding Boxes` sections. 
+
+   .. figure:: img/sqlviews_plainsql_bbox.png
+      
+
+#. Click :guilabel:`Save`. 
+
+At this point the new WMS Layer is being published with GeoServer.
+
+**Creating a parametric SQL view**
+
+   .. warning:: As a rule of thumb use SQL parameter substitution only if the required functionality cannot be obtained with safer means, such as dynamic filtering (CQL filters) or SLD parameter substitution. Only use SQL parameters as a last resort, improperly validated parameters can open the door to `SQL injection attacks <http://en.wikipedia.org/wiki/SQL_injection>`_.
+
+A parametric SQL view is based on a SQL query containing parameters whose values can be dinamically provided along WMS or WFS requests. A parameter is bound by % signs, can have a default value, and should always have a validation regular expression.
+
+#. In order to create a parametric SQL view performs the steps 1 and 2 like before and then insert the following parameters: 
+
+   .. figure:: img/sqlviews_parametricsql_params.png
+	  
+	 Parametric SQL View configuration
+
+   .. code-block:: sql
+
+	SELECT date_part('year'::text, t1.obs_datetime) AS obs_year, t1.storm_num, t1.storm_name, t1.wind, t2.wind AS wind_end, t1.press, t2.press AS press_end, t1.obs_datetime, t2.obs_datetime AS obs_datetime_end, st_makeline(t1.geom, t2.geom) AS geom
+	FROM storm_obs t1
+	JOIN ( SELECT storm_obs.id, storm_obs.storm_num, storm_obs.storm_name, storm_obs.wind, storm_obs.press, storm_obs.obs_datetime, storm_obs.geom
+		   FROM storm_obs) t2 ON (t1.obs_datetime + '06:00:00'::interval) = t2.obs_datetime AND t1.storm_name::text = t2.storm_name::text
+	WHERE 
+		date_part('year'::text, t1.obs_datetime) BETWEEN %MIN_OBS_YEAR% AND %MAX_OBS_YEAR%
+	ORDER BY date_part('year'::text, t1.obs_datetime), t1.storm_num, t1.obs_datetime
+
+   .. note:: The query defines two parameters ``%MIN_OBS_YEAR%`` and ``%MAX_OBS_YEAR%``.
+
+#. Click on the :guilabel:`Guess parameters from SQL`. GeoServer will automatically create fields with the parameters spcified in the view: 
+
+   .. figure:: img/sqlviews_parametricsql_guess_params.png
+      
+	  
+   .. note:: Always provide default values for each parameter in order to let the layer work properly and also be sure the regular expression for the values validation are correct.
+
+
+	Examples of Regular Expressions:
+
+		* ``^[\d\.\+-eE]+$`` will check that the parameter value is composed with valid elements for a floating point number, eventually in scientific notation, but will not check that the provided value is actually a valid floating point number
+		* ``[^;']+`` will check the parameter value does not contain quotes or semicolumn, preventing common sql injection attacks, without actually imposing much on the parameter value structure
+
+#. Fill in some default values for the parameters, so that GeoServer can run the query and inspect the results in the next steps. Set ``MAX_OBS_YEAR`` to 2020 and ``MIN_OBS_YEAR`` to 0.
+
+#. :guilabel:`Refresh` the attributes, check the Geometry SRID and publish the layer like before. 
+   Also assign the ``storm_track_interval`` style to the layer as Default Style.
+
+   .. figure:: img/sqlviews_parametricsql_publishing.png
+      
+   
+#. Click on the :guilabel:`OpenLayers` on the :guilabel:`Layer Preview` list for :guilabel:`v_storm_track_interval` layer.
+
+#. At a first glance you won't see anything since the layer is using the default parameters for the observation years. Specify two years for the view adding this parameter at the end of the GetMap Request:
+
+   ``&viewparams=MIN_OBS_YEAR:2000;MAX_OBS_YEAR:2000``
+
+   You should obtain a request like this:
+   
+  .. code-block:: html
+
+   http://localhost:8083/geoserver/geosolutions/wms?service=WMS&version=1.1.0&request=GetMap&layers=geosolutions:v_storm_track_interval&styles=&bbox=-180.0,-90.0,180.0,90.0&width=660&height=330&srs=EPSG:4326&format=application/openlayers&viewparams=MIN_OBS_YEAR:2000;MAX_OBS_YEAR:2000
+   
+
+Now you are able to see the hurricanes from the parametric view and also dynamically choose the observation years interval of interest.
+
+   .. figure:: img/sqlviews_parametricsql_preview.png
+      
+	 Parametric SQL View OL preview

@@ -1,0 +1,58 @@
+.. component_exercises:
+
+Exercises
+=========
+
+Components and Services
+-----------------------
+
+.. note:: Hint, if ``bash-completion`` is installed, try <TAB><TAB> to get completions.
+
+#. start/stop services
+      .. code-block:: console
+
+        $ sudo service apache2
+        $ sudo service apache2 reload
+        $ sudo service tomcat7
+        $ sudo service postgresql
+#. basic psql interactions
+      .. code-block:: console
+
+        $ sudo su - postgres
+        $ psql
+        => help                 # get help
+        => \?                   # psql specific commands
+        => \l                   # list databases
+        => \c geonode           # switch database
+        => \ds                  # list tables
+        => \dS layers_layer     # describe table
+
+OGC Standards
+-------------
+
+WMS
+...
+
+#. Use the layer preview functionality in GeoServer to bring up a web map.
+#. Copy a the URL for the image in the map.
+#. Alter URL parameters for the request.
+#. Use *curl* to get the capabilities document
+
+  .. code-block:: console
+
+    $ curl 'http://localhost/geoserver/wms?request=getcapabilities'
+
+More: http://docs.geoserver.org/stable/en/user/services/wms/index.html
+
+WFS
+...
+
+#. Describe a feature type using curl (replace ws:name with your layer)
+
+  .. code-block:: console
+  
+    $ curl 'http://localhost/geoserver/wfs?request=describefeaturetype&name=ws:name
+
+More: http://docs.geoserver.org/stable/en/user/services/wfs/reference.html
+  
+

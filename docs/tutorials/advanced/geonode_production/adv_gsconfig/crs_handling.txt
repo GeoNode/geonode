@@ -1,0 +1,149 @@
+.. module:: geoserver.crs_handling
+
+.. _geoserver.crs_handling:
+
+
+Advanced Coordinate Reference System Handling
+------------------------------------------------------------------------
+
+This section describes how coordinate reference systems (CRS) are handled in GeoServer, as well as what can be done to extend GeoServer's CRS handling abilities.
+
+Coordinate Reference System Configuration
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+When adding data, GeoServer tries to inspect data headers looking for an EPSG code: if the data has a CRS with an explicit EPSG code and the full CRS definition behind the code matches the one in GeoServer, the CRS will be already set for the data.
+If the data has a CRS but no EPSG code, you'll have to manually guess the EPSG code. Browsing to `<www.spatialreference.org>`_ might be a good option to find the exact EPSG code for your data.
+
+If an EPSG code cannot be found, then either the data has no CRS or it is unknown to GeoServer.  In this case, there are a few options:
+
+* Force the declared CRS, ignoring the native one.  This is the best solution if the native CRS is known to be wrong.
+* Reproject from the native to the declared CRS.  This is the best solution if the native CRS is correct, but cannot be matched to an EPSG number. An alternative is to add a custom EPSG code that matches exactly the native SRS.
+
+If your data has no native CRS information, the only option is to specify/force an EPSG code.
+
+Custom CRS Definitions
+^^^^^^^^^^^^^^^^^^^^^^
+
+Add a custom CRS
+''''''''''''''''
+
+This example shows how to add a custom projection in GeoServer.
+
+#. The projection parameters need to be provided as a WKT (well known text) definition.  The code sample below is just an example::
+
+      PROJCS["NAD83 / Austin",
+        GEOGCS["NAD83",
+          DATUM["North_American_Datum_1983",
+            SPHEROID["GRS 1980", 6378137.0, 298.257222101],
+            TOWGS84[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]],
+          PRIMEM["Greenwich", 0.0],
+          UNIT["degree", 0.017453292519943295],
+          AXIS["Lon", EAST],
+          AXIS["Lat", NORTH]],
+        PROJECTION["Lambert_Conformal_Conic_2SP"],
+        PARAMETER["central_meridian", -100.333333333333],
+        PARAMETER["latitude_of_origin", 29.6666666666667],
+        PARAMETER["standard_parallel_1", 31.883333333333297],
+        PARAMETER["false_easting", 2296583.333333],
+        PARAMETER["false_northing", 9842500.0],
+        PARAMETER["standard_parallel_2", 30.1166666666667],
+        UNIT["m", 1.0],
+        AXIS["x", EAST],
+        AXIS["y", NORTH],
+        AUTHORITY["EPSG","100002"]]
+
+   .. note:: This code sample has been formatted for readability.  The information will need to be provided on a single line instead, or with backslash characters at the end of every line (except the last one).
+
+#. Go into the :file:`user_projections` directory inside your data directory, and open the :file:`epsg.properties` file.  If this file doesn't exist, you can create it.
+
+#. Insert the code WKT for the projection at the end of the file (on a single line or with backslash characters)::
+
+      100002=PROJCS["NAD83 / Austin", \
+        GEOGCS["NAD83", \
+          DATUM["North_American_Datum_1983", \
+            SPHEROID["GRS 1980", 6378137.0, 298.257222101], \
+            TOWGS84[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]], \
+          PRIMEM["Greenwich", 0.0], \
+          UNIT["degree", 0.017453292519943295], \
+          AXIS["Lon", EAST], \
+          AXIS["Lat", NORTH]], \
+        PROJECTION["Lambert_Conformal_Conic_2SP"], \
+        PARAMETER["central_meridian", -100.333333333333], \
+        PARAMETER["latitude_of_origin", 29.6666666666667], \
+        PARAMETER["standard_parallel_1", 31.883333333333297], \
+        PARAMETER["false_easting", 2296583.333333], \
+        PARAMETER["false_northing", 9842500.0], \
+        PARAMETER["standard_parallel_2", 30.1166666666667], \
+        UNIT["m", 1.0], \
+        AXIS["x", EAST], \
+        AXIS["y", NORTH], \
+        AUTHORITY["EPSG","100002"]]
+
+.. note:: Note the number that precedes the WKT.  This will determine the EPSG code.  So in this example, the EPSG code is 100002.
+
+#. Save the file.
+
+#. Restart GeoServer.
+
+#. Verify that the CRS has been properly parsed by navigating to the `srs_list` page in the `web_admin`.
+
+#. If the projection wasn't listed, examine the logs for any errors.
+
+Override an official EPSG code
+''''''''''''''''''''''''''''''
+
+In some situations it is necessary to override an official EPSG code with a custom definition.  A common case is the need to change the TOWGS84 parameters in order to get better reprojection accuracy in specific areas.
+
+The GeoServer referencing subsystem checks the existence of another property file, :file:`epsg_overrides.properties`, whose format is the same as :file:`epsg.properties`. Any definition contained in :file:`epsg_overrides.properties` will **override** the EPSG code, while definitions stored in :file:`epsg.properties` can only **add** to the database.
+
+Special care must be taken when overriding the Datum parameters, in particular the **TOWGS84** parameters. To make sure the override parameters are actually used the code of the Datum must be removed, otherwise the referencing subsystem will keep on reading the official database in search of the best Datum shift method (grid, 7 or 5 parameters transformation, plain affine transform).
+
+For example, if you need to override the official **TOWGS84** parameters of EPSG:3003 to better match the peninsular area of Italy::
+
+  PROJCS["Monte Mario / Italy zone 1", 
+  GEOGCS["Monte Mario", 
+    DATUM["Monte Mario", 
+      SPHEROID["International 1924", 6378388.0, 297.0, AUTHORITY["EPSG","7022"]], 
+      TOWGS84[-50.2, -50.4, 84.8, -0.69, -2.012, 0.459, -5.791915759418465], 
+      AUTHORITY["EPSG","6265"]], 
+    PRIMEM["Greenwich", 0.0, AUTHORITY["EPSG","8901"]], 
+    UNIT["degree", 0.017453292519943295], 
+    AXIS["Geodetic longitude", EAST], 
+    AXIS["Geodetic latitude", NORTH], 
+    AUTHORITY["EPSG","4265"]], 
+  PROJECTION["Transverse Mercator", AUTHORITY["EPSG","9807"]], 
+  PARAMETER["central_meridian", 9.0], 
+  PARAMETER["latitude_of_origin", 0.0], 
+  PARAMETER["scale_factor", 0.9996], 
+  PARAMETER["false_easting", 1500000.0], 
+  PARAMETER["false_northing", 0.0], 
+  UNIT["m", 1.0], 
+  AXIS["Easting", EAST], 
+  AXIS["Northing", NORTH], 
+  AUTHORITY["EPSG","3003"]]
+   
+You should write the following (in a single line, here it's reported formatted over multiple lines for readability)::
+  
+  3003 =
+   PROJCS["Monte Mario / Italy zone 1", 
+  GEOGCS["Monte Mario", 
+    DATUM["Monte Mario", 
+      SPHEROID["International 1924", 6378388.0, 297.0, AUTHORITY["EPSG","7022"]], 
+      TOWGS84[-104.1, -49.1, -9.9, 0.971, -2.917, 0.714, -11.68], 
+      AUTHORITY["EPSG","6265"]], 
+    PRIMEM["Greenwich", 0.0, AUTHORITY["EPSG","8901"]], 
+    UNIT["degree", 0.017453292519943295], 
+    AXIS["Geodetic longitude", EAST], 
+    AXIS["Geodetic latitude", NORTH]], 
+  PROJECTION["Transverse_Mercator"], 
+  PARAMETER["central_meridian", 9.0], 
+  PARAMETER["latitude_of_origin", 0.0], 
+  PARAMETER["scale_factor", 0.9996], 
+  PARAMETER["false_easting", 1500000.0], 
+  PARAMETER["false_northing", 0.0], 
+  UNIT["m", 1.0], 
+  AXIS["Easting", EAST], 
+  AXIS["Northing", NORTH], 
+  AUTHORITY["EPSG","3003"]]
+
+The definition has been changed in two places, the **TOWGS84** paramerers, and the Datum code, ``AUTHORITY["EPSG","4265"]``, has been removed. 

@@ -1,0 +1,46 @@
+.. _setup_nyc_db:
+
+Create and Prepare the *nyc* Example DataBase
+=============================================
+
+This small section contains a step-by-step guide for the creation and population of an database containing few geospatial tables of New York City:
+
+    * giant_polygon
+    * poi
+    * poly_landmarks
+    * tiger_roads
+
+#. Log as *postgres* system user
+
+    .. code-block:: console
+    
+        $ su - postgres
+
+#. Create the role **bob** with password *postgres*
+
+    .. code-block:: console
+    
+        $ psql -c "CREATE ROLE bob LOGIN ENCRYPTED PASSWORD 'md565170a859842ceb2930dc2fa1454af9d' CREATEDB VALID UNTIL 'infinity';"
+    
+#. Create the database **nyc** with the geospatial extensions
+
+    .. code-block:: console
+    
+        $ createdb nyc
+        $ psql -d nyc -c 'CREATE EXTENSION postgis;'
+        $ psql -d nyc -c 'GRANT ALL ON geometry_columns TO PUBLIC;'
+        $ psql -d nyc -c 'GRANT ALL ON spatial_ref_sys TO PUBLIC;'
+
+#. Restore the tables into the database from the :download:`dump <resources/nyc.dump>`
+
+    .. code-block:: console
+
+        $ psql -d nyc < /tmp/nyc.dump 
+
+#. Test that everything is ok by connecting to the database and listing the tables
+
+    .. code-block:: console
+    
+        $ psql nyc
+        \dt
+        

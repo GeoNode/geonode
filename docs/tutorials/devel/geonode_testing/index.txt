@@ -1,0 +1,86 @@
+.. _geonode_testing:
+
+Testing in GeoNode
+==================
+
+The community encourages the Test Driven Development (TDD) and the contribution to write new tests to extend the coverage. Ideally every model, view, and utility should becovered by tests.
+
+GeoNode has Unit, Integration and Javascript tests. The Unit tests are located in the tests file of every django app (Maps, Layers, Documents, Catalogue, Search, Security etc).
+
+The Integration, CSW and smoke tests are located under the tests folder).
+
+.. warning:: The tests are meant to be ran using the SQLite database, some of them may fail using PostgreSQL or others. Therefore **remove or rename your local_settings.py file before running the tests**.
+
+If running them in development mode make sure to have the jetty server
+ shut down otherwise the test could get stuck. To make sure it is run:
+    
+.. code-block:: console    
+
+    $ paver stop
+
+Unit Tests
+----------
+
+To run the unit tests make sure you have the virtualenv active (if running GeoNode under virtualenv) then run:
+
+    .. code-block:: console
+    
+        $ paver test # or python setup.py test when testing development versions
+
+This will produce a detailed test report.
+
+It's possible to run just specific apps tests by using the django command:
+
+    .. code-block:: console
+    
+        $ python manage.py test app/tests.py
+
+For example:
+
+    .. code-block:: console
+    
+        $ python manage.py test geonode.maps.tests
+
+To run a single testcase or method (omit the method name to run the whole class), for example:
+
+    .. code-block:: console
+    
+        $ python manage.py test geonode.maps.tests:MapsTest.test_maps_search
+
+These tests are based on the Python/django unit test suite.
+
+Integration Tests
+-----------------
+
+To run the unit tests make sure you have the virtualenv active (if running GeoNode under virtualenv) then run:
+
+    .. code-block:: console
+    
+        $ paver test_integration # or python setup.py test_integration when testing development versions
+
+To run the csw integration test run:
+
+    .. code-block:: console
+    
+        $ paver test_integration -n geonode.tests.csw
+
+Like the unit tests above, it is also possible to test specific modules, for example:
+
+    .. code-block:: console
+    
+        $ paver test_integration -n geonode.tests.integration:GeoNodeMapTest.test_search_result_detail
+
+To test with with coverage:
+
+    .. code-block:: console
+    
+        $ python manage.py test  geonode.maps.tests -- --with-coverage --cover-package=geonode.maps
+
+These tests are based on the Python/django unit test suite.
+
+Javascript Tests
+----------------
+
+.. note:: Javascript tests has been currently disabled in GeoNode. There is a plan to improve and re-enable them in the future.
+
+.. todo:: Reactivate the js test before
