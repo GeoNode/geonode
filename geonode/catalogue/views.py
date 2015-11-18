@@ -18,6 +18,7 @@
 #
 #########################################################################
 
+import json
 import os
 from django.conf import settings
 from django.http import HttpResponse, HttpResponseRedirect
@@ -25,6 +26,7 @@ from django.shortcuts import render_to_response
 from django.views.decorators.csrf import csrf_exempt
 from pycsw import server
 from geonode.catalogue.backends.pycsw_local import CONFIGURATION
+from geonode.base.models import ResourceBase
 
 
 @csrf_exempt
@@ -65,3 +67,33 @@ def opensearch_dispatch(request):
 
     return render_to_response('catalogue/opensearch_description.xml', ctx,
                               content_type='application/opensearchdescription+xml')
+
+
+@csrf_exempt
+def data_json(request):
+    """Return data.json representation of catalogue"""
+    json_data = []
+    for resource in ResourceBase.objects.all():
+        record = {}
+        record['title'] = resource.title
+        record['description'] = resource.abstract
+        record['keyword'] = resource.keyword_csv.split(',')
+        record['modified'] = resource.csw_insert_date.isoformat()
+        record['publisher'] = resource.poc.organization
+        record['contactPoint'] = resource.poc.name_long
+        record['mbox'] = resource.poc.email
+        record['identifier'] = resource.uuid
+        if resource.is_published:
+            record['accessLevel'] = 'public'
+        else:
+            record['accessLevel'] = 'non-public'
+
+        record['distribution'] = []
+        for link in resource.link_set.all():
+            record['distribution'].append({
+                'accessURL': link.url,
+                'format': link.mime
+            })
+        json_data.append(record)
+
+    return HttpResponse(json.dumps(json_data), 'application/json')

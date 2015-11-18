@@ -319,7 +319,7 @@
           {% else %}
           <input type="radio" name="style" id="{{ style.name }}" value="{{ style.title }}"/>
           {% endif %}
-          <a href="{{ GEOSERVER_BASE_URL }}styles/{{ style.name }}.sld" >{{ style.sld_title }}</a>
+          <a href="{{ GEOSERVER_BASE_URL }}{{ style.absolute_url }}" >{{ style.sld_title }}</a>
         </li>
         {% empty %}
         <li>{% trans "No styles associated with this layer" %}</li>
