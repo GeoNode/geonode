@@ -31,9 +31,8 @@ define(function (require, exports) {
         var parts = getBase(file);
 
         if (parts.length > 1) {
-            if (getExt(file) === 'xml' && 
-                    parts[parts.length - 2].toLowerCase() === 'shp'){               
-                parts.pop(); 
+            if (getExt(file) === 'xml' && parts[0].endsWith('.shp')) {
+                parts[0] = parts[0].replace('.shp', '');
             }
             parts.splice(parts.length - 1);
             return parts.join('.');
