@@ -73,7 +73,7 @@ Level 5 sections should have a single dot,periol symbol (.)::
 Page labels
 -----------
 
-**Ensure every page has a label.** For example if the page is named ``foo_bar.rst`` then the page should have the label at the top of the file (line1) ::
+**Ensure every page has a label.** For example if the page is named ``foo_bar.txt`` then the page should have the label at the top of the file (line1) ::
 
    ..  _foo_bar:
 
