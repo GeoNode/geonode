@@ -9,7 +9,7 @@
 {% block body %}
   <div class="page-header">
     {% if user.is_authenticated %}
-    <a href="{% url "group_create" %}" class="btn btn-danger pull-right"><i class="fa fa-users fa-2x"></i><i class="fa fa-plus"></i> <span>Create</span></a>
+    <a href="{% url "group_create" %}" class="btn btn-primary pull-right">{% trans "Create a New Group" %}</a>
     {% endif %}
     <h2>{% trans "Explore Groups" %}</h2>
   </div>
