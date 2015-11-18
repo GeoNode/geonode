@@ -5,9 +5,9 @@
   	    <a href="{{ item.detail_url }}"><img ng-src="{{ item.thumbnail_url }}" /></a>
   	  </div>
       <div class="col-xs-8 item-info">
-        {% endverbatim %}{% if request.user.is_authenticated %}
+        {% endverbatim %}
         <button class="btn btn-default btn-xs pull-right"  ng-click="cart.toggleItem(item)"><i ng-class="cart.getFaClass(item.id)" class="fa fa-lg"></i></button>
-        {% endif %}{% verbatim %}
+        {% verbatim %}
         <h4><a href="{{ item.detail_url }}">{{ item.title }}</a></h4>
         <p>{{ item.category__gn_description }} <span class="owner">by <a href="/people/profile/{{ item.owner__username }}">{{ item.owner__username }}</a></span></p>
         <p class="abstract">{{ item.abstract }}</p>
