@@ -1,3 +1,105 @@
+geonode (2.4.0+rc3) trusty; urgency=high
+
+  [ Simone Dalmasso ]
+  * [39f179] initial support for shopping cart
+  * [69fbd5] add bulk permissions in cart
+  * [bfcafa] removed unnecessary css rule
+  * [696234] fix cart empty message
+
+  [ gannebamm ]
+  * [176eb2] added german as language
+
+  [ Simone Dalmasso ]
+  * [5c4005] fix dynamic to correctly use the basefile
+
+  [ julien collaer ]
+  * [07cd09] sycing
+  * [fd80e8] sycing tsf
+
+  [ Simone Dalmasso ]
+  * [0b2ac3] add verbose name plural and set geomanager as default for dynamic
+
+  [ pjdufour ]
+  * [eca65b] Message posted to Slack after layer upload
+
+  [ Gavin Reich ]
+  * [0b75df] get doc_url extension using urlparse
+
+  [ Francesco Bartoli ]
+  * [357bec] Clear all SEVERE and ERROR messages from building docs
+
+  [ Paolo Pasquali ]
+  * [caad6f] Update
+  * [e5775c] Fix People page layout
+
+  [ Simone Dalmasso ]
+  * [29ca8c] Revert category choice in upload, also fixes #2323
+
+  [ Francesco Bartoli ]
+  * [f5f6b8] fix more inconsistencies on docs source files
+
+  [ Simone Dalmasso ]
+  * [e6ceb5] set additional store parameters, fixes #2337. Thanks @afabiani
+
+  [ julien collaer ]
+  * [856e23] sycing
+  * [62d4ba] sycing tsf
+
+  [ pjdufour ]
+  * [92d649] Message posted to Slack after layer upload
+
+  [ Gavin Reich ]
+  * [f14b3e] get doc_url extension using urlparse
+
+  [ Francesco Bartoli ]
+  * [262c52] Clear all SEVERE and ERROR messages from building docs
+  * [ba3ce6] fix more inconsistencies on docs source files
+
+  [ Paolo Pasquali ]
+  * [4a56ac] Fix group and profile layout page
+  * [887a19] Fix logo in group detail page
+
+  [ Daniel Berry ]
+  * [c672bc] 'added additional filetypes for geonode.importer - gdal specific'
+
+  [ Paolo Pasquali ]
+  * [e1da56] Fix keyword style in group page
+
+  [ Jude Mwenda ]
+  * [da22ec] Changes to include spherical projections and better error handling when logging
+
+  [ Tom Kralidis ]
+  * [f604af] add support for data.json output (#1022)
+
+  [ Paolo Pasquali ]
+  * [a466ac] Restore primary button in group list page
+  * [ecdccd] Restore settings and search.js
+
+  [ afabiani ]
+  * [2e3870]  - Proposal Refactoring for GeoNode Documentation
+
+  [ Simone Dalmasso ]
+  * [401882] use sld_url to retrieve the correct sld location, fixes #2048
+  * [1c5f7d] add cart button and add/remove behavior
+  * [54b034] more fixed own the cart templates
+  * [fe3402] add credentials on was statistics generation, fixes #1412
+
+  [ capooti ]
+  * [3be01b] Now bingmaps base layer will be enabled if a BING_API_KEY is defined. Refs #2314
+
+  [ Paolo Pasquali ]
+  * [013990] Fix cart templates
+
+  [ Simone Dalmasso ]
+  * [a1b744] body_href is a property then and bump gsconfig to 1.0.3
+
+  [ capooti ]
+  * [603b4f] Fixes #2301
+
+  [ x ]
+
+ -- x <x@x>  Wed, 18 Nov 2015 15:08:41 -0500
+
 geonode (2.4.0+rc2) trusty; urgency=high
 
   [ Simone Dalmasso ]
