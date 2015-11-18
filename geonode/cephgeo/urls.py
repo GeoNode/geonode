@@ -27,6 +27,6 @@ urlpatterns = patterns('',
     url(r'^datamanager/list/(?P<sort>[A-Za-z]+)/$', views.file_list_geonode ),
     url(r'^datamanager/list/(?P<sort>[A-Za-z]+)/(?P<grid_ref>[A-Za-z0-9]+)/$', views.file_list_geonode ),
     url(r'^datamanager/list_ceph/$', views.file_list_ceph ),
-    url(r'^datamanager/list_ceph/(?P<sort>[A-Za-z]+)/$', views.file_list_ceph, ),
+    url(r'^datamanager/list_ceph/(?P<sort>[A-Za-z]+)/$', views.file_list_ceph )
     
 )
