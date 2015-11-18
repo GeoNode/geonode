@@ -17,31 +17,31 @@ from django_enumfield import enum
 class DataClassification(enum.Enum):
     UNKNOWN = 0
     LAZ = 1
-    DEM = 2
+#    DEM = 2
     DTM = 3
-#    DSM = 4
+    DSM = 4
     ORTHOPHOTO = 5
     
     labels = {
         UNKNOWN     : "Unknown Type",
         LAZ            : "LAZ",
-        DEM         : "DEM TIF",
-#        DSM         : "DSM TIF",
+#        DEM         : "DEM TIF",
+        DSM         : "DSM TIF",
         DTM         : "DTM TIF",
         ORTHOPHOTO  : "Orthophoto",}
     
     gs_feature_labels = {
         UNKNOWN     : "UNSUPPORTED",
         LAZ         : "UNSUPPORTED",
-        DEM         : "UNSUPPORTED",
-#        DSM         : "DSM",
+#        DEM         : "UNSUPPORTED",
+        DSM         : "DSM",
         DTM         : "DTM",
         ORTHOPHOTO  : "ORTHO",}
     
     filename_suffixes = {
         ".laz"            : LAZ,
-        "_dem.tif"         : DEM,
-#        "_dsm.tif"         : DSM,
+#        "_dem.tif"         : DEM,
+        "_dsm.tif"         : DSM,
         "_dtm.tif"         : DTM,
         "_ortho.tif"    : ORTHOPHOTO,}
     

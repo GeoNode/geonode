@@ -33,6 +33,7 @@ from datetime import datetime, timedelta
 import logging
 
 from geonode.cephgeo.utils import get_cart_datasize
+from django.utils.text import slugify
 
 _PERMISSION_VIEW = _("You are not permitted to view this layer")
 _PERMISSION_GENERIC = _('You do not have permissions for this layer.')
@@ -156,14 +157,17 @@ def tiled_view(request, overlay=settings.TILED_SHAPEFILE, template="maptiles/map
 def process_georefs(request):
     if request.method == "POST":
         try:
+            ### HERE ###
             georef_area = request.POST['georef_area']
             georef_list = filter(None, georef_area.split(","))
             print("[POST]")
             pprint(request.POST)
             data_classes = list()
+            print("[LABELS]")
+            pprint(DataClassification.labels.values())
             for data_class in DataClassification.labels.values():
-                if request.POST[data_class]:
-                    data_class.append(data_class)
+                if request.POST.get(slugify(data_class.decode('cp1252'))):
+                    data_classes.append(data_class)
             
             print("[DATACLASSES]: "+str(data_classes))
             #spprint(georef_list)
@@ -220,6 +224,8 @@ def georefs_validation(request):
         )
     else:
         georefs = request.POST["georefs"]
+        print("[VALIDATION]")
+        pprint(request.POST)
         georefs_list = filter(None, georefs.split(","))
         cart_total_size = get_cart_datasize(request)
         
