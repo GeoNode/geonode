@@ -1,0 +1,57 @@
+{% extends "ceph_base.html" %}
+{% load i18n %}
+{% load url from future %}
+{% load cephgeo_extras %}
+
+{% block title %} {% trans "FTP Requests" %} - {{ block.super }} {% endblock %}
+
+{% block body_class %}FTP Request Details for [{{req_details.name}}] {% endblock %}
+
+{% block body_outer %}
+  {% block body %}
+  
+  <div class="page-header">
+      <h2 class="page-title">FTP Request Detail</h2>
+  </div>
+
+  <div class="col-md-6">
+  <ul class="list-inline pull-left" id="sort">
+    <li><b>SORT BY:</b></li>
+    {% for sort_type in sort_types %}
+	  {% if sort_type == sort %}
+	  	<li><b class="selected" >{{ sort_type }}</b></li>
+	  {% else %}
+		<li><a href="{% url 'cephgeo.views.ftp_request_list' sort_type %}" >{{ sort_type }}</a></li>
+	  {% endif %}
+    {% endfor %}
+  </ul>  
+  </div>
+  <br /><br /><br />
+  Request Name: {{req_details.name}}
+  Request Date and Time: {{req_details.date_time}}
+  Request Status: {{req_details.status}}
+  Request Size: {{req_details.size_in_bytes}}
+  
+    {% for co in cephobjects %}
+    <!--<tr id="{{ ftp_req.name }}" name="{{ ftp_req.name }}" style="text-align: center;">
+        <td>{{ ftp_req.name }}</td>
+        <td>{{ ftp_req.date_time }}</td>
+        <td>{{ ftp_req.status|get_ftp_status_label }}</td>
+        <td>{{ ftp_req.num_tiles }}</td>
+        <td>{{ ftp_req.size_in_bytes | filesizeformat }}</td>
+    </tr>-->
+    <tr id="{{cephobjects}}" name="{{co.name}}" style="text-align: center;">
+        <td>{{ co.name }}</td>
+        <td>{{ co.size_in_bytes}}</td>
+        <td>{{ co.data_class}}</td>
+        <td>{{ co.last_modified}}</td>
+    </tr>
+    {% endfor %}
+
+  </table>
+{% endblock body %}
+ {% block sidebar %}{% endblock sidebar %}
+{% endblock body_outer %}
+
+
+
