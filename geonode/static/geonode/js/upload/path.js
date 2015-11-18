@@ -8,7 +8,9 @@ define(function (require, exports) {
         getName;
 
     getBase = exports.getBase = function (file) {
-        var parts = file.name.split(delimiter);
+        var ext = file.name.substr(file.name.lastIndexOf('.') + 1);
+        var name = file.name.substr(0, file.name.length-(ext.length+1));
+        var parts = [name, ext];
         if (parts) {
             return parts;
         }
