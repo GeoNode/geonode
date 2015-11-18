@@ -105,11 +105,8 @@
             <ul class="list-inline pull-left">
                  {% for class in data_classes %}
                    {% if class != 'Unknown Type' %}
-                      <!--
-                      <input type="checkbox" name="{{ class | slugify }}" > {{ class }}</input></li>
-                      -->
                       <li>
-                        <input id="{{ class | slugify }}" type="checkbox" />
+                        <input id="{{ class | slugify }}" name="{{ class | slugify }}" type="checkbox" />
                         <label class="label-dataclass" for="{{ class | slugify }}">{{ class }}</label>
                       </li>
                    {% endif %}
