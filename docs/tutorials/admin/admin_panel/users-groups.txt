@@ -4,11 +4,11 @@
 Manage users and groups through the admin panel
 ===============================================
 
-The admin section called Auth has the two links to access the Users and Groups
-sections, see figure
+The admin section called Auth has the link to access the Groups while the section called People has the link to access the Users, see figure
 
 .. figure:: img/admin-auth.png
 
+.. figure:: img/admin-people.png
 
 Users
 =====
