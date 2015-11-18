@@ -245,7 +245,7 @@ class ProfileResource(TypeFilteredResource):
         return bundle.obj.resourcebase_set.filter(id__in=obj_with_perms.values('id')).distinct().count()
 
     def dehydrate_avatar_100(self, bundle):
-        return avatar_url(bundle.obj, 100)
+        return avatar_url(bundle.obj, 240)
 
     def dehydrate_profile_detail_url(self, bundle):
         return bundle.obj.get_absolute_url()
