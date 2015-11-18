@@ -12,7 +12,7 @@
 <div class="col-md-4">
   {% block bulk_perms_button %}
     {% if request.user.is_authenticated %}
-    <button data-toggle="modal" class="btn btn-default pull-right" data-target="#_bulk_permissions">{% trans "Set permissions" %}</button>
+    <button data-toggle="modal" ng-disabled="!cart.getCart().items.length" class="btn btn-default pull-right" data-target="#_bulk_permissions">{% trans "Set permissions" %}</button>
     {% endif %}
     {% if facet_type == 'layers' %}
     <button class="btn btn-default pull-right" ng-disabled="!cart.getCart().items.length" ng-click="newMap()">{% trans "Create a map" %}</button>
