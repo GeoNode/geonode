@@ -416,7 +416,7 @@ def ftp_request_list(request, sort=None):
                     "sort"          : sort,})
                     
 @login_required
-def ftp_request_details(request, ftp_req_name=None)
+def ftp_request_details(request, ftp_req_name=None):
     if ftp_req_name is None:
         return HttpResponse(status=404)
         
