@@ -130,12 +130,21 @@ class DataTableAttribute(models.Model):
 
 
 class GeocodeType(models.Model):
-    name = models.CharField(max_length=255, unique=True, help_text='Examples: US Census Block, US County FIPS code, US Zip code, etc')
+    name = models.CharField(max_length=50, unique=True, help_text='Examples: US Census Block, US County FIPS code, US Zip code, etc')
     description = models.CharField(max_length=255, blank=True, help_text='Short description for end user')
     sort_order = models.IntegerField(default=10)
 
+    slug = models.SlugField(blank=True)
     created = models.DateTimeField(auto_now_add=True)
     modified =models.DateTimeField(auto_now=True)
+
+    def save(self, *args, **kwargs):
+        # create the slug
+        if self.name:
+            self.slug = slugify(self.name)
+
+        super(GeocodeType, self).save(*args, **kwargs)
+
 
     def __unicode__(self):
         return self.name
@@ -199,6 +208,7 @@ class JoinTarget(models.Model):
             attribute={'attribute':self.attribute.attribute, 'type':self.attribute.attribute_type},\
             type=type,\
             geocode_type=self.geocode_type.name,\
+            geocode_type_slug=self.geocode_type.slug,\
             year=self.year)
 
     class Meta:
