@@ -791,7 +791,7 @@ def save_style(gs_style):
     style, created = Style.objects.get_or_create(name=gs_style.name)
     style.sld_title = gs_style.sld_title
     style.sld_body = gs_style.sld_body
-    style.sld_url = gs_style.body_href
+    style.sld_url = gs_style.body_href()
     style.save()
     return style
 
@@ -1425,8 +1425,12 @@ def wps_execute_layer_attribute_statistics(layer_name, field):
                                'layer_name': 'geonode:%s' % layer_name,
                                'field': field
                                })
-
-    response = http_post(url, request, timeout=ogc_server_settings.TIMEOUT)
+    response = http_post(
+        url,
+        request,
+        timeout=ogc_server_settings.TIMEOUT,
+        username=ogc_server_settings.credentials.username,
+        password=ogc_server_settings.credentials.password)
 
     exml = etree.fromstring(response)
 
@@ -1447,16 +1451,24 @@ def wps_execute_layer_attribute_statistics(layer_name, field):
 
     result['unique_values'] = 'NA'
 
+    return result
+
     # TODO: find way of figuring out threshold better
-    if result['Count'] < 10000:
-        request = render_to_string('layers/wps_execute_gs_unique.xml', {
-                                   'layer_name': 'geonode:%s' % layer_name,
-                                   'field': field
-                                   })
+    # Looks incomplete what is the purpose if the nex lines?
 
-        response = http_post(url, request, timeout=ogc_server_settings.TIMEOUT)
+    # if result['Count'] < 10000:
+    #     request = render_to_string('layers/wps_execute_gs_unique.xml', {
+    #                                'layer_name': 'geonode:%s' % layer_name,
+    #                                'field': field
+    #                                })
 
-        exml = etree.fromstring(response)
+    #     response = http_post(
+    #     url,
+    #     request,
+    #     timeout=ogc_server_settings.TIMEOUT,
+    #     username=ogc_server_settings.credentials.username,
+    #     password=ogc_server_settings.credentials.password)
+    #     exml = etree.fromstring(response)
 
 
 def style_update(request, url):
