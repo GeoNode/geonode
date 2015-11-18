@@ -16,6 +16,7 @@
 {% endif %}
 <script src="{{ STATIC_URL }}geonode/js/search/explore.js?v={{ VERSION }}"></script>
 <script src="{{ STATIC_URL }}geonode/js/search/search.js?v={{ VERSION }}"></script>
+<script src="{{ STATIC_URL }}geonode/js/search/cart.js"></script>
 <script type="text/javascript">
   $("body").attr('ng-controller', 'geonode_search_controller');
   CATEGORIES_ENDPOINT = '{% url 'api_dispatch_list' api_name='api' resource_name='categories' %}';
@@ -28,7 +29,7 @@
   AUTOCOMPLETE_URL_RESOURCEBASE = '{% url "autocomplete_light_autocomplete" "ResourceBaseAutocomplete" %}';
   AUTOCOMPLETE_URL_REGION = '{% url "autocomplete_light_autocomplete" "RegionAutocomplete" %}';
 
-  var module = angular.module('search', ['geonode_main_search']);
+  var module = angular.module('search', ['geonode_main_search', 'cart']);
   module.constant('Configs', {
     url: SEARCH_URL
   });
