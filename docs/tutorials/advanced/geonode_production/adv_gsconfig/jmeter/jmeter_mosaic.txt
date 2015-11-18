@@ -1,0 +1,70 @@
+
+
+.. _geoserver.jmeter_mosaic:
+
+
+Configuring JMeter for testing Raster optimization
+==================================================
+
+The following section explains how the GeoServer performances improves with the optimization of raster files. 
+
+Optimization has already been discussed in the :ref:`Introduction To Processing With GDAL <geoserver.processing>` sections, describing the most common techniques used.
+
+.. note:: This section requires the layers published in the :ref:`Adding an Image Mosaic <geoserver.mosaic>`, :ref:`Introduction To Processing With GDAL <geoserver.processing>` and :ref:`Advanced Mosaics Configuration <geoserver.mosaic_pyramid>` sections.
+
+Test the Unoptimized Mosaic
+---------------------------
+
+#. Go to ``$TRAINING_ROOT/data/jmeter_data`` and copy the file ``template.jmx`` file, creating a ``mosaic.jmx`` file
+
+#. From the training root, on the command line, run ``jmeter.bat`` (or ``jmeter.sh`` if you're on Linux) to start JMeter
+
+#. On the top left go to :guilabel:`File --> Open` and search for the new *jmx* file copied
+
+#. Disable the Thread Groups **8**, **16**, **32**, **64** by right-clicking on them and selecting `Disable`. 
+	  
+#. In the ``CSV Data Set Config`` element of the remaining thread groups, modify the **path** of the CSV file by setting the path for the file ``optimized.csv`` in the ``$TRAINING_ROOT/data/jmeter_data`` directory
+	  
+#. In the **HTTP Request Default** element modify the following parameters:
+
+	.. list-table::
+		  :widths: 30 50
+
+		  * - **Name**
+		    - **Value**
+		  * - layers
+		    - geosolutions:boulder_bg
+		  * - srs
+		    - EPSG:26913
+
+At this point jMeter is configured to run a GeoServer performance test:
+
+#. Run the test
+
+	.. note:: Remember to run and stop the test a few times for having stable results
+
+#. You should see something like this:
+
+	   .. figure:: img/jmeter29.png
+		:align: center
+
+		*`View Results Tree` panel*
+   
+#. When the test is completed, Save the results in a text file and remove them from the console by clicking on :guilabel:`Run --> Clear All` on the menu
+
+Test the Optimized Mosaic
+---------------------------
+
+#. In the **HTTP Request Default** section modify the following parameter:
+
+	.. list-table::
+		  :widths: 30 50
+
+		  * - **Name**
+		    - **Value**
+		  * - layers
+		    - geosolutions:boulder_bg_optimized
+
+#. Run the test again
+   
+#. Compare the results of this test with the ones saved before. **You should see that throughput is increased with the optimized Mosaic**

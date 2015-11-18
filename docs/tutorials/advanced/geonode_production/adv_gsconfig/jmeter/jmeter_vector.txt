@@ -1,0 +1,120 @@
+
+
+.. _geoserver.jmeter_vector:
+
+
+Configuring JMeter for testing Vector data
+================================================
+
+The following section compare vector data preparation using Shapefile and PostGis. For this example a Shapefile containing primary or secondary roads is used.
+
+The purpose is to test the throughput between the shapefile and an optimized database containing the same data. The result will demonstrate that database optimization can provide a better
+throughput than the one of the shapefile
+
+
+Configuring the database
+---------------------------------
+
+#. Open the terminal and go to the ``%TRAINING_ROOT%``
+
+#. Load the shapefile ``tl_2014_01_prisecroads`` located in ``%TRAINING_ROOT%\data\user_data`` into PostGIS with the following commands:
+
+	.. code-block:: xml
+		
+		setenv.bat
+		
+		createdb -U postgres -T postgis20 shape2
+		
+		shp2pgsql -k -I "data\user_data\tl_2014_01_prisecroads\tl_2014_01_prisecroads.shp" public.pgroads | psql -U postgres -d shape2
+
+	.. note:: More information can be found at :ref:`Loading a Shapefile into PostGIS <geoserver.shp_postgis>`
+
+#. On the ``%TRAINING_ROOT%`` run **pgAdmin.bat**
+
+#. Go to the table ``pgroads`` inside database ``shape2`` and execute the following SQL script for creating an index on the *MTFCC* column:
+
+	.. code-block:: sql
+		
+		CREATE INDEX mtfcc_idx ON pgroads ("MTFCC");
+		
+	.. figure:: img/jmeter46.png
+		:align: center
+   
+		*Create a new index*
+	
+   The following index optimizes the access to the database when filtering on the *MTFCC* column.
+	
+Configuring GeoServer
+---------------------------------
+
+#. On your Web browser, navigate to the GeoServer `Welcome Page <http://localhost:8083/geoserver/>`_.
+
+#. Following the instructions on :ref:`Adding a Postgis layer <geoserver.postgis_lay>`, configure the database ``shape2`` in GeoServer and call it **pgroads**
+
+	.. note:: Note that the database `Coordinate Reference System` is ``EPSG:4269``
+
+#. Configure the shapefile ``tl_2014_01_prisecroads`` used before in GeoServer following the instructions in :ref:`Adding a Shapefile <geoserver.add_shp>` and call it **allroads**
+
+	.. note:: Note that the shapefile `Coordinate Reference System` is ``EPSG:4269``
+
+#. Go to :guilabel:`Styles` and click on ``Add new Style``
+
+#. On the bottom of the page, click on :guilabel:`Choose File` and select the SLD file called ``shproads`` in the ``$TRAINING_ROOT/data/jmeter_data`` directory
+
+#. Click on :guilabel:`Upload` and then on :guilabel:`Submit`. This new style supports scale dependency which is used as filter on the roads to display.
+
+Configuring JMeter
+---------------------------------
+
+#. Go to ``$TRAINING_ROOT/data/jmeter_data`` and copy the file ``template.jmx`` file creating a ``vector.jmx`` file.
+
+#. From the training root, on the command line, run ``jmeter.bat`` (or ``jmeter.sh`` if you're on Linux) to start JMeter
+
+#. On the top left go to :guilabel:`File --> Open` and search for the new *jmx* file copied
+
+#. In the ``CSV Data Set Config`` element, modify the **path** of the CSV file by setting the path for the file ``shp2pg.csv`` in the ``$TRAINING_ROOT/data/jmeter_data`` directory
+	  
+#. In the **HTTP Request Default** element modify the following parameters:
+
+	.. list-table::
+		  :widths: 30 50
+
+		  * - **Name**
+		    - **Value**
+		  * - layers
+		    - geosolutions:allroads
+		  * - srs
+		    - EPSG:4269
+		  * - styles
+		    - shproads
+	
+Test the Shapefile
+------------------
+
+#. Run the test. You should see something like this:
+
+	.. figure:: img/jmeter47.png
+		:align: center
+   
+		*Sample request on the Shapefile*	
+	  
+	.. note:: Remember to run and stop the test a few times for having stable results
+
+#. When the test is completed, Save the results in a text file.
+	
+#. Remove the result from JMeter by clicking on :guilabel:`Run --> Clear All` on the menu
+
+Test the Database
+------------------------
+	
+#. In the **HTTP Request Default** element modify the following parameter:
+
+	.. list-table::
+		  :widths: 30 50
+
+		  * - **Name**
+		    - **Value**
+		  * - layers
+		    - geosolutions:pgroads
+
+#. Run the test again. It should be noted that database throughput is greater than that of the Shapefile, because the new index created provides a faster access on the database, improving GeoServer performances

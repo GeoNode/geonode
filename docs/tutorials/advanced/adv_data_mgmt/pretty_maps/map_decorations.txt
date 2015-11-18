@@ -1,0 +1,53 @@
+.. _geoserver.decorating_maps:
+
+
+
+Decorating a Map
+------------------
+
+
+WMS Decorations provide a framework for visually annotating images from WMS with absolute, rather than spatial, positioning. This example of decoration include scaleline, legends, and image.
+
+
+#. Go to $GEOSERVER_DATA_DIR and create a new directory named :guilabel:`layouts` and create a new file named :guilabel:`boulder_ly.xml` inside it.
+
+
+#. Inside the :guilabel:`boulder_ly.xml` file enter the following XML (replace ``${GEOSERVER_DATA_DIR}`` with your actual path, e.g., ``file://C:/training/geoserver_data`` ):
+
+   .. code-block:: xml
+
+	<layout>
+			<decoration type="image" affinity="top,left" offset="45,8"
+					size="174,60">
+				<option name="url"
+					value="${GEOSERVER_DATA_DIR}/geosolutions-logo-tx.png" />
+			</decoration>
+
+			<decoration type="text" affinity="bottom,right" offset="3,3">
+				<option name="message" value="Boulder City" />
+				<option name="font-size" value="14" />
+				<option name="font-color" value="#FFFFFF" />
+				<option name="halo-radius" value="1" />
+				<option name="halo-color" value="#000000" />
+			</decoration>
+
+			<decoration type="scaleline" affinity="bottom,left" offset="3,3" />
+
+			<decoration type="legend" affinity="top,right"
+					offset="6,6" size="auto" />
+	</layout>
+
+#. Save and close the file. 
+
+#. Go to the **Layer Preview** to preview the new map decoration on :guilabel:`geosolutions:Mainrd` layer. Once the layout :guilabel:`boulder_ly.xml` is defined, request it by adding :guilabel:`&format_options=layout:boulder_ly` to the request parameters.
+
+
+   .. figure:: img/decoration2.png
+         
+      Map decoration
+      
+   The request::
+   
+      http://localhost:8083/geoserver/geosolutions/wms?service=WMS&version=1.1.0&request=GetMap&layers=geosolutions:Mainrd&styles=&bbox=3048474.661,1226045.092,3095249.0,1279080.5&width=451&height=512&srs=EPSG:2876&format=application/openlayers&format_options=layout:boulder_ly
+
+.. note:: Zoom-in until the layer and legend appears since for this layer we have scale_denominator based rules. Also you can apply this format_layout to any layer, but be careful with the overalys since you will have all the legends printed out on the right-top side of the map.
