@@ -102,6 +102,8 @@ def view_add_worldmap_shapefile(request):
     """
     #print request.POST.values()
 
+    #print "view_add_worldmap_shapefile"
+
     #   Is this request a POST?
     #
     if not request.POST:
@@ -121,15 +123,15 @@ def view_add_worldmap_shapefile(request):
                                 , msg="File not found.  Did you send a file?")
 
         return HttpResponse(status=400, content=json_msg, content_type="application/json")
-    
+
     if not len(request.FILES)==1:
         logger.error("Shapefile import error.  Only send 1 file")
         json_msg = MessageHelperJSON.get_json_msg(success=False\
                                 , msg="This request only accepts a single file")
 
         return HttpResponse(status=400, content=json_msg, content_type="application/json")
-        
-    
+
+
 
     Post_Data_As_Dict = request.POST.dict()
 
@@ -165,11 +167,9 @@ def view_add_worldmap_shapefile(request):
     #-----------------------------------------------------------
     existing_dv_layer_metadata = None
     logger.info("pre existing layer check")
-    print "pre existing layer check"
     try:
         existing_dv_layer_metadata = check_for_existing_layer(Post_Data_As_Dict)
         logger.info("found existing layer")
-        print "found existing layer"
     except ValidationError as e:
         error_msg = "The dataverse information failed validation: %s" % Post_Data_As_Dict
         logger.error(error_msg)
@@ -183,7 +183,6 @@ def view_add_worldmap_shapefile(request):
     #   * Update the worldmap user? *
     #-----------------------------------------------------------
     if existing_dv_layer_metadata:
-        print "Found existing layer!"
         logger.info("Found existing layer!")
 
         update_the_layer_metadata(existing_dv_layer_metadata, Post_Data_As_Dict)
@@ -228,13 +227,14 @@ def view_add_worldmap_shapefile(request):
     #
     shapefile_name = slugify(shapefile_name.replace(".","_"))
     file_obj = write_the_dataverse_file(transferred_file)
-        #print ('file_obj', file_obj)
+    #print ('file_obj', file_obj)
+
+    #print "make the layer...."
 
     #   Save the actual layer
     #
     #
     try:
-
         saved_layer = save(shapefile_name,\
                            file_obj,\
                            user_object,\
@@ -256,7 +256,7 @@ def view_add_worldmap_shapefile(request):
             #
             if saved_layer:
                 saved_layer.delete()
-                
+
             # Error
             return HttpResponse(status=400, content=json_msg, content_type="application/json")
 
@@ -266,7 +266,7 @@ def view_add_worldmap_shapefile(request):
         layer_metadata_obj = LayerMetadata(saved_layer)
 
         # Return the response!
-        json_msg = MessageHelperJSON.get_json_msg(success=True, msg='worked', data_dict=layer_metadata_obj.get_metadata_dict())
+        json_msg = MessageHelperJSON.get_json_msg(success=True, msg='Shapefile successfully imported', data_dict=layer_metadata_obj.get_metadata_dict())
         #print '-' * 40
         #print 'json_msg', json_msg
 
@@ -296,7 +296,7 @@ def write_the_dataverse_file(temp_uploaded_file):
         for c in temp_uploaded_file.chunks():
             writable.write(c)
     return path
-    
+
 
 def get_worldmap_user_object(worldmap_username, dv_user_email):
     """

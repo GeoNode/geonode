@@ -18,13 +18,14 @@ urlpatterns += patterns('geonode.contrib.dataverse_connect.views_sld',
        url(r'^classify-layer/$', 'view_create_new_layer_style', name='view_create_new_layer_style'),
 
        url(r'^get-classify-attributes/$', 'view_layer_classification_attributes', name='view_layer_classification_attributes'),
-       
-       
+
+
 )
 
 
 urlpatterns += patterns('geonode.contrib.dataverse_connect.views_delete',
 
-       url(r'^delete-map-layer/$', 'view_delete_dataverse_map_layer', name='view_delete_dataverse_map_layer'),
-       
+       url(r'^delete-map-layer/$', 'view_delete_dataverse_map_layer',\
+            name='view_delete_dataverse_map_layer'),
+
 )

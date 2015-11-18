@@ -1,10 +1,6 @@
 import sys
-import json
-import urllib
 import logging
 
-from django.http import HttpResponse, Http404
-from django.conf import settings
 from django.views.decorators.csrf import csrf_exempt
 
 from shared_dataverse_information.shared_form_util.format_form_errors import format_errors_as_text
@@ -28,13 +24,13 @@ logger = logging.getLogger(__name__)
 def test_delete(request):
     """
     Used for debugging -- do not activate this and check it in!
-    
+
     #url(r'^delete-map-layer-test/$', 'test_delete', name='test_delete'),
-    
+
     """
     raise Http404('nada')
     if not request.POST:
-        json_msg = MessageHelperJSON.get_json_msg(success=False, msg="Not a POST.")        
+        json_msg = MessageHelperJSON.get_json_msg(success=False, msg="Not a POST.")
         return HttpResponse(status=401, content=json_msg, content_type="application/json")
 
     Post_Data_As_Dict = request.POST.dict()
@@ -43,14 +39,14 @@ def test_delete(request):
     print 'Post_Data_As_Dict', Post_Data_As_Dict
 
     if Post_Data_As_Dict.get('layer_id', None) is None:
-        json_msg = MessageHelperJSON.get_json_msg(success=False, msg="No layer_id.")        
+        json_msg = MessageHelperJSON.get_json_msg(success=False, msg="No layer_id.")
         return HttpResponse(status=400, content=json_msg, content_type="application/json")
 
 
     try:
         layer = Layer.objects.get(pk=Post_Data_As_Dict['layer_id'])
     except Layer.DoesNotExist:
-        json_msg = MessageHelperJSON.get_json_msg(success=False, msg="Layer not found for this id.")        
+        json_msg = MessageHelperJSON.get_json_msg(success=False, msg="Layer not found for this id.")
         return HttpResponse(status=400, content=json_msg, content_type="application/json")
 
     #layer.delete()
@@ -67,8 +63,8 @@ params = { 'layer_id' : 103 }
 r = requests.post(api_url, data=params)
 print r.text
 print r.status_code
-"""        
-    
+"""
+
 
 @csrf_exempt
 @http_basic_auth_for_api
@@ -86,7 +82,7 @@ def view_delete_dataverse_map_layer(request):
         json_msg = MessageHelperJSON.get_json_msg(success=False, msg="Not a POST.")
         return HttpResponse(status=401, content=json_msg, content_type="application/json")
 
-    
+
     """
     Validate the Data in the API call
     """
@@ -109,7 +105,7 @@ def view_delete_dataverse_map_layer(request):
     if existing_dv_layer_metadata is None:
         json_msg = MessageHelperJSON.get_json_msg(success=False, msg="Existing layer not found.")
         return HttpResponse(status=404, content=json_msg, content_type="application/json")
-        
+
     map_layer = existing_dv_layer_metadata.map_layer
 
 
@@ -156,11 +152,11 @@ def view_delete_dataverse_map_layer(request):
 
     json_msg = MessageHelperJSON.get_json_msg(success=True, msg='Layer deleted')
     return HttpResponse(status=200, content=json_msg, content_type="application/json")
-    
+
 
 def delete_map_layer(map_layer):
     assert isinstance(map_layer, Layer), "map_layer must be a geonode.maps.models.Layer object"
-    
+
     try:
         map_layer.delete()
     except FailedRequestError as e:
@@ -170,5 +166,3 @@ def delete_map_layer(map_layer):
          return (False, "Failed to map_layer. %s" % err_msg)
 
     return (True, None)
-
-    

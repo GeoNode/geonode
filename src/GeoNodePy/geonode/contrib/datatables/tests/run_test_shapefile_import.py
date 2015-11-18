@@ -363,7 +363,7 @@ class TestWorldMapShapefileImport(TestTabularAPIBase):
         msg(r.status_code)
         msg(r.text)
 
-        open('/Users/rmp553/Desktop/page_out.html', 'w').write(r.text)
+        #open('/Users/rmp553/Desktop/page_out.html', 'w').write(r.text)
         #return
         #   Expect HTTP 200 - success
         #
