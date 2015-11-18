@@ -64,6 +64,9 @@ class Style(models.Model):
     def __str__(self):
         return "%s" % self.name.encode('utf-8')
 
+    def absolute_url(self):
+        return self.sld_url.split('geoserver/', 1)[1]
+
 
 class LayerManager(ResourceBaseManager):
 
@@ -492,18 +495,20 @@ def post_delete_layer(instance, sender, **kwargs):
     Remove the layer default style.
     """
     from geonode.maps.models import MapLayer
-    logger.debug(
-        "Going to delete associated maplayers for [%s]",
-        instance.typename.encode('utf-8'))
-    MapLayer.objects.filter(
-        name=instance.typename,
-        ows_url=instance.ows_url).delete()
+    if instance.typename:
+        logger.debug(
+            "Going to delete associated maplayers for [%s]",
+            instance.typename.encode('utf-8'))
+        MapLayer.objects.filter(
+            name=instance.typename,
+            ows_url=instance.ows_url).delete()
 
     if instance.service:
         return
-    logger.debug(
-        "Going to delete the default style for [%s]",
-        instance.typename.encode('utf-8'))
+    if instance.typename:
+        logger.debug(
+            "Going to delete the default style for [%s]",
+            instance.typename.encode('utf-8'))
 
     if instance.default_style and Layer.objects.filter(
             default_style__id=instance.default_style.id).count() == 0:

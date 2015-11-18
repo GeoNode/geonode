@@ -134,9 +134,10 @@ class RegionResource(TypeFilteredResource):
         allowed_methods = ['get']
         filtering = {
             'name': ALL,
+            'code': ALL,
         }
-        # To activate the counts on regions uncomment the following line
-        # serializer = CountJSONSerializer()
+        if settings.API_INCLUDE_REGIONS_COUNT:
+            serializer = CountJSONSerializer()
 
 
 class TopicCategoryResource(TypeFilteredResource):
@@ -279,6 +280,28 @@ class ProfileResource(TypeFilteredResource):
     class Meta:
         queryset = get_user_model().objects.exclude(username='AnonymousUser')
         resource_name = 'profiles'
+        allowed_methods = ['get']
+        ordering = ['username', 'date_joined']
+        excludes = ['is_staff', 'password', 'is_superuser',
+                    'is_active', 'last_login']
+
+        filtering = {
+            'username': ALL,
+        }
+        serializer = CountJSONSerializer()
+
+
+class OwnersResource(TypeFilteredResource):
+    """Owners api, lighter and faster version of the profiles api"""
+
+    def serialize(self, request, data, format, options={}):
+        options['count_type'] = 'owner'
+
+        return super(OwnersResource, self).serialize(request, data, format, options)
+
+    class Meta:
+        queryset = get_user_model().objects.exclude(username='AnonymousUser')
+        resource_name = 'owners'
         allowed_methods = ['get']
         ordering = ['username', 'date_joined']
         excludes = ['is_staff', 'password', 'is_superuser',

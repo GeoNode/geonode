@@ -45,6 +45,8 @@ This includes:
 * Python development libraries
 * PostgresQL database
 * The GDAL, GEOS, and OGR geospatial software libraries
+  
+For detailed information on dependencies please refere to the section :ref:`dependencies`.
 
 For convenience, appropriate commands to retrieve these dependencies on Ubuntu
 14.04 LTS are listed below:
@@ -55,7 +57,6 @@ For convenience, appropriate commands to retrieve these dependencies on Ubuntu
             apache2                \
             gcc                    \
             gdal-bin               \
-            gettext                \
             gettext                \
             git-core               \
             libapache2-mod-wsgi    \
@@ -103,7 +104,7 @@ installation-configuration of GeoNode:
 In the end you will have the same running instance of Geonode.
 
 Configure Manually
---------------------
+------------------
 
 Download Code
 '''''''''''''
@@ -158,7 +159,7 @@ Django Database
     PostgresQL
 
 Configure Postgresql and Postgis
-````````````````````````````````
+''''''''''''''''''''''''''''''''
 
 At this point, GeoNode uses *sqlite3* as the default db.
 The following steps will show you how to make geonode to use *postgresql* and
@@ -272,7 +273,7 @@ To synchronise the database call the django command ``syncdb``
 
 
 Django configurations
-`````````````````````
+'''''''''''''''''''''
 
 The **Django** frontend can be served in various ways,
 one of the most performant is Apache httpd with mod_wsgi installed.
@@ -318,7 +319,7 @@ If using apache webserver, change owner to ``www-data``
     $ sudo chown www-data -R /home/user/geonode/geonode/uploaded
 
 Webserver configurations (Apache and mod_wsgi)
-``````````````````````````````````````````````
+''''''''''''''''''''''''''''''''''''''''''''''
 **Make apache to load the mod_wsgi module**
 
 If you've done the installation from above,
@@ -427,7 +428,7 @@ Now you should be able to see this:
 .. figure:: img/admin_interface.PNG
 
 Change permissions of folders
-`````````````````````````````
+'''''''''''''''''''''''''''''
 
 .. code-block:: console
 
@@ -437,7 +438,7 @@ Change permissions of folders
     $ sudo service apache2 reload
 
 Configure application server
-````````````````````````````
+''''''''''''''''''''''''''''
 
 The **GeoServer** web application must be served using a *Java Servlet container*;
 two popular and free containers are Jetty and Tomcat.

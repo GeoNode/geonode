@@ -171,6 +171,7 @@ def upload(name, base_file,
               time_format=None, srs=None, use_big_date=use_big_date)
 
     run_import(upload_session, async=False)
+
     final_step(upload_session, user)
 
 
@@ -247,8 +248,12 @@ def save_step(user, layer, spatial_files, overwrite=True):
     try:
         # importer tracks ids by autoincrement but is prone to corruption
         # which potentially may reset the id - hopefully prevent this...
-        next_id = Upload.objects.all().aggregate(Max('import_id')).values()[0]
-        next_id = next_id + 1 if next_id else 1
+        upload_next_id = Upload.objects.all().aggregate(Max('import_id')).values()[0]
+        upload_next_id = upload_next_id if upload_next_id else 0
+        # next_id = next_id + 1 if next_id else 1
+        importer_sessions = gs_uploader.get_sessions()
+        last_importer_session = importer_sessions[len(importer_sessions)-1].id if importer_sessions else 0
+        next_id = max(int(last_importer_session), int(upload_next_id)) + 1
 
         # save record of this whether valid or not - will help w/ debugging
         upload = Upload.objects.create(
@@ -321,6 +326,9 @@ def run_import(upload_session, async):
     if import_session.state == 'INCOMPLETE':
         if task.state != 'ERROR':
             raise Exception('unknown item state: %s' % task.state)
+    elif import_session.state == 'PENDING' and task.target.store_type == 'coverageStore':
+        if task.state == 'READY':
+            import_session.commit(async)
 
     # if a target datastore is configured, ensure the datastore exists
     # in geoserver and set the uploader target appropriately
@@ -507,6 +515,13 @@ def final_step(upload_session, user):
     _log('Getting from catalog [%s]', name)
     publishing = cat.get_layer(name)
 
+    if import_session.state == 'INCOMPLETE':
+        if task.state != 'ERROR':
+            raise Exception('unknown item state: %s' % task.state)
+    elif import_session.state == 'PENDING':
+        if task.state == 'READY' and task.data.format != 'Shapefile':
+            import_session.commit()
+
     if not publishing:
         raise LayerNotReady("Expected to find layer named '%s' in geoserver" % name)
 
@@ -617,8 +632,8 @@ def final_step(upload_session, user):
     # FIXME: Do this as part of the post_save hook
 
     permissions = upload_session.permissions
-    _log('Setting default permissions for [%s]', name)
-    if permissions is not None:
+    if created and permissions is not None:
+        _log('Setting default permissions for [%s]', name)
         saved_layer.set_permissions(permissions)
 
     if upload_session.tempdir and os.path.exists(upload_session.tempdir):

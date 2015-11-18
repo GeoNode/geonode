@@ -473,7 +473,8 @@ def new_map_config(request):
 
         if 'layer' in params:
             bbox = None
-            map_obj = Map(projection="EPSG:900913")
+            map_obj = Map(projection=getattr(settings, 'DEFAULT_MAP_CRS',
+                          'EPSG:900913'))
             layers = []
             for layer_name in params.getlist('layer'):
                 try:
@@ -503,8 +504,10 @@ def new_map_config(request):
                 # Add required parameters for GXP lazy-loading
                 config["title"] = layer.title
                 config["queryable"] = True
-                config["srs"] = layer.srid if layer.srid != "EPSG:4326" else "EPSG:900913"
-                config["bbox"] = llbbox_to_mercator([float(coord) for coord in bbox])
+
+                config["srs"] = getattr(settings, 'DEFAULT_MAP_CRS', 'EPSG:900913')
+                config["bbox"] = bbox if config["srs"] != 'EPSG:900913' \
+                    else llbbox_to_mercator([float(coord) for coord in bbox])
 
                 if layer.storeType == "remoteStore":
                     service = layer.service
