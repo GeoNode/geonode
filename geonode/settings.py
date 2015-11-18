@@ -634,7 +634,7 @@ MAP_BASELAYERS = [{
     "name": "naip",
     "group": "background",
     "visibility": False
-}, 
+},
 # {    
 #     "source": {"ptype": "gxp_bingsource"},
 #     "name": "AerialWithLabels",

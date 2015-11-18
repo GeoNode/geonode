@@ -20,7 +20,7 @@
   <h2 class="page-title">{{ object.title|default:object.slug }}</h2>
 </div>
 <div class="row">
-  <div class="col-md-8">
+  <div class="col-md-8 group-details">
     <div class="row">
       <div class="col-xs-4 col-md-3 group-logo">
       {% if object.logo %}
@@ -32,9 +32,9 @@
       <div class="col-xs-8 col-md-9 group-details">
         <p class="group-desc">{{ object.description }}</p>
           {% if object.keyword_list %}
-          <p><i class="fa fa-tag"></i>
+          <p>
             {% for keyword in object.keyword_list %}
-              {{ keyword }}
+              <span class="label label-default">{{ keyword }}</span>
             {% endfor %}
           </p>
           {% else %}
