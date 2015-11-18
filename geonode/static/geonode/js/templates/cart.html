@@ -5,7 +5,7 @@
     </p>
     <table class="table table-striped">
         <tr ng-repeat="resource in cart.getCart().items">
-            <td>{{ resource.title }}<button class="btn btn-default btn-xs pull-right" ng-click="cart.removeItem(resource.id)">X</button></td>
+            <td>{{ resource.title }}<button class="btn btn-default btn-xs pull-right" ng-click="cart.removeItem(resource)">X</button></td>
         </tr>
     </table>
 </div>
