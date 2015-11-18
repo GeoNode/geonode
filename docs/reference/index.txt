@@ -22,6 +22,8 @@ In this section, you will find information about each and every component of Geo
 
 :ref:`browsers`
 
+:ref:`geosites`
+
 .. toctree::
     :hidden:
     :maxdepth: 3
@@ -31,9 +33,9 @@ In this section, you will find information about each and every component of Geo
     security
     api
     localization
-    settings
-    browsers
     developers/index
     developers/django-apps
     developers/javascript
     developers/settings
+    browsers
+    developers/geosites

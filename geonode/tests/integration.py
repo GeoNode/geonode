@@ -59,6 +59,49 @@ LOGIN_URL = "/accounts/login/"
 
 logging.getLogger("south").setLevel(logging.INFO)
 
+"""
+ HOW TO RUN THE TESTS
+ --------------------
+ (https://github.com/GeoNode/geonode/blob/master/docs/tutorials/devel/testing.txt)
+
+ 1)
+  (https://github.com/GeoNode/geonode/blob/master/docs/tutorials/devel/envsetup/paver.txt)
+
+  $ paver setup
+
+   1a. If using a PostgreSQL DB
+       $ sudo su postgres
+       $ psql
+       ..>  ALTER USER test_geonode CREATEDB;
+       ..>  ALTER USER test_geonode WITH SUPERUSER;
+       ..>  \q
+       $ exit
+
+2)
+
+  $ paver test_integration > tests_integration.log 2>&1
+
+  2a)
+
+    $ paver test_integration -n geonode.tests.integration:GeoNodeMapTest.test_cascading_delete
+
+A. Create a GeoNode DB (If using a PostgreSQL DB)
+
+$ sudo su postgres
+$ psql -c "drop database test_geonode;"
+$ createuser -P test_geonode
+  pw: geonode
+$ createdb -O test_geonode test_geonode
+$ psql -d test_geonode -c "create extension postgis;"
+$ psql -d test_geonode -c "grant all on spatial_ref_sys to public;"
+$ psql -d test_geonode -c "grant all on geometry_columns to public;"
+$ exit
+
+$ geonode syncdb
+$ geonode createsuperuser
+
+"""
+
 
 class GeoNodeCoreTest(TestCase):
 
@@ -388,18 +431,20 @@ class GeoNodeMapTest(TestCase):
             gisdata.VECTOR_DATA,
             'san_andres_y_providencia_poi.shp')
         shp_layer = file_upload(shp_file, overwrite=True)
-        shp_store = gs_cat.get_store(shp_layer.name)
+        ws = gs_cat.get_workspace(shp_layer.workspace)
+        shp_store = gs_cat.get_store(shp_layer.store, ws)
+        shp_store_name = shp_store.name
         shp_layer.delete()
+        # self.assertIsNone(gs_cat.get_resource(shp_layer.name, store=shp_store))
         self.assertRaises(
             FailedRequestError,
-            lambda: gs_cat.get_resource(
-                shp_layer.name,
-                store=shp_store))
+            lambda: gs_cat.get_store(shp_store_name))
 
         # Test Uploading then Deleting a TIFF file from GeoServer
         tif_file = os.path.join(gisdata.RASTER_DATA, 'test_grid.tif')
         tif_layer = file_upload(tif_file)
-        tif_store = gs_cat.get_store(tif_layer.name)
+        ws = gs_cat.get_workspace(tif_layer.workspace)
+        tif_store = gs_cat.get_store(tif_layer.store, ws)
         tif_layer.delete()
         self.assertRaises(
             FailedRequestError,
@@ -419,20 +464,21 @@ class GeoNodeMapTest(TestCase):
             'san_andres_y_providencia_poi.shp')
         shp_layer = file_upload(shp_file)
         shp_layer_id = shp_layer.pk
-        shp_store = gs_cat.get_store(shp_layer.name)
+        ws = gs_cat.get_workspace(shp_layer.workspace)
+        shp_store = gs_cat.get_store(shp_layer.store, ws)
         shp_store_name = shp_store.name
 
-        name = shp_layer.name
         uuid = shp_layer.uuid
 
         # Delete it with the Layer.delete() method
         shp_layer.delete()
 
         # Verify that it no longer exists in GeoServer
-        self.assertRaises(FailedRequestError,
-                          lambda: gs_cat.get_resource(name, store=shp_store))
-        self.assertRaises(FailedRequestError,
-                          lambda: gs_cat.get_store(shp_store_name))
+        # self.assertIsNone(gs_cat.get_resource(name, store=shp_store))
+        # self.assertIsNone(gs_cat.get_layer(shp_layer.name))
+        self.assertRaises(
+            FailedRequestError,
+            lambda: gs_cat.get_store(shp_store_name))
 
         # Check that it was also deleted from GeoNodes DB
         self.assertRaises(ObjectDoesNotExist,
@@ -930,7 +976,7 @@ class GeoNodeMapPrintTest(TestCase):
                 'layout': 'A4 portrait',
                 'mapTitle': 'test',
                 'outputFilename': 'print',
-                'srs': 'EPSG:900913',
+                'srs': getattr(settings, 'DEFAULT_MAP_CRS', 'EPSG:900913'),
                 'units': 'm'}
 
             self.client.post(print_url, post_payload)

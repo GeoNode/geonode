@@ -85,9 +85,4 @@ Having trouble? Cant find what you are looking for? We'd like to help!
 .. _Freenode's web based client: http://webchat.freenode.net
 .. _ticket tracker: http://github.com/GeoNode/geonode/issues
 
-.. toctree::
-   :maxdepth: 4
 
-   organizational
-   tutorials
-   reference

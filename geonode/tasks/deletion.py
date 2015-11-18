@@ -16,7 +16,7 @@ def delete_layer(object_id):
     layer.delete()
 
 
-@task(name='geonode.tasks.deletion.delete_map', queue='cleanup')
+@task(name='geonode.tasks.deletion.delete_map', queue='cleanup', expires=300)
 def delete_map(object_id):
     """
     Deletes a map and the associated map layers.

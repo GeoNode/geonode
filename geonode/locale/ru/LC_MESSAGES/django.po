@@ -11,6 +11,9 @@
 # Translators:
 # Translators:
 # Translators:
+# Translators:
+# Translators:
+# Translators:
 # Andres Alfonso Lemon Gomez <lemon.andres@gmail.com>, 2014
 # dan, 2015
 # dan, 2015
@@ -18,10 +21,11 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-07-16 05:46-0500\n"
-"PO-Revision-Date: 2015-07-16 10:35+0000\n"
+"POT-Creation-Date: 2015-10-29 04:21-0500\n"
+"PO-Revision-Date: 2015-10-29 09:05+0000\n"
 "Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
-"Language-Team: Russian (http://www.transifex.com/p/geonode/language/ru/)\n"
+"Language-Team: Russian (http://www.transifex.com/geonode/geonode/language/"
+"ru/)\n"
 "Language: ru\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -30,11 +34,11 @@ msgstr ""
 "%10<=4 && (n%100<12 || n%100>14) ? 1 : n%10==0 || (n%10>=5 && n%10<=9) || (n"
 "%100>=11 && n%100<=14)? 2 : 3);\n"
 
-#: utils.py:44
+#: utils.py:43
 msgid "Invalid permission level."
 msgstr "Неправильный уровень прав доступа."
 
-#: utils.py:494
+#: utils.py:496
 msgid "Permission Denied"
 msgstr "Доступ запрещен"
 
@@ -155,8 +159,9 @@ msgid "No information provided"
 msgstr "Информация отсутствует"
 
 #: base/forms.py:43 base/templates/base/resourcebase_info_panel.html:62
-#: documents/templates/documents/document_metadata.html:58
-#: layers/templates/layers/layer_metadata.html:63
+#: documents/templates/documents/document_metadata.html:65
+#: layers/templates/layers/layer_metadata.html:70
+#: layers/templates/upload/layer_upload.html:89
 #: maps/templates/maps/map_metadata.html:61
 msgid "Category"
 msgstr "Категория"
@@ -165,7 +170,7 @@ msgstr "Категория"
 msgid "Category is required."
 msgstr "Категория должна быть указана."
 
-#: base/forms.py:105 groups/models.py:45 people/forms.py:82
+#: base/forms.py:114 groups/models.py:45 people/forms.py:82
 msgid "A space or comma-separated list of keywords"
 msgstr "Список ключевых слов, разделенных пробелом или запятой"
 
@@ -434,7 +439,7 @@ msgid "A request for downloading a resource was sent"
 msgstr "Запрос на скачивание ресурса отправлен"
 
 #: base/templates/base/_resourcebase_contact_snippet.html:3
-#: templates/500.html:151 templates/base.html:143
+#: templates/500.html:151 templates/base.html:144
 msgid "About"
 msgstr "Инфо"
 
@@ -444,13 +449,17 @@ msgstr "Владелец, контактная информация, автор 
 
 #: base/templates/base/_resourcebase_contact_snippet.html:14
 #: base/templates/base/resourcebase_info_panel.html:89
-#: documents/templates/documents/document_metadata.html:48
-#: layers/templates/layers/layer_metadata.html:99
+#: documents/templates/documents/document_metadata.html:33
+#: documents/templates/documents/document_metadata.html:55
+#: layers/templates/layers/layer_metadata.html:36
+#: layers/templates/layers/layer_metadata.html:107
 #: maps/templates/maps/map_metadata.html:51
 msgid "Point of Contact"
 msgstr "Контактная информация"
 
 #: base/templates/base/_resourcebase_contact_snippet.html:18
+#: documents/templates/documents/document_metadata.html:29
+#: layers/templates/layers/layer_metadata.html:32
 msgid "Metadata Author"
 msgstr "Автор метаданных"
 
@@ -469,13 +478,13 @@ msgid "Abstract"
 msgstr "Аннотация"
 
 #: base/templates/base/resourcebase_info_panel.html:34
-#: contrib/exif/templates/exif/_exif_document_detail.html:14
+#: contrib/exif/templates/exif/_exif_document_detail.html:13
 #: templates/search/_general_filters.html:47
 msgid "Date"
 msgstr "Дата"
 
 #: base/templates/base/resourcebase_info_panel.html:45
-#: layers/templates/layers/layer_detail.html:344
+#: layers/templates/layers/layer_detail.html:345
 msgid "Type"
 msgstr "Тип"
 
@@ -511,7 +520,7 @@ msgid "Purpose"
 msgstr "Цель"
 
 #: base/templates/base/resourcebase_info_panel.html:145 templates/500.html:154
-#: templates/base.html:146
+#: templates/base.html:147
 msgid "Language"
 msgstr "Язык"
 
@@ -531,50 +540,50 @@ msgstr "Дополнительная информация"
 msgid "Spatial Representation Type"
 msgstr "Тип пространственного представления"
 
-#: contrib/exif/templates/exif/_exif_document_detail.html:6
+#: contrib/exif/templates/exif/_exif_document_detail.html:5
 msgid "Width"
 msgstr "Ширина"
 
-#: contrib/exif/templates/exif/_exif_document_detail.html:8
+#: contrib/exif/templates/exif/_exif_document_detail.html:7
 msgid "Height"
 msgstr "Высота"
 
-#: contrib/exif/templates/exif/_exif_document_detail.html:10
+#: contrib/exif/templates/exif/_exif_document_detail.html:9
 msgid "Make"
 msgstr ""
 
-#: contrib/exif/templates/exif/_exif_document_detail.html:12
+#: contrib/exif/templates/exif/_exif_document_detail.html:11
 msgid "Model"
 msgstr ""
 
-#: contrib/exif/templates/exif/_exif_document_detail.html:16
+#: contrib/exif/templates/exif/_exif_document_detail.html:15
 #: layers/templates/upload/layer_upload_csv.html:24
 msgid "Latitude"
 msgstr "Широта"
 
-#: contrib/exif/templates/exif/_exif_document_detail.html:17
-#: contrib/exif/templates/exif/_exif_document_detail.html:19
+#: contrib/exif/templates/exif/_exif_document_detail.html:16
+#: contrib/exif/templates/exif/_exif_document_detail.html:18
 msgid "Not specified"
 msgstr ""
 
-#: contrib/exif/templates/exif/_exif_document_detail.html:18
+#: contrib/exif/templates/exif/_exif_document_detail.html:17
 #: layers/templates/upload/layer_upload_csv.html:37
 msgid "Longitude"
 msgstr "Долгота"
 
-#: contrib/exif/templates/exif/_exif_document_detail.html:20
+#: contrib/exif/templates/exif/_exif_document_detail.html:19
 msgid "Flash"
 msgstr ""
 
-#: contrib/exif/templates/exif/_exif_document_detail.html:21
+#: contrib/exif/templates/exif/_exif_document_detail.html:20
 msgid "True"
 msgstr ""
 
-#: contrib/exif/templates/exif/_exif_document_detail.html:21
+#: contrib/exif/templates/exif/_exif_document_detail.html:20
 msgid "False"
 msgstr ""
 
-#: contrib/exif/templates/exif/_exif_document_detail.html:22
+#: contrib/exif/templates/exif/_exif_document_detail.html:21
 msgid "Speed Rating"
 msgstr ""
 
@@ -648,7 +657,7 @@ msgid "No"
 msgstr "Нет"
 
 #: contrib/geosites/templates/master_index.html:25
-#: layers/templates/layers/layer_detail.html:219 templates/index.html:30
+#: layers/templates/layers/layer_detail.html:220 templates/index.html:30
 #: templates/notification/request_download_resourcebase/full.txt:7
 msgid "Layer"
 msgid_plural "Layers"
@@ -722,23 +731,23 @@ msgstr ""
 msgid "See users"
 msgstr "Посмотреть пользователей"
 
-#: documents/forms.py:92 documents/forms.py:160
+#: documents/forms.py:96 documents/forms.py:164
 msgid "Document must be a file or url."
 msgstr "Документ должен быть файлом или ссылкой (URL)."
 
-#: documents/forms.py:96 documents/forms.py:164
+#: documents/forms.py:100 documents/forms.py:168
 msgid "A document cannot have both a file and a url."
 msgstr "Документ не может содержать одновременно файл и ссылку (URL)."
 
-#: documents/forms.py:109 documents/forms.py:177
+#: documents/forms.py:113 documents/forms.py:181
 msgid "This file type is not allowed"
 msgstr "Этот тип файла не допустим"
 
-#: documents/forms.py:127
+#: documents/forms.py:131
 msgid "Link to"
 msgstr "Ссылка на"
 
-#: documents/forms.py:149
+#: documents/forms.py:153
 msgid "Permissions must be valid JSON."
 msgstr "Разрешения должны быть допустимым JSON."
 
@@ -754,33 +763,41 @@ msgstr "Ссылка (URL) на документ, если он является
 msgid "URL"
 msgstr "Ссылка (URL)"
 
-#: documents/views.py:28
+#: documents/views.py:29
 msgid "You are not permitted to delete this document"
 msgstr "Вам не разрешено удалять этот документ"
 
-#: documents/views.py:29
+#: documents/views.py:30
 msgid "You do not have permissions for this document."
 msgstr "У вас нет разрешений на этот документ."
 
-#: documents/views.py:30
+#: documents/views.py:31
 msgid "You are not permitted to modify this document"
 msgstr "Вам не разрешено вносить корректировки в этот документ"
 
-#: documents/views.py:32
+#: documents/views.py:33
 msgid "You are not permitted to modify this document's metadata"
 msgstr "Вам не разрешено вносить корректировки в метаданные этого документа"
 
-#: documents/views.py:33
+#: documents/views.py:34
 msgid "You are not permitted to view this document"
 msgstr "Вам не разрешено просматривать этот документ"
 
-#: documents/views.py:69 documents/views.py:127
+#: documents/views.py:70 documents/views.py:128
 msgid "You are not allowed to view this document."
 msgstr "Вы не можете просматривать этот документ."
 
-#: documents/views.py:263
+#: documents/views.py:278
 msgid "You are not allowed to edit this document."
 msgstr "Вы не можете редактировать этот документ."
+
+#: documents/views.py:328 layers/views.py:358
+msgid "You must set a point of contact for this resource"
+msgstr ""
+
+#: documents/views.py:343 layers/views.py:373
+msgid "You must set an author for this resource"
+msgstr ""
 
 #: documents/management/__init__.py:14
 msgid "Document Created"
@@ -853,14 +870,14 @@ msgid "Edit Document"
 msgstr "Редактирование документа"
 
 #: documents/templates/documents/document_detail.html:120
-#: layers/templates/layers/layer_detail.html:193
+#: layers/templates/layers/layer_detail.html:194
 #: maps/templates/maps/map_detail.html:110
 msgid "Metadata"
 msgstr ""
 
 #: documents/templates/documents/document_detail.html:121
-#: layers/templates/layers/layer_detail.html:194
-#: layers/templates/layers/layer_detail.html:203
+#: layers/templates/layers/layer_detail.html:195
+#: layers/templates/layers/layer_detail.html:204
 #: maps/templates/maps/map_detail.html:111
 #: maps/templates/maps/map_detail.html:125
 msgid "Edit"
@@ -872,7 +889,7 @@ msgid "Document"
 msgstr "Документ"
 
 #: documents/templates/documents/document_detail.html:129
-#: layers/templates/layers/layer_detail.html:221
+#: layers/templates/layers/layer_detail.html:222
 msgid "Replace"
 msgstr "Заменить"
 
@@ -880,16 +897,16 @@ msgstr "Заменить"
 #: groups/templates/groups/group_members.html:33
 #: groups/templates/groups/group_members.html:59
 #: groups/templates/groups/group_members.html:86
-#: layers/templates/layers/layer_detail.html:227
+#: layers/templates/layers/layer_detail.html:228
 #: maps/templates/maps/map_detail.html:126
 msgid "Remove"
 msgstr "Удалить"
 
 #: documents/templates/documents/document_detail.html:139
 #: documents/templates/documents/document_detail.html:163
-#: layers/templates/layers/layer_detail.html:168
-#: layers/templates/layers/layer_detail.html:234
-#: layers/templates/layers/layer_detail.html:260
+#: layers/templates/layers/layer_detail.html:169
+#: layers/templates/layers/layer_detail.html:235
+#: layers/templates/layers/layer_detail.html:261
 #: maps/templates/maps/map_detail.html:89
 #: maps/templates/maps/map_detail.html:132
 #: templates/_bulk_permissions_form.html:19
@@ -898,8 +915,8 @@ msgstr "Закрыть"
 
 #: documents/templates/documents/document_detail.html:146
 #: documents/templates/documents/document_detail.html:153
-#: layers/templates/layers/layer_detail.html:242
-#: layers/templates/layers/layer_detail.html:250
+#: layers/templates/layers/layer_detail.html:243
+#: layers/templates/layers/layer_detail.html:251
 msgid "Download Metadata"
 msgstr "Скачать метаданные"
 
@@ -922,9 +939,9 @@ msgstr "Этот документ не относится ни к каким к�
 #: documents/templates/documents/document_detail.html:186
 #: documents/templates/documents/document_upload.html:31
 #: groups/templates/groups/group_detail.html:70
-#: layers/templates/layers/layer_detail.html:333
+#: layers/templates/layers/layer_detail.html:334
 #: layers/templates/layers/layer_replace.html:94
-#: layers/templates/upload/layer_upload.html:93
+#: layers/templates/upload/layer_upload.html:112
 #: maps/templates/maps/map_detail.html:178 people/admin.py:55
 msgid "Permissions"
 msgstr "Права доступа"
@@ -966,45 +983,52 @@ msgid "Error updating metadata.  Please check the following fields: "
 msgstr ""
 "Ошибка при обновлении метаданных. Пожалуйста, проверьте следующие поля:"
 
-#: documents/templates/documents/document_metadata.html:41
-#: documents/templates/documents/document_metadata.html:75
+#: documents/templates/documents/document_metadata.html:48
+#: documents/templates/documents/document_metadata.html:82
 #: groups/templates/groups/group_update.html:26
-#: layers/templates/layers/layer_metadata.html:51
-#: layers/templates/layers/layer_metadata.html:110
+#: layers/templates/layers/layer_metadata.html:59
+#: layers/templates/layers/layer_metadata.html:118
 #: maps/templates/maps/map_metadata.html:44
 #: maps/templates/maps/map_metadata.html:78
 msgid "Update"
 msgstr "Обновить"
 
-#: documents/templates/documents/document_metadata.html:53
-#: layers/templates/layers/layer_metadata.html:104
+#: documents/templates/documents/document_metadata.html:60
+#: layers/templates/layers/layer_metadata.html:112
 #: maps/templates/maps/map_metadata.html:56
 msgid "Metadata Provider"
 msgstr "Провайдер метаданных"
 
-#: documents/templates/documents/document_remove.html:11
+#: documents/templates/documents/document_remove.html:4
+#: maps/templates/maps/map_remove.html:6
+msgid "Deleting"
+msgstr "Удаление"
+
+#: documents/templates/documents/document_remove.html:8
+msgid "Remove Document"
+msgstr ""
+
+#: documents/templates/documents/document_remove.html:13
 #, python-format
 msgid ""
 "\n"
-"          Are you sure you want to remove %(document_title)s?\n"
+"          Are you sure you want to remove <a href="
+"\"%(document.get_absolute_url)s\">%(document_title)s</a>?\n"
 "        "
 msgstr ""
-"\n"
-"          Вы уверены, что хотите удалить %(document_title)s?\n"
-"        "
 
-#: documents/templates/documents/document_remove.html:18
+#: documents/templates/documents/document_remove.html:20
 #: groups/templates/groups/group_remove.html:19
 #: layers/templates/layers/layer_remove.html:22
-#: maps/templates/maps/map_remove.html:19
+#: maps/templates/maps/map_remove.html:22
 #: services/templates/services/service_remove.html:17
 msgid "Yes, I am sure"
 msgstr "Да, я уверен"
 
-#: documents/templates/documents/document_remove.html:19
+#: documents/templates/documents/document_remove.html:21
 #: groups/templates/groups/group_remove.html:20
 #: layers/templates/layers/layer_remove.html:23
-#: maps/templates/maps/map_remove.html:20
+#: maps/templates/maps/map_remove.html:23
 #: services/templates/services/service_remove.html:18
 msgid "No, don't remove it"
 msgstr "Нет, не удалять"
@@ -1020,7 +1044,7 @@ msgstr "Заменить "
 
 #: documents/templates/documents/document_replace.html:27
 #: layers/templates/layers/layer_replace.html:84
-#: layers/templates/upload/layer_upload.html:86
+#: layers/templates/upload/layer_upload.html:105
 msgid "Clear"
 msgstr "Очистить"
 
@@ -1028,11 +1052,11 @@ msgstr "Очистить"
 msgid "Upload Document"
 msgstr "Загрузить документ"
 
-#: geoserver/helpers.py:973
+#: geoserver/helpers.py:987
 msgid "An exception occurred loading data to PostGIS"
 msgstr "Произошла ошибка при загрузке данных в PostGIS"
 
-#: geoserver/helpers.py:978
+#: geoserver/helpers.py:992
 msgid " Additionally an error occured during database cleanup"
 msgstr "Также произошла ошибка при очистке базы данных"
 
@@ -1072,7 +1096,7 @@ msgstr "PDF"
 msgid "PNG"
 msgstr "PNG"
 
-#: geoserver/signals.py:293
+#: geoserver/signals.py:294
 msgid "Could not create a download link for layer."
 msgstr "Не удалось создать ссылку для скачивания слоя."
 
@@ -1160,7 +1184,7 @@ msgid "Logo"
 msgstr ""
 
 #: groups/models.py:37 layers/templates/layers/layer_detail.html:60
-#: layers/templates/layers/layer_metadata.html:83
+#: layers/templates/layers/layer_metadata.html:91
 #: people/templates/people/profile_detail.html:73 services/forms.py:27
 #: services/templates/services/layers_register.html:28
 msgid "Description"
@@ -1214,14 +1238,14 @@ msgstr "Все"
 #: people/templates/people/_profile_filters.html:5
 #: services/templates/services/service_detail.html:64
 #: social/templates/social/activity_list.html:21 templates/500.html:55
-#: templates/base.html:55
+#: templates/base.html:56
 msgid "Layers"
 msgstr "Слои"
 
 #: groups/templates/groups/activity.html:26
 #: people/templates/people/_profile_filters.html:6
 #: social/templates/social/activity_list.html:22 templates/500.html:58
-#: templates/base.html:58
+#: templates/base.html:59
 msgid "Maps"
 msgstr "Карты"
 
@@ -1547,7 +1571,7 @@ msgstr "последнее обновление"
 msgid "date when attribute statistics were last updated"
 msgstr "дата последнего обновления статистики атрибута"
 
-#: layers/views.py:72
+#: layers/views.py:73
 msgid ""
 "There was an error while attempting to upload your data. Please try again, "
 "or contact and administrator if the problem continues."
@@ -1555,39 +1579,39 @@ msgstr ""
 "Обнаружена ошибка при попытке загрузки Ваших данных. Попытайтесь заново, "
 "если проблема не решится - свяжитесь с администратором."
 
-#: layers/views.py:75
+#: layers/views.py:76
 msgid "You are not permitted to delete this layer"
 msgstr "Вам не разрешено удалять данный слой"
 
-#: layers/views.py:76
+#: layers/views.py:77
 msgid "You do not have permissions for this layer."
 msgstr "У Вас нет прав доступа к данному слою"
 
-#: layers/views.py:77
+#: layers/views.py:78
 msgid "You are not permitted to modify this layer"
 msgstr "Вам не разрешено вносить корректировки в данный слой"
 
-#: layers/views.py:79
+#: layers/views.py:80
 msgid "You are not permitted to modify this layer's metadata"
 msgstr "Вам не разрешено вносить корректировки в метаданные данного слоя"
 
-#: layers/views.py:80
+#: layers/views.py:81
 msgid "You are not permitted to view this layer"
 msgstr "Вам не разрешено просматривать данный слой"
 
-#: layers/views.py:479
+#: layers/views.py:486
 msgid "You are attempting to replace a vector layer with a raster."
 msgstr "Вы пытаетесь заменить векторный слой растровым"
 
-#: layers/views.py:482
+#: layers/views.py:489
 msgid "You are attempting to replace a raster layer with a vector."
 msgstr "Вы пытаетесь заменить растровый слой векторным"
 
-#: layers/views.py:538
+#: layers/views.py:545
 msgid "Unable to delete layer"
 msgstr "Не удалось удалить слой"
 
-#: layers/views.py:541
+#: layers/views.py:548
 msgid ""
 "This layer is a member of a layer group, you must remove the layer from the "
 "group before deleting."
@@ -1642,7 +1666,7 @@ msgid "Attribute Name"
 msgstr "Имя атрибута"
 
 #: layers/templates/layers/layer_detail.html:59
-#: layers/templates/layers/layer_metadata.html:82
+#: layers/templates/layers/layer_metadata.html:90
 msgid "Label"
 msgstr "Метка"
 
@@ -1667,77 +1691,77 @@ msgid "Rate this layer"
 msgstr "Оценить данный слой"
 
 #: layers/templates/layers/layer_detail.html:143
-#: layers/templates/layers/layer_detail.html:156
+#: layers/templates/layers/layer_detail.html:157
 msgid "Download Layer"
 msgstr "Скачать слой"
 
-#: layers/templates/layers/layer_detail.html:179
-#: layers/templates/layers/layer_detail.html:186
+#: layers/templates/layers/layer_detail.html:180
+#: layers/templates/layers/layer_detail.html:187
 msgid "Edit Layer"
 msgstr "Редактировать слой"
 
-#: layers/templates/layers/layer_detail.html:201
-#: layers/templates/layers/layer_detail.html:310
+#: layers/templates/layers/layer_detail.html:202
+#: layers/templates/layers/layer_detail.html:311
 msgid "Styles"
 msgstr "Стили"
 
-#: layers/templates/layers/layer_detail.html:205
+#: layers/templates/layers/layer_detail.html:206
 #: services/templates/services/service_detail.html:110
 msgid "Manage"
 msgstr "Управлять"
 
-#: layers/templates/layers/layer_detail.html:212
+#: layers/templates/layers/layer_detail.html:213
 #: maps/templates/maps/map_detail.html:117
 msgid "Thumbnail"
 msgstr "Thumbnail"
 
-#: layers/templates/layers/layer_detail.html:213
+#: layers/templates/layers/layer_detail.html:214
 #: maps/templates/maps/map_detail.html:118
 msgid "Set"
 msgstr "Установить"
 
-#: layers/templates/layers/layer_detail.html:224
+#: layers/templates/layers/layer_detail.html:225
 msgid "Edit data"
 msgstr "Редактировать"
 
-#: layers/templates/layers/layer_detail.html:268 services/views.py:1272
+#: layers/templates/layers/layer_detail.html:269 services/views.py:1288
 msgid "Legend"
 msgstr "Легенда"
 
-#: layers/templates/layers/layer_detail.html:278
+#: layers/templates/layers/layer_detail.html:279
 msgid "Maps using this layer"
 msgstr "Карты с данным слоем"
 
-#: layers/templates/layers/layer_detail.html:280
+#: layers/templates/layers/layer_detail.html:281
 msgid "List of maps using this layer:"
 msgstr "Список карт, содержащих данный слой"
 
-#: layers/templates/layers/layer_detail.html:286
+#: layers/templates/layers/layer_detail.html:287
 msgid "This layer is not currently used in any maps."
 msgstr "Данный слой в настоящее время не используется ни в каких картах"
 
-#: layers/templates/layers/layer_detail.html:291
+#: layers/templates/layers/layer_detail.html:292
 msgid "Create a map using this layer"
 msgstr "Создать карту с данным слоем"
 
-#: layers/templates/layers/layer_detail.html:292
+#: layers/templates/layers/layer_detail.html:293
 msgid "Click the button below to generate a new map based on this layer."
 msgstr ""
 "Нажмите кнопку ниже для создания новой карты, основанной на данном слое"
 
-#: layers/templates/layers/layer_detail.html:293
+#: layers/templates/layers/layer_detail.html:294
 msgid "Create a Map"
 msgstr "Создать карту"
 
-#: layers/templates/layers/layer_detail.html:298
+#: layers/templates/layers/layer_detail.html:299
 msgid "Documents related to this layer"
 msgstr "Документы, связанные с данным слоем"
 
-#: layers/templates/layers/layer_detail.html:299
+#: layers/templates/layers/layer_detail.html:300
 msgid "List of documents related to this layer:"
 msgstr "Список документов, относящиеся к данному слою"
 
-#: layers/templates/layers/layer_detail.html:311
+#: layers/templates/layers/layer_detail.html:312
 msgid ""
 "The following styles are associated with this layer. Choose a style to view "
 "it in the preview map."
@@ -1745,23 +1769,23 @@ msgstr ""
 "Следующие стили связаны с данным слоем. Выберите стиль для просмотра на "
 "карте."
 
-#: layers/templates/layers/layer_detail.html:324
+#: layers/templates/layers/layer_detail.html:325
 msgid "No styles associated with this layer"
 msgstr "Нет стиля, связанного с данным слоем"
 
-#: layers/templates/layers/layer_detail.html:334
+#: layers/templates/layers/layer_detail.html:335
 msgid "Click the button below to change the permissions of this layer."
 msgstr "Нажмите кнопку ниже для изменения прав доступа к данному слою."
 
-#: layers/templates/layers/layer_detail.html:335
+#: layers/templates/layers/layer_detail.html:336
 msgid "Change Layer Permissions"
 msgstr "Изменить права доступа к слою"
 
-#: layers/templates/layers/layer_detail.html:342
+#: layers/templates/layers/layer_detail.html:343
 msgid "External service layer"
 msgstr "Слой на внешнем сервисе"
 
-#: layers/templates/layers/layer_detail.html:343
+#: layers/templates/layers/layer_detail.html:344
 msgid "Source"
 msgstr "Источник"
 
@@ -1777,7 +1801,7 @@ msgstr "Посмотреть слои"
 #: layers/templates/layers/layer_list.html:12
 #: layers/templates/upload/layer_upload.html:18
 #: layers/templates/upload/layer_upload_base.html:12 templates/500.html:216
-#: templates/base.html:208
+#: templates/base.html:209
 msgid "Upload Layers"
 msgstr "Загрузить слои"
 
@@ -1806,16 +1830,16 @@ msgstr ""
 "Dublin Core. \n"
 "Некоторые из элементов исходных метаданных могут быть потеряны."
 
-#: layers/templates/layers/layer_metadata.html:37
-#: layers/templates/layers/layer_metadata.html:77 templates/_actions.html:5
+#: layers/templates/layers/layer_metadata.html:45
+#: layers/templates/layers/layer_metadata.html:85 templates/_actions.html:5
 msgid "Attributes"
 msgstr "Атрибуты"
 
-#: layers/templates/layers/layer_metadata.html:81
+#: layers/templates/layers/layer_metadata.html:89
 msgid "Attribute"
 msgstr "Атрибут"
 
-#: layers/templates/layers/layer_metadata.html:84
+#: layers/templates/layers/layer_metadata.html:92
 msgid "Display Order"
 msgstr "Порядок отображения"
 
@@ -1963,7 +1987,7 @@ msgstr "Обновление доступных стилей"
 msgid "Upload Layer"
 msgstr "Загрузить слой"
 
-#: layers/templates/upload/layer_upload.html:87
+#: layers/templates/upload/layer_upload.html:106
 msgid "Upload files"
 msgstr "Загрузить файлы"
 
@@ -2597,20 +2621,18 @@ msgstr ""
 "Dublin Core. \n"
 "Некоторые из элементов исходных метаданных могут быть потеряны."
 
-#: maps/templates/maps/map_remove.html:6
-msgid "Deleting"
-msgstr "Удаление"
+#: maps/templates/maps/map_remove.html:10
+msgid "Remove Map"
+msgstr ""
 
-#: maps/templates/maps/map_remove.html:13
+#: maps/templates/maps/map_remove.html:15
 #, python-format
 msgid ""
 "\n"
-"        Are you sure you want to remove %(map_title)s?\n"
-"    "
+"          Are you sure you want to remove <a href=\"%(map.get_absolute_url)s"
+"\">%(map_title)s</a>?\n"
+"        "
 msgstr ""
-"\n"
-"        Вы уверены, что хотите удалить %(map_title)s?\n"
-"    "
 
 #: maps/templates/maps/map_view.html:5
 msgid "GeoExplorer"
@@ -2729,7 +2751,7 @@ msgstr "Наименование организации"
 msgid "name of the responsible organization"
 msgstr "наименование ответственной организации"
 
-#: people/models.py:51 templates/500.html:218 templates/base.html:210
+#: people/models.py:51 templates/500.html:218 templates/base.html:211
 msgid "Profile"
 msgstr "Профиль"
 
@@ -2815,15 +2837,15 @@ msgstr ""
 "обычно используемое слово(а) или формализованное слово(а) или фраза(ы), "
 "используемые для описания субъекта (через пробел или запятую"
 
-#: people/views.py:90
+#: people/views.py:91
 msgid "Your username for "
 msgstr "Ваше имя пользователя для "
 
-#: people/views.py:104
+#: people/views.py:105
 msgid "Your username has been emailed to you."
 msgstr "Ваше имя пользователя было выслано Вам по электронной почте"
 
-#: people/views.py:106
+#: people/views.py:107
 msgid "No user could be found with that email address."
 msgstr "Не найден пользователь с таким почтовым адресом"
 
@@ -2836,7 +2858,7 @@ msgid "All contents"
 msgstr "Все включая"
 
 #: people/templates/people/_profile_filters.html:7 templates/500.html:61
-#: templates/base.html:61
+#: templates/base.html:62
 msgid "Documents"
 msgstr "Документы"
 
@@ -2923,34 +2945,35 @@ msgid "My Activities"
 msgstr "Моя деятельность"
 
 #: people/templates/people/profile_detail.html:108 templates/500.html:222
-#: templates/base.html:214
+#: templates/base.html:215
 msgid "Notifications"
 msgstr "Уведомления"
 
 #: people/templates/people/profile_detail.html:111 templates/500.html:225
-#: templates/base.html:217 templates/announcements/announcement_list.html:6
+#: templates/base.html:218 templates/announcements/announcement_list.html:6
 #: templates/announcements/announcement_list.html:13
 msgid "Announcements"
 msgstr "Объявления"
 
 #: people/templates/people/profile_detail.html:116
 #: services/templates/services/service_list.html:9 templates/500.html:228
-#: templates/base.html:220
+#: templates/base.html:221
 msgid "Remote Services"
 msgstr "Удаленные сервисы"
 
 #: people/templates/people/profile_detail.html:117 templates/500.html:229
-#: templates/base.html:221
+#: templates/base.html:222 templates/account/invite_user.html:8
+#: templates/account/invite_user.html:15
 msgid "Invite User"
 msgstr "Пригласить пользователя"
 
 #: people/templates/people/profile_detail.html:118 templates/500.html:231
-#: templates/base.html:223
+#: templates/base.html:224
 msgid "GeoServer"
 msgstr "GeoServer"
 
 #: people/templates/people/profile_detail.html:121 templates/500.html:234
-#: templates/base.html:226
+#: templates/base.html:227
 msgid "Admin"
 msgstr "Админ"
 
@@ -3269,20 +3292,20 @@ msgstr ""
 "      Страница не существует. Возможно, Вы используете устаревшую закладку?\n"
 "  "
 
-#: templates/500.html:66 templates/base.html:66
+#: templates/500.html:66 templates/base.html:67
 msgid "People"
 msgstr "Люди"
 
-#: templates/500.html:69 templates/base.html:69
+#: templates/500.html:69 templates/base.html:70
 msgid "Groups"
 msgstr "Группы"
 
-#: templates/500.html:89 templates/base.html:89
+#: templates/500.html:89 templates/base.html:90
 msgid "Register"
 msgstr "Регистрация"
 
-#: templates/500.html:100 templates/500.html.py:200 templates/base.html:100
-#: templates/base.html.py:174 templates/base.html:192
+#: templates/500.html:100 templates/500.html.py:200 templates/base.html:101
+#: templates/base.html.py:175 templates/base.html:193
 msgid "Sign in"
 msgstr "Подписаться"
 
@@ -3301,59 +3324,59 @@ msgid ""
 "            "
 msgstr ""
 
-#: templates/500.html:149 templates/base.html:141
+#: templates/500.html:149 templates/base.html:142
 msgid "Powered by"
 msgstr "Работает на"
 
-#: templates/500.html:149 templates/base.html:141
+#: templates/500.html:149 templates/base.html:142
 msgid "GeoNode"
 msgstr "GeoNode"
 
-#: templates/500.html:149 templates/base.html:141
+#: templates/500.html:149 templates/base.html:142
 msgid "version"
 msgstr "версия"
 
-#: templates/500.html:150 templates/base.html:142
+#: templates/500.html:150 templates/base.html:143
 msgid "Developers"
 msgstr "Разработчикам"
 
-#: templates/500.html:188 templates/500.html.py:189 templates/base.html:180
-#: templates/base.html.py:181
+#: templates/500.html:188 templates/500.html.py:189 templates/base.html:181
+#: templates/base.html.py:182
 msgid "Username"
 msgstr "Имя пользователя"
 
-#: templates/500.html:192 templates/base.html:184
+#: templates/500.html:192 templates/base.html:185
 msgid "Password"
 msgstr "Пароль"
 
-#: templates/500.html:196 templates/base.html:188
+#: templates/500.html:196 templates/base.html:189
 msgid "Remember Me"
 msgstr "Запомнить меня"
 
-#: templates/500.html:212 templates/base.html:204
+#: templates/500.html:212 templates/base.html:205
 msgid "Menu"
 msgstr "Меню"
 
-#: templates/500.html:219 templates/base.html:211
+#: templates/500.html:219 templates/base.html:212
 msgid "Recent Activity"
 msgstr "Последняя активность"
 
-#: templates/500.html:220 templates/base.html:212
+#: templates/500.html:220 templates/base.html:213
 #: templates/user_messages/inbox.html:15
 msgid "Inbox"
 msgstr "Входящие"
 
-#: templates/500.html:239 templates/base.html:231
+#: templates/500.html:239 templates/base.html:232
 msgid "Help"
 msgstr "Справка"
 
-#: templates/500.html:245 templates/base.html:237
+#: templates/500.html:245 templates/base.html:238
 #: templates/account/logout.html:6 templates/account/logout.html.py:12
 #: templates/account/logout.html:17
 msgid "Log out"
 msgstr "Выйти из системы"
 
-#: templates/500.html:280 templates/base.html:274
+#: templates/500.html:280 templates/base.html:275
 msgid "Type your search here ..."
 msgstr "Введите здесь строку поиска ..."
 
@@ -3854,11 +3877,11 @@ msgid "Share This"
 msgstr ""
 
 #: templates/account/admin_approval_sent.html:6
-#: templates/account/admin_approval_sent.html:9
+#: templates/account/admin_approval_sent.html:11
 msgid "Account Pending Approval"
 msgstr "Учётная запись ожидает одобрения"
 
-#: templates/account/admin_approval_sent.html:11
+#: templates/account/admin_approval_sent.html:14
 #, python-format
 msgid ""
 "We have sent the administrators a notice to approve your account associated "
@@ -3870,11 +3893,11 @@ msgstr ""
 "получите подтверждающее уведомление."
 
 #: templates/account/email_confirmation_sent.html:6
-#: templates/account/email_confirmation_sent.html:9
+#: templates/account/email_confirmation_sent.html:11
 msgid "Confirm your email address"
 msgstr "Подтвердите адрес Вашей электронной почты"
 
-#: templates/account/email_confirmation_sent.html:11
+#: templates/account/email_confirmation_sent.html:14
 #, python-format
 msgid ""
 "We have sent you an email to <b>%(email)s</b> for verification. Follow the "
@@ -3902,6 +3925,22 @@ msgstr "Забыли свой пароль?"
 #: templates/account/logout.html:15
 msgid "Are you sure you want to log out?"
 msgstr "Вы уверены, что хотите выйти?"
+
+#: templates/account/password_change.html:8
+msgid "Password change"
+msgstr ""
+
+#: templates/account/password_change.html:14
+msgid "Password Change"
+msgstr ""
+
+#: templates/account/password_change.html:18
+msgid "Change your password here"
+msgstr ""
+
+#: templates/account/password_change.html:24
+msgid "Change my password"
+msgstr ""
 
 #: templates/account/password_reset.html:8
 msgid "Password reset"
@@ -3938,12 +3977,12 @@ msgstr ""
 "<a href=\"mailto:%(THEME_ACCOUNT_CONTACT_EMAIL)s\">"
 "%(THEME_ACCOUNT_CONTACT_EMAIL)s</a>."
 
-#: templates/account/signup.html:7 templates/account/signup.html.py:14
-#: templates/account/signup.html:22
+#: templates/account/signup.html:7 templates/account/signup.html.py:11
+#: templates/account/signup.html:17 templates/account/signup.html.py:25
 msgid "Sign up"
 msgstr "Подписаться"
 
-#: templates/account/signup.html:27
+#: templates/account/signup.html:30
 msgid "Sorry, registrations are not open at this time."
 msgstr "К сожалению, регистрация сейчас закрыта."
 
@@ -4442,11 +4481,11 @@ msgstr "гггг-мм-дд"
 msgid "Date ends before:"
 msgstr "Дата заканчивается до:"
 
-#: templates/search/_search_content.html:6
+#: templates/search/_search_content.html:5
 msgid "Your selections"
 msgstr "Ваш выбор"
 
-#: templates/search/_search_content.html:7
+#: templates/search/_search_content.html:6
 msgid "Clear all filters"
 msgstr "Очистить все фильтры"
 
@@ -4514,6 +4553,24 @@ msgstr "Вернуться в ящик входящих сообщений"
 msgid "Send Reply"
 msgstr "Послать ответ"
 
+#~ msgid ""
+#~ "\n"
+#~ "          Are you sure you want to remove %(document_title)s?\n"
+#~ "        "
+#~ msgstr ""
+#~ "\n"
+#~ "          Are you sure you want to remove %(document_title)s?\n"
+#~ "        "
+
+#~ msgid ""
+#~ "\n"
+#~ "        Are you sure you want to remove %(map_title)s?\n"
+#~ "    "
+#~ msgstr ""
+#~ "\n"
+#~ "        Are you sure you want to remove %(map_title)s?\n"
+#~ "    "
+
 #~ msgid "email"
 #~ msgstr "email"
 
@@ -4535,9 +4592,6 @@ msgstr "Послать ответ"
 #~ msgid "Replace this Document"
 #~ msgstr "Replace this Document"
 
-#~ msgid "Remove this Document"
-#~ msgstr "Remove this Document"
-
 #~ msgid "Edit Styles"
 #~ msgstr "Edit Styles"
 
@@ -4552,9 +4606,6 @@ msgstr "Послать ответ"
 
 #~ msgid "Edit Map Metadata"
 #~ msgstr "Edit Map Metadata"
-
-#~ msgid "Remove this Map"
-#~ msgstr "Remove this Map"
 
 #~ msgid "Profile Menu"
 #~ msgstr "Profile Menu"

@@ -8,16 +8,16 @@
     <title>{% block title %}{{ SITE_NAME }}{% endblock %}</title>
     {% block head %}
       {% if DEBUG_STATIC %}
-      <link href="{{ STATIC_URL }}lib/css/jquery.dataTables.css" rel="stylesheet" />
-      <link href="{{ STATIC_URL }}lib/css/select2.css" rel="stylesheet"/>
-      <link href="{{ STATIC_URL }}lib/css/bootstrap.min.css" rel="stylesheet"/>
-      <link href="{{ STATIC_URL }}lib/css/jquery-ui.css" rel="stylesheet"/>
-      <link href="{{ STATIC_URL }}lib/css/bootstrap-datetimepicker.css" rel="stylesheet"/>
+      <link href="{{ STATIC_URL }}lib/css/jquery.dataTables.css?v={{ VERSION }}" rel="stylesheet" />
+      <link href="{{ STATIC_URL }}lib/css/select2.css?v={{ VERSION }}" rel="stylesheet"/>
+      <link href="{{ STATIC_URL }}lib/css/bootstrap.min.css?v={{ VERSION }}" rel="stylesheet"/>
+      <link href="{{ STATIC_URL }}lib/css/jquery-ui.css?v={{ VERSION }}" rel="stylesheet"/>
+      <link href="{{ STATIC_URL }}lib/css/bootstrap-datetimepicker.css?v={{ VERSION }}" rel="stylesheet"/>
       {% else %}
-      <link href="{{ STATIC_URL }}lib/css/assets.min.css" rel="stylesheet"/>
+      <link href="{{ STATIC_URL }}lib/css/assets.min.css?v={{ VERSION }}" rel="stylesheet"/>
       {% endif %}
-      <link href="{{ STATIC_URL }}geonode/css/ext-compatibility.css" rel="stylesheet" />
-      <link href="{{ STATIC_URL }}geonode/css/base.css" rel="stylesheet" />
+      <link href="{{ STATIC_URL }}geonode/css/ext-compatibility.css?v={{ VERSION }}" rel="stylesheet" />
+      <link href="{{ STATIC_URL }}geonode/css/base.css?v={{ VERSION }}" rel="stylesheet" />
       <style type="text/css">[ng\:cloak],[ng-cloak],[data-ng-cloak],[x-ng-cloak],.ng-cloak,.x-ng-cloak,.ng-hide:not(.ng-hide-animate){display:none !important;}</style>
       {% block extra_head %}
       {% endblock %}
@@ -245,24 +245,24 @@
     <!-- End of Modal -->
     
     {% if DEBUG_STATIC %}
-    <script src="{{ STATIC_URL }}lib/js/jquery.min.js"></script>
-    <script src="{{ STATIC_URL }}lib/js/jquery.dataTables.js"></script>
-    <script src="{{ STATIC_URL }}lib/js/jquery.timeago.js"></script>
-    <script src="{{ STATIC_URL }}lib/js/jquery.ajaxprogress.js"></script>
-    <script src="{{ STATIC_URL }}lib/js/jquery.ajaxQueue.js"></script>
-    <script src="{{ STATIC_URL }}lib/js/jquery-ui.custom.js"></script>
-    <script src="{{ STATIC_URL }}lib/js/jquery.raty.js"></script>
-    <script src="{{ STATIC_URL }}lib/js/bootstrap.min.js"></script>
-    <script src="{{ STATIC_URL }}lib/js/moment-with-locales.min.js"></script>
-    <script src="{{ STATIC_URL }}lib/js/bootstrap-datetimepicker.min.js"></script>
-    <script src="{{ STATIC_URL }}lib/js/json2.js"></script>
-    <script src="{{ STATIC_URL }}lib/js/select2.js"></script>
-    <script src="{{ STATIC_URL }}lib/js/waypoints.js"></script>
+    <script src="{{ STATIC_URL }}lib/js/jquery.min.js?v={{ VERSION }}"></script>
+    <script src="{{ STATIC_URL }}lib/js/jquery.dataTables.js?v={{ VERSION }}"></script>
+    <script src="{{ STATIC_URL }}lib/js/jquery.timeago.js?v={{ VERSION }}"></script>
+    <script src="{{ STATIC_URL }}lib/js/jquery.ajaxprogress.js?v={{ VERSION }}"></script>
+    <script src="{{ STATIC_URL }}lib/js/jquery.ajaxQueue.js?v={{ VERSION }}"></script>
+    <script src="{{ STATIC_URL }}lib/js/jquery-ui.custom.js?v={{ VERSION }}"></script>
+    <script src="{{ STATIC_URL }}lib/js/jquery.raty.js?v={{ VERSION }}"></script>
+    <script src="{{ STATIC_URL }}lib/js/bootstrap.min.js?v={{ VERSION }}"></script>
+    <script src="{{ STATIC_URL }}lib/js/moment-with-locales.min.js?v={{ VERSION }}"></script>
+    <script src="{{ STATIC_URL }}lib/js/bootstrap-datetimepicker.min.js?v={{ VERSION }}"></script>
+    <script src="{{ STATIC_URL }}lib/js/json2.js?v={{ VERSION }}"></script>
+    <script src="{{ STATIC_URL }}lib/js/select2.js?v={{ VERSION }}"></script>
+    <script src="{{ STATIC_URL }}lib/js/waypoints.js?v={{ VERSION }}"></script>
     {% else %}
-    <script src="{{ STATIC_URL }}lib/js/assets.min.js"></script>
+    <script src="{{ STATIC_URL }}lib/js/assets.min.js?v={{ VERSION }}"></script>
     {% endif %}
-    <script src="{{ STATIC_URL }}geonode/js/utils/utils.js"></script>
-    <script src="{{ STATIC_URL }}geonode/js/base/base.js"></script>
+    <script src="{{ STATIC_URL }}geonode/js/utils/utils.js?v={{ VERSION }}"></script>
+    <script src="{{ STATIC_URL }}geonode/js/base/base.js?v={{ VERSION }}"></script>
     {% include 'autocomplete_light/static.html' %}
     <script type="text/javascript" src="{% url 'django.views.i18n.javascript_catalog' %}"></script>
     {% block extra_script %}{% endblock extra_script %}
@@ -273,11 +273,12 @@
             hideAfter: 200,
             minimumCharacters: 1,
             placeholder: '{% trans 'Type your search here ...' %}',
-            appendAutocomplete: $('#search_input')
+            appendAutocomplete: $('#search_input'),
+            autoHilightFirst: false
         });
         $('#search_input').bind('selectChoice', function(e, choice, autocomplete) {
             if(choice[0].children[0] == undefined) {
-                $('#search_input').val(choice[0].innerHTML);
+                $('#search_input').val($(choice[0]).text());
                 $('#search').submit();
             }
         });
