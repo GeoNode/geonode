@@ -44,7 +44,7 @@
     </tr>
     {% for ftp_req in ftp_request_list %}
     <tr id="{{ ftp_req.name }}" name="{{ ftp_req.name }}" style="text-align: center;">
-        <td>{{ ftp_req.name }}</td>
+        <td><a href="{% url 'cephgeo.views.ftp_request_details' ftp_req.name%}" >{{ ftp_req.name }}</td>
         <td>{{ ftp_req.date_time }}</td>
         <td>{{ ftp_req.status|get_ftp_status_label }}</td>
         <td>{{ ftp_req.num_tiles }}</td>

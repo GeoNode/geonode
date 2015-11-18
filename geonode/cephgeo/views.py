@@ -414,6 +414,24 @@ def ftp_request_list(request, sort=None):
                     "sort_types"    : utils.FTP_SORT_TYPES, 
                     "status_labels"    : FTPStatus.labels, 
                     "sort"          : sort,})
+                    
+@login_required
+def ftp_request_details(request, ftp_req_name=None)
+    if ftp_req_name is None:
+        return HttpResponse(status=404)
+        
+    ftp_request_obj=FTPRequest.objects.get(name=ftp_req_name, user=request.user)
+    ftp_to_objects_rel = FTPRequestToObjectIndex.objects.filter(ftprequest=ftp_request_obj)
+    ceph_objects = []
+    for i in ftp_to_objects_rel:
+        ceph_objects.append(i.cephobject)
+    
+    context_dict = {
+        "req_details": ftp_request_obj,
+        "objects": ceph_objects
+    }
+    
+    return render_to_response("ftp_details.html", context_dict)
 
 @login_required
 def clear_cart(request):
