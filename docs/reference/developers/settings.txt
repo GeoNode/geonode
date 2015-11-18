@@ -128,12 +128,6 @@ Default::
         "name":"naip",
         "group":"background",
         "visibility": False
-      }, {
-        "source": {"ptype": "gxp_bingsource"},
-        "name": "AerialWithLabels",
-        "fixed": True,
-        "visibility": False,
-        "group":"background"
       },{
         "source": {"ptype": "gxp_mapboxsource"},
       }, {
@@ -157,6 +151,8 @@ Default::
     }]
 
 A list of dictionaries that specify the default map layers.
+
+In case a BING_API_KEY is defined in the local_settings.py file, then a BingMaps base layer is added to the default MAP_BASELAYERS as well.
 
 LAYER_PREVIEW_LIBRARY
 ---------------------
