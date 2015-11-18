@@ -1,11 +1,9 @@
-<div id="composerCart" class="pull-right col-md-3">
-    <h4>Cart</h4>
-    <p ng-show="!cart.getCart().items.length">
-        Add resources through the "Select" buttons.
-    </p>
-    <table class="table table-striped">
-        <tr ng-repeat="resource in cart.getCart().items">
-            <td>{{ resource.title }}<button class="btn btn-default btn-xs pull-right" ng-click="cart.removeItem(resource)">X</button></td>
-        </tr>
-    </table>
+<div class="panel panel-default" id="composerCart">
+  <div class="panel-heading">Cart</div>
+  <div class="panel-body">
+    <p ng-show="!cart.getCart().items.length">Add resources through the "Select" buttons.</p>
+  </div>
+  <ul class="list-group">
+    <li class="list-group-item" ng-repeat="resource in cart.getCart().items">{{ resource.title }}<button class="btn btn-default btn-xs pull-right" ng-click="cart.removeItem(resource)"><i class="fa fa-remove fa-lg"></i></button></li>
+  </ul>
 </div>
