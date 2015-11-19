@@ -80,19 +80,19 @@ class ResourceBaseForm(TranslationModelForm):
         }
     date = forms.DateTimeField(
         localize=True,
-        input_formats = ['%Y-%m-%d %I:%M %p', ],
+        input_formats=['%Y-%m-%d %I:%M %p'],
         widget=DateTimePicker(**_date_widget_options)
     )
     temporal_extent_start = forms.DateTimeField(
         required=False,
         localize=True,
-        input_formats = ['%Y-%m-%d %I:%M %p', ],
+        input_formats=['%Y-%m-%d %I:%M %p'],
         widget=DateTimePicker(**_date_widget_options)
     )
     temporal_extent_end = forms.DateTimeField(
         required=False,
         localize=True,
-        input_formats = ['%Y-%m-%d %I:%M %p', ],
+        input_formats=['%Y-%m-%d %I:%M %p'],
         widget=DateTimePicker(**_date_widget_options)
     )
 
