@@ -1,3 +1,24 @@
+geoserver-geonode (2.7.4-2) trusty; urgency=high
+
+  * GeoServer needs to be unzipped in target/geoserver
+  * Added README to create this package
+
+ -- Ariel Nunez <ingenieroariel@gmail.com>  Thu, 19 Nov 2015 11:59:41 -0500
+
+
+geoserver-geonode (2.7.4-1) trusty; urgency=high
+
+  * Fixed packaging problem that affected the build
+
+ -- Ariel Nunez <ingenieroariel@gmail.com>  Thu, 19 Nov 2015 11:59:41 -0500
+
+
+geoserver-geonode (2.7.4) trusty; urgency=medium
+
+  * GeoServer 2.7.4 by Alessio Fabiani
+
+ -- Ariel Nunez <ingenieroariel@gmail.com>  Thu, 19 Nov 2015 11:53:41 -0500
+
 geoserver-geonode (2.4+beta25) precise; urgency=low
 
   * Updates for Geonode 2.0
