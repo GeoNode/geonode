@@ -507,10 +507,10 @@
         });
       });
     
-      $scope.showMap = false;
+      var showMap = false;
       $('#_extent_filter').click(function(evt) {
-     	  $scope.showMap = !$scope.showMap
-        if ($scope.showMap){
+     	  showMap = !showMap
+        if (showMap){
           leafletData.getMap().then(function(map) {
             map.invalidateSize();
           });
