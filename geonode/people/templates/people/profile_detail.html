@@ -30,32 +30,32 @@
 
 <div class="col-xs-9 col-md-7 profile-details">
 
-  {% if user.is_authenticated %}
-  {% if user == profile %}
-    {% for group in profile.group_list_all %}
-    <div ng-if="group.logo != ''" class="col-xs-1 pull-right group-logo">
-      <a href="{{ group.get_absolute_url }}" ><img src="/uploaded/{{ group.logo }}" alt="{{ group.title }}" /></a>
-    </div>
-    <!-- <div class="col-xs-6 col-md-8">
-      <h5>
-        <a href="{{ group.get_absolute_url }}">{{ group.title }}</a>
-        {% if group.email %} <a href="mailto:{{ group.email }}"><i class="fa fa-envelope-o"></i></a>{% endif %}
-      </h5>
-    </div> -->
-    {% endfor %}
-  {% else %}
-    {% for group in profile.group_list_public %}
-    <div ng-if="group.logo != ''" class="col-xs-1 pull-right group-logo">
-      <a href="{{ group.get_absolute_url }}" ><img src="/uploaded/{{ group.logo }}" alt="{{ group.title }}" /></a>
-    </div>
-    <!-- <div class="col-xs-6 col-md-8">
-      <h5>
-        <a href="{{ group.get_absolute_url }}">{{ group.title }}</a>
-        {% if group.email %} <a href="mailto:{{ group.email }}"><i class="fa fa-envelope-o"></i></a>{% endif %}
-      </h5>
-    </div> -->
-    {% endfor %}
-  {% endif %}
+{% if user.is_authenticated %}
+{% if user == profile %}
+  {% for group in profile.group_list_all %}
+  <div ng-if="group.logo != ''" class="col-xs-1 pull-right group-logo">
+    <a href="{{ group.get_absolute_url }}" ><img src="/uploaded/{{ group.logo }}" alt="{{ group.title }}" /></a>
+  </div>
+  <!-- <div class="col-xs-6 col-md-8">
+    <h5>
+      <a href="{{ group.get_absolute_url }}">{{ group.title }}</a>
+      {% if group.email %} <a href="mailto:{{ group.email }}"><i class="fa fa-envelope-o"></i></a>{% endif %}
+    </h5>
+  </div> -->
+  {% endfor %}
+{% else %}
+  {% for group in profile.group_list_public %}
+  <div ng-if="group.logo != ''" class="col-xs-1 pull-right group-logo">
+    <a href="{{ group.get_absolute_url }}" ><img src="/uploaded/{{ group.logo }}" alt="{{ group.title }}" /></a>
+  </div>
+  <!-- <div class="col-xs-6 col-md-8">
+    <h5>
+      <a href="{{ group.get_absolute_url }}">{{ group.title }}</a>
+      {% if group.email %} <a href="mailto:{{ group.email }}"><i class="fa fa-envelope-o"></i></a>{% endif %}
+    </h5>
+  </div> -->
+  {% endfor %}
+{% endif %}
 {% endif %}
 
   <h3>{{ profile.first_name|default:profile.name_long }}</h3>
@@ -113,24 +113,6 @@
       </tr>
     </tbody>
   </table>
-
-  <div class="row">
-    <div class="col-md-12">
-      <h4>{% trans "Resources" %}</h4>
-    </div>
-    <div class="col-md-12">
-      {% include "people/_profile_filters.html" %}
-    </div>
-    <!-- <div class="col-md-12">
-      {% include "search/_sort_filters.html" %}
-    </div> -->
-    <div class="col-md-12">
-      {% include 'base/_resourcebase_snippet.html' %}
-    </div>
-    <div class="col-md-12">
-      {% include 'search/_pagination.html' %}
-    </div>
-  </div>
 </div>
   
 <div class="col-xs-12 col-md-3">
@@ -187,6 +169,22 @@
   {% if_has_tag if_relationship %}
     {% include "relationships/_list_connections.html" %}
   {% endif_has_tag %}
+</div>
+
+<div class="col-md-9" ng-if="results.length > 0">
+  <h4>{% trans "Resources" %}</h4>
+  <div class="col-md-12">
+    {% include "people/_profile_filters.html" %}
+  </div>
+  <!-- <div class="col-md-12">
+    {% include "search/_sort_filters.html" %}
+  </div> -->
+  <div class="col-md-12">
+    {% include 'base/_resourcebase_snippet.html' %}
+  </div>
+  <div class="col-md-12">
+    {% include 'search/_pagination.html' %}
+  </div>
 </div>
 
 {% endblock %}
