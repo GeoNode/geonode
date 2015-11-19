@@ -471,7 +471,6 @@
     * Spatial search
     */
     if ($('.leaflet_map').length > 0) {
-    	console.log($('.leaflet_map').length)
       angular.extend($scope, {
         layers: {
           baselayers: {
