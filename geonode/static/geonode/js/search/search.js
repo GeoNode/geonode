@@ -200,8 +200,7 @@
     $scope.query.limit = $scope.query.limit || CLIENT_RESULTS_LIMIT;
     $scope.query.offset = $scope.query.offset || 0;
     $scope.page = Math.round(($scope.query.offset / $scope.query.limit) + 1);
-
-
+   
     //Get data from apis and make them available to the page
     function query_api(data){
       $http.get(Configs.url, {params: data || {}}).success(function(data){
@@ -490,13 +489,14 @@
         map_center: {
           lat: 5.6,
           lng: 3.9,
-          zoom: 1
+          zoom: 0
         },
         defaults: {
           zoomControl: false
         }
       });
 
+			
       var leafletData = $injector.get('leafletData'),
           map = leafletData.getMap('filter-map');
 
@@ -505,6 +505,16 @@
           $scope.query['extent'] = map.getBounds().toBBoxString();
           query_api($scope.query);
         });
+      });
+    
+      var showMap = false;
+      $('#_extent_filter').click(function(evt) {
+     	  showMap = !showMap
+        if (showMap){
+          leafletData.getMap().then(function(map) {
+            map.invalidateSize();
+          });
+        } 
       });
     }
   });
