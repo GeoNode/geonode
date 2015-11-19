@@ -22,7 +22,7 @@ from django.utils import simplejson as json
 
 
 class Command(BaseCommand):
-    help = ('Rename a layer on a particular map.\n\n'
+    help = ('Change the title of a layer on a particular map.\n\n'
             'Arguments: mapId name title\n'
             'mapId - numeric map ID\n'
             'name - name of the layer (e.g., geonode:layer_name)\n'
