@@ -489,7 +489,7 @@
         map_center: {
           lat: 5.6,
           lng: 3.9,
-          zoom: 1
+          zoom: 0
         },
         defaults: {
           zoomControl: false
