@@ -44,7 +44,7 @@ define(function (require, exports) {
      *  @returns string 
      */
     LayerInfo.safeSelector = function (name) {
-        return name.replace(/\[|\]|\(|\)/g, '_');
+        return name.replace(/\[|\]|\(|\)|./g, '_');
     };
 
     /** Function to return the success template  
@@ -177,7 +177,6 @@ define(function (require, exports) {
         }
 
         form_data.append('charset', $('#charset').val());
-        form_data.append('category', $("#category_form :radio:checked").val());
         return form_data;
     };
 
