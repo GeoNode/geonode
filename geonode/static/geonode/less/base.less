@@ -81,6 +81,7 @@ form {
     padding: 5px;
   }
 }
+
 /* Layout
 ----------------------- */
 #wrap {
@@ -602,6 +603,53 @@ nav.filter {
 }
 #clear-button, #upload-button {
   margin-top: 20px;
+}
+
+/* Upload Documents
+----------------------- */
+#upload_form {
+  input[type="text"] {
+    display: block;
+    margin: 0;
+    width: 480px;
+    appearance: none;
+    box-shadow: none;
+    border-radius: none;
+    transition: box-shadow 0.3s, border 0.3s;
+  }
+  input[type="text"]:focus {
+    border: solid 1px #707070;
+    box-shadow: 0 0 5px 1px #969696;
+    outline: none;
+  }
+  #id_title {
+  }
+  #id_doc_file {
+    padding: 0.5em;
+    width: 480px;
+  }
+  #id_doc_url {
+    display: block;
+    width: 480px;
+  }
+  #s2id_resource {
+    display: block;
+    width: 480px;
+  }
+  .helptext {
+
+  }
+}
+
+@media (max-width: 991px) {
+  #upload_form {
+    input[type="text"] {
+      width: 360px;
+    }
+    #id_doc_file, #id_doc_url, #s2id_resource {
+      width: 360px;
+    }
+  }
 }
 /* Upload Time
 ----------------------- */
