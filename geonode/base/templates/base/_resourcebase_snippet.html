@@ -8,7 +8,7 @@
         </div>
         <div class="col-xs-8 item-details">
           {% endverbatim %}{% if request.user.is_authenticated %}
-          <button class="btn btn-default btn-xs pull-right"  ng-click="cart.toggleItem(item)"><i ng-class="cart.getFaClass(item.id)" class="fa fa-lg"></i></button>
+          <button class="btn btn-default btn-xs pull-right" ng-if="cart" ng-click="cart.toggleItem(item)"><i ng-class="cart.getFaClass(item.id)" class="fa fa-lg"></i></button>
           {% endif %}{% verbatim %}
           <p class="item-meta"><span class="item-category">{{ item.category__gn_description }}</span></p>
           <h4><a href="{{ item.detail_url }}">{{ item.title }}</a></h4>
