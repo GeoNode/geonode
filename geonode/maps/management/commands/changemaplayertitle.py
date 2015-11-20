@@ -37,11 +37,11 @@ class Command(BaseCommand):
             map_id, name, title = args
         else:
             raise CommandError("You must specify three arguments: map_id name title")
-            
+
         maplayer = MapLayer.objects.filter(map_id=map_id, name=name)[0]
 
         layer_params = json.loads(maplayer.layer_params)
-        layer_params['title'] = title;
-        layer_params['capability']['title'] = title;
+        layer_params['title'] = title
+        layer_params['capability']['title'] = title
         maplayer.layer_params = json.dumps(layer_params)
         maplayer.save()
