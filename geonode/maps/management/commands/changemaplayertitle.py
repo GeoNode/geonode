@@ -23,10 +23,12 @@ from django.utils import simplejson as json
 
 class Command(BaseCommand):
     help = ('Change the title of a layer on a particular map.\n\n'
-            'Arguments: mapId name title\n'
-            'mapId - numeric map ID\n'
+            'Arguments:\n'
+            'map_id - numeric map ID\n'
             'name - name of the layer (e.g., geonode:layer_name)\n'
             'title - title of layer as it should appear on the specified map')
+
+    args = 'map_id name title'
 
     def handle(self, *args, **options):
         from geonode.maps.models import MapLayer
@@ -34,7 +36,7 @@ class Command(BaseCommand):
         if len(args) == 3:
             map_id, name, title = args
         else:
-            raise CommandError("You must specify three arguments: mapID name title")
+            raise CommandError("You must specify three arguments: map_id name title")
             
         maplayer = MapLayer.objects.filter(map_id=map_id, name=name)[0]
 
