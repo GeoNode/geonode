@@ -8,8 +8,11 @@
           <a href="{{ profile.profile_detail_url }}" ><img ng-src="{{ profile.avatar_100 }}"/></a>
         </div>
         <div class="col-xs-8 profile-details">
-          <h5><a href="{{ profile.profile_detail_url }}">{{ profile.first_name }} {{ profile.last_name }}</a></h5>
-          <p><small>{{ profile.organization != '' ?  profile.organization : _("No Organization Info") }}</small></p>
+          <h5>
+            <a href="{{ profile.profile_detail_url }}">{{ profile.first_name != '' ? profile.first_name : profile.username }} {{ profile.last_name != '' ? profile.last_name : '' }}
+            </a>
+          </h5>
+          <p><small>{{ profile.organization != '' ?  profile.organization : "No Organization info" }}</small></p>
           <!-- <p>{{ profile.username }}</p> -->
           <!-- <a href="mailto:{{ profile.email }}" ng-if="profile.email != ''"><i class="fa fa-envelope"></i></a> -->
         </div>

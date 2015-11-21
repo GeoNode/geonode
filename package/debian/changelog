@@ -1,3 +1,56 @@
+geonode (2.4.0+thefinal0) trusty; urgency=high
+
+  [ Tom Kralidis ]
+  * [37c3d7] support XML metadata uploads with filenames like xyz.shp.xml (#2351)
+
+  [ Simone Dalmasso ]
+  * [9af583] hide the add to cart icon if there's no cart
+  * [7c1932] the add to cart is now visible despite the user is logged in or not
+
+  [ Paolo Pasquali ]
+  * [13349d] Minor layout fixes in People and Group pages
+
+  [ Simone Dalmasso ]
+  * [388624] don't show the resource div if there are no resources in profile detail
+  * [9ec815] limit title length in cart
+  * [053135] Change cart default text
+  * [fccfd2] updated few screenshots
+
+  [ Paolo Pasquali ]
+  * [de61c5] Documents Upload Page improvements
+
+  [ Simone Dalmasso ]
+  * [8a91d1] test doc build without readme
+
+  [ ilpise ]
+  * [a98a4b] Mobile Design / Extent Search #2171
+  * [9bca62] fixed logs
+  * [921084] changed map initial zoom to 0
+
+  [ Pedro Dias ]
+  * [642f19] Fixed the problem with DateTimeFields not accepting PM datetimes
+
+  [ ilpise ]
+  * [ee9320] Changed $scope to var
+
+  [ Pedro Dias ]
+  * [dc011d] Corrected flake8 violations
+
+  [ Simone Dalmasso ]
+  * [6f9ed4] bump owslib to 0.10
+
+  [ Ariel Nunez ]
+  * [17b343] Added instructions to build geoserver debian package
+
+  [ Tom Kralidis ]
+  * [04ddf1] make CSW GetDomain display facet counts
+
+  [ Ariel Nunez ]
+  * [2716c3] Updated geoserver's debian package building documentation
+  * [09f892] Updated geoserver's debian package building documentation
+
+ -- Ariel Nunez <ingenieroariel@gmail.com>  Thu, 19 Nov 2015 14:48:54 -0500
+
 geonode (2.4.0+rc4) trusty; urgency=high
 
   [ x ]
