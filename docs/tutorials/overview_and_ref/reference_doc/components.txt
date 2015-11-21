@@ -43,7 +43,7 @@ PostgreSQL_ and PostGIS_ are the database components that store and manage spati
 pycsw
 =====
 
-pycsw_ is an OGC CSW server implementation written in Python.  GeoNode uses pycsw to provide an OGC compliant standards-based CSW metadata and catalogue component of spatial data infrastructures, supporting popular geospatial metadata standards such as Dublin Core, ISO 19115, FGDC and DIF.
+pycsw_ is an OGC CSW server implementation written in Python.  GeoNode uses pycsw to provide an OGC compliant standards-based CSW metadata and catalogue component of spatial data infrastructures, supporting popular geospatial metadata standards such as Dublin Core, ISO 19115, FGDC, GM03 and DIF.
 
 .. _pycsw: http://pycsw.org
 
