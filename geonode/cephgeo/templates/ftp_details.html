@@ -32,9 +32,9 @@
   Request Date and Time: {{req_details.date_time}} <br />
   Request Status: {{req_details.status}} <br />
   Request Size: {{req_details.size_in_bytes}} <br />
-  Number of Items in Request: {{num_items}}
+  Number of Items in Request: {{num_items}}   <br />
   </div>
-  <br /><br /><br />
+  <br /><br />
   <table>
        <tr id="cart_table" border="3" style="width:100% ">
         <th style="text-align: center;">{% trans "Name" %}</th>
@@ -42,7 +42,7 @@
         <th style="text-align: center;">{% trans "Data Class" %}</th>
         <th style="text-align: center;">{% trans "Last Modified" %}</th>
       </tr >
-    {% for co in cephobjects %}
+    {% for co in objects %}
     <!--<tr id="{{ ftp_req.name }}" name="{{ ftp_req.name }}" style="text-align: center;">
         <td>{{ ftp_req.name }}</td>
         <td>{{ ftp_req.date_time }}</td>
