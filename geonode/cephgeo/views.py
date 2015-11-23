@@ -428,7 +428,8 @@ def ftp_request_details(request, ftp_req_name=None):
     
     context_dict = {
         "req_details": ftp_request_obj,
-        "objects": ceph_objects
+        "objects": ceph_objects,
+        "num_items": len(ceph_objects)
     }
     
     return render(request, "ftp_details.html", context_dict)
