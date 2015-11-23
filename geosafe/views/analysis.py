@@ -82,3 +82,28 @@ def impact_function_filter(request):
             json.dumps(impact_functions), content_type="application/json")
     except:
         raise HttpResponseServerError
+
+def layer_tiles(request):
+    """Ajax request to get layer's url to show in the map.
+    """
+    if request.method != 'GET':
+        raise HttpBadRequest
+    layer_id = request.GET.get('layer_id')
+    if not layer_id:
+        raise HttpBadRequest
+    try:
+        layer = Layer.objects.get(id=layer_id)
+        context = {
+            'layer_tiles_url': layer.get_tiles_url(),
+            'layer_bbox_x0': float(layer.bbox_x0),
+            'layer_bbox_x1': float(layer.bbox_x1),
+            'layer_bbox_y0': float(layer.bbox_y0),
+            'layer_bbox_y1': float(layer.bbox_y1)
+        }
+        print context
+        return HttpResponse(
+            json.dumps(context), content_type="application/json"
+        )
+    except Exception as e:
+        print e
+        raise HttpResponseServerError
