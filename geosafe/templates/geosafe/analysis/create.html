@@ -8,17 +8,19 @@
 {% block body_outer %}
     <div class="page-header">
         <h2 class="page-title">Create Analysis</h2>
-        <div class="row">
-            <div class="container-fluid pad0x">
-                <div class="col-md-12" id="inner-body">
-                    <div id="map" style="width: 100%; height: 600px; position:relative;">
-                        <div id="form-div" style="position: absolute; width: 30%; z-index: 100; top: 0; right: 0; background-color: transparent">
-                            <form action="" method="post" enctype="multipart/form-data">
-                                {% csrf_token %}
-                                {{ form|as_bootstrap }}
-                                <button type="submit" class="btn btn-primary">Run</button>
-                            </form>
-                        </div>
+    </div>
+
+    <div class="row">
+        <div class="container-fluid pad0x">
+            <div class="col-md-12" id="inner-body">
+                <div id="map" style="width: 100%; height: 600px; position:relative;">
+                    <div id="form-div"
+                         style="position: absolute; width: 30%; z-index: 100; top: 0; right: 0; background-color: transparent">
+                        <form action="" method="post" enctype="multipart/form-data">
+                            {% csrf_token %}
+                            {{ form|as_bootstrap }}
+                            <button type="submit" class="btn btn-primary">Run</button>
+                        </form>
                     </div>
                 </div>
             </div>
@@ -43,6 +45,7 @@
 
             {# listen to change handler #}
             var retrieve_if_list = function (evt) {
+                console.log('call retrieve IF list');
                 var chosen_combination = {
                     'exposure_id': $("#id_exposure_layer").val(),
                     'hazard_id': $("#id_hazard_layer").val()
@@ -55,6 +58,7 @@
                         $("#id_impact_function_id").empty();
                     }
                     else {
+                        console.log('No IF found')
                         $("<option></option>").text("No matching Impact Function").appendTo(select);
                     }
                     for (var i = 0; i < data.length; i++) {

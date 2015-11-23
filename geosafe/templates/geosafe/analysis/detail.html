@@ -3,31 +3,42 @@
 {% block extra_head %}
     <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.css"/>
 {% endblock extra_head %}
-{% block body %}
-    <h1>Analysis Details</h1>
-    <div id="map" style="width: 600px; height: 400px"></div>
-    <div>
-        <p>Exposure Layer: <a
-                href="{% url 'layer_detail' layername=analysis.exposure_layer.typename %}">{{ analysis.exposure_layer }}</a>
-        </p>
-
-        <p>Hazard Layer: <a
-                href="{% url 'layer_detail' layername=analysis.hazard_layer.typename %}">{{ analysis.hazard_layer }}</a>
-        </p>
-
-        <p>Aggregation Layer: <a
-                href="{% url 'layer_detail' layername=analysis.aggregation_layer.typename %}">{{ analysis.aggregation_layer }}</a>
-        </p>
-
-        <p>Impact Function ID: {{ analysis.impact_function_id }}</p>
-
-        <p>Extent: {{ analysis.get_extent_option_display }}</p>
-
-        <p>Impact Layer: <a
-                href="{% url 'layer_detail' layername=analysis.impact_layer.typename %}">{{ analysis.impact_layer }}</a>
-        </p>
+{% block body_outer %}
+    <div class="page-header">
+        <h2 class="page-title">Analysis Details</h2>
     </div>
-{% endblock %}
+    <div class="row">
+        <div class="container-fluid pad0x">
+            <div class="col-md-8" id="inner-body">
+                <div id="map" style="width: 100%; height: 600px; position:relative;">
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div>
+                    <p>Exposure Layer: <a
+                            href="{% url 'layer_detail' layername=analysis.exposure_layer.typename %}">{{ analysis.exposure_layer }}</a>
+                    </p>
+
+                    <p>Hazard Layer: <a
+                            href="{% url 'layer_detail' layername=analysis.hazard_layer.typename %}">{{ analysis.hazard_layer }}</a>
+                    </p>
+
+                    <p>Aggregation Layer: <a
+                            href="{% url 'layer_detail' layername=analysis.aggregation_layer.typename %}">{{ analysis.aggregation_layer }}</a>
+                    </p>
+
+                    <p>Impact Function ID: {{ analysis.impact_function_id }}</p>
+
+                    <p>Extent: {{ analysis.get_extent_option_display }}</p>
+
+                    <p>Impact Layer: <a
+                            href="{% url 'layer_detail' layername=analysis.impact_layer.typename %}">{{ analysis.impact_layer }}</a>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock body_outer %}
 
 {% block extra_script %}
     <script src="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.js"></script>
