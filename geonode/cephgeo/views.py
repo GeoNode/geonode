@@ -422,7 +422,7 @@ def ftp_request_details(request, ftp_req_name=None):
         
     ftp_request_obj=FTPRequest.objects.get(name=ftp_req_name, user=request.user)
     ftp_to_objects_rel = FTPRequestToObjectIndex.objects.filter(ftprequest=ftp_request_obj)
-    ceph_objects = ftp_to_objects_rel.select_related("CephDataObject")
+    ceph_objects = ftp_to_objects_rel.select_related("cephobject")
     #for i in ftp_to_objects_rel:
     #   ceph_object = CephDataObject.objects.get(id=)
     
