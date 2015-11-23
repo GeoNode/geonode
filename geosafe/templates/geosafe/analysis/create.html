@@ -3,15 +3,28 @@
 {% block extra_head %}
     <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.css"/>
 {% endblock extra_head %}
-{% block body %}
-    <h1>Create Analysis</h1>
-    <div id="map" style="width: 600px; height: 400px"></div>
-    <form action="" method="post" enctype="multipart/form-data">
-        {% csrf_token %}
-        {{ form|as_bootstrap }}
-        <button type="submit" class="btn btn-primary">Run</button>
-    </form>
-{% endblock %}
+
+
+{% block body_outer %}
+    <div class="page-header">
+        <h2 class="page-title">Create Analysis</h2>
+        <div class="row">
+            <div class="container-fluid pad0x">
+                <div class="col-md-12" id="inner-body">
+                    <div id="map" style="width: 100%; height: 600px; position:relative;">
+                        <div id="form-div" style="position: absolute; width: 30%; z-index: 100; top: 0; right: 0; background-color: transparent">
+                            <form action="" method="post" enctype="multipart/form-data">
+                                {% csrf_token %}
+                                {{ form|as_bootstrap }}
+                                <button type="submit" class="btn btn-primary">Run</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock body_outer %}
 
 {% block extra_script %}
     <script src="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.js"></script>
