@@ -30,8 +30,7 @@
   Request Name: {{req_details.name}} <br />
   Request Date and Time: {{req_details.date_time}} <br />
   Request Status: {{req_details.status}} <br />
-  Request Size: {{req_details.size_in_bytes}} <br />
-  Number of Items in Request: {{num_items}}   <br />
+  Request Size: {{req_details.size_in_bytes|filesizeformat}} <br />
   <br /><br />
   <table>
        <tr id="cart_table" border="3" style="width:100% ">
@@ -43,7 +42,7 @@
     {% for o in objects %}
     <tr id="{{cephobjects}}" name="{{co.name}}" style="text-align: center;">
         <td>{{o.name}}</td>
-        <td>{{o.size_in_bytes}}</td>
+        <td>{{o.size_in_bytes|filesizeformat}}</td>
         <td>{{o.data_class}}</td>
         <td>{{o.last_modified}}</td>
     </tr>
