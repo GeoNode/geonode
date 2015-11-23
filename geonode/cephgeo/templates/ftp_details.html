@@ -44,18 +44,11 @@
         <th style="text-align: center;">{% trans "Last Modified" %}</th>
       </tr >
     {% for o in objects %}
-    <!--<tr id="{{ ftp_req.name }}" name="{{ ftp_req.name }}" style="text-align: center;">
-        <td>{{ ftp_req.name }}</td>
-        <td>{{ ftp_req.date_time }}</td>
-        <td>{{ ftp_req.status|get_ftp_status_label }}</td>
-        <td>{{ ftp_req.num_tiles }}</td>
-        <td>{{ ftp_req.size_in_bytes | filesizeformat }}</td>
-    </tr>-->
     <tr id="{{cephobjects}}" name="{{co.name}}" style="text-align: center;">
-        <td>{{ co.name }}</td>
-        <td>{{ co.size_in_bytes}}</td>
-        <td>{{ co.data_class}}</td>
-        <td>{{ co.last_modified}}</td>
+        <td>{{o.name}}</td>
+        <td>{{o.size_in_bytes}}</td>
+        <td>{{o.data_class}}</td>
+        <td>{{o.last_modified}}</td>
     </tr>
     {% endfor %}
   </table>
