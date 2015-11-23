@@ -25,7 +25,7 @@ urlpatterns = patterns(
         name='impact-function-filter'
     ),
     url(
-        r'^geosafe/analysis/(?P<pk>\d)$',
+        r'^geosafe/analysis/(?P<pk>\d+)$',
         AnalysisDetailView.as_view(),
         name='analysis-detail'
     ),

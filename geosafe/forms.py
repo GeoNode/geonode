@@ -65,7 +65,6 @@ class AnalysisCreationForm(models.ModelForm):
 
     def save(self, commit=True):
         instance = super(AnalysisCreationForm, self).save(commit=False)
-        LOG.error(instance)
         instance.user = self.user
         instance.save()
         return instance
