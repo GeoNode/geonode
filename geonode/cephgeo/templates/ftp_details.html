@@ -27,15 +27,12 @@
   </ul>  
   </div>-->
   <br />
-  <div class="col-md-6">
   Request Name: {{req_details.name}} <br />
   Request Date and Time: {{req_details.date_time}} <br />
   Request Status: {{req_details.status}} <br />
   Request Size: {{req_details.size_in_bytes}} <br />
   Number of Items in Request: {{num_items}}   <br />
-  </div>
   <br /><br />
-   <div class="col-md-6">
   <table>
        <tr id="cart_table" border="3" style="width:100% ">
         <th style="text-align: center;">{% trans "Name" %}</th>
@@ -52,7 +49,6 @@
     </tr>
     {% endfor %}
   </table>
-  </div>
 {% endblock body %}
  {% block sidebar %}{% endblock sidebar %}
 {% endblock body_outer %}
