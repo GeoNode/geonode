@@ -431,7 +431,7 @@ def ftp_request_details(request, ftp_req_name=None):
         "objects": ceph_objects
     }
     
-    return render_to_response("ftp_details.html", context_dict)
+    return render(request, "ftp_details.html", context_dict)
 
 @login_required
 def clear_cart(request):
