@@ -26,28 +26,27 @@
     {% endfor %}
   </ul>  
   </div>-->
-  <br /><br /><br />
-  Request Name: {{req_details.name}}
-  Request Date and Time: {{req_details.date_time}}
-  Request Status: {{req_details.status}}
-  Request Size: {{req_details.size_in_bytes}}
-  
-    {% for co in cephobjects %}
-    <!--<tr id="{{ ftp_req.name }}" name="{{ ftp_req.name }}" style="text-align: center;">
-        <td>{{ ftp_req.name }}</td>
-        <td>{{ ftp_req.date_time }}</td>
-        <td>{{ ftp_req.status|get_ftp_status_label }}</td>
-        <td>{{ ftp_req.num_tiles }}</td>
-        <td>{{ ftp_req.size_in_bytes | filesizeformat }}</td>
-    </tr>-->
+  <br />
+  Request Name: {{req_details.name}} <br />
+  Request Date and Time: {{req_details.date_time}} <br />
+  Request Status: {{req_details.status}} <br />
+  Request Size: {{req_details.size_in_bytes|filesizeformat}} <br />
+  <br /><br />
+  <table>
+       <tr id="cart_table" border="3" style="width:100% ">
+        <th style="text-align: center;">{% trans "Name" %}</th>
+        <th style="text-align: center;">{% trans "Size" %}</th>
+        <th style="text-align: center;">{% trans "Data Class" %}</th>
+        <th style="text-align: center;">{% trans "Last Modified" %}</th>
+      </tr >
+    {% for o in objects %}
     <tr id="{{cephobjects}}" name="{{co.name}}" style="text-align: center;">
-        <td>{{ co.name }}</td>
-        <td>{{ co.size_in_bytes}}</td>
-        <td>{{ co.data_class}}</td>
-        <td>{{ co.last_modified}}</td>
+        <td>{{o.name}}</td>
+        <td>{{o.size_in_bytes|filesizeformat}}</td>
+        <td>{{o.data_class}}</td>
+        <td>{{o.last_modified}}</td>
     </tr>
     {% endfor %}
-
   </table>
 {% endblock body %}
  {% block sidebar %}{% endblock sidebar %}

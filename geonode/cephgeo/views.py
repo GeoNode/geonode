@@ -421,17 +421,18 @@ def ftp_request_details(request, ftp_req_name=None):
         return HttpResponse(status=404)
         
     ftp_request_obj=FTPRequest.objects.get(name=ftp_req_name, user=request.user)
-    ftp_to_objects_rel = FTPRequestToObjectIndex.objects.filter(ftprequest=ftp_request_obj)
-    ceph_objects = []
+    ftp_to_objects_rel = FTPRequestToObjectIndex.objects.filter(ftprequest=ftp_request_obj).select_related("cephobject")
+    ceph_objects=[]
     for i in ftp_to_objects_rel:
-        ceph_objects.append(i.cephobject)
+       ceph_objects.append(i.cephobject)
     
     context_dict = {
         "req_details": ftp_request_obj,
-        "objects": ceph_objects
+        "objects": ceph_objects,
+        "num_items": len(ceph_objects)
     }
     
-    return render_to_response("ftp_details.html", context_dict)
+    return render(request, "ftp_details.html", context_dict)
 
 @login_required
 def clear_cart(request):
