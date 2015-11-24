@@ -1,3 +1,167 @@
+geonode (2.4.0+thefinal0) trusty; urgency=high
+
+  [ Tom Kralidis ]
+  * [37c3d7] support XML metadata uploads with filenames like xyz.shp.xml (#2351)
+
+  [ Simone Dalmasso ]
+  * [9af583] hide the add to cart icon if there's no cart
+  * [7c1932] the add to cart is now visible despite the user is logged in or not
+
+  [ Paolo Pasquali ]
+  * [13349d] Minor layout fixes in People and Group pages
+
+  [ Simone Dalmasso ]
+  * [388624] don't show the resource div if there are no resources in profile detail
+  * [9ec815] limit title length in cart
+  * [053135] Change cart default text
+  * [fccfd2] updated few screenshots
+
+  [ Paolo Pasquali ]
+  * [de61c5] Documents Upload Page improvements
+
+  [ Simone Dalmasso ]
+  * [8a91d1] test doc build without readme
+
+  [ ilpise ]
+  * [a98a4b] Mobile Design / Extent Search #2171
+  * [9bca62] fixed logs
+  * [921084] changed map initial zoom to 0
+
+  [ Pedro Dias ]
+  * [642f19] Fixed the problem with DateTimeFields not accepting PM datetimes
+
+  [ ilpise ]
+  * [ee9320] Changed $scope to var
+
+  [ Pedro Dias ]
+  * [dc011d] Corrected flake8 violations
+
+  [ Simone Dalmasso ]
+  * [6f9ed4] bump owslib to 0.10
+
+  [ Ariel Nunez ]
+  * [17b343] Added instructions to build geoserver debian package
+
+  [ Tom Kralidis ]
+  * [04ddf1] make CSW GetDomain display facet counts
+
+  [ Ariel Nunez ]
+  * [2716c3] Updated geoserver's debian package building documentation
+  * [09f892] Updated geoserver's debian package building documentation
+
+ -- Ariel Nunez <ingenieroariel@gmail.com>  Thu, 19 Nov 2015 14:48:54 -0500
+
+geonode (2.4.0+rc4) trusty; urgency=high
+
+  [ x ]
+  * UNRELEASED
+
+  [ Ariel Nunez ]
+
+ -- Ariel Nunez <ingenieroariel@gmail.com>  Wed, 18 Nov 2015 15:48:03 -0500
+
+geonode (2.4.0+rc3) trusty; urgency=high
+
+  [ Simone Dalmasso ]
+  * [39f179] initial support for shopping cart
+  * [69fbd5] add bulk permissions in cart
+  * [bfcafa] removed unnecessary css rule
+  * [696234] fix cart empty message
+
+  [ gannebamm ]
+  * [176eb2] added german as language
+
+  [ Simone Dalmasso ]
+  * [5c4005] fix dynamic to correctly use the basefile
+
+  [ julien collaer ]
+  * [07cd09] sycing
+  * [fd80e8] sycing tsf
+
+  [ Simone Dalmasso ]
+  * [0b2ac3] add verbose name plural and set geomanager as default for dynamic
+
+  [ pjdufour ]
+  * [eca65b] Message posted to Slack after layer upload
+
+  [ Gavin Reich ]
+  * [0b75df] get doc_url extension using urlparse
+
+  [ Francesco Bartoli ]
+  * [357bec] Clear all SEVERE and ERROR messages from building docs
+
+  [ Paolo Pasquali ]
+  * [caad6f] Update
+  * [e5775c] Fix People page layout
+
+  [ Simone Dalmasso ]
+  * [29ca8c] Revert category choice in upload, also fixes #2323
+
+  [ Francesco Bartoli ]
+  * [f5f6b8] fix more inconsistencies on docs source files
+
+  [ Simone Dalmasso ]
+  * [e6ceb5] set additional store parameters, fixes #2337. Thanks @afabiani
+
+  [ julien collaer ]
+  * [856e23] sycing
+  * [62d4ba] sycing tsf
+
+  [ pjdufour ]
+  * [92d649] Message posted to Slack after layer upload
+
+  [ Gavin Reich ]
+  * [f14b3e] get doc_url extension using urlparse
+
+  [ Francesco Bartoli ]
+  * [262c52] Clear all SEVERE and ERROR messages from building docs
+  * [ba3ce6] fix more inconsistencies on docs source files
+
+  [ Paolo Pasquali ]
+  * [4a56ac] Fix group and profile layout page
+  * [887a19] Fix logo in group detail page
+
+  [ Daniel Berry ]
+  * [c672bc] 'added additional filetypes for geonode.importer - gdal specific'
+
+  [ Paolo Pasquali ]
+  * [e1da56] Fix keyword style in group page
+
+  [ Jude Mwenda ]
+  * [da22ec] Changes to include spherical projections and better error handling when logging
+
+  [ Tom Kralidis ]
+  * [f604af] add support for data.json output (#1022)
+
+  [ Paolo Pasquali ]
+  * [a466ac] Restore primary button in group list page
+  * [ecdccd] Restore settings and search.js
+
+  [ afabiani ]
+  * [2e3870]  - Proposal Refactoring for GeoNode Documentation
+
+  [ Simone Dalmasso ]
+  * [401882] use sld_url to retrieve the correct sld location, fixes #2048
+  * [1c5f7d] add cart button and add/remove behavior
+  * [54b034] more fixed own the cart templates
+  * [fe3402] add credentials on was statistics generation, fixes #1412
+
+  [ capooti ]
+  * [3be01b] Now bingmaps base layer will be enabled if a BING_API_KEY is defined. Refs #2314
+
+  [ Paolo Pasquali ]
+  * [013990] Fix cart templates
+
+  [ Simone Dalmasso ]
+  * [a1b744] body_href is a property then and bump gsconfig to 1.0.3
+
+  [ capooti ]
+  * [603b4f] Fixes #2301
+
+  [ x ]
+
+ -- x <x@x>  Wed, 18 Nov 2015 15:08:41 -0500
+
 geonode (2.4.0+rc2) trusty; urgency=high
 
   [ Simone Dalmasso ]

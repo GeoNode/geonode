@@ -81,6 +81,7 @@ form {
     padding: 5px;
   }
 }
+
 /* Layout
 ----------------------- */
 #wrap {
@@ -233,7 +234,7 @@ body.groups li#nav_groups a {
     a {
       color: @text-color;
       &:hover {
-        color: @brand-alternate;
+        color: @brand-danger;
         text-decoration: none
       };
     }
@@ -244,7 +245,7 @@ body.groups li#nav_groups a {
       a {
         color: @text-color;
         &:hover {
-          color: @brand-alternate;
+          color: @brand-danger;
           text-decoration: none;
         }
       }
@@ -278,6 +279,73 @@ body.groups li#nav_groups a {
 }
 /* Layers
 ----------------------- */
+.item-container {
+  padding: 1em;
+}
+.profile-avatar {
+  background: white;
+  border: 1px solid @gray-light;
+  padding: 0;
+  h5 a {
+    color: @text-color;
+    display: block;
+    margin-bottom: -0.5em;
+    margin-top: 1em;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    &:hover {
+      color: @brand-danger;
+      text-decoration: none;
+    }
+    i {
+      margin-left: 0.75em;
+      &:hover {
+        color: @brand-danger;
+        text-decoration: none;
+      };
+    }
+  }
+  .list-inline {
+    margin: 0.5em 0;
+  }
+}
+
+.item-thumb {
+  padding-left: 0;
+  padding-right: 0;
+  img {
+    width: 100%;
+  }
+}
+
+.item-details {
+  background: white;
+  color: @text-color;
+  .item-meta {
+    margin-top: 1em;
+    .item-category {
+      font-size: 12px;
+      text-transform: uppercase;
+    }
+  }
+  .btn-sm {
+    margin-right: -17px;
+    margin-top: -1px;
+    padding: 0.5em 1em;
+  }
+  .item-items {
+    border-top: 1px solid @gray-lighter;
+    ul {
+      margin: 0 0 0 -15px;
+      padding: 0.5em;
+      i {
+        margin-right: 0.5em;
+      }
+    }
+  }
+}
+
 .detail-page-actions {
   margin-top: 20px;
   i {
@@ -326,54 +394,80 @@ body.groups li#nav_groups a {
 
 /* People
 ----------------------- */
+.profile-container {
+  padding: 1em;
+}
 .profile-avatar {
+  background: white;
+  border: 1px solid @gray-lighter;
+  padding: 0;
   h5 a {
     color: @text-color;
-    margin-left: -0.5em;
     display: block;
+    margin-bottom: -0.5em;
+    margin-top: 1em;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
     &:hover {
-      color: @brand-alternate;
+      color: @brand-danger;
       text-decoration: none;
     }
     i {
-      color: @gray-lighter;
       margin-left: 0.75em;
       &:hover {
-        color: @brand-alternate;
+        color: @brand-danger;
         text-decoration: none;
       };
     }
   }
-  li a {
+  .profile-items {
+    border-top: 1px solid @gray-lighter;
     color: @gray;
+    i {
+      margin-left: 0;
+      margin-right: 0.125em;
+      a {
+        &:hover {
+        color: @brand-danger;
+        text-decoration: none;
+      };
+    }
+  }
+  .list-inline {
+    margin: 0.5em 0;
+  }
+}
+  li a { 
+    color: @gray;
+    margin-right: 0.5em;
     &:hover {
-      color: @brand-alternate;
+      color: @brand-danger;
       text-decoration: none;
     };
   }
   img {
-    border-top-left-radius: 4px;
-    border-top-right-radius: 4px;
+    margin: 0;
+    width: 100%;
+  }
+}
+
+.profile-image {
+  padding-left: 0;
+  padding-right: 0;
+  img {
     width: 100%;
   }
 }
 .profile-details {
-  border-bottom-left-radius: 4px;
-  border-bottom-right-radius: 4px;
-  border-bottom: 1px solid @gray-lighter;
-  border-left: 1px solid @gray-lighter;
-  border-right: 1px solid @gray-lighter;
-  color: @gray-lighter;
-  i {
-    margin-left: 0;
-    margin-right: 0.125em;
-  }
-  .list-inline {
-    margin-bottom: 0.5em;
-    margin-top: -0.25em;
+  background: white;
+  color: @text-color;
+  .group-logo {
+    margin: 0.5em;
+    padding: 0;
+    img {
+      width: 60px;
+    }
   }
 }
 nav.filter {
@@ -430,16 +524,66 @@ nav.filter {
 }
 /* Groups
 ----------------------- */
-.group-logo {
-  img {
+.group-container {
+  padding: 1em;
+}
+.group-avatar {
+  border: 1px solid @gray-lighter;
+  padding: 0;
+  h5 a {
+    color: @text-color;
+    display: block;
+    margin-bottom: -0.5em;
+    margin-top: 1em;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    &:hover {
+      color: @brand-danger;
+      text-decoration: none;
+    }
+    i {
+      margin-left: 0.75em;
+      &:hover {
+        color: @brand-danger;
+        text-decoration: none;
+      };
+    }
+  }
+}
+  .group-items {
+    border-top: 1px solid @gray-lighter;
+    color: @gray;
+    i {
+      margin-left: 0;
+      margin-right: 0.125em;
+      a {
+        &:hover {
+        color: @brand-danger;
+        text-decoration: none;
+      };
+    }
+  }
+  .list-inline {
+    margin: 0.5em 0;
+  }
+}
+.group-image {
+  height: 120px;
+  overflow: hidden;
+}
+.group-container {
+  .group-logo {
+    padding: 1em 0;
     width: 100%;
   }
 }
 .group-details {
-  i {
-    margin-right: 0.5em;
+  .group-logo img {
+    width: 100%;
   }
 }
+
 /* Upload Layers
 ----------------------- */
 
@@ -459,6 +603,53 @@ nav.filter {
 }
 #clear-button, #upload-button {
   margin-top: 20px;
+}
+
+/* Upload Documents
+----------------------- */
+#upload_form {
+  input[type="text"] {
+    display: block;
+    margin: 0;
+    width: 480px;
+    appearance: none;
+    box-shadow: none;
+    border-radius: none;
+    transition: box-shadow 0.3s, border 0.3s;
+  }
+  input[type="text"]:focus {
+    border: solid 1px #707070;
+    box-shadow: 0 0 5px 1px #969696;
+    outline: none;
+  }
+  #id_title {
+  }
+  #id_doc_file {
+    padding: 0.5em;
+    width: 480px;
+  }
+  #id_doc_url {
+    display: block;
+    width: 480px;
+  }
+  #s2id_resource {
+    display: block;
+    width: 480px;
+  }
+  .helptext {
+
+  }
+}
+
+@media (max-width: 991px) {
+  #upload_form {
+    input[type="text"] {
+      width: 360px;
+    }
+    #id_doc_file, #id_doc_url, #s2id_resource {
+      width: 360px;
+    }
+  }
 }
 /* Upload Time
 ----------------------- */
@@ -536,6 +727,16 @@ footer {
   width: 100%;
 }
 
+#composerCart {
+  .list-group i {
+    margin-right: 0;
+  }
+}
+.selections {
+    margin-top: 1em;
+  }
+
+
 .comment {
   padding-bottom: 11px;
 }
@@ -549,6 +750,7 @@ footer {
   font-weight: bold;
   color:#777
 }
+
 
 /* Activity
    ----------------------------- */
@@ -648,12 +850,6 @@ footer {
 
 #permission_form .select2-container {
   width: 250px;
-}
-
-.resource_selected{
-  -moz-box-shadow: 0 0 5px @brand-alternate;
-  -webkit-box-shadow: 0 0 5px @brand-alternate;
-  box-shadow: 0px 0px 5px @brand-alternate;
 }
 
 /* Sign In Modal

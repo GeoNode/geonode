@@ -126,12 +126,12 @@ setup(name='GeoNode',
         "geonode-arcrest==10.2",
         "geonode-notification==1.1.1",
         "geonode-dialogos==0.4",
-        "gsconfig==1.0.0",
+        "gsconfig==1.0.3",
         "gsimporter==1.0.0",
         "gisdata==0.5.4",
 
         # geopython dependencies
-        "OWSLib==0.8.13",
+        "OWSLib==0.10.0",
         "pycsw==1.10.3",
 
         # haystack/elasticsearch, uncomment to use

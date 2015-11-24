@@ -635,13 +635,6 @@ MAP_BASELAYERS = [{
     "group": "background",
     "visibility": False
 }, 
-# {    
-#     "source": {"ptype": "gxp_bingsource"},
-#     "name": "AerialWithLabels",
-#     "fixed": True,
-#     "visibility": False,
-#     "group": "background"
-# }, 
 {
     "source": {"ptype": "gxp_mapboxsource"},
 }]
@@ -892,6 +885,20 @@ try:
 except ImportError:
     pass
 
+try:
+    BING_LAYER = {    
+        "source": {
+            "ptype": "gxp_bingsource",
+            "apiKey": BING_API_KEY
+        },
+        "name": "AerialWithLabels",
+        "fixed": True,
+        "visibility": False,
+        "group": "background"
+    }
+    MAP_BASELAYERS.append(BING_LAYER)
+except NameError:
+    print "Not enabling BingMaps base layer as a BING_API_KEY is not defined in local_settings.py file."
 
 # Require users to authenticate before using Geonode
 if LOCKDOWN_GEONODE:

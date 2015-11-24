@@ -1,0 +1,335 @@
+.. _running_ansible:
+
+=======================
+Running Ansible scripts
+=======================
+
+`Ansible <http://www.ansible.com/>`_ is a free software platform used for configuring
+and managing computers. It is written in `Python <https://www.python.org/>`_ and
+allows users to manage `nodes` (computers) over SSH.
+
+Configuration files are written in `YAML <https://en.wikipedia.org/wiki/YAML>`_ ,
+a simple, human-readable, data serialization format.
+
+Installing Ansible
+==================
+
+Before you install `Ansible` make sure you have Python 2.6 or Python 2.7 on the
+controlling machine, you will also need an SSH client. Most Linux distributions
+come with an SSH client preinstalled.
+
+If you encounter any problems during the installation, refer to the
+`official documentation <http://docs.ansible.com/ansible/intro_installation.html>`_
+
+Windows
+-------
+
+Windows is not supported as a controlling machine.
+
+Ubuntu
+------
+
+Fist configure Ansible `PPA <https://en.wikipedia.org/wiki/Personal_Package_Archive>`_::
+
+    sudo apt-get install software-properties-common
+    sudo apt-add-repository ppa:ansible/ansible
+
+Then update your available software index and install ansible::
+
+    sudo apt-get update
+    sudo apt-get install ansible
+
+Running Ansible
+===============
+
+To test your ansible installation, run the following command
+
+.. note::
+
+    you need a running SSH server on your machine for this to work::
+
+        ansible localhost -m ping
+
+You should get the following output::
+
+        localhost | success >> {
+        "changed": false,
+        "ping": "pong"
+    }
+
+To test your ansible installation, run the following command (you need a running
+SSH server on your machine for this to work)::
+
+    ansible localhost -m ping
+
+You should get the following output::
+
+        localhost | success >> {
+        "changed": false,
+        "ping": "pong"
+    }
+
+Ansible Hosts file
+==================
+
+Ansible keeps information about the managed nodes in the `inventory` or `hosts file`.
+Edit or create the hosts file::
+
+    vim /etc/ansible/hosts
+
+This file contains a list of nodes for Ansible to manage. Nodes can be referred
+either with IP or hostname. The syntax is the following:::
+
+    192.168.1.50
+    aserver.example.org
+    bserver.example.org
+
+You can also arrange hosts in groups::
+
+    mail.example.com
+
+    [webservers]
+    foo.example.com
+    bar.example.com
+
+    [dbservers]
+    one.example.com
+    two.example.com
+    three.example.com
+
+Public Key access
+=================
+
+To avoid having to type users password to connect to the nodes over and over, using
+SSH keys is recommended.
+
+To setup Public Key SSH access to the nodes. First create a key pair:::
+
+    ssh-keygen
+
+And follow the instructions on the screen. A new key pair will be generated and
+placed inside the `.ssh` folder in your user's home directory.
+
+All you need to do now is copy the public key (id_rsa.pub) in the `authorized_keys`
+file on the node you want to manage, inside the user's home directory. For example
+if you want to be able to connect to training.geonode1.com as user `geo` edit the
+/home/geo/.ssh/authorized_keys file on the remote machine and add the content
+of your public key inside the file.
+
+For more information on how to setup SSH keys in Ubuntu
+refere to `this <https://help.ubuntu.com/community/SSH/OpenSSH/Keys>`_ document
+
+Connect to managed nodes
+========================
+
+Now that SSH access to the managed nodes is in place for all the nodes inside Ansible
+`inventory` (hosts file) we can run our first command::
+
+    ansible all -m ping -u geo
+
+.. note::
+
+        change `geo` with the username to use for SSH login
+
+The output will be similar to this:::
+
+    ansible all -m ping -u geo
+    84.33.2.70 | success >> {
+        "changed": false,
+        "ping": "pong"
+    }
+
+We asked ansible to connect to all the machine in our `Inventory` as user `geo`
+and run the `module` (modules are Ansible's units of work, more on that later..)
+ping.
+As you can see by the output, Ansible successfully connected to the remote machine
+and executed the module `ping`
+
+Ad hoc commands
+===============
+
+An ad-hoc command is something that you might type in to do something really quick,
+but don’t want to save for later.
+
+Later you are going to write so called `Playbooks` with the commands to run on
+the controlled node but for learning purposes ad-hoc commands can be used to do
+quick things.
+
+One example of ad-hoc command is the ping command we just run. We typed in in the
+command line and run it interactively.
+
+Another example:::
+
+    ansible all -m shell -a "free" -u geo
+    84.33.2.70 | success | rc=0 >>
+                 total       used       free     shared    buffers     cached
+    Mem:       4049236    3915596     133640          0     650560    2487416
+    -/+ buffers/cache:     777620    3271616
+    Swap:      4194300     730268    3464032
+
+In this example we ran the `free` command on the remote hosts to get memory usage
+stats. Note that we used the `shell` module (-m flag) with the command as the argument
+(-a flag)
+
+File Transfer
+=============
+
+Another use case for the Ansible command is transfer files over SCP::
+
+    ansible 84.33.2.70 -m copy -a "src=/home/geo/test dest=~/" -u geo
+    84.33.2.70 | success >> {
+        "changed": true,
+        "dest": "/home/geo/test",
+        "gid": 1000,
+        "group": "geo",
+        "md5sum": "d41d8cd98f00b204e9800998ecf8427e",
+        "mode": "0664",
+        "owner": "geo",
+        "size": 0,
+        "src": "/home/geo/.ansible/tmp/ansible-tmp-1444051174.15-189094870931130/source",
+        "state": "file",
+        "uid": 1000
+
+We used the `ansible` command to transfer the local file /home/geo/test to the remote
+node in user's home directory ('~/')
+
+Managing Packages
+=================
+
+Another use case is installing or upgrading packages on the remote nodes. You can use
+the `apt` module to achive this on Debian based systems or the `yum` module on
+Red Hat based systems::
+
+    ansible 84.33.2.70 -m apt -a "name=apache2 state=present"
+
+For example the previous command will install apache web server on the remote system
+(if not present).
+
+You can use the same module to make sure a package is at the latest version::
+
+    ansible 84.33.2.70 -m apt -a "name=apache2 state=latest"
+
+Managing Services
+=================
+
+Use the `service` module to ensure a given service is started on all webservers:::
+
+    ansible webservers -m service -a "name=httpd state=started"
+
+(where `webserver` is a group defined in Ansible Inventory)
+
+Restart the service:::
+
+    ansible webservers -m service -a "name=httpd state=restarted"
+
+Or stop it::
+
+    ansible webservers -m service -a "name=httpd state=stopped"
+
+For more information on ad-hoc command refer to the `official documentation <https://docs.ansible.com/ansible/intro_adhoc.html>`_
+
+These were just a few of the modules avilable for ansible. See the
+`complete list <http://docs.ansible.com/ansible/list_of_all_modules.html>`_ available
+at Ansible web site
+
+Ansible Playbooks
+=================
+
+Playbooks are Ansible’s configuration, deployment, and orchestration language.
+
+Playbooks are a completely different way to use ansible than in adhoc task execution
+mode, and are particularly powerful.
+
+Playbooks can declare configurations, but they can also orchestrate steps of any
+manual ordered process.
+
+While you might run the main /usr/bin/ansible program for ad-hoc tasks, playbooks
+are more likely to be kept in source control and used to push out your configuration
+or assure the configurations of your remote systems are in spec.
+
+Playbooks languuage example
+---------------------------
+
+Playbooks are expressed in `YAML <https://en.wikipedia.org/wiki/YAML>`_ format
+
+Here is an example of a Playbook:::
+
+    ---
+    - hosts: webservers
+      vars:
+        http_port: 80
+        max_clients: 200
+      remote_user: root
+      tasks:
+      - name: ensure apache is at the latest version
+        yum: pkg=httpd state=latest
+      - name: write the apache config file
+        template: src=/srv/httpd.j2 dest=/etc/httpd.conf
+        notify:
+        - restart apache
+      - name: ensure apache is running (and enable it at boot)
+        service: name=httpd state=started enabled=yes
+      handlers:
+        - name: restart apache
+          service: name=httpd state=restarted
+
+Every Playbook begins with three dashes `---` at the very top of the file to indicate
+that this is a YAML file.
+
+This example Playbook contains only one Play. the play is composed of three parts
+
+    - hosts
+    - tasks
+    - handlers
+
+The hosts part specifies to wich hosts in the Inventory this playbook applies and
+how to connect to them
+
+The tasks part describes the desired state or actions to perform on the hosts
+
+The handlers part describes the handlers for this playbook (more on handlers later)
+
+In the example above there are three tasks. Each task has a name, a module and zero
+or more arguments for the module.
+
+The first task specifies that we want apache at the latest version installed on
+the system. This is accomplished by the `yum` module
+
+The second task specifies a configuration file for apache using a `template`.
+Template files for are written in `Jinja2 template language <http://jinja.pocoo.org/>`_
+
+The third task make sure apache web server is running using the `service` module.
+
+When you run a Playbook, using the ansible-playbook command. Ansible will connect to
+the hosts specified in the hosts section and run the tasks one by one, in order.
+
+One or more tasks may have a `notify` section (just like the second task in our example).
+The `notify` actions are triggered at the end of each block of tasks in a playbook,
+and will only be triggered once even if notified by multiple different tasks.
+When triggered, the corresponding handler will be executed.
+In the example above the handler will restart Apache because we changed a config
+file
+
+Run a Playbook
+--------------
+
+Now that we have created a sample playbook save it on the file system and execute it:::
+
+    ansible-playbook test.yml -u geo
+
+    PLAY [84.33.2.70] *************************************************************
+
+    GATHERING FACTS ***************************************************************
+    ok: [84.33.2.70]
+
+    TASK: [test] ******************************************************************
+    ok: [84.33.2.70]
+
+    PLAY RECAP ********************************************************************
+    84.33.2.70                 : ok=2    changed=0    unreachable=0    failed=0
+
+This concludes our brief tutorial on Ansible. For a more thorough introduction
+refer the `official documentation <https://docs.ansible.com/>`_
+
+Alse, take a look at the `Ansible examples repository <https://github.com/ansible/ansible-examples>`_
+for a set of Playbooks showing common techniques.

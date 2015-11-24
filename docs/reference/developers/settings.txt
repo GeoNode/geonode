@@ -128,12 +128,6 @@ Default::
         "name":"naip",
         "group":"background",
         "visibility": False
-      }, {
-        "source": {"ptype": "gxp_bingsource"},
-        "name": "AerialWithLabels",
-        "fixed": True,
-        "visibility": False,
-        "group":"background"
       },{
         "source": {"ptype": "gxp_mapboxsource"},
       }, {
@@ -157,6 +151,8 @@ Default::
     }]
 
 A list of dictionaries that specify the default map layers.
+
+In case a BING_API_KEY is defined in the local_settings.py file, then a BingMaps base layer is added to the default MAP_BASELAYERS as well.
 
 LAYER_PREVIEW_LIBRARY
 ---------------------
@@ -420,7 +416,7 @@ Default::
 A list of dictionaries that is used to generate the social links displayed in the Share tab.  For each origin, the name and and url format parameters are replaced by the actual values of the ResourceBase object (layer, map, document).
 
 CKAN_ORIGINS
---------------
+------------
 Default::
 
     CKAN_ORIGINS = [{
@@ -432,25 +428,25 @@ Default::
 A list of dictionaries that is used to generate the links to CKAN instances displayed in the Share tab.  For each origin, the name and and abstract format parameters are replaced by the actual values of the ResourceBase object (layer, map, document).  This is not enabled by default.  To enabled, uncomment the following line: SOCIAL_ORIGINS.extend(CKAN_ORIGINS).
 
 TWITTER_CARD
---------------
+------------
 Default:: ``True``
 
 A boolean that specifies whether Twitter cards are enabled.
 
 TWITTER_SITE
---------------
+------------
 Default:: ``'@GeoNode'``
 
 A string that specifies the site to for the twitter:site meta tag for Twitter Cards.
 
 TWITTER_HASHTAGS
---------------
+----------------
 Default:: ``['geonode']``
 
 A list that specifies the hastags to use when sharing a resource when clicking on a social link.
 
 OPENGRAPH_ENABLED
---------------
+-----------------
 Default:: ``True``
 
 A boolean that specifies whether Open Graph is enabled.  Open Graph is used by Facebook and Slack.
@@ -480,7 +476,7 @@ Default::
 A dictionary of Uploader settings and and their values.
 
 BACKEND
-.......
+-------
 Default: ``'geonode.rest'``
 
 The uploader backend to use.  The backend choices are:
@@ -500,14 +496,14 @@ Default::
         'GEOGIG_ENABLED': False,
     }
 
-TIME_ENABED
-...........
+TIME_ENABLED
+------------
 Default: ``False``
 
 A boolean that specifies whether the upload should allow the user to enable time support when uploading data.
 
-GEOGIG_ENABED
-.............
+GEOGIG_ENABLED
+--------------
 Default: ``False``
 
 A boolean that specifies whether the uploader should allow the user to upload data into a GeoGig datastore.
@@ -542,7 +538,7 @@ Default::
     ]
     
 DOWNLOAD_FORMATS_VECTOR
--------------------------
+-----------------------
 
 Specifies which formats for vector data are available for users to download. 
 
@@ -554,7 +550,7 @@ Default::
     ]
     
 DOWNLOAD_FORMATS_RASTER
--------------------------
+-----------------------
 
 Specifies which formats for raster data are available for users to download. 
 
@@ -565,28 +561,28 @@ Default::
     ]
 
 Contrib settings
-=================
+================
 
-EXIF_ENABED
-...........
+EXIF_ENABLED
+------------
 Default: ``False``
 
 A boolean that specifies whether the Exif contrib app is enabled.  If enabled, metadata is generated from Exif tags when documents are uploaded.
 
-NLP_ENABED
-...........
+NLP_ENABLED
+-----------
 Default: ``False``
 
 A boolean that specifies whether the NLP (Natural Language Processing) contrib app is enabled.  If enabled, NLP (specifically MITIE) is used to infer additional metadata from uploaded documents to help fill metadata gaps.
 
 NLP_LOCATION_THRESHOLD
--------------------
+----------------------
 Default: ``1.0``
 
 A float that specifies the threshold for location matches.
 
 NLP_LIBRARY_PATH
---------------
+----------------
 Default:: ``'/opt/MITIE/mitielib'``
 
 A string that specifies the location of the MITIE library
@@ -597,14 +593,14 @@ Default:: ``'/opt/MITIE/MITIE-models/english/ner_model.dat'``
 
 A string that specifies the location of the NER (Named Entity Resolver).  MITIE comes with English and Spanish NER models.  Other models can be trained.
 
-SLACK_ENABED
-...........
+SLACK_ENABLED
+-------------
 Default: ``False``
 
 A boolean that specifies whether the Slack contrib app is enabled.  If enabled, GeoNode will send messages to the slack channels specified in SLACK_WEBHOOK_URLS when a document is uploaded, metadata is updated, etc.  Coverage of events is still incomplete.
 
 SLACK_WEBHOOK_URLS
--------------------------
+------------------
 
 A list that specifies the urls to post Slack messages to.  Each url is for a different channel.  The default url should be replaced when slack integration is enabled.
 
