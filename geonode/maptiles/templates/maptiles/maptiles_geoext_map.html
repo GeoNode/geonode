@@ -401,7 +401,7 @@ function getJurisdictionGeom(jurisdiction, juris_vec_layer){
                 //var parser = new OpenLayers.Format.GeoJSON();
                 var feature_out =olGeoJSON.read(response.priv.responseText);
                 jstsJurisdictionGeoms = jstsParser.read(response.priv.responseText);
-                console.log(jstsJurisdictionGeoms);
+                console.log("jstsJurisdictionGeoms:"+jstsJurisdictionGeoms);
                 juris_vec_layer.addFeatures(feature_out);
                 jurisdiction_geoms = juris_vec_layer.features;
             }
