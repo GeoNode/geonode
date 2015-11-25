@@ -58,7 +58,7 @@ var tile_cache = [];
 
 var jstsParser = new jsts.io.GeoJSONReader();
 var jstsWriter = new jsts.io.GeoJSONWriter();
-var jstsJurisdictionGeom;
+var jstsJurisdictionGeoms;
 
 var olGeoJSON = new OpenLayers.Format.GeoJSON();
 //var geoserver = "{{geoserver}}";
@@ -376,7 +376,7 @@ function selection_bounds(map_bounds, highlight_layer) {
     
     var transformed_bounds = map_bounds.clone().transform(new OpenLayers.Projection("EPSG:900913"), new OpenLayers.Projection("EPSG:32651"));
     var jstsSelectionBox= jstsParser.read(olGeoJSON.write(transformed_bounds.toGeometry()))
-    var jstsIntersection = jstsJurisdictionGeom.intersection(jstsSelectionBox);
+    var jstsIntersection = jstsJurisdictionGeoms.intersection(jstsSelectionBox);
     var olIntersection = olGeoJSON.read(jstsWriter.write(jstsIntersection));
     
     var intersecting_filter = new OpenLayers.Filter.Spatial({
