@@ -405,7 +405,7 @@ function getJurisdictionGeom(jurisdiction, juris_vec_layer){
                 jurisdiction_geoms = juris_vec_layer.features;
                 tmp_geoms=[];
                 
-                for (g in jstsParser(response.priv.responseText)){
+                for (g in jstsParser.read(response.priv.responseText)){
                     tmp_geoms.push(g.geometry);
                 }
                 geomCombiner = new jsts.geom.util.GeometryCombiner(tmp_geoms);
