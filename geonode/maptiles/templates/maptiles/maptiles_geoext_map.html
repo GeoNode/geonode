@@ -406,7 +406,7 @@ function getJurisdictionGeom(jurisdiction, juris_vec_layer){
                 tmp_geoms=[];
                 tmp = jstsParser.read(response.priv.responseText);
                 console.log(tmp);
-                for (g in  tmp){
+                for (g in tmp.features){
                     console.log(g.geometry);
                     tmp_geoms.push(g.geometry);
                 }
