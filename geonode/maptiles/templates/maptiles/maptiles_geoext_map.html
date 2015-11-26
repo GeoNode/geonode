@@ -403,12 +403,12 @@ function getJurisdictionGeom(jurisdiction, juris_vec_layer){
                 var feature_out =olGeoJSON.read(response.priv.responseText);
                 juris_vec_layer.addFeatures(feature_out);
                 jurisdiction_geoms = juris_vec_layer.features;
-                var tmp_geoms=[];
+                var tmp_geoms=new javascript.util.ArrayList();
                 tmp = jstsParser.read(response.priv.responseText);
                 console.log(tmp.features);
                 for (var i=0; i< tmp.features.length; i++){
                     console.log(tmp.features[i].geometry);
-                    tmp_geoms.push(tmp.features[i].geometry);
+                    tmp_geoms.add(tmp.features[i].geometry);
                 }
                 console.log(tmp_geoms.isEmpty());
                 geomCombiner = new jsts.geom.util.GeometryCombiner(tmp_geoms);
