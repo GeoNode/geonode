@@ -60,6 +60,7 @@ var tile_cache = [];
 
 var jstsParser = new jsts.io.GeoJSONReader();
 var jstsWriter = new jsts.io.GeoJSONWriter();
+var geomCombiner;
 var jstsJurisdictionGeoms;
 
 var olGeoJSON = new OpenLayers.Format.GeoJSON();
@@ -400,10 +401,15 @@ function getJurisdictionGeom(jurisdiction, juris_vec_layer){
             if (response.priv.responseText){
                 //var parser = new OpenLayers.Format.GeoJSON();
                 var feature_out =olGeoJSON.read(response.priv.responseText);
-                jstsJurisdictionGeoms = jstsParser.read(response.priv.responseText);
-                console.log(jstsJurisdictionGeoms);
                 juris_vec_layer.addFeatures(feature_out);
                 jurisdiction_geoms = juris_vec_layer.features;
+                tmp_geoms=[];
+                
+                for (g in jstsParser(response.priv.responseText)){
+                    tmp_geoms.push(g.geometry);
+                }
+                geomCombiner = new jsts.geom.util.GeometryCombiner(tmp_geoms);
+                jstsJurisdictionGeoms = geomCombiner.combine();
             }
         }
     });
