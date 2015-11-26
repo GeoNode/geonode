@@ -407,7 +407,7 @@ function getJurisdictionGeom(jurisdiction, juris_vec_layer){
                 tmp = jstsParser.read(response.priv.responseText);
                 console.log(tmp.features);
                 for (g in tmp.features){
-                    console.log(g["id"]);
+                    console.log(g);
                     tmp_geoms.push(g.geometry);
                 }
                 //console.log(tmp_geoms);
