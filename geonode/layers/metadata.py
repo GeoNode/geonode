@@ -55,17 +55,17 @@ def set_metadata(xml):
         tagname = get_tagname(exml)
 
     if tagname == 'MD_Metadata':  # ISO
-        vals, regions, keywords = iso2dict(exml)
+        identifier, vals, regions, keywords = iso2dict(exml)
     elif tagname == 'metadata':  # FGDC
-        vals, regions, keywords = fgdc2dict(exml)
+        identifier, vals, regions, keywords = fgdc2dict(exml)
     elif tagname == 'Record':  # Dublin Core
-        vals, regions, keywords = dc2dict(exml)
+        identifier, vals, regions, keywords = dc2dict(exml)
     else:
         raise RuntimeError('Unsupported metadata format')
     if not vals.get("date"):
         vals["date"] = datetime.datetime.now().strftime("%Y-%m-%dT%H:%M:%S")
 
-    return [vals, regions, keywords]
+    return [identifier, vals, regions, keywords]
 
 
 def iso2dict(exml):
@@ -76,6 +76,7 @@ def iso2dict(exml):
     keywords = []
 
     mdata = MD_Metadata(exml)
+    identifier = mdata.identifier
     vals['language'] = mdata.language or mdata.languagecode or 'eng'
     vals['spatial_representation_type'] = mdata.hierarchy
     vals['date'] = sniff_date(mdata.datestamp)
@@ -115,7 +116,7 @@ def iso2dict(exml):
     if mdata.dataquality is not None:
         vals['data_quality_statement'] = mdata.dataquality.lineage
 
-    return [vals, regions, keywords]
+    return [identifier, vals, regions, keywords]
 
 
 def fgdc2dict(exml):
@@ -126,7 +127,7 @@ def fgdc2dict(exml):
     keywords = []
 
     mdata = Metadata(exml)
-
+    identifier = mdata.idinfo.datasetid
     if hasattr(mdata.idinfo, 'citation'):
         if hasattr(mdata.idinfo.citation, 'citeinfo'):
             vals['spatial_representation_type'] = \
@@ -177,7 +178,7 @@ def fgdc2dict(exml):
     if raw_date is not None:
         vals['date'] = sniff_date(raw_date)
 
-    return [vals, regions, keywords]
+    return [identifier, vals, regions, keywords]
 
 
 def dc2dict(exml):
@@ -188,6 +189,7 @@ def dc2dict(exml):
     keywords = []
 
     mdata = CswRecord(exml)
+    identifier = mdata.identifier
     vals['language'] = mdata.language
     vals['spatial_representation_type'] = mdata.type
     keywords = mdata.subjects
@@ -199,7 +201,7 @@ def dc2dict(exml):
     vals['title'] = mdata.title
     vals['abstract'] = mdata.abstract
 
-    return [vals, regions, keywords]
+    return [identifier, vals, regions, keywords]
 
 
 def sniff_date(datestr):
