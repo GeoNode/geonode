@@ -388,7 +388,8 @@ function selection_bounds(map_bounds, highlight_layer) {
         value: transformed_bounds.toGeometry()
     });
     
-    filterSelectedTiles(box_filter, false, true);
+    //filterSelectedTiles(box_filter, false, true);
+    filterSelectedTiles(intersecting_filter, false, true);
 }
 
 /*
