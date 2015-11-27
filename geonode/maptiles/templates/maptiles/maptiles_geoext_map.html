@@ -386,14 +386,19 @@ function selection_bounds(map_bounds, highlight_layer) {
     var filter;
     if (jurisdiction_geoms.length > 0){
         var jstsSelectionBox= jstsParser.read(olGeoJSON.write(transformed_bounds.toGeometry()))
-        var jstsIntersection = jstsJurisdictionGeoms.intersection(jstsSelectionBox);
-        var olIntersection = olGeoJSON.read(jstsWriter.write(jstsIntersection));
+        var jstsIntersections = new javascript.util.ArrayList();
+        
+        for (var i=0; i < jstsJurisdictionGeoms.length; i++){
+            jstsIntersections.add(jstsJurisdictionGeoms[i].intersection(jstsSelectionBox));
+        }
+        geomCombiner = new jsts.geom.GeometryCombiner(jstsIntersections);
+        var olIntersection = olGeoJSON.read(jstsWriter.write(geomCombiner.combine()));
         console.log(olIntersection);
         
         filter = new OpenLayers.Filter.Spatial({
             type: OpenLayers.Filter.Spatial.INTERSECTS,
             property: "the_geom",
-            value: transformed_bounds.toGeometry()
+            value: olIntersection.toGeometry()
         });
     }else{
         filter= new OpenLayers.Filter.Spatial({
@@ -424,9 +429,9 @@ function getJurisdictionGeom(jurisdiction, juris_vec_layer){
                     //console.log(tmp.features[i].geometry);
                     tmp_geoms.add(tmp.features[i].geometry);
                 }
-                console.log(tmp_geoms.isEmpty());
-                geomCombiner = new jsts.geom.util.GeometryCombiner(tmp_geoms);
-                jstsJurisdictionGeoms = geomCombiner.combine();
+                //console.log(tmp_geoms.isEmpty());
+                //geomCombiner = new jsts.geom.util.GeometryCombiner(tmp_geoms);
+                jstsJurisdictionGeoms = tmp_geoms;
             }
         }
     });
