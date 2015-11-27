@@ -386,7 +386,7 @@ function selection_bounds(map_bounds, highlight_layer) {
     if (jurisdiction_geoms.length > 0){
         var jstsSelectionBox= jstsParser.read(olGeoJSON.write(transformed_bounds.toGeometry()));
         console.log(jstsSelectionBox);
-        var jstsIntersection = jstsJurisdictionGeoms.intersect(jstsSelectionBox);
+        var jstsIntersection = jstsJurisdictionGeoms.intersection(jstsSelectionBox);
         
         var olIntersection = olGeoJSON.read(jstsWriter.write(jstsIntersection));
         console.log(olIntersection);
