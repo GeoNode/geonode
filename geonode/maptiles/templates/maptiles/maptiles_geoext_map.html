@@ -420,7 +420,7 @@ function getJurisdictionGeom(jurisdiction, juris_vec_layer){
                 juris_vec_layer.addFeatures(feature_out);
                 jurisdiction_geoms = juris_vec_layer.features;
                 //jstsJurisdictionGeoms=new javascript.util.ArrayList();
-                jstsJurisdictionGeoms=new jsts.geom.Geometry();
+                jstsJurisdictionGeoms=new jsts.geom.MultiPolygon();
                 tmp = jstsParser.read(response.priv.responseText);
                 for (var i=0; i< tmp.features.length; i++){
                     //jstsJurisdictionGeoms.push(tmp.features[i].geometry);
