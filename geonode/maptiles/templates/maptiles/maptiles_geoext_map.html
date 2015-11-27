@@ -390,6 +390,7 @@ function selection_bounds(map_bounds, highlight_layer) {
         
         for (var i=0; i < jstsJurisdictionGeoms.length; i++){
             intersection = jstsJurisdictionGeoms[i].intersection(jstsSelectionBox);
+            console.log(intersection);
             if (intersection != null)
                 jstsIntersections.add(intersection);
         }
