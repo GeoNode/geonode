@@ -60,7 +60,6 @@ var tile_cache = [];
 
 var jstsParser = new jsts.io.GeoJSONReader();
 var jstsWriter = new jsts.io.GeoJSONWriter();
-var geomCombiner;
 var jstsJurisdictionGeoms;
 
 var olGeoJSON = new OpenLayers.Format.GeoJSON();
@@ -387,19 +386,9 @@ function selection_bounds(map_bounds, highlight_layer) {
     if (jurisdiction_geoms.length > 0){
         var jstsSelectionBox= jstsParser.read(olGeoJSON.write(transformed_bounds.toGeometry()));
         console.log(jstsSelectionBox);
-        var jstsIntersections = new javascript.util.ArrayList();
+        var jstsIntersection = jstsJurisdictionGeoms.intersect(jstsSelectionBox);
         
-        for (var i=0; i < jstsJurisdictionGeoms.length; i++){
-            intersection = jstsJurisdictionGeoms[i].intersection(jstsSelectionBox);
-            console.log(intersection);
-            if (intersection.CLASS_NAME != "jsts.geom.Polygon")
-                jstsIntersections.add(intersection);
-        }
-        //geomUnion = new jsts.geom.util.GeometryCombiner(jstsIntersections);
-        geomUnion = new jsts.operation.union.CascadedPolygonUnion(jstsIntersections);
-        console.log(geomUnion.union());
-        //var olIntersection = olGeoJSON.read(jstsWriter.write(geomCombiner.combine()));
-        var olIntersection = olGeoJSON.read(jstsWriter.write(geomUnion.union()));
+        var olIntersection = olGeoJSON.read(jstsWriter.write(jstsIntersection));
         console.log(olIntersection);
         
         filter = new OpenLayers.Filter.Spatial({
@@ -431,15 +420,13 @@ function getJurisdictionGeom(jurisdiction, juris_vec_layer){
                 juris_vec_layer.addFeatures(feature_out);
                 jurisdiction_geoms = juris_vec_layer.features;
                 //jstsJurisdictionGeoms=new javascript.util.ArrayList();
-                jstsJurisdictionGeoms=[];
+                jstsJurisdictionGeoms=new jsts.geom.Geometry();
                 tmp = jstsParser.read(response.priv.responseText);
                 for (var i=0; i< tmp.features.length; i++){
-                    //jstsJurisdictionGeoms.add(tmp.features[i].geometry);
-                    jstsJurisdictionGeoms.push(tmp.features[i].geometry);
+                    //jstsJurisdictionGeoms.push(tmp.features[i].geometry);
+                    jstsJurisdictionGeoms.union(tmp.features[i].geometry);
                 }
-                //console.log(tmp_geoms.isEmpty());
-                //geomCombiner = new jsts.geom.util.GeometryCombiner(tmp_geoms);
-                //jstsJurisdictionGeoms = tmp_geoms;
+
             }
         }
     });
