@@ -393,6 +393,7 @@ function selection_bounds(map_bounds, highlight_layer) {
         
         for (var i=0; i< jstsJurisdictionGeoms.length; i++){
                     //jstsJurisdictionGeoms.push(tmp.features[i].geometry);
+                    console.log(i);
                     jstsIntersection.union(jstsJurisdictionGeoms[i].intersection(jstsSelectionBox));
                     console.log(jstsJurisdictionGeoms[i].intersection(jstsSelectionBox));
                     //jstsJurisdictionGeoms.union(tmp.features[i].geometry);
