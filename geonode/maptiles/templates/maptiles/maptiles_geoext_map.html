@@ -391,7 +391,7 @@ function selection_bounds(map_bounds, highlight_layer) {
         for (var i=0; i < jstsJurisdictionGeoms.length; i++){
             intersection = jstsJurisdictionGeoms[i].intersection(jstsSelectionBox);
             if (intersection != null)
-                jstsIntersections.add(jstsJurisdictionGeoms[i].intersection(jstsSelectionBox));
+                jstsIntersections.add(intersection);
         }
         geomCombiner = new jsts.geom.util.GeometryCombiner(jstsIntersections);
         var olIntersection = olGeoJSON.read(jstsWriter.write(geomCombiner.combine()));
