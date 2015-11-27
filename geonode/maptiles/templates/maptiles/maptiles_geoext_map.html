@@ -392,7 +392,7 @@ function selection_bounds(map_bounds, highlight_layer) {
         for (var i=0; i < jstsJurisdictionGeoms.length; i++){
             intersection = jstsJurisdictionGeoms[i].intersection(jstsSelectionBox);
             console.log(intersection);
-            if (intersection != null)
+            if (intersection.CLASS_NAME != "jsts.geom.Polygon")
                 jstsIntersections.add(intersection);
         }
         //geomUnion = new jsts.geom.util.GeometryCombiner(jstsIntersections);
