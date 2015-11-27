@@ -389,7 +389,7 @@ function selection_bounds(map_bounds, highlight_layer) {
         console.log(jstsSelectionBox);
         var jstsIntersections = new javascript.util.ArrayList();
         
-        console.log(jstsJurisdictionGeoms.length);
+        console.log(jstsJurisdictionGeoms.size);
         for (var i=0; i < jstsJurisdictionGeoms.length; i++){
             intersection = jstsJurisdictionGeoms[i].intersection(jstsSelectionBox);
             console.log(intersection);
@@ -431,7 +431,7 @@ function getJurisdictionGeom(jurisdiction, juris_vec_layer){
                 var feature_out =olGeoJSON.read(response.priv.responseText);
                 juris_vec_layer.addFeatures(feature_out);
                 jurisdiction_geoms = juris_vec_layer.features;
-                jstsJurisdictiongeoms=new javascript.util.ArrayList();
+                jstsJurisdictionGeoms=new javascript.util.ArrayList();
                 tmp = jstsParser.read(response.priv.responseText);
                 for (var i=0; i< tmp.features.length; i++){
                     //console.log(tmp.features[i].geometry);
