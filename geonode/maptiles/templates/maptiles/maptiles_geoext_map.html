@@ -395,7 +395,7 @@ function selection_bounds(map_bounds, highlight_layer) {
                     //jstsJurisdictionGeoms.push(tmp.features[i].geometry);
                     console.log(i);
                     if (jstsJurisdictionGeoms[i].CLASS_NAME != "jsts.geom.GeometryCollection"){
-                        console.log(i);
+                        console.log(jstsJurisdictionGeoms[i].CLASS_NAME);
                         jstsIntersection.union(jstsJurisdictionGeoms[i].intersection(jstsSelectionBox));
                         console.log(jstsJurisdictionGeoms[i].intersection(jstsSelectionBox));
                     }
