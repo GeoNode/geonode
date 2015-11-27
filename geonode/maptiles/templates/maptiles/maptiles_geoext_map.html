@@ -385,7 +385,8 @@ function selection_bounds(map_bounds, highlight_layer) {
     var transformed_bounds = map_bounds.clone().transform(new OpenLayers.Projection("EPSG:900913"), new OpenLayers.Projection("EPSG:32651"));
     var filter;
     if (jurisdiction_geoms.length > 0){
-        var jstsSelectionBox= jstsParser.read(olGeoJSON.write(transformed_bounds.toGeometry()))
+        var jstsSelectionBox= jstsParser.read(olGeoJSON.write(transformed_bounds.toGeometry()));
+        console.log(jstsSelectionBox);
         var jstsIntersections = new javascript.util.ArrayList();
         
         for (var i=0; i < jstsJurisdictionGeoms.length; i++){
