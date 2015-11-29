@@ -289,8 +289,9 @@ class GXPMapBase(object):
                 'ptype': 'gxp_wmscsource',
                 'name': service.name
             }
-            index += 1
-            sources[index] = remote_source
+            if remote_source['url'] not in source_urls:
+                index += 1
+                sources[index] = remote_source
 
         config = {
             'id': self.id,
