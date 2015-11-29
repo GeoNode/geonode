@@ -73,6 +73,9 @@ MAX_SEARCH_BATCH_SIZE = 25
 GENERIC_UPLOAD_ERROR = _("There was an error while attempting to upload your data. \
 Please try again, or contact and administrator if the problem continues.")
 
+METADATA_UPLOADED_PRESERVE_ERROR = _("Note: this layer's orginal metadata was \
+populated and preserved by importing a metadata XML file. This metadata cannot be edited.")
+
 _PERMISSION_MSG_DELETE = _("You are not permitted to delete this layer")
 _PERMISSION_MSG_GENERIC = _('You do not have permissions for this layer.')
 _PERMISSION_MSG_MODIFY = _("You are not permitted to modify this layer")
@@ -158,6 +161,7 @@ def layer_upload(request, template='upload/layer_upload.html'):
                     charset=form.cleaned_data["charset"],
                     abstract=form.cleaned_data["abstract"],
                     title=form.cleaned_data["layer_title"],
+                    metadata_uploaded_preserve=form.cleaned_data["metadata_uploaded_preserve"]
                 )
             except Exception as e:
                 exception_type, error, tb = sys.exc_info()
@@ -309,6 +313,16 @@ def layer_metadata(request, layername, template='layers/layer_metadata.html'):
     metadata_author = layer.metadata_author
 
     if request.method == "POST":
+        if layer.metadata_uploaded_preserve:  # layer metadata cannot be edited
+            out = {
+                'success': False,
+                'errors': METADATA_UPLOADED_PRESERVE_ERROR
+            }
+            return HttpResponse(
+                json.dumps(out),
+                mimetype='application/json',
+                status=400)
+
         layer_form = LayerForm(request.POST, instance=layer, prefix="resource")
         attribute_form = layer_attribute_set(
             request.POST,
