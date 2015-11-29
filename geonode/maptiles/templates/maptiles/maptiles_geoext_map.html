@@ -50,6 +50,8 @@ if ("{{test_mode}}"=="True"){
 }
 
 {% autoescape off %}
+console.log ({{grid | safe}});
+console.log ({{jurisdiction | safe}});
 
 var options = {{ viewer| safe }};
 var app, map;
