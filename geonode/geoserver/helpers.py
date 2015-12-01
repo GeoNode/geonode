@@ -959,28 +959,35 @@ def _create_db_featurestore(name, data, overwrite=False, charset="UTF-8", worksp
     """
     cat = gs_catalog
     dsname = ogc_server_settings.DATASTORE
+
+    ds_exists = False
     try:
         ds = get_store(cat, dsname, workspace=workspace)
-
+        ds_exists = True
     except FailedRequestError:
         ds = cat.create_datastore(dsname, workspace=workspace)
-        db = ogc_server_settings.datastore_db
-        db_engine = 'postgis' if \
-            'postgis' in db['ENGINE'] else db['ENGINE']
-        ds.connection_parameters.update(
-            {'validate connections': 'true',
-             'max connections': '10',
-             'min connections': '1',
-             'fetch size': '1000',
-             'host': db['HOST'],
-             'port': db['PORT'],
-             'database': db['NAME'],
-             'user': db['USER'],
-             'passwd': db['PASSWORD'],
-             'dbtype': db_engine}
-        )
-        cat.save(ds)
-        ds = get_store(cat, dsname, workspace=workspace)
+
+    db = ogc_server_settings.datastore_db
+    db_engine = 'postgis' if \
+        'postgis' in db['ENGINE'] else db['ENGINE']
+    ds.connection_parameters.update(
+        {'validate connections': 'true',
+         'max connections': '10',
+         'min connections': '1',
+         'fetch size': '1000',
+         'host': db['HOST'],
+         'port': db['PORT'],
+         'database': db['NAME'],
+         'user': db['USER'],
+         'passwd': db['PASSWORD'],
+         'dbtype': db_engine}
+    )
+
+    if ds_exists:
+        ds.save_method = "PUT"
+
+    cat.save(ds)
+    ds = get_store(cat, dsname, workspace=workspace)
 
     try:
         cat.add_data_to_store(ds, name, data,
