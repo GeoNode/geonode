@@ -1,0 +1,56 @@
+{% extends "ceph_base.html" %}
+{% load i18n %}
+{% load url from future %}
+{% load cephgeo_extras %}
+
+{% block title %} {% trans "FTP Requests" %} - {{ block.super }} {% endblock %}
+
+{% block body_class %}FTP Request Details for [{{req_details.name}}] {% endblock %}
+
+{% block body_outer %}
+  {% block body %}
+  
+  <div class="page-header">
+      <h2 class="page-title">FTP Request Detail</h2>
+  </div>
+
+  <!--<div class="col-md-6">
+  <ul class="list-inline pull-left" id="sort">
+    <li><b>SORT BY:</b></li>
+    {% for sort_type in sort_types %}
+	  {% if sort_type == sort %}
+	  	<li><b class="selected" >{{ sort_type }}</b></li>
+	  {% else %}
+		<li><a href="{% url 'cephgeo.views.ftp_request_list' sort_type %}" >{{ sort_type }}</a></li>
+	  {% endif %}
+    {% endfor %}
+  </ul>  
+  </div>-->
+  <br />
+  Request Name: {{req_details.name}} <br />
+  Request Date and Time: {{req_details.date_time}} <br />
+  Request Status: {{req_details.status}} <br />
+  Request Size: {{req_details.size_in_bytes|filesizeformat}} <br />
+  <br /><br />
+  <table>
+       <tr id="cart_table" border="3" style="width:100% ">
+        <th style="text-align: center;">{% trans "Name" %}</th>
+        <th style="text-align: center;">{% trans "Size" %}</th>
+        <th style="text-align: center;">{% trans "Data Class" %}</th>
+        <th style="text-align: center;">{% trans "Last Modified" %}</th>
+      </tr >
+    {% for o in objects %}
+    <tr id="{{cephobjects}}" name="{{co.name}}" style="text-align: center;">
+        <td>{{o.name}}</td>
+        <td>{{o.size_in_bytes|filesizeformat}}</td>
+        <td>{{o.data_class}}</td>
+        <td>{{o.last_modified}}</td>
+    </tr>
+    {% endfor %}
+  </table>
+{% endblock body %}
+ {% block sidebar %}{% endblock sidebar %}
+{% endblock body_outer %}
+
+
+
