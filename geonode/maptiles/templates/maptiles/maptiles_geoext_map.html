@@ -6,6 +6,9 @@
 <script type="text/javascript" src="{{ STATIC_URL}}geonode/js/utils/thumbnail.js"></script>
 <script type="text/javascript" src="{{ STATIC_URL}}geonode/js/utils/proj4js-compressed.js"></script>
 <script type="text/javascript" src="{{ STATIC_URL}}geonode/js/utils/proj4js-EPSG32651.js"></script>
+<script type="text/javascript" src="http://bjornharrtell.github.io/jsts/lib/javascript.util.js"></script>
+<script type="text/javascript" src="https://cdn.rawgit.com/bjornharrtell/jsts/gh-pages/lib/0.16.0/jsts.min.js"></script>
+<script type="text/javascript" src="http://bjornharrtell.github.io/jsts/lib/attache.array.min.js"></script>
 
 <script src="//ajax.googleapis.com/ajax/libs/jquery/1.7/jquery.js"></script>
 <script type="text/javascript" >
@@ -53,7 +56,13 @@ var app, map;
 var tile_list = [];
 var highlight_layer;
 var jurisdiction_geoms = [];
-var interest_bounds; 
+var tile_cache = [];
+
+var jstsParser = new jsts.io.GeoJSONReader();
+var jstsWriter = new jsts.io.GeoJSONWriter();
+var jstsJurisdictionGeoms;
+
+var olGeoJSON = new OpenLayers.Format.GeoJSON();
 //var geoserver = "{{geoserver}}";
 //var geoserver = curr_location+"/geoserver/";
 
@@ -70,11 +79,6 @@ $(document).ready(function(){
            var self = this;
            var json_parser = new OpenLayers.Format.JSON()
            var georef_string = document.getElementById("georef_area").getAttribute("value");
-           /*alert("VALUES:"
-                    +"\nLAZ: "+document.getElementById("laz").checked
-                    +"\nDTM: "+document.getElementById("dtm-tif").checked
-                    +"\nDSM: "+document.getElementById("dsm-tif").checked
-                    +"\nORTHOPHOTO: "+document.getElementById("orthophoto").checked)*/
            var data_classes = []
            if(document.getElementById("laz").checked){
                data_classes.push("LAZ");
@@ -318,14 +322,17 @@ function filterSelectedTiles(tile_filter, single_click, send_notice){
          send_notice: send_notice,
          callback: function(response){
              if(response.priv.responseText){
-                 json_parser = new OpenLayers.Format.GeoJSON();
-                 feature_out = json_parser.read(response.priv.responseText);
-                 var tiles;
-                  if (jurisdiction_geoms.length > 0){
-                      tiles = hasData(jurisdictionFilter(jurisdiction_geoms, feature_out));
+                 start = new Date().getTime();
+                 console.log(start);
+                 //json_parser = new OpenLayers.Format.GeoJSON();
+                 feature_out = olGeoJSON.read(response.priv.responseText);
+                 var tiles = hasData(feature_out);
+                  /*if (jurisdiction_geoms.length > 0){
+                     // tiles = hasData(jurisdictionFilter(jurisdiction_geoms, feature_out));
+                     tiles = hasData(feature_out);
                   }else{
                       tiles = hasData(feature_out);
-                  }
+                  }*/
                   
                   for (var i=0; i<tiles.length; i++){
                     var f = tiles[i];
@@ -360,6 +367,9 @@ function filterSelectedTiles(tile_filter, single_click, send_notice){
                       document.getElementById("warning").style.display =  "inline";*/
                       //container.setAttribute("hidden","hidden");
                   }
+                  
+                  end = new Date().getTime();
+                  console.log(end);
              }
          }
      };
@@ -372,14 +382,45 @@ function filterSelectedTiles(tile_filter, single_click, send_notice){
 function selection_bounds(map_bounds, highlight_layer) {
     
     var transformed_bounds = map_bounds.clone().transform(new OpenLayers.Projection("EPSG:900913"), new OpenLayers.Projection("EPSG:32651"));
+    var filter;
+    if (jurisdiction_geoms.length > 0){
+        var jstsSelectionBox= jstsParser.read(olGeoJSON.write(transformed_bounds.toGeometry()));
+        console.log(jstsSelectionBox);
+        //var jstsIntersection = jstsJurisdictionGeoms.intersection(jstsSelectionBox);
+        var jstsIntersection = new jsts.geom.MultiPolygon();
+        console.log(jstsIntersection);
+        
+        
+        for (var i=0; i< jstsJurisdictionGeoms.length; i++){
+                    //jstsJurisdictionGeoms.push(tmp.features[i].geometry);
+                    console.log(i);
+                    if (!(jstsJurisdictionGeoms[i]  instanceof jsts.geom.GeometryCollection)){
+                        console.log(jstsJurisdictionGeoms[i].CLASS_NAME);
+                        jstsIntersection.union(jstsJurisdictionGeoms[i].intersection(jstsSelectionBox));
+                        console.log(jstsJurisdictionGeoms[i].intersection(jstsSelectionBox));
+                    }
+                    
+                    //jstsJurisdictionGeoms.union(tmp.features[i].geometry);
+        }
+        
+        console.log(jstsWriter.write(jstsIntersection));
+        var olIntersection = olGeoJSON.parseGeometry(jstsWriter.write(jstsIntersection));
+        console.log(olIntersection);
+        
+        filter = new OpenLayers.Filter.Spatial({
+            type: OpenLayers.Filter.Spatial.INTERSECTS,
+            property: "the_geom",
+            value: olIntersection
+        });
+    }else{
+        filter= new OpenLayers.Filter.Spatial({
+            type: OpenLayers.Filter.Spatial.INTERSECTS,
+            property: "the_geom",
+            value: transformed_bounds.toGeometry() });
+    }
     
-    var box_filter = new OpenLayers.Filter.Spatial({
-        type: OpenLayers.Filter.Spatial.INTERSECTS,
-        property: "the_geom",
-        value: transformed_bounds.toGeometry()
-    });
-    
-    filterSelectedTiles(box_filter, false, true);
+    //filterSelectedTiles(box_filter, false, true);
+    filterSelectedTiles(filter, false, true);
 }
 
 /*
@@ -390,10 +431,18 @@ function getJurisdictionGeom(jurisdiction, juris_vec_layer){
     var response = juris_wfs.read({
       callback: function(response){
             if (response.priv.responseText){
-                var parser = new OpenLayers.Format.GeoJSON();
-                var feature_out =parser.read(response.priv.responseText);
+                //var parser = new OpenLayers.Format.GeoJSON();
+                var feature_out =olGeoJSON.read(response.priv.responseText);
                 juris_vec_layer.addFeatures(feature_out);
                 jurisdiction_geoms = juris_vec_layer.features;
+                //jstsJurisdictionGeoms=new javascript.util.ArrayList();
+                jstsJurisdictionGeoms=[];
+                tmp = jstsParser.read(response.priv.responseText);
+                for (var i=0; i< tmp.features.length; i++){
+                    jstsJurisdictionGeoms.push(tmp.features[i].geometry);
+                    //jstsJurisdictionGeoms.union(tmp.features[i].geometry);
+                }
+
             }
         }
     });
