@@ -745,6 +745,8 @@ DOWNLOAD_FORMATS_RASTER = [
     'KML',
     'View in Google Earth',
     'Tiles',
+    'GML',
+    'GZIP'
 ]
 
 ACCOUNT_NOTIFY_ON_PASSWORD_CHANGE = False
