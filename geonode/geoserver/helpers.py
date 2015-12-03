@@ -325,19 +325,20 @@ def delete_from_postgis(resource_name):
     """
     import psycopg2
     db = ogc_server_settings.datastore_db
-    conn = psycopg2.connect(
-        "dbname='" +
-        db['NAME'] +
-        "' user='" +
-        db['USER'] +
-        "'  password='" +
-        db['PASSWORD'] +
-        "' port=" +
-        db['PORT'] +
-        " host='" +
-        db['HOST'] +
-        "'")
+    conn = None
     try:
+        conn = psycopg2.connect(
+            "dbname='" +
+            db['NAME'] +
+            "' user='" +
+            db['USER'] +
+            "'  password='" +
+            db['PASSWORD'] +
+            "' port=" +
+            db['PORT'] +
+            " host='" +
+            db['HOST'] +
+            "'")
         cur = conn.cursor()
         cur.execute("SELECT DropGeometryTable ('%s')" % resource_name)
         conn.commit()
@@ -347,7 +348,11 @@ def delete_from_postgis(resource_name):
             resource_name,
             str(e))
     finally:
-        conn.close()
+        try:
+            if conn:
+                conn.close()
+        except Exception as e:
+            logger.error("Error closing PostGIS conn %s:%s", resource_name, str(e))
 
 
 def gs_slurp(
