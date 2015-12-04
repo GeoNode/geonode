@@ -256,6 +256,12 @@ class GXPMapBase(object):
         source_urls = [source['url']
                        for source in sources.values() if 'url' in source]
 
+        if len(source_urls) == 0:
+            for idx, val in enumerate(settings.MAP_BASELAYERS):
+                sources[str(idx)] = val['source']
+            source_urls = [source['url']
+                           for source in sources.values() if 'url' in source]
+
         if 'geonode.geoserver' in settings.INSTALLED_APPS:
             if not settings.MAP_BASELAYERS[0]['source']['url'] in source_urls:
                 keys = sorted(sources.keys())
@@ -312,6 +318,10 @@ class GXPMapBase(object):
         if any(layers):
             # Mark the last added layer as selected - important for data page
             config["map"]["layers"][len(layers) - 1]["selected"] = True
+        else:
+            (def_map_config, def_map_layers) = default_map_config()
+            config = def_map_config
+            layers = def_map_layers
 
         config["map"].update(_get_viewer_projection_info(self.projection))
 
