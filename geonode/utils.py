@@ -256,14 +256,8 @@ class GXPMapBase(object):
         source_urls = [source['url']
                        for source in sources.values() if 'url' in source]
 
-        if len(source_urls) == 0:
-            for idx, val in enumerate(settings.MAP_BASELAYERS):
-                sources[str(idx)] = val['source']
-            source_urls = [source['url']
-                           for source in sources.values() if 'url' in source]
-
         if 'geonode.geoserver' in settings.INSTALLED_APPS:
-            if not settings.MAP_BASELAYERS[0]['source']['url'] in source_urls:
+            if len(sources.keys()) > 0 and not settings.MAP_BASELAYERS[0]['source']['url'] in source_urls:
                 keys = sorted(sources.keys())
                 settings.MAP_BASELAYERS[0]['source'][
                     'title'] = 'Local Geoserver'
@@ -282,12 +276,13 @@ class GXPMapBase(object):
                     lyr["source"]) not in map(
                     _base_source,
                     sources.values()):
-                sources[
-                    str(int(max(sources.keys(), key=int)) + 1)] = lyr["source"]
+                if len(sources.keys()) > 0:
+                    sources[
+                        str(int(max(sources.keys(), key=int)) + 1)] = lyr["source"]
 
         # adding remote services sources
         from geonode.services.models import Service
-        index = int(max(sources.keys()))
+        index = int(max(sources.keys())) if len(sources.keys()) > 0 else 0
         for service in Service.objects.all():
             remote_source = {
                 'url': service.base_url,
