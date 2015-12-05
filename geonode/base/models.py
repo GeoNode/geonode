@@ -29,6 +29,8 @@ from geonode.utils import bbox_to_wkt
 from geonode.utils import forward_mercator
 from geonode.security.models import PermissionLevelMixin
 from taggit.managers import TaggableManager
+from taggit.models import TagBase, ItemBase
+from treebeard.mp_tree import MP_Node
 
 from geonode.people.enumerations import ROLE_VALUES
 
@@ -186,6 +188,25 @@ class License(models.Model):
         verbose_name_plural = 'Licenses'
 
 
+class HierarchicalKeyword(TagBase, MP_Node):
+    node_order_by = [ 'name' ]
+
+
+class TaggedContentItem(ItemBase):
+    content_object = models.ForeignKey('ResourceBase')
+    tag = models.ForeignKey('HierarchicalKeyword', related_name='keywords')
+
+    # see https://github.com/alex/django-taggit/issues/101
+    @classmethod
+    def tags_for(cls, model, instance=None):
+        if instance is not None:
+            return cls.tag_model().objects.filter(**{
+                '%s__content_object' % cls.tag_relname(): instance
+            })
+        return cls.tag_model().objects.filter(**{
+            '%s__content_object__isnull' % cls.tag_relname(): False
+        }).distinct()
+
 class ResourceBaseManager(PolymorphicManager):
     def admin_contact(self):
         # this assumes there is at least one superuser
@@ -202,7 +223,7 @@ class ResourceBaseManager(PolymorphicManager):
         return super(ResourceBaseManager, self).get_queryset()
 
 
-class ResourceBase(PolymorphicModel, PermissionLevelMixin):
+class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
     """
     Base Resource Object loosely based on ISO 19115:2003
     """
@@ -249,7 +270,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin):
     maintenance_frequency = models.CharField(_('maintenance frequency'), max_length=255, choices=UPDATE_FREQUENCIES,
                                              blank=True, null=True, help_text=maintenance_frequency_help_text)
 
-    keywords = TaggableManager(_('keywords'), blank=True, help_text=keywords_help_text)
+    keywords = TaggableManager(_('keywords'), through=TaggedContentItem, blank=True, help_text=keywords_help_text)
     regions = models.ManyToManyField(Region, verbose_name=_('keywords region'), blank=True, null=True,
                                      help_text=regions_help_text)
 
