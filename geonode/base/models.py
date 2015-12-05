@@ -28,7 +28,7 @@ from geonode.base.enumerations import ALL_LANGUAGES, \
 from geonode.utils import bbox_to_wkt
 from geonode.utils import forward_mercator
 from geonode.security.models import PermissionLevelMixin
-from taggit.managers import TaggableManager
+from taggit.managers import TaggableManager, _TaggableManager
 from taggit.models import TagBase, ItemBase
 from treebeard.mp_tree import MP_Node
 
@@ -207,6 +207,28 @@ class TaggedContentItem(ItemBase):
             '%s__content_object__isnull' % cls.tag_relname(): False
         }).distinct()
 
+class _HierarchicalTagManager(_TaggableManager):
+
+    def add(self, *tags):
+        str_tags = set([
+            t
+            for t in tags
+            if not isinstance(t, self.through.tag_model())
+        ])
+        tag_objs = set(tags) - str_tags
+        # If str_tags has 0 elements Django actually optimizes that to not do a
+        # query.  Malcolm is very smart.
+        existing = self.through.tag_model().objects.filter(
+            name__in=str_tags
+        )
+        tag_objs.update(existing)
+
+        for new_tag in str_tags - set(t.name for t in existing):
+            tag_objs.add(HierarchicalKeyword.add_root(name=new_tag))
+
+        for tag in tag_objs:
+            self.through.objects.get_or_create(tag=tag, **self._lookup_kwargs())
+
 class ResourceBaseManager(PolymorphicManager):
     def admin_contact(self):
         # this assumes there is at least one superuser
@@ -270,7 +292,8 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
     maintenance_frequency = models.CharField(_('maintenance frequency'), max_length=255, choices=UPDATE_FREQUENCIES,
                                              blank=True, null=True, help_text=maintenance_frequency_help_text)
 
-    keywords = TaggableManager(_('keywords'), through=TaggedContentItem, blank=True, help_text=keywords_help_text)
+    keywords = TaggableManager(_('keywords'), through=TaggedContentItem, blank=True, help_text=keywords_help_text,
+                                            manager=_HierarchicalTagManager)
     regions = models.ManyToManyField(Region, verbose_name=_('keywords region'), blank=True, null=True,
                                      help_text=regions_help_text)
 
