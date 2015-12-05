@@ -19,7 +19,7 @@ from geonode.maps.models import Map
 from geonode.documents.models import Document
 from geonode.groups.models import GroupProfile
 
-from taggit.models import Tag
+from geonode.base.models import HierarchicalKeyword
 from django.core.serializers.json import DjangoJSONEncoder
 from tastypie.serializers import Serializer
 from tastypie import fields
@@ -111,7 +111,7 @@ class TagResource(TypeFilteredResource):
         return super(TagResource, self).serialize(request, data, format, options)
 
     class Meta:
-        queryset = Tag.objects.all().order_by('name')
+        queryset = HierarchicalKeyword.objects.all().order_by('name')
         resource_name = 'keywords'
         allowed_methods = ['get']
         filtering = {

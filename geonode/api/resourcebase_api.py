@@ -13,6 +13,7 @@ from guardian.shortcuts import get_objects_for_user
 from django.conf.urls import url
 from django.core.paginator import Paginator, InvalidPage
 from django.http import Http404
+from django.core.exceptions import ObjectDoesNotExist
 
 from tastypie.utils.mime import build_content_type
 
@@ -20,6 +21,7 @@ from geonode.layers.models import Layer
 from geonode.maps.models import Map
 from geonode.documents.models import Document
 from geonode.base.models import ResourceBase
+from geonode.base.models import HierarchicalKeyword 
 
 from .authorization import GeoNodeAuthorization
 
@@ -79,6 +81,7 @@ class CommonModelApi(ModelResource):
     def apply_filters(self, request, applicable_filters):
         types = applicable_filters.pop('type', None)
         extent = applicable_filters.pop('extent', None)
+        keywords = applicable_filters.pop('keywords__slug__in', None)
         semi_filtered = super(
             CommonModelApi,
             self).apply_filters(
@@ -106,7 +109,27 @@ class CommonModelApi(ModelResource):
 
         if extent:
             filtered = self.filter_bbox(filtered, extent)
+
+        if keywords:
+            filtered = self.filter_h_keywords(filtered, keywords)
+
         return filtered
+
+    def filter_h_keywords(self, queryset, keywords):
+        filtered = queryset
+        for keyword in keywords:
+            try:
+                kw = HierarchicalKeyword.objects.get(name=keyword)
+                treeqs = HierarchicalKeyword.get_tree(kw)
+                query = Q(keywords__in=treeqs)
+                filtered = queryset.filter(query)
+                print filtered.count()
+            except ObjectDoesNotExist:
+                pass
+
+        return filtered 
+        
+
 
     def filter_bbox(self, queryset, bbox):
         """
