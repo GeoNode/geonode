@@ -121,10 +121,9 @@ class CommonModelApi(ModelResource):
             try:
                 kw = HierarchicalKeyword.objects.get(name=keyword)
                 treeqs = HierarchicalKeyword.get_tree(kw)
-                query = Q(keywords__in=treeqs)
-                filtered = queryset.filter(query)
-                print filtered.count()
+                filtered = queryset.filter(Q(keywords__in=treeqs))
             except ObjectDoesNotExist:
+                # Ignore keywords not actually used?
                 pass
 
         return filtered 
