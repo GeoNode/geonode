@@ -58,7 +58,7 @@ def get_layer_config(request, typename, permission='base.view_resourcebase',
                        
     pprint("typename="+typename)
     try:
-        layer = _resolve_layer(request, overlay, "base.view_resourcebase", _PERMISSION_VIEW )
+        layer = _resolve_layer(request, typename, "base.view_resourcebase", _PERMISSION_VIEW )
     except Exception as e:
         pprint("Error on resolving layer")
         pprint("Message: "+ e.message + "/nType: "+str(type(e)))
