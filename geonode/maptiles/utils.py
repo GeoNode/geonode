@@ -22,6 +22,8 @@ from geonode.security.views import _perms_info_json
 
 import logging
 
+import pprint.pprint
+
 _PERMISSION_VIEW = _("You are not permitted to view this layer")
 _PERMISSION_GENERIC = _('You do not have permissions for this layer.')
 # Create your views here.
