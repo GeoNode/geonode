@@ -71,7 +71,7 @@ def get_layer_config(request, typename, permission='base.view_resourcebase',
     config["title"] = layer.title
     config["queryable"] = True
     
-     if layer.storeType == "remoteStore":
+    if layer.storeType == "remoteStore":
         service = layer.service
         source_params = {
             "ptype": service.ptype,
