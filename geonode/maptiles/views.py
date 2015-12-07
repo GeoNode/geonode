@@ -77,12 +77,13 @@ def tiled_view2(request, overlay=settings.TILED_SHAPEFILE, template="maptiles/ma
     context_dict = {}
     context_dict["grid"] = get_layer_config(request, overlay, "base.view_resourcebase", _PERMISSION_VIEW )
     if jurisdiction is not None:
-        context_dict["jurisdiction"] = get_layer_config(request,overlay, "base.view_resourcebase", _PERMISSION_VIEW)
+        context_dict["jurisdiction"] = get_layer_config(request,jurisdiction, "base.view_resourcebase", _PERMISSION_VIEW)
     
     context_dict["feature_municipality"]  = settings.MUNICIPALITY_SHAPEFILE.split(":")[1]
     context_dict["feature_tiled"] = overlay.split(":")[1]
     context_dict["test_mode"]=test_mode
     
+    pprint(context_dict);
     return render_to_response(template, RequestContext(request, context_dict))
     
 
