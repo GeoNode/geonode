@@ -82,7 +82,7 @@ def tiled_view2(request, overlay=settings.TILED_SHAPEFILE, template="maptiles/ma
             context_dict["jurisdiction"] = get_layer_config(request,jurisdiction, "base.view_resourcebase", _PERMISSION_VIEW)
         except ObjectDoesNotExist:
             context_dict["jurisdiction"]=""
-    else
+    else:
         context_dict["jurisdiction"] = get_layer_config(request,jurisdiction, "base.view_resourcebase", _PERMISSION_VIEW)
     
     context_dict["feature_municipality"]  = settings.MUNICIPALITY_SHAPEFILE.split(":")[1]
