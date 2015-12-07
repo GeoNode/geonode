@@ -83,7 +83,7 @@ def tiled_view2(request, overlay=settings.TILED_SHAPEFILE, template="maptiles/ma
     context_dict["feature_tiled"] = overlay.split(":")[1]
     context_dict["test_mode"]=test_mode
     
-    pprint(context_dict);
+    logger.info("context_dict="context_dict);
     return render_to_response(template, RequestContext(request, context_dict))
     
 
