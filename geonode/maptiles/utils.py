@@ -100,7 +100,6 @@ def get_layer_config(request, typename, permission='base.view_resourcebase',
         name__in=settings.DOWNLOAD_FORMATS_METADATA)
 
     context_dict = {
-        "data_classes": DataClassification.labels.values(),
         "resource": layer,
         "permissions_json": _perms_info_json(layer),
         "metadata": metadata,
