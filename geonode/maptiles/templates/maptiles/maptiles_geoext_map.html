@@ -50,10 +50,9 @@ if ("{{test_mode}}"=="True"){
 }
 
 {% autoescape off %}
-console.log ("{{grid | safe}}");
-console.log ("{{jurisdiction | safe}}");
-
-var options = {{ viewer| safe }};
+jurisdiction_args = {{ jurisdiction|safe}}
+grid_args = {{grid|safe}}
+var options = grid_args["viewer"];
 var app, map;
 var tile_list = [];
 var highlight_layer;
@@ -477,12 +476,13 @@ Initialization of the map UI
 */
 Ext.onReady(function (){
     //definition of the jurisdiction layer name
-    var jurisdiction = "{{jurisdiction}}";
+    layer_count  = jurisdiction["viewer"]["map"]["layers"].length
+    var jurisdiction = jurisdiction["viewer"]["map"]["layers"][layer_count-1];
    
     var juris_vec_layer = new OpenLayers.Layer.Vector();
     
     //definition of the Philippine grid layer
-    var layer_name = "{{  layer }}";
+    var layer_name = "geonode:{{  feature_tiled }}";
     
     //definition of the map object
     var map_options = options["map"];
@@ -541,13 +541,15 @@ Ext.onReady(function (){
     
     // initialization of the jurisdiction display layer
     var jurisdiction_view_layer;
-    if(jurisdiction){
+    if(jurisdiction_args){
+        jurisdiction_opts = jurisdiction_args["viewer"];
+        var j_layer = jurisdiction_opts["layers"].filter(function(l){ return l["name"] == {{jurisdiction_name}} })[0];
         jurisdiction_view_layer = new OpenLayers.Layer.WMS(
             jurisdiction, geoserver+"geonode/wms",
             {
-                LAYERS: jurisdiction,
+                LAYERS: j_layer["name"],
                 format: "image/png",
-                bbox: new OpenLayers.Bounds({{j_bbox}}),
+                bbox: new OpenLayers.Bounds(j_layer["bbox"]),
                 transparent: true,
                 opacity: 0.3
             },
@@ -556,7 +558,7 @@ Ext.onReady(function (){
                 displayOutsideMaxExtent: true,
                 isBaseLayer: false,
                 projection: "EPSG:32651",
-                maxExtent: new OpenLayers.Bounds({{j_bbox}})
+                maxExtent: new OpenLayers.Bounds(j_layer["bbox"])
             } 
         );
         
