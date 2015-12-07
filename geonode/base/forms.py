@@ -115,7 +115,7 @@ class ResourceBaseForm(TranslationModelForm):
     keywords = TaggitField(
         required=False,
         help_text=_("A space or comma-separated list of keywords"),
-        widget=TaggitWidget('TagAutocomplete'))
+        widget=TaggitWidget('HierarchicalKeywordAutocomplete'))
 
     regions = TreeNodeMultipleChoiceField(
         required=False,
