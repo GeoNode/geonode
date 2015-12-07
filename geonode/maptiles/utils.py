@@ -55,12 +55,11 @@ def get_layer_config(request, typename, permission='base.view_resourcebase',
                    msg=_PERMISSION_GENERIC, **kwargs):
                        
     layer = {}
-    
+    logger.info("typename="+typename)
     try:
         layer = _resolve_layer(request, overlay, "base.view_resourcebase", _PERMISSION_VIEW )
     except Exception as e:
-        layer = _resolve_layer(request, settings.MUNICIPALITY_SHAPEFILE, _PERMISSION_VIEW)
-        overlay = settings.MUNICIPALITY_SHAPEFILE
+        logger.info("Error on resolving layer")
 
     config = layer.attribute_config()
     layer_bbox = layer.bbox
