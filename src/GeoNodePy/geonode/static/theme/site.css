@@ -257,11 +257,10 @@ Layout
 
 #login-area a {
     color: #18469C;
-//font-weight: bold;
+    text-decoration: none;
 }
 
-#login-area a:hover,
-#login-area a:active {
+#login-area a:hover {
     text-decoration: underline;
 }
 
@@ -398,6 +397,11 @@ background: #fff url(img/main-bg.png) repeat-x;
 
 #main .wrap {
     padding: 10px 0 0;
+}
+
+#select_help {
+    color: #18469C;
+    font-size: 100%;
 }
 
 /*-----------------------

@@ -51,11 +51,20 @@
             	{% endautoescape %}
     		});
 		}
-   </script>        
+   </script>    
+
+   <script>
+    $(document).ready(function() {
+      $("#select_help").change(function(){
+        location = this.options[this.selectedIndex].value;
+      });
+      });
+    </script>
+
 </head>
 <body>
 {#<div id="maintenance_msg" style="padding:5px 15px;border:1px solid #ff0000;font-family:verdana; text-align:center;background-color:#FFFF99;">Maintenance Note: The WorldMap will be unavailable on February 17th, from 4:30pm EST to 5:30pm EST. (21:30 GMT to 22:30 GMT)</div>#}
-{% block start_body_js %}{% endblock %}
+
   <div id="header">
     <div class="wrap selfclear">
         	{% block logos %}
@@ -73,18 +82,24 @@
       				{% endif %}
   	  			{% endblock %}
         	{% endblock logos %}
-      <div id="login-area">
-        {% if user.is_authenticated %}
-          <a href="{% if user.get_profile %}{{ user.get_profile.get_absolute_url }}{% else %}{% url profiles_create_profile %}{% endif %}">{{ user.username}}</a> | <a href="{% url auth_logout %}">{% trans "Log out" %}</a>
-        {% else %}
+
+    <div id="login-area">
+      {% if user.is_authenticated %}
+          <a href="{{ user.get_profile.get_absolute_url }}">{{ user.username}}</a> | <a href="{% url "account_logout" %}">{% trans "Log out" %}</a>
+      {% else %}
           <!-- this should be updated to a url var -->
-          <a href="/accounts/login?next={% if 'logout' not in request.path %}{{request.path}}{% else %}/{% endif %}"
-          >{% trans "Sign in" %}</a>
+          <a href="/account/login/?next={% if 'logout' not in request.path %}{{request.path}}{% else %}/{% endif %}"
+                  >{% trans "Sign in" %}</a>
       {% endif %}
-          | <a class="" id="mapLink" href="/maps/new">{% trans "Create Map" %}</a>
-          | <a class="" id="viewLink" href="{% url maps_search %}?sort=last_modified&dir=DESC">{% trans "View Map" %}</a>
-          | <a class="" id="helpLink" href="{{ STATIC_URL }}docs/WorldMap_Help_{{LANGUAGE_CODE}}.pdf" target="_blank">{% trans "Help" %}</a>
-      </div>
+      | <a class="" id="mapLink" href="/maps/new">{% trans "Create Map" %}</a>
+      | <a class="" id="viewLink" href="{% url maps_search %}?sort=last_modified&dir=DESC">{% trans "View Map" %}</a>
+      | <select id="select_help">
+          <option value="" disabled selected>Help</option>
+          <option value='{{ STATIC_URL }}docs/WorldMap_Help_en.pdf'>English</option>
+          <option value='{{ STATIC_URL }}docs/WorldMap_Help_zh-cn.pdf'>Chinese</option>
+          <option value='{{ STATIC_URL }}docs/WorldMap_Help_it.pdf'>Italian</option>
+        </select>
+
     </div><!-- /.wrap -->
   </div><!-- /#header -->
 
@@ -120,10 +135,11 @@
       <div class="onecol" style="text-align:center">
          <a href="{{site}}{{ STATIC_URL }}docs/WorldMap_Help_{{LANGUAGE_CODE}}.pdf">{% trans "Need Help?" %}</a>&nbsp;&nbsp;
          <a href="mailto:worldmap@harvard.edu">{%  trans "Contact Us" %}</a>&nbsp;&nbsp;
-          <a href="http://projects.iq.harvard.edu/worldmap/blog">{% trans "Blog" %}</a>&nbsp;&nbsp;
          <a href="https://github.com/cga-harvard/cga-worldmap">{% trans "Source Code" %}</a>&nbsp;&nbsp;
-         {% trans "Copyright 2011 &copy; The President and Fellows of Harvard College" %}
+         <a href="http://www.harvard.edu/copyright-issue">{% trans "Report Copyright Infringement" %}</a>&nbsp;&nbsp;
+         {% trans "Copyright 2015 &copy; The President and Fellows of Harvard College" %}
       </div>
+
       {% endblock %}
     </div><!-- /.wrap -->
   </div><!-- /#footer -->
