@@ -105,7 +105,7 @@ def get_layer_config(request, typename, permission='base.view_resourcebase',
         "wps_enabled": settings.OGC_SERVER['default']['WPS_ENABLED'],
     }
 
-     context_dict["viewer"] = json.dumps(
+    context_dict["viewer"] = json.dumps(
         map_obj.viewer_json(request.user, * (NON_WMS_BASE_LAYERS + [maplayer])))
     
     return context_dict
