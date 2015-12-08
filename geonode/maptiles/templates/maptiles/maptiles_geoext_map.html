@@ -659,7 +659,7 @@ Ext.onReady(function (){
     app = new GeoExt.MapPanel(config);
     if(jurisdiction_args ){
         map.zoomToExtent(jurisdiction_view_layer.getExtent());
-        getJurisdictionGeom(jurisdiction_name.split(":")[0], juris_vec_layer);
+        getJurisdictionGeom(jurisdiction_name.split(":")[1], juris_vec_layer);
     }else{
         map.zoomToExtent(tile_layer.getExtent());
     }
