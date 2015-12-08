@@ -517,7 +517,7 @@ Ext.onReady(function (){
     
     // definition of the tiled layer
     var tile_layer = new OpenLayers.Layer.WMS(
-        layer_name + "- Tiled", geoserver+"geonode/wms",
+        grid_layer_name + "- Tiled", geoserver+"geonode/wms",
         {
             LAYERS: stored_layer["name"],
             format:  'image/png',
