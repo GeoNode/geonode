@@ -542,7 +542,7 @@ Ext.onReady(function (){
     if(jurisdiction_args){
         var j_layer = jurisdiction_args["map"]["layers"].filter(function(l){ return l["name"] ==jurisdiction_name })[0];
         jurisdiction_view_layer = new OpenLayers.Layer.WMS(
-            jurisdiction, geoserver+"geonode/wms",
+            jurisdiction_name, geoserver+"geonode/wms",
             {
                 LAYERS: j_layer["name"],
                 format: "image/png",
