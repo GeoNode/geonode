@@ -87,7 +87,7 @@ def tiled_view2(request, overlay=settings.TILED_SHAPEFILE, template="maptiles/ma
     
     context_dict["feature_municipality"]  = settings.MUNICIPALITY_SHAPEFILE.split(":")[1]
     context_dict["feature_tiled"] = overlay.split(":")[1]
-    context_dict["jurisdiction_name"] = jurisdiction_shapefile.typename
+    context_dict["jurisdiction_name"] = jurisdiction.jurisdiction_shapefile.typename
     context_dict["test_mode"]=test_mode
     context_dict["data_classes"]= DataClassification.labels.values()
     
