@@ -1,6 +1,8 @@
 import sys
 import logging
 
+from django.http import HttpResponse
+
 from django.views.decorators.csrf import csrf_exempt
 
 from shared_dataverse_information.shared_form_util.format_form_errors import format_errors_as_text

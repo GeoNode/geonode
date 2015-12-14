@@ -5,6 +5,7 @@ import logging
 from django.http import HttpResponse
 from django.conf import settings
 from django.views.decorators.csrf import csrf_exempt
+from django.http import HttpResponse
 
 from shared_dataverse_information.layer_classification.forms_api import ClassifyRequestDataForm, LayerAttributeRequestForm
 from geonode.contrib.dataverse_layer_metadata.forms import CheckForExistingLayerFormWorldmap
@@ -32,9 +33,9 @@ logger = logging.getLogger("geonode.contrib.dataverse_connect.views_sld")
 def view_layer_classification_attributes(request):
     """
     Given a layer name, return attributes for that layer to be used in the GeoConnect classification form.
-    """    
+    """
     # Auth check embedded in params, handled by LayerAttributeRequestForm
-    
+
     if not request.POST:
         json_msg = MessageHelperJSON.get_json_msg(success=False,
                                         msg="use a POST request")
@@ -79,31 +80,31 @@ def view_layer_classification_attributes(request):
 
     json_msg = get_layer_features_definition(api_form.cleaned_data.get('layer_name', ''))
     return HttpResponse(content=json_msg, content_type="application/json")
-            
-    
+
+
 
 @csrf_exempt
 @http_basic_auth_for_api
 def view_create_new_layer_style(request):
     """
     Send in a POST request with parameters that conform to the attributes in the sld_helper_form.SLDHelperForm
-    
-    Encapsulates 3 steps: 
+
+    Encapsulates 3 steps:
         (1) Based on parameters, create new classfication rules and embed in SLD XML
         (2) Make the classification rules the default style for the given layer
         (3) Return links to the newly styled layer -- or an error message
-    
+
     :returns: JSON message with either an error or data containing links to the update classification layer
-    
+
     """
-    
+
     # Auth check embedded in params, handled by ClassifyRequestDataForm
 
     if not request.POST:
-        json_msg = MessageHelperJSON.get_json_msg(success=False, msg="use a POST request")    
+        json_msg = MessageHelperJSON.get_json_msg(success=False, msg="use a POST request")
         return HttpResponse(status=405, content=json_msg, content_type="application/json")
 
-    
+
     Post_Data_As_Dict = request.POST.dict()
     api_form = ClassifyRequestDataForm(Post_Data_As_Dict)
     if not api_form.is_valid():
@@ -115,7 +116,7 @@ def view_create_new_layer_style(request):
                                     msg="Incorrect params for ClassifyRequestDataForm: <br />%s" % api_form.errors)
 
         return HttpResponse(status=400, content=json_msg, content_type="application/json")
-        
+
     """
     if not api_form.is_signature_valid_check_post(request):
         #
@@ -136,15 +137,15 @@ def view_create_new_layer_style(request):
         json_msg = MessageHelperJSON.get_json_msg(success=False,
                                 msg="Invalid data for classifying an existing layer.")
         return HttpResponse(status=400, content=json_msg, content_type="application/json")
-    
+
     if not f.legitimate_layer_exists(request.POST):
         err_msg = "The layer to classify could not be found.  This may not be a Dataverse-created layer."
         logger.error(err_msg)
         json_msg = MessageHelperJSON.get_json_msg(success=False,
                                 msg=err_msg)
         return HttpResponse(status=400, content=json_msg, content_type="application/json")
-        
-    
+
+
     ls = LayerStyler(request.POST)
     ls.style_layer()
 
@@ -156,6 +157,5 @@ def view_create_new_layer_style(request):
         print 'not bad'
 
     json_msg = ls.get_json_message()    # Will determine success/failure and appropriate params
-    
-    return HttpResponse(content=json_msg, content_type="application/json")
 
+    return HttpResponse(content=json_msg, content_type="application/json")

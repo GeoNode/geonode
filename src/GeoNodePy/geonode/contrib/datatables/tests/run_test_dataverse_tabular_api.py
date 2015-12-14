@@ -39,11 +39,11 @@ class TestDataverseTabularAPI(TestTabularAPIBase):
         super(TestDataverseTabularAPI, cls).setUpClass()
         pause_time = 5 # seconds
         time.sleep(pause_time)
-        msgt('Sleeping %d seconds - needed for Geoserver to calculate bbox and other shapefile stats' % pause_time)
+        msgt("""Sleeping %d seconds - needed for Geoserver to calculate bbox other shapefile stats""" % pause_time)
 
 
     def get_dataverse_csv_test_info(self):
-       return {
+        return {
             "datafile_content_type": "text/comma-separated-values",
             "datafile_create_datetime": "2015-09-24 10:00:54.544",
             "datafile_expected_md5_checksum": "87df5ed0314ba91d300e2c19e40e847a",
@@ -192,5 +192,3 @@ class TestDataverseTabularAPI(TestTabularAPIBase):
         self.assertEqual(r.status_code, 200, "Should receive 200 message.  Received: %s\n%s" % (r.status_code, r.text))
         msgn('Datatable Delete successful.')
         msg('returned json: %s' % r.text)
-
-
