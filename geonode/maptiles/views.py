@@ -157,27 +157,38 @@ def tiled_view(request, overlay=settings.TILED_SHAPEFILE, template="maptiles/map
 def process_georefs(request):
     if request.method == "POST":
         try:
-            ### HERE ###
+            #Get georef list
             georef_area = request.POST['georef_area']
             georef_list = filter(None, georef_area.split(","))
-            print("[POST]")
-            pprint(request.POST)
+            
+            #Get the requested dataclasses
             data_classes = list()
-            print("[LABELS]")
-            pprint(DataClassification.labels.values())
             for data_class in DataClassification.labels.values():
                 if request.POST.get(slugify(data_class.decode('cp1252'))):
                     data_classes.append(data_class)
             
-            print("[DATACLASSES]: "+str(data_classes))
-            #spprint(georef_list)
-            #TODO: find all files with these georefs and add them to cart
+            #Construct filter for excluding unselected data classes
+            dataclass_filter = DataClassification.labels.keys()
+            for dataclass, label in DataClassification.labels.iteritems():
+                if label in data_classes:
+                    dataclass_filter.remove(dataclass)
+            
+            #Initialize variables for counting empty and duplicates 
             count = 0
             empty_georefs = 0
             duplicates = []
             
             for georef in georef_list:      # Process each georef in list
-                objects = CephDataObject.objects.filter(Q(name__startswith=georef))
+                
+                #Build filter query to exclude unselected data classes 
+                filter_query = Q(name__startswith=georef)
+                for filtered_class in dataclass_filter:
+                    filter_query = filter_query & ~Q(data_class=filtered_class)
+                
+                #Execute query 
+                objects = CephDataObject.objects.filter(filter_query)
+                
+                #Count duplicates and empty references
                 count += len(objects)
                 if len(objects) > 0:
                     for ceph_obj in objects:    # Add each Ceph object to cart
