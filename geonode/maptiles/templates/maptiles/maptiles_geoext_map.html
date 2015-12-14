@@ -50,8 +50,9 @@ if ("{{test_mode}}"=="True"){
 }
 
 {% autoescape off %}
-
-var options = {{ viewer| safe }};
+jurisdiction_args = {{jurisdiction.viewer|safe}};
+grid_args = {{grid.viewer |safe}}
+//var options = grid_args;
 var app, map;
 var tile_list = [];
 var highlight_layer;
@@ -427,14 +428,16 @@ function selection_bounds(map_bounds, highlight_layer) {
 Function retrieves the list of jurisdiction geometries and puts them into a list for future use
 */
 function getJurisdictionGeom(jurisdiction, juris_vec_layer){
-    var juris_wfs = wfs_proto_creator("{{feature_juris}}", "EPSG:32651", "json");
+    var juris_wfs = wfs_proto_creator(jurisdiction, "EPSG:32651", "json");
     var response = juris_wfs.read({
       callback: function(response){
             if (response.priv.responseText){
                 //var parser = new OpenLayers.Format.GeoJSON();
+                console.log(jurisdiction);
                 var feature_out =olGeoJSON.read(response.priv.responseText);
                 juris_vec_layer.addFeatures(feature_out);
                 jurisdiction_geoms = juris_vec_layer.features;
+                console.log(jurisdiction_geoms.length);
                 //jstsJurisdictionGeoms=new javascript.util.ArrayList();
                 jstsJurisdictionGeoms=[];
                 tmp = jstsParser.read(response.priv.responseText);
@@ -474,16 +477,14 @@ var vector_style_map = new OpenLayers.StyleMap({
 Initialization of the map UI
 */
 Ext.onReady(function (){
-    //definition of the jurisdiction layer name
-    var jurisdiction = "{{jurisdiction}}";
    
     var juris_vec_layer = new OpenLayers.Layer.Vector();
     
     //definition of the Philippine grid layer
-    var layer_name = "{{  layer }}";
+    var grid_layer_name = "geonode:{{  feature_tiled }}";
     
     //definition of the map object
-    var map_options = options["map"];
+    var map_options = grid_args["map"];
     map = new OpenLayers.Map({
         units: map_options["units"],
         maxResolution: map_options["maxResolution"],
@@ -511,14 +512,14 @@ Ext.onReady(function (){
     
     map.addLayer(mq_layer);
 
-    var stored_layer = map_options["layers"].filter(function(l){ return l["name"] == layer_name })[0];
+    var stored_layer = map_options["layers"].filter(function(l){ return l["name"] == grid_layer_name })[0];
     var source_index = stored_layer["source"];
     
     map.addLayer(juris_vec_layer);
     
     // definition of the tiled layer
     var tile_layer = new OpenLayers.Layer.WMS(
-        layer_name + "- Tiled", geoserver+"geonode/wms",
+        grid_layer_name + "- Tiled", geoserver+"geonode/wms",
         {
             LAYERS: stored_layer["name"],
             format:  'image/png',
@@ -539,13 +540,15 @@ Ext.onReady(function (){
     
     // initialization of the jurisdiction display layer
     var jurisdiction_view_layer;
-    if(jurisdiction){
+    jurisdiction_name="{{jurisdiction_name}}";
+    if(jurisdiction_args){
+        var j_layer = jurisdiction_args["map"]["layers"].filter(function(l){ return l["name"] ==jurisdiction_name })[0];
         jurisdiction_view_layer = new OpenLayers.Layer.WMS(
-            jurisdiction, geoserver+"geonode/wms",
+            jurisdiction_name, geoserver+"geonode/wms",
             {
-                LAYERS: jurisdiction,
+                LAYERS: j_layer["name"],
                 format: "image/png",
-                bbox: new OpenLayers.Bounds({{j_bbox}}),
+                bbox: new OpenLayers.Bounds(j_layer["bbox"]),
                 transparent: true,
                 opacity: 0.3
             },
@@ -554,10 +557,10 @@ Ext.onReady(function (){
                 displayOutsideMaxExtent: true,
                 isBaseLayer: false,
                 projection: "EPSG:32651",
-                maxExtent: new OpenLayers.Bounds({{j_bbox}})
+                maxExtent: new OpenLayers.Bounds(j_layer["bbox"])
             } 
         );
-        
+        console.log(j_layer);
         map.addLayer(jurisdiction_view_layer);
     }
 
@@ -596,7 +599,7 @@ Ext.onReady(function (){
             this.box.activate();
         },
         highlight_layer: highlight_layer,
-        jurisdiction: jurisdiction,
+        jurisdiction: jurisdiction_name,
         notice: function (bounds){ 
             var ll = map.getLonLatFromPixel(new OpenLayers.Pixel(bounds.left, bounds.bottom)); 
             var ur = map.getLonLatFromPixel(new OpenLayers.Pixel(bounds.right, bounds.top)); 
@@ -654,9 +657,9 @@ Ext.onReady(function (){
     drawControl.activate();
 
     app = new GeoExt.MapPanel(config);
-    if(jurisdiction != "" ){
-        map.zoomToExtent(new OpenLayers.Bounds({{j_bbox}}));
-        getJurisdictionGeom(jurisdiction, juris_vec_layer);
+    if(jurisdiction_args ){
+        map.zoomToExtent(jurisdiction_view_layer.getExtent());
+        getJurisdictionGeom(jurisdiction_name.split(":")[1], juris_vec_layer);
     }else{
         map.zoomToExtent(tile_layer.getExtent());
     }
