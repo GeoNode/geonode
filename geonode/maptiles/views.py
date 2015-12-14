@@ -240,10 +240,15 @@ def georefs_validation(request):
         georefs_list = filter(None, georefs.split(","))
         cart_total_size = get_cart_datasize(request)
         
-        yesterday = datetime.now() -  timedelta(days=1)
+        #Retrieve FTPRequests from the last 24 hours
+        #yesterday = datetime.now() -  timedelta(days=1)
+        #requests_last24h = FTPRequest.objects.filter(date_time__gt=yesterday, user=request.user)
         
-        requests_last24h = FTPRequest.objects.filter(date_time__gt=yesterday, user=request.user)
-        
+        #Retrieve FTPRequests since midnight
+        today_min = datetime.datetime.combine(datetime.date.today(), datetime.time.min)
+        today_max = datetime.datetime.combine(datetime.date.today(), datetime.time.max)
+        requests_today = FTPRequest.objects.get(user=request.user, date__range=(today_min, today_max))
+
         total_size = 0
         for georef in georefs_list:
             objects = CephDataObject.objects.filter(name__startswith=georef)
@@ -252,7 +257,8 @@ def georefs_validation(request):
                 
         request_size_last24h = 0
         
-        for r in requests_last24h:
+        #for r in requests_last24h:
+        for r in requests_today:
             request_size_last24h += r.size_in_bytes
         
         if total_size + cart_total_size + request_size_last24h > settings.SELECTION_LIMIT:            
