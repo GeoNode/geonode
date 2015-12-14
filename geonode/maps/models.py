@@ -318,7 +318,7 @@ class Map(ResourceBase, GXPMapBase):
         """
         Publishes local map layers as WMS layer group on local OWS.
         """
-        if 'geonode.geoserver' not in settings.INSTALLED_APPS:
+        if 'geonode.geoserver' in settings.INSTALLED_APPS:
             from geonode.geoserver.helpers import gs_catalog
             from geoserver.layergroup import UnsavedLayerGroup as GsUnsavedLayerGroup
         else:
