@@ -22,6 +22,7 @@ from geonode.utils import default_map_config
 from geonode.security.views import _perms_info_json
 from geonode.cephgeo.models import CephDataObject, DataClassification, FTPRequest, UserJurisdiction
 from geonode.cephgeo.cart_utils import *
+from geonode.maptiles.utils import *
 from geonode.documents.models import get_related_documents
 from geonode.registration.models import Province, Municipality 
 
@@ -71,9 +72,30 @@ def _resolve_layer(request, typename, permission='base.view_resourcebase',
 #Returns the template with the configuration details as context
 #
 @login_required
+def tiled_view2(request, overlay=settings.TILED_SHAPEFILE, template="maptiles/maptiles_map.html",test_mode=False, jurisdiction=None):
+    
+    context_dict = {}
+    context_dict["grid"] = get_layer_config(request, overlay, "base.view_resourcebase", _PERMISSION_VIEW )
+    if jurisdiction is None:
+        try:
+            jurisdiction = UserJurisdiction.objects.get(user=request.user)
+            context_dict["jurisdiction"] = get_layer_config(request,jurisdiction.jurisdiction_shapefile.typename, "base.view_resourcebase", _PERMISSION_VIEW)
+        except ObjectDoesNotExist:
+            context_dict["jurisdiction"]=""
+    else:
+        context_dict["jurisdiction"] = get_layer_config(request,jurisdiction, "base.view_resourcebase", _PERMISSION_VIEW)
+    
+    context_dict["feature_municipality"]  = settings.MUNICIPALITY_SHAPEFILE.split(":")[1]
+    context_dict["feature_tiled"] = overlay.split(":")[1]
+    context_dict["jurisdiction_name"] = jurisdiction.jurisdiction_shapefile.typename
+    context_dict["test_mode"]=test_mode
+    context_dict["data_classes"]= DataClassification.labels.values()
+    
+    return render_to_response(template, RequestContext(request, context_dict))
+    
+
+@login_required
 def tiled_view(request, overlay=settings.TILED_SHAPEFILE, template="maptiles/maptiles_map.html",test_mode=False, jurisdiction=None):
-    if request.method == "POST":
-        pprint(request.POST)
     
     layer = {}
     try:
@@ -296,6 +318,4 @@ def province_lookup(request, province=""):
             status=200,
             content_type="application/json",
         )
-    
-
     
