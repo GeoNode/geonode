@@ -1,12 +1,18 @@
+import logging
+
 import os
 from subprocess import call, Popen, PIPE
-from celery.task import task
+
+from celery.app import shared_task
 from geonode.layers.utils import file_upload
 
 __author__ = 'lucernae'
 
 
-@task(name='geosafe.tasks.analysis.run_analysis_docker', queue='cleanup')
+LOGGER = logging.getLogger(__name__)
+
+
+@shared_task
 def run_analysis_docker(arguments, output_file, layer_folder, output_folder, analysis):
     """
     Running an analysis via InaSAFE cli in docker container
@@ -22,9 +28,10 @@ def run_analysis_docker(arguments, output_file, layer_folder, output_folder, ana
     )
     saved_layer.set_default_permissions()
     analysis.impact_layer = saved_layer
+    analysis.save(run_analysis=False)
 
 
-@task(name='geosafe.tasks.analysis.run_analysis_cli', queue='cleanup')
+@shared_task
 def run_analysis_cli(arguments, output_file):
     """
     Running an analysis via InaSAFE CLI directly in the filesystem
@@ -36,7 +43,7 @@ def run_analysis_cli(arguments, output_file):
     # TODO: Save the layer file and all info to geonode (upload?)
 
 
-@task(name='geosafe.tasks.analysis.if_list', queue='cleanup')
+@shared_task
 def if_list(hazard_file=None, exposure_file=None,
             layer_folder=None, output_folder=None):
     """
@@ -61,10 +68,18 @@ def if_list(hazard_file=None, exposure_file=None,
     start = False
     ifs = []
     for line in output.split('\n'):
+        line = line.strip()
         if line == 'Available Impact Function:' and not start:
             start = True
-        elif start and not line.strip() == '':
+        elif start and not line == '':
             ifs.append(line)
-        elif start and line.strip() == '':
+        elif start and line == '':
             break
+
     return ifs
+
+
+@shared_task
+def test_add(x, y):
+    LOGGER.info('Test Add : %s + %s = %s' % (x, y, x + y))
+    return x + y

@@ -1,4 +1,6 @@
 import json
+import logging
+
 import os
 
 from django.core.urlresolvers import reverse
@@ -10,6 +12,9 @@ from geosafe.models import Analysis
 from geosafe.forms import (AnalysisCreationForm)
 from geosafe.tasks.analysis import if_list
 from tastypie.http import HttpBadRequest
+
+
+LOGGER = logging.getLogger("geosafe")
 
 
 class AnalysisCreateView(CreateView):
@@ -36,6 +41,7 @@ class AnalysisListView(ListView):
         context = super(AnalysisListView, self).get_context_data(**kwargs)
         return context
 
+
 class AnalysisDetailView(DetailView):
     model = Analysis
     template_name = 'geosafe/analysis/detail.html'
@@ -44,6 +50,7 @@ class AnalysisDetailView(DetailView):
     def get_context_data(self, **kwargs):
         context = super(AnalysisDetailView, self).get_context_data(**kwargs)
         return context
+
 
 def impact_function_filter(request):
     """Ajax Request for filtered available IF
@@ -54,8 +61,6 @@ def impact_function_filter(request):
     exposure_id = request.GET.get('exposure_id')
     hazard_id = request.GET.get('hazard_id')
 
-    print exposure_id+' '+hazard_id
-
     if not (exposure_id and hazard_id):
         raise HttpBadRequest
 
@@ -63,25 +68,23 @@ def impact_function_filter(request):
         exposure_layer = Layer.objects.get(id=exposure_id)
         hazard_layer = Layer.objects.get(id=hazard_id)
 
-        print exposure_layer
-        print hazard_layer
-
         hazard_file_path = hazard_layer.get_base_file()[0].file.path
         exposure_file_path = exposure_layer.get_base_file()[0].file.path
 
-        print hazard_file_path
-        print exposure_file_path
+        LOGGER.info('Hazard : %s' % hazard_file_path)
+        LOGGER.info('Exposure : %s' % exposure_file_path)
 
-        impact_functions = if_list(
+        impact_functions = if_list.delay(
             hazard_file=hazard_file_path,
             exposure_file=exposure_file_path,
             layer_folder=os.path.dirname(hazard_file_path)
-        )
+        ).get()
 
         return HttpResponse(
             json.dumps(impact_functions), content_type="application/json")
     except:
         raise HttpResponseServerError
+
 
 def layer_tiles(request):
     """Ajax request to get layer's url to show in the map.

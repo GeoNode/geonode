@@ -242,8 +242,8 @@ class Analysis(models.Model):
         return arguments, temp_file, os.path.dirname(hazard_file_path), os.path.dirname(temp_file)
 
     def save(self, force_insert=False, force_update=False, using=None,
-             update_fields=None):
-        if not self.pk:
+             update_fields=None, run_analysis=True):
+        if run_analysis:
             arguments, output_file, layer_folder, output_folder = self.generate_cli()
             run_analysis_docker.delay(
                 arguments=arguments,
