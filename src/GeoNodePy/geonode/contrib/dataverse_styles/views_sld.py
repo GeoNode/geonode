@@ -1,9 +1,9 @@
-import json
-import urllib
+"""
+Views for classifyng a Dataverse-created layer
+"""
 import logging
 
 from django.http import HttpResponse
-from django.conf import settings
 from django.views.decorators.csrf import csrf_exempt
 from django.http import HttpResponse
 
@@ -11,22 +11,14 @@ from shared_dataverse_information.layer_classification.forms_api import Classify
 from geonode.contrib.dataverse_layer_metadata.forms import CheckForExistingLayerFormWorldmap
 from shared_dataverse_information.shared_form_util.format_form_errors import format_errors_as_text
 
-from geonode.contrib.dataverse_connect.layer_metadata import LayerMetadata
 from geonode.contrib.dataverse_connect.dv_utils import MessageHelperJSON
 from geonode.contrib.dataverse_styles.geonode_get_services import get_layer_features_definition
-from geonode.contrib.dataverse_styles.sld_helper_form import SLDHelperForm
 from geonode.contrib.dataverse_styles.style_organizer import StyleOrganizer
-from geonode.contrib.dataverse_connect.layer_metadata import LayerMetadata
 from geonode.contrib.basic_auth_decorator import http_basic_auth_for_api
 
 
-logger = logging.getLogger("geonode.contrib.dataverse_connect.views_sld")
+LOGGER = logging.getLogger("geonode.contrib.dataverse_connect.views_sld")
 
-#from proxy.views import geoserver_rest_proxy
-
-# http://localhost:8000/gs/rest/sldservice/geonode:boston_social_disorder_pbl/classify.xml?attribute=Violence_4&method=equalInterval&intervals=5&ramp=Gray&startColor=%23FEE5D9&endColor=%23A50F15&reverse=
-#http://localhost:8000/gs/rest/sldservice/geonode:social_disorder_shapefile_zip_x7x/classify.xml?attribute=SocStrif_1&method=equalInterval&intervals=5&ramp=Gray&startColor=%23FEE5D9&endColor=%23A50F15&reverse=
-#{'reverse': False, 'attribute': u'SocStrif_1', 'dataverse_installation_name': u'http://localhost:8000', 'ramp': u'Blue', 'endColor': u'#08306b', 'datafile_id': 7775, 'intervals': 5, 'layer_name': u'social_disorder_shapefile_zip_x7x', 'startColor': u'#f7fbff', 'method': u'equalInterval'}
 
 @csrf_exempt
 @http_basic_auth_for_api
@@ -46,7 +38,7 @@ def view_layer_classification_attributes(request):
         #
         #   Invalid, send back an error message
         #
-        logger.error("Classfication error import error: \n%s" % format_errors_as_text(api_form))
+        LOGGER.error("Classfication error import error: \n%s" % format_errors_as_text(api_form))
         json_msg = MessageHelperJSON.get_json_msg(success=False,
                                 msg="Incorrect params for LayerAttributeRequestForm: <br />%s" % api_form.errors)
         return HttpResponse(status=400, content=json_msg, content_type="application/json")
@@ -56,14 +48,14 @@ def view_layer_classification_attributes(request):
     #-------------
     f = CheckForExistingLayerFormWorldmap(request.POST)
     if not f.is_valid():    # This should always pass....
-        logger.error("Unexpected form validation error in CheckForExistingLayerFormWorldmap. Errors: %s" % f.errors)
+        LOGGER.error("Unexpected form validation error in CheckForExistingLayerFormWorldmap. Errors: %s" % f.errors)
         json_msg = MessageHelperJSON.get_json_msg(success=False,
                              msg="Invalid data for classifying an existing layer.")
         return HttpResponse(status=400, content=json_msg, content_type="application/json")
 
     if not f.legitimate_layer_exists(request.POST):
         err_msg = "The layer to classify could not be found.  This may not be a Dataverse-created layer."
-        logger.error(err_msg)
+        LOGGER.error(err_msg)
         json_msg = MessageHelperJSON.get_json_msg(success=False,
                             msg=err_msg)
         return HttpResponse(status=400, content=json_msg, content_type="application/json")
@@ -78,8 +70,6 @@ def view_layer_classification_attributes(request):
 @http_basic_auth_for_api
 def view_create_new_layer_style(request):
     """
-    Send in a POST request with parameters that conform to the attributes in the sld_helper_form.SLDHelperForm
-
     Encapsulates 3 steps:
         (1) Based on parameters, create new classfication rules and embed in SLD XML
         (2) Make the classification rules the default style for the given layer
@@ -104,7 +94,7 @@ def view_create_new_layer_style(request):
         #
         #   Invalid, send back an error message
         #
-        logger.error("Classfication error import error: \n%s" % format_errors_as_text(api_form))
+        LOGGER.error("Classfication error import error: \n%s" % format_errors_as_text(api_form))
         json_msg = MessageHelperJSON.get_json_msg(success=False,
                                     msg="Incorrect params for ClassifyRequestDataForm: <br />%s" % api_form.errors)
 
@@ -118,33 +108,28 @@ def view_create_new_layer_style(request):
     #-------------
     f = CheckForExistingLayerFormWorldmap(request.POST)
     if not f.is_valid():    # This should always pass....
-        print 'view_create_new_layer_style 2a'
-        logger.error("Unexpected form validation error in CheckForExistingLayerFormWorldmap. Errors: %s" % f.errors)
+        LOGGER.error("Unexpected form validation error in CheckForExistingLayerFormWorldmap. Errors: %s" % f.errors)
         json_msg = MessageHelperJSON.get_json_msg(success=False,
                                 msg="Invalid data for classifying an existing layer.")
         return HttpResponse(status=400, content=json_msg, content_type="application/json")
 
-    print 'view_create_new_layer_style 3'
     if not f.legitimate_layer_exists(request.POST):
-        print 'view_create_new_layer_style 3a'
         err_msg = "The layer to classify could not be found.  This may not be a Dataverse-created layer."
-        logger.error(err_msg)
+        LOGGER.error(err_msg)
         json_msg = MessageHelperJSON.get_json_msg(success=False,
                                 msg=err_msg)
         return HttpResponse(status=400, content=json_msg, content_type="application/json")
 
-    print 'view_create_new_layer_style 4'
 
     ls = StyleOrganizer(request.POST)
     ls.style_layer()
 
-    print 'view_create_new_layer_style 5'
-    if ls.err_found:
-        print 'has an error!'
-        print '\n'.join(ls.err_msgs)
-    else:
-        print 'not bad'
-
     json_msg = ls.get_json_message()    # Will determine success/failure and appropriate params
-    print json_msg
     return HttpResponse(content=json_msg, content_type="application/json")
+
+
+#from proxy.views import geoserver_rest_proxy
+
+# http://localhost:8000/gs/rest/sldservice/geonode:boston_social_disorder_pbl/classify.xml?attribute=Violence_4&method=equalInterval&intervals=5&ramp=Gray&startColor=%23FEE5D9&endColor=%23A50F15&reverse=
+#http://localhost:8000/gs/rest/sldservice/geonode:social_disorder_shapefile_zip_x7x/classify.xml?attribute=SocStrif_1&method=equalInterval&intervals=5&ramp=Gray&startColor=%23FEE5D9&endColor=%23A50F15&reverse=
+#{'reverse': False, 'attribute': u'SocStrif_1', 'dataverse_installation_name': u'http://localhost:8000', 'ramp': u'Blue', 'endColor': u'#08306b', 'datafile_id': 7775, 'intervals': 5, 'layer_name': u'social_disorder_shapefile_zip_x7x', 'startColor': u'#f7fbff', 'method': u'equalInterval'}
