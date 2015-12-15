@@ -4,10 +4,10 @@ urlpatterns = patterns('geonode.contrib.dataverse_connect.views',
 
        #url(r'^check-for-existing-layer/?$', 'view_check_for_existing_layer', name='view_check_for_existing_layer'),     # Has a layer already been created with this file?
 
-       url(r'^import-shapefile/?$', 'view_add_worldmap_shapefile', name='view_add_worldmap_shapefile'),     # First time layer creation
+       url(r'^import-shapefile/?$', 'view_add_worldmap_shapefile', name='view_add_worldmap_shapefile'),
 
+       url(r'^import-geotiff/?$', 'view_add_worldmap_geotiff', name='view_add_worldmap_geotiff'),   
 
-#       url(r'^export/?$', 'dvn_export', name="dvn_export")
 )
 
 

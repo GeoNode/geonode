@@ -61,12 +61,24 @@ class TestWorldMapShapefileImport(TestTabularAPIBase):
         self.test_bad_file = join(self.TEST_FILE_DIR, 'meditation-gray-matter-rebuild.pdf')
         assert isfile(self.test_bad_file), '"Bad"" test shapefile not found: %s' % self.test_bad_file
 
+        # Verify/load geotiff test information
+        geotiff_info_test_fixture_fname = join(self.TEST_FILE_DIR, 'geotiff_info_test.json')
+        assert isfile(geotiff_info_test_fixture_fname), "GeoTiff test fixture file not found: %s" % geotiff_info_test_fixture_fname
+        self.geotiff_test_info = json.loads(open(geotiff_info_test_fixture_fname, 'r').read())
+
+        # Verify that test geotiff exists (good file)
+        #
+        self.test_geotiff_fname = join(self.TEST_FILE_DIR, 'Neighborhoods_BRA_1.tiff')
+        assert isfile(self.test_geotiff_fname), "Test geotiff not found: %s" % self.test_geotiff_fname
+
+
+
 
     def tearDown(self):
         pass
         #os.remove(realpath(join('test-scratch', 'scratch.db3')))
 
-    #@skip("skipping")
+    @skip("skipping")
     def test01_bad_shapefile_imports(self):
 
         #-----------------------------------------------------------
@@ -320,7 +332,7 @@ class TestWorldMapShapefileImport(TestTabularAPIBase):
                         % (expected_err, r.text)\
                     )
 
-    #@skip("skipping")
+    @skip("skipping")
     def test02_good_shapefile_import(self):
 
         #-----------------------------------------------------------
@@ -435,7 +447,7 @@ class TestWorldMapShapefileImport(TestTabularAPIBase):
         self.assertTrue(json_resp.get('success', False) is True, "'success' value should be 'True'")
         self.assertTrue('data' in json_resp, 'JSON should include key "data".  But found keys: %s' % json_resp.keys())
 
-
+    @skip("skipping")
     def test03_bad_delete_shapefile_from_worldmap(self):
         #-----------------------------------------------------------
         msgt("--- Delete shapefile ---")
@@ -502,7 +514,7 @@ class TestWorldMapShapefileImport(TestTabularAPIBase):
 
         self.assertEqual(r.status_code, 404, "Expected status code 404 but received '%s'" % r.status_code)
 
-
+    @skip("skipping")
     def test04_good_delete_shapefile_from_worldmap(self):
 
         #-----------------------------------------------------------
@@ -541,3 +553,90 @@ class TestWorldMapShapefileImport(TestTabularAPIBase):
         expected_msg = "Layer deleted"
         self.assertEqual(json_resp.get('message'), expected_msg, 'Message should be "%s"'% expected_msg)
 
+
+    def test_05_good_geotiff_import(self):
+        """
+        Test GeoTIFF import API
+
+        Note: It is the same endpoint as the shapefiles.
+        This test is simply adding a valid file.
+        """
+        api_url = self.add_geotiff_url
+
+        #-----------------------------------------------------------
+        msgn("(5) Test WorldMap GeoTIFF import API -- with GOOD data/file")
+        #-----------------------------------------------------------
+        # Get basic GeoTIFF info
+        geotiff_api_form = ShapefileImportDataForm(self.geotiff_test_info)
+        self.assertTrue(geotiff_api_form.is_valid())
+
+        cleaned_geotiff_info = geotiff_api_form.cleaned_data
+
+        # add dv info
+        cleaned_geotiff_info.update(self.geotiff_test_info)
+
+        # prep file
+        files = {'file': open( self.test_geotiff_fname, 'rb')}
+
+        # Send it over!
+        msg('api url: %s' % api_url)
+        try:
+            r = requests.post(api_url,
+                              data=cleaned_geotiff_info,
+                              files=files,
+                              auth=self.get_creds_for_http_basic_auth())
+        except requests.exceptions.ConnectionError as e:
+            msgx('Connection error: %s' % e.message); return
+        except:
+            msgx("Unexpected error: %s" % sys.exc_info()[0]); return
+
+        msg(r.status_code)
+        msg(r.text)
+
+        #open('/Users/rmp553/Desktop/page_out.html', 'w').write(r.text)
+        #return
+        #   Expect HTTP 200 - success
+        #
+        self.assertEqual(r.status_code, 200, "Should receive 200 message.  Received: %s\n%s" % (r.status_code, r.text))
+
+
+    def test_06_good_delete_geotiff_from_worldmap(self):
+
+        #-----------------------------------------------------------
+        msgn("(6a) Send GeoTIFF delete request - Good parameters")
+        #-----------------------------------------------------------
+        api_prep_form = CheckForExistingLayerForm(self.geotiff_test_info)
+        self.assertTrue(api_prep_form.is_valid()\
+                        , "Error.  Validation failed. (DataverseInfoValidationFormWithKey):\n%s" % api_prep_form.errors)
+
+        data_params = api_prep_form.cleaned_data
+
+        try:
+            r = requests.post(self.delete_dataverse_layer_url,
+                              data=data_params,
+                              auth=self.get_creds_for_http_basic_auth())
+        except requests.exceptions.ConnectionError as e:
+            msgx('Connection error: %s' % e.message)
+        except:
+            msgx("Unexpected error: %s" % sys.exc_info()[0])
+
+        self.assertEqual(r.status_code, 200, "Expected status code 200 but received '%s'" % r.status_code)
+
+
+        msg(r.status_code)
+        msg(r.text)
+
+        #-----------------------------------------------------------
+        msgn("(6b) Examine JSON result from WorldMap GeoTIFF delete API")
+        #-----------------------------------------------------------
+        try:
+            json_resp = r.json()
+        except:
+            self.assertTrue(False, "Failed to convert response to JSON. Received: %s" % r.text)
+
+        #   Expect 'success' key to be True
+        #
+        self.assertTrue(json_resp.has_key('success'), 'JSON should have key "success".  But found keys: %s' % json_resp.keys())
+        self.assertEqual(json_resp.get('success'), True, "'success' value should be 'True'")
+        expected_msg = "Layer deleted"
+        self.assertEqual(json_resp.get('message'), expected_msg, 'Message should be "%s"'% expected_msg)

@@ -14,9 +14,6 @@ from geonode.maps.utils import save
 from geonode.maps.views import _create_new_user
 from geonode.utils import slugify
 
-#from geonode.dataverse_private_layer.permissions_helper import make_layer_private
-from django.contrib.auth.decorators import login_required
-
 from geonode.contrib.basic_auth_decorator import http_basic_auth_for_api
 from geonode.contrib.dataverse_connect.layer_metadata import LayerMetadata        # object with layer metadata
 from geonode.contrib.dataverse_connect.dv_utils import MessageHelperJSON          # format json response object
@@ -93,6 +90,15 @@ def view_check_for_existing_layer(request):
 
     return HttpResponse(status=200, content=json_msg, content_type="application/json")
 '''
+
+@csrf_exempt
+@http_basic_auth_for_api
+def view_add_worldmap_geotiff(request):
+    """
+    Add a GeoTiff from WorldMap -- the code is the same as importing a Shapefile
+    """
+    return view_add_worldmap_shapefile(request)
+
 
 @csrf_exempt
 @http_basic_auth_for_api

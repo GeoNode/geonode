@@ -162,6 +162,9 @@ class TestTabularAPIBase(unittest.TestCase):
         self.delete_dataverse_layer_url = self.base_url + reverse('view_delete_dataverse_map_layer', kwargs={})
 
         self.add_shapefile_url = self.base_url + reverse('view_add_worldmap_shapefile', kwargs={})
+
+        self.add_geotiff_url = self.base_url + reverse('view_add_worldmap_geotiff', kwargs={})
+
         #ADD_SHAPEFILE_API_PATH, DELETE_LAYER_API_PATH
 
     def refresh_session(self):
