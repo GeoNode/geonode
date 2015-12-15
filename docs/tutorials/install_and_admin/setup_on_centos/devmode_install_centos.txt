@@ -1,9 +1,9 @@
 :Author: Margherita Di Leo
 .. _devmode_install_centos:
 
-####################################
-Install GeoNode on CentOS (dev mode)
-####################################
+######################################
+Install GeoNode on CentOS 7 (dev mode)
+######################################
 
 Preparation
 ===========
