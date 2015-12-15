@@ -243,6 +243,8 @@ class Analysis(models.Model):
 
     def save(self, force_insert=False, force_update=False, using=None,
              update_fields=None, run_analysis=True):
+        super(Analysis, self).save(
+            force_insert=force_insert, force_update=force_update, using=using, update_fields=update_fields)
         if run_analysis:
             arguments, output_file, layer_folder, output_folder = self.generate_cli()
             run_analysis_docker.delay(
@@ -251,8 +253,6 @@ class Analysis(models.Model):
                 layer_folder=layer_folder,
                 output_folder=output_folder,
                 analysis=self)
-        super(Analysis, self).save(
-            force_insert=force_insert, force_update=force_update, using=using, update_fields=update_fields)
 
 @receiver(post_save, sender=Layer)
 def create_metadata_object(sender, instance, created, **kwargs):
