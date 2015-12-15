@@ -3,16 +3,13 @@ Convenience functions for making calls to the Geoserver Rest service
 
 
 """
-
-
 if __name__ == '__main__':
     import os, sys
     DJANGO_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     sys.path.append(DJANGO_ROOT)
     os.environ['DJANGO_SETTINGS_MODULE'] = 'geonode.settings'
 
-
-import httplib2
+import urllib
 try:
     from urlparse import urljoin
 except:
@@ -26,14 +23,38 @@ from django.http import QueryDict
 
 from geonode.maps.models import Layer
 from geonode.contrib.dataverse_connect.dv_utils import remove_whitespace_from_xml, MessageHelperJSON
-from geonode.contrib.dataverse_connect.sld_helper_form import SLDHelperForm
+from geonode.contrib.dataverse_styles.sld_helper_form import SLDHelperForm
 
-from geonode.contrib.dataverse_connect.geoserver_rest_url_helper\
-    import get_retrieve_sld_rules_url, get_layer_features_definition_url
+#from geonode.contrib.dataverse_styles.geoserver_rest_url_helper\
+#    import get_retrieve_sld_rules_url, get_layer_features_definition_url
 
-from geonode.contrib.dataverse_connect.geoserver_rest_util import make_geoserver_get_request
-logger = logging.getLogger("geonode.contrib.dataverse_connect.geonode_get_services")
+from geonode.contrib.dataverse_styles.geoserver_rest_util import make_geoserver_get_request
+logger = logging.getLogger("geonode.contrib.dataverse_styles.geonode_get_services")
 
+#WORLDMAP_WORKSPACE_NAME = settings.DEFAULT_WORKSPACE    #'geonode'
+
+
+def get_retrieve_sld_rules_url(params_dict):
+    """
+    Format the URL used to retrieve SLD rules based on parameters
+
+    Example: http://localhost:8080/geoserver/rest/sldservice/geonode:income_2so/classify.xml?reverse=&attribute=B19013_Med&ramp=Gray&endColor=%23A50F15&intervals=5&startColor=%23FEE5D9&method=equalInterval
+    """
+    if not type(params_dict) is dict:
+        return None
+
+    layer_name = params_dict.get('layer_name', None)
+    if layer_name is None:
+        return None
+
+    params_dict.pop('layer_name')    # not needed for url query string
+    encoded_params = urllib.urlencode(params_dict)
+
+    sld_rules_fragment =  'rest/sldservice/%s:%s/classify.xml?%s' % (settings.DEFAULT_WORKSPACE, layer_name, encoded_params)
+
+    sld_rules_url = urljoin(settings.GEOSERVER_BASE_URL, sld_rules_fragment)
+
+    return sld_rules_url
 
 
 def get_sld_rules(params):
@@ -107,6 +128,20 @@ def get_sld_rules(params):
     return MessageHelperJSON.get_json_msg(success=True,\
         msg='', data_dict={ 'style_rules' : content })
 
+
+
+def get_layer_features_definition_url(layer_name):
+    """
+    Example of url sent to Geoserver, where layer_name is "income_2so"
+        http://localhost:8080/geoserver/rest/sldservice/geonode:income_2so/attributes.xml
+    """
+    if not layer_name:
+        return None
+
+    defn_url_fragment = 'rest/sldservice/%s:%s/attributes.xml' % (settings.DEFAULT_WORKSPACE, layer_name)
+    defn_url = urljoin(settings.GEOSERVER_BASE_URL, defn_url_fragment)
+
+    return defn_url
 
 
 def get_layer_features_definition(layer_name):

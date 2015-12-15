@@ -21,14 +21,14 @@ import sys
 from django.conf import settings
 
 from geonode.contrib.dataverse_connect.dv_utils import MessageHelperJSON
-from geonode.contrib.dataverse_connect.sld_helper_form import SLDHelperForm
-from geonode.contrib.dataverse_connect.style_layer_maker import StyleLayerMaker
-from geonode.contrib.dataverse_connect.style_rules_formatter import StyleRulesFormatter
-from geonode.contrib.dataverse_connect.geonode_get_services import get_sld_rules
+from geonode.contrib.dataverse_styles.sld_helper_form import SLDHelperForm
+from geonode.contrib.dataverse_styles.style_layer_maker import StyleLayerMaker
+from geonode.contrib.dataverse_styles.style_rules_formatter import StyleRulesFormatter
+from geonode.contrib.dataverse_styles.geonode_get_services import get_sld_rules
 
-logger = logging.getLogger("geonode.contrib.dataverse_connect.layer_styler")
+logger = logging.getLogger("geonode.contrib.dataverse_styles.style_organizer")
 
-class LayerStyler(object):
+class StyleOrganizer(object):
     """
     Given a set of styling parameters, set a new style for a layer
     """
@@ -177,7 +177,7 @@ class LayerStyler(object):
             if metadata_dict:
                 return MessageHelperJSON.get_json_msg(success=True, msg='', data_dict=metadata_dict)
             else:
-                logger.error('LayerStyler. Failed to retrieve metadata dict for layer [%s]' % (self.layer_name))
+                logger.error('StyleOrganizer. Failed to retrieve metadata dict for layer [%s]' % (self.layer_name))
                 return MessageHelperJSON.get_json_msg(success=False, msg='Fail to create metadata dict')
 
         err_msg = '\n'.join(self.err_msgs)
@@ -201,7 +201,7 @@ if __name__=='__main__':
                 ,endColor='#67000d'\
                 ,reverse=''\
             )
-    ls = LayerStyler(d)
+    ls = StyleOrganizer(d)
     worked = ls.style_layer()
     if not worked:
         print ('\n'.join(ls.err_msgs))

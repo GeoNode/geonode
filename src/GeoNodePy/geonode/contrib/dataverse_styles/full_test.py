@@ -84,3 +84,63 @@ def run_test2():
 if __name__=='__main__':
     run_test2()
     #run_test()
+
+
+"""
+cd /Users/rmp553/Documents/github-worldmap/cga-worldmap
+workon cga-worldmap
+django-admin.py shell
+
+
+import geonode.contrib.dataverse_styles.geonode_get_services
+
+reload(geonode.contrib.dataverse_styles.geonode_get_services)
+from geonode.contrib.dataverse_styles.geonode_get_services import get_sld_xml_for_layer, get_style_name_for_layer
+
+print get_sld_xml_for_layer('social_disorder_shapefile_zip_kr3')
+print get_style_name_for_layer('social_disorder_shapefile_zip_kr3')
+
+"""
+
+"""
+cd /Users/rmp553/Documents/github-worldmap/cga-worldmap
+workon cga-worldmap
+django-admin.py shell
+
+from geonode.contrib.dataverse_styles.style_organizer import StyleOrganizer
+from geonode.contrib.dataverse_layer_metadata.forms import CheckForExistingLayerFormWorldmap
+from geonode.contrib.dataverse_styles.geonode_get_services import get_sld_rules
+from geonode.contrib.dataverse_styles.style_rules_formatter import StyleRulesFormatter
+from geonode.contrib.dataverse_styles.style_layer_maker import StyleLayerMaker
+
+params = {
+        "layer_name": "social_disorder_shapefile_zip_x7x",
+        "dataverse_installation_name": "http://localhost:8000",
+        "datafile_id": 7775,
+        "endColor": "#08306b",
+        "intervals": 5,
+        "attribute": "SocStrif_1",
+        "method": "equalInterval",
+        "ramp": "Blue",
+        "startColor": "#f7fbff",
+        "reverse": False
+    }
+f = CheckForExistingLayerFormWorldmap(params)
+f.is_valid()
+f.legitimate_layer_exists(params)
+m = f.get_latest_dataverse_layer_metadata()
+m.map_layer
+
+
+ls = StyleOrganizer(params)
+sld_rule_data= ls.set_layer_name_and_get_rule_data()
+ls.layer_name
+
+sld_formatter = StyleRulesFormatter(ls.layer_name)
+sld_formatter.format_sld_xml(sld_rule_data)
+
+sld_formatter.formatted_sld_xml
+
+slm = StyleLayerMaker(ls.layer_name)
+slm.add_sld_to_layer(sld_formatter)
+"""

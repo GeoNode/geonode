@@ -69,8 +69,3 @@ class JoinTargetTestCase(unittest.TestCase):
         f = JoinTargetForm(d)
         self.assertEqual(f.is_valid(), False)
         self.assertEqual(f.get_error_messages_as_html_string(), ERR_MSG_START_YEAR_CANNOT_BE_GREATER)
-
-
-
-
-

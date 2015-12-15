@@ -20,18 +20,18 @@ from django.conf import settings
 
 from geonode.contrib.dataverse_connect.layer_metadata import LayerMetadata
 from geonode.maps.models import Layer
-from geonode.contrib.dataverse_connect.geoserver_rest_util import make_geoserver_json_put_request, make_geoserver_put_sld_request
-from geonode.contrib.dataverse_connect.geoserver_rest_url_helper import get_url_to_set_sld_rules, get_set_default_style_url
-from geonode.contrib.dataverse_connect.geonode_get_services import get_style_name_for_layer
+from geonode.contrib.dataverse_styles.geoserver_rest_util import make_geoserver_json_put_request, make_geoserver_put_sld_request
+from geonode.contrib.dataverse_styles.geonode_get_services import get_style_name_for_layer
 
 
 
-logger = logging.getLogger("geonode.contrib.dataverse_connect.style_layer_maker")
+logger = logging.getLogger("geonode.contrib.dataverse_styles.style_layer_maker")
 
 
 class StyleLayerMaker:
 
-    """Given Style Rules, create SLD XML and add it to a layer
+    """
+    Given Style Rules, create SLD XML and add it to a layer
 
     Basic usage:
 
@@ -92,6 +92,40 @@ class StyleLayerMaker:
         # use direct python, but doesn't properly clear tile cache
         #return self.add_sld_xml_to_layer(formatted_sld_object)
 
+    def get_url_to_set_sld_rules(self, style_name):
+        """
+         Create url to set the new SLD to the layer via a put
+         #http://localhost:8000/gs/rest/styles/social_disorder_nydj_k_i_v.xml
+
+            This will be sent with a XML content containing the SLD rules
+        """
+        if not style_name:
+            return None
+
+        # (1) Given the layer, retrieve the SLD containing the style name
+        #
+        # (to do)
+
+        # (2) Format the url for adding/retrieving styles
+        #
+        url_fragment = 'rest/styles/%s.xml' % (style_name)
+        full_url = urljoin(settings.GEOSERVER_BASE_URL, url_fragment)
+
+        return full_url
+
+
+    def get_set_default_style_url(self, layer_name):
+        """
+        Given a layer name, return the REST url to set a default style
+        """
+        if not layer_name:
+            return None
+
+        url_fragment = 'rest/layers/%s:%s' % (settings.DEFAULT_WORKSPACE, layer_name)
+        full_url = urljoin(settings.GEOSERVER_BASE_URL, url_fragment)
+
+        return full_url
+
 
     def add_sld_xml_to_layer_via_puts(self, formatted_sld_object, layer_name):
         if not formatted_sld_object or not layer_name:
@@ -117,7 +151,7 @@ class StyleLayerMaker:
             self.add_err_msg(style_name_or_err_msg)
             return False
 
-        geoserver_sld_url = get_url_to_set_sld_rules(style_name_or_err_msg)
+        geoserver_sld_url = self.get_url_to_set_sld_rules(style_name_or_err_msg)
         print 'geoserver_sld_url', geoserver_sld_url
         print '-' * 40
         print 'formatted_sld_object.formatted_sld_xml', formatted_sld_object.formatted_sld_xml
@@ -135,7 +169,11 @@ class StyleLayerMaker:
         # (3) Set the new style as the default for the layer
         #     Send a PUT to the catalog to set the default style
         json_str = """{"layer":{"defaultStyle":{"name":"%s"},"styles":{},"enabled":true}}""" % formatted_sld_object.sld_name
-        geoserver_json_url = get_set_default_style_url(self.layer_name)
+        geoserver_json_url = self.get_set_default_style_url(self.layer_name)
+        if geoserver_json_url is None:
+            self.add_err_msg('Failed to format the url to set new style for layer: %s' % self.layer_name)
+            return False
+
         (response, content) = make_geoserver_json_put_request(geoserver_json_url, json_str)
 
         if response is None or not response.status in (200, 201):

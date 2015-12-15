@@ -11,7 +11,7 @@ urlpatterns = patterns('geonode.contrib.dataverse_connect.views',
 )
 
 
-urlpatterns += patterns('geonode.contrib.dataverse_connect.views_sld',
+urlpatterns += patterns('geonode.contrib.dataverse_styles.views_sld',
 
 #       url(r'^describe-features/(?P<layer_name>[^/]*)/$', 'view_layer_feature_defn', name='view_layer_feature_defn'),
 

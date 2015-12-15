@@ -13,9 +13,9 @@ from shared_dataverse_information.shared_form_util.format_form_errors import for
 
 from geonode.contrib.dataverse_connect.layer_metadata import LayerMetadata
 from geonode.contrib.dataverse_connect.dv_utils import MessageHelperJSON
-from geonode.contrib.dataverse_connect.geonode_get_services import get_layer_features_definition
-from geonode.contrib.dataverse_connect.sld_helper_form import SLDHelperForm
-from geonode.contrib.dataverse_connect.layer_styler import LayerStyler
+from geonode.contrib.dataverse_styles.geonode_get_services import get_layer_features_definition
+from geonode.contrib.dataverse_styles.sld_helper_form import SLDHelperForm
+from geonode.contrib.dataverse_styles.style_organizer import StyleOrganizer
 from geonode.contrib.dataverse_connect.layer_metadata import LayerMetadata
 from geonode.contrib.basic_auth_decorator import http_basic_auth_for_api
 
@@ -135,8 +135,7 @@ def view_create_new_layer_style(request):
 
     print 'view_create_new_layer_style 4'
 
-    # Test failing here....
-    ls = LayerStyler(request.POST)
+    ls = StyleOrganizer(request.POST)
     ls.style_layer()
 
     print 'view_create_new_layer_style 5'
@@ -149,62 +148,3 @@ def view_create_new_layer_style(request):
     json_msg = ls.get_json_message()    # Will determine success/failure and appropriate params
     print json_msg
     return HttpResponse(content=json_msg, content_type="application/json")
-
-"""
-cd /Users/rmp553/Documents/github-worldmap/cga-worldmap
-workon cga-worldmap
-django-admin.py shell
-
-
-import geonode.contrib.dataverse_connect.geonode_get_services
-
-reload(geonode.contrib.dataverse_connect.geonode_get_services)
-from geonode.contrib.dataverse_connect.geonode_get_services import get_sld_xml_for_layer, get_style_name_for_layer
-
-print get_sld_xml_for_layer('social_disorder_shapefile_zip_kr3')
-print get_style_name_for_layer('social_disorder_shapefile_zip_kr3')
-
-"""
-
-"""
-cd /Users/rmp553/Documents/github-worldmap/cga-worldmap
-workon cga-worldmap
-django-admin.py shell
-
-from geonode.contrib.dataverse_connect.layer_styler import LayerStyler
-from geonode.contrib.dataverse_layer_metadata.forms import CheckForExistingLayerFormWorldmap
-from geonode.contrib.dataverse_connect.geonode_get_services import get_sld_rules
-from geonode.contrib.dataverse_connect.style_rules_formatter import StyleRulesFormatter
-from geonode.contrib.dataverse_connect.style_layer_maker import StyleLayerMaker
-
-params = {
-        "layer_name": "social_disorder_shapefile_zip_x7x",
-        "dataverse_installation_name": "http://localhost:8000",
-        "datafile_id": 7775,
-        "endColor": "#08306b",
-        "intervals": 5,
-        "attribute": "SocStrif_1",
-        "method": "equalInterval",
-        "ramp": "Blue",
-        "startColor": "#f7fbff",
-        "reverse": False
-    }
-f = CheckForExistingLayerFormWorldmap(params)
-f.is_valid()
-f.legitimate_layer_exists(params)
-m = f.get_latest_dataverse_layer_metadata()
-m.map_layer
-
-
-ls = LayerStyler(params)
-sld_rule_data= ls.set_layer_name_and_get_rule_data()
-ls.layer_name
-
-sld_formatter = StyleRulesFormatter(ls.layer_name)
-sld_formatter.format_sld_xml(sld_rule_data)
-
-sld_formatter.formatted_sld_xml
-
-slm = StyleLayerMaker(ls.layer_name)
-slm.add_sld_to_layer(sld_formatter)
-"""

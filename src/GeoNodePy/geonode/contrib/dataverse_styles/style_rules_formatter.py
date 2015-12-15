@@ -9,6 +9,7 @@ if __name__=='__main__':
     sys.path.append(DJANGO_ROOT)
     os.environ['DJANGO_SETTINGS_MODULE'] = 'geonode.settings.local'
 
+from django.conf import settings
 import logging
 import random
 import string
@@ -16,9 +17,8 @@ import string
 from lxml import etree
 
 from geonode.contrib.dataverse_connect.dv_utils import remove_whitespace_from_xml, MessageHelperJSON
-from geonode.contrib.dataverse_connect.geoserver_rest_url_helper import WORLDMAP_WORKSPACE_NAME
 
-logger = logging.getLogger("geonode.contrib.dataverse_connect.style_rules_formatter")
+logger = logging.getLogger("geonode.contrib.dataverse_styles.style_rules_formatter")
 
 class StyleRulesFormatter(object):
     """
@@ -128,7 +128,7 @@ class StyleRulesFormatter(object):
                     <sld:FeatureTypeStyle>%s</sld:FeatureTypeStyle>
                 </sld:UserStyle>
             </sld:NamedLayer>
-        </sld:StyledLayerDescriptor>""" % (WORLDMAP_WORKSPACE_NAME, self.layer_name, self.sld_name, rules_xml_formatted)
+        </sld:StyledLayerDescriptor>""" % (settings.DEFAULT_WORKSPACE, self.layer_name, self.sld_name, rules_xml_formatted)
 
 
         self.formatted_sld_xml = remove_whitespace_from_xml(xml_str)
