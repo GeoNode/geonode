@@ -78,7 +78,7 @@ class TestWorldMapShapefileImport(TestTabularAPIBase):
         pass
         #os.remove(realpath(join('test-scratch', 'scratch.db3')))
 
-    @skip("skipping")
+    #@skip("skipping")
     def test01_bad_shapefile_imports(self):
 
         #-----------------------------------------------------------
@@ -332,7 +332,7 @@ class TestWorldMapShapefileImport(TestTabularAPIBase):
                         % (expected_err, r.text)\
                     )
 
-    @skip("skipping")
+    #@skip("skipping")
     def test02_good_shapefile_import(self):
 
         #-----------------------------------------------------------
@@ -447,7 +447,7 @@ class TestWorldMapShapefileImport(TestTabularAPIBase):
         self.assertTrue(json_resp.get('success', False) is True, "'success' value should be 'True'")
         self.assertTrue('data' in json_resp, 'JSON should include key "data".  But found keys: %s' % json_resp.keys())
 
-    @skip("skipping")
+    #@skip("skipping")
     def test03_bad_delete_shapefile_from_worldmap(self):
         #-----------------------------------------------------------
         msgt("--- Delete shapefile ---")
@@ -514,7 +514,7 @@ class TestWorldMapShapefileImport(TestTabularAPIBase):
 
         self.assertEqual(r.status_code, 404, "Expected status code 404 but received '%s'" % r.status_code)
 
-    @skip("skipping")
+    #@skip("skipping")
     def test04_good_delete_shapefile_from_worldmap(self):
 
         #-----------------------------------------------------------
@@ -554,6 +554,7 @@ class TestWorldMapShapefileImport(TestTabularAPIBase):
         self.assertEqual(json_resp.get('message'), expected_msg, 'Message should be "%s"'% expected_msg)
 
 
+    #@skip("skipping")
     def test_05_good_geotiff_import(self):
         """
         Test GeoTIFF import API
@@ -600,6 +601,7 @@ class TestWorldMapShapefileImport(TestTabularAPIBase):
         self.assertEqual(r.status_code, 200, "Should receive 200 message.  Received: %s\n%s" % (r.status_code, r.text))
 
 
+    #@skip("skipping")
     def test_06_good_delete_geotiff_from_worldmap(self):
 
         #-----------------------------------------------------------

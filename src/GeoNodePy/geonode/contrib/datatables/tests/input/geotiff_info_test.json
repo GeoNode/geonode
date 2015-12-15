@@ -1,6 +1,6 @@
 {
     "title": "Boston Neighborhood Boundaries",
-    "abstract": "Boston Redevelopment Authority Districts ",
+    "abstract": "Boston Redevelopment Authority Districts.  View in Dataverse: http://localhost:8080/dataset.xhtml?id=62 ",
     "dv_user_email": "dvuser@harvard.edu",
     "shapefile_name": "Neighborhoods_BRA_1.tiff",
 
