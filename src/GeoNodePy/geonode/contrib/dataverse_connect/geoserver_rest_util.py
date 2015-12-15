@@ -25,15 +25,17 @@ def make_geoserver_json_put_request(request_url_str, json_data_str):
     """
     content_type = 'application/json; charset=UTF-8'
     return make_geoserver_put_request(request_url_str, json_data_str, content_type)
-    
+
 
 def make_geoserver_put_sld_request(request_url_str, xml_data):
     """
     Make a geoserver PUT request, sending SLD data in XML format
     """
     content_type = 'application/vnd.ogc.sld+xml; charset=UTF-8'
-    return make_geoserver_put_request(request_url_str, xml_data, content_type)
+
     
+    return make_geoserver_put_request(request_url_str, xml_data, content_type)
+
 
 def make_geoserver_put_request(request_url_str, data, content_type):
     """
@@ -73,5 +75,3 @@ def make_geoserver_get_request(get_request_url_str):
                                       , 'GET'\
                                       )
     return (response, content)
-
-

@@ -1,4 +1,18 @@
-from __future__ import print_function
+"""
+Convenience class used to style a Layer via an API call.
+API attributes include:
+    datafile_id = models.IntegerField()
+    dataverse_installation_name = models.CharField(max_length=255)
+    layer_name = models.CharField(max_length=255)
+    attribute = models.CharField(max_length=255)
+    intervals = models.IntegerField()
+    method = models.CharField(max_length=255)
+    ramp = models.CharField(max_length=255)
+    startColor = models.CharField(max_length=30)
+    endColor = models.CharField(max_length=30)
+    reverse = models.BooleanField(default=False)
+"""
+#from __future__ import print_function
 
 import json
 import logging
@@ -9,61 +23,65 @@ from django.conf import settings
 from geonode.contrib.dataverse_connect.dv_utils import MessageHelperJSON
 from geonode.contrib.dataverse_connect.sld_helper_form import SLDHelperForm
 from geonode.contrib.dataverse_connect.style_layer_maker import StyleLayerMaker
-from geonode.contrib.dataverse_connect.formatted_style_rules import FormattedStyleRules
+from geonode.contrib.dataverse_connect.style_rules_formatter import StyleRulesFormatter
 from geonode.contrib.dataverse_connect.geonode_get_services import get_sld_rules
 
 logger = logging.getLogger("geonode.contrib.dataverse_connect.layer_styler")
 
-class LayerStyler:
+class LayerStyler(object):
+    """
+    Given a set of styling parameters, set a new style for a layer
+    """
     def __init__(self, styling_params):
         self.styling_params = styling_params
         self.layer_name = None
         self.err_found = False
         self.err_msgs = []
         self.layer_metadata = None
-    
-    
+
+
     def add_err_msg(self, msg):
         self.err_found = True
         self.err_msgs.append(msg)
         logger.warn(msg)
 
-  
+
     def get_json_as_dict(self, resp_json, default_msg):
         try:
             return json.loads(resp_json)
         except:
             return {'success' : False, 'message' : default_msg}
-    
-    
+
+
     def style_layer(self):
-        
+
         # (1) Check params and create rules
         #
         sld_rule_data = self.set_layer_name_and_get_rule_data()
         if sld_rule_data is None:
             return False
-        
+
         # (2) Format rules into full SLD
         #
         formatted_sld_object = self.format_rules_into_full_sld(sld_rule_data)
         if formatted_sld_object is None:
             return False
-        
+
         # (3) Add new SLD to Layer
         #
         return self.add_new_sld_to_layer(formatted_sld_object)
-    
+
 
     def set_layer_name_and_get_rule_data(self):
         """
         (1) Check params and create rules
         """
+        print 'set_layer_name_and_get_rule_data 1'
         if self.styling_params is None:
             return None
         resp_json = get_sld_rules(self.styling_params)
         resp_dict = self.get_json_as_dict(resp_json, 'Failed to make the SLD rules')
-        
+
         if not resp_dict.get('success') is True:
             msg = resp_dict.get('message',)
             self.add_err_msg(msg)
@@ -82,14 +100,16 @@ class LayerStyler:
         if sld_rule_data is None:
             self.add_err_msg('Failed to find rules in response')
             return None
-        
+
+        print 'sld_rule_data', sld_rule_data
         return sld_rule_data
-        
+
 
     def format_rules_into_full_sld(self, sld_rule_data):
-        """ 
+        """
         (2) Format rules into full SLD
         """
+        print 'format_rules_into_full_sld 1'
         if not sld_rule_data:
             self.add_err_msg('Rule data is not available')
             return None
@@ -98,38 +118,57 @@ class LayerStyler:
             self.add_err_msg('Layer name is not available')
             return None
 
-        sld_formatter = FormattedStyleRules(self.layer_name)
+        print 'format_rules_into_full_sld 2'
+
+        # --------------------------------------
+        # Create a StyleRulesFormatter object
+        # --------------------------------------
+        sld_formatter = StyleRulesFormatter(self.layer_name)#, style_name_or_err_msg)
+
+        print 'format_rules_into_full_sld 3'
+
 
         sld_formatter.format_sld_xml(sld_rule_data)
 
         if sld_formatter.err_found:
+            print 'format_rules_into_full_sld ERR 3a'
+
             self.add_err_msg('Failed to format xml')
             if sld_formatter.err_found:
                 self.add_err_msg('\n'.join(formatted_sld.err_msgs))
             return None
 
+        print 'format_rules_into_full_sld 4'
+
         return sld_formatter
-        
-    
+
+
     def add_new_sld_to_layer(self, formatted_sld_object):
-        """ 
+        """
         (3) Add new SLD to Layer
         """
+        print 'add_new_sld_to_layer 1'
         if not formatted_sld_object:
             self.add_err_msg('Formatted SLD data is not available')
             return False
-        
+
+        print 'add_new_sld_to_layer 2'
         slm = StyleLayerMaker(self.layer_name)
         success = slm.add_sld_to_layer(formatted_sld_object)
+        print 'add_new_sld_to_layer 3'
+
         if success:
+            print 'add_new_sld_to_layer 3a'
+
             self.layer_metadata = slm.layer_metadata
             return True
-    
+
+        print 'add_new_sld_to_layer 4'
         for err in slm.err_msgs:
             self.add_err_msg(err)
-        
+
         return False
-        
+
 
     def get_json_message(self):
 
@@ -146,17 +185,17 @@ class LayerStyler:
             err_msg = 'Failed to create layer.  Please try again'
 
         return MessageHelperJSON.get_json_msg(success=False, msg=err_msg)
-        
+
 
 if __name__=='__main__':
     from geonode_get_services import get_layer_features_definition
-    layer_name = 'income_bfe'
+    layer_name = 'japan_evac_zones_se1'
     #print (get_layer_features_definition(layer_name))
-    
+
     d = dict(layer_name=layer_name\
-                , attribute='B19013_Med'\
+                , attribute='Socdis_202'\
                 ,method='quantile'\
-                ,intervals=2\
+                ,intervals=3\
                 ,ramp='Random'\
                 ,startColor='#fff5f0'\
                 ,endColor='#67000d'\
@@ -171,5 +210,5 @@ if __name__=='__main__':
     #    metadata = ls.layer_metadata
     #    if metadata:
     #        print (metadata.get_metadata_dict())
-    print ('-'*40)       
+    print ('-'*40)
     print (ls.get_json_message())

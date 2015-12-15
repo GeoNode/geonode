@@ -21,7 +21,7 @@ def dashes(): msg('-' * 40)
 def msgt(m): dashes(); msg(m); dashes()
 
 class ValidationFormTest(TestCase):
-    
+
     def setUp(self):
          self.test_data = {\
                      #
@@ -59,9 +59,9 @@ class ValidationFormTest(TestCase):
                      u'return_to_dataverse_url': u'http://localhost:8080/dataset.xhtml?id=1383&versionId362'\
                     }
     def test_form_validation1(self):
-    
+
         msgt('(1) Test valid data')
-        
+
         validation_form = DataverseLayerMetadataValidationForm(self.test_data)
         #print 'valid',validation_form.is_valid()
         self.assertEqual(validation_form.is_valid(), True)
@@ -81,18 +81,18 @@ class ValidationFormTest(TestCase):
 
         msg('check for attributes in error')
         err_keys = validation_form.errors.keys()
-        msg(err_keys)        
+        msg(err_keys)
         self.assertEqual('return_to_dataverse_url' in err_keys, True)
         self.assertEqual('dataset_id' in err_keys, True)
-        
+
         msg('check for err messages')
         err_msgs = validation_form.errors.values()
         msg(err_msgs)
         self.assertEqual([u'Enter a valid URL.'] in err_msgs, True)
         self.assertEqual([u'Enter a whole number.'] in err_msgs, True)
-    
+
     def test_form_validation3(self):
-        
+
         msgt('(3) Does form validate with the Geoconnect GISDataFile object turned to a dict--it has extra fields')
 
         tdata = self.test_data.copy()
@@ -104,7 +104,7 @@ class ValidationFormTest(TestCase):
         validation_form.is_valid()
         msg(validation_form.errors)
         self.assertEqual(validation_form.is_valid(), True)
-        
+
         dvinfo_obj = validation_form.save(commit=False)
         self.assertEqual(type(dvinfo_obj), DataverseLayerMetadata)
         msg('yes, converts into a DataverseMetadata object (minus the map_layer)')
@@ -203,37 +203,5 @@ class SimpleClientTest(unittest.TestCase):
 
 
 """
-import requests
-data = dict(geoconnect_token='test-token'\
-        , dv_user_id=1\
-        , datafile_id=1392\
-        )
-url = 'http://127.0.0.1:8000/dvn-layer/get-existing-layer-info/'
-r = requests.post(url, data=data)
-print r.status_code
-print r.text
-
-#--------------------------------
-import requests
-data = dict(geoconnect_token='test-token'\
-        , dv_user_id=5\
-        )
-url = 'http://127.0.0.1:8000/dvn-layer/get-dataverse-user-layers/'
-r = requests.post(url, data=data)
-print r.status_code
-print r.text
-
-#--------------------------------
-import requests
-data = dict(geoconnect_token='test-token'\
-        , dv_user_id=5\
-        , datafile_id=90\
-        )
-url = 'http://127.0.0.1:8000/dvn-layer/get-dataverse-user-layers/'
-#url = 'http://127.0.0.1:8000/dvn-layer/get-existing-layer-info/'
-
-r = requests.post(url, data=data)
-print r.status_code
-print r.text
 
 """
