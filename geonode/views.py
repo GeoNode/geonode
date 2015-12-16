@@ -136,3 +136,8 @@ def ident_json(request):
     json_data['counts'] = facets({'request': request, 'facet_type': 'home'})
 
     return HttpResponse(content=json.dumps(json_data), mimetype='application/json')
+
+def h_keywords(request):
+    from geonode.base.models import HierarchicalKeyword as hk
+    keywords = json.dumps(hk.dump_bulk_tree())
+    return HttpResponse(content=keywords, mimetype='application/json') 

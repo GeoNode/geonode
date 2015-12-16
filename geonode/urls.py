@@ -69,6 +69,9 @@ urlpatterns = patterns('',
                        # ident
                        url(r'^ident.json$', 'geonode.views.ident_json', name='ident_json'),
 
+                       # h keywords
+                       url(r'^h_keywords_api$', 'geonode.views.h_keywords', name='h_keywords_api'),
+
                        # Search views
                        url(r'^search/$', TemplateView.as_view(template_name='search/search.html'), name='search'),
 
