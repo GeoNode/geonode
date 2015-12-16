@@ -1,0 +1,128 @@
+:Author: Margherita Di Leo
+.. _devmode_install_centos:
+
+######################################
+Install GeoNode on CentOS 7 (dev mode)
+######################################
+
+Preparation
+===========
+
+Make sure all the needed libraries are installed::
+
+    yum -y update
+
+    yum groupinstall 'Development Tools'
+    yum install -y libxml2-devel libxslt-devel \
+    postgresql postgresql-server postgresql-contrib \
+    postgresql-libs postgresql-devel postgis geos-python \
+    python python-tools python-devel python-pillow python-lxml \
+    openssh-clients zip unzip wget git gdal python-virtualenv \
+    gdal-python geos python-pip python-imaging python-devel \
+    gcc-c++ python-psycopg2 libxml2 libxml2-devel \
+    libxml2-python libxslt libxslt-devel libxslt-python
+
+
+Install pip
+===========
+
+    rpm -iUvh http://dl.fedoraproject.org/pub/epel/7/x86_64/e/epel-release-7-5.noarch.rpm
+    yum -y update
+    yum -y install python-pip
+    pip install --upgrade pip
+
+Install virtualenvwrapper
+-------------------------
+
+    pip install virtualenvwrapper
+
+
+Setup Postgresql
+================
+
+    systemctl enable postgresql
+    passwd -u postgres -f
+    passwd postgres
+
+Create GeoNode role and database
+--------------------------------
+
+    systemctl start postgresql.service
+    su - postgres
+    initdb
+    pg_ctl start
+    pg_ctl status 
+
+    createdb geonode
+    postgres=#
+    postgres=# \password postgres
+    postgres=# CREATE USER geonode WITH PASSWORD 'geonode'; 
+    postgres=# GRANT ALL PRIVILEGES ON DATABASE "geonode" to geonode;
+    postgres=# \q
+
+
+Install Java
+============
+
+    # check if java is installed
+    java -version
+    # install java
+    yum install -y java-1.8.0-openjdk-devel
+
+
+Setup a virtual environment
+===========================
+
+Let's assume your user name is v-user. You need to edit your .bashrc file
+
+    nano /home/v-user/.bashrc
+
+adding the following lines:
+
+    # virtualenvwrapper
+    export VIRTUALENVWRAPPER_PYTHON=/usr/bin/python
+    export WORKON_HOME=home/v-user/.venvs
+    source /usr/bin/virtualenvwrapper.sh
+    export PIP_DOWNLOAD_CACHE=$HOME/.pip-downloads
+
+Save and exit. Then,
+
+    source /home/v-user/.bashrc
+
+
+Install GeoNode
+===============
+
+Setup a virtual environment for GeoNode:
+
+    mkvirtualenv geonode --system-site-packages
+    workon geonode
+
+Get the code: we will download the current stable version
+
+    wget https://github.com/GeoNode/geonode/archive/debian/2.4.0+thefinal0.zip
+    unzip 2.4.0+thefinal0.zip
+    cd geonode-debian-2.4.0-thefinal0/
+
+Install
+
+    pip install -e . --use-mirrors
+
+Verify the installation
+
+    pip freeze
+
+In case of successful installation, this should return several (50+) lines.
+
+
+Install GeoServer
+-----------------
+
+    paver setup
+
+This should return: 
+
+    GeoNode development environment successfully set up.If you have not set 
+    up an administrative account, please do so now. Use "paver start" to start 
+    up the server.
+

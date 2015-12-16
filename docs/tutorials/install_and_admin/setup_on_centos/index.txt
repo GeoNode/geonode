@@ -15,3 +15,4 @@ on a CentOS 7 machine.
    install_base_tomcat
    install_base_httpd
    install_base_postgresql
+   devmode_install_centos
