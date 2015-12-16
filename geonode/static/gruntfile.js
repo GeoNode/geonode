@@ -83,7 +83,7 @@ module.exports = function(grunt) {
             'leaflet-fullscreen/dist/fullscreen@2x.png',
             'leaflet-fullscreen/dist/fullscreen.png',
             'eonasdan-bootstrap-datetimepicker/build/css/bootstrap-datetimepicker.css',
-            'bootstrap-treeview/dist/bootstrap-treeview.min.css
+            'bootstrap-treeview/dist/bootstrap-treeview.min.css',
           ]
         }, {
           expand: true,
