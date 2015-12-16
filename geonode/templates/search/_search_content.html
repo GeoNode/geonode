@@ -27,6 +27,9 @@
               {% include "search/_text_filter.html" %}
             {% endif  %}
         <div id="slide-pane">
+            {% if SEARCH_FILTERS.H_KEYWORDS_ENABLED %}
+              {% include "search/_h_keywords_filter.html" %}
+            {% endif %}
             {% if SEARCH_FILTERS.TYPE_ENABLED and include_type_filter == 'true' %}
               {% include "search/_type_filters.html" %}
             {% endif %}
