@@ -61,6 +61,19 @@
         });
     }
 
+  module.load_h_keywords = function($http, $rootScope, $location){
+    var params = typeof FILTER_TYPE == 'undefined' ? {} : {'type': FILTER_TYPE};
+    $http.get(H_KEYWORDS_ENDPOINT, {params: params}).success(function(data){
+        $('#treeview').treeview({
+          data: data,
+          levels: 1,
+          onNodeSelected: function($event, $data) {
+            console.log($data.text);
+          }
+        });
+    });
+  }
+
   module.load_regions = function ($http, $rootScope, $location){
         var params = typeof FILTER_TYPE == 'undefined' ? {} : {'type': FILTER_TYPE};
         if ($location.search().hasOwnProperty('title__icontains')){
@@ -158,9 +171,11 @@
     if ($('#categories').length > 0){
        module.load_categories($http, $rootScope, $location);
     }
-    if ($('#keywords').length > 0){
-       module.load_keywords($http, $rootScope, $location);
-    }
+    //if ($('#keywords').length > 0){
+    //   module.load_keywords($http, $rootScope, $location);
+    //}
+    module.load_h_keywords($http, $rootScope, $location);
+    
     if ($('#regions').length > 0){
        module.load_regions($http, $rootScope, $location);
     }
@@ -284,6 +299,7 @@
           $location.search($scope.query);
         }, true);
     }
+
 
     /*
     * Add the selection behavior to the element, it adds/removes the 'active' class
