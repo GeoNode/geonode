@@ -100,10 +100,10 @@ def iso2dict(exml):
         if (hasattr(mdata.identification, 'keywords') and
                 len(mdata.identification.keywords) > 0):
             for kw in mdata.identification.keywords:
-                if kw['type'] == "theme":
-                    keywords.extend(kw['keywords'])
-                elif kw['type'] == "place":
+                if kw['type'] == "place":
                     regions.extend(kw['keywords'])
+                else:
+                    keywords.extend(kw['keywords'])
         if len(mdata.identification.otherconstraints) > 0:
             vals['constraints_other'] = \
                 mdata.identification.otherconstraints[0]
