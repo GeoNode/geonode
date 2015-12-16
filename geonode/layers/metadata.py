@@ -104,9 +104,6 @@ def iso2dict(exml):
                     keywords.extend(kw['keywords'])
                 elif kw['type'] == "place":
                     regions.extend(kw['keywords'])
-        if len(mdata.identification.securityconstraints) > 0:
-            vals['constraints_use'] = \
-                mdata.identification.securityconstraints[0]
         if len(mdata.identification.otherconstraints) > 0:
             vals['constraints_other'] = \
                 mdata.identification.otherconstraints[0]

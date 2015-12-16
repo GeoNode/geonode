@@ -182,7 +182,7 @@ class GeoNodeMapTest(TestCase):
         uploaded = file_upload(filename)
         wcs_link = False
         for link in uploaded.link_set.all():
-            if link.mime == 'GeoTIFF':
+            if link.mime == 'image/tiff':
                 wcs_link = True
         self.assertTrue(wcs_link)
 
