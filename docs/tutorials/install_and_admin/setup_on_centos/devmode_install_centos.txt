@@ -13,7 +13,8 @@ Make sure all the needed libraries are installed::
     yum -y update
 
     yum groupinstall 'Development Tools'
-    yum install -y libxml2-devel libxslt-devel \
+    
+    yum install -y libxml2-devel libxslt-devel libjpeg-turbo-devel \
     postgresql postgresql-server postgresql-contrib \
     postgresql-libs postgresql-devel postgis geos-python \
     python python-tools python-devel python-pillow python-lxml \
@@ -25,29 +26,35 @@ Make sure all the needed libraries are installed::
 
 Install pip
 ===========
+Installation of Python pip:
 
     rpm -iUvh http://dl.fedoraproject.org/pub/epel/7/x86_64/e/epel-release-7-5.noarch.rpm
     yum -y update
     yum -y install python-pip
     pip install --upgrade pip
 
-Install virtualenvwrapper
--------------------------
+Install Python Virtual Environment
 
     pip install virtualenvwrapper
 
 
 Setup Postgresql
 ================
+Enable Postgresql service
 
     systemctl enable postgresql
+
+Change postgres UNIX password
+
     passwd -u postgres -f
     passwd postgres
 
-Create GeoNode role and database
---------------------------------
+Start Postgresql service
 
     systemctl start postgresql.service
+
+Create GeoNode role and database
+
     su - postgres
     initdb
     pg_ctl start
@@ -63,21 +70,23 @@ Create GeoNode role and database
 
 Install Java
 ============
+First, check if Java is already installed
 
-    # check if java is installed
     java -version
-    # install java
+
+In case, install Java
+
     yum install -y java-1.8.0-openjdk-devel
 
 
 Setup a virtual environment
 ===========================
 
-Let's assume your user name is v-user. You need to edit your .bashrc file
+Assuming your user name is v-user, you need to edit your .bashrc file
 
     nano /home/v-user/.bashrc
 
-adding the following lines:
+adding the following lines (please replace v-user with your actual user name):
 
     # virtualenvwrapper
     export VIRTUALENVWRAPPER_PYTHON=/usr/bin/python
@@ -92,13 +101,12 @@ Save and exit. Then,
 
 Install GeoNode
 ===============
-
-Setup a virtual environment for GeoNode:
+Setup a virtual environment for GeoNode
 
     mkvirtualenv geonode --system-site-packages
     workon geonode
 
-Get the code: we will download the current stable version
+Download the current stable version (2.4)
 
     wget https://github.com/GeoNode/geonode/archive/debian/2.4.0+thefinal0.zip
     unzip 2.4.0+thefinal0.zip
@@ -117,6 +125,7 @@ In case of successful installation, this should return several (50+) lines.
 
 Install GeoServer
 -----------------
+The installation of Geoserver starts with
 
     paver setup
 
@@ -125,4 +134,3 @@ This should return:
     GeoNode development environment successfully set up.If you have not set 
     up an administrative account, please do so now. Use "paver start" to start 
     up the server.
-
