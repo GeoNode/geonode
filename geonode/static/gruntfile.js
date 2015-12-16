@@ -128,7 +128,8 @@ module.exports = function(grunt) {
             'leaflet-fullscreen/dist/Leaflet.fullscreen.min.js',
             'moment/min/moment-with-locales.min.js',
             'eonasdan-bootstrap-datetimepicker/build/js/bootstrap-datetimepicker.min.js',
-            'bootstrap-treeview/dist/bootstrap-treeview.min.js'
+            'bootstrap-treeview/dist/bootstrap-treeview.min.js',
+            'bootstrap-tokenfield/js/bootstrap-tokenfield.js'
           ]
         }]
       }

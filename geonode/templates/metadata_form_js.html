@@ -1,6 +1,8 @@
 {% load staticfiles %}
 {% if DEBUG_STATIC %}
 <script src="{% static "lib/js/bootstrap-datetimepicker.min.js" %}" type="text/javascript"></script>
+<script src="{% static "lib/js/bootstrap-treeview.js" %}" type="text/javascript"></script>
+<script src="{% static "lib/js/bootstrap-tokenfield.js" %}" type="text/javascript"></script>
 {% endif %}
 <script type="text/javascript">
 {% autoescape off %}
@@ -46,6 +48,21 @@
         $('#layer_metadata_update :input').attr('readonly','readonly');
         {% endif %}
         $('.has-popover').popover({'trigger':'hover'});
+
+        var params = typeof FILTER_TYPE == 'undefined' ? {} : {'type': FILTER_TYPE};
+        $('#keywords').tokenfield()
+
+        $.ajax('/h_keywords_api', {params: params}).success(function(data){
+            $('#treeview').treeview({
+                data: data,
+                levels: 99,
+                onNodeSelected: function($event, $data) {
+                    $('#keywords').tokenfield('createToken', $data.text);
+                    kw = $('#keywords').tokenfield('gettokens');
+                    console.log(kw);
+                }
+            });
+        });
     });
 {% endautoescape %}
 </script>

@@ -54,6 +54,9 @@ geonode/static/lib/js/ZeroClipboard.min.js
 geonode/static/lib/js/moment.min.js
 geonode/static/lib/css/bootstrap-treeview.css
 geonode/static/lib/js/bootstrap-treeview.js
+geonode/static/lib/css/bootstrap-treeview.min.css
+geonode/static/lib/js/bootstrap-tokenfield.js
+geonode/static/lib/js/bootstrap-treeview.min.js
 
 # Uploaded files
 geonode/uploaded
