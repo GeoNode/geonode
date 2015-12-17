@@ -344,7 +344,12 @@ class Map(ResourceBase, GXPMapBase):
         lg_layers = [l.name for l in layers]
 
         # Group layer bounds and name
-        lg_bounds = [str(coord) for coord in self.bbox]
+        lg_bounds = [
+            str(min(self.geonode_map.bbox_x0,self.geonode_map.bbox_x1)), # xmin
+            str(max(self.geonode_map.bbox_x0,self.geonode_map.bbox_x1)), # xmax
+            str(min(self.geonode_map.bbox_y0,self.geonode_map.bbox_y1)), # ymin
+            str(max(self.geonode_map.bbox_y0,self.geonode_map.bbox_y1)), # ymax
+            str(self.geonode_map.srid)]
         lg_name = '%s_%d' % (slugify(self.title), self.id)
 
         # Update existing or add new group layer
