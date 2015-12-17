@@ -1,9 +1,8 @@
 {% if DEBUG_STATIC %}
 
-<script src="{{ STATIC_URL }}lib/js/bootstrap-datepicker.js?v={{ VERSION }}" type="text/javascript"></script>
 <script src="{{ STATIC_URL }}lib/js/angular.js?v={{ VERSION }}"></script>
 <script src="{{ STATIC_URL }}lib/js/angular-leaflet-directive.min.js?v={{ VERSION }}"></script>
-<script src="{{ STATIC_URL }}lib/js/bootstrap-treeview.js?v={{ VERSION }}"></script>
+<script src="{{ STATIC_URL }}lib/js/bootstrap-treeview.min.js?v={{ VERSION }}"></script>
 {% endif %}
 
 {% if include_spatial == 'true' %}

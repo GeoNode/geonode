@@ -116,4 +116,4 @@ admin.site.register(License, LicenseAdmin)
 admin.site.register(HierarchicalKeyword, HierarchicalKeywordAdmin)
 
 class ResourceBaseAdminForm(autocomplete_light.ModelForm):
-    keywords = TaggitField(widget=TaggitWidget('TagAutocomplete'), required=False)
+    keywords = TaggitField(widget=TaggitWidget('HierarchicalKeywordAutocomplete'), required=False)
