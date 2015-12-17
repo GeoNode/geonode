@@ -50,16 +50,33 @@
         $('.has-popover').popover({'trigger':'hover'});
 
         var params = typeof FILTER_TYPE == 'undefined' ? {} : {'type': FILTER_TYPE};
-        $('#keywords').tokenfield()
+        $('#id_resource-keywords').tokenfield({
+            /*
+            autocomplete: {
+                source: ['red','blue','green','yellow','violet','brown','purple','black','white'],
+                delay: 100
+            },
+            showAutocompleteOnFocus: true
+            */
+        })
 
         $.ajax('/h_keywords_api', {params: params}).success(function(data){
             $('#treeview').treeview({
                 data: data,
-                levels: 99,
+                levels: 1,
                 onNodeSelected: function($event, $data) {
-                    $('#keywords').tokenfield('createToken', $data.text);
-                    kw = $('#keywords').tokenfield('gettokens');
-                    console.log(kw);
+                    //TODO: This seems a horribly inelegant way of doing this in 12 Lines
+                    kws = $('#id_resource-keywords').tokenfield('getTokens');
+                    newToken = $data.text
+                    exists = false 
+                    for (kw in kws) {
+                        if (kws[kw]['value'].indexOf(newToken) >=0) {
+                            exists = true
+                        }
+                    }
+                    if (!exists) {
+                        $('#id_resource-keywords').tokenfield('createToken', $data.text);
+                    }
                 }
             });
         });

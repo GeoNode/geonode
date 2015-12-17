@@ -22,7 +22,7 @@ import autocomplete_light
 from autocomplete_light.contrib.taggit_field import TaggitField, TaggitWidget
 
 from django import forms
-from django.forms.widgets import Input, Widget
+from django.forms.widgets import TextInput, Widget
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext as _
 
@@ -39,14 +39,20 @@ class CategoryChoiceField(forms.ModelChoiceField):
         return '<span class="has-popover" data-container="body" data-toggle="popover" data-placement="top" ' \
                'data-content="' + obj.description + '" trigger="hover">' + obj.gn_description + '</span>'
 
-class TreeWidget(Input):
+class TreeWidget(forms.TextInput):
+        input_type = 'text'
         def __init__(self, attrs=None):
             super(TreeWidget, self).__init__(attrs) 
 
-        def render(self, name, value, attrs=None):
-            output = ["<input class='form-control' id='keywords' name='keywords' value=''>"]
+        def render(self, name, values, attrs=None):
+            vals = ','.join([str(i.tag.name) for i in values])
+            #vals = ""
+            output = ["<input class='form-control' id='id_resource-keywords' name='resource-keywords' value='%s'><br/>" % (vals)]
             output.append('<div id="treeview" class=""></div>')
             return mark_safe(u'\n'.join(output))
+        
+
+        
 
 class CategoryForm(forms.Form):
     category_choice_field = CategoryChoiceField(required=False,
@@ -122,7 +128,7 @@ class ResourceBaseForm(TranslationModelForm):
             username='AnonymousUser'),
         widget=autocomplete_light.ChoiceWidget('ProfileAutocomplete'))
 
-    keywords = forms.CharField(widget=TreeWidget)
+    keywords = forms.CharField(required=False, help_text=_("Select keywords from the tree"), widget=TreeWidget())
 
     #keywords = TaggitField(
     #    required=False,
