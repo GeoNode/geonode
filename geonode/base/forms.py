@@ -22,6 +22,8 @@ import autocomplete_light
 from autocomplete_light.contrib.taggit_field import TaggitField, TaggitWidget
 
 from django import forms
+from django.forms.widgets import Input, Widget
+from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext as _
 
 from mptt.forms import TreeNodeMultipleChoiceField
@@ -37,6 +39,14 @@ class CategoryChoiceField(forms.ModelChoiceField):
         return '<span class="has-popover" data-container="body" data-toggle="popover" data-placement="top" ' \
                'data-content="' + obj.description + '" trigger="hover">' + obj.gn_description + '</span>'
 
+class TreeWidget(Input):
+        def __init__(self, attrs=None):
+            super(TreeWidget, self).__init__(attrs) 
+
+        def render(self, name, value, attrs=None):
+            output = ["<input class='form-control' id='keywords' name='keywords' value=''>"]
+            output.append('<div id="treeview" class=""></div>')
+            return mark_safe(u'\n'.join(output))
 
 class CategoryForm(forms.Form):
     category_choice_field = CategoryChoiceField(required=False,
@@ -112,10 +122,12 @@ class ResourceBaseForm(TranslationModelForm):
             username='AnonymousUser'),
         widget=autocomplete_light.ChoiceWidget('ProfileAutocomplete'))
 
-    keywords = TaggitField(
-        required=False,
-        help_text=_("A space or comma-separated list of keywords"),
-        widget=TaggitWidget('HierarchicalKeywordAutocomplete'))
+    keywords = forms.CharField(widget=TreeWidget)
+
+    #keywords = TaggitField(
+    #    required=False,
+    #    help_text=_("A space or comma-separated list of keywords"),
+    #    widget=TaggitWidget('TagAutocomplete'))
 
     regions = TreeNodeMultipleChoiceField(
         required=False,

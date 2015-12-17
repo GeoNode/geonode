@@ -14,20 +14,6 @@
   </ul>
 </nav>
 {% endif %}
-{% if SEARCH_FILTERS.KEYWORDS_ENABLED %}
-<nav class="filter">
-  <h4><a href="#" class="toggle toggle-nav"><i class="fa fa-chevron-right"></i> {% trans "Keywords" %}</a></h4>
-  <ul class="nav closed" id="keywords">
-    {% verbatim %}
-      <li ng-repeat="keyword in keywords" ng-if="keyword.count > 0">
-        <a data-value="{{ keyword.slug }}" data-filter="keywords__slug__in" ng-click="multiple_choice_listener($event)" class="{{keyword.active}}">{{ keyword.name }}
-          <span class="badge pull-right">{{ keyword.count }}</span>
-        </a>
-      </li>
-    {% endverbatim %}
-  </ul>
-</nav>
-{% endif %}
 {% if SEARCH_FILTERS.OWNERS_ENABLED %}
 <nav class="filter">
   <h4><a href="#" class="toggle toggle-nav"><i class="fa fa-chevron-right"></i> {% trans "Owners" %}</a></h4>

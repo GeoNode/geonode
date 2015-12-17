@@ -7,6 +7,7 @@ from pyproj import transform, Proj
 from urlparse import urljoin, urlsplit
 
 from django.db import models
+from django.core import serializers
 from django.db.models import Q
 from django.utils.translation import ugettext_lazy as _
 from django.core.exceptions import ValidationError
@@ -191,6 +192,44 @@ class License(models.Model):
 class HierarchicalKeyword(TagBase, MP_Node):
     node_order_by = [ 'name' ]
 
+    @classmethod
+    def dump_bulk_tree(cls, parent=None, keep_ids=True):
+        """Dumps a tree branch to a python data structure."""
+        qset = cls._get_serializable_model().get_tree(parent)
+        ret, lnk = [], {}
+        for pyobj in qset:
+            serobj = serializers.serialize('python', [pyobj])[0]
+            # django's serializer stores the attributes in 'fields'
+            fields = serobj['fields']
+            depth = fields['depth']
+            fields['text'] = fields['name']
+            fields['href'] = fields['slug']
+            del fields['name']
+            del fields['slug']
+            del fields['path']
+            del fields['numchild']
+            del fields['depth']
+            if 'id' in fields:
+                # this happens immediately after a load_bulk
+                del fields['id']
+
+            newobj = {}
+            for field in fields:
+                newobj[field] = fields[field] 
+            if keep_ids:
+                newobj['id'] = serobj['pk']
+
+            if (not parent and depth == 1) or\
+               (parent and depth == parent.depth):
+                ret.append(newobj)
+            else:
+                parentobj = pyobj.get_parent()
+                parentser = lnk[parentobj.pk]
+                if 'nodes' not in parentser:
+                    parentser['nodes'] = []
+                parentser['nodes'].append(newobj)
+            lnk[pyobj.pk] = newobj
+        return ret
 
 class TaggedContentItem(ItemBase):
     content_object = models.ForeignKey('ResourceBase')
