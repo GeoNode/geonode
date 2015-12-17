@@ -52,6 +52,8 @@ import tarfile
 
 from zipfile import ZipFile, is_zipfile
 
+from datetime import datetime
+
 logger = logging.getLogger('geonode.layers.utils')
 
 _separator = '\n' + ('-' * 100) + '\n'
@@ -503,7 +505,7 @@ def file_upload(filename, name=None, user=None, title=None, abstract=None,
             layer.regions.add(*regions_resolved)
 
     if date is not None:
-        layer.date = date
+        layer.date = datetime.strptime(date, '%Y-%m-%d %H:%M:%S')
         layer.save()
 
     return layer
