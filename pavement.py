@@ -114,7 +114,7 @@ def install_deps(options):
              'Use "paver bundle_deps" to create an install bundle')
         pip_install("-r shared/%s" % options.config.corelibs)
         pip_install("-r shared/%s" % options.config.devlibs)
-        pip_install('-e %s' %(path("src/GeoNodePy")))
+        pip_install('-e %s' %(path(".")))
         if options.config.platform == "win32":
             info("You will need to install 'PIL' and 'ReportLab' " \
                  "separately to do PDF generation")
@@ -287,7 +287,7 @@ def setup_geonode_client(options):
     """
     Fetch geonode-client
     """
-    static = path("./src/GeoNodePy/geonode/static/geonode")
+    static = path("./geonode/static/geonode")
     if not static.exists():
         static.mkdir()
 
@@ -333,7 +333,7 @@ def package_client(options):
         geonode_client_target_war.copy(options.deploy.out_dir)
     else:
         # Extract static files to static_location
-        geonode_media_dir = path("./src/GeoNodePy/geonode/media")
+        geonode_media_dir = path("./geonode/media")
         static_location = geonode_media_dir / "static"
 
         dst_zip = "src/geonode-client/build/geonode-client.zip"
@@ -362,8 +362,7 @@ def package_webapp(options):
     sh("django-admin.py collectstatic -v0 --settings=geonode.settings --noinput")
 
     """Package (Python, Django) web application and dependencies."""
-    with pushd('src/GeoNodePy'):
-        sh('python setup.py egg_info sdist')
+    sh('python setup.py egg_info sdist')
 
     req_file = path(os.getcwd()) / options.deploy.req_file
     req_file.write_text(deploy_req_txt)
