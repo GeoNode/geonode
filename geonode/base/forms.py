@@ -128,7 +128,7 @@ class ResourceBaseForm(TranslationModelForm):
             username='AnonymousUser'),
         widget=autocomplete_light.ChoiceWidget('ProfileAutocomplete'))
 
-    keywords = forms.CharField(required=False, help_text=_("Select keywords from the tree"), widget=TreeWidget())
+    keywords = TaggitField(required=False, help_text=_("Select keywords from the tree"), widget=TreeWidget())
 
     #keywords = TaggitField(
     #    required=False,
