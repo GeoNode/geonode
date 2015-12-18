@@ -383,13 +383,18 @@ div.overlay-scaleline {
 /* WorldMap additions/modifications */
 
 .x-btn-noicon .x-btn-small .x-btn-text {
-  height: 12px;
+  height: 23px;
+
+}
+
+.ext-gecko .x-btn button, .ext-webkit .x-btn button {
+    padding-right: 6px;
 }
 
 .x-btn-text {
     font-size: 8pt;
     /*color: #18469C;*/
-    padding:5px;
+    padding:0px;
     border-radius: 2px;
     /*border: 1px solid #000;*/
     border:none;
@@ -399,7 +404,6 @@ div.overlay-scaleline {
 .x-btn-text button {
     font-size: 8pt;
     text-decoration: none;
-    color: #000;
 }
 
 .x-btn-link-medium {
@@ -408,8 +412,9 @@ div.overlay-scaleline {
     text-align:right;
 }
 
+
 .x-btn .icon-add, .x-menu-item .icon-add {
-    background-image: url(img/silk/add.png);
+    background-image: url(../../externals/ext/resources/images/white/silk/add.png);
 }
 
 
@@ -616,7 +621,8 @@ ul.x-tab-strip-top {
 .x-panel-body-noheader {
   border-top: 0px solid;
   border-bottom: 0px solid;
-  border-color: #dbdbdb;
+  border-color: #fff;
+  /*border-color: #dbdbdb;*/
 }
 
 
@@ -696,16 +702,21 @@ ul.x-tab-strip-top {
 
 .x-toolbar .x-btn-click .x-btn-bc, .x-toolbar .x-btn-menu-active .x-btn-bc, .x-toolbar .x-btn-pressed .x-btn-bc,  .x-toolbar .x-btn-over .x-btn-bc {
     background-image: none;
-    background-color: #333;
+    background-color: #d9d9d9;
+    height: 1px;
 /*    background-color: #287AB0;*/
+}
+
+.x-btn .gxp-icon-note {
+    background-image: url("../../externals/ext/resources/images/white/tree/note.png");
+    background-size: 17%;
 }
 
 .x-btn-text-icon .x-btn-icon-small-left .x-btn-text {
     background-position: 0px center;
     background-repeat: no-repeat;
-/*    padding-left: 18px; */
-    padding-left: 0px;
-    height: 5px;
+    padding-left: 19px;
+    height: 23px;
 }
 
 .x-btn-icon .x-btn-small .x-btn-text {
@@ -713,7 +724,7 @@ ul.x-tab-strip-top {
 }
 
 .x-tree-node .x-tree-selected {
-    background-color: #d9d9d9;
+    background-color: #d3d3d3;
 }
 
 .x-tip .x-tip-tc, .x-tip .x-tip-tl, .x-tip .x-tip-tr, .x-tip .x-tip-bc, .x-tip .x-tip-bl, .x-tip .x-tip-br, .x-tip .x-tip-ml, .x-tip .x-tip-mr {
@@ -836,7 +847,12 @@ a.x-grid3-hd-btn {
 .x-form-text, textarea.x-form-field {
     background-color: #FFF;
     background-image: none;
-    border-color: #DBDBDB;
+    border-color: #d3d3d3;
+}
+
+.x-grid3-scroller {
+    border-radius: 1px;
+    border: 1px solid #d3d3d3;
 }
 
 .x-form-field-wrap .x-form-field-trigger-wrap {
@@ -861,13 +877,13 @@ a.x-grid3-hd-btn {
 
 .x-grid3-body .x-grid3-row-selected .x-grid3-td-expander {
     background-image: none;
-    background-color: #dbdbdb;
+    background-color: #fff;
 }
 
 .x-grid3-row-selected {
-    background-color: #dbdbdb !important;
+    background-color: #fff !important;
     background-image: none;
-    border-color: #737373;
+    border-color: #d3d3d3;
 }
 
 .x-grid3-col .x-grid3-cell .x-grid3-td-expander .x-grid3-cell-first {
@@ -879,8 +895,14 @@ a.x-grid3-hd-btn {
   background-color: #fff;
 }
 
+.x-grid3-row-over {
+	border-color:#ddd;
+    background-color:#efefef;
+    background-image:none;
+}
+
 .x-grid3-row .x-grid3-row-collapsed .x-grid3-row-over {
-    background-color: #dbdbdb !important;
+    background-color: #fff !important;
     background-image: none;
     border-color: #1a1a1a;
 }

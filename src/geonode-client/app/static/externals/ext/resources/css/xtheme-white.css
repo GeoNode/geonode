@@ -130,7 +130,7 @@ ul.x-tab-strip-bottom{
 
 .x-tab-strip-top .x-tab-right, .x-tab-strip-top .x-tab-left, .x-tab-strip-top .x-tab-strip-inner{
 	/*background-image: url(../images/white/tabs/tabs-sprite.gif);*/
-  background-image:none; 
+  background-image:none;
 }
 
 .x-tab-strip-bottom .x-tab-right {
@@ -313,14 +313,26 @@ ul.x-tab-strip-bottom{
 .x-fieldset legend {
     font:bold 11px tahoma, arial, helvetica, sans-serif;
     color:#777777;
-}.x-btn{
+}
+.x-btn{
 	font:normal 11px tahoma, verdana, helvetica;
 }
 
 .x-btn button{
-
     font:normal 11px arial,tahoma,verdana,helvetica;
     color:#333;
+}
+
+.x-btn .add {
+    background-image: url(../images/white/silk/add.png);
+}
+
+.x-btn .icon-adduser {
+    background-image: url(../images/white/silk/add.png);
+} 
+
+.x-btn .gxp-icon-addlayers, .x-menu-item .gxp-icon-addlayers, .x-tree-node .gxp-icon-addlayers {
+    background-image: url(../images/white/silk/add.png);
 }
 
 .x-btn em {
@@ -342,6 +354,7 @@ ul.x-tab-strip-bottom{
 
 .x-btn-mc em.x-btn-arrow {
     background-image:url(../images/white/button/arrow.gif);
+    padding-right: 12px;
 }
 
 .x-btn-mc em.x-btn-split {
@@ -724,7 +737,7 @@ td.x-grid3-hd-over .x-grid3-hd-inner, td.sort-desc .x-grid3-hd-inner, td.sort-as
 }
 
 .x-grid3-row-checker, .x-grid3-hd-checker {
-    background-image:url(../images/white/grid/row-check-sprite.gif);
+    background-image:url(../images/white/grid/row-check-sprite.png);
 }
 
 .x-grid3-body .x-grid3-td-numberer {
@@ -776,7 +789,7 @@ td.x-grid3-hd-over .x-grid3-hd-inner, td.sort-desc .x-grid3-hd-inner, td.sort-as
 }
 
 .x-cols-icon {
-    background-image:url(../images/white/grid/columns.gif);
+    background-image:url(../images/white/grid/columns.png);
 }
 
 .x-show-groups-icon {
@@ -1212,7 +1225,7 @@ a.x-menu-item {
 }
 
 .x-menu-item-checked .x-menu-item-icon{
-	background-image:url(../images/white/menu/checked.gif);
+	background-image:url(../images/white/menu/checked.png);
 }
 
 .x-menu-item-checked .x-menu-group-item .x-menu-item-icon{
@@ -2088,7 +2101,7 @@ ul.x-tab-strip-top {
     background-image: none;
     background-color: #fff;
 }
-.x-btn-focus, .x-btn-pressed{
+.x-btn-focus, .x-btn-pressed, {
     background-image: none;
     background-color: #fff;
 }
