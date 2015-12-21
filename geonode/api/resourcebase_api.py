@@ -363,12 +363,12 @@ class CommonModelApi(ModelResource):
                     facets[facet][item[0]] = item[1]
 
             # Paginate the results
-            paginator = Paginator(sqs, request.GET.get('limit'))
+            paginator = Paginator(sqs, request.GET.get('limit', 1))
 
             try:
                 page = paginator.page(
-                    int(request.GET.get('offset')) /
-                    int(request.GET.get('limit'), 0) + 1)
+                    int(request.GET.get('offset', 0)) /
+                    int(request.GET.get('limit', 1)) + 1)
             except InvalidPage:
                 raise Http404("Sorry, no results on that page.")
 
