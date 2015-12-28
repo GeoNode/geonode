@@ -85,10 +85,10 @@
 
     <div id="login-area">
       {% if user.is_authenticated %}
-          <a href="{{ user.get_profile.get_absolute_url }}">{{ user.username}}</a> | <a href="{% url "account_logout" %}">{% trans "Log out" %}</a>
+          <a href="{{ user.get_profile.get_absolute_url }}">{{ user.username}}</a> | <a href="/accounts/logout/">{% trans "Log out" %}</a>
       {% else %}
           <!-- this should be updated to a url var -->
-          <a href="/account/login/?next={% if 'logout' not in request.path %}{{request.path}}{% else %}/{% endif %}"
+          <a href="/accounts/login/?next={% if 'logout' not in request.path %}{{request.path}}{% else %}/{% endif %}"
                   >{% trans "Sign in" %}</a>
       {% endif %}
       | <a class="" id="mapLink" href="/maps/new">{% trans "Create Map" %}</a>
