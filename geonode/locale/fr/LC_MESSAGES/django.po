@@ -603,7 +603,7 @@ msgstr "Favoris"
 
 #: contrib/favorite/templates/favorite/_favorite.html:17
 msgid "Log in to add/delete Favorites."
-msgstr "Indentifiez vous pour ajouter ou supprimer des favoris"
+msgstr "Identifiez vous pour ajouter ou supprimer des favoris"
 
 #: contrib/favorite/templates/favorite/_favorite_js.html:23
 msgid "Delete from Favorites"
@@ -4549,7 +4549,7 @@ msgstr "Envoyer une réponse"
 #~ msgstr "KML"
 
 #~ msgid "Tiles"
-#~ msgstr "Tiles"
+#~ msgstr "Tuiles"
 
 #~ msgid ""
 #~ "\n"
@@ -4561,79 +4561,79 @@ msgstr "Envoyer une réponse"
 #~ "      "
 
 #~ msgid "Replace this Document"
-#~ msgstr "Replace this Document"
+#~ msgstr "Remplacer ce document"
 
 #~ msgid "Edit Styles"
-#~ msgstr "Edit Styles"
+#~ msgstr "Editer les styles"
 
 #~ msgid "Set Map Thumbnail"
-#~ msgstr "Set Map Thumbnail"
+#~ msgstr "Définir la vignette de la carte"
 
 #~ msgid "Replace this Layer"
-#~ msgstr "Replace this Layer"
+#~ msgstr "Remplacer cette couche"
 
 #~ msgid "Remove this Layer"
-#~ msgstr "Remove this Layer"
+#~ msgstr "Enlever cette couche"
 
 #~ msgid "Edit Map Metadata"
-#~ msgstr "Edit Map Metadata"
+#~ msgstr "Modifier les métadonnées de la carte"
 
 #~ msgid "Profile Menu"
-#~ msgstr "Profile Menu"
+#~ msgstr "Menu du profil"
 
 #~ msgid "Share data"
-#~ msgstr "Share data"
+#~ msgstr "Partager des données"
 
 #~ msgid "Most shared"
-#~ msgstr "Most shared"
+#~ msgstr "Les plus partagées"
 
 #~ msgid "from"
-#~ msgstr "from"
+#~ msgstr "de"
 
 #~ msgid "view"
-#~ msgstr "view"
+#~ msgstr "vue"
 
 #~ msgid "Average rating"
-#~ msgstr "Average rating"
+#~ msgstr "Notation moyenne"
 
 #~ msgid "votes"
 #~ msgstr "votes"
 
 #~ msgid "You do not have permission to view this document"
-#~ msgstr "You do not have permission to view this document"
+#~ msgstr "Vous n'avez pas la permission de visualiser ce document. "
 
 #~ msgid "Remote Thumbnail"
-#~ msgstr "Remote Thumbnail"
+#~ msgstr "Vignette distante"
 
 #~ msgid "Group details"
-#~ msgstr "Group details"
+#~ msgstr "Détails du groupe"
 
 #~ msgid "Create a map"
-#~ msgstr "Create a map"
+#~ msgstr "Créer une carte"
 
 #~ msgid "You do not have permission to view this layer"
-#~ msgstr "You do not have permission to view this layer"
+#~ msgstr "Vous n'avez pas la permission de visualiser cette couche"
 
 #~ msgid "View"
-#~ msgstr "View"
+#~ msgstr "Voir"
 
 #~ msgid "You do not have permission to view this map"
-#~ msgstr "You do not have permission to view this map"
+#~ msgstr "Vous n'avez pas la permission de voir cette carte"
 
 #~ msgid "Add a Comment"
-#~ msgstr "Add a Comment"
+#~ msgstr "Ajouter un commentaire"
 
 #~ msgid "Notices"
-#~ msgstr "Notices"
+#~ msgstr "Notifications"
 
 #~ msgid "Notice settings"
-#~ msgstr "Notice settings"
+#~ msgstr "Paramétrage des notifications"
 
 #~ msgid "Observed objects"
-#~ msgstr "Observed objects"
+#~ msgstr "Objets surveillés"
 
 #~ msgid "Primary email"
-#~ msgstr "Primary email"
+#~ msgstr "Email principal"
 
 #~ msgid "change under <a href=\"%(email_url)s\">Account</a>"
 #~ msgstr "change under <a href=\"%(email_url)s\">Account</a>"
@@ -4649,19 +4649,19 @@ msgstr "Envoyer une réponse"
 #~ "You can add one by going to <a href=\"%(email_url)s\">Account</a>."
 
 #~ msgid "Mark all unseen notices seen"
-#~ msgstr "Mark all unseen notices seen"
+#~ msgstr "Marquer comme vues les notifications"
 
 #~ msgid "MONTH_DAY_FORMAT"
 #~ msgstr "MONTH_DAY_FORMAT"
 
 #~ msgid "View Notice"
-#~ msgstr "View Notice"
+#~ msgstr "Voir la notification"
 
 #~ msgid "No notices."
-#~ msgstr "No notices."
+#~ msgstr "Pas de notification"
 
 #~ msgid "Notice"
-#~ msgstr "Notice"
+#~ msgstr "Notification"
 
 #~ msgid "you"
-#~ msgstr "you"
+#~ msgstr "vous"
