@@ -50,8 +50,8 @@ urlpatterns = patterns('',
         name='auth_ajax_lookup'),
     (r'^accounts/ajax_lookup_email$', 'geonode.views.ajax_lookup_email'),
 
-    (r'^accounts/login', 'django.contrib.auth.views.login'),
-    (r'^accounts/logout', 'django.contrib.auth.views.logout'),
+    url(r'^accounts/login$', 'django.contrib.auth.views.login', name='accounts_login'),
+    url(r'^accounts/logout$', 'django.contrib.auth.views.logout', name='accounts_logout'),
 
     # Meta
     url(r'^lang\.js$', 'django.views.generic.simple.direct_to_template',
