@@ -58,6 +58,7 @@ var tile_list = [];
 var highlight_layer;
 var jurisdiction_geoms = [];
 var tile_cache = [];
+var single_click = true;
 
 var jstsParser = new jsts.io.GeoJSONReader();
 var jstsWriter = new jsts.io.GeoJSONWriter();
@@ -264,26 +265,30 @@ function wfs_proto_creator(layer_request, srs, outformat){
 /*
 Filters tiles if they intersect the geometries which are part of the jurisdiction
 */
+
+function isInJurisdiction(geoms, tile){
+    for ( var i=0; i<geoms.length; i++){
+        if (tile.intersects(geoms[i].geometry){
+            return true;
+        }
+    }
+}
+
 function jurisdictionFilter(geoms, feature_list){
     console.log("feature_list.length="+feature_list.length);
     var tile_list = [];
-    var inJurisdiction = false;
     for (var i=0;i<feature_list.length;i++){
-         for ( var j=0; j<geoms.length;j++){
-            if(feature_list[i].geometry.components[0].intersects(geoms[j].geometry)){
-                tile_list.push(feature_list[i]);
-                break;
+        if(isInJurisdiction(geoms, feature_list[i]){
+             if (find_georef(tile_list, tile.georef)<0){
+                        tile_list.push(tile);
             }
         }
     }
     return tile_list;
 }
 
-/*
-Creates a nested filter object which checks if  a tile has any data available
-*/
-function hasData( f_list){
-   var data_filter = new OpenLayers.Filter.Logical({
+function tileHasData (feature){
+    var data_filter = new OpenLayers.Filter.Logical({
         type: "||",
         filters: [
             new OpenLayers.Filter.Comparison({
@@ -303,9 +308,17 @@ function hasData( f_list){
             }),
         ]
     });
+    return data_filter.evaluate(feature);
+}
+
+/*
+Creates a nested filter object which checks if  a tile has any data available
+*/
+function hasDataFiltering( f_list){
+   
     var tile_list = [];
     for (var i=0;i<f_list.length;i++){
-        if(data_filter.evaluate(f_list[i])){
+        if(tileHasData(f_list[i])){
             tile_list.push(f_list[i]);
         }
     }
@@ -327,15 +340,29 @@ function filterSelectedTiles(tile_filter, single_click, send_notice){
                  console.log(start);
                  //json_parser = new OpenLayers.Format.GeoJSON();
                  feature_out = olGeoJSON.read(response.priv.responseText);
-                 var tiles = hasData(feature_out);
+                 var tiles = hasDataFiltering(feature_out);
                   if (jurisdiction_geoms.length > 0){
-                     tiles = hasData(jurisdictionFilter(jurisdiction_geoms, feature_out));
-                    // tiles = hasData(feature_out);
-                  }else{
-                      tiles = hasData(feature_out);
+                     for (var i=0;i<tiles.length;i++){
+                         if (isInJurisdiction(jurisdiction_geoms, tile[i]){
+                              if (find_georef(tile_list, tile.georef)<0){
+                                     var corners = {
+                                        "ur_x": f.data.MAXX, "ur_y": f.data.MAXY,
+                                        "ul_x": f.data.MINX, "ul_y": f.data.MAXY,
+                                        "ll_x": f.data.MINX, "ll_y": f.data.MINY,
+                                        "lr_x": f.data.MAXX,"lr_y": f.data.MINY
+                                    }
+                                    var tile = createTile(corners);
+                                    tile_list.push(tile);
+                                    tile.feature = createHighlightBox(tile.corners);
+                                    highlight_layer.addFeatures([tile.feature]);
+                              }else if (single_click){
+                                  removeHighlight(tile.georef, highlight_layer);
+                              }
+                         }
+                     }
                   }
-                  
-                  for (var i=0; i<tiles.length; i++){
+                  display_points("point_display", highlight_layer);
+                  /*for (var i=0; i<tiles.length; i++){
                     var f = tiles[i];
                     var corners = {
                         "ur_x": f.data.MAXX, "ur_y": f.data.MAXY,
@@ -343,17 +370,17 @@ function filterSelectedTiles(tile_filter, single_click, send_notice){
                         "ll_x": f.data.MINX, "ll_y": f.data.MINY,
                         "lr_x": f.data.MAXX,"lr_y": f.data.MINY
                     }
-                    var tile = createTile(corners);
+                    var tile = createTile(corners);*/
 
-                    if (find_georef(tile_list, tile.georef)<0){
+                    /*if (find_georef(tile_list, tile.georef)<0){
                         tile_list.push(tile);
                         tile.feature = createHighlightBox(tile.corners);
                         highlight_layer.addFeatures([tile.feature]);
                     }else{
                         removeHighlight(tile.georef, highlight_layer);
-                    }
-                    display_points("point_display", highlight_layer);
-                  }
+                    }*/
+                    
+                  
                   
                   if (tiles.length < feature_out.length){
                       if (feature_out.length==1){
@@ -368,7 +395,7 @@ function filterSelectedTiles(tile_filter, single_click, send_notice){
                       document.getElementById("warning").style.display =  "inline";*/
                       //container.setAttribute("hidden","hidden");
                   }
-                  
+                  single_click=true;
                   end = new Date().getTime();
                   console.log(end);
              }
@@ -384,10 +411,10 @@ function selection_bounds(map_bounds, highlight_layer) {
     
     var transformed_bounds = map_bounds.clone().transform(new OpenLayers.Projection("EPSG:900913"), new OpenLayers.Projection("EPSG:32651"));
     var filter;
-    if (jurisdiction_geoms.length > 0){
+    /*if (jurisdiction_geoms.length > 0){
         var jstsSelectionBox= jstsParser.read(olGeoJSON.write(transformed_bounds.toGeometry()));
         console.log(jstsSelectionBox);
-        //var jstsIntersection = jstsJurisdictionGeoms.intersection(jstsSelectionBox);
+        var jstsIntersection = jstsJurisdictionGeoms.intersection(jstsSelectionBox);
         var jstsIntersection = new jsts.geom.MultiPolygon();
         console.log(jstsIntersection);
         
@@ -417,10 +444,11 @@ function selection_bounds(map_bounds, highlight_layer) {
         filter= new OpenLayers.Filter.Spatial({
             type: OpenLayers.Filter.Spatial.INTERSECTS,
             property: "the_geom",
-            value: transformed_bounds.toGeometry() });
+            value: transformed_bounds.toGeometry() });*/
     }
     
     //filterSelectedTiles(box_filter, false, true);
+    single_click = false;
     filterSelectedTiles(filter, false, true);
 }
 
@@ -645,7 +673,7 @@ Ext.onReady(function (){
                     matchCase: true,
                     value: createTile(computed_corners).georef//tile.georef
             });
-            
+            single_click = true;
             filterSelectedTiles(filter, true, true);
         }
     });
