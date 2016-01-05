@@ -2169,7 +2169,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             renderTo: 'search_results',
             trackSelection: true,
             permalinkURL: '/data/search',
-            searchURL: '/data/search/api',
+            searchURL: 'http://54.83.116.189:8983/solr/wmdata/select',
             layerDetailURL: '/data/search/detail',
             constraints: [this.bbox],
             searchParams: {'limit':10, 'bbox': llbounds.toBBOX()},
