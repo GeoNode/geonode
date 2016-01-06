@@ -67,6 +67,9 @@
       <ul id="global-errors"></ul>
       <h4>{% trans "Files to be uploaded" %}</h4>
       <div id="file-queue"></div>
+      <div class="checkbox" style="display:none;" id="metadata_uploaded_preserve_check">
+          Preserve Metadata XML <input type="checkbox" name="metadata_uploaded_preserve" id="id_metadata_uploaded_preserve"/>
+      </div>
     </section>
 
     <section class="charset">
@@ -81,7 +84,7 @@
         {% endfor %}
       </select>
     </section>
-
+    
     <section>
       <a href="#" id="clear-button" class="btn btn-default">{% trans "Clear" %}</a>
       <a href="#" id="upload-button" class="btn btn-danger">{% trans "Upload files" %}</a>
@@ -104,7 +107,7 @@
 <script data-main="{% static 'geonode/js/upload/main' %}" 
   src="{% static 'lib/js/require.js' %}">
 </script>
-
+<script type="text/javascript" src="{% static 'geonode/js/upload/cookie.js' %}"></script>
 <script type="text/javascript">
 {% autoescape off %}
 

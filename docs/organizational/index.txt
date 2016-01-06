@@ -42,7 +42,6 @@ Helping out the GeoNode project is great and by contributing we all benefit and 
     :maxdepth: 3
 
     about
-    projects
     roadmap
     community_resources
     comm_bylaws

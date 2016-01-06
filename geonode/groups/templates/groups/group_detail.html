@@ -20,7 +20,7 @@
   <h2 class="page-title">{{ object.title|default:object.slug }}</h2>
 </div>
 <div class="row">
-  <div class="col-md-8">
+  <div class="col-md-8 group-details">
     <div class="row">
       <div class="col-xs-4 col-md-3 group-logo">
       {% if object.logo %}
@@ -31,28 +31,19 @@
       </div>
       <div class="col-xs-8 col-md-9 group-details">
         <p class="group-desc">{{ object.description }}</p>
-          {% if object.keyword_list %}
-          <p><i class="fa fa-tag"></i>
-            {% for keyword in object.keyword_list %}
-              {{ keyword }}
-            {% endfor %}
-          </p>
-          {% else %}
-          {% endif %}
-          {% if object.email %}
-          <p><i class="fa fa-envelope-o"></i>
-            <a href="mailto:{{ object.email }}">{{ object.email }}</a>
-          </p>
-          {% endif %}
-      </div>
-    </div>
-    <div class="row">
-      <div class="col-md-12">
-        <h3>{% trans "Members" %}</h3>
-        {% include 'search/_pagination.html' %}
-         <div class="tab-content paginate paginate-auto" id="search-content">
-        {% include 'people/_profile_list_item.html' %}
-        </div> 
+        {% if object.keyword_list %}
+        <p>
+          {% for keyword in object.keyword_list %}
+            <span class="label label-default">{{ keyword }}</span>
+          {% endfor %}
+        </p>
+        {% else %}
+        {% endif %}
+        {% if object.email %}
+        <p><i class="fa fa-envelope-o"></i>
+          <a href="mailto:{{ object.email }}">{{ object.email }}</a>
+        </p>
+        {% endif %}
       </div>
     </div>
   </div>
@@ -98,8 +89,18 @@
     </ul>
   </div>
 </div>
-
+<div class="row">
+  <div class="col-md-12">
+    <h4>{% trans "Members" %}</h4>
+    <div class="tab-content paginate paginate-auto" id="search-content">
+    {% include 'people/_profile_list_item.html' %}
+    </div>
+  </div>
+  {% include 'search/_pagination.html' %}
+</div>
 {% endblock %}
+
+
 {% block extra_script %}
   <script type="text/javascript">
   SEARCH_URL = '{% url 'api_dispatch_list' api_name='api' resource_name='profiles' %}'+ '?group='+ '{{ object.slug }}';

@@ -21,11 +21,15 @@
 # Django settings for the GeoNode project.
 import os
 from kombu import Queue
+import geonode
 from geonode.celery_app import app  # flake8: noqa
 
 #
 # General Django development settings
 #
+
+# GeoNode Version
+VERSION = geonode.get_version()
 
 # Defines the directory that contains the settings file as the PROJECT_ROOT
 # It is used for relative settings elsewhere.
@@ -555,8 +559,8 @@ PYCSW = {
         #},
         'metadata:main': {
             'identification_title': 'GeoNode Catalogue',
-            'identification_abstract': 'GeoNode is an open source platform that facilitates the creation, sharing, \
-             and collaborative use of geospatial data',
+            'identification_abstract': 'GeoNode is an open source platform that facilitates the creation, sharing, ' \
+            'and collaborative use of geospatial data',
             'identification_keywords': 'sdi,catalogue,discovery,metadata,GeoNode',
             'identification_keywords_type': 'theme',
             'identification_fees': 'None',
@@ -594,6 +598,10 @@ PYCSW = {
 
 # GeoNode javascript client configuration
 
+# default map projection
+# Note: If set to EPSG:4326, then only EPSG:4326 basemaps will work.
+DEFAULT_MAP_CRS = "EPSG:900913"
+
 # Where should newly created maps be focused?
 DEFAULT_MAP_CENTER = (0, 0)
 
@@ -626,13 +634,8 @@ MAP_BASELAYERS = [{
     "name": "naip",
     "group": "background",
     "visibility": False
-}, {
-    "source": {"ptype": "gxp_bingsource"},
-    "name": "AerialWithLabels",
-    "fixed": True,
-    "visibility": False,
-    "group": "background"
-}, {
+}, 
+{
     "source": {"ptype": "gxp_mapboxsource"},
 }]
 
@@ -670,7 +673,7 @@ CKAN_ORIGINS = [{
 # Be sure to replace @GeoNode with your organization or site's twitter handle.
 TWITTER_CARD = True
 TWITTER_SITE = '@GeoNode'
-TWITTER_HASHTAGS = ['geonode'] 
+TWITTER_HASHTAGS = ['geonode']
 
 OPENGRAPH_ENABLED = True
 
@@ -742,6 +745,8 @@ DOWNLOAD_FORMATS_RASTER = [
     'KML',
     'View in Google Earth',
     'Tiles',
+    'GML',
+    'GZIP'
 ]
 
 ACCOUNT_NOTIFY_ON_PASSWORD_CHANGE = False
@@ -759,6 +764,7 @@ CLIENT_RESULTS_LIMIT = 100
 
 # Number of items returned by the apis 0 equals no limit
 API_LIMIT_PER_PAGE = 0
+API_INCLUDE_REGIONS_COUNT = False
 
 LEAFLET_CONFIG = {
     'TILES': [
@@ -781,12 +787,12 @@ LEAFLET_CONFIG = {
     ],
     'PLUGINS': {
         'esri-leaflet': {
-            'js': 'lib/js/esri-leaflet.js',
+            'js': 'lib/js/esri-leaflet.js?v=%s' % VERSION,
             'auto-include': True,
         },
         'leaflet-fullscreen': {
-            'css': 'lib/css/leaflet.fullscreen.css',
-            'js': 'lib/js/Leaflet.fullscreen.min.js',
+            'css': 'lib/css/leaflet.fullscreen.css?v=%s' % VERSION,
+            'js': 'lib/js/Leaflet.fullscreen.min.js?v=%s' % VERSION,
             'auto-include': True,
         },
     }
@@ -881,6 +887,20 @@ try:
 except ImportError:
     pass
 
+try:
+    BING_LAYER = {    
+        "source": {
+            "ptype": "gxp_bingsource",
+            "apiKey": BING_API_KEY
+        },
+        "name": "AerialWithLabels",
+        "fixed": True,
+        "visibility": False,
+        "group": "background"
+    }
+    MAP_BASELAYERS.append(BING_LAYER)
+except NameError:
+    print "Not enabling BingMaps base layer as a BING_API_KEY is not defined in local_settings.py file."
 
 # Require users to authenticate before using Geonode
 if LOCKDOWN_GEONODE:

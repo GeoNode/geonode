@@ -1,0 +1,112 @@
+.. _install_base_httpd:
+
+===============================
+Apache HTTP Server Installation
+===============================
+
+
+Install Apache::
+
+    sudo yum install -y httpd
+
+And additional modules::
+
+    sudo yum install -y mod_ssl mod_proxy_html mod_wsgi
+
+Firewall configuration
+----------------------
+
+Allow requests on port 80 through the firewall::
+
+    firewall-cmd --zone=public --add-service=http --permanent
+    firewall-cmd --reload
+
+Security issues
+---------------
+
+There are a couple of security issues to fix when dealing with GeoNode.
+
+GeoNode will run inside httpd through WSGI. This means that httpd will try to perform external connection toward the DB.
+This is usually blocked by default by strict security policies, so we need to relax them::
+
+   setsebool -P httpd_can_network_connect_db 1
+
+The other issue is about SELinux itself: it is not WSGI friendly, so we'll have to disable it.
+Edit the file ``/etc/sysconfig/selinux`` and  change the line::
+
+   SELINUX=enforcing
+
+into::
+
+   SELINUX=permissive
+
+and reboot the machine.
+
+
+httpd configuration
+===================
+
+As ``root``, create the file ``/etc/httpd/conf.d/geonode.conf``
+and insert into it :download:`this content <resources/geonode.conf>`.
+
+Add `thumbs` and `layers` folders::
+
+    sudo mkdir -p /home/geonode/geonode/geonode/uploaded/thumbs
+    sudo mkdir -p /home/geonode/geonode/geonode/uploaded/layers
+
+Set appropriate permissions on the folders:::
+
+    sudo chown -R geonode /home/geonode/geonode/
+    sudo chown geonode:www-data /home/geonode/geonode/geonode/static/
+    sudo chown geonode:www-data /home/geonode/geonode/geonode/uploaded/
+    chmod -Rf 777 /home/geonode/geonode/geonode/uploaded/thumbs
+    chmod -Rf 777 /home/geonode/geonode/geonode/uploaded/layers
+    sudo chown www-data:www-data /home/geonode/geonode/geonode/static_root/
+
+SSL configuration
+-----------------
+
+If a secure HTTP communication is needed then you have to add a virtual host listening on a secure port:::
+
+    Listen 443
+    <VirtualHost *:443>
+        ServerName https://localhost
+        SSLEngine on
+        SSLCertificateFile "/path/to/demo.geonode.org.cert"
+        SSLCertificateKeyFile "/path/to/demo.geonode.org.key"
+    </VirtualHost>
+
+In some cases even the proxy pass has to challenge with a secured GeoServer instance listening in HTTPS. In this situation Apache has to verify the remote server certificate with the certificate of its own Certification Authority (CA). For this purpose the concatenation of the various PEM-encoded certificate files can be used accordingly with this directive:::
+
+    SSLProxyCACertificateFile /usr/local/apache2/conf/ssl.crt/ca-bundle-geoserver-remote-server.crt
+
+Alternatively the directive that sets the directory where you keep the certificates of Certification Authorities (CAs) whose remote servers you deal with can be used:::
+
+    SSLProxyCACertificatePath /usr/local/apache2/conf/ssl.crt/
+
+.. note:: 
+
+    If the verification of GeoServer certificate is not required then the SSL proxy has to be instructed with a directive which excludes the need of a valid certificate:::
+
+        SSLProxyVerify none (instead of "require")
+
+If a strong authentication with client certificates is needed then the secure virtual host has to contain at least these directives:::
+
+    SSLVerifyClient require
+    SSLVerifyDepth 1
+    SSLCACertificateFile "conf/ssl.crt/geonode-ca.crt"
+
+.. note:: 
+    
+    This configuration above requires a client certificate which has to be directly signed by the GeoNode CA certificate in geonode-ca.crt. In certain cases you do not want the verification of GeoServer certificate as mandatory hence it is enough to apply the value *none*
+
+Quick administration
+--------------------
+
+If you change any directive then restart httpd to make it reload the new configurations:::
+
+   systemctl restart httpd
+
+To automatically start Apache at boot, run:::
+
+    systemctl enable httpd

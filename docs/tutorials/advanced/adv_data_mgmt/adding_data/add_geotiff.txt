@@ -1,0 +1,45 @@
+.. module:: geoserver.add_geotiff
+   :synopsis: Learn how to adding a GeoTiff.
+
+.. _geoserver.add_geotiff:
+
+Adding a GeoTiff
+----------------
+
+The GeoTIFF is a widely used geospatial raster data format: it is composed of a single file containing both the data and the georeferencing information (not to be confused with the .tiff/.tfw/.prj file triplet, which is considered a "world image" file in GeoServer).
+This section provides instructions to add and publish a GeoTIFF file.
+
+#. Open the web browser and navigate to the GeoServer `Welcome Page <http://localhost:8083/geoserver>`_.
+
+#. Select :guilabel:`Add stores` from the interface. 
+
+   .. figure:: img/geotiff_addstores.png
+
+#. Select :guilabel:`GeoTIFF - Tagged Image File Format with Geographic information` from the set of available Raster Data Sources. 
+
+   .. figure:: img/geotiff_sources.png
+   
+
+#. Specify a proper name (as an instance, :file:`13tde815295_200803_0x6000m_cl`) in the :guilabel:`Data Source Name` field of the interface. 
+
+#. Click on browse link in order to set the GeoTIFF location in the :guilabel:`URL` field.
+
+   .. note:: The 13tde815295_200803_0x6000m_cl.tif is located at :file:`${TRAINING_ROOT}/data/user_data/aerial/13tde815295_200803_0x6000m_cl.tif` (on Windows :file:`%TRAINIG_ROOT%\\data\\user_data\\aerial\\13tde815295_200803_0x6000m_cl.tif`)
+
+   .. figure:: img/addgeotiff1.png
+      :width: 600
+
+#. Click :guilabel:`Save`. 
+
+#. Publish the layer by clicking on the :guilabel:`publish` link. 
+
+   .. figure:: img/addgeotiff2.png
+      :width: 600
+
+#. Check the Coordinate Reference Systems and the Bounding Boxes fields are properly set and click on :guilabel:`Save`. 
+
+   .. figure:: img/addgeotiff3.png
+
+#. At this point the GeoTIFF is being published with GeoServer. You can use the layer preview to inspect the data.
+
+   .. figure:: img/addgeotiff4.png

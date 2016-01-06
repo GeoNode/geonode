@@ -24,7 +24,6 @@ import base64
 import math
 import copy
 import string
-import datetime
 import re
 from osgeo import ogr
 from slugify import Slugify
@@ -258,7 +257,7 @@ class GXPMapBase(object):
                        for source in sources.values() if 'url' in source]
 
         if 'geonode.geoserver' in settings.INSTALLED_APPS:
-            if not settings.MAP_BASELAYERS[0]['source']['url'] in source_urls:
+            if len(sources.keys()) > 0 and not settings.MAP_BASELAYERS[0]['source']['url'] in source_urls:
                 keys = sorted(sources.keys())
                 settings.MAP_BASELAYERS[0]['source'][
                     'title'] = 'Local Geoserver'
@@ -277,12 +276,13 @@ class GXPMapBase(object):
                     lyr["source"]) not in map(
                     _base_source,
                     sources.values()):
-                sources[
-                    str(int(max(sources.keys(), key=int)) + 1)] = lyr["source"]
+                if len(sources.keys()) > 0:
+                    sources[
+                        str(int(max(sources.keys(), key=int)) + 1)] = lyr["source"]
 
         # adding remote services sources
         from geonode.services.models import Service
-        index = int(max(sources.keys()))
+        index = int(max(sources.keys())) if len(sources.keys()) > 0 else 0
         for service in Service.objects.all():
             remote_source = {
                 'url': service.base_url,
@@ -290,8 +290,9 @@ class GXPMapBase(object):
                 'ptype': 'gxp_wmscsource',
                 'name': service.name
             }
-            index += 1
-            sources[index] = remote_source
+            if remote_source['url'] not in source_urls:
+                index += 1
+                sources[index] = remote_source
 
         config = {
             'id': self.id,
@@ -312,6 +313,10 @@ class GXPMapBase(object):
         if any(layers):
             # Mark the last added layer as selected - important for data page
             config["map"]["layers"][len(layers) - 1]["selected"] = True
+        else:
+            (def_map_config, def_map_layers) = default_map_config()
+            config = def_map_config
+            layers = def_map_layers
 
         config["map"].update(_get_viewer_projection_info(self.projection))
 
@@ -415,12 +420,15 @@ class GXPLayer(GXPLayerBase):
 
 
 def default_map_config():
-    _DEFAULT_MAP_CENTER = forward_mercator(settings.DEFAULT_MAP_CENTER)
+    if getattr(settings, 'DEFAULT_MAP_CRS', 'EPSG:900913') == "EPSG:4326":
+        _DEFAULT_MAP_CENTER = inverse_mercator(settings.DEFAULT_MAP_CENTER)
+    else:
+        _DEFAULT_MAP_CENTER = forward_mercator(settings.DEFAULT_MAP_CENTER)
 
     _default_map = GXPMap(
         title=DEFAULT_TITLE,
         abstract=DEFAULT_ABSTRACT,
-        projection="EPSG:900913",
+        projection=getattr(settings, 'DEFAULT_MAP_CRS', 'EPSG:900913'),
         center_x=_DEFAULT_MAP_CENTER[0],
         center_y=_DEFAULT_MAP_CENTER[1],
         zoom=settings.DEFAULT_MAP_ZOOM
@@ -600,7 +608,9 @@ def build_social_links(request, resourcebase):
         protocol=("https" if request.is_secure() else "http"),
         host=request.get_host(),
         path=request.get_full_path())
-    date = datetime.datetime.strftime(resourcebase.date, "%m/%d/%Y") if resourcebase.date else None
+    # Don't use datetime strftime() because it requires year >= 1900
+    # see https://docs.python.org/2/library/datetime.html#strftime-strptime-behavior
+    date = '{0.month:02d}/{0.day:02d}/{0.year:4d}'.format(resourcebase.date) if resourcebase.date else None
     abstract = build_abstract(resourcebase, url=social_url, includeURL=True)
     caveats = build_caveats(resourcebase)
     hashtags = ",".join(getattr(settings, 'TWITTER_HASHTAGS', []))
