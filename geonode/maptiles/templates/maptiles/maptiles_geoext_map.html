@@ -50,7 +50,10 @@ if ("{{test_mode}}"=="True"){
 }
 
 {% autoescape off %}
+{% if jurisdiction.viewer|safe %}
 jurisdiction_args = {{jurisdiction.viewer|safe}};
+{% else %}
+jurisdiction_args = "";
 grid_args = {{grid.viewer |safe}}
 //var options = grid_args;
 var app, map;
