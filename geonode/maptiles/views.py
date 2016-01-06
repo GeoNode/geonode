@@ -83,10 +83,10 @@ def tiled_view(request, overlay=settings.TILED_SHAPEFILE, template="maptiles/map
                 context_dict["jurisdiction"] = get_layer_config(request,jurisdiction_object.jurisdiction_shapefile.typename, "base.view_resourcebase", _PERMISSION_VIEW)
                 context_dict["jurisdiction_name"] = jurisdiction_object.jurisdiction_shapefile.typename
             else:
-                context_dict["jurisdiction"]=""
+                context_dict["jurisdiction"]="{}"
                 context_dict["jurisdiction_name"] = ""
         except ObjectDoesNotExist:
-            context_dict["jurisdiction"]=""
+            context_dict["jurisdiction"]="{}"
     else:
         context_dict["jurisdiction"] = get_layer_config(request,jurisdiction, "base.view_resourcebase", _PERMISSION_VIEW)
     
