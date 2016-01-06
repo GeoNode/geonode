@@ -52,7 +52,7 @@ if ("{{test_mode}}"=="True"){
 {% if jurisdiction.viewer %}
 jurisdiction_args = {{jurisdiction.viewer|safe}};
 {% else %}
-jurisdiction_args = "";
+jurisdiction_args = "";s
 {% endif %}
 
 {% autoescape off %}
@@ -416,7 +416,10 @@ function filterSelectedTiles(tile_filter, single_click, send_notice){
 function selection_bounds(map_bounds, highlight_layer) {
     
     var transformed_bounds = map_bounds.clone().transform(new OpenLayers.Projection("EPSG:900913"), new OpenLayers.Projection("EPSG:32651"));
-    var filter;
+    var filter= new OpenLayers.Filter.Spatial({
+            type: OpenLayers.Filter.Spatial.INTERSECTS,
+            property: "the_geom",
+            value: transformed_bounds.toGeometry() });
     /*if (jurisdiction_geoms.length > 0){
         var jstsSelectionBox= jstsParser.read(olGeoJSON.write(transformed_bounds.toGeometry()));
         console.log(jstsSelectionBox);
