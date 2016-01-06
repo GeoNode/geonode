@@ -81,8 +81,10 @@ def tiled_view(request, overlay=settings.TILED_SHAPEFILE, template="maptiles/map
             jurisdiction_object = UserJurisdiction.objects.get(user=request.user)
             if jurisdiction_object is not None:
                 context_dict["jurisdiction"] = get_layer_config(request,jurisdiction_object.jurisdiction_shapefile.typename, "base.view_resourcebase", _PERMISSION_VIEW)
+                context_dict["jurisdiction_name"] = jurisdiction_object.jurisdiction_shapefile.typename
             else:
                 context_dict["jurisdiction"]=""
+                context_dict["jurisdiction_name"] = ""
         except ObjectDoesNotExist:
             context_dict["jurisdiction"]=""
 
@@ -91,7 +93,6 @@ def tiled_view(request, overlay=settings.TILED_SHAPEFILE, template="maptiles/map
     
     context_dict["feature_municipality"]  = settings.MUNICIPALITY_SHAPEFILE.split(":")[1]
     context_dict["feature_tiled"] = overlay.split(":")[1]
-    context_dict["jurisdiction_name"] = jurisdiction.jurisdiction_shapefile.typename
     context_dict["test_mode"]=test_mode
     context_dict["data_classes"]= DataClassification.labels.values()
     
