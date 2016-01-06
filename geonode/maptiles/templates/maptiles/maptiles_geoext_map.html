@@ -49,7 +49,7 @@ if ("{{test_mode}}"=="True"){
     geoserver = curr_location+"/geoserver/" ;
 }
 
-{% if jurisdiction.viewer|safe %}
+{% if jurisdiction.viewer %}
 jurisdiction_args = {{jurisdiction.viewer|safe}};
 {% else %}
 jurisdiction_args = "";
