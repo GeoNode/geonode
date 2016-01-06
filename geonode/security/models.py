@@ -183,7 +183,11 @@ class PermissionLevelMixin(object):
         if 'users' in perm_spec and "AnonymousUser" in perm_spec['users']:
             anonymous_group = Group.objects.get(name='anonymous')
             for perm in perm_spec['users']['AnonymousUser']:
-                assign_perm(perm, anonymous_group, self.get_self_resource())
+                if self.polymorphic_ctype.name == 'layer' and perm in ('change_layer_data', 'change_layer_style',
+                                                                       'add_layer', 'change_layer', 'delete_layer',):
+                    assign_perm(perm, anonymous_group, self.layer)
+                else:
+                    assign_perm(perm, anonymous_group, self.get_self_resource())
 
         # TODO refactor code here
         if 'users' in perm_spec:
