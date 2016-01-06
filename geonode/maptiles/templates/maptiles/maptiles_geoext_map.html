@@ -268,7 +268,7 @@ Filters tiles if they intersect the geometries which are part of the jurisdictio
 
 function isInJurisdiction(geoms, tile){
     for ( var i=0; i<geoms.length; i++){
-        if (tile.intersects(geoms[i].geometry){
+        if (tile.intersects(geoms[i].geometry)){
             return true;
         }
     }
@@ -278,7 +278,7 @@ function jurisdictionFilter(geoms, feature_list){
     console.log("feature_list.length="+feature_list.length);
     var tile_list = [];
     for (var i=0;i<feature_list.length;i++){
-        if(isInJurisdiction(geoms, feature_list[i]){
+        if(isInJurisdiction(geoms, feature_list[i])){
              if (find_georef(tile_list, tile.georef)<0){
                         tile_list.push(tile);
             }
