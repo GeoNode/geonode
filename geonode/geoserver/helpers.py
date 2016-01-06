@@ -365,7 +365,8 @@ def gs_slurp(
         filter=None,
         skip_unadvertised=False,
         skip_geonode_registered=False,
-        remove_deleted=False):
+        remove_deleted=False,
+        permissions=None):
     """Configure the layers available in GeoServer in GeoNode.
 
        It returns a list of dictionaries with the name of the layer,
@@ -490,7 +491,11 @@ def gs_slurp(
                     resource.name.encode('utf-8'), e), None, sys.exc_info()[2]
         else:
             if created:
-                layer.set_default_permissions()
+                if not permissions:
+                    layer.set_default_permissions()
+                else:
+                    layer.set_permissions(permissions)
+
                 status = 'created'
                 output['stats']['created'] += 1
             else:
