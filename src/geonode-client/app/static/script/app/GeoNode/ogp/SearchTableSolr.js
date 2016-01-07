@@ -11,7 +11,7 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
     nextText: 'UT: Next',
     ofText: 'UT: of',
     noResultsText: 'UT: Your search did not match any items.',
-    searchLabelText: 'UT: Search Data',
+    searchLabelText: 'UT: Keyword',
     searchButtonText: 'UT: Search',
     showingText: 'UT: Showing',
     loadingText: 'UT: Loading',
@@ -20,6 +20,7 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
     remoteTooltip: 'UT: Remote Data',
     invalidQueryText: 'Invalid Query', 
     searchTermRequired: 'You need to specify a search term',
+    originatorSearchLabelText: 'UT: Originator',
 
     searchOnLoad: false,
     linkableTitle: true,
@@ -85,10 +86,11 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
     doSearch: function() {
         /* updates parameters from constraints and 
            permforms a new search */
-        if (!this.queryInput.getValue()) {
-            Ext.Msg.alert(this.invalidQueryText, this.searchTermRequired);
-            return;
+        
+        if (this.queryInput.getValue() === ''){
+            this.searchParams.q = '*';
         }
+
         this.searchParams.start = 0;
         if (this.constraints) {
             for (var i = 0; i < this.constraints.length; i++) {
@@ -164,7 +166,11 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
 
     updateQuery: function() {
         /* called when main search query changes */ 
+        this.searchParams.fq = []; 
         this.searchParams.q = this.queryInput.getValue();
+        if (this.originatorInput.getValue() !== ''){
+            this.searchParams.fq.push('Originator:' + this.originatorInput.getValue());
+        }
         this.doSearch();
     },
     
@@ -268,11 +274,18 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
         this.table = new Ext.grid.GridPanel(tableCfg);
         
         this.queryInput = new Ext.form.TextField({
-                        fieldLabel: this.searchLabelText,
+                        emptyText: this.searchLabelText,
                         name: 'search',
-                        allowBlank:false,
+                        allowBlank: true,
                         width: 350
                      });
+
+        this.originatorInput = new Ext.form.TextField({
+                        emptyText: this.originatorSearchLabelText,
+                        name: 'search_originator',
+                        allowBlank: true,
+                        width: 100
+        });
         
         this.queryInput.on('specialkey', function(field, e) {
             if (e.getKey() == e.ENTER) {
@@ -294,6 +307,7 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
                  right: 10
              }}),
              items: [this.queryInput,
+                     this.originatorInput,
                      searchButton
              ]
          });
