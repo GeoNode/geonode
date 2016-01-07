@@ -21,9 +21,17 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
     invalidQueryText: 'Invalid Query', 
     searchTermRequired: 'You need to specify a search term',
     originatorSearchLabelText: 'UT: Originator',
+    dataTypeSearchLableText: 'UT: Data Type',
 
     searchOnLoad: false,
     linkableTitle: true,
+
+    additionalParams: {
+        wt: 'json',
+        defType: 'edismax',
+        qf: 'LayerDisplayNameSynonyms^0.2 ThemeKeywordsSynonymsIso^0.1 ThemeKeywordsSynonymsLcsh^0.1 PlaceKeywordsSynonyms^0.1 Publisher^0.1 Originator^0.1',
+        fq: ['Institution:Harvard OR Access:Public']
+    },
 
     constructor: function(config) {
         this.addEvents('load'); 
@@ -40,11 +48,6 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
             idProperty: 'LayerId',
             remoteSort: true,
             totalProperty: 'response.numFound',
-            baseParams: {
-                wt: 'json',
-                defType: 'edismax',
-                qf: 'LayerDisplayNameSynonyms^0.2 ThemeKeywordsSynonymsIso^0.1 ThemeKeywordsSynonymsLcsh^0.1 PlaceKeywordsSynonyms^0.1 Publisher^0.1 Originator^0.1'
-            },
             fields: [
                 {name: 'Name', type: 'string'},
                 {name: 'LayerDisplayName', type: 'string'},
@@ -165,11 +168,20 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
     },
 
     updateQuery: function() {
-        /* called when main search query changes */ 
-        this.searchParams.fq = []; 
+        /* called when main search query changes */
+        this.searchParams = Ext.apply(this.searchParams, this.additionalParams);
         this.searchParams.q = this.queryInput.getValue();
         if (this.originatorInput.getValue() !== ''){
             this.searchParams.fq.push('Originator:' + this.originatorInput.getValue());
+        }
+        if (this.dataTypeInput.getValue().length > 0){
+            var values = this.dataTypeInput.getValue();
+            var string = '';
+            for(var i=0;i<values.length;i++){
+                string += 'DataType:' + values[i].name + ' OR ';
+            }
+            string = string.slice(0, -4);
+            this.searchParams.fq.push(string);
         }
         this.doSearch();
     },
@@ -279,6 +291,11 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
                         allowBlank: true,
                         width: 350
                      });
+        this.queryInput.on('specialkey', function(field, e) {
+            if (e.getKey() == e.ENTER) {
+                this.updateQuery();
+            }
+        }, this);
 
         this.originatorInput = new Ext.form.TextField({
                         emptyText: this.originatorSearchLabelText,
@@ -287,11 +304,18 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
                         width: 100
         });
         
-        this.queryInput.on('specialkey', function(field, e) {
-            if (e.getKey() == e.ENTER) {
-                this.updateQuery();
-            }
-        }, this);
+        this.dataTypeInput = new Ext.form.CheckboxGroup({
+            id: 'dataTypes',
+            fieldLabel: 'Data Type',
+            items: [
+                {boxLabel: 'Worldmap Vector', name: 'Vector', checked: true},
+                {boxLabel: 'Worldmap', name: 'Raster', checked: true},
+                {boxLabel: 'ESRI Services', name: 'RESTServices', checked: true},
+                {boxLabel: 'WMS Services', name: 'WMSServices', checked: true}
+            ]
+        });
+
+        
         var searchButton = new Ext.Button({
             text: this.searchButtonText
         });
@@ -300,16 +324,27 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
         var searchForm = new Ext.Panel({
              frame:false,
              border: false,
-             layout: new Ext.layout.HBoxLayout({defaultMargins: {
-                 top: 10,
-                 bottom: 10,
-                 left: 0,
-                 right: 10
-             }}),
-             items: [this.queryInput,
-                     this.originatorInput,
-                     searchButton
-             ]
+             layout: 'table',
+             layoutConfig: {
+                columns: 3
+            },
+            defaults: {
+                bodyStyle:'border: 0px; padding: 10px;',
+            },
+            items: [{
+                items: [
+                     this.queryInput,
+                     this.originatorInput
+                    ],
+                colspan: 3
+            },{
+                items: [this.dataTypeInput],
+                colspan: 2
+            },{
+                items: [searchButton],
+                colspan: 1
+            }]
+
          });
          searchForm.render(input_el);
 
