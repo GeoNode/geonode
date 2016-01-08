@@ -370,25 +370,6 @@ function filterSelectedTiles(tile_filter, single_click, send_notice){
                      }
                   }
                   display_points("point_display", highlight_layer);
-                  /*for (var i=0; i<tiles.length; i++){
-                    var f = tiles[i];
-                    var corners = {
-                        "ur_x": tiles[i].data.MAXX, "ur_y": tiles[i].data.MAXY,
-                        "ul_x": tiles[i].data.MINX, "ul_y": tiles[i].data.MAXY,
-                        "ll_x": tiles[i].data.MINX, "ll_y": tiles[i].data.MINY,
-                        "lr_x": tiles[i].data.MAXX,"lr_y": tiles[i].data.MINY
-                    }
-                    var tile = createTile(corners);*/
-
-                    /*if (find_georef(tile_list, tile.georef)<0){
-                        tile_list.push(tile);
-                        tile.feature = createHighlightBox(tile.corners);
-                        highlight_layer.addFeatures([tile.feature]);
-                    }else{
-                        removeHighlight(tile.georef, highlight_layer);
-                    }*/
-                    
-                  
                   
                   if (tiles.length < feature_out.length){
                       if (feature_out.length==1){
