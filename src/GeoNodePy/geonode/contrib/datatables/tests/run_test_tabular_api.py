@@ -521,15 +521,6 @@ class TestWorldMapTabularAPI(TestTabularAPIBase):
             "Expected status code 401, not: %s.  MAKE SURE YOU HAVE A 'pubuser' WITHOUT DELETE PERMISSIONS.\nError: %s" %
             (r.status_code, r.text))
 
-        try:
-            rjson = r.json()
-        except:
-            self.assertTrue(False, "Failed to convert response to JSON: %s" % r.text)
-
-        expected_msg = "not permitted to delete this TableJoin object"
-        self.assertTrue(r.text.find(expected_msg) > -1
-            , "Expected message not found: '%s'\nActual response: %s" % (expected_msg, r.text))
-
         # -----------------------------------------------------------
         msgn('(2g) TableJoin Delete -- also deletes TableJoin')
         # -----------------------------------------------------------
@@ -720,7 +711,7 @@ class TestWorldMapTabularAPI(TestTabularAPIBase):
         except:
             self.assertTrue(False, "Failed to convert response to JSON: %s" % r.text)
 
-        expected_msg = "You are not permitted to delete this DataTable object"
+        expected_msg = "Login failed"
         self.assertTrue(r.text.find(expected_msg) > -1
             , "Expected message not found: '%s'\nActual response: %s" % (expected_msg, r.text))
 

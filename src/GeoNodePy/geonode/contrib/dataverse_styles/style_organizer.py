@@ -1,5 +1,8 @@
 """
 Convenience class used to style a Layer via an API call.
+
+For the workflow, see the "StyleOrganizer.style_layer()" function
+
 API attributes include:
     datafile_id = models.IntegerField()
     dataverse_installation_name = models.CharField(max_length=255)

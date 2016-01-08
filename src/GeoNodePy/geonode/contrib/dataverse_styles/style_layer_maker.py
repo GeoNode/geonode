@@ -1,3 +1,6 @@
+"""
+Given Style Rules, create an SLD in XML format add it to a layer
+"""
 if __name__=='__main__':
     import os, sys
     DJANGO_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))

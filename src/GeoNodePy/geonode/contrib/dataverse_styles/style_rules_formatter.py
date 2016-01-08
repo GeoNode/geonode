@@ -22,7 +22,7 @@ logger = logging.getLogger("geonode.contrib.dataverse_styles.style_rules_formatt
 
 class StyleRulesFormatter(object):
     """
-    Usage.  Create a new SLD used for restyling a layer
+    Usage.  Create a new SLD used for re-styling a layer
     """
 
     RULES_START_TAG = '<Rules>'
