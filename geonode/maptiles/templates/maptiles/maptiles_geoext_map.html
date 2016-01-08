@@ -274,7 +274,7 @@ Filters tiles if they intersect the geometries which are part of the jurisdictio
 
 function isInJurisdiction(geoms, tile){
     for ( var i=0; i<geoms.length; i++){
-        if (tile.intersects(geoms[i].geometry)){
+        if (tile.geometry.intersects(geoms[i].geometry)){
             return true;
         }
     }
@@ -349,18 +349,20 @@ function filterSelectedTiles(tile_filter, single_click, send_notice){
                  var tiles = hasDataFiltering(feature_out);
                   if (jurisdiction_geoms.length > 0){
                      for (var i=0;i<tiles.length;i++){
-                         if (isInJurisdiction(jurisdiction_geoms, tile[i])){
-                              if (find_georef(tile_list, tile.georef)<0){
-                                     var corners = {
-                                        "ur_x": f.data.MAXX, "ur_y": f.data.MAXY,
-                                        "ul_x": f.data.MINX, "ul_y": f.data.MAXY,
-                                        "ll_x": f.data.MINX, "ll_y": f.data.MINY,
-                                        "lr_x": f.data.MAXX,"lr_y": f.data.MINY
-                                    }
-                                    var tile = createTile(corners);
+                         //console.log(tiles[i]);
+                         var corners = {
+                                        "ur_x": tiles[i].data.MAXX, "ur_y": tiles[i].data.MAXY,
+                                        "ul_x": tiles[i].data.MINX, "ul_y": tiles[i].data.MAXY,
+                                        "ll_x": tiles[i].data.MINX, "ll_y": tiles[i].data.MINY,
+                                        "lr_x": tiles[i].data.MAXX,"lr_y": tiles[i].data.MINY
+                        }
+                        var tile = createTile(corners);
+                         if (find_georef(tile_list, tile.georef)<0){
+                               if (isInJurisdiction(jurisdiction_geoms, tiles[i])){
                                     tile_list.push(tile);
                                     tile.feature = createHighlightBox(tile.corners);
                                     highlight_layer.addFeatures([tile.feature]);
+                                    highlight_layer.refresh();
                               }else if (single_click){
                                   removeHighlight(tile.georef, highlight_layer);
                               }
@@ -368,25 +370,6 @@ function filterSelectedTiles(tile_filter, single_click, send_notice){
                      }
                   }
                   display_points("point_display", highlight_layer);
-                  /*for (var i=0; i<tiles.length; i++){
-                    var f = tiles[i];
-                    var corners = {
-                        "ur_x": f.data.MAXX, "ur_y": f.data.MAXY,
-                        "ul_x": f.data.MINX, "ul_y": f.data.MAXY,
-                        "ll_x": f.data.MINX, "ll_y": f.data.MINY,
-                        "lr_x": f.data.MAXX,"lr_y": f.data.MINY
-                    }
-                    var tile = createTile(corners);*/
-
-                    /*if (find_georef(tile_list, tile.georef)<0){
-                        tile_list.push(tile);
-                        tile.feature = createHighlightBox(tile.corners);
-                        highlight_layer.addFeatures([tile.feature]);
-                    }else{
-                        removeHighlight(tile.georef, highlight_layer);
-                    }*/
-                    
-                  
                   
                   if (tiles.length < feature_out.length){
                       if (feature_out.length==1){
@@ -404,6 +387,7 @@ function filterSelectedTiles(tile_filter, single_click, send_notice){
                   single_click=true;
                   end = new Date().getTime();
                   console.log(end);
+                  console.log(end-start);
              }
          }
      };
