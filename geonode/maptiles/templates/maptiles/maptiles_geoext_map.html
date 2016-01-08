@@ -350,12 +350,13 @@ function filterSelectedTiles(tile_filter, single_click, send_notice){
                   if (jurisdiction_geoms.length > 0){
                      for (var i=0;i<tiles.length;i++){
                          console.log(tiles[i]);
+                         
                          if (isInJurisdiction(jurisdiction_geoms, tiles[i])){
                               var corners = {
-                                        "ur_x": f.data.MAXX, "ur_y": f.data.MAXY,
-                                        "ul_x": f.data.MINX, "ul_y": f.data.MAXY,
-                                        "ll_x": f.data.MINX, "ll_y": f.data.MINY,
-                                        "lr_x": f.data.MAXX,"lr_y": f.data.MINY
+                                        "ur_x": tiles[i].data.MAXX, "ur_y": tiles[i].data.MAXY,
+                                        "ul_x": tiles[i].data.MINX, "ul_y": tiles[i].data.MAXY,
+                                        "ll_x": tiles[i].data.MINX, "ll_y": tiles[i].data.MINY,
+                                        "lr_x": tiles[i].data.MAXX,"lr_y": tiles[i].data.MINY
                               }
                               var tile = createTile(corners);
                               if (find_georef(tile_list, tile.georef)<0){
@@ -372,10 +373,10 @@ function filterSelectedTiles(tile_filter, single_click, send_notice){
                   /*for (var i=0; i<tiles.length; i++){
                     var f = tiles[i];
                     var corners = {
-                        "ur_x": f.data.MAXX, "ur_y": f.data.MAXY,
-                        "ul_x": f.data.MINX, "ul_y": f.data.MAXY,
-                        "ll_x": f.data.MINX, "ll_y": f.data.MINY,
-                        "lr_x": f.data.MAXX,"lr_y": f.data.MINY
+                        "ur_x": tiles[i].data.MAXX, "ur_y": tiles[i].data.MAXY,
+                        "ul_x": tiles[i].data.MINX, "ul_y": tiles[i].data.MAXY,
+                        "ll_x": tiles[i].data.MINX, "ll_y": tiles[i].data.MINY,
+                        "lr_x": tiles[i].data.MAXX,"lr_y": tiles[i].data.MINY
                     }
                     var tile = createTile(corners);*/
 
