@@ -267,8 +267,8 @@ def georefs_validation(request):
         #requests_last24h = FTPRequest.objects.filter(date_time__gt=yesterday, user=request.user)
         
         #Retrieve FTPRequests since midnight
-        today_min = datetime.datetime.combine(datetime.date.today(), datetime.time.min)
-        today_max = datetime.datetime.combine(datetime.date.today(), datetime.time.max)
+        today_min = datetime.combine(datetime.date.today(), datetime.time.min)
+        today_max = datetime.combine(datetime.date.today(), datetime.time.max)
         requests_today = FTPRequest.objects.get(user=request.user, date__range=(today_min, today_max))
 
         total_size = 0
