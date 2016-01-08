@@ -203,7 +203,7 @@ def process_csv_file(data_table, delimiter=",", no_header_row=False):
 
     try:
         cur = conn.cursor()
-        cur.execute('drop table if exists %s CASCADE;' % table_name) 
+        cur.execute('drop table if exists %s CASCADE;' % table_name)
         cur.execute(create_table_sql)
         conn.commit()
     except Exception as e:
@@ -259,7 +259,7 @@ def process_csv_file(data_table, delimiter=",", no_header_row=False):
     trans.commit()
     conn.close()
     f.close()
-    
+
     return data_table, ""
 
 
@@ -364,11 +364,11 @@ def create_point_col_from_lat_lon(new_table_owner, table_name, lat_column, lng_c
 
     try:
         conn = psycopg2.connect(get_datastore_connection_string())
-        
+
         cur = conn.cursor()
         cur.execute(alter_table_sql)
         cur.execute(update_table_sql)
-        cur.execute(create_index_sql) 
+        cur.execute(create_index_sql)
         conn.commit()
         conn.close()
     except Exception as e:
@@ -380,9 +380,9 @@ def create_point_col_from_lat_lon(new_table_owner, table_name, lat_column, lng_c
     msg('create_point_col_from_lat_lon - 4')
 
     # ------------------------------------------------------
-    # Create the Layer in GeoServer from the table 
+    # Create the Layer in GeoServer from the table
     # ------------------------------------------------------
-    try:        
+    try:
         cat = Catalog(settings.GEOSERVER_BASE_URL + "rest",
                           "admin", "geoserver")
         workspace = cat.get_workspace("geonode")
@@ -464,6 +464,7 @@ def create_point_col_from_lat_lon(new_table_owner, table_name, lat_column, lng_c
 
 
 def setup_join(new_table_owner, table_name, layer_typename, table_attribute_name, layer_attribute_name):
+    logger.info('setup_join')
     """
     Setup the Table Join in GeoNode
     """
@@ -473,12 +474,15 @@ def setup_join(new_table_owner, table_name, layer_typename, table_attribute_name
     assert table_attribute_name is not None, "table_attribute_name cannot be None"
     assert layer_attribute_name is not None, "layer_attribute_name cannot be None"
 
+    logger.info('setup_join. Step (1): Retrieve the DataTable object')
     try:
         dt = DataTable.objects.get(table_name=table_name)
     except DataTable.DoesNotExist:
         err_msg = 'No DataTable object found for table_name "%s"' % table_name
         logger.error(err_msg)
         return None, err_msg
+
+    logger.info('setup_join. Step (2): Retrieve the Layer object')
 
     try:
         layer = Layer.objects.get(typename=layer_typename)
@@ -488,6 +492,7 @@ def setup_join(new_table_owner, table_name, layer_typename, table_attribute_name
         return None, err_msg
     msg('setup_join 01b')
 
+    logger.info('setup_join. Step (3): Retrieve the DataTableAttribute object')
     try:
         table_attribute = DataTableAttribute.objects.get(datatable=dt,attribute=table_attribute_name)
     except DataTableAttribute.DoesNotExist:
@@ -496,6 +501,7 @@ def setup_join(new_table_owner, table_name, layer_typename, table_attribute_name
         logger.error(err_msg)
         return None, err_msg
 
+    logger.info('setup_join. Step (4): Retrieve the LayerAttribute object')
     try:
         layer_attribute = LayerAttribute.objects.get(layer=layer, attribute=layer_attribute_name)
     except LayerAttribute.DoesNotExist:
@@ -504,19 +510,18 @@ def setup_join(new_table_owner, table_name, layer_typename, table_attribute_name
         logger.error(err_msg)
         return None, err_msg
 
-    msg('setup_join 01d')
+    logger.info('setup_join. Step (5): Build SQL statement to create view')
 
     layer_name = layer.typename.split(':')[1]
-    msg('setup_join 02')
 
     view_name = "join_%s_%s" % (layer_name, dt.table_name)
 
     view_sql = 'create view %s as select %s.%s, %s.* from %s inner join %s on %s."%s" = %s."%s";' %  (view_name, layer_name, THE_GEOM_LAYER_COLUMN, dt.table_name, layer_name, dt.table_name, layer_name, layer_attribute.attribute, dt.table_name, table_attribute.attribute)
     #view_sql = 'create materialized view %s as select %s.the_geom, %s.* from %s inner join %s on %s."%s" = %s."%s";' %  (view_name, layer_name, dt.table_name, layer_name, dt.table_name, layer_name, layer_attribute.attribute, dt.table_name, table_attribute.attribute)
-    
+
     #double_view_name = "view_%s" % view_name
     #double_view_sql = "create view %s as select * from %s" % (double_view_name, view_name)
-    msg('setup_join 03')
+    logger.info('setup_join. Step (6): Retrieve stats')
 
     # ------------------------------------------------------------------
     # Retrieve stats
@@ -529,12 +534,12 @@ def setup_join(new_table_owner, table_name, layer_typename, table_attribute_name
 
     unmatched_list_sql = 'select %s from %s where %s.%s not in (select "%s" from %s) limit 100;'\
                         % (table_attribute.attribute, dt.table_name, dt.table_name, table_attribute.attribute, layer_attribute.attribute, layer_name)
-    
-    
+
+
     # ------------------------------------------------------------------
     # Create a TableJoin object
     # ------------------------------------------------------------------
-    msg('setup_join 04')
+    logger.info('setup_join. Step (7): Create a TableJoin object')
     tj, created = TableJoin.objects.get_or_create(source_layer=layer
                             , datatable=dt
                             , table_attribute=table_attribute
@@ -547,13 +552,14 @@ def setup_join(new_table_owner, table_name, layer_typename, table_attribute_name
     # ------------------------------------------------------------------
     # Create the View (and double view)
     # ------------------------------------------------------------------
+    logger.info('setup_join. Step (8): Create the View (and double view)')
     try:
         conn = psycopg2.connect(get_datastore_connection_string())
-            
+
         cur = conn.cursor()
         #cur.execute('drop view if exists %s;' % double_view_name)  # removing double view
-        cur.execute('drop view if exists %s;' % view_name) 
-        #cur.execute('drop materialized view if exists %s;' % view_name) 
+        cur.execute('drop view if exists %s;' % view_name)
+        #cur.execute('drop materialized view if exists %s;' % view_name)
         msg ('view_sql: %s'% view_sql)
         cur.execute(view_sql)
         #cur.execute(double_view_sql)
@@ -575,12 +581,11 @@ def setup_join(new_table_owner, table_name, layer_typename, table_attribute_name
         logger.error(err_msg)
         return None, err_msg
 
-    
-    msg('setup_join 06')
 
     #--------------------------------------------------
     # Create the Layer in GeoServer from the view
     #--------------------------------------------------
+    logger.info('setup_join. Step (9): Create the Layer in GeoServer from the view')
     try:
         cat = Catalog(settings.GEOSERVER_BASE_URL + "rest",
                           "admin", "geoserver")
@@ -601,7 +606,7 @@ def setup_join(new_table_owner, table_name, layer_typename, table_attribute_name
             logger.error(str(ds))
             return None, err_msg
 
-        ft = cat.publish_featuretype(view_name, ds, layer.srs, srs=layer.srs)        
+        ft = cat.publish_featuretype(view_name, ds, layer.srs, srs=layer.srs)
         #ft = cat.publish_featuretype(double_view_name, ds, layer.srs, srs=layer.srs)
 
         cat.save(ft)
@@ -612,8 +617,7 @@ def setup_join(new_table_owner, table_name, layer_typename, table_attribute_name
         err_msg = "Error creating GeoServer layer for %s: %s" % (view_name, str(e))
         logger.error(err_msg)
         return None, err_msg
-    
-    msg('setup_join 07 - Default Style')
+
 
     # ------------------------------------------------------
     # Set the Layer's default Style
@@ -623,6 +627,7 @@ def setup_join(new_table_owner, table_name, layer_typename, table_attribute_name
     # ------------------------------------------------------------------
     # Create the Layer in GeoNode from the GeoServer Layer
     # ------------------------------------------------------------------
+    logger.info('setup_join. Step (10): Create the Layer in GeoNode from the GeoServer Layer')
     try:
         layer_params = {
             "workspace": workspace.name,
@@ -658,11 +663,12 @@ def setup_join(new_table_owner, table_name, layer_typename, table_attribute_name
     # ------------------------------------------------------------------
     # Create LayerAttributes for the new Layer (not done in GeoNode 2.x)
     # ------------------------------------------------------------------
+    logger.info('setup_join. Step (11): Create Layer Attributes from the Datatable')
     create_layer_attributes_from_datatable(dt, layer)
 
 
     return tj, ""
-    
+
 
 def set_default_style_for_new_layer(geoserver_catalog, feature_type):
     """
@@ -749,7 +755,7 @@ def create_layer_attributes_from_datatable(datatable, layer):
         # Make key, value pairs of the DataTableAttribute's values
         new_params = dict([ (attr_name, dt_attribute.__dict__.get(attr_name)) for attr_name in names_of_attrs ])
         new_params['layer'] = layer
-        
+
         # Creata or Retrieve a new LayerAttribute
         layer_attribute_obj, created = LayerAttribute.objects.get_or_create(**new_params)
 
@@ -768,10 +774,10 @@ def attempt_datatable_upload_from_request_params(request, new_layer_owner):
     Error:  (False, Error Message)
     Success: (True, TableJoin object)
     """
+    logger.info('contrib.datatables.utils.attempt_tablejoin_from_request_params')
     if not isinstance(new_layer_owner, User):
         return (False, "Please specify an owner for the new layer.")
 
-    logger.info('attempt_tablejoin_from_request_params')
 
     # ----------------------------------
     # Is this a POST?
@@ -779,6 +785,8 @@ def attempt_datatable_upload_from_request_params(request, new_layer_owner):
     if not request.method == 'POST':
         err_msg = "Unsupported Method"
         return (False, err_msg)
+
+    logger.info('Step (a): Verify Request')
 
     # ---------------------------------------
     # Verify Request
@@ -788,6 +796,7 @@ def attempt_datatable_upload_from_request_params(request, new_layer_owner):
         err_msg = "Form errors found. %s" % format_errors_as_text(form)#.as_json()#.as_text()
         return (False, err_msg)
 
+    logger.info('Step (b): Prepare data, create DataTable object')
 
     data = form.cleaned_data
 
@@ -806,14 +815,19 @@ def attempt_datatable_upload_from_request_params(request, new_layer_owner):
     # save DataTable object
     instance.save()
 
+    logger.info('Step (d): Process the tabular file')
+
     (new_datatable_obj, result_msg) = process_csv_file(instance, delimiter=delimiter, no_header_row=no_header_row)
 
     if new_datatable_obj:
+        logger.info('Step (d1): Success!')
+
         # -----------------------------------------
         #  Success, DataTable created
         # -----------------------------------------
         return (True, new_datatable_obj)
     else:
+        logger.info('Step (d2): Failed!')
         # -----------------------------------------
         #  Failed, DataTable not created
         # -----------------------------------------
@@ -827,15 +841,15 @@ def attempt_tablejoin_from_request_params(table_join_params, new_layer_owner):
     Error:  (False, Error Message)
     Success: (True, TableJoin object)
     """
-    msgt('attempt_tablejoin_from_request_params')
+    logger.info('attempt_tablejoin_from_request_params')
     if not isinstance(new_layer_owner, User):
         return (False, "Please specify an owner for the new layer.")
 
-    logger.info('attempt_tablejoin_from_request_params')
 
+    logger.info('Step (a): Validate the request params')
 
     # ----------------------------------
-    # Validate the request an pull params
+    # Validate the request params
     # ----------------------------------
     f = TableJoinRequestForm(table_join_params)
     if not f.is_valid():
@@ -854,12 +868,16 @@ def attempt_tablejoin_from_request_params(table_join_params, new_layer_owner):
     # ----------------------------------
     # Attempt to Join the table to an existing layer
     # ----------------------------------
+    logger.info('Step (b): Attempt to Join the table to an existing layer')
+
     try:
         table_join_obj, result_msg = setup_join(new_layer_owner, table_name, layer_typename, table_attribute, layer_attribute)
         if table_join_obj:
+            logger.info('Step (b1): Success')
             # Successful Join
             return (True, table_join_obj)
         else:
+            logger.info('Step (b2): Failure', result_msg)
             # Error!
             err_msg = "Error Creating Join: %s" % result_msg
             return (False, err_msg)
@@ -867,4 +885,3 @@ def attempt_tablejoin_from_request_params(table_join_params, new_layer_owner):
         traceback.print_exc(sys.exc_info())
         err_msg = "Error Creating Join: %s" % str(sys.exc_info()[0])
         return (False, err_msg)
-
