@@ -29,7 +29,7 @@ from geonode.registration.models import Province, Municipality
 import geonode.settings as settings
 
 from pprint import pprint
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, date, time
 
 import logging
 
@@ -188,10 +188,12 @@ def georefs_validation(request):
         #requests_last24h = FTPRequest.objects.filter(date_time__gt=yesterday, user=request.user)
         
         #Retrieve FTPRequests since midnight
-        today_min = datetime.combine(datetime.date.today(), datetime.time.min)
-        today_max = datetime.combine(datetime.date.today(), datetime.time.max)
-        requests_today = FTPRequest.objects.get(user=request.user, date__range=(today_min, today_max))
-
+        today_min = datetime.combine(date.today(), time.min)
+        today_max = datetime.combine(date.today(), time.max)
+        requests_today = FTPRequest.objects.filter(user=request.user, date_time__range=(today_min, today_max))
+        #requests_today = FTPRequest.objects.filter(date_time__gt=today_min, user=request.user)
+        print "PREVIOUS REQUESTS:  "
+        pprint(requests_today)
         total_size = 0
         for georef in georefs_list:
             objects = CephDataObject.objects.filter(name__startswith=georef)
