@@ -1,73 +1,66 @@
 :Author: Margherita Di Leo
 .. _devmode_install_centos:
 
-######################################
-Install GeoNode on CentOS 7 (dev mode)
-######################################
-
-Preparation
-===========
-
-Make sure all the needed libraries are installed
-
-    .. code-block:: console
-
-    yum -y update
-    yum groupinstall 'Development Tools'
-    yum install -y libxml2-devel libxslt-devel libjpeg-turbo-devel postgresql postgresql-server postgresql-contrib postgresql-libs postgresql-devel postgis geos-python python python-tools python-devel python-pillow python-lxml openssh-clients zip unzip wget git gdal python-virtualenv gdal-python geos python-pip python-imaging python-devel gcc-c++ python-psycopg2 libxml2 libxml2-devel libxml2-python libxslt libxslt-devel libxslt-python
+Install GeoNode for Development (CentOS 7)
+==========================================
 
 
-Install pip
-===========
-Installation of Python pip:
+#. Preparation: make sure all the needed libraries are installed
 
-    .. code-block:: console
+   .. code-block:: console
 
-    rpm -iUvh http://dl.fedoraproject.org/pub/epel/7/x86_64/e/epel-release-7-5.noarch.rpm
-    yum -y update
-    yum -y install python-pip
-    pip install --upgrade pip
-
-Install Python Virtual Environment
-
-    .. code-block:: console
-
-    pip install virtualenvwrapper
+    $ sudo yum -y update
+    $ sudo yum groupinstall 'Development Tools'
+    $ sudo yum install -y libxml2-devel libxslt-devel libjpeg-turbo-devel postgresql postgresql-server postgresql-contrib postgresql-libs postgresql-devel postgis geos-python python python-tools python-devel python-pillow python-lxml openssh-clients zip unzip wget git gdal python-virtualenv gdal-python geos python-pip python-imaging python-devel gcc-c++ python-psycopg2 libxml2 libxml2-devel libxml2-python libxslt libxslt-devel libxslt-python
 
 
-Setup Postgresql
-================
-Enable Postgresql service
+#. Install pip
 
-    .. code-block:: console
+   .. code-block:: console
 
-    systemctl enable postgresql
+    $ sudo rpm -iUvh http://dl.fedoraproject.org/pub/epel/7/x86_64/e/epel-release-7-5.noarch.rpm
+    $ sudo yum -y update
+    $ sudo yum -y install python-pip
+    $ pip install --upgrade pip
 
-Change postgres UNIX password
+   Install Python Virtual Environment
 
-    .. code-block:: console
+   .. code-block:: console
 
-    passwd -u postgres -f
-    passwd postgres
+    $ pip install virtualenvwrapper
 
-Start Postgresql service
 
-    .. code-block:: console
+#. Setup Postgresql
 
-    systemctl start postgresql.service
+   .. code-block:: console
+    
+    # Enable Postgresql service
+    
+    $ sudo systemctl enable postgresql
 
-Create GeoNode role and database
+    # Change postgres UNIX password
 
-    .. code-block:: console
+    $ passwd -u postgres -f
+    $ passwd postgres
 
-    su - postgres
-    initdb
-    pg_ctl start
-    pg_ctl status 
+    # Start Postgresql service
+
+    $ sudo systemctl start postgresql.service
+
+   Create GeoNode role and database
+
+   .. code-block:: console
+
+    $ su - postgres
+    $ initdb
+    $ pg_ctl start
+    $ pg_ctl status 
  
-    .. code-block:: console
+   .. code-block:: console
 
-    createdb geonode
+    $ createdb geonode
+    $ psql
+
     postgres=#
     postgres=# \password postgres
     postgres=# CREATE USER geonode WITH PASSWORD 'geonode'; 
@@ -75,33 +68,30 @@ Create GeoNode role and database
     postgres=# \q
 
 
-Install Java
-============
-First, check if Java is already installed
+#. Install Java
 
-    .. code-block:: console
+   .. code-block:: console
+   
+    # First, check if Java is already installed
+    
+    $ java -version
 
-    java -version
-
-In case, install Java
-
-    .. code-block:: console
-
-    yum install -y java-1.8.0-openjdk-devel
+    # In case, install Java
+    
+    $ sudo yum install -y java-1.8.0-openjdk-devel
 
 
-Setup a virtual environment
-===========================
+#. Setup a virtual environment
 
-Assuming your user name is v-user, you need to edit your .bashrc file
+   Assuming your user name is v-user, you need to edit your .bashrc file
 
-    .. code-block:: console
+   .. code-block:: console
 
-    nano /home/v-user/.bashrc
+    $ nano /home/v-user/.bashrc
 
-adding the following lines (please replace v-user with your actual user name):
+   adding the following lines (please replace v-user with your actual user name):
 
-    .. code-block:: console
+   .. code-block:: console
 
     # virtualenvwrapper
     export VIRTUALENVWRAPPER_PYTHON=/usr/bin/python
@@ -109,56 +99,56 @@ adding the following lines (please replace v-user with your actual user name):
     source /usr/bin/virtualenvwrapper.sh
     export PIP_DOWNLOAD_CACHE=$HOME/.pip-downloads
 
-Save and exit. Then,
+   Save and exit. Then,
 
-    .. code-block:: console
+   .. code-block:: console
 
-    source /home/v-user/.bashrc
-
-
-Install GeoNode
-===============
-Setup a virtual environment for GeoNode
-
-    .. code-block:: console
-
-    mkvirtualenv geonode --system-site-packages
-    workon geonode
-
-Download the current stable version (2.4)
-
-    .. code-block:: console
-
-    wget https://github.com/GeoNode/geonode/archive/debian/2.4.0+thefinal0.zip
-    unzip 2.4.0+thefinal0.zip
-    cd geonode-debian-2.4.0-thefinal0/
-
-Install
-
-    .. code-block:: console
-
-    pip install -e . --use-mirrors
-
-Verify the installation
-
-    .. code-block:: console
-
-    pip freeze
-
-In case of successful installation, this should return several (50+) lines.
+    $ source /home/v-user/.bashrc
 
 
-Install GeoServer
------------------
-The installation of Geoserver starts with
+#. Install GeoNode
 
-    .. code-block:: console
+   Setup a virtual environment for GeoNode
 
-    paver setup
+   .. code-block:: console
 
-This should return
+    $ mkvirtualenv geonode --system-site-packages
+    $ workon geonode
 
-    .. code-block:: console
+   Download the current stable version (2.4)
+
+   .. code-block:: console
+
+    $ wget https://github.com/GeoNode/geonode/archive/debian/2.4.0+thefinal0.zip
+    $ unzip 2.4.0+thefinal0.zip
+    $ cd geonode-debian-2.4.0-thefinal0/
+
+   Install
+
+   .. code-block:: console
+
+    $ pip install -e . --use-mirrors
+
+   Verify the installation
+
+   .. code-block:: console
+
+    $ pip freeze
+
+   In case of successful installation, this should return several (50+) lines.
+
+
+#. Install GeoServer
+
+   The installation of Geoserver starts with
+
+   .. code-block:: console
+
+    $ paver setup
+
+   This should return
+
+   .. code-block:: console
 
     GeoNode development environment successfully set up.If you have not set 
     up an administrative account, please do so now. Use "paver start" to start 
