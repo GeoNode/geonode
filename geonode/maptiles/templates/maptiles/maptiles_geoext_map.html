@@ -349,17 +349,16 @@ function filterSelectedTiles(tile_filter, single_click, send_notice){
                  var tiles = hasDataFiltering(feature_out);
                   if (jurisdiction_geoms.length > 0){
                      for (var i=0;i<tiles.length;i++){
-                         console.log(tiles[i]);
-                         
-                         if (isInJurisdiction(jurisdiction_geoms, tiles[i])){
-                              var corners = {
+                         //console.log(tiles[i]);
+                         var corners = {
                                         "ur_x": tiles[i].data.MAXX, "ur_y": tiles[i].data.MAXY,
                                         "ul_x": tiles[i].data.MINX, "ul_y": tiles[i].data.MAXY,
                                         "ll_x": tiles[i].data.MINX, "ll_y": tiles[i].data.MINY,
                                         "lr_x": tiles[i].data.MAXX,"lr_y": tiles[i].data.MINY
-                              }
-                              var tile = createTile(corners);
-                              if (find_georef(tile_list, tile.georef)<0){
+                        }
+                        var tile = createTile(corners);
+                         if (find_georef(tile_list, tile.georef)<0){
+                               if (isInJurisdiction(jurisdiction_geoms, tiles[i])){
                                     tile_list.push(tile);
                                     tile.feature = createHighlightBox(tile.corners);
                                     highlight_layer.addFeatures([tile.feature]);
