@@ -57,6 +57,8 @@ def view_upload_table_and_join_layer(request):
     post_data_dict = request.POST.dict()
 
     msg('step 1')
+    logger.info('Upload a tabular file originating from Dataverse/Geoconnect and join it to a layer.')
+    logger.info('Step 1:  Is the Dataverse Layer Metadata valid?')
     # -------------------------------------------
     # Is the Dataverse Layer Metadata valid?
     # -------------------------------------------
@@ -75,6 +77,8 @@ def view_upload_table_and_join_layer(request):
     # Does a layer already exist for this DataverseInfo?
     # -------------------------------------------
     msg('step 2')
+    logger.info('Step 2:  Does a layer already exist for this DataverseInfo?')
+
     existing_dv_layer_metadata = retrieve_dataverse_layer_metadata_by_kwargs_installation_and_file_id(**post_data_dict)
 
     #   A layer was found!
@@ -94,9 +98,10 @@ def view_upload_table_and_join_layer(request):
 
 
     # -------------------------------------------
-    # Is the Upload and join post valid?
+    # Is the Upload and join info valid?
     # -------------------------------------------
     msg('step 3')
+    logger.info("Step 3: Is the Upload and join info valid?")
 
     form_upload_and_join = TableUploadAndJoinRequestForm(post_data_dict, request.FILES)
     if not form_upload_and_join.is_valid():
@@ -110,7 +115,7 @@ def view_upload_table_and_join_layer(request):
     # ----------------------------------------------------
     # Attempt to upload the table
     # ----------------------------------------------------
-    msg('step 4')
+    logger.info("Step 4: Attempt to UPLOAD the table")
     (success, data_table_or_error) = attempt_datatable_upload_from_request_params(request, request.user)
     if not success:
         json_msg = MessageHelperJSON.get_json_fail_msg(data_table_or_error)
@@ -119,7 +124,8 @@ def view_upload_table_and_join_layer(request):
     # ----------------------------------------------------
     # Attempt to join the table
     # ----------------------------------------------------
-    msg('step 4')
+    logger.info("Step 5: Prepare to JOIN the table")
+
     new_datatable = data_table_or_error
     join_props = request.POST.copy()
 
@@ -133,6 +139,8 @@ def view_upload_table_and_join_layer(request):
     # ---------------------------------
     # Make the join!
     # ---------------------------------
+    logger.info("Step 6: Make the JOIN to the table")
+
     (success, tablejoin_obj_or_err_msg) = attempt_tablejoin_from_request_params(join_props, request.user)
 
     if not success: # FAILED!
@@ -150,7 +158,7 @@ def view_upload_table_and_join_layer(request):
     # ----------------------------------------------------
     #  Make a new DataverseInfo object and attach it to the Layer
     # ----------------------------------------------------
-    msg('step 6')
+    logger.info('Step 7: Make a new DataverseInfo object and attach it to the Layer')
 
     dataverse_layer_metadata = add_dataverse_layer_metadata(new_layer, post_data_dict)
     if dataverse_layer_metadata is None:
@@ -171,10 +179,9 @@ def view_upload_table_and_join_layer(request):
     # ------------------------------
     # We made it! Send back a JSON response!
     # ------------------------------
-    msg('step 7')
+    logger.info('Step 8: We made it! Send back a JSON response!')
 
     layer_metadata_obj = LayerMetadata(new_layer)
-    msg('step 7a')
 
     response_params = layer_metadata_obj.get_metadata_dict()
     response_params.update(TableJoinResultForm.get_cleaned_data_from_table_join(new_tablejoin))
@@ -182,7 +189,8 @@ def view_upload_table_and_join_layer(request):
 
     # Return the response!
     json_msg = MessageHelperJSON.get_json_msg(success=True, msg='worked', data_dict=response_params)
-    msg('step 7b')
+    msg('step 8b')
+    logger.info('Step 8a: json_msg', json_msg)
+
     msg('json_msg: %s' % json_msg)
     return HttpResponse(status=200, content=json_msg, content_type="application/json")
-
