@@ -384,7 +384,9 @@ def create_point_col_from_lat_lon(new_table_owner, table_name, lat_column, lng_c
     # ------------------------------------------------------
     try:
         cat = Catalog(settings.GEOSERVER_BASE_URL + "rest",
-                          "admin", "geoserver")
+                    settings.GEOSERVER_CREDENTIALS[0],
+                    settings.GEOSERVER_CREDENTIALS[1])
+                    #      "admin", "geoserver")
         workspace = cat.get_workspace("geonode")
         ds_list = cat.get_xml(workspace.datastore_url)
         datastores = [datastore_from_index(cat, workspace, n) for n in ds_list.findall("dataStore")]
@@ -592,7 +594,9 @@ def setup_join(new_table_owner, table_name, layer_typename, table_attribute_name
         # Find the datastore
         #----------------------------
         cat = Catalog(settings.GEOSERVER_BASE_URL + "rest",
-                          "admin", "geoserver")
+                    settings.GEOSERVER_CREDENTIALS[0],
+                    settings.GEOSERVER_CREDENTIALS[1])
+                    # "admin", "geoserver")
         workspace = cat.get_workspace('geonode')
         ds_list = cat.get_xml(workspace.datastore_url)
         datastores = [datastore_from_index(cat, workspace, n) for n in ds_list.findall("dataStore")]
