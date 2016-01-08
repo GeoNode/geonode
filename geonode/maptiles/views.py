@@ -72,107 +72,28 @@ def _resolve_layer(request, typename, permission='base.view_resourcebase',
 #Returns the template with the configuration details as context
 #
 @login_required
-def tiled_view2(request, overlay=settings.TILED_SHAPEFILE, template="maptiles/maptiles_map.html",test_mode=False, jurisdiction=None):
+def tiled_view(request, overlay=settings.TILED_SHAPEFILE, template="maptiles/maptiles_map.html",test_mode=False, jurisdiction=None):
     
     context_dict = {}
     context_dict["grid"] = get_layer_config(request, overlay, "base.view_resourcebase", _PERMISSION_VIEW )
     if jurisdiction is None:
         try:
-            jurisdiction = UserJurisdiction.objects.get(user=request.user)
-            context_dict["jurisdiction"] = get_layer_config(request,jurisdiction.jurisdiction_shapefile.typename, "base.view_resourcebase", _PERMISSION_VIEW)
+            jurisdiction_object = UserJurisdiction.objects.get(user=request.user)
+            if jurisdiction_object is not None:
+                context_dict["jurisdiction"] = get_layer_config(request,jurisdiction_object.jurisdiction_shapefile.typename, "base.view_resourcebase", _PERMISSION_VIEW)
+                context_dict["jurisdiction_name"] = jurisdiction_object.jurisdiction_shapefile.typename
         except ObjectDoesNotExist:
-            context_dict["jurisdiction"]=""
+            print "No jurisdiction found"
     else:
         context_dict["jurisdiction"] = get_layer_config(request,jurisdiction, "base.view_resourcebase", _PERMISSION_VIEW)
     
     context_dict["feature_municipality"]  = settings.MUNICIPALITY_SHAPEFILE.split(":")[1]
     context_dict["feature_tiled"] = overlay.split(":")[1]
-    context_dict["jurisdiction_name"] = jurisdiction.jurisdiction_shapefile.typename
     context_dict["test_mode"]=test_mode
     context_dict["data_classes"]= DataClassification.labels.values()
     
     return render_to_response(template, RequestContext(request, context_dict))
     
-
-@login_required
-def tiled_view(request, overlay=settings.TILED_SHAPEFILE, template="maptiles/maptiles_map.html",test_mode=False, jurisdiction=None):
-    
-    layer = {}
-    try:
-        layer = _resolve_layer(request, overlay, "base.view_resourcebase", _PERMISSION_VIEW )
-    except Exception as e:
-        layer = _resolve_layer(request, settings.MUNICIPALITY_SHAPEFILE, _PERMISSION_VIEW)
-        overlay = settings.MUNICIPALITY_SHAPEFILE
-            
-    config = layer.attribute_config()
-    layer_bbox = layer.bbox
-    bbox = [float(coord) for coord in list(layer_bbox[0:4])]
-    srid = layer.srid
-    
-    # Transform WGS84 to Mercator.
-    config["srs"] = srid if srid != "EPSG:4326" else "EPSG:900913"
-    config["bbox"] = llbbox_to_mercator([float(coord) for coord in bbox])
-
-    config["title"] = layer.title
-    config["queryable"] = True
-
-    if layer.storeType == "remoteStore":
-        service = layer.service
-        source_params = {
-            "ptype": service.ptype,
-            "remote": True,
-            "url": service.base_url,
-            "name": service.name}
-        maplayer = GXPLayer(
-            name=layer.typename,
-            ows_url=layer.ows_url,
-            layer_params=json.dumps(config),
-            source_params=json.dumps(source_params))
-    else:
-        maplayer = GXPLayer(
-            name=layer.typename,
-            ows_url=layer.ows_url,
-            layer_params=json.dumps(config))
-
-    map_obj = GXPMap(projection="EPSG:900913")
-    NON_WMS_BASE_LAYERS = [
-        la for la in default_map_config()[1] if la.ows_url is None]
-
-    metadata = layer.link_set.metadata().filter(
-        name__in=settings.DOWNLOAD_FORMATS_METADATA)
-
-    context_dict = {
-        "data_classes": DataClassification.labels.values(),
-        "resource": layer,
-        "permissions_json": _perms_info_json(layer),
-        "metadata": metadata,
-        "is_layer": True,
-        "wps_enabled": settings.OGC_SERVER['default']['WPS_ENABLED'],
-    }
-    
-    context_dict["viewer"] = json.dumps(
-        map_obj.viewer_json(request.user, * (NON_WMS_BASE_LAYERS + [maplayer])))
-        
-    context_dict["layer"]  = overlay
-    context_dict["geoserver"] = settings.OGC_SERVER['default']['PUBLIC_LOCATION']
-    context_dict["siteurl"] = settings.SITEURL
-        
-    context_dict["feature_municipality"]  = settings.MUNICIPALITY_SHAPEFILE.split(":")[1]
-    context_dict["feature_tiled"] = overlay.split(":")[1]
-    context_dict["test_mode"]=test_mode
-    try:
-        jurisdiction = UserJurisdiction.objects.get(user=request.user)
-        context_dict["jurisdiction"]=jurisdiction.get_shapefile_typename()
-        context_dict["feature_juris"] = context_dict["jurisdiction"].split(":")[1]
-        juris_layer = _resolve_layer(request, context_dict["jurisdiction"], "base.view_resourcebase", _PERMISSION_VIEW )
-        juris_bbox = juris_layer.bbox
-        j_bbox = [float(coord) for coord in list(juris_bbox[0:4])]
-        context_dict["j_bbox"] = json.dumps(llbbox_to_mercator([float(coord) for coord in j_bbox]))
-    except ObjectDoesNotExist:
-        context_dict["jurisdiction"]=""
-        
-    return render_to_response(template, RequestContext(request, context_dict))
-
 #
 # Function for processing the georefs submitted by the user
 #
