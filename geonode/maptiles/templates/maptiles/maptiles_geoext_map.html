@@ -362,6 +362,7 @@ function filterSelectedTiles(tile_filter, single_click, send_notice){
                                     tile_list.push(tile);
                                     tile.feature = createHighlightBox(tile.corners);
                                     highlight_layer.addFeatures([tile.feature]);
+                                    highlight_layer.refresh();
                               }else if (single_click){
                                   removeHighlight(tile.georef, highlight_layer);
                               }
