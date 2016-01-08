@@ -175,7 +175,10 @@ class TestWorldMapShapefileImport(TestTabularAPIBase):
         #   Test WorldMap shapefile import API but send 2 files instead of 1
         #
         try:
-            r = requests.post(api_url, data=test_shapefile_info, files=files )
+            r = requests.post(api_url,
+                data=test_shapefile_info,
+                files=files,
+                auth=self.get_creds_for_http_basic_auth())
         except requests.exceptions.ConnectionError as e:
             msgx('Connection error: %s' % e.message); return
         except:
@@ -191,7 +194,7 @@ class TestWorldMapShapefileImport(TestTabularAPIBase):
             self.assertTrue(False, "Failed to convert response to JSON. Received: %s" % r.text)
 
 
-        expected_msg = 'File not found.'
+        expected_msg = 'This request only accepts a single file'
         self.assertTrue(json_resp.get('message','').startswith(expected_msg),
                 'Should receive message: "%s".  Received: %s' % (expected_msg, r.text))
 
@@ -284,11 +287,9 @@ class TestWorldMapShapefileImport(TestTabularAPIBase):
             msgx("Unexpected error: %s" % sys.exc_info()[0]); return
 
         msg(r.status_code)
+        msg(r.text)
 
         self.assertEqual(r.status_code, 401, "Should receive 401 error.  Received: %s\n%s" % (r.status_code, r.text))
-        expected_msg = 'Login required'
-        self.assertEqual(r.json().get('message'), expected_msg\
-                    , 'Should receive message: "%s".  Received: %s' % (expected_msg, r.text))
 
 
         #-----------------------------------------------------------
@@ -635,6 +636,8 @@ class TestWorldMapShapefileImport(TestTabularAPIBase):
             json_resp = r.json()
         except:
             self.assertTrue(False, "Failed to convert response to JSON. Received: %s" % r.text)
+
+        msg(r.status_code)
 
         #   Expect 'success' key to be True
         #
