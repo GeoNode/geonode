@@ -587,29 +587,39 @@ def setup_join(new_table_owner, table_name, layer_typename, table_attribute_name
     #--------------------------------------------------
     logger.info('setup_join. Step (9): Create the Layer in GeoServer from the view')
     try:
+        logger.info('setup_join. Step (9a): Find the datastore')
+        #----------------------------
+        # Find the datastore
+        #----------------------------
         cat = Catalog(settings.GEOSERVER_BASE_URL + "rest",
                           "admin", "geoserver")
         workspace = cat.get_workspace('geonode')
         ds_list = cat.get_xml(workspace.datastore_url)
         datastores = [datastore_from_index(cat, workspace, n) for n in ds_list.findall("dataStore")]
-        #----------------------------
-        # Find the datastore
-        #----------------------------
         ds = None
+
+        # Iterate through datastores
+        #
         for datastore in datastores:
             #msg ('datastore name:', datastore.name)
             if datastore.name == settings.DB_DATASTORE_NAME: #"geonode_imports":
                 ds = datastore
+
         if ds is None:
             tj.delete()
             err_msg = "Datastore name not found: %s" % settings.DB_DATASTORE_NAME
             logger.error(str(ds))
             return None, err_msg
 
+        # Publish the feature
+        #
+        logger.info('setup_join. Step (9b): Publish the feature type')
         ft = cat.publish_featuretype(view_name, ds, layer.srs, srs=layer.srs)
         #ft = cat.publish_featuretype(double_view_name, ds, layer.srs, srs=layer.srs)
 
+        logger.info('setup_join. Step (9c): Save the feature type')
         cat.save(ft)
+
     except Exception as e:
         tj.delete()
         import traceback
