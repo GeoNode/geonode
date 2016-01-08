@@ -56,7 +56,6 @@ def _resolve_layer(request, typename, permission='base.view_resourcebase',
 def get_layer_config(request, typename, permission='base.view_resourcebase',
                    msg=_PERMISSION_GENERIC, **kwargs):
                        
-    pprint("typename="+typename)
     try:
         layer = _resolve_layer(request, typename, "base.view_resourcebase", _PERMISSION_VIEW )
     except Exception as e:
