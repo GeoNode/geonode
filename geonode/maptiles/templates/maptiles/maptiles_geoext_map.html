@@ -351,14 +351,14 @@ function filterSelectedTiles(tile_filter, single_click, send_notice){
                      for (var i=0;i<tiles.length;i++){
                          console.log(tiles[i]);
                          if (isInJurisdiction(jurisdiction_geoms, tiles[i])){
-                              if (find_georef(tile_list, tile.georef)<0){
-                                     var corners = {
+                              var corners = {
                                         "ur_x": f.data.MAXX, "ur_y": f.data.MAXY,
                                         "ul_x": f.data.MINX, "ul_y": f.data.MAXY,
                                         "ll_x": f.data.MINX, "ll_y": f.data.MINY,
                                         "lr_x": f.data.MAXX,"lr_y": f.data.MINY
-                                    }
-                                    var tile = createTile(corners);
+                              }
+                              var tile = createTile(corners);
+                              if (find_georef(tile_list, tile.georef)<0){
                                     tile_list.push(tile);
                                     tile.feature = createHighlightBox(tile.corners);
                                     highlight_layer.addFeatures([tile.feature]);
