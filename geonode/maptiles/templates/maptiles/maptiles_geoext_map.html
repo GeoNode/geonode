@@ -281,7 +281,6 @@ function isInJurisdiction(geoms, tile){
 }
 
 function jurisdictionFilter(geoms, feature_list){
-    console.log("feature_list.length="+feature_list.length);
     var tile_list = [];
     for (var i=0;i<feature_list.length;i++){
         if(isInJurisdiction(geoms, feature_list[i])){
@@ -349,7 +348,6 @@ function filterSelectedTiles(tile_filter, single_click, send_notice){
                  var tiles = hasDataFiltering(feature_out);
                   if (jurisdiction_geoms.length > 0){
                      for (var i=0;i<tiles.length;i++){
-                         //console.log(tiles[i]);
                          var corners = {
                                         "ur_x": tiles[i].data.MAXX, "ur_y": tiles[i].data.MAXY,
                                         "ul_x": tiles[i].data.MINX, "ul_y": tiles[i].data.MAXY,
@@ -454,11 +452,9 @@ function getJurisdictionGeom(jurisdiction, juris_vec_layer){
       callback: function(response){
             if (response.priv.responseText){
                 //var parser = new OpenLayers.Format.GeoJSON();
-                console.log(jurisdiction);
                 var feature_out =olGeoJSON.read(response.priv.responseText);
                 juris_vec_layer.addFeatures(feature_out);
                 jurisdiction_geoms = juris_vec_layer.features;
-                console.log(jurisdiction_geoms.length);
                 //jstsJurisdictionGeoms=new javascript.util.ArrayList();
                 jstsJurisdictionGeoms=[];
                 tmp = jstsParser.read(response.priv.responseText);
@@ -581,7 +577,6 @@ Ext.onReady(function (){
                 maxExtent: new OpenLayers.Bounds(j_layer["bbox"])
             } 
         );
-        console.log(j_layer);
         map.addLayer(jurisdiction_view_layer);
     }
 
