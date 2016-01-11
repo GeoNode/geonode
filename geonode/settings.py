@@ -401,7 +401,7 @@ AUTHENTICATION_BACKENDS = (
 ANONYMOUS_USER_ID = -1
 GUARDIAN_GET_INIT_ANONYMOUS_USER = 'geonode.people.models.get_anonymous_user_instance'
 
-# Whether the uplaoded resources should be public and downloadable by default or not
+# Whether the uploaded resources should be public and downloadable by default or not
 DEFAULT_ANONYMOUS_VIEW_PERMISSION = True
 DEFAULT_ANONYMOUS_DOWNLOAD_PERMISSION = True
 
@@ -482,6 +482,10 @@ OGP_URL = "http://geodata.tufts.edu/solr/select"
 # Topic Categories list should not be modified (they are ISO). In case you
 # absolutely need it set to True this variable
 MODIFY_TOPICCATEGORY = False
+
+# If exists new/unknown categories in metadata file,
+# add then to geonode or return a error
+ADD_NEW_CATEGORIES_FROM_METADATA = False
 
 MISSING_THUMBNAIL = 'geonode/img/missing_thumb.png'
 

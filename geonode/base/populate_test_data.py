@@ -156,9 +156,10 @@ def create_models(type=None):
                     bbox_x1=bbox_x1,
                     bbox_y0=bbox_y0,
                     bbox_y1=bbox_y1,
-                    category=category,
                     )
+
             m.save()
+            m.categories.add(category)
             for kw in kws:
                 m.keywords.add(kw)
                 m.save()
@@ -173,9 +174,9 @@ def create_models(type=None):
                          bbox_x1=bbox_x1,
                          bbox_y0=bbox_y0,
                          bbox_y1=bbox_y1,
-                         category=category,
                          doc_file=f)
             m.save()
+            m.categories.add(category)
             for kw in kws:
                 m.keywords.add(kw)
                 m.save()
@@ -200,9 +201,9 @@ def create_models(type=None):
                       temporal_extent_end=end,
                       date=start,
                       storeType=storeType,
-                      category=category,
                       )
             l.save()
+            l.categories.add(category)
             for kw in kws:
                 l.keywords.add(kw)
                 l.save()

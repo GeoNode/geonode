@@ -244,11 +244,15 @@
        <gmd:characterSet>
          <gmd:MD_CharacterSetCode codeSpace="ISOTC211/19115" codeList="http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#MD_CharacterSetCode" codeListValue="utf8">utf8</gmd:MD_CharacterSetCode>
        </gmd:characterSet>
-       <gmd:topicCategory {% if not layer.category %}gco:nilReason="missing"{% endif %}>
-         {% if layer.category %}
-         <gmd:MD_TopicCategoryCode>{{layer.category.identifier}}</gmd:MD_TopicCategoryCode>
-         {% endif %}
+       {% if layer.categories_list|length < 1 %}
+       <gmd:topicCategory gco:nilReason="missing"/>
+       {% else %}
+       {% for topic in layer.categories_list %}
+       <gmd:topicCategory>
+                <gmd:MD_TopicCategoryCode>{{ topic.identifier }}</gmd:MD_TopicCategoryCode>
        </gmd:topicCategory>
+       {% endfor %}
+       {% endif %}
        <gmd:extent>
          <gmd:EX_Extent>
            <gmd:geographicElement>

@@ -22,6 +22,7 @@ import autocomplete_light
 from autocomplete_light.contrib.taggit_field import TaggitField, TaggitWidget
 
 from django import forms
+from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext as _
 
 from mptt.forms import TreeNodeMultipleChoiceField
@@ -32,32 +33,22 @@ from geonode.base.models import TopicCategory, Region
 from geonode.people.models import Profile
 
 
-class CategoryChoiceField(forms.ModelChoiceField):
+class CategoryChoiceField(forms.ModelMultipleChoiceField):
+    def prepare_value(self, value):
+        # The current version of django-forms-bootstrap on PyPi only works if the return is a str or list of str
+        # The version in Github is already fixed when its updated in PyPi this method can/should be removed
+        value = super(CategoryChoiceField, self).prepare_value(value)
+        if type(value) == list:
+            return [str(x) for x in value]
+        return str(value)
+
     def label_from_instance(self, obj):
-        return '<span class="has-popover" data-container="body" data-toggle="popover" data-placement="top" ' \
-               'data-content="' + obj.description + '" trigger="hover">' + obj.gn_description + '</span>'
-
-
-class CategoryForm(forms.Form):
-    category_choice_field = CategoryChoiceField(required=False,
-                                                label='*' + _('Category'),
-                                                empty_label=None,
-                                                queryset=TopicCategory.objects.extra(order_by=['description']))
-
-    def clean(self):
-        cleaned_data = self.data
-        ccf_data = cleaned_data.get("category_choice_field")
-
-        if not ccf_data:
-            msg = _("Category is required.")
-            self._errors = self.error_class([msg])
-
-        # Always return the full collection of cleaned data.
-        return cleaned_data
+        return mark_safe('<span class="has-popover" data-container="body" data-toggle="popover" data-placement="top" '
+                         'data-content="' + obj.description + '" trigger="hover">' + obj.gn_description + '</span>')
 
 
 class ResourceBaseForm(TranslationModelForm):
-    """Base form for metadata, should be inherited by childres classes of ResourceBase"""
+    """Base form for metadata, should be inherited by child classes of ResourceBase"""
 
     owner = forms.ModelChoiceField(
         empty_label="Owner",
@@ -123,6 +114,12 @@ class ResourceBaseForm(TranslationModelForm):
         level_indicator=u'___')
     regions.widget.attrs = {"size": 20}
 
+    categories = CategoryChoiceField(
+        TopicCategory.objects.extra(order_by=['description']),
+        required=False,
+        widget=forms.CheckboxSelectMultiple,
+        label=_('Categories'))
+
     def __init__(self, *args, **kwargs):
         super(ResourceBaseForm, self).__init__(*args, **kwargs)
         for field in self.fields:
@@ -147,7 +144,6 @@ class ResourceBaseForm(TranslationModelForm):
             'bbox_y0',
             'bbox_y1',
             'srid',
-            'category',
             'csw_typename',
             'csw_schema',
             'csw_mdsource',

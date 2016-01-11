@@ -124,14 +124,14 @@ class SearchApiTests(ResourceTestCase):
 
         # check we get the correct layers number returnered filtering on one
         # and then two different categories
-        filter_url = self.list_url + '?category__identifier=location'
+        filter_url = self.list_url + '?categories__identifier=location'
 
         resp = self.api_client.get(filter_url)
         self.assertValidJSONResponse(resp)
         self.assertEquals(len(self.deserialize(resp)['objects']), 3)
 
         filter_url = self.list_url + \
-            '?category__identifier__in=location&category__identifier__in=biota'
+            '?categories__identifier__in=location&categories__identifier__in=biota'
 
         resp = self.api_client.get(filter_url)
         self.assertValidJSONResponse(resp)

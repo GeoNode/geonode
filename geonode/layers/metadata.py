@@ -95,7 +95,7 @@ def iso2dict(exml):
             mdata.identification.temporalextent_end
 
         if len(mdata.identification.topiccategory) > 0:
-            vals['topic_category'] = mdata.identification.topiccategory[0]
+            vals['topic_category'] = mdata.identification.topiccategory
 
         if (hasattr(mdata.identification, 'keywords') and
                 len(mdata.identification.keywords) > 0):
@@ -139,6 +139,7 @@ def fgdc2dict(exml):
 
     if hasattr(mdata.idinfo, 'keywords'):
         if mdata.idinfo.keywords.theme:
+            vals['topic_category'] = []
             for theme in mdata.idinfo.keywords.theme:
                 if theme['themekt'] is not None:
                     lowered_themekt = theme['themekt'].lower()
@@ -154,8 +155,7 @@ def fgdc2dict(exml):
                         ss in lowered_themekt for ss in [
                             'category',
                             'categories']):
-                        vals['topic_category'] = theme['themekey'][0]
-
+                        vals['topic_category'].extend(theme['themekey'])
                     keywords.extend(theme['themekey'])
 
         if mdata.idinfo.keywords.place:

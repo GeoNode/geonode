@@ -354,7 +354,7 @@ def extract_tarfile(upload_file, extension='.shp', tempdir=None):
 
 
 def file_upload(filename, name=None, user=None, title=None, abstract=None,
-                keywords=[], category=None, regions=[],
+                keywords=[], categories=[], regions=[],
                 skip=True, overwrite=False, charset='UTF-8',
                 metadata_uploaded_preserve=False):
     """Saves a layer in GeoNode asking as little information as possible.
@@ -378,12 +378,13 @@ def file_upload(filename, name=None, user=None, title=None, abstract=None,
     if name is None:
         name = slugify(title).replace('-', '_')
 
-    if category is not None:
-        categories = TopicCategory.objects.filter(Q(identifier__iexact=category) | Q(gn_description__iexact=category))
-        if len(categories) == 1:
-            category = categories[0]
-        else:
-            category = None
+    if len(categories) > 0:
+        for category in categories:
+            category = TopicCategory.objects.filter(Q(identifier__iexact=category) | Q(gn_description__iexact=category))
+            if len(category) == 1:
+                categories.append(category[0])
+    else:
+        categories = []
 
     # Generate a name that is not taken if overwrite is False.
     valid_name = get_valid_layer_name(name, overwrite)
@@ -419,7 +420,6 @@ def file_upload(filename, name=None, user=None, title=None, abstract=None,
         'bbox_y0': bbox_y0,
         'bbox_y1': bbox_y1,
         'is_published': is_published,
-        'category': category
     }
 
     # set metadata
@@ -440,11 +440,20 @@ def file_upload(filename, name=None, user=None, title=None, abstract=None,
             if key == 'spatial_representation_type':
                 value = SpatialRepresentationType(identifier=value)
             elif key == 'topic_category':
-                value, created = TopicCategory.objects.get_or_create(
-                    identifier=value.lower(),
-                    defaults={'description': '', 'gn_description': value})
-                key = 'category'
-                defaults[key] = value
+                for top_cat in value:
+                    if getattr(settings, 'MODIFY_TOPICCATEGORY', False) is False or \
+                            getattr(settings, 'ADD_NEW_CATEGORIES_FROM_METADATA', False) is False:
+                        try:
+                            val = TopicCategory.objects.get(identifier=top_cat)
+                        except:
+                            raise GeoNodeException('The Topic Category/Theme \'' + top_cat + '\' in the metadata '
+                                                                                             'file is invalid!')
+                    else:
+                        val, created = TopicCategory.objects.get_or_create(identifier=top_cat, defaults={
+                            'description': '', 'gn_description': top_cat
+                        })
+                    if val is not None:
+                        categories.append(val)
             else:
                 defaults[key] = value
 
@@ -489,6 +498,11 @@ def file_upload(filename, name=None, user=None, title=None, abstract=None,
         # geoserver_post_save_signal should upload the new file or not
         layer.overwrite = overwrite
         layer.save()
+    # Assign the Topic Category (need to be done after saving)
+    categories = list(set(categories))
+    if categories:
+        if len(categories) > 0:
+            layer.categories.add(*categories)
 
     # Assign the keywords (needs to be done after saving)
     keywords = list(set(keywords))
@@ -506,7 +520,7 @@ def file_upload(filename, name=None, user=None, title=None, abstract=None,
 
 
 def upload(incoming, user=None, overwrite=False,
-           keywords=(), category=None, regions=(),
+           keywords=(), categories=[], regions=(),
            skip=True, ignore_errors=True,
            verbosity=1, console=None, title=None, private=False,
            metadata_uploaded_preserve=False):
@@ -592,7 +606,7 @@ def upload(incoming, user=None, overwrite=False,
                                     user=user,
                                     overwrite=overwrite,
                                     keywords=keywords,
-                                    category=category,
+                                    categories=categories,
                                     regions=regions,
                                     title=title,
                                     metadata_uploaded_preserve=metadata_uploaded_preserve

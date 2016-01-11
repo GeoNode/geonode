@@ -17,8 +17,7 @@ from django.forms.util import ErrorList
 from geonode.utils import resolve_object
 from geonode.security.views import _perms_info_json
 from geonode.people.forms import ProfileForm
-from geonode.base.forms import CategoryForm
-from geonode.base.models import TopicCategory, ResourceBase
+from geonode.base.models import ResourceBase
 from geonode.documents.models import Document
 from geonode.documents.forms import DocumentForm, DocumentCreateForm, DocumentReplaceForm
 from geonode.documents.models import IMGTYPES
@@ -287,31 +286,19 @@ def document_metadata(
     else:
         poc = document.poc
         metadata_author = document.metadata_author
-        topic_category = document.category
 
         if request.method == "POST":
             document_form = DocumentForm(
                 request.POST,
                 instance=document,
                 prefix="resource")
-            category_form = CategoryForm(
-                request.POST,
-                prefix="category_choice_field",
-                initial=int(
-                    request.POST["category_choice_field"]) if "category_choice_field" in request.POST else None)
         else:
             document_form = DocumentForm(instance=document, prefix="resource")
-            category_form = CategoryForm(
-                prefix="category_choice_field",
-                initial=topic_category.id if topic_category else None)
 
-        if request.method == "POST" and document_form.is_valid(
-        ) and category_form.is_valid():
+        if request.method == "POST" and document_form.is_valid():
             new_poc = document_form.cleaned_data['poc']
             new_author = document_form.cleaned_data['metadata_author']
             new_keywords = document_form.cleaned_data['keywords']
-            new_category = TopicCategory.objects.get(
-                id=category_form.cleaned_data['category_choice_field'])
 
             if new_poc is None:
                 if poc is None:
@@ -350,7 +337,6 @@ def document_metadata(
                 the_document.poc = new_poc
                 the_document.metadata_author = new_author
                 the_document.keywords.add(*new_keywords)
-                Document.objects.filter(id=the_document.id).update(category=new_category)
 
                 if getattr(settings, 'SLACK_ENABLED', False):
                     try:
@@ -381,7 +367,6 @@ def document_metadata(
             "document_form": document_form,
             "poc_form": poc_form,
             "author_form": author_form,
-            "category_form": category_form,
         }))
 
 

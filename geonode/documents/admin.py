@@ -10,9 +10,9 @@ class DocumentAdminForm(ResourceBaseAdminForm):
 
 
 class DocumentAdmin(MediaTranslationAdmin):
-    list_display = ('id', 'title', 'date', 'category')
+    list_display = ('id', 'title', 'date', 'categories_str')
     list_display_links = ('id',)
-    list_filter = ('date', 'date_type', 'restriction_code_type', 'category')
+    list_filter = ('date', 'date_type', 'restriction_code_type', 'categories')
     search_fields = ('title', 'abstract', 'purpose',)
     date_hierarchy = 'date'
     form = DocumentAdminForm

@@ -44,7 +44,7 @@ class CommonMetaApi:
     filtering = {'title': ALL,
                  'keywords': ALL_WITH_RELATIONS,
                  'regions': ALL_WITH_RELATIONS,
-                 'category': ALL_WITH_RELATIONS,
+                 'categories': ALL_WITH_RELATIONS,
                  'owner': ALL_WITH_RELATIONS,
                  'date': ALL,
                  }
@@ -55,11 +55,10 @@ class CommonMetaApi:
 class CommonModelApi(ModelResource):
     keywords = fields.ToManyField(TagResource, 'keywords', null=True)
     regions = fields.ToManyField(RegionResource, 'regions', null=True)
-    category = fields.ToOneField(
+    categories = fields.ToManyField(
         TopicCategoryResource,
-        'category',
-        null=True,
-        full=True)
+        'categories',
+        null=True)
     owner = fields.ToOneField(ProfileResource, 'owner', full=True)
 
     def build_filters(self, filters={}):
@@ -150,7 +149,7 @@ class CommonModelApi(ModelResource):
         date_start = parameters.get("date__gte", None)
 
         # Topic category filter
-        category = parameters.getlist("category__identifier__in")
+        categories = parameters.getlist("categories__identifier__in")
 
         # Keyword filter
         keywords = parameters.getlist("keywords__slug__in")
@@ -230,10 +229,13 @@ class CommonModelApi(ModelResource):
                             SQ(content=Raw(search_word))
                         )
 
-        # filter by category
-        if category:
-            sqs = (SearchQuerySet() if sqs is None else sqs).narrow(
-                'category:%s' % ','.join(map(str, category)))
+        # filter by category: use filter_or with keywords_exact
+        # not using exact leads to fuzzy matching and too many results
+        # using narrow with exact leads to zero results if multiple category
+        # selected
+        if categories:
+            for category in categories:
+                sqs = (SearchQuerySet() if sqs is None else sqs).filter_or(categories_exact=category)
 
         # filter by keyword: use filter_or with keywords_exact
         # not using exact leads to fuzzy matching and too many results
@@ -326,13 +328,13 @@ class CommonModelApi(ModelResource):
             # Do the query using the filterset and the query term. Facet the
             # results
             if len(filter_set) > 0:
-                sqs = sqs.filter(id__in=filter_set_ids).facet('type').facet('subtype').facet('owner')\
-                    .facet('keywords').facet('regions').facet('category')
+                sqs = sqs.filter(id__in=filter_set_ids).facet('type').facet('subtype').facet('owner').facet(
+                    'keywords').facet('regions').facet('categories')
             else:
                 sqs = None
         else:
-            sqs = sqs.facet('type').facet('subtype').facet(
-                'owner').facet('keywords').facet('regions').facet('category')
+            sqs = sqs.facet('type').facet('subtype').facet('owner').facet('keywords').facet('regions').facet(
+                'categories')
 
         if sqs:
             # Build the Facet dict
@@ -442,19 +444,20 @@ class CommonModelApi(ModelResource):
             'share_count',
             'popular_count',
             'srid',
-            'category__gn_description',
             'supplemental_information',
             'thumbnail_url',
             'detail_url',
             'rating',
         ]
 
-        if isinstance(
-                data,
-                dict) and 'objects' in data and not isinstance(
-                data['objects'],
-                list):
+        if isinstance(data, dict) and 'objects' in data and not isinstance(data['objects'], list):
+            buffer = data['objects'][:]  # keep original to later retrieve categories list
             data['objects'] = list(data['objects'].values(*VALUES))
+            # Adding the categories to the corresponding objects,
+            # The function values() will not work as expected with the ResourceBase.categories ManyToMany field
+            # See:"https://docs.djangoproject.com/en/1.6/ref/models/querysets/#django.db.models.query.QuerySet.values"
+            for i in range(0, len(data['objects'])):
+                data['objects'][i]["categories__gn_description"] = buffer[i].categories_gn_descriptions_list()
 
         desired_format = self.determine_format(request)
         serialized = self.serialize(request, data, desired_format)

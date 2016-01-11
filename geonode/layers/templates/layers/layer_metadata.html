@@ -28,7 +28,7 @@
           Some of your original metadata may have been lost.{% endblocktrans %}</p>
       {% endif %}
 
-      {% if layer_form.errors or attribute_form.errors or category_form.errors or author_form.errors or poc.errors %}
+      {% if layer_form.errors or attribute_form.errors or author_form.errors or poc.errors %}
     	  <p class="bg-danger">{% blocktrans %}Error updating metadata.  Please check the following fields: {% endblocktrans %}</p>
           <ul class="bg-danger">
           {% if author_form.errors %}
@@ -52,9 +52,6 @@
             {% endif %}
             {% endfor %}
           {% endif %}
-          {% if category_form.errors %}
-            <li>{{ category_form.errors.as_ul }}</li>
-          {% endif %}
           </ul>
         {% endif %}
 
@@ -69,23 +66,8 @@
         <div class="col-md-6 form-controls">
           {{ layer_form|as_bootstrap }}
         </div>
-        
+
         <div class="row">
-          <div class="col-md-12">
-            <label class="control-label required-field">{% trans "Category" %}</label>
-            <fieldset id="category_form">
-              {% autoescape off %}
-              {% for choice in category_form.category_choice_field.field.choices %}
-              <div class="radio col-md-6">
-                <input type="radio" name="category_choice_field" value="{{ choice.0 }}"
-                  {% ifequal category_form.initial choice.0 %} checked="checked" {% endifequal %}> 
-                  {{ choice.1 }}
-                </input>
-              </div>
-              {% endfor %}
-              {% endautoescape %}
-            </fieldset>
-          </div>
           <div class="col-md-12 grid-spacer">
             <h5>{% trans "Attributes" %}</h5>
             {{ attribute_form.management_form }}
@@ -131,5 +113,5 @@
 </div>
 {% endblock %}
 {% block extra_script %}
- {% include 'metadata_form_js.html' %} 
+ {% include 'metadata_form_js.html' %}
 {% endblock %}

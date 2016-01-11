@@ -9,7 +9,11 @@ from geonode.documents.models import Document
 class DocumentIndex(indexes.SearchIndex, indexes.Indexable):
     id = indexes.IntegerField(model_attr='id')
     abstract = indexes.CharField(model_attr="abstract", boost=1.5)
-    category__gn_description = indexes.CharField(model_attr="category__gn_description", null=True)
+    categories__gn_description = indexes.MultiValueField(
+        model_attr="categories_gn_descriptions_list",
+        null=True,
+        faceted=True,
+        stored=True)
     csw_type = indexes.CharField(model_attr="csw_type")
     csw_wkt_geometry = indexes.CharField(model_attr="csw_wkt_geometry")
     detail_url = indexes.CharField(model_attr="get_absolute_url")
@@ -30,10 +34,10 @@ class DocumentIndex(indexes.SearchIndex, indexes.Indexable):
     text = indexes.EdgeNgramField(document=True, use_template=True, stored=False)
     type = indexes.CharField(faceted=True)
     title_sortable = indexes.CharField(indexed=False, stored=False)  # Necessary for sorting
-    category = indexes.CharField(
-        model_attr="category__identifier",
-        faceted=True,
+    categories = indexes.MultiValueField(
+        model_attr="categories_identifiers_list",
         null=True,
+        faceted=True,
         stored=True)
     bbox_left = indexes.FloatField(model_attr="bbox_x0", null=True, stored=False)
     bbox_right = indexes.FloatField(model_attr="bbox_x1", null=True, stored=False)

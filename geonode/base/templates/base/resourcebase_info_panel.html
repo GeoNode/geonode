@@ -29,7 +29,7 @@
     <dt>{% trans "Abstract" %}</dt>
     <dd itemprop="description">{{ resource.abstract|escape|urlize|linebreaks|safe|truncatechars:500 }}</dd>
     {% endif %}
-    
+
     {% if resource.date %}
     <dt>{% trans resource.date_type|title %} {% trans "Date" %}</dt>
       {% if resource.date_type == 'creation' %}
@@ -57,17 +57,23 @@
       {% endfor %}
     </dd>
     {% endif %}
-          
-    {% if resource.category %}
-    <dt>{% trans "Category" %}</dt>
-    <dd><a href="{% url "search" %}?category__identifier__in={{ resource.category.identifier }}">{{ resource.category }}</a> {% if resource.category.description %}<a href="#category-more" data-toggle="collapse" data-target=".category-more"><i class="fa fa-info-circle"></i></a>{% endif %}</dd>
-      {% if resource.category.description %}
-      <dd class="category-more collapse">
-        {{ resource.category.description }}
-      </dd>
-      {% endif %}
+
+    {% if resource.categories_list.count > 0 %}
+      <dt>{% trans "Categories" %}</dt>
+      {% for category in resource.categories_list %}
+        <dd><a href="{% url "search" %}?categories__identifier__in={{ category.identifier }}">{{ category }}</a>
+          {% if category.description %}
+            <a href="#category-more" data-toggle="collapse" data-target=".category-more-{{ category.identifier }}" ><i class="fa fa-info-circle"></i></a>
+          {% endif %}
+        </dd>
+        {% if category.description %}
+          <dd class="category-more-{{ category.identifier }} collapse">
+            {{ category.description }}
+          </dd>
+        {% endif %}
+      {% endfor %}
     {% endif %}
-  
+
     {% if resource.regions.all %}
     <dt>{% trans "Regions" %}</dt>
     <dd itemprop="keywords">
@@ -79,7 +85,7 @@
       {% endfor %}
     </dd>
     {% endif %}
-  
+
     {% if resource.owner %}
     <dt>{% trans "Owner" %}</dt>
     <dd><a itemprop="author" href="{{ resource.owner.get_absolute_url }}">{{ resource.owner.username }}</a></dd>
@@ -121,7 +127,7 @@
     <dt>{% trans "Maintenance Frequency" %}</dt>
     <dd>{{ resource.maintenance_frequency_title }}</dd>
     {% endif %}
-    
+
     {% if resource.restriction_code_type or resource.constraints_other %}
     <dt>{% trans "Restrictions" %}</dt>
     <dd>{% if resource.constraints_other %}
@@ -130,7 +136,7 @@
             {{ resource.restriction_code_type }}
         {% endif %}</dd>
     {% endif %}
-          
+
     {% if resource.edition %}
     <dt>{% trans "Edition" %}</dt>
     <dd>{{ resource.edition}}</dd>
