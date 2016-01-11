@@ -712,6 +712,16 @@ class LayersTest(TestCase):
         elevation = topics.get(identifier='elevation')
         self.assertEquals(elevation.layer_count, 3)
 
+    def test_assign_change_layer_data_perm(self):
+        """
+        Ensure set_permissions supports the change_layer_data permission.
+        """
+        layer = Layer.objects.first()
+        user = get_anonymous_user()
+        layer.set_permissions({'users': {user.username: ['change_layer_data']}})
+        perms = layer.get_all_level_info()
+        self.assertIn('change_layer_data', perms['users'][user])
+
 
 class UnpublishedObjectTests(TestCase):
 
