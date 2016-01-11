@@ -100,6 +100,7 @@ setup(name='GeoNode',
         "django-extensions==1.2.5", # python-django-extensions
         "django-taggit==0.12", # python-django-taggit
         "django-mptt==0.6.1", # django-mptt
+	"django-treebeard==3.0", #django-treebeard
         "django-guardian==1.2.0", #django-guardian
         # "django-admin-bootstrapped==1.6.5", #django-admin-bootstrapped
 

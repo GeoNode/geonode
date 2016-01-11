@@ -45,8 +45,10 @@ class TreeWidget(forms.TextInput):
             super(TreeWidget, self).__init__(attrs) 
 
         def render(self, name, values, attrs=None):
-            vals = ','.join([str(i.tag.name) for i in values])
-            #vals = ""
+            if isinstance(values, basestring):
+                vals = values 
+            else:
+                vals = ','.join([str(i.tag.name) for i in values])
             output = ["<input class='form-control' id='id_resource-keywords' name='resource-keywords' value='%s'><br/>" % (vals)]
             output.append('<div id="treeview" class=""></div>')
             return mark_safe(u'\n'.join(output))
