@@ -38,6 +38,7 @@ METADATA_FORMATS = {'Atom': ('atom:entry', 'http://www.w3.org/2005/Atom'),
                     'Dublin Core': ('csw:Record', 'http://www.opengis.net/cat/csw/2.0.2'),
                     'ebRIM': ('rim:RegistryObject', 'urn:oasis:names:tc:ebxml-regrep:xsd:rim:3.0'),
                     'FGDC': ('fgdc:metadata', 'http://www.opengis.net/cat/csw/csdgm'),
+                    'GM03': ('gm03:TRANSFER', 'http://www.interlis.ch/INTERLIS2.3'),
                     'ISO': ('gmd:MD_Metadata', 'http://www.isotc211.org/2005/gmd')
                     }
 

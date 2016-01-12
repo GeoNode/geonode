@@ -729,7 +729,7 @@ HAYSTACK_FACET_COUNTS = False
 
 # Available download formats
 DOWNLOAD_FORMATS_METADATA = [
-    'Atom', 'DIF', 'Dublin Core', 'ebRIM', 'FGDC', 'ISO',
+    'Atom', 'DIF', 'Dublin Core', 'ebRIM', 'FGDC', 'GM03', 'ISO',
 ]
 DOWNLOAD_FORMATS_VECTOR = [
     'JPEG', 'PDF', 'PNG', 'Zipped Shapefile', 'GML 2.0', 'GML 3.1.1', 'CSV',

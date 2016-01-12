@@ -28,4 +28,4 @@ class CatalogueBackend(GenericCatalogueBackend):
         """initialize pycsw HTTP CSW backend"""
         super(CatalogueBackend, self).__init__(*args, **kwargs)
         self.catalogue.formats = \
-            ['Atom', 'DIF', 'Dublin Core', 'ebRIM', 'FGDC', 'ISO']
+            ['Atom', 'DIF', 'Dublin Core', 'ebRIM', 'FGDC', 'GM03', 'ISO']

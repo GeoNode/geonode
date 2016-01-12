@@ -253,6 +253,33 @@ class GeoNodeCSWTest(TestCase):
                 'No abstract provided',
                 'Expected a specific abstract in FGDC model')
 
+    def test_csw_outputschema_gm03(self):
+        """Verify that GeoNode CSW can handle ISO metadata with GM03 outputSchema"""
+
+        # GeoNetwork and deegree do not transform ISO <-> GM03
+
+        csw = get_catalogue()
+        if csw.catalogue.type in ['pycsw_http', 'pycsw_local']:
+            # get all ISO records in GM03 schema
+            csw.catalogue.getrecords(
+                typenames='gmd:MD_Metadata',
+                keywords=['san_andres_y_providencia_location'],
+                outputschema='http://www.interlis.ch/INTERLIS2.3')
+
+            record = csw.catalogue.records.values()[0]
+
+            # test that the ISO title maps correctly in FGDC
+            self.assertEqual(
+                record.data.core.citation.title.pt_group[0].plain_text,
+                'San Andres Y Providencia Location',
+                'Expected a specific title in GM03 model')
+
+            # test that the ISO abstract maps correctly in FGDC
+            self.assertEqual(
+                record.data.core.data_identification.abstract.pt_group[0].plain_text,
+                'No abstract provided',
+                'Expected a specific abstract in GM03 model')
+
     def test_csw_query_bbox(self):
         """Verify that GeoNode CSW can handle bbox queries"""
 

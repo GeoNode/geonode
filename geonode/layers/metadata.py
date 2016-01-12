@@ -32,6 +32,7 @@ from geonode import GeoNodeException
 from owslib.csw import CswRecord
 from owslib.iso import MD_Metadata
 from owslib.fgdc import Metadata
+from owslib.gm03 import GM03
 
 LOGGER = logging.getLogger(__name__)
 
@@ -60,6 +61,8 @@ def set_metadata(xml):
         identifier, vals, regions, keywords = fgdc2dict(exml)
     elif tagname == 'Record':  # Dublin Core
         identifier, vals, regions, keywords = dc2dict(exml)
+    elif tagname == 'TRANSFER':  # GM03
+        identifier, vals, regions, keywords = gm032dict(exml)
     else:
         raise RuntimeError('Unsupported metadata format')
     if not vals.get("date"):
@@ -112,6 +115,83 @@ def iso2dict(exml):
 
     if mdata.dataquality is not None:
         vals['data_quality_statement'] = mdata.dataquality.lineage
+
+    return [identifier, vals, regions, keywords]
+
+
+def gm032dict(exml):
+    """generate dict of properties from GM03 metadata"""
+
+    vals = {}
+    regions = []
+    keywords = []
+
+    def get_value_by_language(pt_group, language, pt_type='text'):
+        for ptg in pt_group:
+            if ptg.language == language:
+                if pt_type == 'url':
+                    val = ptg.plain_url
+                else:  # 'text'
+                    val = ptg.plain_text
+                return val
+
+    mdata = GM03(exml)
+
+    if hasattr(mdata.data, 'core'):
+        data = mdata.data.core
+    elif hasattr(mdata.data, 'comprehensive'):
+        data = mdata.data.comprehensive
+
+    identifier = data.metadata.file_identifier
+    language = data.metadata.language
+
+    # GM03 is English/French/German based.
+    # Adjust alpha 2 language code to alpha 3
+    if len(language) == 3:
+        language_alpha3 = language
+    elif len(language) == 2:
+        if language == 'en':
+            language_alpha3 = 'eng'
+        elif language == 'fr':
+            language_alpha3 = 'fra'
+        elif language == 'de':
+            language_alpha3 = 'ger'
+        else:
+            language_alpha3 = 'eng'
+    else:
+        language_alpha3 = 'eng'
+
+    vals['language'] = language_alpha3
+
+    vals['spatial_representation_type'] = data.metadata.hierarchy_level[0]
+    vals['date'] = data.metadata.date_stamp
+
+    # TODO: include once https://github.com/GeoNode/geonode/issues/1125 is done
+    # for dt in data.date:
+    #    if dt.date_type == 'modified':
+    #        vals['date_modified'] =  data.date.date
+    #    elif dt.date_type == 'creation':
+    #        vals['date_creation'] =  data.date.date
+    #    elif dt.date_type == 'publication':
+    #        vals['date_publication'] =  data.date.date
+    #    elif dt.date_type == 'revision':
+    #        vals['date_revision'] =  data.date.date
+
+    if hasattr(data, 'citation'):
+        vals['title'] = get_value_by_language(data.citation.title.pt_group, language)
+
+    if hasattr(data, 'data_identification'):
+        vals['abstract'] = get_value_by_language(data.data_identification.abstract.pt_group, language)
+        vals['topic_category'] = data.data_identification.topic_category
+
+    # temporal extent
+    if hasattr(data, 'temporal_extent'):
+        if data.temporal_extent.extent['begin'] is not None and data.temporal_extent.extent['end'] is not None:
+            vals['temporal_extent_start'] = data.temporal_extent.extent['begin']
+            vals['temporal_extent_end'] = data.temporal_extent.extent['end']
+
+    for kw in data.keywords:
+        keywords.append(get_value_by_language(kw.keyword.pt_group, language))
 
     return [identifier, vals, regions, keywords]
 
