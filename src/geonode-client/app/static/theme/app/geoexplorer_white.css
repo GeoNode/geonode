@@ -383,22 +383,33 @@ div.overlay-scaleline {
 /* WorldMap additions/modifications */
 
 .x-btn-noicon .x-btn-small .x-btn-text {
-  height: 23px;
-
+  height: 21px;
 }
 
 .ext-gecko .x-btn button, .ext-webkit .x-btn button {
-    padding-right: 6px;
+  color: #1a1a1a;
+  border: 1px solid #808080;
+  border-radius: 2px;
+}
+
+.ext-gecko .x-btn button:hover {
+  color:#000;
+  background-color: #bbb;
+  border: 1px solid #000;
+}
+
+.x-btn .user_item .icon-removeuser .remove-button {
+  border: 1px solid #fff;
 }
 
 .x-btn-text {
     font-size: 8pt;
     /*color: #18469C;*/
     padding:0px;
-    border-radius: 2px;
+    border-radius: 1px;
     /*border: 1px solid #000;*/
     border:none;
-    text-transform: uppercase;
+    text-transform: capitalize;
 }
 
 .x-btn-text button {
@@ -452,7 +463,7 @@ cga-logo-overlay {
     width:50px;
     background: #FFF;
     text-decoration: none;
-    border: 1px solid #000;
+    /*border: 1px solid #000;*/
 }
 
 .more-overlay-element .x-btn-small td {background-image: none; text-decoration:none;}
@@ -702,7 +713,6 @@ ul.x-tab-strip-top {
 
 .x-toolbar .x-btn-click .x-btn-bc, .x-toolbar .x-btn-menu-active .x-btn-bc, .x-toolbar .x-btn-pressed .x-btn-bc,  .x-toolbar .x-btn-over .x-btn-bc {
     background-image: none;
-    background-color: #d9d9d9;
     height: 1px;
 /*    background-color: #287AB0;*/
 }
@@ -716,11 +726,12 @@ ul.x-tab-strip-top {
     background-position: 0px center;
     background-repeat: no-repeat;
     padding-left: 19px;
-    height: 23px;
+    height: 21px;
 }
 
 .x-btn-icon .x-btn-small .x-btn-text {
-    height: 25px;
+  border: 1px solid #fff;
+  /*  height: 25px;*/
 }
 
 .x-tree-node .x-tree-selected {
@@ -783,7 +794,7 @@ ul.x-tab-strip-top {
 
 .x-form-field-wrap .x-form-trigger {
     background-image: url("../../externals/ext/resources/images/white/form/trigger.gif");
-    border: 0px;
+    border: 1px solid #fff;
     padding-top: 0px;
 }
 
@@ -796,8 +807,8 @@ ul.x-tab-strip-top {
 }
 
 .ext-gecko .x-btn button, .ext-webkit .x-btn button {
-    /*padding-left: 5px;
-    padding-right: 5px;*/
+    padding-left: 5px;
+    padding-right: 5px;
 }
 
 .x-tab-strip-active span.x-tab-strip-text {

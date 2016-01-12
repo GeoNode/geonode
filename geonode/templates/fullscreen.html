@@ -4,14 +4,15 @@
 
     <title>{% block title %}{% trans "WorldMap" %}{% endblock %}</title>
     <link rel="shortcut icon" href="{{ STATIC_URL }}theme/img/favicon.ico"/>
+
+        {% if urlsuffix %}
+        <link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}{{urlsuffix}}/site.css" media="screen" />
+        {% else %}
+        <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}theme/site.css" />
+        {% endif %}
     {% block head %}
 
 
-    {% if urlsuffix %}
-    <link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}{{urlsuffix}}/site.css" media="screen" />
-    {% else %}
-    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}theme/site.css" />
-    {% endif %}
 
     <script type="text/javascript" src="{% url jscat %}"></script>
     <script type="text/javascript" src="{% url lang %}"></script>
@@ -48,7 +49,7 @@
             {% endif %}
             | <a class="" id="mapLink" href="/maps/new">{% trans "Create Map" %}</a>
             | <a class="" id="mapLink" href="{% url maps_search %}?sort=last_modified&dir=DESC">{% trans "View Map" %}</a>
-            | <a class="" id="dataLink" href="{{site}}{{ STATIC_URL }}docs/WorldMap_Help.pdf" target="_blank">{% trans "Help" %}</a>                        
+            | <a class="" id="dataLink" href="{{site}}{{ STATIC_URL }}docs/WorldMap_Help.pdf" target="_blank">{% trans "Help" %}</a>
         </div>
     </div><!-- /.wrap -->
 </div><!-- /#header -->
@@ -56,7 +57,7 @@
 {% endblock body %}
        <div id="langselect" style="display:inline">
    			<!-- Only show the language form if the csrf_token is present -->
-   			{% if csrf_token != "NOTPROVIDED" %}       
+   			{% if csrf_token != "NOTPROVIDED" %}
    				{% get_current_language as LANGUAGE %}
     			<form class="langbar" id="target" action="/i18n/setlang/" method="post">
       			{% csrf_token %}
