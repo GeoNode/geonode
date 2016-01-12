@@ -28,7 +28,7 @@ var isMobile = {
 };    
 </script>
 
-
+<script type="text/javascript" src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
 {% include "geonode/ext_header.html" %}
 {% include "geonode/app_header.html" %}
 {% include "geonode/geo_header.html" %}
@@ -223,8 +223,8 @@ var init = function() {
 
     <div id="dataTabs" class="x-hidden">
 
-<div id="searchDiv" style="background-color:#fff;width:800px;">
-<div style="float:left;position:relative;margin:10px;width:580px;">
+<div id="searchDiv" style="background-color:#fff;width:100%;">
+<div style="float:left;position:relative;margin:10px;width:48%;height:500px;">
   <div class="block">
     <h2>{% trans "Search" %} <span class="subtitle">{% trans "for geospatial data" %}</span></h2>
 
@@ -246,16 +246,14 @@ var init = function() {
 
 
 
-<div style="position:relative;float:right;width:200px">
+<div style="position:relative;float:right;width:50%;">
   <div id="refine" class="block">
     <h3>{% trans "Refine Search" %}</h3>
     <div class="bbox-controls">
-      <div class="bbox-enabled"><input type="checkbox" /> {% trans "By area" %}</div>
       <p><span class="explain">{% blocktrans %}Limit the search to data that includes features in the displayed area.{% endblocktrans %}</span></p>
       <div class="bbox-expand">
       </div>
     </div>
-    <div class="search-button">Refine</div>
   </div>
 
 </div>

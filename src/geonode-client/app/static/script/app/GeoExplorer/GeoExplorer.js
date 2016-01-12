@@ -2160,7 +2160,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             proxy: "/proxy/?url=",
             viewerConfig:this.getBoundingBoxConfig(),
             renderTo: 'refine',
-            height: 275,
+            height: 500,
             isEnabled: false,
             useGxpViewer: true
         });
@@ -2212,8 +2212,8 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             title: "Add Layers",
             closeAction: 'hide',
             layout: 'fit',
-            width: 850,
-            height:600,
+            width: '100%',
+            height:700,
             items: [this.dataTabPanel],
             modal: true,
             autoScroll: true,

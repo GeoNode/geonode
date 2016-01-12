@@ -26,13 +26,6 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
     searchOnLoad: false,
     linkableTitle: true,
 
-    additionalParams: {
-        wt: 'json',
-        defType: 'edismax',
-        qf: 'LayerDisplayNameSynonyms^0.2 ThemeKeywordsSynonymsIso^0.1 ThemeKeywordsSynonymsLcsh^0.1 PlaceKeywordsSynonyms^0.1 Publisher^0.1 Originator^0.1',
-        fq: ['Institution:Harvard OR Access:Public']
-    },
-
     constructor: function(config) {
         this.addEvents('load'); 
         Ext.apply(this, config);
@@ -69,19 +62,19 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
     },
 
     initFromQuery: function() {
-        if (!this.searchParams) {
-            this.searchParams = {};
+        if (!GeoNode.queryTerms) {
+            GeoNode.queryTerms = {};
         }
-        if (!this.searchParams.start) {
-            this.searchParams.start = 0;
+        if (!GeoNode.queryTerms.start) {
+            GeoNode.queryTerms.start = 0;
         }
-        if (!this.searchParams.limit) {
-            this.searchParams.limit = 25;
+        if (!GeoNode.queryTerms.limit) {
+            GeoNode.queryTerms.limit = 25;
         }
         
         if (this.constraints) {
             for (var i = 0; i < this.constraints.length; i++) {
-                this.constraints[i].initFromQuery(this, this.searchParams);
+                this.constraints[i].initFromQuery(this, GeoNode.queryTerms);
             }
         }
     },
@@ -91,16 +84,16 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
            permforms a new search */
         
         if (this.queryInput.getValue() === ''){
-            this.searchParams.q = '*';
+            GeoNode.queryTerms.q = '*';
         }
 
-        this.searchParams.start = 0;
+        GeoNode.queryTerms.start = 0;
         if (this.constraints) {
             for (var i = 0; i < this.constraints.length; i++) {
-                this.constraints[i].applyConstraint(this.searchParams);
+                this.constraints[i].applyConstraint(GeoNode.queryTerms);
             }
         }
-        this._search(this.searchParams);
+        this._search(GeoNode.queryTerms);
     },
     
     
@@ -113,16 +106,16 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
     },
 
     loadNextBatch: function() {
-        this.searchParams.start += this.searchParams.limit;
-        this._search(this.searchParams);
+        GeoNode.queryTerms.start += GeoNode.queryTerms.limit;
+        this._search(GeoNode.queryTerms);
     },
     
     loadPrevBatch: function() {
-        this.searchParams.start -= this.searchParams.limit;
-        if (this.searchParams.start < 0) {
-            this.searchParams.start = 0;
+        GeoNode.queryTerms.start -= GeoNode.queryTerms.limit;
+        if (GeoNode.queryTerms.start < 0) {
+            GeoNode.queryTerms.start = 0;
         }
-        this._search(this.searchParams);
+        this._search(GeoNode.queryTerms);
     },
 
     disableControls: function() {
@@ -133,22 +126,22 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
     updateControls: function() {
         var total = this.searchStore.getTotalCount();
 
-        if (this.searchParams.start > 0) {
+        if (GeoNode.queryTerms.start > 0) {
             this.prevButton.setDisabled(false);
         }
         else {
             this.prevButton.setDisabled(true);
         }
         
-        if (this.searchParams.start + this.searchParams.limit < total) {
+        if (GeoNode.queryTerms.start + GeoNode.queryTerms.limit < total) {
             this.nextButton.setDisabled(false);
         }
         else {
             this.nextButton.setDisabled(true);
         }
         
-        var minItem = this.searchParams.start + 1;
-        var maxItem = minItem + this.searchParams.limit - 1;
+        var minItem = GeoNode.queryTerms.start + 1;
+        var maxItem = minItem + GeoNode.queryTerms.limit - 1;
         if (minItem > total) {
             minItem = total;
         }
@@ -163,16 +156,15 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
     
     updatePermalink: function() {
         if (this.permalink) {
-            this.permalink.href = Ext.urlAppend(this.permalinkURL, Ext.urlEncode(this.searchParams));
+            this.permalink.href = Ext.urlAppend(this.permalinkURL, Ext.urlEncode(GeoNode.queryTerms));
         }
     },
 
     updateQuery: function() {
         /* called when main search query changes */
-        this.searchParams = Ext.apply(this.searchParams, this.additionalParams);
-        this.searchParams.q = this.queryInput.getValue();
+        GeoNode.queryTerms.q = this.queryInput.getValue();
         if (this.originatorInput.getValue() !== ''){
-            this.searchParams.fq.push('Originator:' + this.originatorInput.getValue());
+            GeoNode.queryTerms.fq.push('Originator:' + this.originatorInput.getValue());
         }
         if (this.dataTypeInput.getValue().length > 0){
             var values = this.dataTypeInput.getValue();
@@ -181,7 +173,8 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
                 string += 'DataType:' + values[i].name + ' OR ';
             }
             string = string.slice(0, -4);
-            this.searchParams.fq.push(string);
+            GeoNode.queryTerms.fq.pop();
+            GeoNode.queryTerms.fq.push(string);
         }
         this.doSearch();
     },
@@ -215,12 +208,12 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
         var table_el = el.query('.search-table')[0];
         var controls_el = el.query('.search-controls')[0];
         
-        var expander = new GeoNode.SearchTableRowExpander({fetchURL: this.layerDetailURL});
+        //var expander = new GeoNode.SearchTableRowExpander({fetchURL: this.layerDetailURL});
 
 
         tableCfg = {
             store: this.searchStore, 
-            plugins: [expander],
+            //plugins: [expander],
             autoExpandColumn: 'title',
             viewConfig: {
                 autoFill: true,
@@ -235,7 +228,7 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
         var remoteTooltip = this.remoteTooltip;
         
         var columns = [
-            expander,
+            //expander,
             /*
             {header: this.nameHeaderText,
              dataIndex: 'name',
@@ -254,7 +247,7 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
                     
                     return detail;
                 }
-            },
+            }
             
         ];
         
@@ -329,17 +322,17 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
                 columns: 3
             },
             defaults: {
-                bodyStyle:'border: 0px; padding: 10px;',
+                bodyStyle:'border: 0px; padding: 10px;'
             },
             items: [{
                 items: [
-                     this.queryInput,
-                     this.originatorInput
-                    ],
+                    this.queryInput,
+                    this.originatorInput
+                ],
                 colspan: 3
             },{
                 items: [this.dataTypeInput],
-                colspan: 2
+                colspan: 3
             },{
                 items: [searchButton],
                 colspan: 1
@@ -372,8 +365,8 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
          
           this.disableControls();
 
-          if (this.searchParams.q) {
-              this.queryInput.setValue(this.searchParams.q);
+          if (GeoNode.queryTerms.q) {
+              this.queryInput.setValue(GeoNode.queryTerms.q);
           }
           this.updatePermalink();
 }

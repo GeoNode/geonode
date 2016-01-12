@@ -15,13 +15,12 @@ GeoNode.BoundingBoxWidget = Ext.extend(Ext.util.Observable, {
     constructor: function(config, vanillaViewer) {
         Ext.apply(this, config);
         this.doLayout();
+        var heatmap = new GeoNode.HeatmapModel({bbox_widget: this});
     },
 
     doLayout: function() {
 
         var el = Ext.get(this.renderTo);
-
-        this.enabledCB = el.query('.bbox-enabled input')[0];
 
         var viewerConfig = {
             proxy: this.proxy,
@@ -30,7 +29,7 @@ GeoNode.BoundingBoxWidget = Ext.extend(Ext.util.Observable, {
             useToolbar: false,
             useMapOverlay: false,
             portalConfig: {
-                collapsed: true,
+                collapsed: false,
                 border: false,
                 height: this.height,
                 renderTo: el.query('.bbox-expand')[0]
@@ -38,10 +37,6 @@ GeoNode.BoundingBoxWidget = Ext.extend(Ext.util.Observable, {
             listeners: {
                 "ready": function() {
                     this._ready = true;
-                    if (this.isEnabled)
-                    {
-                        this.enable();
-                    }
                 },
                 scope: this
             }
@@ -60,22 +55,9 @@ GeoNode.BoundingBoxWidget = Ext.extend(Ext.util.Observable, {
             this.viewer = new gxp.Viewer(viewerConfig);
         }
 
-        else
+        else{
             this.viewer = new GeoExplorer.Viewer(viewerConfig);
-
-
-
-        if (!this.isEnabled)
-            this.disable();
-
-        Ext.get(this.enabledCB).on('click', function() {
-            if (this.enabledCB.checked == true) {
-                this.enable();
-            }
-            else {
-                this.disable();
-            }
-        }, this);
+        }
 
     },
 
@@ -88,7 +70,7 @@ GeoNode.BoundingBoxWidget = Ext.extend(Ext.util.Observable, {
     },
 
     isActive: function() {
-        return this.enabledCB.checked == true; 
+        return true; 
     },
     
     hasConstraint: function() {
@@ -136,15 +118,5 @@ GeoNode.BoundingBoxWidget = Ext.extend(Ext.util.Observable, {
                 }
             }
         }
-    },
-    
-    enable: function() {
-        this.enabledCB.checked = true;
-        this.viewer.portal && this.viewer.portal.expand();
-    }, 
-
-    disable: function() {
-        this.enabledCB.checked = false;
-        this.viewer.portal && this.viewer.portal.collapse();
     }
 });
