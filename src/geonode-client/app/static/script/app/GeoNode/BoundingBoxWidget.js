@@ -15,7 +15,6 @@ GeoNode.BoundingBoxWidget = Ext.extend(Ext.util.Observable, {
     constructor: function(config, vanillaViewer) {
         Ext.apply(this, config);
         this.doLayout();
-        var heatmap = new GeoNode.HeatmapModel({bbox_widget: this});
     },
 
     doLayout: function() {

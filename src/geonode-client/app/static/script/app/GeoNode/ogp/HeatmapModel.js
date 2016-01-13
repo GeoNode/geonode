@@ -3,7 +3,11 @@ Ext.namespace("GeoNode");
 var heatmapParams = {
   facet : "true", 
   "facet.heatmap" : "bbox_rpt", 
-  "facet.heatmap.format" : "ints2D"
+  "facet.heatmap.format" : "ints2D",
+  fq: [
+    "Area:[0 TO 400]",
+    "!(Area:1 AND MaxX:0 AND MaxY:0)"
+  ]
 };
 
 GeoNode.HeatmapModel = Ext.extend(Ext.util.Observable, {
@@ -16,24 +20,28 @@ GeoNode.HeatmapModel = Ext.extend(Ext.util.Observable, {
     this.addEvents({
       fireSearch: true
     });
-    this.addListener('fireSearch', function(){
+    this.addListener('fireSearch', function(propagateToSearchTable){
       this.handleHeatmap();
+
+      // should this search trigger also the search table?
+      if(propagateToSearchTable){
+        this.searchTable.doSearch();
+      }
     });
-    //this.fireEvent('fireSearch');
 
     this.bbox_widget.viewer.mapPanel.map.events.register('moveend', event, function(){
-      self.fireEvent('fireSearch');
+      self.fireEvent('fireSearch', true);
     });
   },
 
   handleHeatmap: function(){
     this.deleteHeatmapLayer();
     this.makeHeatmapLayer();
-
   },
 
   setQueryParameters: function(){
     var extent = this.bbox_widget.viewer.mapPanel.map.getExtent();
+    var center = extent.getCenterLonLat().transform(new OpenLayers.Projection('EPSG:900913'), new OpenLayers.Projection('EPSG:4326'));
     if (extent){
       extent = extent.transform(new OpenLayers.Projection('EPSG:900913'), new OpenLayers.Projection('EPSG:4326'));
       var bbox = {
@@ -42,7 +50,13 @@ GeoNode.HeatmapModel = Ext.extend(Ext.util.Observable, {
         minY: extent.bottom,
         maxY: extent.top
       };
-      GeoNode.queryTerms['intx'] = GeoNode.solr.getIntersectionFunction(bbox);
+      GeoNode.solr.center = {
+        centerX: center.lat,
+        centerY: center.lon
+      }
+      var params = GeoNode.solr.getOgpSpatialQueryParams(bbox);
+      GeoNode.queryTerms.intx = params.intx;
+      GeoNode.queryTerms.bf = params.bf;
     }
   },
 
@@ -53,7 +67,9 @@ GeoNode.HeatmapModel = Ext.extend(Ext.util.Observable, {
   makeHeatmapLayer: function(){
     var self = this;
     this.setQueryParameters();
-    var params = GeoNode.solr.combineParams(GeoNode.queryTerms, heatmapParams);
+    var params = $.extend({}, GeoNode.queryTerms, heatmapParams);
+    params.fq = $.merge([], heatmapParams.fq);
+    $.merge(params.fq, GeoNode.queryTerms.fq);
     $.ajax({
       url: GeoNode.solrBackend,
       jsonp: "json.wrf",

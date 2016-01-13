@@ -18,9 +18,7 @@ Ext.onReady(function(){
     ],
     'fq': [
         "{!frange l=0 incl=false cache=false}$intx",
-        "Institution:Harvard OR Access:Public",
-        "Area:[0 TO 400]",
-        "!(Area:1 AND MaxX:0 AND MaxY:0)"
+        "Institution:Harvard OR Access:Public"
     ]
   };
 

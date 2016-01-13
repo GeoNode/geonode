@@ -31,6 +31,9 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
         Ext.apply(this, config);
         this.initFromQuery();
         this.loadData();
+
+        // give a reference of this to heatmap to enable cross search
+        this.heatmap.searchTable = this;
     },
     
     loadData: function() {
@@ -88,11 +91,7 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
         }
 
         GeoNode.queryTerms.start = 0;
-        if (this.constraints) {
-            for (var i = 0; i < this.constraints.length; i++) {
-                this.constraints[i].applyConstraint(GeoNode.queryTerms);
-            }
-        }
+        
         this._search(GeoNode.queryTerms);
     },
     
@@ -153,7 +152,6 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
                                 total);
     },
 
-    
     updatePermalink: function() {
         if (this.permalink) {
             this.permalink.href = Ext.urlAppend(this.permalinkURL, Ext.urlEncode(GeoNode.queryTerms));
@@ -166,17 +164,27 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
         if (this.originatorInput.getValue() !== ''){
             GeoNode.queryTerms.fq.push('Originator:' + this.originatorInput.getValue());
         }
-        if (this.dataTypeInput.getValue().length > 0){
-            var values = this.dataTypeInput.getValue();
+
+        // Remove any DataType filter if there
+        for(var i=0;i<GeoNode.queryTerms.fq.length;i++){
+            if(GeoNode.queryTerms.fq[i].indexOf('DataType') > -1){
+                GeoNode.queryTerms.fq.splice(i, 1);
+            }
+        };
+        var datetypes = this.dataTypeInput.getValue();
+        if (datetypes.length > 0 && datetypes < 4){
+            var values = datetypes;
             var string = '';
             for(var i=0;i<values.length;i++){
                 string += 'DataType:' + values[i].name + ' OR ';
             }
             string = string.slice(0, -4);
-            GeoNode.queryTerms.fq.pop();
             GeoNode.queryTerms.fq.push(string);
         }
         this.doSearch();
+
+        // now trigger the heatmap update
+        this.heatmap.fireEvent('fireSearch', false);
     },
     
     hookupSearchButtons: function(el) {
@@ -365,9 +373,6 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
          
           this.disableControls();
 
-          if (GeoNode.queryTerms.q) {
-              this.queryInput.setValue(GeoNode.queryTerms.q);
-          }
           this.updatePermalink();
 }
 

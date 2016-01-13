@@ -2156,6 +2156,8 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
         var llbounds = mapBounds.transform(
             new OpenLayers.Projection(this.mapPanel.map.projection),
             new OpenLayers.Projection("EPSG:4326"));
+
+        
         this.bbox = new GeoNode.BoundingBoxWidget({
             proxy: "/proxy/?url=",
             viewerConfig:this.getBoundingBoxConfig(),
@@ -2165,6 +2167,10 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             useGxpViewer: true
         });
 
+        // Pass the bbox widget to heatmap so that it can accesd the search map
+        var heatmap = new GeoNode.HeatmapModel({bbox_widget: this.bbox});
+
+        //Pass the heatmap to the searchTable so that it can trigger searches
         this.searchTable = new GeoNode.SearchTable({
             renderTo: 'search_results',
             trackSelection: true,
@@ -2173,7 +2179,8 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             layerDetailURL: '/data/search/detail',
             constraints: [this.bbox],
             searchParams: {'limit':10, 'bbox': llbounds.toBBOX()},
-            searchOnLoad: false
+            searchOnLoad: false, 
+            heatmap: heatmap
         });
 
         this.searchTable.hookupSearchButtons('refine');
