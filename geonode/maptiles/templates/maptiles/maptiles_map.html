@@ -117,11 +117,18 @@
         </nobr> 
         <nobr>
             <select>
-                 {% for proj in projections %}
-                      <option   id="{{ proj | slugify }}" 
-                                name="{{ proj | slugify }}" 
-                                value="{{ proj | slugify }}">
-                        {{ proj | slugify }}
+                {% for proj in projections %}
+                    {% if proj == 'UTM 51 (Default)' %}
+                        <option  id="{{ proj | slugify }}" 
+                                 name="{{ proj | slugify }}" 
+                                 value="{{ proj | slugify }}">
+                    {% else %}             
+                        <option  id="{{ proj | slugify }}" 
+                                 name="{{ proj | slugify }}" 
+                                 value="{{ proj | slugify }}"
+                                 selected="selected">
+                    {% endif %}
+                        {{ proj }}
                       </option>
                  {% endfor %}
             </select>
