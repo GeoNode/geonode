@@ -155,7 +155,7 @@ setup(name='GeoNode',
         "psycopg2==2.6.1",
         "GDAL==1.10.0",
         "django-model-utils==2.3.1",
-        "django-simple-captcha==0.4.6",
+        "django-recaptcha==1.0.4",
         "django-braces==1.8.1",
 
         ],
