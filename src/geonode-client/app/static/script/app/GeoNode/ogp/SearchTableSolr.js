@@ -22,6 +22,7 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
     searchTermRequired: 'You need to specify a search term',
     originatorSearchLabelText: 'UT: Originator',
     dataTypeSearchLableText: 'UT: Data Type',
+    originatorText: 'UT: Originator',
 
     searchOnLoad: false,
     linkableTitle: true,
@@ -47,7 +48,8 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
             fields: [
                 {name: 'Name', type: 'string'},
                 {name: 'LayerDisplayName', type: 'string'},
-                {name: 'LayerId', type: 'string'}
+                {name: 'LayerId', type: 'string'},
+                {name: 'Originator', type: 'string'}
             ]
         });
         this.searchStore.on('load', function() {
@@ -248,13 +250,13 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
                 header: this.titleHeaderText,
                 dataIndex: 'LayerDisplayName',
                 id: 'title',
-                sortable: true,
-                renderer: function(value, metaData, record, rowIndex, colIndex, store) {
-                    
-                    var detail = value;
-                    
-                    return detail;
-                }
+                sortable: true
+            },
+            {
+                header: this.originatorText,
+                dataIndex: 'Originator',
+                id: 'originator',
+                sortable: true
             }
             
         ];
