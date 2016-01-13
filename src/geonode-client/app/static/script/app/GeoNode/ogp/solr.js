@@ -563,7 +563,7 @@ GeoNode.Solr = function() {
       intx : this.getIntersectionFunction(bounds)};
     if (this.heatmap)
     {
-        heatmapParams = {"facet.heatmap.geom" : '["' + bounds.minX + ' ' + bounds.minY + '" TO "' + bounds.maxX + ' ' + bounds.maxY + '"]'};
+        var heatmapParams = {"facet.heatmap.geom" : '["' + bounds.minX + ' ' + bounds.minY + '" TO "' + bounds.maxX + ' ' + bounds.maxY + '"]'};
         params = this.combineParams(params, heatmapParams);
     }
         //"facet.heatmap.geom" : '["' + bounds.minX + ' ' + bounds.minY + '" TO "' + bounds.maxX + ' ' + bounds.maxY + '"]'

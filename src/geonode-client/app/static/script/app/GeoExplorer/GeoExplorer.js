@@ -1742,8 +1742,8 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                 }
             },
             failure: function(response, options) {
-                return false;
                 Ext.Msg.alert('Error', response.responseText, this.showMetadataForm);
+                return false;
             },
             scope: this
         });

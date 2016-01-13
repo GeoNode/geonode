@@ -7,7 +7,8 @@ var heatmapParams = {
   fq: [
     "Area:[0 TO 400]",
     "!(Area:1 AND MaxX:0 AND MaxY:0)"
-  ]
+  ],
+  'facet.heatmap.geom': ""
 };
 
 GeoNode.HeatmapModel = Ext.extend(Ext.util.Observable, {
@@ -57,6 +58,7 @@ GeoNode.HeatmapModel = Ext.extend(Ext.util.Observable, {
       var params = GeoNode.solr.getOgpSpatialQueryParams(bbox);
       GeoNode.queryTerms.intx = params.intx;
       GeoNode.queryTerms.bf = params.bf;
+      heatmapParams['facet.heatmap.geom'] = params['facet.heatmap.geom'];
     }
   },
 
