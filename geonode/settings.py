@@ -255,6 +255,9 @@ GEONODE_APPS = (
     'geonode.upload',
     'geonode.tasks',
 
+    # Data Requests Management App
+    'geonode.datarequests',
+
 
 )
 
@@ -318,6 +321,7 @@ INSTALLED_APPS = (
     'djkombu',
     'south',
     'corsheaders',
+    'captcha',
 
 ) + GEONODE_APPS
 
@@ -879,6 +883,10 @@ MUNICIPALITY_SHAPEFILE = 'geonode:phl_adm2_municipalities_utm_z51n'
 #Upload permissions on file
 FILE_UPLOAD_PERMISSIONS = 0664
 
+# Captcha app settings
+RECAPTCHA_PUBLIC_KEY = '6LfUCxITAAAAAJo81QnK1GfgyTll47Y3aVFueipN'
+RECAPTCHA_PRIVATE_KEY = '6LfUCxITAAAAAMVE0bJz7mn_CJWIzHjcZsiInOzw'
+NOCAPTCHA = True
 # Load more settings from a file called local_settings.py if it exists
 try:
     from local_settings import *  # noqa
