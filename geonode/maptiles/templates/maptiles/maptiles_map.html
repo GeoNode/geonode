@@ -115,24 +115,27 @@
                  
             </ul>
         </nobr> 
+        
         <nobr>
-            <select>
-                {% for proj in projections %}
-                    {% if proj == 'UTM 51 (Default)' %}
-                        <option  id="{{ proj | slugify }}" 
-                                 name="{{ proj | slugify }}" 
-                                 value="{{ proj | slugify }}">
-                    {% else %}             
-                        <option  id="{{ proj | slugify }}" 
-                                 name="{{ proj | slugify }}" 
-                                 value="{{ proj | slugify }}"
-                                 selected="selected">
-                    {% endif %}
-                        {{ proj }}
-                      </option>
-                 {% endfor %}
-            </select>
-        </nobr>
+        <label class="label-dataclass">SRS</label>
+        <select>
+            {% for proj in projections %}
+                {% if proj == 'UTM 51 (Default)' %}
+                    <option  id="{{ proj | slugify }}" 
+                             name="{{ proj | slugify }}" 
+                             value="{{ proj | slugify }}">
+                {% else %}             
+                    <option  id="{{ proj | slugify }}" 
+                             name="{{ proj | slugify }}" 
+                             value="{{ proj | slugify }}"
+                             selected="selected">
+                {% endif %}
+                    {{ proj }}
+                  </option>
+             {% endfor %}
+        </select>
+        </nobr> 
+        <br/>
      <input type="text" id="georef_area" name="georef_area" style="display:none" />
      <input type="submit" id="georef_submit" name="georef_submit" value="Submit" class="btn btn-default" />
     </div>
