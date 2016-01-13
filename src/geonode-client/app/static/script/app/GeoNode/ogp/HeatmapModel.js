@@ -30,7 +30,7 @@ GeoNode.HeatmapModel = Ext.extend(Ext.util.Observable, {
       }
     });
 
-    this.bbox_widget.viewer.mapPanel.map.events.register('moveend', event, function(){
+    this.bbox_widget.viewer.mapPanel.map.events.register('moveend', '', function(){
       self.fireEvent('fireSearch', true);
     });
   },
