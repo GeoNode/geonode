@@ -112,8 +112,20 @@
                       </li>
                    {% endif %}
                  {% endfor %}
+                 
             </ul>
         </nobr> 
+        <nobr>
+            <select>
+                 {% for proj in projections %}
+                      <option   id="{{ proj | slugify }}" 
+                                name="{{ proj | slugify }}" 
+                                value="{{ proj | slugify }}">
+                        {{ proj | slugify }}
+                      </option>
+                 {% endfor %}
+            </select>
+        </nobr>
      <input type="text" id="georef_area" name="georef_area" style="display:none" />
      <input type="submit" id="georef_submit" name="georef_submit" value="Submit" class="btn btn-default" />
     </div>
