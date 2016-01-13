@@ -35,6 +35,7 @@ import logging
 
 from geonode.cephgeo.utils import get_cart_datasize
 from django.utils.text import slugify
+from geonode.maptiles.models import SRS
 
 _PERMISSION_VIEW = _("You are not permitted to view this layer")
 _PERMISSION_GENERIC = _('You do not have permissions for this layer.')
@@ -91,6 +92,7 @@ def tiled_view(request, overlay=settings.TILED_SHAPEFILE, template="maptiles/map
     context_dict["feature_tiled"] = overlay.split(":")[1]
     context_dict["test_mode"]=test_mode
     context_dict["data_classes"]= DataClassification.labels.values()
+    context_dict["projections"]= SRS.labels.values()
     
     return render_to_response(template, RequestContext(request, context_dict))
     
