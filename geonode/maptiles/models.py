@@ -9,3 +9,7 @@ class SRS(enum.Enum):
     labels = {
         UTM51N: 'UTM 51N (Default)',
         PRS92: 'PRS 92',}
+    
+    EPSG_num = {
+        'default' : 32651,
+        'prs-92' : 4683,}
