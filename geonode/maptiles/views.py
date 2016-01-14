@@ -118,6 +118,15 @@ def process_georefs(request):
                 if label in data_classes:
                     dataclass_filter.remove(dataclass)
             
+            #Get specified projection
+            prj_slug=request.POST.get(slugify(data_class.decode('cp1252')))
+            srs_epsg=None
+            for prj_epsg, prj_name in SRS.labels.iteritems():
+                if prj_slug is slugify(prj_name.decode('cp1252')):
+                    srs_epsg=prj_epsg
+                    
+            print(">>>[SRS]: "+str(srs_epsg))
+            
             #Initialize variables for counting empty and duplicates 
             count = 0
             empty_georefs = 0
