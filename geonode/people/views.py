@@ -29,6 +29,7 @@ from django.contrib.sites.models import Site
 from django.conf import settings
 from django.http import HttpResponseForbidden
 
+from geonode.datarequests.models import DataRequestProfile
 from geonode.people.models import Profile
 from geonode.people.forms import ProfileForm
 from geonode.people.forms import ForgotUsernameForm
@@ -71,8 +72,14 @@ def profile_detail(request, username):
     profile = get_object_or_404(Profile, username=username)
     # combined queryset from each model content type
 
+    try:
+        data_request_profile = profile.datarequestprofile
+    except DataRequestProfile.DoesNotExist:
+        data_request_profile = None
+
     return render(request, "people/profile_detail.html", {
         "profile": profile,
+        "request_profile": data_request_profile,
     })
 
 

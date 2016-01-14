@@ -1,0 +1,58 @@
+<script type='text/html' id='errorTemplate'>
+  <li class='alert alert-error'>
+    <button class='close' data-dismiss='alert'>&times;</button>
+    <strong><%= title %></strong><p><%= message %></p>
+  </li>
+</script>
+
+<script type='text/html' id='infoTemplate'>
+  <div class='alert <%= level %>'><p><%= message %></p></div>
+</script>
+
+<script type='text/html' id='layerTemplate'>
+  <div class='file-element' id='<%= selector %>-element'>
+    <div class='row'>
+      <div class='span6'><h3><%= name %></h3></div>
+      <div class='span2'><h3><%= type %><h3></div>
+    </div>
+    <% if (format !== 'raster') { %>
+    <div id='<%= name %>-vector-options' class='row span8'>
+        <% if (time) { %>
+            <div class="checkbox">
+                <input type='checkbox' id='<%= name %>-time' name='<%= name %>-time'/><label for="<%= name %>-time">&nbsp;Configure Time</label>
+            </div>
+        <% } %>
+        <% if (geogig) { %>
+            <div class="checkbox">
+                <input type='checkbox' id='<%= name %>:geogig_toggle' name='<%= name %>:geogig_toggle'/><label for="<%= name %>:geogig_toggle">&nbsp;Import to Geogig</label>
+            </div>
+            <div id="<%= name %>:geogig_store" name='<%= name %>:geogig_store' style="width: 225px; visibility:hidden;padding:5px"></div>
+        <% } %>
+
+    </div>
+    <% } %>
+    <hr />
+    <div id="<%= name %>-files" class="row span8">
+      <ul class='files'></ul>
+      <ul class='errors'></ul>
+      <div id='status'></div>
+    </div>
+  </div>
+</script>
+
+
+<script type='text/html' id='progressTemplate'>
+  <div class='alert <%= alertLevel %>'>
+    <p><%= message %></p>
+  </div>
+</script>
+
+
+<script type='text/html' id='successTemplate'>
+
+  <div class='alert alert-success'>
+    <p>Your layer has been upload successfully</p>
+    a href="/data/geonode:<%= name %>" class='btn'>Layer page</a>
+  </div>
+
+</script>

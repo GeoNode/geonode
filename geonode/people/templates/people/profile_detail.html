@@ -19,64 +19,226 @@
     <a href="{% url "message_create" profile.pk %}" class="btn btn-primary btn-block" style="margin-top:4px;">{% trans "Message User" %}</a>
   </div>
   <div class="col-xs-9 col-md-6 profile-details">
-    <table class="table table-user-profile">
-        <tbody>
-        <tr>
-            <td class="table-user-profile-attribute">{% trans 'Email' %}</td>
-            {% if profile.email %}
-                <td><a href="mailto:{{ profile.email }}">{{ profile.email }}</a></td>
-            {% else %}
-                <td>{% trans 'Not provided.' %}</td>
-            {% endif %}
-          </tr>
-          <tr>
-            <td class="table-user-profile-attribute">{% trans 'Name' %}</td>
-            <td>{{ profile.get_full_name | default:_('Not provided.') }}</td>
-          </tr>
-          <tr>
-            <td class="table-user-profile-attribute">{% trans 'Position' %}</td>
-            <td>{{ profile.position | default:_('Not provided.') }}</td>
-          </tr>
-          <tr>
-            <td class="table-user-profile-attribute">{% trans 'Organization'  %}</td>
-            <td>{{ profile.organization | default:_('Not provided.') }}</td>
-          </tr>
-          {% if user.is_authenticated %}
-          <tr>
-            <td class="table-user-profile-attribute">{% trans 'Location' %}</td>
-            <td>{{ profile.location | default:_('Not provided.') }}</td>
-          </tr>
-          <tr>
-            <td class="table-user-profile-attribute">{% trans 'Voice' %}</td>
-            {% if profile.voice %}
-                <td><a href="tel:{{ profile.voice }}">{{ profile.voice }}</a></td>
-            {% else %}
-                <td>Not provided.</td>
-            {% endif %}
-          </tr>
-          <tr>
-            <td class="table-user-profile-attribute">{% trans 'Fax' %}</td>
-            <td>{{ profile.fax | default:_('Not provided.') }}</td>
-          </tr>
-          <tr>
-            <td class="table-user-profile-attribute">{% trans 'Description' %}</td>
-            <td>{{ profile.profile | default:_('Not provided.') }}</td>
-          </tr>
-          {% endif %}
-          <tr>
-            <td class="table-user-profile-attribute">{% trans 'Keywords' %}</td>
-            <td>
-                {% if profile.keyword_list %}
-                    {% for keyword in profile.keyword_list %}
-                        <span class="label label-default">{{ keyword }}</span>
-                    {% endfor %}
-                {% else %}
-                    {% trans 'Not provided' %}
+    {% if request_profile %}
+      <div class="layer-actions">
+        <ul class="nav nav-tabs">
+          <li class="active"><a href="#profile" data-toggle="tab"><i class="fa fa-info-circle"></i>{% trans "Profile" %}</a></li>
+          <li><a href="#data-request-profile" data-toggle="tab"><i class="fa fa-info-circle"></i>{% trans "Data Request Details" %}</a></li>
+        </ul>
+      </div>
+
+      <div class="tab-content">
+        <article id="profile" class="tab-pane active">
+          <table class="table table-user-profile">
+              <tbody>
+              <tr>
+                  <td class="table-user-profile-attribute">{% trans 'Email' %}</td>
+                  {% if profile.email %}
+                      <td><a href="mailto:{{ profile.email }}">{{ profile.email }}</a></td>
+                  {% else %}
+                      <td>{% trans 'Not provided.' %}</td>
+                  {% endif %}
+                </tr>
+                <tr>
+                  <td class="table-user-profile-attribute">{% trans 'Name' %}</td>
+                  <td>{{ profile.get_full_name | default:_('Not provided.') }}</td>
+                </tr>
+                <tr>
+                  <td class="table-user-profile-attribute">{% trans 'Position' %}</td>
+                  <td>{{ profile.position | default:_('Not provided.') }}</td>
+                </tr>
+                <tr>
+                  <td class="table-user-profile-attribute">{% trans 'Organization'  %}</td>
+                  <td>{{ profile.organization | default:_('Not provided.') }}</td>
+                </tr>
+                {% if user.is_authenticated %}
+                <tr>
+                  <td class="table-user-profile-attribute">{% trans 'Location' %}</td>
+                  <td>{{ profile.location | default:_('Not provided.') }}</td>
+                </tr>
+                <tr>
+                  <td class="table-user-profile-attribute">{% trans 'Voice' %}</td>
+                  {% if profile.voice %}
+                      <td><a href="tel:{{ profile.voice }}">{{ profile.voice }}</a></td>
+                  {% else %}
+                      <td>Not provided.</td>
+                  {% endif %}
+                </tr>
+                <tr>
+                  <td class="table-user-profile-attribute">{% trans 'Fax' %}</td>
+                  <td>{{ profile.fax | default:_('Not provided.') }}</td>
+                </tr>
+                <tr>
+                  <td class="table-user-profile-attribute">{% trans 'Description' %}</td>
+                  <td>{{ profile.profile | default:_('Not provided.') }}</td>
+                </tr>
                 {% endif %}
-            </td>
-          </tr>
-        </tbody>
-      </table>
+                <tr>
+                  <td class="table-user-profile-attribute">{% trans 'Keywords' %}</td>
+                  <td>
+                      {% if profile.keyword_list %}
+                          {% for keyword in profile.keyword_list %}
+                              <span class="label label-default">{{ keyword }}</span>
+                          {% endfor %}
+                      {% else %}
+                          {% trans 'Not provided' %}
+                      {% endif %}
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+        </article>
+
+        <article id="data-request-profile" class="tab-pane">
+          <table class="table table-user-profile">
+              <tbody>
+              <tr>
+                <td class="table-user-profile-attribute col-md-3">{% trans "Requester Type" %}</td>
+                <td>{{ request_profile.get_requester_type_display }}</td>
+              </tr>
+
+              <tr>
+                <td class="table-user-profile-attribute">{% trans "Entity" %}</td>
+                <td>{{ request_profile.get_location_display }}</td>
+              </tr>
+
+              <tr>
+                <td class="table-user-profile-attribute">{% trans "Contact Number" %}</td>
+                <td>{{ request_profile.contact_number }}</td>
+              </tr>
+
+              <tr>
+                <td class="table-user-profile-attribute">{% trans "Project Summary" %}</td>
+                <td>{{ request_profile.project_summary }}</td>
+              </tr>
+
+              <tr>
+                <td class="table-user-profile-attribute">{% trans "Type of Data Requested" %}</td>
+                <td>{{ request_profile.get_data_type_requested_display }}</td>
+              </tr>
+
+              <tr>
+              <td class="table-user-profile-attribute">{% trans "Data/Data Set Subject to License" %}</td>
+              <td>{{ request_profile.data_set }}</td>
+              </tr>
+
+              <tr>
+                <td class="table-user-profile-attribute">{% trans "Area of Coverage" %}</td>
+                <td>{{ request_profile.area_coverage }}</td>
+              </tr>
+
+              <tr>
+                <td class="table-user-profile-attribute">{% trans "Data Resolution" %}</td>
+                <td>{{ request_profile.data_resolution }}</td>
+              </tr>
+
+              <tr>
+                <td class="table-user-profile-attribute">{% trans "Liense Period" %}</td>
+                <td>{{ request_profile.license_period }}</td>
+              </tr>
+
+              <tr>
+                <td class="table-user-profile-attribute">{% trans "Subscription/Maintenance?" %}</td>
+                <td>{{ has_subscription|yesno:"yes,no" }}</td>
+              </tr>
+
+              <tr>
+                <td class="table-user-profile-attribute">{% trans "Purpose/Intended Use of Data" %}</td>
+                <td>{{ request_profile.purpose }}</td>
+              </tr>
+
+              <tr>
+                <td class="table-user-profile-attribute">{% trans "Intended Use of Dataset" %}</td>
+                <td>{{ request_profile.get_intended_use_of_dataset_display }}</td>
+              </tr>
+
+              {% if request_profile.requester_type == 'noncommercial' or request_profile.requester_type == 'academe' %}
+                <tr>
+                  <td class="table-user-profile-attribute">{% trans "Organization type based on Phil-LiDAR1 Data Distribution Policy" %}</td>
+                  <td>{{ request_profile.get_organization_type_display }}</td>
+                </tr>
+                {% if request_profile.requester_type == 'academe' %}
+                  <tr>
+                    <td class="table-user-profile-attribute">{% trans "Level of Request" %}</td>
+                    <td>{{ request_profile.get_request_level_display }}</td>
+                  </tr>
+
+                  <tr>
+                    <td class="table-user-profile-attribute">{% trans "Source of Funding" %}</td>
+                    <td>{{ request_profile.funding_source }}</td>
+                  </tr>
+                  <tr>
+                  <td class="table-user-profile-attribute">{% trans "Consultant in behalf of another organization?" %}</td>
+                  <td>{{ is_consultant|yesno:"yes,no" }}</td>
+                  </tr>
+                {% endif %}
+              {% endif %}
+              </tbody>
+            </table>
+        </article>
+      </div>
+
+    {% else %}
+      <table class="table table-user-profile">
+          <tbody>
+          <tr>
+              <td class="table-user-profile-attribute">{% trans 'Email' %}</td>
+              {% if profile.email %}
+                  <td><a href="mailto:{{ profile.email }}">{{ profile.email }}</a></td>
+              {% else %}
+                  <td>{% trans 'Not provided.' %}</td>
+              {% endif %}
+            </tr>
+            <tr>
+              <td class="table-user-profile-attribute">{% trans 'Name' %}</td>
+              <td>{{ profile.get_full_name | default:_('Not provided.') }}</td>
+            </tr>
+            <tr>
+              <td class="table-user-profile-attribute">{% trans 'Position' %}</td>
+              <td>{{ profile.position | default:_('Not provided.') }}</td>
+            </tr>
+            <tr>
+              <td class="table-user-profile-attribute">{% trans 'Organization'  %}</td>
+              <td>{{ profile.organization | default:_('Not provided.') }}</td>
+            </tr>
+            {% if user.is_authenticated %}
+            <tr>
+              <td class="table-user-profile-attribute">{% trans 'Location' %}</td>
+              <td>{{ profile.location | default:_('Not provided.') }}</td>
+            </tr>
+            <tr>
+              <td class="table-user-profile-attribute">{% trans 'Voice' %}</td>
+              {% if profile.voice %}
+                  <td><a href="tel:{{ profile.voice }}">{{ profile.voice }}</a></td>
+              {% else %}
+                  <td>Not provided.</td>
+              {% endif %}
+            </tr>
+            <tr>
+              <td class="table-user-profile-attribute">{% trans 'Fax' %}</td>
+              <td>{{ profile.fax | default:_('Not provided.') }}</td>
+            </tr>
+            <tr>
+              <td class="table-user-profile-attribute">{% trans 'Description' %}</td>
+              <td>{{ profile.profile | default:_('Not provided.') }}</td>
+            </tr>
+            {% endif %}
+            <tr>
+              <td class="table-user-profile-attribute">{% trans 'Keywords' %}</td>
+              <td>
+                  {% if profile.keyword_list %}
+                      {% for keyword in profile.keyword_list %}
+                          <span class="label label-default">{{ keyword }}</span>
+                      {% endfor %}
+                  {% else %}
+                      {% trans 'Not provided' %}
+                  {% endif %}
+              </td>
+            </tr>
+          </tbody>
+        </table>
+    {% endif %}
+
   </div>
 
   <div class="col-xs-12 col-md-4">
@@ -166,7 +328,7 @@
          </div>
      </article>
     {% endfor %}
-  {% endif %} 
+  {% endif %}
 </div>
 {% endif %}
 
