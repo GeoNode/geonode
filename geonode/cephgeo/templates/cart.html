@@ -16,6 +16,23 @@
 
   <div class="page-header">
     <ul class="list-inline pull-right" id="sort">
+      <label class="label-dataclass">SRS</label>
+      <select>
+            {% for proj in projections %}
+                {% if proj == 'UTM 51 (Default)' %}
+                    <option  id="{{ proj | slugify }}" 
+                             name="{{ proj | slugify }}" 
+                             value="{{ proj | slugify }}">
+                {% else %}             
+                    <option  id="{{ proj | slugify }}" 
+                             name="{{ proj | slugify }}" 
+                             value="{{ proj | slugify }}"
+                             selected="selected">
+                {% endif %}
+                    {{ proj }}
+                  </option>
+             {% endfor %}
+      </select>
       <li><a href="{% url 'maptiles_main' %}"><button class="btn btn-default">{% trans "Return to Selection" %}</button></a></li>
       {% if not cart.is_empty %}
         <li><button class="btn btn-default" data-toggle="modal" data-target="#eula-dialog">{% trans "Create FTP Folder" %}</a></li>

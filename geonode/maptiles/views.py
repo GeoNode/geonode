@@ -92,7 +92,7 @@ def tiled_view(request, overlay=settings.TILED_SHAPEFILE, template="maptiles/map
     context_dict["feature_tiled"] = overlay.split(":")[1]
     context_dict["test_mode"]=test_mode
     context_dict["data_classes"]= DataClassification.labels.values()
-    context_dict["projections"]= SRS.labels.values()
+    #context_dict["projections"]= SRS.labels.values()
     
     return render_to_response(template, RequestContext(request, context_dict))
     
@@ -117,15 +117,6 @@ def process_georefs(request):
             for dataclass, label in DataClassification.labels.iteritems():
                 if label in data_classes:
                     dataclass_filter.remove(dataclass)
-            
-            #Get specified projection
-            prj_slug=request.POST.get(slugify(data_class.decode('cp1252')))
-            srs_epsg=None
-            for prj_epsg, prj_name in SRS.labels.iteritems():
-                if prj_slug is slugify(prj_name.decode('cp1252')):
-                    srs_epsg=prj_epsg
-                    
-            print(">>>[SRS]: "+str(srs_epsg))
             
             #Initialize variables for counting empty and duplicates 
             count = 0

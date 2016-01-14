@@ -24,6 +24,7 @@ from geonode.tasks.update import ceph_metadata_udate
 from geonode.cephgeo.utils import get_cart_datasize
 from datetime import datetime
 from django.core.urlresolvers import reverse
+from geonode.maptiles.models import SRS
 
 # Create your views here.
 @login_required
@@ -287,7 +288,7 @@ def error(request):
 @login_required
 def get_cart(request):
     return render_to_response('cart.html', 
-                                dict(cart=CartProxy(request), cartsize=get_cart_datasize(request)),
+                                dict(cart=CartProxy(request), cartsize=get_cart_datasize(request), projections= SRS.labels.values()),
                                 context_instance=RequestContext(request))
 
 @login_required
@@ -329,6 +330,15 @@ def create_ftp_folder(request):
         pass
     cart=CartProxy(request)
     #[CephDataObject.objects.get(id=int(item.object_id)).name for item in cart]
+    
+    #Get specified projection
+    prj_slug=request.POST.get(slugify(data_class.decode('cp1252')))
+    srs_epsg=None
+    for prj_epsg, prj_name in SRS.labels.iteritems():
+        if prj_slug is slugify(prj_name.decode('cp1252')):
+            srs_epsg=prj_epsg
+            
+    print(">>>[SRS]: "+str(srs_epsg))
     
     obj_name_dict = dict()
     total_size_in_bytes = 0
