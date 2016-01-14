@@ -15,7 +15,7 @@
       <h1>{% trans "Welcome to LiPAD!" %}</h1>
       <p>
           {% blocktrans %}
-          The <abbr title="LiDAR Portal for Archiviing and Distribution">LiPAD</abbr> system of the <a href="https://www.dream.upd.edu.ph/about-us/phil-lidar-1/" title="About the Phil-LiDAR 1 Program">Phil-LiDAR 1 Program</a> aims to facilitate the exchange of information across all components of the Phil LiDAR Program, including all affiliated SUCs and HEIs across the country through the use of web standard protocols.  
+          The <abbr title="LiDAR Portal for Archiviing and Distribution">LiPAD</abbr> system of the <a href="https://www.dream.upd.edu.ph/about-us/phil-lidar-1/" title="About the Phil-LiDAR 1 Program">Phil-LiDAR 1 Program</a> aims to facilitate the exchange of information across all components of the Phil LiDAR Program, including all affiliated SUCs and HEIs across the country through the use of web standard protocols.
           {% endblocktrans %}
         </p><p>
           {% blocktrans %}
@@ -31,16 +31,16 @@
     <div class="row home-facets">
     {% with facet_type='home' %}
      {% facets as facets %}
-      <div class="col-md-4">
+      <!-- <div class="col-md-4">
         <p><a href="{% url "layer_browse" %}"><i class="fa fa-square-o fa-5x rotate-45"></i></a></p>
         <h2><a href="{% url "layer_browse" %}">{{ facets.layer|default:_("No") }} {% blocktrans count counter=facets.layer %}Layer{% plural %}Layers{% endblocktrans %}</a></h2>
-        <p>{% trans "Click to search for geospatial data published by other users, organizations and public sources. Download data in standard formats." %}</p> 
+        <p>{% trans "Click to search for geospatial data published by other users, organizations and public sources. Download data in standard formats." %}</p>
         {% if user.is_authenticated %}
         <p class="text-center"><a class="btn btn-default" href="{% url "layer_upload" %}" role="button">{% trans "Add layers" %} &raquo;</a></p>
         {% else %}
-        <p class="text-center"><a class="btn btn-default" href="{% url "layer_browse" %}" role="button">{% trans "Explore layers" %} &raquo;</a></p>        
+        <p class="text-center"><a class="btn btn-default" href="{% url "layer_browse" %}" role="button">{% trans "Explore layers" %} &raquo;</a></p>
         {% endif %}
-      </div>
+      </div> -->
       <div class="col-md-4">
         <p><a href="{% url "maps_browse" %}"><i class="fa fa-map-marker fa-5x"></i></a></p>
         <h2><a href="{% url "maps_browse" %}">{{ facets.map|default:_("No") }} {% blocktrans count counter=facets.map %}Map{% plural %}Maps{% endblocktrans %}</a></h2>
@@ -68,7 +68,7 @@
   </div>
   {% endverbatim %}
   {% endblock %}
-  
+
 {% endblock %}
 
 {% block extra_script %}
@@ -78,14 +78,14 @@
   <script type="text/javascript">
     FEATURED_URL = '{% url 'api_dispatch_list' api_name='api' resource_name='featured' %}'
     'use strict';
-    (function(){  
+    (function(){
       var module = angular.module('featured', []);
       module.run(function($http, $rootScope){
         $http.get(FEATURED_URL).success(function(data){
           $rootScope.featured = data.objects;
         });
       });
-    })(); 
+    })();
   </script>
 
 {% endblock extra_script %}
