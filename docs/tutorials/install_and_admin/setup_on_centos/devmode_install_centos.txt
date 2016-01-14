@@ -12,9 +12,9 @@ Make sure all the needed libraries are installed
 
     .. code-block:: console
 
-    yum -y update
-    yum groupinstall 'Development Tools'
-    yum install -y libxml2-devel libxslt-devel libjpeg-turbo-devel postgresql postgresql-server postgresql-contrib postgresql-libs postgresql-devel postgis geos-python python python-tools python-devel python-pillow python-lxml openssh-clients zip unzip wget git gdal python-virtualenv gdal-python geos python-pip python-imaging python-devel gcc-c++ python-psycopg2 libxml2 libxml2-devel libxml2-python libxslt libxslt-devel libxslt-python
+        yum -y update
+        yum groupinstall 'Development Tools'
+        yum install -y libxml2-devel libxslt-devel libjpeg-turbo-devel postgresql postgresql-server postgresql-contrib postgresql-libs postgresql-devel postgis geos-python python python-tools python-devel python-pillow python-lxml openssh-clients zip unzip wget git gdal python-virtualenv gdal-python geos python-pip python-imaging python-devel gcc-c++ python-psycopg2 libxml2 libxml2-devel libxml2-python libxslt libxslt-devel libxslt-python
 
 
 Install pip
@@ -23,16 +23,16 @@ Installation of Python pip:
 
     .. code-block:: console
 
-    rpm -iUvh http://dl.fedoraproject.org/pub/epel/7/x86_64/e/epel-release-7-5.noarch.rpm
-    yum -y update
-    yum -y install python-pip
-    pip install --upgrade pip
+        rpm -iUvh http://dl.fedoraproject.org/pub/epel/7/x86_64/e/epel-release-7-5.noarch.rpm
+        yum -y update
+        yum -y install python-pip
+        pip install --upgrade pip
 
 Install Python Virtual Environment
 
     .. code-block:: console
 
-    pip install virtualenvwrapper
+        pip install virtualenvwrapper
 
 
 Setup Postgresql
@@ -41,38 +41,38 @@ Enable Postgresql service
 
     .. code-block:: console
 
-    systemctl enable postgresql
+        systemctl enable postgresql
 
 Change postgres UNIX password
 
     .. code-block:: console
 
-    passwd -u postgres -f
-    passwd postgres
+        passwd -u postgres -f
+        passwd postgres
 
 Start Postgresql service
 
     .. code-block:: console
 
-    systemctl start postgresql.service
+        systemctl start postgresql.service
 
 Create GeoNode role and database
 
     .. code-block:: console
 
-    su - postgres
-    initdb
-    pg_ctl start
-    pg_ctl status 
+        su - postgres
+        initdb
+        pg_ctl start
+        pg_ctl status 
  
     .. code-block:: console
 
-    createdb geonode
-    postgres=#
-    postgres=# \password postgres
-    postgres=# CREATE USER geonode WITH PASSWORD 'geonode'; 
-    postgres=# GRANT ALL PRIVILEGES ON DATABASE "geonode" to geonode;
-    postgres=# \q
+        createdb geonode
+        postgres=#
+        postgres=# \password postgres
+        postgres=# CREATE USER geonode WITH PASSWORD 'geonode'; 
+        postgres=# GRANT ALL PRIVILEGES ON DATABASE "geonode" to geonode;
+        postgres=# \q
 
 
 Install Java
@@ -81,13 +81,13 @@ First, check if Java is already installed
 
     .. code-block:: console
 
-    java -version
+        java -version
 
 In case, install Java
 
     .. code-block:: console
 
-    yum install -y java-1.8.0-openjdk-devel
+        yum install -y java-1.8.0-openjdk-devel
 
 
 Setup a virtual environment
@@ -97,23 +97,23 @@ Assuming your user name is v-user, you need to edit your .bashrc file
 
     .. code-block:: console
 
-    nano /home/v-user/.bashrc
+        nano /home/v-user/.bashrc
 
 adding the following lines (please replace v-user with your actual user name):
 
     .. code-block:: console
 
-    # virtualenvwrapper
-    export VIRTUALENVWRAPPER_PYTHON=/usr/bin/python
-    export WORKON_HOME=home/v-user/.venvs
-    source /usr/bin/virtualenvwrapper.sh
-    export PIP_DOWNLOAD_CACHE=$HOME/.pip-downloads
+        # virtualenvwrapper
+        export VIRTUALENVWRAPPER_PYTHON=/usr/bin/python
+        export WORKON_HOME=home/v-user/.venvs
+        source /usr/bin/virtualenvwrapper.sh
+        export PIP_DOWNLOAD_CACHE=$HOME/.pip-downloads
 
 Save and exit. Then,
 
     .. code-block:: console
 
-    source /home/v-user/.bashrc
+        source /home/v-user/.bashrc
 
 
 Install GeoNode
@@ -122,28 +122,28 @@ Setup a virtual environment for GeoNode
 
     .. code-block:: console
 
-    mkvirtualenv geonode --system-site-packages
-    workon geonode
+        mkvirtualenv geonode --system-site-packages
+        workon geonode
 
 Download the current stable version (2.4)
 
     .. code-block:: console
 
-    wget https://github.com/GeoNode/geonode/archive/debian/2.4.0+thefinal0.zip
-    unzip 2.4.0+thefinal0.zip
-    cd geonode-debian-2.4.0-thefinal0/
+        wget https://github.com/GeoNode/geonode/archive/debian/2.4.0+thefinal0.zip
+        unzip 2.4.0+thefinal0.zip
+        cd geonode-debian-2.4.0-thefinal0/
 
 Install
 
     .. code-block:: console
 
-    pip install -e . --use-mirrors
+        pip install -e . --use-mirrors
 
 Verify the installation
 
     .. code-block:: console
 
-    pip freeze
+        pip freeze
 
 In case of successful installation, this should return several (50+) lines.
 
@@ -154,12 +154,12 @@ The installation of Geoserver starts with
 
     .. code-block:: console
 
-    paver setup
+        paver setup
 
 This should return
 
     .. code-block:: console
 
-    GeoNode development environment successfully set up.If you have not set 
-    up an administrative account, please do so now. Use "paver start" to start 
-    up the server.
+        GeoNode development environment successfully set up.If you have not set 
+        up an administrative account, please do so now. Use "paver start" to start 
+        up the server.
