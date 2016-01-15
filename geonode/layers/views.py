@@ -206,7 +206,7 @@ def layer_upload(request, template='upload/layer_upload.html'):
             status_code = 400
         return HttpResponse(
             json.dumps(out),
-            mimetype='application/json',
+            content_type='application/json',
             status=status_code)
 
 
@@ -320,7 +320,7 @@ def layer_metadata(request, layername, template='layers/layer_metadata.html'):
             }
             return HttpResponse(
                 json.dumps(out),
-                mimetype='application/json',
+                content_type='application/json',
                 status=400)
 
         layer_form = LayerForm(request.POST, instance=layer, prefix="resource")
@@ -530,7 +530,7 @@ def layer_replace(request, layername, template='layers/layer_replace.html'):
             status_code = 400
         return HttpResponse(
             json.dumps(out),
-            mimetype='application/json',
+            content_type='application/json',
             status=status_code)
 
 
@@ -579,5 +579,5 @@ def layer_thumbnail(request, layername):
             return HttpResponse(
                 content='error saving thumbnail',
                 status=500,
-                mimetype='text/plain'
+                content_type='text/plain'
             )

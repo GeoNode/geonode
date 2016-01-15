@@ -385,7 +385,7 @@ class MapLayer(models.Model, GXPLayerBase):
         null=True,
         max_length=200,
         blank=True)
-    # The mimetype of the image format to use for tiles (image/png, image/jpeg,
+    # The content_type of the image format to use for tiles (image/png, image/jpeg,
     # image/gif...)
 
     name = models.CharField(_('name'), null=True, max_length=200)
