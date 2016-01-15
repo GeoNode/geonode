@@ -55,7 +55,7 @@ If error still persists, forward this email to [{2}]""".format( request_name,
 
 
 @hosts(settings.CEPHACCESS_HOST)
-def fab_create_ftp_folder(ftp_request, ceph_obj_list_by_data_class):
+def fab_create_ftp_folder(ftp_request, ceph_obj_list_by_data_class, srs_epsg=None):
     """
         Creates an FTP folder for the requested tile data set
         Records the request in the database
@@ -114,7 +114,13 @@ regarding this error.
                         return "ERROR: Failed to create data class subdirectory [{0}].".format(os.path.join(ftp_dir,type_dir))
                         
                     obj_dl_list = " ".join(map(str,ceph_obj_list))
-                    result = run("python {0} -d={1} {2}".format( dl_script_path,
+                    if srs_epsg is not None:
+                        result = run("python {0} -d={1} -p={2} {3}".format( dl_script_path,
+                                                        os.path.join(ftp_dir,type_dir),
+                                                        srs_epsg,
+                                                        obj_dl_list)) # Download list of objects in corresponding geo-type folder
+                    else:
+                        result = run("python {0} -d={1} {2}".format( dl_script_path,
                                                         os.path.join(ftp_dir,type_dir),
                                                         obj_dl_list)) # Download list of objects in corresponding geo-type folder
                     if result.return_code is not 0:                 #Handle error
@@ -209,7 +215,7 @@ Please forward this mail to the system administrator ({2}).
         ftp_request.save()
         
 @celery.task(name='geonode.tasks.ftp.process_ftp_request', queue='ftp')
-def process_ftp_request(ftp_request, ceph_obj_list_by_data_class):
+def process_ftp_request(ftp_request, ceph_obj_list_by_data_class, srs_epsg_num=None):
     """
         Create the a new folder containing the data requested inside 
         Geostorage-FTP directory
@@ -227,7 +233,7 @@ def process_ftp_request(ftp_request, ceph_obj_list_by_data_class):
     if isinstance(result.get(host_string, None), BaseException):
         raise Exception(result.get(host_string))
     else:
-        result = execute(fab_create_ftp_folder, ftp_request, ceph_obj_list_by_data_class )
+        result = execute(fab_create_ftp_folder, ftp_request, ceph_obj_list_by_data_class, srs_epsg_num )
         if isinstance(result.get(host_string, None), BaseException):
             raise Exception(result.get(host_string))
 
