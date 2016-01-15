@@ -371,7 +371,7 @@ def create_ftp_folder(request, projection=None):
     
     
     # Call to celery
-    process_ftp_request.delay(ftp_request, obj_name_dict)
+    process_ftp_request.delay(ftp_request, obj_name_dict, srs_epsg)
     
     # Clear cart items
     delete_all_items_from_cart(request)
