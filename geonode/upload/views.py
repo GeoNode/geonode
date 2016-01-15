@@ -692,18 +692,18 @@ class UploadFileCreateView(CreateView):
                     args=[
                         self.object.id]),
                 'delete_type': "DELETE"}]
-        response = JSONResponse(data, {}, response_mimetype(self.request))
+        response = JSONResponse(data, {}, response_content_type(self.request))
         response['Content-Disposition'] = 'inline; filename=files.json'
         return response
 
     def form_invalid(self, form):
         data = [{}]
-        response = JSONResponse(data, {}, response_mimetype(self.request))
+        response = JSONResponse(data, {}, response_content_type(self.request))
         response['Content-Disposition'] = 'inline; filename=files.json'
         return response
 
 
-def response_mimetype(request):
+def response_content_type(request):
     if "application/json" in request.META['HTTP_ACCEPT']:
         return "application/json"
     else:
@@ -721,7 +721,7 @@ class UploadFileDeleteView(DeleteView):
         self.object = self.get_object()
         self.object.delete()
         if request.is_ajax():
-            response = JSONResponse(True, {}, response_mimetype(self.request))
+            response = JSONResponse(True, {}, response_content_type(self.request))
             response['Content-Disposition'] = 'inline; filename=files.json'
             return response
         else:

@@ -284,7 +284,7 @@ def _process_wms_service(url, name, type, username, password, wms=None, owner=No
                         'service_title': service.title
                         }]
         return HttpResponse(json.dumps(return_dict),
-                            mimetype='application/json',
+                            content_type='application/json',
                             status=200)
     except:
         pass
@@ -316,7 +316,7 @@ def _register_cascaded_service(url, type, name, username, password, wms=None, ow
         return_dict['service_id'] = service.pk
         return_dict['msg'] = "This is an existing Service"
         return HttpResponse(json.dumps(return_dict),
-                            mimetype='application/json',
+                            content_type='application/json',
                             status=200)
     except:
         # TODO: Handle this error properly
@@ -408,7 +408,7 @@ def _register_cascaded_service(url, type, name, username, password, wms=None, ow
         return HttpResponse(
             'Invalid Method / Type combo: ' +
             'Only Cascaded WMS, WFS and WCS supported',
-            mimetype="text/plain",
+            content_type="text/plain",
             status=400)
 
     message = "Service %s registered" % service.name
@@ -426,7 +426,7 @@ def _register_cascaded_service(url, type, name, username, password, wms=None, ow
     else:
         _register_cascaded_layers(service)
     return HttpResponse(json.dumps(return_dict),
-                        mimetype='application/json',
+                        content_type='application/json',
                         status=200)
 
 
@@ -502,7 +502,7 @@ def _register_cascaded_layers(service, owner=None):
         message = "%d Layers Registered" % count
         return_dict = {'status': 'ok', 'msg': message}
         return HttpResponse(json.dumps(return_dict),
-                            mimetype='application/json',
+                            content_type='application/json',
                             status=200)
     elif service.type == 'WCS':
         return HttpResponse('Not Implemented (Yet)', status=501)
@@ -527,7 +527,7 @@ def _register_indexed_service(type, url, name, username, password, verbosity=Fal
             return_dict['service_id'] = service.pk
             return_dict['msg'] = "This is an existing Service"
             return HttpResponse(json.dumps(return_dict),
-                                mimetype='application/json',
+                                content_type='application/json',
                                 status=200)
         except:
             pass
@@ -567,7 +567,7 @@ def _register_indexed_service(type, url, name, username, password, verbosity=Fal
                         'available_layers': available_resources
                         }]
         return HttpResponse(json.dumps(return_dict),
-                            mimetype='application/json',
+                            content_type='application/json',
                             status=200)
     elif type == 'WFS':
         return HttpResponse('Not Implemented (Yet)', status=501)
@@ -577,7 +577,7 @@ def _register_indexed_service(type, url, name, username, password, verbosity=Fal
         return HttpResponse(
             'Invalid Method / Type combo: ' +
             'Only Indexed WMS, WFS and WCS supported',
-            mimetype="text/plain",
+            content_type="text/plain",
             status=400)
 
 
@@ -620,7 +620,7 @@ def _register_indexed_layers(service, wms=None, verbosity=False):
                 message = "%d Incompatible projection - try setting the service as cascaded" % count
                 return_dict = {'status': 'ok', 'msg': message}
                 return HttpResponse(json.dumps(return_dict),
-                                    mimetype='application/json',
+                                    content_type='application/json',
                                     status=200)
 
             bbox = list(
@@ -665,7 +665,7 @@ def _register_indexed_layers(service, wms=None, verbosity=False):
         message = "%d Layers Registered" % count
         return_dict = {'status': 'ok', 'msg': message}
         return HttpResponse(json.dumps(return_dict),
-                            mimetype='application/json',
+                            content_type='application/json',
                             status=200)
     elif service.type == 'WFS':
         return HttpResponse('Not Implemented (Yet)', status=501)
@@ -689,7 +689,7 @@ def _register_harvested_service(url, name, username, password, csw=None, owner=N
             'msg': 'This is an existing Service'
         }]
         return HttpResponse(json.dumps(return_dict),
-                            mimetype='application/json',
+                            content_type='application/json',
                             status=200)
     except:
         pass
@@ -726,7 +726,7 @@ def _register_harvested_service(url, name, username, password, csw=None, owner=N
         _harvest_csw(service)
 
     return HttpResponse(json.dumps(return_dict),
-                        mimetype='application/json',
+                        content_type='application/json',
                         status=200)
 
 
@@ -818,7 +818,7 @@ def _register_arcgis_url(url, name, username, password, owner=None, parent=None)
             arcserver, name, services=[], owner=owner, parent=parent)
 
     return HttpResponse(json.dumps(return_json),
-                        mimetype='application/json',
+                        content_type='application/json',
                         status=200)
 
 
@@ -1012,7 +1012,7 @@ def _register_ogp_service(url, owner=None):
                     'service_title': service.title
                     }]
     return HttpResponse(json.dumps(return_dict),
-                        mimetype='application/json',
+                        content_type='application/json',
                         status=200)
 
 
@@ -1258,14 +1258,14 @@ def ajax_service_permissions(request, service_id):
         return HttpResponse(
             'You are not allowed to change permissions for this service',
             status=401,
-            mimetype='text/plain'
+            content_type='text/plain'
         )
 
     if not request.method == 'POST':
         return HttpResponse(
             'You must use POST for editing service permissions',
             status=405,
-            mimetype='text/plain'
+            content_type='text/plain'
         )
 
     spec = json.loads(request.body)
@@ -1274,7 +1274,7 @@ def ajax_service_permissions(request, service_id):
     return HttpResponse(
         "Permissions updated",
         status=200,
-        mimetype='text/plain')
+        content_type='text/plain')
 
 
 def create_arcgis_links(instance):
