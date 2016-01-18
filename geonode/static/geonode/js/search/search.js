@@ -66,13 +66,23 @@
     $http.get(H_KEYWORDS_ENDPOINT, {params: params}).success(function(data){
       $('#treeview').treeview({
         data: data,
-        levels: 1,
         multiSelect: true,
-        onNodeSelected: function($event, $data) {
-          $rootScope.$broadcast('select_h_keyword', $data);
+        onNodeSelected: function($event, node) {
+          $rootScope.$broadcast('select_h_keyword', node);
+          if(node.nodes){
+            for(var i=0; i<node.nodes.length;i++){
+              $('#treeview').treeview('selectNode', node.nodes[i]);
+            } 
+          }
         },
-        onNodeUnselected: function($event, $data){
-          $rootScope.$broadcast('unselect_h_keyword', $data);
+        onNodeUnselected: function($event, node){
+          $rootScope.$broadcast('unselect_h_keyword', node);
+          if(node.nodes){
+            for(var i=0; i<node.nodes.length;i++){
+              $('#treeview').treeview('unselectNode', node.nodes[i]);
+              $('#treeview').trigger('nodeUnselected', $.extend(true, {}, node.nodes[i]));
+            } 
+          }
         }
       });
     });
