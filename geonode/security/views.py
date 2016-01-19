@@ -28,8 +28,6 @@ from django.conf import settings
 from geonode.utils import resolve_object
 from geonode.base.models import ResourceBase
 
-from pprint import pprint
-
 if "notification" in settings.INSTALLED_APPS:
     from notification import models as notification
 
@@ -65,7 +63,6 @@ def resource_permissions(request, resource_id):
 
     if request.method == 'POST':
         permission_spec = json.loads(request.body)
-        pprint(permission_spec)
         resource.set_permissions(permission_spec)
 
         return HttpResponse(

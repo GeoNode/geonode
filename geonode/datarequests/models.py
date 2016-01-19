@@ -18,9 +18,12 @@ from geonode.cephgeo.models import UserJurisdiction
 from geonode.groups.models import GroupProfile
 from geonode.layers.models import Layer
 from geonode.people.models import OrganizationType, Profile
+from geonode.utils import resolve_object
+from geonode.base.models import ResourceBase
+
+from pprint import pprint
 
 from .utils import create_login_credentials
-
 
 class DataRequestProfile(TimeStampedModel):
 
@@ -401,6 +404,12 @@ class DataRequestProfile(TimeStampedModel):
             user=profile_account,
             jurisdiction_shapefile=self.jurisdiction_shapefile,
         )
+
+        # Add view permission on resource
+        resource = self.jurisdiction_shapefile
+        perms = resource.get_all_level_info()
+        perms["users"][profile_account.username]=["view_resourcebase"]
+        resource.set_permissions(perms);
 
         # Add account to requesters group
         group_name = "Data Requesters"
