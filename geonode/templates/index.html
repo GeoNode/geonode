@@ -2,7 +2,7 @@
 {% load i18n %}
 {% load staticfiles %}
 {% load base_tags %}
-
+{% load layers_tags %}
 
 {% block title %} {% trans "Welcome!" %} - {{ block.super }} {% endblock %}
 
@@ -29,10 +29,22 @@
 
   {% block mainbody %}
   <div class="container">
-      <div class="embed-responsive embed-responsive-16by9 border=0">
+    <div class="row">
+      <div class="col-md-6 border=0">
         <iframe width="560" height="315" src="https://www.youtube.com/embed/KSsbWPeOQfs" frameborder="0" allowfullscreen></iframe>
       </div>
-      <p></p>
+      <div class="col-md-6" id="featured-layer">
+      <section class="widget list paginate-contents">
+        <h2>{% trans "Latest Layers" %}</h2>
+        <section class="article-list latest-layers">
+          {% featured_layers as featured_layers %}
+          {% for layer in featured_layers %}
+              {% include "layers/_layer_list_item.html" %}
+          {% endfor %}
+        </section>
+      </section>
+    </div>
+  </div>
       <div class="col-md-4">
         <p><a href="{% url "layer_browse" %}"><i class="fa fa-square-o fa-5x rotate-45"></i></a></p>
         <h2><a href="{% url "layer_browse" %}">{{ facets.layer|default:_("No") }} {% blocktrans count counter=facets.layer %}Layer{% plural %}Layers{% endblocktrans %}</a></h2>
