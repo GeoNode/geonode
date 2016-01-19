@@ -302,9 +302,9 @@ REQUESTER_TYPES = {
 }
 
 
-"""
+
 class DataRequestProfileResource(ModelResource):
-    #Data Request Profile api
+    """Data Request Profile api"""
     data_request_detail_url = fields.CharField()
     org_type = fields.CharField()
     req_type = fields.CharField()
@@ -316,7 +316,7 @@ class DataRequestProfileResource(ModelResource):
     shapefile_thumbnail_url = fields.CharField(null=True)
 
     class Meta:
-        authorization = GeoNodeAuthorization()
+        #authorization = GeoNodeAuthorization()
         queryset = DataRequestProfile.objects.exclude(
             date=None
         ).order_by('-date')
@@ -392,16 +392,3 @@ class DataRequestProfileResource(ModelResource):
             ]
         else:
             return []
-"""
-
-class DataRequestProfileResource(ModelResource):
-    """Data Request Profile api"""
- 
-    class Meta:
-        queryset = DataRequestProfile.objects.exclude(
-            date=None
-        ).order_by('-date')
-        resource_name = 'data_requests'
-        allowed_methods = ['get']
-        ordering = ['date', ]
-
