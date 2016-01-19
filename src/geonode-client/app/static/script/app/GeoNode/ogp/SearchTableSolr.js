@@ -238,8 +238,6 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
 
         tableCfg = {
             store: this.searchStore, 
-            //plugins: [expander],
-            autoExpandColumn: 'title',
             viewConfig: {
                 autoFill: true,
                 forceFit: true,

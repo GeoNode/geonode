@@ -55,7 +55,7 @@ GeoNode.DataCart = Ext.extend(Ext.util.Observable, {
                 defaults: {sortable: false, menuDisabled: true},
                 columns: [
                     sm,
-                    {dataIndex: 'title'}
+                    {dataIndex: 'LayerDisplayName'}
                 ]
             })
         });
