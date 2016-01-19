@@ -255,6 +255,9 @@ GEONODE_APPS = (
     'geonode.upload',
     'geonode.tasks',
 
+    # Data Requests Management App
+    'geonode.datarequests',
+
 
 )
 
@@ -318,6 +321,7 @@ INSTALLED_APPS = (
     'djkombu',
     'south',
     'corsheaders',
+    'captcha',
 
 ) + GEONODE_APPS
 
