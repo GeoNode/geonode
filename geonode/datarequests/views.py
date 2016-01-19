@@ -379,7 +379,6 @@ def data_request_profile_approve(request, pk):
         try:
             request_profile.request_status = 'approved'
             request_profile.save()
-            request_profile.
             request_profile.create_account()
             return HttpResponseRedirect(request_profile.get_absolute_url())
         except:
