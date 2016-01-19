@@ -3,6 +3,7 @@
 {% load staticfiles %}
 {% load base_tags %}
 
+
 {% block title %} {% trans "Welcome!" %} - {{ block.super }} {% endblock %}
 
 {% block body_class %}home{% endblock %}
@@ -28,10 +29,11 @@
 
   {% block mainbody %}
   <div class="container">
-    <div class="row home-facets">
-    {% with facet_type='home' %}
-     {% facets as facets %}
-      <!-- <div class="col-md-4">
+      <div class="embed-responsive embed-responsive-16by9 border=0">
+        <iframe width="560" height="315" src="https://www.youtube.com/embed/KSsbWPeOQfs" frameborder="0" allowfullscreen></iframe>
+      </div>
+      <p></p>
+      <div class="col-md-4">
         <p><a href="{% url "layer_browse" %}"><i class="fa fa-square-o fa-5x rotate-45"></i></a></p>
         <h2><a href="{% url "layer_browse" %}">{{ facets.layer|default:_("No") }} {% blocktrans count counter=facets.layer %}Layer{% plural %}Layers{% endblocktrans %}</a></h2>
         <p>{% trans "Click to search for geospatial data published by other users, organizations and public sources. Download data in standard formats." %}</p>
@@ -40,7 +42,7 @@
         {% else %}
         <p class="text-center"><a class="btn btn-default" href="{% url "layer_browse" %}" role="button">{% trans "Explore layers" %} &raquo;</a></p>
         {% endif %}
-      </div> -->
+      </div>
       <div class="col-md-4">
         <p><a href="{% url "maps_browse" %}"><i class="fa fa-map-marker fa-5x"></i></a></p>
         <h2><a href="{% url "maps_browse" %}">{{ facets.map|default:_("No") }} {% blocktrans count counter=facets.map %}Map{% plural %}Maps{% endblocktrans %}</a></h2>
@@ -57,8 +59,9 @@
         <p>{% trans "GeoNode allows registered users to easily upload geospatial data in several formats including shapefile and GeoTiff." %}</p>
         <p><a class="btn btn-default" href="{% url "profile_browse" %}" role="button">{% trans "See users" %} &raquo;</a></p>
       </div>
-    {% endwith %}
+
     </div>
+
   </div>
   {% verbatim %}
   <div ng-app="featured">
