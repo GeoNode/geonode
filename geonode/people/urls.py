@@ -27,5 +27,5 @@ urlpatterns = patterns('geonode.people.views',
                        url(r"^edit/(?P<username>[^/]*)$", "profile_edit", name="profile_edit"),
                        url(r"^profile/(?P<username>[^/]*)/$", "profile_detail", name="profile_detail"),
                        url(r'^forgotname', 'forgot_username', name='forgot_username'),
-                       url(r"^profile/(?P<username>[^/]*)/changepassword$",TemplateView.as_view(template_name='people/ssplink.html'),name='ssplink'),
+                       url(r"^profile/(?P<username>[^/]*)changepassword$",TemplateView.as_view(template_name='people/ssplink.html'),name='ssplink'),
                        )
