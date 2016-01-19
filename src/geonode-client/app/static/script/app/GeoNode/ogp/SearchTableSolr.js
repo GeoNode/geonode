@@ -38,6 +38,7 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
     },
     
     loadData: function() {
+        var self = this;
     
         this.searchStore = new Ext.data.JsonStore({
             url: this.searchURL,
@@ -49,6 +50,10 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
                 {name: 'Name', type: 'string'},
                 {name: 'LayerDisplayName', type: 'string'},
                 {name: 'LayerId', type: 'string'},
+                {name: 'MinX', type: 'string'},
+                {name: 'MinY', type: 'string'},
+                {name: 'MaxX', type: 'string'},
+                {name: 'MaxY', type: 'string'},
                 {name: 'Originator', type: 'string'}
             ]
         });
@@ -58,6 +63,16 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
                 this.dataCart.reselect();
             }
             this.fireEvent('load', this);
+            var rows = this.table.getView().getRows();
+            $.each(rows, function(index, row){
+                $(row).on('mouseover', function(){
+                    self.doMouseoverOn(index);
+                });
+
+                $(row).on('mouseout', function(){
+                    self.doMouseoverOff(index);
+                });
+            });
         }, this);
         
         this.doLayout();
@@ -74,7 +89,7 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
             GeoNode.queryTerms.start = 0;
         }
         if (!GeoNode.queryTerms.limit) {
-            GeoNode.queryTerms.limit = 25;
+            GeoNode.queryTerms.limit = 100;
         }
         
         if (this.constraints) {
@@ -204,7 +219,7 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
     },
 
     doLayout: function() {
-        
+
         var widgetHTML =
         '<div class="search-results">' +
         '<div class="search-input"></div>' +
@@ -325,7 +340,7 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
         searchButton.on('click', this.updateQuery, this)
 
         var searchForm = new Ext.Panel({
-             frame:false,
+             frame: false,
              border: false,
              layout: 'table',
              layoutConfig: {
@@ -376,6 +391,28 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
           this.disableControls();
 
           this.updatePermalink();
-}
+    },
+
+    doMouseoverOn : function(index){
+        var element = this.table.getStore().getAt(index);
+        this.showBounds(element);
+    },
+    
+    doMouseoverOff: function(){
+        this.hideBounds();
+    },
+    
+    showBounds : function(element) {
+        var bbox = {};
+        bbox.south = element.data.MinY
+        bbox.north = element.data.MaxY
+        bbox.west = element.data.MinX
+        bbox.east = element.data.MaxX
+        this.heatmap.bbox_widget.viewer.fireEvent("showBBox", bbox);
+    },
+    
+    hideBounds : function() {
+        this.heatmap.bbox_widget.viewer.fireEvent("hideBBox");
+    }
 
 });

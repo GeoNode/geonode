@@ -33,6 +33,8 @@ GeoNode.HeatmapModel = Ext.extend(Ext.util.Observable, {
     this.bbox_widget.viewer.mapPanel.map.events.register('moveend', '', function(){
       self.fireEvent('fireSearch', true);
     });
+
+    this.WGS84ToMercator = this.bbox_widget.WGS84ToMercator;
   },
 
   handleHeatmap: function(){
@@ -70,8 +72,8 @@ GeoNode.HeatmapModel = Ext.extend(Ext.util.Observable, {
     var self = this;
     this.setQueryParameters();
     var params = $.extend({}, GeoNode.queryTerms, heatmapParams);
-    params.fq = $.merge([], heatmapParams.fq);
-    $.merge(params.fq, GeoNode.queryTerms.fq);
+    params.fq = $.merge([],  GeoNode.queryTerms.fq);
+    $.merge(params.fq, heatmapParams.fq);
     $.ajax({
       url: GeoNode.solrBackend,
       jsonp: "json.wrf",
@@ -257,26 +259,6 @@ GeoNode.HeatmapModel = Ext.extend(Ext.util.Observable, {
     
     value = value * 1.0;
     return value / max;
-  },
-
-  WGS84ToMercator: function(the_lon, the_lat) {
-    // returns -infinity for -90.0 lat; a bug?
-    var lat = parseFloat(the_lat);
-    var lon = parseFloat(the_lon);
-    if (lat >= 90) {
-      lat = 89.99;
-    }
-    if (lat <= -90) {
-      lat = -89.99;
-    }
-    if (lon >= 180) {
-      lon = 179.99;
-    }
-    if (lon <= -180) {
-      lon = -179.99;
-    }
-    // console.log([lon, "tomercator"])
-    return OpenLayers.Layer.SphericalMercator.forwardMercator(lon, lat);
   },
 
   computeRadius: function(latitude, longitude, latitudeStepSize, longitudeStepSize){
