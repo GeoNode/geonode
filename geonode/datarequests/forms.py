@@ -248,6 +248,7 @@ class DataRequestProfileForm(forms.ModelForm):
                 return purpose_other
         return purpose
 
+    """
     def clean_license_period_other(self):
         license_period = self.cleaned_data.get('license_period')
         license_period_other = self.cleaned_data.get('license_period_other')
@@ -266,6 +267,7 @@ class DataRequestProfileForm(forms.ModelForm):
             else:
                 return license_period_other
         return license_period
+    """
 
     def clean_funding_source(self):
         funding_source = self.cleaned_data.get('funding_source')
