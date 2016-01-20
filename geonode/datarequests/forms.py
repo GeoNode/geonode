@@ -167,10 +167,6 @@ class DataRequestProfileForm(forms.ModelForm):
                     css_class='form-group'
                 ),
                 Div(
-                    Field('intended_use_of_dataset', css_class='form-control'),
-                    css_class='form-group'
-                ),
-                Div(
                     Field('license_period', css_class='form-control'),
                     Div(
                         Field('license_period_other', css_class='form-control'),
