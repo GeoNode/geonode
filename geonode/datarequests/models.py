@@ -119,11 +119,11 @@ class DataRequestProfile(TimeStampedModel):
         default=DATA_TYPE_CHOICES.interpreted,
         max_length=15,
     )
+    """
     data_set = models.CharField(
         _('Data/Data Set Subject to License'),
         max_length=100,
     )
-    """
     area_coverage = models.DecimalField(
         _('Area of Coverage'),
         max_digits=30,
@@ -134,6 +134,7 @@ class DataRequestProfile(TimeStampedModel):
         _('Data Resolution'),
         help_text=_('pixels per inch'),
     )
+    """
     license_period = models.CharField(
         _('Liense Period'),
         max_length=50,
@@ -141,7 +142,7 @@ class DataRequestProfile(TimeStampedModel):
     has_subscription = models.BooleanField(
         _('Subscription/Maintenance?'),
         default=False)
-    """
+    
     purpose = models.TextField(_('Purpose/Intended Use of Data'))
     intended_use_of_dataset = models.CharField(
         _('Intended Use of Dataset'),
