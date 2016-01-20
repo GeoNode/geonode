@@ -58,7 +58,7 @@ class DataRequestProfileForm(forms.ModelForm):
         required=False
     )
     
-     license_period = forms.ChoiceField(
+    license_period = forms.ChoiceField(
         label=_('License Period'),
         choices=LICENSE_PERIOD_CHOICES
     )
