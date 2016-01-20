@@ -34,7 +34,21 @@ GeoNode.HeatmapModel = Ext.extend(Ext.util.Observable, {
       self.fireEvent('fireSearch', true);
     });
 
+    this.bbox_widget.viewer.mapPanel.map.events.register('mousemove',this.bbox_widget.viewer.mapPanel.map, function(event){
+      self.processEvent(event);
+    },true);
+
     this.WGS84ToMercator = this.bbox_widget.WGS84ToMercator;
+
+    Ext.QuickTips.init();
+
+    this.tooltip = new Ext.ToolTip({
+        html: 'test',
+        cls: 'ogp-tooltip',
+        hideDelay: 0,
+        showDelay: 0,
+        width: 80
+      });
   },
 
   handleHeatmap: function(){
@@ -83,6 +97,7 @@ GeoNode.HeatmapModel = Ext.extend(Ext.util.Observable, {
         var facetCounts = response.facet_counts;
         if (facetCounts != null){
           var heatmapObject = facetCounts.facet_heatmaps.bbox_rpt;
+          self.heatmapObject = heatmapObject;
           self.drawHeatmapOpenLayers(heatmapObject);
         }
       }
@@ -270,6 +285,53 @@ GeoNode.HeatmapModel = Ext.extend(Ext.util.Observable, {
     var deltaLongitude = Math.abs(pixel1.y - pixel2.y);
     var delta = Math.max(deltaLatitude, deltaLongitude);
     return Math.ceil(delta / 2.);
+  },
+
+  getCountGeodetic: function(heatmapObject, latitude, longitude){
+    var heatmap = heatmapObject[15];
+      if (heatmap == null)
+        return;
+      var minimumLatitude = heatmapObject[11];
+      var maximumLatitude = heatmapObject[13];
+      var deltaLatitude = maximumLatitude - minimumLatitude;
+      var minimumLongitude = heatmapObject[7];
+      var maximumLongitude = heatmapObject[9];
+      var deltaLongitude = maximumLongitude - minimumLongitude;
+
+      var stepsLatitude = heatmap.length;
+      var stepsLongitude = heatmap[0].length;
+      var stepSizeLatitude = deltaLatitude / stepsLatitude;
+      var stepSizeLongitude = deltaLongitude / stepsLongitude;
+
+      var latitudeIndex = Math.floor((latitude - minimumLatitude) / stepSizeLatitude);
+      var longitudeIndex = Math.floor((longitude - minimumLongitude) / stepSizeLongitude);
+
+      if (latitudeIndex < 0) latitudeIndex = 0;
+      if (longitudeIndex < 0) longitudeIndex = 0;
+      try{
+        var heatmapValue = heatmap[heatmap.length - latitudeIndex - 1][longitudeIndex];
+        return heatmapValue;
+      }
+        catch (err)
+      {
+        return heatmap[0][0];
+      }
+  },
+
+  processEvent: function(event){
+      var map = this.bbox_widget.viewer.mapPanel.map;
+      var pixel = event.xy;
+      var mercator = map.getLonLatFromViewPortPx(pixel);
+      var epsg4326 = new OpenLayers.Projection("EPSG:4326");
+      var epsg900913 = new OpenLayers.Projection("EPSG:900913");
+      var point = mercator.transform(epsg900913, epsg4326);
+      var count = this.getCountGeodetic(this.heatmapObject, point.lat, point.lon);
+      if (count < 0) count = 0;
+      var message = "Number of layers = " + count;
+      this.tooltip.initTarget('ge_searchWindow');
+      this.tooltip.show();
+      this.tooltip.body.dom.innerHTML = message;
+      
   }
 
 });
