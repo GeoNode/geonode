@@ -48,15 +48,6 @@ class DataRequestProfileForm(forms.ModelForm):
         ('faculty', _('Faculty')),
         ('student', _('Student')),
     )
-
-    data_set = forms.ChoiceField(
-        label=_('Data/Data Set Subject to License'),
-        choices=DATA_SET_CHOICES
-    )
-    data_set_other = forms.CharField(
-        label=_(u'Your custom data/data set'),
-        required=False
-    )
     
     purpose = forms.ChoiceField(
         label=_('Purpose/Intended Use of Data'),
@@ -66,6 +57,16 @@ class DataRequestProfileForm(forms.ModelForm):
         label=_(u'Your custom purpose for the data'),
         required=False
     )
+    
+     license_period = forms.ChoiceField(
+        label=_('License Period'),
+        choices=LICENSE_PERIOD_CHOICES
+    )
+    license_period_other = forms.IntegerField(
+        label=_(u'Your custom license period (in years)'),
+        required=False
+    )
+
 
     request_level = forms.ChoiceField(
         label=_('Level of Request'),
@@ -85,12 +86,12 @@ class DataRequestProfileForm(forms.ModelForm):
             'contact_number',
             'project_summary',
             'data_type_requested',
-            'data_set',
+            #'data_set',
             #'area_coverage',
             #'data_resolution',
             'purpose',
-            #'license_period',
-            #'has_subscription',
+            'license_period',
+            'has_subscription',
             'intended_use_of_dataset',
 
             # Non-commercial requester field
@@ -152,14 +153,6 @@ class DataRequestProfileForm(forms.ModelForm):
                     css_class='form-group'
                 ),
                 Div(
-                    Field('data_set', css_class='form-control'),
-                    Div(
-                        Field('data_set_other', css_class='form-control'),
-                        css_class='col-sm-11 col-sm-offset-1'
-                    ),
-                    css_class='form-group'
-                ),
-                Div(
                     Field('purpose', css_class='form-control'),
                     Div(
                         Field('purpose_other', css_class='form-control'),
@@ -171,7 +164,21 @@ class DataRequestProfileForm(forms.ModelForm):
                     Field('intended_use_of_dataset', css_class='form-control'),
                     css_class='form-group'
                 ),
+                Div(
+                    Field('license_period', css_class='form-control'),
+                    Div(
+                        Field('license_period_other', css_class='form-control'),
+                        css_class='col-sm-11 col-sm-offset-1'
+                    ),
+                    css_class='form-group'
+                ),
+                Field('has_subscription'),
+                Div(
+                    Field('intended_use_of_dataset', css_class='form-control'),
+                    css_class='form-group'
+                ),
             ),
+            
             Fieldset('Non-commercial',
                 Div(
                     Field('organization_type', css_class='form-control'),
@@ -209,7 +216,8 @@ class DataRequestProfileForm(forms.ModelForm):
                 "A data request registration with that email already exists.")
 
         return email
-
+    
+    """
     def clean_data_set_other(self):
         data_set = self.cleaned_data.get('data_set')
         data_set_other = self.cleaned_data.get('data_set_other')
@@ -228,6 +236,7 @@ class DataRequestProfileForm(forms.ModelForm):
             else:
                 return data_set_other
         return data_set
+    """
 
     def clean_purpose_other(self):
         purpose = self.cleaned_data.get('purpose')
@@ -248,7 +257,7 @@ class DataRequestProfileForm(forms.ModelForm):
                 return purpose_other
         return purpose
 
-    """
+    
     def clean_license_period_other(self):
         license_period = self.cleaned_data.get('license_period')
         license_period_other = self.cleaned_data.get('license_period_other')
@@ -267,7 +276,7 @@ class DataRequestProfileForm(forms.ModelForm):
             else:
                 return license_period_other
         return license_period
-    """
+    
 
     def clean_funding_source(self):
         funding_source = self.cleaned_data.get('funding_source')

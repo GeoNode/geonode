@@ -61,6 +61,8 @@ def get_layer_config(request, typename, permission='base.view_resourcebase',
     except Exception as e:
         pprint("Error on resolving layer")
         pprint("Message: "+ e.message + "/nType: "+str(type(e)))
+        
+    
 
     config = layer.attribute_config()
     layer_bbox = layer.bbox
