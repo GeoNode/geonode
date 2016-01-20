@@ -23,7 +23,7 @@ class DataRequestProfileForm(forms.ModelForm):
         ('Resource Prospecting/Asset Map',
             _('Resource Prospecting/Asset Map')),
         ('Flood Hazard Map', _('Flood Hazard Map')),
-        ('Landslide Hazard Map', _('Landslide Hazard Map')),
+        #('Landslide Hazard Map', _('Landslide Hazard Map')),
         ('Thematic Disaster 3D Layer Map',
             _('Thematic Disaster 3D Layer Map')),
         ('other', _('Other, please specify:')),
@@ -43,12 +43,13 @@ class DataRequestProfileForm(forms.ModelForm):
         ('other', _('Other, please specify:')),
     )
 
+    """
     LICENSE_PERIOD_CHOICES = Choices(
         ('One-time Use', _('One-time Use')),
         ('1 Year or Less', _('1 Year or Less')),
         ('other', _('Other, please specify:')),
     )
-
+    """
     REQUEST_LEVEL_CHOICES = Choices(
         ('institution', _('Institution')),
         ('faculty', _('Faculty')),
@@ -63,7 +64,7 @@ class DataRequestProfileForm(forms.ModelForm):
         label=_(u'Your custom data/data set'),
         required=False
     )
-
+    
     purpose = forms.ChoiceField(
         label=_('Purpose/Intended Use of Data'),
         choices=INTENDED_USE_CHOICES
@@ -73,6 +74,7 @@ class DataRequestProfileForm(forms.ModelForm):
         required=False
     )
 
+    """
     license_period = forms.ChoiceField(
         label=_('License Period'),
         choices=LICENSE_PERIOD_CHOICES
@@ -81,6 +83,7 @@ class DataRequestProfileForm(forms.ModelForm):
         label=_(u'Your custom license period (in years)'),
         required=False
     )
+    """
 
     request_level = forms.ChoiceField(
         label=_('Level of Request'),
@@ -101,11 +104,11 @@ class DataRequestProfileForm(forms.ModelForm):
             'project_summary',
             'data_type_requested',
             'data_set',
-            'area_coverage',
-            'data_resolution',
+            #'area_coverage',
+            #'data_resolution',
             'purpose',
-            'license_period',
-            'has_subscription',
+            #'license_period',
+            #'has_subscription',
             'intended_use_of_dataset',
 
             # Non-commercial requester field
@@ -174,6 +177,7 @@ class DataRequestProfileForm(forms.ModelForm):
                     ),
                     css_class='form-group'
                 ),
+                """
                 Div(
                     Field('area_coverage', css_class='form-control'),
                     css_class='form-group'
@@ -182,6 +186,7 @@ class DataRequestProfileForm(forms.ModelForm):
                     Field('data_resolution', css_class='form-control'),
                     css_class='form-group'
                 ),
+                """
                 Div(
                     Field('purpose', css_class='form-control'),
                     Div(
@@ -190,6 +195,7 @@ class DataRequestProfileForm(forms.ModelForm):
                     ),
                     css_class='form-group'
                 ),
+                """
                 Div(
                     Field('license_period', css_class='form-control'),
                     Div(
@@ -199,6 +205,7 @@ class DataRequestProfileForm(forms.ModelForm):
                     css_class='form-group'
                 ),
                 Field('has_subscription'),
+                """
                 Div(
                     Field('intended_use_of_dataset', css_class='form-control'),
                     css_class='form-group'
