@@ -7,7 +7,7 @@ from django.template import RequestContext
 from django.core.exceptions import ValidationError, PermissionDenied, ObjectDoesNotExist
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from django.http import HttpResponseRedirect, HttpResponse
+from django.http import HttpResponseRedirect, HttpResponse, Http404
 from django.db.models import Q
 
 from geonode.services.models import Service
@@ -55,14 +55,16 @@ def _resolve_layer(request, typename, permission='base.view_resourcebase',
 
 def get_layer_config(request, typename, permission='base.view_resourcebase',
                    msg=_PERMISSION_GENERIC, **kwargs):
-                       
+    
+    layer = False
     try:
         layer = _resolve_layer(request, typename, "base.view_resourcebase", _PERMISSION_VIEW )
     except Exception as e:
         pprint("Error on resolving layer")
         pprint("Message: "+ e.message + "/nType: "+str(type(e)))
-        
-    
+
+    if !layer:
+        raise HttP404()
 
     config = layer.attribute_config()
     layer_bbox = layer.bbox
