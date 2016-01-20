@@ -43,6 +43,12 @@ class DataRequestProfileForm(forms.ModelForm):
         ('other', _('Other, please specify:')),
     )
 
+    LICENSE_PERIOD_CHOICES = Choices(
+        ('One-time Use', _('One-time Use')),
+        ('1 Year or Less', _('1 Year or Less')),
+        ('other', _('Other, please specify:')),
+    )
+
     REQUEST_LEVEL_CHOICES = Choices(
         ('institution', _('Institution')),
         ('faculty', _('Faculty')),
