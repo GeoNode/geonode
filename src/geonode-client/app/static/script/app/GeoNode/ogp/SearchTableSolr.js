@@ -88,8 +88,8 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
         if (!GeoNode.queryTerms.start) {
             GeoNode.queryTerms.start = 0;
         }
-        if (!GeoNode.queryTerms.limit) {
-            GeoNode.queryTerms.limit = 100;
+        if (!GeoNode.queryTerms.rows) {
+            GeoNode.queryTerms.rows = 50;
         }
         
         if (this.constraints) {
@@ -122,12 +122,12 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
     },
 
     loadNextBatch: function() {
-        GeoNode.queryTerms.start += GeoNode.queryTerms.limit;
+        GeoNode.queryTerms.start += GeoNode.queryTerms.rows;
         this._search(GeoNode.queryTerms);
     },
     
     loadPrevBatch: function() {
-        GeoNode.queryTerms.start -= GeoNode.queryTerms.limit;
+        GeoNode.queryTerms.start -= GeoNode.queryTerms.rows;
         if (GeoNode.queryTerms.start < 0) {
             GeoNode.queryTerms.start = 0;
         }
@@ -149,7 +149,7 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
             this.prevButton.setDisabled(true);
         }
         
-        if (GeoNode.queryTerms.start + GeoNode.queryTerms.limit < total) {
+        if (GeoNode.queryTerms.start + GeoNode.queryTerms.rows < total) {
             this.nextButton.setDisabled(false);
         }
         else {
@@ -157,7 +157,7 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
         }
         
         var minItem = GeoNode.queryTerms.start + 1;
-        var maxItem = minItem + GeoNode.queryTerms.limit - 1;
+        var maxItem = minItem + GeoNode.queryTerms.rows - 1;
         if (minItem > total) {
             minItem = total;
         }
@@ -243,8 +243,8 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
                 forceFit: true,
                 emptyText: this.noResultsText
             },
-            autoHeight: true,
-            renderTo: table_el
+            renderTo: table_el,
+            height: 300
         };
 
         var unviewableTooltip = this.unviewableTooltip;
