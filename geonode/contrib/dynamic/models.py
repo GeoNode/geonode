@@ -16,7 +16,8 @@ from geonode.geoserver.helpers import ogc_server_settings
 
 from .postgis import file2pgtable
 
-DYNAMIC_DATASTORE = 'datastore'
+datastore_name = settings.OGC_SERVER['default']['DATASTORE']
+DYNAMIC_DATASTORE = datastore_name if datastore_name != '' else 'datastore'
 
 has_datastore = True if len(ogc_server_settings.datastore_db.keys()) > 0 else False
 
@@ -131,7 +132,10 @@ def create_model(
     setattr(Meta, 'verbose_name_plural', name)
 
     # Set up a dictionary to simulate declarations within a class
-    attrs = {'__module__': module, 'Meta': Meta, 'objects': models.GeoManager()}
+    geomanager = models.GeoManager()
+    geomanager._db = DYNAMIC_DATASTORE
+
+    attrs = {'__module__': module, 'Meta': Meta, 'objects': geomanager}
 
     # Add in any fields that were provided
     if fields:
