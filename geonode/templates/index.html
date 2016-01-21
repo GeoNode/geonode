@@ -2,7 +2,7 @@
 {% load i18n %}
 {% load staticfiles %}
 {% load base_tags %}
-<!-- {% load layers_tags %} -->
+
 
 {% block title %} {% trans "Welcome!" %} - {{ block.super }} {% endblock %}
 
@@ -11,49 +11,50 @@
 {% block middle %}
    {{ block.super }}
   {% block hero %}
-<div class="row body-top">
-  <!-- <div class="jumbotron col-md-6"> -->
-    <div class="container col-md-6 center-text">
-      <h1 class="no-margin-top">{% trans "Welcome to LiPAD!" %}</h1>
-      <p>
-          {% blocktrans %}
-          The <abbr title="LiDAR Portal for Archiviing and Distribution">LiPAD</abbr> system of the <a href="https://www.dream.upd.edu.ph/about-us/phil-lidar-1/" title="About the Phil-LiDAR 1 Program">Phil-LiDAR 1 Program</a> aims to facilitate the exchange of information across all components of the Phil LiDAR Program, including all affiliated SUCs and HEIs across the country through the use of web standard protocols.
-          {% endblocktrans %}
-        </p><p>
-          {% blocktrans %}
-            The <a href="https://www.dream.upd.edu.ph/about-us/phil-lidar-1/" title="About the Phil-LiDAR 1 Program">Phil-LiDAR 1 Program</a> aims to produce 3D flood and hazard maps for the 2/3 of Philippine river systems, following the <a href="https://www.dream.upd.edu.ph" title="About DREAM Program">DREAM Program</a> which covered 18 major river basins,  and tapping state universities and colleges (SUCs) and private higher education institutions (HEIs) nationwide in the processing, validation, and modeling of the acquired LiDAR data. Aside from addressing disaster risk reduction and climate change adaptation, the resource information to be generated from this project will also be useful in providing the information requirements of various sectors in the country.
-          {% endblocktrans %}
-        </p>
-    <!-- </div> -->
-  </div>
-  <div class="col-md-6 border=0">
-    <iframe width="560" height="315" src="https://www.youtube.com/embed/KSsbWPeOQfs" frameborder="0" allowfullscreen></iframe>
-  </div>
+  <div class="container">
+    <div class="row body-top">
+      <!-- <div class="jumbotron col-md-6"> -->
+        <div class="container col-md-6 center-text">
+          <h1 class="no-margin-top">{% trans "Welcome to LiPAD!" %}</h1>
+          <p>
+              {% blocktrans %}
+              The <abbr title="LiDAR Portal for Archiviing and Distribution">LiPAD</abbr> system of the <a href="https://www.dream.upd.edu.ph/about-us/phil-lidar-1/" title="About the Phil-LiDAR 1 Program">Phil-LiDAR 1 Program</a> aims to facilitate the exchange of information across all components of the Phil LiDAR Program, including all affiliated SUCs and HEIs across the country through the use of web standard protocols.
+              {% endblocktrans %}
+            </p><p>
+              {% blocktrans %}
+                The <a href="https://www.dream.upd.edu.ph/about-us/phil-lidar-1/" title="About the Phil-LiDAR 1 Program">Phil-LiDAR 1 Program</a> aims to produce 3D flood and hazard maps for the 2/3 of Philippine river systems, following the <a href="https://www.dream.upd.edu.ph" title="About DREAM Program">DREAM Program</a> which covered 18 major river basins,  and tapping state universities and colleges (SUCs) and private higher education institutions (HEIs) nationwide in the processing, validation, and modeling of the acquired LiDAR data. Aside from addressing disaster risk reduction and climate change adaptation, the resource information to be generated from this project will also be useful in providing the information requirements of various sectors in the country.
+              {% endblocktrans %}
+            </p>
+        <!-- </div> -->
+      </div>
+      <div class="col-md-6 border=0">
+        <iframe width="560" height="315" src="https://www.youtube.com/embed/KSsbWPeOQfs" frameborder="0" allowfullscreen></iframe>
+      </div>
 
-</div>
+    </div>
+
 
   {% endblock %}
 
   {% block mainbody %}
 
     <div class="row body-bottom">
-
-      <!-- <div class="col-md-9"> -->
-        <!-- <div class="col-md-3"> -->
         <div class="page-header">
           <h2 >{% trans "Latest Layers" %}</h2>
         </div>
-        <span>Total: </span>
-        <span ng-bind="total_counts"></span>
-    </div>
+    <!-- </div>
 
-    <div class="row body-bottom">
-        <div class="col-md-15 grid-spacer ">
+    <div class="row body-bottom"> -->
+        <div class="col-md-12 grid-spacer ">
+          <span class="total-layers" >Total: </span>
+          <span ng-bind="total_counts" class="total-layers"></span>
           {% include 'base/_resourcebase_snippet.html' %}
         </div>
       </div>
 
   {% endblock %}
+
+</div>
 
   {% block extra_script %}
     {% if GEONODE_SECURITY_ENABLED %}

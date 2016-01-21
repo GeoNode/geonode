@@ -1,23 +1,21 @@
 .body-top{
-    margin: auto;
-    width: 90%;
+    /*margin: auto;*/
+    /*width: 90%;*/
     /*border: 3px solid #73AD21;*/
-    padding: 10px;
+    /*padding: 10px;*/
     padding-top: 3%;
+    padding-bottom: 0px;
 }
 
 .body-bottom{
-  margin: auto;
-  width: 90%;
-  padding-top: 1%;
+  /*margin: auto;
+  width: 90%;*/
+  padding-top: 0px;
   /*align-items: center;*/
 }
 
-.body-bottom-text{
-  margin: auto;
-  width: 90%;
-  padding-top: 5%;
-  /*align-items: center;*/
+span.total-layers{
+  font-size: 20px;
 }
 
 h2.latest-layer{
