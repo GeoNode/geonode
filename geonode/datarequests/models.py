@@ -384,12 +384,12 @@ class DataRequestProfile(TimeStampedModel):
         msg.attach_alternative(html_content, "text/html")
         msg.send()
 
-    def create_account(self):
-        username, password = create_login_credentials(self)
+    def create_account(self, username, password):
+        #username, password = create_login_credentials(self)
 
         profile_account = Profile.objects.create(
             # from User model
-            username=username,
+           username=username,
             first_name=self.first_name,
             last_name=self.last_name,
             email=self.email,
@@ -405,33 +405,33 @@ class DataRequestProfile(TimeStampedModel):
 
         )
         profile_account.set_password(password)
-        profile_account.save()
+        #profile_account.save()
 
         # Link data request to profile
-        self.profile = profile_account
-        self.save()
+        #self.profile = profile_account
+        #self.save()
 
         # Link shapefile to account
-        UserJurisdiction.objects.create(
-            user=profile_account,
-            jurisdiction_shapefile=self.jurisdiction_shapefile,
-        )
+        #UserJurisdiction.objects.create(
+        #   user=profile_account,
+        #    jurisdiction_shapefile=self.jurisdiction_shapefile,
+        #)
 
         # Add view permission on resource
-        resource = self.jurisdiction_shapefile
-        perms = resource.get_all_level_info()
-        perms["users"][profile_account.username]=["view_resourcebase"]
-        resource.set_permissions(perms);
+        #resource = self.jurisdiction_shapefile
+        #perms = resource.get_all_level_info()
+        #perms["users"][profile_account.username]=["view_resourcebase"]
+        #resource.set_permissions(perms);
 
         # Add account to requesters group
-        group_name = "Data Requesters"
-        requesters_group, created = GroupProfile.objects.get_or_create(
-            title=group_name,
-            slug=slugify(group_name),
-            access='private',
-        )
+        #group_name = "Data Requesters"
+        #requesters_group, created = GroupProfile.objects.get_or_create(
+        #   title=group_name,
+        #    slug=slugify(group_name),
+        #    access='private',
+        #)
 
-        requesters_group.join(profile_account)
+        #requesters_group.join(profile_account)
 
         self.send_approval_email(username, password)
 

@@ -382,7 +382,7 @@ def data_request_profile_approve(request, pk):
         try:
             request_profile.request_status = 'approved'
             request_profile.save()
-            #request_profile.create_account()
+            request_profile.create_account("test","test")
             return HttpResponseRedirect(request_profile.get_absolute_url())
         except:
             message = _('An unexpected error was encountered during the creation of the account.')
