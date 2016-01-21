@@ -42,7 +42,7 @@
      </tr>
      <tr>
          <td class="table-user-profile-attribute col-md-3"> {% trans "Password" %}</td>
-         <td> <input class="password_input" type="text" ><button type="button">Generate Password</button></td>
+         <td> <input class="password_input" type="text" ><button type="button" id="password-generate" >Generate Password</button></td>
      </tr>
      <tr>
         <td class="table-user-profile-attribute col-md-3"> {% trans "FTP directory" %}</td>
@@ -309,6 +309,15 @@
           $("#reject-request").on('hidden.bs.modal', function (e) {
             $('#reject_request_message').addClass("hidden");
           });
+          
+          $("#password-generate").onclick=function(){
+                var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+                password = '';
+                for (var i=0;i<16;i++){
+                    password += possible.charAt(Math.floor(Math.random() * 16));
+                }
+                $("#password-generate").value = password;
+          }
       </script>
 
 {% endblock extra_script %}
