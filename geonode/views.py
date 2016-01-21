@@ -112,7 +112,7 @@ def forbidden(request):
     return TemplateResponse(request, '401.html', {}, status=401).render()
     
 def assign_relationships(user):
-    
+    pprint("assigning relationships")
     if DataRequestProfile.objects.get(email=user.email).exists():
             drp = DataRequestProfile.objects.get(email=user.email)
             drp.user = user
