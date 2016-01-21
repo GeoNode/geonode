@@ -339,7 +339,7 @@
                   $("#password-error").hide();
                   $("#username-error").hide();
                   console.log(modal_target);
-                  $($("#approve-button").attr("data-target")).show();
+                  $(modal_target).modal();
               }else{
                   if  ($("#password-input").val() == ""){
                       $("#password-input").focus();
