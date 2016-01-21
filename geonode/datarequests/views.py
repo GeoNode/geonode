@@ -385,7 +385,7 @@ def data_request_profile_approve(request, pk):
             request_profile.save()
             username = str(request.POST[u'username'][0])
             password = str(request.POST[u'password'][0])
-            request_profile.create_account("username","password", "request_profile.ftp_folder")
+            request_profile.create_account(username,password, request_profile.ftp_folder)
             return HttpResponseRedirect(request_profile.get_absolute_url())
         except:
             message = _('An unexpected error was encountered during the creation of the account.')
