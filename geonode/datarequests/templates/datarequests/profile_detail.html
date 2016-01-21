@@ -50,7 +50,7 @@
         <td> <input class="ftp_directory_input" type="text" id="ftp-directory-input" value= "{{ request_profile.ftp_folder }}" readonly> </td>
         {% else %}
         <td> <input class="ftp_directory_input" type="text" id="ftp-directory-input" value= "Others/" readonly> </td>
-        {% elif %}
+        {% endif %}
      </tr>
       <tr>
       <td class="table-user-profile-attribute col-md-3">{% trans "Requester Type" %}</td>
