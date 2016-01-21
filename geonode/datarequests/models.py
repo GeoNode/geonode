@@ -10,6 +10,7 @@ from django.utils.translation import ugettext as _
 from django.utils.encoding import iri_to_uri
 from django.utils.http import urlquote
 from django_enumfield import enum
+from django.core import validators
 
 from model_utils import Choices
 from model_utils.models import TimeStampedModel
@@ -201,7 +202,8 @@ class DataRequestProfile(TimeStampedModel):
         _('The FTP folder to be associated with the user account'),
         blank=True,
         null=True,
-        max_length=100
+        max_length=100,
+        validators=[validators.validate_slug]
         )
     
     class Meta:
@@ -384,7 +386,7 @@ class DataRequestProfile(TimeStampedModel):
         msg.attach_alternative(html_content, "text/html")
         msg.send()
 
-    def create_account(self, username, password):
+    def create_account(self, username, password, directory):
         #username, password = create_login_credentials(self)
 
         profile_account = Profile.objects.create(
@@ -433,10 +435,10 @@ class DataRequestProfile(TimeStampedModel):
 
         #requesters_group.join(profile_account)
 
-        self.send_approval_email(username, password)
+        self.send_approval_email(username, password, directory)
 
 
-    def send_approval_email(self, username, password):
+    def send_approval_email(self, username, password,directory):
 
         site = Site.objects.get_current()
         profile_url = (
@@ -452,7 +454,9 @@ class DataRequestProfile(TimeStampedModel):
         You will now be able to log in using the following log-in credentials:
         username: {}
         password: {}
-
+        
+        Your designated FTP directory is: {}
+        
         You will be able to edit your account details by logging in and going to the following link:
         {}
 
@@ -464,6 +468,7 @@ class DataRequestProfile(TimeStampedModel):
              self.first_name,
              username,
              password,
+             directory,
              profile_url,
              settings.LIPAD_SUPPORT_MAIL,
          )
