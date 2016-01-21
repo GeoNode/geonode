@@ -342,18 +342,6 @@ def data_request_profile(request, pk, template='datarequests/profile_detail.html
 def data_request_profile_reject(request, pk):
     if not request.user.is_superuser:
         raise PermissionDenied
-        
-    if request.method != "POST":
-        return HttpResponse(
-        json.dumps({
-            'result': 'failed',
-            'errors': 'request is not a POST request',
-            'url': url}),
-        status=400,
-        mimetype='text/plain'
-        )
-    
-    pprint(request.POST);
     
     request_profile = get_object_or_404(DataRequestProfile, pk=pk)
     if not request_profile.date:
@@ -386,6 +374,8 @@ def data_request_profile_approve(request, pk):
         raise PermissionDenied
 
     if request.method == 'POST':
+        
+        pprint(request.POST)
         request_profile = get_object_or_404(DataRequestProfile, pk=pk)
         if not request_profile.date:
             raise Http404
