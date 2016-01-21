@@ -333,6 +333,7 @@
           
           //Validate if user name and password fields are empty or not Do note that password will not be saved
           $("#approve-button").click(function(){
+              console.log("haithere");
               if !( $("#password-input").val() == "" || $("#username-input").val() ==""){
                   $("#ftp-directory").val( $("#ftp-directory-input").val());
                   $($("approve-button").attr("data-target")).show();
