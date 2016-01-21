@@ -36,6 +36,7 @@
       <td class="table-user-profile-attribute col-md-3">{% trans "Requester" %}</td>
       <td>{{ request_profile.first_name }} {{ request_profile.middle_name }} {{ request_profile.last_name }}</td>
       </tr>
+      {% if request_profile.request_status == 'pending' %}
      <tr>
          <td class="table-user-profile-attribute col-md-3"> {% trans "User Name" %}</td>
          <td> <input class="username_input" id="username-input" type="text" value="" ><font id="username-error" color="red" hidden>Invalid Username</font></td>
@@ -44,6 +45,7 @@
          <td class="table-user-profile-attribute col-md-3"> {% trans "Password" %}</td>
          <td> <input class="password_input" id="password-input" type="text"  value=""><button type="button" id="password-generate" >Generate Password</button><font id="password-error" color="red" hidden>Invalid Password</font></td>
      </tr>
+     {% endif %}
      <tr>
         <td class="table-user-profile-attribute col-md-3"> {% trans "FTP directory" %}</td>
         {% if request_profile.ftp_folder %} 

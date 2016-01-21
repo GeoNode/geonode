@@ -375,12 +375,12 @@ def data_request_profile_approve(request, pk):
 
     if request.method == 'POST':
         
-        pprint(request.POST)
         request_profile = get_object_or_404(DataRequestProfile, pk=pk)
         if not request_profile.date:
             raise Http404
         try:
             request_profile.request_status = 'approved'
+            request_profile.ftp_folder = request.POST[u'ftp-directory'][0]
             request_profile.save()
             request_profile.create_account("test","test")
             return HttpResponseRedirect(request_profile.get_absolute_url())
