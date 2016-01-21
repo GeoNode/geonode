@@ -341,10 +341,15 @@
                   if  ($("#password-input").val() == ""){
                       $("#password-input").focus();
                       $("#password-error").show();
+                  }else{
+                      $("#password-error").hide();
                   }
+                  
                   if  ($("#username-input").val() == ""){
                       $("#username-input").focus();
                       $("#username-error").show();
+                  }else{
+                      $("#username-error").hide();
                   }
               }
           });
