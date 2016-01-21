@@ -115,10 +115,9 @@ def assign_relationships(user):
     
     if DataRequestProfile.objects.get(email=user.email).exists():
             drp = DataRequestProfile.objects.get(email=user.email)
-            if !drp.user:
-                drp.user = user
-                drp.save()
-    if !UserJurisdiction.objects.get (user=user).exists():
+            drp.user = user
+            drp.save()
+    if UserJurisdiction.objects.get (user=user).exists() is not True:
         jurisdiction_shapefile = DataRequestProfile.objects.get(email=user.email).jurisdiction_shapefile
         jurisdiction = UserJurisdiction(user=user, jurisdiction_shapefile=jurisdiction_shapefile)
         jurisdiction.save()
