@@ -38,11 +38,11 @@
       </tr>
      <tr>
          <td class="table-user-profile-attribute col-md-3"> {% trans "User Name" %}</td>
-         <td> <input class="username_input" id="username-input" type="text" ></td>
+         <td> <input class="username_input" id="username-input" type="text" value="" ></td>
      </tr>
      <tr>
          <td class="table-user-profile-attribute col-md-3"> {% trans "Password" %}</td>
-         <td> <input class="password_input" id="password-input" type="text" ><button type="button" id="password-generate" >Generate Password</button></td>
+         <td> <input class="password_input" id="password-input" type="text"  value=""><button type="button" id="password-generate" >Generate Password</button></td>
      </tr>
      <tr>
         <td class="table-user-profile-attribute col-md-3"> {% trans "FTP directory" %}</td>
@@ -167,11 +167,12 @@
 
       {% if request_profile.request_status == 'pending'%}
         <li class="list-group-item">
-          <button class="btn btn-primary btn-md btn-block" data-toggle="modal" data-target="#approve-request">{% trans "Approve" %}</button>
+          <button class="btn btn-primary btn-md btn-block" data-toggle="modal" data-target="#approve-request" id="approve-button">{% trans "Approve" %}</button>
         </li>
 
         <div class="modal fade" id="approve-request" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
           <form id="approve_form" method="post" class="modal-form" action='{% url "datarequests:data_request_profile_approve" pk=request_profile.pk%}'>{% csrf_token %}
+            <input type="hidden" id="ftp-directory" name="ftp-directory" value="">
           <div class="modal-dialog">
             <div class="modal-content">
               <div class="modal-header">
@@ -179,7 +180,7 @@
                 <h4 class="modal-title" id="myModalLabel">{% trans "Approve Data Request Profile" %}</h4>
               </div>
               <div class="modal-body">
-                <p>Are your sure you want to approve this data request profile?</p>
+                <p>Please make sure that an Active Directory account has been created based on the credentials in this page before approving. Are your sure you want to approve this data request profile?</p>
               </div>
               <div class="modal-footer">
                 <button type="button" id="approve_request_cancel" class="btn btn-default" data-dismiss="modal">{% trans "Cancel" %}</button>
@@ -327,6 +328,22 @@
           $("#username-input").keyup(function(){
               $("#ftp-directory-input").val("Others/"+$(this).val())
           });
+          
+          //Validate if user name and password fields are empty or not Do note that password will not be saved
+          $("#approve-button").click(function(){
+              if !( $("#password-input").val() == "" || $("#username-input").val() ==""){
+                  $("#ftp-directory").val( $("#ftp-directory-input").val());
+                  $($("approve-button").attr("data-target")).show();
+              }else{
+                  if  ($("#password-input").val() == ""){
+                      $("#password-input").focus();
+                  }
+                  if  ($("#username-input").val() == ""){
+                      $("#username-input").focus();
+                  }
+              }
+          });
+          
       </script>
 
 {% endblock extra_script %}
