@@ -27,6 +27,9 @@ from django.template.response import TemplateResponse
 
 from geonode.groups.models import GroupProfile
 
+from geonode.cephgeo.models import UserJurisdiction
+from geonode.datarequests.models import DataRequestProfile
+
 class AjaxLoginForm(forms.Form):
     password = forms.CharField(widget=forms.PasswordInput)
     username = forms.CharField()
@@ -106,3 +109,17 @@ def err403(request):
         
 def forbidden(request):
     return TemplateResponse(request, '401.html', {}, status=401).render()
+    
+def assign_relationships(user):
+    
+    if DataRequestProfile.objects.get(email=user.email).exists():
+            drp = DataRequestProfile.objects.get(email=user.email)
+            if !drp.user:
+                drp.user = user
+                drp.save()
+    if !UserJurisdiction.objects.get (user=user).exists():
+        jurisdiction_shapefile = DataRequestProfile.objects.get(email=user.email).jurisdiction_shapefile
+        jurisdiction = UserJurisdiction(user=user, jurisdiction_shapefile=jurisdiction_shapefile)
+        jurisdiction.save()
+        
+    
