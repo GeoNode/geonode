@@ -199,11 +199,11 @@ class DataRequestProfile(TimeStampedModel):
 
     # For mapping an FTP folder to the datarequest and consequently to a user profile
     ftp_folder = models.CharField(
-        _('The FTP folder to be associated with the user account'),
+        _('FTP folder for the user account'),
         blank=True,
         null=True,
         max_length=100,
-        validators=[validators.validate_slug]
+        validators=[validators.RegexValidator(regex="Others\/[a-zA-Z]{6,15}[0-9]{1,4}"]
         )
     
     class Meta:
