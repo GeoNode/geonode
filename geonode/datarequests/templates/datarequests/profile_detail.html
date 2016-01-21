@@ -37,15 +37,15 @@
       <td>{{ request_profile.first_name }} {{ request_profile.middle_name }} {{ request_profile.last_name }}</td>
       </tr>
      <tr>
-         <td class="table-user-profile-attribute col-md-3"> {% trans User Name %}</td>
+         <td class="table-user-profile-attribute col-md-3"> {% trans "User Name" %}</td>
          <td> <input class="username_input" type="text" ></td>
      </tr>
      <tr>
-         <td class="table-user-profile-attribute col-md-3"> {% trans Password %}</td>
+         <td class="table-user-profile-attribute col-md-3"> {% trans "Password" %}</td>
          <td> <input class="password_input" type="text" ><button type="button">Generate Password</button></td>
      </tr>
      <tr>
-        <td class="table-user-profile-attribute col-md-3"> {% trans FTP directory %}</td>
+        <td class="table-user-profile-attribute col-md-3"> {% trans "FTP directory" %}</td>
         <td> <input class="ftp_directory_input" type="text" value= "{{ request_profile.ftp_folder }}">
      </tr>
       <tr>
