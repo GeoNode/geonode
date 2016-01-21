@@ -38,7 +38,7 @@
       </tr>
      <tr>
          <td class="table-user-profile-attribute col-md-3"> {% trans "User Name" %}</td>
-         <td> <input class="username_input" id="username_input" type="text" ></td>
+         <td> <input class="username_input" id="username-input" type="text" ></td>
      </tr>
      <tr>
          <td class="table-user-profile-attribute col-md-3"> {% trans "Password" %}</td>
@@ -46,7 +46,11 @@
      </tr>
      <tr>
         <td class="table-user-profile-attribute col-md-3"> {% trans "FTP directory" %}</td>
-        <td> <input class="ftp_directory_input" type="text" id="ftp-directory-input" value= "{{ request_profile.ftp_folder }}">
+        {% if request_profile.ftp_folder %} 
+        <td> <input class="ftp_directory_input" type="text" id="ftp-directory-input" value= "{{ request_profile.ftp_folder }}" readonly> </td>
+        {% else %}
+        <td> <input class="ftp_directory_input" type="text" id="ftp-directory-input" value= "Others/" readonly> </td>
+        {% elif %}
      </tr>
       <tr>
       <td class="table-user-profile-attribute col-md-3">{% trans "Requester Type" %}</td>
@@ -318,6 +322,10 @@
                 }
                 $("#password-input").val(password);
                 $("#password-input").text(password);
+          });
+          
+          $("#username-input").keyup(function(){
+              $("#ftp-directory-input").val("Others/"+$(this).val)
           });
       </script>
 
