@@ -30,6 +30,8 @@ from geonode.groups.models import GroupProfile
 from geonode.cephgeo.models import UserJurisdiction
 from geonode.datarequests.models import DataRequestProfile
 
+from pprint import pprint
+
 class AjaxLoginForm(forms.Form):
     password = forms.CharField(widget=forms.PasswordInput)
     username = forms.CharField()
