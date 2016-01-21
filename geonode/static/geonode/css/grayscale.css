@@ -229,6 +229,7 @@ section.article-list {
     .details {
       float:left;
       width:152px;
+      clear:both;
     }
 
     h6 {
