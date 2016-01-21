@@ -63,7 +63,7 @@ def get_layer_config(request, typename, permission='base.view_resourcebase',
         pprint("Error on resolving layer")
         pprint("Message: "+ e.message + "/nType: "+str(type(e)))
 
-    if !layer:
+    if layer is False :
         raise HttP404()
 
     config = layer.attribute_config()
