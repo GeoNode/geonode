@@ -39,10 +39,12 @@
      <tr>
          <td class="table-user-profile-attribute col-md-3"> {% trans "User Name" %}</td>
          <td> <input class="username_input" id="username-input" type="text" value="" ></td>
+         <td id="username-error"></td>
      </tr>
      <tr>
          <td class="table-user-profile-attribute col-md-3"> {% trans "Password" %}</td>
          <td> <input class="password_input" id="password-input" type="text"  value=""><button type="button" id="password-generate" >Generate Password</button></td>
+         <td id="password-error"></td>
      </tr>
      <tr>
         <td class="table-user-profile-attribute col-md-3"> {% trans "FTP directory" %}</td>
@@ -337,9 +339,11 @@
               }else{
                   if  ($("#password-input").val() == ""){
                       $("#password-input").focus();
+                      $("#password-error").html("<font color=\"red\">Invalid Password</font>");
                   }
                   if  ($("#username-input").val() == ""){
                       $("#username-input").focus();
+                      $("#username-error").html("<font color=\"red\">Invalid User Name</font>");
                   }
               }
           });
