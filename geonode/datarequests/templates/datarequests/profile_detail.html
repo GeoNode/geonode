@@ -38,13 +38,11 @@
       </tr>
      <tr>
          <td class="table-user-profile-attribute col-md-3"> {% trans "User Name" %}</td>
-         <td> <input class="username_input" id="username-input" type="text" value="" ></td>
-         <td id="username-error"></td>
+         <td> <input class="username_input" id="username-input" type="text" value="" ><font id="username-error" color="red" hidden>Invalid Username</font></td>
      </tr>
      <tr>
          <td class="table-user-profile-attribute col-md-3"> {% trans "Password" %}</td>
-         <td> <input class="password_input" id="password-input" type="text"  value=""><button type="button" id="password-generate" >Generate Password</button></td>
-         <td id="password-error"></td>
+         <td> <input class="password_input" id="password-input" type="text"  value=""><button type="button" id="password-generate" >Generate Password</button><font id="password-error" color="red" hidden>Invalid Password</font></td>
      </tr>
      <tr>
         <td class="table-user-profile-attribute col-md-3"> {% trans "FTP directory" %}</td>
@@ -336,15 +334,17 @@
               console.log("haithere");
               if ( $("#password-input").val() != "" && $("#username-input").val() !=""){
                   $("#ftp-directory").val( $("#ftp-directory-input").val());
-                  $($("approve-button").attr("data-target")).show();
+                  $($("#approve-button").attr("data-target")).show();
+                  $("#password-error").hide();
+                  $("#username-error").hide();
               }else{
                   if  ($("#password-input").val() == ""){
                       $("#password-input").focus();
-                      $("#password-error").html("<font color=\"red\">Invalid Password</font>");
+                      $("#password-error").show();
                   }
                   if  ($("#username-input").val() == ""){
                       $("#username-input").focus();
-                      $("#username-error").html("<font color=\"red\">Invalid User Name</font>");
+                      $("#username-error").show();
                   }
               }
           });
