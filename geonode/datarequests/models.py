@@ -201,6 +201,7 @@ class DataRequestProfile(TimeStampedModel):
         _('The FTP folder to be associated with the user account'),
         blank=True,
         null=True,
+        max_length=100
         )
     
     class Meta:
