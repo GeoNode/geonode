@@ -312,7 +312,7 @@
           
           $("#password-generate").onclick=function(){
                 var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-                password = '';
+                var password = '';
                 for (var i=0;i<16;i++){
                     password += possible.charAt(Math.floor(Math.random() * 16));
                 }
