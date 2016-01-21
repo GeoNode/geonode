@@ -1,5 +1,37 @@
-#featured-layer{
-  width: 100%,
-  overflow-y: scroll,
-  overflow-x: scroll
+.body-top{
+    margin: auto;
+    width: 90%;
+    /*border: 3px solid #73AD21;*/
+    padding: 10px;
+    padding-top: 3%;
+}
+
+.body-bottom{
+  margin: auto;
+  width: 90%;
+  padding-top: 1%;
+  /*align-items: center;*/
+}
+
+.body-bottom-text{
+  margin: auto;
+  width: 90%;
+  padding-top: 5%;
+  /*align-items: center;*/
+}
+
+h2.latest-layer{
+  border-bottom: 1px solid #DDD
+}
+
+.center-text{
+  text-align: justify;
+  text-justify: inter-word;
+}
+
+h1.no-margin-top{
+  margin-top: 0px;
+  padding-top: 0px;
+  border-top: none;
+  font-size: 45px;
 }

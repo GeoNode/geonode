@@ -2,7 +2,7 @@
 {% load i18n %}
 {% load staticfiles %}
 {% load base_tags %}
-{% load layers_tags %}
+<!-- {% load layers_tags %} -->
 
 {% block title %} {% trans "Welcome!" %} - {{ block.super }} {% endblock %}
 
@@ -11,9 +11,10 @@
 {% block middle %}
    {{ block.super }}
   {% block hero %}
-  <div class="jumbotron">
-    <div class="container">
-      <h1>{% trans "Welcome to LiPAD!" %}</h1>
+<div class="row body-top">
+  <!-- <div class="jumbotron col-md-6"> -->
+    <div class="container col-md-6 center-text">
+      <h1 class="no-margin-top">{% trans "Welcome to LiPAD!" %}</h1>
       <p>
           {% blocktrans %}
           The <abbr title="LiDAR Portal for Archiviing and Distribution">LiPAD</abbr> system of the <a href="https://www.dream.upd.edu.ph/about-us/phil-lidar-1/" title="About the Phil-LiDAR 1 Program">Phil-LiDAR 1 Program</a> aims to facilitate the exchange of information across all components of the Phil LiDAR Program, including all affiliated SUCs and HEIs across the country through the use of web standard protocols.
@@ -23,84 +24,52 @@
             The <a href="https://www.dream.upd.edu.ph/about-us/phil-lidar-1/" title="About the Phil-LiDAR 1 Program">Phil-LiDAR 1 Program</a> aims to produce 3D flood and hazard maps for the 2/3 of Philippine river systems, following the <a href="https://www.dream.upd.edu.ph" title="About DREAM Program">DREAM Program</a> which covered 18 major river basins,  and tapping state universities and colleges (SUCs) and private higher education institutions (HEIs) nationwide in the processing, validation, and modeling of the acquired LiDAR data. Aside from addressing disaster risk reduction and climate change adaptation, the resource information to be generated from this project will also be useful in providing the information requirements of various sectors in the country.
           {% endblocktrans %}
         </p>
-    </div>
+    <!-- </div> -->
   </div>
+  <div class="col-md-6 border=0">
+    <iframe width="560" height="315" src="https://www.youtube.com/embed/KSsbWPeOQfs" frameborder="0" allowfullscreen></iframe>
+  </div>
+
+</div>
+
   {% endblock %}
 
   {% block mainbody %}
-  <div class="container">
-    <div class="row">
-      <div class="col-md-6 border=0">
-        <iframe width="560" height="315" src="https://www.youtube.com/embed/KSsbWPeOQfs" frameborder="0" allowfullscreen></iframe>
-      </div>
-      <div class="col-md-6" id="featured-layer">
-      <section class="widget list paginate-contents">
-        <h2>{% trans "Latest Layers" %}</h2>
-        <section class="article-list latest-layers">
-          {% featured_layers as featured_layers %}
-          {% for layer in featured_layers %}
-              {% include "layers/_layer_list_item.html" %}
-          {% endfor %}
-        </section>
-      </section>
-    </div>
-  </div>
-      <div class="col-md-4">
-        <p><a href="{% url "layer_browse" %}"><i class="fa fa-square-o fa-5x rotate-45"></i></a></p>
-        <h2><a href="{% url "layer_browse" %}">{{ facets.layer|default:_("No") }} {% blocktrans count counter=facets.layer %}Layer{% plural %}Layers{% endblocktrans %}</a></h2>
-        <p>{% trans "Click to search for geospatial data published by other users, organizations and public sources. Download data in standard formats." %}</p>
-        {% if user.is_authenticated %}
-        <p class="text-center"><a class="btn btn-default" href="{% url "layer_upload" %}" role="button">{% trans "Add layers" %} &raquo;</a></p>
-        {% else %}
-        <p class="text-center"><a class="btn btn-default" href="{% url "layer_browse" %}" role="button">{% trans "Explore layers" %} &raquo;</a></p>
-        {% endif %}
-      </div>
-      <div class="col-md-4">
-        <p><a href="{% url "maps_browse" %}"><i class="fa fa-map-marker fa-5x"></i></a></p>
-        <h2><a href="{% url "maps_browse" %}">{{ facets.map|default:_("No") }} {% blocktrans count counter=facets.map %}Map{% plural %}Maps{% endblocktrans %}</a></h2>
-        <p>{% trans "Data is available for browsing, aggregating and styling to generate maps which can be shared publicly or restricted to specific users only." %}</p>
-        {% if user.is_authenticated %}
-        <p><a class="btn btn-default" href="{% url "new_map" %}" role="button">{% trans "Create maps" %} &raquo;</a></p>
-        {% else %}
-        <p><a class="btn btn-default" href="{% url "maps_browse" %}" role="button">{% trans "Explore maps" %} &raquo;</a></p>
-        {% endif %}
-      </div>
-      <div class="col-md-4">
-        <p><a href="{% url "profile_browse" %}"><i class="fa fa-user fa-5x"></i></a></p>
-        <h2><a href="{% url "profile_browse" %}">{{ facets.user|default:_("No") }} {% blocktrans count counter=facets.user %}User{% plural %}Users{% endblocktrans %}</a></h2>
-        <p>{% trans "GeoNode allows registered users to easily upload geospatial data in several formats including shapefile and GeoTiff." %}</p>
-        <p><a class="btn btn-default" href="{% url "profile_browse" %}" role="button">{% trans "See users" %} &raquo;</a></p>
-      </div>
 
+    <div class="row body-bottom">
+
+      <!-- <div class="col-md-9"> -->
+        <!-- <div class="col-md-3"> -->
+        <div class="page-header">
+          <h2 >{% trans "Latest Layers" %}</h2>
+        </div>
+        <span>Total: </span>
+        <span ng-bind="total_counts"></span>
     </div>
 
-  </div>
-  {% verbatim %}
-  <div ng-app="featured">
-    <div ng-repeat="item in featured">
-      <!--{{ item.title }}-->
-    </div>
-  </div>
-  {% endverbatim %}
+    <div class="row body-bottom">
+        <div class="col-md-15 grid-spacer ">
+          {% include 'base/_resourcebase_snippet.html' %}
+        </div>
+      </div>
+
   {% endblock %}
 
+  {% block extra_script %}
+    {% if GEONODE_SECURITY_ENABLED %}
+      {% include "_permissions_form_js.html" %}
+    {% endif %}
+    <script type="text/javascript">
+        {% if HAYSTACK_SEARCH %}
+            SEARCH_URL = '{% url 'api_get_search' api_name='api' resource_name='base' %}?type__in=layer'
+        {% else %}
+            SEARCH_URL = '{% url 'api_dispatch_list' api_name='api' resource_name='layers' %}';
+        {% endif %}
+      FILTER_TYPE = 'layer';
+    </script>
+    {% with include_spatial='true' %}
+    {% include 'search/search_scripts.html' %}
+    {% endwith %}
+  {% endblock extra_script %}
+
 {% endblock %}
-
-{% block extra_script %}
-{% if DEBUG_STATIC %}
-<script src="{{ STATIC_URL }}lib/js/angular.js"></script>
-{% endif %}
-  <script type="text/javascript">
-    FEATURED_URL = '{% url 'api_dispatch_list' api_name='api' resource_name='featured' %}'
-    'use strict';
-    (function(){
-      var module = angular.module('featured', []);
-      module.run(function($http, $rootScope){
-        $http.get(FEATURED_URL).success(function(data){
-          $rootScope.featured = data.objects;
-        });
-      });
-    })();
-  </script>
-
-{% endblock extra_script %}
