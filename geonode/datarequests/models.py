@@ -100,6 +100,7 @@ class DataRequestProfile(TimeStampedModel):
     first_name = models.CharField(_('First Name'), max_length=100)
     middle_name = models.CharField(_('Middle Name'), max_length=100)
     last_name = models.CharField(_('Last Name'), max_length=100)
+    
     organization = models.CharField(
         _('Office/Organization Name'),
         max_length=255
@@ -195,6 +196,13 @@ class DataRequestProfile(TimeStampedModel):
 
     )
 
+    # For mapping an FTP folder to the datarequest and consequently to a user profile
+    ftp_folder = models.CharField(
+        _('The FTP folder to be associated with the user account'),
+        blank=True,
+        null=True,
+        )
+    
     class Meta:
         verbose_name = _('Data Request Profile')
         verbose_name_plural = _('Data Request Profiles')

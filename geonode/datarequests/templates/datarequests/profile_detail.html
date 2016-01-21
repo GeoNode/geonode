@@ -36,7 +36,18 @@
       <td class="table-user-profile-attribute col-md-3">{% trans "Requester" %}</td>
       <td>{{ request_profile.first_name }} {{ request_profile.middle_name }} {{ request_profile.last_name }}</td>
       </tr>
-
+     <tr>
+         <td class="table-user-profile-attribute col-md-3"> {% trans User Name %}</td>
+         <td> <input class="username_input" type="text" ></td>
+     </tr>
+     <tr>
+         <td class="table-user-profile-attribute col-md-3"> {% trans Password %}</td>
+         <td> <input class="password_input" type="text" ><button type="button">Generate Password</button></td>
+     </tr>
+     <tr>
+        <td class="table-user-profile-attribute col-md-3"> {% trans FTP directory %}</td>
+        <td> <input class="ftp_directory_input" type="text" value= "{{ request_profile.ftp_folder }}">
+     </tr>
       <tr>
       <td class="table-user-profile-attribute col-md-3">{% trans "Requester Type" %}</td>
       <td>{{ request_profile.get_requester_type_display }}</td>
@@ -73,22 +84,7 @@
       </tr>
 
       <tr>
-      <td class="table-user-profile-attribute">{% trans "Data/Data Set Subject to License" %}</td>
-      <td>{{ request_profile.data_set }}</td>
-      </tr>
-
-      <tr>
-      <td class="table-user-profile-attribute">{% trans "Area of Coverage" %}</td>
-      <td>{{ request_profile.area_coverage }}</td>
-      </tr>
-
-      <tr>
-      <td class="table-user-profile-attribute">{% trans "Data Resolution" %}</td>
-      <td>{{ request_profile.data_resolution }}</td>
-      </tr>
-
-      <tr>
-      <td class="table-user-profile-attribute">{% trans "Liense Period" %}</td>
+      <td class="table-user-profile-attribute">{% trans "License Period" %}</td>
       <td>{{ request_profile.license_period }}</td>
       </tr>
 
