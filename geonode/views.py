@@ -57,6 +57,7 @@ def ajax_login(request):
             login(request, user)
             if request.session.test_cookie_worked():
                 request.session.delete_test_cookie()
+            assign_relationships(user)
             return HttpResponse(
                 content="successful login",
                 status=200,
