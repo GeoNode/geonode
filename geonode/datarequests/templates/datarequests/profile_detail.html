@@ -316,8 +316,8 @@
                 for (var i=0;i<16;i++){
                     password += possible.charAt(Math.floor(Math.random() * possible.length));
                 }
-                $("#password-input").value = password;
-                $("#password-input").text = password;
+                $("#password-input").val(password);
+                $("#password-input").text(password);
           });
       </script>
 
