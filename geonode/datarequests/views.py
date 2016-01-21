@@ -34,6 +34,8 @@ from geonode.utils import build_social_links
 
 from pprint import pprint
 
+import unicodedata
+
 from braces.views import (
     SuperuserRequiredMixin, LoginRequiredMixin,
 )
@@ -379,7 +381,8 @@ def data_request_profile_approve(request, pk):
         if not request_profile.date:
             raise Http404
         try:
-            request_profile.ftp_folder = request.POST[u'ftp-directory'][0]
+            request_profile.ftp_folder =request.POST[u'ftp-directory'][0]
+            request_profile.save()
             request_profile.request_status = 'approved'
             request_profile.save()
             request_profile.create_account("test","test")

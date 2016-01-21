@@ -203,7 +203,7 @@ class DataRequestProfile(TimeStampedModel):
         blank=True,
         null=True,
         max_length=100,
-        validators=[validators.RegexValidator(regex="^Others\/[a-zA-Z]{6,15}[0-9]{0,4}")]
+        #validators=[validators.RegexValidator(regex="^Others\/[a-zA-Z]{6,15}[0-9]{0,4}")]
         )
     
     class Meta:
