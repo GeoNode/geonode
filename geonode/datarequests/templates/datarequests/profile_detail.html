@@ -310,7 +310,7 @@
             $('#reject_request_message').addClass("hidden");
           });
           
-          $("#password-generate").onclick=function(){
+          $("#password-generate").click(function(){
                 var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
                 var password = '';
                 for (var i=0;i<16;i++){
@@ -319,7 +319,7 @@
                 $("#password-input").value = password;
                 $("#password-input").text = password;
                 console.log(password);
-          };
+          });
       </script>
 
 {% endblock extra_script %}
