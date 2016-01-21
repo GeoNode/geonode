@@ -376,16 +376,16 @@ def data_request_profile_approve(request, pk):
         raise PermissionDenied
 
     if request.method == 'POST':
-        
         request_profile = get_object_or_404(DataRequestProfile, pk=pk)
         if not request_profile.date:
             raise Http404
         try:
-            request_profile.ftp_folder =request.POST[u'ftp-directory'][0]
-            request_profile.save()
+            request_profile.ftp_folder =str(request.POST[u'ftp-directory'][0])
             request_profile.request_status = 'approved'
             request_profile.save()
-            request_profile.create_account("test","test")
+            username = str(request.POST[u'username'][0])
+            password = str(request.POST[u'password'][0])
+            request_profile.create_account("username","password", "request_profile.ftp_folder")
             return HttpResponseRedirect(request_profile.get_absolute_url())
         except:
             message = _('An unexpected error was encountered during the creation of the account.')

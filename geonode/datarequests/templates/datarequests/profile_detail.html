@@ -175,6 +175,8 @@
         <div class="modal fade" id="approve-request" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
           <form id="approve_form" method="post" class="modal-form" action='{% url "datarequests:data_request_profile_approve" pk=request_profile.pk%}'>{% csrf_token %}
             <input type="hidden" id="ftp-directory" name="ftp-directory" value="">
+            <input type="hidden" id="username" name="username" value="">
+            <input type="hidden" id="password" name="password" value="">
           <div class="modal-dialog">
             <div class="modal-content">
               <div class="modal-header">
@@ -336,6 +338,8 @@
               
               if ( $("#password-input").val() != "" && $("#username-input").val() !=""){
                   $("#ftp-directory").val( $("#ftp-directory-input").val());
+                  $("#username").val( $("#username-input").val());
+                  $("#password").val( $("#password-input").val());
                   modal_target=$("#approve-button").attr("data-target")
                   
                   $("#password-error").hide();
