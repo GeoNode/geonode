@@ -167,7 +167,7 @@
 
       {% if request_profile.request_status == 'pending'%}
         <li class="list-group-item">
-          <button class="btn btn-primary btn-md btn-block" data-target="#approve-request" id="approve-button">{% trans "Approve" %}</button>
+          <button class="btn btn-primary btn-md btn-block" data-toggle="modal" data-target="#approve-request" id="approve-button">{% trans "Approve" %}</button>
         </li>
 
         <div class="modal fade" id="approve-request" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
@@ -331,12 +331,15 @@
           
           //Validate if user name and password fields are empty or not Do note that password will not be saved
           $("#approve-button").click(function(){
-              console.log("haithere");
+              
               if ( $("#password-input").val() != "" && $("#username-input").val() !=""){
                   $("#ftp-directory").val( $("#ftp-directory-input").val());
-                  $($("#approve-button").attr("data-target")).show();
+                  modal_target=$("#approve-button").attr("data-target")
+                  
                   $("#password-error").hide();
                   $("#username-error").hide();
+                  console.log(modal_target);
+                  $($("#approve-button").attr("data-target")).show();
               }else{
                   if  ($("#password-input").val() == ""){
                       $("#password-input").focus();
