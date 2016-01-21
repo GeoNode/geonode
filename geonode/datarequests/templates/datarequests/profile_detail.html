@@ -38,15 +38,15 @@
       </tr>
      <tr>
          <td class="table-user-profile-attribute col-md-3"> {% trans "User Name" %}</td>
-         <td> <input class="username_input" type="text" ></td>
+         <td> <input class="username_input" id="username_input" type="text" ></td>
      </tr>
      <tr>
          <td class="table-user-profile-attribute col-md-3"> {% trans "Password" %}</td>
-         <td> <input class="password_input" type="text" ><button type="button" id="password-generate" >Generate Password</button></td>
+         <td> <input class="password_input" id="password-input" type="text" ><button type="button" id="password-generate" >Generate Password</button></td>
      </tr>
      <tr>
         <td class="table-user-profile-attribute col-md-3"> {% trans "FTP directory" %}</td>
-        <td> <input class="ftp_directory_input" type="text" value= "{{ request_profile.ftp_folder }}">
+        <td> <input class="ftp_directory_input" type="text" id="ftp-directory-input" value= "{{ request_profile.ftp_folder }}">
      </tr>
       <tr>
       <td class="table-user-profile-attribute col-md-3">{% trans "Requester Type" %}</td>
@@ -316,7 +316,7 @@
                 for (var i=0;i<16;i++){
                     password += possible.charAt(Math.floor(Math.random() * 16));
                 }
-                $("#password-generate").value = password;
+                $("#password-input").value = password;
           }
       </script>
 
