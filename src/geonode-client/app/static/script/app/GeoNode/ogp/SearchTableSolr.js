@@ -190,7 +190,7 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
         };
         var datatypes = this.dataTypeInput.getValue();
         if (datatypes.length > 0 && datatypes < 4){
-            var values = datetypes;
+            var values = datatypes.length;
             var string = '';
             for(var i=0;i<values.length;i++){
                 string += 'DataType:' + values[i].name + ' OR ';
