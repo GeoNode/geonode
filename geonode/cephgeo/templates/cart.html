@@ -37,6 +37,27 @@
 	  {% endfor %}
 	</ul>
   </div> 
+  <ul class="list-inline pull-right" id="sort">
+      <li>
+          <label class="label-srs">SRS: </label>
+          <select id="srsselection">
+                {% for proj in projections %}
+                    {% if proj == 'UTM 51N (Default)' %}
+                        <option  id="{{ proj | slugify }}" 
+                                 name="{{ proj | slugify }}" 
+                                 value="default"
+                                 selected="selected">
+                    {% else %}             
+                        <option  id="{{ proj | slugify }}" 
+                                 name="{{ proj | slugify }}" 
+                                 value="{{ proj | slugify }}">
+                    {% endif %}
+                        {{ proj }}
+                      </option>
+                 {% endfor %}
+          </select>
+      </li>
+  </ul>
   <table id="cart_table" border="3" style="width:100% ">
         <tr >
             <th style="text-align: center;">Tile Object</th>
@@ -71,11 +92,28 @@
 			display: inline-block; 
 			width: 100%;
 		}
+        .label-srs{
+            font-size: 16px;
+        }
 	</style>
 	<script type="text/javascript">
 	    $('table[id="cart_table"] input[type=checkbox]').click(function () {
 		    $(this).closest('tr').toggleClass("highlight", this.checked);
 		});
+        
+        var activities = document.getElementById("srsselection");
+        var eula_form = document.getElementById("form_eula")
+        
+        activities.addEventListener("change", function() {
+            if(activities.value == "default")
+            {
+                //alert("Changing URL to /ceph/ftp/");
+                eula_form.action = "/ceph/ftp/";
+            }else{
+                //alert("Changing URL to /ceph/ftp/" + activities.value + "/");
+                eula_form.action = "/ceph/ftp/" + activities.value + "/";
+            }
+        });
 	</script>
 	    
 {% endblock body %}

@@ -23,20 +23,18 @@ from geonode.security.views import _perms_info_json
 from geonode.cephgeo.models import CephDataObject, DataClassification, FTPRequest, UserJurisdiction
 from geonode.cephgeo.cart_utils import *
 from geonode.maptiles.utils import *
-from geonode.datarequests.models import DataRequestProfile
 from geonode.documents.models import get_related_documents
 from geonode.registration.models import Province, Municipality 
 
 import geonode.settings as settings
 
 from pprint import pprint
-from datetime import datetime, timedelta, date, time
+from datetime import datetime, timedelta
 
 import logging
 
 from geonode.cephgeo.utils import get_cart_datasize
 from django.utils.text import slugify
-from geonode.maptiles.models import SRS
 
 _PERMISSION_VIEW = _("You are not permitted to view this layer")
 _PERMISSION_GENERIC = _('You do not have permissions for this layer.')
@@ -81,13 +79,9 @@ def tiled_view(request, overlay=settings.TILED_SHAPEFILE, template="maptiles/map
     if jurisdiction is None:
         try:
             jurisdiction_object = UserJurisdiction.objects.get(user=request.user)
-            if not jurisdiction_object.exists():
-                jurisdiction_shapefile = DataRequestProfile.objects.get(username=request.user.username,email=request.user.email, request_status='approved').jurisdiction_shapefile
-                jurisdiction_object = UserJurisdiction(user=request.user, jurisdiction_shapefile=jurisdiction_shapefile)
-                jurisdiction_object.save()
-            
-            context_dict["jurisdiction"] = get_layer_config(request,jurisdiction_object.jurisdiction_shapefile.typename, "base.view_resourcebase", _PERMISSION_VIEW)
-            context_dict["jurisdiction_name"] = jurisdiction_object.jurisdiction_shapefile.typename
+            if jurisdiction_object is not None:
+                context_dict["jurisdiction"] = get_layer_config(request,jurisdiction_object.jurisdiction_shapefile.typename, "base.view_resourcebase", _PERMISSION_VIEW)
+                context_dict["jurisdiction_name"] = jurisdiction_object.jurisdiction_shapefile.typename
         except ObjectDoesNotExist:
             print "No jurisdiction found"
     else:
@@ -97,7 +91,6 @@ def tiled_view(request, overlay=settings.TILED_SHAPEFILE, template="maptiles/map
     context_dict["feature_tiled"] = overlay.split(":")[1]
     context_dict["test_mode"]=test_mode
     context_dict["data_classes"]= DataClassification.labels.values()
-    #context_dict["projections"]= SRS.labels.values()
     
     return render_to_response(template, RequestContext(request, context_dict))
     
@@ -190,17 +183,10 @@ def georefs_validation(request):
         georefs_list = filter(None, georefs.split(","))
         cart_total_size = get_cart_datasize(request)
         
-        #Retrieve FTPRequests from the last 24 hours
-        #yesterday = datetime.now() -  timedelta(days=1)
-        #requests_last24h = FTPRequest.objects.filter(date_time__gt=yesterday, user=request.user)
+        yesterday = datetime.now() -  timedelta(days=1)
         
-        #Retrieve FTPRequests since midnight
-        today_min = datetime.combine(date.today(), time.min)
-        today_max = datetime.combine(date.today(), time.max)
-        requests_today = FTPRequest.objects.filter(user=request.user, date_time__range=(today_min, today_max))
-        #requests_today = FTPRequest.objects.filter(date_time__gt=today_min, user=request.user)
-        print "PREVIOUS REQUESTS:  "
-        pprint(requests_today)
+        requests_last24h = FTPRequest.objects.filter(date_time__gt=yesterday, user=request.user)
+        
         total_size = 0
         for georef in georefs_list:
             objects = CephDataObject.objects.filter(name__startswith=georef)
@@ -209,8 +195,7 @@ def georefs_validation(request):
                 
         request_size_last24h = 0
         
-        #for r in requests_last24h:
-        for r in requests_today:
+        for r in requests_last24h:
             request_size_last24h += r.size_in_bytes
         
         if total_size + cart_total_size + request_size_last24h > settings.SELECTION_LIMIT:            
