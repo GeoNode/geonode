@@ -115,12 +115,12 @@ regarding this error.
                         
                     obj_dl_list = " ".join(map(str,ceph_obj_list))
                     if srs_epsg is not None:
-                        result = run("python {0} -d={1} -p={2} {3}".format( dl_script_path,
+                        result = run("/bin/sudo /bin/python {0} -d={1} -p={2} {3}".format( dl_script_path,
                                                         os.path.join(ftp_dir,type_dir),
                                                         srs_epsg,
                                                         obj_dl_list)) # Download list of objects in corresponding geo-type folder
                     else:
-                        result = run("python {0} -d={1} {2}".format( dl_script_path,
+                        result = run("/bin/sudo /bin/python {0} -d={1} {2}".format( dl_script_path,
                                                         os.path.join(ftp_dir,type_dir),
                                                         obj_dl_list)) # Download list of objects in corresponding geo-type folder
                     if result.return_code is not 0:                 #Handle error
