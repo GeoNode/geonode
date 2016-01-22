@@ -38,7 +38,7 @@ def fab_check_cephaccess(username, user_email, request_name):
     ## Check from inside Cephaccess if Ceph Object Gateway is reachable
     ## 
     
-    test_file = '/home/cephaccess/testfolder/DL/test.txt'
+    test_file = '/home/cephaccess/test.txt'
     result = run("touch {0} && rm -f {0}".format(test_file))
     if result.failed:
         logger.error("Unable to access {0}. Host may be down or there may be a network problem.".format(env.hosts))
