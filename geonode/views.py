@@ -112,16 +112,5 @@ def err403(request):
         
 def forbidden(request):
     return TemplateResponse(request, '401.html', {}, status=401).render()
-    
-def assign_relationships(user):
-    pprint("assigning relationships")
-    if DataRequestProfile.objects.get(email=user.email).exists():
-            drp = DataRequestProfile.objects.get(email=user.email)
-            drp.user = user
-            drp.save()
-    if UserJurisdiction.objects.get (user=user).exists() is not True:
-        jurisdiction_shapefile = DataRequestProfile.objects.get(email=user.email).jurisdiction_shapefile
-        jurisdiction = UserJurisdiction(user=user, jurisdiction_shapefile=jurisdiction_shapefile)
-        jurisdiction.save()
         
     

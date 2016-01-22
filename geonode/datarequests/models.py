@@ -11,6 +11,7 @@ from django.utils.encoding import iri_to_uri
 from django.utils.http import urlquote
 from django_enumfield import enum
 from django.core import validators
+from djang_auth_ldap.backend import LDAPBackend
 
 from model_utils import Choices
 from model_utils.models import TimeStampedModel
@@ -23,6 +24,8 @@ from geonode.utils import resolve_object
 from geonode.base.models import ResourceBase
 
 from pprint import pprint
+
+import geonode.settings as local_settings
 
 from .utils import create_login_credentials
 
@@ -77,6 +80,13 @@ class DataRequestProfile(TimeStampedModel):
         on_delete=models.SET_NULL,
         null=True,
         blank=True
+    )
+    
+    username = models.CharField(
+        _('User name'),
+        max_length=50,
+        null=True,
+        blank=True,
     )
     # Do not require for now
     # jurisdiction_shapefile = models.ForeignKey(Layer, null=False, blank=False)
@@ -388,26 +398,28 @@ class DataRequestProfile(TimeStampedModel):
 
     def create_account(self, username, password, directory):
         #username, password = create_login_credentials(self)
+        #if not local_settings.LDAP_ENABLED:
+        #    profile_account = Profile.objects.create(
+                # from User model
+        #       username=username,
+        #        first_name=self.first_name,
+        #        last_name=self.last_name,
+        #       email=self.email,
+        #        is_active=True,
+        #        is_staff=False,
+        #        is_superuser=False,
+        #        last_login=timezone.now(),
+        #        date_joined=timezone.now(),
 
-        profile_account = Profile.objects.create(
-            # from User model
-           username=username,
-            first_name=self.first_name,
-            last_name=self.last_name,
-            email=self.email,
-            is_active=True,
-            is_staff=False,
-            is_superuser=False,
-            last_login=timezone.now(),
-            date_joined=timezone.now(),
+                # from Profile model
+        #        organization=self.organization,
+        #        organization_type=self.organization_type
 
-            # from Profile model
-            organization=self.organization,
-            organization_type=self.organization_type
-
-        )
-        profile_account.set_password(password)
-        profile_account.save()
+        #   )
+        #    profile_account.set_password(password)
+        #    profile_account.save()
+        #else:
+        #    LDAPBackend().populate_user(username)
 
         # Link data request to profile
         #self.profile = profile_account
@@ -419,7 +431,7 @@ class DataRequestProfile(TimeStampedModel):
         #    jurisdiction_shapefile=self.jurisdiction_shapefile,
         #)
 
-        # Add view permission on resource
+        #Add view permission on resource
         #resource = self.jurisdiction_shapefile
         #perms = resource.get_all_level_info()
         #perms["users"][profile_account.username]=["view_resourcebase"]

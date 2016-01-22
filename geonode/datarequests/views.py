@@ -381,7 +381,9 @@ def data_request_profile_approve(request, pk):
             raise Http404
         try:
             request_profile.ftp_folder =str(request.POST[u'ftp-directory'])
+            request_profile.username = str(request.POST[u'username'])
             request_profile.request_status = 'approved'
+            request_profile.save()
             username = str(request.POST[u'username'])
             password = str(request.POST[u'password'])
             request_profile.create_account(username,password, request_profile.ftp_folder)
