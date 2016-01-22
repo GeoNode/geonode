@@ -255,6 +255,8 @@ def get_folder_for_user(user):
             return "/mnt/FTP/PL2/{0}/DL/DAD/geonode_requests".format(user.username)
         elif group.slug == u'other-data-requesters':
             return "/mnt/FTP/Others/{0}/DL/DAD/geonode_requests".format(user.username)
+        elif group.slug == u'data-requesters':
+            return "/mnt/FTP/Others/{0}/DL/DAD/geonode_requests".format(user.username)
         else:
             return "/mnt/FTP/PL1/testfolder/DL/DAD/geonode_requests"
 
