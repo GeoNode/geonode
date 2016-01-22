@@ -52,7 +52,7 @@ if ("{{test_mode}}"=="True"){
 {% if jurisdiction.viewer %}
 jurisdiction_args = {{jurisdiction.viewer|safe}};
 {% else %}
-jurisdiction_args = "";s
+jurisdiction_args = "";
 {% endif %}
 
 {% autoescape off %}
