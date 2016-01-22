@@ -93,7 +93,7 @@ If error still persists, forward this email to [{2}]""".format( request_name,
                     type_dir = data_class.replace(" ", "_")
                     
                     if srs_epsg is not None:
-                        result = run("mkdir {0}".format("EPSG-"+srs_epsg,type_dir))      # Create a directory for each geo-type
+                        result = run("mkdir {0}".format("EPSG-"+str(srs_epsg),type_dir))      # Create a directory for each geo-type
                     else:
                         result = run("mkdir {0}".format(type_dir))      # Create a directory for each geo-type 
                     if result.return_code is not 0:                 #Handle error
@@ -119,7 +119,7 @@ regarding this error.
                     obj_dl_list = " ".join(map(str,ceph_obj_list))
                     if srs_epsg is not None:
                         result = run("python {0} -d={1} -p={2} {3}".format( dl_script_path,
-                                                        os.path.join(ftp_dir,"EPSG-"+srs_epsg,type_dir),
+                                                        os.path.join(ftp_dir,"EPSG-"+str(srs_epsg),type_dir),
                                                         srs_epsg,
                                                         obj_dl_list)) # Download list of objects in corresponding geo-type folder
                     else:
