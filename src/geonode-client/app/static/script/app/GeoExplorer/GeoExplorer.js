@@ -2278,6 +2278,10 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
         this.searchWindow.alignTo(document, 'tl-tl');
         //this.searchTable.doSearch();
 
+        //Apparently the ext slider has a bug in positioning the thumbs.
+        // this is a workaround, we do this after the search window has been rendered.
+        this.searchTable.dateInput.syncThumb();
+
         // Don't show the window if >70 layers on map (due to z-index issue with OpenLayers maps)
         if (this.mapPanel.layers.data.items.length > this.maxMapLayers) {
             Ext.Msg.alert(this.maxLayersTitle, this.maxLayersText.replace('%n', this.mapPanel.layers.data.items.length).replace("%max", this.maxMapLayers));

@@ -188,8 +188,8 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
                 GeoNode.queryTerms.fq.splice(i, 1);
             }
         };
-        var datetypes = this.dataTypeInput.getValue();
-        if (datetypes.length > 0 && datetypes < 4){
+        var datatypes = this.dataTypeInput.getValue();
+        if (datatypes.length > 0 && datatypes < 4){
             var values = datetypes;
             var string = '';
             for(var i=0;i<values.length;i++){
@@ -198,6 +198,18 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
             string = string.slice(0, -4);
             GeoNode.queryTerms.fq.push(string);
         }
+
+        // Remove any date filter if there
+        for(var i=0;i<GeoNode.queryTerms.fq.length;i++){
+            if(GeoNode.queryTerms.fq[i].indexOf('ContentDate') > -1){
+                GeoNode.queryTerms.fq.splice(i, 1);
+            }
+        };
+        var dates = this.dateInput.getDateValues();
+        if(dates){
+            GeoNode.queryTerms.fq.push("ContentDate:" + this.dateInput.getDateValues());
+        };
+
         this.doSearch();
 
         // now trigger the heatmap update
@@ -219,6 +231,7 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
     },
 
     doLayout: function() {
+        var self = this;
 
         var widgetHTML =
         '<div class="search-results">' +
@@ -331,7 +344,12 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
             ]
         });
 
-        
+        this.dateLabel = new Ext.form.Label({text: 'Select Dates'});
+        this.dateInput = new GeoNode.TimeSlider();
+        this.dateInput.addListener('changecomplete', function(slider, value, thumb){
+            self.dateLabel.setText(self.dateInput.getReadableDates());
+        });
+
         var searchButton = new Ext.Button({
             text: this.searchButtonText
         });
@@ -355,6 +373,9 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
                 colspan: 3
             },{
                 items: [this.dataTypeInput],
+                colspan: 3
+            },{
+                items: [this.dateLabel, this.dateInput],
                 colspan: 3
             },{
                 items: [searchButton],
