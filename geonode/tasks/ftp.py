@@ -70,7 +70,7 @@ def fab_create_ftp_folder(ftp_request, ceph_obj_list_by_data_class, srs_epsg=Non
         email = None
         
         #Check for duplicate folders
-        result = run("sudo [ -d {0} ]".format(ftp_dir))
+        result = run("[ -d {0} ]".format(ftp_dir))
         if result.return_code == 0:
             logger.error("FTP Task Error: A duplicate FTP request toplevel directory was found.")
             ftp_request.status = FTPStatus.DUPLICATE
@@ -85,14 +85,14 @@ If error still persists, forward this email to [{2}]""".format( request_name,
             mail_ftp_user(username, user_email, request_name, mail_msg)
             return "ERROR: A duplicate FTP request toplevel directory was found."
 
-        result = run("sudo mkdir -p {0}".format(ftp_dir))    # Create toplevel directory for this FTP request
+        result = run("mkdir -p {0}".format(ftp_dir))    # Create toplevel directory for this FTP request
         if result.return_code is 0:
             with cd(ftp_dir):
 
                 for data_class, ceph_obj_list in ceph_obj_list_by_data_class.iteritems():
                     type_dir = data_class.replace(" ", "_")
                     
-                    result = run("sudo mkdir {0}".format(os.path.join(ftp_dir, type_dir)))      # Create a directory for each geo-type
+                    result = run("mkdir {0}".format(type_dir))      # Create a directory for each geo-type
                     if result.return_code is not 0:                 #Handle error
                         logger.error("Error on FTP request: Failed to create data class subdirectory at [{0}]. Please notify the administrator of this error".format(ftp_dir))
                         ftp_request.status = FTPStatus.ERROR
@@ -115,12 +115,12 @@ regarding this error.
                         
                     obj_dl_list = " ".join(map(str,ceph_obj_list))
                     if srs_epsg is not None:
-                        result = run("/bin/sudo /bin/python {0} -d={1} -p={2} {3}".format( dl_script_path,
+                        result = run("python {0} -d={1} -p={2} {3}".format( dl_script_path,
                                                         os.path.join(ftp_dir,type_dir),
                                                         srs_epsg,
                                                         obj_dl_list)) # Download list of objects in corresponding geo-type folder
                     else:
-                        result = run("/bin/sudo /bin/python {0} -d={1} {2}".format( dl_script_path,
+                        result = run("python {0} -d={1} {2}".format( dl_script_path,
                                                         os.path.join(ftp_dir,type_dir),
                                                         obj_dl_list)) # Download list of objects in corresponding geo-type folder
                     if result.return_code is not 0:                 #Handle error
