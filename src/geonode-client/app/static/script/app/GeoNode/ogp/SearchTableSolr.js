@@ -336,7 +336,7 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
             id: 'dataTypes',
             fieldLabel: 'Data Type',
             items: [
-                {boxLabel: 'Worldmap Vector', name: 'Vector', checked: true},
+                {boxLabel: 'Worldmap Vector', name: 'Polygon', checked: true},
                 {boxLabel: 'Worldmap', name: 'Raster', checked: true},
                 {boxLabel: 'ESRI Services', name: 'RESTServices', checked: true},
                 {boxLabel: 'WMS Services', name: 'WMSServices', checked: true}
