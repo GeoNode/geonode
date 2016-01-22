@@ -11,7 +11,7 @@ from django.utils.encoding import iri_to_uri
 from django.utils.http import urlquote
 from django_enumfield import enum
 from django.core import validators
-from djang_auth_ldap.backend import LDAPBackend
+from django_auth_ldap.backend import LDAPBackend
 
 from model_utils import Choices
 from model_utils.models import TimeStampedModel
