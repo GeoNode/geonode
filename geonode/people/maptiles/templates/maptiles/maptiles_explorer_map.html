@@ -1,0 +1,242 @@
+{% include "geonode/ext_header.html" %}
+{% include "geonode/app_header.html" %}
+{% include "maptiles/maptiles_header.html" %}
+<script type="text/javascript" src="{{ STATIC_URL}}geonode/js/utils/thumbnail.js"></script>
+<script type="text/javascript" src="http://svn.osgeo.org/metacrs/proj4js/trunk/lib/proj4js-compressed.js"></script>
+<script type="text/javascript" src="http://spatialreference.org/ref/epsg/wgs-84-utm-zone-51n/proj4js/"></script>
+<!--<script type="text/javascript" src="{{ STATIC_URL }}static/lib/js/proj4.js"></script>-->
+<!--<script type="text/javascript" src="http://dev.openlayers.org/OpenLayers.js"></script>-->
+<script type="text/javascript">
+{% autoescape off %}
+
+var _TILE_SIZE = 1000;
+
+function floor_tile_size(x){
+    return  (Math.floor(x/_TILE_SIZE) * _TILE_SIZE);
+}
+
+function ceil_tile_size(x) {
+    return (Math.ceil(x/_TILE_SIZE) * _TILE_SIZE);
+}
+
+function get_corners( x, y ){
+    return { ul_x: floor_tile_size(x), ul_y: ceil_tile_size(y),
+         ur_x: ceil_tile_size(x), ur_y: ceil_tile_size(y),
+         ll_x: floor_tile_size(x), ll_y: floor_tile_size(y),
+         lr_x: ceil_tile_size(x), lr_y: floor_tile_size(y)
+        };
+}
+
+var georef_list=[];
+
+function display_points(tile_list,div_id){
+    var container = document.getElementById(div_id);
+    container.removeChild(container.firstElementChild||container.firstChild);
+    var list_element = document.createElement("ul");
+    container.appendChild(list_element);
+    
+    var georef_string = "";
+    
+    for (var i=0; i< tile_list.length; i++){
+        var tile = tile_list[i];
+        var item_element = document.createElement("li");
+        item_element.setAttribute("id",tile.georef);
+        item_element.innerHTML = tile.georef;
+        item_element.onclick = function(){
+            tile_list.splice(i,1);
+            this.parentNode.removeChild(this);
+        };
+        list_element.appendChild(item_element);
+        georef_string+=tile.georef+",";
+    }
+    
+   document.getElementById("georef_area").setAttribute("value",georef_string);
+   
+}
+
+var app;
+var viewer_options = {{ viewer|safe }};
+Ext.onReady(function() {
+   
+   GeoExt.Lang.set("{{ LANGUAGE_CODE }}");
+   var config = {
+        viewerTools: [
+            {
+                ptype: "gxp_wmsgetfeatureinfo",
+                format: "grid",
+                actionTarget: "main.tbar",
+                outputConfig: {width: 400, height: 200, panIn: false}
+            },
+            {
+                id: "feature_manager",
+                ptype: "gxp_featuremanager",
+                autoSetLayer: true
+            },
+            {
+                id: "feature_editor",
+                ptype: "gxp_featureeditor",
+                featureManager: "feature_manager",
+                hidden: false
+            }
+        ],
+        {% if PROXY_URL %}
+        proxy: '{{ PROXY_URL }}',
+        {% endif %}
+        localGeoServerBaseUrl: "{{GEOSERVER_BASE_URL}}",
+        authorizedRoles: "{{ user.is_authenticated|yesno:"ROLE_ADMINISTRATOR,ROLE_ANONYMOUS" }}",
+
+        /* The URL to a REST map configuration service.  This service 
+         * provides listing and, with an authenticated user, saving of 
+         * maps on the server for sharing and editing.
+         */
+        rest: "/maps/",
+        {% if MAPFISH_PRINT_ENABLED %}
+        printService: "{{GEOSERVER_BASE_URL}}pdf/",
+        {% else %}
+        printService: "",
+        {% endif %}
+        
+        portalConfig: {
+            renderTo: "preview_map",
+            height: 400 
+        },
+
+        listeners: {
+            "ready": function() {
+                var map = app.mapPanel.map;
+                var layer = app.map.layers.slice(-1)[0];
+
+                // FIXME(Ariel): Zoom to extent until #1795 is fixed.
+                //map.zoomToExtent(layer.maxExtent, false)
+                
+                var bbox = layer.bbox;
+                
+                OpenLayers.Control.Click = OpenLayers.Class(OpenLayers.Control, {
+                    defaultHandlerOptions: {
+                        "single": true,
+                        "double": false,
+                        "pixelTolerance": 0,
+                        "stopSingle": false,
+                        "stopDouble": false
+                    },
+                    
+                    initialize: function(options) {
+                        this.handlerOptions = OpenLayers.Util.extend(
+                            {}, this.defaultHandlerOptions);
+                        OpenLayers.Control.prototype.initialize.apply(this, arguments);
+                        
+                        this.handler = new OpenLayers.Handler.Click(
+                        this, {
+                            'click': this.trigger
+                        }, this.handlerOptions);
+                    },
+                    
+                    trigger: function(e) {
+                        var lonlat = map.getLonLatFromPixel(e.xy);
+                        var click_pt = new OpenLayers.Geometry.Point(lonlat.lon, lonlat.lat);
+                        var transformed_pt = click_pt.transform(map.getProjectionObject(),new OpenLayers.Projection("EPSG:32651"));
+                        var computed_corners = get_corners(click_pt.x, click_pt.y);
+                        
+                        var temp_pt = new OpenLayers.Geometry.Point(computed_corners["ul_x"], computed_corners["ul_y"]);
+                        
+                        var tmp_tile = {
+                            georef: "E"+(computed_corners["ul_x"]/1000)+"N"+(computed_corners["ul_y"]/1000),
+                            ul: new OpenLayers.Geometry.Point(computed_corners["ul_x"], computed_corners["ul_y"]),
+                            ur: new OpenLayers.Geometry.Point(computed_corners["ur_x"], computed_corners["ur_y"]),
+                            lr: new OpenLayers.Geometry.Point(computed_corners["lr_x"], computed_corners["lr_y"]),
+                            ll: new OpenLayers.Geometry.Point(computed_corners["ll_x"], computed_corners["ll_y"])
+                        }
+                        
+                        if (georef_list.length < 1){
+                            georef_list.push(tmp_tile);
+                        }else{
+                            var removed=false;
+                            for (var i =0; i<georef_list.length; i++){
+                                var tile = georef_list[i];
+                                if ( tile.georef == tmp_tile.georef ){
+                                    georef_list.splice(i,1);
+                                    removed=true;
+                                    console.log("Removing point");
+                                }
+                            }
+                            if(!removed){
+                                georef_list.push(tmp_tile);
+                            }
+                        }
+                        
+                        display_points(georef_list, "point_display");
+                    }
+                });
+
+                click_select = new OpenLayers.Control.Click()
+                map.addControl(click_select);
+                click_select.activate();
+                
+                if (bbox != undefined)
+                {
+                   if (!Array.isArray(bbox) && Object.keys(layer.srs) in bbox) {
+                    bbox = bbox[Object.keys(layer.srs)].bbox;
+                   }
+
+                   var extent = OpenLayers.Bounds.fromArray(bbox);
+                   var zoomToData = function()
+                   {
+                       map.zoomToExtent(extent, false);
+                       app.mapPanel.center = map.center;
+                       app.mapPanel.zoom = map.zoom;
+                       map.events.unregister('changebaselayer', null, zoomToData);
+                   };
+                   
+                   map.events.register('changebaselayer',null,zoomToData);
+                   if(map.baseLayer){
+                        map.zoomToExtent(extent, false);
+                   }
+                }
+            },
+            "beforeunload": function() {
+                if (modified) {
+                    styleEditor.show();
+                    return false;
+                }
+            }
+        }
+    };
+    
+    config = Ext.apply(config, {{ viewer|safe }});
+
+    app = new GeoExplorer.Viewer(config);
+
+    for (var key in app.tools) {
+        var tool = app.tools[key];
+        if (tool.ptype == 'gxp_styler') {
+            tool.rasterStyling = true;
+        };
+        //console.log("Ptype:" + tool.ptype + " ID: " + tool.id);
+    };
+    //console.log(app.tools);
+
+    //change style displayed in map
+    Ext.get(Ext.DomQuery.select("input[@name='style']")).on("click", function(evt, elem) {
+        app.selectedLayer.getLayer().mergeNewParams({
+            "STYLES": elem.id,
+            "_dc": Math.random()
+        }); 
+    });
+    
+    Ext.get(Ext.DomQuery.select(".style-edit")).on("click", function(evt, elem) {
+        for (var key in app.tools) {
+            var tool = app.tools[key];
+            if (tool.ptype == 'gxp_styler') {
+                tool.actions[0].execute();
+            };
+        }
+    });
+    Ext.Ajax.on('requestcomplete', function(req, cippa, opts){
+        if(opts.method == 'PUT'){
+            $('#legend_icon').attr('src', $('#legend_icon').attr('src')+'&'+Math.random());
+        }   
+    }, this);
+});
+
+{% endautoescape %}
+</script>

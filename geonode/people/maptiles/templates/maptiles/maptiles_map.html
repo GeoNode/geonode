@@ -1,0 +1,123 @@
+{% extends "maptiles/maptiles_base.html" %}
+{% load i18n %}
+{% load dialogos_tags %}
+{% load agon_ratings_tags %}
+{% load bootstrap_tags %}
+{% load url from future %}
+{% load base_tags %}
+{% load guardian_tags %}
+
+{% block title %}Map Tiles Selection — {{ block.super }}{% endblock %}
+
+{% block head %}
+<style>
+/*** custom checkboxes ***/
+
+    input[type=checkbox] { display:none; } /* to hide the checkbox itself */
+    input[type=checkbox] + label:before {
+      font-family: FontAwesome;
+      font-size: 16px;
+      display: inline-block;
+    }
+    .label-dataclass{
+        font-size: 16px;
+    }
+    input[type=checkbox] + label:before { content: "\f096"; } /* unchecked icon */
+    input[type=checkbox] + label:before { letter-spacing: 20px; } /* space between checkbox and label */
+
+    input[type=checkbox]:checked + label:before { content: "\f046"; } /* checked icon */
+    input[type=checkbox]:checked + label:before { letter-spacing: 20px; } /* allow space for check mark */
+</style>
+{# {% if preview == 'geoext' %}  #}
+    {# {% include "maptiles/maptiles_explorer_map.html" %} #}
+ {#{% else %} #}
+    {#{% include "maptiles/maptiles_leaflet_map.html" %} #}
+{% include "maptiles/maptiles_geoext_map.html" %}
+{# {% endif %} #}
+{{ block.super }}
+{% endblock %}
+
+{% block body_class %}maptiles{% endblock %}
+
+{% block body_outer %}
+{% block body %}
+<div id="notif">
+
+</div>
+<div class="page-header">
+  <h2 class="page-title">Map Tiles</h2>
+</div>
+<div class="row">
+    <div class="col-md-9">
+		<div id="embedded_map" class="mrg-btm">
+			<div id="preview_map" ></div>
+		</div>
+    </div>
+    <div class="col-md-3">
+        <ul class="list-group">
+            <li class="list-group-item">
+		<h4 class="list-group-item-heading">Bounding Box Selection</h4>
+                <form id="bbox_form">
+                    (EPSG:900913 decimal degrees) <br />
+                    <table>
+                        <tr><td>Upper limit: </td><td><input type="number" id="upperlimit" name="upperlimit" value=0 step="any" /></td></tr>
+                        <tr><td>Left limit: </td><td><input type="number" id="leftlimit" name="leftlimit"value=0 step="any"/></td></tr>
+                        <tr><td>Right limit: </td><td><input type="number" id="rightlimit" name="rightlimit" value=0 step="any"/></td></tr>
+                        <tr><td>Lower limit: </td><td><input type="number" id="lowerlimit" name="lowerlimit" value=0 step="any"/></td></tr>
+                    </table> <br />
+                    <input type="submit" id="bbox_submit" name="bbox_submit" value="Submit Bounding Box" class="btn btn-default" />
+                </form>
+            </li>
+            <!--<li class="list-group-item">
+               	<h4 class="list-group-item-heading">Area of Interest</h4>
+            <input type="submit" id="interest_submit" name="interest_submit" value="Submit Area of Interest" class="btn btn-default" />
+            </li>-->
+	    <li class="list-group-item">
+		<h4 class="list-group-item-heading">{%trans "Legend" %}</h4>
+		<img id="legend_icon" src="{{ grid.resource.get_legend.url }}"><br/>
+        <img id="legend_icon2" src="{{jurisdiction.resource.get_legend.url}}">
+	    </li>
+	    <li class="list-group-item">
+		<div class="selections"><nav class="filter">
+		<h4><a href="{% url 'cephgeo.views.get_cart' %}" class="toggle toggle-nav"><i class="fa fa-shopping-cart"></i>Data Cart</a></h4>
+                <h4><a href="{% url 'cephgeo.views.ftp_request_list' %}" class="toggle toggle-nav"><i class="fa fa-database"></i>FTP Requests</a></h4>
+		</nav></div>
+   	   </li>
+        </ul>
+    </div>
+</div>
+
+    <!--<ul class="list-group">
+	</ul>-->
+
+ <br />
+ <div  class ="page-header">
+    <h3 class="page-title">Selected Tiles</h3>
+ </div>
+ <div class="row" id="point_display">
+     
+ </div>
+ <hr>
+ <h3 class="page-title">Select Data Class(es) to Download</h3>
+ <form name="georef_form" id="georef_form" action="/maptiles/addtocart/" method="POST" >
+     {% csrf_token %}
+    <div class="col-md-4" align="left">
+        <nobr>
+            <ul class="list-inline pull-left">
+                 {% for class in data_classes %}
+                   {% if class != 'Unknown Type' %}
+                      <li>
+                        <input id="{{ class | slugify }}" name="{{ class | slugify }}" type="checkbox" />
+                        <label class="label-dataclass" for="{{ class | slugify }}">{{ class }}</label>
+                      </li>
+                   {% endif %}
+                 {% endfor %}
+            </ul>
+        </nobr> 
+     <input type="text" id="georef_area" name="georef_area" style="display:none" />
+     <input type="submit" id="georef_submit" name="georef_submit" value="Submit" class="btn btn-default" />
+    </div>
+</form>
+  
+{% endblock %}
+{% endblock %}

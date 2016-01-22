@@ -4,7 +4,7 @@
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1"> 
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{% block title %}{{ SITE_NAME }}{% endblock %}</title>
     {% block head %}
       {% if DEBUG_STATIC %}
@@ -13,11 +13,13 @@
       <link href="{{ STATIC_URL }}lib/css/bootstrap.min.css" rel="stylesheet"/>
       <link href="{{ STATIC_URL }}lib/css/jquery-ui.css" rel="stylesheet"/>
       <link href="{{ STATIC_URL }}lib/css/bootstrap-datetimepicker.css" rel="stylesheet"/>
+
       {% else %}
       <link href="{{ STATIC_URL }}lib/css/assets.min.css" rel="stylesheet"/>
       {% endif %}
       <link href="{{ STATIC_URL }}geonode/css/ext-compatibility.css" rel="stylesheet" />
       <link href="{{ STATIC_URL }}geonode/css/base.css" rel="stylesheet" />
+
       <style type="text/css">[ng\:cloak],[ng-cloak],[data-ng-cloak],[x-ng-cloak],.ng-cloak,.x-ng-cloak,.ng-hide:not(.ng-hide-animate){display:none !important;}</style>
       {% block extra_head %}
       {% endblock %}
@@ -33,7 +35,7 @@
       </style>
     <![endif]-->
   </head>
-  
+
   <body class="{% block body_class %}{% endblock %}">
 
     {% block header %}
@@ -79,7 +81,7 @@
 	              <a href="{% url "data_management" %}">{% trans "Data Management" %}</a>
 	            </li>
             {% endif %}
-            
+
             {% endblock %}
           </ul>
           <form class="navbar-form" id="search" action="{% url "search" %}" >
@@ -97,8 +99,8 @@
             </div>
           </form>
           <ul class="nav navbar-nav navbar-right">
-            {% if not user.is_authenticated and REGISTRATION_OPEN %}
-            <li><a href="{% url "account_signup" %}">{% trans "Register" %}</a></li>
+            {% if not user.is_authenticated  %}
+            <li><a href="{% url 'datarequests:registration_part_one' %}">{% trans "Register" %}</a></li>
             {% endif %}
             {% if user.is_authenticated %}
             <li>
@@ -109,7 +111,7 @@
             {% else %}
             <li>
               <a href="#" data-toggle="modal" data-target="#SigninModal" role="button" >
-                {% trans "Sign in" %} 
+                {% trans "Sign in" %}
               </a>
             </li>
             {% endif %}
@@ -144,7 +146,7 @@
     </div>
     {% endblock middle %}
   </div>
-    
+
     {% block footer %}
     <footer class="footer">
       <div class="container">
@@ -228,6 +230,7 @@
               <li><a href="{% url "announcements_list" %}"><i class="fa fa-bullhorn"></i> {% trans "Announcements" %}</a></li>
               {% endif %}
               {% if user.is_superuser %}
+              <li><a href="{% url "datarequests:data_request_browse" %}"><i class="fa fa-users"></i> {% trans "Data Request Profiles" %}</a></li>
               <li><a href="{% url "services" %}"><i class="fa fa-globe"></i> {% trans "Remote Services" %}</a></li>
               <li><a href="{% url "account_invite_user" %}"><i class="fa fa-edit"></i> {% trans "Invite User" %}</a></li>
               <li class="modal-divider"></li>
@@ -251,7 +254,7 @@
     </div>
     {% endif %}
     <!-- End of Modal -->
-    
+
     {% if DEBUG_STATIC %}
     <script src="{{ STATIC_URL }}lib/js/jquery.min.js"></script>
     <script src="{{ STATIC_URL }}lib/js/jquery.dataTables.js"></script>
@@ -299,6 +302,14 @@
         };
     </script>
     <script type="text/javascript" src="{% url "lang" %}"></script>
+    <script>
+  	(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  	(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+	  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+	  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
 
+	  ga('create', 'UA-72261630-1', 'auto');
+	  ga('send', 'pageview');
+    </script>
   </body>
 </html>

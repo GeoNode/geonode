@@ -1,0 +1,23 @@
+{% extends "ceph_base.html" %}
+{% load i18n %}
+{% load url from future %}
+{% block title %} {% trans "Data Input Form" %} - {{ block.super }} {% endblock %}
+
+{% block body_class %}Cephgeo Data Input{% endblock %}
+
+{% block body_outer %}
+  {% block body %}
+  
+  <div class="page-header">
+    <h2 class="page-title">{% trans "Georef Input Form" %}</h2>
+  </div>
+  
+  <form method="POST"  id="georef_form" name="georef_form" >
+     {% csrf_token %}
+    <input type="textarea" name="georef_area" ></input>
+    <input id="georef_submit" type="submit" name="georef_submit" value="Submit"></input>
+</form>
+  
+{% endblock body %}
+ {% block sidebar %}{% endblock sidebar %}
+{% endblock body_outer %}

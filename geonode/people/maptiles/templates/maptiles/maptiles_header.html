@@ -1,0 +1,41 @@
+<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}geoexplorer/externals/geoext/resources/css/geoext-all.css" />
+<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}geoexplorer/externals/geoext/resources/css/gxtheme-gray.css">
+<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}geoexplorer/theme/ux/colorpicker/color-picker.ux.css" />
+<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}geoexplorer/externals/printpreview/resources/css/printpreview.css" />
+<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}geoexplorer/externals/openlayers/theme/default/style.css" />
+<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}geoexplorer/externals/gxp/src/theme/all.css" />
+<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}geoexplorer/theme/app/geoexplorer.css " />
+<!--[if IE]><link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}geoexplorer/theme/app/ie.css"/><![endif]-->
+<script src="{{STATIC_URL}}geoexplorer/script/GeoExplorer.js" type="text/javascript"></script>
+<script type="text/javascript">
+OpenLayers.ImgPath = "{{ STATIC_URL }}geoexplorer/externals/openlayers/theme/default/img";
+OpenLayers.Request.DEFAULT_CONFIG.headers = {
+    'X-CSRFToken': '{{ csrf_token|escapejs }}'
+};
+
+GeoExplorer.Viewer.prototype.loadConfig = function(config) {
+    
+    // Do not include the layer styler on the map-detail view.
+    {% if not map %}
+        {% if user.is_authenticated %}
+        config.viewerTools.splice(5, 0, {
+            id: "styler",
+            ptype: "gxp_styler",
+            checked: true
+        });
+        {% endif %}
+    {% endif %}
+    /*config.viewerTools.splice(6, 0, {
+        id: "feature_manager",
+        ptype: "gxp_featuremanager",
+        autoSetLayer: true
+    });
+    config.viewerTools.splice(7,0, {
+        id: "feature_editor",
+        ptype: "gxp_featureeditor",
+        featureManager: "feature_manager",
+        hidden: false
+    });*/
+    GeoExplorer.Viewer.superclass.loadConfig.call(this, config);
+};
+</script>
