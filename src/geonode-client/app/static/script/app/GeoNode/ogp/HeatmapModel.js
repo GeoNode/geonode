@@ -92,7 +92,7 @@ GeoNode.HeatmapModel = Ext.extend(Ext.util.Observable, {
       url: GeoNode.solrBackend,
       jsonp: "json.wrf",
       dataType: "jsonp",
-      data : params,
+      data : $.param(params, true),
       success: function(response){
         var facetCounts = response.facet_counts;
         if (facetCounts != null){
