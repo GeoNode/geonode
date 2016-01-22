@@ -64,7 +64,7 @@ def get_layer_config(request, typename, permission='base.view_resourcebase',
         pprint("Message: "+ e.message + "/nType: "+str(type(e)))
 
     if layer is False :
-        raise HttP404()
+        raise Http404()
 
     config = layer.attribute_config()
     layer_bbox = layer.bbox
