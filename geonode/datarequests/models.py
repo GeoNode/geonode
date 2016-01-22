@@ -398,32 +398,29 @@ class DataRequestProfile(TimeStampedModel):
 
     def create_account(self, username, password, directory):
         #username, password = create_login_credentials(self)
-        #if not local_settings.LDAP_ENABLED:
-        #    profile_account = Profile.objects.create(
+        profile_account = Profile.objects.create(
                 # from User model
-        #       username=username,
-        #        first_name=self.first_name,
-        #        last_name=self.last_name,
-        #       email=self.email,
-        #        is_active=True,
-        #        is_staff=False,
-        #        is_superuser=False,
-        #        last_login=timezone.now(),
-        #        date_joined=timezone.now(),
+                username=username,
+                first_name=self.first_name,
+                last_name=self.last_name,
+                email=self.email,
+                is_active=True,
+                is_staff=False,
+                is_superuser=False,
+                last_login=timezone.now(),
+                date_joined=timezone.now(),
 
                 # from Profile model
-        #        organization=self.organization,
-        #        organization_type=self.organization_type
+                organization=self.organization,
+                organization_type=self.organization_type
 
-        #   )
-        #    profile_account.set_password(password)
-        #    profile_account.save()
-        #else:
-        #    LDAPBackend().populate_user(username)
+            )
+        profile_account.set_password(password)
+        profile_account.save()
 
         # Link data request to profile
-        #self.profile = profile_account
-        #self.save()
+        self.profile = profile_account
+        self.save()
 
         # Link shapefile to account
         #UserJurisdiction.objects.create(
