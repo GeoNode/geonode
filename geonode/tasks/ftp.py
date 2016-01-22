@@ -70,7 +70,7 @@ def fab_create_ftp_folder(ftp_request, ceph_obj_list_by_data_class, srs_epsg=Non
         email = None
         
         #Check for duplicate folders
-        result = run("[ -d {0} ]".format(ftp_dir))
+        result = run("sudo [ -d {0} ]".format(ftp_dir))
         if result.return_code == 0:
             logger.error("FTP Task Error: A duplicate FTP request toplevel directory was found.")
             ftp_request.status = FTPStatus.DUPLICATE
