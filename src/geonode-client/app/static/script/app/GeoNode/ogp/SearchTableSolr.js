@@ -189,7 +189,7 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
             }
         };
         var datatypes = this.dataTypeInput.getValue();
-        if (datatypes.length > 0 && datatypes < 4){
+        if (datatypes.length > 0 && datatypes.length < 4){
             var values = datatypes.length;
             var string = '';
             for(var i=0;i<values.length;i++){
