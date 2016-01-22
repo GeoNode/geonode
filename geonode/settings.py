@@ -234,17 +234,17 @@ GEONODE_APPS = (
     # GeoNode Contrib Apps
 
     # 'geonode.contrib.dynamic',
-    
+
     #CEPH App
     'geonode.cephgeo',
-    
-    # Maptiles 
+
+    # Maptiles
     # Django app for selecting and highlighting tiles
     'geonode.maptiles',
-    
+
     #Registration app
     #'geonode.registration',
-    
+
     # EULA app
     'geonode.eula',
 
@@ -314,7 +314,7 @@ INSTALLED_APPS = (
     'tastypie',
     'polymorphic',
     'guardian',
-    
+
     # Crispy Forms
     'crispy_forms',
     'changuito',
@@ -403,7 +403,7 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    # This middleware allows to print private layers for the users that have 
+    # This middleware allows to print private layers for the users that have
     # the permissions to view them.
     # It sets temporary the involved layers as public before restoring the permissions.
     # Beware that for few seconds the involved layers are public there could be risks.
@@ -647,20 +647,20 @@ MAP_BASELAYERS = [{
     "source": {"ptype": "gxp_mapquestsource"},
     "name": "osm",
     "group": "background",
-    "visibility": True
+    "visibility": False
 }, {
     "source": {"ptype": "gxp_mapquestsource"},
     "name": "naip",
     "group": "background",
     "visibility": False
-}, 
+},
 #{
 #    "source": {"ptype": "gxp_bingsource"},
 #    "name": "AerialWithLabels",
 #    "fixed": True,
 #    "visibility": False,
 #    "group": "background"
-#}, 
+#},
 {
     "source": {"ptype": "gxp_mapboxsource"},
 }]
@@ -896,7 +896,7 @@ if os.name == 'nt':
     if not "GEOS_LIBRARY_PATH" in locals() or not "GDAL_LIBRARY_PATH" in locals():
         if os.environ.get("GEOS_LIBRARY_PATH", None) \
             and os.environ.get("GDAL_LIBRARY_PATH", None):
-            GEOS_LIBRARY_PATH = os.environ.get('GEOS_LIBRARY_PATH') 
+            GEOS_LIBRARY_PATH = os.environ.get('GEOS_LIBRARY_PATH')
             GDAL_LIBRARY_PATH = os.environ.get('GDAL_LIBRARY_PATH')
         else:
             #maybe it will be found regardless if not it will throw 500 error

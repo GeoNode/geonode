@@ -24,6 +24,8 @@ from geonode.tasks.update import ceph_metadata_udate
 from geonode.cephgeo.utils import get_cart_datasize
 from datetime import datetime
 from django.core.urlresolvers import reverse
+from geonode.maptiles.models import SRS
+from django.utils.text import slugify
 
 # Create your views here.
 @login_required
@@ -287,7 +289,7 @@ def error(request):
 @login_required
 def get_cart(request):
     return render_to_response('cart.html', 
-                                dict(cart=CartProxy(request), cartsize=get_cart_datasize(request)),
+                                dict(cart=CartProxy(request), cartsize=get_cart_datasize(request), projections= SRS.labels.values()),
                                 context_instance=RequestContext(request))
 
 @login_required
@@ -313,7 +315,7 @@ def get_obj_ids_json(request):
     return HttpResponse(json.dumps(ceph_objs_by_data_class), content_type="application/json")
 
 @login_required
-def create_ftp_folder(request):
+def create_ftp_folder(request, projection=None):
     # Check time difference between this request and the next most recent request
     # If within 5 minutes/300 secs, inform the user to wait
     try:
@@ -329,6 +331,13 @@ def create_ftp_folder(request):
         pass
     cart=CartProxy(request)
     #[CephDataObject.objects.get(id=int(item.object_id)).name for item in cart]
+    
+    #Get specified projection
+    srs_epsg=None
+    if projection is not None:
+        srs_epsg=SRS.EPSG_num[projection]
+            
+    print(">>>[SRS]: "+str(projection)+"  "+str(srs_epsg))
     
     obj_name_dict = dict()
     total_size_in_bytes = 0
@@ -362,7 +371,7 @@ def create_ftp_folder(request):
     
     
     # Call to celery
-    process_ftp_request.delay(ftp_request, obj_name_dict)
+    process_ftp_request.delay(ftp_request, obj_name_dict, srs_epsg)
     
     # Clear cart items
     delete_all_items_from_cart(request)

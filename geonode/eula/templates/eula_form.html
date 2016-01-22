@@ -6,7 +6,7 @@
 
 {% block body_outer %}
     {% show_eula %}
-    <form name="form_eula" action={% target_url %} onsubmit="return checkForm(this);" method="POST">
+    <form id="form_eula" name="form_eula" action={% target_url %} onsubmit="return checkForm(this);" method="POST">
         {% csrf_token %}
         
         <hr/>

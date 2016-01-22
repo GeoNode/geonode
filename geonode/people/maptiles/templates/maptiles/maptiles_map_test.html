@@ -1,0 +1,50 @@
+{% extends "maptiles/maptiles_base.html" %}
+{% load i18n %}
+{% load dialogos_tags %}
+{% load agon_ratings_tags %}
+{% load bootstrap_tags %}
+{% load url from future %}
+{% load base_tags %}
+{% load guardian_tags %}
+
+{% block title %}Map Tiles Selection — {{ block.super }}{% endblock %}
+
+{% block head %}
+{% include "maptiles/maptiles_geoext_map.html" %}
+{{ block.super }}
+{% endblock %}
+
+{% block body_class %}maptiles{% endblock %}
+
+{% block body_outer %}
+{% block body %}
+
+<div class="page-header">
+  <h2 class="page-title">Map Tiles</h2>
+</div>
+<div class="row">
+	<div class="col-md-8">
+
+		<div id="embedded_map" class="mrg-btm">
+			<div id="preview_map"></div>
+		</div>
+	</div>
+</div>
+ <div class="col-md-4">
+
+    <!--<ul class="list-group">
+	</ul>-->
+ </div>
+ <br />
+ <h2 class="page-title">Selected Tiles</h2>
+ <div class="row" id="point_display">
+     
+ </div>
+ <form action="/maptiles/addtocart/" method="POST">
+     {% csrf_token %}
+    <input type="text" id="georef_area" name="georef_area" style="display:none" />
+    <input type="submit" id="georef_submit" name="georef_submit" value="Submit" class="btn btn-default" />
+</form>
+  
+{% endblock %}
+{% endblock %}
