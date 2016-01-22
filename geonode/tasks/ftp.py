@@ -116,7 +116,7 @@ regarding this error.
                     obj_dl_list = " ".join(map(str,ceph_obj_list))
                     if srs_epsg is not None:
                         result = run("python {0} -d={1} -p={2} {3}".format( dl_script_path,
-                                                        os.path.join(ftp_dir,type_dir),
+                                                        os.path.join(ftp_dir,"EPSG-"+srs_epsg,type_dir),
                                                         srs_epsg,
                                                         obj_dl_list)) # Download list of objects in corresponding geo-type folder
                     else:
