@@ -29,7 +29,7 @@
         <java jar="externals/ringo/run.jar" fork="true" failonerror="true">
             <sysproperty key="ringo.home" path="externals/ringo"/>
             <arg path="externals/buildkit/lib/buildkit/build.js"/>
-            <arg line="-o ${build}/${ant.project.name}/WEB-INF/app/static/script buildjs.cfg"/>
+            <arg line="-o ../../geonode/static/geonode/script buildjs.cfg"/>
         </java>
 
     </target>
