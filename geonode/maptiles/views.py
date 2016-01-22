@@ -81,7 +81,7 @@ def tiled_view(request, overlay=settings.TILED_SHAPEFILE, template="maptiles/map
     if jurisdiction is None:
         try:
             jurisdiction_object = UserJurisdiction.objects.get(user=request.user)
-            if not jurisdiction_object.exists():
+            if jurisdiction_object is None:
                 jurisdiction_shapefile = DataRequestProfile.objects.get(username=request.user.username,email=request.user.email, request_status='approved').jurisdiction_shapefile
                 jurisdiction_object = UserJurisdiction(user=request.user, jurisdiction_shapefile=jurisdiction_shapefile)
                 jurisdiction_object.save()
