@@ -190,10 +190,9 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
         };
         var datatypes = this.dataTypeInput.getValue();
         if (datatypes.length > 0 && datatypes.length < 4){
-            var values = datatypes.length;
             var string = '';
-            for(var i=0;i<values.length;i++){
-                string += 'DataType:' + values[i].name + ' OR ';
+            for(var i=0;i<datatypes.length;i++){
+                string += 'DataType:' + datatypes[i].name + ' OR ';
             }
             string = string.slice(0, -4);
             GeoNode.queryTerms.fq.push(string);
