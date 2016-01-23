@@ -38,7 +38,7 @@ def fab_check_cephaccess(username, user_email, request_name):
     ## Check from inside Cephaccess if Ceph Object Gateway is reachable
     ## 
     
-    test_file = '/home/cephaccess/testfolder/DL/test.txt'
+    test_file = '/tmp/test.txt'
     result = run("touch {0} && rm -f {0}".format(test_file))
     if result.failed:
         logger.error("Unable to access {0}. Host may be down or there may be a network problem.".format(env.hosts))
@@ -92,7 +92,10 @@ If error still persists, forward this email to [{2}]""".format( request_name,
                 for data_class, ceph_obj_list in ceph_obj_list_by_data_class.iteritems():
                     type_dir = data_class.replace(" ", "_")
                     
-                    result = run("mkdir {0}".format(type_dir))      # Create a directory for each geo-type
+                    if srs_epsg is not None:
+                        result = run("mkdir -p {0}".format(os.path.join("EPSG-"+str(srs_epsg),type_dir)))      # Create a directory for each geo-type
+                    else:
+                        result = run("mkdir {0}".format(type_dir))      # Create a directory for each geo-type 
                     if result.return_code is not 0:                 #Handle error
                         logger.error("Error on FTP request: Failed to create data class subdirectory at [{0}]. Please notify the administrator of this error".format(ftp_dir))
                         ftp_request.status = FTPStatus.ERROR
@@ -115,12 +118,12 @@ regarding this error.
                         
                     obj_dl_list = " ".join(map(str,ceph_obj_list))
                     if srs_epsg is not None:
-                        result = run("/bin/sudo /bin/python {0} -d={1} -p={2} {3}".format( dl_script_path,
-                                                        os.path.join(ftp_dir,type_dir),
+                        result = run("python {0} -d={1} -p={2} {3}".format( dl_script_path,
+                                                        os.path.join(ftp_dir,"EPSG-"+str(srs_epsg),type_dir),
                                                         srs_epsg,
                                                         obj_dl_list)) # Download list of objects in corresponding geo-type folder
                     else:
-                        result = run("/bin/sudo /bin/python {0} -d={1} {2}".format( dl_script_path,
+                        result = run("python {0} -d={1} {2}".format( dl_script_path,
                                                         os.path.join(ftp_dir,type_dir),
                                                         obj_dl_list)) # Download list of objects in corresponding geo-type folder
                     if result.return_code is not 0:                 #Handle error
@@ -254,6 +257,8 @@ def get_folder_for_user(user):
         elif group.slug == u'phil-lidar-2-sucs':
             return "/mnt/FTP/PL2/{0}/DL/DAD/geonode_requests".format(user.username)
         elif group.slug == u'other-data-requesters':
+            return "/mnt/FTP/Others/{0}/DL/DAD/geonode_requests".format(user.username)
+        elif group.slug == u'data-requesters':
             return "/mnt/FTP/Others/{0}/DL/DAD/geonode_requests".format(user.username)
         else:
             return "/mnt/FTP/PL1/testfolder/DL/DAD/geonode_requests"
