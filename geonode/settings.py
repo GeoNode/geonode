@@ -350,7 +350,13 @@ LOGGING = {
         'mail_admins': {
             'level': 'ERROR', 'filters': ['require_debug_false'],
             'class': 'django.utils.log.AdminEmailHandler',
-        }
+        },
+#        'file': {
+#            'level': 'DEBUG',
+#            'class': 'logging.FileHandler',
+#            'filename': '/var/log/geonode.log',
+#            'formatter': 'verbose'
+#        }
     },
     "loggers": {
         "django": {
