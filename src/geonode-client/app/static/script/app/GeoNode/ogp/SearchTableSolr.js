@@ -54,7 +54,8 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
                 {name: 'MinY', type: 'string'},
                 {name: 'MaxX', type: 'string'},
                 {name: 'MaxY', type: 'string'},
-                {name: 'Originator', type: 'string'}
+                {name: 'Originator', type: 'string'},
+                {name: 'Location', type:'string'}
             ]
         });
         this.searchStore.on('load', function() {
@@ -414,23 +415,47 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
     doMouseoverOn : function(index){
         var element = this.table.getStore().getAt(index);
         this.showBounds(element);
+        this.showPreviewLayer(element);
+        
     },
     
     doMouseoverOff: function(){
         this.hideBounds();
+        this.hidePreviewLayer();
     },
     
     showBounds : function(element) {
+        var bbox = this.getLayerBounds(element);
+        this.heatmap.bbox_widget.viewer.fireEvent("showBBox", bbox);
+    },
+    
+    getLayerBounds: function(element){
         var bbox = {};
         bbox.south = element.data.MinY
         bbox.north = element.data.MaxY
         bbox.west = element.data.MinX
         bbox.east = element.data.MaxX
-        this.heatmap.bbox_widget.viewer.fireEvent("showBBox", bbox);
+        return bbox
     },
-    
+
     hideBounds : function() {
         this.heatmap.bbox_widget.viewer.fireEvent("hideBBox");
-    }
+    },
 
+    showPreviewLayer: function(element){
+        var typename = this.getlayerTypename(element);
+        var bbox = this.getLayerBounds(element);
+        bbox = [bbox.west, bbox.south, bbox.east, bbox.north];
+        this.heatmap.bbox_widget.viewer.fireEvent("showPreviewLayer", typename, bbox);
+    },
+
+    hidePreviewLayer: function(){
+        this.heatmap.bbox_widget.viewer.fireEvent("hidePreviewLayer");
+    },
+
+    getlayerTypename: function(record){
+        var layer_detail = JSON.parse(record.data.Location)['layerInfoPage'];
+        var typename = layer_detail.split('/')[2];
+        return decodeURIComponent(decodeURIComponent(typename));
+    }
 });

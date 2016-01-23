@@ -12,6 +12,8 @@ GeoNode.BoundingBoxWidget = Ext.extend(Ext.util.Observable, {
     isEnabled: false,
     useGxpViewer: false,
 
+    gwcBackend: 'http://worldmap.harvard.edu/geoserver/wms',
+
     constructor: function(config, vanillaViewer) {
         Ext.apply(this, config);
         this.doLayout();
@@ -45,6 +47,12 @@ GeoNode.BoundingBoxWidget = Ext.extend(Ext.util.Observable, {
                 },
                 hideBBox: function(bbox){
                     self.hideLayerBBox();
+                },
+                showPreviewLayer: function(typename, bbox){
+                    self.showPreviewLayer(typename, bbox);
+                },
+                hidePreviewLayer: function(){
+                    self.hidePreviewLayer();
                 }
             }
         }
@@ -381,5 +389,33 @@ GeoNode.BoundingBoxWidget = Ext.extend(Ext.util.Observable, {
         } else {
             return false;
         }
+    },
+
+    showPreviewLayer: function(typename, bbox){
+        var map = this.viewer.mapPanel.map;
+        var layer = this.createPreviewLayer(typename);
+        map.addLayer(layer);
+    },
+
+    hidePreviewLayer: function(){
+        var map = this.viewer.mapPanel.map;
+        for(var i=0;i<map.layers.length;i++){
+            if(map.layers[i].preview){
+                map.removeLayer(map.layers[i]);
+            }
+        };
+    },
+
+    createPreviewLayer: function(typename){
+        var layer = new OpenLayers.Layer.WMS(
+            typename,
+            this.gwcBackend,
+            {
+                layers: typename,
+                transparent: true
+            }
+        );
+        layer.preview = true;
+        return layer;
     }
 });
