@@ -89,7 +89,7 @@ def tiled_view(request, overlay=settings.TILED_SHAPEFILE, template="maptiles/map
             jurisdiction_object = UserJurisdiction(user=request.user, jurisdiction_shapefile=jurisdiction_shapefile)
             resource = self.jurisdiction_shapefile
             perms = resource.get_all_level_info()
-            perms["users"][profile_account.username]=["view_resourcebase"]
+            perms["users"][request.user.username]=["view_resourcebase"]
             resource.set_permissions(perms);
             jurisdiction_object.save()
         
