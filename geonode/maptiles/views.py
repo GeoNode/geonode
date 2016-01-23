@@ -26,6 +26,7 @@ from geonode.maptiles.utils import *
 from geonode.datarequests.models import DataRequestProfile
 from geonode.documents.models import get_related_documents
 from geonode.registration.models import Province, Municipality 
+from geonode.base.models import ResourceBase
 
 import geonode.settings as settings
 
@@ -86,6 +87,10 @@ def tiled_view(request, overlay=settings.TILED_SHAPEFILE, template="maptiles/map
             print "No jurisdiction found"
             jurisdiction_shapefile = DataRequestProfile.objects.get(username=request.user.username,email=request.user.email, request_status='approved').jurisdiction_shapefile
             jurisdiction_object = UserJurisdiction(user=request.user, jurisdiction_shapefile=jurisdiction_shapefile)
+            resource = self.jurisdiction_shapefile
+            perms = resource.get_all_level_info()
+            perms["users"][profile_account.username]=["view_resourcebase"]
+            resource.set_permissions(perms);
             jurisdiction_object.save()
         
         context_dict["jurisdiction"] = get_layer_config(request,jurisdiction_object.jurisdiction_shapefile.typename, "base.view_resourcebase", _PERMISSION_VIEW)
