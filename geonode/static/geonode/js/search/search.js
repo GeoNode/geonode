@@ -91,7 +91,7 @@
                   keyword.count = 0;
               }
           }
-      }	
+      }
 
       if ("regions" in $rootScope) {
           $rootScope.regions_counts = data.meta.facets.regions;
@@ -156,6 +156,7 @@
       $http.get(Configs.url, {params: data || {}}).success(function(data){
         $scope.results = data.objects;
         $scope.total_counts = data.meta.total_count;
+        $scope.latest_layers = 5;
         $scope.$root.query_data = data;
         if (HAYSTACK_SEARCH) {
           if ($location.search().hasOwnProperty('q')){
@@ -187,7 +188,7 @@
 
 
     /*
-    * Pagination 
+    * Pagination
     */
     // Control what happens when the total results change
     $scope.$watch('total_counts', function(){
@@ -195,8 +196,8 @@
         ($scope.total_counts / $scope.query.limit) + 0.49
       );
 
-      // In case the user is viewing a page > 1 and a 
-      // subsequent query returns less pages, then 
+      // In case the user is viewing a page > 1 and a
+      // subsequent query returns less pages, then
       // reset the page to one and search again.
       if($scope.numpages < $scope.page){
         $scope.page = 1;
@@ -213,7 +214,7 @@
         $scope.page -= 1;
         $scope.query.offset =  $scope.query.limit * ($scope.page - 1);
         query_api($scope.query);
-      }   
+      }
     }
 
     $scope.paginate_up = function(){
@@ -239,13 +240,13 @@
     * Add the selection behavior to the element, it adds/removes the 'active' class
     * and pushes/removes the value of the element from the query object
     */
-    $scope.multiple_choice_listener = function($event){    
+    $scope.multiple_choice_listener = function($event){
       var element = $($event.target);
       var query_entry = [];
       var data_filter = element.attr('data-filter');
       var value = element.attr('data-value');
 
-      // If the query object has the record then grab it 
+      // If the query object has the record then grab it
       if ($scope.query.hasOwnProperty(data_filter)){
 
         // When in the location are passed two filters of the same
@@ -254,7 +255,7 @@
           query_entry = $scope.query[data_filter];
         }else{
           query_entry.push($scope.query[data_filter]);
-        }     
+        }
       }
 
       // If the element is active active then deactivate it
@@ -263,15 +264,15 @@
         element.removeClass('active');
 
         // Remove the entry from the correct query in scope
-        
+
         query_entry.splice(query_entry.indexOf(value), 1);
       }
       // if is not active then activate it
       else if(!element.hasClass('active')){
         // Add the entry in the correct query
         if (query_entry.indexOf(value) == -1){
-          query_entry.push(value);  
-        }         
+          query_entry.push(value);
+        }
         element.addClass('active');
       }
 
@@ -291,7 +292,7 @@
       var data_filter = element.attr('data-filter');
       var value = element.attr('data-value');
 
-      // If the query object has the record then grab it 
+      // If the query object has the record then grab it
       if ($scope.query.hasOwnProperty(data_filter)){
         query_entry = $scope.query[data_filter];
       }
@@ -309,7 +310,7 @@
         $scope.query[data_filter] = query_entry;
 
         query_api($scope.query);
-      }     
+      }
     }
 
     /*
@@ -374,7 +375,7 @@
       else{
         element.html('Deselect');
         article.addClass('resource_selected');
-      } 
+      }
     };
 
     /*
@@ -409,7 +410,7 @@
       }else{
         init_date = false;
       }
-      
+
     }, true);
 
     /*
