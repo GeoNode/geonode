@@ -87,7 +87,7 @@ def tiled_view(request, overlay=settings.TILED_SHAPEFILE, template="maptiles/map
             print "No jurisdiction found"
             jurisdiction_shapefile = DataRequestProfile.objects.get(username=request.user.username,email=request.user.email, request_status='approved').jurisdiction_shapefile
             jurisdiction_object = UserJurisdiction(user=request.user, jurisdiction_shapefile=jurisdiction_shapefile)
-            resource = self.jurisdiction_shapefile
+            resource = jurisdiction_shapefile
             perms = resource.get_all_level_info()
             perms["users"][request.user.username]=["view_resourcebase"]
             resource.set_permissions(perms);
