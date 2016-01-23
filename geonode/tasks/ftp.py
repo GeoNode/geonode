@@ -38,7 +38,7 @@ def fab_check_cephaccess(username, user_email, request_name):
     ## Check from inside Cephaccess if Ceph Object Gateway is reachable
     ## 
     
-    test_file = '/home/cephaccess/testfolder/DL/test.txt'
+    test_file = '/tmp/test.txt'
     result = run("touch {0} && rm -f {0}".format(test_file))
     if result.failed:
         logger.error("Unable to access {0}. Host may be down or there may be a network problem.".format(env.hosts))
@@ -55,7 +55,7 @@ If error still persists, forward this email to [{2}]""".format( request_name,
 
 
 @hosts(settings.CEPHACCESS_HOST)
-def fab_create_ftp_folder(ftp_request, ceph_obj_list_by_data_class):
+def fab_create_ftp_folder(ftp_request, ceph_obj_list_by_data_class, srs_epsg=None):
     """
         Creates an FTP folder for the requested tile data set
         Records the request in the database
@@ -92,7 +92,10 @@ If error still persists, forward this email to [{2}]""".format( request_name,
                 for data_class, ceph_obj_list in ceph_obj_list_by_data_class.iteritems():
                     type_dir = data_class.replace(" ", "_")
                     
-                    result = run("mkdir {0}".format(type_dir))      # Create a directory for each geo-type
+                    if srs_epsg is not None:
+                        result = run("mkdir -p {0}".format(os.path.join("EPSG-"+str(srs_epsg),type_dir)))      # Create a directory for each geo-type
+                    else:
+                        result = run("mkdir {0}".format(type_dir))      # Create a directory for each geo-type 
                     if result.return_code is not 0:                 #Handle error
                         logger.error("Error on FTP request: Failed to create data class subdirectory at [{0}]. Please notify the administrator of this error".format(ftp_dir))
                         ftp_request.status = FTPStatus.ERROR
@@ -114,7 +117,13 @@ regarding this error.
                         return "ERROR: Failed to create data class subdirectory [{0}].".format(os.path.join(ftp_dir,type_dir))
                         
                     obj_dl_list = " ".join(map(str,ceph_obj_list))
-                    result = run("python {0} -d={1} {2}".format( dl_script_path,
+                    if srs_epsg is not None:
+                        result = run("python {0} -d={1} -p={2} {3}".format( dl_script_path,
+                                                        os.path.join(ftp_dir,"EPSG-"+str(srs_epsg),type_dir),
+                                                        srs_epsg,
+                                                        obj_dl_list)) # Download list of objects in corresponding geo-type folder
+                    else:
+                        result = run("python {0} -d={1} {2}".format( dl_script_path,
                                                         os.path.join(ftp_dir,type_dir),
                                                         obj_dl_list)) # Download list of objects in corresponding geo-type folder
                     if result.return_code is not 0:                 #Handle error
@@ -209,7 +218,7 @@ Please forward this mail to the system administrator ({2}).
         ftp_request.save()
         
 @celery.task(name='geonode.tasks.ftp.process_ftp_request', queue='ftp')
-def process_ftp_request(ftp_request, ceph_obj_list_by_data_class):
+def process_ftp_request(ftp_request, ceph_obj_list_by_data_class, srs_epsg_num=None):
     """
         Create the a new folder containing the data requested inside 
         Geostorage-FTP directory
@@ -227,7 +236,7 @@ def process_ftp_request(ftp_request, ceph_obj_list_by_data_class):
     if isinstance(result.get(host_string, None), BaseException):
         raise Exception(result.get(host_string))
     else:
-        result = execute(fab_create_ftp_folder, ftp_request, ceph_obj_list_by_data_class )
+        result = execute(fab_create_ftp_folder, ftp_request, ceph_obj_list_by_data_class, srs_epsg_num )
         if isinstance(result.get(host_string, None), BaseException):
             raise Exception(result.get(host_string))
 
@@ -240,24 +249,30 @@ def get_folder_for_user(user):
         raise UserEmptyException(user)
     
     # Filter group if [PL1, PL2, Others, Test] ##
+    
     groups = GroupProfile.objects.filter(groupmember__user=user,groupmember__role='member')
+    
+    if groups is None:
+        raise CephAccessException("User is not part of any FTP user group in LiPAD, no FTP folder can be found.")
     
     for group in groups:
         if group.slug == u'phil-lidar-1-sucs':
-            return "/mnt/FTP/PL1/{0}/DL/DAD/LiPAD_requests".format(user.username)
+            return "/mnt/FTP/PL1/{0}/DL/DAD/lipad_requests".format(user.username)
         elif group.slug == u'phil-lidar-2-sucs':
-            return "/mnt/FTP/PL2/{0}/DL/DAD/LiPAD_requests".format(user.username)
+            return "/mnt/FTP/PL2/{0}/DL/DAD/lipad_requests".format(user.username)
         elif group.slug == u'other-data-requesters':
-            return "/mnt/FTP/Others/{0}/DL/DAD/LiPAD_requests".format(user.username)
-
-    return "/mnt/FTP/PL1/testfolder/DL/DAD/LiPAD_requests"
+            return "/mnt/FTP/Others/{0}/DL/DAD/lipad_requests".format(user.username)
+        elif group.slug == u'data-requesters':
+            return "/mnt/FTP/Others/{0}/DL/DAD/lipad_requests".format(user.username)
+    
+    raise CephAccessException("User is not part of any FTP user group in LiPAD, no FTP folder can be found.")
 
 def mail_ftp_user(username, user_email, mail_subject, mail_msg):
     #DEBUG
     mail_subject = "Phil-LiDAR FTP Request [{0}] for User [{1}]".format(mail_subject,username)
     mail_body = """\
 This is an automated mailer. DO NOT REPLY TO THIS MAIL! Send your e-mails to the site administrator.
-This is an e-mail regarding your FTP request from geonode.dream.upd.edu.ph. Details are found below:
+This is an e-mail regarding your FTP request from LiPAD. Details are found below:
 
 """+mail_msg
     args_tup = (mail_subject, mail_body, settings.FTP_AUTOMAIL,

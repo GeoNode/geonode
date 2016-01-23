@@ -33,13 +33,14 @@ FTP_SORT_TYPES = [ "date", "status", "default" ]
 TYPE_TO_IDENTIFIER_DICT = {
     ".laz"          : "LAZ file",
     "_dem.tif"      : "DEM TIF",
-    "_dsm.tif"      : "DSM TIF",
+#    "_dsm.tif"      : "DSM TIF",
     "_ortho.tif"    : "Orthophoto",
 }
 
 
 #### returns classification of the file based on file extension
 #### if no matches, result is an empty string
+### DEPRECTATED ###
 def file_classifier(file_name):
     
     ext_classification = ''
@@ -59,6 +60,7 @@ def sort_by(sort_key, object_list, descending=False):
 #def file_feature_classifier(file_name):
 #   pass
 
+### DEPRECTATED ###
 def is_valid_grid_ref_old(grid_ref_string):
     ptn = re.compile('^[a-zA-Z]{2}[0-9]{4}$')
     if ptn.match(grid_ref_string) is not None:

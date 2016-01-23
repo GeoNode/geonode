@@ -10,6 +10,24 @@
 {% block title %}Map Tiles Selection — {{ block.super }}{% endblock %}
 
 {% block head %}
+<style>
+/*** custom checkboxes ***/
+
+    input[type=checkbox] { display:none; } /* to hide the checkbox itself */
+    input[type=checkbox] + label:before {
+      font-family: FontAwesome;
+      font-size: 16px;
+      display: inline-block;
+    }
+    .label-dataclass{
+        font-size: 16px;
+    }
+    input[type=checkbox] + label:before { content: "\f096"; } /* unchecked icon */
+    input[type=checkbox] + label:before { letter-spacing: 20px; } /* space between checkbox and label */
+
+    input[type=checkbox]:checked + label:before { content: "\f046"; } /* checked icon */
+    input[type=checkbox]:checked + label:before { letter-spacing: 20px; } /* allow space for check mark */
+</style>
 {# {% if preview == 'geoext' %}  #}
     {# {% include "maptiles/maptiles_explorer_map.html" %} #}
  {#{% else %} #}
@@ -23,7 +41,9 @@
 
 {% block body_outer %}
 {% block body %}
+<div id="notif">
 
+</div>
 <div class="page-header">
   <h2 class="page-title">Map Tiles</h2>
 </div>
@@ -54,7 +74,8 @@
             </li>-->
 	    <li class="list-group-item">
 		<h4 class="list-group-item-heading">{%trans "Legend" %}</h4>
-		<img id="legend_icon" src="{{ resource.get_legend.url }}">
+		<img id="legend_icon" src="{{ grid.resource.get_legend.url }}"><br/>
+        <img id="legend_icon2" src="{{jurisdiction.resource.get_legend.url}}">
 	    </li>
 	    <li class="list-group-item">
 		<div class="selections"><nav class="filter">
@@ -77,25 +98,46 @@
      
  </div>
  <hr>
-<!--
- <h3 class="page-title">Data Class</h3>
--->
+ <h3 class="page-title">Select Data Class(es) to Download</h3>
  <form name="georef_form" id="georef_form" action="/maptiles/addtocart/" method="POST" >
      {% csrf_token %}
-<!--
-     <div class="col-md-4">
-       <nobr>
-         <ul class="list-inline pull-left">
-             {% for class in data_classes %}
-               {% if class != 'Unknown Type' %}
-                  <li><input type="checkbox" name="{{ class | slugify }}" > {{ class }}</input></li>
-               {% endif %}
+    <div class="col-md-4" align="left">
+        <nobr>
+            <ul class="list-inline pull-left">
+                 {% for class in data_classes %}
+                   {% if class != 'Unknown Type' %}
+                      <li>
+                        <input id="{{ class | slugify }}" name="{{ class | slugify }}" type="checkbox" />
+                        <label class="label-dataclass" for="{{ class | slugify }}">{{ class }}</label>
+                      </li>
+                   {% endif %}
+                 {% endfor %}
+                 
+            </ul>
+        </nobr> 
+        
+        <!-- SRS Selection commented out
+        <nobr>
+        <label class="label-dataclass">SRS</label>
+        <select>
+            {% for proj in projections %}
+                {% if proj == 'UTM 51 (Default)' %}
+                    <option  id="{{ proj | slugify }}" 
+                             name="{{ proj | slugify }}" 
+                             value="{{ proj | slugify }}">
+                {% else %}             
+                    <option  id="{{ proj | slugify }}" 
+                             name="{{ proj | slugify }}" 
+                             value="{{ proj | slugify }}"
+                             selected="selected">
+                {% endif %}
+                    {{ proj }}
+                  </option>
              {% endfor %}
-         </ul>
-       </nobr>
-     </div>
--->
-    <div class="col-md-4" align="right">
+        </select>
+        </nobr> 
+        -->
+        <br/>
      <input type="text" id="georef_area" name="georef_area" style="display:none" />
      <input type="submit" id="georef_submit" name="georef_submit" value="Submit" class="btn btn-default" />
     </div>
