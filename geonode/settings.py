@@ -184,7 +184,7 @@ ALLOWED_DOCUMENT_TYPES = [
     'doc', 'docx', 'gif', 'jpg', 'jpeg', 'ods', 'odt', 'odp', 'pdf', 'png', 'ppt',
     'pptx', 'rar', 'tif', 'tiff', 'txt', 'xls', 'xlsx', 'xml', 'zip', 'gz'
 ]
-MAX_DOCUMENT_SIZE = 2  # MB
+MAX_DOCUMENT_SIZE = 50  # MB
 DOCUMENT_TYPE_MAP = {
     'txt': 'text',
     'log': 'text',
@@ -234,17 +234,17 @@ GEONODE_APPS = (
     # GeoNode Contrib Apps
 
     # 'geonode.contrib.dynamic',
-    
+
     #CEPH App
     'geonode.cephgeo',
-    
-    # Maptiles 
+
+    # Maptiles
     # Django app for selecting and highlighting tiles
     'geonode.maptiles',
-    
+
     #Registration app
     #'geonode.registration',
-    
+
     # EULA app
     'geonode.eula',
 
@@ -254,6 +254,9 @@ GEONODE_APPS = (
     'geonode.geoserver',
     'geonode.upload',
     'geonode.tasks',
+
+    # Data Requests Management App
+    'geonode.datarequests',
 
 
 )
@@ -311,13 +314,14 @@ INSTALLED_APPS = (
     'tastypie',
     'polymorphic',
     'guardian',
-    
+
     # Crispy Forms
     'crispy_forms',
     'changuito',
     'djkombu',
     'south',
     'corsheaders',
+    'captcha',
 
 ) + GEONODE_APPS
 
@@ -405,7 +409,7 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    # This middleware allows to print private layers for the users that have 
+    # This middleware allows to print private layers for the users that have
     # the permissions to view them.
     # It sets temporary the involved layers as public before restoring the permissions.
     # Beware that for few seconds the involved layers are public there could be risks.
@@ -478,9 +482,9 @@ EMAIL_HOST = "mail.lan.dream.upd.edu.ph"
 EMAIL_PORT = 25
 
 # Email for users to contact admins.
-THEME_ACCOUNT_CONTACT_EMAIL = 'lipad-support@dream.upd.edu.ph'
-LIPAD_SUPPORT_MAIL = 'lipad-support@dream.upd.edu.ph'
-FTP_SUPPORT_MAIL = 'support@dream.upd.edu.ph'
+THEME_ACCOUNT_CONTACT_EMAIL = 'lipad@dream.upd.edu.ph'
+LIPAD_SUPPORT_MAIL = 'lipad@dream.upd.edu.ph'
+FTP_SUPPORT_MAIL = 'lipad@dream.upd.edu.ph'
 FTP_AUTOMAIL = 'automailer@dream.upd.edu.ph'
 
 #
@@ -649,13 +653,13 @@ MAP_BASELAYERS = [{
     "source": {"ptype": "gxp_mapquestsource"},
     "name": "osm",
     "group": "background",
-    "visibility": True
+    "visibility": False
 }, {
     "source": {"ptype": "gxp_mapquestsource"},
     "name": "naip",
     "group": "background",
     "visibility": False
-}, 
+},
 #{
 #    "source": {"ptype": "gxp_bingsource"},
 #    "name": "AerialWithLabels",
@@ -848,7 +852,7 @@ CELERY_EAGER_PROPAGATES_EXCEPTIONS = True
 CELERY_IGNORE_RESULT = True
 CELERY_SEND_EVENTS = False
 CELERY_RESULT_BACKEND = None
-CELERY_TASK_RESULT_EXPIRES = 1
+CELERY_TASK_RESULT_EXPIRES = 18000
 CELERY_DISABLE_RATE_LIMITS = True
 CELERY_DEFAULT_QUEUE = "default"
 CELERY_DEFAULT_EXCHANGE = "default"
@@ -882,6 +886,8 @@ EULA_URL = '/eula/eula_form/'
 SELECTION_LIMIT=209715200
 
 MUNICIPALITY_SHAPEFILE = 'geonode:phl_adm2_municipalities_utm_z51n'
+#Upload permissions on file
+FILE_UPLOAD_PERMISSIONS = 0664
 
 # Load more settings from a file called local_settings.py if it exists
 try:
@@ -896,7 +902,7 @@ if os.name == 'nt':
     if not "GEOS_LIBRARY_PATH" in locals() or not "GDAL_LIBRARY_PATH" in locals():
         if os.environ.get("GEOS_LIBRARY_PATH", None) \
             and os.environ.get("GDAL_LIBRARY_PATH", None):
-            GEOS_LIBRARY_PATH = os.environ.get('GEOS_LIBRARY_PATH') 
+            GEOS_LIBRARY_PATH = os.environ.get('GEOS_LIBRARY_PATH')
             GDAL_LIBRARY_PATH = os.environ.get('GDAL_LIBRARY_PATH')
         else:
             #maybe it will be found regardless if not it will throw 500 error

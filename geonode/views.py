@@ -27,6 +27,11 @@ from django.template.response import TemplateResponse
 
 from geonode.groups.models import GroupProfile
 
+from geonode.cephgeo.models import UserJurisdiction
+from geonode.datarequests.models import DataRequestProfile
+
+from pprint import pprint
+
 class AjaxLoginForm(forms.Form):
     password = forms.CharField(widget=forms.PasswordInput)
     username = forms.CharField()
@@ -54,6 +59,7 @@ def ajax_login(request):
             login(request, user)
             if request.session.test_cookie_worked():
                 request.session.delete_test_cookie()
+            assign_relationships(user)
             return HttpResponse(
                 content="successful login",
                 status=200,
@@ -106,3 +112,5 @@ def err403(request):
         
 def forbidden(request):
     return TemplateResponse(request, '401.html', {}, status=401).render()
+        
+    

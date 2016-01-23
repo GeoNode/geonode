@@ -9,6 +9,7 @@ from django.core.exceptions import PermissionDenied, ObjectDoesNotExist
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseRedirect, HttpResponse
+from django.db.models import Q
 
 from geonode.services.models import Service
 from geonode.layers.models import Layer
@@ -21,17 +22,23 @@ from geonode.utils import default_map_config
 from geonode.security.views import _perms_info_json
 from geonode.cephgeo.models import CephDataObject, DataClassification, FTPRequest, UserJurisdiction
 from geonode.cephgeo.cart_utils import *
+from geonode.maptiles.utils import *
+from geonode.datarequests.models import DataRequestProfile
 from geonode.documents.models import get_related_documents
 from geonode.registration.models import Province, Municipality 
+from geonode.base.models import ResourceBase
+from geonode.groups.models import GroupProfile
 
 import geonode.settings as settings
 
 from pprint import pprint
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, date, time
 
 import logging
 
 from geonode.cephgeo.utils import get_cart_datasize
+from django.utils.text import slugify
+from geonode.maptiles.models import SRS
 
 _PERMISSION_VIEW = _("You are not permitted to view this layer")
 _PERMISSION_GENERIC = _('You do not have permissions for this layer.')
@@ -64,103 +71,94 @@ def _resolve_layer(request, typename, permission='base.view_resourcebase',
                               permission_msg=msg,
                               **kwargs)
 
+#
+#This function generates the layer configuration details required for the map view.
+#Returns the template with the configuration details as context
+#
 @login_required
 def tiled_view(request, overlay=settings.TILED_SHAPEFILE, template="maptiles/maptiles_map.html",test_mode=False, jurisdiction=None):
-    if request.method == "POST":
-        pprint(request.POST)
     
-    layer = {}
-    try:
-        layer = _resolve_layer(request, overlay, "base.view_resourcebase", _PERMISSION_VIEW )
-    except Exception as e:
-        layer = _resolve_layer(request, settings.MUNICIPALITY_SHAPEFILE, _PERMISSION_VIEW)
-        overlay = settings.MUNICIPALITY_SHAPEFILE
+    context_dict = {}
+    context_dict["grid"] = get_layer_config(request, overlay, "base.view_resourcebase", _PERMISSION_VIEW )
+    
+    
+    
+    group_name = u"Data Requesters"
+    requesters_group, created = GroupProfile.objects.get_or_create(
+        title=group_name,
+        slug=slugify(group_name),
+        access='private',
+    )
+    
+    if not requesters_group.user_is_member(request.user) and created:
+        requesters_group.join(request.user)
+    
+    if jurisdiction is None:
+        try:
+            jurisdiction_object = UserJurisdiction.objects.get(user=request.user)
+            jurisdiction_shapefile = jurisdiction_object.jurisdiction_shapefile
+        except ObjectDoesNotExist:
+            print "No jurisdiction found"
+            jurisdiction_shapefile = DataRequestProfile.objects.get(username=request.user.username,email=request.user.email, request_status='approved').jurisdiction_shapefile
+            jurisdiction_object = UserJurisdiction(user=request.user, jurisdiction_shapefile=jurisdiction_shapefile)
+            resource = jurisdiction_shapefile
+            perms = resource.get_all_level_info()
+            perms["users"][request.user.username]=["view_resourcebase"]
+            resource.set_permissions(perms);
+            jurisdiction_object.save()
+        
+        context_dict["jurisdiction"] = get_layer_config(request,jurisdiction_object.jurisdiction_shapefile.typename, "base.view_resourcebase", _PERMISSION_VIEW)
+        context_dict["jurisdiction_name"] = jurisdiction_object.jurisdiction_shapefile.typename
             
-    config = layer.attribute_config()
-    layer_bbox = layer.bbox
-    bbox = [float(coord) for coord in list(layer_bbox[0:4])]
-    srid = layer.srid
-    
-    # Transform WGS84 to Mercator.
-    config["srs"] = srid if srid != "EPSG:4326" else "EPSG:900913"
-    config["bbox"] = llbbox_to_mercator([float(coord) for coord in bbox])
-
-    config["title"] = layer.title
-    config["queryable"] = True
-
-    if layer.storeType == "remoteStore":
-        service = layer.service
-        source_params = {
-            "ptype": service.ptype,
-            "remote": True,
-            "url": service.base_url,
-            "name": service.name}
-        maplayer = GXPLayer(
-            name=layer.typename,
-            ows_url=layer.ows_url,
-            layer_params=json.dumps(config),
-            source_params=json.dumps(source_params))
     else:
-        maplayer = GXPLayer(
-            name=layer.typename,
-            ows_url=layer.ows_url,
-            layer_params=json.dumps(config))
-
-    map_obj = GXPMap(projection="EPSG:900913")
-    NON_WMS_BASE_LAYERS = [
-        la for la in default_map_config()[1] if la.ows_url is None]
-
-    metadata = layer.link_set.metadata().filter(
-        name__in=settings.DOWNLOAD_FORMATS_METADATA)
-
-    context_dict = {
-        "data_classes": DataClassification.labels.values(),
-        "resource": layer,
-        "permissions_json": _perms_info_json(layer),
-        "metadata": metadata,
-        "is_layer": True,
-        "wps_enabled": settings.OGC_SERVER['default']['WPS_ENABLED'],
-    }
+        context_dict["jurisdiction"] = get_layer_config(request,jurisdiction, "base.view_resourcebase", _PERMISSION_VIEW)
     
-    context_dict["viewer"] = json.dumps(
-        map_obj.viewer_json(request.user, * (NON_WMS_BASE_LAYERS + [maplayer])))
-        
-    context_dict["layer"]  = overlay
-    
-    #context_dict["geoserver"] = settings.OGC_SERVER['default']['PUBLIC_LOCATION']
-    context_dict["geoserver"] = settings.OGC_SERVER['default']['PUBLIC_LOCATION']
-    context_dict["siteurl"] = settings.SITEURL
-        
     context_dict["feature_municipality"]  = settings.MUNICIPALITY_SHAPEFILE.split(":")[1]
     context_dict["feature_tiled"] = overlay.split(":")[1]
     context_dict["test_mode"]=test_mode
-    try:
-        jurisdiction = UserJurisdiction.objects.get(user=request.user)
-        context_dict["jurisdiction"]=jurisdiction.get_shapefile_typename()
-        context_dict["feature_juris"] = context_dict["jurisdiction"].split(":")[1]
-        juris_layer = _resolve_layer(request, context_dict["jurisdiction"], "base.view_resourcebase", _PERMISSION_VIEW )
-        juris_bbox = juris_layer.bbox
-        j_bbox = [float(coord) for coord in list(juris_bbox[0:4])]
-        context_dict["j_bbox"] = json.dumps(llbbox_to_mercator([float(coord) for coord in j_bbox]))
-    except ObjectDoesNotExist:
-        context_dict["jurisdiction"]=""
-        
+    context_dict["data_classes"]= DataClassification.labels.values()
+    #context_dict["projections"]= SRS.labels.values()
+    
     return render_to_response(template, RequestContext(request, context_dict))
-
-
+    
+#
+# Function for processing the georefs submitted by the user
+#
 def process_georefs(request):
     if request.method == "POST":
         try:
+            #Get georef list
             georef_area = request.POST['georef_area']
             georef_list = filter(None, georef_area.split(","))
-            #spprint(georef_list)
-            #TODO: find all files with these georefs and add them to cart
+            
+            #Get the requested dataclasses
+            data_classes = list()
+            for data_class in DataClassification.labels.values():
+                if request.POST.get(slugify(data_class.decode('cp1252'))):
+                    data_classes.append(data_class)
+            
+            #Construct filter for excluding unselected data classes
+            dataclass_filter = DataClassification.labels.keys()
+            for dataclass, label in DataClassification.labels.iteritems():
+                if label in data_classes:
+                    dataclass_filter.remove(dataclass)
+            
+            #Initialize variables for counting empty and duplicates 
             count = 0
             empty_georefs = 0
             duplicates = []
             
             for georef in georef_list:      # Process each georef in list
-                objects = CephDataObject.objects.filter(name__startswith=georef)
+                
+                #Build filter query to exclude unselected data classes 
+                filter_query = Q(name__startswith=georef)
+                for filtered_class in dataclass_filter:
+                    filter_query = filter_query & ~Q(data_class=filtered_class)
+                
+                #Execute query 
+                objects = CephDataObject.objects.filter(filter_query)
+                
+                #Count duplicates and empty references
                 count += len(objects)
                 if len(objects) > 0:
                     for ceph_obj in objects:    # Add each Ceph object to cart
@@ -191,6 +189,9 @@ def process_georefs(request):
     else:   # Must process HTTP POST method from form
         raise Exception("HTTP method must be POST!")    
 
+#
+# Validates if the total file size requested is less than the limit specified in local settings
+#
 @login_required
 def georefs_validation(request):
     """
@@ -204,13 +205,22 @@ def georefs_validation(request):
         )
     else:
         georefs = request.POST["georefs"]
+        print("[VALIDATION]")
+        pprint(request.POST)
         georefs_list = filter(None, georefs.split(","))
         cart_total_size = get_cart_datasize(request)
         
-        yesterday = datetime.now() -  timedelta(days=1)
+        #Retrieve FTPRequests from the last 24 hours
+        #yesterday = datetime.now() -  timedelta(days=1)
+        #requests_last24h = FTPRequest.objects.filter(date_time__gt=yesterday, user=request.user)
         
-        requests_last24h = FTPRequest.objects.filter(date_time__gt=yesterday, user=request.user)
-        
+        #Retrieve FTPRequests since midnight
+        today_min = datetime.combine(date.today(), time.min)
+        today_max = datetime.combine(date.today(), time.max)
+        requests_today = FTPRequest.objects.filter(user=request.user, date_time__range=(today_min, today_max))
+        #requests_today = FTPRequest.objects.filter(date_time__gt=today_min, user=request.user)
+        print "PREVIOUS REQUESTS:  "
+        pprint(requests_today)
         total_size = 0
         for georef in georefs_list:
             objects = CephDataObject.objects.filter(name__startswith=georef)
@@ -219,7 +229,8 @@ def georefs_validation(request):
                 
         request_size_last24h = 0
         
-        for r in requests_last24h:
+        #for r in requests_last24h:
+        for r in requests_today:
             request_size_last24h += r.size_in_bytes
         
         if total_size + cart_total_size + request_size_last24h > settings.SELECTION_LIMIT:            
@@ -237,6 +248,9 @@ def georefs_validation(request):
                 content_type="application/json"
             )
 
+#
+# Function for looking up the municipalities within a province
+#
 @login_required
 def province_lookup(request, province=""):
     if province=="":
@@ -260,6 +274,4 @@ def province_lookup(request, province=""):
             status=200,
             content_type="application/json",
         )
-    
-
     
