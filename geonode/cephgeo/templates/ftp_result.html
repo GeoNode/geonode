@@ -19,7 +19,7 @@
   <br /><br /><br />
   <h4><b>Total Size: </b> {{ total_size | filesizeformat }}</h4>
 	<ul class="list-inline pull-right" id="sort">
-	  <li><a href="{% url 'ceph_main' %}"><button class="btn btn-default">{% trans "Return to Datastore Main Page" %}</button></a></li>
+	  <li><a href="{% url 'maptiles_main' %}"><button class="btn btn-default">{% trans "Return to Data Selection" %}</button></a></li>
 	</ul>
     {% if ftp_objects %}
 	    <table border="3" style="width:100%">
