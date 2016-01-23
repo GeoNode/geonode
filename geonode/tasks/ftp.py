@@ -253,13 +253,13 @@ def get_folder_for_user(user):
     
     for group in groups:
         if group.slug == u'phil-lidar-1-sucs':
-            return "/mnt/FTP/PL1/{0}/DL/DAD/geonode_requests".format(user.username)
+            return "/mnt/FTP/PL1/{0}/DL/DAD/lipad_requests".format(user.username)
         elif group.slug == u'phil-lidar-2-sucs':
-            return "/mnt/FTP/PL2/{0}/DL/DAD/geonode_requests".format(user.username)
+            return "/mnt/FTP/PL2/{0}/DL/DAD/lipad_requests".format(user.username)
         elif group.slug == u'other-data-requesters':
-            return "/mnt/FTP/Others/{0}/DL/DAD/geonode_requests".format(user.username)
+            return "/mnt/FTP/Others/{0}/DL/DAD/lipad_requests".format(user.username)
         elif group.slug == u'data-requesters':
-            return "/mnt/FTP/Others/{0}/DL/DAD/geonode_requests".format(user.username)
+            return "/mnt/FTP/Others/{0}/DL/DAD/lipad_requests".format(user.username)
         else:
             return "/mnt/FTP/PL1/testfolder/DL/DAD/geonode_requests"
 
