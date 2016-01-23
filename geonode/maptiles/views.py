@@ -83,7 +83,7 @@ def tiled_view(request, overlay=settings.TILED_SHAPEFILE, template="maptiles/map
     
     
     
-    group_name = "Data Requesters"
+    group_name = u"Data Requesters"
     requesters_group, created = GroupProfile.objects.get_or_create(
         title=group_name,
         slug=slugify(group_name),
