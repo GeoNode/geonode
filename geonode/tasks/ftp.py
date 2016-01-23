@@ -249,7 +249,11 @@ def get_folder_for_user(user):
         raise UserEmptyException(user)
     
     # Filter group if [PL1, PL2, Others, Test] ##
+    
     groups = GroupProfile.objects.filter(groupmember__user=user,groupmember__role='member')
+    
+    if groups is None:
+        raise CephAccessException("User is not part of any FTP user group in LiPAD, no FTP folder can be found.")
     
     for group in groups:
         if group.slug == u'phil-lidar-1-sucs':
