@@ -264,8 +264,8 @@ def get_folder_for_user(user):
             return "/mnt/FTP/Others/{0}/DL/DAD/lipad_requests".format(user.username)
         elif group.slug == u'data-requesters':
             return "/mnt/FTP/Others/{0}/DL/DAD/lipad_requests".format(user.username)
-        else:
-            raise CephAccessException("User is not part of any FTP user group in LiPAD, no FTP folder can be found.")
+    
+    raise CephAccessException("User is not part of any FTP user group in LiPAD, no FTP folder can be found.")
 
 def mail_ftp_user(username, user_email, mail_subject, mail_msg):
     #DEBUG
