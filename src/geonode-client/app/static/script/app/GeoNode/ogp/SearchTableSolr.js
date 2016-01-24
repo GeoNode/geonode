@@ -66,12 +66,18 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
             this.fireEvent('load', this);
             var rows = this.table.getView().getRows();
             $.each(rows, function(index, row){
+                var timeout = null;
                 $(row).on('mouseover', function(){
-                    self.doMouseoverOn(index);
+                    // set a small timeout so to not add new layers while the mouse is 
+                    // just passing on the list
+                    timeout = setTimeout(function(){self.doMouseoverOn(index)}, 50);
                 });
 
                 $(row).on('mouseout', function(){
-                    self.doMouseoverOff(index);
+                    if(timeout |= null){
+                        self.doMouseoverOff(index);
+                    };
+                    clearTimeout(timeout);
                 });
             });
         }, this);
@@ -297,7 +303,7 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
                      *  is tied to rendered div's class.
                      */
                     
-                     return '<div class="x-grid3-row-checker">&#160;</div>';
+                    return '<div class="x-grid3-row-checker">&#160;</div>';
                     
                 }
             });
