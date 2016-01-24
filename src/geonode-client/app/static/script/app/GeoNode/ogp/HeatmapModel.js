@@ -224,8 +224,7 @@ GeoNode.HeatmapModel = Ext.extend(Ext.util.Observable, {
       }
     }
 
-    this.jenksClassifications = this.cleanupClassifications(jenksClassifications);
-    return jenksClassifications;
+    return this.cleanupClassifications(jenksClassifications);
   },
 
   cleanupClassifications: function(classifications){
@@ -234,7 +233,8 @@ GeoNode.HeatmapModel = Ext.extend(Ext.util.Observable, {
     if (lastZero == -1){
       return classifications;
     };
-    return classifications.slice(lastZero, classifications.length);
+    classifications = classifications.slice(lastZero, classifications.length);
+    return classifications;
   },
 
   getColors: function(){
@@ -250,7 +250,7 @@ GeoNode.HeatmapModel = Ext.extend(Ext.util.Observable, {
     var colorGradient = {};
     for (var i = 0 ; i < classifications.length ; i++){
       var value = classifications[i];
-      var scaledValue = this.rescaleHeatmapValue(value, this.jenksClassifications[0], maxValue);
+      var scaledValue = this.rescaleHeatmapValue(value, classifications[0], maxValue);
       if (scaledValue < 0){
         scaledValue = 0;
       }
