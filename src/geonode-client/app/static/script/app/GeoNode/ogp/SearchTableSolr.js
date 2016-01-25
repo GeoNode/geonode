@@ -55,7 +55,8 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
                 {name: 'MaxX', type: 'string'},
                 {name: 'MaxY', type: 'string'},
                 {name: 'Originator', type: 'string'},
-                {name: 'Location', type:'string'}
+                {name: 'Location', type: 'string'},
+                {name: 'LayerId', type: 'string'}
             ]
         });
         this.searchStore.on('load', function() {
@@ -118,8 +119,7 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
         
         this._search(GeoNode.queryTerms);
     },
-    
-    
+
     _search: function(params) {
        /* search with given parameters */  
         this.disableControls();

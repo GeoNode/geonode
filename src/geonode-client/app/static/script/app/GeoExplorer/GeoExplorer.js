@@ -1093,14 +1093,14 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             if (isLocal) {
                 //Get all the required WMS parameters from the GeoNode/Worldmap database
                 // instead of GetCapabilities
-                var layer = records[i].get("name");
-                var tiled = records[i].get("tiled");
+                var typename = this.searchTable.getlayerTypename(records[i]);
+                var tiled = thisRecord.get("tiled") || true;
 
 
                 Ext.Ajax.request({
-                    url: "/maps/addgeonodelayer/?" + thisRecord.get("name"),
+                    url: "/maps/addgeonodelayer/?" + typename,
                     method: "POST",
-                    params: {layername:thisRecord.get("name")},
+                    params: {layername: typename},
 
                     success: function(result, request) {
                         var jsonData = Ext.util.JSON.decode(result.responseText);
@@ -1129,12 +1129,9 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                                 geoEx.layerTree.addCategoryFolder({"group":record.get("group")}, true);
                                 layerStore.add([record]);
 
-
                                 //geoEx.reorderNodes(record.getLayer());
                                 geoEx.layerTree.overlayRoot.findDescendant("layer", record.getLayer()).select();
                             }
-
-
                         }
                     },
                     failure: function(result, request) {
@@ -2276,7 +2273,6 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
         }
         this.searchWindow.show();
         this.searchWindow.alignTo(document, 'tl-tl');
-        //this.searchTable.doSearch();
 
         //Apparently the ext slider has a bug in positioning the thumbs.
         // this is a workaround, we do this after the search window has been rendered.
