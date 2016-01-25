@@ -249,26 +249,30 @@ def get_folder_for_user(user):
         raise UserEmptyException(user)
     
     # Filter group if [PL1, PL2, Others, Test] ##
+    
     groups = GroupProfile.objects.filter(groupmember__user=user,groupmember__role='member')
+    
+    if groups is None:
+        raise CephAccessException("User is not part of any FTP user group in LiPAD, no FTP folder can be found.")
     
     for group in groups:
         if group.slug == u'phil-lidar-1-sucs':
-            return "/mnt/FTP/PL1/{0}/DL/DAD/geonode_requests".format(user.username)
+            return "/mnt/FTP/PL1/{0}/DL/DAD/lipad_requests".format(user.username)
         elif group.slug == u'phil-lidar-2-sucs':
-            return "/mnt/FTP/PL2/{0}/DL/DAD/geonode_requests".format(user.username)
+            return "/mnt/FTP/PL2/{0}/DL/DAD/lipad_requests".format(user.username)
         elif group.slug == u'other-data-requesters':
-            return "/mnt/FTP/Others/{0}/DL/DAD/geonode_requests".format(user.username)
+            return "/mnt/FTP/Others/{0}/DL/DAD/lipad_requests".format(user.username)
         elif group.slug == u'data-requesters':
-            return "/mnt/FTP/Others/{0}/DL/DAD/geonode_requests".format(user.username)
-        else:
-            return "/mnt/FTP/PL1/testfolder/DL/DAD/geonode_requests"
+            return "/mnt/FTP/Others/{0}/DL/DAD/lipad_requests".format(user.username)
+    
+    raise CephAccessException("User is not part of any FTP user group in LiPAD, no FTP folder can be found.")
 
 def mail_ftp_user(username, user_email, mail_subject, mail_msg):
     #DEBUG
     mail_subject = "Phil-LiDAR FTP Request [{0}] for User [{1}]".format(mail_subject,username)
     mail_body = """\
 This is an automated mailer. DO NOT REPLY TO THIS MAIL! Send your e-mails to the site administrator.
-This is an e-mail regarding your FTP request from geonode.dream.upd.edu.ph. Details are found below:
+This is an e-mail regarding your FTP request from LiPAD. Details are found below:
 
 """+mail_msg
     args_tup = (mail_subject, mail_body, settings.FTP_AUTOMAIL,

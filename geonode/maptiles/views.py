@@ -26,6 +26,8 @@ from geonode.maptiles.utils import *
 from geonode.datarequests.models import DataRequestProfile
 from geonode.documents.models import get_related_documents
 from geonode.registration.models import Province, Municipality 
+from geonode.base.models import ResourceBase
+from geonode.groups.models import GroupProfile
 
 import geonode.settings as settings
 
@@ -78,6 +80,19 @@ def tiled_view(request, overlay=settings.TILED_SHAPEFILE, template="maptiles/map
     
     context_dict = {}
     context_dict["grid"] = get_layer_config(request, overlay, "base.view_resourcebase", _PERMISSION_VIEW )
+    
+    
+    
+    group_name = u"Data Requesters"
+    requesters_group, created = GroupProfile.objects.get_or_create(
+        title=group_name,
+        slug=slugify(group_name),
+        access='private',
+    )
+    
+    if not requesters_group.user_is_member(request.user) and created:
+        requesters_group.join(request.user)
+    
     if jurisdiction is None:
         try:
             jurisdiction_object = UserJurisdiction.objects.get(user=request.user)
@@ -86,6 +101,10 @@ def tiled_view(request, overlay=settings.TILED_SHAPEFILE, template="maptiles/map
             print "No jurisdiction found"
             jurisdiction_shapefile = DataRequestProfile.objects.get(username=request.user.username,email=request.user.email, request_status='approved').jurisdiction_shapefile
             jurisdiction_object = UserJurisdiction(user=request.user, jurisdiction_shapefile=jurisdiction_shapefile)
+            resource = jurisdiction_shapefile
+            perms = resource.get_all_level_info()
+            perms["users"][request.user.username]=["view_resourcebase"]
+            resource.set_permissions(perms);
             jurisdiction_object.save()
         
         context_dict["jurisdiction"] = get_layer_config(request,jurisdiction_object.jurisdiction_shapefile.typename, "base.view_resourcebase", _PERMISSION_VIEW)

@@ -476,9 +476,9 @@ EMAIL_HOST = "mail.lan.dream.upd.edu.ph"
 EMAIL_PORT = 25
 
 # Email for users to contact admins.
-THEME_ACCOUNT_CONTACT_EMAIL = 'lipad-support@dream.upd.edu.ph'
-LIPAD_SUPPORT_MAIL = 'lipad-support@dream.upd.edu.ph'
-FTP_SUPPORT_MAIL = 'support@dream.upd.edu.ph'
+THEME_ACCOUNT_CONTACT_EMAIL = 'lipad@dream.upd.edu.ph'
+LIPAD_SUPPORT_MAIL = 'lipad@dream.upd.edu.ph'
+FTP_SUPPORT_MAIL = 'lipad@dream.upd.edu.ph'
 FTP_AUTOMAIL = 'automailer@dream.upd.edu.ph'
 
 #
