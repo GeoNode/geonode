@@ -84,13 +84,13 @@ def tiled_view(request, overlay=settings.TILED_SHAPEFILE, template="maptiles/map
     
     
     group_name = u"Data Requesters"
-    requesters_group, created = GroupProfile.objects.get_or_create(
+    requesters_group, requesters_group_created = GroupProfile.objects.get_or_create(
         title=group_name,
         slug=slugify(group_name),
         access='private',
     )
     
-    if not requesters_group.user_is_member(request.user) and created:
+    if Datarequesters_group_created and not requesters_group.user_is_member(request.user):
         requesters_group.join(request.user)
     
     if jurisdiction is None:
@@ -106,6 +106,13 @@ def tiled_view(request, overlay=settings.TILED_SHAPEFILE, template="maptiles/map
             perms["users"][request.user.username]=["view_resourcebase"]
             resource.set_permissions(perms);
             jurisdiction_object.save()
+            
+            group_name = u"Data Requesters"
+            requesters_group, requesters_group_created = GroupProfile.objects.get_or_create(
+                title=group_name,
+                slug=slugify(group_name),
+                access='private',
+            )
         
         context_dict["jurisdiction"] = get_layer_config(request,jurisdiction_object.jurisdiction_shapefile.typename, "base.view_resourcebase", _PERMISSION_VIEW)
         context_dict["jurisdiction_name"] = jurisdiction_object.jurisdiction_shapefile.typename
