@@ -218,7 +218,7 @@ GeoNode.HeatmapModel = Ext.extend(Ext.util.Observable, {
 
     var jenksClassifications = series.getClassJenks(this.getColors().length);
 
-    for (var i = 0 ; i < jenksClassifications.length ; i++){
+    for (var i = 0 ; i < jenksClassifications.length; i++){
       if (jenksClassifications[i] < 0){
         jenksClassifications[i] = 0;
       }
@@ -248,7 +248,7 @@ GeoNode.HeatmapModel = Ext.extend(Ext.util.Observable, {
 
     var colors = this.getColors();
     var colorGradient = {};
-    for (var i = 0 ; i < classifications.length ; i++){
+    for (var i = 0 ; i < classifications.length -1 ; i++){
       var value = classifications[i];
       var scaledValue = this.rescaleHeatmapValue(value, classifications[0], maxValue);
       if (scaledValue < 0){
