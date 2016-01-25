@@ -224,6 +224,7 @@ class Layer(ResourceBase):
             ('change_layer_data', 'Can edit layer data'),
             ('change_layer_style', 'Can change layer style'),
         )
+        verbose_name_plural = 'StoryLayers'
 
     # Permission Level Constants
     # LEVEL_NONE inherited

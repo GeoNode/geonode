@@ -372,6 +372,7 @@ class Map(ResourceBase, GXPMapBase):
         return lg_name
 
     class Meta(ResourceBase.Meta):
+        verbose_name_plural = 'MapStories'
         pass
 
 
