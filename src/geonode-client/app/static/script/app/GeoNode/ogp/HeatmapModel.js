@@ -248,7 +248,11 @@ GeoNode.HeatmapModel = Ext.extend(Ext.util.Observable, {
 
     var colors = this.getColors();
     var colorGradient = {};
-    for (var i = 0 ; i < classifications.length -1 ; i++){
+    var classes = classifications.length;
+    if(classifications.length == 8){
+      classes -= 1;
+    }
+    for (var i = 0 ; i < classes; i++){
       var value = classifications[i];
       var scaledValue = this.rescaleHeatmapValue(value, classifications[0], maxValue);
       if (scaledValue < 0){
