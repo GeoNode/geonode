@@ -32,6 +32,16 @@
     <h3>What is GeoWebCache?</h3>
     <p>GeoWebCache provides mapping tiles that are compatible with a number of mapping engines, including Google Maps, Bing Maps and OpenLayers. All the data hosted by GeoNode is also available through GeoWebCache. GeoWebCache improves on WMS by caching data and providing more responsive maps.</p>
 
+    <h3>CSW Example Code</h3>
+    <p>To interact with GeoNode's CSW you can use any CSW client (QGIS MetaSearch, GRASS, etc.).  The following example illustrates a simple invocation using the OWSLib Python package:</p>
+    <p><code>from owslib.csw import CatalogueServiceWeb</code></p>
+    <p><code>from owslib.fes import PropertyIsLike</code></p>
+    <p><code>csw = CatalogueServiceWeb('{{ CATALOGUE_BASE_URL }}')</code></p>
+    <p><code>anytext = PropertyIsLike('csw:AnyText', 'birds')')</code></p>
+    <p><code>csw.getrecords2(constraints=[anytext])</code></p>
+    <p><code>print csw.results</code></p>
+    <p><code>print csw.records</code></p>
+
     <h3>OpenLayers Example Code</h3>
 
     <p>To include a GeoNode map layer in an OpenLayers map, first find the name for that layer. This is found in the layer's <code>name</code> field (not <code>title</code>) of the layer list. For this example, we will use the Nicaraguan political boundaries background layer, whose name is <code>risk:nicaragua_admin</code>. Then, create an instance of OpenLayers.Layer.WMS:</p>
