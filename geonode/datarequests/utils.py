@@ -1,6 +1,8 @@
 import random
 import string
+import ldap
 
+from pprint import pprintt
 from django.core.exceptions import ObjectDoesNotExist
 
 from geonode.people.models import Profile
@@ -40,3 +42,8 @@ def create_login_credentials(data_request):
         password += random.choice(string.lowercase + string.uppercase + string.digits)
 
     return final_username, password
+
+def get_unames_starting_with(name):
+    return list_of_unames
+
+def create_ad_account(username, password):
