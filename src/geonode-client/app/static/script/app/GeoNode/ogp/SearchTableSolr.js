@@ -56,7 +56,8 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
                 {name: 'MaxY', type: 'string'},
                 {name: 'Originator', type: 'string'},
                 {name: 'Location', type: 'string'},
-                {name: 'LayerId', type: 'string'}
+                {name: 'LayerId', type: 'string'},
+                {name: 'ContentDate', type: 'string'}
             ]
         });
         this.searchStore.on('load', function() {
@@ -270,27 +271,30 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
         var remoteTooltip = this.remoteTooltip;
         
         var columns = [
-            //expander,
-            /*
-            {header: this.nameHeaderText,
-             dataIndex: 'name',
-             hidden: true,
-             id: 'name',
-             width: 35
-            },*/
             {
                 header: this.titleHeaderText,
                 dataIndex: 'LayerDisplayName',
                 id: 'title',
-                sortable: true
+                sortable: true,
+                renderer: function(value, metaData, record, rowIndex, colIndex, store){
+                    return '<a href="/layers/' + self.getlayerTypename(record) +'" target=_blank>' + record.get('LayerDisplayName')+ '</a>'
+                }
             },
             {
                 header: this.originatorText,
                 dataIndex: 'Originator',
                 id: 'originator',
                 sortable: true
+            },
+            {
+                header: 'Date',
+                id: 'date',
+                sortable: true,
+                renderer: function(value, metaData, record, rowIndex, colIndex, store){
+                    var date = new Date(record.get('ContentDate'));
+                    return date.toDateString();
+                }
             }
-            
         ];
         
         if (this.trackSelection == true) {
@@ -350,11 +354,12 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
             ]
         });
 
-        this.dateLabel = new Ext.form.Label({text: 'Select Dates'});
+        
         this.dateInput = new GeoNode.TimeSlider();
         this.dateInput.addListener('changecomplete', function(slider, value, thumb){
             self.dateLabel.setText(self.dateInput.getReadableDates());
         });
+        this.dateLabel = new Ext.form.Label({text: self.dateInput.getReadableDates()});
 
         var searchButton = new Ext.Button({
             text: this.searchButtonText

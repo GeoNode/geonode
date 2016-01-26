@@ -12,7 +12,7 @@ GeoNode.BoundingBoxWidget = Ext.extend(Ext.util.Observable, {
     isEnabled: false,
     useGxpViewer: false,
 
-    gwcBackend: 'http://worldmap.harvard.edu/geoserver/wms',
+    gwcBackend: '/hyperpreview/',
 
     constructor: function(config, vanillaViewer) {
         Ext.apply(this, config);
@@ -407,12 +407,11 @@ GeoNode.BoundingBoxWidget = Ext.extend(Ext.util.Observable, {
     },
 
     createPreviewLayer: function(typename){
-        var layer = new OpenLayers.Layer.WMS(
+        var layer = new OpenLayers.Layer.OSM(
             typename,
-            this.gwcBackend,
+            this.gwcBackend+'?layers=' + typename +'&zoom=${z}&x=${x}&y=${y}&format=image/png8',
             {
-                layers: typename,
-                transparent: true
+                isBaseLayer: false
             }
         );
         layer.preview = true;
