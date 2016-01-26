@@ -4,6 +4,7 @@ from django.contrib.sites.models import Site
 from django.core.mail import EmailMultiAlternatives
 from django.core.urlresolvers import reverse
 from django.template.defaultfilters import slugify
+from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.utils import timezone
 from django.utils.crypto import get_random_string
 from django.utils.translation import ugettext as _
@@ -27,7 +28,7 @@ from pprint import pprint
 
 import geonode.settings as local_settings
 
-from .utils import create_login_credentials
+from .utils import create_login_credentials, create_ad_account
 
 class DataRequestProfile(TimeStampedModel):
 
@@ -396,58 +397,55 @@ class DataRequestProfile(TimeStampedModel):
         msg.attach_alternative(html_content, "text/html")
         msg.send()
 
-    def create_account(self, username, password, directory):
-        #username, password = create_login_credentials(self)
-        #profile_account = Profile.objects.create(
-                # from User model
-        #       username=username,
-        #        first_name=self.first_name,
-        #        last_name=self.last_name,
-        #        email=self.email,
-        #        is_active=True,
-        #        is_staff=False,
-        #        is_superuser=False,
-        #        last_login=timezone.now(),
-        #        date_joined=timezone.now(),
+    def create_account(self):
+        uname = create_login_credentials(self)
+        pprint("Creating account for "+uname)
+        if create_ad_account(self, uname):
+            profile = LDAPBackend().populate_user(uname)
+            if profile is None:
+                pprint("Account was not created")
+                raise Http404
+            
+            # Link data request to profile and updating other fields of the request
+            self.username = uname
+            self.profile = profile
+            self.ftp_folder = "Others/"+uname
+            self.save()
+            
+            # Link shapefile to account
+            UserJurisdiction.objects.create(
+                user=profile,
+                jurisdiction_shapefile=self.jurisdiction_shapefile,
+            )
+            
+            #Add view permission on resource
+            resource = self.jurisdiction_shapefile
+            perms = resource.get_all_level_info()
+            perms["users"][profile.username]=["view_resourcebase"]
+            resource.set_permissions(perms);
 
-                # from Profile model
-        #        organization=self.organization,
-        #        organization_type=self.organization_type
+            # Add account to requesters group
+            group_name = "Data Requesters"
+            requesters_group, created = GroupProfile.objects.get_or_create(
+                title=group_name,
+                slug=slugify(group_name),
+                access='private',
+            )
 
-        #    )
-        #profile_account.set_password(password)
-        #profile_account.save()
+            requesters_group.join(profile)
+            
+            profile.is_active=True
+            profile.save()
+            
+            self.request_status = 'approved'
+            self.save()
 
-        # Link data request to profile
-        #self.profile = profile_account
-        #self.save()
+            self.send_approval_email(uname, self.ftp_folder)
+            
+        else:
+            raise Http404
 
-        # Link shapefile to account
-        #UserJurisdiction.objects.create(
-        #   user=profile_account,
-        #    jurisdiction_shapefile=self.jurisdiction_shapefile,
-        #)
-
-        #Add view permission on resource
-        #resource = self.jurisdiction_shapefile
-        #perms = resource.get_all_level_info()
-        #perms["users"][profile_account.username]=["view_resourcebase"]
-        #resource.set_permissions(perms);
-
-        # Add account to requesters group
-        #group_name = "Data Requesters"
-        #requesters_group, created = GroupProfile.objects.get_or_create(
-        #   title=group_name,
-        #    slug=slugify(group_name),
-        #    access='private',
-        #)
-
-        #requesters_group.join(profile_account)
-
-        self.send_approval_email(username, password, directory)
-
-
-    def send_approval_email(self, username, password,directory):
+    def send_approval_email(self, username, directory):
 
         site = Site.objects.get_current()
         profile_url = (
@@ -462,9 +460,10 @@ class DataRequestProfile(TimeStampedModel):
         Your data request registration for LiPAD was approved!
         You will now be able to log in using the following log-in credentials:
         username: {}
-        password: {}
         
         Your designated FTP directory is: {}
+        
+        Before you are able to login to LiPAD, visit first https://ssp.dream.upd.edu.ph/?action=sendtoken and follow the instructions to (re)set a password for your account
         
         You will be able to edit your account details by logging in and going to the following link:
         {}
@@ -476,7 +475,6 @@ class DataRequestProfile(TimeStampedModel):
          """.format(
              self.first_name,
              username,
-             password,
              directory,
              profile_url,
              settings.LIPAD_SUPPORT_MAIL,
@@ -487,8 +485,10 @@ class DataRequestProfile(TimeStampedModel):
 
        <p>Your data request registration for LiPAD was approved! You will now be able to log in using the following log-in credentials:</p>
        username: <strong>{}</strong><br/>
-       password: <strong>{}</strong>
        </br>
+       Your designated FTP directory is: <strong{}</strong><br/>
+       </br>
+       <p>Before you are able to login to LiPAD, visit first https://ssp.dream.upd.edu.ph/?action=sendtoken and follow the instructions to (re)set a password for your account</p></br>
        <p>You will be able to edit your account details by logging in and going to the following link:</p>
        {}
        </br>
@@ -499,7 +499,6 @@ class DataRequestProfile(TimeStampedModel):
         """.format(
              self.first_name,
              username,
-             password,
              profile_url,
              settings.LIPAD_SUPPORT_MAIL,
              settings.LIPAD_SUPPORT_MAIL,
