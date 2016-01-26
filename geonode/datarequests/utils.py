@@ -40,7 +40,7 @@ def create_login_credentials(data_request):
     for i in range(16):
         password += random.choice(string.lowercase + string.uppercase + string.digits)
 
-    return final_username, password
+    return final_username, password, 
 
 def get_unames_starting_with(name):
     con =ldap.initialize(settings.AUTH_LDAP_SERVER_URI)

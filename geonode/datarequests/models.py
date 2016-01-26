@@ -398,6 +398,7 @@ class DataRequestProfile(TimeStampedModel):
 
     def create_account(self):
         uname, pword = create_login_credentials(self)
+        pprint("Creating account for "+uname)
         if create_ad_account(self, uname, pword):
             profile = LDAPBackend().populate_user(uname)
             if user is None:
