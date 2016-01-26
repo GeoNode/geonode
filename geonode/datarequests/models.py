@@ -27,7 +27,7 @@ from pprint import pprint
 
 import geonode.settings as local_settings
 
-from .utils import create_login_credentials
+from .utils import create_login_credentials, create_ad_account
 
 class DataRequestProfile(TimeStampedModel):
 

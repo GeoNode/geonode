@@ -74,6 +74,7 @@ def create_ad_account(datarequest, username, password):
     }
     try:
         con = ldap.initialize(settings.AUTH_LDAP_SERVER_URI)
+        con.simple_bind_s(settings.LIPAD_LDAP_BIND_DN, LIPAD_LDAP_BIND_PASSWORD)
         result = con.add_s(dn,ldap.modlist.addModlist(modlist))
         con.unbind_s()
         pprint(result)
