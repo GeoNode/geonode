@@ -49,6 +49,6 @@ GeoNode.TimeSlider = Ext.extend(Ext.slider.MultiSlider, {
     },
 
     getReadableDates: function(){
-      return this.getThumbRedableDate(this.thumbs[0]) + ' to ' + this.getThumbRedableDate(this.thumbs[1])
+      return 'from ' + this.getThumbRedableDate(this.thumbs[0]) + ' to ' + this.getThumbRedableDate(this.thumbs[1])
     }
 });
