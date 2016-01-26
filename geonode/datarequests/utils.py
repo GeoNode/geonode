@@ -1,8 +1,10 @@
 import random
 import string
 import ldap
+import geonode.settings
 
-from pprint import pprintt
+
+from pprint import pprint
 from django.core.exceptions import ObjectDoesNotExist
 
 from geonode.people.models import Profile
@@ -23,18 +25,15 @@ def create_login_credentials(data_request):
     unique = False
     counter = 0
     final_username = base_username
+    username_list = get_unames_starting_with(base_username)
     while not unique:
         if counter > 0:
             final_username = final_username + str(counter)
-
-        try:
-            Profile.objects.get(
-                username=final_username,
-            )
-            counter += 1
-
-        except ObjectDoesNotExist:
-            unique = True
+            
+            if final_username in  username_list:
+                counter += 1
+            else:
+                unique = true
 
     # Generate random password
     password = ''
@@ -44,6 +43,39 @@ def create_login_credentials(data_request):
     return final_username, password
 
 def get_unames_starting_with(name):
-    return list_of_unames
+    con =ldap.initialize(settings.AUTH_LDAP_SERVER_URI)
+    con.simple_bind_s(settings.AUTH_LDAP_BIND_DN, AUTH_LDAP_BIND_PASSWORD)
+    result = con.search_s(settings.AUTH_LDAP_BASE_DN, ldap.SCOPE_SUBTREE, "(sAMAccountName="+name+"*)", ["sAMAccountName"])
+    pprint(result)
+    return result
 
-def create_ad_account(username, password):
+def create_ad_account(datarequest, username, password):
+    objectClass =  ["organizationalPerson", "person", "top", "user"]
+    sAMAccountName = username
+    sn= datarequest.last_name
+    givenName = datarequest.first_name
+    cn = datarequest.first_name+" "+datarequest.middle_name[0]+" "+datarequest.last_name
+    displayName=datarequest.first_name+" "+datarequest.middle_name[0]+". "+datarequest.last_name
+    mail=datarequest.email
+    userPrincipalName=username+"@ad.dream.upd.edu.ph"
+    userAccountControl = "512"
+    
+    dn="CN="+cn+","+settings.LIPAD_LDAP_BASE_DN
+    modList = {
+        "objectClass": objectClass,
+        "sAMAccountName": [sAMAccountName],
+        "sn": [sn],
+        "givenName": [givenName],
+        "cn":[cn],
+        "displayName": [displayName],
+        "mail": [mail],
+        "userPrincipalName": [userPrincipalName],
+        "userAccountControl": [userAccountControl]
+    }
+    try:
+        result = con.add_s(dn,ldap.modlist.addModlist(modlist))
+        pprint(result)
+        return true
+    except:
+        return false
+        

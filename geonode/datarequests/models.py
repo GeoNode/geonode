@@ -396,8 +396,46 @@ class DataRequestProfile(TimeStampedModel):
         msg.attach_alternative(html_content, "text/html")
         msg.send()
 
-    def create_account(self, username, password, directory):
-        #username, password = create_login_credentials(self)
+    def create_account(self):
+        uname, pword = create_login_credentials(self)
+        if create_ad_account(self, uname, pword):
+            profile = LDAPBackend().populate_user(uname)
+            if user is None:
+                raise Http404
+            
+            # Link data request to profile and updating other fields of the request
+            self.username = uname
+            self.profile = profile
+            self.ftp_directory = "Others/"+uname
+            self.save()
+            
+            # Link shapefile to account
+            UserJurisdiction.objects.create(
+                user=profile_account,
+                jurisdiction_shapefile=self.jurisdiction_shapefile,
+            )
+            
+            #Add view permission on resource
+            resource = self.jurisdiction_shapefile
+            perms = resource.get_all_level_info()
+            perms["users"][profille.username]=["view_resourcebase"]
+            resource.set_permissions(perms);
+
+            # Add account to requesters group
+            group_name = "Data Requesters"
+            requesters_group, created = GroupProfile.objects.get_or_create(
+                title=group_name,
+                slug=slugify(group_name),
+                access='private',
+            )
+
+            requesters_group.join(profile_account)
+
+            self.send_approval_email(username, password, directory)
+            
+        else:
+            raise Http404
+        
         #profile_account = Profile.objects.create(
                 # from User model
         #       username=username,
@@ -416,35 +454,7 @@ class DataRequestProfile(TimeStampedModel):
 
         #    )
         #profile_account.set_password(password)
-        #profile_account.save()
-
-        # Link data request to profile
-        #self.profile = profile_account
-        #self.save()
-
-        # Link shapefile to account
-        #UserJurisdiction.objects.create(
-        #   user=profile_account,
-        #    jurisdiction_shapefile=self.jurisdiction_shapefile,
-        #)
-
-        #Add view permission on resource
-        #resource = self.jurisdiction_shapefile
-        #perms = resource.get_all_level_info()
-        #perms["users"][profile_account.username]=["view_resourcebase"]
-        #resource.set_permissions(perms);
-
-        # Add account to requesters group
-        #group_name = "Data Requesters"
-        #requesters_group, created = GroupProfile.objects.get_or_create(
-        #   title=group_name,
-        #    slug=slugify(group_name),
-        #    access='private',
-        #)
-
-        #requesters_group.join(profile_account)
-
-        self.send_approval_email(username, password, directory)
+        #profile_account.save()      
 
 
     def send_approval_email(self, username, password,directory):
