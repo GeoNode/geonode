@@ -925,3 +925,7 @@ a.x-grid3-hd-btn {
 td.x-grid3-hd-over .x-grid3-hd-inner, td.sort-desc .x-grid3-hd-inner, td.sort-asc .x-grid3-hd-inner, td.x-grid3-hd-menu-open .x-grid3-hd-inner {
     background: transparent none repeat-x scroll left bottom;
 }
+
+ .olImageLoadError { 
+    opacity: 0 !important;
+    filter: alpha(opacity=0) !important; }
