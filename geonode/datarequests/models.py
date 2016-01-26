@@ -401,7 +401,8 @@ class DataRequestProfile(TimeStampedModel):
         pprint("Creating account for "+uname)
         if create_ad_account(self, uname, pword):
             profile = LDAPBackend().populate_user(uname)
-            if user is None:
+            if profile is None:
+                pprint("Account was not created")
                 raise Http404
             
             # Link data request to profile and updating other fields of the request
