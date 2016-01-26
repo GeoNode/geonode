@@ -72,7 +72,7 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
                 $(row).on('mouseover', function(){
                     // set a small timeout so to not add new layers while the mouse is 
                     // just passing on the list
-                    timeout = setTimeout(function(){self.doMouseoverOn(index)}, 50);
+                    timeout = setTimeout(function(){self.doMouseoverOn(index)}, 20);
                 });
 
                 $(row).on('mouseout', function(){
