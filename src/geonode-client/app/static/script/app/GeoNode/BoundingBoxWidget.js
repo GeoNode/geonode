@@ -12,7 +12,7 @@ GeoNode.BoundingBoxWidget = Ext.extend(Ext.util.Observable, {
     isEnabled: false,
     useGxpViewer: false,
 
-    gwcBackend: '/hyperpreview/',
+    gwcBackend: '/geoserver/gwc/service/gmaps/',
 
     constructor: function(config, vanillaViewer) {
         Ext.apply(this, config);
