@@ -1,5 +1,6 @@
 import json
 import os
+import logging
 
 from django.core.urlresolvers import reverse
 from django.http.response import HttpResponseServerError, HttpResponse
@@ -11,6 +12,8 @@ from geosafe.forms import (AnalysisCreationForm)
 from geosafe.tasks.analysis import if_list
 from tastypie.http import HttpBadRequest
 
+
+logger = logging.getLogger("geonode.geosafe.analysis")
 
 class AnalysisCreateView(CreateView):
     model = Analysis
@@ -54,7 +57,7 @@ def impact_function_filter(request):
     exposure_id = request.GET.get('exposure_id')
     hazard_id = request.GET.get('hazard_id')
 
-    print exposure_id+' '+hazard_id
+    logger.debug('Exposure ID: %s, Hazard ID: %s' % exposure_id, hazard_id)
 
     if not (exposure_id and hazard_id):
         raise HttpBadRequest
@@ -63,14 +66,14 @@ def impact_function_filter(request):
         exposure_layer = Layer.objects.get(id=exposure_id)
         hazard_layer = Layer.objects.get(id=hazard_id)
 
-        print exposure_layer
-        print hazard_layer
+        logger.debug('Exposure layer %s' % exposure_layer)
+        logger.debug('Hazard layer %s' % hazard_layer)
 
         hazard_file_path = hazard_layer.get_base_file()[0].file.path
         exposure_file_path = exposure_layer.get_base_file()[0].file.path
 
-        print hazard_file_path
-        print exposure_file_path
+        logger.debug('Exposure layer path: %s' % exposure_file_path)
+        logger.debug('Hazard layer path: %s' % hazard_file_path)
 
         impact_functions = if_list(
             hazard_file=hazard_file_path,
@@ -100,10 +103,10 @@ def layer_tiles(request):
             'layer_bbox_y0': float(layer.bbox_y0),
             'layer_bbox_y1': float(layer.bbox_y1)
         }
-        print context
+        logger.debug(context)
         return HttpResponse(
             json.dumps(context), content_type="application/json"
         )
     except Exception as e:
-        print e
+        logger.debug(e)
         raise HttpResponseServerError
