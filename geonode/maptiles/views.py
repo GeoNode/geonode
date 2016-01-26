@@ -8,7 +8,7 @@ from django.core.exceptions import ValidationError
 from django.core.exceptions import PermissionDenied, ObjectDoesNotExist
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from django.http import HttpResponseRedirect, HttpResponse
+from django.http import HttpResponseRedirect, HttpResponse, HttpResponseForbidden
 from django.db.models import Q
 
 from geonode.services.models import Service
@@ -99,7 +99,11 @@ def tiled_view(request, overlay=settings.TILED_SHAPEFILE, template="maptiles/map
             jurisdiction_shapefile = jurisdiction_object.jurisdiction_shapefile
         except ObjectDoesNotExist:
             print "No jurisdiction found"
-            jurisdiction_shapefile = DataRequestProfile.objects.get(username=request.user.username,email=request.user.email, request_status='approved').jurisdiction_shapefile
+            try:
+                jurisdiction_shapefile = DataRequestProfile.objects.get(username=request.user.username,email=request.user.email, request_status='approved').jurisdiction_shapefile
+            except ObjectDoesNotExist:
+                return HttpResponseForbidden
+            
             jurisdiction_object = UserJurisdiction(user=request.user, jurisdiction_shapefile=jurisdiction_shapefile)
             resource = jurisdiction_shapefile
             perms = resource.get_all_level_info()
