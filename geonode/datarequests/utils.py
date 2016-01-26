@@ -43,10 +43,11 @@ def create_login_credentials(data_request):
 
 def get_unames_starting_with(name):
     con =ldap.initialize(settings.AUTH_LDAP_SERVER_URI)
+    con.set_option(ldap.OPT_REFERRALS, 0)
     con.simple_bind_s(settings.AUTH_LDAP_BIND_DN, AUTH_LDAP_BIND_PASSWORD)
     result = con.search_s(settings.AUTH_LDAP_BASE_DN, ldap.SCOPE_SUBTREE, "(sAMAccountName="+name+"*)", ["sAMAccountName"])
     con.unbind_s()
-    pprint(result)
+    pprint("LDAPsearch:"+result)
     return result
 
 def create_ad_account(datarequest, username, password):
@@ -74,10 +75,11 @@ def create_ad_account(datarequest, username, password):
     }
     try:
         con = ldap.initialize(settings.AUTH_LDAP_SERVER_URI)
+        con.set_option(ldap.OPT_REFERRALS, 0)
         con.simple_bind_s(settings.LIPAD_LDAP_BIND_DN, LIPAD_LDAP_BIND_PASSWORD)
         result = con.add_s(dn,ldap.modlist.addModlist(modlist))
         con.unbind_s()
-        pprint(result)
+        pprint("Add result:"+result)
         return true
     except Exception as e:
         print '%s (%s)' % (e.message, type(e))
