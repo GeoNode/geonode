@@ -42,11 +42,11 @@ def create_login_credentials(data_request):
                     unique=True
 
     # Generate random password
-    password = ''
-    for i in range(16):
-        password += random.choice(string.lowercase + string.uppercase + string.digits)
+    #password = ''
+    #for i in range(16):
+    #    password += random.choice(string.lowercase + string.uppercase + string.digits)
 
-    return final_username, password, 
+    return final_username
 
 def get_unames_starting_with(name):
     try:
@@ -60,7 +60,7 @@ def get_unames_starting_with(name):
         print '%s (%s)' % (e.message, type(e))
     return result
 
-def create_ad_account(datarequest, username, password):
+def create_ad_account(datarequest, username):
     objectClass =  ["organizationalPerson", "person", "top", "user"]
     sAMAccountName = str(username)
     sn= str(datarequest.last_name)
@@ -70,9 +70,6 @@ def create_ad_account(datarequest, username, password):
     mail=str(datarequest.email)
     userPrincipalName=str(username+"@ad.dream.upd.edu.ph")
     userAccountControl = "512"
-    
-    unicode_pass = unicode("\"" + password + "\"", "iso-8859-1")
-    password_value = unicode_pass.encode("utf-16-le")
     
     dn="CN="+cn+","+settings.LIPAD_LDAP_BASE_DN
     modList = {
@@ -85,7 +82,6 @@ def create_ad_account(datarequest, username, password):
         "mail": [mail],
         "userPrincipalName": [userPrincipalName],
         "userAccountControl": [userAccountControl],
-        "unicodePwd": [password_value]
     }
     try:
         con = ldap.initialize(settings.AUTH_LDAP_SERVER_URI)

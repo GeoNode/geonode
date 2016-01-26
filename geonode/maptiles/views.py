@@ -100,24 +100,6 @@ def tiled_view(request, overlay=settings.TILED_SHAPEFILE, template="maptiles/map
         except ObjectDoesNotExist:
             print "No jurisdiction found"
             return HttpResponseForbidden
-            try:
-                jurisdiction_shapefile = DataRequestProfile.objects.get(username=request.user.username,email=request.user.email, request_status='approved').jurisdiction_shapefile
-            except ObjectDoesNotExist:
-                
-            
-                jurisdiction_object = UserJurisdiction(user=request.user, jurisdiction_shapefile=jurisdiction_shapefile)
-                resource = jurisdiction_shapefile
-                perms = resource.get_all_level_info()
-                perms["users"][request.user.username]=["view_resourcebase"]
-                resource.set_permissions(perms);
-                jurisdiction_object.save()
-                
-                group_name = u"Data Requesters"
-                requesters_group, requesters_group_created = GroupProfile.objects.get_or_create(
-                    title=group_name,
-                    slug=slugify(group_name),
-                    access='private',
-                )
         
         context_dict["jurisdiction"] = get_layer_config(request,jurisdiction_object.jurisdiction_shapefile.typename, "base.view_resourcebase", _PERMISSION_VIEW)
         context_dict["jurisdiction_name"] = jurisdiction_object.jurisdiction_shapefile.typename
