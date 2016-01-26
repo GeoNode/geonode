@@ -3,7 +3,6 @@ import string
 import ldap
 import geonode.settings
 
-
 from pprint import pprint
 from django.core.exceptions import ObjectDoesNotExist
 
@@ -46,6 +45,7 @@ def get_unames_starting_with(name):
     con =ldap.initialize(settings.AUTH_LDAP_SERVER_URI)
     con.simple_bind_s(settings.AUTH_LDAP_BIND_DN, AUTH_LDAP_BIND_PASSWORD)
     result = con.search_s(settings.AUTH_LDAP_BASE_DN, ldap.SCOPE_SUBTREE, "(sAMAccountName="+name+"*)", ["sAMAccountName"])
+    con.unbind_s()
     pprint(result)
     return result
 
@@ -73,9 +73,12 @@ def create_ad_account(datarequest, username, password):
         "userAccountControl": [userAccountControl]
     }
     try:
+        con = ldap.initialize(settings.AUTH_LDAP_SERVER_URI)
         result = con.add_s(dn,ldap.modlist.addModlist(modlist))
+        con.unbind_s()
         pprint(result)
         return true
-    except:
+    except Exception as e:
+        print '%s (%s)' % (e.message, type(e))
         return false
         
