@@ -380,17 +380,11 @@ def data_request_profile_approve(request, pk):
         if not request_profile.date:
             raise Http404
         try:
-            #request_profile.ftp_folder =str(request.POST[u'ftp-directory'])
-            #request_profile.username = str(request.POST[u'username'])
-            
-           # username = str(request.POST[u'username'])
-            #password = str(request.POST[u'password'])
             request_profile.create_account()
-            request_profile.request_status = 'approved'
-            request_profile.save()
             return HttpResponseRedirect(request_profile.get_absolute_url())
         except Exception as e:
-            message = _('An unexpected error was encountered during the creation of the account.'+ e.message + " "+str(type(e)))
+            import traceback
+            message = _('An unexpected error was encountered during the creation of the account.'+  traceback.format_exc() )
             messages.error(request, message)
             return HttpResponseRedirect(request_profile.get_absolute_url())
     else:
