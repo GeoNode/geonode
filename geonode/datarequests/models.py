@@ -268,7 +268,7 @@ class DataRequestProfile(TimeStampedModel):
          """.format(
              self.first_name,
              verification_url,
-             settings.LIPAD_SUPPORT_MAIL,
+             local_settings.LIPAD_SUPPORT_MAIL,
          )
 
         html_content = """
@@ -284,8 +284,8 @@ class DataRequestProfile(TimeStampedModel):
             self.first_name,
             verification_url,
             verification_url,
-            settings.LIPAD_SUPPORT_MAIL,
-            settings.LIPAD_SUPPORT_MAIL,
+            local_settings.LIPAD_SUPPORT_MAIL,
+            local_settings.LIPAD_SUPPORT_MAIL,
         )
 
         email_subject = _('[LiPAD] Email Confirmation')
@@ -365,7 +365,7 @@ class DataRequestProfile(TimeStampedModel):
              self.first_name,
              self.rejection_reason,
              additional_details,
-             settings.LIPAD_SUPPORT_MAIL,
+             local_settings.LIPAD_SUPPORT_MAIL,
          )
 
         html_content = """
@@ -382,8 +382,8 @@ class DataRequestProfile(TimeStampedModel):
              self.first_name,
              self.rejection_reason,
              additional_details,
-             settings.LIPAD_SUPPORT_MAIL,
-            settings.LIPAD_SUPPORT_MAIL,
+             local_settings.LIPAD_SUPPORT_MAIL,
+            local_settings.LIPAD_SUPPORT_MAIL,
         )
 
         email_subject = _('[LiPAD] Data Request Registration Status')
@@ -477,7 +477,7 @@ class DataRequestProfile(TimeStampedModel):
              username,
              directory,
              profile_url,
-             settings.LIPAD_SUPPORT_MAIL,
+             local_settings.LIPAD_SUPPORT_MAIL,
          )
 
         html_content = """
@@ -500,8 +500,8 @@ class DataRequestProfile(TimeStampedModel):
              self.first_name,
              username,
              profile_url,
-             settings.LIPAD_SUPPORT_MAIL,
-             settings.LIPAD_SUPPORT_MAIL,
+             local_settings.LIPAD_SUPPORT_MAIL,
+             local_settings.LIPAD_SUPPORT_MAIL,
          )
 
         email_subject = _('[LiPAD] Data Request Registration Status')
