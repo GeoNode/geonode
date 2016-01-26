@@ -4,6 +4,7 @@ from django.contrib.sites.models import Site
 from django.core.mail import EmailMultiAlternatives
 from django.core.urlresolvers import reverse
 from django.template.defaultfilters import slugify
+from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.utils import timezone
 from django.utils.crypto import get_random_string
 from django.utils.translation import ugettext as _
@@ -413,14 +414,14 @@ class DataRequestProfile(TimeStampedModel):
             
             # Link shapefile to account
             UserJurisdiction.objects.create(
-                user=profile_account,
+                user=profile,
                 jurisdiction_shapefile=self.jurisdiction_shapefile,
             )
             
             #Add view permission on resource
             resource = self.jurisdiction_shapefile
             perms = resource.get_all_level_info()
-            perms["users"][profille.username]=["view_resourcebase"]
+            perms["users"][profile.username]=["view_resourcebase"]
             resource.set_permissions(perms);
 
             # Add account to requesters group
@@ -431,7 +432,7 @@ class DataRequestProfile(TimeStampedModel):
                 access='private',
             )
 
-            requesters_group.join(profile_account)
+            requesters_group.join(profile)
 
             self.send_approval_email(username, password, directory)
             

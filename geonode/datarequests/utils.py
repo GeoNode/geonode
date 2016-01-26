@@ -1,6 +1,7 @@
 import random
 import string
 import ldap
+import ldap.modlist
 import geonode.settings as settings
 
 from pprint import pprint
@@ -28,11 +29,17 @@ def create_login_credentials(data_request):
     while not unique:
         if counter > 0:
             final_username = final_username + str(counter)
-            
-            if final_username in  username_list:
-                counter += 1
+         
+        for x,y in username_list:
+            if x is None:
+                unique = True
             else:
-                unique = true
+                if final_username == y["sAMAccountName"][0]:
+                    counter += 1
+                    unique=False
+                    break
+                else:
+                    unique=True
 
     # Generate random password
     password = ''
@@ -55,14 +62,17 @@ def get_unames_starting_with(name):
 
 def create_ad_account(datarequest, username, password):
     objectClass =  ["organizationalPerson", "person", "top", "user"]
-    sAMAccountName = username
-    sn= datarequest.last_name
-    givenName = datarequest.first_name
-    cn = datarequest.first_name+" "+datarequest.middle_name[0]+" "+datarequest.last_name
-    displayName=datarequest.first_name+" "+datarequest.middle_name[0]+". "+datarequest.last_name
-    mail=datarequest.email
-    userPrincipalName=username+"@ad.dream.upd.edu.ph"
+    sAMAccountName = str(username)
+    sn= str(datarequest.last_name)
+    givenName = str(datarequest.first_name)
+    cn = str(datarequest.first_name+" "+datarequest.middle_name[0]+" "+datarequest.last_name)
+    displayName=str(datarequest.first_name+" "+datarequest.middle_name[0]+". "+datarequest.last_name)
+    mail=str(datarequest.email)
+    userPrincipalName=str(username+"@ad.dream.upd.edu.ph")
     userAccountControl = "512"
+    
+    unicode_pass = unicode("\"" + password + "\"", "iso-8859-1")
+    password_value = unicode_pass.encode("utf-16-le")
     
     dn="CN="+cn+","+settings.LIPAD_LDAP_BASE_DN
     modList = {
@@ -74,17 +84,19 @@ def create_ad_account(datarequest, username, password):
         "displayName": [displayName],
         "mail": [mail],
         "userPrincipalName": [userPrincipalName],
-        "userAccountControl": [userAccountControl]
+        "userAccountControl": [userAccountControl],
+        "unicodePwd": [password_value]
     }
     try:
         con = ldap.initialize(settings.AUTH_LDAP_SERVER_URI)
         con.set_option(ldap.OPT_REFERRALS, 0)
-        con.simple_bind_s(settings.LIPAD_LDAP_BIND_DN, settings.LIPAD_LDAP_BIND_PASSWORD)
-        result = con.add_s(dn,ldap.modlist.addModlist(modlist))
+        con.simple_bind_s(settings.LIPAD_LDAP_BIND_DN, settings.LIPAD_LDAP_BIND_PW)
+        result = con.add_s(dn,ldap.modlist.addModlist(modList))
         con.unbind_s()
-        pprint("Add result:"+result)
-        return true
+        pprint(result)
+        return True
     except Exception as e:
-        print '%s (%s)' % (e.message, type(e))
-        return false
+        import traceback
+        print traceback.format_exc()
+        return False
         
