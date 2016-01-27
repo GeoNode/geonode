@@ -64,8 +64,8 @@ def create_ad_account(datarequest, username):
     sAMAccountName = str(username)
     sn= str(datarequest.last_name)
     givenName = str(datarequest.first_name)
-    cn = str(datarequest.first_name+" "+datarequest.middle_name[0]+" "+datarequest.last_name)
-    displayName=str(datarequest.first_name+" "+datarequest.middle_name[0]+". "+datarequest.last_name)
+    cn = str(datarequest.first_name+" "+datarequest.middle_name[0][0]+" "+datarequest.last_name)
+    displayName=str(datarequest.first_name+" "+datarequest.middle_name[0][0]+". "+datarequest.last_name)
     mail=str(datarequest.email)
     userPrincipalName=str(username+"@ad.dream.upd.edu.ph")
     userAccountControl = "512"
