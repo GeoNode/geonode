@@ -284,7 +284,7 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
             {
                 header: this.originatorText,
                 dataIndex: 'Originator',
-                id: 'originator',
+                id: 'originator'
             },
             {
                 header: 'Date',
@@ -421,7 +421,6 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
                 items: [searchButton],
                 colspan: 1
             }]
-
          });
          searchForm.render(input_el);
 
