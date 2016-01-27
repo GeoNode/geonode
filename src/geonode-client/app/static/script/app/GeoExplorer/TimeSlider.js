@@ -37,15 +37,10 @@ GeoNode.TimeSlider = Ext.extend(Ext.slider.MultiSlider, {
     },
 
     getDateValues: function(){
-      if(this.thumbs[0].value != this.minValue || this.thumbs[1].value != this.maxValue){
-        var start = this.getThumbDate(this.thumbs[0]).toISOString();
-        var end = this.getThumbDate(this.thumbs[1]).toISOString();
+      var start = this.getThumbDate(this.thumbs[0]).toISOString();
+      var end = this.getThumbDate(this.thumbs[1]).toISOString();
 
-        return '[' + start + ' TO ' + end + ']';
-      }
-      else{
-        return null;
-      }
+      return '[' + start + ' TO ' + end + ']';
     },
 
     getReadableDates: function(){

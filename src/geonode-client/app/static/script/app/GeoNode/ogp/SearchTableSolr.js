@@ -217,6 +217,8 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
             GeoNode.queryTerms.fq.push("ContentDate:" + this.dateInput.getDateValues());
         };
 
+        GeoNode.queryTerms.sort = this.sortInput.getValue();
+
         this.doSearch();
 
         // now trigger the heatmap update
@@ -275,7 +277,6 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
                 header: this.titleHeaderText,
                 dataIndex: 'LayerDisplayName',
                 id: 'title',
-                sortable: true,
                 renderer: function(value, metaData, record, rowIndex, colIndex, store){
                     return '<a href="/layers/' + self.getlayerTypename(record) +'" target=_blank>' + record.get('LayerDisplayName')+ '</a>'
                 }
@@ -284,12 +285,10 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
                 header: this.originatorText,
                 dataIndex: 'Originator',
                 id: 'originator',
-                sortable: true
             },
             {
                 header: 'Date',
                 id: 'date',
-                sortable: true,
                 renderer: function(value, metaData, record, rowIndex, colIndex, store){
                     var date = new Date(record.get('ContentDate'));
                     return date.toDateString();
@@ -366,6 +365,33 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
         });
         searchButton.on('click', this.updateQuery, this)
 
+
+        this.sortLabel = new Ext.form.Label({text: 'Sort by'});
+        this.sortInput = new Ext.form.ComboBox({
+            triggerAction: 'all',
+            mode: 'local',
+            store: new Ext.data.ArrayStore({
+                id: 0,
+                fields: [
+                    'value',
+                    'displayText'
+                ],
+                data: [
+                    ['ContentDate desc', '-date'], 
+                    ['ContentDate asc', 'date'], 
+                    ['LayerDisplayName asc', 'A-Z'], 
+                    ['LayerDisplayName desc', 'Z-A'],
+                    ['score desc', '-score'],
+                    ['score asc', '+score']
+                    ]
+            }),
+            valueField: 'value',
+            displayField: 'displayText',
+            forceSelection: true,
+            value: '-score',
+            editable: false
+        });
+
         var searchForm = new Ext.Panel({
              frame: false,
              border: false,
@@ -387,6 +413,9 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
                 colspan: 3
             },{
                 items: [this.dateLabel, this.dateInput],
+                colspan: 3
+            },{
+                items: [this.sortLabel, this.sortInput],
                 colspan: 3
             },{
                 items: [searchButton],

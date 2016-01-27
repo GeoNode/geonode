@@ -926,6 +926,7 @@ td.x-grid3-hd-over .x-grid3-hd-inner, td.sort-desc .x-grid3-hd-inner, td.sort-as
     background: transparent none repeat-x scroll left bottom;
 }
 
- .olImageLoadError { 
+.olImageLoadError { 
     opacity: 0 !important;
-    filter: alpha(opacity=0) !important; }
+    filter: alpha(opacity=0) !important; 
+}
