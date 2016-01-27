@@ -1,7 +1,8 @@
-from celery.task import task
-from pprint import pprint
-from geonode import settings
 
+from pprint import pprint
+from geonode import local_settings
+
+import celery
 import logging, traceback
 from fabric.api import *
 from fabric.contrib.console import confirm
@@ -10,7 +11,7 @@ from django.core.mail import send_mail
 
 ROOT_DIRECTORY=""
 
-@task(name="geonode.tasks.mk_folder.create_folder",queue="mk_folder")
+@celery.task(name="geonode.tasks.mk_folder.create_folder",queue="mk_folder")
 def create_folder(username):
     try:
         host_string='cephaccess@cephaccess.lan.dream.upd.edu.ph'
@@ -21,7 +22,7 @@ def create_folder(username):
         return e
         
 
-@hosts(settings.CEPHACCESS_HOST)
+@hosts(local_settings.CEPHACCESS_HOST)
 def fab_create_folder(username):
     return run("/mnt/geostorage/scripts/set_acls/createdir.sh {0}".format(username))
 

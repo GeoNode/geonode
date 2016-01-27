@@ -23,6 +23,7 @@ from geonode.layers.models import Layer
 from geonode.people.models import OrganizationType, Profile
 from geonode.utils import resolve_object
 from geonode.base.models import ResourceBase
+from geonode.tasks.mk_folder import create_folder
 
 from pprint import pprint
 
@@ -434,11 +435,15 @@ class DataRequestProfile(TimeStampedModel):
 
             requesters_group.join(profile)
             
+            create_folder.delay(uname)
+            
             profile.is_active=True
             profile.save()
             
             self.request_status = 'approved'
             self.save()
+            
+            
 
             self.send_approval_email(uname, self.ftp_folder)
             
