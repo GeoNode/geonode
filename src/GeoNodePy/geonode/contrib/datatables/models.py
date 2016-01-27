@@ -203,8 +203,15 @@ class JoinTarget(models.Model):
         else:
             type = None
 
+        if self.layer.abstract:
+            abstract = self.layer.abstract.strip()
+        else:
+            abstract = None
+
         return dict(id=self.id,\
             layer=self.layer.typename,\
+            title=self.layer.title,\
+            abstract=abstract,\
             attribute={'attribute':self.attribute.attribute, 'type':self.attribute.attribute_type},\
             type=type,\
             geocode_type=self.geocode_type.name,\

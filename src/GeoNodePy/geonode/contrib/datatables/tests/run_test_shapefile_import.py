@@ -459,7 +459,7 @@ class TestWorldMapShapefileImport(TestTabularAPIBase):
         #-----------------------------------------------------------
         existing_layer_form = CheckForExistingLayerForm(self.dataverse_test_info)
         self.assertTrue(existing_layer_form.is_valid()\
-                        , "Error.  Validation failed. (DataverseInfoValidationFormWithKey):\n%s" % existing_layer_form.errors)
+                        , "Error.  Validation failed. (CheckForExistingLayerForm):\n%s" % existing_layer_form.errors)
 
         data_params = existing_layer_form.cleaned_data
         data_params.pop('datafile_id')
@@ -495,7 +495,7 @@ class TestWorldMapShapefileImport(TestTabularAPIBase):
         #-----------------------------------------------------------
         api_prep_form = CheckForExistingLayerForm(self.dataverse_test_info)
         self.assertTrue(api_prep_form.is_valid()\
-                        , "Error.  Validation failed. (DataverseInfoValidationFormWithKey):\n%s" % api_prep_form.errors)
+                        , "Error.  Validation failed. (CheckForExistingLayerForm):\n%s" % api_prep_form.errors)
 
         data_params = api_prep_form.cleaned_data
 
@@ -523,7 +523,7 @@ class TestWorldMapShapefileImport(TestTabularAPIBase):
         #-----------------------------------------------------------
         api_prep_form = CheckForExistingLayerForm(self.dataverse_test_info)
         self.assertTrue(api_prep_form.is_valid()\
-                        , "Error.  Validation failed. (DataverseInfoValidationFormWithKey):\n%s" % api_prep_form.errors)
+                        , "Error.  Validation failed. (CheckForExistingLayerForm):\n%s" % api_prep_form.errors)
 
         data_params = api_prep_form.cleaned_data
 
@@ -610,7 +610,7 @@ class TestWorldMapShapefileImport(TestTabularAPIBase):
         #-----------------------------------------------------------
         api_prep_form = CheckForExistingLayerForm(self.geotiff_test_info)
         self.assertTrue(api_prep_form.is_valid()\
-                        , "Error.  Validation failed. (DataverseInfoValidationFormWithKey):\n%s" % api_prep_form.errors)
+                        , "Error.  Validation failed. (CheckForExistingLayerForm):\n%s" % api_prep_form.errors)
 
         data_params = api_prep_form.cleaned_data
 

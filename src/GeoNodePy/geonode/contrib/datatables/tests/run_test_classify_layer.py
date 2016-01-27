@@ -144,7 +144,7 @@ class TestWorldMapClassification(TestTabularAPIBase):
 
         api_prep_form = CheckForExistingLayerForm(self.dataverse_test_info)
         self.assertTrue(api_prep_form.is_valid()\
-                        , "Error.  Validation failed. (DataverseInfoValidationFormWithKey):\n%s" % api_prep_form.errors)
+                        , "Error.  Validation failed. (CheckForExistingLayerForm):\n%s" % api_prep_form.errors)
 
         data_params = api_prep_form.cleaned_data
 
