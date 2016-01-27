@@ -27,12 +27,6 @@ GeoNode.TimeSlider = Ext.extend(Ext.slider.MultiSlider, {
 
       this.values = [0, this.maxValue];
 
-      this.plugins = new Ext.slider.Tip({
-        getText: function(thumb){
-            return self.getThumbRedableDate(thumb);
-        }
-      });
-
       GeoNode.TimeSlider.superclass.initComponent.call(this);
     },
 
@@ -44,6 +38,11 @@ GeoNode.TimeSlider = Ext.extend(Ext.slider.MultiSlider, {
     },
 
     getReadableDates: function(){
-      return 'from ' + this.getThumbRedableDate(this.thumbs[0]) + ' to ' + this.getThumbRedableDate(this.thumbs[1])
+      return  [this.getThumbRedableDate(this.thumbs[0]), this.getThumbRedableDate(this.thumbs[1])];
+    },
+
+    getValueFromDate: function(date){
+      var date = new Date(date);
+      return Math.round((date - this.startDate) / 3600 /24 / 1000);
     }
 });

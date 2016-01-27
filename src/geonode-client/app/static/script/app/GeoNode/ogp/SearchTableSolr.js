@@ -341,7 +341,7 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
                         allowBlank: true,
                         width: 100
         });
-        
+
         this.dataTypeInput = new Ext.form.CheckboxGroup({
             id: 'dataTypes',
             fieldLabel: 'Data Type',
@@ -355,10 +355,53 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
 
         
         this.dateInput = new GeoNode.TimeSlider();
-        this.dateInput.addListener('changecomplete', function(slider, value, thumb){
-            self.dateLabel.setText(self.dateInput.getReadableDates());
+
+        var dateStartTextField = new Ext.form.TextField({
+            name: 'startDate',
+            listeners: {
+                change: function(scope, newValue, oldValue){
+                    self.dateInput.setValue(0, self.dateInput.getValueFromDate(newValue));
+                },
+                keypress: function(scope, e){
+                    if (e.getKey() == e.ENTER) {
+                        e.stopPropagation();
+                        scope.fireEvent('change', scope, scope.getValue());
+                    }
+                }
+            },
+            enableKeyEvents: true
         });
-        this.dateLabel = new Ext.form.Label({text: self.dateInput.getReadableDates()});
+
+        var dateEndTextField = new Ext.form.TextField({
+            name: 'endDate',
+            listeners: {
+                change: function(scope, newValue, oldValue){
+                    self.dateInput.setValue(1, self.dateInput.getValueFromDate(newValue));
+                },
+                keypress: function(scope, e){
+                    if (e.getKey() == e.ENTER) {
+                        e.stopPropagation();
+                        scope.fireEvent('change', scope, scope.getValue());
+                    }
+                }
+            },
+            enableKeyEvents: true
+        });
+
+        this.dateLabelPanel = new Ext.Panel({
+            items: [new Ext.form.Label({text: 'From'}), dateStartTextField, new Ext.form.Label({text: 'to'}), dateEndTextField],
+            layout: 'fit'
+        });
+        
+        function setDates(){
+            var dates = self.dateInput.getReadableDates();
+            dateStartTextField.setValue(dates[0]);
+            dateEndTextField.setValue(dates[1]);
+        };
+        setDates();
+        this.dateInput.addListener('change', function(){
+            setDates();
+        });
 
         var searchButton = new Ext.Button({
             text: this.searchButtonText
@@ -377,18 +420,18 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
                     'displayText'
                 ],
                 data: [
-                    ['ContentDate desc', '-date'], 
-                    ['ContentDate asc', 'date'], 
+                    ['ContentDate desc', 'Date desc'], 
+                    ['ContentDate asc', 'Date asc'], 
                     ['LayerDisplayName asc', 'A-Z'], 
                     ['LayerDisplayName desc', 'Z-A'],
-                    ['score desc', '-score'],
-                    ['score asc', '+score']
+                    ['score desc', 'Score desc'],
+                    ['score asc', 'Score asc']
                     ]
             }),
             valueField: 'value',
             displayField: 'displayText',
             forceSelection: true,
-            value: '-score',
+            value: 'score desc',
             editable: false
         });
 
@@ -412,7 +455,7 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
                 items: [this.dataTypeInput],
                 colspan: 3
             },{
-                items: [this.dateLabel, this.dateInput],
+                items: [this.dateLabelPanel, this.dateInput],
                 colspan: 3
             },{
                 items: [this.sortLabel, this.sortInput],
