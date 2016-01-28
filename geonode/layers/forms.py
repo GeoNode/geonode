@@ -161,6 +161,7 @@ class LayerUploadForm(forms.Form):
 
 class NewLayerUploadForm(LayerUploadForm):
     sld_file = forms.FileField(required=False)
+    qml_file = forms.FileField(required=False)
     xml_file = forms.FileField(required=False)
 
     abstract = forms.CharField(required=False)
@@ -174,7 +175,9 @@ class NewLayerUploadForm(LayerUploadForm):
         "shx_file",
         "prj_file",
         "sld_file",
-        "xml_file")
+        "xml_file",
+        "qml_file"
+    )
 
 
 class LayerDescriptionForm(forms.Form):

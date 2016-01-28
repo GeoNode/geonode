@@ -146,7 +146,7 @@ def get_files(filename):
     if len(matches) == 1:
         files['sld'] = matches[0]
     elif len(matches) > 1:
-        msg = ('Multiple style files for %s exist; they need to be '
+        msg = ('Multiple style files (sld) for %s exist; they need to be '
                'distinct by spelling and not just case.') % filename
         raise GeoNodeException(msg)
 
@@ -161,6 +161,17 @@ def get_files(filename):
         files['xml'] = matches[0]
     elif len(matches) > 1:
         msg = ('Multiple XML files for %s exist; they need to be '
+               'distinct by spelling and not just case.') % filename
+        raise GeoNodeException(msg)
+
+    matches = glob.glob(glob_name + ".[qQ][mM][lL]")
+    logger.debug('Checking QML file')
+    logger.debug('Number of matches QML file : %s' % len(matches))
+    logger.debug('glob name: %s' % glob_name)
+    if len(matches) == 1:
+        files['qml'] = matches[0]
+    elif len(matches) > 1:
+        msg = ('Multiple style files (qml) for %s exist; they need to be '
                'distinct by spelling and not just case.') % filename
         raise GeoNodeException(msg)
 
@@ -365,6 +376,7 @@ def file_upload(filename, name=None, user=None, title=None, abstract=None,
     # Create a new upload session
     upload_session = UploadSession.objects.create(user=theuser)
 
+    logger.debug('Filename to upload: %s' % filename)
     # Get all the files uploaded with the layer
     files = get_files(filename)
 

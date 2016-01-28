@@ -40,6 +40,7 @@ class LayerUploadForm(forms.Form):
     prj_file = forms.FileField(required=False)
     sld_file = forms.FileField(required=False)
     xml_file = forms.FileField(required=False)
+    qml_file = forms.FileField(required=False)
 
     geogig = forms.BooleanField(required=False)
     geogig_store = forms.CharField(required=False)
@@ -55,7 +56,9 @@ class LayerUploadForm(forms.Form):
         "shx_file",
         "prj_file",
         "sld_file",
-        "xml_file")
+        "xml_file",
+        'qml_file'
+    )
 
     def clean(self):
         requires_datastore = () if ogc_server_settings.DATASTORE else (
