@@ -53,6 +53,9 @@ def qgis_server_post_save(instance, sender, **kwargs):
        The way keywords are implemented requires the layer
        to be saved to the database before accessing them.
     """
+    # TODO
+    # 1. Create or update associated QGISServerLayer [Done]
+    # 2. Create Link for the tile and legend.
     logger.debug('QGIS Server Post Save')
     qgis_layer, created = QGISServerLayer.objects.get_or_create(layer=instance)
     # copy layer to QGIS Layer Directory
