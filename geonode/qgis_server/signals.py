@@ -13,12 +13,29 @@ from geonode.maps.models import Map, MapLayer
 
 
 logger = logging.getLogger("geonode.qgis_server.signals")
-
+QGIS_layer_directory = settings.QGIS_SERVER_CONFIG['layer_directory']
 
 def qgis_server_pre_delete(instance, sender, **kwargs):
     """Removes the layer from Local Storage
     """
     logger.debug('QGIS Server Pre Delete')
+    # Deleting QGISServerLayer object happened on geonode level since it's
+    # OneToOne relationship
+    # Delete layers
+    try:
+        qgis_server_layer = QGISServerLayer.objects.get(layer=instance)
+        base_path = qgis_server_layer.base_layer_path
+        base_name, _ = os.path.splitext(base_path)
+        logger.debug('Basename: %s' % base_name)
+        for ext in QGISServerLayer.accepted_format:
+            file_path = base_name + '.' + ext
+            logger.debug('Try to delete %s' % file_path)
+            if os.path.exists(file_path):
+                logger.debug('Deleting %s' % file_path)
+                os.remove(file_path)
+    except QGISServerLayer.DoesNotExist:
+        logger.debug('QGIS Server Layer not found. Not deleting.')
+        pass
 
 
 def qgis_server_pre_save(instance, sender, **kwargs):
@@ -60,7 +77,7 @@ def qgis_server_post_save(instance, sender, **kwargs):
                     # geonode rename it
                     shutil.copy2(
                         base_filename + '.' + ext,
-                        settings.QGIS_SERVER_CONFIG['layer_directory']
+                        QGIS_layer_directory
                     )
                 else:
                     # If there is already a file, replace the old one
@@ -73,9 +90,11 @@ def qgis_server_post_save(instance, sender, **kwargs):
                 logger.debug('Error copying file. %s' % e)
     if created:
         # Only set when creating new QGISServerLayer Object
+        geonode_filename = os.path.basename(geonode_layer_path)
+        basename = os.path.splitext(geonode_filename)[0]
         qgis_layer.base_layer_path = os.path.join(
-            settings.QGIS_SERVER_CONFIG['layer_directory'],
-            base_filename + '.' + original_ext
+            QGIS_layer_directory,
+            basename + original_ext  # Already with dot
         )
     qgis_layer.save()
 
