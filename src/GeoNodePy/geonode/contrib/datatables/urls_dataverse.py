@@ -6,4 +6,8 @@ urlpatterns = patterns('geonode.contrib.datatables.views_dataverse',
    #
    url(r'^api/upload-join/?$', 'view_upload_table_and_join_layer',\
     name='view_upload_table_and_join_layer'),
+
+   url(r'^api/upload-lat-lng/?$', 'view_upload_lat_lng_table',\
+    name='view_upload_lat_lng_table'),
+
 )
