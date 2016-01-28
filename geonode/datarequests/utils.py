@@ -65,7 +65,7 @@ def create_ad_account(datarequest, username):
     sn= str(datarequest.last_name)
     givenName = str(datarequest.first_name)
     initials=str(datarequest.middle_name)[0]
-    cn = str(givenName+" "+initials+" "+sn)
+    cn = str(givenName+" "+initials+". "+sn)
     displayName=str(givenName+" "+initials+". "+sn)
     
     mail=str(datarequest.email)
