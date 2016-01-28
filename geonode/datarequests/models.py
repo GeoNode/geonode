@@ -436,7 +436,7 @@ class DataRequestProfile(TimeStampedModel):
             requesters_group.join(profile)
             
             pprint("creating user folder for "+uname)
-            create_folder.get(uname)
+            create_folder.delay(uname)
             
             self.request_status = 'approved'
             self.save()

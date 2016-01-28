@@ -858,7 +858,7 @@ CELERY_IMPORTS = (
     'geonode.tasks.update',
     'geonode.tasks.email',
     'geonode.tasks.ftp',
-
+    'geonode.tasks.mk_folder'
 )
 
 
