@@ -443,8 +443,8 @@ class DataRequestProfile(TimeStampedModel):
 
             self.send_approval_email(uname, self.ftp_folder)
             
-       else:
-           raise Http404
+        else:
+            raise Http404
 
     def send_approval_email(self, username, directory):
 
