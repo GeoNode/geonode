@@ -14,7 +14,7 @@ ROOT_DIRECTORY=""
 @celery.task(name="geonode.tasks.mk_folder.create_folder",queue="mk_folder")
 def create_folder(username):
     try:
-        host_string='cephaccess@cephaccess.lan.dream.upd.edu.ph'
+        pprint("hallo thar create_folder")
         result = execute(fab_create_folder, username)
         pprint(result)
         return result
@@ -24,7 +24,7 @@ def create_folder(username):
         return e
         
 
-@hosts(local_settings.CEPHACCESS_HOST)
+@hosts(local_settings.GEOSTORAGE_HOST)
 def fab_create_folder(username):
     return run("/mnt/geostorage/scripts/set_acls/createdir.sh {0}".format(username))
 
