@@ -16,9 +16,11 @@ def create_folder(username):
     try:
         host_string='cephaccess@cephaccess.lan.dream.upd.edu.ph'
         result = execute(fab_create_folder, username)
+        pprint(result)
         return result
     except Exception as e:
         mail_on_error(username,  traceback.format_exc())
+        pprint(traceback.format_exc())
         return e
         
 
