@@ -70,13 +70,14 @@
             </li>
            {% block extra_tab %}
            {% endblock %}
+            {% if request.user.is_superuser %}
             <li id="nav_people">
               <a href="{% url "profile_browse" %}">{% trans "People" %}</a>
             </li>
             <li id="nav_groups">
               <a href="{% url "group_list" %}">{% trans "Groups" %}</a>
             </li>
-            {% if request.user.is_superuser %}
+
 	            <li id="nav_datastore">
 	              <a href="{% url "data_management" %}">{% trans "Data Management" %}</a>
 	            </li>
