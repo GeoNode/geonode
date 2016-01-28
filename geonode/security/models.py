@@ -49,7 +49,10 @@ class PermissionLevelMixin(object):
     user has exactly one assigned role with respect to
     an object representing an "access level"
     """
-
+    """
+    NOTE: django-guardian's get_users_with_perms and get_groups_with_perms
+          is VERY SLOW and needs to be replaced with something else  
+    """
     def get_all_level_info(self):
 
         resource = self.get_self_resource()
