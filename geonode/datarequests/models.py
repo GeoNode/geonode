@@ -435,21 +435,16 @@ class DataRequestProfile(TimeStampedModel):
 
             requesters_group.join(profile)
             
-            pprint("creating user folder for"+uname)
+            pprint("creating user folder for "+uname)
             create_folder.delay(uname)
-            
-            profile.is_active=True
-            profile.save()
             
             self.request_status = 'approved'
             self.save()
-            
-            
 
             self.send_approval_email(uname, self.ftp_folder)
             
-        else:
-            raise Http404
+       else:
+           raise Http404
 
     def send_approval_email(self, username, directory):
 

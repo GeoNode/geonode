@@ -384,7 +384,7 @@ def data_request_profile_approve(request, pk):
             return HttpResponseRedirect(request_profile.get_absolute_url())
         except Exception as e:
             import traceback
-            message = _('An unexpected error was encountered during the creation of the account.'+  traceback.format_exc() )
+            message = _('An unexpected error was encountered during the creation of the account.\n'+  traceback.format_exc() )
             messages.error(request, message)
             return HttpResponseRedirect(request_profile.get_absolute_url())
     else:
