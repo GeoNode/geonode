@@ -43,29 +43,40 @@ def qgis_server_post_save(instance, sender, **kwargs):
        to be saved to the database before accessing them.
     """
     logger.debug('QGIS Server Post Save')
-    qgis_layer, _ = QGISServerLayer.objects.get_or_create(layer=instance)
+    qgis_layer, created = QGISServerLayer.objects.get_or_create(layer=instance)
     # copy layer to QGIS Layer Directory
     geonode_layer_path = instance.get_base_file()[0].file.path
     logger.debug('Geonode Layer Path %s' % geonode_layer_path)
 
     base_filename, original_ext = os.path.splitext(geonode_layer_path)
-    exts = ['tif', 'tiff', 'asc', 'shp', 'shx', 'dbf', 'prj', 'qml', 'xml']
+    extensions = QGISServerLayer.accepted_format
 
-    for ext in exts:
+    for ext in extensions:
         if os.path.exists(base_filename + '.' + ext):
             logger.debug('Copying %s' % base_filename + '.' + ext)
             try:
-                shutil.copy2(
-                    base_filename + '.' + ext,
-                    settings.QGIS_SERVER_CONFIG['layer_directory']
-                )
+                if created:
+                    # Assuming different layer has different filename because
+                    # geonode rename it
+                    shutil.copy2(
+                        base_filename + '.' + ext,
+                        settings.QGIS_SERVER_CONFIG['layer_directory']
+                    )
+                else:
+                    # If there is already a file, replace the old one
+                    shutil.copy2(
+                        base_filename + '.' + ext,
+                        qgis_layer.base_layer_path + '.' + ext
+                    )
                 logger.debug('Success')
             except IOError as e:
                 logger.debug('Error copying file. %s' % e)
-    qgis_layer.base_layer_path = os.path.join(
-        settings.QGIS_SERVER_CONFIG['layer_directory'],
-        base_filename + '.' + original_ext
-    )
+    if created:
+        # Only set when creating new QGISServerLayer Object
+        qgis_layer.base_layer_path = os.path.join(
+            settings.QGIS_SERVER_CONFIG['layer_directory'],
+            base_filename + '.' + original_ext
+        )
     qgis_layer.save()
 
 def qgis_server_pre_save_maplayer(instance, sender, **kwargs):

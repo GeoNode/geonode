@@ -13,6 +13,10 @@ if not os.path.exists(QGIS_LAYER_DIRECTORY):
 class QGISServerLayer(models.Model):
     """Model for Layer in QGIS Server Backend.
     """
+
+    accepted_format = [
+        'tif', 'tiff', 'asc', 'shp', 'shx', 'dbf', 'prj', 'qml', 'xml']
+
     layer = models.OneToOneField(
         Layer,
         primary_key=True,
