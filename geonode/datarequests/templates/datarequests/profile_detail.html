@@ -36,23 +36,13 @@
       <td class="table-user-profile-attribute col-md-3">{% trans "Requester" %}</td>
       <td>{{ request_profile.first_name }} {{ request_profile.middle_name }} {{ request_profile.last_name }}</td>
       </tr>
-      {% if request_profile.request_status == 'pending' %}
      <tr>
          <td class="table-user-profile-attribute col-md-3"> {% trans "User Name" %}</td>
-         <td> <input class="username_input" id="username-input" type="text" value="" ><font id="username-error" color="red" hidden>Invalid Username</font></td>
+         <td> {{ request_profile.username }}</td>
      </tr>
-     <tr>
-         <td class="table-user-profile-attribute col-md-3"> {% trans "Password" %}</td>
-         <td> <input class="password_input" id="password-input" type="text"  value=""><button type="button" id="password-generate" >Generate Password</button><font id="password-error" color="red" hidden>Invalid Password</font></td>
-     </tr>
-     {% endif %}
      <tr>
         <td class="table-user-profile-attribute col-md-3"> {% trans "FTP directory" %}</td>
-        {% if request_profile.ftp_folder %} 
-        <td> <input class="ftp_directory_input" type="text" id="ftp-directory-input" value= "{{ request_profile.ftp_folder }}" readonly> </td>
-        {% else %}
-        <td> <input class="ftp_directory_input" type="text" id="ftp-directory-input" value= "Others/" readonly> </td>
-        {% endif %}
+        <td>{{ request_profile.ftp_folder }} </td>
      </tr>
       <tr>
       <td class="table-user-profile-attribute col-md-3">{% trans "Requester Type" %}</td>
@@ -169,7 +159,7 @@
 
       {% if request_profile.request_status == 'pending'%}
         <li class="list-group-item">
-          <button class="btn btn-primary btn-md btn-block"  data-target="#approve-request" id="approve-button">{% trans "Approve" %}</button>
+          <button class="btn btn-primary btn-md btn-block"  data-toggle="modal" data-target="#approve-request" id="approve-button">{% trans "Approve" %}</button>
         </li>
 
         <div class="modal fade" id="approve-request" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
@@ -184,7 +174,7 @@
                 <h4 class="modal-title" id="myModalLabel">{% trans "Approve Data Request Profile" %}</h4>
               </div>
               <div class="modal-body">
-                <p>Please make sure that an Active Directory account has been created based on the credentials in this page before approving. Are you sure you want to approve this data request profile?</p>
+                <p>Are you sure you want to approve this data request profile?</p>
               </div>
               <div class="modal-footer">
                 <button type="button" id="approve_request_cancel" class="btn btn-default" data-dismiss="modal">{% trans "Cancel" %}</button>
@@ -318,51 +308,6 @@
           $("#reject-request").on('hidden.bs.modal', function (e) {
             $('#reject_request_message').addClass("hidden");
           });
-          
-          $("#password-generate").click(function(){
-                var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-                var password = '';
-                for (var i=0;i<16;i++){
-                    password += possible.charAt(Math.floor(Math.random() * possible.length));
-                }
-                $("#password-input").val(password);
-                $("#password-input").text(password);
-          });
-          
-          $("#username-input").keyup(function(){
-              $("#ftp-directory-input").val("Others/"+$(this).val())
-          });
-          
-          //Validate if user name and password fields are empty or not Do note that password will not be saved
-          $("#approve-button").click(function(){
-              
-              if ( $("#password-input").val() != "" && $("#username-input").val() !=""){
-                  $("#ftp-directory").val( $("#ftp-directory-input").val());
-                  $("#username").val( $("#username-input").val());
-                  $("#password").val( $("#password-input").val());
-                  modal_target=$("#approve-button").attr("data-target")
-                  
-                  $("#password-error").hide();
-                  $("#username-error").hide();
-                  console.log(modal_target);
-                  $(modal_target).modal();
-              }else{
-                  if  ($("#password-input").val() == ""){
-                      $("#password-input").focus();
-                      $("#password-error").show();
-                  }else{
-                      $("#password-error").hide();
-                  }
-                  
-                  if  ($("#username-input").val() == ""){
-                      $("#username-input").focus();
-                      $("#username-error").show();
-                  }else{
-                      $("#username-error").hide();
-                  }
-              }
-          });
-          
-      </script>
+    </script>
 
 {% endblock extra_script %}
