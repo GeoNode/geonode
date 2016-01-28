@@ -384,7 +384,7 @@ class DataRequestProfile(TimeStampedModel):
              self.rejection_reason,
              additional_details,
              local_settings.LIPAD_SUPPORT_MAIL,
-            local_settings.LIPAD_SUPPORT_MAIL,
+             local_settings.LIPAD_SUPPORT_MAIL
         )
 
         email_subject = _('[LiPAD] Data Request Registration Status')
@@ -435,6 +435,7 @@ class DataRequestProfile(TimeStampedModel):
 
             requesters_group.join(profile)
             
+            pprint("creating user folder for"+uname)
             create_folder.delay(uname)
             
             profile.is_active=True
@@ -482,7 +483,7 @@ class DataRequestProfile(TimeStampedModel):
              username,
              directory,
              profile_url,
-             local_settings.LIPAD_SUPPORT_MAIL,
+             local_settings.LIPAD_SUPPORT_MAIL
          )
 
         html_content = """
@@ -504,9 +505,10 @@ class DataRequestProfile(TimeStampedModel):
         """.format(
              self.first_name,
              username,
+             directory,
              profile_url,
              local_settings.LIPAD_SUPPORT_MAIL,
-             local_settings.LIPAD_SUPPORT_MAIL,
+             local_settings.LIPAD_SUPPORT_MAIL
          )
 
         email_subject = _('[LiPAD] Data Request Registration Status')

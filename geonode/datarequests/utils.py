@@ -17,7 +17,7 @@ def create_login_credentials(data_request):
     for i in first_name.lower().split():
         first_name_f += i[0]
 
-    middle_name_f = "".join(data_request.middle_name.split())
+    middle_name_f= "".join(data_request.middle_name.split())[0]
     last_name_f = "".join(data_request.last_name.split())
 
     base_username = (first_name_f + middle_name_f + last_name_f).lower()
@@ -64,8 +64,10 @@ def create_ad_account(datarequest, username):
     sAMAccountName = str(username)
     sn= str(datarequest.last_name)
     givenName = str(datarequest.first_name)
-    cn = str(datarequest.first_name+" "+datarequest.middle_name[0][0]+" "+datarequest.last_name)
-    displayName=str(datarequest.first_name+" "+datarequest.middle_name[0][0]+". "+datarequest.last_name)
+    initials=str(datarequest.middle_name)[0]
+    cn = str(givenName+" "+initials+" "+sn)
+    displayName=str(givenName+" "+initials+". "+sn)
+    
     mail=str(datarequest.email)
     userPrincipalName=str(username+"@ad.dream.upd.edu.ph")
     userAccountControl = "512"
