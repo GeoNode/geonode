@@ -15,27 +15,21 @@ from geonode.maps.models import Map, MapLayer
 logger = logging.getLogger("geonode.qgis_server.signals")
 QGIS_layer_directory = settings.QGIS_SERVER_CONFIG['layer_directory']
 
+
+def qgis_server_layer_pre_delete(instance, sender, **kwargs):
+    """Removes the layer from Local Storage
+    """
+    logger.debug('QGIS Server Layer Pre Delete')
+    instance.delete_qgis_layer()
+
+
 def qgis_server_pre_delete(instance, sender, **kwargs):
     """Removes the layer from Local Storage
     """
     logger.debug('QGIS Server Pre Delete')
     # Deleting QGISServerLayer object happened on geonode level since it's
     # OneToOne relationship
-    # Delete layers
-    try:
-        qgis_server_layer = QGISServerLayer.objects.get(layer=instance)
-        base_path = qgis_server_layer.base_layer_path
-        base_name, _ = os.path.splitext(base_path)
-        logger.debug('Basename: %s' % base_name)
-        for ext in QGISServerLayer.accepted_format:
-            file_path = base_name + '.' + ext
-            logger.debug('Try to delete %s' % file_path)
-            if os.path.exists(file_path):
-                logger.debug('Deleting %s' % file_path)
-                os.remove(file_path)
-    except QGISServerLayer.DoesNotExist:
-        logger.debug('QGIS Server Layer not found. Not deleting.')
-        pass
+    # Delete file is included when deleting the object.
 
 
 def qgis_server_pre_save(instance, sender, **kwargs):
@@ -113,3 +107,4 @@ signals.pre_delete.connect(qgis_server_pre_delete, sender=Layer)
 signals.post_save.connect(qgis_server_post_save, sender=Layer)
 signals.pre_save.connect(qgis_server_pre_save_maplayer, sender=MapLayer)
 signals.post_save.connect(qgis_server_post_save_map, sender=Map)
+signals.pre_delete.connect(qgis_server_layer_pre_delete, sender=QGISServerLayer)
