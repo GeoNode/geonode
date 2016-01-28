@@ -1,18 +1,26 @@
-from django.db.models import signals
+import os
+from django.db import models
+from django.conf import settings
 
-from geonode.base.models import ResourceBase
 from geonode.layers.models import Layer
-from geonode.maps.models import Map, MapLayer
+from geonode.maps.models import MapLayer
 
-from geonode.qgis_server.signals import qgis_server_pre_save
-from geonode.qgis_server.signals import qgis_server_pre_delete
-from geonode.qgis_server.signals import qgis_server_post_save
-from geonode.qgis_server.signals import qgis_server_pre_save_maplayer
-from geonode.qgis_server.signals import qgis_server_post_save_map
+QGIS_LAYER_DIRECTORY = settings.QGIS_SERVER_CONFIG['layer_directory']
 
-signals.post_save.connect(qgis_server_post_save, sender=ResourceBase)
-signals.pre_save.connect(qgis_server_pre_save, sender=Layer)
-signals.pre_delete.connect(qgis_server_pre_delete, sender=Layer)
-signals.post_save.connect(qgis_server_post_save, sender=Layer)
-signals.pre_save.connect(qgis_server_pre_save_maplayer, sender=MapLayer)
-signals.post_save.connect(qgis_server_post_save_map, sender=Map)
+if not os.path.exists(QGIS_LAYER_DIRECTORY):
+    os.mkdir(QGIS_LAYER_DIRECTORY)
+
+class QGISServerLayer(models.Model):
+    """Model for Layer in QGIS Server Backend.
+    """
+    layer = models.OneToOneField(
+        Layer,
+        primary_key=True,
+        name='layer'
+    )
+    base_layer_path = models.CharField(
+        name='base_layer_path',
+        verbose_name='Base Layer Path',
+        help_text='Location of the base layer.',
+        max_length=100
+    )

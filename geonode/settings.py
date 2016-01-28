@@ -933,3 +933,9 @@ if 'geonode.geoserver' in INSTALLED_APPS:
 # App specific
 # Geosafe - Celery
 BROKER_URL = 'redis://localhost:6379/0'
+
+
+# QGIS Server Backend
+QGIS_SERVER_CONFIG = {
+    'layer_directory': os.path.join(PROJECT_ROOT, "qgis_layer")
+}
