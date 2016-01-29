@@ -49,6 +49,7 @@ def create_login_credentials(data_request):
     return final_username
 
 def get_unames_starting_with(name):
+    result = []
     try:
         con =ldap.initialize(settings.AUTH_LDAP_SERVER_URI)
         con.set_option(ldap.OPT_REFERRALS, 0)
@@ -57,6 +58,7 @@ def get_unames_starting_with(name):
         con.unbind_s()
     except Exception as e:
         print '%s (%s)' % (e.message, type(e))
+        return e
     return result
 
 def create_ad_account(datarequest, username):
@@ -86,6 +88,7 @@ def create_ad_account(datarequest, username):
     }
     
     add_user_mod = [(ldap.MOD_ADD, "member", dn)]
+    
     try:
         con = ldap.initialize(settings.AUTH_LDAP_SERVER_URI)
         con.set_option(ldap.OPT_REFERRALS, 0)
