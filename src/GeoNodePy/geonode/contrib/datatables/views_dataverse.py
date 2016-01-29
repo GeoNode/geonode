@@ -97,20 +97,20 @@ def view_upload_table_and_join_layer(request):
 
     existing_dv_layer_metadata = retrieve_dataverse_layer_metadata_by_kwargs_installation_and_file_id(**post_data_dict)
 
+    #-----------------------------------------------------------
     #   A layer was found!
     #   Update the DataverseLayerMetadata and return the layer.
-    #   * Update the worldmap user? *
     #-----------------------------------------------------------
-    if existing_dv_layer_metadata:
-        msg("Found existing layer!")
-        logger.info("Found existing layer!")
+    #if existing_dv_layer_metadata:
+    #    msg("Found existing layer!")
+    #    logger.info("Found existing layer!")
 
-        #update_the_layer_metadata(existing_dv_layer_metadata, post_data_dict)
+    #    #update_the_layer_metadata(existing_dv_layer_metadata, post_data_dict)
 
-        layer_metadata_obj = LayerMetadata(existing_dv_layer_metadata.map_layer)
+    #    layer_metadata_obj = LayerMetadata(existing_dv_layer_metadata.map_layer)
 
-        json_msg = MessageHelperJSON.get_json_msg(success=True, msg='A layer already exists for the join.', data_dict=layer_metadata_obj.get_metadata_dict())
-        return HttpResponse(status=200, content=json_msg, content_type="application/json")
+    #    json_msg = MessageHelperJSON.get_json_msg(success=True, msg='A layer already exists for the join.', data_dict=layer_metadata_obj.get_metadata_dict())
+    #    return HttpResponse(status=200, content=json_msg, content_type="application/json")
 
 
     # -------------------------------------------
@@ -216,32 +216,78 @@ def view_upload_table_and_join_layer(request):
 @csrf_exempt
 def view_upload_lat_lng_table(request):
 
+    msg('view_upload_lat_lng_table 0')
+    # -------------------------------------------
     # Is it a POST?
-    #
-    #
+    # -------------------------------------------
     if not request.method == 'POST':
         json_msg = MessageHelperJSON.get_json_fail_msg("Unsupported Method")
         return HttpResponse(json_msg, mimetype="application/json", status=500)
 
-    # Is the request data valid?
-    # Check with the MapLatLngLayerRequestForm
-    #
-    #f = MapLatLngLayerRequestForm(request.POST, request.FILES)
+
+    post_data_dict = request.POST.dict()
+
+    logger.info('Upload a lat/lng file originating from Dataverse/Geoconnect and join it to a layer.')
+    logger.info('Step 1:  Is the Dataverse Layer Metadata valid?')
+
+    msg('view_upload_lat_lng_table 1')
+    # -------------------------------------------
+    # (1) Is the Dataverse Layer Metadata valid?
+    # -------------------------------------------
+    f = DataverseLayerMetadataValidationForm(post_data_dict)
+    if not f.is_valid():
+        logger.error('check_for_existing_layer. failed validation')
+        logger.error('Errors: %s', f.errors)
+        json_msg = MessageHelperJSON.get_json_fail_msg('Failed to validate Dataverse metadata',
+                                                       data_dict=f.errors)
+
+        return HttpResponse(json_msg, mimetype="application/json", status=400)
+
+
+    # -------------------------------------------
+    # (1b) Does a layer already exist for this DataverseInfo?
+    # -------------------------------------------
+    msg('step 2')
+    logger.info('Step 2:  Does a layer already exist for this DataverseInfo?')
+
+    existing_dv_layer_metadata = retrieve_dataverse_layer_metadata_by_kwargs_installation_and_file_id(**post_data_dict)
+
+    #-----------------------------------------------------------
+    #   A layer was found!
+    #   Update the DataverseLayerMetadata and return the layer.
+    #-----------------------------------------------------------
+    if existing_dv_layer_metadata:
+        msg("Found existing layer!")
+        logger.info("Found existing layer!")
+
+        #update_the_layer_metadata(existing_dv_layer_metadata, post_data_dict)
+
+        layer_metadata_obj = LayerMetadata(existing_dv_layer_metadata.map_layer)
+
+        json_msg = MessageHelperJSON.get_json_msg(success=True, msg='A layer already exists for the join.', data_dict=layer_metadata_obj.get_metadata_dict())
+        return HttpResponse(status=200, content=json_msg, content_type="application/json")
+
+
+    # -------------------------------------------
+    # (2) Is the Lat/Lng request data valid? Check with the MapLatLngLayerRequestForm
+    # -------------------------------------------
+    logger.info('Step 2:  Is the Lat/Lng request data valid? Check with the MapLatLngLayerRequestForm')
     f = DataTableUploadFormLatLng(request.POST, request.FILES)
     if not f.is_valid():
         err_msg = "Invalid data in request: %s" % format_errors_as_text(f)
-        logger.error("datatable_upload_lat_lon_api. %s" % err_msg)
+        logger.error("datatable_upload_lat_lon_api. %s", err_msg)
         json_msg = MessageHelperJSON.get_json_fail_msg(err_msg, data_dict=f.errors)
         return HttpResponse(json_msg, mimetype="application/json", status=400)
 
     #   Set the new table/layer owner
     #
     new_table_owner = request.user
-    msg('view_upload_lat_lng_table 1')
+
 
     # --------------------------------------
-    # (1) Datatable Upload
+    # (3) Datatable Upload
     # --------------------------------------
+    logger.info('Step 3:  Datatable Upload')
     try:
         resp = datatable_upload_api(request)
         upload_return_dict = json.loads(resp.content)
@@ -256,11 +302,10 @@ def view_upload_lat_lng_table(request):
         traceback.print_exc(sys.exc_info())
         return HttpResponse(json_msg, mimetype='application/json', status=400)
 
-
     # --------------------------------------
-    # (2) Create layer using the Lat/Lng columns
+    # (4) Create layer using the Lat/Lng columns
     # --------------------------------------
-    msg('view_upload_lat_lng_table 2')
+    logger.info('Step 4: Create layer using the Lat/Lng columns')
     try:
         success, latlng_record_or_err_msg = create_point_col_from_lat_lon(new_table_owner
                         , upload_return_dict['data']['datatable_name']
@@ -300,6 +345,8 @@ def view_upload_lat_lng_table(request):
         logger.error(err_msg)
 
         return HttpResponse(json_msg, mimetype="application/json", status=400)
+
+
 
 def get_layer_metadata(layer_typename):
     if not layer_typename:
