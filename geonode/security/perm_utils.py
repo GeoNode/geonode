@@ -1,8 +1,9 @@
-from guardian.models import UserObjectPermission, GroupObjectPermission
-from django.contrib.contenttypes.models import ContentType
+#from guardian.models import UserObjectPermission, GroupObjectPermission
+import guardian.models as gmodels
 from guardian.shortcuts import get_perms
-import bisect
 from guardian.compat import get_user_model
+from django.contrib.contenttypes.models import ContentType
+import bisect
 from django.db.models.query_utils import Q
 
 
@@ -18,7 +19,7 @@ def get_users_with_perms(obj, attach_perms=True, with_superusers=True,
     
     #Retrieve users with direct permissions 
     obj_content_type = ContentType.objects.get_for_model(obj)
-    user_perms = UserObjectPermission.objects.filter(content_type=obj_content_type,object_pk=obj.id)
+    user_perms = gmodels.UserObjectPermission.objects.filter(content_type=obj_content_type,object_pk=obj.id)
     for p in user_perms:
         if p.user in all_user_perms:
             bisect.insort_left(all_user_perms[p.user],p.permission.codename)
@@ -52,7 +53,7 @@ def get_groups_with_perms(obj, attach_perms=True):
     all_group_perms = dict()
     
     obj_content_type = ContentType.objects.get_for_model(obj)
-    group_perms = GroupObjectPermission.objects.filter(content_type=obj_content_type,object_pk=obj.id)
+    group_perms = gmodels.GroupObjectPermission.objects.filter(content_type=obj_content_type,object_pk=obj.id)
     for p in group_perms:
         if p.group in all_group_perms:
             bisect.insort_left(all_group_perms[p.group],p.permission.codename)
