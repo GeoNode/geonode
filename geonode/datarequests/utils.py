@@ -104,5 +104,7 @@ def create_ad_account(datarequest, username):
         print traceback.format_exc()
         return False
     
+def add_to_ad_group():
+    
 
         

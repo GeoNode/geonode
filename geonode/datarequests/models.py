@@ -410,7 +410,7 @@ class DataRequestProfile(TimeStampedModel):
             # Link data request to profile and updating other fields of the request
             self.username = uname
             self.profile = profile
-            self.ftp_folder = "Others/"+uname
+            self.ftp_folder = directory = "Others/"+uname
             self.save()
             
             # Link shapefile to account
@@ -441,7 +441,7 @@ class DataRequestProfile(TimeStampedModel):
             self.request_status = 'approved'
             self.save()
 
-            self.send_approval_email(uname, self.ftp_folder)
+            self.send_approval_email(uname, directory)
             
         else:
             raise Http404
