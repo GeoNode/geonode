@@ -936,6 +936,7 @@ BROKER_URL = 'redis://localhost:6379/0'
 
 
 # QGIS Server Backend
-QGIS_SERVER_CONFIG = {
-    'layer_directory': os.path.join(PROJECT_ROOT, "qgis_layer")
-}
+if 'geonode.qgis_server' in INSTALLED_APPS:
+    QGIS_SERVER_CONFIG = {
+        'layer_directory': os.path.join(PROJECT_ROOT, "qgis_layer")
+    }

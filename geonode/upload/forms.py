@@ -38,9 +38,12 @@ class LayerUploadForm(forms.Form):
     dbf_file = forms.FileField(required=False)
     shx_file = forms.FileField(required=False)
     prj_file = forms.FileField(required=False)
-    sld_file = forms.FileField(required=False)
     xml_file = forms.FileField(required=False)
-    qml_file = forms.FileField(required=False)
+
+    if 'geonode.geoserver' in settings.INSTALLED_APPS:
+        sld_file = forms.FileField(required=False)
+    if 'geonode.qgis_server' in settings.INSTALLED_APPS:
+        qml_file = forms.FileField(required=False)
 
     geogig = forms.BooleanField(required=False)
     geogig_store = forms.CharField(required=False)
@@ -50,15 +53,20 @@ class LayerUploadForm(forms.Form):
     layer_title = forms.CharField(required=False)
     permissions = JSONField()
 
-    spatial_files = (
+    spatial_files = [
         "base_file",
         "dbf_file",
         "shx_file",
         "prj_file",
-        "sld_file",
         "xml_file",
-        'qml_file'
-    )
+    ]
+    # Adding style file based on the backend
+    if 'geonode.geoserver' in settings.INSTALLED_APPS:
+        spatial_files.append('sld_file')
+    if 'geonode.qgis_server' in settings.INSTALLED_APPS:
+        spatial_files.append('qml_file')
+
+    spatial_files = tuple(spatial_files)
 
     def clean(self):
         requires_datastore = () if ogc_server_settings.DATASTORE else (

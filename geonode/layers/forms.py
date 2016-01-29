@@ -23,6 +23,7 @@ import tempfile
 import autocomplete_light
 import zipfile
 
+from django.conf import settings
 from django import forms
 from django.utils import simplejson as json
 from geonode.layers.utils import unzip_file
@@ -160,8 +161,10 @@ class LayerUploadForm(forms.Form):
 
 
 class NewLayerUploadForm(LayerUploadForm):
-    sld_file = forms.FileField(required=False)
-    qml_file = forms.FileField(required=False)
+    if 'geonode.geoserver' in settings.INSTALLED_APPS:
+        sld_file = forms.FileField(required=False)
+    if 'geonode.qgis_server' in settings.INSTALLED_APPS:
+        qml_file = forms.FileField(required=False)
     xml_file = forms.FileField(required=False)
 
     abstract = forms.CharField(required=False)
@@ -169,15 +172,20 @@ class NewLayerUploadForm(LayerUploadForm):
     permissions = JSONField()
     charset = forms.CharField(required=False)
 
-    spatial_files = (
+    spatial_files = [
         "base_file",
         "dbf_file",
         "shx_file",
         "prj_file",
-        "sld_file",
         "xml_file",
-        "qml_file"
-    )
+    ]
+    # Adding style file based on the backend
+    if 'geonode.geoserver' in settings.INSTALLED_APPS:
+        spatial_files.append('sld_file')
+    if 'geonode.qgis_server' in settings.INSTALLED_APPS:
+        spatial_files.append('qml_file')
+
+    spatial_files = tuple(spatial_files)
 
 
 class LayerDescriptionForm(forms.Form):
