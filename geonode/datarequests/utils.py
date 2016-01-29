@@ -87,24 +87,35 @@ def create_ad_account(datarequest, username):
         "userAccountControl": [userAccountControl],
     }
     
-    add_user_mod = [(ldap.MOD_ADD, "member", dn)]
+    
     
     try:
         con = ldap.initialize(settings.AUTH_LDAP_SERVER_URI)
         con.set_option(ldap.OPT_REFERRALS, 0)
         con.simple_bind_s(settings.LIPAD_LDAP_BIND_DN, settings.LIPAD_LDAP_BIND_PW)
         result = con.add_s(dn,ldap.modlist.addModlist(modList))
-        group_result = con.modify_s(settings.LIPAD_LDAP_GROUP_DN, add_user_mod)
         con.unbind_s()
         pprint(result)
-        pprint(group_result)
-        return True
+        return dn
     except Exception as e:
         import traceback
         print traceback.format_exc()
         return False
     
-def add_to_ad_group():
+def add_to_ad_group(group_dn=settings.LIPAD_LDAP_GROUP_DN, used_dn=""):
+    try:
+        add_user_mod = [(ldap.MOD_ADD, "member", user_dn)]
+        con = ldap.initialize(settings.AUTH_LDAP_SERVER_URI)
+        con.set_option(ldap.OPT_REFERRALS, 0)
+        con.simple_bind_s(settings.LIPAD_LDAP_BIND_DN, settings.LIPAD_LDAP_BIND_PW)
+        group_result = con.modify_s(group_dn, add_user_mod)
+        con.unbind_s()
+        pprint(group_result)
+        return result
+    except Exception as e:
+        import traceback
+        print traceback.format_exc()
+        return e
+        
     
-
         
