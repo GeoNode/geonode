@@ -2,7 +2,7 @@ from django import forms
 from django.core.validators import MaxValueValidator, RegexValidator
 from django.core.files.uploadedfile import SimpleUploadedFile
 
-from geonode.contrib.datatables.models import DataTable, TableJoin, TableJoinResult, TABLE_JOIN_TO_RESULT_MAP
+from .models import DataTable, TableJoin, TableJoinResult, TABLE_JOIN_TO_RESULT_MAP
 
 MAX_ALLOWED_YEAR = 9999
 ERR_MSG_START_YEAR_CANNOT_BE_GREATER = "The start year cannot be greater than the end year."

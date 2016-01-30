@@ -1,6 +1,6 @@
 from os.path import dirname, join, realpath
 from django.utils import unittest
-from contrib.datatables.forms import TableUploadAndJoinRequestForm
+from geonode.contrib.datatables.forms import TableUploadAndJoinRequestForm
 from django.core.files.uploadedfile import SimpleUploadedFile
 
 class TableUploadAndJoinFormTestCase(unittest.TestCase):

@@ -1,5 +1,5 @@
 from django.utils import unittest
-from contrib.datatables.forms import JoinTargetForm, ERR_MSG_START_YEAR_CANNOT_BE_GREATER, ERR_MSG_YEAR_TOO_HIGH
+from geonode.contrib.datatables.forms import JoinTargetForm, ERR_MSG_START_YEAR_CANNOT_BE_GREATER, ERR_MSG_YEAR_TOO_HIGH
 
 
 class JoinTargetTestCase(unittest.TestCase):
