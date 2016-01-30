@@ -1,0 +1,1 @@
+{% load i18n %}{{owner}}{% trans " has invited you to " %} {{ site.name }}

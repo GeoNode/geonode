@@ -1,0 +1,43 @@
+{% extends "profiles/base.html" %}
+{% load i18n avatar_tags %}
+  {% block breadcrumb %}
+      					<a id="logo" href="{% url home %}"><img src="{{STATIC_URL}}theme/img/WorldMap-Logo_26px.png" border="0"></a>
+  						<div id="page-breadcrumb"><span>Edit {{ profile.user.username }}'s profile</span></div>
+
+  {% endblock %}
+
+{% block content %}
+<div class="onecol">
+  <h2>Edit {{ profile.user.username }}'s profile</h2>
+
+    <div >
+        <div class="avatar">{% avatar user 70 %}</div>
+        <p><a class="btn btn-primary btn-block" href="{% url avatar_change %}">{% trans "Change your avatar" %}</a></p>
+    </div>
+
+   {%  if USE_CUSTOM_ORG_AUTHORIZATION %}
+    <div style="padding: 10px">
+    {%  if not is_org_user  %}
+        <p>{%  trans "Are you affiliated with  " %}{{ CUSTOM_GROUP_NAME }}?
+            <a href="/affiliation/confirm">{% trans "Click here to confirm" %}</a></p>
+    {%  endif %}
+    {%  if is_org_user  %}
+        {% if is_org_current %}
+            <p>
+            {% trans "Your affiliation with " %}{{ CUSTOM_GROUP_NAME }}{% trans " expires on " %}{{ org_expiration_dt }}
+        {%  else %}
+            {% trans "Your affiliation with " %}{{ CUSTOM_GROUP_NAME }}{% trans " expired on " %}{{ org_expiration_dt }}
+        {%  endif  %}
+            : <a href="/affiliation/confirm">{% trans "Click here to renew" %}</a></p>
+    {%  endif %}
+       </div>
+    {%  endif  %}
+  <form action="" method="post">
+  {% csrf_token %}
+  <ul class="form">
+   {{ form.as_ul }}
+  </ul>
+  <input type="submit" value="Submit" />
+  </form>
+</div>
+{% endblock %}

@@ -1,0 +1,19 @@
+{% extends "admin/change_form.html" %}
+
+{% block extrahead %}{{block.super}}
+## adds a helper popup for looking up maps and layers in the admin for row level perms
+<script>
+django.jQuery(document).ready(function() {
+  django.jQuery(".object_id").append('<div id="object_id_finder"></div>');
+  django.jQuery("#id_object_ct").change(function() {
+    var type = django.jQuery("#id_object_ct option:selected").text();
+    if (type == 'map' || type == 'layer') {
+      django.jQuery("#object_id_finder").html('<a onclick="return showRelatedObjectLookupPopup(this);" id="lookup_id_object_id" class="related-lookup" href="../../../maps/' + type +'/">Lookup ' + type + '</a>');
+    }
+    else {
+      django.jQuery("#object_id_finder").html('');
+    }
+  }).change();
+});
+</script>
+{% endblock %}

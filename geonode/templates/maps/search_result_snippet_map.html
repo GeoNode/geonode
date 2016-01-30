@@ -1,0 +1,27 @@
+{% load i18n %}
+{% load geonode_auth %}
+{% load avatar_tags %}
+{% load certified %}
+
+{% if map.abstract %}
+<p><b>{% trans "Abstract" %}:</b> {{map.abstract}}</p>
+{% endif %}
+
+{% if map.keywords.all.count > 0 %}
+<p><b>{% trans "Keywords:" %}</b>
+    {{map.keywords.all|join:", "}}
+</p>
+{% endif %}
+
+{% object_certifications map as certifications %}
+{% if certifications %}
+    <p><b>{% trans "Certified by:" %}</b>
+    {% for certification in certifications %}
+        <a href="/profiles/{{certification.certifier.username}}"><span class="certbadge">{% avatar certification.certifier 32 %}</span></a>
+    {% endfor %}
+    </p>
+{% endif %}
+
+
+
+<p><a href="{detail}">{% trans "View this map" %}</a></p>

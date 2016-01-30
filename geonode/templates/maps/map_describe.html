@@ -1,0 +1,42 @@
+{% extends "page_layout.html" %}
+{% load i18n %}
+
+{% block title %} {{ map.title }} - {{urlsuffix}} - {{ block.super }} {% endblock %}
+
+{% block head %}
+{% include "geonode/ext_header.html" %}
+<script type="text/javascript" src="{{ GEONODE_CLIENT_LOCATION }}externals/misc/nicEdit.js"></script>
+{{ block.super }}
+<script type="text/javascript">
+    var app;
+    var mapurl = "{% url geonode.maps.views.view map.id %}";
+    {% if map.officialurl %}
+        mapurl="{% url geonode.maps.views.official_site map.officialurl %}";
+        {% else %}
+        {% if map.url %}
+            mapurl="{% url geonode.maps.views.view map.url %}";
+            {% endif %}
+            {% endif %}
+
+            Ext.onReady(function() {
+                var titleTemplate = new Ext.Template("<a  href=\"" + mapurl + "\">{{map.title}}</a><span>&nbsp;/&nbsp;</span><a  href=\"" + mapurl + "edit/\">{% trans 'Share' %}</a><span>&nbsp;/&nbsp;{% trans 'Edit Details' %}</span>");
+                Ext.DomHelper.overwrite(Ext.get("page-breadcrumb"), titleTemplate.apply());
+            });
+</script>
+{% endblock %}
+{% block main %}
+<div class="twocol">
+    <h2> {% trans "Editing details for " %} {{ map.title }} </h2>
+    <form action="/maps/{{map.id}}/info/describe/" method="POST">
+        {% csrf_token %}
+        <ul class="form">
+            {{ map_form.as_ul }}
+            <input type="submit" value="{% trans "Update" %}"/>
+        </ul>
+    </form>
+</div>
+ <script type="text/javascript">
+     var nicEditIconsPath = "{{ GEONODE_CLIENT_LOCATION }}externals/misc/images/nicEditorIcons.gif"
+     var myNicEditor = new nicEditor({fullPanel : true,  maxHeight: 190, iconsPath: nicEditIconsPath}).panelInstance("mapdescription");
+ </script>
+{% endblock %}

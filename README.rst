@@ -93,6 +93,27 @@ database name: wm_db
 user: wm_user
 password: wm_password
 
+Postgres database creation
+--------------------------
+
+  # create user
+  create role wm_user password 'wm_password' superuser login;
+  # create wm_db
+  psql -U postgres -c "drop database wm_db"
+  psql -U postgres -c "create database wm_db with owner wm_user encoding 'UTF8' lc_collate='en_US.utf8' lc_ctype='en_US.utf8' template template0;"
+  psql -U wm_user -d wm_db -f /usr/share/postgresql/9.1/contrib/postgis-1.5/postgis.sql
+  psql -U wm_user -d wm_db -f /usr/share/postgresql/9.1/contrib/postgis_comments.sql
+  psql -U wm_user -d wm_db -f /usr/share/postgresql/9.1/contrib/postgis-1.5/spatial_ref_sys.sql
+
+  # create wmdata
+  psql -U postgres -c "drop database wmdata"
+  psql -U postgres -c "create database wmdata with owner wm_user encoding 'UTF8' lc_collate='en_US.utf8' lc_ctype='en_US.utf8' template template0;"
+  psql -U wm_user -d wmdata -f /usr/share/postgresql/9.1/contrib/postgis-1.5/postgis.sql
+  psql -U wm_user -d wmdata -f /usr/share/postgresql/9.1/contrib/postgis_comments.sql
+  psql -U wm_user -d wmdata -f /usr/share/postgresql/9.1/contrib/postgis-1.5/spatial_ref_sys.sql
+
+GeoNode installation
+--------------------
 
   git clone git://github.com/cga-harvard/cga-worldmap.git cga-worldmap
   

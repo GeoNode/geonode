@@ -1,0 +1,8 @@
+<link rel="stylesheet" type="text/css" href="{{ GEONODE_CLIENT_LOCATION }}externals/ext/resources/css/ext-all.css" />
+<script type="text/javascript" src="{{ GEONODE_CLIENT_LOCATION }}externals/ext/adapter/ext/ext-base.js"></script>
+<script type="text/javascript" src="{{ GEONODE_CLIENT_LOCATION }}externals/ext/ext-all.js"></script>
+
+<script type="text/javascript">
+  Ext.Ajax.defaultHeaders = { 'X-CSRFToken': '{{ csrf_token|escapejs }}' };
+  Ext.BLANK_IMAGE_URL = "{{ GEONODE_CLIENT_LOCATION }}externals/ext/resources/images/default/s.gif";
+</script>

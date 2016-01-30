@@ -33,6 +33,8 @@ target
 # Directory created by collectstatic
 src/GeoNodePy/geonode/site_media/
 
+# directory created by the build process
+src/GeoNodePy/geonode/static/geonode
 
 # OSX specific
 .Python

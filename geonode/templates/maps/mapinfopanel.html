@@ -1,0 +1,73 @@
+
+{% load i18n %}
+{% load geonode_auth %}
+
+
+
+<style>h3{font-size:1.5em;line-height:1;margin-bottom:1em;margin-top:1em}p{margin-bottom:0.5em}strong{font-weight:bold}caption{background:#ffc}</style>
+
+
+    {% has_obj_perm user map "maps.change_map" as can_change %}
+    {% has_obj_perm user map "maps.delete_map" as can_delete %}
+
+  {% has_obj_perm user map "maps.change_map_permissions" as can_change_permissions %}
+
+<div style="padding:10px;">
+  <h3>{% trans "Map Views" %}</h3>
+  <p>{% trans "This map has been viewed " %} {{ mapstats.visits }} {% trans "time(s) " %}  {% trans "by " %} {{ mapstats.uniques }} {% trans "user(s)" %}  </p>
+</div>
+
+  {% if can_change_permissions %}
+<div style="padding:10px;">
+  <h3>{% trans "Map Permissions" %}</h3>
+    <p>{% trans "Select what kind of privileges to allow." %}</p>
+    <div id="map_permissions_form"></div>
+</div>
+  {% endif %}
+
+
+
+{% if can_delete %}
+<div style="padding:10px;">
+  <h3>{% trans "Manage Map" %}</h3>
+  <ul>
+    <li><a href="#" onclick="Ext.MessageBox.confirm('{% trans "Delete map" %}', '{% trans "Are you sure you want to delete this map?" %}', handleResponse);return false;">{% trans "Delete map" %}</a></li>
+  </ul>
+</div>
+{% endif %}
+
+<script type="text/javascript">
+{% has_obj_perm user map "maps.change_map_permissions" as can_change_permissions %}
+{% autoescape off %}
+{% if can_change_permissions %}
+    var mpe = new GeoNode.WorldMapPermissionsEditor({
+        levels: {
+            'admin': 'map_admin',
+            'readwrite': 'map_readwrite',
+            'readonly': 'map_readonly',
+            'none': '_none'
+        },
+        renderTo: "map_permissions_form",
+        submitTo: "{% url geonode.maps.views.ajax_map_permissions_by_email map.id %}",
+        userLookup: "{% url geonode.views.ajax_lookup_email %}",
+        customGroup: "{{ customGroup }}",
+        permissions: {{ permissions_json }},
+        listeners: {
+            updated: function(perms) {
+                var submitTo = "{% url geonode.maps.views.ajax_map_permissions_by_email map.id %}";
+                Ext.Ajax.request({ url: submitTo, jsonData: perms.writePermissions() });
+            }
+        }
+    });
+mpe.fireEvent("updated", mpe);
+{% endif %}
+
+
+ function handleResponse(btn){
+        if (btn == 'yes'){
+            window.location = "{% url geonode.maps.views.map_controller map.id %}?removenow";
+        }
+    };
+
+{% endautoescape %}
+</script>

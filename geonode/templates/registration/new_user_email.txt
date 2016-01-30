@@ -1,0 +1,16 @@
+{% load i18n %}
+
+{{owner}} {% trans " has shared '" %}{{title}}{% trans "' with you on Harvard University WorldMap:" %}
+	http://{{ site.domain }}{{url}}
+
+{% if password %}
+	{% trans "Activate your new WorldMap account at" %} {{ site.name }}:
+
+	http://{{ site.domain }}{% url registration_activate activation_key %}
+
+	{% trans "Username" %} : {{username}}
+	{% trans "Password" %} : {{password}}
+
+	{% blocktrans %}Link is valid for {{ expiration_days }} days.{% endblocktrans %}
+{% endif %}
+

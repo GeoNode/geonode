@@ -1,0 +1,11 @@
+{% extends "registration/base.html" %}
+{% load i18n %}
+
+{% block main %}
+<div class="twocol">
+  {% if account %}
+  <p>{% trans "Account successfully activated" %}</p>
+  {% endif %}
+  <p><a href="{% url auth_login %}">{% trans "Log in" %}</a></p>
+</div>
+{% endblock %}

@@ -1,0 +1,149 @@
+{% load i18n %}
+{% load officialsites %}
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+  <title>{% block title %} {{ SITENAME }} {% endblock %}</title>
+  <link rel="shortcut icon" href="{{ STATIC_URL }}theme/img/favicon.ico"/>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.js" type="text/javascript"></script>
+  <script type="text/javascript" src="{{ GEONODE_CLIENT_LOCATION }}externals/ext/adapter/jquery/ext-jquery-adapter.js"></script>
+  {% include 'autocomplete_light/static.html' %}    
+  {% block head_extra_meta %}{% endblock %}
+  {% block head %}
+
+
+  	{% if urlsuffix %}
+		<link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}{{urlsuffix}}/boilerplate-min.css" media="screen" />
+    	<link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}{{urlsuffix}}/site.css" media="screen" />
+    	  <!--[if lte IE 6]><link rel="stylesheet" href="{{STATIC_URL}}theme/boilerplate-ie-min.css" type="text/css" media="screen" charset="utf-8"><![endif]-->
+    {% else %}
+    	<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}theme/boilerplate-min.css" media="screen" />
+    	<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}theme/site.css"  media="screen" />
+    	  <!--[if lte IE 6]><link rel="stylesheet" href="{{ STATIC_URL }}theme/boilerplate-ie-min.css" type="text/css" media="screen" charset="utf-8"><![endif]-->
+    {% endif %}
+    <script type="text/javascript" src="{% url jscat %}"></script>
+    <script type="text/javascript" src="{% url django.views.i18n.javascript_catalog %}"></script>
+    <script type="text/javascript" src="{% url lang %}"></script>
+   
+    
+  	{% endblock %}
+    {% autoescape off %}
+        {{ GOOGLE_ANALYTICS_CODE }}
+    {% endautoescape %}
+    
+    <script type="text/javascript">
+		function hideModal() {
+			Ext.get("modalhelp").setStyle("display","none");
+		}
+		function showModal(text) {
+			Ext.get("modalhelp").setStyle("display","block").update(text);
+		}
+		function showHelp(event) {
+			showModal(event.target.innerHTML);
+		}
+		if (Ext.onReady) {
+        	Ext.onReady(function() {
+        		{% autoescape off %}
+            		Ext.select(".helptext").on('mouseover',showHelp);
+        			Ext.select(".helptext").on('mouseout',hideModal);
+            	{% endautoescape %}
+    		});
+		}
+   </script>    
+
+   <script>
+    $(document).ready(function() {
+      $("#select_help").change(function(){
+        location = this.options[this.selectedIndex].value;
+      });
+      });
+    </script>
+
+</head>
+<body>
+{#<div id="maintenance_msg" style="padding:5px 15px;border:1px solid #ff0000;font-family:verdana; text-align:center;background-color:#FFFF99;">Maintenance Note: The WorldMap will be unavailable on February 17th, from 4:30pm EST to 5:30pm EST. (21:30 GMT to 22:30 GMT)</div>#}
+
+  <div id="header">
+    <div class="wrap selfclear">
+        	{% block logos %}
+        	    {% block breadcrumb %}
+        	    	{% if urlsuffix %}
+                                {% if map.officialurl %}
+                                                 <div id="page-breadcrumb"><a href="{% url geonode.maps.views.official_site map.officialurl %}">{{title}}</a></div>
+                                {% else %}
+                                                <div id="page-breadcrumb"><span>{{title}}</span></div>
+                                {% endif %}
+
+    				{% else %}
+      					<a id="logo" href="{% url home %}"><img src="{{STATIC_URL}}theme/img/WorldMap-Logo_26px.png" border="0"></a>
+  						<div id="page-breadcrumb"><span>{{title}}</span></div>
+      				{% endif %}
+  	  			{% endblock %}
+        	{% endblock logos %}
+
+    <div id="login-area">
+      {% if user.is_authenticated %}
+          <a href="{{ user.get_profile.get_absolute_url }}">{{ user.username}}</a> | <a href="{% url accounts_logout %}">{% trans "Log out" %}</a>
+      {% else %}
+          <!-- this should be updated to a url var -->
+          <a href="{% url accounts_login %}?next={% if 'logout' not in request.path %}{{request.path}}{% else %}/{% endif %}"
+                  >{% trans "Sign in" %}</a>
+      {% endif %}
+      | <a class="" id="mapLink" href="/maps/new">{% trans "Create Map" %}</a>
+      | <a class="" id="viewLink" href="{% url maps_search %}?sort=last_modified&dir=DESC">{% trans "View Map" %}</a>
+      | <select id="select_help">
+          <option value="" disabled selected>Help</option>
+          <option value='{{ STATIC_URL }}docs/WorldMap_Help_en.pdf'>English</option>
+          <option value='{{ STATIC_URL }}docs/WorldMap_Help_zh-cn.pdf'>Chinese</option>
+          <option value='{{ STATIC_URL }}docs/WorldMap_Help_it.pdf'>Italian</option>
+        </select>
+
+    </div><!-- /.wrap -->
+  </div><!-- /#header -->
+
+  <div id="main">
+    <div class="wrap selfclear">
+      {% block main %}{% endblock %}
+      {% block content %}{% endblock %}
+      {% block sidebar %}{% endblock %}
+    </div><!-- /.wrap -->
+  </div><!-- /#main -->
+  <div id="footer">
+    <div class="wrap selfclear">
+      {% block footer %}
+      
+   <!-- Only show the language form if the csrf_token is present -->
+   {% if csrf_token != "NOTPROVIDED" and False %}       
+   {% get_current_language as LANGUAGE %}
+    <form class="langbar" id="target" action="/i18n/setlang/" method="post">
+      {% csrf_token %}
+       <div style="display: inline;float:left;">
+         <select id="langval" name="language" onchange="javascript:form.submit()">
+           {% for lang in LANGUAGES %}
+            <option value="{{ lang.0 }}"
+                {% ifequal LANGUAGE_CODE lang.0 %} selected="selected"{% endifequal %}>
+                {{ lang.1 }}
+            </option>
+           {% endfor %}
+         </select>
+       </div>
+     </form>
+   {% endif %}        
+      
+      <div class="onecol" style="text-align:center">
+         <a href="{{site}}{{ STATIC_URL }}docs/WorldMap_Help_{{LANGUAGE_CODE}}.pdf">{% trans "Need Help?" %}</a>&nbsp;&nbsp;
+         <a href="mailto:worldmap@harvard.edu">{%  trans "Contact Us" %}</a>&nbsp;&nbsp;
+         <a href="https://github.com/cga-harvard/cga-worldmap">{% trans "Source Code" %}</a>&nbsp;&nbsp;
+         <a href="http://www.harvard.edu/copyright-issue">{% trans "Report Copyright Infringement" %}</a>&nbsp;&nbsp;
+         {% trans "Copyright 2015 &copy; The President and Fellows of Harvard College" %}
+      </div>
+
+      {% endblock %}
+    </div><!-- /.wrap -->
+  </div><!-- /#footer -->
+  {% block end_body_js %}{% endblock %}
+  <div id="modalhelp" class="modal_help"></div>
+</body>
+</html>

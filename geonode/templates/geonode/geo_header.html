@@ -1,0 +1,114 @@
+<link rel="stylesheet" type="text/css" href="{{ GEONODE_CLIENT_LOCATION }}externals/openlayers/theme/default/style.css" />
+<script src="{{ GEONODE_CLIENT_LOCATION }}script/OpenLayers.js"></script>
+<link rel="stylesheet" type="text/css" href="{{ GEONODE_CLIENT_LOCATION }}externals/geoext/resources/css/geoext-all.css" />
+<script src="{{ GEONODE_CLIENT_LOCATION }}script/GeoExt.js"></script>
+<link rel="stylesheet" href="{{ GEONODE_CLIENT_LOCATION }}externals/gxp/theme/all.css" />
+<script src="{{ GEONODE_CLIENT_LOCATION }}script/gxp.js"></script>
+<link rel="stylesheet" type="text/css" href="{{ GEONODE_CLIENT_LOCATION }}theme/app/geoexplorer.css" />
+<!--[if IE]><link rel="stylesheet" type="text/css" href="{{ GEONODE_CLIENT_LOCATION }}theme/app/ie.css"/><![endif]-->
+<script src="{{ GEONODE_CLIENT_LOCATION }}script/GeoExplorer.js"></script>
+<script type="text/javascript">
+OpenLayers.ImgPath = "{{ GEONODE_CLIENT_LOCATION }}externals/openlayers/img/";
+var nicEditIconsPath = "{{ GEONODE_CLIENT_LOCATION }}externals/misc/images/nicEditorIcons.gif"
+
+gxp.plugins.Styler.prototype.enableActionIfAvailable  = function(url) {
+    Ext.Ajax.request({
+        method: "POST",
+        url:"{{ STATIC_URL }}/data/" + this.target.selectedLayer.getLayer().params.LAYERS + "/ajax-edit-check",
+        callback: function(options, success, response) {
+            this.launchAction.setDisabled(response.status !== 200);
+        },
+        scope: this
+    });
+};
+
+
+gxp.WMSStylesDialog.prototype.createGeoServerStylerConfig = function (layerRecord, url) {
+    var layer = layerRecord.getLayer();
+    if (!url) {
+        url = layerRecord.get("restUrl");
+    }
+    if (!url) {
+        url = layer.url.split("?").shift().replace(/\/(wms|ows)\/?$/, "/rest");
+    }
+    return {
+        xtype:"gxp_wmsstylesdialog",
+        layerRecord:layerRecord,
+        classifyEnabled: true,
+        plugins:[
+            {
+                ptype:"gxp_geoserverstylewriter",
+                baseUrl:url
+            }
+        ],
+        listeners:{
+            "styleselected":function (cmp, style) {
+                layer.mergeNewParams({
+                    styles:style
+                });
+            },
+            "modified":function (cmp, style) {
+                cmp.saveStyles();
+            },
+            "saved":function (cmp, style) {
+                layer.mergeNewParams({
+                    _olSalt:Math.random(),
+                    styles:style
+                });
+            },
+            scope:this
+        }
+    };
+}
+
+gxp.WMSLayerPanel.prototype.createStylesPanel = function(url) {
+    var config = gxp.WMSStylesDialog.createGeoServerStylerConfig(
+            this.layerRecord, url
+    );
+    if (this.rasterStyling === true) {
+        config.plugins.push({
+            ptype: "gxp_wmsrasterstylesdialog"
+        });
+    }
+    var ownerCt = this.ownerCt;
+    if (!(ownerCt.ownerCt instanceof Ext.Window)) {
+        config.dialogCls = Ext.Panel;
+        config.showDlg = function(dlg) {
+            dlg.layout = "fit";
+            dlg.autoHeight = false;
+            ownerCt.add(dlg);
+        };
+    }
+    return Ext.apply(config, {
+        title: this.stylesText,
+        style: "padding: 10px",
+        editable: false,
+        listeners: Ext.apply(config.listeners, {
+            "beforerender": {
+                fn: function(cmp) {
+                    var render = !this.editableStyles;
+                    if (!render) {
+                            Ext.Ajax.request({
+                                method: "PUT",
+                                url:"{{ STATIC_URL }}/data/" + this.layerRecord.getLayer().params.LAYERS + "/ajax-edit-check",
+                                callback: function(options, success, response) {
+                                    // we expect a 405 error code here if we are dealing with
+                                    // GeoServer and have write access. Otherwise we will
+                                    // create the panel in readonly mode.
+                                    cmp.editable = (response.status == 200);
+                                    cmp.ownerCt.doLayout();
+                                }
+                            });
+                    }
+                    return render;
+                },
+                scope: this,
+                single: true
+            }
+        })
+    });
+};
+
+
+
+</script>
