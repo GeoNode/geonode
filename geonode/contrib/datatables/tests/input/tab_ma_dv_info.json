@@ -5,7 +5,7 @@
     "datafile_download_url": "http://localhost:8080/api/access/datafile/7775",
     "datafile_filesize": 3844023,
     "datafile_id": 7775,
-    "datafile_label": "ma_tigerlines.zip",
+    "datafile_label": "tab_shp_ma_tigerlines.zip",
 
     "dataset_id": 25,
      "dataset_name": "MA Tigerlines",
