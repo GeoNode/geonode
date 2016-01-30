@@ -3,8 +3,7 @@
 Install GeoNode for Development
 ===============================
 
-
-In order to install Geonode 2.0 in developing mode on Ubuntu 12.04 the following steps are required:
+In order to install Geonode 2.4 in development mode on Ubuntu 14.04 the following steps are required:
 
 For Windows: (:ref:`win_devinstall`)
 
@@ -12,17 +11,17 @@ For Centos 7: (:ref:`devmode_install_centos`)
 
 #. Retrieve latest apt-get list
 #. Install build tools and libraries
-#. Install dependencies (Python, Postgresql and Java) and supporting tools
+#. Install dependencies (Python, PostgreSQL and Java) and supporting tools
 #. Add Nodejs PPA and other tools required for static development
 #. Set up a virtual environment (virtualenv)
-#. Clone geonode from github and install it in the virtual environment
+#. Clone GeoNode from github and install it in the virtual environment
 #. Run paver to get install geoserver and start the development servers
-#. Compile and Start the server
-#. Start Geonode instance
+#. Download GeoServer and setup the server 
+#. Start GeoNode instance
 #. To stop the server
-#. Next create a superuser for your django geonode
+#. Create a superuser for your GeoNode 
 
-.. note:: The following steps have to be executed in your terminal. The steps have to be done as a root user, therefore don´t forget to type sudo in front!
+.. note:: The following steps have to be executed in your terminal. Many steps need to be performed as the root user, therefore don´t forget to type sudo in front!
 
 #. Retrieve latest apt-get list
 
@@ -52,11 +51,11 @@ For Centos 7: (:ref:`devmode_install_centos`)
 
     $ sudo pip install virtualenvwrapper
 
-   *Postgresql*
+   *PostgreSQL & PostGIS*
 
      .. code-block:: console
 
-      $ sudo apt-get install postgresql-9.3-postgis-2.1 postgresql-9.3-postgis-scripts
+      $ sudo apt-get install -y postgresql-9.3-postgis-2.1 postgresql-9.3-postgis-scripts
 
      Change postgres UNIX password
 
@@ -65,31 +64,36 @@ For Centos 7: (:ref:`devmode_install_centos`)
       $ sudo passwd -u postgres # change password expiry infromation
       $ sudo passwd postgres # change unix password for postgres
 
-     Create geonode role and database
+     Create GeoNode role and database
 
      .. code-block:: console
 
       $ su postgres
       $ createdb geonode
+      $ createdb geonode_data
       $ psql
       postgres=#
       postgres=# \password postgres
       postgres=# CREATE USER geonode WITH PASSWORD 'geonode'; # should be same as password in setting.py
-      postgres=# GRANT ALL PRIVILEGES ON DATABASE "geonode" to geonode;
+      postgres=# GRANT ALL PRYIVILEGES ON DATABASE "geonode" to geonode;
+      postgres=# GRANT ALL PRYIVILEGES ON DATABASE "geonode_data" to geonode;
+      postgres=# \c geonode_data
+      postgres=# create extension postgis; 
       postgres=# \q
+      $ exit 
 
 
    *Java dependencies*
 
    .. code-block:: console
 
-    $ sudo apt-get install -y --force-yes openjdk-6-jdk ant maven2 --no-install-recommends
+    $ sudo apt-get install -y --force-yes openjdk-6-jdk --no-install-recommends
 
-   *supporting tools*
+   *Supporting tools*
 
    .. code-block:: console
 
-    $ sudo apt-get install -y git gettext
+    $ sudo apt-get install -y git gettext libjpeg62 libjpeg62-dev
 
 
 
@@ -118,17 +122,24 @@ For Centos 7: (:ref:`devmode_install_centos`)
       .. code-block:: console
 
        $ mkvirtualenv geonode
-       $ workon geonode
 
       This creates a new directory where you want your project to be and creates a new virtualenvironment
 
+    Later you can re-activate the virtualenv with the following command
+
+      .. code-block:: console
+
+       $ workon geonode
+
+
 #. Get the code
 
-   To download the latest geonode version from github, the command *clone* is used
+   To download the latest GeoNode version from github, the command *clone* is used
 
    .. code-block:: console
 
     $ git clone https://github.com/GeoNode/geonode.git
+
 
 #. Add Nodejs PPA and other tools required for static development
 
@@ -136,10 +147,9 @@ For Centos 7: (:ref:`devmode_install_centos`)
 
    .. code-block:: console
 
-    $ sudo add-apt-repository -y ppa:chris-lea/node.js
-    $ sudo apt-get update
+    $ curl -sL https://deb.nodesource.com/setup_4.x | sudo -E bash - 
     $ sudo apt-get install -y nodejs
-    $ cd geonode/static
+    $ cd geonode/geonode/static
     $ npm install --save-dev
 
     # If the last command does not work, you can run it manually like this:
@@ -155,8 +165,8 @@ For Centos 7: (:ref:`devmode_install_centos`)
     $ npm install grunt-contrib-cssmin --save-dev
     $ npm install grunt-contrib-watch --save-dev
 
-    
    Every time you want to update the static files after making changes to the sources, go to geonode/static and run 'grunt production'.
+
 
 #. Install GeoNode in the new active local virtualenv
 
@@ -171,21 +181,23 @@ For Centos 7: (:ref:`devmode_install_centos`)
     
      $ pip install -e geonode --use-mirrors --allow-external pyproj --allow-unverified pyproj 
 
-#. Compile and Start the server
 
-   The last step is to compile GeoServer and setup
+#. Download GeoServer and setup the server 
+
+   The last step is to download GeoServer and setup the server.
 
    .. code-block:: console
 
     $ paver setup
 
-#. Now we can start our geonode instance
+
+#. Now we can start our GeoNode instance
 
    .. code-block:: console
 
     $ paver start
 
-   Visit the geonode site by typing http://localhost:8000 into your browser window.
+   Visit the GeoNode site by typing http://localhost:8000 into your browser window.
 
    If you are using a different IP address (e.g 1.1.1.1), then start paver using the command below.
 
@@ -194,6 +206,7 @@ For Centos 7: (:ref:`devmode_install_centos`)
     $ paver start -b 1.1.1.1:8000
    
    If the start fails because of an import error related to osgeo, then please consult the `GDAL for Development Guide <http://docs.geonode.org/en/latest/tutorials/devel/install_devmode/gdal_install.html>`_. 
+
 
 #. To stop the server
 
@@ -205,18 +218,20 @@ For Centos 7: (:ref:`devmode_install_centos`)
 
     $ paver stop    # to stop all django, geoserver services
 
-#. Next create a superuser for your django geonode
 
-   Create a superuser so you can log on to your local geonode installation at http://localhost:8000
+#. Create a superuser for your django GeoNode 
+
+   Create a superuser so you can log on to your local GeoNode installation at http://localhost:8000
 
    .. code-block:: console
 
        $ django-admin.py createsuperuser –-settings=geonode.settings
 
+
 Start working on Geonode the next day after install
 ===================================================
 
-   With every restart of your machine, you have to restart geonode as well. That means, you will not be able to open http://localhost:8000   directly after starting your machine new. In order to be able to use geonode now, you have to activate your virtualenvironment and to start the development servers. 
+   With every restart of your machine, you have to restart GeoNode as well. That means, you will not be able to open http://localhost:8000   directly after starting your machine new. In order to be able to use GeoNode now, you have to activate your virtualenvironment and to start the development servers. 
 
    .. note:: *username* is the name of your machine and personal folder!
 
@@ -250,7 +265,7 @@ Start working on Geonode the next day after install
 
       .. note:: Remember that you have to do these steps each time you restart your machine!!
 
-.. hint:: Now you've followed these installation instructions, geonode is running in development mode. This also means that you are using all the default settings of geonode. If you want to change them, e.g use Tomcat instead of Jetty, or Postgresql instead of sqlite3, you may follow the steps from the section **Configure Manually** in :ref:`custom_install`.
+.. hint:: Now you've followed these installation instructions, GeoNode is running in development mode. This also means that you are using all the default settings of GeoNode. If you want to change them, e.g use Tomcat instead of Jetty, or Postgresql instead of sqlite3, you may follow the steps from the section **Configure Manually** in :ref:`custom_install`.
 
 .. toctree::
    :maxdepth: 1
