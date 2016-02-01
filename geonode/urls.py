@@ -113,6 +113,11 @@ if 'geonode.geoserver' in settings.INSTALLED_APPS:
                             (r'^upload/', include('geonode.upload.urls')),
                             (r'^gs/', include('geonode.geoserver.urls')),
                             )
+if 'geonode.qgis_server' in settings.INSTALLED_APPS:
+    # GeoServer Helper Views
+    urlpatterns += patterns('',
+                            (r'', include('geonode.qgis_server.urls')),
+                            )
 
 if 'notification' in settings.INSTALLED_APPS:
     urlpatterns += patterns('',

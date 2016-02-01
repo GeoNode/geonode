@@ -7,7 +7,7 @@ from django.db.models import signals
 from django.conf import settings
 
 from geonode.qgis_server.models import QGISServerLayer
-from geonode.base.models import ResourceBase
+from geonode.base.models import ResourceBase, Link
 from geonode.layers.models import Layer
 from geonode.maps.models import Map, MapLayer
 
@@ -94,6 +94,20 @@ def qgis_server_post_save(instance, sender, **kwargs):
             basename + original_ext  # Already with dot
         )
     qgis_layer.save()
+
+    # Set Link for Download Raw in Zip File
+    zip_download_url = 'qgis-server/download-zip/' + instance.name
+    Link.objects.get_or_create(
+            resource=instance.resourcebase_ptr,
+            url=zip_download_url,
+            defaults=dict(
+                        extension='zip',
+                        name='Zipped Shapefile',
+                        mime='SHAPE-ZIP',
+                        url=zip_download_url,
+                        link_type='data'
+                )
+            )
 
 def qgis_server_pre_save_maplayer(instance, sender, **kwargs):
     logger.debug('QGIS Server Pre Save Map Layer')
