@@ -55,6 +55,7 @@ geonode/static/lib/js/moment.min.js
 
 # Uploaded files
 geonode/uploaded
+geonode/qgis_layer
 
 #Testing output
 .coverage
