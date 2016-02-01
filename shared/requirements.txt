@@ -62,7 +62,7 @@ django-autocomplete-light==1.4.5
 
 # For the Dataverse/Geoconnect/WorldMap connection
 xmltodict
-shared_dataverse_information
+shared_dataverse_information==0.3.8
 # ------------------
 
 
