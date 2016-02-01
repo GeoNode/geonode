@@ -20,6 +20,6 @@ GeoNode.TimeSlider = Ext.extend(Ext.slider.MultiSlider, {
       var end = end_date.toISOString();
 
       return '[' + start + ' TO ' + end + ']';
-    },
+    }
 
 });
