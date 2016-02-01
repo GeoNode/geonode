@@ -22,7 +22,7 @@ from django.views.generic import TemplateView
 
 from geonode.base.enumerations import CHARSETS
 from geonode.documents.models import get_related_documents
-from geonode.layers.models import UploadSession
+from geonode.layers.models import UploadSession, Style
 from geonode.layers.utils import file_upload
 from geonode.people.models import Profile
 from geonode.security.views import _perms_info_json
@@ -119,6 +119,7 @@ def registration_part_two(request):
                     charset=form.cleaned_data["charset"],
                     abstract=form.cleaned_data["abstract"],
                     title=form.cleaned_data["layer_title"],
+                    default_style=Style.objects.get(sld_title="Boundary")
                 )
                 saved_layer.is_published = False
                 saved_layer.save()
