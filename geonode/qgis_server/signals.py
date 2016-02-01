@@ -3,7 +3,7 @@ import logging
 import shutil
 import os
 from django.db.models import signals
-
+from django.core.urlresolvers import reverse
 from django.conf import settings
 
 from geonode.qgis_server.models import QGISServerLayer
@@ -97,6 +97,10 @@ def qgis_server_post_save(instance, sender, **kwargs):
 
     # Set Link for Download Raw in Zip File
     zip_download_url = 'qgis-server/download-zip/' + instance.name
+    zip_download_url = reverse(
+            'qgis-server-download-zip',
+            kwargs={'layername': instance.name})
+    logger.debug('zip_download_url: %s' % zip_download_url)
     Link.objects.get_or_create(
             resource=instance.resourcebase_ptr,
             url=zip_download_url,
