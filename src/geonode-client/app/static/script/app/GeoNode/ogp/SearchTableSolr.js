@@ -83,6 +83,13 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
                 });
             });
         }, this);
+
+        // hack to fix the sort term as solr is expecting it
+        this.searchStore.on('beforeload', function(scope, options){
+            if(scope.sortInfo){
+                options.params.sort = options.params.sort + ' ' + scope.sortInfo.direction;
+            }       
+        });
         
         this.doLayout();
 
@@ -197,10 +204,11 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
             }
         };
         var datatypes = this.dataTypeInput.getValue();
-        if (datatypes.length > 0 && datatypes.length < 4){
+
+        if (datatypes.length > 0 && datatypes[0].name != ''){
             var string = '';
             for(var i=0;i<datatypes.length;i++){
-                string += 'DataType:' + datatypes[i].name + ' OR ';
+                string += datatypes[i].name + ' OR ';
             }
             string = string.slice(0, -4);
             GeoNode.queryTerms.fq.push(string);
@@ -216,8 +224,6 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
         if(dates){
             GeoNode.queryTerms.fq.push("ContentDate:" + this.dateInput.getDateValues());
         };
-
-        GeoNode.queryTerms.sort = this.sortInput.getValue();
 
         this.doSearch();
 
@@ -277,18 +283,24 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
                 header: this.titleHeaderText,
                 dataIndex: 'LayerDisplayName',
                 id: 'title',
+                sortable: true,
+                sortBy: 'LayerDisplayName',
                 renderer: function(value, metaData, record, rowIndex, colIndex, store){
-                    return '<a href="/layers/' + self.getlayerTypename(record) +'" target=_blank>' + record.get('LayerDisplayName')+ '</a>'
+                    return '<a href="/data/' + self.getlayerTypename(record) +'" target=_blank>' + record.get('LayerDisplayName')+ '</a>'
                 }
             },
             {
                 header: this.originatorText,
                 dataIndex: 'Originator',
-                id: 'originator'
+                id: 'originator',
+                sortable: true
             },
             {
                 header: 'Date',
                 id: 'date',
+                sortable: true,
+                dataIndex: 'ContentDate',
+                sortBy: 'ContentDate',
                 renderer: function(value, metaData, record, rowIndex, colIndex, store){
                     var date = new Date(record.get('ContentDate'));
                     return date.toDateString();
@@ -298,25 +310,16 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
         
         if (this.trackSelection == true) {
             sm = new Ext.grid.CheckboxSelectionModel({
-                checkOnly: true,
-                renderer: function(v, p, record){
-                    /*
-                     *  A bit of a hack. CheckboxSelectionModel's
-                     *  mousedown selection behavior
-                     *  is tied to rendered div's class.
-                     */
-                    
-                    return '<div class="x-grid3-row-checker">&#160;</div>';
-                    
-                }
+                checkOnly: true
             });
+            sm.header = '';
 
             this.dataCart = new GeoNode.DataCartStore({selModel: sm});
             columns.push(sm);
             tableCfg.selModel = sm;
         }
         var colModel = new Ext.grid.ColumnModel({
-            defaults: {sortable: false, menuDisabled: true},
+            defaults: {sortable: true, menuDisabled: true},
             columns: columns
         });
         tableCfg.colModel = colModel;
@@ -346,11 +349,15 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
             id: 'dataTypes',
             fieldLabel: 'Data Type',
             items: [
-                {boxLabel: 'Worldmap Vector', name: 'Polygon', checked: true},
-                {boxLabel: 'Worldmap', name: 'Raster', checked: true},
-                {boxLabel: 'ESRI Services', name: 'RESTServices', checked: true},
-                {boxLabel: 'WMS Services', name: 'WMSServices', checked: true}
-            ]
+                {boxLabel: 'All Layers', name: '', checked: true},
+                {boxLabel: 'Worldmap Layers', name: 'DataType:Polygon OR DataType:Raster', checked: false},
+                {boxLabel: 'Worldmap Collections', name: 'DataType:RESTServices OR DataType:WMSServices', checked: false}
+            ],
+            listeners:{
+                change: function(scope, checked){
+                    self.updateQuery();
+                }
+            }
         });
 
         
@@ -360,7 +367,8 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
             name: 'startDate',
             listeners: {
                 change: function(scope, newValue, oldValue){
-                    self.dateInput.setValue(0, self.dateInput.getValueFromDate(newValue));
+                    self.dateInput.setValue(0, parseInt(newValue));
+                    self.updateQuery();
                 },
                 keypress: function(scope, e){
                     if (e.getKey() == e.ENTER) {
@@ -375,8 +383,9 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
         var dateEndTextField = new Ext.form.TextField({
             name: 'endDate',
             listeners: {
-                change: function(scope, newValue, oldValue){
-                    self.dateInput.setValue(1, self.dateInput.getValueFromDate(newValue));
+                change: function(scope, newValue, oldValue){            
+                    self.dateInput.setValue(1, parseInt(newValue));
+                    self.updateQuery();
                 },
                 keypress: function(scope, e){
                     if (e.getKey() == e.ENTER) {
@@ -394,46 +403,22 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
         });
         
         function setDates(){
-            var dates = self.dateInput.getReadableDates();
-            dateStartTextField.setValue(dates[0]);
-            dateEndTextField.setValue(dates[1]);
+            var values = self.dateInput.getValues();
+            dateStartTextField.setValue(values[0]);
+            dateEndTextField.setValue(values[1]);
         };
         setDates();
         this.dateInput.addListener('change', function(){
             setDates();
         });
+        this.dateInput.addListener('changecomplete', function(){
+            self.updateQuery();
+        });
 
         var searchButton = new Ext.Button({
             text: this.searchButtonText
         });
-        searchButton.on('click', this.updateQuery, this)
-
-
-        this.sortLabel = new Ext.form.Label({text: 'Sort by'});
-        this.sortInput = new Ext.form.ComboBox({
-            triggerAction: 'all',
-            mode: 'local',
-            store: new Ext.data.ArrayStore({
-                id: 0,
-                fields: [
-                    'value',
-                    'displayText'
-                ],
-                data: [
-                    ['ContentDate desc', 'Date desc'], 
-                    ['ContentDate asc', 'Date asc'], 
-                    ['LayerDisplayName asc', 'A-Z'], 
-                    ['LayerDisplayName desc', 'Z-A'],
-                    ['score desc', 'Score desc'],
-                    ['score asc', 'Score asc']
-                    ]
-            }),
-            valueField: 'value',
-            displayField: 'displayText',
-            forceSelection: true,
-            value: 'score desc',
-            editable: false
-        });
+        searchButton.on('click', this.updateQuery, this);
 
         var searchForm = new Ext.Panel({
              frame: false,
@@ -448,7 +433,8 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
             items: [{
                 items: [
                     this.queryInput,
-                    this.originatorInput
+                    this.originatorInput,
+                    searchButton
                 ],
                 colspan: 3
             },{
@@ -457,12 +443,6 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
             },{
                 items: [this.dateLabelPanel, this.dateInput],
                 colspan: 3
-            },{
-                items: [this.sortLabel, this.sortInput],
-                colspan: 3
-            },{
-                items: [searchButton],
-                colspan: 1
             }]
          });
          searchForm.render(input_el);
