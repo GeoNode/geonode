@@ -16,7 +16,7 @@ class ConfigMap(DictMixin):
     def __iter__(self):
         for sname in self.sects:
             yield sname
-            
+
     def __getitem__(self, idx):
         return OptionMap(self.parser, idx)
 
@@ -44,7 +44,7 @@ class OptionMap(DictMixin):
     def __init__(self, parser, section):
         self.parser = parser
         self.section = section
-        
+
     def __getitem__(self, idx):
         try:
             return self.parser.get(self.section, idx)
@@ -153,3 +153,15 @@ def slugify(text, delim=u'-'):
     for word in punct_re.split(text.lower()):
         result.extend(unidecode(word).split())
     return unicode(delim.join(result))
+
+class SlackLogHandler(Handler):
+   def __init__(self, logging_url="", stack_trace=False):
+      Handler.__init__(self)
+      self.logging_url = logging_url
+      self.stack_trace = stack_trace
+   def emit(self, record):
+      message = '%s' % (record.getMessage())
+      if self.stack_trace:
+         if record.exc_info:
+            message += '\n'.join(traceback.format_exception(*record.exc_info))
+            requests.post(self.logging_url, data=json.dumps({"pretext": "", "channel":"worldmap-log","username":"django", "icon_emoji": ":ghost:","text":"```%s```" % message} ))
