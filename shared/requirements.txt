@@ -24,7 +24,6 @@ psycopg2==2.4.1
 #-e git+https://github.com/cga-harvard/gsconfig.py.git#egg=gsconfig.py
 -e git+https://github.com/cga-harvard/gsconfig.py.git@publish_featuretype#egg=gsconfig.py
 
-
 django-registration==0.8
 django-profiles==0.2
 -e git+https://github.com/mbertrand/django-avatar.git#egg=avatar
@@ -60,11 +59,19 @@ vectorformats
 #For autocomplete
 django-autocomplete-light==1.4.5
 
+# --------------------------------------------------
 # For the Dataverse/Geoconnect/WorldMap connection
+# --------------------------------------------------
 xmltodict
-shared_dataverse_information==0.3.8
-# ------------------
+#shared_dataverse_information==0.4.1
+-e git+https://github.com/IQSS/shared-dataverse-information.git#egg=shared-dataverse-information
 
+# --------------------------------------------------
+# For Datatable app.  Tabular table joins to existing layers
+# --------------------------------------------------
+csvkit==0.9.0
+
+# --------------------------------------------------
 
 paste
 PasteDeploy

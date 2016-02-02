@@ -20,6 +20,7 @@ from datetime import datetime
 from django.contrib.auth.models import User, Permission
 from django.utils.translation import ugettext_lazy as _
 from django.core.exceptions import ValidationError
+from django.core.urlresolvers import reverse
 from lxml import etree
 from geonode.maps.gs_helpers import cascading_delete, get_postgis_bbox
 import logging
@@ -583,6 +584,10 @@ DEFAULT_CONTENT=_(
 class GeoNodeException(Exception):
     pass
 
+
+#class ResourceBase(models.Model):
+#    pass
+    
 class Contact(models.Model):
     user = models.ForeignKey(User, blank=True, null=True)
     name = models.CharField(_('Individual Name'), max_length=255, blank=True, null=True)
@@ -886,6 +891,7 @@ class LayerCategory(models.Model):
 
 
 class Layer(models.Model, PermissionLevelMixin):
+#class Layer(ResourceBase, PermissionLevelMixin):
     """
     Layer Object loosely based on ISO 19115:2003
     """
@@ -974,6 +980,13 @@ class Layer(models.Model, PermissionLevelMixin):
 
     # Section 9
     # see metadata_author property definition below
+    def add_as_join_target(self):
+        if not self.id:
+            return 'n/a'
+        admin_url = reverse('admin:datatables_jointarget_add', args=())
+        add_as_target_link = '%s?layer=%s' % (admin_url, self.id)
+        return '<a href="%s">Add as Join Target</a>' % (add_as_target_link)
+    add_as_join_target.allow_tags = True
 
     def llbbox_coords(self):
         try:
@@ -1121,6 +1134,13 @@ class Layer(models.Model, PermissionLevelMixin):
                 raise GeoNodeException(msg)
 
 
+    @property
+    def attributes(self):
+        """
+        Used for table joins.  See geonode.contrib.datatables
+        """
+        return self.attribute_set.exclude(attribute='the_geom')
+                
 
     def layer_attributes(self):
         attribute_fields = cache.get('layer_searchfields_' + self.typename)
@@ -1589,7 +1609,10 @@ class LayerAttributeManager(models.Manager):
 
 class LayerAttribute(models.Model):
     objects = LayerAttributeManager()
+    
     layer = models.ForeignKey(Layer, blank=False, null=False, unique=False, related_name='attribute_set')
+    #layer = models.ForeignKey(ResourceBase, blank=False, null=False, unique=False, related_name='attribute_set')
+    
     attribute = models.CharField(_('Attribute Name'), max_length=255, blank=False, null=True, unique=False)
     attribute_label = models.CharField(_('Attribute Label'), max_length=255, blank=False, null=True, unique=False)
     attribute_type = models.CharField(_('Attribute Type'), max_length=50, blank=False, null=False, default='xsd:string', unique=False)

@@ -9,4 +9,4 @@ nose
 nose-cover3
 coverage==3.4
 nosexcover
-mock
+mock==1.0.0

@@ -435,15 +435,16 @@ def save(layer, base_file, user, overwrite = True, title=None,
 
 
         if sld is not None:
+            stylename = name + "_".join([choice('qwertyuiopasdfghjklzxcvbnm0123456789') for i in range(6)])
             try:
-                cat.create_style(name, sld)
+                cat.create_style(stylename, sld)
             except geoserver.catalog.ConflictingDataError, e:
                 msg = (_('There is already a style in GeoServer named ') +
-                   '"%s"' % (name))
+                   '"%s"' % (stylename))
                 logger.warn(msg)
                 e.args = (msg,)
             #FIXME: Should we use the fully qualified typename?
-            publishing.default_style = cat.get_style(name)
+            publishing.default_style = cat.get_style(stylename)
             cat.save(publishing)
 
     # Step 8. Create the Django record for the layer
