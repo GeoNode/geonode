@@ -6,6 +6,12 @@ import os
 import subprocess
 from unidecode import unidecode
 from django.utils.log import AdminEmailHandler
+<<<<<<< HEAD
+=======
+import requests
+from logging import Handler
+import requests, json, traceback
+>>>>>>> worldmap-legacy
 
 
 class ConfigMap(DictMixin):
@@ -17,7 +23,7 @@ class ConfigMap(DictMixin):
     def __iter__(self):
         for sname in self.sects:
             yield sname
-            
+
     def __getitem__(self, idx):
         return OptionMap(self.parser, idx)
 
@@ -45,7 +51,7 @@ class OptionMap(DictMixin):
     def __init__(self, parser, section):
         self.parser = parser
         self.section = section
-        
+
     def __getitem__(self, idx):
         try:
             return self.parser.get(self.section, idx)
@@ -155,46 +161,14 @@ def slugify(text, delim=u'-'):
         result.extend(unidecode(word).split())
     return unicode(delim.join(result))
 
-
-class SlackHandler(AdminEmailHandler):
-    def emit(self, record):
-        try:
-            request = record.request
-            subject = '%s (%s IP): %s' % (
-                record.levelname,
-                ('internal' if request.META.get('REMOTE_ADDR') in settings.INTERNAL_IPS
-                 else 'EXTERNAL'),
-                record.getMessage()
-            )
-            filter = get_exception_reporter_filter(request)
-            request_repr = '\n{0}'.format(filter.get_request_repr(request))
-        except Exception:
-            subject = '%s: %s' % (
-                record.levelname,
-                record.getMessage()
-            )
-            request = None
-            request_repr = "unavailable"
-        subject = self.format_subject(subject)
-
-        if record.exc_info:
-            exc_info = record.exc_info
-        else:
-            exc_info = (None, record.getMessage(), None)
-
-        message = "%s\n\nRequest repr(): %s" % (self.format(record), request_repr)
-        reporter = ExceptionReporter(request, is_email=True, *exc_info)
-        html_message = reporter.get_traceback_html() if self.include_html else None
-
-        requests.post(settings.SLACK_WEBHOOK_URL, json={
-            "fallback": message,
-            "pretext": "An error occured",
-            "color": "#ef2a2a",
-            "fields": [
-                {
-                    "title": "Error",
-                    "value": message, 
-                    "short": False
-                }
-            ]
-        })
+class SlackLogHandler(Handler):
+   def __init__(self, logging_url="", stack_trace=False):
+      Handler.__init__(self)
+      self.logging_url = logging_url
+      self.stack_trace = stack_trace
+   def emit(self, record):
+      message = '%s' % (record.getMessage())
+      if self.stack_trace:
+         if record.exc_info:
+            message += '\n'.join(traceback.format_exception(*record.exc_info))
+            requests.post(self.logging_url, data=json.dumps({"pretext": "", "channel":"worldmap-log","username":"django", "icon_emoji": ":ghost:","text":"```%s```" % message} ))

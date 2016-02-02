@@ -1,0 +1,26 @@
+{
+    "datafile_content_type": "application/zipped-shapefile",
+    "datafile_create_datetime": "2014-09-30 10:00:54.544",
+    "datafile_expected_md5_checksum": "zzzzdfa180f176d7ce16c3b5c4378134",
+    "datafile_download_url": "http://localhost:8080/api/access/datafile/7775",
+    "datafile_filesize": 3844023,
+    "datafile_id": 7775,
+    "datafile_label": "tab_shp_ma_tigerlines.zip",
+
+    "dataset_id": 25,
+     "dataset_name": "MA Tigerlines",
+     "dataset_semantic_version": "1.0",
+     "dataset_citation": "Tigerlines, Tige, 2015, \"MA Tigerlines\", http://dx.doi.org/10.1234/FK2/7775,  Test Dataverse,  1.0",
+     "dataset_description": "",
+     "dataset_version_id": 1,
+
+    "dataverse_id": 2,
+    "dataverse_name": "Test Dataverse",
+    "dataverse_installation_name": "http://localhost:8000",
+    "dataverse_description": "The test dataverse.",
+
+    "dv_user_id": 2,
+    "dv_user_email": "ye_old_user@harvard.edu",
+    "dv_username": "TigeTigerlines",
+    "return_to_dataverse_url": "http://localhost:8080/dataset.xhtml?id=25&versionId=2"
+}

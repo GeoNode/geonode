@@ -50,8 +50,8 @@ urlpatterns = patterns('',
         name='auth_ajax_lookup'),
     (r'^accounts/ajax_lookup_email$', 'geonode.views.ajax_lookup_email'),
 
-    (r'^accounts/login', 'django.contrib.auth.views.login'),
-    (r'^accounts/logout', 'django.contrib.auth.views.logout'),
+    url(r'^accounts/login$', 'django.contrib.auth.views.login', name='accounts_login'),
+    url(r'^accounts/logout$', 'django.contrib.auth.views.logout', name='accounts_logout'),
 
     # Meta
     url(r'^lang\.js$', 'django.views.generic.simple.direct_to_template',
@@ -73,11 +73,15 @@ urlpatterns = patterns('',
     (r'^certification/', include('geonode.certification.urls')),    
     url(r'^autocomplete/', include('autocomplete_light.urls')),
     
-    (r'^dataverse-layer/', include('geonode.dataverse_layer_metadata.urls')),
-    (r'^dataverse/', include('geonode.dataverse_connect.urls')),
+    # Dataverse/GeoConnect API
+    (r'^dataverse-layer/', include('geonode.contrib.dataverse_layer_metadata.urls')),
+    (r'^dataverse/', include('geonode.contrib.dataverse_connect.urls')),
+    (r'^dataverse-tabular/', include('geonode.contrib.datatables.urls_dataverse')),
+
+    # Datatables API
+    (r'^datatables/', include('geonode.contrib.datatables.urls')),
     
-    
-    )
+)
 
 urlpatterns += geonode.proxy.urls.urlpatterns
 

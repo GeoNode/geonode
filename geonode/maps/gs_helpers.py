@@ -1,5 +1,6 @@
 from itertools import cycle, izip
 from geoserver.catalog import FailedRequestError
+import sys
 import logging
 import re
 from django.conf import settings
@@ -156,7 +157,16 @@ def cascading_delete(cat, resource):
                     # We'll catch the exception and log it.
                     logger.debug(e)
 
-        cat.delete(resource) #This will fail on Geoserver 2.4+
+        try:
+            cat.delete(resource) #This will fail on Geoserver 2.4+
+        except Exception as e:
+            import traceback
+            traceback.print_exc(sys.exc_info())
+            err_msg = 'Error deleting resource "%s".  Expected in Geoserver 2.4+\nError: %s' % (resource_name, str(e))
+            #print err_msg
+            logger.error(err_msg)
+            # continue on....
+
         if store.resource_type == 'dataStore' and 'dbtype' in store.connection_parameters and store.connection_parameters['dbtype'] == 'postgis':
             delete_from_postgis(resource_name)
         else:

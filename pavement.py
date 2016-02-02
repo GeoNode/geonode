@@ -846,4 +846,3 @@ def _zip_extract_member(zf, member, targetpath, pwd):
     target.close()
 
     return targetpath
-
