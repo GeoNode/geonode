@@ -1,18 +1,16 @@
 import json
 import logging
 
-import os
-
 from django.core.urlresolvers import reverse
-from django.http.response import HttpResponseServerError, HttpResponse
+from django.http.response import HttpResponseServerError, HttpResponse, \
+    HttpResponseBadRequest
 from django.views.generic import (
     ListView, CreateView, DetailView)
-from geonode.layers.models import Layer
-from geosafe.models import Analysis
-from geosafe.forms import (AnalysisCreationForm)
-from geosafe.tasks.analysis import if_list
-from tastypie.http import HttpBadRequest
 
+from geonode.layers.models import Layer
+from geosafe.forms import (AnalysisCreationForm)
+from geosafe.models import Analysis
+from geosafe.tasks.analysis import filter_impact_function
 
 LOGGER = logging.getLogger("geosafe")
 
@@ -24,7 +22,7 @@ class AnalysisCreateView(CreateView):
     context_object_name = 'analysis'
 
     def get_success_url(self):
-        return reverse('analysis-detail', kwargs={'pk':self.object.pk})
+        return reverse('analysis-detail', kwargs={'pk': self.object.pk})
 
     def get_form_kwargs(self):
         kwargs = super(AnalysisCreateView, self).get_form_kwargs()
@@ -56,13 +54,13 @@ def impact_function_filter(request):
     """Ajax Request for filtered available IF
     """
     if request.method != 'GET':
-        raise HttpBadRequest
+        raise HttpResponseBadRequest
 
     exposure_id = request.GET.get('exposure_id')
     hazard_id = request.GET.get('hazard_id')
 
     if not (exposure_id and hazard_id):
-        raise HttpBadRequest
+        raise HttpResponseBadRequest
 
     try:
         exposure_layer = Layer.objects.get(id=exposure_id)
@@ -74,11 +72,17 @@ def impact_function_filter(request):
         LOGGER.info('Hazard : %s' % hazard_file_path)
         LOGGER.info('Exposure : %s' % exposure_file_path)
 
-        impact_functions = if_list.delay(
-            hazard_file=hazard_file_path,
-            exposure_file=exposure_file_path,
-            layer_folder=os.path.dirname(hazard_file_path)
-        ).get()
+        # impact_functions = if_list.delay(
+        #     hazard_file=hazard_file_path,
+        #     exposure_file=exposure_file_path,
+        #     layer_folder=os.path.dirname(hazard_file_path)
+        # ).get()
+
+        async_result = filter_impact_function.delay(
+            hazard_layer.get_absolute_url(),
+            exposure_layer.get_absolute_url())
+
+        impact_functions = async_result.get()
 
         return HttpResponse(
             json.dumps(impact_functions), content_type="application/json")
@@ -90,10 +94,10 @@ def layer_tiles(request):
     """Ajax request to get layer's url to show in the map.
     """
     if request.method != 'GET':
-        raise HttpBadRequest
+        raise HttpResponseBadRequest
     layer_id = request.GET.get('layer_id')
     if not layer_id:
-        raise HttpBadRequest
+        raise HttpResponseBadRequest
     try:
         layer = Layer.objects.get(id=layer_id)
         context = {

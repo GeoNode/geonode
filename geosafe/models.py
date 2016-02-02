@@ -1,11 +1,9 @@
-from django.db import models
-from django.conf import settings
-from django.db.models import signals
-from datetime import datetime
+import tempfile
 
+from django.conf import settings
+from django.db import models
 from django.db.models.signals import post_save
 from django.dispatch import receiver
-import tempfile
 
 from geonode.layers.models import Layer
 from geonode.people.models import Profile
@@ -15,12 +13,12 @@ import os
 from xml.etree import ElementTree
 from ast import literal_eval
 from collections import OrderedDict
-from geosafe.tasks.analysis import run_analysis_docker
-
 
 # geosafe
 # list of tags to get to the InaSAFE keywords.
 # this is stored in a list so it can be easily used in a for loop
+from geosafe.tasks.analysis import run_analysis
+
 ISO_METADATA_KEYWORD_NESTING = [
     '{http://www.isotc211.org/2005/gmd}identificationInfo',
     '{http://www.isotc211.org/2005/gmd}MD_DataIdentification',
@@ -216,8 +214,10 @@ class Analysis(models.Model):
     def generate_cli(self):
         """Generating CLI command to run analysis in InaSAFE headless.
 
-        inasafe --hazard=HAZARD_FILE (--download --layers=LAYER_NAME [LAYER_NAME...] | --exposure=EXP_FILE)
-            --impact-function=IF_ID --report-template=TEMPLATE --output-file=FILE [--extent=XMIN:YMIN:XMAX:YMAX]
+            inasafe --hazard=HAZARD_FILE (--download --layers=LAYER_NAME
+                [LAYER_NAME...] | --exposure=EXP_FILE) --impact-function=IF_ID
+                --report-template=TEMPLATE --output-file=FILE
+                [--extent=XMIN:YMIN:XMAX:YMAX]
         """
         hazard_file_path = self.hazard_layer.get_base_file()[0].file.path
         exposure_file_path = self.exposure_layer.get_base_file()[0].file.path
@@ -242,17 +242,26 @@ class Analysis(models.Model):
         return arguments, temp_file, os.path.dirname(hazard_file_path), os.path.dirname(temp_file)
 
     def save(self, force_insert=False, force_update=False, using=None,
-             update_fields=None, run_analysis=True):
+             update_fields=None, run_analysis_flag=True):
         super(Analysis, self).save(
             force_insert=force_insert, force_update=force_update, using=using, update_fields=update_fields)
-        if run_analysis:
-            arguments, output_file, layer_folder, output_folder = self.generate_cli()
-            run_analysis_docker.delay(
-                arguments=arguments,
-                output_file=output_file,
-                layer_folder=layer_folder,
-                output_folder=output_folder,
-                analysis=self)
+        if run_analysis_flag:
+            hazard = self.hazard_layer.get_absolute_url()
+            exposure = self.exposure_layer.get_absolute_url()
+            function = self.impact_function_id
+            run_analysis.delay(
+                hazard,
+                exposure,
+                function,
+                generate_report=True)
+            # arguments, output_file, layer_folder, output_folder = self.generate_cli()
+            # run_analysis_docker.delay(
+            #     arguments=arguments,
+            #     output_file=output_file,
+            #     layer_folder=layer_folder,
+            #     output_folder=output_folder,
+            #     analysis=self)
+
 
 @receiver(post_save, sender=Layer)
 def create_metadata_object(sender, instance, created, **kwargs):

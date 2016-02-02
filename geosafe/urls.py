@@ -1,5 +1,6 @@
 __author__ = 'ismailsunni'
 from django.conf.urls import patterns, url
+
 from geosafe.views.analysis import (
     AnalysisListView,
     AnalysisCreateView,
