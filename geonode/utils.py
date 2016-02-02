@@ -6,12 +6,10 @@ import os
 import subprocess
 from unidecode import unidecode
 from django.utils.log import AdminEmailHandler
-<<<<<<< HEAD
-=======
+
 import requests
 from logging import Handler
 import requests, json, traceback
->>>>>>> worldmap-legacy
 
 
 class ConfigMap(DictMixin):
