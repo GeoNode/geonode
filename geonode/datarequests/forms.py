@@ -79,6 +79,10 @@ class DataRequestProfileForm(forms.ModelForm):
         choices=REQUEST_LEVEL_CHOICES
     )
 
+    letter_file = forms.FileField(
+        label=_("Data Request Letter"),
+        required=True
+    )
 
     class Meta:
         model = DataRequestProfile
@@ -107,6 +111,9 @@ class DataRequestProfileForm(forms.ModelForm):
             'request_level',
             'funding_source',
             'is_consultant',
+            
+            #Request Letter FIeld
+            'letter_file'.
         )
 
     def __init__(self, *args, **kwargs):
@@ -200,6 +207,10 @@ class DataRequestProfileForm(forms.ModelForm):
                 Field('is_consultant'),
                 css_class='academe-fieldset',
             ),
+            Div(
+                Field('letter_file', css_class='form-control').
+                css_class='form-group'
+            ).
         )
 
     def clean_email(self):
@@ -331,7 +342,6 @@ class DataRequestProfileForm(forms.ModelForm):
         if commit:
             data_request.save()
         return data_request
-
 
 class DataRequestProfileShapefileForm(NewLayerUploadForm):
     captcha = ReCaptchaField(attrs={'theme': 'clean'})

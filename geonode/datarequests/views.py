@@ -41,7 +41,7 @@ from braces.views import (
 )
 
 from .forms import (
-    DataRequestProfileForm, DataRequestProfileShapefileForm,
+    DataRequestProfileForm, DataRequestProfileRequestLetterForm,DataRequestProfileShapefileForm, 
     DataRequestProfileRejectForm, DataRequestProfileCaptchaForm)
 from .models import DataRequestProfile
 
@@ -58,6 +58,7 @@ def registration_part_one(request):
 
     form = DataRequestProfileForm(
         request.POST or None,
+        request.FILES,
         initial=profile_form_data
     )
     if request.method == 'POST':
