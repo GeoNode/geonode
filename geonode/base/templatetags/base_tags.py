@@ -90,6 +90,6 @@ def facets(context):
                 access="private").count()
 
             facets['layer'] = facets['raster'] + \
-                facets['vector'] + facets['remote'] +  + facets['wms']
+                facets['vector'] + facets['remote'] + facets['wms']
 
     return facets
