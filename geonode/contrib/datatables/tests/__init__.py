@@ -21,9 +21,9 @@ from test_form_upload_and_join import *
 #
 """
 The tests in the next imports are run against the installation specified in:
-    "server_creds.json" (in this directory)
- If a "server_creds.json" doesn't exist:
-   - Copy "server_creds_template.json" to "server_creds.json"
+    "server_credentials.json" (in this directory)
+ If a "server_credentials.json" doesn't exist:
+   - Copy "server_credentials_template.json" to "server_credentials.json"
    - Add the necessary url and credentials
 """
 from run_test_tabular_api import *
