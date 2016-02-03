@@ -113,7 +113,7 @@ class DataRequestProfileForm(forms.ModelForm):
             'is_consultant',
             
             #Request Letter FIeld
-            'letter_file'.
+            'letter_file',
         )
 
     def __init__(self, *args, **kwargs):
@@ -208,9 +208,9 @@ class DataRequestProfileForm(forms.ModelForm):
                 css_class='academe-fieldset',
             ),
             Div(
-                Field('letter_file', css_class='form-control').
+                Field('letter_file', css_class='form-control'),
                 css_class='form-group'
-            ).
+            ),
         )
 
     def clean_email(self):

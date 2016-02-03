@@ -20,6 +20,7 @@ from model_utils.models import TimeStampedModel
 from geonode.cephgeo.models import UserJurisdiction
 from geonode.groups.models import GroupProfile
 from geonode.layers.models import Layer
+from geonode.documents.models import Document
 from geonode.people.models import OrganizationType, Profile
 from geonode.utils import resolve_object
 from geonode.base.models import ResourceBase
