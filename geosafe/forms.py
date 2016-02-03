@@ -1,6 +1,5 @@
-import os
-
-from geosafe.tasks.analysis import filter_impact_function
+# coding=utf-8
+from geosafe.tasks.headless.analysis import filter_impact_function
 
 __author__ = 'ismailsunni'
 

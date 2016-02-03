@@ -51,7 +51,7 @@
                     'hazard_id': $("#id_hazard_layer").val()
                 };
 
-                $.get('{% url 'impact-function-filter' %}', chosen_combination, function (data) {
+                $.get('{% url 'geosafe:impact-function-filter' %}', chosen_combination, function (data) {
                     console.log(data);
                     var select = $("#id_impact_function_id");
                     if (data.length > 0) {
@@ -88,7 +88,7 @@
             }
 
             function update_map(layer_id, layer_purpose) {
-                $.get('{% url 'layer-tiles' %}', {'layer_id': layer_id}, function (data) {
+                $.get('{% url 'geosafe:layer-tiles' %}', {'layer_id': layer_id}, function (data) {
                     console.log(data);
                     layer_tiles_url = data['layer_tiles_url'];
                     layer_bbox_x0 = data['layer_bbox_x0'];

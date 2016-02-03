@@ -1,9 +1,9 @@
 import tempfile
+import urlparse
 
 from django.conf import settings
+from django.core.urlresolvers import reverse
 from django.db import models
-from django.db.models.signals import post_save
-from django.dispatch import receiver
 
 from geonode.layers.models import Layer
 from geonode.people.models import Profile
@@ -11,13 +11,10 @@ from geonode.people.models import Profile
 # geosafe
 import os
 from xml.etree import ElementTree
-from ast import literal_eval
-from collections import OrderedDict
 
 # geosafe
 # list of tags to get to the InaSAFE keywords.
 # this is stored in a list so it can be easily used in a for loop
-from geosafe.tasks.analysis import run_analysis
 
 ISO_METADATA_KEYWORD_NESTING = [
     '{http://www.isotc211.org/2005/gmd}identificationInfo',
@@ -61,50 +58,6 @@ class Metadata(models.Model):
         if not os.path.exists(xml_file_path):
             return ''
         return xml_file_path
-
-    def inasafe_metadata(self):
-        """Return dictionary of inasafe metadata."""
-        xml_file_path = self.get_metadata_file_path()
-        keywords = self.read_iso_metadata(xml_file_path)
-        keywords = keywords['keywords']
-        # remove empty line
-        keywords = [x for x in keywords if x]
-        keyword_dict = {}
-        for item in keywords:
-            if ':' not in item:
-                key = item.strip()
-                val = None
-            else:
-                # Get splitting point
-                idx = item.find(':')
-
-                # Take key as everything up to the first ':'
-                key = item[:idx]
-
-                # Take value as everything after the first ':'
-                textval = item[idx + 1:].strip()
-                try:
-                    # Take care of python structures like
-                    # booleans, None, lists, dicts etc
-                    val = literal_eval(textval)
-                except (ValueError, SyntaxError):
-                    if 'OrderedDict(' == textval[:12]:
-                        try:
-                            val = OrderedDict(
-                                literal_eval(textval[12:-1]))
-                        except (ValueError, SyntaxError, TypeError):
-                            val = textval
-                    else:
-                        val = textval
-
-            # Add entry to dictionary
-            keyword_dict[key] = val
-        return keyword_dict
-
-    def set_layer_purpose(self):
-        """Obtain layer's purpose"""
-        keywords = self.inasafe_metadata()
-        self.layer_purpose = keywords.get('layer_purpose', '')
 
     @staticmethod
     def read_iso_metadata(keyword_filename):
@@ -241,32 +194,20 @@ class Analysis(models.Model):
 
         return arguments, temp_file, os.path.dirname(hazard_file_path), os.path.dirname(temp_file)
 
+    @classmethod
+    def get_layer_url(cls, layer):
+        layer_id = layer.id
+        layer_url = reverse(
+            'geosafe:layer-archive',
+            kwargs={'layer_id': layer_id})
+        layer_url = urlparse.urljoin(settings.GEONODE_BASE_URL, layer_url)
+        return layer_url
+
     def save(self, force_insert=False, force_update=False, using=None,
              update_fields=None, run_analysis_flag=True):
         super(Analysis, self).save(
-            force_insert=force_insert, force_update=force_update, using=using, update_fields=update_fields)
-        if run_analysis_flag:
-            hazard = self.hazard_layer.get_absolute_url()
-            exposure = self.exposure_layer.get_absolute_url()
-            function = self.impact_function_id
-            run_analysis.delay(
-                hazard,
-                exposure,
-                function,
-                generate_report=True)
-            # arguments, output_file, layer_folder, output_folder = self.generate_cli()
-            # run_analysis_docker.delay(
-            #     arguments=arguments,
-            #     output_file=output_file,
-            #     layer_folder=layer_folder,
-            #     output_folder=output_folder,
-            #     analysis=self)
+            force_insert=force_insert,
+            force_update=force_update,
+            using=using,
+            update_fields=update_fields)
 
-
-@receiver(post_save, sender=Layer)
-def create_metadata_object(sender, instance, created, **kwargs):
-    metadata = Metadata()
-    metadata.layer = instance
-    metadata.set_layer_purpose()
-
-    metadata.save()
