@@ -37,14 +37,14 @@
                             <a href="{% url 'layer_detail' layername=analysis.impact_layer.typename %}">{{ analysis.impact_layer }}</a>
                         </td>
                         <td>
-                            <a href="{% url 'analysis-detail' pk=analysis.pk %}">View</a>
+                            <a href="{% url 'geosafe:analysis-detail' pk=analysis.pk %}">View</a>
                         </td>
                     </tr>
                 {% endfor %}
                 </tbody>
             </table>
         {% else %}
-            <p>No analysis yet. <a href="{% url "analysis-create" %}">Why not creating one?</a></p>
+            <p>No analysis yet. <a href="{% url "geosafe:analysis-create" %}">Why not creating one?</a></p>
         {% endif %}
     </div>
 {% endblock %}

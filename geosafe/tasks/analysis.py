@@ -1,70 +1,60 @@
+# coding=utf-8
+import logging
 import os
-from subprocess import call, Popen, PIPE
-from celery.task import task
+import time
+import urllib
+import urlparse
+from zipfile import ZipFile
+
+from celery.app import shared_task
+from django.conf import settings
+from django.core.urlresolvers import reverse
+
+from geonode.layers.models import Layer
 from geonode.layers.utils import file_upload
+from geosafe.models import Analysis, Metadata
+from geosafe.tasks.headless.analysis import read_keywords_iso_metadata
 
 __author__ = 'lucernae'
 
 
-@task(name='geosafe.tasks.analysis.run_analysis_docker', queue='cleanup')
-def run_analysis_docker(arguments, output_file, layer_folder, output_folder, analysis):
-    """
-    Running an analysis via InaSAFE cli in docker container
-
-    (useful for sandboxing InaSAFE environment and deps)
-    """
-    # call system function
-    call(["inasafe", arguments, layer_folder, output_folder])
-    # TODO: Save the layer file and all info to geonode (upload?)
-    saved_layer = file_upload(
-        output_file,
-        overwrite=True,
-    )
-    saved_layer.set_default_permissions()
-    analysis.impact_layer = saved_layer
+LOGGER = logging.getLogger(__name__)
 
 
-@task(name='geosafe.tasks.analysis.run_analysis_cli', queue='cleanup')
-def run_analysis_cli(arguments, output_file):
-    """
-    Running an analysis via InaSAFE CLI directly in the filesystem
+@shared_task
+def create_metadata_object(layer_id):
+    # Sleep 5 second to let layer post_save ends
+    time.sleep(5)
+    metadata = Metadata()
+    layer = Layer.objects.get(id=layer_id)
+    metadata.layer = layer
+    layer_url = reverse(
+        'geosafe:layer-metadata',
+        kwargs={'layer_id': layer_id})
+    layer_url = urlparse.urljoin(settings.GEONODE_BASE_URL, layer_url)
+    async_result = read_keywords_iso_metadata.delay(
+        layer_url, 'layer_purpose')
+    metadata.layer_purpose = async_result.get()
+    metadata.save()
 
-    inasafe-cli should be installed on /usr/local/bin or in the PATH
-    """
-    # call system function
-    call("inasafe "+arguments)
-    # TODO: Save the layer file and all info to geonode (upload?)
 
-
-@task(name='geosafe.tasks.analysis.if_list', queue='cleanup')
-def if_list(hazard_file=None, exposure_file=None,
-            layer_folder=None, output_folder=None):
-    """
-    Show possible IF list
-
-    Can also return filtered IF list if arguments is provided
-    :return: Filtered list of Impact Function IDs
-    :rtype: list
-    """
-    # call system function
-    if hazard_file and exposure_file:
-        arguments = [
-            "inasafe", "--hazard=%s --exposure=%s --list-functions" % (
-                hazard_file, exposure_file)]
-        if layer_folder:
-            arguments.append(layer_folder)
-        p = Popen(arguments, stdout=PIPE)
-    else:
-        p = Popen(["inasafe", "--list-functions"], stdout=PIPE)
-
-    output, err = p.communicate()
-    start = False
-    ifs = []
-    for line in output.split('\n'):
-        if line == 'Available Impact Function:' and not start:
-            start = True
-        elif start and not line.strip() == '':
-            ifs.append(line)
-        elif start and line.strip() == '':
-            break
-    return ifs
+@shared_task(name='geosafe.tasks.analysis.process_impact_result', queue='geosafe')
+def process_impact_result(analysis_id, impact_url_result):
+    # wait for process to return the result
+    impact_url = impact_url_result.get()
+    analysis = Analysis.objects.get(id=analysis_id)
+    # download impact zip
+    impact_path, _ = urllib.urlretrieve(impact_url)
+    dir_name = os.path.dirname(impact_path)
+    with ZipFile(impact_path) as zf:
+        zf.extractall(path=dir_name)
+        for name in zf.namelist():
+            _, ext = os.path.splitext(name)
+            if ext in ['.shp', '.tif']:
+                saved_layer = file_upload(
+                    os.path.join(dir_name, name),
+                    overwrite=True)
+                saved_layer.set_default_permissions()
+                analysis.impact_layer = saved_layer
+                analysis.save(run_analysis_flag=False)
+                break
