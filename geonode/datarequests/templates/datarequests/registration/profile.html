@@ -18,7 +18,7 @@
   <p>Step 1 of 2</p>
   <div class="row">
     <div class="col-md-6 col-md-offset-1">
-      <form action="" class="form-horizontal" method="post">{% csrf_token %}
+      <form action="" class="form-horizontal" method="post" enctype="multipart/form-data">{% csrf_token %}
         <div class="row">
           <div class="form-controls">
             {% crispy form %}

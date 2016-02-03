@@ -64,9 +64,10 @@ def registration_part_one(request):
     
     
     if request.method == 'POST':
-        pprint(request.FILES)
         if form.is_valid():
+            pprint(request.FILES)
             request.session['data_request_info'] = form.cleaned_data
+            
             return HttpResponseRedirect(
                 reverse('datarequests:registration_part_two')
             )
@@ -86,11 +87,11 @@ def registration_part_two(request):
     form = DataRequestProfileCaptchaForm()
 
     if not profile_form_data:
-        pprint(profile_form_data)
         return redirect(reverse('datarequests:registration_part_one'))
 
     if request.method == 'POST':
         form = DataRequestProfileShapefileForm(request.POST, request.FILES)
+        pprint(request.POST)
         tempdir = None
         errormsgs = []
         out = {'success': False}

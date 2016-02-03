@@ -1,3 +1,5 @@
+import os
+
 from django import forms
 from django.utils.translation import ugettext_lazy as _
 
@@ -186,6 +188,7 @@ class DataRequestProfileForm(forms.ModelForm):
                     Field('intended_use_of_dataset', css_class='form-control'),
                     css_class='form-group'
                 ),
+                enctype="multipart/form-data"
             ),
             
             Fieldset('Non-commercial',
@@ -301,6 +304,14 @@ class DataRequestProfileForm(forms.ModelForm):
             raise forms.ValidationError(
                 'This field is required.')
         return funding_source
+
+    def clean_letter_file(self):
+        letter_file = self.cleaned_data.get('letter_file')
+
+        if letter_file and not os.path.splitext(
+                letter_file.name)[1].lower()[1:] is not ".pdf":
+            raise forms.ValidationError(_("This file type is not allowed"))
+        
 
     def save(self, commit=True, *args, **kwargs):
         data_request = super(
