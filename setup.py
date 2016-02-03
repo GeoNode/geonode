@@ -80,7 +80,7 @@ setup(name='GeoNode',
 
         # native dependencies
         "pillow", # python-pillow
-        "lxml", # python-lxml
+        "lxml>=3.4.4", # python-lxml
         # "psycopg2==2.4.5", # python-psycopg2
         "Django==1.6.11", # python-django
 
@@ -132,7 +132,9 @@ setup(name='GeoNode',
 
         # geopython dependencies
         "OWSLib==0.10.0",
-        "pycsw==1.10.3",
+        "pycsw>=1.10.2",
+        "pyproj>=1.9.3",
+        "Shapely",
 
         # haystack/elasticsearch, uncomment to use
         "django-haystack==2.1.0",
