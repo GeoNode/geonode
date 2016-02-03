@@ -39,6 +39,7 @@ from geonode.contrib.datatables.utils import create_point_col_from_lat_lon,\
     attempt_datatable_upload_from_request_params
 
 from geonode.contrib.msg_util import *
+from shared_dataverse_information.shared_form_util.format_form_errors import format_errors_as_text
 
 
 import logging
