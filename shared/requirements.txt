@@ -63,8 +63,8 @@ django-autocomplete-light==1.4.5
 # For the Dataverse/Geoconnect/WorldMap connection
 # --------------------------------------------------
 xmltodict
-#shared_dataverse_information==0.4.1
--e git+https://github.com/IQSS/shared-dataverse-information.git#egg=shared-dataverse-information
+shared_dataverse_information==0.4.2
+#-e git+https://github.com/IQSS/shared-dataverse-information.git#egg=shared-dataverse-information
 
 # --------------------------------------------------
 # For Datatable app.  Tabular table joins to existing layers
