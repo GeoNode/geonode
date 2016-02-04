@@ -65,7 +65,7 @@ def facets(context):
             'raster': count_dict.get('coverageStore', 0),
             'vector': count_dict.get('dataStore', 0),
             'remote': count_dict.get('remoteStore', 0),
-			'wms': count_dict.get('wmsStore', 0),
+    'wms': count_dict.get('wmsStore', 0),
         }
 
         # Break early if only_layers is set.
