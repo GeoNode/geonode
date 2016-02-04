@@ -51,7 +51,7 @@ from shared_dataverse_information.map_layer_metadata.forms import WorldMapToGeoc
 # --------------------------------------------------
 # Load up the Worldmap server url and username
 # --------------------------------------------------
-GEONODE_CREDS_FNAME = join(dirname(realpath(__file__)), 'server_creds.json')
+GEONODE_CREDS_FNAME = join(dirname(realpath(__file__)), 'server_credentials.json')
 assert isfile(GEONODE_CREDS_FNAME), 'Server credentials file not found: %s' % GEONODE_CREDS_FNAME
 try:
     GEONODE_CREDS_JSON = json.loads(open(GEONODE_CREDS_FNAME, 'r').read())
@@ -156,6 +156,9 @@ class TestTabularAPIBase(unittest.TestCase):
 
         self.delete_tablejoin_url = self.base_url + reverse('tablejoin_remove',
                     kwargs={'tj_id':self.URL_ID_ATTR} )
+
+        self.delete_datatable_lat_lon_url = self.base_url + reverse('datatable_lat_lon_remove',
+                    kwargs={'dt_id':self.URL_ID_ATTR} )
 
         self.dataverse_upload_and_join_datatable_url = self.base_url + reverse('view_upload_table_and_join_layer', kwargs={})
 

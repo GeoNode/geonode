@@ -4,6 +4,8 @@ from .models import DataTable, DataTableAttribute, TableJoin, JoinTarget, JoinTa
 
 class DataTableAdmin(admin.ModelAdmin):
     model = DataTable
+    search_fields = ('title',)
+
     list_display = (
         'id',
         'title',
@@ -19,6 +21,7 @@ class DataTableAttributeAdmin(admin.ModelAdmin):
     list_filter  = ('datatable', 'searchable', 'attribute_type')
 
 class LatLngTableMappingRecordAdmin(admin.ModelAdmin):
+    search_fields = ('title',)
     list_display = ('datatable', 'lat_attribute', 'lng_attribute', 'layer', 'mapped_record_count', 'unmapped_record_count', 'created')
     list_filter  = ('datatable', 'layer', )
 

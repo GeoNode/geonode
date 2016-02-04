@@ -34,8 +34,10 @@ from run_test_classify_layer import *
 
 """
 # Run tests from the command line
-python manage.py test datatables --settings=geonode.no_db_settings
+# cd ~/github-worldmap/cga-worldmap/geonode
+django-admin.py test datatables --settings=no_db_settings
 
 
 # For more specific tests, comment out the import lines above as needed
+
 """

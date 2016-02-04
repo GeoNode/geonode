@@ -6,7 +6,7 @@ urlpatterns = patterns('geonode.contrib.dataverse_connect.views',
 
        url(r'^import-shapefile/?$', 'view_add_worldmap_shapefile', name='view_add_worldmap_shapefile'),
 
-       url(r'^import-geotiff/?$', 'view_add_worldmap_geotiff', name='view_add_worldmap_geotiff'),   
+       url(r'^import-geotiff/?$', 'view_add_worldmap_geotiff', name='view_add_worldmap_geotiff'),
 
 )
 
@@ -28,4 +28,11 @@ urlpatterns += patterns('geonode.contrib.dataverse_connect.views_delete',
        url(r'^delete-map-layer/$', 'view_delete_dataverse_map_layer',\
             name='view_delete_dataverse_map_layer'),
 
+)
+
+urlpatterns += patterns('geonode.contrib.dataverse_layer_metadata.views',
+
+       url(r'^layer-info/$', 'get_existing_layer_data', name='get_existing_layer_data'),     # Does layer exist
+
+      # url(r'^get-dataverse-user-layers/$', 'view_get_dataverse_user_layers', name='view_get_dataverse_user_layers'),     # Does layer exist
 )

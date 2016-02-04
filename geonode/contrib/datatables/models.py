@@ -13,6 +13,7 @@ from django.core.urlresolvers import reverse
 
 from .db_helper import get_datastore_connection_string
 
+
 TRANSFORMATION_FUNCTIONS = []
 
 
@@ -237,27 +238,28 @@ class LatLngTableMappingRecord(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     modified =models.DateTimeField(auto_now=True)
 
-
     def __unicode__(self):
         return '%s' % self.datatable
 
     def as_json(self):
         data_dict = {}
 
-        straight_attrs = ('id', 'mapped_record_count', 'unmapped_record_count')#, 'created', 'modified')
+        straight_attrs = ('mapped_record_count', 'unmapped_record_count')#, 'created', 'modified')
         for attr in straight_attrs:
             data_dict[attr] = self.__dict__.get(attr)
 
-        data_dict.update( dict( datatable=self.datatable.table_name\
-                        , lat_attribute=dict(attribute=self.lat_attribute.attribute\
-                                    , type=self.lat_attribute.attribute_type)\
-                        , lng_attribute=dict(attribute=self.lng_attribute.attribute\
-                                    , type=self.lng_attribute.attribute_type)\
-                        , layer_name=self.layer.name\
-                        , layer_typename=self.layer.typename\
-                        , layer_link=self.layer.get_absolute_url()\
-                        )\
-                    )
+        data_dict['lat_lng_record_id'] = self.id
+        data_dict['datatable'] = self.datatable.table_name
+        data_dict['datatable_id'] = self.datatable.id
+        data_dict['layer_id'] = self.layer.id
+        data_dict['layer_name'] = self.layer.name
+        data_dict['layer_typename'] = self.layer.typename
+        data_dict['layer_link'] = self.layer.get_absolute_url()
+
+        data_dict['lat_attribute'] = dict(attribute=self.lat_attribute.attribute\
+                    , type=self.lat_attribute.attribute_type)
+        data_dict['lng_attribute'] = dict(attribute=self.lng_attribute.attribute\
+                    , type=self.lng_attribute.attribute_type)
 
         return data_dict
 

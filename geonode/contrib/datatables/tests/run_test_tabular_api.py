@@ -712,7 +712,8 @@ class TestWorldMapTabularAPI(TestTabularAPIBase):
             self.assertTrue(False, "Failed to convert response to JSON: %s" % r.text)
 
         expected_msg = "Login failed"
-        self.assertTrue(r.text.find(expected_msg) > -1
+        other_expected_msg = "You are not permitted to delete this DataTable object"
+        self.assertTrue(r.text.find(expected_msg) > -1 or r.text.find(other_expected_msg) > -1
             , "Expected message not found: '%s'\nActual response: %s" % (expected_msg, r.text))
 
 

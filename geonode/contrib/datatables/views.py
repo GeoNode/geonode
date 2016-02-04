@@ -18,14 +18,13 @@ from geonode.contrib.datatables.forms import JoinTargetForm,\
                                         TableJoinResultForm,\
                                         DataTableUploadFormLatLng
 
+#from geonode.contrib.dataverse_connect.layer_metadata import LayerMetadata        # object with layer metadata
 from shared_dataverse_information.worldmap_datatables.forms import MapLatLngLayerRequestForm
-# , TableJoinResultForm
-# DataTableUploadForm,\
-# TableUploadAndJoinRequestForm,\
+
 
 from geonode.contrib.msg_util import msg, msgt, msgn, msgx
 
-from .models import DataTable, JoinTarget, TableJoin
+from .models import DataTable, JoinTarget, TableJoin, LatLngTableMappingRecord
 from .utils import create_point_col_from_lat_lon,\
     standardize_name,\
     attempt_tablejoin_from_request_params,\
@@ -53,7 +52,7 @@ def datatable_upload_api(request):
     return HttpResponse(json_msg, mimetype="application/json", status=200)
 
 
-       
+
 @http_basic_auth_for_api
 @csrf_exempt
 def datatable_detail(request, dt_id):
@@ -373,19 +372,29 @@ def datatable_upload_lat_lon_api(request):
                     )
 
 
+
         if not success:
             logger.error('Failed to (2) Create layer for map lat/lng table: %s' % latlng_record_or_err_msg)
 
             # FAILED
             #
             json_msg = MessageHelperJSON.get_json_fail_msg(latlng_record_or_err_msg)
+
+
             return HttpResponse(json_msg, mimetype="application/json", status=400)
         else:
             # SUCCESS
             #
 
-            json_data = latlng_record_or_err_msg.as_json()
-            json_msg = MessageHelperJSON.get_json_success_msg(msg='New layer created', data_dict=json_data)
+            # Get the Layer metadata
+            #layer_metadata_obj = LayerMetadata(latlng_record_or_err_msg.layer)
+            #response_params = layer_metadata_obj.get_metadata_dict()
+
+            # Addd lat/lng attributes
+            layer_params = latlng_record_or_err_msg.as_json()
+            msgt('layer_params: %s' % layer_params)
+
+            json_msg = MessageHelperJSON.get_json_success_msg(msg='New layer created', data_dict=layer_params)
             return HttpResponse(json_msg, mimetype="application/json", status=200)
     except:
         traceback.print_exc(sys.exc_info())
@@ -394,3 +403,51 @@ def datatable_upload_lat_lon_api(request):
         logger.error(err_msg)
 
         return HttpResponse(json_msg, mimetype="application/json", status=400)
+
+@http_basic_auth_for_api
+@csrf_exempt
+def datatable_lat_lon_remove(request, dt_id):
+    """
+    Check if the user has 'delete_datatable' permissions
+    """
+
+    # -----------------------------------------------
+    # Retrieve the DataTable object
+    # -----------------------------------------------
+    try:
+        lat_lng_datatable = LatLngTableMappingRecord.objects.get(pk=dt_id)
+    except LatLngTableMappingRecord.DoesNotExist:
+        err_msg = 'No LatLngTableMappingRecord object found'
+        logger.error(err_msg + ' for id: %s' % dt_id)
+        json_msg = MessageHelperJSON.get_json_fail_msg(err_msg)
+        return HttpResponse(json_msg, mimetype='application/json', status=404)
+
+    # -----------------------------------------------
+    # Does the user have permissions to Delete it?
+    # -----------------------------------------------
+    if not request.user.has_perm('datatables.delete_latlngtablemappingrecord', obj=lat_lng_datatable):
+        err_msg = "You are not permitted to delete this DataTable object"
+        logger.error(err_msg + ' (id: %s)' % dt_id)
+        json_msg = MessageHelperJSON.get_json_fail_msg(err_msg)
+        return HttpResponse(json_msg, mimetype='application/json', status=401)
+
+    # -----------------------------------------------
+    # Delete it!
+    # -----------------------------------------------
+    if lat_lng_datatable.layer:
+        lat_lng_datatable.layer.delete()
+    if lat_lng_datatable.datatable:
+        lat_lng_datatable.datatable.delete()
+
+    dt_name = str(lat_lng_datatable)
+    try:
+        lat_lng_datatable.delete()
+        success_msg = 'LatLngTableMappingRecord "%s" successfully deleted.' % (dt_name)
+        logger.info(success_msg)
+        json_msg = MessageHelperJSON.get_json_success_msg(success_msg)
+        return HttpResponse(json_msg, mimetype='application/json', status=200)
+    except:
+        err_msg = 'Failed to delete LatLngTableMappingRecord "%s" (id: %s)\nError: %s' % (dt_name, lat_lng_datatable.id, sys.exc_info()[0])
+        logger.info(err_msg)
+        json_msg = MessageHelperJSON.get_json_fail_msg(err_msg)
+        return HttpResponse(json_msg, mimetype='application/json', status=400)
