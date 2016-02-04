@@ -105,7 +105,7 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
             GeoNode.queryTerms.start = 0;
         }
         if (!GeoNode.queryTerms.rows) {
-            GeoNode.queryTerms.rows = 50;
+            GeoNode.queryTerms.rows = 500;
         }
         
         if (this.constraints) {
@@ -118,12 +118,6 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
     doSearch: function() {
         /* updates parameters from constraints and 
            permforms a new search */
-        
-        if (this.queryInput.getValue() === ''){
-            GeoNode.queryTerms.q = '*';
-        }
-
-        GeoNode.queryTerms.start = 0;
         
         this._search(GeoNode.queryTerms);
     },
@@ -225,10 +219,17 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
             GeoNode.queryTerms.fq.push("ContentDate:" + this.dateInput.getDateValues());
         };
 
-        this.doSearch();
+        if (this.queryInput.getValue() === ''){
+            GeoNode.queryTerms.q = '*';
+        }
+
+        GeoNode.queryTerms.start = 0;
 
         // now trigger the heatmap update
         this.heatmap.fireEvent('fireSearch', false);
+
+
+        this.doSearch();
     },
     
     hookupSearchButtons: function(el) {
