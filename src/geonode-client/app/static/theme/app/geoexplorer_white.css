@@ -930,3 +930,7 @@ td.x-grid3-hd-over .x-grid3-hd-inner, td.sort-desc .x-grid3-hd-inner, td.sort-as
     opacity: 0 !important;
     filter: alpha(opacity=0) !important; 
 }
+
+#data_cart > .selection-table{
+    display: none;
+}
