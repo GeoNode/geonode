@@ -194,8 +194,11 @@ GeoNode.HeatmapModel = Ext.extend(Ext.util.Observable, {
 
   deleteHeatmapLayer: function(){
     var map = this.bbox_widget.viewer.mapPanel.map;
-    if(map.getLayersByName('Heatmap').length > 0){
-      map.removeLayer(this.heatmapLayer);
+    var heatmaplayers = map.getLayersByName('Heatmap');
+    if(heatmaplayers.length > 0){
+      for(var i=0; i<heatmaplayers.length; i++){
+        map.removeLayer(heatmaplayers[i]);
+      }
     }
   },
 

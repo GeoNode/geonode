@@ -254,67 +254,6 @@ GeoNode.BoundingBoxWidget = Ext.extend(Ext.util.Observable, {
             extent.Right = mapRight;
         }
 
-        if (layerLeft < mapLeft || layerRight > mapRight || layerTop > mapTop
-                || layerBottom < mapBottom) {
-            // console.log("should show arrow");
-
-            if (layerTop < mapTop && layerBottom > mapBottom) {
-                if (showEWArrows) {
-                    if (layerRight > mapRight) {
-                        // console.log("ne + se");
-                        this.showCorners([ "ne", "se" ]);
-                    }
-
-                    if (layerLeft < mapLeft) {
-                        // console.log("sw + nw");
-                        this.showCorners([ "sw", "nw" ]);
-                    }
-                }
-            } else if (layerRight < mapRight && layerLeft > mapLeft) {
-                if (layerTop > mapTop) {
-                    // console.log("ne + nw");
-                    this.showCorners([ "ne", "nw" ]);
-                }
-
-                if (layerBottom < mapBottom) {
-                    this.showCorners([ "se", "sw" ]);
-                }
-
-            } else {
-                // corners only
-                if (layerTop > mapTop && layerRight > mapRight) {
-                    this.showCorners([ "ne" ]);
-                }
-
-                if (layerBottom < mapBottom && layerRight > mapRight) {
-                    this.showCorners([ "se" ]);
-                }
-
-                if (layerTop > mapTop && layerLeft < mapLeft) {
-                    this.showCorners([ "nw" ]);
-                }
-
-                if (layerBottom < mapBottom && layerLeft < mapLeft) {
-                    this.showCorners([ "sw" ]);
-                }
-
-            }
-
-        }
-
-    },
-
-    showCorners: function(corners) {
-        var cornerIds = {
-            ne : "neCorner",
-            nw : "nwCorner",
-            sw : "swCorner",
-            se : "seCorner"
-        };
-
-        for ( var i in corners) {
-            jQuery("#" + cornerIds[corners[i]]).show();
-        }
     },
 
     hideLayerBBox: function() {
@@ -323,7 +262,6 @@ GeoNode.BoundingBoxWidget = Ext.extend(Ext.util.Observable, {
             var featureLayer = map.getLayersByName("layerBBox")[0];
             featureLayer.removeAllFeatures();
         }
-        jQuery(".corner").hide();
     },
 
     WGS84ToMercator: function(the_lon, the_lat) {
