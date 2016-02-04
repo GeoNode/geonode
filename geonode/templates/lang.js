@@ -104,7 +104,7 @@ if (window.GeoExplorer) {
         uploadLayerText: gettext('Upload Layer'),
         createLayerText: gettext('Create Layer'),
         rectifyLayerText: gettext('Rectify Layer'),
-        worldmapDataText:  gettext('WorldMap Data'),
+        worldmapDataText:  gettext('Search'),
         externalDataText: gettext('External Data'),
         leavePageWarningText: gettext('If you leave this page, unsaved changes will be lost.')
     });

@@ -219,7 +219,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
     uploadLayerText: 'Upload Layer',
     createLayerText: 'Create Layer',
     rectifyLayerText: 'Rectify Layer',
-    worldmapDataText: 'WorldMap Data',
+    worldmapDataText: 'Search',
     externalDataText: 'External Data',
     leavePageWarningText: 'If you leave this page, unsaved changes will be lost.',
 
@@ -2214,7 +2214,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
 
         this.searchWindow = new Ext.Window({
             id: 'ge_searchWindow',
-            title: "Add Layers",
+            title: "Search",
             closeAction: 'hide',
             layout: 'fit',
             width: '100%',
