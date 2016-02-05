@@ -6,6 +6,8 @@ from urlparse import parse_qs
 
 from django.conf import settings
 from django.contrib import messages
+from django.core.files.storage import default_storage
+from django.core.files.base import ContentFile
 from django.core.exceptions import ObjectDoesNotExist, PermissionDenied
 from django.core.urlresolvers import reverse
 from django.http import HttpResponse, HttpResponseRedirect, Http404
@@ -65,7 +67,7 @@ def registration_part_one(request):
     
     if request.method == 'POST':
         if form.is_valid():
-            pprint(request.FILES)
+            pprint("TEMPORARY FOLDER:"+settings.FILE_UPLOAD_TEMP_DIR)
             request.session['data_request_info'] = form.cleaned_data
             
             return HttpResponseRedirect(
