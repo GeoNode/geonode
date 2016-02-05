@@ -91,7 +91,7 @@ class DataRequestProfile(TimeStampedModel):
         null=True,
         blank=True,
     )
-    # Do not require for now
+
     # jurisdiction_shapefile = models.ForeignKey(Layer, null=False, blank=False)
     jurisdiction_shapefile = models.ForeignKey(Layer, null=True, blank=True)
 
