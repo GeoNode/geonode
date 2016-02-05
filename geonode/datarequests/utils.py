@@ -48,6 +48,12 @@ def create_login_credentials(data_request):
 
     return final_username
 
+def string_randomizer(length):
+    word = ""
+    for i in range(length):
+        word += random.choice(string.lowercase+string.uppercase+string.digits)
+    return word
+
 def get_unames_starting_with(name):
     result = []
     try:
