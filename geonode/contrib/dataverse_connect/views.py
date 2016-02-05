@@ -217,17 +217,9 @@ def view_add_worldmap_shapefile(request):
 
 
     # Retrieve or create a User object
+    #  2/2016 - Changed.  Use the user who made the API call to this method
     #
-    # - attempt #1 - Has a username name been sent in the request?
-    # - attempt #2 - Does the dataverse email match an existing WorldMap user?
-    # - attempt #3 -
-    #
-    user_object = get_worldmap_user_object(worldmap_username, dv_user_email)
-    if user_object is None:
-        error_msg = "A user account could not be created for email %s" % dv_user_email
-        logger.error(error_msg)
-        json_msg = MessageHelperJSON.get_json_msg(success=False, msg=error_msg)
-        return HttpResponse(status=400, content=json_msg, content_type="application/json")
+    user_object = request.user
 
     #   Format file name and save actual file
     #

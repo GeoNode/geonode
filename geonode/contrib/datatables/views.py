@@ -34,12 +34,15 @@ logger = logging.getLogger(__name__)
 
 
 @http_basic_auth_for_api
-#@login_required
 @csrf_exempt
 def datatable_upload_api(request):
+    """
+    API to upload a datatable -- saved as a DataTable object
+    """
     if request.method != 'POST':
         return HttpResponse("Invalid Request", mimetype="text/plain", status=405)
 
+    # Note: The User used for auth is set as the DataTable owner
     (success, data_table_or_error) = attempt_datatable_upload_from_request_params(request, request.user)
     if not success:
         json_msg = MessageHelperJSON.get_json_fail_msg(data_table_or_error)
@@ -68,8 +71,11 @@ def datatable_detail(request, dt_id):
         json_msg = MessageHelperJSON.get_json_fail_msg(err_msg)
         return HttpResponse(json_msg, mimetype='application/json', status=404)
 
-    if not request.user.has_perm('datatables.view_datatable', obj=datatable):
-        err_msg = "You are not permitted to view this TableJoin object"
+    # Check if the owner is making the request.
+    # Note: This a simplified check for geonode 1.2
+    #
+    if request.user != datatable.owner:
+        err_msg = "You are not permitted to view this DataTable object"
         logger.error(err_msg + ' (id: %s)' % dt_id)
         json_msg = MessageHelperJSON.get_json_fail_msg(err_msg)
         return HttpResponse(json_msg, mimetype='application/json', status=401)
@@ -92,7 +98,10 @@ def jointargets(request):
         - type
         - start_year
         - end_year
+
     These filters are validated through the JoinTargetForm
+
+    Available to any WorldMap user
     """
     f = JoinTargetForm(request.GET)
     if not f.is_valid():
@@ -127,6 +136,9 @@ def tablejoin_api(request):
         logger.error(err_msg)
         return HttpResponse(json_msg, mimetype="application/json", status=405)
 
+    # ---------------------------------
+    # Attempt the table join
+    # ---------------------------------
     (success, tablejoin_obj_or_err_msg) = attempt_tablejoin_from_request_params(request, request.user)
 
     # ---------------------------------
@@ -147,8 +159,12 @@ def tablejoin_api(request):
 @http_basic_auth_for_api
 @csrf_exempt
 def tablejoin_detail(request, tj_id):
-
-    # get TableJoin
+    """
+    Return details of a TableJoin object
+    """
+    # -------------------------------------------------------
+    # Retrieve TableJoin
+    # -------------------------------------------------------
     try:
         tj = TableJoin.objects.get(pk=tj_id)
     except TableJoin.DoesNotExist:
@@ -157,7 +173,12 @@ def tablejoin_detail(request, tj_id):
         json_msg = MessageHelperJSON.get_json_fail_msg(err_msg)
         return HttpResponse(json_msg, mimetype='application/json', status=404)
 
-    if not request.user.has_perm('maps.view_layer', obj=tj.join_layer):
+    # -------------------------------------------------------
+    # Check if the DataTable owner is making the request.
+    # Note: This a simplified check for geonode 1.2
+    # -------------------------------------------------------
+    #if not request.user.has_perm('maps.view_layer', obj=tj.join_layer):
+    if request.user != tj.datatable.owner:
         err_msg = "You are not permitted to view this TableJoin object"
         logger.error(err_msg + ' (id: %s)' % tj_id)
         json_msg = MessageHelperJSON.get_json_fail_msg(err_msg)
@@ -187,10 +208,12 @@ def tablejoin_remove(request, tj_id):
 
         return HttpResponse(json_msg, mimetype='application/json', status=404)
 
-    # -----------------------------------------------
-    # Does the user have permissions to Delete it?
-    # -----------------------------------------------
-    if not request.user.has_perm('maps.delete_layer', obj=tj.join_layer):
+    # -------------------------------------------------------
+    # Check if the Layer owner is making the request.
+    # Note: This a simplified check for geonode 1.2
+    # -------------------------------------------------------
+    #if not request.user.has_perm('maps.delete_layer', obj=tj.join_layer):
+    if request.user != tj.datatable.owner:
         err_msg = "You are not permitted to delete this TableJoin object"
         logger.error(err_msg + ' (id: %s)' % tj_id)
         json_msg = MessageHelperJSON.get_json_fail_msg(err_msg)
@@ -229,9 +252,11 @@ def datatable_remove(request, dt_id):
         return HttpResponse(json_msg, mimetype='application/json', status=404)
 
     # -----------------------------------------------
-    # Does the user have permissions to Delete it?
+    # Check if the Layer owner is making the request.
+    # Note: This a simplified check for geonode 1.2
     # -----------------------------------------------
-    if not request.user.has_perm('datatables.delete_datatable', obj=datatable):
+    #if not request.user.has_perm('datatables.delete_datatable', obj=datatable):
+    if request.user != datatable.owner:
         err_msg = "You are not permitted to delete this DataTable object"
         logger.error(err_msg + ' (id: %s)' % dt_id)
         json_msg = MessageHelperJSON.get_json_fail_msg(err_msg)
@@ -424,9 +449,11 @@ def datatable_lat_lon_remove(request, dt_id):
 
     # -----------------------------------------------
     # Does the user have permissions to Delete it?
-    # -----------------------------------------------
-    if not request.user.has_perm('datatables.delete_latlngtablemappingrecord', obj=lat_lng_datatable):
-        err_msg = "You are not permitted to delete this DataTable object"
+    # Note: This a simplified check for geonode 1.2
+    # -------------------------------------------------------
+    #if not request.user.has_perm('datatables.delete_latlngtablemappingrecord', obj=lat_lng_datatable):
+    if request.user != lat_lng_datatable.datatable.owner:
+        err_msg = "You are not permitted to delete this Latitude/Longitude layer and datatable"
         logger.error(err_msg + ' (id: %s)' % dt_id)
         json_msg = MessageHelperJSON.get_json_fail_msg(err_msg)
         return HttpResponse(json_msg, mimetype='application/json', status=401)

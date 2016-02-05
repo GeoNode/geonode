@@ -21,52 +21,6 @@ from geoserver.catalog import FailedRequestError
 from geonode.contrib.basic_auth_decorator import http_basic_auth_for_api
 logger = logging.getLogger(__name__)
 
-'''
-#@csrf_exempt
-def test_delete(request):
-    """
-    Used for debugging -- do not activate this and check it in!
-
-    #url(r'^delete-map-layer-test/$', 'test_delete', name='test_delete'),
-
-    """
-    raise Http404('nada')
-    if not request.POST:
-        json_msg = MessageHelperJSON.get_json_msg(success=False, msg="Not a POST.")
-        return HttpResponse(status=401, content=json_msg, content_type="application/json")
-
-    Post_Data_As_Dict = request.POST.dict()
-
-    print 'request.POST', request.POST
-    print 'Post_Data_As_Dict', Post_Data_As_Dict
-
-    if Post_Data_As_Dict.get('layer_id', None) is None:
-        json_msg = MessageHelperJSON.get_json_msg(success=False, msg="No layer_id.")
-        return HttpResponse(status=400, content=json_msg, content_type="application/json")
-
-
-    try:
-        layer = Layer.objects.get(pk=Post_Data_As_Dict['layer_id'])
-    except Layer.DoesNotExist:
-        json_msg = MessageHelperJSON.get_json_msg(success=False, msg="Layer not found for this id.")
-        return HttpResponse(status=400, content=json_msg, content_type="application/json")
-
-    #layer.delete()
-
-    json_msg = MessageHelperJSON.get_json_msg(success=True, msg='Layer deleted')
-    return HttpResponse(status=200, content=json_msg, content_type="application/json")
-'''
-"""
-import requests, json
-server = 'http://127.0.0.1:8000'
-api_url = server + '/dataverse/delete-map-layer-test/'
-params = { 'layer_id' : 103 }
-
-r = requests.post(api_url, data=params)
-print r.text
-print r.status_code
-"""
-
 
 @csrf_exempt
 @http_basic_auth_for_api
@@ -111,7 +65,8 @@ def view_delete_dataverse_map_layer(request):
     map_layer = existing_dv_layer_metadata.map_layer
 
 
-    if not request.user.has_perm('maps.delete_layer', obj=map_layer):
+    #if not request.user.has_perm('maps.delete_layer', obj=map_layer):
+    if request.user != map_layer.owner:
         err_msg = "You are not permitted to delete this Map Layer"
         logger.error(err_msg + ' (id: %s)' % map_layer.id)
         json_msg = MessageHelperJSON.get_json_fail_msg(err_msg)
@@ -168,3 +123,14 @@ def delete_map_layer(map_layer):
          return (False, "Failed to map_layer. %s" % err_msg)
 
     return (True, None)
+
+"""
+import requests, json
+server = 'http://127.0.0.1:8000'
+api_url = server + '/dataverse/delete-map-layer-test/'
+params = { 'layer_id' : 103 }
+
+r = requests.post(api_url, data=params)
+print r.text
+print r.status_code
+"""

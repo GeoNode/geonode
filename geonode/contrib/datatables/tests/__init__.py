@@ -26,11 +26,11 @@ The tests in the next imports are run against the installation specified in:
    - Copy "server_credentials_template.json" to "server_credentials.json"
    - Add the necessary url and credentials
 """
+from run_test_shapefile_import import *
+from run_test_classify_layer import *
 from run_test_tabular_api import *
 from run_test_lat_lng_api import *
 from run_test_dataverse_tabular_api import *
-from run_test_shapefile_import import *
-from run_test_classify_layer import *
 
 """
 # Run tests from the command line
