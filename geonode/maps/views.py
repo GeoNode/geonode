@@ -35,7 +35,7 @@ from django.db.models import F
 from django.views.decorators.clickjacking import xframe_options_exempt
 
 from geonode.layers.models import Layer
-from geonode.maps.models import Map, MapLayer, MapSnapshot
+from geonode.maps.models import Map, MapLayer, MapSnapshot, MapStory
 from geonode.layers.views import _resolve_layer
 from geonode.utils import forward_mercator, llbbox_to_mercator
 from geonode.utils import DEFAULT_TITLE
@@ -459,7 +459,7 @@ def new_map_config(request):
     and the map specified does not exist a 404 is returned.
     '''
     DEFAULT_MAP_CONFIG, DEFAULT_BASE_LAYERS = default_map_config()
-
+    map_obj = None
     if request.method == 'GET' and 'copy' in request.GET:
         mapid = request.GET['copy']
         map_obj = _resolve_map(request, mapid, 'base.view_resourcebase')
@@ -573,6 +573,13 @@ def new_map_config(request):
             config['fromLayer'] = True
         else:
             config = DEFAULT_MAP_CONFIG
+    if map_obj is not None:
+        if map_obj.story is None:
+            story_obj = MapStory()
+            story_obj.save()
+        else:
+            story_obj = map_obj.story
+        config['story_id'] = story_obj.id
     return json.dumps(config)
 
 
