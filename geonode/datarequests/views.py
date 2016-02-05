@@ -2,6 +2,7 @@ import os
 import sys
 import shutil
 import traceback
+import datetime
 from urlparse import parse_qs
 
 from django.conf import settings
@@ -24,6 +25,7 @@ from django.views.generic import TemplateView
 
 from geonode.base.enumerations import CHARSETS
 from geonode.documents.models import get_related_documents
+from geonode.documents.models import Document
 from geonode.layers.models import UploadSession, Style
 from geonode.layers.utils import file_upload
 from geonode.people.models import Profile
@@ -85,10 +87,10 @@ def registration_part_two(request):
 
     request.session['data_request_shapefile'] = True
     profile_form_data = request.session.get('data_request_info', None)
-    pprint(request.session.get('letter_file',None))
+    request_letter = request.session.get('letter_file',None)
     form = DataRequestProfileCaptchaForm()
 
-    if not profile_form_data:
+    if not profile_form_data or not request_letter:
         return redirect(reverse('datarequests:registration_part_one'))
 
     if request.method == 'POST':
@@ -133,9 +135,13 @@ def registration_part_two(request):
                 saved_layer.save()
                 data_request_form = DataRequestProfileForm(
                     request.session.get('data_request_info', None))
+                
                 if data_request_form.is_valid():
                     request_profile = data_request_form.save()
                     request_profile.jurisdiction_shapefile = saved_layer
+                    requester_name = request_profile.first_name+" "+request_profile.middle_name+" "+request_profile.last_name
+                    request_letter_document = save_request_letter(file_object=request_letter, uploader_name = requester_name)
+                    request_profile.request_letter = request_letter_document
                     request_profile.save()
                 else:
                     out['errors'] = form.data_request_form
@@ -143,7 +149,6 @@ def registration_part_two(request):
                 exception_type, error, tb = sys.exc_info()
                 out['success'] = False
                 out['errors'] = "An unexpected error was encountered. Please try again later."
-
                 # Assign the error message to the latest UploadSession of the data request uploader user.
                 latest_uploads = UploadSession.objects.filter(
                     user=registration_uploader
@@ -211,6 +216,23 @@ def registration_part_two(request):
             'form': form
         })
 
+def save_request_letter(title="", file_object=None, uploader_name=""):
+    if file_object is None:
+        raise Http404
+    if title is "":
+        title = uploader_name + " Request Letter " + str(datetime.datetime.date())
+    owner=Profile.objects.get_or_create(username="dataRegistrationUploader")
+    abstract = "request letter from"+uploader_name+" "+str(datetime.datetime.date())
+    req_letter = Document(
+        user = owner,
+        abstract = abstract,
+        title = title
+    )
+    req_letter.save()
+    return req_letter
+    
+    
+        
 
 class DataRequestPofileList(LoginRequiredMixin, SuperuserRequiredMixin, TemplateView):
     template_name = 'datarequests/data_request_list.html'

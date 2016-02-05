@@ -122,6 +122,6 @@ def add_to_ad_group(group_dn=settings.LIPAD_LDAP_GROUP_DN, used_dn=""):
         import traceback
         print traceback.format_exc()
         return e
-        
+    
     
         
