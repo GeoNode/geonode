@@ -53,6 +53,33 @@ class MapStory(ResourceBase):
     def chapters(self):
         return self.chapter_list.order_by('chapter_index')
 
+    def update_from_viewer(self, conf):
+
+        if isinstance(conf, basestring):
+            conf = json.loads(conf)
+
+        self.title = conf['title']
+        self.abstract = conf['abstract']
+
+        if self.uuid is None or self.uuid == '':
+            self.uuid = str(uuid.uuid1())
+
+
+        #self.keywords.add(*conf['map'].get('keywords', []))
+
+        self.save()
+
+    def viewer_json(self):
+
+        config = {
+            'id':self.id,
+            'title':self.title,
+            'abstract':self.abstract,
+        }
+
+        return config
+
+
 
 class Map(ResourceBase, GXPMapBase):
 
