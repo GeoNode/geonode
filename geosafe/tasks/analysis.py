@@ -21,7 +21,9 @@ __author__ = 'lucernae'
 LOGGER = logging.getLogger(__name__)
 
 
-@shared_task
+@shared_task(
+    name='geosafe.tasks.analysis.create_metadata_object',
+    queue='geosafe')
 def create_metadata_object(layer_id):
     # Sleep 5 second to let layer post_save ends
     time.sleep(5)
@@ -38,7 +40,9 @@ def create_metadata_object(layer_id):
     metadata.save()
 
 
-@shared_task(name='geosafe.tasks.analysis.process_impact_result', queue='geosafe')
+@shared_task(
+    name='geosafe.tasks.analysis.process_impact_result',
+    queue='geosafe')
 def process_impact_result(analysis_id, impact_url_result):
     # wait for process to return the result
     impact_url = impact_url_result.get()

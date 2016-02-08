@@ -1,5 +1,4 @@
 # coding=utf-8
-import sys
 from celery import Celery
 
 __author__ = 'Rizky Maulana Nugraha <lana.pcfre@gmail.com>'
