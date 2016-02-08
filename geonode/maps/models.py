@@ -87,9 +87,9 @@ class Map(ResourceBase, GXPMapBase):
     A Map aggregates several layers together and annotates them with a viewport
     configuration.
     """
-    story = models.ForeignKey(MapStory,related_name='chapter_list')
+    story = models.ForeignKey(MapStory,related_name='chapter_list', blank=True,null=True)
 
-    chapter_index = models.IntegerField(_('chapter index'))
+    chapter_index = models.IntegerField(_('chapter index'), blank=True)
 
     # viewer configuration
     zoom = models.IntegerField(_('zoom'))
