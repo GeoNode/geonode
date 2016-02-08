@@ -162,9 +162,10 @@ class TestWorldMapClassification(TestTabularAPIBase):
         except:
             msgx("Unexpected error: %s" % sys.exc_info()[0])
             return
+        msg(r.text)
+        msg(r.status_code)
 
         self.assertEqual(r.status_code, 200, "Expected status code 200 but received '%s'" % r.status_code)
-        msg(r.text)
 
 
     #def test_it(self):

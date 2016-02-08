@@ -4,10 +4,10 @@ urlpatterns = patterns('geonode.contrib.datatables.views_dataverse',
 
    # Upload tabular file and join it to an existing layer
    #
-   url(r'^api/upload-join/?$', 'view_upload_table_and_join_layer',\
+   url(r'^upload-join/?$', 'view_upload_table_and_join_layer',\
     name='view_upload_table_and_join_layer'),
 
-   url(r'^api/upload-lat-lng/?$', 'view_upload_lat_lng_table',\
+   url(r'^upload-lat-lng/?$', 'view_upload_lat_lng_table',\
     name='view_upload_lat_lng_table'),
 
 )

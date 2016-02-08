@@ -21,21 +21,23 @@ from test_form_upload_and_join import *
 #
 """
 The tests in the next imports are run against the installation specified in:
-    "server_creds.json" (in this directory)
- If a "server_creds.json" doesn't exist:
-   - Copy "server_creds_template.json" to "server_creds.json"
+    "server_credentials.json" (in this directory)
+ If a "server_credentials.json" doesn't exist:
+   - Copy "server_credentials_template.json" to "server_credentials.json"
    - Add the necessary url and credentials
 """
+from run_test_shapefile_import import *
+from run_test_classify_layer import *
 from run_test_tabular_api import *
 from run_test_lat_lng_api import *
 from run_test_dataverse_tabular_api import *
-from run_test_shapefile_import import *
-from run_test_classify_layer import *
 
 """
 # Run tests from the command line
-python manage.py test datatables --settings=geonode.no_db_settings
+# cd ~/github-worldmap/cga-worldmap/geonode
+django-admin.py test datatables --settings=no_db_settings
 
 
 # For more specific tests, comment out the import lines above as needed
+
 """

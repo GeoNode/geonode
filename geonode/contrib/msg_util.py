@@ -1,8 +1,12 @@
 from __future__ import print_function
 # Hackish:)
 import sys
+from django.conf import settings
 
-def msg(s): print(s)
+
+def msg(s):
+    #if settings.DEBUG:
+    print(s)
 def dashes(d='-'): msg(40*d)
 def msgd(s): dashes(); msg(s)
 def msgt(s): dashes(); msg(s); dashes()

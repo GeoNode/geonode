@@ -70,17 +70,17 @@ urlpatterns = patterns('',
     (r'^download/(?P<service>[^/]*)/(?P<layer>[^/]*)/(?P<format>[^/]*)/?$','geonode.proxy.views.download'),
     (r'^gazetteer/', include('geonode.gazetteer.urls')),
     (r'^bostonhoods/?', include('geonode.hoods.urls')),
-    (r'^certification/', include('geonode.certification.urls')),    
+    (r'^certification/', include('geonode.certification.urls')),
     url(r'^autocomplete/', include('autocomplete_light.urls')),
-    
-    # Dataverse/GeoConnect API
-    (r'^dataverse-layer/', include('geonode.contrib.dataverse_layer_metadata.urls')),
-    (r'^dataverse/', include('geonode.contrib.dataverse_connect.urls')),
-    (r'^dataverse-tabular/', include('geonode.contrib.datatables.urls_dataverse')),
 
     # Datatables API
     (r'^datatables/', include('geonode.contrib.datatables.urls')),
-    
+
+    # Dataverse/GeoConnect API
+    (r'^dataverse/api/', include('geonode.contrib.dataverse_connect.urls')),
+    (r'^dataverse/api/tabular/', include('geonode.contrib.datatables.urls_dataverse')),
+
+
 )
 
 urlpatterns += geonode.proxy.urls.urlpatterns
