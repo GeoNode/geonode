@@ -1,2 +1,3 @@
 celery
+requests
 south

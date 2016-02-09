@@ -1,11 +1,12 @@
 # coding=utf-8
 import logging
 import os
+import tempfile
 import time
-import urllib
 import urlparse
 from zipfile import ZipFile
 
+import requests
 from celery.app import shared_task
 from django.conf import settings
 from django.core.urlresolvers import reverse
@@ -19,6 +20,22 @@ __author__ = 'lucernae'
 
 
 LOGGER = logging.getLogger(__name__)
+
+
+def download_file(url):
+    # FixMe: Handle for local file protocol too
+    tmpfile = tempfile.mktemp()
+    # NOTE the stream=True parameter
+    headers = {
+        'User-Agent':
+            'Mozilla/5.0 (X11; U; Linux i686) Gecko/20071127 Firefox/2.0.0.11'
+    }
+    r = requests.get(url, headers=headers, stream=True)
+    with open(tmpfile, 'wb') as f:
+        for chunk in r.iter_content(chunk_size=1024):
+            if chunk:
+                f.write(chunk)
+    return tmpfile
 
 
 @shared_task(
@@ -48,7 +65,7 @@ def process_impact_result(analysis_id, impact_url_result):
     impact_url = impact_url_result.get()
     analysis = Analysis.objects.get(id=analysis_id)
     # download impact zip
-    impact_path, _ = urllib.urlretrieve(impact_url)
+    impact_path = download_file(impact_url)
     dir_name = os.path.dirname(impact_path)
     with ZipFile(impact_path) as zf:
         zf.extractall(path=dir_name)
