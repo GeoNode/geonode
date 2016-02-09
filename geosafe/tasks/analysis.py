@@ -23,26 +23,39 @@ LOGGER = logging.getLogger(__name__)
 
 
 def download_file(url):
-    # FixMe: Handle for local file protocol too
-    tmpfile = tempfile.mktemp()
-    # NOTE the stream=True parameter
-    headers = {
-        'User-Agent':
-            'Mozilla/5.0 (X11; U; Linux i686) Gecko/20071127 Firefox/2.0.0.11'
-    }
-    r = requests.get(url, headers=headers, stream=True)
-    with open(tmpfile, 'wb') as f:
-        for chunk in r.iter_content(chunk_size=1024):
-            if chunk:
-                f.write(chunk)
-    return tmpfile
+    parsed_uri = urlparse.urlparse(url)
+    if parsed_uri.scheme == 'http' or parsed_uri.scheme == 'https':
+        tmpfile = tempfile.mktemp()
+        # NOTE the stream=True parameter
+        # Assign User-Agent to emulate browser
+        headers = {
+            'User-Agent': 'Mozilla/5.0 (X11; U; Linux i686) '
+                          'Gecko/20071127 Firefox/2.0.0.11'
+        }
+        r = requests.get(url, headers=headers, stream=True)
+        with open(tmpfile, 'wb') as f:
+            for chunk in r.iter_content(chunk_size=1024):
+                if chunk:
+                    f.write(chunk)
+        return tmpfile
+    elif parsed_uri.scheme == 'file' or not parsed_uri.scheme:
+        return parsed_uri.path
 
 
 @shared_task(
     name='geosafe.tasks.analysis.create_metadata_object',
     queue='geosafe')
 def create_metadata_object(layer_id):
+    """Create metadata object of a given layer
+
+    :param layer_id: layer ID
+    :type layer_id: int
+
+    :return: True if success
+    :rtype: bool
+    """
     # Sleep 5 second to let layer post_save ends
+    # That way, the Layer can be accessed
     time.sleep(5)
     metadata = Metadata()
     layer = Layer.objects.get(id=layer_id)
@@ -55,12 +68,25 @@ def create_metadata_object(layer_id):
         layer_url, 'layer_purpose')
     metadata.layer_purpose = async_result.get()
     metadata.save()
+    return True
 
 
 @shared_task(
     name='geosafe.tasks.analysis.process_impact_result',
     queue='geosafe')
 def process_impact_result(analysis_id, impact_url_result):
+    """Extract impact analysis after running it via InaSAFE-Headless celery
+
+    :param analysis_id: analysis id of the object
+    :type analysis_id: int
+
+    :param impact_url_result: the AsyncResult taken from executing headless
+        task to run impact analysis
+    :type impact_url_result: celery.result.AsyncResult
+
+    :return: True if success
+    :rtype: bool
+    """
     # wait for process to return the result
     impact_url = impact_url_result.get()
     analysis = Analysis.objects.get(id=analysis_id)
@@ -78,4 +104,8 @@ def process_impact_result(analysis_id, impact_url_result):
                 saved_layer.set_default_permissions()
                 analysis.impact_layer = saved_layer
                 analysis.save()
-                break
+                return True
+
+    LOGGER.info('No impact layer found in %s' % impact_url)
+
+    return False

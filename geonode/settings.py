@@ -923,3 +923,8 @@ if 'geonode.geoserver' in INSTALLED_APPS:
     baselayers = MAP_BASELAYERS
     MAP_BASELAYERS = [LOCAL_GEOSERVER]
     MAP_BASELAYERS.extend(baselayers)
+
+
+# This settings here is needed to construct url for InaSAFE-Headless celery
+# batch. Note, trailing slash is important
+GEONODE_BASE_URL = 'http://localhost:8000/'

@@ -21,6 +21,7 @@ def layer_post_save(sender, instance, created, **kwargs):
 
 @receiver(post_save, sender=Analysis)
 def analysis_post_save(sender, instance, created, **kwargs):
+    # Used to run impact analysis when analysis object is firstly created
     if created:
         hazard = instance.get_layer_url(instance.hazard_layer)
         exposure = instance.get_layer_url(instance.exposure_layer)
