@@ -21,10 +21,7 @@ def layer_post_save(sender, instance, created, **kwargs):
 
 @receiver(post_save, sender=Analysis)
 def analysis_post_save(sender, instance, created, **kwargs):
-    run_analysis_flag = True
-    if 'run_analysis_flag' in kwargs:
-        run_analysis_flag = kwargs['run_analysis_flag']
-    if run_analysis_flag:
+    if created:
         hazard = instance.get_layer_url(instance.hazard_layer)
         exposure = instance.get_layer_url(instance.exposure_layer)
         function = instance.impact_function_id

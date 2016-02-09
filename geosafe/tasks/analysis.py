@@ -60,5 +60,5 @@ def process_impact_result(analysis_id, impact_url_result):
                     overwrite=True)
                 saved_layer.set_default_permissions()
                 analysis.impact_layer = saved_layer
-                analysis.save(run_analysis_flag=False)
+                analysis.save()
                 break
