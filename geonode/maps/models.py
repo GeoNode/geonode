@@ -243,7 +243,7 @@ class Map(ResourceBase, GXPMapBase):
                 ))
 
         self.chapter_index = conf['chapter_index']
-        story_id = conf['story_id']
+        story_id = conf.get('story_id',0)
         story_obj = MapStory.objects.get(id=story_id)
         self.story = story_obj
         self.save()
