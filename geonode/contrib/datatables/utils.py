@@ -26,6 +26,7 @@ from geonode.maps.gs_helpers import get_sld_for #fixup_style, cascading_delete, 
 
 from geonode.contrib.datatables.models import DataTable, DataTableAttribute, TableJoin, LatLngTableMappingRecord
 from geonode.contrib.datatables.forms import DataTable, DataTableUploadForm, TableJoinRequestForm
+from geonode.contrib.datatables.column_checker import ColumnChecker
 from geonode.contrib.msg_util import *
 
 from geonode.contrib.datatables.db_helper import get_datastore_connection_string
@@ -405,7 +406,7 @@ def create_point_col_from_lat_lon(new_table_owner, table_name, lat_column, lng_c
         ft = cat.publish_featuretype(table_name, ds, "EPSG:4326", srs="EPSG:4326")
         cat.save(ft)
     except Exception as e:
-        #tj.delete()
+        tj.delete()
         import traceback
         traceback.print_exc(sys.exc_info())
         err_msg = "Error creating GeoServer layer for %s: %s" % (table_name, str(e))
@@ -465,6 +466,7 @@ def create_point_col_from_lat_lon(new_table_owner, table_name, lat_column, lng_c
     return True, lat_lnt_map_record
 
 
+
 def setup_join(new_table_owner, table_name, layer_typename, table_attribute_name, layer_attribute_name):
     logger.info('setup_join')
     """
@@ -521,6 +523,16 @@ def setup_join(new_table_owner, table_name, layer_typename, table_attribute_name
     view_sql = 'create view %s as select %s.%s, %s.* from %s inner join %s on %s."%s" = %s."%s";' %  (view_name, layer_name, THE_GEOM_LAYER_COLUMN, dt.table_name, layer_name, dt.table_name, layer_name, layer_attribute.attribute, dt.table_name, table_attribute.attribute)
     #view_sql = 'create materialized view %s as select %s.the_geom, %s.* from %s inner join %s on %s."%s" = %s."%s";' %  (view_name, layer_name, dt.table_name, layer_name, dt.table_name, layer_name, layer_attribute.attribute, dt.table_name, table_attribute.attribute)
 
+    # ------------------------------------------------------------------
+    # (5a) Check if the join columns compatible
+    # ------------------------------------------------------------------
+    column_checker = ColumnChecker(layer_name, layer_attribute.attribute,
+                            dt.table_name, table_attribute.attribute)
+    (are_cols_compatible, user_err_msg) = column_checker.are_join_columns_compatible()
+    if not are_cols_compatible:     # Doesn't look good, return an error message
+        return None, user_err_msg
+
+
     #double_view_name = "view_%s" % view_name
     #double_view_sql = "create view %s as select * from %s" % (double_view_name, view_name)
     logger.info('setup_join. Step (6): Retrieve stats')
@@ -536,7 +548,6 @@ def setup_join(new_table_owner, table_name, layer_typename, table_attribute_name
 
     unmatched_list_sql = 'select %s from %s where %s.%s not in (select "%s" from %s) limit 100;'\
                         % (table_attribute.attribute, dt.table_name, dt.table_name, table_attribute.attribute, layer_attribute.attribute, layer_name)
-
 
     # ------------------------------------------------------------------
     # Create a TableJoin object
@@ -573,15 +584,32 @@ def setup_join(new_table_owner, table_name, layer_typename, table_attribute_name
         tj.unmatched_records_list = ",".join([r[0] for r in cur.fetchall()])
         conn.commit()
         conn.close()
+
+        # If no records match, then delete the TableJoin
+        #
+        if tj.matched_records_count == 0:
+            # Delete the table join
+            tj.delete()
+
+            # Create an error message, log it, and send it back
+            err_msg = 'Sorry!  No records matched.  Make sure that you chose the correct column and that the chosen layer is in the same geographic area.'
+            logger.error(err_msg)
+            return None, err_msg
+
     except Exception as e:
         if conn:
             conn.close()
-        tj.delete()
+
+        tj.delete() # If needed for debugging, don't delete the table join
         import traceback
         traceback.print_exc(sys.exc_info())
         err_msg =  "Error Joining table %s to layer %s: %s" % (table_name, layer_typename, str(e[0]))
         logger.error(err_msg)
-        return None, err_msg
+        if err_msg.find('You might need to add explicit type casts.') > -1:
+            user_msg = "The chosen column is a different data type than the one expected."
+        else:
+            user_msg = err_msg
+        return None, user_msg
 
 
     #--------------------------------------------------
