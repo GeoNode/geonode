@@ -198,7 +198,7 @@ class DataRequestProfile(TimeStampedModel):
         )
         
     #For request letter
-    request_letter= models.ForeignKey(Document, null=False, blank=False)
+    request_letter= models.ForeignKey(Document, null=True, blank=True)
 
     # For email verification
     verification_key = models.CharField(max_length=50)

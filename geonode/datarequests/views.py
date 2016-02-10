@@ -99,7 +99,7 @@ def registration_part_two(request):
         tempdir = None
         errormsgs = []
         out = {'success': False}
-
+        request_profile = None
         if form.is_valid():
             title = form.cleaned_data["layer_title"]
 
@@ -128,25 +128,37 @@ def registration_part_two(request):
                     overwrite=False,
                     charset=form.cleaned_data["charset"],
                     abstract=form.cleaned_data["abstract"],
-                    title=form.cleaned_data["layer_title"],
-                    default_style=Style.objects.get(sld_title="Boundary")
+                    title=form.cleaned_data["layer_title"]
+                    #default_style=Style.objects.get(sld_title="Boundary")
                 )
                 saved_layer.is_published = False
                 saved_layer.save()
+                pprint("printing session data")
+                pprint (profile_form_data)
                 data_request_form = DataRequestProfileForm(
-                    request.session.get('data_request_info', None))
+                    profile_form_data,
+                    request_letter or None)
+                
+                pprint("printing fields of the form")
+                for field in data_request_form.fields:
+                    pprint(field+": "+str(data_request_form[field].data))
                 
                 if data_request_form.is_valid():
                     request_profile = data_request_form.save()
                     request_profile.jurisdiction_shapefile = saved_layer
                     requester_name = request_profile.first_name+" "+request_profile.middle_name+" "+request_profile.last_name
                     request_letter_document = save_request_letter(file_object=request_letter, uploader_name = requester_name)
+                    pprint(request_letter_document)
                     request_profile.request_letter = request_letter_document
                     request_profile.save()
                 else:
-                    out['errors'] = form.data_request_form
+                    pprint("data request form is not valid")
+                    out['errors'] = form.errors
+                    pprint(out['errors'])
             except Exception as e:
                 exception_type, error, tb = sys.exc_info()
+                pprint("Exception encountered:" + str(exception_type)+"\n Error:"+str(error))
+                print traceback.format_exc()
                 out['success'] = False
                 out['errors'] = "An unexpected error was encountered. Please try again later."
                 # Assign the error message to the latest UploadSession of the data request uploader user.
@@ -186,6 +198,7 @@ def registration_part_two(request):
                 errormsgs.extend([escape(v) for v in e])
 
             out['errors'] = form.errors
+            pprint(out['errors'])
             out['errormsgs'] = errormsgs
 
         if out['success']:
