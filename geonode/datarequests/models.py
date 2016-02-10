@@ -23,6 +23,7 @@ from geonode.layers.models import Layer
 from geonode.people.models import OrganizationType, Profile
 from geonode.utils import resolve_object
 from geonode.base.models import ResourceBase
+from geonode.tasks.mk_folder import create_folder
 
 from pprint import pprint
 
@@ -383,7 +384,7 @@ class DataRequestProfile(TimeStampedModel):
              self.rejection_reason,
              additional_details,
              local_settings.LIPAD_SUPPORT_MAIL,
-            local_settings.LIPAD_SUPPORT_MAIL,
+             local_settings.LIPAD_SUPPORT_MAIL
         )
 
         email_subject = _('[LiPAD] Data Request Registration Status')
@@ -400,7 +401,11 @@ class DataRequestProfile(TimeStampedModel):
     def create_account(self):
         uname = create_login_credentials(self)
         pprint("Creating account for "+uname)
-        if create_ad_account(self, uname):
+        dn = create_ad_account(self, uname)
+        if dn is not False:
+            
+            add_to_ad_group(group_dn=settings.LIPAD_LDAP_GROUP_DN, user_dn=dn)
+            
             profile = LDAPBackend().populate_user(uname)
             if profile is None:
                 pprint("Account was not created")
@@ -409,7 +414,7 @@ class DataRequestProfile(TimeStampedModel):
             # Link data request to profile and updating other fields of the request
             self.username = uname
             self.profile = profile
-            self.ftp_folder = "Others/"+uname
+            self.ftp_folder = directory = "Others/"+uname
             self.save()
             
             # Link shapefile to account
@@ -434,13 +439,13 @@ class DataRequestProfile(TimeStampedModel):
 
             requesters_group.join(profile)
             
-            profile.is_active=True
-            profile.save()
+            pprint("creating user folder for "+uname)
+            create_folder.delay(uname)
             
             self.request_status = 'approved'
             self.save()
 
-            self.send_approval_email(uname, self.ftp_folder)
+            self.send_approval_email(uname, directory)
             
         else:
             raise Http404
@@ -477,7 +482,7 @@ class DataRequestProfile(TimeStampedModel):
              username,
              directory,
              profile_url,
-             local_settings.LIPAD_SUPPORT_MAIL,
+             local_settings.LIPAD_SUPPORT_MAIL
          )
 
         html_content = """
@@ -499,9 +504,10 @@ class DataRequestProfile(TimeStampedModel):
         """.format(
              self.first_name,
              username,
+             directory,
              profile_url,
              local_settings.LIPAD_SUPPORT_MAIL,
-             local_settings.LIPAD_SUPPORT_MAIL,
+             local_settings.LIPAD_SUPPORT_MAIL
          )
 
         email_subject = _('[LiPAD] Data Request Registration Status')

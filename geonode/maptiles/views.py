@@ -81,25 +81,13 @@ def tiled_view(request, overlay=settings.TILED_SHAPEFILE, template="maptiles/map
     context_dict = {}
     context_dict["grid"] = get_layer_config(request, overlay, "base.view_resourcebase", _PERMISSION_VIEW )
     
-    
-    
-    group_name = u"Data Requesters"
-    requesters_group, requesters_group_created = GroupProfile.objects.get_or_create(
-        title=group_name,
-        slug=slugify(group_name),
-        access='private',
-    )
-    
-    if Datarequesters_group_created and not requesters_group.user_is_member(request.user):
-        requesters_group.join(request.user)
-    
     if jurisdiction is None:
         try:
             jurisdiction_object = UserJurisdiction.objects.get(user=request.user)
             jurisdiction_shapefile = jurisdiction_object.jurisdiction_shapefile
         except ObjectDoesNotExist:
             print "No jurisdiction found"
-            return HttpResponseForbidden
+            return HttpResponseForbidden()
         
         context_dict["jurisdiction"] = get_layer_config(request,jurisdiction_object.jurisdiction_shapefile.typename, "base.view_resourcebase", _PERMISSION_VIEW)
         context_dict["jurisdiction_name"] = jurisdiction_object.jurisdiction_shapefile.typename
