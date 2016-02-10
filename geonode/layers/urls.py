@@ -30,7 +30,6 @@ urlpatterns = patterns(
     'geonode.layers.views',
     url(r'^$', TemplateView.as_view(template_name='layers/layer_list.html'), name='layer_browse'),
     url(r'^$', TemplateView.as_view(template_name='layers/layer_home.html'), name='layer_home'),
-    url(r'^layers$', 'update_LayerMetadata', name='update_LayerMetadata'),
     url(r'^upload$', 'layer_upload', name='layer_upload'),
     url(r'^(?P<layername>[^/]*)$', 'layer_detail', name="layer_detail"),
     url(r'^(?P<layername>[^/]*)/metadata$', 'layer_metadata', name="layer_metadata"),

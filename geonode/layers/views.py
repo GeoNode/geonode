@@ -56,10 +56,7 @@ from geonode.security.views import _perms_info_json
 from geonode.documents.models import get_related_documents
 from geonode.utils import build_social_links
 from geonode.geoserver.helpers import cascading_delete, gs_catalog
-#added by denise
-#from geoserver.catalog import Catalog
-from geonode.tasks.update import layers_metadata_update
-#
+
 
 CONTEXT_LOG_FILE = None
 
@@ -118,26 +115,6 @@ def _resolve_layer(request, typename, permission='base.view_resourcebase',
                               permission=permission,
                               permission_msg=msg,
                               **kwargs)
-
-
-# Basic Layer Views #
-@login_required
-def update_LayerMetadata(request, template='layers/update_LayerMetadata.html'):
-    layers_metadata_update.delay()
-    ctx = {
-        'charsets': CHARSETS,
-        'is_layer': True,
-    }
-
-    return render_to_response(template,RequestContext(request, ctx))
-        #process method, return results
-        #use def get_self_resource(self):
-        #create task -> layer.attribute = "", call here
-        # cat = Catalog("http://192.168.56.101:8080/geoserver/rest",
-        #     username="admin", password="admin")
-        # all_layers = cat.get_layers()
-        # print "%s" % all_layers
-
 
 
 @login_required
