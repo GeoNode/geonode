@@ -85,6 +85,12 @@ class DataRequestProfile(TimeStampedModel):
         blank=True
     )
     
+    approver = models.ForeignKey(
+        Profile,
+        null=True,
+        blank=True
+    )
+    
     username = models.CharField(
         _('User name'),
         max_length=50,
