@@ -154,9 +154,19 @@
             {% if links %}
             <ul>
               {% for link in links %}
-              <li><a href="{{ link.url }}">{% trans link.name %}</a></li>
+                <li><a href="{{ link.url }}">{% trans link.name %}</a></li>
               {% endfor %}
             </ul>
+            <form id="form_download" name="form_eula" method="POST">
+                {% csrf_token %}
+                {% for link in links %}
+                    <li>
+                        <input type="radio" name="download_link" id="{% trans link.name %}" value="{{ link.url }}"/>
+                        <label for="{% trans link.name %}">{% trans link.name %}</label>
+                    </li>
+                {% endfor %}
+                <input type="submit" value="Submit">
+            </form>
             {% endif %}
           </div>
           <div class="modal-footer">
