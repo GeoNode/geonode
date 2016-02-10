@@ -98,7 +98,10 @@
       <td class="table-user-profile-attribute">{% trans "Intended Use of Dataset" %}</td>
       <td>{{ request_profile.get_intended_use_of_dataset_display }}</td>
       </tr>
-
+       <tr>
+          <td class="table-user-profile-attribute col-md-3">{% trans "Approval/Rejection Administrator"</td>
+          <td>{{request_profile.administrator.username}}</td>
+      </tr>
       {% if request_profile.requester_type == 'noncommercial' or request_profile.requester_type == 'academe' %}
         <tr>
         <td class="table-user-profile-attribute">{% trans "Organization type based on Phil-LiDAR1 Data Distribution Policy" %}</td>

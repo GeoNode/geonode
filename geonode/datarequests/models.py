@@ -85,12 +85,6 @@ class DataRequestProfile(TimeStampedModel):
         blank=True
     )
     
-    approver = models.ForeignKey(
-        Profile,
-        null=True,
-        blank=True
-    )
-    
     username = models.CharField(
         _('User name'),
         max_length=50,
@@ -227,6 +221,13 @@ class DataRequestProfile(TimeStampedModel):
         max_length=100,
         #validators=[validators.RegexValidator(regex="^Others\/[a-zA-Z]{6,15}[0-9]{0,4}")]
         )
+        
+    administrator = models.ForeignKey(
+        Profile,
+        null=True,
+        blank=True,
+        related_name="+"
+    )
     
     class Meta:
         verbose_name = _('Data Request Profile')

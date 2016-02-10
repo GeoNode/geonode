@@ -386,6 +386,7 @@ def data_request_profile_reject(request, pk):
         request_profile.request_status = 'rejected'
         if 'additional_rejection_reason' in form.keys():
             request_profile.additional_rejection_reason = form['additional_rejection_reason'][0]
+        request_profile.administrator = request.user
         request_profile.save()
         request_profile.send_rejection_email()
 
@@ -412,6 +413,8 @@ def data_request_profile_approve(request, pk):
             raise Http404
         try:
             request_profile.create_account()
+            request_profile.administrator = request.user
+            request_profile.save()
             return HttpResponseRedirect(request_profile.get_absolute_url())
         except Exception as e:
             import traceback
