@@ -15,6 +15,7 @@ from geonode.people.models import OrganizationType, Profile
 
 from .models import DataRequestProfile, RequestRejectionReason
 
+from pprint import pprint
 
 class DataRequestProfileForm(forms.ModelForm):
 
@@ -304,14 +305,16 @@ class DataRequestProfileForm(forms.ModelForm):
             raise forms.ValidationError(
                 'This field is required.')
         return funding_source
-
+    
     def clean_letter_file(self):
         letter_file = self.cleaned_data.get('letter_file')
-
-        if letter_file and not os.path.splitext(
-                letter_file.name)[1].lower()[1:] is not ".pdf":
-            raise forms.ValidationError(_("This file type is not allowed"))
         
+        if letter_file and os.path.splitext(
+                letter_file.name)[1].lower()[
+                1:]is not "pdf":
+            pprint( os.path.splitext(letter_file.name))
+            raise forms.ValidationError(_("This file type is not allowed"))
+        return letter_file
 
     def save(self, commit=True, *args, **kwargs):
         data_request = super(
