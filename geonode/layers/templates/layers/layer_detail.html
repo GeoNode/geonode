@@ -157,7 +157,7 @@
                 <li><a href="{{ link.url }}">{% trans link.name %}</a></li>
               {% endfor %}
             </ul>
-            <form id="form_download" name="form_eula" method="POST">
+            <form id="form_download_layer" name="form_download_layer" action="/layers/geonode%3A{% trans resource.name %}/download" method="POST">
                 {% csrf_token %}
                 {% for link in links %}
                     <li>

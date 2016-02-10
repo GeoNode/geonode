@@ -23,6 +23,7 @@ import sys
 import logging
 import shutil
 import traceback
+from pprint import pprint
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
@@ -554,3 +555,12 @@ def layer_thumbnail(request, layername):
                 status=500,
                 mimetype='text/plain'
             )
+
+def layer_download(request, layername):
+    if request.method == 'POST':
+        ## TODO : CHECK FOR USER PERMISSIONS FOR LAYER FIRST
+        print(">>>DOWNLOADING: [{0}]".format(layername))
+        pprint(request.POST)
+        return HttpResponseRedirect(request.POST["download_link"])
+    else:
+        return HttpResponse('Fail!')
