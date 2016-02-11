@@ -334,7 +334,7 @@ GeoNode.HeatmapModel = Ext.extend(Ext.util.Observable, {
       var point = mercator.transform(epsg900913, epsg4326);
       var count = this.getCountGeodetic(this.heatmapObject, point.lat, point.lon);
       if (count < 0) count = 0;
-      var message = "Number of layers = " + count;
+      var message = count + " layers";
       this.tooltip.initTarget('ge_searchWindow');
       this.tooltip.show();
       this.tooltip.body.dom.innerHTML = message;

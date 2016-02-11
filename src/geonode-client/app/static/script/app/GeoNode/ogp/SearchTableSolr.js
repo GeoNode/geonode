@@ -197,16 +197,19 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
                 GeoNode.queryTerms.fq.splice(i, 1);
             }
         };
-        var datatypes = this.dataTypeInput.getValue();
-
-        if (datatypes.length > 0 && datatypes[0].name != ''){
-            var string = '';
-            for(var i=0;i<datatypes.length;i++){
-                string += datatypes[i].name + ' OR ';
-            }
-            string = string.slice(0, -4);
-            GeoNode.queryTerms.fq.push(string);
-        }
+        var datatypes = this.dataTypeInput.getValue().inputValue;
+        if(datatypes !== ''){
+            GeoNode.queryTerms.fq.push(datatypes);
+        };
+        
+        // if (datatypes.length > 0 && datatypes[0].name != ''){
+        //     var string = '';
+        //     for(var i=0;i<datatypes.length;i++){
+        //         string += datatypes[i].name + ' OR ';
+        //     }
+        //     string = string.slice(0, -4);
+        //     GeoNode.queryTerms.fq.push(string);
+        // }
 
         // Remove any date filter if there
         for(var i=0;i<GeoNode.queryTerms.fq.length;i++){
@@ -264,7 +267,6 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
         
         //var expander = new GeoNode.SearchTableRowExpander({fetchURL: this.layerDetailURL});
 
-
         tableCfg = {
             store: this.searchStore, 
             viewConfig: {
@@ -278,7 +280,7 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
 
         var unviewableTooltip = this.unviewableTooltip;
         var remoteTooltip = this.remoteTooltip;
-        
+
         var columns = [
             {
                 header: this.titleHeaderText,
@@ -286,8 +288,9 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
                 id: 'title',
                 sortable: true,
                 sortBy: 'LayerDisplayName',
-                renderer: function(value, metaData, record, rowIndex, colIndex, store){
-                    return '<a href="/data/' + self.getlayerTypename(record) +'" target=_blank>' + record.get('LayerDisplayName')+ '</a>'
+                renderer: function(value, metadata, record, rowIndex, colIndex, store){
+                    metadata.attr = 'ext:qtip="' + record.get('Abstract') + '"';
+                    return value;
                 }
             },
             {
@@ -304,7 +307,14 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
                 sortBy: 'ContentDate',
                 renderer: function(value, metaData, record, rowIndex, colIndex, store){
                     var date = new Date(record.get('ContentDate'));
-                    return date.toDateString();
+                    return date.getFullYear();
+                }
+            },
+            {
+                header: 'Show',
+                id: 'show',
+                renderer: function(value, metaData, record, rowIndex, colIndex, store){
+                    return '<input type="checkbox"/>';
                 }
             }
         ];
@@ -313,12 +323,13 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
             sm = new Ext.grid.CheckboxSelectionModel({
                 checkOnly: true
             });
-            sm.header = '';
+            sm.header = 'Select';
 
             this.dataCart = new GeoNode.DataCartStore({selModel: sm});
             columns.push(sm);
             tableCfg.selModel = sm;
         }
+
         var colModel = new Ext.grid.ColumnModel({
             defaults: {sortable: true, menuDisabled: true},
             columns: columns
@@ -346,13 +357,13 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
                         width: 100
         });
 
-        this.dataTypeInput = new Ext.form.CheckboxGroup({
+        this.dataTypeInput = new Ext.form.RadioGroup({
             id: 'dataTypes',
             fieldLabel: 'Data Type',
             items: [
-                {boxLabel: 'All Layers', name: '', checked: true},
-                {boxLabel: 'Worldmap Layers', name: 'DataType:Polygon OR DataType:Raster', checked: false},
-                {boxLabel: 'Worldmap Collections', name: 'DataType:RESTServices OR DataType:WMSServices', checked: false}
+                {boxLabel: 'All Layers', name: 'datatypes', inputValue: '', checked: true},
+                {boxLabel: 'Worldmap Layers', name: 'datatypes', inputValue: 'DataType:Polygon OR DataType:Raster'},
+                {boxLabel: 'Worldmap Collections', name: 'datatypes', inputValue: 'DataType:RESTServices OR DataType:WMSServices'}
             ],
             listeners:{
                 change: function(scope, checked){
@@ -361,8 +372,6 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
             }
         });
 
-        
-        this.dateInput = new GeoNode.TimeSlider();
 
         var dateStartTextField = new Ext.form.TextField({
             name: 'startDate',
@@ -403,10 +412,34 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
             layout: 'fit'
         });
         
+        this.dateInput = new GeoNode.TimeSlider();
+
         function setDates(){
-            var values = self.dateInput.getValues();
-            dateStartTextField.setValue(values[0]);
-            dateEndTextField.setValue(values[1]);
+            $.ajax({
+                method: 'GET',
+                jsonp: "json.wrf",
+                dataType: "jsonp",
+                url: 'http://54.83.116.189:8983/solr/wmdata/select?q=*&rows=1&sort=ContentDate asc&fl=ContentDate&wt=json',
+                success: function(response_asc){
+                    $.ajax({
+                        method: 'GET',
+                        jsonp: "json.wrf",
+                        dataType: "jsonp",
+                        url: 'http://54.83.116.189:8983/solr/wmdata/select?q=*&rows=1&sort=ContentDate desc&fl=ContentDate&wt=json',
+                        success: function(response_desc){
+                            var startdate =  new Date(response_asc.response.docs[0].ContentDate);
+                            var enddate = new Date(response_desc.response.docs[0].ContentDate);
+                            self.dateInput.setMinValue(startdate.getFullYear());
+                            self.dateInput.setMaxValue(enddate.getFullYear());
+                            self.dateInput.setValue(0, startdate.getFullYear());
+                            self.dateInput.setValue(1, enddate.getFullYear());
+                            var values = self.dateInput.getValues();
+                            dateStartTextField.setValue(values[0]);
+                            dateEndTextField.setValue(values[1]);
+                        }
+                    })
+                }
+            })
         };
         setDates();
         this.dateInput.addListener('change', function(){
