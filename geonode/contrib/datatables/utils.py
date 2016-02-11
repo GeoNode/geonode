@@ -208,7 +208,6 @@ def process_csv_file(data_table, delimiter=",", no_header_row=False):
         cur.execute(create_table_sql)
         conn.commit()
     except Exception as e:
-        import traceback
         traceback.print_exc(sys.exc_info())
         err_msg =  "Error Creating table %s:%s" % (data_table.name, str(e))
         logger.error(err_msg)
@@ -407,7 +406,6 @@ def create_point_col_from_lat_lon(new_table_owner, table_name, lat_column, lng_c
         cat.save(ft)
     except Exception as e:
         tj.delete()
-        import traceback
         traceback.print_exc(sys.exc_info())
         err_msg = "Error creating GeoServer layer for %s: %s" % (table_name, str(e))
         return False, err_msg
@@ -441,7 +439,6 @@ def create_point_col_from_lat_lon(new_table_owner, table_name, lat_column, lng_c
         })
         #set_attributes(layer, overwrite=True)
     except Exception as e:
-        import traceback
         traceback.print_exc(sys.exc_info())
         err_msg = "Error creating GeoNode layer for %s: %s" % (table_name, str(e))
         return False, err_msg
@@ -461,6 +458,23 @@ def create_point_col_from_lat_lon(new_table_owner, table_name, lat_column, lng_c
     # Save a related LatLngTableMappingRecord
     # ----------------------------------
     lat_lnt_map_record.layer = layer
+
+    # ----------------------------------
+    # Retrieve matche/unmatched counts
+    # ----------------------------------
+    # Get datatable feature count - total record to map
+    (success_datatable, datatable_feature_count) = get_layer_feature_count(dt.table_name)
+
+    # Get layer feature count - mapped records
+    (success_layer, layer_feature_count) = get_layer_feature_count(layer.name)
+
+    # Set Record counts
+    if success_layer and success_datatable:
+        lat_lnt_map_record.mapped_record_count = layer_feature_count
+        lat_lnt_map_record.unmapped_record_count = datatable_feature_count - layer_feature_count
+    else:
+        logger.error('Failed to calculate Lat/Lng record counts')
+        
     lat_lnt_map_record.save()
 
     return True, lat_lnt_map_record
@@ -601,7 +615,6 @@ def setup_join(new_table_owner, table_name, layer_typename, table_attribute_name
             conn.close()
 
         tj.delete() # If needed for debugging, don't delete the table join
-        import traceback
         traceback.print_exc(sys.exc_info())
         err_msg =  "Error Joining table %s to layer %s: %s" % (table_name, layer_typename, str(e[0]))
         logger.error(err_msg)
@@ -654,7 +667,6 @@ def setup_join(new_table_owner, table_name, layer_typename, table_attribute_name
 
     except Exception as e:
         tj.delete()
-        import traceback
         traceback.print_exc(sys.exc_info())
         err_msg = "Error creating GeoServer layer for %s: %s" % (view_name, str(e))
         logger.error(err_msg)
@@ -696,7 +708,6 @@ def setup_join(new_table_owner, table_name, layer_typename, table_attribute_name
         tj.save()
     except Exception as e:
         tj.delete()
-        import traceback
         traceback.print_exc(sys.exc_info())
         err_msg = "Error creating GeoNode layer for %s: %s" % (view_name, str(e))
         logger.error(err_msg)
@@ -767,7 +778,6 @@ def set_default_style_for_new_layer(geoserver_catalog, feature_type):
         new_layer.default_style = geoserver_catalog.get_style(new_layer_stylename)
         geoserver_catalog.save(new_layer)
     except Exception as e:
-        import traceback
         traceback.print_exc(sys.exc_info())
         err_msg = "Error setting new default style for layer. %s" % (str(e))
         #print err_msg
@@ -927,3 +937,31 @@ def attempt_tablejoin_from_request_params(table_join_params, new_layer_owner):
         traceback.print_exc(sys.exc_info())
         err_msg = "Error Creating Join: %s" % str(sys.exc_info()[0])
         return (False, err_msg)
+
+
+def get_layer_feature_count(table_name):
+    if table_name is None:
+        logger.error("Expected a table name")
+        return (False, "Expected a table object")
+
+    # e.g. geonode:coded_data_2008_10 => coded_data_2008_10
+    table_name = table_name.split(':')[-1]
+
+    # format SQL
+    num_features_sql = 'SELECT COUNT(*) from {0};'.format(table_name)
+
+    print '%s num_features_sql: %s' % (table_name, num_features_sql)
+
+    # Make the query
+    try:
+        conn = psycopg2.connect(get_datastore_connection_string())
+        cur = conn.cursor()
+        cur.execute(num_features_sql)
+        return (True, cur.fetchone()[0])
+    except Exception as e:
+        traceback.print_exc(sys.exc_info())
+        err_msg =  "Error querying table %s:%s" % (table_name, str(e))
+        logger.error(err_msg)
+        return (False, err_msg)
+    finally:
+        conn.close()
