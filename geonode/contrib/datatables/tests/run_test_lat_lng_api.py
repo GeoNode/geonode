@@ -86,6 +86,9 @@ class TestLatLngTabularAPI(TestTabularAPIBase):
 
         lat_lng_record_id = rjson.get('data', {}).get('lat_lng_record_id')
 
+        num_matched_records = rjson.get('data', {}).get('mapped_record_count', 0)
+        self.assertTrue(num_matched_records == 99,\
+                    "The 'mapped_record_count' should be 99")
 
         #        data": {"layer_link": "/data/geonode:coded_data_2008_10_tab_1", "unmapped_record_count": 0, "layer_typename": "geonode:coded_data_2008_10_tab_1", "layer_name": "coded_data_2008_10_tab_1", "datatable": "coded_data_2008_10_tab_1", "mapped_record_count": 0, "lng_attribute": {
 
