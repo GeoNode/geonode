@@ -57,6 +57,8 @@ from geonode.security.views import _perms_info_json
 from geonode.documents.models import get_related_documents
 from geonode.utils import build_social_links
 from geonode.geoserver.helpers import cascading_delete, gs_catalog
+from urlparse import urljoin, urlsplit
+from actstream.signals import action
 
 CONTEXT_LOG_FILE = None
 
@@ -557,10 +559,15 @@ def layer_thumbnail(request, layername):
             )
 
 def layer_download(request, layername):
-    if request.method == 'POST':
-        ## TODO : CHECK FOR USER PERMISSIONS FOR LAYER FIRST
-        print(">>>DOWNLOADING: [{0}]".format(layername))
-        pprint(request.POST)
-        return HttpResponseRedirect(request.POST["download_link"])
-    else:
-        return HttpResponse('Fail!')
+    layer = _resolve_layer(
+        request,
+        layername,
+        'base.view_resourcebase',
+        _PERMISSION_MSG_VIEW)
+    
+    action.send(request.user, verb='downloaded', target=layer)
+    
+    splits = request.get_full_path().split("/")
+    redir_url = urljoin(settings.OGC_SERVER['default']['PUBLIC_LOCATION'], "/".join(splits[4:]))
+    return HttpResponseRedirect(redir_url)
+    

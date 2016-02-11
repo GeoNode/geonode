@@ -7,6 +7,7 @@
 {% load base_tags %}
 {% load guardian_tags %}
 {% load eula_extras %}
+{% load layer_extras %}
 
 {% block title %}{{ resource.title|default:resource.typename }} — {{ block.super }}{% endblock %}
 
@@ -154,19 +155,9 @@
             {% if links %}
             <ul>
               {% for link in links %}
-                <li><a href="{{ link.url }}">{% trans link.name %}</a></li>
+                <li><a href="{{ link | get_layer_download_url }}">{% trans link.name %}</a></li>
               {% endfor %}
             </ul>
-            <form id="form_download_layer" name="form_download_layer" action="/layers/geonode%3A{% trans resource.name %}/download" method="POST">
-                {% csrf_token %}
-                {% for link in links %}
-                    <li>
-                        <input type="radio" name="download_link" id="{% trans link.name %}" value="{{ link.url }}"/>
-                        <label for="{% trans link.name %}">{% trans link.name %}</label>
-                    </li>
-                {% endfor %}
-                <input type="submit" value="Submit">
-            </form>
             {% endif %}
           </div>
           <div class="modal-footer">
