@@ -154,18 +154,6 @@ def view_add_worldmap_shapefile(request):
 
         return HttpResponse(status=400, content=json_msg, content_type="application/json")
 
-    """
-    # get rid of this, use service account
-    if not form_shapefile_import.is_signature_valid_check_post(request):
-        #
-        #   Invalid signature on request
-        #
-        logger.error("Invalid signature on request.  Failed validation with ShapefileImportDataForm")
-        json_msg = MessageHelperJSON.get_json_msg(success=False\
-                                , msg="Invalid signature on request.  Failed validation with ShapefileImportDataForm")
-        return HttpResponse(status=400, content=json_msg, content_type="application/json")
-    """
-
     #-----------------------------------------------------------
     #   start: check for existing layer
     #   Does a layer already exist for this file?
@@ -227,11 +215,9 @@ def view_add_worldmap_shapefile(request):
     file_obj = write_the_dataverse_file(transferred_file)
     #print ('file_obj', file_obj)
 
-    #print "make the layer...."
-
+    # ------------------------------------------
     #   Save the actual layer
-    #
-    #
+    # ------------------------------------------
     try:
         saved_layer = save(shapefile_name,\
                            file_obj,\
@@ -242,9 +228,10 @@ def view_add_worldmap_shapefile(request):
                            keywords = keywords.split()\
                         )
 
+        # ------------------------------------------
         # Look for DataverseInfo in the Post_Data_As_Dict
         #   If it exists, create a DataverseLayerMetadata object
-        #
+        # ------------------------------------------
         dataverse_layer_metadata = add_dataverse_layer_metadata(saved_layer, Post_Data_As_Dict)
         if dataverse_layer_metadata is None:
             logger.error("Failed to create a DataverseLayerMetadata object")

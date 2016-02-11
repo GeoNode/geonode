@@ -18,7 +18,8 @@ TRANSFORMATION_FUNCTIONS = []
 
 
 class DataTableAttributeManager(models.Manager):
-    """Helper class to access filtered attributes
+    """
+    Helper class to access filtered attributes
     """
     def visible(self):
         return self.get_query_set().filter(visible=True).order_by('display_order')
@@ -178,7 +179,7 @@ class JoinTarget(models.Model):
     attribute = models.ForeignKey(LayerAttribute)
     geocode_type = models.ForeignKey(GeocodeType, on_delete=models.PROTECT)
     type = models.ForeignKey(JoinTargetFormatType, null=True, blank=True)
-    year = models.IntegerField(null=True, blank=True)
+    year = models.IntegerField()
 
     created = models.DateTimeField(auto_now_add=True)
     modified =models.DateTimeField(auto_now=True)
