@@ -315,6 +315,19 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
                 id: 'show',
                 renderer: function(value, metaData, record, rowIndex, colIndex, store){
                     return '<input type="checkbox"/>';
+                },
+                listeners: {
+                    click: function(scope, grid, rowIndex, e){
+                        var record = grid.getStore().getAt(rowIndex);
+                        if(e.target.checked){
+                            self.heatmap.bbox_widget.viewer.fireEvent('showLayer', 
+                                self.getlayerTypename(record));
+                        }else{
+                            self.heatmap.bbox_widget.viewer.fireEvent('hideLayer',
+                                self.getlayerTypename(record));
+                        }
+                        
+                    }
                 }
             }
         ];

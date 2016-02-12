@@ -14,6 +14,8 @@ GeoNode.BoundingBoxWidget = Ext.extend(Ext.util.Observable, {
 
     gwcBackend: '/geoserver/gwc/service/gmaps/',
 
+    layers: {},
+
     constructor: function(config, vanillaViewer) {
         Ext.apply(this, config);
         this.doLayout();
@@ -53,6 +55,12 @@ GeoNode.BoundingBoxWidget = Ext.extend(Ext.util.Observable, {
                 },
                 hidePreviewLayer: function(){
                     self.hidePreviewLayer();
+                },
+                showLayer: function(typename){
+                    self.showLayer(typename);
+                },
+                hideLayer: function(typename){
+                    self.hideLayer(typename);
                 }
             }
         }
@@ -354,5 +362,31 @@ GeoNode.BoundingBoxWidget = Ext.extend(Ext.util.Observable, {
         );
         layer.preview = true;
         return layer;
+    },
+
+    getOrCreateLayer: function(typename){
+        if(!this.layers.hasOwnProperty(typename)){
+            var layer = new OpenLayers.Layer.OSM(
+                typename,
+                this.gwcBackend+'?layers=' + typename +'&zoom=${z}&x=${x}&y=${y}&format=image/png8',
+                {
+                    isBaseLayer: false
+                }
+            );
+            this.layers[typename] = layer;
+        }
+        return this.layers[typename];
+    },
+
+    showLayer: function(typename){
+        var map = this.viewer.mapPanel.map;
+        var layer = this.getOrCreateLayer(typename);
+        map.addLayer(layer);
+    },
+
+    hideLayer: function(typename){
+        var map = this.viewer.mapPanel.map;
+        var layer = this.getOrCreateLayer(typename);
+        map.removeLayer(layer);
     }
 });
