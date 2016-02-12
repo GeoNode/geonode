@@ -57,7 +57,9 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
                 {name: 'Originator', type: 'string'},
                 {name: 'Location', type: 'string'},
                 {name: 'LayerId', type: 'string'},
-                {name: 'ContentDate', type: 'string'}
+                {name: 'ContentDate', type: 'string'},
+                {name: 'Availability', type: 'string'},
+                {name: 'Abstract', type: 'string'}
             ]
         });
         this.searchStore.on('load', function() {
@@ -427,7 +429,9 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
         
         this.dateInput = new GeoNode.TimeSlider();
 
-        function setDates(){
+
+        //Set initial dates from the max and min dates from the server
+        function setInitialDates(){
             $.ajax({
                 method: 'GET',
                 jsonp: "json.wrf",
@@ -446,17 +450,22 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
                             self.dateInput.setMaxValue(enddate.getFullYear());
                             self.dateInput.setValue(0, startdate.getFullYear());
                             self.dateInput.setValue(1, enddate.getFullYear());
-                            var values = self.dateInput.getValues();
-                            dateStartTextField.setValue(values[0]);
-                            dateEndTextField.setValue(values[1]);
                         }
                     })
                 }
             })
         };
-        setDates();
+        setInitialDates();
+
+        // updates the dates in the dates text fields
+        function updateTextDates(){
+            var values = self.dateInput.getValues();
+            dateStartTextField.setValue(values[0]);
+            dateEndTextField.setValue(values[1]);
+        }
+        
         this.dateInput.addListener('change', function(){
-            setDates();
+            updateTextDates();
         });
         this.dateInput.addListener('changecomplete', function(){
             self.updateQuery();
