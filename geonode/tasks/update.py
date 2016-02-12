@@ -5,9 +5,9 @@ from geonode.documents.models import Document
 from geonode.cephgeo.models import CephDataObject, DataClassification
 from geonode.cephgeo.utils import get_data_class_from_filename
 from geonode.cephgeo.gsquery import nested_grid_update
-#_fh
 from geonode.layers.models import Layer
 from geonode.base.models import TopicCategory
+from django.db.models import Q
 
 def layer_metadata(layer_list,flood_year,flood_year_probability):
     for layer in layer_list:
@@ -17,14 +17,14 @@ def layer_metadata(layer_list,flood_year,flood_year_probability):
         map_resolution = ''
         first_half = ''
         second_half = ''
-        if "_10m_30m" in layer.title:
+        if "_10m_30m" in layer.name:
             map_resolution = '30'
-        elif "_10m" in layer.title:
+        elif "_10m" in layer.name:
             map_resolution = '10'
-        elif "_30m" in layer.title:
+        elif "_30m" in layer.name:
             map_resolution = '30'
 
-        layer.title = layer.title.replace("_10m","").replace("_30m","").replace("__"," ").replace("_"," ").replace("fh%syr" % flood_year,"%s Year Flood Hazard Map" % flood_year).title()
+        layer.title = layer.name.replace("_10m","").replace("_30m","").replace("__"," ").replace("_"," ").replace("fh%syr" % flood_year,"%s Year Flood Hazard Map" % flood_year).title()
 
         first_half = "This shapefile, with a resolution of %s meters, illustrates the inundation extents in the area if the actual amount of rain exceeds that of a %s year-rain return period." % (map_resolution,flood_year) + "\n\n" + "Note: There is a 1/" + flood_year + " (" + flood_year_probability + "%) probability of a flood with " +flood_year + " year return period occurring in a single year. \n\n"
         second_half = "3 levels of hazard:" + "\n" + "Low Hazard (YELLOW)" + "\n" + "Height: 0.1m-0.5m" + "\n\n" + "Medium Hazard (ORANGE)" + "\n" + "Height: 0.5m-1.5m" + "\n\n" + "High Hazard (RED)" + "\n" + "Height: beyond 1.5m"
@@ -36,20 +36,18 @@ def layer_metadata(layer_list,flood_year,flood_year_probability):
         layer.category = TopicCategory.objects.get(identifier="geoscientificInformation")
         layer.save()
 
-        print "Updated metadata for this layer: %s" % layer.title
+        print "Updated metadata for this layer: %s" % layer.name
 
 
 @task(name='geonode.tasks.update.layers_metadata_update', queue='update')
 def layers_metadata_update():
     # This will work for layer titles with the format '_fhXyr_'
-    layer_list = Layer.objects.filter(title__icontains='fh5yr')
+    layer_list = Layer.objects.filter(name__icontains='fh5yr').exclude(Q(keywords__name__icontains='flood hazard map')&Q(category__identifier='geoscientificInformation'))
     layer_metadata(layer_list,'5','20')
-    layer_list = Layer.objects.filter(title__icontains='fh25yr')
+    layer_list = Layer.objects.filter(name__icontains='fh25yr').exclude(Q(keywords__name__icontains='flood hazard map')&Q(category__identifier='geoscientificInformation'))
     layer_metadata(layer_list,'25','4')
-    layer_list = Layer.objects.filter(title__icontains='fh100yr')
+    layer_list = Layer.objects.filter(name__icontains='fh100yr').exclude(Q(keywords__name__icontains='flood hazard map')&Q(category__identifier='geoscientificInformation'))
     layer_metadata(layer_list,'100','1')
-    #problem: yung may enye
-    #problem: 2 underscores
 
 
 
