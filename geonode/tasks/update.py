@@ -11,9 +11,6 @@ from django.db.models import Q
 
 def layer_metadata(layer_list,flood_year,flood_year_probability):
     for layer in layer_list:
-        #makati_city_fh5yr_10m_30m = Makati City Flood Hazard 5 Year Map
-        #print "Old title: %s" % layer.title
-
         map_resolution = ''
         first_half = ''
         second_half = ''
@@ -42,19 +39,17 @@ def layer_metadata(layer_list,flood_year,flood_year_probability):
 @task(name='geonode.tasks.update.layers_metadata_update', queue='update')
 def layers_metadata_update():
     # This will work for layer titles with the format '_fhXyr_'
-    layer_list = Layer.objects.filter(name__icontains='fh5yr').exclude(Q(keywords__name__icontains='flood hazard map')&Q(category__identifier='geoscientificInformation'))
+    layer_list = Layer.objects.filter(name__icontains='fh5yr').exclude(Q(keywords__name__icontains='flood hazard map')&Q(category__identifier='geoscientificInformation')&Q(purpose__icontains='the'))
     if layer_list is not None:
         layer_metadata(layer_list,'5','20')
 
-    layer_list = Layer.objects.filter(name__icontains='fh25yr').exclude(Q(keywords__name__icontains='flood hazard map')&Q(category__identifier='geoscientificInformation'))
+    layer_list = Layer.objects.filter(name__icontains='fh25yr').exclude(Q(keywords__name__icontains='flood hazard map')&Q(category__identifier='geoscientificInformation')&Q(purpose__icontains='the'))
     if layer_list is not None:
         layer_metadata(layer_list,'25','4')
 
-    layer_list = Layer.objects.filter(name__icontains='fh100yr').exclude(Q(keywords__name__icontains='flood hazard map')&Q(category__identifier='geoscientificInformation'))
+    layer_list = Layer.objects.filter(name__icontains='fh100yr').exclude(Q(keywords__name__icontains='flood hazard map')&Q(category__identifier='geoscientificInformation')&Q(purpose__icontains='the'))
     if layer_list is not None:
         layer_metadata(layer_list,'100','1')
-
-
 
 @task(name='geonode.tasks.update.ceph_metadata_udate', queue='update')
 def ceph_metadata_udate(uploaded_objects):
