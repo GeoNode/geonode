@@ -106,22 +106,6 @@ def catalogue_pre_save(instance, sender, **kwargs):
     if record is None:
         return
 
-    # Fill in the url for the catalogue
-    if hasattr(record.distribution, 'online'):
-        onlineresources = [r for r in record.distribution.online if r.protocol == "WWW:LINK-1.0-http--link"]
-        if len(onlineresources) == 1:
-            res = onlineresources[0]
-            instance.distribution_url = res.url
-            instance.distribution_description = res.description
-    else:
-            durl = settings.SITEURL
-            if durl[-1] == '/':  # strip trailing slash
-                durl = durl[:-1]
-
-            durl = '%s%s' % (durl, instance.get_absolute_url())
-            instance.distribution_url = durl
-            instance.distribution_description = 'Online link to the \'%s\' description on GeoNode ' % instance.title
-
 
 if 'geonode.catalogue' in settings.INSTALLED_APPS:
     signals.pre_save.connect(catalogue_pre_save, sender=Layer)

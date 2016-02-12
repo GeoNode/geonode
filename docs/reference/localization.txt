@@ -43,7 +43,6 @@ Optional steps:
                  'abstract',
                  'purpose',
                  'constraints_other',
-                 'distribution_description',
                  'data_quality_statement',
                  'supplemental_information',
                  )
