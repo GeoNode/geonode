@@ -36,7 +36,8 @@ urlpatterns = patterns(
     url(r'^(?P<layername>[^/]*)/remove$', 'layer_remove', name="layer_remove"),
     url(r'^(?P<layername>[^/]*)/replace$', 'layer_replace', name="layer_replace"),
     url(r'^(?P<layername>[^/]*)/thumbnail$', 'layer_thumbnail', name='layer_thumbnail'),
-    #url(r'^layers$','update_LayerMetadata', name='update_metadata'),
+    url(r'^(?P<layername>[^/]*)/download/', 'layer_download', name='layer_download'),
+
     # url(r'^api/batch_permissions/?$', 'batch_permissions',
     #    name='batch_permssions'),
     # url(r'^api/batch_delete/?$', 'batch_delete', name='batch_delete'),
