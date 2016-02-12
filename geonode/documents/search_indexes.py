@@ -13,8 +13,6 @@ class DocumentIndex(indexes.SearchIndex, indexes.Indexable):
     csw_type = indexes.CharField(model_attr="csw_type")
     csw_wkt_geometry = indexes.CharField(model_attr="csw_wkt_geometry")
     detail_url = indexes.CharField(model_attr="get_absolute_url")
-    distribution_description = indexes.CharField(model_attr="distribution_description", null=True)
-    distribution_url = indexes.CharField(model_attr="distribution_url", null=True)
     owner__username = indexes.CharField(model_attr="owner", faceted=True, null=True)
     popular_count = indexes.IntegerField(
         model_attr="popular_count",

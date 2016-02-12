@@ -9,7 +9,6 @@ class LayerTranslationOptions(TranslationOptions):
         'purpose',
         'constraints_other',
         'supplemental_information',
-        'distribution_description',
         'data_quality_statement',
     )
 
