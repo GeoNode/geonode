@@ -12,7 +12,7 @@ from geonode.base.models import TopicCategory
 def layer_metadata(layer_list,flood_year,flood_year_probability):
     for layer in layer_list:
         #makati_city_fh5yr_10m_30m = Makati City Flood Hazard 5 Year Map
-        print "Old title: %s" % layer.title
+        #print "Old title: %s" % layer.title
 
         map_resolution = ''
         first_half = ''
@@ -36,7 +36,7 @@ def layer_metadata(layer_list,flood_year,flood_year_probability):
         layer.category = TopicCategory.objects.get(identifier="geoscientificInformation")
         layer.save()
 
-        print "New title: %s" % layer.title
+        print "Updated metadata for this layer: %s" % layer.title
 
 
 @task(name='geonode.tasks.update.layers_metadata_update', queue='update')
