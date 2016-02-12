@@ -43,11 +43,16 @@ def layer_metadata(layer_list,flood_year,flood_year_probability):
 def layers_metadata_update():
     # This will work for layer titles with the format '_fhXyr_'
     layer_list = Layer.objects.filter(name__icontains='fh5yr').exclude(Q(keywords__name__icontains='flood hazard map')&Q(category__identifier='geoscientificInformation'))
-    layer_metadata(layer_list,'5','20')
+    if layer_list is not None:
+        layer_metadata(layer_list,'5','20')
+
     layer_list = Layer.objects.filter(name__icontains='fh25yr').exclude(Q(keywords__name__icontains='flood hazard map')&Q(category__identifier='geoscientificInformation'))
-    layer_metadata(layer_list,'25','4')
+    if layer_list is not None:
+        layer_metadata(layer_list,'25','4')
+
     layer_list = Layer.objects.filter(name__icontains='fh100yr').exclude(Q(keywords__name__icontains='flood hazard map')&Q(category__identifier='geoscientificInformation'))
-    layer_metadata(layer_list,'100','1')
+    if layer_list is not None:
+        layer_metadata(layer_list,'100','1')
 
 
 
