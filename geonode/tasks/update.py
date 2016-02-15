@@ -68,7 +68,7 @@ def fh_style_update():
             gs_style.update_body(fhm_style.sld_body)
             #change style in geonode
             gn_style.sld_body = fhm_style.sld_body
-            style.save()
+            gn_style.save()
             print "Updated style for %s " % gn_style.name
 
 
