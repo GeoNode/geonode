@@ -8,6 +8,9 @@ from geonode.cephgeo.gsquery import nested_grid_update
 from geonode.layers.models import Layer
 from geonode.base.models import TopicCategory
 from django.db.models import Q
+from geoserver.catalog import Catalog
+from geonode.layers.models import Style
+from django.conf import settings
 
 def layer_metadata(layer_list,flood_year,flood_year_probability):
     for layer in layer_list:
@@ -50,6 +53,24 @@ def layers_metadata_update():
     layer_list = Layer.objects.filter(name__icontains='fh100yr').exclude(Q(keywords__name__icontains='flood hazard map')&Q(category__identifier='geoscientificInformation')&Q(purpose__icontains='the')&Q(abstract__icontains='the'))
     if layer_list is not None:
         layer_metadata(layer_list,'100','1')
+
+@task(name='geonode.tasks.update.fh_style_update', queue='update')
+def fh_style_update():
+    cat = Catalog(settings.OGC_SERVER['default']['LOCATION'] + 'rest',
+                    username=settings.OGC_SERVER['default']['USER'],
+                    password=settings.OGC_SERVER['default']['PASSWORD'])
+    gn_style_list = Style.objects.filter(name__icontains='fh')
+    fhm_style = cat.get_style("fhm")
+    for style in gn_style_list:
+        print "Updated style for %s " % style.name
+        if '<sld:CssParameter name="fill">#ffff00</sld:CssParameter>' not in style.sld_body:
+            #change style in geoserver
+            cat.create_style(style.name,open("geoserver/data/styles/fhm.sld").read(),overwrite=True)
+            #change style in geonode
+            style.sld_body = fhm_style.sld_body
+            print "Updated style for %s " % style.name
+            style.save()
+
 
 @task(name='geonode.tasks.update.ceph_metadata_udate', queue='update')
 def ceph_metadata_udate(uploaded_objects):
