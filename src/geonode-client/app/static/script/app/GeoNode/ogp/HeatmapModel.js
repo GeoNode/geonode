@@ -15,6 +15,8 @@ GeoNode.HeatmapModel = Ext.extend(Ext.util.Observable, {
 
   radiusAdjust: 1.1,
 
+  global_layers: 0,
+
   constructor: function(config) {
     var self = this;
     Ext.apply(this, config);
@@ -49,6 +51,22 @@ GeoNode.HeatmapModel = Ext.extend(Ext.util.Observable, {
         showDelay: 0,
         width: 80
       });
+
+    //get the number of global layers
+    $.ajax({
+      url: GeoNode.solrBackend,
+      jsonp: "json.wrf",
+      dataType: "jsonp",
+      data : {
+        q: '*',
+        fq: 'Area:[401 TO *]',
+        rows: 0,
+        wt: 'json'
+      },
+      success: function(response){
+        self.global_layers = response.response.numFound;
+      }
+    });
   },
 
   handleHeatmap: function(){
@@ -332,7 +350,7 @@ GeoNode.HeatmapModel = Ext.extend(Ext.util.Observable, {
       var epsg4326 = new OpenLayers.Projection("EPSG:4326");
       var epsg900913 = new OpenLayers.Projection("EPSG:900913");
       var point = mercator.transform(epsg900913, epsg4326);
-      var count = this.getCountGeodetic(this.heatmapObject, point.lat, point.lon);
+      var count = this.getCountGeodetic(this.heatmapObject, point.lat, point.lon) + this.global_layers;
       if (count < 0) count = 0;
       var message = count + " layers";
       this.tooltip.initTarget('ge_searchWindow');
