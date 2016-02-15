@@ -60,16 +60,17 @@ def fh_style_update():
                     username=settings.OGC_SERVER['default']['USER'],
                     password=settings.OGC_SERVER['default']['PASSWORD'])
     gn_style_list = Style.objects.filter(name__icontains='fh')
-    fhm_style = cat.get_style("fhm")
-    for gn_style in gn_style_list:
-        if '<sld:CssParameter name="fill">#ffff00</sld:CssParameter>' not in gn_style.sld_body:
-            #change style in geoserver
-            gs_style  = cat.get_style(gn_style.name)
-            gs_style.update_body(fhm_style.sld_body)
-            #change style in geonode
-            gn_style.sld_body = fhm_style.sld_body
-            gn_style.save()
-            print "Updated style for %s " % gn_style.name
+    if gn_style_list is not None:
+        fhm_style = cat.get_style("fhm")
+        for gn_style in gn_style_list:
+            if '<sld:CssParameter name="fill">#ffff00</sld:CssParameter>' not in gn_style.sld_body:
+                #change style in geoserver
+                gs_style  = cat.get_style(gn_style.name)
+                gs_style.update_body(fhm_style.sld_body)
+                #change style in geonode
+                gn_style.sld_body = fhm_style.sld_body
+                gn_style.save()
+                print "Updated style for %s " % gn_style.name
 
 
 @task(name='geonode.tasks.update.ceph_metadata_udate', queue='update')
