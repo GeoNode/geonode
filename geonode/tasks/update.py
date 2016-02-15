@@ -68,9 +68,8 @@ def fh_style_update():
             gs_style.update_body(fhm_style.sld_body)
             #change style in geonode
             gn_style.sld_body = fhm_style.sld_body
-            print "Updated style for %s " % style.name
             style.save()
-            print "Updated style for %s " % style.name
+            print "Updated style for %s " % gn_style.name
 
 
 @task(name='geonode.tasks.update.ceph_metadata_udate', queue='update')
