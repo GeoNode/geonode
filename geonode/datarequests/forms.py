@@ -308,11 +308,11 @@ class DataRequestProfileForm(forms.ModelForm):
     
     def clean_letter_file(self):
         letter_file = self.cleaned_data.get('letter_file')
+        split_filename =  os.path.splitext(str(letter_file.name))
+        pprint(split_filename)
+        pprint( split_filename[len(split_filename)-1].lower()[1:] )
         
-        if letter_file and os.path.splitext(
-                letter_file.name)[1].lower()[
-                1:]is not "pdf":
-            pprint( os.path.splitext(letter_file.name))
+        if letter_file and split_filename[len(split_filename)-1].lower()[1:] != "pdf":
             raise forms.ValidationError(_("This file type is not allowed"))
         return letter_file
 
