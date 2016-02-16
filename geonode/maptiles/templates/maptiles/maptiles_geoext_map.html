@@ -13,14 +13,14 @@
 <script src="//ajax.googleapis.com/ajax/libs/jquery/1.7/jquery.js"></script>
 <script type="text/javascript" >
     function formatBytes(bytes, decimals) {
-        if(bytes == 0) 
+        if(bytes == 0)
             return '0 Bytes';
         var k = 1024;
         var sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
         var i = Math.floor(Math.log(bytes) / Math.log(k));
         return (bytes / Math.pow(k, i)).toPrecision(decimals + 1) + ' ' + sizes[i];
     }
-    
+
     function sleep(milliseconds) {
       var start = new Date().getTime();
       for (var i = 0; i < 1e7; i++) {
@@ -29,8 +29,8 @@
         }
       }
     }
-    
-    
+
+
 </script>
 <script type="text/javascript" >
 
@@ -80,7 +80,7 @@ var olGeoJSON = new OpenLayers.Format.GeoJSON();
 var _TILE_SIZE = 1000;
 
 $(document).ready(function(){
-    
+
         // adds the total request size filtering
        $("#georef_form").submit(function(e) {
            e.preventDefault();
@@ -100,11 +100,11 @@ $(document).ready(function(){
            if(document.getElementById("orthophoto").checked){
                data_classes.push("ORTHO");
            }
-           $.post('/maptiles/validate/', 
+           $.post('/maptiles/validate/',
                 {"georefs" : georef_string, "dataclasses": data_classes}).done(function(result){
-                   if (result.response) 
+                   if (result.response)
                         self.submit();
-                        /*$.post('/maptiles/addtocart/',  {   "georef_area" : document.getElementById("georef_area").getAttribute("value"), 
+                        /*$.post('/maptiles/addtocart/',  {   "georef_area" : document.getElementById("georef_area").getAttribute("value"),
                                                             "dataclasses" : data_classes});*/
                    else {
                         /*alert("The total file size of this request is "+formatBytes(result.total_size, 2)+
@@ -118,8 +118,8 @@ $(document).ready(function(){
                     }
                 })
        });
-       
-       // enables the submission of bounding box coordinates for selecting tiles 
+
+       // enables the submission of bounding box coordinates for selecting tiles
        $("#bbox_form").submit(function(e){
            e.preventDefault();
            var self= this;
@@ -134,12 +134,12 @@ $(document).ready(function(){
                 highlight_layer
             );
         });
-        
+
         $("#selection-message-close").click(function(e){
             //$("#selection-message").hide();
             document.getElementById("selection-message").style.visibility="collapse";
         });
-       
+
 });
 
 /*
@@ -187,7 +187,7 @@ function display_points(div_id, vec_layer){
     var table_element = document.createElement("table");
     table_element.className += "georef_table";
     container.appendChild(table_element);
-    
+
     var georef_string = "";
     //console.log(tile_list);
     for (var i=0; i< tile_list.length/5; i++){
@@ -200,7 +200,7 @@ function display_points(div_id, vec_layer){
             georef_column.className += "georef_td"
             georef_column.innerHTML = tile_list[i*5+j].georef
             row_element.appendChild(georef_column);
-            
+
             if(i*5+j == 0){
                 georef_string+=tile_list[i*5+j].georef;
             }else{
@@ -215,7 +215,7 @@ function display_points(div_id, vec_layer){
 Function for displaying messages for notifying the user
 */
 function display_message(div_id, message){
-    
+
     var container=document.getElementById(div_id);
     container.innerHTML = "<div class=\"alert alert-block announcement alert-warning\" style=\"visibility: visible\">\n"+
         "<a type=\"button\" class=\"close\" data-dismiss=\"alert\" data-dismiss-url=\"#\" href=\"#\">×</a>\n"+
@@ -234,12 +234,12 @@ function createHighlightBox(feature_attribs){
     var pt2 = new OpenLayers.Geometry.Point(feature_attribs["ur_x"], feature_attribs["ur_y"]).transform(new OpenLayers.Projection("EPSG:32651"), new OpenLayers.Projection("EPSG:900913"));
     var pt3 = new OpenLayers.Geometry.Point(feature_attribs["lr_x"], feature_attribs["lr_y"]).transform(new OpenLayers.Projection("EPSG:32651"), new OpenLayers.Projection("EPSG:900913"));
     var pt4 = new OpenLayers.Geometry.Point(feature_attribs["ll_x"], feature_attribs["ll_y"]).transform(new OpenLayers.Projection("EPSG:32651"), new OpenLayers.Projection("EPSG:900913"));
-    
+
     var pts = [pt1, pt2, pt3, pt4];
     var lr = new OpenLayers.Geometry.LinearRing(pts);
     var polygon  = new OpenLayers.Geometry.Polygon([lr]);
     var polygon_feature = new  OpenLayers.Feature.Vector(polygon);
-    
+
     return polygon_feature;
 }
 
@@ -320,7 +320,7 @@ function tileHasData (feature){
 Creates a nested filter object which checks if  a tile has any data available
 */
 function hasDataFiltering( f_list){
-   
+
     var tile_list = [];
     for (var i=0;i<f_list.length;i++){
         if(tileHasData(f_list[i])){
@@ -334,7 +334,7 @@ function hasDataFiltering( f_list){
 Function which retrieves selected tiles and filters them if  they don't have data or they are outside the jurisdiction
 */
 function filterSelectedTiles(tile_filter, single_click, send_notice){
-     var wfs_proto = wfs_proto_creator("{{feature_tiled}}", "EPSG:32651","json"); 
+     var wfs_proto = wfs_proto_creator("{{feature_tiled}}", "EPSG:32651","json");
      var arg_obj = {
          filter: tile_filter,
          single_click: single_click,
@@ -368,7 +368,7 @@ function filterSelectedTiles(tile_filter, single_click, send_notice){
                      }
                   }
                   display_points("point_display", highlight_layer);
-                  
+
                   if (tiles.length < feature_out.length){
                       if (feature_out.length==1){
                             //alert("Selected tile either lacks data or is out of bounds. ");
@@ -396,7 +396,7 @@ function filterSelectedTiles(tile_filter, single_click, send_notice){
  Function which is used for selecting tiles given a rectangular selection
 */
 function selection_bounds(map_bounds, highlight_layer) {
-    
+
     var transformed_bounds = map_bounds.clone().transform(new OpenLayers.Projection("EPSG:900913"), new OpenLayers.Projection("EPSG:32651"));
     var filter= new OpenLayers.Filter.Spatial({
             type: OpenLayers.Filter.Spatial.INTERSECTS,
@@ -408,8 +408,8 @@ function selection_bounds(map_bounds, highlight_layer) {
         var jstsIntersection = jstsJurisdictionGeoms.intersection(jstsSelectionBox);
         var jstsIntersection = new jsts.geom.MultiPolygon();
         console.log(jstsIntersection);
-        
-        
+
+
         for (var i=0; i< jstsJurisdictionGeoms.length; i++){
                     //jstsJurisdictionGeoms.push(tmp.features[i].geometry);
                     console.log(i);
@@ -418,14 +418,14 @@ function selection_bounds(map_bounds, highlight_layer) {
                         jstsIntersection.union(jstsJurisdictionGeoms[i].intersection(jstsSelectionBox));
                         console.log(jstsJurisdictionGeoms[i].intersection(jstsSelectionBox));
                     }
-                    
+
                     //jstsJurisdictionGeoms.union(tmp.features[i].geometry);
         }
-        
+
         console.log(jstsWriter.write(jstsIntersection));
         var olIntersection = olGeoJSON.parseGeometry(jstsWriter.write(jstsIntersection));
         console.log(olIntersection);
-        
+
         filter = new OpenLayers.Filter.Spatial({
             type: OpenLayers.Filter.Spatial.INTERSECTS,
             property: "the_geom",
@@ -437,7 +437,7 @@ function selection_bounds(map_bounds, highlight_layer) {
             property: "the_geom",
             value: transformed_bounds.toGeometry() });
     }*/
-    
+
     //filterSelectedTiles(box_filter, false, true);
     single_click = false;
     filterSelectedTiles(filter, false, true);
@@ -494,12 +494,12 @@ var vector_style_map = new OpenLayers.StyleMap({
 Initialization of the map UI
 */
 Ext.onReady(function (){
-   
+
     var juris_vec_layer = new OpenLayers.Layer.Vector();
-    
+
     //definition of the Philippine grid layer
     var grid_layer_name = "geonode:{{  feature_tiled }}";
-    
+
     //definition of the map object
     var map_options = grid_args["map"];
     map = new OpenLayers.Map({
@@ -507,7 +507,7 @@ Ext.onReady(function (){
         maxResolution: map_options["maxResolution"],
         projection: map_options["projection"]
     });
-    
+
     //definition of the world map layer
     var mq_layer = new OpenLayers.Layer.XYZ(
         "OpenStreetMap",
@@ -526,14 +526,14 @@ Ext.onReady(function (){
             wrapDateLine: true
         }
     );
-    
+
     map.addLayer(mq_layer);
 
     var stored_layer = map_options["layers"].filter(function(l){ return l["name"] == grid_layer_name })[0];
     var source_index = stored_layer["source"];
-    
+
     map.addLayer(juris_vec_layer);
-    
+
     // definition of the tiled layer
     var tile_layer = new OpenLayers.Layer.WMS(
         grid_layer_name + "- Tiled", geoserver+"geonode/wms",
@@ -550,11 +550,11 @@ Ext.onReady(function (){
             isBaseLayer: false,
             projection: "EPSG:900913",
             maxExtent: new OpenLayers.Bounds(stored_layer["bbox"])
-        } 
+        }
     );
-    
+
     map.addLayer(tile_layer);
-    
+
     // initialization of the jurisdiction display layer
     var jurisdiction_view_layer;
     jurisdiction_name="{{jurisdiction_name}}";
@@ -575,7 +575,7 @@ Ext.onReady(function (){
                 isBaseLayer: false,
                 projection: "EPSG:32651",
                 maxExtent: new OpenLayers.Bounds(j_layer["bbox"])
-            } 
+            }
         );
         map.addLayer(jurisdiction_view_layer);
     }
@@ -592,7 +592,7 @@ Ext.onReady(function (){
         }
     );
     map.addLayer(highlight_layer);
-    
+
     var items = [];
     var config = {
         renderTo: "preview_map",
@@ -604,74 +604,74 @@ Ext.onReady(function (){
         center: [13652590.86,1366919.96],
         zoom: 7
     };
+    {% if jurisdiction_yes %}
+      //declaration of the draw control to enable drawing a rectangle using SHIFT+Click and d
+      var drawControl = new OpenLayers.Control();
+      OpenLayers.Util.extend(drawControl, {
+          draw: function () {
+              this.box = new OpenLayers.Handler.Box( drawControl,
+                  {"done": this.notice},
+                  {keyMask: OpenLayers.Handler.MOD_SHIFT});
+              this.box.activate();
+          },
+          highlight_layer: highlight_layer,
+          jurisdiction: jurisdiction_name,
+          notice: function (bounds){
+              var ll = map.getLonLatFromPixel(new OpenLayers.Pixel(bounds.left, bounds.bottom));
+              var ur = map.getLonLatFromPixel(new OpenLayers.Pixel(bounds.right, bounds.top));
+              var map_bounds = new OpenLayers.Bounds();
+              map_bounds.extend(ll);
+              map_bounds.extend(ur);
+              selection_bounds(map_bounds, this.highlight_layer);
+          }
+      });
 
-    //declaration of the draw control to enable drawing a rectangle using SHIFT+Click and d
-    var drawControl = new OpenLayers.Control();
-    OpenLayers.Util.extend(drawControl, {
-        draw: function () {
-            this.box = new OpenLayers.Handler.Box( drawControl,
-                {"done": this.notice},
-                {keyMask: OpenLayers.Handler.MOD_SHIFT});
-            this.box.activate();
-        },
-        highlight_layer: highlight_layer,
-        jurisdiction: jurisdiction_name,
-        notice: function (bounds){ 
-            var ll = map.getLonLatFromPixel(new OpenLayers.Pixel(bounds.left, bounds.bottom)); 
-            var ur = map.getLonLatFromPixel(new OpenLayers.Pixel(bounds.right, bounds.top)); 
-            var map_bounds = new OpenLayers.Bounds();
-            map_bounds.extend(ll);
-            map_bounds.extend(ur);
-            selection_bounds(map_bounds, this.highlight_layer);
-        }
-    });
+      //declaration of click behavior on the map
+      OpenLayers.Control.Click = OpenLayers.Class(OpenLayers.Control, {
+          defaultHandlerOptions: {
+              "single": true,
+              "double": false,
+              "pixelTolerance": 0,
+              "stopSingle": false,
+              "stopDouble": false
+          },
 
-    //declaration of click behavior on the map
-    OpenLayers.Control.Click = OpenLayers.Class(OpenLayers.Control, {
-        defaultHandlerOptions: {
-            "single": true,
-            "double": false,
-            "pixelTolerance": 0,
-            "stopSingle": false,
-            "stopDouble": false
-        },
-        
-        initialize: function(options) {
-            this.handlerOptions = OpenLayers.Util.extend(
-                {}, this.defaultHandlerOptions);
-            OpenLayers.Control.prototype.initialize.apply(this, arguments);
-            
-            this.handler = new OpenLayers.Handler.Click(
-            this, {
-                'click': this.trigger
-            }, this.handlerOptions);
-        },
-        
-        trigger: function(e) {
-            var lonlat = map.getLonLatFromPixel(e.xy);
-            var click_pt = new OpenLayers.Geometry.Point(lonlat.lon, lonlat.lat);
-            var transformed_pt = click_pt.transform(map.getProjectionObject(),new OpenLayers.Projection("EPSG:32651"));
-            var computed_corners = get_corners(click_pt.x, click_pt.y);
-            
-            //var tile = createTile(computed_corners);// this is a pointless piece of code
+          initialize: function(options) {
+              this.handlerOptions = OpenLayers.Util.extend(
+                  {}, this.defaultHandlerOptions);
+              OpenLayers.Control.prototype.initialize.apply(this, arguments);
 
-            var filter = new OpenLayers. Filter.Comparison({
-                    type: "==",
-                    property: "GRIDREF",
-                    matchCase: true,
-                    value: createTile(computed_corners).georef//tile.georef
-            });
-            single_click = true;
-            filterSelectedTiles(filter, true, true);
-        }
-    });
+              this.handler = new OpenLayers.Handler.Click(
+              this, {
+                  'click': this.trigger
+              }, this.handlerOptions);
+          },
 
-   click_select = new OpenLayers.Control.Click()
-    map.addControl(click_select);
-    click_select.activate();
-    map.addControl(drawControl);
-    drawControl.activate();
+          trigger: function(e) {
+              var lonlat = map.getLonLatFromPixel(e.xy);
+              var click_pt = new OpenLayers.Geometry.Point(lonlat.lon, lonlat.lat);
+              var transformed_pt = click_pt.transform(map.getProjectionObject(),new OpenLayers.Projection("EPSG:32651"));
+              var computed_corners = get_corners(click_pt.x, click_pt.y);
 
+              //var tile = createTile(computed_corners);// this is a pointless piece of code
+
+              var filter = new OpenLayers. Filter.Comparison({
+                      type: "==",
+                      property: "GRIDREF",
+                      matchCase: true,
+                      value: createTile(computed_corners).georef//tile.georef
+              });
+              single_click = true;
+              filterSelectedTiles(filter, true, true);
+          }
+      });
+
+     click_select = new OpenLayers.Control.Click()
+      map.addControl(click_select);
+      click_select.activate();
+      map.addControl(drawControl);
+      drawControl.activate();
+    {% endif %}
     app = new GeoExt.MapPanel(config);
     if(jurisdiction_args ){
         map.zoomToExtent(jurisdiction_view_layer.getExtent());
