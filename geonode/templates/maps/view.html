@@ -224,29 +224,26 @@ var init = function() {
     <div id="dataTabs" class="x-hidden">
 
 <div id="searchDiv" style="background-color:#fff;width:100%;">
-<div style="float:left;position:relative;margin:10px;width:48%;height:500px;">
+<div style="float:left;position:relative;margin:10px;width:100%;height:256px;">
   <div class="block">
     <h2>{% trans "Search" %} <span class="subtitle">{% trans "for geospatial data" %}</span></h2>
-
-    <div id="search_results"></div>
-
+    <div id="search_form"></div>
   </div>
-
-  <div class="block wrap selfclear">
-  <div id="selection">
-    <div id="data_cart"></div>
-    </div>
-    <div id="data_ops">
-    </div>
-  </div>
-
-
 </div>
 
 
 
-<div style="position:relative;float:right;width:50%;">
-  <div id="refine" class="block">
+<div style="position:relative;float:right;width:100%;">
+  
+  <div style="float:left;width:50%">
+    <div id="search_results"></div>
+    <div id="selection">
+        <div id="data_cart"></div>
+    </div>
+    <div id="data_ops">
+    </div>
+  </div>
+  <div id="refine" style="float:left;width:50%">
     <div class="bbox-controls">
       <div class="bbox-expand">
       </div>

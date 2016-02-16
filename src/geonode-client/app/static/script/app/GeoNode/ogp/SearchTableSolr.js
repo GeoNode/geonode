@@ -276,7 +276,7 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
                 forceFit: true,
                 emptyText: this.noResultsText
             },
-            renderTo: table_el,
+            renderTo: 'search_results',
             height: 300
         };
 
@@ -477,6 +477,7 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
         searchButton.on('click', this.updateQuery, this);
 
         var searchForm = new Ext.Panel({
+             width: '100%',
              frame: false,
              border: false,
              layout: 'table',

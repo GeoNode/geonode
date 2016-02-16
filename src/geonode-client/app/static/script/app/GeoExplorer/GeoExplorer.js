@@ -2170,7 +2170,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
 
         //Pass the heatmap to the searchTable so that it can trigger searches
         this.searchTable = new GeoNode.SearchTable({
-            renderTo: 'search_results',
+            renderTo: 'search_form',
             trackSelection: true,
             permalinkURL: '/data/search',
             searchURL: '/solr',
