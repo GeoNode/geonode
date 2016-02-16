@@ -604,7 +604,7 @@ Ext.onReady(function (){
         center: [13652590.86,1366919.96],
         zoom: 7
     };
-    //{% if jurisdiction_yes %}
+    {% if jurisdiction_yes %}
       //declaration of the draw control to enable drawing a rectangle using SHIFT+Click and d
       var drawControl = new OpenLayers.Control();
       OpenLayers.Util.extend(drawControl, {
@@ -671,7 +671,7 @@ Ext.onReady(function (){
       click_select.activate();
       map.addControl(drawControl);
       drawControl.activate();
-    //{% endif %}
+    {% endif %}
     app = new GeoExt.MapPanel(config);
     if(jurisdiction_args ){
         map.zoomToExtent(jurisdiction_view_layer.getExtent());
