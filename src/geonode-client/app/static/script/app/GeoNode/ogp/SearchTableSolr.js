@@ -431,39 +431,39 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
 
 
         //Set initial dates from the max and min dates from the server
-        function setInitialDates(){
-            $.ajax({
-                method: 'GET',
-                jsonp: "json.wrf",
-                dataType: "jsonp",
-                url: 'http://54.83.116.189:8983/solr/wmdata/select?q=*&rows=1&sort=ContentDate asc&fl=ContentDate&wt=json',
-                success: function(response_asc){
-                    $.ajax({
-                        method: 'GET',
-                        jsonp: "json.wrf",
-                        dataType: "jsonp",
-                        url: 'http://54.83.116.189:8983/solr/wmdata/select?q=*&rows=1&sort=ContentDate desc&fl=ContentDate&wt=json',
-                        success: function(response_desc){
-                            var startdate =  new Date(response_asc.response.docs[0].ContentDate);
-                            var enddate = new Date(response_desc.response.docs[0].ContentDate);
-                            self.dateInput.setMinValue(startdate.getFullYear());
-                            self.dateInput.setMaxValue(enddate.getFullYear());
-                            self.dateInput.setValue(0, startdate.getFullYear());
-                            self.dateInput.setValue(1, enddate.getFullYear());
-                        }
-                    })
-                }
-            })
-        };
-        setInitialDates();
+        // function setInitialDates(){
+        //     $.ajax({
+        //         method: 'GET',
+        //         jsonp: "json.wrf",
+        //         dataType: "jsonp",
+        //         url: 'http://54.83.116.189:8983/solr/wmdata/select?q=*&rows=1&sort=ContentDate asc&fl=ContentDate&wt=json',
+        //         success: function(response_asc){
+        //             $.ajax({
+        //                 method: 'GET',
+        //                 jsonp: "json.wrf",
+        //                 dataType: "jsonp",
+        //                 url: 'http://54.83.116.189:8983/solr/wmdata/select?q=*&rows=1&sort=ContentDate desc&fl=ContentDate&wt=json',
+        //                 success: function(response_desc){
+        //                     var startdate =  new Date(response_asc.response.docs[0].ContentDate);
+        //                     var enddate = new Date(response_desc.response.docs[0].ContentDate);
+        //                     self.dateInput.setMinValue(startdate.getFullYear());
+        //                     self.dateInput.setMaxValue(enddate.getFullYear());
+        //                     self.dateInput.setValue(0, startdate.getFullYear());
+        //                     self.dateInput.setValue(1, enddate.getFullYear());
+        //                 }
+        //             })
+        //         }
+        //     })
+        // };
+        // setInitialDates();
 
         // updates the dates in the dates text fields
         function updateTextDates(){
-            var values = self.dateInput.getValues();
+            var values = self.dateInput.valuesToTime();
             dateStartTextField.setValue(values[0]);
             dateEndTextField.setValue(values[1]);
         }
-        
+        updateTextDates();
         this.dateInput.addListener('change', function(){
             updateTextDates();
         });
