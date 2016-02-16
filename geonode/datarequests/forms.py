@@ -11,6 +11,8 @@ from model_utils import Choices
 
 from geonode.datarequests.models import DataRequestProfile
 from geonode.layers.forms import NewLayerUploadForm
+from geonode.documents.models import Document
+from geonode.documents.forms import DocumentCreateForm
 from geonode.people.models import OrganizationType, Profile
 
 from .models import DataRequestProfile, RequestRejectionReason
@@ -82,10 +84,10 @@ class DataRequestProfileForm(forms.ModelForm):
         choices=REQUEST_LEVEL_CHOICES
     )
 
-    letter_file = forms.FileField(
-        label=_("Data Request Letter"),
-        required=True
-    )
+    #letter_file = forms.FileField(
+    #    label=_("Data Request Letter"),
+    #    required=True
+    #)
 
     class Meta:
         model = DataRequestProfile
@@ -116,7 +118,7 @@ class DataRequestProfileForm(forms.ModelForm):
             'is_consultant',
             
             #Request Letter FIeld
-            'letter_file',
+            #'letter_file',
         )
 
     def __init__(self, *args, **kwargs):
@@ -211,10 +213,10 @@ class DataRequestProfileForm(forms.ModelForm):
                 Field('is_consultant'),
                 css_class='academe-fieldset',
             ),
-            Div(
-                Field('letter_file', css_class='form-control'),
-                css_class='form-group'
-            ),
+            #Div(
+            #    Field('letter_file', css_class='form-control'),
+            #    css_class='form-group'
+            #),
         )
 
     def clean_email(self):
@@ -306,15 +308,15 @@ class DataRequestProfileForm(forms.ModelForm):
                 'This field is required.')
         return funding_source
 
-    def clean_letter_file(self):
-        letter_file = self.cleaned_data.get('letter_file')
-        split_filename =  os.path.splitext(str(letter_file.name))
-        pprint(split_filename)
-        pprint( split_filename[len(split_filename)-1].lower()[1:] )
+    #def clean_letter_file(self):
+        #letter_file = self.cleaned_data.get('letter_file')
+        #split_filename =  os.path.splitext(str(letter_file.name))
+        #pprint(split_filename)
+        #pprint( split_filename[len(split_filename)-1].lower()[1:] )
         
-        if letter_file and split_filename[len(split_filename)-1].lower()[1:] != "pdf":
-            raise forms.ValidationError(_("This file type is not allowed"))
-        return letter_file
+        #if letter_file and split_filename[len(split_filename)-1].lower()[1:] != "pdf":
+            #raise forms.ValidationError(_("This file type is not allowed"))
+        #return letter_file
     
     def save(self, commit=True, *args, **kwargs):
         data_request = super(
@@ -356,6 +358,22 @@ class DataRequestProfileForm(forms.ModelForm):
         if commit:
             data_request.save()
         return data_request
+
+class DataRequestProfileLetterForm(DocumentCreateForm):
+
+    class Meta:
+        model = Document
+        fields = ('doc_file', )
+        exclude = ('resource')
+        
+    def clean_doc_file(self):
+        doc_file = self.cleaned_data.get('doc_file')
+        split_filename =  os.path.splitext(str(doc_file.name))
+        
+        if doc_file and split_filename[len(split_filename)-1].lower()[1:] != "pdf":
+            raise forms.ValidationError(_("This file type is not allowed"))
+        return doc_file
+
 
 class DataRequestProfileShapefileForm(NewLayerUploadForm):
     captcha = ReCaptchaField(attrs={'theme': 'clean'})

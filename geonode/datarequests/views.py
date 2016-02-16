@@ -45,7 +45,7 @@ from braces.views import (
 )
 
 from .forms import (
-    DataRequestProfileForm, DataRequestProfileShapefileForm, 
+    DataRequestProfileForm, DataRequestProfileLetterForm, DataRequestProfileShapefileForm, 
     DataRequestProfileRejectForm, DataRequestProfileCaptchaForm)
 from .models import DataRequestProfile
 
@@ -62,22 +62,30 @@ def registration_part_one(request):
 
     form = DataRequestProfileForm(
         request.POST or None,
-        request.FILES,
         initial=profile_form_data
+    )
+    
+    request_letter_form = DataRequestProfileLetterForm(
+        None,
+        request.FILES or None
     )
     
     
     if request.method == 'POST':
-        if form.is_valid():
+        if form.is_valid() and request_letter_form.is_valid():
             request.session['data_request_info'] = form.cleaned_data
-            request.session['letter_file'] = request.FILES['letter_file']
+            request.session['request_letter'] = request_letter_form.cleaned_data
             return HttpResponseRedirect(
                 reverse('datarequests:registration_part_two')
             )
+        else:
+            pprint(form.is_valid())
+            pprint(request_letter_form.is_valid())
     return render(
         request,
         'datarequests/registration/profile.html',
-        {'form': form}
+        {'form': form,
+          'request_letter_form': request_letter_form}
     )
 
 
@@ -87,7 +95,7 @@ def registration_part_two(request):
 
     request.session['data_request_shapefile'] = True
     profile_form_data = request.session.get('data_request_info', None)
-    request_letter = request.session.get('letter_file',None)
+    request_letter_form_data = request.session.get('request_letter',None)
     form = DataRequestProfileCaptchaForm()
 
     if not profile_form_data or not request_letter:
@@ -133,23 +141,17 @@ def registration_part_two(request):
                 )
                 saved_layer.is_published = False
                 saved_layer.save()
-                pprint("printing session data")
-                pprint (profile_form_data)
                 data_request_form = DataRequestProfileForm(
-                    profile_form_data,
-                    {'letter_file':request_letter})
+                    profile_form_data)
                 
-                data_request_form['letter_file'] = request_letter
-                
-                pprint("printing fields of the form")
-                for field in data_request_form.fields:
-                    pprint(field+": "+str(data_request_form[field].data))
+                request_letter_form = DataRequestProfileLetterForm(
+                    request_letter_form_data)
                 
                 if data_request_form.is_valid():
                     request_profile = data_request_form.save()
                     request_profile.jurisdiction_shapefile = saved_layer
                     requester_name = request_profile.first_name+" "+request_profile.middle_name+" "+request_profile.last_name
-                    request_letter_document = save_request_letter(file_object=request_letter, uploader_name = requester_name)
+                    request_letter_document = save_request_letter(request_letter_form.save(commit=False), requester_name)
                     pprint(request_letter_document)
                     request_profile.request_letter = request_letter_document
                     request_profile.save()
@@ -231,22 +233,19 @@ def registration_part_two(request):
             'form': form
         })
 
-def save_request_letter(title="", file_object=None, uploader_name=""):
+def save_request_letter(document_object, uploader_name, related_layer=None):
     if file_object is None:
         raise Http404
-    if title is "":
-        title = uploader_name + " Request Letter " + str(datetime.datetime.date())
-    owner=Profile.objects.get_or_create(username="dataRegistrationUploader")
-    abstract = "request letter from"+uploader_name+" "+str(datetime.datetime.date())
-    req_letter = Document(
-        user = owner,
-        abstract = abstract,
-        title = title
-    )
-    req_letter.save()
-    return req_letter
     
+    document_object.title = uploader_name + " Request Letter " + str(datetime.datetime.date())
+    document_object.owner = Profile.objects.get_or_create(username="dataRegistrationUploader")
+    document_object.abstract = "request letter from"+uploader_name+" "+str(datetime.datetime.date())
     
+    if related_layer:
+        document_object.resource = related_layer
+        
+    document_object.save()
+    return document_object
         
 
 class DataRequestPofileList(LoginRequiredMixin, SuperuserRequiredMixin, TemplateView):
