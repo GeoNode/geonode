@@ -305,7 +305,7 @@ class DataRequestProfileForm(forms.ModelForm):
             raise forms.ValidationError(
                 'This field is required.')
         return funding_source
-    
+
     def clean_letter_file(self):
         letter_file = self.cleaned_data.get('letter_file')
         split_filename =  os.path.splitext(str(letter_file.name))
@@ -315,7 +315,7 @@ class DataRequestProfileForm(forms.ModelForm):
         if letter_file and split_filename[len(split_filename)-1].lower()[1:] != "pdf":
             raise forms.ValidationError(_("This file type is not allowed"))
         return letter_file
-
+    
     def save(self, commit=True, *args, **kwargs):
         data_request = super(
             DataRequestProfileForm, self).save(commit=False, *args, **kwargs)

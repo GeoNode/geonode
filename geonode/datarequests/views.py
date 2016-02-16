@@ -137,7 +137,9 @@ def registration_part_two(request):
                 pprint (profile_form_data)
                 data_request_form = DataRequestProfileForm(
                     profile_form_data,
-                    request_letter or None)
+                    {'letter_file':request_letter})
+                
+                data_request_form['letter_file'] = request_letter
                 
                 pprint("printing fields of the form")
                 for field in data_request_form.fields:
