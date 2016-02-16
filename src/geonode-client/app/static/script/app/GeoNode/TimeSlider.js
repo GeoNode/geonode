@@ -72,7 +72,7 @@ GeoNode.TimeSlider = Ext.extend(Ext.slider.MultiSlider, {
     values: [0, 60],
 
     getDateValues: function(){
-      var dates = this.timesToDates();
+      var dates = this.valuesToDates();
       var start = dates[0];
       var end = dates[1];
       if(start !== '*'){
@@ -89,8 +89,32 @@ GeoNode.TimeSlider = Ext.extend(Ext.slider.MultiSlider, {
       return [time_periods[values[0]][0], time_periods[values[1]][0]];
     },
 
-    timesToDates: function(){
+    valuesToDates: function(){
       var values = this.getValues();
       return [time_periods[values[0]][1], time_periods[values[1]][1]];
+    },
+
+    cleanupInput: function(input){
+      if(input.indexOf('BCE') > -1){
+        var zeros = '';
+        if(input.indexOf('M') > -1){
+          zeros = '000000';
+        }
+        if(input.indexOf('K') > -1){
+          zeros = '000';
+        }
+        input = '-' + input.replace(/\D+/, '') + zeros;
+      }
+      return input;
+    },
+
+    valuesFromInput: function(index, input){
+      var value = parseInt(this.cleanupInput(input));
+      for(var i=0;i<time_periods.length;i++){
+        if(value>=time_periods[i][1] && value<=time_periods[i+1][1]){
+          this.setValue(index, i+1);
+          break
+        }
+      }
     }
 });

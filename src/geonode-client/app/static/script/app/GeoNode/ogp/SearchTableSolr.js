@@ -392,7 +392,7 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
             name: 'startDate',
             listeners: {
                 change: function(scope, newValue, oldValue){
-                    self.dateInput.setValue(0, parseInt(newValue));
+                    self.dateInput.valuesFromInput(0, newValue);
                     self.updateQuery();
                 },
                 keypress: function(scope, e){
@@ -408,8 +408,8 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
         var dateEndTextField = new Ext.form.TextField({
             name: 'endDate',
             listeners: {
-                change: function(scope, newValue, oldValue){            
-                    self.dateInput.setValue(1, parseInt(newValue));
+                change: function(scope, newValue, oldValue){     
+                    self.dateInput.valuesFromInput(1, newValue);       
                     self.updateQuery();
                 },
                 keypress: function(scope, e){
