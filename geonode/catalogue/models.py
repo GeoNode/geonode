@@ -108,11 +108,14 @@ def catalogue_pre_save(instance, sender, **kwargs):
 
     # Fill in the url for the catalogue
     if hasattr(record.distribution, 'online'):
-        onlineresources = [r for r in record.distribution.online if r.protocol == "WWW:LINK-1.0-http--link"]
-        if len(onlineresources) == 1:
-            res = onlineresources[0]
-            instance.distribution_url = res.url
-            instance.distribution_description = res.description
+        pass
+        # onlineresources = [r for r in record.distribution.online if r.protocol == "WWW:LINK-1.0-http--link"]
+        # from pprint import pprint
+        # pprint(dir(onlineresources[0]))
+        # if len(onlineresources) == 1:
+        #     res = onlineresources[0]
+        #     instance.distribution_url = res.url
+        #     instance.distribution_description = res.description
     else:
             durl = settings.SITEURL
             if durl[-1] == '/':  # strip trailing slash
