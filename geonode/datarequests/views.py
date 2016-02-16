@@ -56,25 +56,24 @@ def registration_part_one(request):
 
     shapefile_session = request.session.get('data_request_shapefile', None)
     profile_form_data = request.session.get('data_request_info', None)
+    
     if not shapefile_session and profile_form_data:
         del request.session['data_request_info']
         request.session.modified = True
 
     form = DataRequestProfileForm(
         request.POST or None,
-        initial=profile_form_data
+        initial = profile_form_data
     )
     
     request_letter_form = DataRequestProfileLetterForm(
-        None,
-        request.FILES or None
+        request.POST or None,
+        request.FILES
     )
-    
     
     if request.method == 'POST':
         if form.is_valid() and request_letter_form.is_valid():
             request.session['data_request_info'] = form.cleaned_data
-            request.session['request_letter'] = request_letter_form.cleaned_data
             return HttpResponseRedirect(
                 reverse('datarequests:registration_part_two')
             )
@@ -98,7 +97,7 @@ def registration_part_two(request):
     request_letter_form_data = request.session.get('request_letter',None)
     form = DataRequestProfileCaptchaForm()
 
-    if not profile_form_data or not request_letter:
+    if not profile_form_data or not request_letter_form_data:
         return redirect(reverse('datarequests:registration_part_one'))
 
     if request.method == 'POST':
@@ -144,8 +143,10 @@ def registration_part_two(request):
                 data_request_form = DataRequestProfileForm(
                     profile_form_data)
                 
-                request_letter_form = DataRequestProfileLetterForm(
-                    request_letter_form_data)
+                #request_letter_form = DataRequestProfileLetterForm(
+                #    request_letter_form_data)
+                
+                pprint(request_letter_form_data)
                 
                 if data_request_form.is_valid():
                     request_profile = data_request_form.save()
@@ -232,20 +233,6 @@ def registration_part_two(request):
             'is_layer': True,
             'form': form
         })
-
-def save_request_letter(document_object, uploader_name, related_layer=None):
-    if file_object is None:
-        raise Http404
-    
-    document_object.title = uploader_name + " Request Letter " + str(datetime.datetime.date())
-    document_object.owner = Profile.objects.get_or_create(username="dataRegistrationUploader")
-    document_object.abstract = "request letter from"+uploader_name+" "+str(datetime.datetime.date())
-    
-    if related_layer:
-        document_object.resource = related_layer
-        
-    document_object.save()
-    return document_object
         
 
 class DataRequestPofileList(LoginRequiredMixin, SuperuserRequiredMixin, TemplateView):

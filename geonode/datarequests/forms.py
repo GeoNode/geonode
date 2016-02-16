@@ -364,7 +364,18 @@ class DataRequestProfileLetterForm(DocumentCreateForm):
     class Meta:
         model = Document
         fields = ('doc_file', )
-        exclude = ('resource')
+    
+    def __init__(self, *args, **kwargs):
+        super(DocumentCreateForm, self).__init__(*args, **kwargs)
+        self.fields.pop('resource')
+        self.fields.pop('permissions')
+    
+    def clean(self):
+        doc_file = self.cleaned_data.get('doc_file')
+        if not doc_file:
+            raise forms.ValidationError(_("Document  not found"))
+            
+        return self.cleaned_data
         
     def clean_doc_file(self):
         doc_file = self.cleaned_data.get('doc_file')
@@ -373,6 +384,14 @@ class DataRequestProfileLetterForm(DocumentCreateForm):
         if doc_file and split_filename[len(split_filename)-1].lower()[1:] != "pdf":
             raise forms.ValidationError(_("This file type is not allowed"))
         return doc_file
+    
+    def save(self, commit=True, *args, **kwargs):
+        document_resource = super(
+            DataRequestProfileLetterForm, self).save(commit=False, *args, **kwargs)
+        
+        pprint (self.request)
+        return document_resource
+        
 
 
 class DataRequestProfileShapefileForm(NewLayerUploadForm):
