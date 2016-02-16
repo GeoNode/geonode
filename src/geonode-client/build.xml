@@ -34,6 +34,13 @@
 
     </target>
 
+    <target name="copycss">
+        <mkdir dir="${build}/${ant.project.name}/WEB-INF/app/static/script"/>
+        <copy todir="../../geonode/static/geonode/theme/app" overwrite="true">
+            <fileset dir="app/static/theme/app"/>
+        </copy>
+    </target>
+
     <target name="dist" depends="init, patch, buildjs, redist"/>
 
     <target name="redist">
