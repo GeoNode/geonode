@@ -60,6 +60,7 @@ from geonode.geoserver.helpers import cascading_delete, gs_catalog
 from urlparse import urljoin, urlsplit
 from actstream.signals import action
 
+
 CONTEXT_LOG_FILE = None
 
 if 'geonode.geoserver' in settings.INSTALLED_APPS:
@@ -117,9 +118,6 @@ def _resolve_layer(request, typename, permission='base.view_resourcebase',
                               permission=permission,
                               permission_msg=msg,
                               **kwargs)
-
-
-# Basic Layer Views #
 
 
 @login_required
