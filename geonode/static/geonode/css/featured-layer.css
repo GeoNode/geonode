@@ -34,7 +34,8 @@ h1.no-margin-top{
   font-size: 45px;
 }
 h4:target,
-h5:target{/*anchor offset*/
+h5:target,
+li:target{/*anchor offset*/
   padding-top: 75px;
 }
 img{
