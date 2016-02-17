@@ -99,9 +99,9 @@ Step by step GeoNode Windows installation
 
    .. note:: The installation proceeds silently and using the default values:
    
-      - PostgreSQL: TCP/IP Port 5432
+      - PostgreSQL: TCP/IP Port 5454
       
-      - User/password: postgres/postgres
+      - User/password: postgres/g30Nod3-P0stgr3s
    
    .. figure:: img/win_install_17.jpg
    
