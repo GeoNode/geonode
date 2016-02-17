@@ -88,6 +88,17 @@ class DataRequestProfileForm(forms.ModelForm):
         label=_("Data Request Letter"),
         required=True
     )
+    
+    has_shapefile = forms.BooleanField(
+        label=_("Do you have a shapefile for your area of interest?"),
+        required=False
+    )
+    
+    layer_files = forms.FileField(
+        label =_("Optional Area of Interest ShapeFile"),
+        required = False
+    )
+    
 
     class Meta:
         model = DataRequestProfile
@@ -119,6 +130,10 @@ class DataRequestProfileForm(forms.ModelForm):
             
             #Request Letter FIeld
             'letter_file',
+            
+            #ShapeFile Layer Field
+            'has_shapefile',
+            'layer_files',
         )
 
     def __init__(self, *args, **kwargs):
@@ -217,6 +232,7 @@ class DataRequestProfileForm(forms.ModelForm):
                 Field('letter_file', css_class='form-control'),
                 css_class='form-group'
             ),
+            Fieldset(''
         )
 
     def clean_email(self):
