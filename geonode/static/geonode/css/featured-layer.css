@@ -40,4 +40,5 @@ h5:target{/*anchor offset*/
 img{
   padding: 10px 0px;
   width: 680px;
+  border: 1px solid black;
 }
