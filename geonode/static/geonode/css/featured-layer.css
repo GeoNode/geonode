@@ -38,8 +38,7 @@ h5:target{/*anchor offset*/
   padding-top: 75px;
 }
 img{
-  margin: 20px 0px;
   max-width: 680px;
   display: block;
-  margin: 0 auto;
+  margin: 20px auto;
 }
