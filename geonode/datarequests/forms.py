@@ -84,10 +84,10 @@ class DataRequestProfileForm(forms.ModelForm):
         choices=REQUEST_LEVEL_CHOICES
     )
 
-    #letter_file = forms.FileField(
-    #    label=_("Data Request Letter"),
-    #    required=True
-    #)
+    letter_file = forms.FileField(
+        label=_("Data Request Letter"),
+        required=True
+    )
 
     class Meta:
         model = DataRequestProfile
@@ -118,7 +118,7 @@ class DataRequestProfileForm(forms.ModelForm):
             'is_consultant',
             
             #Request Letter FIeld
-            #'letter_file',
+            'letter_file',
         )
 
     def __init__(self, *args, **kwargs):
@@ -213,10 +213,10 @@ class DataRequestProfileForm(forms.ModelForm):
                 Field('is_consultant'),
                 css_class='academe-fieldset',
             ),
-            #Div(
-            #    Field('letter_file', css_class='form-control'),
-            #    css_class='form-group'
-            #),
+            Div(
+                Field('letter_file', css_class='form-control'),
+                css_class='form-group'
+            ),
         )
 
     def clean_email(self):
@@ -308,15 +308,13 @@ class DataRequestProfileForm(forms.ModelForm):
                 'This field is required.')
         return funding_source
 
-    #def clean_letter_file(self):
-        #letter_file = self.cleaned_data.get('letter_file')
-        #split_filename =  os.path.splitext(str(letter_file.name))
-        #pprint(split_filename)
-        #pprint( split_filename[len(split_filename)-1].lower()[1:] )
+    def clean_letter_file(self):
+        letter_file = self.cleaned_data.get('letter_file')
+        split_filename =  os.path.splitext(str(letter_file.name))
         
-        #if letter_file and split_filename[len(split_filename)-1].lower()[1:] != "pdf":
-            #raise forms.ValidationError(_("This file type is not allowed"))
-        #return letter_file
+        if letter_file and split_filename[len(split_filename)-1].lower()[1:] != "pdf":
+            raise forms.ValidationError(_("This file type is not allowed"))
+        return letter_file
     
     def save(self, commit=True, *args, **kwargs):
         data_request = super(
@@ -391,8 +389,6 @@ class DataRequestProfileLetterForm(DocumentCreateForm):
         
         pprint (self.request)
         return document_resource
-        
-
 
 class DataRequestProfileShapefileForm(NewLayerUploadForm):
     captcha = ReCaptchaField(attrs={'theme': 'clean'})
