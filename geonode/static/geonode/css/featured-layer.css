@@ -33,7 +33,7 @@ h1.no-margin-top{
   border-top: none;
   font-size: 45px;
 }
-a.anchor {
+h4 h5 {/*anchor offset*/
     display: block;
     position: relative;
     top: -250px;
