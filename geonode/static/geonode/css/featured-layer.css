@@ -40,4 +40,6 @@ h5:target{/*anchor offset*/
 img{
   margin: 20px 0px;
   max-width: 680px;
+  display: block;
+  margin: 0 auto;
 }
