@@ -37,3 +37,7 @@ h4:target,
 h5:target{/*anchor offset*/
   padding-top: 75px;
 }
+img{
+  margin: 20px 0px;
+  max-width: 680px;
+}
