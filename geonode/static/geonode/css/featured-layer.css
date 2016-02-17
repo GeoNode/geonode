@@ -39,6 +39,6 @@ h5:target{/*anchor offset*/
 }
 img{
   margin: 10px 0px;
-  width: 680px;
+  max-width: 680px;
   border: 1px solid black;
 }
