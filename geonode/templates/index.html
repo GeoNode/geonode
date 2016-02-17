@@ -42,7 +42,7 @@
         <p>
           <a data-toggle="modal" data-target="#modal-fhm">Download Flood Hazard Maps.</a>
         </p><p>
-          <a href="https://www.youtube.com/watch?v=KSsbWPeOQfs">Download LiDAR data tiles.</a>
+          <a data-toggle="modal" data-target="#modal-data">Download LiDAR data tiles.</a>
         </p>
         {% endblocktrans %}
       </div>
@@ -80,6 +80,22 @@
       </div>
       <div class="modal-body">
         <iframe width="560" height="315" src="https://www.youtube.com/embed/BGL-2hoQP_0" frameborder="0" allowfullscreen></iframe>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">{% trans "Close" %}</button>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="modal fade" id="modal-data" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h4 class="modal-title" id="myModalLabel">{% trans "Download Flood Hazard Maps" %}</h4>
+      </div>
+      <div class="modal-body">
+        <iframe width="560" height="315" src="https://www.youtube.com/embed/KSsbWPeOQfs" frameborder="0" allowfullscreen></iframe>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-default" data-dismiss="modal">{% trans "Close" %}</button>
