@@ -71,11 +71,14 @@ def registration_part_one(request):
     if request.method == 'POST':
         if form.is_valid():
             request.session['data_request_info'] = form.cleaned_data
+            pprint(form.cleaned_data)
+            request.session['request_letter_info']
             request_profile = form.save()
             if request_profile:
+                pprint("request profile created")
                 request_letter = DocumentCreateForm(
                     {
-                        'doc_file': form['doc_file'],
+                        'doc_file': form.cleaned_data['doc_file'],
                         'permissions':  u'',
                         'resource': u''
                     }
@@ -85,9 +88,9 @@ def registration_part_one(request):
                 request_profile.request_letter = request_letter
                 request_profile.save()
                 request_profile.send_verification_email()
-            return HttpResponseRedirect(
-                reverse('datarequests:registration_part_two')
-            )
+                return HttpResponseRedirect(
+                    reverse('datarequests:registration_part_two')
+                )
         else:
             pprint(form.is_valid())
             pprint(request_letter_form.is_valid())
