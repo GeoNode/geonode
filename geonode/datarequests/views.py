@@ -26,6 +26,7 @@ from django.views.generic import TemplateView
 from geonode.base.enumerations import CHARSETS
 from geonode.documents.models import get_related_documents
 from geonode.documents.models import Document
+from geonode.documents.forms import DocumentCreateForm
 from geonode.layers.models import UploadSession, Style
 from geonode.layers.utils import file_upload
 from geonode.people.models import Profile
@@ -62,18 +63,28 @@ def registration_part_one(request):
         request.session.modified = True
 
     form = DataRequestProfileForm(
-        request.POST or None,
+        request.POST,
+        request.FILES,
         initial = profile_form_data
     )
     
-    request_letter_form = DataRequestProfileLetterForm(
-        request.POST or None,
-        request.FILES
-    )
-    
     if request.method == 'POST':
-        if form.is_valid() and request_letter_form.is_valid():
+        if form.is_valid():
             request.session['data_request_info'] = form.cleaned_data
+            request_profile = form.save()
+            if request_profile:
+                request_letter = DocumentCreateForm(
+                    {
+                        'doc_file': form['doc_file'],
+                        'permissions':  u'',
+                        'resource': u''
+                    }
+                ).save()
+                request_letter.owner = Profile.objects.get_or_create(username='dataRegistrationUploader')
+                request_letter.save()
+                request_profile.request_letter = request_letter
+                request_profile.save()
+                request_profile.send_verification_email()
             return HttpResponseRedirect(
                 reverse('datarequests:registration_part_two')
             )
@@ -83,8 +94,7 @@ def registration_part_one(request):
     return render(
         request,
         'datarequests/registration/profile.html',
-        {'form': form,
-          'request_letter_form': request_letter_form}
+        {'form': form}
     )
 
 

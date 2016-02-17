@@ -2,7 +2,7 @@ import json
 import os
 import taggit
 import re
-
+from pprint import pprint
 from django import forms
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.contenttypes.models import ContentType
@@ -244,6 +244,7 @@ class DocumentCreateForm(TranslationModelForm):
         Ensures the doc_file or the doc_url field is populated.
         """
         cleaned_data = super(DocumentCreateForm, self).clean()
+        pprint(cleaned_data)
         doc_file = self.cleaned_data.get('doc_file')
         doc_url = self.cleaned_data.get('doc_url')
 
