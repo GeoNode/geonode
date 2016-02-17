@@ -14,7 +14,7 @@
   <div class="container">
     <div class="row body-top">
       <!-- <div class="jumbotron col-md-6"> -->
-        <div class="container col-md-6 center-text">
+        <div class="container col-md-6 center-text" style="width:70%;border-right:2px solid #007196;">
           <h1 class="no-margin-top">{% trans "Welcome to LiPAD!" %}</h1>
           <p>
               {% blocktrans %}
@@ -25,10 +25,31 @@
                 The <a href="https://www.dream.upd.edu.ph/about-us/phil-lidar-1/" title="About the Phil-LiDAR 1 Program">Phil-LiDAR 1 Program</a> aims to produce 3D flood and hazard maps for the 2/3 of Philippine river systems, following the <a href="https://www.dream.upd.edu.ph" title="About DREAM Program">DREAM Program</a> which covered 18 major river basins,  and tapping state universities and colleges (SUCs) and private higher education institutions (HEIs) nationwide in the processing, validation, and modeling of the acquired LiDAR data. Aside from addressing disaster risk reduction and climate change adaptation, the resource information to be generated from this project will also be useful in providing the information requirements of various sectors in the country.
               {% endblocktrans %}
             </p>
-        <!-- </div> -->
-      </div>
-      <div class="col-md-6 border=0">
-        <iframe width="560" height="315" src="https://www.youtube.com/embed/KSsbWPeOQfs" frameborder="0" allowfullscreen></iframe>
+        </div>
+      <!-- </div>-->
+      <div class="col-md-6 border=0"  style="width:30%;">
+        <!--<iframe width="560" height="315" src="https://www.youtube.com/embed/KSsbWPeOQfs" frameborder="0" allowfullscreen></iframe>-->
+        <!-- <h2 style="margin-top:15px;">{% trans "How to get data" %}</h2> -->
+        {% blocktrans %}
+        <p style="margin-top:15px;">
+          How to get data
+          <ol>
+            <li><a href="/datarequests/register/">Register</a></li>
+            <li><a href="/help/#home-select">Select</a></li>
+            <li><a href="/help/#home-download">Download</a></li>
+          </ol>
+        </p><p>
+          How to download Flood Hazard Maps
+          <ul>
+            <li><a href="https://youtu.be/BGL-2hoQP_0">demo video</a></li>
+          </ul>
+        </p><p>
+          How to download LiDAR data tiles
+          <ul>
+            <li><a href="https://www.youtube.com/watch?v=KSsbWPeOQfs">demo video</a></li>
+          </ul>
+        </p>
+        {% endblocktrans %}
       </div>
 
     </div>
