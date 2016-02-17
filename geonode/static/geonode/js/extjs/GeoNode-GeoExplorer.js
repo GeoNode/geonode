@@ -184,7 +184,7 @@ GeoNode.plugins.SaveHyperlink = Ext.extend(gxp.plugins.Tool, {
      */
     init: function(target) {
         GeoNode.plugins.SaveHyperlink.superclass.init.apply(this, arguments);
-        this.titleTemplate = new Ext.Template("<a class='maplist' href='" + 
+        this.titleTemplate = new Ext.Template("<a class='maplist' href='" +
             this.target.rest + "'>Maps</a> / <strong>{title}");
         this.target.on("save", function(id) {
             this.actions[0].update(this.getMapTitle());
@@ -389,7 +389,7 @@ Ext.preg(GeoNode.plugins.LayerInfo.prototype.ptype, GeoNode.plugins.LayerInfo);
 
 /** api: constructor
  *  .. class:: Composer(config)
- *   
+ *
  *    The GeoNode Composer application class.
  *    Changes compared to out-of-the-box GeoExplorer:
  *    - before saving a map, show a metadata form
