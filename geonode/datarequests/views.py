@@ -83,6 +83,7 @@ def registration_part_one(request):
                         'resource': u''
                     }
                 ).save()
+                
                 request_letter.owner = Profile.objects.get_or_create(username='dataRegistrationUploader')
                 request_letter.save()
                 request_profile.request_letter = request_letter
