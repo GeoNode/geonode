@@ -60,6 +60,11 @@ class DataRequestProfileForm(forms.ModelForm):
         ('student', _('Student')),
     )
     
+    HAS_SHAPEFILE_CHOICES = Choices(
+        (True,_('Yes')),
+        (False,_('No')),
+    )
+    
     purpose = forms.ChoiceField(
         label=_('Purpose/Intended Use of Data'),
         choices=INTENDED_USE_CHOICES
@@ -89,7 +94,7 @@ class DataRequestProfileForm(forms.ModelForm):
         required=True
     )
     
-    has_shapefile = forms.BooleanField(
+    has_shapefile = forms.ChoiceField(
         label=_("Do you have a shapefile for your area of interest?"),
         required=False
     )
@@ -206,7 +211,6 @@ class DataRequestProfileForm(forms.ModelForm):
                     Field('intended_use_of_dataset', css_class='form-control'),
                     css_class='form-group'
                 ),
-                enctype="multipart/form-data"
             ),
             
             Fieldset('Non-commercial',
@@ -232,7 +236,15 @@ class DataRequestProfileForm(forms.ModelForm):
                 Field('letter_file', css_class='form-control'),
                 css_class='form-group'
             ),
-            Fieldset(''
+            Div(
+                    Field('has_shapefile', css_class='form-control'),
+                    Fieldset('Yes',
+                        Div(
+                            Field('layer_files', multiple="multiple"),
+                        ),
+                        css_class='form-group'
+                    ),
+            ),
         )
 
     def clean_email(self):
