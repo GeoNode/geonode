@@ -28,6 +28,7 @@ from geonode.security.models import PermissionLevelMixin
 from taggit.managers import TaggableManager
 
 from geonode.people.enumerations import ROLE_VALUES
+import geonode
 
 logger = logging.getLogger(__name__)
 
@@ -667,7 +668,10 @@ class Link(models.Model):
 
     def __str__(self):
         return '%s link' % self.link_type
-
+    
+    def get_download_url(self):
+        return self.url.replace("geoserver","layers/geonode%3A{0}/download".format(self.resource.name))
+        
 
 def resourcebase_post_save(instance, *args, **kwargs):
     """
