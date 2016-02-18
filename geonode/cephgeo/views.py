@@ -478,17 +478,8 @@ def management(request):
 @login_required
 @user_passes_test(lambda u: u.is_superuser)
 def update_layer_metadata(request, template='update_LayerMetadata.html'):
+    #updates metadata and style of FH maps
     layers_metadata_update.delay()
-    ctx = {
-        'charsets': CHARSETS,
-        'is_layer': True,
-    }
-
-    return render_to_response(template,RequestContext(request, ctx))
-
-@login_required
-@user_passes_test(lambda u: u.is_superuser)
-def update_fh_style(request, template='update_fh_style.html'):
     fh_style_update.delay()
     ctx = {
         'charsets': CHARSETS,
@@ -496,3 +487,14 @@ def update_fh_style(request, template='update_fh_style.html'):
     }
 
     return render_to_response(template,RequestContext(request, ctx))
+
+# @login_required
+# @user_passes_test(lambda u: u.is_superuser)
+# def update_fh_style(request, template='update_fh_style.html'):
+#     fh_style_update.delay()
+#     ctx = {
+#         'charsets': CHARSETS,
+#         'is_layer': True,
+#     }
+#
+#     return render_to_response(template,RequestContext(request, ctx))
