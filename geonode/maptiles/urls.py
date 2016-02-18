@@ -15,4 +15,5 @@ urlpatterns = patterns('',
                         url(r'^validate/?$', views.georefs_validation),
                         url(r'^provinces/?$', views.province_lookup),
                         url(r'^provinces/(?P<province>[^/]*)$', views.province_lookup),
+						url(r'^test2/?$', views.tiled_view, { "overlay": settings.TILED_SHAPEFILE ,"test_mode":True} )
 						)
