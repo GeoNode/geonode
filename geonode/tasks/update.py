@@ -1,3 +1,6 @@
+from geonode import settings
+from geonode import GeoNodeException
+from geonode.geoserver.helpers import ogc_server_settings
 from pprint import pprint
 from celery.task import task
 from geonode.geoserver.helpers import gs_slurp
@@ -10,7 +13,8 @@ from geonode.base.models import TopicCategory
 from django.db.models import Q
 from geoserver.catalog import Catalog
 from geonode.layers.models import Style
-from django.conf import settings
+from geonode.geoserver.helpers import http_client
+from geonode.layers.utils import create_thumbnail
 
 def layer_metadata(layer_list,flood_year,flood_year_probability):
     for layer in layer_list:
@@ -59,7 +63,10 @@ def fh_style_update():
     cat = Catalog(settings.OGC_SERVER['default']['LOCATION'] + 'rest',
                     username=settings.OGC_SERVER['default']['USER'],
                     password=settings.OGC_SERVER['default']['PASSWORD'])
-    gn_style_list = Style.objects.filter(name__icontains='fh').exclude(Q(sld_body__icontains='<sld:CssParameter name="fill">#ffff00</sld:CssParameter>'))
+    # gn_style_list = Style.objects.filter(name__icontains='fh').exclude(Q(sld_body__icontains='<sld:CssParameter name="fill">#ffff00</sld:CssParameter>'))
+    gn_style_list = Style.objects.filter(name__icontains='fh')
+    fh_styles_count = len(gn_style_list)
+    ctr = 0
     if gn_style_list is not None:
         fhm_style = cat.get_style("fhm")
         for gn_style in gn_style_list:
@@ -69,7 +76,23 @@ def fh_style_update():
             #change style in geonode
             gn_style.sld_body = fhm_style.sld_body
             gn_style.save()
-            print "Updated style for %s " % gn_style.name
+            #for updating thumbnail
+            layer = Layer.objects.get(name=gn_style.name)
+            if layer is not None:
+                params = {
+                    'layers': layer.typename.encode('utf-8'),
+                    'format': 'image/png8',
+                    'width': 200,
+                    'height': 150,
+                }
+                p = "&".join("%s=%s" % item for item in params.items())
+                thumbnail_remote_url = ogc_server_settings.PUBLIC_LOCATION + \
+                    "wms/reflect?" + p
+                # thumbnail_create_url = ogc_server_settings.LOCATION + \
+                #     "wms/reflect?" + p
+                create_thumbnail(layer, thumbnail_remote_url, thumbnail_remote_url, ogc_client=http_client)
+                ctr+=1
+                print "'{0}' out of '{1}' : Updated style for '{2}' ".format(ctr,fh_styles_count,gn_style.name)
 
 
 @task(name='geonode.tasks.update.ceph_metadata_udate', queue='update')
