@@ -27,67 +27,71 @@ from django.core.urlresolvers import reverse
 from geonode.maptiles.models import SRS
 from django.utils.text import slugify
 
+from geonode.tasks.update import layers_metadata_update
+from geonode.base.enumerations import CHARSETS
+from geonode.tasks.update import fh_style_update
+
 # Create your views here.
 @login_required
 @user_passes_test(lambda u: u.is_superuser)
 def file_list_ceph(request, sort=None):
     if sort not in utils.SORT_TYPES and sort != None:
         return HttpResponse(status=404)
-        
-    cephclient = client.CephStorageClient(settings.CEPH_OGW['default']['USER'], settings.CEPH_OGW['default']['KEY'], settings.CEPH_OGW['default']['LOCATION']) 
+
+    cephclient = client.CephStorageClient(settings.CEPH_OGW['default']['USER'], settings.CEPH_OGW['default']['KEY'], settings.CEPH_OGW['default']['LOCATION'])
     object_list = cephclient.list_files(container_name=settings.CEPH_OGW['default']['CONTAINER'])
     sorted_list = []
-    
+
     for ceph_object in object_list:
         ceph_object["type"] = utils.get_data_class_from_filename(ceph_object["name"])
         ceph_object["uploaddate"] = ceph_object["last_modified"]
-        
+
     ###sorting goes here
     if sort != None:
         sorted_list = utils.sort_by(sort, object_list)
         paginator = Paginator(sorted_list, 50)
     else:
         paginator = Paginator(object_list, 50)
-    
+
     page = request.GET.get('page')
-    
+
     try:
         paged_objects = paginator.page(page)
     except PageNotAnInteger:
         paged_objects = paginator.page(1)
     except EmptyPage:
         paged_objects = paginator.page(paginator.num_pages)
-    
+
     return render(request, "file_list.html",
-                    {"file_list"    : paged_objects, 
-                    "file_types"    : utils.TYPE_TO_IDENTIFIER_DICT , 
-                    "sort_types"    : utils.SORT_TYPES, 
+                    {"file_list"    : paged_objects,
+                    "file_types"    : utils.TYPE_TO_IDENTIFIER_DICT ,
+                    "sort_types"    : utils.SORT_TYPES,
                     "sort"          : sort})
 
 @login_required
 @user_passes_test(lambda u: u.is_superuser)
 def file_list_geonode(request, sort=None, grid_ref=None):
-    
+
     if sort not in utils.SORT_TYPES and sort != None:
         return HttpResponse(status=404)
-    
+
     object_list = []
     sorted_list = []
-    
+
     #No Grid Ref
     if grid_ref is None:
         object_list = CephDataObject.objects.all()
-        
+
     else:
         #1 Grid Ref or Grid Ref Range
         if utils.is_valid_grid_ref(grid_ref):
             # Query files with same grid reference
             #object_list = CephDataObject.objects.filter(name__startswith=grid_ref)
             object_list = CephDataObject.objects.filter(grid_ref=grid_ref)
-            
+
         else:
             return HttpResponse(status=404)
-    
+
     if sort == 'type':
         sorted_list = sorted(object_list.order_by('name'), key=operator.attrgetter('data_class'))
     elif sort == 'uploaddate':
@@ -97,38 +101,38 @@ def file_list_geonode(request, sort=None, grid_ref=None):
         sorted_list = sorted(object_list, key=operator.attrgetter('name'))
     else: # default
         sorted_list = object_list
-    
+
     paginator = Paginator(sorted_list, 50)
-    
+
     page = request.GET.get('page')
-    
+
     try:
         paged_objects = paginator.page(page)
     except PageNotAnInteger:
         paged_objects = paginator.page(1)
     except EmptyPage:
         paged_objects = paginator.page(paginator.num_pages)
-    
+
     return render(request, "file_list_geonode.html",
-                    {"file_list"    : paged_objects, 
-                    "file_types"    : utils.TYPE_TO_IDENTIFIER_DICT , 
-                    "sort_types"    : utils.SORT_TYPES, 
+                    {"file_list"    : paged_objects,
+                    "file_types"    : utils.TYPE_TO_IDENTIFIER_DICT ,
+                    "sort_types"    : utils.SORT_TYPES,
                     "sort"          : sort,
                     "grid_ref"      : grid_ref})
-                    
+
 @login_required
 def file_list_json(request, sort=None, grid_ref=None):
-    
+
     if sort not in utils.SORT_TYPES and sort != None:
         return HttpResponse(status=404)
-    
+
     object_list = []
     sorted_list = []
-    
+
     #No Grid Ref
     if grid_ref is None:
         object_list = CephDataObject.objects.all()
-        
+
     else:
         #1 Grid Ref or Grid Ref Range
         if utils.is_valid_grid_ref(grid_ref):
@@ -136,7 +140,7 @@ def file_list_json(request, sort=None, grid_ref=None):
             object_list = CephDataObject.objects.filter(name__startswith=grid_ref)
         else:
             return HttpResponse(status=404)
-    
+
     if sort == 'type':
         sorted_list = sorted(object_list.order_by('name'), key=operator.attrgetter('data_class'))
     elif sort == 'uploaddate':
@@ -146,13 +150,13 @@ def file_list_json(request, sort=None, grid_ref=None):
         sorted_list = sorted(object_list, key=operator.attrgetter('name'))
     else: # default
         sorted_list = object_list
-    
-    response_data = {"file_list"    : serializers.serialize('json', sorted_list), 
-                    "file_types"    : utils.TYPE_TO_IDENTIFIER_DICT , 
-                    "sort_types"    : utils.SORT_TYPES, 
+
+    response_data = {"file_list"    : serializers.serialize('json', sorted_list),
+                    "file_types"    : utils.TYPE_TO_IDENTIFIER_DICT ,
+                    "sort_types"    : utils.SORT_TYPES,
                     "sort"          : sort,
                     "grid_ref"      : grid_ref,}
-    
+
     return HttpResponse(json.dumps(response_data), content_type="application/json")
 
 @login_required
@@ -170,18 +174,18 @@ def data_input(request):
             csv_delimiter=','
             uploaded_objects_list = smart_str(form.cleaned_data['data']).splitlines()
             update_grid = form.cleaned_data['update_grid']
-            
+
             # Pop first line containing header
             uploaded_objects_list.pop(0)
             """NAME,LAST_MODIFIED,SIZE_IN_BYTES,CONTENT_TYPE,GEO_TYPE,FILE_HASH GRID_REF"""
-            
+
             # Loop through each metadata element
             objects_inserted=0
             objects_updated=0
             gridref_dict_by_data_class=dict()
             for ceph_obj_metadata in uploaded_objects_list:
                 metadata_list = ceph_obj_metadata.split(csv_delimiter)
-                
+
                 # Check if metadata list is valid
                 if len(metadata_list) is 6:
                     #try:
@@ -195,13 +199,13 @@ def data_input(request):
                             #ceph_obj.grid_ref = metadata_list[5]
                             #ceph_obj.data_class = get_data_class_from_filename(metadata_list[0])
                             #ceph_obj.content_type = metadata_list[3]
-                            
+
                             ceph_obj.last_modified = metadata_list[1]
                             ceph_obj.size_in_bytes = metadata_list[2]
                             ceph_obj.file_hash = metadata_list[4]
-                            
+
                             ceph_obj.save()
-                            
+
                             objects_updated += 1
                         except ObjectDoesNotExist:
                             ceph_obj = CephDataObject(  name = metadata_list[0],
@@ -213,7 +217,7 @@ def data_input(request):
                                                         file_hash = metadata_list[4],
                                                         grid_ref = metadata_list[5])
                             ceph_obj.save()
-                            
+
                             objects_inserted += 1
                         if ceph_obj is not None:
                         # Construct dict of gridrefs to update
@@ -225,7 +229,7 @@ def data_input(request):
                         #    print("Skipping invalid metadata list: {0}".format(metadata_list))
                 else:
                     print("Skipping invalid metadata list (invalid length): {0}".format(metadata_list))
-            
+
             # Pass to celery the task of updating the gird shapefile
             result_msg = "Succesfully encoded metadata of [{0}] of objects. Inserted [{1}], updated [{2}].".format(objects_inserted+objects_updated, objects_inserted, objects_updated)
             if update_grid:
@@ -240,7 +244,7 @@ def data_input(request):
     else:
         form = DataInputForm()
         return render(request, 'ceph_data_input.html', {'data_input_form': form})
-    
+
 @login_required
 @user_passes_test(lambda u: u.is_superuser)
 def data_input_old(request):
@@ -266,11 +270,11 @@ def data_input_old(request):
                                                 file_hash = obj_meta_dict['hash'],
                                                 grid_ref = obj_meta_dict['grid_ref'])
                     ceph_obj.save()
-            
+
             # Commented out until a way is figured out how to assign database writes/saves
             #   to celery without throwing a 'database locked' error
             #ceph_metadata_udate.delay(uploaded_objects)
-            
+
             messages.success(request, "Processing metadata of [{0}] of objects in the background.".format(len(uploaded_objects)))
             return redirect('geonode.cephgeo.views.file_list_geonode',sort='uploaddate')
         else:
@@ -288,7 +292,7 @@ def error(request):
 
 @login_required
 def get_cart(request):
-    return render_to_response('cart.html', 
+    return render_to_response('cart.html',
                                 dict(cart=CartProxy(request), cartsize=get_cart_datasize(request), projections= SRS.labels.values()),
                                 context_instance=RequestContext(request))
 
@@ -299,9 +303,9 @@ def get_cart_json(request):
     #~ for item in cart:
         #~ json_cart[str(item.object_id)] = serializers.serialize('json', CephDataObject.objects.get(id=int(item.pk)))
     #~ return HttpResponse(json.dumps(json_cart), content_type="application/json")
-    
+
     # TODO: debug serialization for CephDataObjects
-    
+
     obj_name_dict = [CephDataObject.objects.get(id=int(item.object_id)).name for item in cart]
     return HttpResponse(json.dumps(obj_name_dict) , content_type="application/json")
 
@@ -319,10 +323,10 @@ def create_ftp_folder(request, projection=None):
     # Check time difference between this request and the next most recent request
     # If within 5 minutes/300 secs, inform the user to wait
     try:
-        latest_request = FTPRequest.objects.latest('date_time') 
+        latest_request = FTPRequest.objects.latest('date_time')
         time_diff = datetime.now() -latest_request.date_time
         if time_diff.total_seconds() < 300:
-            return render_to_response('ftp_result.html', 
+            return render_to_response('ftp_result.html',
                                     {   "result_msg" : "There was a problem with your request. A previous FTP request \
                                          was recorded within the last 5 minutes. Please wait at least 5 minutes in \
                                          between submitting FTP requests.",},
@@ -331,14 +335,14 @@ def create_ftp_folder(request, projection=None):
         pass
     cart=CartProxy(request)
     #[CephDataObject.objects.get(id=int(item.object_id)).name for item in cart]
-    
+
     #Get specified projection
     srs_epsg=None
     if projection is not None:
         srs_epsg=SRS.EPSG_num[projection]
-            
+
     print(">>>[SRS]: "+str(projection)+"  "+str(srs_epsg))
-    
+
     obj_name_dict = dict()
     total_size_in_bytes = 0
     num_tiles = 0
@@ -350,34 +354,34 @@ def create_ftp_folder(request, projection=None):
             obj_name_dict[DataClassification.labels[obj.data_class].encode('utf8')].append(obj.name.encode('utf8'))
         else:
             obj_name_dict[DataClassification.labels[obj.data_class].encode('utf8')] = [obj.name.encode('utf8'),]
-    
+
     # Record FTP request to database
     # DETAILS: user, request name, for item(ceph_obj) in cart, date, EULA?
     ftp_request = FTPRequest(   name = time.strftime("ftprequest_%Y-%m-%d_%H%M"),
                                 user = request.user)
-    
+
     ftp_request.size_in_bytes = total_size_in_bytes
     ftp_request.num_tiles = num_tiles
     ftp_request.save()
-    
+
     # Mapping of FTP Request to requested objects
     ftp_objs = []
     for item in cart:
         obj = CephDataObject.objects.get(id=int(item.object_id))
         ftp_objs.append(obj)
-        ftp_obj_idx = FTPRequestToObjectIndex(  ftprequest = ftp_request, 
+        ftp_obj_idx = FTPRequestToObjectIndex(  ftprequest = ftp_request,
                                                 cephobject = obj)
         ftp_obj_idx.save()
-    
-    
+
+
     # Call to celery
     process_ftp_request.delay(ftp_request, obj_name_dict, srs_epsg)
-    
+
     # Clear cart items
     delete_all_items_from_cart(request)
-    
-    
-    return render_to_response('ftp_result.html', 
+
+
+    return render_to_response('ftp_result.html',
                                 {   "result_msg" : "Your FTP request is being processed. A notification \
                                      will arrive via email regarding the completion of your request. The \
                                      items you requested are listed below.",
@@ -386,16 +390,16 @@ def create_ftp_folder(request, projection=None):
                                 context_instance=RequestContext(request))
 @login_required
 def ftp_request_list(request, sort=None):
-    
+
     if sort not in utils.FTP_SORT_TYPES and sort != None:
         return HttpResponse(status=404)
-    
+
     ftp_list = []
     sorted_list = []
-    
+
     # Query all ftp requests for this user
     ftp_list = FTPRequest.objects.filter(user=request.user)
-    
+
     # Sort by specified attribute
     if sort == 'date':
         sorted_list = sorted(ftp_list.order_by('name'), key=operator.attrgetter('date_time'), reverse=True)
@@ -403,53 +407,53 @@ def ftp_request_list(request, sort=None):
         sorted_list = sorted(ftp_list.order_by('name'), key=operator.attrgetter('status'), reverse=True)
     elif sort == 'size':
         sorted_list = sorted(ftp_list.order_by('name'), key=operator.attrgetter('size_in_bytes'), reverse=True)
-        
+
     else: # default
         sorted_list = ftp_list
-    
+
     paginator = Paginator(sorted_list, 10)
-    
+
     page = request.GET.get('page')
-    
+
     try:
         paged_list = paginator.page(page)
     except PageNotAnInteger:
         paged_list = paginator.page(1)
     except EmptyPage:
         paged_list = paginator.page(paginator.num_pages)
-    
+
     return render(request, "ftp_list.html",
-                    {"ftp_request_list"    : paged_list, 
-                    "sort_types"    : utils.FTP_SORT_TYPES, 
-                    "status_labels"    : FTPStatus.labels, 
+                    {"ftp_request_list"    : paged_list,
+                    "sort_types"    : utils.FTP_SORT_TYPES,
+                    "status_labels"    : FTPStatus.labels,
                     "sort"          : sort,})
-                    
+
 @login_required
 def ftp_request_details(request, ftp_req_name=None):
     if ftp_req_name is None:
         return HttpResponse(status=404)
-        
+
     ftp_request_obj=FTPRequest.objects.get(name=ftp_req_name, user=request.user)
     ftp_to_objects_rel = FTPRequestToObjectIndex.objects.filter(ftprequest=ftp_request_obj).select_related("cephobject")
     ceph_objects=[]
     for i in ftp_to_objects_rel:
        ceph_objects.append(i.cephobject)
-    
+
     context_dict = {
         "req_details": ftp_request_obj,
         "objects": ceph_objects,
         "num_items": len(ceph_objects)
     }
-    
+
     return render(request, "ftp_details.html", context_dict)
 
 @login_required
 def clear_cart(request):
     delete_all_items_from_cart(request)
-    response = render_to_response('cart.html', 
+    response = render_to_response('cart.html',
                                 dict(cart=CartProxy(request)),
                                 context_instance=RequestContext(request))
-    
+
     response.delete_cookie("cart")
     return response
 
@@ -471,4 +475,24 @@ def count_duplicate_requests(ftp_request):
 def management(request):
     return render_to_response('ceph_manager.html',context_instance=RequestContext(request))
 
+@login_required
+@user_passes_test(lambda u: u.is_superuser)
+def update_layer_metadata(request, template='update_LayerMetadata.html'):
+    layers_metadata_update.delay()
+    ctx = {
+        'charsets': CHARSETS,
+        'is_layer': True,
+    }
 
+    return render_to_response(template,RequestContext(request, ctx))
+
+@login_required
+@user_passes_test(lambda u: u.is_superuser)
+def update_fh_style(request, template='update_fh_style.html'):
+    fh_style_update.delay()
+    ctx = {
+        'charsets': CHARSETS,
+        'is_layer': True,
+    }
+
+    return render_to_response(template,RequestContext(request, ctx))
