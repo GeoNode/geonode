@@ -497,15 +497,14 @@ Ext.onReady(function (){
 
     var juris_vec_layer = new OpenLayers.Layer.Vector();
 
+    
     //definition of the Philippine grid layer
     var grid_layer_name = "geonode:{{  feature_tiled }}";
 
     //definition of the map object
     var map_options = grid_args["map"];
     map = new OpenLayers.Map({
-      units: map_options["units"],
-      maxResolution: map_options["maxResolution"],
-      projection: map_options["projection"]
+        restrictedExtent: extent
     });
 
     //definition of the world map layer
