@@ -437,7 +437,7 @@ def data_request_profile_approve(request, pk):
             messages.error(request, message)
             return HttpResponseRedirect(request_profile.get_absolute_url())
     else:
-        return HttpResponse("Not allowed", status=403)
+        return HttpResponseRedirect("/forbidden/")
 
 
 @require_POST

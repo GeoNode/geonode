@@ -23,6 +23,7 @@ import sys
 import logging
 import shutil
 import traceback
+from pprint import pprint
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
@@ -56,6 +57,9 @@ from geonode.security.views import _perms_info_json
 from geonode.documents.models import get_related_documents
 from geonode.utils import build_social_links
 from geonode.geoserver.helpers import cascading_delete, gs_catalog
+from urlparse import urljoin, urlsplit
+from actstream.signals import action
+
 
 CONTEXT_LOG_FILE = None
 
@@ -114,9 +118,6 @@ def _resolve_layer(request, typename, permission='base.view_resourcebase',
                               permission=permission,
                               permission_msg=msg,
                               **kwargs)
-
-
-# Basic Layer Views #
 
 
 @login_required
@@ -554,3 +555,16 @@ def layer_thumbnail(request, layername):
                 status=500,
                 mimetype='text/plain'
             )
+
+def layer_download(request, layername):
+    layer = _resolve_layer(
+        request,
+        layername,
+        'base.view_resourcebase',
+        _PERMISSION_MSG_VIEW)
+
+    action.send(request.user, verb='downloaded', target=layer)
+
+    splits = request.get_full_path().split("/")
+    redir_url = urljoin(settings.OGC_SERVER['default']['PUBLIC_LOCATION'], "/".join(splits[4:]))
+    return HttpResponseRedirect(redir_url)
