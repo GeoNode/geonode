@@ -504,7 +504,10 @@ Ext.onReady(function (){
     //definition of the map object
     var map_options = grid_args["map"];
     map = new OpenLayers.Map({
-        restrictedExtent: extent
+      units: map_options["units"],
+      maxResolution: map_options["maxResolution"],
+      projection: map_options["projection"],
+      restrictedExtent: extent
     });
 
     //definition of the world map layer
