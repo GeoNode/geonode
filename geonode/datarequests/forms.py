@@ -6,7 +6,7 @@ from django.utils.translation import ugettext_lazy as _
 from captcha.fields import ReCaptchaField
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Fieldset, HTML, Div, Column, Row, Field
-from crispy_forms.bootstrap import PrependedText
+from crispy_forms.bootstrap import PrependedText, InlineRadios
 from model_utils import Choices
 
 from geonode.datarequests.models import DataRequestProfile
@@ -61,8 +61,8 @@ class DataRequestProfileForm(forms.ModelForm):
     )
     
     HAS_SHAPEFILE_CHOICES = Choices(
-        (True,_('Yes')),
-        (False,_('No')),
+        ("yes",_('Yes')),
+        ("no",_('No')),
     )
     
     purpose = forms.ChoiceField(
@@ -96,7 +96,10 @@ class DataRequestProfileForm(forms.ModelForm):
     
     has_shapefile = forms.ChoiceField(
         label=_("Do you have a shapefile for your area of interest?"),
-        required=False
+        widget=forms.RadioSelect,
+        choices=HAS_SHAPEFILE_CHOICES,
+        initial='no',
+        required=True
     )
     
     layer_files = forms.FileField(
@@ -236,15 +239,14 @@ class DataRequestProfileForm(forms.ModelForm):
                 Field('letter_file', css_class='form-control'),
                 css_class='form-group'
             ),
-            Div(
-                    Field('has_shapefile', css_class='form-control'),
-                    Fieldset('Yes',
-                        Div(
-                            Field('layer_files', multiple="multiple"),
-                        ),
-                        css_class='form-group'
-                    ),
+            InlineRadios('has_shapefile'),
+            Fieldset('Shapefile Upload',
+                Div(
+                    Field('layer_files', multiple="multiple"),
+                ),
+                css_class='shapefileupload-fieldset'
             ),
+            css_class='form-group'
         )
 
     def clean_email(self):

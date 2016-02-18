@@ -5,6 +5,8 @@ $(function() {
     var $form = $intended_use.closest('form');
     var $noncommercial = $form.find('fieldset.noncommercial-fieldset');
     var $academe = $form.find('fieldset.academe-fieldset');
+    var $has_shapefile = $form.find("#id_has_shapefile");
+    var $shapefile_upload = $form.find('fieldset.shapefileupload-fieldset');
 
     // Initial values
     if ($intended_use.val() == 'commercial'){
@@ -17,6 +19,7 @@ $(function() {
             $academe.toggle(true);
         }
     }
+    
     $intended_use.on('change', function() {
 
         if ($(this).val() == 'noncommercial'){
@@ -38,7 +41,14 @@ $(function() {
             $academe.slideUp();
         }
     });
-
+    
+    $has_shapefile.on('change', function() {
+        if ($(this).val() == 'yes'){
+            $shapefile_upload.slideDown();
+        }else{
+            $shapefile_upload.slideUp();
+        }
+    });
 
     // Data Set
     var $data_set = $("#id_data_set")
