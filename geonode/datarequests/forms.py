@@ -90,21 +90,8 @@ class DataRequestProfileForm(forms.ModelForm):
     )
 
     letter_file = forms.FileField(
-        label=_("Data Request Letter"),
+       label=_("Data Request Letter"),
         required=True
-    )
-    
-    has_shapefile = forms.ChoiceField(
-        label=_("Do you have a shapefile for your area of interest?"),
-        widget=forms.RadioSelect,
-        choices=HAS_SHAPEFILE_CHOICES,
-        initial='no',
-        required=True
-    )
-    
-    layer_files = forms.FileField(
-        label =_("Optional Area of Interest ShapeFile"),
-        required = False
     )
     
 
@@ -140,8 +127,7 @@ class DataRequestProfileForm(forms.ModelForm):
             'letter_file',
             
             #ShapeFile Layer Field
-            'has_shapefile',
-            'layer_files',
+            #'layer_files',
         )
 
     def __init__(self, *args, **kwargs):
@@ -239,16 +225,12 @@ class DataRequestProfileForm(forms.ModelForm):
                 Field('letter_file', css_class='form-control'),
                 css_class='form-group'
             ),
-            Div(
-                InlineRadios('has_shapefile'),
-                css_class='form-group'
-            ),
-            Fieldset('Shapefile Upload',
-                Div(
-                    Field('layer_files', multiple="multiple"),
-                ),
-                css_class='shapefileupload-fieldset'
-            ),
+            #Fieldset('Shapefile Upload',
+            #    Div(
+            #        Field('layer_files', multiple="multiple"),
+            #    ),
+            #    css_class='shapefileupload-fieldset'
+            #),
         )
 
     def clean_email(self):
@@ -389,38 +371,6 @@ class DataRequestProfileForm(forms.ModelForm):
             data_request.save()
         return data_request
 
-class DataRequestProfileLetterForm(DocumentCreateForm):
-
-    class Meta:
-        model = Document
-        fields = ('doc_file', )
-    
-    def __init__(self, *args, **kwargs):
-        super(DocumentCreateForm, self).__init__(*args, **kwargs)
-        self.fields.pop('resource')
-        self.fields.pop('permissions')
-    
-    def clean(self):
-        doc_file = self.cleaned_data.get('doc_file')
-        if not doc_file:
-            raise forms.ValidationError(_("Document  not found"))
-            
-        return self.cleaned_data
-        
-    def clean_doc_file(self):
-        doc_file = self.cleaned_data.get('doc_file')
-        split_filename =  os.path.splitext(str(doc_file.name))
-        
-        if doc_file and split_filename[len(split_filename)-1].lower()[1:] != "pdf":
-            raise forms.ValidationError(_("This file type is not allowed"))
-        return doc_file
-    
-    def save(self, commit=True, *args, **kwargs):
-        document_resource = super(
-            DataRequestProfileLetterForm, self).save(commit=False, *args, **kwargs)
-        
-        pprint (self.request)
-        return document_resource
 
 class DataRequestProfileShapefileForm(NewLayerUploadForm):
     captcha = ReCaptchaField(attrs={'theme': 'clean'})
