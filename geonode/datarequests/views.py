@@ -46,7 +46,7 @@ from braces.views import (
 )
 
 from .forms import (
-    DataRequestProfileForm, DataRequestProfileLetterForm, DataRequestProfileShapefileForm, 
+    DataRequestProfileForm, DataRequestProfileShapefileForm, 
     DataRequestProfileRejectForm, DataRequestProfileCaptchaForm)
 from .models import DataRequestProfile
 
@@ -69,29 +69,31 @@ def registration_part_one(request):
     )
     
     if request.method == 'POST':
+        pprint(request.POST)
+        pprint(request.FILES)
         if form.is_valid():
-            request.session['data_request_info'] = form.cleaned_data
             pprint(form.cleaned_data)
-            request.session['request_letter_info']
-            request_profile = form.save()
+            request.session['data_request_info'] = form.cleaned_data
+            
+            #request_profile = form.save()
             if request_profile:
                 pprint("request profile created")
-                request_letter = DocumentCreateForm(
-                    {
-                        'doc_file': form.cleaned_data['doc_file'],
-                        'permissions':  u'',
-                        'resource': u''
-                    }
-                ).save()
+                #request_letter = DocumentCreateForm(
+                    #{
+                        ##'doc_file': form.cleaned_data['letter_file'],
+                        #'permissions':  u'',
+                        #'resource': u''
+                    #}
+                #).save()
                 
-                request_letter.owner = Profile.objects.get_or_create(username='dataRegistrationUploader')
-                request_letter.save()
-                request_profile.request_letter = request_letter
-                request_profile.save()
-                request_profile.send_verification_email()
-                return HttpResponseRedirect(
-                    reverse('datarequests:registration_part_two')
-                )
+                #request_letter.owner = Profile.objects.get_or_create(username='dataRegistrationUploader')
+                #request_letter.save()
+                #request_profile.request_letter = request_letter
+                #request_profile.save()
+                #request_profile.send_verification_email()
+                #return HttpResponseRedirect(
+                    #reverse('datarequests:registration_part_two')
+                #)
         else:
             pprint(form.is_valid())
             pprint(request_letter_form.is_valid())

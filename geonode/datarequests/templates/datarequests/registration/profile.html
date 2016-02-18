@@ -22,6 +22,13 @@
         <div class="row">
           <div class="form-controls">
             {% crispy form %}
+            
+             <section id="drop-zone">
+                <h3><i class="fa fa-cloud-upload"></i><br />{% trans "Drop files here" %}</h3>
+            </section>
+
+            <p>{% trans " or select them one by one:" %}</p>
+            <input class="btn" id="file-input" type="file" multiple>
           </div>
           <div class="form-actions">
             <input type="submit" class="btn btn-primary btn-md" value="{% trans 'Continue' %}"/>
