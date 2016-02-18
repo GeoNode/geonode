@@ -497,6 +497,11 @@ Ext.onReady(function (){
 
     var juris_vec_layer = new OpenLayers.Layer.Vector();
 
+    //philippine extent
+    var extent = new OpenLayers.Bounds(8, 44.5, 19, 50);
+    var options = {
+      restrictedExtent: extent
+    };
     //definition of the Philippine grid layer
     var grid_layer_name = "geonode:{{  feature_tiled }}";
 
@@ -506,7 +511,7 @@ Ext.onReady(function (){
         units: map_options["units"],
         maxResolution: map_options["maxResolution"],
         projection: map_options["projection"]
-    });
+    },options);
 
     //definition of the world map layer
     var mq_layer = new OpenLayers.Layer.XYZ(
@@ -546,7 +551,7 @@ Ext.onReady(function (){
         },
         {
             buffer: 0,
-            displayOutsideMaxExtent: true,
+            displayOutsideMaxExtent: false,
             isBaseLayer: false,
             projection: "EPSG:900913",
             maxExtent: new OpenLayers.Bounds(stored_layer["bbox"])
@@ -571,7 +576,7 @@ Ext.onReady(function (){
             },
             {
                 buffer: 0,
-                displayOutsideMaxExtent: true,
+                displayOutsideMaxExtent: false,
                 isBaseLayer: false,
                 projection: "EPSG:32651",
                 maxExtent: new OpenLayers.Bounds(j_layer["bbox"])
