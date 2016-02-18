@@ -102,6 +102,32 @@ def tiled_view(request, overlay=settings.TILED_SHAPEFILE, template="maptiles/map
     #context_dict["projections"]= SRS.labels.values()
 
     return render_to_response(template, RequestContext(request, context_dict))
+def tiled_view2(request, overlay=settings.TILED_SHAPEFILE, template="maptiles/maptiles_map2.html",test_mode=False, jurisdiction=None):
+
+    context_dict = {}
+    context_dict["grid"] = get_layer_config(request, overlay, "base.view_resourcebase", _PERMISSION_VIEW )
+
+    if jurisdiction is None:
+        try:
+            jurisdiction_object = UserJurisdiction.objects.get(user=request.user)
+            jurisdiction_shapefile = jurisdiction_object.jurisdiction_shapefile
+            context_dict["jurisdiction"] = get_layer_config(request,jurisdiction_object.jurisdiction_shapefile.typename, "base.view_resourcebase", _PERMISSION_VIEW)
+            context_dict["jurisdiction_name"] = jurisdiction_object.jurisdiction_shapefile.typename
+            context_dict["jurisdiction_yes"] = True
+        except Exception as e:
+            context_dict["jurisdiction_yes"] = False
+            print e
+
+    else:
+        context_dict["jurisdiction"] = get_layer_config(request,jurisdiction, "base.view_resourcebase", _PERMISSION_VIEW)
+
+    context_dict["feature_municipality"]  = settings.MUNICIPALITY_SHAPEFILE.split(":")[1]
+    context_dict["feature_tiled"] = overlay.split(":")[1]
+    context_dict["test_mode"]=test_mode
+    context_dict["data_classes"]= DataClassification.labels.values()
+    #context_dict["projections"]= SRS.labels.values()
+
+    return render_to_response(template, RequestContext(request, context_dict))
 
 #
 # Function for processing the georefs submitted by the user
