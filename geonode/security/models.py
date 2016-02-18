@@ -23,8 +23,8 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth import login
 from django.contrib.auth.models import Group
 
-from guardian.shortcuts import assign_perm, remove_perm, \
-    get_groups_with_perms, get_users_with_perms
+from guardian.shortcuts import assign_perm, remove_perm
+from perm_utils import get_groups_with_perms, get_users_with_perms
 
 ADMIN_PERMISSIONS = [
     'view_resourcebase',
@@ -49,7 +49,10 @@ class PermissionLevelMixin(object):
     user has exactly one assigned role with respect to
     an object representing an "access level"
     """
-
+    """
+    NOTE: django-guardian's get_users_with_perms and get_groups_with_perms
+          is VERY SLOW and needs to be replaced with something else  
+    """
     def get_all_level_info(self):
 
         resource = self.get_self_resource()

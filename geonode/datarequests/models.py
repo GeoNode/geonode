@@ -401,7 +401,11 @@ class DataRequestProfile(TimeStampedModel):
     def create_account(self):
         uname = create_login_credentials(self)
         pprint("Creating account for "+uname)
-        if create_ad_account(self, uname):
+        dn = create_ad_account(self, uname)
+        if dn is not False:
+            
+            add_to_ad_group(group_dn=settings.LIPAD_LDAP_GROUP_DN, user_dn=dn)
+            
             profile = LDAPBackend().populate_user(uname)
             if profile is None:
                 pprint("Account was not created")
@@ -410,7 +414,7 @@ class DataRequestProfile(TimeStampedModel):
             # Link data request to profile and updating other fields of the request
             self.username = uname
             self.profile = profile
-            self.ftp_folder = "Others/"+uname
+            self.ftp_folder = directory = "Others/"+uname
             self.save()
             
             # Link shapefile to account
@@ -441,7 +445,7 @@ class DataRequestProfile(TimeStampedModel):
             self.request_status = 'approved'
             self.save()
 
-            self.send_approval_email(uname, self.ftp_folder)
+            self.send_approval_email(uname, directory)
             
         else:
             raise Http404
