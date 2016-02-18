@@ -239,14 +239,16 @@ class DataRequestProfileForm(forms.ModelForm):
                 Field('letter_file', css_class='form-control'),
                 css_class='form-group'
             ),
-            InlineRadios('has_shapefile'),
+            Div(
+                InlineRadios('has_shapefile'),
+                css_class='form-group'
+            ),
             Fieldset('Shapefile Upload',
                 Div(
                     Field('layer_files', multiple="multiple"),
                 ),
                 css_class='shapefileupload-fieldset'
             ),
-            css_class='form-group'
         )
 
     def clean_email(self):
