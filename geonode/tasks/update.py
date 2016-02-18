@@ -17,6 +17,8 @@ from geonode.geoserver.helpers import http_client
 from geonode.layers.utils import create_thumbnail
 
 def layer_metadata(layer_list,flood_year,flood_year_probability):
+    layer_list_count = len(layer_list)
+    ctr = 0
     for layer in layer_list:
         map_resolution = ''
         first_half = ''
@@ -39,8 +41,8 @@ def layer_metadata(layer_list,flood_year,flood_year_probability):
         layer.keywords.add("Flood Hazard Map")
         layer.category = TopicCategory.objects.get(identifier="geoscientificInformation")
         layer.save()
-
-        print "Updated metadata for this layer: %s" % layer.name
+        ctr+=1
+        print "'{0}' out of '{1}' : Updated metadata for '{2}' ".format(ctr,layer_list_count,layer.name)
 
 
 @task(name='geonode.tasks.update.layers_metadata_update', queue='update')
@@ -63,20 +65,22 @@ def fh_style_update():
     cat = Catalog(settings.OGC_SERVER['default']['LOCATION'] + 'rest',
                     username=settings.OGC_SERVER['default']['USER'],
                     password=settings.OGC_SERVER['default']['PASSWORD'])
-    # gn_style_list = Style.objects.filter(name__icontains='fh').exclude(Q(sld_body__icontains='<sld:CssParameter name="fill">#ffff00</sld:CssParameter>'))
-    gn_style_list = Style.objects.filter(name__icontains='fh')
+    gn_style_list = Style.objects.filter(name__icontains='fh').exclude(Q(name__icontains="fhm")|Q(sld_body__icontains='<sld:CssParameter name="fill">#ffff00</sld:CssParameter>'))
+    # gn_style_list = Style.objects.filter(name__icontains='fh').exclude(Q(name__icontains="fhm"))
     fh_styles_count = len(gn_style_list)
     ctr = 0
     if gn_style_list is not None:
         fhm_style = cat.get_style("fhm")
         for gn_style in gn_style_list:
             #change style in geoserver
+            print "Style name %s " % gn_style.name
             gs_style  = cat.get_style(gn_style.name)
             gs_style.update_body(fhm_style.sld_body)
             #change style in geonode
             gn_style.sld_body = fhm_style.sld_body
             gn_style.save()
             #for updating thumbnail
+
             layer = Layer.objects.get(name=gn_style.name)
             if layer is not None:
                 params = {
