@@ -662,6 +662,12 @@ Ext.onReady(function (){
       map.addControl(drawControl);
       drawControl.activate();
     {% endif %}
+    var layer = new OpenLayers.Layer.WMS(
+            "Global Imagery",
+            "http://maps.opengeo.org/geowebcache/service/wms",
+            {layers: "bluemarble"}
+        );
+        map.addLayer(layer);
     var config = {
         renderTo: "preview_map",
         height: 480,
