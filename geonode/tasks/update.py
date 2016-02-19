@@ -104,7 +104,7 @@ def fh_style_update():
             #if a style with no layer exists
                 print "Will delete %s" % gn_style.name
                 gn_style.delete()
-                cat.delete(gn_style)
+                cat.delete(gs_style)
 
 @task(name='geonode.tasks.update.ceph_metadata_udate', queue='update')
 def ceph_metadata_udate(uploaded_objects):
