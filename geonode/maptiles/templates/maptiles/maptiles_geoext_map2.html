@@ -594,16 +594,6 @@ Ext.onReady(function (){
     map.addLayer(highlight_layer);
 
     var items = [];
-    var config = {
-        renderTo: "preview_map",
-        height: 480,
-        width: "100%",
-        map: map,
-        title: "Tile Selection",
-        items: items,
-        center: [13652590.86,1366919.96],
-        zoom: 7
-    };
     {% if jurisdiction_yes %}
       //declaration of the draw control to enable drawing a rectangle using SHIFT+Click and d
       var drawControl = new OpenLayers.Control();
@@ -672,7 +662,29 @@ Ext.onReady(function (){
       map.addControl(drawControl);
       drawControl.activate();
     {% endif %}
+    var config = {
+        renderTo: "preview_map",
+        height: 480,
+        width: "100%",
+        map: map,
+        title: "Tile Selection",
+        items: items,
+        center: [13652590.86,1366919.96],
+        zoom: 7
+    };
     app = new GeoExt.MapPanel(config);
+    var layerList = new GeoExt.tree.LayerContainer({
+      text: 'All Layers',
+      layerStore: mapPanel.layers,
+      leaf: false,
+      expanded: true
+    });
+    var layerTree = new Ext.tree.TreePanel({
+      title: 'Map Layers',
+      renderTo: 'layerTree',
+      root: layerList
+    });
+
     if(jurisdiction_args ){
         map.zoomToExtent(jurisdiction_view_layer.getExtent());
         getJurisdictionGeom(jurisdiction_name.split(":")[1], juris_vec_layer);
@@ -682,4 +694,3 @@ Ext.onReady(function (){
 });
 {% endautoescape %}
 </script>
-
