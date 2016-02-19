@@ -673,14 +673,17 @@ Ext.onReady(function (){
         zoom: 7
     };
     app = new GeoExt.MapPanel(config);
-    new Ext.grid.GridPanel({
-    renderTo: 'layerTree',
-    height: 200, width: 200,
-    autoScroll: true,
-    store: mapPanel.layers,
-    columns: [{name: 'name', heading: 'Name'}]
-});
-    
+    var layerList = new GeoExt.tree.LayerContainer({
+      text: 'All Layers',
+      layerStore: app.layers,
+      leaf: false,
+      expanded: true
+    });
+    var layerTree = new Ext.tree.TreePanel({
+      title: 'Map Layers',
+      renderTo: 'layerTree',
+      root: layerList
+    });
 
     if(jurisdiction_args ){
         map.zoomToExtent(jurisdiction_view_layer.getExtent());
