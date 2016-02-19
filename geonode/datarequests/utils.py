@@ -102,7 +102,7 @@ def create_ad_account(datarequest, username):
         print traceback.format_exc()
         return False
     
-def add_to_ad_group(group_dn=settings.LIPAD_LDAP_GROUP_DN, used_dn=""):
+def add_to_ad_group(group_dn=settings.LIPAD_LDAP_GROUP_DN, user_dn=""):
     try:
         add_user_mod = [(ldap.MOD_ADD, "member", user_dn)]
         con = ldap.initialize(settings.AUTH_LDAP_SERVER_URI)
