@@ -8,7 +8,7 @@ Ext.onReady(function(){
     qf: "LayerDisplayNameSynonyms^0.2 ThemeKeywordsSynonymsIso^0.1 ThemeKeywordsSynonymsLcsh^0.1 PlaceKeywordsSynonyms^0.1 Publisher^0.1 Originator^0.1",
     wt: "json",
     defType: "edismax",
-    fl: "Name,Institution,Access,DataType,LayerDisplayName,Publisher,GeoReferenced,Originator,Location,MinX,MaxX,MinY,MaxY,ContentDate,LayerId,score,WorkspaceName,CollectionId,ServiceType,Availability",
+    fl: "Name,Institution,Access,DataType,LayerDisplayName,Publisher,GeoReferenced,Originator,Location,MinX,MaxX,MinY,MaxY,ContentDate,LayerId,score,WorkspaceName,CollectionId,ServiceType,Availability,Abstract",
     q: "*",
     fq: [
         "{!frange l=0 incl=false cache=false}$intx",
