@@ -64,13 +64,14 @@ def fh_style_update():
                     username=settings.OGC_SERVER['default']['USER'],
                     password=settings.OGC_SERVER['default']['PASSWORD'])
     # gn_style_list = Style.objects.filter(name__icontains='fh').exclude(Q(sld_body__icontains='<sld:CssParameter name="fill">#ffff00</sld:CssParameter>'))
-    gn_style_list = Style.objects.filter(name__icontains='fh')
+    gn_style_list = Style.objects.filter(name__icontains='fh').exclude(Q(name__icontains="fhm"))
     fh_styles_count = len(gn_style_list)
     ctr = 0
     if gn_style_list is not None:
         fhm_style = cat.get_style("fhm")
         for gn_style in gn_style_list:
             #change style in geoserver
+	    print "Style name %s " % gn_style.name
             gs_style  = cat.get_style(gn_style.name)
             gs_style.update_body(fhm_style.sld_body)
             #change style in geonode
