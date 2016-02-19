@@ -14,7 +14,7 @@
 /*** custom checkboxes ***/
 
     /*input[type=checkbox] { display:none; } to hide the checkbox itself */
-    input[type=checkbox] + label:before {
+    input[type=checkbox]/* + label:before */{
       font-family: FontAwesome;
       font-size: 16px;
       display: inline-block;
@@ -59,7 +59,7 @@
     <div class="col-md-3">
         <ul class="list-group">
             <li class="list-group-item">
-	<h4 class="list-group-item-heading">Bounding Box Selection</h4>
+		<h4 class="list-group-item-heading">Bounding Box Selection</h4>
                 <form id="bbox_form">
                     (EPSG:900913 decimal degrees) <br />
                     <table>
@@ -70,7 +70,6 @@
                     </table> <br />
                     <input type="submit" id="bbox_submit" name="bbox_submit" value="Submit Bounding Box" class="btn btn-default" />
                 </form>
-            </li>
             </li>
             <!--<li class="list-group-item">
                	<h4 class="list-group-item-heading">Area of Interest</h4>
