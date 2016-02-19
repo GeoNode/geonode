@@ -38,7 +38,7 @@ h5:target,
 li:target{/*anchor offset*/
   padding-top: 75px;
 }
-img{
+img#helpimg{
   max-width: 680px;
   display: block;
   margin: 20px auto;
