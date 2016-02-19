@@ -30,6 +30,7 @@ def layer_metadata(layer_list,flood_year,flood_year_probability):
         elif "_30m" in layer.name:
             map_resolution = '30'
 
+        print "Layer: %s" % layer.name
         layer.title = layer.name.replace("_10m","").replace("_30m","").replace("__"," ").replace("_"," ").replace("fh%syr" % flood_year,"%s Year Flood Hazard Map" % flood_year).title()
 
         first_half = "This shapefile, with a resolution of %s meters, illustrates the inundation extents in the area if the actual amount of rain exceeds that of a %s year-rain return period." % (map_resolution,flood_year) + "\n\n" + "Note: There is a 1/" + flood_year + " (" + flood_year_probability + "%) probability of a flood with " +flood_year + " year return period occurring in a single year. \n\n"
@@ -75,29 +76,35 @@ def fh_style_update():
             #change style in geoserver
             print "Style name %s " % gn_style.name
             gs_style  = cat.get_style(gn_style.name)
-            gs_style.update_body(fhm_style.sld_body)
-            #change style in geonode
-            gn_style.sld_body = fhm_style.sld_body
-            gn_style.save()
-            #for updating thumbnail
 
-            layer = Layer.objects.get(name=gn_style.name)
-            if layer is not None:
-                params = {
-                    'layers': layer.typename.encode('utf-8'),
-                    'format': 'image/png8',
-                    'width': 200,
-                    'height': 150,
-                }
-                p = "&".join("%s=%s" % item for item in params.items())
-                thumbnail_remote_url = ogc_server_settings.PUBLIC_LOCATION + \
-                    "wms/reflect?" + p
-                # thumbnail_create_url = ogc_server_settings.LOCATION + \
-                #     "wms/reflect?" + p
-                create_thumbnail(layer, thumbnail_remote_url, thumbnail_remote_url, ogc_client=http_client)
-                ctr+=1
-                print "'{0}' out of '{1}' : Updated style for '{2}' ".format(ctr,fh_styles_count,gn_style.name)
+            try:
+                layer = Layer.objects.get(name=gn_style.name)
+                if layer is not None:
+                    gs_style.update_body(fhm_style.sld_body)
+                    #change style in geonode
+                    gn_style.sld_body = fhm_style.sld_body
+                    gn_style.save()
+                    #for updating thumbnail
+                    params = {
+                        'layers': layer.typename.encode('utf-8'),
+                        'format': 'image/png8',
+                        'width': 200,
+                        'height': 150,
+                    }
+                    p = "&".join("%s=%s" % item for item in params.items())
+                    thumbnail_remote_url = ogc_server_settings.PUBLIC_LOCATION + \
+                        "wms/reflect?" + p
+                    # thumbnail_create_url = ogc_server_settings.LOCATION + \
+                    #     "wms/reflect?" + p
+                    create_thumbnail(layer, thumbnail_remote_url, thumbnail_remote_url, ogc_client=http_client)
+                    ctr+=1
+                    print "'{0}' out of '{1}' : Updated style for '{2}' ".format(ctr,fh_styles_count,gn_style.name)
 
+            except:
+            #if a style with no layer exists
+                print "Will delete %s" % gn_style.name
+                gn_style.delete()
+                cat.delete(gn_style)
 
 @task(name='geonode.tasks.update.ceph_metadata_udate', queue='update')
 def ceph_metadata_udate(uploaded_objects):
