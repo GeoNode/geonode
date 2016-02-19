@@ -14,7 +14,11 @@
 /*** custom checkboxes ***/
 
     /*input[type=checkbox] { display:none; } to hide the checkbox itself */
-    
+    input[type=checkbox] + label:before {
+      font-family: FontAwesome;
+      font-size: 16px;
+      display: none;
+    }
     img{
       display:inline-block;
     }
