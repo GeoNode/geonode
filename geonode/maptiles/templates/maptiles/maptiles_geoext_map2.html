@@ -538,7 +538,7 @@ Ext.onReady(function (){
     var tile_layer = new OpenLayers.Layer.WMS(
         grid_layer_name + "- Tiled", geoserver+"geonode/wms",
         {
-            LAYERS: stored_layer["name"],
+            layers: stored_layer["name"],
             format:  'image/png',
             bbox: stored_layer["bbox"],
             transparent: true,
@@ -563,7 +563,7 @@ Ext.onReady(function (){
         jurisdiction_view_layer = new OpenLayers.Layer.WMS(
             jurisdiction_name, geoserver+"geonode/wms",
             {
-                LAYERS: j_layer["name"],
+                layers: j_layer["name"],
                 format: "image/png",
                 bbox: new OpenLayers.Bounds(j_layer["bbox"]),
                 transparent: true,
@@ -594,80 +594,6 @@ Ext.onReady(function (){
     map.addLayer(highlight_layer);
 
     var items = [];
-    {% if jurisdiction_yes %}
-      //declaration of the draw control to enable drawing a rectangle using SHIFT+Click and d
-      var drawControl = new OpenLayers.Control();
-      OpenLayers.Util.extend(drawControl, {
-          draw: function () {
-              this.box = new OpenLayers.Handler.Box( drawControl,
-                  {"done": this.notice},
-                  {keyMask: OpenLayers.Handler.MOD_SHIFT});
-              this.box.activate();
-          },
-          highlight_layer: highlight_layer,
-          jurisdiction: jurisdiction_name,
-          notice: function (bounds){
-              var ll = map.getLonLatFromPixel(new OpenLayers.Pixel(bounds.left, bounds.bottom));
-              var ur = map.getLonLatFromPixel(new OpenLayers.Pixel(bounds.right, bounds.top));
-              var map_bounds = new OpenLayers.Bounds();
-              map_bounds.extend(ll);
-              map_bounds.extend(ur);
-              selection_bounds(map_bounds, this.highlight_layer);
-          }
-      });
-
-      //declaration of click behavior on the map
-      OpenLayers.Control.Click = OpenLayers.Class(OpenLayers.Control, {
-          defaultHandlerOptions: {
-              "single": true,
-              "double": false,
-              "pixelTolerance": 0,
-              "stopSingle": false,
-              "stopDouble": false
-          },
-
-          initialize: function(options) {
-              this.handlerOptions = OpenLayers.Util.extend(
-                  {}, this.defaultHandlerOptions);
-              OpenLayers.Control.prototype.initialize.apply(this, arguments);
-
-              this.handler = new OpenLayers.Handler.Click(
-              this, {
-                  'click': this.trigger
-              }, this.handlerOptions);
-          },
-
-          trigger: function(e) {
-              var lonlat = map.getLonLatFromPixel(e.xy);
-              var click_pt = new OpenLayers.Geometry.Point(lonlat.lon, lonlat.lat);
-              var transformed_pt = click_pt.transform(map.getProjectionObject(),new OpenLayers.Projection("EPSG:32651"));
-              var computed_corners = get_corners(click_pt.x, click_pt.y);
-
-              //var tile = createTile(computed_corners);// this is a pointless piece of code
-
-              var filter = new OpenLayers. Filter.Comparison({
-                      type: "==",
-                      property: "GRIDREF",
-                      matchCase: true,
-                      value: createTile(computed_corners).georef//tile.georef
-              });
-              single_click = true;
-              filterSelectedTiles(filter, true, true);
-          }
-      });
-
-     click_select = new OpenLayers.Control.Click()
-      map.addControl(click_select);
-      click_select.activate();
-      map.addControl(drawControl);
-      drawControl.activate();
-    {% endif %}
-    var layer = new OpenLayers.Layer.WMS(
-            "Global Imagery",
-            "http://maps.opengeo.org/geowebcache/service/wms",
-            {layers: "bluemarble"}
-        );
-        map.addLayer(layer);
     var config = {
         renderTo: "preview_map",
         height: 480,
