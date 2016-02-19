@@ -675,7 +675,7 @@ Ext.onReady(function (){
     app = new GeoExt.MapPanel(config);
     var layerList = new GeoExt.tree.LayerContainer({
       text: 'All Layers',
-      layerStore: mapPanel.layers,
+      layerStore: app.layers,
       leaf: false,
       expanded: true
     });
