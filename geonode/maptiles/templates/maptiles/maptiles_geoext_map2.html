@@ -592,18 +592,6 @@ Ext.onReady(function (){
         }
     );
     map.addLayer(highlight_layer);
-    bus_stop = new OpenLayers.Layer.WMS("Bus Stops",
-                    "https://ows.terrestris.de/osm-haltestellen?",
-                    {
-                        layers: 'OSM-Bushaltestellen',
-                        format: 'image/png',
-                        transparent: true
-                    },
-                    {
-                        singleTile: true
-                    }
-                );
-    map.addLayer(bus_stop);
     var items = [];
     var config = {
         renderTo: "preview_map",
