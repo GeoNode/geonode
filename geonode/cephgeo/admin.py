@@ -50,8 +50,8 @@ class FTPRequestAdmin(admin.ModelAdmin):
         'status',
         'num_tiles',
         'size_in_bytes',)
-    list_filter = ('name', 'user', 'status',)
-    search_fields = ('name', 'user', 'status',)
+    list_filter = ('user', 'status',)
+    search_fields = ('name', 'user__username', 'status',)
 
 class FTPRequestToObjectIndexAdmin(admin.ModelAdmin):
     model = FTPRequestToObjectIndex
@@ -61,7 +61,7 @@ class FTPRequestToObjectIndexAdmin(admin.ModelAdmin):
         'ftprequest',
         'cephobject',)
     list_filter = ('cephobject', 'ftprequest',)
-    search_fields = ('cephobject', 'ftprequest',)
+    search_fields = ('cephobject__name', 'ftprequest__name',)
 
 class UserJurisdictionAdmin(admin.ModelAdmin):
     model = UserJurisdiction
@@ -72,9 +72,9 @@ class UserJurisdictionAdmin(admin.ModelAdmin):
 #        'group',
         'jurisdiction_shapefile',)
 #    list_filter = ('group',)
-    search_fields = ('user', 
+    search_fields = ('user__username', 
 #                     'group', 
-                     'jurisdiction_shapefile',)
+                     'jurisdiction_shapefile__title',)
 
 admin.site.register(Cart, CartAdmin)
 admin.site.register(Item, ItemAdmin)
