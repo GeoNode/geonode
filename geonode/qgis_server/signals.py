@@ -2,9 +2,11 @@
 import logging
 import shutil
 import os
+from lxml import etree
 from django.db.models import signals
 from django.core.urlresolvers import reverse
 from django.conf import settings
+from django.template import Context, Template
 
 from geonode.qgis_server.models import QGISServerLayer
 from geonode.base.models import ResourceBase, Link
@@ -112,6 +114,43 @@ def qgis_server_post_save(instance, sender, **kwargs):
                         link_type='data'
                 )
             )
+
+    # Create the QGIS project
+
+    # Open the QML
+    basename, _ = os.path.splitext(qgis_layer.base_layer_path)
+    qml_file_path = '%s.qml' % basename
+
+    map_layer_qml = etree.parse(qml_file_path)
+
+    template_items = {
+        'renderer-v2': None,
+        'customproperties': None,
+        'edittypes': None,
+        'labeling': None,
+    }
+
+    for xml in template_items.keys():
+        item = map_layer_qml.find(xml)
+        if item is not None:
+            print etree.tostring(
+                item, encoding='utf8', method='xml', xml_declaration=False)
+            template_items[xml] = etree.tostring(
+                item, encoding='utf8', method='xml', xml_declaration=False)
+
+    template_items['layer_id'] = sender.name
+    template_items['layer_title'] = sender.name
+    template_items['layer_source'] = qgis_layer.base_layer_path
+
+    project_template = Template('qgis_project.qgs')
+    project_context = Context(template_items)
+
+    qgis_project_xml = project_template.render(project_context)
+    qgis_project_file_path = '%s.qgs' % basename
+    f = open(qgis_project_file_path, 'w')
+    f.write(qgis_project_xml)
+    f.close()
+
 
 def qgis_server_pre_save_maplayer(instance, sender, **kwargs):
     logger.debug('QGIS Server Pre Save Map Layer')
