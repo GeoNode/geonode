@@ -433,9 +433,9 @@
           }
         },
         map_center: {
-          lat: 5.6,
-          lng: 3.9,
-          zoom: 1
+          lat: 11,
+          lng: 123,
+          zoom: 4
         },
         defaults: {
           zoomControl: false
