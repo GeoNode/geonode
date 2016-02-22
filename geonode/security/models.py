@@ -23,8 +23,8 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth import login
 from django.contrib.auth.models import Group
 
-from guardian.shortcuts import assign_perm, remove_perm, \
-    get_groups_with_perms, get_users_with_perms
+from guardian.shortcuts import assign_perm, remove_perm
+from perm_utils import get_groups_with_perms, get_users_with_perms
 
 ADMIN_PERMISSIONS = [
     'view_resourcebase',
