@@ -69,34 +69,29 @@ def registration_part_one(request):
     )
     
     if request.method == 'POST':
-        pprint(request.POST)
-        pprint(request.FILES)
         if form.is_valid():
             pprint(form.cleaned_data)
             request.session['data_request_info'] = form.cleaned_data
-            
-            #request_profile = form.save()
-            if request_profile:
-                pprint("request profile created")
-                #request_letter = DocumentCreateForm(
-                    #{
-                        ##'doc_file': form.cleaned_data['letter_file'],
-                        #'permissions':  u'',
-                        #'resource': u''
-                    #}
-                #).save()
+            return HttpResponseRedirect(
+                reverse('datarequests:registration_part_two')
+            )
+            ##request_profile = form.save()
+            ##if request_profile:
+            ##    pprint("request profile created")
+                ##request_letter = DocumentCreateForm(
+                    ##{
+                        ###'doc_file': form.cleaned_data['letter_file'],
+                        ##'permissions':  u'',
+                        ##'resource': u''
+                    ##}
+                ##).save()
                 
-                #request_letter.owner = Profile.objects.get_or_create(username='dataRegistrationUploader')
-                #request_letter.save()
-                #request_profile.request_letter = request_letter
-                #request_profile.save()
-                #request_profile.send_verification_email()
-                #return HttpResponseRedirect(
-                    #reverse('datarequests:registration_part_two')
-                #)
-        else:
-            pprint(form.is_valid())
-            pprint(request_letter_form.is_valid())
+                ##request_letter.owner = Profile.objects.get_or_create(username='dataRegistrationUploader')
+                ##request_letter.save()
+                ##request_profile.request_letter = request_letter
+                ##request_profile.save()
+                ##request_profile.send_verification_email()
+                
     return render(
         request,
         'datarequests/registration/profile.html',
@@ -107,16 +102,19 @@ def registration_part_one(request):
 def registration_part_two(request):
     if request.user.is_authenticated():
         return redirect(reverse('home'))
-
+        
     request.session['data_request_shapefile'] = True
     profile_form_data = request.session.get('data_request_info', None)
     request_letter_form_data = request.session.get('request_letter',None)
+    
     form = DataRequestProfileCaptchaForm()
 
-    if not profile_form_data or not request_letter_form_data:
+    if not profile_form_data:
         return redirect(reverse('datarequests:registration_part_one'))
 
     if request.method == 'POST':
+        pprint(request.POST)
+        pprint(request.FILES)
         form = DataRequestProfileShapefileForm(request.POST, request.FILES)
         
         tempdir = None
@@ -168,7 +166,6 @@ def registration_part_two(request):
                     request_profile = data_request_form.save()
                     request_profile.jurisdiction_shapefile = saved_layer
                     requester_name = request_profile.first_name+" "+request_profile.middle_name+" "+request_profile.last_name
-                    request_letter_document = save_request_letter(request_letter_form.save(commit=False), requester_name)
                     pprint(request_letter_document)
                     request_profile.request_letter = request_letter_document
                     request_profile.save()

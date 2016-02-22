@@ -1,4 +1,6 @@
 {% extends "upload/layer_upload_base.html" %}
+{% load bootstrap_tags %}
+{% load crispy_forms_tags %}
 {% load i18n %}
 {% load staticfiles %}
 
@@ -42,8 +44,11 @@
       </div>
 
       <div id="upload-status"></div>
-
-      <section id="drop-zone">
+        <form id="file-uploader" method="post" enctype="multipart/form-data">
+            {% crispy form %}
+        </form>
+        
+      <!--<section id="drop-zone">
         <h3><i class="fa fa-cloud-upload"></i><br />{% trans "Drop files here" %}</h3>
       </section>
 
@@ -72,7 +77,7 @@
         <ul id="global-errors"></ul>
         <h5>{% trans "Files to be uploaded" %}</h5>
         <div id="file-queue"></div>
-      </section>
+      </section>-->
     
         <!--<legend>Data Request Letter</legend>     
         <form id="document-uploader" method="post" enctype="multipart/form-data">
@@ -80,9 +85,6 @@
       </form>-->
         
       <br />
-      <section class="widget">
-        {{ form }}
-      </section>
 
       <section>
         <a href="{% url 'datarequests:registration_part_one' %}" class="btn btn-default btn-md" style="margin-top: 20px;">{% trans "Prev Step" %}</a>
@@ -97,6 +99,7 @@
 
 
 {% block extra_script %}
+<script src="{{ STATIC_URL }}geonode/js/datarequests/registration.js"></script>
 <script data-main="{% static 'geonode/js/datarequests/upload/main' %}"
   src="{% static 'lib/js/require.js' %}">
 </script>

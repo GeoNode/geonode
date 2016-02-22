@@ -24,6 +24,7 @@ define(['underscore',
         displayFiles,
         init_geogig_stores,
         doUploads,
+        doFormSubmit,
         doSrs,
         doDelete,
         doResume,
@@ -265,6 +266,15 @@ define(['underscore',
         }
         return false;
     };
+    
+    
+    /** Function which submits the form fields
+     *  
+     */
+    doFormSubmit = function(){
+        console.log("doFormSubmit");
+        console.log($(options.form).serialize());
+     }
 
     /** Function to ...
      *
@@ -328,7 +338,10 @@ define(['underscore',
             displayFiles(file_queue);
         });
         $(options.clear_button).on('click', doClearState);
-        $(options.upload_button).on('click', doUploads);
+        $(options.upload_button).on('click', function(){
+            doUploads(),
+            console.log($(options.form).serializeArray());    
+        });
         $("[id^=delete]").on('click', doDelete);
         $("[id^=resume]").on('click', doResume);
         if (geogig_enabled) {
