@@ -7,6 +7,7 @@
 {% load base_tags %}
 {% load guardian_tags %}
 {% load eula_extras %}
+{% load layer_extras %}
 
 {% block title %}{{ resource.title|default:resource.typename }} — {{ block.super }}{% endblock %}
 
@@ -154,7 +155,7 @@
             {% if links %}
             <ul>
               {% for link in links %}
-              <li><a href="{{ link.url }}">{% trans link.name %}</a></li>
+                <li><a href="{{ link | get_layer_download_url }}">{% trans link.name %}</a></li>
               {% endfor %}
             </ul>
             {% endif %}

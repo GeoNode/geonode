@@ -157,8 +157,9 @@ setup(name='GeoNode',
         "django-model-utils==2.3.1",
         "django-recaptcha==1.0.4",
         "django-braces==1.8.1",
+        "python_ldap==2.4.19",
         "django-auth-ldap==1.2.6",
-
+        
         ],
       zip_safe=False,
       )
