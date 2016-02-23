@@ -1,4 +1,4 @@
-Ext.namespace("GeoNode"); 
+Ext.namespace("GeoNode");
 
 GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
     selectHeaderText: 'UT: Select',
@@ -18,7 +18,7 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
     permalinkText: 'UT: permalink',
     unviewableTooltip: 'UT: Unviewable Data',
     remoteTooltip: 'UT: Remote Data',
-    invalidQueryText: 'Invalid Query', 
+    invalidQueryText: 'Invalid Query',
     searchTermRequired: 'You need to specify a search term',
     originatorSearchLabelText: 'UT: Originator',
     dataTypeSearchLableText: 'UT: Data Type',
@@ -28,7 +28,7 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
     linkableTitle: true,
 
     constructor: function(config) {
-        this.addEvents('load'); 
+        this.addEvents('load');
         Ext.apply(this, config);
         this.initFromQuery();
         this.loadData();
@@ -36,10 +36,10 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
         // give a reference of this to heatmap to enable cross search
         this.heatmap.searchTable = this;
     },
-    
+
     loadData: function() {
         var self = this;
-    
+
         this.searchStore = new Ext.data.JsonStore({
             url: this.searchURL,
             root: 'response.docs',
@@ -72,7 +72,7 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
             $.each(rows, function(index, row){
                 var timeout = null;
                 $(row).on('mouseover', function(){
-                    // set a small timeout so to not add new layers while the mouse is 
+                    // set a small timeout so to not add new layers while the mouse is
                     // just passing on the list
                     timeout = setTimeout(function(){self.doMouseoverOn(index)}, 20);
                 });
@@ -90,9 +90,9 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
         this.searchStore.on('beforeload', function(scope, options){
             if(scope.sortInfo){
                 options.params.sort = options.params.sort + ' ' + scope.sortInfo.direction;
-            }       
+            }
         });
-        
+
         this.doLayout();
 
         if (this.searchOnLoad)
@@ -109,23 +109,23 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
         if (!GeoNode.queryTerms.rows) {
             GeoNode.queryTerms.rows = 500;
         }
-        
+
         if (this.constraints) {
             for (var i = 0; i < this.constraints.length; i++) {
                 this.constraints[i].initFromQuery(this, GeoNode.queryTerms);
             }
         }
     },
-    
+
     doSearch: function() {
-        /* updates parameters from constraints and 
+        /* updates parameters from constraints and
            permforms a new search */
-        
+
         this._search(GeoNode.queryTerms);
     },
 
     _search: function(params) {
-       /* search with given parameters */  
+       /* search with given parameters */
         this.disableControls();
         this.pagerLabel.setText(this.loadingText);
         this.searchStore.load({params: params});
@@ -136,7 +136,7 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
         GeoNode.queryTerms.start += GeoNode.queryTerms.rows;
         this._search(GeoNode.queryTerms);
     },
-    
+
     loadPrevBatch: function() {
         GeoNode.queryTerms.start -= GeoNode.queryTerms.rows;
         if (GeoNode.queryTerms.start < 0) {
@@ -159,14 +159,14 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
         else {
             this.prevButton.setDisabled(true);
         }
-        
+
         if (GeoNode.queryTerms.start + GeoNode.queryTerms.rows < total) {
             this.nextButton.setDisabled(false);
         }
         else {
             this.nextButton.setDisabled(true);
         }
-        
+
         var minItem = GeoNode.queryTerms.start + 1;
         var maxItem = minItem + GeoNode.queryTerms.rows - 1;
         if (minItem > total) {
@@ -176,7 +176,7 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
             maxItem = total;
         }
         this.pagerLabel.setText(this.showingText + ' ' + minItem  +
-                                '-' + maxItem + ' ' + this.ofText + ' ' + 
+                                '-' + maxItem + ' ' + this.ofText + ' ' +
                                 total);
     },
 
@@ -210,7 +210,7 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
         if(datatypes !== ''){
             GeoNode.queryTerms.fq.push(datatypes);
         };
-        
+
         // if (datatypes.length > 0 && datatypes[0].name != ''){
         //     var string = '';
         //     for(var i=0;i<datatypes.length;i++){
@@ -243,7 +243,7 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
 
         this.doSearch();
     },
-    
+
     hookupSearchButtons: function(el) {
         var root = Ext.get(el);
         var buttons = root.query('.search-button');
@@ -267,24 +267,25 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
         '<div class="search-table"></div>' +
         '<div class="search-controls"></div>' +
         '</div>';
-        
+
         var el = Ext.get(this.renderTo);
         el.update(widgetHTML);
         var input_el = el.query('.search-input')[0];
         var table_el = el.query('.search-table')[0];
         var controls_el = el.query('.search-controls')[0];
-        
+
         //var expander = new GeoNode.SearchTableRowExpander({fetchURL: this.layerDetailURL});
 
         tableCfg = {
-            store: this.searchStore, 
+            store: this.searchStore,
             viewConfig: {
                 autoFill: true,
                 forceFit: true,
                 emptyText: this.noResultsText
             },
             renderTo: 'search_results',
-            height: 300
+            height: 440,
+            width: 310
         };
 
         var unviewableTooltip = this.unviewableTooltip;
@@ -329,18 +330,18 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
                     click: function(scope, grid, rowIndex, e){
                         var record = grid.getStore().getAt(rowIndex);
                         if(e.target.checked){
-                            self.heatmap.bbox_widget.viewer.fireEvent('showLayer', 
+                            self.heatmap.bbox_widget.viewer.fireEvent('showLayer',
                                 self.getlayerTypename(record));
                         }else{
                             self.heatmap.bbox_widget.viewer.fireEvent('hideLayer',
                                 self.getlayerTypename(record));
                         }
-                        
+
                     }
                 }
             }
         ];
-        
+
         if (this.trackSelection == true) {
             sm = new Ext.grid.CheckboxSelectionModel({
                 checkOnly: true
@@ -359,12 +360,12 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
         tableCfg.colModel = colModel;
 
         this.table = new Ext.grid.GridPanel(tableCfg);
-        
+
         this.queryInput = new Ext.form.TextField({
                         emptyText: this.searchLabelText,
                         name: 'search',
                         allowBlank: true,
-                        width: 350
+                        width: 150
                      });
         this.queryInput.on('specialkey', function(field, e) {
             if (e.getKey() == e.ENTER) {
@@ -376,7 +377,7 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
                         emptyText: this.originatorSearchLabelText,
                         name: 'search_originator',
                         allowBlank: true,
-                        width: 100
+                        width: 150
         });
 
         this.dataTypeInput = new Ext.form.RadioGroup({
@@ -384,8 +385,8 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
             fieldLabel: 'Data Type',
             items: [
                 {boxLabel: 'All Layers', name: 'datatypes', inputValue: '', checked: true},
-                {boxLabel: 'Worldmap Layers', name: 'datatypes', inputValue: 'DataType:Polygon OR DataType:Raster'},
-                {boxLabel: 'Worldmap Collections', name: 'datatypes', inputValue: 'DataType:RESTServices OR DataType:WMSServices'}
+                {boxLabel: 'WM Layers', name: 'datatypes', inputValue: 'DataType:Polygon OR DataType:Raster'},
+                {boxLabel: 'WM Collections', name: 'datatypes', inputValue: 'DataType:RESTServices OR DataType:WMSServices'}
             ],
             listeners:{
                 change: function(scope, checked){
@@ -397,6 +398,7 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
 
         var dateStartTextField = new Ext.form.TextField({
             name: 'startDate',
+            width: 110,
             listeners: {
                 change: function(scope, newValue, oldValue){
                     self.dateInput.valuesFromInput(0, newValue);
@@ -414,9 +416,10 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
 
         var dateEndTextField = new Ext.form.TextField({
             name: 'endDate',
+            width: 110,
             listeners: {
-                change: function(scope, newValue, oldValue){     
-                    self.dateInput.valuesFromInput(1, newValue);       
+                change: function(scope, newValue, oldValue){
+                    self.dateInput.valuesFromInput(1, newValue);
                     self.updateQuery();
                 },
                 keypress: function(scope, e){
@@ -433,7 +436,7 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
             items: [new Ext.form.Label({text: 'From'}), dateStartTextField, new Ext.form.Label({text: 'to'}), dateEndTextField],
             layout: 'fit'
         });
-        
+
         this.dateInput = new GeoNode.TimeSlider();
 
 
@@ -513,7 +516,7 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
 
          this.prevButton =  new Ext.Button({text: this.previousText});
          this.prevButton.on('click', this.loadPrevBatch, this);
-    
+
          this.nextButton =  new Ext.Button({text: this.nextText});
          this.nextButton.on('click', this.loadNextBatch, this);
 
@@ -526,13 +529,13 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
                   top: 10,
                   bottom: 10,
                   left: 0,
-                  right: 10
+                  right: 5
               }}),
               items: [this.prevButton, this.nextButton, this.pagerLabel]
           });
           controls.render(controls_el);
           this.permalink = Ext.query('a.permalink')[0];
-         
+
           this.disableControls();
 
           this.updatePermalink();
@@ -542,19 +545,19 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
         var element = this.table.getStore().getAt(index);
         this.showBounds(element);
         this.showPreviewLayer(element);
-        
+
     },
-    
+
     doMouseoverOff: function(){
         this.hideBounds();
         this.hidePreviewLayer();
     },
-    
+
     showBounds : function(element) {
         var bbox = this.getLayerBounds(element);
         this.heatmap.bbox_widget.viewer.fireEvent("showBBox", bbox);
     },
-    
+
     getLayerBounds: function(element){
         var bbox = {};
         bbox.south = element.data.MinY

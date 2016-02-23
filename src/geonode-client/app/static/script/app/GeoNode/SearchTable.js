@@ -1,4 +1,4 @@
-Ext.namespace("GeoNode"); 
+Ext.namespace("GeoNode");
 
 GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
     selectHeaderText: 'UT: Select',
@@ -18,21 +18,21 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
     permalinkText: 'UT: permalink',
     unviewableTooltip: 'UT: Unviewable Data',
     remoteTooltip: 'UT: Remote Data',
-    invalidQueryText: 'Invalid Query', 
+    invalidQueryText: 'Invalid Query',
     searchTermRequired: 'You need to specify a search term',
 
     searchOnLoad: false,
     linkableTitle: true,
 
     constructor: function(config) {
-        this.addEvents('load'); 
+        this.addEvents('load');
         Ext.apply(this, config);
         this.initFromQuery();
         this.loadData();
     },
-    
+
     loadData: function() {
-    
+
         this.searchStore = new Ext.data.JsonStore({
             url: this.searchURL,
             root: 'rows',
@@ -61,7 +61,7 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
             }
             this.fireEvent('load', this);
         }, this);
-        
+
         this.doLayout();
 
         if (this.searchOnLoad)
@@ -78,16 +78,16 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
         if (!this.searchParams.limit) {
             this.searchParams.limit = 25;
         }
-        
+
         if (this.constraints) {
             for (var i = 0; i < this.constraints.length; i++) {
                 this.constraints[i].initFromQuery(this, this.searchParams);
             }
         }
     },
-    
+
     doSearch: function() {
-        /* updates parameters from constraints and 
+        /* updates parameters from constraints and
            permforms a new search */
         if (!this.queryInput.getValue()) {
             Ext.Msg.alert(this.invalidQueryText, this.searchTermRequired);
@@ -101,10 +101,10 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
         }
         this._search(this.searchParams);
     },
-    
-    
+
+
     _search: function(params) {
-       /* search with given parameters */  
+       /* search with given parameters */
         this.disableControls();
         this.pagerLabel.setText(this.loadingText);
         this.searchStore.load({params: params});
@@ -115,7 +115,7 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
         this.searchParams.start += this.searchParams.limit;
         this._search(this.searchParams);
     },
-    
+
     loadPrevBatch: function() {
         this.searchParams.start -= this.searchParams.limit;
         if (this.searchParams.start < 0) {
@@ -138,14 +138,14 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
         else {
             this.prevButton.setDisabled(true);
         }
-        
+
         if (this.searchParams.start + this.searchParams.limit < total) {
             this.nextButton.setDisabled(false);
         }
         else {
             this.nextButton.setDisabled(true);
         }
-        
+
         var minItem = this.searchParams.start + 1;
         var maxItem = minItem + this.searchParams.limit - 1;
         if (minItem > total) {
@@ -155,11 +155,11 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
             maxItem = total;
         }
         this.pagerLabel.setText(this.showingText + ' ' + minItem  +
-                                '-' + maxItem + ' ' + this.ofText + ' ' + 
+                                '-' + maxItem + ' ' + this.ofText + ' ' +
                                 total);
     },
 
-    
+
     updatePermalink: function() {
         if (this.permalink) {
             this.permalink.href = Ext.urlAppend(this.permalinkURL, Ext.urlEncode(this.searchParams));
@@ -167,11 +167,11 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
     },
 
     updateQuery: function() {
-        /* called when main search query changes */ 
+        /* called when main search query changes */
         this.searchParams.q = this.queryInput.getValue();
         this.doSearch();
     },
-    
+
     hookupSearchButtons: function(el) {
         var root = Ext.get(el);
         var buttons = root.query('.search-button');
@@ -187,25 +187,26 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
     },
 
     doLayout: function() {
-        
+
         var widgetHTML =
-        '<div class="search-results">' +
-        '<div class="search-input"></div>' +
-        '<div class="search-table"></div>' +
+        '<div class="search-input" style="width:1024px; height: 256px"></div>' +
+        '<div class="search-carajo" style="width:340px; height: 512px">' +
+        '<div class="search-table" ></div>' +
         '<div class="search-controls"></div>' +
-        '</div>';
-        
+        '</div>' +
+        '<div class="search-map" style="width:645px; height: 512px; background-color:red">';
+
         var el = Ext.get(this.renderTo);
         el.update(widgetHTML);
         var input_el = el.query('.search-input')[0];
         var table_el = el.query('.search-table')[0];
         var controls_el = el.query('.search-controls')[0];
-        
+
         var expander = new GeoNode.SearchTableRowExpander({fetchURL: this.layerDetailURL});
 
 
         tableCfg = {
-            store: this.searchStore, 
+            store: this.searchStore,
             plugins: [expander],
             autoExpandColumn: 'title',
             viewConfig: {
@@ -219,7 +220,7 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
 
         var unviewableTooltip = this.unviewableTooltip;
         var remoteTooltip = this.remoteTooltip;
-        
+
         var columns = [
             expander,
             /*
@@ -263,7 +264,7 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
                     var is_local = record.get('_local');
                     var info_type = '';
                     var tooltip = '';
-                  
+
                     /* do not show detail link for layers without read permission */
                     if (is_local) {
                         var permissions = record.get('_permissions');
@@ -285,7 +286,7 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
                 }
             }
         ];
-        
+
         if (this.trackSelection == true) {
             sm = new Ext.grid.CheckboxSelectionModel({
                 checkOnly: true,
@@ -323,14 +324,14 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
         tableCfg.colModel = colModel;
 
         this.table = new Ext.grid.GridPanel(tableCfg);
-        
+
         this.queryInput = new Ext.form.TextField({
                         fieldLabel: this.searchLabelText,
                         name: 'search',
                         allowBlank:false,
                         width: 350
                      });
-        
+
         this.queryInput.on('specialkey', function(field, e) {
             if (e.getKey() == e.ENTER) {
                 this.updateQuery();
@@ -342,8 +343,9 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
         searchButton.on('click', this.updateQuery, this)
 
         var searchForm = new Ext.Panel({
-             frame:false,
-             border: false,
+             frame:true,
+             border: true,
+             width: '100%',
              layout: new Ext.layout.HBoxLayout({defaultMargins: {
                  top: 10,
                  bottom: 10,
@@ -358,7 +360,7 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
 
          this.prevButton =  new Ext.Button({text: this.previousText});
          this.prevButton.on('click', this.loadPrevBatch, this);
-    
+
          this.nextButton =  new Ext.Button({text: this.nextText});
          this.nextButton.on('click', this.loadNextBatch, this);
 
@@ -377,7 +379,7 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
           });
           controls.render(controls_el);
           this.permalink = Ext.query('a.permalink')[0];
-         
+
           this.disableControls();
 
           if (this.searchParams.q) {

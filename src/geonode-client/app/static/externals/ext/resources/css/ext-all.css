@@ -859,7 +859,7 @@ ul.x-tab-strip li.x-tab-edge {
 }
 
 .x-tab-scrolling {
-    position:relative;    
+    position:relative;
 }
 
 .x-tab-panel-bbar .x-toolbar {
@@ -971,6 +971,7 @@ textarea {
 
 /* 2.0.2 style */
 .x-form-check-wrap {
+
     line-height:18px;
     height: auto;
 }
@@ -2331,7 +2332,7 @@ div.x-toolbar-no-items {
 }
 
 .ext-strict .x-grid3-header-pop-inner {
-    width:14px; 
+    width:14px;
 }
 
 .x-grid3-header-inner {
@@ -4644,7 +4645,7 @@ body.ext-ie6.x-body-masked .x-window select {
 
 .x-html-editor-tb .x-edit-bold, .x-menu-item img.x-edit-bold {
     background-position:0 0;
-    background-image:url(../images/default/editor/tb-sprite.gif);    
+    background-image:url(../images/default/editor/tb-sprite.gif);
 }
 
 .x-html-editor-tb .x-edit-italic, .x-menu-item img.x-edit-italic {
@@ -5044,6 +5045,7 @@ body.ext-ie6.x-body-masked .x-window select {
 }
 
 .x-box-inner {
+
     overflow:hidden;
     zoom:1;
     position:relative;
@@ -5202,7 +5204,7 @@ body.ext-ie6.x-body-masked .x-window select {
     -khtml-user-select:none;
     -webkit-user-select:ignore;
 	display:block;
-	overflow:hidden;  
+	overflow:hidden;
 }
 
 /* Horizontal styles */
@@ -5313,7 +5315,7 @@ body.ext-ie6.x-body-masked .x-window select {
 }
 
 .x-window-dlg .x-dlg-icon .ext-mb-content{
-    zoom: 1; 
+    zoom: 1;
     margin-left: 47px;
 }
 
@@ -5366,7 +5368,7 @@ body.ext-ie6.x-body-masked .x-window select {
 }
 
 /*
-.x-color-palette em:hover, .x-color-palette span:hover{   
+.x-color-palette em:hover, .x-color-palette span:hover{
     background-color: #deecfd;
 }
 */
@@ -5603,7 +5605,7 @@ ul.x-tab-strip-bottom{
 }
 
 .x-form-item {
-    font:normal 12px tahoma, arial, helvetica, sans-serif;
+    font:normal 10px tahoma, arial, helvetica, sans-serif;
 }
 
 .x-form-invalid-msg {
@@ -6670,7 +6672,7 @@ a.x-menu-item {
 
 .x-panel-header {
     color:#15428b;
-	font-weight:bold; 
+	font-weight:bold;
     font-size: 11px;
     font-family: tahoma,arial,verdana,sans-serif;
     border-color:#99bbe8;
@@ -6678,6 +6680,7 @@ a.x-menu-item {
 }
 
 .x-panel-body {
+    font-size: 10px;
     border-color:#99bbe8;
     background-color:#fff;
 }

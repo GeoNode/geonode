@@ -856,9 +856,14 @@ a.x-grid3-hd-btn {
 }
 
 .x-form-text, textarea.x-form-field {
+    color: #808080;
     background-color: #FFF;
     background-image: none;
     border-color: #d3d3d3;
+    margin-bottom: 5px;
+    margin-right: 5px;
+    margin-left: 5px;
+    border-radius: 3px;
 }
 
 .x-grid3-scroller {
@@ -926,9 +931,9 @@ td.x-grid3-hd-over .x-grid3-hd-inner, td.sort-desc .x-grid3-hd-inner, td.sort-as
     background: transparent none repeat-x scroll left bottom;
 }
 
-.olImageLoadError { 
+.olImageLoadError {
     opacity: 0 !important;
-    filter: alpha(opacity=0) !important; 
+    filter: alpha(opacity=0) !important;
 }
 
 #data_cart > .selection-table{

@@ -25,7 +25,7 @@ var isMobile = {
     any: function() {
         return (isMobile.Android() || isMobile.BlackBerry() || isMobile.iOS() || isMobile.Opera() || isMobile.Windows());
     }
-};    
+};
 </script>
 
 <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
@@ -184,7 +184,7 @@ var init = function() {
     }
 
     app = new GeoExplorer(config, true);
-    
+
     var permalinkTemplate = new Ext.Template("{protocol}//{host}/maps/{id}/edit");
     var permalink = function(id) {
         return permalinkTemplate.apply({
@@ -203,11 +203,11 @@ var init = function() {
         Ext.DomHelper.overwrite(Ext.get("page-breadcrumb"), titleTemplate.apply({title: (config.about.title ? config.about.title : gettext('New Map'))}));
 
 
-	
+
 
     }, this);
-    
-    
+
+
     {% endautoescape %}
     }
 
@@ -227,23 +227,23 @@ var init = function() {
 <div style="float:left;position:relative;margin:10px;width:100%;height:256px;">
   <div class="block">
     <h2>{% trans "Search" %} <span class="subtitle">{% trans "for geospatial data" %}</span></h2>
-    <div id="search_form"></div>
+    <div id="search_form" style="width: 968px; height: 238px"></div>
   </div>
 </div>
 
 
 
 <div style="position:relative;float:right;width:100%;">
-  
-  <div style="float:left;width:50%">
-    <div id="search_results"></div>
+
+  <div style="float:left;width:340px">
+    <div id="search_results" style="margin-left:15px;"></div>
     <div id="selection">
-        <div id="data_cart"></div>
+        <div id="data_cart" style="margin-left:15px;"></div>
     </div>
     <div id="data_ops">
     </div>
   </div>
-  <div id="refine" style="float:left;width:50%">
+  <div id="refine" style="float:left;width:630px;padding-bottom:15px;">
     <div class="bbox-controls">
       <div class="bbox-expand">
       </div>
@@ -265,8 +265,8 @@ var init = function() {
                 <div style="position:relative;float:left;">
 
 
-                    <h3>{%trans "Rectify Images"  %}</h3>    
-                    
+                    <h3>{%trans "Rectify Images"  %}</h3>
+
                     <p style="font-size: 14px">{% trans "Use <a target='_blank' href='http://warp.worldmap.harvard.edu'>WorldMap WARP</a> to upload and rectify scanned maps for use in WorldMap." %} <br/><br/> {% trans "Maps rectified using this tool can be brought into WorldMap by following the instructions under Section 4.5 in <a href='{{ STATIC_URL }}docs/WorldMap_Help.pdf'>WorldMap Help</a>." %}</p>
                     <br/><br/>
                     <div align="center"><a target="_blank" href="http://warp.worldmap.harvard.edu"><img src="{{ STATIC_URL }}theme/img/warper-sample.jpg" border="0" /></a></div>
@@ -281,4 +281,3 @@ var init = function() {
 
 
 {% endblock %}
-

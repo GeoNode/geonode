@@ -282,7 +282,7 @@ ul.x-tab-strip-bottom{
 }
 
 .x-form-item {
-    font:normal 12px tahoma, arial, helvetica, sans-serif;
+    font:normal 10px tahoma, arial, helvetica, sans-serif;
 }
 
 .x-form-invalid-msg {
@@ -1663,11 +1663,11 @@ body.x-body-masked .x-window-plain .x-window-mc {
     border-color: #d0d0d0;
 }
 .x-slider-horz, .x-slider-horz .x-slider-end, .x-slider-horz .x-slider-inner {
-    background-image:url(../images/white/slider/slider-bg.png);
+    background-image:url(../images/white/slider/slider-bg-flat.png);
 }
 
 .x-slider-horz .x-slider-thumb {
-    background-image:url(../images/white/slider/slider-thumb.png);
+    background-image:url(../images/white/slider/slider-thumb-flat.png);
 }
 
 .x-slider-vert, .x-slider-vert .x-slider-end, .x-slider-vert .x-slider-inner {
