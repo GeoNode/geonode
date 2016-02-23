@@ -189,6 +189,13 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
     updateQuery: function() {
         /* called when main search query changes */
         GeoNode.queryTerms.q = this.queryInput.getValue();
+
+        // Remove any Originator filter if there
+        for(var i=0;i<GeoNode.queryTerms.fq.length;i++){
+            if(GeoNode.queryTerms.fq[i].indexOf('Originator') > -1){
+                GeoNode.queryTerms.fq.splice(i, 1);
+            }
+        };
         if (this.originatorInput.getValue() !== ''){
             GeoNode.queryTerms.fq.push('Originator:' + this.originatorInput.getValue());
         }
