@@ -54,7 +54,6 @@
             }
         });
         $rootScope.keywords = data.objects;
-        module.haystack_facets($http, $rootScope, $location);
 
         $http.get(REGIONS_ENDPOINT, {params: params}).success(function(data){
             if($location.search().hasOwnProperty('regions__name__in')){
