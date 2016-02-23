@@ -537,7 +537,11 @@ def new_map_config(request):
                 x = (minx + maxx) / 2
                 y = (miny + maxy) / 2
 
-                center = list(forward_mercator((x, y)))
+                if getattr(settings, 'DEFAULT_MAP_CRS', 'EPSG:900913') == "EPSG:4326":
+                    center = list((x, y))
+                else:
+                    center = list(forward_mercator((x, y)))
+
                 if center[1] == float('-inf'):
                     center[1] = 0
 
