@@ -8,7 +8,9 @@ var heatmapParams = {
     "Area:[0 TO 400]",
     "!(Area:1 AND MaxX:0 AND MaxY:0)"
   ],
-  'facet.heatmap.geom': ""
+  'facet.heatmap.geom': "",
+  rows: 0,
+  "facet.heatmap.gridLevel": 3
 };
 
 GeoNode.HeatmapModel = Ext.extend(Ext.util.Observable, {
