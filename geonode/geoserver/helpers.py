@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #########################################################################
 #
-# Copyright (C) 2012 OpenPlans
+# Copyright (C) 2012 Open Source Geospatial Foundation
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -17,6 +17,7 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
+
 import json
 import sys
 import os
@@ -455,7 +456,7 @@ def gs_slurp(
                 "storeType": the_store.resource_type,
                 "typename": "%s:%s" % (workspace.name.encode('utf-8'), resource.name.encode('utf-8')),
                 "title": resource.title or 'No title provided',
-                "abstract": resource.abstract or 'No abstract provided',
+                "abstract": resource.abstract or unicode(_('No abstract provided')).encode('utf-8'),
                 "owner": owner,
                 "uuid": str(uuid.uuid4()),
                 "bbox_x0": Decimal(resource.latlon_bbox[0]),
@@ -1524,7 +1525,7 @@ def style_update(request, url):
             style = Style(name=style_name, sld_body=sld_body, sld_url=url)
             style.save()
             layer = Layer.objects.all().filter(typename=layer_name)[0]
-            style.layer_styles.add(layer)
+            style.LayerStyles.add(layer)
             style.save()
         if request.method == 'PUT':  # update style in GN
             style = Style.objects.all().filter(name=style_name)[0]
@@ -1533,7 +1534,7 @@ def style_update(request, url):
             if len(elm_user_style_title.text) > 0:
                 style.sld_title = elm_user_style_title.text
             style.save()
-            for layer in style.layer_styles.all():
+            for layer in style.LayerStyles.all():
                 layer.save()
     if request.method == 'DELETE':  # delete style from GN
         style_name = os.path.basename(request.path)
@@ -1697,3 +1698,40 @@ def _fixup_ows_url(thumb_spec):
     gspath = '"' + ogc_server_settings.public_url  # this should be in img src attributes
     repl = '"' + ogc_server_settings.LOCATION
     return re.sub(gspath, repl, thumb_spec)
+
+
+def mosaic_delete_first_granule(cat, layer):
+    # - since GeoNode will uploade the first granule again through the Importer, we need to /
+    #   delete the one created by the gs_config
+    cat._cache.clear()
+    store = cat.get_store(layer)
+    coverages = cat.mosaic_coverages(store)
+
+    granule_id = layer + ".1"
+
+    cat.mosaic_delete_granule(coverages['coverages']['coverage'][0]['name'], store, granule_id)
+
+
+def set_time_dimension(cat, layer, time_presentation, time_presentation_res, time_presentation_default_value,
+                       time_presentation_reference_value):
+    # configure the layer time dimension as LIST
+    cat._cache.clear()
+
+    presentation = time_presentation
+    if not presentation:
+        presentation = "LIST"
+
+    resolution = None
+    if time_presentation == 'DISCRETE_INTERVAL':
+        resolution = time_presentation_res
+
+    strategy = None
+    if time_presentation_default_value and not time_presentation_default_value == "":
+        strategy = time_presentation_default_value
+
+    timeInfo = DimensionInfo("time", "true", presentation, resolution, "ISO8601", None, attribute="time",
+                             strategy=strategy, reference_value=time_presentation_reference_value)
+
+    resource = cat.get_layer(layer).resource
+    resource.metadata = {'time': timeInfo}
+    cat.save(resource)

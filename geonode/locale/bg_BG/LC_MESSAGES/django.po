@@ -14,13 +14,15 @@
 # Translators:
 # Translators:
 # Translators:
+# Translators:
+# Translators:
 # Lyubomir Filipov <lubomirfilipov@gmail.com>, 2015
 msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-10-29 04:21-0500\n"
-"PO-Revision-Date: 2015-10-29 09:05+0000\n"
+"POT-Creation-Date: 2016-04-14 03:50-0500\n"
+"PO-Revision-Date: 2016-04-14 08:37+0000\n"
 "Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
 "Language-Team: Bulgarian (Bulgaria) (http://www.transifex.com/geonode/"
 "geonode/language/bg_BG/)\n"
@@ -32,572 +34,583 @@ msgstr ""
 
 #: utils.py:43
 msgid "Invalid permission level."
-msgstr ""
+msgstr "Невалидно ниво на достъп"
 
-#: utils.py:496
+#: utils.py:502
 msgid "Permission Denied"
-msgstr ""
+msgstr "Отказано разрешение"
 
 #: base/enumerations.py:27
 msgid "series"
-msgstr ""
+msgstr "серии"
 
 #: base/enumerations.py:28
 msgid "computer program or routine"
-msgstr ""
+msgstr "компютърна програма или практика"
 
 #: base/enumerations.py:29
 msgid "feature type"
-msgstr ""
+msgstr "тип функция"
 
 #: base/enumerations.py:30
 msgid "copy or imitation of an existing or hypothetical object"
-msgstr ""
+msgstr "копие или наподобяване на съществуващ или хипотететичен обект"
 
 #: base/enumerations.py:31
 msgid "collection hardware"
-msgstr ""
+msgstr "набор от хардуер"
 
 #: base/enumerations.py:32
 msgid "collection session"
-msgstr ""
+msgstr "сесия по събиране"
 
 #: base/enumerations.py:33
 msgid "non-geographic data"
-msgstr ""
+msgstr "не-географски данни"
 
 #: base/enumerations.py:34
 msgid "property type"
-msgstr ""
+msgstr "вид собственост"
 
 #: base/enumerations.py:35
 msgid "field session"
-msgstr ""
+msgstr "поле на сесията"
 
 #: base/enumerations.py:36
 msgid "dataset"
-msgstr ""
+msgstr "набор на данни"
 
 #: base/enumerations.py:37
 msgid "service interfaces"
-msgstr ""
+msgstr "интерфейс за услуги"
 
 #: base/enumerations.py:38
 msgid "attribute class"
-msgstr ""
+msgstr "атрибутивен клас"
 
 #: base/enumerations.py:39
 msgid "characteristic of a feature"
-msgstr ""
+msgstr "характеристика на особеност"
 
 #: base/enumerations.py:40
 msgid "tile or spatial subset of geographic data"
-msgstr ""
+msgstr "набор от географски данни"
 
 #: base/enumerations.py:41
 msgid "feature"
-msgstr ""
+msgstr "особеност"
 
 #: base/enumerations.py:42
 msgid "dimension group"
-msgstr ""
+msgstr "измерение на група"
 
 #: base/enumerations.py:46
 msgid "frequency of maintenance for the data is not known"
-msgstr ""
+msgstr "неизвестна честота на поддръжка на данните"
 
 #: base/enumerations.py:47
 msgid "data is repeatedly and frequently updated"
-msgstr ""
+msgstr "данни се обновяват често"
 
 #: base/enumerations.py:48
 msgid "there are no plans to update the data"
-msgstr ""
+msgstr "няма планове да се обновяват данните"
 
 #: base/enumerations.py:49
 msgid "data is updated each day"
-msgstr ""
+msgstr "данните се обновяват всеки ден"
 
 #: base/enumerations.py:50
 msgid "data is updated every year"
-msgstr ""
+msgstr "данните се обновяват всяка година"
 
 #: base/enumerations.py:51
 msgid "data is updated as deemed necessary"
-msgstr ""
+msgstr "данните се обновяват при необходимост"
 
 #: base/enumerations.py:52
 msgid "data is updated each month"
-msgstr ""
+msgstr "данните се обновяват всеки месец"
 
 #: base/enumerations.py:53
 msgid "data is updated every two weeks"
-msgstr ""
+msgstr "данните се обновяват на всеки две седмици"
 
 #: base/enumerations.py:55
 msgid "data is updated in intervals that are uneven in duration"
-msgstr ""
+msgstr "данните се обновяват на неравни интервали"
 
 #: base/enumerations.py:56
 msgid "data is updated on a weekly basis"
-msgstr ""
+msgstr "данните се обновяват ежеседмично"
 
 #: base/enumerations.py:57
 msgid "data is updated twice each year"
-msgstr ""
+msgstr "данните се обновяват два пъти всяка година"
 
 #: base/enumerations.py:58
 msgid "data is updated every three months"
-msgstr ""
+msgstr "данните се обновяват на всеки три месеца"
 
 #: base/enumerations.py:77
 msgid "No information provided"
-msgstr ""
+msgstr "Няма предоставена информация"
 
 #: base/forms.py:43 base/templates/base/resourcebase_info_panel.html:62
 #: documents/templates/documents/document_metadata.html:65
-#: layers/templates/layers/layer_metadata.html:70
-#: layers/templates/upload/layer_upload.html:89
-#: maps/templates/maps/map_metadata.html:61
+#: layers/templates/layers/layer_metadata.html:75
+#: maps/templates/maps/map_metadata.html:61 templates/metadata_detail.html:86
 msgid "Category"
-msgstr ""
+msgstr "Категория"
 
 #: base/forms.py:52
 msgid "Category is required."
+msgstr "Изисква се категория"
+
+#: base/forms.py:64 base/models.py:257
+#: base/templates/base/_resourcebase_contact_snippet.html:10
+#: base/templates/base/resourcebase_info_panel.html:84
+#: templates/metadata_detail.html:110
+msgid "Owner"
+msgstr "Собственик"
+
+#: base/forms.py:82 base/templates/base/resourcebase_info_panel.html:34
+#: contrib/exif/templates/exif/_exif_document_detail.html:13
+#: templates/metadata_detail.html:69 templates/search/_general_filters.html:47
+msgid "Date"
+msgstr "Дата"
+
+#: base/forms.py:88 base/models.py:295
+msgid "temporal extent start"
+msgstr "начало на времеви обхват"
+
+#: base/forms.py:95 base/models.py:297
+msgid "temporal extent end"
+msgstr "край на времеви обхват"
+
+#: base/forms.py:103 base/forms.py:111
+msgid "Person outside GeoNode (fill form)"
 msgstr ""
 
-#: base/forms.py:114 groups/models.py:45 people/forms.py:82
+#: base/forms.py:104 base/templates/base/_resourcebase_contact_snippet.html:14
+#: base/templates/base/resourcebase_info_panel.html:89
+#: documents/templates/documents/document_metadata.html:33
+#: documents/templates/documents/document_metadata.html:55
+#: layers/templates/layers/layer_metadata.html:39
+#: layers/templates/layers/layer_metadata.html:112
+#: maps/templates/maps/map_metadata.html:51
+msgid "Point of Contact"
+msgstr "Точка за контакт"
+
+#: base/forms.py:112 base/templates/base/_resourcebase_contact_snippet.html:18
+#: documents/templates/documents/document_metadata.html:29
+#: layers/templates/layers/layer_metadata.html:35
+#: templates/metadata_detail.html:329
+msgid "Metadata Author"
+msgstr "Автор на метаданни"
+
+#: base/forms.py:119 base/templates/base/resourcebase_info_panel.html:50
+#: groups/models.py:64 people/templates/people/profile_detail.html:103
+#: templates/metadata_detail.html:79 templates/metadata_detail.html.py:140
+#: templates/metadata_detail.html:282 templates/metadata_detail.html.py:358
+#: templates/search/_general_filters.html:19
+msgid "Keywords"
+msgstr "Ключови думи"
+
+#: base/forms.py:121 groups/models.py:65 people/forms.py:82
 msgid "A space or comma-separated list of keywords"
-msgstr ""
+msgstr "Списък с ключови думи, отделени с празно място или запетая"
 
-#: base/models.py:44 services/models.py:86
+#: base/forms.py:125 base/templates/base/resourcebase_info_panel.html:72
+#: templates/metadata_detail.html:96 templates/search/_region_filter.html:5
+msgid "Regions"
+msgstr "Региони"
+
+#: base/models.py:64 services/models.py:106
 msgid "function performed by the responsible party"
-msgstr ""
+msgstr "функцията се изпълнява от отговорния екип"
 
-#: base/models.py:212
+#: base/models.py:232
 msgid "reference date for the cited resource"
-msgstr ""
+msgstr "референтни данни за цитирания ресурс"
 
-#: base/models.py:213
+#: base/models.py:233
 msgid "identification of when a given event occurred"
-msgstr ""
+msgstr "идентификация за това кога се е случило дадено събитие"
 
-#: base/models.py:214
+#: base/models.py:234
 msgid "version of the cited resource"
-msgstr ""
+msgstr "версия на цитирания ресурс"
 
-#: base/models.py:215
+#: base/models.py:235
 msgid "brief narrative summary of the content of the resource(s)"
-msgstr ""
+msgstr "кратко описателно обобщение на съдържанието на ресурса(и)"
 
-#: base/models.py:216
+#: base/models.py:236
 msgid "summary of the intentions with which the resource(s) was developed"
-msgstr ""
+msgstr "обобщение на намеренията, с които е разработен ресурса(и)"
 
-#: base/models.py:217
+#: base/models.py:237
 msgid ""
 "frequency with which modifications and deletions are made to the data after "
 "it is first produced"
 msgstr ""
+"честота, с която са правени модификации и изтривания на данните, след "
+"първоначалното им създаване"
 
-#: base/models.py:219
+#: base/models.py:239
 msgid ""
 "commonly used word(s) or formalised word(s) or phrase(s) used to describe "
 "the subject (space or comma-separated"
 msgstr ""
+"често срещани думи(а) или официални думи(а) или фрази(а) използвани, за да "
+"се опише предмета (разделени с празно място или запетая"
 
-#: base/models.py:221
+#: base/models.py:241
 msgid "keyword identifies a location"
-msgstr ""
+msgstr "ключовата дума идентифицира локация"
 
-#: base/models.py:222
+#: base/models.py:242
 msgid "limitation(s) placed upon the access or use of the data."
-msgstr ""
+msgstr "ограничение(я) са наложени върху достъпа или употребат на данните"
 
-#: base/models.py:223
+#: base/models.py:243
 msgid ""
 "other restrictions and legal prerequisites for accessing and using the "
 "resource or metadata"
 msgstr ""
+"други ограничения и правни предпоставки за достъп и използване на ресурса "
+"или метаданните"
 
-#: base/models.py:225
+#: base/models.py:245
 msgid "license of the dataset"
-msgstr ""
+msgstr "лиценз на набора на данни"
 
-#: base/models.py:226
+#: base/models.py:246
 msgid "language used within the dataset"
-msgstr ""
+msgstr "език използван в набора на данни"
 
-#: base/models.py:227
+#: base/models.py:247
 msgid ""
 "high-level geographic data thematic classification to assist in the grouping "
 "and search of available geographic data sets."
 msgstr ""
+"тематична класификация на географки данни на високо равнище, която допринася "
+"за групирането и търсенето на налични географски набори на данни"
 
-#: base/models.py:229
+#: base/models.py:249
 msgid "method used to represent geographic information in the dataset."
-msgstr ""
+msgstr "метод използван да представи географска информация в набора данни"
 
-#: base/models.py:230
+#: base/models.py:250
 msgid "time period covered by the content of the dataset (start)"
-msgstr ""
+msgstr "времеви период покрит от съдържанието на набора данни (начало)"
 
-#: base/models.py:231
+#: base/models.py:251
 msgid "time period covered by the content of the dataset (end)"
-msgstr ""
+msgstr "времеви период покрит от съдържанието на набора данни (край)"
 
-#: base/models.py:232
-msgid ""
-"information about on-line sources from which the dataset, specification, or "
-"community profile name and extended metadata elements can be obtained"
-msgstr ""
-
-#: base/models.py:234
-msgid "detailed text description of what the online resource is/does"
-msgstr ""
-
-#: base/models.py:235
+#: base/models.py:252
 msgid ""
 "general explanation of the data producer's knowledge about the lineage of a "
 "dataset"
 msgstr ""
+"общо описание на знанията на създателя на данни относно произхода на набора "
+"данни"
 
-#: base/models.py:240
-#: base/templates/base/_resourcebase_contact_snippet.html:10
-#: base/templates/base/resourcebase_info_panel.html:84
-msgid "Owner"
-msgstr ""
-
-#: base/models.py:242
+#: base/models.py:259
 msgid "title"
 msgstr "заглавие"
 
-#: base/models.py:242
+#: base/models.py:259
 msgid "name by which the cited resource is known"
-msgstr ""
+msgstr "име, с което е познат цитирания ресурс"
 
-#: base/models.py:243
+#: base/models.py:260
 msgid "date"
-msgstr ""
+msgstr "дата"
 
-#: base/models.py:244
+#: base/models.py:261
 msgid "date type"
-msgstr ""
+msgstr "тип дата"
 
-#: base/models.py:246
+#: base/models.py:263
 msgid "edition"
-msgstr ""
+msgstr "издание"
 
-#: base/models.py:247
+#: base/models.py:264
 msgid "abstract"
-msgstr ""
+msgstr "резюме"
 
-#: base/models.py:248
+#: base/models.py:265
 msgid "purpose"
-msgstr ""
+msgstr "предназначение"
 
-#: base/models.py:249
+#: base/models.py:266
 msgid "maintenance frequency"
-msgstr ""
+msgstr "честота на поддръжката"
 
-#: base/models.py:252 people/models.py:92
+#: base/models.py:269 people/models.py:92
 msgid "keywords"
 msgstr "ключови думи"
 
-#: base/models.py:253
+#: base/models.py:270
 msgid "keywords region"
-msgstr ""
+msgstr "област ключови думи"
 
-#: base/models.py:256
+#: base/models.py:273
 msgid "restrictions"
-msgstr ""
+msgstr "ограничения други"
 
-#: base/models.py:260
+#: base/models.py:277
 msgid "restrictions other"
-msgstr ""
+msgstr "ограничения други"
 
-#: base/models.py:264 base/templates/base/resourcebase_info_panel.html:16
+#: base/models.py:281 base/templates/base/resourcebase_info_panel.html:16
 #: base/templates/base/resourcebase_info_panel.html:108
+#: templates/metadata_detail.html:55 templates/metadata_detail.html.py:191
 msgid "License"
-msgstr ""
-
-#: base/models.py:266
-msgid "language"
-msgstr ""
-
-#: base/models.py:274
-msgid "spatial representation type"
-msgstr ""
-
-#: base/models.py:278
-msgid "temporal extent start"
-msgstr "начало на времеви обхват"
-
-#: base/models.py:280
-msgid "temporal extent end"
-msgstr "край на времеви обхват"
+msgstr "Лиценз"
 
 #: base/models.py:283
+msgid "language"
+msgstr "език"
+
+#: base/models.py:291
+msgid "spatial representation type"
+msgstr "вид пространствено представяне"
+
+#: base/models.py:300
 msgid "supplemental information"
-msgstr ""
+msgstr "допълнителна информация"
 
-#: base/models.py:284
+#: base/models.py:301
 msgid "any other descriptive information about the dataset"
-msgstr ""
+msgstr "всякаква друга описателна информация относно набора данни"
 
-#: base/models.py:287
-msgid "distribution URL"
-msgstr ""
-
-#: base/models.py:289
-msgid "distribution description"
-msgstr ""
-
-#: base/models.py:293
+#: base/models.py:304
 msgid "data quality statement"
-msgstr ""
-
-#: base/models.py:308
-msgid "CSW typename"
-msgstr ""
-
-#: base/models.py:310
-msgid "CSW schema"
-msgstr ""
-
-#: base/models.py:315
-msgid "CSW source"
-msgstr ""
-
-#: base/models.py:316
-msgid "CSW insert date"
-msgstr ""
-
-#: base/models.py:317
-msgid "CSW type"
-msgstr ""
-
-#: base/models.py:318
-msgid "CSW anytext"
-msgstr ""
+msgstr "информация за качеството на данни"
 
 #: base/models.py:319
+msgid "CSW typename"
+msgstr "CSW име"
+
+#: base/models.py:321
+msgid "CSW schema"
+msgstr "CSW схема"
+
+#: base/models.py:326
+msgid "CSW source"
+msgstr "CSW източник"
+
+#: base/models.py:327
+msgid "CSW insert date"
+msgstr "CSW дата на въвеждане"
+
+#: base/models.py:328
+msgid "CSW type"
+msgstr "CSW тип"
+
+#: base/models.py:329
+msgid "CSW anytext"
+msgstr "CSW текст"
+
+#: base/models.py:330
 msgid "CSW WKT geometry"
-msgstr ""
+msgstr "CSW WKT геометрия"
 
-#: base/models.py:332
+#: base/models.py:344 templates/metadata_detail.html:103
 msgid "Featured"
-msgstr ""
+msgstr "Показани"
 
-#: base/models.py:333
+#: base/models.py:345
 msgid "Should this resource be advertised in home page?"
-msgstr ""
+msgstr "Трябва ли този ресурса да бъде обявен на началната страница?"
 
-#: base/models.py:334
+#: base/models.py:346
 msgid "Is Published"
-msgstr ""
+msgstr "Е публикуван"
 
-#: base/models.py:335
+#: base/models.py:347
 msgid "Should this resource be published and searchable?"
-msgstr ""
+msgstr "Трябва ли този ресурс да бъде публикуван и възможен за търсене?"
 
-#: base/models.py:704
+#: base/models.py:716
 msgid "For example \"kml\""
-msgstr ""
+msgstr "Например \"kml\""
 
-#: base/models.py:706
+#: base/models.py:718
 msgid "For example \"View in Google Earth\""
-msgstr ""
+msgstr "Например \"Виж в Google Earth\""
 
-#: base/models.py:707
+#: base/models.py:719
 msgid "For example \"text/xml\""
-msgstr ""
+msgstr "Например \"text/xml\""
 
-#: base/management/__init__.py:14
+#: base/management/__init__.py:34
 msgid "Request to download a resource"
-msgstr ""
+msgstr "Заявка за изтегляне на ресурс"
 
-#: base/management/__init__.py:15
+#: base/management/__init__.py:35
 msgid "A request for downloading a resource was sent"
-msgstr ""
+msgstr "Заявка за изтегляне на ресурс беше изпратена"
 
 #: base/templates/base/_resourcebase_contact_snippet.html:3
-#: templates/500.html:151 templates/base.html:144
+#: templates/500.html:151 templates/base.html:145
 msgid "About"
-msgstr ""
+msgstr "Относно"
 
 #: base/templates/base/_resourcebase_contact_snippet.html:5
 msgid "Owner, Point of Contact, Metadata Author"
 msgstr "Собственик, Контакт, Автор на метаданни"
 
-#: base/templates/base/_resourcebase_contact_snippet.html:14
-#: base/templates/base/resourcebase_info_panel.html:89
-#: documents/templates/documents/document_metadata.html:33
-#: documents/templates/documents/document_metadata.html:55
-#: layers/templates/layers/layer_metadata.html:36
-#: layers/templates/layers/layer_metadata.html:107
-#: maps/templates/maps/map_metadata.html:51
-msgid "Point of Contact"
-msgstr ""
-
-#: base/templates/base/_resourcebase_contact_snippet.html:18
-#: documents/templates/documents/document_metadata.html:29
-#: layers/templates/layers/layer_metadata.html:32
-msgid "Metadata Author"
-msgstr "Автор на метаданни"
-
-#: base/templates/base/resourcebase_info_panel.html:6 groups/models.py:34
-#: services/forms.py:24 templates/announcements/announcement_list.html:20
+#: base/templates/base/resourcebase_info_panel.html:6 groups/models.py:54
+#: services/forms.py:44 templates/metadata_detail.html:41
+#: templates/announcements/announcement_list.html:20
 msgid "Title"
 msgstr "Заглавие"
 
 #: base/templates/base/resourcebase_info_panel.html:11
 #: base/templates/base/resourcebase_info_panel.html:103
 msgid "SRID"
-msgstr ""
+msgstr "SRID"
 
-#: base/templates/base/resourcebase_info_panel.html:29 services/forms.py:29
+#: base/templates/base/resourcebase_info_panel.html:29 services/forms.py:49
+#: templates/metadata_detail.html:46
 msgid "Abstract"
-msgstr ""
-
-#: base/templates/base/resourcebase_info_panel.html:34
-#: contrib/exif/templates/exif/_exif_document_detail.html:13
-#: templates/search/_general_filters.html:47
-msgid "Date"
-msgstr "Дата"
+msgstr "Резюме"
 
 #: base/templates/base/resourcebase_info_panel.html:45
-#: layers/templates/layers/layer_detail.html:345
+#: layers/templates/layers/layer_detail.html:352
+#: templates/metadata_detail.html:74
 msgid "Type"
-msgstr ""
-
-#: base/templates/base/resourcebase_info_panel.html:50 groups/models.py:44
-#: people/templates/people/profile_detail.html:78
-#: templates/search/_general_filters.html:19
-msgid "Keywords"
-msgstr "Ключови думи"
-
-#: base/templates/base/resourcebase_info_panel.html:72
-#: templates/search/_region_filter.html:5
-msgid "Regions"
-msgstr ""
+msgstr "Вид"
 
 #: base/templates/base/resourcebase_info_panel.html:95
 msgid "More info"
-msgstr ""
+msgstr "Повече информация"
 
 #: base/templates/base/resourcebase_info_panel.html:121
+#: templates/metadata_detail.html:204
 msgid "Maintenance Frequency"
-msgstr ""
+msgstr "Честота на поддръжка"
 
 #: base/templates/base/resourcebase_info_panel.html:126
+#: templates/metadata_detail.html:209
 msgid "Restrictions"
-msgstr ""
+msgstr "Ограничения"
 
 #: base/templates/base/resourcebase_info_panel.html:135
+#: templates/metadata_detail.html:218
 msgid "Edition"
-msgstr ""
+msgstr "Издание"
 
 #: base/templates/base/resourcebase_info_panel.html:140
+#: templates/metadata_detail.html:223
 msgid "Purpose"
-msgstr ""
+msgstr "Предназначение"
 
 #: base/templates/base/resourcebase_info_panel.html:145 templates/500.html:154
-#: templates/base.html:147
+#: templates/base.html:148 templates/metadata_detail.html:228
 msgid "Language"
-msgstr ""
+msgstr "Език"
 
 #: base/templates/base/resourcebase_info_panel.html:150
+#: templates/metadata_detail.html:233
 msgid "Temporal Extent"
 msgstr "Времеви обхват"
 
 #: base/templates/base/resourcebase_info_panel.html:155
+#: templates/metadata_detail.html:238
 msgid "Data Quality"
-msgstr ""
+msgstr "Качество на Данните"
 
 #: base/templates/base/resourcebase_info_panel.html:160
+#: templates/metadata_detail.html:243
 msgid "Supplemental Information"
-msgstr ""
+msgstr "Допълнителна Информация"
 
 #: base/templates/base/resourcebase_info_panel.html:165
+#: templates/metadata_detail.html:248
 msgid "Spatial Representation Type"
-msgstr ""
+msgstr "Вид Пространствено Представяне"
 
 #: contrib/exif/templates/exif/_exif_document_detail.html:5
 msgid "Width"
-msgstr ""
+msgstr "Широчина "
 
 #: contrib/exif/templates/exif/_exif_document_detail.html:7
 msgid "Height"
-msgstr ""
+msgstr "Височина"
 
 #: contrib/exif/templates/exif/_exif_document_detail.html:9
 msgid "Make"
-msgstr ""
+msgstr "Направи"
 
 #: contrib/exif/templates/exif/_exif_document_detail.html:11
 msgid "Model"
-msgstr ""
+msgstr "Модел"
 
 #: contrib/exif/templates/exif/_exif_document_detail.html:15
 #: layers/templates/upload/layer_upload_csv.html:24
 msgid "Latitude"
-msgstr ""
+msgstr "Географска ширина"
 
 #: contrib/exif/templates/exif/_exif_document_detail.html:16
 #: contrib/exif/templates/exif/_exif_document_detail.html:18
 msgid "Not specified"
-msgstr ""
+msgstr "Неопределен"
 
 #: contrib/exif/templates/exif/_exif_document_detail.html:17
 #: layers/templates/upload/layer_upload_csv.html:37
 msgid "Longitude"
-msgstr ""
+msgstr "Географска дължина"
 
 #: contrib/exif/templates/exif/_exif_document_detail.html:19
 msgid "Flash"
-msgstr ""
+msgstr "Flash"
 
 #: contrib/exif/templates/exif/_exif_document_detail.html:20
 msgid "True"
-msgstr ""
+msgstr "Верен"
 
 #: contrib/exif/templates/exif/_exif_document_detail.html:20
 msgid "False"
-msgstr ""
+msgstr "Грешен"
 
 #: contrib/exif/templates/exif/_exif_document_detail.html:21
 msgid "Speed Rating"
-msgstr ""
+msgstr "Бърза оценка"
 
 #: contrib/favorite/readme.txt:38
 #: contrib/favorite/templates/favorite/_favorite.html:5
 msgid "Favorite"
-msgstr ""
+msgstr "Предпочитан"
 
 #: contrib/favorite/readme.txt:68 contrib/favorite/readme.txt.py:76
 msgid "Favorites"
-msgstr ""
+msgstr "Любими"
 
 #: contrib/favorite/templates/favorite/_favorite.html:17
 msgid "Log in to add/delete Favorites."
-msgstr ""
+msgstr "Влезте в профила си, за да добавяте/изтривате предпочитания."
 
 #: contrib/favorite/templates/favorite/_favorite_js.html:23
 msgid "Delete from Favorites"
-msgstr ""
+msgstr "Изтрий от Любими"
 
 #: contrib/favorite/templates/favorite/_favorite_js.html:26
 msgid "Add to Favorites"
-msgstr "Add to Favorites"
+msgstr "Добави в Любими"
 
 #: contrib/favorite/templates/favorite/favorite_list.html:8
 msgid "Favorites for"
-msgstr ""
+msgstr "Любими за"
 
-#: contrib/geosites/views.py:106 geoserver/views.py:422 geoserver/views.py:477
+#: contrib/geosites/views.py:126 geoserver/views.py:442 geoserver/views.py:497
 msgid "Bad HTTP Authorization Credentials."
-msgstr ""
+msgstr "Лоша HTTP оторизация на пълномощията."
 
 #: contrib/geosites/site_template/templates/site_index.html:9
 #: contrib/geosites/templates/master_index.html:10 templates/index.html:15
@@ -609,6 +622,8 @@ msgstr "Добре дошли"
 msgid ""
 "GeoNode is an open source platform for sharing geospatial data and maps."
 msgstr ""
+"GeoNode е платформа с отворен код за споделяне на гео-пространствени данни и "
+"карти."
 
 #: contrib/geosites/site_template/templates/site_index.html:11
 #: contrib/geosites/templates/master_index.html:12
@@ -616,62 +631,71 @@ msgid ""
 "If you have any questions about the software or service, join our <a href="
 "\"https://groups.google.com/d/forum/geonode-users\">mailing list</a>."
 msgstr ""
+"Ако имате някакви въпроси относно софтуера или услугата, присъединете се към "
+"нас <a href=\"https://groups.google.com/d/forum/geonode-users\">списък с "
+"адреси</a>."
 
 #: contrib/geosites/site_template/templates/site_index.html:12
 #: contrib/geosites/templates/master_index.html:13 templates/index.html:18
 msgid "Need help?"
-msgstr ""
+msgstr "Нуждаете се от помощ?"
 
 #: contrib/geosites/site_template/templates/site_index.html:12
 #: contrib/geosites/templates/master_index.html:13 templates/index.html:18
 msgid "Getting Started"
-msgstr ""
+msgstr "Въведение"
 
 #: contrib/geosites/templates/master_index.html:25
 #: contrib/geosites/templates/master_index.html:35
 #: contrib/geosites/templates/master_index.html:45 templates/index.html:30
 #: templates/index.html.py:40 templates/index.html:50
+#: templates/metadata_detail.html:101 templates/metadata_detail.html.py:104
 msgid "No"
-msgstr ""
+msgstr "Не"
 
 #: contrib/geosites/templates/master_index.html:25
-#: layers/templates/layers/layer_detail.html:220 templates/index.html:30
+#: layers/templates/layers/layer_detail.html:227 templates/index.html:30
 #: templates/notification/request_download_resourcebase/full.txt:7
 msgid "Layer"
 msgid_plural "Layers"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "Слоеве "
+msgstr[1] "Слоеве"
 
 #: contrib/geosites/templates/master_index.html:26 templates/index.html:31
 msgid ""
 "Click to search for geospatial data published by other users, organizations "
 "and public sources. Download data in standard formats."
 msgstr ""
+"Натиснете за търсене на геопространствени данни, публикувани от други "
+"потребители и организации. Свалете данни в стандартни формати."
 
 #: contrib/geosites/templates/master_index.html:28 templates/index.html:33
 msgid "Add layers"
-msgstr ""
+msgstr "Добави слоеве"
 
 #: contrib/geosites/templates/master_index.html:30 templates/index.html:35
 msgid "Explore layers"
 msgstr "Преглед слоеве"
 
 #: contrib/geosites/templates/master_index.html:35
-#: maps/templates/maps/map_detail.html:124 templates/index.html:40
+#: maps/templates/maps/map_detail.html:131 templates/index.html:40
 msgid "Map"
 msgid_plural "Maps"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "Карти"
+msgstr[1] "Карти "
 
 #: contrib/geosites/templates/master_index.html:36 templates/index.html:41
 msgid ""
 "Data is available for browsing, aggregating and styling to generate maps "
 "which can be shared publicly or restricted to specific users only."
 msgstr ""
+"Данните са достъпни за разглеждане, агрегиране и оформление за генериране на "
+"карти, които могат да бъдат споделяни публично или ограничени само до "
+"определени потребители."
 
 #: contrib/geosites/templates/master_index.html:38 templates/index.html:43
 msgid "Create maps"
-msgstr ""
+msgstr "Създаване карти"
 
 #: contrib/geosites/templates/master_index.html:40 templates/index.html:45
 msgid "Explore maps"
@@ -681,241 +705,249 @@ msgstr "Преглед карти"
 #: templates/notification/account_approve/full.txt:1
 msgid "User"
 msgid_plural "Users"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "Потребители"
+msgstr[1] "Потребители "
 
 #: contrib/geosites/templates/master_index.html:46 templates/index.html:51
 msgid ""
 "GeoNode allows registered users to easily upload geospatial data in several "
 "formats including shapefile and GeoTiff."
 msgstr ""
+"GeoNode допуска регистрирани потребители лесно да качват гео-пространствени "
+"данни в няколко формата, вкл. шейпфайл или Geo Tiff."
 
 #: contrib/geosites/templates/master_index.html:47 templates/index.html:52
 msgid "See users"
-msgstr ""
+msgstr "Виж потребители"
 
-#: documents/forms.py:96 documents/forms.py:164
+#: documents/forms.py:116 documents/forms.py:184
 msgid "Document must be a file or url."
-msgstr ""
+msgstr "Документът може да бъде файл или url."
 
-#: documents/forms.py:100 documents/forms.py:168
+#: documents/forms.py:120 documents/forms.py:188
 msgid "A document cannot have both a file and a url."
-msgstr ""
+msgstr "Документ не може да има едновременно file и url."
 
-#: documents/forms.py:113 documents/forms.py:181
+#: documents/forms.py:133 documents/forms.py:201
 msgid "This file type is not allowed"
-msgstr ""
+msgstr "Форматът на файла не е позволен"
 
-#: documents/forms.py:131
+#: documents/forms.py:151
 msgid "Link to"
 msgstr "Връзка към"
 
-#: documents/forms.py:153
+#: documents/forms.py:173
 msgid "Permissions must be valid JSON."
-msgstr ""
+msgstr "Разрешението трябва да е валидно за JSON."
 
-#: documents/models.py:40
+#: documents/models.py:62
 msgid "File"
 msgstr "Файл"
 
-#: documents/models.py:49
+#: documents/models.py:72
 msgid "The URL of the document if it is external."
-msgstr ""
+msgstr "URL адресът на документа, ако е външен."
 
-#: documents/models.py:50
+#: documents/models.py:73
 msgid "URL"
-msgstr ""
+msgstr "URL"
 
-#: documents/views.py:29
+#: documents/views.py:49
 msgid "You are not permitted to delete this document"
-msgstr ""
+msgstr "Вие нямате разрешение да изтриете този документ"
 
-#: documents/views.py:30
+#: documents/views.py:50
 msgid "You do not have permissions for this document."
-msgstr ""
+msgstr "Вие нямате разрешение за този този документ."
 
-#: documents/views.py:31
+#: documents/views.py:51
 msgid "You are not permitted to modify this document"
-msgstr ""
+msgstr "Вие нямате разрешение да променяте този документ."
 
-#: documents/views.py:33
+#: documents/views.py:53
 msgid "You are not permitted to modify this document's metadata"
-msgstr ""
+msgstr "Вие нямате разрешение да променяте метаданните на този документ."
 
-#: documents/views.py:34
+#: documents/views.py:54
 msgid "You are not permitted to view this document"
-msgstr ""
+msgstr "Вие нямате разрешение да разглеждате този документ."
 
-#: documents/views.py:70 documents/views.py:128
+#: documents/views.py:90 documents/views.py:148
 msgid "You are not allowed to view this document."
-msgstr ""
+msgstr "Вие нямате право да видите този документ."
 
-#: documents/views.py:278
+#: documents/views.py:298
 msgid "You are not allowed to edit this document."
-msgstr ""
+msgstr "Вие нямате право да редактирате този документ."
 
-#: documents/views.py:328 layers/views.py:358
+#: documents/views.py:348 layers/views.py:366
 msgid "You must set a point of contact for this resource"
-msgstr ""
+msgstr "Трябва да зададете точка за контакт към този ресурс"
 
-#: documents/views.py:343 layers/views.py:373
+#: documents/views.py:363 layers/views.py:381
 msgid "You must set an author for this resource"
-msgstr ""
+msgstr "Трябва да посочите автор на този ресурс"
 
-#: documents/management/__init__.py:14
+#: documents/management/__init__.py:34
 msgid "Document Created"
-msgstr ""
+msgstr "Документът е създаден"
 
-#: documents/management/__init__.py:15
+#: documents/management/__init__.py:35
 msgid "A Document was created"
-msgstr ""
+msgstr "Документ бе създаден"
 
-#: documents/management/__init__.py:18
+#: documents/management/__init__.py:38
 msgid "Document Updated"
-msgstr ""
+msgstr "Обновен документ"
 
-#: documents/management/__init__.py:19
+#: documents/management/__init__.py:39
 msgid "A Document was updated"
-msgstr ""
+msgstr "Документ бе обновен"
 
-#: documents/management/__init__.py:22
+#: documents/management/__init__.py:42
 msgid "Document Deleted"
-msgstr ""
+msgstr "Изтрит документ"
 
-#: documents/management/__init__.py:23
+#: documents/management/__init__.py:43
 msgid "A Document was deleted"
-msgstr ""
+msgstr "Документ бе изтрит"
 
-#: documents/management/__init__.py:26
+#: documents/management/__init__.py:46
 msgid "Comment on Document"
-msgstr ""
+msgstr "Коментар за документ"
 
-#: documents/management/__init__.py:27
+#: documents/management/__init__.py:47
 msgid "A Document was commented on"
-msgstr ""
+msgstr "Документ бе коментиран на"
 
-#: documents/management/__init__.py:30
+#: documents/management/__init__.py:50
 msgid "Document for Map"
-msgstr ""
+msgstr "Документ за Карта"
 
-#: documents/management/__init__.py:31
+#: documents/management/__init__.py:51
 msgid "A rating was given to a document"
-msgstr ""
+msgstr "Беше дадена оценка за документ"
 
 #: documents/templates/documents/document_detail.html:44
 msgid "External Resource"
-msgstr ""
+msgstr "Външен ресурс"
 
 #: documents/templates/documents/document_detail.html:66
 msgid "Rate this document"
-msgstr ""
+msgstr "Оцени този документ"
 
 #: documents/templates/documents/document_detail.html:70
 #: layers/templates/layers/layer_detail.html:127
 #: maps/templates/maps/map_detail.html:54
 msgid "Average Rating"
+msgstr "Средна оценка"
+
+#: documents/templates/documents/document_detail.html:89
+#: layers/templates/layers/layer_detail.html:181
+#: maps/templates/maps/map_detail.html:78
+msgid "Metadata Detail"
 msgstr ""
 
-#: documents/templates/documents/document_detail.html:91
-#: documents/templates/documents/document_detail.html:93
-#: documents/templates/documents/document_detail.html:95
-msgid "Download Document"
-msgstr ""
-
+#: documents/templates/documents/document_detail.html:97
 #: documents/templates/documents/document_detail.html:99
-#: layers/templates/layers/layer_detail.html:146
-msgid "Request Download"
-msgstr ""
+#: documents/templates/documents/document_detail.html:101
+msgid "Download Document"
+msgstr "Свали документ"
 
 #: documents/templates/documents/document_detail.html:105
-#: documents/templates/documents/document_detail.html:112
+#: layers/templates/layers/layer_detail.html:146
+msgid "Request Download"
+msgstr "Заявка за изтегляне"
+
+#: documents/templates/documents/document_detail.html:111
+#: documents/templates/documents/document_detail.html:118
 msgid "Edit Document"
-msgstr ""
+msgstr "Редактирай документ"
 
-#: documents/templates/documents/document_detail.html:120
-#: layers/templates/layers/layer_detail.html:194
-#: maps/templates/maps/map_detail.html:110
+#: documents/templates/documents/document_detail.html:126
+#: layers/templates/layers/layer_detail.html:201
+#: maps/templates/maps/map_detail.html:117 templates/metadata_detail.html:30
 msgid "Metadata"
-msgstr ""
-
-#: documents/templates/documents/document_detail.html:121
-#: layers/templates/layers/layer_detail.html:195
-#: layers/templates/layers/layer_detail.html:204
-#: maps/templates/maps/map_detail.html:111
-#: maps/templates/maps/map_detail.html:125
-msgid "Edit"
-msgstr ""
+msgstr "Метаданни"
 
 #: documents/templates/documents/document_detail.html:127
+#: layers/templates/layers/layer_detail.html:202
+#: layers/templates/layers/layer_detail.html:211
+#: maps/templates/maps/map_detail.html:118
+#: maps/templates/maps/map_detail.html:132
+msgid "Edit"
+msgstr "Редакция"
+
+#: documents/templates/documents/document_detail.html:133
 #: templates/notification/request_download_resourcebase/full.txt:9
 msgid "Document"
-msgstr ""
+msgstr "Документ"
 
-#: documents/templates/documents/document_detail.html:129
-#: layers/templates/layers/layer_detail.html:222
+#: documents/templates/documents/document_detail.html:135
+#: layers/templates/layers/layer_detail.html:229
 msgid "Replace"
-msgstr ""
+msgstr "Замяна"
 
-#: documents/templates/documents/document_detail.html:132
+#: documents/templates/documents/document_detail.html:138
 #: groups/templates/groups/group_members.html:33
 #: groups/templates/groups/group_members.html:59
 #: groups/templates/groups/group_members.html:86
-#: layers/templates/layers/layer_detail.html:228
-#: maps/templates/maps/map_detail.html:126
-msgid "Remove"
-msgstr ""
-
-#: documents/templates/documents/document_detail.html:139
-#: documents/templates/documents/document_detail.html:163
-#: layers/templates/layers/layer_detail.html:169
 #: layers/templates/layers/layer_detail.html:235
-#: layers/templates/layers/layer_detail.html:261
-#: maps/templates/maps/map_detail.html:89
-#: maps/templates/maps/map_detail.html:132
+#: maps/templates/maps/map_detail.html:133
+msgid "Remove"
+msgstr "Премахване"
+
+#: documents/templates/documents/document_detail.html:145
+#: documents/templates/documents/document_detail.html:169
+#: layers/templates/layers/layer_detail.html:169
+#: layers/templates/layers/layer_detail.html:242
+#: layers/templates/layers/layer_detail.html:268
+#: maps/templates/maps/map_detail.html:96
+#: maps/templates/maps/map_detail.html:139
 #: templates/_bulk_permissions_form.html:19
 msgid "Close"
-msgstr ""
+msgstr "Затваряне"
 
-#: documents/templates/documents/document_detail.html:146
-#: documents/templates/documents/document_detail.html:153
-#: layers/templates/layers/layer_detail.html:243
-#: layers/templates/layers/layer_detail.html:251
+#: documents/templates/documents/document_detail.html:152
+#: documents/templates/documents/document_detail.html:159
+#: layers/templates/layers/layer_detail.html:250
+#: layers/templates/layers/layer_detail.html:258
 msgid "Download Metadata"
 msgstr "Сваляне на метаданни"
 
-#: documents/templates/documents/document_detail.html:170
-msgid "Resource using this document"
-msgstr ""
-
-#: documents/templates/documents/document_detail.html:172
-msgid "List of resources using this document:"
-msgstr ""
-
 #: documents/templates/documents/document_detail.html:176
+msgid "Resource using this document"
+msgstr "Ресурс, използващ този документ"
+
+#: documents/templates/documents/document_detail.html:178
+msgid "List of resources using this document:"
+msgstr "Списък с ресурси използващи този документ:"
+
+#: documents/templates/documents/document_detail.html:182
 msgid "This document is related to a "
-msgstr ""
+msgstr "Този документ е свързан с"
 
-#: documents/templates/documents/document_detail.html:179
+#: documents/templates/documents/document_detail.html:185
 msgid "This document is not related to any maps or layers"
-msgstr ""
+msgstr "Този документ не е свързан с карти или слоеве"
 
-#: documents/templates/documents/document_detail.html:186
-#: documents/templates/documents/document_upload.html:31
-#: groups/templates/groups/group_detail.html:70
-#: layers/templates/layers/layer_detail.html:334
+#: documents/templates/documents/document_detail.html:192
+#: documents/templates/documents/document_upload.html:30
+#: groups/templates/groups/group_detail.html:61
+#: layers/templates/layers/layer_detail.html:341
 #: layers/templates/layers/layer_replace.html:94
-#: layers/templates/upload/layer_upload.html:112
-#: maps/templates/maps/map_detail.html:178 people/admin.py:55
+#: layers/templates/upload/layer_upload.html:96
+#: maps/templates/maps/map_detail.html:185 people/admin.py:55
 msgid "Permissions"
 msgstr "Настройки за сигурност"
 
-#: documents/templates/documents/document_detail.html:187
+#: documents/templates/documents/document_detail.html:193
 msgid "Click the button below to change the permissions of this document."
-msgstr ""
+msgstr " Натиснете бутона долу, за да промените разрешенията на този документ."
 
-#: documents/templates/documents/document_detail.html:188
+#: documents/templates/documents/document_detail.html:194
 msgid "Change Document Permissions"
-msgstr ""
+msgstr "Променя на достъпа за документа"
 
 #: documents/templates/documents/document_list.html:6
 #: documents/templates/documents/document_list.html:13
@@ -937,10 +969,10 @@ msgstr "Редакция на метаданни"
 
 #: documents/templates/documents/document_metadata.html:22
 msgid "Editing details for"
-msgstr ""
+msgstr "Редакционни детайли за"
 
 #: documents/templates/documents/document_metadata.html:26
-#: layers/templates/layers/layer_metadata.html:29
+#: layers/templates/layers/layer_metadata.html:32
 #: maps/templates/maps/map_metadata.html:29
 msgid "Error updating metadata.  Please check the following fields: "
 msgstr "Грешка при качване на метаданни. Моля проверете следните полета:"
@@ -948,15 +980,15 @@ msgstr "Грешка при качване на метаданни. Моля п�
 #: documents/templates/documents/document_metadata.html:48
 #: documents/templates/documents/document_metadata.html:82
 #: groups/templates/groups/group_update.html:26
-#: layers/templates/layers/layer_metadata.html:59
-#: layers/templates/layers/layer_metadata.html:118
+#: layers/templates/layers/layer_metadata.html:63
+#: layers/templates/layers/layer_metadata.html:124
 #: maps/templates/maps/map_metadata.html:44
 #: maps/templates/maps/map_metadata.html:78
 msgid "Update"
-msgstr ""
+msgstr "Обновяване"
 
 #: documents/templates/documents/document_metadata.html:60
-#: layers/templates/layers/layer_metadata.html:112
+#: layers/templates/layers/layer_metadata.html:117
 #: maps/templates/maps/map_metadata.html:56
 msgid "Metadata Provider"
 msgstr "Доставчик на метаданни"
@@ -964,11 +996,11 @@ msgstr "Доставчик на метаданни"
 #: documents/templates/documents/document_remove.html:4
 #: maps/templates/maps/map_remove.html:6
 msgid "Deleting"
-msgstr ""
+msgstr "Изтриване"
 
 #: documents/templates/documents/document_remove.html:8
 msgid "Remove Document"
-msgstr ""
+msgstr "Премахни документ"
 
 #: documents/templates/documents/document_remove.html:13
 #, python-format
@@ -978,6 +1010,9 @@ msgid ""
 "\"%(document.get_absolute_url)s\">%(document_title)s</a>?\n"
 "        "
 msgstr ""
+"\n"
+"Сигурни ли сте, че искате да премахнете <a href="
+"\"%(document.get_absolute_url)s\">%(document_title)s</a>?"
 
 #: documents/templates/documents/document_remove.html:20
 #: groups/templates/groups/group_remove.html:19
@@ -985,7 +1020,7 @@ msgstr ""
 #: maps/templates/maps/map_remove.html:22
 #: services/templates/services/service_remove.html:17
 msgid "Yes, I am sure"
-msgstr ""
+msgstr "Да, сигурен съм"
 
 #: documents/templates/documents/document_remove.html:21
 #: groups/templates/groups/group_remove.html:20
@@ -993,199 +1028,219 @@ msgstr ""
 #: maps/templates/maps/map_remove.html:23
 #: services/templates/services/service_remove.html:18
 msgid "No, don't remove it"
-msgstr ""
+msgstr "Не го премахвай"
 
 #: documents/templates/documents/document_replace.html:4
 #: documents/templates/documents/document_replace.html:28
 msgid "Replace Document"
-msgstr ""
+msgstr "Замени документ"
 
 #: documents/templates/documents/document_replace.html:16
 msgid "Replace "
-msgstr ""
+msgstr "Замяна"
 
 #: documents/templates/documents/document_replace.html:27
 #: layers/templates/layers/layer_replace.html:84
-#: layers/templates/upload/layer_upload.html:105
+#: layers/templates/upload/layer_upload.html:89
+#: templates/search/_search_content.html:24
 msgid "Clear"
-msgstr ""
+msgstr "Изчистване"
 
 #: documents/templates/documents/document_upload.html:5
 msgid "Upload Document"
 msgstr "Зареждане на документи"
 
-#: geoserver/helpers.py:987
-msgid "An exception occurred loading data to PostGIS"
+#: geoserver/helpers.py:459 layers/models.py:420
+msgid "No abstract provided"
 msgstr ""
 
-#: geoserver/helpers.py:992
+#: geoserver/helpers.py:1009
+msgid "An exception occurred loading data to PostGIS"
+msgstr "Наблюдава се изключение при зареждане на данни в PostGIS"
+
+#: geoserver/helpers.py:1014
 msgid " Additionally an error occured during database cleanup"
 msgstr ""
+"Освен това се наблюдава и грешка по време на почистване на базата данни"
 
-#: geoserver/ows.py:103
+#: geoserver/ows.py:43
+msgid "GZIP"
+msgstr ""
+
+#: geoserver/ows.py:44
+msgid "GeoTIFF"
+msgstr ""
+
+#: geoserver/ows.py:67
 msgid "Zipped Shapefile"
-msgstr ""
+msgstr "архивиран (zipped) шейпфайл"
 
-#: geoserver/ows.py:104
+#: geoserver/ows.py:68
 msgid "GML 2.0"
-msgstr ""
+msgstr "GML 2.0"
 
-#: geoserver/ows.py:105
+#: geoserver/ows.py:69
 msgid "GML 3.1.1"
-msgstr ""
+msgstr "GML 3.1.1"
 
-#: geoserver/ows.py:106
+#: geoserver/ows.py:70
 msgid "CSV"
-msgstr ""
+msgstr "CSV"
 
-#: geoserver/ows.py:107
+#: geoserver/ows.py:71
 msgid "Excel"
-msgstr ""
+msgstr "Excel"
 
-#: geoserver/ows.py:108
+#: geoserver/ows.py:72
 msgid "GeoJSON"
-msgstr ""
+msgstr "GeoJSON"
 
-#: geoserver/ows.py:132
+#: geoserver/ows.py:96
 msgid "JPEG"
-msgstr ""
+msgstr "JPEG"
 
-#: geoserver/ows.py:133
+#: geoserver/ows.py:97
 msgid "PDF"
-msgstr ""
+msgstr "PDF"
 
-#: geoserver/ows.py:134
+#: geoserver/ows.py:98
 msgid "PNG"
-msgstr ""
+msgstr "PNG"
 
-#: geoserver/signals.py:294
-msgid "Could not create a download link for layer."
-msgstr ""
-
-#: geoserver/views.py:335
+#: geoserver/views.py:355
 msgid "You don't have permissions to change style for this layer"
-msgstr ""
+msgstr "Вие нямате разрешение да промените стилът на слоя"
 
-#: geoserver/management/__init__.py:30
+#: geoserver/management/__init__.py:31
 msgid "Layer Uploaded"
 msgstr "Слоя е зареден"
 
-#: geoserver/management/__init__.py:30
+#: geoserver/management/__init__.py:31
 msgid "A layer was uploaded"
 msgstr "Слой беше зареден"
 
-#: geoserver/management/__init__.py:31 layers/management/__init__.py:45
+#: geoserver/management/__init__.py:32 layers/management/__init__.py:46
 msgid "Comment on Layer"
-msgstr ""
+msgstr "Коментиране на слой"
 
-#: geoserver/management/__init__.py:31 layers/management/__init__.py:46
+#: geoserver/management/__init__.py:32 layers/management/__init__.py:47
 msgid "A layer was commented on"
-msgstr ""
+msgstr "Слой бе коментиран на"
 
-#: geoserver/management/__init__.py:32 layers/management/__init__.py:49
+#: geoserver/management/__init__.py:33 layers/management/__init__.py:50
 msgid "Rating for Layer"
-msgstr ""
+msgstr "Оценка за слой"
 
-#: geoserver/management/__init__.py:32 layers/management/__init__.py:50
+#: geoserver/management/__init__.py:33 layers/management/__init__.py:51
 msgid "A rating was given to a layer"
-msgstr ""
+msgstr "Беше дадена оценка на слой"
 
-#: groups/forms.py:15
+#: groups/forms.py:35
 msgid ""
 "a short version of the name consisting only of letters, numbers, underscores "
 "and hyphens."
 msgstr ""
+"кратка версия на името състояща се само от букви, цифри, долни черти и "
+"тирета."
 
-#: groups/forms.py:23
+#: groups/forms.py:43
 msgid "A group already exists with that slug."
-msgstr ""
+msgstr "Вече съществува група с този \"slug\"."
 
-#: groups/forms.py:30 groups/forms.py:57
+#: groups/forms.py:50 groups/forms.py:77
 msgid "A group already exists with that name."
-msgstr ""
+msgstr "Група с това име вече съществува"
 
-#: groups/models.py:20
+#: groups/models.py:40
 msgid "Public"
-msgstr ""
+msgstr "Публичен"
 
-#: groups/models.py:21
+#: groups/models.py:41
 msgid "Public (invite-only)"
-msgstr ""
+msgstr "Публичен (само с покана)"
 
-#: groups/models.py:22
+#: groups/models.py:42
 msgid "Private"
-msgstr ""
+msgstr "Частен"
 
-#: groups/models.py:25
+#: groups/models.py:45
 msgid ""
 "Public: Any registered user can view and join a public group.<br>Public "
 "(invite-only):Any registered user can view the group.  Only invited users "
 "can join.<br>Private: Registered users cannot see any details about the "
 "group, including membership.  Only invited users can join."
 msgstr ""
+"Публична: Всеки регистриран потребител може да разглежда и да се включи в "
+"отворена група. <br>Публична (само с покана): Всеки регистриран потребител "
+"може да разглежда тази група. Само поканени потребители могат да се "
+"присъединят. <br> Затворени: Регистрирани потребители не могат да виждат "
+"никакви детайли за групата, включително и членове. Само поканени потребители "
+"могат да се присъединят."
 
-#: groups/models.py:30
+#: groups/models.py:50
 msgid ""
 "Email used to contact one or all group members, such as a mailing list, "
 "shared email, or exchange group."
 msgstr ""
+"Ел.поща е използвана за връзка с един или всички членове на групата, напр. "
+"списък с адреси, споделена ел.поща или група за споделяне."
 
-#: groups/models.py:36
+#: groups/models.py:56
 msgid "Logo"
-msgstr ""
+msgstr "Лого"
 
-#: groups/models.py:37 layers/templates/layers/layer_detail.html:60
-#: layers/templates/layers/layer_metadata.html:91
-#: people/templates/people/profile_detail.html:73 services/forms.py:27
+#: groups/models.py:57 layers/templates/layers/layer_detail.html:60
+#: layers/templates/layers/layer_metadata.html:96
+#: people/templates/people/profile_detail.html:98 services/forms.py:47
 #: services/templates/services/layers_register.html:28
 msgid "Description"
-msgstr ""
+msgstr "Описание"
 
-#: groups/models.py:39 people/templates/people/profile_detail.html:36
+#: groups/models.py:59 people/templates/people/profile_detail.html:65
 msgid "Email"
-msgstr ""
+msgstr "Ел.поща"
 
-#: groups/models.py:48
+#: groups/models.py:68
 msgid "Access"
-msgstr ""
+msgstr "Достъп"
 
-#: groups/models.py:188 groups/models.py:207
+#: groups/models.py:208 groups/models.py:227
 #: groups/templates/groups/group_members.html:28
 #: groups/templates/groups/group_members.html:54
 #: groups/templates/groups/group_members.html:81
 msgid "Manager"
-msgstr ""
+msgstr "Администратор"
 
-#: groups/models.py:189 groups/models.py:208
+#: groups/models.py:209 groups/models.py:228
 msgid "Member"
-msgstr ""
+msgstr "Член"
 
-#: groups/models.py:213
+#: groups/models.py:233
 msgid "Sent"
-msgstr ""
+msgstr "Изпратено"
 
-#: groups/models.py:214
+#: groups/models.py:234
 msgid "Accepted"
-msgstr ""
+msgstr "Приет"
 
-#: groups/models.py:215
+#: groups/models.py:235
 msgid "Declined"
-msgstr ""
+msgstr "Отказан"
 
 #: groups/templates/groups/activity.html:7
 #: groups/templates/groups/activity.html:8
-#: groups/templates/groups/activity.html:20 templates/actstream/actor.html:19
+#: groups/templates/groups/activity.html:19 templates/actstream/actor.html:19
 msgid "Activity Feed for"
-msgstr ""
+msgstr "Информация за активност за"
 
-#: groups/templates/groups/activity.html:24
+#: groups/templates/groups/activity.html:25
 #: groups/templates/groups/group_members.html:13
 #: social/templates/social/activity_list.html:20
 #: templates/user_messages/inbox.html:16
 msgid "All"
-msgstr ""
+msgstr "Всички"
 
-#: groups/templates/groups/activity.html:25
+#: groups/templates/groups/activity.html:26
 #: people/templates/people/_profile_filters.html:5
 #: services/templates/services/service_detail.html:64
 #: social/templates/social/activity_list.html:21 templates/500.html:55
@@ -1193,30 +1248,30 @@ msgstr ""
 msgid "Layers"
 msgstr "Слоеве"
 
-#: groups/templates/groups/activity.html:26
+#: groups/templates/groups/activity.html:27
 #: people/templates/people/_profile_filters.html:6
 #: social/templates/social/activity_list.html:22 templates/500.html:58
 #: templates/base.html:59
 msgid "Maps"
 msgstr "Карти"
 
-#: groups/templates/groups/activity.html:27
+#: groups/templates/groups/activity.html:28
 #: social/templates/social/activity_list.html:23 templates/_actions.html:11
 #: templates/_comments.html:12
 msgid "Comments"
-msgstr ""
+msgstr "Коментари"
 
-#: groups/templates/groups/activity.html:35
-#: groups/templates/groups/activity.html:44
-#: groups/templates/groups/activity.html:53
-#: groups/templates/groups/activity.html:62
+#: groups/templates/groups/activity.html:36
+#: groups/templates/groups/activity.html:45
+#: groups/templates/groups/activity.html:54
+#: groups/templates/groups/activity.html:63
 #: social/templates/social/activity_list.html:31
 #: social/templates/social/activity_list.html:40
 #: social/templates/social/activity_list.html:49
 #: social/templates/social/activity_list.html:58
 #: templates/actstream/actor.html:28
 msgid "No actions yet"
-msgstr ""
+msgstr "Все още няма действия"
 
 #: groups/templates/groups/group_base.html:13
 #: groups/templates/groups/group_list.html:5
@@ -1226,139 +1281,145 @@ msgstr "Преглед на групи"
 
 #: groups/templates/groups/group_base.html:14
 #: groups/templates/groups/group_create.html:11
-#: groups/templates/groups/group_list.html:12
 msgid "Create a Group"
-msgstr ""
+msgstr "Създай група"
 
 #: groups/templates/groups/group_base.html:16
 #: groups/templates/groups/group_update.html:11
 msgid "Update Group"
-msgstr ""
+msgstr "Обнови група"
 
 #: groups/templates/groups/group_base.html:17
 msgid "Remove Group"
-msgstr ""
+msgstr "Премахни група"
 
 #: groups/templates/groups/group_create.html:5
 #: groups/templates/groups/group_update.html:5
 msgid "Create Group"
-msgstr ""
+msgstr "Създай група"
 
 #: groups/templates/groups/group_create.html:26
 #: services/templates/services/service_register.html:19
 msgid "Create"
-msgstr ""
+msgstr "Създай"
 
 #: groups/templates/groups/group_detail.html:29
 msgid "This group has not created a logo."
-msgstr ""
+msgstr "Тази група не е създала лого."
 
-#: groups/templates/groups/group_detail.html:51
-#: groups/templates/groups/group_invite_response.html:7
-#: groups/templates/groups/group_members.html:9
-#: groups/templates/groups/group_members.html:15
-msgid "Members"
-msgstr ""
-
-#: groups/templates/groups/group_detail.html:62
+#: groups/templates/groups/group_detail.html:53
 msgid "Edit Group Details"
-msgstr ""
+msgstr "Редактирай Детайли за Групата"
+
+#: groups/templates/groups/group_detail.html:54
+msgid "Manage Group Members"
+msgstr "Управлявай Членове на Групата"
+
+#: groups/templates/groups/group_detail.html:55
+msgid "Delete this Group"
+msgstr "Изтрий тази група"
+
+#: groups/templates/groups/group_detail.html:58
+msgid "Group Activities"
+msgstr "Дейности на групата"
 
 #: groups/templates/groups/group_detail.html:63
-msgid "Manage Group Members"
-msgstr ""
-
-#: groups/templates/groups/group_detail.html:64
-msgid "Delete this Group"
-msgstr ""
-
-#: groups/templates/groups/group_detail.html:67
-msgid "Group Activities"
-msgstr ""
-
-#: groups/templates/groups/group_detail.html:72
 #, python-format
 msgid ""
 "\n"
 "            This group is <strong>%(access)s</strong>.\n"
 "          "
 msgstr ""
+"\n"
+"Тази група е <strong>%(access)s</strong>."
 
-#: groups/templates/groups/group_detail.html:76
+#: groups/templates/groups/group_detail.html:67
 msgid "Anyone may join this group."
-msgstr ""
+msgstr "Всеки може да се присъедини към тази група."
 
-#: groups/templates/groups/group_detail.html:84
+#: groups/templates/groups/group_detail.html:75
 msgid "Anyone may view this group but membership is by invitation only."
-msgstr ""
+msgstr "Всеки може да разглежда групата, но членството е само с покана."
 
-#: groups/templates/groups/group_detail.html:86
+#: groups/templates/groups/group_detail.html:77
 msgid "Membership is by invitation only."
-msgstr ""
+msgstr "Членството е само с покана."
 
-#: groups/templates/groups/group_detail.html:91
+#: groups/templates/groups/group_detail.html:82
 #: groups/templates/groups/group_members.html:14
 msgid "Managers"
-msgstr ""
+msgstr "Администратори"
+
+#: groups/templates/groups/group_detail.html:94
+#: groups/templates/groups/group_invite_response.html:7
+#: groups/templates/groups/group_members.html:9
+#: groups/templates/groups/group_members.html:15
+msgid "Members"
+msgstr "Членове"
 
 #: groups/templates/groups/group_invite_response.html:10
 msgid "Membership Request"
-msgstr ""
+msgstr "Заявка за членство"
 
 #: groups/templates/groups/group_invite_response.html:14
 msgid "Don't Join"
-msgstr ""
+msgstr "Не се присъединявай"
 
 #: groups/templates/groups/group_invite_response.html:15
 msgid "Join Group"
+msgstr "Присъедини се към групата"
+
+#: groups/templates/groups/group_list.html:12
+msgid "Create a New Group"
 msgstr ""
 
-#: groups/templates/groups/group_list.html:19
-#: people/templates/people/profile_list.html:13
-#: templates/search/_sort_filters.html:5
+#: groups/templates/groups/group_list.html:24
+#: people/templates/people/profile_list.html:19
+#: templates/search/_sort_filters.html:10
 msgid "Most recent"
 msgstr "Най-актуален"
 
-#: groups/templates/groups/group_list.html:20
-#: people/templates/people/profile_list.html:14
-#: templates/search/_sort_filters.html:6
+#: groups/templates/groups/group_list.html:25
+#: people/templates/people/profile_list.html:20
+#: templates/search/_sort_filters.html:11
 msgid "Less recent"
 msgstr "Най-неактуален"
 
-#: groups/templates/groups/group_list.html:21
-#: people/templates/people/profile_list.html:15
-#: templates/search/_sort_filters.html:7
+#: groups/templates/groups/group_list.html:26
+#: people/templates/people/profile_list.html:21
+#: templates/search/_sort_filters.html:12
 msgid "A - Z"
-msgstr ""
+msgstr "А - Я"
 
-#: groups/templates/groups/group_list.html:22
-#: people/templates/people/profile_list.html:16
-#: templates/search/_sort_filters.html:8
+#: groups/templates/groups/group_list.html:27
+#: people/templates/people/profile_list.html:22
+#: templates/search/_sort_filters.html:13
 msgid "Z - A"
-msgstr ""
+msgstr "Я - А"
 
-#: groups/templates/groups/group_list.html:23
-#: templates/search/_sort_filters.html:9
+#: groups/templates/groups/group_list.html:28
+#: people/templates/people/profile_list.html:23
+#: templates/search/_sort_filters.html:14
 msgid "Most popular"
 msgstr "Най-популярен"
 
 #: groups/templates/groups/group_members.html:8
 msgid "Edit Members for"
-msgstr ""
+msgstr "Редактирай членове за"
 
 #: groups/templates/groups/group_members.html:37
 #: groups/templates/groups/group_members.html:63
 #: groups/templates/groups/group_members.html:90
 msgid "Role"
-msgstr ""
+msgstr "Роля"
 
 #: groups/templates/groups/group_members.html:99
 msgid "Add members"
-msgstr ""
+msgstr "Добави членове"
 
 #: groups/templates/groups/group_members.html:110
 msgid "Invite people"
-msgstr ""
+msgstr "Покани хора"
 
 #: groups/templates/groups/group_remove.html:12
 #, python-format
@@ -1367,220 +1428,232 @@ msgid ""
 "          Are you sure you want to remove the group: %(group_title)s?\n"
 "        "
 msgstr ""
+"\n"
+"Сигурни ли сте, че искате да премахнете групата: %(group_title)s?"
 
 #: groups/templates/groups/group_remove_maps_data.html:6
 msgid "Remove Maps/Data from Group"
-msgstr ""
+msgstr "Премахни карти/данни от група"
 
 #: groups/templates/groups/group_remove_maps_data.html:15
 msgid "Remove selected maps/data"
-msgstr ""
+msgstr "Премахни избраните карти/данни"
 
-#: layers/models.py:53
+#: layers/models.py:54
 msgid "style name"
-msgstr ""
+msgstr "стил на име"
 
-#: layers/models.py:55
+#: layers/models.py:56
 msgid "sld text"
-msgstr ""
+msgstr "текст на sld"
 
-#: layers/models.py:57
+#: layers/models.py:58
 msgid "sld version"
-msgstr ""
+msgstr "версия на sld"
 
-#: layers/models.py:61
+#: layers/models.py:62
 msgid "sld url"
-msgstr ""
+msgstr "sld url"
 
-#: layers/models.py:190
+#: layers/models.py:194
 msgid "File cannot be opened, maybe check the encoding"
-msgstr "Файлът не може да бъде отворен, проверете енкодинга."
+msgstr "Файлът не може да бъде отворен, проверете кодирането."
 
-#: layers/models.py:297
+#: layers/models.py:301
 msgid "attribute name"
-msgstr ""
+msgstr "атрибутивно име"
 
-#: layers/models.py:298
+#: layers/models.py:302
 msgid "name of attribute as stored in shapefile/spatial database"
-msgstr ""
+msgstr "име на атрибута съхранен като шейпфайл/пространствена база данни"
 
-#: layers/models.py:304
+#: layers/models.py:308
 msgid "attribute description"
-msgstr ""
+msgstr "атрибутивно описание"
 
-#: layers/models.py:305
+#: layers/models.py:309
 msgid "description of attribute to be used in metadata"
-msgstr ""
+msgstr "описание на атрибута, който ще бъде използван в метаданните"
 
-#: layers/models.py:310
+#: layers/models.py:314
 msgid "attribute label"
-msgstr ""
+msgstr "атрибутивен надпис"
 
-#: layers/models.py:311
+#: layers/models.py:315
 msgid "title of attribute as displayed in GeoNode"
-msgstr ""
+msgstr "име на атрибута както е показан в GeoNode"
 
-#: layers/models.py:317
+#: layers/models.py:321
 msgid "attribute type"
-msgstr ""
+msgstr "тип на атрибут"
 
-#: layers/models.py:318
+#: layers/models.py:322
 msgid "the data type of the attribute (integer, string, geometry, etc)"
-msgstr ""
-
-#: layers/models.py:325
-msgid "visible?"
-msgstr ""
-
-#: layers/models.py:326
-msgid "specifies if the attribute should be displayed in identify results"
-msgstr ""
+msgstr "тип данни на атрибута (число, низ, геометрия, др.)"
 
 #: layers/models.py:329
-msgid "display order"
-msgstr ""
+msgid "visible?"
+msgstr "видим?"
 
 #: layers/models.py:330
+msgid "specifies if the attribute should be displayed in identify results"
+msgstr "указва дали да се показва атрибута в резултати"
+
+#: layers/models.py:333
+msgid "display order"
+msgstr "ред за показване"
+
+#: layers/models.py:334
 msgid ""
 "specifies the order in which attribute should be displayed in identify "
 "results"
-msgstr ""
-
-#: layers/models.py:335
-msgid "count"
-msgstr ""
-
-#: layers/models.py:336
-msgid "count value for this field"
-msgstr ""
+msgstr "указва реда, в който атрибута трябва да се показва в резултати"
 
 #: layers/models.py:339
-msgid "min"
-msgstr ""
+msgid "count"
+msgstr "брой "
 
 #: layers/models.py:340
+msgid "count value for this field"
+msgstr "брой стойности в това поле "
+
+#: layers/models.py:343
+msgid "min"
+msgstr "минимум "
+
+#: layers/models.py:344
 msgid "minimum value for this field"
-msgstr ""
+msgstr "минимална стойност за това поле"
 
-#: layers/models.py:347
+#: layers/models.py:351
 msgid "max"
-msgstr ""
+msgstr "максимум "
 
-#: layers/models.py:348
+#: layers/models.py:352
 msgid "maximum value for this field"
-msgstr ""
+msgstr "максимална стойност за това поле"
 
-#: layers/models.py:355
+#: layers/models.py:359
 msgid "average"
-msgstr ""
+msgstr "средно"
 
-#: layers/models.py:356
+#: layers/models.py:360
 msgid "average value for this field"
-msgstr ""
+msgstr "средна стойност за това поле "
 
-#: layers/models.py:363
+#: layers/models.py:367
 msgid "median"
-msgstr ""
+msgstr "междинен"
 
-#: layers/models.py:364
+#: layers/models.py:368
 msgid "median value for this field"
-msgstr ""
+msgstr "междинна стойност на това поле"
 
-#: layers/models.py:371
+#: layers/models.py:375
 msgid "standard deviation"
-msgstr ""
+msgstr "стандартно отклонение"
 
-#: layers/models.py:372
+#: layers/models.py:376
 msgid "standard deviation for this field"
-msgstr ""
+msgstr "стандартно отклонение за това поле"
 
-#: layers/models.py:379
+#: layers/models.py:383
 msgid "sum"
-msgstr ""
+msgstr "сума"
 
-#: layers/models.py:380
+#: layers/models.py:384
 msgid "sum value for this field"
-msgstr ""
+msgstr "сумирана стойност за това поле"
 
-#: layers/models.py:387
+#: layers/models.py:391
 msgid "unique values for this field"
-msgstr ""
+msgstr "уникална стойност за това поле"
 
-#: layers/models.py:392
+#: layers/models.py:396
 msgid "last modified"
-msgstr ""
+msgstr "последно редактиран"
 
-#: layers/models.py:394
+#: layers/models.py:398
 msgid "date when attribute statistics were last updated"
-msgstr ""
+msgstr "дата, на която статистиките на атрибута последно са актуализирани"
 
 #: layers/views.py:73
 msgid ""
 "There was an error while attempting to upload your data. Please try again, "
 "or contact and administrator if the problem continues."
 msgstr ""
+"Възникна грешка при опит да качите вашите данни. Моля опитайте отново, или "
+"се свържете с администратора, ако проблемът продължава."
 
 #: layers/views.py:76
+msgid ""
+"Note: this layer's orginal metadata was populated and preserved by importing "
+"a metadata XML file. This metadata cannot be edited."
+msgstr ""
+
+#: layers/views.py:79
 msgid "You are not permitted to delete this layer"
-msgstr ""
-
-#: layers/views.py:77
-msgid "You do not have permissions for this layer."
-msgstr ""
-
-#: layers/views.py:78
-msgid "You are not permitted to modify this layer"
-msgstr ""
+msgstr "Нямате разрешение да изтриете този слой"
 
 #: layers/views.py:80
-msgid "You are not permitted to modify this layer's metadata"
-msgstr ""
+msgid "You do not have permissions for this layer."
+msgstr "Нямате разрешение за този слой."
 
 #: layers/views.py:81
+msgid "You are not permitted to modify this layer"
+msgstr "Нямате разрешение да променяте този слой"
+
+#: layers/views.py:83
+msgid "You are not permitted to modify this layer's metadata"
+msgstr "Нямате разрешение да променяте метаданните на този слой"
+
+#: layers/views.py:84
 msgid "You are not permitted to view this layer"
-msgstr ""
+msgstr "Нямате рзрешение да разглеждате този слой"
 
-#: layers/views.py:486
+#: layers/views.py:494
 msgid "You are attempting to replace a vector layer with a raster."
-msgstr ""
+msgstr "Вие се опитвате да замените векторен слой с растерен."
 
-#: layers/views.py:489
+#: layers/views.py:497
 msgid "You are attempting to replace a raster layer with a vector."
-msgstr ""
+msgstr "Вие се опитвате да замените растерен слой с векторен."
 
-#: layers/views.py:545
+#: layers/views.py:553
 msgid "Unable to delete layer"
-msgstr ""
+msgstr "Невъзможност слоят да бъде изтрит"
 
-#: layers/views.py:548
+#: layers/views.py:556
 msgid ""
 "This layer is a member of a layer group, you must remove the layer from the "
 "group before deleting."
 msgstr ""
-
-#: layers/management/__init__.py:33
-msgid "Layer Created"
-msgstr ""
+"Този слой е част от група слоеве, вие трябва да премахнете този слой от "
+"групата преди изтриване."
 
 #: layers/management/__init__.py:34
-msgid "A Layer was created"
-msgstr ""
+msgid "Layer Created"
+msgstr "Създаден слой "
 
-#: layers/management/__init__.py:37
-msgid "Layer Updated"
-msgstr ""
+#: layers/management/__init__.py:35
+msgid "A Layer was created"
+msgstr "Беше създаден слой"
 
 #: layers/management/__init__.py:38
-msgid "A Layer was updated"
-msgstr ""
+msgid "Layer Updated"
+msgstr "Слоят е обновен"
 
-#: layers/management/__init__.py:41
-msgid "Layer Deleted"
-msgstr ""
+#: layers/management/__init__.py:39
+msgid "A Layer was updated"
+msgstr "Слой беше актуализиран"
 
 #: layers/management/__init__.py:42
+msgid "Layer Deleted"
+msgstr "Изтрит слой "
+
+#: layers/management/__init__.py:43
 msgid "A Layer was deleted"
-msgstr ""
+msgstr "Слой беше изтрит "
 
 #: layers/templates/layers/layer_change_poc.html:5
 msgid "Home"
@@ -1589,141 +1662,146 @@ msgstr "Начало"
 #: layers/templates/layers/layer_change_poc.html:5
 #: layers/templates/layers/layer_change_poc.html:7
 msgid "Change point of contact"
-msgstr ""
+msgstr "Промяна точка за контакт"
 
 #: layers/templates/layers/layer_change_poc.html:10
 msgid "Assign a new point of contact to the layers below:"
-msgstr ""
+msgstr "Присвояване на нова точка за контакт към слоевете по-долу:"
 
 #: layers/templates/layers/layer_change_poc.html:17
 #: people/templates/people/forgot_username_form.html:15
 msgid "Submit"
-msgstr ""
+msgstr "Предай"
 
 #: layers/templates/layers/layer_detail.html:58
 msgid "Attribute Name"
-msgstr ""
+msgstr "Име на атрибут "
 
 #: layers/templates/layers/layer_detail.html:59
-#: layers/templates/layers/layer_metadata.html:90
+#: layers/templates/layers/layer_metadata.html:95
 msgid "Label"
-msgstr ""
+msgstr "Надпис "
 
 #: layers/templates/layers/layer_detail.html:62
 msgid "Range"
-msgstr ""
+msgstr "Обхват "
 
 #: layers/templates/layers/layer_detail.html:63
 msgid "Average"
-msgstr ""
+msgstr "Средно "
 
 #: layers/templates/layers/layer_detail.html:64
 msgid "Median"
-msgstr ""
+msgstr "Междинно"
 
 #: layers/templates/layers/layer_detail.html:65
 msgid "Standard Deviation"
-msgstr ""
+msgstr "Стандартно отклонение"
 
 #: layers/templates/layers/layer_detail.html:123
 msgid "Rate this layer"
-msgstr ""
+msgstr "Оцени този слой"
 
 #: layers/templates/layers/layer_detail.html:143
 #: layers/templates/layers/layer_detail.html:157
 msgid "Download Layer"
-msgstr ""
+msgstr "Свален слой "
 
-#: layers/templates/layers/layer_detail.html:180
 #: layers/templates/layers/layer_detail.html:187
+#: layers/templates/layers/layer_detail.html:194
 msgid "Edit Layer"
-msgstr ""
+msgstr "Редактиране на слой "
 
-#: layers/templates/layers/layer_detail.html:202
-#: layers/templates/layers/layer_detail.html:311
+#: layers/templates/layers/layer_detail.html:209
+#: layers/templates/layers/layer_detail.html:318
 msgid "Styles"
-msgstr ""
-
-#: layers/templates/layers/layer_detail.html:206
-#: services/templates/services/service_detail.html:110
-msgid "Manage"
-msgstr ""
+msgstr "Стилове "
 
 #: layers/templates/layers/layer_detail.html:213
-#: maps/templates/maps/map_detail.html:117
+#: services/templates/services/service_detail.html:110
+msgid "Manage"
+msgstr "Управлявай"
+
+#: layers/templates/layers/layer_detail.html:220
+#: maps/templates/maps/map_detail.html:124
 msgid "Thumbnail"
 msgstr "Thumbnail"
 
-#: layers/templates/layers/layer_detail.html:214
-#: maps/templates/maps/map_detail.html:118
+#: layers/templates/layers/layer_detail.html:221
+#: maps/templates/maps/map_detail.html:125
 msgid "Set"
-msgstr ""
+msgstr "Поредица"
 
-#: layers/templates/layers/layer_detail.html:225
+#: layers/templates/layers/layer_detail.html:232
 msgid "Edit data"
-msgstr ""
+msgstr "Редактиране на данни "
 
-#: layers/templates/layers/layer_detail.html:269 services/views.py:1288
+#: layers/templates/layers/layer_detail.html:276 services/views.py:1300
 msgid "Legend"
-msgstr ""
+msgstr "Легенда"
 
-#: layers/templates/layers/layer_detail.html:279
+#: layers/templates/layers/layer_detail.html:286
 msgid "Maps using this layer"
-msgstr ""
+msgstr "Карти използващи слой"
 
-#: layers/templates/layers/layer_detail.html:281
+#: layers/templates/layers/layer_detail.html:288
 msgid "List of maps using this layer:"
-msgstr ""
+msgstr "Списък с карти с този слой: "
 
-#: layers/templates/layers/layer_detail.html:287
+#: layers/templates/layers/layer_detail.html:294
 msgid "This layer is not currently used in any maps."
-msgstr ""
+msgstr "В момента този слой не се използва в карти. "
 
-#: layers/templates/layers/layer_detail.html:292
+#: layers/templates/layers/layer_detail.html:299
 msgid "Create a map using this layer"
 msgstr "Създаване на карта чрез посочения слой"
 
-#: layers/templates/layers/layer_detail.html:293
+#: layers/templates/layers/layer_detail.html:300
 msgid "Click the button below to generate a new map based on this layer."
-msgstr ""
+msgstr "Натиснете бутона отдолу, за да направите нова карта с този слой. "
 
-#: layers/templates/layers/layer_detail.html:294
+#: layers/templates/layers/layer_detail.html:301
+#: templates/search/_search_content.html:16
 msgid "Create a Map"
 msgstr "Създаване на карта"
 
-#: layers/templates/layers/layer_detail.html:299
+#: layers/templates/layers/layer_detail.html:306
 msgid "Documents related to this layer"
 msgstr "Документи, свързани към този слой"
 
-#: layers/templates/layers/layer_detail.html:300
+#: layers/templates/layers/layer_detail.html:307
 msgid "List of documents related to this layer:"
 msgstr "Списък на документи, свързани към този слой:"
 
-#: layers/templates/layers/layer_detail.html:312
+#: layers/templates/layers/layer_detail.html:319
 msgid ""
 "The following styles are associated with this layer. Choose a style to view "
 "it in the preview map."
 msgstr ""
+"Следните стилове са свързани с този слой. Изберете стил, за го видите в "
+"изгледа на картата. "
 
-#: layers/templates/layers/layer_detail.html:325
+#: layers/templates/layers/layer_detail.html:332
 msgid "No styles associated with this layer"
-msgstr ""
+msgstr "Няма стилове, свързани с този слой. "
 
-#: layers/templates/layers/layer_detail.html:335
+#: layers/templates/layers/layer_detail.html:342
 msgid "Click the button below to change the permissions of this layer."
 msgstr ""
-
-#: layers/templates/layers/layer_detail.html:336
-msgid "Change Layer Permissions"
-msgstr ""
+"Натиснете бутона отдолу, за да промените разрешенията за достъп до този "
+"слой. "
 
 #: layers/templates/layers/layer_detail.html:343
-msgid "External service layer"
-msgstr ""
+msgid "Change Layer Permissions"
+msgstr "Промяна в настройките за достъп до слой. "
 
-#: layers/templates/layers/layer_detail.html:344
+#: layers/templates/layers/layer_detail.html:350
+msgid "External service layer"
+msgstr "Външна услуга за слой "
+
+#: layers/templates/layers/layer_detail.html:351
 msgid "Source"
-msgstr ""
+msgstr "Източник  "
 
 #: layers/templates/layers/layer_list.html:6
 #: layers/templates/layers/layer_list.html:13
@@ -1737,7 +1815,7 @@ msgstr "Преглед на слоеве"
 #: layers/templates/layers/layer_list.html:12
 #: layers/templates/upload/layer_upload.html:18
 #: layers/templates/upload/layer_upload_base.html:12 templates/500.html:216
-#: templates/base.html:209
+#: templates/base.html:210
 msgid "Upload Layers"
 msgstr "Зареждане на слоеве"
 
@@ -1748,8 +1826,17 @@ msgid ""
 "        Editing details for %(layer_title)s\n"
 "      "
 msgstr ""
+"\n"
+"Подробности за редактиране на %(layer_title)s "
 
 #: layers/templates/layers/layer_metadata.html:23
+msgid ""
+"Note: this layer's orginal metadata was populated and preserved by importing "
+"a metadata XML file.\n"
+"          This metadata cannot be edited."
+msgstr ""
+
+#: layers/templates/layers/layer_metadata.html:26
 msgid ""
 "Note: this layer's orginal metadata was populated by importing a metadata "
 "XML file.\n"
@@ -1757,23 +1844,28 @@ msgid ""
 "Dublin Core metadata elements.\n"
 "          Some of your original metadata may have been lost."
 msgstr ""
+"Забележка: оригиналните метаданни на слоя бяха допълнени чрез въвеждане на "
+"метаданни от XML файл.\n"
+"Въвеждането на метаданни в GeoNode поддържа метаданни елементи от ISO, FGDC "
+"и Dublin Core.\n"
+"Някои от оригиналните ви метаданни може да са изгубени. "
 
-#: layers/templates/layers/layer_metadata.html:45
-#: layers/templates/layers/layer_metadata.html:85 templates/_actions.html:5
+#: layers/templates/layers/layer_metadata.html:48
+#: layers/templates/layers/layer_metadata.html:90 templates/_actions.html:5
 msgid "Attributes"
-msgstr ""
+msgstr "Атрибути "
 
-#: layers/templates/layers/layer_metadata.html:89
+#: layers/templates/layers/layer_metadata.html:94
 msgid "Attribute"
-msgstr ""
+msgstr "Атрибут "
 
-#: layers/templates/layers/layer_metadata.html:92
+#: layers/templates/layers/layer_metadata.html:97
 msgid "Display Order"
-msgstr ""
+msgstr "Ред на показване "
 
 #: layers/templates/layers/layer_remove.html:9
 msgid "Remove Layers"
-msgstr ""
+msgstr "Премахване на слоеве "
 
 #: layers/templates/layers/layer_remove.html:14
 #, python-format
@@ -1783,23 +1875,26 @@ msgid ""
 "\"%(layer.get_absolute_url)s\">%(layer_title)s</a>?\n"
 "        "
 msgstr ""
+"\n"
+"Сигурни ли сте, че искате да премахнете <a href=\"%(layer.get_absolute_url)s"
+"\">%(layer_title)s</a>? "
 
 #: layers/templates/layers/layer_remove.html:30
 msgid "This action affects the following maps:"
-msgstr ""
+msgstr "Действието засяга следните карти: "
 
 #: layers/templates/layers/layer_remove.html:34
 msgid "No maps are using this layer"
-msgstr ""
+msgstr "Няма карти, които използват този слой "
 
 #: layers/templates/layers/layer_replace.html:5
 #: layers/templates/layers/layer_replace.html:85
 msgid "Replace Layer"
-msgstr ""
+msgstr "Заместване на слой "
 
 #: layers/templates/layers/layer_replace.html:19
 msgid "Replace Layer: "
-msgstr ""
+msgstr "Заместване на слой: "
 
 #: layers/templates/layers/layer_replace.html:23
 #: layers/templates/upload/layer_upload.html:24
@@ -1809,17 +1904,17 @@ msgstr "Незавършено зареждане"
 #: layers/templates/layers/layer_replace.html:24
 #: layers/templates/upload/layer_upload.html:25
 msgid "You have the following incomplete uploads"
-msgstr ""
+msgstr "Имате следните непълни качвания "
 
 #: layers/templates/layers/layer_replace.html:27
 #: layers/templates/upload/layer_upload.html:28
 msgid "last updated on"
-msgstr ""
+msgstr "последно обновяване на "
 
 #: layers/templates/layers/layer_replace.html:29
 #: layers/templates/upload/layer_upload.html:30
 msgid "Resume"
-msgstr ""
+msgstr "Започни отново"
 
 #: layers/templates/layers/layer_replace.html:30
 #: layers/templates/layers/layer_replace.html:38
@@ -1829,12 +1924,12 @@ msgstr ""
 #: templates/announcements/announcement_form.html:25
 #: templates/user_messages/_message_snippet.html:40
 msgid "Delete"
-msgstr ""
+msgstr "Изтрий"
 
 #: layers/templates/layers/layer_replace.html:36
 #: layers/templates/upload/layer_upload.html:37
 msgid "Are you sure you want to delete this upload?"
-msgstr ""
+msgstr "Сигурни ли сте, че искате да изтриете качения файл? "
 
 #: layers/templates/layers/layer_replace.html:39
 #: layers/templates/upload/layer_upload.html:39
@@ -1843,22 +1938,22 @@ msgstr ""
 #: templates/announcements/announcement_confirm_delete.html:21
 #: templates/announcements/announcement_form.html:23
 msgid "Cancel"
-msgstr ""
+msgstr "Отмени"
 
 #: layers/templates/layers/layer_replace.html:41
 #: layers/templates/upload/layer_upload.html:40
 msgid "Delete, and don't ask me again."
-msgstr ""
+msgstr "Изтрий и не ме питай повече. "
 
 #: layers/templates/layers/layer_replace.html:55
 #: layers/templates/upload/layer_upload.html:57
 msgid "Drop files here"
-msgstr "Поставете файловете тук"
+msgstr "Поставете файловете тук "
 
 #: layers/templates/layers/layer_replace.html:58
 #: layers/templates/upload/layer_upload.html:60
 msgid " or select them one by one:"
-msgstr ""
+msgstr "или ги изберете един по един:"
 
 #: layers/templates/layers/layer_replace.html:66
 #: layers/templates/upload/layer_upload.html:68
@@ -1866,13 +1961,13 @@ msgid "Files to be uploaded"
 msgstr "Слоеве за зареждане"
 
 #: layers/templates/layers/layer_replace.html:71
-#: layers/templates/upload/layer_upload.html:73
+#: layers/templates/upload/layer_upload.html:76
 msgid "Select the charset or leave default"
-msgstr ""
+msgstr "Изберете набора от знаци или оставете по подразбиране "
 
 #: layers/templates/layers/layer_style_manage.html:14
 msgid "Manage Styles"
-msgstr ""
+msgstr "Управляване на стилове"
 
 #: layers/templates/layers/layer_style_manage.html:16
 #, python-format
@@ -1882,24 +1977,29 @@ msgid ""
 "%(layer_title)s</a>\n"
 "    "
 msgstr ""
+"\n"
+"Управление на налични стилове за <a href=\"/layers/%(layer_title)s\">"
+"%(layer_title)s</a> "
 
 #: layers/templates/layers/layer_style_manage.html:23
 msgid "Layer Default Style"
-msgstr ""
+msgstr "Стил на слой по подразбиране "
 
 #: layers/templates/layers/layer_style_manage.html:41
 msgid "Available styles"
-msgstr ""
+msgstr "Налични стилове "
 
 #: layers/templates/layers/layer_style_manage.html:42
 msgid ""
 "Click on an available style in the upper box to assign it to this layer. "
 "Selected styles appear in the lower box."
 msgstr ""
+"Изберете от наличните стилове в горното поле, за да го препишете на този "
+"слой. Избраните стилове се показват в долното поле. "
 
 #: layers/templates/layers/layer_style_manage.html:61
 msgid "Update Available Styles"
-msgstr ""
+msgstr "Обновяване на налични стилове "
 
 #: layers/templates/upload/layer_upload.html:5
 #: layers/templates/upload/layer_upload_crs.html:7
@@ -1907,17 +2007,17 @@ msgstr ""
 msgid "Upload Layer"
 msgstr "Зареждане на слой"
 
-#: layers/templates/upload/layer_upload.html:106
+#: layers/templates/upload/layer_upload.html:90
 msgid "Upload files"
 msgstr "Зареждане на файлове"
 
 #: layers/templates/upload/layer_upload_crs.html:10
 msgid "Provide CRS for "
-msgstr ""
+msgstr "Осигурете CRS за "
 
 #: layers/templates/upload/layer_upload_crs.html:14
 msgid "Coordinate Reference System"
-msgstr ""
+msgstr "Референтна координатна система "
 
 #: layers/templates/upload/layer_upload_crs.html:17
 msgid ""
@@ -1930,12 +2030,18 @@ msgid ""
 "        and enter the following:\n"
 "    "
 msgstr ""
+"\n"
+"Референтната координатна система за този слой не може да бъде одобрена. "
+"Локализирай или въведи подходящо ESPG код за този слой по-долу.\n"
+"Можете да го направите като отидете на:\n"
+"<a href=\"http://prj2epsg.org/search\" target=\"_\">prj2epsg</a>\n"
+"и въведете следното:"
 
 #: layers/templates/upload/layer_upload_crs.html:32
 #: layers/templates/upload/layer_upload_csv.html:49
 #: layers/templates/upload/layer_upload_time.html:101
 msgid "Next"
-msgstr ""
+msgstr "Следващ"
 
 #: layers/templates/upload/layer_upload_crs.html:35
 msgid ""
@@ -1944,16 +2050,21 @@ msgid ""
 "        reproject this data to a more common projection.\n"
 "        "
 msgstr ""
+"\n"
+"Възника проблем при проектирането на тази данна, Моля, \n"
+"проектирайте отново данната в по-често срещана проекция.     "
 
 #: layers/templates/upload/layer_upload_csv.html:11
 msgid "Geospatial Data"
-msgstr ""
+msgstr "Геопространствени данни"
 
 #: layers/templates/upload/layer_upload_csv.html:12
 msgid ""
 "Please indicate which attributes contain the latitude and longitude "
 "coordinates in the CSV data."
 msgstr ""
+"Моля посочете кои атрибути съдържат координати с географка ширина и дължина "
+"в CSV данните."
 
 #: layers/templates/upload/layer_upload_csv.html:14
 msgid ""
@@ -1961,11 +2072,14 @@ msgid ""
 "latitude and longitude coordinates, but please confirm that the correct\n"
 "attributes are selected below."
 msgstr ""
+"С тези данни, GeoNode определи кои атрибути съдържат\n"
+"координати на географска ширина и дължина, но моля да потвърдите правилните\n"
+"атрибути избрани по-долу. "
 
 #: layers/templates/upload/layer_upload_csv.html:26
 #: layers/templates/upload/layer_upload_csv.html:39
 msgid "Select an attribute"
-msgstr ""
+msgstr "Изберете атрибут"
 
 #: layers/templates/upload/layer_upload_csv.html:57
 msgid ""
@@ -1975,15 +2089,20 @@ msgid ""
 "for\n"
 "the latitude and longitude."
 msgstr ""
+"Не открихме колони, които бихме могли да бъдат използвани за географска "
+"ширина и дължина. \n"
+"Моля потвърдете, че имате две колони във вашия csv файл, които могат да "
+"бъдат използвани за географска ширина и дължина."
 
 #: layers/templates/upload/layer_upload_invalid.html:6
 #: layers/templates/upload/no_upload.html:6
 msgid "Your upload is either complete or you haven't resumed an earlier one."
 msgstr ""
+"Вашето качване е или завършено, или не сте възобновили предишно каччване."
 
 #: layers/templates/upload/layer_upload_invalid.html:7
 msgid "Return to"
-msgstr ""
+msgstr "Върни се към"
 
 #: layers/templates/upload/layer_upload_invalid.html:7
 msgid "Upload Form"
@@ -1991,11 +2110,11 @@ msgstr "Форма за зареждане"
 
 #: layers/templates/upload/layer_upload_time.html:7
 msgid "Upload Layer Step 2"
-msgstr ""
+msgstr "Качи Слой Стъпка 2"
 
 #: layers/templates/upload/layer_upload_time.html:15
 msgid "Editing details for "
-msgstr ""
+msgstr "Подробности за редактиране за"
 
 #: layers/templates/upload/layer_upload_time.html:19
 msgid "Time Options"
@@ -2003,77 +2122,79 @@ msgstr "Времеви опции"
 
 #: layers/templates/upload/layer_upload_time.html:22
 msgid "Choose time attribute"
-msgstr ""
+msgstr "Избери времеви атрибут"
 
 #: layers/templates/upload/layer_upload_time.html:25
 msgid "This data does not have a time attribute"
-msgstr ""
+msgstr "Тези данни нямат времеви атрибут"
 
 #: layers/templates/upload/layer_upload_time.html:30
 #: layers/templates/upload/layer_upload_time.html:57
 msgid "Existing Time Attribute"
-msgstr ""
+msgstr "Съществуващ времеви атрибут"
 
 #: layers/templates/upload/layer_upload_time.html:36
 #: layers/templates/upload/layer_upload_time.html:63
 msgid "Convert Text Attribute"
-msgstr ""
+msgstr "Конвертирай текстови атрибут"
 
 #: layers/templates/upload/layer_upload_time.html:38
 #: layers/templates/upload/layer_upload_time.html:65
 msgid "Date Format"
-msgstr ""
+msgstr "Формат на дата"
 
 #: layers/templates/upload/layer_upload_time.html:49
 #: layers/templates/upload/layer_upload_time.html:76
 msgid "Convert Number (As Year)"
-msgstr ""
+msgstr "Конвертирай число (като година)"
 
 #: layers/templates/upload/layer_upload_time.html:53
 msgid "Choose optional end time attribute"
-msgstr ""
+msgstr "Изберете aтрибут за край на времето по избор"
 
 #: layers/templates/upload/layer_upload_time.html:81
 msgid "Present time attribute as"
-msgstr ""
+msgstr "Атрибут за настоящо време като"
 
 #: layers/templates/upload/layer_upload_time.html:84
 msgid "List"
-msgstr ""
+msgstr "Списък"
 
 #: layers/templates/upload/layer_upload_time.html:84
 msgid "of all the distinct time values"
-msgstr ""
+msgstr "от всички специфични времеви стойности"
 
 #: layers/templates/upload/layer_upload_time.html:88
 msgid "Intervals"
-msgstr ""
+msgstr "интервали"
 
 #: layers/templates/upload/layer_upload_time.html:88
 msgid "defined by the resolution"
-msgstr ""
+msgstr "определен от резолюцията"
 
 #: layers/templates/upload/layer_upload_time.html:92
 msgid "Continuous Intervals"
-msgstr ""
+msgstr "Непрекъснати интервали"
 
 #: layers/templates/upload/layer_upload_time.html:92
 msgid ""
 "for data that is frequently updated, resolution describes the frequency of "
 "updates"
 msgstr ""
+"за данни, които често се актуализират, резолюцията описва честотата на "
+"актуализациите"
 
 #: layers/templates/upload/layer_upload_time.html:96
 msgid "Resolution of time attribute"
-msgstr ""
+msgstr "Резолция на времеви атрибут"
 
 #: layers/templates/upload/layer_upload_time.html:108
 msgid "Need Help?"
-msgstr ""
+msgstr "Имате нужда от помощ?"
 
 #: layers/templates/upload/layer_upload_time.html:109
 msgid "Enabling Time"
-msgstr ""
+msgstr "Разреши време"
 
 #: layers/templates/upload/layer_upload_time.html:110
 msgid ""
@@ -2084,26 +2205,33 @@ msgid ""
 "period for the\n"
 "    feature."
 msgstr ""
+"Една характеристика в момента може да поддръжа един или два атрибута. Ако "
+"единичен\n"
+"атрибут е необходим, характеристиката се смята за релевантна в определена "
+"точка от времето. Ако два\n"
+"атрибута се използват, втория атрибута представлява края на един валиден "
+"период за\n"
+"характеристиката."
 
 #: layers/templates/upload/layer_upload_time.html:114
 msgid "Selecting an Attribute"
-msgstr ""
+msgstr "Избиране на атрибут"
 
 #: layers/templates/upload/layer_upload_time.html:115
 msgid "A time attribute can be one of"
-msgstr ""
+msgstr "Времеви атрибут може да бъде един от"
 
 #: layers/templates/upload/layer_upload_time.html:117
 msgid "An existing date"
-msgstr ""
+msgstr "Съществуваща дата"
 
 #: layers/templates/upload/layer_upload_time.html:118
 msgid "Text that can be converted to a timestamp"
-msgstr ""
+msgstr "Текст, който може да бъде конвертиран във времеви печат"
 
 #: layers/templates/upload/layer_upload_time.html:119
 msgid "A number representing a year"
-msgstr ""
+msgstr "Число представляващо година"
 
 #: layers/templates/upload/layer_upload_time.html:122
 msgid ""
@@ -2113,207 +2241,216 @@ msgid ""
 "    The most common formatting flags are:\n"
 "    "
 msgstr ""
+"\n"
+"За текстови атрибути, може да се специфицира формат по избор или да използва "
+"подхода \"най-добро предположение\".\n"
+"Най-често срещаните форматирания са:"
 
 #: layers/templates/upload/layer_upload_time.html:128
 msgid "year"
-msgstr ""
+msgstr "година"
 
 #: layers/templates/upload/layer_upload_time.html:129
 msgid "month"
-msgstr ""
+msgstr "месец"
 
 #: layers/templates/upload/layer_upload_time.html:130
 msgid "day of month"
-msgstr ""
+msgstr "ден от месеца"
 
 #: layers/templates/upload/layer_upload_time.html:131
 #: layers/templates/upload/layer_upload_time.html:132
 msgid "hour of day"
-msgstr ""
+msgstr "час от деня"
 
 #: layers/templates/upload/layer_upload_time.html:133
 msgid "minute in hour"
-msgstr ""
+msgstr "минути в час"
 
 #: layers/templates/upload/layer_upload_time.html:134
 msgid "second in minute"
-msgstr ""
+msgstr "секунди в минута "
 
 #: layers/templates/upload/layer_upload_time.html:137
 msgid "Note that single quotes represent a literal character."
-msgstr ""
+msgstr "Имайте предвид, че единични кавички представляват буквен знак."
 
 #: layers/templates/upload/layer_upload_time.html:138
 msgid ""
 "To remove ambiguity, repeat a code to represent the maximum number of digits "
 "- for example yyyy"
 msgstr ""
+"За да избегнете двусмислие, повторете код, който представлява максималния "
+"брой цифри - например yyyy"
 
 #: layers/templates/upload/layer_upload_time.html:140
 msgid "The 'best guess' will handle date and optional time variants of"
 msgstr ""
+"\"Най-доброто предположение\" ще борави с дата и времеви варианти по избор за"
 
 #: layers/templates/upload/layer_upload_time.html:141
 msgid "In terms of the formatting flags noted above, these are"
-msgstr ""
+msgstr "От гледна точка на отбелязаните форматирания по-горе, те са"
 
 #: layers/templates/upload/no_upload.html:7
 msgid ""
 "Returning to the upload starting page in <span id=\"cnt\">5</span>seconds "
 msgstr ""
+"Връщайки се към началната страница за качване след <span id=\"cnt\">5</span> "
+"секунди"
 
 #: layers/templates/upload/no_upload.html:8
 msgid " Or just go "
-msgstr ""
+msgstr "Или просто отидете"
 
 #: layers/templates/upload/no_upload.html:8
 #: templates/relationships/success.html:6
 msgid "now"
-msgstr ""
+msgstr "сега"
 
 #: maps/models.py:58
 msgid "zoom"
-msgstr ""
+msgstr "приближение"
 
 #: maps/models.py:62
 msgid "projection"
-msgstr ""
+msgstr "проекция"
 
 #: maps/models.py:66
 msgid "center X"
-msgstr ""
+msgstr "център X"
 
 #: maps/models.py:70
 msgid "center Y"
-msgstr ""
+msgstr "център Y"
 
 #: maps/models.py:77
 msgid "Site URL"
-msgstr ""
+msgstr "Сайт URL"
 
 #: maps/models.py:82
 msgid "Featured Map URL"
-msgstr ""
+msgstr "URL на карта"
 
 #: maps/models.py:379
 msgid "stack order"
-msgstr ""
+msgstr "поставяне на ред"
 
 #: maps/models.py:384
 msgid "format"
-msgstr ""
+msgstr "формат"
 
 #: maps/models.py:391
 msgid "name"
-msgstr ""
+msgstr "име"
 
 #: maps/models.py:398
 msgid "opacity"
-msgstr ""
+msgstr "непрозрачност"
 
 #: maps/models.py:402
 msgid "styles"
-msgstr ""
+msgstr "стилове"
 
 #: maps/models.py:408
 msgid "transparent"
-msgstr ""
+msgstr "прозрачност"
 
 #: maps/models.py:412
 msgid "fixed"
-msgstr ""
+msgstr "фиксиран"
 
 #: maps/models.py:416
 msgid "group"
-msgstr ""
+msgstr "група"
 
 #: maps/models.py:420
 msgid "visibility"
-msgstr ""
+msgstr "видимост"
 
 #: maps/models.py:423
 msgid "ows URL"
-msgstr ""
+msgstr "притежава URL"
 
 #: maps/models.py:426
 msgid "layer params"
-msgstr ""
+msgstr "параметри на слоя"
 
 #: maps/models.py:433
 msgid "source params"
-msgstr ""
+msgstr "параметри на източника"
 
 #: maps/models.py:527
 msgid "JSON Configuration"
-msgstr ""
+msgstr "JSON Конфигурация"
 
 #: maps/views.py:74
 msgid "You are not permitted to delete this map."
-msgstr ""
+msgstr "Не ви е разрешено да изтриете тази карта"
 
 #: maps/views.py:75
 msgid "You do not have permissions for this map."
-msgstr ""
+msgstr "Нямате разшрение за тази карта."
 
 #: maps/views.py:76
 msgid "You must be logged in to save this map"
-msgstr ""
+msgstr "Трябва да се регистрирате, за да запазите тази карта."
 
 #: maps/views.py:77
 msgid "You are not permitted to save or edit this map."
-msgstr ""
+msgstr "Не ви е разрешено да запазите или редактирате тази карта."
 
 #: maps/views.py:79
 msgid "You are not allowed to modify this map's metadata."
-msgstr ""
+msgstr "Нямате право да редактирате метаданните на тази карта."
 
 #: maps/views.py:80
 msgid "You are not allowed to view this map."
-msgstr ""
+msgstr "Нямате достъп до преглед на тази карта"
 
 #: maps/views.py:81
 msgid "An unknown error has occured."
-msgstr ""
+msgstr "Неизвестна грешка."
 
-#: maps/management/__init__.py:33
+#: maps/management/__init__.py:34
 msgid "Map Created"
 msgstr "Картата е създадане"
 
-#: maps/management/__init__.py:34
+#: maps/management/__init__.py:35
 msgid "A Map was created"
 msgstr "Нова карта беше създадена"
 
-#: maps/management/__init__.py:37
+#: maps/management/__init__.py:38
 msgid "Map Updated"
 msgstr "Картата е обновена"
 
-#: maps/management/__init__.py:38
+#: maps/management/__init__.py:39
 msgid "A Map was updated"
-msgstr ""
-
-#: maps/management/__init__.py:41
-msgid "Map Deleted"
-msgstr ""
+msgstr "Карта беше актуализирана"
 
 #: maps/management/__init__.py:42
-msgid "A Map was deleted"
-msgstr ""
+msgid "Map Deleted"
+msgstr "Изтрита карта"
 
-#: maps/management/__init__.py:45
-msgid "Comment on Map"
-msgstr ""
+#: maps/management/__init__.py:43
+msgid "A Map was deleted"
+msgstr "Карта беше изтрита"
 
 #: maps/management/__init__.py:46
-msgid "A map was commented on"
-msgstr ""
+msgid "Comment on Map"
+msgstr "Коментар на карта"
 
-#: maps/management/__init__.py:49
-msgid "Rating for Map"
-msgstr ""
+#: maps/management/__init__.py:47
+msgid "A map was commented on"
+msgstr "Беше коментирано върху карта"
 
 #: maps/management/__init__.py:50
+msgid "Rating for Map"
+msgstr "Рейтинг на карта"
+
+#: maps/management/__init__.py:51
 msgid "A rating was given to a map"
-msgstr ""
+msgstr "Оценка беше дадена на карта"
 
 #: maps/templates/maps/map_base.html:5 maps/templates/maps/map_base.html:12
 #: maps/templates/maps/map_list.html:11
@@ -2323,95 +2460,96 @@ msgstr "Преглед на карти"
 
 #: maps/templates/maps/map_detail.html:50
 msgid "Rate this Map"
-msgstr ""
+msgstr "Оцени тази карта"
 
 #: maps/templates/maps/map_detail.html:72
-#: maps/templates/maps/map_detail.html:80
+#: maps/templates/maps/map_detail.html:87
 msgid "Download Map"
 msgstr "Сваляне на карта"
 
-#: maps/templates/maps/map_detail.html:84
+#: maps/templates/maps/map_detail.html:91
 msgid "Download Data Layers"
-msgstr ""
+msgstr "Свали слоевете данни"
 
-#: maps/templates/maps/map_detail.html:85
+#: maps/templates/maps/map_detail.html:92
 msgid "Download Web Map Context"
-msgstr ""
+msgstr "Свали контекста на уеб картата"
 
-#: maps/templates/maps/map_detail.html:96
 #: maps/templates/maps/map_detail.html:103
+#: maps/templates/maps/map_detail.html:110
 msgid "Edit Map"
 msgstr "Редакция на карта"
 
-#: maps/templates/maps/map_detail.html:139
+#: maps/templates/maps/map_detail.html:146
 msgid "View Map"
 msgstr "Преглед на карта"
 
-#: maps/templates/maps/map_detail.html:149
+#: maps/templates/maps/map_detail.html:156
 msgid "Map Layers"
 msgstr "Картни слоеве"
 
-#: maps/templates/maps/map_detail.html:150
+#: maps/templates/maps/map_detail.html:157
 msgid "This map uses the following layers:"
-msgstr ""
+msgstr "Тази карта използва следните слоеве:"
 
-#: maps/templates/maps/map_detail.html:166
+#: maps/templates/maps/map_detail.html:173
 msgid "Documents related to this map"
 msgstr "Документи, свръзани към тази карта"
 
-#: maps/templates/maps/map_detail.html:167
+#: maps/templates/maps/map_detail.html:174
 msgid "List of documents related to this map:"
 msgstr "Списък на документи, свързани към тази карта:"
 
-#: maps/templates/maps/map_detail.html:179
+#: maps/templates/maps/map_detail.html:186
 msgid "Specify which users can view or modify this map"
 msgstr ""
+"Специфицирай кои потребители могат да разглеждат или променят тази карта"
 
-#: maps/templates/maps/map_detail.html:180
+#: maps/templates/maps/map_detail.html:187
 msgid "Change Permissions of this Map"
-msgstr ""
+msgstr "Промени разрешенията за тази карта"
 
-#: maps/templates/maps/map_detail.html:186
+#: maps/templates/maps/map_detail.html:193
 msgid "Copy this map"
 msgstr "Копиране на карта"
 
-#: maps/templates/maps/map_detail.html:187
+#: maps/templates/maps/map_detail.html:194
 msgid "Duplicate this map and modify it for your own purposes"
-msgstr ""
+msgstr "Направи копие на тази карта или я промени за своите цели"
 
-#: maps/templates/maps/map_detail.html:188
+#: maps/templates/maps/map_detail.html:195
 #: maps/templates/maps/map_list.html:10
 msgid "Create a New Map"
 msgstr "Създаване на нова карта"
 
-#: maps/templates/maps/map_detail.html:193
-msgid "Map WMS"
-msgstr ""
-
-#: maps/templates/maps/map_detail.html:195
-msgid "WMS layer group for local map layers"
-msgstr ""
-
-#: maps/templates/maps/map_detail.html:196 social/tests.py:103
-#: social/templatetags/social_tags.py:48
-msgid "on"
-msgstr ""
-
-#: maps/templates/maps/map_detail.html:196
-msgid "local OWS"
-msgstr ""
-
-#: maps/templates/maps/map_detail.html:199
-msgid "Publish local map layers as WMS layer group"
-msgstr ""
-
 #: maps/templates/maps/map_detail.html:200
+msgid "Map WMS"
+msgstr "Карта WMS"
+
+#: maps/templates/maps/map_detail.html:202
+msgid "WMS layer group for local map layers"
+msgstr "WMS група от слоеве за локалните картни слоеве"
+
+#: maps/templates/maps/map_detail.html:203 social/tests.py:123
+#: social/templatetags/social_tags.py:68
+msgid "on"
+msgstr "на"
+
+#: maps/templates/maps/map_detail.html:203
+msgid "local OWS"
+msgstr "локална OWS"
+
+#: maps/templates/maps/map_detail.html:206
+msgid "Publish local map layers as WMS layer group"
+msgstr "Публикувай локални картни слоеве като WMS група от слоеве"
+
+#: maps/templates/maps/map_detail.html:207
 msgid "Publish Map WMS"
-msgstr ""
+msgstr "Публикувай карта WMS"
 
 #: maps/templates/maps/map_download.html:6
 msgid "Download"
-msgstr ""
+msgstr "Сваляне"
 
 #: maps/templates/maps/map_download.html:8
 msgid ""
@@ -2420,6 +2558,9 @@ msgid ""
 "      are hosted on this GeoNode.\n"
 "    "
 msgstr ""
+"\n"
+"Тук можете да свалите всички слоеве на тази карта, които\n"
+"се хостват на този GeoNode."
 
 #: maps/templates/maps/map_download.html:22
 msgid ""
@@ -2428,6 +2569,9 @@ msgid ""
 "for this map. You can go back to  \n"
 "      "
 msgstr ""
+"\n"
+"<div class=\"alert alert-warning\">Не могат да бъдат открити слоеве за тази "
+"карта, които могат да бъдат свалени. Можете да се върнете назад"
 
 #: maps/templates/maps/map_download.html:29
 msgid ""
@@ -2437,6 +2581,9 @@ msgid ""
 "        due to security restrictions:\n"
 "      "
 msgstr ""
+"\n"
+"Като допълнение, картата създава тези слоеве, които няма да бъдат свалени\n"
+"поради ограничения за сигурност:"
 
 #: maps/templates/maps/map_download.html:41
 msgid ""
@@ -2445,26 +2592,29 @@ msgid ""
 "        because they are not available directly from this GeoNode:\n"
 "      "
 msgstr ""
+"\n"
+"Окончателно, картата съдържа тези слоеве, които няма да бъдат свалени,\n"
+"защото не са налични директно от този GeoNode:"
 
 #: maps/templates/maps/map_download.html:54
 msgid "Downloading"
-msgstr ""
+msgstr "Сваляне "
 
 #: maps/templates/maps/map_download.html:59
 msgid "Retry"
-msgstr ""
+msgstr "Повторен опит "
 
 #: maps/templates/maps/map_download.html:65
 msgid "Start downloading this map"
-msgstr ""
+msgstr "Начало на сваляне на картата "
 
 #: maps/templates/maps/map_download.html:95
 msgid "Download Complete"
-msgstr ""
+msgstr "Свалянето приключено "
 
 #: maps/templates/maps/map_download.html:105
 msgid "Download Failed"
-msgstr ""
+msgstr "Свалянето е неуспешно "
 
 #: maps/templates/maps/map_metadata.html:17
 #, python-format
@@ -2473,6 +2623,8 @@ msgid ""
 "        Editing details for %(map_title)s\n"
 "      "
 msgstr ""
+"\n"
+"Подробности за редактиране за %(map_title)s"
 
 #: maps/templates/maps/map_metadata.html:23
 msgid ""
@@ -2482,10 +2634,15 @@ msgid ""
 "Core metadata elements.\n"
 "        Some of your original metadata may have been lost."
 msgstr ""
+"Забележка: оригиналните метаданни на тази карта бяха обогатени с метаданни "
+"XML файл. \n"
+"Въвеждането на метаданни в GeoNode поддържа подсет елементи от ISO, FGDC, и "
+"Dublin Core метаданни.\n"
+"Някои от вашите оригинални метаданни може да са загубени."
 
 #: maps/templates/maps/map_remove.html:10
 msgid "Remove Map"
-msgstr ""
+msgstr "Премахване на карта "
 
 #: maps/templates/maps/map_remove.html:15
 #, python-format
@@ -2495,217 +2652,235 @@ msgid ""
 "\">%(map_title)s</a>?\n"
 "        "
 msgstr ""
+"\n"
+"Сигурен ли си, че искаш да премахнеш <a href=\"%(map.get_absolute_url)s\">"
+"%(map_title)s</a>?"
 
 #: maps/templates/maps/map_view.html:5
 msgid "GeoExplorer"
-msgstr ""
+msgstr "GeoEplorer"
 
 #: people/admin.py:54
 msgid "Personal info"
-msgstr ""
+msgstr "Лична информация"
 
 #: people/admin.py:57
 msgid "Important dates"
-msgstr ""
+msgstr "Важни дати "
 
 #: people/admin.py:58
 msgid "Extended profile"
-msgstr ""
+msgstr "Разширен профил "
 
 #: people/admin.py:155
 msgid "Password changed successfully."
-msgstr ""
+msgstr "Паролата е променена успешно "
 
 #: people/admin.py:165
 #, python-format
 msgid "Change password: %s"
-msgstr ""
+msgstr "Променена парола: %s "
 
 #: people/enumerations.py:39
 msgid "party who authored the resource"
-msgstr ""
+msgstr "страна, която е автор на ресурса"
 
 #: people/enumerations.py:40
 msgid ""
 "party who has processed the data in a manner such that the resource has been "
 "modified"
 msgstr ""
+"страна, която е обработила данните по такъв начин, че ресурсът е променен"
 
 #: people/enumerations.py:41
 msgid "party who published the resource"
-msgstr ""
+msgstr "страна, която е публикувала ресурса"
 
 #: people/enumerations.py:42
 msgid ""
 "party that accepts accountability and responsibility for the data and "
 "ensures         appropriate care and maintenance of the resource"
 msgstr ""
+"страна, която приема отчетсност и отговорност за данните и гарантира "
+"подходяща грижа и поддръжка на ресурса"
 
 #: people/enumerations.py:44
 msgid ""
 "party who can be contacted for acquiring knowledge about or acquisition of "
 "the resource"
 msgstr ""
+"страна, с която може да се свържете за усвояване на знания относно или за "
+"придобиване на ресурса"
 
 #: people/enumerations.py:45
 msgid "party who distributes the resource"
-msgstr ""
+msgstr "страна, която дистрибутира ресурса"
 
 #: people/enumerations.py:46
 msgid "party who uses the resource"
-msgstr ""
+msgstr "страна, която използва ресурса"
 
 #: people/enumerations.py:47
 msgid "party that supplies the resource"
-msgstr ""
+msgstr "страна, която осигурява ресурса"
 
 #: people/enumerations.py:48
 msgid "party who created the resource"
-msgstr ""
+msgstr "страна, която е създала ресурса"
 
 #: people/enumerations.py:49
 msgid "party that owns the resource"
-msgstr ""
+msgstr "страна, която притежава ресурса"
 
 #: people/enumerations.py:50
 msgid "key party responsible for gathering information and conducting research"
 msgstr ""
+"ключова страна, отговорна за събирането на информация и провеждане на "
+"проучването"
 
 #: people/forms.py:64
 msgid "Email Address"
-msgstr ""
-
-#: people/management.py:32
-msgid "User following you"
-msgstr ""
+msgstr "Електронна поща"
 
 #: people/management.py:33
-msgid "Another user has started following you"
-msgstr ""
+msgid "User following you"
+msgstr "Потребител, който те следва"
 
-#: people/management.py:36
-msgid "User requested access"
-msgstr ""
+#: people/management.py:34
+msgid "Another user has started following you"
+msgstr "Друг потребител започна да те следва"
 
 #: people/management.py:37
-msgid "A new user has requested access to the site"
-msgstr ""
+msgid "User requested access"
+msgstr "Поискан достъп от потребител"
 
-#: people/management.py:40
-msgid "Account activated"
-msgstr ""
+#: people/management.py:38
+msgid "A new user has requested access to the site"
+msgstr "Нов потребител е поискал достъп до страницата "
 
 #: people/management.py:41
+msgid "Account activated"
+msgstr "Акаунтът е активиран "
+
+#: people/management.py:42
 msgid "This account is now active and can log in the site"
-msgstr ""
+msgstr "Този акаунт е вече активен и можеш да се регистрираш на сайта"
 
 #: people/models.py:46
 msgid "Organization Name"
-msgstr ""
+msgstr "Име на организацията "
 
 #: people/models.py:50
 msgid "name of the responsible organization"
-msgstr ""
+msgstr "име на оотговорната организация"
 
-#: people/models.py:51 templates/500.html:218 templates/base.html:211
+#: people/models.py:51 templates/500.html:218 templates/base.html:212
 msgid "Profile"
-msgstr ""
+msgstr "Профил "
 
 #: people/models.py:51
 msgid "introduce yourself"
-msgstr ""
+msgstr "представи себе си"
 
 #: people/models.py:53
 msgid "Position Name"
-msgstr ""
+msgstr "Име на позицията"
 
 #: people/models.py:57
 msgid "role or position of the responsible person"
-msgstr ""
+msgstr "роля или позиция на отговорния човек"
 
-#: people/models.py:58 people/templates/people/profile_detail.html:61
+#: people/models.py:58 people/templates/people/profile_detail.html:86
+#: templates/metadata_detail.html:133 templates/metadata_detail.html.py:275
+#: templates/metadata_detail.html:351
 msgid "Voice"
-msgstr ""
+msgstr "Глас"
 
 #: people/models.py:59
 msgid ""
 "telephone number by which individuals can speak to the responsible "
 "organization or individual"
 msgstr ""
+"телефонен номер, на който могат да се провеждат индивидуални разговори с "
+"отговорната организация или човек"
 
 #: people/models.py:60
 msgid "Facsimile"
-msgstr ""
+msgstr "Факс"
 
 #: people/models.py:61
 msgid ""
 "telephone number of a facsimile machine for the responsible organization or "
 "individual"
-msgstr ""
+msgstr "телефонен номер на факс машиниата на отговорната организация или човек"
 
 #: people/models.py:63
 msgid "Delivery Point"
-msgstr ""
+msgstr "Точка на доставка"
 
 #: people/models.py:67
 msgid ""
 "physical and email address at which the organization or individual may be "
 "contacted"
 msgstr ""
+"Реален адрес или екетронна поща, където можеш да се свържеш с организацията "
+"или индивида"
 
 #: people/models.py:69
 msgid "City"
-msgstr ""
+msgstr "Град "
 
 #: people/models.py:73
 msgid "city of the location"
-msgstr ""
+msgstr "град на локацията"
 
 #: people/models.py:75
 msgid "Administrative Area"
-msgstr ""
+msgstr "Административна област"
 
 #: people/models.py:79
 msgid "state, province of the location"
-msgstr ""
+msgstr "град, провинция на локацията"
 
 #: people/models.py:81
 msgid "Postal Code"
-msgstr ""
+msgstr "Пощенски код "
 
 #: people/models.py:85
 msgid "ZIP or other postal code"
-msgstr ""
+msgstr "ЗИП или друг пощенски код"
 
 #: people/models.py:91
 msgid "country of the physical address"
-msgstr ""
+msgstr "държава на реалния адрес"
 
 #: people/models.py:93
 msgid ""
 "commonly used word(s) or formalised word(s) or phrase(s) used to describe "
 "the subject             (space or comma-separated"
 msgstr ""
+"Често използвани дума(и) или официални дума(и) или фраза(и) използвани, за "
+"да опишат тема (разделени с празно място или запетая"
 
-#: people/views.py:91
+#: people/views.py:92
 msgid "Your username for "
-msgstr ""
+msgstr "Вашето потребителско име за "
 
-#: people/views.py:105
+#: people/views.py:106
 msgid "Your username has been emailed to you."
-msgstr ""
+msgstr "Потребителското ви име беше изпратено по ел. поща. "
 
-#: people/views.py:107
+#: people/views.py:108
 msgid "No user could be found with that email address."
-msgstr ""
+msgstr "На тази електронна поща не беше открит потребител."
 
 #: people/templates/people/_profile_about_item.html:18
 msgid "No Group"
-msgstr ""
+msgstr "Няма група"
 
 #: people/templates/people/_profile_filters.html:4
 msgid "All contents"
-msgstr ""
+msgstr "Цялото съдържание"
 
 #: people/templates/people/_profile_filters.html:7 templates/500.html:61
 #: templates/base.html:62
@@ -2714,221 +2889,224 @@ msgstr "Документи"
 
 #: people/templates/people/forgot_username_form.html:6
 msgid "Forgot Username"
-msgstr ""
+msgstr "Забравено потребителско име"
 
 #: people/templates/people/forgot_username_form.html:10
 msgid ""
 "Enter your email address and click the submit button. <br />Your username "
 "will be sent to you."
 msgstr ""
+"Въведи своята електронна поща и натисни бутона за изпращане.  <br /> Вашето "
+"потребителско име ще ви бъде изпратено."
 
 #: people/templates/people/profile_create.html:8
 #: people/templates/people/profile_create.html:14
 msgid "Create Profile"
-msgstr ""
+msgstr "Създаване профил"
 
 #: people/templates/people/profile_detail.html:7
 msgid "Profile of "
-msgstr ""
-
-#: people/templates/people/profile_detail.html:30
-msgid "Message User"
-msgstr ""
-
-#: people/templates/people/profile_detail.html:40
-#: people/templates/people/profile_detail.html:45
-#: people/templates/people/profile_detail.html:49
-#: people/templates/people/profile_detail.html:53
-#: people/templates/people/profile_detail.html:58
-#: people/templates/people/profile_detail.html:70
-#: people/templates/people/profile_detail.html:74
-msgid "Not provided."
-msgstr ""
-
-#: people/templates/people/profile_detail.html:44
-#: services/templates/services/layers_register.html:27
-msgid "Name"
-msgstr ""
-
-#: people/templates/people/profile_detail.html:48
-msgid "Position"
-msgstr ""
-
-#: people/templates/people/profile_detail.html:52
-msgid "Organization"
-msgstr ""
-
-#: people/templates/people/profile_detail.html:57
-msgid "Location"
-msgstr ""
+msgstr "Профил на"
 
 #: people/templates/people/profile_detail.html:69
+#: people/templates/people/profile_detail.html:74
+#: people/templates/people/profile_detail.html:78
+#: people/templates/people/profile_detail.html:83
+#: people/templates/people/profile_detail.html:95
+#: people/templates/people/profile_detail.html:99
+msgid "Not provided."
+msgstr "Не е предоставено."
+
+#: people/templates/people/profile_detail.html:73
+#: templates/metadata_detail.html:124 templates/metadata_detail.html.py:266
+#: templates/metadata_detail.html:342
+msgid "Position"
+msgstr "Позиция"
+
+#: people/templates/people/profile_detail.html:77
+#: templates/metadata_detail.html:127 templates/metadata_detail.html.py:269
+#: templates/metadata_detail.html:345
+msgid "Organization"
+msgstr "Организация"
+
+#: people/templates/people/profile_detail.html:82
+#: templates/metadata_detail.html:130 templates/metadata_detail.html.py:272
+#: templates/metadata_detail.html:348
+msgid "Location"
+msgstr "Локация"
+
+#: people/templates/people/profile_detail.html:94
+#: templates/metadata_detail.html:136 templates/metadata_detail.html.py:278
+#: templates/metadata_detail.html:354
 msgid "Fax"
-msgstr ""
+msgstr "Факс "
 
-#: people/templates/people/profile_detail.html:85 services/views.py:542
-#: services/views.py:639 services/views.py:707 services/views.py:855
+#: people/templates/people/profile_detail.html:110 services/views.py:542
+#: services/views.py:639 services/views.py:707 services/views.py:862
 msgid "Not provided"
-msgstr ""
+msgstr "Не е предоставен "
 
-#: people/templates/people/profile_detail.html:96
-#: people/templates/people/profile_detail.html:130
+#: people/templates/people/profile_detail.html:120
+msgid "Message User"
+msgstr "Съобщение към потребител"
+
+#: people/templates/people/profile_detail.html:124
+#: people/templates/people/profile_detail.html:158
 msgid "Edit profile"
-msgstr ""
+msgstr "Редактиране на профил "
 
-#: people/templates/people/profile_detail.html:97
+#: people/templates/people/profile_detail.html:125
 msgid "Change password"
-msgstr ""
+msgstr "Смени парола "
 
-#: people/templates/people/profile_detail.html:100
+#: people/templates/people/profile_detail.html:128
 msgid "Upload new layers"
 msgstr "Зареждане на нови слоеве"
 
-#: people/templates/people/profile_detail.html:101
+#: people/templates/people/profile_detail.html:129
 msgid "Create a new map"
-msgstr ""
+msgstr "Създаване на нова карта "
 
-#: people/templates/people/profile_detail.html:103
+#: people/templates/people/profile_detail.html:131
 msgid "My Activities"
-msgstr ""
+msgstr "Моите дейности"
 
-#: people/templates/people/profile_detail.html:108 templates/500.html:222
-#: templates/base.html:215
+#: people/templates/people/profile_detail.html:136 templates/500.html:222
+#: templates/base.html:216
 msgid "Notifications"
-msgstr ""
+msgstr "Известия "
 
-#: people/templates/people/profile_detail.html:111 templates/500.html:225
-#: templates/base.html:218 templates/announcements/announcement_list.html:6
+#: people/templates/people/profile_detail.html:139 templates/500.html:225
+#: templates/base.html:219 templates/announcements/announcement_list.html:6
 #: templates/announcements/announcement_list.html:13
 msgid "Announcements"
-msgstr ""
+msgstr "Обявления"
 
-#: people/templates/people/profile_detail.html:116
+#: people/templates/people/profile_detail.html:144
 #: services/templates/services/service_list.html:9 templates/500.html:228
-#: templates/base.html:221
+#: templates/base.html:222
 msgid "Remote Services"
-msgstr ""
+msgstr "Услуги с отдалечен достъп"
 
-#: people/templates/people/profile_detail.html:117 templates/500.html:229
-#: templates/base.html:222 templates/account/invite_user.html:8
+#: people/templates/people/profile_detail.html:145 templates/500.html:229
+#: templates/base.html:223 templates/account/invite_user.html:8
 #: templates/account/invite_user.html:15
 msgid "Invite User"
-msgstr ""
+msgstr "Покани потребител "
 
-#: people/templates/people/profile_detail.html:118 templates/500.html:231
-#: templates/base.html:224
+#: people/templates/people/profile_detail.html:146 templates/500.html:231
+#: templates/base.html:225
 msgid "GeoServer"
-msgstr ""
+msgstr "GeoServer "
 
-#: people/templates/people/profile_detail.html:121 templates/500.html:234
-#: templates/base.html:227
+#: people/templates/people/profile_detail.html:149 templates/500.html:234
+#: templates/base.html:228
 msgid "Admin"
-msgstr ""
+msgstr "Администратор "
 
-#: people/templates/people/profile_detail.html:134
+#: people/templates/people/profile_detail.html:162
 msgid "User Activities"
-msgstr ""
+msgstr "Дейности на потребителя"
 
-#: people/templates/people/profile_detail.html:191
+#: people/templates/people/profile_detail.html:175
 msgid "Resources"
-msgstr ""
+msgstr "Ресурси "
 
 #: people/templates/people/profile_edit.html:10
-#: people/templates/people/profile_edit.html:24
 msgid "Edit Your Profile"
-msgstr ""
+msgstr "Редактиране на профил "
 
 #: people/templates/people/profile_edit.html:12
 msgid "Edit Profile for"
-msgstr ""
+msgstr "Редактирай профил за"
 
 #: people/templates/people/profile_edit.html:19
 msgid "Change your avatar"
-msgstr ""
+msgstr "Променете своя аватар"
 
 #: people/templates/people/profile_edit.html:30
 msgid "Update profile"
-msgstr ""
+msgstr "Обновяване на профил "
 
 #: people/templates/people/profile_list.html:8
 msgid "Explore People"
-msgstr "Преглед на потребители"
+msgstr "Преглед на потребители "
 
 #: services/enumerations.py:24
 msgid "Auto-detect"
-msgstr ""
+msgstr "Автоматично засичане"
 
 #: services/enumerations.py:25
 msgid "Paired WMS/WFS/WCS"
-msgstr ""
+msgstr "WMS/WFS/WCS заедно"
 
 #: services/enumerations.py:26
 msgid "Web Map Service"
-msgstr ""
+msgstr "Услуга на уеб карта"
 
 #: services/enumerations.py:27
 msgid "Catalogue Service"
-msgstr ""
+msgstr "Каталог услуги"
 
 #: services/enumerations.py:28
 msgid "ArcGIS REST Service"
-msgstr ""
+msgstr "ArcGIS REST услуга"
 
 #: services/enumerations.py:29 services/enumerations.py:39
 msgid "OpenGeoPortal"
-msgstr ""
+msgstr "OpenGeoPortal"
 
 #: services/enumerations.py:30
 msgid "Harvard Geospatial Library"
-msgstr ""
+msgstr "Харвард геопространствена библиотека"
 
 #: services/enumerations.py:34
 msgid "Local"
-msgstr ""
+msgstr "Локален"
 
 #: services/enumerations.py:35
 msgid "Cascaded"
-msgstr ""
+msgstr "Каскадно"
 
 #: services/enumerations.py:36
 msgid "Harvested"
-msgstr ""
+msgstr "Придобит"
 
 #: services/enumerations.py:37
 msgid "Indexed"
-msgstr ""
+msgstr "Индексиран "
 
 #: services/enumerations.py:38
 msgid "Live"
-msgstr ""
+msgstr "На живо"
 
-#: services/forms.py:12
+#: services/forms.py:32
 msgid "Service URL"
-msgstr ""
+msgstr "URL услуга"
 
-#: services/forms.py:15
+#: services/forms.py:35
 msgid "Service name"
-msgstr ""
+msgstr "Име на услугата"
 
-#: services/forms.py:19
+#: services/forms.py:39
 msgid "Service Type"
-msgstr ""
+msgstr "Вид услуга"
 
-#: services/models.py:92
+#: services/models.py:112
 msgid "Layer Name"
-msgstr ""
+msgstr "Име на слой"
 
-#: services/models.py:93
+#: services/models.py:113
 msgid "Layer Title"
 msgstr "Заглавие на слой"
 
-#: services/models.py:94
+#: services/models.py:114
 msgid "Layer Description"
-msgstr ""
+msgstr "Описание на слой"
 
-#: services/models.py:95
+#: services/models.py:115
 msgid "Layer Styles"
-msgstr ""
+msgstr "Стилове слой"
 
 #: services/views.py:63
 msgid ""
@@ -2944,45 +3122,60 @@ msgid ""
 "maps, metadata, and development resources through a single common "
 "interface.\n"
 msgstr ""
+"\n"
+"Open Geoportal е консорциум с участието на няколко университета и "
+"организация, за да подпомага\n"
+"откриването и придобиването на геопространствени данни за много организации "
+"и платформи. Сегашните му основатели\n"
+"включват: Harvard, MIT, MassGIS, Princeton, Columbia, Stanford, UC Berkeley, "
+"UCLA, Yale и UConn. Изграден на принципа на отворен код,\n"
+"Open Geoportal осигурява слоеве с геопространствени данни,\n"
+"карти, метаданни и ресурси чрез един общ интерфейс. \n"
 
-#: services/views.py:278
+#: services/views.py:281
 msgid "This is an existing service"
-msgstr ""
+msgstr "Това е съществуваща услуга "
 
-#: services/views.py:807
+#: services/views.py:812
 msgid "Could not find any layers in a compatible projection."
-msgstr ""
+msgstr "Не може да се намери слой в съвместима проекция. "
 
-#: services/views.py:952
+#: services/views.py:961
 #, python-format
 msgid ""
-"Could not find any layers in a compatible projection:                 The "
-"spatial id was: %(srs)s and the url %(url)s"
+"Could not find any layers in a compatible projection:                     "
+"The spatial id was: %(srs)s and the url %(url)s"
 msgstr ""
 
-#: services/views.py:1214
+#: services/views.py:1226
 msgid "You are not permitted to remove this service."
-msgstr ""
+msgstr "Не можете да премахнете тази услуга. "
 
 #: services/templates/services/layers_register.html:26
 msgid "All/None"
-msgstr ""
+msgstr "Всички/Никои "
+
+#: services/templates/services/layers_register.html:27
+#: templates/metadata_detail.html:118 templates/metadata_detail.html.py:260
+#: templates/metadata_detail.html:336
+msgid "Name"
+msgstr "Име"
 
 #: services/templates/services/layers_register.html:42
 msgid "Add Layers"
-msgstr ""
+msgstr "Добавете слоеве"
 
 #: services/templates/services/service_detail.html:43
 msgid "Name:"
-msgstr ""
+msgstr "Име: "
 
 #: services/templates/services/service_detail.html:44
 msgid "URL:"
-msgstr ""
+msgstr "URL: "
 
 #: services/templates/services/service_detail.html:45
 msgid "Abstract:"
-msgstr ""
+msgstr "Описание:"
 
 #: services/templates/services/service_detail.html:46
 msgid "Keywords:"
@@ -2990,109 +3183,109 @@ msgstr "Ключови думи:"
 
 #: services/templates/services/service_detail.html:47
 msgid "Contact:"
-msgstr ""
+msgstr "Контакт: "
 
 #: services/templates/services/service_detail.html:51
 msgid "Services"
-msgstr ""
+msgstr "Услуги "
 
 #: services/templates/services/service_detail.html:52
 msgid "This CSW server contains the following services"
-msgstr ""
+msgstr "Този CSW сървър съдържа следните услуги "
 
 #: services/templates/services/service_detail.html:65
 msgid "This Service contains the following layers"
-msgstr ""
+msgstr "Услугата съдържа следните слоеве "
 
 #: services/templates/services/service_detail.html:113
 msgid "Edit Service Metadata"
-msgstr ""
+msgstr "Редактирай метаданни за услуга "
 
 #: services/templates/services/service_detail.html:116
 msgid "Remove Service"
-msgstr ""
+msgstr "Премахни услуга "
 
 #: services/templates/services/service_edit.html:15
 msgid "Edit Service"
-msgstr ""
+msgstr "Редактирай услуга "
 
 #: services/templates/services/service_edit.html:21
 #: templates/announcements/announcement_form.html:27
 msgid "Save"
-msgstr ""
+msgstr "Запеметяване"
 
 #: services/templates/services/service_layers.html:3
 msgid "Service:"
-msgstr ""
+msgstr "Услуга: "
 
 #: services/templates/services/service_layers.html:5
 msgid "The following layers will soon be added to the data catalog:"
-msgstr ""
+msgstr "Следните слоеве ще бъдат добавени към каталога с данни скоро: "
 
 #: services/templates/services/service_list.html:8
 msgid "Register a new Service"
-msgstr ""
+msgstr "Регистрирай нова услуга "
 
 #: services/templates/services/service_register.html:13
 msgid "Register New Service"
-msgstr ""
+msgstr "Регистриране нова услуга "
 
 #: services/templates/services/service_register.html:23
 msgid "Service has been created:"
-msgstr ""
+msgstr "Услугата е създадена:"
 
 #: services/templates/services/service_register.html:30
 msgid "The following layers will be imported"
-msgstr ""
+msgstr "Следните слоеве ще бъдат импортирани "
 
 #: services/templates/services/service_remove.html:8
 msgid "Remove Remote Service"
-msgstr ""
+msgstr "Премахни услугата за отдалечен достъп"
 
 #: services/templates/services/service_remove.html:12
 msgid "Are you sure you want to remove"
-msgstr ""
+msgstr "Сигурни ли сте, че искате премахване "
 
-#: social/signals.py:85
+#: social/signals.py:86
 msgid "created"
-msgstr ""
+msgstr "създаден "
 
-#: social/signals.py:86 social/tests.py:80
+#: social/signals.py:87 social/tests.py:100
 msgid "deleted"
-msgstr ""
+msgstr "изтрит "
 
-#: social/signals.py:89
+#: social/signals.py:90
 msgid "updated"
-msgstr ""
+msgstr "обновен "
 
-#: social/signals.py:94 social/tests.py:100
+#: social/signals.py:95 social/tests.py:120
 msgid "added a comment"
-msgstr ""
+msgstr "добавен коментар "
 
-#: social/signals.py:96
+#: social/signals.py:97
 msgid "updated a comment"
-msgstr ""
+msgstr "обновен коментар"
 
-#: social/signals.py:98 social/tests.py:54
+#: social/signals.py:99 social/tests.py:74
 msgid "uploaded"
 msgstr "зареден"
 
 #: social/templates/social/_activity_item.html:31
 msgid "ago"
-msgstr ""
+msgstr "преди"
 
 #: social/templates/social/activity_list.html:4
 #: social/templates/social/activity_list.html:15
 msgid "Recent activity"
 msgstr "Актуални действия"
 
-#: social/templatetags/social_tags.py:32
+#: social/templatetags/social_tags.py:52
 msgid "to"
-msgstr ""
+msgstr "към"
 
 #: templates/401.html:10
 msgid "Not Permitted"
-msgstr ""
+msgstr "Неразрешен "
 
 #: templates/401.html:18
 msgid ""
@@ -3100,18 +3293,20 @@ msgid ""
 "          You are not allowed to perform this operation.  \n"
 "      "
 msgstr ""
+"\n"
+"Нямате разрешение за извършване на действието. "
 
 #: templates/401.html:25
 msgid "Please verify that you are logged in as the correct user."
-msgstr ""
+msgstr "Моля проверете дали сте се регистрирали като точния потребител. "
 
 #: templates/401.html:27
 msgid "Please login or register and retry."
-msgstr ""
+msgstr "Моля регистрирайте се като потребител и пробвайте отново. "
 
 #: templates/404.html:5
 msgid "Page Not Found"
-msgstr ""
+msgstr "Страницата не е открита  "
 
 #: templates/404.html:6
 msgid ""
@@ -3120,6 +3315,9 @@ msgid ""
 "outdated bookmark?\n"
 "  "
 msgstr ""
+"\n"
+"Страница, която се опитвате да достъпите не съществува. Може би използвате "
+"стара отметка? "
 
 #: templates/500.html:66 templates/base.html:67
 msgid "People"
@@ -3127,20 +3325,20 @@ msgstr "Потребители"
 
 #: templates/500.html:69 templates/base.html:70
 msgid "Groups"
-msgstr ""
+msgstr "Групи "
 
-#: templates/500.html:89 templates/base.html:90
+#: templates/500.html:89 templates/base.html:91
 msgid "Register"
-msgstr ""
+msgstr "Регистър "
 
-#: templates/500.html:100 templates/500.html.py:200 templates/base.html:101
-#: templates/base.html.py:175 templates/base.html:193
+#: templates/500.html:100 templates/500.html.py:200 templates/base.html:102
+#: templates/base.html.py:176 templates/base.html:194
 msgid "Sign in"
-msgstr ""
+msgstr "Регистрирай се"
 
 #: templates/500.html:127
 msgid "There was a problem loading this page"
-msgstr ""
+msgstr "Имаше проблем при зареждане на страницата "
 
 #: templates/500.html:129
 msgid ""
@@ -3152,152 +3350,160 @@ msgid ""
 "GeoNode/geonode/issues\">GeoNode's issue tracker</a>\n"
 "            "
 msgstr ""
+"\n"
+"Моля свържете с вашия GeoNode администратор (вероятно той е получил "
+"автоматично писмо при правилно конфигуриране).\n"
+"Ако вие сте администратор, разрешете режима за отстраняване на грешки, за да "
+"видите самата грешка и да я отстраните или подадете въпрос на <a href="
+"\"http://github.com/GeoNode/geonode/issues\">GeoNode's issue tracker</a> "
 
-#: templates/500.html:149 templates/base.html:142
+#: templates/500.html:149 templates/base.html:143
 msgid "Powered by"
-msgstr ""
+msgstr "Поддържано от "
 
-#: templates/500.html:149 templates/base.html:142
+#: templates/500.html:149 templates/base.html:143
 msgid "GeoNode"
-msgstr ""
+msgstr "GeoNode "
 
-#: templates/500.html:149 templates/base.html:142
+#: templates/500.html:149 templates/base.html:143
 msgid "version"
-msgstr ""
+msgstr "версия "
 
-#: templates/500.html:150 templates/base.html:143
+#: templates/500.html:150 templates/base.html:144
 msgid "Developers"
-msgstr ""
+msgstr "Разработчици"
 
-#: templates/500.html:188 templates/500.html.py:189 templates/base.html:181
-#: templates/base.html.py:182
+#: templates/500.html:188 templates/500.html.py:189 templates/base.html:182
+#: templates/base.html.py:183
 msgid "Username"
-msgstr ""
+msgstr "Потребителско име "
 
-#: templates/500.html:192 templates/base.html:185
+#: templates/500.html:192 templates/base.html:186 templates/base.html.py:187
 msgid "Password"
-msgstr ""
+msgstr "Парола "
 
-#: templates/500.html:196 templates/base.html:189
+#: templates/500.html:196 templates/base.html:190
 msgid "Remember Me"
-msgstr ""
+msgstr "Запомни ме"
 
-#: templates/500.html:212 templates/base.html:205
+#: templates/500.html:212 templates/base.html:206
 msgid "Menu"
-msgstr ""
+msgstr "Меню "
 
-#: templates/500.html:219 templates/base.html:212
+#: templates/500.html:219 templates/base.html:213
 msgid "Recent Activity"
 msgstr "Актуални действия"
 
-#: templates/500.html:220 templates/base.html:213
+#: templates/500.html:220 templates/base.html:214
 #: templates/user_messages/inbox.html:15
 msgid "Inbox"
-msgstr ""
+msgstr "Пощенска кутия"
 
-#: templates/500.html:239 templates/base.html:232
+#: templates/500.html:239 templates/base.html:233
 msgid "Help"
-msgstr ""
+msgstr "Помощ "
 
-#: templates/500.html:245 templates/base.html:238
+#: templates/500.html:245 templates/base.html:239
 #: templates/account/logout.html:6 templates/account/logout.html.py:12
 #: templates/account/logout.html:17
 msgid "Log out"
-msgstr ""
+msgstr "Изход "
 
-#: templates/500.html:280 templates/base.html:275
+#: templates/500.html:280 templates/base.html:276
 msgid "Type your search here ..."
-msgstr ""
+msgstr "Напишете текст за търсене тук ... "
 
 #: templates/_actions.html:3
 msgid "Info"
-msgstr ""
+msgstr "Информация "
 
 #: templates/_actions.html:8
 msgid "Share"
-msgstr ""
+msgstr "Споделяне "
 
 #: templates/_actions.html:10
 msgid "Ratings"
-msgstr ""
+msgstr "Оценки "
 
 #: templates/_actions.html:13
 msgid "GeoGig"
-msgstr ""
+msgstr "GeoGig "
 
 #: templates/_actions.html:16
 msgid "Exif"
-msgstr ""
+msgstr "Изход"
 
 #: templates/_bulk_permissions_form.html:9
 msgid "Set permissions on selected resources"
-msgstr ""
+msgstr "Сложете разрешения на избрани ресурси"
 
 #: templates/_bulk_permissions_form.html:20
 #: templates/_permissions_form.html:16
 msgid "Apply Changes"
-msgstr ""
+msgstr "Приложи промените "
 
 #: templates/_comments.html:17 templates/_comments.html.py:58
 msgid "Add Comment"
-msgstr ""
+msgstr "Добави коментар "
 
 #: templates/_comments.html:21
 msgid "Log in to add a comment"
-msgstr ""
+msgstr "Регистрирай се, за да добавиш коментар"
 
 #: templates/_comments.html:33
 msgid "By"
-msgstr ""
+msgstr "От"
 
 #: templates/_comments.html:67
 msgid "Submit Comment"
-msgstr ""
+msgstr "Публикувай коментар"
 
 #: templates/_permissions.html:8
 msgid "Who can view it?"
-msgstr ""
+msgstr "Кой може да го разглежда?"
 
 #: templates/_permissions.html:17 templates/_permissions.html.py:49
 msgid "Anyone"
-msgstr "Някой"
+msgstr "Всеки"
 
 #: templates/_permissions.html:22 templates/_permissions.html.py:54
 #: templates/_permissions.html:80 templates/_permissions.html.py:107
 #: templates/_permissions.html:133 templates/_permissions.html.py:160
 msgid "The following users:"
-msgstr ""
+msgstr "Следните потребители:"
 
 #: templates/_permissions.html:28 templates/_permissions.html.py:60
 #: templates/_permissions.html:86 templates/_permissions.html.py:113
 #: templates/_permissions.html:139 templates/_permissions.html.py:166
 msgid "The following groups:"
-msgstr ""
+msgstr "Следните групи:"
 
 #: templates/_permissions.html:40
 msgid "Who can download it?"
-msgstr ""
+msgstr "Кой може да го сваля?"
 
 #: templates/_permissions.html:72
 msgid "Who can change metadata for it?"
-msgstr ""
+msgstr "Кой може да променя метаданните му?"
 
 #: templates/_permissions.html:99
 msgid "Who can edit data for this layer?"
-msgstr ""
+msgstr "Кой може да редактира данни за този слой?"
 
 #: templates/_permissions.html:125
 msgid "Who can edit styles for this layer?"
-msgstr ""
+msgstr "Кой може да редактира стиловете за този слой? "
 
 #: templates/_permissions.html:152
 msgid ""
 "Who can manage it? (update, delete, change permissions, publish/unpublish it)"
 msgstr ""
+"Кой може да го управлява? (актуализира, изтрива, променя разрешенията, "
+"публикува/сваляне от публикация)"
 
 #: templates/_permissions_form.html:9
 msgid "Set permissions for this resource"
-msgstr ""
+msgstr "Сложете разрешения за този ресурс"
 
 #: templates/_permissions_form_js.html:204
 msgid "Choose users..."
@@ -3309,21 +3515,27 @@ msgstr "Избор на групи"
 
 #: templates/about.html:4 templates/about.html.py:8
 msgid "About GeoNode"
-msgstr ""
+msgstr "Относно GeoNode"
 
 #: templates/about.html:10
 msgid "About GeoNode."
-msgstr ""
+msgstr "Относно GeoNode"
+
+#: templates/base.html:74 templates/search/search.html:6
+#: templates/search/search.html.py:12
+msgid "Search"
+msgstr "Търсене"
 
 #: templates/developer.html:4 templates/developer.html.py:8
 msgid "Information for Developers"
-msgstr ""
+msgstr "Информация за разработчици"
 
 #: templates/developer.html:13
 msgid "Useful information for developers interested in GeoNode."
-msgstr ""
+msgstr "Полезна информация за разработчици, които се интересуват от GeoNode"
 
 #: templates/developer.html:14
+#, python-format
 msgid ""
 "\n"
 "    <p><a href=\"http://geonode.org/\">GeoNode</a> is an open service built "
@@ -3373,6 +3585,18 @@ msgid ""
 "data hosted by GeoNode is also available through GeoWebCache. GeoWebCache "
 "improves on WMS by caching data and providing more responsive maps.</p>\n"
 "\n"
+"    <h3>CSW Example Code</h3>\n"
+"    <p>To interact with GeoNode's CSW you can use any CSW client (QGIS "
+"MetaSearch, GRASS, etc.).  The following example illustrates a simple "
+"invocation using the OWSLib Python package:</p>\n"
+"    <p><code>from owslib.csw import CatalogueServiceWeb</code></p>\n"
+"    <p><code>from owslib.fes import PropertyIsLike</code></p>\n"
+"    <p><code>csw = CatalogueServiceWeb('%(CATALOGUE_BASE_URL)s')</code></p>\n"
+"    <p><code>anytext = PropertyIsLike('csw:AnyText', 'birds')')</code></p>\n"
+"    <p><code>csw.getrecords2(constraints=[anytext])</code></p>\n"
+"    <p><code>print csw.results</code></p>\n"
+"    <p><code>print csw.records</code></p>\n"
+"\n"
 "    <h3>OpenLayers Example Code</h3>\n"
 "\n"
 "    <p>To include a GeoNode map layer in an OpenLayers map, first find the "
@@ -3411,55 +3635,62 @@ msgid ""
 "    "
 msgstr ""
 
-#: templates/developer.html:55
+#: templates/developer.html:65
 msgid "GeoNode's Web Services"
-msgstr ""
+msgstr "Уеб услуги на GeoNode"
 
-#: templates/developer.html:56
+#: templates/developer.html:66
 msgid "GeoNode's Web Services are available from the following URLs:"
-msgstr ""
+msgstr "Уеб услугите на GeoNode са налични на следните URL: "
 
-#: templates/developer.html:59
+#: templates/developer.html:69
 msgid "Dynamic tiles via WMS:"
-msgstr ""
+msgstr "Динамична разграфка чрез WMS:"
 
-#: templates/developer.html:63
+#: templates/developer.html:73
 msgid "Vector data via WFS:"
-msgstr ""
+msgstr "Векторни данни чрез WFS: "
 
-#: templates/developer.html:67
+#: templates/developer.html:77
 msgid "Raster data via WCS:"
-msgstr ""
+msgstr "Растерни данни чрез WCS: "
 
-#: templates/developer.html:71
+#: templates/developer.html:81
 msgid "Metadata search via CSW:"
-msgstr ""
+msgstr "Търсене на метаданни чрез CSW:"
 
-#: templates/developer.html:75
+#: templates/developer.html:85
 msgid "Metadata search via OpenSearch:"
-msgstr ""
+msgstr "Търсене на метаданни чрез OpenSearch:"
 
-#: templates/developer.html:79
+#: templates/developer.html:89
 msgid "Metadata search via OAI-PMH:"
+msgstr "Търсене на метаданни чрез OAI-PMH"
+
+#: templates/developer.html:93
+msgid "Open Data:"
 msgstr ""
 
-#: templates/developer.html:83
+#: templates/developer.html:97
 msgid "Cached tiles via WMTS:"
-msgstr ""
+msgstr "Каширани разграфки чрез WMTS:"
 
 #: templates/help.html:4
 msgid "User Guide"
-msgstr ""
+msgstr "Ръководство на потребителя "
 
 #: templates/help.html:8
 msgid "GeoNode Help"
-msgstr ""
+msgstr "GeoNode помощ "
 
 #: templates/help.html:12
 msgid ""
 "This page provides helpful information about how to use the GeoNode. You can "
 "use the sidebar links to navigate to what you want to know."
 msgstr ""
+"Тази страница предоставя полезна информация за това как да използвате "
+"GeoNode. Можете да използвате страничната лента за навигация към това, което "
+"искате да знаете. "
 
 #: templates/help.html:14
 msgid ""
@@ -3550,34 +3781,117 @@ msgid ""
 "<a href=\"/maps\">Maps</a> tab.</p> \n"
 "    "
 msgstr ""
+"\n"
+"<p>GeoNode предоставя достъп до набор от данни и възможност за създаване на "
+"карта, позволява на потребителите да разглеждат съществуващи карти и да "
+"споделят свои.</p>\n"
+"\n"
+"<h4 id=\"browsing-data\">Търсене на слоеве</h4>\n"
+"<p>Бутонът <a href=\"/layers\">за слоеве</a> ви позволява да търсите данни, "
+"качени на GeoNode.</p>\n"
+"<p> Всички данни могат да бъдат свалени в различни формати и да се ползват в "
+"други програми.</p>\n"
+"\n"
+"<h4 id=\"developer-access\">Достъп за дивевелопъри</h4>\n"
+"<p><a href=\"/developer\"> </a> страница за дивелопъри е мястото за "
+"изготвяне на приложения в GeoNode. Има инструкции за използването на уеб "
+"сервизи, линкове към кодовете на GeoNode и информация за отвореният код, "
+"използван за създаването.</p>\n"
+"\n"
+"<h4 id=\"browsing-maps\">Разглеждане на карти</h4>\n"
+"<p>GeoNode позволява на потребителите да създават и споделят карти.</p>\n"
+"<p><a href=\"/maps\">Бутона</a> за карти дава възможност за разглеждане на "
+"картите в GeoNode. От тук можете <strong>търсите карта</strong> или "
+"<strong>създавате карта</strong>, което ще отвори <a href=\"/maps/new"
+"\">Композитора на карти</a>.</p>\n"
+"<h5>Google Earth Mode</h5>\n"
+"<p>Всяка карта може да бъде видяна в 3D вариант чрез плъгина Google Earth. "
+"За да превключите на 3D изглед изберете Google Earth globe logo, най-десния "
+"бутон в горната лента с инструменти. Ако нямате плъгина Google Earth, ще ви "
+"бъде предложено да го инсталирате.</p>\n"
+"\n"
+"<h4 id=\"creating-a-map\">Създаване на карта</h4>\n"
+"<p>За да създадете нова карта, отидете на <a href=\"/maps\">Публикуване на "
+"карти</a> натиснете <a href=\"/maps/new\">създай собствена карта</a> линк.</"
+"p>\n"
+"<p>Това ще ви отведе до <a href=\"/maps/new\">Композитора на карти</a> със "
+"зареден базов слой.</p>\n"
+"<p>За да добавите слоеве с данни от GeoNode, натиснете зеления бутон плюс, "
+"който се намира под за слоевете в лявата част на екрана. Това ще отвори "
+"диалогов прозорец със списък на всички достъпни слоеве в GeoNode.</p>\n"
+"<p>За да добавите слоеве на картата, трябва да ги изберете и натиснете "
+"бутона<strong>Добави слоеве</strong>. Когато сте готови натиснете "
+"<strong>Готово</strong> за да затворите и да се върнете към картата.</p>\n"
+"\n"
+"<h5>Преподреждане и премахване на слоеве</h5>\n"
+"<p>Промени реда на показване на слоевете като ги плъзгате и пускате. Редът в "
+"картата ще отразява промените. За да направите слой невидим, го "
+"размаркирайте, за да го премахнете изцялонатиснете червения минус.</p>\n"
+"\n"
+"<h5>Запаметяване на вашата карта</h5>\n"
+"<p>Когато подходящ набор от слоеве и мащаб бъде определен, е време да "
+"запаметите картата, за да могат и другите да я видят. Натиснете бутова "
+"Запаметяване - най-ляват иконка, със знак на дискета и попълнете заглавие и "
+"описание на картата.</p>\n"
+"\n"
+"<h4 id=\"exporting-a-map\">Преглеждане на карта</h4>\n"
+"<p>Всяка карта от GeoNode може да бъде вградена в друг сайт или блог. За да "
+"експортирате карта:</p>\n"
+"<ol>\n"
+"<li>Избрете карта от списъка на страницата с карти и натиснете бутона "
+"'експортиране на карта'.</li> \n"
+"<li>Изберете желаната височина и ширина.</li> \n"
+"<li>Копирайте предоставения HTML в някоя HTML страница или блог.</li>\n"
+"</ol>\n"
+"<p>Това ще покаже вашата карта интерактвно в вашата уеб страница или блог.</"
+"p>\n"
+"<p>Имайте предвид, че <a href=\"/maps/new\">Композитора на карти</a>също има "
+"бутон за експортиране на карти. Бъдете сигурни, че карта е запенетена преди "
+"експортиране на картата, ако има промени, които искате другите да могат да "
+"виждат. Ще бъде експортирана последната запеметена версия, не последната, "
+"която може да се види.</p>\n"
+"\n"
+"<h4 id=\"remixing-a-map\">Миксиране на карта</h4>\n"
+"<p>Всяка съществуваща карта може да служи като основа за нова карта.</p>\n"
+"<ol>\n"
+"<li>Отворете картата в Композитора на карти.</li>\n"
+"<li>Добавяйте и премахвайте слоеве по ваше желание.</li>\n"
+"<li>Навигирайте е приближавайте към маркираната територия, която "
+"представлява интерес.</li>\n"
+"<li><strong>Важно:</strong> Обновете заглавие, описание, информация за "
+"контакт и ключови думи, за да са актуални към новата карта.</li>\n"
+"<li>Запазете картата.</li>\n"
+"</ol>\n"
+"<p>Можете да видите новата си карта, като я потърсите на <a href=\"/maps"
+"\">Карти</a> бутона.</p>"
 
 #: templates/help.html:66
 msgid "Sections"
-msgstr ""
+msgstr "Сегменти"
 
 #: templates/help.html:67
 msgid "Browsing Layers"
-msgstr ""
+msgstr "Търсене на слоеве "
 
 #: templates/help.html:68
 msgid "Developer Access"
-msgstr ""
+msgstr "Достъп на разработчик"
 
 #: templates/help.html:69
 msgid "Browsing Maps"
-msgstr ""
+msgstr "Търсене на карти"
 
 #: templates/help.html:70
 msgid "Creating a Map"
-msgstr ""
+msgstr "Създаване на карта "
 
 #: templates/help.html:71
 msgid "Exporting a Map"
-msgstr ""
+msgstr "Експортиране на карта "
 
 #: templates/help.html:72
 msgid "Remixing a Map"
-msgstr ""
+msgstr "Миксиране на карта"
 
 #: templates/index.html:6
 msgid "Welcome!"
@@ -3589,15 +3903,99 @@ msgid ""
 "\"http://lists.osgeo.org/cgi-bin/mailman/listinfo/geonode-users\">mailing "
 "list</a>."
 msgstr ""
+"Ако имате някакви въпроси относно софтуера или услугата, включете се в "
+"списъка <a href=\"http://lists.osgeo.org/cgi-bin/mailman/listinfo/geonode-"
+"users\"> с адреси: </a>."
+
+#: templates/metadata_detail.html:26
+msgid "Return to Document"
+msgstr ""
+
+#: templates/metadata_detail.html:28
+msgid "Return to Layer"
+msgstr ""
+
+#: templates/metadata_detail.html:36
+msgid "Identification"
+msgstr ""
+
+#: templates/metadata_detail.html:100
+msgid "Published"
+msgstr ""
+
+#: templates/metadata_detail.html:101 templates/metadata_detail.html.py:104
+msgid "Yes"
+msgstr ""
+
+#: templates/metadata_detail.html:121 templates/metadata_detail.html.py:263
+#: templates/metadata_detail.html:339
+msgid "email"
+msgstr "email"
+
+#: templates/metadata_detail.html:151
+msgid "Information of Layer"
+msgstr ""
+
+#: templates/metadata_detail.html:156
+msgid "Identification Image"
+msgstr ""
+
+#: templates/metadata_detail.html:165
+msgid "Spatial Resolution"
+msgstr ""
+
+#: templates/metadata_detail.html:168
+msgid "Projetion System"
+msgstr ""
+
+#: templates/metadata_detail.html:171
+msgid "Extension x0"
+msgstr ""
+
+#: templates/metadata_detail.html:174
+msgid "Extension x1"
+msgstr ""
+
+#: templates/metadata_detail.html:177
+msgid "Extension y0"
+msgstr ""
+
+#: templates/metadata_detail.html:180
+msgid "Extension y1"
+msgstr ""
+
+#: templates/metadata_detail.html:185
+msgid "Features"
+msgstr ""
+
+#: templates/metadata_detail.html:255
+msgid "Contact Points"
+msgstr ""
+
+#: templates/metadata_detail.html:296
+msgid "References"
+msgstr ""
+
+#: templates/metadata_detail.html:301
+msgid "Link Online"
+msgstr ""
+
+#: templates/metadata_detail.html:304
+msgid "Metadata Page"
+msgstr ""
+
+#: templates/metadata_detail.html:308
+msgid "Online Link"
+msgstr ""
 
 #: templates/social_links.html:10
 msgid "Share This"
-msgstr ""
+msgstr "Споделяне на това "
 
 #: templates/account/admin_approval_sent.html:6
 #: templates/account/admin_approval_sent.html:11
 msgid "Account Pending Approval"
-msgstr ""
+msgstr "Профил чакащ одобрение"
 
 #: templates/account/admin_approval_sent.html:14
 #, python-format
@@ -3606,11 +4004,13 @@ msgid ""
 "with <b>%(email)s</b>. If the account is approved, you will receive a "
 "confirmation notice."
 msgstr ""
+"Ние сме изпратили на администраторите известие да одобрят продила свързан с  "
+"<b>%(email)s</b>. Ако профилът бъде одобрен, ще получите потвърждение."
 
 #: templates/account/email_confirmation_sent.html:6
 #: templates/account/email_confirmation_sent.html:11
 msgid "Confirm your email address"
-msgstr ""
+msgstr "Потвърждаване на ел.поща"
 
 #: templates/account/email_confirmation_sent.html:14
 #, python-format
@@ -3618,64 +4018,68 @@ msgid ""
 "We have sent you an email to <b>%(email)s</b> for verification. Follow the "
 "link provided to finalize the signup process."
 msgstr ""
+"Изпратили сме ел.писмо на  <b>%(email)s</b> за верификация. Натиснете "
+"предоставения линк, за да приключите процеа по регистрация."
 
 #: templates/account/login.html:7 templates/account/login.html.py:25
 msgid "Log in"
-msgstr ""
+msgstr "Регистрирай се"
 
 #: templates/account/login.html:11
 msgid "Log in to an existing account"
-msgstr ""
+msgstr "Вход във съществуващ профил "
 
 #: templates/account/login.html:22
 msgid "Forgot your username?"
-msgstr ""
+msgstr "Забравено потребителско име? "
 
 #: templates/account/login.html:23
 msgid "Forgot your password?"
-msgstr ""
+msgstr "Забравена парола? "
 
 #: templates/account/logout.html:15
 msgid "Are you sure you want to log out?"
-msgstr ""
+msgstr "Сигурни ли сте, че искате да излезете? "
 
 #: templates/account/password_change.html:8
 msgid "Password change"
-msgstr ""
+msgstr "Промяна на парола "
 
 #: templates/account/password_change.html:14
 msgid "Password Change"
-msgstr ""
+msgstr "Промяна на парола "
 
 #: templates/account/password_change.html:18
 msgid "Change your password here"
-msgstr ""
+msgstr "Променете паролата си от тук "
 
 #: templates/account/password_change.html:24
 msgid "Change my password"
-msgstr ""
+msgstr "Смяна на моята парола "
 
 #: templates/account/password_reset.html:8
 msgid "Password reset"
-msgstr ""
+msgstr "Рестартиране на парола"
 
 #: templates/account/password_reset.html:14
 msgid "Password Reset"
-msgstr ""
+msgstr "Рестартиране на парола"
 
 #: templates/account/password_reset.html:18
 msgid "Forgotten your password?"
-msgstr ""
+msgstr "Забравена парола? "
 
 #: templates/account/password_reset.html:19
 msgid ""
 "Enter your email address below, and we'll send you an email allowing you to "
 "reset it."
 msgstr ""
+"Напишете адреса на вашата електронна поща по-долу и ще ви изпратим писмо, "
+"което ви позволява да рестартирате паролата. "
 
 #: templates/account/password_reset.html:25
 msgid "Reset my password"
-msgstr ""
+msgstr "Рестартиране на паролата"
 
 #: templates/account/password_reset.html:29
 #, python-format
@@ -3684,15 +4088,18 @@ msgid ""
 "\"mailto:%(THEME_ACCOUNT_CONTACT_EMAIL)s\">%(THEME_ACCOUNT_CONTACT_EMAIL)s</"
 "a>."
 msgstr ""
+"Ако имате проблем при рестартирането на паролата, свържете се с нас на <a "
+"href=\"mailto:%(THEME_ACCOUNT_CONTACT_EMAIL)s\">"
+"%(THEME_ACCOUNT_CONTACT_EMAIL)s</a>."
 
 #: templates/account/signup.html:7 templates/account/signup.html.py:11
 #: templates/account/signup.html:17 templates/account/signup.html.py:25
 msgid "Sign up"
-msgstr ""
+msgstr "Регистрирай се"
 
 #: templates/account/signup.html:30
 msgid "Sorry, registrations are not open at this time."
-msgstr ""
+msgstr "Съжалявам, в този момент регистрациите на са възможни."
 
 #: templates/account/email/email_confirmation_message.txt:1
 #, python-format
@@ -3703,11 +4110,16 @@ msgid ""
 "\n"
 "If you did not sign up for this site, you can ignore this message.\n"
 msgstr ""
+"Потребител на %(site_name)s е създал профил със този електронен адрес.\n"
+"\n"
+"За да потвърдите адреса моля отидете на  %(activate_url)s\n"
+"\n"
+"Ако не сте се регистрирали за тази страница, игнорирайте това съобщение. \n"
 
 #: templates/account/email/email_confirmation_subject.txt:1
 #, python-format
 msgid "Confirm email address for %(site_name)s"
-msgstr ""
+msgstr "Потвърдете адреса на електронната поща за %(site_name)s"
 
 #: templates/account/email/password_reset.txt:1
 #, python-format
@@ -3719,59 +4131,65 @@ msgid ""
 "\n"
 "%(password_reset_url)s\n"
 msgstr ""
+"Получавате това писмо, защото вие или някой друг е поискал парола за "
+"потребителския ви профил %(site_name)s.\n"
+"Ако не сте поискали парола игнорирайте това писмо. За да промените паролата, "
+"натиснете линка.\n"
+"\n"
+"%(password_reset_url)s\n"
 
 #: templates/account/email/password_reset_subject.txt:1
 #, python-format
 msgid "[%(site_name)s] Password reset"
-msgstr ""
+msgstr "[%(site_name)s] Паролата е променена"
 
 #: templates/actstream/actor.html:7 templates/actstream/actor.html.py:8
 msgid "My Activity feed"
-msgstr ""
+msgstr "Моята активност"
 
 #: templates/actstream/actor.html:7 templates/actstream/actor.html.py:8
 msgid "Activity Feed"
-msgstr ""
+msgstr "Следене на активността"
 
 #: templates/admin/base_site.html:3
 msgid "GeoNode site admin"
-msgstr ""
+msgstr "GeoNode администраторска страница"
 
 #: templates/admin/base_site.html:6
 msgid "GeoNode administration"
-msgstr ""
+msgstr "Администриране на GeoNode"
 
 #: templates/announcements/announcement_confirm_delete.html:10
 msgid "Delete Announcement?"
-msgstr ""
+msgstr "Изтриване на известие?"
 
 #: templates/announcements/announcement_confirm_delete.html:13
 msgid "Are you sure you want to delete this announcement?"
-msgstr ""
+msgstr "Сигурни ли сте, че искате да изтриете известието?"
 
 #: templates/announcements/announcement_form.html:11
 msgid "Edit Announcement"
-msgstr ""
+msgstr "Редактирай известие"
 
 #: templates/announcements/announcement_form.html:11
 msgid "Create Announcement"
-msgstr ""
+msgstr "Създай известие"
 
 #: templates/announcements/announcement_list.html:12
 msgid "New Announcement"
-msgstr ""
+msgstr "Ново известие"
 
 #: templates/announcements/announcement_list.html:21
 msgid "Level"
-msgstr ""
+msgstr "Ниво"
 
 #: templates/announcements/announcement_list.html:22
 msgid "Announcement"
-msgstr ""
+msgstr "Известие"
 
 #: templates/announcements/announcement_list.html:23
 msgid "Published From"
-msgstr ""
+msgstr "Публикувана форма"
 
 #: templates/announcements/announcement_list.html:38
 #, python-format
@@ -3781,40 +4199,42 @@ msgid ""
 "b>.\n"
 "          "
 msgstr ""
+"\n"
+"Публикувано от <b>%(publish_start)s</b> to <b>%(publish_end)s</b>."
 
 #: templates/announcements/detail.html:4
 #, python-format
 msgid "Announcements : %(announcement)s"
-msgstr ""
+msgstr "Известия : %(announcement)s"
 
 #: templates/avatar/add.html:6 templates/avatar/change.html:6
 #: templates/avatar/confirm_delete.html:5
 msgid "Back to edit your profile information"
-msgstr ""
+msgstr "Обратно към редактиране на вашата информация в профила"
 
 #: templates/avatar/add.html:7 templates/avatar/change.html:7
 msgid "Your current avatar: "
-msgstr ""
+msgstr "Сегашната ви снимка:"
 
 #: templates/avatar/add.html:10 templates/avatar/change.html:10
 msgid "You haven't uploaded an avatar yet. Please upload one now."
-msgstr ""
+msgstr "До момента не сте качила профилна снимка. Моля качете такава сега."
 
 #: templates/avatar/add.html:14 templates/avatar/change.html:21
 msgid "Upload New Image"
-msgstr ""
+msgstr "Качване на ново изображение"
 
 #: templates/avatar/change.html:16
 msgid "Choose new Default"
-msgstr ""
+msgstr "Изберете нова опция по подразбиране"
 
 #: templates/avatar/change.html:23
 msgid "Delete Your Avatar"
-msgstr ""
+msgstr "Изтрийте вашaта снимка"
 
 #: templates/avatar/confirm_delete.html:6
 msgid "Please select the avatars that you would like to delete."
-msgstr ""
+msgstr "Моля изберете снимките, които искате да изтриете."
 
 #: templates/avatar/confirm_delete.html:9
 #, python-format
@@ -3822,15 +4242,17 @@ msgid ""
 "You have no avatars to delete. Please <a href=\"%(avatar_change_url)s"
 "\">upload one</a> now."
 msgstr ""
+"Нямате профилни снимки за изтриване. Моля <a href=\"%(avatar_change_url)s"
+"\">качете такава</a> сега."
 
 #: templates/avatar/confirm_delete.html:15
 msgid "Delete These"
-msgstr ""
+msgstr "Изтрий тези"
 
 #: templates/notification/notice_settings.html:8
 #: templates/notification/notice_settings.html:11
 msgid "Notification Settings"
-msgstr ""
+msgstr "Настройки за известяване"
 
 #: templates/notification/notice_settings.html:15
 #, python-format
@@ -3843,59 +4265,67 @@ msgid ""
 "        </p>\n"
 "        "
 msgstr ""
+"\n"
+"<p class=\"alert alert-warning\">\n"
+"<span class=\"warning\">Note</span>:\n"
+"Нямате проверен адрес на електронната поща, на който могат да бъдат пращани "
+"уведомления. <a href=\"%(email_url)s\">Добавете такъв</a> сега.\n"
+"</p>"
 
 #: templates/notification/notice_settings.html:27
 msgid "Notification Type"
-msgstr ""
+msgstr "Тип уведомление"
 
 #: templates/notification/notice_settings.html:52
 msgid "Change"
-msgstr ""
+msgstr "Промени"
 
 #: templates/notification/account_active/full.txt:3
 msgid "Your account has been approved and is now active."
-msgstr ""
+msgstr "Профилът ви беше одобрен и е вече активен."
 
 #: templates/notification/account_active/full.txt:5
 msgid "You can use the login form at"
-msgstr ""
+msgstr "Можете да използвате формата за влизане в профила"
 
 #: templates/notification/account_active/short.txt:3
 msgid "Your account is now active"
-msgstr ""
+msgstr "Профилът ви вече е активен"
 
 #: templates/notification/account_approve/full.txt:1
 msgid "has requested access to the site."
-msgstr ""
+msgstr "е поискал достъп до страницата"
 
 #: templates/notification/account_approve/full.txt:1
 msgid ""
 "You can enable access by setting the user as active on the admin section"
 msgstr ""
+"Можете да разрешите достъпа като посочите потребителя като активен в сесия "
+"на администратор"
 
 #: templates/notification/account_approve/short.txt:3
 msgid "A user has requested access to the site"
-msgstr ""
+msgstr "Потребител е заявил молба за достъп до страницата"
 
 #: templates/notification/document_comment/full.txt:3
 msgid "A comment has been posted for the document"
-msgstr ""
+msgstr "Бе направен коментар за документа"
 
 #: templates/notification/document_comment/full.txt:3
 #: templates/notification/layer_comment/full.txt:3
 #: templates/notification/map_comment/full.txt:4
 msgid "by the user"
-msgstr ""
+msgstr "от потребителя"
 
 #: templates/notification/document_comment/full.txt:5
 #: templates/notification/document_created/full.txt:6
 #: templates/notification/document_updated/full.txt:6
 msgid "You can visit the document's detail page here"
-msgstr ""
+msgstr "Можете да посетите страницата с информация за документа от тук"
 
 #: templates/notification/document_comment/short.txt:3
 msgid "A comment has been posted for a document"
-msgstr ""
+msgstr "За документа бе направен коментар"
 
 #: templates/notification/document_created/full.txt:3
 #: templates/notification/document_rated/full.txt:3
@@ -3905,19 +4335,19 @@ msgstr ""
 #: templates/notification/map_rated/full.txt:3
 #: templates/notification/request_download_resourcebase/full.txt:3
 msgid "The user"
-msgstr ""
+msgstr "Потребителят"
 
 #: templates/notification/document_created/full.txt:3
 msgid "uploaded the following document"
-msgstr ""
+msgstr "обновяване на следния документ"
 
 #: templates/notification/document_created/short.txt:3
 msgid "A document has been uploaded"
-msgstr ""
+msgstr "Документ беше качен"
 
 #: templates/notification/document_deleted/full.txt:3
 msgid "The following document was deleted"
-msgstr ""
+msgstr "Следният документ бе изтрит"
 
 #: templates/notification/document_deleted/full.txt:4
 #: templates/notification/document_rated/full.txt:6
@@ -3929,21 +4359,21 @@ msgstr ""
 #: templates/notification/map_rated/full.txt:6
 #: templates/notification/map_updated/full.txt:4
 msgid "owned by"
-msgstr ""
+msgstr "собственост на"
 
 #: templates/notification/document_deleted/short.txt:3
 msgid "A document has been deleted"
-msgstr ""
+msgstr "Документ беше изтрит"
 
 #: templates/notification/document_rated/full.txt:4
 #: templates/notification/layer_rated/full.txt:4
 #: templates/notification/map_rated/full.txt:4
 msgid "rated"
-msgstr ""
+msgstr "оценен"
 
 #: templates/notification/document_rated/full.txt:5
 msgid "the following document"
-msgstr ""
+msgstr "следния документ"
 
 #: templates/notification/document_rated/full.txt:8
 #: templates/notification/layer_comment/full.txt:5
@@ -3951,193 +4381,194 @@ msgstr ""
 #: templates/notification/layer_rated/full.txt:8
 #: templates/notification/layer_updated/full.txt:6
 msgid "You can visit the layer's detail page here"
-msgstr ""
+msgstr "Можете да посетите страницата с информация за слоя от тук"
 
 #: templates/notification/document_rated/short.txt:3
 msgid "A document has been rated"
-msgstr ""
+msgstr "Документ беше оценен"
 
 #: templates/notification/document_updated/full.txt:3
 msgid "The following document was updated"
-msgstr ""
+msgstr "Следният документ бе обновен"
 
 #: templates/notification/document_updated/short.txt:3
 msgid "A document has been updated"
-msgstr ""
+msgstr "Документ беше обновен"
 
 #: templates/notification/layer_comment/full.txt:3
 msgid "A comment has been posted for the layer"
-msgstr ""
+msgstr "Направен е коментар за слоят"
 
 #: templates/notification/layer_comment/short.txt:3
 msgid "A comment has been posted for a layer"
-msgstr ""
+msgstr "Направен е коментар за слой"
 
 #: templates/notification/layer_created/full.txt:3
 msgid "uploaded the following layer"
-msgstr ""
+msgstr "качен е следния слой"
 
 #: templates/notification/layer_created/short.txt:3
 msgid "A new layer has been uploaded"
-msgstr ""
+msgstr "Качен е нов слой"
 
 #: templates/notification/layer_deleted/full.txt:3
 msgid "The following layer was deleted"
-msgstr ""
+msgstr "Следният слой бе изтрит"
 
 #: templates/notification/layer_deleted/short.txt:3
 msgid "A layer has been deleted"
-msgstr ""
+msgstr "Слой беше изтрит"
 
 #: templates/notification/layer_rated/full.txt:5
 msgid "the following layer"
-msgstr ""
+msgstr "следният слой"
 
 #: templates/notification/layer_rated/short.txt:3
 msgid "A layer has been rated"
-msgstr ""
+msgstr "Слой беше оценен"
 
 #: templates/notification/layer_updated/full.txt:3
 msgid "The following layer was updated"
-msgstr ""
+msgstr "Следният слой бе обновен"
 
 #: templates/notification/layer_updated/short.txt:3
 msgid "A layer has been updated"
-msgstr ""
+msgstr "Слой беше обновен"
 
 #: templates/notification/map_comment/full.txt:3
 msgid "A comment has been posted for the map"
-msgstr ""
+msgstr "Направен е коментар за картата"
 
 #: templates/notification/map_comment/full.txt:6
 #: templates/notification/map_created/full.txt:6
 #: templates/notification/map_rated/full.txt:8
 #: templates/notification/map_updated/full.txt:6
 msgid "You can visit the map's detail page here"
-msgstr ""
+msgstr "От тук можете да посетите страницата с информация за картата"
 
 #: templates/notification/map_comment/short.txt:3
 msgid "A comment has been posted for a map"
-msgstr ""
+msgstr "Направен е коментар за карта"
 
 #: templates/notification/map_created/full.txt:3
 msgid "created the following map"
-msgstr ""
+msgstr "създадена е следната карта"
 
 #: templates/notification/map_created/short.txt:3
 msgid "A map has been created"
-msgstr ""
+msgstr "Карта е създадена"
 
 #: templates/notification/map_deleted/full.txt:3
 msgid "The following map was deleted"
-msgstr ""
+msgstr "Следната карта бе изтрита"
 
 #: templates/notification/map_deleted/short.txt:3
 msgid "A map has been deleted"
-msgstr ""
+msgstr "Карта беше изтрита"
 
 #: templates/notification/map_rated/full.txt:5
 msgid "the following map"
-msgstr ""
+msgstr "следната карта"
 
 #: templates/notification/map_rated/short.txt:3
 msgid "A map has been rated"
-msgstr ""
+msgstr "Карта беше оценена"
 
 #: templates/notification/map_updated/full.txt:3
 msgid "The following map was updated"
-msgstr ""
+msgstr "Следната карта бе обновена"
 
 #: templates/notification/map_updated/short.txt:3
 msgid "A map has been updated"
-msgstr ""
+msgstr "Карта бе обновена"
 
 #: templates/notification/request_download_resourcebase/full.txt:3
 msgid "requested you to download this resource"
-msgstr ""
+msgstr "поиска да свали този ресурс"
 
 #: templates/notification/request_download_resourcebase/full.txt:12
 msgid ""
 "Please go to resource page and assign the download permissions if you wish"
 msgstr ""
+"Моля отидете на страницата с източника и ако желаете дайте достъп за сваляне"
 
 #: templates/notification/request_download_resourcebase/short.txt:3
 msgid "A resource's download has been requested"
-msgstr ""
+msgstr "Поискано е сваляне на ресурс"
 
 #: templates/relationships/_list_connections.html:3
 #: templates/relationships/_manage_connections.html:6
 msgid "Following"
-msgstr ""
+msgstr "Следване"
 
 #: templates/relationships/_list_connections.html:9
 msgid "This user is not following anyone"
-msgstr ""
+msgstr "Потребителят не следва друг потребител"
 
 #: templates/relationships/_list_connections.html:11
 msgid "Followers"
-msgstr ""
+msgstr "Последователи"
 
 #: templates/relationships/_list_connections.html:17
 msgid "No one is following this user"
-msgstr ""
+msgstr "Никой не следи този потребител"
 
 #: templates/relationships/_manage_connections.html:4
 msgid "Manage Connections"
-msgstr ""
+msgstr "Управление на възките"
 
 #: templates/relationships/_manage_connections.html:7
 msgid "Blocking"
-msgstr ""
+msgstr "Блокиране"
 
 #: templates/relationships/_profile_follow.html:6
 #: templates/relationships/relationship_list.html:16
 msgid "Unfollow"
-msgstr ""
+msgstr "Прекрати следването"
 
 #: templates/relationships/_profile_follow.html:9
 msgid "Follow"
-msgstr ""
+msgstr "Последвай"
 
 #: templates/relationships/_profile_follow.html:14
 #: templates/relationships/relationship_list.html:20
 msgid "Unblock"
-msgstr ""
+msgstr "Деблокиране"
 
 #: templates/relationships/_profile_follow.html:17
 msgid "Block"
-msgstr ""
+msgstr "Блокиране"
 
 #: templates/relationships/confirm.html:4
 #: templates/relationships/confirm.html:7
 msgid "No longer"
-msgstr ""
+msgstr "Вече не"
 
 #: templates/relationships/confirm.html:12
 msgid "Confirm"
-msgstr ""
+msgstr "Потвърди"
 
 #: templates/relationships/relationship_list.html:26
 #, python-format
 msgid "You're not %(status_slug)s anyone!"
-msgstr ""
+msgstr "Вие не сте %(status_slug)s от никого!"
 
 #: templates/relationships/success.html:5
 msgid "Success"
-msgstr ""
+msgstr "Успех"
 
 #: templates/relationships/success.html:6
 msgid "You are "
-msgstr ""
+msgstr "Вие сте"
 
 #: templates/relationships/success.html:6
 msgid "no longer"
-msgstr ""
+msgstr "вече не"
 
 #: templates/relationships/success.html:7
 #, python-format
 msgid "%(to_user_username)s's profile"
-msgstr ""
+msgstr "Профилът на %(to_user_username)s"
 
 #: templates/search/_extent_filter.html:3
 msgid "Extent"
@@ -4149,92 +4580,117 @@ msgstr "Категории"
 
 #: templates/search/_general_filters.html:33
 msgid "Owners"
-msgstr ""
+msgstr "Притежатели"
 
 #: templates/search/_general_filters.html:49
 msgid "Date begins after:"
-msgstr ""
+msgstr "Денят започва след:"
 
 #: templates/search/_general_filters.html:50
 #: templates/search/_general_filters.html:54
 msgid "yyyy-mm-dd"
-msgstr ""
+msgstr "гггг-мм-дд"
 
 #: templates/search/_general_filters.html:53
 msgid "Date ends before:"
+msgstr "Денят приключва преди:"
+
+#: templates/search/_pagination.html:13
+msgid "page"
 msgstr ""
 
-#: templates/search/_search_content.html:5
-msgid "Your selections"
-msgstr ""
+#: templates/search/_pagination.html:13
+msgid "of"
+msgstr "на"
 
-#: templates/search/_search_content.html:6
-msgid "Clear all filters"
-msgstr "Изчистване на всички филтри"
-
-#: templates/search/_sort_filters.html:15
+#: templates/search/_search_content.html:11
 msgid "Set permissions"
+msgstr "Задай разрешения за достъп"
+
+#: templates/search/_search_content.html:23
+msgid "Filters"
 msgstr ""
 
 #: templates/search/_text_filter.html:5
 msgid "Text"
-msgstr ""
-
-#: templates/search/search.html:6 templates/search/search.html.py:12
-msgid "Search"
-msgstr "Търсене"
+msgstr "Текст"
 
 #: templates/user_messages/_message_snippet.html:8
 msgid "With"
-msgstr ""
+msgstr "С"
 
 #: templates/user_messages/_message_snippet.html:9
 msgid "Subject"
-msgstr ""
+msgstr "Тема"
 
 #: templates/user_messages/_message_snippet.html:10
 msgid "Last Sender"
-msgstr ""
+msgstr "Последен изпращач"
 
 #: templates/user_messages/_message_snippet.html:11
 msgid "Preview"
-msgstr ""
+msgstr "Преглед"
 
 #: templates/user_messages/_message_snippet.html:12
 msgid "Delete?"
-msgstr ""
+msgstr "Изтриване?"
 
 #: templates/user_messages/_message_snippet.html:29
 #: templates/user_messages/thread_detail.html:14
 msgid "me"
-msgstr ""
+msgstr "аз"
 
 #: templates/user_messages/inbox.html:6
 msgid "Message Inbox"
-msgstr ""
+msgstr "Съобщения"
 
 #: templates/user_messages/inbox.html:11
 msgid "Messages"
-msgstr ""
+msgstr "Съобщение"
 
 #: templates/user_messages/inbox.html:38
 #: templates/user_messages/message_create.html:6
 #: templates/user_messages/message_create.html:9
 msgid "Create Message"
-msgstr ""
+msgstr "Създай съобщение"
 
 #: templates/user_messages/message_create.html:16
 msgid "Send message"
-msgstr ""
+msgstr "Изпрати съобщение"
 
 #: templates/user_messages/message_create.html:22
 #: templates/user_messages/thread_detail.html:32
 msgid "Back to Inbox"
-msgstr ""
+msgstr "Обратно към входяща поща"
 
 #: templates/user_messages/thread_detail.html:26
 msgid "Send Reply"
-msgstr ""
+msgstr "Изпрати отговор"
+
+#~ msgid ""
+#~ "information about on-line sources from which the dataset, specification, "
+#~ "or community profile name and extended metadata elements can be obtained"
+#~ msgstr ""
+#~ "information about on-line sources from which the dataset, specification, "
+#~ "or community profile name and extended metadata elements can be obtained"
+
+#~ msgid "detailed text description of what the online resource is/does"
+#~ msgstr "detailed text description of what the online resource is/does"
+
+#~ msgid "distribution URL"
+#~ msgstr "distribution URL"
+
+#~ msgid "distribution description"
+#~ msgstr "distribution description"
+
+#~ msgid "Could not create a download link for layer."
+#~ msgstr "Could not create a download link for layer."
+
+#~ msgid "Your selections"
+#~ msgstr "Your selections"
+
+#~ msgid "Clear all filters"
+#~ msgstr "Clear all filters"
 
 #~ msgid ""
 #~ "\n"
@@ -4253,9 +4709,6 @@ msgstr ""
 #~ "\n"
 #~ "        Are you sure you want to remove %(map_title)s?\n"
 #~ "    "
-
-#~ msgid "email"
-#~ msgstr "email"
 
 #~ msgid "KML"
 #~ msgstr "KML"

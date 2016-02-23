@@ -1,6 +1,7 @@
+# -*- coding: utf-8 -*-
 #########################################################################
 #
-# Copyright (C) 2012 OpenPlans
+# Copyright (C) 2012 Open Source Geospatial Foundation
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -28,6 +29,7 @@ import zipfile
 import glob
 import fileinput
 from setuptools.command import easy_install
+from urlparse import urlparse
 
 from paver.easy import task, options, cmdopts, needs
 from paver.easy import path, sh, info, call_task
@@ -160,11 +162,11 @@ def win_install_deps(options):
     if not download_dir.exists():
         download_dir.makedirs()
     win_packages = {
-        #required by transifex-client
-        "Py2exe": "http://superb-dca2.dl.sourceforge.net/project/py2exe/py2exe/0.6.9/py2exe-0.6.9.win32-py2.7.exe",
+        # required by transifex-client
+        "Py2exe": "http://downloads.sourceforge.net/project/py2exe/py2exe/0.6.9/py2exe-0.6.9.win32-py2.7.exe",
         "Nose": "https://s3.amazonaws.com/geonodedeps/nose-1.3.3.win32-py2.7.exe",
-        #the wheel 1.9.4 installs but pycsw wants 1.9.3, which fails to compile
-        #when pycsw bumps their pyproj to 1.9.4 this can be removed.
+        # the wheel 1.9.4 installs but pycsw wants 1.9.3, which fails to compile
+        # when pycsw bumps their pyproj to 1.9.4 this can be removed.
         "PyProj": "https://pyproj.googlecode.com/files/pyproj-1.9.3.win32-py2.7.exe"
     }
     failed = False
@@ -344,10 +346,13 @@ def start_geoserver(options):
 
     from geonode.settings import OGC_SERVER
     GEOSERVER_BASE_URL = OGC_SERVER['default']['LOCATION']
+    url = GEOSERVER_BASE_URL
 
-    url = "http://localhost:8080/geoserver/"
-    if GEOSERVER_BASE_URL != url:
-        print 'your GEOSERVER_BASE_URL does not match %s' % url
+    if urlparse(GEOSERVER_BASE_URL).hostname != 'localhost':
+        print "Warning: OGC_SERVER['default']['LOCATION'] hostname is not equal to 'localhost'"
+
+    if not GEOSERVER_BASE_URL.endswith('/'):
+        print "Error: OGC_SERVER['default']['LOCATION'] does not end with a '/'"
         sys.exit(1)
 
     download_dir = path('downloaded').abspath()
@@ -356,6 +361,7 @@ def start_geoserver(options):
     web_app = path('geoserver/geoserver').abspath()
     log_file = path('geoserver/jetty.log').abspath()
     config = path('scripts/misc/jetty-runner.xml').abspath()
+    jetty_port = urlparse(GEOSERVER_BASE_URL).port
     # @todo - we should not have set workdir to the datadir but a bug in geoserver
     # prevents geonode security from initializing correctly otherwise
     with pushd(data_dir):
@@ -397,6 +403,7 @@ def start_geoserver(options):
             # workaround for JAI sealed jar issue and jetty classloader
             ' -Dorg.eclipse.jetty.server.webapp.parentLoaderPriority=true'
             ' -jar %(jetty_runner)s'
+            ' --port %(jetty_port)i'
             ' --log %(log_file)s'
             ' %(config)s'
             ' > %(loggernullpath)s &' % locals()

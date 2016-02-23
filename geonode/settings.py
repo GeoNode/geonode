@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #########################################################################
 #
-# Copyright (C) 2012 OpenPlans
+# Copyright (C) 2012 Open Source Geospatial Foundation
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -94,6 +94,7 @@ LANGUAGES = (
     ('af', 'Afrikaans'),
     ('sw', 'Swahili'),
     ('pt', 'Portuguese'),
+    ('pt-br', 'Portuguese (Brazil)'),
     ('ru', 'Russian'),
     ('vi', 'Vietnamese'),
     ('ko', '한국어'),
@@ -254,7 +255,9 @@ GEONODE_CONTRIB_APPS = (
 # GEONODE_APPS = GEONODE_APPS + GEONODE_CONTRIB_APPS
 
 INSTALLED_APPS = (
-
+    
+    'modeltranslation',
+    
     # Boostrap admin theme
     # 'django_admin_bootstrapped.bootstrap3',
     # 'django_admin_bootstrapped',
@@ -283,7 +286,7 @@ INSTALLED_APPS = (
     # 'haystack',
     'autocomplete_light',
     'mptt',
-    'modeltranslation',
+    #'modeltranslation',
     'djcelery',
 
     # Theme
@@ -303,7 +306,7 @@ INSTALLED_APPS = (
     'tastypie',
     'polymorphic',
     'guardian',
-
+    
 ) + GEONODE_APPS
 
 LOGGING = {
@@ -519,6 +522,7 @@ UPLOADER = {
     'BACKEND': 'geonode.rest',
     'OPTIONS': {
         'TIME_ENABLED': False,
+        'MOSAIC_ENABLED': False,
         'GEOGIG_ENABLED': False,
     }
 }
@@ -900,7 +904,8 @@ try:
     }
     MAP_BASELAYERS.append(BING_LAYER)
 except NameError:
-    print "Not enabling BingMaps base layer as a BING_API_KEY is not defined in local_settings.py file."
+    #print "Not enabling BingMaps base layer as a BING_API_KEY is not defined in local_settings.py file."
+    pass
 
 # Require users to authenticate before using Geonode
 if LOCKDOWN_GEONODE:
