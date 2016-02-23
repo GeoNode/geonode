@@ -6,7 +6,7 @@ from lxml import etree
 from django.db.models import signals
 from django.core.urlresolvers import reverse
 from django.conf import settings
-from django.template import Context, Template
+from django.template.loader import render_to_string
 
 from geonode.qgis_server.models import QGISServerLayer
 from geonode.base.models import ResourceBase, Link
@@ -114,14 +114,11 @@ def qgis_server_post_save(instance, sender, **kwargs):
                         link_type='data'
                 )
             )
-
     # Create the QGIS project
 
     # Open the QML
     basename, _ = os.path.splitext(qgis_layer.base_layer_path)
     qml_file_path = '%s.qml' % basename
-
-    map_layer_qml = etree.parse(qml_file_path)
 
     template_items = {
         'renderer-v2': None,
@@ -130,22 +127,23 @@ def qgis_server_post_save(instance, sender, **kwargs):
         'labeling': None,
     }
 
-    for xml in template_items.keys():
-        item = map_layer_qml.find(xml)
-        if item is not None:
-            print etree.tostring(
-                item, encoding='utf8', method='xml', xml_declaration=False)
-            template_items[xml] = etree.tostring(
-                item, encoding='utf8', method='xml', xml_declaration=False)
+    if os.path.exists(qml_file_path):
+        map_layer_qml = etree.parse(qml_file_path)
 
-    template_items['layer_id'] = sender.name
-    template_items['layer_title'] = sender.name
+        for xml in template_items.keys():
+            item = map_layer_qml.find(xml)
+            if item is not None:
+                template_items[xml] = etree.tostring(
+                    item, encoding='utf8', method='xml', xml_declaration=False)
+
+    template_items['layer_id'] = instance.name
+    template_items['layer_title'] = instance.name
     template_items['layer_source'] = qgis_layer.base_layer_path
 
-    project_template = Template('qgis_project.qgs')
-    project_context = Context(template_items)
+    # Render the QGIS project template
+    qgis_project_xml = render_to_string('qgis_project.qgs', template_items)
 
-    qgis_project_xml = project_template.render(project_context)
+    # Write the project to a .qgs file.
     qgis_project_file_path = '%s.qgs' % basename
     f = open(qgis_project_file_path, 'w')
     f.write(qgis_project_xml)
