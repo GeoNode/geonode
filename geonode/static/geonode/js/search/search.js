@@ -53,7 +53,10 @@
                 module.haystack_facets($http, $rootScope, $location);
             }
         });
+        data.objects = module.set_initial_filters_from_query(data.objects,
+            $location.search()['keywords__slug__in'], 'slug');
         $rootScope.keywords = data.objects;
+        
 
         $http.get(REGIONS_ENDPOINT, {params: params}).success(function(data){
             if($location.search().hasOwnProperty('regions__name__in')){
