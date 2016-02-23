@@ -1,9 +1,4 @@
-__author__ = 'ismailsunni'
-__project_name__ = 'geonode'
-__filename__ = 'views'
-__date__ = '1/29/16'
-__copyright__ = 'imajimatika@gmail.com'
-
+# -*- coding: utf-8 -*-
 
 import os
 import logging
@@ -15,7 +10,14 @@ from django.db.models import ObjectDoesNotExist
 from geonode.layers.models import Layer
 from geonode.qgis_server.models import QGISServerLayer
 
+__author__ = 'ismailsunni'
+__project_name__ = 'geonode'
+__filename__ = 'views'
+__date__ = '1/29/16'
+__copyright__ = 'imajimatika@gmail.com'
+
 logger = logging.getLogger('geonode.qgis_server.views')
+
 
 def download_zip(request, layername):
     try:
