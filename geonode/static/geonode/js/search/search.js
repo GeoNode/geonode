@@ -86,7 +86,7 @@
           for (var id in $rootScope.keywords) {
               var keyword = $rootScope.keywords[id];
               if (keyword.slug in $rootScope.keyword_counts) {
-                  keyword.count = $rootScope.keyword_counts[keyword.slug]
+                  keyword.count = $rootScope.keyword_counts[keyword.slug];
               } else {
                   keyword.count = 0;
               }
@@ -98,7 +98,7 @@
           for (var id in $rootScope.regions) {
               var region = $rootScope.regions[id];
               if (region.name in $rootScope.region_counts) {
-                  region.count = $rootScope.region_counts[region.name]
+                  region.count = $rootScope.region_counts[region.name];
               } else {
                   region.count = 0;
               }
