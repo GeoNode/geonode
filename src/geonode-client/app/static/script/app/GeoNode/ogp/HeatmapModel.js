@@ -125,7 +125,12 @@ GeoNode.HeatmapModel = Ext.extend(Ext.util.Observable, {
   },
 
   drawHeatmapOpenLayers: function(heatmapObject){
-    this.heatmapLayer = this.initHeatmapLayer();
+
+    var map = this.bbox_widget.viewer.mapPanel.map;
+
+    if(!this.heatmapLayer){
+      this.heatmapLayer = this.initHeatmapLayer();
+    }
     this.heatmapLayer.points = [];
 
     var heatmap = heatmapObject[15];
@@ -170,7 +175,13 @@ GeoNode.HeatmapModel = Ext.extend(Ext.util.Observable, {
       }
     }
     this.heatmapLayer.setOpacity(0.50);
-    this.bbox_widget.viewer.mapPanel.map.addLayer(this.heatmapLayer);
+
+    if(map.getLayersByName("Heatmap").length == 0){
+      map.addLayer(this.heatmapLayer);
+      map.setLayerIndex(this.heatmapLayer, 2);
+    }else{
+      this.heatmapLayer.redraw();
+    } 
   },
 
   getRadiusFactor: function(){

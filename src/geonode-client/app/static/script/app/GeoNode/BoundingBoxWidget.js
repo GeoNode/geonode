@@ -81,8 +81,6 @@ GeoNode.BoundingBoxWidget = Ext.extend(Ext.util.Observable, {
         else{
             this.viewer = new GeoExplorer.Viewer(viewerConfig);
         }
-
-        this.viewer.mapPanel.map.addLayer(this.createBBoxLayer());
     },
 
     updateBBox: function(bounds) {
@@ -222,7 +220,7 @@ GeoNode.BoundingBoxWidget = Ext.extend(Ext.util.Observable, {
         }
 
         featureLayer.addFeatures(arrFeatures);
-        map.setLayerIndex(featureLayer, (map.layers.length - 1));
+        //map.setLayerIndex(featureLayer, (map.layers.length - 1));
 
         // do a comparison with current map extent
         var extent = this.getVisibleExtent();
