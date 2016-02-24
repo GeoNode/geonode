@@ -937,6 +937,10 @@ BROKER_URL = 'redis://localhost:6379/0'
 
 # QGIS Server Backend
 if 'geonode.qgis_server' in INSTALLED_APPS:
+    tiles_directory = os.path.join(PROJECT_ROOT, "qgis_tiles")
     QGIS_SERVER_CONFIG = {
+        'tiles_directory': tiles_directory,
+        'tile_path': tiles_directory + '/%s/%d/%d/%d.png',
+        'qgis_server_url': 'http://127.0.0.1/qgisltr',
         'layer_directory': os.path.join(PROJECT_ROOT, "qgis_layer")
     }
