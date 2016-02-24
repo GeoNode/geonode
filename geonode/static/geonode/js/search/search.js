@@ -44,7 +44,7 @@
         });
 
         $http.get(KEYWORDS_ENDPOINT, {params: params}).success(function(data){
-            if(data.hasOwnProperty('keywords__slug__in')){
+            if($location.search().hasOwnProperty('keywords__slug__in')){
                 data.objects = module.set_initial_filters_from_query(data.objects,
                     $location.search()['keywords__slug__in'], 'slug');
             }
@@ -85,7 +85,7 @@
           for (var id in $rootScope.keywords) {
               var keyword = $rootScope.keywords[id];
               if (keyword.slug in $rootScope.keyword_counts) {
-                  keyword.count = $rootScope.keyword_counts[keyword.slug];
+                  keyword.count = $rootScope.keyword_counts[keyword.slug]
               } else {
                   keyword.count = 0;
               }
@@ -97,7 +97,7 @@
           for (var id in $rootScope.regions) {
               var region = $rootScope.regions[id];
               if (region.name in $rootScope.region_counts) {
-                  region.count = $rootScope.region_counts[region.name];
+                  region.count = $rootScope.region_counts[region.name]
               } else {
                   region.count = 0;
               }
