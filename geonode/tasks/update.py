@@ -77,7 +77,7 @@ def fh_style_update():
         #delete thumbnail first because of permissions
         if "192" in local.HOST_ADDR:
             url = "geonode"+layer.thumbnail_url #if on local
-        else
+        else:
             url = "/var/www/geonode"+layer.thumbnail_url #if on lipad
         os.remove(url)
         gs_layer = cat.get_layer(layer.name)
