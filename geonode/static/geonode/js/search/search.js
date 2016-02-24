@@ -44,9 +44,7 @@
         });
 
         $http.get(KEYWORDS_ENDPOINT, {params: params}).success(function(data){
-          console.log(data);
             if(data.hasOwnProperty('keywords__slug__in')){
-                console.log("HEY");
                 data.objects = module.set_initial_filters_from_query(data.objects,
                     $location.search()['keywords__slug__in'], 'slug');
             }
@@ -54,11 +52,6 @@
             if (HAYSTACK_FACET_COUNTS && $rootScope.query_data) {
                 module.haystack_facets($http, $rootScope, $location);
             }
-          console.log($rootScope.query_data);
-          console.log(params);
-          console.log($location.search());
-          console.log(data.objects);
-          console.log(data.objects[0].name);
         });
         $http.get(REGIONS_ENDPOINT, {params: params}).success(function(data){
             if($location.search().hasOwnProperty('regions__name__in')){
