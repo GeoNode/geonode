@@ -175,8 +175,11 @@ define(function (require, exports) {
 
         form_data.append('charset', $('#charset').val());
         form_data.append('g-recaptcha-response',  grecaptcha.getResponse());
-        form_data.append('purpose', $('#id_purpose').val());
+        form_data.append('purpose', $('#id_purpose').val());            
+        form_data.append('purpose_other', $('#id_purpose_other').val());
+        
         console.log($('#id_letter_file').val());
+        form_data.append('letter_file',$('#id_letter_file').val())
         return form_data;
     };
 

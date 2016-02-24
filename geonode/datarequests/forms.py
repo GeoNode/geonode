@@ -265,30 +265,12 @@ class DataRequestProfileCaptchaForm(forms.Form):
                 </section>
             """),
             Div(
-                HTML("<section class=widget>"),
+                
+                HTML("<br/><br/><section class=widget>"),
                 Field('captcha'),
                 HTML("</section>")
             ),
         )
-
-    def clean_purpose_other(self):
-        purpose = self.cleaned_data.get('purpose')
-        purpose_other = self.cleaned_data.get('purpose_other')
-        if purpose == self.INTENDED_USE_CHOICES.other:
-            if not purpose_other:
-                raise forms.ValidationError(
-                    'Please state your purpose for the requested data.')
-        return purpose_other
-
-    def clean_purpose(self):
-        purpose = self.cleaned_data.get('purpose')
-        if purpose == self.INTENDED_USE_CHOICES.other:
-            purpose_other = self.cleaned_data.get('purpose_other')
-            if not purpose_other:
-                return purpose
-            else:
-                return purpose_other
-        return purpose
 
     
     def clean_license_period_other(self):
@@ -322,14 +304,6 @@ class DataRequestProfileCaptchaForm(forms.Form):
                 'This field is required.')
         return funding_source
 
-    def clean_letter_file(self):
-        letter_file = self.cleaned_data.get('letter_file')
-        split_filename =  os.path.splitext(str(letter_file.name))
-        
-        if letter_file and split_filename[len(split_filename)-1].lower()[1:] != "pdf":
-            raise forms.ValidationError(_("This file type is not allowed"))
-        return letter_file
-
 class DataRequestProfileShapefileForm(NewLayerUploadForm):
     captcha = ReCaptchaField(attrs={'theme': 'clean'})
     #project_summary = forms.CharField(widget=forms.Textarea)
@@ -337,8 +311,13 @@ class DataRequestProfileShapefileForm(NewLayerUploadForm):
         choices = DataRequestProfileCaptchaForm.INTENDED_USE_CHOICES,
         required = True
     )
+    
     purpose_other = forms.CharField(
         required = False
+    )
+    
+    letter_file = forms.FileField(
+        required = True
     )
     
 
@@ -347,6 +326,7 @@ class DataRequestProfileShapefileForm(NewLayerUploadForm):
             #'project_summary',
             'purpose',
             'purpose_other',
+            'letter_file',
             'captcha',
         )
 
@@ -355,6 +335,33 @@ class DataRequestProfileShapefileForm(NewLayerUploadForm):
         super(DataRequestProfileShapefileForm, self).__init__(*args, **kwargs)
 
         self.fields['captcha'].error_messages = {'required': 'Please answer the Captcha to continue.'}
+    
+    def clean_purpose_other(self):
+        purpose = self.cleaned_data.get('purpose')
+        purpose_other = self.cleaned_data.get('purpose_other')
+        if purpose == DataRequestProfileCaptchaForm.INTENDED_USE_CHOICES.other:
+            if not purpose_other:
+                raise forms.ValidationError(
+                    'Please state your purpose for the requested data.')
+        return purpose_other
+
+    def clean_purpose(self):
+        purpose = self.cleaned_data.get('purpose')
+        if purpose == DataRequestProfileCaptchaForm.INTENDED_USE_CHOICES.other:
+            purpose_other = self.cleaned_data.get('purpose_other')
+            if not purpose_other:
+                return purpose
+            else:
+                return purpose_other
+        return purpose
+    
+    def clean_letter_file(self):
+        letter_file = self.cleaned_data.get('letter_file')
+        split_filename =  os.path.splitext(str(letter_file.name))
+        
+        if letter_file and split_filename[len(split_filename)-1].lower()[1:] != "pdf":
+            raise forms.ValidationError(_("This file type is not allowed"))
+        return letter_file
 
 class DataRequestProfileRejectForm(forms.ModelForm):
 

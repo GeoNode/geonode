@@ -114,7 +114,7 @@ def registration_part_two(request):
 
     if request.method == 'POST':
         pprint(request.POST)
-        pprint(request.FILES)
+        pprint(request.FILES.get('letter_file', None))
         form = DataRequestProfileShapefileForm(request.POST, request.FILES)
         
         tempdir = None
