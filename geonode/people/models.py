@@ -55,6 +55,9 @@ class Profile(AbstractUser):
     social_facebook = models.CharField(_('Facebook Profile'), help_text=_('Provide your Facebook handle or URL'), max_length=255, null=True, blank=True)
     social_github = models.CharField(_('GitHub Profile'), help_text=_('Provide your GitHub handle or URL'), max_length=255, null=True, blank=True)
     social_linkedin = models.CharField(_('LinkedIn Profile'), help_text=_('Provide your LinkedIn handle or URL'), max_length=255, null=True, blank=True)
+    education = models.TextField(_('Education'), null=True, blank=True, help_text=_('Provide some details about your Education and Background'))
+    expertise = models.TextField(_('Expertise'), null=True, blank=True, help_text=_('Provide some details about your Expertise'))
+    
     # End mapstory stuff
     organization = models.CharField(
         _('Organization Name'),
