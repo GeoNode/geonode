@@ -75,7 +75,7 @@ def fh_style_update():
     for layer in layer_list:
         print " {0} out of {1} layers. Will edit style of {2} ".format(ctr,len(layer_list),layer.name)
         #delete thumbnail first because of permissions
-        if "192" in local.HOST_ADDR:
+        if "192" in local_settings.HOST_ADDR:
             url = "geonode"+layer.thumbnail_url #if on local
         else:
             url = "/var/www/geonode"+layer.thumbnail_url #if on lipad
