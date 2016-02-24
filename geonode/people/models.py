@@ -51,6 +51,10 @@ class Profile(AbstractUser):
         default=False)
     interests = TaggableManager(_('interests'), blank=True, help_text=_(
         'a list of personal interests (separate each interest with a comma)'), through=TaggedInterests, related_name='profile_interests')
+    social_twitter = models.CharField(_('Twitter Handle'), help_text=_('Provide your Twitter handle or URL'), max_length=255, null=True, blank=True)
+    social_facebook = models.CharField(_('Facebook Profile'), help_text=_('Provide your Facebook handle or URL'), max_length=255, null=True, blank=True)
+    social_github = models.CharField(_('GitHub Profile'), help_text=_('Provide your GitHub handle or URL'), max_length=255, null=True, blank=True)
+    social_linkedin = models.CharField(_('LinkedIn Profile'), help_text=_('Provide your LinkedIn handle or URL'), max_length=255, null=True, blank=True)
     # End mapstory stuff
     organization = models.CharField(
         _('Organization Name'),
