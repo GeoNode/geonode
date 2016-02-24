@@ -1,9 +1,9 @@
 <!DOCTYPE qgis PUBLIC 'http://mrcc.com/qgis.dtd' 'SYSTEM'>
 <qgis projectname="" version="2.13.0-Master">
-  <title></title>
+  <title>Geonode</title>
   <layer-tree-group expanded="1" checked="Qt::Checked" name="">
     <customproperties/>
-    <layer-tree-layer expanded="1" checked="Qt::Checked" id="test20160223180917461" name="Test test Polygon">
+    <layer-tree-layer expanded="1" checked="Qt::Checked" id="{{ layer_id }}" name="{{ layer_name }}">
       <customproperties/>
     </layer-tree-layer>
   </layer-tree-group>
@@ -11,10 +11,10 @@
   <mapcanvas>
     <units>degrees</units>
     <extent>
-      <xmin>-1.55715204423028375</xmin>
-      <ymin>-1.02294025124147803</ymin>
-      <xmax>1.32793969888898244</xmax>
-      <ymax>1.35641754692365968</ymax>
+      <xmin>-180</xmin>
+      <ymin>-90</ymin>
+      <xmax>180</xmax>
+      <ymax>90</ymax>
     </extent>
     <rotation>0</rotation>
     <projections>0</projections>
@@ -35,27 +35,28 @@
   </mapcanvas>
   <layer-tree-canvas>
     <custom-order enabled="0">
-      <item>test20160223180917461</item>
+      <item>{{ layer_id }}</item>
     </custom-order>
   </layer-tree-canvas>
   <legend updateDrawingOrder="true">
     <legendlayer drawingOrder="-1" open="true" checked="Qt::Checked" name="Test test Polygon" showFeatureCount="0">
       <filegroup open="true" hidden="false">
-        <legendlayerfile isInOverview="0" layerid="test20160223180917461" visible="1"/>
+        <legendlayerfile isInOverview="0" layerid="{{ layer_id }}" visible="1"/>
       </filegroup>
     </legendlayer>
   </legend>
-  <projectlayers>
-    <maplayer minimumScale="0" maximumScale="1e+08" simplifyDrawingHints="1" minLabelScale="0" maxLabelScale="1e+08" simplifyDrawingTol="1" geometry="Polygon" simplifyMaxScale="1" type="vector" hasScaleBasedVisibilityFlag="0" simplifyLocal="1" scaleBasedLabelVisibilityFlag="0">
-      <id>test20160223180917461</id>
-      <datasource>/home/etienne/tmp/test.shp</datasource>
-      <shortname>test</shortname>
+  <projectlayers>*
+      <!-- Missing geometry -->
+    <maplayer minimumScale="0" maximumScale="1e+08" simplifyDrawingHints="1" minLabelScale="0" maxLabelScale="1e+08" simplifyDrawingTol="1" simplifyMaxScale="1" type="{{ geometry_type }}" hasScaleBasedVisibilityFlag="0" simplifyLocal="1" scaleBasedLabelVisibilityFlag="0">
+      <id>{{ layer_id }}</id>
+      <datasource>{{ layer_source }}</datasource>
+      <shortname>{{ layer_name }}</shortname>
       <title></title>
       <abstract></abstract>
       <keywordList>
         <value></value>
       </keywordList>
-      <layername>Test test Polygon</layername>
+      <layername>{{ layer_name }}</layername>
       <srs>
         <spatialrefsys>
           <proj4>+proj=longlat +datum=WGS84 +no_defs</proj4>
@@ -68,7 +69,7 @@
           <geographicflag>true</geographicflag>
         </spatialrefsys>
       </srs>
-      <provider encoding="System">ogr</provider>
+      {{ provider | safe }}
       <previewExpression></previewExpression>
       <vectorjoins/>
       <layerDependencies/>
@@ -76,62 +77,16 @@
       <map-layer-style-manager current="">
         <map-layer-style name=""/>
       </map-layer-style-manager>
-      <edittypes>
-        <edittype widgetv2type="TextEdit" name="id">
-          <widgetv2config IsMultiline="0" fieldEditable="1" UseHtml="0" labelOnTop="0"/>
-        </edittype>
-        <edittype widgetv2type="TextEdit" name="qsd">
-          <widgetv2config IsMultiline="0" fieldEditable="1" UseHtml="0" labelOnTop="0"/>
-        </edittype>
-      </edittypes>
-      <renderer-v2 forceraster="0" symbollevels="0" type="singleSymbol" enableorderby="0">
-        <symbols>
-          <symbol alpha="1" clip_to_extent="1" type="fill" name="0">
-            <layer pass="0" class="SimpleFill" locked="0">
-              <prop k="border_width_map_unit_scale" v="0,0,0,0,0,0"/>
-              <prop k="color" v="33,45,154,255"/>
-              <prop k="joinstyle" v="bevel"/>
-              <prop k="offset" v="0,0"/>
-              <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
-              <prop k="offset_unit" v="MM"/>
-              <prop k="outline_color" v="0,0,0,255"/>
-              <prop k="outline_style" v="solid"/>
-              <prop k="outline_width" v="0.26"/>
-              <prop k="outline_width_unit" v="MM"/>
-              <prop k="style" v="solid"/>
-            </layer>
-          </symbol>
-        </symbols>
-        <rotation/>
-        <sizescale scalemethod="diameter"/>
-      </renderer-v2>
-      <labeling type="simple"/>
-      <customproperties/>
-      <blendMode>0</blendMode>
-      <featureBlendMode>0</featureBlendMode>
-      <layerTransparency>0</layerTransparency>
-      <displayfield>id</displayfield>
-      <label>0</label>
-      <labelattributes>
-        <label fieldname="" text="Label"/>
-        <family fieldname="" name="Ubuntu"/>
-        <size fieldname="" units="pt" value="12"/>
-        <bold fieldname="" on="0"/>
-        <italic fieldname="" on="0"/>
-        <underline fieldname="" on="0"/>
-        <strikeout fieldname="" on="0"/>
-        <color fieldname="" red="0" blue="0" green="0"/>
-        <x fieldname=""/>
-        <y fieldname=""/>
-        <offset x="0" y="0" units="pt" yfieldname="" xfieldname=""/>
-        <angle fieldname="" value="0" auto="0"/>
-        <alignment fieldname="" value="center"/>
-        <buffercolor fieldname="" red="255" blue="255" green="255"/>
-        <buffersize fieldname="" units="pt" value="1"/>
-        <bufferenabled fieldname="" on=""/>
-        <multilineenabled fieldname="" on=""/>
-        <selectedonly on=""/>
-      </labelattributes>
+        {{ edittypes | safe }}
+        {{ renderer_v2 | safe }}
+      {{ labeling | safe }}
+      {{ customproperties | safe }}
+      {{ blendMode | safe }}
+      {{ featureBlendMode | safe }}
+      {{ layerTransparency | safe }}
+      {{ displayfield | safe }}
+      {{ label | safe }}
+        {{ labelattributes | safe }}
       <annotationform></annotationform>
       <excludeAttributesWMS/>
       <excludeAttributesWFS/>
@@ -148,14 +103,6 @@
         <rowstyles/>
         <fieldstyles/>
       </conditionalstyles>
-      <edittypes>
-        <edittype widgetv2type="TextEdit" name="id">
-          <widgetv2config IsMultiline="0" fieldEditable="1" UseHtml="0" labelOnTop="0"/>
-        </edittype>
-        <edittype widgetv2type="TextEdit" name="qsd">
-          <widgetv2config IsMultiline="0" fieldEditable="1" UseHtml="0" labelOnTop="0"/>
-        </edittype>
-      </edittypes>
     </maplayer>
   </projectlayers>
   <properties>

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from django.conf.urls import patterns, url
-from geonode.qgis_server.views import download_zip, tile
+from geonode.qgis_server.views import download_zip
 
 __author__ = 'ismailsunni'
 __project_name__ = 'geonode'

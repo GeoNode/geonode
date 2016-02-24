@@ -116,28 +116,44 @@ def qgis_server_post_save(instance, sender, **kwargs):
             )
     # Create the QGIS project
 
+    """
     # Open the QML
     basename, _ = os.path.splitext(qgis_layer.base_layer_path)
     qml_file_path = '%s.qml' % basename
 
     template_items = {
-        'renderer-v2': None,
-        'customproperties': None,
-        'edittypes': None,
-        'labeling': None,
+        'renderer_v2': '',
+        'customproperties': '',
+        'edittypes': '',
+        'labeling': '',
+        'blendMode': '',
+        'featureBlendMode': '',
+        'layerTransparency': '',
+        'displayfield': '',
+        'label': '',
+        'labelattributes': '',
     }
+
+    if instance.is_vector():
+        template_items['provider'] = (
+            '<provider encoding="System">ogr</provider>')
+        template_items['geometry_type'] = 'vector'
+    else:
+        template_items['provider'] = (
+            '<provider encoding="System">raster</provider>')
+        template_items['geometry_type'] = 'raster'
 
     if os.path.exists(qml_file_path):
         map_layer_qml = etree.parse(qml_file_path)
 
         for xml in template_items.keys():
-            item = map_layer_qml.find(xml)
+            item = map_layer_qml.find(xml.replace('_', '-'))
             if item is not None:
                 template_items[xml] = etree.tostring(
                     item, encoding='utf8', method='xml', xml_declaration=False)
 
     template_items['layer_id'] = instance.name
-    template_items['layer_title'] = instance.name
+    template_items['layer_name'] = instance.name
     template_items['layer_source'] = qgis_layer.base_layer_path
 
     # Render the QGIS project template
@@ -148,7 +164,7 @@ def qgis_server_post_save(instance, sender, **kwargs):
     f = open(qgis_project_file_path, 'w')
     f.write(qgis_project_xml)
     f.close()
-
+    """
 
 def qgis_server_pre_save_maplayer(instance, sender, **kwargs):
     logger.debug('QGIS Server Pre Save Map Layer')
