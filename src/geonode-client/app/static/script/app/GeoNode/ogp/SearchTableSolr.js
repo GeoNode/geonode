@@ -83,6 +83,10 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
                     };
                     clearTimeout(timeout);
                 });
+
+                $(row).on('dblclick', function(){
+                    self.rowDoubleClick(index);
+                });
             });
         }, this);
 
@@ -586,5 +590,11 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
         var layer_detail = JSON.parse(record.data.Location)['layerInfoPage'];
         var typename = layer_detail.split('/')[2];
         return decodeURIComponent(decodeURIComponent(typename));
-    }
+    },
+
+    rowDoubleClick: function(index){
+        var record = this.table.getStore().getAt(index);
+        this.heatmap.bbox_widget.viewer.fireEvent("zoomToRecord", record);
+
+    },
 });

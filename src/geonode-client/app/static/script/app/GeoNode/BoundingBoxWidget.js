@@ -61,6 +61,9 @@ GeoNode.BoundingBoxWidget = Ext.extend(Ext.util.Observable, {
                 },
                 hideLayer: function(typename){
                     self.hideLayer(typename);
+                },
+                zoomToRecord: function(record){
+                    self.zoomToRecord(record);
                 }
             }
         }
@@ -386,5 +389,20 @@ GeoNode.BoundingBoxWidget = Ext.extend(Ext.util.Observable, {
         var map = this.viewer.mapPanel.map;
         var layer = this.getOrCreateLayer(typename);
         map.removeLayer(layer);
+    },
+
+    zoomToRecord: function(record){
+        var map = this.viewer.mapPanel.map;
+        var bounds = new OpenLayers.Bounds(
+            [record.get('MinX'),
+            record.get('MinY'),
+            record.get('MaxX'),
+            record.get('MaxY')]
+        );
+        bounds.transform(
+            new OpenLayers.Projection("EPSG:4326"),
+            new OpenLayers.Projection(this.viewerConfig.map.projection)
+            );
+        map.zoomToExtent(bounds, true);
     }
 });
