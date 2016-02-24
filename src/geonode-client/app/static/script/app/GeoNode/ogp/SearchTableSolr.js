@@ -595,6 +595,5 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
     rowDoubleClick: function(index){
         var record = this.table.getStore().getAt(index);
         this.heatmap.bbox_widget.viewer.fireEvent("zoomToRecord", record);
-
-    },
+    }
 });
