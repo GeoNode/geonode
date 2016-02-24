@@ -2,13 +2,13 @@
 <nav class="filter">
   <h4><a href="#" class="toggle toggle-nav"><i class="fa fa-chevron-right"></i> {% trans "Keywords" %}</a></h4>
   <ul class="nav closed" id="keywords">
-
+    {% verbatim %}
       <li ng-repeat="item in results">
-        <a href="{{ item.detail_url }}"><img ng-src="{{ item.thumbnail_url }}" /></a>
+        <a href="{{ item.detail_url }}"></a>
           <span class="badge pull-right">{{ keyword.count }}</span>
 
       </li>
-
+    {% endverbatim %}
   </ul>
 </nav>
 <nav class="filter">
