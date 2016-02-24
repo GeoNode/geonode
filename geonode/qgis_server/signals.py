@@ -116,7 +116,6 @@ def qgis_server_post_save(instance, sender, **kwargs):
             )
     # Create the QGIS project
 
-    """
     # Open the QML
     basename, _ = os.path.splitext(qgis_layer.base_layer_path)
     qml_file_path = '%s.qml' % basename
@@ -164,7 +163,7 @@ def qgis_server_post_save(instance, sender, **kwargs):
     f = open(qgis_project_file_path, 'w')
     f.write(qgis_project_xml)
     f.close()
-    """
+
 
 def qgis_server_pre_save_maplayer(instance, sender, **kwargs):
     logger.debug('QGIS Server Pre Save Map Layer')
