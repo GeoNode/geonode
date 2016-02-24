@@ -50,14 +50,13 @@
                 data.objects = module.set_initial_filters_from_query(data.objects,
                     $location.search()['keywords__slug__in'], 'slug');
             }
-            $scope.keywords = data.objects;
+            $rootScope.keywords = data.objects;
             if (HAYSTACK_FACET_COUNTS && $rootScope.query_data) {
-                module.haystack_facets($http, $scope.$root, $location);
+                module.haystack_facets($http, $rootScope, $location);
             }
-            module.haystack_facets($http, $scope.$root, $location);
           console.log($rootScope.query_data);
-          console.log(HAYSTACK_FACET_COUNTS);
-          console.log(if (HAYSTACK_FACET_COUNTS && $rootScope.query_data));
+          console.log(params);
+          console.log($location.search());
           console.log(data.objects);
           console.log(data.objects[0].name);
         });
@@ -89,11 +88,11 @@
       }
 
       if ("keywords" in $rootScope) {
-          $scope.keyword_counts = data.meta.facets.keywords;
-          for (var id in $scope.keywords) {
-              var keyword = $scope.keywords[id];
-              if (keyword.slug in $scope.keyword_counts) {
-                  keyword.count = $scope.keyword_counts[keyword.slug];
+          $rootScope.keyword_counts = data.meta.facets.keywords;
+          for (var id in $rootScope.keywords) {
+              var keyword = $rootScope.keywords[id];
+              if (keyword.slug in $rootScope.keyword_counts) {
+                  keyword.count = $rootScope.keyword_counts[keyword.slug];
               } else {
                   keyword.count = 0;
               }
