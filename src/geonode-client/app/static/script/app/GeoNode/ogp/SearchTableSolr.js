@@ -447,7 +447,12 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
              border: false,
              layout: 'table',
              layoutConfig: {
-                columns: 3
+                columns: 3,
+                tableAttrs: {
+                    style: {
+                        width: '100%'
+                    }
+                },
             },
             defaults: {
                 bodyStyle:'border: 0px; padding: 10px;'
