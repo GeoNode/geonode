@@ -267,7 +267,7 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
 
 
         var sm = new Ext.grid.RowSelectionModel({
-            listeners:{ 
+            listeners:{
                 rowselect: function(sm, rowIndex, record){
                     self.heatmap.bbox_widget.viewer.fireEvent('showLayer',
                         self.getlayerTypename(record));
@@ -438,7 +438,8 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
         });
 
         var searchButton = new Ext.Button({
-            text: this.searchButtonText
+            text: this.searchButtonText,
+            iconCls: 'prominent-btn'
         });
         searchButton.on('click', this.updateQuery, this);
 
@@ -452,7 +453,7 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
                     style: {
                         width: '100%'
                     }
-                },
+                }
             },
             defaults: {
                 bodyStyle:'border: 0px; padding: 10px;'

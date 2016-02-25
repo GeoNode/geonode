@@ -1,7 +1,7 @@
 Ext.namespace("GeoNode");
 
 GeoNode.DataCart = Ext.extend(Ext.util.Observable, {
-    
+
     selectedLayersText: 'UT: Selected Layers',
     emptySelectionText: 'UT: No Layers Selected',
     titleText: 'UT: Title',
@@ -25,13 +25,13 @@ GeoNode.DataCart = Ext.extend(Ext.util.Observable, {
         });
         return layerIds;
     },
-    
+
     doLayout: function() {
         var widgetHTML =
         '<div class="selection-table"></div>' +
         '<div class="selection-controls"></div>' +
         '<div class="selection-ops></div>"';
-        
+
         var el = Ext.get(this.renderTo);
         el.update(widgetHTML);
         var controls_el = el.query('.selection-controls')[0];
@@ -57,7 +57,7 @@ GeoNode.DataCart = Ext.extend(Ext.util.Observable, {
                 view.focusRow(rowIndex);
             }
         };
-        
+
         this.grid = new Ext.grid.GridPanel({
             store: this.store,
             viewConfig: {
@@ -85,7 +85,7 @@ GeoNode.DataCart = Ext.extend(Ext.util.Observable, {
 
         var addToMapButton = new Ext.Button({
             text: this.addLayersButtonText,
-            iconCls: 'icon-add',
+            iconCls: 'prominent-btn',
             cls: 'x-btn-link-medium x-btn-text'
         });
 
@@ -99,7 +99,7 @@ GeoNode.DataCart = Ext.extend(Ext.util.Observable, {
             var addToMapTarget = this.addToMapButtonTarget;
             var dataGrid = this.grid;
             var dataCart = this;
-            
+
             addToMapButton.on('click', function() {
             addToMapFunction.call(addToMapTarget, dataGrid.getSelectionModel().getSelections());
             clearAll.call(dataCart);
@@ -121,7 +121,7 @@ GeoNode.DataCart = Ext.extend(Ext.util.Observable, {
         }, this);
 
 
-        
+
         var clearAllButton = new Ext.Button({
             text: this.clearAllButtonText
         });
@@ -144,7 +144,7 @@ GeoNode.DataCart = Ext.extend(Ext.util.Observable, {
              }),
              items: [clearSelectedButton, clearAllButton]
          });
-        
+
         if (this.addToMapButtonFunction) {
         	controlsForm.items.insert(0, addToMapButton);
         }
