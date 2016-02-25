@@ -78,7 +78,7 @@ class DataRequestProfile(TimeStampedModel):
         ('reason3', _('Reason 3')),
     )
 
-    profile = models.OneToOneField(
+    profile = models.ForeignKey(
         Profile,
         on_delete=models.SET_NULL,
         null=True,
