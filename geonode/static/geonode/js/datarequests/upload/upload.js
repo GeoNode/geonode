@@ -24,7 +24,7 @@ define(['underscore',
         displayFiles,
         init_geogig_stores,
         doUploads,
-        doFormSubmit,
+        doLetterUpload,
         doSrs,
         doDelete,
         doResume,
@@ -144,6 +144,7 @@ define(['underscore',
      */
     checkFiles = function(){
         var files = layers[Object.keys(layers)[0]]['files'];
+        console.log(files);
         var types = [];
         for (var i = 0; i<files.length; i++){
             var ext = files[i].name.split('.').pop();
@@ -252,10 +253,10 @@ define(['underscore',
      *  @returns false
      */
     doUploads = function () {
-        if ($.isEmptyObject(layers)) {
+        /*if ($.isEmptyObject(layers)) {
             common.logError('Please provide some files');
             return false;
-        }
+        }*/
         var checked = checkFiles();
         if ($.isEmptyObject(layers) || !checked) {
             alert(gettext('You are uploading an incomplete set of files.'));
@@ -271,9 +272,8 @@ define(['underscore',
     /** Function which submits the form fields
      *  
      */
-    doFormSubmit = function(){
-        console.log("doFormSubmit");
-        console.log($(options.form).serialize());
+    doLetterUpload = function(){
+        
      }
 
     /** Function to ...

@@ -47,7 +47,7 @@ from braces.views import (
 
 from .forms import (
     DataRequestProfileForm, DataRequestProfileShapefileForm, 
-    DataRequestProfileRejectForm, DataRequestProfileCaptchaForm)
+    DataRequestProfileRejectForm, DataRequestDetailsForm)
 from .models import DataRequestProfile
 
 
@@ -70,27 +70,12 @@ def registration_part_one(request):
     
     if request.method == 'POST':
         if form.is_valid():
-            pprint(form.cleaned_data)
             request.session['data_request_info'] = form.cleaned_data
+            request.session['request_letter'] = form.cleaned_data['letter_file']
+            
             return HttpResponseRedirect(
                 reverse('datarequests:registration_part_two')
             )
-            ##request_profile = form.save()
-            ##if request_profile:
-            ##    pprint("request profile created")
-                ##request_letter = DocumentCreateForm(
-                    ##{
-                        ###'doc_file': form.cleaned_data['letter_file'],
-                        ##'permissions':  u'',
-                        ##'resource': u''
-                    ##}
-                ##).save()
-                
-                ##request_letter.owner = Profile.objects.get_or_create(username='dataRegistrationUploader')
-                ##request_letter.save()
-                ##request_profile.request_letter = request_letter
-                ##request_profile.save()
-                ##request_profile.send_verification_email()
                 
     return render(
         request,
@@ -106,15 +91,15 @@ def registration_part_two(request):
     request.session['data_request_shapefile'] = True
     profile_form_data = request.session.get('data_request_info', None)
     request_letter_form_data = request.session.get('request_letter',None)
+    pprint(request_letter_form_data)
     
-    form = DataRequestProfileCaptchaForm()
+    form = DataRequestDetailsForm()
 
     if not profile_form_data:
         return redirect(reverse('datarequests:registration_part_one'))
 
     if request.method == 'POST':
         pprint(request.POST)
-        pprint(request.FILES.get('letter_file', None))
         form = DataRequestProfileShapefileForm(request.POST, request.FILES)
         
         tempdir = None
@@ -122,6 +107,7 @@ def registration_part_two(request):
         out = {'success': False}
         request_profile = None
         if form.is_valid():
+            pprint(form.cleaned_data)
             title = form.cleaned_data["layer_title"]
 
             # Replace dots in filename - GeoServer REST API upload bug
