@@ -78,6 +78,52 @@ def download_zip(request, layername):
     return resp
 
 
+def legend(request, layername):
+    try:
+        layer = Layer.objects.get(name=layername)
+    except ObjectDoesNotExist:
+        logger.debug('No layer found for %s' % layername)
+        return
+
+    try:
+        qgis_layer = QGISServerLayer.objects.get(layer=layer)
+    except ObjectDoesNotExist:
+        logger.debug('No QGIS Server Layer for existing layer %s' % layername)
+        return
+
+    basename, _ = os.path.splitext(qgis_layer.base_layer_path)
+
+    legend_path = QGIS_SERVER_CONFIG['legend_path']
+    legend_filename = legend_path % os.path.basename(basename)
+
+    if not os.path.exists(legend_filename):
+
+        if not os.path.exists(os.path.dirname(legend_filename)):
+            os.makedirs(os.path.dirname(legend_filename))
+
+        qgis_server = QGIS_SERVER_CONFIG['qgis_server_url']
+        query_string = {
+            'MAP': basename + '.qgs',
+            'SERVICE': 'WMS',
+            'VERSION': '1.3.0',
+            'REQUEST': 'GetLegendGraphic',
+            'LAYER': layer.name,
+            'FORMAT': 'image/png'
+        }
+
+        url = qgis_server + '?'
+        for param, value in query_string.iteritems():
+            url += param + '=' + value + '&'
+
+        urlretrieve(url, legend_filename)
+
+    if not os.path.exists(legend_filename):
+        raise Http404('The legend could not be found')
+
+    with open(legend_filename, 'rb') as f:
+        return HttpResponse(f.read(), mimetype='image/png')
+
+
 def tile(request, layername, z, x, y):
     x = int(x)
     y = int(y)
