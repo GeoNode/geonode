@@ -891,13 +891,6 @@ CELERY_QUEUES = [
 import djcelery
 djcelery.setup_loader()
 
-# Load more settings from a file called local_settings.py if it exists
-try:
-    from local_settings import *  # noqa
-except ImportError:
-    pass
-
-
 # Require users to authenticate before using Geonode
 if LOCKDOWN_GEONODE:
     MIDDLEWARE_CLASSES = MIDDLEWARE_CLASSES + \
@@ -936,6 +929,7 @@ BROKER_URL = 'redis://localhost:6379/0'
 
 
 # QGIS Server Backend
+# The QGIS server URL might be overridden in local_settings.py.
 if 'geonode.qgis_server' in INSTALLED_APPS:
     tiles_directory = os.path.join(PROJECT_ROOT, "qgis_tiles")
     QGIS_SERVER_CONFIG = {
@@ -945,3 +939,9 @@ if 'geonode.qgis_server' in INSTALLED_APPS:
         'qgis_server_url': 'http://127.0.0.1/qgisltr',
         'layer_directory': os.path.join(PROJECT_ROOT, "qgis_layer")
     }
+
+# Load more settings from a file called local_settings.py if it exists
+try:
+    from local_settings import *  # noqa
+except ImportError:
+    pass
