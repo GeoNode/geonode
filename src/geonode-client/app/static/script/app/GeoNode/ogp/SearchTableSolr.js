@@ -263,7 +263,7 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
         el.update(widgetHTML);
         var input_el = el.query('.search-input')[0];
         var table_el = el.query('.search-table')[0];
-        var controls_el = el.query('.search-controls')[0];
+        var controls_el = Ext.get('search_controls');
 
 
         var sm = new Ext.grid.RowSelectionModel({
@@ -300,7 +300,6 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
             },
             renderTo: 'search_results',
             height: 440,
-            width: 310,
             sm: sm
         };
 
@@ -444,7 +443,6 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
         searchButton.on('click', this.updateQuery, this);
 
         var searchForm = new Ext.Panel({
-             width: '100%',
              frame: false,
              border: false,
              layout: 'table',
