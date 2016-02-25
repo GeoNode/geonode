@@ -351,8 +351,8 @@ ul.x-tab-strip-bottom{
 }
 
 .x-btn-click .x-btn-text, .x-btn-menu-active .x-btn-text, .x-btn-pressed .x-btn-text{
-    color:#000;
-    background-color: #bbb;
+    color:#fff;
+    background-color: #18469c;
 }
 
 .x-btn-disabled *{
@@ -844,7 +844,7 @@ td.x-grid3-hd-over .x-grid3-hd-inner, td.sort-desc .x-grid3-hd-inner, td.sort-as
 .x-dd-drag-ghost{
 	color:#000;
 	font: normal 11px arial, helvetica, sans-serif;
-    border-color: #ddd #bbb #bbb #ddd;
+    border-color: #ddd #18469c #18469c #ddd;
 	background-color:#fff;
 }
 

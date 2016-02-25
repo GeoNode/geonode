@@ -28,7 +28,7 @@ if (window.GeoExplorer) {
         layerContainerText: gettext("Map Layers"),
         layerSelectionLabel: gettext("View available data from:"),
         layerLocalLabel: gettext("Upload your own data"),
-        
+
         layersContainerText: gettext("Data"),
         layersPanelText: gettext("Layers"),
         legendPanelText: gettext("Legend"),
@@ -79,7 +79,7 @@ if (window.GeoExplorer) {
         addCategoryActionText: gettext('Add New Category'),
         addCategoryActionTipText: gettext('Add a new layer category'),
         renameCategoryActionText: gettext('Rename Category'),
-        renameCategoryActionTipText: gettext('Rename this category'),    
+        renameCategoryActionTipText: gettext('Rename this category'),
         removeCategoryActionText: gettext('Remove Category'),
         removeCategoryActionTipText: gettext('Remove this category and layers'),
         layerPropertiesText: gettext('Layer Properties'),
@@ -221,7 +221,7 @@ if (window.GeoNode && GeoNode.SearchTable) {
         loadingText: gettext("Loading..."),
         permalinkText: gettext('permalink'),
         unviewableTooltip: gettext('You do not have permission to view this data'),
-        remoteTooltip: gettext('This data is stored on a remote server')    
+        remoteTooltip: gettext('This data is stored on a remote server')
     });
 }
 if (window.GeoNode && GeoNode.SearchTableRowExpander) {
@@ -248,7 +248,7 @@ if (window.GeoNode && GeoNode.DataCart) {
         titleText: gettext('Title'),
         clearSelectedButtonText: gettext('Clear Selected'),
         clearAllButtonText: gettext('Clear All'),
-        addLayersButtonText: gettext('Add Selected Layers')
+        addLayersButtonText: gettext('Add to Map')
     });
 }
 

@@ -312,6 +312,7 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
                 dataIndex: 'LayerDisplayName',
                 id: 'title',
                 sortable: true,
+                width: 200,
                 sortBy: 'LayerDisplayName',
                 renderer: function(value, metadata, record, rowIndex, colIndex, store){
                     metadata.attr = 'ext:qtip="' + record.get('Abstract') + '"';
@@ -322,11 +323,13 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
                 header: this.originatorText,
                 dataIndex: 'Originator',
                 id: 'originator',
+                width: 100,
                 sortable: true
             },
             {
                 header: 'Date',
                 id: 'date',
+                width: 50,
                 sortable: true,
                 dataIndex: 'ContentDate',
                 sortBy: 'ContentDate',
@@ -349,7 +352,7 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
                         emptyText: this.searchLabelText,
                         name: 'search',
                         allowBlank: true,
-                        width: 150
+                        width: 110
                      });
         this.queryInput.on('specialkey', function(field, e) {
             if (e.getKey() == e.ENTER) {
@@ -361,7 +364,7 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
                         emptyText: this.originatorSearchLabelText,
                         name: 'search_originator',
                         allowBlank: true,
-                        width: 150
+                        width: 110
         });
 
         this.dataTypeInput = new Ext.form.RadioGroup({
@@ -466,7 +469,9 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
                 ],
                 colspan: 3
             },{
-                items: [this.dataTypeInput],
+                items: [
+                  this.dataTypeInput
+            ],
                 colspan: 3
             },{
                 items: [this.dateLabelPanel, this.dateInput],

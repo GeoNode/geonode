@@ -108,7 +108,8 @@ GeoNode.DataCart = Ext.extend(Ext.util.Observable, {
 
 
         var clearSelectedButton = new Ext.Button({
-            text: this.clearSelectedButtonText
+            text: this.clearSelectedButtonText,
+            iconCls: "not-prominent-btn"
         });
         clearSelectedButton.on('click', function() {
             sm.each(function(rec) {
@@ -142,11 +143,11 @@ GeoNode.DataCart = Ext.extend(Ext.util.Observable, {
                      right: 0
                   }
              }),
-             items: [clearSelectedButton, clearAllButton]
+             items: [clearSelectedButton]
          });
 
         if (this.addToMapButtonFunction) {
-        	controlsForm.items.insert(0, addToMapButton);
+        	controlsForm.items.insert(1, addToMapButton);
         }
 
 

@@ -387,15 +387,15 @@ div.overlay-scaleline {
 }
 
 .ext-gecko .x-btn button, .ext-webkit .x-btn button {
-  color: #1a1a1a;
-  border: 1px solid #808080;
+  color: #0d0d0d;
+  border: 1px solid #bbb;
   border-radius: 5px;
 }
 
 .ext-gecko .x-btn button:hover {
-  color:#000;
-  background-color: #bbb;
-  border: 1px solid #000;
+  color:#fff;
+  background-color: #18469c;
+  border: 1px solid #18469c;
 }
 
 .x-btn .user_item .icon-removeuser .remove-button {
@@ -856,7 +856,7 @@ a.x-grid3-hd-btn {
 }
 
 .x-form-text, textarea.x-form-field {
-    color: #808080;
+    color: #bbb;
     background-color: #FFF;
     background-image: none;
     border-color: #d3d3d3;
@@ -897,9 +897,9 @@ a.x-grid3-hd-btn {
 }
 
 .x-grid3-row-selected {
-    background-color: #00cfa4 !important;
+    background-color: #18469c !important;
     background-image: none;
-    border-color: #00cfa4;
+    border-color: #18469c;
 }
 
 .x-grid3-row-selected  .x-grid3-cell-inner{
@@ -917,8 +917,8 @@ a.x-grid3-hd-btn {
 }
 
 .x-grid3-row-over {
-	border-color:#00cfa4 ;
-  background-color: #00cfa4;
+	border-color:#18469c ;
+  background-color: #18469c;
     background-image:none;
 }
 
@@ -947,15 +947,25 @@ td.x-grid3-hd-over .x-grid3-hd-inner, td.sort-desc .x-grid3-hd-inner, td.sort-as
 }
 
 .x-btn .prominent-btn, .prominent-btn, .prominent-button button, ext-gecko .x-btn .prominent-button button {
-  background-color: #00cfa4 !important;
-  border-color: #00cfa4 !important;
+  background-color: #18469c !important;
+  border-color: #18469c !important;
   border-radius: 5px !important;
   color: #fff !important;
-  font-size: 14pt !important;
+  font-size: 12pt !important;
   font-weight: bold;
-  height: 35px !important;
-  padding-left: 15px !important;
-  padding-right: 15px !important;
-  padding-top: 5px !important;
-  padding-bottom:5px !important;
+  height: 30px !important;
+  padding-left: 10px !important;
+  padding-right: 10px !important;
+  padding-top: 3px !important;
+  padding-bottom:3px !important;
+}
+
+.x-btn .not-prominent-btn, .not-prominent-btn, .not-prominent-button button, ext-gecko .x-btn .not-prominent-button button {
+  border-radius: 5px !important;
+  font-size: 12pt !important;
+  height: 30px !important;
+  padding-left: 10px !important;
+  padding-right: 10px !important;
+  padding-top: 3px !important;
+  padding-bottom:3px !important;
 }
