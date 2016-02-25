@@ -271,7 +271,7 @@ GeoNode.HeatmapModel = Ext.extend(Ext.util.Observable, {
   },
 
   getColors: function(){
-    return [0x00000000, 0x0000dfff, 0x00effeff, 0x00ff42ff, 0xfeec30ff, 0xff5f00ff, 0xff0000ff];
+    return [0x00000000, 0x00000000, 0x0000dfff, 0x00effeff, 0x00ff42ff, 0xfeec30ff, 0xff5f00ff, 0xff0000ff];
   },
 
   /*
@@ -282,7 +282,7 @@ GeoNode.HeatmapModel = Ext.extend(Ext.util.Observable, {
     var colors = this.getColors();
     var colorGradient = {};
     var classes = classifications.length;
-    if(classifications.length == 8){
+    if(classifications.length == 9){
       classes -= 1;
     }
     for (var i = 0 ; i < classes; i++){
