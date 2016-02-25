@@ -37,8 +37,17 @@ GeoNode.DataCart = Ext.extend(Ext.util.Observable, {
         var controls_el = el.query('.selection-controls')[0];
         var table_el = el.query('.selection-table')[0];
         var ops_el = el.query('.selection-ops')[0];
-        
-        sm = new Ext.grid.CheckboxSelectionModel({});
+
+        var self = this;
+        var sm = new Ext.grid.CheckboxSelectionModel({
+            listeners: {
+                rowdeselect: function(sm, rowIndex, record){
+                    self.store.removeAt(rowIndex);
+                    self.store.reselect();
+                }
+            }
+        });
+
         this.grid = new Ext.grid.GridPanel({
             store: this.store,
             viewConfig: {

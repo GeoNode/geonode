@@ -11,7 +11,7 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
     nextText: 'UT: Next',
     ofText: 'UT: of',
     noResultsText: 'UT: Your search did not match any items.',
-    searchLabelText: 'UT: Keyword',
+    searchLabelText: 'Keyword',
     searchButtonText: 'UT: Search',
     showingText: 'UT: Showing',
     loadingText: 'UT: Loading',
@@ -20,9 +20,9 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
     remoteTooltip: 'UT: Remote Data',
     invalidQueryText: 'Invalid Query',
     searchTermRequired: 'You need to specify a search term',
-    originatorSearchLabelText: 'UT: Originator',
+    originatorSearchLabelText: 'Originator',
     dataTypeSearchLableText: 'UT: Data Type',
-    originatorText: 'UT: Originator',
+    originatorText: 'Originator',
 
     searchOnLoad: false,
     linkableTitle: true,
@@ -82,10 +82,6 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
                         self.doMouseoverOff(index);
                     };
                     clearTimeout(timeout);
-                });
-
-                $(row).on('dblclick', function(){
-                    self.rowDoubleClick(index);
                 });
             });
         }, this);
@@ -215,15 +211,6 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
             GeoNode.queryTerms.fq.push(datatypes);
         };
 
-        // if (datatypes.length > 0 && datatypes[0].name != ''){
-        //     var string = '';
-        //     for(var i=0;i<datatypes.length;i++){
-        //         string += datatypes[i].name + ' OR ';
-        //     }
-        //     string = string.slice(0, -4);
-        //     GeoNode.queryTerms.fq.push(string);
-        // }
-
         // Remove any date filter if there
         for(var i=0;i<GeoNode.queryTerms.fq.length;i++){
             if(GeoNode.queryTerms.fq[i].indexOf('ContentDate') > -1){
@@ -278,7 +265,31 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
         var table_el = el.query('.search-table')[0];
         var controls_el = el.query('.search-controls')[0];
 
-        //var expander = new GeoNode.SearchTableRowExpander({fetchURL: this.layerDetailURL});
+
+        var sm = new Ext.grid.RowSelectionModel({
+            listeners:{ 
+                rowselect: function(sm, rowIndex, record){
+                    self.heatmap.bbox_widget.viewer.fireEvent('showLayer',
+                        self.getlayerTypename(record));
+                },
+                rowdeselect: function(sm, rowIndex, record){
+                    self.heatmap.bbox_widget.viewer.fireEvent('hideLayer',
+                        self.getlayerTypename(record));
+                }
+            }
+        });
+        sm.handleMouseDown = function(g, rowIndex, e){
+            var view = this.grid.getView();
+            var isSelected = this.isSelected(rowIndex);
+            if(isSelected){
+                this.deselectRow(rowIndex);
+            }else{
+                this.selectRow(rowIndex, true);
+                view.focusRow(rowIndex);
+            }
+        };
+
+        this.dataCart = new GeoNode.DataCartStore({selModel: sm});
 
         tableCfg = {
             store: this.searchStore,
@@ -289,7 +300,8 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
             },
             renderTo: 'search_results',
             height: 440,
-            width: 310
+            width: 310,
+            sm: sm
         };
 
         var unviewableTooltip = this.unviewableTooltip;
@@ -323,39 +335,8 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
                     var date = new Date(record.get('ContentDate'));
                     return date.getFullYear();
                 }
-            },
-            {
-                header: 'Show',
-                id: 'show',
-                renderer: function(value, metaData, record, rowIndex, colIndex, store){
-                    return '<input type="checkbox"/>';
-                },
-                listeners: {
-                    click: function(scope, grid, rowIndex, e){
-                        var record = grid.getStore().getAt(rowIndex);
-                        if(e.target.checked){
-                            self.heatmap.bbox_widget.viewer.fireEvent('showLayer',
-                                self.getlayerTypename(record));
-                        }else{
-                            self.heatmap.bbox_widget.viewer.fireEvent('hideLayer',
-                                self.getlayerTypename(record));
-                        }
-
-                    }
-                }
             }
         ];
-
-        if (this.trackSelection == true) {
-            sm = new Ext.grid.CheckboxSelectionModel({
-                checkOnly: true
-            });
-            sm.header = 'Select';
-
-            this.dataCart = new GeoNode.DataCartStore({selModel: sm});
-            columns.push(sm);
-            tableCfg.selModel = sm;
-        }
 
         var colModel = new Ext.grid.ColumnModel({
             defaults: {sortable: true, menuDisabled: true},
@@ -442,34 +423,6 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
         });
 
         this.dateInput = new GeoNode.TimeSlider();
-
-
-        //Set initial dates from the max and min dates from the server
-        // function setInitialDates(){
-        //     $.ajax({
-        //         method: 'GET',
-        //         jsonp: "json.wrf",
-        //         dataType: "jsonp",
-        //         url: 'http://54.83.116.189:8983/solr/wmdata/select?q=*&rows=1&sort=ContentDate asc&fl=ContentDate&wt=json',
-        //         success: function(response_asc){
-        //             $.ajax({
-        //                 method: 'GET',
-        //                 jsonp: "json.wrf",
-        //                 dataType: "jsonp",
-        //                 url: 'http://54.83.116.189:8983/solr/wmdata/select?q=*&rows=1&sort=ContentDate desc&fl=ContentDate&wt=json',
-        //                 success: function(response_desc){
-        //                     var startdate =  new Date(response_asc.response.docs[0].ContentDate);
-        //                     var enddate = new Date(response_desc.response.docs[0].ContentDate);
-        //                     self.dateInput.setMinValue(startdate.getFullYear());
-        //                     self.dateInput.setMaxValue(enddate.getFullYear());
-        //                     self.dateInput.setValue(0, startdate.getFullYear());
-        //                     self.dateInput.setValue(1, enddate.getFullYear());
-        //                 }
-        //             })
-        //         }
-        //     })
-        // };
-        // setInitialDates();
 
         // updates the dates in the dates text fields
         function updateTextDates(){
@@ -590,10 +543,5 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
         var layer_detail = JSON.parse(record.data.Location)['layerInfoPage'];
         var typename = layer_detail.split('/')[2];
         return decodeURIComponent(decodeURIComponent(typename));
-    },
-
-    rowDoubleClick: function(index){
-        var record = this.table.getStore().getAt(index);
-        this.heatmap.bbox_widget.viewer.fireEvent("zoomToRecord", record);
     }
 });
