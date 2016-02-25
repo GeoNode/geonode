@@ -126,6 +126,9 @@ class Profile(AbstractUser):
         """
         return [kw.name for kw in self.keywords.all()]
 
+    def keyword_slug_list(self):
+        return [kw.slug for kw in self.keywords.all()]
+
     def interest_list(self):
         """
         Returns a list of the Profile's interests.
