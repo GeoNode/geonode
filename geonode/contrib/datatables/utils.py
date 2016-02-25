@@ -120,12 +120,16 @@ def process_csv_file(data_table, delimiter=",", no_header_row=False):
 
     # Standardize table_name for the DataTable
     #
-    table_name = os.path.splitext(os.path.basename(csv_filename))[0]
-    table_name = standardize_table_name(table_name)
+    if data_table.id is not None:
+        # This DataTable already has a unique name
+        table_name = data_table.table_name
+    else:
+        # Get a unique name for the data table
+        table_name = os.path.splitext(os.path.basename(csv_filename))[0]
+        table_name = get_unique_tablename(table_name)
 
-    #
-    data_table.table_name = table_name
-    data_table.save()
+        data_table.table_name = table_name
+        data_table.save()
 
     # -----------------------------------------------------
     # Transform csv file to csvkit Table
@@ -352,16 +356,46 @@ def create_point_col_from_lat_lon(new_table_owner, table_name, lat_column, lng_c
 
     msg('create_point_col_from_lat_lon - 2')
 
-    #alter_table_sql = "ALTER TABLE %s ADD COLUMN geom geometry(POINT,4326);" % (table_name) # postgi 2.x
+    # ----------------------------------------------------
+    # Yank bad columns out of the DataTable
+    # ----------------------------------------------------
+    # See https://github.com/IQSS/dataverse/issues/2949
+    """
+    - SELECT * from TABLE
+        WHERE lat_col_attr > 90 or lat_col_attr < -90
+            or lng_col_attr > 180 or lng_col_attr < -180;
+    - Store these records in lat_lnt_map_record under unmapped_records_list
+        - Make these a JSON field?- Once code is working well, save notebook and use AWS, local university or other service to run regularly**
+    - Delete these records:
+        DELETE from TABLE WHERE lat_col_attr > 90 or lat_col_attr < -90
+        or lng_col_attr > 180 or lng_col_attr < -180;
+    """
+
+
+    # ---------------------------------------------
+    # Format SQL to:
+    #   (a) Add the Geometry column to the Datatable
+    #   (b) Populate the column using the lat/lng attributes
+    #   (c) Create column index
+    # ---------------------------------------------
+    # (a) Add column SQL
     alter_table_sql = "ALTER TABLE %s ADD COLUMN geom geometry;" % (table_name) # postgis 1.x
+    #alter_table_sql = "ALTER TABLE %s ADD COLUMN geom geometry(POINT,4326);" % (table_name) # postgi 2.x
+
+    # (b) Populate column SQL
     update_table_sql = "UPDATE %s SET geom = ST_SetSRID(ST_MakePoint(%s,%s),4326);" \
                     % (table_name, lng_col_attr.attribute, lat_col_attr.attribute)
     #update_table_sql = "UPDATE %s SET geom = ST_SetSRID(ST_MakePoint(cast(%s AS float), cast(%s as float)),4326);" % (table_name, lng_column, lat_column)
     msg('update_table_sql: %s' % update_table_sql)
+
+    # (c) Index column SQL
     create_index_sql = "CREATE INDEX idx_%s_geom ON %s USING GIST(geom);" % (table_name, table_name)
 
     msg('create_point_col_from_lat_lon - 3')
 
+    # ---------------------------------------------
+    # Run the SQL
+    # ---------------------------------------------
     try:
         conn = psycopg2.connect(get_datastore_connection_string())
 
@@ -474,7 +508,7 @@ def create_point_col_from_lat_lon(new_table_owner, table_name, lat_column, lng_c
         lat_lnt_map_record.unmapped_record_count = datatable_feature_count - layer_feature_count
     else:
         logger.error('Failed to calculate Lat/Lng record counts')
-        
+
     lat_lnt_map_record.save()
 
     return True, lat_lnt_map_record
