@@ -1,4 +1,5 @@
 import psycopg2
+import json
 from django.db import models
 from django.db.models import signals
 
@@ -261,6 +262,11 @@ class LatLngTableMappingRecord(models.Model):
                     , type=self.lat_attribute.attribute_type)
         data_dict['lng_attribute'] = dict(attribute=self.lng_attribute.attribute\
                     , type=self.lng_attribute.attribute_type)
+        if self.unmapped_records_list:
+            try:
+                data_dict['unmapped_records_list'] = json.loads(self.unmapped_records_list)
+            except TypeError:
+                data_dict['unmapped_records_list'] = self.unmapped_records_list
 
         return data_dict
 

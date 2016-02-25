@@ -126,11 +126,14 @@ def create_point_col_from_lat_lon(new_table_owner, table_name, lat_column, lng_c
     # ----------------------------------------------------
     # See https://github.com/IQSS/dataverse/issues/2949
 
-    (success, err_msg) = remove_bad_lat_lng_numbers(lat_lnt_map_record)
+    (success, row_cnt_or_err_msg) = remove_bad_lat_lng_numbers(lat_lnt_map_record)
     if not success:
         if lat_lnt_map_record.id:
             lat_lnt_map_record.delete()
         return False, 'Failed to remove bad lat/lng values.'
+
+    # The bad rows were not mapped
+    lat_lnt_map_record.unmapped_record_count = row_cnt_or_err_msg
 
     # ---------------------------------------------
     # Format SQL to:
@@ -269,7 +272,12 @@ def create_point_col_from_lat_lon(new_table_owner, table_name, lat_column, lng_c
     # Set Record counts
     if success_layer and success_datatable:
         lat_lnt_map_record.mapped_record_count = layer_feature_count
-        lat_lnt_map_record.unmapped_record_count = datatable_feature_count - layer_feature_count
+        new_misssed_records = datatable_feature_count - layer_feature_count
+        if lat_lnt_map_record.unmapped_record_count and lat_lnt_map_record.unmapped_record_count > 0:
+            lat_lnt_map_record.unmapped_record_count += new_misssed_records
+        else:
+            lat_lnt_map_record.unmapped_record_count = new_misssed_records
+
     else:
         LOGGER.error('Failed to calculate Lat/Lng record counts')
 
@@ -339,7 +347,7 @@ def remove_bad_lat_lng_numbers(lat_lng_map_record):
         bad_row_count = cur.fetchone()[0]
         LOGGER.info("Bad row count: %s", bad_row_count)
         if bad_row_count == 0:
-            return True, 'Looks good'
+            return True, bad_row_count
 
         # Grab the bad rows, and save them
         # in the lat_lng_map_record
@@ -356,7 +364,7 @@ def remove_bad_lat_lng_numbers(lat_lng_map_record):
         #
         cur.execute(delete_query)
         conn.commit()
-        return True, '{0} row(s) removed'.format(bad_row_count)
+        return True, bad_row_count
 
     except Exception as e:
         msg('failure...')
@@ -364,7 +372,7 @@ def remove_bad_lat_lng_numbers(lat_lng_map_record):
         traceback.print_exc(sys.exc_info())
         err_msg = "Error remove bad rows for SQL table %s: %s" % (datatable_name, str(e))
         LOGGER.error(err_msg)
-        return None, err_msg
+        return False, err_msg
 
     finally:
         conn.close()

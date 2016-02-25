@@ -40,7 +40,9 @@ class TestLatLngTabularAPI(TestTabularAPIBase):
         """
         msgt('(1) Upload Good Lat/Lng File')
 
-        fname_to_upload = join(self.TEST_FILE_DIR, 'coded_data_2008_10-tab.txt')
+        #fname_to_upload = join(self.TEST_FILE_DIR, 'coded_data_2008_10-tab.txt')
+        fname_to_upload = join(self.TEST_FILE_DIR, 'coded_data_2007_09.txt')
+
         assert isfile(fname_to_upload), "File not found: %s" % fname_to_upload
 
         params = self.get_lat_lng_upload_params()
@@ -87,8 +89,16 @@ class TestLatLngTabularAPI(TestTabularAPIBase):
         lat_lng_record_id = rjson.get('data', {}).get('lat_lng_record_id')
 
         num_matched_records = rjson.get('data', {}).get('mapped_record_count', 0)
-        self.assertTrue(num_matched_records == 99,\
-                    "The 'mapped_record_count' should be 99")
+        self.assertTrue(num_matched_records == 6157,\
+                    "The 'mapped_record_count' should be 6157")
+
+        unmapped_record_count = rjson.get('data', {}).get('unmapped_record_count', 0)
+        self.assertTrue(unmapped_record_count == 18,\
+                    "The 'mapped_record_count' should be 18")
+
+        unmapped_records_list = rjson.get('data', {}).get('unmapped_records_list', 0)
+        self.assertTrue(len(unmapped_records_list) == 18,\
+                    "The 'unmapped_records_list' should have 18 entries")
 
         #        data": {"layer_link": "/data/geonode:coded_data_2008_10_tab_1", "unmapped_record_count": 0, "layer_typename": "geonode:coded_data_2008_10_tab_1", "layer_name": "coded_data_2008_10_tab_1", "datatable": "coded_data_2008_10_tab_1", "mapped_record_count": 0, "lng_attribute": {
 
