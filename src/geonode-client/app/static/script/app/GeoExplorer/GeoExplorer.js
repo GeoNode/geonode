@@ -1818,7 +1818,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                     failure: function(response, options) {
                         Ext.Msg.alert('Error', response.responseText, this.showMetadataForm);
                         return false;
-                        
+
                     },
                     scope: this
                 });
@@ -2155,12 +2155,12 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             new OpenLayers.Projection(this.mapPanel.map.projection),
             new OpenLayers.Projection("EPSG:4326"));
 
-        
+
         this.bbox = new GeoNode.BoundingBoxWidget({
             proxy: "/proxy/?url=",
             viewerConfig:this.getBoundingBoxConfig(),
             renderTo: 'refine',
-            height: 500,
+            height: 450,
             isEnabled: false,
             useGxpViewer: true
         });
@@ -2173,12 +2173,12 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             renderTo: 'search_form',
             trackSelection: true,
             permalinkURL: '/data/search',
-            //searchURL: 'http://54.83.116.189:8983/solr/wmdata/select',
-            searchURL: '/solr',
+            //searchURL: 'http://54.83.116.189:8983/solr/search/select',
+            searchURL: "/solr",
             layerDetailURL: '/data/search/detail',
             constraints: [this.bbox],
             searchParams: {'limit':10, 'bbox': llbounds.toBBOX()},
-            searchOnLoad: false, 
+            searchOnLoad: false,
             heatmap: heatmap
         });
 
@@ -2446,4 +2446,3 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
         });
     }
 });
-

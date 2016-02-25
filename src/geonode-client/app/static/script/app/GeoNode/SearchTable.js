@@ -189,12 +189,11 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
     doLayout: function() {
 
         var widgetHTML =
-        '<div class="search-input" style="width:1024px; height: 256px"></div>' +
-        '<div class="search-carajo" style="width:340px; height: 512px">' +
+        '<div class="search-input"></div>' +
+        '<div class="search-carajo"' +
         '<div class="search-table" ></div>' +
         '<div class="search-controls"></div>' +
-        '</div>' +
-        '<div class="search-map" style="width:645px; height: 512px; background-color:red">';
+        '</div>';
 
         var el = Ext.get(this.renderTo);
         el.update(widgetHTML);
