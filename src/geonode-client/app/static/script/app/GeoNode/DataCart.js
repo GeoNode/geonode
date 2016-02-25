@@ -39,7 +39,7 @@ GeoNode.DataCart = Ext.extend(Ext.util.Observable, {
         var ops_el = el.query('.selection-ops')[0];
 
         var self = this;
-        var sm = new Ext.grid.CheckboxSelectionModel({
+        var sm = new Ext.grid.RowSelectionModel({
             listeners: {
                 rowdeselect: function(sm, rowIndex, record){
                     self.store.removeAt(rowIndex);
@@ -47,7 +47,17 @@ GeoNode.DataCart = Ext.extend(Ext.util.Observable, {
                 }
             }
         });
-
+        sm.handleMouseDown = function(g, rowIndex, e){
+            var view = this.grid.getView();
+            var isSelected = this.isSelected(rowIndex);
+            if(isSelected){
+                this.deselectRow(rowIndex);
+            }else{
+                this.selectRow(rowIndex, true);
+                view.focusRow(rowIndex);
+            }
+        };
+        
         this.grid = new Ext.grid.GridPanel({
             store: this.store,
             viewConfig: {
@@ -63,7 +73,6 @@ GeoNode.DataCart = Ext.extend(Ext.util.Observable, {
             colModel: new Ext.grid.ColumnModel({
                 defaults: {sortable: false, menuDisabled: true},
                 columns: [
-                    sm,
                     {dataIndex: 'LayerDisplayName'}
                 ]
             })
