@@ -897,7 +897,7 @@ a.x-grid3-hd-btn {
 }
 
 .x-grid3-row-selected {
-    background-color: #fff !important;
+    background-color: rgb(173, 202, 255) !important;
     background-image: none;
     border-color: #d3d3d3;
 }
