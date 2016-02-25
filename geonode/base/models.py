@@ -591,15 +591,20 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin):
             logger.debug('There are no permissions for this object, setting default perms.')
             self.set_default_permissions()
 
+        user = None
         if self.owner:
             user = self.owner
         else:
-            user = ResourceBase.objects.admin_contact().user
+            try:
+                user = ResourceBase.objects.admin_contact().user
+            except:
+                pass
 
-        if self.poc is None:
-            self.poc = user
-        if self.metadata_author is None:
-            self.metadata_author = user
+        if user:
+            if self.poc is None:
+                self.poc = user
+            if self.metadata_author is None:
+                self.metadata_author = user
 
     def maintenance_frequency_title(self):
         return [v for i, v in enumerate(UPDATE_FREQUENCIES) if v[0] == self.maintenance_frequency][0][1].title()
