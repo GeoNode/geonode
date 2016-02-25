@@ -302,7 +302,7 @@ def set_default_style_for_new_layer(geoserver_catalog, feature_type):
     except geoserver.catalog.ConflictingDataError, e:
         err_msg = (_('There is already a style in GeoServer named ') +
                         '"%s"' % (name))
-        logger.error(msg)
+        logger.error(err_msg)
         return False, err_msg
 
     # ----------------------------------------------------

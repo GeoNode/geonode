@@ -1,4 +1,5 @@
 #from __future__ import print_function
+import sys
 import os
 import uuid
 import traceback
@@ -7,6 +8,8 @@ import string
 from random import choice
 from csvkit import sql
 from csvkit import table
+
+from geonode.contrib.msg_util import *
 
 from geoserver.catalog import Catalog
 from geoserver.store import datastore_from_index
@@ -25,9 +28,8 @@ from geonode.maps.models import Layer, LayerAttribute
 from geonode.maps.gs_helpers import get_sld_for #fixup_style, cascading_delete, delete_from_postgis, get_postgis_bbox
 
 from geonode.contrib.datatables.models import DataTable, DataTableAttribute, TableJoin
-from geonode.contrib.datatables.forms import DataTable, DataTableUploadForm, TableJoinRequestForm
+from geonode.contrib.datatables.forms import DataTableUploadForm, TableJoinRequestForm
 from geonode.contrib.datatables.column_checker import ColumnChecker
-from geonode.contrib.msg_util import msg, msgt
 
 from geonode.contrib.datatables.db_helper import get_datastore_connection_string
 
@@ -149,9 +151,6 @@ def process_csv_file(data_table, delimiter=",", no_header_row=False):
     #csv_file = File(f)
     f.close()
 
-
-    msg ('process_csv_file 2')
-
     # -----------------------------------------------------
     # Create DataTableAttribute objects
     # -----------------------------------------------------
@@ -183,7 +182,7 @@ def process_csv_file(data_table, delimiter=",", no_header_row=False):
         return None, err_msg
 
 
-    msg ('process_csv_file 3')
+    msg('process_csv_file 3')
     # -----------------------------------------------------
     # Generate SQL to create table from csv file
     # -----------------------------------------------------
@@ -198,8 +197,7 @@ def process_csv_file(data_table, delimiter=",", no_header_row=False):
         LOGGER.error(err_msg)
         return None, err_msg
 
-
-    msg ('process_csv_file 4')
+    msg('process_csv_file 4')
 
     # -----------------------------------------------------
     # Execute the SQL and Create the Table (No data is loaded)
@@ -294,7 +292,6 @@ def setup_join(new_table_owner, table_name, layer_typename, table_attribute_name
         err_msg = 'No Layer object found for layer_typename "%s"' % layer_typename
         LOGGER.error(err_msg)
         return None, err_msg
-    msg('setup_join 01b')
 
     LOGGER.info('setup_join. Step (3): Retrieve the DataTableAttribute object')
     try:
@@ -373,7 +370,7 @@ def setup_join(new_table_owner, table_name, layer_typename, table_attribute_name
         #cur.execute('drop view if exists %s;' % double_view_name)  # removing double view
         cur.execute('drop view if exists %s;' % view_name)
         #cur.execute('drop materialized view if exists %s;' % view_name)
-        msg ('view_sql: %s'% view_sql)
+        msg('view_sql: %s'% view_sql)
         cur.execute(view_sql)
         #cur.execute(double_view_sql)
         cur.execute(matched_count_sql)
@@ -503,9 +500,9 @@ def setup_join(new_table_owner, table_name, layer_typename, table_attribute_name
     # Create LayerAttributes for the new Layer (not done in GeoNode 2.x)
     # ------------------------------------------------------------------
     LOGGER.info('setup_join. Step (11): Create Layer Attributes from the Datatable')
-    (attributes_created, msg) = create_layer_attributes_from_datatable(dt, layer)
+    (attributes_created, err_msg) = create_layer_attributes_from_datatable(dt, layer)
     if not attributes_created:
-        LOGGER.error(msg)
+        LOGGER.error(err_msg)
         tj.delete() # Delete the table join object
         return None, "Sorry there was an error creating the Datatable (s11)"
 
@@ -557,7 +554,7 @@ def set_default_style_for_new_layer(geoserver_catalog, feature_type):
     except geoserver.catalog.ConflictingDataError, e:
         err_msg = (_('There is already a style in GeoServer named ') +
                         '"%s"' % (name))
-        LOGGER.error(msg)
+        LOGGER.error(err_msg)
         return False, err_msg
 
     # ----------------------------------------------------

@@ -3,8 +3,6 @@ import json
 from django.db import models
 from django.db.models import signals
 
-from django.core import serializers
-
 from geonode.maps.models import LayerAttribute, LayerAttributeManager
 from geonode.maps.models import Layer
 from django.template.defaultfilters import slugify
@@ -156,16 +154,43 @@ class GeocodeType(models.Model):
         ordering = ('sort_order', 'name')
 
 class JoinTargetFormatType(models.Model):
+    """
+    This information is sent via API and can be used to specify
+    the expected data format from the client.
+
+    For example, a census TRACT may require 6 digits, zero padded if needed
+
+    Currently, data cleaning is NOT done on the WorldMap side.
+    """
     name = models.CharField(max_length=255, help_text='Census Tract (6 digits, no decimal)')
-    description_shorthand = models.CharField(max_length=255, help_text='dddddd')
-    clean_steps = models.TextField(help_text='verbal description. e.g. Remove non integers. Check for empty string. Pad with zeros until 6 digits.')
-    regex_replacement_string = models.CharField(help_text='"[^0-9]"; Usage: re.sub("[^0-9]", "", "1234.99"'\
-                                , max_length=255)
-    python_code_snippet = models.TextField(blank=True)
-    tranformation_function_name = models.CharField(max_length=255, blank=True, choices=TRANSFORMATION_FUNCTIONS)
+
+    is_zero_padded = models.BooleanField(default=False)
+    expected_zero_padded_length = models.IntegerField(default=-1)
+
+    description = models.TextField(help_text='verbal description for client. e.g. Remove non integers. Check for empty string. Pad with zeros until 6 digits.')
+
+
+    regex_match_string = models.CharField(max_length=255, blank=True,\
+            help_text="""r'\\d{6}'; Usage: re.search(r'\\d{6}', your_input)""")
+    #regex_replacement_string = models.CharField(max_length=255, blank=True,\
+    #        help_text='"[^0-9]"; Usage: re.sub("[^0-9]", "", "1234.99"')
+    #python_code_snippet = models.TextField(blank=True, help_text='currently unused')
+    #tranformation_function_name = models.CharField(max_length=255, blank=True, choices=TRANSFORMATION_FUNCTIONS)
 
     created = models.DateTimeField(auto_now_add=True)
     modified =models.DateTimeField(auto_now=True)
+
+    def as_json(self):
+        """Return the object in dict format"""
+        info = dict(name=self.name,\
+                description=self.description,\
+                is_zero_padded=self.is_zero_padded,\
+                expected_zero_padded_length=self.expected_zero_padded_length)
+        if self.regex_match_string:
+            info['regex_match_string'] = self.regex_match_string
+
+        return info
+
 
     def __unicode__(self):
         return self.name
@@ -179,7 +204,7 @@ class JoinTarget(models.Model):
     layer = models.ForeignKey(Layer)
     attribute = models.ForeignKey(LayerAttribute)
     geocode_type = models.ForeignKey(GeocodeType, on_delete=models.PROTECT)
-    type = models.ForeignKey(JoinTargetFormatType, null=True, blank=True)
+    expected_format = models.ForeignKey(JoinTargetFormatType, null=True, blank=True)
     year = models.IntegerField()
 
     created = models.DateTimeField(auto_now_add=True)
@@ -199,12 +224,10 @@ class JoinTarget(models.Model):
     def as_json(self):
         """Return the object in dict format"""
 
-        if self.type:
-            type = {'name':self.type.name,\
-                'description':self.type.description_shorthand,\
-                'clean_steps':self.type.clean_steps}
+        if self.expected_format:
+            expected_format = self.expected_format.as_json()
         else:
-            type = None
+            expected_format = None
 
         if self.layer.abstract:
             abstract = self.layer.abstract.strip()
@@ -216,7 +239,7 @@ class JoinTarget(models.Model):
             title=self.layer.title,\
             abstract=abstract,\
             attribute={'attribute':self.attribute.attribute, 'type':self.attribute.attribute_type},\
-            type=type,\
+            expected_format=expected_format,\
             geocode_type=self.geocode_type.name,\
             geocode_type_slug=self.geocode_type.slug,\
             year=self.year)

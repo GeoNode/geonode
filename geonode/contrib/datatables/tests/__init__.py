@@ -34,7 +34,7 @@ from run_test_dataverse_tabular_api import *
 
 """
 # Run tests from the command line
-# cd ~/github-worldmap/cga-worldmap/geonode
+# cd Documents/github-worldmap/cga-worldmap/geonode; workon cga-worldmap
 django-admin.py test datatables --settings=no_db_settings
 
 

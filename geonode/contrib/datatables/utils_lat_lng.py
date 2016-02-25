@@ -26,7 +26,7 @@ from geonode.contrib.datatables.utils import set_default_style_for_new_layer,\
     create_layer_attributes_from_datatable,\
     standardize_name
 
-from geonode.contrib.msg_util import msg
+from geonode.contrib.msg_util import *
 
 import logging
 LOGGER = logging.getLogger(__name__)

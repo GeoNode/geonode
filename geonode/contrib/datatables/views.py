@@ -21,8 +21,7 @@ from geonode.contrib.datatables.forms import JoinTargetForm,\
 #from geonode.contrib.dataverse_connect.layer_metadata import LayerMetadata        # object with layer metadata
 from shared_dataverse_information.worldmap_datatables.forms import MapLatLngLayerRequestForm
 
-
-from geonode.contrib.msg_util import msg, msgt, msgn, msgx
+from geonode.contrib.msg_util import *
 
 from .models import DataTable, JoinTarget, TableJoin, LatLngTableMappingRecord
 from geonode.contrib.datatables.utils import standardize_name,\
@@ -365,7 +364,6 @@ def datatable_upload_lat_lon_api(request):
     #   Set the new table/layer owner
     #
     new_table_owner = request.user
-    msg('datatable_upload_lat_lon_api 1')
 
     # --------------------------------------
     # (1) Datatable Upload

@@ -33,7 +33,7 @@ class TableJoinAdmin(admin.ModelAdmin):
 
 class JoinTargetAdmin(admin.ModelAdmin):
     model = JoinTarget
-    list_display = ('layer', 'attribute', 'geocode_type', 'type', 'year')
+    list_display = ('layer', 'attribute', 'geocode_type', 'expected_format', 'year')
     readonly_fields = ('return_to_layer_admin', )
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
@@ -44,11 +44,15 @@ class JoinTargetAdmin(admin.ModelAdmin):
         return super(JoinTargetAdmin, self).formfield_for_foreignkey(
             db_field, request, **kwargs)
 
+class JoinTargetFormatTypeAdmin(admin.ModelAdmin):
+    search_fields = ('name',)
+    readonly_fields = ('created', 'modified')
+
 
 admin.site.register(DataTable, DataTableAdmin)
 admin.site.register(DataTableAttribute, DataTableAttributeAdmin)
 admin.site.register(TableJoin, TableJoinAdmin)
 admin.site.register(JoinTarget, JoinTargetAdmin)
-admin.site.register(JoinTargetFormatType)
+admin.site.register(JoinTargetFormatType, JoinTargetFormatTypeAdmin)
 admin.site.register(GeocodeType)
 admin.site.register(LatLngTableMappingRecord, LatLngTableMappingRecordAdmin)

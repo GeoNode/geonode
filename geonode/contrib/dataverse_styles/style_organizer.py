@@ -43,10 +43,10 @@ class StyleOrganizer(object):
         self.layer_metadata = None
 
 
-    def add_err_msg(self, msg):
+    def add_err_msg(self, err_msg):
         self.err_found = True
-        self.err_msgs.append(msg)
-        logger.warn(msg)
+        self.err_msgs.append(err_msg)
+        logger.warn(err_msg)
 
 
     def get_json_as_dict(self, resp_json, default_msg):
@@ -86,8 +86,8 @@ class StyleOrganizer(object):
         resp_dict = self.get_json_as_dict(resp_json, 'Failed to make the SLD rules')
 
         if not resp_dict.get('success') is True:
-            msg = resp_dict.get('message',)
-            self.add_err_msg(msg)
+            user_msg = resp_dict.get('message',)
+            self.add_err_msg(user_msg)
             for err_msg in resp_dict.get('data', []):
                 self.add_err_msg(err_msg)
             return None
