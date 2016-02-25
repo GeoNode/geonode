@@ -24,17 +24,17 @@ from os.path import basename, splitext
 from geonode.maps.models import Layer, LayerAttribute
 from geonode.maps.gs_helpers import get_sld_for #fixup_style, cascading_delete, delete_from_postgis, get_postgis_bbox
 
-from geonode.contrib.datatables.models import DataTable, DataTableAttribute, TableJoin, LatLngTableMappingRecord
+from geonode.contrib.datatables.models import DataTable, DataTableAttribute, TableJoin
 from geonode.contrib.datatables.forms import DataTable, DataTableUploadForm, TableJoinRequestForm
 from geonode.contrib.datatables.column_checker import ColumnChecker
-from geonode.contrib.msg_util import *
+from geonode.contrib.msg_util import msg, msgt
 
 from geonode.contrib.datatables.db_helper import get_datastore_connection_string
 
 from shared_dataverse_information.shared_form_util.format_form_errors import format_errors_as_text
 from .db_helper import CHOSEN_DB_SETTING
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 
 THE_GEOM_LAYER_COLUMN = 'the_geom'
 THE_GEOM_LAYER_COLUMN_REPLACEMENT = 'the_geom_col'
@@ -144,7 +144,7 @@ def process_csv_file(data_table, delimiter=",", no_header_row=False):
     except:
         data_table.delete()
         err_msg = str(sys.exc_info()[0])
-        logger.error('Failed to convert csv file to table.  Error: %s' % err_msg)
+        LOGGER.error('Failed to convert csv file to table.  Error: %s' % err_msg)
         return None, err_msg
     #csv_file = File(f)
     f.close()
@@ -179,7 +179,7 @@ def process_csv_file(data_table, delimiter=",", no_header_row=False):
     except:
         data_table.delete()     # Deleting DataTable also deletes related DataTableAttribute objects
         err_msg = 'Failed to convert csv file to table.  Error: %s' % str(sys.exc_info()[0])
-        logger.error(err_msg)
+        LOGGER.error(err_msg)
         return None, err_msg
 
 
@@ -195,7 +195,7 @@ def process_csv_file(data_table, delimiter=",", no_header_row=False):
     except:
         data_table.delete()
         err_msg = 'Generate SQL to create table from csv file.  Error: %s' % str(sys.exc_info()[0])
-        logger.error(err_msg)
+        LOGGER.error(err_msg)
         return None, err_msg
 
 
@@ -214,7 +214,7 @@ def process_csv_file(data_table, delimiter=",", no_header_row=False):
     except Exception as e:
         traceback.print_exc(sys.exc_info())
         err_msg =  "Error Creating table %s:%s" % (data_table.name, str(e))
-        logger.error(err_msg)
+        LOGGER.error(err_msg)
         return None, err_msg
 
     finally:
@@ -230,7 +230,7 @@ def process_csv_file(data_table, delimiter=",", no_header_row=False):
         engine, metadata = sql.get_connection(connection_string)
     except ImportError:
         err_msg =  "Failed to get SQL connection for copying csv data to database.\n%s" % str(sys.exc_info()[0])
-        logger.error(err_msg)
+        LOGGER.error(err_msg)
         return None, err_msg
 
 
@@ -254,7 +254,7 @@ def process_csv_file(data_table, delimiter=",", no_header_row=False):
             # Clean up after ourselves
             instance.delete()
             err_msg =  "Failed to add csv DATA to table %s.\n%s" % (table_name, (sys.exc_info()[0]))
-            logger.error(err_msg)
+            LOGGER.error(err_msg)
             return None, err_msg
 
 
@@ -267,256 +267,8 @@ def process_csv_file(data_table, delimiter=",", no_header_row=False):
     return data_table, ""
 
 
-def is_valid_attribute_for_lat_lng(dt_attr, lng_check=False):
-    """
-    success: return True, None
-    fail: return False, err_msg
-    """
-    assert isinstance(dt_attr, DataTableAttribute)
-
-    if dt_attr.attribute_type.find('float') > -1:
-        return True, None
-
-    if dt_attr.attribute_type.find('double') > -1:
-        return True, None
-
-    col_type = 'latitude'
-    if lng_check:
-        col_type = 'longitude'
-
-    err_msg = 'Not a valid %s column. Column "%s" is type "%s".   All data in the column must be a float or double.' \
-                                    % (col_type, dt_attr.attribute, dt_attr.attribute_type)
-    return False, err_msg
-
-
-def create_point_col_from_lat_lon(new_table_owner, table_name, lat_column, lng_column):
-    """
-    Using a new DataTable and specified lat/lng column names, map the points
-
-    :param new_table_owner:
-    :param table_name:
-    :param lat_column:
-    :param lng_column:
-    :return:
-    """
-    logger.info('create_point_col_from_lat_lon')
-    assert isinstance(new_table_owner, User), "new_table_owner must be a User object"
-    assert table_name is not None, "table_name cannot be None"
-    assert lat_column is not None, "lat_column cannot be None"
-    assert lng_column is not None, "lng_column cannot be None"
-
-    # ----------------------------------------------------
-    # Retrieve the DataTable and check for lat/lng columns
-    # ----------------------------------------------------
-    try:
-        dt = DataTable.objects.get(table_name=table_name)
-    except:
-        err_msg = "Could not find DataTable with name: %s" % (table_name)
-        logger.error(err_msg)
-        return False, err_msg
-
-    # ----------------------------------------------------
-    # Latitude attribute
-    # ----------------------------------------------------
-    lat_col_attr = dt.get_attribute_by_name(standardize_name(lat_column))
-    if lat_col_attr is None:
-        err_msg = 'DataTable "%s" does not have a latitude column named "%s" (formatted: %s)'\
-                  % (table_name, lat_column, standardize_name(lat_column))
-        logger.error(err_msg)
-        return False, err_msg
-
-    is_valid, err_msg = is_valid_attribute_for_lat_lng(lat_col_attr)
-    if not is_valid:
-        logger.error(err_msg)
-        return False, err_msg
-
-
-    # ----------------------------------------------------
-    # Longitude attribute
-    # ----------------------------------------------------
-    lng_col_attr = dt.get_attribute_by_name(standardize_name(lng_column))
-    if lng_col_attr is None:
-        err_msg = 'DataTable "%s" does not have a longitude column named "%s" (formatted: %s)'\
-                  % (table_name, lng_column, standardize_name(lng_column))
-        logger.error(err_msg)
-        return False, err_msg
-
-    is_valid, err_msg = is_valid_attribute_for_lat_lng(lng_col_attr, lng_check=True)
-    if not is_valid:
-        logger.error(err_msg)
-        return False, err_msg
-
-    # ----------------------------------------------------
-    # Start mapping record
-    # ----------------------------------------------------
-    lat_lnt_map_record = LatLngTableMappingRecord(datatable=dt\
-                                , lat_attribute=lat_col_attr\
-                                , lng_attribute=lng_col_attr\
-                                )
-
-    msg('create_point_col_from_lat_lon - 2')
-
-    # ----------------------------------------------------
-    # Yank bad columns out of the DataTable
-    # ----------------------------------------------------
-    # See https://github.com/IQSS/dataverse/issues/2949
-    """
-    - SELECT * from TABLE
-        WHERE lat_col_attr > 90 or lat_col_attr < -90
-            or lng_col_attr > 180 or lng_col_attr < -180;
-    - Store these records in lat_lnt_map_record under unmapped_records_list
-        - Make these a JSON field?- Once code is working well, save notebook and use AWS, local university or other service to run regularly**
-    - Delete these records:
-        DELETE from TABLE WHERE lat_col_attr > 90 or lat_col_attr < -90
-        or lng_col_attr > 180 or lng_col_attr < -180;
-    """
-
-
-    # ---------------------------------------------
-    # Format SQL to:
-    #   (a) Add the Geometry column to the Datatable
-    #   (b) Populate the column using the lat/lng attributes
-    #   (c) Create column index
-    # ---------------------------------------------
-    # (a) Add column SQL
-    alter_table_sql = "ALTER TABLE %s ADD COLUMN geom geometry;" % (table_name) # postgis 1.x
-    #alter_table_sql = "ALTER TABLE %s ADD COLUMN geom geometry(POINT,4326);" % (table_name) # postgi 2.x
-
-    # (b) Populate column SQL
-    update_table_sql = "UPDATE %s SET geom = ST_SetSRID(ST_MakePoint(%s,%s),4326);" \
-                    % (table_name, lng_col_attr.attribute, lat_col_attr.attribute)
-    #update_table_sql = "UPDATE %s SET geom = ST_SetSRID(ST_MakePoint(cast(%s AS float), cast(%s as float)),4326);" % (table_name, lng_column, lat_column)
-    msg('update_table_sql: %s' % update_table_sql)
-
-    # (c) Index column SQL
-    create_index_sql = "CREATE INDEX idx_%s_geom ON %s USING GIST(geom);" % (table_name, table_name)
-
-    msg('create_point_col_from_lat_lon - 3')
-
-    # ---------------------------------------------
-    # Run the SQL
-    # ---------------------------------------------
-    try:
-        conn = psycopg2.connect(get_datastore_connection_string())
-
-        cur = conn.cursor()
-        cur.execute(alter_table_sql)
-        cur.execute(update_table_sql)
-        cur.execute(create_index_sql)
-        conn.commit()
-        conn.close()
-    except Exception as e:
-        conn.close()
-        err_msg =  "Error Creating Point Column from Latitude and Longitude %s" % (str(e[0]))
-        logger.error(err_msg)
-        return False, err_msg
-
-    msg('create_point_col_from_lat_lon - 4')
-
-    # ------------------------------------------------------
-    # Create the Layer in GeoServer from the table
-    # ------------------------------------------------------
-    try:
-        cat = Catalog(settings.GEOSERVER_BASE_URL + "rest",
-                    settings.GEOSERVER_CREDENTIALS[0],
-                    settings.GEOSERVER_CREDENTIALS[1])
-                    #      "admin", "geoserver")
-        workspace = cat.get_workspace("geonode")
-        ds_list = cat.get_xml(workspace.datastore_url)
-        datastores = [datastore_from_index(cat, workspace, n) for n in ds_list.findall("dataStore")]
-        #----------------------------
-        # Find the datastore
-        #----------------------------
-        ds = None
-        for datastore in datastores:
-            #if datastore.name == "datastore":
-            if datastore.name == settings.DB_DATASTORE_NAME: #"geonode_imports":
-                ds = datastore
-
-        if ds is None:
-            err_msg = "Datastore '%s' not found" % (settings.DB_DATASTORE_NAME)
-            return False, err_msg
-        ft = cat.publish_featuretype(table_name, ds, "EPSG:4326", srs="EPSG:4326")
-        cat.save(ft)
-    except Exception as e:
-        tj.delete()
-        traceback.print_exc(sys.exc_info())
-        err_msg = "Error creating GeoServer layer for %s: %s" % (table_name, str(e))
-        return False, err_msg
-
-    msg('create_point_col_from_lat_lon - 5 - add style')
-
-     # ------------------------------------------------------
-    # Set the Layer's default Style
-    # ------------------------------------------------------
-    set_default_style_for_new_layer(cat, ft)
-
-
-    # ------------------------------------------------------
-    # Create the Layer in GeoNode from the GeoServer Layer
-    # ------------------------------------------------------
-    try:
-        layer, created = Layer.objects.get_or_create(name=table_name, defaults={
-            "workspace": workspace.name,
-            "store": ds.name,
-            "storeType": ds.resource_type,
-            "typename": "%s:%s" % (workspace.name.encode('utf-8'), ft.name.encode('utf-8')),
-            "title": dt.title or 'No title provided',
-            #"name" : dt.title or 'No title provided',
-            "abstract": dt.abstract or 'No abstract provided',
-            "uuid": str(uuid.uuid4()),
-            "owner" : new_table_owner,
-            #"bbox_x0": Decimal(ft.latlon_bbox[0]),
-            #"bbox_x1": Decimal(ft.latlon_bbox[1]),
-            #"bbox_y0": Decimal(ft.latlon_bbox[2]),
-            #"bbox_y1": Decimal(ft.latlon_bbox[3])
-        })
-        #set_attributes(layer, overwrite=True)
-    except Exception as e:
-        traceback.print_exc(sys.exc_info())
-        err_msg = "Error creating GeoNode layer for %s: %s" % (table_name, str(e))
-        return False, err_msg
-
-    # ----------------------------------
-    # Set default permissions (public)
-    # ----------------------------------
-    layer.set_default_permissions()
-
-    # ------------------------------------------------------------------
-    # Create LayerAttributes for the new Layer (not done in GeoNode 2.x)
-    # ------------------------------------------------------------------
-    create_layer_attributes_from_datatable(dt, layer)
-
-
-    # ----------------------------------
-    # Save a related LatLngTableMappingRecord
-    # ----------------------------------
-    lat_lnt_map_record.layer = layer
-
-    # ----------------------------------
-    # Retrieve matche/unmatched counts
-    # ----------------------------------
-    # Get datatable feature count - total record to map
-    (success_datatable, datatable_feature_count) = get_layer_feature_count(dt.table_name)
-
-    # Get layer feature count - mapped records
-    (success_layer, layer_feature_count) = get_layer_feature_count(layer.name)
-
-    # Set Record counts
-    if success_layer and success_datatable:
-        lat_lnt_map_record.mapped_record_count = layer_feature_count
-        lat_lnt_map_record.unmapped_record_count = datatable_feature_count - layer_feature_count
-    else:
-        logger.error('Failed to calculate Lat/Lng record counts')
-
-    lat_lnt_map_record.save()
-
-    return True, lat_lnt_map_record
-
-
-
 def setup_join(new_table_owner, table_name, layer_typename, table_attribute_name, layer_attribute_name):
-    logger.info('setup_join')
+    LOGGER.info('setup_join')
     """
     Setup the Table Join in GeoNode
     """
@@ -526,43 +278,43 @@ def setup_join(new_table_owner, table_name, layer_typename, table_attribute_name
     assert table_attribute_name is not None, "table_attribute_name cannot be None"
     assert layer_attribute_name is not None, "layer_attribute_name cannot be None"
 
-    logger.info('setup_join. Step (1): Retrieve the DataTable object')
+    LOGGER.info('setup_join. Step (1): Retrieve the DataTable object')
     try:
         dt = DataTable.objects.get(table_name=table_name)
     except DataTable.DoesNotExist:
         err_msg = 'No DataTable object found for table_name "%s"' % table_name
-        logger.error(err_msg)
+        LOGGER.error(err_msg)
         return None, err_msg
 
-    logger.info('setup_join. Step (2): Retrieve the Layer object')
+    LOGGER.info('setup_join. Step (2): Retrieve the Layer object')
 
     try:
         layer = Layer.objects.get(typename=layer_typename)
     except Layer.DoesNotExist:
         err_msg = 'No Layer object found for layer_typename "%s"' % layer_typename
-        logger.error(err_msg)
+        LOGGER.error(err_msg)
         return None, err_msg
     msg('setup_join 01b')
 
-    logger.info('setup_join. Step (3): Retrieve the DataTableAttribute object')
+    LOGGER.info('setup_join. Step (3): Retrieve the DataTableAttribute object')
     try:
         table_attribute = DataTableAttribute.objects.get(datatable=dt,attribute=table_attribute_name)
     except DataTableAttribute.DoesNotExist:
         err_msg = 'No DataTableAttribute object found for table/attribute (%s/%s)' \
                   % (dt, table_attribute_name)
-        logger.error(err_msg)
+        LOGGER.error(err_msg)
         return None, err_msg
 
-    logger.info('setup_join. Step (4): Retrieve the LayerAttribute object')
+    LOGGER.info('setup_join. Step (4): Retrieve the LayerAttribute object')
     try:
         layer_attribute = LayerAttribute.objects.get(layer=layer, attribute=layer_attribute_name)
     except LayerAttribute.DoesNotExist:
         err_msg = 'No LayerAttribute object found for layer/attribute (%s/%s)' \
                   % (layer, layer_attribute_name)
-        logger.error(err_msg)
+        LOGGER.error(err_msg)
         return None, err_msg
 
-    logger.info('setup_join. Step (5): Build SQL statement to create view')
+    LOGGER.info('setup_join. Step (5): Build SQL statement to create view')
 
     layer_name = layer.typename.split(':')[1]
 
@@ -583,7 +335,7 @@ def setup_join(new_table_owner, table_name, layer_typename, table_attribute_name
 
     #double_view_name = "view_%s" % view_name
     #double_view_sql = "create view %s as select * from %s" % (double_view_name, view_name)
-    logger.info('setup_join. Step (6): Retrieve stats')
+    LOGGER.info('setup_join. Step (6): Retrieve stats')
 
     # ------------------------------------------------------------------
     # Retrieve stats
@@ -600,7 +352,7 @@ def setup_join(new_table_owner, table_name, layer_typename, table_attribute_name
     # ------------------------------------------------------------------
     # Create a TableJoin object
     # ------------------------------------------------------------------
-    logger.info('setup_join. Step (7): Create a TableJoin object')
+    LOGGER.info('setup_join. Step (7): Create a TableJoin object')
     tj, created = TableJoin.objects.get_or_create(source_layer=layer
                             , datatable=dt
                             , table_attribute=table_attribute
@@ -613,7 +365,7 @@ def setup_join(new_table_owner, table_name, layer_typename, table_attribute_name
     # ------------------------------------------------------------------
     # Create the View (and double view)
     # ------------------------------------------------------------------
-    logger.info('setup_join. Step (8): Create the View (and double view)')
+    LOGGER.info('setup_join. Step (8): Create the View (and double view)')
     try:
         conn = psycopg2.connect(get_datastore_connection_string())
 
@@ -641,7 +393,7 @@ def setup_join(new_table_owner, table_name, layer_typename, table_attribute_name
 
             # Create an error message, log it, and send it back
             err_msg = 'Sorry!  No records matched.  Make sure that you chose the correct column and that the chosen layer is in the same geographic area.'
-            logger.error(err_msg)
+            LOGGER.error(err_msg)
             return None, err_msg
 
     except Exception as e:
@@ -651,7 +403,7 @@ def setup_join(new_table_owner, table_name, layer_typename, table_attribute_name
         tj.delete() # If needed for debugging, don't delete the table join
         traceback.print_exc(sys.exc_info())
         err_msg =  "Error Joining table %s to layer %s: %s" % (table_name, layer_typename, str(e[0]))
-        logger.error(err_msg)
+        LOGGER.error(err_msg)
         if err_msg.find('You might need to add explicit type casts.') > -1:
             user_msg = "The chosen column is a different data type than the one expected."
         else:
@@ -662,9 +414,9 @@ def setup_join(new_table_owner, table_name, layer_typename, table_attribute_name
     #--------------------------------------------------
     # Create the Layer in GeoServer from the view
     #--------------------------------------------------
-    logger.info('setup_join. Step (9): Create the Layer in GeoServer from the view')
+    LOGGER.info('setup_join. Step (9): Create the Layer in GeoServer from the view')
     try:
-        logger.info('setup_join. Step (9a): Find the datastore')
+        LOGGER.info('setup_join. Step (9a): Find the datastore')
         #----------------------------
         # Find the datastore
         #----------------------------
@@ -687,23 +439,23 @@ def setup_join(new_table_owner, table_name, layer_typename, table_attribute_name
         if ds is None:
             tj.delete()
             err_msg = "Datastore name not found: %s" % settings.DB_DATASTORE_NAME
-            logger.error(str(ds))
+            LOGGER.error(str(ds))
             return None, err_msg
 
         # Publish the feature
         #
-        logger.info('setup_join. Step (9b): Publish the feature type')
+        LOGGER.info('setup_join. Step (9b): Publish the feature type')
         ft = cat.publish_featuretype(view_name, ds, layer.srs, srs=layer.srs)
         #ft = cat.publish_featuretype(double_view_name, ds, layer.srs, srs=layer.srs)
 
-        logger.info('setup_join. Step (9c): Save the feature type')
+        LOGGER.info('setup_join. Step (9c): Save the feature type')
         cat.save(ft)
 
     except Exception as e:
         tj.delete()
         traceback.print_exc(sys.exc_info())
         err_msg = "Error creating GeoServer layer for %s: %s" % (view_name, str(e))
-        logger.error(err_msg)
+        LOGGER.error(err_msg)
         return None, err_msg
 
 
@@ -715,7 +467,7 @@ def setup_join(new_table_owner, table_name, layer_typename, table_attribute_name
     # ------------------------------------------------------------------
     # Create the Layer in GeoNode from the GeoServer Layer
     # ------------------------------------------------------------------
-    logger.info('setup_join. Step (10): Create the Layer in GeoNode from the GeoServer Layer')
+    LOGGER.info('setup_join. Step (10): Create the Layer in GeoNode from the GeoServer Layer')
     try:
         layer_params = {
             "workspace": workspace.name,
@@ -744,15 +496,18 @@ def setup_join(new_table_owner, table_name, layer_typename, table_attribute_name
         tj.delete()
         traceback.print_exc(sys.exc_info())
         err_msg = "Error creating GeoNode layer for %s: %s" % (view_name, str(e))
-        logger.error(err_msg)
+        LOGGER.error(err_msg)
         return None, err_msg
 
     # ------------------------------------------------------------------
     # Create LayerAttributes for the new Layer (not done in GeoNode 2.x)
     # ------------------------------------------------------------------
-    logger.info('setup_join. Step (11): Create Layer Attributes from the Datatable')
-    create_layer_attributes_from_datatable(dt, layer)
-
+    LOGGER.info('setup_join. Step (11): Create Layer Attributes from the Datatable')
+    (attributes_created, msg) = create_layer_attributes_from_datatable(dt, layer)
+    if not attributes_created:
+        LOGGER.error(msg)
+        tj.delete() # Delete the table join object
+        return None, "Sorry there was an error creating the Datatable (s11)"
 
     return tj, ""
 
@@ -782,7 +537,7 @@ def set_default_style_for_new_layer(geoserver_catalog, feature_type):
 
     if sld is None:
         err_msg = 'Failed to retrieve the SLD for the geoserver layer: %s' % feature_type.name
-        logger.error(err_msg)
+        LOGGER.error(err_msg)
         return False, err_msg
 
     # ----------------------------------------------------
@@ -802,7 +557,7 @@ def set_default_style_for_new_layer(geoserver_catalog, feature_type):
     except geoserver.catalog.ConflictingDataError, e:
         err_msg = (_('There is already a style in GeoServer named ') +
                         '"%s"' % (name))
-        logger.error(msg)
+        LOGGER.error(msg)
         return False, err_msg
 
     # ----------------------------------------------------
@@ -815,7 +570,7 @@ def set_default_style_for_new_layer(geoserver_catalog, feature_type):
         traceback.print_exc(sys.exc_info())
         err_msg = "Error setting new default style for layer. %s" % (str(e))
         #print err_msg
-        logger.error(err_msg)
+        LOGGER.error(err_msg)
         return False, err_msg
 
     msg('default saved')
@@ -828,29 +583,38 @@ def create_layer_attributes_from_datatable(datatable, layer):
     When a new Layer has been created from a DataTable,
     Create LayerAttribute objects from the DataTable's DataTableAttribute objects
     """
-    assert isinstance(datatable, DataTable), "datatable must be a Datatable object"
-    assert isinstance(layer, Layer), "layer must be a Layer object"
+    if not isinstance(datatable, DataTable):
+        return (False, "datatable must be a Datatable object")
+    if not isinstance(layer, Layer):
+        return (False, "layer must be a Layer object")
 
     names_of_attrs = ('attribute', 'attribute_label', 'attribute_type', 'searchable', 'visible', 'display_order')
 
     # Iterate through the DataTable's DataTableAttribute objects
     #   - For each one, create a new LayerAttribute
     #
+    new_layer_attributes= []
     for dt_attribute in DataTableAttribute.objects.filter(datatable=datatable):
 
         # Make key, value pairs of the DataTableAttribute's values
         new_params = dict([ (attr_name, dt_attribute.__dict__.get(attr_name)) for attr_name in names_of_attrs ])
         new_params['layer'] = layer
 
-        # Creata or Retrieve a new LayerAttribute
+        # Create or Retrieve a new LayerAttribute
         layer_attribute_obj, created = LayerAttribute.objects.get_or_create(**new_params)
+        if not layer_attribute_obj:
+            LOGGER.error("Failed to create LayerAttribute for: %s" % dt_attribute)
+            return (False, "Failed to create LayerAttribute for: %s" % dt_attribute)
 
+        # Add to list of new attributes
+        new_layer_attributes.append(layer_attribute_obj)
         """
         if created:
             print 'layer_attribute_obj created: %s' % layer_attribute_obj
         else:
             print 'layer_attribute_obj EXISTS: %s' % layer_attribute_obj
         """
+    return (True, "All LayerAttributes created")
 
 
 def attempt_datatable_upload_from_request_params(request, new_layer_owner):
@@ -860,7 +624,7 @@ def attempt_datatable_upload_from_request_params(request, new_layer_owner):
     Error:  (False, Error Message)
     Success: (True, TableJoin object)
     """
-    logger.info('contrib.datatables.utils.attempt_tablejoin_from_request_params')
+    LOGGER.info('contrib.datatables.utils.attempt_tablejoin_from_request_params')
     if not isinstance(new_layer_owner, User):
         return (False, "Please specify an owner for the new layer.")
 
@@ -872,7 +636,7 @@ def attempt_datatable_upload_from_request_params(request, new_layer_owner):
         err_msg = "Unsupported Method"
         return (False, err_msg)
 
-    logger.info('Step (a): Verify Request')
+    LOGGER.info('Step (a): Verify Request')
 
     # ---------------------------------------
     # Verify Request
@@ -882,7 +646,7 @@ def attempt_datatable_upload_from_request_params(request, new_layer_owner):
         err_msg = "Form errors found. %s" % format_errors_as_text(form)#.as_json()#.as_text()
         return (False, err_msg)
 
-    logger.info('Step (b): Prepare data, create DataTable object')
+    LOGGER.info('Step (b): Prepare data, create DataTable object')
 
     data = form.cleaned_data
 
@@ -901,19 +665,19 @@ def attempt_datatable_upload_from_request_params(request, new_layer_owner):
     # save DataTable object
     instance.save()
 
-    logger.info('Step (d): Process the tabular file')
+    LOGGER.info('Step (d): Process the tabular file')
 
     (new_datatable_obj, result_msg) = process_csv_file(instance, delimiter=delimiter, no_header_row=no_header_row)
 
     if new_datatable_obj:
-        logger.info('Step (d1): Success!')
+        LOGGER.info('Step (d1): Success!')
 
         # -----------------------------------------
         #  Success, DataTable created
         # -----------------------------------------
         return (True, new_datatable_obj)
     else:
-        logger.info('Step (d2): Failed!')
+        LOGGER.info('Step (d2): Failed!')
         # -----------------------------------------
         #  Failed, DataTable not created
         # -----------------------------------------
@@ -927,12 +691,12 @@ def attempt_tablejoin_from_request_params(table_join_params, new_layer_owner):
     Error:  (False, Error Message)
     Success: (True, TableJoin object)
     """
-    logger.info('attempt_tablejoin_from_request_params')
+    LOGGER.info('attempt_tablejoin_from_request_params')
     if not isinstance(new_layer_owner, User):
         return (False, "Please specify an owner for the new layer.")
 
 
-    logger.info('Step (a): Validate the request params')
+    LOGGER.info('Step (a): Validate the request params')
 
     # ----------------------------------
     # Validate the request params
@@ -954,16 +718,16 @@ def attempt_tablejoin_from_request_params(table_join_params, new_layer_owner):
     # ----------------------------------
     # Attempt to Join the table to an existing layer
     # ----------------------------------
-    logger.info('Step (b): Attempt to Join the table to an existing layer')
+    LOGGER.info('Step (b): Attempt to Join the table to an existing layer')
 
     try:
         table_join_obj, result_msg = setup_join(new_layer_owner, table_name, layer_typename, table_attribute, layer_attribute)
         if table_join_obj:
-            logger.info('Step (b1): Success')
+            LOGGER.info('Step (b1): Success')
             # Successful Join
             return (True, table_join_obj)
         else:
-            logger.info('Step (b2): Failure', result_msg)
+            LOGGER.info('Step (b2): Failure', result_msg)
             # Error!
             err_msg = "Error Creating Join: %s" % result_msg
             return (False, err_msg)
@@ -971,31 +735,3 @@ def attempt_tablejoin_from_request_params(table_join_params, new_layer_owner):
         traceback.print_exc(sys.exc_info())
         err_msg = "Error Creating Join: %s" % str(sys.exc_info()[0])
         return (False, err_msg)
-
-
-def get_layer_feature_count(table_name):
-    if table_name is None:
-        logger.error("Expected a table name")
-        return (False, "Expected a table object")
-
-    # e.g. geonode:coded_data_2008_10 => coded_data_2008_10
-    table_name = table_name.split(':')[-1]
-
-    # format SQL
-    num_features_sql = 'SELECT COUNT(*) from {0};'.format(table_name)
-
-    print '%s num_features_sql: %s' % (table_name, num_features_sql)
-
-    # Make the query
-    try:
-        conn = psycopg2.connect(get_datastore_connection_string())
-        cur = conn.cursor()
-        cur.execute(num_features_sql)
-        return (True, cur.fetchone()[0])
-    except Exception as e:
-        traceback.print_exc(sys.exc_info())
-        err_msg =  "Error querying table %s:%s" % (table_name, str(e))
-        logger.error(err_msg)
-        return (False, err_msg)
-    finally:
-        conn.close()

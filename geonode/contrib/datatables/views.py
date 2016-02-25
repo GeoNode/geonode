@@ -25,10 +25,10 @@ from shared_dataverse_information.worldmap_datatables.forms import MapLatLngLaye
 from geonode.contrib.msg_util import msg, msgt, msgn, msgx
 
 from .models import DataTable, JoinTarget, TableJoin, LatLngTableMappingRecord
-from .utils import create_point_col_from_lat_lon,\
-    standardize_name,\
+from geonode.contrib.datatables.utils import standardize_name,\
     attempt_tablejoin_from_request_params,\
     attempt_datatable_upload_from_request_params
+from geonode.contrib.datatables.utils_lat_lng import create_point_col_from_lat_lon
 
 logger = logging.getLogger(__name__)
 

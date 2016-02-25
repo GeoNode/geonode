@@ -34,12 +34,12 @@ from geonode.contrib.dataverse_layer_metadata.layer_metadata_helper import add_d
 from geonode.contrib.datatables.forms import TableUploadAndJoinRequestForm,\
                                         TableJoinResultForm
 
-from geonode.contrib.datatables.utils import create_point_col_from_lat_lon,\
-    standardize_name,\
+from geonode.contrib.datatables.utils import standardize_name,\
     attempt_tablejoin_from_request_params,\
     attempt_datatable_upload_from_request_params
+from geonode.contrib.datatables.utils_lat_lng import create_point_col_from_lat_lon
 
-from geonode.contrib.msg_util import *
+from geonode.contrib.msg_util import msg
 from shared_dataverse_information.shared_form_util.format_form_errors import format_errors_as_text
 
 
