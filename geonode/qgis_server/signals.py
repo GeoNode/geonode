@@ -162,6 +162,7 @@ def qgis_server_post_save(instance, sender, **kwargs):
     f = open(qgis_project_file_path, 'w')
     f.write(qgis_project_xml)
     f.close()
+    logger.debug('QGIS project created: %s' % qgis_project_file_path)
 
     tile_url = reverse(
             'qgis-server-tile',
