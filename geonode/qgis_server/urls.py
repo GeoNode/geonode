@@ -17,11 +17,12 @@ urlpatterns = patterns(
         name='qgis-server-download-zip'
     ),
     url(
-        r'tiles/'
+        r'^qgis-server/tiles/'
         r'(?P<layername>[^/]*)/'
         r'(?P<z>[0-9]*)/'
         r'(?P<x>[0-9]*)/'
         r'(?P<y>[0-9]*).png$',
         tile,
+        name='qgis-server-tile'
     ),
 )

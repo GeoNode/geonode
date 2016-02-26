@@ -57,7 +57,7 @@ def impact_function_filter(request):
     exposure_id = request.GET.get('exposure_id')
     hazard_id = request.GET.get('hazard_id')
 
-    logger.debug('Exposure ID: %s, Hazard ID: %s' % exposure_id, hazard_id)
+    logger.debug('Exposure ID: %s, Hazard ID: %s' % (exposure_id, hazard_id))
 
     if not (exposure_id and hazard_id):
         raise HttpBadRequest

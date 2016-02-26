@@ -98,7 +98,6 @@ def qgis_server_post_save(instance, sender, **kwargs):
     qgis_layer.save()
 
     # Set Link for Download Raw in Zip File
-    zip_download_url = 'qgis-server/download-zip/' + instance.name
     zip_download_url = reverse(
             'qgis-server-download-zip',
             kwargs={'layername': instance.name})
@@ -114,8 +113,8 @@ def qgis_server_post_save(instance, sender, **kwargs):
                         link_type='data'
                 )
             )
-    # Create the QGIS project
 
+    # Create the QGIS project
     # Open the QML
     basename, _ = os.path.splitext(qgis_layer.base_layer_path)
     qml_file_path = '%s.qml' % basename
@@ -163,6 +162,24 @@ def qgis_server_post_save(instance, sender, **kwargs):
     f = open(qgis_project_file_path, 'w')
     f.write(qgis_project_xml)
     f.close()
+
+    tile_url = reverse(
+            'qgis-server-tile',
+            kwargs={'layername': instance.name, 'x': 5678, 'y':910, 'z': 1234})
+    logger.debug('tile_url: %s' % tile_url)
+    tile_url = tile_url.replace('1234/5678/910', '{z}/{x}/{y}')
+    logger.debug('tile_url: %s' % tile_url)
+
+    Link.objects.get_or_create(
+        resource=instance.resourcebase_ptr,
+        url=tile_url,
+        defaults=dict(
+            extension='tiles',
+            name="Tiles",
+            mime='image/png',
+            link_type='image'
+        )
+    )
 
 
 def qgis_server_pre_save_maplayer(instance, sender, **kwargs):
