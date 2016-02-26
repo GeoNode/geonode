@@ -3,6 +3,7 @@ import sys
 import shutil
 import traceback
 import datetime
+import time
 from urlparse import parse_qs
 
 from django.conf import settings
@@ -95,7 +96,7 @@ def registration_part_two(request):
     
     form = DataRequestDetailsForm()
 
-    if not profile_form_data:
+    if not profile_form_data or not request_letter_form_data:
         return redirect(reverse('datarequests:registration_part_one'))
 
     if request.method == 'POST':
@@ -107,96 +108,119 @@ def registration_part_two(request):
         out = {'success': False}
         request_profile = None
         if form.is_valid():
-            pprint(form.cleaned_data)
-            title = form.cleaned_data["layer_title"]
+            if form.cleaned_data:
+                interest_layer = None
+                if form.cleaned_data["layer_title"]:
+                    title = form.cleaned_data["layer_title"]
 
-            # Replace dots in filename - GeoServer REST API upload bug
-            # and avoid any other invalid characters.
-            # Use the title if possible, otherwise default to the filename
-            if title is not None and len(title) > 0:
-                name_base = title
-            else:
-                name_base, __ = os.path.splitext(
-                    form.cleaned_data["base_file"].name)
+                    # Replace dots in filename - GeoServer REST API upload bug
+                    # and avoid any other invalid characters.
+                    # Use the title if possible, otherwise default to the filename
+                    if title is not None and len(title) > 0:
+                        name_base = title
+                    else:
+                        name_base, __ = os.path.splitext(
+                            form.cleaned_data["base_file"].name)
 
-            name = slugify(name_base.replace(".", "_"))
+                    name = slugify(name_base.replace(".", "_"))
 
-            try:
-                # Moved this inside the try/except block because it can raise
-                # exceptions when unicode characters are present.
-                # This should be followed up in upstream Django.
-                tempdir, base_file = form.write_files()
-                registration_uploader, created = Profile.objects.get_or_create(username='dataRegistrationUploader')
+                    try:
+                        # Moved this inside the try/except block because it can raise
+                        # exceptions when unicode characters are present.
+                        # This should be followed up in upstream Django.
+                        tempdir, base_file = form.write_files()
+                        registration_uploader, created = Profile.objects.get_or_create(username='dataRegistrationUploader')
 
-                saved_layer = file_upload(
-                    base_file,
-                    name=name,
-                    user=registration_uploader,
-                    overwrite=False,
-                    charset=form.cleaned_data["charset"],
-                    abstract=form.cleaned_data["abstract"],
-                    title=form.cleaned_data["layer_title"]
-                    #default_style=Style.objects.get(sld_title="Boundary")
-                )
-                saved_layer.is_published = False
-                saved_layer.save()
-                data_request_form = DataRequestProfileForm(
-                    profile_form_data)
+                        saved_layer = file_upload(
+                            base_file,
+                            name=name,
+                            user=registration_uploader,
+                            overwrite=False,
+                            charset=form.cleaned_data["charset"],
+                            abstract=form.cleaned_data["abstract"],
+                            title=form.cleaned_data["layer_title"]
+                            #default_style=Style.objects.get(sld_title="Boundary")
+                        )
+                        saved_layer.is_published = False
+                        interest_layer = saved_layer.save()
+                       
+                    except Exception as e:
+                        exception_type, error, tb = sys.exc_info()
+                        pprint("Exception encountered:" + str(exception_type)+"\n Error:"+str(error))
+                        print traceback.format_exc()
+                        out['success'] = False
+                        out['errors'] = "An unexpected error was encountered. Please try again later."
+                        # Assign the error message to the latest UploadSession of the data request uploader user.
+                        latest_uploads = UploadSession.objects.filter(
+                            user=registration_uploader
+                        ).order_by('-date')
+                        if latest_uploads.count() > 0:
+                            upload_session = latest_uploads[0]
+                            upload_session.error = str(error)
+                            upload_session.traceback = traceback.format_exc(tb)
+                            upload_session.context = "Data requester's jurisdiction file upload"
+                            upload_session.save()
+                            out['traceback'] = upload_session.traceback
+                            out['context'] = upload_session.context
+                            out['upload_session'] = upload_session.id
+                    else:
+                        out['success'] = True
+                        out['url'] = reverse(
+                            'layer_detail', args=[
+                                saved_layer.service_typename])
+
+                        upload_session = saved_layer.upload_session
+                        upload_session.processed = True
+                        upload_session.save()
+                        permissions = {
+                            'users': {'AnonymousUser': []},
+                            'groups': {}
+                        }
+                        if permissions is not None and len(permissions.keys()) > 0:
+                            saved_layer.set_permissions(permissions)
+
+                    finally:
+                        if tempdir is not None:
+                            shutil.rmtree(tempdir)
+            
+            #Now store the data request
+            data_request_form = DataRequestProfileForm(
+                            profile_form_data)
+
+            
+            if data_request_form.is_valid():
+                request_profile = data_request_form.save()
                 
-                #request_letter_form = DataRequestProfileLetterForm(
-                #    request_letter_form_data)
+                ### Updating the other fields of the request
+                request_profile.project_summary = form.cleaned_data['project_summary']
+                request_profile.data_type_requested = form.cleaned_data['data_type_requested']
+                request_profile.purpose = form.cleaned_data['purpose']
+                request_profile.license_period = form.cleaned_data['license_period']
+                request_profile.has_subscription = form.cleaned_data['has_subscription']
+                request_profile.intended_use_of_dataset = form.cleaned_data['intended_use_of_dataset']
+                request_profile.organization_type = form.cleaned_data['organziation_type']
+                request_profile.request_level = form.cleaned_data['request_level']
+                request_profile.funding_source = form.cleaned_data['funding_source']
+                request_profile.is_consultant = form.cleaned_data['is_consultant']
+                request_profile.save()
                 
-                pprint(request_letter_form_data)
-                
-                if data_request_form.is_valid():
-                    request_profile = data_request_form.save()
-                    request_profile.jurisdiction_shapefile = saved_layer
-                    requester_name = request_profile.first_name+" "+request_profile.middle_name+" "+request_profile.last_name
-                    pprint(request_letter_document)
-                    request_profile.request_letter = request_letter_document
+                ### Saving the interest_layer
+                if interest_layer:
+                    request_profile.jurisdiction_shapefile = interest_layer
                     request_profile.save()
-                else:
-                    pprint("data request form is not valid")
-                    out['errors'] = form.errors
-                    pprint(out['errors'])
-            except Exception as e:
-                exception_type, error, tb = sys.exc_info()
-                pprint("Exception encountered:" + str(exception_type)+"\n Error:"+str(error))
-                print traceback.format_exc()
-                out['success'] = False
-                out['errors'] = "An unexpected error was encountered. Please try again later."
-                # Assign the error message to the latest UploadSession of the data request uploader user.
-                latest_uploads = UploadSession.objects.filter(
-                    user=registration_uploader
-                ).order_by('-date')
-                if latest_uploads.count() > 0:
-                    upload_session = latest_uploads[0]
-                    upload_session.error = str(error)
-                    upload_session.traceback = traceback.format_exc(tb)
-                    upload_session.context = "Data requester's jurisdiction file upload"
-                    upload_session.save()
-                    out['traceback'] = upload_session.traceback
-                    out['context'] = upload_session.context
-                    out['upload_session'] = upload_session.id
+                
+                ### Saving the PDF request letter and linking it to the request
+                requester_name = request_profile.first_name+" "+request_profile.middle_name+" "+request_profile.last_name
+                letter = DocumentCreateForm({
+                    'title': requester_name+ " Request Letter" + time.strftime("%Y-%m-%d", timezone.now()),
+                    'doc_file': request_letter_form_data,
+                    'permissions': u''
+                }).save()
+                request_profile.request_letter =letter;
+                request_profile.save()
             else:
-                out['success'] = True
-                out['url'] = reverse(
-                    'layer_detail', args=[
-                        saved_layer.service_typename])
-
-                upload_session = saved_layer.upload_session
-                upload_session.processed = True
-                upload_session.save()
-                permissions = {
-                    'users': {'AnonymousUser': []},
-                    'groups': {}
-                }
-                if permissions is not None and len(permissions.keys()) > 0:
-                    saved_layer.set_permissions(permissions)
-
-            finally:
-                if tempdir is not None:
-                    shutil.rmtree(tempdir)
+                pprint("data request form is not valid")
+                out['errors'] = form.errors
         else:
             for e in form.errors.values():
                 errormsgs.extend([escape(v) for v in e])

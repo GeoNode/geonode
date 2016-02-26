@@ -151,28 +151,6 @@ class DataRequestDetailsForm(forms.ModelForm):
         ('student', _('Student')),
     )
     
-    purpose = forms.ChoiceField(
-        label=_('Purpose/Intended Use of Data'),
-        choices=INTENDED_USE_CHOICES
-    )
-    purpose_other = forms.CharField(
-        label=_(u'Your custom purpose for the data'),
-        required=False
-    )
-    
-    license_period = forms.ChoiceField(
-        label=_('License Period'),
-        choices=LICENSE_PERIOD_CHOICES
-    )
-    license_period_other = forms.IntegerField(
-        label=_(u'Your custom license period (in years)'),
-        required=False
-    )
-    request_level = forms.ChoiceField(
-        label=_('Level of Request'),
-        choices=REQUEST_LEVEL_CHOICES
-    )
-    
     class Meta:
         model = DataRequestProfile
         fields=(
@@ -289,6 +267,20 @@ class DataRequestDetailsForm(forms.ModelForm):
 
 class DataRequestProfileShapefileForm(NewLayerUploadForm):
 
+    INTENDED_USE_CHOICES = Choices(
+        ('Disaster Risk Management', _('Disaster Risk Management')),
+        ('Urban/Land Subdivision Planning',
+            _('Urban/Land Subdivision Planning')),
+        ('Road/Infrastracture Planning', _('Road/Infrastracture Planning')),
+        ('Transport/Traffic Management', _('Transport/Traffic Management')),
+        ('Oil/Gas/Geothermal/Quarries/Minerals Exploration',
+            _('Oil/Gas/Geothermal/Quarries/Minerals Exploration')),
+        ('Biological/Agricultural/Forestry/Marine/Natural Resource Planning',
+            _('Biological/Agricultural/Forestry/Marine/Natural Resource Planning')),
+        ('Cellular Network Mapping', _('Cellular Network Mapping')),
+        ('other', _('Other, please specify:')),
+    )
+
     DATASET_USE_CHOICES =Choices(
         ('commercial', _('Commercial')),
         ('noncommercial', _('Non-commercial')),
@@ -317,6 +309,16 @@ class DataRequestProfileShapefileForm(NewLayerUploadForm):
         widget=forms.Textarea,
         label=_('Project Summary'),
         required=True
+    )
+    
+   purpose = forms.ChoiceField(
+        label=_('Purpose/Intended Use of Data'),
+        choices=INTENDED_USE_CHOICES
+    )
+    
+    purpose_other = forms.CharField(
+        label=_(u'Your custom purpose for the data'),
+        required=False
     )
 
     data_type_requested = forms.TypedChoiceField(
@@ -363,10 +365,26 @@ class DataRequestProfileShapefileForm(NewLayerUploadForm):
         super(DataRequestProfileShapefileForm, self).__init__(*args, **kwargs)
         
     def clean(self):
-        cleaned = super(LayerUploadForm).clean()
+        cleaned = super(forms.Form, self).clean()
         if "base_file" in cleaned:
-            cleaned = super(DataRequestProfileShapefileForm).clean()
+            cleaned = super(LayerUploadForm, self).clean()
+        pprint(cleaned)
+        if cleaned['purpose'] == self.INTENDED_USE_CHOICES.other:
+            cleaned['purpose']= cleaned['purpose_other']
+        if cleaned['license_period'] == self.LICENSE_PERIOD_CHOICES.other:
+            cleaned['license_period']= cleaned['license_period_other']
+            
+        organization_type = cleaned['organization_type']
+        intended_use_of_dataset = cleaned['intended_use_of_dataset']
         
+        if intended_use_of_dataset =='noncommercial':
+            if organization_type == OrganizationType.ACADEME:
+                cleaned['requester_type'] = 'academe'
+            else:
+                cleaned['requester_type'] = 'noncommercial'
+        else:
+            cleaned['requester_type'] = 'commercial'
+            
         return cleaned
 
     def clean_purpose_other(self):

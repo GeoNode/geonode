@@ -186,6 +186,8 @@ define(function (require, exports) {
         form_data.append('request_level',$('#id_request_level').val());
         form_data.append('funding_source', $('#id_funding_source').val());
         form_data.append('is_consultant', $('#id_is_consultant').val());
+        
+        console.log(form_data)
         return form_data;
     };
 
