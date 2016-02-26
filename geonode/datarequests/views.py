@@ -71,7 +71,9 @@ def registration_part_one(request):
     
     if request.method == 'POST':
         if form.is_valid():
+            request_object = form.save(commit=False)
             request.session['data_request_info'] = form.cleaned_data
+            request.session['request_object'] = request_object
             request.session['request_letter'] = form.cleaned_data['letter_file']
             
             return HttpResponseRedirect(
@@ -91,17 +93,19 @@ def registration_part_two(request):
         
     request.session['data_request_shapefile'] = True
     profile_form_data = request.session.get('data_request_info', None)
-    request_letter_form_data = request.session.get('request_letter',None)
-    pprint(request_letter_form_data)
+    request_letter = request.session.get('request_letter',None)
     
     form = DataRequestDetailsForm()
 
-    if not profile_form_data or not request_letter_form_data:
+    if not profile_form_data or not request_letter:
         return redirect(reverse('datarequests:registration_part_one'))
 
-    if request.method == 'POST':
-        pprint(request.POST)
-        form = DataRequestProfileShapefileForm(request.POST, request.FILES)
+    if request.method == 'POST' :
+        post_data = request.POST.copy()
+        post_data['permissions'] = '{"users":{"dataRegistrationUploader": ["view_resourcebase"] }}'
+        form = DataRequestDetailsForm(post_data)
+        if request.FILES:
+            form = DataRequestProfileShapefileForm(post_data, request.FILES)
         
         tempdir = None
         errormsgs = []
@@ -110,7 +114,7 @@ def registration_part_two(request):
         if form.is_valid():
             if form.cleaned_data:
                 interest_layer = None
-                if form.cleaned_data["layer_title"]:
+                if request.FILES:
                     title = form.cleaned_data["layer_title"]
 
                     # Replace dots in filename - GeoServer REST API upload bug
@@ -142,11 +146,11 @@ def registration_part_two(request):
                             #default_style=Style.objects.get(sld_title="Boundary")
                         )
                         saved_layer.is_published = False
-                        interest_layer = saved_layer.save()
+                        saved_layer.save()
+                        interest_layer =  saved_layer
                        
                     except Exception as e:
                         exception_type, error, tb = sys.exc_info()
-                        pprint("Exception encountered:" + str(exception_type)+"\n Error:"+str(error))
                         print traceback.format_exc()
                         out['success'] = False
                         out['errors'] = "An unexpected error was encountered. Please try again later."
@@ -184,43 +188,49 @@ def registration_part_two(request):
                             shutil.rmtree(tempdir)
             
             #Now store the data request
-            data_request_form = DataRequestProfileForm(
-                            profile_form_data)
+                #data_request_form = DataRequestProfileForm(
+                #                profile_form_data)
 
-            
-            if data_request_form.is_valid():
-                request_profile = data_request_form.save()
                 
-                ### Updating the other fields of the request
-                request_profile.project_summary = form.cleaned_data['project_summary']
-                request_profile.data_type_requested = form.cleaned_data['data_type_requested']
-                request_profile.purpose = form.cleaned_data['purpose']
-                request_profile.license_period = form.cleaned_data['license_period']
-                request_profile.has_subscription = form.cleaned_data['has_subscription']
-                request_profile.intended_use_of_dataset = form.cleaned_data['intended_use_of_dataset']
-                request_profile.organization_type = form.cleaned_data['organziation_type']
-                request_profile.request_level = form.cleaned_data['request_level']
-                request_profile.funding_source = form.cleaned_data['funding_source']
-                request_profile.is_consultant = form.cleaned_data['is_consultant']
-                request_profile.save()
-                
-                ### Saving the interest_layer
-                if interest_layer:
-                    request_profile.jurisdiction_shapefile = interest_layer
+                if 'request_object' in request.session:
+                    request_profile = request.session['request_object']
+                    
+                    ### Updating the other fields of the request
+                    request_profile.project_summary = form.cleaned_data['project_summary']
+                    request_profile.data_type_requested = form.cleaned_data['data_type_requested']
+                    request_profile.purpose = form.cleaned_data['purpose']
+                    request_profile.license_period = form.cleaned_data['license_period']
+                    request_profile.has_subscription = form.cleaned_data['has_subscription']
+                    request_profile.intended_use_of_dataset = form.cleaned_data['intended_use_of_dataset']
+                    request_profile.organization_type = form.cleaned_data['organization_type']
+                    request_profile.request_level = form.cleaned_data['request_level']
+                    request_profile.funding_source = form.cleaned_data['funding_source']
+                    request_profile.is_consultant = form.cleaned_data['is_consultant']
                     request_profile.save()
-                
-                ### Saving the PDF request letter and linking it to the request
-                requester_name = request_profile.first_name+" "+request_profile.middle_name+" "+request_profile.last_name
-                letter = DocumentCreateForm({
-                    'title': requester_name+ " Request Letter" + time.strftime("%Y-%m-%d", timezone.now()),
-                    'doc_file': request_letter_form_data,
-                    'permissions': u''
-                }).save()
-                request_profile.request_letter =letter;
-                request_profile.save()
-            else:
-                pprint("data request form is not valid")
-                out['errors'] = form.errors
+                    
+                    ### Saving the interest_layer
+                    if interest_layer:
+                        request_profile.jurisdiction_shapefile = interest_layer
+                        request_profile.save()
+                    
+                    ### Saving the PDF request letter and linking it to the request
+                    requester_name = request_profile.first_name+" "+request_profile.middle_name+" "+request_profile.last_name
+                    letter = Document()
+                    letter_owner, created =  Profile.objects.get_or_create(username='dataRegistrationUploader')
+                    letter.owner = letter_owner
+                    letter.doc_file = request_letter
+                    letter.title = requester_name+ " Request Letter" +datetime.datetime.now().strftime("%Y-%m-%d")
+                    letter.is_published = False
+                    letter.save()
+                    letter.set_permissions( {"users":{"dataRegistrationUploader":["view_resourcebase"]}})
+                    
+                    request_profile.request_letter =letter;
+                    request_profile.save()
+                    
+                    out['success'] = True
+                else:
+                    pprint("unable to retrieve request object")
+                    out['errors'] = form.errors
         else:
             for e in form.errors.values():
                 errormsgs.extend([escape(v) for v in e])
@@ -241,7 +251,7 @@ def registration_part_two(request):
 
             del request.session['data_request_info']
             del request.session['data_request_shapefile']
-            request.session.modified = True
+            del request.session['request_object']
         else:
             status_code = 400
         return HttpResponse(
