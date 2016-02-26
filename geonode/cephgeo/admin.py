@@ -51,7 +51,7 @@ class FTPRequestAdmin(admin.ModelAdmin):
         'num_tiles',
         'size_in_bytes',)
     list_filter = ('name', 'user', 'status',)
-    search_fields = ('name', 'user', 'status',)
+    search_fields = ('name', 'user__username', 'status',)
 
 class FTPRequestToObjectIndexAdmin(admin.ModelAdmin):
     model = FTPRequestToObjectIndex
