@@ -39,7 +39,7 @@ class ContactRole(models.Model):
     """
     ContactRole is an intermediate model to bind Profiles as Contacts to Resources and apply roles.
     """
-    resource = models.ForeignKey('ResourceBase')
+    resource = models.ForeignKey('ResourceBase', blank=True, null=True)
     contact = models.ForeignKey(settings.AUTH_USER_MODEL)
     role = models.CharField(choices=ROLE_VALUES, max_length=255, help_text=_('function performed by the responsible '
                                                                              'party'))
@@ -697,7 +697,7 @@ class Link(models.Model):
         * OGC:WFS: for WFS service links
         * OGC:WCS: for WCS service links
     """
-    resource = models.ForeignKey(ResourceBase)
+    resource = models.ForeignKey(ResourceBase, blank=True, null=True)
     extension = models.CharField(max_length=255, help_text=_('For example "kml"'))
     link_type = models.CharField(max_length=255, choices=[(x, x) for x in LINK_TYPES])
     name = models.CharField(max_length=255, help_text=_('For example "View in Google Earth"'))
