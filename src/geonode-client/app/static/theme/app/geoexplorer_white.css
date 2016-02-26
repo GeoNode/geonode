@@ -969,3 +969,7 @@ td.x-grid3-hd-over .x-grid3-hd-inner, td.sort-desc .x-grid3-hd-inner, td.sort-as
   padding-top: 3px !important;
   padding-bottom:3px !important;
 }
+
+.search-bar{
+    float: left;
+}

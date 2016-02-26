@@ -352,7 +352,8 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
                         emptyText: this.searchLabelText,
                         name: 'search',
                         allowBlank: true,
-                        width: 110
+                        width: 110,
+                        cls: 'search-bar'
                      });
         this.queryInput.on('specialkey', function(field, e) {
             if (e.getKey() == e.ENTER) {
@@ -364,7 +365,8 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
                         emptyText: this.originatorSearchLabelText,
                         name: 'search_originator',
                         allowBlank: true,
-                        width: 110
+                        width: 110,
+                        cls: 'search-bar'
         });
 
         this.dataTypeInput = new Ext.form.RadioGroup({
@@ -442,7 +444,8 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
 
         var searchButton = new Ext.Button({
             text: this.searchButtonText,
-            iconCls: 'prominent-btn'
+            iconCls: 'prominent-btn',
+            cls: 'search-bar'
         });
         searchButton.on('click', this.updateQuery, this);
 
