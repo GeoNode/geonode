@@ -206,7 +206,7 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
                 GeoNode.queryTerms.fq.splice(i, 1);
             }
         };
-        var datatypes = this.dataTypeInput.getValue().inputValue;
+        var datatypes = this.dataTypeInput.getValue();
         if(datatypes !== ''){
             GeoNode.queryTerms.fq.push(datatypes);
         };
@@ -369,14 +369,26 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
                         cls: 'search-bar'
         });
 
-        this.dataTypeInput = new Ext.form.RadioGroup({
+        this.dataTypeInput = new Ext.form.ComboBox({
             id: 'dataTypes',
-            fieldLabel: 'Data Type',
-            items: [
-                {boxLabel: 'All Layers', name: 'datatypes', inputValue: '', checked: true},
-                {boxLabel: 'WM Layers', name: 'datatypes', inputValue: 'DataType:Polygon OR DataType:Raster'},
-                {boxLabel: 'WM Collections', name: 'datatypes', inputValue: 'DataType:RESTServices OR DataType:WMSServices'}
-            ],
+            mode: 'local',
+            store: new Ext.data.ArrayStore({
+                id: 0,
+                fields: [
+                    'value',
+                    'Label'
+                ],
+                data: [['', 'All Layers'], 
+                    ['DataType:Polygon OR DataType:Raster', 'WM Layers'],
+                    ['DataType:RESTServices OR DataType:WMSServices', 'WM Collections']
+                ]
+            }),
+            valueField: 'value',
+            displayField: 'Label',
+            triggerAction: 'all',
+            editable: false,
+            forceSelection: true,
+            value: '',
             listeners:{
                 change: function(scope, checked){
                     self.updateQuery();
