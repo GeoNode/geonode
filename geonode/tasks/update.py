@@ -69,8 +69,8 @@ def fh_style_update():
                     username=settings.OGC_SERVER['default']['USER'],
                     password=settings.OGC_SERVER['default']['PASSWORD'])
 
-    layer_list = Layer.objects.filter(name__icontains='fh')
-    # layer_list = Layer.objects.filter(name__icontains='fh').exclude(styles__name__icontains='fhm')#initial run of script includes all fhm layers for cleaning of styles in GN + GS
+    #layer_list = Layer.objects.filter(name__icontains='fh')
+    layer_list = Layer.objects.filter(name__icontains='fh').exclude(styles__name__icontains='fhm')#initial run of script includes all fhm layers for cleaning of styles in GN + GS
     fhm_style = cat.get_style("fhm")
     ctr = 1
     for layer in layer_list:
