@@ -393,7 +393,8 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
                 change: function(scope, checked){
                     self.updateQuery();
                 }
-            }
+            },
+            cls: 'search-bar'
         });
 
 
@@ -435,7 +436,7 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
 
         this.dateLabelPanel = new Ext.Panel({
             items: [new Ext.form.Label({text: 'From'}), dateStartTextField, new Ext.form.Label({text: 'to'}), dateEndTextField],
-            layout: 'fit'
+            cls: 'search-bar'
         });
 
         this.dateInput = new GeoNode.TimeSlider();
@@ -485,11 +486,12 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
                 colspan: 3
             },{
                 items: [
-                  this.dataTypeInput
-            ],
+                  this.dataTypeInput,
+                  this.dateLabelPanel
+                ],
                 colspan: 3
             },{
-                items: [this.dateLabelPanel, this.dateInput],
+                items: [this.dateInput],
                 colspan: 3
             }]
          });
