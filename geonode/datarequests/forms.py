@@ -1,6 +1,8 @@
 import os
+import traceback
 
 from django import forms
+from django.forms import widgets
 from django.utils.translation import ugettext_lazy as _
 
 from captcha.fields import ReCaptchaField
@@ -10,7 +12,7 @@ from crispy_forms.bootstrap import PrependedText, InlineRadios
 from model_utils import Choices
 
 from geonode.datarequests.models import DataRequestProfile
-from geonode.layers.forms import NewLayerUploadForm
+from geonode.layers.forms import NewLayerUploadForm, LayerUploadForm, JSONField
 from geonode.documents.models import Document
 from geonode.documents.forms import DocumentCreateForm
 from geonode.people.models import OrganizationType, Profile
@@ -138,6 +140,18 @@ class DataRequestDetailsForm(forms.ModelForm):
         ('Cellular Network Mapping', _('Cellular Network Mapping')),
         ('other', _('Other, please specify:')),
     )
+    
+    ORGANIZATION_TYPE_CHOICES = Choices(
+        (0, _('Phil-LiDAR 1 SUC')),
+        (1, _('Phil-LiDAR 2 SUC' )),
+        (2, _( 'Government Agency')),
+        (3, _( 'Academic/Research Institution' )),
+        (4, _('Academe')),
+        (5, _( 'International NGO')),
+        (6, _('Local NGO')),
+        (7, _('Private Insitution' )),
+        (8, _('Other' )),
+    )
 
     LICENSE_PERIOD_CHOICES = Choices(
         ('One-time Use', _('One-time Use')),
@@ -151,13 +165,31 @@ class DataRequestDetailsForm(forms.ModelForm):
         ('student', _('Student')),
     )
     
+    license_period = forms.ChoiceField(
+        label=_('License Period'),
+        choices=LICENSE_PERIOD_CHOICES
+    )
+    
+    license_period_other = forms.IntegerField(
+        label=_(u'Your custom license period (in years)'),
+        required=False
+    )
+    
+    purpose = forms.ChoiceField(
+        label =_(u'Purpose of the Data'),
+        choices = INTENDED_USE_CHOICES
+    )
+    
+    purpose_other = forms.CharField(
+        label=_(u'Your custom purpose for the data'),
+        required=False
+    )
+        
     class Meta:
         model = DataRequestProfile
         fields=(
             'project_summary',
             'data_type_requested',
-            'purpose',
-            'license_period',
             'has_subscription',
             'intended_use_of_dataset',
 
@@ -169,6 +201,8 @@ class DataRequestDetailsForm(forms.ModelForm):
             'funding_source',
             'is_consultant',
         )
+        
+    
     
     def __init__(self, *args, **kwargs):
         super(DataRequestDetailsForm, self).__init__(*args, **kwargs)
@@ -280,6 +314,18 @@ class DataRequestProfileShapefileForm(NewLayerUploadForm):
         ('Cellular Network Mapping', _('Cellular Network Mapping')),
         ('other', _('Other, please specify:')),
     )
+    
+    ORGANIZATION_TYPE_CHOICES = Choices(
+        (0, _('Phil-LiDAR 1 SUC')),
+        (1, _('Phil-LiDAR 2 SUC' )),
+        (2, _( 'Government Agency')),
+        (3, _( 'Academic/Research Institution' )),
+        (4, _('Academe')),
+        (5, _( 'International NGO')),
+        (6, _('Local NGO')),
+        (7, _('Private Insitution' )),
+        (8, _('Other' )),
+    )
 
     DATASET_USE_CHOICES =Choices(
         ('commercial', _('Commercial')),
@@ -305,13 +351,16 @@ class DataRequestProfileShapefileForm(NewLayerUploadForm):
         ('student', _('Student')),
     )
 
+    abstract = forms.CharField(required=False)
+    
+    charset = forms.CharField(required=False)
+
     project_summary = forms.CharField(
-        widget=forms.Textarea,
         label=_('Project Summary'),
         required=True
     )
     
-   purpose = forms.ChoiceField(
+    purpose = forms.ChoiceField(
         label=_('Purpose/Intended Use of Data'),
         choices=INTENDED_USE_CHOICES
     )
@@ -336,6 +385,10 @@ class DataRequestProfileShapefileForm(NewLayerUploadForm):
         required=False
     )
 
+    has_subscription = forms.BooleanField(
+        required=False
+    )
+
     intended_use_of_dataset = forms.ChoiceField(
         label = _('Intended Use of Data Set'),
         choices = DATASET_USE_CHOICES,
@@ -343,47 +396,32 @@ class DataRequestProfileShapefileForm(NewLayerUploadForm):
     )
 
     organization_type = forms.ChoiceField(
-        required=True
+        choices = ORGANIZATION_TYPE_CHOICES,
+        required = False
     )
 
-    request_level = forms.ChoiceField(
+    request_level = forms.CharField(
         label=_('Level of the Request'),
-        choices = REQUEST_LEVEL_CHOICES
+        required = False
     )
 
     funding_source = forms.CharField(
         label = _('Source of Funding'),
         max_length=255,
+        required=False
     )
     
     is_consultant = forms.BooleanField(
-        _('Consultant in behalf of another organization?'),
+        required=False
     )
-
+    
     def __init__(self, *args, **kwargs):
-        self.helper = FormHelper()
         super(DataRequestProfileShapefileForm, self).__init__(*args, **kwargs)
         
     def clean(self):
-        cleaned = super(forms.Form, self).clean()
-        if "base_file" in cleaned:
-            cleaned = super(LayerUploadForm, self).clean()
-        pprint(cleaned)
-        if cleaned['purpose'] == self.INTENDED_USE_CHOICES.other:
-            cleaned['purpose']= cleaned['purpose_other']
-        if cleaned['license_period'] == self.LICENSE_PERIOD_CHOICES.other:
-            cleaned['license_period']= cleaned['license_period_other']
-            
-        organization_type = cleaned['organization_type']
-        intended_use_of_dataset = cleaned['intended_use_of_dataset']
-        
-        if intended_use_of_dataset =='noncommercial':
-            if organization_type == OrganizationType.ACADEME:
-                cleaned['requester_type'] = 'academe'
-            else:
-                cleaned['requester_type'] = 'noncommercial'
-        else:
-            cleaned['requester_type'] = 'commercial'
+        cleaned = self.cleaned_data
+        if cleaned['base_file']:
+            cleaned = super(NewLayerUploadForm, self).clean()
             
         return cleaned
 

@@ -158,7 +158,7 @@ class DataRequestProfile(TimeStampedModel):
         _('Subscription/Maintenance?'),
         default=False)
     
-    purpose = models.TextField(_('Purpose/Intended Use of Data'))
+    purpose = models.TextField(_('Purpose of Data'))
     intended_use_of_dataset = models.CharField(
         _('Intended Use of Dataset'),
         choices=DATASET_USE_CHOICES,

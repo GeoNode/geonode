@@ -275,11 +275,11 @@ define(['underscore',
      *  
      */
     doFormSubmit = function(){
-        var form = $("#file-uploader");
+        var form = $("#file-uploader").serialize();
         $.ajax({
            type: "POST",
            url: '/datarequests/register/shapefile/',
-           data: form.serialize(), // serializes the form's elements.
+           data: form, // serializes the form's elements.
            success: function(data)
            {
                if('redirect_to' in data) {
@@ -364,8 +364,7 @@ define(['underscore',
         });
         $(options.clear_button).on('click', doClearState);
         $(options.upload_button).on('click', function(){
-            doUploads(),
-            console.log($(options.form).serializeArray());    
+            doUploads();
         });
         $("[id^=delete]").on('click', doDelete);
         $("[id^=resume]").on('click', doResume);
