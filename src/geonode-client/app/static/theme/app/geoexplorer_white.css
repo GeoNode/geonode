@@ -1,4 +1,4 @@
-/* do wrap lines on any tooltips */
+		/* do wrap lines on any tooltips */
 .x-tip {
 }
 
@@ -973,7 +973,6 @@ td.x-grid3-hd-over .x-grid3-hd-inner, td.sort-desc .x-grid3-hd-inner, td.sort-as
 .search-bar{
     float: left;
 }
-
 #search_controls{
     margin-left: 20px;
 }

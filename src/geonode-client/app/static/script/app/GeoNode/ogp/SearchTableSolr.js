@@ -299,7 +299,7 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
                 emptyText: this.noResultsText
             },
             renderTo: 'search_results',
-            height: 440,
+            height: 310,
             sm: sm
         };
 
@@ -378,7 +378,7 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
                     'value',
                     'Label'
                 ],
-                data: [['', 'All Layers'], 
+                data: [['', 'All Layers'],
                     ['DataType:Polygon OR DataType:Raster', 'WM Layers'],
                     ['DataType:RESTServices OR DataType:WMSServices', 'WM Collections']
                 ]
@@ -497,10 +497,10 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
          });
          searchForm.render(input_el);
 
-         this.prevButton =  new Ext.Button({text: this.previousText});
+         this.prevButton =  new Ext.Button({text: this.previousText, iconCls:"prominent-btn"});
          this.prevButton.on('click', this.loadPrevBatch, this);
 
-         this.nextButton =  new Ext.Button({text: this.nextText});
+         this.nextButton =  new Ext.Button({text: this.nextText, iconCls:"prominent-btn"});
          this.nextButton.on('click', this.loadNextBatch, this);
 
          this.pagerLabel = new Ext.form.Label({text: ""});
