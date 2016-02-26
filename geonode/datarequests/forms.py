@@ -361,6 +361,13 @@ class DataRequestProfileShapefileForm(NewLayerUploadForm):
     def __init__(self, *args, **kwargs):
         self.helper = FormHelper()
         super(DataRequestProfileShapefileForm, self).__init__(*args, **kwargs)
+        
+    def clean(self):
+        cleaned = super(LayerUploadForm).clean()
+        if "base_file" in cleaned:
+            cleaned = super(DataRequestProfileShapefileForm).clean()
+        
+        return cleaned
 
     def clean_purpose_other(self):
         purpose = self.cleaned_data.get('purpose')
@@ -399,7 +406,6 @@ class DataRequestProfileShapefileForm(NewLayerUploadForm):
             else:
                 return license_period_other
         return license_period
-
 
     def clean_funding_source(self):
         funding_source = self.cleaned_data.get('funding_source')
