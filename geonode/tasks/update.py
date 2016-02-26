@@ -69,18 +69,21 @@ def fh_style_update():
                     username=settings.OGC_SERVER['default']['USER'],
                     password=settings.OGC_SERVER['default']['PASSWORD'])
 
-    layer_list = Layer.objects.filter(name__icontains='fh').exclude(styles__name__icontains='fhm')#initial run of script includes all fhm layers for cleaning of styles in GN + GS
+    layer_list = Layer.objects.filter(name__icontains='fh')
+    # layer_list = Layer.objects.filter(name__icontains='fh').exclude(styles__name__icontains='fhm')#initial run of script includes all fhm layers for cleaning of styles in GN + GS
     fhm_style = cat.get_style("fhm")
     ctr = 1
     for layer in layer_list:
         print " {0} out of {1} layers. Will edit style of {2} ".format(ctr,len(layer_list),layer.name)
         #delete thumbnail first because of permissions
+
         print "Layer thumbnail url: %s " % layer.thumbnail_url
         if "192" in local_settings.BASEURL:
             url = "geonode"+layer.thumbnail_url #if on local
+            os.remove(url)
         else:
             url = "/var/www/geonode"+layer.thumbnail_url #if on lipad
-        os.remove(url)
+            os.remove(url)
         gs_layer = cat.get_layer(layer.name)
         gs_layer._set_default_style(fhm_style.name)
         cat.save(gs_layer) #save in geoserver
