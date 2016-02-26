@@ -24,7 +24,7 @@ define(['underscore',
         displayFiles,
         init_geogig_stores,
         doUploads,
-        doLetterUpload,
+        doFormSubmit,
         doSrs,
         doDelete,
         doResume,
@@ -144,7 +144,9 @@ define(['underscore',
      */
     checkFiles = function(){
         var files = layers[Object.keys(layers)[0]]['files'];
-        console.log(files);
+        if (!files){
+            return false;
+        }
         var types = [];
         for (var i = 0; i<files.length; i++){
             var ext = files[i].name.split('.').pop();
@@ -253,10 +255,10 @@ define(['underscore',
      *  @returns false
      */
     doUploads = function () {
-        /*if ($.isEmptyObject(layers)) {
-            common.logError('Please provide some files');
+        if ($.isEmptyObject(layers)) {
+            doFormSubmit();
             return false;
-        }*/
+        }
         var checked = checkFiles();
         if ($.isEmptyObject(layers) || !checked) {
             alert(gettext('You are uploading an incomplete set of files.'));
@@ -272,8 +274,31 @@ define(['underscore',
     /** Function which submits the form fields
      *  
      */
-    doLetterUpload = function(){
-        
+    doFormSubmit = function(){
+        var form = $("#file-uploader");
+        $.ajax({
+           type: "POST",
+           url: '/datarequests/register/shapefile/',
+           data: form.serialize(), // serializes the form's elements.
+           success: function(data)
+           {
+               if('redirect_to' in data) {
+                    common.make_request({
+                        url: data.redirect_to,
+                        async: false,
+                        failure: function (resp, status) {common.logError(resp); },
+                        success: function (resp, status) {
+                            window.location = resp.url;
+                        }
+                    });
+                } else if ('url' in data) {
+                    window.location = data.url;
+                } else {
+                    common.logError("unexpected response");
+                }
+            }
+        });
+           
      }
 
     /** Function to ...

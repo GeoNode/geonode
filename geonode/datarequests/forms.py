@@ -249,7 +249,7 @@ class DataRequestDetailsForm(forms.ModelForm):
             ),
             HTML("""
             {% load i18n %} 
-             <legend>Jurisdiction Shapefile</legend>
+             <legend>Area of Interest Shapefile (Optional)</legend>
             <div class="form-group">
                 {% block additional_info %}{% endblock %}
 

@@ -174,7 +174,6 @@ define(function (require, exports) {
         }
 
         form_data.append('charset', $('#charset').val());
-        form_data.append('g-recaptcha-response',  grecaptcha.getResponse());
         return form_data;
     };
 
