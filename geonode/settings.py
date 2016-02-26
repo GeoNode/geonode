@@ -55,8 +55,10 @@ DEBUG = TEMPLATE_DEBUG = True
 DATABASES = {
     'default': {
         'ENGINE': 'django.contrib.gis.db.backends.postgis',
-        'NAME': 'worldmap',
-        'USER': 'ubuntu',
+        'NAME': 'wm_db',
+        'USER': 'wm_user',
+        'PASSWORD': 'wm_password',
+        'HOST': 'localhost', 'PORT': '5432'
         }
 }
 
@@ -393,6 +395,12 @@ MAP_BASELAYERS = [
         "group": "background",
         "visibility": False
     }, {
+        "source": {"ptype": "gxp_bingsource"},
+        "name": "AerialWithLabels",
+        "fixed": True,
+        "visibility": False,
+        "group": "background"
+    }, {
         "source": {"ptype": "gxp_mapboxsource"},
     },
     {
@@ -424,36 +432,27 @@ MAP_BASELAYERS = [
 ]
 
 
-GEONODE_CLIENT_LOCATION = "http://localhost:9090/"
-#GEONODE_CLIENT_LOCATION = "/static/geonode/"
+#GEONODE_CLIENT_LOCATION = "http://localhost:9090/"
+GEONODE_CLIENT_LOCATION = "/static/geonode/"
 
 
 # GeoNode vector data backend configuration.
 
 #Import uploaded shapefiles into a database such as PostGIS?
-DB_DATASTORE = True
+DB_DATASTORE = False
 
 #
 #Database datastore connection settings
 #
-DB_DATASTORE_DATABASE = 'wmdata'
-DB_DATASTORE_USER = 'guillermo'
-DB_DATASTORE_PASSWORD = 'guillermo'
-DB_DATASTORE_HOST = 'localhost'
-DB_DATASTORE_PORT = '5432'
-DB_DATASTORE_TYPE = 'postgis'
+DB_DATASTORE_DATABASE = ''
+DB_DATASTORE_USER = ''
+DB_DATASTORE_PASSWORD = ''
+DB_DATASTORE_HOST = ''
+DB_DATASTORE_PORT = ''
+DB_DATASTORE_TYPE = ''
 # Name of the store in geoserver
-DB_DATASTORE_NAME = 'datastore'
+DB_DATASTORE_NAME = ''
 DB_DATASTORE_ENGINE = 'django.contrib.gis.db.backends.postgis'
-
-DATABASE_NAME = 'worldmap_guillo'
-DATABASE_USER = 'guillermo'
-DATABASE_PASSWORD = 'guillermo'
-DATABASE_HOST = 'localhost'
-DATABASE_PORT = '5432'
-DATABASE_ENGINE = 'django.contrib.gis.db.backends.postgis'
-
-
 
 USE_GAZETTEER = False
 ##### START GAZETTEER SETTINGS #####
@@ -461,27 +460,25 @@ USE_GAZETTEER = False
 # only use if PostGIS integration enabled
 # and USE_GAZETTEER = True
 #GAZETTEER_DB_ALIAS = "wmdata"
-
-DATABASES = {
-    'default': {
-        'ENGINE': DATABASE_ENGINE,
-        'NAME': DATABASE_NAME,
-        'USER' : DATABASE_USER,
-        'PASSWORD': DATABASE_PASSWORD,
-        'PORT': DATABASE_PORT,
-        'HOST': DATABASE_HOST
-    },
-    'wmdata': {
-        'ENGINE': DB_DATASTORE_ENGINE,
-        'NAME': DB_DATASTORE_DATABASE,
-        'USER' : DB_DATASTORE_USER,
-        'PASSWORD': DB_DATASTORE_PASSWORD,
-        'PORT': DB_DATASTORE_PORT,
-        'HOST': DB_DATASTORE_HOST
-    }
-
-}
-
+#DATABASES = {
+#    'default': {
+#        'ENGINE': DATABASE_ENGINE,
+#        'NAME': DATABASE_NAME,
+#        'USER' : DATABASE_USER,
+#        'PASSWORD': DATABASE_PASSWORD,
+#        'PORT': DATABASE_PORT,
+#        'HOST': DATABASE_HOST
+#    },
+#    'wmdata': {
+#        'ENGINE': DB_DATASTORE_ENGINE,
+#        'NAME': DB_DATASTORE_DATABASE,
+#        'USER' : DB_DATASTORE_USER,
+#        'PASSWORD': DB_DATASTORE_PASSWORD,
+#        'PORT': DB_DATASTORE_PORT,
+#        'HOST': DATABASE_HOST
+#    }
+#
+#}
 #DATABASE_ROUTERS = ['geonode.utils.WorldmapDatabaseRouter']
 #SOUTH_DATABASE_ADAPTERS = {
 #    'default': "south.db.sqlite3",
