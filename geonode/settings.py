@@ -936,6 +936,7 @@ if 'geonode.qgis_server' in INSTALLED_APPS:
         'tiles_directory': tiles_directory,
         'tile_path': tiles_directory + '/%s/%d/%d/%d.png',
         'legend_path': tiles_directory + '/%s/legend.png',
+        'thumbnail_path': tiles_directory + '/%s/thumbnail.png',
         'qgis_server_url': 'http://127.0.0.1/qgisltr',
         'layer_directory': os.path.join(PROJECT_ROOT, "qgis_layer")
     }

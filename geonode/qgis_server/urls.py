@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from django.conf.urls import patterns, url
-from geonode.qgis_server.views import download_zip, tile, legend
+from geonode.qgis_server.views import download_zip, tile, legend, thumbnail
 
 __author__ = 'ismailsunni'
 __project_name__ = 'geonode'
@@ -29,5 +29,10 @@ urlpatterns = patterns(
     url(
         r'^qgis-server/legend/(?P<layername>[^/]*)$',
         legend,
+    ),
+    url(
+        r'^qgis-server/thumbnail/(?P<layername>[^/]*)$',
+        thumbnail,
+        name='qgis-server-thumbnail'
     ),
 )
