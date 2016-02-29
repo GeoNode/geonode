@@ -18,7 +18,7 @@ from geonode.layers.models import Style
 from geonode.geoserver.helpers import http_client
 from geonode.security.models import PermissionLevelMixin
 from django.contrib.auth.models import Group
-from guardian.shortcuts import assign_perm
+from guardian.shortcuts import assign_perm, get_anonymous_user
 
 def layer_metadata(layer_list,flood_year,flood_year_probability):
     total_layers = len(layer_list)
@@ -106,15 +106,16 @@ def fh_style_update():
 
 @task(name='geonode.tasks.update.fh_perms_update', queue='update')
 def fh_perms_update():
-    anonymous_group, created = Group.objects.get_or_create(name='anonymous')
+    # anonymous_group, created = Group.objects.get_or_create(name='anonymous')
     layer_list = Layer.objects.filter(name__icontains='fh')
     total_layers = len(layer_list)
     ctr = 1
     for layer in layer_list:
         try:
             print "[FH PERMISSIONS] {0}/{1} : {2} ".format(ctr,total_layers,layer.name)
-            assign_perm('view_resourcebase', anonymous_group, layer.get_self_resource())
-            assign_perm('download_resourcebase', anonymous_group, layer.get_self_resource())
+            #layer.remove_all_permissions()
+            assign_perm('view_resourcebase', get_anonymous_user(), layer.get_self_resource())
+            assign_perm('download_resourcebase', get_anonymous_user(), layer.get_self_resource())
             ctr+=1
         except:
             "Error in %s" % layer.name
