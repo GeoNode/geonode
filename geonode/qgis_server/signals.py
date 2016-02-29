@@ -182,6 +182,23 @@ def qgis_server_post_save(instance, sender, **kwargs):
         )
     )
 
+    # Create legend link
+    legend_url = reverse(
+        'qgis-server-legend',
+        kwargs={'layername': instance.name}
+    )
+    Link.objects.get_or_create(
+        resource=instance.resourcebase_ptr,
+        url=legend_url,
+        defaults=dict(
+            extension='png',
+            name='Legend',
+            url=legend_url,
+            mime='image/png',
+            link_type='image',
+        )
+    )
+
 
 def qgis_server_pre_save_maplayer(instance, sender, **kwargs):
     logger.debug('QGIS Server Pre Save Map Layer')

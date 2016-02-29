@@ -29,5 +29,6 @@ urlpatterns = patterns(
     url(
         r'^qgis-server/legend/(?P<layername>[^/]*)$',
         legend,
+        name='qgis-server-legend'
     ),
 )
