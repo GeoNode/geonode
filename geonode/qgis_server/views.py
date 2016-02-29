@@ -4,6 +4,7 @@ import os
 import logging
 import zipfile
 import StringIO
+from imghdr import what as image_format
 
 from urllib import urlretrieve
 from django.http import HttpResponse, Http404
@@ -82,14 +83,16 @@ def legend(request, layername):
     try:
         layer = Layer.objects.get(name=layername)
     except ObjectDoesNotExist:
-        logger.debug('No layer found for %s' % layername)
-        return
+        msg = 'No layer found for %s' % layername
+        logger.debug(msg)
+        raise Http404(msg)
 
     try:
         qgis_layer = QGISServerLayer.objects.get(layer=layer)
     except ObjectDoesNotExist:
-        logger.debug('No QGIS Server Layer for existing layer %s' % layername)
-        return
+        msg = 'No QGIS Server Layer for existing layer %s' % layername
+        logger.debug(msg)
+        raise Http404(msg)
 
     basename, _ = os.path.splitext(qgis_layer.base_layer_path)
 
@@ -117,8 +120,12 @@ def legend(request, layername):
 
         urlretrieve(url, legend_filename)
 
+        if image_format(legend_filename) != 'png':
+            logger.error('%s is not valid PNG.' % legend_filename)
+            os.remove(legend_filename)
+
     if not os.path.exists(legend_filename):
-        raise Http404('The legend could not be found')
+        return HttpResponse('The legend could not be found.', status=409)
 
     with open(legend_filename, 'rb') as f:
         return HttpResponse(f.read(), mimetype='image/png')
@@ -132,14 +139,16 @@ def tile(request, layername, z, x, y):
     try:
         layer = Layer.objects.get(name=layername)
     except ObjectDoesNotExist:
-        logger.debug('No layer found for %s' % layername)
-        return
+        msg = 'No layer found for %s' % layername
+        logger.debug(msg)
+        raise Http404(msg)
 
     try:
         qgis_layer = QGISServerLayer.objects.get(layer=layer)
     except ObjectDoesNotExist:
-        logger.debug('No QGIS Server Layer for existing layer %s' % layername)
-        return
+        msg = 'No QGIS Server Layer for existing layer %s' % layername
+        logger.debug(msg)
+        raise Http404(msg)
 
     basename, _ = os.path.splitext(qgis_layer.base_layer_path)
 
@@ -180,8 +189,12 @@ def tile(request, layername, z, x, y):
 
         urlretrieve(url, tile_filename)
 
+        if image_format(tile_filename) != 'png':
+            logger.error('%s is not valid PNG.' % tile_filename)
+            os.remove(tile_filename)
+
     if not os.path.exists(tile_filename):
-        raise Http404('The tile could not be found.')
+        return HttpResponse('The legend could not be found.', status=409)
 
     with open(tile_filename, 'rb') as f:
         return HttpResponse(f.read(), mimetype='image/png')
