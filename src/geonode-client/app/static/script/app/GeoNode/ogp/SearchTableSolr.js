@@ -352,7 +352,8 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
                         emptyText: this.searchLabelText,
                         name: 'search',
                         allowBlank: true,
-                        width: 110,
+                        width: 180,
+                        height: 25,
                         cls: 'search-bar'
                      });
         this.queryInput.on('specialkey', function(field, e) {
@@ -365,13 +366,17 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
                         emptyText: this.originatorSearchLabelText,
                         name: 'search_originator',
                         allowBlank: true,
-                        width: 110,
+                        width: 180,
+                        height: 25,
                         cls: 'search-bar'
         });
 
         this.dataTypeInput = new Ext.form.ComboBox({
             id: 'dataTypes',
             mode: 'local',
+            width: 120,
+            height: 25,
+            cls: 'data-type',
             store: new Ext.data.ArrayStore({
                 id: 0,
                 fields: [
@@ -394,13 +399,13 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
                     self.updateQuery();
                 }
             },
-            cls: 'search-bar'
         });
 
 
         var dateStartTextField = new Ext.form.TextField({
             name: 'startDate',
-            width: 110,
+            width: 80,
+            height: 25,
             listeners: {
                 change: function(scope, newValue, oldValue){
                     self.dateInput.valuesFromInput(0, newValue);
@@ -418,7 +423,7 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
 
         var dateEndTextField = new Ext.form.TextField({
             name: 'endDate',
-            width: 110,
+            width: 80,
             listeners: {
                 change: function(scope, newValue, oldValue){
                     self.dateInput.valuesFromInput(1, newValue);
@@ -436,7 +441,7 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
 
         this.dateLabelPanel = new Ext.Panel({
             items: [new Ext.form.Label({text: 'from'}), dateStartTextField, new Ext.form.Label({text: 'to'}), dateEndTextField],
-            cls: 'search-bar'
+            cls: 'search-bar date-form'
         });
 
         this.dateInput = new GeoNode.TimeSlider();
@@ -458,7 +463,7 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
         var searchButton = new Ext.Button({
             text: this.searchButtonText,
             iconCls: 'prominent-btn',
-            cls: 'search-bar'
+            cls: 'search-bar search-button'
         });
         searchButton.on('click', this.updateQuery, this);
 
@@ -497,13 +502,13 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
          });
          searchForm.render(input_el);
 
-         this.prevButton =  new Ext.Button({text: this.previousText, iconCls:"prominent-btn"});
+         this.prevButton =  new Ext.Button({text: this.previousText, iconCls:"prominent-btn small-btn"});
          this.prevButton.on('click', this.loadPrevBatch, this);
 
-         this.nextButton =  new Ext.Button({text: this.nextText, iconCls:"prominent-btn"});
+         this.nextButton =  new Ext.Button({text: this.nextText, iconCls:"prominent-btn small-btn"});
          this.nextButton.on('click', this.loadNextBatch, this);
 
-         this.pagerLabel = new Ext.form.Label({text: ""});
+         this.pagerLabel = new Ext.form.Label({text: "", cls: "pager-label"});
 
          var controls = new Ext.Panel({
               frame:false,
