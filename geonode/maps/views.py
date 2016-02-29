@@ -122,7 +122,7 @@ class LayerContactForm(forms.Form):
 
 class LayerForm(forms.ModelForm):
     from geonode.maps.models import CONSTRAINT_OPTIONS
-    CONSTRAINT_HELP = _('''<p>Please choose the appropriate type of restriction (if any) for the use of your data. 
+    CONSTRAINT_HELP = _('''<p>Please choose the appropriate type of restriction (if any) for the use of your data.
     Then use the "Constraints Other" form below to provide any necessary details.</p>
     <p>
     Public Domain Dedication and License<br />
@@ -140,7 +140,7 @@ class LayerForm(forms.ModelForm):
     CC-BY-SA<br />
     http://creativecommons.org/licenses/by-sa/2.0/
     ''')
-    
+
     map_id = forms.CharField(widget=forms.HiddenInput(), initial='', required=False)
     date = forms.DateTimeField(label='*' + (_('Date')), widget=forms.SplitDateTimeWidget)
     date.widget.widgets[0].attrs = {"class":"date"}
@@ -149,7 +149,7 @@ class LayerForm(forms.ModelForm):
     temporal_extent_end = FlexiDateFormField(required=False,label= _('Temporal Extent End Date'))
     title = forms.CharField(label = '*' + _('Title'), max_length=255)
     abstract = forms.CharField(label = '*' + _('Abstract'), widget=forms.Textarea(attrs={'cols': 60}))
-    constraints_use = forms.ChoiceField(label= _('Contraints'), choices=CONSTRAINT_OPTIONS, 
+    constraints_use = forms.ChoiceField(label= _('Contraints'), choices=CONSTRAINT_OPTIONS,
                                         help_text=CONSTRAINT_HELP)
     keywords = taggit.forms.TagField(required=False)
     class Meta:
@@ -315,7 +315,7 @@ def newmap_config(request):
 
             config = map_obj.viewer_json(request.user, *(DEFAULT_BASE_LAYERS + layers))
             config['map']['groups'] = []
-            for group in groups:             
+            for group in groups:
                 if group not in json.dumps(config['map']['groups']):
                     config['map']['groups'].append({"expanded":"true", "group":group})
 
@@ -653,7 +653,7 @@ def mapdetail(request,mapid):
     if not request.user.has_perm('maps.view_map', obj=map_obj):
         return HttpResponse(loader.render_to_string('401.html',
             RequestContext(request, {'error_message':
-                _("You are not allowed to view this map.")})), status=401)    
+                _("You are not allowed to view this map.")})), status=401)
     config = map_obj.viewer_json(request.user)
     config = json.dumps(config)
     layers = MapLayer.objects.filter(map=map_obj.id)
@@ -748,7 +748,7 @@ def additional_layers(request, map_obj, layerlist):
         group = layer.topic_category.title if layer.topic_category else "General"
         if group not in groups:
             groups.add(group)
-                
+
         layers.append(MapLayer(
                     map = map_obj,
                     name = layer.typename,
@@ -758,7 +758,7 @@ def additional_layers(request, map_obj, layerlist):
                     group=group,
                     source_params = u'{"ptype": "gxp_gnsource"}',
                     layer_params= u'{"tiled":true, "title":" '+ layer.title + '", "format":"image/png","queryable":true}')
-                )    
+                )
     return layers, groups, bbox
 
 def view(request, mapid, snapshot=None):
@@ -808,11 +808,11 @@ def view(request, mapid, snapshot=None):
     config['uid'] = request.user.id
     config['edit_map'] = request.user.has_perm('maps.change_map', obj=map_obj)
     config['topic_categories'] = category_list()
-    
+
     template_page = 'maps/view.html'
     if map_obj.template_page:
         template_page = map_obj.template_page
-    
+
     return render_to_response(template_page, RequestContext(request, {
         'config': json.dumps(config),
         'GOOGLE_API_KEY' : settings.GOOGLE_API_KEY,
@@ -860,7 +860,7 @@ def tweetview(request):
         testUrl = settings.SITEURL  + "tweetserver/" +  geops_ip  + "/?REQUEST%3DGetFeatureInfo%26SQL%3Dselect%20min(time)%2Cmax(time)%20from%20tweets"
         #testUrl = "http://worldmap.harvard.edu"
         resp, content = conn.request(testUrl, 'GET')
-        timerange = json.loads(content)  
+        timerange = json.loads(content)
     except:
         timerange = None
         redirectPage = "maps/tweetstartup.html"
@@ -893,14 +893,14 @@ def embed(request, mapid=None, snapshot=None):
         else:
             config = snapshot_config(snapshot, map_obj, request.user)
         config['first_visit'] = False
-        
+
     return render_to_response('maps/embed.html', RequestContext(request, {
         'config': json.dumps(config)
     }))
 
 
 def printmap(request, mapid=None, snapshot=None):
-        
+
     return render_to_response('maps/map_print.html', RequestContext(request, {}))
 
 def data(request):
@@ -1164,7 +1164,7 @@ def layer_detail(request, layername):
                 _("You are not permitted to view this layer")})), status=401)
 
     metadata = layer.metadata_csw()
-    
+
     print '-' * 40
     print '\nlayer.typename', layer.typename
     print 'settings.GEOSERVER_BASE_URL', settings.GEOSERVER_BASE_URL
@@ -1662,7 +1662,7 @@ def metadata_search(request):
 
     result = _metadata_search(query, start, limit, sortby, sortorder, **advanced)
 
-    # XXX slowdown here to dig out result permissions
+    # slowdown here to dig out result permissions and other info from GeoNode
     for doc in result['rows']:
         try:
             layer = Layer.objects.get(uuid=doc['uuid'])
@@ -1673,6 +1673,8 @@ def metadata_search(request):
                 'delete': request.user.has_perm('maps.delete_layer', obj=layer),
                 'change_permissions': request.user.has_perm('maps.change_layer_permissions', obj=layer),
             }
+            doc['topic_category'] = layer.topic_category.name
+            doc['owner_username'] = layer.owner.username
         except Layer.DoesNotExist:
             doc['_local'] = False
             pass
@@ -2362,7 +2364,7 @@ def addLayerJSON(request):
     logger.debug("Enter addLayerJSON")
     layername = request.POST.get('layername', False)
     logger.debug("layername is [%s]", layername)
-    
+
     if layername:
         try:
             layer = Layer.objects.get(typename=layername)
@@ -2878,7 +2880,7 @@ def mobilemap(request, mapid=None, snapshot=None):
         else:
             request.session['visit_mobile' + str(map_obj.id)] = True
         config['first_visit_mobile'] = first_visit_mobile
-        
+
     return render_to_response('maps/mobilemap.html', RequestContext(request, {
         'config': json.dumps(config),
         'GOOGLE_API_KEY' : settings.GOOGLE_API_KEY,
