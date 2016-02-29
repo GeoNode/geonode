@@ -27,9 +27,8 @@ from django.core.urlresolvers import reverse
 from geonode.maptiles.models import SRS
 from django.utils.text import slugify
 
-from geonode.tasks.update import layers_metadata_update
+from geonode.tasks.update import fh_style_update, layers_metadata_update, fh_perms_update
 from geonode.base.enumerations import CHARSETS
-from geonode.tasks.update import fh_style_update
 
 # Create your views here.
 @login_required
@@ -492,6 +491,17 @@ def update_layer_metadata(request, template='running_task.html'):
 @user_passes_test(lambda u: u.is_superuser)
 def update_fh_style(request, template='running_task.html'):
     fh_style_update.delay()
+    ctx = {
+        'charsets': CHARSETS,
+        'is_layer': True,
+    }
+
+    return render_to_response(template,RequestContext(request, ctx))
+
+@login_required
+@user_passes_test(lambda u: u.is_superuser)
+def update_fh_perms(request, template='running_task.html'):
+    fh_perms_update.delay()
     ctx = {
         'charsets': CHARSETS,
         'is_layer': True,
