@@ -50,7 +50,14 @@ class Profile(AbstractUser):
         help_text=_('indicates membership of the Volunteer Technical Comunity'),
         default=False)
     interests = TaggableManager(_('interests'), blank=True, help_text=_(
-        'a list of personal interests'), through=TaggedInterests, related_name='profile_interests')
+        'a list of personal interests (separate each interest with a comma)'), through=TaggedInterests, related_name='profile_interests')
+    social_twitter = models.CharField(_('Twitter Handle'), help_text=_('Provide your Twitter handle or URL'), max_length=255, null=True, blank=True)
+    social_facebook = models.CharField(_('Facebook Profile'), help_text=_('Provide your Facebook handle or URL'), max_length=255, null=True, blank=True)
+    social_github = models.CharField(_('GitHub Profile'), help_text=_('Provide your GitHub handle or URL'), max_length=255, null=True, blank=True)
+    social_linkedin = models.CharField(_('LinkedIn Profile'), help_text=_('Provide your LinkedIn handle or URL'), max_length=255, null=True, blank=True)
+    education = models.TextField(_('Education'), null=True, blank=True, help_text=_('Provide some details about your Education and Background'))
+    expertise = models.TextField(_('Expertise'), null=True, blank=True, help_text=_('Provide some details about your Expertise'))
+    
     # End mapstory stuff
     organization = models.CharField(
         _('Organization Name'),
@@ -58,7 +65,7 @@ class Profile(AbstractUser):
         blank=True,
         null=True,
         help_text=_('name of the responsible organization'))
-    profile = models.TextField(_('Profile'), null=True, blank=True, help_text=_('introduce yourself'))
+    profile = models.TextField(_('Profile'), null=True, blank=True, help_text=_('Introduce yourself in under 200 characters'))
     position = models.CharField(
         _('Position Name'),
         max_length=255,
@@ -80,7 +87,7 @@ class Profile(AbstractUser):
         max_length=255,
         blank=True,
         null=True,
-        help_text=_('city of the location'))
+        help_text=_('What city do you spend most of your time in?'))
     area = models.CharField(
         _('Administrative Area'),
         max_length=255,
@@ -98,7 +105,7 @@ class Profile(AbstractUser):
         max_length=3,
         blank=True,
         null=True,
-        help_text=_('country of the physical address'))
+        help_text=_('What country do you spend most of your time in?'))
     keywords = TaggableManager(_('keywords'), blank=True, help_text=_(
         'commonly used word(s) or formalised word(s) or phrase(s) used to describe the subject \
             (space or comma-separated'), related_name='profile_keywords')
@@ -125,6 +132,9 @@ class Profile(AbstractUser):
         Returns a list of the Profile's keywords.
         """
         return [kw.name for kw in self.keywords.all()]
+
+    def keyword_slug_list(self):
+        return [kw.slug for kw in self.keywords.all()]
 
     def interest_list(self):
         """

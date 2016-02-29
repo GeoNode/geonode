@@ -17,6 +17,11 @@ class ProfileIndex(indexes.SearchIndex, indexes.Indexable):
     avatar_100 = indexes.CharField(null=True)
     text = indexes.CharField(document=True, use_template=True)
     type = indexes.CharField(faceted=True)
+    keywords = indexes.MultiValueField(
+        model_attr="keyword_slug_list",
+        null=True,
+        faceted=True,
+        stored=True)
 
     def prepare_avatar_100(self, obj):
         avatar = obj.avatar_set.first()

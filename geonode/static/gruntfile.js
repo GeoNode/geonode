@@ -88,6 +88,17 @@ module.exports = function(grunt) {
           expand: true,
           flatten: true,
           cwd: '.components',
+          dest: 'lib/fonts',
+          src: [
+            'bootstrap/fonts/*.eot',
+            'bootstrap/fonts/*.svg',
+            'bootstrap/fonts/*.ttf',
+            'bootstrap/fonts/*.woff'
+          ]
+        }, {
+          expand: true,
+          flatten: true,
+          cwd: '.components',
           dest: 'lib/img',
           src: [
             'bootstrap/img/*.png',
