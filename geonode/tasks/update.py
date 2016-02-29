@@ -1,5 +1,7 @@
+import os
 from geonode import settings
 from geonode import GeoNodeException
+from geonode import local_settings
 from geonode.geoserver.helpers import ogc_server_settings
 from pprint import pprint
 from celery.task import task
@@ -66,47 +68,38 @@ def fh_style_update():
     cat = Catalog(settings.OGC_SERVER['default']['LOCATION'] + 'rest',
                     username=settings.OGC_SERVER['default']['USER'],
                     password=settings.OGC_SERVER['default']['PASSWORD'])
-    gn_style_list = Style.objects.filter(name__icontains='fh').exclude(Q(name__icontains="fhm")|Q(sld_body__icontains='<sld:CssParameter name="fill">#ffff00</sld:CssParameter>'))
-    # gn_style_list = Style.objects.filter(name__icontains='fh').exclude(Q(name__icontains="fhm"))
-    gs_style = None
-    fh_styles_count = len(gn_style_list)
-    ctr = 0
-    if gn_style_list is not None:
-        fhm_style = cat.get_style("fhm")
-        for gn_style in gn_style_list:
-            #change style in geoserver
-            try:
-                layer = Layer.objects.get(name=gn_style.name)
-                gs_style  = cat.get_style(gn_style.name)
-                if gs_style is not None:
-                    gs_style  = cat.get_style(gn_style.name)
-                    gs_style.update_body(fhm_style.sld_body)
-                else:
-                    cat.create_style(gn_style.name,fhm.sld_body)
-                #change style in geonode
-                gn_style.sld_body = fhm_style.sld_body
-                gn_style.save()
-                #for updating thumbnail
-                params = {
-                    'layers': layer.typename.encode('utf-8'),
-                    'format': 'image/png8',
-                    'width': 200,
-                    'height': 150,
-                }
-                p = "&".join("%s=%s" % item for item in params.items())
-                thumbnail_remote_url = ogc_server_settings.PUBLIC_LOCATION + \
-                    "wms/reflect?" + p
-                # thumbnail_create_url = ogc_server_settings.LOCATION + \
-                #     "wms/reflect?" + p
-                create_thumbnail(layer, thumbnail_remote_url, thumbnail_remote_url, ogc_client=http_client)
-                ctr+=1
-                print "'{0}' out of '{1}' : Updated style for '{2}' ".format(ctr,fh_styles_count,gn_style.name)
-            except Exception as e:
-                err_msg = str(e)
-                if "Layer matching query does not exist" in err_msg:
-                    gn_style.delete()
 
+    #layer_list = Layer.objects.filter(name__icontains='fh')
+    layer_list = Layer.objects.filter(name__icontains='fh').exclude(styles__name__icontains='fhm')#initial run of script includes all fhm layers for cleaning of styles in GN + GS
+    fhm_style = cat.get_style("fhm")
+    ctr = 1
+    for layer in layer_list:
+        print " {0} out of {1} layers. Will edit style of {2} ".format(ctr,len(layer_list),layer.name)
+        #delete thumbnail first because of permissions
 
+        print "Layer thumbnail url: %s " % layer.thumbnail_url
+        if "192" in local_settings.BASEURL:
+            url = "geonode"+layer.thumbnail_url #if on local
+            os.remove(url)
+        else:
+            url = "/var/www/geonode"+layer.thumbnail_url #if on lipad
+            os.remove(url)
+        gs_layer = cat.get_layer(layer.name)
+        gs_layer._set_default_style(fhm_style.name)
+        cat.save(gs_layer) #save in geoserver
+        layer.sld_body = fhm_style.sld_body
+        layer.save() #save in geonode
+        ctr+=1
+        try:
+            gs_style = cat.get_style(layer.name)
+            print "Geoserver: Will delete style %s " % gs_style.name
+            cat.delete(gs_style) #erase in geoserver the default layer_list
+            gn_style = Style.objects.get(name=layer.name)
+            print "Geonode: Will delete style %s " % gn_style.name
+            gn_style.delete()#erase in geonode
+        except:
+            "Error in %s" % layer.name
+            pass
 
 @task(name='geonode.tasks.update.ceph_metadata_udate', queue='update')
 def ceph_metadata_udate(uploaded_objects):
