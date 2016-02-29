@@ -1673,8 +1673,10 @@ def metadata_search(request):
                 'delete': request.user.has_perm('maps.delete_layer', obj=layer),
                 'change_permissions': request.user.has_perm('maps.change_layer_permissions', obj=layer),
             }
-            doc['topic_category'] = layer.topic_category.title
-            doc['owner_username'] = layer.owner.username
+            if 'topic_category' in doc:
+                doc['topic_category'] = layer.topic_category.title
+            if 'owner_username' in doc:
+                doc['owner_username'] = layer.owner.username
         except Layer.DoesNotExist:
             doc['_local'] = False
             pass
