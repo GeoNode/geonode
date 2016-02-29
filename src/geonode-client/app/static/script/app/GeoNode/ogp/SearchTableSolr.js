@@ -398,7 +398,7 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
                 change: function(scope, checked){
                     self.updateQuery();
                 }
-            },
+            }
         });
 
 
