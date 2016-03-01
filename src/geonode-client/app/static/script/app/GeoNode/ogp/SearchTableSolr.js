@@ -315,7 +315,7 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
                 width: 200,
                 sortBy: 'LayerDisplayName',
                 renderer: function(value, metadata, record, rowIndex, colIndex, store){
-                    metadata.attr = 'ext:qtip="' + record.get('Abstract') + '"';
+                    metadata.attr = 'ext:qtip="' + record.get('LayerDisplayName') + ' | ' + record.get('Originator') + '<br/><strong>Abstract</strong>: ' + record.get('Abstract') + '"';
                     return value;
                 }
             },
