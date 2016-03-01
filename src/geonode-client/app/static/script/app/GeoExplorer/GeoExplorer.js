@@ -2121,8 +2121,8 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
         // update anything that can change
         var center = this.mapPanel.map.getCenter();
         Ext.apply(state.map, {
-            center: [center.lon, center.lat],
-            zoom: this.mapPanel.map.zoom,
+            center: [0, 0],
+            zoom: 0,
             layers: []
         });
 
