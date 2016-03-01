@@ -4,6 +4,7 @@ import os
 import logging
 import zipfile
 import StringIO
+from imghdr import what as image_format
 
 from urllib import urlretrieve
 from django.http import HttpResponse, Http404
@@ -82,14 +83,16 @@ def legend(request, layername):
     try:
         layer = Layer.objects.get(name=layername)
     except ObjectDoesNotExist:
-        logger.debug('No layer found for %s' % layername)
-        return
+        msg = 'No layer found for %s' % layername
+        logger.debug(msg)
+        raise Http404(msg)
 
     try:
         qgis_layer = QGISServerLayer.objects.get(layer=layer)
     except ObjectDoesNotExist:
-        logger.debug('No QGIS Server Layer for existing layer %s' % layername)
-        return
+        msg = 'No QGIS Server Layer for existing layer %s' % layername
+        logger.debug(msg)
+        raise Http404(msg)
 
     basename, _ = os.path.splitext(qgis_layer.base_layer_path)
 
@@ -117,10 +120,97 @@ def legend(request, layername):
 
         urlretrieve(url, legend_filename)
 
+        if image_format(legend_filename) != 'png':
+            logger.error('%s is not valid PNG.' % legend_filename)
+            os.remove(legend_filename)
+
     if not os.path.exists(legend_filename):
-        raise Http404('The legend could not be found')
+        return HttpResponse('The legend could not be found.', status=409)
 
     with open(legend_filename, 'rb') as f:
+        return HttpResponse(f.read(), mimetype='image/png')
+
+
+def thumbnail(request, layername):
+    try:
+        layer = Layer.objects.get(name=layername)
+    except ObjectDoesNotExist:
+        msg = 'No layer found for %s' % layername
+        logger.debug(msg)
+        raise Http404(msg)
+
+    try:
+        qgis_layer = QGISServerLayer.objects.get(layer=layer)
+    except ObjectDoesNotExist:
+        msg = 'No QGIS Server Layer for existing layer %s' % layername
+        logger.debug(msg)
+        raise Http404(msg)
+
+    basename, _ = os.path.splitext(qgis_layer.base_layer_path)
+
+    thumbnail_path = QGIS_SERVER_CONFIG['thumbnail_path']
+    thumbnail_filename = thumbnail_path % os.path.basename(basename)
+
+    if not os.path.exists(thumbnail_filename):
+
+        if not os.path.exists(os.path.dirname(thumbnail_filename)):
+            os.makedirs(os.path.dirname(thumbnail_filename))
+
+        # We get the extent of the layer.
+        x_min = layer.resourcebase_ptr.bbox_x0
+        x_max = layer.resourcebase_ptr.bbox_x1
+        y_min = layer.resourcebase_ptr.bbox_y0
+        y_max = layer.resourcebase_ptr.bbox_y1
+
+        # We calculate the margins according to 10 percent.
+        percent = 10
+        delta_x = (x_max - x_min) / 100 * percent
+        delta_y = (y_max - y_min) / 100 * percent
+
+        # We apply the margins to the extent.
+        margin = [
+            y_min - delta_y,
+            x_min - delta_x,
+            y_max + delta_y,
+            x_max + delta_x
+        ]
+
+        # Call the WMS.
+        bbox = ','.join([str(val) for val in margin])
+
+        qgis_server = QGIS_SERVER_CONFIG['qgis_server_url']
+        query_string = {
+            'SERVICE': 'WMS',
+            'VERSION': '1.3.0',
+            'REQUEST': 'GetMap',
+            'BBOX': bbox,
+            'CRS': 'EPSG:4326',
+            'WIDTH': '250',
+            'HEIGHT': '250',
+            'MAP': basename + '.qgs',
+            'LAYERS': layer.name,
+            'STYLES': 'default',
+            'FORMAT': 'image/png',
+            'DPI': '96',
+            'MAP_RESOLUTION': '96',
+            'FORMAT_OPTIONS': 'dpi:96'
+        }
+
+        url = qgis_server + '?'
+        for param, value in query_string.iteritems():
+            url += param + '=' + value + '&'
+
+        urlretrieve(url, thumbnail_filename)
+
+        if image_format(thumbnail_filename) != 'png':
+            logger.error('%s is not valid PNG.' % thumbnail_filename)
+            os.remove(thumbnail_filename)
+
+        if not os.path.exists(thumbnail_filename):
+            msg = 'The thumbnail could not be found.'
+            return HttpResponse(msg, status=409)
+
+    with open(thumbnail_filename, 'rb') as f:
         return HttpResponse(f.read(), mimetype='image/png')
 
 
@@ -132,14 +222,16 @@ def tile(request, layername, z, x, y):
     try:
         layer = Layer.objects.get(name=layername)
     except ObjectDoesNotExist:
-        logger.debug('No layer found for %s' % layername)
-        return
+        msg = 'No layer found for %s' % layername
+        logger.debug(msg)
+        raise Http404(msg)
 
     try:
         qgis_layer = QGISServerLayer.objects.get(layer=layer)
     except ObjectDoesNotExist:
-        logger.debug('No QGIS Server Layer for existing layer %s' % layername)
-        return
+        msg = 'No QGIS Server Layer for existing layer %s' % layername
+        logger.debug(msg)
+        raise Http404(msg)
 
     basename, _ = os.path.splitext(qgis_layer.base_layer_path)
 
@@ -180,8 +272,12 @@ def tile(request, layername, z, x, y):
 
         urlretrieve(url, tile_filename)
 
+        if image_format(tile_filename) != 'png':
+            logger.error('%s is not valid PNG.' % tile_filename)
+            os.remove(tile_filename)
+
     if not os.path.exists(tile_filename):
-        raise Http404('The tile could not be found.')
+        return HttpResponse('The legend could not be found.', status=409)
 
     with open(tile_filename, 'rb') as f:
         return HttpResponse(f.read(), mimetype='image/png')
