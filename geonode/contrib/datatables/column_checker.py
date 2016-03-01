@@ -61,7 +61,7 @@ class ColumnChecker(object):
 
         sql_target_data_type = """SELECT data_type FROM information_schema.columns WHERE table_name = '{0}' AND column_name='{1}';""".format(table_name, table_attribute)
 
-        msg ('sql_target_data_type: %s' % sql_target_data_type)
+        #msg ('sql_target_data_type: %s' % sql_target_data_type)
 
         try:
             conn = psycopg2.connect(get_datastore_connection_string())

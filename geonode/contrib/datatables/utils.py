@@ -389,7 +389,7 @@ def setup_join(new_table_owner, table_name, layer_typename, table_attribute_name
             tj.delete()
 
             # Create an error message, log it, and send it back
-            err_msg = 'Sorry!  No records matched.  Make sure that you chose the correct column and that the chosen layer is in the same geographic area.'
+            err_msg = 'No records matched.  Make sure that you chose the correct column and that the chosen layer is in the same geographic area.'
             LOGGER.error(err_msg)
             return None, err_msg
 

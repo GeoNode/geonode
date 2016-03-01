@@ -334,6 +334,7 @@ class TableJoin(models.Model):
     def as_json(self):
         return dict(
             id=self.id, datable=self.datatable.table_name, source_layer=self.source_layer.typename, join_layer=self.join_layer.typename,
+            join_layer_title=self.join_layer.title,
             table_attribute={'attribute':self.table_attribute.attribute, 'type':self.table_attribute.attribute_type},
             layer_attribute={'attribute':self.layer_attribute.attribute, 'type':self.layer_attribute.attribute_type},
             view_name=self.view_name,
