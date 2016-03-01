@@ -219,7 +219,7 @@ def registration_part_two(request):
                     letter_owner, created =  Profile.objects.get_or_create(username='dataRegistrationUploader')
                     letter.owner = letter_owner
                     letter.doc_file = request_letter
-                    letter.title = requester_name+ " Request Letter" +datetime.datetime.now().strftime("%Y-%m-%d")
+                    letter.title = requester_name+ " Request Letter " +datetime.datetime.now().strftime("%Y-%m-%d")
                     letter.is_published = False
                     letter.save()
                     letter.set_permissions( {"users":{"dataRegistrationUploader":["view_resourcebase"]}})
@@ -246,6 +246,10 @@ def registration_part_two(request):
                 request_profile.send_verification_email()
 
             out['success_url'] = request.build_absolute_uri(
+                reverse('datarequests:email_verification_send')
+            )
+            
+            out['redirect_to'] = request.build_absolute_uri(
                 reverse('datarequests:email_verification_send')
             )
 
