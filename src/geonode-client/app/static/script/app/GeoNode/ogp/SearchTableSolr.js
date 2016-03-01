@@ -107,7 +107,7 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
             GeoNode.queryTerms.start = 0;
         }
         if (!GeoNode.queryTerms.rows) {
-            GeoNode.queryTerms.rows = 500;
+            GeoNode.queryTerms.rows = 200;
         }
 
         if (this.constraints) {
