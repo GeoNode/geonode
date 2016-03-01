@@ -36,6 +36,10 @@
       <td class="table-user-profile-attribute col-md-3">{% trans "Requester" %}</td>
       <td>{{ request_profile.first_name }} {{ request_profile.middle_name }} {{ request_profile.last_name }}</td>
       </tr>
+      <tr>
+      <td class="table-user-profile-attribute col-md-3">{% trans "Request Letter" %}</td>
+      <td><a href="{{ request_profile.request_letter.detail_url }}/download" >{{ request_profile.request_letter.title }}</a></td>
+      </tr>
      <tr>
          <td class="table-user-profile-attribute col-md-3"> {% trans "User Name" %}</td>
          <td> {{ request_profile.username }}</td>
@@ -99,7 +103,7 @@
       <td>{{ request_profile.get_intended_use_of_dataset_display }}</td>
       </tr>
        <tr>
-          <td class="table-user-profile-attribute col-md-3">{% trans "Approval/Rejection Administrator"</td>
+          <td class="table-user-profile-attribute col-md-3">{% trans "Approval/Rejection Administrator" %}</td>
           <td>{{request_profile.administrator.username}}</td>
       </tr>
       {% if request_profile.requester_type == 'noncommercial' or request_profile.requester_type == 'academe' %}
