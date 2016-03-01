@@ -25,6 +25,11 @@ from geonode.layers.models import Layer, Attribute, Style
 from geonode.layers.models import LayerFile, UploadSession
 
 
+def fix_thumbnail(modeladmin, request, queryset):
+    for layer in queryset:
+            layer.save() # invokes create_thumbnail()
+fix_thumbnail.short_description = "Fix Thumbnails"
+
 class AttributeInline(admin.TabularInline):
     model = Attribute
 
@@ -54,6 +59,7 @@ class LayerAdmin(MediaTranslationAdmin):
     readonly_fields = ('uuid', 'typename', 'workspace')
     inlines = [AttributeInline]
     form = LayerAdminForm
+    actions = [fix_thumbnail]
 
 
 class AttributeAdmin(admin.ModelAdmin):
