@@ -262,6 +262,7 @@ define(['underscore',
         var checked = checkFiles();
         if ($.isEmptyObject(layers) || !checked) {
             alert(gettext('You are uploading an incomplete set of files.'));
+            console.log('You are uploading an incomplete set of files.');
         } else {
             $.each(layers, function (name, layerinfo) {
                 layerinfo.uploadFiles();
@@ -363,9 +364,7 @@ define(['underscore',
             displayFiles(file_queue);
         });
         $(options.clear_button).on('click', doClearState);
-        $(options.upload_button).on('click', function(){
-            doUploads();
-        });
+        $(options.upload_button).on('click', doUploads);
         $("[id^=delete]").on('click', doDelete);
         $("[id^=resume]").on('click', doResume);
         if (geogig_enabled) {

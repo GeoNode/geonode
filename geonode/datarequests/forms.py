@@ -262,6 +262,8 @@ class DataRequestDetailsForm(forms.ModelForm):
             HTML("""
             {% load i18n %} 
              <legend>Area of Interest Shapefile (Optional)</legend>
+             <p>Valid file formats are ONLY the following :
+             <ul><li>shp</li><li>dbf</li><li>prj</li><li>shx</li><li>xml</li></ul></p>
             <div class="form-group">
                 {% block additional_info %}{% endblock %}
 
@@ -296,6 +298,13 @@ class DataRequestDetailsForm(forms.ModelForm):
                 {% endfor %}
                 </select>
                 </section>
+                
+                <section class="widget">
+                <ul id="global-errors"></ul>
+                <h5>{% trans "Files to be uploaded" %}</h5>
+                <div id="file-queue"></div>
+                </section>
+                
             """),
         )
 
