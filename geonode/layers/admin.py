@@ -23,11 +23,11 @@ from django.contrib import admin
 from geonode.base.admin import MediaTranslationAdmin, ResourceBaseAdminForm
 from geonode.layers.models import Layer, Attribute, Style
 from geonode.layers.models import LayerFile, UploadSession
-
+from geonode.tasks.update import fix_layer_thumbnail
 
 def fix_thumbnail(modeladmin, request, queryset):
     for layer in queryset:
-            layer.save() # invokes create_thumbnail()
+            fix_layer_thumbnail.delay(object_id=layer.id)        
 fix_thumbnail.short_description = "Fix Thumbnails"
 
 class AttributeInline(admin.TabularInline):
