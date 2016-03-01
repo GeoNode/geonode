@@ -440,7 +440,7 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
         });
 
         this.dateLabelPanel = new Ext.Panel({
-            items: [new Ext.form.Label({text: 'from'}), dateStartTextField, new Ext.form.Label({text: 'to'}), dateEndTextField],
+            items: [new Ext.form.Label({text: 'from year'}), dateStartTextField, new Ext.form.Label({text: 'to year'}), dateEndTextField],
             cls: 'search-bar date-form'
         });
 
