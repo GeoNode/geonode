@@ -69,17 +69,25 @@ def registration_part_one(request):
         initial = profile_form_data
     )
     
-    if request.method == 'POST':
-        if form.is_valid():
-            request_object = form.save(commit=False)
-            request.session['data_request_info'] = form.cleaned_data
-            request.session['request_object'] = request_object
-            request.session['request_letter'] = form.cleaned_data['letter_file']
-            
-            return HttpResponseRedirect(
-                reverse('datarequests:registration_part_two')
-            )
+    try:
+        if request.method == 'POST':
+            if form.is_valid():
+                request_object = form.save(commit=False)
+                request.session['data_request_info'] = form.cleaned_data
+                request.session['request_object'] = request_object
+                request.session['request_letter'] = form.cleaned_data['letter_file']
                 
+                return HttpResponseRedirect(
+                    reverse('datarequests:registration_part_two')
+                )
+    except Exception as e:
+        print traceback.format_exc()
+        out['errors'] = form.errors
+        return HttpResponse(
+            json.dumps(out),
+            mimetype='application/json',
+            status=400)
+        
     return render(
         request,
         'datarequests/registration/profile.html',
