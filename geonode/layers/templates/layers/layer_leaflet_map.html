@@ -38,8 +38,8 @@
 
         {% endif %}
         if (tile_layer != null) {
-{#            map.layerscontrol.addOverlay(tile_layer,"{{ resource.title }}");#}
-            map.addLayer(tile_layer);
+            layerControl = L.control.layers().addTo(map);
+            layerControl.addOverlay(tile_layer , "{{ resource.title }}");
         }
 
         if (L.control.hasOwnProperty('fullscreen')) {
