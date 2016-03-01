@@ -805,7 +805,8 @@ LEAFLET_CONFIG = {
             'js': 'lib/js/Leaflet.fullscreen.min.js',
             'auto-include': True,
         },
-    }
+    },
+    'SRID': 3857
 }
 
 # option to enable/disable resource unpublishing for administrators
