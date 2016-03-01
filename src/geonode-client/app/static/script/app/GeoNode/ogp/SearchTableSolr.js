@@ -197,7 +197,7 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
             }
         };
         if (this.originatorInput.getValue() !== ''){
-            GeoNode.queryTerms.fq.push('Originator:' + this.originatorInput.getValue());
+            GeoNode.queryTerms.fq.push('Originator:*' + this.originatorInput.getValue() + '*');
         }
 
         // Remove any DataType filter if there
