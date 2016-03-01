@@ -24,7 +24,7 @@ from pprint import pprint
 class DataRequestProfileForm(forms.ModelForm):
     
     letter_file = forms.FileField(
-        label=_('Formal Request Letter'),
+        label=_('Formal Request Letter (PDF only)'),
         required = True
     )
     
