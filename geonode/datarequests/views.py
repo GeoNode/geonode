@@ -27,7 +27,6 @@ from django.views.generic import TemplateView
 from geonode.base.enumerations import CHARSETS
 from geonode.documents.models import get_related_documents
 from geonode.documents.models import Document
-from geonode.documents.forms import DocumentCreateForm
 from geonode.layers.models import UploadSession, Style
 from geonode.layers.utils import file_upload
 from geonode.people.models import Profile
@@ -50,6 +49,7 @@ from .forms import (
     DataRequestProfileForm, DataRequestProfileShapefileForm, 
     DataRequestProfileRejectForm, DataRequestDetailsForm)
 from .models import DataRequestProfile
+from .utils import update_datarequest_obj
 
 
 def registration_part_one(request):
@@ -109,7 +109,7 @@ def registration_part_two(request):
         
         tempdir = None
         errormsgs = []
-        out = {'success': False}
+        out = {}
         request_profile = None
         if form.is_valid():
             if form.cleaned_data:
@@ -154,7 +154,7 @@ def registration_part_two(request):
                         exception_type, error, tb = sys.exc_info()
                         print traceback.format_exc()
                         out['success'] = False
-                        out['errors'] = "An unexpected error was encountered. Please try again later."
+                        out['errors'] = "An unexpected error was encountered. Check the files you have uploaded, clear your selected files, and try again."
                         # Assign the error message to the latest UploadSession of the data request uploader user.
                         latest_uploads = UploadSession.objects.filter(
                             user=registration_uploader
@@ -191,44 +191,25 @@ def registration_part_two(request):
             #Now store the data request
                 #data_request_form = DataRequestProfileForm(
                 #                profile_form_data)
-
                 
-                if 'request_object' in request.session:
-                    request_profile = request.session['request_object']
+                
+                if 'request_object' in request.session :
+                    if 'success' not in out:
+                        request_profile, letter = update_datarequest_obj(
+                            datarequest=  request.session['request_object'],
+                            parameter_dict = form.cleaned_data,
+                            request_letter = request.session['request_letter']
+                        )
+                        out['success']=True
+                    else: 
+                        if out['success']:
+                            request_profile, letter = update_datarequest_obj(
+                                datarequest=  request.session['request_object'],
+                                parameter_dict = form.cleaned_data,
+                                request_letter = request.session['request_letter']
+                            )
+
                     
-                    ### Updating the other fields of the request
-                    request_profile.project_summary = form.cleaned_data['project_summary']
-                    request_profile.data_type_requested = form.cleaned_data['data_type_requested']
-                    request_profile.purpose = form.cleaned_data['purpose']
-                    request_profile.license_period = form.cleaned_data['license_period']
-                    request_profile.has_subscription = form.cleaned_data['has_subscription']
-                    request_profile.intended_use_of_dataset = form.cleaned_data['intended_use_of_dataset']
-                    request_profile.organization_type = form.cleaned_data['organization_type']
-                    request_profile.request_level = form.cleaned_data['request_level']
-                    request_profile.funding_source = form.cleaned_data['funding_source']
-                    request_profile.is_consultant = form.cleaned_data['is_consultant']
-                    request_profile.save()
-                    
-                    ### Saving the interest_layer
-                    if interest_layer:
-                        request_profile.jurisdiction_shapefile = interest_layer
-                        request_profile.save()
-                    
-                    ### Saving the PDF request letter and linking it to the request
-                    requester_name = request_profile.first_name+" "+request_profile.middle_name+" "+request_profile.last_name
-                    letter = Document()
-                    letter_owner, created =  Profile.objects.get_or_create(username='dataRegistrationUploader')
-                    letter.owner = letter_owner
-                    letter.doc_file = request_letter
-                    letter.title = requester_name+ " Request Letter " +datetime.datetime.now().strftime("%Y-%m-%d")
-                    letter.is_published = False
-                    letter.save()
-                    letter.set_permissions( {"users":{"dataRegistrationUploader":["view_resourcebase"]}})
-                    
-                    request_profile.request_letter =letter;
-                    request_profile.save()
-                    
-                    out['success'] = True
                 else:
                     pprint("unable to retrieve request object")
                     out['errors'] = form.errors
@@ -488,3 +469,38 @@ def data_request_facet_count(request):
         status=200,
         mimetype='text/plain'
     )
+    
+def update_datarequest_obj(datarequest=None, parameter_dict=None, interest_layer=None, request_letter = None):
+    if datarequest is None or parameter_dict is None or request_letter is None:
+        raise HttpResponseBadRequest
+                    
+    ### Updating the other fields of the request
+    datarequest.project_summary = parameter_dict['project_summary']
+    datarequest.data_type_requested = parameter_dict['data_type_requested']
+    datarequest.purpose = parameter_dict['purpose']
+    datarequest.license_period = parameter_dict['license_period']
+    datarequest.has_subscription = parameter_dict['has_subscription']
+    datarequest.intended_use_of_dataset = parameter_dict['intended_use_of_dataset']
+    datarequest.organization_type = parameter_dict['organization_type']
+    datarequest.request_level = parameter_dict['request_level']
+    datarequest.funding_source = parameter_dict['funding_source']
+    datarequest.is_consultant = parameter_dict['is_consultant']
+    
+    if interest_layer:
+        datarequest.jurisdiction_shapefile = interest_layer
+        
+    requester_name = datarequest.first_name+" "+datarequest.middle_name+" "+datarequest.last_name
+    letter = Document()
+    letter_owner, created =  Profile.objects.get_or_create(username='dataRegistrationUploader')
+    letter.owner = letter_owner
+    letter.doc_file = request_letter
+    letter.title = requester_name+ " Request Letter " +datetime.datetime.now().strftime("%Y-%m-%d")
+    letter.is_published = False
+    letter.save()
+    letter.set_permissions( {"users":{"dataRegistrationUploader":["view_resourcebase"]}})
+    
+    datarequest.request_letter =letter;
+    
+    datarequest.save()
+    
+    return (datarequest, letter)
