@@ -149,6 +149,7 @@ if __name__ == '__main__':
       if helpers.confirm(prompt='WARNING: The restore will overwrite all your GeoNode data and files. Are you sure you want to proceed?', resp=False):
          restore_full(restore_file)
    else:
-      print "Please, provide the full path to the ZIP archive to Restore."
+      print "Please, provide the full path to the ZIP archive to Restore.\n"
+      print "Usage example:  python restore.py backup/geonode_backup_test.zip\n"
 
 

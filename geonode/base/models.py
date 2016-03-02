@@ -553,9 +553,17 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin):
         if not os.path.exists(upload_path):
             os.makedirs(upload_path)
 
-        with open(os.path.join(upload_path, filename), 'wb') as f:
-            thumbnail = File(f)
-            thumbnail.write(image)
+        try:
+            try:
+                os.remove(os.path.join(upload_path, filename))
+            except:
+                pass
+
+            with open(os.path.join(upload_path, filename), 'wb') as f:
+                thumbnail = File(f)
+                thumbnail.write(image)
+        except Exception, err:
+            logger.warning("It was not possible to set the Thumbnail ", os.path.join(upload_path, filename)," due the the following error:", str(err))
 
         url_path = os.path.join(settings.MEDIA_URL, thumb_folder, filename).replace('\\', '/')
         url = urljoin(settings.SITEURL, url_path)
@@ -715,6 +723,9 @@ def resourcebase_post_save(instance, *args, **kwargs):
     Used to fill any additional fields after the save.
     Has to be called by the children
     """
+    if not instance.id:
+        return
+
     ResourceBase.objects.filter(id=instance.id).update(
         thumbnail_url=instance.get_thumbnail_url(),
         detail_url=instance.get_absolute_url(),

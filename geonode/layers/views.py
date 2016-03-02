@@ -426,11 +426,17 @@ def layer_metadata(request, layername, template='layers/layer_metadata.html'):
         layer_form.fields['poc'].initial = poc.id
         poc_form = ProfileForm(prefix="poc")
         poc_form.hidden = True
+    else:
+        poc_form = ProfileForm(prefix="poc")
+        poc_form.hidden = False
 
     if metadata_author is not None:
         layer_form.fields['metadata_author'].initial = metadata_author.id
         author_form = ProfileForm(prefix="author")
         author_form.hidden = True
+    else:
+        author_form = ProfileForm(prefix="author")
+        author_form.hidden = False
 
     return render_to_response(template, RequestContext(request, {
         "layer": layer,
