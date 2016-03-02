@@ -6,8 +6,12 @@ import traceback
 import psycopg2
 import ConfigParser
 import os
+import sys
 import time
 import shutil
+
+import json
+import re
 
 MEDIA_ROOT       = 'uploaded'
 STATIC_ROOT      = 'static_root'
@@ -29,6 +33,10 @@ except:
 
 app_names    = config.get('fixtures', 'apps').split(',')
 dump_names   = config.get('fixtures', 'dumps').split(',')
+migrations   = config.get('fixtures', 'migrations').split(',')
+manglers     = config.get('fixtures', 'manglers').split(',')
+
+sys.path.append(os.path.join(os.path.dirname(__file__), "lib"))
 
 def get_db_conn():
     """Get db conn (GeoNode)"""
@@ -76,16 +84,18 @@ def cleanup_db():
    conn.commit()
 
 
-def load_fixture(apps, fixture_file):
-    from django.core import serializers
+def load_fixture(apps, fixture_file, mangler=None, basepk=-1, owner="admin", datastore='', siteurl=''):
 
     fixture = open(fixture_file, 'rb')
     
-    objects = serializers.deserialize('json', fixture, ignorenonexistent=True)
-    for obj in objects:
-        obj.save()
+    if mangler:
+       objects = json.load(fixture, cls=mangler, **{"basepk":basepk, "owner":owner, "datastore":datastore, "siteurl":siteurl})
+    else:
+       objects = json.load(fixture)
 
     fixture.close()
+
+    return objects
 
 
 def get_dir_time_suffix():
@@ -178,5 +188,17 @@ def confirm(prompt=None, resp=False):
            return True
        if ans == 'n' or ans == 'N':
            return False
+
+
+def load_class(name):
+
+    components = name.split('.')
+    mod = __import__(components[0])
+
+    for comp in components[1:]:
+        mod = getattr(mod, comp)
+
+    return mod
+
 
 
