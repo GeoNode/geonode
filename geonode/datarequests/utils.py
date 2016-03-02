@@ -6,9 +6,10 @@ import geonode.settings as settings
 
 from pprint import pprint
 from django.core.exceptions import ObjectDoesNotExist
+from django.http import HttpResponse, HttpResponseBadRequest, HttpResponseRedirect, Http404
 
 from geonode.people.models import Profile
-
+from geonode.documents.models import Document
 
 def create_login_credentials(data_request):
 
