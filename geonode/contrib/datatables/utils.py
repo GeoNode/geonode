@@ -138,10 +138,8 @@ def process_csv_file(data_table, delimiter=",", no_header_row=False):
     # -----------------------------------------------------
     f = open(csv_filename, 'rb')
 
-
-    csv_table = table.Table.from_csv(f, name=table_name, no_header_row=no_header_row, delimiter=delimiter)
     try:
-        pass
+        csv_table = table.Table.from_csv(f, name=table_name, no_header_row=no_header_row, delimiter=delimiter)
         #csv_table = table.Table.from_csv(f, name=table_name, no_header_row=no_header_row, delimiter=delimiter)
     except:
         data_table.delete()
@@ -315,19 +313,33 @@ def setup_join(new_table_owner, table_name, layer_typename, table_attribute_name
 
     layer_name = layer.typename.split(':')[1]
 
-    view_name = "join_%s_%s" % (layer_name, dt.table_name)
-
-    view_sql = 'create view %s as select %s.%s, %s.* from %s inner join %s on %s."%s" = %s."%s";' %  (view_name, layer_name, THE_GEOM_LAYER_COLUMN, dt.table_name, layer_name, dt.table_name, layer_name, layer_attribute.attribute, dt.table_name, table_attribute.attribute)
-    #view_sql = 'create materialized view %s as select %s.the_geom, %s.* from %s inner join %s on %s."%s" = %s."%s";' %  (view_name, layer_name, dt.table_name, layer_name, dt.table_name, layer_name, layer_attribute.attribute, dt.table_name, table_attribute.attribute)
-
     # ------------------------------------------------------------------
     # (5a) Check if the join columns compatible
     # ------------------------------------------------------------------
     column_checker = ColumnChecker(layer_name, layer_attribute.attribute,
                             dt.table_name, table_attribute.attribute)
-    (are_cols_compatible, user_err_msg) = column_checker.are_join_columns_compatible()
+    (are_cols_compatible, join_stmt_or_err_msg) = column_checker.get_column_join_stmt()
     if not are_cols_compatible:     # Doesn't look good, return an error message
-        return None, user_err_msg
+        return None, join_stmt_or_err_msg
+
+    join_stmt = join_stmt_or_err_msg
+
+    msgt('join_stmt: %s' % join_stmt)
+    # ------------------------------------------------------------------
+    # (5b) Create SQL statement for the tablejoin
+    # ------------------------------------------------------------------
+    view_name = "join_%s_%s" % (layer_name, dt.table_name)
+
+    view_sql = 'create view %s as select %s.%s, %s.* from %s inner join %s on %s;' %\
+        (view_name, layer_name, THE_GEOM_LAYER_COLUMN,\
+        dt.table_name, layer_name, dt.table_name,\
+        join_stmt)
+
+    # Without casting in the join
+    #view_sql = 'create view %s as select %s.%s, %s.* from %s inner join %s on %s."%s" = %s."%s";' %  (view_name, layer_name, THE_GEOM_LAYER_COLUMN, dt.table_name, layer_name, dt.table_name, layer_name, layer_attribute.attribute, dt.table_name, table_attribute.attribute)
+
+    # Materialized view for next version of Postgres
+    #view_sql = 'create materialized view %s as select %s.the_geom, %s.* from %s inner join %s on %s."%s" = %s."%s";' %  (view_name, layer_name, dt.table_name, layer_name, dt.table_name, layer_name, layer_attribute.attribute, dt.table_name, table_attribute.attribute)
 
 
     #double_view_name = "view_%s" % view_name
@@ -343,7 +355,7 @@ def setup_join(new_table_owner, table_name, layer_typename, table_attribute_name
     unmatched_count_sql = 'select count(%s) from %s where %s.%s not in (select "%s" from %s);'\
                         % (table_attribute.attribute, dt.table_name, dt.table_name, table_attribute.attribute, layer_attribute.attribute, layer_name)
 
-    unmatched_list_sql = 'select %s from %s where %s.%s not in (select "%s" from %s) limit 100;'\
+    unmatched_list_sql = 'select %s from %s where %s.%s not in (select "%s" from %s) limit 500;'\
                         % (table_attribute.attribute, dt.table_name, dt.table_name, table_attribute.attribute, layer_attribute.attribute, layer_name)
 
     # ------------------------------------------------------------------
@@ -357,7 +369,7 @@ def setup_join(new_table_owner, table_name, layer_typename, table_attribute_name
                             , view_name=view_name
                             , view_sql=view_sql)
     tj.save()
-    msgt('table join created! %s' % tj.id )
+    msgt('table join created! :) %s' % tj.id )
 
     # ------------------------------------------------------------------
     # Create the View (and double view)
@@ -372,18 +384,26 @@ def setup_join(new_table_owner, table_name, layer_typename, table_attribute_name
         #cur.execute('drop materialized view if exists %s;' % view_name)
         msg('view_sql: %s'% view_sql)
         cur.execute(view_sql)
-        #cur.execute(double_view_sql)
+        #cur.execute(double_view_sql)   # For later version of postgres
+
+
         cur.execute(matched_count_sql)
         tj.matched_records_count = cur.fetchone()[0]
         cur.execute(unmatched_count_sql)
         tj.unmatched_records_count = int(cur.fetchone()[0])
         cur.execute(unmatched_list_sql)
         tj.unmatched_records_list = ",".join([r[0] for r in cur.fetchall()])
+        """
+        tj.matched_records_count = 100
+        tj.unmatched_records_count = 100
+        tj.unmatched_records_list = 0
+        """
         conn.commit()
         conn.close()
 
         # If no records match, then delete the TableJoin
         #
+
         if tj.matched_records_count == 0:
             # Delete the table join
             tj.delete()
@@ -732,3 +752,33 @@ def attempt_tablejoin_from_request_params(table_join_params, new_layer_owner):
         traceback.print_exc(sys.exc_info())
         err_msg = "Error Creating Join: %s" % str(sys.exc_info()[0])
         return (False, err_msg)
+
+def drop_view_from_table_join(table_join):
+    """
+    Given a view name, drop it from the database
+    """
+    if not isinstance(table_join, TableJoin):
+        return False, "table_join must be a TableJoin object"
+
+    view_name = table_join.view_name
+    if view_name is None or len(view_name) < 5:
+        return False, 'The TableJoin layer (view) could not be found.'
+
+    # -----------------------------------------------------
+    # Execute the SQL and Drop the View
+    # -----------------------------------------------------
+    conn = psycopg2.connect(get_datastore_connection_string())
+
+    try:
+        cur = conn.cursor()
+        cur.execute('DROP VIEW IF EXISTS %s;' % view_name)
+        conn.commit()
+        return True, None
+    except Exception as e:
+        traceback.print_exc(sys.exc_info())
+        err_msg =  "Error dropping view %s from table join (id: %s)\n(For admins: %s)" %\
+            (view_name, table_join.id, str(e))
+        LOGGER.error(err_msg)
+        return False, err_msg
+    finally:
+        conn.close()

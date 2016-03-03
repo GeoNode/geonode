@@ -26,8 +26,10 @@ from geonode.contrib.msg_util import *
 from .models import DataTable, JoinTarget, TableJoin, LatLngTableMappingRecord
 from geonode.contrib.datatables.utils import standardize_name,\
     attempt_tablejoin_from_request_params,\
-    attempt_datatable_upload_from_request_params
+    attempt_datatable_upload_from_request_params,\
+    drop_view_from_table_join
 from geonode.contrib.datatables.utils_lat_lng import create_point_col_from_lat_lon
+from geonode.contrib.datatables.db_helper import get_datastore_connection_string
 
 logger = logging.getLogger(__name__)
 
@@ -218,8 +220,17 @@ def tablejoin_remove(request, tj_id):
         json_msg = MessageHelperJSON.get_json_fail_msg(err_msg)
         return HttpResponse(json_msg, mimetype='application/json', status=401)
 
+
     # -----------------------------------------------
-    # Delete it!
+    # Delete the view...the TableJoin "Layer"
+    # -----------------------------------------------
+    view_dropped, err_msg = drop_view_from_table_join(tj)
+    if not view_dropped:
+        json_msg = MessageHelperJSON.get_json_fail_msg(err_msg)
+        return HttpResponse(json_msg, mimetype='application/json', status=400)
+
+    # -----------------------------------------------
+    # Delete The DataTable, JoinLayer, and TableJoin objects!
     # -----------------------------------------------
     try:
         tj.datatable.delete()
