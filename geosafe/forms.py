@@ -1,7 +1,8 @@
-from geosafe.tasks.analysis import if_list
+# coding=utf-8
+from geosafe.tasks.headless.analysis import filter_impact_function
 
 __author__ = 'ismailsunni'
-from datetime import datetime
+
 import logging
 
 from django.forms import models
@@ -9,7 +10,8 @@ from django import forms
 
 from geonode.layers.models import Layer
 
-from geosafe.models import Metadata, Analysis
+from geosafe.models import Analysis
+from django.conf import settings
 
 LOG = logging.getLogger(__name__)
 
@@ -51,7 +53,7 @@ class AnalysisCreationForm(models.ModelForm):
             attrs={'class': 'form-control'})
     )
 
-    if_id_list = if_list()
+    if_id_list = filter_impact_function.delay().get()
 
     impact_function_id = forms.ChoiceField(
         label='Impact Function ID',

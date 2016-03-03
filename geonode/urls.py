@@ -98,7 +98,7 @@ urlpatterns = patterns('',
                        (r'^documents/', include('geonode.documents.urls')),
                        (r'^services/', include('geonode.services.urls')),
                        url(r'', include(api.urls)),
-                        url(r'', include(geosafe.urls)),
+                       url(r'', include(geosafe.urls, namespace='geosafe')),
                        )
 
 if "geonode.contrib.dynamic" in settings.INSTALLED_APPS:

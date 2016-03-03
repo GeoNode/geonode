@@ -923,12 +923,6 @@ if 'geonode.geoserver' in INSTALLED_APPS:
     MAP_BASELAYERS = [LOCAL_GEOSERVER]
     MAP_BASELAYERS.extend(baselayers)
 
-
-# App specific
-# Geosafe - Celery
-BROKER_URL = 'redis://localhost:6379/0'
-
-
 # QGIS Server Backend
 # The QGIS server URL might be overridden in local_settings.py.
 if 'geonode.qgis_server' in INSTALLED_APPS:
@@ -947,3 +941,7 @@ try:
     from local_settings import *  # noqa
 except ImportError:
     pass
+
+# This settings here is needed to construct url for InaSAFE-Headless celery
+# batch. Note, trailing slash is important
+GEONODE_BASE_URL = 'http://localhost:8000/'

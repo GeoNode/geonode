@@ -90,3 +90,6 @@ slave
 
 # virtual env
 venv
+
+# config files
+geosafe/tasks/headless/celeryconfig.py

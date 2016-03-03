@@ -1,16 +1,23 @@
 import json
+
 import os
 import logging
+import tempfile
+from zipfile import ZipFile
 
+from django.conf import settings
 from django.core.urlresolvers import reverse
-from django.http.response import HttpResponseServerError, HttpResponse
+from django.http.response import HttpResponseServerError, HttpResponse, \
+    HttpResponseBadRequest
 from django.views.generic import (
     ListView, CreateView, DetailView)
+
 from geonode.layers.models import Layer
-from geosafe.models import Analysis
 from geosafe.forms import (AnalysisCreationForm)
-from geosafe.tasks.analysis import if_list
-from tastypie.http import HttpBadRequest
+from geosafe.models import Analysis, Metadata
+from geosafe.tasks.headless.analysis import filter_impact_function
+
+LOGGER = logging.getLogger("geosafe")
 
 
 logger = logging.getLogger("geonode.geosafe.analysis")
@@ -21,8 +28,39 @@ class AnalysisCreateView(CreateView):
     template_name = 'geosafe/analysis/create.html'
     context_object_name = 'analysis'
 
+    def get_context_data(self, **kwargs):
+        # list all required layers
+        def retrieve_layers(purpose, category):
+            metadatas = Metadata.objects.filter(
+                layer_purpose=purpose, category=category)
+            return [m.layer for m in metadatas]
+        exposure_population = retrieve_layers('exposure', 'population')
+        exposure_road = retrieve_layers('exposure', 'road')
+        exposure_building = retrieve_layers('exposure', 'structure')
+        hazard_flood = retrieve_layers('hazard', 'flood')
+        hazard_earthquake = retrieve_layers('hazard', 'earthquake')
+        hazard_volcano = retrieve_layers('hazard', 'volcano')
+        context = super(AnalysisCreateView, self).get_context_data(**kwargs)
+        context.update(
+            {
+                'exposure_population': exposure_population,
+                'exposure_road': exposure_road,
+                'exposure_building': exposure_building,
+                'hazard_earthquake': hazard_earthquake,
+                'hazard_flood': hazard_flood,
+                'hazard_volcano': hazard_volcano,
+                'hazard_list': ['flood', 'earthquake', 'volcano'],
+                'hazard_list_value': {
+                    'flood': hazard_flood,
+                    'earthquake': hazard_earthquake,
+                    'volcano': hazard_volcano
+                },
+            }
+        )
+        return context
+
     def get_success_url(self):
-        return reverse('analysis-detail', kwargs={'pk':self.object.pk})
+        return reverse('geosafe:analysis-detail', kwargs={'pk': self.object.pk})
 
     def get_form_kwargs(self):
         kwargs = super(AnalysisCreateView, self).get_form_kwargs()
@@ -39,6 +77,7 @@ class AnalysisListView(ListView):
         context = super(AnalysisListView, self).get_context_data(**kwargs)
         return context
 
+
 class AnalysisDetailView(DetailView):
     model = Analysis
     template_name = 'geosafe/analysis/detail.html'
@@ -48,52 +87,48 @@ class AnalysisDetailView(DetailView):
         context = super(AnalysisDetailView, self).get_context_data(**kwargs)
         return context
 
+
 def impact_function_filter(request):
     """Ajax Request for filtered available IF
     """
     if request.method != 'GET':
-        raise HttpBadRequest
+        return HttpResponseBadRequest()
 
     exposure_id = request.GET.get('exposure_id')
     hazard_id = request.GET.get('hazard_id')
 
-    logger.debug('Exposure ID: %s, Hazard ID: %s' % (exposure_id, hazard_id))
-
     if not (exposure_id and hazard_id):
-        raise HttpBadRequest
+        return HttpResponseBadRequest()
 
     try:
         exposure_layer = Layer.objects.get(id=exposure_id)
         hazard_layer = Layer.objects.get(id=hazard_id)
 
-        logger.debug('Exposure layer %s' % exposure_layer)
-        logger.debug('Hazard layer %s' % hazard_layer)
+        hazard_url = Analysis.get_layer_url(hazard_layer)
+        exposure_url = Analysis.get_layer_url(exposure_layer)
 
-        hazard_file_path = hazard_layer.get_base_file()[0].file.path
-        exposure_file_path = exposure_layer.get_base_file()[0].file.path
+        async_result = filter_impact_function.delay(
+            hazard_url,
+            exposure_url)
 
-        logger.debug('Exposure layer path: %s' % exposure_file_path)
-        logger.debug('Hazard layer path: %s' % hazard_file_path)
 
-        impact_functions = if_list(
-            hazard_file=hazard_file_path,
-            exposure_file=exposure_file_path,
-            layer_folder=os.path.dirname(hazard_file_path)
-        )
+        impact_functions = async_result.get()
 
         return HttpResponse(
             json.dumps(impact_functions), content_type="application/json")
-    except:
+    except Exception as e:
+        LOGGER.exception(e)
         raise HttpResponseServerError
+
 
 def layer_tiles(request):
     """Ajax request to get layer's url to show in the map.
     """
     if request.method != 'GET':
-        raise HttpBadRequest
+        raise HttpResponseBadRequest
     layer_id = request.GET.get('layer_id')
     if not layer_id:
-        raise HttpBadRequest
+        raise HttpResponseBadRequest
     try:
         layer = Layer.objects.get(id=layer_id)
         context = {
@@ -103,10 +138,90 @@ def layer_tiles(request):
             'layer_bbox_y0': float(layer.bbox_y0),
             'layer_bbox_y1': float(layer.bbox_y1)
         }
-        logger.debug(context)
+
         return HttpResponse(
             json.dumps(context), content_type="application/json"
         )
     except Exception as e:
-        logger.debug(e)
+        LOGGER.exception(e)
         raise HttpResponseServerError
+
+
+def layer_metadata(request, layer_id):
+    """request to get layer's xml metadata"""
+    if request.method != 'GET':
+        return HttpResponseBadRequest()
+    if not layer_id:
+        return HttpResponseBadRequest()
+    try:
+        layer = Layer.objects.get(id=layer_id)
+        base_file, _ = layer.get_base_file()
+        if not base_file:
+            return HttpResponseServerError()
+        base_file_path = base_file.file.path
+        xml_file_path = base_file_path.split('.')[0] + '.xml'
+        if not os.path.exists(xml_file_path):
+            return HttpResponseServerError()
+        with open(xml_file_path) as f:
+            return HttpResponse(f.read(), content_type='text/xml')
+
+    except Exception as e:
+        LOGGER.exception(e)
+        return HttpResponseServerError()
+
+
+def layer_archive(request, layer_id):
+    """request to get layer's zipped archive"""
+    if request.method != 'GET':
+        return HttpResponseBadRequest()
+
+    if not layer_id:
+        return HttpResponseBadRequest()
+
+    try:
+        layer = Layer.objects.get(id=layer_id)
+        base_file, _ = layer.get_base_file()
+        if not base_file:
+            return HttpResponseServerError
+        base_file_path = base_file.file.path
+        base_name, _ = os.path.splitext(base_file_path)
+        tmp = tempfile.mktemp()
+        with ZipFile(tmp, mode='w') as zf:
+            for root, dirs, files in os.walk(os.path.dirname(base_file_path)):
+                for f in files:
+                    f_name = os.path.join(root, f)
+                    f_base, f_ext = os.path.splitext(f_name)
+                    if f_base == base_name:
+                        zf.write(f_name, arcname=f)
+
+        with open(tmp) as f:
+            return HttpResponse(f.read(), content_type='application/zip')
+
+    except Exception as e:
+        LOGGER.exception(e)
+        return HttpResponseServerError()
+
+
+def layer_list(request, layer_purpose, layer_category):
+    if request.method != 'GET':
+        return HttpResponseBadRequest()
+
+    if not layer_purpose or not layer_category:
+        return HttpResponseBadRequest()
+
+    try:
+        metadatas = Metadata.objects.filter(
+            layer_purpose=layer_purpose, category=layer_category)
+        layers = []
+        for m in metadatas:
+            layer_obj = dict()
+            layer_obj['id'] = m.layer.id
+            layer_obj['name'] = m.layer.name
+            layers += layer_obj
+
+        return HttpResponse(
+            json.dumps(layers), content_type="application/json")
+
+    except Exception as e:
+        LOGGER.exception(e)
+        return HttpResponseServerError()

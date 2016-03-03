@@ -1,11 +1,12 @@
 __author__ = 'ismailsunni'
 from django.conf.urls import patterns, url
+
 from geosafe.views.analysis import (
     AnalysisListView,
     AnalysisCreateView,
     AnalysisDetailView,
     impact_function_filter,
-    layer_tiles)
+    layer_tiles, layer_metadata, layer_archive, layer_list)
 
 urlpatterns = patterns(
     '',
@@ -33,5 +34,22 @@ urlpatterns = patterns(
         r'^geosafe/analysis/layer-tiles$',
         layer_tiles,
         name='layer-tiles'
+    ),
+    url(
+        r'^geosafe/analysis/layer-metadata/(?P<layer_id>\d+)',
+        layer_metadata,
+        name='layer-metadata'
+    ),
+    url(
+        r'^geosafe/analysis/layer-archive/(?P<layer_id>\d+)',
+        layer_archive,
+        name='layer-archive'
+    ),
+    url(
+        r'^geosafe/analysis/layer-list/'
+        r'(?P<layer_purpose>(hazard|exposure|aggregation))/'
+        r'(?P<layer_category>\w+)',
+        layer_list,
+        name='layer-list'
     ),
 )
