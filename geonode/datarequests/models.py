@@ -229,6 +229,12 @@ class DataRequestProfile(TimeStampedModel):
         related_name="+"
     )
     
+    action_date = models.DateTimeField(
+        blank=True,
+        null=True,
+        help_text=_('The date and time this data request was approved or rejected'),
+    )
+    
     class Meta:
         verbose_name = _('Data Request Profile')
         verbose_name_plural = _('Data Request Profiles')
@@ -455,6 +461,7 @@ class DataRequestProfile(TimeStampedModel):
             create_folder.delay(uname)
             
             self.request_status = 'approved'
+            self.action_date = timezone.now()
             self.save()
 
             self.send_approval_email(uname, directory)
