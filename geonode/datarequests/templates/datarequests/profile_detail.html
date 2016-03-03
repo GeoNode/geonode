@@ -11,10 +11,12 @@
 {% block title %}{% trans "Data Request Profile" %} — {{ block.super }}{% endblock %}
 
 {% block head %}
-{% if preview == 'geoext' %}
-  {% include "layers/layer_geoext_map.html" %}
-{% else %}
-  {% include "layers/layer_leaflet_map.html" %}
+{% if resource %}
+    {% if preview == 'geoext' %}
+      {% include "layers/layer_geoext_map.html" %}
+    {% else %}
+      {% include "layers/layer_leaflet_map.html" %}
+    {% endif %}
 {% endif %}
 {{ block.super }}
 {% endblock %}
