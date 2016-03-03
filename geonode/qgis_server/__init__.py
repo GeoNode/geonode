@@ -5,4 +5,3 @@ __date__ = '1/19/16'
 __copyright__ = 'imajimatika@gmail.com'
 
 
-import geonode.qgis_server.signals

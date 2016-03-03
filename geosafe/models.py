@@ -191,3 +191,5 @@ class Analysis(models.Model):
             using=using,
             update_fields=update_fields)
 
+
+from geosafe import signals

@@ -44,3 +44,5 @@ class QGISServerLayer(models.Model):
         except QGISServerLayer.DoesNotExist:
             logger.debug('QGIS Server Layer not found. Not deleting.')
             pass
+
+import geonode.qgis_server.signals
