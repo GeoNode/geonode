@@ -31,6 +31,8 @@ from geonode.contrib.datatables.utils import standardize_name,\
 from geonode.contrib.datatables.utils_lat_lng import create_point_col_from_lat_lon
 from geonode.contrib.datatables.db_helper import get_datastore_connection_string
 
+from geonode.contrib.datatables.column_checker import ColumnHelper
+
 logger = logging.getLogger(__name__)
 
 
@@ -224,11 +226,13 @@ def tablejoin_remove(request, tj_id):
     # -----------------------------------------------
     # Delete the view...the TableJoin "Layer"
     # -----------------------------------------------
+    """
+    # Not needed!
     view_dropped, err_msg = drop_view_from_table_join(tj)
     if not view_dropped:
         json_msg = MessageHelperJSON.get_json_fail_msg(err_msg)
         return HttpResponse(json_msg, mimetype='application/json', status=400)
-
+    """
     # -----------------------------------------------
     # Delete The DataTable, JoinLayer, and TableJoin objects!
     # -----------------------------------------------
@@ -308,11 +312,31 @@ def datatable_upload_and_join_api(request):
         json_msg = MessageHelperJSON.get_json_fail_msg(err_msg, data_dict=f.errors)
         return HttpResponse(json_msg, mimetype="application/json", status=400)
 
+    # ----------------------------------------------------
+    # Does the DataTable join column need to be char?
+    #  - Check if the existing target join column is char?
+    # ----------------------------------------------------
+    (check_worked, force_char_convert) = ColumnHelper.is_char_column_conversion_recommended(\
+                f.cleaned_data['layer_name'],\
+                f.cleaned_data['layer_attribute'])
+    if not check_worked:
+        err_msg = 'Could not check the target column type'
+        logger.error(err_msg)
+        json_msg = MessageHelperJSON.get_json_fail_msg(err_msg)
+        return HttpResponse(json_msg, mimetype="application/json", status=400)
+
+    if force_char_convert:  # It is, make sure the Datatable col will be char
+        force_char_column = join_props['table_attribute']
+    else:                   # Nope, let the datatable col stand, good or bad
+        force_char_column = None
 
     # ----------------------------------------------------
     # Create a DataTable object from the file
     # ----------------------------------------------------
-    (success, data_table_or_error) = attempt_datatable_upload_from_request_params(request, request.user)
+    (success, data_table_or_error) = attempt_datatable_upload_from_request_params(\
+                                request,\
+                                request.user,\
+                                force_char_column=force_char_column)
     if not success:
         json_msg = MessageHelperJSON.get_json_fail_msg(data_table_or_error)
         return HttpResponse(json_msg, mimetype="application/json", status=400)

@@ -49,20 +49,26 @@ def standardize_name(col_name):
     """
     assert col_name is not None, "col_name cannot be None"
 
-    cname = slugify(unicode(col_name)).replace('-','_')
+    cname = slugify(unicode(col_name)).replace('-', '_')
     if cname == THE_GEOM_LAYER_COLUMN:
         return THE_GEOM_LAYER_COLUMN_REPLACEMENT
     return cname
 
 
 def standardize_table_name(tbl_name):
+    """
+    Make sure table name:
+        - Doesn't begin with a number
+        - Has "_" instead of '_'
+        - Truncate name
+    """
     assert tbl_name is not None, "tbl_name cannot be None"
     assert len(tbl_name) > 0, "tbl_name must be a least 1-char long, not zero"
 
     if tbl_name[:1].isdigit():
         tbl_name = 't-' + tbl_name
 
-    return slugify(unicode(tbl_name)).replace('-','_')
+    return slugify(unicode(tbl_name)).replace('-', '_')[:10]
 
 
 def get_unique_tablename(table_name):
@@ -103,7 +109,10 @@ Attempts: %s""" % (table_name, ', '.join(attempts))
     raise ValueError(err_msg)
 
 
-def process_csv_file(data_table, delimiter=",", no_header_row=False):
+def process_csv_file(data_table,\
+                delimiter=",",\
+                no_header_row=False,\
+                force_char_column=None):
     """
     Transform csv file and add it to the postgres DataStore
 
@@ -144,10 +153,22 @@ def process_csv_file(data_table, delimiter=",", no_header_row=False):
     except:
         data_table.delete()
         err_msg = str(sys.exc_info()[0])
-        LOGGER.error('Failed to convert csv file to table.  Error: %s' % err_msg)
+        LOGGER.error('Failed to convert csv file to table.  Error: %s'\
+                , err_msg)
         return None, err_msg
     #csv_file = File(f)
     f.close()
+
+    # -----------------------------------------------------
+    # If needed, force a column to be character
+    # -----------------------------------------------------
+    #for col in csv_table:
+    #    print 'PRE col: %s, %s' % (col.name, col.type)
+    csv_table = force_csv_column_tochar(csv_table,\
+                    force_char_column)
+
+    #for col in csv_table:
+    #    print 'POST col: %s, %s' % (col.name, col.type)
 
     # -----------------------------------------------------
     # Create DataTableAttribute objects
@@ -167,7 +188,8 @@ def process_csv_file(data_table, delimiter=",", no_header_row=False):
             if column.name == '_unnamed':
                 is_visible = False
 
-            attribute, created = DataTableAttribute.objects.get_or_create(datatable=data_table,
+            attribute, created = DataTableAttribute.objects.get_or_create(\
+                    datatable=data_table,
                     attribute=column.name,
                     attribute_label=column.name,
                     attribute_type=column.type.__name__,
@@ -225,7 +247,9 @@ def process_csv_file(data_table, delimiter=",", no_header_row=False):
     try:
         engine, metadata = sql.get_connection(connection_string)
     except ImportError:
-        err_msg =  "Failed to get SQL connection for copying csv data to database.\n%s" % str(sys.exc_info()[0])
+        err_msg = ("Failed to get SQL connection"
+                   "for copying csv data to database."
+                   "\n{0}".format(str(sys.exc_info()[0])))
         LOGGER.error(err_msg)
         return None, err_msg
 
@@ -261,6 +285,46 @@ def process_csv_file(data_table, delimiter=",", no_header_row=False):
     f.close()
 
     return data_table, ""
+
+def force_csv_column_tochar(csv_table, column_name):
+
+    # ---------------------
+    # Find the correct column
+    # ---------------------
+    selected_col = None
+    for col in csv_table:
+        if col.name == column_name:
+            selected_col = col
+            break
+
+    # ---------------------
+    # Did we find the column?
+    # ---------------------
+    if selected_col is None:
+        return csv_table    # return csv_table as is
+
+    # ---------------------
+    # Is it already a char column?
+    # ---------------------
+    if selected_col.type == unicode:
+        return csv_table    # return csv_table as is
+
+    # ---------------------
+    # Assume this is numeric and change it to char
+    # ---------------------
+
+    # ---------------------
+    # change the type
+    # ---------------------
+    selected_col.type = unicode
+
+    # ---------------------
+    # change the values
+    # ---------------------
+    for idx, val in enumerate(selected_col):
+        selected_col[idx] = u'%s' % val
+
+    return csv_table
 
 
 def setup_join(new_table_owner, table_name, layer_typename, table_attribute_name, layer_attribute_name):
@@ -318,26 +382,28 @@ def setup_join(new_table_owner, table_name, layer_typename, table_attribute_name
     # ------------------------------------------------------------------
     column_checker = ColumnChecker(layer_name, layer_attribute.attribute,
                             dt.table_name, table_attribute.attribute)
-    (are_cols_compatible, join_stmt_or_err_msg) = column_checker.get_column_join_stmt()
+    (are_cols_compatible, err_msg) = column_checker.are_join_columns_compatible()
     if not are_cols_compatible:     # Doesn't look good, return an error message
-        return None, join_stmt_or_err_msg
+        return None, err_msg
 
-    join_stmt = join_stmt_or_err_msg
-
-    msgt('join_stmt: %s' % join_stmt)
     # ------------------------------------------------------------------
     # (5b) Create SQL statement for the tablejoin
     # ------------------------------------------------------------------
     view_name = "join_%s_%s" % (layer_name, dt.table_name)
 
-    view_sql = 'create view %s as select %s.%s, %s.* from %s inner join %s on %s;' %\
-        (view_name, layer_name, THE_GEOM_LAYER_COLUMN,\
-        dt.table_name, layer_name, dt.table_name,\
-        join_stmt)
+    # SQL to create the view
+    view_sql = ('CREATE VIEW {0}'
+            ' AS SELECT {1}.{2}, {3}.*'
+            ' FROM {1} INNER JOIN {3}'
+            ' ON {1}."{4}" = {3}."{5}";'.format(\
+                view_name,  # 0
+                layer_name, # 1
+                THE_GEOM_LAYER_COLUMN, # 2
+                dt.table_name,  # 3
+                layer_attribute.attribute, # 4
+                table_attribute.attribute)) # 5
 
-    # Without casting in the join
-    #view_sql = 'create view %s as select %s.%s, %s.* from %s inner join %s on %s."%s" = %s."%s";' %  (view_name, layer_name, THE_GEOM_LAYER_COLUMN, dt.table_name, layer_name, dt.table_name, layer_name, layer_attribute.attribute, dt.table_name, table_attribute.attribute)
-
+    #print 'view_sql', view_sql
     # Materialized view for next version of Postgres
     #view_sql = 'create materialized view %s as select %s.the_geom, %s.* from %s inner join %s on %s."%s" = %s."%s";' %  (view_name, layer_name, dt.table_name, layer_name, dt.table_name, layer_name, layer_attribute.attribute, dt.table_name, table_attribute.attribute)
 
@@ -399,11 +465,9 @@ def setup_join(new_table_owner, table_name, layer_typename, table_attribute_name
         tj.unmatched_records_list = 0
         """
         conn.commit()
-        conn.close()
 
         # If no records match, then delete the TableJoin
         #
-
         if tj.matched_records_count == 0:
             # Delete the table join
             tj.delete()
@@ -414,9 +478,6 @@ def setup_join(new_table_owner, table_name, layer_typename, table_attribute_name
             return None, err_msg
 
     except Exception as e:
-        if conn:
-            conn.close()
-
         tj.delete() # If needed for debugging, don't delete the table join
         traceback.print_exc(sys.exc_info())
         err_msg =  "Error Joining table %s to layer %s: %s" % (table_name, layer_typename, str(e[0]))
@@ -426,7 +487,8 @@ def setup_join(new_table_owner, table_name, layer_typename, table_attribute_name
         else:
             user_msg = err_msg
         return None, user_msg
-
+    finally:
+        conn.close()
 
     #--------------------------------------------------
     # Create the Layer in GeoServer from the view
@@ -634,9 +696,14 @@ def create_layer_attributes_from_datatable(datatable, layer):
     return (True, "All LayerAttributes created")
 
 
-def attempt_datatable_upload_from_request_params(request, new_layer_owner):
+def attempt_datatable_upload_from_request_params(request,\
+                            new_layer_owner,\
+                            force_char_column=None):
     """
     Using request parameters, attempt a TableJoin
+
+    force_char_column - If specified, make sure this column is type char
+        csvkit will mistakenly convert quoted numbers into numeric
 
     Error:  (False, Error Message)
     Success: (True, TableJoin object)
@@ -684,7 +751,10 @@ def attempt_datatable_upload_from_request_params(request, new_layer_owner):
 
     LOGGER.info('Step (d): Process the tabular file')
 
-    (new_datatable_obj, result_msg) = process_csv_file(instance, delimiter=delimiter, no_header_row=no_header_row)
+    (new_datatable_obj, result_msg) = process_csv_file(instance,\
+            delimiter=delimiter,\
+            no_header_row=no_header_row,\
+            force_char_column=force_char_column)
 
     if new_datatable_obj:
         LOGGER.info('Step (d1): Success!')

@@ -8,8 +8,6 @@ Check that a character column isn't going to be joined to a numeric column.
 Attempting such a join will throw a Postgres error anyway--this is give a better
 error message.
 """
-import sys
-import traceback
 import logging
 import psycopg2
 from geonode.contrib.msg_util import msg, msgt
@@ -17,12 +15,8 @@ from geonode.contrib.datatables.db_helper import get_datastore_connection_string
 
 LOGGER = logging.getLogger('geonode.contrib.datatables.column_checker')
 
+from geonode.contrib.datatables.column_helper import ColumnHelper
 
-POSTGRES_CHAR_DATATYPES = ('character varying', 'varchar', 'character',\
-                            'char', 'text')
-POSTGRES_NUMERIC_DATATYPES = ('smallint', 'integer', 'bigint', 'decimal',\
-                            'numeric', 'real', 'double precision',\
-                            'smallserial', 'serial', 'bigserial')
 
 class ColumnChecker(object):
     """
@@ -61,77 +55,35 @@ class ColumnChecker(object):
         """
         Check the data_type string against known postgres character datatypes
         """
-        global POSTGRES_CHAR_DATATYPES
-        if data_type is None:
-            return False
-
-        if data_type in POSTGRES_CHAR_DATATYPES:
-            return True
-
-        return False
+        return ColumnHelper.is_character_column(data_type)
 
     def is_numeric_column(self, data_type):
         """
-        Check the data_type string against known postgres numeric datatypes
+        Check the data_type string against known postgres character datatypes
         """
-        global POSTGRES_NUMERIC_DATATYPES
-        if data_type is None:
-            return False
-
-        if data_type in POSTGRES_NUMERIC_DATATYPES:
-            return True
-
-        return False
-
-    @staticmethod
-    def get_column_datatype(table_name, table_attribute):
-        """
-        Retrieve the column data type from postgres
-        """
-        if table_name is None or table_attribute is None:
-            return (False, "The table_name and table_attribute must be specified.")
-
-        sql_target_data_type = "SELECT data_type " +\
-                "FROM information_schema.columns " +\
-                "WHERE table_name = '{0}' AND column_name='{1}';".format(\
-                table_name, table_attribute)
-
-        #msg ('sql_target_data_type: %s' % sql_target_data_type)
-
-        try:
-            conn = psycopg2.connect(get_datastore_connection_string())
-
-            cur = conn.cursor()
-            cur.execute(sql_target_data_type)
-            data_type = cur.fetchone()[0]
-            conn.close()
-            return (True, data_type)
-
-        except Exception as e:
-            if conn:
-                conn.close()
-
-
-            traceback.print_exc(sys.exc_info())
-            err_msg = "Error finding data type for column '%s' in table '%s': %s"\
-                    % (table_attribute, table_name, str(e[0]))
-            LOGGER.error(err_msg)
-            return (False, err_msg)
+        return ColumnHelper.is_numeric_column(data_type)
 
     def get_column_join_stmt(self, with_casting=True):
         """
+        when creating a Table csvkit turns quoted
+
         Join statement possibilities:
 
         (1) same type
             target_table."attribute name A" = data_table."attribute name B"
 
-        (2) target is char, datatable is numeric
+        (2) target is char, DataTable is numeric
 
-            target_table."attribute name A" = data_table."attribute name B"::varchar
+            Currently, returns an error.
+
+            Commented out: you can explicitly alter the DataTable column, changing it from
+            numeric to character.  This is great for combined Upload + Join
+            commands.  However, it is dangerous if trying to join to an
+            already uplodated DataTable.
 
         (3) target is numeric, datatable is char
 
-            target_table."attribute name A"::varchar = data_table."attribute name B"
+            Doesn't work.  We don't want to explicitly change the target layer
 
         (4) one of the attributes is unknown
 
@@ -142,14 +94,14 @@ class ColumnChecker(object):
         """
 
         # Target layer, join column data type
-        (retrieved, target_data_type) = ColumnChecker.get_column_datatype(\
+        (retrieved, target_data_type) = ColumnHelper.get_column_datatype(\
                             self.target_table, self.target_attribute)
         if not retrieved:
             return (False, 'Sorry, the target column is not available.')
 
         # Table to join, column data type
         (was_retrieved, datatable_data_type) =\
-            ColumnChecker.get_column_datatype(self.dt_table, self.dt_attribute)
+            ColumnHelper.get_column_datatype(self.dt_table, self.dt_attribute)
         if not was_retrieved:
             return (False, 'The data type of your column was not available')
 
@@ -158,7 +110,7 @@ class ColumnChecker(object):
                                 self.dt_table,\
                                 self.dt_attribute)
 
-        varchar_str = '::varchar(255)'
+        varchar_str = '::varchar'
 
         # Are columns types the same?  OK
         if target_data_type == datatable_data_type:
@@ -190,13 +142,18 @@ class ColumnChecker(object):
             self.is_numeric_column(datatable_data_type):
             return (True, join_clause)
 
-        if False:   #with_casting:
+        if with_casting is True:
             #   Target is char but datatable is numeric,
             #   Cast datatable to varchar
             #
 
             if self.is_character_column(target_data_type) and\
                 self.is_numeric_column(datatable_data_type):
+                pass
+                """
+                #Handling this upstream instead, explicitly changing
+                #DataTable upload to force a specified column to be char
+
                 success, msg = self.alter_column_to_var(self.dt_table,\
                                 self.dt_attribute)
                 if success:
@@ -204,30 +161,15 @@ class ColumnChecker(object):
                 else:
                     return False, msg
                 """
-                join_clause = '%s."%s" = %s.%s%s' % (self.target_table,\
-                                        self.target_attribute,\
-                                        self.dt_table,\
-                                        self.dt_attribute,\
-                                        varchar_str,\
-                                        )
-                return (True, join_clause)
-                """
-            """
+
             #   Target is char but datatable is numeric,
             #   Cast datatable COLUMN to varchar
             #
             if self.is_numeric_column(target_data_type) and\
                 self.is_character_column(datatable_data_type):
+                pass
 
-                join_clause = '%s."%s"%s = %s."%s"' % (self.target_table,\
-                                        self.target_attribute,\
-                                        varchar_str,\
-                                        self.dt_table,\
-                                        self.dt_attribute,\
-                                        )
 
-                return (True, join_clause)
-            """
         target_type_text = self.get_type_text_char_or_numeric(target_data_type)
         dt_type_text = self.get_type_text_char_or_numeric(datatable_data_type)
 
@@ -277,13 +219,13 @@ class ColumnChecker(object):
         """
 
         # Target layer, join column data type
-        (retrieved, target_data_type) = ColumnChecker.get_column_datatype(\
+        (retrieved, target_data_type) = ColumnHelper.get_column_datatype(\
                     self.target_table, self.target_attribute)
         if not retrieved:
             return (False, 'Sorry, the target column is not available.')
 
         # Table to join, column data type
-        (was_retrieved, datatable_data_type) = ColumnChecker.get_column_datatype(\
+        (was_retrieved, datatable_data_type) = ColumnHelper.get_column_datatype(\
                 self.dt_table, self.dt_attribute)
         if not was_retrieved:
             return (False, 'The data type of your column was not available')

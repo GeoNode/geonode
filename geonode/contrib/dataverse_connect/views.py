@@ -218,8 +218,12 @@ def view_add_worldmap_shapefile(request):
     # ------------------------------------------
     #   Save the actual layer
     # ------------------------------------------
+
+    # Truncate name.  Note the 'save method' checks for name clashes and appends
+    #   a random string at the end
+    new_layer_name = shapefile_name[:10]
     try:
-        saved_layer = save(shapefile_name,\
+        saved_layer = save(new_layer_name,\
                            file_obj,\
                            user_object,\
                            overwrite = False,\

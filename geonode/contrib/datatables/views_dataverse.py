@@ -14,6 +14,7 @@ from geonode.maps.models import Layer
 from geonode.contrib.datatables.models import TableJoin, LatLngTableMappingRecord
 from geonode.contrib.dataverse_connect.dv_utils import MessageHelperJSON          # format json response object
 from geonode.contrib.dataverse_connect.layer_metadata import LayerMetadata        # object with layer metadata
+from geonode.contrib.datatables.column_checker import ColumnHelper
 
 from geonode.contrib.dataverse_layer_metadata.forms import\
         DataverseLayerMetadataValidationForm
@@ -129,12 +130,32 @@ def view_upload_table_and_join_layer(request):
 
         return HttpResponse(status=400, content=json_msg, content_type="application/json")
 
+    # ----------------------------------------------------
+    # Does the DataTable join column need to be char?
+    #  - Check if the existing target join column is char?
+    # ----------------------------------------------------
+    (check_worked, force_char_convert) = ColumnHelper.is_char_column_conversion_recommended(\
+                form_upload_and_join.cleaned_data['layer_name'],\
+                form_upload_and_join.cleaned_data['layer_attribute'])
+
+    if not check_worked:
+        err_msg = 'Could not check the target column type'
+        LOGGER.error(err_msg)
+        json_msg = MessageHelperJSON.get_json_fail_msg(err_msg)
+        return HttpResponse(json_msg, mimetype="application/json", status=400)
+
+    if force_char_convert:  # It is, make sure the Datatable col will be char
+        force_char_column = post_data_dict['table_attribute']
+    else:                   # Nope, let the datatable col stand, good or bad
+        force_char_column = None
 
     # ----------------------------------------------------
     # Attempt to upload the table
     # ----------------------------------------------------
     LOGGER.info("Step 4: Attempt to UPLOAD the table")
-    (success, data_table_or_error) = attempt_datatable_upload_from_request_params(request, request.user)
+    (success, data_table_or_error) = attempt_datatable_upload_from_request_params(request,\
+                                        request.user,\
+                                        force_char_column=force_char_column)
     if not success:
         json_msg = MessageHelperJSON.get_json_fail_msg(data_table_or_error)
         return HttpResponse(json_msg, mimetype="application/json", status=400)
