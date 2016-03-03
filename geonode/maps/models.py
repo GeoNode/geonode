@@ -47,12 +47,49 @@ from agon_ratings.models import OverallRating
 logger = logging.getLogger("geonode.maps.models")
 
 
+class MapStory(ResourceBase):
+
+    @property
+    def chapters(self):
+        return self.chapter_list.order_by('chapter_index')
+
+    def update_from_viewer(self, conf):
+
+        if isinstance(conf, basestring):
+            conf = json.loads(conf)
+
+        self.title = conf['title']
+        self.abstract = conf['abstract']
+
+        if self.uuid is None or self.uuid == '':
+            self.uuid = str(uuid.uuid1())
+
+
+        #self.keywords.add(*conf['map'].get('keywords', []))
+
+        self.save()
+
+    def viewer_json(self):
+
+        config = {
+            'id':self.id,
+            'title':self.title,
+            'abstract':self.abstract,
+        }
+
+        return config
+
+
+
 class Map(ResourceBase, GXPMapBase):
 
     """
     A Map aggregates several layers together and annotates them with a viewport
     configuration.
     """
+    story = models.ForeignKey(MapStory,related_name='chapter_list', blank=True,null=True)
+
+    chapter_index = models.IntegerField(_('chapter index'), blank=True)
 
     # viewer configuration
     zoom = models.IntegerField(_('zoom'))
@@ -106,6 +143,7 @@ class Map(ResourceBase, GXPMapBase):
         layer_names = MapLayer.objects.filter(map__id=self.id).values('name')
         return Layer.objects.filter(typename__in=layer_names) | \
             Layer.objects.filter(name__in=layer_names)
+
 
     def json(self, layer_filter):
         """
@@ -204,6 +242,10 @@ class Map(ResourceBase, GXPMapBase):
                     MapLayer, layer, source_for(layer), ordering
                 ))
 
+        self.chapter_index = conf['chapter_index']
+        story_id = conf.get('story_id',0)
+        story_obj = MapStory.objects.get(id=story_id)
+        self.story = story_obj
         self.save()
 
         if layer_names != set([l.typename for l in self.local_layers]):
