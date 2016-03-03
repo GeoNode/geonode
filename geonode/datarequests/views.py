@@ -407,6 +407,7 @@ def data_request_profile_reject(request, pk):
         if 'additional_rejection_reason' in form.keys():
             request_profile.additional_rejection_reason = form['additional_rejection_reason'][0]
         request_profile.administrator = request.user
+        request_profile.action_date = timezone.now()
         request_profile.save()
         request_profile.send_rejection_email()
 
