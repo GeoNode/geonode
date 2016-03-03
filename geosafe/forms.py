@@ -53,8 +53,6 @@ class AnalysisCreationForm(models.ModelForm):
             attrs={'class': 'form-control'})
     )
 
-    print settings.CELERY_ALWAYS_EAGER
-
     if_id_list = filter_impact_function.delay().get()
 
     impact_function_id = forms.ChoiceField(

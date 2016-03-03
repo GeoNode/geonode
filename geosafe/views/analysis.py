@@ -3,7 +3,6 @@ import logging
 
 import os
 import tempfile
-import urlparse
 from zipfile import ZipFile
 
 from django.conf import settings
@@ -15,7 +14,7 @@ from django.views.generic import (
 
 from geonode.layers.models import Layer
 from geosafe.forms import (AnalysisCreationForm)
-from geosafe.models import Analysis
+from geosafe.models import Analysis, Metadata
 from geosafe.tasks.headless.analysis import filter_impact_function
 
 LOGGER = logging.getLogger("geosafe")
@@ -26,6 +25,37 @@ class AnalysisCreateView(CreateView):
     form_class = AnalysisCreationForm
     template_name = 'geosafe/analysis/create.html'
     context_object_name = 'analysis'
+
+    def get_context_data(self, **kwargs):
+        # list all required layers
+        def retrieve_layers(purpose, category):
+            metadatas = Metadata.objects.filter(
+                layer_purpose=purpose, category=category)
+            return [m.layer for m in metadatas]
+        exposure_population = retrieve_layers('exposure', 'population')
+        exposure_road = retrieve_layers('exposure', 'road')
+        exposure_building = retrieve_layers('exposure', 'structure')
+        hazard_flood = retrieve_layers('hazard', 'flood')
+        hazard_earthquake = retrieve_layers('hazard', 'earthquake')
+        hazard_volcano = retrieve_layers('hazard', 'volcano')
+        context = super(AnalysisCreateView, self).get_context_data(**kwargs)
+        context.update(
+            {
+                'exposure_population': exposure_population,
+                'exposure_road': exposure_road,
+                'exposure_building': exposure_building,
+                'hazard_earthquake': hazard_earthquake,
+                'hazard_flood': hazard_flood,
+                'hazard_volcano': hazard_volcano,
+                'hazard_list': ['flood', 'earthquake', 'volcano'],
+                'hazard_list_value': {
+                    'flood': hazard_flood,
+                    'earthquake': hazard_earthquake,
+                    'volcano': hazard_volcano
+                },
+            }
+        )
+        return context
 
     def get_success_url(self):
         return reverse('geosafe:analysis-detail', kwargs={'pk': self.object.pk})
@@ -162,6 +192,31 @@ def layer_archive(request, layer_id):
 
         with open(tmp) as f:
             return HttpResponse(f.read(), content_type='application/zip')
+
+    except Exception as e:
+        LOGGER.exception(e)
+        return HttpResponseServerError()
+
+
+def layer_list(request, layer_purpose, layer_category):
+    if request.method != 'GET':
+        return HttpResponseBadRequest()
+
+    if not layer_purpose or not layer_category:
+        return HttpResponseBadRequest()
+
+    try:
+        metadatas = Metadata.objects.filter(
+            layer_purpose=layer_purpose, category=layer_category)
+        layers = []
+        for m in metadatas:
+            layer_obj = dict()
+            layer_obj['id'] = m.layer.id
+            layer_obj['name'] = m.layer.name
+            layers += layer_obj
+
+        return HttpResponse(
+            json.dumps(layers), content_type="application/json")
 
     except Exception as e:
         LOGGER.exception(e)

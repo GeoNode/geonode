@@ -1,0 +1,187 @@
+{% extends 'site_base.html' %}
+{% load bootstrap_tags %}
+{% block extra_head %}
+    <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.css"/>
+{% endblock extra_head %}
+
+
+{% block body_outer %}
+    <div class="page-header">
+        <h2 class="page-title">Create Analysis</h2>
+    </div>
+
+    <div class="row">
+        <div class="container-fluid pad0x">
+            <div class="col-md-12" id="inner-body">
+                <div id="map" style="width: 100%; height: 600px; position:relative;">
+                    <div id="form-div"
+                         style="position: absolute; width: 30%; z-index: 100; top: 0; right: 0; background-color: transparent">
+                        <form action="" method="post" enctype="multipart/form-data">
+                            {% csrf_token %}
+                            {{ form|as_bootstrap }}
+                            <button type="submit" class="btn btn-primary">Run</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock body_outer %}
+
+{% block extra_script %}
+    <script src="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.js"></script>
+
+    <script type="text/javascript">
+        var map;
+
+        var exposure_layer;
+        var hazard_layer;
+        var aggregation_layer;
+        $(document).ready(function () {
+            var exposure_layer_cbo = $("#id_exposure_layer");
+            var hazard_layer_cbo = $("#id_hazard_layer");
+            var aggregation_layer_cbo = $("#id_aggregation_layer");
+
+
+            {# listen to change handler #}
+            var retrieve_if_list = function (evt) {
+                console.log('call retrieve IF list');
+                var chosen_combination = {
+                    'exposure_id': $("#id_exposure_layer").val(),
+                    'hazard_id': $("#id_hazard_layer").val()
+                };
+
+                $.get('{% url 'geosafe:impact-function-filter' %}', chosen_combination, function (data) {
+                    console.log(data);
+                    var select = $("#id_impact_function_id");
+                    if (data.length > 0) {
+                        $("#id_impact_function_id").empty();
+                    }
+                    else {
+                        console.log('No IF found')
+                        $("<option></option>").text("No matching Impact Function").appendTo(select);
+                    }
+                    for (var i = 0; i < data.length; i++) {
+                        var id = data[i];
+                        $("<option></option>").val(id).text(id).appendTo(select);
+                    }
+                });
+            };
+
+            function zoom_to_box(map, bbox) {
+                var bounds = [
+                    [bbox[1], bbox[0]],
+                    [bbox[3], bbox[2]]
+                ];
+                map.fitBounds(bounds);
+            }
+
+            function add_layer(map, layer_tiles_url, layer) {
+                layer = L.tileLayer(layer_tiles_url,
+                        {
+                            'opacity': 0.8
+                        });
+                if (layer != null) {
+                    map.addLayer(layer);
+                    return layer;
+                }
+            }
+
+            function update_map(layer_id, layer_purpose) {
+                $.get('{% url 'geosafe:layer-tiles' %}', {'layer_id': layer_id}, function (data) {
+                    console.log(data);
+                    layer_tiles_url = data['layer_tiles_url'];
+                    layer_bbox_x0 = data['layer_bbox_x0'];
+                    layer_bbox_x1 = data['layer_bbox_x1'];
+                    layer_bbox_y0 = data['layer_bbox_y0'];
+                    layer_bbox_y1 = data['layer_bbox_y1'];
+                    map.fitBounds([[layer_bbox_y1, layer_bbox_x1], [layer_bbox_y0, layer_bbox_x0]]);
+
+                    if (layer_purpose == 'exposure') {
+                        exposure_layer = add_layer(map, layer_tiles_url, exposure_layer);
+                    } else if (layer_purpose == 'hazard') {
+                        hazard_layer = add_layer(map, layer_tiles_url, hazard_layer);
+
+                    } else if (layer_purpose == 'aggregation') {
+                        aggregation_layer = add_layer(map, layer_tiles_url, aggregation_layer);
+
+                    }
+                });
+            }
+
+            function update_exposure_layer() {
+                var layer_id = exposure_layer_cbo.val();
+                console.log('exposure changed to ' + layer_id);
+
+                if (layer_id) {
+                    console.log('update exposure layer');
+                    if (exposure_layer) {
+                        console.log('remove previous exposure layer');
+                        console.log(exposure_layer);
+                        map.removeLayer(exposure_layer);
+                    }
+                    update_map(layer_id, 'exposure');
+                } else {
+                    console.log('delete exposure');
+                    map.removeLayer(exposure_layer);
+                }
+            }
+
+            function update_hazard_layer() {
+                var layer_id = hazard_layer_cbo.val();
+                console.log('hazard changed to ' + layer_id);
+
+                if (layer_id) {
+                    console.log('update hazard layer');
+                    if (hazard_layer) {
+                        console.log('remove previous hazard layer');
+                        console.log(hazard_layer);
+                        map.removeLayer(hazard_layer);
+                    }
+                    update_map(layer_id, 'hazard');
+                } else {
+                    console.log('delete hazard');
+                    map.removeLayer(hazard_layer);
+                }
+            }
+
+            function update_aggregation_layer() {
+                var layer_id = aggregation_layer_cbo.val();
+                console.log('aggregation changed to ' + layer_id);
+
+                if (layer_id) {
+                    console.log('update aggregation layer');
+                    if (aggregation_layer) {
+                        console.log('remove previous aggregation layer');
+                        console.log(aggregation_layer);
+                        map.removeLayer(aggregation_layer);
+                    }
+                    update_map(layer_id, 'aggregation');
+                } else {
+                    console.log('delete aggregation');
+                    map.removeLayer(aggregation_layer);
+                }
+            }
+
+            var map_quest = L.tileLayer('http://otile{s}.mqcdn.com/tiles/1.0.0/{type}/{z}/{x}/{y}.{ext}', {
+                type: 'map',
+                ext: 'jpg',
+                attribution: 'Tiles Courtesy of <a href="http://www.mapquest.com/">MapQuest</a> &mdash; Map data &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+                subdomains: '1234'
+            });
+            map = L.map('map', {
+                layers: [map_quest]
+            });
+
+            zoom_to_box(map, [0, 45, 0, -45]);
+
+            exposure_layer_cbo.change(retrieve_if_list);
+            hazard_layer_cbo.change(retrieve_if_list);
+
+            exposure_layer_cbo.change(update_exposure_layer);
+            hazard_layer_cbo.change(update_hazard_layer);
+            aggregation_layer_cbo.change(update_aggregation_layer);
+
+        });
+    </script>
+{% endblock %}

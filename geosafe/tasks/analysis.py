@@ -65,8 +65,10 @@ def create_metadata_object(layer_id):
         kwargs={'layer_id': layer_id})
     layer_url = urlparse.urljoin(settings.GEONODE_BASE_URL, layer_url)
     async_result = read_keywords_iso_metadata.delay(
-        layer_url, 'layer_purpose')
-    metadata.layer_purpose = async_result.get()
+        layer_url, ('layer_purpose', 'hazard', 'exposure'))
+    keywords = async_result.get()
+    metadata.layer_purpose = keywords.get('layer_purpose', None)
+    metadata.category = keywords.get(metadata.layer_purpose, None)
     metadata.save()
     return True
 

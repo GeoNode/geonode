@@ -38,11 +38,21 @@ class Metadata(models.Model):
         verbose_name='Metadata file',
         help_text='Metadata file for a layer.',
         upload_to='metadata',
-        max_length=100
+        max_length=100,
+        blank=True,
+        null=True,
     )
     layer_purpose = models.CharField(
         verbose_name='Purpose of the Layer',
         max_length=20,
+        blank=True,
+        null=True,
+        default=''
+    )
+    category = models.CharField(
+        verbose_name='The category of layer purpose that describes a kind of'
+                     'hazard or exposure this layer is',
+        max_length=30,
         blank=True,
         null=True,
         default=''
@@ -58,36 +68,6 @@ class Metadata(models.Model):
         if not os.path.exists(xml_file_path):
             return ''
         return xml_file_path
-
-    @staticmethod
-    def read_iso_metadata(keyword_filename):
-        """Try to extract keywords from an xml file
-
-        :param keyword_filename: Name of keywords file.
-        :type keyword_filename: str
-
-        :returns: metadata: a dictionary containing the metadata.
-            the keywords element contains the content of the ISO_METADATA_KW_TAG
-            as list so that it can be read line per line as if it was a file.
-
-        :raises: ReadMetadataError, IOError
-        """
-
-        basename, _ = os.path.splitext(keyword_filename)
-        xml_filename = basename + '.xml'
-
-        # this raises a IOError if the file doesn't exist
-        tree = ElementTree.parse(xml_filename)
-        root = tree.getroot()
-
-        keyword_element = root.find(ISO_METADATA_KEYWORD_TAG)
-        # we have an xml file but it has no valid container
-        if keyword_element is None:
-            raise GeoSAFEException
-
-        metadata = {'keywords': keyword_element.text.split('\n')}
-
-        return metadata
 
 
 class Analysis(models.Model):
