@@ -168,8 +168,8 @@ border-color: transparent rgba(244,244,244,0.9) transparent transparent;
 {#    <div class="search section"> <a href="#" id="search-call"><i class="fa fa-search"></i></a> </div>#}
     <div class="exposure section">
         <h4 class="section-title">Exposure</h4>
-        <div class="option"><a href="#" id="population"><img src="{% static "geosafe/img/population.svg" %}" alt="population" class="svg"/></a>
-            <div class="list floating-box" id="population-list" class="{% if exposure_population %}has-children{% endif %}">
+        <div class="option"><a href="#" id="population" class="{% if exposure_population %}has-children{% endif %}"><img src="{% static "geosafe/img/population.svg" %}" alt="population" class="svg"/></a>
+            <div class="list floating-box" id="population-list">
                 <h4 class="list-title">Select the population</h4>
                 <ul>
                     {% for e in exposure_population %}
