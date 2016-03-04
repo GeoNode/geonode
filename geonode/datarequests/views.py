@@ -49,8 +49,6 @@ from .forms import (
     DataRequestProfileForm, DataRequestProfileShapefileForm, 
     DataRequestProfileRejectForm, DataRequestDetailsForm)
 from .models import DataRequestProfile
-from .utils import update_datarequest_obj
-
 
 def registration_part_one(request):
     if request.user.is_authenticated():

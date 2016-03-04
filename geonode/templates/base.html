@@ -17,6 +17,7 @@
       {% else %}
       <link href="{{ STATIC_URL }}lib/css/assets.min.css" rel="stylesheet"/>
       {% endif %}
+      <link href="{{ STATIC_URL }}lib/css/bootstrap-submenu.min.css" rel="stylesheet"/>
       <link href="{{ STATIC_URL }}geonode/css/ext-compatibility.css" rel="stylesheet" />
       <link href="{{ STATIC_URL }}geonode/css/base.css" rel="stylesheet" />
 
@@ -53,16 +54,20 @@
         <div id="navbar" class="navbar-collapse collapse">
           <ul class="nav navbar-nav">
             {% block tabs %}
-	    <li id="nav_datastore" class="dropdown">
-  	    	<a href="{% url "maptiles_main" %}" class="dropdown-toggle" data-toggle="dropdown">{% trans "Data Store" %} <span class="caret"></span></a>
-                <ul class="dropdown-menu">
-		  <li><a href="{% url "maptiles_main" %}">{% trans "Data Tiles" %}</a></li>
-		  <li><a href="{% url "layer_browse" %}">{% trans "Layers" %}</a></li>
-		  <li><a href="{% url "maps_browse" %}">{% trans "Maps" %}</a></li>
-		</ul>
-	    </li>
+                  <li id="nav_datastore" class="dropdown">
+                      <a tabindex="0" href="/maptiles/" class="dropdown-toggle js-activated" data-toggle="dropdown" data-submenu>Data Store <span class="caret"></span></a>
+                      <ul class="dropdown-menu">
+                        <li><a href="/maptiles/">Data Tiles</a></li>
+                        <li class="dropdown-submenu"><a tabindex="0" href="/layers/">Layers</a>
+                          <ul class="dropdown-menu">
+                            <li><a tabindex="0" href="/layers/?limit=100&offset=0&keywords__slug__in=flood-hazard-map">Flood Hazard Map</a></li>
+                          </ul>
+                        </li>
+                        <li><a href="/maps/">Maps</a></li>
+                      </ul>
+                  </li>
             <li id="nav_documents" class="dropdown">
-              <a href="{% url "document_browse" %}" class="dropdown-toggle" data-toggle="dropdown">{% trans "Documents" %} <span class="caret"></span></a>
+              <a href="{% url "document_browse" %}" class="dropdown-toggle js-activated" data-toggle="dropdown">{% trans "Documents" %} <span class="caret"></span></a>
 	      <ul class="dropdown-menu">
 		<li><a href="{% url "document_browse" %}">{% trans "Documents" %}</a></li>
 		<li><a href="{% url "eula" %}">{% trans "EULA" %}</a></li>
@@ -270,6 +275,15 @@
     <script src="{{ STATIC_URL }}lib/js/waypoints.js"></script>
     {% else %}
     <script src="{{ STATIC_URL }}lib/js/assets.min.js"></script>
+    <script src="{{ STATIC_URL }}lib/js/bootstrap.min.js"></script>
+    <script src="{{ STATIC_URL }}lib/js/bootstrap-hover-dropdown.js"></script>
+    <script>
+      // bootstrap hover: very simple to use!
+      $(document).ready(function() {
+        $('.js-activated').dropdownHover().dropdown();
+      });
+    </script>
+
     {% endif %}
     <script src="{{ STATIC_URL }}geonode/js/utils/utils.js"></script>
     <script src="{{ STATIC_URL }}geonode/js/base/base.js"></script>
