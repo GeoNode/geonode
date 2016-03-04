@@ -53,7 +53,6 @@
                 module.haystack_facets($http, $rootScope, $location);
             }
         });
-
         $http.get(REGIONS_ENDPOINT, {params: params}).success(function(data){
             if($location.search().hasOwnProperty('regions__name__in')){
                 data.objects = module.set_initial_filters_from_query(data.objects,
@@ -117,7 +116,7 @@
     if ($('#categories').length > 0){
        module.load_categories($http, $rootScope, $location);
     }
-
+    module.load_categories($http, $rootScope, $location);
     // Activate the type filters if in the url
     if($location.search().hasOwnProperty('type__in')){
       var types = $location.search()['type__in'];
@@ -433,9 +432,9 @@
           }
         },
         map_center: {
-          lat: 5.6,
-          lng: 3.9,
-          zoom: 1
+          lat: 11,
+          lng: 123,
+          zoom: 4
         },
         defaults: {
           zoomControl: false
