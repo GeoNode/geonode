@@ -923,3 +923,5 @@ if 'geonode.geoserver' in GEONODE_APPS:
     baselayers = MAP_BASELAYERS
     MAP_BASELAYERS = [LOCAL_GEOSERVER]
     MAP_BASELAYERS.extend(baselayers)
+
+FILE_UPLOAD_TEMP_DIR = "/tmp/geonode"

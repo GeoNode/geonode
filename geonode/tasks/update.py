@@ -1,5 +1,7 @@
+import os
 from geonode import settings
 from geonode import GeoNodeException
+from geonode import local_settings
 from geonode.geoserver.helpers import ogc_server_settings
 from pprint import pprint
 from celery.task import task
@@ -14,10 +16,12 @@ from django.db.models import Q
 from geoserver.catalog import Catalog
 from geonode.layers.models import Style
 from geonode.geoserver.helpers import http_client
-from geonode.layers.utils import create_thumbnail
+from geonode.security.models import PermissionLevelMixin
+from django.contrib.auth.models import Group
+from guardian.shortcuts import assign_perm, get_anonymous_user
 
 def layer_metadata(layer_list,flood_year,flood_year_probability):
-    layer_list_count = len(layer_list)
+    total_layers = len(layer_list)
     ctr = 0
     for layer in layer_list:
         map_resolution = ''
@@ -43,7 +47,7 @@ def layer_metadata(layer_list,flood_year,flood_year_probability):
         layer.category = TopicCategory.objects.get(identifier="geoscientificInformation")
         layer.save()
         ctr+=1
-        print "'{0}' out of '{1}' : Updated metadata for '{2}' ".format(ctr,layer_list_count,layer.name)
+        print "[FH METADATA] {0}/{1} : {2}".format(ctr,total_layers,layer.name)
 
 
 @task(name='geonode.tasks.update.layers_metadata_update', queue='update')
@@ -66,47 +70,56 @@ def fh_style_update():
     cat = Catalog(settings.OGC_SERVER['default']['LOCATION'] + 'rest',
                     username=settings.OGC_SERVER['default']['USER'],
                     password=settings.OGC_SERVER['default']['PASSWORD'])
-    gn_style_list = Style.objects.filter(name__icontains='fh').exclude(Q(name__icontains="fhm")|Q(sld_body__icontains='<sld:CssParameter name="fill">#ffff00</sld:CssParameter>'))
-    # gn_style_list = Style.objects.filter(name__icontains='fh').exclude(Q(name__icontains="fhm"))
-    gs_style = None
-    fh_styles_count = len(gn_style_list)
-    ctr = 0
-    if gn_style_list is not None:
-        fhm_style = cat.get_style("fhm")
-        for gn_style in gn_style_list:
-            #change style in geoserver
-            try:
-                layer = Layer.objects.get(name=gn_style.name)
-                gs_style  = cat.get_style(gn_style.name)
-                if gs_style is not None:
-                    gs_style  = cat.get_style(gn_style.name)
-                    gs_style.update_body(fhm_style.sld_body)
-                else:
-                    cat.create_style(gn_style.name,fhm.sld_body)
-                #change style in geonode
-                gn_style.sld_body = fhm_style.sld_body
-                gn_style.save()
-                #for updating thumbnail
-                params = {
-                    'layers': layer.typename.encode('utf-8'),
-                    'format': 'image/png8',
-                    'width': 200,
-                    'height': 150,
-                }
-                p = "&".join("%s=%s" % item for item in params.items())
-                thumbnail_remote_url = ogc_server_settings.PUBLIC_LOCATION + \
-                    "wms/reflect?" + p
-                # thumbnail_create_url = ogc_server_settings.LOCATION + \
-                #     "wms/reflect?" + p
-                create_thumbnail(layer, thumbnail_remote_url, thumbnail_remote_url, ogc_client=http_client)
-                ctr+=1
-                print "'{0}' out of '{1}' : Updated style for '{2}' ".format(ctr,fh_styles_count,gn_style.name)
-            except Exception as e:
-                err_msg = str(e)
-                if "Layer matching query does not exist" in err_msg:
-                    gn_style.delete()
 
+    #layer_list = Layer.objects.filter(name__icontains='fh')
+    layer_list = Layer.objects.filter(name__icontains='fh').exclude(styles__name__icontains='fhm')#initial run of script includes all fhm layers for cleaning of styles in GN + GS
+    total_layers = len(layer_list)
+    fhm_style = cat.get_style("fhm")
+    ctr = 1
+    for layer in layer_list:
+        print "[FH STYLE] {0}/{1} : {2} ".format(ctr,total_layers,layer.name)
+        #delete thumbnail first because of permissions
 
+        print "Layer thumbnail url: %s " % layer.thumbnail_url
+        if "192" in local_settings.BASEURL:
+            url = "geonode"+layer.thumbnail_url #if on local
+            os.remove(url)
+        else:
+            url = "/var/www/geonode"+layer.thumbnail_url #if on lipad
+            os.remove(url)
+        gs_layer = cat.get_layer(layer.name)
+        gs_layer._set_default_style(fhm_style.name)
+        cat.save(gs_layer) #save in geoserver
+        layer.sld_body = fhm_style.sld_body
+        layer.save() #save in geonode
+        ctr+=1
+        try:
+            gs_style = cat.get_style(layer.name)
+            print "Geoserver: Will delete style %s " % gs_style.name
+            cat.delete(gs_style) #erase in geoserver the default layer_list
+            gn_style = Style.objects.get(name=layer.name)
+            print "Geonode: Will delete style %s " % gn_style.name
+            gn_style.delete()#erase in geonode
+        except:
+            "Error in %s" % layer.name
+            pass
+
+@task(name='geonode.tasks.update.fh_perms_update', queue='update')
+def fh_perms_update():
+    # anonymous_group, created = Group.objects.get_or_create(name='anonymous')
+    layer_list = Layer.objects.filter(name__icontains='fh')
+    total_layers = len(layer_list)
+    ctr = 1
+    for layer in layer_list:
+        try:
+            print "[FH PERMISSIONS] {0}/{1} : {2} ".format(ctr,total_layers,layer.name)
+            #layer.remove_all_permissions()
+            assign_perm('view_resourcebase', get_anonymous_user(), layer.get_self_resource())
+            assign_perm('download_resourcebase', get_anonymous_user(), layer.get_self_resource())
+            ctr+=1
+        except:
+            "Error in %s" % layer.name
+            pass
 
 @task(name='geonode.tasks.update.ceph_metadata_udate', queue='update')
 def ceph_metadata_udate(uploaded_objects):
