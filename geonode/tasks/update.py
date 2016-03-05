@@ -17,6 +17,7 @@ from geoserver.catalog import Catalog
 from geonode.layers.models import Style
 from geonode.geoserver.helpers import http_client
 from geonode.layers.utils import create_thumbnail
+from django.core.exceptions import ObjectDoesNotExist
 
 def layer_metadata(layer_list,flood_year,flood_year_probability):
     layer_list_count = len(layer_list)
@@ -101,24 +102,71 @@ def fh_style_update():
             "Error in %s" % layer.name
             pass
 
-@task(name='geonode.tasks.update.ceph_metadata_udate', queue='update')
-def ceph_metadata_udate(uploaded_objects):
+@task(name='geonode.tasks.update.ceph_metadata_update', queue='update')
+def ceph_metadata_update(uploaded_objects_list, update_grid=True):
     """
         NOTE: DOES NOT WORK
           Outputs error 'OperationalError: database is locked'
           Need a better way of making celery write into the database
     """
-    #Save each ceph object
-    for obj_meta_dict in uploaded_objects:
-        ceph_obj = CephDataObject(  name = obj_meta_dict['name'],
-                                    #last_modified = time.strptime(obj_meta_dict['last_modified'], "%Y-%m-%d %H:%M:%S"),
-                                    last_modified = obj_meta_dict['last_modified'],
-                                    size_in_bytes = obj_meta_dict['bytes'],
-                                    content_type = obj_meta_dict['content_type'],
-                                    data_class = get_data_class_from_filename(obj_meta_dict['name']),
-                                    file_hash = obj_meta_dict['hash'],
-                                    grid_ref = obj_meta_dict['grid_ref'])
-        ceph_obj.save()
+    # Loop through each metadata element
+    csv_delimiter=','
+    objects_inserted=0
+    objects_updated=0
+    gridref_dict_by_data_class=dict()
+    for ceph_obj_metadata in uploaded_objects_list:
+        metadata_list = ceph_obj_metadata.split(csv_delimiter)
+
+        # Check if metadata list is valid
+        if len(metadata_list) is 6:
+            #try:
+                """
+                    Retrieve and check if metadata is present, update instead if there is
+                """
+                ceph_obj=None
+                try:
+                    ceph_obj = CephDataObject.objects.get(name=metadata_list[0])
+                    # Commented attributes are not relevant to update
+                    #ceph_obj.grid_ref = metadata_list[5]
+                    #ceph_obj.data_class = get_data_class_from_filename(metadata_list[0])
+                    #ceph_obj.content_type = metadata_list[3]
+
+                    ceph_obj.last_modified = metadata_list[1]
+                    ceph_obj.size_in_bytes = metadata_list[2]
+                    ceph_obj.file_hash = metadata_list[4]
+
+                    ceph_obj.save()
+
+                    objects_updated += 1
+                except ObjectDoesNotExist:
+                    ceph_obj = CephDataObject(  name = metadata_list[0],
+                                                #last_modified = time.strptime(metadata_list[1], "%Y-%m-%d %H:%M:%S"),
+                                                last_modified = metadata_list[1],
+                                                size_in_bytes = metadata_list[2],
+                                                content_type = metadata_list[3],
+                                                data_class = get_data_class_from_filename(metadata_list[0]),
+                                                file_hash = metadata_list[4],
+                                                grid_ref = metadata_list[5])
+                    ceph_obj.save()
+
+                    objects_inserted += 1
+                if ceph_obj is not None:
+                # Construct dict of gridrefs to update
+                    if DataClassification.gs_feature_labels[ceph_obj.data_class] in gridref_dict_by_data_class:
+                        gridref_dict_by_data_class[DataClassification.gs_feature_labels[ceph_obj.data_class].encode('utf8')].append(ceph_obj.grid_ref.encode('utf8'))
+                    else:
+                        gridref_dict_by_data_class[DataClassification.gs_feature_labels[ceph_obj.data_class].encode('utf8')] = [ceph_obj.grid_ref.encode('utf8'),]
+                #except Exception as e:
+                #    print("Skipping invalid metadata list: {0}".format(metadata_list))
+        else:
+            print("Skipping invalid metadata list (invalid length): {0}".format(metadata_list))
+
+    # Pass to celery the task of updating the gird shapefile
+    result_msg = "Succesfully encoded metadata of [{0}] of objects. Inserted [{1}], updated [{2}].".format(objects_inserted+objects_updated, objects_inserted, objects_updated)
+    if update_grid:
+        result_msg += " Starting update for PhilGrid."
+        grid_feature_update.delay(gridref_dict_by_data_class)
+    print result_msg
 
 @task(name='geonode.tasks.update.grid_feature_update', queue='update')
 def grid_feature_update(gridref_dict_by_data_class, field_value=1):
