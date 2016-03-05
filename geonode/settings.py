@@ -806,7 +806,8 @@ LEAFLET_CONFIG = {
             'auto-include': True,
         },
     },
-    'SRID': 3857
+    'SRID': 3857,
+    'RESET_VIEW': False
 }
 
 # option to enable/disable resource unpublishing for administrators

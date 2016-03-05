@@ -107,7 +107,8 @@ LEAFLET_CONFIG = {
             'auto-include': True,
         },
     },
-    'SRID': 3857
+    'SRID': 3857,
+    'RESET_VIEW': False
 }
 
 tiles_directory = os.path.join(PROJECT_ROOT, "qgis_tiles")

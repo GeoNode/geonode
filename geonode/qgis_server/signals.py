@@ -12,6 +12,8 @@ from geonode.qgis_server.models import QGISServerLayer
 from geonode.base.models import ResourceBase, Link
 from geonode.layers.models import Layer
 from geonode.maps.models import Map, MapLayer
+from geonode.layers.utils import create_thumbnail
+from geonode.geoserver.helpers import http_client
 
 
 logger = logging.getLogger("geonode.qgis_server.signals")
@@ -198,6 +200,13 @@ def qgis_server_post_save(instance, sender, **kwargs):
             link_type='image',
         )
     )
+
+    # Create thumbnail
+    thumbnail_remote_url = settings.GEONODE_BASE_URL[:-1]
+    thumbnail_remote_url += reverse(
+        'qgis-server-thumbnail', kwargs={'layername': instance.name})
+    logger.debug(thumbnail_remote_url)
+    create_thumbnail(instance, thumbnail_remote_url, ogc_client=http_client)
 
 
 def qgis_server_pre_save_maplayer(instance, sender, **kwargs):

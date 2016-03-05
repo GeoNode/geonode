@@ -40,6 +40,7 @@
         if (tile_layer != null) {
             layerControl = L.control.layers().addTo(map);
             layerControl.addOverlay(tile_layer , "{{ resource.title }}");
+            map.addLayer(tile_layer);
         }
 
         if (L.control.hasOwnProperty('fullscreen')) {
@@ -52,6 +53,7 @@
             [bbox[1], bbox[0]],
             [bbox[3], bbox[2]]
         ];
+        console.log(bounds);
         map.fitBounds(bounds);
     }
 </script>
