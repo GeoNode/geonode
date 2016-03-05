@@ -109,11 +109,16 @@ def ceph_metadata_update(uploaded_objects_list, update_grid=True):
           Outputs error 'OperationalError: database is locked'
           Need a better way of making celery write into the database
     """
+    # Pop first line containing header
+    uploaded_objects_list.pop(0)
+    """NAME,LAST_MODIFIED,SIZE_IN_BYTES,CONTENT_TYPE,GEO_TYPE,FILE_HASH GRID_REF"""
+    
     # Loop through each metadata element
     csv_delimiter=','
     objects_inserted=0
     objects_updated=0
     gridref_dict_by_data_class=dict()
+    print "Encoding {0} ceph data object".format(len(uploaded_objects_list))
     for ceph_obj_metadata in uploaded_objects_list:
         metadata_list = ceph_obj_metadata.split(csv_delimiter)
 
@@ -164,7 +169,7 @@ def ceph_metadata_update(uploaded_objects_list, update_grid=True):
     # Pass to celery the task of updating the gird shapefile
     result_msg = "Succesfully encoded metadata of [{0}] of objects. Inserted [{1}], updated [{2}].".format(objects_inserted+objects_updated, objects_inserted, objects_updated)
     if update_grid:
-        result_msg += " Starting update for PhilGrid."
+        result_msg += " Starting feature updates for PhilGrid shapefile."
         grid_feature_update.delay(gridref_dict_by_data_class)
     print result_msg
 
