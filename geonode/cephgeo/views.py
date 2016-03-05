@@ -20,7 +20,6 @@ from geonode.cephgeo.cart_utils import *
 
 import client, utils, cPickle, unicodedata, time, operator, json
 import geonode.local_settings as settings
-from geonode.tasks.update import ceph_metadata_udate
 from geonode.cephgeo.utils import get_cart_datasize
 from datetime import datetime
 from django.core.urlresolvers import reverse
