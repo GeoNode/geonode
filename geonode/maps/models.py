@@ -69,15 +69,22 @@ class MapStory(ResourceBase):
 
         self.save()
 
-    def viewer_json(self):
+    def viewer_json(self, user):
 
         config = {
-            'id':self.id,
-            'title':self.title,
-            'abstract':self.abstract,
+            'id': self.id,
+            'title': self.title,
+            'abstract': self.abstract,
+            'owner': self.owner.name_long,
+            'chapters': [chapter.viewer_json(user) for chapter in self.chapters]
         }
 
         return config
+
+    class Meta(ResourceBase.Meta):
+        verbose_name_plural = 'MapStories'
+        db_table = 'maps_mapstory'
+        pass
 
 
 
@@ -87,7 +94,7 @@ class Map(ResourceBase, GXPMapBase):
     A Map aggregates several layers together and annotates them with a viewport
     configuration.
     """
-    story = models.ForeignKey(MapStory,related_name='chapter_list', blank=True,null=True)
+    story = models.ForeignKey(MapStory, related_name='chapter_list', blank=True, null=True)
 
     chapter_index = models.IntegerField(_('chapter index'), blank=True)
 
@@ -414,7 +421,7 @@ class Map(ResourceBase, GXPMapBase):
         return lg_name
 
     class Meta(ResourceBase.Meta):
-        verbose_name_plural = 'MapStories'
+        verbose_name_plural = 'MapStory Chapters'
         pass
 
 
