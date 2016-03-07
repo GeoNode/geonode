@@ -16,6 +16,7 @@ Read the comments below.
 #
 from test_form_jointarget import *
 from test_form_upload_and_join import *
+from test_name_helper import *
 
 # LOCAL or REMOTE API tests run using the python requests library
 #

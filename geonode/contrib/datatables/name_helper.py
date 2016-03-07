@@ -13,7 +13,7 @@ THE_GEOM_LAYER_COLUMN_REPLACEMENT = 'the_geom_col'
 def standardize_column_name(col_name):
     """
     Format column names in tabular files
-     - Special case for columns named "the_geom", replace them
+     - Handle special case for columns named "the_geom", replace them
     """
     assert col_name is not None, "col_name cannot be None"
 
@@ -27,17 +27,27 @@ def standardize_table_name(tbl_name):
     """
     Make sure table name:
         - Doesn't begin with a number
-        - Has "_" instead of '_'
+        - Has "-" instead of '_'
         - Truncate name
     """
     assert tbl_name is not None, "tbl_name cannot be None"
     assert len(tbl_name) > 0, "tbl_name must be a least 1-char long, not zero"
 
     if tbl_name[:1].isdigit():
-        tbl_name = 't-' + tbl_name
+        tbl_name = 't_' + tbl_name
 
-    return slugify(unicode(tbl_name)).replace('-', '_')[:10]
+    tname = slugify(unicode(tbl_name)).replace('-', '_')[:10]
+    if tname.endswith('_'):
+        return tname[:-1]
 
+    return tname
+    
+def get_random_chars(num_chars=1):
+    """
+    Return a random string of lowercase letters and digits
+    """
+    char_list = string.ascii_lowercase + string.digits
+    return "".join([choice(char_list) for i in range(num_chars)])
 
 
 def get_unique_tablename(table_name):
@@ -67,7 +77,7 @@ def get_unique_tablename(table_name):
         # Not unique. Add 2 to 11 random chars to end of table_name
         #  attempts 1:-3 datatable_xx, datatable_xxx, datatable_xxxx where x is random char
         #
-        random_chars = "".join([choice(string.ascii_lowercase + string.digits) for i in range(x+1)])
+        random_chars = get_random_chars(x+1)
         unique_tname = '%s_%s' % (table_name, random_chars)
     # ------------------------------------------------
     # Failed to generate a unique name, throw an error
@@ -110,7 +120,7 @@ def get_unique_viewname(layer_name, table_name):
         # Not unique. Add 2 to 11 random chars to end of table_name
         #  attempts 1:-3 datatable_xx, datatable_xxx, datatable_xxxx where x is random char
         #
-        random_chars = "".join([choice(string.ascii_lowercase + string.digits) for i in range(x+1)])
+        random_chars = get_random_chars(x+1)
         unique_vname = '%s_%s' % (view_name, random_chars)
     # ------------------------------------------------
     # Failed to generate a unique name, throw an error
@@ -119,11 +129,3 @@ def get_unique_viewname(layer_name, table_name):
 Original: %s
 Attempts: %s""" % (view_name, ', '.join(attempts))
     raise ValueError(err_msg)
-
-
-def does_view_or_table_name_exist(table_name):
-    """
-    When making a View to represent a TableJoin, make sure the name
-    isn't already in the database
-    """
-    return does_table_name_exist(table_name)
