@@ -31,9 +31,30 @@
 
                     <p>Extent: {{ analysis.get_extent_option_display }}</p>
 
-                    <p>Impact Layer: <a
-                            href="{% url 'layer_detail' layername=analysis.impact_layer.typename %}">{{ analysis.impact_layer }}</a>
+                    <p>Impact Layer:
+                        {% if not analysis.get_task_result %}
+                                Analysis not yet running
+                        {% elif analysis.get_task_result.successful %}
+                            <a href="{% url 'layer_detail' layername=analysis.impact_layer.typename %}">{{ analysis.impact_layer }}</a>
+                        {% else %}
+                            Task Status:
+                            <label class="text-{{ analysis.get_label_class }}">
+                            {{ analysis.get_task_result.state }}
+                            </label>
+                        {% endif %}
                     </p>
+                    {% if analysis.get_task_result %}
+                        {% if analysis.get_task_result.successful or analysis.get_task_result.failed %}
+                            <p>
+                                <form action="{% url 'geosafe:rerun-analysis' analysis_id=analysis.id %}" method="post">
+                                    {% csrf_token %}
+                                    <input type="hidden" id="analysis_id" value="{{ analysis.id }}" />
+                                    <button type="submit" class="btn btn-primary">Rerun Analysis</button>
+                                </form>
+{#                                <a href="{% url 'geosafe:rerun-analysis' analysis_id=analysis.id %}" class="btn btn-primary">Rerun analysis</a>#}
+                            </p>
+                        {% endif %}
+                    {% endif %}
                 </div>
             </div>
         </div>
@@ -95,6 +116,15 @@
                 zoom_to_box(map, [{{ analysis.aggregation_layer.bbox_string }}]);
             {% else %}
                 zoom_to_box(map, [{{ analysis.exposure_layer.bbox_string }}]);
+            {% endif %}
+
+            {% if analysis.get_task_result %}
+                {% if not analysis.get_task_result.successful and not analysis.get_task_result.failed %}
+                    {# Automatic reload in 30 sec #}
+                    setTimeout(function(){
+                        window.location.reload()
+                    }, 30000);
+                {% endif %}
             {% endif %}
         })();
 

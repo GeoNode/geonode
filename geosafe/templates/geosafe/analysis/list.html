@@ -34,7 +34,13 @@
                             {{ analysis.impact_function_id }}
                         </td>
                         <td>
-                            <a href="{% url 'layer_detail' layername=analysis.impact_layer.typename %}">{{ analysis.impact_layer }}</a>
+                            {% if not analysis.get_task_result %}
+                                Analysis not yet running
+                            {% elif analysis.get_task_result.successful %}
+                                <a href="{% url 'layer_detail' layername=analysis.impact_layer.typename %}">{{ analysis.impact_layer }}</a>
+                            {% else %}
+                                Task Status: <label class="text-{{ analysis.get_label_class }}">{{ analysis.get_task_result.state }}</label>
+                            {% endif %}
                         </td>
                         <td>
                             <a href="{% url 'geosafe:analysis-detail' pk=analysis.pk %}">View</a>

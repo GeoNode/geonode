@@ -8,19 +8,21 @@ from zipfile import ZipFile
 from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.http.response import HttpResponseServerError, HttpResponse, \
-    HttpResponseBadRequest
+    HttpResponseBadRequest, HttpResponseRedirect
 from django.views.generic import (
     ListView, CreateView, DetailView)
 
 from geonode.layers.models import Layer
 from geosafe.forms import (AnalysisCreationForm)
 from geosafe.models import Analysis, Metadata
+from geosafe.signals import analysis_post_save
 from geosafe.tasks.headless.analysis import filter_impact_function
 
 LOGGER = logging.getLogger("geosafe")
 
 
 logger = logging.getLogger("geonode.geosafe.analysis")
+
 
 class AnalysisCreateView(CreateView):
     model = Analysis
@@ -222,6 +224,27 @@ def layer_list(request, layer_purpose, layer_category):
         return HttpResponse(
             json.dumps(layers), content_type="application/json")
 
+    except Exception as e:
+        LOGGER.exception(e)
+        return HttpResponseServerError()
+
+
+def rerun_analysis(request, analysis_id=None):
+    if request.method != 'POST':
+        return HttpResponseBadRequest()
+
+    if not analysis_id:
+        analysis_id = request.POST.get('analysis_id')
+
+    if not analysis_id:
+        return HttpResponseBadRequest()
+
+    try:
+        analysis = Analysis.objects.get(id=analysis_id)
+        analysis_post_save(None, analysis, True)
+        return HttpResponseRedirect(
+            reverse('geosafe:analysis-detail', kwargs={'pk': analysis.pk})
+        )
     except Exception as e:
         LOGGER.exception(e)
         return HttpResponseServerError()

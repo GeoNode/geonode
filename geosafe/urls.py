@@ -6,7 +6,7 @@ from geosafe.views.analysis import (
     AnalysisCreateView,
     AnalysisDetailView,
     impact_function_filter,
-    layer_tiles, layer_metadata, layer_archive, layer_list)
+    layer_tiles, layer_metadata, layer_archive, layer_list, rerun_analysis)
 
 urlpatterns = patterns(
     '',
@@ -51,5 +51,11 @@ urlpatterns = patterns(
         r'(?P<layer_category>\w+)',
         layer_list,
         name='layer-list'
+    ),
+    url(
+        r'^geosafe/analysis/rerun-analysis/'
+        r'(?P<analysis_id>\d+)',
+        rerun_analysis,
+        name='rerun-analysis'
     ),
 )

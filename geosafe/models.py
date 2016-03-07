@@ -1,9 +1,12 @@
+from __future__ import absolute_import
+
 import tempfile
 import urlparse
 
 from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.db import models
+from celery.result import AsyncResult
 
 from geonode.layers.models import Layer
 from geonode.people.models import Profile
@@ -34,14 +37,6 @@ class GeoSAFEException(BaseException):
 class Metadata(models.Model):
     """Represent metadata for a layer."""
     layer = models.OneToOneField(Layer, primary_key=True)
-    metadata_file = models.FileField(
-        verbose_name='Metadata file',
-        help_text='Metadata file for a layer.',
-        upload_to='metadata',
-        max_length=100,
-        blank=True,
-        null=True,
-    )
     layer_purpose = models.CharField(
         verbose_name='Purpose of the Layer',
         max_length=20,
@@ -57,17 +52,6 @@ class Metadata(models.Model):
         null=True,
         default=''
     )
-
-    def get_metadata_file_path(self):
-        """Obtain metadata (.xml) file path of the layer."""
-        base_file, _ = self.layer.get_base_file()
-        if not base_file:
-            return ''
-        base_file_path = base_file.file.path
-        xml_file_path = base_file_path.split('.')[0] + '.xml'
-        if not os.path.exists(xml_file_path):
-            return ''
-        return xml_file_path
 
 
 class Analysis(models.Model):
@@ -88,6 +72,9 @@ class Analysis(models.Model):
         # Disable for now
         # (HAZARD_EXPOSURE_BBOX_CODE, HAZARD_EXPOSURE_BBOX_TEXT),
     )
+
+    class Meta:
+        verbose_name_plural = 'Analyses'
 
     exposure_layer = models.ForeignKey(
         Layer,
@@ -136,6 +123,14 @@ class Analysis(models.Model):
         related_name='impact_layer'
     )
 
+    task_id = models.CharField(
+        max_length=40,
+        verbose_name='Task UUID',
+        help_text='Task UUID that runs analysis',
+        blank=True,
+        null=True
+    )
+
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         verbose_name='Author',
@@ -144,35 +139,18 @@ class Analysis(models.Model):
         null=True
     )
 
-    def generate_cli(self):
-        """Generating CLI command to run analysis in InaSAFE headless.
+    def get_task_result(self):
+        return AsyncResult(self.task_id)
 
-            inasafe --hazard=HAZARD_FILE (--download --layers=LAYER_NAME
-                [LAYER_NAME...] | --exposure=EXP_FILE) --impact-function=IF_ID
-                --report-template=TEMPLATE --output-file=FILE
-                [--extent=XMIN:YMIN:XMAX:YMAX]
-        """
-        hazard_file_path = self.hazard_layer.get_base_file()[0].file.path
-        exposure_file_path = self.exposure_layer.get_base_file()[0].file.path
-        # Save for later.
-        # aggregation_file_path = self.aggregation_layer.get_base_file()[0].file.path
-
-        arguments = ''
-        arguments += '--hazard=' + hazard_file_path + ' '
-        arguments += '--exposure=' + exposure_file_path + ' '
-        arguments += '--impact-function=' + self.impact_function_id + ' '
-        arguments += '--report-template= '  # later
-        _, exposure_extension = os.path.splitext(exposure_file_path)
-        if exposure_extension == '.shp':
-            output_extension = '.shp'
+    def get_label_class(self):
+        result = self.get_task_result()
+        if result.state == 'SUCCESS':
+            return 'success'
+        elif result.state == 'FAILURE':
+            return 'danger'
         else:
-            output_extension = '.tif'
-        temp_file = os.path.join(
-            tempfile._get_default_tempdir(),
-            tempfile._get_candidate_names().next())+output_extension
-        arguments += '--output-file=' + temp_file
+            return 'info'
 
-        return arguments, temp_file, os.path.dirname(hazard_file_path), os.path.dirname(temp_file)
 
     @classmethod
     def get_layer_url(cls, layer):
@@ -192,4 +170,5 @@ class Analysis(models.Model):
             update_fields=update_fields)
 
 
-from geosafe import signals
+# needed to load signals
+from geosafe import signals  # noqa
