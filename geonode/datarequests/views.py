@@ -12,6 +12,7 @@ from django.core.files.storage import default_storage
 from django.core.files.base import ContentFile
 from django.core.exceptions import ObjectDoesNotExist, PermissionDenied
 from django.core.urlresolvers import reverse
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.shortcuts import (
     redirect, get_object_or_404, render, render_to_response)
@@ -257,6 +258,36 @@ def registration_part_two(request):
 class DataRequestPofileList(LoginRequiredMixin, SuperuserRequiredMixin, TemplateView):
     template_name = 'datarequests/data_request_list.html'
     raise_exception = True
+    
+@login_required
+def request_history(request):
+    if not request.user.is_authenticated():
+        raise HttpResponseForbidden
+        
+    if request.user.is_superuser():
+        return HttpResponseRedirect(
+            reverse('datarequests:data_request_browse')
+        )
+    
+    user=request.user
+    data_requests = DataRequestProfile.objects.filter(profile=user)
+    total = data_requests.len()
+    
+    paginator = Paginator(data_requests, 10)
+    page = request.GET.get('page')
+
+    try:
+        paged_objects = paginator.page(page)
+    except PageNotAnInteger:
+        paged_objects = paginator.page(1)
+    except EmptyPage:
+        paged_objects = paginator.page(paginator.num_pages)
+        
+    return render(request, "users_request_list.html",
+        {"data_requests": paged_objects,
+          "total":  total
+        })
+    
 
 
 def email_verification_send(request):
