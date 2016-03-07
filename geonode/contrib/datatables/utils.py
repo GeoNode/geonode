@@ -17,7 +17,6 @@ from geoserver.resource import FeatureType
 
 import psycopg2
 
-from django.template.defaultfilters import slugify
 from django.contrib.auth.models import User
 from django.conf import settings
 from django.utils.translation import ugettext_lazy as _
@@ -30,6 +29,10 @@ from geonode.maps.gs_helpers import get_sld_for #fixup_style, cascading_delete, 
 from geonode.contrib.datatables.models import DataTable, DataTableAttribute, TableJoin
 from geonode.contrib.datatables.forms import DataTableUploadForm, TableJoinRequestForm
 from geonode.contrib.datatables.column_checker import ColumnChecker
+from geonode.contrib.datatables.name_helper import get_unique_tablename,\
+    standardize_column_name,\
+    get_unique_viewname,\
+    THE_GEOM_LAYER_COLUMN
 
 from geonode.contrib.datatables.db_helper import get_datastore_connection_string
 
@@ -38,75 +41,6 @@ from .db_helper import CHOSEN_DB_SETTING
 
 LOGGER = logging.getLogger(__name__)
 
-THE_GEOM_LAYER_COLUMN = 'the_geom'
-THE_GEOM_LAYER_COLUMN_REPLACEMENT = 'the_geom_col'
-
-
-def standardize_name(col_name):
-    """
-    Format column names in tabular files
-     - Special case for columns named "the_geom", replace them
-    """
-    assert col_name is not None, "col_name cannot be None"
-
-    cname = slugify(unicode(col_name)).replace('-', '_')
-    if cname == THE_GEOM_LAYER_COLUMN:
-        return THE_GEOM_LAYER_COLUMN_REPLACEMENT
-    return cname
-
-
-def standardize_table_name(tbl_name):
-    """
-    Make sure table name:
-        - Doesn't begin with a number
-        - Has "_" instead of '_'
-        - Truncate name
-    """
-    assert tbl_name is not None, "tbl_name cannot be None"
-    assert len(tbl_name) > 0, "tbl_name must be a least 1-char long, not zero"
-
-    if tbl_name[:1].isdigit():
-        tbl_name = 't-' + tbl_name
-
-    return slugify(unicode(tbl_name)).replace('-', '_')[:10]
-
-
-def get_unique_tablename(table_name):
-    """
-    Check the database to see if a table_name already exists.
-    If it does, generate a random extension and check again until an unused name is found.
-    """
-    assert table_name is not None, "table_name cannot be None"
-
-    # ------------------------------------------------
-    # slugify, change to unicode
-    # ------------------------------------------------
-    table_name = standardize_table_name(table_name)
-
-    # ------------------------------------------------
-    # Make 10 attempts to generate a unique table name
-    # ------------------------------------------------
-    unique_tname = table_name
-    attempts = []
-    for x in range(1, 11):
-        attempts.append(unique_tname)   # save the attempt
-
-        # Is this a unique name?  Yes, return it.
-        if DataTable.objects.filter(table_name=unique_tname).count() == 0:
-            return unique_tname
-
-        # Not unique. Add 2 to 11 random chars to end of table_name
-        #  attempts 1:-3 datatable_xx, datatable_xxx, datatable_xxxx where x is random char
-        #
-        random_chars = "".join([choice(string.ascii_lowercase + string.digits) for i in range(x+1)])
-        unique_tname = '%s_%s' % (table_name, random_chars)
-    # ------------------------------------------------
-    # Failed to generate a unique name, throw an error
-    # ------------------------------------------------
-    err_msg = """Failed to generate unique table_name attribute for a new DataTable object.
-Original: %s
-Attempts: %s""" % (table_name, ', '.join(attempts))
-    raise ValueError(err_msg)
 
 
 def process_csv_file(data_table,\
@@ -180,7 +114,7 @@ def process_csv_file(data_table,\
 
             # Standardize column name
             #
-            column.name = standardize_name(column.name)
+            column.name = standardize_column_name(column.name)
 
             # Create DataTableAttribute object
             #
@@ -389,7 +323,8 @@ def setup_join(new_table_owner, table_name, layer_typename, table_attribute_name
     # ------------------------------------------------------------------
     # (5b) Create SQL statement for the tablejoin
     # ------------------------------------------------------------------
-    view_name = "join_%s_%s" % (layer_name, dt.table_name)
+    #view_name = "join_%s_%s" % (layer_name, dt.table_name)
+    view_name = get_unique_viewname(dt.table_name, layer_name)
 
     # SQL to create the view
     view_sql = ('CREATE VIEW {0}'
@@ -407,9 +342,6 @@ def setup_join(new_table_owner, table_name, layer_typename, table_attribute_name
     # Materialized view for next version of Postgres
     #view_sql = 'create materialized view %s as select %s.the_geom, %s.* from %s inner join %s on %s."%s" = %s."%s";' %  (view_name, layer_name, dt.table_name, layer_name, dt.table_name, layer_name, layer_attribute.attribute, dt.table_name, table_attribute.attribute)
 
-
-    #double_view_name = "view_%s" % view_name
-    #double_view_sql = "create view %s as select * from %s" % (double_view_name, view_name)
     LOGGER.info('setup_join. Step (6): Retrieve stats')
 
     # ------------------------------------------------------------------
@@ -460,6 +392,7 @@ def setup_join(new_table_owner, table_name, layer_typename, table_attribute_name
         cur.execute(unmatched_list_sql)
         tj.unmatched_records_list = ",".join([r[0] for r in cur.fetchall()])
         """
+        # for debug
         tj.matched_records_count = 100
         tj.unmatched_records_count = 100
         tj.unmatched_records_list = 0
@@ -822,33 +755,3 @@ def attempt_tablejoin_from_request_params(table_join_params, new_layer_owner):
         traceback.print_exc(sys.exc_info())
         err_msg = "Error Creating Join: %s" % str(sys.exc_info()[0])
         return (False, err_msg)
-
-def drop_view_from_table_join(table_join):
-    """
-    Given a view name, drop it from the database
-    """
-    if not isinstance(table_join, TableJoin):
-        return False, "table_join must be a TableJoin object"
-
-    view_name = table_join.view_name
-    if view_name is None or len(view_name) < 5:
-        return False, 'The TableJoin layer (view) could not be found.'
-
-    # -----------------------------------------------------
-    # Execute the SQL and Drop the View
-    # -----------------------------------------------------
-    conn = psycopg2.connect(get_datastore_connection_string())
-
-    try:
-        cur = conn.cursor()
-        cur.execute('DROP VIEW IF EXISTS %s;' % view_name)
-        conn.commit()
-        return True, None
-    except Exception as e:
-        traceback.print_exc(sys.exc_info())
-        err_msg =  "Error dropping view %s from table join (id: %s)\n(For admins: %s)" %\
-            (view_name, table_join.id, str(e))
-        LOGGER.error(err_msg)
-        return False, err_msg
-    finally:
-        conn.close()

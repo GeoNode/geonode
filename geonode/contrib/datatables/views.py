@@ -24,10 +24,11 @@ from shared_dataverse_information.worldmap_datatables.forms import MapLatLngLaye
 from geonode.contrib.msg_util import *
 
 from .models import DataTable, JoinTarget, TableJoin, LatLngTableMappingRecord
-from geonode.contrib.datatables.utils import standardize_name,\
-    attempt_tablejoin_from_request_params,\
-    attempt_datatable_upload_from_request_params,\
-    drop_view_from_table_join
+from geonode.contrib.datatables.name_helper import standardize_column_name
+
+from geonode.contrib.datatables.utils import attempt_tablejoin_from_request_params,\
+    attempt_datatable_upload_from_request_params
+#from geonode.contrib.datatables.utils_joins import drop_view_from_table_join
 from geonode.contrib.datatables.utils_lat_lng import create_point_col_from_lat_lon
 from geonode.contrib.datatables.db_helper import get_datastore_connection_string
 
@@ -350,7 +351,7 @@ def datatable_upload_and_join_api(request):
     #
     join_props['table_name'] = data_table_or_error.table_name
     original_table_attribute = join_props['table_attribute']
-    sanitized_table_attribute = standardize_name(original_table_attribute)
+    sanitized_table_attribute = standardize_column_name(original_table_attribute)
     join_props['table_attribute'] = sanitized_table_attribute
 
     (success, tablejoin_obj_or_err_msg) = attempt_tablejoin_from_request_params(join_props, request.user)

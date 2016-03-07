@@ -23,8 +23,8 @@ from geonode.contrib.datatables.models import DataTable, DataTableAttribute,\
     LatLngTableMappingRecord
 
 from geonode.contrib.datatables.utils import set_default_style_for_new_layer,\
-    create_layer_attributes_from_datatable,\
-    standardize_name
+    create_layer_attributes_from_datatable
+from geonode.contrib.datatables.name_helper import standardize_column_name
 
 from geonode.contrib.msg_util import *
 
@@ -83,10 +83,10 @@ def create_point_col_from_lat_lon(new_table_owner, table_name, lat_column, lng_c
     # ----------------------------------------------------
     # Latitude attribute
     # ----------------------------------------------------
-    lat_col_attr = dt.get_attribute_by_name(standardize_name(lat_column))
+    lat_col_attr = dt.get_attribute_by_name(standardize_column_name(lat_column))
     if lat_col_attr is None:
         err_msg = 'DataTable "%s" does not have a latitude column named "%s" (formatted: %s)'\
-                  % (table_name, lat_column, standardize_name(lat_column))
+                  % (table_name, lat_column, standardize_column_name(lat_column))
         LOGGER.error(err_msg)
         return False, err_msg
 
@@ -99,10 +99,10 @@ def create_point_col_from_lat_lon(new_table_owner, table_name, lat_column, lng_c
     # ----------------------------------------------------
     # Longitude attribute
     # ----------------------------------------------------
-    lng_col_attr = dt.get_attribute_by_name(standardize_name(lng_column))
+    lng_col_attr = dt.get_attribute_by_name(standardize_column_name(lng_column))
     if lng_col_attr is None:
         err_msg = 'DataTable "%s" does not have a longitude column named "%s" (formatted: %s)'\
-                  % (table_name, lng_column, standardize_name(lng_column))
+                  % (table_name, lng_column, standardize_column_name(lng_column))
         LOGGER.error(err_msg)
         return False, err_msg
 

@@ -34,9 +34,9 @@ from geonode.contrib.dataverse_layer_metadata.layer_metadata_helper import add_d
 
 from geonode.contrib.datatables.forms import TableUploadAndJoinRequestForm,\
                                         TableJoinResultForm
+from geonode.contrib.datatables.name_helper import standardize_column_name
 
-from geonode.contrib.datatables.utils import standardize_name,\
-    attempt_tablejoin_from_request_params,\
+from geonode.contrib.datatables.utils import attempt_tablejoin_from_request_params,\
     attempt_datatable_upload_from_request_params
 from geonode.contrib.datatables.utils_lat_lng import create_point_col_from_lat_lon
 
@@ -172,7 +172,7 @@ def view_upload_table_and_join_layer(request):
     #
     join_props['table_name'] = data_table_or_error.table_name
     original_table_attribute = join_props['table_attribute']
-    sanitized_table_attribute = standardize_name(original_table_attribute)
+    sanitized_table_attribute = standardize_column_name(original_table_attribute)
     join_props['table_attribute'] = sanitized_table_attribute
 
     # ---------------------------------

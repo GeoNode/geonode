@@ -41,7 +41,7 @@ logger = logging.getLogger('geonode.contrib.datatables.utils')
 THE_GEOM_LAYER_COLUMN = 'the_geom'
 THE_GEOM_LAYER_COLUMN_REPLACEMENT = 'the_geom_col'
 
-def standardize_name(col_name, is_table_name=False):
+def standardize_column_name(col_name, is_table_name=False):
     """
     Format table and column names in tabular files
     """
@@ -73,7 +73,7 @@ def process_csv_file(data_table, delimiter=",", no_header_row=False):
 
     # Standardize table_name for the DataTable
     #
-    table_name = standardize_name(os.path.splitext(os.path.basename(csv_filename))[0], is_table_name=True)
+    table_name = standardize_column_name(os.path.splitext(os.path.basename(csv_filename))[0], is_table_name=True)
     if table_name[:1].isdigit():
         table_name = 't-' + table_name
     #
@@ -108,7 +108,7 @@ def process_csv_file(data_table, delimiter=",", no_header_row=False):
 
             # Standardize column name
             #
-            column.name = standardize_name(column.name)
+            column.name = standardize_column_name(column.name)
 
             # Create DataTableAttribute object
             #
