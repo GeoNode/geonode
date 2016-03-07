@@ -18,6 +18,8 @@ from geonode.layers.models import Style
 from geonode.geoserver.helpers import http_client
 from geonode.layers.utils import create_thumbnail
 from django.core.exceptions import ObjectDoesNotExist
+from celery.utils.log import get_task_logger
+logger = get_task_logger("geonode.tasks.update")
 
 def layer_metadata(layer_list,flood_year,flood_year_probability):
     layer_list_count = len(layer_list)
@@ -118,10 +120,10 @@ def ceph_metadata_update(uploaded_objects_list, update_grid=True):
     objects_inserted=0
     objects_updated=0
     gridref_dict_by_data_class=dict()
-    print "Encoding {0} ceph data object".format(len(uploaded_objects_list))
+    logger.info("Encoding {0} ceph data objects".format(len(uploaded_objects_list)))
     for ceph_obj_metadata in uploaded_objects_list:
         metadata_list = ceph_obj_metadata.split(csv_delimiter)
-
+        logger.info("-> {0}".format(ceph_obj_metadata))
         # Check if metadata list is valid
         if len(metadata_list) is 6:
             #try:
@@ -181,6 +183,7 @@ def grid_feature_update(gridref_dict_by_data_class, field_value=1):
         Update the grid shapefile feature attribute specified by [feature_attr] on gridrefs in [gridref_list]
     """
     for feature_attr, grid_ref_list in gridref_dict_by_data_class.iteritems():
+        logger.info("Updating feature attribute [{0}]".format(feature_attr))
         nested_grid_update(grid_ref_list, feature_attr, field_value)
 
 @task(name='geonode.tasks.update.geoserver_update_layers', queue='update')
