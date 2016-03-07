@@ -937,12 +937,12 @@ if 'geonode.qgis_server' in INSTALLED_APPS:
         'layer_directory': os.path.join(PROJECT_ROOT, "qgis_layer")
     }
 
+# This settings here is needed to construct url for InaSAFE-Headless celery
+# batch. Note, trailing slash is important
+GEONODE_BASE_URL = 'http://localhost:8000/'
+
 # Load more settings from a file called local_settings.py if it exists
 try:
     from local_settings import *  # noqa
 except ImportError:
     pass
-
-# This settings here is needed to construct url for InaSAFE-Headless celery
-# batch. Note, trailing slash is important
-GEONODE_BASE_URL = 'http://localhost:8000/'
