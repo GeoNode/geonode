@@ -1,0 +1,44 @@
+.. _styling_layers:
+
+Edit Layer Style
+================
+
+Edit style task can be performed only by the user who have the permission to do it.
+
+1. In the Explore Layer page choose a Layer that you want to edit clicking over the name of layer or in the preview window.
+2. In the Edit Layers page click the Edit Layer button.
+3. In the Edit Layer window click Edit button under Style icon. In this interface is it possible to change the style of layers. GeoNode allows to edit layer styles graphically, without the need to resort to programming or requiring a technical background.
+
+    In the following example the layer has one style and one rule in that style. Click Edit in Styles menu change Title and Abstract of the selected Style.
+
+       .. figure:: img/layer_styles.png
+
+          *Layer Styles window*
+
+       .. figure:: img/layer_styles_userstyle.png
+
+          *User Styles window*
+
+    Click the Rule (Untitled 1) to select it, and then click on Edit below it. 
+    Edit the style choosing Basic tab to edit symbology of layers, Labels to add and manage labels and Advanced to manage styles by scale and condition. 
+    When done, click Save, then click on the word Layers to return to the layer list.
+
+       .. figure:: img/style_rule_basic.png
+
+          *Basic Style Rule window*
+
+       .. figure:: img/style_rule_label.png
+
+          *Labels Style Rule window*
+
+       .. figure:: img/style_rule_advanced.png
+
+          *Advanced Style Rule window*
+
+4. In the Edit Layer window click Manage button under Style icon. Manage Styles function allows to assign available style to selected layers.
+
+   .. figure:: img/manage_styles.png
+
+      *Manage Layer Styles*
+
+

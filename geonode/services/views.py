@@ -204,7 +204,7 @@ def _verify_service_type(base_url, service_type=None):
     """
     Try to determine service type by process of elimination
     """
-
+    logger.info("Checking the url: " + base_url)
     if service_type in ['WMS', 'OWS', None]:
         try:
             service = WebMapService(base_url)
@@ -235,13 +235,17 @@ def _verify_service_type(base_url, service_type=None):
         except:
             pass
         else:
-            service.services
-            return ['REST', service]
+            try:
+                service.services
+                return ['REST', service]
+            except ValueError:
+                service = CatalogueServiceWeb(base_url)
 
     if service_type in ['CSW', None]:
         try:
             service = CatalogueServiceWeb(base_url)
-        except:
+        except Exception, e:
+            logger.exception(e)
             raise
         else:
             return ['CSW', service]
@@ -271,7 +275,6 @@ def _process_wms_service(url, name, type, username, password, wms=None, owner=No
         logger.info(
             "Could not retrieve GetMap url, using originally supplied URL %s" % url)
         pass
-
     try:
         service = Service.objects.get(base_url=url)
         return_dict = [{'status': 'ok',
@@ -333,11 +336,9 @@ def _register_cascaded_service(url, type, name, username, password, wms=None, ow
                                      online_resource=wms.provider.url,
                                      owner=owner,
                                      parent=parent)
-
     service.keywords = ','.join(wms.identification.keywords)
     service.save()
     service.set_default_permissions()
-
     if type in ['WMS', 'OWS']:
         # Register the Service with GeoServer to be cascaded
         cat = Catalog(settings.OGC_SERVER['default']['LOCATION'] + "rest",
@@ -448,7 +449,6 @@ def _register_cascaded_layers(service, owner=None):
             cat.save(store)
         wms = WebMapService(service.base_url)
         layers = list(wms.contents)
-
         count = 0
         for layer in layers:
             lyr = cat.get_resource(layer, store, cascade_ws)
@@ -798,10 +798,15 @@ def _register_arcgis_url(url, name, username, password, owner=None, parent=None)
     """
     # http://maps1.arcgisonline.com/ArcGIS/rest/services
     baseurl = _clean_url(url)
+    logger.info("Fetching the ESRI url " + url)
     if re.search("\/MapServer\/*(f=json)*", baseurl):
         # This is a MapService
-        arcserver = ArcMapService(baseurl)
-        if isinstance(arcserver, ArcMapService) and arcserver.spatialReference.wkid in [102100, 3857, 900913, 102113]:
+        try:
+            arcserver = ArcMapService(baseurl)
+        except Exception, e:
+            logger.exception(e)
+        if isinstance(arcserver, ArcMapService) and arcserver.spatialReference.wkid in [
+                102100, 102113, 3785, 3857, 900913]:
             return_json = [_process_arcgis_service(arcserver, name, owner=owner, parent=parent)]
         else:
             return_json = [{'msg':  _("Could not find any layers in a compatible projection.")}]
@@ -822,6 +827,7 @@ def _register_arcgis_layers(service, arc=None):
     Register layers from an ArcGIS REST service
     """
     arc = arc or ArcMapService(service.base_url)
+    logger.info("Registering layers for %s" % service.base_url)
     for layer in arc.layers:
         valid_name = slugify(layer.name)
         count = 0
@@ -831,7 +837,7 @@ def _register_arcgis_layers(service, arc=None):
         typename = layer.id
 
         existing_layer = None
-
+        logger.info("Registering layer  %s" % layer.name)
         try:
             existing_layer = Layer.objects.get(
                 typename=typename, service=service)
@@ -842,6 +848,7 @@ def _register_arcgis_layers(service, arc=None):
 
         if existing_layer is None:
             # Need to check if layer already exists??
+            logger.info("Importing layer  %s" % layer.name)
             saved_layer, created = Layer.objects.get_or_create(
                 typename=typename,
                 service=service,
@@ -944,14 +951,19 @@ def _process_arcgis_folder(folder, name, services=[], owner=None, parent=None):
         if not isinstance(service, ArcMapService):
             return_dict[
                 'msg'] = 'Service could not be identified as an ArcMapService, URL: %s' % service.url
+            logger.debug(return_dict['msg'])
         else:
-            if service.spatialReference.wkid in [102100, 3857, 900913, 102113]:
-                return_dict = _process_arcgis_service(
-                    service, name, owner, parent=parent)
-            else:
-                return_dict['msg'] = _("Could not find any layers in a compatible projection: \
-                The spatial id was: %(srs)s and the url %(url)s" % {'srs': service.spatialReference.wkid,
-                                                                    'url': service.url})
+            try:
+                if service.spatialReference.wkid in [102100, 102113, 3785, 3857, 900913]:
+                    return_dict = _process_arcgis_service(
+                        service, name, owner, parent=parent)
+                else:
+                    return_dict['msg'] = _("Could not find any layers in a compatible projection: \
+                    The spatial id was: %(srs)s and the url %(url)s" % {'srs': service.spatialReference.wkid,
+                                                                        'url': service.url})
+                    logger.debug(return_dict['msg'])
+            except Exception as e:
+                logger.exception('Error uploading from the service: ' + service.url + ' ' + str(e))
 
         services.append(return_dict)
 

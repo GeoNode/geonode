@@ -200,8 +200,7 @@
     $scope.query.limit = $scope.query.limit || CLIENT_RESULTS_LIMIT;
     $scope.query.offset = $scope.query.offset || 0;
     $scope.page = Math.round(($scope.query.offset / $scope.query.limit) + 1);
-
-
+   
     //Get data from apis and make them available to the page
     function query_api(data){
       $http.get(Configs.url, {params: data || {}}).success(function(data){
@@ -371,12 +370,20 @@
           choiceSelector: 'span',
           hideAfter: 200,
           minimumCharacters: 1,
-          appendAutocomplete: $('#text_search_input'),
-          placeholder: gettext('Enter your text here ...')
+          placeholder: gettext('Enter your text here ...'),
+          autoHilightFirst: false
     });
+
+    $('#text_search_input').keypress(function(e) {
+      if(e.which == 13) {
+        $('#text_search_btn').click();
+        $('.yourlabs-autocomplete').hide();
+      }
+    });
+
     $('#text_search_input').bind('selectChoice', function(e, choice, text_autocomplete) {
           if(choice[0].children[0] == undefined) {
-              $('#text_search_input').val(choice[0].innerHTML);
+              $('#text_search_input').val($(choice[0]).text());
               $('#text_search_btn').click();
           }
     });
@@ -482,13 +489,14 @@
         map_center: {
           lat: 5.6,
           lng: 3.9,
-          zoom: 1
+          zoom: 0
         },
         defaults: {
           zoomControl: false
         }
       });
 
+			
       var leafletData = $injector.get('leafletData'),
           map = leafletData.getMap('filter-map');
 
@@ -497,6 +505,16 @@
           $scope.query['extent'] = map.getBounds().toBBoxString();
           query_api($scope.query);
         });
+      });
+    
+      var showMap = false;
+      $('#_extent_filter').click(function(evt) {
+     	  showMap = !showMap
+        if (showMap){
+          leafletData.getMap().then(function(map) {
+            map.invalidateSize();
+          });
+        } 
       });
     }
   });

@@ -64,6 +64,9 @@ class Style(models.Model):
     def __str__(self):
         return "%s" % self.name.encode('utf-8')
 
+    def absolute_url(self):
+        return self.sld_url.split('geoserver/', 1)[1]
+
 
 class LayerManager(ResourceBaseManager):
 

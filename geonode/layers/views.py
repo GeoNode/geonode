@@ -20,7 +20,6 @@
 
 import os
 import sys
-import string
 import logging
 import shutil
 import traceback
@@ -129,8 +128,7 @@ def layer_upload(request, template='upload/layer_upload.html'):
             'charsets': CHARSETS,
             'is_layer': True,
         }
-        category_form = CategoryForm(prefix="category_choice_field", initial=None)
-        return render_to_response(template, {"category_form": category_form}, RequestContext(request, ctx))
+        return render_to_response(template, RequestContext(request, ctx))
     elif request.method == 'POST':
         form = NewLayerUploadForm(request.POST, request.FILES)
         tempdir = None
@@ -152,13 +150,6 @@ def layer_upload(request, template='upload/layer_upload.html'):
                 # exceptions when unicode characters are present.
                 # This should be followed up in upstream Django.
                 tempdir, base_file = form.write_files()
-                topic_id = request.META.get("HTTP_COOKIE")
-                topic_id = string.split(topic_id, " ")[0]
-                topic_id = string.split(topic_id, ":")[1]
-                topic_id = string.split(topic_id, ";")[0]
-                topic_category = TopicCategory.objects.get(
-                    id=topic_id
-                )
                 saved_layer = file_upload(
                     base_file,
                     name=name,
@@ -167,9 +158,6 @@ def layer_upload(request, template='upload/layer_upload.html'):
                     charset=form.cleaned_data["charset"],
                     abstract=form.cleaned_data["abstract"],
                     title=form.cleaned_data["layer_title"],
-                )
-                Layer.objects.filter(name=name).update(
-                    category=topic_category
                 )
             except Exception as e:
                 exception_type, error, tb = sys.exc_info()
@@ -332,6 +320,7 @@ def layer_metadata(request, layername, template='layers/layer_metadata.html'):
             prefix="category_choice_field",
             initial=int(
                 request.POST["category_choice_field"]) if "category_choice_field" in request.POST else None)
+
     else:
         layer_form = LayerForm(instance=layer, prefix="resource")
         attribute_form = layer_attribute_set(
@@ -396,6 +385,9 @@ def layer_metadata(request, layername, template='layers/layer_metadata.html'):
             layer.keywords.clear()
             layer.keywords.add(*new_keywords)
             the_layer = layer_form.save()
+            up_sessions = UploadSession.objects.filter(layer=the_layer.id)
+            if up_sessions.count() > 0 and up_sessions[0].user != the_layer.owner:
+                up_sessions.update(user=the_layer.owner)
             the_layer.poc = new_poc
             the_layer.metadata_author = new_author
             Layer.objects.filter(id=the_layer.id).update(

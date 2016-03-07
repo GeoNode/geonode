@@ -20,14 +20,17 @@
 
 import os
 import tempfile
-import autocomplete_light
 import zipfile
+import autocomplete_light
 
 from django.conf import settings
 from django import forms
 from django.utils import simplejson as json
 from geonode.layers.utils import unzip_file
 from geonode.layers.models import Layer, Attribute
+
+autocomplete_light.autodiscover() # flake8: noqa
+
 from geonode.base.forms import ResourceBaseForm
 
 
@@ -54,7 +57,6 @@ class LayerForm(ResourceBaseForm):
             'styles',
             'upload_session',
             'service',)
-        widgets = autocomplete_light.get_widgets_dict(Layer)
 
 
 class LayerUploadForm(forms.Form):

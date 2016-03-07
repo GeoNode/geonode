@@ -113,7 +113,7 @@ setup(name='GeoNode',
         "django-tastypie==0.11.0",
         "django-polymorphic==0.5.6",
         "django-leaflet==0.13.7",
-        "django-autocomplete-light==1.4.14",
+        "django-autocomplete-light==2.2.10",
         "django-modeltranslation==0.8",
 
         # GeoNode org maintained apps.
@@ -126,13 +126,13 @@ setup(name='GeoNode',
         "geonode-arcrest==10.2",
         "geonode-notification==1.1.1",
         "geonode-dialogos==0.4",
-        "gsconfig==1.0.0",
+        "gsconfig==1.0.3",
         "gsimporter==1.0.0",
         "gisdata==0.5.4",
 
         # geopython dependencies
-        "OWSLib==0.8.10",
-        "pycsw==1.10.2",
+        "OWSLib==0.10.0",
+        "pycsw==1.10.3",
 
         # haystack/elasticsearch, uncomment to use
         "django-haystack==2.1.0",

@@ -1,0 +1,396 @@
+.. module:: geoserver.processing
+
+.. _geoserver.processing:
+
+Introduction To Processing With GDAL Utilities 
+------------------------------------------------------------
+
+In the :ref:`Adding a GeoTiff <geoserver.add_geotiff>` section, a GeoTIFF file has been added to GeoServer as is. However, it's common practice to do a preliminary analysis on the available data and, if needed, optimize it since configuring big datasets without proper pre-processing, may result in low performance when accessing them. 
+In this section, instructions about how to do data optimization will be provided by introducing some FWTools Utilities.
+
+.. note:: On a *Windows* machine you can set-up a shell with all GDAL Utilities opening a terminal and running the file :file:`setenv.bat` under the `%TRAINING_ROOT%` folder. This operation must repeated whenever a new terminal window is open. Alternatively run directly the file :file:`gdal.bat` under the `%TRAINING_ROOT%` folder.
+
+gdalinfo
+````````
+This utility allows to get several info from the GDAL library, for instance, specific Driver capabilities and input Datasets/Files properties.  
+
+*gdalinfo - Getting Drivers Capabilities*
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Being GeoTIFF a widely adopted geospatial format, it's useful to get information about the GDAL GeoTIFF's Driver capabilities using the command::
+
+     gdalinfo --format GTIFF
+     
+This is only a trimmed down version of a typical output::
+
+     Format Details:
+       Short Name: GTiff
+       Long Name: GeoTIFF
+       Extension: tif
+       Mime Type: image/tiff
+       Help Topic: frmt_gtiff.html
+       Supports: Create() - Create writeable dataset.
+       Supports: CreateCopy() - Create dataset by copying another.
+       Supports: Virtual IO - eg. /vsimem/
+       Creation Datatypes: Byte UInt16 Int16 UInt32 Int32 Float32 Float64 CInt16 CInt32 CFloat32 CFloat64
+       <CreationOptionList>
+       <Option name="COMPRESS" type="string-select">
+              <Value>NONE</Value>
+              <Value>LZW</Value>
+              <Value>PACKBITS</Value>
+              <Value>JPEG</Value>
+              <Value>CCITTRLE</Value>
+              <Value>CCITTFAX3</Value>
+              <Value>CCITTFAX4</Value>
+              <Value>DEFLATE</Value>
+       </Option>
+       <Option name="PREDICTOR" type="int" description="Predictor Type" />
+       <Option name="JPEG_QUALITY" type="int" description="JPEG quality 1-100" default="75"/>
+       <Option name="ZLEVEL" type="int" description="DEFLATE compression level 1-9" default="6" />
+       <Option name="LZMA_PRESET" type="int" description="LZMA compression level 0(fast)-9(slow)" default="6" />
+       <Option name="NBITS" type="int" description="BITS for sub-byte files (1-7), sub-uint16 (9-15), sub-uint32 (17-31)" />
+       <Option name="INTERLEAVE" type="string-select" default="PIXEL">
+              <Value>BAND</Value>
+              <Value>PIXEL</Value>
+       </Option>
+       <Option name="TILED" type="boolean" description="Switch to tiled format"/>
+       <Option name="TFW" type="boolean" description="Write out world file"/>
+       <Option name="RPB" type="boolean" description="Write out .RPB (RPC) file" />
+       <Option name="BLOCKXSIZE" type="int" description="Tile Width"/>
+       <Option name="BLOCKYSIZE" type="int" description="Tile/Strip Height"/>
+       <Option name="PHOTOMETRIC" type="string-select">
+              <Value>MINISBLACK</Value>
+              <Value>MINISWHITE</Value>
+              <Value>PALETTE</Value>
+              <Value>RGB</Value>
+              <Value>CMYK</Value>
+              <Value>YCBCR</Value>
+              <Value>CIELAB</Value>
+              <Value>ICCLAB</Value>
+              <Value>ITULAB</Value>
+       </Option>
+       <Option name="SPARSE_OK" type="boolean" description="Can newly created files have missing blocks?" default="FALSE" />
+       <Option name="ALPHA" type="boolean" description="Mark first extrasample as being alpha" />
+       <Option name="PROFILE" type="string-select" default="GDALGeoTIFF">
+              <Value>GDALGeoTIFF</Value>
+              <Value>GeoTIFF</Value>
+              <Value>BASELINE</Value>
+       </Option>
+       <Option name="PIXELTYPE" type="string-select">
+              <Value>DEFAULT</Value>
+              <Value>SIGNEDBYTE</Value>
+       </Option>
+       <Option name="BIGTIFF" type="string-select" description="Force creation of BigTIFF file">
+              <Value>YES</Value>
+              <Value>NO</Value>
+              <Value>IF_NEEDED</Value>
+              <Value>IF_SAFER</Value>
+       </Option>
+       <Option name="ENDIANNESS" type="string-select" default="NATIVE" description="Force endianness of created file. For DEBUG purpose mostly">
+              <Value>NATIVE</Value>
+              <Value>INVERTED</Value>
+              <Value>LITTLE</Value>
+              <Value>BIG</Value>
+       </Option>
+       <Option name="COPY_SRC_OVERVIEWS" type="boolean" default="NO" description="Force copy of overviews of source dataset (CreateCopy())" />
+       </CreationOptionList>
+
+From the above list of create options it's possible to determine the main GeoTIFF Driver's writing capabilities:
+  * COMPRESS: customize the compression to be used when writing output data
+  * JPEG_QUALITY: specify a quality factor to be used by the JPEG compression
+  * TILED: When set to YES it allows to tile output data
+  * BLOCKXSIZE, BLOCKYZISE: Specify the Tile dimension width and Tile dimension height
+  * PHOTOMETRIC: Specify the photometric interpretation of the data
+  * PROFILE: Specify the GeoTIFF profile to be used (some profiles only support a minimal set of TIFF Tags while some others provide a wider range of Tags)
+  * BIGTIFF: Specify when to write data as BigTIFF (A TIFF format which allows to break the 4GB Offset boundary)
+
+
+
+*gdalinfo - Getting Dataset/File Properties*
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+The following instructions allow you to get information about the sample dataset previously configured in GeoServer.
+
+#. Run::
+
+    * Linux::
+      
+      cd ${TRAINING_ROOT}/data/user_data/aerial
+      
+      gdalinfo 13tde815295_200803_0x6000m_cl.tif
+     
+    * Windows::
+     
+      setenv.bat
+     
+      cd %TRAINING_ROOT%\data\user_data\aerial\
+      
+      gdalinfo 13tde815295_200803_0x6000m_cl.tif
+
+   .. figure:: img/fw_basegdalinfo.png
+
+      Part of the *gdalinfo* output on a sample dataset 
+
+#. Check the **Block** info as well as the **Overviews** info if present. 
+  
+  * **Block**: It represents the internal tiling. Notice that the sample dataset has tiles made of 16 rows having width equals to the full image width.  
+  * **Overviews**: It provides information about the underlying overviews. Notice that the sample dataset doesn't have overviews since the *Overviews* property is totally missing from the gdalinfo output. 
+
+gdal_translate
+``````````````
+This utility allows to convert a dataset to a different format by allowing a wide set of parameters to customize the conversion.
+
+Running the command::
+
+     gdal_translate
+
+allows to get the list of supported parameters as well as the supported output formats::
+
+     Usage: gdal_translate [--help-general]
+            [-ot {Byte/Int16/UInt16/UInt32/Int32/Float32/Float64/
+                  CInt16/CInt32/CFloat32/CFloat64}] [-strict]
+            [-of format] [-b band] [-mask band] [-expand {gray|rgb|rgba}]
+            [-outsize xsize[%] ysize[%]]
+            [- unscale] [-scale [src_min src_max [dst_min dst_max]]]
+            [-srcwin xoff yoff xsize ysize] [-projwin ulx uly lrx lry]
+            [-a_srs srs_def] [-a_ullr ulx uly lrx lry] [-a_nodata value]
+            [-gcp pixel line easting northing [elevation]]*
+            [-mo "META-TAG=VALUE"]* [-q] [-sds]
+            [-co "NAME=VALUE"]* [-stats]
+            src_dataset dst_dataset
+
+Where the meaning of the main parameters is summarized below:
+  * *-ot*: allows to specify the output datatype (Make sure that the specified datatype is contained in the *Creation Datatypes* list of the Writing driver)
+  * *-of*: specify the desired output format (GTIFF is the default value)
+  * *-b*: allows to specify an input band to be written in the output file. (Use multiple *-b* option to specify more bands)
+  * *-mask*: allows to specify an input band to be write an output dataset mask band.
+  * *-expand*: allows to expose a dataset with 1 band with a color table as a dataset with 3 (rgb) or 4 (rgba) bands. The (gray) value allows to expand a dataset with a color table containing only gray levels to a gray indexed dataset.
+  * *-outsize*: allows to set the size of the output file in terms of pixels and lines unless the *%* sign is attached in which case it's as a fraction of the input image size.
+  * *-unscale*: allows to apply the scale/offset metadata for the bands to convert from scaled values to unscaled ones.
+  * *-scale*: allows to rescale the input pixels values from the range src_min to src_max to the range dst_min to dst_max. (If omitted the output range is 0 to 255. If omitted the input range is automatically computed from the source data).
+  * *-srcwin*: allows to select a subwindow from the source image in terms of xoffset, yoffset, width and height
+  * *-projwin*: allows to select a subwindow from the source image by specifying the corners given in georeferenced coordinates.
+  * *-a_srs*: allows to override the projection for the output file. The srs_def may be any of the usual GDAL/OGR forms, complete WKT, PROJ.4, EPSG:n or a file containing the WKT.
+  * *-a_ullr*: allows to assign/override the georeferenced bounds of the output file. 
+  * *-a_nodata*: allows to assign a specified nodata value to output bands.
+  * *-co*: allows to set a creation option in the form "NAME=VALUE" to the output format driver. (Multiple *-co* options may be listed.)
+  * *-stats*: allows to get statistics (min, max, mean, stdDev) for each band
+  * *src_dataset*: is the source dataset name. It can be either file name, URL of data source or subdataset name for multi*-dataset files.
+  * *dst_dataset*: is the destination file name. 
+  
+*gdal_translate - Tiling the sample dataset*
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+The following steps provide instructions to tile the sample dataset previously configured in GeoServer, by using the GeoTiff driver.
+
+1. Create a directory to store the converted data:
+
+  * Linux::
+  
+     cd ${TRAINING_ROOT}/data/user_data
+     
+     mkdir retiled 
+     
+  * Windows::
+  
+     cd %TRAINING_ROOT%\data\user_data
+     
+     mkdir retiled 
+
+2. Convert the input sample data to an output file having tiling set to 512x512. Run:
+
+  * Linux::
+  
+     gdal_translate -co "TILED=YES" -co "BLOCKXSIZE=512" -co "BLOCKYSIZE=512" aerial/13tde815295_200803_0x6000m_cl.tif retiled/13tde815295_200803_0x6000m_cl.tif 
+     
+  * Windows::
+     
+     gdal_translate -co "TILED=YES" -co "BLOCKXSIZE=512" -co "BLOCKYSIZE=512" aerial\13tde815295_200803_0x6000m_cl.tif retiled\13tde815295_200803_0x6000m_cl.tif 
+
+3. Optionally, check that the output dataset have been successfully tiled, by running the command:
+
+  * Linux::
+  
+     gdalinfo retiled/13tde815295_200803_0x6000m_cl.tif 
+     
+  * Windows::
+     
+     gdalinfo retiled\13tde815295_200803_0x6000m_cl.tif 
+     
+
+   .. figure:: img/fw_tiledgdalinfo.png
+
+      Part of the *gdalinfo* output on the tiled dataset. Notice the **Block** value now is 512x512
+
+gdaladdo
+````````
+This utility allows to add overviews to a dataset. The following steps provide instructions to add overviews to the tiled sample dataset.
+
+Running the command::
+
+     gdaladdo
+
+allows to get the list of supported parameters::
+
+     Usage: gdaladdo [-r {nearest,average,gauss,average_mp,average_magphase,mode}]
+                     [-ro] [--help-general] filename levels
+
+Where the meaning of the main parameters is summarized below:
+  * *-r*: allows to specify the resampling algorithm (Nearest is the default value)
+  * *-ro*: allows to open the dataset in read-only mode, in order to generate external overview (for GeoTIFF especially)
+  * *filename*: represents the file to build overviews for.
+  * *levels*: allows to specify a list of overview levels to build.
+
+*gdaladdo - Adding overviews to the sample dataset*
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+#. Run:
+
+  * Linux::
+  
+     cd ${TRAINING_ROOT}/data/user_data/retiled
+
+     gdaladdo -r average 13tde815295_200803_0x6000m_cl.tif 2 4 8 16 32
+     
+  * Windows::
+  
+     cd %TRAINING_ROOT%\data\user_data\retiled
+
+     gdaladdo -r average 13tde815295_200803_0x6000m_cl.tif 2 4 8 16 32
+
+   to add 5 levels of overviews having 2,4,8,16,32 subsampling factors applied to the original image resolution respectively.
+
+#. Optionally, check that the overviews have been added to the dataset, by running the command::
+
+     gdalinfo 13tde815295_200803_0x6000m_cl.tif
+
+   .. figure:: img/fw_tiledovgdalinfo.png
+
+      Part of the *gdalinfo* output on the tiled dataset with overviews. Notice the **Overviews** properties
+
+Process in bulk
+```````````````
+
+Instead of manually repeating these 2 steps (retile + add overviews) for each file, we can invoke a few commands to get it automated.
+
+#. Run:
+
+  * Linux::
+  
+     cd ${TRAINING_ROOT}/data/user_data
+
+     mkdir optimized
+
+     cd aerial
+
+     for i in `find *.tif`; do gdal_translate -CO "TILED=YES" -CO "BLOCKXSIZE=512" -CO "BLOCKYSIZE=512" $i ../optimized/$i; gdaladdo -r average ../optimized/$i 2 4 8 16 32; done
+     
+  * Windows::
+      
+      cd %TRAINING_ROOT%\data\user_data\
+      
+      mkdir optimized
+      
+      cd aerial
+      
+	  notepad optimize.bat
+	  
+    will be open a text editor. Copy the following content::
+  
+	  for %%F in (*.tif) do  (
+		echo Processing file %%F
+
+		REM translate
+		echo Performing gdal_translate on file %%F to file %%~nF.tiff
+		gdal_translate -co "TILED=YES" -co "BLOCKXSIZE=512" -co "BLOCKYSIZE=512" -co "COMPRESS=DEFLATE" %%F ..\optimized\%%~nF.tiff
+
+		REM add overviews
+		echo Adding overviews on file %%~nF.tiff
+		gdaladdo -r average --config COMPRESS_OVERVIEW DEFLATE ..\optimized\%%~nF.tiff 2 4 8 16 32
+
+	  )
+  
+    Then save the file and run the created .bat file::
+	
+		optimize.bat
+
+#. You should see a list of run like this::
+
+     ...
+     Input file size is 2500, 2500
+     0...10...20...30...40...50...60...70...80...90...100 - done.
+     0...10...20...30...40...50...60...70...80...90...100 - done.
+     Input file size is 2500, 2500
+     0...10...20...30...40...50...60...70...80...90...100 - done.
+     0...10...20...30...40...50...60...70...80...90...100 - done.
+     Input file size is 2500, 2500
+     0...10...20...30...40...50...60...70...80...90...100 - done.
+     0...10...20...30...40...50...60...70...80...90...100 - done.
+     ...
+
+.. warning:: This process can take some seconds.
+
+At this point optimized datasets have been prepared and they are ready to be served by GeoServer as an ImageMosaic. 
+
+gdalwarp
+````````
+This utility allows to warp and reproject a dataset. The following steps provide instructions to reproject the aerial dataset (which has "EPSG:26913" coordinate reference system) to WGS84 ("EPSG:4326").
+
+Running the command::
+
+     gdalwarp
+
+allows to get the list of supported parameters::
+
+     Usage: gdalwarp [--help-general] [--formats]
+            [-s_srs srs_def] [-t_srs srs_def] [-to "NAME=VALUE"]
+            [-order n | -tps | -rpc | -geoloc] [-et err_threshold]
+            [-refine_gcps tolerance [minimum_gcps]]
+            [-te xmin ymin xmax ymax] [-tr xres yres] [-tap] [-ts width height]
+            [-wo "NAME=VALUE"] [-ot Byte/Int16/...] [-wt Byte/Int16]
+            [-srcnodata "value [value...]"] [-dstnodata "value [value...]"] -dstalpha
+            [-r resampling_method] [-wm memory_in_mb] [-multi] [-q]
+            [-cutline datasource] [-cl layer] [-cwhere expression]
+            [-csql statement] [-cblend dist_in_pixels] [-crop_to_cutline]
+            [-of format] [-co "NAME=VALUE"]* [-overwrite]
+            srcfile* dstfile
+
+Where the meaning of the main parameters is summarized below:
+  * *-s_srs*: allows to specify the source coordinate reference system
+  * *-t_srs*: allows to specify the target coordinate reference system
+  * *-te*: allows to set georeferenced extents (expressed in target CRS) of the output
+  * *-tr*: allows to specify the output resolution (expressed in target georeferenced units)
+  * *-ts*: allows to specify the output size in pixel and lines.
+  * *-r*: allows to specify the resampling method (one of near, bilinear, cubic, cubicspline and lanczos)
+  * *-srcnodata*: allows to specify band values to be excluded from interpolation.
+  * *-dstnodata*: allows to specify nodata values on output file.
+  * *-wm*: allows to specify the amount of memory (expressed in megabytes) used by the warping API for caching.
+
+
+*gdalwarp - Reprojecting sample dataset to WGS84*
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+#. Run:
+
+  * Linux::
+
+     cd ${TRAINING_ROOT}/data/user_data/retiled
+
+     gdalwarp -t_srs "EPSG:4326" -co "TILED=YES" 13tde815295_200803_0x6000m_cl.tif 13tde815295_200803_0x6000m_cl_warped.tif
+
+  * Windows::
+
+     cd %TRAINING_ROOT%/data/user_data/retiled
+
+     gdalwarp -t_srs "EPSG:4326" -co "TILED=YES" 13tde815295_200803_0x6000m_cl.tif 13tde815295_200803_0x6000m_cl_warped.tif	 
+
+   to reproject the specified aerial dataset to WGS84 coordinate reference system.
+
+#. Optionally, check that reprojection has been successfull, by running the command::
+
+     gdalinfo 13tde815295_200803_0x6000m_cl_warped.tif
+
+   .. figure:: img/fw_warpedgdalinfo.png
+
+      Part of the *gdalinfo* output on the warped dataset. Notice the updated **Coordinate System** property
+
+
+In the :ref:`next <geoserver.mosaic_pyramid>` section, instructions to configure an ImageMosaic will be provided.
