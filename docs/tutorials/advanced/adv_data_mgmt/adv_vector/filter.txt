@@ -1,0 +1,39 @@
+.. _geoserver.vector_data.filter:
+
+Filtering and Extracting vector data
+------------------------------------
+
+WFS also defines mechanisms to only retrieve a subset of the data that matches some specified constraints.
+
+#. Create a new ``request.xml`` file in the training root and past the following request into it::
+ 
+    <wfs:GetFeature xmlns:wfs='http://www.opengis.net/wfs'
+      xmlns:ogc='http://www.opengis.net/ogc' service='WFS' version='1.0.0'>
+      <Query typeName='geosolutions:WorldCountries'>
+        <ogc:Filter>
+          <ogc:FeatureId fid='WorldCountries.137' />
+        </ogc:Filter>
+      </Query>
+    </wfs:GetFeature>
+
+#. Go on the command line, move to the training folder root, and execute the request using CURL::
+
+    curl -XPOST -d @request.xml -H "Content-type: application/xml" "http://localhost:8083/geoserver/ows"
+
+
+#. Now, let's write an equivalent request - using the name of the state instead of the ``id``- issuing a ``GET`` and encoding the filter in a language called `CQL <http://en.wikipedia.org/wiki/CQL>`_. Copy the following  URL in your browser's navigation bar::
+
+    http://localhost:8083/geoserver/wfs?request=GetFeature&service=WFS&version=1.0.0&typeName=geosolutions:WorldCountries&outputFormat=GML2&CQL_FILTER=NAME=%27Monaco%27
+
+   .. figure:: img/cql-filter-url.png
+
+      The CQL filter in the Firefox URL bar
+
+   .. figure:: img/cql_filter_result.png
+ 
+      The results of the CQL filter
+
+That's how a feature set is filtered with either the OGC encoding or the CQL notation.
+
+In the :ref:`next <geoserver.vector_data.wfst>` section we will see how to edit the features via a protocol called WFS Transactional (WFS-T).
+

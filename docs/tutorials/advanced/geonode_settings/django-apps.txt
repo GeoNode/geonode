@@ -1,0 +1,393 @@
+.. _djangoapps:
+
+===================
+GeoNode Django Apps
+===================
+
+The user interface of a GeoNode site is built on top of the Django web
+framework.  GeoNode includes a few "apps" (reusable Django modules) to support
+development of those user interfaces.  While these apps have reasonable default
+configurations, for customized GeoNode sites you will probably want to adjust
+these apps for your specific needs.
+
+.. comment:
+  .. toctree::
+     :maxdepth: 2
+
+     django-apps/base
+     django-apps/documents
+     django-apps/layers
+     django-apps/maps
+     django-apps/proxy
+     django-apps/search
+     django-apps/security
+  
+  .. comment:
+      geonode.base
+        core application functionality.
+
+      geonode.documents
+        document creation and management.
+
+      geonode.layers
+        manage layers
+
+      geonode.maps
+        manage maps, styles
+  
+      geonode.proxy
+        support JavaScript applications accessing GeoServer
+
+      geonode.search
+        searching GeoNode.
+
+      geonode.security
+        provide django auth backend for providing security system.
+
+
+``geonode.base`` - GeoNode core functionality
+=============================================
+
+  Stores core functionality used throughout the GeoNode application.
+
+Template Tags
+-------------
+num_ratings <object>
+
+  Returns the number of ratings an object has.  Example usage::
+
+    {% load base_tags %}
+    {% num_ratings map as num_votes %}
+
+    <p>Map votes: {{num_votes}}.</p>
+
+categories
+
+  Returns topic categories and the count of objects in each category.
+
+
+``geonode.documents`` - Document creation and management
+========================================================
+
+  Manages uploaded files that can be related to maps.  Documents can be any type of file that is included in the
+  ALLOWED_DOCUMENTS_TYPES setting.
+
+``settings.py`` Entries
+-----------------------
+
+ALLOWED_DOCUMENT_TYPES
+  Default: ``['doc', 'docx', 'xls', 'xslx', 'pdf', 'zip', 'jpg', 'jpeg', 'tif', 'tiff', 'png', 'gif', 'txt']``
+
+  A list of acceptable file extensions that can be uploaded to the Documents app.
+
+MAX_DOCUMENT_SIZE
+  Default: ``2``
+
+  The maximum size (in megabytes) that an upload will be before it gets rejected.
+
+``geonode.layers`` - Layer creation and geospatial data management
+==================================================================
+This Django app provides support for managing and manipulating single geospatial datasets known as layers.
+
+Models
+------
+* Attribute - Feature attributes for a layer managed by the GeoNode.
+* Layer - A data layer managed by the GeoNode
+* Style - A data layer's style managed by the GeoNode
+
+Views
+-----
+* Creating, viewing, browsing, editing, and deleting layers and their metadata
+
+Template Tags
+-------------
+featured_layers
+  Returns the the 7 newest layers.
+
+layer_thumbnail <layer>
+  Returns the layer's thumbnail.
+
+``manage.py`` Commands
+----------------------
+
+importlayers
+   ``python manage.py importlayers``
+
+   Brings a data file or a directory full of data files into a
+   GeoNode site.  Layers are added to the Django database, the
+   GeoServer configuration, and the GeoNetwork metadata index.
+
+updatelayers
+  ``python manage.py updatelayers``
+
+  Scan Geoserver for data that has not been added to GeoNode.
+
+``geonode.maps`` - Map creation and geospatial data management
+==============================================================
+
+This Django app provides some support for managing and manipulating geospatial
+datasets.  In particular, it provides tools for editing, viewing, and searching
+metadata for data layers, and for editing, viewing, and searching maps that
+aggregate data layers to display data about a particular topic.
+
+Models
+------
+
+* Map - A collection of data layers composed in a particular order to form a map
+* MapLayer - A model that maintains some map-specific information related to a layer, such as the z-indexing order.
+
+Views
+-----
+
+The maps app provides views for:
+
+* Creating, viewing, browsing, editing, and deleting Maps
+
+These operations require the use of GeoServer to manage map rendering, as well
+as GeoExt to provide interactive editing and previewing of maps and data layers.
+
+There are also some url mappings in the ``geonode.maps.urls`` module for easy
+inclusion in GeoNode sites.
+
+``settings.py`` Entries
+-----------------------
+
+OGC_SERVER
+  Default: ``{}`` (Empty dictionary)
+
+  A dictionary of OGC servers and and their options.  The main
+  server should be listed in the 'default' key.  If there is no 'default'
+  key or if the ``OGC_SERVER`` setting does not exist GeoNode will raise
+  an Improperly Configured exception.  Below is an example of the ``OGC_SERVER``
+  setting::
+
+   OGC_SERVER = {
+     'default' : {
+         'LOCATION' : 'http://localhost:8080/geoserver/',
+         'USER' : 'admin',
+         'PASSWORD' : 'geoserver',
+     }
+   }
+
+  BACKEND
+    Default: ``"geonode.geoserver"``
+
+    The OGC server backend to use.  The backend choices are:
+
+    * ``'geonode.geoserver'``
+
+  BACKEND_WRITE_ENABLED
+    Default: ``True``
+
+    Specifies whether the OGC server can be written to.  If False, actions that modify
+    data on the OGC server will not execute.
+
+  LOCATION
+    Default: ``"http://localhost:8080/geoserver/"``
+
+    A base URL from which GeoNode can construct OGC service URLs.
+    If using Geoserver you can determine this by
+    visiting the GeoServer administration home page without the
+    /web/ at the end.  For example, if your GeoServer administration app is at
+    http://example.com/geoserver/web/, your server's location is http://example.com/geoserver.
+
+  PUBLIC_LOCATION
+    Default: ``"http://localhost:8080/geoserver/"``
+
+    The URL used to in most public requests from GeoNode.  This settings allows a user to write to one OGC server (the LOCATION setting)
+    and read from a seperate server or the PUBLIC_LOCATION.
+
+  USER
+    Default: ``'admin'``
+
+    The administrative username for the OGC server as a string.
+
+  PASSWORD
+    Default: ``'geoserver'``
+
+    The administrative password for the OGC server as a string.
+
+  MAPFISH_PRINT_ENABLED
+    Default: ``True``
+
+    A boolean that represents whether the Mapfish printing extension is enabled on the server.
+
+  PRINT_NG_ENABLED
+    Default: ``True``
+
+    A boolean that represents whether printing of maps and layers is enabled.
+
+  GEONODE_SECURITY_ENABLED
+    Default: ``True``
+
+    A boolean that represents whether GeoNode's security application is enabled.
+
+  GEOGIT_ENABLED
+    Default: ``False``
+
+    A boolean that represents whether the OGC server supports Geogig datastores.
+
+  WMST_ENABLED
+    Default: ``False``
+
+    Not implemented.
+
+  WPS_ENABLED
+    Default: ``False``
+
+    Not implemented.
+
+  DATASTORE
+    Default: ``''`` (Empty string)
+
+    An optional string that represents the name of a vector datastore that GeoNode uploads
+    are imported into.  In order to support vector datastore imports there also needs to be an
+    entry for the datastore in the ``DATABASES`` dictionary with the same name.  Example::
+
+     OGC_SERVER = {
+       'default' : {
+          'LOCATION' : 'http://localhost:8080/geoserver/',
+          'USER' : 'admin',
+          'PASSWORD' : 'geoserver',
+          'DATASTORE': 'geonode_imports'
+       }
+     }
+
+     DATABASES = {
+      'default': {
+          'ENGINE': 'django.db.backends.sqlite3',
+          'NAME': 'development.db',
+      },
+      'geonode_imports' : {
+          'ENGINE': 'django.contrib.gis.db.backends.postgis',
+          'NAME': 'geonode_imports',
+          'USER' : 'geonode_user',
+          'PASSWORD' : 'a_password',
+          'HOST' : 'localhost',
+          'PORT' : '5432',
+       }
+      }
+
+
+GEOSERVER_CREDENTIALS
+  Removed in GeoNode 2.0, this value is now specified in the ``OGC_SERVER`` settings.
+
+GEOSERVER_BASE_URL
+  Removed in GeoNode 2.0, this value is now specified in the ``OGC_SERVER`` settings.
+
+CATALOGUE
+  A dict with the following keys:
+
+  * ENGINE: The CSW backend (default is ``geonode.catalogue.backends.pycsw_local``)
+  * URL: The FULLY QUALIFIED base url to the CSW instance for this GeoNode
+  * USERNAME: login credentials (if required)
+  * PASSWORD: login credentials (if required)
+
+  pycsw is the default CSW enabled in GeoNode.  pycsw configuration directives
+  are managed in the PYCSW entry.
+
+PYCSW
+  A dict with pycsw's configuration.  Of note are the sections
+  ``metadata:main`` to set CSW server metadata and ``metadata:inspire``
+  to set INSPIRE options.  Setting ``metadata:inspire['enabled']`` to ``true``
+  will enable INSPIRE support.  Server level configurations can be overridden
+  in the ``server`` section.  See http://pycsw.org/docs/configuration.html
+  for full pycsw configuration details.
+
+SITEURL
+  Default: ``'http://localhost:8000/'``
+
+  A base URL for use in creating absolute links to Django views.
+
+DEFAULT_MAP_BASE_LAYER
+  The name of the background layer to include in newly created maps.
+ 
+DEFAULT_MAP_CENTER
+  Default: ``(0, 0)``
+
+  A 2-tuple with the latitude/longitude coordinates of the center-point to use
+  in newly created maps.
+ 
+DEFAULT_MAP_ZOOM
+  Default: ``0``
+
+  The zoom-level to use in newly created maps.  This works like the OpenLayers
+  zoom level setting; 0 is at the world extent and each additional level cuts
+  the viewport in half in each direction.
+
+``geonode.proxy`` - Assist JavaScript applications in accessing remote servers
+==============================================================================
+
+This Django app provides some HTTP proxies for accessing data from remote
+servers, to overcome restrictions imposed by the same-origin policy used by
+browsers.  This helps the GeoExt applications in a GeoNode site to access various XML documents from OGC-compliant data services.
+
+Views
+-----
+
+geonode.proxy.views.proxy
+  This view forwards requests without authentication to a URL provided in the
+  request, similar to the proxy.cgi script provided by the OpenLayers project.
+
+geonode.proxy.views.geoserver
+  This view proxies requests to GeoServer.  Instead of a URL-encoded URL
+  parameter, the path component of the request is expected to be a path
+  component for GeoServer.  Requests to this URL require valid authentication
+  against the Django site, and will use the default ``OGC_SERVER`` ``USER``,
+  ``PASSWORD`` and ``LOCATION`` settings as defined in the maps application.
+
+``geonode.search`` - Provides the GeoNode search functionality.
+===============================================================
+This Django app provides a fast search functionality to GeoNode.
+
+Views
+-----
+* search_api- Builds and executes a search query based on url parameters and returns matching results in requested format.
+
+``geonode.security`` - GeoNode granular Auth Backend
+====================================================
+
+This app provides an authentication backend for use in assigning permissions to individual objects (maps and layers).
+
+``settings.py`` Entries
+-----------------------
+
+LOCKDOWN_GEONODE
+  Default: ``False``
+
+  By default, the GeoNode application allows visitors to view most pages without
+  being authenticated.  Set ``LOCKDOWN_GEONODE = True`` to require a user to
+  be authenticated before viewing the application.
+
+AUTH_EXEMPT_URLS
+  Default: ``()`` (Empty tuple)
+
+  A tuple of url patterns that the user can visit without being authenticated.
+  This setting has no effect if ``LOCKDOWN_GEONODE`` is not True.  For example,
+  ``AUTH_EXEMPT_URLS = ('/maps',)`` will allow unauthenticated users to
+  browse maps.
+
+Template Tags
+-------------
+geonode_media <media_name>
+  Accesses entries in MEDIA_LOCATIONS without requiring the view to explicitly
+  add it to the template context.  Example usage::
+
+  {% include geonode_media %}
+  {% geonode_media "ext_base" %}
+
+has_obj_perm <user> <obj> <permission>
+  Checks whether the user has the specified permission on an object.
+
+  ``{% has_obj_perm user obj "app.view_thing" as can_view_thing %}``
+
+
+Django's error templates
+========================
+
+GeoNode customizes some of Django's default error templates.
+
+500.html
+--------
+
+If no custom handler for 500 errors is set up in the URLconf module, django will call django.views.defaults.server_error which expects a 500.html file in the root of the templates directory. In GeoNode, we have put a template that does not inherit from anything as 500.html and because most of Django's machinery is down when an INTERNAL ERROR (500 code) is encountered the use of template tags should be avoided.

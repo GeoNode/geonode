@@ -1,0 +1,197 @@
+.. _ubuntu_basic_tutorial:
+
+=====================
+Ubuntu Basic Tutorial
+=====================
+
+`Ubuntu <https://en.wikipedia.org/wiki/Ubuntu_(operating_system)>`_ is one of the most
+widespread `Linux <https://en.wikipedia.org/wiki/Linux>`_ `Distributions <https://en.wikipedia.org/wiki/Linux_distribution>`_
+.
+
+In this section of the documentation you will learn how to do basic operations in
+Ubuntu such as Log inand Log out, Launch applications and Install new software.
+
+User Login
+==========
+
+When you first start Ubuntu, at the end of the boot process you see the Ubuntu
+login screen
+
+.. image:: img/ubuntu_admin_1.png
+   :width: 600px
+   :alt: Ubuntu login screen
+
+Select the user you want to login as, enter the password and press `Enter`. In a
+few second the user's desktop will appear.
+
+.. image:: img/ubuntu_admin_2.png
+   :width: 600px
+   :alt: Ubuntu Desktop
+
+User Interface Walkthrough
+==========================
+
+The panel on the left side of the screen contains shortcuts to frequently used
+application. From dark grey bar at the top you can reach network settings
+(the icon with two arrows pointing in opposite directions) system language (the icon
+with `En` written inside it), audio volume, system date and time and power menu
+(top right corner with an icon half way between a gear and power buttom).
+
+From the power menu you can switch to a different user, logout, power off the system
+or access system settings.
+
+In `system setting ` menu you can set several different parameters for the system
+
+.. image:: img/ubuntu_admin_3.png
+   :width: 600px
+   :alt: Ubuntu System settings
+
+Launch an application
+=====================
+
+You  can launch the applications listed in the `Favourites` panel simply by clicking on them.
+
+If the application you want to launch is not in the favourites panel, use the Ubuntu
+Launcher. Click on the Ubuntu Launcher icon in the top left corner of the screen
+
+.. image:: img/ubuntu_admin_4.png
+   :width: 600px
+   :alt: Ubuntu Launcher
+
+Write down the name of the application. A list of applications matching the name you
+are searching will show up, for and press `Enter` or click on the icon of the
+application.
+
+Install new software
+====================
+
+To install new software, open the `Ubuntu software Center` (you will find it in the
+favourite applications panel).
+
+Enter the name of the application you are looking for in the search bar
+
+.. image:: img/ubuntu_admin_5.png
+   :width: 600px
+   :alt: Ubuntu Software Center
+
+A list of candidate applications will appear. Click on the one you want to install,
+then click `install` to install it. You will be prompted for administrative password
+
+.. image:: img/ubuntu_admin_6.png
+   :width: 600px
+   :alt: Ubuntu Software Center
+
+And your application will be installed in the system.
+
+Launch the terminal emulator
+============================
+
+Click on the `Ubuntu Launcher` icon in the top left corner of the screen, and type
+gnome-terminal in the search box
+
+.. image:: img/ubuntu_admin_7.png
+   :width: 600px
+   :alt: Ubuntu Software Center
+
+And launch the terminal emulator.
+
+.. image:: img/ubuntu_admin_8.png
+   :width: 600px
+   :alt: Ubuntu Software Center
+
+Terminal emulator will open and will be ready for your commands.
+
+
+Basic commands
+==============
+
+Current working directory
+-------------------------
+
+::
+
+    $ pwd
+    /home/geo
+
+The `pwd` command will show you your `working directory`, that is the directory
+you are inside of and running your commands in.
+
+Create a directory
+------------------
+
+::
+
+    $ mkdir test
+
+To create a new directory inside your working directory use the `mkdir` command
+followed by the folder name argument
+
+Delete a directory
+------------------
+
+::
+
+    $ rmdir test
+
+To delete an empty directory type `rmdir` followed by the folder name argument
+
+Create an empty file
+--------------------
+
+::
+
+    $ touch testfile
+
+To create an empty file in your current working directory use the `touch` command
+followed by the name of the file
+
+Delete a file
+-------------
+
+::
+
+    $ rm filename
+
+To delete a file use the `rm` command followed by the file name
+
+Change working directory
+------------------------
+
+::
+
+    $ cd /home
+
+To change your current working directory use the `cd` command followed by the `path`
+(location) you want to change to
+
+List content of a folder
+------------------------
+
+::
+
+    $ ls
+
+The `ls` command will list the content of your current working directory. You can
+optionally provide a path to a directory as argument, in that case `ls` will show
+you the content of that directory ::
+
+    $ ls /home
+    geo  geonode
+
+Home folder
+-----------
+
+A user's home folder is the folder where he or she will do most of the operations
+in. Inside your home folder you can freely create or delete file and folders.
+
+To switch to your home folder you can use the tilde `~` character as a shortcut
+::
+
+    $ cd ~
+    $ pwd
+    /home/geo
+
+
+For more information on Ubuntu refer to the `Ubuntu user manual <http://ubuntu-manual.org/?lang=en>`_
+
+For more terminal commands read the `Using the terminal <https://help.ubuntu.com/community/UsingTheTerminal>`_ guide

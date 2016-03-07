@@ -1,0 +1,283 @@
+.. module:: geoserver.pretty_maps
+   :synopsis: Style point data
+
+Styling point data 
+====================================
+
+Point data in SLD can be depicted with ``PointSymbolizer`` and labelled with ``TextSymbolizer``.
+This section describe an existing, realistic style, available in the data directory that depicts the *point landmarks* layer (``bptlandmarks``) with icons and labels.
+
+The dataset
+-----------
+
+The ``bptlandmarks`` layer (Boulder point landmarks) contains the location of significant point entities such as malls, schools, airports and the like. The attribute structure is reported in the `GeoServer page for such layer <http://localhost:8083/geoserver/web/?wicket:bookmarkablePage=:org.geoserver.web.data.resource.ResourceConfigurationPage&name=bptlandmarks&wsName=geosolutions>`_:
+
+
+.. figure:: img/pt_attribute_table.png
+
+   Point landmarks attribute structure
+
+The style will use the ``MTFCC`` code to categorize the various points in the different types (e.g., schools have ``MTFCC = K2543``, and eventually use ``FULLNAME`` for the label.
+This results in the `following map <http://localhost:8083/geoserver/geosolutions/wms?service=WMS&version=1.1.0&request=GetMap&layers=geosolutions:BoulderCityLimits,geosolutions:bptlandmarks&styles=line,&bbox=-105.688,39.914,-105.06,40.261&width=597&height=330&srs=EPSG:4269&format=application/openlayers>`_:
+
+.. figure:: img/pt_landmark_map.png
+
+   Point landmarks in Boulder
+  
+The complete style we'll be referring to is named ``point_landmark``, you can have a look at the full style in the `GeoServer style editor <http://localhost:8083/geoserver/web/?wicket:bookmarkablePage=:org.geoserver.wms.web.data.StyleEditPage&name=point_landmark>`_:
+
+.. figure:: img/pt_landmark_style.png
+
+   Point landmarks style
+
+  
+Point symbolizers
+-----------------
+
+A point symbolizer depicts a symbol by means of a ``Mark`` or a ``External Graphic``.
+The former is a built-in vector symbol that can be stroked and filled at the styler will, but only a handful of such symbols are available, whilst the latter can be a user provided image or SVG graphic.
+
+The point landmark styles use the Open Street Map icons for most of the locations. The images have been added inside the data directory, inside ``styles/im``, since this allows to refer them by relative path:
+
+
+.. figure:: img/icons.png
+
+   Point landmarks style
+
+Given the above symbols a point symbolizer looks as follows:
+
+.. code-block:: xml
+
+  <sld:PointSymbolizer>
+            <sld:Graphic>
+              <sld:ExternalGraphic>
+                <sld:OnlineResource xlink:type="simple" xlink:href="./img/landmarks/school.png" />
+                <sld:Format>image/png</sld:Format>
+              </sld:ExternalGraphic>
+            </sld:Graphic>
+            <VendorOption name="labelObstacle">true</VendorOption>
+          </sld:PointSymbolizer>
+
+The icon is depicted on the screen as-is, at its natural resolutions.
+The ``labelObstacle`` vendor parameter, specific to GeoServer, makes sure the point is icon is treated as a `label obstacle <http://docs.geoserver.org/latest/en/user/styling/sld-extensions/label-obstacles.html>`_, that is, makes sure no label will ever be depicted over the point.
+
+Text symbolizers for points
+---------------------------
+
+The text symbolizer associates a label with a point using an attribute value as the label source.
+The following symbolizer is used to label schools:
+
+.. code-block:: xml
+
+         <sld:TextSymbolizer>
+            <sld:Label>
+              <ogc:PropertyName>FULLNAME</ogc:PropertyName>
+            </sld:Label>
+            <sld:Font>
+              <sld:CssParameter name="font-family">Arial</sld:CssParameter>
+              <sld:CssParameter name="font-size">12.0</sld:CssParameter>
+              <sld:CssParameter name="font-style">normal</sld:CssParameter>
+              <sld:CssParameter name="font-weight">normal</sld:CssParameter>
+            </sld:Font>
+            <sld:LabelPlacement>
+              <sld:PointPlacement>
+                <sld:AnchorPoint>
+                  <sld:AnchorPointX>
+                    <ogc:Literal>0.5</ogc:Literal>
+                  </sld:AnchorPointX>
+                  <sld:AnchorPointY>
+                    <ogc:Literal>1.0</ogc:Literal>
+                  </sld:AnchorPointY>
+                </sld:AnchorPoint>
+                <sld:Displacement>
+                  <sld:DisplacementX>
+                    <ogc:Literal>0.0</ogc:Literal>
+                  </sld:DisplacementX>
+                  <sld:DisplacementY>
+                    <ogc:Literal>-10.0</ogc:Literal>
+                  </sld:DisplacementY>
+                </sld:Displacement>
+                <sld:Rotation>
+                  <ogc:Literal>0.0</ogc:Literal>
+                </sld:Rotation>
+              </sld:PointPlacement>
+            </sld:LabelPlacement>
+            <sld:Halo>
+              <sld:Radius>
+                <ogc:Literal>1.5</ogc:Literal>
+              </sld:Radius>
+              <sld:Fill>
+                <sld:CssParameter name="fill">#FFFFFF</sld:CssParameter>
+              </sld:Fill>
+            </sld:Halo>
+            <sld:Fill>
+              <sld:CssParameter name="fill">#000033</sld:CssParameter>
+            </sld:Fill>
+            <sld:Priority>200000</sld:Priority>
+            <sld:VendorOption name="autoWrap">100</sld:VendorOption>
+          </sld:TextSymbolizer>
+
+Highlights about the above style:
+
+* Uses ``FULLNAME`` as the label source
+* Uses a Arial 12pt font
+* Places the label below the point, and offsets it by 10 pixel to the south
+* Applies a white halo to make it stand out of the background map
+* Sets its priority to 200000 (high, important) to make sure the label is depicted in preference to others
+* Uses the ``autoWrap`` option to make it wrap on the next line if it's larger than 100 pixels
+  (the full list of labelling vendor options is available in the `GeoServer user guide <http://docs.geoserver.org/latest/en/user/styling/sld-reference/labeling.html>`_).
+
+Using Rules to assign a different styling to each point
+-------------------------------------------------------
+
+A Rule is a SLD construct allowing the style editor to control scale dependencies and filter data so that only certain data is depicted using the symbolizers contained in the rule.
+
+The rule for the school points looks as follows:
+
+.. code-block:: xml
+
+       <sld:Rule>
+          <sld:Name>school</sld:Name>
+          <ogc:Filter>
+            <ogc:PropertyIsEqualTo>
+              <ogc:PropertyName>MTFCC</ogc:PropertyName>
+              <ogc:Literal>K2543</ogc:Literal>
+            </ogc:PropertyIsEqualTo>
+          </ogc:Filter>
+          <sld:MaxScaleDenominator>100000</sld:MaxScaleDenominator>
+          <sld:PointSymbolizer>
+            <!-- same as above -->
+          </sld:PointSymbolizer>
+          <sld:TextSymbolizer>
+            <!-- same as above -->
+          </sld:TextSymbolizer>
+        </sld:Rule>
+
+Highlights about the above rule:
+
+* makes sure the symbolizers are applied only to the features whose ``MTFCC = K2543``
+* shows the symbols only when the scale denominator is below 100000 (e.g., shows them at 1:10000, but not at 1:2000000).
+
+Using dynamic symbolizers to reduce the style size
+---------------------------------------------------
+
+The overall ``point_landmark`` style has 8 different rules using different symbols for each type and amounts to almost 550 lines of XML. The same style could be written in a much more compact way if we could store the symbol name in some attribute and expand it in the external graphic URL.
+
+Standard SLD 1.0 does not allow for that, but GeoServer supports extensions to it known as *dynamic symbolizers* that allow for generic CQL expressions to be embedded in the URL.
+The data directory already contains a secondary layer, ``bptlandmarks_2876``, which is using a different projection and has a ``IMAGE`` attribute containing the file names.
+
+The style can then be reduced to a single rule using the following point symbolizer:
+
+.. code-block:: xml
+
+   <sld:PointSymbolizer>
+     <sld:Graphic>
+       <sld:ExternalGraphic>
+         <sld:OnlineResource xlink:type="simple" xlink:href="./img/landmarks/${IMAGE}" />
+         <sld:Format>image/png</sld:Format>
+       </sld:ExternalGraphic>
+     </sld:Graphic>
+     <VendorOption name="labelObstacle">true</VendorOption>
+   </sld:PointSymbolizer>
+
+Here is the overall style:
+
+.. code-block:: xml
+
+  <?xml version="1.0" encoding="UTF-8"?>
+  <sld:StyledLayerDescriptor
+  xmlns="http://www.opengis.net/sld"
+  xmlns:sld="http://www.opengis.net/sld"
+  xmlns:ogc="http://www.opengis.net/ogc"
+  xmlns:gml="http://www.opengis.net/gml"
+  xmlns:xlink="http://www.w3.org/1999/xlink" version="1.0.0">
+   
+   <sld:UserLayer>
+     <sld:LayerFeatureConstraints>
+       <sld:FeatureTypeConstraint/>
+     </sld:LayerFeatureConstraints>
+     <sld:UserStyle>
+       <sld:Name>tl 2010 08013 pointlm</sld:Name>
+       <sld:Title/>
+       <sld:FeatureTypeStyle>
+         <sld:Rule>
+           <sld:Name>landmarks</sld:Name>
+           <ogc:Filter>
+             <ogc:Not>
+               <ogc:PropertyIsNull>
+                 <ogc:PropertyName>IMAGE</ogc:PropertyName>
+               </ogc:PropertyIsNull>
+             </ogc:Not>
+           </ogc:Filter>
+           <sld:MaxScaleDenominator>100000</sld:MaxScaleDenominator>
+           <sld:PointSymbolizer>
+             <sld:Graphic>
+               <sld:ExternalGraphic>
+                 <sld:OnlineResource xlink:type="simple" xlink:href="./img/landmarks/${IMAGE}" />
+                 <sld:Format>image/png</sld:Format>
+               </sld:ExternalGraphic>
+             </sld:Graphic>
+             <VendorOption name="labelObstacle">true</VendorOption>
+           </sld:PointSymbolizer>
+           <sld:TextSymbolizer>
+             <sld:Label>
+               <ogc:PropertyName>FULLNAME</ogc:PropertyName>
+             </sld:Label>
+             <sld:Font>
+               <sld:CssParameter name="font-family">Arial</sld:CssParameter>
+               <sld:CssParameter name="font-size">12.0</sld:CssParameter>
+               <sld:CssParameter name="font-style">normal</sld:CssParameter>
+               <sld:CssParameter name="font-weight">normal</sld:CssParameter>
+             </sld:Font>
+             <sld:LabelPlacement>
+               <sld:PointPlacement>
+                 <sld:AnchorPoint>
+                   <sld:AnchorPointX>
+                     <ogc:Literal>0.5</ogc:Literal>
+                   </sld:AnchorPointX>
+                   <sld:AnchorPointY>
+                     <ogc:Literal>1.0</ogc:Literal>
+                   </sld:AnchorPointY>
+                 </sld:AnchorPoint>
+                 <sld:Displacement>
+                   <sld:DisplacementX>
+                     <ogc:Literal>0.0</ogc:Literal>
+                   </sld:DisplacementX>
+                   <sld:DisplacementY>
+                     <ogc:Literal>-14.0</ogc:Literal>
+                   </sld:DisplacementY>
+                 </sld:Displacement>
+                 <sld:Rotation>
+                   <ogc:Literal>0.0</ogc:Literal>
+                 </sld:Rotation>
+               </sld:PointPlacement>
+             </sld:LabelPlacement>
+             <sld:Halo>
+               <sld:Radius>
+                 <ogc:Literal>1.5</ogc:Literal>
+               </sld:Radius>
+               <sld:Fill>
+                 <sld:CssParameter name="fill">#FFFFFF</sld:CssParameter>
+               </sld:Fill>
+             </sld:Halo>
+             <sld:Fill>
+               <sld:CssParameter name="fill">#000033</sld:CssParameter>
+             </sld:Fill>
+             <sld:Priority>200000</sld:Priority>
+             <sld:VendorOption name="autoWrap">100</sld:VendorOption>
+           </sld:TextSymbolizer>
+         </sld:Rule>
+       </sld:FeatureTypeStyle>
+     </sld:UserStyle>
+   </sld:UserLayer>
+  </sld:StyledLayerDescriptor>
+
+And `here is a map <http://localhost:8083/geoserver/geosolutions/wms?service=WMS&version=1.1.0&request=GetMap&layers=geosolutions:BoulderCityLimits,geosolutions:bptlandmarks&styles=line,&bbox=-105.688,39.914,-105.06,40.261&width=597&height=330&srs=EPSG:4269&format=application/openlayers>`_ using this alternate style:
+
+
+.. figure:: img/pt_landmark_ds.png
+   
+   Point landmarks using dynamic symbolizers
+
+
+  

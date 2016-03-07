@@ -348,6 +348,7 @@ ALL_LANGUAGES = (
     ('fin', 'Finnish'),
     ('fry', 'Frisian'),
     ('glg', 'Gallegan'),
+    ('ger', 'German'),
     ('kal', 'Greenlandic'),
     ('grn', 'Guarani'),
     ('guj', 'Gujarati'),
