@@ -39,7 +39,7 @@
                             {% elif analysis.get_task_result.successful %}
                                 <a href="{% url 'layer_detail' layername=analysis.impact_layer.typename %}">{{ analysis.impact_layer }}</a>
                             {% else %}
-                                Task Status: <label class="text-{{ analysis.get_label_class }}">{{ analysis.get_task_result.state }}</label>
+                                Task Status: <span class="label label-{{ analysis.get_label_class }}">{{ analysis.get_task_result.state }}</span>
                             {% endif %}
                         </td>
                         <td>

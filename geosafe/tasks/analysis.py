@@ -104,10 +104,7 @@ def process_impact_result(analysis_id, impact_url_result):
                     os.path.join(dir_name, name),
                     overwrite=True)
                 saved_layer.set_default_permissions()
-                layer_name = '%s on %s' % (
-                    analysis.hazard_layer.name,
-                    analysis.exposure_layer.name
-                )
+                layer_name = analysis.get_default_impact_title()
                 saved_layer.title = layer_name
                 saved_layer.save()
                 current_impact = None

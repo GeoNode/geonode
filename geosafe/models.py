@@ -151,6 +151,12 @@ class Analysis(models.Model):
         else:
             return 'info'
 
+    def get_default_impact_title(self):
+        layer_name = '%s on %s' % (
+            self.hazard_layer.name,
+            self.exposure_layer.name
+        )
+        return layer_name
 
     @classmethod
     def get_layer_url(cls, layer):

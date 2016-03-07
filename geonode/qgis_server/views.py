@@ -79,7 +79,7 @@ def download_zip(request, layername):
     return resp
 
 
-def legend(request, layername):
+def legend(request, layername, layertitle=None):
     try:
         layer = Layer.objects.get(name=layername)
     except ObjectDoesNotExist:
@@ -104,6 +104,9 @@ def legend(request, layername):
         if not os.path.exists(os.path.dirname(legend_filename)):
             os.makedirs(os.path.dirname(legend_filename))
 
+        if not layertitle:
+            layertitle = 'FALSE'
+
         qgis_server = QGIS_SERVER_CONFIG['qgis_server_url']
         query_string = {
             'MAP': basename + '.qgs',
@@ -111,6 +114,7 @@ def legend(request, layername):
             'VERSION': '1.3.0',
             'REQUEST': 'GetLegendGraphic',
             'LAYER': layer.name,
+            'LAYERTITLE': layertitle,
             'FORMAT': 'image/png'
         }
 

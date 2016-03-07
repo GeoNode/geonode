@@ -38,9 +38,20 @@
                             <a href="{% url 'layer_detail' layername=analysis.impact_layer.typename %}">{{ analysis.impact_layer }}</a>
                         {% else %}
                             Task Status:
-                            <label class="text-{{ analysis.get_label_class }}">
+                            <span class="label label-{{ analysis.get_label_class }}">
                             {{ analysis.get_task_result.state }}
-                            </label>
+                            </span>
+                        {% endif %}
+                        {% if analysis.get_task_result and analysis.get_task_result.state == "FAILURE" %}
+                            <div class="panel panel-default">
+                              <div class="panel-heading">
+                                <h3 class="panel-title">Error Detail</h3>
+                              </div>
+                              <div class="panel-body">
+                                  <p>{{ analysis.get_task_result.result }}</p>
+                                  <p>{{ analysis.get_task_result.traceback }}</p>
+                              </div>
+                            </div>
                         {% endif %}
                     </p>
                     {% if analysis.get_task_result %}
@@ -51,7 +62,6 @@
                                     <input type="hidden" id="analysis_id" value="{{ analysis.id }}" />
                                     <button type="submit" class="btn btn-primary">Rerun Analysis</button>
                                 </form>
-{#                                <a href="{% url 'geosafe:rerun-analysis' analysis_id=analysis.id %}" class="btn btn-primary">Rerun analysis</a>#}
                             </p>
                         {% endif %}
                     {% endif %}
