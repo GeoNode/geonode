@@ -18,7 +18,7 @@ from model_utils import Choices
 from model_utils.models import TimeStampedModel
 
 from geonode.cephgeo.models import UserJurisdiction
-from geonode.groups.models import GroupProfile
+from geonode.groups.models import GroupProfile, GroupMember
 from geonode.layers.models import Layer
 from geonode.documents.models import Document
 from geonode.people.models import OrganizationType, Profile
@@ -430,46 +430,58 @@ class DataRequestProfile(TimeStampedModel):
                 pprint("Account was not created")
                 raise Http404
             
-            # Link data request to profile and updating other fields of the request
-            self.username = uname
-            self.profile = profile
-            self.ftp_folder = directory = "Others/"+uname
-            self.save()
-            
-            # Link shapefile to account
-            if self.jurisdiction_shapefile:
-                UserJurisdiction.objects.create(
-                    user=profile,
-                    jurisdiction_shapefile=self.jurisdiction_shapefile,
-                )
-                
-            #Add view permission on resource
-            resource = self.jurisdiction_shapefile
-            perms = resource.get_all_level_info()
-            perms["users"][profile.username]=["view_resourcebase"]
-            resource.set_permissions(perms)
-
-            # Add account to requesters group
-            group_name = "Data Requesters"
-            requesters_group, created = GroupProfile.objects.get_or_create(
-                title=group_name,
-                slug=slugify(group_name),
-                access='private',
-            )
-
-            requesters_group.join(profile)
-            
-            pprint("creating user folder for "+uname)
-            create_folder.delay(uname)
-            
-            self.request_status = 'approved'
-            self.action_date = timezone.now()
-            self.save()
-
-            self.send_approval_email(uname, directory)
+            self.profile_details(uname=uname, profile = profile)
             
         else:
             raise Http404
+
+    def join_requester_grp(self):
+        # Add account to requesters group
+        group_name = "Data Requesters"
+        requesters_group, created = GroupProfile.objects.get_or_create(
+            title=group_name,
+            slug=slugify(group_name),
+            access='private',
+        )
+        
+        try:
+            group_member = GroupMember.objects.get(group=requesters_group, user=self.profile)
+            if not group_member:
+                requesters_group.join(self.profile)
+        except Exeption as e:
+            raise ValueError("Unable to add user to the group")
+        
+
+    def assign_jurisdiction(self):
+        # Link shapefile to account
+        uj, created = UserJurisdiction.objects.get_or_create(user=user.profile)
+        uj.jurisdiction_shapefile = self.jurisdiction_shapefile
+        uj.save()
+        #Add view permission on resource
+        resource = self.jurisdiction_shapefile
+        perms = resource.get_all_level_info()
+        perms["users"][self.profile.username]=["view_resourcebase"]
+        resource.set_permissions(perms)
+        
+    def update_profile_details(self, uname="",profile=None):
+        # Link data request to profile and updating other fields of the request
+        self.username = uname
+        self.profile = profile
+        self.ftp_folder = "Others/"+uname
+        self.save()
+
+    def create_directory(self):
+        pprint("creating user folder for "+self.uname)
+        create_folder.delay(self.uname)
+        
+    def set_approved(self):
+        self.request_status = 'approved'
+        self.action_date = timezone.now()
+        self.save()
+
+        if not self.profile:
+            self.send_approval_email(self.uname, self.directory)
+        
 
     def send_approval_email(self, username, directory):
 
