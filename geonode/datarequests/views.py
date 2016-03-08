@@ -13,6 +13,7 @@ from django.core.files.base import ContentFile
 from django.core.exceptions import ObjectDoesNotExist, PermissionDenied
 from django.core.urlresolvers import reverse
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.shortcuts import (
     redirect, get_object_or_404, render, render_to_response)
@@ -54,11 +55,24 @@ from .utils import update_datarequest_obj
 
 
 def registration_part_one(request):
-    if request.user.is_authenticated():
-        return redirect(reverse('home'))
 
     shapefile_session = request.session.get('data_request_shapefile', None)
     profile_form_data = request.session.get('data_request_info', None)
+    
+    if request.user.is_authenticated():
+        try:
+            last_submitted_dr = DataRequestProfile.objects.filter(profile=request.user).latest('key_created_date')
+            if last_submitted_dr:
+                profile_form_data[ 'first_name'] = last_submitted_dr.first_name
+                profile_form_data[ 'middle_name'] = last_submitted_dr.middle_name
+                profile_form_data[ 'last_name'] = last_submitted_dr.last_name
+                profile_form_data[ 'organization'] = last_submitted_dr.organization
+                profile_form_data[ 'location'] = last_submitted_dr.location
+                profile_form_data[ 'email'] = last_submitted_dr.email
+                profile_form_data[ 'contact_number'] = last_submitted_dr.contact_number
+        except ObjectDoesNotExist as e:
+                pprint("No data request present for this user")
+       
     
     if not shapefile_session and profile_form_data:
         del request.session['data_request_info']
@@ -89,14 +103,21 @@ def registration_part_one(request):
 
 
 def registration_part_two(request):
+    part_two_initial ={}
+    last_submitted_dr = None
     if request.user.is_authenticated():
-        return redirect(reverse('home'))
+        try:
+            last_submitted_dr = DataRequestProfile.objects.filter(profile=request.user).latest('key_created_date')
+            part_two_initial['project_summary']=last_submitted_dr.project_summary
+            part_two_initial['data_type_requested']=last_submitted_dr.data_type_requested
+        except ObjectDoesNotExist as e:
+            pprint("Did not find datarequests for this user")
         
     request.session['data_request_shapefile'] = True
     profile_form_data = request.session.get('data_request_info', None)
     request_letter = request.session.get('request_letter',None)
     
-    form = DataRequestDetailsForm()
+    form = DataRequestDetailsForm(initial=part_two_initial)
 
     if not profile_form_data or not request_letter:
         return redirect(reverse('datarequests:registration_part_one'))
@@ -209,8 +230,11 @@ def registration_part_two(request):
                                 parameter_dict = form.cleaned_data,
                                 request_letter = request.session['request_letter']
                             )
-
-                    
+                    if last_submitted_dr:
+                        if last_submitted_dr.request_status is 'pending':
+                            last_submitted_dr.request_status = 'cancelled'
+                            last_submitted_dr.save()
+                        
                 else:
                     pprint("unable to retrieve request object")
                     out['errors'] = form.errors

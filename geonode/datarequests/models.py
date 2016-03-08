@@ -437,11 +437,12 @@ class DataRequestProfile(TimeStampedModel):
             self.save()
             
             # Link shapefile to account
-            UserJurisdiction.objects.create(
-                user=profile,
-                jurisdiction_shapefile=self.jurisdiction_shapefile,
-            )
-            
+            if self.jurisdiction_shapefile:
+                UserJurisdiction.objects.create(
+                    user=profile,
+                    jurisdiction_shapefile=self.jurisdiction_shapefile,
+                )
+                
             #Add view permission on resource
             resource = self.jurisdiction_shapefile
             perms = resource.get_all_level_info()
