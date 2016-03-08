@@ -9,21 +9,22 @@ import psycopg2
 
 from django.template.defaultfilters import slugify
 
-from geonode.contrib.datatables.models import TableJoin
 from geonode.contrib.datatables.db_helper import get_datastore_connection_string
 
 LOGGER = logging.getLogger(__name__)
 
 def drop_view_from_table_join(table_join):
+    if not hasattr(table_join, 'view_name'):
+        return False, "table_join must be a TableJoin object"
+
+    drop_view_by_name(table_join.view_name)
+
+def drop_view_by_name(view_name):
     """
     Given a view name, drop it from the database
     """
-    if not isinstance(table_join, TableJoin):
-        return False, "table_join must be a TableJoin object"
-
-    view_name = table_join.view_name
     if view_name is None or len(view_name) < 5:
-        return False, 'The TableJoin layer (view) could not be found.'
+        return False, 'The view name could not be found.'
 
     # -----------------------------------------------------
     # Execute the SQL and Drop the View
@@ -37,10 +38,9 @@ def drop_view_from_table_join(table_join):
         return True, None
     except Exception as e:
         traceback.print_exc(sys.exc_info())
-        err_msg = ("Error dropping view {0} "
-                "from table join (id: {1})"
-                "\n(For admins: {2})".format(\
-                view_name, table_join.id, str(e)))
+        err_msg = ("Error dropping view '{0}'"
+                "\n(For admins: {1})".format(\
+                view_name, str(e)))
         LOGGER.error(err_msg)
         return False, err_msg
     finally:

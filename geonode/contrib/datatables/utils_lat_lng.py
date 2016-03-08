@@ -22,7 +22,9 @@ from geonode.maps.models import Layer
 from geonode.contrib.datatables.models import DataTable, DataTableAttribute,\
     LatLngTableMappingRecord
 
-from geonode.contrib.datatables.utils import set_default_style_for_new_layer,\
+#from geonode.contrib.datatables.utils import set_default_style_for_latlng_layer,\
+#    create_layer_attributes_from_datatable
+from geonode.contrib.datatables.layer_helper import set_default_style_for_latlng_layer,\
     create_layer_attributes_from_datatable
 from geonode.contrib.datatables.name_helper import standardize_column_name
 
@@ -213,7 +215,7 @@ def create_point_col_from_lat_lon(new_table_owner, table_name, lat_column, lng_c
      # ------------------------------------------------------
     # Set the Layer's default Style
     # ------------------------------------------------------
-    set_default_style_for_new_layer(cat, ft)
+    set_default_style_for_latlng_layer(cat, ft)
 
 
     # ------------------------------------------------------

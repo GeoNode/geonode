@@ -4,8 +4,6 @@ import os
 import uuid
 import traceback
 import logging
-import string
-from random import choice
 from csvkit import sql
 from csvkit import table
 
@@ -13,7 +11,6 @@ from geonode.contrib.msg_util import *
 
 from geoserver.catalog import Catalog
 from geoserver.store import datastore_from_index
-from geoserver.resource import FeatureType
 
 import psycopg2
 
@@ -24,7 +21,6 @@ from django.utils.translation import ugettext_lazy as _
 from os.path import basename, splitext
 
 from geonode.maps.models import Layer, LayerAttribute
-from geonode.maps.gs_helpers import get_sld_for #fixup_style, cascading_delete, delete_from_postgis, get_postgis_bbox
 
 from geonode.contrib.datatables.models import DataTable, DataTableAttribute, TableJoin
 from geonode.contrib.datatables.forms import DataTableUploadForm, TableJoinRequestForm
@@ -34,7 +30,13 @@ from geonode.contrib.datatables.name_helper import get_unique_tablename,\
     get_unique_viewname,\
     THE_GEOM_LAYER_COLUMN
 
+from geonode.contrib.datatables.layer_helper import\
+    set_style_for_new_join_layer,\
+    create_layer_attributes_from_datatable
+
 from geonode.contrib.datatables.db_helper import get_datastore_connection_string
+from geonode.contrib.datatables.utils_joins import drop_view_by_name
+
 
 from shared_dataverse_information.shared_form_util.format_form_errors import format_errors_as_text
 from .db_helper import CHOSEN_DB_SETTING
@@ -163,6 +165,7 @@ def process_csv_file(data_table,\
         cur.execute('drop table if exists %s CASCADE;' % table_name)
         cur.execute(create_table_sql)
         conn.commit()
+        cur.close()
     except Exception as e:
         traceback.print_exc(sys.exc_info())
         err_msg =  "Error Creating table %s:%s" % (data_table.name, str(e))
@@ -206,11 +209,12 @@ def process_csv_file(data_table,\
             conn.execute(insert, rows_to_add)
         except:
             # Clean up after ourselves
+            conn.close()
+            f.close()
             instance.delete()
             err_msg =  "Failed to add csv DATA to table %s.\n%s" % (table_name, (sys.exc_info()[0]))
             LOGGER.error(err_msg)
             return None, err_msg
-
 
     # Commit new rows and close connection
     #
@@ -338,7 +342,6 @@ def setup_join(new_table_owner, table_name, layer_typename, table_attribute_name
                 layer_attribute.attribute, # 4
                 table_attribute.attribute)) # 5
 
-    #print 'view_sql', view_sql
     # Materialized view for next version of Postgres
     #view_sql = 'create materialized view %s as select %s.the_geom, %s.* from %s inner join %s on %s."%s" = %s."%s";' %  (view_name, layer_name, dt.table_name, layer_name, dt.table_name, layer_name, layer_attribute.attribute, dt.table_name, table_attribute.attribute)
 
@@ -373,31 +376,39 @@ def setup_join(new_table_owner, table_name, layer_typename, table_attribute_name
     # Create the View (and double view)
     # ------------------------------------------------------------------
     LOGGER.info('setup_join. Step (8): Create the View (and double view)')
+
+    # Convenience method to drop a view
+    #
+    drop_view_by_name(view_name)
+
     try:
         conn = psycopg2.connect(get_datastore_connection_string())
-
         cur = conn.cursor()
-        #cur.execute('drop view if exists %s;' % double_view_name)  # removing double view
-        cur.execute('drop view if exists %s;' % view_name)
-        #cur.execute('drop materialized view if exists %s;' % view_name)
+
+        # Create the new view
+        #
         msg('view_sql: %s'% view_sql)
         cur.execute(view_sql)
         #cur.execute(double_view_sql)   # For later version of postgres
 
+        # Record the counts for matched records and
+        # add unmatched records to the TableJoin object
 
+        # Unmatched count
         cur.execute(matched_count_sql)
         tj.matched_records_count = cur.fetchone()[0]
+
+        # Matched count
         cur.execute(unmatched_count_sql)
         tj.unmatched_records_count = int(cur.fetchone()[0])
-        cur.execute(unmatched_list_sql)
-        tj.unmatched_records_list = ",".join([r[0] for r in cur.fetchall()])
-        """
-        # for debug
-        tj.matched_records_count = 100
-        tj.unmatched_records_count = 100
-        tj.unmatched_records_list = 0
-        """
+
+        # Unmatched records list
+        if tj.unmatched_records_count > 0:
+            cur.execute(unmatched_list_sql)
+            tj.unmatched_records_list = ",".join([r[0] for r in cur.fetchall()])
+
         conn.commit()
+        cur.close()
 
         # If no records match, then delete the TableJoin
         #
@@ -412,14 +423,18 @@ def setup_join(new_table_owner, table_name, layer_typename, table_attribute_name
 
     except Exception as e:
         tj.delete() # If needed for debugging, don't delete the table join
+
         traceback.print_exc(sys.exc_info())
         err_msg =  "Error Joining table %s to layer %s: %s" % (table_name, layer_typename, str(e[0]))
         LOGGER.error(err_msg)
+
         if err_msg.find('You might need to add explicit type casts.') > -1:
             user_msg = "The chosen column is a different data type than the one expected."
         else:
             user_msg = err_msg
+
         return None, user_msg
+
     finally:
         conn.close()
 
@@ -445,7 +460,7 @@ def setup_join(new_table_owner, table_name, layer_typename, table_attribute_name
         #
         for datastore in datastores:
             #msg ('datastore name:', datastore.name)
-            if datastore.name == settings.DB_DATASTORE_NAME: #"geonode_imports":
+            if datastore.name == settings.DB_DATASTORE_NAME:
                 ds = datastore
 
         if ds is None:
@@ -474,7 +489,9 @@ def setup_join(new_table_owner, table_name, layer_typename, table_attribute_name
     # ------------------------------------------------------
     # Set the Layer's default Style
     # ------------------------------------------------------
-    set_default_style_for_new_layer(cat, ft)
+    sld_success, err_msg = set_style_for_new_join_layer(cat, ft, layer)
+    if not sld_success:
+        return None, err_msg
 
     # ------------------------------------------------------------------
     # Create the Layer in GeoNode from the GeoServer Layer
@@ -523,110 +540,6 @@ def setup_join(new_table_owner, table_name, layer_typename, table_attribute_name
 
     return tj, ""
 
-
-def set_default_style_for_new_layer(geoserver_catalog, feature_type):
-    """
-    For a newly created Geoserver layer in the Catalog, set a default style
-
-    :param catalog:
-    :param feature_type:
-
-    Returns success (True,False), err_msg (if False)
-    """
-    assert isinstance(geoserver_catalog, Catalog)
-    assert isinstance(feature_type, FeatureType)
-
-    # ----------------------------------------------------
-    # Retrieve the layer from the catalog
-    # ----------------------------------------------------
-    new_layer = geoserver_catalog.get_layer(feature_type.name)
-
-    # ----------------------------------------------------
-    # Retrieve the SLD for this layer
-    # ----------------------------------------------------
-    sld = get_sld_for(new_layer)
-    #msgt('SLD retrieved: %s' % sld)
-
-    if sld is None:
-        err_msg = 'Failed to retrieve the SLD for the geoserver layer: %s' % feature_type.name
-        LOGGER.error(err_msg)
-        return False, err_msg
-
-    # ----------------------------------------------------
-    # Create a new style name
-    # ----------------------------------------------------
-    random_ext = "".join([choice(string.ascii_lowercase + string.digits) for i in range(4)])
-    new_layer_stylename = '%s_%s' % (feature_type.name, random_ext)
-
-    msg('new_layer_stylename: %s' % new_layer_stylename)
-
-    # ----------------------------------------------------
-    # Add this new style to the catalog
-    # ----------------------------------------------------
-    try:
-        geoserver_catalog.create_style(new_layer_stylename, sld)
-        msg('created!')
-    except geoserver.catalog.ConflictingDataError, e:
-        err_msg = (_('There is already a style in GeoServer named ') +
-                        '"%s"' % (name))
-        LOGGER.error(err_msg)
-        return False, err_msg
-
-    # ----------------------------------------------------
-    # Use the new SLD as the layer's default style
-    # ----------------------------------------------------
-    try:
-        new_layer.default_style = geoserver_catalog.get_style(new_layer_stylename)
-        geoserver_catalog.save(new_layer)
-    except Exception as e:
-        traceback.print_exc(sys.exc_info())
-        err_msg = "Error setting new default style for layer. %s" % (str(e))
-        #print err_msg
-        LOGGER.error(err_msg)
-        return False, err_msg
-
-    msg('default saved')
-    msg('sname: %s' % new_layer.default_style )
-    return True
-
-
-def create_layer_attributes_from_datatable(datatable, layer):
-    """
-    When a new Layer has been created from a DataTable,
-    Create LayerAttribute objects from the DataTable's DataTableAttribute objects
-    """
-    if not isinstance(datatable, DataTable):
-        return (False, "datatable must be a Datatable object")
-    if not isinstance(layer, Layer):
-        return (False, "layer must be a Layer object")
-
-    names_of_attrs = ('attribute', 'attribute_label', 'attribute_type', 'searchable', 'visible', 'display_order')
-
-    # Iterate through the DataTable's DataTableAttribute objects
-    #   - For each one, create a new LayerAttribute
-    #
-    new_layer_attributes= []
-    for dt_attribute in DataTableAttribute.objects.filter(datatable=datatable):
-
-        # Make key, value pairs of the DataTableAttribute's values
-        new_params = dict([ (attr_name, dt_attribute.__dict__.get(attr_name)) for attr_name in names_of_attrs ])
-        new_params['layer'] = layer
-
-        # Create or Retrieve a new LayerAttribute
-        layer_attribute_obj, created = LayerAttribute.objects.get_or_create(**new_params)
-        if not layer_attribute_obj:
-            LOGGER.error("Failed to create LayerAttribute for: %s" % dt_attribute)
-            return (False, "Failed to create LayerAttribute for: %s" % dt_attribute)
-
-        # Add to list of new attributes
-        new_layer_attributes.append(layer_attribute_obj)
-        """
-        if created:
-            print 'layer_attribute_obj created: %s' % layer_attribute_obj
-        else:
-            print 'layer_attribute_obj EXISTS: %s' % layer_attribute_obj
-        """
-    return (True, "All LayerAttributes created")
 
 
 def attempt_datatable_upload_from_request_params(request,\

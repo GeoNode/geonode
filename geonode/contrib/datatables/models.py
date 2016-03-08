@@ -11,7 +11,7 @@ from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 
 from .db_helper import get_datastore_connection_string
-
+from geonode.contrib.datatables.utils_joins import drop_view_by_name
 
 TRANSFORMATION_FUNCTIONS = []
 
@@ -323,14 +323,8 @@ class TableJoin(models.Model):
         return self.view_name
 
     def remove_joins(self):
-        conn = psycopg2.connect(get_datastore_connection_string())
-        cur = conn.cursor()
-        cur.execute('drop view if exists %s;' % self.view_name)
-        #cur.execute('drop materialized view if exists %s;' % self.view_name.replace('view_', ''))
-        conn.commit()
-        cur.close()
-        conn.close()
-
+        drop_view_by_name(self.view_name)
+        
     def as_json(self):
         return dict(
             id=self.id, datable=self.datatable.table_name, source_layer=self.source_layer.typename, join_layer=self.join_layer.typename,
