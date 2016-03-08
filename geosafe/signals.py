@@ -21,6 +21,15 @@ def layer_post_save(sender, instance, created, **kwargs):
 
 @receiver(post_save, sender=Analysis)
 def analysis_post_save(sender, instance, created, **kwargs):
+    """
+
+    :param sender:
+    :param instance:
+    :type instance: Analysis
+    :param created:
+    :param kwargs:
+    :return:
+    """
     # Used to run impact analysis when analysis object is firstly created
     if created:
         hazard = instance.get_layer_url(instance.hazard_layer)
@@ -31,5 +40,7 @@ def analysis_post_save(sender, instance, created, **kwargs):
             exposure,
             function,
             generate_report=True)
-        process_impact_result.delay(instance.id, impact_url_result)
-
+        async_result = process_impact_result.delay(
+            instance.id, impact_url_result)
+        instance.task_id = async_result.task_id
+        instance.save()
