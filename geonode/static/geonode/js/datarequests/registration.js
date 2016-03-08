@@ -17,6 +17,7 @@ $(function() {
             $academe.toggle(true);
         }
     }
+    
     $intended_use.on('change', function() {
 
         if ($(this).val() == 'noncommercial'){
@@ -38,7 +39,6 @@ $(function() {
             $academe.slideUp();
         }
     });
-
 
     // Data Set
     var $data_set = $("#id_data_set")

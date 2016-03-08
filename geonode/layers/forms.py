@@ -22,6 +22,8 @@ import os
 import tempfile
 import taggit
 
+from pprint import pprint
+
 from django import forms
 from django.utils import simplejson as json
 from django.utils.translation import ugettext as _
@@ -151,7 +153,7 @@ class LayerForm(TranslationModelForm):
 
 
 class LayerUploadForm(forms.Form):
-    base_file = forms.FileField()
+    base_file = forms.FileField(required=False)
     dbf_file = forms.FileField(required=False)
     shx_file = forms.FileField(required=False)
     prj_file = forms.FileField(required=False)
@@ -234,8 +236,7 @@ class NewLayerUploadForm(LayerUploadForm):
         "prj_file",
         "sld_file",
         "xml_file")
-
-
+        
 class LayerDescriptionForm(forms.Form):
     title = forms.CharField(300)
     abstract = forms.CharField(1000, widget=forms.Textarea, required=False)

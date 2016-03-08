@@ -2,7 +2,6 @@ import json
 import os
 import taggit
 import re
-
 from django import forms
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.contenttypes.models import ContentType
@@ -233,7 +232,6 @@ class DocumentCreateForm(TranslationModelForm):
         Ensures the JSON field is JSON.
         """
         permissions = self.cleaned_data['permissions']
-
         try:
             return json.loads(permissions)
         except ValueError:
