@@ -1677,6 +1677,11 @@ def metadata_search(request):
                 doc['topic_category'] = layer.topic_category.title
             if layer.owner:
                 doc['owner_username'] = layer.owner.username
+            if layer.temporal_extent_start:
+                doc['temporal_extent_start'] = layer.temporal_extent_start
+            if layer.temporal_extent_end:
+                doc['temporal_extent_end'] = layer.temporal_extent_end
+
         except Layer.DoesNotExist:
             doc['_local'] = False
             pass
