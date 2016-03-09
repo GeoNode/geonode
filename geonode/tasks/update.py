@@ -66,7 +66,7 @@ def fh_style_update(layer,filename):
             url = "/var/www/geonode/uploaded/thumbs/layer-" +layer.uuid + "-thumb.png" #if on lipad
             os.remove(url)
         gs_layer = cat.get_layer(layer.name)
-        gs_layer._set_default_style(fhm_style.name)
+        gs_layer._set_default_style(fhm_style)
         cat.save(gs_layer) #save in geoserver
         layer.sld_body = fhm_style.sld_body
         layer.save() #save in geonode
@@ -94,6 +94,9 @@ def layer_metadata(layer_list,flood_year,flood_year_probability):
     fh_err_log = "Flood-Hazard-Error-Log.txt"
     f = open(fh_err_log,'w')
     for layer in layer_list:
+        fh_style_update(layer,f)
+        fh_perms_update(layer,f)
+
         map_resolution = ''
         first_half = ''
         second_half = ''
@@ -116,9 +119,6 @@ def layer_metadata(layer_list,flood_year,flood_year_probability):
         layer.keywords.add("Flood Hazard Map")
         layer.category = TopicCategory.objects.get(identifier="geoscientificInformation")
         layer.save()
-
-        fh_style_update(layer,f)
-        fh_perms_update(layer,f)
         ctr+=1
         print "[{0} YEAR FH METADATA] {1}/{2} : {3}".format(flood_year,ctr,total_layers,layer.name)
     f.close()
