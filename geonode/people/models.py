@@ -37,11 +37,6 @@ from .utils import format_address
 if 'notification' in settings.INSTALLED_APPS:
     from notification import models as notification
     
-from taggit.models import TaggedItemBase
-
-class TaggedInterests(TaggedItemBase):
-    content_object = models.ForeignKey('Profile')
-
 class Profile(AbstractUser):
 
     """Fully featured Geonode user"""
@@ -49,8 +44,6 @@ class Profile(AbstractUser):
     Volunteer_Technical_Community = models.BooleanField(_('Volunteer Technical Community'),
         help_text=_('indicates membership of the Volunteer Technical Comunity'),
         default=False)
-    interests = TaggableManager(_('interests'), blank=True, help_text=_(
-        'a list of personal interests (separate each interest with a comma)'), through=TaggedInterests, related_name='profile_interests')
     social_twitter = models.CharField(_('Twitter Handle'), help_text=_('Provide your Twitter handle or URL'), max_length=255, null=True, blank=True)
     social_facebook = models.CharField(_('Facebook Profile'), help_text=_('Provide your Facebook handle or URL'), max_length=255, null=True, blank=True)
     social_github = models.CharField(_('GitHub Profile'), help_text=_('Provide your GitHub handle or URL'), max_length=255, null=True, blank=True)
@@ -135,12 +128,6 @@ class Profile(AbstractUser):
 
     def keyword_slug_list(self):
         return [kw.slug for kw in self.keywords.all()]
-
-    def interest_list(self):
-        """
-        Returns a list of the Profile's interests.
-        """
-        return [interest.name for interest in self.interests.all()]
 
     @property
     def name_long(self):

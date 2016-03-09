@@ -231,7 +231,7 @@ class ProfileResource(ModelResource):
     documents_count = fields.IntegerField(default=0)
     current_user = fields.BooleanField(default=False)
     activity_stream_url = fields.CharField(null=True)
-    interests = fields.CharField(null=True, attribute='interests')
+    keywords = fields.CharField(null=True, attribute='keywords')
 
     def build_filters(self, filters={}):
         """adds filtering by group functionality"""
@@ -240,10 +240,6 @@ class ProfileResource(ModelResource):
 
         if 'group' in filters:
             orm_filters['group'] = filters['group']
-        if 'interest_list' in filters:
-            query = filters['interest_list']
-            qset = (Q(interests__slug__iexact=query))
-            orm_filters['interest_list'] = qset
 
         return orm_filters
 
@@ -251,11 +247,6 @@ class ProfileResource(ModelResource):
         """filter by group if applicable by group functionality"""
 
         group = applicable_filters.pop('group', None)
-
-        if 'interest_list' in applicable_filters:
-            interest_list = applicable_filters.pop('interest_list')
-        else:
-            interest_list = None
 
         semi_filtered = super(
             ProfileResource,
@@ -266,9 +257,6 @@ class ProfileResource(ModelResource):
         if group is not None:
             semi_filtered = semi_filtered.filter(
                 groupmember__group__slug=group)
-
-        if interest_list is not None:
-            semi_filtered = semi_filtered.filter(interest_list)
 
         return semi_filtered
 
@@ -310,8 +298,8 @@ class ProfileResource(ModelResource):
                     bundle.obj).pk,
                 'object_id': bundle.obj.pk})
 
-    def dehydrate_interests(self, bundle):
-        return bundle.obj.interest_list()
+    def dehydrate_keywords(self, bundle):
+        return bundle.obj.keyword_list()
 
     def prepend_urls(self):
         if settings.HAYSTACK_SEARCH:
@@ -353,4 +341,7 @@ class ProfileResource(ModelResource):
         filtering = {
             'username': ALL,
             'city': ALL,
+            'first_name': ALL,
+            'last_name': ALL,
+            'keywords': ALL
         }
