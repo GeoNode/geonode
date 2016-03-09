@@ -471,8 +471,8 @@ class DataRequestProfile(TimeStampedModel):
         self.save()
 
     def create_directory(self):
-        pprint("creating user folder for "+self.uname)
-        create_folder.delay(self.uname)
+        pprint("creating user folder for "+self.username)
+        create_folder.delay(self.username)
         
     def set_approved(self):
         self.request_status = 'approved'
@@ -480,10 +480,12 @@ class DataRequestProfile(TimeStampedModel):
         self.save()
 
         if not self.profile:
-            self.send_approval_email(self.uname, self.directory)
+            self.send_account_approval_email(self.username, self.directory)
+        else:
+            self.send_request_approval_email(self.username)
         
 
-    def send_approval_email(self, username, directory):
+    def send_account_approval_email(self, username, directory):
 
         site = Site.objects.get_current()
         profile_url = (
@@ -554,7 +556,56 @@ class DataRequestProfile(TimeStampedModel):
         msg.attach_alternative(html_content, "text/html")
         msg.send()
 
+    def send_request_approval_email(self, username):
+        site = Site.objects.get_current()
+        profile_url = (
+            str(site) +
+            reverse('profile_detail', kwargs={'username': username})
+        )
+        profile_url = iri_to_uri(profile_url)
 
+        text_content = """
+         Hi {},
+
+        Your data request registration for LiPAD was approved!
+        
+
+        If you have any questions, you can contact us as at {}.
+
+        Regards,
+        LiPAD Team
+         """.format(
+             self.first_name,
+             local_settings.LIPAD_SUPPORT_MAIL
+         )
+
+        html_content = """
+        <p>Hi <strong>{}</strong>,</p>
+
+       <p>Your data request in LiPAD was approved! 
+       </br>
+       <p>If you have any questions, you can contact us as at <a href="mailto:{}" target="_top">{}</a></p>
+       </br>
+        <p>Regards,</p>
+        <p>LiPAD Team</p>
+        """.format(
+             self.first_name,
+             local_settings.LIPAD_SUPPORT_MAIL,
+             local_settings.LIPAD_SUPPORT_MAIL
+         )
+
+        email_subject = _('[LiPAD] Data Request Status')
+
+        msg = EmailMultiAlternatives(
+            email_subject,
+            text_content,
+            settings.DEFAULT_FROM_EMAIL,
+            [self.email, ]
+        )
+        msg.attach_alternative(html_content, "text/html")
+        msg.send()
+
+        
 class RequestRejectionReason(models.Model):
     reason = models.CharField(_('Reason for rejection'), max_length=100)
 
