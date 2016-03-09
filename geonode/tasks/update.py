@@ -1,7 +1,6 @@
 import os
 from geonode import settings
 from geonode import GeoNodeException
-from geonode import local_settings
 from geonode.geoserver.helpers import ogc_server_settings
 from pprint import pprint
 from celery.task import task
@@ -19,6 +18,7 @@ from geonode.geoserver.helpers import http_client
 from geonode.layers.utils import create_thumbnail
 from django.core.exceptions import ObjectDoesNotExist
 from celery.utils.log import get_task_logger
+import geonode.settings as settings
 logger = get_task_logger("geonode.tasks.update")
 
 def layer_metadata(layer_list,flood_year,flood_year_probability):
@@ -81,7 +81,7 @@ def fh_style_update():
         #delete thumbnail first because of permissions
 
         print "Layer thumbnail url: %s " % layer.thumbnail_url
-        if "192" in local_settings.BASEURL:
+        if "192" in settings.BASEURL:
             url = "geonode"+layer.thumbnail_url #if on local
             os.remove(url)
         else:
