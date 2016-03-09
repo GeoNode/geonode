@@ -1,4 +1,9 @@
 from django.conf.urls import patterns, url
+from .api import FavoriteResource
+
+from geonode.api.urls import api
+
+api.register(FavoriteResource())
 
 urlpatterns = patterns(
     'geonode.contrib.favorite.views',
