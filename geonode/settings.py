@@ -233,8 +233,6 @@ DOCUMENT_TYPE_MAP = {
 
 
 GEONODE_APPS = (
-
-
     # GeoNode internal apps
     'geonode.people',
     'geonode.base',
@@ -250,9 +248,6 @@ GEONODE_APPS = (
     'geonode.services',
 
     'geonode.annotations',
-    # GeoNode Contrib Apps
-
-    # 'geonode.contrib.dynamic',
 
     # GeoServer Apps
     # Geoserver needs to come last because
@@ -261,6 +256,21 @@ GEONODE_APPS = (
     'geonode.upload',
     'geonode.tasks'
 )
+
+GEONODE_CONTRIB_APPS = (
+    # GeoNode Contrib Apps
+    'geonode.contrib.dynamic',
+    'geonode.contrib.exif',
+    'geonode.contrib.favorite',
+    'geonode.contrib.geogig',
+    'geonode.contrib.geosites',
+    'geonode.contrib.nlp',
+    'geonode.contrib.slack',
+    'geonode.contrib.collections'
+)
+
+# Uncomment the following line to enable contrib apps
+# GEONODE_APPS = GEONODE_APPS + GEONODE_CONTRIB_APPS
 
 INSTALLED_APPS = (
 
