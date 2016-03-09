@@ -489,7 +489,10 @@ def data_request_profile_reject(request, pk):
         request_profile.administrator = request.user
         request_profile.action_date = timezone.now()
         request_profile.save()
-        request_profile.send_rejection_email()
+        if request_profile.profile:
+            request_profile.send_request_rejection_email()
+        else:
+            request_profile.send_rejection_email()
 
     url = request.build_absolute_uri(request_profile.get_absolute_url())
 
