@@ -366,7 +366,7 @@ class DataRequestProfile(TimeStampedModel):
         msg.send()
 
 
-    def send_rejection_email(self):
+    def send_account_rejection_email(self):
 
         additional_details = 'Additional Details: ' + self.additional_rejection_reason
 
@@ -374,6 +374,57 @@ class DataRequestProfile(TimeStampedModel):
          Hi {},
 
         Your data request registration for LiPAD was rejected.
+        Reason: {}
+        {}
+
+        If you have further questions, you can contact us as at {}.
+
+        Regards,
+        LiPAD Team
+         """.format(
+             self.first_name,
+             self.rejection_reason,
+             additional_details,
+             local_settings.LIPAD_SUPPORT_MAIL,
+         )
+
+        html_content = """
+        <p>Hi <strong>{}</strong>,</p>
+
+       <p>Your data request registration for LiPAD was rejected.</p>
+       <p>Reason: {} <br/>
+       {}</p>
+       <p>If you have further questions, you can contact us as at <a href="mailto:{}" target="_top">{}</a></p>
+       </br>
+        <p>Regards,</p>
+        <p>LiPAD Team</p>
+        """.format(
+             self.first_name,
+             self.rejection_reason,
+             additional_details,
+             local_settings.LIPAD_SUPPORT_MAIL,
+             local_settings.LIPAD_SUPPORT_MAIL
+        )
+
+        email_subject = _('[LiPAD] Data Request Registration Status')
+
+        msg = EmailMultiAlternatives(
+            email_subject,
+            text_content,
+            settings.DEFAULT_FROM_EMAIL,
+            [self.email, ]
+        )
+        msg.attach_alternative(html_content, "text/html")
+        msg.send()
+    
+    def send_request_rejection_email(self):
+
+        additional_details = 'Additional Details: ' + self.additional_rejection_reason
+
+        text_content = """
+         Hi {},
+
+        Your data request  for LiPAD was rejected.
         Reason: {}
         {}
 
