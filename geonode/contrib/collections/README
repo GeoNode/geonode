@@ -12,3 +12,18 @@ Installation
 - Add `geonode.contrib.collections`to your installed apps
 - Add `(r'^collections/', include('geonode.contrib.collections.urls')),` to the GeoNode main urls.py file
 - Run `GeoNode syncdb`
+
+
+How to use it
+-------------
+
+Collections provides an admin page where to add new collections. There it is possible to associate an arbitrary number of resources to a group.
+Collections are published through JSON APIs at `/api/collections` and each collection has a dedicated API at `/api/collections/COLLECTION_ID`. The API, for each collection, provides:
+
+- users, the list of the users that belong to the collection's group
+- resources, the full serialization of the resources including the owner
+- group, the group owning the collection
+- name, the name of the collection
+- slug, a unique slugified name
+
+The APIs can be consumed by any client library.

@@ -3,16 +3,8 @@
   // it uses the detail url to get the type.
   function getResourceType(resource){
     var detail_url = resource.detail_url;
-    var resource_type = '';
-    if(detail_url.indexOf('/layers/') > -1){
-      resource_type = 'layer';
-    }
-    if(detail_url.indexOf('/maps/') > -1){
-      resource_type = 'map';
-    }
-    if(detail_url.indexOf('/documents/') > -1){
-      resource_type = 'document';
-    }
-    return resource_type;
+    return detail_url.indexOf('/layers/') > -1 ? 'layer' :
+           detail_url.indexOf('/maps/') > -1 ? 'map' :
+           'document';
   };
 </script>
