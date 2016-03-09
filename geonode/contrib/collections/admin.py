@@ -3,7 +3,7 @@ from django.contrib import admin
 from .models import Collection
 
 
-class CollectionAdmin(admin.modelAdmin):
+class CollectionAdmin(admin.ModelAdmin):
      prepopulated_fields = {"slug": ("name",)}
 
 
