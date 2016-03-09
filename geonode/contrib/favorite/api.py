@@ -1,30 +1,37 @@
 import json
 
+from django.core.urlresolvers import reverse
+
 from tastypie.resources import ModelResource
 from tastypie.authorization import Authorization
 from tastypie import fields
+from tastypie.constants import ALL
+from tastypie.contrib.contenttypes.fields import GenericForeignKeyField
+
+from geonode.layers.models import Layer
+from geonode.maps.models import Map
+from geonode.documents.models import Document
+from geonode.people.models import Profile
+from geonode.api.resourcebase_api import LayerResource, MapResource, DocumentResource
+from geonode.api.api import ProfileResource
 
 from .models import Favorite 
 
 class FavoriteResource(ModelResource):
     """Favorites API"""
-    type = fields.CharField()
-    detail_url = fields.CharField()
-    thumbnail_url = fields.CharField()
+
+    type = fields.CharField('content_type')
+    content_object = GenericForeignKeyField({
+        Layer: LayerResource,
+        Map: MapResource,
+        Document: DocumentResource,
+        Profile: ProfileResource
+    }, 'content_object', full=True)
 
     def dehydrate_type(self, bundle):
-      return bundle.obj.content_type
-
-    def dehydrate_detail_url(self, bundle):
-        if str(bundle.obj.content_type) == "layer":
-            return reverse('layer_detail', args=[Layer.objects.get(id=bundle.obj.id)])
-
-    def dehydrate_thumbnail_url(self, bundle):
-        if str(bundle.obj.content_type) == "layer":
-            return Layer.objects.get(id=bundle.obj.id).thumbnail_url
+      return str(bundle.obj.content_type)
 
     def serialize(self, request, data, format, options={}):
-        options['something'] = 'anything'
         return super(FavoriteResource, self).serialize(request, data, format, options)
 
     def authorized_read_list(self, object_list, bundle):
@@ -35,3 +42,6 @@ class FavoriteResource(ModelResource):
         resource_name = 'favorites'
         allowed_methods = ['get']
         authorization = Authorization()
+        filtering = {
+            'type': 'exact',  
+        }
