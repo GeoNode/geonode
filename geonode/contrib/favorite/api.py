@@ -20,7 +20,7 @@ from .models import Favorite
 class FavoriteResource(ModelResource):
     """Favorites API"""
 
-    type = fields.CharField('content_type')
+    content_type = fields.CharField('content_type')
     content_object = GenericForeignKeyField({
         Layer: LayerResource,
         Map: MapResource,
@@ -28,7 +28,7 @@ class FavoriteResource(ModelResource):
         Profile: ProfileResource
     }, 'content_object', full=True)
 
-    def dehydrate_type(self, bundle):
+    def dehydrate_content_type(self, bundle):
       return str(bundle.obj.content_type)
 
     def serialize(self, request, data, format, options={}):
@@ -43,5 +43,5 @@ class FavoriteResource(ModelResource):
         allowed_methods = ['get']
         authorization = Authorization()
         filtering = {
-            'type': 'exact',  
+            'content_type': 'exact',  
         }
