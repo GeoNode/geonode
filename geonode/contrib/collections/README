@@ -1,0 +1,14 @@
+
+GeoNode Collections app
+=======================
+
+The Collections app allows to present, in a single page, resources and users grouped by a GeoNode Group.
+To a Collection can be assigned arbitrary resources, a Group and a name that will be also used to build a dedicated URL.
+
+
+Installation
+------------
+
+- Add `geonode.contrib.collections`to your installed apps
+- Add `(r'^collections/', include('geonode.contrib.collections.urls')),` to the GeoNode main urls.py file
+- Run `GeoNode syncdb`
