@@ -1,6 +1,5 @@
 
 from pprint import pprint
-import geonode.settings as settings
 
 import celery
 import logging, traceback
@@ -8,6 +7,7 @@ from fabric.api import *
 from fabric.contrib.console import confirm
 from fabric.tasks import execute
 from django.core.mail import send_mail
+from geonode import settings
 
 ROOT_DIRECTORY=""
 
