@@ -6,9 +6,10 @@ import geonode.settings as settings
 
 from pprint import pprint
 from django.core.exceptions import ObjectDoesNotExist
+from django.http import HttpResponse, HttpResponseBadRequest, HttpResponseRedirect, Http404
 
 from geonode.people.models import Profile
-
+from geonode.documents.models import Document
 
 def create_login_credentials(data_request):
 
@@ -47,6 +48,12 @@ def create_login_credentials(data_request):
     #    password += random.choice(string.lowercase + string.uppercase + string.digits)
 
     return final_username
+
+def string_randomizer(length):
+    word = ""
+    for i in range(length):
+        word += random.choice(string.lowercase+string.uppercase+string.digits)
+    return word
 
 def get_unames_starting_with(name):
     result = []
@@ -116,6 +123,6 @@ def add_to_ad_group(group_dn=settings.LIPAD_LDAP_GROUP_DN, user_dn=""):
         import traceback
         print traceback.format_exc()
         return e
-        
+    
     
         

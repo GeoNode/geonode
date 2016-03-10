@@ -1,4 +1,6 @@
 {% extends "upload/layer_upload_base.html" %}
+{% load bootstrap_tags %}
+{% load crispy_forms_tags %}
 {% load i18n %}
 {% load staticfiles %}
 
@@ -14,75 +16,29 @@
 
 {% block body_outer %}
 <div class="page-header">
-  <h2 class="page-title">{% trans "Data Request Registration Form" %}</h2>
+  <h2 class="page-title">{% trans "Request Details" %}</h2>
 </div>
-<p>Step 2 of 2</p>
+
 <div class="row">
   <div class="col-md-7 col-md-offset-1">
-    <legend>Jurisdiction Shapefile</legend>
-    <div class="form-group">
-      {% block additional_info %}{% endblock %}
-
-      {% if errors %}
-      <div id="errors" class="alert alert-danger">
-        {% for error in errors %}
-        <p>{{ error }}</p>
-        {% endfor %}
-      </div>
-      {% endif %}
+   
 
       <div id="modal-content" class="modal fade" tabindex="-1" role="dialog">
           <div class="modal-dialog">
               <div class="modal-content">
                   <div class="modal-body">
-                      <h4>Registration in progress. Please wait while your registration data are being processed.</h4>
+                      <h4>Upload is in progress. Please wait while your registration data are being processed.</h4>
                   </div>
               </div>
           </div>
       </div>
 
       <div id="upload-status"></div>
-
-      <section id="drop-zone">
-        <h3><i class="fa fa-cloud-upload"></i><br />{% trans "Drop files here" %}</h3>
-      </section>
-
-      <p>{% trans " or select them one by one:" %}</p>
-
-      <form id="file-uploader" method="post" enctype="multipart/form-data">
-        <input class="btn" id="file-input" type="file" multiple>
-      </form>
-      <a href="#" id="clear-button" class="btn btn-danger">{% trans "Clear Files" %}</a>
-      <br />
-      <br />
-      <section class="charset">
-        <p>{% trans "Select the charset or leave default" %}</p>
-        <select id="charset">
-          {% for charset in charsets %}
-          {% if charset.0 == 'UTF-8' %}
-          <option selected='selected' value={{ charset.0 }}>{{ charset.1 }}</option>
-          {% else %}
-          <option value={{ charset.0 }}>{{ charset.1 }}</option>
-          {% endif %}
-          {% endfor %}
-        </select>
-      </section>
-
-      <section class="widget">
-        <ul id="global-errors"></ul>
-        <h5>{% trans "Files to be uploaded" %}</h5>
-        <div id="file-queue"></div>
-      </section>
-    
-        <!--<legend>Data Request Letter</legend>     
-        <form id="document-uploader" method="post" enctype="multipart/form-data">
-          <input class="btn" id="document-input" type="file">
-      </form>-->
+        <form id="file-uploader" class="form-horizontal" method="post" enctype="multipart/form-data">
+            {% crispy form %}
+        </form>
         
       <br />
-      <section class="widget">
-        {{ form }}
-      </section>
 
       <section>
         <a href="{% url 'datarequests:registration_part_one' %}" class="btn btn-default btn-md" style="margin-top: 20px;">{% trans "Prev Step" %}</a>
@@ -97,6 +53,7 @@
 
 
 {% block extra_script %}
+<script src="{{ STATIC_URL }}geonode/js/datarequests/registration.js"></script>
 <script data-main="{% static 'geonode/js/datarequests/upload/main' %}"
   src="{% static 'lib/js/require.js' %}">
 </script>
