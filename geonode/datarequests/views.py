@@ -207,7 +207,7 @@ def registration_part_two(request):
                         upload_session.processed = True
                         upload_session.save()
                         permissions = {
-                            'users': {'dataRegistrationUploader': ["view_resourebase"]},
+                            'users': {'dataRegistrationUploader': []},
                             'groups': {}
                         }
                         if request.user.is_authenticated():
@@ -216,6 +216,7 @@ def registration_part_two(request):
                                 'groups': {}
                             }
                         if permissions is not None and len(permissions.keys()) > 0:
+    
                             saved_layer.set_permissions(permissions)
 
                     finally:
@@ -252,6 +253,7 @@ def registration_part_two(request):
                 else:
                     pprint("unable to retrieve request object")
                     out['errors'] = form.errors
+                    out['success'] = False
         else:
             for e in form.errors.values():
                 errormsgs.extend([escape(v) for v in e])
@@ -312,7 +314,7 @@ def request_history(request):
     if not request.user.is_authenticated():
         raise HttpResponseForbidden
         
-    if request.user.is_superuser():
+    if request.user.is_superuser:
         return HttpResponseRedirect(
             reverse('datarequests:data_request_browse')
         )
