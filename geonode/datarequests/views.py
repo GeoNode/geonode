@@ -207,7 +207,7 @@ def registration_part_two(request):
                         upload_session.processed = True
                         upload_session.save()
                         permissions = {
-                            'users': {'dataRegistrationUploader': ["view_resourebase"]},
+                            'users': {'dataRegistrationUploader': []},
                             'groups': {}
                         }
                         if request.user.is_authenticated():
@@ -216,6 +216,7 @@ def registration_part_two(request):
                                 'groups': {}
                             }
                         if permissions is not None and len(permissions.keys()) > 0:
+    
                             saved_layer.set_permissions(permissions)
 
                     finally:
