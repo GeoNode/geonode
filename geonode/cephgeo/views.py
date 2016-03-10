@@ -14,22 +14,19 @@ from geonode.cephgeo.forms import DataInputForm
 from geonode.cephgeo.models import CephDataObject, FTPRequest, FTPStatus, FTPRequestToObjectIndex
 from geonode.cephgeo.utils import get_data_class_from_filename
 from geonode.tasks.ftp import process_ftp_request
-from geonode.tasks.update import grid_feature_update
+from geonode.tasks.update import ceph_metadata_remove, ceph_metadata_update, layers_metadata_update, fh_style_update
 
 from geonode.cephgeo.cart_utils import *
 
 import client, utils, cPickle, unicodedata, time, operator, json
 import geonode.local_settings as settings
-from geonode.tasks.update import ceph_metadata_udate
 from geonode.cephgeo.utils import get_cart_datasize
 from datetime import datetime
 from django.core.urlresolvers import reverse
 from geonode.maptiles.models import SRS
 from django.utils.text import slugify
 
-from geonode.tasks.update import layers_metadata_update
 from geonode.base.enumerations import CHARSETS
-from geonode.tasks.update import fh_style_update
 
 # Create your views here.
 @login_required
@@ -175,68 +172,14 @@ def data_input(request):
             uploaded_objects_list = smart_str(form.cleaned_data['data']).splitlines()
             update_grid = form.cleaned_data['update_grid']
 
-            # Pop first line containing header
-            uploaded_objects_list.pop(0)
-            """NAME,LAST_MODIFIED,SIZE_IN_BYTES,CONTENT_TYPE,GEO_TYPE,FILE_HASH GRID_REF"""
-
-            # Loop through each metadata element
-            objects_inserted=0
-            objects_updated=0
-            gridref_dict_by_data_class=dict()
-            for ceph_obj_metadata in uploaded_objects_list:
-                metadata_list = ceph_obj_metadata.split(csv_delimiter)
-
-                # Check if metadata list is valid
-                if len(metadata_list) is 6:
-                    #try:
-                        """
-                            Retrieve and check if metadata is present, update instead if there is
-                        """
-                        ceph_obj=None
-                        try:
-                            ceph_obj = CephDataObject.objects.get(name=metadata_list[0])
-                            # Commented attributes are not relevant to update
-                            #ceph_obj.grid_ref = metadata_list[5]
-                            #ceph_obj.data_class = get_data_class_from_filename(metadata_list[0])
-                            #ceph_obj.content_type = metadata_list[3]
-
-                            ceph_obj.last_modified = metadata_list[1]
-                            ceph_obj.size_in_bytes = metadata_list[2]
-                            ceph_obj.file_hash = metadata_list[4]
-
-                            ceph_obj.save()
-
-                            objects_updated += 1
-                        except ObjectDoesNotExist:
-                            ceph_obj = CephDataObject(  name = metadata_list[0],
-                                                        #last_modified = time.strptime(metadata_list[1], "%Y-%m-%d %H:%M:%S"),
-                                                        last_modified = metadata_list[1],
-                                                        size_in_bytes = metadata_list[2],
-                                                        content_type = metadata_list[3],
-                                                        data_class = get_data_class_from_filename(metadata_list[0]),
-                                                        file_hash = metadata_list[4],
-                                                        grid_ref = metadata_list[5])
-                            ceph_obj.save()
-
-                            objects_inserted += 1
-                        if ceph_obj is not None:
-                        # Construct dict of gridrefs to update
-                            if DataClassification.gs_feature_labels[ceph_obj.data_class] in gridref_dict_by_data_class:
-                                gridref_dict_by_data_class[DataClassification.gs_feature_labels[ceph_obj.data_class].encode('utf8')].append(ceph_obj.grid_ref.encode('utf8'))
-                            else:
-                                gridref_dict_by_data_class[DataClassification.gs_feature_labels[ceph_obj.data_class].encode('utf8')] = [ceph_obj.grid_ref.encode('utf8'),]
-                        #except Exception as e:
-                        #    print("Skipping invalid metadata list: {0}".format(metadata_list))
-                else:
-                    print("Skipping invalid metadata list (invalid length): {0}".format(metadata_list))
-
-            # Pass to celery the task of updating the gird shapefile
-            result_msg = "Succesfully encoded metadata of [{0}] of objects. Inserted [{1}], updated [{2}].".format(objects_inserted+objects_updated, objects_inserted, objects_updated)
-            if update_grid:
-                result_msg += " Grid shapefile has been updated."
-                grid_feature_update.delay(gridref_dict_by_data_class)
-            messages.success(request, result_msg)
-            return redirect('geonode.cephgeo.views.file_list_geonode',sort='uploaddate')
+            ceph_metadata_update.delay(uploaded_objects_list, update_grid)
+            
+            ctx = {
+                'charsets': CHARSETS,
+                'is_layer': True,
+            }
+        
+            return render_to_response("update_task.html",RequestContext(request, ctx))
         else:
             messages.error(request, "Invalid input on data form")
             return redirect('geonode.cephgeo.views.data_input')
@@ -247,36 +190,28 @@ def data_input(request):
 
 @login_required
 @user_passes_test(lambda u: u.is_superuser)
-def data_input_old(request):
+def data_remove(request):
     if request.method == 'POST':
         # create a form instance and populate it with data from the request:
         # pprint(request.POST)
         form = DataInputForm(request.POST)
         # check whether it's valid:
         if form.is_valid():
-            data = form.cleaned_data['data']
-            uploaded_objects = cPickle.loads(smart_str(data))
-            #pprint(uploaded_objects)
-            update_grid = form.cleaned_data['update_grid']
-            for obj_meta_dict in uploaded_objects:
-                #Check if object metadata has already been encoded
-                if not CephDataObject.objects.filter(name=obj_meta_dict['name']).exists():
-                    ceph_obj = CephDataObject(  name = obj_meta_dict['name'],
-                                                #last_modified = time.strptime(obj_meta_dict['last_modified'], "%Y-%m-%d %H:%M:%S"),
-                                                last_modified = obj_meta_dict['last_modified'],
-                                                size_in_bytes = obj_meta_dict['bytes'],
-                                                content_type = obj_meta_dict['content_type'],
-                                                data_class = get_data_class_from_filename(obj_meta_dict['name']),
-                                                file_hash = obj_meta_dict['hash'],
-                                                grid_ref = obj_meta_dict['grid_ref'])
-                    ceph_obj.save()
-
             # Commented out until a way is figured out how to assign database writes/saves
             #   to celery without throwing a 'database locked' error
-            #ceph_metadata_udate.delay(uploaded_objects)
+            #ceph_metadata_update.delay(uploaded_objects)
+            csv_delimiter=','
+            uploaded_objects_list = smart_str(form.cleaned_data['data']).splitlines()
+            update_grid = form.cleaned_data['update_grid']
 
-            messages.success(request, "Processing metadata of [{0}] of objects in the background.".format(len(uploaded_objects)))
-            return redirect('geonode.cephgeo.views.file_list_geonode',sort='uploaddate')
+            ceph_metadata_remove.delay(uploaded_objects_list, update_grid)
+            
+            ctx = {
+                'charsets': CHARSETS,
+                'is_layer': True,
+            }
+        
+            return render_to_response("update_task.html",RequestContext(request, ctx))
         else:
             messages.error(request, "Invalid input on data form")
             return redirect('geonode.cephgeo.views.data_input')
