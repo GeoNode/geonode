@@ -53,7 +53,7 @@ def fh_style_update(layer,filename):
     #layer_list = Layer.objects.filter(name__icontains='fh').exclude(styles__name__icontains='fhm'
     #total_layers = len(layer_list)
     fhm_style = cat.get_style("fhm")
-    #ctr = 1
+    ctr = 0
     #for layer in layer_list:
         #print "[FH STYLE] {0}/{1} : {2} ".format(ctr,total_layers,layer.name)
         #delete thumbnail first because of permissions
@@ -65,26 +65,33 @@ def fh_style_update(layer,filename):
         else:
             url = "/var/www/geonode/uploaded/thumbs/layer-" +layer.uuid + "-thumb.png" #if on lipad
             os.remove(url)
+
         gs_layer = cat.get_layer(layer.name)
+        print "GS LAYER: %s " % gs_layer.name
         gs_layer._set_default_style(fhm_style)
         cat.save(gs_layer) #save in geoserver
-        layer.sld_body = fhm_style.sld_body
-        layer.save() #save in geonode
+
         ctr+=1
 
         gs_style = cat.get_style(layer.name)
+        print "GS STYLE: %s " % gs_style.name
         print "Geoserver: Will delete style %s " % gs_style.name
         cat.delete(gs_style) #erase in geoserver the default layer_list
         gn_style = Style.objects.get(name=layer.name)
         print "Geonode: Will delete style %s " % gn_style.name
         gn_style.delete()#erase in geonode
-    except:
-        "Error in %s" % layer.name
-        ts = time.time()
-        st = datetime.datetime.fromtimestamp(ts).strftime('%Y-%m-%d %H:%M:%S')
-        Err_msg = st + " Error in updating style of " + layer.name + "\n"
-        filename.write(Err_msg)
+
+        layer.sld_body = fhm_style.sld_body
+        layer.save() #save in geonode
+    except Exception as e:
+        print "%s" % e
         pass
+    #     print "%s"
+        # "Error in %s" % layer.name
+        # ts = time.time()
+        # st = datetime.datetime.fromtimestamp(ts).strftime('%Y-%m-%d %H:%M:%S')
+        # Err_msg = st + " Error in updating style of " + layer.name + "\n"
+        # filename.write(Err_msg)
 
 # f.close()
 
@@ -94,6 +101,7 @@ def layer_metadata(layer_list,flood_year,flood_year_probability):
     fh_err_log = "Flood-Hazard-Error-Log.txt"
     f = open(fh_err_log,'w')
     for layer in layer_list:
+        print "Layer: %s" % layer.name
         fh_style_update(layer,f)
         fh_perms_update(layer,f)
 
