@@ -1,7 +1,7 @@
 from tastypie.api import Api
 
 from .api import TagResource, TopicCategoryResource, ProfileResource, \
-    GroupResource, RegionResource, FavoriteResource
+    GroupResource, RegionResource
 from .resourcebase_api import LayerResource, MapResource, DocumentResource, \
     ResourceBaseResource, FeaturedResourceBaseResource
 
@@ -17,4 +17,9 @@ api.register(RegionResource())
 api.register(TopicCategoryResource())
 api.register(GroupResource())
 api.register(FeaturedResourceBaseResource())
+
+# TODO: This should not live here but in geonode/contrib/favorite/urls.py
+# but its not currently working there.
+from geonode.contrib.favorite.api import FavoriteResource
 api.register(FavoriteResource())
+
