@@ -65,9 +65,23 @@ def fab_create_ftp_folder(ftp_request, ceph_obj_list_by_data_class, srs_epsg=Non
     request_name = ftp_request.name
     user_email = [ftp_request.user.email.encode('utf8'),]
     try:
-        ftp_dir = os.path.join(get_folder_for_user(ftp_request.user), request_name)
+        top_dir, ftp_dir = get_folders_for_user(ftp_request.user, request_name)
         dl_script_path = settings.CEPHACCESS_DL_SCRIPT
         email = None
+        
+        #Check for toplevel dir
+        result = run("[ -d {0} ]".format(top_dir))
+        if result.return_code == 1:
+            logger.error("FTP Task Error: No toplevel directory was found.")
+            ftp_request.status = FTPStatus.DUPLICATE
+            mail_msg = """\
+An error was encountered on your FTP request named [{0}] for user [{1}]. 
+No top level directory was found. Please forward this email to [{2}]""".format( request_name, 
+                                                                username, 
+                                                                settings.FTP_SUPPORT_MAIL,)
+            
+            mail_ftp_user(username, user_email, request_name, mail_msg)
+            return "ERROR: No top level directory was found."
         
         #Check for duplicate folders
         result = run("[ -d {0} ]".format(ftp_dir))
@@ -244,7 +258,7 @@ def process_ftp_request(ftp_request, ceph_obj_list_by_data_class, srs_epsg_num=N
 ###
 #   UTIL FUNCTIONS
 ###
-def get_folder_for_user(user):
+def get_folders_for_user(user, request_name):
     if not user:
         raise UserEmptyException(user)
     
@@ -257,13 +271,21 @@ def get_folder_for_user(user):
     
     for group in groups:
         if group.slug == u'phil-lidar-1-sucs':
-            return "/mnt/FTP/PL1/{0}/DL/DAD/lipad_requests".format(user.username)
+            return ("/mnt/FTP/PL1/{0}/".format(user.username),
+                    os.path.join("/mnt/FTP/PL1/{0}/DL/DAD/lipad_requests".format(user.username), request_name)
+                    )
         elif group.slug == u'phil-lidar-2-sucs':
-            return "/mnt/FTP/PL2/{0}/DL/DAD/lipad_requests".format(user.username)
+            return ("/mnt/FTP/PL2/{0}/".format(user.username),
+                    os.path.join("/mnt/FTP/PL2/{0}/DL/DAD/lipad_requests".format(user.username), request_name)
+                    )
         elif group.slug == u'other-data-requesters':
-            return "/mnt/FTP/Others/{0}/DL/DAD/lipad_requests".format(user.username)
+            return ("/mnt/FTP/Others/{0}/".format(user.username),
+                    os.path.join("/mnt/FTP/Others/{0}/DL/DAD/lipad_requests".format(user.username), request_name)
+                    )
         elif group.slug == u'data-requesters':
-            return "/mnt/FTP/Others/{0}/DL/DAD/lipad_requests".format(user.username)
+            return ("/mnt/FTP/Others/{0}/".format(user.username),
+                    os.path.join("/mnt/FTP/Others/{0}/DL/DAD/lipad_requests".format(user.username), request_name)
+                    )
     
     raise CephAccessException("User is not part of any FTP user group in LiPAD, no FTP folder can be found.")
 
