@@ -1,0 +1,13 @@
+{% load i18n %}
+<div class="row">
+  <div class="col-md-9">
+    <div class="col-md-3">
+      <span>Total: </span>
+      <span ng-bind="total_counts"></span>
+    </div>
+    <div class="col-md-12 grid-spacer">
+    {% include 'datarequests/_data_request_list_item.html' %}
+    {% include 'search/_pagination.html' %}
+    </div>
+  </div>
+</div>

@@ -107,6 +107,8 @@
           <ul class="nav navbar-nav navbar-right">
             {% if not user.is_authenticated  %}
             <li><a href="{% url 'datarequests:registration_part_one' %}">{% trans "Register" %}</a></li>
+            {% elif not user.is_superuser %}
+            <li><a href="{% url 'datarequests:registration_part_one' %}">{% trans "Request Data" %}</a></li>
             {% endif %}
             {% if user.is_authenticated %}
             <li>
@@ -241,6 +243,8 @@
               <li><a href="{% url "account_invite_user" %}"><i class="fa fa-edit"></i> {% trans "Invite User" %}</a></li>
               <li class="modal-divider"></li>
               <li><a href="{{ GEOSERVER_BASE_URL }}"><i class="fa fa-gears"></i> {% trans "GeoServer" %}</a></li>
+              {% else %}
+              <li><a href="{% url "datarequests:data_request_history" %}"><i class="fa fa-users"></i> {% trans "Data Request Profiles" %}</a></li>
               {% endif %}
               {% if user.is_staff %}
               <li><a href="{% url "admin:index" %}"><i class="fa fa-cog"></i> {% trans "Admin" %}</a></li>
