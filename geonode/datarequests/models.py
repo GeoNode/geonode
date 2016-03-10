@@ -443,10 +443,10 @@ class DataRequestProfile(TimeStampedModel):
             	)
             
             #Add view permission on resource
-            resource = self.jurisdiction_shapefile
-            perms = resource.get_all_level_info()
-            perms["users"][profile.username]=["view_resourcebase"]
-            resource.set_permissions(perms);
+            	resource = self.jurisdiction_shapefile
+            	perms = resource.get_all_level_info()
+            	perms["users"][profile.username]=["view_resourcebase"]
+            	resource.set_permissions(perms);
 
             # Add account to requesters group
             group_name = "Data Requesters"
