@@ -1163,8 +1163,6 @@ def layer_detail(request, layername):
             RequestContext(request, {'error_message':
                 _("You are not permitted to view this layer")})), status=401)
 
-    metadata = layer.metadata_csw()
-
     print '-' * 40
     print '\nlayer.typename', layer.typename
     print 'settings.GEOSERVER_BASE_URL', settings.GEOSERVER_BASE_URL
@@ -1182,7 +1180,6 @@ def layer_detail(request, layername):
 
     return render_to_response('maps/layer.html', RequestContext(request, {
         "layer": layer,
-        "metadata": metadata,
         "layerstats": layerstats,
         "viewer": json.dumps(map_obj.viewer_json(request.user, * (DEFAULT_BASE_LAYERS + [maplayer]))),
         "permissions_json": _perms_info_email_json(layer, LAYER_LEV_NAMES),
