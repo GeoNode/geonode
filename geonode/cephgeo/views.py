@@ -14,7 +14,7 @@ from geonode.cephgeo.forms import DataInputForm
 from geonode.cephgeo.models import CephDataObject, FTPRequest, FTPStatus, FTPRequestToObjectIndex
 from geonode.cephgeo.utils import get_data_class_from_filename
 from geonode.tasks.ftp import process_ftp_request
-from geonode.tasks.update import grid_feature_update, ceph_metadata_update
+from geonode.tasks.update import ceph_metadata_remove, ceph_metadata_update, layers_metadata_update, fh_style_update
 
 from geonode.cephgeo.cart_utils import *
 
@@ -26,9 +26,7 @@ from django.core.urlresolvers import reverse
 from geonode.maptiles.models import SRS
 from django.utils.text import slugify
 
-from geonode.tasks.update import layers_metadata_update
 from geonode.base.enumerations import CHARSETS
-from geonode.tasks.update import fh_style_update
 
 # Create your views here.
 @login_required
@@ -174,7 +172,7 @@ def data_input(request):
             uploaded_objects_list = smart_str(form.cleaned_data['data']).splitlines()
             update_grid = form.cleaned_data['update_grid']
 
-            ceph_metadata_update.delay(uploaded_objects_list)
+            ceph_metadata_update.delay(uploaded_objects_list, update_grid)
             
             ctx = {
                 'charsets': CHARSETS,
@@ -192,36 +190,28 @@ def data_input(request):
 
 @login_required
 @user_passes_test(lambda u: u.is_superuser)
-def data_input_old(request):
+def data_remove(request):
     if request.method == 'POST':
         # create a form instance and populate it with data from the request:
         # pprint(request.POST)
         form = DataInputForm(request.POST)
         # check whether it's valid:
         if form.is_valid():
-            data = form.cleaned_data['data']
-            uploaded_objects = cPickle.loads(smart_str(data))
-            #pprint(uploaded_objects)
-            update_grid = form.cleaned_data['update_grid']
-            for obj_meta_dict in uploaded_objects:
-                #Check if object metadata has already been encoded
-                if not CephDataObject.objects.filter(name=obj_meta_dict['name']).exists():
-                    ceph_obj = CephDataObject(  name = obj_meta_dict['name'],
-                                                #last_modified = time.strptime(obj_meta_dict['last_modified'], "%Y-%m-%d %H:%M:%S"),
-                                                last_modified = obj_meta_dict['last_modified'],
-                                                size_in_bytes = obj_meta_dict['bytes'],
-                                                content_type = obj_meta_dict['content_type'],
-                                                data_class = get_data_class_from_filename(obj_meta_dict['name']),
-                                                file_hash = obj_meta_dict['hash'],
-                                                grid_ref = obj_meta_dict['grid_ref'])
-                    ceph_obj.save()
-
             # Commented out until a way is figured out how to assign database writes/saves
             #   to celery without throwing a 'database locked' error
-            #ceph_metadata_udate.delay(uploaded_objects)
+            #ceph_metadata_update.delay(uploaded_objects)
+            csv_delimiter=','
+            uploaded_objects_list = smart_str(form.cleaned_data['data']).splitlines()
+            update_grid = form.cleaned_data['update_grid']
 
-            messages.success(request, "Processing metadata of [{0}] of objects in the background.".format(len(uploaded_objects)))
-            return redirect('geonode.cephgeo.views.file_list_geonode',sort='uploaddate')
+            ceph_metadata_remove.delay(uploaded_objects_list, update_grid)
+            
+            ctx = {
+                'charsets': CHARSETS,
+                'is_layer': True,
+            }
+        
+            return render_to_response("update_task.html",RequestContext(request, ctx))
         else:
             messages.error(request, "Invalid input on data form")
             return redirect('geonode.cephgeo.views.data_input')
