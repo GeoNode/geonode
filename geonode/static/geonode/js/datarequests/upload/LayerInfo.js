@@ -174,7 +174,18 @@ define(function (require, exports) {
         }
 
         form_data.append('charset', $('#charset').val());
-        form_data.append('g-recaptcha-response',  grecaptcha.getResponse());
+        form_data.append('project_summary', $('#id_project_summary').val());
+        form_data.append('purpose', $('#id_purpose').val());
+        form_data.append('purpose_other', $('#id_purpose_other').val());
+        form_data.append('data_type_requested', $('#id_data_type_requested').val());
+        form_data.append('license_period', $('#id_license_period').val());
+        form_data.append('license_period_other', $('#id_license_period_other').val());
+        form_data.append('has_subscription', $('#id_has_subscription').val());
+        form_data.append('intended_use_of_dataset',$('#id_intended_use_of_dataset').val());
+        form_data.append('organization_type',$('#id_organization_type').val());
+        form_data.append('request_level',$('#id_request_level').val());
+        form_data.append('funding_source', $('#id_funding_source').val());
+        form_data.append('is_consultant', $('#id_is_consultant').val());
         return form_data;
     };
 
@@ -245,7 +256,7 @@ define(function (require, exports) {
             empty: 'true'
         });
     };
-
+    
     LayerInfo.prototype.startPolling = function() {
         var self = this;
         if (self.polling) {

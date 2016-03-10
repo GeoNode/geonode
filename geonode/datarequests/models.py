@@ -20,6 +20,7 @@ from model_utils.models import TimeStampedModel
 from geonode.cephgeo.models import UserJurisdiction
 from geonode.groups.models import GroupProfile
 from geonode.layers.models import Layer
+from geonode.documents.models import Document
 from geonode.people.models import OrganizationType, Profile
 from geonode.utils import resolve_object
 from geonode.base.models import ResourceBase
@@ -77,7 +78,7 @@ class DataRequestProfile(TimeStampedModel):
         ('reason3', _('Reason 3')),
     )
 
-    profile = models.OneToOneField(
+    profile = models.ForeignKey(
         Profile,
         on_delete=models.SET_NULL,
         null=True,
@@ -90,7 +91,7 @@ class DataRequestProfile(TimeStampedModel):
         null=True,
         blank=True,
     )
-    # Do not require for now
+
     # jurisdiction_shapefile = models.ForeignKey(Layer, null=False, blank=False)
     jurisdiction_shapefile = models.ForeignKey(Layer, null=True, blank=True)
 
@@ -157,7 +158,7 @@ class DataRequestProfile(TimeStampedModel):
         _('Subscription/Maintenance?'),
         default=False)
     
-    purpose = models.TextField(_('Purpose/Intended Use of Data'))
+    purpose = models.TextField(_('Purpose of Data'))
     intended_use_of_dataset = models.CharField(
         _('Intended Use of Dataset'),
         choices=DATASET_USE_CHOICES,
@@ -195,6 +196,9 @@ class DataRequestProfile(TimeStampedModel):
         blank=True,
         null=True,
         )
+        
+    #For request letter
+    request_letter= models.ForeignKey(Document, null=True, blank=True)
 
     # For email verification
     verification_key = models.CharField(max_length=50)
@@ -217,6 +221,19 @@ class DataRequestProfile(TimeStampedModel):
         max_length=100,
         #validators=[validators.RegexValidator(regex="^Others\/[a-zA-Z]{6,15}[0-9]{0,4}")]
         )
+        
+    administrator = models.ForeignKey(
+        Profile,
+        null=True,
+        blank=True,
+        related_name="+"
+    )
+    
+    action_date = models.DateTimeField(
+        blank=True,
+        null=True,
+        help_text=_('The date and time this data request was approved or rejected'),
+    )
     
     class Meta:
         verbose_name = _('Data Request Profile')
@@ -254,7 +271,8 @@ class DataRequestProfile(TimeStampedModel):
             '?key=' + self.verification_key + '&email=' +
             urlquote(self.email)
         )
-        verification_url = iri_to_uri(verification_url)
+        verification_url = iri_to_uri(verification_url).replace("//", "/")
+        pprint(verification_url)
 
         text_content = """
          Hi <strong>{}</strong>,
@@ -418,16 +436,17 @@ class DataRequestProfile(TimeStampedModel):
             self.save()
             
             # Link shapefile to account
-            UserJurisdiction.objects.create(
-                user=profile,
-                jurisdiction_shapefile=self.jurisdiction_shapefile,
-            )
+	    if self.jurisdiction_shapefile:
+            	UserJurisdiction.objects.create(
+                	user=profile,
+                	jurisdiction_shapefile=self.jurisdiction_shapefile,
+            	)
             
             #Add view permission on resource
-            resource = self.jurisdiction_shapefile
-            perms = resource.get_all_level_info()
-            perms["users"][profile.username]=["view_resourcebase"]
-            resource.set_permissions(perms);
+            	resource = self.jurisdiction_shapefile
+            	perms = resource.get_all_level_info()
+            	perms["users"][profile.username]=["view_resourcebase"]
+            	resource.set_permissions(perms);
 
             # Add account to requesters group
             group_name = "Data Requesters"
@@ -443,6 +462,7 @@ class DataRequestProfile(TimeStampedModel):
             create_folder.delay(uname)
             
             self.request_status = 'approved'
+            self.action_date = timezone.now()
             self.save()
 
             self.send_approval_email(uname, directory)

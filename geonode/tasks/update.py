@@ -20,11 +20,87 @@ from django.core.exceptions import ObjectDoesNotExist
 from celery.utils.log import get_task_logger
 import geonode.settings as settings
 logger = get_task_logger("geonode.tasks.update")
+from geonode.security.models import PermissionLevelMixin
+from django.contrib.auth.models import Group
+from guardian.shortcuts import assign_perm, get_anonymous_user
+import time
+import datetime
+
+@task(name='geonode.tasks.update.fh_perms_update', queue='update')
+def fh_perms_update(layer,filename):
+    # anonymous_group, created = Group.objects.get_or_create(name='anonymous')
+    #layer_list = Layer.objects.filter(name__icontains='fh')
+    #total_layers = len(layer_list)
+    #ctr = 1
+    #for layer in layer_list:
+
+    try:
+        #print "[FH PERMISSIONS] {0}/{1} : {2} ".format(ctr,total_layers,layer.name)
+        layer.remove_all_permissions()
+        assign_perm('view_resourcebase', get_anonymous_user(), layer.get_self_resource())
+        assign_perm('download_resourcebase', get_anonymous_user(), layer.get_self_resource())
+        #ctr+=1
+    except:
+        ts = time.time()
+        st = datetime.datetime.fromtimestamp(ts).strftime('%Y-%m-%d %H:%M:%S')
+        Err_msg = st + " Error in updating style of " + layer.name + "\n"
+        filename.write(Err_msg)
+        pass
+
+#@task(name='geonode.tasks.update.fh_style_update', queue='update')
+def fh_style_update(layer,filename):
+    cat = Catalog(settings.OGC_SERVER['default']['LOCATION'] + 'rest',
+                    username=settings.OGC_SERVER['default']['USER'],
+                    password=settings.OGC_SERVER['default']['PASSWORD'])
+
+    #layer_list = Layer.objects.filter(name__icontains='fh')#initial run of script includes all fhm layers for cleaning of styles in GN + GS
+    #layer_list = Layer.objects.filter(name__icontains='fh').exclude(styles__name__icontains='fhm'
+    #total_layers = len(layer_list)
+    fhm_style = cat.get_style("fhm")
+    #ctr = 1
+    #for layer in layer_list:
+        #print "[FH STYLE] {0}/{1} : {2} ".format(ctr,total_layers,layer.name)
+        #delete thumbnail first because of permissions
+    try:
+        print "Layer thumbnail url: %s " % layer.thumbnail_url
+        if "192" in local_settings.BASEURL:
+            url = "geonode/uploaded/thumbs/layer-"+ layer.uuid + "-thumb.png" #if on local
+            os.remove(url)
+        else:
+            url = "/var/www/geonode/uploaded/thumbs/layer-" +layer.uuid + "-thumb.png" #if on lipad
+            os.remove(url)
+        gs_layer = cat.get_layer(layer.name)
+        gs_layer._set_default_style(fhm_style)
+        cat.save(gs_layer) #save in geoserver
+        layer.sld_body = fhm_style.sld_body
+        layer.save() #save in geonode
+        ctr+=1
+
+        gs_style = cat.get_style(layer.name)
+        print "Geoserver: Will delete style %s " % gs_style.name
+        cat.delete(gs_style) #erase in geoserver the default layer_list
+        gn_style = Style.objects.get(name=layer.name)
+        print "Geonode: Will delete style %s " % gn_style.name
+        gn_style.delete()#erase in geonode
+    except:
+        "Error in %s" % layer.name
+        ts = time.time()
+        st = datetime.datetime.fromtimestamp(ts).strftime('%Y-%m-%d %H:%M:%S')
+        Err_msg = st + " Error in updating style of " + layer.name + "\n"
+        filename.write(Err_msg)
+        pass
+
+# f.close()
 
 def layer_metadata(layer_list,flood_year,flood_year_probability):
-    layer_list_count = len(layer_list)
+    total_layers = len(layer_list)
     ctr = 0
+    fh_err_log = "Flood-Hazard-Error-Log.txt"
+    f = open(fh_err_log,'w')
     for layer in layer_list:
+        fh_style_update(layer,f)
+        fh_perms_update(layer,f)
+
         map_resolution = ''
         first_half = ''
         second_half = ''
@@ -48,22 +124,27 @@ def layer_metadata(layer_list,flood_year,flood_year_probability):
         layer.category = TopicCategory.objects.get(identifier="geoscientificInformation")
         layer.save()
         ctr+=1
-        print "'{0}' out of '{1}' : Updated metadata for '{2}' ".format(ctr,layer_list_count,layer.name)
-
+        print "[{0} YEAR FH METADATA] {1}/{2} : {3}".format(flood_year,ctr,total_layers,layer.name)
+    f.close()
 
 @task(name='geonode.tasks.update.layers_metadata_update', queue='update')
 def layers_metadata_update():
     # This will work for layer titles with the format '_fhXyr_'
-    layer_list = Layer.objects.filter(name__icontains='fh5yr').exclude(Q(keywords__name__icontains='flood hazard map')&Q(category__identifier='geoscientificInformation')&Q(purpose__icontains='the')&Q(abstract__icontains='the'))
+    # layer_list = Layer.objects.filter(name__icontains='fh5yr').exclude(Q(keywords__name__icontains='flood hazard map')&Q(category__identifier='geoscientificInformation')&Q(purpose__icontains='the')&Q(abstract__icontains='the'))
+    layer_list = Layer.objects.filter(name__icontains='fh5yr')
+    total_layers = 0
     if layer_list is not None:
+        total_layers = total_layers + len(layer_list)
         layer_metadata(layer_list,'5','20')
 
-    layer_list = Layer.objects.filter(name__icontains='fh25yr').exclude(Q(keywords__name__icontains='flood hazard map')&Q(category__identifier='geoscientificInformation')&Q(purpose__icontains='the')&Q(abstract__icontains='the'))
+    layer_list = Layer.objects.filter(name__icontains='fh25yr')
     if layer_list is not None:
+        total_layers = total_layers + len(layer_list)
         layer_metadata(layer_list,'25','4')
 
-    layer_list = Layer.objects.filter(name__icontains='fh100yr').exclude(Q(keywords__name__icontains='flood hazard map')&Q(category__identifier='geoscientificInformation')&Q(purpose__icontains='the')&Q(abstract__icontains='the'))
+    layer_list = Layer.objects.filter(name__icontains='fh100yr')
     if layer_list is not None:
+        total_layers = total_layers + len(layer_list)
         layer_metadata(layer_list,'100','1')
 
 @task(name='geonode.tasks.update.fh_style_update', queue='update')
