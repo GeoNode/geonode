@@ -456,7 +456,7 @@ class DataRequestProfile(TimeStampedModel):
                 access='private',
             )
 
-            requesters_group.join(profile)
+            requesters_group.join(profile, role='member')
             
             pprint("creating user folder for "+uname)
             create_folder.delay(uname)
