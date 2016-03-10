@@ -2137,14 +2137,17 @@ class MapLayer(models.Model):
         paired with the GeoNode site.  Currently this is based on heuristics,
         but we try to err on the side of false negatives.
         """
-        if self.ows_url == (settings.GEOSERVER_BASE_URL + "wms"):
-            isLocal = cache.get('islocal_' + self.name)
-            if isLocal is None:
-                isLocal = Layer.objects.filter(typename=self.name).count() != 0
-                cache.add('islocal_' + self.name, isLocal)
-            return isLocal
-        else:
-            return False
+        isLocal = False
+        if self.ows_url:
+            ows_url = urlparse(self.ows_url)
+            settings_url = urlparse(settings.GEOSERVER_BASE_URL + "wms")
+            if settings_url.netloc == ows_url.netloc and settings_url.path == ows_url.path:
+                isLocal = cache.get('islocal_' + self.name)
+                if isLocal is None:
+                    isLocal = Layer.objects.filter(typename=self.name).count() != 0
+                    cache.add('islocal_' + self.name, isLocal)
+        return isLocal
+
 
     def source_config(self):
         """
