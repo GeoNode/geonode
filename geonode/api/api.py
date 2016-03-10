@@ -21,6 +21,7 @@ from geonode.groups.models import GroupProfile
 from taggit.models import Tag
 
 from tastypie import fields
+from tastypie.authentication import SessionAuthentication
 from tastypie.resources import ModelResource
 from tastypie.constants import ALL
 from tastypie.utils import trailing_slash
@@ -285,6 +286,7 @@ class ProfileResource(ModelResource):
 
     class Meta:
         queryset = get_user_model().objects.exclude(username='AnonymousUser')
+        authentication = SessionAuthentication()
         resource_name = 'profiles'
         allowed_methods = ['get']
         ordering = ['username', 'date_joined']
@@ -317,6 +319,7 @@ class DataRequestProfileResource(ModelResource):
 
     class Meta:
         #authorization = GeoNodeAuthorization()
+        authentication = SessionAuthentication()
         queryset = DataRequestProfile.objects.exclude(
             date=None
         ).order_by('-date')

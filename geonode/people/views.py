@@ -73,7 +73,7 @@ def profile_detail(request, username):
     # combined queryset from each model content type
 
     try:
-        data_request_profile = profile.datarequestprofile
+        data_request_profile = DataRequestProfile.objects.filter(profile=profile).latest('key_created_date')
     except DataRequestProfile.DoesNotExist:
         data_request_profile = None
 
