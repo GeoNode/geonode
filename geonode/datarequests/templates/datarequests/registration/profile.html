@@ -11,6 +11,8 @@
 
 {% block body_outer %}
   {% block body %}
+  
+  
 
   <div class="page-header">
     <h2 class="page-title">{% trans "Data Request Registration Form" %}</h2>
@@ -40,6 +42,9 @@
 
 {% block extra_script %}
 <script src="{{ STATIC_URL }}geonode/js/datarequests/registration.js"></script>
+<script>
+    console.log("{{profile_form_data}}")
+</script>
 {% endblock extra_script %}
 
 

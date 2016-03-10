@@ -94,18 +94,6 @@ class DataRequestProfileForm(forms.ModelForm):
 
     def clean_email(self):
         email = self.cleaned_data.get('email')
-        user_emails = Profile.objects.all().values_list('email', flat=True)
-        requester_email = DataRequestProfile.objects.exclude(
-            request_status='rejected'
-        ).values_list('email', flat=True)
-
-        if email in user_emails:
-            raise forms.ValidationError(
-                'That email is already being used by a registered user.')
-
-        if email in requester_email:
-            raise forms.ValidationError(
-                "A data request registration with that email already exists.")
 
         return email
     

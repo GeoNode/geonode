@@ -118,7 +118,7 @@ def add_to_ad_group(group_dn=settings.LIPAD_LDAP_GROUP_DN, user_dn=""):
         group_result = con.modify_s(group_dn, add_user_mod)
         con.unbind_s()
         pprint(group_result)
-        return result
+        return group_result
     except Exception as e:
         import traceback
         print traceback.format_exc()

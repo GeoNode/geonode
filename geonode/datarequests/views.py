@@ -12,6 +12,8 @@ from django.core.files.storage import default_storage
 from django.core.files.base import ContentFile
 from django.core.exceptions import ObjectDoesNotExist, PermissionDenied
 from django.core.urlresolvers import reverse
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.shortcuts import (
     redirect, get_object_or_404, render, render_to_response)
@@ -51,23 +53,41 @@ from .forms import (
 from .models import DataRequestProfile
 
 def registration_part_one(request):
-    if request.user.is_authenticated():
-        return redirect(reverse('home'))
 
     shapefile_session = request.session.get('data_request_shapefile', None)
     profile_form_data = request.session.get('data_request_info', None)
+     
+    if request.user.is_authenticated():
+        try:
+            last_submitted_dr = DataRequestProfile.objects.filter(profile=request.user).latest('key_created_date')
+            profile_form_data ={}
+            if last_submitted_dr:
+                profile_form_data[ 'first_name'] = last_submitted_dr.first_name
+                profile_form_data[ 'middle_name'] = last_submitted_dr.middle_name
+                profile_form_data[ 'last_name'] = last_submitted_dr.last_name
+                profile_form_data[ 'organization'] = last_submitted_dr.organization
+                profile_form_data[ 'location'] = last_submitted_dr.location
+                profile_form_data[ 'email'] = last_submitted_dr.email
+                profile_form_data[ 'contact_number'] = last_submitted_dr.contact_number
+        except ObjectDoesNotExist as e:
+                pprint("No data request present for this user")
+       
     
     if not shapefile_session and profile_form_data:
-        del request.session['data_request_info']
-        request.session.modified = True
-
+            if 'data_request_info' in request.session:
+                del request.session['data_request_info']
+                request.session.modified = True
+    
     form = DataRequestProfileForm(
-        request.POST,
-        request.FILES,
         initial = profile_form_data
     )
     
     if request.method == 'POST':
+        form = DataRequestProfileForm(
+            request.POST,
+            request.FILES,
+            initial = profile_form_data
+        )
         if form.is_valid():
             request_object = form.save(commit=False)
             request.session['data_request_info'] = form.cleaned_data
@@ -86,19 +106,30 @@ def registration_part_one(request):
 
 
 def registration_part_two(request):
+    part_two_initial ={}
+    last_submitted_dr = None
     if request.user.is_authenticated():
-        return redirect(reverse('home'))
+        try:
+            last_submitted_dr = DataRequestProfile.objects.filter(profile=request.user).latest('key_created_date')
+            part_two_initial['project_summary']=last_submitted_dr.project_summary
+            part_two_initial['data_type_requested']=last_submitted_dr.data_type_requested
+        except ObjectDoesNotExist as e:
+            pprint("Did not find datarequests for this user")
         
     request.session['data_request_shapefile'] = True
     profile_form_data = request.session.get('data_request_info', None)
     request_letter = request.session.get('request_letter',None)
     
-    form = DataRequestDetailsForm()
+    form = DataRequestDetailsForm(initial=part_two_initial)
 
     if not profile_form_data or not request_letter:
         return redirect(reverse('datarequests:registration_part_one'))
 
     if request.method == 'POST' :
+        if last_submitted_dr and last_submitted_dr.request_status.encode('utf8') == 'pending':
+            pprint("updating request_status")
+            last_submitted_dr.request_status = 'cancelled'
+            last_submitted_dr.save()
         post_data = request.POST.copy()
         post_data['permissions'] = '{"users":{"dataRegistrationUploader": ["view_resourcebase"] }}'
         form = DataRequestDetailsForm(post_data)
@@ -176,9 +207,14 @@ def registration_part_two(request):
                         upload_session.processed = True
                         upload_session.save()
                         permissions = {
-                            'users': {'AnonymousUser': []},
+                            'users': {'dataRegistrationUploader': ["view_resourebase"]},
                             'groups': {}
                         }
+                        if request.user.is_authenticated():
+                            permissions = {
+                                'users': {request.user.username : ['view_resourcebase']},
+                                'groups': {}
+                            }
                         if permissions is not None and len(permissions.keys()) > 0:
                             saved_layer.set_permissions(permissions)
 
@@ -206,7 +242,12 @@ def registration_part_two(request):
                                 parameter_dict = form.cleaned_data,
                                 request_letter = request.session['request_letter']
                             )
-
+                    
+                    if request.user.is_authenticated():
+                        request_profile.profile = request.user
+                        request_profile.username = request.user.username
+                        request_profile.set_verification_key()
+                        request_profile.save()
                     
                 else:
                     pprint("unable to retrieve request object")
@@ -222,16 +263,26 @@ def registration_part_two(request):
         if out['success']:
             status_code = 200
 
-            if request_profile:
+            if request_profile and not request_profile.profile:
                 request_profile.send_verification_email()
 
-            out['success_url'] = request.build_absolute_uri(
-                reverse('datarequests:email_verification_send')
-            )
-            
-            out['redirect_to'] = request.build_absolute_uri(
-                reverse('datarequests:email_verification_send')
-            )
+                out['success_url'] = request.build_absolute_uri(
+                    reverse('datarequests:email_verification_send')
+                )
+                
+                out['redirect_to'] = request.build_absolute_uri(
+                    reverse('datarequests:email_verification_send')
+                )
+            elif request_profile and request_profile.profile:
+                out['success_url'] = request.build_absolute_uri(
+                    reverse('home')
+                )
+                
+                out['redirect_to'] = request.build_absolute_uri(
+                    reverse('home')
+                )
+                request_profile.date = timezone.now()
+                request_profile.save()
 
             del request.session['data_request_info']
             del request.session['data_request_shapefile']
@@ -255,7 +306,35 @@ def registration_part_two(request):
 class DataRequestPofileList(LoginRequiredMixin, SuperuserRequiredMixin, TemplateView):
     template_name = 'datarequests/data_request_list.html'
     raise_exception = True
+    
+@login_required
+def request_history(request):
+    if not request.user.is_authenticated():
+        raise HttpResponseForbidden
+        
+    if request.user.is_superuser():
+        return HttpResponseRedirect(
+            reverse('datarequests:data_request_browse')
+        )
+    
+    user=request.user
+    data_requests = DataRequestProfile.objects.filter(profile=user)
+    total = data_requests.len()
+    
+    paginator = Paginator(data_requests, 10)
+    page = request.GET.get('page')
 
+    try:
+        paged_objects = paginator.page(page)
+    except PageNotAnInteger:
+        paged_objects = paginator.page(1)
+    except EmptyPage:
+        paged_objects = paginator.page(paginator.num_pages)
+        
+    return render(request, "users_request_list.html",
+        {"data_requests": paged_objects,
+          "total":  total
+        })
 
 def email_verification_send(request):
     context = {
@@ -408,7 +487,10 @@ def data_request_profile_reject(request, pk):
         request_profile.administrator = request.user
         request_profile.action_date = timezone.now()
         request_profile.save()
-        request_profile.send_rejection_email()
+        if request_profile.profile:
+            request_profile.send_request_rejection_email()
+        else:
+            request_profile.send_rejection_email()
 
     url = request.build_absolute_uri(request_profile.get_absolute_url())
 
@@ -432,7 +514,18 @@ def data_request_profile_approve(request, pk):
         if not request_profile.date:
             raise Http404
         try:
-            request_profile.create_account()
+            if not request_profile.profile:
+                request_profile.create_account()
+            
+            request_profile.join_requester_grp()
+            
+            if request_profile.jurisdiction_shapefile:
+                request_profile.assign_jurisdiction()
+                
+            request_profile.create_directory()
+            
+            request_profile.set_approved()
+            
             request_profile.administrator = request.user
             request_profile.save()
             return HttpResponseRedirect(request_profile.get_absolute_url())
@@ -456,6 +549,8 @@ def data_request_facet_count(request):
             request_status='approved').count(),
         'rejected': DataRequestProfile.objects.filter(
             request_status='rejected').count(),
+        'cancelled': DataRequestProfile.objects.filter(
+            request_status='cancelled').exclude(date=None).count(),
         'commercial': DataRequestProfile.objects.filter(
             requester_type='commercial').exclude(date=None).count(),
         'noncommercial': DataRequestProfile.objects.filter(

@@ -353,7 +353,7 @@ class DataRequestProfileResource(ModelResource):
         return formats.date_format(bundle.obj.date, "SHORT_DATETIME_FORMAT")
 
     def dehydrate_status_label(self, bundle):
-        if bundle.obj.request_status == 'pending':
+        if bundle.obj.request_status == 'pending' or bundle.obj.request_status == 'cancelled':
             return 'default'
         elif bundle.obj.request_status == 'rejected':
             return 'danger'
