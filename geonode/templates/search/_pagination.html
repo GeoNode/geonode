@@ -1,3 +1,4 @@
+{% load i18n %}
 <!-- <a href><strong ng-click="paginate_down()">&laquo;</strong></a>
 <span>page </span>
 <span ng-model="page" ng-bind="page"></span>
@@ -9,7 +10,7 @@
   <nav>
 	<ul class="pagination pull-right">
 	  <li ng-click="paginate_down()"><a href><strong><i class="fa fa-angle-left"></i></strong></a></li>
-	  <li><a href>page <span ng-model="page" ng-bind="page"></span> of <span ng-bind="numpages"></span></a>
+	  <li><a href>{% trans "page" %} <span ng-model="page" ng-bind="page"></span> {% trans "of" %} <span ng-bind="numpages"></span></a>
 	  </li>
 	  <li ng-click="paginate_up()"><a href><strong><i class="fa fa-angle-right"></i></strong></a></li>
 	</ul>

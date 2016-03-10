@@ -61,7 +61,7 @@ class ResourceBaseForm(TranslationModelForm):
 
     owner = forms.ModelChoiceField(
         empty_label="Owner",
-        label="Owner",
+        label=_("Owner"),
         required=False,
         queryset=Profile.objects.exclude(
             username='AnonymousUser'),
@@ -79,17 +79,20 @@ class ResourceBaseForm(TranslationModelForm):
         "options": False,
         }
     date = forms.DateTimeField(
+        label=_("Date"),
         localize=True,
         input_formats=['%Y-%m-%d %I:%M %p'],
         widget=DateTimePicker(**_date_widget_options)
     )
     temporal_extent_start = forms.DateTimeField(
+        label=_("temporal extent start"),
         required=False,
         localize=True,
         input_formats=['%Y-%m-%d %I:%M %p'],
         widget=DateTimePicker(**_date_widget_options)
     )
     temporal_extent_end = forms.DateTimeField(
+        label=_("temporal extent end"),
         required=False,
         localize=True,
         input_formats=['%Y-%m-%d %I:%M %p'],
@@ -97,27 +100,29 @@ class ResourceBaseForm(TranslationModelForm):
     )
 
     poc = forms.ModelChoiceField(
-        empty_label="Person outside GeoNode (fill form)",
-        label="Point Of Contact",
+        empty_label=_("Person outside GeoNode (fill form)"),
+        label=_("Point of Contact"),
         required=False,
         queryset=Profile.objects.exclude(
             username='AnonymousUser'),
         widget=autocomplete_light.ChoiceWidget('ProfileAutocomplete'))
 
     metadata_author = forms.ModelChoiceField(
-        empty_label="Person outside GeoNode (fill form)",
-        label="Metadata Author",
+        empty_label=_("Person outside GeoNode (fill form)"),
+        label=_("Metadata Author"),
         required=False,
         queryset=Profile.objects.exclude(
             username='AnonymousUser'),
         widget=autocomplete_light.ChoiceWidget('ProfileAutocomplete'))
 
     keywords = TaggitField(
+        label=_("Keywords"),
         required=False,
         help_text=_("A space or comma-separated list of keywords"),
         widget=TaggitWidget('TagAutocomplete'))
 
     regions = TreeNodeMultipleChoiceField(
+        label=_("Regions"),
         required=False,
         queryset=Region.objects.all(),
         level_indicator=u'___')
