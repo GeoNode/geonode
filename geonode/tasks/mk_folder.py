@@ -1,6 +1,6 @@
 
 from pprint import pprint
-from geonode import local_settings
+from geonode import settings
 
 import celery
 import logging, traceback
@@ -24,7 +24,7 @@ def create_folder(username):
         return e
         
 
-@hosts(local_settings.GEOSTORAGE_HOST)
+@hosts(settings.GEOSTORAGE_HOST)
 def fab_create_folder(username):
     return run("/mnt/geostorage/scripts/set_acls/createdir.sh {0}".format(username))
 
