@@ -199,6 +199,7 @@ class ProfileResource(ModelResource):
     current_user = fields.BooleanField(default=False)
     activity_stream_url = fields.CharField(null=True)
     keywords = fields.CharField(null=True, attribute='keywords')
+    is_active = fields.BooleanField(attribute='is_active')
 
     def build_filters(self, filters={}):
         """adds filtering by group functionality"""
@@ -207,6 +208,10 @@ class ProfileResource(ModelResource):
 
         if 'group' in filters:
             orm_filters['group'] = filters['group']
+        if 'interest_list' in filters:
+            query = filters['interest_list']
+            qset =(Q(keywords__slug__iexact=query))
+            orm_filters['interest_list'] = qset
 
         return orm_filters
 
@@ -214,6 +219,11 @@ class ProfileResource(ModelResource):
         """filter by group if applicable by group functionality"""
 
         group = applicable_filters.pop('group', None)
+
+        if 'interest_list' in applicable_filters:
+            interest_list = applicable_filters.pop('interest_list')
+        else:
+            interest_list = None
 
         semi_filtered = super(
             ProfileResource,
@@ -224,6 +234,9 @@ class ProfileResource(ModelResource):
         if group is not None:
             semi_filtered = semi_filtered.filter(
                 groupmember__group__slug=group)
+
+        if interest_list is not None:
+            semi_filtered = semi_filtered.filter(interest_list)
 
         return semi_filtered
 
@@ -309,6 +322,5 @@ class ProfileResource(ModelResource):
             'username': ALL,
             'city': ALL,
             'first_name': ALL,
-            'last_name': ALL,
-            'keywords': ALL
+            'last_name': ALL
         }
