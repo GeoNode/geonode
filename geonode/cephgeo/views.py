@@ -487,24 +487,24 @@ def update_layer_metadata(request, template='running_task.html'):
 
     return render_to_response(template,RequestContext(request, ctx))
 
-@login_required
-@user_passes_test(lambda u: u.is_superuser)
-def update_fh_style(request, template='running_task.html'):
-    fh_style_update.delay()
-    ctx = {
-        'charsets': CHARSETS,
-        'is_layer': True,
-    }
+# @login_required
+# @user_passes_test(lambda u: u.is_superuser)
+# def update_fh_style(request, template='running_task.html'):
+#     fh_style_update.delay()
+#     ctx = {
+#         'charsets': CHARSETS,
+#         'is_layer': True,
+#     }
+#
+#     return render_to_response(template,RequestContext(request, ctx))
 
-    return render_to_response(template,RequestContext(request, ctx))
-
-@login_required
-@user_passes_test(lambda u: u.is_superuser)
-def update_fh_perms(request, template='running_task.html'):
-    fh_perms_update.delay()
-    ctx = {
-        'charsets': CHARSETS,
-        'is_layer': True,
-    }
-
-    return render_to_response(template,RequestContext(request, ctx))
+# @login_required
+# @user_passes_test(lambda u: u.is_superuser)
+# def update_fh_perms(request, template='running_task.html'):
+#     fh_perms_update.delay()
+#     ctx = {
+#         'charsets': CHARSETS,
+#         'is_layer': True,
+#     }
+#
+#     return render_to_response(template,RequestContext(request, ctx))
