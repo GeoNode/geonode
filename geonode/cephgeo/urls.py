@@ -23,7 +23,7 @@ urlpatterns = patterns('',
     # Data Management Views
     url(r'^datamanager/$', views.management, name='data_management'),
     url(r'^datamanager/input/$', views.data_input ),
-    url(r'^datamanager/input_old/$', views.data_input_old ),
+    url(r'^datamanager/remove_ceph_objects/$', views.data_remove ),
     url(r'^datamanager/update_layer_metadata/$', views.update_layer_metadata ),
     url(r'^datamanager/update_fh_style/$', views.update_fh_style ),
     url(r'^datamanager/list/$', views.file_list_geonode ),
