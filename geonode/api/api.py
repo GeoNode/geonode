@@ -231,7 +231,8 @@ class ProfileResource(ModelResource):
     documents_count = fields.IntegerField(default=0)
     current_user = fields.BooleanField(default=False)
     activity_stream_url = fields.CharField(null=True)
-    interests = fields.CharField(null=True, attribute='interests')
+    keywords = fields.CharField(null=True, attribute='keywords')
+    is_active = fields.BooleanField(attribute='is_active')
 
     def build_filters(self, filters={}):
         """adds filtering by group functionality"""
@@ -242,7 +243,7 @@ class ProfileResource(ModelResource):
             orm_filters['group'] = filters['group']
         if 'interest_list' in filters:
             query = filters['interest_list']
-            qset = (Q(interests__slug__iexact=query))
+            qset =(Q(keywords__slug__iexact=query))
             orm_filters['interest_list'] = qset
 
         return orm_filters
@@ -310,8 +311,8 @@ class ProfileResource(ModelResource):
                     bundle.obj).pk,
                 'object_id': bundle.obj.pk})
 
-    def dehydrate_interests(self, bundle):
-        return bundle.obj.interest_list()
+    def dehydrate_keywords(self, bundle):
+        return bundle.obj.keyword_list()
 
     def prepend_urls(self):
         if settings.HAYSTACK_SEARCH:
@@ -353,4 +354,6 @@ class ProfileResource(ModelResource):
         filtering = {
             'username': ALL,
             'city': ALL,
+            'first_name': ALL,
+            'last_name': ALL
         }
