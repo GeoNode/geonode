@@ -65,7 +65,7 @@ class MapStory(ResourceBase):
             self.uuid = str(uuid.uuid1())
 
         removed_chapter_ids = conf['removed_chapters']
-        if removed_chapter_ids is not None:
+        if removed_chapter_ids is not None and len(removed_chapter_ids) > 0:
             for chapter_id in removed_chapter_ids:
                 map_obj = Map.objects.get(id=chapter_id)
                 self.chapter_list.remove(map_obj)
