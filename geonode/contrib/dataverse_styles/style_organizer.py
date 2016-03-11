@@ -75,7 +75,7 @@ class StyleOrganizer(object):
 
         # (3) Add new SLD to Layer
         #
-        return self.add_new_sld_to_layer_orig(formatted_sld_object)
+        return self.add_new_sld_to_layer(formatted_sld_object)
 
 
     def set_layer_name_and_get_rule_data(self):
@@ -210,7 +210,7 @@ class StyleOrganizer(object):
 
 
 if __name__ == '__main__':
-    from geonode_get_services import get_layer_features_definition
+    #from geonode_get_services import get_layer_features_definition
     layer_name = 'japan_evac_zones_se1'
     #print (get_layer_features_definition(layer_name))
 
