@@ -36,12 +36,12 @@ def standardize_table_name(tbl_name):
     if tbl_name[:1].isdigit():
         tbl_name = 't_' + tbl_name
 
-    tname = slugify(unicode(tbl_name)).replace('-', '_')[:10]
+    tname = slugify(unicode(tbl_name)).replace('-', '_')[:9]
     if tname.endswith('_'):
         return tname[:-1]
 
     return tname
-    
+
 def get_random_chars(num_chars=1):
     """
     Return a random string of lowercase letters and digits
@@ -100,8 +100,8 @@ def get_unique_viewname(layer_name, table_name):
     # slugify, change to unicode
     # ------------------------------------------------
     view_name = 'j_{0}_{1}'.format(\
-                standardize_table_name(layer_name)[:7],
-                standardize_table_name(table_name)[:7])
+                standardize_table_name(layer_name),
+                standardize_table_name(table_name))
     if view_name.endswith('_'):
         view_name = view_name[:-1]
 

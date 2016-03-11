@@ -21,10 +21,10 @@ class JoinTargetTestCase(unittest.TestCase):
     def test_name_is_slugified(self):
 
         tname = standardize_table_name('hello" there-table')
-        self.assertEqual(tname, 'hello_ther')
+        self.assertEqual(tname, 'hello_the')
 
         tname = standardize_table_name('1-2-button-+shoe')
-        self.assertEqual(tname, 't_1_2_butt')
+        self.assertEqual(tname, 't_1_2_but')
 
     def test_random_chars(self):
 

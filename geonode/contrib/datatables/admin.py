@@ -33,7 +33,7 @@ class TableJoinAdmin(admin.ModelAdmin):
 
 class JoinTargetAdmin(admin.ModelAdmin):
     model = JoinTarget
-    list_display = ('layer', 'attribute', 'geocode_type', 'expected_format', 'year')
+    list_display = ('name', 'layer', 'attribute', 'geocode_type', 'expected_format', 'year')
     readonly_fields = ('return_to_layer_admin', )
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):

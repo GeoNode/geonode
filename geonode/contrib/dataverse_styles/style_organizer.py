@@ -15,21 +15,21 @@ API attributes include:
     endColor = models.CharField(max_length=30)
     reverse = models.BooleanField(default=False)
 """
-#from __future__ import print_function
+from __future__ import print_function
 
 import json
 import logging
-import sys
 
 from django.conf import settings
 
 from geonode.contrib.dataverse_connect.dv_utils import MessageHelperJSON
-from geonode.contrib.dataverse_styles.sld_helper_form import SLDHelperForm
 from geonode.contrib.dataverse_styles.style_layer_maker import StyleLayerMaker
 from geonode.contrib.dataverse_styles.style_rules_formatter import StyleRulesFormatter
 from geonode.contrib.dataverse_styles.geonode_get_services import get_sld_rules
+from geoserver.catalog import Catalog
+from geonode.contrib.dataverse_connect.layer_metadata import LayerMetadata
 
-logger = logging.getLogger("geonode.contrib.dataverse_styles.style_organizer")
+LOGGER = logging.getLogger("geonode.contrib.dataverse_styles.style_organizer")
 
 class StyleOrganizer(object):
     """
@@ -44,9 +44,12 @@ class StyleOrganizer(object):
 
 
     def add_err_msg(self, err_msg):
+        """
+        Add error message
+        """
         self.err_found = True
         self.err_msgs.append(err_msg)
-        logger.warn(err_msg)
+        LOGGER.warn(err_msg)
 
 
     def get_json_as_dict(self, resp_json, default_msg):
@@ -64,7 +67,7 @@ class StyleOrganizer(object):
         if sld_rule_data is None:
             return False
 
-        # (2) Format rules into full SLD
+        # (2) Format rules into full SLD ... the SLD is XML in string format
         #
         formatted_sld_object = self.format_rules_into_full_sld(sld_rule_data)
         if formatted_sld_object is None:
@@ -72,14 +75,14 @@ class StyleOrganizer(object):
 
         # (3) Add new SLD to Layer
         #
-        return self.add_new_sld_to_layer(formatted_sld_object)
+        return self.add_new_sld_to_layer_orig(formatted_sld_object)
 
 
     def set_layer_name_and_get_rule_data(self):
         """
         (1) Check params and create rules
         """
-        print 'set_layer_name_and_get_rule_data 1'
+        print ('set_layer_name_and_get_rule_data 1')
         if self.styling_params is None:
             return None
         resp_json = get_sld_rules(self.styling_params)
@@ -92,7 +95,8 @@ class StyleOrganizer(object):
                 self.add_err_msg(err_msg)
             return None
 
-        # (1a) Pull layer name from initial params, should never fail b/c params have been evaluated in (1)
+        # (1a) Pull layer name from initial params, should not
+        # fail b/c params have been evaluated in (1)
         #
         self.layer_name = self.styling_params.get('layer_name', None)
         if self.layer_name is None:
@@ -104,7 +108,7 @@ class StyleOrganizer(object):
             self.add_err_msg('Failed to find rules in response')
             return None
 
-        print 'sld_rule_data', sld_rule_data
+        print ('sld_rule_data', sld_rule_data)
         return sld_rule_data
 
 
@@ -112,7 +116,6 @@ class StyleOrganizer(object):
         """
         (2) Format rules into full SLD
         """
-        print 'format_rules_into_full_sld 1'
         if not sld_rule_data:
             self.add_err_msg('Rule data is not available')
             return None
@@ -121,27 +124,20 @@ class StyleOrganizer(object):
             self.add_err_msg('Layer name is not available')
             return None
 
-        print 'format_rules_into_full_sld 2'
 
         # --------------------------------------
         # Create a StyleRulesFormatter object
         # --------------------------------------
         sld_formatter = StyleRulesFormatter(self.layer_name)#, style_name_or_err_msg)
 
-        print 'format_rules_into_full_sld 3'
-
-
         sld_formatter.format_sld_xml(sld_rule_data)
 
         if sld_formatter.err_found:
-            print 'format_rules_into_full_sld ERR 3a'
-
             self.add_err_msg('Failed to format xml')
             if sld_formatter.err_found:
-                self.add_err_msg('\n'.join(formatted_sld.err_msgs))
+                self.add_err_msg('\n'.join(sld_formatter.err_msgs))
             return None
 
-        print 'format_rules_into_full_sld 4'
 
         return sld_formatter
 
@@ -150,23 +146,40 @@ class StyleOrganizer(object):
         """
         (3) Add new SLD to Layer
         """
-        print 'add_new_sld_to_layer 1'
+        # get the catalog
+        geoserver_catalog = Catalog(settings.GEOSERVER_BASE_URL + "rest",\
+                    settings.GEOSERVER_CREDENTIALS[0],\
+                    settings.GEOSERVER_CREDENTIALS[1])
+
+        # pull the layer
+        the_layer = geoserver_catalog.get_layer(self.layer_name)
+
+        # set the new style
+        the_layer.default_style.update_body(formatted_sld_object.formatted_sld_xml)
+
+        # save it
+        geoserver_catalog.save(the_layer)
+
+        self.layer_metadata = LayerMetadata.create_metadata_using_layer_name(self.layer_name)
+        return True
+
+
+    def add_new_sld_to_layer_orig(self, formatted_sld_object):
+        """
+        'Legacy': Simpler code implemented in "add_new_sld_to_layer"
+        (3) Add new SLD to Layer
+        """
         if not formatted_sld_object:
             self.add_err_msg('Formatted SLD data is not available')
             return False
 
-        print 'add_new_sld_to_layer 2'
         slm = StyleLayerMaker(self.layer_name)
         success = slm.add_sld_to_layer(formatted_sld_object)
-        print 'add_new_sld_to_layer 3'
 
         if success:
-            print 'add_new_sld_to_layer 3a'
-
             self.layer_metadata = slm.layer_metadata
             return True
 
-        print 'add_new_sld_to_layer 4'
         for err in slm.err_msgs:
             self.add_err_msg(err)
 
@@ -174,14 +187,20 @@ class StyleOrganizer(object):
 
 
     def get_json_message(self):
-
+        """
+        Retrieve message in JSON format
+        """
         if self.layer_metadata is not None:
             metadata_dict = self.layer_metadata.get_metadata_dict()
             if metadata_dict:
                 return MessageHelperJSON.get_json_msg(success=True, msg='', data_dict=metadata_dict)
             else:
-                logger.error('StyleOrganizer. Failed to retrieve metadata dict for layer [%s]' % (self.layer_name))
-                return MessageHelperJSON.get_json_msg(success=False, msg='Fail to create metadata dict')
+                err_msg = ('StyleOrganizer. Failed to retrieve '
+                            ' metadata dict for layer [%s]' %\
+                            (self.layer_name))
+                LOGGER.error(err_msg)
+                return MessageHelperJSON.get_json_msg(success=False,\
+                    msg='Fail to create format layer metadata')
 
         err_msg = '\n'.join(self.err_msgs)
         if not err_msg:
@@ -190,28 +209,28 @@ class StyleOrganizer(object):
         return MessageHelperJSON.get_json_msg(success=False, msg=err_msg)
 
 
-if __name__=='__main__':
+if __name__ == '__main__':
     from geonode_get_services import get_layer_features_definition
     layer_name = 'japan_evac_zones_se1'
     #print (get_layer_features_definition(layer_name))
 
-    d = dict(layer_name=layer_name\
-                , attribute='Socdis_202'\
-                ,method='quantile'\
-                ,intervals=3\
-                ,ramp='Random'\
-                ,startColor='#fff5f0'\
-                ,endColor='#67000d'\
-                ,reverse=''\
+    d = dict(layer_name=layer_name,\
+                attribute='Socdis_202',\
+                method='quantile',\
+                intervals=3,\
+                ramp='Random',\
+                startColor='#fff5f0',\
+                endColor='#67000d',\
+                reverse='',\
             )
-    ls = StyleOrganizer(d)
-    worked = ls.style_layer()
-    if not worked:
-        print ('\n'.join(ls.err_msgs))
+    style_organizer = StyleOrganizer(d)
+    styler_succeeded = style_organizer.style_layer()
+    if not styler_succeeded:
+        print ('\n'.join(style_organizer.err_msgs))
     #else:
     #    print ('Yes!')
     #    metadata = ls.layer_metadata
     #    if metadata:
     #        print (metadata.get_metadata_dict())
     print ('-'*40)
-    print (ls.get_json_message())
+    print (style_organizer.get_json_message())

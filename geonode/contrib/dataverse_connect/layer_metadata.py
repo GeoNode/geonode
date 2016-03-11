@@ -91,7 +91,10 @@ class LayerMetadata:
 
         f = WorldMapToGeoconnectMapLayerMetadataValidationForm(params)
         if not f.is_valid():
-            raise forms.ValidationError('Validation failed for the WorldMapToGeoconnectMapLayerMetadataValidationForm.  \nErrors: %s' % f.errors)
+            err_msg = ('Validation failed for the '
+                    'WorldMapToGeoconnectMapLayerMetadataValidationForm. '
+                    '\nErrors: %s' % f.errors)
+            raise forms.ValidationError(err_msg)
 
         print '-'
         for k, v in params.items():

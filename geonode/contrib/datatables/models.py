@@ -201,6 +201,8 @@ class JoinTarget(models.Model):
     """
     JoinTarget
     """
+    name = models.CharField(max_length=100,\
+        help_text='Will be presented to Geoconnect Users. e.g. "Boston Zip Codes (5 digit)"')
     layer = models.ForeignKey(Layer)
     attribute = models.ForeignKey(LayerAttribute)
     geocode_type = models.ForeignKey(GeocodeType, on_delete=models.PROTECT)
@@ -212,6 +214,10 @@ class JoinTarget(models.Model):
 
     def __unicode__(self):
         return self.layer.title
+
+    class Meta:
+        unique_together = ('layer', 'attribute',)
+        ordering = ('year', 'name')
 
     def return_to_layer_admin(self):
         if not self.id or not self.layer:
@@ -235,6 +241,7 @@ class JoinTarget(models.Model):
             abstract = None
 
         return dict(id=self.id,\
+            name=self.name,\
             layer=self.layer.typename,\
             title=self.layer.title,\
             abstract=abstract,\
@@ -243,9 +250,6 @@ class JoinTarget(models.Model):
             geocode_type=self.geocode_type.name,\
             geocode_type_slug=self.geocode_type.slug,\
             year=self.year)
-
-    class Meta:
-        unique_together = ('layer', 'attribute',)
 
 
 class LatLngTableMappingRecord(models.Model):
@@ -324,7 +328,7 @@ class TableJoin(models.Model):
 
     def remove_joins(self):
         drop_view_by_name(self.view_name)
-        
+
     def as_json(self):
         return dict(
             id=self.id, datable=self.datatable.table_name, source_layer=self.source_layer.typename, join_layer=self.join_layer.typename,
