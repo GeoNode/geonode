@@ -64,6 +64,13 @@ class MapStory(ResourceBase):
         if self.uuid is None or self.uuid == '':
             self.uuid = str(uuid.uuid1())
 
+        removed_chapter_ids = conf['removed_chapters']
+        if removed_chapter_ids is not None:
+            for chapter_id in removed_chapter_ids:
+                map_obj = Map.objects.get(chapter_id)
+                self.chapter_list.remove(map_obj)
+
+
 
         #self.keywords.add(*conf['map'].get('keywords', []))
 
