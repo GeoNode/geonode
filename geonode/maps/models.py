@@ -78,12 +78,17 @@ class MapStory(ResourceBase):
 
     def viewer_json(self, user):
 
-        config = {
-            'id': self.id,
+        about = {
             'title': self.title,
             'abstract': self.abstract,
-            'owner': self.owner.name_long,
-            'chapters': [chapter.viewer_json(user) for chapter in self.chapters]
+            'owner': self.owner.name_long
+        }
+
+        config = {
+            'id': self.id,
+            'about': about,
+            'chapters': [chapter.viewer_json(user) for chapter in self.chapters],
+            'thumbnail_url': '/static/geonode/img/missing_thumb.png'
         }
 
         return config

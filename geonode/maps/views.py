@@ -385,7 +385,7 @@ def save_story(request, storyid):
 
     try:
         story_obj.update_from_viewer(request.body)
-        return HttpResponse(json.dumps(story_obj.viewer_json()))
+        return HttpResponse(json.dumps(story_obj.viewer_json(request.user)))
     except ValueError as e:
         return HttpResponse(
                 "The server could not understand the request." + str(e),
