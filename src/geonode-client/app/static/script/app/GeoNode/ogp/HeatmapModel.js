@@ -2,7 +2,7 @@ Ext.namespace("GeoNode");
 
 var heatmapParams = {
   facet : "true", 
-  "facet.heatmap" : "bbox_rpt", 
+  "facet.heatmap" : "bbox", 
   "facet.heatmap.format" : "ints2D",
   fq: [
     "Area:[0 TO 400]",
@@ -115,7 +115,7 @@ GeoNode.HeatmapModel = Ext.extend(Ext.util.Observable, {
       success: function(response){
         var facetCounts = response.facet_counts;
         if (facetCounts != null){
-          var heatmapObject = facetCounts.facet_heatmaps.bbox_rpt;
+          var heatmapObject = facetCounts.facet_heatmaps.bbox;
           self.heatmapObject = heatmapObject;
           self.drawHeatmapOpenLayers(heatmapObject);
         }

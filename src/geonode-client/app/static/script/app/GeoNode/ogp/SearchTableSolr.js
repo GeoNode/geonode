@@ -47,8 +47,7 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
             remoteSort: true,
             totalProperty: 'response.numFound',
             fields: [
-                {name: 'Name', type: 'string'},
-                {name: 'LayerDisplayName', type: 'string'},
+                {name: 'LayerTitle', type: 'string'},
                 {name: 'LayerId', type: 'string'},
                 {name: 'MinX', type: 'string'},
                 {name: 'MinY', type: 'string'},
@@ -56,10 +55,13 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
                 {name: 'MaxY', type: 'string'},
                 {name: 'Originator', type: 'string'},
                 {name: 'Location', type: 'string'},
-                {name: 'LayerId', type: 'string'},
-                {name: 'ContentDate', type: 'string'},
+                {name: 'LayerName', type: 'string'},
+                {name: 'LayerDate', type: 'string'},
                 {name: 'Availability', type: 'string'},
-                {name: 'Abstract', type: 'string'}
+                {name: 'Abstract', type: 'string'},
+                {name: 'bbox', type: 'string'},
+                {name: 'LayerUrl', type: 'string'},
+                {name: 'ServiceType', type: 'string'}
             ]
         });
         this.searchStore.on('load', function() {
@@ -202,7 +204,7 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
 
         // Remove any DataType filter if there
         for(var i=0;i<GeoNode.queryTerms.fq.length;i++){
-            if(GeoNode.queryTerms.fq[i].indexOf('DataType') > -1){
+            if(GeoNode.queryTerms.fq[i].indexOf('ServiceType') > -1){
                 GeoNode.queryTerms.fq.splice(i, 1);
             }
         };
@@ -213,13 +215,13 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
 
         // Remove any date filter if there
         for(var i=0;i<GeoNode.queryTerms.fq.length;i++){
-            if(GeoNode.queryTerms.fq[i].indexOf('ContentDate') > -1){
+            if(GeoNode.queryTerms.fq[i].indexOf('LayerDate') > -1){
                 GeoNode.queryTerms.fq.splice(i, 1);
             }
         };
         var dates = this.dateInput.getDateValues();
         if(dates){
-            GeoNode.queryTerms.fq.push("ContentDate:" + this.dateInput.getDateValues());
+            GeoNode.queryTerms.fq.push("LayerDate:" + this.dateInput.getDateValues());
         };
 
         if (this.queryInput.getValue() === ''){
@@ -309,13 +311,14 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
         var columns = [
             {
                 header: this.titleHeaderText,
-                dataIndex: 'LayerDisplayName',
+                dataIndex: 'LayerTitle',
                 id: 'title',
                 sortable: true,
                 width: 200,
-                sortBy: 'LayerDisplayName',
+                sortBy: 'LayerTitle',
                 renderer: function(value, metadata, record, rowIndex, colIndex, store){
-                    metadata.attr = 'ext:qtip="' + record.get('LayerDisplayName') + ' | ' + record.get('Originator') + '<br/><strong>Abstract</strong>: ' + record.get('Abstract') + '"';
+                    var abstract = app.layerTree.replaceURLWithHTMLLinks(record.get('Abstract')).substring(0, 250);
+                    metadata.attr = 'ext:qtip="' + record.get('Originator') + '<br/><strong>Abstract</strong>: ' + abstract + '"';
                     return value;
                 }
             },
@@ -331,10 +334,10 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
                 id: 'date',
                 width: 50,
                 sortable: true,
-                dataIndex: 'ContentDate',
-                sortBy: 'ContentDate',
+                dataIndex: 'LayerDate',
+                sortBy: 'LayerDate',
                 renderer: function(value, metaData, record, rowIndex, colIndex, store){
-                    var date = new Date(record.get('ContentDate'));
+                    var date = new Date(record.get('LayerDate'));
                     return date.getFullYear();
                 }
             }
@@ -384,8 +387,11 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
                     'Label'
                 ],
                 data: [['', 'All Layers'],
-                    ['DataType:Polygon OR DataType:Raster', 'WM Layers'],
-                    ['DataType:RESTServices OR DataType:WMSServices', 'WM Collections']
+                    ['ServiceType:WM', 'WorldMap Layers'],
+                    ['ServiceType:OGC_WMTS', 'WMTS'],
+                    ['ServiceType:OGC_WMS', 'WMS'],
+                    ['ServiceType:ESRI_ImageServer', 'ESRI Image'],
+                    ['ServiceType:ESRI_MapServer', 'ESRI Map']
                 ]
             }),
             valueField: 'value',

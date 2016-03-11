@@ -213,7 +213,7 @@ GeoNode.Solr = function() {
   this.CountRequest = "CountOnly";
 
   this.SearchRequestColumns = [ "Name", "Institution", "Access", "DataType",
-      "LayerDisplayName", "Publisher", "GeoReferenced", "Originator",
+      "LayerTitle", "Publisher", "GeoReferenced", "Originator",
       "Location", "MinX", "MaxX", "MinY", "MaxY", "ContentDate",
       "LayerId", "score", "WorkspaceName", "CollectionId", "ServiceType" , "Availability" ];
 
@@ -311,11 +311,11 @@ GeoNode.Solr = function() {
   // you can specify different solr fields and boosts for basic and advanced.
   this.LayerDisplayNameTerm = {
     basic : {
-      term : "LayerDisplayNameSynonyms",
+      term : "LayerTitleSynonyms",
       boost : .2
     },
     advanced : {
-      term : "LayerDisplayNameSynonyms",
+      term : "LayerTitleSynonyms",
       boost : .2
     }
   };

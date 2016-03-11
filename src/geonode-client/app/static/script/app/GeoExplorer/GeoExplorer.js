@@ -1096,49 +1096,52 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                 var typename = this.searchTable.getlayerTypename(records[i]);
                 var tiled = thisRecord.get("tiled") || true;
 
+                var layer_bbox = [];
+                var bbox_values = thisRecord.get('bbox').split(')')[0].split('(')[1].split(',');
+                for (var i=0; i<bbox_values.length; i++){
+                    layer_bbox.push(parseFloat(bbox_values[i]));
+                };
+                var layer = {
+                    "styles": "", 
+                    "group": "General", 
+                    "name": thisRecord.get('LayerName'), 
+                    "title": thisRecord.get('LayerTitle'), 
+                    "url": thisRecord.get('LayerUrl'), 
+                    "abstract": thisRecord.get('Abstract'), 
+                    "visibility": true, 
+                    "queryable": true, 
+                    "disabled": false, 
+                    "srs": thisRecord.get('SrsProjectionCode'), 
+                    "bbox": layer_bbox, 
+                    "transparent": true, 
+                    "llbbox": layer_bbox,
+                    "source": key,
+                    "buffer": 0,
+                    "tiled": true
+                };
+                var record = source.createLayerRecord(layer);
+                record.selected = true;
 
-                Ext.Ajax.request({
-                    url: "/maps/addgeonodelayer/?" + typename,
-                    method: "POST",
-                    params: {layername: typename},
+                if (record) {
+                    if (record.get("group") === "background") {
+                        var pos = layerStore.queryBy(
+                            function(rec) {
+                                return rec.get("group") === "background"
+                            }).getCount();
+                        layerStore.insert(pos, [record]);
 
-                    success: function(result, request) {
-                        var jsonData = Ext.util.JSON.decode(result.responseText);
-                        layer = jsonData.layer;
-                        layer.source = key;
-                        layer.buffer = 0;
-                        layer.tiled = true;
-                        //console.log('BBOX:' + layer.llbbox);
-                        var record = source.createLayerRecord(layer);
-                        record.selected = true;
-                        //console.log('Created record');
-                        ////console.log('GROUP:' + record.get("group"));
-                        if (record) {
-                            if (record.get("group") === "background") {
-                                var pos = layerStore.queryBy(
-                                    function(rec) {
-                                        return rec.get("group") === "background"
-                                    }).getCount();
-                                layerStore.insert(pos, [record]);
+                    } else {
+                        category = record.get("group");
+                        if (!category || category == '')
+                            record.set("group", "General");
 
-                            } else {
-                                category = record.get("group");
-                                if (!category || category == '')
-                                    record.set("group", "General");
+                        geoEx.layerTree.addCategoryFolder({"group":record.get("group")}, true);
+                        layerStore.add([record]);
 
-                                geoEx.layerTree.addCategoryFolder({"group":record.get("group")}, true);
-                                layerStore.add([record]);
-
-                                //geoEx.reorderNodes(record.getLayer());
-                                geoEx.layerTree.overlayRoot.findDescendant("layer", record.getLayer()).select();
-                            }
-                        }
-                    },
-                    failure: function(result, request) {
-                        //No permission to view
+                        //geoEx.reorderNodes(record.getLayer());
+                        geoEx.layerTree.overlayRoot.findDescendant("layer", record.getLayer()).select();
                     }
-
-                });
+                };
             } else {
                 //Not a local GeoNode layer, use source's standard method for creating the layer.
                 var layer = records[i].get("name");
