@@ -317,8 +317,8 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
                 width: 200,
                 sortBy: 'LayerTitle',
                 renderer: function(value, metadata, record, rowIndex, colIndex, store){
-                    var abstract = app.layerTree.replaceURLWithHTMLLinks(record.get('Abstract')).substring(0, 250);
-                    metadata.attr = 'ext:qtip="' + record.get('Originator') + '<br/><strong>Abstract</strong>: ' + abstract + '"';
+                    var the_abstract = app.layerTree.replaceURLWithHTMLLinks(record.get('Abstract'));
+                    metadata.attr = 'ext:qtip="' + record.get('Originator') + '<br/><strong>Abstract</strong>: ' + the_abstract.substring(0, 250) + '"';
                     return value;
                 }
             },

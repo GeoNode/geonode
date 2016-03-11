@@ -10,7 +10,7 @@ Ext.onReady(function(){
     defType: "edismax",
     q: "*",
     fq: [
-        "{!frange l=0 incl=false cache=false}$intx",
+        "{!frange l=0 incl=false cache=false}$intx"
     ]
   };
 
