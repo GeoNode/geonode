@@ -1,6 +1,7 @@
 from django.db import models
 from django.conf import settings
 from django.contrib.sites.models import Site
+from django.core.exceptions import ObjectDoesNotExist, PermissionDenied
 from django.core.mail import EmailMultiAlternatives
 from django.core.urlresolvers import reverse
 from django.template.defaultfilters import slugify
@@ -501,9 +502,9 @@ class DataRequestProfile(TimeStampedModel):
             group_member = GroupMember.objects.get(group=requesters_group, user=self.profile)
             if not group_member:
                 requesters_group.join(self.profile, role='member')
-        except Exception as e:
-            pprint (traceback.format_exc())
-            raise ValueError("Unable to add user to the group")
+        except ObjectDoesNotExist as e:
+            requesters_group.join(self.profile, role='member')
+            #raise ValueError("Unable to add user to the group")
         
 
     def assign_jurisdiction(self):
