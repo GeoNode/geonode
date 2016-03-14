@@ -23,6 +23,7 @@ from django.contrib import admin
 from geonode.base.admin import MediaTranslationAdmin
 from geonode.layers.models import Layer, Attribute, Style
 from geonode.layers.models import LayerFile, UploadSession
+from geonode.layers.models import AnonDownloader
 
 import autocomplete_light
 
@@ -83,7 +84,19 @@ class UploadSessionAdmin(admin.ModelAdmin):
     list_display = ('date', 'user', 'processed')
     inlines = [LayerFileInline]
 
+class AnonDownloaderAdmin(admin.ModelAdmin):
+    model = AnonDownloader
+    list_display_links = ('id',)
+    list_display = (
+        'id',
+        'anon_first_name',
+        'anon_last_name',
+        'anon_email',
+        'anon_organization',
+        'anon_purpose')
+
 admin.site.register(Layer, LayerAdmin)
 admin.site.register(Attribute, AttributeAdmin)
 admin.site.register(Style, StyleAdmin)
 admin.site.register(UploadSession, UploadSessionAdmin)
+admin.site.register(AnonDownloader, AnonDownloaderAdmin)
