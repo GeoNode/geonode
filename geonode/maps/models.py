@@ -2200,8 +2200,8 @@ class MapLayer(models.Model):
                 cfg['llbbox'] = [-180,-90,180,90]
                 cfg['attributes'] = []
                 cfg['queryable'] =False,
-                cfg['disabled'] = True
-                cfg['visibility'] = False
+                cfg['disabled'] = False
+                cfg['visibility'] = cfg['visibility'] and not cfg['disabled']
                 cfg['abstract'] = ''
                 cfg['styles'] =''
                 logger.info("Could not retrieve Layer with typename of %s : %s", self.name, str(e))
