@@ -321,7 +321,6 @@ class DataRequestProfileResource(ModelResource):
         #authorization = GeoNodeAuthorization()
         authentication = SessionAuthentication()
         queryset = DataRequestProfile.objects.all().order_by('-date')
-        queryset = DataRequestProfile.objects.all.order_by('-date')
         resource_name = 'data_requests'
         allowed_methods = ['get']
         ordering = ['date', ]
