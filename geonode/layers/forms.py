@@ -38,7 +38,7 @@ from geonode.base.models import Region
 
 import autocomplete_light
 
-from .models import AnonDownloader
+from geonode.eula.models import AnonDownloader
 
 from captcha.fields import ReCaptchaField
 from crispy_forms.helper import FormHelper
@@ -60,27 +60,19 @@ class AnonDownloaderForm(forms.ModelForm):
         self.helper = FormHelper()
         super(AnonDownloaderForm, self).__init__(*args, **kwargs)
         self.helper.form_tag = False
+        self.helper.render_required_fields = True
         self.helper.layout = Layout(
             Fieldset('Requester Information',
                 Div(
                     Field('anon_first_name', css_class='form-control'),
-                    css_class='form-group'
-                ),
-                Div(
                     Field('anon_last_name', css_class='form-control'),
-                    css_class='form-group'
-                ),
-                Div(
-                    Field('anon_organization', css_class='form-control'),
-                    css_class='form-group'
-                ),
-                Div(
                     Field('anon_email', css_class='form-control'),
                     css_class='form-group'
                 ),
                 Div(
+                    Field('anon_organization', css_class='form-control'),
                     Field('anon_purpose', css_class='form-control'),
-                    css_class='form-group'
+                    css_class='form-group'    
                 ),
             ),
         )
