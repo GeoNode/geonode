@@ -546,10 +546,10 @@ def data_request_profile_approve(request, pk):
                 
             request_profile.create_directory()
             
-            request_profile.set_approved()
+            request_profile.set_approved(is_new_acc)
             
             request_profile.administrator = request.user
-            request_profile.save(is_new_acc)
+            request_profile.save()
             return HttpResponseRedirect(request_profile.get_absolute_url())
         except Exception as e:
             import traceback
