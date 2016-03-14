@@ -139,7 +139,7 @@ def registration_part_two(request):
         tempdir = None
         errormsgs = []
         out = {}
-        request_profile = None
+        request_profile =  request.session['request_object']
         if form.is_valid():
             if form.cleaned_data:
                 interest_layer = None
@@ -215,6 +215,8 @@ def registration_part_two(request):
                                 'users': {request.user.username : ['view_resourcebase']},
                                 'groups': {}
                             }
+                            
+                        request_profile
                         if permissions is not None and len(permissions.keys()) > 0:
     
                             saved_layer.set_permissions(permissions)
@@ -233,7 +235,8 @@ def registration_part_two(request):
                         request_profile, letter = update_datarequest_obj(
                             datarequest=  request.session['request_object'],
                             parameter_dict = form.cleaned_data,
-                            request_letter = request.session['request_letter']
+                            request_letter = request.session['request_letter'],
+                            interest_layer = interest_layer
                         )
                         out['success']=True
                     else: 
@@ -241,7 +244,8 @@ def registration_part_two(request):
                             request_profile, letter = update_datarequest_obj(
                                 datarequest=  request.session['request_object'],
                                 parameter_dict = form.cleaned_data,
-                                request_letter = request.session['request_letter']
+                                request_letter = request.session['request_letter'],
+                                interest_layer = interest_layer
                             )
                     
                     if request.user.is_authenticated():
