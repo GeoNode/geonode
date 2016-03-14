@@ -39,6 +39,8 @@ from geonode.utils import GXPMap
 from geonode.utils import llbbox_to_mercator
 from geonode.utils import build_social_links
 
+from geoserver.catalog import Catalog
+
 from pprint import pprint
 
 import unicodedata
@@ -139,7 +141,7 @@ def registration_part_two(request):
         tempdir = None
         errormsgs = []
         out = {}
-        request_profile = None
+        request_profile =  request.session['request_object']
         if form.is_valid():
             if form.cleaned_data:
                 interest_layer = None
@@ -178,6 +180,17 @@ def registration_part_two(request):
                         saved_layer.is_published = False
                         saved_layer.save()
                         interest_layer =  saved_layer
+                        
+                        cat = Catalog(settings.OGC_SERVER['default']['LOCATION'] + 'rest',
+                            username=settings.OGC_SERVER['default']['USER'],
+                            password=settings.OGC_SERVER['default']['PASSWORD'])
+
+                        boundary_style = cat.get_style('Boundary')
+                        gs_layer = cat.get_layer(saved_layer.name)
+                        gs_layer._set_default_style(boundary_style)
+                        cat.save(gs_layer) #save in geoserver
+                        saved_layer.sld_body = boundary_style.sld_body
+                        saved_layer.save() #save in geonode
                        
                     except Exception as e:
                         exception_type, error, tb = sys.exc_info()
@@ -215,6 +228,8 @@ def registration_part_two(request):
                                 'users': {request.user.username : ['view_resourcebase']},
                                 'groups': {}
                             }
+                            
+                        request_profile
                         if permissions is not None and len(permissions.keys()) > 0:
     
                             saved_layer.set_permissions(permissions)
@@ -233,7 +248,8 @@ def registration_part_two(request):
                         request_profile, letter = update_datarequest_obj(
                             datarequest=  request.session['request_object'],
                             parameter_dict = form.cleaned_data,
-                            request_letter = request.session['request_letter']
+                            request_letter = request.session['request_letter'],
+                            interest_layer = interest_layer
                         )
                         out['success']=True
                     else: 
@@ -241,7 +257,8 @@ def registration_part_two(request):
                             request_profile, letter = update_datarequest_obj(
                                 datarequest=  request.session['request_object'],
                                 parameter_dict = form.cleaned_data,
-                                request_letter = request.session['request_letter']
+                                request_letter = request.session['request_letter'],
+                                interest_layer = interest_layer
                             )
                     
                     if request.user.is_authenticated():
