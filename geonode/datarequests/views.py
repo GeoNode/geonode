@@ -533,8 +533,11 @@ def data_request_profile_approve(request, pk):
         if not request_profile.date:
             raise Http404
         try:
+            is_new_acc=True
             if not request_profile.profile:
                 request_profile.create_account()
+            else:
+                is_new_acc = False
             
             request_profile.join_requester_grp()
             
@@ -546,7 +549,7 @@ def data_request_profile_approve(request, pk):
             request_profile.set_approved()
             
             request_profile.administrator = request.user
-            request_profile.save()
+            request_profile.save(is_new_acc)
             return HttpResponseRedirect(request_profile.get_absolute_url())
         except Exception as e:
             import traceback
