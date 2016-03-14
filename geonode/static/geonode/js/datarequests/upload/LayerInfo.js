@@ -178,9 +178,6 @@ define(function (require, exports) {
         form_data.append('purpose', $('#id_purpose').val());
         form_data.append('purpose_other', $('#id_purpose_other').val());
         form_data.append('data_type_requested', $('#id_data_type_requested').val());
-        form_data.append('license_period', $('#id_license_period').val());
-        form_data.append('license_period_other', $('#id_license_period_other').val());
-        form_data.append('has_subscription', $('#id_has_subscription').val());
         form_data.append('intended_use_of_dataset',$('#id_intended_use_of_dataset').val());
         form_data.append('organization_type',$('#id_organization_type').val());
         form_data.append('request_level',$('#id_request_level').val());
