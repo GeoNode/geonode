@@ -32,7 +32,7 @@ class DataClassification(enum.Enum):
     
     gs_feature_labels = {
         UNKNOWN     : "UNSUPPORTED",
-        LAZ         : "UNSUPPORTED",
+        LAZ         : "LAZ",
 #        DEM         : "UNSUPPORTED",
         DSM         : "DSM",
         DTM         : "DTM",
