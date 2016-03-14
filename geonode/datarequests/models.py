@@ -509,9 +509,14 @@ class DataRequestProfile(TimeStampedModel):
 
     def assign_jurisdiction(self):
         # Link shapefile to account
-        uj, created = UserJurisdiction.objects.get_or_create(user=self.profile)
-        uj.jurisdiction_shapefile = self.jurisdiction_shapefile
-        uj.save()
+        uj = None
+        try:
+            uj = UserJurisdiction.objects.get(user=self.profile)
+        except ObjectDoesNotExist as e:
+            uj = UserJurisdiction()
+            uj.user = self.profile
+            uj.jurisdiction_shapefile = self.jurisdiction_shapefile
+            uj.save()
         #Add view permission on resource
         resource = self.jurisdiction_shapefile
         perms = resource.get_all_level_info()
