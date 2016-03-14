@@ -320,9 +320,7 @@ class DataRequestProfileResource(ModelResource):
     class Meta:
         #authorization = GeoNodeAuthorization()
         authentication = SessionAuthentication()
-        queryset = DataRequestProfile.objects.exclude(
-            date=None
-        ).order_by('-date')
+        queryset = DataRequestProfile.objects.all().order_by('-date')
         resource_name = 'data_requests'
         allowed_methods = ['get']
         ordering = ['date', ]
@@ -356,7 +354,7 @@ class DataRequestProfileResource(ModelResource):
         return formats.date_format(bundle.obj.date, "SHORT_DATETIME_FORMAT")
 
     def dehydrate_status_label(self, bundle):
-        if bundle.obj.request_status == 'pending' or bundle.obj.request_status == 'cancelled':
+        if bundle.obj.request_status == 'pending' or bundle.obj.request_status == 'cancelled' or bundle.obj.request_status == 'unconfirmed':
             return 'default'
         elif bundle.obj.request_status == 'rejected':
             return 'danger'
