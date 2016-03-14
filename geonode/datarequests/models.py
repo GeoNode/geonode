@@ -499,7 +499,7 @@ class DataRequestProfile(TimeStampedModel):
             group_member = GroupMember.objects.get(group=requesters_group, user=self.profile)
             if not group_member:
                 requesters_group.join(self.profile)
-        except Exeption as e:
+        except Exception as e:
             raise ValueError("Unable to add user to the group")
         
 
