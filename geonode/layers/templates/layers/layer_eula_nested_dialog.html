@@ -25,7 +25,6 @@
 
           <div class="modal-footer">
             <form id="form_eula" name="form_eula" method="POST">
-                {% csrf_token %}
                 <ul class="list-inline pull-right" align="right">
                     {% if not request.user.is_authenticated %}
                     <div class="form-controls">
