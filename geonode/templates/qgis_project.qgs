@@ -140,6 +140,17 @@
     <Legend>
       <filterByMap type="bool">false</filterByMap>
     </Legend>
+    <WFSLayers type="QStringList">
+      <value>{{ layer_id }}</value>
+    </WFSLayers>
+    <WFSTLayers>
+      <Insert type="QStringList"/>
+      <Update type="QStringList"/>
+      <Delete type="QStringList"/>
+    </WFSTLayers>
+    <WFSLayersPrecision>
+      <{{ layer_id }} type="int">8</{{ layer_id }}>
+    </WFSLayersPrecision>
   </properties>
   <visibility-presets/>
 </qgis>
