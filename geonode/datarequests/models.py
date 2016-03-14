@@ -480,7 +480,7 @@ class DataRequestProfile(TimeStampedModel):
                 pprint("Account was not created")
                 raise Http404
             
-            self.profile_details(uname=uname, profile = profile)
+            self.update_profile_details(uname=uname, profile = profile)
             
         else:
             raise Http404
