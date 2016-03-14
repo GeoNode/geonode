@@ -28,6 +28,8 @@ from geonode.tasks.mk_folder import create_folder
 
 from pprint import pprint
 
+import traceback
+
 import geonode.settings as local_settings
 
 from .utils import create_login_credentials, create_ad_account, add_to_ad_group
@@ -498,8 +500,9 @@ class DataRequestProfile(TimeStampedModel):
         try:
             group_member = GroupMember.objects.get(group=requesters_group, user=self.profile)
             if not group_member:
-                requesters_group.join(self.profile)
+                requesters_group.join(self.profile, role='member')
         except Exception as e:
+            pprint (traceback.format_exc())
             raise ValueError("Unable to add user to the group")
         
 
