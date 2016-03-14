@@ -44,13 +44,6 @@ vec_exts = shp_exts + csv_exts + kml_exts
 
 cov_exts = ['.tif', '.tiff', '.geotiff', '.geotif']
 
-class AnonDownloader(models.Model):
-    anon_first_name = models.CharField(('anon_first_name'), max_length=100)
-    anon_last_name = models.CharField(('anon_last_name'), max_length=100)
-    anon_email = models.EmailField(('anon_email'), max_length=50)
-    anon_organization = models.CharField(('anon_organization'), max_length=100)
-    anon_purpose = models.CharField(('anon_purpose'), max_length=100)
-
 class Style(models.Model):
 
     """Model for storing styles.
@@ -508,6 +501,14 @@ def post_delete_layer(instance, sender, **kwargs):
         for lf in instance.upload_session.layerfile_set.all():
             lf.file.delete()
 
+class AnonDownloader(models.Model):
+    date = models.DateTimeField(auto_now=True)
+    anon_first_name = models.CharField(('anon_first_name'), max_length=100)
+    anon_last_name = models.CharField(('anon_last_name'), max_length=100)
+    anon_email = models.EmailField(('anon_email'), max_length=50)
+    anon_organization = models.CharField(('anon_organization'), max_length=100)
+    anon_purpose = models.CharField(('anon_purpose'), max_length=100)
+    layer = models.ForeignKey(Layer, null=True, blank=True)
 
 signals.pre_save.connect(pre_save_layer, sender=Layer)
 signals.post_save.connect(resourcebase_post_save, sender=Layer)

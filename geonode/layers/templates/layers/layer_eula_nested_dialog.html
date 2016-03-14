@@ -29,6 +29,7 @@
                     {% if not request.user.is_authenticated %}
                     <div class="form-controls">
                       {% crispy anon_form %}
+                      
                     </div>
                     {% endif %}
                     <input type="checkbox" id="signed" required name="signed"> I accept the <b><u>End User License Agreement</u></b></p>
