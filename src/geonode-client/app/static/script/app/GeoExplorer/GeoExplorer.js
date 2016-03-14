@@ -1099,8 +1099,8 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
 
                 var layer_bbox = [];
                 var bbox_values = thisRecord.get('bbox').split(')')[0].split('(')[1].split(',');
-                for (var i=0; i<bbox_values.length; i++){
-                    layer_bbox.push(parseFloat(bbox_values[i]));
+                for (var j=0; j<bbox_values.length; j++){
+                    layer_bbox.push(parseFloat(bbox_values[j]));
                 };
                 var layer = {
                     "styles": "", 
@@ -1168,10 +1168,8 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                     }
                 }
             }
-            this.searchWindow.hide();
-
-
         }
+        this.searchWindow.hide();
     },
 
 
