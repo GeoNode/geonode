@@ -567,7 +567,7 @@ def data_request_profile_reconfirm(request, pk):
     if request.method == 'POST':
         request_profile = get_object_or_404(DataRequestProfile, pk=pk)
         
-        request.profile.send_verification_email()
+        request_profile.send_verification_email()
         return HttpResponseRedirect(request_profile.get_absolute_url())
 
 @require_POST
