@@ -323,7 +323,7 @@ class DataRequestProfileResource(ModelResource):
         queryset = DataRequestProfile.objects.all().order_by('-key_created_date')
         resource_name = 'data_requests'
         allowed_methods = ['get']
-        ordering = ['date', ]
+        ordering = ['key_created_date', ]
         filtering = {'first_name': ALL,
                      'requester_type': ALL,
                      'request_status': ALL,
