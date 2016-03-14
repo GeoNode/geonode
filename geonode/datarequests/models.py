@@ -104,7 +104,7 @@ class DataRequestProfile(TimeStampedModel):
         _('Status of Data Request'),
         choices=REQUEST_STATUS_CHOICES,
         default=REQUEST_STATUS_CHOICES.pending,
-        max_length=10,
+        max_length=12,
         null=True,
         blank=True,
     )
