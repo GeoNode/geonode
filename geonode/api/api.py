@@ -329,7 +329,7 @@ class DataRequestProfileResource(ModelResource):
                      'request_status': ALL,
                      'organization': ALL,
                      'request_status': ALL,
-                     'date': ALL,
+                     'key_created_date': ALL,
                      }
 
     def dehydrate_data_request_detail_url(self, bundle):
