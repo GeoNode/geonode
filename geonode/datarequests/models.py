@@ -535,7 +535,7 @@ class DataRequestProfile(TimeStampedModel):
         self.save()
 
         if is_new_acc:
-            self.send_account_approval_email(self.username, self.directory)
+            self.send_account_approval_email(self.username, self.ftp_folder)
         else:
             self.send_request_approval_email(self.username)
         
