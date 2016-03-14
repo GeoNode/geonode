@@ -130,10 +130,7 @@ class DataRequestDetailsForm(forms.ModelForm):
     )
     
     ORGANIZATION_TYPE_CHOICES = Choices(
-        (0, _('Phil-LiDAR 1 SUC')),
-        (1, _('Phil-LiDAR 2 SUC' )),
         (2, _( 'Government Agency')),
-        (3, _( 'Academic/Research Institution' )),
         (4, _('Academe')),
         (5, _( 'International NGO')),
         (6, _('Local NGO')),
@@ -142,7 +139,7 @@ class DataRequestDetailsForm(forms.ModelForm):
     )
 
     REQUEST_LEVEL_CHOICES = Choices(
-        ('institution', _('Institution')),
+        ('institution', _('Academic/ Research Institution')),
         ('faculty', _('Faculty')),
         ('student', _('Student')),
     )
@@ -162,7 +159,6 @@ class DataRequestDetailsForm(forms.ModelForm):
         fields=(
             'project_summary',
             'data_type_requested',
-            'has_subscription',
             'intended_use_of_dataset',
 
             # Non-commercial requester field
