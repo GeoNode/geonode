@@ -78,22 +78,4 @@ $(function() {
         }
     });
 
-    // Purpose
-    var $license_period = $("#id_license_period")
-    var $license_period_other = $form.find('#div_id_license_period_other').parent();
-
-    // Initial values
-    if ($license_period.val() == 'other'){
-        $license_period_other.toggle(true);
-    } else {
-        $license_period_other.toggle(false);
-    }
-    $form.on('change', '#id_license_period', function() {
-        if ($(this).val() == 'other'){
-            $license_period_other.slideDown();
-            $license_period_other.find('input').focus();
-        } else {
-            $license_period_other.slideUp();
-        }
-    });
 });

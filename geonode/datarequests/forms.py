@@ -141,26 +141,10 @@ class DataRequestDetailsForm(forms.ModelForm):
         (8, _('Other' )),
     )
 
-    LICENSE_PERIOD_CHOICES = Choices(
-        ('One-time Use', _('One-time Use')),
-        ('1 Year or Less', _('1 Year or Less')),
-        ('other', _('Other, please specify:')),
-    )
-
     REQUEST_LEVEL_CHOICES = Choices(
         ('institution', _('Institution')),
         ('faculty', _('Faculty')),
         ('student', _('Student')),
-    )
-    
-    license_period = forms.ChoiceField(
-        label=_('License Period'),
-        choices=LICENSE_PERIOD_CHOICES
-    )
-    
-    license_period_other = forms.IntegerField(
-        label=_(u'Your custom license period (in years)'),
-        required=False
     )
     
     purpose = forms.ChoiceField(
@@ -214,19 +198,6 @@ class DataRequestDetailsForm(forms.ModelForm):
             Div(
                Field('data_type_requested', css_class='form-control'),
                css_class='form-group'
-            ),
-            Div(
-                Field('license_period', css_class='form-control'),
-                Div(
-                    Field('license_period_other', css_class='form-control'),
-                    css_class='col-sm-11 col-sm-offset-1'
-                ),
-                css_class='form-group'
-            ),
-            Field('has_subscription'),
-            Div(
-                Field('intended_use_of_dataset', css_class='form-control'),
-                css_class='form-group'
             ),
             Fieldset('Non-commercial',
                 Div(
@@ -336,12 +307,6 @@ class DataRequestProfileShapefileForm(NewLayerUploadForm):
         ('other', _('Other')),
     )
 
-    LICENSE_PERIOD_CHOICES = Choices(
-        ('One-time Use', _('One-time Use')),
-        ('1 Year or Less', _('1 Year or Less')),
-        ('other', _('Other, please specify:')),
-    )
-
     REQUEST_LEVEL_CHOICES = Choices(
         ('institution', _('Institution')),
         ('faculty', _('Faculty')),
@@ -370,20 +335,6 @@ class DataRequestProfileShapefileForm(NewLayerUploadForm):
     data_type_requested = forms.TypedChoiceField(
         label = _('Types of Data Requested'),
         choices = DATA_TYPE_CHOICES,
-    )
-
-    license_period = forms.ChoiceField(
-        label=_('License Period'),
-        choices=LICENSE_PERIOD_CHOICES
-    )
-
-    license_period_other = forms.IntegerField(
-        label=_(u'Your custom license period (in years)'),
-        required=False
-    )
-
-    has_subscription = forms.BooleanField(
-        required=False
     )
 
     intended_use_of_dataset = forms.ChoiceField(
@@ -440,25 +391,6 @@ class DataRequestProfileShapefileForm(NewLayerUploadForm):
             else:
                 return purpose_other
         return purpose
-
-    def clean_license_period_other(self):
-        license_period = self.cleaned_data.get('license_period')
-        license_period_other = self.cleaned_data.get('license_period_other')
-        if license_period == self.LICENSE_PERIOD_CHOICES.other:
-            if not license_period_other:
-                raise forms.ValidationError(
-                    'Please input the license period.')
-        return license_period_other
-
-    def clean_license_period(self):
-        license_period = self.cleaned_data.get('license_period')
-        if license_period == self.LICENSE_PERIOD_CHOICES.other:
-            license_period_other = self.cleaned_data.get('license_period_other')
-            if not license_period_other:
-                return license_period
-            else:
-                return license_period_other
-        return license_period
 
     def clean_funding_source(self):
         funding_source = self.cleaned_data.get('funding_source')

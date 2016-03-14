@@ -481,47 +481,7 @@ class DataRequestProfile(TimeStampedModel):
                 pprint("Account was not created")
                 raise Http404
             
-<<<<<<< HEAD
             self.profile_details(uname=uname, profile = profile)
-=======
-            # Link data request to profile and updating other fields of the request
-            self.username = uname
-            self.profile = profile
-            self.ftp_folder = directory = "Others/"+uname
-            self.save()
-            
-            # Link shapefile to account
-	    if self.jurisdiction_shapefile:
-            	UserJurisdiction.objects.create(
-                	user=profile,
-                	jurisdiction_shapefile=self.jurisdiction_shapefile,
-            	)
-            
-            #Add view permission on resource
-            	resource = self.jurisdiction_shapefile
-            	perms = resource.get_all_level_info()
-            	perms["users"][profile.username]=["view_resourcebase"]
-            	resource.set_permissions(perms);
-
-            # Add account to requesters group
-            group_name = "Data Requesters"
-            requesters_group, created = GroupProfile.objects.get_or_create(
-                title=group_name,
-                slug=slugify(group_name),
-                access='private',
-            )
-
-            requesters_group.join(profile)
-            
-            pprint("creating user folder for "+uname)
-            create_folder.delay(uname)
-            
-            self.request_status = 'approved'
-            self.action_date = timezone.now()
-            self.save()
-
-            self.send_approval_email(uname, directory)
->>>>>>> af7d2cd8b68cea58ecee2084a193725a18b101d6
             
         else:
             raise Http404

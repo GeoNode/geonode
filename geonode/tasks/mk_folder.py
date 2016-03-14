@@ -1,9 +1,5 @@
-
 from pprint import pprint
-<<<<<<< HEAD
 from geonode import settings
-=======
->>>>>>> af7d2cd8b68cea58ecee2084a193725a18b101d6
 
 import celery
 import logging, traceback

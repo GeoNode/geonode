@@ -578,8 +578,6 @@ def update_datarequest_obj(datarequest=None, parameter_dict=None, interest_layer
     datarequest.project_summary = parameter_dict['project_summary']
     datarequest.data_type_requested = parameter_dict['data_type_requested']
     datarequest.purpose = parameter_dict['purpose']
-    datarequest.license_period = parameter_dict['license_period']
-    datarequest.has_subscription = parameter_dict['has_subscription']
     datarequest.intended_use_of_dataset = parameter_dict['intended_use_of_dataset']
     datarequest.organization_type = parameter_dict['organization_type']
     datarequest.request_level = parameter_dict['request_level']
