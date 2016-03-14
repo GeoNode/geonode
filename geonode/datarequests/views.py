@@ -537,12 +537,12 @@ def data_request_profile_approve(request, pk):
             raise Http404
         try:
             if not request_profile.profile:
-                request_profile.create_account()
+                request_profile.create_account() #creates account in AD if AD profile does not exist
             
-            request_profile.join_requester_grp()
+            request_profile.join_requester_grp() #adds to  data requesters user group
             
             if request_profile.jurisdiction_shapefile:
-                request_profile.assign_jurisdiction()
+                request_profile.assign_jurisdiction() #assigns/creates jurisdiction object 
                 
             request_profile.create_directory()
             

@@ -12,7 +12,7 @@ from django.utils.encoding import iri_to_uri
 from django.utils.http import urlquote
 from django_enumfield import enum
 from django.core import validators
-from django_auth_ldap.backend import LDAPBackend
+from django_auth_ldap.backend import LDAPBackend, ldap_error
 
 from model_utils import Choices
 from model_utils.models import TimeStampedModel
@@ -468,14 +468,21 @@ class DataRequestProfile(TimeStampedModel):
         msg.send()
 
     def create_account(self):
+        profile = None
         uname = create_login_credentials(self)
+        try:
+            profile = LDAPBackend().populate_user(uname)
+        except ldap_error as e:
+            import traceback
+            message = _('An unexpected error was encountered during the creation of the account.\n'+  traceback.format_exc() )
+            
         pprint("Creating account for "+uname)
         dn = create_ad_account(self, uname)
         if dn is not False:
             
             add_to_ad_group(group_dn=settings.LIPAD_LDAP_GROUP_DN, user_dn=dn)
             
-            profile = LDAPBackend().populate_user(uname)
+            profile = 
             if profile is None:
                 pprint("Account was not created")
                 raise Http404
@@ -498,7 +505,7 @@ class DataRequestProfile(TimeStampedModel):
             group_member = GroupMember.objects.get(group=requesters_group, user=self.profile)
             if not group_member:
                 requesters_group.join(self.profile)
-        except Exeption as e:
+        except Exception as e:
             raise ValueError("Unable to add user to the group")
         
 
