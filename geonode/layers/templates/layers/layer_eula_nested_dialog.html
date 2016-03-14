@@ -25,14 +25,10 @@
 
           <div class="modal-footer">
             <form id="form_eula" name="form_eula" method="POST">
-                {% csrf_token %}
                 <ul class="list-inline pull-right" align="right">
                     {% if not request.user.is_authenticated %}
                     <div class="form-controls">
                       {% crispy anon_form %}
-                    </div>
-                    <div class="form-actions">
-                      <input type="submit" class="btn btn-primary btn-md" value="{% trans 'Continue' %}"/>
                     </div>
                     {% endif %}
                     <input type="checkbox" id="signed" required name="signed"> I accept the <b><u>End User License Agreement</u></b></p>
