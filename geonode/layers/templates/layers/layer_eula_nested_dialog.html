@@ -1,4 +1,5 @@
 {% load i18n %}
+{% load crispy_forms_tags %}
 <script src="//ajax.googleapis.com/ajax/libs/jquery/1.7/jquery.js"></script>
 <script src="https://www.google.com/recaptcha/api.js" async defer></script>
 {% load eula_extras %}
@@ -27,12 +28,12 @@
                 {% csrf_token %}
                 <ul class="list-inline pull-right" align="right">
                     {% if not request.user.is_authenticated %}
-                      First Name: <input type="text" id="anon_first_name" required name="anon_first_name" style="margin:2px 0;"><br>
-                      Last Name: <input type="text" id="anon_last_name" required name="anon_last_name" style="margin:2px 0;"><br>
-                      Email: <input type="email" id="anon_email" required name="anon_email"  style="margin:2px 0;"><br>
-                      Organization: <input type="text" id="anon_organization" required name="anon_organization"  style="margin:2px 0;"><br>
-                      Purpose: <input type="text" id="anon_purpose" required name="anon_purpose"  style="margin:2px 0;"><br>
-                      <div class="g-recaptcha" data-sitekey="6Lf7YhgTAAAAAOOof_YKjDv0mgpWbBS6tELuC7iD"></div>
+                    <div class="form-controls">
+                      {% crispy anon_form %}
+                    </div>
+                    <div class="form-actions">
+                      <input type="submit" class="btn btn-primary btn-md" value="{% trans 'Continue' %}"/>
+                    </div>
                     {% endif %}
                     <input type="checkbox" id="signed" required name="signed"> I accept the <b><u>End User License Agreement</u></b></p>
                     <input type="submit" class="btn btn-default" value="Sign EULA">
@@ -60,3 +61,4 @@
           return false;
         });
     </script>
+<br>

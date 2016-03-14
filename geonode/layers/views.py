@@ -320,6 +320,7 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
     else:
         #Render form
         form = AnonDownloaderForm()
+    context_dict["anon_form"] = form
     return render_to_response(template, RequestContext(request, context_dict))
 
 
