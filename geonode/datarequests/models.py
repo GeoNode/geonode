@@ -55,6 +55,7 @@ class DataRequestProfile(TimeStampedModel):
         ('approved', _('Approved')),
         ('cancelled', _('Cancelled')),
         ('rejected', _('Rejected')),
+        ('unconfirmed',_('Unconfirmed Email')),
     )
 
     REQUESTER_TYPE_CHOICES = Choices(
