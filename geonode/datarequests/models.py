@@ -57,7 +57,6 @@ class DataRequestProfile(TimeStampedModel):
     REQUESTER_TYPE_CHOICES = Choices(
         ('commercial', _('Commercial Requester')),
         ('noncommercial', _('Non-Commercial Requester')),
-        ('academe', _('Academe Requester')),
     )
 
     DATASET_USE_CHOICES = Choices(
