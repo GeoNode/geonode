@@ -123,7 +123,10 @@
     </table>
 
     <div class="row">
-      <h5><strong>Jurisdiction Shapefile</strong></h5>
+      <h4><strong>Jurisdiction Shapefile</strong></h4>
+      {% if not request_profile.shapefile %}
+        <h5><strong>No ROI submitted</strong></h5>
+        {% endif %}
       <div id="embedded_map" class="mrg-btm">
         <div id="preview_map"></div>
       </div>
