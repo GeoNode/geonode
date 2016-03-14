@@ -61,7 +61,8 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
                 {name: 'Abstract', type: 'string'},
                 {name: 'bbox', type: 'string'},
                 {name: 'LayerUrl', type: 'string'},
-                {name: 'ServiceType', type: 'string'}
+                {name: 'ServiceType', type: 'string'},
+                {name: 'LayerUsername', type: 'string'} 
             ]
         });
         this.searchStore.on('load', function() {
@@ -327,7 +328,12 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
                 dataIndex: 'Originator',
                 id: 'originator',
                 width: 100,
-                sortable: true
+                sortable: true,
+                renderer: function(value, metadata, record, rowIndex, colIndex, store){
+                    return value.indexOf('worldmap') > -1 ? 
+                        record.get('LayerUsername') + ' | ' + value :
+                        value;
+                }
             },
             {
                 header: 'Date',
