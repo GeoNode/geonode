@@ -317,7 +317,7 @@ class DataRequestProfile(TimeStampedModel):
         msg = EmailMultiAlternatives(
             email_subject,
             text_content,
-            settings.DEFAULT_FROM_EMAIL,
+            local_settings.LIPAD_SUPPORT_MAIL,
             [self.email, ]
         )
         msg.attach_alternative(html_content, "text/html")
@@ -363,7 +363,7 @@ class DataRequestProfile(TimeStampedModel):
         msg = EmailMultiAlternatives(
             email_subject,
             text_content,
-            settings.DEFAULT_FROM_EMAIL,
+            local_settings.LIPAD_SUPPORT_MAIL,
             email_reciepients
         )
         msg.attach_alternative(html_content, "text/html")
@@ -410,12 +410,12 @@ class DataRequestProfile(TimeStampedModel):
              local_settings.LIPAD_SUPPORT_MAIL
         )
 
-        email_subject = _('[LiPAD] Data Request Status')
+        email_subject = _('[LiPAD] Data Request Registration Status')
 
         msg = EmailMultiAlternatives(
             email_subject,
             text_content,
-            settings.DEFAULT_FROM_EMAIL,
+            local_settings.LIPAD_SUPPORT_MAIL,
             [self.email, ]
         )
         msg.attach_alternative(html_content, "text/html")
@@ -461,12 +461,12 @@ class DataRequestProfile(TimeStampedModel):
              local_settings.LIPAD_SUPPORT_MAIL
         )
 
-        email_subject = _('[LiPAD] Data Request Registration Status')
+        email_subject = _('[LiPAD] Data Registration Status')
 
         msg = EmailMultiAlternatives(
             email_subject,
             text_content,
-            settings.DEFAULT_FROM_EMAIL,
+            local_settings.LIPAD_SUPPORT_MAIL,
             [self.email, ]
         )
         msg.attach_alternative(html_content, "text/html")
@@ -611,7 +611,7 @@ class DataRequestProfile(TimeStampedModel):
         msg = EmailMultiAlternatives(
             email_subject,
             text_content,
-            settings.DEFAULT_FROM_EMAIL,
+            local_settings.LIPAD_SUPPORT_MAIL,
             [self.email, ]
         )
         msg.attach_alternative(html_content, "text/html")
@@ -660,7 +660,7 @@ class DataRequestProfile(TimeStampedModel):
         msg = EmailMultiAlternatives(
             email_subject,
             text_content,
-            settings.DEFAULT_FROM_EMAIL,
+            local_settings.LIPAD_SUPPORT_MAIL,
             [self.email, ]
         )
         msg.attach_alternative(html_content, "text/html")
