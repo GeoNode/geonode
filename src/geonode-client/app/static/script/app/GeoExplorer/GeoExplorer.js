@@ -223,6 +223,8 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
     externalDataText: 'External Data',
     leavePageWarningText: 'If you leave this page, unsaved changes will be lost.',
 
+    mapproxy_backend: 'http://hh.worldmap.harvard.edu/layer/',
+
     constructor: function(config) {
         this.config = config;
         this.popupCache = {};
