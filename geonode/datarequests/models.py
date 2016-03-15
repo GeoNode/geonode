@@ -317,7 +317,7 @@ class DataRequestProfile(TimeStampedModel):
         msg = EmailMultiAlternatives(
             email_subject,
             text_content,
-            local_settings.LIPAD_SUPPORT_MAIL,
+            settings.DEFAULT_FROM_EMAIL,
             [self.email, ]
         )
         msg.attach_alternative(html_content, "text/html")
@@ -363,7 +363,7 @@ class DataRequestProfile(TimeStampedModel):
         msg = EmailMultiAlternatives(
             email_subject,
             text_content,
-            local_settings.LIPAD_SUPPORT_MAIL,
+            settings.DEFAULT_FROM_EMAIL,
             email_reciepients
         )
         msg.attach_alternative(html_content, "text/html")
@@ -415,7 +415,7 @@ class DataRequestProfile(TimeStampedModel):
         msg = EmailMultiAlternatives(
             email_subject,
             text_content,
-            local_settings.LIPAD_SUPPORT_MAIL,
+            settings.DEFAULT_FROM_EMAIL,
             [self.email, ]
         )
         msg.attach_alternative(html_content, "text/html")
@@ -466,7 +466,7 @@ class DataRequestProfile(TimeStampedModel):
         msg = EmailMultiAlternatives(
             email_subject,
             text_content,
-            local_settings.LIPAD_SUPPORT_MAIL,
+            settings.DEFAULT_FROM_EMAIL,
             [self.email, ]
         )
         msg.attach_alternative(html_content, "text/html")
@@ -609,7 +609,7 @@ class DataRequestProfile(TimeStampedModel):
         msg = EmailMultiAlternatives(
             email_subject,
             text_content,
-            local_settings.LIPAD_SUPPORT_MAIL,
+            settings.DEFAULT_FROM_EMAIL,
             [self.email, ]
         )
         msg.attach_alternative(html_content, "text/html")
@@ -657,7 +657,7 @@ class DataRequestProfile(TimeStampedModel):
         msg = EmailMultiAlternatives(
             email_subject,
             text_content,
-            local_settings.LIPAD_SUPPORT_MAIL,
+            settings.DEFAULT_FROM_EMAIL,
             [self.email, ]
         )
         msg.attach_alternative(html_content, "text/html")
