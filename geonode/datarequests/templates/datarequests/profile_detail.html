@@ -221,7 +221,7 @@
             </div>
           </form>
         </div>
-      {% elif request_profile.request_status %}
+      {% elif request_profile.request_status == 'unconfirmed'%}
        <li class="list-group-item">
         <form id="approve_form" method="post" class="modal-form" action='{% url "datarequests:data_request_profile_reconfirm" pk=request_profile.pk%}'>{% csrf_token %}
             <button type="submit" class="btn btn-primary btn-md btn-block"  id="reconfirm-request-submit">{% trans "Resend Confirmation Email" %}</button>
