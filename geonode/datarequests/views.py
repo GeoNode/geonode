@@ -536,8 +536,11 @@ def data_request_profile_approve(request, pk):
         if not request_profile.date:
             raise Http404
         try:
+            is_new_acc=True
             if not request_profile.profile:
                 request_profile.create_account() #creates account in AD if AD profile does not exist
+            else:
+                is_new_acc = False
             
             request_profile.join_requester_grp() #adds to  data requesters user group
             
@@ -546,7 +549,7 @@ def data_request_profile_approve(request, pk):
                 
             request_profile.create_directory()
             
-            request_profile.set_approved()
+            request_profile.set_approved(is_new_acc)
             
             request_profile.administrator = request.user
             request_profile.save()
@@ -559,6 +562,16 @@ def data_request_profile_approve(request, pk):
     else:
         return HttpResponseRedirect("/forbidden/")
 
+@require_POST
+def data_request_profile_reconfirm(request, pk):
+    if not request.user.is_superuser:
+        raise PermissionDenied
+
+    if request.method == 'POST':
+        request_profile = get_object_or_404(DataRequestProfile, pk=pk)
+        
+        request_profile.send_verification_email()
+        return HttpResponseRedirect(request_profile.get_absolute_url())
 
 @require_POST
 def data_request_facet_count(request):
