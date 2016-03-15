@@ -27,6 +27,7 @@ from django.views.decorators.http import require_POST
 from django.views.generic import TemplateView
 
 from geonode.base.enumerations import CHARSETS
+from geonode.cephgeo.models import UserJurisdiction
 from geonode.documents.models import get_related_documents
 from geonode.documents.models import Document
 from geonode.layers.models import UploadSession, Style
@@ -38,6 +39,8 @@ from geonode.utils import GXPLayer
 from geonode.utils import GXPMap
 from geonode.utils import llbbox_to_mercator
 from geonode.utils import build_social_links
+
+from geoserver.catalog import Catalog
 
 from pprint import pprint
 
@@ -126,10 +129,11 @@ def registration_part_two(request):
         return redirect(reverse('datarequests:registration_part_one'))
 
     if request.method == 'POST' :
-        if last_submitted_dr and last_submitted_dr.request_status.encode('utf8') == 'pending':
-            pprint("updating request_status")
-            last_submitted_dr.request_status = 'cancelled'
-            last_submitted_dr.save()
+        if last_submitted_dr:
+            if last_submitted_dr.request_status.encode('utf8') == 'pending' or last_submitted_dr.request_status.encode('utf8') == 'unconfirmed':
+                pprint("updating request_status")
+                last_submitted_dr.request_status = 'cancelled'
+                last_submitted_dr.save()
         post_data = request.POST.copy()
         post_data['permissions'] = '{"users":{"dataRegistrationUploader": ["view_resourcebase"] }}'
         form = DataRequestDetailsForm(post_data)
@@ -139,7 +143,7 @@ def registration_part_two(request):
         tempdir = None
         errormsgs = []
         out = {}
-        request_profile = None
+        request_profile =  request.session['request_object']
         if form.is_valid():
             if form.cleaned_data:
                 interest_layer = None
@@ -178,7 +182,19 @@ def registration_part_two(request):
                         saved_layer.is_published = False
                         saved_layer.save()
                         interest_layer =  saved_layer
-                       
+                        
+                        cat = Catalog(settings.OGC_SERVER['default']['LOCATION'] + 'rest',
+                            username=settings.OGC_SERVER['default']['USER'],
+                            password=settings.OGC_SERVER['default']['PASSWORD'])
+
+                        boundary_style = cat.get_style('Boundary')
+                        if boundary_style:
+                            gs_layer = cat.get_layer(saved_layer.name)
+                            gs_layer._set_default_style(boundary_style)
+                            cat.save(gs_layer) #save in geoserver
+                            saved_layer.sld_body = boundary_style.sld_body
+                            saved_layer.save() #save in geonode
+                           
                     except Exception as e:
                         exception_type, error, tb = sys.exc_info()
                         print traceback.format_exc()
@@ -215,6 +231,8 @@ def registration_part_two(request):
                                 'users': {request.user.username : ['view_resourcebase']},
                                 'groups': {}
                             }
+                            
+                        request_profile
                         if permissions is not None and len(permissions.keys()) > 0:
     
                             saved_layer.set_permissions(permissions)
@@ -233,7 +251,8 @@ def registration_part_two(request):
                         request_profile, letter = update_datarequest_obj(
                             datarequest=  request.session['request_object'],
                             parameter_dict = form.cleaned_data,
-                            request_letter = request.session['request_letter']
+                            request_letter = request.session['request_letter'],
+                            interest_layer = interest_layer
                         )
                         out['success']=True
                     else: 
@@ -241,11 +260,13 @@ def registration_part_two(request):
                             request_profile, letter = update_datarequest_obj(
                                 datarequest=  request.session['request_object'],
                                 parameter_dict = form.cleaned_data,
-                                request_letter = request.session['request_letter']
+                                request_letter = request.session['request_letter'],
+                                interest_layer = interest_layer
                             )
                     
                     if request.user.is_authenticated():
                         request_profile.profile = request.user
+                        request_profile.request_status = 'pending'
                         request_profile.username = request.user.username
                         request_profile.set_verification_key()
                         request_profile.save()
@@ -365,6 +386,7 @@ def email_verification_confirm(request):
             )
             # Only verify once
             if not data_request.date:
+                data_request.request_status = 'pending'
                 data_request.date = timezone.now()
                 data_request.save()
                 data_request.send_new_request_notif_to_admins()
@@ -393,8 +415,8 @@ def data_request_profile(request, pk, template='datarequests/profile_detail.html
         raise PermissionDenied
     
 
-    if not request_profile.date:
-        raise Http404
+    #if not request_profile.date:
+    #    raise Http404
     
     context_dict={"request_profile": request_profile}
     
@@ -477,8 +499,6 @@ def data_request_profile_reject(request, pk):
         raise PermissionDenied
     
     request_profile = get_object_or_404(DataRequestProfile, pk=pk)
-    if not request_profile.date:
-        raise Http404
 
     if request_profile.request_status == 'pending':
         form = parse_qs(request.POST.get('form', None))
@@ -492,7 +512,7 @@ def data_request_profile_reject(request, pk):
         if request_profile.profile:
             request_profile.send_request_rejection_email()
         else:
-            request_profile.send_rejection_email()
+            request_profile.send_account_rejection_email()
 
     url = request.build_absolute_uri(request_profile.get_absolute_url())
 
@@ -516,17 +536,25 @@ def data_request_profile_approve(request, pk):
         if not request_profile.date:
             raise Http404
         try:
+            is_new_acc=True
             if not request_profile.profile:
                 request_profile.create_account()
+            else:
+                is_new_acc = False
             
             request_profile.join_requester_grp()
             
             if request_profile.jurisdiction_shapefile:
                 request_profile.assign_jurisdiction()
+            else:
+                try:
+                    UserJurisdiction.objects.get(user=request_profile.profile).delete()
+                except ObjectDoesNotExist as e:
+                    pprint("Jurisdiction Shapefile not found, nothing to delete. Carry on")
                 
             request_profile.create_directory()
             
-            request_profile.set_approved()
+            request_profile.set_approved(is_new_acc)
             
             request_profile.administrator = request.user
             request_profile.save()
@@ -539,6 +567,16 @@ def data_request_profile_approve(request, pk):
     else:
         return HttpResponseRedirect("/forbidden/")
 
+@require_POST
+def data_request_profile_reconfirm(request, pk):
+    if not request.user.is_superuser:
+        raise PermissionDenied
+
+    if request.method == 'POST':
+        request_profile = get_object_or_404(DataRequestProfile, pk=pk)
+        
+        request_profile.send_verification_email()
+        return HttpResponseRedirect(request_profile.get_absolute_url())
 
 @require_POST
 def data_request_facet_count(request):

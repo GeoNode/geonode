@@ -320,18 +320,16 @@ class DataRequestProfileResource(ModelResource):
     class Meta:
         #authorization = GeoNodeAuthorization()
         authentication = SessionAuthentication()
-        queryset = DataRequestProfile.objects.exclude(
-            date=None
-        ).order_by('-date')
+        queryset = DataRequestProfile.objects.all().order_by('-key_created_date')
         resource_name = 'data_requests'
         allowed_methods = ['get']
-        ordering = ['date', ]
+        ordering = ['key_created_date', ]
         filtering = {'first_name': ALL,
                      'requester_type': ALL,
                      'request_status': ALL,
                      'organization': ALL,
                      'request_status': ALL,
-                     'date': ALL,
+                     'key_created_date': ALL,
                      }
 
     def dehydrate_data_request_detail_url(self, bundle):
@@ -353,10 +351,10 @@ class DataRequestProfileResource(ModelResource):
         return bundle.obj.request_status == 'rejected'
 
     def dehydrate_date_submitted(self, bundle):
-        return formats.date_format(bundle.obj.date, "SHORT_DATETIME_FORMAT")
+        return formats.date_format(bundle.obj.key_created_date, "SHORT_DATETIME_FORMAT")
 
     def dehydrate_status_label(self, bundle):
-        if bundle.obj.request_status == 'pending' or bundle.obj.request_status == 'cancelled':
+        if bundle.obj.request_status == 'pending' or bundle.obj.request_status == 'cancelled' or bundle.obj.request_status == 'unconfirmed':
             return 'default'
         elif bundle.obj.request_status == 'rejected':
             return 'danger'
