@@ -24,11 +24,14 @@ DATABASES = {
 }
 
 # OGC (WMS/WFS/WCS) Server Settings
+
+WMS_QGIS_SERVER = GEONODE_BASE_URL + 'qgis-server/'
+
 OGC_SERVER = {
     'default' : {
         'BACKEND' : 'geonode.geoserver',
-        'LOCATION' : 'http://localhost:8080/geoserver/',
-        'PUBLIC_LOCATION' : 'http://localhost:8080/geoserver/',
+        'LOCATION' : 'http://localhost:8080/geoserver/',  # or use WMS_QGIS_SERVER
+        'PUBLIC_LOCATION' : 'http://localhost:8080/geoserver/',  # or use WMS_QGIS_SERVER
         'USER' : 'admin',
         'PASSWORD' : 'geoserver',
         'MAPFISH_PRINT_ENABLED' : True,
@@ -117,6 +120,8 @@ QGIS_SERVER_CONFIG = {
     'tile_path': tiles_directory + '/%s/%d/%d/%d.png',
     'legend_path': tiles_directory + '/%s/legend.png',
     'thumbnail_path': tiles_directory + '/%s/thumbnail.png',
+    'map_tile_path': os.path.join(
+        tiles_directory, '%s', 'map_tiles', '%s', '%s', '%s', '%s.png'),
     'qgis_server_url': 'http://127.0.0.1/qgisltr',
     'layer_directory': os.path.join(PROJECT_ROOT, "qgis_layer")
 }
