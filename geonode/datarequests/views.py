@@ -509,7 +509,7 @@ def data_request_profile_reject(request, pk):
         if request_profile.profile:
             request_profile.send_request_rejection_email()
         else:
-            request_profile.send_rejection_email()
+            request_profile.send_account_rejection_email()
 
     url = request.build_absolute_uri(request_profile.get_absolute_url())
 
