@@ -1,6 +1,7 @@
 from django.db import models
 from django.conf import settings
 from django.contrib.sites.models import Site
+from django.core.exceptions import ObjectDoesNotExist, PermissionDenied
 from django.core.mail import EmailMultiAlternatives
 from django.core.urlresolvers import reverse
 from django.template.defaultfilters import slugify
@@ -28,6 +29,8 @@ from geonode.tasks.mk_folder import create_folder
 
 from pprint import pprint
 
+import traceback
+
 import geonode.settings as local_settings
 
 from .utils import create_login_credentials, create_ad_account, add_to_ad_group
@@ -52,6 +55,7 @@ class DataRequestProfile(TimeStampedModel):
         ('approved', _('Approved')),
         ('cancelled', _('Cancelled')),
         ('rejected', _('Rejected')),
+        ('unconfirmed',_('Unconfirmed Email')),
     )
 
     REQUESTER_TYPE_CHOICES = Choices(
@@ -99,8 +103,8 @@ class DataRequestProfile(TimeStampedModel):
     request_status = models.CharField(
         _('Status of Data Request'),
         choices=REQUEST_STATUS_CHOICES,
-        default=REQUEST_STATUS_CHOICES.pending,
-        max_length=10,
+        default=REQUEST_STATUS_CHOICES.unconfirmed,
+        max_length=12,
         null=True,
         blank=True,
     )
@@ -313,7 +317,7 @@ class DataRequestProfile(TimeStampedModel):
         msg = EmailMultiAlternatives(
             email_subject,
             text_content,
-            settings.DEFAULT_FROM_EMAIL,
+            local_settings.LIPAD_SUPPORT_MAIL,
             [self.email, ]
         )
         msg.attach_alternative(html_content, "text/html")
@@ -359,7 +363,7 @@ class DataRequestProfile(TimeStampedModel):
         msg = EmailMultiAlternatives(
             email_subject,
             text_content,
-            settings.DEFAULT_FROM_EMAIL,
+            local_settings.LIPAD_SUPPORT_MAIL,
             email_reciepients
         )
         msg.attach_alternative(html_content, "text/html")
@@ -411,7 +415,7 @@ class DataRequestProfile(TimeStampedModel):
         msg = EmailMultiAlternatives(
             email_subject,
             text_content,
-            settings.DEFAULT_FROM_EMAIL,
+            local_settings.LIPAD_SUPPORT_MAIL,
             [self.email, ]
         )
         msg.attach_alternative(html_content, "text/html")
@@ -457,12 +461,12 @@ class DataRequestProfile(TimeStampedModel):
              local_settings.LIPAD_SUPPORT_MAIL
         )
 
-        email_subject = _('[LiPAD] Data Request Registration Status')
+        email_subject = _('[LiPAD] Data Registration Status')
 
         msg = EmailMultiAlternatives(
             email_subject,
             text_content,
-            settings.DEFAULT_FROM_EMAIL,
+            local_settings.LIPAD_SUPPORT_MAIL,
             [self.email, ]
         )
         msg.attach_alternative(html_content, "text/html")
@@ -481,7 +485,7 @@ class DataRequestProfile(TimeStampedModel):
                 pprint("Account was not created")
                 raise Http404
             
-            self.profile_details(uname=uname, profile = profile)
+            self.update_profile_details(uname=uname, profile = profile)
             
         else:
             raise Http404
@@ -498,16 +502,22 @@ class DataRequestProfile(TimeStampedModel):
         try:
             group_member = GroupMember.objects.get(group=requesters_group, user=self.profile)
             if not group_member:
-                requesters_group.join(self.profile)
-        except Exeption as e:
-            raise ValueError("Unable to add user to the group")
+                requesters_group.join(self.profile, role='member')
+        except ObjectDoesNotExist as e:
+            requesters_group.join(self.profile, role='member')
+            #raise ValueError("Unable to add user to the group")
         
 
     def assign_jurisdiction(self):
         # Link shapefile to account
-        uj, created = UserJurisdiction.objects.get_or_create(user=user.profile)
-        uj.jurisdiction_shapefile = self.jurisdiction_shapefile
-        uj.save()
+        uj = None
+        try:
+            uj = UserJurisdiction.objects.get(user=self.profile)
+        except ObjectDoesNotExist as e:
+            uj = UserJurisdiction()
+            uj.user = self.profile
+            uj.jurisdiction_shapefile = self.jurisdiction_shapefile
+            uj.save()
         #Add view permission on resource
         resource = self.jurisdiction_shapefile
         perms = resource.get_all_level_info()
@@ -525,13 +535,13 @@ class DataRequestProfile(TimeStampedModel):
         pprint("creating user folder for "+self.username)
         create_folder.delay(self.username)
         
-    def set_approved(self):
+    def set_approved(self, is_new_acc):
         self.request_status = 'approved'
         self.action_date = timezone.now()
         self.save()
 
-        if not self.profile:
-            self.send_account_approval_email(self.username, self.directory)
+        if is_new_acc:
+            self.send_account_approval_email(self.username, self.ftp_folder)
         else:
             self.send_request_approval_email(self.username)
         
@@ -601,7 +611,7 @@ class DataRequestProfile(TimeStampedModel):
         msg = EmailMultiAlternatives(
             email_subject,
             text_content,
-            settings.DEFAULT_FROM_EMAIL,
+            local_settings.LIPAD_SUPPORT_MAIL,
             [self.email, ]
         )
         msg.attach_alternative(html_content, "text/html")
@@ -650,7 +660,7 @@ class DataRequestProfile(TimeStampedModel):
         msg = EmailMultiAlternatives(
             email_subject,
             text_content,
-            settings.DEFAULT_FROM_EMAIL,
+            local_settings.LIPAD_SUPPORT_MAIL,
             [self.email, ]
         )
         msg.attach_alternative(html_content, "text/html")

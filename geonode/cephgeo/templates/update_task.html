@@ -1,0 +1,9 @@
+{% extends "ceph_base.html" %}
+{% load i18n %}
+{% load staticfiles %}
+{% load url from future %}
+
+{% block body%}
+<h1>{% trans "Update task is running in the background. You can check /var/log/celeryd.log for further details" %}</h1>
+
+{% endblock %}
