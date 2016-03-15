@@ -1124,9 +1124,10 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                 };
                 var record = source.createLayerRecord(layer);
                 record.selected = true;
-                record.data.detail_url = thisRecord.get('LayerUrl').indexOf('worldmap.harvard.edu') > -1 ? 
-                        '/data/' + thisRecord.get('LayerName') : 
-                        this.mapproxy_backend + JSON.parse(thisRecord.get('Location')).layerInfoPage;
+                // record.data.detail_url = thisRecord.get('LayerUrl').indexOf('worldmap.harvard.edu') > -1 ? 
+                //         '/data/' + thisRecord.get('LayerName') : 
+                //         this.mapproxy_backend + JSON.parse(thisRecord.get('Location')).layerInfoPage;
+                record.data.detail_url = this.mapproxy_backend + JSON.parse(thisRecord.get('Location')).layerInfoPage;
 
                 if (record) {
                     if (record.get("group") === "background") {
