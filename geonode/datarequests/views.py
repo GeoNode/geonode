@@ -27,6 +27,7 @@ from django.views.decorators.http import require_POST
 from django.views.generic import TemplateView
 
 from geonode.base.enumerations import CHARSETS
+from geonode.cephgeo.models import UserJurisdiction
 from geonode.documents.models import get_related_documents
 from geonode.documents.models import Document
 from geonode.layers.models import UploadSession, Style
@@ -545,6 +546,11 @@ def data_request_profile_approve(request, pk):
             
             if request_profile.jurisdiction_shapefile:
                 request_profile.assign_jurisdiction()
+            else:
+                try:
+                    UserJurisdiction.objects.get(user=).delete()
+                except ObjectDoesNotExist as e:
+                    pprint("Jurisdiction Shapefile not found, nothing to delete. Carry on")
                 
             request_profile.create_directory()
             
