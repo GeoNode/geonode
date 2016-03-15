@@ -9,6 +9,11 @@
             min-width: 750px;
             margin: 30px auto;
         }
+        .form-group{
+            margin: 0px 5px 15px 5px;
+            display: inline-block;
+            text-align: left;
+        }
     </style>
 
     <div class="modal fade" id="eula-nested-dialog" tabindex="-10" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
@@ -29,6 +34,7 @@
                     {% if not request.user.is_authenticated %}
                     <div class="form-controls">
                       {% crispy anon_form %}
+                      <div id="anon_errors" style="border: 1px solid;margin: 10px 0px;padding:15px 10px 15px 50px;background-repeat: no-repeat;background-position: 10px center;color: #D8000C;background-color: #FFBABA; display:none;text-align:center;">Please fill up all fields</div>
                     </div>
                     {% endif %}
                     <input type="checkbox" id="signed" required name="signed"> I accept the <b><u>End User License Agreement</u></b></p>
@@ -54,6 +60,10 @@
                 $('#trigger_next_modal_btn').click();
               }
           });
+          if (document.form_eula.anon_first_name.value == "") {
+            document.getElementById('anon_errors').style.display = "block";
+            return false;
+          }
           return false;
         });
     </script>
