@@ -461,7 +461,7 @@ class DataRequestProfile(TimeStampedModel):
              local_settings.LIPAD_SUPPORT_MAIL
         )
 
-        email_subject = _('[LiPAD] Data Request Registration Status')
+        email_subject = _('[LiPAD] Data Request Status')
 
         msg = EmailMultiAlternatives(
             email_subject,
@@ -602,7 +602,7 @@ class DataRequestProfile(TimeStampedModel):
              local_settings.LIPAD_SUPPORT_MAIL
          )
 
-        email_subject = _('[LiPAD] Data Request Registration Status')
+        email_subject = _('[LiPAD] Account Registration Status')
 
         msg = EmailMultiAlternatives(
             email_subject,
