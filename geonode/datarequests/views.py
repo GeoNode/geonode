@@ -510,8 +510,10 @@ def data_request_profile_reject(request, pk):
         request_profile.action_date = timezone.now()
         request_profile.save()
         if request_profile.profile:
+            pprint("sending request rejection email")
             request_profile.send_request_rejection_email()
         else:
+            pprint("sending account rejection email")
             request_profile.send_account_rejection_email()
 
     url = request.build_absolute_uri(request_profile.get_absolute_url())
