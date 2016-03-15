@@ -103,7 +103,7 @@ class DataRequestProfile(TimeStampedModel):
     request_status = models.CharField(
         _('Status of Data Request'),
         choices=REQUEST_STATUS_CHOICES,
-        default=REQUEST_STATUS_CHOICES.pending,
+        default=REQUEST_STATUS_CHOICES.unconfirmed,
         max_length=12,
         null=True,
         blank=True,
@@ -410,7 +410,7 @@ class DataRequestProfile(TimeStampedModel):
              local_settings.LIPAD_SUPPORT_MAIL
         )
 
-        email_subject = _('[LiPAD] Data Request Registration Status')
+        email_subject = _('[LiPAD] Data Request Status')
 
         msg = EmailMultiAlternatives(
             email_subject,
