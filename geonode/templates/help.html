@@ -12,29 +12,38 @@
     <p class="lead">{% trans "This page provides helpful information about how to use LiPAD. You can use the sidebar links to navigate to what you want to know." %}</p>
 
     {% blocktrans %}
-    <h4 id="registration-process">Data Request Registration Process</h4>
+    <h3 id="registration-process">Data Request Registration Process</h3>
+    <p>Users who want to gain access to the site must submit a data request for LiDAR data to the Phil-LiDAR program. The system administrator will have the option to approve or deny a request based on the information given by the user. Upon approval, a LiPAD user account will be given to the user. Approved users will be able to log into the site using the given account and download resources based on the data provided during registration.</p>
     <p>The information given during the registration will determine if your request will be approved by the administrators, so make sure that all the information you provided are valid.</p>
     <p>Here are the steps for the registration process:</p>
     <ol>
       <li>Click the <a href="/datarequests/register/">Register</a> button on the top-right corner of the page. After clicking, you will be redirected to the first part of the data request registration.</li>
       <li>You need to fill out the whole form in order to proceed to the next step of the registration process.</li>
-      <li>After providing the required information, click the <strong>Continue</strong> button at the bottom-left part of the page.</li>
+      <li> Upload your request letter. After providing the required information answer the provided Captcha challenge. Click the <strong>Continue</strong> button at the bottom-left part of the page.</li>
       <img id="helpimg" src="{{STATIC_URL}}geonode/img/help/help_1.png">
       <li>If you forgot to fill out some fields or provided invalid input, you will be redirected to the same page. Fields that need proper input will be marked red, and messages will be shown regarding the error.</li>
       <img id="helpimg" src="{{STATIC_URL}}geonode/img/help/help_2.png">
       <li>
-        <p>After providing the correct information, you will be redirected to the second step of the registration process. In this step, you will be required to provide a jurisdiction shapefile and answer the provided Captcha challenge.</p>
-        <p>The jurisdiction shapefile must be a valid one and must contain all the necessary parts. The administrator will check this file, and if your request is approved, you will be given access to resources based on the coverage of the shapefile you provided.</p>
+        <p>You will be redirected to the second page of the registration process. You may opt to provide a jurisdiction shapefile.</p>
+        <p>Valid formats of the shapefile are:
+          <ol type="a">
+           <li>.shp</li>
+           <li>.dbf</li>
+           <li>.prj</li>
+           <li>.shx</li>
+           <li>.xml</li>
+         </ol>
+        </p>
+        <p>The administrator will check this file, and if your request is approved, you will be given access to resources based on the coverage of the shapefile you provided.</p>
         <img id="helpimg" src="{{STATIC_URL}}geonode/img/help/help_3.png">
       </li>
-      <li>If you want to change some of the information you provided for the first step of the registration, you will be able to go back by clicking the <strong>Prev</strong> button on the bottom-left part of the page.</li>
-      <img id="helpimg" src="{{STATIC_URL}}geonode/img/help/help_4.png">
-      <li>After providing a valid shapefile and answering the Captcha challenge, click the <strong>Submit</strong> button and wait for your registration data to be processed.</li>
-      <img id="helpimg" src="{{STATIC_URL}}geonode/img/help/help_5.png">
+      <li>If you want to change some of the information you provided for the first step of the registration, you will be able to go back by clicking the <strong>Prev Step</strong> button on the bottom-left part of the page. After providing all required information, click the <strong>Submit</strong> button and wait for your registration data to be processed.</li>
       <li>Once your registration data is processed, you will be redirected to the email confirmation page. An email will be sent to you for verification. You need to follow the steps provided in the email to complete the registration.</li>
-      <li>Once you verified your email, your registration is now complete. Your request will now be available to the administrator for approval. You will receive an email regarding the status of your registration once the administrator approve/reject your request. If your request if approved, the details of your new account for logging into the site will be included in the email.</li>
+      <li><strong>Once you verified your email, your registration is now complete.</strong> Your request will now be available to the administrator for approval. You will receive an email regarding the status of your registration once the administrator approve/reject your request. If your request if approved, the details of your new account for logging into the site will be included in the email.</li>
     </ol>
-    <h4 id="data-access">Data Access</h4>
+
+    <br>
+    <h3 id="data-access">Data Access</h3>
     <p>The following data types can be downloaded via LiPAD through the Data Store Section</p>
     <ol>
       <li>Flood Hazard Maps (no account needed) - DREAM/Phil-LiDAR 1</li>
@@ -42,17 +51,15 @@
       <li>Digital Surface Models - DREAM/Phil-LiDAR 1</li>
       <li>Orthophotos, selected - DREAM/Phil-LiDAR 1</li>
       <li>Classified LAZ, selected - DREAM/Phil-LiDAR 1</li>
-      <li>sample datasets from Phil-LiDAR 2 (no account needed)</li>
+      <li>Sample datasets from Phil-LiDAR 2 (no account needed)</li>
     </ol>
+    <br>
     <h5 id="download-fhm">Downloading Flood Hazard Maps and other vector/layers via Data Store/Layers</h5>
     <ol>
-      <li>View the desired layer on a map. See <strong>Viewing a Layer</strong>.</li>
+      <li>View the desired layer on a map.</li>
       <img id="helpimg" src="{{STATIC_URL}}geonode/img/help/help_6.png">
-      <li>Click <strong>Request Download</strong> to request permission from the layer owner to download a layer.</li>
+      <li>Click <strong>Download Layer</strong> to request permission from the layer owner to download a layer.</li>
       <img id="helpimg" src="{{STATIC_URL}}geonode/img/help/help_7.png">
-      <li>Wait for the approval of the owner of the uploaded layer.</li>
-      <img id="helpimg" src="{{STATIC_URL}}geonode/img/help/help_8.png">
-      <li>If approval is granted, view desired layer on map. Click on <strong>Download Layer</strong>.</li>
       <li>End user license agreement (EULA) will be displayed. The user is required to click <strong>I agree</strong> to proceed with the download.</li>
       <img id="helpimg" src="{{STATIC_URL}}geonode/img/help/help_9.png">
       <li>Click <strong>Sign EULA</strong></li>
@@ -60,6 +67,7 @@
       <img id="helpimg" src="{{STATIC_URL}}geonode/img/help/help_10.png">
       <li>Save file and wait for download to finish.</li>
     </ol>
+    <br>
     <h5 id="download-tiles">Downloading other datasets via Data Store/Data Tiles</h5>
     <ol>
       <li>Login to LiPAD.</li>
@@ -71,16 +79,18 @@
       <ul>
         <li>To select tiles one by one, simply <strong>click on a map cell.</strong></li>
         <img id="helpimg" src="{{STATIC_URL}}geonode/img/help/help_13.png">
-        <li>To select a group of tiles, <strong>hold Shift while dragging the mouse to draw a rectangle.</strong>Selected tiles will be highlighted blue. The corresponding geo-reference of each tile is listed below the map.</li>
+        <li>To select a group of tiles, <strong>hold Shift while dragging the mouse to draw a rectangle.</strong>Selected tiles will be highlighted blue. The corresponding geo-reference of each tile is listed below the map. Tiles with no data are not highlighted</li>
         <img id="helpimg" src="{{STATIC_URL}}geonode/img/help/help_14.png">
         <img id="helpimg" src="{{STATIC_URL}}geonode/img/help/help_15.png">
       </ul>
-      <li>Click <strong>Submit</strong> at the bottom of the geo-reference list.</li>
+      <li>Check the file types you want to download. Note that only the available data stored in the tile can be downloaded. Click <strong>Submit.</strong></li>
       <img id="helpimg" src="{{STATIC_URL}}geonode/img/help/help_16.png">
-      <li>The Data Cart is displayed. This lists the associated files to the selected tiles.</li>
+
+      <li>The Data Cart is displayed. This lists the associated files to the selected tiles. An error message is displayed if there is a selected tile with no data.</li>
+      <img id="helpimg" src="{{STATIC_URL}}geonode/img/help/help_17.png">
       <ul>
         <li>To erase the contents of the cart, click <strong>Empty This Cart.</strong></li>
-        <img id="helpimg" src="{{STATIC_URL}}geonode/img/help/help_17.png">
+        <img id="helpimg" src="{{STATIC_URL}}geonode/img/help/help_19.png">
         <li>To proceed downloading the files, click <strong>Create FTP Folder.</strong> Requested files will be available for download via FTP.</li>
         <img id="helpimg" src="{{STATIC_URL}}geonode/img/help/help_18.png">
       </ul>
@@ -89,6 +99,35 @@
       <ul>
         <li><strong>Log in</strong> to the DREAM Phil-LiDAR FTP server and navigate to the download folder. The file will be downloaded from the FTP client.</li>
       </ul>
+    </ol>
+    <h5 id="download-ftp">Download Files Using FTP</h5>
+    <p><strong>Requirements:</strong></p>
+    <p>FTP Client - download via <a href="http://filezilla-project.org" title="FTP Client"> filezilla</a></p>
+    <p>7zip software - download via <a href="http://7-zip.org/" title="7-zip"> 7zip</a></p><br>
+    <ol>
+      <li>Download and install Filezilla FTP Client and 7-zip compression software.</li>
+      <li>
+        <p>Open Filezilla. For quick connect, input the following details:</p>
+
+          <p>&nbsp;&nbsp;&nbsp;Host: <samp>ftpes://ftp.dream.upd.edu.ph</samp></p>
+          <p>&nbsp;&nbsp;&nbsp;Username: <samp> username </samp></p>
+          <p>&nbsp;&nbsp;&nbsp;Password: <samp> password </samp></p>
+
+        <img id="helpimg" src="{{STATIC_URL}}geonode/img/help/help_20.png">
+        <p>To use the site manager, click <strong>File</strong>><strong>Site Manager.</strong> Click <strong>New Site</strong> button and input the following details:</p>
+
+          <p>&nbsp;&nbsp;&nbsp;Host: <samp>ftp.dream.upd.edu.ph</samp></p>
+          <p>&nbsp;&nbsp;&nbsp;Protocol: <samp>FTP - File Transfer Protocol</samp></p>
+          <p>&nbsp;&nbsp;&nbsp;Encryption: <samp>Require explicit FTP over TLS</samp></p>
+          <p>&nbsp;&nbsp;&nbsp;Logon Type: <samp>Normal</samp></p>
+          <p>&nbsp;&nbsp;&nbsp;Username: <samp>username</samp></p>
+          <p>&nbsp;&nbsp;&nbsp;Password: <samp>password</samp></p>
+          <img id="helpimg" src="{{STATIC_URL}}geonode/img/help/help_21.png">
+      </li>
+      <li><strong>Downloading Data.</strong> To download files, navigate to the download folder and double-click filename/s needed under Remote Site and the file download will start. Files can be downloaded compressed, using 7-zip, or uncompressed.</li>
+      <p>Ex.</p>
+      <samp>DFTP/PL1/username/DL/DAD/LiPAD_requests/ftprequest_2015-07-28_2203</samp>
+      <img id="helpimg" src="{{STATIC_URL}}geonode/img/help/help_22.png">
     </ol>
     {% endblocktrans %}
   </div>
@@ -99,6 +138,7 @@
     <li class="list-group-item"><a href="#data-access">{% trans "Data Access" %}</a></li>
     <li class="list-group-item"><a href="#download-fhm">{% trans "Downloading Flood Hazard Maps and other vector/layers via Data Store/Layers" %}</a></li>
     <li class="list-group-item"><a href="#download-tiles">{% trans "Downloading other datasets via Data Store/Data Tiles" %}</a></li>
+    <li class="list-group-item"><a href="#download-ftp">{% trans "Download Files Using FTP" %}</a></li>
   </ul>
 </div>
 </div>
