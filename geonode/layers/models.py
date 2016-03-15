@@ -44,13 +44,6 @@ vec_exts = shp_exts + csv_exts + kml_exts
 
 cov_exts = ['.tif', '.tiff', '.geotiff', '.geotif']
 
-class AnonDownloader(models.Model):
-    anon_first_name = models.CharField(('anon_first_name'), max_length=100)
-    anon_last_name = models.CharField(('anon_last_name'), max_length=100)
-    anon_email = models.EmailField(('anon_email'), max_length=50)
-    anon_organization = models.CharField(('anon_organization'), max_length=100)
-    anon_purpose = models.CharField(('anon_purpose'), max_length=100)
-
 class Style(models.Model):
 
     """Model for storing styles.
