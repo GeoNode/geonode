@@ -62,7 +62,7 @@ from urlparse import urljoin, urlsplit
 from actstream.signals import action
 
 from .forms import AnonDownloaderForm
-from .models import AnonDownloader
+from geonode.eula.models import AnonDownloader
 
 CONTEXT_LOG_FILE = None
 
@@ -303,7 +303,9 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
         if form.is_valid():
             out['success'] = True
             pprint(form.cleaned_data)
-            form.save()
+            anondownload = form.save()
+            anondownload.anon_layer = Layer.objects.get(typename = layername)
+            anondownload.save()
         else:
             errormsgs = []
             for e in form.errors.values():
@@ -321,6 +323,7 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
         #Render form
         form = AnonDownloaderForm()
     context_dict["anon_form"] = form
+    context_dict["layername"] = layername
     return render_to_response(template, RequestContext(request, context_dict))
 
 
