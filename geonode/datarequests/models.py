@@ -372,7 +372,7 @@ class DataRequestProfile(TimeStampedModel):
 
     def send_account_rejection_email(self):
 
-        additional_details = 'Additional Details: ' + self.additional_rejection_reason
+        additional_details = 'Additional Details: ' + str(self.additional_rejection_reason)
 
         text_content = """
          Dear {},
@@ -514,8 +514,10 @@ class DataRequestProfile(TimeStampedModel):
         try:
             uj = UserJurisdiction.objects.get(user=self.profile)
         except ObjectDoesNotExist as e:
+            pprint("No previous jurisdiction shapefile set")
             uj = UserJurisdiction()
             uj.user = self.profile
+        finally:
             uj.jurisdiction_shapefile = self.jurisdiction_shapefile
             uj.save()
         #Add view permission on resource
