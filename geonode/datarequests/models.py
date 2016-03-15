@@ -423,7 +423,7 @@ class DataRequestProfile(TimeStampedModel):
     
     def send_request_rejection_email(self):
 
-        additional_details = 'Additional Details: ' + self.additional_rejection_reason
+        additional_details = 'Additional Details: ' + str(self.additional_rejection_reason)
 
         text_content = """
          Hi {},
