@@ -128,10 +128,11 @@ def registration_part_two(request):
         return redirect(reverse('datarequests:registration_part_one'))
 
     if request.method == 'POST' :
-        if last_submitted_dr and last_submitted_dr.request_status.encode('utf8') == 'pending' or last_submitted_dr.request_status.encode('utf8') == 'unconfirmed':
-            pprint("updating request_status")
-            last_submitted_dr.request_status = 'cancelled'
-            last_submitted_dr.save()
+        if last_submitted_dr:
+            if last_submitted_dr.request_status.encode('utf8') == 'pending' or last_submitted_dr.request_status.encode('utf8') == 'unconfirmed':
+                pprint("updating request_status")
+                last_submitted_dr.request_status = 'cancelled'
+                last_submitted_dr.save()
         post_data = request.POST.copy()
         post_data['permissions'] = '{"users":{"dataRegistrationUploader": ["view_resourcebase"] }}'
         form = DataRequestDetailsForm(post_data)
