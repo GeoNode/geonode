@@ -128,7 +128,7 @@ def registration_part_two(request):
         return redirect(reverse('datarequests:registration_part_one'))
 
     if request.method == 'POST' :
-        if last_submitted_dr and last_submitted_dr.request_status.encode('utf8') == 'pending':
+        if last_submitted_dr and last_submitted_dr.request_status.encode('utf8') == 'pending' or last_submitted_dr.request_status.encode('utf8') == 'unconfirmed':
             pprint("updating request_status")
             last_submitted_dr.request_status = 'cancelled'
             last_submitted_dr.save()
@@ -186,12 +186,13 @@ def registration_part_two(request):
                             password=settings.OGC_SERVER['default']['PASSWORD'])
 
                         boundary_style = cat.get_style('Boundary')
-                        gs_layer = cat.get_layer(saved_layer.name)
-                        gs_layer._set_default_style(boundary_style)
-                        cat.save(gs_layer) #save in geoserver
-                        saved_layer.sld_body = boundary_style.sld_body
-                        saved_layer.save() #save in geonode
-                       
+                        if boundary_style:
+                            gs_layer = cat.get_layer(saved_layer.name)
+                            gs_layer._set_default_style(boundary_style)
+                            cat.save(gs_layer) #save in geoserver
+                            saved_layer.sld_body = boundary_style.sld_body
+                            saved_layer.save() #save in geonode
+                           
                     except Exception as e:
                         exception_type, error, tb = sys.exc_info()
                         print traceback.format_exc()
@@ -263,6 +264,7 @@ def registration_part_two(request):
                     
                     if request.user.is_authenticated():
                         request_profile.profile = request.user
+                        request_profile.request_status = 'pending'
                         request_profile.username = request.user.username
                         request_profile.set_verification_key()
                         request_profile.save()
@@ -382,6 +384,7 @@ def email_verification_confirm(request):
             )
             # Only verify once
             if not data_request.date:
+                data_request.request_status = 'pending'
                 data_request.date = timezone.now()
                 data_request.save()
                 data_request.send_new_request_notif_to_admins()
@@ -410,8 +413,8 @@ def data_request_profile(request, pk, template='datarequests/profile_detail.html
         raise PermissionDenied
     
 
-    if not request_profile.date:
-        raise Http404
+    #if not request_profile.date:
+    #    raise Http404
     
     context_dict={"request_profile": request_profile}
     
@@ -494,8 +497,6 @@ def data_request_profile_reject(request, pk):
         raise PermissionDenied
     
     request_profile = get_object_or_404(DataRequestProfile, pk=pk)
-    if not request_profile.date:
-        raise Http404
 
     if request_profile.request_status == 'pending':
         form = parse_qs(request.POST.get('form', None))
