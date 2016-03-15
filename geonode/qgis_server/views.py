@@ -281,3 +281,71 @@ def tile(request, layername, z, x, y):
 
     with open(tile_filename, 'rb') as f:
         return HttpResponse(f.read(), mimetype='image/png')
+
+def wms(request):
+    logger.debug('=============================')
+    logger.debug('WMS from QGIS Server')
+
+    qgis_server = QGIS_SERVER_CONFIG['qgis_server_url']
+    query_string = dict()
+    for k, v in request.GET.iteritems():
+        query_string[k] = v
+    if query_string['SERVICE'] != 'WMS':
+        return
+    # Sample parameters from the geoext.
+    # LAYERS : geonode:buildings
+    # STYLES :
+    # WIDTH : 256
+    # SERVICE : WMS
+    # FORMAT : image/png
+    # REQUEST : GetMap
+    # HEIGHT : 256
+    # SRS : EPSG:900913
+    # VERSION : 1.1.1
+    # TILED : true
+    # TRANSPARENT : TRUE
+    # BBOX : 11891155.614613,-689767.74314941,11892378.607065,-688544.75069702
+
+    layer = Layer.objects.get(typename=query_string.pop('LAYERS'))
+    query_string['LAYERS'] = layer.name
+    try:
+        qgis_layer = QGISServerLayer.objects.get(layer=layer)
+    except ObjectDoesNotExist:
+        msg = 'No QGIS Server Layer for existing layer %s' % layer.name
+        logger.debug(msg)
+        raise Http404(msg)
+
+    basename, _ = os.path.splitext(qgis_layer.base_layer_path)
+
+    query_string['map'] = basename + '.qgs'
+
+    url = qgis_server + '?'
+    for param, value in query_string.iteritems():
+        url += param + '=' + value + '&'
+
+    logger.debug(url)
+
+    bbox_string = query_string['BBOX'].replace('-', 'n')
+    bbox = bbox_string.split(',')
+
+    map_tile_path = QGIS_SERVER_CONFIG['map_tile_path']
+    tile_filename = map_tile_path % (
+        os.path.basename(basename), bbox[0], bbox[1], bbox[2], bbox[3])
+
+    logger.debug(tile_filename)
+
+    if not os.path.exists(tile_filename):
+        if not os.path.exists(os.path.dirname(tile_filename)):
+            os.makedirs(os.path.dirname(tile_filename))
+
+        urlretrieve(url, tile_filename)
+
+        if image_format(tile_filename) != 'png':
+            logger.error('%s is not valid PNG.' % tile_filename)
+            os.remove(tile_filename)
+
+    if not os.path.exists(tile_filename):
+        return HttpResponse('The legend could not be found.', status=409)
+
+    with open(tile_filename, 'rb') as f:
+        return HttpResponse(f.read(), mimetype='image/png')
