@@ -166,9 +166,6 @@
 
         <div class="modal fade" id="approve-request" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
           <form id="approve_form" method="post" class="modal-form" action='{% url "datarequests:data_request_profile_approve" pk=request_profile.pk%}'>{% csrf_token %}
-            <input type="hidden" id="ftp-directory" name="ftp-directory" value="">
-            <input type="hidden" id="username" name="username" value="">
-            <input type="hidden" id="password" name="password" value="">
           <div class="modal-dialog">
             <div class="modal-content">
               <div class="modal-header">
@@ -214,6 +211,13 @@
             </div>
           </form>
         </div>
+      {% elif request_profile.request_status %}
+       <li class="list-group-item">
+        <form id="approve_form" method="post" class="modal-form" action='{% url "datarequests:data_request_profile_reconfirm" pk=request_profile.pk%}'>{% csrf_token %}
+            <button type="submit" class="btn btn-primary btn-md btn-block"  id="reconfirm-request-submit">{% trans "Resend Confirmation Email" %}</button>
+        </form>
+          
+        </li>
       {% endif %}
   </ul>
   <input type="hidden" id="request_profile_id" value="{{request_profile.pk}}"></input>
@@ -306,6 +310,8 @@
               $("#approve_request_cancel").attr("disabled", true);
               $('#approve_form').submit();
           });
+          
+          $("#re
 
           $("#reject-request").on('hidden.bs.modal', function (e) {
             $('#reject_request_message').addClass("hidden");
