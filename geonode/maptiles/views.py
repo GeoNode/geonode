@@ -117,7 +117,6 @@ def tiled_view2(request, overlay=settings.TILED_SHAPEFILE, template="maptiles/ma
         except Exception as e:
             context_dict["jurisdiction_yes"] = False
             print e
-
     else:
         context_dict["jurisdiction"] = get_layer_config(request,jurisdiction, "base.view_resourcebase", _PERMISSION_VIEW)
 
