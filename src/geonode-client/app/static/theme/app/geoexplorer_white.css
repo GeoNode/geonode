@@ -394,8 +394,8 @@ div.overlay-scaleline {
 
 .ext-gecko .x-btn button:hover {
   color:#fff;
-  background-color: #18469c;
-  border: 1px solid #18469c;
+  background-color: #2657A8;
+  border: 1px solid #2657A8;
 }
 
 .x-btn .user_item .icon-removeuser .remove-button {
@@ -860,7 +860,7 @@ a.x-grid3-hd-btn {
     margin-bottom: 5px;
     margin-right: 5px;
     margin-left: 5px;
-    border-radius: 5px;
+    border-radius: 3px;
 }
 
 .x-grid3-scroller {
@@ -991,10 +991,12 @@ td.x-grid3-hd-over .x-grid3-hd-inner, td.sort-desc .x-grid3-hd-inner, td.sort-as
 }
 
 .x-btn .small-btn, .small-btn, .small-button button, ext-gecko .x-btn .small-button button {
-  font-size: 12px !important;
-  height: 18px !important;
-  padding-left: 5px !important;
-  padding-right: 5px !important;
+  font-size: 11px !important;
+  font-weight: lighter;
+  height: 20px !important;
+  padding-left: 4px !important;
+  padding-right: 4px !important;
+  border-radius: 3px  !important;
 }
 
 .pager-label {
