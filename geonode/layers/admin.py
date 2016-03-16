@@ -83,6 +83,7 @@ class UploadSessionAdmin(admin.ModelAdmin):
     list_display = ('date', 'user', 'processed')
     inlines = [LayerFileInline]
 
+
 admin.site.register(Layer, LayerAdmin)
 admin.site.register(Attribute, AttributeAdmin)
 admin.site.register(Style, StyleAdmin)
