@@ -108,14 +108,7 @@ class DataRequestProfile(TimeStampedModel):
         null=True,
         blank=True,
     )
-    requester_type = models.CharField(
-        _('Data Requester Type'),
-        choices=REQUESTER_TYPE_CHOICES,
-        default=REQUESTER_TYPE_CHOICES.commercial,
-        max_length=20,
-        null=True,
-        blank=True,
-    )
+
     first_name = models.CharField(_('First Name'), max_length=100)
     middle_name = models.CharField(_('Middle Name'), max_length=100)
     last_name = models.CharField(_('Last Name'), max_length=100)
@@ -155,13 +148,6 @@ class DataRequestProfile(TimeStampedModel):
         help_text=_('pixels per inch'),
     )
     """
-    license_period = models.CharField(
-        _('Liense Period'),
-        max_length=50,
-    )
-    has_subscription = models.BooleanField(
-        _('Subscription/Maintenance?'),
-        default=False)
 
     purpose = models.TextField(_('Purpose of Data'))
     intended_use_of_dataset = models.CharField(
