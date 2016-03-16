@@ -54,20 +54,20 @@ GeoNode.HeatmapModel = Ext.extend(Ext.util.Observable, {
       });
 
     //get the number of global layers
-    $.ajax({
-      url: GeoNode.solrBackend,
-      jsonp: "json.wrf",
-      dataType: "jsonp",
-      data : {
-        q: '*',
-        fq: 'Area:[401 TO *]',
-        rows: 0,
-        wt: 'json'
-      },
-      success: function(response){
-        self.global_layers = response.response.numFound;
-      }
-    });
+    // $.ajax({
+    //   url: GeoNode.solrBackend,
+    //   jsonp: "json.wrf",
+    //   dataType: "jsonp",
+    //   data : {
+    //     q: '*',
+    //     fq: 'Area:[401 TO *]',
+    //     rows: 0,
+    //     wt: 'json'
+    //   },
+    //   success: function(response){
+    //     self.global_layers = response.response.numFound;
+    //   }
+    // });
   },
 
   handleHeatmap: function(){
