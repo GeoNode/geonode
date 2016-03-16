@@ -108,7 +108,7 @@ class Map(ResourceBase, GXPMapBase):
     """
     story = models.ForeignKey(MapStory, related_name='chapter_list', blank=True, null=True)
 
-    chapter_index = models.IntegerField(_('chapter index'), blank=True)
+    chapter_index = models.IntegerField(_('chapter index'), null=True, blank=True)
 
     # viewer configuration
     zoom = models.IntegerField(_('zoom'))
