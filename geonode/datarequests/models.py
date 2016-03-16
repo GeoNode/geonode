@@ -478,28 +478,31 @@ class DataRequestProfile(TimeStampedModel):
             self.username = create_login_credentials(self)
             self.save()
             
-            try:
-                if not self.profile:
-                    dn = create_ad_account(self, self.username)
-                    profile = LDAPBackend().populate_user(self.username)
-                    add_to_ad_group(group_dn=settings.LIPAD_LDAP_GROUP_DN, user_dn=dn)
-                    self.profile = profile
-                    self.save()
-            except ldap_error as e:
-                import traceback
-                pprint(traceback.format_exc())
-                return (false, "Account creation failed. Check /var/log/apache2/error.log for more details")
-                
-            self.join_requester_grp()
+        try:
+            if not self.profile:
+                pprint("Creating account for "+uname)
+                dn = create_ad_account(self, self.username)
+                profile = LDAPBackend().populate_user(self.username)
+                add_to_ad_group(group_dn=settings.LIPAD_LDAP_GROUP_DN, user_dn=dn)
+                self.profile = profile
+                self.save()
+        except ldap_error as e:
+            pprint(traceback.format_exc())
+            return (False, "Account creation failed. Check /var/log/apache2/error.log for more details")
             
+        self.join_requester_grp()
+        
+        try:
             if not self.ftp_folder:
                 self.create_directory(self.username)
                 self.ftp_folder = "Others/"+uname
                 self.save()
+        except Exception as e:
+            pprint(traceback.format_exc())
+            return (False, "Folder creation failed, Check /var/log/apache2/error.log for more details")
             
+        return  (True, "Account creation successful")
                 
-            
-        pprint("Creating account for "+uname)
        
         
 
