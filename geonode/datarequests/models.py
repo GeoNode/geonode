@@ -467,6 +467,8 @@ class DataRequestProfile(TimeStampedModel):
             add_to_ad_group(group_dn=settings.LIPAD_LDAP_GROUP_DN, user_dn=dn)
 
             profile = LDAPBackend().populate_user(uname)
+            profile.organization_type = self.organization_type
+            profile.save()
             if profile is None:
                 pprint("Account was not created")
                 raise Http404
