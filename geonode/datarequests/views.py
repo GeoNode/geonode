@@ -547,7 +547,7 @@ def data_request_profile_approve(request, pk):
             else:
                 is_new_acc = False
             
-            request_profile.join_requester_grp() #adds to  data requesters user group
+            
             
             if request_profile.jurisdiction_shapefile:
                 request_profile.assign_jurisdiction() #assigns/creates jurisdiction object 

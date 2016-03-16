@@ -76,7 +76,7 @@ def create_ad_account(datarequest, username):
     initials=str(datarequest.middle_name)[0]
     cn = str(givenName+" "+initials+". "+sn)
     displayName=str(givenName+" "+initials+". "+sn)
-    
+    telephoneNumber = str(datarequest.contact_number)
     mail=str(datarequest.email)
     userPrincipalName=str(username+"@ad.dream.upd.edu.ph")
     userAccountControl = "512"
@@ -92,6 +92,7 @@ def create_ad_account(datarequest, username):
         "mail": [mail],
         "userPrincipalName": [userPrincipalName],
         "userAccountControl": [userAccountControl],
+        "telephoneNumber": [telephoneNumber],
     }
     
     

@@ -473,28 +473,34 @@ class DataRequestProfile(TimeStampedModel):
 
     def create_account(self):
         profile = None
-        try:
-            if not self.username:
-                self.username = create_login_credentials(self)
-            profile = LDAPBackend().populate_user(self.username)
-            dn = create_ad_account(self, self.username)
-        except ldap_error as e:
-            import traceback
-            message = _('An unexpected error was encountered during the creation of the account.\n'+  traceback.format_exc() )
+        errors = []
+        if not self.username:
+            self.username = create_login_credentials(self)
+            self.save()
+            
+            if not self.profile:
+                dn = create_ad_account(self, self.username)
+                profile = LDAPBackend().populate_user(self.username)
+                add_to_ad_group(group_dn=settings.LIPAD_LDAP_GROUP_DN, user_dn=dn)
+                self.profile = profile
+                sellf.save()
+            except ldap_error as e:
+                import traceback
+                
+                raise e
+            
+            self.join_requester_grp()
+            
+            if not self.ftp_folder:
+                self.create_directory(self.username)
+                self.ftp_folder = "Others/"+uname
+                self.save()
+            
+                
             
         pprint("Creating account for "+uname)
        
-        if dn is not False:
-
-            add_to_ad_group(group_dn=settings.LIPAD_LDAP_GROUP_DN, user_dn=dn)
-            if profile is None:
-                pprint("Account was not created")
-                raise Http404
-
-            self.update_profile_details(uname=uname, profile = profile)
-
-        else:
-            raise Http404
+        
 
     def join_requester_grp(self):
         # Add account to requesters group
@@ -531,13 +537,6 @@ class DataRequestProfile(TimeStampedModel):
         perms = resource.get_all_level_info()
         perms["users"][self.profile.username]=["view_resourcebase"]
         resource.set_permissions(perms)
-
-    def update_profile_details(self, uname="",profile=None):
-        # Link data request to profile and updating other fields of the request
-        self.username = uname
-        self.profile = profile
-        self.ftp_folder = "Others/"+uname
-        self.save()
 
     def create_directory(self):
         pprint("creating user folder for "+self.username)
