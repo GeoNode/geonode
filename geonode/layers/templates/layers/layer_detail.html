@@ -126,16 +126,16 @@
     </div>
 
   </div>
-            
+
   <div class="col-md-4">
-    
+
     <ul class="list-group">
       {% if resource.storeType != "remoteStore" %}
         {% get_obj_perms request.user for resource.get_self_resource as "perms" %}
-        
+
         <li class="list-group-item">
         {% if links %}
-            {% eula_nested_modal_dialog "download-layer" %}
+            {% include "layers/layer_eula_nested_dialog.html" %}
             <button class="btn btn-primary btn-md btn-block" data-toggle="modal" data-target="#eula-nested-dialog">{% trans "Download Layer" %}</button>
         {% else %}
           {% if request.user.is_authenticated %}
@@ -167,12 +167,12 @@
       </div>
     </div>
 
-    
+
     {% if GEOSERVER_BASE_URL %}
       {% get_obj_perms request.user for resource.layer as "layer_perms" %}
     {% endif %}
     {% if "change_resourcebase_metadata" in perms or "change_resourcebase" in perms or "delete_resourcebase" in perms or "change_layer_style" in layer_perms %}
-    <li class="list-group-item"> 
+    <li class="list-group-item">
       <button class="btn btn-primary btn-md btn-block" data-toggle="modal" data-target="#edit-layer">{% trans "Edit Layer" %}</button>
     </li>
     <div class="modal fade" id="edit-layer" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
@@ -277,7 +277,7 @@
         <p>{% trans "List of maps using this layer:" %}</p>
         {% endif %}
         <ul class="list-unstyled">
-          {% for maplayer in resource.maps %} 
+          {% for maplayer in resource.maps %}
             <li><a href="{{ maplayer.map.get_absolute_url }}">{{ maplayer.map.title }}</a></li>
           {% empty %}
             <li>{% trans "This layer is not currently used in any maps." %}</li>
@@ -295,7 +295,7 @@
       <h4>{% trans "Documents related to this layer" %}</h4>
       <p>{% trans "List of documents related to this layer:" %}</p>
       <ul class="list-unstyled">
-        {% for document in documents %} 
+        {% for document in documents %}
           <li><a href="{{ document.get_absolute_url }}">{{ document.title }}</a></li>
         {% endfor %}
       </ul>
@@ -342,11 +342,11 @@
     </li>
     {% endif %}
 
-    {% include "base/_resourcebase_contact_snippet.html" %}  
+    {% include "base/_resourcebase_contact_snippet.html" %}
   </ul>
 
 
-  {% if GEONODE_SECURITY_ENABLED %}   
+  {% if GEONODE_SECURITY_ENABLED %}
     {% include "_permissions_form.html" %}
   {% endif %}
 
@@ -377,7 +377,7 @@
               data: $("#form_post_comment").serialize(),
               success: function() {
                 $('#form_post_comment_div').modal('hide');
-                $('#comments_section').load(window.location.pathname + ' #comments_section', 
+                $('#comments_section').load(window.location.pathname + ' #comments_section',
                 		function(){$(this).children().unwrap()})
               }
             });

@@ -55,23 +55,7 @@
     </div>
     <div class="col-md-3">
         <ul class="list-group">
-            <li class="list-group-item">
-		<h4 class="list-group-item-heading">Bounding Box Selection</h4>
-                <form id="bbox_form">
-                    (EPSG:900913 decimal degrees) <br />
-                    <table>
-                        <tr><td>Upper limit: </td><td><input type="number" id="upperlimit" name="upperlimit" value=0 step="any" /></td></tr>
-                        <tr><td>Left limit: </td><td><input type="number" id="leftlimit" name="leftlimit"value=0 step="any"/></td></tr>
-                        <tr><td>Right limit: </td><td><input type="number" id="rightlimit" name="rightlimit" value=0 step="any"/></td></tr>
-                        <tr><td>Lower limit: </td><td><input type="number" id="lowerlimit" name="lowerlimit" value=0 step="any"/></td></tr>
-                    </table> <br />
-                    <input type="submit" id="bbox_submit" name="bbox_submit" value="Submit Bounding Box" class="btn btn-default" />
-                </form>
-            </li>
-            <!--<li class="list-group-item">
-               	<h4 class="list-group-item-heading">Area of Interest</h4>
-            <input type="submit" id="interest_submit" name="interest_submit" value="Submit Area of Interest" class="btn btn-default" />
-            </li>-->
+
 	    <li class="list-group-item">
 		<h4 class="list-group-item-heading">{%trans "Legend" %}</h4>
 		<img id="legend_icon" src="{{ grid.resource.get_legend.url }}"><br/>

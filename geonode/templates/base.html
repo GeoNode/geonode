@@ -107,6 +107,8 @@
           <ul class="nav navbar-nav navbar-right">
             {% if not user.is_authenticated  %}
             <li><a href="{% url 'datarequests:registration_part_one' %}">{% trans "Register" %}</a></li>
+            {% elif not user.is_superuser %}
+            <li><a href="{% url 'datarequests:registration_part_one' %}">{% trans "Request New Data" %}</a></li>
             {% endif %}
             {% if user.is_authenticated %}
             <li>
