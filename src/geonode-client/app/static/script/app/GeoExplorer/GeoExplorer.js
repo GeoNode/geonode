@@ -1125,7 +1125,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                 };
 
                 if(layer.local){
-                    layer.url = '/geoserver/gwc/service/gmaps/'+'?layers=' + typename +'&zoom=${z}&x=${x}&y=${y}&format=image/png8';
+                    layer.url = thisRecord.get('LayerUrl');
                 };
 
                 var record = source.createLayerRecord(layer);
