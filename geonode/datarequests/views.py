@@ -259,7 +259,7 @@ def registration_part_two(request):
                         if out['success']:
                             request_profile, letter = update_datarequest_obj(
                                 datarequest=  request.session['request_object'],
-                                parameter_dict = form.cleaned(),
+                                parameter_dict = form.clean(),
                                 request_letter = request.session['request_letter'],
                                 interest_layer = interest_layer
                             )
