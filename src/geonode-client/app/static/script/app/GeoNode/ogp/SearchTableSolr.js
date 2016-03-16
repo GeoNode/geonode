@@ -274,8 +274,10 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
         var sm = new Ext.grid.RowSelectionModel({
             listeners:{
                 rowselect: function(sm, rowIndex, record){
-                    self.heatmap.bbox_widget.viewer.fireEvent('showLayer',
-                        self.getlayerTypename(record));
+                    if(record.get('Is_Public')){
+                        self.heatmap.bbox_widget.viewer.fireEvent('showLayer',
+                        self.getlayerTypename(record), self.getLayerID(record));
+                    }
                 },
                 rowdeselect: function(sm, rowIndex, record){
                     self.heatmap.bbox_widget.viewer.fireEvent('hideLayer',
@@ -572,11 +574,11 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
         this.heatmap.bbox_widget.viewer.fireEvent("hideBBox");
     },
 
-    showPreviewLayer: function(element){
-        var typename = this.getlayerTypename(element);
-        var bbox = this.getLayerBounds(element);
-        bbox = [bbox.west, bbox.south, bbox.east, bbox.north];
-        this.heatmap.bbox_widget.viewer.fireEvent("showPreviewLayer", typename, bbox);
+    showPreviewLayer: function(record){
+        if(record.get('Is_Public')){
+            var typename = this.getlayerTypename(record);
+            this.heatmap.bbox_widget.viewer.fireEvent("showPreviewLayer", typename, this.getLayerID(record));
+        }
     },
 
     hidePreviewLayer: function(){
