@@ -62,7 +62,8 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
                 {name: 'bbox', type: 'string'},
                 {name: 'LayerUrl', type: 'string'},
                 {name: 'ServiceType', type: 'string'},
-                {name: 'LayerUsername', type: 'string'} 
+                {name: 'LayerUsername', type: 'string'},
+                {name: 'Is_Public', type: 'string'} 
             ]
         });
         this.searchStore.on('load', function() {
@@ -320,7 +321,7 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
                 renderer: function(value, metadata, record, rowIndex, colIndex, store){
                     var the_abstract = app.layerTree.replaceURLWithHTMLLinks(record.get('Abstract'));
                     metadata.attr = 'ext:qtip="' + record.get('Originator') + '<br/><strong>Abstract</strong>: ' + the_abstract.substring(0, 250) + '"';
-                    return value;
+                    return record.get('Is_Public') ?  value : '<span class="unviewable-layer"></span>' + '  ' + value;
                 }
             },
             {

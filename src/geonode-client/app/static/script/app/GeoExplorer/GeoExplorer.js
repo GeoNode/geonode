@@ -1090,10 +1090,9 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
         //     source.url.replace(this.urlPortRegEx, "$1/").indexOf(
         //         this.localGeoServerBaseUrl.replace(
         //             this.urlPortRegEx, "$1/")) === 0;
-        var isLocal = true;
         for (var i = 0, ii = records.length; i < ii; ++i) {
             var thisRecord = records[i];
-            if (isLocal) {
+            if (thisRecord.get('Is_Public')) {
                 //Get all the required WMS parameters from the GeoNode/Worldmap database
                 // instead of GetCapabilities
                 var typename = this.searchTable.getlayerTypename(records[i]);
@@ -1149,31 +1148,32 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                         geoEx.layerTree.overlayRoot.findDescendant("layer", record.getLayer()).select();
                     }
                 };
-            } else {
-                //Not a local GeoNode layer, use source's standard method for creating the layer.
-                var layer = records[i].get("name");
-                var record = source.createLayerRecord({
-                    name: layer,
-                    source: key,
-                    buffer: 0
-                });
-                //alert(layer + " created after FAIL");
-                if (record) {
-                    if (record.get("group") === "background") {
-                        var pos = layerStore.queryBy(
-                            function(rec) {
-                                return rec.get("group") === "background"
-                            }).getCount();
-                        layerStore.insert(pos, [record]);
-                    } else {
-                        category = "General";
-                        record.set("group", category);
+            } 
+            //else {
+            //     //Not a local GeoNode layer, use source's standard method for creating the layer.
+            //     var layer = records[i].get("name");
+            //     var record = source.createLayerRecord({
+            //         name: layer,
+            //         source: key,
+            //         buffer: 0
+            //     });
+            //     //alert(layer + " created after FAIL");
+            //     if (record) {
+            //         if (record.get("group") === "background") {
+            //             var pos = layerStore.queryBy(
+            //                 function(rec) {
+            //                     return rec.get("group") === "background"
+            //                 }).getCount();
+            //             layerStore.insert(pos, [record]);
+            //         } else {
+            //             category = "General";
+            //             record.set("group", category);
 
-                        geoEx.layerTree.addCategoryFolder({"group":record.get("group")}, true);
-                        layerStore.add([record]);
-                    }
-                }
-            }
+            //             geoEx.layerTree.addCategoryFolder({"group":record.get("group")}, true);
+            //             layerStore.add([record]);
+            //         }
+            //     }
+            // }
         }
         this.searchWindow.hide();
     },
