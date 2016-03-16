@@ -587,5 +587,9 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
 
     getlayerTypename: function(record){
         return record.get('LayerName');
+    }, 
+
+    getLayerID: function(record){
+        return record.get('LayerId');
     }
 });
