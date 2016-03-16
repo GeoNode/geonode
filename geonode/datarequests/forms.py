@@ -133,12 +133,11 @@ class DataRequestDetailsForm(forms.ModelForm):
         (0, _('Phil-LiDAR 1 SUC')),
         (1, _('Phil-LiDAR 2 SUC' )),
         (2, _( 'Government Agency')),
-        (3, _( 'Academic/Research Institution' )),
-        (4, _('Academe')),
-        (5, _( 'International NGO')),
-        (6, _('Local NGO')),
-        (7, _('Private Insitution' )),
-        (8, _('Other' )),
+        (3, _('Academe')),
+        (4, _( 'International NGO')),
+        (5, _('Local NGO')),
+        (6, _('Private Insitution' )),
+        (7, _('Other' )),
     )
 
     LICENSE_PERIOD_CHOICES = Choices(
