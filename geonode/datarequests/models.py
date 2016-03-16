@@ -129,7 +129,7 @@ class DataRequestProfile(TimeStampedModel):
     data_type_requested = models.CharField(
         _('Type of Data Requested'),
         choices=DATA_TYPE_CHOICES,
-        default=DATA_TYPE_CHOICES.interpreted,
+        default=DATA_TYPE_CHOICES.processed,
         max_length=15,
     )
     """
