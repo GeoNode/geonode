@@ -478,17 +478,18 @@ class DataRequestProfile(TimeStampedModel):
             self.username = create_login_credentials(self)
             self.save()
             
-            if not self.profile:
-                dn = create_ad_account(self, self.username)
-                profile = LDAPBackend().populate_user(self.username)
-                add_to_ad_group(group_dn=settings.LIPAD_LDAP_GROUP_DN, user_dn=dn)
-                self.profile = profile
-                sellf.save()
+            try:
+                if not self.profile:
+                    dn = create_ad_account(self, self.username)
+                    profile = LDAPBackend().populate_user(self.username)
+                    add_to_ad_group(group_dn=settings.LIPAD_LDAP_GROUP_DN, user_dn=dn)
+                    self.profile = profile
+                    self.save()
             except ldap_error as e:
                 import traceback
+                pprint(traceback.format_exc())
+                return (false, "Account creation failed. Check /var/log/apache2/error.log for more details")
                 
-                raise e
-            
             self.join_requester_grp()
             
             if not self.ftp_folder:
