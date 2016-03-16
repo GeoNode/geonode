@@ -321,6 +321,7 @@ class ProfileResource(ModelResource):
         filtering = {
             'username': ALL,
             'city': ALL,
+            'country': ALL,
             'first_name': ALL,
             'last_name': ALL
         }
