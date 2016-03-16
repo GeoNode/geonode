@@ -9,7 +9,7 @@
         <h4><a href="{{ item.data_request_detail_url }}">{{ item.first_name }} {{ item.middle_name }} {{ item.last_name }}</a></h4>
         <h6>Submitted: {{ item.date_submitted }}</h6>
         <p>
-        Type: <strong>{{ item.req_type }} </strong></br>
+        Purpose: <strong>{{ item.purpose }} </strong></br>
         Organization: <strong>{{ item.organization }} </strong></br>
         Organization Type: <strong>{{ item.org_type }} </strong></p>
         <div ng-if="item.request_status == 'rejected'">

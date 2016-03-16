@@ -250,7 +250,7 @@ def registration_part_two(request):
                     if 'success' not in out:
                         request_profile, letter = update_datarequest_obj(
                             datarequest=  request.session['request_object'],
-                            parameter_dict = form.cleaned_data,
+                            parameter_dict = form.cleaned,
                             request_letter = request.session['request_letter'],
                             interest_layer = interest_layer
                         )
@@ -259,7 +259,7 @@ def registration_part_two(request):
                         if out['success']:
                             request_profile, letter = update_datarequest_obj(
                                 datarequest=  request.session['request_object'],
-                                parameter_dict = form.cleaned_data,
+                                parameter_dict = form.cleaned(),
                                 request_letter = request.session['request_letter'],
                                 interest_layer = interest_layer
                             )
@@ -593,12 +593,6 @@ def data_request_facet_count(request):
             request_status='rejected').count(),
         'cancelled': DataRequestProfile.objects.filter(
             request_status='cancelled').exclude(date=None).count(),
-        'commercial': DataRequestProfile.objects.filter(
-            requester_type='commercial').exclude(date=None).count(),
-        'noncommercial': DataRequestProfile.objects.filter(
-            requester_type='noncommercial').exclude(date=None).count(),
-        'academe': DataRequestProfile.objects.filter(
-            requester_type='academe').exclude(date=None).count(),
     }
 
     return HttpResponse(
