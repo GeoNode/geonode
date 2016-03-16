@@ -116,7 +116,7 @@ class Profile(AbstractUser):
     ### Custom Attribs
     organization_type = enum.EnumField(
         OrganizationType, 
-        default=OrganizationType.PHIL_LIDAR_1,
+        default=OrganizationType.OTHER,
         help_text=_('Organization type based on Phil-LiDAR1 Data Distribution Policy'))
         
     eula_signed = models.BooleanField(
