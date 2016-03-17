@@ -176,8 +176,7 @@ def registration_part_two(request):
                             overwrite=False,
                             charset=form.cleaned_data["charset"],
                             abstract=form.cleaned_data["abstract"],
-                            title=form.cleaned_data["layer_title"]
-                            #default_style=Style.objects.get(sld_title="Boundary")
+                            title=form.cleaned_data["layer_title"],
                         )
                         saved_layer.is_published = False
                         saved_layer.save()
@@ -236,7 +235,7 @@ def registration_part_two(request):
                         if permissions is not None and len(permissions.keys()) > 0:
     
                             saved_layer.set_permissions(permissions)
-
+                        
                     finally:
                         if tempdir is not None:
                             shutil.rmtree(tempdir)
@@ -278,7 +277,7 @@ def registration_part_two(request):
         else:
             for e in form.errors.values():
                 errormsgs.extend([escape(v) for v in e])
-
+            out['success'] = False
             out['errors'] = form.errors
             pprint(out['errors'])
             out['errormsgs'] = errormsgs
