@@ -183,6 +183,7 @@ class GroupResource(ModelResource):
         filtering = {
             'name': ALL,
             'city': ALL,
+            'id': ALL
         }
         ordering = ['title', 'last_modified', 'date_joined']
 

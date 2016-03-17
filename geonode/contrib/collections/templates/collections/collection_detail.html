@@ -1,0 +1,10 @@
+<script type="text/javascript">
+  // Use this to guess the resource type from a json serialization of the resource
+  // it uses the detail url to get the type.
+  function getResourceType(resource){
+    var detail_url = resource.detail_url;
+    return detail_url.indexOf('/layers/') > -1 ? 'layer' :
+           detail_url.indexOf('/maps/') > -1 ? 'map' :
+           'document';
+  };
+</script>
