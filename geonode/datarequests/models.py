@@ -463,16 +463,25 @@ class DataRequestProfile(TimeStampedModel):
         if not self.username:
             self.username = create_login_credentials(self)
             self.save()
-            
-        try:
-            if not self.profile:
-                pprint("Creating account for "+uname)
-                dn = create_ad_account(self, self.username)
+            pprint(self.username)
+        else:
+            try:
                 profile = LDAPBackend().populate_user(self.username)
-                add_to_ad_group(group_dn=settings.LIPAD_LDAP_GROUP_DN, user_dn=dn)
                 self.profile = profile
                 self.save()
-        except ldap_error as e:
+            except Exception as e:
+                pprint(traceback.format_exc())
+                return (False, "Account creation failed. Check /var/log/apache2/error.log for more details")
+        
+        try:
+             if not self.profile:
+                pprint("Creating account for "+self.username)
+                dn = create_ad_account(self, self.username)
+                add_to_ad_group(group_dn=settings.LIPAD_LDAP_GROUP_DN, user_dn=dn)
+                profile = LDAPBackend().populate_user(self.username)
+                self.profile = profile
+                self.save()
+        except Exception as e:
             pprint(traceback.format_exc())
             return (False, "Account creation failed. Check /var/log/apache2/error.log for more details")
             
@@ -480,9 +489,7 @@ class DataRequestProfile(TimeStampedModel):
         
         try:
             if not self.ftp_folder:
-                self.create_directory(self.username)
-                self.ftp_folder = "Others/"+uname
-                self.save()
+                self.create_directory()
         except Exception as e:
             pprint(traceback.format_exc())
             return (False, "Folder creation failed, Check /var/log/apache2/error.log for more details")
@@ -528,6 +535,8 @@ class DataRequestProfile(TimeStampedModel):
     def create_directory(self):
         pprint("creating user folder for "+self.username)
         create_folder.delay(self.username)
+        self.ftp_folder = "Others/"+self.username
+        self.save()
 
     def set_approved(self, is_new_acc):
         self.request_status = 'approved'
