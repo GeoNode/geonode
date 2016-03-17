@@ -35,10 +35,21 @@ def fh_perms_update(layer,filename):
     #for layer in layer_list:
 
     try:
-        #print "[FH PERMISSIONS] {0}/{1} : {2} ".format(ctr,total_layers,layer.name)
-        layer.remove_all_permissions()
+        # geoadmin = User.objects.get.filter(username='geoadmin')
+        # for user in User.objects.all():
+        datarequesters = Group.objects.get(name='data-requesters')
+        assign_perm('view_resourcebase', datarequesters, layer.get_self_resource())
+        assign_perm('download_resourcebase', datarequesters, layer.get_self_resource())
+        # superusers=get_user_model().objects.filter(Q(is_superuser=True))
+        # for superuser in superusers:
+        #     assign_perm('view_resourcebase', superuser, layer.get_self_resource())
+        #     assign_perm('download_resourcebase', superuser, layer.get_self_resource())
         assign_perm('view_resourcebase', get_anonymous_user(), layer.get_self_resource())
         assign_perm('download_resourcebase', get_anonymous_user(), layer.get_self_resource())
+        #print "[FH PERMISSIONS] {0}/{1} : {2} ".format(ctr,total_layers,layer.name)
+        # layer.remove_all_permissions()
+        # assign_perm('view_resourcebase', get_anonymous_user(), layer.get_self_resource())
+        # assign_perm('download_resourcebase', get_anonymous_user(), layer.get_self_resource())
         #ctr+=1
     except:
         ts = time.time()
@@ -106,31 +117,31 @@ def layer_metadata(layer_list,flood_year,flood_year_probability):
     f = open(fh_err_log,'w')
     for layer in layer_list:
         print "Layer: %s" % layer.name
-        fh_style_update(layer,f)
+        #fh_style_update(layer,f)
         fh_perms_update(layer,f)
 
-        map_resolution = ''
-        first_half = ''
-        second_half = ''
-        if "_10m_30m" in layer.name:
-            map_resolution = '30'
-        elif "_10m" in layer.name:
-            map_resolution = '10'
-        elif "_30m" in layer.name:
-            map_resolution = '30'
-
-        print "Layer: %s" % layer.name
-        layer.title = layer.name.replace("_10m","").replace("_30m","").replace("__"," ").replace("_"," ").replace("fh%syr" % flood_year,"%s Year Flood Hazard Map" % flood_year).title()
-
-        first_half = "This shapefile, with a resolution of %s meters, illustrates the inundation extents in the area if the actual amount of rain exceeds that of a %s year-rain return period." % (map_resolution,flood_year) + "\n\n" + "Note: There is a 1/" + flood_year + " (" + flood_year_probability + "%) probability of a flood with " +flood_year + " year return period occurring in a single year. \n\n"
-        second_half = "3 levels of hazard:" + "\n" + "Low Hazard (YELLOW)" + "\n" + "Height: 0.1m-0.5m" + "\n\n" + "Medium Hazard (ORANGE)" + "\n" + "Height: 0.5m-1.5m" + "\n\n" + "High Hazard (RED)" + "\n" + "Height: beyond 1.5m"
-        layer.abstract = first_half + second_half
-
-        layer.purpose = " The flood hazard map may be used by the local government for appropriate land use planning in flood-prone areas and for disaster risk reduction and management, such as identifying areas at risk of flooding and proper planning of evacuation."
-
-        layer.keywords.add("Flood Hazard Map")
-        layer.category = TopicCategory.objects.get(identifier="geoscientificInformation")
-        layer.save()
+        # map_resolution = ''
+        # first_half = ''
+        # second_half = ''
+        # if "_10m_30m" in layer.name:
+        #     map_resolution = '30'
+        # elif "_10m" in layer.name:
+        #     map_resolution = '10'
+        # elif "_30m" in layer.name:
+        #     map_resolution = '30'
+        #
+        # print "Layer: %s" % layer.name
+        # layer.title = layer.name.replace("_10m","").replace("_30m","").replace("__"," ").replace("_"," ").replace("fh%syr" % flood_year,"%s Year Flood Hazard Map" % flood_year).title()
+        #
+        # first_half = "This shapefile, with a resolution of %s meters, illustrates the inundation extents in the area if the actual amount of rain exceeds that of a %s year-rain return period." % (map_resolution,flood_year) + "\n\n" + "Note: There is a 1/" + flood_year + " (" + flood_year_probability + "%) probability of a flood with " +flood_year + " year return period occurring in a single year. \n\n"
+        # second_half = "3 levels of hazard:" + "\n" + "Low Hazard (YELLOW)" + "\n" + "Height: 0.1m-0.5m" + "\n\n" + "Medium Hazard (ORANGE)" + "\n" + "Height: 0.5m-1.5m" + "\n\n" + "High Hazard (RED)" + "\n" + "Height: beyond 1.5m"
+        # layer.abstract = first_half + second_half
+        #
+        # layer.purpose = " The flood hazard map may be used by the local government for appropriate land use planning in flood-prone areas and for disaster risk reduction and management, such as identifying areas at risk of flooding and proper planning of evacuation."
+        #
+        # layer.keywords.add("Flood Hazard Map")
+        # layer.category = TopicCategory.objects.get(identifier="geoscientificInformation")
+        # layer.save()
         ctr+=1
         print "[{0} YEAR FH METADATA] {1}/{2} : {3}".format(flood_year,ctr,total_layers,layer.name)
     f.close()
@@ -203,7 +214,7 @@ def ceph_metadata_update(uploaded_objects_list, update_grid=True):
     # Pop first line containing header
     uploaded_objects_list.pop(0)
     """NAME,LAST_MODIFIED,SIZE_IN_BYTES,CONTENT_TYPE,GEO_TYPE,FILE_HASH GRID_REF"""
-    
+
     # Loop through each metadata element
     csv_delimiter=','
     objects_inserted=0
@@ -272,7 +283,7 @@ def ceph_metadata_remove(uploaded_objects_list, update_grid=True):
     # Pop first line containing header
     uploaded_objects_list.pop(0)
     """NAME,LAST_MODIFIED,SIZE_IN_BYTES,CONTENT_TYPE,GEO_TYPE,FILE_HASH GRID_REF"""
-    
+
     # Loop through each metadata element
     csv_delimiter=','
     objects_deleted=0
@@ -290,21 +301,21 @@ def ceph_metadata_remove(uploaded_objects_list, update_grid=True):
                 """
                 ceph_obj=None
                 try:
-                    # Retrieve object 
+                    # Retrieve object
                     ceph_obj = CephDataObject.objects.get(name=metadata_list[0])
-                    
+
                     # Add object to list for grid removal
                     if DataClassification.gs_feature_labels[ceph_obj.data_class] in gridref_dict_by_data_class:
                         gridref_dict_by_data_class[DataClassification.gs_feature_labels[ceph_obj.data_class].encode('utf8')].append(ceph_obj.grid_ref.encode('utf8'))
                     else:
                         gridref_dict_by_data_class[DataClassification.gs_feature_labels[ceph_obj.data_class].encode('utf8')] = [ceph_obj.grid_ref.encode('utf8'),]
-                    
+
                     # Delete object
                     ceph_obj.delete()
                     objects_deleted += 1
                 except ObjectDoesNotExist:
                     objects_not_found += 1
-                    
+
                 #except Exception as e:
                 #    print("Skipping invalid metadata list: {0}".format(metadata_list))
         else:
