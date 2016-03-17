@@ -323,11 +323,11 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
                 sortBy: 'LayerTitle',
                 renderer: function(value, metadata, record, rowIndex, colIndex, store){
                     var the_abstract = app.layerTree.replaceURLWithHTMLLinks(record.get('Abstract'));
-                    metadata.attr =
-                        'ext:qtip="' + record.get('Originator') +
-                        '<br/><h3 style=\'display:inline;\'>Abstract</h3>: ' +
-                        the_abstract.substring(0, 250) +
-                        '<br/><h3 style=\'display:inline;\'>Date</h3>: ' + record.get('LayerDateType') + '"';
+                    metadata.attr = 
+                        'ext:qtip="' + record.get('Originator') + 
+                        '<br/><strong>Abstract</strong>: ' + 
+                        the_abstract.substring(0, 250) + 
+                        '<br/><strong>Date</strong>: ' + record.get('LayerDateType') + '"';
                     return record.get('Is_Public') ?  value : '<span class="unviewable-layer"></span>' + '  ' + value;
                 }
             },

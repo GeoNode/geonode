@@ -1103,12 +1103,13 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                 for (var j=0; j<bbox_values.length; j++){
                     layer_bbox.push(parseFloat(bbox_values[j]));
                 };
+                var layer_detail_url = this.mapproxy_backend + JSON.parse(thisRecord.get('Location')).layerInfoPage;
                 var layer = {
                     "styles": "", 
                     "group": "General", 
                     "name": thisRecord.get('LayerName'), 
                     "title": thisRecord.get('LayerTitle'), 
-                    "url": thisRecord.get('LayerUrl'), 
+                    "url": layer_detail_url + 'map/wmts/' + typename.replace('geonode:', '') + '/default_grid/${z}/${x}/${y}.png', 
                     "abstract": thisRecord.get('Abstract'), 
                     "visibility": true, 
                     "queryable": true, 
@@ -1119,14 +1120,20 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                     "llbbox": layer_bbox,
                     "source": key,
                     "buffer": 0,
-                    "tiled": true
+                    "tiled": true,
+                    "local": thisRecord.get('ServiceType') === 'WM'
                 };
+
+                if(layer.local){
+                    layer.url = thisRecord.get('LayerUrl');
+                };
+
                 var record = source.createLayerRecord(layer);
                 record.selected = true;
                 // record.data.detail_url = thisRecord.get('LayerUrl').indexOf('worldmap.harvard.edu') > -1 ? 
                 //         '/data/' + thisRecord.get('LayerName') : 
                 //         this.mapproxy_backend + JSON.parse(thisRecord.get('Location')).layerInfoPage;
-                record.data.detail_url = this.mapproxy_backend + JSON.parse(thisRecord.get('Location')).layerInfoPage;
+                record.data.detail_url = layer_detail_url;
 
                 if (record) {
                     if (record.get("group") === "background") {

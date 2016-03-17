@@ -12,7 +12,7 @@ GeoNode.BoundingBoxWidget = Ext.extend(Ext.util.Observable, {
     isEnabled: false,
     useGxpViewer: false,
 
-    gwcBackend: '/geoserver/gwc/service/gmaps/',
+    gwcBackend: 'http://hh.worldmap.harvard.edu/layer/',
 
     layers: {},
 
@@ -50,14 +50,14 @@ GeoNode.BoundingBoxWidget = Ext.extend(Ext.util.Observable, {
                 hideBBox: function(bbox){
                     self.hideLayerBBox();
                 },
-                showPreviewLayer: function(typename, bbox){
-                    self.showPreviewLayer(typename, bbox);
+                showPreviewLayer: function(typename,layerId){
+                    self.showPreviewLayer(typename, layerId);
                 },
                 hidePreviewLayer: function(){
                     self.hidePreviewLayer();
                 },
-                showLayer: function(typename){
-                    self.showLayer(typename);
+                showLayer: function(typename, layerId){
+                    self.showLayer(typename, layerId);
                 },
                 hideLayer: function(typename){
                     self.hideLayer(typename);
@@ -338,9 +338,9 @@ GeoNode.BoundingBoxWidget = Ext.extend(Ext.util.Observable, {
         }
     },
 
-    showPreviewLayer: function(typename, bbox){
+    showPreviewLayer: function(typename, layerId){
         var map = this.viewer.mapPanel.map;
-        var layer = this.createPreviewLayer(typename);
+        var layer = this.createPreviewLayer(typename, layerId);
         map.addLayer(layer);
     },
 
@@ -353,10 +353,10 @@ GeoNode.BoundingBoxWidget = Ext.extend(Ext.util.Observable, {
         };
     },
 
-    createPreviewLayer: function(typename){
+    createPreviewLayer: function(typename, layerId){
         var layer = new OpenLayers.Layer.OSM(
             typename,
-            this.gwcBackend+'?layers=' + typename +'&zoom=${z}&x=${x}&y=${y}&format=image/png8',
+            this.gwcBackend + layerId + '/map/wmts/' + typename.replace('geonode:', '')  + '/default_grid/${z}/${x}/${y}.png',
             {
                 isBaseLayer: false
             }
@@ -365,11 +365,11 @@ GeoNode.BoundingBoxWidget = Ext.extend(Ext.util.Observable, {
         return layer;
     },
 
-    getOrCreateLayer: function(typename){
+    getOrCreateLayer: function(typename, layerId){
         if(!this.layers.hasOwnProperty(typename)){
             var layer = new OpenLayers.Layer.OSM(
                 typename,
-                this.gwcBackend+'?layers=' + typename +'&zoom=${z}&x=${x}&y=${y}&format=image/png8',
+                this.gwcBackend + layerId + '/map/wmts/' + typename.replace('geonode:', '') + '/default_grid/${z}/${x}/${y}.png',
                 {
                     isBaseLayer: false
                 }
@@ -379,9 +379,9 @@ GeoNode.BoundingBoxWidget = Ext.extend(Ext.util.Observable, {
         return this.layers[typename];
     },
 
-    showLayer: function(typename){
+    showLayer: function(typename, layerId){
         var map = this.viewer.mapPanel.map;
-        var layer = this.getOrCreateLayer(typename);
+        var layer = this.getOrCreateLayer(typename, layerId);
         map.addLayer(layer);
     },
 
