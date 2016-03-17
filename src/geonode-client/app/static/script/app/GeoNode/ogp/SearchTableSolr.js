@@ -409,12 +409,7 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
             triggerAction: 'all',
             editable: false,
             forceSelection: true,
-            value: '',
-            listeners:{
-                change: function(scope, checked){
-                    self.updateQuery();
-                }
-            }
+            value: ''
         });
 
 
