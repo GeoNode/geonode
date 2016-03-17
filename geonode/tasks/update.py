@@ -99,7 +99,7 @@ def layer_metadata(layer_list,flood_year,flood_year_probability):
     f = open(fh_err_log,'w')
     for layer in layer_list:
         fh_style_update(layer,f)
-        fh_perms_update(layer,f)
+        #fh_perms_update(layer,f)
 
         map_resolution = ''
         first_half = ''
