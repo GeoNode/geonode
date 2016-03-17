@@ -252,7 +252,7 @@ def registration_part_two(request):
                     if 'success' not in out:
                         request_profile, letter = update_datarequest_obj(
                             datarequest=  request.session['request_object'],
-                            parameter_dict = form.cleaned_data,
+                            parameter_dict = form.clean(),
                             request_letter = request.session['request_letter'],
                             interest_layer = interest_layer
                         )
@@ -261,7 +261,7 @@ def registration_part_two(request):
                         if out['success']:
                             request_profile, letter = update_datarequest_obj(
                                 datarequest=  request.session['request_object'],
-                                parameter_dict = form.cleaned_data,
+                                parameter_dict = form.clean(),
                                 request_letter = request.session['request_letter'],
                                 interest_layer = interest_layer
                             )
@@ -540,35 +540,29 @@ def data_request_profile_approve(request, pk):
         request_profile = get_object_or_404(DataRequestProfile, pk=pk)
         if not request_profile.date:
             raise Http404
-        try:
-            is_new_acc=True
-            if not request_profile.profile:
-                request_profile.create_account() #creates account in AD if AD profile does not exist
-            else:
-                is_new_acc = False
-            
-            
-            
+        
+        result = True
+        message = ''
+        is_new_acc=True
+        
+        if request_profile.profile:
+            result, message = result request_profile.create_account() #creates account in AD if AD profile does not exist
+        else:
+            is_new_acc = False
+        
+        if not result:
+            messages.error (request, _(message))
+        else:       
             if request_profile.jurisdiction_shapefile:
                 request_profile.assign_jurisdiction() #assigns/creates jurisdiction object 
             else:
                 try:
-                    UserJurisdiction.objects.get(user=request_profile.profile).delete()
+                    UserJurisdiction.objects.get(user=request_profile.profile).jurisdiction_shapefile = None
                 except ObjectDoesNotExist as e:
                     pprint("Jurisdiction Shapefile not found, nothing to delete. Carry on")
-                
-            request_profile.create_directory()
-            
-            request_profile.set_approved(is_new_acc)
-            
-            request_profile.administrator = request.user
-            request_profile.save()
-            return HttpResponseRedirect(request_profile.get_absolute_url())
-        except Exception as e:
-            import traceback
-            message = _('An unexpected error was encountered during the creation of the account.\n'+  traceback.format_exc() )
-            messages.error(request, message)
-            return HttpResponseRedirect(request_profile.get_absolute_url())
+                    
+        return HttpResponseRedirect(request_profile.get_absolute_url())
+        
     else:
         return HttpResponseRedirect("/forbidden/")
 
@@ -596,12 +590,6 @@ def data_request_facet_count(request):
             request_status='rejected').count(),
         'cancelled': DataRequestProfile.objects.filter(
             request_status='cancelled').exclude(date=None).count(),
-        'commercial': DataRequestProfile.objects.filter(
-            requester_type='commercial').exclude(date=None).count(),
-        'noncommercial': DataRequestProfile.objects.filter(
-            requester_type='noncommercial').exclude(date=None).count(),
-        'academe': DataRequestProfile.objects.filter(
-            requester_type='academe').exclude(date=None).count(),
     }
 
     return HttpResponse(
@@ -617,7 +605,12 @@ def update_datarequest_obj(datarequest=None, parameter_dict=None, interest_layer
     ### Updating the other fields of the request
     datarequest.project_summary = parameter_dict['project_summary']
     datarequest.data_type_requested = parameter_dict['data_type_requested']
-    datarequest.purpose = parameter_dict['purpose']
+    
+    if parameter_dict['purpose']  == 'other':
+        datarequest.purpose = parameter_dict['purpose_other']
+    else:
+        datarequest.purpose = parameter_dict['purpose']
+        
     datarequest.intended_use_of_dataset = parameter_dict['intended_use_of_dataset']
     datarequest.organization_type = parameter_dict['organization_type']
     datarequest.request_level = parameter_dict['request_level']
