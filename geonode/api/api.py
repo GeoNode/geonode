@@ -338,9 +338,6 @@ class DataRequestProfileResource(ModelResource):
     def dehydrate_org_type(self, bundle):
         return bundle.obj.get_organization_type_display()
 
-    def dehydrate_req_type(self, bundle):
-        return bundle.obj.get_requester_type_display()
-
     def dehydrate_rejection_reason(self, bundle):
         return bundle.obj.rejection_reason
 

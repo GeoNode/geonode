@@ -131,11 +131,11 @@ class DataRequestDetailsForm(forms.ModelForm):
     
     ORGANIZATION_TYPE_CHOICES = Choices(
         (2, _( 'Government Agency')),
-        (4, _('Academe')),
-        (5, _( 'International NGO')),
-        (6, _('Local NGO')),
-        (7, _('Private Insitution' )),
-        (8, _('Other' )),
+        (3, _('Academe')),
+        (4, _( 'International NGO')),
+        (5, _('Local NGO')),
+        (6, _('Private Insitution' )),
+        (7, _('Other' )),
     )
 
     REQUEST_LEVEL_CHOICES = Choices(
@@ -194,6 +194,10 @@ class DataRequestDetailsForm(forms.ModelForm):
             Div(
                Field('data_type_requested', css_class='form-control'),
                css_class='form-group'
+            ),
+            Div(
+                Field('intended_use_of_dataset', css_class='form-control'),
+                css_class='form-group'
             ),
             Fieldset('Non-commercial',
                 Div(
@@ -283,12 +287,11 @@ class DataRequestProfileShapefileForm(NewLayerUploadForm):
         (0, _('Phil-LiDAR 1 SUC')),
         (1, _('Phil-LiDAR 2 SUC' )),
         (2, _( 'Government Agency')),
-        (3, _( 'Academic/Research Institution' )),
-        (4, _('Academe')),
-        (5, _( 'International NGO')),
-        (6, _('Local NGO')),
-        (7, _('Private Insitution' )),
-        (8, _('Other' )),
+        (3, _('Academe')),
+        (4, _( 'International NGO')),
+        (5, _('Local NGO')),
+        (6, _('Private Insitution' )),
+        (7, _('Other' )),
     )
 
     DATASET_USE_CHOICES =Choices(
@@ -367,6 +370,9 @@ class DataRequestProfileShapefileForm(NewLayerUploadForm):
         if cleaned['base_file']:
             cleaned = super(NewLayerUploadForm, self).clean()
             
+        cleaned[ 'purpose'] = self.clean_purpose()
+        cleaned['purpose_other'] = self.clean_purpose_other()
+        
         return cleaned
 
     def clean_purpose_other(self):
