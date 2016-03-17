@@ -107,8 +107,13 @@ def layer_metadata(layer_list,flood_year,flood_year_probability):
     for layer in layer_list:
         print "Layer: %s" % layer.name
         fh_style_update(layer,f)
-        fh_perms_update(layer,f)
-
+        """
+            IMPORTANT NOTE:
+            Commenting assigning public permission to FHMs
+            because it triggers geoserver permission issue!
+        """
+        #fh_perms_update(layer,f)
+        
         map_resolution = ''
         first_half = ''
         second_half = ''
@@ -212,7 +217,7 @@ def ceph_metadata_update(uploaded_objects_list, update_grid=True):
     logger.info("Encoding {0} ceph data objects".format(len(uploaded_objects_list)))
     for ceph_obj_metadata in uploaded_objects_list:
         metadata_list = ceph_obj_metadata.split(csv_delimiter)
-        logger.info("-> {0}".format(ceph_obj_metadata))
+        #logger.info("-> {0}".format(ceph_obj_metadata))
         # Check if metadata list is valid
         if len(metadata_list) is 6:
             #try:
@@ -327,6 +332,7 @@ def grid_feature_update(gridref_dict_by_data_class, field_value=1):
     for feature_attr, grid_ref_list in gridref_dict_by_data_class.iteritems():
         logger.info("Updating feature attribute [{0}]".format(feature_attr))
         nested_grid_update(grid_ref_list, feature_attr, field_value)
+        logger.info("Finished task for feature [{0}]".format(feature_attr))
 
 @task(name='geonode.tasks.update.geoserver_update_layers', queue='update')
 def geoserver_update_layers(*args, **kwargs):
