@@ -159,7 +159,11 @@ var init = function() {
             	actionTarget:   {target: "paneltbar", index: 20}
             }{% endif %}
             ],
+            {% if DEBUG %}
             proxy: "/proxy/?url=",
+            {% else %}
+            proxy: "",
+            {% endif %}
 
         /* The URL to a REST map configuration service.  This service
          * provides listing and, with an authenticated user, saving of
