@@ -64,7 +64,7 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
                 {name: 'ServiceType', type: 'string'},
                 {name: 'LayerUsername', type: 'string'},
                 {name: 'Is_Public', type: 'string'},
-                {name: 'LayerDateType', type: 'string'} 
+                {name: 'LayerDateType', type: 'string'}
             ]
         });
         this.searchStore.on('load', function() {
@@ -323,10 +323,10 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
                 sortBy: 'LayerTitle',
                 renderer: function(value, metadata, record, rowIndex, colIndex, store){
                     var the_abstract = app.layerTree.replaceURLWithHTMLLinks(record.get('Abstract'));
-                    metadata.attr = 
-                        'ext:qtip="' + record.get('Originator') + 
-                        '<br/><h3 style=\'display:inline;\'>Abstract</h3>: ' + 
-                        the_abstract.substring(0, 250) + 
+                    metadata.attr =
+                        'ext:qtip="' + record.get('Originator') +
+                        '<br/><h3 style=\'display:inline;\'>Abstract</h3>: ' +
+                        the_abstract.substring(0, 250) +
                         '<br/><h3 style=\'display:inline;\'>Date</h3>: ' + record.get('LayerDateType') + '"';
                     return record.get('Is_Public') ?  value : '<span class="unviewable-layer"></span>' + '  ' + value;
                 }
@@ -364,7 +364,7 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
                         emptyText: this.searchLabelText,
                         name: 'search',
                         allowBlank: true,
-                        width: 180,
+                        width: 100,
                         height: 25,
                         cls: 'search-bar'
                      });
@@ -378,17 +378,18 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
                         emptyText: this.originatorSearchLabelText,
                         name: 'search_originator',
                         allowBlank: true,
-                        width: 180,
+                        width: 100,
                         height: 25,
                         cls: 'search-bar'
         });
 
+
         this.dataTypeInput = new Ext.form.ComboBox({
             id: 'dataTypes',
             mode: 'local',
-            width: 120,
+            width: 130,
             height: 25,
-            cls: 'data-type',
+            cls: 'data-type layer-selection',
             store: new Ext.data.ArrayStore({
                 id: 0,
                 fields: [
@@ -419,7 +420,7 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
 
         var dateStartTextField = new Ext.form.TextField({
             name: 'startDate',
-            width: 80,
+            width: 160,
             height: 25,
             listeners: {
                 change: function(scope, newValue, oldValue){
@@ -438,7 +439,7 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
 
         var dateEndTextField = new Ext.form.TextField({
             name: 'endDate',
-            width: 80,
+            width: 160,
             listeners: {
                 change: function(scope, newValue, oldValue){
                     self.dateInput.valuesFromInput(1, newValue);
@@ -487,7 +488,7 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
              border: false,
              layout: 'table',
              layoutConfig: {
-                columns: 3,
+                columns: 4,
                 tableAttrs: {
                     style: {
                         width: '100%'
@@ -495,24 +496,24 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
                 }
             },
             defaults: {
-                bodyStyle:'border: 0px; padding: 10px;'
+                bodyStyle:'border: 0px; padding: 0 10px 10px 10px;'
             },
             items: [{
                 items: [
                     this.queryInput,
                     this.originatorInput,
+                    this.dataTypeInput, //dropdown
                     searchButton
                 ],
-                colspan: 3
+                colspan: 4
             },{
                 items: [
-                  this.dataTypeInput,
                   this.dateLabelPanel
                 ],
-                colspan: 3
+                colspan: 4
             },{
                 items: [this.dateInput],
-                colspan: 3
+                colspan: 4
             }]
          });
          searchForm.render(input_el);
@@ -587,7 +588,7 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
 
     getlayerTypename: function(record){
         return record.get('LayerName');
-    }, 
+    },
 
     getLayerID: function(record){
         return record.get('LayerId');

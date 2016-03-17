@@ -1024,7 +1024,8 @@ textarea {
 
 .x-form-field-wrap {
     position:relative;
-    left:0;top:0;
+    left:0;
+    top:0;
     text-align: left;
     zoom:1;
     white-space: nowrap;

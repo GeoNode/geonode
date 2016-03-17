@@ -970,8 +970,18 @@ td.x-grid3-hd-over .x-grid3-hd-inner, td.sort-desc .x-grid3-hd-inner, td.sort-as
 }
 
 .data-type{
-  float:left;
-  width: 140px;
+  /*float:left;*/
+  /*width: 140px;*/
+  height: 25px;
+}
+
+.x-form-field-wrap, .x-form-field-trigger-wrap, .x-trigger-wrap-focus {
+  margin-left: 230px;
+}
+
+.x-panel-body .x-panel-body-noheader .x-panel-body-noborder {
+  max-width: 884px;
+  max-height: 520px;
 }
 
 #search_controls{
@@ -979,11 +989,12 @@ td.x-grid3-hd-over .x-grid3-hd-inner, td.sort-desc .x-grid3-hd-inner, td.sort-as
 }
 
 .search-button {
-  margin-left: 20px;
+  margin-top:-29px;
+  margin-left: 400px;
 }
 
 .date-form{
-  margin-left: 56px;
+  margin-left: 25px;
 }
 
 .x-trigger-wrap-focus .x-form-trigger{
