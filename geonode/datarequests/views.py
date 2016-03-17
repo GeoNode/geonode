@@ -545,8 +545,8 @@ def data_request_profile_approve(request, pk):
         message = ''
         is_new_acc=True
         
-        if request_profile.profile:
-            result, message = result request_profile.create_account() #creates account in AD if AD profile does not exist
+        if not request_profile.profile or not request_profile.username or not request_profile.ftp_folder:
+            result, message = request_profile.create_account() #creates account in AD if AD profile does not exist
         else:
             is_new_acc = False
         
@@ -557,9 +557,14 @@ def data_request_profile_approve(request, pk):
                 request_profile.assign_jurisdiction() #assigns/creates jurisdiction object 
             else:
                 try:
-                    UserJurisdiction.objects.get(user=request_profile.profile).jurisdiction_shapefile = None
+                    uj = UserJurisdiction.objects.get(user=request_profile.profile)
+                    uj.jurisdiction_shapefile = None
+                    uj.save()
                 except ObjectDoesNotExist as e:
                     pprint("Jurisdiction Shapefile not found, nothing to delete. Carry on")
+            
+            request_profile.set_approved(is_new_acc)
+                    
                     
         return HttpResponseRedirect(request_profile.get_absolute_url())
         
