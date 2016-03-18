@@ -478,6 +478,13 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
         });
         searchButton.on('click', this.updateQuery, this);
 
+        var clearSearchLink = new Ext.Button({
+            text: "Clear Search", 
+            listeners: {
+                click: function(){self.clearSearch()}
+            }
+        });
+
         var searchForm = new Ext.Panel({
              frame: false,
              border: false,
@@ -498,7 +505,8 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
                     this.queryInput,
                     this.originatorInput,
                     this.dataTypeInput, //dropdown
-                    searchButton
+                    searchButton,
+                    clearSearchLink
                 ],
                 colspan: 4
             },{
@@ -587,5 +595,15 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
 
     getLayerID: function(record){
         return record.get('LayerId');
+    },
+
+    clearSearch: function(){
+        this.originatorInput.setValue('');
+        this.dataTypeInput.setValue('');
+        this.dateInput.setValue(0, this.dateInput.values[0]);
+        this.dateInput.setValue(1, this.dateInput.values[1]);
+        this.queryInput.setValue('');
+        delete this.table.store.sortInfo;
+        this.updateQuery();
     }
 });
