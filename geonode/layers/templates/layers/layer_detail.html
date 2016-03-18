@@ -175,6 +175,13 @@
     {% if GEOSERVER_BASE_URL %}
       {% get_obj_perms request.user for resource.layer as "layer_perms" %}
     {% endif %}
+
+    <li class="list-group-item"> 
+      <a href="{% url "layer_metadata_detail" resource.typename %}">
+        <button class="btn btn-primary btn-md btn-block">{% trans "Metadata Detail" %}</button> 
+      </a>    
+    </li>
+
     {% if "change_resourcebase_metadata" in perms_list or "change_resourcebase" in perms_list or "delete_resourcebase" in perms_list or "change_layer_style" in layer_perms %}
     <li class="list-group-item"> 
       <button class="btn btn-primary btn-md btn-block" data-toggle="modal" data-target="#edit-layer">{% trans "Edit Layer" %}</button>
