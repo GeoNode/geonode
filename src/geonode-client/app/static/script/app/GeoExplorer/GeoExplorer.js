@@ -1105,18 +1105,18 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                 };
                 var layer_detail_url = this.mapproxy_backend + JSON.parse(thisRecord.get('Location')).layerInfoPage;
                 var layer = {
-                    "styles": "", 
-                    "group": "General", 
-                    "name": thisRecord.get('LayerName'), 
-                    "title": thisRecord.get('LayerTitle'), 
-                    "url": layer_detail_url + 'map/wmts/' + typename.replace('geonode:', '') + '/default_grid/${z}/${x}/${y}.png', 
-                    "abstract": thisRecord.get('Abstract'), 
-                    "visibility": true, 
-                    "queryable": true, 
-                    "disabled": false, 
-                    "srs": thisRecord.get('SrsProjectionCode'), 
-                    "bbox": layer_bbox, 
-                    "transparent": true, 
+                    "styles": "",
+                    "group": "General",
+                    "name": thisRecord.get('LayerName'),
+                    "title": thisRecord.get('LayerTitle'),
+                    "url": layer_detail_url + 'map/wmts/' + typename.replace('geonode:', '') + '/default_grid/${z}/${x}/${y}.png',
+                    "abstract": thisRecord.get('Abstract'),
+                    "visibility": true,
+                    "queryable": true,
+                    "disabled": false,
+                    "srs": thisRecord.get('SrsProjectionCode'),
+                    "bbox": layer_bbox,
+                    "transparent": true,
                     "llbbox": layer_bbox,
                     "source": key,
                     "buffer": 0,
@@ -1130,8 +1130,8 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
 
                 var record = source.createLayerRecord(layer);
                 record.selected = true;
-                // record.data.detail_url = thisRecord.get('LayerUrl').indexOf('worldmap.harvard.edu') > -1 ? 
-                //         '/data/' + thisRecord.get('LayerName') : 
+                // record.data.detail_url = thisRecord.get('LayerUrl').indexOf('worldmap.harvard.edu') > -1 ?
+                //         '/data/' + thisRecord.get('LayerName') :
                 //         this.mapproxy_backend + JSON.parse(thisRecord.get('Location')).layerInfoPage;
                 record.data.detail_url = layer_detail_url;
 
@@ -1155,7 +1155,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                         geoEx.layerTree.overlayRoot.findDescendant("layer", record.getLayer()).select();
                     }
                 };
-            } 
+            }
             //else {
             //     //Not a local GeoNode layer, use source's standard method for creating the layer.
             //     var layer = records[i].get("name");
@@ -2233,11 +2233,12 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             title: "Search",
             closeAction: 'hide',
             layout: 'fit',
-            width: 900,
-            height: 580,
+            width: 870,
+            height: 570,
             items: [this.dataTabPanel],
             modal: true,
             autoScroll: true,
+            resizable: false,
             bodyStyle: 'background-color:#FFF'
         });
 
