@@ -86,7 +86,7 @@ def set_default_style_for_latlng_layer(geoserver_catalog, feature_type):
 
     msg('default saved')
     msg('sname: %s' % new_layer.default_style )
-    return True
+    return True, None
 
 
 
@@ -143,6 +143,10 @@ def set_style_for_new_join_layer(geoserver_catalog, feature_type, original_layer
     assert isinstance(feature_type, FeatureType)
     assert isinstance(original_layer, Layer)
 
+    # Ah...was the original good enough?
+    #return set_default_style_for_latlng_layer(geoserver_catalog, feature_type)
+
+
     # ----------------------------------------------------
     # Get the SLD from the original layer
     # ----------------------------------------------------
@@ -155,6 +159,7 @@ def set_style_for_new_join_layer(geoserver_catalog, feature_type, original_layer
         LOGGER.error(err_msg)
         return False, err_msg
 
+    #msg('orig layer style name: %s' % original_layer.default_style.name)
     original_sld = original_layer.default_style.sld_body
     if original_sld is None:
         err_msg = 'Failed to retrieve the SLD for the original_layer (id: %s)' % original_layer.id
@@ -164,6 +169,8 @@ def set_style_for_new_join_layer(geoserver_catalog, feature_type, original_layer
     # ----------------------------------------------------
     # Retrieve the new layer from the catalog
     # ----------------------------------------------------
+    #msg('feature_type.name: %s' % feature_type.name)
+
     new_layer = geoserver_catalog.get_layer(feature_type.name)
     if new_layer is None:
         err_msg = ('Failed to retrieve the Layer '
@@ -176,14 +183,15 @@ def set_style_for_new_join_layer(geoserver_catalog, feature_type, original_layer
     # Create a new style name and
     # use it in the original_sld string
     # ----------------------------------------------------
-    random_ext = get_random_chars(4)
-    new_layer_stylename = '%s_%s' % (feature_type.name, random_ext)
 
-    new_sld = update_sld_name(original_sld, new_layer_stylename)
+    new_sld = update_sld_name(original_sld, new_layer.name)
 
     # ----------------------------------------------------
     # Add this new style to the catalog
     # ----------------------------------------------------
+    random_ext = get_random_chars(4)
+    new_layer_stylename = '%s_%s' % (feature_type.name, random_ext)
+
     try:
         geoserver_catalog.create_style(new_layer_stylename, new_sld)
         msg('created!')

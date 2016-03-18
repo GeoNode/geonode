@@ -36,7 +36,7 @@ def standardize_table_name(tbl_name):
     if tbl_name[:1].isdigit():
         tbl_name = 't_' + tbl_name
 
-    tname = slugify(unicode(tbl_name)).replace('-', '_')[:9]
+    tname = slugify(unicode(tbl_name)).replace('-', '_')[:11]
     if tname.endswith('_'):
         return tname[:-1]
 

@@ -2,8 +2,9 @@
 
 def update_sld_name(sld_str, new_sld_name):
     """
-    Given an SLD (as a string), update the first two
-    instances of <sld:Name>
+    Given an SLD (as a string), update the first two instances of <sld:Name>
+
+    Note: The new_sld_name should be the Layer Name
     """
     if sld_str is None:
         return False, "The sld_str cannot be None"

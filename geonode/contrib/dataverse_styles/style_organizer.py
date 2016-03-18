@@ -75,6 +75,7 @@ class StyleOrganizer(object):
 
         # (3) Add new SLD to Layer
         #
+        #return self.add_new_sld_to_layer_orig(formatted_sld_object)
         return self.add_new_sld_to_layer(formatted_sld_object)
 
 
