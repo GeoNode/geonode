@@ -154,6 +154,12 @@ def qgis_server_post_save(instance, sender, **kwargs):
     template_items['layer_name'] = instance.name
     template_items['layer_source'] = qgis_layer.base_layer_path
 
+    # Bounding box
+    template_items['x_min'] = instance.resourcebase_ptr.bbox_x0
+    template_items['x_max'] = instance.resourcebase_ptr.bbox_x1
+    template_items['y_min'] = instance.resourcebase_ptr.bbox_y0
+    template_items['y_max'] = instance.resourcebase_ptr.bbox_y1
+
     # Render the QGIS project template
     qgis_project_xml = render_to_string('qgis_project.qgs', template_items)
 
