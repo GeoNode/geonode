@@ -166,44 +166,6 @@ def layers_metadata_update():
         total_layers = total_layers + len(layer_list)
         layer_metadata(layer_list,'100','1')
 
-@task(name='geonode.tasks.update.fh_style_update', queue='update')
-def fh_style_update():
-    cat = Catalog(settings.OGC_SERVER['default']['LOCATION'] + 'rest',
-                    username=settings.OGC_SERVER['default']['USER'],
-                    password=settings.OGC_SERVER['default']['PASSWORD'])
-
-    #layer_list = Layer.objects.filter(name__icontains='fh')
-    layer_list = Layer.objects.filter(name__icontains='fh').exclude(styles__name__icontains='fhm')#initial run of script includes all fhm layers for cleaning of styles in GN + GS
-    fhm_style = cat.get_style("fhm")
-    ctr = 1
-    for layer in layer_list:
-        print " {0} out of {1} layers. Will edit style of {2} ".format(ctr,len(layer_list),layer.name)
-        #delete thumbnail first because of permissions
-
-        print "Layer thumbnail url: %s " % layer.thumbnail_url
-        if "192" in settings.BASEURL:
-            url = "geonode"+layer.thumbnail_url #if on local
-            os.remove(url)
-        else:
-            url = "/var/www/geonode"+layer.thumbnail_url #if on lipad
-            os.remove(url)
-        gs_layer = cat.get_layer(layer.name)
-        gs_layer._set_default_style(fhm_style.name)
-        cat.save(gs_layer) #save in geoserver
-        layer.sld_body = fhm_style.sld_body
-        layer.save() #save in geonode
-        ctr+=1
-        try:
-            gs_style = cat.get_style(layer.name)
-            print "Geoserver: Will delete style %s " % gs_style.name
-            cat.delete(gs_style) #erase in geoserver the default layer_list
-            gn_style = Style.objects.get(name=layer.name)
-            print "Geonode: Will delete style %s " % gn_style.name
-            gn_style.delete()#erase in geonode
-        except:
-            "Error in %s" % layer.name
-            pass
-
 @task(name='geonode.tasks.update.ceph_metadata_update', queue='update')
 def ceph_metadata_update(uploaded_objects_list, update_grid=True):
     """
@@ -223,7 +185,7 @@ def ceph_metadata_update(uploaded_objects_list, update_grid=True):
     logger.info("Encoding {0} ceph data objects".format(len(uploaded_objects_list)))
     for ceph_obj_metadata in uploaded_objects_list:
         metadata_list = ceph_obj_metadata.split(csv_delimiter)
-        #logger.info("-> {0}".format(ceph_obj_metadata))
+        logger.info("-> {0}".format(ceph_obj_metadata))
         # Check if metadata list is valid
         if len(metadata_list) is 6:
             #try:
@@ -338,7 +300,6 @@ def grid_feature_update(gridref_dict_by_data_class, field_value=1):
     for feature_attr, grid_ref_list in gridref_dict_by_data_class.iteritems():
         logger.info("Updating feature attribute [{0}]".format(feature_attr))
         nested_grid_update(grid_ref_list, feature_attr, field_value)
-        logger.info("Finished task for feature [{0}]".format(feature_attr))
 
 @task(name='geonode.tasks.update.geoserver_update_layers', queue='update')
 def geoserver_update_layers(*args, **kwargs):
