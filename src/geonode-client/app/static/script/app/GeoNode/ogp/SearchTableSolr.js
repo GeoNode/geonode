@@ -229,7 +229,7 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
             }
         };
         var dates = this.dateInput.getDateValues();
-        if(dates){
+        if(dates != '[* TO *]'){
             GeoNode.queryTerms.fq.push("LayerDate:" + this.dateInput.getDateValues());
         };
 
@@ -353,7 +353,7 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
                 sortBy: 'LayerDate',
                 renderer: function(value, metaData, record, rowIndex, colIndex, store){
                     var date = new Date(record.get('LayerDate'));
-                    return date.getFullYear();
+                    return date.getFullYear() || 'No date';
                 }
             }
         ];
