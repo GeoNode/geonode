@@ -607,6 +607,7 @@ def update_datarequest_obj(datarequest=None, parameter_dict=None, interest_layer
     ### Updating the other fields of the request
     datarequest.project_summary = parameter_dict['project_summary']
     datarequest.data_type_requested = parameter_dict['data_type_requested']
+    
     if parameter_dict['purpose']  == 'other':
         datarequest.purpose = parameter_dict['purpose_other']
     else:
