@@ -176,8 +176,7 @@ def registration_part_two(request):
                             overwrite=False,
                             charset=form.cleaned_data["charset"],
                             abstract=form.cleaned_data["abstract"],
-                            title=form.cleaned_data["layer_title"]
-                            #default_style=Style.objects.get(sld_title="Boundary")
+                            title=form.cleaned_data["layer_title"],
                         )
                         saved_layer.is_published = False
                         saved_layer.save()
@@ -236,7 +235,7 @@ def registration_part_two(request):
                         if permissions is not None and len(permissions.keys()) > 0:
     
                             saved_layer.set_permissions(permissions)
-
+                        
                     finally:
                         if tempdir is not None:
                             shutil.rmtree(tempdir)
@@ -250,7 +249,7 @@ def registration_part_two(request):
                     if 'success' not in out:
                         request_profile, letter = update_datarequest_obj(
                             datarequest=  request.session['request_object'],
-                            parameter_dict = form.cleaned_data,
+                            parameter_dict = form.clean(),
                             request_letter = request.session['request_letter'],
                             interest_layer = interest_layer
                         )
@@ -259,7 +258,7 @@ def registration_part_two(request):
                         if out['success']:
                             request_profile, letter = update_datarequest_obj(
                                 datarequest=  request.session['request_object'],
-                                parameter_dict = form.cleaned_data,
+                                parameter_dict = form.clean(),
                                 request_letter = request.session['request_letter'],
                                 interest_layer = interest_layer
                             )
@@ -278,7 +277,7 @@ def registration_part_two(request):
         else:
             for e in form.errors.values():
                 errormsgs.extend([escape(v) for v in e])
-
+            out['success'] = False
             out['errors'] = form.errors
             pprint(out['errors'])
             out['errormsgs'] = errormsgs
@@ -593,12 +592,6 @@ def data_request_facet_count(request):
             request_status='rejected').count(),
         'cancelled': DataRequestProfile.objects.filter(
             request_status='cancelled').exclude(date=None).count(),
-        'commercial': DataRequestProfile.objects.filter(
-            requester_type='commercial').exclude(date=None).count(),
-        'noncommercial': DataRequestProfile.objects.filter(
-            requester_type='noncommercial').exclude(date=None).count(),
-        'academe': DataRequestProfile.objects.filter(
-            requester_type='academe').exclude(date=None).count(),
     }
 
     return HttpResponse(
@@ -614,9 +607,11 @@ def update_datarequest_obj(datarequest=None, parameter_dict=None, interest_layer
     ### Updating the other fields of the request
     datarequest.project_summary = parameter_dict['project_summary']
     datarequest.data_type_requested = parameter_dict['data_type_requested']
-    datarequest.purpose = parameter_dict['purpose']
-    datarequest.license_period = parameter_dict['license_period']
-    datarequest.has_subscription = parameter_dict['has_subscription']
+    if parameter_dict['purpose']  == 'other':
+        datarequest.purpose = parameter_dict['purpose_other']
+    else:
+        datarequest.purpose = parameter_dict['purpose']
+        
     datarequest.intended_use_of_dataset = parameter_dict['intended_use_of_dataset']
     datarequest.organization_type = parameter_dict['organization_type']
     datarequest.request_level = parameter_dict['request_level']

@@ -52,12 +52,11 @@ class UserRegistrationForm2(forms.Form):
     organization_type = forms.TypedChoiceField(
         label = "Type of Organization",
         choices = ((2, "Government Agency/Local Government Unit"),
-                   (3, "Academic or Research Institution"),
-                   (4, "Academe"),
-                   (5, "International NGO"),
-                   (6, "Local NGO"),
-                   (7, "Private"),
-                   (8, "Other"),),
+                   (3, "Academe"),
+                   (4, "International NGO"),
+                   (5, "Local NGO"),
+                   (6, "Private"),
+                   (7, "Other"),),
         
         required = True,
     )

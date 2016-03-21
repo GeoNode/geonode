@@ -108,14 +108,7 @@ class DataRequestProfile(TimeStampedModel):
         null=True,
         blank=True,
     )
-    requester_type = models.CharField(
-        _('Data Requester Type'),
-        choices=REQUESTER_TYPE_CHOICES,
-        default=REQUESTER_TYPE_CHOICES.commercial,
-        max_length=20,
-        null=True,
-        blank=True,
-    )
+
     first_name = models.CharField(_('First Name'), max_length=100)
     middle_name = models.CharField(_('Middle Name'), max_length=100)
     last_name = models.CharField(_('Last Name'), max_length=100)
@@ -136,7 +129,7 @@ class DataRequestProfile(TimeStampedModel):
     data_type_requested = models.CharField(
         _('Type of Data Requested'),
         choices=DATA_TYPE_CHOICES,
-        default=DATA_TYPE_CHOICES.interpreted,
+        default=DATA_TYPE_CHOICES.processed,
         max_length=15,
     )
     """
@@ -155,13 +148,6 @@ class DataRequestProfile(TimeStampedModel):
         help_text=_('pixels per inch'),
     )
     """
-    license_period = models.CharField(
-        _('Liense Period'),
-        max_length=50,
-    )
-    has_subscription = models.BooleanField(
-        _('Subscription/Maintenance?'),
-        default=False)
 
     purpose = models.TextField(_('Purpose of Data'))
     intended_use_of_dataset = models.CharField(
@@ -481,6 +467,8 @@ class DataRequestProfile(TimeStampedModel):
             add_to_ad_group(group_dn=settings.LIPAD_LDAP_GROUP_DN, user_dn=dn)
 
             profile = LDAPBackend().populate_user(uname)
+            profile.organization_type = self.organization_type
+            profile.save()
             if profile is None:
                 pprint("Account was not created")
                 raise Http404
