@@ -39,19 +39,17 @@ class OrganizationType(enum.Enum):
     PHIL_LIDAR_1 = 0
     PHIL_LIDAR_2 = 1
     GOVERNMENT_AGENCY = 2
-    ACADEMIC_OR_RESEARCH_INSTITUTION = 3
-    ACADEME = 4
-    NGO_INTERNATIONAL = 5
-    NGO_LOCAL = 6
-    PRIVATE = 7
-    OTHER = 8
+    ACADEME = 3
+    NGO_INTERNATIONAL = 4
+    NGO_LOCAL = 5
+    PRIVATE = 6
+    OTHER = 7
 
     
     labels = {
         PHIL_LIDAR_1 : 'Phil-LiDAR 1 SUC',
         PHIL_LIDAR_2 : 'Phil-LiDAR 2 SUC',
         GOVERNMENT_AGENCY : 'Government Agency',
-        ACADEMIC_OR_RESEARCH_INSTITUTION : 'Academic/Research Institution',
         ACADEME : 'Academe',
         NGO_INTERNATIONAL : 'International NGO',
         NGO_LOCAL : 'Local NGO',

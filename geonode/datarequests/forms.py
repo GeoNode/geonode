@@ -133,12 +133,11 @@ class DataRequestDetailsForm(forms.ModelForm):
         (0, _('Phil-LiDAR 1 SUC')),
         (1, _('Phil-LiDAR 2 SUC' )),
         (2, _( 'Government Agency')),
-        (3, _( 'Academic/Research Institution' )),
-        (4, _('Academe')),
-        (5, _( 'International NGO')),
-        (6, _('Local NGO')),
-        (7, _('Private Insitution' )),
-        (8, _('Other' )),
+        (3, _('Academe')),
+        (4, _( 'International NGO')),
+        (5, _('Local NGO')),
+        (6, _('Private Insitution' )),
+        (7, _('Other' )),
     )
 
     LICENSE_PERIOD_CHOICES = Choices(
@@ -151,16 +150,6 @@ class DataRequestDetailsForm(forms.ModelForm):
         ('institution', _('Institution')),
         ('faculty', _('Faculty')),
         ('student', _('Student')),
-    )
-    
-    license_period = forms.ChoiceField(
-        label=_('License Period'),
-        choices=LICENSE_PERIOD_CHOICES
-    )
-    
-    license_period_other = forms.IntegerField(
-        label=_(u'Your custom license period (in years)'),
-        required=False
     )
     
     purpose = forms.ChoiceField(
@@ -178,7 +167,6 @@ class DataRequestDetailsForm(forms.ModelForm):
         fields=(
             'project_summary',
             'data_type_requested',
-            'has_subscription',
             'intended_use_of_dataset',
 
             # Non-commercial requester field
@@ -215,15 +203,6 @@ class DataRequestDetailsForm(forms.ModelForm):
                Field('data_type_requested', css_class='form-control'),
                css_class='form-group'
             ),
-            Div(
-                Field('license_period', css_class='form-control'),
-                Div(
-                    Field('license_period_other', css_class='form-control'),
-                    css_class='col-sm-11 col-sm-offset-1'
-                ),
-                css_class='form-group'
-            ),
-            Field('has_subscription'),
             Div(
                 Field('intended_use_of_dataset', css_class='form-control'),
                 css_class='form-group'
@@ -316,12 +295,11 @@ class DataRequestProfileShapefileForm(NewLayerUploadForm):
         (0, _('Phil-LiDAR 1 SUC')),
         (1, _('Phil-LiDAR 2 SUC' )),
         (2, _( 'Government Agency')),
-        (3, _( 'Academic/Research Institution' )),
-        (4, _('Academe')),
-        (5, _( 'International NGO')),
-        (6, _('Local NGO')),
-        (7, _('Private Insitution' )),
-        (8, _('Other' )),
+        (3, _('Academe')),
+        (4, _( 'International NGO')),
+        (5, _('Local NGO')),
+        (6, _('Private Insitution' )),
+        (7, _('Other' )),
     )
 
     DATASET_USE_CHOICES =Choices(
@@ -372,20 +350,6 @@ class DataRequestProfileShapefileForm(NewLayerUploadForm):
         choices = DATA_TYPE_CHOICES,
     )
 
-    license_period = forms.ChoiceField(
-        label=_('License Period'),
-        choices=LICENSE_PERIOD_CHOICES
-    )
-
-    license_period_other = forms.IntegerField(
-        label=_(u'Your custom license period (in years)'),
-        required=False
-    )
-
-    has_subscription = forms.BooleanField(
-        required=False
-    )
-
     intended_use_of_dataset = forms.ChoiceField(
         label = _('Intended Use of Data Set'),
         choices = DATASET_USE_CHOICES,
@@ -420,6 +384,9 @@ class DataRequestProfileShapefileForm(NewLayerUploadForm):
         if cleaned['base_file']:
             cleaned = super(NewLayerUploadForm, self).clean()
             
+        cleaned[ 'purpose'] = self.clean_purpose()
+        cleaned['purpose_other'] = self.clean_purpose_other()
+        
         return cleaned
 
     def clean_purpose_other(self):
@@ -440,25 +407,6 @@ class DataRequestProfileShapefileForm(NewLayerUploadForm):
             else:
                 return purpose_other
         return purpose
-
-    def clean_license_period_other(self):
-        license_period = self.cleaned_data.get('license_period')
-        license_period_other = self.cleaned_data.get('license_period_other')
-        if license_period == self.LICENSE_PERIOD_CHOICES.other:
-            if not license_period_other:
-                raise forms.ValidationError(
-                    'Please input the license period.')
-        return license_period_other
-
-    def clean_license_period(self):
-        license_period = self.cleaned_data.get('license_period')
-        if license_period == self.LICENSE_PERIOD_CHOICES.other:
-            license_period_other = self.cleaned_data.get('license_period_other')
-            if not license_period_other:
-                return license_period
-            else:
-                return license_period_other
-        return license_period
 
     def clean_funding_source(self):
         funding_source = self.cleaned_data.get('funding_source')
