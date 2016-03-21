@@ -7,6 +7,9 @@ class DocumentAdminForm(ResourceBaseAdminForm):
 
     class Meta:
         model = Document
+        exclude = (
+            'resource',
+        )
 
 
 class DocumentAdmin(MediaTranslationAdmin):
