@@ -801,7 +801,6 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
 
         var addLayerButton = new Ext.Button({
             id: "worldmap_addlayers_button",
-            tooltip : this.addLayersButtonText,
             disabled: false,
             text: '<span class="x-btn-text">' + this.addLayersButtonText + '</span>',
             handler : this.showSearchWindow,

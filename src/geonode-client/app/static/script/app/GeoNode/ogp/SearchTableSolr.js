@@ -89,6 +89,12 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
                     clearTimeout(timeout);
                 });
             });
+
+            // use jquery to remove tooltip on mouseleave
+            $('.x-grid3-row').mouseleave(function(){
+                $('.x-tip').hide();
+                $('.x-shadow').hide();
+            });
         }, this);
 
         // hack to fix the sort term as solr is expecting it
