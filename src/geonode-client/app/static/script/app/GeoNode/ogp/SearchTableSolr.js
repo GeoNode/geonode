@@ -353,7 +353,7 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
                 sortBy: 'LayerDate',
                 renderer: function(value, metaData, record, rowIndex, colIndex, store){
                     var date = new Date(record.get('LayerDate'));
-                    return date.getFullYear() || 'No date';
+                    return date.getFullYear() || 'None';
                 }
             }
         ];
