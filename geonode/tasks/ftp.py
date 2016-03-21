@@ -237,7 +237,8 @@ def process_ftp_request(ftp_request, ceph_obj_list_by_data_class, srs_epsg_num=N
         Create the a new folder containing the data requested inside 
         Geostorage-FTP directory
     """
-    host_string='cephaccess@cephaccess.lan.dream.upd.edu.ph'
+    print "Processing [{0}]".format(ftp_request.name)
+    host_string=settings.CEPHACCESS_HOST
     #~ try:
         #~ result = execute(fab_create_ftp_folder, username, user_email, request_name, ceph_obj_list_by_data_class )
         #~ if isinstance(result.get(host_string, None), BaseException):
