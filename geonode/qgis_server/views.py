@@ -353,6 +353,9 @@ def wms(request):
     params = dict()
     for key, value in request.GET.iteritems():
         params[key] = value
+    # We need to replace 900913 with 3857. Deprecated in QGIS 2.14
+    if params.get('SRS') == 'EPSG:900913':
+        params['SRS'] = 'EPSG:3857'
     if params.get('SERVICE') == 'WMS':
         if params.get('REQUEST') == 'GetMap':
             return wms_get_map(params)
