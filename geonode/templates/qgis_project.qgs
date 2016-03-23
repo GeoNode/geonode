@@ -1,5 +1,5 @@
 <!DOCTYPE qgis PUBLIC 'http://mrcc.com/qgis.dtd' 'SYSTEM'>
-<qgis projectname="" version="2.13.0-Master">
+<qgis projectname="Geonode" version="2.14.0-Essen">
   <title>Geonode</title>
   <layer-tree-group expanded="1" checked="Qt::Checked" name="">
     <customproperties/>
@@ -11,10 +11,10 @@
   <mapcanvas>
     <units>degrees</units>
     <extent>
-      <xmin>-180</xmin>
-      <ymin>-90</ymin>
-      <xmax>180</xmax>
-      <ymax>90</ymax>
+      <xmin>{{ x_min }}</xmin>
+      <ymin>{{ y_min }}</ymin>
+      <xmax>{{ x_max }}</xmax>
+      <ymax>{{ y_max }}</ymax>
     </extent>
     <rotation>0</rotation>
     <projections>0</projections>
@@ -39,13 +39,13 @@
     </custom-order>
   </layer-tree-canvas>
   <legend updateDrawingOrder="true">
-    <legendlayer drawingOrder="-1" open="true" checked="Qt::Checked" name="Test test Polygon" showFeatureCount="0">
+    <legendlayer drawingOrder="-1" open="true" checked="Qt::Checked" name="{{ layer_name }}" showFeatureCount="0">
       <filegroup open="true" hidden="false">
         <legendlayerfile isInOverview="0" layerid="{{ layer_id }}" visible="1"/>
       </filegroup>
     </legendlayer>
   </legend>
-  <projectlayers>*
+  <projectlayers>
       <!-- Missing geometry -->
     <maplayer minimumScale="0" maximumScale="1e+08" simplifyDrawingHints="1" minLabelScale="0" maxLabelScale="1e+08" simplifyDrawingTol="1" simplifyMaxScale="1" type="{{ geometry_type }}" hasScaleBasedVisibilityFlag="0" simplifyLocal="1" scaleBasedLabelVisibilityFlag="0">
       <id>{{ layer_id }}</id>
@@ -77,8 +77,8 @@
       <map-layer-style-manager current="">
         <map-layer-style name=""/>
       </map-layer-style-manager>
-        {{ edittypes | safe }}
-        {{ renderer_v2 | safe }}
+      {{ edittypes | safe }}
+      {{ renderer_v2 | safe }}
       {{ labeling | safe }}
       {{ customproperties | safe }}
       {{ blendMode | safe }}
@@ -86,7 +86,7 @@
       {{ layerTransparency | safe }}
       {{ displayfield | safe }}
       {{ label | safe }}
-        {{ labelattributes | safe }}
+      {{ labelattributes | safe }}
       <annotationform></annotationform>
       <excludeAttributesWMS/>
       <excludeAttributesWFS/>
@@ -106,18 +106,48 @@
     </maplayer>
   </projectlayers>
   <properties>
-    <Measurement>
-      <DistanceUnits type="QString">meters</DistanceUnits>
-      <AreaUnits type="QString"></AreaUnits>
-    </Measurement>
-    <SpatialRefSys>
-      <ProjectCRSProj4String type="QString">+proj=longlat +datum=WGS84 +no_defs</ProjectCRSProj4String>
-      <ProjectCrs type="QString">EPSG:4326</ProjectCrs>
-      <ProjectCRSID type="int">3452</ProjectCRSID>
-    </SpatialRefSys>
+    <WMSContactPerson type="QString"></WMSContactPerson>
+    <Variables>
+      <variableNames type="QStringList"/>
+      <variableValues type="QStringList"/>
+    </Variables>
+    <WMSOnlineResource type="QString"></WMSOnlineResource>
+    <WMSUseLayerIDs type="bool">false</WMSUseLayerIDs>
+    <WMSContactOrganization type="QString"></WMSContactOrganization>
+    <WMSKeywordList type="QStringList">
+      <value></value>
+    </WMSKeywordList>
+    <WFSUrl type="QString"></WFSUrl>
     <Paths>
-      <Absolute type="bool">false</Absolute>
+      <Absolute type="bool">true</Absolute>
     </Paths>
+    <WMSServiceTitle type="QString"></WMSServiceTitle>
+    <WFSLayers type="QStringList">
+      <value>{{ layer_id }}</value>
+    </WFSLayers>
+    <WMSContactMail type="QString"></WMSContactMail>
+    <WMSRestrictedComposers type="QStringList"/>
+    <WMSRestrictedLayers type="QStringList"/>
+    <PositionPrecision>
+      <DecimalPlaces type="int">2</DecimalPlaces>
+      <Automatic type="bool">true</Automatic>
+      <DegreeFormat type="QString">MU</DegreeFormat>
+    </PositionPrecision>
+    <WCSUrl type="QString"></WCSUrl>
+    <WMSContactPhone type="QString"></WMSContactPhone>
+    <WMSServiceCapabilities type="bool">false</WMSServiceCapabilities>
+    <WMSServiceAbstract type="QString"></WMSServiceAbstract>
+    <WMSContactPosition type="QString"></WMSContactPosition>
+    <WMSAddWktGeometry type="bool">false</WMSAddWktGeometry>
+    <Measure>
+      <Ellipsoid type="QString">NONE</Ellipsoid>
+    </Measure>
+    <WMSPrecision type="QString">8</WMSPrecision>
+    <WFSTLayers>
+      <Insert type="QStringList"/>
+      <Update type="QStringList"/>
+      <Delete type="QStringList"/>
+    </WFSTLayers>
     <Gui>
       <SelectionColorBluePart type="int">0</SelectionColorBluePart>
       <CanvasColorGreenPart type="int">255</CanvasColorGreenPart>
@@ -128,18 +158,45 @@
       <CanvasColorBluePart type="int">255</CanvasColorBluePart>
     </Gui>
     <Digitizing>
-      <DefaultSnapToleranceUnit type="int">1</DefaultSnapToleranceUnit>
+      <DefaultSnapToleranceUnit type="int">2</DefaultSnapToleranceUnit>
       <SnappingMode type="QString">current_layer</SnappingMode>
       <DefaultSnapType type="QString">off</DefaultSnapType>
       <DefaultSnapTolerance type="double">0</DefaultSnapTolerance>
     </Digitizing>
-    <PositionPrecision>
-      <DecimalPlaces type="int">2</DecimalPlaces>
-      <Automatic type="bool">true</Automatic>
-    </PositionPrecision>
+    <WFSLayersPrecision>
+      <{{ layer_id }} type="int">8</{{ layer_id }}>
+    </WFSLayersPrecision>
+    <Identify>
+      <disabledLayers type="QStringList"/>
+    </Identify>
+    <Macros>
+      <pythonCode type="QString"></pythonCode>
+    </Macros>
+    <WMSAccessConstraints type="QString">None</WMSAccessConstraints>
+    <WCSLayers type="QStringList"/>
     <Legend>
       <filterByMap type="bool">false</filterByMap>
     </Legend>
+    <SpatialRefSys>
+      <ProjectCRSProj4String type="QString">+proj=longlat +datum=WGS84 +no_defs</ProjectCRSProj4String>
+      <ProjectCrs type="QString">EPSG:4326</ProjectCrs>
+      <ProjectCRSID type="int">3452</ProjectCRSID>
+    </SpatialRefSys>
+    <DefaultStyles>
+      <Fill type="QString"></Fill>
+      <Line type="QString"></Line>
+      <Marker type="QString"></Marker>
+      <RandomColors type="bool">true</RandomColors>
+      <AlphaInt type="int">255</AlphaInt>
+      <ColorRamp type="QString"></ColorRamp>
+    </DefaultStyles>
+    <WMSFees type="QString">conditions unknown</WMSFees>
+    <WMSImageQuality type="int">90</WMSImageQuality>
+    <Measurement>
+      <DistanceUnits type="QString">meters</DistanceUnits>
+      <AreaUnits type="QString">m2</AreaUnits>
+    </Measurement>
+    <WMSUrl type="QString"></WMSUrl>
   </properties>
   <visibility-presets/>
 </qgis>

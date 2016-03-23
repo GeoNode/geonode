@@ -44,7 +44,7 @@ define(function (require, exports) {
      *  @returns string 
      */
     LayerInfo.safeSelector = function (name) {
-        return name.replace(/\[|\]|\(|\)/g, '_');
+        return name.replace(/\[|\]|\(|\)|./g, '_');
     };
 
     /** Function to return the success template  

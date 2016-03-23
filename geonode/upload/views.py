@@ -522,7 +522,21 @@ _pages = {
     'tif': ('run', 'final'),
     'kml': ('run', 'final'),
     'csv': ('csv', 'time', 'run', 'final'),
-    'geojson': ('run', 'final')
+    'geojson': ('run', 'final'),
+    'ntf': ('run', 'final'),  # NITF
+    'img': ('run', 'final'),  # ERDAS Imagine
+    'i41': ('run', 'final'),  # CIB01 RPF
+    'i21': ('run', 'final'),  # CIB05 RPF
+    'i11': ('run', 'final'),  # CIB10 RPF
+    'gn1': ('run', 'final'),  # GNC RPF
+    'jn1': ('run', 'final'),  # JNC RPF
+    'on1': ('run', 'final'),  # ONC RPF
+    'tp1': ('run', 'final'),  # TPC RPF
+    'ja1': ('run', 'final'),  # JOG RPF
+    'tc1': ('run', 'final'),  # TLM100 RPF
+    'tl1': ('run', 'final'),  # TLM50 RPF
+    'jp2': ('run', 'final'),  # JPEG2000 MrSID
+    'sid': ('run', 'final'),  # MrSID
 }
 
 if not _ALLOW_TIME_STEP:

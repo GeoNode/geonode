@@ -13,9 +13,11 @@
 # Translators:
 # Translators:
 # Translators:
+# Translators:
 # Andres Alfonso Lemon Gomez <lemon.andres@gmail.com>, 2014
 # barbara angerer <barbara.angerer@student.tugraz.at>, 2013
 # barbara angerer <barbara.angerer@student.tugraz.at>, 2013
+# Florian Hoedt <gannebamm@gmail.com>, 2015
 # Frank Gasdorf, 2013
 # Frank Gasdorf, 2013-2014
 # Hermann Schwarting <hfs@gmx.de>, 2012
@@ -32,8 +34,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-09-22 03:42-0500\n"
-"PO-Revision-Date: 2015-09-22 08:17+0000\n"
+"POT-Creation-Date: 2015-10-29 04:21-0500\n"
+"PO-Revision-Date: 2015-10-29 09:05+0000\n"
 "Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
 "Language-Team: German (http://www.transifex.com/geonode/geonode/language/"
 "de/)\n"
@@ -43,11 +45,11 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: utils.py:44
+#: utils.py:43
 msgid "Invalid permission level."
 msgstr "Ungültige Berechtigungsstufe."
 
-#: utils.py:494
+#: utils.py:496
 msgid "Permission Denied"
 msgstr "Zugriff verweigert"
 
@@ -77,7 +79,7 @@ msgstr ""
 
 #: base/enumerations.py:33
 msgid "non-geographic data"
-msgstr "Nicht Geographische Daten"
+msgstr "Nicht räumliche Daten"
 
 #: base/enumerations.py:34
 msgid "property type"
@@ -169,7 +171,8 @@ msgstr "Keine Information angegeben"
 
 #: base/forms.py:43 base/templates/base/resourcebase_info_panel.html:62
 #: documents/templates/documents/document_metadata.html:65
-#: layers/templates/layers/layer_metadata.html:71
+#: layers/templates/layers/layer_metadata.html:70
+#: layers/templates/upload/layer_upload.html:89
 #: maps/templates/maps/map_metadata.html:61
 msgid "Category"
 msgstr "Kategorie"
@@ -178,7 +181,7 @@ msgstr "Kategorie"
 msgid "Category is required."
 msgstr "Kategorie erforderlich."
 
-#: base/forms.py:105 groups/models.py:45 people/forms.py:82
+#: base/forms.py:114 groups/models.py:45 people/forms.py:82
 msgid "A space or comma-separated list of keywords"
 msgstr "Eine durch Leerzeichen oder Kommas getrennte Stichwortliste"
 
@@ -414,7 +417,7 @@ msgstr "CSW WKT Geometrie"
 
 #: base/models.py:332
 msgid "Featured"
-msgstr ""
+msgstr "Vorgestellt"
 
 #: base/models.py:333
 msgid "Should this resource be advertised in home page?"
@@ -422,7 +425,7 @@ msgstr "Sollte diese Ressource in Startseite beworben werden?"
 
 #: base/models.py:334
 msgid "Is Published"
-msgstr ""
+msgstr "wurde veröffentlicht"
 
 #: base/models.py:335
 msgid "Should this resource be published and searchable?"
@@ -481,7 +484,7 @@ msgstr "Titel"
 #: base/templates/base/resourcebase_info_panel.html:11
 #: base/templates/base/resourcebase_info_panel.html:103
 msgid "SRID"
-msgstr ""
+msgstr "SRID"
 
 #: base/templates/base/resourcebase_info_panel.html:29 services/forms.py:29
 msgid "Abstract"
@@ -511,7 +514,7 @@ msgstr "Regionen"
 
 #: base/templates/base/resourcebase_info_panel.html:95
 msgid "More info"
-msgstr ""
+msgstr "mehr Informationen"
 
 #: base/templates/base/resourcebase_info_panel.html:121
 msgid "Maintenance Frequency"
@@ -560,11 +563,11 @@ msgstr "Höhe"
 
 #: contrib/exif/templates/exif/_exif_document_detail.html:9
 msgid "Make"
-msgstr ""
+msgstr "Erstellen"
 
 #: contrib/exif/templates/exif/_exif_document_detail.html:11
 msgid "Model"
-msgstr ""
+msgstr "Model"
 
 #: contrib/exif/templates/exif/_exif_document_detail.html:15
 #: layers/templates/upload/layer_upload_csv.html:24
@@ -574,7 +577,7 @@ msgstr "Breite"
 #: contrib/exif/templates/exif/_exif_document_detail.html:16
 #: contrib/exif/templates/exif/_exif_document_detail.html:18
 msgid "Not specified"
-msgstr ""
+msgstr "nicht spezifiziert"
 
 #: contrib/exif/templates/exif/_exif_document_detail.html:17
 #: layers/templates/upload/layer_upload_csv.html:37
@@ -583,36 +586,36 @@ msgstr "Länge"
 
 #: contrib/exif/templates/exif/_exif_document_detail.html:19
 msgid "Flash"
-msgstr ""
+msgstr "Flash"
 
 #: contrib/exif/templates/exif/_exif_document_detail.html:20
 msgid "True"
-msgstr ""
+msgstr "wahr"
 
 #: contrib/exif/templates/exif/_exif_document_detail.html:20
 msgid "False"
-msgstr ""
+msgstr "falsch"
 
 #: contrib/exif/templates/exif/_exif_document_detail.html:21
 msgid "Speed Rating"
-msgstr ""
+msgstr "Bewertung der Geschwindigkeit"
 
 #: contrib/favorite/readme.txt:38
 #: contrib/favorite/templates/favorite/_favorite.html:5
 msgid "Favorite"
-msgstr ""
+msgstr "Favourit"
 
 #: contrib/favorite/readme.txt:68 contrib/favorite/readme.txt.py:76
 msgid "Favorites"
-msgstr ""
+msgstr "Favouriten"
 
 #: contrib/favorite/templates/favorite/_favorite.html:17
 msgid "Log in to add/delete Favorites."
-msgstr ""
+msgstr "Melden Sie sich an um Favouriten hinzuzufügen/ zu löschen"
 
 #: contrib/favorite/templates/favorite/_favorite_js.html:23
 msgid "Delete from Favorites"
-msgstr ""
+msgstr "Aus Favouriten entfernen"
 
 #: contrib/favorite/templates/favorite/_favorite_js.html:26
 msgid "Add to Favorites"
@@ -620,7 +623,7 @@ msgstr "Add to Favorites"
 
 #: contrib/favorite/templates/favorite/favorite_list.html:8
 msgid "Favorites for"
-msgstr ""
+msgstr "Favouriten für"
 
 #: contrib/geosites/views.py:106 geoserver/views.py:422 geoserver/views.py:477
 msgid "Bad HTTP Authorization Credentials."
@@ -734,23 +737,23 @@ msgstr ""
 msgid "See users"
 msgstr "Benutzer sehen"
 
-#: documents/forms.py:92 documents/forms.py:160
+#: documents/forms.py:96 documents/forms.py:164
 msgid "Document must be a file or url."
 msgstr "Dokument eine Datei oder URL sein."
 
-#: documents/forms.py:96 documents/forms.py:164
+#: documents/forms.py:100 documents/forms.py:168
 msgid "A document cannot have both a file and a url."
 msgstr "Ein Dokument kann nicht beides haben eine Datei und einen URL."
 
-#: documents/forms.py:109 documents/forms.py:177
+#: documents/forms.py:113 documents/forms.py:181
 msgid "This file type is not allowed"
 msgstr "Dieser Dateityp ist nicht erlaubt"
 
-#: documents/forms.py:127
+#: documents/forms.py:131
 msgid "Link to"
 msgstr "Link zu"
 
-#: documents/forms.py:149
+#: documents/forms.py:153
 msgid "Permissions must be valid JSON."
 msgstr "Berechtigungen müssen gültige JSON sein."
 
@@ -795,13 +798,13 @@ msgstr "Sie sind nicht berechtigt, dieses Dokument zu sehen."
 msgid "You are not allowed to edit this document."
 msgstr "Sie sind nicht berechtigt, dieses Dokument zu bearbeiten."
 
-#: documents/views.py:328 layers/views.py:363
+#: documents/views.py:328 layers/views.py:358
 msgid "You must set a point of contact for this resource"
-msgstr ""
+msgstr "Sie müssen für diese Ressource einen Kontakt festlegen"
 
-#: documents/views.py:343 layers/views.py:378
+#: documents/views.py:343 layers/views.py:373
 msgid "You must set an author for this resource"
-msgstr ""
+msgstr "Sie müssen für diese Ressource einen Autor festlegen"
 
 #: documents/management/__init__.py:14
 msgid "Document Created"
@@ -945,7 +948,7 @@ msgstr "Diese Dokument mit keiner Karte und keinem Layer verwandt"
 #: groups/templates/groups/group_detail.html:70
 #: layers/templates/layers/layer_detail.html:334
 #: layers/templates/layers/layer_replace.html:94
-#: layers/templates/upload/layer_upload.html:93
+#: layers/templates/upload/layer_upload.html:112
 #: maps/templates/maps/map_detail.html:178 people/admin.py:55
 msgid "Permissions"
 msgstr "Berechtigungen"
@@ -1006,28 +1009,36 @@ msgstr "Aktualisieren"
 msgid "Metadata Provider"
 msgstr "Metadaten-Quelle"
 
-#: documents/templates/documents/document_remove.html:11
+#: documents/templates/documents/document_remove.html:4
+#: maps/templates/maps/map_remove.html:6
+msgid "Deleting"
+msgstr "Lösche"
+
+#: documents/templates/documents/document_remove.html:8
+msgid "Remove Document"
+msgstr ""
+
+#: documents/templates/documents/document_remove.html:13
 #, python-format
 msgid ""
 "\n"
-"          Are you sure you want to remove %(document_title)s?\n"
+"          Are you sure you want to remove <a href="
+"\"%(document.get_absolute_url)s\">%(document_title)s</a>?\n"
 "        "
 msgstr ""
-"\n"
-"Sind Sie sich sicher, dass sie %(document_title)s entfernen möchten?"
 
-#: documents/templates/documents/document_remove.html:18
+#: documents/templates/documents/document_remove.html:20
 #: groups/templates/groups/group_remove.html:19
 #: layers/templates/layers/layer_remove.html:22
-#: maps/templates/maps/map_remove.html:19
+#: maps/templates/maps/map_remove.html:22
 #: services/templates/services/service_remove.html:17
 msgid "Yes, I am sure"
 msgstr "Ja, ich bin sicher"
 
-#: documents/templates/documents/document_remove.html:19
+#: documents/templates/documents/document_remove.html:21
 #: groups/templates/groups/group_remove.html:20
 #: layers/templates/layers/layer_remove.html:23
-#: maps/templates/maps/map_remove.html:20
+#: maps/templates/maps/map_remove.html:23
 #: services/templates/services/service_remove.html:18
 msgid "No, don't remove it"
 msgstr "Nein, nicht löschen"
@@ -1043,7 +1054,7 @@ msgstr "Ersetz"
 
 #: documents/templates/documents/document_replace.html:27
 #: layers/templates/layers/layer_replace.html:84
-#: layers/templates/upload/layer_upload.html:86
+#: layers/templates/upload/layer_upload.html:105
 msgid "Clear"
 msgstr "Löschen"
 
@@ -1051,11 +1062,11 @@ msgstr "Löschen"
 msgid "Upload Document"
 msgstr "Dokument hochladen"
 
-#: geoserver/helpers.py:974
+#: geoserver/helpers.py:987
 msgid "An exception occurred loading data to PostGIS"
 msgstr "Eine Fehler ist aufgetreten beim Laden der Daten nach PostGIS"
 
-#: geoserver/helpers.py:979
+#: geoserver/helpers.py:992
 msgid " Additionally an error occured during database cleanup"
 msgstr "Während der Datenbankbereinigung ist ein Fehler aufgetreten"
 
@@ -1095,7 +1106,7 @@ msgstr "PDF"
 msgid "PNG"
 msgstr "PNG"
 
-#: geoserver/signals.py:293
+#: geoserver/signals.py:294
 msgid "Could not create a download link for layer."
 msgstr "Einen Download-Link für die Schicht konnte nicht erstellt werden."
 
@@ -1178,7 +1189,7 @@ msgstr ""
 
 #: groups/models.py:36
 msgid "Logo"
-msgstr ""
+msgstr "Logo"
 
 #: groups/models.py:37 layers/templates/layers/layer_detail.html:60
 #: layers/templates/layers/layer_metadata.html:91
@@ -1193,7 +1204,7 @@ msgstr "Email"
 
 #: groups/models.py:48
 msgid "Access"
-msgstr ""
+msgstr "Zugriff"
 
 #: groups/models.py:188 groups/models.py:207
 #: groups/templates/groups/group_members.html:28
@@ -1601,19 +1612,19 @@ msgstr "Sie sind nicht berechtigt, die Metadaten dieser Ebene zu ändern"
 msgid "You are not permitted to view this layer"
 msgstr "Sie sind nicht berechtigt, diese Ebene anzusehen"
 
-#: layers/views.py:488
+#: layers/views.py:486
 msgid "You are attempting to replace a vector layer with a raster."
 msgstr "Sie haben versucht, eine Vektorebene mit einem Raster zu ersetzen."
 
-#: layers/views.py:491
+#: layers/views.py:489
 msgid "You are attempting to replace a raster layer with a vector."
 msgstr "Sie haben versucht, eine Rasterebene mit einem Vektor zu ersetzen."
 
-#: layers/views.py:547
+#: layers/views.py:545
 msgid "Unable to delete layer"
 msgstr "Ebene kann nicht gelöscht werden"
 
-#: layers/views.py:550
+#: layers/views.py:548
 msgid ""
 "This layer is a member of a layer group, you must remove the layer from the "
 "group before deleting."
@@ -1991,7 +2002,7 @@ msgstr "Aktualisierung verfügbare Style"
 msgid "Upload Layer"
 msgstr "Layer hinaufladen"
 
-#: layers/templates/upload/layer_upload.html:87
+#: layers/templates/upload/layer_upload.html:106
 msgid "Upload files"
 msgstr "Dateien hochladen"
 
@@ -2139,7 +2150,7 @@ msgstr "Wählen Sie ein optionales Endzeitattribut"
 
 #: layers/templates/upload/layer_upload_time.html:81
 msgid "Present time attribute as"
-msgstr ""
+msgstr "Zeit-Attribut anzeigen als"
 
 #: layers/templates/upload/layer_upload_time.html:84
 msgid "List"
@@ -2621,19 +2632,18 @@ msgstr ""
 "Teil der ISO, FGDC und Dublin Core Metadaten-Elemente. Einige Ihrer "
 "ursprünglichen Metadaten möglicherweise verloren gegangen."
 
-#: maps/templates/maps/map_remove.html:6
-msgid "Deleting"
-msgstr "Lösche"
+#: maps/templates/maps/map_remove.html:10
+msgid "Remove Map"
+msgstr ""
 
-#: maps/templates/maps/map_remove.html:13
+#: maps/templates/maps/map_remove.html:15
 #, python-format
 msgid ""
 "\n"
-"        Are you sure you want to remove %(map_title)s?\n"
-"    "
+"          Are you sure you want to remove <a href=\"%(map.get_absolute_url)s"
+"\">%(map_title)s</a>?\n"
+"        "
 msgstr ""
-"\n"
-"Sind Sie sicher, dass Sie %(map_title)s löschen wollen?"
 
 #: maps/templates/maps/map_view.html:5
 msgid "GeoExplorer"
@@ -2649,7 +2659,7 @@ msgstr "Wichtige Termine"
 
 #: people/admin.py:58
 msgid "Extended profile"
-msgstr ""
+msgstr "erweitertes Profil"
 
 #: people/admin.py:155
 msgid "Password changed successfully."
@@ -2841,15 +2851,15 @@ msgstr ""
 "Phrase (n) verwendet werden, um das Thema (Leerzeichen oder Komma getrennt "
 "beschreiben"
 
-#: people/views.py:90
+#: people/views.py:91
 msgid "Your username for "
 msgstr "Ihr Benutzername für"
 
-#: people/views.py:104
+#: people/views.py:105
 msgid "Your username has been emailed to you."
 msgstr "Ihr Benutzername wurde Ihnen par E-Mail zugesendet."
 
-#: people/views.py:106
+#: people/views.py:107
 msgid "No user could be found with that email address."
 msgstr "Kein Benutzer mit einer solchen E-Mail Adresse bekannt."
 
@@ -2966,7 +2976,8 @@ msgid "Remote Services"
 msgstr "Remote Services"
 
 #: people/templates/people/profile_detail.html:117 templates/500.html:229
-#: templates/base.html:222
+#: templates/base.html:222 templates/account/invite_user.html:8
+#: templates/account/invite_user.html:15
 msgid "Invite User"
 msgstr "Benutzer einladen"
 
@@ -2995,7 +3006,7 @@ msgstr "Profil bearbeiten"
 
 #: people/templates/people/profile_edit.html:12
 msgid "Edit Profile for"
-msgstr ""
+msgstr "Editiere Profil von"
 
 #: people/templates/people/profile_edit.html:19
 msgid "Change your avatar"
@@ -3325,6 +3336,13 @@ msgid ""
 "GeoNode/geonode/issues\">GeoNode's issue tracker</a>\n"
 "            "
 msgstr ""
+"\n"
+"Bitte kontaktieren Sie Ihren GeoNode Administrator (Wenn Geonode korrekt "
+"konfiguriert ist, hat er bereits eine Email erhalten).\n"
+"Wenn Sie der Site-Administrator sind, ermöglicht der Debug-Modus, den "
+"tatsächlichen Fehler zu sehen und zu beheben\n"
+"Falls dies nicht möglich ist Benenne dieses Problem im  <a href=\"http://"
+"github.com/GeoNode/geonode/issues\">GeoNode Issue-Tracker</a>"
 
 #: templates/500.html:149 templates/base.html:142
 msgid "Powered by"
@@ -3380,7 +3398,7 @@ msgstr "Ausloggen"
 
 #: templates/500.html:280 templates/base.html:275
 msgid "Type your search here ..."
-msgstr "Geben Sie hier Ihre Suche ..."
+msgstr "Suche eingeben ..."
 
 #: templates/_actions.html:3
 msgid "Info"
@@ -3400,7 +3418,7 @@ msgstr "GeoGig"
 
 #: templates/_actions.html:16
 msgid "Exif"
-msgstr ""
+msgstr "Exif"
 
 #: templates/_bulk_permissions_form.html:9
 msgid "Set permissions on selected resources"
@@ -3586,6 +3604,132 @@ msgid ""
 "</p>\n"
 "    "
 msgstr ""
+"\n"
+"<p><a href=\"http://geonode.org/\">GeoNode</a> ist ein quelloffener Dienst, "
+"welcher aus OpenSource Software aufgebaut wurde. Wir möchten Sie ermutigen "
+"neue Anwendungen aus den GeoNode zu grunde liegenden Komponenten und "
+"Ressourcen zu erstellen. Diese Seite dient dabei als Einstieg für alle "
+"interessierten Entwickler, die das volle Potential von GeoNode nutzen "
+"möchten. Darüber hinaus sind die Links zum Quellcode der Anwendungen, so "
+"dass jeder Nutzer eine eigenes und angepasstes GeoNode erstellen kann.</p>\n"
+"<h3>GeoNode Software</h3>\n"
+"\n"
+"<p>GeoNodes gesamter Programmcode ist open-source. Der Code ist unter <a "
+"href=\"http://github.com/GeoNode/geonode\">http://github.com/GeoNode/geonode/"
+"</a> zu finden. Der Issue-Tracker für das Projekt befindet sich unter <a "
+"href=\"http://github.com/GeoNode/geonode/issues\">http://github.com/GeoNode/"
+"geonode/issues</a>.</p>\n"
+"\n"
+"\n"
+"\n"
+"<p>GeoNode wurdew aus verschiedenen open-source Projekten erstellt, jedes "
+"mit seiner eigenen Community. Wenn Sie interessiert sind neue Features zu "
+"GeoNode beizutragen, dann möchten wir Sie ermutigen die GeoNode zu grunde "
+"liegenden Projekte zu erweitern:</p>\n"
+"\n"
+"<ul>\n"
+"\n"
+"<li><a href=\"http://geoext.org\">GeoExt</a> - Das JavaScript Toolkit für "
+"umfangreiche web-mapping Anwendungen</li>\n"
+"\n"
+"<li><a href=\"http://geoserver.org\">GeoServer</a> - der auf OGC-Standards "
+"basierende Server für Geoinformationen</li>\n"
+"\n"
+"<li><a href=\"http://geowebcache.org\">GeoWebCache</a> - Cache engine für "
+"WMS Kacheln</li><li><a href=\"http://openlayers.org\">OpenLayers</a> - "
+"JavaScript Bibliothek welhe die Karten von GeoExt antreibt</li>\n"
+"\n"
+"<li><a href=\"http://pycsw.org\">pycsw</a> - CSW, OpenSearch and OAI-PMH "
+"Metadaten Katalog Server</li>\n"
+"\n"
+"</ul>\n"
+"\n"
+"\n"
+"\n"
+"<h3>Was sind OGC Dienste?</h3>\n"
+"\n"
+"<p>Die Daten dieser Anwendung werden über offene vom <a href=\"http://"
+"opengeospatial.org/\">Open Geospatial Consortium</a> befürwortete Standards "
+"geliefert. Es werden folgende Dienste genutzt:\n"
+"<ul>\n"
+"\n"
+"<li>WMS (Web Map Service) um die Karten zu rendern,\n"
+"<li>WFS (Web Feature Service) um Vektor Daten und\n"
+"<li>WCS (Web Coverage Service) um Raster Daten zu liefern.\n"
+"<li>WMC (Web Map Context Documents) werden verwendet, um das Austauschen von "
+"Web-Karten zu ermöglichen.\n"
+"</ul>\n"
+"\n"
+"<p>Sie können diese Dienste in eigenen Anwendungen nutzen und über "
+"Bibliotheken wie OpenLayers, GeoTools und OGR ansprechen (alle open-source "
+"und frei zu Verfügung).</p>\n"
+"\n"
+"\n"
+"\n"
+"<h3>Was ist GeoWebCache?</h3>\n"
+"\n"
+"<p>GeoWebCache liefert Kartenkacheln, welche mit einer Vielzahl von Mapping-"
+"Engines, inklusive Google Maps, Bing Maps und OpenLayers, genutzt werden "
+"können. Jeder von GeoNode bereitgestellter Datensatz ist zusätzlich über "
+"GeoWebCache verfügbar. GeoWebCache verbessert zudem WMS durch die "
+"gekachelten Datensätze und sorgt für eine performantere Kartendarstellung.</"
+"p>\n"
+"\n"
+"\n"
+"\n"
+"<h3>OpenLayers Beispiel Code</h3>\n"
+"\n"
+"\n"
+"\n"
+"<p>Um einen GeoNode Layer in einer OpenLayers Karte einzufügen muss zunächst "
+"der Name des Layers ermittelt werden. Dieser steh im <code>name</code> Feld "
+"(nicht <code>title</code>!) der Layer Liste. Für dieses Beispiel nutzen wir "
+"den Nicaragua Hintergrunddatensatz der politischen Grenzen mit dem Namen "
+"<code>risk:nicaragua_admin</code>. Erstelle eine Instanz des OpenLayers."
+"Layer.WMS:</p>\n"
+"\n"
+"<p><code>var geonodeLayer = new OpenLayers.Layer.WMS(\"GeoNode Risk Data\", "
+"\"http://demo.geonode.org/geoserver/wms\",{ layers: \"risk:nicaragua_admin"
+"\" });</code></p>\n"
+"\n"
+"\n"
+"\n"
+"<h3>Google Maps Beispiel Code</h3>\n"
+"\n"
+"<p>Um einen GeoNode Layer in Google Map einzubinden, muss der Layer Name in "
+"die URL Vorlage eingefügt werden.</p>\n"
+"\n"
+"<p><code>var tilelayer = new GTileLayer(null, null, null, {tileUrlTemplate: "
+"'http://demo.geonode.org/geoserver/gwc/service/gmaps?layers=risk:"
+"nicaragua_admin&#38;zoom={Z}&#38;x={X}&#38;y={Y}', isPng:true, "
+"opacity:0.5 } );</code></p>\n"
+"\n"
+"\n"
+"\n"
+"<h3>Shapefile/GeoJSON/GML Ausgabe</h3>\n"
+"\n"
+"<p>Um Daten aus den GeoNode Web-Diensten zu erhalten kann das WFS-Protokoll "
+"genutzt werden. Um zum Beispiel die gesamten administrativen Grenzen "
+"Nicaraguas zu erhalten kann:</p>\n"
+"\n"
+"<p><code>http://demo.geonode.org/geoserver/wfs?request=GetFeature&#38;"
+"typeName=risk:nicaragua_admin&#38;outputformat=SHAPE-ZIP</code></p>\n"
+"\n"
+"<p>genutzt werden</p>\n"
+"\n"
+"<p>Durch ein ändern des Output Formats können auch <code>json</code>, "
+"<code>GML2</code>, <code>GML3</code>, oder <code>csv</code> Daten abgerufen "
+"werden. Das WFS-Protokoll kann überdies auch komplexe Abfragen, "
+"Umgrenzungsgeometrien und eine Vielzahl von räumlichen und nicht räumlichen "
+"auf den Attributen des Datensatzes basierende Filter verarbeiten.</p>\n"
+"\n"
+"\n"
+"\n"
+"<h3>GeoTools Beispiel Code</h3>\n"
+"\n"
+"<p>Erstelle einen DataStore und extrahiere einen Feauture-Typ, um "
+"anschließend eine Abfrage auszuführen. Die Dokumentation hierfür ist in der "
+"Wiki unter <code>http://geotools.org/</code> zu finden.</p>"
 
 #: templates/developer.html:55
 msgid "GeoNode's Web Services"
@@ -3613,11 +3757,11 @@ msgstr "Metadatensuche via CSW:"
 
 #: templates/developer.html:75
 msgid "Metadata search via OpenSearch:"
-msgstr ""
+msgstr "Metadatensuche über OpenSearch:"
 
 #: templates/developer.html:79
 msgid "Metadata search via OAI-PMH:"
-msgstr ""
+msgstr "Metadatensuche über OAI-PMH:"
 
 #: templates/developer.html:83
 msgid "Cached tiles via WMTS:"
@@ -3729,6 +3873,115 @@ msgid ""
 "<a href=\"/maps\">Maps</a> tab.</p> \n"
 "    "
 msgstr ""
+"\n"
+"<p>GeoNode ermöglicht den Zugriff auf Datensätze sowie eine "
+"Kartenerstellungs-Anwendung und lässt Nutzer vorhandene Karten durchsuchen "
+"sowie eigene Erstellen.</p>\n"
+"\n"
+"<h4 id=\"browsing-data\">Layer durchsuchen</h4>\n"
+"\n"
+"<p>Der <a href=\"/layers\">Layer</a> Reiter ermöglicht Ihnen die auf GeoNode "
+"hochgeladenen Layer zu durchsuchen.</p>\n"
+"\n"
+"<h4 id=\"developer-access\">Entwickler Zugriff</h4>\n"
+"\n"
+"<p>Die <a href=\"/developer\">Entwickler</a> Seite enthält Informationen zur "
+"Erstellung von Anwendungen unter Nutzung von GeoNode. Sie enthält "
+"Anweisungen wie die Web-Dienste genutzt werden können, den Link zum "
+"Quellcode von GeoNode, sowie Informationen über denen von GeoNode genutzten "
+"Open-Source Projekten.</p>\n"
+"\n"
+"<h4 id=\"browsing-maps\">Karten durchsuchen</h4>\n"
+"\n"
+"<p>GeoNode ermöglicht den NutzerInnen Karten zu erstellen und mit anderen zu "
+"Teilen.</p>\n"
+"<p>Der <a href=\"/maps\">Karten</a> Reiter ermöglicht die mit GeoNode "
+"erstellen Kartenwerke zu erkunden. Von dort aus können die Funktionen "
+"<strong>Karte suchen</strong> oder <strong>neue Karte erstellen</strong> "
+"gewählt werden, welche den <a href=\"/maps/new\">Map Composer</a> öffnen.</"
+"p>\n"
+"\n"
+"<h5>Google Earth Modus</h5>\n"
+"\n"
+"<p>Jede der in der interaktiven Kartenansicht gezeigten Karten kann über das "
+"Google Earth Plugin in 3D betrachtet werden. Um in die 3D-Ansicht zu "
+"wechseln muss das Google Earth Logo in der Kartenansicht angewählt werden, "
+"der rechte Knopf in der Werkzeugleiste oberhalb der Kartenansicht. Wenn bei "
+"Ihnen im Browser das Google Earth Plugin fehlt, werden Sie dazu aufgefordert "
+"es zu installieren.</p>\n"
+"\n"
+"<h4 id=\"creating-a-map\">Eine Karte erstellen</h4>\n"
+"\n"
+"<p>Um eine neue Karte zu erstellen wählen Sie den <a href=\"/maps\">Karten</"
+"a> Reiter und klicken dort <a href=\"/maps/new\">neue Karte anlegen</a>.</"
+"p>\n"
+"\n"
+"<p>Dies öffnet den <a href=\"/maps/new\">Map Composer</a> - die interaktive "
+"Kartenansicht - mit einem geladenen Hintergrundlayer.</p>\n"
+"\n"
+"<p>Um weitere Datensätze hinzuzuladen kann der grüne Plus Knopf genutzt "
+"werden, welcher sich auf der linken Seite des MapComposers, über der "
+"Layerliste, befindet. Dies öffnet einen Dialog mit allen in GeoNode "
+"verfügbaren Layern zur Auswahl.</p>\n"
+"\n"
+"<p>Um einen Datensatz der Liste zur Karte hinzuzufügen muss dieser zunächst "
+"ausgewählt und dann der <strong>Layer hinzufügen</strong> Knopf gedrückt "
+"werden. Es können mehrere Layer zur Karte hinzugefügt werden. Wenn alle "
+"gewünschten Layer hinzugefügt wurden, kann über den <strong>Fertig</strong> "
+"Knopf der Dialog geschlossen und zur Kartenansich zurückgegangen werden.</"
+"p>\n"
+"\n"
+"<h5>Layer neuordnen oder entfernen</h5>\n"
+"\n"
+"<p>Die Darstellungsreihenfolge der Layer in der Layerliste kann über "
+"Drag&Drop verändert werden. Um einen Layer nicht sichtbar zu schalten kann "
+"dieser abgewählt werden, um einen Layer zu entfernen muss dieser ausgewählt "
+"und der rote Minus Knopf betätigt werden.</p>\n"
+"\n"
+"<h5>Karte speichern</h5>\n"
+"\n"
+"<p>Sobald ausreichend Layer und eine geeignete Zoomstufe eingestellt worden "
+"sind, kann die Karte gespeichert werden um Anderen die Möglichkeit zu geben "
+"diese zu verwenden. Klicke dafür den Karte Knopf -- links oben in der "
+"Werkzeugleiste -- und dort den Befehl Karte speichern. Im folgenden Dialog "
+"müssen für die Karte ein Titel, sowie eine Kurzbeschreibung vergeben werden."
+"</p>\n"
+"\n"
+"<h4 id=\"exporting-a-map\">Karte veröffentlichen</h4>\n"
+"\n"
+"<p>Jede über GeoNode erstelle Karte kann als eingebettete Karte in einem "
+"Blog oder einer anderen Webseite genutzt werden. Um eine Karte zu "
+"veröffentlichen sind diese Schritte zu befolgen:</p>\n"
+"\n"
+"<ol>\n"
+"<li>Wähle eine Karte aus und öffne diese in der Ansicht</li>\n"
+"<li>Wähle im MapComposer Karte -- Karte veröffentlichen</li>\n"
+"<li>Bevor die Karte veröffentlicht werden kann, muss Sie gespeichert werden "
+"-- vergebe dafür Kartentitel und Kurzbeschreibung</li>\n"
+"<li>Wähle nachfolgend deine gewünschte Kartengröße und -breite</li>\n"
+"<li>Kopiere den HTML-Code und füge diesen in deine iFrame unterstützende "
+"Webseite/Blog ein.</li>\n"
+"</ol>\n"
+"\n"
+"<p>Dadurch wird eine interaktive Karte in deiner Seite/ deinem Blog "
+"angezeigt.</p>\n"
+"\n"
+"<h4 id=\"remixing-a-map\">Verändern/ Mischen von Karteninhalten</h4>\n"
+"<p>Jede gespeicherte Karte kann als Startpunkt füre eine neue Karte genutzt "
+"werden:</p>\n"
+"<ol>\n"
+"<li>Öffne die Karte im MapComposer</li>\n"
+"<li>Veränderen Sie die Layer (entfernen, neue hinzufügen, Symbologie ändern) "
+"nach Wunsch</li>\n"
+"<li>Schwenken und Zoomen Sie zur gewünschten Ausdehnung der Karte</li>\n"
+"<li><strong>WICHTIG</strong> verändern Sie den Titel und die "
+"Kurzbeschreibung der Karte, sowie ggf. die Kontaktinfo und Schlagwörter, um "
+"den Inhalten der neuen Karte zu entsprechen</li>\n"
+"<li>Speichern Sie die Karte</li>\n"
+"</ol>\n"
+"\n"
+"<p>Im Anschluss kann die neue Karte über den <a href=\"/maps\">Karten</a> "
+"Reiter gefunden und betrachtet werden.</p>"
 
 #: templates/help.html:66
 msgid "Sections"
@@ -3768,17 +4021,20 @@ msgid ""
 "\"http://lists.osgeo.org/cgi-bin/mailman/listinfo/geonode-users\">mailing "
 "list</a>."
 msgstr ""
+"Falls Sie Fragen zur Software oder den Webdiensten haben, können Sie der <a "
+"href=\"http://lists.osgeo.org/cgi-bin/mailman/listinfo/geonode-users"
+"\">Mailingliste</a> beitreten."
 
 #: templates/social_links.html:10
 msgid "Share This"
-msgstr ""
+msgstr "Teilen"
 
 #: templates/account/admin_approval_sent.html:6
-#: templates/account/admin_approval_sent.html:9
+#: templates/account/admin_approval_sent.html:11
 msgid "Account Pending Approval"
 msgstr "Konto- Genehmigung noch nicht erteilt"
 
-#: templates/account/admin_approval_sent.html:11
+#: templates/account/admin_approval_sent.html:14
 #, python-format
 msgid ""
 "We have sent the administrators a notice to approve your account associated "
@@ -3790,11 +4046,11 @@ msgstr ""
 "Buchungsbestätigung."
 
 #: templates/account/email_confirmation_sent.html:6
-#: templates/account/email_confirmation_sent.html:9
+#: templates/account/email_confirmation_sent.html:11
 msgid "Confirm your email address"
 msgstr "Bestätigen Sie Ihre E-Mail-Adresse"
 
-#: templates/account/email_confirmation_sent.html:11
+#: templates/account/email_confirmation_sent.html:14
 #, python-format
 msgid ""
 "We have sent you an email to <b>%(email)s</b> for verification. Follow the "
@@ -3822,6 +4078,22 @@ msgstr "Passwort vergessen?"
 #: templates/account/logout.html:15
 msgid "Are you sure you want to log out?"
 msgstr "Sind Sie sich sicher, dass Sie sich abmelden wollen?"
+
+#: templates/account/password_change.html:8
+msgid "Password change"
+msgstr ""
+
+#: templates/account/password_change.html:14
+msgid "Password Change"
+msgstr ""
+
+#: templates/account/password_change.html:18
+msgid "Change your password here"
+msgstr ""
+
+#: templates/account/password_change.html:24
+msgid "Change my password"
+msgstr ""
 
 #: templates/account/password_reset.html:8
 msgid "Password reset"
@@ -3858,12 +4130,12 @@ msgstr ""
 "kontaktieren Sie uns unter <a href=\"mailto:%(THEME_ACCOUNT_CONTACT_EMAIL)s"
 "\">%(THEME_ACCOUNT_CONTACT_EMAIL)s</a>."
 
-#: templates/account/signup.html:7 templates/account/signup.html.py:14
-#: templates/account/signup.html:22
+#: templates/account/signup.html:7 templates/account/signup.html.py:11
+#: templates/account/signup.html:17 templates/account/signup.html.py:25
 msgid "Sign up"
 msgstr "Anmeldung"
 
-#: templates/account/signup.html:27
+#: templates/account/signup.html:30
 msgid "Sorry, registrations are not open at this time."
 msgstr "Leider sind Anmeldungen zu diesem Zeitpunkt nicht geöffnet."
 
@@ -4348,7 +4620,7 @@ msgstr "Kategorien"
 
 #: templates/search/_general_filters.html:33
 msgid "Owners"
-msgstr ""
+msgstr "Eigentümer"
 
 #: templates/search/_general_filters.html:49
 msgid "Date begins after:"
@@ -4363,11 +4635,11 @@ msgstr "yyyy-mm-dd"
 msgid "Date ends before:"
 msgstr "Datum endet, bevor:"
 
-#: templates/search/_search_content.html:6
+#: templates/search/_search_content.html:5
 msgid "Your selections"
 msgstr "Deine Auswahl"
 
-#: templates/search/_search_content.html:7
+#: templates/search/_search_content.html:6
 msgid "Clear all filters"
 msgstr "Alle Filter"
 
@@ -4435,6 +4707,24 @@ msgstr "Zurück zum Posteingang"
 msgid "Send Reply"
 msgstr "Antwort senden"
 
+#~ msgid ""
+#~ "\n"
+#~ "          Are you sure you want to remove %(document_title)s?\n"
+#~ "        "
+#~ msgstr ""
+#~ "\n"
+#~ "          Are you sure you want to remove %(document_title)s?\n"
+#~ "        "
+
+#~ msgid ""
+#~ "\n"
+#~ "        Are you sure you want to remove %(map_title)s?\n"
+#~ "    "
+#~ msgstr ""
+#~ "\n"
+#~ "        Are you sure you want to remove %(map_title)s?\n"
+#~ "    "
+
 #~ msgid "email"
 #~ msgstr "email"
 
@@ -4456,9 +4746,6 @@ msgstr "Antwort senden"
 #~ msgid "Replace this Document"
 #~ msgstr "Replace this Document"
 
-#~ msgid "Remove this Document"
-#~ msgstr "Remove this Document"
-
 #~ msgid "Edit Styles"
 #~ msgstr "Edit Styles"
 
@@ -4473,9 +4760,6 @@ msgstr "Antwort senden"
 
 #~ msgid "Edit Map Metadata"
 #~ msgstr "Edit Map Metadata"
-
-#~ msgid "Remove this Map"
-#~ msgstr "Remove this Map"
 
 #~ msgid "Profile Menu"
 #~ msgstr "Profile Menu"

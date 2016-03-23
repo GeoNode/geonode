@@ -1,0 +1,178 @@
+.. _vm_setup_virtualbox:
+
+========================
+VM Setup with VirtualBox
+========================
+
+In this section you will find instructions on how to setup an Ubuntu 14.04 VM in
+`VirtualBox`_
+
+.. _VirtualBox: https://www.virtualbox.org/
+
+VirtualBox Setup
+================
+
+Download Virtualbox from `official <https://www.virtualbox.org/wiki/Downloads>`_ web site. Choose the installer matching your
+operating system and architecture.
+
+Installation process is straightforward, refer to VirtualBox `official documentation
+<https://www.virtualbox.org/manual/ch01.html#intro-installing>`_ if you encounter
+any problem.
+
+Windows
+-------
+
+After you downloaded executable, double click on it to launch the installer.
+
+.. image:: img/virtualbox_install_win_1.png
+   :width: 600px
+   :alt: VirtualBox installation - Windows
+
+Customize VirtualBox features an paths if you need to or leave default ones
+
+.. image:: img/virtualbox_install_win_2.png
+   :width: 600px
+   :alt: VirtualBox installation - Windows
+
+And start the installation process
+
+.. image:: img/virtualbox_install_win_5.png
+   :width: 600px
+   :alt: VirtualBox installation - Windows
+
+.. image:: img/virtualbox_install_win_6.png
+   :width: 600px
+   :alt: VirtualBox installation - Windows
+
+Click on "Finish"
+
+.. image:: img/virtualbox_install_win_7.png
+   :width: 600px
+   :alt: VirtualBox installation - Windows
+
+VirtualBox is now installed. And will automatically be launched
+
+Ubuntu
+------
+
+After you downloaded the package,  double click on it. The "Ubuntu Software Center"
+will pop up, click on "Install" to start the installation process
+
+.. image:: img/virtualbox_install_1.png
+   :width: 600px
+   :alt: VirtualBox installation - Ubuntu
+
+You will be prompted for administrator password.
+
+At the end of the installation process, launch VirtualBox.
+
+.. image:: img/virtualbox_started.png
+   :width: 600px
+   :alt: VirtualBox installation - Windows
+
+Virtual Machine Setup
+=====================
+
+Now that VirtualBox is installed on the system it is time to setup our Ubuntu VM.
+
+Click the light blue `New` button in VirtualBox user interface.
+
+Choose a name for the Virtual Machine and select the appropriate VM type and version
+
+.. image:: img/ubuntu_vm_setup_1.png
+   :width: 600px
+   :alt: Ubuntu VM setup
+
+Then select the amount of memory you want to assign to the VM,
+`Ubuntu recommends <https://help.ubuntu.com/community/Installation/SystemRequirements>`_
+at least 512 MB of memory but we are going to need more than that to run GeoNode
+refer to `System Preparation & Prerequisites` sections for details.
+
+.. image:: img/ubuntu_vm_setup_2.png
+   :width: 600px
+   :alt: Ubuntu VM setup
+
+Create a new `virtual disk` for the VM. Againg, refer to `System Preparation & Prerequisites`
+section for details about disk size, for testing purposes 30 GB will be enought.
+
+Now edit the Virtual Machine settigs
+
+.. image:: img/ubuntu_vm_setup_3.png
+   :width: 600px
+   :alt: Ubuntu VM setup
+
+Under "Storage" select the empty DVD drive, click on `Live CD/DVD` as shown below
+
+.. image:: img/ubuntu_vm_setup_4.png
+   :width: 600px
+   :alt: Ubuntu VM setup
+
+Click on the DVD icon next to the `Optical Drive` drop down menu and select the Ubuntu 14.04 `.iso`
+file from your file system
+
+.. image:: img/ubuntu_vm_setup_5.png
+   :width: 600px
+   :alt: Ubuntu VM setup
+
+Edit other VM setting if you need to, then click `OK`.
+
+We are ready to start our Ubuntu VM for the first time. Select it from the main
+menu and click on `Start`
+
+.. image:: img/ubuntu_vm_setup_6.png
+   :width: 600px
+   :alt: Ubuntu VM start
+
+Ubuntu will start the boot process
+
+.. image:: img/ubuntu_vm_setup_7.png
+   :width: 600px
+   :alt: Ubuntu VM boot
+
+At the end of the boot process you will be asked if you want to `Try Ubuntu` or `Install Ubuntu`.
+Select the language in the left panel and click on `Install Ubuntu`
+
+.. image:: img/ubuntu_vm_setup_8.png
+   :width: 600px
+   :alt: Ubuntu VM install
+
+The installer will check your internet connection and available disk space. If you
+are connected to the internet check the `Download updates while installing` checkbox.
+
+.. image:: img/ubuntu_vm_setup_9.png
+   :width: 600px
+   :alt: Ubuntu VM install
+
+Click on `continue`. In the page you will configure the partitioning of the disks.
+If you recall we have created a new `virtual disk` during the VM configuration
+process for Ubuntu. We are going to assign the entire disk to it. Select
+`Erase disk and install Ubuntu`, then `Install Now`
+
+.. image:: img/ubuntu_vm_setup_10.png
+   :width: 600px
+   :alt: Ubuntu VM install
+
+You will be prompted for confirmation.
+
+Now select the correct time zone for your location, then select the language for the VM
+and enter the details for the administrator user.
+
+.. image:: img/ubuntu_vm_setup_11.png
+   :width: 600px
+   :alt: Ubuntu VM install
+
+.. image:: img/ubuntu_vm_setup_12.png
+   :width: 600px
+   :alt: Ubuntu VM install
+
+.. image:: img/ubuntu_vm_setup_13.png
+   :width: 600px
+   :alt: Ubuntu VM install
+
+The installation will continue automatically. At the end of the installation process
+a pop up window will ask you to restart the system to start using Ubuntu.
+Click on `Restart Now`
+
+.. image:: img/ubuntu_vm_setup_14.png
+   :width: 600px
+   :alt: Ubuntu VM install

@@ -89,7 +89,7 @@ done here
 .. image:: img/create_file.png
 
 If you click on *create new file here* you can first subdirect to another folder by typing the *foldername* followed by /. If this folder
-doesn't exist until now, one will be created. To create a new file in this folder just type *filename.rst* into the box and hit enter.
+doesn't exist until now, one will be created. To create a new file in this folder just type *filename.txt* into the box and hit enter.
 A short example on how to manage this is given here http://i.stack.imgur.com/n3Wg3.gif.
 
 .. image:: img/create_file_test.PNG

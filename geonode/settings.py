@@ -23,11 +23,15 @@ import os
 
 from celery.schedules import crontab
 from kombu import Queue
+import geonode
 from geonode.celery_app import app  # flake8: noqa
 
 #
 # General Django development settings
 #
+
+# GeoNode Version
+VERSION = geonode.get_version()
 
 # Defines the directory that contains the settings file as the PROJECT_ROOT
 # It is used for relative settings elsewhere.
@@ -643,13 +647,6 @@ MAP_BASELAYERS = [{
     "group": "background",
     "visibility": False
 }, 
-# {    
-#     "source": {"ptype": "gxp_bingsource"},
-#     "name": "AerialWithLabels",
-#     "fixed": True,
-#     "visibility": False,
-#     "group": "background"
-# }, 
 {
     "source": {"ptype": "gxp_mapboxsource"},
 }]
@@ -777,6 +774,7 @@ CLIENT_RESULTS_LIMIT = 100
 
 # Number of items returned by the apis 0 equals no limit
 API_LIMIT_PER_PAGE = 0
+API_INCLUDE_REGIONS_COUNT = False
 
 LEAFLET_CONFIG = {
     'TILES': [
@@ -799,12 +797,12 @@ LEAFLET_CONFIG = {
     ],
     'PLUGINS': {
         'esri-leaflet': {
-            'js': 'lib/js/esri-leaflet.js',
+            'js': 'lib/js/esri-leaflet.js?v=%s' % VERSION,
             'auto-include': True,
         },
         'leaflet-fullscreen': {
-            'css': 'lib/css/leaflet.fullscreen.css',
-            'js': 'lib/js/Leaflet.fullscreen.min.js',
+            'css': 'lib/css/leaflet.fullscreen.css?v=%s' % VERSION,
+            'js': 'lib/js/Leaflet.fullscreen.min.js?v=%s' % VERSION,
             'auto-include': True,
         },
     },
@@ -894,6 +892,27 @@ CELERY_QUEUES = [
 
 import djcelery
 djcelery.setup_loader()
+
+# Load more settings from a file called local_settings.py if it exists
+try:
+    from local_settings import *  # noqa
+except ImportError:
+    pass
+
+try:
+    BING_LAYER = {    
+        "source": {
+            "ptype": "gxp_bingsource",
+            "apiKey": BING_API_KEY
+        },
+        "name": "AerialWithLabels",
+        "fixed": True,
+        "visibility": False,
+        "group": "background"
+    }
+    MAP_BASELAYERS.append(BING_LAYER)
+except NameError:
+    print "Not enabling BingMaps base layer as a BING_API_KEY is not defined in local_settings.py file."
 
 # Require users to authenticate before using Geonode
 if LOCKDOWN_GEONODE:
