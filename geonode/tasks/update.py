@@ -1,4 +1,5 @@
 import os
+import subprocess
 from geonode import settings
 from geonode import GeoNodeException
 from geonode.geoserver.helpers import ogc_server_settings
@@ -110,6 +111,10 @@ def fh_style_update(layer,filename):
 
 # f.close()
 
+def batch_seed(layer):
+    out = subprocess.check_output([settings.PROJECT_ROOT + '/gwc.sh', 'seed', '{0}:{1}'.format(layer.workspace,layer.name) , 'EPSG:4326', '-v'], stderr=subprocess.STDOUT)
+    print out
+
 def layer_metadata(layer_list,flood_year,flood_year_probability):
     total_layers = len(layer_list)
     ctr = 0
@@ -117,31 +122,31 @@ def layer_metadata(layer_list,flood_year,flood_year_probability):
     f = open(fh_err_log,'w')
     for layer in layer_list:
         print "Layer: %s" % layer.name
-        fh_style_update(layer,f)
+        # fh_style_update(layer,f)
         #fh_perms_update(layer,f)
-
-        map_resolution = ''
-        first_half = ''
-        second_half = ''
-        if "_10m_30m" in layer.name:
-            map_resolution = '30'
-        elif "_10m" in layer.name:
-            map_resolution = '10'
-        elif "_30m" in layer.name:
-            map_resolution = '30'
-
-        print "Layer: %s" % layer.name
-        layer.title = layer.name.replace("_10m","").replace("_30m","").replace("__"," ").replace("_"," ").replace("fh%syr" % flood_year,"%s Year Flood Hazard Map" % flood_year).title()
-
-        first_half = "This shapefile, with a resolution of %s meters, illustrates the inundation extents in the area if the actual amount of rain exceeds that of a %s year-rain return period." % (map_resolution,flood_year) + "\n\n" + "Note: There is a 1/" + flood_year + " (" + flood_year_probability + "%) probability of a flood with " +flood_year + " year return period occurring in a single year. \n\n"
-        second_half = "3 levels of hazard:" + "\n" + "Low Hazard (YELLOW)" + "\n" + "Height: 0.1m-0.5m" + "\n\n" + "Medium Hazard (ORANGE)" + "\n" + "Height: 0.5m-1.5m" + "\n\n" + "High Hazard (RED)" + "\n" + "Height: beyond 1.5m"
-        layer.abstract = first_half + second_half
-
-        layer.purpose = " The flood hazard map may be used by the local government for appropriate land use planning in flood-prone areas and for disaster risk reduction and management, such as identifying areas at risk of flooding and proper planning of evacuation."
-
-        layer.keywords.add("Flood Hazard Map")
-        layer.category = TopicCategory.objects.get(identifier="geoscientificInformation")
-        layer.save()
+        batch_seed(layer)
+        # map_resolution = ''
+        # first_half = ''
+        # second_half = ''
+        # if "_10m_30m" in layer.name:
+        #     map_resolution = '30'
+        # elif "_10m" in layer.name:
+        #     map_resolution = '10'
+        # elif "_30m" in layer.name:
+        #     map_resolution = '30'
+        #
+        # print "Layer: %s" % layer.name
+        # layer.title = layer.name.replace("_10m","").replace("_30m","").replace("__"," ").replace("_"," ").replace("fh%syr" % flood_year,"%s Year Flood Hazard Map" % flood_year).title()
+        #
+        # first_half = "This shapefile, with a resolution of %s meters, illustrates the inundation extents in the area if the actual amount of rain exceeds that of a %s year-rain return period." % (map_resolution,flood_year) + "\n\n" + "Note: There is a 1/" + flood_year + " (" + flood_year_probability + "%) probability of a flood with " +flood_year + " year return period occurring in a single year. \n\n"
+        # second_half = "3 levels of hazard:" + "\n" + "Low Hazard (YELLOW)" + "\n" + "Height: 0.1m-0.5m" + "\n\n" + "Medium Hazard (ORANGE)" + "\n" + "Height: 0.5m-1.5m" + "\n\n" + "High Hazard (RED)" + "\n" + "Height: beyond 1.5m"
+        # layer.abstract = first_half + second_half
+        #
+        # layer.purpose = " The flood hazard map may be used by the local government for appropriate land use planning in flood-prone areas and for disaster risk reduction and management, such as identifying areas at risk of flooding and proper planning of evacuation."
+        #
+        # layer.keywords.add("Flood Hazard Map")
+        # layer.category = TopicCategory.objects.get(identifier="geoscientificInformation")
+        # layer.save()
         ctr+=1
         print "[{0} YEAR FH METADATA] {1}/{2} : {3}".format(flood_year,ctr,total_layers,layer.name)
     f.close()
