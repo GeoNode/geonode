@@ -1127,6 +1127,11 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                     layer.url = thisRecord.get('LayerUrl');
                 };
 
+                if(thisRecord.get('ServiceType') === 'ESRI_ImageServer'){
+                    layer.url = thisRecord.get('LayerUrl');
+                    source = geoEx.addLayerSource({config: {url: layer.url, ptype: 'gxp_arcrestsource'}});
+                };
+
                 var record = source.createLayerRecord(layer);
                 record.selected = true;
                 // record.data.detail_url = thisRecord.get('LayerUrl').indexOf('worldmap.harvard.edu') > -1 ?
