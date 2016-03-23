@@ -4,6 +4,7 @@ import os
 import logging
 import zipfile
 import StringIO
+import urllib2
 from imghdr import what as image_format
 
 from urllib import urlretrieve
@@ -333,6 +334,38 @@ def wms_get_map(params):
         return HttpResponse(f.read(), mimetype='image/png')
 
 
+def wms_describe_layer(params):
+    logger.debug('WMS DescribeLayer')
+    for k, v in params.iteritems():
+        logger.debug('%s %s' % (k, v))
+    params['SLD_VERSION'] = '1.1.0'
+
+    qgis_server = QGIS_SERVER_CONFIG['qgis_server_url']
+
+    layer = Layer.objects.get(typename=params.pop('LAYERS'))
+    params['LAYERS'] = layer.name
+    try:
+        qgis_layer = QGISServerLayer.objects.get(layer=layer)
+    except ObjectDoesNotExist:
+        msg = 'No QGIS Server Layer for existing layer %s' % layer.name
+        logger.debug(msg)
+        raise Http404(msg)
+
+    basename, _ = os.path.splitext(qgis_layer.base_layer_path)
+
+    params['map'] = basename + '.qgs'
+
+    url = qgis_server + '?'
+    for param, value in params.iteritems():
+        url += param + '=' + value + '&'
+
+    logger.debug(url)
+
+    result = urllib2.urlopen(url)
+    a = result.readlines()
+    return HttpResponse(''.join(a).replace('\n', ''), mimetype='text/xml')
+
+
 def wms(request):
     logger.debug('WMS from QGIS Server')
 
@@ -356,6 +389,9 @@ def wms(request):
     # We need to replace 900913 with 3857. Deprecated in QGIS 2.14
     if params.get('SRS') == 'EPSG:900913':
         params['SRS'] = 'EPSG:3857'
+
     if params.get('SERVICE') == 'WMS':
         if params.get('REQUEST') == 'GetMap':
             return wms_get_map(params)
+        elif params.get('REQUEST') == 'DescribeLayer':
+            return wms_describe_layer(params)
