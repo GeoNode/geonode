@@ -112,8 +112,19 @@ def fh_style_update(layer,filename):
 # f.close()
 
 def batch_seed(layer):
-    out = subprocess.check_output([settings.PROJECT_ROOT + '/gwc.sh', 'seed', '{0}:{1}'.format(layer.workspace,layer.name) , 'EPSG:4326', '-v'], stderr=subprocess.STDOUT)
-    print out
+    try:
+        out = subprocess.check_output([settings.PROJECT_ROOT + '/gwc.sh', 'seed',
+        '{0}:{1}'.format(layer.workspace,layer.name) , 'EPSG:4326', '-v', '-a',
+        settings.OGC_SERVER['default']['USER'] + ':' +
+        settings.OGC_SERVER['default']['PASSWORD'], '-u',
+        settings.OGC_SERVER['default']['LOCATION'] + 'gwc/rest'],
+        stderr=subprocess.STDOUT)
+        print out
+    except subprocess.CalledProcessError as e:
+        print 'Error seeding layer:', layer
+        print 'e.returncode:', e.returncode
+        print 'e.cmd:', e.cmd
+        print 'e.output:', e.output
 
 def layer_metadata(layer_list,flood_year,flood_year_probability):
     total_layers = len(layer_list)
