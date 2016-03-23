@@ -35,11 +35,9 @@ def fh_perms_update(layer,filename):
     #for layer in layer_list:
 
     try:
-        # geoadmin = User.objects.get.filter(username='geoadmin')
-        # for user in User.objects.all():
-        datarequesters = Group.objects.get(name='data-requesters')
-        assign_perm('view_resourcebase', datarequesters, layer.get_self_resource())
-        assign_perm('download_resourcebase', datarequesters, layer.get_self_resource())
+        anonymous_group = Group.objects.get(name='anonymous')
+        assign_perm('view_resourcebase', anonymous_group, layer.get_self_resource())
+        assign_perm('download_resourcebase', anonymous_group, layer.get_self_resource())
         # superusers=get_user_model().objects.filter(Q(is_superuser=True))
         # for superuser in superusers:
         #     assign_perm('view_resourcebase', superuser, layer.get_self_resource())
@@ -58,7 +56,7 @@ def fh_perms_update(layer,filename):
         filename.write(Err_msg)
         pass
 
-#@task(name='geonode.tasks.update.fh_style_update', queue='update')
+@task(name='geonode.tasks.update.fh_style_update', queue='update')
 def fh_style_update(layer,filename):
     cat = Catalog(settings.OGC_SERVER['default']['LOCATION'] + 'rest',
                     username=settings.OGC_SERVER['default']['USER'],
@@ -74,7 +72,7 @@ def fh_style_update(layer,filename):
         #delete thumbnail first because of permissions
     try:
         print "Layer thumbnail url: %s " % layer.thumbnail_url
-        if "192" in local_settings.BASEURL:
+        if "192" in settings.BASEURL:
             url = "geonode/uploaded/thumbs/layer-"+ layer.uuid + "-thumb.png" #if on local
             os.remove(url)
         else:
@@ -117,8 +115,8 @@ def layer_metadata(layer_list,flood_year,flood_year_probability):
     f = open(fh_err_log,'w')
     for layer in layer_list:
         print "Layer: %s" % layer.name
-        #fh_style_update(layer,f)
-        fh_perms_update(layer,f)
+        # fh_style_update(layer,f)
+        # fh_perms_update(layer,f)
 
         # map_resolution = ''
         # first_half = ''
@@ -165,44 +163,6 @@ def layers_metadata_update():
     if layer_list is not None:
         total_layers = total_layers + len(layer_list)
         layer_metadata(layer_list,'100','1')
-
-@task(name='geonode.tasks.update.fh_style_update', queue='update')
-def fh_style_update():
-    cat = Catalog(settings.OGC_SERVER['default']['LOCATION'] + 'rest',
-                    username=settings.OGC_SERVER['default']['USER'],
-                    password=settings.OGC_SERVER['default']['PASSWORD'])
-
-    #layer_list = Layer.objects.filter(name__icontains='fh')
-    layer_list = Layer.objects.filter(name__icontains='fh').exclude(styles__name__icontains='fhm')#initial run of script includes all fhm layers for cleaning of styles in GN + GS
-    fhm_style = cat.get_style("fhm")
-    ctr = 1
-    for layer in layer_list:
-        print " {0} out of {1} layers. Will edit style of {2} ".format(ctr,len(layer_list),layer.name)
-        #delete thumbnail first because of permissions
-
-        print "Layer thumbnail url: %s " % layer.thumbnail_url
-        if "192" in settings.BASEURL:
-            url = "geonode"+layer.thumbnail_url #if on local
-            os.remove(url)
-        else:
-            url = "/var/www/geonode"+layer.thumbnail_url #if on lipad
-            os.remove(url)
-        gs_layer = cat.get_layer(layer.name)
-        gs_layer._set_default_style(fhm_style.name)
-        cat.save(gs_layer) #save in geoserver
-        layer.sld_body = fhm_style.sld_body
-        layer.save() #save in geonode
-        ctr+=1
-        try:
-            gs_style = cat.get_style(layer.name)
-            print "Geoserver: Will delete style %s " % gs_style.name
-            cat.delete(gs_style) #erase in geoserver the default layer_list
-            gn_style = Style.objects.get(name=layer.name)
-            print "Geonode: Will delete style %s " % gn_style.name
-            gn_style.delete()#erase in geonode
-        except:
-            "Error in %s" % layer.name
-            pass
 
 @task(name='geonode.tasks.update.ceph_metadata_update', queue='update')
 def ceph_metadata_update(uploaded_objects_list, update_grid=True):
