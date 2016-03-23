@@ -1,3 +1,4 @@
 celery
 requests
 south
+django-autocomplete-light==1.4.14

@@ -104,8 +104,17 @@ def process_impact_result(analysis_id, impact_url_result):
                     os.path.join(dir_name, name),
                     overwrite=True)
                 saved_layer.set_default_permissions()
+                layer_name = analysis.get_default_impact_title()
+                saved_layer.title = layer_name
+                saved_layer.save()
+                current_impact = None
+                if analysis.impact_layer:
+                    current_impact = analysis.impact_layer
                 analysis.impact_layer = saved_layer
                 analysis.save()
+
+                if current_impact:
+                    current_impact.delete()
                 return True
 
     LOGGER.info('No impact layer found in %s' % impact_url)
