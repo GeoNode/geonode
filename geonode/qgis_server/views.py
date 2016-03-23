@@ -366,22 +366,36 @@ def wms_describe_layer(params):
     return HttpResponse(''.join(a).replace('\n', ''), mimetype='text/xml')
 
 
+def wfs_describe_feature_type(params):
+    logger.debug('WFS Describe Feature Type')
+    qgis_server = QGIS_SERVER_CONFIG['qgis_server_url']
+
+    layer = Layer.objects.get(typename=params.pop('TYPENAME'))
+    params['LAYERS'] = layer.name
+    try:
+        qgis_layer = QGISServerLayer.objects.get(layer=layer)
+    except ObjectDoesNotExist:
+        msg = 'No QGIS Server Layer for existing layer %s' % layer.name
+        logger.debug(msg)
+        raise Http404(msg)
+
+    basename, _ = os.path.splitext(qgis_layer.base_layer_path)
+
+    params['map'] = basename + '.qgs'
+
+    url = qgis_server + '?'
+    for param, value in params.iteritems():
+        url += param + '=' + value + '&'
+
+    logger.debug(url)
+
+    result = urllib2.urlopen(url)
+    a = result.readlines()
+    return HttpResponse(''.join(a).replace('\n', ''), mimetype='text/xml')
+
+
 def wms(request):
     logger.debug('WMS from QGIS Server')
-
-    # Sample parameters from the geoext.
-    # LAYERS : geonode:buildings
-    # STYLES :
-    # WIDTH : 256
-    # SERVICE : WMS
-    # FORMAT : image/png
-    # REQUEST : GetMap
-    # HEIGHT : 256
-    # SRS : EPSG:900913
-    # VERSION : 1.1.1
-    # TILED : true
-    # TRANSPARENT : TRUE
-    # BBOX : 11891155.614613,-689767.74314941,11892378.607065,-688544.75069702
 
     params = dict()
     for key, value in request.GET.iteritems():
@@ -395,3 +409,9 @@ def wms(request):
             return wms_get_map(params)
         elif params.get('REQUEST') == 'DescribeLayer':
             return wms_describe_layer(params)
+        elif params.get('REQUEST') == 'GetLegendGraphic':
+            layer = Layer.objects.get(typename=params.get('LAYER'))
+            return legend(request, layername=layer.name)
+    elif params.get('SERVICE') == 'WFS':
+        if params.get('REQUEST') == 'DescribeFeatureType':
+            return wfs_describe_feature_type(params)
