@@ -2,7 +2,7 @@
 
 from django.conf.urls import patterns, url
 from geonode.qgis_server.views import (
-    download_zip, tile, legend, thumbnail, wms)
+    download_zip, tile, legend, thumbnail, qgis_server_request)
 
 __author__ = 'ismailsunni'
 __project_name__ = 'geonode'
@@ -39,7 +39,7 @@ urlpatterns = patterns(
     ),
     url(
         r'^qgis-server/wms/$',
-        wms,
-        name='qgis-server-wms'
+        qgis_server_request,
+        name='qgis-server-request'
     ),
 )

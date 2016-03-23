@@ -431,8 +431,9 @@ def wms_get_feature_info(params):
     return HttpResponse(
         ''.join(result_list).replace('\n', ''), mimetype='text/xml')
 
-def wms(request):
-    logger.debug('WMS from QGIS Server')
+
+def qgis_server_request(request):
+    logger.debug('WMS/WFS request to QGIS Server')
 
     params = dict()
     for key, value in request.GET.iteritems():
@@ -451,6 +452,8 @@ def wms(request):
             return legend(request, layername=layer.name)
         elif params.get('REQUEST') == 'GetFeatureInfo':
             return wms_get_feature_info(params)
+        # May be we need to implement for GetStyle also
     elif params.get('SERVICE') == 'WFS':
         if params.get('REQUEST') == 'DescribeFeatureType':
             return wfs_describe_feature_type(params)
+        # May be we need to implement for GetFeature, Transaction also
