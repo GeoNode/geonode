@@ -1085,13 +1085,13 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
         var source = dataSource;
 
         var layerStore = this.mapPanel.layers;
-        // var isLocal = source instanceof gxp.plugins.GeoNodeSource &&
-        //     source.url.replace(this.urlPortRegEx, "$1/").indexOf(
-        //         this.localGeoServerBaseUrl.replace(
-        //             this.urlPortRegEx, "$1/")) === 0;
+        var isLocal = source instanceof gxp.plugins.GeoNodeSource &&
+            source.url.replace(this.urlPortRegEx, "$1/").indexOf(
+                this.localGeoServerBaseUrl.replace(
+                    this.urlPortRegEx, "$1/")) === 0;
         for (var i = 0, ii = records.length; i < ii; ++i) {
             var thisRecord = records[i];
-            if (thisRecord.get('Is_Public')) {
+            if (thisRecord.get('Is_Public') && isLocal) {
                 //Get all the required WMS parameters from the GeoNode/Worldmap database
                 // instead of GetCapabilities
                 var typename = this.searchTable.getlayerTypename(records[i]);
