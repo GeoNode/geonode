@@ -32,9 +32,13 @@ class AnalysisCreateView(CreateView):
 
     def get_context_data(self, **kwargs):
         # list all required layers
-        def retrieve_layers(purpose, category):
-            metadatas = Metadata.objects.filter(
-                layer_purpose=purpose, category=category)
+        def retrieve_layers(purpose, category=None):
+            if category:
+                metadatas = Metadata.objects.filter(
+                    layer_purpose=purpose, category=category)
+            else:
+                metadatas = Metadata.objects.filter(
+                    layer_purpose=purpose)
             return [m.layer for m in metadatas]
         exposure_population = retrieve_layers('exposure', 'population')
         exposure_road = retrieve_layers('exposure', 'road')
@@ -42,6 +46,11 @@ class AnalysisCreateView(CreateView):
         hazard_flood = retrieve_layers('hazard', 'flood')
         hazard_earthquake = retrieve_layers('hazard', 'earthquake')
         hazard_volcano = retrieve_layers('hazard', 'volcano')
+        impact_layers = retrieve_layers('impact')
+        try:
+            analysis = Analysis.objects.get(id=self.kwargs.get('pk'))
+        except:
+            analysis = None
         context = super(AnalysisCreateView, self).get_context_data(**kwargs)
         context.update(
             {
@@ -51,18 +60,17 @@ class AnalysisCreateView(CreateView):
                 'hazard_earthquake': hazard_earthquake,
                 'hazard_flood': hazard_flood,
                 'hazard_volcano': hazard_volcano,
-                'hazard_list': ['flood', 'earthquake', 'volcano'],
-                'hazard_list_value': {
-                    'flood': hazard_flood,
-                    'earthquake': hazard_earthquake,
-                    'volcano': hazard_volcano
-                },
+                'impact_layers': impact_layers,
+                'analysis': analysis,
             }
         )
         return context
 
     def get_success_url(self):
-        return reverse('geosafe:analysis-detail', kwargs={'pk': self.object.pk})
+        kwargs = {
+            'pk': self.object.pk
+        }
+        return reverse('geosafe:analysis-create', kwargs=kwargs)
 
     def get_form_kwargs(self):
         kwargs = super(AnalysisCreateView, self).get_form_kwargs()
@@ -120,7 +128,7 @@ def impact_function_filter(request):
             json.dumps(impact_functions), content_type="application/json")
     except Exception as e:
         LOGGER.exception(e)
-        raise HttpResponseServerError
+        raise HttpResponseServerError()
 
 
 def layer_tiles(request):
@@ -245,6 +253,49 @@ def rerun_analysis(request, analysis_id=None):
         return HttpResponseRedirect(
             reverse('geosafe:analysis-detail', kwargs={'pk': analysis.pk})
         )
+    except Exception as e:
+        LOGGER.exception(e)
+        return HttpResponseServerError()
+
+
+def analysis_json(request, analysis_id):
+    """Return the status of an analysis
+
+    :param request:
+    :param analysis_id:
+    :return:
+    """
+    if request.method != 'GET':
+        return HttpResponseBadRequest()
+
+    try:
+        analysis = Analysis.objects.get(id=analysis_id)
+        retval = {
+            'analysis_id': analysis_id,
+            'impact_layer_id': analysis.impact_layer_id
+        }
+        return HttpResponse(
+            json.dumps(retval), content_type="application/json")
+    except Exception as e:
+        LOGGER.exception(e)
+        return HttpResponseServerError()
+
+
+def toggle_analysis_saved(request, analysis_id):
+    """Toggle the state of keep of analysis
+
+    :param request:
+    :param analysis_id:
+    :return:
+    """
+    if request.method != 'POST':
+        return HttpResponseBadRequest()
+
+    try:
+        analysis = Analysis.objects.get(id=analysis_id)
+        analysis.keep = not analysis.keep
+        analysis.save()
+        return HttpResponseRedirect(reverse('geosafe:analysis-list'))
     except Exception as e:
         LOGGER.exception(e)
         return HttpResponseServerError()

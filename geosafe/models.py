@@ -131,6 +131,13 @@ class Analysis(models.Model):
         null=True
     )
 
+    keep = models.BooleanField(
+        verbose_name='Keep impact result',
+        help_text='True if the impact will be kept',
+        blank=True,
+        default=False,
+    )
+
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         verbose_name='Author',

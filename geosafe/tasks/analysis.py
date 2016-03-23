@@ -10,6 +10,7 @@ import requests
 from celery.app import shared_task
 from django.conf import settings
 from django.core.urlresolvers import reverse
+from django.db.models.query_utils import Q
 
 from geonode.layers.models import Layer
 from geonode.layers.utils import file_upload
@@ -71,6 +72,26 @@ def create_metadata_object(layer_id):
     metadata.category = keywords.get(metadata.layer_purpose, None)
     metadata.save()
     return True
+
+
+@shared_task(
+    name='geosafe.tasks.analysis.clean_impact_result',
+    queue='geosafe')
+def clean_impact_result():
+    """Clean all the impact results not marked kept
+
+    :return:
+    """
+    query = Q(keep=True)
+    for a in Analysis.objects.filter(~query):
+        a.impact_layer.delete()
+        a.delete()
+
+    for i in Metadata.objects.filter(layer_purpose='impact'):
+        try:
+            Analysis.objects.get(impact_layer=i.layer)
+        except Analysis.DoesNotExist:
+            i.delete()
 
 
 @shared_task(

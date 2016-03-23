@@ -6,12 +6,13 @@ from geosafe.views.analysis import (
     AnalysisCreateView,
     AnalysisDetailView,
     impact_function_filter,
-    layer_tiles, layer_metadata, layer_archive, layer_list, rerun_analysis)
+    layer_tiles, layer_metadata, layer_archive, layer_list, rerun_analysis,
+    analysis_json, toggle_analysis_saved)
 
 urlpatterns = patterns(
     '',
     url(
-        r'^geosafe/analysis/create/$',
+        r'^geosafe/analysis/create(?:/(?P<pk>\d*))?$',
         AnalysisCreateView.as_view(),
         name='analysis-create'
     ),
@@ -53,9 +54,21 @@ urlpatterns = patterns(
         name='layer-list'
     ),
     url(
-        r'^geosafe/analysis/rerun-analysis/'
+        r'^geosafe/analysis/rerun/'
         r'(?P<analysis_id>\d+)',
         rerun_analysis,
         name='rerun-analysis'
+    ),
+    url(
+        r'^geosafe/analysis/check/'
+        r'(?P<analysis_id>\d+)',
+        analysis_json,
+        name='check-analysis'
+    ),
+    url(
+        r'^geosafe/analysis/toggle-saved/'
+        r'(?P<analysis_id>\d+)',
+        toggle_analysis_saved,
+        name='toggle-analysis-saved'
     ),
 )

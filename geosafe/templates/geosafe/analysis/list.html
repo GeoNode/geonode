@@ -13,6 +13,7 @@
                     <th>Impact Function ID</th>
                     <th>Impact Layer</th>
                     <th>Detail</th>
+                    <th>Keep</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -43,7 +44,19 @@
                             {% endif %}
                         </td>
                         <td>
-                            <a href="{% url 'geosafe:analysis-detail' pk=analysis.pk %}">View</a>
+                            <a href="{% url 'geosafe:analysis-create' pk=analysis.pk %}">View</a>
+                        </td>
+                        <td>
+                            Layer is
+                            {% if analysis.keep %}
+                                <span class="label label-info">Saved</span>
+                            {% else %}
+                                <span class="label label-danger">Unsaved</span>
+                            {% endif %}
+                            <form action="{% url 'geosafe:toggle-analysis-saved' analysis_id=analysis.id %}" method="post">
+                                {% csrf_token %}
+                                <button type="submit">Toggle</button>
+                            </form>
                         </td>
                     </tr>
                 {% endfor %}
