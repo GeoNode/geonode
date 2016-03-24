@@ -863,6 +863,7 @@ CELERY_CREATE_MISSING_QUEUES = True
 CELERY_IMPORTS = (
     'geonode.tasks.deletion',
     'geonode.tasks.update',
+    'geonode.tasks.ceph_update',
     'geonode.tasks.email',
     'geonode.tasks.ftp',
     'geonode.tasks.mk_folder'
@@ -873,6 +874,7 @@ CELERY_QUEUES = [
     Queue('default', routing_key='default'),
     Queue('cleanup', routing_key='cleanup'),
     Queue('update', routing_key='update'),
+    Queue('ceph_update', routing_key='ceph_update'),
     Queue('email', routing_key='email'),
     Queue('ftp', routing_key='ftp'),
     Queue('mk_folder', routing_key='mk_folder')
