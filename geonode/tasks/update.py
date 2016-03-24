@@ -185,11 +185,6 @@ def layers_metadata_update():
 
 @task(name='geonode.tasks.update.ceph_metadata_update', queue='update')
 def ceph_metadata_update(uploaded_objects_list, update_grid=True):
-    """
-        NOTE: DOES NOT WORK
-          Outputs error 'OperationalError: database is locked'
-          Need a better way of making celery write into the database
-    """
     # Pop first line containing header
     uploaded_objects_list.pop(0)
     """NAME,LAST_MODIFIED,SIZE_IN_BYTES,CONTENT_TYPE,GEO_TYPE,FILE_HASH GRID_REF"""
