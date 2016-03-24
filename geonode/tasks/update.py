@@ -122,63 +122,56 @@ def batch_seed(layer):
         print 'e.cmd:', e.cmd
         print 'e.output:', e.output
 
-def layer_metadata(layer_list,flood_year,flood_year_probability):
+def fhm_year_metadata(flood_year, skip_prev):
+    flood_year_probability = int(100/flood_year)
+    layer_list = []
+    if skip_prev:
+        layer_list = Layer.objects.filter(name__icontains='fh{0}yr'.format(flood_year)).exclude(Q(keywords__name__icontains='flood hazard map')&Q(category__identifier='geoscientificInformation')&Q(purpose__icontains='the')&Q(abstract__icontains='the'))
+    else:
+        layer_list = Layer.objects.filter(name__icontains='fh{0}yr'.format(flood_year))
     total_layers = len(layer_list)
+    
     ctr = 0
     fh_err_log = "Flood-Hazard-Error-Log.txt"
     f = open(fh_err_log,'w')
     for layer in layer_list:
         print "Layer: %s" % layer.name
-        # fh_style_update(layer,f)
-        # fh_perms_update(layer,f)
+        fh_style_update(layer,f)
+        fh_perms_update(layer,f)
 
-        batch_seed(layer)
+        #batch_seed(layer)
 
-        # map_resolution = ''
-        # first_half = ''
-        # second_half = ''
-        # if "_10m_30m" in layer.name:
-        #     map_resolution = '30'
-        # elif "_10m" in layer.name:
-        #     map_resolution = '10'
-        # elif "_30m" in layer.name:
-        #     map_resolution = '30'
-        #
-        # print "Layer: %s" % layer.name
-        # layer.title = layer.name.replace("_10m","").replace("_30m","").replace("__"," ").replace("_"," ").replace("fh%syr" % flood_year,"%s Year Flood Hazard Map" % flood_year).title()
-        #
-        # first_half = "This shapefile, with a resolution of %s meters, illustrates the inundation extents in the area if the actual amount of rain exceeds that of a %s year-rain return period." % (map_resolution,flood_year) + "\n\n" + "Note: There is a 1/" + flood_year + " (" + flood_year_probability + "%) probability of a flood with " +flood_year + " year return period occurring in a single year. \n\n"
-        # second_half = "3 levels of hazard:" + "\n" + "Low Hazard (YELLOW)" + "\n" + "Height: 0.1m-0.5m" + "\n\n" + "Medium Hazard (ORANGE)" + "\n" + "Height: 0.5m-1.5m" + "\n\n" + "High Hazard (RED)" + "\n" + "Height: beyond 1.5m"
-        # layer.abstract = first_half + second_half
-        #
-        # layer.purpose = " The flood hazard map may be used by the local government for appropriate land use planning in flood-prone areas and for disaster risk reduction and management, such as identifying areas at risk of flooding and proper planning of evacuation."
-        #
-        # layer.keywords.add("Flood Hazard Map")
-        # layer.category = TopicCategory.objects.get(identifier="geoscientificInformation")
-        # layer.save()
+        map_resolution = ''
+        first_half = ''
+        second_half = ''
+        if "_10m_30m" in layer.name:
+            map_resolution = '30'
+        elif "_10m" in layer.name:
+            map_resolution = '10'
+        elif "_30m" in layer.name:
+            map_resolution = '30'
+        
+        print "Layer: %s" % layer.name
+        layer.title = layer.name.replace("_10m","").replace("_30m","").replace("__"," ").replace("_"," ").replace("fh%syr" % flood_year,"%s Year Flood Hazard Map" % flood_year).title()
+        
+        first_half = "This shapefile, with a resolution of %s meters, illustrates the inundation extents in the area if the actual amount of rain exceeds that of a %s year-rain return period." % (map_resolution,flood_year) + "\n\n" + "Note: There is a 1/" + flood_year + " (" + flood_year_probability + "%) probability of a flood with " +flood_year + " year return period occurring in a single year. \n\n"
+        second_half = "3 levels of hazard:" + "\n" + "Low Hazard (YELLOW)" + "\n" + "Height: 0.1m-0.5m" + "\n\n" + "Medium Hazard (ORANGE)" + "\n" + "Height: 0.5m-1.5m" + "\n\n" + "High Hazard (RED)" + "\n" + "Height: beyond 1.5m"
+        layer.abstract = first_half + second_half
+        
+        layer.purpose = " The flood hazard map may be used by the local government for appropriate land use planning in flood-prone areas and for disaster risk reduction and management, such as identifying areas at risk of flooding and proper planning of evacuation."
+        
+        layer.keywords.add("Flood Hazard Map")
+        layer.category = TopicCategory.objects.get(identifier="geoscientificInformation")
+        layer.save()
         ctr+=1
         print "[{0} YEAR FH METADATA] {1}/{2} : {3}".format(flood_year,ctr,total_layers,layer.name)
     f.close()
 
 @task(name='geonode.tasks.update.layers_metadata_update', queue='update')
-def layers_metadata_update():
-    # This will work for layer titles with the format '_fhXyr_'
-    # layer_list = Layer.objects.filter(name__icontains='fh5yr').exclude(Q(keywords__name__icontains='flood hazard map')&Q(category__identifier='geoscientificInformation')&Q(purpose__icontains='the')&Q(abstract__icontains='the'))
-    layer_list = Layer.objects.filter(name__icontains='fh5yr')
-    total_layers = 0
-    if layer_list is not None:
-        total_layers = total_layers + len(layer_list)
-        layer_metadata(layer_list,'5','20')
+def fhm_metadata_update(skip_prev=True, flood_years=(5, 25, 100)):
+    for year in flood_years:
+        fhm_year_metadata(year, skip_prev) 
 
-    layer_list = Layer.objects.filter(name__icontains='fh25yr')
-    if layer_list is not None:
-        total_layers = total_layers + len(layer_list)
-        layer_metadata(layer_list,'25','4')
-
-    layer_list = Layer.objects.filter(name__icontains='fh100yr')
-    if layer_list is not None:
-        total_layers = total_layers + len(layer_list)
-        layer_metadata(layer_list,'100','1')
 
 @task(name='geonode.tasks.update.geoserver_update_layers', queue='update')
 def geoserver_update_layers(*args, **kwargs):
