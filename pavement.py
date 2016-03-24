@@ -28,6 +28,7 @@ import zipfile
 import glob
 import fileinput
 from setuptools.command import easy_install
+from urlparse import urlparse
 
 from paver.easy import task, options, cmdopts, needs
 from paver.easy import path, sh, info, call_task
@@ -344,10 +345,13 @@ def start_geoserver(options):
 
     from geonode.settings import OGC_SERVER
     GEOSERVER_BASE_URL = OGC_SERVER['default']['LOCATION']
+    url = GEOSERVER_BASE_URL
+    
+    if urlparse(GEOSERVER_BASE_URL).hostname != 'localhost':
+        print "Warning: OGC_SERVER['default']['LOCATION'] hostname is not equal to 'localhost'"
 
-    url = "http://localhost:8080/geoserver/"
-    if GEOSERVER_BASE_URL != url:
-        print 'your GEOSERVER_BASE_URL does not match %s' % url
+    if not GEOSERVER_BASE_URL.endswith('/'):
+        print "Error: OGC_SERVER['default']['LOCATION'] does not end with a '/'"
         sys.exit(1)
 
     download_dir = path('downloaded').abspath()
@@ -356,6 +360,7 @@ def start_geoserver(options):
     web_app = path('geoserver/geoserver').abspath()
     log_file = path('geoserver/jetty.log').abspath()
     config = path('scripts/misc/jetty-runner.xml').abspath()
+    jetty_port = urlparse(GEOSERVER_BASE_URL).port
     # @todo - we should not have set workdir to the datadir but a bug in geoserver
     # prevents geonode security from initializing correctly otherwise
     with pushd(data_dir):
@@ -397,6 +402,7 @@ def start_geoserver(options):
             # workaround for JAI sealed jar issue and jetty classloader
             ' -Dorg.eclipse.jetty.server.webapp.parentLoaderPriority=true'
             ' -jar %(jetty_runner)s'
+            ' --port %(jetty_port)i'
             ' --log %(log_file)s'
             ' %(config)s'
             ' > %(loggernullpath)s &' % locals()
