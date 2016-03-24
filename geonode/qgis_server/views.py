@@ -116,7 +116,10 @@ def legend(request, layername, layertitle=None):
             'REQUEST': 'GetLegendGraphic',
             'LAYER': layer.name,
             'LAYERTITLE': layertitle,
-            'FORMAT': 'image/png'
+            'FORMAT': 'image/png',
+            'TILED': 'true',
+            'transparent': 'true',
+            'legend_options': 'fontAntiAliasing:true;fontSize:11;fontName:Arial'
         }
 
         url = qgis_server + '?'
