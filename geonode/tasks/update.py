@@ -130,7 +130,7 @@ def fhm_year_metadata(flood_year, skip_prev):
     else:
         layer_list = Layer.objects.filter(name__icontains='fh{0}yr'.format(flood_year))
     total_layers = len(layer_list)
-    
+    print("Updating metadata of [{0}] Flood Hazard Maps for Flood Year [{1}]".format(total_layers, flood_year))
     ctr = 0
     fh_err_log = "Flood-Hazard-Error-Log.txt"
     f = open(fh_err_log,'w')
