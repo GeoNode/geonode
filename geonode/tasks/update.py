@@ -1,4 +1,3 @@
-import os
 from geonode.geoserver.helpers import ogc_server_settings
 from pprint import pprint
 from celery.task import task
@@ -17,12 +16,11 @@ from geonode.layers.utils import create_thumbnail
 from django.core.exceptions import ObjectDoesNotExist
 from celery.utils.log import get_task_logger
 import geonode.settings as settings
+import os, subprocess, time, datetime
 logger = get_task_logger("geonode.tasks.update")
 from geonode.security.models import PermissionLevelMixin
 from django.contrib.auth.models import Group
 from guardian.shortcuts import assign_perm, get_anonymous_user
-import time
-import datetime
 
 @task(name='geonode.tasks.update.fh_perms_update', queue='update')
 def fh_perms_update(layer,filename):
@@ -33,9 +31,12 @@ def fh_perms_update(layer,filename):
     #for layer in layer_list:
 
     try:
-        anonymous_group = Group.objects.get(name='anonymous')
-        assign_perm('view_resourcebase', anonymous_group, layer.get_self_resource())
-        assign_perm('download_resourcebase', anonymous_group, layer.get_self_resource())
+        # geoadmin = User.objects.get.filter(username='geoadmin')
+        # for user in User.objects.all():
+        layer.remove_all_permissions()
+        anon_group = Group.objects.get(name='anonymous')
+        assign_perm('view_resourcebase', anon_group, layer.get_self_resource())
+        assign_perm('download_resourcebase', anon_group, layer.get_self_resource())
         # superusers=get_user_model().objects.filter(Q(is_superuser=True))
         # for superuser in superusers:
         #     assign_perm('view_resourcebase', superuser, layer.get_self_resource())
@@ -106,6 +107,21 @@ def fh_style_update(layer,filename):
 
 # f.close()
 
+def batch_seed(layer):
+    try:
+        out = subprocess.check_output([settings.PROJECT_ROOT + '/gwc.sh', 'seed',
+        '{0}:{1}'.format(layer.workspace,layer.name) , 'EPSG:4326', '-v', '-a',
+        settings.OGC_SERVER['default']['USER'] + ':' +
+        settings.OGC_SERVER['default']['PASSWORD'], '-u',
+        settings.OGC_SERVER['default']['LOCATION'] + 'gwc/rest'],
+        stderr=subprocess.STDOUT)
+        print out
+    except subprocess.CalledProcessError as e:
+        print 'Error seeding layer:', layer
+        print 'e.returncode:', e.returncode
+        print 'e.cmd:', e.cmd
+        print 'e.output:', e.output
+
 def layer_metadata(layer_list,flood_year,flood_year_probability):
     total_layers = len(layer_list)
     ctr = 0
@@ -115,6 +131,8 @@ def layer_metadata(layer_list,flood_year,flood_year_probability):
         print "Layer: %s" % layer.name
         # fh_style_update(layer,f)
         # fh_perms_update(layer,f)
+
+        batch_seed(layer)
 
         # map_resolution = ''
         # first_half = ''
@@ -162,6 +180,14 @@ def layers_metadata_update():
         total_layers = total_layers + len(layer_list)
         layer_metadata(layer_list,'100','1')
 
+@task(name='geonode.tasks.update.geoserver_update_layers', queue='update')
+def geoserver_update_layers(*args, **kwargs):
+    """
+    Runs update layers.
+    """
+    return gs_slurp(*args, **kwargs)
+
+
 @task(name='geonode.tasks.update.create_document_thumbnail', queue='update')
 def create_document_thumbnail(object_id):
     """
@@ -177,10 +203,3 @@ def create_document_thumbnail(object_id):
     image = document._render_thumbnail()
     filename = 'doc-%s-thumb.png' % document.id
     document.save_thumbnail(filename, image)
-
-@task(name='geonode.tasks.update.geoserver_update_layers', queue='update')
-def geoserver_update_layers(*args, **kwargs):
-    """
-    Runs update layers.
-    """
-    return gs_slurp(*args, **kwargs)
