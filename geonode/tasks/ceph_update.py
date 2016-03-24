@@ -8,9 +8,9 @@ from django.core.exceptions import ObjectDoesNotExist
 from celery.utils.log import get_task_logger
 import geonode.settings as settings
 from geonode.cephgeo.utils import get_data_class_from_filename
-logger = get_task_logger("geonode.tasks.update")
+logger = get_task_logger("geonode.tasks.ceph_update")
 
-@task(name='geonode.tasks.update.ceph_metadata_update', queue='update')
+@task(name='geonode.tasks.ceph_update.ceph_metadata_update', queue='update')
 def ceph_metadata_update(uploaded_objects_list, update_grid=True):
     """
         NOTE: DOES NOT WORK
