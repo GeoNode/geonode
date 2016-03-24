@@ -38,9 +38,10 @@ def fh_perms_update(layer,filename):
     try:
         # geoadmin = User.objects.get.filter(username='geoadmin')
         # for user in User.objects.all():
-        datarequesters = Group.objects.get(name='data-requesters')
-        assign_perm('view_resourcebase', datarequesters, layer.get_self_resource())
-        assign_perm('download_resourcebase', datarequesters, layer.get_self_resource())
+        layer.remove_all_permissions()
+        anon_group = Group.objects.get(name='anonymous')
+        assign_perm('view_resourcebase', anon_group, layer.get_self_resource())
+        assign_perm('download_resourcebase', anon_group, layer.get_self_resource())
         # superusers=get_user_model().objects.filter(Q(is_superuser=True))
         # for superuser in superusers:
         #     assign_perm('view_resourcebase', superuser, layer.get_self_resource())
