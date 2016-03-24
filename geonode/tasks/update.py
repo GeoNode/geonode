@@ -123,7 +123,7 @@ def batch_seed(layer):
         print 'e.output:', e.output
 
 def fhm_year_metadata(flood_year, skip_prev):
-    flood_year_probability = str(int(100/flood_year))
+    flood_year_probability = int(100/flood_year)
     layer_list = []
     if skip_prev:
         layer_list = Layer.objects.filter(name__icontains='fh{0}yr'.format(flood_year)).exclude(Q(keywords__name__icontains='flood hazard map')&Q(category__identifier='geoscientificInformation')&Q(purpose__icontains='the')&Q(abstract__icontains='the'))
@@ -154,10 +154,21 @@ def fhm_year_metadata(flood_year, skip_prev):
         print "Layer: %s" % layer.name
         layer.title = layer.name.replace("_10m","").replace("_30m","").replace("__"," ").replace("_"," ").replace("fh%syr" % flood_year,"%s Year Flood Hazard Map" % flood_year).title()
         
-        first_half = "This shapefile, with a resolution of %s meters, illustrates the inundation extents in the area if the actual amount of rain exceeds that of a %s year-rain return period." % (map_resolution,flood_year) + "\n\n" + "Note: There is a 1/" + str(flood_year) + " (" + flood_year_probability + "%) probability of a flood with " +str(flood_year) + " year return period occurring in a single year. \n\n"
-        second_half = "3 levels of hazard:" + "\n" + "Low Hazard (YELLOW)" + "\n" + "Height: 0.1m-0.5m" + "\n\n" + "Medium Hazard (ORANGE)" + "\n" + "Height: 0.5m-1.5m" + "\n\n" + "High Hazard (RED)" + "\n" + "Height: beyond 1.5m"
-        layer.abstract = first_half + second_half
-        
+        layer.abstract = """This shapefile, with a resolution of {0} meters, illustrates the inundation extents in the area if the actual amount of rain exceeds that of a {1} year-rain return period.
+
+Note: There is a 1/{2} ({3}%) probability of a flood with {4} year return period occurring in a single year.
+
+3 levels of hazard:
+Low Hazard (YELLOW)
+Height: 0.1m-0.5m
+
+Medium Hazard (ORANGE)
+Height: 0.5m-1.5m
+
+High Hazard (RED)
+Height: beyond 1.5m""".format(map_resolution, flood_year, flood_year, flood_year_probability, flood_year)
+
+
         layer.purpose = " The flood hazard map may be used by the local government for appropriate land use planning in flood-prone areas and for disaster risk reduction and management, such as identifying areas at risk of flooding and proper planning of evacuation."
         
         layer.keywords.add("Flood Hazard Map")
