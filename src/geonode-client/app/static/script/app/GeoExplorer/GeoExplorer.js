@@ -1127,7 +1127,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                     layer.url = thisRecord.get('LayerUrl');
                 };
 
-                if(thisRecord.get('ServiceType') === 'ESRI_ImageServer'){
+                if(thisRecord.get('ServiceType') === 'ESRI_ImageServer' || thisRecord.get('ServiceType') === 'ESRI_MapServer'){
                     layer.url = thisRecord.get('LayerUrl');
                     source = geoEx.addLayerSource({config: {url: layer.url, ptype: 'gxp_arcrestsource'}});
                 };
