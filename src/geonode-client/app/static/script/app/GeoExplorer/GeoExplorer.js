@@ -2201,7 +2201,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             renderTo: 'search_form',
             trackSelection: true,
             permalinkURL: '/data/search',
-            //searchURL: 'http://54.83.116.189:8983/solr/wmdata/select',
+            //searchURL: 'http://174.129.181.119:8983/solr/hypermap/select',
             searchURL: "/solr",
             layerDetailURL: '/data/search/detail',
             constraints: [this.bbox],
