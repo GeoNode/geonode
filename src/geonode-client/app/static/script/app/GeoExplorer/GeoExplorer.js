@@ -1085,15 +1085,13 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
         var source = dataSource;
 
         var layerStore = this.mapPanel.layers;
-        var isLocal = source instanceof gxp.plugins.GeoNodeSource &&
-            source.url.replace(this.urlPortRegEx, "$1/").indexOf(
-                this.localGeoServerBaseUrl.replace(
-                    this.urlPortRegEx, "$1/")) === 0;
+        var isLocal = source instanceof gxp.plugins.GeoNodeSource;
         for (var i = 0, ii = records.length; i < ii; ++i) {
             var thisRecord = records[i];
             if (thisRecord.get('Is_Public') && isLocal) {
                 //Get all the required WMS parameters from the GeoNode/Worldmap database
                 // instead of GetCapabilities
+;
                 var typename = this.searchTable.getlayerTypename(records[i]);
                 var tiled = thisRecord.get("tiled") || true;
 
@@ -1129,36 +1127,18 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
 
                 if(thisRecord.get('ServiceType') === 'ESRI_ImageServer' || thisRecord.get('ServiceType') === 'ESRI_MapServer'){
                     layer.url = thisRecord.get('LayerUrl');
-                    source = geoEx.addLayerSource({config: {url: layer.url, ptype: 'gxp_arcrestsource'}});
-                };
+                    source = geoEx.addLayerSource({
+                        config: {url: layer.url, ptype: 'gxp_arcrestsource'},
+                        callback: function(){
+                            this.loadRecord(source, layerStore, layer, layer_detail_url);
+                        }
 
-                var record = source.createLayerRecord(layer);
-                record.selected = true;
-                // record.data.detail_url = thisRecord.get('LayerUrl').indexOf('worldmap.harvard.edu') > -1 ?
-                //         '/data/' + thisRecord.get('LayerName') :
-                //         this.mapproxy_backend + JSON.parse(thisRecord.get('Location')).layerInfoPage;
-                record.data.detail_url = layer_detail_url;
+                    });
+                }else{
+                    this.loadRecord(source, layerStore, layer, layer_detail_url);
+                }
 
-                if (record) {
-                    if (record.get("group") === "background") {
-                        var pos = layerStore.queryBy(
-                            function(rec) {
-                                return rec.get("group") === "background"
-                            }).getCount();
-                        layerStore.insert(pos, [record]);
-
-                    } else {
-                        category = record.get("group");
-                        if (!category || category == '')
-                            record.set("group", "General");
-
-                        geoEx.layerTree.addCategoryFolder({"group":record.get("group")}, true);
-                        layerStore.add([record]);
-
-                        //geoEx.reorderNodes(record.getLayer());
-                        geoEx.layerTree.overlayRoot.findDescendant("layer", record.getLayer()).select();
-                    }
-                };
+                
             }
             else {
                 //Not a local GeoNode layer, use source's standard method for creating the layer.
@@ -1189,7 +1169,36 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
         this.searchWindow.hide();
     },
 
+    loadRecord: function(source, layerStore, config, layer_detail_url){
+        var record = source.createLayerRecord(config);
+        var geoEx = this;
+        record.selected = true;
+        // record.data.detail_url = thisRecord.get('LayerUrl').indexOf('worldmap.harvard.edu') > -1 ?
+        //         '/data/' + thisRecord.get('LayerName') :
+        //         this.mapproxy_backend + JSON.parse(thisRecord.get('Location')).layerInfoPage;
+        record.data.detail_url = layer_detail_url;
 
+        if (record) {
+            if (record.get("group") === "background") {
+                var pos = layerStore.queryBy(
+                    function(rec) {
+                        return rec.get("group") === "background"
+                    }).getCount();
+                layerStore.insert(pos, [record]);
+
+            } else {
+                category = record.get("group");
+                if (!category || category == '')
+                    record.set("group", "General");
+
+                geoEx.layerTree.addCategoryFolder({"group":record.get("group")}, true);
+                layerStore.add([record]);
+
+                //geoEx.reorderNodes(record.getLayer());
+                geoEx.layerTree.overlayRoot.findDescendant("layer", record.getLayer()).select();
+            }
+        };
+    },
 
     initSearchPanel: function() {
 
