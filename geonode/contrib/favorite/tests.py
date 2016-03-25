@@ -4,21 +4,29 @@ from django.contrib.auth import get_user_model
 from django.contrib.contenttypes.models import ContentType
 from django.core.urlresolvers import reverse
 from django.db.models import Max
-from django.test import TestCase
+
+from tastypie.test import ResourceTestCase, TestApiClient
 
 from .models import Favorite
 from geonode.base.populate_test_data import create_models
 from geonode.documents.models import Document
 
 
-class FavoriteTest(TestCase):
+class FavoriteTest(ResourceTestCase):
     """
     Tests geonode.contrib.favorite app/module
     """
     def setUp(self):
+        super(FavoriteTest, self).setUp()
         self.adm_un = "admin"
         self.adm_pw = "admin"
         create_models(type="document")
+        self.list_url = reverse(
+            'api_dispatch_list',
+            kwargs={
+                'api_name': 'api',
+                'resource_name': 'favorites'})
+        self.api_client = TestApiClient()
 
     # tests of Favorite and FavoriteManager methods.
     def test_favorite(self):
@@ -26,7 +34,6 @@ class FavoriteTest(TestCase):
         test_user = get_user_model().objects.get(id=1)
         test_document_1 = Document.objects.get(id=1)
         test_document_2 = Document.objects.get(id=2)
-
         # test create favorite.
         Favorite.objects.create_favorite(test_document_1, test_user)
         Favorite.objects.create_favorite(test_document_2, test_user)
@@ -171,6 +178,43 @@ class FavoriteTest(TestCase):
         """
         response = self._get_response("delete_favorite", ("1",))
         self.assertEqual(response.status_code, 302)
+
+    def test_api_filtering(self):
+        """Test api filtering and searching"""
+    
+        test_user = get_user_model().objects.get(username=self.adm_un)
+        test_document_1 = Document.objects.get(id=1)
+        test_document_2 = Document.objects.get(id=2)
+        test_document_3 = Document.objects.get(id=3)
+        # test create favorite.
+        Favorite.objects.create_favorite(test_document_1, test_user)
+        Favorite.objects.create_favorite(test_document_2, test_user)
+        Favorite.objects.create_favorite(test_document_3, test_user)
+        Favorite.objects.create_favorite(test_user, test_user)
+
+        self.api_client.client.login(username=self.adm_un, password=self.adm_pw)
+        #Keywords filtering
+        filters = '?keyword=doctagunique'
+        resp = self.api_client.get(self.list_url + filters)
+        self.assertValidJSONResponse(resp)
+        self.assertEquals(len(self.deserialize(resp)['objects']), 1)
+
+        #Title filtering
+        filters = '?title=lorem1'
+        resp = self.api_client.get(self.list_url + filters)
+        self.assertValidJSONResponse(resp)
+        self.assertEquals(len(self.deserialize(resp)['objects']), 1)
+
+        #Type filtering
+        filters = '?type=profile'
+        resp = self.api_client.get(self.list_url + filters)
+        self.assertValidJSONResponse(resp)
+        self.assertEquals(len(self.deserialize(resp)['objects']), 1)
+
+        filters = '?type=document'
+        resp = self.api_client.get(self.list_url + filters)
+        self.assertValidJSONResponse(resp)
+        self.assertEquals(len(self.deserialize(resp)['objects']), 3)
 
     def _get_response(self, input_url, input_args):
         return self.client.post(
