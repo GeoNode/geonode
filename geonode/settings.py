@@ -894,6 +894,9 @@ MUNICIPALITY_SHAPEFILE = 'geonode:phl_adm2_municipalities_utm_z51n'
 FILE_UPLOAD_PERMISSIONS = 0664
 GEOSTORAGE_HOST = ""
 
+FILE_UPLOAD_TEMP_DIR = "/tmp/geonode"
+THUMBNAIL_FILE_PERMISSIONS = 0664
+
 # Load more settings from a file called local_settings.py if it exists
 try:
     from local_settings import *  # noqa
@@ -927,4 +930,3 @@ if 'geonode.geoserver' in GEONODE_APPS:
     MAP_BASELAYERS = [LOCAL_GEOSERVER]
     MAP_BASELAYERS.extend(baselayers)
 
-FILE_UPLOAD_TEMP_DIR = "/tmp/geonode"
