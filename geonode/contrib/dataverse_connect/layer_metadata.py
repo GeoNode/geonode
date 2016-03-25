@@ -96,11 +96,13 @@ class LayerMetadata:
                     '\nErrors: %s' % f.errors)
             raise forms.ValidationError(err_msg)
 
+        '''
         print '-'
         for k, v in params.items():
             print '%s: (%s)' % (k, v)
         print '-'
-
+        '''
+        
         if as_json:
             try:
                 return json.dumps(params)

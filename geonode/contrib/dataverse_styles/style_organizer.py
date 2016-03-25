@@ -83,7 +83,7 @@ class StyleOrganizer(object):
         """
         (1) Check params and create rules
         """
-        print ('set_layer_name_and_get_rule_data 1')
+        #print ('set_layer_name_and_get_rule_data 1')
         if self.styling_params is None:
             return None
         resp_json = get_sld_rules(self.styling_params)
@@ -109,7 +109,7 @@ class StyleOrganizer(object):
             self.add_err_msg('Failed to find rules in response')
             return None
 
-        print ('sld_rule_data', sld_rule_data)
+        #print ('sld_rule_data', sld_rule_data)
         return sld_rule_data
 
 

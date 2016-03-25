@@ -85,7 +85,7 @@ def view_create_new_layer_style(request):
         json_msg = MessageHelperJSON.get_json_msg(success=False, msg="use a POST request")
         return HttpResponse(status=405, content=json_msg, content_type="application/json")
 
-    print 'view_create_new_layer_style 1'
+    #print 'view_create_new_layer_style 1'
 
     Post_Data_As_Dict = request.POST.dict()
     api_form = ClassifyRequestDataForm(Post_Data_As_Dict)
@@ -100,7 +100,7 @@ def view_create_new_layer_style(request):
 
         return HttpResponse(status=400, content=json_msg, content_type="application/json")
 
-    print 'view_create_new_layer_style 2'
+    #print 'view_create_new_layer_style 2'
 
 
     #-------------

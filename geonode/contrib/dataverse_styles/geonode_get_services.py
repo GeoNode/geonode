@@ -75,7 +75,7 @@ def get_sld_rules(params):
     Example of url sent to Geoserver:
     http://localhost:8080/geoserver/rest/sldservice/geonode:income_2so/classify.xml?reverse=&attribute=B19013_Med&ramp=Gray&endColor=%23A50F15&intervals=5&startColor=%23FEE5D9&method=equalInterval
     """
-    print('get_sld_rules.sld type: %s, params: %s' % (type(params), params))
+    #print('get_sld_rules.sld type: %s, params: %s' % (type(params), params))
     if not type(params) in (QueryDict, dict):
         return None
 
@@ -84,7 +84,7 @@ def get_sld_rules(params):
     # ----------------------------------
     f = SLDHelperForm(params)
     if not f.is_valid():
-        print ('form failed')
+        #print ('form failed')
         return MessageHelperJSON.get_json_msg(success=False,\
             msg='The following errors were encounted:',\
             data_dict=f.get_error_list())
@@ -93,12 +93,13 @@ def get_sld_rules(params):
     # Create geoserver query url
     # ----------------------------------
     sld_rules_url = get_retrieve_sld_rules_url(f.get_url_params_dict())
+    """
     print '-' *40
     print sld_rules_url
     print '-' *40
-
+    """
     response, content = make_geoserver_get_request(sld_rules_url)
-    print 'response:', response
+    #print 'response:', response
 
     # ----------------------------------
     # New rules not created -- possible bad data
@@ -172,7 +173,7 @@ def get_layer_features_definition(layer_name):
     # Create geoserver query url
     #query_url = 'rest/sldservice/geonode:%s/attributes.xml' % layer_name
     layer_defn_url =get_layer_features_definition_url(layer_name)
-    print (layer_defn_url)
+    #print (layer_defn_url)
     response, content = make_geoserver_get_request(layer_defn_url)
 
 
@@ -227,7 +228,7 @@ def get_sld_xml_for_layer(layer_name):
 
     if response:
         response_code = response.get('status', '(No status code set)')
-        print 'type(response_code)', type(response_code)
+        #print 'type(response_code)', type(response_code)
         if response_code != '200':
             err_msg = '''Call to Geoserver returned response code of %s when\
             trying to find layer "%s"''' % (response_code, layer_name)
