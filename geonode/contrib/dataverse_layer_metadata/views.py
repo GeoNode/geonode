@@ -11,6 +11,8 @@ from shared_dataverse_information.dataverse_info.forms_existing_layer import Che
 
 from geonode.contrib.datatables.models import LatLngTableMappingRecord
 
+from geonode.contrib.datatables.forms import TableJoinResultForm
+
 logger = logging.getLogger("geonode.contrib.dataverse_layer_metadata.views")
 from geonode.contrib.basic_auth_decorator import http_basic_auth_for_api
 
@@ -63,7 +65,11 @@ def get_existing_layer_data(request):
     # Is this a TableJoin, if so, add more data
     if map_layer.join_layer.count() > 0:
         join_layer = map_layer.join_layer.all()[0]
-        data_dict.update(join_layer.as_json())
+        #data_dict.update(join_layer.as_json())
+
+        data_dict.update(\
+            TableJoinResultForm.get_cleaned_data_from_table_join(join_layer)\
+            )
 
     # Was this a Datatable mapped by Lat/Lng
     if LatLngTableMappingRecord.objects.filter(layer=map_layer).count() > 0:
