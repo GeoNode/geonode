@@ -3,9 +3,6 @@ from pprint import pprint
 from celery.task import task
 from geonode.geoserver.helpers import gs_slurp
 from geonode.documents.models import Document
-from geonode.cephgeo.models import CephDataObject, DataClassification
-from geonode.cephgeo.utils import get_data_class_from_filename
-from geonode.cephgeo.gsquery import nested_grid_update
 from geonode.layers.models import Layer
 from geonode.base.models import TopicCategory
 from django.db.models import Q
