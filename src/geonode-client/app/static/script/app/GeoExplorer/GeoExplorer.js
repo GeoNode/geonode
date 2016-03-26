@@ -1127,18 +1127,19 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
 
                 if(thisRecord.get('ServiceType') === 'ESRI_ImageServer' || thisRecord.get('ServiceType') === 'ESRI_MapServer'){
                     layer.url = thisRecord.get('LayerUrl');
-                    source = geoEx.addLayerSource({
-                        config: {url: layer.url, ptype: 'gxp_arcrestsource'},
-                        callback: function(){
-                            this.loadRecord(source, layerStore, layer, layer_detail_url);
-                        }
-
-                    });
+                    layer.name = thisRecord.get('LayerTitle');
+                    if (layer.srs == null){
+                      //Assume that the bbox needs to be transformed to web mercator
+                      //delete layer.bbox;
+                      layer_bbox = [thisRecord.get('MinX'),thisRecord.get('MinY'),thisRecord.get('MaxX'),thisRecord.get('MaxY')];
+                      layer.bbox = new OpenLayers.Bounds(layer_bbox).transform("EPSG:4326", this.map.projection).toArray();
+                    }
+                    this.addEsriSourceAndLayer(layerStore, layer, layer_detail_url);
                 }else{
                     this.loadRecord(source, layerStore, layer, layer_detail_url);
                 }
 
-                
+
             }
             else {
                 //Not a local GeoNode layer, use source's standard method for creating the layer.
@@ -1167,6 +1168,17 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             }
         }
         this.searchWindow.hide();
+    },
+
+    addEsriSourceAndLayer: function(layerStore, layer, layer_detail_url){
+      this.addLayerSource({
+          config: {url: layer.url, ptype: 'gxp_arcrestsource'},
+          callback: function(source_id){
+              layer.source = source_id;
+              source = this.layerSources[source_id];
+              this.loadRecord(source, this.mapPanel.layers, layer, layer_detail_url);
+          }
+        });
     },
 
     loadRecord: function(source, layerStore, config, layer_detail_url){
