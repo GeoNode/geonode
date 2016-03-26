@@ -104,20 +104,22 @@ def fh_style_update(layer,filename):
 
 # f.close()
 
-def batch_seed(layer):
-    try:
-        out = subprocess.check_output([settings.PROJECT_ROOT + '/gwc.sh', 'seed',
-        '{0}:{1}'.format(layer.workspace,layer.name) , 'EPSG:4326', '-v', '-a',
-        settings.OGC_SERVER['default']['USER'] + ':' +
-        settings.OGC_SERVER['default']['PASSWORD'], '-u',
-        settings.OGC_SERVER['default']['LOCATION'] + 'gwc/rest'],
-        stderr=subprocess.STDOUT)
-        print out
-    except subprocess.CalledProcessError as e:
-        print 'Error seeding layer:', layer
-        print 'e.returncode:', e.returncode
-        print 'e.cmd:', e.cmd
-        print 'e.output:', e.output
+@task(name='geonode.tasks.update.geoserver_seed_layers', queue='update')
+def geoserver_seed_layers(layer_list):
+    for layer in layer_list:
+        try:
+            out = subprocess.check_output([settings.PROJECT_ROOT + '/gwc.sh', 'seed',
+            '{0}:{1}'.format(layer.workspace,layer.name) , 'EPSG:4326', '-v', '-a',
+            settings.OGC_SERVER['default']['USER'] + ':' +
+            settings.OGC_SERVER['default']['PASSWORD'], '-u',
+            settings.OGC_SERVER['default']['LOCATION'] + 'gwc/rest'],
+            stderr=subprocess.STDOUT)
+            print out
+        except subprocess.CalledProcessError as e:
+            print 'Error seeding layer:', layer
+            print 'e.returncode:', e.returncode
+            print 'e.cmd:', e.cmd
+            print 'e.output:', e.output
 
 def fhm_year_metadata(flood_year, skip_prev):
     flood_year_probability = int(100/flood_year)
