@@ -4,39 +4,40 @@
 {% load i18n %}
 {% load url from future %}
 
-
-{% block title %} {% trans "Data Request Registration Form" %} - {{ block.super }} {% endblock %}
+{% block title %} {% trans "Register" %} - {{ block.super }} {% endblock %}
 
 {% block body_class %}Data Request Registration Input{% endblock %}
 
 {% block body_outer %}
-  {% block body %}
-  
-  
 
   <div class="page-header">
-    <h2 class="page-title">{% trans "Data Request Registration Form" %}</h2>
+    <h2 class="page-title">{% trans "Registration Form" %}</h2>
   </div>
   <div class="row">
     <div class="col-md-6 col-md-offset-1">
       <form action="" class="form-horizontal" method="post" enctype="multipart/form-data">{% csrf_token %}
-        <div class="row">
+
           <div class="form-controls">
             {% crispy form %}
           </div>
           <div class="form-actions">
             <input type="submit" class="btn btn-primary btn-md" value="{% trans 'Continue' %}"/>
           </div>
-        </div>
+
       </form>
+    </div>
+    <div class="col-md-3 col-md-offset-1">
+      <h2>Step 1</h2>
+      <p>Please fill out your complete details.</p>
+      <p>Registering your user details allow us to better understand who benefits from the datasets produced by the Program.</p>
+      <p><em>Note on the formal request letter:</em> The <a href="https://goo.gl/O7ULNn" title="Sample Formal Letter for Requesting Data">letter</a> is a signed endorsement from the head of the agency, department head, academic adviser, etc.</p>
     </div>
   </div>
 <!--<section>
         <a href="{% url 'datarequests:registration_part_one' %}" class="btn btn-default btn-md" style="margin-top: 20px;">{% trans "Prev Step" %}</a>
         <a href="#" id="upload-button" class="btn btn-primary btn-md">{% trans "Submit" %}</a>
       </section>-->
-{% endblock body %}
- {% block sidebar %}{% endblock sidebar %}
+
 {% endblock body_outer %}
 
 
@@ -46,5 +47,3 @@
     console.log("{{profile_form_data}}")
 </script>
 {% endblock extra_script %}
-
-

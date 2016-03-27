@@ -22,13 +22,13 @@ from .models import DataRequestProfile, RequestRejectionReason
 from pprint import pprint
 
 class DataRequestProfileForm(forms.ModelForm):
-    
+
     letter_file = forms.FileField(
         label=_('Formal Request Letter (PDF only)'),
         required = True
     )
-    
-    captcha = ReCaptchaField(attrs={'theme': 'clean'}) 
+
+    captcha = ReCaptchaField(attrs={'theme': 'clean'})
 
     class Meta:
         model = DataRequestProfile
@@ -53,7 +53,7 @@ class DataRequestProfileForm(forms.ModelForm):
         self.helper.form_tag = False
         # self.helper.form_show_labels = False
         self.helper.layout = Layout(
-            Fieldset('Requester Information',
+            Fieldset('User Information',
                 Div(
                     Field('first_name', css_class='form-control'),
                     css_class='form-group'
@@ -82,10 +82,13 @@ class DataRequestProfileForm(forms.ModelForm):
                     Field('contact_number', css_class='form-control'),
                     css_class='form-group'
                 ),
-                Field('letter_file'),
+                Div(
+                    Field('letter_file', css_class='form-control'),
+                    css_class='form-group'
+                ),
             ),
             Div(
-                
+
                 HTML("<br/><section class=widget>"),
                 Field('captcha'),
                 HTML("</section>")
@@ -96,15 +99,15 @@ class DataRequestProfileForm(forms.ModelForm):
         email = self.cleaned_data.get('email')
 
         return email
-    
+
     def clean_letter_file(self):
         letter_file = self.cleaned_data.get('letter_file')
         split_filename =  os.path.splitext(str(letter_file.name))
-        
+
         if letter_file and split_filename[len(split_filename)-1].lower()[1:] != "pdf":
             raise forms.ValidationError(_("This file type is not allowed"))
         return letter_file
-    
+
     def save(self, commit=True, *args, **kwargs):
         data_request = super(
             DataRequestProfileForm, self).save(commit=False, *args, **kwargs)
@@ -112,9 +115,9 @@ class DataRequestProfileForm(forms.ModelForm):
         if commit:
             data_request.save()
         return data_request
-        
+
 class DataRequestDetailsForm(forms.ModelForm):
-    
+
     INTENDED_USE_CHOICES = Choices(
         ('Disaster Risk Management', _('Disaster Risk Management')),
         ('Urban/Land Subdivision Planning',
@@ -128,7 +131,7 @@ class DataRequestDetailsForm(forms.ModelForm):
         ('Cellular Network Mapping', _('Cellular Network Mapping')),
         ('other', _('Other, please specify:')),
     )
-    
+
     ORGANIZATION_TYPE_CHOICES = Choices(
         (0, _('Phil-LiDAR 1 SUC')),
         (1, _('Phil-LiDAR 2 SUC' )),
@@ -151,17 +154,17 @@ class DataRequestDetailsForm(forms.ModelForm):
         ('faculty', _('Faculty')),
         ('student', _('Student')),
     )
-    
+
     purpose = forms.ChoiceField(
         label =_(u'Purpose of the Data'),
         choices = INTENDED_USE_CHOICES
     )
-    
+
     purpose_other = forms.CharField(
         label=_(u'Your custom purpose for the data'),
         required=False
     )
-        
+
     class Meta:
         model = DataRequestProfile
         fields=(
@@ -177,16 +180,16 @@ class DataRequestDetailsForm(forms.ModelForm):
             'funding_source',
             'is_consultant',
         )
-        
-    
-    
+
+
+
     def __init__(self, *args, **kwargs):
         super(DataRequestDetailsForm, self).__init__(*args, **kwargs)
         self.helper = FormHelper()
         # self.helper.form_class = 'form-horizontal'
         self.helper.form_tag = False
         # self.helper.form_show_labels = False
-        self.helper.layout = Layout( 
+        self.helper.layout = Layout(
             Div(
                 Field('project_summary', css_class='form-control'),
                 css_class='form-group'
@@ -197,7 +200,7 @@ class DataRequestDetailsForm(forms.ModelForm):
                     Field('purpose_other', css_class='form-control'),
                     css_class='col-sm-11 col-sm-offset-1'
                 ),
-                css_class='form-group'    
+                css_class='form-group'
             ),
             Div(
                Field('data_type_requested', css_class='form-control'),
@@ -227,10 +230,10 @@ class DataRequestDetailsForm(forms.ModelForm):
                 css_class='academe-fieldset',
             ),
             HTML("""
-            {% load i18n %} 
+            {% load i18n %}
              <legend>Area of Interest Shapefile (Optional)</legend>
              <p>Valid file formats are ONLY the following :
-             <ul><li>shp</li><li>dbf</li><li>prj</li><li>shx</li><li>xml</li></ul></p>
+             <ul><li>shp</li><li>dbf</li><li>prj</li><li>shx</li></ul></p>
             <div class="form-group">
                 {% block additional_info %}{% endblock %}
 
@@ -241,7 +244,7 @@ class DataRequestDetailsForm(forms.ModelForm):
                     {% endfor %}
                   </div>
                   {% endif %}
-                
+
                 <section id="drop-zone">
                     <h3><i class="fa fa-cloud-upload"></i><br />{% trans "Drop files here" %}</h3>
                 </section>
@@ -249,7 +252,7 @@ class DataRequestDetailsForm(forms.ModelForm):
                 <p>{% trans " or select them one by one:" %}</p>
 
                 <input class="btn" id="file-input" type="file" multiple>
-    
+
                 <a href="#" id="clear-button" class="btn btn-danger">{% trans "Clear Files" %}</a>
                 <br />
                 <br />
@@ -265,13 +268,14 @@ class DataRequestDetailsForm(forms.ModelForm):
                 {% endfor %}
                 </select>
                 </section>
-                
+
                 <section class="widget">
                 <ul id="global-errors"></ul>
                 <h5>{% trans "Files to be uploaded" %}</h5>
                 <div id="file-queue"></div>
                 </section>
-                
+                </div><!--form-group-->
+
             """),
         )
 
@@ -290,7 +294,7 @@ class DataRequestProfileShapefileForm(NewLayerUploadForm):
         ('Cellular Network Mapping', _('Cellular Network Mapping')),
         ('other', _('Other, please specify:')),
     )
-    
+
     ORGANIZATION_TYPE_CHOICES = Choices(
         (0, _('Phil-LiDAR 1 SUC')),
         (1, _('Phil-LiDAR 2 SUC' )),
@@ -327,19 +331,19 @@ class DataRequestProfileShapefileForm(NewLayerUploadForm):
     )
 
     abstract = forms.CharField(required=False)
-    
+
     charset = forms.CharField(required=False)
 
     project_summary = forms.CharField(
         label=_('Project Summary'),
         required=True
     )
-    
+
     purpose = forms.ChoiceField(
         label=_('Purpose/Intended Use of Data'),
         choices=INTENDED_USE_CHOICES
     )
-    
+
     purpose_other = forms.CharField(
         label=_(u'Your custom purpose for the data'),
         required=False
@@ -371,22 +375,22 @@ class DataRequestProfileShapefileForm(NewLayerUploadForm):
         max_length=255,
         required=False
     )
-    
+
     is_consultant = forms.BooleanField(
         required=False
     )
-    
+
     def __init__(self, *args, **kwargs):
         super(DataRequestProfileShapefileForm, self).__init__(*args, **kwargs)
-        
+
     def clean(self):
         cleaned = self.cleaned_data
         if cleaned['base_file']:
             cleaned = super(NewLayerUploadForm, self).clean()
-            
+
         cleaned[ 'purpose'] = self.clean_purpose()
         cleaned['purpose_other'] = self.clean_purpose_other()
-        
+
         return cleaned
 
     def clean_purpose_other(self):
@@ -418,7 +422,7 @@ class DataRequestProfileShapefileForm(NewLayerUploadForm):
             raise forms.ValidationError(
                 'This field is required.')
         return funding_source
-        
+
 class DataRequestProfileRejectForm(forms.ModelForm):
 
     REJECTION_REASON_CHOICES = Choices(
