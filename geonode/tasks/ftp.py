@@ -32,24 +32,24 @@ def fab_check_cephaccess(username, user_email, request_name):
     """
         Call to check if CephAccess is up and running
     """
-    
+
     #TODO: more detailed checks
     ## DONE: Check if DL folder is writeable
     ## Check from inside Cephaccess if Ceph Object Gateway is reachable
-    ## 
-    
+    ##
+
     test_file = '/tmp/test.txt'
     result = run("touch {0} && rm -f {0}".format(test_file))
     if result.failed:
         logger.error("Unable to access {0}. Host may be down or there may be a network problem.".format(env.hosts))
         mail_msg = """\
-An error was encountered on your FTP request named [{0}] for user [{1}]. 
-A duplicate FTP request toplevel directory was found. Please wait 
+An error was encountered on your data request named [{0}] for user [{1}].
+A duplicate FTP request toplevel directory was found. Please wait
 5 minutes in between submitting FTP requests and creating FTP folders.
-If error still persists, forward this email to [{2}]""".format( request_name, 
-                                                                username, 
+If error still persists, forward this email to [{2}]""".format( request_name,
+                                                                username,
                                                                 settings.FTP_SUPPORT_MAIL,)
-            
+
         mail_ftp_user(username, user_email, request_name, mail_msg)
         raise CephAccessException("Unable to access {0}. Host may be down or there may be a network problem.".format(env.hosts))
 
@@ -68,34 +68,34 @@ def fab_create_ftp_folder(ftp_request, ceph_obj_list_by_data_class, srs_epsg=Non
         top_dir, ftp_dir = get_folders_for_user(ftp_request.user, request_name)
         dl_script_path = settings.CEPHACCESS_DL_SCRIPT
         email = None
-        
+
         #Check for toplevel dir
         result = run("[ -d {0} ]".format(top_dir))
         if result.return_code == 1:
             logger.error("FTP Task Error: No toplevel directory was found.")
             ftp_request.status = FTPStatus.DUPLICATE
             mail_msg = """\
-An error was encountered on your FTP request named [{0}] for user [{1}]. 
-No top level directory was found. Please forward this email to [{2}]""".format( request_name, 
-                                                                username, 
+An error was encountered on your data request named [{0}] for user [{1}].
+No top level directory was found. Please forward this email to [{2}]""".format( request_name,
+                                                                username,
                                                                 settings.FTP_SUPPORT_MAIL,)
-            
+
             mail_ftp_user(username, user_email, request_name, mail_msg)
             return "ERROR: No top level directory was found."
-        
+
         #Check for duplicate folders
         result = run("[ -d {0} ]".format(ftp_dir))
         if result.return_code == 0:
             logger.error("FTP Task Error: A duplicate FTP request toplevel directory was found.")
             ftp_request.status = FTPStatus.DUPLICATE
             mail_msg = """\
-An error was encountered on your FTP request named [{0}] for user [{1}]. 
-A duplicate FTP request toplevel directory was found. Please wait 
+An error was encountered on your data request named [{0}] for user [{1}].
+A duplicate FTP request toplevel directory was found. Please wait
 5 minutes in between submitting FTP requests and creating FTP folders.
-If error still persists, forward this email to [{2}]""".format( request_name, 
-                                                                username, 
+If error still persists, forward this email to [{2}]""".format( request_name,
+                                                                username,
                                                                 settings.FTP_SUPPORT_MAIL,)
-            
+
             mail_ftp_user(username, user_email, request_name, mail_msg)
             return "ERROR: A duplicate FTP request toplevel directory was found."
 
@@ -105,31 +105,31 @@ If error still persists, forward this email to [{2}]""".format( request_name,
 
                 for data_class, ceph_obj_list in ceph_obj_list_by_data_class.iteritems():
                     type_dir = data_class.replace(" ", "_")
-                    
+
                     if srs_epsg is not None:
                         result = run("mkdir -p {0}".format(os.path.join("EPSG-"+str(srs_epsg),type_dir)))      # Create a directory for each geo-type
                     else:
-                        result = run("mkdir {0}".format(type_dir))      # Create a directory for each geo-type 
+                        result = run("mkdir {0}".format(type_dir))      # Create a directory for each geo-type
                     if result.return_code is not 0:                 #Handle error
                         logger.error("Error on FTP request: Failed to create data class subdirectory at [{0}]. Please notify the administrator of this error".format(ftp_dir))
                         ftp_request.status = FTPStatus.ERROR
                         mail_msg = """\
-An error was encountered on your FTP request named [{0}] for user [{1}]. 
-The system failed to create an dataclass subdirectory inside the FTP 
-folder at location [{2}]. Please e-mail the system administrator ({3}) 
-regarding this error.
+An error was encountered on your data request named [{0}] for user [{1}].
+The system failed to create an dataclass subdirectory inside the FTP
+folder at location [{2}]. Please forward this email to ({3})
+so that we can address this issue.
 
 ---RESULT TRACE---
 
-{4}""".format(  request_name, 
-                username, 
-                os.path.join(ftp_dir,type_dir), 
+{4}""".format(  request_name,
+                username,
+                os.path.join(ftp_dir,type_dir),
                 settings.FTP_SUPPORT_MAIL,
                 result,)
-                        
+
                         mail_ftp_user(username, user_email, request_name, mail_msg)
                         return "ERROR: Failed to create data class subdirectory [{0}].".format(os.path.join(ftp_dir,type_dir))
-                        
+
                     obj_dl_list = " ".join(map(str,ceph_obj_list))
                     if srs_epsg is not None:
                         result = run("python {0} -d={1} -p={2} {3}".format( dl_script_path,
@@ -144,38 +144,38 @@ regarding this error.
                         logger.error("Error on FTP request: Failed to download file/s for dataclass [{0}].".format(data_class))
                         ftp_request.status = FTPStatus.ERROR
                         mail_msg = """\
-Cannot access Ceph Data Store. An error was encountered on your FTP request named [{0}] for user [{1}]. 
+Cannot access Ceph Data Store. An error was encountered on your data request named [{0}] for user [{1}].
 The system failed to download the following files: [{2}]. Either the file/s do/es not exist,
-or the Ceph Data Storage is down. Please e-mail the system administrator ({3}) regarding this error.
+or the Ceph Data Storage is down. Please forward this email to ({3}) that we can address this issue..
 
 ---RESULT TRACE---
 
-{4}""".format(  request_name, 
-                username, 
-                obj_dl_list, 
+{4}""".format(  request_name,
+                username,
+                obj_dl_list,
                 settings.FTP_SUPPORT_MAIL,
                 result,)
                         mail_ftp_user(username, user_email, request_name, mail_msg)
                         return "ERROR: Failed to create folder [{0}].".format(ftp_dir)
-                    
+
         else:
             logger.error("Error on FTP request: Failed to create FTP folder at [{0}]. Please notify the administrator of this error".format(ftp_dir))
             ftp_request.status = FTPStatus.ERROR
             mail_msg = """\
-An error was encountered on your FTP request named [{0}] for user [{1}]. 
-The system failed to create the toplevel FTP directory at location [{2}]. 
-Please ensure that you are a legitimate user and have permission to use 
-this FTP service. If you are a legitimate user, please e-mail the system 
+An error was encountered on your data request named [{0}] for user [{1}].
+The system failed to create the toplevel FTP directory at location [{2}].
+Please ensure that you are a legitimate user and have permission to use
+this FTP service. If you are a legitimate user, please e-mail the system
 administrator ({3}) regarding this error.
 
 ---RESULT TRACE---
 
-{4}""".format(  request_name, 
-                username, 
-                ftp_dir, 
+{4}""".format(  request_name,
+                username,
+                ftp_dir,
                 settings.FTP_SUPPORT_MAIL,
                 result,)
-            
+
             mail_ftp_user(username, user_email, request_name, mail_msg)
             return "ERROR: Failed to create folder [{0}].".format(ftp_dir)
 
@@ -185,11 +185,21 @@ administrator ({3}) regarding this error.
         logger.info("FTP request has been completed for user [{0}]. Requested data is found under the DL directory path [{1}]".format(username,os.path.join("DL",request_name)))
         ftp_request.status = FTPStatus.DONE
         mail_msg = """\
-Your FTP request named [{0}] for user [{1}] has been succesfully completed.
-Please login using an FTPES client (e.g. FileZilla) to ftpes://ftp.dream.upd.edu.ph and
-check your download folder for a new folder named [{0}] under the directory [DL/DAD/].
-Please refer to the FTP access instructions document for further information.""".format(request_name, username)
-        
+Data request named [{0}] for user [{1}] has been succesfully processed.
+
+With your LiPAD username and password, please login with an FTPES client
+like Filezilla, to ftpes://ftp.dream.upd.edu.ph. Your requested datasets
+will be in a new folder named [{0}] under the directory [DL/DAD/].
+
+FTP Server: ftpes://ftp.dream.upd.edu.ph/FTP/Other/{1}/DL/DAD/LiPAD_requests/{0}
+Encryption: Require explicit FTP over TLS
+Logon Type: Normal
+Username: {1}
+Password: [your LiPAD password]
+
+Please refer to the FTP access instructions [https://lipad.dream.upd.edu.ph/help/#download-ftp]
+for further information. For issues encountered, please email {2}""".format(request_name, username, settings.FTP_SUPPORT_MAIL)
+
         mail_ftp_user(username, user_email, request_name, mail_msg)
         return "SUCCESS: FTP request successfuly completed."
 
@@ -198,43 +208,43 @@ Please refer to the FTP access instructions document for further information."""
         logger.error("FTP request has failed. No FTP folder was found for username [{0}]. User may not have proper access rights to the FTP repository.".format(username))
         ftp_request.status = FTPStatus.ERROR
         mail_msg = """\
-An error was encountered on your FTP request named [{0}] for user [{1}]. 
-No FTP folder was found for username [{1}]. Please ensure you have 
-access rights to the FTP repository. Otherwise, please contact the 
-system administrator ({2}) regarding this error.""".format(   request_name, 
+An error was encountered on your data request named [{0}] for user [{1}].
+No FTP folder was found for username [{1}]. Please ensure you have
+access rights to the FTP repository. Otherwise, please contact the
+system administrator ({2}) regarding this error.""".format(   request_name,
                                                               username,
                                                               settings.FTP_SUPPORT_MAIL)
-        
+
         mail_ftp_user(username, user_email, request_name, mail_msg)
         return "ERROR: User [{0}] has no FTP folder: ".format(e.message)
-    
+
     except Exception as e:
         error_trace = traceback.format_exc()
-        logger.error("""An FTP request has failed with an unexpected error: 
+        logger.error("""An FTP request has failed with an unexpected error:
 {0}""".format(error_trace))
         ftp_request.status = FTPStatus.ERROR
         mail_msg = """\
-An unexpected error was encountered on your FTP request named [{0}] for user [{1}]. 
+An unexpected error was encountered on your data request named [{0}] for user [{1}].
 Please forward this mail to the system administrator ({2}).
 
 ---RESULT TRACE---
 
-{3}""".format(  request_name, 
+{3}""".format(  request_name,
                 username,
                 settings.FTP_SUPPORT_MAIL,
                 error_trace,)
-        
+
         mail_ftp_user(username, user_email, request_name, mail_msg)
         return "ERROR: Unexpected error occured:\n[{0}]".format(e.message)
-    
-        
+
+
     finally:
         ftp_request.save()
-        
+
 @celery.task(name='geonode.tasks.ftp.process_ftp_request', queue='ftp')
 def process_ftp_request(ftp_request, ceph_obj_list_by_data_class, srs_epsg_num=None):
     """
-        Create the a new folder containing the data requested inside 
+        Create the a new folder containing the data requested inside
         Geostorage-FTP directory
     """
     print "Processing [{0}]".format(ftp_request.name)
@@ -246,7 +256,7 @@ def process_ftp_request(ftp_request, ceph_obj_list_by_data_class, srs_epsg_num=N
     #~ except Exception as e:
         #~ traceback.print_exc()
         #~ raise Exception("task process_ftp_request terminated with exception -- %s" % e.message)
-        
+
     result = execute(fab_check_cephaccess, ftp_request.user.username, [ftp_request.user.email.encode('utf8'),], ftp_request.name )
     if isinstance(result.get(host_string, None), BaseException):
         raise Exception(result.get(host_string))
@@ -255,21 +265,21 @@ def process_ftp_request(ftp_request, ceph_obj_list_by_data_class, srs_epsg_num=N
         if isinstance(result.get(host_string, None), BaseException):
             raise Exception(result.get(host_string))
 
-    
+
 ###
 #   UTIL FUNCTIONS
 ###
 def get_folders_for_user(user, request_name):
     if not user:
         raise UserEmptyException(user)
-    
+
     # Filter group if [PL1, PL2, Others, Test] ##
-    
+
     groups = GroupProfile.objects.filter(groupmember__user=user,groupmember__role='member')
-    
+
     if groups is None:
         raise CephAccessException("User is not part of any FTP user group in LiPAD, no FTP folder can be found.")
-    
+
     for group in groups:
         if group.slug == u'phil-lidar-1-sucs':
             return ("/mnt/FTP/PL1/{0}/".format(user.username),
@@ -287,14 +297,14 @@ def get_folders_for_user(user, request_name):
             return ("/mnt/FTP/Others/{0}/".format(user.username),
                     os.path.join("/mnt/FTP/Others/{0}/DL/DAD/lipad_requests".format(user.username), request_name)
                     )
-    
+
     raise CephAccessException("User is not part of any FTP user group in LiPAD, no FTP folder can be found.")
 
 def mail_ftp_user(username, user_email, mail_subject, mail_msg):
     #DEBUG
-    mail_subject = "Phil-LiDAR FTP Request [{0}] for User [{1}]".format(mail_subject,username)
+    mail_subject = "[LiPAD] FTP Download Request [{0}] for User [{1}]".format(mail_subject,username)
     mail_body = """\
-This is an automated mailer. DO NOT REPLY TO THIS MAIL! Send your e-mails to the site administrator.
+This is an automated mailer. DO NOT REPLY TO THIS MAIL!
 This is an e-mail regarding your FTP request from LiPAD. Details are found below:
 
 """+mail_msg
