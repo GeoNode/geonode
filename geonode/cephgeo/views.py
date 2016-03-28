@@ -14,20 +14,21 @@ from geonode.cephgeo.forms import DataInputForm
 from geonode.cephgeo.models import CephDataObject, FTPRequest, FTPStatus, FTPRequestToObjectIndex
 from geonode.cephgeo.utils import get_data_class_from_filename
 from geonode.tasks.ftp import process_ftp_request
-from geonode.tasks.update import ceph_metadata_remove, ceph_metadata_update, layers_metadata_update, fh_style_update
+from geonode.tasks.ceph_update import ceph_metadata_remove, ceph_metadata_update
 
 from geonode.cephgeo.cart_utils import *
 
 import client, utils, cPickle, unicodedata, time, operator, json
-import geonode.local_settings as settings
 from geonode.cephgeo.utils import get_cart_datasize
 from datetime import datetime
 from django.core.urlresolvers import reverse
 from geonode.maptiles.models import SRS
 from django.utils.text import slugify
 
-from geonode.tasks.update import fh_style_update, layers_metadata_update, fh_perms_update
+from geonode.tasks.update import fhm_metadata_update, geoserver_seed_layers
 from geonode.base.enumerations import CHARSETS
+
+from geonode import settings
 
 # Create your views here.
 @login_required
@@ -416,7 +417,18 @@ def management(request):
 def update_layer_metadata(request, template='running_task.html'):
     #updates metadata and style of FH maps
     # fh_style_update.delay()
-    layers_metadata_update.delay()
+    fhm_metadata_update.delay()
+    ctx = {
+        'charsets': CHARSETS,
+        'is_layer': True,
+    }
+
+    return render_to_response(template,RequestContext(request, ctx))
+
+@login_required
+@user_passes_test(lambda u: u.is_superuser)
+def seed_layers(request, template='running_task.html'):
+    geoserver_seed_layers.delay()
     ctx = {
         'charsets': CHARSETS,
         'is_layer': True,

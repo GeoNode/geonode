@@ -176,7 +176,7 @@ def registration_part_two(request):
                             overwrite=False,
                             charset=form.cleaned_data["charset"],
                             abstract=form.cleaned_data["abstract"],
-                            title=form.cleaned_data["layer_title"]
+                            title=form.cleaned_data["layer_title"],
                         )
                         def_style = Style.objects.get(name="Boundary")
                         saved_layer.styles.add(def_style)
@@ -238,7 +238,7 @@ def registration_part_two(request):
                         if permissions is not None and len(permissions.keys()) > 0:
     
                             saved_layer.set_permissions(permissions)
-
+                        
                     finally:
                         if tempdir is not None:
                             shutil.rmtree(tempdir)
