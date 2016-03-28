@@ -82,7 +82,10 @@ class DataRequestProfileForm(forms.ModelForm):
                     Field('contact_number', css_class='form-control'),
                     css_class='form-group'
                 ),
-                Field('letter_file', css_class='form-control'),
+                Div(
+                    Field('letter_file', css_class='form-control'),
+                    css_class='form-group'
+                ),
             ),
             Div(
 
