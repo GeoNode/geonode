@@ -521,7 +521,8 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin):
             os.makedirs(upload_path)
         url = os.path.join(settings.MEDIA_URL, thumb_folder, filename)
 
-        with open(os.path.join(upload_path, filename), 'w') as f:
+        #with open(os.path.join(upload_path, filename), 'w') as f:
+        with os.fdopen(os.open(os.path.join(upload_path, filename), os.O_WRONLY | os.O_CREAT, settings.THUMBNAIL_FILE_PERMISSIONS), 'w') as f:
             thumbnail = File(f)
             thumbnail.write(image)
 
