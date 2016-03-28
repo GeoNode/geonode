@@ -863,6 +863,7 @@ CELERY_CREATE_MISSING_QUEUES = True
 CELERY_IMPORTS = (
     'geonode.tasks.deletion',
     'geonode.tasks.update',
+    'geonode.tasks.ceph_update',
     'geonode.tasks.email',
     'geonode.tasks.ftp',
     'geonode.tasks.mk_folder'
@@ -873,6 +874,7 @@ CELERY_QUEUES = [
     Queue('default', routing_key='default'),
     Queue('cleanup', routing_key='cleanup'),
     Queue('update', routing_key='update'),
+    Queue('ceph_update', routing_key='ceph_update'),
     Queue('email', routing_key='email'),
     Queue('ftp', routing_key='ftp'),
     Queue('mk_folder', routing_key='mk_folder')
@@ -889,8 +891,11 @@ SELECTION_LIMIT=209715200
 
 MUNICIPALITY_SHAPEFILE = 'geonode:phl_adm2_municipalities_utm_z51n'
 #Upload permissions on file
-FILE_UPLOAD_PERMISSIONS = 0664
+FILE_UPLOAD_PERMISSIONS = 0666
 GEOSTORAGE_HOST = ""
+
+FILE_UPLOAD_TEMP_DIR = "/tmp/geonode"
+THUMBNAIL_FILE_PERMISSIONS = 0664
 
 # Load more settings from a file called local_settings.py if it exists
 try:
@@ -925,4 +930,3 @@ if 'geonode.geoserver' in GEONODE_APPS:
     MAP_BASELAYERS = [LOCAL_GEOSERVER]
     MAP_BASELAYERS.extend(baselayers)
 
-FILE_UPLOAD_TEMP_DIR = "/tmp/geonode"
