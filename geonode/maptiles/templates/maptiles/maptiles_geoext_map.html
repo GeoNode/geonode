@@ -336,7 +336,7 @@ function filterSelectedTiles(tile_filter, single_click, send_notice){
              if(response.priv.responseText){
                  start = new Date().getTime();
                  console.log(start);
-                 //json_parser = new OpenLayers.Format.GeoJSON();
+                 var added_count = 0;
                  feature_out = olGeoJSON.read(response.priv.responseText);
                  var tiles = hasDataFiltering(feature_out);
                   if (jurisdiction_geoms.length > 0){
@@ -354,6 +354,7 @@ function filterSelectedTiles(tile_filter, single_click, send_notice){
                                     tile.feature = createHighlightBox(tile.corners);
                                     highlight_layer.addFeatures([tile.feature]);
                                     highlight_layer.refresh();
+                                    added_count++;
                               }else if (single_click){
                                   removeHighlight(tile.georef, highlight_layer);
                               }
@@ -362,7 +363,7 @@ function filterSelectedTiles(tile_filter, single_click, send_notice){
                   }
                   display_points("point_display", highlight_layer);
 
-                  if (tiles.length < feature_out.length){
+                  if (added_count< feature_out.length){
                       if (feature_out.length==1){
                             //alert("Selected tile either lacks data or is out of bounds. ");
                             display_message("notif","Selected tile either lacks data or is out of bounds." );
@@ -459,6 +460,8 @@ Function which removes the highlight of a tile
 */
 function removeHighlight(georef, vec_layer){
     var index= find_georef(tile_list, georef);
+    if (index < 0 )
+        return;
     vec_layer.removeFeatures([tile_list[index].feature]);
     tile_list.splice(index,1);
 }
