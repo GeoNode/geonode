@@ -29,7 +29,8 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.urlresolvers import reverse
 from django.http import HttpResponse, HttpResponseRedirect
-from django.shortcuts import render_to_response
+from django.shortcuts import (
+    redirect, get_object_or_404, render, render_to_response)
 from django.conf import settings
 from django.template import RequestContext
 from django.utils.translation import ugettext as _
@@ -60,6 +61,8 @@ from geonode.geoserver.helpers import cascading_delete, gs_catalog
 from urlparse import urljoin, urlsplit
 from actstream.signals import action
 
+from .forms import AnonDownloaderForm
+from geonode.eula.models import AnonDownloader
 
 CONTEXT_LOG_FILE = None
 
@@ -294,6 +297,33 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
     if settings.SOCIAL_ORIGINS:
         context_dict["social_links"] = build_social_links(request, layer)
 
+    if request.method == 'POST':
+        form = AnonDownloaderForm(request.POST)
+        out = {}
+        if form.is_valid():
+            out['success'] = True
+            pprint(form.cleaned_data)
+            anondownload = form.save()
+            anondownload.anon_layer = Layer.objects.get(typename = layername)
+            anondownload.save()
+        else:
+            errormsgs = []
+            for e in form.errors.values():
+                errormsgs.extend([escape(v) for v in e])
+            out['success'] = False
+            out['errors'] = form.errors
+            out['errormsgs'] = errormsgs
+        if out['success']:
+            status_code = 200
+        else:
+            status_code = 400
+        #Handle form
+        return HttpResponse(status=status_code)
+    else:
+        #Render form
+        form = AnonDownloaderForm()
+    context_dict["anon_form"] = form
+    context_dict["layername"] = layername
     return render_to_response(template, RequestContext(request, context_dict))
 
 

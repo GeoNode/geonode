@@ -22,13 +22,13 @@ from .models import DataRequestProfile, RequestRejectionReason
 from pprint import pprint
 
 class DataRequestProfileForm(forms.ModelForm):
-    
+
     letter_file = forms.FileField(
         label=_('Formal Request Letter (PDF only)'),
         required = True
     )
-    
-    captcha = ReCaptchaField(attrs={'theme': 'clean'}) 
+
+    captcha = ReCaptchaField(attrs={'theme': 'clean'})
 
     class Meta:
         model = DataRequestProfile
@@ -53,7 +53,7 @@ class DataRequestProfileForm(forms.ModelForm):
         self.helper.form_tag = False
         # self.helper.form_show_labels = False
         self.helper.layout = Layout(
-            Fieldset('Requester Information',
+            Fieldset('User Information',
                 Div(
                     Field('first_name', css_class='form-control'),
                     css_class='form-group'
@@ -82,10 +82,13 @@ class DataRequestProfileForm(forms.ModelForm):
                     Field('contact_number', css_class='form-control'),
                     css_class='form-group'
                 ),
-                Field('letter_file'),
+                Div(
+                    Field('letter_file', css_class='form-control'),
+                    css_class='form-group'
+                ),
             ),
             Div(
-                
+
                 HTML("<br/><section class=widget>"),
                 Field('captcha'),
                 HTML("</section>")
@@ -94,29 +97,17 @@ class DataRequestProfileForm(forms.ModelForm):
 
     def clean_email(self):
         email = self.cleaned_data.get('email')
-        user_emails = Profile.objects.all().values_list('email', flat=True)
-        requester_email = DataRequestProfile.objects.exclude(
-            request_status='rejected'
-        ).values_list('email', flat=True)
-
-        if email in user_emails:
-            raise forms.ValidationError(
-                'That email is already being used by a registered user.')
-
-        if email in requester_email:
-            raise forms.ValidationError(
-                "A data request registration with that email already exists.")
 
         return email
-    
+
     def clean_letter_file(self):
         letter_file = self.cleaned_data.get('letter_file')
         split_filename =  os.path.splitext(str(letter_file.name))
-        
+
         if letter_file and split_filename[len(split_filename)-1].lower()[1:] != "pdf":
             raise forms.ValidationError(_("This file type is not allowed"))
         return letter_file
-    
+
     def save(self, commit=True, *args, **kwargs):
         data_request = super(
             DataRequestProfileForm, self).save(commit=False, *args, **kwargs)
@@ -124,9 +115,9 @@ class DataRequestProfileForm(forms.ModelForm):
         if commit:
             data_request.save()
         return data_request
-        
+
 class DataRequestDetailsForm(forms.ModelForm):
-    
+
     INTENDED_USE_CHOICES = Choices(
         ('Disaster Risk Management', _('Disaster Risk Management')),
         ('Urban/Land Subdivision Planning',
@@ -140,17 +131,16 @@ class DataRequestDetailsForm(forms.ModelForm):
         ('Cellular Network Mapping', _('Cellular Network Mapping')),
         ('other', _('Other, please specify:')),
     )
-    
+
     ORGANIZATION_TYPE_CHOICES = Choices(
         (0, _('Phil-LiDAR 1 SUC')),
         (1, _('Phil-LiDAR 2 SUC' )),
         (2, _( 'Government Agency')),
-        (3, _( 'Academic/Research Institution' )),
-        (4, _('Academe')),
-        (5, _( 'International NGO')),
-        (6, _('Local NGO')),
-        (7, _('Private Insitution' )),
-        (8, _('Other' )),
+        (3, _('Academe')),
+        (4, _( 'International NGO')),
+        (5, _('Local NGO')),
+        (6, _('Private Insitution' )),
+        (7, _('Other' )),
     )
 
     LICENSE_PERIOD_CHOICES = Choices(
@@ -164,33 +154,22 @@ class DataRequestDetailsForm(forms.ModelForm):
         ('faculty', _('Faculty')),
         ('student', _('Student')),
     )
-    
-    license_period = forms.ChoiceField(
-        label=_('License Period'),
-        choices=LICENSE_PERIOD_CHOICES
-    )
-    
-    license_period_other = forms.IntegerField(
-        label=_(u'Your custom license period (in years)'),
-        required=False
-    )
-    
+
     purpose = forms.ChoiceField(
         label =_(u'Purpose of the Data'),
         choices = INTENDED_USE_CHOICES
     )
-    
+
     purpose_other = forms.CharField(
         label=_(u'Your custom purpose for the data'),
         required=False
     )
-        
+
     class Meta:
         model = DataRequestProfile
         fields=(
             'project_summary',
             'data_type_requested',
-            'has_subscription',
             'intended_use_of_dataset',
 
             # Non-commercial requester field
@@ -201,16 +180,16 @@ class DataRequestDetailsForm(forms.ModelForm):
             'funding_source',
             'is_consultant',
         )
-        
-    
-    
+
+
+
     def __init__(self, *args, **kwargs):
         super(DataRequestDetailsForm, self).__init__(*args, **kwargs)
         self.helper = FormHelper()
         # self.helper.form_class = 'form-horizontal'
         self.helper.form_tag = False
         # self.helper.form_show_labels = False
-        self.helper.layout = Layout( 
+        self.helper.layout = Layout(
             Div(
                 Field('project_summary', css_class='form-control'),
                 css_class='form-group'
@@ -221,21 +200,12 @@ class DataRequestDetailsForm(forms.ModelForm):
                     Field('purpose_other', css_class='form-control'),
                     css_class='col-sm-11 col-sm-offset-1'
                 ),
-                css_class='form-group'    
+                css_class='form-group'
             ),
             Div(
                Field('data_type_requested', css_class='form-control'),
                css_class='form-group'
             ),
-            Div(
-                Field('license_period', css_class='form-control'),
-                Div(
-                    Field('license_period_other', css_class='form-control'),
-                    css_class='col-sm-11 col-sm-offset-1'
-                ),
-                css_class='form-group'
-            ),
-            Field('has_subscription'),
             Div(
                 Field('intended_use_of_dataset', css_class='form-control'),
                 css_class='form-group'
@@ -260,10 +230,10 @@ class DataRequestDetailsForm(forms.ModelForm):
                 css_class='academe-fieldset',
             ),
             HTML("""
-            {% load i18n %} 
+            {% load i18n %}
              <legend>Area of Interest Shapefile (Optional)</legend>
              <p>Valid file formats are ONLY the following :
-             <ul><li>shp</li><li>dbf</li><li>prj</li><li>shx</li><li>xml</li></ul></p>
+             <ul><li>shp</li><li>dbf</li><li>prj</li><li>shx</li></ul></p>
             <div class="form-group">
                 {% block additional_info %}{% endblock %}
 
@@ -274,7 +244,7 @@ class DataRequestDetailsForm(forms.ModelForm):
                     {% endfor %}
                   </div>
                   {% endif %}
-                
+
                 <section id="drop-zone">
                     <h3><i class="fa fa-cloud-upload"></i><br />{% trans "Drop files here" %}</h3>
                 </section>
@@ -282,7 +252,7 @@ class DataRequestDetailsForm(forms.ModelForm):
                 <p>{% trans " or select them one by one:" %}</p>
 
                 <input class="btn" id="file-input" type="file" multiple>
-    
+
                 <a href="#" id="clear-button" class="btn btn-danger">{% trans "Clear Files" %}</a>
                 <br />
                 <br />
@@ -298,13 +268,14 @@ class DataRequestDetailsForm(forms.ModelForm):
                 {% endfor %}
                 </select>
                 </section>
-                
+
                 <section class="widget">
                 <ul id="global-errors"></ul>
                 <h5>{% trans "Files to be uploaded" %}</h5>
                 <div id="file-queue"></div>
                 </section>
-                
+                </div><!--form-group-->
+
             """),
         )
 
@@ -323,17 +294,16 @@ class DataRequestProfileShapefileForm(NewLayerUploadForm):
         ('Cellular Network Mapping', _('Cellular Network Mapping')),
         ('other', _('Other, please specify:')),
     )
-    
+
     ORGANIZATION_TYPE_CHOICES = Choices(
         (0, _('Phil-LiDAR 1 SUC')),
         (1, _('Phil-LiDAR 2 SUC' )),
         (2, _( 'Government Agency')),
-        (3, _( 'Academic/Research Institution' )),
-        (4, _('Academe')),
-        (5, _( 'International NGO')),
-        (6, _('Local NGO')),
-        (7, _('Private Insitution' )),
-        (8, _('Other' )),
+        (3, _('Academe')),
+        (4, _( 'International NGO')),
+        (5, _('Local NGO')),
+        (6, _('Private Insitution' )),
+        (7, _('Other' )),
     )
 
     DATASET_USE_CHOICES =Choices(
@@ -361,19 +331,19 @@ class DataRequestProfileShapefileForm(NewLayerUploadForm):
     )
 
     abstract = forms.CharField(required=False)
-    
+
     charset = forms.CharField(required=False)
 
     project_summary = forms.CharField(
         label=_('Project Summary'),
         required=True
     )
-    
+
     purpose = forms.ChoiceField(
         label=_('Purpose/Intended Use of Data'),
         choices=INTENDED_USE_CHOICES
     )
-    
+
     purpose_other = forms.CharField(
         label=_(u'Your custom purpose for the data'),
         required=False
@@ -382,20 +352,6 @@ class DataRequestProfileShapefileForm(NewLayerUploadForm):
     data_type_requested = forms.TypedChoiceField(
         label = _('Types of Data Requested'),
         choices = DATA_TYPE_CHOICES,
-    )
-
-    license_period = forms.ChoiceField(
-        label=_('License Period'),
-        choices=LICENSE_PERIOD_CHOICES
-    )
-
-    license_period_other = forms.IntegerField(
-        label=_(u'Your custom license period (in years)'),
-        required=False
-    )
-
-    has_subscription = forms.BooleanField(
-        required=False
     )
 
     intended_use_of_dataset = forms.ChoiceField(
@@ -419,19 +375,22 @@ class DataRequestProfileShapefileForm(NewLayerUploadForm):
         max_length=255,
         required=False
     )
-    
+
     is_consultant = forms.BooleanField(
         required=False
     )
-    
+
     def __init__(self, *args, **kwargs):
         super(DataRequestProfileShapefileForm, self).__init__(*args, **kwargs)
-        
+
     def clean(self):
         cleaned = self.cleaned_data
         if cleaned['base_file']:
             cleaned = super(NewLayerUploadForm, self).clean()
-            
+
+        cleaned[ 'purpose'] = self.clean_purpose()
+        cleaned['purpose_other'] = self.clean_purpose_other()
+
         return cleaned
 
     def clean_purpose_other(self):
@@ -453,25 +412,6 @@ class DataRequestProfileShapefileForm(NewLayerUploadForm):
                 return purpose_other
         return purpose
 
-    def clean_license_period_other(self):
-        license_period = self.cleaned_data.get('license_period')
-        license_period_other = self.cleaned_data.get('license_period_other')
-        if license_period == self.LICENSE_PERIOD_CHOICES.other:
-            if not license_period_other:
-                raise forms.ValidationError(
-                    'Please input the license period.')
-        return license_period_other
-
-    def clean_license_period(self):
-        license_period = self.cleaned_data.get('license_period')
-        if license_period == self.LICENSE_PERIOD_CHOICES.other:
-            license_period_other = self.cleaned_data.get('license_period_other')
-            if not license_period_other:
-                return license_period
-            else:
-                return license_period_other
-        return license_period
-
     def clean_funding_source(self):
         funding_source = self.cleaned_data.get('funding_source')
         organization_type = self.cleaned_data.get('organization_type')
@@ -482,7 +422,7 @@ class DataRequestProfileShapefileForm(NewLayerUploadForm):
             raise forms.ValidationError(
                 'This field is required.')
         return funding_source
-        
+
 class DataRequestProfileRejectForm(forms.ModelForm):
 
     REJECTION_REASON_CHOICES = Choices(

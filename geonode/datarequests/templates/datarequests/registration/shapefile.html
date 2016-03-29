@@ -4,7 +4,7 @@
 {% load i18n %}
 {% load staticfiles %}
 
-{% block title %} {% trans "Data Request Registration Form"  %} - {{ block.super }}  {% endblock %}
+{% block title %} {% trans "Request Data"  %} - {{ block.super }}  {% endblock %}
 
 {% block body_class %}Data Request Registration Form{% endblock %}
 
@@ -16,12 +16,12 @@
 
 {% block body_outer %}
 <div class="page-header">
-  <h2 class="page-title">{% trans "Request Details" %}</h2>
+  <h2 class="page-title">{% trans "Request Data" %}</h2>
 </div>
 
 <div class="row">
-  <div class="col-md-7 col-md-offset-1">
-   
+  <div class="col-md-6 col-md-offset-1">
+
 
       <div id="modal-content" class="modal fade" tabindex="-1" role="dialog">
           <div class="modal-dialog">
@@ -37,18 +37,21 @@
         <form id="file-uploader" class="form-horizontal" method="post" enctype="multipart/form-data">
             {% crispy form %}
         </form>
-        
+
       <br />
 
       <section>
-        <a href="{% url 'datarequests:registration_part_one' %}" class="btn btn-default btn-md" style="margin-top: 20px;">{% trans "Prev Step" %}</a>
+        <a href="{% url 'datarequests:registration_part_one' %}" class="clearfix btn btn-default btn-md" style="margin-top: 20px;">{% trans "Prev Step" %}</a>
         <a href="#" id="upload-button" class="btn btn-primary btn-md">{% trans "Submit" %}</a>
       </section>
     </div>
-
+    <div class="col-md-3 col-md-offset-1">
+      <h2>Step 2</h2>
+      <p>Please fill out the details of your data request. If you already have a shapefile of your project area or area of interest, you may upload the shapefile here.</p>
+    </div>
   </div>
 
-</div>
+
 {% endblock %}
 
 

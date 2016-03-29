@@ -44,7 +44,6 @@ vec_exts = shp_exts + csv_exts + kml_exts
 
 cov_exts = ['.tif', '.tiff', '.geotiff', '.geotif']
 
-
 class Style(models.Model):
 
     """Model for storing styles.
