@@ -7,6 +7,8 @@ var layers = {};
 
 var geogig_stores = {};
 
+var files_changed = false;
+
 define(['underscore',
         'upload/LayerInfo',
         'upload/FileTypes',
@@ -360,9 +362,18 @@ define(['underscore',
 
         $(options.form).change(function (event) {
             // this is a mess
-            buildFileInfo(_.groupBy(file_input.files, path.getName));
-            displayFiles(file_queue);
+            if (files_changed){
+                buildFileInfo(_.groupBy(file_input.files, path.getName));
+                displayFiles(file_queue);
+                files_changed = false;
+          }
         });
+        
+        $("#file-input").change(function (event) {
+            files_changed = true;
+        });
+
+        
         $(options.clear_button).on('click', doClearState);
         $(options.upload_button).on('click', doUploads);
         $("[id^=delete]").on('click', doDelete);

@@ -7,7 +7,7 @@
 {% load base_tags %}
 {% load guardian_tags %}
 
-{% block title %}Map Tiles Selection — {{ block.super }}{% endblock %}
+{% block title %}Data Tiles Selection — {{ block.super }}{% endblock %}
 
 {% block head %}
 <style>
@@ -45,7 +45,7 @@
 
 </div>
 <div class="page-header">
-  <h2 class="page-title">Map Tiles</h2>
+  <h2 class="page-title">Data Tiles</h2>
 </div>
 <div class="row">
     <div class="col-md-9">
@@ -55,34 +55,42 @@
     </div>
     <div class="col-md-3">
         <ul class="list-group">
-            <li class="list-group-item">
-		<h4 class="list-group-item-heading">Bounding Box Selection</h4>
-                <form id="bbox_form">
-                    (EPSG:900913 decimal degrees) <br />
-                    <table>
-                        <tr><td>Upper limit: </td><td><input type="number" id="upperlimit" name="upperlimit" value=0 step="any" /></td></tr>
-                        <tr><td>Left limit: </td><td><input type="number" id="leftlimit" name="leftlimit"value=0 step="any"/></td></tr>
-                        <tr><td>Right limit: </td><td><input type="number" id="rightlimit" name="rightlimit" value=0 step="any"/></td></tr>
-                        <tr><td>Lower limit: </td><td><input type="number" id="lowerlimit" name="lowerlimit" value=0 step="any"/></td></tr>
-                    </table> <br />
-                    <input type="submit" id="bbox_submit" name="bbox_submit" value="Submit Bounding Box" class="btn btn-default" />
-                </form>
-            </li>
-            <!--<li class="list-group-item">
-               	<h4 class="list-group-item-heading">Area of Interest</h4>
-            <input type="submit" id="interest_submit" name="interest_submit" value="Submit Area of Interest" class="btn btn-default" />
-            </li>-->
-	    <li class="list-group-item">
-		<h4 class="list-group-item-heading">{%trans "Legend" %}</h4>
-		<img id="legend_icon" src="{{ grid.resource.get_legend.url }}"><br/>
-        <img id="legend_icon2" src="{{jurisdiction.resource.get_legend.url}}">
-	    </li>
-	    <li class="list-group-item">
-		<div class="selections"><nav class="filter">
-		<h4><a href="{% url 'cephgeo.views.get_cart' %}" class="toggle toggle-nav"><i class="fa fa-shopping-cart"></i>Data Cart</a></h4>
-                <h4><a href="{% url 'cephgeo.views.ftp_request_list' %}" class="toggle toggle-nav"><i class="fa fa-database"></i>FTP Requests</a></h4>
-		</nav></div>
-   	   </li>
+          <li class="list-group-item">
+              <h4 class="list-group-item-heading">{%trans "Download Data Class(es)" %}</h4>
+              <form name="georef_form" id="georef_form" action="/maptiles/addtocart/" method="POST" >
+                  {% csrf_token %}
+                <!-- <div class="col-md-4" align="left">-->
+                     <nobr>
+                         <ul>
+                              {% for class in data_classes %}
+                                {% if class != 'Unknown Type' %}
+                                   <li>
+                                     <input id="{{ class | slugify }}" name="{{ class | slugify }}" type="checkbox" />
+                                     <label class="label-dataclass" for="{{ class | slugify }}">{{ class }}</label>
+                                   </li>
+                                {% endif %}
+                              {% endfor %}
+
+                         </ul>
+                     </nobr>
+
+                     <br/>
+                  <input type="text" id="georef_area" name="georef_area" style="display:none" />
+                  <input type="submit" id="georef_submit" name="georef_submit" value="Submit" class="btn btn-default" />
+                <!--</div> -->
+             </form>
+          </li>
+	         <li class="list-group-item">
+		           <h4 class="list-group-item-heading">{%trans "Legend" %}</h4>
+		             <img id="legend_icon" src="{{ grid.resource.get_legend.url }}"><br/>
+                 <img id="legend_icon2" src="{{jurisdiction.resource.get_legend.url}}">
+           </li>
+	         <li class="list-group-item">
+		           <div class="selections"><nav class="filter">
+		               <h4><a href="{% url 'cephgeo.views.get_cart' %}" class="toggle toggle-nav"><i class="fa fa-shopping-cart"></i>Data Cart</a></h4>
+                   <h4><a href="{% url 'cephgeo.views.ftp_request_list' %}" class="toggle toggle-nav"><i class="fa fa-database"></i>FTP Requests</a></h4>
+		               </nav></div>
+   	       </li>
         </ul>
     </div>
 </div>
@@ -95,53 +103,8 @@
     <h3 class="page-title">Selected Tiles</h3>
  </div>
  <div class="row" id="point_display">
-     
- </div>
- <hr>
- <h3 class="page-title">Select Data Class(es) to Download</h3>
- <form name="georef_form" id="georef_form" action="/maptiles/addtocart/" method="POST" >
-     {% csrf_token %}
-    <div class="col-md-4" align="left">
-        <nobr>
-            <ul class="list-inline pull-left">
-                 {% for class in data_classes %}
-                   {% if class != 'Unknown Type' %}
-                      <li>
-                        <input id="{{ class | slugify }}" name="{{ class | slugify }}" type="checkbox" />
-                        <label class="label-dataclass" for="{{ class | slugify }}">{{ class }}</label>
-                      </li>
-                   {% endif %}
-                 {% endfor %}
-                 
-            </ul>
-        </nobr> 
-        
-        <!-- SRS Selection commented out
-        <nobr>
-        <label class="label-dataclass">SRS</label>
-        <select>
-            {% for proj in projections %}
-                {% if proj == 'UTM 51 (Default)' %}
-                    <option  id="{{ proj | slugify }}" 
-                             name="{{ proj | slugify }}" 
-                             value="{{ proj | slugify }}">
-                {% else %}             
-                    <option  id="{{ proj | slugify }}" 
-                             name="{{ proj | slugify }}" 
-                             value="{{ proj | slugify }}"
-                             selected="selected">
-                {% endif %}
-                    {{ proj }}
-                  </option>
-             {% endfor %}
-        </select>
-        </nobr> 
-        -->
-        <br/>
-     <input type="text" id="georef_area" name="georef_area" style="display:none" />
-     <input type="submit" id="georef_submit" name="georef_submit" value="Submit" class="btn btn-default" />
-    </div>
-</form>
-  
+
+
+
 {% endblock %}
 {% endblock %}

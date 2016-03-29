@@ -21,6 +21,7 @@ from geonode.groups.models import GroupProfile
 from taggit.models import Tag
 
 from tastypie import fields
+from tastypie.authentication import SessionAuthentication
 from tastypie.resources import ModelResource
 from tastypie.constants import ALL
 from tastypie.utils import trailing_slash
@@ -285,6 +286,7 @@ class ProfileResource(ModelResource):
 
     class Meta:
         queryset = get_user_model().objects.exclude(username='AnonymousUser')
+        authentication = SessionAuthentication()
         resource_name = 'profiles'
         allowed_methods = ['get']
         ordering = ['username', 'date_joined']
@@ -317,18 +319,17 @@ class DataRequestProfileResource(ModelResource):
 
     class Meta:
         #authorization = GeoNodeAuthorization()
-        queryset = DataRequestProfile.objects.exclude(
-            date=None
-        ).order_by('-date')
+        authentication = SessionAuthentication()
+        queryset = DataRequestProfile.objects.all().order_by('-key_created_date')
         resource_name = 'data_requests'
         allowed_methods = ['get']
-        ordering = ['date', ]
+        ordering = ['key_created_date', ]
         filtering = {'first_name': ALL,
                      'requester_type': ALL,
                      'request_status': ALL,
                      'organization': ALL,
                      'request_status': ALL,
-                     'date': ALL,
+                     'key_created_date': ALL,
                      }
 
     def dehydrate_data_request_detail_url(self, bundle):
@@ -336,9 +337,6 @@ class DataRequestProfileResource(ModelResource):
 
     def dehydrate_org_type(self, bundle):
         return bundle.obj.get_organization_type_display()
-
-    def dehydrate_req_type(self, bundle):
-        return bundle.obj.get_requester_type_display()
 
     def dehydrate_rejection_reason(self, bundle):
         return bundle.obj.rejection_reason
@@ -350,10 +348,10 @@ class DataRequestProfileResource(ModelResource):
         return bundle.obj.request_status == 'rejected'
 
     def dehydrate_date_submitted(self, bundle):
-        return formats.date_format(bundle.obj.date, "SHORT_DATETIME_FORMAT")
+        return formats.date_format(bundle.obj.key_created_date, "SHORT_DATETIME_FORMAT")
 
     def dehydrate_status_label(self, bundle):
-        if bundle.obj.request_status == 'pending':
+        if bundle.obj.request_status == 'pending' or bundle.obj.request_status == 'cancelled' or bundle.obj.request_status == 'unconfirmed':
             return 'default'
         elif bundle.obj.request_status == 'rejected':
             return 'danger'

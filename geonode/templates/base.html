@@ -107,6 +107,8 @@
           <ul class="nav navbar-nav navbar-right">
             {% if not user.is_authenticated  %}
             <li><a href="{% url 'datarequests:registration_part_one' %}">{% trans "Register" %}</a></li>
+            {% elif not user.is_superuser %}
+            <li><a href="{% url 'datarequests:registration_part_one' %}">{% trans "Request New Data" %}</a></li>
             {% endif %}
             {% if user.is_authenticated %}
             <li>
@@ -158,8 +160,9 @@
       <div class="container">
         <div class="row">
           <div class="col-md-8">
-            &copy; {% trans "2015 UP-DOST Phil LiDAR 1 Program. All Rights Reserved" %} |
-            <a href="{% url "about" %}">{% trans "About LiPAD" %}</a>
+            &copy; {% trans "2016 UP-DOST Phil LiDAR 1 Program. All Rights Reserved" %} |
+            <a href="{% url "about" %}">{% trans "About" %}</a> |
+            <a href="{% url "help" %}">{% trans "Help" %}</a>
           </div>
           <div class="col-md-4">
             <label class="hidden">{% trans "Language" %}</label>

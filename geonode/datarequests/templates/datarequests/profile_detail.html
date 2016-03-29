@@ -51,9 +51,6 @@
         <td>{{ request_profile.ftp_folder }} </td>
      </tr>
       <tr>
-      <td class="table-user-profile-attribute col-md-3">{% trans "Requester Type" %}</td>
-      <td>{{ request_profile.get_requester_type_display }}</td>
-      </tr>
 
       <tr>
       <td class="table-user-profile-attribute">{% trans "Organization" %}</td>
@@ -84,17 +81,7 @@
       <td class="table-user-profile-attribute">{% trans "Type of Data Requested" %}</td>
       <td>{{ request_profile.get_data_type_requested_display }}</td>
       </tr>
-
-      <tr>
-      <td class="table-user-profile-attribute">{% trans "License Period" %}</td>
-      <td>{{ request_profile.license_period }}</td>
-      </tr>
-
-      <tr>
-      <td class="table-user-profile-attribute">{% trans "Subscription/Maintenance?" %}</td>
-      <td>{{ has_subscription|yesno:"yes,no" }}</td>
-      </tr>
-
+      
       <tr>
       <td class="table-user-profile-attribute">{% trans "Purpose/Intended Use of Data" %}</td>
       <td>{{ request_profile.purpose }}</td>
@@ -104,16 +91,13 @@
       <td class="table-user-profile-attribute">{% trans "Intended Use of Dataset" %}</td>
       <td>{{ request_profile.get_intended_use_of_dataset_display }}</td>
       </tr>
-       <tr>
-          <td class="table-user-profile-attribute col-md-3">{% trans "Approval/Rejection Administrator" %}</td>
-          <td>{{request_profile.administrator.username}}</td>
-      </tr>
-      {% if request_profile.requester_type == 'noncommercial' or request_profile.requester_type == 'academe' %}
+
+      {% if request_profile.intended_use_of_dataset == 'noncommercial' or request_profile.intended_use_of_dataset == 'academe' %}
         <tr>
         <td class="table-user-profile-attribute">{% trans "Organization type based on Phil-LiDAR1 Data Distribution Policy" %}</td>
         <td>{{ request_profile.get_organization_type_display }}</td>
         </tr>
-        {% if request_profile.requester_type == 'academe' %}
+        {% if request_profile.intended_use_of_dataset == 'academe' %}
           <tr>
           <td class="table-user-profile-attribute">{% trans "Level of Request" %}</td>
           <td>{{ request_profile.get_request_level_display }}</td>
@@ -129,11 +113,18 @@
           </tr>
         {% endif %}
       {% endif %}
+         <tr>
+          <td class="table-user-profile-attribute col-md-3">{% trans "Approval/Rejection Administrator" %}</td>
+          <td>{{request_profile.administrator.username}}</td>
+      </tr>
       </tbody>
     </table>
 
     <div class="row">
-      <h5><strong>Jurisdiction Shapefile</strong></h5>
+      <h4><strong>Jurisdiction Shapefile</strong></h4>
+      {% if not request_profile.jurisdiction_shapefile %}
+        <h5><strong>No ROI submitted</strong></h5>
+        {% endif %}
       <div id="embedded_map" class="mrg-btm">
         <div id="preview_map"></div>
       </div>
@@ -173,9 +164,6 @@
 
         <div class="modal fade" id="approve-request" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
           <form id="approve_form" method="post" class="modal-form" action='{% url "datarequests:data_request_profile_approve" pk=request_profile.pk%}'>{% csrf_token %}
-            <input type="hidden" id="ftp-directory" name="ftp-directory" value="">
-            <input type="hidden" id="username" name="username" value="">
-            <input type="hidden" id="password" name="password" value="">
           <div class="modal-dialog">
             <div class="modal-content">
               <div class="modal-header">
@@ -221,6 +209,13 @@
             </div>
           </form>
         </div>
+      {% elif request_profile.request_status == 'unconfirmed'%}
+       <li class="list-group-item">
+        <form id="approve_form" method="post" class="modal-form" action='{% url "datarequests:data_request_profile_reconfirm" pk=request_profile.pk%}'>{% csrf_token %}
+            <button type="submit" class="btn btn-primary btn-md btn-block"  id="reconfirm-request-submit">{% trans "Resend Confirmation Email" %}</button>
+        </form>
+          
+        </li>
       {% endif %}
   </ul>
   <input type="hidden" id="request_profile_id" value="{{request_profile.pk}}"></input>
