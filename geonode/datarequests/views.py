@@ -288,21 +288,15 @@ def registration_part_two(request):
             if request_profile and not request_profile.profile:
                 request_profile.send_verification_email()
 
-                out['success_url'] = request.build_absolute_uri(
-                    reverse('datarequests:email_verification_send')
-                )
+                out['success_url'] = reverse('datarequests:email_verification_send')
                 
-                out['redirect_to'] = request.build_absolute_uri(
-                    reverse('datarequests:email_verification_send')
-                )
+                out['redirect_to'] = reverse('datarequests:email_verification_send')
+                
             elif request_profile and request_profile.profile:
-                out['success_url'] = request.build_absolute_uri(
-                    reverse('home')
-                )
+                out['success_url'] = reverse('home')
                 
-                out['redirect_to'] = request.build_absolute_uri(
-                    reverse('home')
-                )
+                out['redirect_to'] = reverse('home')
+                
                 request_profile.date = timezone.now()
                 request_profile.save()
 
@@ -607,6 +601,7 @@ def update_datarequest_obj(datarequest=None, parameter_dict=None, interest_layer
     ### Updating the other fields of the request
     datarequest.project_summary = parameter_dict['project_summary']
     datarequest.data_type_requested = parameter_dict['data_type_requested']
+    
     if parameter_dict['purpose']  == 'other':
         datarequest.purpose = parameter_dict['purpose_other']
     else:
