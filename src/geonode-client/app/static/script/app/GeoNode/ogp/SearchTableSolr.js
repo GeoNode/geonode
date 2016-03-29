@@ -329,10 +329,10 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
                 sortBy: 'LayerTitle',
                 renderer: function(value, metadata, record, rowIndex, colIndex, store){
                     var the_abstract = app.layerTree.replaceURLWithHTMLLinks(record.get('Abstract'));
-                    metadata.attr = 
-                        'ext:qtip="' + record.get('Originator') + 
-                        '<br/><strong>Abstract</strong>: ' + 
-                        the_abstract.substring(0, 250) + 
+                    metadata.attr =
+                        'ext:qtip="' + record.get('Originator') +
+                        '<br/><strong>Abstract</strong>: ' +
+                        the_abstract.substring(0, 250) +
                         '<br/><strong>Date</strong>: ' + record.get('LayerDateType') + '"';
                     return record.get('Is_Public') ?  value : '<span class="unviewable-layer"></span>' + '  ' + value;
                 }
@@ -370,7 +370,7 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
                         emptyText: this.searchLabelText,
                         name: 'search',
                         allowBlank: true,
-                        width: 100,
+                        width: 80,
                         height: 25,
                         cls: 'search-bar'
                      });
@@ -384,7 +384,7 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
                         emptyText: this.originatorSearchLabelText,
                         name: 'search_originator',
                         allowBlank: true,
-                        width: 100,
+                        width: 80,
                         height: 25,
                         cls: 'search-bar'
         });
@@ -393,7 +393,7 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
         this.dataTypeInput = new Ext.form.ComboBox({
             id: 'dataTypes',
             mode: 'local',
-            width: 130,
+            width: 110,
             height: 25,
             cls: 'data-type layer-selection',
             store: new Ext.data.ArrayStore({
@@ -485,7 +485,7 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
         searchButton.on('click', this.updateQuery, this);
 
         var clearSearchLink = new Ext.Button({
-            text: "Clear Search", 
+            text: "Clear Search",
             listeners: {
                 click: function(){self.clearSearch()}
             }

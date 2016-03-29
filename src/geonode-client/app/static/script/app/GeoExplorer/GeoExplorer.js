@@ -2232,12 +2232,12 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             title: "Search",
             closeAction: 'hide',
             layout: 'fit',
-            width: 870,
-            height: 570,
+            width: 900,
+            height: 590,
             items: [this.dataTabPanel],
             modal: true,
             autoScroll: true,
-            resizable: false,
+            resizable: true,
             bodyStyle: 'background-color:#FFF'
         });
 
