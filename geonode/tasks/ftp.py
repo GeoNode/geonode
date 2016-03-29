@@ -191,7 +191,7 @@ With your LiPAD username and password, please login with an FTPES client
 like Filezilla, to ftpes://ftp.dream.upd.edu.ph. Your requested datasets
 will be in a new folder named [{0}] under the directory [DL/DAD/].
 
-FTP Server: ftpes://ftp.dream.upd.edu.ph/FTP/Other/{1}/DL/DAD/LiPAD_requests/{0}
+FTP Server: ftpes://ftp.dream.upd.edu.ph/FTP/Others/{1}/DL/DAD/lipad_requests/{0}
 Encryption: Require explicit FTP over TLS
 Logon Type: Normal
 Username: {1}
