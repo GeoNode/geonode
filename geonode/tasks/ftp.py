@@ -105,11 +105,20 @@ If error still persists, forward this email to [{2}]""".format( request_name,
 
                 for data_class, ceph_obj_list in ceph_obj_list_by_data_class.iteritems():
                     type_dir = data_class.replace(" ", "_")
+                    
+                    # Projection path folders
+                    utm_51n_dir = "EPSG-32651_{0}".format(type_dir)
+                    reprojected_dir = ""
+                    if srs_epsg is not None:
+                        reprojected_dir = "EPSG-{0}_{1}".format(srs_epsg, type_dir)
 
                     if srs_epsg is not None:
-                        result = run("mkdir -p {0}".format(os.path.join("EPSG-"+str(srs_epsg),type_dir)))      # Create a directory for each geo-type
+                        if data_class == 'LAZ':
+                            result = run("mkdir {0}".format(utm_51n_dir))      # Do not reproject LAZ
+                        else:
+                            result = run("mkdir {0}".format(reprojected_dir))      # Create a directory for each geo-type
                     else:
-                        result = run("mkdir {0}".format(type_dir))      # Create a directory for each geo-type
+                        result = run("mkdir {0}".format(utm_51n_dir))      # Create a directory for each geo-type
                     if result.return_code is not 0:                 #Handle error
                         logger.error("Error on FTP request: Failed to create data class subdirectory at [{0}]. Please notify the administrator of this error".format(ftp_dir))
                         ftp_request.status = FTPStatus.ERROR
@@ -132,13 +141,18 @@ so that we can address this issue.
 
                     obj_dl_list = " ".join(map(str,ceph_obj_list))
                     if srs_epsg is not None:
-                        result = run("python {0} -d={1} -p={2} {3}".format( dl_script_path,
-                                                        os.path.join(ftp_dir,"EPSG-"+str(srs_epsg),type_dir),
+                        if data_class == 'LAZ':
+                            result = run("python {0} -d={1} {2}".format( dl_script_path,
+                                                        os.path.join(ftp_dir, utm_51n_dir),
+                                                        obj_dl_list)) # Download list of objects in corresponding geo-type folder
+                        else:
+                            result = run("python {0} -d={1} -p={2} {3}".format( dl_script_path,
+                                                        os.path.join(ftp_dir, reprojected_dir),
                                                         srs_epsg,
                                                         obj_dl_list)) # Download list of objects in corresponding geo-type folder
                     else:
                         result = run("python {0} -d={1} {2}".format( dl_script_path,
-                                                        os.path.join(ftp_dir,type_dir),
+                                                        os.path.join(ftp_dir, utm_51n_dir),
                                                         obj_dl_list)) # Download list of objects in corresponding geo-type folder
                     if result.return_code is not 0:                 #Handle error
                         logger.error("Error on FTP request: Failed to download file/s for dataclass [{0}].".format(data_class))
@@ -240,6 +254,7 @@ Please forward this mail to the system administrator ({2}).
 
     finally:
         ftp_request.save()
+
 
 @celery.task(name='geonode.tasks.ftp.process_ftp_request', queue='ftp')
 def process_ftp_request(ftp_request, ceph_obj_list_by_data_class, srs_epsg_num=None):
