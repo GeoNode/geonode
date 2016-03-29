@@ -63,7 +63,7 @@ def fh_style_update(layer,filename):
     #total_layers = len(layer_list)
     layer_attrib = layer.attributes[0].attribute.encode("utf-8")
     fhm_style = None
-    if layer_attrib is "Var":
+    if layer_attrib == "Var":
         fhm_style = cat.get_style("fhm")
     else:
         fhm_style = cat.get_style("fhm_merge")
