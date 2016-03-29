@@ -17,7 +17,7 @@
 #
 #########################################################################
 
-from django.conf import settings
+from geonode import settings
 from geonode import get_version
 from geonode.catalogue import default_catalogue_backend
 from django.contrib.sites.models import Site
@@ -87,3 +87,6 @@ def resource_urls(request):
     )
 
     return defaults
+
+def fmc_site_url():
+    return settings.LIPAD_FMC_SITE_URL
