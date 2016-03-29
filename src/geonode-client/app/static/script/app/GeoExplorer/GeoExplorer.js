@@ -1085,23 +1085,23 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
         var source = dataSource;
 
         var layerStore = this.mapPanel.layers;
-        // var isLocal = source instanceof gxp.plugins.GeoNodeSource &&
-        //     source.url.replace(this.urlPortRegEx, "$1/").indexOf(
-        //         this.localGeoServerBaseUrl.replace(
-        //             this.urlPortRegEx, "$1/")) === 0;
+        var isLocal = source instanceof gxp.plugins.GeoNodeSource;
         for (var i = 0, ii = records.length; i < ii; ++i) {
             var thisRecord = records[i];
-            if (thisRecord.get('Is_Public')) {
+            if (thisRecord.get('Is_Public') && isLocal) {
                 //Get all the required WMS parameters from the GeoNode/Worldmap database
                 // instead of GetCapabilities
+
                 var typename = this.searchTable.getlayerTypename(records[i]);
                 var tiled = thisRecord.get("tiled") || true;
 
-                var layer_bbox = [];
-                var bbox_values = thisRecord.get('bbox').split(')')[0].split('(')[1].split(',');
-                for (var j=0; j<bbox_values.length; j++){
-                    layer_bbox.push(parseFloat(bbox_values[j]));
-                };
+                var layer_bbox = [
+                    parseFloat(thisRecord.get('MinX')),
+                    parseFloat(thisRecord.get('MinY')),
+                    parseFloat(thisRecord.get('MaxX')),
+                    parseFloat(thisRecord.get('MaxY'))
+                    ];
+
                 var layer_detail_url = this.mapproxy_backend + JSON.parse(thisRecord.get('Location')).layerInfoPage;
                 var layer = {
                     "styles": "",
@@ -1127,13 +1127,31 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                     layer.url = thisRecord.get('LayerUrl');
                 };
 
-                var record = source.createLayerRecord(layer);
-                record.selected = true;
-                // record.data.detail_url = thisRecord.get('LayerUrl').indexOf('worldmap.harvard.edu') > -1 ?
-                //         '/data/' + thisRecord.get('LayerName') :
-                //         this.mapproxy_backend + JSON.parse(thisRecord.get('Location')).layerInfoPage;
-                record.data.detail_url = layer_detail_url;
+                if(thisRecord.get('ServiceType') === 'ESRI_ImageServer' || thisRecord.get('ServiceType') === 'ESRI_MapServer'){
+                    layer.url = thisRecord.get('LayerUrl');
+                    layer.name = thisRecord.get('LayerTitle');
+                    if (layer.srs == null){
+                      //Assume that the bbox needs to be transformed to web mercator
+                      //delete layer.bbox;
+                      layer_bbox = [thisRecord.get('MinX'),thisRecord.get('MinY'),thisRecord.get('MaxX'),thisRecord.get('MaxY')];
+                      layer.bbox = new OpenLayers.Bounds(layer_bbox).transform("EPSG:4326", this.map.projection).toArray();
+                    }
+                    this.addEsriSourceAndLayer(layerStore, layer, layer_detail_url);
+                }else{
+                    this.loadRecord(source, layerStore, layer, layer_detail_url);
+                }
 
+
+            }
+            else {
+                //Not a local GeoNode layer, use source's standard method for creating the layer.
+                var layer = records[i].get("name");
+                var record = source.createLayerRecord({
+                    name: layer,
+                    source: key,
+                    buffer: 0
+                });
+                //alert(layer + " created after FAIL");
                 if (record) {
                     if (record.get("group") === "background") {
                         var pos = layerStore.queryBy(
@@ -1141,50 +1159,60 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                                 return rec.get("group") === "background"
                             }).getCount();
                         layerStore.insert(pos, [record]);
-
                     } else {
-                        category = record.get("group");
-                        if (!category || category == '')
-                            record.set("group", "General");
+                        category = "General";
+                        record.set("group", category);
 
                         geoEx.layerTree.addCategoryFolder({"group":record.get("group")}, true);
                         layerStore.add([record]);
-
-                        //geoEx.reorderNodes(record.getLayer());
-                        geoEx.layerTree.overlayRoot.findDescendant("layer", record.getLayer()).select();
                     }
-                };
+                }
             }
-            //else {
-            //     //Not a local GeoNode layer, use source's standard method for creating the layer.
-            //     var layer = records[i].get("name");
-            //     var record = source.createLayerRecord({
-            //         name: layer,
-            //         source: key,
-            //         buffer: 0
-            //     });
-            //     //alert(layer + " created after FAIL");
-            //     if (record) {
-            //         if (record.get("group") === "background") {
-            //             var pos = layerStore.queryBy(
-            //                 function(rec) {
-            //                     return rec.get("group") === "background"
-            //                 }).getCount();
-            //             layerStore.insert(pos, [record]);
-            //         } else {
-            //             category = "General";
-            //             record.set("group", category);
-
-            //             geoEx.layerTree.addCategoryFolder({"group":record.get("group")}, true);
-            //             layerStore.add([record]);
-            //         }
-            //     }
-            // }
         }
         this.searchWindow.hide();
     },
 
+    addEsriSourceAndLayer: function(layerStore, layer, layer_detail_url){
+      this.addLayerSource({
+          config: {url: layer.url, ptype: 'gxp_arcrestsource'},
+          callback: function(source_id){
+              layer.source = source_id;
+              source = this.layerSources[source_id];
+              this.loadRecord(source, this.mapPanel.layers, layer, layer_detail_url);
+          }
+        });
+    },
 
+    loadRecord: function(source, layerStore, config, layer_detail_url){
+        var record = source.createLayerRecord(config);
+        var geoEx = this;
+        record.selected = true;
+        // record.data.detail_url = thisRecord.get('LayerUrl').indexOf('worldmap.harvard.edu') > -1 ?
+        //         '/data/' + thisRecord.get('LayerName') :
+        //         this.mapproxy_backend + JSON.parse(thisRecord.get('Location')).layerInfoPage;
+        record.data.detail_url = layer_detail_url;
+
+        if (record) {
+            if (record.get("group") === "background") {
+                var pos = layerStore.queryBy(
+                    function(rec) {
+                        return rec.get("group") === "background"
+                    }).getCount();
+                layerStore.insert(pos, [record]);
+
+            } else {
+                category = record.get("group");
+                if (!category || category == '')
+                    record.set("group", "General");
+
+                geoEx.layerTree.addCategoryFolder({"group":record.get("group")}, true);
+                layerStore.add([record]);
+
+                //geoEx.reorderNodes(record.getLayer());
+                geoEx.layerTree.overlayRoot.findDescendant("layer", record.getLayer()).select();
+            }
+        };
+    },
 
     initSearchPanel: function() {
 
@@ -2187,8 +2215,8 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             renderTo: 'search_form',
             trackSelection: true,
             permalinkURL: '/data/search',
-            //searchURL: 'http://54.83.116.189:8983/solr/wmdata/select',
-            searchURL: "/solr",
+            searchURL: 'http://174.129.181.119:8983/solr/hypermap/select',
+            //searchURL: "/solr",
             layerDetailURL: '/data/search/detail',
             constraints: [this.bbox],
             searchParams: {'limit':10, 'bbox': llbounds.toBBOX()},
