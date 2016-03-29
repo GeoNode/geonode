@@ -1091,15 +1091,17 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             if (thisRecord.get('Is_Public') && isLocal) {
                 //Get all the required WMS parameters from the GeoNode/Worldmap database
                 // instead of GetCapabilities
-;
+
                 var typename = this.searchTable.getlayerTypename(records[i]);
                 var tiled = thisRecord.get("tiled") || true;
 
-                var layer_bbox = [];
-                var bbox_values = thisRecord.get('bbox').split(')')[0].split('(')[1].split(',');
-                for (var j=0; j<bbox_values.length; j++){
-                    layer_bbox.push(parseFloat(bbox_values[j]));
-                };
+                var layer_bbox = [
+                    parseFloat(thisRecord.get('MinX')),
+                    parseFloat(thisRecord.get('MinY')),
+                    parseFloat(thisRecord.get('MaxX')),
+                    parseFloat(thisRecord.get('MaxY'))
+                    ];
+
                 var layer_detail_url = this.mapproxy_backend + JSON.parse(thisRecord.get('Location')).layerInfoPage;
                 var layer = {
                     "styles": "",
@@ -2213,8 +2215,8 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             renderTo: 'search_form',
             trackSelection: true,
             permalinkURL: '/data/search',
-            //searchURL: 'http://174.129.181.119:8983/solr/hypermap/select',
-            searchURL: "/solr",
+            searchURL: 'http://174.129.181.119:8983/solr/hypermap/select',
+            //searchURL: "/solr",
             layerDetailURL: '/data/search/detail',
             constraints: [this.bbox],
             searchParams: {'limit':10, 'bbox': llbounds.toBBOX()},
