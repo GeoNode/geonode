@@ -114,6 +114,13 @@ def view_delete_dataverse_map_layer(request):
 def delete_map_layer(map_layer):
     assert isinstance(map_layer, Layer), "map_layer must be a geonode.maps.models.Layer object"
 
+
+    # Is this a part of a join_layer?
+    # If so, then the layer is a view
+    #
+    if hasattr(map_layer, 'join_layer') and map_layer.join_layer.count() > 0:
+        join_layer = map_layer.join_layer.all()[0]
+
     try:
         map_layer.delete()
     except FailedRequestError as e:

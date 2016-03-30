@@ -16,6 +16,7 @@ Read the comments below.
 #
 from test_form_jointarget import *
 from test_form_upload_and_join import *
+from test_name_helper import *
 
 # LOCAL or REMOTE API tests run using the python requests library
 #
@@ -34,7 +35,7 @@ from run_test_dataverse_tabular_api import *
 
 """
 # Run tests from the command line
-# cd ~/github-worldmap/cga-worldmap/geonode
+# cd Documents/github-worldmap/cga-worldmap/geonode; workon cga-worldmap
 django-admin.py test datatables --settings=no_db_settings
 
 
