@@ -587,7 +587,7 @@ class GeoNodeException(Exception):
 
 #class ResourceBase(models.Model):
 #    pass
-    
+
 class Contact(models.Model):
     user = models.ForeignKey(User, blank=True, null=True)
     name = models.CharField(_('Individual Name'), max_length=255, blank=True, null=True)
@@ -755,7 +755,7 @@ class LayerManager(models.Manager):
             workspace = cat.get_workspace(workspace)
             resources = cat.get_resources(workspace=workspace)
         output = []
-        
+
         # check lnames
         if lnames is not None:
             for l in lnames:
@@ -1140,7 +1140,7 @@ class Layer(models.Model, PermissionLevelMixin):
         Used for table joins.  See geonode.contrib.datatables
         """
         return self.attribute_set.exclude(attribute='the_geom')
-                
+
 
     def layer_attributes(self):
         attribute_fields = cache.get('layer_searchfields_' + self.typename)
@@ -1571,8 +1571,8 @@ class Layer(models.Model, PermissionLevelMixin):
         if len(bboxes) != 1 and len(bboxes[0]) != 2:
             return
         if bboxes[0][0] is None or bboxes[0][1] is None:
-            return 
-       
+            return
+
         bbox = re.findall(r"[+-]?(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][+-]?\d+)?", bboxes[0][0])
         llbbox = re.findall(r"[+-]?(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][+-]?\d+)?", bboxes[0][1])
 
@@ -1581,18 +1581,18 @@ class Layer(models.Model, PermissionLevelMixin):
         self.llbbox = str([float(l) for l in llbbox])
         self.set_bbox(bbox, srs=self.srs)
 
-        #Update Geoserver bounding boxes        
+        #Update Geoserver bounding boxes
         resource_bbox = list(self.resource.native_bbox)
-        resource_llbbox = list(self.resource.latlon_bbox)                
- 
+        resource_llbbox = list(self.resource.latlon_bbox)
+
         (resource_bbox[0],resource_bbox[1],resource_bbox[2],resource_bbox[3]) = str(bbox[0]), str(bbox[2]), str(bbox[1]), str(bbox[3])
         (resource_llbbox[0],resource_llbbox[1],resource_llbbox[2],resource_llbbox[3]) = str(llbbox[0]), str(llbbox[2]), str(llbbox[1]), str(llbbox[3])
-                                
+
         self.resource.native_bbox = tuple(resource_bbox)
         self.resource.latlon_bbox = tuple(resource_llbbox)
         Layer.objects.gs_catalog.save(self._resource_cache)
 
-        
+
         # Use update to avoid unnecessary post_save signal
         Layer.objects.filter(id=self.id).update(bbox=self.bbox,llbbox=self.llbbox,geographic_bounding_box=self.geographic_bounding_box )
 
@@ -1609,10 +1609,10 @@ class LayerAttributeManager(models.Manager):
 
 class LayerAttribute(models.Model):
     objects = LayerAttributeManager()
-    
+
     layer = models.ForeignKey(Layer, blank=False, null=False, unique=False, related_name='attribute_set')
     #layer = models.ForeignKey(ResourceBase, blank=False, null=False, unique=False, related_name='attribute_set')
-    
+
     attribute = models.CharField(_('Attribute Name'), max_length=255, blank=False, null=True, unique=False)
     attribute_label = models.CharField(_('Attribute Label'), max_length=255, blank=False, null=True, unique=False)
     attribute_type = models.CharField(_('Attribute Type'), max_length=50, blank=False, null=False, default='xsd:string', unique=False)
@@ -1709,7 +1709,7 @@ class Map(models.Model, PermissionLevelMixin):
     """
     Layer categories (names, expanded)
     """
-    
+
     template_page = models.CharField('Map template page',  max_length=255, blank=True)
     """
     The map view template page to use, if different from default
@@ -1881,6 +1881,7 @@ class Map(models.Model, PermissionLevelMixin):
         config["map"]["layers"][len(layers)-1]["selected"] = True
 
         config["map"].update(_get_viewer_projection_info(self.projection))
+
 
         return config
 
@@ -2136,14 +2137,17 @@ class MapLayer(models.Model):
         paired with the GeoNode site.  Currently this is based on heuristics,
         but we try to err on the side of false negatives.
         """
-        if self.ows_url == (settings.GEOSERVER_BASE_URL + "wms"):
-            isLocal = cache.get('islocal_' + self.name)
-            if isLocal is None:
-                isLocal = Layer.objects.filter(typename=self.name).count() != 0
-                cache.add('islocal_' + self.name, isLocal)
-            return isLocal
-        else:
-            return False
+        isLocal = False
+        if self.ows_url:
+            ows_url = urlparse(self.ows_url)
+            settings_url = urlparse(settings.GEOSERVER_BASE_URL + "wms")
+            if settings_url.netloc == ows_url.netloc and settings_url.path == ows_url.path:
+                isLocal = cache.get('islocal_' + self.name)
+                if isLocal is None:
+                    isLocal = Layer.objects.filter(typename=self.name).count() != 0
+                    cache.add('islocal_' + self.name, isLocal)
+        return isLocal
+
 
     def source_config(self):
         """
@@ -2254,6 +2258,16 @@ class MapLayer(models.Model):
 
     def __unicode__(self):
         return '%s?layers=%s' % (self.ows_url, self.name)
+
+
+def pre_save_maplayer(instance, sender, **kwargs):
+
+    if instance.local():
+        print 'Fixing layer_params url for layer %s' % instance.name
+        instance.layer_params = instance.layer_params.replace('https://', 'http://')
+
+signals.pre_save.connect(pre_save_maplayer, sender=MapLayer)
+
 
 class Role(models.Model):
     """
