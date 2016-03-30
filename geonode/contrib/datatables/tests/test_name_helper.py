@@ -15,16 +15,16 @@ class JoinTargetTestCase(unittest.TestCase):
         self.assertEqual(tname, 't_12345')
 
         # digit + truncate
-        tname = standardize_table_name('45no_di_it_start')[:10]
-        self.assertEqual(tname, 't_45no_di')
+        tname = standardize_table_name('45no_di_it_start')
+        self.assertEqual(tname, 't_45no_di_i')
 
     def test_name_is_slugified(self):
 
         tname = standardize_table_name('hello" there-table')
-        self.assertEqual(tname, 'hello_the')
+        self.assertEqual(tname, 'hello_there')
 
         tname = standardize_table_name('1-2-button-+shoe')
-        self.assertEqual(tname, 't_1_2_but')
+        self.assertEqual(tname, 't_1_2_butto')
 
     def test_random_chars(self):
 
