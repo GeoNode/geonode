@@ -1078,6 +1078,60 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             new OpenLayers.Projection("EPSG:4326");
     },
 
+    addLocalLayer: function(thisRecord, source, layerStore, key){
+        //Get all the required WMS parameters from the GeoNode/Worldmap database
+        // instead of GetCapabilities
+
+        var typename = this.searchTable.getlayerTypename(thisRecord);
+        var tiled = thisRecord.get("tiled") || true;
+
+        var layer_bbox = [
+            parseFloat(thisRecord.get('MinX')),
+            parseFloat(thisRecord.get('MinY')),
+            parseFloat(thisRecord.get('MaxX')),
+            parseFloat(thisRecord.get('MaxY'))
+            ];
+
+        var layer_detail_url = this.mapproxy_backend + JSON.parse(thisRecord.get('Location')).layerInfoPage;
+        var layer = {
+            "styles": "",
+            "group": "General",
+            "name": thisRecord.get('LayerName'),
+            "title": thisRecord.get('LayerTitle'),
+            "url": layer_detail_url + 'map/wmts/' + typename.replace('geonode:', '') + '/default_grid/${z}/${x}/${y}.png',
+            "abstract": thisRecord.get('Abstract'),
+            "visibility": true,
+            "queryable": true,
+            "disabled": false,
+            "srs": thisRecord.get('SrsProjectionCode'),
+            "bbox": layer_bbox,
+            "transparent": true,
+            "llbbox": layer_bbox,
+            "source": key,
+            "buffer": 0,
+            "tiled": true,
+            "local": thisRecord.get('ServiceType') === 'WM'
+        };
+
+        if(layer.local){
+            layer.url = thisRecord.get('LayerUrl');
+        };
+
+        if(thisRecord.get('ServiceType') === 'ESRI_ImageServer' || thisRecord.get('ServiceType') === 'ESRI_MapServer'){
+            layer.url = thisRecord.get('LayerUrl');
+            layer.name = thisRecord.get('LayerTitle');
+            if (layer.srs == null){
+              //Assume that the bbox needs to be transformed to web mercator
+              //delete layer.bbox;
+              layer_bbox = [thisRecord.get('MinX'),thisRecord.get('MinY'),thisRecord.get('MaxX'),thisRecord.get('MaxY')];
+              layer.bbox = new OpenLayers.Bounds(layer_bbox).transform("EPSG:4326", this.map.projection).toArray();
+            }
+            this.addEsriSourceAndLayer(layerStore, layer, layer_detail_url);
+        }else{
+            this.loadRecord(source, layerStore, layer, layer_detail_url);
+        }
+    },
+
     addLayerAjax: function (dataSource, dataKey, dataRecords) {
         var geoEx = this;
         var key = dataKey;
@@ -1088,62 +1142,17 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
         var isLocal = source instanceof gxp.plugins.GeoNodeSource;
         for (var i = 0, ii = records.length; i < ii; ++i) {
             var thisRecord = records[i];
-            if ($.parseJSON(thisRecord.get('Is_Public')) && isLocal) {
-                //Get all the required WMS parameters from the GeoNode/Worldmap database
-                // instead of GetCapabilities
-
-                var typename = this.searchTable.getlayerTypename(records[i]);
-                var tiled = thisRecord.get("tiled") || true;
-
-                var layer_bbox = [
-                    parseFloat(thisRecord.get('MinX')),
-                    parseFloat(thisRecord.get('MinY')),
-                    parseFloat(thisRecord.get('MaxX')),
-                    parseFloat(thisRecord.get('MaxY'))
-                    ];
-
-                var layer_detail_url = this.mapproxy_backend + JSON.parse(thisRecord.get('Location')).layerInfoPage;
-                var layer = {
-                    "styles": "",
-                    "group": "General",
-                    "name": thisRecord.get('LayerName'),
-                    "title": thisRecord.get('LayerTitle'),
-                    "url": layer_detail_url + 'map/wmts/' + typename.replace('geonode:', '') + '/default_grid/${z}/${x}/${y}.png',
-                    "abstract": thisRecord.get('Abstract'),
-                    "visibility": true,
-                    "queryable": true,
-                    "disabled": false,
-                    "srs": thisRecord.get('SrsProjectionCode'),
-                    "bbox": layer_bbox,
-                    "transparent": true,
-                    "llbbox": layer_bbox,
-                    "source": key,
-                    "buffer": 0,
-                    "tiled": true,
-                    "local": thisRecord.get('ServiceType') === 'WM'
-                };
-
-                if(layer.local){
-                    layer.url = thisRecord.get('LayerUrl');
-                };
-
-                if(thisRecord.get('ServiceType') === 'ESRI_ImageServer' || thisRecord.get('ServiceType') === 'ESRI_MapServer'){
-                    layer.url = thisRecord.get('LayerUrl');
-                    layer.name = thisRecord.get('LayerTitle');
-                    if (layer.srs == null){
-                      //Assume that the bbox needs to be transformed to web mercator
-                      //delete layer.bbox;
-                      layer_bbox = [thisRecord.get('MinX'),thisRecord.get('MinY'),thisRecord.get('MaxX'),thisRecord.get('MaxY')];
-                      layer.bbox = new OpenLayers.Bounds(layer_bbox).transform("EPSG:4326", this.map.projection).toArray();
-                    }
-                    this.addEsriSourceAndLayer(layerStore, layer, layer_detail_url);
-                }else{
-                    this.loadRecord(source, layerStore, layer, layer_detail_url);
-                }
-
-
-            }
-            else {
+            if (isLocal){
+                var authorized = true;
+                if (!$.parseJSON(thisRecord.get('Is_Public'))){
+                    $.get('/data/' + thisRecord.get('LayerName'))
+                    .success(function(){
+                            this.addLocalLayer(thisRecord, source, layerStore, key);
+                        });
+                } else {
+                    this.addLocalLayer(thisRecord, source, layerStore, key);
+                }                  
+            } else {
                 //Not a local GeoNode layer, use source's standard method for creating the layer.
                 var layer = records[i].get("name");
                 var record = source.createLayerRecord({
