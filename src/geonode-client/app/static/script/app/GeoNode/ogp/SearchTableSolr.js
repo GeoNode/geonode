@@ -20,9 +20,9 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
     remoteTooltip: 'UT: Remote Data',
     invalidQueryText: 'Invalid Query',
     searchTermRequired: 'You need to specify a search term',
-    originatorSearchLabelText: 'Originator',
+    originatorSearchLabelText: 'Source',
     dataTypeSearchLableText: 'UT: Data Type',
-    originatorText: 'Originator',
+    originatorText: 'Source',
 
     searchOnLoad: false,
     linkableTitle: true,
@@ -330,11 +330,12 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
                 renderer: function(value, metadata, record, rowIndex, colIndex, store){
                     var the_abstract = app.layerTree.replaceURLWithHTMLLinks(record.get('Abstract'));
                     metadata.attr =
-                        'ext:qtip="' + record.get('Originator') +
-                        '<br/><strong>Abstract</strong>: ' +
+                        'ext:qtip="<strong>Title: ' + record.get('LayerTitle') +
+                        '</strong><br/><strong>Source: ' + record.get('Originator') +
+                        '</strong><br/><strong>Abstract</strong>: ' +
                         the_abstract.substring(0, 250) +
                         '<br/><strong>Date</strong>: ' + record.get('LayerDateType') + '"';
-                    return record.get('Is_Public') ?  value : '<span class="unviewable-layer"></span>' + '  ' + value;
+                    return $.parseJSON(record.get('Is_Public')) ?  value : '<span class="unviewable-layer"></span>' + '  ' + value;
                 }
             },
             {
@@ -388,7 +389,11 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
                         height: 25,
                         cls: 'search-bar'
         });
-
+        this.originatorInput.on('specialkey', function(field, e) {
+            if (e.getKey() == e.ENTER) {
+                this.updateQuery();
+            }
+        }, this);
 
         this.dataTypeInput = new Ext.form.ComboBox({
             id: 'dataTypes',
@@ -417,7 +422,11 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
             forceSelection: true,
             value: ''
         });
-
+        this.dataTypeInput.on('specialkey', function(field, e) {
+            if (e.getKey() == e.ENTER) {
+                this.updateQuery();
+            }
+        }, this);
 
         var dateStartTextField = new Ext.form.TextField({
             name: 'startDate',
@@ -585,7 +594,7 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
     },
 
     showPreviewLayer: function(record){
-        if(record.get('Is_Public')){
+        if($.parseJSON(record.get('Is_Public'))){
             var typename = this.getlayerTypename(record);
             this.heatmap.bbox_widget.viewer.fireEvent("showPreviewLayer", typename, this.getLayerID(record));
         }
