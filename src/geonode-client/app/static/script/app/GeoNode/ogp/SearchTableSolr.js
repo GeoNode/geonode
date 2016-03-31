@@ -371,7 +371,7 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
                         emptyText: this.searchLabelText,
                         name: 'search',
                         allowBlank: true,
-                        width: 80,
+                        width: 90,
                         height: 25,
                         cls: 'search-bar'
                      });
@@ -385,7 +385,7 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
                         emptyText: this.originatorSearchLabelText,
                         name: 'search_originator',
                         allowBlank: true,
-                        width: 80,
+                        width: 90,
                         height: 25,
                         cls: 'search-bar'
         });
@@ -450,6 +450,7 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
         var dateEndTextField = new Ext.form.TextField({
             name: 'endDate',
             width: 160,
+            height: 25,
             listeners: {
                 change: function(scope, newValue, oldValue){
                     self.dateInput.valuesFromInput(1, newValue);
@@ -494,7 +495,9 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
         searchButton.on('click', this.updateQuery, this);
 
         var clearSearchLink = new Ext.Button({
-            text: "Clear Search",
+            text: "Reset",
+            iconCls: 'not-prominent-btn',
+            cls: 'search-bar clear-search-button',
             listeners: {
                 click: function(){self.clearSearch()}
             }

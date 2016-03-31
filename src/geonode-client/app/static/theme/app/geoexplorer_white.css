@@ -990,7 +990,12 @@ td.x-grid3-hd-over .x-grid3-hd-inner, td.sort-desc .x-grid3-hd-inner, td.sort-as
 
 .search-button {
   margin-top:-29px;
-  margin-left: 310px;
+  margin-left: 336px;
+}
+
+.clear-search-button {
+  float:right;
+  margin-top:-29px;
 }
 
 .x-panel .date-form{
