@@ -1088,7 +1088,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
         var isLocal = source instanceof gxp.plugins.GeoNodeSource;
         for (var i = 0, ii = records.length; i < ii; ++i) {
             var thisRecord = records[i];
-            if (thisRecord.get('Is_Public') && isLocal) {
+            if ($.parseJSON(thisRecord.get('Is_Public')) && isLocal) {
                 //Get all the required WMS parameters from the GeoNode/Worldmap database
                 // instead of GetCapabilities
 
