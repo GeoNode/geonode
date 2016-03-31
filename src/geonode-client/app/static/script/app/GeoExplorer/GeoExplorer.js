@@ -1145,7 +1145,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             if (isLocal){
                 var authorized = true;
                 if (!$.parseJSON(thisRecord.get('Is_Public'))){
-                    $.get('/data/' + thisRecord.get('LayerName'))
+                    $.get('http://worldmap.harvard.edu/data/' + thisRecord.get('LayerName'))
                     .success(function(){
                             this.addLocalLayer(thisRecord, source, layerStore, key);
                         });
