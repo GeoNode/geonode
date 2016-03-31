@@ -1132,6 +1132,20 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
         }
     },
 
+    testLayerPermission: function(thisRecord, source, layerStore, key){
+        var self = this;
+        $.ajax({
+            url: 'http://worldmap.harvard.edu/data/' + thisRecord.get('LayerName'),
+            method: 'GET',
+            complete: function(xhr, status){
+                if (xhr.status == 200){
+                    self.addLocalLayer(thisRecord, source, layerStore, key)
+                }
+            },
+            dataType: 'jsonp'
+        });
+    },
+
     addLayerAjax: function (dataSource, dataKey, dataRecords) {
         var geoEx = this;
         var key = dataKey;
@@ -1145,12 +1159,9 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             if (isLocal){
                 var authorized = true;
                 if (!$.parseJSON(thisRecord.get('Is_Public'))){
-                    $.get('http://worldmap.harvard.edu/data/' + thisRecord.get('LayerName'))
-                    .success(function(){
-                            this.addLocalLayer(thisRecord, source, layerStore, key);
-                        });
+                   geoEx.testLayerPermission(thisRecord, source, layerStore, key);
                 } else {
-                    this.addLocalLayer(thisRecord, source, layerStore, key);
+                    geoEx.addLocalLayer(thisRecord, source, layerStore, key);
                 }                  
             } else {
                 //Not a local GeoNode layer, use source's standard method for creating the layer.
