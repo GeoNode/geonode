@@ -533,8 +533,8 @@ def data_request_profile_approve(request, pk):
     if request.method == 'POST':
         request_profile = get_object_or_404(DataRequestProfile, pk=pk)
 
-        if not if not request_profile.has_verified_email():
-            return HttpResponseRedirect("/forbidden/")
+        if not request_profile.has_verified_email() or not request_profile.request_status == 'pending':
+            raise PermissionDenied
         
         result = True
         message = ''
