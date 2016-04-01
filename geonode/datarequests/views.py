@@ -532,7 +532,8 @@ def data_request_profile_approve(request, pk):
 
     if request.method == 'POST':
         request_profile = get_object_or_404(DataRequestProfile, pk=pk)
-        if not request_profile.date:
+
+        if not if not request_profile.has_verified_email():
             return HttpResponseRedirect("/forbidden/")
         
         result = True

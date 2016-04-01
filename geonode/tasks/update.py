@@ -61,7 +61,12 @@ def fh_style_update(layer,filename):
     #layer_list = Layer.objects.filter(name__icontains='fh')#initial run of script includes all fhm layers for cleaning of styles in GN + GS
     #layer_list = Layer.objects.filter(name__icontains='fh').exclude(styles__name__icontains='fhm'
     #total_layers = len(layer_list)
-    fhm_style = cat.get_style("fhm")
+    layer_attrib = layer.attributes[0].attribute.encode("utf-8")
+    fhm_style = None
+    if layer_attrib == "Var":
+        fhm_style = cat.get_style("fhm")
+    else:
+        fhm_style = cat.get_style("fhm_merge")
     ctr = 0
     #for layer in layer_list:
         #print "[FH STYLE] {0}/{1} : {2} ".format(ctr,total_layers,layer.name)

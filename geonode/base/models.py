@@ -673,6 +673,16 @@ class Link(models.Model):
     def get_download_url(self):
         return self.url.replace("geoserver","layers/geonode%3A{0}/download".format(self.resource.name))
         
+    def update_siteurl(self, protocol="http"):
+        tokens=self.url.split("/")
+        link_protocol = tokens[0].split(":")[0]
+        if tokens[2].encode('utf-8') != settings.BASEURL:   # Replace BASEURL used by URL
+            #print "Replacing link baseurl [{0}]".format(tokens[2])
+            tokens[2] = settings.BASEURL
+        if tokens[0] != (protocol+":"): # Replace protocol used by URL
+            tokens[0] = (protocol+":")
+        self.url="/".join(tokens)       # Combine resulting tokens to form new URL
+        self.save()
 
 def resourcebase_post_save(instance, *args, **kwargs):
     """
