@@ -528,7 +528,7 @@ def data_request_profile_approve(request, pk):
 
     if request.method == 'POST':
         request_profile = get_object_or_404(DataRequestProfile, pk=pk)
-        if not request_profile.date:
+        if not request_profile.has_verified_email():
             raise Http404
         try:
             is_new_acc=True
