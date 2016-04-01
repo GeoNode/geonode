@@ -119,3 +119,5 @@ docs/_build
 #bootstrap.min.js
 #jquery.min.js
 #bootstrap.min.css
+
+.Flood-Hazard-Error-Log.txt
