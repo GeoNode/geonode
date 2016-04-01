@@ -141,6 +141,7 @@
           {% if request.user.is_authenticated %}
           <button class="btn btn-primary btn-md btn-block" id="request-download">{% trans "Request Download" %}</button>
           {% endif %}
+          {{metadata}}
         {% endif %}
         </li>
       {% endif %}
