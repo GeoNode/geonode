@@ -72,7 +72,7 @@ def formatSourceLink(layer_name):
     return "<a href='{0}data/{1}' target='_blank'>{2}</a>".format(settings.SITEURL, layer.typename, layer.name)
 
 
-def getGazetteerResults(place_name, map=None, layer=None, start_date=None, end_date=None, project=None):
+def getGazetteerResults(place_name, map=None, layer=None, start_date=None, end_date=None, project=None, user=None):
     """
     Return placenames from gazetteer that match certain filters:
         place_name: text to do a LIKE search for
@@ -97,7 +97,7 @@ def getGazetteerResults(place_name, map=None, layer=None, start_date=None, end_d
     elif layer:
         layers = [layer]
 
-## The following retrieves results using the GazetteerEntry model.
+    ## The following retrieves results using the GazetteerEntry model.
 
     criteria = Q() if settings.GAZETTEER_FULLTEXTSEARCH else Q(place_name__istartswith=place_name)
     if layers:
@@ -142,6 +142,11 @@ def getGazetteerResults(place_name, map=None, layer=None, start_date=None, end_d
     if project:
         criteria = criteria & Q(project__exact=project)
 
+    if user:
+        criteria = criteria & Q(username__exact=user)
+    else:
+        criteria = criteria & Q(is_public__exact=True)
+
     matchingEntries=(GazetteerEntry.objects.extra(
         where=['placename_tsv @@ to_tsquery(%s)'],
         params=[re.sub("\s+"," & ",place_name.strip()) + ":*"]).filter(criteria))[:500] \
@@ -168,7 +173,8 @@ def delete_from_gazetteer(layer_name):
     GazetteerEntry.objects.filter(layer_name__exact=layer_name).delete()
 
 
-def add_to_gazetteer(layer_name, name_attributes, start_attribute=None, end_attribute=None, project=None):
+def add_to_gazetteer(layer_name, name_attributes, start_attribute=None,
+                     end_attribute=None, project=None, user=None, public=False):
     """
     Add placenames from a WorldMap layer into the gazetteer.
     layer_name: Name of the layer
@@ -232,40 +238,74 @@ def add_to_gazetteer(layer_name, name_attributes, start_attribute=None, end_attr
         end_format = end_dates[0]
         julian_end = end_dates[1]
 
+    username = ("'%s'" % user) if user else 'NULL'
+
+    updateTemplate = """
+    UPDATE {table} SET layer_attribute = '{attribute}', feature = {geom},
+    feature_type = '{type}', place_name = l."{attribute}", username = {username},
+    is_public = {public}, start_date={sdate}, end_date = {edate},
+    julian_start = {sjulian}, julian_end={ejulian}, project='{project}',
+    longitude = ST_X({coord}), latitude = ST_Y({coord})
+    FROM "{layer}" as l WHERE layer_name = '{layer}' AND feature_fid = l.fid
+    AND layer_attribute = '{attribute}' and l."{attribute}" is not NULL;
+    """
+
+    insertTemplate = """
+    INSERT INTO {table} (layer_name, layer_attribute, feature_type, feature_fid,
+    place_name, start_date, end_date, julian_start, julian_end, project,
+    feature, longitude, latitude, username, is_public)
+    (SELECT '{layer}' as layer_name, '{attribute}' as layer_attribute,
+    '{type}' as feature_type, fid as feature_fid, "{attribute}" as place_name,
+    {sdate} as start_attribute, {edate} as end_attribute, {sjulian} as
+    julian_start, {ejulian} as julian_end, '{project}' as project, {geom} as
+    feature, ST_X({coord}), ST_Y({coord}), {username}, {public}
+    FROM {layer} as l WHERE l."{attribute}" IS NOT NULL AND fid NOT IN
+    (SELECT feature_fid FROM {table} WHERE layer_name = '{layer}' AND
+    layer_attribute = '{attribute}'))
+    """
+
     for name in name_attributes:
         attribute = get_object_or_404(LayerAttribute, layer=layer, attribute=name)
         """
-        Update layer placenames where placename FID = layer FID and placename layer attribute = name attribute
+        Update layer placenames where placename FID = layer FID
+        and placename layer attribute = name attribute
         """
-        updateQueries.append("UPDATE " + GAZETTEER_TABLE + " SET layer_attribute = '" + str(
-            attribute.attribute) + "', feature = " + geom_query + ", feature_type = '" + layer_type +\
-                             "', place_name = l.\"" + attribute.attribute + "\"" +
-                             ", start_date = " + (start_format if start_format else "null") +\
-                             ", end_date = " + (end_format if end_format else "null") +\
-                             ", julian_start = " + (julian_start if julian_start else "null") +\
-                             ", julian_end = " + (julian_end if julian_end else "null") +\
-                             ", project = " + ("'" + project + "'" if project else "null") +\
-                             ", longitude = ST_X(" + coord_query + "), latitude = ST_Y(" + coord_query + ")" +\
-                             " FROM \"" + layer_name + "\" as l WHERE layer_name = '" + layer_name + "' AND" +\
-                             " feature_fid = l.fid AND layer_attribute = '" + attribute.attribute + "' and l.\"" +\
-                             attribute.attribute + "\" is not null")
+
+        updateQuery =updateTemplate.format(
+            table=GAZETTEER_TABLE,
+            attribute=attribute.attribute,
+            geom=geom_query,
+            username=username,
+            type=layer_type,
+            public=public,
+            sdate=(start_format if start_format else "NULL"),
+            edate=(end_format if end_format else "NULL"),
+            sjulian=(julian_start if julian_start else "NULL"),
+            ejulian=(julian_end if julian_end else "NULL"),
+            project=project,
+            coord=coord_query,
+            layer=layer_name)
+        print updateQuery
+        updateQueries.append(updateQuery)
+
         """
         Insert any new placenames
         """
-        insertQueries.append(
-            "INSERT INTO " + GAZETTEER_TABLE + " (layer_name, layer_attribute, feature_type, feature_fid, place_name, start_date, end_date, julian_start, julian_end, project, feature, longitude, latitude) (SELECT '" + str(
-                    layer.name) + "' as layer_name,'" + str(
-                    attribute.attribute) + "' as layer_attribute,'" + layer_type + "' as feature_type,fid as feature_fid,"\
-                + "\"" + attribute.attribute + "\" as place_name," +\
-                (start_format.replace("l.","") if start_format else 'null') + " as start_attribute," +\
-                (end_format.replace("l.","") if end_format else 'null') + " as end_attribute," +\
-                (julian_start.replace("l.","") if julian_start else 'null') + " as julian_start," +\
-                (julian_end.replace("l.","") if julian_end else 'null') + " as julian_end," +\
-            ("'" + project + "'" if project else 'null') + " as project" +\
-                "," + geom_query + " as feature," +\
-            "ST_X(" + coord_query + "), ST_Y(" + coord_query + ") from " + layer_name +\
-            " as l WHERE  l.\"" + attribute.attribute + "\" is not null AND " +\
-            "fid not in (SELECT feature_fid from " + GAZETTEER_TABLE + " where layer_name = '" + layer_name + "' and layer_attribute = '" + attribute.attribute + "'))")
+        insertQuery = insertTemplate.format(
+            table=GAZETTEER_TABLE,
+            attribute=attribute.attribute,
+            geom=geom_query,
+            username=username,
+            type=layer_type,
+            public=public,
+            sdate=start_format.replace("l.", "") if start_format else 'NULL',
+            edate=end_format.replace("l.", "") if end_format else 'NULL',
+            sjulian=julian_start if julian_start else "NULL",
+            ejulian=julian_end if julian_end else "NULL",
+            project=project,
+            coord=coord_query,
+            layer=layer_name)
+        insertQueries.append(insertQuery)
 
     conn = getConnection()
 

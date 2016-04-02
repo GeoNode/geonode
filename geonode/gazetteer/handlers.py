@@ -69,11 +69,12 @@ class PlaceNameHandler(BaseHandler):
     #fields = ('layerName', ('latitude', 'longitude'), 'source')
 
     @classmethod
-    def read(self, request, place_name, map = None, layer = None, start_date = None, end_date = None, project=None, services=None):
+    def read(self, request, place_name, map=None, layer=None, start_date=None,
+             end_date=None, project=None, services=None, user=None):
         if place_name.isdigit():
             posts = getGazetteerEntry(place_name)
         else:
-            posts = getGazetteerResults(place_name, map, layer, start_date, end_date, project)
+            posts = getGazetteerResults(place_name, map, layer, start_date, end_date, project, user)
         if services is not None:
             posts.extend(getExternalServiceResults(place_name,services))
         return posts

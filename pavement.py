@@ -305,6 +305,7 @@ def sync_django_db(options):
     sh("django-admin.py syncdb --settings=geonode.settings --noinput")
     try:
         sh("django-admin.py syncdb --database=wmdata --settings=geonode.settings --noinput")
+        sh("django-admin.py migrate gazetteer --database=wmdata --settings=geonode.settings --noinput")
     except:
         info("******CREATION OF GAZETTEER TABLE FAILED - if you want the gazetteer enabled, \n \
 unescape the 'DATABASES' AND 'DATABASE_ROUTERS' settings in your settings file \n \
