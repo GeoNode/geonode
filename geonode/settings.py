@@ -458,40 +458,26 @@ DB_DATASTORE_TYPE = ''
 DB_DATASTORE_NAME = ''
 DB_DATASTORE_ENGINE = 'django.contrib.gis.db.backends.postgis'
 
-USE_GAZETTEER = False
-##### START GAZETTEER SETTINGS #####
+"""
+START GAZETTEER SETTINGS
+"""
 # Defines settings for multiple databases,
 # only use if PostGIS integration enabled
 # and USE_GAZETTEER = True
-#GAZETTEER_DB_ALIAS = "wmdata"
-#DATABASES = {
-#    'default': {
-#        'ENGINE': DATABASE_ENGINE,
-#        'NAME': DATABASE_NAME,
-#        'USER' : DATABASE_USER,
-#        'PASSWORD': DATABASE_PASSWORD,
-#        'PORT': DATABASE_PORT,
-#        'HOST': DATABASE_HOST
-#    },
-#    'wmdata': {
-#        'ENGINE': DB_DATASTORE_ENGINE,
-#        'NAME': DB_DATASTORE_DATABASE,
-#        'USER' : DB_DATASTORE_USER,
-#        'PASSWORD': DB_DATASTORE_PASSWORD,
-#        'PORT': DB_DATASTORE_PORT,
-#        'HOST': DATABASE_HOST
-#    }
-#
-#}
-#DATABASE_ROUTERS = ['geonode.utils.WorldmapDatabaseRouter']
-#SOUTH_DATABASE_ADAPTERS = {
+USE_GAZETTEER = False
+GAZETTEER_DB_ALIAS = "wmdata"
+GAZETTEER_FULLTEXTSEARCH = False
+# Uncomment the following if USE_GAZETTEER = True
+# DATABASE_ROUTERS = ['geonode.utils.WorldmapDatabaseRouter']
+# SOUTH_DATABASE_ADAPTERS = {
 #    'default': "south.db.sqlite3",
 #    'wmdata' : "south.db.postgresql_psycopg2",
 #
 #    }
-#SOUTH_TESTS_MIGRATE = False
-#GAZETTEER_FULLTEXTSEARCH = False
-##### END GAZETTEER SETTINGS #####
+# SOUTH_TESTS_MIGRATE = False
+"""
+END GAZETTEER SETTINGS
+"""
 
 #Set to true to schedule asynchronous updates of
 #layer bounds updates (after creating/editing features)
