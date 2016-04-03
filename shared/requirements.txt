@@ -42,9 +42,9 @@ defusedxml
 #The following are for the gazetteer
 -e git+https://github.com/cga-harvard/geopy.git#egg=geopy
 geojson
-https://bitbucket.org/jespern/django-piston/get/5b3ef294fe89.zip
+dicttoxml==1.6.6
 #Uncomment the following to use the django debug toolbar
--e git+https://github.com/robhudson/django-debug-toolbar.git#egg=django-debug-toolbar
+#-e git+https://github.com/robhudson/django-debug-toolbar.git#egg=django-debug-toolbar
 
 #For scheduled tasks
 django-celery==3.0.11
