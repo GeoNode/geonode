@@ -12,17 +12,9 @@ class Migration(SchemaMigration):
         # Adding field 'GazetteerEntry.username'
         db.add_column('gazetteer_gazetteerentry', 'username', self.gf('django.db.models.fields.CharField')(max_length=30, null=True, blank=True), keep_default=False)
 
-        # Adding field 'GazetteerEntry.is_public'
-        db.add_column('gazetteer_gazetteerentry', 'is_public', self.gf('django.db.models.fields.BooleanField')(default=True), keep_default=False)
-
-
     def backwards(self, orm):
         # Deleting field 'GazetteerEntry.username'
         db.delete_column('gazetteer_gazetteerentry', 'username')
-
-        # Deleting field 'GazetteerEntry.is_public'
-        db.delete_column('gazetteer_gazetteerentry', 'is_public')
-
 
     models = {
         'gazetteer.gazetteerentry': {
@@ -32,7 +24,6 @@ class Migration(SchemaMigration):
             'feature_fid': ('django.db.models.fields.BigIntegerField', [], {}),
             'feature_type': ('django.db.models.fields.CharField', [], {'max_length': '255'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'is_public': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
             'julian_end': ('django.db.models.fields.IntegerField', [], {'null': 'True', 'blank': 'True'}),
             'julian_start': ('django.db.models.fields.IntegerField', [], {'null': 'True', 'blank': 'True'}),
             'latitude': ('django.db.models.fields.FloatField', [], {}),

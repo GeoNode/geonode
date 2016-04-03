@@ -932,7 +932,7 @@ def layer_metadata(request, layername):
 
         topic_category = layer.topic_category
         layerAttSet = inlineformset_factory(Layer, LayerAttribute, extra=0, form=LayerAttributeForm, )
-        show_gazetteer_form = request.user = layer.owner and layer.store == settings.DB_DATASTORE_NAME
+        show_gazetteer_form = settings.USE_GAZETTEER and layer.store == settings.DB_DATASTORE_NAME
 
         fieldTypes = {}
         attributeOptions = layer.attribute_set.filter(attribute_type__in=['xsd:dateTime','xsd:date','xsd:int','xsd:string','xsd:bigint', 'xsd:double'])
@@ -981,8 +981,6 @@ def layer_metadata(request, layername):
 
             if "tab" in request.POST:
                 tab = request.POST["tab"]
-
-
 
             if layer_form.is_valid() and category_form.is_valid() and (
                     not settings.USE_GAZETTEER or gazetteer_form.is_valid()):
