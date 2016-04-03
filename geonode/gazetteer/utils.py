@@ -141,7 +141,6 @@ def getGazetteerResults(place_name, map=None, layer=None, start_date=None, end_d
 
     if project:
         criteria = criteria & Q(project__exact=project)
-
     if user:
         criteria = criteria & Q(username__exact=user)
     else:
@@ -151,19 +150,12 @@ def getGazetteerResults(place_name, map=None, layer=None, start_date=None, end_d
         where=['placename_tsv @@ to_tsquery(%s)'],
         params=[re.sub("\s+"," & ",place_name.strip()) + ":*"]).filter(criteria))[:500] \
         if settings.GAZETTEER_FULLTEXTSEARCH else GazetteerEntry.objects.filter(criteria)
-
-
     posts = []
-
-
     for entry in matchingEntries:
         posts.append({'placename': entry.place_name, 'coordinates': (entry.latitude, entry.longitude),
             'source': formatSourceLink(entry.layer_name), 'start_date': entry.start_date, 'end_date': entry.end_date,
             'gazetteer_id': entry.id})
     return posts
-
-
-
 
 
 def delete_from_gazetteer(layer_name):
