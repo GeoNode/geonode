@@ -23,7 +23,6 @@ class GazetteerEntry(models.Model):
     project = models.CharField(_('Project'), max_length=255,  blank=True, null=True)
     feature = models.GeometryField(_('Geometry'), null=True, blank=True)
     username = models.CharField(_('User Name'), max_length=30, blank=True, null=True)
-    is_public = models.BooleanField(_('Is Public'), default=True)
     objects = models.GeoManager()
 
     class Meta:

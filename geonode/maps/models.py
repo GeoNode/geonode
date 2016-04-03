@@ -1542,8 +1542,6 @@ class Layer(models.Model, PermissionLevelMixin):
             newJob = GazetteerUpdateJob(layer=self)
             newJob.save()
 
-
-
     def update_gazetteer(self):
         from geonode.gazetteer.utils import add_to_gazetteer, delete_from_gazetteer
         if not self.in_gazetteer:
@@ -1562,8 +1560,7 @@ class Layer(models.Model, PermissionLevelMixin):
                              start_attribute=startAttribute,
                              end_attribute=endAttribute,
                              project=self.gazetteer_project,
-                             user=self.owner.username,
-                             public=self.owner.is_superuser)
+                             user=self.owner.username)
 
     def queue_bounds_update(self):
         from geonode.queue.models import LayerBoundsUpdateJob

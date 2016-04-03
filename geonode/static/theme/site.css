@@ -1013,3 +1013,7 @@ Comments
     padding:5px;
     vertical-align:middle;
 }
+
+.gazetteer_warning {
+    color: Red;
+}

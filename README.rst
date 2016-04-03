@@ -96,21 +96,40 @@ password: wm_password
 Postgres database creation
 --------------------------
 
+  PostGIS 1.5
+  ===========
+
   # create user
   create role wm_user password 'wm_password' superuser login;
   # create wm_db
-  psql -U postgres -c "drop database wm_db"
   psql -U postgres -c "create database wm_db with owner wm_user encoding 'UTF8' lc_collate='en_US.utf8' lc_ctype='en_US.utf8' template template0;"
   psql -U wm_user -d wm_db -f /usr/share/postgresql/9.1/contrib/postgis-1.5/postgis.sql
   psql -U wm_user -d wm_db -f /usr/share/postgresql/9.1/contrib/postgis_comments.sql
   psql -U wm_user -d wm_db -f /usr/share/postgresql/9.1/contrib/postgis-1.5/spatial_ref_sys.sql
 
   # create wmdata
-  psql -U postgres -c "drop database wmdata"
   psql -U postgres -c "create database wmdata with owner wm_user encoding 'UTF8' lc_collate='en_US.utf8' lc_ctype='en_US.utf8' template template0;"
   psql -U wm_user -d wmdata -f /usr/share/postgresql/9.1/contrib/postgis-1.5/postgis.sql
   psql -U wm_user -d wmdata -f /usr/share/postgresql/9.1/contrib/postgis_comments.sql
   psql -U wm_user -d wmdata -f /usr/share/postgresql/9.1/contrib/postgis-1.5/spatial_ref_sys.sql
+
+
+  PostGIS 2.0+
+  ===========
+
+  # create user
+  createuser -P -s -E -l wm_user;
+
+  #create PostGIS template with legacy GIST operators
+  createdb -E UTF8 -O wm_user template_postgis
+  psql -U postgres -d template_postgis -c "CREATE EXTENSION postgis;"
+  psql -U postgres -d template_postgis -f geonode/static/geonode/patches/postgis/legacy_gist.sql
+
+  # create wm_db
+  createdb -E UTF8 -U wm_user -T template_postgis wm_db
+
+  # create wmdata
+  createdb -E UTF8 -U wm_user -T template_postgis wmdata
 
 GeoNode installation
 --------------------
