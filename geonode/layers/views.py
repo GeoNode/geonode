@@ -277,6 +277,8 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
         "is_layer": True,
         "wps_enabled": settings.OGC_SERVER['default']['WPS_ENABLED'],
     }
+    context_dict["phillidar2keyword"] = "phillidar2"
+
 
     context_dict["viewer"] = json.dumps(
         map_obj.viewer_json(request.user, * (NON_WMS_BASE_LAYERS + [maplayer])))
