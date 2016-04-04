@@ -173,6 +173,7 @@ define(function (require, exports) {
             }
         }
 
+        form_data.append('letter_file', $('#id_letter_file')[0].files[0]);
         form_data.append('charset', $('#charset').val());
         form_data.append('project_summary', $('#id_project_summary').val());
         form_data.append('purpose', $('#id_purpose').val());
