@@ -273,16 +273,19 @@ define(['underscore',
         return false;
     };
     
+    /**Function which submits the form if no 
     
     /** Function which submits the form fields
      *  
      */
     doFormSubmit = function(){
-        var form = $("#file-uploader").serialize();
+        var form = new FormData($("#file-uploader")[0]);
         $.ajax({
            type: "POST",
            url: '/datarequests/register/shapefile/',
-           data: form, // serializes the form's elements.
+           data: form, //form.serialize(), // serializes the form's elements.
+           contentType: false,
+           processData: false,
            success: function(data)
            {
                if('redirect_to' in data) {
@@ -303,6 +306,8 @@ define(['underscore',
         });
            
      }
+     
+     
 
     /** Function to ...
      *
