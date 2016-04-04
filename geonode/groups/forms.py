@@ -42,7 +42,7 @@ class GroupForm(forms.ModelForm):
 
     class Meta:
         model = GroupProfile
-        exclude = ['group']
+        exclude = ['group', 'profile_type']
 
 
 class GroupUpdateForm(forms.ModelForm):
@@ -59,7 +59,7 @@ class GroupUpdateForm(forms.ModelForm):
 
     class Meta:
         model = GroupProfile
-        exclude = ['group']
+        exclude = ['group', 'profile_type']
 
 
 class GroupMemberForm(forms.Form):
