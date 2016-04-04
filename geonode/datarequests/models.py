@@ -96,7 +96,6 @@ class DataRequestProfile(TimeStampedModel):
         blank=True,
     )
 
-    # jurisdiction_shapefile = models.ForeignKey(Layer, null=False, blank=False)
     jurisdiction_shapefile = models.ForeignKey(Layer, null=True, blank=True)
 
     request_status = models.CharField(
@@ -124,7 +123,7 @@ class DataRequestProfile(TimeStampedModel):
     )
     email = models.EmailField(_('Email Address'), max_length=50)
     contact_number = models.CharField(_('Contact Number'), max_length=255)
-    project_summary = models.TextField(_('Summary of Project/Program'))
+    project_summary = models.TextField(_('Summary of Project/Program'), null=True, blank=True)
     data_type_requested = models.CharField(
         _('Type of Data Requested'),
         choices=DATA_TYPE_CHOICES,
@@ -148,7 +147,7 @@ class DataRequestProfile(TimeStampedModel):
     )
     """
 
-    purpose = models.TextField(_('Purpose of Data'))
+    purpose = models.TextField(_('Purpose of Data'), null=True, blank = True)
     intended_use_of_dataset = models.CharField(
         _('Intended Use of Dataset'),
         choices=DATASET_USE_CHOICES,
@@ -164,12 +163,14 @@ class DataRequestProfile(TimeStampedModel):
         _('Level of Request'),
         choices=REQUEST_LEVEL_CHOICES,
         blank=True,
+        null=True,
         max_length=15,
     )
     funding_source = models.CharField(
         _('Source of Funding'),
         max_length=255,
         blank=True,
+        null=True
     )
     is_consultant = models.BooleanField(
         _('Consultant in behalf of another organization?'),
