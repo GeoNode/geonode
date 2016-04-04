@@ -23,10 +23,10 @@ from pprint import pprint
 
 class DataRequestProfileForm(forms.ModelForm):
 
-    letter_file = forms.FileField(
-        label=_('Formal Request Letter (PDF only)'),
-        required = True
-    )
+    #letter_file = forms.FileField(
+    #    label=_('Formal Request Letter (PDF only)'),
+    #    required = True
+    #)
 
     captcha = ReCaptchaField(attrs={'theme': 'clean'})
 
@@ -40,7 +40,7 @@ class DataRequestProfileForm(forms.ModelForm):
             'location',
             'email',
             'contact_number',
-            'letter_file',
+            #'letter_file',
             'captcha'
         )
 
@@ -82,10 +82,10 @@ class DataRequestProfileForm(forms.ModelForm):
                     Field('contact_number', css_class='form-control'),
                     css_class='form-group'
                 ),
-                Div(
-                    Field('letter_file', css_class='form-control'),
-                    css_class='form-group'
-                ),
+                #Div(
+                #    Field('letter_file', css_class='form-control'),
+                #    css_class='form-group'
+                #),
             ),
             Div(
 
@@ -97,16 +97,20 @@ class DataRequestProfileForm(forms.ModelForm):
 
     def clean_email(self):
         email = self.cleaned_data.get('email')
+        user_emails = Profile.objects.all().values_list('email', flat=True)
+        if email in user_emails:
+            raise forms.ValidationError(
+                'That email is already being used by a registered user.')
 
         return email
 
-    def clean_letter_file(self):
-        letter_file = self.cleaned_data.get('letter_file')
-        split_filename =  os.path.splitext(str(letter_file.name))
+    #def clean_letter_file(self):
+    #    letter_file = self.cleaned_data.get('letter_file')
+    #    split_filename =  os.path.splitext(str(letter_file.name))
 
-        if letter_file and split_filename[len(split_filename)-1].lower()[1:] != "pdf":
-            raise forms.ValidationError(_("This file type is not allowed"))
-        return letter_file
+    #    if letter_file and split_filename[len(split_filename)-1].lower()[1:] != "pdf":
+    #        raise forms.ValidationError(_("This file type is not allowed"))
+    #    return letter_file
 
     def save(self, commit=True, *args, **kwargs):
         data_request = super(
@@ -155,6 +159,11 @@ class DataRequestDetailsForm(forms.ModelForm):
     purpose_other = forms.CharField(
         label=_(u'Your custom purpose for the data'),
         required=False
+    )
+    
+    letter_file = forms.FileField(
+        label=_('Formal Request Letter (PDF only)'),
+        required = True
     )
 
     class Meta:
@@ -221,6 +230,10 @@ class DataRequestDetailsForm(forms.ModelForm):
                 Field('is_consultant'),
                 css_class='academe-fieldset',
             ),
+            Div(
+                Field('letter_file', css_class='form-control'),
+                    css_class='form-group'
+            ),
             HTML("""
             {% load i18n %}
              <legend>Area of Interest Shapefile (Optional)</legend>
@@ -270,6 +283,14 @@ class DataRequestDetailsForm(forms.ModelForm):
 
             """),
         )
+        
+    def clean_letter_file(self):
+        letter_file = self.cleaned_data.get('letter_file')
+        split_filename =  os.path.splitext(str(letter_file.name))
+
+        if letter_file and split_filename[len(split_filename)-1].lower()[1:] != "pdf":
+            raise forms.ValidationError(_("This file type is not allowed"))
+        return letter_file
 
 class DataRequestProfileShapefileForm(NewLayerUploadForm):
 
@@ -365,6 +386,11 @@ class DataRequestProfileShapefileForm(NewLayerUploadForm):
     is_consultant = forms.BooleanField(
         required=False
     )
+    
+    letter_file = forms.FileField(
+        label=_('Formal Request Letter (PDF only)'),
+        required = True
+    )
 
     def __init__(self, *args, **kwargs):
         super(DataRequestProfileShapefileForm, self).__init__(*args, **kwargs)
@@ -378,6 +404,14 @@ class DataRequestProfileShapefileForm(NewLayerUploadForm):
         cleaned['purpose_other'] = self.clean_purpose_other()
 
         return cleaned
+        
+    def clean_letter_file(self):
+        letter_file = self.cleaned_data.get('letter_file')
+        split_filename =  os.path.splitext(str(letter_file.name))
+
+        if letter_file and split_filename[len(split_filename)-1].lower()[1:] != "pdf":
+            raise forms.ValidationError(_("This file type is not allowed"))
+        return letter_file
 
     def clean_purpose_other(self):
         purpose = self.cleaned_data.get('purpose')
