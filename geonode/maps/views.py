@@ -46,8 +46,6 @@ from geonode.utils import resolve_object
 from geonode.utils import layer_from_viewer_config
 from geonode.maps.forms import MapForm
 from geonode.security.views import _perms_info_json
-from geonode.base.forms import CategoryForm
-from geonode.base.models import TopicCategory
 from geonode.tasks.deletion import delete_map
 
 from geonode.documents.models import get_related_documents
@@ -139,31 +137,17 @@ def map_metadata(request, mapid, template='maps/map_metadata.html'):
     poc = map_obj.poc
 
     metadata_author = map_obj.metadata_author
-
-    topic_category = map_obj.category
-
     if request.method == "POST":
         map_form = MapForm(request.POST, instance=map_obj, prefix="resource")
-        category_form = CategoryForm(
-            request.POST,
-            prefix="category_choice_field",
-            initial=int(
-                request.POST["category_choice_field"]) if "category_choice_field" in request.POST else None)
     else:
         map_form = MapForm(instance=map_obj, prefix="resource")
-        category_form = CategoryForm(
-            prefix="category_choice_field",
-            initial=topic_category.id if topic_category else None)
 
-    if request.method == "POST" and map_form.is_valid(
-    ) and category_form.is_valid():
+    if request.method == "POST" and map_form.is_valid():
         new_poc = map_form.cleaned_data['poc']
         new_author = map_form.cleaned_data['metadata_author']
         new_keywords = map_form.cleaned_data['keywords']
         new_title = strip_tags(map_form.cleaned_data['title'])
         new_abstract = strip_tags(map_form.cleaned_data['abstract'])
-        new_category = TopicCategory.objects.get(
-            id=category_form.cleaned_data['category_choice_field'])
 
         if new_poc is None:
             if poc is None:
@@ -194,7 +178,6 @@ def map_metadata(request, mapid, template='maps/map_metadata.html'):
             the_map.save()
             the_map.keywords.clear()
             the_map.keywords.add(*new_keywords)
-            the_map.category = new_category
             the_map.save()
 
             if getattr(settings, 'SLACK_ENABLED', False):
@@ -238,7 +221,6 @@ def map_metadata(request, mapid, template='maps/map_metadata.html'):
         "map_form": map_form,
         "poc_form": poc_form,
         "author_form": author_form,
-        "category_form": category_form,
     }))
 
 

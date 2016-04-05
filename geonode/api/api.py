@@ -144,7 +144,7 @@ class TopicCategoryResource(TypeFilteredResource):
     """Category api"""
 
     def serialize(self, request, data, format, options={}):
-        options['count_type'] = 'category'
+        options['count_type'] = 'categories'
 
         return super(TopicCategoryResource, self).serialize(request, data, format, options)
 

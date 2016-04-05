@@ -682,23 +682,22 @@ class LayersTest(TestCase):
     def test_category_counts(self):
         topics = TopicCategory.objects.all()
         topics = topics.annotate(
-            **{'layer_count': Count('resourcebase__layer__category')})
+            **{'layer_count': Count('resourcebase__layer__id', distinct=True)})
         location = topics.get(identifier='location')
         # there are three layers with location category
         self.assertEquals(location.layer_count, 3)
 
         # change the category of one layers_count
-        layer = Layer.objects.filter(category=location)[0]
+        layer = Layer.objects.filter(categories=location)[0]
         elevation = topics.get(identifier='elevation')
-        layer.category = elevation
-        layer.save()
+        layer.categories.add(elevation)
 
         # reload the categories since it's caching the old count
         topics = topics.annotate(
-            **{'layer_count': Count('resourcebase__layer__category')})
+            **{'layer_count': Count('resourcebase__layer__id', distinct=True)})
         location = topics.get(identifier='location')
         elevation = topics.get(identifier='elevation')
-        self.assertEquals(location.layer_count, 2)
+        self.assertEquals(location.layer_count, 3)
         self.assertEquals(elevation.layer_count, 4)
 
         # delete a layer and check the count update
@@ -708,7 +707,7 @@ class LayersTest(TestCase):
         self.assertEquals(elevation.layer_count, 4)
         layer.delete()
         topics = topics.annotate(
-            **{'layer_count': Count('resourcebase__layer__category')})
+            **{'layer_count': Count('resourcebase__layer__id', distinct=True)})
         elevation = topics.get(identifier='elevation')
         self.assertEquals(elevation.layer_count, 3)
 

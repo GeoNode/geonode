@@ -33,7 +33,7 @@ def assign_random_category(resource):
     """ Assign a random category to a resource """
     random_index = randint(0, TopicCategory.objects.all().count() - 1)
     tc = TopicCategory.objects.all()[random_index]
-    resource.category = tc
+    resource.categories.add(tc)
     resource.save()
     
 def assign_keywords(resource):

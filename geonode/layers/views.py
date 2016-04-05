@@ -43,10 +43,10 @@ from django.forms.util import ErrorList
 from geonode.tasks.deletion import delete_layer
 from geonode.services.models import Service
 from geonode.layers.forms import LayerForm, LayerUploadForm, NewLayerUploadForm, LayerAttributeForm
-from geonode.base.forms import CategoryForm
+
 from geonode.layers.models import Layer, Attribute, UploadSession
 from geonode.base.enumerations import CHARSETS
-from geonode.base.models import TopicCategory
+
 
 from geonode.utils import default_map_config
 from geonode.utils import GXPLayer
@@ -307,7 +307,6 @@ def layer_metadata(request, layername, template='layers/layer_metadata.html'):
         extra=0,
         form=LayerAttributeForm,
     )
-    topic_category = layer.category
 
     poc = layer.poc
     metadata_author = layer.metadata_author
@@ -329,24 +328,14 @@ def layer_metadata(request, layername, template='layers/layer_metadata.html'):
             instance=layer,
             prefix="layer_attribute_set",
             queryset=Attribute.objects.order_by('display_order'))
-        category_form = CategoryForm(
-            request.POST,
-            prefix="category_choice_field",
-            initial=int(
-                request.POST["category_choice_field"]) if "category_choice_field" in request.POST else None)
-
     else:
         layer_form = LayerForm(instance=layer, prefix="resource")
         attribute_form = layer_attribute_set(
             instance=layer,
             prefix="layer_attribute_set",
             queryset=Attribute.objects.order_by('display_order'))
-        category_form = CategoryForm(
-            prefix="category_choice_field",
-            initial=topic_category.id if topic_category else None)
 
-    if request.method == "POST" and layer_form.is_valid(
-    ) and attribute_form.is_valid() and category_form.is_valid():
+    if request.method == "POST" and layer_form.is_valid() and attribute_form.is_valid():
         new_poc = layer_form.cleaned_data['poc']
         new_author = layer_form.cleaned_data['metadata_author']
         new_keywords = layer_form.cleaned_data['keywords']
@@ -383,9 +372,6 @@ def layer_metadata(request, layername, template='layers/layer_metadata.html'):
             if author_form.has_changed and author_form.is_valid():
                 new_author = author_form.save()
 
-        new_category = TopicCategory.objects.get(
-            id=category_form.cleaned_data['category_choice_field'])
-
         for form in attribute_form.cleaned_data:
             la = Attribute.objects.get(id=int(form['id'].id))
             la.description = form["description"]
@@ -404,9 +390,6 @@ def layer_metadata(request, layername, template='layers/layer_metadata.html'):
                 up_sessions.update(user=the_layer.owner)
             the_layer.poc = new_poc
             the_layer.metadata_author = new_author
-            Layer.objects.filter(id=the_layer.id).update(
-                category=new_category
-                )
 
             if getattr(settings, 'SLACK_ENABLED', False):
                 try:
@@ -438,7 +421,6 @@ def layer_metadata(request, layername, template='layers/layer_metadata.html'):
         "poc_form": poc_form,
         "author_form": author_form,
         "attribute_form": attribute_form,
-        "category_form": category_form,
     }))
 
 

@@ -42,10 +42,10 @@ class LayerAdmin(MediaTranslationAdmin):
         'service_type',
         'title',
         'date',
-        'category')
+        'categories_str')
     list_display_links = ('id',)
-    list_editable = ('title', 'category')
-    list_filter = ('storeType', 'owner', 'category',
+    list_editable = ('title',)
+    list_filter = ('storeType', 'owner', 'categories',
                    'restriction_code_type__identifier', 'date', 'date_type')
     search_fields = ('typename', 'title', 'abstract', 'purpose',)
     filter_horizontal = ('contacts',)

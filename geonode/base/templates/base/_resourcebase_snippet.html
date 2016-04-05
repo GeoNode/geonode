@@ -10,7 +10,7 @@
           {% endverbatim %}
           <button class="btn btn-default btn-xs pull-right" ng-if="cart" ng-click="cart.toggleItem(item)"><i ng-class="cart.getFaClass(item.id)" class="fa fa-lg"></i></button>
           {% verbatim %}
-          <p class="item-meta"><span class="item-category">{{ item.category__gn_description }}</span></p>
+          <p class="item-meta"><span class="item-category">{{ item.categories__gn_description.join(', ')}}</span></p>
           <h4><a href="{{ item.detail_url }}">{{ item.title }}</a></h4>
           <p class="abstract">{{ item.abstract | limitTo: 300 }}{{ item.abstract.length  > 300 ? '...' : ''}}</p>
           <div class="row">

@@ -263,8 +263,8 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin):
     language = models.CharField(_('language'), max_length=3, choices=ALL_LANGUAGES, default='eng',
                                 help_text=language_help_text)
 
-    category = models.ForeignKey(TopicCategory, null=True, blank=True, limit_choices_to=Q(is_choice=True),
-                                 help_text=category_help_text)
+    categories = models.ManyToManyField(TopicCategory, verbose_name=_('categories'), limit_choices_to=Q(is_choice=True),
+                                        help_text=category_help_text)
 
     spatial_representation_type = models.ForeignKey(SpatialRepresentationType, null=True, blank=True,
                                                     limit_choices_to=Q(is_choice=True),
@@ -333,6 +333,24 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin):
 
     def __unicode__(self):
         return self.title
+
+    @property
+    def categories_list(self):
+        return self.categories.all()
+
+    def categories_str(self):
+        # for admin pages
+        return ",  ".join([x.gn_description for x in self.categories.extra(order_by=['description'])])
+
+    categories_str.short_description = 'Categories'
+
+    # to haystack
+    def categories_gn_descriptions_list(self):
+        return [ct.gn_description for ct in self.categories.all()]
+
+    # to haystack
+    def categories_identifiers_list(self):
+        return [ct.identifier for ct in self.categories.all()]
 
     @property
     def bbox(self):

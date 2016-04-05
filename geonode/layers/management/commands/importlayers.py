@@ -64,10 +64,10 @@ class Command(BaseCommand):
         ),
         make_option(
             '-c',
-            '--category',
-            dest='category',
-            default=None,
-            help="""The category for the
+            '--categories',
+            dest='categories',
+            default='',
+            help="""The default categories, separated by comma, for the
                     imported layer(s). Will be the same for all imported layers
                     if multiple imports are done in one command"""
         ),
@@ -113,7 +113,7 @@ class Command(BaseCommand):
         username = options.get('user')
         user = get_valid_user(username)
         overwrite = options.get('overwrite')
-        category = options.get('category', None)
+        # categories = options.get('categories', [])
         private = options.get('private', False)
         title = options.get('title', None)
         metadata_uploaded_preserve = options.get('metadata_uploaded_preserve',
@@ -134,6 +134,13 @@ class Command(BaseCommand):
             keywords = []
         else:
             keywords = map(str.strip, keywords)
+
+        categories = options.get('categories', '').split(',')
+        if len(categories) == 1 and categories[0] == '':
+            categories = []
+        else:
+            categories = map(str.strip, categories)
+
         regions = options.get('regions').split(',')
         if len(regions) == 1 and regions[0] == '':
             regions = []
@@ -150,7 +157,7 @@ class Command(BaseCommand):
                 keywords=keywords,
                 verbosity=verbosity,
                 console=console,
-                category=category,
+                categories=categories,
                 regions=regions,
                 title=title,
                 private=private,

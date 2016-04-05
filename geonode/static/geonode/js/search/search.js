@@ -33,9 +33,9 @@
           params['title__icontains'] = $location.search()['title__icontains'];
         }
         $http.get(CATEGORIES_ENDPOINT, {params: params}).success(function(data){
-            if($location.search().hasOwnProperty('category__identifier__in')){
+            if($location.search().hasOwnProperty('categories__identifier__in')){
                 data.objects = module.set_initial_filters_from_query(data.objects,
-                    $location.search()['category__identifier__in'], 'identifier');
+                    $location.search()['categories__identifier__in'], 'identifier');
             }
             $rootScope.categories = data.objects;
             if (HAYSTACK_FACET_COUNTS && $rootScope.query_data) {
@@ -99,13 +99,13 @@
   module.haystack_facets = function($http, $rootScope, $location) {
       var data = $rootScope.query_data;
       if ("categories" in $rootScope) {
-          $rootScope.category_counts = data.meta.facets.category;
+          $rootScope.categories_counts = data.meta.facets.categories;
           for (var id in $rootScope.categories) {
-              var category = $rootScope.categories[id];
-              if (category.identifier in $rootScope.category_counts) {
-                  category.count = $rootScope.category_counts[category.identifier]
+              var categories = $rootScope.categories[id];
+              if (categories.identifier in $rootScope.categories_counts) {
+                  categories.count = $rootScope.categories_counts[categories.identifier]
               } else {
-                  category.count = 0;
+                  categories.count = 0;
               }
           }
       }
