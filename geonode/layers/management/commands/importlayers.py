@@ -90,6 +90,16 @@ class Command(BaseCommand):
                     if multiple imports are done in one command"""
         ),
         make_option(
+            '-d',
+            '--date',
+            dest='date',
+            default=None,
+            help=('The date and time for the imported layer(s). Will be the '
+                  'same for all imported layers if multiple imports are done '
+                  'in one command. Use quotes to specify both the date and '
+                  'time in the format \'YYYY-MM-DD HH:MM:SS\'.')
+        ),
+        make_option(
             '-p',
             '--private',
             dest='private',
@@ -116,6 +126,7 @@ class Command(BaseCommand):
         category = options.get('category', None)
         private = options.get('private', False)
         title = options.get('title', None)
+        date = options.get('date', None)
         metadata_uploaded_preserve = options.get('metadata_uploaded_preserve',
                                                  False)
 
@@ -153,6 +164,7 @@ class Command(BaseCommand):
                 category=category,
                 regions=regions,
                 title=title,
+                date=date,
                 private=private,
                 metadata_uploaded_preserve=metadata_uploaded_preserve)
 
