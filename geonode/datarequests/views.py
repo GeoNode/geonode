@@ -59,8 +59,8 @@ def registration_part_one(request):
 
     shapefile_session = request.session.get('data_request_shapefile', None)
     profile_form_data = request.session.get('data_request_info', None)
-     
-    if request.user.is_authenticated():
+         
+    if request.user.is_authenticated() and request.method == 'GET':
         try:
             last_submitted_dr = DataRequestProfile.objects.filter(profile=request.user).latest('key_created_date')
             profile_form_data ={}
@@ -72,6 +72,20 @@ def registration_part_one(request):
                 profile_form_data[ 'location'] = last_submitted_dr.location
                 profile_form_data[ 'email'] = last_submitted_dr.email
                 profile_form_data[ 'contact_number'] = last_submitted_dr.contact_number
+                request_object = DataRequestProfile(username = request.user.username, request_status = 'pending', profile=request.user, date=timezone.now(), **profile_form_data)
+                request_object.set_verification_key()
+                request_object.save()
+                if last_submitted_dr.request_status.encode('utf8') == 'pending' or last_submitted_dr.request_status.encode('utf8') == 'unconfirmed':
+                    pprint("updating previous request_status")
+                    last_submitted_dr.request_status = 'cancelled'
+                    last_submitted_dr.save()
+                request.session['last_submitted_dr'] = last_submitted_dr
+                request.session['request_object'] = request_object
+                request.session['data_request_info'] = profile_form_data
+                
+                return HttpResponseRedirect(
+                    reverse('datarequests:registration_part_two')
+                )
         except ObjectDoesNotExist as e:
                 pprint("No data request present for this user")
        
@@ -88,18 +102,17 @@ def registration_part_one(request):
     if request.method == 'POST':
         form = DataRequestProfileForm(
             request.POST,
-            request.FILES,
             initial = profile_form_data
         )
         if form.is_valid():
-            request_object = form.save(commit=False)
-            request.session['data_request_info'] = form.cleaned_data
+            request_object = form.save()
             request.session['request_object'] = request_object
-            request.session['request_letter'] = form.cleaned_data['letter_file']
+            request.session['data_request_info'] = profile_form_data
             
             return HttpResponseRedirect(
                 reverse('datarequests:registration_part_two')
             )
+
             
     return render(
         request,
@@ -113,7 +126,7 @@ def registration_part_two(request):
     last_submitted_dr = None
     if request.user.is_authenticated():
         try:
-            last_submitted_dr = DataRequestProfile.objects.filter(profile=request.user).latest('key_created_date')
+            last_submitted_dr = request.session.get('last_submitted_dr', None)
             part_two_initial['project_summary']=last_submitted_dr.project_summary
             part_two_initial['data_type_requested']=last_submitted_dr.data_type_requested
         except ObjectDoesNotExist as e:
@@ -121,33 +134,34 @@ def registration_part_two(request):
         
     request.session['data_request_shapefile'] = True
     profile_form_data = request.session.get('data_request_info', None)
-    request_letter = request.session.get('request_letter',None)
+    saved_request_object= request.session.get('request_object', None)
     
     form = DataRequestDetailsForm(initial=part_two_initial)
 
-    if not profile_form_data or not request_letter:
+    if not saved_request_object:
         return redirect(reverse('datarequests:registration_part_one'))
 
     if request.method == 'POST' :
-        if last_submitted_dr:
-            if last_submitted_dr.request_status.encode('utf8') == 'pending' or last_submitted_dr.request_status.encode('utf8') == 'unconfirmed':
-                pprint("updating request_status")
-                last_submitted_dr.request_status = 'cancelled'
-                last_submitted_dr.save()
         post_data = request.POST.copy()
         post_data['permissions'] = '{"users":{"dataRegistrationUploader": ["view_resourcebase"] }}'
-        form = DataRequestDetailsForm(post_data)
-        if request.FILES:
+        form = DataRequestDetailsForm(post_data, request.FILES)
+        if u'base_file' in request.FILES:
             form = DataRequestProfileShapefileForm(post_data, request.FILES)
         
         tempdir = None
         errormsgs = []
         out = {}
         request_profile =  request.session['request_object']
+        pprint(post_data)
         if form.is_valid():
+            if last_submitted_dr:
+                if last_submitted_dr.request_status.encode('utf8') == 'pending' or last_submitted_dr.request_status.encode('utf8') == 'unconfirmed':
+                    pprint("updating request_status")
+                    last_submitted_dr.request_status = 'cancelled'
+                    last_submitted_dr.save()
             if form.cleaned_data:
                 interest_layer = None
-                if request.FILES:
+                if u'base_file' in request.FILES:
                     pprint(request.FILES)
                     title = form.cleaned_data["layer_title"]
 
@@ -253,7 +267,7 @@ def registration_part_two(request):
                         request_profile, letter = update_datarequest_obj(
                             datarequest=  request.session['request_object'],
                             parameter_dict = form.clean(),
-                            request_letter = request.session['request_letter'],
+                            request_letter = form.clean()['letter_file'],
                             interest_layer = interest_layer
                         )
                         out['success']=True
@@ -262,7 +276,7 @@ def registration_part_two(request):
                             request_profile, letter = update_datarequest_obj(
                                 datarequest=  request.session['request_object'],
                                 parameter_dict = form.clean(),
-                                request_letter = request.session['request_letter'],
+                                request_letter = form.clean()['letter_file'],
                                 interest_layer = interest_layer
                             )
                     
@@ -304,7 +318,6 @@ def registration_part_two(request):
                 request_profile.date = timezone.now()
                 request_profile.save()
 
-            del request.session['data_request_info']
             del request.session['data_request_shapefile']
             del request.session['request_object']
         else:
@@ -357,6 +370,10 @@ def request_history(request):
         })
 
 def email_verification_send(request):
+    
+    if request.user.is_authenticated():
+        return HttpResponseRedirect(reverse('home'))
+    
     context = {
         'support_email': settings.LIPAD_SUPPORT_MAIL,
     }
