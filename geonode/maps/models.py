@@ -33,7 +33,7 @@ from django.template.defaultfilters import slugify
 from django.core.cache import cache
 
 from geonode.layers.models import Layer
-from geonode.base.models import ResourceBase, resourcebase_post_save
+from geonode.base.models import ResourceBase, resourcebase_post_save, TopicCategory
 from geonode.maps.signals import map_changed_signal
 from geonode.utils import GXPMapBase
 from geonode.utils import GXPLayerBase
@@ -60,6 +60,8 @@ class MapStory(ResourceBase):
 
         self.title = conf['title']
         self.abstract = conf['abstract']
+        self.is_published = conf['is_published']
+        self.category = TopicCategory(conf['category'])
 
         if self.uuid is None or self.uuid == '':
             self.uuid = str(uuid.uuid1())

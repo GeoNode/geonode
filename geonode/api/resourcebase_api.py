@@ -17,7 +17,7 @@ from django.http import Http404
 from tastypie.utils.mime import build_content_type
 
 from geonode.layers.models import Layer
-from geonode.maps.models import Map
+from geonode.maps.models import Map, MapStory
 from geonode.documents.models import Document
 from geonode.base.models import ResourceBase
 
@@ -532,6 +532,16 @@ class LayerResource(CommonModelApi):
             queryset = queryset.filter(is_published=True)
         resource_name = 'layers'
         excludes = ['csw_anytext', 'metadata_xml']
+
+
+class MapStoryResource(CommonModelApi):
+    """MapStory API"""
+
+    class Meta(CommonMetaApi):
+        queryset = MapStory.objects.distinct().order_by('-date')
+        if settings.RESOURCE_PUBLISHING:
+            queryset = queryset.filter(is_published=True)
+        resource_name = 'mapstories'
 
 
 class MapResource(CommonModelApi):
