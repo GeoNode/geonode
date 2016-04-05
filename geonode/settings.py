@@ -94,6 +94,7 @@ LANGUAGES = (
     ('af', 'Afrikaans'),
     ('sw', 'Swahili'),
     ('pt', 'Portuguese'),
+    ('pt-br', 'Portuguese (Brazil)'),
     ('ru', 'Russian'),
     ('vi', 'Vietnamese'),
     ('ko', '한국어'),
