@@ -23,6 +23,7 @@ from django.utils.translation import ugettext as _
 from django.core.urlresolvers import reverse
 from django.contrib.auth.models import AbstractUser
 from django.db.models import signals
+from django.conf import settings
 
 from taggit.managers import TaggableManager
 
@@ -30,7 +31,6 @@ from geonode.base.enumerations import COUNTRIES
 from geonode.groups.models import GroupProfile
 
 from account.models import EmailAddress
-from notification import models as notification
 
 from .utils import format_address
 from django_enumfield import enum
@@ -56,6 +56,9 @@ class OrganizationType(enum.Enum):
         PRIVATE : 'Private Insitution',
         OTHER : 'Other',
     }
+
+if 'notification' in settings.INSTALLED_APPS:
+    from notification import models as notification
 
 
 class Profile(AbstractUser):
@@ -167,14 +170,20 @@ def get_anonymous_user_instance(Profile):
 
 
 def profile_post_save(instance, sender, **kwargs):
-    """Make sure the user belongs by default to the anonymous group.
-    This will make sure that anonymous permissions will be granted to the new users."""
+    """
+    Make sure the user belongs by default to the anonymous group.
+    This will make sure that anonymous permissions will be granted to the new users.
+    """
     from django.contrib.auth.models import Group
     anon_group, created = Group.objects.get_or_create(name='anonymous')
     instance.groups.add(anon_group)
     # keep in sync Profile email address with Account email address
     if instance.email not in [u'', '', None] and not kwargs.get('raw', False):
-        EmailAddress.objects.filter(user=instance, primary=True).update(email=instance.email)
+        address, created = EmailAddress.objects.get_or_create(
+            user=instance, primary=True,
+            defaults={'email': instance.email, 'verified': False})
+        if not created:
+            EmailAddress.objects.filter(user=instance, primary=True).update(email=instance.email)
 
 
 def email_post_save(instance, sender, **kw):
@@ -186,8 +195,8 @@ def profile_pre_save(instance, sender, **kw):
     matching_profiles = Profile.objects.filter(id=instance.id)
     if matching_profiles.count() == 0:
         return
-
-    if instance.is_active and not matching_profiles.get().is_active:
+    if instance.is_active and not matching_profiles.get().is_active and \
+            'notification' in settings.INSTALLED_APPS:
         notification.send([instance, ], "account_active")
 
 signals.pre_save.connect(profile_pre_save, sender=Profile)

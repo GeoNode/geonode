@@ -1,42 +1,47 @@
 {% load i18n %}
 
-
 {% verbatim %}
-<div class="row">
   <article ng-repeat="profile in results" ng-cloak class="ng-cloak">
-    <div class="col-xs-6 col-sm-4 col-md-3 col-lg-2 grid-spacer profile-avatar">
-      <a href="{{ profile.profile_detail_url }}" ><img ng-src="{{ profile.avatar_100 }}"/></a>
-      <div class="col-xs-12 profile-details">
-        <h5>
-          <a href="{{ profile.profile_detail_url }}">{{ profile.username }}</a>
+    <div class="col-xs-12 col-sm-6 col-md-4 col-lg-3 profile-container">
+      <div class="col-xs-12 profile-avatar">
+        <div class="col-xs-4 profile-image">
+          <a href="{{ profile.profile_detail_url }}" ><img ng-src="{{ profile.avatar_100 }}"/></a>
+        </div>
+        <div class="col-xs-8 profile-details">
+          <h5>
+            <a href="{{ profile.profile_detail_url }}">{{ profile.first_name != '' ? profile.first_name : profile.username }} {{ profile.last_name != '' ? profile.last_name : '' }}
+            </a>
+          </h5>
+          <p><small>{{ profile.organization != '' ?  profile.organization : "No Organization info" }}</small></p>
+          <!-- <p>{{ profile.username }}</p> -->
           <!-- <a href="mailto:{{ profile.email }}" ng-if="profile.email != ''"><i class="fa fa-envelope"></i></a> -->
-        </h5>
-        <!-- <h5>{{ profile.organization != '' ?  profile.organization : _("No Organization Info") }}</h5> -->
-        <ul class="list-inline">
-          <li>
-            <a href="{{ profile.profile_detail_url }}?content=layers">
-              <i class="fa fa-square-o rotate-45"></i>
-              <strong>{{ profile.layers_count }}</strong>
-              <!-- <ng-pluralize count="profile.layers_count" when="{'1': 'Layer', 'other': 'Layers'}"></ng-pluralize> -->
-            </a>
-          </li>
-          <li>| 
-            <a href="{{ profile.profile_detail_url }}?content=maps">
-              <i class="fa fa-map-marker"></i>
-              <strong>{{ profile.maps_count }}</strong>
-              <!-- <ng-pluralize count="profile.maps_count" when="{'1': 'Map', 'other': 'Maps'}"></ng-pluralize> -->
-            </a>
-          </li>
-          <li>| 
-            <a href="{{ profile.profile_detail_url }}?content=documents">
-              <i class="fa fa-file-text-o"></i>
-              <strong>{{ profile.documents_count }}</strong>
-              <!-- <ng-pluralize count="profile.documents_count" when="{'1': 'Document', 'other': 'Documents'}"></ng-pluralize> -->
-            </a>
-          </li>
-        </ul>
+        </div>
+        <div class="col-xs-12 profile-items">
+          <ul class="list-inline">
+            <li>
+              <a href="{{ profile.profile_detail_url }}?content=layers">
+                <i class="fa fa-square-o rotate-45"></i>
+                {{ profile.layers_count }}
+                <!-- <ng-pluralize count="profile.layers_count" when="{'1': 'Layer', 'other': 'Layers'}"></ng-pluralize> -->
+              </a>
+            </li>
+            <li>
+              <a href="{{ profile.profile_detail_url }}?content=maps">
+                <i class="fa fa-map-marker"></i>
+                {{ profile.maps_count }}
+                <!-- <ng-pluralize count="profile.maps_count" when="{'1': 'Map', 'other': 'Maps'}"></ng-pluralize> -->
+              </a>
+            </li>
+            <li>
+              <a href="{{ profile.profile_detail_url }}?content=documents">
+                <i class="fa fa-file-text-o"></i>
+                {{ profile.documents_count }}
+                <!-- <ng-pluralize count="profile.documents_count" when="{'1': 'Doc', 'other': 'Docs'}"></ng-pluralize> -->
+              </a>
+            </li>
+          </ul>
+        </div>
       </div>
      </div>
   </article>
-</div>
 {% endverbatim %}

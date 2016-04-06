@@ -1,0 +1,116 @@
+.. module:: geoserver.add_shp
+   :synopsis: Learn how to adding a Shapefile.
+
+.. _geoserver.add_shp:
+
+Adding a Shapefile
+------------------
+
+The task of adding a Shapefile is one that is core to any GIS tool. This section covers the task of adding and publishing a Shapefile with GeoServer.
+
+#. Navigate to the workshop directory :file:`${TRAINING_ROOT}/data/user_data/` (on Windows :file:`%TRAINING_ROOT%\\data\\user_data`) and find the following shapefiles::
+
+     Mainrd.shp
+     Mainrd.shx
+     Mainrd.dbf
+     Mainrd.prj
+
+   Copy the files to the following directory::
+
+     $GEOSERVER_DATA_DIR/data/boulder
+   
+   for Windows::
+     
+        %GEOSERVER_DATA_DIR%\data\boulder
+        
+        
+   .. note:: Ensure that all four parts of the shapefile are copied.  This includes the ``shp``, ``shx``, ``dbf``, and ``prj`` extensions.
+
+#. Navigate to the GeoServer `Welcome Page <http://localhost:8083/geoserver/web/>`_.
+
+#. On the Welcome page locate the :guilabel:`Login` form located at the top right corner, and enter the username "admin" and password "Geos".
+
+   .. figure:: img/vector1.png
+      :width: 600
+		
+      GeoServer Login
+
+#. Click the :guilabel:`Add stores` link.
+
+   .. figure:: img/vector2.png
+      :width: 500
+   
+      Add stores link
+
+#. Select the :guilabel:`Shapefile` link and click it.
+
+   .. figure:: img/vector3.png
+      :width: 600
+
+      Add a new shapefile
+
+   .. note:: The new data source menu contains a list of all the spatial formats supported by GeoServer. When creating a new data store one of these formats must be chosen. Formats like Shapefile and PostGIS are supported by default, and many other formats are available as extensions.
+
+#. On the :guilabel:`Edit Vector Data Source` page enter "Mainrd" in the :guilabel:`Data Source Name` and :guilabel:`Description` fields. Finally click on browse link in order to set the Shapefile location in the :guilabel:`URL` field and click :guilabel:`Save`.
+
+   .. note:: The Mainrd.shp got just copied in the data directory, inside the "data/boulder" folder, and the file browser opens right in the data directory, so just click on "data" and then "boulder" and you'll find it
+   
+   .. figure:: img/vector4.png
+      :width: 600
+	  
+      Specifying Shapefile parameters
+
+#. After saving, you will be taken to a page that lists all the layers in the shapefile and gives you the option to publish any of them. Click :guilabel:`Publish`.
+
+   .. figure:: img/vector5.png
+      :width: 600
+	  
+      Publishing a layer from the shapefile
+
+#. The :guilabel:`Coordinate Reference Systems` have to be manually populated. The :guilabel:`Name` and :guilabel:`Title` fields should be automatically populated.
+
+   .. figure:: img/vector6.png
+      :width: 600
+	  
+      Populate fields.
+
+   Scroll down the page and generate the bounds for the layer by clicking the :guilabel:`Compute from data` button in the :guilabel:`Bounding Boxes` section.
+
+   .. figure:: img/vector7.png
+      :width: 600
+	  
+      Generating the layer bounding box
+
+#. Scroll to the bottom of the page, notice the read only :guilabel:`Feature Type Detail` table and then click :guilabel:`Save`.
+
+   .. figure:: img/vector8.png
+      :width: 600
+	  
+      Submitting the layer configuration
+
+#. If all went well, you should see something like this:
+
+   .. figure:: img/vector9.png
+      :width: 600
+	  
+      After a successful save
+
+   At this point a shapefile has been added and is ready to be served by GeoServer.
+	  
+   .. figure:: img/vector10.png
+	  :width: 600
+
+#. Choose the ``preview`` link in the main menu and filter the layer list with ``mainrd``:
+
+   .. figure:: img/preview_shapefile1.png
+	  :width: 600
+	  
+	  Selecting the ``mainrd`` shapefile in the layer preview.
+
+#. Click on the ``OpenLayers`` link to preview the layer in an interactive viewer:
+
+   .. figure:: img/preview_shapefile2.png
+	  
+      The ``mainrd`` shapefile preview
+
+In the :ref:`next <geoserver.shp_postgis>` section we will see how to load a shapeFile into PostGIS.

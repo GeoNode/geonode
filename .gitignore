@@ -121,3 +121,7 @@ docs/_build
 #bootstrap.min.css
 
 .Flood-Hazard-Error-Log.txt
+uploaded
+development.db
+master
+slave

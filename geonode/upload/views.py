@@ -363,8 +363,8 @@ def csv_step_view(request, upload_session):
     if request.method == 'POST':
         if not lat_field or not lng_field:
             error = 'Please choose which columns contain the latitude and longitude data.'
-        elif (lat_field not in point_candidates
-              or lng_field not in point_candidates):
+        elif (lat_field not in point_candidates or
+              lng_field not in point_candidates):
             error = 'Invalid latitude/longitude columns'
         elif lat_field == lng_field:
             error = 'You cannot select the same column for latitude and longitude data.'
@@ -519,9 +519,24 @@ _steps = {
 # and 'save' is the implied first step :P
 _pages = {
     'shp': ('srs', 'time', 'run', 'final'),
-    'tif': ('time', 'run', 'final'),
+    'tif': ('run', 'final'),
     'kml': ('run', 'final'),
     'csv': ('csv', 'time', 'run', 'final'),
+    'geojson': ('run', 'final'),
+    'ntf': ('run', 'final'),  # NITF
+    'img': ('run', 'final'),  # ERDAS Imagine
+    'i41': ('run', 'final'),  # CIB01 RPF
+    'i21': ('run', 'final'),  # CIB05 RPF
+    'i11': ('run', 'final'),  # CIB10 RPF
+    'gn1': ('run', 'final'),  # GNC RPF
+    'jn1': ('run', 'final'),  # JNC RPF
+    'on1': ('run', 'final'),  # ONC RPF
+    'tp1': ('run', 'final'),  # TPC RPF
+    'ja1': ('run', 'final'),  # JOG RPF
+    'tc1': ('run', 'final'),  # TLM100 RPF
+    'tl1': ('run', 'final'),  # TLM50 RPF
+    'jp2': ('run', 'final'),  # JPEG2000 MrSID
+    'sid': ('run', 'final'),  # MrSID
 }
 
 if not _ALLOW_TIME_STEP:

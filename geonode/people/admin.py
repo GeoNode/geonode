@@ -56,6 +56,11 @@ class ProfileAdmin(admin.ModelAdmin):
                                        'groups')}),
         (_('Important dates'), {'fields': ('last_login', 'date_joined')}),
         (_('Datastore attributes'), {'fields': ('organization_type', 'eula_signed')}),
+        (_('Extended profile'), {'fields': ('organization', 'profile',
+                                            'position', 'voice', 'fax',
+                                            'delivery', 'city', 'area',
+                                            'zipcode', 'country',
+                                            'keywords')}),
     )
     add_fieldsets = (
         (None, {

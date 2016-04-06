@@ -1,6 +1,6 @@
 {{ object.content }}
-{{ object.user.get_full_name }}
-{{ object.user.name }}
+{{ object.get_full_name }}
+{{ object.username }}
 {{ object.name }}
 {{ object.organization }}
 {{ object.profile}}

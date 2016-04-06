@@ -21,9 +21,10 @@
 import os
 import shutil
 import tempfile
+import zipfile
+import StringIO
 
 from django.test import TestCase
-from django.test.client import Client
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.forms import ValidationError
 from django.contrib.contenttypes.models import ContentType
@@ -64,48 +65,44 @@ class LayersTest(TestCase):
 
     def test_data(self):
         '''/data/ -> Test accessing the data page'''
-        c = Client()
-        response = c.get(reverse('layer_browse'))
+        response = self.client.get(reverse('layer_browse'))
         self.failUnlessEqual(response.status_code, 200)
 
     def test_describe_data_2(self):
         '''/data/geonode:CA/metadata -> Test accessing the description of a layer '''
         self.assertEqual(8, get_user_model().objects.all().count())
-        c = Client()
-        response = c.get(reverse('layer_metadata', args=('geonode:CA',)))
+        response = self.client.get(reverse('layer_metadata', args=('geonode:CA',)))
         # Since we are not authenticated, we should not be able to access it
         self.failUnlessEqual(response.status_code, 302)
         # but if we log in ...
-        c.login(username='admin', password='admin')
+        self.client.login(username='admin', password='admin')
         # ... all should be good
-        response = c.get(reverse('layer_metadata', args=('geonode:CA',)))
+        response = self.client.get(reverse('layer_metadata', args=('geonode:CA',)))
         self.failUnlessEqual(response.status_code, 200)
 
     # Layer Tests
 
     # Test layer upload endpoint
     def test_upload_layer(self):
-        c = Client()
 
         # Test redirection to login form when not logged in
-        response = c.get(reverse('layer_upload'))
+        response = self.client.get(reverse('layer_upload'))
         self.assertEquals(response.status_code, 302)
         # Test return of upload form when logged in
-        c.login(username="bobby", password="bob")
-        response = c.get(reverse('layer_upload'))
+        self.client.login(username="bobby", password="bob")
+        response = self.client.get(reverse('layer_upload'))
         self.assertEquals(response.status_code, 200)
 
     def test_describe_data(self):
         '''/data/geonode:CA/metadata -> Test accessing the description of a layer '''
         self.assertEqual(8, get_user_model().objects.all().count())
-        c = Client()
-        response = c.get(reverse('layer_metadata', args=('geonode:CA',)))
+        response = self.client.get(reverse('layer_metadata', args=('geonode:CA',)))
         # Since we are not authenticated, we should not be able to access it
         self.failUnlessEqual(response.status_code, 302)
         # but if we log in ...
-        c.login(username='admin', password='admin')
+        self.client.login(username='admin', password='admin')
         # ... all should be good
-        response = c.get(reverse('layer_metadata', args=('geonode:CA',)))
+        response = self.client.get(reverse('layer_metadata', args=('geonode:CA',)))
         self.failUnlessEqual(response.status_code, 200)
 
     def test_layer_attributes(self):
@@ -268,6 +265,19 @@ class LayersTest(TestCase):
         files = dict(base_file=SimpleUploadedFile('foo.GEOTIF', ' '))
         self.assertTrue(LayerUploadForm(dict(), files).is_valid())
 
+    def testZipValidation(self):
+        the_zip = zipfile.ZipFile('test_upload.zip', 'w')
+        in_memory_file = StringIO.StringIO()
+        in_memory_file.write('test')
+        the_zip.writestr('foo.shp', in_memory_file.getvalue())
+        the_zip.writestr('foo.dbf', in_memory_file.getvalue())
+        the_zip.writestr('foo.shx', in_memory_file.getvalue())
+        the_zip.writestr('foo.prj', in_memory_file.getvalue())
+        the_zip.close()
+        files = dict(base_file=SimpleUploadedFile('test_upload.zip', open('test_upload.zip').read()))
+        self.assertTrue(LayerUploadForm(dict(), files).is_valid())
+        os.remove('test_upload.zip')
+
     def testWriteFiles(self):
         files = dict(
             base_file=SimpleUploadedFile('foo.shp', ' '),
@@ -280,6 +290,22 @@ class LayersTest(TestCase):
         tempdir = form.write_files()[0]
         self.assertEquals(set(os.listdir(tempdir)),
                           set(['foo.shp', 'foo.shx', 'foo.dbf', 'foo.prj']))
+
+        the_zip = zipfile.ZipFile('test_upload.zip', 'w')
+        in_memory_file = StringIO.StringIO()
+        in_memory_file.write('test')
+        the_zip.writestr('foo.shp', in_memory_file.getvalue())
+        the_zip.writestr('foo.dbf', in_memory_file.getvalue())
+        the_zip.writestr('foo.shx', in_memory_file.getvalue())
+        the_zip.writestr('foo.prj', in_memory_file.getvalue())
+        the_zip.close()
+        files = dict(base_file=SimpleUploadedFile('test_upload.zip', open('test_upload.zip').read()))
+        form = LayerUploadForm(dict(), files)
+        self.assertTrue(form.is_valid())
+        tempdir = form.write_files()[0]
+        self.assertEquals(set(os.listdir(tempdir)),
+                          set(['foo.shp', 'foo.shx', 'foo.dbf', 'foo.prj']))
+        os.remove('test_upload.zip')
 
     def test_layer_type(self):
         self.assertEquals(layer_type('foo.shp'), 'vector')
@@ -572,12 +598,10 @@ class LayersTest(TestCase):
             content_type=ctype,
             rating=3)
 
-        c = Client()
-
-        c.login(username='admin', password='admin')
+        self.client.login(username='admin', password='admin')
 
         # Remove the layer
-        c.post(url)
+        self.client.post(url)
 
         # Check there are no ratings matching the remove layer
         rating = OverallRating.objects.filter(category=2, object_id=layer_id)
@@ -590,33 +614,30 @@ class LayersTest(TestCase):
         url = reverse('layer_remove', args=(layer.typename,))
         layer.default_style = Style.objects.get(pk=layer.pk)
         layer.save()
-        c = Client()
 
         # test unauthenticated
-        response = c.get(url)
+        response = self.client.get(url)
         self.assertEquals(response.status_code, 302)
 
         # test a user without layer removal permission
-        c = Client()
-        c.login(username='norman', password='norman')
-        response = c.post(url)
+        self.client.login(username='norman', password='norman')
+        response = self.client.post(url)
         self.assertEquals(response.status_code, 302)
-        c.logout()
+        self.client.logout()
 
         # Now test with a valid user
-        c = Client()
-        c.login(username='admin', password='admin')
+        self.client.login(username='admin', password='admin')
 
         # test a method other than POST and GET
-        response = c.put(url)
+        response = self.client.put(url)
         self.assertEquals(response.status_code, 403)
 
         # test the page with a valid user with layer removal permission
-        response = c.get(url)
+        response = self.client.get(url)
         self.assertEquals(response.status_code, 200)
 
         # test the post method that actually removes the layer and redirects
-        response = c.post(url)
+        response = self.client.post(url)
         self.assertEquals(response.status_code, 302)
         self.assertEquals(response['Location'], 'http://testserver/layers/')
 
@@ -643,11 +664,10 @@ class LayersTest(TestCase):
         self.assertEquals(layer1.default_style, layer2.default_style)
 
         # Now test with a valid user
-        c = Client()
-        c.login(username='admin', password='admin')
+        self.client.login(username='admin', password='admin')
 
         # test the post method that actually removes the layer and redirects
-        response = c.post(url)
+        response = self.client.post(url)
         self.assertEquals(response.status_code, 302)
         self.assertEquals(response['Location'], 'http://testserver/layers/')
 
@@ -713,35 +733,34 @@ class UnpublishedObjectTests(TestCase):
     def test_unpublished_layer(self):
         """Test unpublished layer behaviour"""
 
-        client = Client()
         user = get_user_model().objects.get(username='bobby')
-        client.login(username='bobby', password='bob')
+        self.client.login(username='bobby', password='bob')
 
         # default (RESOURCE_PUBLISHING=False)
         # access to layer detail page gives 200 if layer is published or
         # unpublished
-        response = client.get(reverse('layer_detail', args=('geonode:CA',)))
+        response = self.client.get(reverse('layer_detail', args=('geonode:CA',)))
         self.failUnlessEqual(response.status_code, 200)
         layer = Layer.objects.filter(title='CA')[0]
         layer.is_published = False
         layer.save()
-        response = client.get(reverse('layer_detail', args=('geonode:CA',)))
+        response = self.client.get(reverse('layer_detail', args=('geonode:CA',)))
         self.failUnlessEqual(response.status_code, 200)
 
         # with resource publishing
         with self.settings(RESOURCE_PUBLISHING=True):
             # 404 if layer is unpublished
-            response = client.get(reverse('layer_detail', args=('geonode:CA',)))
+            response = self.client.get(reverse('layer_detail', args=('geonode:CA',)))
             self.failUnlessEqual(response.status_code, 404)
             # 200 if layer is unpublished but user has permission
             assign_perm('publish_resourcebase', user, layer.get_self_resource())
-            response = client.get(reverse('layer_detail', args=('geonode:CA',)))
+            response = self.client.get(reverse('layer_detail', args=('geonode:CA',)))
             self.failUnlessEqual(response.status_code, 200)
             # 200 if layer is published
             layer.is_published = True
             layer.save()
             remove_perm('publish_resourcebase', user, layer.get_self_resource())
-            response = client.get(reverse('layer_detail', args=('geonode:CA',)))
+            response = self.client.get(reverse('layer_detail', args=('geonode:CA',)))
             self.failUnlessEqual(response.status_code, 200)
 
         layer.is_published = True
