@@ -137,6 +137,7 @@ class GroupProfile(models.Model):
         member, created = GroupMember.objects.get_or_create(group=self, user=user, defaults=kwargs)
         if created:
             user.groups.add(self.group)
+            self.group.user_set.add(user)
         else:
             raise ValueError("The invited user \"{0}\" is already a member".format(user.username))
 
