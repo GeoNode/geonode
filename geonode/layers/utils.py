@@ -52,6 +52,8 @@ import tarfile
 
 from zipfile import ZipFile, is_zipfile
 
+from datetime import datetime
+
 logger = logging.getLogger('geonode.layers.utils')
 
 _separator = '\n' + ('-' * 100) + '\n'
@@ -354,7 +356,7 @@ def extract_tarfile(upload_file, extension='.shp', tempdir=None):
 
 
 def file_upload(filename, name=None, user=None, title=None, abstract=None,
-                keywords=[], category=None, regions=[],
+                keywords=[], category=None, regions=[], date=None,
                 skip=True, overwrite=False, charset='UTF-8',
                 metadata_uploaded_preserve=False):
     """Saves a layer in GeoNode asking as little information as possible.
@@ -502,14 +504,18 @@ def file_upload(filename, name=None, user=None, title=None, abstract=None,
         if len(regions_resolved) > 0:
             layer.regions.add(*regions_resolved)
 
+    if date is not None:
+        layer.date = datetime.strptime(date, '%Y-%m-%d %H:%M:%S')
+        layer.save()
+
     return layer
 
 
 def upload(incoming, user=None, overwrite=False,
            keywords=(), category=None, regions=(),
            skip=True, ignore_errors=True,
-           verbosity=1, console=None, title=None, private=False,
-           metadata_uploaded_preserve=False):
+           verbosity=1, console=None, title=None, date=None,
+           private=False, metadata_uploaded_preserve=False):
     """Upload a directory of spatial data files to GeoNode
 
        This function also verifies that each layer is in GeoServer.
@@ -595,6 +601,7 @@ def upload(incoming, user=None, overwrite=False,
                                     category=category,
                                     regions=regions,
                                     title=title,
+                                    date=date,
                                     metadata_uploaded_preserve=metadata_uploaded_preserve
                                     )
                 if not existed:

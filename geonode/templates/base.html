@@ -71,13 +71,14 @@
             </li>
             {% endblock %}
           </ul>
+          {% trans "Search" as search_text %}
           <form class="navbar-form" id="search" action="{% url "search" %}" >
             <div class="col-md-3">
               <div class="input-group">
                 {% if HAYSTACK_SEARCH %}
-                <input id="search_input" type="text" placeholder="Search" class="form-control" name="q">
+                <input id="search_input" type="text" placeholder="{{ search_text }}" class="form-control" name="q">
                 {% else %}
-                <input id="search_input" type="text" placeholder="Search" class="form-control" name="title__icontains">
+                <input id="search_input" type="text" placeholder="{{ search_text }}" class="form-control" name="title__icontains">
                 {% endif %}
                 <span class="input-group-btn">
                   <button class="btn btn-primary" type="submit"><i class="fa fa-search"></i></button>
@@ -183,7 +184,7 @@
               </div>
               <div class="form-group">
                 <label for="id_password" class="sr-only">{% trans "Password" %}:</label>
-                <input id="id_password" class="form-control" name="password" placeholder="Password" type="password" />
+                <input id="id_password" class="form-control" name="password" placeholder="{% trans "Password" %}" type="password" />
               </div>
               <label class="checkbox">
                 <input type="checkbox" /> {% trans "Remember Me" %}

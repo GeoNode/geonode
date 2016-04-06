@@ -455,7 +455,7 @@ def gs_slurp(
                 "storeType": the_store.resource_type,
                 "typename": "%s:%s" % (workspace.name.encode('utf-8'), resource.name.encode('utf-8')),
                 "title": resource.title or 'No title provided',
-                "abstract": resource.abstract or 'No abstract provided',
+                "abstract": resource.abstract or unicode(_('No abstract provided')).encode('utf-8'),
                 "owner": owner,
                 "uuid": str(uuid.uuid4()),
                 "bbox_x0": Decimal(resource.latlon_bbox[0]),
