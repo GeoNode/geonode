@@ -157,6 +157,9 @@ define(function (require, exports) {
         var base_ext  = this.main.name.split('.').pop();
         var base_name = this.main.name.slice(0, -(base_ext.length+1));
 
+        var base_ext  = this.main.name.split('.').pop();
+        var base_name = this.main.name.slice(0, -(base_ext.length+1));
+
         if (!form_data) {
             form_data = new FormData();
         }

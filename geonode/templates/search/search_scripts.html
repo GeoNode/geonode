@@ -1,7 +1,7 @@
 {% if DEBUG_STATIC %}
-<script src="{{ STATIC_URL }}lib/js/bootstrap-datepicker.js" type="text/javascript"></script>
-<script src="{{ STATIC_URL }}lib/js/angular.js"></script>
-<script src="{{ STATIC_URL }}lib/js/angular-leaflet-directive.min.js"></script>
+<script src="{{ STATIC_URL }}lib/js/bootstrap-datepicker.js?v={{ VERSION }}" type="text/javascript"></script>
+<script src="{{ STATIC_URL }}lib/js/angular.js?v={{ VERSION }}"></script>
+<script src="{{ STATIC_URL }}lib/js/angular-leaflet-directive.min.js?v={{ VERSION }}"></script>
 {% endif %}
 
 {% if include_spatial == 'true' %}
@@ -14,15 +14,15 @@
 {% include 'search/_spatial_tags.html' %}
 
 {% endif %}
-<script src="{{ STATIC_URL }}geonode/js/search/explore.js"></script>
-<script src="{{ STATIC_URL }}geonode/js/search/search.js"></script>
+<script src="{{ STATIC_URL }}geonode/js/search/explore.js?v={{ VERSION }}"></script>
+<script src="{{ STATIC_URL }}geonode/js/search/search.js?v={{ VERSION }}"></script>
 <script src="{{ STATIC_URL }}geonode/js/search/cart.js"></script>
 <script type="text/javascript">
   $("body").attr('ng-controller', 'geonode_search_controller');
   CATEGORIES_ENDPOINT = '{% url 'api_dispatch_list' api_name='api' resource_name='categories' %}';
   KEYWORDS_ENDPOINT = '{% url 'api_dispatch_list' api_name='api' resource_name='keywords' %}';
   REGIONS_ENDPOINT = '{% url 'api_dispatch_list' api_name='api' resource_name='regions' %}';
-  OWNERS_ENDPOINT = '{% url 'api_dispatch_list' api_name='api' resource_name='profiles' %}';
+  OWNERS_ENDPOINT = '{% url 'api_dispatch_list' api_name='api' resource_name='owners' %}';
   HAYSTACK_SEARCH = "{{ HAYSTACK_SEARCH }}".toLowerCase() === "true";
   HAYSTACK_FACET_COUNTS = "{{ HAYSTACK_FACET_COUNTS }}".toLowerCase() === "true";
   CLIENT_RESULTS_LIMIT = {{ CLIENT_RESULTS_LIMIT }};

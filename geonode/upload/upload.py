@@ -280,8 +280,8 @@ def save_step(user, layer, spatial_files, overwrite=True,
         upload_next_id = upload_next_id if upload_next_id else 0
         # next_id = next_id + 1 if next_id else 1
         importer_sessions = gs_uploader.get_sessions()
-
         last_importer_session = importer_sessions[len(importer_sessions)-1].id if importer_sessions else 0
+        next_id = max(int(last_importer_session), int(upload_next_id)) + 1
         next_id = max(int(last_importer_session), int(upload_next_id)) + 1
 
         # save record of this whether valid or not - will help w/ debugging
