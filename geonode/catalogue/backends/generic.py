@@ -155,7 +155,7 @@ class Catalogue(CatalogueServiceWeb):
 
     def csw_request(self, layer, template):
 
-        md_doc = self.csw_gen_xml(layer, template)
+        md_doc = self.csw_gen_xml(layer, template).encode('utf-8')
 
         if self.type == 'geonetwork':
             headers = {

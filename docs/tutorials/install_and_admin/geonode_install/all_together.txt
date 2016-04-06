@@ -1,0 +1,215 @@
+.. _all_together:
+
+===================
+Finish installation
+===================
+
+In previous sections you' ve setup all the applications we need to run GeoNode.
+
+In this section we are going to `glue` all the pieces together and finalize GeoNode
+setup.
+
+GeoNode Configuration
+=====================
+
+Now that all applications have been configured we are going to instruct GeoNode on
+how to connect to `PostgreSQL` and `GeoServer`. Also we are going to instruct GeoNode
+on who is allowed to connect to it.
+
+First navigate to geonode configuration folder::
+
+    cd /home/geonode/geonode/geonode/
+
+Copy the `local_settings.py` sample file called `local_settings.py.sample`::
+
+    sudo cp local_settings.py.sample local_settings.py
+
+Then edit the configuration file::
+
+    sudo gedit local_settings.py
+
+Add the `ALLOWED_HOSTS` and `PROXY_ALLOWED_HOSTS` variables at the top with the
+following values:::
+
+    ALLOWED_HOSTS = ['127.0.0.1', 'localhost', '::1']
+    PROXY_ALLOWED_HOSTS = ("127.0.0.1", 'localhost', '::1')
+
+Add the `POSTGIS_VERSION` variable matching your PostGIS version:::
+
+    POSTGIS_VERSION = (2, 1, 2)
+
+This will instruct GeoNode to listen on connections from your local machine.
+
+Change the value of the `SITEURL`::
+
+    SITEURL = "http://localhost/"
+
+Now configure database access:
+Uncomment the `ENGINE`: `django.contrib.gis.db.backends.postgis` line
+and comment the one with empty `ENGINE` variable. Also set the `NAME` variable to
+`geonode_data`::
+
+    DATABASES = {
+    'default': {
+    ...
+    },
+    'datastore' : {
+        'ENGINE': 'django.contrib.gis.db.backends.postgis',
+        #'ENGINE': '', # Empty ENGINE name disables,
+        'NAME': 'geonode_data',
+        ...
+    }
+
+Then configure GeoServer location:
+Change the value of the `LOCATION` and `PUBLIC_LOCATION` variables as follows:::
+
+    OGC_SERVER = {
+        'default' : {
+        ...
+        'LOCATION' : 'http://localhost/geoserver/',
+        'PUBLIC_LOCATION' : 'http://localhost/geoserver/',
+        ...
+    }
+
+The resulting configuration file should look like this:::
+
+    import os
+
+    PROJECT_ROOT = os.path.abspath(os.path.dirname(__file__))
+
+    SITEURL = "http://localhost/"
+
+    ALLOWED_HOSTS = ['127.0.0.1', 'localhost', '::1']
+    PROXY_ALLOWED_HOSTS = ("127.0.0.1", 'localhost', '::1')
+    POSTGIS_VERSION = (2, 1, 2)
+
+    DATABASES = {
+        'default': {
+             'ENGINE': 'django.db.backends.postgresql_psycopg2',
+             'NAME': 'geonode',
+             'USER': 'geonode',
+             'PASSWORD': 'geonode',
+         },
+        # vector datastore for uploads
+        'datastore' : {
+            'ENGINE': 'django.contrib.gis.db.backends.postgis',
+            #'ENGINE': '', # Empty ENGINE name disables
+            'NAME': 'geonode_data',
+            'USER' : 'geonode',
+            'PASSWORD' : 'geonode',
+            'HOST' : 'localhost',
+            'PORT' : '5432',
+        }
+    }
+
+    # OGC (WMS/WFS/WCS) Server Settings
+    OGC_SERVER = {
+        'default' : {
+            'BACKEND' : 'geonode.geoserver',
+            'LOCATION' : 'http://localhost/geoserver/',
+            'PUBLIC_LOCATION' : 'http://localhost/geoserver/',
+            'USER' : 'admin',
+            'PASSWORD' : 'geoserver',
+            'MAPFISH_PRINT_ENABLED' : True,
+            'PRINT_NG_ENABLED' : True,
+            'GEONODE_SECURITY_ENABLED' : True,
+            'GEOGIG_ENABLED' : False,
+            'WMST_ENABLED' : False,
+            'BACKEND_WRITE_ENABLED': True,
+            'WPS_ENABLED' : False,
+            'LOG_FILE': '%s/geoserver/data/logs/geoserver.log' % os.path.abspath(os.path.join(PROJECT_ROOT, os.pardir)),
+            # Set to name of database in DATABASES dictionary to enable
+            'DATASTORE': '', #'datastore',
+        }
+    }
+
+    CATALOGUE = {
+        'default': {
+            # The underlying CSW implementation
+            # default is pycsw in local mode (tied directly to GeoNode Django DB)
+            'ENGINE': 'geonode.catalogue.backends.pycsw_local',
+            # pycsw in non-local mode
+            # 'ENGINE': 'geonode.catalogue.backends.pycsw_http',
+            # GeoNetwork opensource
+            # 'ENGINE': 'geonode.catalogue.backends.geonetwork',
+            # deegree and others
+            # 'ENGINE': 'geonode.catalogue.backends.generic',
+
+            # The FULLY QUALIFIED base url to the CSW instance for this GeoNode
+            'URL': '%scatalogue/csw' % SITEURL,
+            # 'URL': 'http://localhost:8080/geonetwork/srv/en/csw',
+            # 'URL': 'http://localhost:8080/deegree-csw-demo-3.0.4/services',
+
+            # login credentials (for GeoNetwork)
+            'USER': 'admin',
+            'PASSWORD': 'admin',
+        }
+    }
+
+    # Default preview library
+    #LAYER_PREVIEW_LIBRARY = 'geoext'
+
+Create GeoNode Superuser
+========================
+
+Now create the admin user for GeoNode running the following:::
+
+    python manage.py createsuperuser
+
+You will be prompted for the username, email address and passoword for the user
+
+Initialize the Database
+=======================
+
+We' we already setup GeoNode databases and user permissions for PostgreSQL. And
+instruct GeoNode on how to access the database. Now let's get the database ready
+running the following:::
+
+    cd /home/geonode/geonode
+    python manage.py syncdb --noinput
+
+If you get an error message it is likely that database access is not set properly.
+Check you pg_hba.conf file and GeoNode `local_settings.py` file. Remember to restart
+PostgreSQL to make any changes to pg_hba.conf effective.
+
+Test that you are able to connect to the database as follows:::
+
+    psql -U geonode geonode
+
+and::
+
+    psql -U geonode geonode_data
+
+Test the installation
+=====================
+
+We are ready to restart GeoNode (Apache) and test the installation.
+Restart Apache:::
+
+    sudo service apache2 restart
+
+Open the browser and navigate to http://localhost/
+
+GeoNode User interface will show up. Login with admin username and password you
+just set.
+
+.. image:: img/test_geonode2.png
+   :width: 600px
+   :alt: Test GeoNode 2
+
+.. image:: img/geonode_signin.png
+   :width: 600px
+   :alt: GeoNode admin signin
+
+Now open the main menu and click on `GeoServer`
+
+.. image:: img/access_geoserver.png
+   :width: 600px
+   :alt: GeoServer admin login
+
+You will be redirected to GeoServer user interface. You will automatically be
+logged in as administrator in GeoServer.
+
+.. image:: img/geoserver_admin.png
+   :width: 600px
+   :alt: GeoServer Admin

@@ -29,8 +29,8 @@ the following are the *bare minimum* system requirements:
   administration, a decent baseline size for GeoNode deployments is 100GB.
 * 64-bit hardware recommended.
 
-Step 1 Installing Dependencies
-------------------------------
+Installing Dependencies
+-----------------------
 
 Some external software must be installed before you can install GeoNode.
 The GeoNode package contains both the Java and Django web application code for
@@ -45,51 +45,48 @@ This includes:
 * Python development libraries
 * PostgresQL database
 * The GDAL, GEOS, and OGR geospatial software libraries
+  
+For detailed information on dependencies please refere to the section :ref:`dependencies`.
 
 For convenience, appropriate commands to retrieve these dependencies on Ubuntu
-12.04 LTS are listed below:
+14.04 LTS are listed below:
 
 .. code-block:: console
 
-    $ sudo apt-get install     \
-        apache2                \
-        gcc                    \
-        gdal-bin               \
-        gettext                \
-        gettext                \
-        git-core               \
-        libapache2-mod-wsgi    \
-        libgeos-dev            \
-        libjpeg-dev            \
-        libpng-dev             \
-        libpq-dev              \
-        libproj-dev            \
-        libxml2-dev            \
-        libxslt-dev            \
-        openjdk-6-jre          \
-        patch                  \
-        postgresql-9.1         \
-        postgresql-9.1-postgis \
-        postgresql-contrib     \
-        postgresql-contrib-9.1 \
-        python                 \
-        python-dev             \
-        python-gdal            \
-        python-imaging         \
-        python-pastescript     \
-        python-psycopg2        \
-        python-support         \
-        python-urlgrabber      \
-        python-virtualenv      \
-        tomcat7                \
-        unzip                  \
-        zip
+    $ sudo apt-get install         \
+            apache2                \
+            gcc                    \
+            gdal-bin               \
+            gettext                \
+            git-core               \
+            libapache2-mod-wsgi    \
+            libgeos-dev            \
+            libjpeg-dev            \
+            libpng-dev             \
+            libpq-dev              \
+            libproj-dev            \
+            libxml2-dev            \
+            libxslt-dev            \
+            openjdk-7-jre          \
+            patch                  \
+            postgresql             \
+            postgis                \
+            postgresql-9.3-postgis-scripts \
+            postgresql-contrib     \
+            python                 \
+            python-dev             \
+            python-gdal            \
+            python-imaging         \
+            python-pastescript     \
+            python-psycopg2        \
+            python-support         \
+            python-urlgrabber      \
+            python-virtualenv      \
+            tomcat7                \
+            unzip                  \
+            zip
 
 .. todo:: is this the complete and up-to-date list of dependencies??
-
-Beware that in case of use of postgres 9.2 as described in
-:ref:`install_postgresql` and :ref:`install_postgis` all the postgres and
-postgis references must be removed from the above command!
 
 .. note:: Before you copy the command into the terminal and run it, check the
     versions, you might have to adjust them!
@@ -97,8 +94,20 @@ postgis references must be removed from the above command!
 .. note:: Be sure that you've installed all the required dependencies before
     you go further with the installation of GeoNode.
 
-Step 2 Download Code
---------------------
+Please choose between one of the two methods to finish the
+installation-configuration of GeoNode:
+
+#. `Configure using the ubuntu config file`_.
+   This is the recommended way, using the provided .sh scripts
+#. `Configure manually`_, doing each step by hand as opposed to using the .sh scripts
+  
+In the end you will have the same running instance of Geonode.
+
+Configure Manually
+------------------
+
+Download Code
+'''''''''''''
 
 Download the code using git.
 
@@ -135,8 +144,8 @@ Also GeoNode won't start without using the command above.
 To change this, the following configurations of the used components have to be done.
 
 
-Step 3 Configure
-----------------
+Configure
+---------
 
 Complete steps to configure Geonode include the stack:
 
@@ -149,65 +158,8 @@ Python/WSGI Container
 Django Database
     PostgresQL
 
-Please choose between one of the two methods to finish the
-installation-configuration of GeoNode:
-
-#. `Configure using the ubuntu config file`_.
-   This is the recommended way, using the provided .sh scripts
-#. `Configure manually`_, doing each step by hand as opposed to using the .sh scripts
-  
-In the end you will have the same running instance of Geonode.
-
-Configure using the Ubuntu config file
-''''''''''''''''''''''''''''''''''''''
-
-This is a semi-automatic configuration, involving two .sh scripts.
-
-* Installer configuration file *(located in ``package/support/config-ubuntu.sh``)* 
-  This is the first thing to edit.
-* The installer script *(located in ``package/install.sh``)*
-  Second thing to edit.
- 
-#. First open the ``package/support/config-ubuntu.sh`` installer configuration file.
-   Now provide the details of your installation,
-   such as where your webserver looks for documents.
-
-#. Second, open ``install.sh`` and configure to your needs. 
-
-.. note:: you might have to change the postgresql and postgis versions in
-    this file, according to the versions you use!
-
-Once edited (if necessary) run the ``./install.sh`` file with the following commands:
-
-.. code-block:: console
-
-    # change into the folder called "package"
-    $ cd package
-
-    # run the install.sh with the ubuntu config.sh
-    $ sudo ./install.sh support/config-ubuntu.sh
-
-    # copy geoserver.war into tomcat webapps directory
-    $ sudo cp downloaded/geoserver.war /var/lib/tomcat7/webapps
-
-    # create the IP address to your address
-    $ sudo geonode-updateip youraddress
-
-    # call geonode binary django-admin.py create django super user
-    $ geonode createsuperuser
-
-GeoNode can now be accessed at http://localhost
-
-
-Configure Manually
-''''''''''''''''''
-
-.. note:: If the server has a fresh Ubuntu installation it's strongly suggested
-    instead to adjust the ``package/support/config-ubuntu.sh`` script to match the
-    desired installation paths.
-
 Configure Postgresql and Postgis
-````````````````````````````````
+''''''''''''''''''''''''''''''''
 
 At this point, GeoNode uses *sqlite3* as the default db.
 The following steps will show you how to make geonode to use *postgresql* and
@@ -233,28 +185,27 @@ To create the databases (the geonode one and the spatial for shapefile imports):
 .. code-block:: console
 
     $ sudo -u postgres createdb -O geonode geonode
-    $ sudo -u postgres createdb -O geonode geonode-imports
+    $ sudo -u postgres createdb -O geonode geonode_data
     $ sudo su postgres
-    $ psql -f /usr/share/postgresql/9.1/contrib/postgis-1.5/postgis.sql geonode-imports
-    $ psql -f /usr/share/postgresql/9.1/contrib/postgis-1.5/spatial_ref_sys.sql geonode-imports
-    $ psql -d geonode-imports -c 'GRANT ALL ON geometry_columns TO PUBLIC;'
-    $ psql -d geonode-imports -c 'GRANT ALL ON spatial_ref_sys TO PUBLIC;'
+    $ psql -d geonode_data -c 'CREATE EXTENSION postgis;'
+    $ psql -d geonode_data -c 'GRANT ALL ON geometry_columns TO PUBLIC;'
+    $ psql -d geonode_data -c 'GRANT ALL ON spatial_ref_sys TO PUBLIC;'
     $ exit
 
-This creates databases called *geonode* and *geonode-imports* 
+This creates databases called *geonode* and *geonode_data* 
 (which automatically has the postgis extension as well!)
 with owner *geonode*.
 
 **Change authentication method**
 
-In the postgres config path, ``/etc/postgresql/9.2/main``, you should find the
+In the postgres config path, ``/etc/postgresql/9.3/main``, you should find the
 file ``pg_hba.conf``.
 This file has to be edited in order to allow the geonode user to have access to
 the database. Therefore change the directory to this file and open it:
 
 .. code-block:: console
 
-    $ cd /etc/postgresql/9.1/main
+    $ cd /etc/postgresql/9.3/main
     $ sudo vi pg_hba.conf
 
 At this point, the file should contain the following default settings:
@@ -302,7 +253,7 @@ Rename the file to ``local_settings.py``.
 Uncomment line 10 and modify line 12 as follows::
 
     'ENGINE': 'django.contrib.gis.db.backends.postgis',
-    'NAME': 'geonode-imports',
+    'NAME': 'geonode_data',
 
 .. note:: If you do not use *geonode* as password for your database,
         then you have to edit the local_settings.py and change your password in
@@ -322,7 +273,7 @@ To synchronise the database call the django command ``syncdb``
 
 
 Django configurations
-`````````````````````
+'''''''''''''''''''''
 
 The **Django** frontend can be served in various ways,
 one of the most performant is Apache httpd with mod_wsgi installed.
@@ -368,7 +319,7 @@ If using apache webserver, change owner to ``www-data``
     $ sudo chown www-data -R /home/user/geonode/geonode/uploaded
 
 Webserver configurations (Apache and mod_wsgi)
-``````````````````````````````````````````````
+''''''''''''''''''''''''''''''''''''''''''''''
 **Make apache to load the mod_wsgi module**
 
 If you've done the installation from above,
@@ -477,7 +428,7 @@ Now you should be able to see this:
 .. figure:: img/admin_interface.PNG
 
 Change permissions of folders
-`````````````````````````````
+'''''''''''''''''''''''''''''
 
 .. code-block:: console
 
@@ -487,7 +438,7 @@ Change permissions of folders
     $ sudo service apache2 reload
 
 Configure application server
-````````````````````````````
+''''''''''''''''''''''''''''
 
 The **GeoServer** web application must be served using a *Java Servlet container*;
 two popular and free containers are Jetty and Tomcat.
@@ -579,3 +530,48 @@ And secondly, update the value of the ``baseUrl`` tag in
         described in this document, please don't hesitate to let the GeoNode
         team know so we can keep it up to date.
 
+Configure using the Ubuntu config file
+''''''''''''''''''''''''''''''''''''''
+
+This is a semi-automatic configuration, involving two .sh scripts.
+
+Download the code using git.
+
+.. code-block:: console
+
+    # download code from github
+    $ git clone https://github.com/GeoNode/geonode.git
+    $ cd geonode
+
+* Installer configuration file *(located in ``package/support/config-ubuntu.sh``)* 
+  This is the first thing to edit.
+* The installer script *(located in ``package/install.sh``)*
+  Second thing to edit.
+ 
+#. First open the ``package/support/config-ubuntu.sh`` installer configuration file.
+   Now provide the details of your installation,
+   such as where your webserver looks for documents.
+
+#. Second, open ``install.sh`` and configure to your needs. 
+
+.. note:: you might have to change the postgresql and postgis versions in
+    this file, according to the versions you use!
+
+Once edited (if necessary) run the ``./install.sh`` file with the following commands:
+
+.. code-block:: console
+
+    # change into the folder called "package"
+    $ cd package
+
+    # run the install.sh with the ubuntu config.sh
+    $ sudo ./install.sh support/config-ubuntu.sh
+
+    # call geonode binary django-admin.py create django super user
+    $ geonode createsuperuser
+
+    # create the IP address to your address
+    $ sudo geonode-updateip youraddress
+    
+
+GeoNode can now be accessed at http://localhost

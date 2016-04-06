@@ -1,0 +1,67 @@
+.. _geoserver.vector_data.get:
+
+Retrieving vector data and metadata
+-----------------------------------
+
+In this section we will learn how to deal with vector data using WFS. First we will learn how to deal with metadata and then how to retrieve the features. We will be using the layer named ``Counties`` in the workshop namespace.
+
+   .. note:: The Open Geospatial Consortium Web Feature Service Interface Standard (WFS) provides an interface allowing requests for geographical features across the web using platform-independent calls. One can think of geographical features as the "source code" behind a map, whereas the WMS interface or online mapping portals like Google Maps return only an image, which end-users cannot edit or spatially analyze. 
+
+  
+#. Navigate to the GeoServer `Welcome Page <http://localhost:8083/geoserver/web/>`_.
+
+#. On the Welcome page locate the :guilabel:`Layer Preview` link (no need to login).
+
+   .. figure:: img/get1.png
+
+      Layer Preview
+
+#. Navigate to the WFS GML output of the `Counties` layer.
+
+   .. figure:: img/get2.png
+
+      WFS GML output
+
+   Depending on the browser, the output may be unformatted or recognized as XML. Here is what Firefox 3 shows:
+   http://localhost:8083/geoserver/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=geosolutions:Counties&maxFeatures=50&outputFormat=GML2
+
+   .. figure:: img/get3.png
+
+      Default WFS layer preview.
+
+   .. note:: We recommend the Mozilla Firefox web browser for navigating WFS response documents.
+
+
+#. Now that we know the quick and easy way to get WFS data, let's go back and do it the way a standard WFS client works. First, the only thing expected to be known is the WFS server url: http://localhost:8083/geoserver/ows?service=WFS&version=1.0.0
+
+   Using that url, we can issue a ``GetCapabilities`` request in order to know which layer it contains and what operations are supported:
+   http://localhost:8083/geoserver/ows?service=WFS&version=1.0.0&request=GetCapabilities
+
+   .. figure:: img/get4.png
+
+      GetCapabilities response
+
+   If we scroll below, we will find the ``Counties`` feature type described:
+
+   .. figure:: img/get5.png
+
+      GetCapabilities response (``Counties`` feature type)
+
+
+#. Now let's request more information for the ``Counties`` layer using a ``DescribeFeatureType`` request:
+    http://localhost:8083/geoserver/ows?service=WFS&version=1.0.0&request=DescribeFeatureType&typename=geosolutions:Counties
+
+   Which gives us information about the fields names and types as well as the geometry type, in this case ``MultiPolygon``.
+
+   .. figure:: img/get6.png
+
+      DescribeFeatureType response for Counties feature type
+
+
+#. After that, we can issue a basic ``GetFeature`` request, that looks like this::
+
+    http://localhost:8083/geoserver/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=geosolutions:Counties&featureId=Counties.1
+
+   .. note:: Notice it's almost the same as the one that Geoserver generated, but it's requestin a single feature specifying its identifier via ``featureId=Counties.1``
+
+   In the :ref:`next <geoserver.vector_data.filter>` section we will see how to filter the WFS output based on various attributes.

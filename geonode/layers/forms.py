@@ -20,23 +20,19 @@
 
 import os
 import tempfile
-import taggit
+import zipfile
+import autocomplete_light
 
 from pprint import pprint
 
 from django import forms
 from django.utils import simplejson as json
-from django.utils.translation import ugettext as _
-from modeltranslation.forms import TranslationModelForm
-
-from mptt.forms import TreeNodeMultipleChoiceField
-from bootstrap3_datetime.widgets import DateTimePicker
-
+from geonode.layers.utils import unzip_file
 from geonode.layers.models import Layer, Attribute
-from geonode.people.models import Profile
-from geonode.base.models import Region
 
-import autocomplete_light
+autocomplete_light.autodiscover() # flake8: noqa
+
+from geonode.base.forms import ResourceBaseForm
 
 from geonode.eula.models import AnonDownloader
 
@@ -95,107 +91,19 @@ class JSONField(forms.CharField):
             raise forms.ValidationError("this field must be valid JSON")
 
 
-class LayerForm(TranslationModelForm):
-    _date_widget_options = {
-        "icon_attrs": {"class": "fa fa-calendar"},
-        "attrs": {"class": "form-control input-sm"},
-        "format": "%Y-%m-%d %H:%M",
-        # Options for the datetimepickers are not set here on purpose.
-        # They are set in the metadata_form_js.html template because
-        # bootstrap-datetimepicker uses jquery for its initialization
-        # and we need to ensure it is available before trying to
-        # instantiate a new datetimepicker. This could probably be improved.
-        "options": False,
-        }
-    date = forms.DateTimeField(
-        localize=True,
-        widget=DateTimePicker(**_date_widget_options)
-    )
-    temporal_extent_start = forms.DateTimeField(
-        required=False,
-        localize=True,
-        widget=DateTimePicker(**_date_widget_options)
-    )
-    temporal_extent_end = forms.DateTimeField(
-        required=False,
-        localize=True,
-        widget=DateTimePicker(**_date_widget_options)
-    )
+class LayerForm(ResourceBaseForm):
 
-    poc = forms.ModelChoiceField(
-        empty_label="Person outside GeoNode (fill form)",
-        label="Point Of Contact",
-        required=False,
-        queryset=Profile.objects.exclude(
-            username='AnonymousUser'),
-        widget=autocomplete_light.ChoiceWidget('ProfileAutocomplete'))
-
-    metadata_author = forms.ModelChoiceField(
-        empty_label="Person outside GeoNode (fill form)",
-        label="Metadata Author",
-        required=False,
-        queryset=Profile.objects.exclude(
-            username='AnonymousUser'),
-        widget=autocomplete_light.ChoiceWidget('ProfileAutocomplete'))
-
-    keywords = taggit.forms.TagField(
-        required=False,
-        help_text=_("A space or comma-separated list of keywords"))
-
-    regions = TreeNodeMultipleChoiceField(
-        required=False,
-        queryset=Region.objects.all(),
-        level_indicator=u'___')
-    regions.widget.attrs = {"size": 20}
-
-    class Meta:
+    class Meta(ResourceBaseForm.Meta):
         model = Layer
-        exclude = (
-            'contacts',
+        exclude = ResourceBaseForm.Meta.exclude + (
             'workspace',
             'store',
-            'name',
-            'uuid',
             'storeType',
             'typename',
-            'bbox_x0',
-            'bbox_x1',
-            'bbox_y0',
-            'bbox_y1',
-            'srid',
-            'category',
-            'csw_typename',
-            'csw_schema',
-            'csw_mdsource',
-            'csw_type',
-            'csw_wkt_geometry',
-            'metadata_uploaded',
-            'metadata_xml',
-            'csw_anytext',
-            'popular_count',
-            'share_count',
-            'thumbnail',
             'default_style',
             'styles',
             'upload_session',
-            'charset',
-            'rating',
             'service',)
-        widgets = autocomplete_light.get_widgets_dict(Layer)
-
-    def __init__(self, *args, **kwargs):
-        super(LayerForm, self).__init__(*args, **kwargs)
-        for field in self.fields:
-            help_text = self.fields[field].help_text
-            self.fields[field].help_text = None
-            if help_text != '':
-                self.fields[field].widget.attrs.update(
-                    {
-                        'class': 'has-popover',
-                        'data-content': help_text,
-                        'data-placement': 'right',
-                        'data-container': 'body',
-                        'data-html': 'true'})
 
 
 class LayerUploadForm(forms.Form):
@@ -215,54 +123,89 @@ class LayerUploadForm(forms.Form):
 
     def clean(self):
         cleaned = super(LayerUploadForm, self).clean()
-        base_name, base_ext = os.path.splitext(cleaned["base_file"].name)
-        if base_ext.lower() == '.zip':
-            # for now, no verification, but this could be unified
-            pass
-        elif base_ext.lower() not in (".shp", ".tif", ".tiff", ".geotif", ".geotiff"):
+        dbf_file = shx_file = prj_file = xml_file = None
+        base_name = base_ext = None
+        if zipfile.is_zipfile(cleaned["base_file"]):
+            filenames = zipfile.ZipFile(cleaned["base_file"]).namelist()
+            for filename in filenames:
+                name, ext = os.path.splitext(filename)
+                if ext.lower() == '.shp':
+                    if base_name is not None:
+                        raise forms.ValidationError(
+                            "Only one shapefile per zip is allowed")
+                    base_name = name
+                    base_ext = ext
+                elif ext.lower() == '.dbf':
+                    dbf_file = filename
+                elif ext.lower() == '.shx':
+                    shx_file = filename
+                elif ext.lower() == '.prj':
+                    prj_file = filename
+                elif ext.lower() == '.xml':
+                    xml_file = filename
+            if base_name is None:
+                raise forms.ValidationError(
+                    "Zip files can only contain shapefile.")
+        else:
+            base_name, base_ext = os.path.splitext(cleaned["base_file"].name)
+            if cleaned["dbf_file"] is not None:
+                dbf_file = cleaned["dbf_file"].name
+            if cleaned["shx_file"] is not None:
+                shx_file = cleaned["shx_file"].name
+            if cleaned["prj_file"] is not None:
+                prj_file = cleaned["prj_file"].name
+            if cleaned["xml_file"] is not None:
+                xml_file = cleaned["xml_file"].name
+
+        if base_ext.lower() not in (".shp", ".tif", ".tiff", ".geotif", ".geotiff"):
             raise forms.ValidationError(
                 "Only Shapefiles and GeoTiffs are supported. You uploaded a %s file" %
                 base_ext)
         if base_ext.lower() == ".shp":
-            dbf_file = cleaned["dbf_file"]
-            shx_file = cleaned["shx_file"]
             if dbf_file is None or shx_file is None:
                 raise forms.ValidationError(
-                    "When uploading Shapefiles, .SHX and .DBF files are also required.")
-            dbf_name, __ = os.path.splitext(dbf_file.name)
-            shx_name, __ = os.path.splitext(shx_file.name)
+                    "When uploading Shapefiles, .shx and .dbf files are also required.")
+            dbf_name, __ = os.path.splitext(dbf_file)
+            shx_name, __ = os.path.splitext(shx_file)
             if dbf_name != base_name or shx_name != base_name:
                 raise forms.ValidationError(
                     "It looks like you're uploading "
                     "components from different Shapefiles. Please "
                     "double-check your file selections.")
-            if cleaned["prj_file"] is not None:
-                prj_file = cleaned["prj_file"].name
+            if prj_file is not None:
                 if os.path.splitext(prj_file)[0] != base_name:
                     raise forms.ValidationError(
                         "It looks like you're "
                         "uploading components from different Shapefiles. "
                         "Please double-check your file selections.")
-            if cleaned["xml_file"] is not None:
-                xml_file = cleaned["xml_file"].name
+            if xml_file is not None:
                 if os.path.splitext(xml_file)[0] != base_name:
                     if xml_file.find('.shp') != -1:
                         # force rename of file so that file.shp.xml doesn't
                         # overwrite as file.shp
-                        cleaned["xml_file"].name = '%s.xml' % base_name
+                        if cleaned.get("xml_file"):
+                            cleaned["xml_file"].name = '%s.xml' % base_name
+
         return cleaned
 
     def write_files(self):
+
+        absolute_base_file = None
         tempdir = tempfile.mkdtemp()
-        for field in self.spatial_files:
-            f = self.cleaned_data[field]
-            if f is not None:
-                path = os.path.join(tempdir, f.name)
-                with open(path, 'wb') as writable:
-                    for c in f.chunks():
-                        writable.write(c)
-        absolute_base_file = os.path.join(tempdir,
-                                          self.cleaned_data["base_file"].name)
+
+        if zipfile.is_zipfile(self.cleaned_data['base_file']):
+            absolute_base_file = unzip_file(self.cleaned_data['base_file'], '.shp', tempdir=tempdir)
+
+        else:
+            for field in self.spatial_files:
+                f = self.cleaned_data[field]
+                if f is not None:
+                    path = os.path.join(tempdir, f.name)
+                    with open(path, 'wb') as writable:
+                        for c in f.chunks():
+                            writable.write(c)
+            absolute_base_file = os.path.join(tempdir,
+                                              self.cleaned_data["base_file"].name)
         return tempdir, absolute_base_file
 
 
