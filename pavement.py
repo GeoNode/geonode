@@ -1,6 +1,7 @@
+# -*- coding: utf-8 -*-
 #########################################################################
 #
-# Copyright (C) 2012 OpenPlans
+# Copyright (C) 2012 Open Source Geospatial Foundation
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -162,7 +163,7 @@ def win_install_deps(options):
         download_dir.makedirs()
     win_packages = {
         #required by transifex-client
-        "Py2exe": "http://superb-dca2.dl.sourceforge.net/project/py2exe/py2exe/0.6.9/py2exe-0.6.9.win32-py2.7.exe",
+        "Py2exe": "http://downloads.sourceforge.net/project/py2exe/py2exe/0.6.9/py2exe-0.6.9.win32-py2.7.exe",
         "Nose": "https://s3.amazonaws.com/geonodedeps/nose-1.3.3.win32-py2.7.exe",
         #the wheel 1.9.4 installs but pycsw wants 1.9.3, which fails to compile
         #when pycsw bumps their pyproj to 1.9.4 this can be removed.
@@ -346,7 +347,7 @@ def start_geoserver(options):
     from geonode.settings import OGC_SERVER
     GEOSERVER_BASE_URL = OGC_SERVER['default']['LOCATION']
     url = GEOSERVER_BASE_URL
-    
+
     if urlparse(GEOSERVER_BASE_URL).hostname != 'localhost':
         print "Warning: OGC_SERVER['default']['LOCATION'] hostname is not equal to 'localhost'"
 

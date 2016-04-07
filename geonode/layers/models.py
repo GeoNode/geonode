@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #########################################################################
 #
-# Copyright (C) 2012 OpenPlans
+# Copyright (C) 2012 Open Source Geospatial Foundation
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -17,6 +17,7 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
+
 import uuid
 import logging
 
@@ -99,12 +100,6 @@ class Layer(ResourceBase):
     storeType = models.CharField(max_length=128)
     name = models.CharField(max_length=128)
     typename = models.CharField(max_length=128, null=True, blank=True)
-
-    is_mosaic = models.BooleanField(default=False)
-    has_time = models.BooleanField(default=False)
-    has_elevation = models.BooleanField(default=False)
-    time_regex = models.CharField(max_length=128, null=True, blank=True, choices=TIME_REGEX)
-    elevation_regex = models.CharField(max_length=128, null=True, blank=True)
 
     is_mosaic = models.BooleanField(default=False)
     has_time = models.BooleanField(default=False)
