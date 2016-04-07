@@ -6,6 +6,8 @@ import datetime
 import time
 from urlparse import parse_qs
 
+from crispy_forms.utils import render_crispy_form
+
 from django.conf import settings
 from django.contrib import messages
 from django.core.files.storage import default_storage
@@ -113,8 +115,7 @@ def registration_part_one(request):
             return HttpResponseRedirect(
                 reverse('datarequests:registration_part_two')
             )
-
-            
+    
     return render(
         request,
         'datarequests/registration/profile.html',
@@ -294,16 +295,22 @@ def registration_part_two(request):
                     for e in form.errors.values():
                         errormsgs.extend([escape(v) for v in e])
                     out['success'] = False
-                    out['errors'] = errormsgs
+                    out['errors'] =  dict(
+                        (k, map(unicode, v))
+                        for (k,v) in form.errors.iteritems()
+                    )
                     pprint(out['errors'])
-                    out['errormsgs'] = errormsgs
+                    out['errormsgs'] = out['errors']
         else:
             for e in form.errors.values():
                 errormsgs.extend([escape(v) for v in e])
             out['success'] = False
-            out['errors'] = form.errors
+            out['errors'] = dict(
+                    (k, map(unicode, v))
+                    for (k,v) in form.errors.iteritems()
+            )
             pprint(out['errors'])
-            out['errormsgs'] = errormsgs
+            out['errormsgs'] = out['errors']
 
         if out['success']:
             status_code = 200
