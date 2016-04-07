@@ -280,6 +280,7 @@ define(['underscore',
      */
     doFormSubmit = function(){
         var form = new FormData($("#file-uploader")[0]);
+        console.log(form);
         $.ajax({
            type: "POST",
            url: '/datarequests/register/shapefile/',
