@@ -62,11 +62,11 @@ class StyleLayerMaker:
         self.layer_metadata = None      # LayerMetadata object
 
 
-    def add_err_msg(self, msg):
+    def add_err_msg(self, err_msg):
         self.err_found = True
-        self.err_msgs.append(msg)
+        self.err_msgs.append(err_msg)
 
-        logger.warn(msg)
+        logger.warn(err_msg)
 
 
     def create_layer_metadata(self, layer_name):

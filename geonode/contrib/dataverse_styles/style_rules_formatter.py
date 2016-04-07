@@ -38,10 +38,10 @@ class StyleRulesFormatter(object):
         if self.sld_name is None:
             self.sld_name = self.generate_sld_name()
 
-    def add_err_msg(self, msg):
+    def add_err_msg(self, err_msg):
         self.err_found = True
-        self.err_msgs.append(msg)
-        logger.warn(msg)
+        self.err_msgs.append(err_msg)
+        logger.warn(err_msg)
 
     def id_generator(self, size=7, chars=string.ascii_lowercase + string.digits):
         """

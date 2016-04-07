@@ -43,7 +43,7 @@ urlpatterns = patterns('geonode.contrib.datatables.views',
    url(r'^api/join/(?P<tj_id>\d+)/?$', 'tablejoin_detail', name='tablejoin_detail'),
 
    # Delete TableJoin
-   url(r'^api/join/(?P<tj_id>\d+)/remove/?$', 'tablejoin_remove', name='tablejoin_remove'),
+   url(r'^api/join/remove/(?P<tj_id>\d+)/?$', 'tablejoin_remove', name='tablejoin_remove'),
 
    #-------------------
    # JoinTarget
