@@ -47,19 +47,20 @@
       <div id="upload-status"></div>
         <form id="file-uploader" class="form-horizontal" method="post" enctype="multipart/form-data">
             {% crispy form %}
+            
+            {% if errors %}
+            <div id="errors" class="alert alert-danger">
+            {% for error in errors %}
+            <p>{{ error }}</p>
+                {% endfor %}
+            </div>
+            {% endif %}
+            
             <legend>Area of Interest Shapefile (Optional)</legend>
              <p>Valid file formats are ONLY the following :
              <ul><li>shp</li><li>dbf</li><li>prj</li><li>shx</li></ul></p>
             <div class="form-group">
                 {% block additional_info %}{% endblock %}
-
-                  {% if errors %}
-                  <div id="errors" class="alert alert-danger">
-                    {% for error in errors %}
-                    <p>{{ error }}</p>
-                    {% endfor %}
-                  </div>
-                  {% endif %}
 
                 <section id="drop-zone">
                     <h3><i class="fa fa-cloud-upload"></i><br />{% trans "Drop files here" %}</h3>
@@ -123,6 +124,8 @@
   geogig_enabled = {{ GEOGIG_ENABLED|lower  }},
   time_enabled = {{ TIME_ENABLED|lower  }},
   userLookup = "{% url "geonode.views.ajax_lookup" %}"
+
+  $('#file-uploader').find('#errors').hide()
 
 {% endautoescape %}
 

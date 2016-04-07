@@ -141,6 +141,11 @@ class DataRequestDetailsForm(forms.ModelForm):
         ('faculty', _('Faculty')),
         ('student', _('Student')),
     )
+    
+    project_summary = forms.CharField(
+        label=_('Project Summary'),
+        required=True
+    )
 
     purpose = forms.ChoiceField(
         label =_(u'Purpose of the Data'),
@@ -160,7 +165,7 @@ class DataRequestDetailsForm(forms.ModelForm):
     class Meta:
         model = DataRequestProfile
         fields=(
-            'project_summary',
+            #project_summary',
             'data_type_requested',
             'intended_use_of_dataset',
 

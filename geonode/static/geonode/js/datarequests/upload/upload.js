@@ -280,7 +280,6 @@ define(['underscore',
      */
     doFormSubmit = function(){
         var form = new FormData($("#file-uploader")[0]);
-        console.log(form);
         $.ajax({
            type: "POST",
            url: '/datarequests/register/shapefile/',
@@ -302,6 +301,13 @@ define(['underscore',
                     window.location = data.url;
                 } else {
                     common.logError("unexpected response");
+                }
+            },
+            error: function(data){
+                var errors = $.parseJSON(data.responseText).errors;
+                for (var key in errors ){
+                    $('#div_id_'+key).addClass('has-error');
+                    $('#div_id_'+key).find('div').append("<span id=\"error_id_"+key+"\" class=\"error-msg\">"+errors[key]+"</span>");
                 }
             }
         });
