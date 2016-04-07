@@ -108,7 +108,7 @@ def registration_part_one(request):
             request_object = form.save()
             request.session['request_object'] = request_object
             request.session['data_request_info'] = profile_form_data
-            request_profile.send_verification_email()
+            request_object.send_verification_email()
             
             return HttpResponseRedirect(
                 reverse('datarequests:registration_part_two')
@@ -126,12 +126,12 @@ def registration_part_two(request):
     part_two_initial ={}
     last_submitted_dr = None
     if request.user.is_authenticated():
-        try:
-            last_submitted_dr = request.session.get('last_submitted_dr', None)
-            part_two_initial['project_summary']=last_submitted_dr.project_summary
-            part_two_initial['data_type_requested']=last_submitted_dr.data_type_requested
-        except ObjectDoesNotExist as e:
-            pprint("Did not find datarequests for this user")
+        last_submitted_dr = request.session.get('last_submitted_dr', None)
+        if not last_submitted_dr:
+            pprint("No previous request from "+request.user.username)
+            return HttpResponseRedirect(reverse('datarequests:registration_part_one'))
+        part_two_initial['project_summary']=last_submitted_dr.project_summary
+        part_two_initial['data_type_requested']=last_submitted_dr.data_type_requested
         
     request.session['data_request_shapefile'] = True
     profile_form_data = request.session.get('data_request_info', None)
@@ -333,7 +333,8 @@ def registration_part_two(request):
         {
             'charsets': CHARSETS,
             'is_layer': True,
-            'form': form
+            'form': form,
+            'support_email': settings.LIPAD_SUPPORT_MAIL,
         })
         
 
