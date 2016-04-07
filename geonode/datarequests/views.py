@@ -291,8 +291,12 @@ def registration_part_two(request):
                 else:
                     pprint("unable to retrieve request object")
                     
-                    out['errors'] = form.errors
+                    for e in form.errors.values():
+                        errormsgs.extend([escape(v) for v in e])
                     out['success'] = False
+                    out['errors'] = errormsgs
+                    pprint(out['errors'])
+                    out['errormsgs'] = errormsgs
         else:
             for e in form.errors.values():
                 errormsgs.extend([escape(v) for v in e])
