@@ -18,6 +18,7 @@
 #
 #########################################################################
 
+
 class BaseCatalogueBackend(object):
     """Catalogue abstract base class"""
 
