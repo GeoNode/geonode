@@ -143,6 +143,7 @@ class DataRequestDetailsForm(forms.ModelForm):
     )
     
     project_summary = forms.CharField(
+        widget=forms.TextArea, 
         label=_('Project Summary'),
         required=True
     )
