@@ -54,14 +54,14 @@ urlpatterns = patterns('',
                        url(r'^/?$', TemplateView.as_view(template_name='index.html'), name='home'),
                        url(r'^help/$', TemplateView.as_view(template_name='help.html'), name='help'),
                        url(r'^developer/$', TemplateView.as_view(template_name='developer.html'), name='developer'),
-                       url(r'^about/$', TemplateView.as_view(template_name='about.html'), name='about'), 
-                       
+                       url(r'^about/$', TemplateView.as_view(template_name='about.html'), name='about'),
+
                        # EULA URLs
                        url(r'^eula/', include('geonode.eula.urls'), name='eula'),
-                       
+
                        # Permission denied handler
                        url(r'^forbidden/$', forbidden, name='forbidden'),
-                       
+
                        # Layer views
                        (r'^layers/', include('geonode.layers.urls')),
 
@@ -90,7 +90,7 @@ urlpatterns = patterns('',
                        # Accounts
                        url(r'^account/ajax_login$', 'geonode.views.ajax_login', name='account_ajax_login'),
                        url(r'^account/ajax_lookup$', 'geonode.views.ajax_lookup', name='account_ajax_lookup'),
-					   
+
                        # Data Request Profiles
                        (r'^datarequests/', include('geonode.datarequests.urls', namespace='datarequests')),
 
@@ -99,7 +99,7 @@ urlpatterns = patterns('',
 
 					   # CephGeo
 					   url(r'^ceph/', include("geonode.cephgeo.urls")),
-					   
+
 					   #MapTiles
 					   url(r'^maptiles/',include("geonode.maptiles.urls")),
 
@@ -118,8 +118,8 @@ urlpatterns = patterns('',
                        (r'^documents/', include('geonode.documents.urls')),
                        (r'^services/', include('geonode.services.urls')),
                        url(r'', include(api.urls)),
-                       
-                       
+                       (r'^api/', include('geonode.api.urls')),
+
                        )
 
 if "geonode.contrib.dynamic" in settings.INSTALLED_APPS:

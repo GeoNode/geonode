@@ -112,6 +112,7 @@
             SEARCH_URL = '{% url 'api_get_search' api_name='api' resource_name='base' %}?type__in=layer'
         {% else %}
             SEARCH_URL = '{% url 'api_dispatch_list' api_name='api' resource_name='layers' %}';
+            
         {% endif %}
       FILTER_TYPE = 'layer';
     </script>
