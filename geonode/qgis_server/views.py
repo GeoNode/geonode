@@ -116,7 +116,10 @@ def legend(request, layername, layertitle=None):
             'REQUEST': 'GetLegendGraphic',
             'LAYER': layer.name,
             'LAYERTITLE': layertitle,
-            'FORMAT': 'image/png'
+            'FORMAT': 'image/png',
+            'TILED': 'true',
+            'transparent': 'true',
+            'legend_options': 'fontAntiAliasing:true;fontSize:11;fontName:Arial'
         }
 
         url = qgis_server + '?'
@@ -366,8 +369,9 @@ def wms_describe_layer(params):
     logger.debug(url)
 
     result = urllib2.urlopen(url)
-    a = result.readlines()
-    return HttpResponse(''.join(a).replace('\n', ''), mimetype='text/xml')
+    result_list = result.readlines()
+    return HttpResponse(
+        ''.join(result_list).replace('\n', ''), mimetype='text/xml')
 
 
 def wfs_describe_feature_type(params):
@@ -394,12 +398,45 @@ def wfs_describe_feature_type(params):
     logger.debug(url)
 
     result = urllib2.urlopen(url)
-    a = result.readlines()
-    return HttpResponse(''.join(a).replace('\n', ''), mimetype='text/xml')
+    result_list = result.readlines()
+    return HttpResponse(
+        ''.join(result_list).replace('\n', ''), mimetype='text/xml')
 
 
-def wms(request):
-    logger.debug('WMS from QGIS Server')
+def wms_get_feature_info(params):
+    logger.debug('WMS GetFeatureInfo')
+
+    qgis_server = QGIS_SERVER_CONFIG['qgis_server_url']
+
+    layer = Layer.objects.get(typename=params.pop('LAYERS'))
+    params['LAYERS'] = layer.name
+    params['QUERY_LAYERS'] = layer.name
+    logger.debug(params['QUERY_LAYERS'])
+    try:
+        qgis_layer = QGISServerLayer.objects.get(layer=layer)
+    except ObjectDoesNotExist:
+        msg = 'No QGIS Server Layer for existing layer %s' % layer.name
+        logger.debug(msg)
+        raise Http404(msg)
+
+    basename, _ = os.path.splitext(qgis_layer.base_layer_path)
+
+    params['map'] = basename + '.qgs'
+
+    url = qgis_server + '?'
+    for param, value in params.iteritems():
+        url += param + '=' + value + '&'
+
+    logger.debug(url)
+
+    result = urllib2.urlopen(url)
+    result_list = result.readlines()
+    return HttpResponse(
+        ''.join(result_list).replace('\n', ''), mimetype='text/xml')
+
+
+def qgis_server_request(request):
+    logger.debug('WMS/WFS request to QGIS Server')
 
     params = dict()
     for key, value in request.GET.iteritems():
@@ -416,6 +453,10 @@ def wms(request):
         elif params.get('REQUEST') == 'GetLegendGraphic':
             layer = Layer.objects.get(typename=params.get('LAYER'))
             return legend(request, layername=layer.name)
+        elif params.get('REQUEST') == 'GetFeatureInfo':
+            return wms_get_feature_info(params)
+        # May be we need to implement for GetStyle also
     elif params.get('SERVICE') == 'WFS':
         if params.get('REQUEST') == 'DescribeFeatureType':
             return wfs_describe_feature_type(params)
+        # May be we need to implement for GetFeature, Transaction also
