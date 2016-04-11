@@ -19,6 +19,17 @@
   <h2 class="page-title">{% trans "Request Data" %}</h2>
 </div>
 
+{% if not user.is_authenticated %}
+    
+    <p>{% blocktrans %}Your registration details have been received. We have sent you an email for verification. Follow the link provided in the email to finalize the signup process.{% endblocktrans %}</p>
+    
+    <p>{% blocktrans %}Didn't receive your email? Please check your spam folder. Still not there? Contact us at <strong>{{ support_email }}</strong>, and we'll be glad to assist you.{% endblocktrans %}</p>
+    
+    <p> Additionally, you can choose to submit your data request below. This action is <strong>not required</strong>.</p>
+
+{% endif %}
+
+
 <div class="row">
   <div class="col-md-6 col-md-offset-1">
 
@@ -36,19 +47,20 @@
       <div id="upload-status"></div>
         <form id="file-uploader" class="form-horizontal" method="post" enctype="multipart/form-data">
             {% crispy form %}
+            
+            {% if errors %}
+            <div id="errors" class="alert alert-danger">
+            {% for error in errors %}
+            <p>{{ error }}</p>
+                {% endfor %}
+            </div>
+            {% endif %}
+            
             <legend>Area of Interest Shapefile (Optional)</legend>
              <p>Valid file formats are ONLY the following :
              <ul><li>shp</li><li>dbf</li><li>prj</li><li>shx</li></ul></p>
             <div class="form-group">
                 {% block additional_info %}{% endblock %}
-
-                  {% if errors %}
-                  <div id="errors" class="alert alert-danger">
-                    {% for error in errors %}
-                    <p>{{ error }}</p>
-                    {% endfor %}
-                  </div>
-                  {% endif %}
 
                 <section id="drop-zone">
                     <h3><i class="fa fa-cloud-upload"></i><br />{% trans "Drop files here" %}</h3>
@@ -112,6 +124,8 @@
   geogig_enabled = {{ GEOGIG_ENABLED|lower  }},
   time_enabled = {{ TIME_ENABLED|lower  }},
   userLookup = "{% url "geonode.views.ajax_lookup" %}"
+
+  $('#file-uploader').find('#errors').hide()
 
 {% endautoescape %}
 

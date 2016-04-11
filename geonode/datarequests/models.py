@@ -163,12 +163,14 @@ class DataRequestProfile(TimeStampedModel):
         _('Level of Request'),
         choices=REQUEST_LEVEL_CHOICES,
         blank=True,
+        null=True,
         max_length=15,
     )
     funding_source = models.CharField(
         _('Source of Funding'),
         max_length=255,
         blank=True,
+        null=True
     )
     is_consultant = models.BooleanField(
         _('Consultant in behalf of another organization?'),
