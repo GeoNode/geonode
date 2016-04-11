@@ -114,6 +114,7 @@ def registration_part_one(request):
                 request_object.send_verification_email()
             else:
                 request.session['last_submitted_dr'] = request_object
+                request.sessions['is_new_auth_req'] = True
             
             return HttpResponseRedirect(
                 reverse('datarequests:registration_part_two')
@@ -129,7 +130,9 @@ def registration_part_one(request):
 def registration_part_two(request):
     part_two_initial ={}
     last_submitted_dr = None
+    is_new_auth_req = False
     if request.user.is_authenticated():
+        is_new_auth_req = request.session.get('is_new_auth_req', None)
         last_submitted_dr = request.session.get('last_submitted_dr', None)
         if not last_submitted_dr:
             pprint("No previous request from "+request.user.username)
@@ -159,7 +162,7 @@ def registration_part_two(request):
         request_profile =  request.session['request_object']
         pprint(post_data)
         if form.is_valid():
-            if last_submitted_dr:
+            if last_submitted_dr and not is_new_auth_req:
                 if last_submitted_dr.request_status.encode('utf8') == 'pending' or last_submitted_dr.request_status.encode('utf8') == 'unconfirmed':
                     pprint("updating request_status")
                     last_submitted_dr.request_status = 'cancelled'
