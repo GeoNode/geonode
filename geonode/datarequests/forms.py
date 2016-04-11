@@ -89,7 +89,7 @@ class DataRequestProfileForm(forms.ModelForm):
         user_emails = Profile.objects.all().values_list('email', flat=True)
         if email in user_emails:
             raise forms.ValidationError(
-                'That email is already being used by a registered user.')
+                'That email is already being used by a registered user. lease login with your account instead.')
 
         return email
 
@@ -141,6 +141,12 @@ class DataRequestDetailsForm(forms.ModelForm):
         ('faculty', _('Faculty')),
         ('student', _('Student')),
     )
+    
+    project_summary = forms.CharField(
+        widget=forms.Textarea, 
+        label=_('Project Summary'),
+        required=True
+    )
 
     purpose = forms.ChoiceField(
         label =_(u'Purpose of the Data'),
@@ -160,7 +166,7 @@ class DataRequestDetailsForm(forms.ModelForm):
     class Meta:
         model = DataRequestProfile
         fields=(
-            'project_summary',
+            #project_summary',
             'data_type_requested',
             'intended_use_of_dataset',
 

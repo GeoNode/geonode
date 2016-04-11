@@ -145,7 +145,7 @@
           {% if request.user.is_authenticated %}
           <button class="btn btn-primary btn-md btn-block" id="request-download">{% trans "Request Download" %}</button>
           {% else %}
-          <button>{% trans "Please Login to Download" %}</button>
+          <button class="btn btn-primary btn-md btn-block">{% trans "Please Login to Download" %}</button>
           {% endif %}
         {% endif %}
         </li>
