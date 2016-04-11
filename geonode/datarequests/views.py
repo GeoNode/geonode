@@ -6,6 +6,8 @@ import datetime
 import time
 from urlparse import parse_qs
 
+from crispy_forms.utils import render_crispy_form
+
 from django.conf import settings
 from django.contrib import messages
 from django.core.files.storage import default_storage
@@ -108,12 +110,12 @@ def registration_part_one(request):
             request_object = form.save()
             request.session['request_object'] = request_object
             request.session['data_request_info'] = profile_form_data
+            request_object.send_verification_email()
             
             return HttpResponseRedirect(
                 reverse('datarequests:registration_part_two')
             )
-
-            
+    
     return render(
         request,
         'datarequests/registration/profile.html',
@@ -125,12 +127,12 @@ def registration_part_two(request):
     part_two_initial ={}
     last_submitted_dr = None
     if request.user.is_authenticated():
-        try:
-            last_submitted_dr = request.session.get('last_submitted_dr', None)
-            part_two_initial['project_summary']=last_submitted_dr.project_summary
-            part_two_initial['data_type_requested']=last_submitted_dr.data_type_requested
-        except ObjectDoesNotExist as e:
-            pprint("Did not find datarequests for this user")
+        last_submitted_dr = request.session.get('last_submitted_dr', None)
+        if not last_submitted_dr:
+            pprint("No previous request from "+request.user.username)
+            return HttpResponseRedirect(reverse('datarequests:registration_part_one'))
+        part_two_initial['project_summary']=last_submitted_dr.project_summary
+        part_two_initial['data_type_requested']=last_submitted_dr.data_type_requested
         
     request.session['data_request_shapefile'] = True
     profile_form_data = request.session.get('data_request_info', None)
@@ -290,21 +292,31 @@ def registration_part_two(request):
                 else:
                     pprint("unable to retrieve request object")
                     
-                    out['errors'] = form.errors
+                    for e in form.errors.values():
+                        errormsgs.extend([escape(v) for v in e])
                     out['success'] = False
+                    out['errors'] =  dict(
+                        (k, map(unicode, v))
+                        for (k,v) in form.errors.iteritems()
+                    )
+                    pprint(out['errors'])
+                    out['errormsgs'] = out['errors']
         else:
             for e in form.errors.values():
                 errormsgs.extend([escape(v) for v in e])
             out['success'] = False
-            out['errors'] = form.errors
+            out['errors'] = dict(
+                    (k, map(unicode, v))
+                    for (k,v) in form.errors.iteritems()
+            )
             pprint(out['errors'])
-            out['errormsgs'] = errormsgs
+            out['errormsgs'] = out['errors']
 
         if out['success']:
             status_code = 200
 
             if request_profile and not request_profile.profile:
-                request_profile.send_verification_email()
+#                request_profile.send_verification_email()
 
                 out['success_url'] = reverse('datarequests:email_verification_send')
                 
@@ -332,7 +344,8 @@ def registration_part_two(request):
         {
             'charsets': CHARSETS,
             'is_layer': True,
-            'form': form
+            'form': form,
+            'support_email': settings.LIPAD_SUPPORT_MAIL,
         })
         
 
