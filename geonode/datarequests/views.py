@@ -89,13 +89,14 @@ def registration_part_one(request):
                     reverse('datarequests:registration_part_two')
                 )
         except ObjectDoesNotExist as e:
-                pprint("No data request present for this user")
+            request.session['is_new_auth_req'] = True
+            pprint("No data request present for this user")
        
     
     if not shapefile_session and profile_form_data:
-            if 'data_request_info' in request.session:
-                del request.session['data_request_info']
-                request.session.modified = True
+        if 'data_request_info' in request.session:
+            del request.session['data_request_info']
+            request.session.modified = True
     
     form = DataRequestProfileForm(
         initial = profile_form_data
@@ -113,8 +114,10 @@ def registration_part_one(request):
             if not request.user.is_authenticated():
                 request_object.send_verification_email()
             else:
+                request_object.request_status = 'pending'
+                request_object.save()
                 request.session['last_submitted_dr'] = request_object
-                request.sessions['is_new_auth_req'] = True
+                
             
             return HttpResponseRedirect(
                 reverse('datarequests:registration_part_two')
