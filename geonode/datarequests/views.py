@@ -110,7 +110,10 @@ def registration_part_one(request):
             request_object = form.save()
             request.session['request_object'] = request_object
             request.session['data_request_info'] = profile_form_data
-            request_object.send_verification_email()
+            if not request.user.is_authenticated():
+                request_object.send_verification_email()
+            else:
+                request.session['last_submitted_dr'] = request_object
             
             return HttpResponseRedirect(
                 reverse('datarequests:registration_part_two')
