@@ -7,7 +7,7 @@ from geosafe.views.analysis import (
     AnalysisDetailView,
     impact_function_filter,
     layer_tiles, layer_metadata, layer_archive, layer_list, rerun_analysis,
-    analysis_json, toggle_analysis_saved)
+    analysis_json, toggle_analysis_saved, download_report)
 
 urlpatterns = patterns(
     '',
@@ -70,5 +70,12 @@ urlpatterns = patterns(
         r'(?P<analysis_id>\d+)',
         toggle_analysis_saved,
         name='toggle-analysis-saved'
+    ),
+    url(
+        r'^geosafe/analysis/report/'
+        r'(?P<analysis_id>\d+)/'
+        r'(?P<data_type>(map|table))',
+        download_report,
+        name='download-report'
     ),
 )

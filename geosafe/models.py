@@ -4,6 +4,7 @@ import tempfile
 import urlparse
 
 from django.conf import settings
+from django.core.files.base import File
 from django.core.urlresolvers import reverse
 from django.db import models
 from celery.result import AsyncResult
@@ -146,6 +147,36 @@ class Analysis(models.Model):
         null=True
     )
 
+    report_map = models.FileField(
+        verbose_name='Report Map',
+        help_text='The map report of the analysis',
+        blank=True,
+        null=True,
+        upload_to='analysis/report/'
+    )
+
+    report_table = models.FileField(
+        verbose_name='Report Table',
+        help_text='The table report of the analysis',
+        blank=True,
+        null=True,
+        upload_to='analysis/report/'
+    )
+
+    def assign_report_map(self, filename):
+        try:
+            self.report_map.delete()
+        except:
+            pass
+        self.report_map = File(open(filename))
+
+    def assign_report_table(self, filename):
+        try:
+            self.report_table.delete()
+        except:
+            pass
+        self.report_table = File(open(filename))
+
     def get_task_result(self):
         return AsyncResult(self.task_id)
 
@@ -181,6 +212,17 @@ class Analysis(models.Model):
             force_update=force_update,
             using=using,
             update_fields=update_fields)
+
+    def delete(self, using=None):
+        try:
+            self.report_map.delete()
+        except:
+            pass
+
+        try:
+            self.report_table.delete()
+        except:
+            pass
 
 
 # needed to load signals

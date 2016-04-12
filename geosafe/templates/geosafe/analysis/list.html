@@ -13,6 +13,7 @@
                     <th>Impact Function ID</th>
                     <th>Impact Layer</th>
                     <th>Detail</th>
+                    <th>Report</th>
                     <th>Keep</th>
                 </tr>
                 </thead>
@@ -45,6 +46,14 @@
                         </td>
                         <td>
                             <a href="{% url 'geosafe:analysis-create' pk=analysis.pk %}">View</a>
+                        </td>
+                        <td>
+                            {% if analysis.report_map %}
+                                <a href="{% url 'geosafe:download-report' analysis_id=analysis.id data_type='map' %}">Map Report</a>
+                            {% endif %}
+                            {% if analysis.report_table %}
+                                <a href="{% url 'geosafe:download-report' analysis_id=analysis.id data_type='table' %}">Table Report</a>
+                            {% endif %}
                         </td>
                         <td>
                             Layer is

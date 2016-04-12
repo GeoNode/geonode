@@ -299,3 +299,39 @@ def toggle_analysis_saved(request, analysis_id):
     except Exception as e:
         LOGGER.exception(e)
         return HttpResponseServerError()
+
+
+def serve_files(file_stream, content_type, filename):
+    response = HttpResponse(
+        file_stream,
+        content_type=content_type)
+    response['Content-Disposition'] = 'inline; filename="%s";' % filename
+    return response
+
+
+def download_report(request, analysis_id, data_type='map'):
+    """Download the pdf files of the analysis
+
+    :param request:
+    :param analysis_id:
+    :param data_type: can be 'map' or 'table'
+    """
+    if request.method != 'GET':
+        return HttpResponseBadRequest()
+
+    try:
+        analysis = Analysis.objects.get(id=analysis_id)
+        layer_title = analysis.impact_layer.title
+        if data_type == 'map':
+            return serve_files(
+                analysis.report_map.read(),
+                'application/pdf',
+                '%s_map.pdf' % layer_title)
+        elif data_type == 'table':
+            return serve_files(
+                analysis.report_table.read(),
+                'application/pdf',
+                '%s_table.pdf' % layer_title)
+        return HttpResponseServerError()
+    except:
+        return HttpResponseServerError()
