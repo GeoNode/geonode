@@ -18,8 +18,6 @@ from django.utils import timezone
 from geonode.base.enumerations import COUNTRIES
 from taggit.models import TaggedItemBase
 
-class TaggedInterests(TaggedItemBase):
-    content_object = models.ForeignKey('GroupProfile')
 
 class GroupProfile(models.Model):
     GROUP_CHOICES = [
@@ -35,7 +33,16 @@ class GroupProfile(models.Model):
                          'Only invited users can join.')
     email_help_text = _('Email used to contact one or all group members, '
                         'such as a mailing list, shared email, or exchange group.')
-
+    social_twitter = models.CharField(_('Twitter Handle'),
+        help_text=_('Provide your Twitter handle or URL'),
+        max_length=255,
+        null=True,
+        blank=True)
+    social_facebook = models.CharField(_('Facebook Profile'),
+        help_text=_('Provide your Facebook handle or URL'),
+        max_length=255,
+        null=True,
+        blank=True) 
     group = models.OneToOneField(Group)
     title = models.CharField(max_length=50)
     slug = models.SlugField(unique=True)
@@ -70,8 +77,8 @@ class GroupProfile(models.Model):
         blank=True,
         null=True,
         help_text=_('country of the physical address'))
-    interests = TaggableManager(_('interests'), blank=True, help_text=_(
-        'a list of personal interests'), through=TaggedInterests, related_name='group_interests')
+    tasks = models.TextField(null=True, blank=True)
+    profile_type = models.CharField(choices=[['org', 'Organization'],['ini', 'Initiative']], max_length=255)
 
     def save(self, *args, **kwargs):
         group, created = Group.objects.get_or_create(name=self.slug)
