@@ -4,6 +4,7 @@ import shutil
 import traceback
 import datetime
 import time
+import csv
 from urlparse import parse_qs
 
 from crispy_forms.utils import render_crispy_form
@@ -21,6 +22,7 @@ from django.shortcuts import (
     redirect, get_object_or_404, render, render_to_response)
 from django.template import RequestContext
 from django.template.defaultfilters import slugify
+from django.utils import dateformat
 from django.utils import timezone
 from django.utils import simplejson as json
 from django.utils.html import escape
@@ -361,6 +363,14 @@ def registration_part_two(request):
 class DataRequestPofileList(LoginRequiredMixin, SuperuserRequiredMixin, TemplateView):
     template_name = 'datarequests/data_request_list.html'
     raise_exception = True
+ 
+ @login_required
+ def datarequest_csv(request):
+    if not request.user.is_superuser:
+        raise HttpResponseForbidden
+         
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = 'attachment; filename="datarequests-"'+dateformat.format(timezone.now(), 'F j, Y, P')+'-.csv"'
     
 @login_required
 def request_history(request):
