@@ -5,11 +5,14 @@ import logging
 import zipfile
 import StringIO
 import urllib2
+import json
 from imghdr import what as image_format
 
 from urllib import urlretrieve
 from django.http import HttpResponse, Http404
 from django.db.models import ObjectDoesNotExist
+from django.http import HttpResponse
+
 from geonode.layers.models import Layer
 from geonode.qgis_server.models import QGISServerLayer
 from geonode.qgis_server.gis_tools import num2deg
@@ -460,3 +463,40 @@ def qgis_server_request(request):
         if params.get('REQUEST') == 'DescribeFeatureType':
             return wfs_describe_feature_type(params)
         # May be we need to implement for GetFeature, Transaction also
+
+
+def qgis_server_pdf(request):
+    response_data = {
+        "scales":[
+            {"name":"1:25,000","value":"25000.0"},
+            {"name":"1:50,000","value":"50000.0"},
+            {"name":"1:100,000","value":"100000.0"},
+            {"name":"1:200,000","value":"200000.0"},
+            {"name":"1:500,000","value":"500000.0"},
+            {"name":"1:1,000,000","value":"1000000.0"},
+            {"name":"1:2,000,000","value":"2000000.0"},
+            {"name":"1:4,000,000","value":"4000000.0"}
+        ],
+        "dpis":[
+            {"name":"75","value":"75"},
+            {"name":"150","value":"150"},
+            {"name":"300","value":"300"}
+        ],
+        "outputFormats":[
+            {"name":"pdf"}
+        ],
+        "layouts":[
+            {"name":"A4 portrait",
+             "map":{"width":440,"height":483},
+             "rotation":True},
+            {"name":"Legal",
+             "map":{"width":440,"height":483},
+             "rotation":False}
+        ],
+        "printURL":"http://localhost:8080/geoserver/pdf/print.pdf",
+        "createURL":"http://localhost:8080/geoserver/pdf/create.json"
+    }
+
+    return HttpResponse(
+        json.dumps(response_data), content_type="application/json")
+
