@@ -7,9 +7,12 @@ import urlparse
 from zipfile import ZipFile
 
 import requests
+import shutil
 from celery.app import shared_task
 from django.conf import settings
+from django.core.files.base import File
 from django.core.urlresolvers import reverse
+from django.db.models.query_utils import Q
 
 from geonode.layers.models import Layer
 from geonode.layers.utils import file_upload
@@ -74,6 +77,26 @@ def create_metadata_object(layer_id):
 
 
 @shared_task(
+    name='geosafe.tasks.analysis.clean_impact_result',
+    queue='geosafe')
+def clean_impact_result():
+    """Clean all the impact results not marked kept
+
+    :return:
+    """
+    query = Q(keep=True)
+    for a in Analysis.objects.filter(~query):
+        a.impact_layer.delete()
+        a.delete()
+
+    for i in Metadata.objects.filter(layer_purpose='impact'):
+        try:
+            Analysis.objects.get(impact_layer=i.layer)
+        except Analysis.DoesNotExist:
+            i.delete()
+
+
+@shared_task(
     name='geosafe.tasks.analysis.process_impact_result',
     queue='geosafe')
 def process_impact_result(analysis_id, impact_url_result):
@@ -95,10 +118,11 @@ def process_impact_result(analysis_id, impact_url_result):
     # download impact zip
     impact_path = download_file(impact_url)
     dir_name = os.path.dirname(impact_path)
+    success = False
     with ZipFile(impact_path) as zf:
         zf.extractall(path=dir_name)
         for name in zf.namelist():
-            _, ext = os.path.splitext(name)
+            basename, ext = os.path.splitext(name)
             if ext in ['.shp', '.tif']:
                 saved_layer = file_upload(
                     os.path.join(dir_name, name),
@@ -111,12 +135,44 @@ def process_impact_result(analysis_id, impact_url_result):
                 if analysis.impact_layer:
                     current_impact = analysis.impact_layer
                 analysis.impact_layer = saved_layer
+
+                # check map report and table
+                report_map_path = os.path.join(
+                    dir_name, '%s.pdf' % basename
+                )
+
+                if os.path.exists(report_map_path):
+                    analysis.assign_report_map(report_map_path)
+
+                report_table_path = os.path.join(
+                    dir_name, '%s_table.pdf' % basename
+                )
+
+                if os.path.exists(report_table_path):
+                    analysis.assign_report_table(report_table_path)
+
                 analysis.save()
 
                 if current_impact:
                     current_impact.delete()
-                return True
+                success = True
+                break
 
-    LOGGER.info('No impact layer found in %s' % impact_url)
+        # cleanup
+        for name in zf.namelist():
+            filepath = os.path.join(dir_name, name)
+            try:
+                os.remove(filepath)
+            except:
+                pass
 
-    return False
+    # cleanup
+    try:
+        os.remove(impact_path)
+    except:
+        pass
+
+    if not success:
+        LOGGER.info('No impact layer found in %s' % impact_url)
+
+    return success

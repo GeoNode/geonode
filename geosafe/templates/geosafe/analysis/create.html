@@ -1,17 +1,24 @@
 {% extends 'site_base.html' %}
 {% load bootstrap_tags %}
 {% load staticfiles %}
+{% load i18n avatar_tags %}
 {% block extra_head %}
 <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.css"/>
 <style type="text/css">
  html, body, #wrap {
     height: 100%;
     width: 100%;
+     padding-top: 0;
+     padding-bottom: 0;
  }
+
+ .section.brand a {
+{#     background: url('{% static 'geosafe/img/logo-geonode.png' %}') 15px 0 no-repeat;#}
+ }
+
  .options-panel {
     position: fixed;
     left: 0;
-    top: 50px;
     width: 70px;
     height: 100%;
     background: #333333;
@@ -161,11 +168,18 @@ border-color: transparent rgba(244,244,244,0.9) transparent transparent;
  </style>
 {% endblock extra_head %}
 
+{% block header %}
+    {# intended to be empty #}
+{% endblock header %}
+
 
 {% block body_outer %}
 </div><!-- close .container -->
 <div class="options-panel">
 {#    <div class="search section"> <a href="#" id="search-call"><i class="fa fa-search"></i></a> </div>#}
+    <div class="brand section">
+        <a href="{% url "home" %}"><img src="{% static 'geosafe/img/logo-geonode.png' %}" href="{% url "home" %}" /></a>
+    </div>
     <div class="exposure section">
         <h4 class="section-title">Exposure</h4>
         <div class="option"><a href="#" id="population" class="{% if exposure_population %}has-children{% endif %}"><img src="{% static "geosafe/img/population.svg" %}" alt="population" class="svg"/></a>
@@ -232,6 +246,19 @@ border-color: transparent rgba(244,244,244,0.9) transparent transparent;
             </div>
         </div>
     </div>
+    <div class="impact section">
+        <h4 class="section-title">Impact</h4>
+            <div class="option"><a href="#" id="impact" class="{% if impact_layers %}has-children{% endif %}"><img src="{% static "geosafe/img/flood.svg" %}" alt="impact" class="svg" /></a>
+                <div class="list floating-box" id="impact-list">
+                    <h4 class="list-title">Select the impact</h4>
+                    <ul>
+                        {% for e in impact_layers %}
+                            <li><a href="javascript:update_impact_layer({{ e.id }})" data-id="{{ e.id }}">{{ e.name }}</a></li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
     <div class="report section">
         <h4 class="section-title">Report</h4>
         <div class="option"><i class="fa fa-map"></i></div>
@@ -247,8 +274,55 @@ border-color: transparent rgba(244,244,244,0.9) transparent transparent;
             <div style="display: none;">
                 {{ form|as_bootstrap }}
             </div>
-            <button type="submit" class="btn btn-primary">Run</button>
+            <button type="submit" class="btn btn-primary" disabled>Run</button>
         </form>
+    </div>
+</div>
+<!-- Waiting Analysis Modal -->
+<div class="modal fade" id="analysis-result-modal" tabindex="-1" role="dialog" aria-labelledby="Analysis Result">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span></button>
+                {% if analysis.get_task_result.state == 'FAILURE' %}
+                    <h4 class="modal-title" id="myModalLabel">Analysis Failed</h4>
+                {% else %}
+                    <h4 class="modal-title" id="myModalLabel">Waiting Analysis</h4>
+                {% endif %}
+            </div>
+            <div class="modal-body">
+                {% if analysis.get_task_result.state == 'FAILURE' %}
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <h3 class="panel-title">Error Detail</h3>
+                        </div>
+                        <div class="panel-body">
+                            Analysis process is failed.
+                            <p>{{ analysis.get_task_result.result }}</p>
+                            <p>{{ analysis.get_task_result.traceback }}</p>
+                        </div>
+                    </div>
+                {% else %}
+                    Analysis is running asynchronously.
+                    The map will be updated when it is done...
+                {% endif %}
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                {% if analysis.get_task_result %}
+                    {% if analysis.get_task_result.failed %}
+                        <p>
+                            <form action="{% url 'geosafe:rerun-analysis' analysis_id=analysis.id %}" method="post">
+                                {% csrf_token %}
+                                <input type="hidden" id="analysis_id" value="{{ analysis.id }}" />
+                                <button type="submit" class="btn btn-primary">Rerun Analysis</button>
+                            </form>
+                        </p>
+                    {% endif %}
+                {% endif %}
+            </div>
+        </div>
     </div>
 </div>
 <div id="map" style="width: 100%; height: 100%; position:relative; margin-left: 70px; ">
@@ -265,75 +339,52 @@ border-color: transparent rgba(244,244,244,0.9) transparent transparent;
 {% block extra_script %} 
 <script src="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.js"></script> 
 <script type="text/javascript">
-$(document).ready( function() {
-jQuery('img.svg').each(function(){
-    var $img = jQuery(this);
-    var imgID = $img.attr('id');
-    var imgClass = $img.attr('class');
-    var imgURL = $img.attr('src');
+$(document).ready(function () {
+    jQuery('img.svg').each(function () {
+        var $img = jQuery(this);
+        var imgID = $img.attr('id');
+        var imgClass = $img.attr('class');
+        var imgURL = $img.attr('src');
 
-    jQuery.get(imgURL, function(data) {
-        // Get the SVG tag, ignore the rest
-        var $svg = jQuery(data).find('svg');
+        jQuery.get(imgURL, function (data) {
+            // Get the SVG tag, ignore the rest
+            var $svg = jQuery(data).find('svg');
 
-        // Add replaced image's ID to the new SVG
-        if(typeof imgID !== 'undefined') {
-            $svg = $svg.attr('id', imgID);
+            // Add replaced image's ID to the new SVG
+            if (typeof imgID !== 'undefined') {
+                $svg = $svg.attr('id', imgID);
+            }
+            // Add replaced image's classes to the new SVG
+            if (typeof imgClass !== 'undefined') {
+                $svg = $svg.attr('class', imgClass + ' replaced-svg');
+            }
+
+            // Remove any invalid XML tags as per http://validator.w3.org
+            $svg = $svg.removeAttr('xmlns:a');
+
+            // Check if the viewport is set, if the viewport is not set the SVG wont't scale.
+            if (!$svg.attr('viewBox') && $svg.attr('height') && $svg.attr('width')) {
+                $svg.attr('viewBox', '0 0 ' + $svg.attr('height') + ' ' + $svg.attr('width'))
+            }
+
+            // Replace image with new SVG
+            $img.replaceWith($svg);
+
+        }, 'xml');
+
+    });
+    var w_width = $(window).width();
+    var map_width = w_width - 70;
+
+    $("#map").css("width", map_width);
+    var last_click;
+    $(".has-children").click(function () {
+        if(last_click!=this){
+            $(last_click).next().filter(".list").removeClass("show");
         }
-        // Add replaced image's classes to the new SVG
-        if(typeof imgClass !== 'undefined') {
-            $svg = $svg.attr('class', imgClass+' replaced-svg');
-        }
-
-        // Remove any invalid XML tags as per http://validator.w3.org
-        $svg = $svg.removeAttr('xmlns:a');
-
-        // Check if the viewport is set, if the viewport is not set the SVG wont't scale.
-        if(!$svg.attr('viewBox') && $svg.attr('height') && $svg.attr('width')) {
-            $svg.attr('viewBox', '0 0 ' + $svg.attr('height') + ' ' + $svg.attr('width'))
-        }
-
-        // Replace image with new SVG
-        $img.replaceWith($svg);
-
-    }, 'xml');
-
-});
-var w_width = $(window).width();
-var map_width = w_width - 70;
-$("#map").css("width", map_width);
-$(".has-children").click(function() {
-	$(this).next().filter(".list").toggleClass("show");
-});
-{#$(".option > a").not('.has-children').click(function() {#}
-{#	$(this).parents().find(".option").children('a').removeClass("set");#}
-{#	$(this).toggleClass("set");#}
-{#});#}
-{#$(".list li a").click(function() {#}
-{#	$(this).parent("li").siblings().children('a').removeClass("selected");#}
-{#	$(this).toggleClass("selected");#}
-{#	if ($(this).hasClass("selected")) {#}
-{#		$(this).parents().find(".option").children('a').removeClass("set");#}
-{#		$(this).parent().parent().parent().parent().find(".has-children").removeClass("selected").addClass("set");#}
-{#	}#}
-{#	else {#}
-{#		$(this).parent().parent().parent().parent().find(".has-children").removeClass("set").addClass("selected");#}
-{#	}#}
-{#});#}
-$(document).mouseup(function (e)
-{
-    var container = $(".floating-box");
-	var call = $(".option a");
-
-    if (!container.is(e.target) // if the target of the click isn't the container...
-        && container.has(e.target).length === 0
-		&& !call.is(e.target) ) // ... nor a call for container
-		
-    {
-        container.removeClass("show");
-		$(".has-children").removeClass("selected");
-    }
-});
+        $(this).next().filter(".list").toggleClass("show");
+        last_click=this;
+    });
 });
 </script> 
 <script type="text/javascript">
@@ -341,12 +392,14 @@ $(document).mouseup(function (e)
 
         var exposure_layer;
         var hazard_layer;
+        var impact_layer;
         var aggregation_layer;
 
         var exposure_layer_cbo = $("#id_exposure_layer");
         var hazard_layer_cbo = $("#id_hazard_layer");
         var aggregation_layer_cbo = $("#id_aggregation_layer");
         var impact_function_cbo = $("#id_impact_function_id");
+        var last_impact_id;
 
         {# listen to change handler #}
         var retrieve_if_list = function (evt) {
@@ -382,15 +435,42 @@ $(document).mouseup(function (e)
                     $li.append($a);
                     $li.appendTo(ul);
                 }
+
+                if(data.length==1){
+{#                     only for lone data#}
+                    select_if(data[0]);
+                }
+                else if(data.length==0){
+{#                    deselect Impact function#}
+                    select_if(undefined);
+                }
+            }).fail(function(){
+                var select = $("#id_impact_function_id");
+                var ul = $("#impact-function-list").find('ul');
+                select.empty();
+                ul.empty();
+                select_if(undefined);
             });
         };
 
         function select_if(function_id){
+
+            var $if_section = $("#impact-function");
+            var $if_section_list = $("#impact-function-list");
+
+            if(!function_id){
+                impact_function_cbo.val(undefined);
+                $if_section.removeClass("set");
+                $if_section_list.find("a:contains("+function_id+")")
+                        .removeClass("selected");
+
+                $(".report.section form button[type=submit]").prop("disabled", true);
+                return
+            }
+
             impact_function_cbo.val(function_id);
 
             // update styles
-            var $if_section = $("#impact-function");
-            var $if_section_list = $("#impact-function-list");
             $if_section.addClass("set");
             $if_section_list.find("a:contains("+function_id+")").addClass("selected");
 
@@ -398,6 +478,9 @@ $(document).mouseup(function (e)
             console.log('Exposure : '+exposure_layer_cbo.val());
             console.log('Hazard : '+hazard_layer_cbo.val());
             console.log('Impact Function : '+impact_function_cbo.val());
+
+            // validate button
+            $(".report.section form button[type=submit]").prop("disabled", false);
         }
 
         function zoom_to_box(map, bbox) {
@@ -438,11 +521,20 @@ $(document).mouseup(function (e)
                     aggregation_layer = add_layer(map, layer_tiles_url, aggregation_layer);
 
                 }
+                else if (layer_purpose == 'impact'){
+                    impact_layer = add_layer(map, layer_tiles_url, impact_layer);
+                }
             });
         }
 
         function update_exposure_layer(layer_id) {
             console.log('exposure changed to ' + layer_id);
+
+{#            deselect if it is the same#}
+            if(exposure_layer_cbo.val() == layer_id){
+                update_exposure_layer(undefined);
+                return;
+            }
 
             exposure_layer_cbo.val(layer_id);
             retrieve_if_list();
@@ -478,6 +570,12 @@ $(document).mouseup(function (e)
         function update_hazard_layer(layer_id) {
             console.log('hazard changed to ' + layer_id);
 
+{#            deselect if it is the same#}
+            if(hazard_layer_cbo.val() == layer_id){
+                update_hazard_layer(undefined);
+                return;
+            }
+
             hazard_layer_cbo.val(layer_id);
             retrieve_if_list();
 
@@ -506,6 +604,44 @@ $(document).mouseup(function (e)
             } else {
                 console.log('delete hazard');
                 map.removeLayer(hazard_layer);
+            }
+        }
+
+        function update_impact_layer(layer_id) {
+            console.log('impact changed to ' + layer_id);
+
+{#            deselect if it is the same#}
+            if(last_impact_id == layer_id){
+                update_impact_layer(undefined);
+                return;
+            }
+
+            last_impact_id = layer_id;
+            // update sidebar styles
+            var $impact_section = $(".impact.section").find(".option");
+            console.log($impact_section);
+            // clear styles
+            $impact_section.find(">a").removeClass("set");
+            $impact_section.find("ul>li>a").removeClass("selected");
+            // find section of the id
+            var $a = $impact_section.find("a[data-id="+layer_id+"]");
+            console.log($a);
+            $a.addClass("selected");
+            var $section = $a.closest(".option");
+            console.log($section);
+            $section.find(">a").addClass("set");
+
+            if (layer_id) {
+                console.log('update impact layer');
+                if (impact_layer) {
+                    console.log('remove previous impact layer');
+                    console.log(impact_layer);
+                    map.removeLayer(impact_layer);
+                }
+                update_map(layer_id, 'impact');
+            } else {
+                console.log('delete impact');
+                map.removeLayer(impact_layer);
             }
         }
 
@@ -550,6 +686,40 @@ $(document).mouseup(function (e)
             exposure_layer_cbo.change(update_exposure_layer);
             hazard_layer_cbo.change(update_hazard_layer);
             aggregation_layer_cbo.change(update_aggregation_layer);
+
+            {# method to prepare map view #}
+            {% if analysis %}
+                {# we are viewing analysis. set desired settings #}
+                update_hazard_layer({{ analysis.hazard_layer_id }});
+                update_exposure_layer({{ analysis.exposure_layer_id }});
+                {# check if impact process is done #}
+                {% if analysis.get_task_result.successful %}
+                    update_impact_layer({{ analysis.impact_layer_id }});
+                {% else %}
+                    {# impact not yet processed #}
+                    $("#analysis-result-modal").modal();
+                {% endif %}
+
+                {% if analysis.get_task_result %}
+                    {% if not analysis.get_task_result.successful and not analysis.get_task_result.failed %}
+                        {# Automatic check in 30 sec #}
+                        var check_analysis = function(){
+                            var check_analysis_url = '{% url 'geosafe:check-analysis' analysis_id=analysis.id %}';
+                            $.get(check_analysis_url, function(data){
+                                if(data && data.impact_layer_id){
+                                    update_impact_layer(data.impact_layer_id)
+                                }
+                                else{
+                                    setTimeout(check_analysis, 30000);
+                                }
+                            }).fail(function(){
+                                setTimeout(check_analysis, 30000);
+                            });
+                        };
+                        setTimeout(check_analysis, 30000);
+                    {% endif %}
+                {% endif %}
+            {% endif %}
 
         });
     </script> 
