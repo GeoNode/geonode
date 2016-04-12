@@ -263,7 +263,6 @@ class DataRequestProfile(TimeStampedModel):
             urlquote(self.email)
         )
         verification_url = iri_to_uri(verification_url).replace("//", "/")
-        pprint(verification_url)
 
         text_content = """
          Dear <strong>{}</strong>,
