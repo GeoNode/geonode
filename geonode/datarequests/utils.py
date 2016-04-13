@@ -78,12 +78,12 @@ def get_unames_starting_with(name):
 
 def create_ad_account(datarequest, username):
     objectClass =  ["organizationalPerson", "person", "top", "user"]
-    sAMAccountName = str(username).replace(',','').replace('.','')
-    sn= str(datarequest.last_name)
-    givenName = str(datarequest.first_name)
-    initials=str(datarequest.middle_name)[0]
-    cn = str(givenName+" "+initials+". "+sn)
-    displayName=str(givenName+" "+initials+". "+sn)
+    sAMAccountName = str(username)
+    sn= unidecode(datarequest.last_name)
+    givenName = unidecode(datarequest.first_name)
+    initials=unidecode(datarequest.middle_name[0])
+    cn = unidecode(givenName+" "+initials+". "+sn)
+    displayName=unidecode(givenName+" "+initials+". "+sn)
     telephoneNumber = str(datarequest.contact_number)
     mail=str(datarequest.email)
     userPrincipalName=str(username+"@ad.dream.upd.edu.ph")
