@@ -220,7 +220,7 @@ def sniff_date(datestr):
     for dfmt in dateformats:
         try:
             return datetime.datetime.strptime(datestr.strip(), dfmt)
-        except ValueError:
+        except (AttributeError, ValueError):
             pass
 
 
