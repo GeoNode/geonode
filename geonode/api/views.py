@@ -29,11 +29,15 @@ from urlparse import urljoin
 
 def api_combined(request, apiname):
     current_url = request.build_absolute_uri()
+    tostrip = 'limit='+str(request.GET.get('limit'))+'&offset='+str(request.GET.get('offset'))
+    apiquery = '?'.join(current_url.split('?')[1:]).replace(tostrip,'').rstrip('&').lstrip('&')
     local_url = urljoin(current_url,'../')
     urls_to_visit = [local_url,'https://lipad-fmc.dream.upd.edu.ph/']
     output = {}
+    # output = []
     for each_url in urls_to_visit:
-        response = urllib2.urlopen(each_url + 'api/' + apiname)
+        # output.append (each_url + 'api/' + apiname + '/?' + apiquery)
+        response = urllib2.urlopen(each_url + 'api/' + apiname + '/?' + apiquery)
         data = json.loads(response.read())
         for each_key in data.keys():
             try:
