@@ -163,7 +163,7 @@ class GroupResource(ModelResource):
     detail_url = fields.CharField()
     member_count = fields.IntegerField()
     manager_count = fields.IntegerField()
-    interests = fields.CharField(null=True, attribute='interests')
+    keywords = fields.CharField(null=True, attribute='keywords')
 
     def dehydrate_member_count(self, bundle):
         return bundle.obj.member_queryset().count()
@@ -174,8 +174,8 @@ class GroupResource(ModelResource):
     def dehydrate_detail_url(self, bundle):
         return reverse('group_detail', args=[bundle.obj.slug])
 
-    def dehydrate_interests(self, bundle):
-        return bundle.obj.interest_list()
+    def dehydrate_keywords(self, bundle):
+        return bundle.obj.keyword_list()
 
     class Meta:
         queryset = GroupProfile.objects.all()
