@@ -17,6 +17,7 @@ urlpatterns = patterns(
     url(r'^register/$', 'registration_part_one', name='registration_part_one'),
 
     url(r'^$', DataRequestPofileList.as_view(), name='data_request_browse'),
+    url(r'^datarequests_csv/$', 'datarequest_csv', name='data_request_csv'),
     url(r'^request_history/$', 'request_history', name='data_request_history'),
     url(r'^(?P<pk>\d+)/$', 'data_request_profile', name="data_request_profile"),
     url(r'^(?P<pk>\d+)/approve/$', 'data_request_profile_approve', name="data_request_profile_approve"),

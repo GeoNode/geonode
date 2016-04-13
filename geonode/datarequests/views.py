@@ -364,13 +364,17 @@ class DataRequestPofileList(LoginRequiredMixin, SuperuserRequiredMixin, Template
     template_name = 'datarequests/data_request_list.html'
     raise_exception = True
  
- @login_required
- def datarequest_csv(request):
+@login_required
+def datarequest_csv(request):
     if not request.user.is_superuser:
         raise HttpResponseForbidden
          
     response = HttpResponse(content_type='text/csv')
     response['Content-Disposition'] = 'attachment; filename="datarequests-"'+dateformat.format(timezone.now(), 'F j, Y, P')+'-.csv"'
+    
+    objects = DataRequestProfile.objects.all
+    
+    return response
     
 @login_required
 def request_history(request):
