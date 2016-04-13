@@ -3,17 +3,18 @@ body {
 }
 
 .navbar-brand {
-	height: 65px;
-	background: url(../img/DREAMlogo65x65.png) no-repeat;
+	height: 70px;
+	background: url(../img/logo_phillidar_65x65.png) no-repeat;
 	width: inherit;
-	text-indent: 65px;
+	text-indent: 135px;
 	display: block;
-	font-size: 20px;
+	font-size: 24px;
+	font-weight: bold;
 }
 
 .navbar-brand small {
 	display: block;
-	font-size: 12px;
+	font-size: 16px;
 	font-weight: 300;
 }
 /* make room for new header size */
