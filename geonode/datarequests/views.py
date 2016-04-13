@@ -438,6 +438,7 @@ def email_verification_confirm(request):
             if not data_request.date:
                 data_request.request_status = 'pending'
                 data_request.date = timezone.now()
+                pprint(email+" has been confirmed")
                 data_request.save()
                 data_request.send_new_request_notif_to_admins()
         except ObjectDoesNotExist:
