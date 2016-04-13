@@ -28,6 +28,7 @@ from geonode.base.models import ResourceBase
 from geonode.tasks.mk_folder import create_folder
 
 from pprint import pprint
+from unidecode import unidecode
 
 import traceback
 
@@ -235,7 +236,7 @@ class DataRequestProfile(TimeStampedModel):
         return (_('{} request by {} {} {} of {}')
                 .format(
                     self.request_status,
-                    self.first_name,
+                    unidecode(self.first_name),
                     self.middle_name,
                     self.last_name,
                     self.organization,
@@ -276,7 +277,7 @@ class DataRequestProfile(TimeStampedModel):
         Regards,
         LiPAD Team
          """.format(
-             self.first_name,
+             unidecode(self.first_name),
              verification_url,
              local_settings.LIPAD_SUPPORT_MAIL,
          )
@@ -291,7 +292,7 @@ class DataRequestProfile(TimeStampedModel):
         <p>Regards,</p>
         <p>LiPAD Team</p>
         """.format(
-            self.first_name,
+            unidecode(self.first_name),
             verification_url,
             verification_url,
             local_settings.LIPAD_SUPPORT_MAIL,
@@ -322,8 +323,8 @@ class DataRequestProfile(TimeStampedModel):
         A new data request has been submitted by {} {}. You can view the data request profile using the following link:
         {}
         """.format(
-            self.first_name,
-            self.last_name,
+            unidecode(self.first_name),
+            unidecode(self.last_name),
             data_request_url,
         )
 
@@ -334,8 +335,8 @@ class DataRequestProfile(TimeStampedModel):
         <p><a rel="nofollow" target="_blank" href="{}">{}</a></p>
 
         """.format(
-            self.first_name,
-            self.last_name,
+            unidecode(self.first_name),
+            unidecode(self.last_name),
             data_request_url,
             data_request_url,
         )
@@ -372,7 +373,7 @@ class DataRequestProfile(TimeStampedModel):
         Regards,
         LiPAD Team
          """.format(
-             self.first_name,
+             unidecode(self.first_name),
              self.rejection_reason,
              additional_details,
              local_settings.LIPAD_SUPPORT_MAIL,
@@ -389,7 +390,7 @@ class DataRequestProfile(TimeStampedModel):
         <p>Regards,</p>
         <p>LiPAD Team</p>
         """.format(
-             self.first_name,
+             unidecode(self.first_name),
              self.rejection_reason,
              additional_details,
              local_settings.LIPAD_SUPPORT_MAIL,
@@ -423,7 +424,7 @@ class DataRequestProfile(TimeStampedModel):
         Regards,
         LiPAD Team
          """.format(
-             self.first_name,
+             unidecode(self.first_name),
              self.rejection_reason,
              additional_details,
              local_settings.LIPAD_SUPPORT_MAIL,
@@ -440,7 +441,7 @@ class DataRequestProfile(TimeStampedModel):
         <p>Regards,</p>
         <p>LiPAD Team</p>
         """.format(
-             self.first_name,
+             unidecode(self.first_name),
              self.rejection_reason,
              additional_details,
              local_settings.LIPAD_SUPPORT_MAIL,
@@ -511,6 +512,7 @@ class DataRequestProfile(TimeStampedModel):
             if not group_member:
                 requesters_group.join(self.profile, role='member')
         except ObjectDoesNotExist as e:
+            pprint(self.profile)
             requesters_group.join(self.profile, role='member')
             #raise ValueError("Unable to add user to the group")
 
@@ -576,7 +578,7 @@ class DataRequestProfile(TimeStampedModel):
         Regards,
         LiPAD Team
          """.format(
-             self.first_name,
+             unidecode(self.first_name),
              username,
              directory,
              profile_url,
@@ -598,7 +600,7 @@ class DataRequestProfile(TimeStampedModel):
         <p>Regards,</p>
         <p>LiPAD Team</p>
         """.format(
-             self.first_name,
+             unidecode(self.first_name),
              username,
              directory,
              profile_url,
@@ -635,7 +637,7 @@ class DataRequestProfile(TimeStampedModel):
         Regards,
         LiPAD Team
          """.format(
-             self.first_name,
+             unidecode(self.first_name),
              local_settings.LIPAD_SUPPORT_MAIL
          )
 
@@ -649,7 +651,7 @@ class DataRequestProfile(TimeStampedModel):
         <p>Regards,</p>
         <p>LiPAD Team</p>
         """.format(
-             self.first_name,
+             unidecode(self.first_name),
              local_settings.LIPAD_SUPPORT_MAIL,
              local_settings.LIPAD_SUPPORT_MAIL
          )
