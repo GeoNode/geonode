@@ -1,0 +1,7 @@
+{% load i18n %}
+
+{% trans "Your layer" %} {{ extra_content.instance.title }}
+{% trans "has been used in the MapStory" %} {{ extra_content.instance.used_in.title }}
+
+
+{% trans "You can visit the MapStory's detail page here" %}: http://{{ current_site }}{% url "map_detail" extra_content.instance.used_in.id %}

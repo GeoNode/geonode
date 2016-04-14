@@ -30,24 +30,41 @@ if "notification" in settings.INSTALLED_APPS:
         def create_notice_types(app, created_models, verbosity, **kwargs):
             notification.models.NoticeType.create(
                 "layer_created",
-                _("Layer Created"),
-                _("A Layer was created"))
+                _("StoryLayer Created"),
+                _("A StoryLayer was created"))
             notification.models.NoticeType.create(
                 "layer_updated",
-                _("Layer Updated"),
-                _("A Layer was updated"))
+                _("StoryLayer Updated"),
+                _("A StoryLayer was updated"))
             notification.models.NoticeType.create(
                 "layer_deleted",
-                _("Layer Deleted"),
-                _("A Layer was deleted"))
+                _("StoryLayer Deleted"),
+                _("A StoryLayer was deleted"))
             notification.models.NoticeType.create(
                 "layer_comment",
-                _("Comment on Layer"),
-                _("A layer was commented on"))
+                _("Comment on StoryLayer"),
+                _("A StoryLayer was commented on"))
             notification.models.NoticeType.create(
                 "layer_rated",
-                _("Rating for Layer"),
-                _("A rating was given to a layer"))
+                _("Rating for StoryLayer"),
+                _("A rating was given to a StoryLayer"))
+            notification.models.NoticeType.create(
+                "layer_favorited",
+                _("StoryLayer favorited"),
+                _("A StoryLayer was favorited"))
+            notification.models.NoticeType.create(
+                "layer_flagged",
+                _("StoryLayer flagged"),
+                _("A flag was given to a StoryLayer"))
+            notification.models.NoticeType.create(
+                "layer_downloaded",
+                _("StoryLayer downloaded"),
+                _("StoryLayer downloaded by another user"))
+            notification.models.NoticeType.create(
+                "layer_used",
+                _("StoryLayer used in a MapStory"),
+                _("Your StoryLayer was used in someone else's MapStory"))
+
 
         signals.post_syncdb.connect(
             create_notice_types,

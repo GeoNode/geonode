@@ -1,6 +1,7 @@
 {% load i18n %}
 
-{% trans "A comment has been posted for the map" %} {{ instance.content_object.title }} 
-{% trans "by the user" %} {{ instance.author.username }}
+{% trans "A comment has been posted for the map" %} {{ extra_content.instance.content_object.title }} 
+{% trans "by the user" %} {{ extra_content.sender.username }}
+{% trans "Content" %}: {{ extra_content.instance.comment }}
 
-{% trans "You can visit the map's detail page here" %}: http://{{ current_site }}{% url "map_detail" instance.content_object.id %}
+{% trans "You can visit the map's detail page here" %}: http://{{ current_site }}{% url "map_detail" extra_content.instance.content_object.id %}

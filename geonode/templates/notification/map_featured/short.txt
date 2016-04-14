@@ -1,0 +1,3 @@
+{% load i18n %}
+
+{% trans "Your MapStory was featured on MapStory.org homepage" %}

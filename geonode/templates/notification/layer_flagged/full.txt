@@ -1,0 +1,9 @@
+{% load i18n %}
+
+{% trans "The user" %} {{ extra_content.sender.username }}
+{% trans "flagged" %} for {{extra_content.instance.flag_type }}
+{% trans "the following layer" %}:
+{{ extra_content.instance.flagged_content.content_object.title }}, {% trans "owned by" %} {{ extra_content.instance.flagged_content.content_object.owner.username }}
+{% trans "with comment" %}: {{ extra_content.instance.comment }}
+
+{% trans "You can visit the layer's detail page here" %}: http://{{ current_site }}{% url "layer_detail" extra_content.instance.flagged_content.content_object.service_typename %}

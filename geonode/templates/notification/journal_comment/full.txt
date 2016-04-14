@@ -1,0 +1,5 @@
+{% load i18n %}
+
+{% trans "A comment has been posted on the journal" %} "{{ extra_content.instance.content_object.title }}" {% trans "by the user" %} {{ extra_content.sender.username }}
+{% trans "Content" %}: {{ extra_content.instance.comment }}
+

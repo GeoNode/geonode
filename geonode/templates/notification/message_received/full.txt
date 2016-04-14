@@ -1,0 +1,5 @@
+{% load i18n %}
+
+{% trans "You received a new message from" %} {{ extra_content.instance.sender.username }}
+{% trans "Subject" %}: {{ extra_content.instance.thread.subject }}
+{% trans "Content" %}: {{ extra_content.instance.content }}

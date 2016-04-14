@@ -13,6 +13,14 @@ if "notification" in settings.INSTALLED_APPS:
                 "request_download_resourcebase",
                 _("Request to download a resource"),
                 _("A request for downloading a resource was sent"))
+            notification.models.NoticeType.create(
+                "journal_comment",
+                _("Journal Comment"),
+                _("Journal entry was commented"))
+            notification.models.NoticeType.create(
+                "password_updated",
+                _("Password Updated"),
+                _("Your password was correctly updated"))
 
         signals.post_syncdb.connect(
             create_notice_types,
