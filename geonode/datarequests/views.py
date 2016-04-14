@@ -360,7 +360,7 @@ def registration_part_two(request):
         })
         
 
-class DataRequestPofileList(LoginRequiredMixin, SuperuserRequiredMixin, TemplateView):
+class DataRequestPofileList(LoginRequiredMixin, TemplateView):
     template_name = 'datarequests/data_request_list.html'
     raise_exception = True
  
@@ -382,35 +382,6 @@ def data_request_csv(request):
         writer.writerow(o.to_values_list())
     
     return response
-    
-@login_required
-def request_history(request):
-    if not request.user.is_authenticated():
-        raise HttpResponseForbidden
-        
-    if request.user.is_superuser:
-        return HttpResponseRedirect(
-            reverse('datarequests:data_request_browse')
-        )
-    
-    user=request.user
-    data_requests = DataRequestProfile.objects.filter(profile=user)
-    total = data_requests.len()
-    
-    paginator = Paginator(data_requests, 10)
-    page = request.GET.get('page')
-
-    try:
-        paged_objects = paginator.page(page)
-    except PageNotAnInteger:
-        paged_objects = paginator.page(1)
-    except EmptyPage:
-        paged_objects = paginator.page(paginator.num_pages)
-        
-    return render(request, "users_request_list.html",
-        {"data_requests": paged_objects,
-          "total":  total
-        })
 
 def email_verification_send(request):
     
@@ -469,8 +440,8 @@ def data_request_profile(request, pk, template='datarequests/profile_detail.html
 
     request_profile = get_object_or_404(DataRequestProfile, pk=pk)
 
-    if not request.user.is_superuser:
-        raise PermissionDenied
+    #if not request.user.is_superuser:
+    #    raise PermissionDenied
     
 
     #if not request_profile.date:
