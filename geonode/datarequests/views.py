@@ -365,14 +365,21 @@ class DataRequestPofileList(LoginRequiredMixin, SuperuserRequiredMixin, Template
     raise_exception = True
  
 @login_required
-def datarequest_csv(request):
+def data_request_csv(request):
     if not request.user.is_superuser:
         raise HttpResponseForbidden
          
     response = HttpResponse(content_type='text/csv')
-    response['Content-Disposition'] = 'attachment; filename="datarequests-"'+dateformat.format(timezone.now(), 'F j, Y, P')+'-.csv"'
+    datetoday = timezone.now()
+    response['Content-Disposition'] = 'attachment; filename="datarequests-"'+str(datetoday.month)+str(datetoday.day)+str(datetoday.year)+'.csv"'
     
-    objects = DataRequestProfile.objects.all
+    writer = csv.writer(response)
+    writer.writerow( ['id','name','email','contact_number', 'organization', 'project_summary', 'created','request_status'])
+    
+    objects = DataRequestProfile.objects.all().order_by('pk')
+    
+    for o in objects:
+        writer.writerow(o.to_values_list())
     
     return response
     
