@@ -6,6 +6,7 @@ from django.core.mail import EmailMultiAlternatives
 from django.core.urlresolvers import reverse
 from django.template.defaultfilters import slugify
 from django.http import HttpResponse, HttpResponseRedirect, Http404
+from django.utils import dateformat
 from django.utils import timezone
 from django.utils.crypto import get_random_string
 from django.utils.translation import ugettext as _
@@ -458,99 +459,6 @@ class DataRequestProfile(TimeStampedModel):
         msg.attach_alternative(html_content, "text/html")
         msg.send()
 
-    def create_account(self):
-        profile = None
-        errors = []
-        if not self.username:
-            self.username = create_login_credentials(self)
-            self.save()
-            pprint(self.username)
-        else:
-            try:
-                profile = LDAPBackend().populate_user(self.username)
-                self.profile = profile
-                self.save()
-            except Exception as e:
-                pprint(traceback.format_exc())
-                return (False, "Account creation failed. Check /var/log/apache2/error.log for more details")
-        
-        try:
-             if not self.profile:
-                pprint("Creating account for "+self.username)
-                dn = create_ad_account(self, self.username)
-                add_to_ad_group(group_dn=settings.LIPAD_LDAP_GROUP_DN, user_dn=dn)
-                profile = LDAPBackend().populate_user(self.username)
-                self.profile = profile
-                self.save()
-        except Exception as e:
-            pprint(traceback.format_exc())
-            return (False, "Account creation failed. Check /var/log/apache2/error.log for more details")
-            
-        self.join_requester_grp()
-        
-        try:
-            if not self.ftp_folder:
-                self.create_directory()
-        except Exception as e:
-            pprint(traceback.format_exc())
-            return (False, "Folder creation failed, Check /var/log/apache2/error.log for more details")
-            
-        return  (True, "Account creation successful")
-
-    def join_requester_grp(self):
-        # Add account to requesters group
-        group_name = "Data Requesters"
-        requesters_group, created = GroupProfile.objects.get_or_create(
-            title=group_name,
-            slug=slugify(group_name),
-            access='private',
-        )
-
-        try:
-            group_member = GroupMember.objects.get(group=requesters_group, user=self.profile)
-            if not group_member:
-                requesters_group.join(self.profile, role='member')
-        except ObjectDoesNotExist as e:
-            pprint(self.profile)
-            requesters_group.join(self.profile, role='member')
-            #raise ValueError("Unable to add user to the group")
-
-
-    def assign_jurisdiction(self):
-        # Link shapefile to account
-        uj = None
-        try:
-            uj = UserJurisdiction.objects.get(user=self.profile)
-        except ObjectDoesNotExist as e:
-            pprint("No previous jurisdiction shapefile set")
-            uj = UserJurisdiction()
-            uj.user = self.profile
-        finally:
-            uj.jurisdiction_shapefile = self.jurisdiction_shapefile
-            uj.save()
-        #Add view permission on resource
-        resource = self.jurisdiction_shapefile
-        perms = resource.get_all_level_info()
-        perms["users"][self.profile.username]=["view_resourcebase"]
-        resource.set_permissions(perms)
-
-    def create_directory(self):
-        pprint("creating user folder for "+self.username)
-        create_folder.delay(self.username)
-        self.ftp_folder = "Others/"+self.username
-        self.save()
-
-    def set_approved(self, is_new_acc):
-        self.request_status = 'approved'
-        self.action_date = timezone.now()
-        self.save()
-
-        if is_new_acc:
-            self.send_account_approval_email(self.username, self.ftp_folder)
-        else:
-            self.send_request_approval_email(self.username)
-
-
     def send_account_approval_email(self, username, directory):
 
         site = Site.objects.get_current()
@@ -666,6 +574,114 @@ class DataRequestProfile(TimeStampedModel):
         msg.attach_alternative(html_content, "text/html")
         msg.send()
 
+    def create_account(self):
+        profile = None
+        errors = []
+        if not self.username:
+            self.username = create_login_credentials(self)
+            self.save()
+            pprint(self.username)
+        else:
+            try:
+                profile = LDAPBackend().populate_user(self.username)
+                self.profile = profile
+                self.save()
+            except Exception as e:
+                pprint(traceback.format_exc())
+                return (False, "Account creation failed. Check /var/log/apache2/error.log for more details")
+        
+        try:
+             if not self.profile:
+                pprint("Creating account for "+self.username)
+                dn = create_ad_account(self, self.username)
+                add_to_ad_group(group_dn=settings.LIPAD_LDAP_GROUP_DN, user_dn=dn)
+                profile = LDAPBackend().populate_user(self.username)
+                self.profile = profile
+                self.save()
+        except Exception as e:
+            pprint(traceback.format_exc())
+            return (False, "Account creation failed. Check /var/log/apache2/error.log for more details")
+            
+        self.join_requester_grp()
+        
+        try:
+            if not self.ftp_folder:
+                self.create_directory()
+        except Exception as e:
+            pprint(traceback.format_exc())
+            return (False, "Folder creation failed, Check /var/log/apache2/error.log for more details")
+            
+        return  (True, "Account creation successful")
+
+    def join_requester_grp(self):
+        # Add account to requesters group
+        group_name = "Data Requesters"
+        requesters_group, created = GroupProfile.objects.get_or_create(
+            title=group_name,
+            slug=slugify(group_name),
+            access='private',
+        )
+
+        try:
+            group_member = GroupMember.objects.get(group=requesters_group, user=self.profile)
+            if not group_member:
+                requesters_group.join(self.profile, role='member')
+        except ObjectDoesNotExist as e:
+            pprint(self.profile)
+            requesters_group.join(self.profile, role='member')
+            #raise ValueError("Unable to add user to the group")
+
+
+    def assign_jurisdiction(self):
+        # Link shapefile to account
+        uj = None
+        try:
+            uj = UserJurisdiction.objects.get(user=self.profile)
+        except ObjectDoesNotExist as e:
+            pprint("No previous jurisdiction shapefile set")
+            uj = UserJurisdiction()
+            uj.user = self.profile
+        finally:
+            uj.jurisdiction_shapefile = self.jurisdiction_shapefile
+            uj.save()
+        #Add view permission on resource
+        resource = self.jurisdiction_shapefile
+        perms = resource.get_all_level_info()
+        perms["users"][self.profile.username]=["view_resourcebase"]
+        resource.set_permissions(perms)
+
+    def create_directory(self):
+        pprint("creating user folder for "+self.username)
+        create_folder.delay(self.username)
+        self.ftp_folder = "Others/"+self.username
+        self.save()
+
+    def set_approved(self, is_new_acc):
+        self.request_status = 'approved'
+        self.action_date = timezone.now()
+        self.save()
+
+        if is_new_acc:
+            self.send_account_approval_email(self.username, self.ftp_folder)
+        else:
+            self.send_request_approval_email(self.username)
+
+    def to_values_list(self, fields=['id','name','email','contact_number', 'organization', 'project_summary', 'created','request_status']):
+        out = []
+        for f in fields:
+            if f  is 'id':
+                out.append(getattr(self, 'pk'))
+            elif f is 'name':
+                first_name = unidecode(getattr(self, 'first_name'))
+                last_name = unidecode(getattr(self,'last_name'))
+                out.append(first_name+" "+last_name)
+            elif f is 'created':
+                created = getattr(self, f)
+                out.append( str(created.month) +"/"+str(created.day)+"/"+str(created.year))
+            else:
+                out.append(str(getattr(self, f)))
+                
+        return out
 
 class RequestRejectionReason(models.Model):
     reason = models.CharField(_('Reason for rejection'), max_length=100)
