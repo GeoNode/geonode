@@ -251,6 +251,9 @@
               {% if user.is_staff %}
               <li><a href="{% url "admin:index" %}"><i class="fa fa-cog"></i> {% trans "Admin" %}</a></li>
               {% endif %}
+              {% if user %}
+              <li><a href="{% url "datarequests:data_request_browse" %}"><i class="fa fa-users"></i> {% trans "Data Request Profiles" %}</a></li>
+              {% endif %}
               <li class="modal-divider"></li>
               <li><a title="Help" rel="tooltip" href="/help/"><i class="fa fa-question-circle"></i> {% trans "Help" %}</a></li>
             </ul>
