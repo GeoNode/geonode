@@ -439,12 +439,9 @@ def email_verification_confirm(request):
 def data_request_profile(request, pk, template='datarequests/profile_detail.html'):
 
     request_profile = get_object_or_404(DataRequestProfile, pk=pk)
-    
-    if request.user is not request_profile.profile:
-        raise PermissionDenied
 
-    #if not request.user.is_superuser:
-    #    raise PermissionDenied
+    if not request.user.is_superuser and request_profile.profile is not request.user:
+        raise PermissionDenied
     
 
     #if not request_profile.date:
