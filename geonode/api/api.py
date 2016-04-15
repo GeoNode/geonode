@@ -214,6 +214,8 @@ class ProfileResource(ModelResource):
             query = filters['interest_list']
             qset =(Q(keywords__slug__iexact=query))
             orm_filters['interest_list'] = qset
+        if 'q' in filters:
+            orm_filters['q'] = filters['q']
 
         return orm_filters
 
@@ -221,6 +223,7 @@ class ProfileResource(ModelResource):
         """filter by group if applicable by group functionality"""
 
         group = applicable_filters.pop('group', None)
+        q = applicable_filters.pop('q', None)
 
         if 'interest_list' in applicable_filters:
             interest_list = applicable_filters.pop('interest_list')
@@ -239,6 +242,9 @@ class ProfileResource(ModelResource):
 
         if interest_list is not None:
             semi_filtered = semi_filtered.filter(interest_list)
+        
+        if q:
+            semi_filtered = semi_filtered.filter(username__icontains=q)
 
         return semi_filtered
 
