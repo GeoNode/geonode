@@ -10,7 +10,7 @@
 {% block body %}
 <div class="page-header">
     {% if request.user.is_superuser %}
-        <a href="{% url 'datarequests:data_request_csv' %}" class="btn btn-primary pull-right">{% trans "View All Requests" %}</a>
+        <a href="{% url 'datarequests:data_request_csv' %}" class="btn btn-primary pull-right">{% trans "Download Requests list in CSV format" %}</a>
     {% endif %}
   <h2 class="page-title">{% trans "Data Request Profiles" %}</h2>
 </div>
