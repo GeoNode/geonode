@@ -247,7 +247,7 @@
               <li><a href="{% url "account_invite_user" %}"><i class="fa fa-edit"></i> {% trans "Invite User" %}</a></li>
               <li class="modal-divider"></li>
               <li><a href="{{ GEOSERVER_BASE_URL }}"><i class="fa fa-gears"></i> {% trans "GeoServer" %}</a></li>
-              {% elif %}
+              {% else %}
               <li><a href="{% url "datarequests:data_request_browse" %}"><i class="fa fa-users"></i> {% trans "Data Requests History" %}</a></li>
               {% endif %}
               {% if user.is_staff %}
