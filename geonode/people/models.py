@@ -26,6 +26,8 @@ from django.db.models import signals
 from django.conf import settings
 
 from taggit.managers import TaggableManager
+from avatar.templatetags.avatar_tags import avatar_url
+from avatar.models import Avatar
 
 from geonode.base.enumerations import COUNTRIES
 from geonode.groups.models import GroupProfile
@@ -102,6 +104,7 @@ class Profile(AbstractUser):
     keywords = TaggableManager(_('keywords'), blank=True, help_text=_(
         'commonly used word(s) or formalised word(s) or phrase(s) used to describe the subject \
             (space or comma-separated'), related_name='profile_keywords')
+    avatar_100 = models.CharField(max_length=512, blank=True, null=True)
 
     def get_absolute_url(self):
         return reverse('profile_detail', args=[self.username, ])
@@ -158,6 +161,7 @@ def profile_post_save(instance, sender, **kwargs):
     # keep in sync Profile email address with Account email address
     if instance.email not in [u'', '', None] and not kwargs.get('raw', False):
         EmailAddress.objects.filter(user=instance, primary=True).update(email=instance.email)
+    Profile.objects.filter(id=instance.id).update(avatar_100=avatar_url(instance, 100))
 
 
 def email_post_save(instance, sender, **kw):
@@ -173,6 +177,12 @@ def profile_pre_save(instance, sender, **kw):
             'notification' in settings.INSTALLED_APPS:
         notification.send([instance, ], "account_active")
 
+def avatar_post_save(instance, sender, **kw):
+    Profile.objects.filter(id=instance.user.id).update(avatar_100=avatar_url(instance.user, 100))
+
+
 signals.pre_save.connect(profile_pre_save, sender=Profile)
 signals.post_save.connect(profile_post_save, sender=Profile)
 signals.post_save.connect(email_post_save, sender=EmailAddress)
+signals.post_save.connect(avatar_post_save, sender=Avatar)
+
