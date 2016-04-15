@@ -4,6 +4,7 @@ import shutil
 import traceback
 import datetime
 import time
+import csv
 from urlparse import parse_qs
 
 from crispy_forms.utils import render_crispy_form
@@ -21,6 +22,7 @@ from django.shortcuts import (
     redirect, get_object_or_404, render, render_to_response)
 from django.template import RequestContext
 from django.template.defaultfilters import slugify
+from django.utils import dateformat
 from django.utils import timezone
 from django.utils import simplejson as json
 from django.utils.html import escape
@@ -89,13 +91,14 @@ def registration_part_one(request):
                     reverse('datarequests:registration_part_two')
                 )
         except ObjectDoesNotExist as e:
-                pprint("No data request present for this user")
+            request.session['is_new_auth_req'] = True
+            pprint("No data request present for this user")
        
     
     if not shapefile_session and profile_form_data:
-            if 'data_request_info' in request.session:
-                del request.session['data_request_info']
-                request.session.modified = True
+        if 'data_request_info' in request.session:
+            del request.session['data_request_info']
+            request.session.modified = True
     
     form = DataRequestProfileForm(
         initial = profile_form_data
@@ -110,7 +113,13 @@ def registration_part_one(request):
             request_object = form.save()
             request.session['request_object'] = request_object
             request.session['data_request_info'] = profile_form_data
-            request_object.send_verification_email()
+            if not request.user.is_authenticated():
+                request_object.send_verification_email()
+            else:
+                request_object.request_status = 'pending'
+                request_object.save()
+                request.session['last_submitted_dr'] = request_object
+                
             
             return HttpResponseRedirect(
                 reverse('datarequests:registration_part_two')
@@ -126,7 +135,9 @@ def registration_part_one(request):
 def registration_part_two(request):
     part_two_initial ={}
     last_submitted_dr = None
+    is_new_auth_req = False
     if request.user.is_authenticated():
+        is_new_auth_req = request.session.get('is_new_auth_req', None)
         last_submitted_dr = request.session.get('last_submitted_dr', None)
         if not last_submitted_dr:
             pprint("No previous request from "+request.user.username)
@@ -156,7 +167,7 @@ def registration_part_two(request):
         request_profile =  request.session['request_object']
         pprint(post_data)
         if form.is_valid():
-            if last_submitted_dr:
+            if last_submitted_dr and not is_new_auth_req:
                 if last_submitted_dr.request_status.encode('utf8') == 'pending' or last_submitted_dr.request_status.encode('utf8') == 'unconfirmed':
                     pprint("updating request_status")
                     last_submitted_dr.request_status = 'cancelled'
@@ -349,38 +360,28 @@ def registration_part_two(request):
         })
         
 
-class DataRequestPofileList(LoginRequiredMixin, SuperuserRequiredMixin, TemplateView):
+class DataRequestPofileList(LoginRequiredMixin, TemplateView):
     template_name = 'datarequests/data_request_list.html'
     raise_exception = True
-    
+ 
 @login_required
-def request_history(request):
-    if not request.user.is_authenticated():
+def data_request_csv(request):
+    if not request.user.is_superuser:
         raise HttpResponseForbidden
-        
-    if request.user.is_superuser:
-        return HttpResponseRedirect(
-            reverse('datarequests:data_request_browse')
-        )
+         
+    response = HttpResponse(content_type='text/csv')
+    datetoday = timezone.now()
+    response['Content-Disposition'] = 'attachment; filename="datarequests-"'+str(datetoday.month)+str(datetoday.day)+str(datetoday.year)+'.csv"'
     
-    user=request.user
-    data_requests = DataRequestProfile.objects.filter(profile=user)
-    total = data_requests.len()
+    writer = csv.writer(response)
+    writer.writerow( ['id','name','email','contact_number', 'organization', 'project_summary', 'created','request_status'])
     
-    paginator = Paginator(data_requests, 10)
-    page = request.GET.get('page')
-
-    try:
-        paged_objects = paginator.page(page)
-    except PageNotAnInteger:
-        paged_objects = paginator.page(1)
-    except EmptyPage:
-        paged_objects = paginator.page(paginator.num_pages)
-        
-    return render(request, "users_request_list.html",
-        {"data_requests": paged_objects,
-          "total":  total
-        })
+    objects = DataRequestProfile.objects.all().order_by('pk')
+    
+    for o in objects:
+        writer.writerow(o.to_values_list())
+    
+    return response
 
 def email_verification_send(request):
     
@@ -415,6 +416,7 @@ def email_verification_confirm(request):
             if not data_request.date:
                 data_request.request_status = 'pending'
                 data_request.date = timezone.now()
+                pprint(email+" has been confirmed")
                 data_request.save()
                 data_request.send_new_request_notif_to_admins()
         except ObjectDoesNotExist:
@@ -438,7 +440,7 @@ def data_request_profile(request, pk, template='datarequests/profile_detail.html
 
     request_profile = get_object_or_404(DataRequestProfile, pk=pk)
 
-    if not request.user.is_superuser:
+    if not request.user.is_superuser and request_profile.profile is not request.user:
         raise PermissionDenied
     
 

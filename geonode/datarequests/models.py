@@ -6,6 +6,7 @@ from django.core.mail import EmailMultiAlternatives
 from django.core.urlresolvers import reverse
 from django.template.defaultfilters import slugify
 from django.http import HttpResponse, HttpResponseRedirect, Http404
+from django.utils import dateformat
 from django.utils import timezone
 from django.utils.crypto import get_random_string
 from django.utils.translation import ugettext as _
@@ -28,6 +29,7 @@ from geonode.base.models import ResourceBase
 from geonode.tasks.mk_folder import create_folder
 
 from pprint import pprint
+from unidecode import unidecode
 
 import traceback
 
@@ -235,7 +237,7 @@ class DataRequestProfile(TimeStampedModel):
         return (_('{} request by {} {} {} of {}')
                 .format(
                     self.request_status,
-                    self.first_name,
+                    unidecode(self.first_name),
                     self.middle_name,
                     self.last_name,
                     self.organization,
@@ -263,7 +265,6 @@ class DataRequestProfile(TimeStampedModel):
             urlquote(self.email)
         )
         verification_url = iri_to_uri(verification_url).replace("//", "/")
-        pprint(verification_url)
 
         text_content = """
          Dear <strong>{}</strong>,
@@ -276,7 +277,7 @@ class DataRequestProfile(TimeStampedModel):
         Regards,
         LiPAD Team
          """.format(
-             self.first_name,
+             unidecode(self.first_name),
              verification_url,
              local_settings.LIPAD_SUPPORT_MAIL,
          )
@@ -291,7 +292,7 @@ class DataRequestProfile(TimeStampedModel):
         <p>Regards,</p>
         <p>LiPAD Team</p>
         """.format(
-            self.first_name,
+            unidecode(self.first_name),
             verification_url,
             verification_url,
             local_settings.LIPAD_SUPPORT_MAIL,
@@ -322,8 +323,8 @@ class DataRequestProfile(TimeStampedModel):
         A new data request has been submitted by {} {}. You can view the data request profile using the following link:
         {}
         """.format(
-            self.first_name,
-            self.last_name,
+            unidecode(self.first_name),
+            unidecode(self.last_name),
             data_request_url,
         )
 
@@ -334,8 +335,8 @@ class DataRequestProfile(TimeStampedModel):
         <p><a rel="nofollow" target="_blank" href="{}">{}</a></p>
 
         """.format(
-            self.first_name,
-            self.last_name,
+            unidecode(self.first_name),
+            unidecode(self.last_name),
             data_request_url,
             data_request_url,
         )
@@ -372,7 +373,7 @@ class DataRequestProfile(TimeStampedModel):
         Regards,
         LiPAD Team
          """.format(
-             self.first_name,
+             unidecode(self.first_name),
              self.rejection_reason,
              additional_details,
              local_settings.LIPAD_SUPPORT_MAIL,
@@ -389,7 +390,7 @@ class DataRequestProfile(TimeStampedModel):
         <p>Regards,</p>
         <p>LiPAD Team</p>
         """.format(
-             self.first_name,
+             unidecode(self.first_name),
              self.rejection_reason,
              additional_details,
              local_settings.LIPAD_SUPPORT_MAIL,
@@ -423,7 +424,7 @@ class DataRequestProfile(TimeStampedModel):
         Regards,
         LiPAD Team
          """.format(
-             self.first_name,
+             unidecode(self.first_name),
              self.rejection_reason,
              additional_details,
              local_settings.LIPAD_SUPPORT_MAIL,
@@ -440,12 +441,127 @@ class DataRequestProfile(TimeStampedModel):
         <p>Regards,</p>
         <p>LiPAD Team</p>
         """.format(
-             self.first_name,
+             unidecode(self.first_name),
              self.rejection_reason,
              additional_details,
              local_settings.LIPAD_SUPPORT_MAIL,
              local_settings.LIPAD_SUPPORT_MAIL
         )
+
+        email_subject = _('[LiPAD] Data Request Status')
+
+        msg = EmailMultiAlternatives(
+            email_subject,
+            text_content,
+            settings.DEFAULT_FROM_EMAIL,
+            [self.email, ]
+        )
+        msg.attach_alternative(html_content, "text/html")
+        msg.send()
+
+    def send_account_approval_email(self, username, directory):
+
+        site = Site.objects.get_current()
+        profile_url = (
+            str(site) +
+            reverse('profile_detail', kwargs={'username': username})
+        )
+        profile_url = iri_to_uri(profile_url)
+
+        text_content = """
+        Dear {},
+
+        Your account registration for LiPAD was approved.
+        You will now be able to log in using the following log-in credentials:
+        username: {}
+
+        Before you are able to login to LiPAD, visit first https://ssp.dream.upd.edu.ph/?action=sendtoken and follow the instructions to reset a password for your account.
+
+        You will be able to edit your account details by logging in and going to the following link:
+        {}
+
+        If you have any questions, you can contact us as at {}.
+
+        Regards,
+        LiPAD Team
+         """.format(
+             unidecode(self.first_name),
+             username,
+             directory,
+             profile_url,
+             local_settings.LIPAD_SUPPORT_MAIL
+         )
+
+        html_content = """
+        <p>Dear <strong>{}</strong>,</p>
+
+       <p>Your account registration for LiPAD was approved! You will now be able to log in using the following log-in credentials:</p>
+       username: <strong>{}</strong><br/>
+       </br>
+       <p>Before you are able to login to LiPAD, visit first https://ssp.dream.upd.edu.ph/?action=sendtoken and follow the instructions to reset a password for your account</p></br>
+       <p>You will be able to edit your account details by logging in and going to the following link:</p>
+       {}
+       </br>
+       <p>If you have any questions, you can contact us as at <a href="mailto:{}" target="_top">{}</a></p>
+       </br>
+        <p>Regards,</p>
+        <p>LiPAD Team</p>
+        """.format(
+             unidecode(self.first_name),
+             username,
+             directory,
+             profile_url,
+             local_settings.LIPAD_SUPPORT_MAIL,
+             local_settings.LIPAD_SUPPORT_MAIL
+         )
+
+        email_subject = _('[LiPAD] Account Registration Status')
+
+        msg = EmailMultiAlternatives(
+            email_subject,
+            text_content,
+            settings.DEFAULT_FROM_EMAIL,
+            [self.email, ]
+        )
+        msg.attach_alternative(html_content, "text/html")
+        msg.send()
+
+    def send_request_approval_email(self, username):
+        site = Site.objects.get_current()
+        profile_url = (
+            str(site) +
+            reverse('profile_detail', kwargs={'username': username})
+        )
+        profile_url = iri_to_uri(profile_url)
+
+        text_content = """
+        Dear {},
+
+        Your current data request for LiPAD was approved.
+
+        If you have any questions, you can contact us as at {}.
+
+        Regards,
+        LiPAD Team
+         """.format(
+             unidecode(self.first_name),
+             local_settings.LIPAD_SUPPORT_MAIL
+         )
+
+        html_content = """
+        <p>Dear <strong>{}</strong>,</p>
+
+       <p>Your current data request in LiPAD was approved.
+       </br>
+       <p>If you have any questions, you can contact us as at <a href="mailto:{}" target="_top">{}</a></p>
+       </br>
+        <p>Regards,</p>
+        <p>LiPAD Team</p>
+        """.format(
+             unidecode(self.first_name),
+             local_settings.LIPAD_SUPPORT_MAIL,
+             local_settings.LIPAD_SUPPORT_MAIL
+         )
 
         email_subject = _('[LiPAD] Data Request Status')
 
@@ -511,6 +627,7 @@ class DataRequestProfile(TimeStampedModel):
             if not group_member:
                 requesters_group.join(self.profile, role='member')
         except ObjectDoesNotExist as e:
+            pprint(self.profile)
             requesters_group.join(self.profile, role='member')
             #raise ValueError("Unable to add user to the group")
 
@@ -549,122 +666,22 @@ class DataRequestProfile(TimeStampedModel):
         else:
             self.send_request_approval_email(self.username)
 
-
-    def send_account_approval_email(self, username, directory):
-
-        site = Site.objects.get_current()
-        profile_url = (
-            str(site) +
-            reverse('profile_detail', kwargs={'username': username})
-        )
-        profile_url = iri_to_uri(profile_url)
-
-        text_content = """
-        Dear {},
-
-        Your account registration for LiPAD was approved.
-        You will now be able to log in using the following log-in credentials:
-        username: {}
-
-        Before you are able to login to LiPAD, visit first https://ssp.dream.upd.edu.ph/?action=sendtoken and follow the instructions to reset a password for your account.
-
-        You will be able to edit your account details by logging in and going to the following link:
-        {}
-
-        If you have any questions, you can contact us as at {}.
-
-        Regards,
-        LiPAD Team
-         """.format(
-             self.first_name,
-             username,
-             directory,
-             profile_url,
-             local_settings.LIPAD_SUPPORT_MAIL
-         )
-
-        html_content = """
-        <p>Dear <strong>{}</strong>,</p>
-
-       <p>Your account registration for LiPAD was approved! You will now be able to log in using the following log-in credentials:</p>
-       username: <strong>{}</strong><br/>
-       </br>
-       <p>Before you are able to login to LiPAD, visit first https://ssp.dream.upd.edu.ph/?action=sendtoken and follow the instructions to reset a password for your account</p></br>
-       <p>You will be able to edit your account details by logging in and going to the following link:</p>
-       {}
-       </br>
-       <p>If you have any questions, you can contact us as at <a href="mailto:{}" target="_top">{}</a></p>
-       </br>
-        <p>Regards,</p>
-        <p>LiPAD Team</p>
-        """.format(
-             self.first_name,
-             username,
-             directory,
-             profile_url,
-             local_settings.LIPAD_SUPPORT_MAIL,
-             local_settings.LIPAD_SUPPORT_MAIL
-         )
-
-        email_subject = _('[LiPAD] Account Registration Status')
-
-        msg = EmailMultiAlternatives(
-            email_subject,
-            text_content,
-            settings.DEFAULT_FROM_EMAIL,
-            [self.email, ]
-        )
-        msg.attach_alternative(html_content, "text/html")
-        msg.send()
-
-    def send_request_approval_email(self, username):
-        site = Site.objects.get_current()
-        profile_url = (
-            str(site) +
-            reverse('profile_detail', kwargs={'username': username})
-        )
-        profile_url = iri_to_uri(profile_url)
-
-        text_content = """
-        Dear {},
-
-        Your current data request for LiPAD was approved.
-
-        If you have any questions, you can contact us as at {}.
-
-        Regards,
-        LiPAD Team
-         """.format(
-             self.first_name,
-             local_settings.LIPAD_SUPPORT_MAIL
-         )
-
-        html_content = """
-        <p>Dear <strong>{}</strong>,</p>
-
-       <p>Your current data request in LiPAD was approved.
-       </br>
-       <p>If you have any questions, you can contact us as at <a href="mailto:{}" target="_top">{}</a></p>
-       </br>
-        <p>Regards,</p>
-        <p>LiPAD Team</p>
-        """.format(
-             self.first_name,
-             local_settings.LIPAD_SUPPORT_MAIL,
-             local_settings.LIPAD_SUPPORT_MAIL
-         )
-
-        email_subject = _('[LiPAD] Data Request Status')
-
-        msg = EmailMultiAlternatives(
-            email_subject,
-            text_content,
-            settings.DEFAULT_FROM_EMAIL,
-            [self.email, ]
-        )
-        msg.attach_alternative(html_content, "text/html")
-        msg.send()
-
+    def to_values_list(self, fields=['id','name','email','contact_number', 'organization', 'project_summary', 'created','request_status']):
+        out = []
+        for f in fields:
+            if f  is 'id':
+                out.append(getattr(self, 'pk'))
+            elif f is 'name':
+                first_name = unidecode(getattr(self, 'first_name'))
+                last_name = unidecode(getattr(self,'last_name'))
+                out.append(first_name+" "+last_name)
+            elif f is 'created':
+                created = getattr(self, f)
+                out.append( str(created.month) +"/"+str(created.day)+"/"+str(created.year))
+            else:
+                out.append(str(getattr(self, f)))
+                
+        return out
 
 class RequestRejectionReason(models.Model):
     reason = models.CharField(_('Reason for rejection'), max_length=100)
