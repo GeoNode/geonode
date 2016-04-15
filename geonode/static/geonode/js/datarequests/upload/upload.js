@@ -273,16 +273,19 @@ define(['underscore',
         return false;
     };
     
+    /**Function which submits the form if no 
     
     /** Function which submits the form fields
      *  
      */
     doFormSubmit = function(){
-        var form = $("#file-uploader").serialize();
+        var form = new FormData($("#file-uploader")[0]);
         $.ajax({
            type: "POST",
            url: '/datarequests/register/shapefile/',
-           data: form, // serializes the form's elements.
+           data: form, //form.serialize(), // serializes the form's elements.
+           contentType: false,
+           processData: false,
            success: function(data)
            {
                if('redirect_to' in data) {
@@ -299,10 +302,19 @@ define(['underscore',
                 } else {
                     common.logError("unexpected response");
                 }
+            },
+            error: function(data){
+                var errors = $.parseJSON(data.responseText).errors;
+                for (var key in errors ){
+                    $('#div_id_'+key).addClass('has-error');
+                    $('#div_id_'+key).find('div').append("<span id=\"error_id_"+key+"\" class=\"error-msg\">"+errors[key]+"</span>");
+                }
             }
         });
            
      }
+     
+     
 
     /** Function to ...
      *
