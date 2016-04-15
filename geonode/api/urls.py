@@ -12,6 +12,7 @@ urlpatterns = patterns(
     'geonode.api.views',
     url(r'^combined-(?P<apiname>[^/]*)$', 'api_combined', name="api_combined"),
     url(r'^combined-(?P<apiname>[^/]*)/?', 'api_combined', name="api_combined"),
+    url(r'^combinedResourceBaseAutocomplete/?', 'api_autocomplete', name="api_autocomplete"),
 )
 
 api.register(LayerResource())
