@@ -10,6 +10,7 @@ from geonode.cephgeo.models import FTPRequest, FTPStatus
 import logging
 import pprint
 from geonode.groups.models import GroupProfile
+from celery.worker.strategy import default
 
 logger = logging.getLogger("geonode.tasks.ftp")
 FTP_USERS_DIRS = {  "test-ftp-user" : "/mnt/FTP/PL1/testfolder", }
@@ -116,7 +117,7 @@ If error still persists, forward this email to [{2}]""".format( request_name,
                         if data_class == 'LAZ':
                             result = run("mkdir {0}".format(utm_51n_dir))      # Do not reproject LAZ
                         else:
-                            result = run("mkdir {0}".format(reprojected_dir))      # Create a directory for each geo-type
+                            result = run("mkdir -p {0}".format(reprojected_dir))      # Create a directory for each geo-type
                     else:
                         result = run("mkdir {0}".format(utm_51n_dir))      # Create a directory for each geo-type
                     if result.return_code is not 0:                 #Handle error
