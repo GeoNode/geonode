@@ -323,8 +323,7 @@ class ProfileResource(ModelResource):
         resource_name = 'profiles'
         allowed_methods = ['get']
         ordering = ['username', 'date_joined', 'layers_count', 'first_name']
-        excludes = ['is_staff', 'password', 'is_superuser',
-                    'is_active', 'last_login']
+        excludes = ['is_staff', 'password', 'is_superuser', 'last_login']
 
         filtering = {
             'username': ALL,
@@ -342,13 +341,57 @@ class OwnersResource(TypeFilteredResource):
 
         return super(OwnersResource, self).serialize(request, data, format, options)
 
+    def build_filters(self, filters={}):
+        """adds filtering by group functionality"""
+
+        orm_filters = super(OwnersResource, self).build_filters(filters)
+
+        if 'group' in filters:
+            orm_filters['group'] = filters['group']
+        if 'interest_list' in filters:
+            query = filters['interest_list']
+            qset =(Q(keywords__slug__iexact=query))
+            orm_filters['interest_list'] = qset
+        if 'q' in filters:
+            orm_filters['q'] = filters['q']
+
+        return orm_filters
+
+    def apply_filters(self, request, applicable_filters):
+        """filter by group if applicable by group functionality"""
+
+        group = applicable_filters.pop('group', None)
+        q = applicable_filters.pop('q', None)
+
+        if 'interest_list' in applicable_filters:
+            interest_list = applicable_filters.pop('interest_list')
+        else:
+            interest_list = None
+
+        semi_filtered = super(
+            OwnersResource,
+            self).apply_filters(
+            request,
+            applicable_filters)
+
+        if group is not None:
+            semi_filtered = semi_filtered.filter(
+                groupmember__group__slug=group)
+
+        if interest_list is not None:
+            semi_filtered = semi_filtered.filter(interest_list)
+        
+        if q:
+            semi_filtered = semi_filtered.filter(username__icontains=q)
+
+        return semi_filtered
+        
     class Meta:
         queryset = get_user_model().objects.exclude(username='AnonymousUser')
         resource_name = 'owners'
         allowed_methods = ['get']
         ordering = ['username', 'date_joined']
-        excludes = ['is_staff', 'password', 'is_superuser',
-                    'is_active', 'last_login']
+        excludes = ['is_staff', 'password', 'is_superuser', 'last_login']
 
         filtering = {
             'username': ALL,
