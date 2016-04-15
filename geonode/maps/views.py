@@ -429,6 +429,7 @@ def new_story_json(request):
 
     story_obj = MapStory(owner=request.user)
     story_obj.save()
+    story_obj.set_default_permissions()
 
     # If the body has been read already, use an empty string.
     # See https://github.com/django/django/commit/58d555caf527d6f1bdfeab14527484e4cca68648
