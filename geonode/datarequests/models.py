@@ -679,7 +679,11 @@ class DataRequestProfile(TimeStampedModel):
                 created = getattr(self, f)
                 out.append( str(created.month) +"/"+str(created.day)+"/"+str(created.year))
             else:
-                out.append(str(getattr(self, f)))
+                val = getattr(self, f)
+                if isinstance(val, unicode):
+                    out.append(unidecode(val))
+                else:
+                    out.append(str(val))
                 
         return out
 
