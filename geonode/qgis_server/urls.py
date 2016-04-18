@@ -7,7 +7,8 @@ from geonode.qgis_server.views import (
     legend,
     thumbnail,
     qgis_server_request,
-    qgis_server_pdf
+    qgis_server_pdf,
+    qgis_server_map_print
 )
 
 __author__ = 'ismailsunni'
@@ -52,5 +53,10 @@ urlpatterns = patterns(
         r'^qgis-server/pdf/info\.json$',
         qgis_server_pdf,
         name='qgis-server-pdf'
+    ),
+    url(
+        r'^qgis-server/map/print$',
+        qgis_server_map_print,
+        name='qgis-server-map-print'
     ),
 )

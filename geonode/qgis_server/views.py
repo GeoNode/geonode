@@ -12,6 +12,7 @@ from urllib import urlretrieve
 from django.http import HttpResponse, Http404
 from django.db.models import ObjectDoesNotExist
 from django.http import HttpResponse
+from django.core.urlresolvers import reverse
 
 from geonode.layers.models import Layer
 from geonode.qgis_server.models import QGISServerLayer
@@ -466,6 +467,8 @@ def qgis_server_request(request):
 
 
 def qgis_server_pdf(request):
+    print_url = reverse('qgis-server-map-print')
+
     response_data = {
         "scales":[
             {"name":"1:25,000","value":"25000.0"},
@@ -493,10 +496,21 @@ def qgis_server_pdf(request):
              "map":{"width":440,"height":483},
              "rotation":False}
         ],
-        "printURL":"http://localhost:8080/geoserver/pdf/print.pdf",
-        "createURL":"http://localhost:8080/geoserver/pdf/create.json"
+        "printURL":"%s" % print_url,
+        "createURL":"%s" % print_url
     }
 
     return HttpResponse(
         json.dumps(response_data), content_type="application/json")
 
+
+def qgis_server_map_print(request):
+    logger.debug('qgis_server_map_print')
+    temp = []
+    for key, value in request.POST.iteritems():
+        temp[key] = value
+        print key
+        print value
+        print '--------'
+    return HttpResponse(
+        json.dumps(temp), content_type="application/json")
