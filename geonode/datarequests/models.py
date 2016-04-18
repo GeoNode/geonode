@@ -110,7 +110,7 @@ class DataRequestProfile(TimeStampedModel):
     )
 
     first_name = models.CharField(_('First Name'), max_length=100)
-    middle_name = models.CharField(_('Middle Name'), max_length=100)
+    middle_name = models.CharField(_('Middle Name'), max_length=100, null=True, blank=True)
     last_name = models.CharField(_('Last Name'), max_length=100)
 
     organization = models.CharField(
