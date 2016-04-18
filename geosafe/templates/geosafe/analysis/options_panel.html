@@ -1,0 +1,123 @@
+{% load bootstrap_tags %}
+{% load staticfiles %}
+{% load i18n avatar_tags %}
+
+<div class="exposure section">
+    <h4 class="section-title">Exposure</h4>
+    <div class="option">
+        <a href="#" id="population" class="{% if exposure_population %}has-children{% endif %}"><img src="{% static "geosafe/img/population.svg" %}" alt="population" class="svg"/></a>
+        <div class="list floating-box" id="population-list">
+            <h4 class="list-title">Select the population</h4>
+            <ul>
+                {% for e in exposure_population %}
+                    <li>
+                        <a href="javascript:update_exposure_layer({{ e.id }})" data-id="{{ e.id }}">{{ e.name }}</a>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+    <div class="option">
+        <a href="#" id="roads" class="{% if exposure_road %}has-children{% endif %}"><img src="{% static "geosafe/img/roads.svg" %}" alt="roads" class="svg"/></a>
+        <div class="list floating-box" id="road-list">
+            <h4 class="list-title">Select the road</h4>
+            <ul>
+                {% for e in exposure_road %}
+                    <li>
+                        <a href="javascript:update_exposure_layer({{ e.id }})" data-id="{{ e.id }}">{{ e.name }}</a>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+    <div class="option">
+        <a href="#" id="buildings" class="{% if exposure_building %}has-children{% endif %}"><img src="{% static "geosafe/img/buildings.svg" %}" alt="buildings" class="svg"/></a>
+        <div class="list floating-box" id="building-list">
+            <h4 class="list-title">Select the building</h4>
+            <ul>
+                {% for e in exposure_building %}
+                    <li>
+                        <a href="javascript:update_exposure_layer({{ e.id }})" data-id="{{ e.id }}">{{ e.name }}</a>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+</div>
+<div class="hazard section">
+    <h4 class="section-title">Hazard</h4>
+    <div class="option">
+        <a href="#" id="flood" class="{% if hazard_flood %}has-children{% endif %}"><img src="{% static "geosafe/img/flood.svg" %}" alt="flood" class="svg"/></a>
+        <div class="list floating-box" id="flood-list">
+            <h4 class="list-title">Select the flood</h4>
+            <ul>
+                {% for e in hazard_flood %}
+                    <li>
+                        <a href="javascript:update_hazard_layer({{ e.id }})" data-id="{{ e.id }}">{{ e.name }}</a>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+    <div class="option">
+        <a href="#" id="earthquake" class="{% if hazard_earthquake %}has-children{% endif %}"><img src="{% static "geosafe/img/earthquake.svg" %}" alt="earthquake" class="svg"/></a>
+        <div class="list floating-box" id="earthquake-list">
+            <h4 class="list-title">Select the earthquake</h4>
+            <ul>
+                {% for e in hazard_earthquake %}
+                    <li>
+                        <a href="javascript:update_hazard_layer({{ e.id }})" data-id="{{ e.id }}">{{ e.name }}</a>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+    <div class="option">
+        <a href="#" class="{% if hazard_volcano %}has-children{% endif %}" id="volcano"><img src="{% static "geosafe/img/volcano.svg" %}" alt="volcano" class="svg"/></a>
+        <div class="list floating-box" id="volcano-list">
+            <h4 class="list-title">Select the volcano</h4>
+            <ul>
+                {% for e in hazard_volcano %}
+                    <li>
+                        <a href="javascript:update_hazard_layer({{ e.id }})" data-id="{{ e.id }}">{{ e.name }}</a>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+</div>
+<div class="impact section">
+    <h4 class="section-title">Impact</h4>
+    <div class="option">
+        <a href="#" id="impact" class="{% if impact_layers %}has-children{% endif %}"><img src="{% static "geosafe/img/flood.svg" %}" alt="impact" class="svg"/></a>
+        <div class="list floating-box" id="impact-list">
+            <h4 class="list-title">Select the impact</h4>
+            <ul>
+                {% for e in impact_layers %}
+                    <li>
+                        <a href="javascript:update_impact_layer({{ e.id }})" data-id="{{ e.id }}">{{ e.name }}</a>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+</div>
+<div class="report section">
+    <h4 class="section-title">Report</h4>
+    <div class="option"><i class="fa fa-map"></i></div>
+    <div class="option">
+        <a href="#" class="has-children" id="impact-function">IF</a>
+        <div class="list floating-box" id="impact-function-list">
+            <h4 class="list-title">Select impact function</h4>
+            <ul>
+            </ul>
+        </div>
+    </div>
+    <form action="" method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div style="display: none;">
+            {{ form|as_bootstrap }}
+        </div>
+        <button type="submit" class="btn btn-primary" disabled>Run</button>
+    </form>
+</div>

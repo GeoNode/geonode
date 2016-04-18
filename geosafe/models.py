@@ -224,6 +224,11 @@ class Analysis(models.Model):
         except:
             pass
 
+        try:
+            self.impact_layer.delete()
+        except:
+            pass
+
 
 # needed to load signals
 from geosafe import signals  # noqa

@@ -7,7 +7,7 @@ from geosafe.views.analysis import (
     AnalysisDetailView,
     impact_function_filter,
     layer_tiles, layer_metadata, layer_archive, layer_list, rerun_analysis,
-    analysis_json, toggle_analysis_saved, download_report)
+    analysis_json, toggle_analysis_saved, download_report, layer_panel)
 
 urlpatterns = patterns(
     '',
@@ -48,10 +48,17 @@ urlpatterns = patterns(
     ),
     url(
         r'^geosafe/analysis/layer-list/'
-        r'(?P<layer_purpose>(hazard|exposure|aggregation))/'
-        r'(?P<layer_category>\w+)',
+        r'(?P<layer_purpose>(hazard|exposure|aggregation|impact))'
+        r'(?:/(?P<layer_category>\w*))?'
+        r'(?:/(?P<bbox>[,.\d-]*))?',
         layer_list,
         name='layer-list'
+    ),
+    url(
+        r'^geosafe/analysis/layer-panel'
+        r'(?:/(?P<bbox>[\[\],.\d-]*))?',
+        layer_panel,
+        name='layer-panel'
     ),
     url(
         r'^geosafe/analysis/rerun/'

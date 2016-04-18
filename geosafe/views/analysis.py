@@ -5,10 +5,11 @@ import logging
 import tempfile
 from zipfile import ZipFile
 
-from django.conf import settings
 from django.core.urlresolvers import reverse
+from django.db.models.query_utils import Q
 from django.http.response import HttpResponseServerError, HttpResponse, \
     HttpResponseBadRequest, HttpResponseRedirect
+from django.shortcuts import render
 from django.views.generic import (
     ListView, CreateView, DetailView)
 
@@ -24,6 +25,48 @@ LOGGER = logging.getLogger("geosafe")
 logger = logging.getLogger("geonode.geosafe.analysis")
 
 
+def retrieve_layers(purpose, category=None, bbox=None):
+    """List all required layers"""
+
+    if not category:
+        category = None
+    if bbox:
+        bbox = json.loads(bbox)
+        point_1 = (
+            Q(layer__bbox_x0__gte=bbox[0]) &
+            Q(layer__bbox_x0__lte=bbox[2]) &
+            Q(layer__bbox_y0__gte=bbox[1]) &
+            Q(layer__bbox_y0__lte=bbox[3])
+        )
+        point_2 = (
+            Q(layer__bbox_x0__gte=bbox[0]) &
+            Q(layer__bbox_x0__lte=bbox[2]) &
+            Q(layer__bbox_y1__gte=bbox[1]) &
+            Q(layer__bbox_y1__lte=bbox[3])
+        )
+        point_3 = (
+            Q(layer__bbox_x1__gte=bbox[0]) &
+            Q(layer__bbox_x1__lte=bbox[2]) &
+            Q(layer__bbox_y0__gte=bbox[1]) &
+            Q(layer__bbox_y0__lte=bbox[3])
+        )
+        point_4 = (
+            Q(layer__bbox_x1__gte=bbox[0]) &
+            Q(layer__bbox_x1__lte=bbox[2]) &
+            Q(layer__bbox_y1__gte=bbox[1]) &
+            Q(layer__bbox_y1__lte=bbox[3])
+        )
+        metadatas = Metadata.objects.filter(
+            Q(layer_purpose=purpose),
+            Q(category=category),
+            point_1 | point_2 | point_3 | point_4
+        )
+    else:
+        metadatas = Metadata.objects.filter(
+            layer_purpose=purpose, category=category)
+    return [m.layer for m in metadatas]
+
+
 class AnalysisCreateView(CreateView):
     model = Analysis
     form_class = AnalysisCreationForm
@@ -31,15 +74,6 @@ class AnalysisCreateView(CreateView):
     context_object_name = 'analysis'
 
     def get_context_data(self, **kwargs):
-        # list all required layers
-        def retrieve_layers(purpose, category=None):
-            if category:
-                metadatas = Metadata.objects.filter(
-                    layer_purpose=purpose, category=category)
-            else:
-                metadatas = Metadata.objects.filter(
-                    layer_purpose=purpose)
-            return [m.layer for m in metadatas]
         exposure_population = retrieve_layers('exposure', 'population')
         exposure_road = retrieve_layers('exposure', 'road')
         exposure_building = retrieve_layers('exposure', 'structure')
@@ -108,7 +142,8 @@ def impact_function_filter(request):
     hazard_id = request.GET.get('hazard_id')
 
     if not (exposure_id and hazard_id):
-        return HttpResponseBadRequest()
+        return HttpResponse(
+            json.dumps([]), content_type="application/json")
 
     try:
         exposure_layer = Layer.objects.get(id=exposure_id)
@@ -120,7 +155,6 @@ def impact_function_filter(request):
         async_result = filter_impact_function.delay(
             hazard_url,
             exposure_url)
-
 
         impact_functions = async_result.get()
 
@@ -212,25 +246,76 @@ def layer_archive(request, layer_id):
         return HttpResponseServerError()
 
 
-def layer_list(request, layer_purpose, layer_category):
+def is_bbox_intersects(bbox_1, bbox_2):
+    """
+
+    bbox is in the format: (x0,y0, x1, y1)
+
+    :param bbox_1:
+    :param bbox_2:
+    :return:
+    """
+    points = [
+        (bbox_1[0], bbox_1[1]),
+        (bbox_1[0], bbox_1[3]),
+        (bbox_1[2], bbox_1[1]),
+        (bbox_1[2], bbox_1[3])
+        ]
+    for p in points:
+        if bbox_2[0] <= p[0] << bbox_2[2] and bbox_2[1] <= p[1] <= bbox_2[3]:
+            return True
+
+    return False
+
+
+def layer_list(request, layer_purpose, layer_category=None, bbox=None):
     if request.method != 'GET':
         return HttpResponseBadRequest()
 
-    if not layer_purpose or not layer_category:
+    if not layer_purpose:
         return HttpResponseBadRequest()
 
     try:
-        metadatas = Metadata.objects.filter(
-            layer_purpose=layer_purpose, category=layer_category)
+        layers_object = retrieve_layers(layer_purpose, layer_category, bbox)
         layers = []
-        for m in metadatas:
+        for l in layers_object:
             layer_obj = dict()
-            layer_obj['id'] = m.layer.id
-            layer_obj['name'] = m.layer.name
-            layers += layer_obj
+            layer_obj['id'] = l.id
+            layer_obj['name'] = l.name
+            layers.append(layer_obj)
 
         return HttpResponse(
             json.dumps(layers), content_type="application/json")
+
+    except Exception as e:
+        LOGGER.exception(e)
+        return HttpResponseServerError()
+
+
+def layer_panel(request, bbox=None):
+    if request.method != 'GET':
+        return HttpResponseBadRequest()
+
+    try:
+        exposure_population = retrieve_layers('exposure', 'population', bbox)
+        exposure_road = retrieve_layers('exposure', 'road', bbox)
+        exposure_building = retrieve_layers('exposure', 'structure', bbox)
+        hazard_flood = retrieve_layers('hazard', 'flood', bbox)
+        hazard_earthquake = retrieve_layers('hazard', 'earthquake', bbox)
+        hazard_volcano = retrieve_layers('hazard', 'volcano', bbox)
+        impact_layers = retrieve_layers('impact', bbox=bbox)
+        form = AnalysisCreationForm()
+        context = {
+            'exposure_population': exposure_population,
+            'exposure_road': exposure_road,
+            'exposure_building': exposure_building,
+            'hazard_earthquake': hazard_earthquake,
+            'hazard_flood': hazard_flood,
+            'hazard_volcano': hazard_volcano,
+            'impact_layers': impact_layers,
+            'form': form
+        }
+        return render(request, "geosafe/analysis/options_panel.html", context)
 
     except Exception as e:
         LOGGER.exception(e)
