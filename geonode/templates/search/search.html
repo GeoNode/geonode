@@ -29,7 +29,7 @@
     {% if HAYSTACK_SEARCH %}
     SEARCH_URL = '{% url 'api_get_search' api_name='api' resource_name='base' %}'
     {% else %}
-    SEARCH_URL = '{% url 'api_dispatch_list' api_name='api' resource_name='base' %}'
+    SEARCH_URL = '{% url 'api_combined' apiname='base' %}'
     {% endif %}
   </script>
   {% with include_spatial='true' %}

@@ -49,3 +49,38 @@ class GeoNodeAuthorization(DjangoAuthorization):
         return bundle.request.user.has_perm(
             'delete_resourcebase',
             bundle.obj.get_self_resource())
+            
+class DataRequestAuthorization(DjangoAuthorization):
+    
+    def read_list(self, object_list, bundle):
+        if bundle.request.user.is_superuser:
+            return object_list
+        else:
+            return object_list.filter(profile=bundle.request.user)
+
+    def read_detail(self, object_list, bundle):
+        if bundle.request.user.is_superuser:
+            return object_list
+        else:
+            return object_list.filter(profile=bundle.request.user)
+
+    def create_list(self, object_list, bundle):
+        # TODO implement if needed
+        raise Unauthorized()
+
+    def create_detail(self, object_list, bundle):
+        raise Unauthorized()
+
+    def update_list(self, object_list, bundle):
+        # TODO implement if needed
+        raise Unauthorized()
+
+    def update_detail(self, object_list, bundle):
+        raise Unauthorized()
+
+    def delete_list(self, object_list, bundle):
+        # TODO implement if needed
+        raise Unauthorized()
+
+    def delete_detail(self, object_list, bundle):
+        raise Unauthorized()
