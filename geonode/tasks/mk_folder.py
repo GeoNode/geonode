@@ -1,5 +1,5 @@
-
 from pprint import pprint
+from geonode import settings
 
 import celery
 import logging, traceback

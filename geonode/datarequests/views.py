@@ -4,7 +4,10 @@ import shutil
 import traceback
 import datetime
 import time
+import csv
 from urlparse import parse_qs
+
+from crispy_forms.utils import render_crispy_form
 
 from django.conf import settings
 from django.contrib import messages
@@ -19,6 +22,7 @@ from django.shortcuts import (
     redirect, get_object_or_404, render, render_to_response)
 from django.template import RequestContext
 from django.template.defaultfilters import slugify
+from django.utils import dateformat
 from django.utils import timezone
 from django.utils import simplejson as json
 from django.utils.html import escape
@@ -59,8 +63,8 @@ def registration_part_one(request):
 
     shapefile_session = request.session.get('data_request_shapefile', None)
     profile_form_data = request.session.get('data_request_info', None)
-     
-    if request.user.is_authenticated():
+         
+    if request.user.is_authenticated() and request.method == 'GET':
         try:
             last_submitted_dr = DataRequestProfile.objects.filter(profile=request.user).latest('key_created_date')
             profile_form_data ={}
@@ -72,14 +76,29 @@ def registration_part_one(request):
                 profile_form_data[ 'location'] = last_submitted_dr.location
                 profile_form_data[ 'email'] = last_submitted_dr.email
                 profile_form_data[ 'contact_number'] = last_submitted_dr.contact_number
+                request_object = DataRequestProfile(username = request.user.username, request_status = 'pending', profile=request.user, date=timezone.now(), **profile_form_data)
+                request_object.set_verification_key()
+                request_object.save()
+                if last_submitted_dr.request_status.encode('utf8') == 'pending' or last_submitted_dr.request_status.encode('utf8') == 'unconfirmed':
+                    pprint("updating previous request_status")
+                    last_submitted_dr.request_status = 'cancelled'
+                    last_submitted_dr.save()
+                request.session['last_submitted_dr'] = last_submitted_dr
+                request.session['request_object'] = request_object
+                request.session['data_request_info'] = profile_form_data
+                
+                return HttpResponseRedirect(
+                    reverse('datarequests:registration_part_two')
+                )
         except ObjectDoesNotExist as e:
-                pprint("No data request present for this user")
+            request.session['is_new_auth_req'] = True
+            pprint("No data request present for this user")
        
     
     if not shapefile_session and profile_form_data:
-            if 'data_request_info' in request.session:
-                del request.session['data_request_info']
-                request.session.modified = True
+        if 'data_request_info' in request.session:
+            del request.session['data_request_info']
+            request.session.modified = True
     
     form = DataRequestProfileForm(
         initial = profile_form_data
@@ -88,19 +107,24 @@ def registration_part_one(request):
     if request.method == 'POST':
         form = DataRequestProfileForm(
             request.POST,
-            request.FILES,
             initial = profile_form_data
         )
         if form.is_valid():
-            request_object = form.save(commit=False)
-            request.session['data_request_info'] = form.cleaned_data
+            request_object = form.save()
             request.session['request_object'] = request_object
-            request.session['request_letter'] = form.cleaned_data['letter_file']
+            request.session['data_request_info'] = profile_form_data
+            if not request.user.is_authenticated():
+                request_object.send_verification_email()
+            else:
+                request_object.request_status = 'pending'
+                request_object.save()
+                request.session['last_submitted_dr'] = request_object
+                
             
             return HttpResponseRedirect(
                 reverse('datarequests:registration_part_two')
             )
-            
+    
     return render(
         request,
         'datarequests/registration/profile.html',
@@ -111,43 +135,46 @@ def registration_part_one(request):
 def registration_part_two(request):
     part_two_initial ={}
     last_submitted_dr = None
+    is_new_auth_req = False
     if request.user.is_authenticated():
-        try:
-            last_submitted_dr = DataRequestProfile.objects.filter(profile=request.user).latest('key_created_date')
-            part_two_initial['project_summary']=last_submitted_dr.project_summary
-            part_two_initial['data_type_requested']=last_submitted_dr.data_type_requested
-        except ObjectDoesNotExist as e:
-            pprint("Did not find datarequests for this user")
+        is_new_auth_req = request.session.get('is_new_auth_req', None)
+        last_submitted_dr = request.session.get('last_submitted_dr', None)
+        if not last_submitted_dr:
+            pprint("No previous request from "+request.user.username)
+            return HttpResponseRedirect(reverse('datarequests:registration_part_one'))
+        part_two_initial['project_summary']=last_submitted_dr.project_summary
+        part_two_initial['data_type_requested']=last_submitted_dr.data_type_requested
         
     request.session['data_request_shapefile'] = True
     profile_form_data = request.session.get('data_request_info', None)
-    request_letter = request.session.get('request_letter',None)
+    saved_request_object= request.session.get('request_object', None)
     
     form = DataRequestDetailsForm(initial=part_two_initial)
 
-    if not profile_form_data or not request_letter:
+    if not saved_request_object:
         return redirect(reverse('datarequests:registration_part_one'))
 
     if request.method == 'POST' :
-        if last_submitted_dr:
-            if last_submitted_dr.request_status.encode('utf8') == 'pending' or last_submitted_dr.request_status.encode('utf8') == 'unconfirmed':
-                pprint("updating request_status")
-                last_submitted_dr.request_status = 'cancelled'
-                last_submitted_dr.save()
         post_data = request.POST.copy()
         post_data['permissions'] = '{"users":{"dataRegistrationUploader": ["view_resourcebase"] }}'
-        form = DataRequestDetailsForm(post_data)
-        if request.FILES:
+        form = DataRequestDetailsForm(post_data, request.FILES)
+        if u'base_file' in request.FILES:
             form = DataRequestProfileShapefileForm(post_data, request.FILES)
         
         tempdir = None
         errormsgs = []
         out = {}
         request_profile =  request.session['request_object']
+        pprint(post_data)
         if form.is_valid():
+            if last_submitted_dr and not is_new_auth_req:
+                if last_submitted_dr.request_status.encode('utf8') == 'pending' or last_submitted_dr.request_status.encode('utf8') == 'unconfirmed':
+                    pprint("updating request_status")
+                    last_submitted_dr.request_status = 'cancelled'
+                    last_submitted_dr.save()
             if form.cleaned_data:
                 interest_layer = None
-                if request.FILES:
+                if u'base_file' in request.FILES:
                     pprint(request.FILES)
                     title = form.cleaned_data["layer_title"]
 
@@ -178,6 +205,9 @@ def registration_part_two(request):
                             abstract=form.cleaned_data["abstract"],
                             title=form.cleaned_data["layer_title"],
                         )
+                        def_style = Style.objects.get(name="Boundary")
+                        saved_layer.styles.add(def_style)
+                        saved_layer.default_style=def_style
                         saved_layer.is_published = False
                         saved_layer.save()
                         interest_layer =  saved_layer
@@ -250,7 +280,7 @@ def registration_part_two(request):
                         request_profile, letter = update_datarequest_obj(
                             datarequest=  request.session['request_object'],
                             parameter_dict = form.clean(),
-                            request_letter = request.session['request_letter'],
+                            request_letter = form.clean()['letter_file'],
                             interest_layer = interest_layer
                         )
                         out['success']=True
@@ -259,7 +289,7 @@ def registration_part_two(request):
                             request_profile, letter = update_datarequest_obj(
                                 datarequest=  request.session['request_object'],
                                 parameter_dict = form.clean(),
-                                request_letter = request.session['request_letter'],
+                                request_letter = form.clean()['letter_file'],
                                 interest_layer = interest_layer
                             )
                     
@@ -272,21 +302,32 @@ def registration_part_two(request):
                     
                 else:
                     pprint("unable to retrieve request object")
-                    out['errors'] = form.errors
+                    
+                    for e in form.errors.values():
+                        errormsgs.extend([escape(v) for v in e])
                     out['success'] = False
+                    out['errors'] =  dict(
+                        (k, map(unicode, v))
+                        for (k,v) in form.errors.iteritems()
+                    )
+                    pprint(out['errors'])
+                    out['errormsgs'] = out['errors']
         else:
             for e in form.errors.values():
                 errormsgs.extend([escape(v) for v in e])
             out['success'] = False
-            out['errors'] = form.errors
+            out['errors'] = dict(
+                    (k, map(unicode, v))
+                    for (k,v) in form.errors.iteritems()
+            )
             pprint(out['errors'])
-            out['errormsgs'] = errormsgs
+            out['errormsgs'] = out['errors']
 
         if out['success']:
             status_code = 200
 
             if request_profile and not request_profile.profile:
-                request_profile.send_verification_email()
+#                request_profile.send_verification_email()
 
                 out['success_url'] = reverse('datarequests:email_verification_send')
                 
@@ -300,7 +341,6 @@ def registration_part_two(request):
                 request_profile.date = timezone.now()
                 request_profile.save()
 
-            del request.session['data_request_info']
             del request.session['data_request_shapefile']
             del request.session['request_object']
         else:
@@ -315,44 +355,39 @@ def registration_part_two(request):
         {
             'charsets': CHARSETS,
             'is_layer': True,
-            'form': form
+            'form': form,
+            'support_email': settings.LIPAD_SUPPORT_MAIL,
         })
         
 
-class DataRequestPofileList(LoginRequiredMixin, SuperuserRequiredMixin, TemplateView):
+class DataRequestPofileList(LoginRequiredMixin, TemplateView):
     template_name = 'datarequests/data_request_list.html'
     raise_exception = True
-    
+ 
 @login_required
-def request_history(request):
-    if not request.user.is_authenticated():
+def data_request_csv(request):
+    if not request.user.is_superuser:
         raise HttpResponseForbidden
-        
-    if request.user.is_superuser:
-        return HttpResponseRedirect(
-            reverse('datarequests:data_request_browse')
-        )
+         
+    response = HttpResponse(content_type='text/csv')
+    datetoday = timezone.now()
+    response['Content-Disposition'] = 'attachment; filename="datarequests-"'+str(datetoday.month)+str(datetoday.day)+str(datetoday.year)+'.csv"'
     
-    user=request.user
-    data_requests = DataRequestProfile.objects.filter(profile=user)
-    total = data_requests.len()
+    writer = csv.writer(response)
+    writer.writerow( ['id','name','email','contact_number', 'organization', 'project_summary', 'created','request_status'])
     
-    paginator = Paginator(data_requests, 10)
-    page = request.GET.get('page')
-
-    try:
-        paged_objects = paginator.page(page)
-    except PageNotAnInteger:
-        paged_objects = paginator.page(1)
-    except EmptyPage:
-        paged_objects = paginator.page(paginator.num_pages)
-        
-    return render(request, "users_request_list.html",
-        {"data_requests": paged_objects,
-          "total":  total
-        })
+    objects = DataRequestProfile.objects.all().order_by('pk')
+    
+    for o in objects:
+        writer.writerow(o.to_values_list())
+    
+    return response
 
 def email_verification_send(request):
+    
+    if request.user.is_authenticated():
+        return HttpResponseRedirect(reverse('home'))
+    
     context = {
         'support_email': settings.LIPAD_SUPPORT_MAIL,
     }
@@ -381,6 +416,7 @@ def email_verification_confirm(request):
             if not data_request.date:
                 data_request.request_status = 'pending'
                 data_request.date = timezone.now()
+                pprint(email+" has been confirmed")
                 data_request.save()
                 data_request.send_new_request_notif_to_admins()
         except ObjectDoesNotExist:
@@ -404,7 +440,7 @@ def data_request_profile(request, pk, template='datarequests/profile_detail.html
 
     request_profile = get_object_or_404(DataRequestProfile, pk=pk)
 
-    if not request.user.is_superuser:
+    if not request.user.is_superuser and not request_profile.profile == request.user:
         raise PermissionDenied
     
 
@@ -528,37 +564,37 @@ def data_request_profile_approve(request, pk):
 
     if request.method == 'POST':
         request_profile = get_object_or_404(DataRequestProfile, pk=pk)
-        if not request_profile.date:
-            raise Http404
-        try:
-            is_new_acc=True
-            if not request_profile.profile:
-                request_profile.create_account()
-            else:
-                is_new_acc = False
-            
-            request_profile.join_requester_grp()
-            
+
+        if not request_profile.has_verified_email or request_profile.request_status != 'pending':
+            raise PermissionDenied
+        
+        result = True
+        message = ''
+        is_new_acc=True
+        
+        if not request_profile.profile or not request_profile.username or not request_profile.ftp_folder:
+            result, message = request_profile.create_account() #creates account in AD if AD profile does not exist
+        else:
+            is_new_acc = False
+        
+        if not result:
+            messages.error (request, _(message))
+        else:       
             if request_profile.jurisdiction_shapefile:
-                request_profile.assign_jurisdiction()
+                request_profile.assign_jurisdiction() #assigns/creates jurisdiction object 
             else:
                 try:
-                    UserJurisdiction.objects.get(user=request_profile.profile).delete()
+                    uj = UserJurisdiction.objects.get(user=request_profile.profile)
+                    uj.jurisdiction_shapefile = None
+                    uj.save()
                 except ObjectDoesNotExist as e:
                     pprint("Jurisdiction Shapefile not found, nothing to delete. Carry on")
-                
-            request_profile.create_directory()
             
             request_profile.set_approved(is_new_acc)
-            
-            request_profile.administrator = request.user
-            request_profile.save()
-            return HttpResponseRedirect(request_profile.get_absolute_url())
-        except Exception as e:
-            import traceback
-            message = _('An unexpected error was encountered during the creation of the account.\n'+  traceback.format_exc() )
-            messages.error(request, message)
-            return HttpResponseRedirect(request_profile.get_absolute_url())
+                    
+                    
+        return HttpResponseRedirect(request_profile.get_absolute_url())
+        
     else:
         return HttpResponseRedirect("/forbidden/")
 

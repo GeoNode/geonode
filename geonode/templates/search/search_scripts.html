@@ -18,18 +18,19 @@
 <script src="{{ STATIC_URL }}geonode/js/search/search.js"></script>
 <script type="text/javascript">
   $("body").attr('ng-controller', 'geonode_search_controller');
-  CATEGORIES_ENDPOINT = '{% url 'api_dispatch_list' api_name='api' resource_name='categories' %}';
-  KEYWORDS_ENDPOINT = '{% url 'api_dispatch_list' api_name='api' resource_name='keywords' %}';
-  REGIONS_ENDPOINT = '{% url 'api_dispatch_list' api_name='api' resource_name='regions' %}';
+  CATEGORIES_ENDPOINT = '{% url 'api_combined' apiname='categories' %}';
+  KEYWORDS_ENDPOINT = '{% url 'api_combined' apiname='keywords' %}';
+  REGIONS_ENDPOINT = '{% url 'api_combined' apiname='regions' %}';
   HAYSTACK_SEARCH = "{{ HAYSTACK_SEARCH }}".toLowerCase() === "true";
   HAYSTACK_FACET_COUNTS = "{{ HAYSTACK_FACET_COUNTS }}".toLowerCase() === "true";
   CLIENT_RESULTS_LIMIT = {{ CLIENT_RESULTS_LIMIT }};
-  AUTOCOMPLETE_URL_RESOURCEBASE = '{% url "autocomplete_light_autocomplete" "ResourceBaseAutocomplete" %}';
+  AUTOCOMPLETE_URL_RESOURCEBASE = '{% url 'api_autocomplete' %}';
   AUTOCOMPLETE_URL_REGION = '{% url "autocomplete_light_autocomplete" "RegionAutocomplete" %}';
 
   var module = angular.module('search', ['geonode_main_search']);
   module.constant('Configs', {
     url: SEARCH_URL
+
   });
 
   var deps = ['search'];
