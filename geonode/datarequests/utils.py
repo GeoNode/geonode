@@ -82,7 +82,7 @@ def create_ad_account(datarequest, username):
     sn= unidecode(datarequest.last_name)
     givenName = unidecode(datarequest.first_name)
     initials=unidecode(datarequest.middle_name[0])
-    cn = unidecode(givenName+" "+initials+". "+sn)
+    cn = unidecode(givenName+" "+datarequest.middle_name+". "+sn)
     displayName=unidecode(givenName+" "+initials+". "+sn)
     telephoneNumber = str(datarequest.contact_number)
     mail=str(datarequest.email)
