@@ -66,25 +66,25 @@
     border-bottom: 1px solid #6d6c6c;
 }
 .options-panel .section-title {
-    foont-size: 12px;
     line-height: 12px;
     margin: 0 0 10px;
     font-weight: normal;
     font-size: 12px;
 }
 a:hover .svg path, a.selected .svg path {
-  fill: #fff;
+    fill: #fff;
 }
 a.set {
-    border: 2px solid #82d173;
-    margin-left: 10px;
-    margin-top: -2px;
-}
-.options-panel .option > a.set:hover {
-    background: none;
+    border: 2px solid #50cf5c;
 }
 a.set .svg path {
-  fill: #82d173;
+    fill: #50cf5c;
+}
+a:not(.set).one{
+    border: 2px solid #3db2dd;
+}
+a:not(.set).one .svg path {
+    fill: #3db2dd;
 }
 a:hover i {
   color: #fff;
@@ -104,10 +104,18 @@ a:hover i {
     top: 16px;
     right: -7px;
     width: 0;
-   height: 0;
-   border-style: solid;
-   border-width: 6.5px 0 6.5px 7px;
+    height: 0;
+    border-style: solid;
+    border-width: 6.5px 0 6.5px 7px;
     border-color: transparent transparent transparent #757575;
+}
+.options-panel a.has-children.set:after, .options-panel a.has-children.set:hover:after{
+    top: 14px;
+    right: -9px;
+    border-color: transparent transparent transparent #50cf5c;
+}
+.options-panel a.one:after, .options-panel a.one:hover:after{
+    border: 0;
 }
 .options-panel a.has-children:hover:after, .options-panel a.has-children.selected:after {
     border-color: transparent transparent transparent #515151;
@@ -147,23 +155,53 @@ a:hover i {
     font-size: 14px;
     color: #979797;
     text-decoration: none;
+    white-space: nowrap;
 }
 .list ul a:hover, .list ul li.selected a, .list ul li.selected {
     color: #fff;
 }
+
 .list-title:after {
     position: absolute;
     left: -7px;
     top: 17px;
-   width: 0;
-height: 0;
-border-style: solid;
-border-width: 6.5px 7px 6.5px 0;
-border-color: transparent rgba(244,244,244,0.9) transparent transparent;
-
+    width: 0;
+    height: 0;
+    border-style: solid;
+    border-width: 6.5px 7px 6.5px 0;
+    border-color: transparent rgba(244,244,244,0.9) transparent transparent;
 }
 .list ul .selected a, .list ul .selected {
-    color: #82d173;
+    color: #50cf5c;
+}
+
+.list li{
+    text-align: left;
+    padding-left: 20px;
+    padding-right: 20px;
+}
+
+.leaflet-bottom{
+    bottom: 46px;
+}
+
+.status-bar{
+    position: fixed;
+    bottom: 0;
+    background: rgba(51,51,51,0.8);
+    color: #757575;
+    width: 100%;
+    height: 46px;
+}
+
+.info-box{
+    vertical-align: middle;
+    float: none;
+    color: #fff;
+}
+
+.info-text{
+    color: #979797;
 }
  </style>
 {% endblock extra_head %}
@@ -178,7 +216,7 @@ border-color: transparent rgba(244,244,244,0.9) transparent transparent;
 <div class="options-panel">
 {#    <div class="search section"> <a href="#" id="search-call"><i class="fa fa-search"></i></a> </div>#}
     <div class="brand section">
-        <a href="{% url "home" %}"><img src="{% static 'geosafe/img/logo-geonode.png' %}" href="{% url "home" %}" /></a>
+        <a href="{% url "home" %}"><img src="{% static 'geosafe/img/logo-geonode.png' %}" href="{% url "home" %}" title="Go To Geonode Homepage"/></a>
     </div>
     <div class="layer-list">
         {% include "geosafe/analysis/options_panel.html" %}
@@ -242,6 +280,15 @@ border-color: transparent rgba(244,244,244,0.9) transparent transparent;
 </div>
 {% endblock body_outer %}
 
+{% block footer %}
+<div class="status-bar">
+    <div class="info-box text-center panel-body">
+        <span class="info-title panel-title panel-heading"></span>
+        <span class="info-text"></span>
+    </div>
+</div>
+{% endblock %}
+
 {% block extra_script %} 
 <script src="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.js"></script>
 
@@ -281,7 +328,13 @@ function init_layer_panel(){
 
     });
     var last_click;
-    $(".has-children").click(function () {
+    $(".option>a").click(function () {
+        {# special case when only contains one layer #}
+        if($(this).hasClass('one')){
+            {# automatically click the only layer #}
+            $(this).next().filter(".list").find("a")[0].click();
+            return;
+        }
         if(last_click!=this){
             $(last_click).next().filter(".list").removeClass("show");
         }
@@ -328,7 +381,7 @@ $(document).ready(function () {
                 if (data.length == 0) {
                     console.log('No IF found')
                     $("<option></option>").text("No matching Impact Function").appendTo(select);
-                    var $a = $("<a></a>");
+                    var $a = $("<p><a></a></p>");
                     $a.text("No matching Impact Function");
                     var $li = $("<li></li>");
                     $li.append($a);
@@ -346,6 +399,7 @@ $(document).ready(function () {
                 if(data.length==1){
 {#                     only for lone data#}
                     select_if(data[0]);
+                    show_info_text('InaSAFE Impact Function', 'Automatically select '+data[0]);
                 }
                 else if(data.length==0){
 {#                    deselect Impact function#}
@@ -434,11 +488,12 @@ $(document).ready(function () {
             });
         }
 
-        function update_exposure_layer(layer_id) {
+        function update_exposure_layer(layer_id, is_update_map) {
             console.log('exposure changed to ' + layer_id);
 
 {#            deselect if it is the same#}
-            if(exposure_layer_cbo.val() == layer_id){
+            var no_layer_id_exists = layer_id != undefined && $(".exposure.section a[data-id='"+layer_id+"']").length == 0;
+            if(exposure_layer_cbo.val() == layer_id || no_layer_id_exists){
                 update_exposure_layer(undefined);
                 return;
             }
@@ -460,6 +515,11 @@ $(document).ready(function () {
             console.log($section);
             $section.find(">a").addClass("set");
 
+            if(is_update_map == false){
+                return;
+            }
+
+            console.log("updating map");
             if (layer_id) {
                 console.log('update exposure layer');
                 if (exposure_layer) {
@@ -468,17 +528,20 @@ $(document).ready(function () {
                     map.removeLayer(exposure_layer);
                 }
                 update_map(layer_id, 'exposure');
+                show_info_text('InaSAFE Exposure', $a.text() + ' selected.');
             } else {
                 console.log('delete exposure');
                 map.removeLayer(exposure_layer);
+                show_info_text('InaSAFE Exposure', 'Exposure unselected.');
             }
         }
 
-        function update_hazard_layer(layer_id) {
+        function update_hazard_layer(layer_id, is_update_map) {
             console.log('hazard changed to ' + layer_id);
 
 {#            deselect if it is the same#}
-            if(hazard_layer_cbo.val() == layer_id){
+            var no_layer_id_exists = layer_id != undefined && $(".hazard.section a[data-id='"+layer_id+"']").length == 0;
+            if(hazard_layer_cbo.val() == layer_id || no_layer_id_exists){
                 update_hazard_layer(undefined);
                 return;
             }
@@ -500,6 +563,10 @@ $(document).ready(function () {
             console.log($section);
             $section.find(">a").addClass("set");
 
+            if(is_update_map == false){
+                return;
+            }
+
             if (layer_id) {
                 console.log('update hazard layer');
                 if (hazard_layer) {
@@ -508,17 +575,21 @@ $(document).ready(function () {
                     map.removeLayer(hazard_layer);
                 }
                 update_map(layer_id, 'hazard');
+                show_info_text('InaSAFE Hazard', $a.text() + ' selected.');
             } else {
                 console.log('delete hazard');
                 map.removeLayer(hazard_layer);
+                show_info_text('InaSAFE Hazard', 'Hazard unselected.');
             }
         }
 
-        function update_impact_layer(layer_id) {
+        function update_impact_layer(layer_id, is_update_map) {
             console.log('impact changed to ' + layer_id);
 
 {#            deselect if it is the same#}
-            if(last_impact_id == layer_id){
+            var no_layer_id_exists = layer_id != undefined && $(".impact.section a[data-id='"+layer_id+"']").length == 0;
+            var same_layer_id = last_impact_id == layer_id && last_impact_id != undefined;
+            if(same_layer_id || no_layer_id_exists){
                 update_impact_layer(undefined);
                 return;
             }
@@ -538,6 +609,10 @@ $(document).ready(function () {
             console.log($section);
             $section.find(">a").addClass("set");
 
+            if(is_update_map == false){
+                return;
+            }
+
             if (layer_id) {
                 console.log('update impact layer');
                 if (impact_layer) {
@@ -546,9 +621,11 @@ $(document).ready(function () {
                     map.removeLayer(impact_layer);
                 }
                 update_map(layer_id, 'impact');
+                show_info_text('InaSAFE Impact', $a.text() + ' selected.');
             } else {
                 console.log('delete impact');
                 map.removeLayer(impact_layer);
+                show_info_text('InaSAFE Impact', 'Impact unselected.');
             }
         }
 
@@ -569,6 +646,13 @@ $(document).ready(function () {
                 map.removeLayer(aggregation_layer);
             }
         }
+        
+        function update_layer_panel() {
+            {# update exposure layer #}
+            if(exposure_layer){
+
+            }
+        }
 
         function filter_layer(bounds){
             var bound_param = [
@@ -579,13 +663,46 @@ $(document).ready(function () {
             ];
             var url = '{% url "geosafe:layer-panel" bbox="9,9,9,9" %}';
             url = url.replace("9%2C9%2C9%2C9", JSON.stringify(bound_param));
+            show_info_text('Extent Changed', 'Filtering available layer for extent');
             $.get(url, function(data){
+                var exposure_id = $(".exposure.section a.selected").attr('data-id');
+                var hazard_id = $(".hazard.section a.selected").attr('data-id');
+                var impact_id = $(".impact.section a.selected").attr('data-id');
                 $(".layer-list").replaceWith('<div class="layer-list">'+data+'</data>');
                 $(document).ready(function(){
+                    exposure_layer_cbo = $("#id_exposure_layer");
+                    hazard_layer_cbo = $("#id_hazard_layer");
+                    aggregation_layer_cbo = $("#id_aggregation_layer");
+                    last_impact_id = undefined;
+                    impact_function_cbo = $("#id_impact_function_id");
                     init_layer_panel();
-                    console.log("updated layer panel");
+                    update_exposure_layer(exposure_id, false);
+                    update_hazard_layer(hazard_id, false);
+                    update_impact_layer(impact_id, false);
                 });
             });
+        }
+
+        function show_info_text(title, content){
+            $(".info-box .info-title").text(title);
+            $(".info-box .info-text").text(content);
+        }
+        
+        function dissmiss_info_text(title) {
+            if($(".info-box .info-title").text() == title){
+                show_info_text("", "");
+            }
+        }
+
+        function warn_analysis_zoom_limit(){
+            var zoom_level = map.getZoom();
+            var title = 'Analysis Extent Too Big'
+            if(zoom_level < 10){
+                show_info_text(title, 'You might want to zoom in to perform analysis.');
+            }
+            else{
+                dissmiss_info_text(title);
+            }
         }
 
         $(document).ready(function () {
@@ -594,7 +711,8 @@ $(document).ready(function () {
                 type: 'map',
                 ext: 'jpg',
                 attribution: 'Tiles Courtesy of <a href="http://www.mapquest.com/">MapQuest</a> &mdash; Map data &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
-                subdomains: '1234'
+                subdomains: '1234',
+                noWrap: true,
             });
             map = L.map('map', {
                 layers: [map_quest]
@@ -608,6 +726,12 @@ $(document).ready(function () {
 
             map.on('zoomend', function(e){
                 filter_layer(map.getBounds());
+                warn_analysis_zoom_limit();
+            });
+
+            map.on('click', function(e){
+                {# disable category popup #}
+                $(".option .list.show").removeClass("show");
             });
 
             var w_width = $(window).width();
@@ -635,7 +759,10 @@ $(document).ready(function () {
                     update_impact_layer({{ analysis.impact_layer_id }});
                 {% else %}
                     {# impact not yet processed #}
-                    $("#analysis-result-modal").modal();
+                    $("#analysis-result-modal").modal({
+                        'backdrop': 'static',
+                        'keyboard': 'false',
+                    });
                 {% endif %}
 
                 {% if analysis.get_task_result %}

@@ -32,34 +32,16 @@ def retrieve_layers(purpose, category=None, bbox=None):
         category = None
     if bbox:
         bbox = json.loads(bbox)
-        point_1 = (
-            Q(layer__bbox_x0__gte=bbox[0]) &
+        intersect = (
             Q(layer__bbox_x0__lte=bbox[2]) &
-            Q(layer__bbox_y0__gte=bbox[1]) &
-            Q(layer__bbox_y0__lte=bbox[3])
-        )
-        point_2 = (
-            Q(layer__bbox_x0__gte=bbox[0]) &
-            Q(layer__bbox_x0__lte=bbox[2]) &
-            Q(layer__bbox_y1__gte=bbox[1]) &
-            Q(layer__bbox_y1__lte=bbox[3])
-        )
-        point_3 = (
             Q(layer__bbox_x1__gte=bbox[0]) &
-            Q(layer__bbox_x1__lte=bbox[2]) &
-            Q(layer__bbox_y0__gte=bbox[1]) &
-            Q(layer__bbox_y0__lte=bbox[3])
-        )
-        point_4 = (
-            Q(layer__bbox_x1__gte=bbox[0]) &
-            Q(layer__bbox_x1__lte=bbox[2]) &
-            Q(layer__bbox_y1__gte=bbox[1]) &
-            Q(layer__bbox_y1__lte=bbox[3])
+            Q(layer__bbox_y0__lte=bbox[3]) &
+            Q(layer__bbox_y1__gte=bbox[1])
         )
         metadatas = Metadata.objects.filter(
             Q(layer_purpose=purpose),
             Q(category=category),
-            point_1 | point_2 | point_3 | point_4
+            intersect
         )
     else:
         metadatas = Metadata.objects.filter(
@@ -74,13 +56,42 @@ class AnalysisCreateView(CreateView):
     context_object_name = 'analysis'
 
     def get_context_data(self, **kwargs):
-        exposure_population = retrieve_layers('exposure', 'population')
-        exposure_road = retrieve_layers('exposure', 'road')
-        exposure_building = retrieve_layers('exposure', 'structure')
-        hazard_flood = retrieve_layers('hazard', 'flood')
-        hazard_earthquake = retrieve_layers('hazard', 'earthquake')
-        hazard_volcano = retrieve_layers('hazard', 'volcano')
+        purposes = [
+            {
+                'name': 'exposure',
+                'categories': ['population', 'road', 'structure'],
+            },
+            {
+                'name': 'hazard',
+                'categories': ['flood', 'earthquake', 'volcano'],
+            }
+        ]
+        sections = [];
+        for p in purposes:
+            categories = []
+            for c in p.get('categories'):
+                layers = retrieve_layers(p.get('name'), c)
+                category = {
+                    'name': c,
+                    'layers': layers
+                }
+                categories.append(category)
+            section = {
+                'name': p.get('name'),
+                'categories': categories
+            }
+            sections.append(section)
+
         impact_layers = retrieve_layers('impact')
+        sections.append({
+            'name': 'impact',
+            'categories': [
+                {
+                    'name': 'impact',
+                    'layers': impact_layers
+                }
+            ]
+        })
         try:
             analysis = Analysis.objects.get(id=self.kwargs.get('pk'))
         except:
@@ -88,13 +99,7 @@ class AnalysisCreateView(CreateView):
         context = super(AnalysisCreateView, self).get_context_data(**kwargs)
         context.update(
             {
-                'exposure_population': exposure_population,
-                'exposure_road': exposure_road,
-                'exposure_building': exposure_building,
-                'hazard_earthquake': hazard_earthquake,
-                'hazard_flood': hazard_flood,
-                'hazard_volcano': hazard_volcano,
-                'impact_layers': impact_layers,
+                'sections': sections,
                 'analysis': analysis,
             }
         )
@@ -116,6 +121,7 @@ class AnalysisListView(ListView):
     model = Analysis
     template_name = 'geosafe/analysis/list.html'
     context_object_name = 'analysis_list'
+    queryset = Analysis.objects.all().order_by("-impact_layer__date")
 
     def get_context_data(self, **kwargs):
         context = super(AnalysisListView, self).get_context_data(**kwargs)
@@ -297,22 +303,46 @@ def layer_panel(request, bbox=None):
         return HttpResponseBadRequest()
 
     try:
-        exposure_population = retrieve_layers('exposure', 'population', bbox)
-        exposure_road = retrieve_layers('exposure', 'road', bbox)
-        exposure_building = retrieve_layers('exposure', 'structure', bbox)
-        hazard_flood = retrieve_layers('hazard', 'flood', bbox)
-        hazard_earthquake = retrieve_layers('hazard', 'earthquake', bbox)
-        hazard_volcano = retrieve_layers('hazard', 'volcano', bbox)
+
+        purposes = [
+            {
+                'name': 'exposure',
+                'categories': ['population', 'road', 'structure'],
+            },
+            {
+                'name': 'hazard',
+                'categories': ['flood', 'earthquake', 'volcano'],
+            }
+        ]
+        sections = [];
+        for p in purposes:
+            categories = []
+            for c in p.get('categories'):
+                layers = retrieve_layers(p.get('name'), c, bbox)
+                category = {
+                    'name': c,
+                    'layers': layers
+                }
+                categories.append(category)
+            section = {
+                'name': p.get('name'),
+                'categories': categories
+            }
+            sections.append(section)
+
         impact_layers = retrieve_layers('impact', bbox=bbox)
+        sections.append({
+            'name': 'impact',
+            'categories': [
+                {
+                    'name': 'impact',
+                    'layers': impact_layers
+                }
+            ]
+        })
         form = AnalysisCreationForm()
         context = {
-            'exposure_population': exposure_population,
-            'exposure_road': exposure_road,
-            'exposure_building': exposure_building,
-            'hazard_earthquake': hazard_earthquake,
-            'hazard_flood': hazard_flood,
-            'hazard_volcano': hazard_volcano,
-            'impact_layers': impact_layers,
+            'sections': sections,
             'form': form
         }
         return render(request, "geosafe/analysis/options_panel.html", context)
