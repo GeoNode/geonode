@@ -1,0 +1,28 @@
+__author__ = 'ismailsunni'
+__project_name__ = 'geonode'
+__filename__ = 'new_views.py'
+__date__ = '4/18/16'
+__copyright__ = 'imajimatika@gmail.com'
+
+
+from geonode.maps.models import Map
+from django.views.generic import (
+    ListView, CreateView, DetailView)
+
+
+class MapCreateView(CreateView):
+    model = Map
+    template_name = 'new_maps/map_view.html'
+    context_object_name = 'analysis'
+
+    def get_context_data(self, **kwargs):
+        # list all required layers
+        context = {}
+        return context
+
+    def get_success_url(self):
+        pass
+
+    def get_form_kwargs(self):
+        kwargs = super(MapCreateView, self).get_form_kwargs()
+        return kwargs
