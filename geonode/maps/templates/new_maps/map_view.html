@@ -1,4 +1,5 @@
 {% extends "site_base.html" %}
+{% load bootstrap_tags %}
 {% load staticfiles %}
 {% load i18n %}
 
@@ -11,22 +12,41 @@
 {% endblock head %}
 
 {% block extra_head %}
-<link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.css"/>
-<style type="text/css">
- html, body, #wrap {
-    height: 100%;
-    width: 100%;
- }
+    <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.css"/>
+    <style type="text/css">
+        html, body, #wrap {
+            height: 100%;
+            width: 100%;
+        }
 
- </style>
+    </style>
 {% endblock extra_head %}
 
 {% block body_outer %}
-    <div class="options-panel">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-3">
+                <div class="options-panel">
+                    <form class="form-horizontal" role="form">
+                        <h3>Base Layer</h3>
+                        <div class="radio">
+                            <label><input type="radio" name="base_layer" value="map_quest" checked="true">Map Quest</label>
+                        </div>
+                        <div class="radio">
+                            <label><input type="radio" name="base_layer" value="osm">OSM</label>
+                        </div>
+                        <div class="radio">
+                            <label><input type="radio" name="base_layer" value="google_map">Google Map</label>
+                        </div>
+                    </form>
+                </div>
+            </div>
 
-    </div>
-    <div id="map" style="width: 100%; height: 100%; position:relative; margin-left: 70px; ">
-
+            <div class="col-md-9">
+                <div id="map" style="width: 100%; height: 100%; position:relative; ">
+                </div>
+            </div>
+        </div>
     </div>
 {% endblock body_outer %}
 
@@ -39,28 +59,60 @@
     <script type="text/javascript">
         var map = $("#map");
 
-        var w_width = $(window).width();
-        var map_width = w_width * 0.8;
-        map.css("width", map_width);
-
         var w_height = $(window).height();
         var map_height = w_height - $('nav').height();
         map.css("height", map_height);
 
         $(document).ready(function () {
+            // Define some default base layers
+            var osm =  L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
+                attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors',
+            });
 
-            var map_quest = L.tileLayer('http://otile{s}.mqcdn.com/tiles/1.0.0/{type}/{z}/{x}/{y}.{ext}', {
-                type: 'map',
-                ext: 'jpg',
+            var map_quest = L.tileLayer('http://otile4.mqcdn.com/tiles/1.0.0/osm/{z}/{x}/{y}.png', {
                 attribution: 'Tiles Courtesy of <a href="http://www.mapquest.com/">MapQuest</a> &mdash; Map data &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
-                subdomains: '1234'
-            });
-            map = L.map('map', {
-                layers: [map_quest]
             });
 
-{#            map.fitBounds([0, 45, 0, -45]);#}
-            map.setView([0, 90], 5)
+            // Initiate map
+            map = L.map('map', {
+                center: [0, 90],
+                zoom: 5,
+                layers: [osm]
+            });
+
+            // Create dict of base layer
+            var base_layers = {
+                "OpenStreetMap": osm,
+                "Map Quest": map_quest
+            };
+
+            // Create dict of layers
+            var layers = {
+
+            };
+
+            // Add control to the map.
+            L.control.layers(base_layers, layers).addTo(map);
+        });
+    </script>
+    <script type="text/javascript">
+            function update_base_layer(map, base_layer) {
+
+            }
+
+            $(document).ready(function () {
+            $('input:radio[name=base_layer]').change(function() {
+                alert(this.value);
+                if (this.value == 'map_quest'){
+
+                }else if (this.value == 'osm'){
+
+                }else if (this.value == 'google'){
+
+                }else {
+
+                }
+            });
         });
     </script>
 {% endblock extra_script %}
