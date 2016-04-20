@@ -119,6 +119,7 @@ def registration_part_one(request):
                 request.POST
             )
             if form.is_valid():
+                
                 if request_object and datarequest_shapefile:
                     request_object.first_name= form.cleaned_data['first_name']
                     request_object.middle_name= form.cleaned_data['middle_name']
@@ -135,6 +136,7 @@ def registration_part_one(request):
                     request_object.send_verification_email()
                     
                 request.session['request_object']= request_object
+                request.session.set_expiry(900)
                 return HttpResponseRedirect(
                     reverse('datarequests:registration_part_two')
                 )
