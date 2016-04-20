@@ -884,7 +884,8 @@ import djcelery
 djcelery.setup_loader()
 
 #TILED_SHAPEFILE = "geonode:cut_phl_001k_grid_utm_z51n"
-TILED_SHAPEFILE = "geonode:index"
+# TILED_SHAPEFILE = "geonode:index"
+TILED_SHAPEFILE = "geonode:philgrid_20160301"
 TILED_SHAPEFILE_TEST = "geonode:index"
 EULA_URL = '/eula/eula_form/'
 SELECTION_LIMIT=209715200
