@@ -135,11 +135,18 @@
 
         <li class="list-group-item">
         {% if links %}
-            {% include "layers/layer_eula_nested_dialog.html" %}
+            {% if phillidar2keyword in resource.keyword_list %}
+              {% include "layers/layer_eula_nested_dialog_phillidar2.html" %}
+            {% else %}
+              {% include "layers/layer_eula_nested_dialog.html" %}
+            {% endif %}
             <button class="btn btn-primary btn-md btn-block" data-toggle="modal" data-target="#eula-nested-dialog">{% trans "Download Layer" %}</button>
         {% else %}
           {% if request.user.is_authenticated %}
           <button class="btn btn-primary btn-md btn-block" id="request-download">{% trans "Request Download" %}</button>
+          {% else %}
+          
+          <button class="btn btn-primary btn-md btn-block" data-toggle="modal" data-target="#SigninModal" >{% trans "Please Sign in to Download" %}</button>
           {% endif %}
         {% endif %}
         </li>
