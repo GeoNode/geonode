@@ -15,6 +15,9 @@
     <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.css"/>
     <link rel="stylesheet" href="http://code.jquery.com/ui/1.8.18/themes/base/jquery-ui.css" type="text/css"
           media="all"/>
+    <link rel="stylesheet"
+          href="https://cdn.rawgit.com/elesdoar/leaflet-control-orderlayers/master/dist/css/leaflet.control.orderlayers.min.css"
+          type="text/css"/>
     <style type="text/css">
         html, body, #wrap {
             height: 100%;
@@ -73,6 +76,7 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/jquery-ui.min.js"
             type="text/javascript"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/Sortable/1.4.2/Sortable.min.js"></script>
+    <script src="https://cdn.rawgit.com/elesdoar/leaflet-control-orderlayers/master/dist/leaflet.control.orderlayers.min.js"></script>
 
     <script type="text/javascript">
         jQuery.fn.extend({
@@ -109,6 +113,13 @@
     <script type="text/javascript">
         var map = $("#map");
         var layer_control;
+        var overlay_layers = [];
+        // Each element contains:
+        // 1. layer name
+        // 2. layer wms url
+        // 3. z index
+        // 4. layer object
+        var highest_z_index = 0;
 
         var w_height = $(window).height();
         var map_height = w_height - $('nav').height();
@@ -143,7 +154,11 @@
             var layers = {};
 
             // Add control to the map.
-            layer_control = L.control.layers(base_layers, layers).addTo(map);
+            layer_control = L.control.orderlayers(
+                    base_layers,
+                    layers, {
+                        title: 'Layer Panel'
+                    }).addTo(map);
 
             // Make sortable
             var list = document.getElementById("layer-list");
@@ -169,12 +184,22 @@
                     layer_control = L.control.layers().addTo(map);
                 }
 
-                layer_control.addOverlay(tile_layer, layer_name);
+                layer_control.addOverlay(tile_layer, layer_name, z_index = highest_z_index);
                 map.addLayer(tile_layer);
+
+                // Add to memory
+                var added_layer = {};
+                added_layer.name = layer_name;
+                added_layer.url = layer_url;
+                added_layer.z_index = 0;
+                added_layer.layer = tile_layer;
+                {#                overlay_layers.append(added_layer);#}
+
+                // Add to list layer
+                $("#layer-list").prepend("<li>" + layer_name + "</li>");
             }
 
-            // Add to list layer
-            $("#layer-list").prepend("<li>" + layer_name + "</li>");
+
         });
     </script>
 {% endblock extra_script %}
