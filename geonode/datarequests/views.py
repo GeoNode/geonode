@@ -71,7 +71,7 @@ def registration_part_one(request):
         if request.user.is_authenticated():
             if not request_object:
                 request_object = DataRequestProfile(
-                    user = request.user,
+                    profile = request.user,
                     first_name = request.user.first_name,
                     middle_name = request.user.middle_name,
                     last_name = request.user.last_name,
@@ -80,7 +80,7 @@ def registration_part_one(request):
                     contact_number = request.user.voice,
                     request_status = 'pending'
                 )
-                request.session['reqiest_object']=request_object
+                request.session['request_object']=request_object
             return HttpResponseRedirect(
                 reverse('datarequests:registration_part_two')
             )
@@ -101,7 +101,7 @@ def registration_part_one(request):
         if request.user.is_authenticated():
             if not request_object:
                 request_object = DataRequestProfile(
-                    user = request.user,
+                    profile = request.user,
                     first_name = request.user.first_name,
                     middle_name = request.user.middle_name,
                     last_name = request.user.last_name,
@@ -668,7 +668,7 @@ def update_datarequest_obj(datarequest=None, parameter_dict=None, interest_layer
     if interest_layer:
         datarequest.jurisdiction_shapefile = interest_layer
         
-    requester_name = datarequest.first_name+" "+datarequest.middle_name+" "+datarequest.last_name
+    requester_name = unidecode(datarequest.first_name+" "+datarequest.middle_name+" "+datarequest.last_name)
     letter = Document()
     letter_owner, created =  Profile.objects.get_or_create(username='dataRegistrationUploader')
     letter.owner = letter_owner
