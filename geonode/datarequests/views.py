@@ -46,9 +46,9 @@ from geonode.utils import build_social_links
 
 from geoserver.catalog import Catalog
 
+from unidecode import unidecode
 from pprint import pprint
 
-import unicodedata
 
 from braces.views import (
     SuperuserRequiredMixin, LoginRequiredMixin,
