@@ -95,6 +95,16 @@ class MapStory(ResourceBase):
 
         return config
 
+    def update_thumbnail(self, first_chapter_obj):
+        if first_chapter_obj.chapter_index != 0:
+            return
+
+        chapter_base = ResourceBase.objects.get(id=first_chapter_obj.id)
+        ResourceBase.objects.filter(id=self.id).update(
+            thumbnail_url=chapter_base.thumbnail_url
+        )
+
+
     class Meta(ResourceBase.Meta):
         verbose_name_plural = 'MapStories'
         db_table = 'maps_mapstory'
