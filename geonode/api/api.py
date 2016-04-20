@@ -26,7 +26,7 @@ from tastypie.resources import ModelResource
 from tastypie.constants import ALL
 from tastypie.utils import trailing_slash
 
-from .authorization import GeoNodeAuthorization
+from .authorization import GeoNodeAuthorization, DataRequestAuthorization
 
 
 FILTER_TYPES = {
@@ -318,7 +318,7 @@ class DataRequestProfileResource(ModelResource):
     shapefile_thumbnail_url = fields.CharField(null=True)
 
     class Meta:
-        #authorization = GeoNodeAuthorization()
+        authorization = DataRequestAuthorization()
         authentication = SessionAuthentication()
         queryset = DataRequestProfile.objects.all().order_by('-key_created_date')
         resource_name = 'data_requests'

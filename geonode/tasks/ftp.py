@@ -10,6 +10,7 @@ from geonode.cephgeo.models import FTPRequest, FTPStatus
 import logging
 import pprint
 from geonode.groups.models import GroupProfile
+from celery.worker.strategy import default
 
 logger = logging.getLogger("geonode.tasks.ftp")
 FTP_USERS_DIRS = {  "test-ftp-user" : "/mnt/FTP/PL1/testfolder", }
@@ -107,16 +108,16 @@ If error still persists, forward this email to [{2}]""".format( request_name,
                     type_dir = data_class.replace(" ", "_")
                     
                     # Projection path folders
-                    utm_51n_dir = "EPSG-32651_{0}".format(type_dir)
+                    utm_51n_dir = os.path.join("UTM_51N",type_dir)
                     reprojected_dir = ""
                     if srs_epsg is not None:
-                        reprojected_dir = "EPSG-{0}_{1}".format(srs_epsg, type_dir)
+                        reprojected_dir = os.path.join("EPSG-"+str(srs_epsg),type_dir)
 
                     if srs_epsg is not None:
                         if data_class == 'LAZ':
                             result = run("mkdir {0}".format(utm_51n_dir))      # Do not reproject LAZ
                         else:
-                            result = run("mkdir {0}".format(reprojected_dir))      # Create a directory for each geo-type
+                            result = run("mkdir -p {0}".format(reprojected_dir))      # Create a directory for each geo-type
                     else:
                         result = run("mkdir {0}".format(utm_51n_dir))      # Create a directory for each geo-type
                     if result.return_code is not 0:                 #Handle error
@@ -254,7 +255,6 @@ Please forward this mail to the system administrator ({2}).
 
     finally:
         ftp_request.save()
-
 
 @celery.task(name='geonode.tasks.ftp.process_ftp_request', queue='ftp')
 def process_ftp_request(ftp_request, ceph_obj_list_by_data_class, srs_epsg_num=None):
