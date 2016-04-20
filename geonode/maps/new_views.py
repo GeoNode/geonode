@@ -6,6 +6,7 @@ __copyright__ = 'imajimatika@gmail.com'
 
 
 from geonode.maps.models import Map
+from geonode.layers.models import Layer
 from django.views.generic import (
     ListView, CreateView, DetailView)
 
@@ -17,7 +18,10 @@ class MapCreateView(CreateView):
 
     def get_context_data(self, **kwargs):
         # list all required layers
-        context = {}
+        layers = Layer.objects.all()
+        context = {
+            'layers': layers
+        }
         return context
 
     def get_success_url(self):
