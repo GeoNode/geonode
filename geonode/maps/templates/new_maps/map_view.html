@@ -18,6 +18,7 @@
     <link rel="stylesheet"
           href="https://cdn.rawgit.com/elesdoar/leaflet-control-orderlayers/master/dist/css/leaflet.control.orderlayers.min.css"
           type="text/css"/>
+    <link rel="stylesheet" href="{% static 'lib/css/L.Control.Pan.css' %}"/>
     <style type="text/css">
         html, body, #wrap {
             height: 100%;
@@ -77,6 +78,8 @@
             type="text/javascript"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/Sortable/1.4.2/Sortable.min.js"></script>
     <script src="https://cdn.rawgit.com/elesdoar/leaflet-control-orderlayers/master/dist/leaflet.control.orderlayers.min.js"></script>
+
+    <script src="{% static 'lib/js/L.Control.Pan.js' %}"></script>
 
     <script type="text/javascript">
         jQuery.fn.extend({
@@ -159,7 +162,7 @@
                     layers, {
                         title: 'Layer Panel'
                     }).addTo(map);
-
+{#            L.control.pan().addTo(map);#}
             // Make sortable
             var list = document.getElementById("layer-list");
             Sortable.create(list); // That's all
