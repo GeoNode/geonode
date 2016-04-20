@@ -11,7 +11,6 @@ from django import forms
 from geonode.layers.models import Layer
 
 from geosafe.models import Analysis
-from django.conf import settings
 
 LOG = logging.getLogger(__name__)
 
@@ -26,7 +25,8 @@ class AnalysisCreationForm(models.ModelForm):
             'hazard_layer',
             'aggregation_layer',
             'impact_function_id',
-            'extent_option'
+            'extent_option',
+            'keep',
         )
 
     exposure_layer = forms.ModelChoiceField(
@@ -61,9 +61,23 @@ class AnalysisCreationForm(models.ModelForm):
         choices=[(id, id) for id in if_id_list]
     )
 
+    keep = forms.BooleanField(
+        label='Save Analysis',
+        required=False,
+    )
+
     def __init__(self, *args, **kwargs):
         self.user = kwargs.pop('user', None)
+        exposure_layer = kwargs.pop('exposure_layer', None)
+        hazard_layer = kwargs.pop('hazard_layer', None)
+        impact_function_ids = kwargs.pop('impact_functions', None)
         super(AnalysisCreationForm, self).__init__(*args, **kwargs)
+        if exposure_layer:
+            self.fields['exposure_layer'].queryset = exposure_layer
+        if hazard_layer:
+            self.fields['hazard_layer'].queryset = hazard_layer
+        if impact_function_ids:
+            self.fields['impact_function_id'].choices = impact_function_ids
 
     def save(self, commit=True):
         instance = super(AnalysisCreationForm, self).save(commit=False)

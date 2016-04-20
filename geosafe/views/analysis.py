@@ -7,8 +7,10 @@ from zipfile import ZipFile
 
 from django.conf import settings
 from django.core.urlresolvers import reverse
+from django.db.models.query_utils import Q
 from django.http.response import HttpResponseServerError, HttpResponse, \
     HttpResponseBadRequest, HttpResponseRedirect
+from django.shortcuts import render
 from django.views.generic import (
     ListView, CreateView, DetailView)
 
@@ -24,6 +26,30 @@ LOGGER = logging.getLogger("geosafe")
 logger = logging.getLogger("geonode.geosafe.analysis")
 
 
+def retrieve_layers(purpose, category=None, bbox=None):
+    """List all required layers"""
+
+    if not category:
+        category = None
+    if bbox:
+        bbox = json.loads(bbox)
+        intersect = (
+            Q(layer__bbox_x0__lte=bbox[2]) &
+            Q(layer__bbox_x1__gte=bbox[0]) &
+            Q(layer__bbox_y0__lte=bbox[3]) &
+            Q(layer__bbox_y1__gte=bbox[1])
+        )
+        metadatas = Metadata.objects.filter(
+            Q(layer_purpose=purpose),
+            Q(category=category),
+            intersect
+        )
+    else:
+        metadatas = Metadata.objects.filter(
+            layer_purpose=purpose, category=category)
+    return [m.layer for m in metadatas]
+
+
 class AnalysisCreateView(CreateView):
     model = Analysis
     form_class = AnalysisCreationForm
@@ -31,22 +57,42 @@ class AnalysisCreateView(CreateView):
     context_object_name = 'analysis'
 
     def get_context_data(self, **kwargs):
-        # list all required layers
-        def retrieve_layers(purpose, category=None):
-            if category:
-                metadatas = Metadata.objects.filter(
-                    layer_purpose=purpose, category=category)
-            else:
-                metadatas = Metadata.objects.filter(
-                    layer_purpose=purpose)
-            return [m.layer for m in metadatas]
-        exposure_population = retrieve_layers('exposure', 'population')
-        exposure_road = retrieve_layers('exposure', 'road')
-        exposure_building = retrieve_layers('exposure', 'structure')
-        hazard_flood = retrieve_layers('hazard', 'flood')
-        hazard_earthquake = retrieve_layers('hazard', 'earthquake')
-        hazard_volcano = retrieve_layers('hazard', 'volcano')
+        purposes = [
+            {
+                'name': 'exposure',
+                'categories': ['population', 'road', 'structure'],
+            },
+            {
+                'name': 'hazard',
+                'categories': ['flood', 'earthquake', 'volcano'],
+            }
+        ]
+        sections = [];
+        for p in purposes:
+            categories = []
+            for c in p.get('categories'):
+                layers = retrieve_layers(p.get('name'), c)
+                category = {
+                    'name': c,
+                    'layers': layers
+                }
+                categories.append(category)
+            section = {
+                'name': p.get('name'),
+                'categories': categories
+            }
+            sections.append(section)
+
         impact_layers = retrieve_layers('impact')
+        sections.append({
+            'name': 'impact',
+            'categories': [
+                {
+                    'name': 'impact',
+                    'layers': impact_layers
+                }
+            ]
+        })
         try:
             analysis = Analysis.objects.get(id=self.kwargs.get('pk'))
         except:
@@ -54,17 +100,18 @@ class AnalysisCreateView(CreateView):
         context = super(AnalysisCreateView, self).get_context_data(**kwargs)
         context.update(
             {
-                'exposure_population': exposure_population,
-                'exposure_road': exposure_road,
-                'exposure_building': exposure_building,
-                'hazard_earthquake': hazard_earthquake,
-                'hazard_flood': hazard_flood,
-                'hazard_volcano': hazard_volcano,
-                'impact_layers': impact_layers,
+                'sections': sections,
                 'analysis': analysis,
             }
         )
         return context
+
+    def post(self, request, *args, **kwargs):
+        super(AnalysisCreateView, self).post(request, *args, **kwargs)
+        return HttpResponse(json.dumps({
+            'success': True,
+            'redirect': self.get_success_url()
+        }), content_type='application/json')
 
     def get_success_url(self):
         kwargs = {
@@ -82,6 +129,7 @@ class AnalysisListView(ListView):
     model = Analysis
     template_name = 'geosafe/analysis/list.html'
     context_object_name = 'analysis_list'
+    queryset = Analysis.objects.all().order_by("-impact_layer__date")
 
     def get_context_data(self, **kwargs):
         context = super(AnalysisListView, self).get_context_data(**kwargs)
@@ -108,7 +156,8 @@ def impact_function_filter(request):
     hazard_id = request.GET.get('hazard_id')
 
     if not (exposure_id and hazard_id):
-        return HttpResponseBadRequest()
+        return HttpResponse(
+            json.dumps([]), content_type="application/json")
 
     try:
         exposure_layer = Layer.objects.get(id=exposure_id)
@@ -120,7 +169,6 @@ def impact_function_filter(request):
         async_result = filter_impact_function.delay(
             hazard_url,
             exposure_url)
-
 
         impact_functions = async_result.get()
 
@@ -212,25 +260,104 @@ def layer_archive(request, layer_id):
         return HttpResponseServerError()
 
 
-def layer_list(request, layer_purpose, layer_category):
+def is_bbox_intersects(bbox_1, bbox_2):
+    """
+
+    bbox is in the format: (x0,y0, x1, y1)
+
+    :param bbox_1:
+    :param bbox_2:
+    :return:
+    """
+    points = [
+        (bbox_1[0], bbox_1[1]),
+        (bbox_1[0], bbox_1[3]),
+        (bbox_1[2], bbox_1[1]),
+        (bbox_1[2], bbox_1[3])
+        ]
+    for p in points:
+        if bbox_2[0] <= p[0] << bbox_2[2] and bbox_2[1] <= p[1] <= bbox_2[3]:
+            return True
+
+    return False
+
+
+def layer_list(request, layer_purpose, layer_category=None, bbox=None):
     if request.method != 'GET':
         return HttpResponseBadRequest()
 
-    if not layer_purpose or not layer_category:
+    if not layer_purpose:
         return HttpResponseBadRequest()
 
     try:
-        metadatas = Metadata.objects.filter(
-            layer_purpose=layer_purpose, category=layer_category)
+        layers_object = retrieve_layers(layer_purpose, layer_category, bbox)
         layers = []
-        for m in metadatas:
+        for l in layers_object:
             layer_obj = dict()
-            layer_obj['id'] = m.layer.id
-            layer_obj['name'] = m.layer.name
-            layers += layer_obj
+            layer_obj['id'] = l.id
+            layer_obj['name'] = l.name
+            layers.append(layer_obj)
 
         return HttpResponse(
             json.dumps(layers), content_type="application/json")
+
+    except Exception as e:
+        LOGGER.exception(e)
+        return HttpResponseServerError()
+
+
+def layer_panel(request, bbox=None):
+    if request.method != 'GET':
+        return HttpResponseBadRequest()
+
+    try:
+
+        purposes = [
+            {
+                'name': 'exposure',
+                'categories': ['population', 'road', 'structure'],
+            },
+            {
+                'name': 'hazard',
+                'categories': ['flood', 'earthquake', 'volcano'],
+            }
+        ]
+        sections = [];
+        for p in purposes:
+            categories = []
+            for c in p.get('categories'):
+                layers = retrieve_layers(p.get('name'), c, bbox)
+                category = {
+                    'name': c,
+                    'layers': layers
+                }
+                categories.append(category)
+            section = {
+                'name': p.get('name'),
+                'categories': categories
+            }
+            sections.append(section)
+
+        impact_layers = retrieve_layers('impact', bbox=bbox)
+        sections.append({
+            'name': 'impact',
+            'categories': [
+                {
+                    'name': 'impact',
+                    'layers': impact_layers
+                }
+            ]
+        })
+        form = AnalysisCreationForm(
+            user=request.user,
+            exposure_layer=retrieve_layers('exposure', bbox=bbox),
+            hazard_layer=retrieve_layers('hazard', bbox=bbox))
+        context = {
+            'sections': sections,
+            'form': form,
+            'user': request.user,
+        }
+        return render(request, "geosafe/analysis/options_panel.html", context)
 
     except Exception as e:
         LOGGER.exception(e)
@@ -295,7 +422,11 @@ def toggle_analysis_saved(request, analysis_id):
         analysis = Analysis.objects.get(id=analysis_id)
         analysis.keep = not analysis.keep
         analysis.save()
-        return HttpResponseRedirect(reverse('geosafe:analysis-list'))
+        return HttpResponse(json.dumps({
+            'success': True,
+            'is_saved': analysis.keep,
+        }), content_type='application/json')
+        # return HttpResponseRedirect(reverse('geosafe:analysis-list'))
     except Exception as e:
         LOGGER.exception(e)
         return HttpResponseServerError()
@@ -332,6 +463,38 @@ def download_report(request, analysis_id, data_type='map'):
                 analysis.report_table.read(),
                 'application/pdf',
                 '%s_table.pdf' % layer_title)
+        elif data_type == 'both':
+            tmp = tempfile.mktemp()
+            with ZipFile(tmp, mode='w') as zf:
+                zf.writestr(
+                    '%s_map.pdf' % layer_title,
+                    analysis.report_map.read())
+                zf.writestr(
+                    '%s_table.pdf' % layer_title,
+                    analysis.report_table.read())
+
+            return serve_files(
+                open(tmp),
+                'application/zip',
+                '%s_report.zip' % layer_title)
         return HttpResponseServerError()
-    except:
+    except Exception as e:
+        LOGGER.debug(e)
+        return HttpResponseServerError()
+
+
+def analysis_summary(request, impact_id):
+    """Get analysis summary from a given impact id"""
+
+    if request.method != 'GET':
+        return HttpResponseBadRequest()
+
+    try:
+        analysis = Analysis.objects.get(impact_layer__id=impact_id)
+        context = {
+            'analysis': analysis
+        }
+        return render(request, "geosafe/analysis/modal/impact_card.html",
+                      context)
+    except Exception as e:
         return HttpResponseServerError()

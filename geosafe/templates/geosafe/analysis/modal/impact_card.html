@@ -1,0 +1,77 @@
+{% load bootstrap_tags %}
+{% load staticfiles %}
+<style>
+    #impact-card-modal{
+        color: #cacaca;
+    }
+    #impact-card-modal .modal-title{
+        text-align: center;
+    }
+    #impact-card-modal .impact-icons{
+        text-align: center;
+        background: #3c3c3c;
+        margin-left: -20px;
+        margin-right: -20px;
+        margin-top: -20px;
+        padding: 10px;
+    }
+    #impact-card-modal .impact-icons img{
+        height: 20px;
+    }
+    #impact-card-modal .modal-footer{
+        text-align: center;
+        border-top: 1px solid #606060;
+    }
+    #impact-card-modal .modal-header{
+        border-bottom: 1px solid #606060;
+    }
+    #impact-card-modal .modal-content{
+        background: #454545;
+    }
+    #impact-card-modal .btn{
+        background: #6c6c6c;
+        color: #eeeeee;
+        border: none;
+    }
+    #impact-card-modal .modal-header .btn{
+        background: transparent;
+    }
+</style>
+<div class="modal fade" id="impact-card-modal" tabindex="-1" role="dialog" aria-labelledby="Impact">
+    {% if analysis %}
+    <div class="modal-dialog modal-sm" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+{#                    <span aria-hidden="true">&times;</span>#}
+                    <i class="fa fa-times-circle-o"></i>
+                </button>
+                <h4 class="modal-title" id="impact_card_label">Impact</h4>
+            </div>
+            <div class="modal-body">
+                <p class="impact-icons">
+                    {% with analysis.exposure_layer.metadata.category as c %}
+                    <img src="{% static "geosafe/img/"|add:c|add:".svg" %}" alt="{{ c }}" class="svg"/>
+                    {% endwith %}
+                    {% with analysis.hazard_layer.metadata.category as c %}
+                    <img src="{% static "geosafe/img/"|add:c|add:".svg" %}" alt="{{ c }}" class="svg"/>
+                    {% endwith %}
+                </p>
+                <p class="impact-questions">
+                    In the event of {{ analysis.hazard_layer.title }}, how many {{ analysis.exposure_layer.title }} will be affected:
+                </p>
+            </div>
+            <div class="modal-footer">
+                <a href="javascript:show_in_iframe('Impact Report', '{% url "geosafe:download-report" analysis_id=analysis.id data_type="table" %}')" role="button" class="btn btn-default btn-xs">See full report</a>
+                <a id="impact_card_toggle_saved" href="javascript:toggle_analysis_saved({{ analysis.id }})" role="button" class="btn btn-default btn-xs {% if analysis.keep %}active{% endif %}">
+                    <i class="fa fa-check"></i>
+                    <i class="fa fa-close"></i>
+                    <i class="fa fa-spinner fa-spin"></i>
+                    Save report
+                </a>
+                <a href="{% url "geosafe:download-report" analysis_id=analysis.id data_type="both" %}" role="button" class="btn btn-default btn-xs">Download report</a>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>

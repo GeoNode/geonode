@@ -1,0 +1,89 @@
+{% load bootstrap_tags %}
+{% load staticfiles %}
+{% load i18n avatar_tags %}
+
+{% for s in sections %}
+    {% if not s.name == 'impact' %}
+    <div class="{{ s.name }} section">
+        <h4 class="section-title">{{ s.name|capfirst }}</h4>
+        {% for c in s.categories %}
+        <div class="option">
+            <a href="#"
+               id="{{ c.name }}" class="{% if c.layers|length > 1 %}has-children{% endif %} {% if c.layers|length == 1 %}one{% endif %}"
+               title="{{ c.name|capfirst }}">
+                <img src="{% static "geosafe/img/"|add:c.name|add:".svg" %}" alt="{{ c.name }}" class="svg"/>
+            </a>
+            <div class="list floating-box" id="{{ c.name }}-list">
+                <h4 class="list-title">Select the {{ c.name }}</h4>
+                <ul>
+                    {% for e in c.layers %}
+                        <li>
+                            <a href="javascript:update_{{ s.name }}_layer({{ e.id }})" data-id="{{ e.id }}">{{ e.title }}</a>
+                        </li>
+                    {% empty %}
+                        <p>No {{ c.name }} layer for the extent.</p>
+                        <a href="{% url "layer_upload" %}" class="btn btn-default">Upload Layer</a>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    {# for impact #}
+    <div class="{{ s.name }} section">
+        <h4 class="section-title">{{ s.name|capfirst }}</h4>
+        {% for c in s.categories %}
+        <div class="option">
+            <a href="#"
+               id="{{ c.name }}" class="{% if c.layers|length > 1 %}has-children{% endif %} {% if c.layers|length == 1 %}one{% endif %}"
+               title="{{ c.name|capfirst }}">
+                <img src="{% static "geosafe/img/"|add:c.name|add:".svg" %}" alt="{{ c.name }}" class="svg"/>
+            </a>
+            <div class="list floating-box" id="{{ c.name }}-list">
+                <h4 class="list-title">Select the {{ c.name }}</h4>
+                <ul>
+                    {% for e in c.layers %}
+                        <li>
+                            <a href="javascript:update_{{ s.name }}_layer({{ e.id }})" data-id="{{ e.id }}">{{ e.title }}</a>
+                        </li>
+                    {% empty %}
+                        <p>No {{ c.name }} layer for the extent.</p>
+                        <a href="{% url "layer_upload" %}" class="btn btn-default">Upload Layer</a>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+        {% endfor %}
+        <div class="option">
+            <a href="javascript:show_analysis_summary()"
+                title="Show Analysis Summary">
+                <i class="fa fa-file"></i>
+            </a>
+        </div>
+    </div>
+    {% endif %}
+{% endfor %}
+<div class="report section">
+    <h4 class="section-title">Report</h4>
+    <div class="option">
+        <a href="{% url "geosafe:analysis-list" %}"
+           title="Go To Analysis List"><i class="fa fa-map"></i>
+        </a>
+    </div>
+    <div class="option">
+        <a href="#" class="has-children" id="impact-function" title="Impact Function">IF</a>
+        <div class="list floating-box" id="impact-function-list">
+            <h4 class="list-title">Select impact function</h4>
+            <ul>
+            </ul>
+        </div>
+    </div>
+    <form action="" method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div style="display: none;">
+            {{ form|as_bootstrap }}
+        </div>
+        <button type="submit" class="btn btn-primary" disabled>Run</button>
+    </form>
+</div>
