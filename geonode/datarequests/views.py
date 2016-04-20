@@ -456,7 +456,6 @@ def data_request_profile(request, pk, template='datarequests/profile_detail.html
     request_profile = get_object_or_404(DataRequestProfile, pk=pk)
 
     if not request.user.is_superuser and not request_profile.profile == request.user:
-        pprint(request_profile.profile  is not request.user)
         raise PermissionDenied
     
 

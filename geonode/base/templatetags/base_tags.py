@@ -11,8 +11,39 @@ from geonode.layers.models import Layer
 from geonode.maps.models import Map
 from geonode.documents.models import Document
 
+import urllib2
+import json
+from django.core.urlresolvers import resolve
+from django.db.models import Q
+from geoserver.catalog import Catalog
+import geonode.settings as settings
+
 register = template.Library()
 
+@register.inclusion_tag('index.html',takes_context=True)
+def get_philgrid(context):
+    cat = Catalog(settings.OGC_SERVER['default']['LOCATION'] + 'rest',
+                username=settings.OGC_SERVER['default']['USER'],
+                password=settings.OGC_SERVER['default']['PASSWORD'])
+    philgrid = Layer.objects.get(name__icontains="philgrid")
+    # resource = philgrid.resource
+    gs_layer = cat.get_layer(philgrid.name)
+    resource = gs_layer.resource
+    return resource
+
+@register.assignment_tag
+def get_fhm_count(takes_context=True):
+    visit_url = 'https://lipad-fmc.dream.upd.edu.ph/api/layers/' #?keyword__contains=hazard'
+    response = urllib2.urlopen(visit_url)
+    data = json.loads(response.read())
+    fhm_count = data['meta']['total_count']
+    return fhm_count
+
+@register.assignment_tag
+def get_resourceLayers_count(takes_context=True):
+    rl_list = Layer.objects.filter(keywords__name__icontains="phillidar2")
+    rl_count = len(rl_list)
+    return rl_count
 
 @register.assignment_tag
 def num_ratings(obj):

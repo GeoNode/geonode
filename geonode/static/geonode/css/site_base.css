@@ -1,5 +1,5 @@
 body {
-	padding-top: 60px;
+	padding-top: 40px;
 }
 
 .navbar-brand {
@@ -45,3 +45,12 @@ body {
 .yourlabs-autocomplete {
 	margin-top: 30px !important;
 }
+
+.home-facets {
+    text-align: center;
+    /*padding: 4em 0px;*/
+   position: relative;
+   padding-top: 31%;
+   padding-left: 0px;
+}
+

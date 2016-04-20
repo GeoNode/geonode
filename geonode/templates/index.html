@@ -4,6 +4,11 @@
 {% load base_tags %}
 
 
+{% block head %}
+  {% include "philgrid.html" %}
+{{ block.super }}
+{% endblock %}
+
 {% block title %} {% trans "Welcome!" %} - {{ block.super }} {% endblock %}
 
 {% block body_class %}home{% endblock %}
@@ -11,10 +16,10 @@
 {% block middle %}
    {{ block.super }}
   {% block hero %}
-  <div class="container">
-    <div class="row body-top">
+<div class="container">
+    <div class="row body-top col-md-9 center-text" style="width:70%">
       <!-- <div class="jumbotron col-md-6"> -->
-        <div class="container col-md-6 center-text" style="width:70%;border-right:2px solid #007196;">
+        <!-- <div class="container col-md-6 center-text" style="width:100%;border-right:2px solid #007196;"> -->
           <h1 class="no-margin-top">{% trans "Welcome to LiPAD!" %}</h1>
           <p>
               {% blocktrans %}
@@ -25,28 +30,95 @@
                 The <a href="https://www.dream.upd.edu.ph/about-us/phil-lidar-1/" title="About the Phil-LiDAR 1 Program">Phil-LiDAR 1 Program</a> aims to produce 3D flood and hazard maps for the 2/3 of Philippine river systems, following the <a href="https://www.dream.upd.edu.ph" title="About DREAM Program">DREAM Program</a> which covered 18 major river basins,  and tapping state universities and colleges (SUCs) and private higher education institutions (HEIs) nationwide in the processing, validation, and modeling of the acquired LiDAR data. Aside from addressing disaster risk reduction and climate change adaptation, the resource information to be generated from this project will also be useful in providing the information requirements of various sectors in the country.
               {% endblocktrans %}
             </p>
-        </div>
-      <!-- </div>-->
-      <div class="col-md-6 border=0"  style="width:30%;">
-        <!--<iframe width="560" height="315" src="https://www.youtube.com/embed/KSsbWPeOQfs" frameborder="0" allowfullscreen></iframe>-->
+        <!-- </div> -->
+      </div>
+      <div class=" body-top col-md-6 pull-right" style="width:30%;">
+        <iframe style="border: none;" height="500" width="400" src="https://lipad.dream.upd.edu.ph/maps/3418/embed"></iframe>
+      </div>
+<div class="container">
+    <div class="row home-facets" style="width:90%;">
+      <div class="col-md-3  border=0 text-center" >
+        <p>
+          <a href="/layers/?limit=100&amp;offset=0&amp;keywords__slug__in=flood-hazard-map">
+            <i class="fa fa-square-o fa-5x rotate-45"></i>
+          </a>
+        </p>
+        <h2>
+          <a href="/layers/?limit=100&amp;offset=0&amp;keywords__slug__in=flood-hazard-map">
+            {% get_fhm_count "%d" as fhm_count %}
+             <p class="text-center" >{{ fhm_count }} </p>
+          </a>
+        </h2>
+        <h4 class="text-center">Flood Hazard Maps</h4>
+      </div>
+
+      <div class="col-md-3 border=0 text-center" >
+        <p>
+          <a href="/search/?keywords__slug__in=phillidar2&amp;limit=100&amp;offset=0">
+            <i class="fa fa-map-marker fa-5x"></i>
+          </a>
+        </p>
+        <h2>
+          <a href="/search/?keywords__slug__in=phillidar2&amp;limit=100&amp;offset=0">
+            {% get_resourceLayers_count "%d" as rl_count %}
+            <p class="text-center">{{ rl_count }} </p>
+          </a>
+        </h2>
+        <h4 class="text-center">Resource Layers</h4>
+      </div>
+
+      <div class="col-md-3 border=0 text-center" >
+        <p><i class="fa fa-globe fa-5x"></i></p>
+        <h2>
+          <p class="text-center">37,557 sq. km.</p>
+        </h2>
+        <h4 class="text-center">Total LiDAR Coverage</h4>
+      </div>
+  </div>
+  
+
+    <div class="row body-bottom">
+      <!-- <div class="col-md-6 border=0"  style="width:30%;"> -->
+      <div class="col-md-3 border=0" style="">
         {% blocktrans %}
-        <h2 style="margin-top:15px;">How to get data</h2>
+        <h4 style="margin-top:15px;">How to get data</h4>
         <p>
           <ol>
             <li><a href="/datarequests/register/">Register</a></li>
             <li><a href="/help#registration-process">Request</a></li>
             <li><a href="/help#download-tiles">Download</a></li>
           </ol>
-        </p>
-        <h2>Demo Videos</h2>
         <p>
-          <a data-toggle="modal" data-target="#modal-fhm" href="">Download Flood Hazard Maps.</a>
-        </p><p>
-          <a data-toggle="modal" data-target="#modal-data" href="">Download LiDAR data tiles.</a>
+        {% endblocktrans %}
+      </div>
+
+      <div class="col-md-3 border=0" style="">
+        {% blocktrans %}
+        <h4 style="margin-top:15px;">Demo Videos</h4>
+        <p>
+          <a data-toggle="modal" data-target="#modal-fhm" href="">Register to LiPAD</a>
+          <br>
+          <a data-toggle="modal" data-target="#modal-fhm" href="">Download Flood Hazard Maps</a>
+        <br>
+          <a data-toggle="modal" data-target="#modal-data" href="">Download LiDAR data tiles</a>
         </p>
         {% endblocktrans %}
       </div>
 
+      <div class="col-md-3 border=0" style="" >
+        {% blocktrans %}
+        <h4 style="margin-top:15px; text-center">OGC Services</h4>
+        <p>
+          <ol>
+            <li><a href="http://lipad-fmc.dmz.dream.upd.edu.ph/geoserver/ows?service=wms&amp;version=1.1.0">WMS 1.1.1</a></li>
+            <li><a href="http://lipad-fmc.dmz.dream.upd.edu.ph/geoserver/ows?service=wms&amp;version=1.3.0">WMS 1.3.0</a></li>
+            <li><a href="http://lipad-fmc.dmz.dream.upd.edu.ph/geoserver/ows?service=wfs&amp;version=1.0.0">WFS 1.0.0</a></li>
+            <li><a href="http://lipad-fmc.dmz.dream.upd.edu.ph/geoserver/ows?service=wfs&amp;version=1.1.0">WFS 1.1.0</a></li>
+            <li><a href="http://lipad-fmc.dmz.dream.upd.edu.ph/geoserver/ows?service=wfs&amp;version=2.0.0">WFS 2.0.0</a></li>
+          </ol>
+        <p>
+        {% endblocktrans %}
+      </div>
     </div>
 
 
@@ -54,23 +126,26 @@
 
   {% block mainbody %}
 
-    <div class="row body-bottom">
-        <div class="page-header">
-          <h2 >{% trans "Latest Layers" %}</h2>
-        </div>
-    <!-- </div>
+  
+{% endblock %}
 
-    <div class="row body-bottom"> -->
-        <div class="col-md-12 grid-spacer ">
-          <!-- <span class="total-layers" >Total: </span> -->
-          <!-- <span ng-bind="latest_layers | limitTo:5"></span> -->
-          {% include 'base/_latestlayer_snippet.html' %}
-        </div>
+<div class="modal fade" id="modal-fhm" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h4 class="modal-title" id="myModalLabel">{% trans "Register to LiPAD" %}</h4>
       </div>
-
-  {% endblock %}
-
+      <div class="modal-body">
+        <iframe width="560" height="315" src="https://www.youtube.com/embed/hniMly5vWKc" frameborder="0" allowfullscreen></iframe>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">{% trans "Close" %}</button>
+      </div>
+    </div>
+  </div>
 </div>
+
 <div class="modal fade" id="modal-fhm" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
@@ -79,7 +154,7 @@
         <h4 class="modal-title" id="myModalLabel">{% trans "Download Flood Hazard Maps" %}</h4>
       </div>
       <div class="modal-body">
-        <iframe width="560" height="315" src="https://www.youtube.com/embed/BGL-2hoQP_0" frameborder="0" allowfullscreen></iframe>
+        <iframe width="560" height="315" src="https://www.youtube.com/embed/3HpiZ9pg4fU" frameborder="0" allowfullscreen></iframe>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-default" data-dismiss="modal">{% trans "Close" %}</button>
@@ -87,15 +162,16 @@
     </div>
   </div>
 </div>
+
 <div class="modal fade" id="modal-data" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-        <h4 class="modal-title" id="myModalLabel">{% trans "Download Flood Hazard Maps" %}</h4>
+        <h4 class="modal-title" id="myModalLabel">{% trans "Download LiDAR Data Tiles" %}</h4>
       </div>
       <div class="modal-body">
-        <iframe width="560" height="315" src="https://www.youtube.com/embed/KSsbWPeOQfs" frameborder="0" allowfullscreen></iframe>
+        <iframe width="560" height="315" src="https://www.youtube.com/embed/mbYCnw7QI5Q" frameborder="0" allowfullscreen></iframe>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-default" data-dismiss="modal">{% trans "Close" %}</button>
@@ -103,22 +179,4 @@
     </div>
   </div>
 </div>
-  {% block extra_script %}
-    {% if GEONODE_SECURITY_ENABLED %}
-      {% include "_permissions_form_js.html" %}
-    {% endif %}
-    <script type="text/javascript">
-        {% if HAYSTACK_SEARCH %}
-            SEARCH_URL = '{% url 'api_get_search' api_name='api' resource_name='base' %}?type__in=layer'
-        {% else %}
-            SEARCH_URL = '{% url 'api_dispatch_list' api_name='api' resource_name='layers' %}';
-            
-        {% endif %}
-      FILTER_TYPE = 'layer';
-    </script>
-    {% with include_spatial='true' %}
-    {% include 'search/search_scripts.html' %}
-    {% endwith %}
-  {% endblock extra_script %}
-
 {% endblock %}

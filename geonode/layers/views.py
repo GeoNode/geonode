@@ -23,6 +23,8 @@ import sys
 import logging
 import shutil
 import traceback
+import csv
+import datetime
 from pprint import pprint
 
 from django.contrib import messages
@@ -60,9 +62,13 @@ from geonode.utils import build_social_links
 from geonode.geoserver.helpers import cascading_delete, gs_catalog
 from urlparse import urljoin, urlsplit
 from actstream.signals import action
+from actstream.models import Action
 
 from .forms import AnonDownloaderForm
 from geonode.eula.models import AnonDownloader
+
+# from datetime import date, timedelta, datetime
+from django.utils import timezone
 
 CONTEXT_LOG_FILE = None
 
@@ -217,6 +223,7 @@ def layer_upload(request, template='upload/layer_upload.html'):
 
 
 def layer_detail(request, layername, template='layers/layer_detail.html'):
+    #tile shapefile ng settings.tile
     layer = _resolve_layer(
         request,
         layername,
@@ -595,8 +602,42 @@ def layer_download(request, layername):
         'base.view_resourcebase',
         _PERMISSION_MSG_VIEW)
     if request.user.is_authenticated():
-        action.send(request.user, verb='downloaded', target=layer)
+        action.send(request.user, verb='downloaded', action_object=layer)
 
     splits = request.get_full_path().split("/")
     redir_url = urljoin(settings.OGC_SERVER['default']['PUBLIC_LOCATION'], "/".join(splits[4:]) + "&format_options=layout:phillidar")
     return HttpResponseRedirect(redir_url)
+
+@login_required
+def layer_download_csv(request):
+    if not request.user.is_superuser:
+        raise HttpResponseForbidden
+
+    response = HttpResponse(content_type='text/csv')
+    datetoday = timezone.now()
+    response['Content-Disposition'] = 'attachment; filename="layerdownloads-"'+str(datetoday.month)+str(datetoday.day)+str(datetoday.year)+'.csv"'
+    writer = csv.writer(response)
+
+    auth_list = Action.objects.filter(target_content_type=40).order_by('timestamp') #get layers in prod
+    # auth_fmc = 
+    anon_list = AnonDownloader.objects.all().order_by('date')
+    # anon_fmc  
+    # writer.writerow( ['username','action','layer_name','date_downloaded'])
+    # for auth in auth_list:
+    #     writer.writerow([auth])
+
+    writer.writerow( ['lastname','firstname','action','layer_name','date_downloaded'])
+    for anon in anon_list:
+        # admin downloaded San Pedro 25 Year Flood Hazard Map 2 1 week, 4 days ago
+        # datetime.datetime(2016, 4, 8, 18, 28, 25, 468897)
+        date_diff = (datetoday - anon.date).days
+        lastname = anon.anon_last_name
+        firstname = anon.anon_first_name
+        action = 'downloaded'
+        layername = anon.anon_layer
+        date = str(date_diff) + " days ago"
+        # string =
+        writer.writerow([lastname,firstname,action,layername,date])        
+
+    return response
+

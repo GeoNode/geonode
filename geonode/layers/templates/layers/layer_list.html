@@ -9,7 +9,10 @@
 
 {% block body %}
 <div class="page-header">
-  <a href="{% url "layer_upload" %}" class="btn btn-primary pull-right">{% trans "Upload Layers" %}</a>
+  {% if user.is_superuser %}
+    <a href="{% url "layer_download_csv" %}" class="btn btn-primary pull-right">{% trans "Download CSV" %}</a>
+    <a href="{% url "layer_upload" %}" class="btn btn-primary pull-right">{% trans "Upload Layers" %}</a>
+  {% endif %}
   <h2 class="page-title">{% trans "Explore Layers" %}</h2>
 </div>
   {% with include_type_filter='true' %}
