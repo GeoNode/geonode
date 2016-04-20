@@ -567,3 +567,24 @@ def layer_thumbnail(request, layername):
                 status=500,
                 mimetype='text/plain'
             )
+
+
+def layer_list(request):
+    """Get Layer list as JSON
+    """
+    if request.method == 'GET':
+        if 'q' in request.GET:
+            query = request.GET.get('q')
+
+            layers = Layer.objects.filter(
+                name__istartswith=query)
+            result = []
+            for layer in layers:
+                result.append(layer.name)
+        else:
+            layers = Layer.objects.all()
+            result = []
+            for layer in layers:
+                result.append(layer.name)
+        result = json.dumps(result)
+        return HttpResponse(result, content_type='application/json')
