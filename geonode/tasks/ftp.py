@@ -108,10 +108,10 @@ If error still persists, forward this email to [{2}]""".format( request_name,
                     type_dir = data_class.replace(" ", "_")
                     
                     # Projection path folders
-                    utm_51n_dir = "EPSG-32651_{0}".format(type_dir)
+                    utm_51n_dir = os.path.join("UTM_51N",type_dir)
                     reprojected_dir = ""
                     if srs_epsg is not None:
-                        reprojected_dir = "EPSG-{0}_{1}".format(srs_epsg, type_dir)
+                        reprojected_dir = os.path.join("EPSG-"+str(srs_epsg),type_dir)
 
                     if srs_epsg is not None:
                         if data_class == 'LAZ':
@@ -255,7 +255,6 @@ Please forward this mail to the system administrator ({2}).
 
     finally:
         ftp_request.save()
-
 
 @celery.task(name='geonode.tasks.ftp.process_ftp_request', queue='ftp')
 def process_ftp_request(ftp_request, ceph_obj_list_by_data_class, srs_epsg_num=None):
