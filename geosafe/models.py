@@ -37,7 +37,8 @@ class GeoSAFEException(BaseException):
 # Create your models here.
 class Metadata(models.Model):
     """Represent metadata for a layer."""
-    layer = models.OneToOneField(Layer, primary_key=True)
+    layer = models.OneToOneField(Layer, primary_key=True,
+                                 related_name='metadata')
     layer_purpose = models.CharField(
         verbose_name='Purpose of the Layer',
         max_length=20,
@@ -228,6 +229,7 @@ class Analysis(models.Model):
             self.impact_layer.delete()
         except:
             pass
+        super(Analysis, self).delete(using=using)
 
 
 # needed to load signals

@@ -5,6 +5,7 @@ import logging
 import tempfile
 from zipfile import ZipFile
 
+from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.db.models.query_utils import Q
 from django.http.response import HttpResponseServerError, HttpResponse, \
@@ -104,6 +105,13 @@ class AnalysisCreateView(CreateView):
             }
         )
         return context
+
+    def post(self, request, *args, **kwargs):
+        super(AnalysisCreateView, self).post(request, *args, **kwargs)
+        return HttpResponse(json.dumps({
+            'success': True,
+            'redirect': self.get_success_url()
+        }), content_type='application/json')
 
     def get_success_url(self):
         kwargs = {
@@ -340,10 +348,14 @@ def layer_panel(request, bbox=None):
                 }
             ]
         })
-        form = AnalysisCreationForm()
+        form = AnalysisCreationForm(
+            user=request.user,
+            exposure_layer=retrieve_layers('exposure', bbox=bbox),
+            hazard_layer=retrieve_layers('hazard', bbox=bbox))
         context = {
             'sections': sections,
-            'form': form
+            'form': form,
+            'user': request.user,
         }
         return render(request, "geosafe/analysis/options_panel.html", context)
 
@@ -410,7 +422,11 @@ def toggle_analysis_saved(request, analysis_id):
         analysis = Analysis.objects.get(id=analysis_id)
         analysis.keep = not analysis.keep
         analysis.save()
-        return HttpResponseRedirect(reverse('geosafe:analysis-list'))
+        return HttpResponse(json.dumps({
+            'success': True,
+            'is_saved': analysis.keep,
+        }), content_type='application/json')
+        # return HttpResponseRedirect(reverse('geosafe:analysis-list'))
     except Exception as e:
         LOGGER.exception(e)
         return HttpResponseServerError()
@@ -447,6 +463,38 @@ def download_report(request, analysis_id, data_type='map'):
                 analysis.report_table.read(),
                 'application/pdf',
                 '%s_table.pdf' % layer_title)
+        elif data_type == 'both':
+            tmp = tempfile.mktemp()
+            with ZipFile(tmp, mode='w') as zf:
+                zf.writestr(
+                    '%s_map.pdf' % layer_title,
+                    analysis.report_map.read())
+                zf.writestr(
+                    '%s_table.pdf' % layer_title,
+                    analysis.report_table.read())
+
+            return serve_files(
+                open(tmp),
+                'application/zip',
+                '%s_report.zip' % layer_title)
         return HttpResponseServerError()
-    except:
+    except Exception as e:
+        LOGGER.debug(e)
+        return HttpResponseServerError()
+
+
+def analysis_summary(request, impact_id):
+    """Get analysis summary from a given impact id"""
+
+    if request.method != 'GET':
+        return HttpResponseBadRequest()
+
+    try:
+        analysis = Analysis.objects.get(impact_layer__id=impact_id)
+        context = {
+            'analysis': analysis
+        }
+        return render(request, "geosafe/analysis/modal/impact_card.html",
+                      context)
+    except Exception as e:
         return HttpResponseServerError()

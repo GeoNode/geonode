@@ -37,8 +37,8 @@
     font-size: 22px;
     display: block;
     margin: 0 12px;
-    height: 46px;
-    width: 42px;
+    height: 40px;
+    width: 40px;
     position: relative;
     -moz-border-radius: 5px;
     -webkit-border-radius: 5px;
@@ -59,10 +59,12 @@
     bottom:0;
     left: 0;
     right: 0;
+    width: 30px;
+    height: 20px;
     margin:auto;
 }
 .options-panel .section {
-    padding: 18px 0;
+    padding: 10px 0;
     border-bottom: 1px solid #6d6c6c;
 }
 .options-panel .section-title {
@@ -181,6 +183,10 @@ a:hover i {
     padding-right: 20px;
 }
 
+.leaflet-top, .leaflet-bottom{
+    z-index: 10;
+}
+
 .leaflet-bottom{
     bottom: 46px;
 }
@@ -203,6 +209,30 @@ a:hover i {
 .info-text{
     color: #979797;
 }
+
+.btn .fa-check{
+    display: none;
+}
+.btn.active .fa-check{
+    display: inline-block;
+    color: #50cf5c;
+}
+.btn .fa-close{
+    display: inline-block;
+    color: #f15a2b;
+}
+.btn.active .fa-close{
+    display: none;
+}
+.btn.processing .fa-close{
+    display: none;
+}
+.btn .fa-spinner{
+    display: none;
+}
+.btn.processing .fa-spinner{
+    display: inline-block;
+}
  </style>
 {% endblock extra_head %}
 
@@ -216,59 +246,23 @@ a:hover i {
 <div class="options-panel">
 {#    <div class="search section"> <a href="#" id="search-call"><i class="fa fa-search"></i></a> </div>#}
     <div class="brand section">
-        <a href="{% url "home" %}"><img src="{% static 'geosafe/img/logo-geonode.png' %}" href="{% url "home" %}" title="Go To Geonode Homepage"/></a>
+        <a href="{% url "home" %}"
+           title="Go To Geonode Homepage"
+           data-toggle="tooltip"
+           data-placement="right">
+            <img src="{% static 'geosafe/img/logo-geonode.png' %}"
+                 href="{% url "home" %}"/>
+        </a>
     </div>
     <div class="layer-list">
         {% include "geosafe/analysis/options_panel.html" %}
     </div>
 </div>
 <!-- Waiting Analysis Modal -->
-<div class="modal fade" id="analysis-result-modal" tabindex="-1" role="dialog" aria-labelledby="Analysis Result">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span></button>
-                {% if analysis.get_task_result.state == 'FAILURE' %}
-                    <h4 class="modal-title" id="myModalLabel">Analysis Failed</h4>
-                {% else %}
-                    <h4 class="modal-title" id="myModalLabel">Waiting Analysis</h4>
-                {% endif %}
-            </div>
-            <div class="modal-body">
-                {% if analysis.get_task_result.state == 'FAILURE' %}
-                    <div class="panel panel-default">
-                        <div class="panel-heading">
-                            <h3 class="panel-title">Error Detail</h3>
-                        </div>
-                        <div class="panel-body">
-                            Analysis process is failed.
-                            <p>{{ analysis.get_task_result.result }}</p>
-                            <p>{{ analysis.get_task_result.traceback }}</p>
-                        </div>
-                    </div>
-                {% else %}
-                    Analysis is running asynchronously.
-                    The map will be updated when it is done...
-                {% endif %}
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                {% if analysis.get_task_result %}
-                    {% if analysis.get_task_result.failed %}
-                        <p>
-                            <form action="{% url 'geosafe:rerun-analysis' analysis_id=analysis.id %}" method="post">
-                                {% csrf_token %}
-                                <input type="hidden" id="analysis_id" value="{{ analysis.id }}" />
-                                <button type="submit" class="btn btn-primary">Rerun Analysis</button>
-                            </form>
-                        </p>
-                    {% endif %}
-                {% endif %}
-            </div>
-        </div>
-    </div>
-</div>
+{% include "geosafe/analysis/modal/waiting_analysis.html" %}
+{% include "geosafe/analysis/modal/analysis_confirmation.html" %}
+{% include "geosafe/analysis/modal/impact_card.html" %}
+{% include "geosafe/analysis/modal/iframe_modal.html" %}
 <div id="map" style="width: 100%; height: 100%; position:relative; margin-left: 70px; ">
 {#    <div id="form-div" style="display: none;position: absolute; width: 30%; z-index: 100; top: 0; right: 0; background-color: transparent">#}
 {#        <form action="" method="post" enctype="multipart/form-data">#}
@@ -340,6 +334,15 @@ function init_layer_panel(){
         }
         $(this).next().filter(".list").toggleClass("show");
         last_click=this;
+    });
+    var $analysis_form = $(".report.section form");
+    $analysis_form.on('submit', function(e){
+        {# prevent form submit by default #}
+        $("#confirm_hazard_title").val(hazard_layer_cbo.find('option:selected').text());
+        $("#confirm_exposure_title").val(exposure_layer_cbo.find('option:selected').text());
+        $("#confirm_impact_title").val(impact_function_cbo.find('option:selected').text());
+        $("#analysis-confirmation-modal").modal();
+        return false;
     });
 }
 
@@ -646,13 +649,6 @@ $(document).ready(function () {
                 map.removeLayer(aggregation_layer);
             }
         }
-        
-        function update_layer_panel() {
-            {# update exposure layer #}
-            if(exposure_layer){
-
-            }
-        }
 
         function filter_layer(bounds){
             var bound_param = [
@@ -705,7 +701,68 @@ $(document).ready(function () {
             }
         }
 
+        function run_analysis(){
+            var $keep = $("#confirm_save_analysis");
+            if($keep && $keep.hasClass('active')){
+                $("#id_keep").prop('checked', true);
+            }
+            else{
+                $("#id_keep").prop('checked', false);
+            }
+            var $analysis_form = $(".report.section form");
+            $.post($analysis_form.attr('action'), $analysis_form.serialize(), function(data){
+                if(data && data.success){
+                    window.location.href = data.redirect;
+                }
+            });
+        }
+
+        function show_analysis_summary(){
+            if(last_impact_id == undefined){
+                show_info_text('Show Analysis Summary', 'Please select desired impact layer first, before viewing analysis summary.')
+                return;
+            }
+            var selected_impact_id = last_impact_id;
+            var url = '{% url "geosafe:analysis-summary" impact_id=-1 %}';
+            url = url.replace("-1", selected_impact_id);
+            $.get(url, function(data){
+                if(data){
+                    $("#impact-card-modal").replaceWith(data);
+                    $("#impact-card-modal").modal();
+                    var impact_layer_title = $(".impact.section a[data-id='"+selected_impact_id+"']").text();
+                    show_info_text('Show Analysis Summary', 'Showing summary for '+impact_layer_title);
+                }
+            });
+        }
+
+        function show_in_iframe(title, url) {
+            var $iframe_modal = $("#iframe-modal");
+            $iframe_modal.find("#iframe_label").text(title);
+            $iframe_modal.find("iframe").attr('src', url);
+            $iframe_modal.modal();
+        }
+
+        function toggle_analysis_saved(id){
+            var url = '{% url "geosafe:toggle-analysis-saved" analysis_id=-1 %}';
+            url = url.replace("-1", id);
+            var $a = $("#impact_card_toggle_saved");
+            $a.removeClass("active").addClass("processing");
+            $.post(url, function(data){
+                if(data && data.success){
+                    $a.removeClass("processing");
+                    if(data.is_saved){
+                        $a.addClass("active");
+                    }
+                }
+            });
+        }
+
         $(document).ready(function () {
+
+            {# initialize tooltip #}
+            $(function () {
+                $('[data-toggle="tooltip"]').tooltip({container: 'body'});
+            });
 
             var map_quest = L.tileLayer('http://otile{s}.mqcdn.com/tiles/1.0.0/{type}/{z}/{x}/{y}.{ext}', {
                 type: 'map',
@@ -761,18 +818,19 @@ $(document).ready(function () {
                     {# impact not yet processed #}
                     $("#analysis-result-modal").modal({
                         'backdrop': 'static',
-                        'keyboard': 'false',
+                        'keyboard': 'false'
                     });
                 {% endif %}
 
                 {% if analysis.get_task_result %}
                     {% if not analysis.get_task_result.successful and not analysis.get_task_result.failed %}
                         {# Automatic check in 30 sec #}
-                        var check_analysis = function(){
+                        function check_analysis(){
                             var check_analysis_url = '{% url 'geosafe:check-analysis' analysis_id=analysis.id %}';
                             $.get(check_analysis_url, function(data){
                                 if(data && data.impact_layer_id){
-                                    update_impact_layer(data.impact_layer_id)
+                                    {# refresh site #}
+                                    window.location.reload();
                                 }
                                 else{
                                     setTimeout(check_analysis, 30000);
@@ -780,7 +838,7 @@ $(document).ready(function () {
                             }).fail(function(){
                                 setTimeout(check_analysis, 30000);
                             });
-                        };
+                        }
                         setTimeout(check_analysis, 30000);
                     {% endif %}
                 {% endif %}
