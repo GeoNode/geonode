@@ -1,5 +1,30 @@
 {% extends 'site_base.html' %}
 {% block body %}
+    <style>
+        .btn .fa-check{
+            display: none;
+        }
+        .btn.active .fa-check{
+            display: inline-block;
+            color: #50cf5c;
+        }
+        .btn .fa-close{
+            display: inline-block;
+            color: #f15a2b;
+        }
+        .btn.active .fa-close{
+            display: none;
+        }
+        .btn.processing .fa-close{
+            display: none;
+        }
+        .btn .fa-spinner{
+            display: none;
+        }
+        .btn.processing .fa-spinner{
+            display: inline-block;
+        }
+    </style>
     <h1>List of Analysis</h1>
     <div>
         {% if analysis_list %}
@@ -8,8 +33,8 @@
                 <tr>
                     <th>Exposure</th>
                     <th>Hazard</th>
-                    <th>Aggregation</th>
-                    <th>Extent</th>
+{#                    <th>Aggregation</th>#}
+{#                    <th>Extent</th>#}
                     <th>Impact Function ID</th>
                     <th>Impact Layer</th>
                     <th>Detail</th>
@@ -26,12 +51,12 @@
                         <td>
                             <a href="{% url 'layer_detail' layername=analysis.hazard_layer.typename %}">{{ analysis.hazard_layer }}</a>
                         </td>
-                        <td>
-                            <a href="{% url 'layer_detail' layername=analysis.aggregation_layer.typename %}">{{ analysis.aggregation_layer }}</a>
-                        </td>
-                        <td>
-                            {{ analysis.get_extent_option_display }}
-                        </td>
+{#                        <td>#}
+{#                            <a href="{% url 'layer_detail' layername=analysis.aggregation_layer.typename %}">{{ analysis.aggregation_layer }}</a>#}
+{#                        </td>#}
+{#                        <td>#}
+{#                            {{ analysis.get_extent_option_display }}#}
+{#                        </td>#}
                         <td>
                             {{ analysis.impact_function_id }}
                         </td>
@@ -56,16 +81,19 @@
                             {% endif %}
                         </td>
                         <td>
-                            Layer is
-                            {% if analysis.keep %}
-                                <span class="label label-info">Saved</span>
-                            {% else %}
-                                <span class="label label-danger">Unsaved</span>
-                            {% endif %}
-                            <form action="{% url 'geosafe:toggle-analysis-saved' analysis_id=analysis.id %}" method="post">
-                                {% csrf_token %}
-                                <button type="submit">Toggle</button>
-                            </form>
+{#                            <form action="{% url 'geosafe:toggle-analysis-saved' analysis_id=analysis.id %}" method="post">#}
+{#                                {% csrf_token %}#}
+{#                                <button type="submit">Toggle</button>#}
+{#                            </form>#}
+                            <a href="javascript:toggle_analysis_saved({{ analysis.id }})"
+                                role="button"
+                                class="btn btn-default {% if analysis.keep %}active{% endif %}"
+                                data-id={{ analysis.id }}>
+                                    <i class="fa fa-check"></i>
+                                    <i class="fa fa-close"></i>
+                                    <i class="fa fa-spinner fa-spin"></i>
+                                Save
+                            </a>
                         </td>
                     </tr>
                 {% endfor %}
@@ -75,4 +103,23 @@
             <p>No analysis yet. <a href="{% url "geosafe:analysis-create" %}">Why not creating one?</a></p>
         {% endif %}
     </div>
+{% endblock %}
+
+{% block extra_script %}
+<script type="text/javascript">
+function toggle_analysis_saved(id){
+    var url = '{% url "geosafe:toggle-analysis-saved" analysis_id=-1 %}';
+    url = url.replace("-1", id);
+    var $a = $("tr a[data-id='"+id+"']");
+    $a.removeClass("active").addClass("processing");
+    $.post(url, function(data){
+        if(data && data.success){
+            $a.removeClass("processing");
+            if(data.is_saved){
+                $a.addClass("active");
+            }
+        }
+    });
+}
+</script>
 {% endblock %}

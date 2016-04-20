@@ -2,7 +2,14 @@
 
 from django.conf.urls import patterns, url
 from geonode.qgis_server.views import (
-    download_zip, tile, legend, thumbnail, qgis_server_request)
+    download_zip,
+    tile,
+    legend,
+    thumbnail,
+    qgis_server_request,
+    qgis_server_pdf,
+    qgis_server_map_print
+)
 
 __author__ = 'ismailsunni'
 __project_name__ = 'geonode'
@@ -47,5 +54,15 @@ urlpatterns = patterns(
         r'^qgis-server/wms/$',
         qgis_server_request,
         name='qgis-server-request'
+    ),
+    url(
+        r'^qgis-server/pdf/info\.json$',
+        qgis_server_pdf,
+        name='qgis-server-pdf'
+    ),
+    url(
+        r'^qgis-server/map/print$',
+        qgis_server_map_print,
+        name='qgis-server-map-print'
     ),
 )

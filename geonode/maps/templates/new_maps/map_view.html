@@ -1,0 +1,215 @@
+{% extends "site_base.html" %}
+{% load bootstrap_tags %}
+{% load staticfiles %}
+{% load i18n %}
+
+{% block title %}
+    {% trans "GeoExplorer" %} - {{ block.super }}
+{% endblock title %}
+
+{% block head %}
+    {{ block.super }}
+{% endblock head %}
+
+{% block extra_head %}
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" />
+    <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.css"/>
+    <link rel="stylesheet" href="http://code.jquery.com/ui/1.8.18/themes/base/jquery-ui.css" type="text/css"
+          media="all"/>
+    <link rel="stylesheet"
+          href="https://cdn.rawgit.com/elesdoar/leaflet-control-orderlayers/master/dist/css/leaflet.control.orderlayers.min.css"
+          type="text/css"/>
+    <link rel="stylesheet" href="{% static 'lib/css/L.Control.Pan.css' %}"/>
+{#    <link rel="stylesheet" href="{% static 'lib/css/L.Control.Zoomslider.css' %}"/>#}
+    <link rel="stylesheet" href="{% static 'lib/css/L.Control.ZoomBox.css' %}"/>
+    <style type="text/css">
+        html, body, #wrap {
+            height: 100%;
+            width: 100%;
+        }
+
+        #layer-list li {
+            cursor: move;
+        }
+
+    </style>
+{% endblock extra_head %}
+
+{% block body %}
+    <div class="container">
+        <div class="row">
+            <div class="col-md-3">
+                <div class="options-panel">
+
+                    <div class="form-group">
+                        <label for="add_layer_select">Add Layer:</label>
+                        <select class="form-control" id="add_layer_select">
+                            {% for layer in layers %}
+                                <option value="{{ layer.get_tiles_url|safe }}">{{ layer.name }}</option>
+                            {% endfor %}
+                        </select>
+                        <input id="add_layer_button" type="submit" class="btn btn-info" value="Add Layer">
+                    </div>
+                    <h4>List Layer</h4>
+                    <div>
+                        <ul id="layer-list">
+                        </ul>
+                    </div>
+                    {#                    <div class="form-group">#}
+                    {#                        <label for="new_layer">Add Layer:</label>#}
+                    {#                        <input type="text" class="form-control" id="new_layer">#}
+                    {##}
+                    {#                    </div>#}
+                </div>
+            </div>
+
+            <div class="col-md-9">
+                <div id="map" style="position:relative; ">
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock body %}
+
+{% block footer %}
+
+{% endblock footer %}
+
+{% block extra_script %}
+    <script src="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/jquery-ui.min.js"
+            type="text/javascript"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/Sortable/1.4.2/Sortable.min.js"></script>
+    <script src="https://cdn.rawgit.com/elesdoar/leaflet-control-orderlayers/master/dist/leaflet.control.orderlayers.min.js"></script>
+    <script src="https://cdn.rawgit.com/elesdoar/leaflet-control-orderlayers/master/dist/leaflet.control.orderlayers.min.js"></script>
+
+    <script src="{% static 'lib/js/L.Control.Pan.js' %}"></script>
+{#    <script src="{% static 'lib/js/L.Control.Zoomslider.js' %}"></script>#}
+    <script src="{% static 'lib/js/L.Control.ZoomBox.min.js' %}"></script>
+
+    <script type="text/javascript">
+        jQuery.fn.extend({
+            propAttr: $.fn.prop || $.fn.attr
+        });
+        function layer_name_autocomplete() {
+            $("#new_layer").autocomplete({
+                source: function (request, response) {
+                    $.ajax({
+                        url: "/layers/list",
+                        dataType: "jsonp",
+                        data: {
+                            q: request.term
+                        },
+                        success: function (data) {
+                            alert(data);
+                            response(data);
+                        }
+                    });
+                },
+                minLength: 3,
+                select: function (event, ui) {
+
+                },
+                open: function () {
+                    $(this).removeClass("ui-corner-all").addClass("ui-corner-top");
+                },
+                close: function () {
+                    $(this).removeClass("ui-corner-top").addClass("ui-corner-all");
+                }
+            })
+        }
+    </script>
+    <script type="text/javascript">
+        var map = $("#map");
+        var layer_control;
+        var overlay_layers = [];
+        // Each element contains:
+        // 1. layer name
+        // 2. layer wms url
+        // 3. z index
+        // 4. layer object
+        var highest_z_index = 0;
+
+        var w_height = $(window).height();
+        var map_height = w_height - $('nav').height();
+        map.css("height", map_height);
+
+        $(document).ready(function () {
+            layer_name_autocomplete();
+
+            // Define some default base layers
+            var osm = L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
+                attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors',
+            });
+
+            var map_quest = L.tileLayer('http://otile4.mqcdn.com/tiles/1.0.0/osm/{z}/{x}/{y}.png', {
+                attribution: 'Tiles Courtesy of <a href="http://www.mapquest.com/">MapQuest</a> &mdash; Map data &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+            });
+
+            // Initiate map
+            map = L.map('map', {
+                center: [-6.2, 106.8],
+                zoom: 11,
+                layers: [osm]
+            });
+
+            // Create dict of base layer
+            var base_layers = {
+                "OpenStreetMap": osm,
+                "Map Quest": map_quest
+            };
+
+            // Create dict of layers
+            var layers = {};
+
+            // Add control to the map.
+            layer_control = L.control.orderlayers(
+                    base_layers,
+                    layers, {
+                        title: 'Layer Panel'
+                    }).addTo(map);
+            var control = L.control.zoomBox({modal: true});
+            map.addControl(control);
+            // Make sortable
+            var list = document.getElementById("layer-list");
+            Sortable.create(list); // That's all
+        });
+    </script>
+    <script type="text/javascript">
+        function update_base_layer(map, base_layer) {
+
+        }
+
+        $("#add_layer_button").click(function () {
+            // Get value from select option
+            {#            var add_layer_select = $('select[id=add_layer_select]');#}
+            var add_layer_select = $("#add_layer_select option:selected");
+            var layer_url = add_layer_select.val();
+            var layer_name = add_layer_select.text();
+
+            // Add layer to leaflet
+            var tile_layer = L.tileLayer(layer_url);
+            if (tile_layer != null) {
+                if (!layer_control) {
+                    layer_control = L.control.layers().addTo(map);
+                }
+
+                layer_control.addOverlay(tile_layer, layer_name, z_index = highest_z_index);
+                map.addLayer(tile_layer);
+
+                // Add to memory
+                var added_layer = {};
+                added_layer.name = layer_name;
+                added_layer.url = layer_url;
+                added_layer.z_index = 0;
+                added_layer.layer = tile_layer;
+                {#                overlay_layers.append(added_layer);#}
+
+                // Add to list layer
+                $("#layer-list").prepend("<li>" + layer_name + "</li>");
+            }
+
+
+        });
+    </script>
+{% endblock extra_script %}

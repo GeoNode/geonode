@@ -86,7 +86,6 @@ def clean_impact_result():
     """
     query = Q(keep=True)
     for a in Analysis.objects.filter(~query):
-        a.impact_layer.delete()
         a.delete()
 
     for i in Metadata.objects.filter(layer_purpose='impact'):
