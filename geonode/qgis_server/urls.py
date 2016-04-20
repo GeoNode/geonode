@@ -35,10 +35,16 @@ urlpatterns = patterns(
         name='qgis-server-tile'
     ),
     url(
-        r'^qgis-server/legend/(?P<layername>[^/]*)$',
+        r'^qgis-server/legend/(?P<layername>[^/]*)'
+        r'(?:/(?P<layertitle>[^/]*))?$',
         legend,
         name='qgis-server-legend'
     ),
+    # url(
+    #     r'^qgis-server/legend/(?P<layername>[^/]*)$',
+    #     legend,
+    #     name='qgis-server-legend'
+    # ),
     url(
         r'^qgis-server/thumbnail/(?P<layername>[^/]*)$',
         thumbnail,

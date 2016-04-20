@@ -68,6 +68,7 @@ geonode/static/geonode/junit.xml
 #Temporary files
 *~
 *.swp
+celerybeat-schedule
 
 # OSX specific
 .Python

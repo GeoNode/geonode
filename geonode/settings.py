@@ -20,6 +20,8 @@
 
 # Django settings for the GeoNode project.
 import os
+
+from celery.schedules import crontab
 from kombu import Queue
 import geonode
 from geonode.celery_app import app  # flake8: noqa
@@ -959,6 +961,15 @@ if 'geonode.qgis_server' in INSTALLED_APPS:
 # This settings here is needed to construct url for InaSAFE-Headless celery
 # batch. Note, trailing slash is important
 GEONODE_BASE_URL = 'http://localhost:8000/'
+
+CELERYBEAT_SCHEDULE = {
+    # executes every night
+    'clean-impact-nightly': {
+        'task': 'geosafe.tasks.analysis.clean_impact_result',
+        'schedule': crontab(hour='0', minute='0')
+    }
+}
+
 
 # Load more settings from a file called local_settings.py if it exists
 try:
