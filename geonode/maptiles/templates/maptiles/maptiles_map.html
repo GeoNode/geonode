@@ -28,12 +28,7 @@
     input[type=checkbox]:checked + label:before { content: "\f046"; } /* checked icon */
     input[type=checkbox]:checked + label:before { letter-spacing: 20px; } /* allow space for check mark */
 </style>
-{# {% if preview == 'geoext' %}  #}
-    {# {% include "maptiles/maptiles_explorer_map.html" %} #}
- {#{% else %} #}
-    {#{% include "maptiles/maptiles_leaflet_map.html" %} #}
 {% include "maptiles/maptiles_geoext_map.html" %}
-{# {% endif %} #}
 {{ block.super }}
 {% endblock %}
 
@@ -55,6 +50,14 @@
     </div>
     <div class="col-md-3">
         <ul class="list-group">
+              <li class="list-group-item">
+		           <h4 class="list-group-item-heading">{%trans "Area Search" %}</h4>
+                   <nobr>
+                  <form name=
+                    <input type="text" id="geocode_input" name="geocode_input"/>
+                  <input type="submit" id="geocode_submit" name="geocode_submit" value="Submit" class="btn btn-default"/>
+                  </nobr>
+           </li>
           <li class="list-group-item">
               <h4 class="list-group-item-heading">{%trans "Download Data Class(es)" %}</h4>
               <form name="georef_form" id="georef_form" action="/maptiles/addtocart/" method="POST" >
@@ -91,6 +94,7 @@
                    <h4><a href="{% url 'cephgeo.views.ftp_request_list' %}" class="toggle toggle-nav"><i class="fa fa-database"></i>FTP Requests</a></h4>
 		               </nav></div>
    	       </li>
+           
         </ul>
     </div>
 </div>
@@ -103,6 +107,15 @@
     <h3 class="page-title">Selected Tiles</h3>
  </div>
  <div class="row" id="point_display">
+
+<script type="text/javascript">
+    {% autoescape off %}
+    csrf_token =  "{{ csrf_token }}"
+    $.ajax({
+           type: "POST",
+           url: '/datarequests/register/shapefile/',
+    {% end autoescape%}
+</script>
 
 
 
