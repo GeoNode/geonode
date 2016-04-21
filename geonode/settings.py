@@ -258,7 +258,8 @@ GEONODE_APPS = (
     # Data Requests Management App
     'geonode.datarequests',
 
-
+    #Handling of geocoding
+    'geonode.geocoding'
 )
 
 INSTALLED_APPS = (
@@ -894,6 +895,8 @@ MUNICIPALITY_SHAPEFILE = 'geonode:phl_adm2_municipalities_utm_z51n'
 #Upload permissions on file
 FILE_UPLOAD_PERMISSIONS = 0666
 GEOSTORAGE_HOST = ""
+
+GEOCODE_URL="https://maps.googleapis.com/maps/api/geocode/"
 
 FILE_UPLOAD_TEMP_DIR = "/tmp/geonode"
 THUMBNAIL_FILE_PERMISSIONS = 0664

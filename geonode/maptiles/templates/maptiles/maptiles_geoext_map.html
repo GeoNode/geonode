@@ -73,6 +73,16 @@ var olGeoJSON = new OpenLayers.Format.GeoJSON();
 var _TILE_SIZE = 1000;
 
 $(document).ready(function(){
+    
+        $('#geocode_submit').on('click', function(e){
+            $.post( '{% geocoding:geocode %}', 
+                new FormData($('#geocode_form'),
+                function(data){
+                    console.log(data);
+                },
+                'json'
+            );
+        });
 
         // adds the total request size filtering
        $("#georef_form").submit(function(e) {
@@ -132,6 +142,8 @@ $(document).ready(function(){
             //$("#selection-message").hide();
             document.getElementById("selection-message").style.visibility="collapse";
         });
+        
+        $()
 
 });
 
