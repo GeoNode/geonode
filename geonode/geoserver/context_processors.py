@@ -45,5 +45,13 @@ def geoserver_urls(request):
                     dict()).get(
                         'TIME_ENABLED',
                         False),
+        MOSAIC_ENABLED=getattr(
+                settings,
+                'UPLOADER',
+                dict()).get(
+                    'OPTIONS',
+                    dict()).get(
+                        'MOSAIC_ENABLED',
+                        False),
     )
     return defaults

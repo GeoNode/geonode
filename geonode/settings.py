@@ -520,6 +520,7 @@ UPLOADER = {
     'BACKEND': 'geonode.rest',
     'OPTIONS': {
         'TIME_ENABLED': False,
+        'MOSAIC_ENABLED': False,
         'GEOGIG_ENABLED': False,
     }
 }
