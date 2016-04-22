@@ -20,7 +20,7 @@ def geocode(request, resp_format="json"):
     if 'geocode_input' in request.POST:
         address = request.POST['geocode_input']
     args={
-        'address':  urllib2.unquote_plus(address)
+        'address':  urllib2.unquote_plus(address),
         'key': GEOCODE_API_KEY
     }
     try:

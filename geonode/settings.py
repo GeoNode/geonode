@@ -259,7 +259,7 @@ GEONODE_APPS = (
     'geonode.datarequests',
 
     #Handling of geocoding
-    'geonode.geocoding'
+    'geonode.arealocate'
 )
 
 INSTALLED_APPS = (
