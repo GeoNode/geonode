@@ -1,3 +1,4 @@
+{% load url from future %}
 {% include "geonode/ext_header.html" %}
 <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}geoext/css/popup.css">
 <link rel="stylesheet" type="text/css" href="{{STATIC_URL}}geonode/css/georef.css">
@@ -75,8 +76,9 @@ var _TILE_SIZE = 1000;
 $(document).ready(function(){
     
         $('#geocode_submit').on('click', function(e){
-            $.post( '{% geocoding:geocode %}', 
-                new FormData($('#geocode_form'),
+            e.preventDefault();
+            $.post( "{% url 'arealocate:geocode' %}", 
+                new FormData($('#geocode_form')),
                 function(data){
                     console.log(data);
                 },
