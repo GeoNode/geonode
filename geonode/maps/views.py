@@ -633,13 +633,6 @@ def new_map_config(request):
             config['fromLayer'] = True
         else:
             config = DEFAULT_MAP_CONFIG
-    if map_obj is not None:
-        if map_obj.story is None:
-            story_obj = MapStory()
-            story_obj.save()
-        else:
-            story_obj = map_obj.story
-        config['story_id'] = story_obj.id
     return json.dumps(config)
 
 
