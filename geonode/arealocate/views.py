@@ -1,5 +1,5 @@
 from django.conf import settings
-from django.http import HttpResponse, HttpResponseForbidden, HttpResponseRedirect, HttpResponse
+from django.http import HttpResponse, HttpResponseForbidden, HttpResponseRedirect
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.core.urlresolvers import reverse
 from django.shortcuts import render, render_to_response, redirect
@@ -9,31 +9,26 @@ from pprint import pprint
 
 import traceback
 import urllib2
+import geocoder
+
+from .forms import GeocodeForm
 
 @login_required
-def geocode(request, resp_format="json"):
-    if request.method == 'GET':
-        raise HttpResponseForbidden
-    status_code = 400
-    address=None
-    pprint(request.POST)
-    if 'geocode_input' in request.POST:
-        address = request.POST['geocode_input']
-    args={
-        'address':  urllib2.unquote_plus(address),
-        'key': GEOCODE_API_KEY
-    }
-    try:
-        data = urllib2.urlencode(args)
-        response = urllib2.urlopen(geocode_url+resp_format+"?", data)
-        resp_data = json.loads(response.read())
-        status_code = response.getcode()
-        pprint(resp_data)
-    except Exception as e:
-        resp_data = ''
-        print traceback.format_exc()
+def geocode(request):
+    context = {}
+    if request.method == 'POST':
+        form  = GeocodeForm(request.POST)
+        pprint(request.POST)
+        if form.is_valid():
+            g = geocoder.google(form.cleaned_data['geocode_input'],key=settings.GEOCODE_API_KEY)
+        
+            return HttpResponse(json.dumps(g.geojson), status=200, content_type='application/json')
+        
+    context['status']=400
+    response = HttpResponse(json.dumps(context), content_type='application/json')
+    response.status_code = 400
+    return response
     
-    return HttpResponse(
-            json.dumps(resp_data),
-            mimetype='application/json',
-            status=status_code)
+    
+    
+    
