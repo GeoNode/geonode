@@ -42,7 +42,8 @@ class CategoryForm(forms.Form):
     category_choice_field = CategoryChoiceField(required=False,
                                                 label='*' + _('Category'),
                                                 empty_label=None,
-                                                queryset=TopicCategory.objects.extra(order_by=['description']))
+                                                queryset=TopicCategory.objects.filter(is_choice=True)
+                                                .extra(order_by=['description']))
 
     def clean(self):
         cleaned_data = self.data
