@@ -95,6 +95,9 @@ urlpatterns = patterns('',
 
                        # Data Request Profiles
                        (r'^datarequests/', include('geonode.datarequests.urls', namespace='datarequests')),
+                       
+                       #Geocoding
+                       (r'^geocoding/',include('geonode.arealocate.urls',namespace='arealocate')),
 
                        # Misc
                        # url(r'^captcha/', include('captcha.urls')),
