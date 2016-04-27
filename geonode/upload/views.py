@@ -121,10 +121,10 @@ class JSONResponse(HttpResponse):
     def __init__(self,
                  obj='',
                  json_opts={},
-                 mimetype="application/json", *args, **kwargs):
+                 content_type="application/json", *args, **kwargs):
 
         content = json.dumps(obj, **json_opts)
-        super(JSONResponse, self).__init__(content, mimetype, *args, **kwargs)
+        super(JSONResponse, self).__init__(content, content_type, *args, **kwargs)
 
 
 def _error_response(req, exception=None, errors=None, force_ajax=True):

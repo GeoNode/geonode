@@ -162,11 +162,11 @@ def win_install_deps(options):
     if not download_dir.exists():
         download_dir.makedirs()
     win_packages = {
-        #required by transifex-client
+        # required by transifex-client
         "Py2exe": "http://downloads.sourceforge.net/project/py2exe/py2exe/0.6.9/py2exe-0.6.9.win32-py2.7.exe",
         "Nose": "https://s3.amazonaws.com/geonodedeps/nose-1.3.3.win32-py2.7.exe",
-        #the wheel 1.9.4 installs but pycsw wants 1.9.3, which fails to compile
-        #when pycsw bumps their pyproj to 1.9.4 this can be removed.
+        # the wheel 1.9.4 installs but pycsw wants 1.9.3, which fails to compile
+        # when pycsw bumps their pyproj to 1.9.4 this can be removed.
         "PyProj": "https://pyproj.googlecode.com/files/pyproj-1.9.3.win32-py2.7.exe"
     }
     failed = False

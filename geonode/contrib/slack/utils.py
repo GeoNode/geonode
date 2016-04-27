@@ -28,7 +28,10 @@ from django.conf import settings
 from django.contrib.sites.models import Site
 from django.core.urlresolvers import reverse
 from django.http import HttpResponse
-from django.utils import simplejson as json
+try:
+    import json
+except ImportError:
+    from django.utils import simplejson as json
 from .enumerations import SLACK_MESSAGE_TEMPLATES
 
 from geonode.base.models import Link

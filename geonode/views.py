@@ -23,7 +23,10 @@ from django.conf import settings
 from django.contrib.auth import authenticate, login, get_user_model
 from django.http import HttpResponse, HttpResponseRedirect
 from django.core.urlresolvers import reverse
-from django.utils import simplejson as json
+try:
+    import json
+except ImportError:
+    from django.utils import simplejson as json
 from django.db.models import Q
 from django.template.response import TemplateResponse
 

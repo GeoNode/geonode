@@ -25,6 +25,7 @@ when you run "manage.py test".
 Replace this with more appropriate tests for your application.
 """
 
+from actstream import registry
 from actstream.models import Action, actor_stream
 from dialogos.models import Comment
 from django.contrib.auth import get_user_model
@@ -35,6 +36,7 @@ from geonode.layers.populate_layers_data import create_layer_data
 from geonode.base.populate_test_data import create_models
 from geonode.social.templatetags.social_tags import activity_item
 from geonode.layers.models import Layer
+from geonode.people.models import Profile
 
 
 class SimpleTest(TestCase):
@@ -42,6 +44,9 @@ class SimpleTest(TestCase):
     fixtures = ['initial_data.json']
 
     def setUp(self):
+        registry.register(Layer)
+        registry.register(Comment)
+        registry.register(Profile)
         create_models(type='layer')
         create_layer_data()
         self.user = get_user_model().objects.filter(username='admin')[0]

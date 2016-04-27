@@ -32,7 +32,10 @@ from django.conf import settings
 from django.core.exceptions import PermissionDenied
 from django.utils.translation import ugettext_lazy as _
 from django.shortcuts import get_object_or_404
-from django.utils import simplejson as json
+try:
+    import json
+except ImportError:
+    from django.utils import simplejson as json
 from django.http import HttpResponse
 from django.core.cache import cache
 from django.http import Http404

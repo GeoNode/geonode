@@ -22,7 +22,10 @@ from lxml import etree
 
 from django.core.urlresolvers import reverse
 from django.test import TestCase
-from django.utils import simplejson as json
+try:
+    import json
+except ImportError:
+    from django.utils import simplejson as json
 from django.contrib.contenttypes.models import ContentType
 from agon_ratings.models import OverallRating
 from django.contrib.auth import get_user_model

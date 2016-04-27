@@ -33,6 +33,7 @@ class UploadFileForm(forms.ModelForm):
 
     class Meta:
         model = UploadFile
+        fields = '__all__'
 
 
 class LayerUploadForm(forms.Form):

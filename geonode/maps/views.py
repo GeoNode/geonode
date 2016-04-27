@@ -30,7 +30,12 @@ from django.shortcuts import render_to_response, get_object_or_404
 from django.conf import settings
 from django.template import RequestContext
 from django.utils.translation import ugettext as _
-from django.utils import simplejson as json
+try:
+    # Django >= 1.7
+    import json
+except ImportError:
+    # Django <= 1.6 backwards compatibility
+    from django.utils import simplejson as json
 from django.utils.html import strip_tags
 from django.db.models import F
 from django.views.decorators.clickjacking import xframe_options_exempt

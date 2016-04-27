@@ -27,6 +27,7 @@ class DocumentAdminForm(ResourceBaseAdminForm):
 
     class Meta:
         model = Document
+        fields = '__all__'
         exclude = (
             'resource',
         )

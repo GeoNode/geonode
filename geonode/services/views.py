@@ -34,7 +34,12 @@ from django.conf import settings
 from django.template import RequestContext, loader
 from django.template.defaultfilters import slugify
 from django.utils.translation import ugettext as _
-from django.utils import simplejson as json
+try:
+    # Django >= 1.7
+    import json
+except ImportError:
+    # Django <= 1.6 backwards compatibility
+    from django.utils import simplejson as json
 from django.shortcuts import get_object_or_404
 
 from owslib.wms import WebMapService

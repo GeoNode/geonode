@@ -28,6 +28,7 @@ class ServiceAdminForm(ResourceBaseAdminForm):
 
     class Meta:
         model = Service
+        fields = '__all__'
 
 
 class ServiceAdmin(admin.ModelAdmin):

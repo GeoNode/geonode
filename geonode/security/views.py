@@ -18,7 +18,10 @@
 #
 #########################################################################
 
-from django.utils import simplejson as json
+try:
+    import json
+except ImportError:
+    from django.utils import simplejson as json
 from django.core.exceptions import PermissionDenied
 from django.http import HttpResponse
 from django.views.decorators.http import require_POST

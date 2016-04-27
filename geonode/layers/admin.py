@@ -33,6 +33,7 @@ class LayerAdminForm(ResourceBaseAdminForm):
 
     class Meta:
         model = Layer
+        fields = '__all__'
 
 
 class LayerAdmin(MediaTranslationAdmin):
