@@ -258,7 +258,8 @@ GEONODE_APPS = (
     # Data Requests Management App
     'geonode.datarequests',
 
-
+    #Handling of geocoding
+    'geonode.arealocate'
 )
 
 INSTALLED_APPS = (
@@ -886,6 +887,8 @@ MUNICIPALITY_SHAPEFILE = 'geonode:phl_adm2_municipalities_utm_z51n'
 FILE_UPLOAD_PERMISSIONS = 0666
 GEOSTORAGE_HOST = ""
 
+GEOCODE_URL="https://maps.googleapis.com/maps/api/geocode/"
+
 FILE_UPLOAD_TEMP_DIR = "/tmp/geonode"
 THUMBNAIL_FILE_PERMISSIONS = 0664
 
@@ -922,3 +925,4 @@ if 'geonode.geoserver' in GEONODE_APPS:
     MAP_BASELAYERS = [LOCAL_GEOSERVER]
     MAP_BASELAYERS.extend(baselayers)
 
+PH_BBOX= [116.22307468566594, 4.27103012208686, 127.09228398538997, 21.2510169394873 ]

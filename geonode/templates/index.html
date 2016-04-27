@@ -15,15 +15,14 @@
     <!-- <div class="row body-top col-md-6 center-text" style="width:70%"> -->
     <div class="row body-top col-md-6 center-text" style="">
       <!-- <div class="jumbotron col-md-6"> -->
-        <!-- <div class="container col-md-6 center-text" style="width:100%;border-right:2px solid #007196;"> -->
-          <h1 class="no-margin-top">{% trans "Welcome to LiPAD!" %}</h1>
+          <h1 class="no-margin-top">{% trans "Welcome to LiPAD" %}</h1>
           <p>
               {% blocktrans %}
-              The <abbr title="LiDAR Portal for Archiviing and Distribution">LiPAD</abbr> system of the <a href="https://www.dream.upd.edu.ph/about-us/phil-lidar-1/" title="About the Phil-LiDAR 1 Program">Phil-LiDAR 1 Program</a> aims to facilitate the exchange of information across all components of the Phil LiDAR Program, including all affiliated SUCs and HEIs across the country through the use of web standard protocols.
+              <abbr title="LiDAR Portal for Archiviing and Distribution">LiPAD</abbr> serves as the primary data access and distribution center of the <a href="https://www.dream.upd.edu.ph/about/phil-lidar-1/" title="About the Phil-LiDAR 1 Program">Phil-LiDAR 1</a> and <a href="https://www.dream.upd.edu.ph/about/phil-lidar-2/" title="About the Phil-LiDAR 2 Program">Phil-LiDAR 2</a> Programs, a Department of Science and Technology initiative that engages the University of the Philippines and fifteen (15) Higher Education Institutions (HEIs) throughout the country, with the aim to produce detailed flood hazard and resource maps using LiDAR technology.
               {% endblocktrans %}
             </p><p>
               {% blocktrans %}
-                The <a href="https://www.dream.upd.edu.ph/about-us/phil-lidar-1/" title="About the Phil-LiDAR 1 Program">Phil-LiDAR 1 Program</a> aims to produce 3D flood and hazard maps for the 2/3 of Philippine river systems, following the <a href="https://www.dream.upd.edu.ph" title="About DREAM Program">DREAM Program</a> which covered 18 major river basins,  and tapping state universities and colleges (SUCs) and private higher education institutions (HEIs) nationwide in the processing, validation, and modeling of the acquired LiDAR data. Aside from addressing disaster risk reduction and climate change adaptation, the resource information to be generated from this project will also be useful in providing the information requirements of various sectors in the country.
+                The datasets, which include Digital Elevation Models (DEMs), Digital Terrain Models (DTMs), Orthophotos, Classified LAZ, Flood Hazard Maps and Resource Maps, are available for download in open and GIS-ready formats, for use by Local Government Units (LGUs), National Government Agencies (NGAs), members of the academe, and researchers, among others.
               {% endblocktrans %}
             </p>
         <!-- </div> -->
@@ -122,6 +121,13 @@
 </div>
 
 
+<<<<<<< HEAD
+=======
+  {% block mainbody %}
+
+
+{% endblock %}
+>>>>>>> c8b7dacc6007f7e410237fe13423f609365f002c
 
 <div class="modal fade" id="modal-fhm" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
   <div class="modal-dialog">
@@ -174,6 +180,7 @@
   </div>
 </div>
 
+<<<<<<< HEAD
   {% endblock %}
 
   {% block mainbody %}
@@ -181,6 +188,25 @@
 
 
 {% endblock %}
+=======
+  {% block extra_script %}
+    {% if GEONODE_SECURITY_ENABLED %}
+      {% include "_permissions_form_js.html" %}
+    {% endif %}
+    <script type="text/javascript">
+        {% if HAYSTACK_SEARCH %}
+            SEARCH_URL = '{% url 'api_get_search' api_name='api' resource_name='base' %}?type__in=layer'
+        {% else %}
+            SEARCH_URL = '{% url 'api_dispatch_list' api_name='api' resource_name='layers' %}';
+
+        {% endif %}
+      FILTER_TYPE = 'layer';
+    </script>
+    {% with include_spatial='true' %}
+    {% include 'search/search_scripts.html' %}
+    {% endwith %}
+  {% endblock extra_script %}
+>>>>>>> c8b7dacc6007f7e410237fe13423f609365f002c
 
 
 {% endblock %}
