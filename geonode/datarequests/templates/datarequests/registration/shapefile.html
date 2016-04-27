@@ -96,7 +96,9 @@
       <br />
 
       <section>
+        {% if not user.is_authenticated %}
         <a href="{% url 'datarequests:registration_part_one' %}" class="clearfix btn btn-default btn-md" style="margin-top: 20px;">{% trans "Prev Step" %}</a>
+        {% endif %}
         <a href="#" id="upload-button" class="btn btn-primary btn-md">{% trans "Submit" %}</a>
       </section>
     </div>

@@ -61,7 +61,12 @@ class OrganizationType(enum.Enum):
 class Profile(AbstractUser):
 
     """Fully featured Geonode user"""
-
+    middle_name = models.CharField(
+        _('Middle Name/Initial'),
+        max_length=255,
+        blank=True,
+        null=True
+    )
     organization = models.CharField(
         _('Organization Name'),
         max_length=255,
