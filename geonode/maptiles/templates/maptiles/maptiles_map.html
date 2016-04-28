@@ -28,12 +28,7 @@
     input[type=checkbox]:checked + label:before { content: "\f046"; } /* checked icon */
     input[type=checkbox]:checked + label:before { letter-spacing: 20px; } /* allow space for check mark */
 </style>
-{# {% if preview == 'geoext' %}  #}
-    {# {% include "maptiles/maptiles_explorer_map.html" %} #}
- {#{% else %} #}
-    {#{% include "maptiles/maptiles_leaflet_map.html" %} #}
 {% include "maptiles/maptiles_geoext_map.html" %}
-{# {% endif %} #}
 {{ block.super }}
 {% endblock %}
 
@@ -55,6 +50,17 @@
     </div>
     <div class="col-md-3">
         <ul class="list-group">
+              <li class="list-group-item">
+		           <h4 class="list-group-item-heading">{%trans "Area Search" %}</h4>
+                   <nobr>
+                  <form name='geocode_form' id="geocode_form">
+                    {% csrf_token %}
+                    <input type="text" id="geocode_input" name="geocode_input"/>
+                </form>
+                <a  id="geocode_submit" name="geocode_submit" class="btn btn-default">Submit</a>
+                
+                  </nobr>
+           </li>
           <li class="list-group-item">
               <h4 class="list-group-item-heading">{%trans "Download Data Class(es)" %}</h4>
               <form name="georef_form" id="georef_form" action="/maptiles/addtocart/" method="POST" >
@@ -91,6 +97,7 @@
                    <h4><a href="{% url 'cephgeo.views.ftp_request_list' %}" class="toggle toggle-nav"><i class="fa fa-database"></i>FTP Requests</a></h4>
 		               </nav></div>
    	       </li>
+           
         </ul>
     </div>
 </div>
@@ -107,4 +114,43 @@
 
 
 {% endblock %}
+{% endblock %}
+{% block extra_script %}
+<script type="text/javascript">
+    {% autoescape off %}
+    submit_location = function(e){
+            form = new FormData($("#geocode_form")[0]);
+            $.ajax({
+               type: "POST",
+               url: "/geocoding/",
+               data: form, //form.serialize(), // serializes the form's elements.
+               contentType: false,
+               processData: false,
+               success: function(data)
+               {
+                   console.log(data.bbox);
+                   zoomOnBbox(data.bbox);
+                },
+                error: function(data){
+                    alert("Invalid area");
+                }
+            });
+            return false;
+    }
+    
+    $(document).ready( function() {
+         $('#geocode_form').submit(function (e){
+            return false;
+         });
+         $('#geocode_input').bind("enterKey", function(e){});
+         $('#geocode_input').keyup(function(e){
+            if(e.keyCode == 13){
+                submit_location(e);
+                return false;
+            }
+         });
+         $("#geocode_submit").click(submit_location);
+    });
+    {% endautoescape %}
+</script>
 {% endblock %}
