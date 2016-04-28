@@ -93,11 +93,11 @@ urlpatterns = patterns('',
                        url(r'^account/ajax_login$', 'geonode.views.ajax_login', name='account_ajax_login'),
                        url(r'^account/ajax_lookup$', 'geonode.views.ajax_lookup', name='account_ajax_lookup'),
 
+		       #Geocoding
+                       (r'^geocoding/',include('geonode.arealocate.urls',namespace='arealocate')),
+
                        # Data Request Profiles
                        (r'^datarequests/', include('geonode.datarequests.urls', namespace='datarequests')),
-                       
-                       #Geocoding
-                       (r'^geocoding/',include('geonode.arealocate.urls',namespace='arealocate')),
 
                        # Misc
                        # url(r'^captcha/', include('captcha.urls')),
