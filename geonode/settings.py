@@ -487,6 +487,8 @@ LIPAD_SUPPORT_MAIL = 'lipad@dream.upd.edu.ph'
 FTP_SUPPORT_MAIL = 'lipad@dream.upd.edu.ph'
 FTP_AUTOMAIL = 'automailer@dream.upd.edu.ph'
 
+#get data coverage layer name
+PHILGRID_NAME = "philgrid_20160301"
 #
 # Test Settings
 #
@@ -794,18 +796,7 @@ LEAFLET_CONFIG = {
         # http://leaflet-extras.github.io/leaflet-providers/preview/
 
         # Stamen toner lite.
-        ('Watercolor',
-         'http://{s}.tile.stamen.com/watercolor/{z}/{x}/{y}.png',
-         'Map tiles by <a href="http://stamen.com">Stamen Design</a>, \
-         <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a> &mdash; Map data &copy; \
-         <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, \
-         <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>'),
-        ('Toner Lite',
-         'http://{s}.tile.stamen.com/toner-lite/{z}/{x}/{y}.png',
-         'Map tiles by <a href="http://stamen.com">Stamen Design</a>, \
-         <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a> &mdash; Map data &copy; \
-         <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, \
-         <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>'),
+        
     ],
     'PLUGINS': {
         'esri-leaflet': {
