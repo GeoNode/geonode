@@ -108,3 +108,42 @@
 
 {% endblock %}
 {% endblock %}
+{% block extra_script %}
+<script type="text/javascript">
+    {% autoescape off %}
+    submit_location = function(e){
+            form = new FormData($("#geocode_form")[0]);
+            $.ajax({
+               type: "POST",
+               url: "/geocoding/",
+               data: form, //form.serialize(), // serializes the form's elements.
+               contentType: false,
+               processData: false,
+               success: function(data)
+               {
+                   console.log(data);
+                   zoomOnBbox(data.bbox);
+                },
+                error: function(data){
+                    alert("Invalid area");
+                }
+            });
+            return false;
+    }
+    
+    $(document).ready( function() {
+         $('#geocode_form').submit(function (e){
+            return false;
+         });
+         $('#geocode_input').bind("enterKey", function(e){});
+         $('#geocode_input').keyup(function(e){
+            if(e.keyCode == 13){
+                submit_location(e);
+                return false;
+            }
+         });
+         $("#geocode_submit").click(submit_location);
+    });
+    {% endautoescape %}
+</script>
+{% endblock %}
