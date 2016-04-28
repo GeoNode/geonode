@@ -50,17 +50,12 @@ def create_login_credentials(data_request):
                 else:
                     unique=True
 
-    # Generate random password
-    #password = ''
-    #for i in range(16):
-    #    password += random.choice(string.lowercase + string.uppercase + string.digits)
-
     return final_username
 
 def string_randomizer(length):
     word = ""
     for i in range(length):
-        word += random.choice(string.lowercase+string.uppercase+string.digits)
+        word += random.choice(string.lowercase+string.uppercase+string.digits+UNALLOWED_USERNAME_CHARACTERS+ESCAPED_CHARACTERS)
     return word
 
 def get_unames_starting_with(name):
@@ -79,6 +74,7 @@ def get_unames_starting_with(name):
 def create_ad_account(datarequest, username):
     objectClass =  ["organizationalPerson", "person", "top", "user"]
     sAMAccountName = str(username)
+    password = unicode("\""+string_randomizer(16)+"\"", "iso-8859-1").encode("utf-16-le")
     sn= unidecode(datarequest.last_name)
     givenName = unidecode(datarequest.first_name)
     initials=unidecode(datarequest.middle_name[0])
@@ -100,6 +96,7 @@ def create_ad_account(datarequest, username):
         "objectClass": objectClass,
         "sAMAccountName": [sAMAccountName],
         "sn": [sn],
+        "unicodePwd": [password],
         "givenName": [givenName],
         "cn":[cn],
         "displayName": [displayName],
