@@ -80,16 +80,14 @@ def _resolve_layer(request, typename, permission='base.view_resourcebase',
                               **kwargs)
 
 
-def get_philgrid(request,template='index.html'):
-    # layername = settings.TILED_SHAPEFILE
-    layername = "geonode:philgrid_20160301"
+def philgrid(request,template='index.html'):
+    layername = "geonode:philgrid"
+    
     layer = _resolve_layer(
         request,
         layername,
         'base.view_resourcebase',
         _PERMISSION_MSG_VIEW)
-    # assert False, str(layer_bbox)
-    layer = Layer.objects.get(name="philgrid_20160301")
     config = layer.attribute_config()
     # print layername
     # Add required parameters for GXP lazy-loading
@@ -122,13 +120,7 @@ def get_philgrid(request,template='index.html'):
             ows_url=layer.ows_url,
             layer_params=json.dumps(config))
 
-    # Update count for popularity ranking,
-    # but do not includes admins or resource owners
-    # if request.user != layer.owner and not request.user.is_superuser:
-    #     Layer.objects.filter(
-    #         id=layer.id).update(popular_count=F('popular_count') + 1)
 
-    # center/zoom don't matter; the viewer will center on the layer bounds
     map_obj = GXPMap(projection="EPSG:900913")
     NON_WMS_BASE_LAYERS = [
         la for la in default_map_config()[1] if la.ows_url is None]
@@ -152,49 +144,9 @@ def get_philgrid(request,template='index.html'):
         'LAYER_PREVIEW_LIBRARY',
         'leaflet')
 
-    # if request.user.has_perm('download_resourcebase', layer.get_self_resource()):
-    #     if layer.storeType == 'dataStore':
-    #         links = layer.link_set.download().filter(
-    #             name__in=settings.DOWNLOAD_FORMATS_VECTOR)
-    #     else:
-    #         links = layer.link_set.download().filter(
-    #             name__in=settings.DOWNLOAD_FORMATS_RASTER)
-    #     context_dict["links"] = links
-
-    # if settings.SOCIAL_ORIGINS:
-    #     context_dict["social_links"] = build_social_links(request, layer)
-
-    # if request.method == 'POST':
-    #     form = AnonDownloaderForm(request.POST)
-    #     out = {}
-    #     if form.is_valid():
-    #         out['success'] = True
-    #         pprint(form.cleaned_data)
-    #         anondownload = form.save()
-    #         anondownload.anon_layer = Layer.objects.get(typename = layername)
-    #         anondownload.save()
-    #     else:
-    #         errormsgs = []
-    #         for e in form.errors.values():
-    #             errormsgs.extend([escape(v) for v in e])
-    #         out['success'] = False
-    #         out['errors'] = form.errors
-    #         out['errormsgs'] = errormsgs
-    #     if out['success']:
-    #         status_code = 200
-    #     else:
-    #         status_code = 400
-    #     #Handle form
-    #     return HttpResponse(status=status_code)
-    # else:
-    #     #Render form
-    #     form = AnonDownloaderForm()
-
-    # context_dict["anon_form"] = form
     context_dict["layername"] = layername
     # pprint context_dict
-    # return render_to_response(template, RequestContext(request, context_dict))
-    return render(template)
+    return render_to_response(template, RequestContext(request, context_dict))
 
 
 class AjaxLoginForm(forms.Form):
