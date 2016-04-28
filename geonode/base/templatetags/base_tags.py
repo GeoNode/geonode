@@ -46,6 +46,11 @@ def get_resourceLayers_count(takes_context=True):
     return rl_count
 
 @register.assignment_tag
+def get_fhm_fmc_url(takes_context=True):
+    fhm = settings.LIPAD_FMC_FHM_URL
+    return fhm
+
+@register.assignment_tag
 def get_public_location(takes_context=True):
     pl = settings.OGC_SERVER['default']['PUBLIC_LOCATION']
     return pl
