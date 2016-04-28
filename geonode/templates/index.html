@@ -11,6 +11,7 @@
    {{ block.super }}
   {% block hero %}
 
+{% endblock %}
 <div class="container">
     <!-- <div class="row body-top col-md-6 center-text" style="width:70%"> -->
     <div class="row body-top col-md-6 center-text" style="">
@@ -120,8 +121,6 @@
 </div>
 </div>
 
-
-
 <div class="modal fade" id="modal-fhm" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
@@ -172,6 +171,7 @@
     </div>
   </div>
 </div>
+
   {% endblock %}
 
   {% block mainbody %}
@@ -179,21 +179,6 @@
 
 
 {% endblock %}
-  {% block extra_script %}
-    {% if GEONODE_SECURITY_ENABLED %}
-      {% include "_permissions_form_js.html" %}
-    {% endif %}
-    <script type="text/javascript">
-        {% if HAYSTACK_SEARCH %}
-            SEARCH_URL = '{% url 'api_get_search' api_name='api' resource_name='base' %}?type__in=layer'
-        {% else %}
-            SEARCH_URL = '{% url 'api_dispatch_list' api_name='api' resource_name='layers' %}';
 
-        {% endif %}
-      FILTER_TYPE = 'layer';
-    </script>
-    {% with include_spatial='true' %}
-    {% include 'search/search_scripts.html' %}
-    {% endwith %}
-  {% endblock extra_script %}
-{% endblock %}
+
+
