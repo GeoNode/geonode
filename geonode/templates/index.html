@@ -11,10 +11,13 @@
    {{ block.super }}
   {% block hero %}
 
+{% endblock %}
+
+
 <div class="container">
-    <!-- <div class="row body-top col-md-6 center-text" style="width:70%"> -->
-    <div class="row body-top col-md-6 center-text" style="">
-      <!-- <div class="jumbotron col-md-6"> -->
+<body>
+    
+    <div class="row body-top col-md-6 center-text home-facets" style="">
           <h1 class="no-margin-top">{% trans "Welcome to LiPAD" %}</h1>
           <p>
               {% blocktrans %}
@@ -25,18 +28,8 @@
                 The datasets, which include Digital Elevation Models (DEMs), Digital Terrain Models (DTMs), Orthophotos, Classified LAZ, Flood Hazard Maps and Resource Maps, are available for download in open and GIS-ready formats, for use by Local Government Units (LGUs), National Government Agencies (NGAs), members of the academe, and researchers, among others.
               {% endblocktrans %}
             </p>
-        <!-- </div> -->
-    </div>
-
-    <!-- <div class="container"> -->
-      <div class="row body-top col-md-6 pull-right" >
-        {% include "philgrid.html" %}
-      </div>
-    <!-- </div> -->
-
-    <!-- <div class="home-facets col-md" > -->
-    <div class="col-md-6 home-facets" style="">
-      <div class="col-md-4  border=0 text-center" >
+       
+          <div class="col-md-4  border=0 text-center" >
         <p>
           <a href="/layers/?limit=100&amp;offset=0&amp;keywords__slug__in=flood-hazard-map">
             <i class="fa fa-square-o fa-5x rotate-45"></i>
@@ -73,11 +66,8 @@
         </h2>
         <h4 class="text-center">Total LiDAR Coverage</h4>
       </div>
-  </div>
-  
-  <div class="col-md-6">
-      <!-- <div class="col-md-6 border=0"  style="width:30%;"> -->
-      <div class="col-md-4 border=0" style="">
+
+       <div class="col-md-4 border=0" style="">
         {% blocktrans %}
         <h4 style="margin-top:15px;">How to get data</h4>
         <p>
@@ -117,17 +107,25 @@
         <p>
         {% endblocktrans %}
       </div>
+
+    </div>
+
+    <div class="col-md-6 pull-right row body-top">
+        <div class="philgrid" >
+        {% include "philgrid.html" %}
+        
+      </div>
+      <li class="list-group-item legend">
+          <h4 class="list-group-item-heading">Legend</h4>
+          <p></p> 
+          <p><img id="legend_icon" src="http://geonode1:8080/geoserver/wms?request=GetLegendGraphic&amp;format=image/png&amp;WIDTH=20&amp;HEIGHT=20&amp;LAYER=geonode:philgrid&amp;legend_options=fontAntiAliasing:true;fontSize:12;forceLabels:on"></p>
+      </li>
+    </div>
+  
+</body>
 </div>
-</div>
 
 
-<<<<<<< HEAD
-=======
-  {% block mainbody %}
-
-
-{% endblock %}
->>>>>>> c8b7dacc6007f7e410237fe13423f609365f002c
 
 <div class="modal fade" id="modal-fhm" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
   <div class="modal-dialog">
@@ -180,33 +178,10 @@
   </div>
 </div>
 
-<<<<<<< HEAD
   {% endblock %}
 
   {% block mainbody %}
 
 
 
-{% endblock %}
-=======
-  {% block extra_script %}
-    {% if GEONODE_SECURITY_ENABLED %}
-      {% include "_permissions_form_js.html" %}
-    {% endif %}
-    <script type="text/javascript">
-        {% if HAYSTACK_SEARCH %}
-            SEARCH_URL = '{% url 'api_get_search' api_name='api' resource_name='base' %}?type__in=layer'
-        {% else %}
-            SEARCH_URL = '{% url 'api_dispatch_list' api_name='api' resource_name='layers' %}';
-
-        {% endif %}
-      FILTER_TYPE = 'layer';
-    </script>
-    {% with include_spatial='true' %}
-    {% include 'search/search_scripts.html' %}
-    {% endwith %}
-  {% endblock extra_script %}
->>>>>>> c8b7dacc6007f7e410237fe13423f609365f002c
-
-
-{% endblock %}
+{% endblock %}                                                                                                                      
