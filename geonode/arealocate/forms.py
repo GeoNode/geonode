@@ -17,3 +17,4 @@ class GeocodeForm(forms.Form):
                 raise ValidationError("Invalid Place Name Format")
         
         return self.cleaned_data.get("place")
+
