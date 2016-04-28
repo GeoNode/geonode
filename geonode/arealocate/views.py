@@ -20,7 +20,7 @@ def geocode(request):
         form  = GeocodeForm(request.POST)
         pprint(request.POST)
         if form.is_valid():
-            g = geocoder.google(form.cleaned_data['geocode_input'],key=settings.GEOCODE_API_KEY, region="PH") #,components="country:Philippines")
+            g = geocoder.google(form.cleaned_data['geocode_input'],key=settings.GEOCODE_API_KEY, region="PH",components="country:Philippines")
         
             return HttpResponse(json.dumps(g.geojson), status=200, content_type='application/json')
         
