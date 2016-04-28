@@ -1,3 +1,4 @@
+{% load url from future %}
 {% include "geonode/ext_header.html" %}
 <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}geoext/css/popup.css">
 <link rel="stylesheet" type="text/css" href="{{STATIC_URL}}geonode/css/georef.css">
@@ -132,8 +133,17 @@ $(document).ready(function(){
             //$("#selection-message").hide();
             document.getElementById("selection-message").style.visibility="collapse";
         });
+        
+        $()
 
 });
+
+function zoomOnBbox(bounds){
+    bbox = new OpenLayers.Bounds(bounds);
+    map.zoomToExtent(
+        bbox.transform(new OpenLayers.Projection("EPSG:4326"), new OpenLayers.Projection("EPSG:900913"))
+    );
+}
 
 /*
 Computes the floor for the GeoRef coordinates based on the tile size
