@@ -160,7 +160,7 @@ setup(name='GeoNode',
         "python_ldap==2.4.19",
         "django-auth-ldap==1.2.6",
         "unidecode==0.04.19",
-        "geocoder==1.12.0",
+        
         ],
       zip_safe=False,
       )
