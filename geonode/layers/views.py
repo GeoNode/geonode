@@ -284,7 +284,7 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
         "is_layer": True,
         "wps_enabled": settings.OGC_SERVER['default']['WPS_ENABLED'],
     }
-    context_dict["phillidar2keyword"] = "phillidar2"
+    context_dict["phillidar2keyword"] = "PhilLiDAR2"
 
 
     context_dict["viewer"] = json.dumps(
@@ -605,7 +605,7 @@ def layer_download(request, layername):
         action.send(request.user, verb='downloaded', action_object=layer)
 
     splits = request.get_full_path().split("/")
-    redir_url = urljoin(settings.OGC_SERVER['default']['PUBLIC_LOCATION'], "/".join(splits[4:]) + "&format_options=layout:phillidar")
+    redir_url = urljoin(settings.OGC_SERVER['default']['PUBLIC_LOCATION'], "/".join(splits[4:]))
     return HttpResponseRedirect(redir_url)
 
 @login_required
