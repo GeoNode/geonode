@@ -618,7 +618,7 @@ def layer_download_csv(request):
     response['Content-Disposition'] = 'attachment; filename="layerdownloads-"'+str(datetoday.month)+str(datetoday.day)+str(datetoday.year)+'.csv"'
     writer = csv.writer(response)
 
-    auth_list = Action.objects.filter(verb='uploaded').order_by('timestamp') #get layers in prod
+    auth_list = Action.objects.filter(verb='downloaded').order_by('timestamp') #get layers in prod
 
     # auth_fmc = 
     anon_list = AnonDownloader.objects.all().order_by('date')
