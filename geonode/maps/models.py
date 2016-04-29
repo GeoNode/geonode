@@ -49,6 +49,9 @@ logger = logging.getLogger("geonode.maps.models")
 
 class MapStory(ResourceBase):
 
+    def get_absolute_url(self):
+        return reverse('mapstory.views.map_detail', None, [str(self.id)])
+
     @property
     def chapters(self):
         return self.chapter_list.order_by('chapter_index')
@@ -633,3 +636,4 @@ class MapSnapshot(models.Model):
 
 signals.pre_delete.connect(pre_delete_map, sender=Map)
 signals.post_save.connect(resourcebase_post_save, sender=Map)
+signals.post_save.connect(resourcebase_post_save, sender=MapStory)
