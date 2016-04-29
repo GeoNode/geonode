@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #########################################################################
 #
-# Copyright (C) 2012 Open Source Geospatial Foundation
+# Copyright (C) 2016 OSGeo
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -1525,7 +1525,7 @@ def style_update(request, url):
             style = Style(name=style_name, sld_body=sld_body, sld_url=url)
             style.save()
             layer = Layer.objects.all().filter(typename=layer_name)[0]
-            style.layer_styles.add(layer)
+            style.LayerStyles.add(layer)
             style.save()
         if request.method == 'PUT':  # update style in GN
             style = Style.objects.all().filter(name=style_name)[0]
@@ -1534,7 +1534,7 @@ def style_update(request, url):
             if len(elm_user_style_title.text) > 0:
                 style.sld_title = elm_user_style_title.text
             style.save()
-            for layer in style.layer_styles.all():
+            for layer in style.LayerStyles.all():
                 layer.save()
     if request.method == 'DELETE':  # delete style from GN
         style_name = os.path.basename(request.path)

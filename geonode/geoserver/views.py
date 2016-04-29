@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #########################################################################
 #
-# Copyright (C) 2012 Open Source Geospatial Foundation
+# Copyright (C) 2016 OSGeo
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -313,7 +313,7 @@ def style_change_check(request, path):
             style_name = os.path.splitext(request.path)[0].split('/')[-1]
             try:
                 style = Style.objects.get(name=style_name)
-                for layer in style.layer_styles.all():
+                for layer in style.LayerStyles.all():
                     if not request.user.has_perm('change_layer_style', obj=layer):
                         authorized = False
             except:

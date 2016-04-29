@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #########################################################################
 #
-# Copyright (C) 2012 Open Source Geospatial Foundation
+# Copyright (C) 2016 OSGeo
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -39,7 +39,8 @@ from django.core.files import File
 
 from mptt.models import MPTTModel, TreeForeignKey
 
-from polymorphic import PolymorphicModel, PolymorphicManager
+from polymorphic.models import PolymorphicModel
+from polymorphic.managers import PolymorphicManager
 from agon_ratings.models import OverallRating
 
 from geonode.base.enumerations import ALL_LANGUAGES, \
@@ -676,19 +677,19 @@ class LinkManager(models.Manager):
     """
 
     def data(self):
-        return self.get_query_set().filter(link_type='data')
+        return self.get_queryset().filter(link_type='data')
 
     def image(self):
-        return self.get_query_set().filter(link_type='image')
+        return self.get_queryset().filter(link_type='image')
 
     def download(self):
-        return self.get_query_set().filter(link_type__in=['image', 'data'])
+        return self.get_queryset().filter(link_type__in=['image', 'data'])
 
     def metadata(self):
-        return self.get_query_set().filter(link_type='metadata')
+        return self.get_queryset().filter(link_type='metadata')
 
     def original(self):
-        return self.get_query_set().filter(link_type='original')
+        return self.get_queryset().filter(link_type='original')
 
     def geogig(self):
         return self.get_queryset().filter(name__icontains='geogig')

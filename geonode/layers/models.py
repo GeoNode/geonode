@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #########################################################################
 #
-# Copyright (C) 2012 Open Source Geospatial Foundation
+# Copyright (C) 2016 OSGeo
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -112,7 +112,7 @@ class Layer(ResourceBase):
         related_name='layer_default_style',
         null=True,
         blank=True)
-    styles = models.ManyToManyField(Style, related_name='layer_styles')
+    styles = models.ManyToManyField(Style, related_name='LayerStyles')
 
     charset = models.CharField(max_length=255, default='UTF-8')
 
@@ -260,7 +260,7 @@ class Layer(ResourceBase):
         return self.__class__.__name__
 
 
-class Layer_Styles(models.Model):
+class LayerStyles(models.Model):
     layer = models.ForeignKey(Layer)
     style = models.ForeignKey(Style)
 
@@ -296,7 +296,7 @@ class AttributeManager(models.Manager):
     """
 
     def visible(self):
-        return self.get_query_set().filter(
+        return self.get_queryset().filter(
             visible=True).order_by('display_order')
 
 
@@ -500,7 +500,7 @@ def pre_delete_layer(instance, sender, **kwargs):
         object_id=instance.id).delete()
     default_style = instance.default_style
     for style in instance.styles.all():
-        if style.layer_styles.all().count() == 1:
+        if style.LayerStyles.all().count() == 1:
             if style != default_style:
                 style.delete()
 

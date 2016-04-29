@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #########################################################################
 #
-# Copyright (C) 2012 Open Source Geospatial Foundation
+# Copyright (C) 2016 OSGeo
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -121,10 +121,10 @@ class JSONResponse(HttpResponse):
     def __init__(self,
                  obj='',
                  json_opts={},
-                 mimetype="application/json", *args, **kwargs):
+                 content_type="application/json", *args, **kwargs):
 
         content = json.dumps(obj, **json_opts)
-        super(JSONResponse, self).__init__(content, mimetype, *args, **kwargs)
+        super(JSONResponse, self).__init__(content, content_type, *args, **kwargs)
 
 
 def _error_response(req, exception=None, errors=None, force_ajax=True):

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #########################################################################
 #
-# Copyright (C) 2012 Open Source Geospatial Foundation
+# Copyright (C) 2016 OSGeo
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -162,11 +162,11 @@ def win_install_deps(options):
     if not download_dir.exists():
         download_dir.makedirs()
     win_packages = {
-        #required by transifex-client
+        # required by transifex-client
         "Py2exe": "http://downloads.sourceforge.net/project/py2exe/py2exe/0.6.9/py2exe-0.6.9.win32-py2.7.exe",
         "Nose": "https://s3.amazonaws.com/geonodedeps/nose-1.3.3.win32-py2.7.exe",
-        #the wheel 1.9.4 installs but pycsw wants 1.9.3, which fails to compile
-        #when pycsw bumps their pyproj to 1.9.4 this can be removed.
+        # the wheel 1.9.4 installs but pycsw wants 1.9.3, which fails to compile
+        # when pycsw bumps their pyproj to 1.9.4 this can be removed.
         "PyProj": "https://pyproj.googlecode.com/files/pyproj-1.9.3.win32-py2.7.exe"
     }
     failed = False
@@ -211,6 +211,10 @@ def sync(options):
     """
     Run the syncdb and migrate management commands to create and migrate a DB
     """
+    try:
+        sh("python manage.py migrate auth --fake-initial")
+    except:
+        pass
     sh("python manage.py syncdb --noinput")
     # sh("python manage.py migrate --noinput")
     sh("python manage.py loaddata sample_admin.json")
