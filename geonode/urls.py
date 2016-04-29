@@ -111,6 +111,11 @@ if "geonode.contrib.dynamic" in settings.INSTALLED_APPS:
                             (r'^dynamic/', include('geonode.contrib.dynamic.urls')),
                             )
 
+if "geonode.contrib.metadataxsl" in settings.INSTALLED_APPS:
+    urlpatterns += patterns('',
+                            (r'^showmetadata/', include('geonode.contrib.metadataxsl.urls')),
+                            )
+
 if 'geonode.geoserver' in settings.INSTALLED_APPS:
     # GeoServer Helper Views
     urlpatterns += patterns('',
