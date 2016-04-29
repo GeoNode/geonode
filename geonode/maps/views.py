@@ -94,6 +94,18 @@ def _resolve_map(request, id, permission='base.change_resourcebase',
     return resolve_object(request, Map, {key: id}, permission=permission,
                           permission_msg=msg, **kwargs)
 
+def _resolve_story(request, id, permission='base.change_resourcebase',
+                 msg=_PERMISSION_MSG_GENERIC, **kwargs):
+    '''
+    Resolve the Map by the provided typename and check the optional permission.
+    '''
+    if id.isdigit():
+        key = 'pk'
+    else:
+        key = 'urlsuffix'
+    return resolve_object(request, MapStory, {key: id}, permission=permission,
+                          permission_msg=msg, **kwargs)
+
 
 # BASIC MAP VIEWS #
 
@@ -287,6 +299,18 @@ def map_embed(
         'config': json.dumps(config)
     }))
 
+
+# Story View #
+def draft_view(request, storyid, template='maps/maploom.html'):
+
+    story_obj = _resolve_story(request, storyid, 'base.change_resourcebase', _PERMISSION_MSG_SAVE)
+
+    config = story_obj.viewer_json(request.user)
+
+    return render_to_response(template, RequestContext(request, {
+        'config': json.dumps(config),
+        'story': story_obj
+    }))
 
 # MAPS VIEWER #
 
