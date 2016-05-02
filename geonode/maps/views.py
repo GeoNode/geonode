@@ -332,6 +332,24 @@ def map_view(request, mapid, snapshot=None, template='maps/map_view.html'):
         'map': map_obj
     }))
 
+@xframe_options_exempt
+def mapstory_view(request, mapid, snapshot=None, template='maps/map_view.html'):
+    """
+    The view that returns the map composer opened to
+    the map with the given map ID.
+    """
+    map_obj = _resolve_story(request, mapid, 'base.view_resourcebase', _PERMISSION_MSG_VIEW)
+
+    if snapshot is None:
+        config = map_obj.viewer_json(request.user)
+    else:
+        config = snapshot_config(snapshot, map_obj, request.user)
+
+    return render_to_response(template, RequestContext(request, {
+        'config': json.dumps(config),
+        'map': map_obj
+    }))
+
 def map_viewer(request, mapid, snapshot=None, template='maps/map_viewer.html'):
     """
     The view that returns the map composer opened to
