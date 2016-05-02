@@ -796,6 +796,11 @@ class LayerManager(models.Manager):
                     "owner": owner,
                     "uuid": str(uuid.uuid4())
                 })
+                if layer is not None and layer.topic_category is None:
+                    # we need a default category, otherwise metadata are not generated
+                    default_category = LayerCategory.objects.get(name='boundaries')
+                    layer.topic_category = default_category
+                    layer.save()
                 if layer is not None and layer.bbox is None:
                     layer._populate_from_gs()
                 layer.save()
