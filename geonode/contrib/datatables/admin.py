@@ -48,8 +48,6 @@ class JoinTargetAdminForm(forms.ModelForm):
         # Is this an existing/saved Join Target?
         #
         if self.instance and self.instance.id:
-            print 'saved instance'
-
             # Yes, limit choices to the chosen layer and its attributes
             #
             self.fields['layer'].queryset = Layer.objects.filter(\
@@ -58,7 +56,6 @@ class JoinTargetAdminForm(forms.ModelForm):
                                     layer=self.instance.layer.id)
 
         elif selected_layer_id and selected_layer_id.isdigit():
-            print 'Url selection'
             self.fields['layer'].queryset = Layer.objects.filter(\
                                             pk=selected_layer_id)
             self.fields['attribute'].queryset = LayerAttribute.objects.filter(\
@@ -84,7 +81,8 @@ class JoinTargetAdmin(admin.ModelAdmin):
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         if db_field.name == 'attribute':
-            if request.GET.get('layer', None) is not None:
+            layer_id = request.GET.get('layer', 'nope')
+            if layer_id.isdigit():
                 kwargs["queryset"] = LayerAttribute.objects.filter(
                                         layer=request.GET.get('layer'))
         return super(JoinTargetAdmin, self).formfield_for_foreignkey(\
