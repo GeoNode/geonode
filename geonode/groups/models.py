@@ -79,6 +79,7 @@ class GroupProfile(models.Model):
         help_text=_('country of the physical address'))
     tasks = models.TextField(null=True, blank=True)
     profile_type = models.CharField(choices=[['org', 'Organization'],['ini', 'Initiative']], max_length=255)
+    featured = models.BooleanField(default=False, help_text=_('Should this resource be advertised in home page?'))
 
     def save(self, *args, **kwargs):
         group, created = Group.objects.get_or_create(name=self.slug)
