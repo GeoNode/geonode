@@ -52,7 +52,8 @@ class Profile(AbstractUser):
     social_linkedin = models.CharField(_('LinkedIn Profile'), help_text=_('Provide your LinkedIn handle or URL'), max_length=255, null=True, blank=True)
     education = models.TextField(_('Education'), null=True, blank=True, help_text=_('Provide some details about your Education and Background'))
     expertise = models.TextField(_('Expertise'), null=True, blank=True, help_text=_('Provide some details about your Expertise'))
-    
+    digest = models.BooleanField(_('Monthly email digest'), help_text=_('Subscribe to MapStory monthly email digest'), default=False)
+
     # End mapstory stuff
     organization = models.CharField(
         _('Organization Name'),

@@ -20,6 +20,7 @@ class MapStoryIndex(indexes.SearchIndex, indexes.Indexable):
     share_count = indexes.IntegerField(model_attr="share_count", default=0)
     rating = indexes.IntegerField(null=True)
     thumbnail_url = indexes.CharField(model_attr="thumbnail_url", null=True)
+    detail_url = indexes.CharField(model_attr="detail_url", null=True)
     uuid = indexes.CharField(model_attr="uuid")
     title = indexes.CharField(model_attr="title", boost=2)
     date = indexes.DateTimeField(model_attr="date")
