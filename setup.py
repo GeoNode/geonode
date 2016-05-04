@@ -161,6 +161,7 @@ setup(name='GeoNode',
         "django-auth-ldap==1.2.6",
         "unidecode==0.04.19",
         "geocoder==1.12.0",
+        'djang-cas-server==0.4.4',
         ],
       zip_safe=False,
       )
