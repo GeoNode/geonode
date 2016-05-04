@@ -114,7 +114,7 @@ def get_unique_viewname(layer_name, table_name):
         attempts.append(unique_vname)   # save the attempt
 
         # Is this a unique name?  Yes, return it.
-        if not does_table_name_exist(table_name):
+        if not does_table_name_exist(unique_vname):
             return unique_vname
 
         # Not unique. Add 2 to 11 random chars to end of table_name
