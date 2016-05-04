@@ -282,6 +282,9 @@ INSTALLED_APPS = (
 
     # Third party apps
 
+    #Single Sign On
+    'cas_server',
+
     # Utility
     'pagination',
     'taggit',
