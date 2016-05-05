@@ -139,6 +139,11 @@ if 'geonode.geoserver' in settings.INSTALLED_APPS:
                             (r'^gs/', include('geonode.geoserver.urls')),
                             )
 
+if 'simple_sso.sso_server' in settings.INSTALLED_APPS:
+    from simple_sso.sso_server.server import Server 
+    server = Server()
+    urlpatterns += server.get_urls()
+
 # Set up proxy
 urlpatterns += geonode.proxy.urls.urlpatterns
 

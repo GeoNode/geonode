@@ -283,7 +283,7 @@ INSTALLED_APPS = (
     # Third party apps
 
     #Single Sign On
-    'cas_server',
+    'simple_sso.sso_server',
 
     # Utility
     'pagination',
