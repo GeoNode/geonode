@@ -16,6 +16,7 @@ import uuid
 import os
 import glob
 import sys
+import datetime
 
 # Django functionality
 from django.contrib.auth.models import User
@@ -227,10 +228,12 @@ def cleanup(name, layer_id):
                    'import for layer: %s', name)
 
 
-def get_db_store_name(username):
+def get_db_store_name(user):
     db_store_name = settings.DB_DATASTORE_NAME
-    if username == 'capooti':
-        db_store_name = '2016_capooti'
+    # only users in beta-users group will use shard db for now
+    if user.groups.filter(name='beta-users').exists():
+        now = datetime.datetime.now()
+        db_store_name = 'wm_%s%02d' % (now.year, now.month)
     return db_store_name
 
 
@@ -270,7 +273,7 @@ def save(layer, base_file, user, overwrite = True, title=None,
 
     # Check if the store exists in geoserver
 
-    db_store_name = get_db_store_name(user.username)
+    db_store_name = get_db_store_name(user)
     try:
         if settings.DB_DATASTORE and the_layer_type == FeatureType.resource_type:
             store = cat.get_store(db_store_name)
@@ -765,7 +768,7 @@ def _create_db_featurestore(name, data, user, overwrite = False, charset = None)
     If the import into the database fails then delete the store
     (and delete the PostGIS table for it).
     """
-    db_store_name = get_db_store_name(user.username)
+    db_store_name = get_db_store_name(user)
     cat = Layer.objects.gs_catalog
     try:
         ds = cat.get_store(db_store_name)
@@ -774,7 +777,8 @@ def _create_db_featurestore(name, data, user, overwrite = False, charset = None)
         ds.connection_parameters.update(
             host=settings.DB_DATASTORE_HOST,
             port=settings.DB_DATASTORE_PORT,
-            database=settings.DB_DATASTORE_DATABASE,
+            #database=settings.DB_DATASTORE_DATABASE,
+            database=db_store_name,
             user=settings.DB_DATASTORE_USER,
             passwd=settings.DB_DATASTORE_PASSWORD,
             dbtype=settings.DB_DATASTORE_TYPE)
