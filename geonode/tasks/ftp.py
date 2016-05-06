@@ -319,7 +319,6 @@ def mail_ftp_user(username, user_email, mail_subject, mail_msg):
     #DEBUG
     mail_subject = "[LiPAD] FTP Download Request [{0}] for User [{1}]".format(mail_subject,username)
     mail_body = """\
-This is an automated mailer. DO NOT REPLY TO THIS MAIL!
 This is an e-mail regarding your FTP request from LiPAD. Details are found below:
 
 """+mail_msg

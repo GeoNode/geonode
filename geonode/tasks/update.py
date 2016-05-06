@@ -144,7 +144,7 @@ def fhm_year_metadata(flood_year, skip_prev):
     for layer in layer_list:
         print "Layer: %s" % layer.name
         fh_style_update(layer,f)
-        fh_perms_update(layer,f)
+        #fh_perms_update(layer,f)
 
         #batch_seed(layer)
 
