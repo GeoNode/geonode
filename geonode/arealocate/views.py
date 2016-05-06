@@ -4,7 +4,6 @@ from django.contrib.auth.decorators import login_required, user_passes_test
 from django.core.urlresolvers import reverse
 from django.shortcuts import render, render_to_response, redirect
 from django.utils import simplejson as json
-
 from pprint import pprint
 
 import traceback
@@ -28,7 +27,3 @@ def geocode(request):
     response = HttpResponse(json.dumps(context), content_type='application/json')
     response.status_code = 400
     return response
-    
-    
-    
-    

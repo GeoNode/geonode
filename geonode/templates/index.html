@@ -3,7 +3,6 @@
 {% load staticfiles %}
 {% load base_tags %}
 
-
 {% block title %} {% trans "Welcome!" %} - {{ block.super }} {% endblock %}
 
 {% block body_class %}home{% endblock %}
@@ -11,8 +10,11 @@
 {% block middle %}
    {{ block.super }}
   {% block hero %}
+
+{% endblock %}
 <div class="container">
-    <div class="row body-top col-md-9 center-text" style="width:70%">
+    <!-- <div class="row body-top col-md-6 center-text" style="width:70%"> -->
+    <div class="row body-top col-md-6 center-text" style="">
       <!-- <div class="jumbotron col-md-6"> -->
           <h1 class="no-margin-top">{% trans "Welcome to LiPAD" %}</h1>
           <p>
@@ -25,13 +27,17 @@
               {% endblocktrans %}
             </p>
         <!-- </div> -->
+    </div>
+
+    <!-- <div class="container"> -->
+      <div class="row body-top col-md-6 pull-right" >
+        {% include "philgrid.html" %}
       </div>
-      <div class=" body-top col-md-6 pull-right" style="width:30%;">
-        <iframe style="border: none;" height="500" width="400" src="https://lipad.dream.upd.edu.ph/maps/3418/embed"></iframe>
-      </div>
-<div class="container">
-    <div class="row home-facets" style="width:90%;">
-      <div class="col-md-3  border=0 text-center" >
+    <!-- </div> -->
+
+    <!-- <div class="home-facets col-md" > -->
+    <div class="col-md-6 home-facets" style="">
+      <div class="col-md-4  border=0 text-center" >
         <p>
           <a href="/layers/?limit=100&amp;offset=0&amp;keywords__slug__in=flood-hazard-map">
             <i class="fa fa-square-o fa-5x rotate-45"></i>
@@ -46,7 +52,7 @@
         <h4 class="text-center">Flood Hazard Maps</h4>
       </div>
 
-      <div class="col-md-3 border=0 text-center" >
+      <div class="col-md-4 border=0 text-center" >
         <p>
           <a href="/search/?keywords__slug__in=phillidar2&amp;limit=100&amp;offset=0">
             <i class="fa fa-map-marker fa-5x"></i>
@@ -61,7 +67,7 @@
         <h4 class="text-center">Resource Layers</h4>
       </div>
 
-      <div class="col-md-3 border=0 text-center" >
+      <div class="col-md-4 border=0 text-center" >
         <p><i class="fa fa-globe fa-5x"></i></p>
         <h2>
           <p class="text-center">37,557 sq. km.</p>
@@ -69,11 +75,10 @@
         <h4 class="text-center">Total LiDAR Coverage</h4>
       </div>
   </div>
-
-
-    <div class="row body-bottom">
+  
+  <div class="col-md-6">
       <!-- <div class="col-md-6 border=0"  style="width:30%;"> -->
-      <div class="col-md-3 border=0" style="">
+      <div class="col-md-4 border=0" style="">
         {% blocktrans %}
         <h4 style="margin-top:15px;">How to get data</h4>
         <p>
@@ -86,7 +91,7 @@
         {% endblocktrans %}
       </div>
 
-      <div class="col-md-3 border=0" style="">
+      <div class="col-md-4 border=0" style="">
         {% blocktrans %}
         <h4 style="margin-top:15px;">Demo Videos</h4>
         <p>
@@ -99,7 +104,7 @@
         {% endblocktrans %}
       </div>
 
-      <div class="col-md-3 border=0" style="" >
+      <div class="col-md-4 border=0" style="" >
         {% blocktrans %}
         <h4 style="margin-top:15px; text-center">OGC Services</h4>
         <p>
@@ -113,15 +118,8 @@
         <p>
         {% endblocktrans %}
       </div>
-    </div>
-
-
-  {% endblock %}
-
-  {% block mainbody %}
-
-
-{% endblock %}
+</div>
+</div>
 
 <div class="modal fade" id="modal-fhm" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
   <div class="modal-dialog">
@@ -174,23 +172,13 @@
   </div>
 </div>
 
-  {% block extra_script %}
-    {% if GEONODE_SECURITY_ENABLED %}
-      {% include "_permissions_form_js.html" %}
-    {% endif %}
-    <script type="text/javascript">
-        {% if HAYSTACK_SEARCH %}
-            SEARCH_URL = '{% url 'api_get_search' api_name='api' resource_name='base' %}?type__in=layer'
-        {% else %}
-            SEARCH_URL = '{% url 'api_dispatch_list' api_name='api' resource_name='layers' %}';
+  {% endblock %}
 
-        {% endif %}
-      FILTER_TYPE = 'layer';
-    </script>
-    {% with include_spatial='true' %}
-    {% include 'search/search_scripts.html' %}
-    {% endwith %}
-  {% endblock extra_script %}
+  {% block mainbody %}
+
 
 
 {% endblock %}
+
+
+
