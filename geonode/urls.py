@@ -124,7 +124,6 @@ urlpatterns = patterns('',
                        (r'^services/', include('geonode.services.urls')),
                        url(r'', include(api.urls)),
                        (r'^api/', include('geonode.api.urls')),
-                       url(r'^cas/', include('cas_server.urls', namespace="cas_server")),
 
                        )
 
