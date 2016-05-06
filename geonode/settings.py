@@ -281,6 +281,9 @@ INSTALLED_APPS = (
 
     # Third party apps
 
+    #Single Sign On
+    #'simple_sso.sso_server',
+
     # Utility
     'pagination',
     'taggit',
