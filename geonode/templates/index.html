@@ -12,10 +12,11 @@
   {% block hero %}
 
 {% endblock %}
+
 <div class="container">
-    <!-- <div class="row body-top col-md-6 center-text" style="width:70%"> -->
-    <div class="row body-top col-md-6 center-text" style="">
-      <!-- <div class="jumbotron col-md-6"> -->
+<body>
+    
+    <div class="row body-top col-md-6 center-text home-facets" style="">
           <h1 class="no-margin-top">{% trans "Welcome to LiPAD" %}</h1>
           <p>
               {% blocktrans %}
@@ -26,25 +27,17 @@
                 The datasets, which include Digital Elevation Models (DEMs), Digital Terrain Models (DTMs), Orthophotos, Classified LAZ, Flood Hazard Maps and Resource Maps, are available for download in open and GIS-ready formats, for use by Local Government Units (LGUs), National Government Agencies (NGAs), members of the academe, and researchers, among others.
               {% endblocktrans %}
             </p>
-        <!-- </div> -->
-    </div>
-
-    <!-- <div class="container"> -->
-      <div class="row body-top col-md-6 pull-right" >
-        {% include "philgrid.html" %}
-      </div>
-    <!-- </div> -->
-
-    <!-- <div class="home-facets col-md" > -->
-    <div class="col-md-6 home-facets" style="">
-      <div class="col-md-4  border=0 text-center" >
+       
+          <div class="col-md-4  border=0 text-center" >
         <p>
-          <a href="/layers/?limit=100&amp;offset=0&amp;keywords__slug__in=flood-hazard-map">
+          {% get_fhm_fmc_url "%s" as fhm %}
+          <a href="{{fhm}}">
             <i class="fa fa-square-o fa-5x rotate-45"></i>
           </a>
         </p>
         <h2>
-          <a href="/layers/?limit=100&amp;offset=0&amp;keywords__slug__in=flood-hazard-map">
+          {% get_fhm_fmc_url "%s" as fhm %}
+          <a href="{{fhm}}">
             {% get_fhm_count "%d" as fhm_count %}
              <p class="text-center" >{{ fhm_count }} </p>
           </a>
@@ -74,11 +67,8 @@
         </h2>
         <h4 class="text-center">Total LiDAR Coverage</h4>
       </div>
-  </div>
-  
-  <div class="col-md-6">
-      <!-- <div class="col-md-6 border=0"  style="width:30%;"> -->
-      <div class="col-md-4 border=0" style="">
+
+       <div class="col-md-4 border=0" style="">
         {% blocktrans %}
         <h4 style="margin-top:15px;">How to get data</h4>
         <p>
@@ -105,20 +95,36 @@
       </div>
 
       <div class="col-md-4 border=0" style="" >
-        {% blocktrans %}
+        
         <h4 style="margin-top:15px; text-center">OGC Services</h4>
         <p>
           <ol>
-            <li><a href="http://lipad-fmc.dmz.dream.upd.edu.ph/geoserver/ows?service=wms&amp;version=1.1.0">WMS 1.1.1</a></li>
-            <li><a href="http://lipad-fmc.dmz.dream.upd.edu.ph/geoserver/ows?service=wms&amp;version=1.3.0">WMS 1.3.0</a></li>
-            <li><a href="http://lipad-fmc.dmz.dream.upd.edu.ph/geoserver/ows?service=wfs&amp;version=1.0.0">WFS 1.0.0</a></li>
-            <li><a href="http://lipad-fmc.dmz.dream.upd.edu.ph/geoserver/ows?service=wfs&amp;version=1.1.0">WFS 1.1.0</a></li>
-            <li><a href="http://lipad-fmc.dmz.dream.upd.edu.ph/geoserver/ows?service=wfs&amp;version=2.0.0">WFS 2.0.0</a></li>
+            {% get_public_location "%s" as pl %}
+            <li><a href="{{pl}}ows?service=wms&amp;version=1.1.0">WMS 1.1.1</a></li>
+            <li><a href="{{pl}}ows?service=wms&amp;version=1.3.0">WMS 1.3.0</a></li>
+            <li><a href="{{pl}}ows?service=wfs&amp;version=1.0.0">WFS 1.0.0</a></li>
+            <li><a href="{{pl}}ows?service=wfs&amp;version=1.1.0">WFS 1.1.0</a></li>
+            <li><a href="{{pl}}ows?service=wfs&amp;version=2.0.0">WFS 2.0.0</a></li>
           </ol>
         <p>
-        {% endblocktrans %}
+        
       </div>
-</div>
+    </div>
+
+    <div class="col-md-6 pull-right row body-top">
+        <div class="philgrid" >
+        {% include "philgrid.html" %}
+        
+      </div>
+      <li class="list-group-item legend">
+          <h4 class="list-group-item-heading">Legend</h4>
+          <p></p>
+            
+          <p>{% get_public_location "%s" as pl %}<img id="legend_icon" src="{{pl}}wms?request=GetLegendGraphic&amp;format=image/png&amp;WIDTH=20&amp;HEIGHT=20&amp;LAYER=geonode:philgrid&amp;legend_options=fontAntiAliasing:true;fontSize:12;forceLabels:on"></p>
+      </li>
+    </div>
+  
+</body>
 </div>
 
 <div class="modal fade" id="modal-fhm" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
@@ -176,9 +182,4 @@
 
   {% block mainbody %}
 
-
-
 {% endblock %}
-
-
-

@@ -54,3 +54,14 @@ body {
    padding-left: 0px;
 }
 
+.philgrid,{
+	z-index: 1;
+	position:absolute;
+}
+
+.legend{
+	z-index: 2;
+	top: 655px;
+	position: absolute;
+	padding: 5px 5px;
+}
