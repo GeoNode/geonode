@@ -618,26 +618,25 @@ def layer_download_csv(request):
     response['Content-Disposition'] = 'attachment; filename="layerdownloads-"'+str(datetoday.month)+str(datetoday.day)+str(datetoday.year)+'.csv"'
     writer = csv.writer(response)
 
-    auth_list = Action.objects.filter(target_content_type=40).order_by('timestamp') #get layers in prod
+    auth_list = Action.objects.filter(verb='downloaded').order_by('timestamp') #get layers in prod
+
     # auth_fmc = 
     anon_list = AnonDownloader.objects.all().order_by('date')
     # anon_fmc  
-    # writer.writerow( ['username','action','layer_name','date_downloaded'])
-    # for auth in auth_list:
-    #     writer.writerow([auth])
+    writer.writerow( ['username','layer name','date downloaded'])
+    
+    for auth in auth_list:
+        # auth.actor + " " + auth.action_object + " " +  auth.timestamp.strftime('%Y/%m/%d')
+        writer.writerow([auth.actor,auth.action_object.title,auth.timestamp.strftime('%Y/%m/%d')])
 
-    writer.writerow( ['lastname','firstname','action','layer_name','date_downloaded'])
-    for anon in anon_list:
-        # admin downloaded San Pedro 25 Year Flood Hazard Map 2 1 week, 4 days ago
-        # datetime.datetime(2016, 4, 8, 18, 28, 25, 468897)
-        date_diff = (datetoday - anon.date).days
-        lastname = anon.anon_last_name
-        firstname = anon.anon_first_name
-        action = 'downloaded'
-        layername = anon.anon_layer
-        date = str(date_diff) + " days ago"
-        # string =
-        writer.writerow([lastname,firstname,action,layername,date])        
+    # writer.writerow(['\n'])
+    # writer.writerow(['Anonymous Downloads'])
+    # writer.writerow( ['lastname','firstname','layer name','date downloaded'])
+    # for anon in anon_list:
+    #     lastname = anon.anon_last_name
+    #     firstname = anon.anon_first_name
+    #     layername = anon.anon_layer
+    #     writer.writerow([lastname,firstname,layername,anon.date.timestamp.strftime('%Y/%m/%d')])        
 
     return response
 
