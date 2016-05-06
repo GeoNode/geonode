@@ -11,9 +11,10 @@
   }
 </style>
 <script type="text/javascript">
+    var map;
     window.addEventListener("map:init", function (e) {
-        //var map = L.map('map').setView([14.65651,121.07011], 17);  
-        var map = e.detail.map;
+       
+        map = e.detail.map;
 
         {% if resource.bbox_string %}
           zoom_to_box(map, [{{ resource.bbox_string }}]);
@@ -27,7 +28,7 @@
             'opacity':0.8,
             tiled:true
         });
-
+        
           var MapQuestOpen_OSM = L.tileLayer('http://otile{s}.mqcdn.com/tiles/1.0.0/{type}/{z}/{x}/{y}.{ext}', {
             type: 'map',
             ext: 'jpg',
@@ -40,15 +41,9 @@
         };
 
         L.control.layers(baseMaps).addTo(map);
-         if (tile_layer != null) {
+        if (tile_layer != null) {
             map.layerscontrol.addOverlay(tile_layer,"{{ resource.title }}");
             map.addLayer(tile_layer);
-            //map.bringToFront(tile_layer);
-        }
-        
-
-        if (L.control.hasOwnProperty('fullscreen')) {
-            L.control.fullscreen().addTo(map);
         }
 
     });
