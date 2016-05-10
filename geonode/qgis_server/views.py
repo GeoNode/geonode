@@ -203,6 +203,7 @@ def thumbnail(request, layername):
             'LAYERS': layer.name,
             'STYLES': 'default',
             'FORMAT': 'image/png',
+            'TRANSPARENT': 'true',
             'DPI': '96',
             'MAP_RESOLUTION': '96',
             'FORMAT_OPTIONS': 'dpi:96'
@@ -273,6 +274,7 @@ def tile(request, layername, z, x, y):
             'LAYERS': layer.name,
             'STYLES': 'default',
             'FORMAT': 'image/png',
+            'TRANSPARENT': 'true',
             'DPI': '96',
             'MAP_RESOLUTION': '96',
             'FORMAT_OPTIONS': 'dpi:96'
