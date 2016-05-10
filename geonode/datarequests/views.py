@@ -68,8 +68,12 @@ def registration_part_one(request):
     form = DataRequestProfileForm( )
     
     if request.method == 'GET':
+        pprint('hi there')
         if request.user.is_authenticated():
             if not request_object:
+                pprint(request.user.first_name)
+                pprint(request.user.middle_name)
+                pprint(request.user.last_name)
                 request_object = DataRequestProfile(
                     profile = request.user,
                     first_name = request.user.first_name,
