@@ -84,7 +84,7 @@ def create_ad_account(datarequest, username):
     mail=str(datarequest.email)
     userPrincipalName=str(username+"@ad.dream.upd.edu.ph")
     userAccountControl = "512"
-    o=datarequest.organization
+    o=unidecode(datarequest.organization)
     
     for c in cn:
         if c in ESCAPED_CHARACTERS:
