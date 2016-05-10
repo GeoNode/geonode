@@ -600,8 +600,7 @@ def data_request_profile_approve(request, pk):
             else:
                 try:
                     uj = UserJurisdiction.objects.get(user=request_profile.profile)
-                    uj.jurisdiction_shapefile = None
-                    uj.save()
+                    uj.delete()
                 except ObjectDoesNotExist as e:
                     pprint("Jurisdiction Shapefile not found, nothing to delete. Carry on")
             
