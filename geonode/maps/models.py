@@ -1572,7 +1572,7 @@ class Layer(models.Model, PermissionLevelMixin):
 
     def update_bounds(self):
         #Get extent for layer from PostGIS
-        bboxes = get_postgis_bbox(self.name)
+        bboxes = get_postgis_bbox(self.name, self.store)
         if len(bboxes) != 1 and len(bboxes[0]) != 2:
             return
         if bboxes[0][0] is None or bboxes[0][1] is None:

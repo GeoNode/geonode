@@ -332,7 +332,6 @@ def getNominatimResults(place_name):
 
 def getConnection():
     return psycopg2.connect(
-        #"dbname='" + settings.DB_DATASTORE_DATABASE + "' user='" + settings.DB_DATASTORE_USER + "'  password='" + settings.DB_DATASTORE_PASSWORD + "' port=" + settings.DB_DATASTORE_PORT + " host='" + settings.DB_DATASTORE_HOST + "'")
         "dbname='" + settings.DATABASES[settings.GAZETTEER_DB_ALIAS]['NAME'] + "' user='" + \
         settings.DATABASES[settings.GAZETTEER_DB_ALIAS]['USER'] + "'  password='" + \
         settings.DATABASES[settings.GAZETTEER_DB_ALIAS]['PASSWORD'] + "' port=" + \
@@ -354,6 +353,3 @@ def getGeonamesResults(place_name):
 def formatExternalGeocode(geocoder, geocodeResult):
     return {'placename': geocodeResult[0], 'coordinates': geocodeResult[1], 'source': geocoder, 'start_date': 'N/A', \
             'end_date': 'N/A', 'gazetteer_id': 'N/A'}
-
-
-

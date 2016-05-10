@@ -777,7 +777,6 @@ def _create_db_featurestore(name, data, user, overwrite = False, charset = None)
         ds.connection_parameters.update(
             host=settings.DB_DATASTORE_HOST,
             port=settings.DB_DATASTORE_PORT,
-            #database=settings.DB_DATASTORE_DATABASE,
             database=db_store_name,
             user=settings.DB_DATASTORE_USER,
             passwd=settings.DB_DATASTORE_PASSWORD,
