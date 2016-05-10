@@ -89,11 +89,6 @@ def create_ad_account(datarequest, username):
     for c in cn:
         if c in ESCAPED_CHARACTERS:
             cn = cn.replace(c, '')
-            
-    for c in ou:
-        if c in ESCAPED_CHARACTERS+'- ':
-            ou = ou.replace(c,'')
-            pprint (ou)
         
     
     dn="CN="+cn+","+settings.LIPAD_LDAP_BASE_DN
@@ -109,7 +104,7 @@ def create_ad_account(datarequest, username):
         "userPrincipalName": [userPrincipalName],
         "userAccountControl": [userAccountControl],
         "telephoneNumber": [telephoneNumber],
-        "ou": [ou, "LIPAD"],
+        "ou": [ou],
     }
     
     try:

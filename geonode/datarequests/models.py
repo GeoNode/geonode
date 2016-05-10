@@ -109,9 +109,9 @@ class DataRequestProfile(TimeStampedModel):
         blank=True,
     )
 
-    first_name = models.CharField(_('First Name'), max_length=100)
-    middle_name = models.CharField(_('Middle Name'), max_length=100, null=True, blank=True)
-    last_name = models.CharField(_('Last Name'), max_length=100)
+    first_name = models.CharField(_('First Name'), max_length=21)
+    middle_name = models.CharField(_('Middle Name'), max_length=21, null=True, blank=True)
+    last_name = models.CharField(_('Last Name'), max_length=21)
 
     organization = models.CharField(
         _('Office/Organization Name'),
@@ -123,8 +123,8 @@ class DataRequestProfile(TimeStampedModel):
         default=LOCATION_CHOICES.local,
         max_length=10,
     )
-    email = models.EmailField(_('Email Address'), max_length=50)
-    contact_number = models.CharField(_('Contact Number'), max_length=255)
+    email = models.EmailField(_('Email Address'), max_length=64)
+    contact_number = models.CharField(_('Contact Number'), max_length=30)
     project_summary = models.TextField(_('Summary of Project/Program'), null=True, blank=True)
     data_type_requested = models.CharField(
         _('Type of Data Requested'),
