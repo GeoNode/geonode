@@ -13,7 +13,7 @@ from geonode.people.models import Profile
 from geonode.documents.models import Document
 
 UNALLOWED_USERNAME_CHARACTERS='"[]:;|=+*?<>/\,.'
-ESCAPED_CHARACTERS="/\,-"
+ESCAPED_CHARACTERS="/\,"
 
 def create_login_credentials(data_request):
 
@@ -91,8 +91,8 @@ def create_ad_account(datarequest, username):
             cn = cn.replace(c, '')
             
     for c in ou:
-        if c in ESCAPED_CHARACTERS:
-            ou = ou.replace(c,'\\'+c)
+        if c in ESCAPED_CHARACTERS+'-':
+            ou = ou.replace(c,'')
             
     
     dn="CN="+cn+","+settings.LIPAD_LDAP_BASE_DN
