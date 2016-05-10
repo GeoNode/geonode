@@ -124,7 +124,7 @@ class DataRequestProfile(TimeStampedModel):
         max_length=10,
     )
     email = models.EmailField(_('Email Address'), max_length=64)
-    contact_number = models.CharField(_('Contact Number'), max_length=30)
+    contact_number = models.CharField(_('Contact Number'), max_length=255)
     project_summary = models.TextField(_('Summary of Project/Program'), null=True, blank=True)
     data_type_requested = models.CharField(
         _('Type of Data Requested'),
