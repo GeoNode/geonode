@@ -69,7 +69,6 @@ def registration_part_one(request):
     
     if request.method == 'GET':
         if request.user.is_authenticated():
-            pprint('hi there')
             if not request_object:
                 pprint(request.user.first_name)
                 pprint(request.user.middle_name)
@@ -85,6 +84,8 @@ def registration_part_one(request):
                     request_status = 'pending'
                 )
                 request.session['request_object']=request_object
+            else:
+                pprint('hi there')
             return HttpResponseRedirect(
                 reverse('datarequests:registration_part_two')
             )
