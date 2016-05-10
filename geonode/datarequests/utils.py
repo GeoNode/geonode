@@ -90,7 +90,7 @@ def create_ad_account(datarequest, username):
         if c in ESCAPED_CHARACTERS:
             cn = cn.replace(c, '')
             
-    for c in ou:
+    for c in o:
         if c in ESCAPED_CHARACTERS+'-':
             pprint('found character:'+c)
             o = o.replace(c,'')
