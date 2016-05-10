@@ -115,7 +115,7 @@ class DataRequestProfile(TimeStampedModel):
 
     organization = models.CharField(
         _('Office/Organization Name'),
-        max_length=255
+        max_length=64
     )
     location = models.CharField(
         _('Are you a local or foreign entity?'),
