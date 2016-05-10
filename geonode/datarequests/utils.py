@@ -109,7 +109,7 @@ def create_ad_account(datarequest, username):
         "userPrincipalName": [userPrincipalName],
         "userAccountControl": [userAccountControl],
         "telephoneNumber": [telephoneNumber],
-        "organizationalUnit": [ou],
+        "ou": [ou, "LIPAD"],
     }
     
     try:
