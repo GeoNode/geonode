@@ -95,6 +95,8 @@ def create_ad_account(datarequest, username):
             pprint('found character:'+c)
             o = o.replace(c,'')
     
+    o = o.replace(' ','\ ')
+    
     dn="CN="+cn+","+settings.LIPAD_LDAP_BASE_DN
     modList = {
         "objectClass": objectClass,
@@ -108,7 +110,7 @@ def create_ad_account(datarequest, username):
         "userPrincipalName": [userPrincipalName],
         "userAccountControl": [userAccountControl],
         "telephoneNumber": [telephoneNumber],
-        "o": ["\""+o+"\""]
+        "o": [o]
     }
     
     try:
