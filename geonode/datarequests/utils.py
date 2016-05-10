@@ -13,7 +13,7 @@ from geonode.people.models import Profile
 from geonode.documents.models import Document
 
 UNALLOWED_USERNAME_CHARACTERS='"[]:;|=+*?<>/\,.'
-ESCAPED_CHARACTERS="/\,"
+ESCAPED_CHARACTERS="/\,-"
 
 def create_login_credentials(data_request):
 
