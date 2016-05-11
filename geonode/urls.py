@@ -33,6 +33,8 @@ from geonode.api.urls import api
 import autocomplete_light
 from geonode.views import forbidden
 
+from geonode import settings
+
 # Setup Django Admin
 autocomplete_light.autodiscover()
 
@@ -51,17 +53,17 @@ sitemaps = {
 urlpatterns = patterns('',
 
                        # Static pages
-                       url(r'^/?$', TemplateView.as_view(template_name='index.html'), name='home'),
+                       url(r'^/?$', 'geonode.views.philgrid', name='home'),
                        url(r'^help/$', TemplateView.as_view(template_name='help.html'), name='help'),
                        url(r'^developer/$', TemplateView.as_view(template_name='developer.html'), name='developer'),
-                       url(r'^about/$', TemplateView.as_view(template_name='about.html'), name='about'), 
-                       
+                       url(r'^about/$', TemplateView.as_view(template_name='about.html'), name='about'),
+
                        # EULA URLs
                        url(r'^eula/', include('geonode.eula.urls'), name='eula'),
-                       
+
                        # Permission denied handler
                        url(r'^forbidden/$', forbidden, name='forbidden'),
-                       
+
                        # Layer views
                        (r'^layers/', include('geonode.layers.urls')),
 
@@ -92,7 +94,10 @@ urlpatterns = patterns('',
                        # Accounts
                        url(r'^account/ajax_login$', 'geonode.views.ajax_login', name='account_ajax_login'),
                        url(r'^account/ajax_lookup$', 'geonode.views.ajax_lookup', name='account_ajax_lookup'),
-					   
+
+		       #Geocoding
+                       (r'^geocoding/',include('geonode.arealocate.urls',namespace='arealocate')),
+
                        # Data Request Profiles
                        (r'^datarequests/', include('geonode.datarequests.urls', namespace='datarequests')),
 
@@ -101,7 +106,7 @@ urlpatterns = patterns('',
 
 					   # CephGeo
 					   url(r'^ceph/', include("geonode.cephgeo.urls")),
-					   
+
 					   #MapTiles
 					   url(r'^maptiles/',include("geonode.maptiles.urls")),
 
@@ -120,8 +125,8 @@ urlpatterns = patterns('',
                        (r'^documents/', include('geonode.documents.urls')),
                        (r'^services/', include('geonode.services.urls')),
                        url(r'', include(api.urls)),
-                       
-                       
+                       (r'^api/', include('geonode.api.urls')),
+
                        )
 
 if "geonode.contrib.dynamic" in settings.INSTALLED_APPS:
@@ -141,6 +146,11 @@ if 'notification' in settings.INSTALLED_APPS:
     urlpatterns += patterns('',
                             (r'^notifications/', include('notification.urls')),
                             )
+
+if 'simple_sso.sso_server' in settings.INSTALLED_APPS:
+    from simple_sso.sso_server.server import Server 
+    server = Server()
+    urlpatterns += server.get_urls()
 
 # Set up proxy
 urlpatterns += geonode.proxy.urls.urlpatterns
