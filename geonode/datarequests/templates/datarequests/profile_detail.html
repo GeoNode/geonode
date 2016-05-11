@@ -81,7 +81,7 @@
       <td class="table-user-profile-attribute">{% trans "Type of Data Requested" %}</td>
       <td>{{ request_profile.get_data_type_requested_display }}</td>
       </tr>
-      
+
       <tr>
       <td class="table-user-profile-attribute">{% trans "Purpose/Intended Use of Data" %}</td>
       <td>{{ request_profile.purpose }}</td>
@@ -148,7 +148,7 @@
               <strong>{{ request_profile.get_request_status_display }}</strong>
             </div>
         </div>
-
+    
         {% if request_profile.request_status == 'rejected'  %}
           <p><strong>{% trans "Reason" %}</strong>: {{ request_profile.rejection_reason }}</p>
           {% if request_profile.additional_rejection_reason %}
@@ -156,7 +156,7 @@
           {% endif %}
         {% endif %}
       </li>
-
+{% if user.is_superuser %}
       {% if request_profile.request_status == 'pending'%}
         <li class="list-group-item">
           <button class="btn btn-primary btn-md btn-block"  data-toggle="modal" data-target="#approve-request" id="approve-button">{% trans "Approve" %}</button>
@@ -216,6 +216,7 @@
         </form>
           
         </li>
+      {% endif %}
       {% endif %}
   </ul>
   <input type="hidden" id="request_profile_id" value="{{request_profile.pk}}"></input>

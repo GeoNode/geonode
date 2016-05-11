@@ -29,6 +29,7 @@ from taggit.managers import TaggableManager
 
 from geonode.people.enumerations import ROLE_VALUES
 import geonode
+from pprint import pprint
 
 logger = logging.getLogger(__name__)
 
@@ -671,7 +672,14 @@ class Link(models.Model):
         return '%s link' % self.link_type
     
     def get_download_url(self):
-        return self.url.replace("geoserver","layers/geonode%3A{0}/download".format(self.resource.name))
+        if settings.GEONODE_PORT is not None and isinstance(settings.GEONODE_PORT,int):
+            tracking_url_tokens = self.url.replace("geoserver","layers/geonode%3A{0}/download".format(self.resource.name)).split("/")
+            tracking_url_tokens[2] = tracking_url_tokens[2].split(":")[0] + ":" + str(settings.GEONODE_PORT)
+            pprint(tracking_url_tokens)
+            return "/".join(tracking_url_tokens)
+
+        else:
+            return self.url.replace("geoserver","layers/geonode%3A{0}/download".format(self.resource.name)) 
         
     def update_siteurl(self, protocol="http"):
         tokens=self.url.split("/")
