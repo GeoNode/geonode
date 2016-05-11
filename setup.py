@@ -159,7 +159,9 @@ setup(name='GeoNode',
         "django-braces==1.8.1",
         "python_ldap==2.4.19",
         "django-auth-ldap==1.2.6",
-        
+        "unidecode==0.04.19",
+        "geocoder==1.12.0",
+        #'django-simple-sso==0.9.3',
         ],
       zip_safe=False,
       )

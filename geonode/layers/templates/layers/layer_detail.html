@@ -135,11 +135,18 @@
 
         <li class="list-group-item">
         {% if links %}
-            {% include "layers/layer_eula_nested_dialog.html" %}
+            {% if phillidar2keyword in resource.keyword_list %}
+              {% include "layers/layer_eula_nested_dialog_phillidar2.html" %}
+            {% else %}
+              {% include "layers/layer_eula_nested_dialog.html" %}
+            {% endif %}
             <button class="btn btn-primary btn-md btn-block" data-toggle="modal" data-target="#eula-nested-dialog">{% trans "Download Layer" %}</button>
         {% else %}
           {% if request.user.is_authenticated %}
           <button class="btn btn-primary btn-md btn-block" id="request-download">{% trans "Request Download" %}</button>
+          {% else %}
+
+          <button class="btn btn-primary btn-md btn-block" data-toggle="modal" data-target="#SigninModal" >{% trans "Please Sign in to Download" %}</button>
           {% endif %}
         {% endif %}
         </li>
@@ -153,11 +160,32 @@
           </div>
           <div class="modal-body">
             {% if links %}
-            <ul>
+            <table class="table table-striped table-bordered table-condensed">
+              <tr><th></th><th>WGS84</th><th>PRS92</th></tr>
               {% for link in links %}
-                <li><a href="{{ link | get_layer_download_url }}">{% trans link.name %}</a></li>
+                {% if "wms" in link.url %}
+                  {% if "PhilLiDAR2" in resource.keyword_list %}
+                  <tr>
+                    <td>{% trans link.link_type %}</td>
+                    <td><a href="{{ link | get_layer_download_url }}&format_options=layout:phillidar2">{% trans link.name %}</a></td>
+                    <td><a href="{{ link | get_layer_download_url }}&format_options=layout:phillidar2">{% trans link.name %}</a></td>
+                  </tr>
+                  {% else %}
+                  <tr>
+                    <td>{% trans link.link_type %}</td>
+                    <td><a href="{{ link | get_layer_download_url }}&format_options=layout:phillidar1">{% trans link.name %}</a></td>
+                    <td><a href="{{ link | get_layer_download_url }}&format_options=layout:phillidar1">{% trans link.name %}</a></td>
+                  </tr>
+                  {% endif %}
+                {% else %}
+                  <tr>
+                    <td>{% trans link.link_type %}</td>
+                    <td><a href="{{ link | get_layer_download_url }}&srsName=EPSG:32651">{% trans link.name %}</a></td>
+                    <td><a href="{{ link | get_layer_download_url }}&srsName=EPSG:4683">{% trans link.name %}</a></td>
+                  </tr>
+                {% endif %}
               {% endfor %}
-            </ul>
+            </table>
             {% endif %}
           </div>
           <div class="modal-footer">
