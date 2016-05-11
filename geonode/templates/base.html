@@ -61,18 +61,6 @@
             <li id="nav_documents">
               <a href="{% url "document_browse" %}">{% trans "Documents" %}</a>
             </li>
-           {% block extra_tab %}
-               <li class="dropdown" id="nav_geosafe">
-                   <a class="dropdown-toggle" data-toggle="dropdown" href="#">
-                       {% trans "GeoSAFE" %}
-                       <span class="caret"></span>
-                   </a>
-                   <ul class="dropdown-menu">
-                       <li><a href="{% url "geosafe:analysis-create" %}">{% trans "Create Analysis" %}</a></li>
-                       <li><a href="{% url "geosafe:analysis-list" %}">{% trans "List Analysis" %}</a></li>
-                   </ul>
-               </li>
-           {% endblock %}
             <li id="nav_people">
               <a href="{% url "profile_browse" %}">{% trans "People" %}</a>
             </li>

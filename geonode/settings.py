@@ -311,11 +311,6 @@ INSTALLED_APPS = (
     'polymorphic',
     'guardian',
 
-    # Geosafe
-    'geosafe',
-    'south',
-    'djcelery',
-
 ) + GEONODE_APPS
 
 LOGGING = {
@@ -961,15 +956,6 @@ if 'geonode.qgis_server' in INSTALLED_APPS:
 # This settings here is needed to construct url for InaSAFE-Headless celery
 # batch. Note, trailing slash is important
 GEONODE_BASE_URL = 'http://localhost:8000/'
-
-CELERYBEAT_SCHEDULE = {
-    # executes every night
-    'clean-impact-nightly': {
-        'task': 'geosafe.tasks.analysis.clean_impact_result',
-        'schedule': crontab(hour='0', minute='0')
-    }
-}
-
 
 # Load more settings from a file called local_settings.py if it exists
 try:

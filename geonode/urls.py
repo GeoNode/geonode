@@ -28,7 +28,6 @@ from django.contrib import admin
 import geonode.proxy.urls
 
 from geonode.api.urls import api
-import geosafe.urls
 
 import autocomplete_light
 
@@ -101,7 +100,6 @@ urlpatterns = patterns('',
                        (r'^documents/', include('geonode.documents.urls')),
                        (r'^services/', include('geonode.services.urls')),
                        url(r'', include(api.urls)),
-                       url(r'', include(geosafe.urls, namespace='geosafe')),
                        )
 
 if "geonode.contrib.dynamic" in settings.INSTALLED_APPS:

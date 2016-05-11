@@ -127,35 +127,6 @@ QGIS_SERVER_CONFIG = {
     'layer_directory': os.path.join(PROJECT_ROOT, "qgis_layer")
 }
 
-
-# App specific
-# Geosafe - Celery
-BROKER_URL = 'redis://localhost:6379/0'
-CELERY_RESULT_BACKEND = BROKER_URL
-CELERY_ALWAYS_EAGER = False
-CELERY_EAGER_PROPAGATES_EXCEPTIONS = True
-CELERY_IGNORE_RESULT = False
-CELERY_SEND_EVENTS = True
-CELERY_TASK_RESULT_EXPIRES = 24 * 3600
-CELERY_DISABLE_RATE_LIMITS = True
-CELERY_DEFAULT_QUEUE = "default"
-CELERY_DEFAULT_EXCHANGE = "default"
-CELERY_DEFAULT_EXCHANGE_TYPE = "direct"
-CELERY_DEFAULT_ROUTING_KEY = "default"
-CELERY_CREATE_MISSING_QUEUES = True
-
-CELERY_QUEUES = [
-Queue('default', routing_key='default'),
-Queue('cleanup', routing_key='cleanup'),
-Queue('update', routing_key='update'),
-Queue('email', routing_key='email'),
-Queue('inasafe-headless', routing_key='inasafe-headless'),
-Queue('geosafe', routing_key='geosafe'),
-]
-
-import djcelery
-djcelery.setup_loader()
-
 # base url used to resolve layer files accessed by InaSAFE Headless
 GEONODE_BASE_URL = 'http://localhost:8000/'
 WMS_QGIS_SERVER = GEONODE_BASE_URL + 'qgis-server/'
