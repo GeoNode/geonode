@@ -279,6 +279,9 @@ INSTALLED_APPS = (
 
     # Third party apps
 
+    #Single Sign On
+    #'simple_sso.sso_server',
+
     # Utility
     'pagination',
     'taggit',
@@ -485,6 +488,8 @@ LIPAD_SUPPORT_MAIL = 'lipad@dream.upd.edu.ph'
 FTP_SUPPORT_MAIL = 'lipad@dream.upd.edu.ph'
 FTP_AUTOMAIL = 'automailer@dream.upd.edu.ph'
 
+#get data coverage layer name
+PHILGRID_NAME = "philgrid_20160301"
 #
 # Test Settings
 #
@@ -804,18 +809,7 @@ LEAFLET_CONFIG = {
         # http://leaflet-extras.github.io/leaflet-providers/preview/
 
         # Stamen toner lite.
-        ('Watercolor',
-         'http://{s}.tile.stamen.com/watercolor/{z}/{x}/{y}.png',
-         'Map tiles by <a href="http://stamen.com">Stamen Design</a>, \
-         <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a> &mdash; Map data &copy; \
-         <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, \
-         <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>'),
-        ('Toner Lite',
-         'http://{s}.tile.stamen.com/toner-lite/{z}/{x}/{y}.png',
-         'Map tiles by <a href="http://stamen.com">Stamen Design</a>, \
-         <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a> &mdash; Map data &copy; \
-         <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, \
-         <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>'),
+        
     ],
     'PLUGINS': {
         'esri-leaflet': {
@@ -920,7 +914,8 @@ import djcelery
 djcelery.setup_loader()
 
 #TILED_SHAPEFILE = "geonode:cut_phl_001k_grid_utm_z51n"
-TILED_SHAPEFILE = "geonode:index"
+# TILED_SHAPEFILE = "geonode:index"
+TILED_SHAPEFILE = "geonode:philgrid_20160301"
 TILED_SHAPEFILE_TEST = "geonode:index"
 EULA_URL = '/eula/eula_form/'
 SELECTION_LIMIT=209715200
@@ -984,3 +979,5 @@ if 'geonode.geoserver' in GEONODE_APPS:
     baselayers = MAP_BASELAYERS
     MAP_BASELAYERS = [LOCAL_GEOSERVER]
     MAP_BASELAYERS.extend(baselayers)
+
+PH_BBOX= [116.22307468566594, 4.27103012208686, 127.09228398538997, 21.2510169394873 ]
