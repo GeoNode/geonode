@@ -231,7 +231,7 @@ def cleanup(name, layer_id):
 def get_db_store_name(user):
     db_store_name = settings.DB_DATASTORE_NAME
     # only users in beta-users group will use shard db for now
-    if user.groups.filter(name='beta-users').exists():
+    if not user.groups.filter(name='dataverse').exists():
         now = datetime.datetime.now()
         db_store_name = 'wm_%s%02d' % (now.year, now.month)
     return db_store_name
