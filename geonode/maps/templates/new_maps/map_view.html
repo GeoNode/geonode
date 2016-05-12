@@ -45,7 +45,7 @@
                         <label for="add_layer_select">Add Layer:</label>
                         <select class="form-control" id="add_layer_select">
                             {% for layer in layers %}
-                                <option value="{{ layer.get_tiles_url|safe }}">{{ layer.name }}</option>
+                                <option value="{{ layer.get_tiles_url|safe }}">{{ layer.title }}</option>
                             {% endfor %}
                         </select>
                         <input id="add_layer_button" type="submit" class="btn btn-info" value="Add Layer">
