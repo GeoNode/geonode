@@ -72,6 +72,7 @@
                 </div>
             </div>
         </div>
+        <a>X</a>
     </div>
 {% endblock body %}
 
@@ -127,7 +128,7 @@
         var map = $("#map");
         var active_background_layer;
 
-        var overlay_layers = [];
+        var overlay_layers = {};
         // Each element contains:
         // 1. layer name
         // 2. layer wms url
@@ -144,6 +145,17 @@
                 [bbox[3], bbox[2]]
             ];
             map.fitBounds(bounds);
+        }
+
+        function check_box_layer_clicked(check_box) {
+            if (check_box.checked) {
+                map.addLayer(overlay_layers[check_box.value].layer);
+            } else {
+                if (map.hasLayer(overlay_layers[check_box.value].layer)){
+                    map.removeLayer(overlay_layers[check_box.value].layer);
+                }
+            }
+
         }
         $(document).ready(function () {
             // Define some default base layers
@@ -211,16 +223,17 @@
                     if (tile_layer != null) {
                         // Set view to new added layer
                         zoom_to_box(map, [
-                                json['bbox_x0'],
-                                json['bbox_y0'],
-                                json['bbox_x1'],
-                                json['bbox_y1']
+                            json['bbox_x0'],
+                            json['bbox_y0'],
+                            json['bbox_x1'],
+                            json['bbox_y1']
                         ]);
                         // Add the layer
                         map.addLayer(tile_layer);
 
                         // Add to list layer
-                        $("#layer-list").prepend("<li>" + layer_name + "</li>");
+                        $("#layer-list").prepend(
+                                "<li><input type='checkbox' onclick='check_box_layer_clicked(this);' name='show_layer' value='" + layer_typename + "' checked>" + layer_name + "</li>");
 
                         // Add to memory
                         var added_layer = {};
@@ -228,7 +241,8 @@
                         added_layer.url = layer_url;
                         added_layer.z_index = 0;
                         added_layer.layer = tile_layer;
-
+                        overlay_layers[layer_typename] = added_layer;
+                        console.log(overlay_layers)
                     }
                 },
                 error: function (xhr, errmsg, err) {
