@@ -20,7 +20,6 @@
           href="https://cdn.rawgit.com/elesdoar/leaflet-control-orderlayers/master/dist/css/leaflet.control.orderlayers.min.css"
           type="text/css"/>
     <link rel="stylesheet" href="{% static 'lib/css/L.Control.Pan.css' %}"/>
-    {#    <link rel="stylesheet" href="{% static 'lib/css/L.Control.Zoomslider.css' %}"/>#}
     <link rel="stylesheet" href="{% static 'lib/css/L.Control.ZoomBox.css' %}"/>
     <style type="text/css">
         html, body, #wrap {
@@ -31,10 +30,10 @@
         #layer-list li {
             cursor: move;
         }
+
         label {
             padding-bottom: 1%;
         }
-
 
     </style>
 {% endblock extra_head %}
@@ -53,10 +52,17 @@
                         </select>
                         <input id="add_layer_button" type="submit" class="btn btn-info" value="Add Layer">
                     </div>
-                    <h4>List Layer</h4>
+                    <h4>Map layers</h4>
                     <div>
                         <ul id="layer-list">
                         </ul>
+                    </div>
+                    <h4>Background layers</h4>
+                    <div>
+                        <form action="">
+                            <input type="radio" name="background-layer" value="osm" checked="checked">OSM<br>
+                            <input type="radio" name="background-layer" value="mapquest">MapQuest<br>
+                        </form>
                     </div>
                 </div>
             </div>
@@ -82,7 +88,6 @@
     <script src="https://cdn.rawgit.com/elesdoar/leaflet-control-orderlayers/master/dist/leaflet.control.orderlayers.min.js"></script>
 
     <script src="{% static 'lib/js/L.Control.Pan.js' %}"></script>
-    {#    <script src="{% static 'lib/js/L.Control.Zoomslider.js' %}"></script>#}
     <script src="{% static 'lib/js/L.Control.ZoomBox.min.js' %}"></script>
 
     <script type="text/javascript">
@@ -118,8 +123,12 @@
         }
     </script>
     <script type="text/javascript">
+
         var map = $("#map");
+        var active_background_layer;
         var layer_control;
+
+
         var overlay_layers = [];
         // Each element contains:
         // 1. layer name
@@ -133,15 +142,27 @@
         map.css("height", map_height);
 
         $(document).ready(function () {
-            layer_name_autocomplete();
-
             // Define some default base layers
             var osm = L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
                 attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors',
             });
 
-            var map_quest = L.tileLayer('http://otile4.mqcdn.com/tiles/1.0.0/osm/{z}/{x}/{y}.png', {
+            var mapquest = L.tileLayer('http://otile4.mqcdn.com/tiles/1.0.0/osm/{z}/{x}/{y}.png', {
                 attribution: 'Tiles Courtesy of <a href="http://www.mapquest.com/">MapQuest</a> &mdash; Map data &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+            });
+            var background_layers = {
+                'osm': osm,
+                'mapquest': mapquest
+            };
+
+            active_background_layer = osm;
+
+            // Add radio button listener for background layer
+            $('input:radio[name=background-layer]').change(function() {
+                var new_background_layer = background_layers[this.value];
+                map.removeLayer(active_background_layer);
+                new_background_layer.addTo(map);
+                active_background_layer = new_background_layer;
             });
 
             // Initiate map
@@ -151,23 +172,9 @@
                 layers: [osm]
             });
 
-            // Create dict of base layer
-            var base_layers = {
-                "OpenStreetMap": osm,
-                "Map Quest": map_quest
-            };
-
             // Create dict of layers
             var layers = {};
 
-            // Add control to the map.
-            layer_control = L.control.orderlayers(
-                    base_layers,
-                    layers, {
-                        title: 'Layer Panel'
-                    }).addTo(map);
-            var control = L.control.zoomBox({modal: true});
-            map.addControl(control);
             // Make sortable
             var list = document.getElementById("layer-list");
             Sortable.create(list); // That's all
@@ -188,11 +195,6 @@
             // Add layer to leaflet
             var tile_layer = L.tileLayer(layer_url);
             if (tile_layer != null) {
-                if (!layer_control) {
-                    layer_control = L.control.layers().addTo(map);
-                }
-
-                layer_control.addOverlay(tile_layer, layer_name, z_index = highest_z_index);
                 map.addLayer(tile_layer);
 
                 // Add to memory
@@ -206,8 +208,6 @@
                 // Add to list layer
                 $("#layer-list").prepend("<li>" + layer_name + "</li>");
             }
-
-
         });
     </script>
 {% endblock extra_script %}
