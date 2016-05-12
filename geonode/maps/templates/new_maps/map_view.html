@@ -47,7 +47,7 @@
                         <label for="add_layer_select">Available layers</label>
                         <select class="form-control" id="add_layer_select">
                             {% for layer in layers %}
-                                <option value="{{ layer.get_tiles_url|safe }}">{{ layer.title }}</option>
+                                <option value="{{ layer.typename }}">{{ layer.title }}</option>
                             {% endfor %}
                         </select>
                         <input id="add_layer_button" type="submit" class="btn btn-info" value="Add Layer">
@@ -126,8 +126,6 @@
 
         var map = $("#map");
         var active_background_layer;
-        var layer_control;
-
 
         var overlay_layers = [];
         // Each element contains:
@@ -140,7 +138,13 @@
         var w_height = $(window).height();
         var map_height = w_height - $('nav').height();
         map.css("height", map_height);
-
+        function zoom_to_box(map, bbox) {
+            var bounds = [
+                [bbox[1], bbox[0]],
+                [bbox[3], bbox[2]]
+            ];
+            map.fitBounds(bounds);
+        }
         $(document).ready(function () {
             // Define some default base layers
             var osm = L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
@@ -158,7 +162,7 @@
             active_background_layer = osm;
 
             // Add radio button listener for background layer
-            $('input:radio[name=background-layer]').change(function() {
+            $('input:radio[name=background-layer]').change(function () {
                 var new_background_layer = background_layers[this.value];
                 map.removeLayer(active_background_layer);
                 new_background_layer.addTo(map);
@@ -178,36 +182,61 @@
             // Make sortable
             var list = document.getElementById("layer-list");
             Sortable.create(list); // That's all
+
         });
     </script>
     <script type="text/javascript">
-        function update_base_layer(map, base_layer) {
-
-        }
-
         $("#add_layer_button").click(function () {
             // Get value from select option
             {#            var add_layer_select = $('select[id=add_layer_select]');#}
             var add_layer_select = $("#add_layer_select option:selected");
-            var layer_url = add_layer_select.val();
+            var layer_typename = add_layer_select.val();
             var layer_name = add_layer_select.text();
 
-            // Add layer to leaflet
-            var tile_layer = L.tileLayer(layer_url);
-            if (tile_layer != null) {
-                map.addLayer(tile_layer);
+            console.log(layer_name);
+            console.log(layer_typename);
 
-                // Add to memory
-                var added_layer = {};
-                added_layer.name = layer_name;
-                added_layer.url = layer_url;
-                added_layer.z_index = 0;
-                added_layer.layer = tile_layer;
-                {#                overlay_layers.append(added_layer);#}
+            $.ajax({
+                type: 'GET',
+                url: '/layers/' + layer_typename + '/get',
+                data: {},
+                dataType: 'json',
+                success: function (json) {
+                    console.log('Ajax success layer change');
+                    console.log(json);
+                    var layer_url = json['url'];
 
-                // Add to list layer
-                $("#layer-list").prepend("<li>" + layer_name + "</li>");
-            }
+                    // Add layer to leaflet
+                    var tile_layer = L.tileLayer(layer_url);
+                    if (tile_layer != null) {
+                        // Set view to new added layer
+                        zoom_to_box(map, [
+                                json['bbox_x0'],
+                                json['bbox_y0'],
+                                json['bbox_x1'],
+                                json['bbox_y1']
+                        ]);
+                        // Add the layer
+                        map.addLayer(tile_layer);
+
+                        // Add to list layer
+                        $("#layer-list").prepend("<li>" + layer_name + "</li>");
+
+                        // Add to memory
+                        var added_layer = {};
+                        added_layer.name = layer_name;
+                        added_layer.url = layer_url;
+                        added_layer.z_index = 0;
+                        added_layer.layer = tile_layer;
+
+                    }
+                },
+                error: function (xhr, errmsg, err) {
+                    console.log(xhr.status + ": " + xhr.responseText);
+                }
+            });
+
+
         });
     </script>
 {% endblock extra_script %}
