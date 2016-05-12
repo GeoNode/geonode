@@ -12,7 +12,7 @@
 {% endblock head %}
 
 {% block extra_head %}
-    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" />
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css"/>
     <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.css"/>
     <link rel="stylesheet" href="http://code.jquery.com/ui/1.8.18/themes/base/jquery-ui.css" type="text/css"
           media="all"/>
@@ -20,7 +20,7 @@
           href="https://cdn.rawgit.com/elesdoar/leaflet-control-orderlayers/master/dist/css/leaflet.control.orderlayers.min.css"
           type="text/css"/>
     <link rel="stylesheet" href="{% static 'lib/css/L.Control.Pan.css' %}"/>
-{#    <link rel="stylesheet" href="{% static 'lib/css/L.Control.Zoomslider.css' %}"/>#}
+    {#    <link rel="stylesheet" href="{% static 'lib/css/L.Control.Zoomslider.css' %}"/>#}
     <link rel="stylesheet" href="{% static 'lib/css/L.Control.ZoomBox.css' %}"/>
     <style type="text/css">
         html, body, #wrap {
@@ -31,6 +31,10 @@
         #layer-list li {
             cursor: move;
         }
+        label {
+            padding-bottom: 1%;
+        }
+
 
     </style>
 {% endblock extra_head %}
@@ -40,9 +44,8 @@
         <div class="row">
             <div class="col-md-3">
                 <div class="options-panel">
-
                     <div class="form-group">
-                        <label for="add_layer_select">Add Layer:</label>
+                        <label for="add_layer_select">Available layers</label>
                         <select class="form-control" id="add_layer_select">
                             {% for layer in layers %}
                                 <option value="{{ layer.get_tiles_url|safe }}">{{ layer.title }}</option>
@@ -55,11 +58,6 @@
                         <ul id="layer-list">
                         </ul>
                     </div>
-                    {#                    <div class="form-group">#}
-                    {#                        <label for="new_layer">Add Layer:</label>#}
-                    {#                        <input type="text" class="form-control" id="new_layer">#}
-                    {##}
-                    {#                    </div>#}
                 </div>
             </div>
 
@@ -84,7 +82,7 @@
     <script src="https://cdn.rawgit.com/elesdoar/leaflet-control-orderlayers/master/dist/leaflet.control.orderlayers.min.js"></script>
 
     <script src="{% static 'lib/js/L.Control.Pan.js' %}"></script>
-{#    <script src="{% static 'lib/js/L.Control.Zoomslider.js' %}"></script>#}
+    {#    <script src="{% static 'lib/js/L.Control.Zoomslider.js' %}"></script>#}
     <script src="{% static 'lib/js/L.Control.ZoomBox.min.js' %}"></script>
 
     <script type="text/javascript">
