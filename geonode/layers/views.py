@@ -597,7 +597,9 @@ def get_layer(request, layername):
         layer_obj = _resolve_layer(request, layername)
         logger.debug(layername)
         response = {
-            'name': layername,
+            'typename': layername,
+            'name': layer_obj.name,
+            'title': layer_obj.title,
             'url': layer_obj.get_tiles_url(),
             'bbox_string': layer_obj.bbox_string,
             'bbox_x0': layer_obj.bbox_x0,
