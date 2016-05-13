@@ -72,7 +72,6 @@
                 </div>
             </div>
         </div>
-        <a>X</a>
     </div>
 {% endblock body %}
 
@@ -139,6 +138,11 @@
         var w_height = $(window).height();
         var map_height = w_height - $('nav').height();
         map.css("height", map_height);
+
+        function remove(id) {
+            return (elem = document.getElementById(id)).parentNode.removeChild(elem);
+        }
+
         function zoom_to_box(map, bbox) {
             var bounds = [
                 [bbox[1], bbox[0]],
@@ -151,12 +155,27 @@
             if (check_box.checked) {
                 map.addLayer(overlay_layers[check_box.value].layer);
             } else {
-                if (map.hasLayer(overlay_layers[check_box.value].layer)){
+                if (map.hasLayer(overlay_layers[check_box.value].layer)) {
                     map.removeLayer(overlay_layers[check_box.value].layer);
                 }
             }
-
         }
+
+        function delete_layer_clicked(button) {
+            // Remove layer from the map
+            console.log("Deleting layer : " + button.value);
+            if (map.hasLayer(overlay_layers[button.value].layer)) {
+                map.removeLayer(overlay_layers[button.value].layer);
+            }
+            console.log(overlay_layers);
+            // Remove layer from the array
+            delete overlay_layers[button.value];
+            console.log(overlay_layers);
+            // Remove layer from map layer list
+            console.log('Remove ' + "li_" + button.value);
+            remove("li_" + button.value)
+        }
+
         $(document).ready(function () {
             // Define some default base layers
             var osm = L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
@@ -233,7 +252,11 @@
 
                         // Add to list layer
                         $("#layer-list").prepend(
-                                "<li><input type='checkbox' onclick='check_box_layer_clicked(this);' name='show_layer' value='" + layer_typename + "' checked>" + layer_name + "</li>");
+                                "<li id='li_" + layer_typename + "'>" +
+                                "<input type='checkbox' onclick='check_box_layer_clicked(this);' name='show_layer' value='" + layer_typename + "' checked>" +
+                                layer_name +
+                                "<button type='button' onclick='delete_layer_clicked(this);' value='" + layer_typename + "'>X</button>" +
+                                "</li>");
 
                         // Add to memory
                         var added_layer = {};
