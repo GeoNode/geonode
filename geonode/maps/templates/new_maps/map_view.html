@@ -12,7 +12,7 @@
 {% endblock head %}
 
 {% block extra_head %}
-    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" />
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css"/>
     <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.css"/>
     <link rel="stylesheet" href="http://code.jquery.com/ui/1.8.18/themes/base/jquery-ui.css" type="text/css"
           media="all"/>
@@ -20,7 +20,6 @@
           href="https://cdn.rawgit.com/elesdoar/leaflet-control-orderlayers/master/dist/css/leaflet.control.orderlayers.min.css"
           type="text/css"/>
     <link rel="stylesheet" href="{% static 'lib/css/L.Control.Pan.css' %}"/>
-{#    <link rel="stylesheet" href="{% static 'lib/css/L.Control.Zoomslider.css' %}"/>#}
     <link rel="stylesheet" href="{% static 'lib/css/L.Control.ZoomBox.css' %}"/>
     <style type="text/css">
         html, body, #wrap {
@@ -32,6 +31,10 @@
             cursor: move;
         }
 
+        label {
+            padding-bottom: 1%;
+        }
+
     </style>
 {% endblock extra_head %}
 
@@ -40,26 +43,27 @@
         <div class="row">
             <div class="col-md-3">
                 <div class="options-panel">
-
                     <div class="form-group">
-                        <label for="add_layer_select">Add Layer:</label>
+                        <label for="add_layer_select">Available layers</label>
                         <select class="form-control" id="add_layer_select">
                             {% for layer in layers %}
-                                <option value="{{ layer.get_tiles_url|safe }}">{{ layer.name }}</option>
+                                <option value="{{ layer.typename }}">{{ layer.title }}</option>
                             {% endfor %}
                         </select>
                         <input id="add_layer_button" type="submit" class="btn btn-info" value="Add Layer">
                     </div>
-                    <h4>List Layer</h4>
+                    <h4>Map layers</h4>
                     <div>
                         <ul id="layer-list">
                         </ul>
                     </div>
-                    {#                    <div class="form-group">#}
-                    {#                        <label for="new_layer">Add Layer:</label>#}
-                    {#                        <input type="text" class="form-control" id="new_layer">#}
-                    {##}
-                    {#                    </div>#}
+                    <h4>Background layers</h4>
+                    <div>
+                        <form action="">
+                            <input type="radio" name="background-layer" value="osm" checked="checked">OSM<br>
+                            <input type="radio" name="background-layer" value="mapquest">MapQuest<br>
+                        </form>
+                    </div>
                 </div>
             </div>
 
@@ -84,7 +88,6 @@
     <script src="https://cdn.rawgit.com/elesdoar/leaflet-control-orderlayers/master/dist/leaflet.control.orderlayers.min.js"></script>
 
     <script src="{% static 'lib/js/L.Control.Pan.js' %}"></script>
-{#    <script src="{% static 'lib/js/L.Control.Zoomslider.js' %}"></script>#}
     <script src="{% static 'lib/js/L.Control.ZoomBox.min.js' %}"></script>
 
     <script type="text/javascript">
@@ -120,9 +123,11 @@
         }
     </script>
     <script type="text/javascript">
+
         var map = $("#map");
-        var layer_control;
-        var overlay_layers = [];
+        var active_background_layer;
+
+        var overlay_layers = {};
         // Each element contains:
         // 1. layer name
         // 2. layer wms url
@@ -134,16 +139,65 @@
         var map_height = w_height - $('nav').height();
         map.css("height", map_height);
 
-        $(document).ready(function () {
-            layer_name_autocomplete();
+        function remove(id) {
+            return (elem = document.getElementById(id)).parentNode.removeChild(elem);
+        }
 
+        function zoom_to_box(map, bbox) {
+            var bounds = [
+                [bbox[1], bbox[0]],
+                [bbox[3], bbox[2]]
+            ];
+            map.fitBounds(bounds);
+        }
+
+        function check_box_layer_clicked(check_box) {
+            if (check_box.checked) {
+                map.addLayer(overlay_layers[check_box.value].layer);
+            } else {
+                if (map.hasLayer(overlay_layers[check_box.value].layer)) {
+                    map.removeLayer(overlay_layers[check_box.value].layer);
+                }
+            }
+        }
+
+        function delete_layer_clicked(button) {
+            // Remove layer from the map
+            console.log("Deleting layer : " + button.value);
+            if (map.hasLayer(overlay_layers[button.value].layer)) {
+                map.removeLayer(overlay_layers[button.value].layer);
+            }
+            console.log(overlay_layers);
+            // Remove layer from the array
+            delete overlay_layers[button.value];
+            console.log(overlay_layers);
+            // Remove layer from map layer list
+            console.log('Remove ' + "li_" + button.value);
+            remove("li_" + button.value)
+        }
+
+        $(document).ready(function () {
             // Define some default base layers
             var osm = L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
                 attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors',
             });
 
-            var map_quest = L.tileLayer('http://otile4.mqcdn.com/tiles/1.0.0/osm/{z}/{x}/{y}.png', {
+            var mapquest = L.tileLayer('http://otile4.mqcdn.com/tiles/1.0.0/osm/{z}/{x}/{y}.png', {
                 attribution: 'Tiles Courtesy of <a href="http://www.mapquest.com/">MapQuest</a> &mdash; Map data &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+            });
+            var background_layers = {
+                'osm': osm,
+                'mapquest': mapquest
+            };
+
+            active_background_layer = osm;
+
+            // Add radio button listener for background layer
+            $('input:radio[name=background-layer]').change(function () {
+                var new_background_layer = background_layers[this.value];
+                map.removeLayer(active_background_layer);
+                new_background_layer.addTo(map);
+                active_background_layer = new_background_layer;
             });
 
             // Initiate map
@@ -153,61 +207,71 @@
                 layers: [osm]
             });
 
-            // Create dict of base layer
-            var base_layers = {
-                "OpenStreetMap": osm,
-                "Map Quest": map_quest
-            };
-
             // Create dict of layers
             var layers = {};
 
-            // Add control to the map.
-            layer_control = L.control.orderlayers(
-                    base_layers,
-                    layers, {
-                        title: 'Layer Panel'
-                    }).addTo(map);
-            var control = L.control.zoomBox({modal: true});
-            map.addControl(control);
             // Make sortable
             var list = document.getElementById("layer-list");
             Sortable.create(list); // That's all
+
         });
     </script>
     <script type="text/javascript">
-        function update_base_layer(map, base_layer) {
-
-        }
-
         $("#add_layer_button").click(function () {
             // Get value from select option
             {#            var add_layer_select = $('select[id=add_layer_select]');#}
             var add_layer_select = $("#add_layer_select option:selected");
-            var layer_url = add_layer_select.val();
+            var layer_typename = add_layer_select.val();
             var layer_name = add_layer_select.text();
 
-            // Add layer to leaflet
-            var tile_layer = L.tileLayer(layer_url);
-            if (tile_layer != null) {
-                if (!layer_control) {
-                    layer_control = L.control.layers().addTo(map);
+            console.log(layer_name);
+            console.log(layer_typename);
+
+            $.ajax({
+                type: 'GET',
+                url: '/layers/' + layer_typename + '/get',
+                data: {},
+                dataType: 'json',
+                success: function (json) {
+                    console.log('Ajax success layer change');
+                    console.log(json);
+                    var layer_url = json['url'];
+
+                    // Add layer to leaflet
+                    var tile_layer = L.tileLayer(layer_url);
+                    if (tile_layer != null) {
+                        // Set view to new added layer
+                        zoom_to_box(map, [
+                            json['bbox_x0'],
+                            json['bbox_y0'],
+                            json['bbox_x1'],
+                            json['bbox_y1']
+                        ]);
+                        // Add the layer
+                        map.addLayer(tile_layer);
+
+                        // Add to list layer
+                        $("#layer-list").prepend(
+                                "<li id='li_" + layer_typename + "'>" +
+                                "<input type='checkbox' onclick='check_box_layer_clicked(this);' name='show_layer' value='" + layer_typename + "' checked>" +
+                                layer_name +
+                                "<button type='button' onclick='delete_layer_clicked(this);' value='" + layer_typename + "'>X</button>" +
+                                "</li>");
+
+                        // Add to memory
+                        var added_layer = {};
+                        added_layer.name = layer_name;
+                        added_layer.url = layer_url;
+                        added_layer.z_index = 0;
+                        added_layer.layer = tile_layer;
+                        overlay_layers[layer_typename] = added_layer;
+                        console.log(overlay_layers)
+                    }
+                },
+                error: function (xhr, errmsg, err) {
+                    console.log(xhr.status + ": " + xhr.responseText);
                 }
-
-                layer_control.addOverlay(tile_layer, layer_name, z_index = highest_z_index);
-                map.addLayer(tile_layer);
-
-                // Add to memory
-                var added_layer = {};
-                added_layer.name = layer_name;
-                added_layer.url = layer_url;
-                added_layer.z_index = 0;
-                added_layer.layer = tile_layer;
-                {#                overlay_layers.append(added_layer);#}
-
-                // Add to list layer
-                $("#layer-list").prepend("<li>" + layer_name + "</li>");
-            }
+            });
 
 
         });
