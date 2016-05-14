@@ -7,8 +7,7 @@ __copyright__ = 'imajimatika@gmail.com'
 
 from geonode.maps.models import Map
 from geonode.layers.models import Layer
-from django.views.generic import (
-    ListView, CreateView, DetailView)
+from django.views.generic import CreateView
 
 
 class MapCreateView(CreateView):
