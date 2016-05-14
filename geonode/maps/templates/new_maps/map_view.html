@@ -38,7 +38,7 @@
     </style>
 {% endblock extra_head %}
 
-{% block body %} 
+{% block body %}
     </div>
     </div>
     </div>
@@ -81,7 +81,7 @@
             </div>
         </div>
     </div>
-{% endblock body %} 
+{% endblock body %}
 
 {% block footer %}
 
@@ -184,6 +184,55 @@
             remove("li_" + button.value)
         }
 
+        function add_layer(layer_typename) {
+            $.ajax({
+                type: 'GET',
+                url: '/layers/' + layer_typename + '/get',
+                data: {},
+                dataType: 'json',
+                success: function (json) {
+                    console.log('Ajax success layer change');
+                    console.log(json);
+                    var layer_url = json['url'];
+                    var layer_title = json['title'];
+
+                    // Add layer to leaflet
+                    var tile_layer = L.tileLayer(layer_url);
+                    if (tile_layer != null) {
+                        // Set view to new added layer
+                        zoom_to_box(map, [
+                            json['bbox_x0'],
+                            json['bbox_y0'],
+                            json['bbox_x1'],
+                            json['bbox_y1']
+                        ]);
+                        // Add the layer
+                        map.addLayer(tile_layer);
+
+                        // Add to list layer
+                        $("#layer-list").prepend(
+                                "<li id='li_" + layer_typename + "'>" +
+                                "<input type='checkbox' onclick='check_box_layer_clicked(this);' name='show_layer' value='" + layer_typename + "' checked>" +
+                                layer_title +
+                                "<button type='button' onclick='delete_layer_clicked(this);' value='" + layer_typename + "'>X</button>" +
+                                "</li>");
+
+                        // Add to memory
+                        var added_layer = {};
+                        added_layer.title = layer_title;
+                        added_layer.url = layer_url;
+                        added_layer.z_index = 0;
+                        added_layer.layer = tile_layer;
+                        overlay_layers[layer_typename] = added_layer;
+                        console.log(overlay_layers)
+                    }
+                },
+                error: function (xhr, errmsg, err) {
+                    console.log(xhr.status + ": " + xhr.responseText);
+                }
+            });
+        }
+
         $(document).ready(function () {
             // Define some default base layers
             var osm = L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
@@ -215,12 +264,24 @@
                 layers: [osm]
             });
 
-            // Create dict of layers
-            var layers = {};
-
             // Make sortable
             var list = document.getElementById("layer-list");
             Sortable.create(list); // That's all
+
+            // Check layer parameter in url
+            var qd = {};
+            location.search.substr(1).split("&").forEach(function (item) {
+                var s = item.split("="),
+                        k = s[0],
+                        v = s[1] && decodeURIComponent(s[1]);
+                (k in qd) ? qd[k].push(v) : qd[k] = [v]
+            });
+            if (qd['layer']) {
+                for (i = 0; i < qd['layer'].length; i++) {
+                    var layer_typename = qd['layer'][i];
+                    add_layer(layer_typename);
+                }
+            }
 
         });
     </script>
@@ -230,56 +291,10 @@
             {#            var add_layer_select = $('select[id=add_layer_select]');#}
             var add_layer_select = $("#add_layer_select option:selected");
             var layer_typename = add_layer_select.val();
-            var layer_name = add_layer_select.text();
 
-            console.log(layer_name);
             console.log(layer_typename);
 
-            $.ajax({
-                type: 'GET',
-                url: '/layers/' + layer_typename + '/get',
-                data: {},
-                dataType: 'json',
-                success: function (json) {
-                    console.log('Ajax success layer change');
-                    console.log(json);
-                    var layer_url = json['url'];
-
-                    // Add layer to leaflet
-                    var tile_layer = L.tileLayer(layer_url);
-                    if (tile_layer != null) {
-                        // Set view to new added layer
-                        zoom_to_box(map, [
-                            json['bbox_x0'],
-                            json['bbox_y0'],
-                            json['bbox_x1'],
-                            json['bbox_y1']
-                        ]);
-                        // Add the layer
-                        map.addLayer(tile_layer);
-
-                        // Add to list layer
-                        $("#layer-list").prepend(
-                                "<li id='li_" + layer_typename + "'>" +
-                                "<input type='checkbox' onclick='check_box_layer_clicked(this);' name='show_layer' value='" + layer_typename + "' checked>" +
-                                layer_name +
-                                "<button type='button' onclick='delete_layer_clicked(this);' value='" + layer_typename + "'>X</button>" +
-                                "</li>");
-
-                        // Add to memory
-                        var added_layer = {};
-                        added_layer.name = layer_name;
-                        added_layer.url = layer_url;
-                        added_layer.z_index = 0;
-                        added_layer.layer = tile_layer;
-                        overlay_layers[layer_typename] = added_layer;
-                        console.log(overlay_layers)
-                    }
-                },
-                error: function (xhr, errmsg, err) {
-                    console.log(xhr.status + ": " + xhr.responseText);
-                }
-            });
+            add_layer(layer_typename);
 
 
         });
