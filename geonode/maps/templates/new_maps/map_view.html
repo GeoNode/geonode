@@ -50,7 +50,8 @@
                         <label for="add_layer_select">Available layers</label>
                         <select class="form-control" id="add_layer_select">
                             {% for layer in layers %}
-                                <option value="{{ layer.typename }}">{{ layer.title }}</option>
+                                <option value="{{ layer.typename }}"
+                                        id="option_{{ layer.typename }}">{{ layer.title }}</option>
                             {% endfor %}
                         </select>
                         <input id="add_layer_button" type="submit" class="btn btn-info" value="Add Layer">
@@ -181,10 +182,21 @@
             console.log(overlay_layers);
             // Remove layer from map layer list
             console.log('Remove ' + "li_" + button.value);
-            remove("li_" + button.value)
+            remove("li_" + button.value);
+
+            // Show from available layer
+            console.log('Show from available layer: #option_' + button.value);
+            document.getElementById("option_" + button.value).style.display = 'block';
         }
 
         function add_layer(layer_typename) {
+            if (layer_typename in overlay_layers) {
+                console.log('Layer already exist');
+                return
+            }
+            if (!layer_typename){
+                return
+            }
             $.ajax({
                 type: 'GET',
                 url: '/layers/' + layer_typename + '/get',
@@ -225,6 +237,11 @@
                         added_layer.layer = tile_layer;
                         overlay_layers[layer_typename] = added_layer;
                         console.log(overlay_layers)
+
+                        // Hide from available layer
+                        console.log('Hide from available layer: #option_' + layer_typename);
+                        document.getElementById("option_" + layer_typename).style.display = 'none';
+                        $('#add_layer_select').prop('selectedIndex', -1);
                     }
                 },
                 error: function (xhr, errmsg, err) {
