@@ -92,14 +92,15 @@
                     <h4 class="modal-title">Save Map</h4>
                 </div>
                 <div class="modal-body">
-                    <form role="form">
+                    <form role="form" id="save-map-form" action="{% url 'new_map_json' %}" method="post">
                         <div class="form-group">
                             <label for="map-title-input">Title:</label>
-                            <input type="text" class="form-control" id="map-title-input" placeholder="Enter map title">
+                            <input name="map-title" type="text" class="form-control" id="map-title-input"
+                                   placeholder="Enter map title">
                         </div>
                         <div class="form-group">
                             <label for="map-abstract-input">Abstract:</label>
-                            <textarea class="form-control" rows="5" id="map-abstract-input"
+                            <textarea name="map-abstract" class="form-control" rows="5" id="map-abstract-input"
                                       placeholder="Enter map abstract"></textarea>
                         </div>
                         <button type="submit" class="btn btn-default">Submit</button>
@@ -159,7 +160,6 @@
         }
     </script>
     <script type="text/javascript">
-
         var map = $("#map");
         var active_background_layer;
 
@@ -199,26 +199,20 @@
 
         function delete_layer_clicked(button) {
             // Remove layer from the map
-            console.log("Deleting layer : " + button.value);
             if (map.hasLayer(overlay_layers[button.value].layer)) {
                 map.removeLayer(overlay_layers[button.value].layer);
             }
-            console.log(overlay_layers);
             // Remove layer from the array
             delete overlay_layers[button.value];
-            console.log(overlay_layers);
             // Remove layer from map layer list
-            console.log('Remove ' + "li_" + button.value);
             remove("li_" + button.value);
 
             // Show from available layer
-            console.log('Show from available layer: #option_' + button.value);
             document.getElementById("option_" + button.value).style.display = 'block';
         }
 
         function add_layer(layer_typename) {
             if (layer_typename in overlay_layers) {
-                console.log('Layer already exist');
                 return
             }
             if (!layer_typename) {
@@ -230,8 +224,6 @@
                 data: {},
                 dataType: 'json',
                 success: function (json) {
-                    console.log('Ajax success layer change');
-                    console.log(json);
                     var layer_url = json['url'];
                     var layer_title = json['title'];
 
@@ -263,10 +255,8 @@
                         added_layer.z_index = 0;
                         added_layer.layer = tile_layer;
                         overlay_layers[layer_typename] = added_layer;
-                        console.log(overlay_layers)
 
                         // Hide from available layer
-                        console.log('Hide from available layer: #option_' + layer_typename);
                         document.getElementById("option_" + layer_typename).style.display = 'none';
                         $('#add_layer_select').prop('selectedIndex', -1);
                     }
@@ -276,6 +266,41 @@
                 }
             });
         }
+
+        function save_map(event) {
+            console.log('Save Map');
+            event.preventDefault();
+            var form_data = $('#save-map-form').serializeObject();
+
+            var map_data = {};
+            map_data['about'] = {
+                'title': form_data['map-title'],
+                'abstract': form_data['map-abstract']
+            };
+            map_data['map'] = {
+                'center': [map.getCenter()['lat'], map.getCenter()['lng']],
+                'zoom': map.getZoom(),
+                'projection': '',
+                'layers': []
+            };
+
+            $.ajax({
+                url: $(this).attr('action'),
+                type: $(this).attr('method'),
+                data: JSON.stringify(map_data),
+                cache: false,
+                processData: false,
+                contentType: false,
+                dataType: 'json',
+                success: function (data) {
+                    console.log('Save map success');
+                },
+                error: function (xhr, status, error) {
+                    console.log('Save map failed');
+                }
+            });
+        }
+
 
         $(document).ready(function () {
             // Define some default base layers
@@ -336,11 +361,10 @@
             var add_layer_select = $("#add_layer_select option:selected");
             var layer_typename = add_layer_select.val();
 
-            console.log(layer_typename);
-
             add_layer(layer_typename);
 
-
         });
+
+        $('#save-map-form').submit(save_map);
     </script>
 {% endblock extra_script %}
