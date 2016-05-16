@@ -103,7 +103,11 @@
                             <textarea name="map-abstract" class="form-control" rows="5" id="map-abstract-input"
                                       placeholder="Enter map abstract"></textarea>
                         </div>
-                        <button type="submit" class="btn btn-default">Submit</button>
+                        <div class="alert alert-danger" id="error-message-modal" hidden>
+                            <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+                            <span id="error-message-content"></span>
+                        </div>
+                        <button type="submit" class="btn btn-default">Save</button>
                         <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
                     </form>
                 </div>
@@ -303,8 +307,7 @@
             };
             map_data['sources'] = {};
             for (var key in overlay_layers) {
-                map_data['sources']['dummy'] = {
-                };
+                map_data['sources']['dummy'] = {};
             }
 
             $.ajax({
@@ -317,9 +320,13 @@
                 dataType: 'json',
                 success: function (data) {
                     console.log('Save map success');
+                    $('#save-map-modal').modal('hide');
                 },
                 error: function (xhr, status, error) {
-                    console.log('Save map failed');
+                    console.log('Save map failed' + error);
+                    $("#error-message-content").html(
+                            "<strong>Failed!</strong> There is an error when saving the map. " + error);
+                    $('#error-message-modal').show();
                 }
             });
         }
