@@ -116,14 +116,20 @@ def qgis_server_post_save(instance, sender, **kwargs):
                 )
             )
 
-    # Create the QGIS project
+    # Create the QGIS project. As we can't use the QGIS API in geonode, we
+    # use a QGIS project as a template.
     # Open the QML
     basename, _ = os.path.splitext(qgis_layer.base_layer_path)
     qml_file_path = '%s.qml' % basename
 
     template_items = {
+        # Use for the vector rendering
         'renderer_v2': '',
+
+        # Use for the raster rendering
         'pipe': '',
+
+        # Other XML tags needed in the QGIS project
         'customproperties': '',
         'edittypes': '',
         'labeling': '',
