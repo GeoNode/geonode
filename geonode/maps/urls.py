@@ -22,7 +22,7 @@ from django.conf.urls import patterns, url
 from django.conf import settings
 from django.views.generic import TemplateView
 
-from geonode.maps.new_views import MapCreateView
+from geonode.maps.qgis_server_views import MapCreateView
 
 js_info_dict = {
     'packages': ('geonode.maps',),
