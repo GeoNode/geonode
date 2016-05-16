@@ -123,6 +123,7 @@ def qgis_server_post_save(instance, sender, **kwargs):
 
     template_items = {
         'renderer_v2': '',
+        'pipe': '',
         'customproperties': '',
         'edittypes': '',
         'labeling': '',
@@ -140,7 +141,7 @@ def qgis_server_post_save(instance, sender, **kwargs):
         template_items['geometry_type'] = 'vector'
     else:
         template_items['provider'] = (
-            '<provider encoding="System">raster</provider>')
+            '<provider encoding="System">gdal</provider>')
         template_items['geometry_type'] = 'raster'
 
     if os.path.exists(qml_file_path):

@@ -79,6 +79,7 @@
       </map-layer-style-manager>
       {{ edittypes | safe }}
       {{ renderer_v2 | safe }}
+      {{ pipe | safe }}
       {{ labeling | safe }}
       {{ customproperties | safe }}
       {{ blendMode | safe }}
