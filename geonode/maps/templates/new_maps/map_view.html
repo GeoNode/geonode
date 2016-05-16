@@ -272,6 +272,24 @@
             event.preventDefault();
             var form_data = $('#save-map-form').serializeObject();
 
+            // Collect layers
+            var layers = [];
+            console.log(overlay_layers);
+            for (var tempe in overlay_layers) {
+                console.log('Adding to layers');
+                console.log(tempe);
+                layers.push(
+                        {
+                            'name': tempe,
+                            'title': overlay_layers[tempe]['title'],
+                            'url': overlay_layers[tempe]['url'],
+                            'source': 'dummy',  // I have no idea
+                            'local': true  // I have no idea
+                        }
+                );
+            }
+            console.log(layers);
+
             var map_data = {};
             map_data['about'] = {
                 'title': form_data['map-title'],
@@ -281,8 +299,13 @@
                 'center': [map.getCenter()['lat'], map.getCenter()['lng']],
                 'zoom': map.getZoom(),
                 'projection': '',
-                'layers': []
+                'layers': layers
             };
+            map_data['sources'] = {};
+            for (var key in overlay_layers) {
+                map_data['sources']['dummy'] = {
+                };
+            }
 
             $.ajax({
                 url: $(this).attr('action'),
