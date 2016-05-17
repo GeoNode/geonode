@@ -7,7 +7,9 @@ from django.db.models import signals
 from django.core.urlresolvers import reverse
 from django.conf import settings
 from django.template.loader import render_to_string
+from django.contrib.gis.gdal import SpatialReference
 
+from geonode.qgis_server.gis_tools import crs_parameters
 from geonode.qgis_server.models import QGISServerLayer
 from geonode.base.models import ResourceBase, Link
 from geonode.layers.models import Layer
@@ -168,6 +170,10 @@ def qgis_server_post_save(instance, sender, **kwargs):
     template_items['x_max'] = instance.resourcebase_ptr.bbox_x1
     template_items['y_min'] = instance.resourcebase_ptr.bbox_y0
     template_items['y_max'] = instance.resourcebase_ptr.bbox_y1
+
+    # CRS
+    srs = SpatialReference(instance.resourcebase_ptr.srid)
+    template_items.update(crs_parameters(srs))
 
     # Render the QGIS project template
     qgis_project_xml = render_to_string('qgis_project.qgs', template_items)

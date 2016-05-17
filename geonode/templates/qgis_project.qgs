@@ -9,7 +9,7 @@
   </layer-tree-group>
   <relations/>
   <mapcanvas>
-    <units>degrees</units>
+    <units>{{ units }}</units>
     <extent>
       <xmin>{{ x_min }}</xmin>
       <ymin>{{ y_min }}</ymin>
@@ -20,14 +20,14 @@
     <projections>0</projections>
     <destinationsrs>
       <spatialrefsys>
-        <proj4>+proj=longlat +datum=WGS84 +no_defs</proj4>
-        <srsid>3452</srsid>
-        <srid>4326</srid>
-        <authid>EPSG:4326</authid>
-        <description>WGS 84</description>
-        <projectionacronym>longlat</projectionacronym>
-        <ellipsoidacronym>WGS84</ellipsoidacronym>
-        <geographicflag>true</geographicflag>
+        <proj4>{{ proj4 }}</proj4>
+        <srsid>{{ srsid }}</srsid>
+        <srid>{{ srid }}</srid>
+        <description>{{ description }}</description>
+        <authid>{{ authid }}</authid>
+        <projectionacronym>{{ projection_acronym }}</projectionacronym>
+        <ellipsoidacronym>{{ ellipsoid_acronym }}</ellipsoidacronym>
+        <geographicflag>{{ geographic }}</geographicflag>
       </spatialrefsys>
     </destinationsrs>
     <rendermaptile>0</rendermaptile>
@@ -59,14 +59,14 @@
       <layername>{{ layer_name }}</layername>
       <srs>
         <spatialrefsys>
-          <proj4>+proj=longlat +datum=WGS84 +no_defs</proj4>
-          <srsid>3452</srsid>
-          <srid>4326</srid>
-          <authid>EPSG:4326</authid>
-          <description>WGS 84</description>
-          <projectionacronym>longlat</projectionacronym>
-          <ellipsoidacronym>WGS84</ellipsoidacronym>
-          <geographicflag>true</geographicflag>
+          <proj4>{{ proj4 }}</proj4>
+          <srsid>{{ srsid }}</srsid>
+          <srid>{{ srid }}</srid>
+          <authid>{{ authid }}</authid>
+          <description>{{ description }}</description>
+          <projectionacronym>{{ projection_acronym }}</projectionacronym>
+          <ellipsoidacronym>{{ ellipsoid_acronym }}</ellipsoidacronym>
+          <geographicflag>{{ geographic_flag }}</geographicflag>
         </spatialrefsys>
       </srs>
       {{ provider | safe }}
