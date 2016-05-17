@@ -71,7 +71,7 @@ The step flag supports three values: 'pre', 'post' and 'all'. Default is 'all'. 
 GPL License
 ===========
 
-GeoNode is Copyright 2010 OpenPlans.
+GeoNode is Copyright 2016 Open Source Geospatial Foundation (OSGeo).
 
 GeoNode is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
