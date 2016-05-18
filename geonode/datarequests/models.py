@@ -678,6 +678,11 @@ class DataRequestProfile(TimeStampedModel):
             elif f is 'created':
                 created = getattr(self, f)
                 out.append( str(created.month) +"/"+str(created.day)+"/"+str(created.year))
+            elif f is 'date of action':
+                action_date = getattr(self, 'action_date')
+                out.append(str(action_date.month)+"/"+str(action_date.day)+"/"+str(action_date.year))
+            elif f is 'organization_type':
+                out.append(str(getattr(self,'organization_type')))
             else:
                 val = getattr(self, f)
                 if isinstance(val, unicode):
