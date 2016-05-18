@@ -685,7 +685,7 @@ class DataRequestProfile(TimeStampedModel):
                 else:
                     out.append('')
             elif f is 'organization_type':
-                out.append(OrganizationType(getattr(self,'organization_type')).name)
+                out.append(OrganizationType.get(getattr(self,'organization_type')))
             elif f is 'has_letter':
                 if self.request_letter:
                     out.append('yes')
