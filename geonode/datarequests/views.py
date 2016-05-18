@@ -391,12 +391,13 @@ def data_request_csv(request):
     response['Content-Disposition'] = 'attachment; filename="datarequests-"'+str(datetoday.month)+str(datetoday.day)+str(datetoday.year)+'.csv"'
     
     writer = csv.writer(response)
-    writer.writerow( ['id','name','email','contact_number', 'organization', 'project_summary', 'created','request_status'])
+    fields = ['id','name','email','contact_number', 'organization', 'organization_type','project_summary', 'created','request_status', 'date of action']
+    writer.writerow( fields)
     
     objects = DataRequestProfile.objects.all().order_by('pk')
     
     for o in objects:
-        writer.writerow(o.to_values_list())
+        writer.writerow(o.to_values_list(fields))
     
     return response
 
