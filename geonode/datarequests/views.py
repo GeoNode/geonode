@@ -391,7 +391,7 @@ def data_request_csv(request):
     response['Content-Disposition'] = 'attachment; filename="datarequests-"'+str(datetoday.month)+str(datetoday.day)+str(datetoday.year)+'.csv"'
     
     writer = csv.writer(response)
-    fields = ['id','name','email','contact_number', 'organization', 'organization_type','project_summary', 'created','request_status', 'date of action']
+    fields = ['id','name','email','contact_number', 'organization', 'organization_type','has_letter','has_shapefile','project_summary', 'created','request_status', 'date of action','rejection_reason']
     writer.writerow( fields)
     
     objects = DataRequestProfile.objects.all().order_by('pk')

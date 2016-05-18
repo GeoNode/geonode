@@ -680,9 +680,24 @@ class DataRequestProfile(TimeStampedModel):
                 out.append( str(created.month) +"/"+str(created.day)+"/"+str(created.year))
             elif f == 'date of action':
                 date_of_action = getattr(self, 'action_date')
-                out.append(str(date_of_action.month)+"/"+str(date_of_action.day)+"/"+str(date_of_action.year))
+                if self.request_status == 'rejected' or self.request_status == 'approved':
+                    out.append(str(date_of_action.month)+"/"+str(date_of_action.day)+"/"+str(date_of_action.year))
+                else:
+                    out.append('')
             elif f is 'organization_type':
                 out.append(str(getattr(self,'organization_type')))
+            elif f is 'has_letter':
+                if self.request_letter:
+                    out.append('yes')
+                else:
+                    out.append('no')
+            elif f is 'has_shapefile':
+                if self.jurisdiction_shapefile:
+                    out.append('yes')
+                else:
+                    out.append('no')
+            elif f is 'rejection_reason':
+                out.append(str(getattr(self,'rejection_reason')))
             else:
                 val = getattr(self, f)
                 if isinstance(val, unicode):
