@@ -49,7 +49,7 @@ class ContactAdmin(admin.ModelAdmin):
     form = autocomplete_light.modelform_factory(Contact)
 
 class LayerAdmin(admin.ModelAdmin):
-    list_display = ('id','title', 'date', 'owner', 'topic_category', 'add_as_join_target')
+    list_display = ('id','title', 'store', 'name', 'date', 'owner', 'topic_category', 'add_as_join_target')
     list_display_links = ('id',)
     list_editable = ('title', 'topic_category')
     list_filter  = ('date', 'date_type', 'constraints_use', 'topic_category', 'owner')

@@ -228,12 +228,16 @@ def cleanup(name, layer_id):
                    'import for layer: %s', name)
 
 
-def get_db_store_name(user):
-    db_store_name = settings.DB_DATASTORE_NAME
-    # only users in beta-users group will use shard db for now
-    if not user.groups.filter(name='dataverse').exists():
-        now = datetime.datetime.now()
-        db_store_name = 'wm_%s%02d' % (now.year, now.month)
+def get_db_store_name(user=None):
+    # DB_DATASTORE_NAME is not used anymore now until this is fixed:
+    # https://osgeo-org.atlassian.net/browse/GEOS-7533
+    # db_store_name = settings.DB_DATASTORE_NAME
+    now = datetime.datetime.now()
+    db_store_name = 'wm_%s%02d' % (now.year, now.month)
+    if user:
+        # only users in target-joins-uploader group will use the dataverse database
+        if user.groups.filter(name='jointarget-uploader').exists():
+            db_store_name = settings.DB_DATAVERSE_NAME
     return db_store_name
 
 

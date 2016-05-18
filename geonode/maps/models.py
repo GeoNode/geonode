@@ -985,8 +985,12 @@ class Layer(models.Model, PermissionLevelMixin):
 
     # Section 9
     # see metadata_author property definition below
+
+    # join target: available only for layers within the DATAVERSE_DB
     def add_as_join_target(self):
         if not self.id:
+            return 'n/a'
+        if self.store != settings.DB_DATAVERSE_NAME:
             return 'n/a'
         admin_url = reverse('admin:datatables_jointarget_add', args=())
         add_as_target_link = '%s?layer=%s' % (admin_url, self.id)
