@@ -92,6 +92,15 @@ class DataRequestProfileForm(forms.ModelForm):
                 'That email is already being used by a registered user. lease login with your account instead.')
 
         return email
+        
+    def clean_organization(self):
+        organization = self.cleaned_data.get('organization')
+        
+        if len(organization) > 64:
+            raise forms.ValidationError(
+                'Organization name can only be 64 characters')
+                
+        return organization
 
     #def clean_letter_file(self):
     #    letter_file = self.cleaned_data.get('letter_file')
