@@ -789,7 +789,7 @@ def _create_db_featurestore(name, data, user, overwrite = False, charset = None)
     except:
         store_params = ds.connection_parameters
         if store_params['dbtype'] and store_params['dbtype'] == 'postgis':
-            delete_from_postgis(name)
+            delete_from_postgis(name, db_store_name)
         else:
             cat.delete(ds, purge=True)
         raise
