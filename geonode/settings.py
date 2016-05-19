@@ -12,15 +12,15 @@ gettext = lambda s: s
 
 ####################### DATAVERSE_INFO_REPOSITORY_PATH
 #
-# For Dataverse/Worldmap communication, the following repository is required: 
+# For Dataverse/Worldmap communication, the following repository is required:
 #
 #   https://github.com/IQSS/shared-dataverse-information
 #
 # It may be accessed in 1 of 2 ways
 # -----------------------------------------------
-# 
+#
 #   (1) Add to the sys.path.  In the local_settings.py:
-#       (a) Add/Uncomment the code below (lines 28-31), 
+#       (a) Add/Uncomment the code below (lines 28-31),
 #           ending with the "sys.path.append" line
 #       (b) Set the appropriate path for "DATAVERSE_INFO_REPOSITORY_PATH"
 #   (2) or run "pip install shared_dataverse_information"
@@ -160,10 +160,10 @@ INSTALLED_APPS = (
     'geonode.capabilities',
     'geonode.queue',
     'geonode.certification',
-    
+
     # Datatable API
     'geonode.contrib.datatables',
-    
+
     #'geonode.hoods',
     #'geonode.gazetteer',
     #'debug_toolbar',
@@ -542,6 +542,10 @@ SESSION_COOKIE_HTTPONLY = True
 CSRF_COOKIE_HTTPONLY = True
 
 WORLDMAP_TOKEN_FOR_DATAVERSE = 'FakeToken'
+
+TESTING = len(sys.argv) > 1 and sys.argv[1] == 'test'
+if TESTING:
+    SOUTH_TESTS_MIGRATE = False
 
 try:
     from local_settings import *
