@@ -10,6 +10,9 @@
 {% block body %}
 <div class="page-header">
   <a href="{% url "document_upload" %}" class="btn btn-primary pull-right">{% trans "Upload Documents" %}</a>
+  {% if user.is_superuser %}
+  <a href="{% url "document_csv_download" %}" class="btn btn-primary pull-right">{% trans "CSV Download" %}</a>
+  {% endif %}
   <h2>{% trans "Explore Documents" %}</h2>
 </div>
   {% with include_type_filter='true' %}

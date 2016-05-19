@@ -18,12 +18,30 @@
                 <h4><a href="{% url 'cephgeo.views.file_list_geonode' %}" class="toggle toggle-nav"><i class="fa fa-files-o"></i>Datastore Files</a></h4>
                 <h4><a href="{% url 'cephgeo.views.file_list_ceph' %}" class="toggle toggle-nav"><i class="fa fa-cubes"></i>Ceph Data Objects</a></h4>
                 <h4><a href="{% url 'cephgeo.views.data_input' %}" class="toggle toggle-nav"><i class="fa fa-file-code-o"></i>Metadata Input</a></h4>
-                <h4><a href="{% url 'cephgeo.views.update_layer_metadata' %}" class="toggle toggle-nav"><i class="fa fa-file-code-o"></i>Update Flood Hazard Metadata</a></h4>
-                <h4><a href="{% url 'cephgeo.views.seed_layers' %}" class="toggle toggle-nav"><i class="fa fa-file-code-o"></i>GeoServer: Seed Layers</a></h4>
-                
+               
+                <li id ="nav-metadata-update" class="dropdown">
+                     <li class="dropdown-submenu"><a tabindex="0" href="" class="dropdown-toggle js-activated toggle toggle-nav" data-toggle="dropdown" data-submenu>Metadata Update</a>
+                    <ul class="dropdown-menu">
+                        <li><h4><a href="{% url 'cephgeo.views.update_fhm_metadata' %}" class="toggle toggle-nav "><i class="fa fa-file-code-o"></i>Update Flood Hazard Metadata</a></h4></li>
+                        <li><h4><a href="{% url 'cephgeo.views.update_pl2_metadata' %}" class="toggle toggle-nav"><i class="fa fa-file-code-o"></i>Update Resource Layer Metadata</a></h4></li>
+                        <li><h4><a href="{% url 'cephgeo.views.update_sar_metadata' %}" class="toggle toggle-nav"><i class="fa fa-file-code-o"></i>Update SAR DEM Metadata</a></h4></li>
+                    </ul>
+                </li>
+
+                <li id ="nav-seed-layers" class="dropdown">
+                    <li class="dropdown-submenu"><a tabindex="0" href="" class="dropdown-toggle js-activated " data-toggle="dropdown" data-submenu>Seed Layers</a>
+                    <ul class="dropdown-menu">
+                      <li><h4><a href="{% url 'cephgeo.views.seed_fhm_layers' %}" class="toggle toggle-nav"><i class="fa fa-file-code-o"></i>Seed FHM Layers</a></h4></li>
+                      <li><h4><a href="{% url 'cephgeo.views.seed_resource_layers' %}" class="toggle toggle-nav"><i class="fa fa-file-code-o"></i>Seed Resource Layers</a></h4></li>
+                      <li><h4><a href="{% url 'cephgeo.views.seed_SAR_DEM' %}" class="toggle toggle-nav"><i class="fa fa-file-code-o"></i>Seed SAR DEM</a></h4></li>
+                    </ul>
+                </li>
+
             </nav>
         </div>
     </div>
+
+
 {% endblock %}
  {% block sidebar %}{% endblock sidebar %}
 {% endblock body_outer %}

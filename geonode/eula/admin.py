@@ -13,6 +13,6 @@ class AnonDownloaderAdmin(admin.ModelAdmin):
         'anon_organization',
         'anon_purpose',
         'date',
-        'anon_layer')
+        'anon_resourcebase')
 
 admin.site.register(AnonDownloader, AnonDownloaderAdmin)

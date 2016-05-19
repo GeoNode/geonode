@@ -1,7 +1,9 @@
 from django.db import models
 from geonode.layers.models import Layer
+from geonode.documents.models import Document
 from datetime import datetime
 from django.utils.translation import ugettext_lazy as _
+from geonode.base.models import ResourceBase
 try:
     from django.conf import settings
     User = settings.AUTH_USER_MODEL
@@ -24,4 +26,6 @@ class AnonDownloader(models.Model):
     anon_email = models.EmailField(_('Email'), max_length=50)
     anon_organization = models.CharField(_('Organization'), max_length=100)
     anon_purpose = models.CharField(_('Purpose'), max_length=100)
-    anon_layer = models.ForeignKey(Layer, null=True, blank=True)
+    # anon_layer = models.ForeignKey(Layer, null=True, blank=True)
+    anon_resourcebase = models.ForeignKey(ResourceBase, null=True, blank=True)
+    # anon_document = models.ForeignKey(Document,null=True,blank=True)
