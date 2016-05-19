@@ -88,6 +88,7 @@ setup(name='GeoNode',
         "Django==1.8.7",  # python-django
 
         # Other
+        "pyyaml==3.11",
         "beautifulsoup4==4.2.1",  # python-bs4
         "MultipartPostHandler==0.1.0",  # python-multipartposthandler
         "httplib2==0.9.2",  # python-httplib2
