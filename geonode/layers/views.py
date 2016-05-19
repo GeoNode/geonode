@@ -313,7 +313,7 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
             out['success'] = True
             pprint(form.cleaned_data)
             anondownload = form.save()
-            anondownload.anon_resourcebase = Layer.objects.get(typename = layername).get_self_resource()
+            anondownload.anon_layer = Layer.objects.get(typename = layername)
             anondownload.save()
         else:
             errormsgs = []
