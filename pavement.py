@@ -28,6 +28,8 @@ import urllib2
 import zipfile
 import glob
 import fileinput
+import yaml
+
 from setuptools.command import easy_install
 from urlparse import urlparse
 
@@ -49,6 +51,9 @@ except ImportError:
 assert sys.version_info >= (2, 6), \
     SystemError("GeoNode Build requires python 2.6 or better")
 
+dev_config = None
+with open("dev_config.yml", 'r') as f:
+    dev_config = yaml.load(f)
 
 def grab(src, dest, name):
     download = True
@@ -69,12 +74,6 @@ def grab(src, dest, name):
         else:
             urllib.urlretrieve(str(src), str(dest))
 
-GEOSERVER_URL = "http://build.geonode.org/geoserver/latest/geoserver.war"
-DATA_DIR_URL = "http://build.geonode.org/geoserver/latest/data.zip"
-JETTY_RUNNER_URL = ("http://repo2.maven.org/maven2/org/mortbay/jetty/jetty-runner/"
-                    "8.1.8.v20121106/jetty-runner-8.1.8.v20121106.jar")
-
-
 @task
 @cmdopts([
     ('geoserver=', 'g', 'The location of the geoserver build (.war file).'),
@@ -88,11 +87,11 @@ def setup_geoserver(options):
 
     geoserver_dir = path('geoserver')
 
-    geoserver_bin = download_dir / os.path.basename(GEOSERVER_URL)
-    jetty_runner = download_dir / os.path.basename(JETTY_RUNNER_URL)
+    geoserver_bin = download_dir / os.path.basename(dev_config['GEOSERVER_URL'])
+    jetty_runner = download_dir / os.path.basename(dev_config['JETTY_RUNNER_URL'])
 
-    grab(options.get('geoserver', GEOSERVER_URL), geoserver_bin, "geoserver binary")
-    grab(options.get('jetty', JETTY_RUNNER_URL), jetty_runner, "jetty runner")
+    grab(options.get('geoserver', dev_config['GEOSERVER_URL']), geoserver_bin, "geoserver binary")
+    grab(options.get('jetty', dev_config['JETTY_RUNNER_URL']), jetty_runner, "jetty runner")
 
     if not geoserver_dir.exists():
         geoserver_dir.makedirs()
@@ -163,11 +162,11 @@ def win_install_deps(options):
         download_dir.makedirs()
     win_packages = {
         # required by transifex-client
-        "Py2exe": "http://downloads.sourceforge.net/project/py2exe/py2exe/0.6.9/py2exe-0.6.9.win32-py2.7.exe",
-        "Nose": "https://s3.amazonaws.com/geonodedeps/nose-1.3.3.win32-py2.7.exe",
+        "Py2exe": dev_config['WINDOWS']['py2exe'],
+        "Nose": dev_config['WINDOWS']['nose'],
         # the wheel 1.9.4 installs but pycsw wants 1.9.3, which fails to compile
         # when pycsw bumps their pyproj to 1.9.4 this can be removed.
-        "PyProj": "https://pyproj.googlecode.com/files/pyproj-1.9.3.win32-py2.7.exe"
+        "PyProj": dev_config['WINDOWS']['pyproj']
     }
     failed = False
     for package, url in win_packages.iteritems():
@@ -360,7 +359,7 @@ def start_geoserver(options):
         sys.exit(1)
 
     download_dir = path('downloaded').abspath()
-    jetty_runner = download_dir / os.path.basename(JETTY_RUNNER_URL)
+    jetty_runner = download_dir / os.path.basename(dev_config['JETTY_RUNNER_URL'])
     data_dir = path('geoserver/data').abspath()
     web_app = path('geoserver/geoserver').abspath()
     log_file = path('geoserver/jetty.log').abspath()
