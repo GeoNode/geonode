@@ -81,6 +81,8 @@ def registration_part_one(request):
                     request_status = 'pending'
                 )
                 request.session['request_object']=request_object
+            else:
+                pprint('hi there')
             return HttpResponseRedirect(
                 reverse('datarequests:registration_part_two')
             )
@@ -389,12 +391,13 @@ def data_request_csv(request):
     response['Content-Disposition'] = 'attachment; filename="datarequests-"'+str(datetoday.month)+str(datetoday.day)+str(datetoday.year)+'.csv"'
     
     writer = csv.writer(response)
-    writer.writerow( ['id','name','email','contact_number', 'organization', 'project_summary', 'created','request_status'])
+    fields = ['id','name','email','contact_number', 'organization', 'organization_type','has_letter','has_shapefile','project_summary', 'created','request_status', 'date of action','rejection_reason']
+    writer.writerow( fields)
     
     objects = DataRequestProfile.objects.all().order_by('pk')
     
     for o in objects:
-        writer.writerow(o.to_values_list())
+        writer.writerow(o.to_values_list(fields))
     
     return response
 
@@ -600,8 +603,7 @@ def data_request_profile_approve(request, pk):
             else:
                 try:
                     uj = UserJurisdiction.objects.get(user=request_profile.profile)
-                    uj.jurisdiction_shapefile = None
-                    uj.save()
+                    uj.delete()
                 except ObjectDoesNotExist as e:
                     pprint("Jurisdiction Shapefile not found, nothing to delete. Carry on")
             

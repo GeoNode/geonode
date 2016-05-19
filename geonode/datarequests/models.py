@@ -109,9 +109,9 @@ class DataRequestProfile(TimeStampedModel):
         blank=True,
     )
 
-    first_name = models.CharField(_('First Name'), max_length=100)
-    middle_name = models.CharField(_('Middle Name'), max_length=100, null=True, blank=True)
-    last_name = models.CharField(_('Last Name'), max_length=100)
+    first_name = models.CharField(_('First Name'), max_length=21)
+    middle_name = models.CharField(_('Middle Name'), max_length=21, null=True, blank=True)
+    last_name = models.CharField(_('Last Name'), max_length=21)
 
     organization = models.CharField(
         _('Office/Organization Name'),
@@ -123,7 +123,7 @@ class DataRequestProfile(TimeStampedModel):
         default=LOCATION_CHOICES.local,
         max_length=10,
     )
-    email = models.EmailField(_('Email Address'), max_length=50)
+    email = models.EmailField(_('Email Address'), max_length=64)
     contact_number = models.CharField(_('Contact Number'), max_length=255)
     project_summary = models.TextField(_('Summary of Project/Program'), null=True, blank=True)
     data_type_requested = models.CharField(
@@ -678,6 +678,26 @@ class DataRequestProfile(TimeStampedModel):
             elif f is 'created':
                 created = getattr(self, f)
                 out.append( str(created.month) +"/"+str(created.day)+"/"+str(created.year))
+            elif f == 'date of action':
+                date_of_action = getattr(self, 'action_date')
+                if self.request_status == 'rejected' or self.request_status == 'approved':
+                    out.append(str(date_of_action.month)+"/"+str(date_of_action.day)+"/"+str(date_of_action.year))
+                else:
+                    out.append('')
+            elif f is 'organization_type':
+                out.append(OrganizationType.get(getattr(self,'organization_type')))
+            elif f is 'has_letter':
+                if self.request_letter:
+                    out.append('yes')
+                else:
+                    out.append('no')
+            elif f is 'has_shapefile':
+                if self.jurisdiction_shapefile:
+                    out.append('yes')
+                else:
+                    out.append('no')
+            elif f is 'rejection_reason':
+                out.append(str(getattr(self,'rejection_reason')))
             else:
                 val = getattr(self, f)
                 if isinstance(val, unicode):
