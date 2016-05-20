@@ -11,6 +11,9 @@ from django.http import HttpResponse, HttpResponseBadRequest, HttpResponseRedire
 
 from geonode.people.models import Profile
 from geonode.documents.models import Document
+from geonode.layers.models import Layer
+
+import geocoder
 
 UNALLOWED_USERNAME_CHARACTERS='"[]:;|=+*?<>/\,.'
 ESCAPED_CHARACTERS="/\,"
@@ -134,6 +137,16 @@ def add_to_ad_group(group_dn=settings.LIPAD_LDAP_GROUP_DN, user_dn=""):
         import traceback
         print traceback.format_exc()
         return e
-    
+
+def get_place_name(longitude,latitude):
+    g = geocoder.google([latitude,longitude], method='reverse')
+    pprint(g.geojson)
+    return {
+        'street': g.street,
+        'city': g.city, 
+        'county': g.county,
+        'state': g.state,
+        'country': g.country
+    }
     
         
