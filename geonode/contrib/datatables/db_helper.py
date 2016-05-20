@@ -38,11 +38,11 @@ def get_datastore_connection_string(url_format=False, is_dataverse_db=True, db_n
 
     # if in production, we rewrite db_param['NAME'] depending on a few situations
     # for datatables, target join layers and joins db is always the same
-    if not settings.DEBUG:
-        if db_name:
-            db_params['NAME'] = db_name
-        else:
-            db_params['NAME'] = get_database_name(is_dataverse_db)
+    #if not settings.DEBUG:
+    if db_name:
+        db_params['NAME'] = db_name
+    else:
+        db_params['NAME'] = get_database_name(is_dataverse_db)
 
     if url_format:
         # connection_string = "postgresql://%s:%s@%s:%s/%s" % (db['USER'], db['PASSWORD'], db['HOST'], db['PORT'], db['NAME'])

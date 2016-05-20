@@ -40,7 +40,19 @@ class TestDataverseTabularAPI(TestTabularAPIBase):
         pause_time = 5 # seconds
         time.sleep(pause_time)
         msgt("""Sleeping %d seconds - needed for Geoserver to calculate bbox other shapefile stats""" % pause_time)
+        self.dv_group.user_set.add(self.user)
 
+    @classmethod
+    def tearDownClass(cls):
+        super(TestDataverseTabularAPI, cls).tearDownClass()
+
+    def setUp(self):
+        super(TestDataverseTabularAPI, self).setUp()
+        self.dv_group.user_set.add(self.user)
+
+    def tearDown(self):
+        super(TestDataverseTabularAPI, self).tearDown()
+        self.dv_group.user_set.remove(self.user)
 
     def get_dataverse_csv_test_info(self):
         return {
@@ -73,7 +85,6 @@ class TestDataverseTabularAPI(TestTabularAPIBase):
     #@skip('skipping test_02_upload_join_boston_income')
     def test_01_upload_join_boston_income(self):
 
-
         msgt('(1) Good Upload and Join - Delete TableJoin (test_01_upload_join_boston_income)')
 
         fname_to_upload = join(self.TEST_FILE_DIR, 'boston-income.csv')
@@ -90,7 +101,6 @@ class TestDataverseTabularAPI(TestTabularAPIBase):
         msgn('(1a) Upload table and join layer')
         # -----------------------------------------------------------
         print 'dataverse_upload_and_join_datatable_url',  self.dataverse_upload_and_join_datatable_url
-
         files = {'uploaded_file': open(fname_to_upload,'rb')}
         try:
             r = self.client.post(self.dataverse_upload_and_join_datatable_url,

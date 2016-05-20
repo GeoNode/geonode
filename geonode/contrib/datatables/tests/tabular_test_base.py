@@ -28,6 +28,8 @@ from requests.exceptions import ConnectionError as RequestsConnectionError
 import requests
 
 from django.utils import unittest
+from django.conf import settings
+from django.contrib.auth.models import Group
 
 from django.core.urlresolvers import reverse
 
@@ -131,6 +133,11 @@ class TestTabularAPIBase(unittest.TestCase):
 
         self.geonode_username = GEONODE_USERNAME
         self.geonode_password = GEONODE_PASSWORD
+
+        dv_group, created = Group.objects.get_or_create(name=settings.DATAVERSE_GROUP_NAME)
+        self.dv_group = dv_group
+        from django.contrib.auth.models import User
+        self.user = User.objects.get(username=self.geonode_username)
 
         # self.login_url =  self.base_url + "/account/login/" # GeoNode
 

@@ -66,6 +66,7 @@ def create_point_col_from_lat_lon(new_table_owner, table_name, lat_column, lng_c
     :param lng_column:
     :return:
     """
+
     LOGGER.info('create_point_col_from_lat_lon')
     assert isinstance(new_table_owner, User), "new_table_owner must be a User object"
     assert table_name is not None, "table_name cannot be None"

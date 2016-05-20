@@ -561,6 +561,7 @@ def attempt_datatable_upload_from_request_params(request,\
     Error:  (False, Error Message)
     Success: (True, TableJoin object)
     """
+
     LOGGER.info('contrib.datatables.utils.attempt_tablejoin_from_request_params')
     if not isinstance(new_layer_owner, User):
         return (False, "Please specify an owner for the new layer.")

@@ -544,6 +544,11 @@ CSRF_COOKIE_HTTPONLY = True
 WORLDMAP_TOKEN_FOR_DATAVERSE = 'FakeToken'
 
 DB_DATAVERSE_NAME = 'dataverse'
+DATAVERSE_GROUP_NAME = 'dataverse'
+
+TESTING = len(sys.argv) > 1 and sys.argv[1] == 'test'
+if TESTING:
+    SOUTH_TESTS_MIGRATE = False
 
 try:
     from local_settings import *
