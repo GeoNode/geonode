@@ -180,7 +180,7 @@ Height: beyond 1.5m""".format(map_resolution, flood_year, flood_year, flood_year
         layer.save()
         ctr+=1
         print "[{0} YEAR FH METADATA] {1}/{2} : {3}".format(flood_year,ctr,total_layers,layer.name)
-    f.close()
+    
     
 
 @task(name='geonode.tasks.update.layers_metadata_update', queue='update')
