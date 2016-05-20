@@ -116,7 +116,7 @@ def document_detail(request, docid):
                 pprint(form.cleaned_data)
                 anondownload = form.save()
                 # anondownload.anon_document = Document.objects.get(id = docid)
-                anondownload.anon_resourcebase = Document.objects.get(pk = docid).get_self_resource()
+                anondownload.anon_document = Document.objects.get(pk = docid)
                 anondownload.save()
             else:
                 errormsgs = []
@@ -415,7 +415,7 @@ def document_csv_download(request):
     for anon in anon_list:
         lastname = anon.anon_last_name
         firstname = anon.anon_first_name
-        documentname = anon.anon_resourcebase
+        documentname = anon.anon_document
         writer.writerow([lastname,firstname,documentname,anon.date.strftime('%Y/%m/%d')])        
 
     return response
