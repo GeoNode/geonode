@@ -70,20 +70,19 @@ def registration_part_one(request):
     
     if request.method == 'GET':
         if request.user.is_authenticated():
-            if not request_object:
-                request_object = DataRequestProfile(
-                    profile = request.user,
-                    first_name = request.user.first_name,
-                    middle_name = request.user.middle_name,
-                    last_name = request.user.last_name,
-                    organization = request.user.organization,
-                    email = request.user.email,
-                    contact_number = request.user.voice,
-                    request_status = 'pending'
-                )
-                request.session['request_object']=request_object
-            else:
-                pprint('hi there')
+        
+            request_object = DataRequestProfile(
+                profile = request.user,
+                first_name = request.user.first_name,
+                middle_name = request.user.middle_name,
+                last_name = request.user.last_name,
+                organization = request.user.organization,
+                email = request.user.email,
+                contact_number = request.user.voice,
+                request_status = 'pending'
+            )
+            request.session['request_object']=request_object
+
             return HttpResponseRedirect(
                 reverse('datarequests:registration_part_two')
             )
