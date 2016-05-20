@@ -81,6 +81,7 @@ def registration_part_one(request):
                 contact_number = request.user.voice,
                 request_status = 'pending'
             )
+            pprint(request_object.first_name)
             request.session['request_object']=request_object
 
             return HttpResponseRedirect(
