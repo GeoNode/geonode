@@ -679,7 +679,7 @@ def update_datarequest_obj(datarequest=None, parameter_dict=None, interest_layer
     if interest_layer:
         datarequest.jurisdiction_shapefile = interest_layer
         
-    requester_name = unidecode(datarequest.first_name+" "+datarequest.middle_name+" "+datarequest.last_name)
+    requester_name = unidecode(datarequest.first_name+" "+datarequest.last_name)
     letter = Document()
     letter_owner, created =  Profile.objects.get_or_create(username='dataRegistrationUploader')
     letter.owner = letter_owner
