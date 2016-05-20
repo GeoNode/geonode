@@ -25,10 +25,11 @@ from django.core.urlresolvers import reverse
 from geonode.maptiles.models import SRS
 from django.utils.text import slugify
 
-from geonode.tasks.update import fhm_metadata_update, geoserver_seed_layers, pl2_metadata_update
+from geonode.tasks.update import fhm_metadata_update, style_update, seed_layers, pl2_metadata_update, sar_metadata_update
 from geonode.base.enumerations import CHARSETS
 
 from geonode import settings
+from geonode.layers.models import Layer
 
 # Create your views here.
 @login_required
@@ -414,11 +415,39 @@ def management(request):
 
 @login_required
 @user_passes_test(lambda u: u.is_superuser)
-def update_layer_metadata(request, template='running_task.html'):
-    #updates metadata and style of FH maps
-    # fh_style_update.delay()
-    #fhm_metadata_update.delay()
+def update_fhm_metadata(request, template='running_task.html'):
+    fhm_metadata_update.delay()
+    ctx = {
+        'charsets': CHARSETS,
+        'is_layer': True,
+    }
+    return render_to_response(template,RequestContext(request, ctx))
+
+@login_required
+@user_passes_test(lambda u: u.is_superuser)
+def update_pl2_metadata(request, template='running_task.html'):
     pl2_metadata_update.delay()
+    ctx = {
+        'charsets': CHARSETS,
+        'is_layer': True,
+    }
+    return render_to_response(template,RequestContext(request, ctx))
+
+@login_required
+@user_passes_test(lambda u: u.is_superuser)
+def update_sar_metadata(request, template='running_task.html'):
+    sar_metadata_update.delay()
+    ctx = {
+        'charsets': CHARSETS,
+        'is_layer': True,
+    }
+    return render_to_response(template,RequestContext(request, ctx))
+
+@login_required
+@user_passes_test(lambda u: u.is_superuser)
+def seed_fhm_layers(request, template='running_task.html'):
+    keyword = 'hazard'
+    seed_layers.delay(keyword)
     ctx = {
         'charsets': CHARSETS,
         'is_layer': True,
@@ -428,8 +457,9 @@ def update_layer_metadata(request, template='running_task.html'):
 
 @login_required
 @user_passes_test(lambda u: u.is_superuser)
-def seed_layers(request, template='running_task.html'):
-    geoserver_seed_layers.delay()
+def seed_SAR_DEM(request, template='running_task.html'):
+    keyword = 'SAR'
+    seed_layers.delay(keyword)
     ctx = {
         'charsets': CHARSETS,
         'is_layer': True,
@@ -437,25 +467,14 @@ def seed_layers(request, template='running_task.html'):
 
     return render_to_response(template,RequestContext(request, ctx))
 
+@login_required
+@user_passes_test(lambda u: u.is_superuser)
+def seed_resource_layers(request, template='running_task.html'):
+    keyword = 'PhilLiDAR2'
+    seed_layers.delay(keyword)
+    ctx = {
+        'charsets': CHARSETS,
+        'is_layer': True,
+    }
 
-# @login_required
-# @user_passes_test(lambda u: u.is_superuser)
-# def update_fh_style(request, template='running_task.html'):
-#     fh_style_update.delay()
-#     ctx = {
-#         'charsets': CHARSETS,
-#         'is_layer': True,
-#     }
-#
-#     return render_to_response(template,RequestContext(request, ctx))
-
-# @login_required
-# @user_passes_test(lambda u: u.is_superuser)
-# def update_fh_perms(request, template='running_task.html'):
-#     fh_perms_update.delay()
-#     ctx = {
-#         'charsets': CHARSETS,
-#         'is_layer': True,
-#     }
-#
-#     return render_to_response(template,RequestContext(request, ctx))
+    return render_to_response(template,RequestContext(request, ctx))
