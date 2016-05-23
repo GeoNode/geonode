@@ -134,13 +134,6 @@ class TestTabularAPIBase(unittest.TestCase):
         self.geonode_username = GEONODE_USERNAME
         self.geonode_password = GEONODE_PASSWORD
 
-        dv_group, created = Group.objects.get_or_create(name=settings.DATAVERSE_GROUP_NAME)
-        self.dv_group = dv_group
-        from django.contrib.auth.models import User
-        self.user = User.objects.get(username=self.geonode_username)
-
-        # self.login_url =  self.base_url + "/account/login/" # GeoNode
-
         self.login_url = self.base_url + "/accounts/login/" # WorldMap
         self.csv_upload_url = self.base_url +  reverse('datatable_upload_api', kwargs={})
 
@@ -361,7 +354,21 @@ class TestTabularAPIBase(unittest.TestCase):
                 return True
         return False
 
+    """
+    def get_join_table_params_temp(self, **kwargs):
+        params = dict(title='CGB Annual Measures',
+                      abstract='(abstract)',
+                      table_attribute='BG_ID_10',
 
+                      layer_name='geonode:ma_census_2010_kyv Layer',
+                      layer_attribute='GEOID10',
+
+                      delimiter='\t',
+                      no_header_row=False,
+                      new_table_owner=None)
+        return params
+    """
+    
     def get_join_datatable_params(self, **kwargs):
 
         params = dict(title='Boston Income',
