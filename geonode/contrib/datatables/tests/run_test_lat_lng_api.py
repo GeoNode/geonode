@@ -22,7 +22,7 @@ class TestLatLngTabularAPI(TestTabularAPIBase):
         assert isfile(tab_ma_dataverse_info_fname),\
             "MA tigerlines test fixture file not found: %s" % tab_ma_dataverse_info_fname
         cls.tab_ma_dv_info = json.loads(open(tab_ma_dataverse_info_fname, 'r').read())
-
+        cls.createDataverseUserAndGroup(add_user_to_dv_group=False)
 
     def get_lat_lng_upload_params(self):
         return dict(title="New Haven, CT Crime, October 2008",
