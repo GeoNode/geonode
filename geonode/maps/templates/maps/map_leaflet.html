@@ -1,0 +1,37 @@
+{% load leaflet_tags %}
+
+{% leaflet_js %}
+{% leaflet_css %}
+
+{% leaflet_map "the_map" creatediv=False %}
+<style>
+    .leaflet-container { /* all maps */
+        height: 400px;
+    }
+</style>
+<script type="text/javascript">
+    window.addEventListener("map:init", function (e) {
+        var map = e.detail.map;
+        console.log("{{ layers }}");
+        // Add layers
+        {% for layer in layers %}
+            console.log("{{ layer }}");
+            console.log("{{ layer.layer_params }}");
+            console.log("{{ layer.ows_url }}");
+            // Add tile layers
+            var tile_layer = L.tileLayer("{{ layer.ows_url }}");
+            map.addLayer(tile_layer);
+        {% endfor %}
+        // Set view port
+        map.setView(new L.LatLng({{ resource.center_x }}, {{ resource.center_y }}), {{ resource.zoom }});
+
+    });
+    function zoom_to_box(map, bbox) {
+        var bounds = [
+            [bbox[1], bbox[0]],
+            [bbox[3], bbox[2]]
+        ];
+        console.log(bounds);
+        map.fitBounds(bounds);
+    }
+</script>

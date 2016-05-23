@@ -278,6 +278,7 @@
 
             // Collect layers
             var layers = [];
+            var token = 'token'
             console.log(overlay_layers);
             for (var tempe in overlay_layers) {
                 console.log('Adding to layers');
@@ -287,7 +288,7 @@
                             'name': tempe,
                             'title': overlay_layers[tempe]['title'],
                             'url': overlay_layers[tempe]['url'],
-                            'source': 'dummy',  // I have no idea
+                            'source': token,  // I have no idea
                             'local': true  // I have no idea
                         }
                 );
@@ -307,7 +308,9 @@
             };
             map_data['sources'] = {};
             for (var key in overlay_layers) {
-                map_data['sources']['dummy'] = {};
+                map_data['sources'][token] = {
+                    'url': overlay_layers[key]['url']
+                };
             }
 
             $.ajax({
