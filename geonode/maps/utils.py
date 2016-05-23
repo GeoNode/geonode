@@ -236,7 +236,7 @@ def get_db_store_name(user=None):
     db_store_name = 'wm_%s%02d' % (now.year, now.month)
     if user:
         # only users in target-joins-uploader group will use the dataverse database
-        if user.groups.filter(settings.DATAVERSE_GROUP_NAME).exists():
+        if user.groups.filter(name=settings.DATAVERSE_GROUP_NAME).exists():
             db_store_name = settings.DB_DATAVERSE_NAME
     return db_store_name
 
