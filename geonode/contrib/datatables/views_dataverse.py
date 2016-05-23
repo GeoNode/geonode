@@ -301,7 +301,9 @@ def view_upload_lat_lng_table(request):
     # --------------------------------------
     LOGGER.info('Step 3:  Datatable Upload')
     try:
-        resp = datatable_upload_api(request)
+        # Upload Lat/Lng Datatables to the Monthly table--not the Dataverse table
+        #
+        resp = datatable_upload_api(request, is_dataverse_db=False)
         upload_return_dict = json.loads(resp.content)
         if upload_return_dict.get('success', None) is not True:
             return HttpResponse(json.dumps(upload_return_dict), mimetype='application/json', status=400)
