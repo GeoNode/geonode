@@ -320,7 +320,11 @@ def setup_join(new_table_owner, table_name, layer_typename, table_attribute_name
     # ------------------------------------------------------------------
     # (5) Check if the layer and the table are in the same store (database)
     # ------------------------------------------------------------------
-    assert layer.store == dt.tablespace, "layer and tablespace must be in the same database"
+    if layer.store != dt.tablespace:
+        err_msg = 'layer (%s) and tablespace (%s) must be in the same database.'\
+            % (layer.store, dt.tablespace)
+        LOGGER.error(err_msg)
+        return None, err_msg
 
     # ------------------------------------------------------------------
     # (5a) Check if the join columns compatible

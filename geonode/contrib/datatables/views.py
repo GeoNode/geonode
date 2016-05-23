@@ -42,6 +42,9 @@ logger = logging.getLogger(__name__)
 def datatable_upload_api(request, is_dataverse_db=True):
     """
     API to upload a datatable -- saved as a DataTable object
+
+    Note: For table joins: is_dataverse_db=True
+          For datatables with lat/lng columns: is_dataverse_db=False
     """
     if request.method != 'POST':
         return HttpResponse("Invalid Request", mimetype="text/plain", status=405)
@@ -297,7 +300,7 @@ def datatable_remove(request, dt_id):
 
 @http_basic_auth_for_api
 @csrf_exempt
-def datatable_upload_and_join_api(request):
+def datatable_upload_and_join_api(request, is_dataverse_db=True):
     """
     Upload a Datatable and join it to an existing Layer
     """
@@ -337,7 +340,7 @@ def datatable_upload_and_join_api(request):
     (success, data_table_or_error) = attempt_datatable_upload_from_request_params(\
                                 request,\
                                 request.user,\
-                                database,\
+                                is_dataverse_db=is_dataverse_db,\
                                 force_char_column=force_char_column)
     if not success:
         json_msg = MessageHelperJSON.get_json_fail_msg(data_table_or_error)

@@ -26,7 +26,8 @@ class TestWorldMapShapefileImport(TestTabularAPIBase):
 
     @classmethod
     def setUpClass(cls):
-        pass
+        cls.createDataverseUserAndGroup(add_user_to_dv_group=False)
+
 
     def setUp(self):
         super(TestWorldMapShapefileImport, self).setUp()
