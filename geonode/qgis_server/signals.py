@@ -16,6 +16,7 @@ from geonode.layers.models import Layer
 from geonode.maps.models import Map, MapLayer
 from geonode.layers.utils import create_thumbnail
 from geonode.geoserver.helpers import http_client
+from geonode.qgis_server.gis_tools import set_attributes
 
 
 logger = logging.getLogger("geonode.qgis_server.signals")
@@ -226,6 +227,9 @@ def qgis_server_post_save(instance, sender, **kwargs):
         'qgis-server-thumbnail', kwargs={'layername': instance.name})
     logger.debug(thumbnail_remote_url)
     create_thumbnail(instance, thumbnail_remote_url, ogc_client=http_client)
+
+    # Attributes
+    set_attributes(instance)
 
 
 def qgis_server_pre_save_maplayer(instance, sender, **kwargs):
