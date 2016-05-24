@@ -2,6 +2,7 @@ import random
 import string
 import ldap
 import ldap.modlist
+import geocoder
 import geonode.settings as settings
 
 from pprint import pprint
@@ -12,8 +13,6 @@ from django.http import HttpResponse, HttpResponseBadRequest, HttpResponseRedire
 from geonode.people.models import Profile
 from geonode.documents.models import Document
 from geonode.layers.models import Layer
-
-import geocoder
 
 UNALLOWED_USERNAME_CHARACTERS='"[]:;|=+*?<>/\,.'
 ESCAPED_CHARACTERS="/\,"
