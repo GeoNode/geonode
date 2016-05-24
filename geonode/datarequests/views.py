@@ -71,16 +71,7 @@ def registration_part_one(request):
     if request.method == 'GET':
         if request.user.is_authenticated():
         
-            request_object = DataRequestProfile(
-                profile = request.user,
-                first_name = request.user.first_name,
-                middle_name = request.user.middle_name,
-                last_name = request.user.last_name,
-                organization = request.user.organization,
-                email = request.user.email,
-                contact_number = request.user.voice,
-                request_status = 'pending'
-            )
+            request_object = create_request_obj(request.user)
             request.session['request_object']=request_object
 
             return HttpResponseRedirect(
@@ -101,16 +92,7 @@ def registration_part_one(request):
                 form = DataRequestProfileForm(initial = initial)
     elif request.method == 'POST':
         if request.user.is_authenticated():
-            request_object = DataRequestProfile(
-                profile = request.user,
-                first_name = request.user.first_name,
-                middle_name = request.user.middle_name,
-                last_name = request.user.last_name,
-                organization = request.user.organization,
-                email = request.user.email,
-                contact_number = request.user.voice,
-                request_status = 'pending'
-            )
+            request_object = create_request_obj(request.user)
             request.session['request_object']=request_object
             return HttpResponseRedirect(
                 reverse('datarequests:registration_part_two')
@@ -180,7 +162,7 @@ def registration_part_two(request):
         out = {}
         #request_profile =  request.session['request_object']
         request_profile = saved_request_object
-        place_name = ''
+        place_name = None
         pprint(post_data)
         if form.is_valid():
             if last_submitted_dr and not is_new_auth_req:
@@ -316,8 +298,9 @@ def registration_part_two(request):
                                 interest_layer = interest_layer
                             )
                     
-                    request_profile.place_name = place_name['state']
-                    request_profile.save()
+                    if place_name:
+                        request_profile.place_name = place_name['state']
+                        request_profile.save()
                     
                     if request.user.is_authenticated():
                         request_profile.profile = request.user
@@ -655,6 +638,30 @@ def data_request_facet_count(request):
         status=200,
         mimetype='text/plain'
     )
+    
+def create_request_obj(user_profile):
+    if not user_profile.middle_name or not user_profile.organization:
+        last_submitted_dr = DataRequestProfile.objects.filter(profile=user_profile, request_status='approved'  ).latest('key_created_date')
+        user_profile.middle_name = last_submitted_dr.middle_name
+        user_profile.organization = last_submitted_dr.organization
+        user_profile.email = last_submitted_dr.email
+        user_profile.voice = last_submitted_dr.contact_number
+        user_profile.save()
+    
+    request_object = DataRequestProfile(
+            profile = user_profile,
+            first_name = user_profile.first_name,
+            middle_name = user_profile.middle_name,
+            last_name = user_profile.last_name,
+            organization = user_profile.organization,
+            email = user_profile.email,
+            contact_number = user_profile.voice,
+            request_status = 'pending'
+    )
+    
+    return request_object
+        
+    
     
 def update_datarequest_obj(datarequest=None, parameter_dict=None, interest_layer=None, request_letter = None):
     if datarequest is None or parameter_dict is None or request_letter is None:
