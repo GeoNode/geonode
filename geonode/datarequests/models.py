@@ -606,6 +606,12 @@ class DataRequestProfile(TimeStampedModel):
                 profile = LDAPBackend().populate_user(self.username)
                 self.profile = profile
                 self.save()
+                
+                profile.middle_name = self.middle_name
+                profile.organization = self.organization
+                profile.voice = self.contact_number
+                profile.email = self.email
+                profile.save()
         except Exception as e:
             pprint(traceback.format_exc())
             return (False, "Account creation failed. Check /var/log/apache2/error.log for more details")
