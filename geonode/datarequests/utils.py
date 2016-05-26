@@ -11,6 +11,9 @@ from django.http import HttpResponse, HttpResponseBadRequest, HttpResponseRedire
 
 from geonode.people.models import Profile
 from geonode.documents.models import Document
+from geonode.layers.models import Layer
+
+import geocoder
 
 UNALLOWED_USERNAME_CHARACTERS='"[]:;|=+*?<>/\,.'
 ESCAPED_CHARACTERS="/\,"
@@ -78,7 +81,7 @@ def create_ad_account(datarequest, username):
     sn= unidecode(datarequest.last_name)
     givenName = unidecode(datarequest.first_name)
     initials=unidecode(datarequest.middle_name[0])
-    cn = unidecode(givenName+" "+datarequest.middle_name+". "+sn)
+    cn = unidecode(givenName+" "+datarequest.middle_name+" "+sn)
     displayName=unidecode(givenName+" "+initials+". "+sn)
     telephoneNumber = str(datarequest.contact_number)
     mail=str(datarequest.email)
@@ -105,6 +108,7 @@ def create_ad_account(datarequest, username):
         "userAccountControl": [userAccountControl],
         "telephoneNumber": [telephoneNumber],
         "ou": [ou],
+        "initials": [initials]
     }
     
     try:
@@ -134,6 +138,16 @@ def add_to_ad_group(group_dn=settings.LIPAD_LDAP_GROUP_DN, user_dn=""):
         import traceback
         print traceback.format_exc()
         return e
-    
+
+def get_place_name(longitude,latitude):
+    g = geocoder.google([latitude,longitude], method='reverse')
+    pprint(g.geojson)
+    return {
+        'street': g.street,
+        'city': g.city, 
+        'county': g.county,
+        'state': g.state,
+        'country': g.country
+    }
     
         

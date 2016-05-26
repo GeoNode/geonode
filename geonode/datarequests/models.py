@@ -189,6 +189,14 @@ class DataRequestProfile(TimeStampedModel):
         blank=True,
         null=True,
         )
+        
+    #For place name
+    place_name = models.CharField(
+        _('Geolocation name provided by Google'),  
+        null=True,
+        blank=True, 
+        max_length=50,
+    )
 
     #For request letter
     request_letter= models.ForeignKey(Document, null=True, blank=True)

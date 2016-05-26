@@ -58,6 +58,7 @@ from .forms import (
     DataRequestProfileForm, DataRequestProfileShapefileForm, 
     DataRequestProfileRejectForm, DataRequestDetailsForm)
 from .models import DataRequestProfile
+from .utils import get_place_name
 
 def registration_part_one(request):
 
@@ -69,20 +70,20 @@ def registration_part_one(request):
     
     if request.method == 'GET':
         if request.user.is_authenticated():
-            if not request_object:
-                request_object = DataRequestProfile(
-                    profile = request.user,
-                    first_name = request.user.first_name,
-                    middle_name = request.user.middle_name,
-                    last_name = request.user.last_name,
-                    organization = request.user.organization,
-                    email = request.user.email,
-                    contact_number = request.user.voice,
-                    request_status = 'pending'
-                )
-                request.session['request_object']=request_object
-            else:
-                pprint('hi there')
+        
+            request_object = DataRequestProfile(
+                profile = request.user,
+                first_name = request.user.first_name,
+                middle_name = request.user.middle_name,
+                last_name = request.user.last_name,
+                organization = request.user.organization,
+                email = request.user.email,
+                contact_number = request.user.voice,
+                request_status = 'pending'
+            )
+            pprint(request_object.first_name)
+            request.session['request_object']=request_object
+
             return HttpResponseRedirect(
                 reverse('datarequests:registration_part_two')
             )
@@ -101,18 +102,17 @@ def registration_part_one(request):
                 form = DataRequestProfileForm(initial = initial)
     elif request.method == 'POST':
         if request.user.is_authenticated():
-            if not request_object:
-                request_object = DataRequestProfile(
-                    profile = request.user,
-                    first_name = request.user.first_name,
-                    middle_name = request.user.middle_name,
-                    last_name = request.user.last_name,
-                    organization = request.user.organization,
-                    email = request.user.email,
-                    contact_number = request.user.voice,
-                    request_status = 'pending'
-                )
-                request.session['request_object']=request_object
+            request_object = DataRequestProfile(
+                profile = request.user,
+                first_name = request.user.first_name,
+                middle_name = request.user.middle_name,
+                last_name = request.user.last_name,
+                organization = request.user.organization,
+                email = request.user.email,
+                contact_number = request.user.voice,
+                request_status = 'pending'
+            )
+            request.session['request_object']=request_object
             return HttpResponseRedirect(
                 reverse('datarequests:registration_part_two')
             )
@@ -169,8 +169,6 @@ def registration_part_two(request):
     
     form = DataRequestDetailsForm(initial=part_two_initial)
 
-    
-
     if request.method == 'POST' :
         post_data = request.POST.copy()
         post_data['permissions'] = '{"users":{"dataRegistrationUploader": ["view_resourcebase"] }}'
@@ -181,7 +179,9 @@ def registration_part_two(request):
         tempdir = None
         errormsgs = []
         out = {}
-        request_profile =  request.session['request_object']
+        #request_profile =  request.session['request_object']
+        request_profile = saved_request_object
+        place_name = ''
         pprint(post_data)
         if form.is_valid():
             if last_submitted_dr and not is_new_auth_req:
@@ -234,12 +234,18 @@ def registration_part_two(request):
                             password=settings.OGC_SERVER['default']['PASSWORD'])
 
                         boundary_style = cat.get_style('Boundary')
+                        gs_layer = cat.get_layer(saved_layer.name)
                         if boundary_style:
-                            gs_layer = cat.get_layer(saved_layer.name)
                             gs_layer._set_default_style(boundary_style)
                             cat.save(gs_layer) #save in geoserver
                             saved_layer.sld_body = boundary_style.sld_body
                             saved_layer.save() #save in geonode
+                        
+                        bbox = gs_layer.resource.latlon_bbox
+                        bbox_lon = (float(bbox[0])+float(bbox[1]))/2
+                        bbox_lat = (float(bbox[2])+float(bbox[3]))/2
+                        place_name = get_place_name(bbox_lon, bbox_lat)
+                        
                            
                     except Exception as e:
                         exception_type, error, tb = sys.exc_info()
@@ -278,7 +284,7 @@ def registration_part_two(request):
                                 'groups': {}
                             }
                             
-                        request_profile
+                        
                         if permissions is not None and len(permissions.keys()) > 0:
     
                             saved_layer.set_permissions(permissions)
@@ -300,6 +306,7 @@ def registration_part_two(request):
                             request_letter = form.clean()['letter_file'],
                             interest_layer = interest_layer
                         )
+                        
                         out['success']=True
                     else: 
                         if out['success']:
@@ -309,6 +316,9 @@ def registration_part_two(request):
                                 request_letter = form.clean()['letter_file'],
                                 interest_layer = interest_layer
                             )
+                    
+                    request_profile.place_name = place_name['state']
+                    request_profile.save()
                     
                     if request.user.is_authenticated():
                         request_profile.profile = request.user
@@ -669,7 +679,7 @@ def update_datarequest_obj(datarequest=None, parameter_dict=None, interest_layer
     if interest_layer:
         datarequest.jurisdiction_shapefile = interest_layer
         
-    requester_name = unidecode(datarequest.first_name+" "+datarequest.middle_name+" "+datarequest.last_name)
+    requester_name = unidecode(datarequest.first_name+" "+datarequest.last_name)
     letter = Document()
     letter_owner, created =  Profile.objects.get_or_create(username='dataRegistrationUploader')
     letter.owner = letter_owner
