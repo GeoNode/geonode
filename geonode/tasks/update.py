@@ -19,7 +19,6 @@ from geonode.security.models import PermissionLevelMixin
 from django.contrib.auth.models import Group
 from guardian.shortcuts import assign_perm, get_anonymous_user
 from string import Template
-
  
 
 @task(name='geonode.tasks.update.fh_perms_update', queue='update')
@@ -85,6 +84,7 @@ def style_update(layer,style_template):
                 os.remove(url)
             else:
                 url = "/var/www/geonode/uploaded/thumbs/layer-" +layer.uuid + "-thumb.png"
+                os.chown(url,'www-data','www-data')
                 os.remove(url)
 
             gs_layer = cat.get_layer(layer.name)
