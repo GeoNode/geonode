@@ -104,7 +104,7 @@ def style_update(layer,style_template):
             layer.save()
         except Exception as e:
             print "%s" % e
-            pass
+            
 
 @task(name='geonode.tasks.update.seed_layers', queue='update')
 def seed_layers(keyword):
@@ -139,47 +139,51 @@ def fhm_year_metadata(flood_year, skip_prev):
     fh_err_log = "Flood-Hazard-Error-Log.txt"
     
     for layer in layer_list:
-        print "Layer: %s" % layer.name
-        style_update(layer,'fhm')
-        fh_perms_update(layer)
-        #fh_perms_update(layer,f)
+        try:
+            print "Layer: %s" % layer.name
+            style_update(layer,'fhm')
+            fh_perms_update(layer)
+            #fh_perms_update(layer,f)
 
-        #batch_seed(layer)
+            #batch_seed(layer)
 
-        map_resolution = ''
+            map_resolution = ''
 
-        if "_10m_30m" in layer.name:
-            map_resolution = '30'
-        elif "_10m" in layer.name:
-            map_resolution = '10'
-        elif "_30m" in layer.name:
-            map_resolution = '30'
-        
-        print "Layer: %s" % layer.name
-        layer.title = layer.name.replace("_10m","").replace("_30m","").replace("__"," ").replace("_"," ").replace("fh%syr" % flood_year,"%s Year Flood Hazard Map" % flood_year).title()
-        
-        layer.abstract = """This shapefile, with a resolution of {0} meters, illustrates the inundation extents in the area if the actual amount of rain exceeds that of a {1} year-rain return period.
+            if "_10m_30m" in layer.name:
+                map_resolution = '30'
+            elif "_10m" in layer.name:
+                map_resolution = '10'
+            elif "_30m" in layer.name:
+                map_resolution = '30'
+            
+            print "Layer: %s" % layer.name
+            layer.title = layer.name.replace("_10m","").replace("_30m","").replace("__"," ").replace("_"," ").replace("fh%syr" % flood_year,"%s Year Flood Hazard Map" % flood_year).title()
+            
+            layer.abstract = """This shapefile, with a resolution of {0} meters, illustrates the inundation extents in the area if the actual amount of rain exceeds that of a {1} year-rain return period.
 
-Note: There is a 1/{2} ({3}%) probability of a flood with {4} year return period occurring in a single year.
+    Note: There is a 1/{2} ({3}%) probability of a flood with {4} year return period occurring in a single year.
 
-3 levels of hazard:
-Low Hazard (YELLOW)
-Height: 0.1m-0.5m
+    3 levels of hazard:
+    Low Hazard (YELLOW)
+    Height: 0.1m-0.5m
 
-Medium Hazard (ORANGE)
-Height: 0.5m-1.5m
+    Medium Hazard (ORANGE)
+    Height: 0.5m-1.5m
 
-High Hazard (RED)
-Height: beyond 1.5m""".format(map_resolution, flood_year, flood_year, flood_year_probability, flood_year)
+    High Hazard (RED)
+    Height: beyond 1.5m""".format(map_resolution, flood_year, flood_year, flood_year_probability, flood_year)
 
 
-        layer.purpose = " The flood hazard map may be used by the local government for appropriate land use planning in flood-prone areas and for disaster risk reduction and management, such as identifying areas at risk of flooding and proper planning of evacuation."
-        
-        layer.keywords.add("Flood Hazard Map")
-        layer.category = TopicCategory.objects.get(identifier="geoscientificInformation")
-        layer.save()
-        ctr+=1
-        print "[{0} YEAR FH METADATA] {1}/{2} : {3}".format(flood_year,ctr,total_layers,layer.name)
+            layer.purpose = " The flood hazard map may be used by the local government for appropriate land use planning in flood-prone areas and for disaster risk reduction and management, such as identifying areas at risk of flooding and proper planning of evacuation."
+            
+            layer.keywords.add("Flood Hazard Map")
+            layer.category = TopicCategory.objects.get(identifier="geoscientificInformation")
+            layer.save()
+            ctr+=1
+            print "[{0} YEAR FH METADATA] {1}/{2} : {3}".format(flood_year,ctr,total_layers,layer.name)
+        except Exception as e:
+            print "%s" % e
+            pass
     
     
 
