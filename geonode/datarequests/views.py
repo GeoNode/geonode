@@ -619,6 +619,17 @@ def data_request_profile_reconfirm(request, pk):
         return HttpResponseRedirect(request_profile.get_absolute_url())
 
 @require_POST
+def data_request_profile_recreate_dir(request, pk):
+    if not request.user.is_superuser:
+        raise PermissionDenied
+
+    if request.method == 'POST':
+        request_profile = get_object_or_404(DataRequestProfile, pk=pk)
+        
+        request_profile.create_directory()
+        return HttpResponseRedirect(request_profile.get_absolute_url())
+
+@require_POST
 def data_request_facet_count(request):
     if not request.user.is_superuser:
         raise PermissionDenied
