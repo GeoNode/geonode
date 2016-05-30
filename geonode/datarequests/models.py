@@ -110,7 +110,7 @@ class DataRequestProfile(TimeStampedModel):
     )
 
     first_name = models.CharField(_('First Name'), max_length=21)
-    middle_name = models.CharField(_('Middle Name'), max_length=21, null=True, blank=True)
+    middle_name = models.CharField(_('Middle Name'), max_length=21, null=False, blank=False)
     last_name = models.CharField(_('Last Name'), max_length=21)
 
     organization = models.CharField(
@@ -189,6 +189,14 @@ class DataRequestProfile(TimeStampedModel):
         blank=True,
         null=True,
         )
+        
+    #For place name
+    place_name = models.CharField(
+        _('Geolocation name provided by Google'),  
+        null=True,
+        blank=True, 
+        max_length=50,
+    )
 
     #For request letter
     request_letter= models.ForeignKey(Document, null=True, blank=True)
@@ -598,6 +606,12 @@ class DataRequestProfile(TimeStampedModel):
                 profile = LDAPBackend().populate_user(self.username)
                 self.profile = profile
                 self.save()
+                
+                profile.middle_name = self.middle_name
+                profile.organization = self.organization
+                profile.voice = self.contact_number
+                profile.email = self.email
+                profile.save()
         except Exception as e:
             pprint(traceback.format_exc())
             return (False, "Account creation failed. Check /var/log/apache2/error.log for more details")
@@ -678,6 +692,26 @@ class DataRequestProfile(TimeStampedModel):
             elif f is 'created':
                 created = getattr(self, f)
                 out.append( str(created.month) +"/"+str(created.day)+"/"+str(created.year))
+            elif f == 'date of action':
+                date_of_action = getattr(self, 'action_date')
+                if self.request_status == 'rejected' or self.request_status == 'approved':
+                    out.append(str(date_of_action.month)+"/"+str(date_of_action.day)+"/"+str(date_of_action.year))
+                else:
+                    out.append('')
+            elif f is 'organization_type':
+                out.append(OrganizationType.get(getattr(self,'organization_type')))
+            elif f is 'has_letter':
+                if self.request_letter:
+                    out.append('yes')
+                else:
+                    out.append('no')
+            elif f is 'has_shapefile':
+                if self.jurisdiction_shapefile:
+                    out.append('yes')
+                else:
+                    out.append('no')
+            elif f is 'rejection_reason':
+                out.append(str(getattr(self,'rejection_reason')))
             else:
                 val = getattr(self, f)
                 if isinstance(val, unicode):

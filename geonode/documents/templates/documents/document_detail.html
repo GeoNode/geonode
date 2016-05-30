@@ -34,9 +34,9 @@
         </a>
       </div>
       {% elif resource.doc_file %}
-      <p><a href="{% url "document_download" resource.id %}" target="_blank">Download the {{ resource }} document</a></p>
+      <p><a data-toggle="modal" data-target="#eula-nested-dialog" target="_blank">Download the {{ resource }} document</a></p>
       {% elif  resource.doc_url %}
-      <p><a href="{{ resource.doc_url }}" target="_blank">Download the {{ resource }} document.</a> <small>({% trans 'External Resource' %})</small></p>
+      <p><a data-toggle="modal" data-target="#eula-nested-dialog" target="_blank">Download the {{ resource }} document.</a> <small>({% trans 'External Resource' %})</small></p>
       {%  endif %}
     {%  endif %}
        
@@ -77,12 +77,13 @@
       {% get_obj_perms request.user for resource.get_self_resource as "perms" %}
       <li class="list-group-item">
       {% if "download_resourcebase" in perms %}
+        {% include "documents/document_eula_nested_dialog.html" %} <!-- EULA related-->
         {% if resource.extension|lower in imgtypes and resource.doc_file %}
-          <a style="text-decoration:none;" target="_blank" href="{% url "document_download" resource.id %}"><button class="btn btn-primary btn-md btn-block">{% trans "Download Document" %}</button></a>
+          <a style="text-decoration:none;" target="_blank" ><button class="btn btn-primary btn-md btn-block" data-toggle="modal" data-target="#eula-nested-dialog">{% trans "Download Document" %}</button></a>
         {% elif resource.doc_file %}
-          <a style="text-decoration:none;" target="_blank" href="{% url "document_download" resource.id %}"><button class="btn btn-primary btn-md btn-block">{% trans "Download Document" %}</button></a>
+          <a style="text-decoration:none;" target="_blank" ><button class="btn btn-primary btn-md btn-block" data-toggle="modal" data-target="#eula-nested-dialog">{% trans "Download Document" %}</button></a>
         {% elif  resource.doc_url %}
-          <a style="text-decoration:none;" target="_blank" href="{{ resource.doc_url }}"><button class="btn btn-primary btn-md btn-block">{% trans "Download Document" %}</button></a>
+          <a style="text-decoration:none;" target="_blank" ><button class="btn btn-primary btn-md btn-block" data-toggle="modal" data-target="#eula-nested-dialog">{% trans "Download Document" %}</button></a>
         {%  endif %}
       {% else %}
         {% if request.user.is_authenticated %}
