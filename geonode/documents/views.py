@@ -5,7 +5,7 @@ from django.shortcuts import render_to_response, get_object_or_404
 from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.template import RequestContext, loader
 from django.utils.translation import ugettext as _
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, user_passes_test
 from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.core.exceptions import PermissionDenied
@@ -24,6 +24,16 @@ from geonode.documents.forms import DocumentForm, DocumentCreateForm, DocumentRe
 from geonode.documents.models import IMGTYPES
 from geonode.utils import build_social_links
 
+from geonode.eula.models import AnonDownloader
+from .forms import AnonDownloaderForm
+from actstream.signals import action
+from actstream.models import Action
+from pprint import pprint
+from django.utils.html import escape
+from django.utils import timezone
+import csv
+import datetime
+
 ALLOWED_DOC_TYPES = settings.ALLOWED_DOCUMENT_TYPES
 
 _PERMISSION_MSG_DELETE = _("You are not permitted to delete this document")
@@ -41,7 +51,6 @@ def _resolve_document(request, docid, permission='base.change_resourcebase',
     '''
     return resolve_object(request, Document, {'pk': docid},
                           permission=permission, permission_msg=msg, **kwargs)
-
 
 def document_detail(request, docid):
     """
@@ -102,22 +111,48 @@ def document_detail(request, docid):
         if settings.SOCIAL_ORIGINS:
             context_dict["social_links"] = build_social_links(request, document)
 
-        if getattr(settings, 'EXIF_ENABLED', False):
-            try:
-                from geonode.contrib.exif.utils import exif_extract_dict
-                exif = exif_extract_dict(document)
-                if exif:
-                    context_dict['exif_data'] = exif
-            except:
-                print "Exif extraction failed."
+        if request.method == 'POST':
+            form = AnonDownloaderForm(request.POST)
+            out = {}
+            if form.is_valid():
+                out['success'] = True
+                pprint(form.cleaned_data)
+                anondownload = form.save()
+                # anondownload.anon_document = Document.objects.get(id = docid)
+                anondownload.anon_document = Document.objects.get(pk = docid)
+                anondownload.save()
+            else:
+                errormsgs = []
+                for e in form.errors.values():
+                    errormsgs.extend([escape(v) for v in e])
+                out['success'] = False
+                out['errors'] = form.errors
+                out['errormsgs'] = errormsgs
+            if out['success']:
+                status_code = 200
+            else:
+                status_code = 400
+            #Handle form
+            # return HttpResponse(status=status_code)
+            # url = reverse('document_download',kwargs={'docid': docid})
+            # return HttpResponseRedirect(url)
+            document = get_object_or_404(Document, pk=docid)
+            return DownloadResponse(document.doc_file)
+        else:
+            #Render form
+            form = AnonDownloaderForm()
+        context_dict["anon_form"] = form
 
         return render_to_response(
             "documents/document_detail.html",
             RequestContext(request, context_dict))
 
-
 def document_download(request, docid):
     document = get_object_or_404(Document, pk=docid)
+    if request.user.is_authenticated():
+        action.send(request.user, verb='downloaded', action_object=document)
+    print request.user.has_perm('base.download_resourcebase',obj=document.get_self_resource())
+
     if not request.user.has_perm(
             'base.download_resourcebase',
             obj=document.get_self_resource()):
@@ -126,8 +161,8 @@ def document_download(request, docid):
                 '401.html', RequestContext(
                     request, {
                         'error_message': _("You are not allowed to view this document.")})), status=401)
+        
     return DownloadResponse(document.doc_file)
-
 
 class DocumentUploadView(CreateView):
     template_name = 'documents/document_upload.html'
@@ -449,3 +484,36 @@ def document_remove(request, docid, template='documents/document_remove.html'):
             mimetype="text/plain",
             status=401
         )
+
+@login_required
+@user_passes_test(lambda u: u.is_superuser)
+def document_csv_download(request):
+    # if not request.user.is_superuser:
+    #     raise HttpResponseForbidden
+
+    response = HttpResponse(content_type='text/csv')
+    datetoday = timezone.now()
+    response['Content-Disposition'] = 'attachment; filename="Documents-List-"'+str(datetoday.month)+str(datetoday.day)+str(datetoday.year)+'.csv"'
+    writer = csv.writer(response)
+
+    # auth_list = Action.objects.filter(verb='downloaded').order_by('timestamp') #get layers in prod
+
+    # auth_fmc = 
+    anon_list = AnonDownloader.objects.all().order_by('date')
+    # anon_fmc  
+    writer.writerow( ['username','layer name','date downloaded'])
+    
+    # for auth in auth_list:
+    #     # auth.actor + " " + auth.action_object + " " +  auth.timestamp.strftime('%Y/%m/%d')
+    #     writer.writerow([auth.actor,auth.action_object.title,auth.timestamp.strftime('%Y/%m/%d')])
+
+    writer.writerow(['\n'])
+    writer.writerow(['Anonymous Downloads'])
+    writer.writerow( ['lastname','firstname','document name','date downloaded'])
+    for anon in anon_list:
+        lastname = anon.anon_last_name
+        firstname = anon.anon_first_name
+        documentname = anon.anon_document
+        writer.writerow([lastname,firstname,documentname,anon.date.strftime('%Y/%m/%d')])        
+
+    return response

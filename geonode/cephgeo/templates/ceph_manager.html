@@ -18,12 +18,103 @@
                 <h4><a href="{% url 'cephgeo.views.file_list_geonode' %}" class="toggle toggle-nav"><i class="fa fa-files-o"></i>Datastore Files</a></h4>
                 <h4><a href="{% url 'cephgeo.views.file_list_ceph' %}" class="toggle toggle-nav"><i class="fa fa-cubes"></i>Ceph Data Objects</a></h4>
                 <h4><a href="{% url 'cephgeo.views.data_input' %}" class="toggle toggle-nav"><i class="fa fa-file-code-o"></i>Metadata Input</a></h4>
-                <h4><a href="{% url 'cephgeo.views.update_layer_metadata' %}" class="toggle toggle-nav"><i class="fa fa-file-code-o"></i>Update Flood Hazard Metadata</a></h4>
-                <h4><a href="{% url 'cephgeo.views.seed_layers' %}" class="toggle toggle-nav"><i class="fa fa-file-code-o"></i>GeoServer: Seed Layers</a></h4>
-                
+                <h4><a data-toggle="modal" data-target="#modal-metadata" href="" class="toggle toggle-nav"><i class="fa fa-file-text-o"></i>Metadata Update</a></h4>
+                <h4><a data-toggle="modal" data-target="#modal-seed" href="" class="toggle toggle-nav"><i class="fa fa-leaf"></i>Seed Layers</a></h4>
+
             </nav>
         </div>
     </div>
+
+<div class="modal fade" id="modal-metadata" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h4 class="modal-title" id="myModalLabel">{% trans "Update metadata" %}</h4>
+      </div>
+      <form id="metadata">
+          <div class="modal-body">
+              <div>
+                <input type="radio" name="fhm" value="fhm" id="fhm">
+                <label for="fhm">Flood Hazard Map</label>
+              </div>
+              <div>
+                <input type="radio" name="resourcelayer" value="resourcelayer" id="resourcelayer">
+                <label for="resourcelayer">Update Resource Layer Metadata</label>
+              </div>
+              <div>
+                <input type="radio" name="sar" value="sar" id="sar">
+                <label for="sar">Update SAR DEM Metadata</label>
+              </div>
+          </div>
+          <div class="modal-footer">
+            <button id="update-which" type="button" class="btn btn-default" data-dismiss="modal">{% trans "Submit" %}</button>
+          </div>
+       </form>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="modal-seed" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h4 class="modal-title" id="myModalLabel">{% trans "Seed Layers" %}</h4>
+      </div>
+      <form id="metadata">
+          <div class="modal-body">
+              <div>
+                <input type="radio" name="seed-fhm" value="seed-fhm" id="seed-fhm">
+                <label for="seed-fhm">Seed FHM Layers</label>
+              </div>
+              <div>
+                <input type="radio" name="seed-resourcelayer" value="seed-resourcelayer" id="seed-resourcelayer">
+                <label for="seed-resourcelayer">Seed Resource Layers</label>
+              </div>
+              <div>
+                <input type="radio" name="seed-sar" value="seed-sar" id="seed-sar">
+                <label for="seed-sar">Seed SAR DEM</label>
+              </div>
+          </div>
+          <div class="modal-footer">
+            <button id="update-which" type="button" class="btn btn-default" data-dismiss="modal">{% trans "Submit" %}</button>
+          </div>
+       </form>
+    </div>
+  </div>
+</div>
+
+
+<!-- <div id="log"></div> -->
+
+{% block extra_script %}
+<script type="text/javascript">
+$( "#update-which" ).click(function() {
+    if ($( "input:checked" ).val() == "fhm"){
+        // $( "#log" ).html( $( "input:checked" ).val() + " is checked!" );
+            window.location = "{% url 'cephgeo.views.update_fhm_metadata' %}";
+    }
+    else if ($( "input:checked" ).val() == "resourcelayer"){
+            window.location = "{% url 'cephgeo.views.update_pl2_metadata' %}";
+    }
+    else if ($( "input:checked" ).val() == "sar"){
+            window.location = "{% url 'cephgeo.views.update_sar_metadata' %}";
+    }
+    else if ($( "input:checked" ).val() == "seed-fhm"){
+        // $( "#log" ).html( $( "input:checked" ).val() + " is checked!" );
+            window.location = "{% url 'cephgeo.views.seed_fhm_layers' %}";
+    }
+    else if ($( "input:checked" ).val() == "seed-resourcelayer"){
+            window.location = "{% url 'cephgeo.views.seed_resource_layers' %}";
+    }
+    else if ($( "input:checked" ).val() == "seed-sar"){
+            window.location = "{% url 'cephgeo.views.seed_SAR_DEM' %}";
+    }
+});
+</script>
+{% endblock extra_script %}
+
 {% endblock %}
  {% block sidebar %}{% endblock sidebar %}
 {% endblock body_outer %}
