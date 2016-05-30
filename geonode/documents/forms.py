@@ -13,6 +13,81 @@ from modeltranslation.forms import TranslationModelForm
 from geonode.documents.models import Document
 from geonode.maps.models import Map
 from geonode.layers.models import Layer
+from geonode.base.models import Region
+
+from geonode.eula.models import AnonDownloader
+from captcha.fields import ReCaptchaField
+from captcha.fields import ReCaptchaField
+from crispy_forms.helper import FormHelper
+from crispy_forms.layout import Layout, Fieldset, HTML, Div, Column, Row, Field
+from crispy_forms.bootstrap import PrependedText
+
+class AnonDownloaderForm(forms.ModelForm):
+    captcha = ReCaptchaField(attrs={'theme': 'clean'})
+    class Meta:
+        model = AnonDownloader
+        fields = (
+            'anon_first_name',
+            'anon_last_name',
+            'anon_email',
+            'anon_purpose',
+            'anon_organization',
+            'captcha'
+        )
+    def __init__(self, *args, **kwargs):
+        self.helper = FormHelper()
+        super(AnonDownloaderForm, self).__init__(*args, **kwargs)
+        self.fields['captcha'].error_messages = {'required': 'Please answer the Captcha to continue.'}
+        self.helper.form_tag = False
+        self.helper.render_required_fields = True
+        self.helper.layout = Layout(
+            Fieldset('Requester Information',
+                Div(
+                    Field('anon_first_name', css_class='form-control'),
+                    Field('anon_last_name', css_class='form-control'),
+                    Field('anon_email', css_class='form-control'),
+                    css_class='form-group'
+                ),
+                Div(
+                    Field('anon_organization', css_class='form-control'),
+                    Field('anon_purpose', css_class='form-control'),
+                    css_class='form-group'
+                ),
+            ),
+            Div(
+
+                HTML("<br/><section class=widget>"),
+                Field('captcha'),
+                HTML("</section>")
+            ),
+        )
+
+class DocumentForm(TranslationModelForm):
+    _date_widget_options = {
+        "icon_attrs": {"class": "fa fa-calendar"},
+        "attrs": {"class": "form-control input-sm"},
+        "format": "%Y-%m-%d %H:%M",
+        # Options for the datetimepickers are not set here on purpose.
+        # They are set in the metadata_form_js.html template because
+        # bootstrap-datetimepicker uses jquery for its initialization
+        # and we need to ensure it is available before trying to
+        # instantiate a new datetimepicker. This could probably be improved.
+        "options": False,
+    }
+    date = forms.DateTimeField(
+        localize=True,
+        widget=DateTimePicker(**_date_widget_options)
+    )
+    temporal_extent_start = forms.DateTimeField(
+        required=False,
+        localize=True,
+        widget=DateTimePicker(**_date_widget_options)
+    )
+    temporal_extent_end = forms.DateTimeField(
+        required=False,
+        localize=True,
+        widget=DateTimePicker(**_date_widget_options)
+    )
 
 autocomplete_light.autodiscover() # flake8: noqa
 
