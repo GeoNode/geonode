@@ -61,7 +61,10 @@ def style_update(layer,style_template):
     #layer_list = Layer.objects.filter(name__icontains='fh')#initial run of script includes all  layers for cleaning of styles in GN + GS
     #layer_list = Layer.objects.filter(name__icontains='fh').exclude(styles__name__icontains='fhm'
     #total_layers = len(layer_list)
-    layer_attrib = layer.attributes[0].attribute.encode("utf-8")
+    try:
+        layer_attrib = layer.attributes[0].attribute.encode("utf-8")
+    except Exception as e:
+            print "No layer attribute %s" % e
     ctr = 0
     #for layer in layer_list:
         #print "[FH STYLE] {0}/{1} : {2} ".format(ctr,total_layers,layer.name)
