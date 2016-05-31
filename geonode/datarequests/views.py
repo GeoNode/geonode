@@ -98,7 +98,7 @@ def registration_part_one(request):
         if request.user.is_authenticated():
             request_object = create_request_obj(request.user)
             
-             if not request_object:
+            if not request_object:
                 return HttpResponseRedirect(reverse('people:profile_edit'), msg="Please update your middle name and/or organization in your profile")
             
             request.session['request_object']=request_object
