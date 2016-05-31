@@ -604,14 +604,19 @@ class DataRequestProfile(TimeStampedModel):
                 dn = create_ad_account(self, self.username)
                 add_to_ad_group(group_dn=settings.LIPAD_LDAP_GROUP_DN, user_dn=dn)
                 profile = LDAPBackend().populate_user(self.username)
-                self.profile = profile
-                self.save()
                 
-                profile.middle_name = self.middle_name
-                profile.organization = self.organization
-                profile.voice = self.contact_number
-                profile.email = self.email
-                profile.save()
+                if profile:
+                    self.profile = profile
+                    self.save()
+                
+                    profile.middle_name = self.middle_name
+                    profile.organization = self.organization
+                    profile.voice = self.contact_number
+                    profile.email = self.email
+                    profile.save()
+                else:
+                    pprint("Accout was not created")
+                    raise Exception("Account not created")
         except Exception as e:
             pprint(traceback.format_exc())
             return (False, "Account creation failed. Check /var/log/apache2/error.log for more details")
@@ -694,7 +699,7 @@ class DataRequestProfile(TimeStampedModel):
                 out.append( str(created.month) +"/"+str(created.day)+"/"+str(created.year))
             elif f == 'date of action':
                 date_of_action = getattr(self, 'action_date')
-                if self.request_status == 'rejected' or self.request_status == 'approved':
+                if date_of_action:
                     out.append(str(date_of_action.month)+"/"+str(date_of_action.day)+"/"+str(date_of_action.year))
                 else:
                     out.append('')
