@@ -75,7 +75,7 @@ def registration_part_one(request):
             request_object = create_request_obj(request.user)
             
             if not request_object:
-                return redirect(reverse('profile_detail', args=[request.user.username], msg = "Please update your middle name and/or organization in your profile" ))
+                return redirect(reverse('profile_detail', username=request.user.username, msg = "Please update your middle name and/or organization in your profile" ))
             
             request.session['request_object']=request_object
 
@@ -100,7 +100,7 @@ def registration_part_one(request):
             request_object = create_request_obj(request.user)
             
             if not request_object:
-                return redirect(reverse('profile_detail', args=[request.user.username], msg = "Please update your middle name and/or organization in your profile" ))
+                return redirect(reverse('profile_detail', username = request.user.username, msg = "Please update your middle name and/or organization in your profile" ))
             
             request.session['request_object']=request_object
             
