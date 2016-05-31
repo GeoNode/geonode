@@ -436,7 +436,9 @@ GeoNode.Composer = window.GeoExplorer && Ext.extend(GeoExplorer.Composer, {
                 config.tools[i].rasterStyling = true;
             }
             if (config.tools[i].ptype === "gxp_addlayers") {
-                config.tools[i].search = true;
+                config.tools[i].search = {
+                  selectedSource: 'search'
+                };
                 config.tools[i].catalogSourceKey = catalogSourceKey;
                 config.tools[i].feeds = true;
             }
@@ -446,9 +448,9 @@ GeoNode.Composer = window.GeoExplorer && Ext.extend(GeoExplorer.Composer, {
         }
         // add catalog source
         config.sources['search'] = {
-            ptype: "gxp_geonodecataloguesource",
+            ptype: "gxp_geonodeapicataloguesource",
             restUrl: "/gs/rest",
-            url: "/search"
+            url: "/api/layers/"
         };
         config.tools.push({
             ptype: 'gn_xhrtrouble'

@@ -7,7 +7,6 @@ import StringIO
 import json
 
 from django.test import TestCase
-from django.test.client import Client
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.contrib.auth import get_user_model
 from django.contrib.contenttypes.models import ContentType
@@ -94,21 +93,20 @@ class LayersTest(TestCase):
         """
         Tests creating and updating external documents.
         """
-        c = Client()
-        c.login(username='admin', password='admin')
+        self.client.login(username='admin', password='admin')
         form_data = {
             'title': 'GeoNode Map',
             'permissions': '{"users":{"AnonymousUser": ["view_resourcebase"]},"groups":{}}',
             'doc_url': 'http://www.geonode.org/map.pdf'}
 
-        response = c.post(reverse('document_upload'), data=form_data)
+        response = self.client.post(reverse('document_upload'), data=form_data)
         self.assertEqual(response.status_code, 302)
 
         d = Document.objects.get(title='GeoNode Map')
         self.assertEqual(d.doc_url, 'http://www.geonode.org/map.pdf')
 
         form_data['doc_url'] = 'http://www.geonode.org/mapz.pdf'
-        response = c.post(
+        response = self.client.post(
             reverse(
                 'document_replace',
                 args=[
@@ -180,17 +178,15 @@ class LayersTest(TestCase):
         d = Document.objects.get(pk=1)
         d.set_default_permissions()
 
-        c = Client()
-        response = c.get(reverse('document_detail', args=(str(d.id),)))
+        response = self.client.get(reverse('document_detail', args=(str(d.id),)))
         self.assertEquals(response.status_code, 200)
 
     def test_access_document_upload_form(self):
         """Test the form page is returned correctly via GET request /documents/upload"""
 
-        c = Client()
-        log = c.login(username='bobby', password='bob')
+        log = self.client.login(username='bobby', password='bob')
         self.assertTrue(log)
-        response = c.get(reverse('document_upload'))
+        response = self.client.get(reverse('document_upload'))
         self.assertTrue('Upload Documents' in response.content)
 
     def test_document_isuploaded(self):
@@ -201,10 +197,9 @@ class LayersTest(TestCase):
             self.imgfile.read(),
             'image/gif')
         m = Map.objects.all()[0]
-        c = Client()
 
-        c.login(username='admin', password='admin')
-        response = c.post(
+        self.client.login(username='admin', password='admin')
+        response = self.client.post(
             reverse('document_upload'),
             data={
                 'file': f,
@@ -262,10 +257,8 @@ class LayersTest(TestCase):
         document_id = document.id
         invalid_document_id = 20
 
-        c = Client()
-
         # Test that an invalid document is handled for properly
-        response = c.post(
+        response = self.client.post(
             reverse(
                 'resource_permissions', args=(
                     invalid_document_id,)), data=json.dumps(
@@ -273,32 +266,35 @@ class LayersTest(TestCase):
         self.assertEquals(response.status_code, 404)
 
         # Test that GET returns permissions
-        response = c.get(reverse('resource_permissions', args=(document_id,)))
+        response = self.client.get(reverse('resource_permissions', args=(document_id,)))
         assert('permissions' in response.content)
 
         # Test that a user is required to have
         # documents.change_layer_permissions
 
         # First test un-authenticated
-        response = c.post(reverse('resource_permissions', args=(document_id,)),
-                          data=json.dumps(self.perm_spec),
-                          content_type="application/json")
+        response = self.client.post(
+            reverse('resource_permissions', args=(document_id,)),
+            data=json.dumps(self.perm_spec),
+            content_type="application/json")
         self.assertEquals(response.status_code, 401)
 
         # Next Test with a user that does NOT have the proper perms
-        logged_in = c.login(username='bobby', password='bob')
+        logged_in = self.client.login(username='bobby', password='bob')
         self.assertEquals(logged_in, True)
-        response = c.post(reverse('resource_permissions', args=(document_id,)),
-                          data=json.dumps(self.perm_spec),
-                          content_type="application/json")
+        response = self.client.post(
+            reverse('resource_permissions', args=(document_id,)),
+            data=json.dumps(self.perm_spec),
+            content_type="application/json")
         self.assertEquals(response.status_code, 401)
 
         # Login as a user with the proper permission and test the endpoint
-        logged_in = c.login(username='admin', password='admin')
+        logged_in = self.client.login(username='admin', password='admin')
         self.assertEquals(logged_in, True)
-        response = c.post(reverse('resource_permissions', args=(document_id,)),
-                          data=json.dumps(self.perm_spec),
-                          content_type="application/json")
+        response = self.client.post(
+            reverse('resource_permissions', args=(document_id,)),
+            data=json.dumps(self.perm_spec),
+            content_type="application/json")
 
         # Test that the method returns 200
         self.assertEquals(response.status_code, 200)

@@ -2,10 +2,12 @@ from django.contrib import admin
 from django.conf import settings
 
 import autocomplete_light
+from autocomplete_light.contrib.taggit_field import TaggitField, TaggitWidget
+
 from modeltranslation.admin import TranslationAdmin
 
 from geonode.base.models import (TopicCategory, SpatialRepresentationType, Region, RestrictionCodeType,
-                                 ContactRole, ResourceBase, Link, License)
+                                 ContactRole, Link, License)
 
 
 class MediaTranslationAdmin(TranslationAdmin):
@@ -22,17 +24,6 @@ class LicenseAdmin(MediaTranslationAdmin):
     model = License
     list_display = ('id', 'name')
     list_display_links = ('name',)
-
-
-class ResourceBaseAdmin(admin.ModelAdmin):
-
-    if settings.RESOURCE_PUBLISHING:
-        list_display = ('id', 'title', 'is_published', 'date', 'category')
-    else:
-        list_display = ('id', 'title', 'date', 'category')
-    list_display_links = ('id',)
-
-    form = autocomplete_light.modelform_factory(ResourceBase)
 
 
 class TopicCategoryAdmin(MediaTranslationAdmin):
@@ -114,6 +105,9 @@ admin.site.register(Region, RegionAdmin)
 admin.site.register(SpatialRepresentationType, SpatialRepresentationTypeAdmin)
 admin.site.register(RestrictionCodeType, RestrictionCodeTypeAdmin)
 admin.site.register(ContactRole, ContactRoleAdmin)
-admin.site.register(ResourceBase, ResourceBaseAdmin)
 admin.site.register(Link, LinkAdmin)
 admin.site.register(License, LicenseAdmin)
+
+
+class ResourceBaseAdminForm(autocomplete_light.ModelForm):
+    keywords = TaggitField(widget=TaggitWidget('TagAutocomplete'), required=False)

@@ -81,7 +81,7 @@
         {% endfor %}
       </select>
     </section>
-
+    
     <section>
       <a href="#" id="clear-button" class="btn btn-default">{% trans "Clear" %}</a>
       <a href="#" id="upload-button" class="btn btn-danger">{% trans "Upload files" %}</a>
@@ -104,7 +104,7 @@
 <script data-main="{% static 'geonode/js/upload/main' %}" 
   src="{% static 'lib/js/require.js' %}">
 </script>
-
+<script type="text/javascript" src="{% static 'geonode/js/upload/cookie.js' %}"></script>
 <script type="text/javascript">
 {% autoescape off %}
 

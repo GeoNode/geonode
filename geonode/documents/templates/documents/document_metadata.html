@@ -22,9 +22,17 @@
         {% trans "Editing details for" %} {{ document.title }}
     </p>
     <form class="form-horizontal" action="{% url "document_metadata" document.id %}" method="POST">
-      {% if document_form.errors or category_form.errors %}
-        <div style="background-color: pink">{% blocktrans %}Error updating metadata.  Please check the following fields: {% endblocktrans %}
-            <ul>
+      {% if document_form.errors or category_form.errors or author_form.errors or poc.errors %}
+        <p class="bg-danger">{% blocktrans %}Error updating metadata.  Please check the following fields: {% endblocktrans %}</p>
+        <ul class="bg-danger">
+        {% if author_form.errors %}
+          <li>{% trans "Metadata Author" %}</li>
+          {{ author_form.errors }}
+        {% endif %}
+        {% if poc_form.errors %}
+          <li>{% trans "Point of Contact" %}</li>
+          {{ poc_form.errors }}
+        {% endif %}
         {% for field in document_form %}
             {% if field.errors %}
                 <li>{{ field.label }}</li>
@@ -34,8 +42,7 @@
         {% if category_form.errors %}
             <li>{{ category_form.errors.as_ul }}</li>
         {% endif %}
-            </ul>
-        </div>
+        </ul>
       {% endif %}
         <div class="form-actions">
           <input type="submit" class="btn btn-primary" value="{% trans "Update" %}"/>
