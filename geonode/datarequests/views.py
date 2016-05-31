@@ -75,7 +75,7 @@ def registration_part_one(request):
             request_object = create_request_obj(request.user)
             
             if not request_object:
-               kwargs = dict(
+                kwargs = dict(
                     msg = "Please update your middle name and/or organization in your profile")
                 return redirect(reverse('profile_detail', args=[request.user.username], kwargs ))
             
