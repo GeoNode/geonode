@@ -604,6 +604,9 @@ class DataRequestProfile(TimeStampedModel):
                 dn = create_ad_account(self, self.username)
                 add_to_ad_group(group_dn=settings.LIPAD_LDAP_GROUP_DN, user_dn=dn)
                 profile = LDAPBackend().populate_user(self.username)
+                pprint(LDAPBackend().get_user_model())
+                pprint(profile)
+                pprint(profile.ldap_user)
                 self.profile = profile
                 self.save()
                 
