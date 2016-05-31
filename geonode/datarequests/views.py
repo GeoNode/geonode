@@ -55,22 +55,23 @@ from braces.views import (
 )
 
 from .forms import (
-    DataRequestProfileForm, DataRequestProfileShapefileForm, 
+    DataRequestProfileForm, DataRequestProfileShapefileForm,
     DataRequestProfileRejectForm, DataRequestDetailsForm)
 from .models import DataRequestProfile
-from .utils import get_place_name
+from .utils import (
+    get_place_name, get_juris_data_size)
 
 def registration_part_one(request):
 
     shapefile_session = request.session.get('data_request_shapefile', None)
     request_object = request.session.get('request_object', None)
     datarequest_shapefile=request.session.get('data_request_shapefile', None)
-    
+
     form = DataRequestProfileForm( )
-    
+
     if request.method == 'GET':
         if request.user.is_authenticated():
-        
+
             request_object = DataRequestProfile(
                 profile = request.user,
                 first_name = request.user.first_name,
@@ -90,7 +91,7 @@ def registration_part_one(request):
         else:
             if datarequest_shapefile and request_object:
                 ## the user pressed back
-                initial = { 
+                initial = {
                     'first_name': request_object.first_name,
                     'middle_name': request_object.middle_name,
                     'last_name': request_object.last_name,
@@ -121,7 +122,7 @@ def registration_part_one(request):
                 request.POST
             )
             if form.is_valid():
-                
+
                 if request_object and datarequest_shapefile:
                     request_object.first_name= form.cleaned_data['first_name']
                     request_object.middle_name= form.cleaned_data['middle_name']
@@ -136,7 +137,7 @@ def registration_part_one(request):
                 else:
                     request_object = form.save()
                     request_object.send_verification_email()
-                    
+
                 request.session['request_object']= request_object
                 request.session.set_expiry(900)
                 return HttpResponseRedirect(
@@ -160,13 +161,13 @@ def registration_part_two(request):
             part_two_initial['data_type_requested']=last_submitted_dr.data_type_requested
         except ObjectDoesNotExist as e:
             pprint("No previous request from "+request.user.username)
-        
+
     request.session['data_request_shapefile'] = True
     saved_request_object= request.session.get('request_object', None)
-    
+
     if not saved_request_object:
         return redirect(reverse('datarequests:registration_part_one'))
-    
+
     form = DataRequestDetailsForm(initial=part_two_initial)
 
     if request.method == 'POST' :
@@ -175,7 +176,7 @@ def registration_part_two(request):
         form = DataRequestDetailsForm(post_data, request.FILES)
         if u'base_file' in request.FILES:
             form = DataRequestProfileShapefileForm(post_data, request.FILES)
-        
+
         tempdir = None
         errormsgs = []
         out = {}
@@ -228,7 +229,7 @@ def registration_part_two(request):
                         saved_layer.is_published = False
                         saved_layer.save()
                         interest_layer =  saved_layer
-                        
+
                         cat = Catalog(settings.OGC_SERVER['default']['LOCATION'] + 'rest',
                             username=settings.OGC_SERVER['default']['USER'],
                             password=settings.OGC_SERVER['default']['PASSWORD'])
@@ -240,13 +241,14 @@ def registration_part_two(request):
                             cat.save(gs_layer) #save in geoserver
                             saved_layer.sld_body = boundary_style.sld_body
                             saved_layer.save() #save in geonode
-                        
+
                         bbox = gs_layer.resource.latlon_bbox
                         bbox_lon = (float(bbox[0])+float(bbox[1]))/2
                         bbox_lat = (float(bbox[2])+float(bbox[3]))/2
                         place_name = get_place_name(bbox_lon, bbox_lat)
-                        
-                           
+                        pprint(saved_layer.name)
+                        juris_data_size = get_juris_data_size(saved_layer.name,bbox)
+
                     except Exception as e:
                         exception_type, error, tb = sys.exc_info()
                         print traceback.format_exc()
@@ -283,21 +285,21 @@ def registration_part_two(request):
                                 'users': {request.user.username : ['view_resourcebase']},
                                 'groups': {}
                             }
-                            
-                        
+
+
                         if permissions is not None and len(permissions.keys()) > 0:
-    
+
                             saved_layer.set_permissions(permissions)
-                        
+
                     finally:
                         if tempdir is not None:
                             shutil.rmtree(tempdir)
-            
+
             #Now store the data request
                 #data_request_form = DataRequestProfileForm(
                 #                profile_form_data)
-                
-                
+
+
                 if 'request_object' in request.session :
                     if 'success' not in out:
                         request_profile, letter = update_datarequest_obj(
@@ -306,9 +308,9 @@ def registration_part_two(request):
                             request_letter = form.clean()['letter_file'],
                             interest_layer = interest_layer
                         )
-                        
+
                         out['success']=True
-                    else: 
+                    else:
                         if out['success']:
                             request_profile, letter = update_datarequest_obj(
                                 datarequest=  request.session['request_object'],
@@ -316,20 +318,20 @@ def registration_part_two(request):
                                 request_letter = form.clean()['letter_file'],
                                 interest_layer = interest_layer
                             )
-                    
+
                     request_profile.place_name = place_name['state']
                     request_profile.save()
-                    
+
                     if request.user.is_authenticated():
                         request_profile.profile = request.user
                         request_profile.request_status = 'pending'
                         request_profile.username = request.user.username
                         request_profile.set_verification_key()
                         request_profile.save()
-                    
+
                 else:
                     pprint("unable to retrieve request object")
-                    
+
                     for e in form.errors.values():
                         errormsgs.extend([escape(v) for v in e])
                     out['success'] = False
@@ -357,14 +359,14 @@ def registration_part_two(request):
 #                request_profile.send_verification_email()
 
                 out['success_url'] = reverse('datarequests:email_verification_send')
-                
+
                 out['redirect_to'] = reverse('datarequests:email_verification_send')
-                
+
             elif request_profile and request_profile.profile:
                 out['success_url'] = reverse('home')
-                
+
                 out['redirect_to'] = reverse('home')
-                
+
                 request_profile.date = timezone.now()
                 request_profile.save()
 
@@ -385,37 +387,37 @@ def registration_part_two(request):
             'form': form,
             'support_email': settings.LIPAD_SUPPORT_MAIL,
         })
-        
+
 
 class DataRequestPofileList(LoginRequiredMixin, TemplateView):
     template_name = 'datarequests/data_request_list.html'
     raise_exception = True
- 
+
 @login_required
 def data_request_csv(request):
     if not request.user.is_superuser:
         raise HttpResponseForbidden
-         
+
     response = HttpResponse(content_type='text/csv')
     datetoday = timezone.now()
     response['Content-Disposition'] = 'attachment; filename="datarequests-"'+str(datetoday.month)+str(datetoday.day)+str(datetoday.year)+'.csv"'
-    
+
     writer = csv.writer(response)
     fields = ['id','name','email','contact_number', 'organization', 'organization_type','has_letter','has_shapefile','project_summary', 'created','request_status', 'date of action','rejection_reason']
     writer.writerow( fields)
-    
+
     objects = DataRequestProfile.objects.all().order_by('pk')
-    
+
     for o in objects:
         writer.writerow(o.to_values_list(fields))
-    
+
     return response
 
 def email_verification_send(request):
-    
+
     if request.user.is_authenticated():
         return HttpResponseRedirect(reverse('home'))
-    
+
     context = {
         'support_email': settings.LIPAD_SUPPORT_MAIL,
     }
@@ -470,13 +472,13 @@ def data_request_profile(request, pk, template='datarequests/profile_detail.html
 
     if not request.user.is_superuser and not request_profile.profile == request.user:
         raise PermissionDenied
-    
+
 
     #if not request_profile.date:
     #    raise Http404
-    
+
     context_dict={"request_profile": request_profile}
-    
+
     if request_profile.jurisdiction_shapefile:
         layer = request_profile.jurisdiction_shapefile
         # assert False, str(layer_bbox)
@@ -554,7 +556,7 @@ def data_request_profile(request, pk, template='datarequests/profile_detail.html
 def data_request_profile_reject(request, pk):
     if not request.user.is_superuser:
         raise PermissionDenied
-    
+
     request_profile = get_object_or_404(DataRequestProfile, pk=pk)
 
     if request_profile.request_status == 'pending':
@@ -595,33 +597,33 @@ def data_request_profile_approve(request, pk):
 
         if not request_profile.has_verified_email or request_profile.request_status != 'pending':
             raise PermissionDenied
-        
+
         result = True
         message = ''
         is_new_acc=True
-        
+
         if not request_profile.profile or not request_profile.username or not request_profile.ftp_folder:
             result, message = request_profile.create_account() #creates account in AD if AD profile does not exist
         else:
             is_new_acc = False
-        
+
         if not result:
             messages.error (request, _(message))
-        else:       
+        else:
             if request_profile.jurisdiction_shapefile:
-                request_profile.assign_jurisdiction() #assigns/creates jurisdiction object 
+                request_profile.assign_jurisdiction() #assigns/creates jurisdiction object
             else:
                 try:
                     uj = UserJurisdiction.objects.get(user=request_profile.profile)
                     uj.delete()
                 except ObjectDoesNotExist as e:
                     pprint("Jurisdiction Shapefile not found, nothing to delete. Carry on")
-            
+
             request_profile.set_approved(is_new_acc)
-                    
-                    
+
+
         return HttpResponseRedirect(request_profile.get_absolute_url())
-        
+
     else:
         return HttpResponseRedirect("/forbidden/")
 
@@ -632,7 +634,7 @@ def data_request_profile_reconfirm(request, pk):
 
     if request.method == 'POST':
         request_profile = get_object_or_404(DataRequestProfile, pk=pk)
-        
+
         request_profile.send_verification_email()
         return HttpResponseRedirect(request_profile.get_absolute_url())
 
@@ -656,29 +658,29 @@ def data_request_facet_count(request):
         status=200,
         mimetype='text/plain'
     )
-    
+
 def update_datarequest_obj(datarequest=None, parameter_dict=None, interest_layer=None, request_letter = None):
     if datarequest is None or parameter_dict is None or request_letter is None:
         raise HttpResponseBadRequest
-                    
+
     ### Updating the other fields of the request
     datarequest.project_summary = parameter_dict['project_summary']
     datarequest.data_type_requested = parameter_dict['data_type_requested']
-    
+
     if parameter_dict['purpose']  == 'other':
         datarequest.purpose = parameter_dict['purpose_other']
     else:
         datarequest.purpose = parameter_dict['purpose']
-        
+
     datarequest.intended_use_of_dataset = parameter_dict['intended_use_of_dataset']
     datarequest.organization_type = parameter_dict['organization_type']
     datarequest.request_level = parameter_dict['request_level']
     datarequest.funding_source = parameter_dict['funding_source']
     datarequest.is_consultant = parameter_dict['is_consultant']
-    
+
     if interest_layer:
         datarequest.jurisdiction_shapefile = interest_layer
-        
+
     requester_name = unidecode(datarequest.first_name+" "+datarequest.last_name)
     letter = Document()
     letter_owner, created =  Profile.objects.get_or_create(username='dataRegistrationUploader')
@@ -688,9 +690,9 @@ def update_datarequest_obj(datarequest=None, parameter_dict=None, interest_layer
     letter.is_published = False
     letter.save()
     letter.set_permissions( {"users":{"dataRegistrationUploader":["view_resourcebase"]}})
-    
+
     datarequest.request_letter =letter;
-    
+
     datarequest.save()
-    
+
     return (datarequest, letter)
