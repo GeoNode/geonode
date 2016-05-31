@@ -48,7 +48,7 @@
               </div>
           </div>
           <div class="modal-footer">
-            <button id="update-which" type="button" class="btn btn-default" data-dismiss="modal">{% trans "Close" %}</button>
+            <button id="update-which" type="button" class="btn btn-default" data-dismiss="modal">{% trans "Submit" %}</button>
           </div>
        </form>
     </div>
@@ -78,7 +78,7 @@
               </div>
           </div>
           <div class="modal-footer">
-            <button id="update-which" type="button" class="btn btn-default" data-dismiss="modal">{% trans "Close" %}</button>
+            <button id="update-which" type="button" class="btn btn-default" data-dismiss="modal">{% trans "Submit" %}</button>
           </div>
        </form>
     </div>
@@ -90,7 +90,7 @@
 
 {% block extra_script %}
 <script type="text/javascript">
-$( "button" ).on( "click", function() {
+$( "#update-which" ).click(function() {
     if ($( "input:checked" ).val() == "fhm"){
         // $( "#log" ).html( $( "input:checked" ).val() + " is checked!" );
             window.location = "{% url 'cephgeo.views.update_fhm_metadata' %}";
