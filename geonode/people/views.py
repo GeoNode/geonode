@@ -70,7 +70,7 @@ def profile_edit(request, username=None, msg=None):
             'You are not allowed to edit other users profile')
 
 
-def profile_detail(request, username, msg=None):
+def profile_detail(request, username):
     profile = get_object_or_404(Profile, username=username)
     # combined queryset from each model content type
 
@@ -79,8 +79,6 @@ def profile_detail(request, username, msg=None):
     except DataRequestProfile.DoesNotExist:
         data_request_profile = None
     
-    if msg:
-        messages.info(request, msg)
     return render(request, "people/profile_detail.html", {
         "profile": profile,
         "request_profile": data_request_profile,
