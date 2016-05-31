@@ -37,6 +37,7 @@ from geonode.documents.models import Document
 from geonode.layers.models import UploadSession, Style
 from geonode.layers.utils import file_upload
 from geonode.people.models import Profile
+from geonode.people.views import profile_detail
 from geonode.security.views import _perms_info_json
 from geonode.utils import default_map_config
 from geonode.utils import GXPLayer
@@ -72,6 +73,11 @@ def registration_part_one(request):
         if request.user.is_authenticated():
         
             request_object = create_request_obj(request.user)
+            
+            if not request_object:
+                messages.info(request, "Please update your middle name and/or organization in your profile")
+                return redirect(reverse('profile_detail',  args= [request.user.username]))
+            
             request.session['request_object']=request_object
 
             return HttpResponseRedirect(
@@ -93,10 +99,13 @@ def registration_part_one(request):
     elif request.method == 'POST':
         if request.user.is_authenticated():
             request_object = create_request_obj(request.user)
+            
+            if not request_object:
+                messages.info(request, "Please update your middle name and/or organization in your profile")
+                return redirect(reverse('profile_detail',  args= [request.user.username]))
+            
             request.session['request_object']=request_object
-            return HttpResponseRedirect(
-                reverse('datarequests:registration_part_two')
-            )
+            
         else:
             form = DataRequestProfileForm(
                 request.POST
@@ -619,6 +628,17 @@ def data_request_profile_reconfirm(request, pk):
         return HttpResponseRedirect(request_profile.get_absolute_url())
 
 @require_POST
+def data_request_profile_recreate_dir(request, pk):
+    if not request.user.is_superuser:
+        raise PermissionDenied
+
+    if request.method == 'POST':
+        request_profile = get_object_or_404(DataRequestProfile, pk=pk)
+        
+        request_profile.create_directory()
+        return HttpResponseRedirect(request_profile.get_absolute_url())
+
+@require_POST
 def data_request_facet_count(request):
     if not request.user.is_superuser:
         raise PermissionDenied
@@ -641,12 +661,17 @@ def data_request_facet_count(request):
     
 def create_request_obj(user_profile):
     if not user_profile.middle_name or not user_profile.organization:
-        last_submitted_dr = DataRequestProfile.objects.filter(profile=user_profile, request_status='approved'  ).latest('key_created_date')
-        user_profile.middle_name = last_submitted_dr.middle_name
-        user_profile.organization = last_submitted_dr.organization
-        user_profile.email = last_submitted_dr.email
-        user_profile.voice = last_submitted_dr.contact_number
-        user_profile.save()
+        try:
+            last_submitted_dr = DataRequestProfile.objects.filter(profile=user_profile, request_status='approved'  ).latest('key_created_date')
+            user_profile.middle_name = last_submitted_dr.middle_name
+            user_profile.organization = last_submitted_dr.organization
+            user_profile.email = last_submitted_dr.email
+            user_profile.voice = last_submitted_dr.contact_number
+            user_profile.save()
+        except ObjectDoesNotExist as e:
+            pprint("User details missing. Please tell user to update user profile first")
+            return None
+            
     
     request_object = DataRequestProfile(
             profile = user_profile,
