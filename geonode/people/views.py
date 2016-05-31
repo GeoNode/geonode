@@ -37,7 +37,7 @@ from geonode.tasks.email import send_email
 
 
 @login_required
-def profile_edit(request, username=None):
+def profile_edit(request, username=None, msg=None):
     if username is None:
         try:
             profile = request.user.profile
@@ -58,6 +58,8 @@ def profile_edit(request, username=None):
                         args=[
                             request.user.username]))
         else:
+            if msg:
+                messages.info(request, msg)
             form = ProfileForm(instance=profile)
         
         return render(request, "people/profile_edit.html", {
