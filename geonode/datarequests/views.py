@@ -37,6 +37,7 @@ from geonode.documents.models import Document
 from geonode.layers.models import UploadSession, Style
 from geonode.layers.utils import file_upload
 from geonode.people.models import Profile
+from geonode.people.views import profile_detail
 from geonode.security.views import _perms_info_json
 from geonode.utils import default_map_config
 from geonode.utils import GXPLayer
@@ -74,7 +75,7 @@ def registration_part_one(request):
             request_object = create_request_obj(request.user)
             
             if not request_object:
-                return HttpResponseRedirect(reverse('people:profile_edit'), msg="Please update your middle name and/or organization in your profile")
+                return redirect(reverse('profile_detail', args=[request.user.username,"Please update your middle name and/or organization in your profile" ] ))
             
             request.session['request_object']=request_object
 
@@ -99,12 +100,10 @@ def registration_part_one(request):
             request_object = create_request_obj(request.user)
             
             if not request_object:
-                return HttpResponseRedirect(reverse('people:profile_edit'), msg="Please update your middle name and/or organization in your profile")
+                return redirect(reverse('profile_detail', args=[request.user.username,"Please update your middle name and/or organization in your profile" ] ))
             
             request.session['request_object']=request_object
-            return HttpResponseRedirect(
-                reverse('datarequests:registration_part_two')
-            )
+            
         else:
             form = DataRequestProfileForm(
                 request.POST
