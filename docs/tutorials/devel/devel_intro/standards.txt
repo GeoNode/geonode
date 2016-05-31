@@ -1,0 +1,141 @@
+.. _standards:
+
+Standards
+=========
+
+GeoNode is based on a set of Open Geospatial Consortium (OGC) standards. These standards enable GeoNode installations to be interoperable with a wide variety of tools that support these OGC standards and enable federation with other OGC compliant services and infrastructure. Reference links about these standards are also included at the end of this module.
+
+GeoNode is also based on Web Standards ...
+
+Open Geospatial Consortium (OGC) Standards
+------------------------------------------
+
+Web Map Service (WMS)
+~~~~~~~~~~~~~~~~~~~~~
+
+    The Web Map Service (WMS) specification defines an interface for requesting rendered map images across the web. It is used within GeoNode to display maps in the pages of the site and in the GeoExplorer application to display rendered layers based on default or custom styles.
+
+Web Feature Service (WFS)
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+    The Web Feature Service (WFS) specification defines an interface for reading and writing geographic features across the web. It is used within GeoNode to enable downloading of vector layers in various formats and within GeoExplorer to enable editing of Vector Layers that are stored in a GeoNode.
+
+Web Coverage Service (WCS)
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+    The Web Coverage Service (WCS) specification defines an interface for reading and writing geospatial raster data as "coverages" across the web. It is used within GeoNode to enable downloading of raster layers in various formats.
+
+Catalogue Service for Web (CSW)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+    The Catalogue Service for Web (CSW) specification defines an interface for exposing a catalogue of geospatial metadata across the web. It is used within GeoNode to enable any application to search GeoNode's catalogue or to provide federated search that includes a set of GeoNode layers within another application.
+
+Tile Mapping Service (TMS/WMTS)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+    The Tile Mapping Service (TMS) specification defines and interface for retrieving rendered map tiles over the web. It is used within geonode to enable serving of a cache of rendered layers to be included in GeoNode's web pages or within the GeoExplorer mapping application. Its purpose is to improve performance on the client vs asking the WMS for rendered images directly.
+
+Web Standards
+-------------
+
+HTML
+~~~~
+
+    **HyperText Markup Language**, commonly referred to as **HTML**, is the
+    standard markup language used to create web pages. [1]_ Web
+    browsers can read HTML files and render them into visible or audible
+    web pages. HTML describes the structure of a website semantically
+    along with cues for presentation, making it a markup language, rather
+    than a programming language.
+
+    HTML elements form the building blocks of all websites. HTML allows
+    images and objects to be embedded and can be used to create
+    interactive forms. It provides a means to create structured
+    documents by denoting structural semantics for text such as headings,
+    paragraphs, lists, links, quotes and other items.
+
+    The language is written in the form of HTML elements consisting of
+    *tags* enclosed in angle brackets (like < >). Browsers do not display
+    the HTML tags and scripts, but use them to interpret the content of the
+    page.
+
+    HTML can embed scripts written in languages such as JavaScript
+    which affect the behavior of HTML web pages. Web browsers can also refer
+    to Cascading Style Sheets (CSS) to define the look and layout of text
+    and other material. The World Wide Web Consortium (W3C), maintainer
+    of both the HTML and the CSS standards, has encouraged the use of CSS
+    over explicit presentational HTML since 1997.
+
+CSS
+~~~
+
+    **Cascading Style Sheets** (**CSS**) is a style sheet language used
+    for describing the presentation of a document written in a markup
+    language. [2]_ Although most often used to set the visual style of
+    web pages and user interfaces written in HTML and XHTML, the
+    language can be applied to any XML document, including plain XML,
+    SVG and XUL, and is applicable to rendering in speech, or on
+    other media. Along with HTML and JavaScript, CSS is a cornerstone
+    technology used by most websites to create visually engaging webpages,
+    user interfaces for web applications, and user interfaces for many
+    mobile applications. [3]_
+
+    CSS is designed primarily to enable the separation of document content
+    from document presentation, including aspects such as the layout,
+    colors, and fonts. [4]_ This separation can improve content
+    accessibility, provide more flexibility and control in the
+    specification of presentation characteristics, enable multiple HTML
+    pages to share formatting by specifying the relevant CSS in a separate
+    .css file, and reduce complexity and repetition in the structural
+    content, such as semantically insignificant tables that were widely
+    used to format pages before consistent CSS rendering was available in
+    all major browsers. CSS makes it possible to separate presentation
+    instructions from the HTML content in a separate file or style section
+    of the HTML file. For each matching HTML element, it provides a list
+    of formatting instructions. For example, a CSS rule might specify that
+    “all heading 1 elements should be bold”, leaving pure semantic HTML
+    markup that asserts “this text is a level 1 heading” without formatting
+    code such as a ``<bold>`` tag indicating how such text should be
+    displayed.
+
+    This separation of formatting and content makes it possible to present
+    the same markup page in different styles for different rendering
+    methods, such as on-screen, in print, by voice (when read out by a
+    speech-based browser or screen reader) and on Braille-based,
+    tactile devices. It can also be used to display the web page differently
+    depending on the screen size or device on which it is being viewed.
+    Although
+
+REST
+~~~~ 
+
+    In computing, **Representational State Transfer** (**REST**) is the
+    software architectural style of the World Wide Web. [5]_ [6]_ [7]_
+    REST gives a coordinated set of constraints to the design of components
+    in a distributed hypermedia system that can lead to a higher
+    performing and more maintainable architecture.
+
+    To the extent that systems conform to the constraints of REST they can
+    be called RESTful. RESTful systems typically, but not always,
+    communicate over the Hypertext Transfer Protocol with the same HTTP
+    verbs (GET, POST, PUT, DELETE, etc.) which web browsers use to
+    retrieve web pages and to send data to remote servers. [8]_ REST
+    interfaces usually involve collections of resources with
+    identifiers, for example ``/people/tom``, which can be operated upon
+    using standard verbs, such as ``DELETE /people/tom``.
+
+.. [1] `Hypertext Markup Language | Definition of hypertext markup language by Merriam-Webster <http://www.merriam-webster.com/dictionary/hypertext%20markup%20language>`_
+
+.. [2] `"CSS developer guide" <https://developer.mozilla.org/en-US/docs/Web/Guide/CSS>`_. Mozilla Developer Network. Retrieved 2015-09-24
+
+.. [3] `"Web-based Mobile Apps of the Future Using HTML 5, CSS and JavaScript" <http://www.htmlgoodies.com/beyond/article.php/3893911/Web-based-Mobile-Apps-of-the-Future-Using-HTML-5-CSS-and-JavaScript.htm>`_. HTMLGoodies. Retrieved October 2014.
+
+.. [4] `"What is CSS?" <http://www.w3.org/standards/webdesign/htmlcss#whatcss>`_. World Wide Web Consortium. Retrieved December 2010.
+
+.. [5] Fielding, R. T.; Taylor, R. N. (2000). "Principled design of the modern Web architecture". pp. 407–416. doi:`10.1145/337180.337228 <https://dx.doi.org/10.1145%2F337180.337228>`_.
+
+.. [6] Richardson, Leonard; Sam Ruby (2007), `RESTful web service <http://books.google.com/books?id=XUaErakHsoAC>`_, O'Reilly Media, `ISBN 978-0-596-52926-0 <https://en.wikipedia.org/wiki/Special:BookSources/978-0-596-52926-0>`_, retrieved 18 January 2011, The main topic of this book is the web service architectures which can be considered RESTful: those which get a good score when judged on the criteria set forth in Roy Fielding's dissertation."
+
+.. [7] Richardson, Leonard; Mike Amundsen (2013), `RESTful web APIs <http://www.amazon.com/RESTful-Web-APIs-Leonard-Richardson/dp/1449358063/ref=sr_1_1?ie=UTF8&qid=1442372039&sr=8-1&keywords=restful+web+apis>`_, O'Reilly Media, `ISBN 978-1-449-35806-8 <https://en.wikipedia.org/wiki/Special:BookSources/978-1-449-35806-8>`_, retrieved 15 September 2015, The Fielding disertation explains the decisions behind the design of the Web."
+
+.. [8] Fielding, Roy Thomas (2000). `"Chapter 5: Representational State Transfer (REST)" <http://www.ics.uci.edu/~fielding/pubs/dissertation/rest_arch_style.htm>`_. *Architectural Styles and the Design of Network-based Software Architectures* (Ph.D.). University of California, Irvine. This chapter introduced the Representational State Transfer (REST) architectural style for distributed hypermedia systems. REST provides a set of architectural constraints that, when applied as a whole, emphasizes scalability of component interactions, generality of interfaces, independent deployment of components, and intermediary components to reduce interaction latency, enforce security, and encapsulate legacy systems."

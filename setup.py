@@ -82,7 +82,7 @@ setup(name='GeoNode',
         "pillow", # python-pillow
         "lxml", # python-lxml
         # "psycopg2==2.4.5", # python-psycopg2
-        "Django==1.6.10", # python-django
+        "Django==1.6.11", # python-django
 
         # Other
         "beautifulsoup4==4.2.1", # python-bs4
@@ -92,6 +92,7 @@ setup(name='GeoNode',
         "Paver==1.2.1", # python-paver
         "nose <=1.0, <=1.3.1", # python-nose
         "django-nose==1.2", # python-django-nose
+        "awesome-slugify==1.6.2",
 
         # Django Apps
         "django-pagination >=1.0.5, <=1.0.7", # python-django-pagination
@@ -112,11 +113,11 @@ setup(name='GeoNode',
         "django-tastypie==0.11.0",
         "django-polymorphic==0.5.6",
         "django-leaflet==0.13.7",
-        "django-autocomplete-light==1.4.14",
+        "django-autocomplete-light==2.2.10",
         "django-modeltranslation==0.8",
 
         # GeoNode org maintained apps.
-        "django-geoexplorer==4.0.4",
+        "django-geoexplorer==4.0.5",
         "geonode-user-messages==0.1.2",
         "geonode-avatar==2.1.4",
         "geonode-announcements==1.0.5",
@@ -125,13 +126,13 @@ setup(name='GeoNode',
         "geonode-arcrest==10.2",
         "geonode-notification==1.1.1",
         "geonode-dialogos==0.4",
-        "gsconfig==0.6.11",
-        "gsimporter==0.1",
+        "gsconfig==1.0.3",
+        "gsimporter==1.0.0",
         "gisdata==0.5.4",
 
         # geopython dependencies
-        "OWSLib==0.8.10",
-        "pycsw==1.10.0",
+        "OWSLib==0.10.0",
+        "pycsw==1.10.3",
 
         # haystack/elasticsearch, uncomment to use
         "django-haystack==2.1.0",

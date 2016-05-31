@@ -15,3 +15,4 @@ RUN paver setup
 
 CMD ["paver", "start", "-b 0.0.0.0:8000","-f"]
 EXPOSE 8000
+EXPOSE 8080

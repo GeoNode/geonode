@@ -1,48 +1,55 @@
-.. _devel:
+.. _dev_workshop:
 
+===================
 Developers Workshop
 ===================
 
-Welcome to the Developers Workshop! This workshop will teach how to develop with and for the `GeoNode <http://geonode.org>`_ software application.
+Welcome to the GeoNode Training `Developers Workshop` documentation v\ |release|.
+
+This workshop will teach how to develop with and for the `GeoNode <http://geonode.org>`_ software application.
+This module will introduce you to the components that GeoNode is built with, the standards that it supports and the services it provides based on those standards, and an overview its architecture.
+
+*Prerequisites*
+    GeoNode is a web based GIS tool, and as such, in order to do development on GeoNode itself or to integrate it into your own application, you should be familiar with basic web development concepts as well as with general GIS concepts.
 
 .. toctree::
-   :hidden:
-
-   intro_devel/index
-   core/index
-   install_devmode/index
-   projects/index
-   debug/index
-   api/index
-   envsetup/index
-   testing 
-   release/index
+    :hidden:
+    
+    devel_intro/index
+    django_overview/index
+    devel_core/index
+    devel_env/index
+    devel_debug/index
+    geonode_apis/index
+    geonode_testing/index
 
 :ref:`intro_devel`
-  Learn about GeoNode's core components, its Architecture, the tools it is developed with and the standards it supports.
+    This module will introduce you to the components that GeoNode is built with, the standards that it supports and the services it provides based on those standards, and an overview its architecture.
 
-:ref:`core`
-  Learn about the pre-requisites you will need in order to develop with GeoNode. Take a look at its core modules and how they work together to provide a complete web mapping tool. 
+:ref:`django_overview_index`
+    This section introduces some basic concepts of DJango, the Python based web framework on top of which GeoNode has been developed.
+
+    Django's primary goal is to ease the creation of complex, database-driven websites. Django emphasizes reusability and "pluggability" of components,
+    rapid development, and the principle of *don't repeat yourself*. 
+    Python is used throughout, even for settings, files, and data models. 
+
+    Django also provides an optional administrative create, read, update and delete interface that is generated dynamically through introspection and configured via admin models.
+
+:ref:`dev_core`
+    This module will introduce you to the basic tools and skills required to start actively developing GeoNode.
 
 :ref:`install_devmode`
-  Prepare your development environment by installing GeoNode in dev mode.
+    This module shows a step-by-step guide for the setup of a GeoNode Develeopment Environent on an Ubuntu system.
+    
+    For other Linux distributions the commands are similar, the difference is mainly on the packages names.
+    
+    .. note:: For Windows: (:ref:`install_win_devmode`)
+    
+:ref:`dev_debug`
+    GeoNode can be difficult to debug as there are several different components involved. This module shows some tecniques to debug the different parts of GeoNode.
+    
+:ref:`geonode_apis`
+    This module provides an overview of the core modules and libraries used by GeoNode and teach to the user how to use them through some guided examples.
 
-:ref:`customize_projects`
-  Learn how existing projects leverage GeoNode and create your own GeoNode based project.
-
-:ref:`debug`
-  Learn how to debug GeoNode instances and projects.
-
-:ref:`envsetup`
-  Learn how to set up a GeoNode development environment so you can contribute to GeoNode's core.
-
-:ref:`api`
-  Learn about the APIs GeoNode leverages and provides.
-
-:ref:`org_index`
-  Learn about GeoNode's development process and how to work with the GeoNode community.
-
-:ref:`release`
-  Learn how to make a release of GeoNode
-
-
+:ref:`geonode_testing`
+    This section explain how to run the tests on GeoNode.

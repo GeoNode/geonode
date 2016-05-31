@@ -55,23 +55,24 @@ def set_metadata(xml):
         tagname = get_tagname(exml)
 
     if tagname == 'MD_Metadata':  # ISO
-        vals, keywords = iso2dict(exml)
+        vals, regions, keywords = iso2dict(exml)
     elif tagname == 'metadata':  # FGDC
-        vals, keywords = fgdc2dict(exml)
+        vals, regions, keywords = fgdc2dict(exml)
     elif tagname == 'Record':  # Dublin Core
-        vals, keywords = dc2dict(exml)
+        vals, regions, keywords = dc2dict(exml)
     else:
         raise RuntimeError('Unsupported metadata format')
     if not vals.get("date"):
         vals["date"] = datetime.datetime.now().strftime("%Y-%m-%dT%H:%M:%S")
 
-    return [vals, keywords]
+    return [vals, regions, keywords]
 
 
 def iso2dict(exml):
     """generate dict of properties from gmd:MD_Metadata"""
 
     vals = {}
+    regions = []
     keywords = []
 
     mdata = MD_Metadata(exml)
@@ -97,9 +98,11 @@ def iso2dict(exml):
 
         if (hasattr(mdata.identification, 'keywords') and
                 len(mdata.identification.keywords) > 0):
-            if None not in mdata.identification.keywords[0]['keywords']:
-                keywords = mdata.identification.keywords[0]['keywords']
-
+            for kw in mdata.identification.keywords:
+                if kw['type'] == "theme":
+                    keywords.extend(kw['keywords'])
+                elif kw['type'] == "place":
+                    regions.extend(kw['keywords'])
         if len(mdata.identification.securityconstraints) > 0:
             vals['constraints_use'] = \
                 mdata.identification.securityconstraints[0]
@@ -112,13 +115,14 @@ def iso2dict(exml):
     if mdata.dataquality is not None:
         vals['data_quality_statement'] = mdata.dataquality.lineage
 
-    return [vals, keywords]
+    return [vals, regions, keywords]
 
 
 def fgdc2dict(exml):
     """generate dict of properties from FGDC metadata"""
 
     vals = {}
+    regions = []
     keywords = []
 
     mdata = Metadata(exml)
@@ -156,6 +160,11 @@ def fgdc2dict(exml):
 
                     keywords.extend(theme['themekey'])
 
+        if mdata.idinfo.keywords.place:
+            for place in mdata.idinfo.keywords.place:
+                if 'placekey' in place:
+                    regions.extend(place['placekey'])
+
     if hasattr(mdata.idinfo.timeperd, 'timeinfo'):
         if hasattr(mdata.idinfo.timeperd.timeinfo, 'rngdates'):
             vals['temporal_extent_start'] = \
@@ -168,19 +177,21 @@ def fgdc2dict(exml):
     if raw_date is not None:
         vals['date'] = sniff_date(raw_date)
 
-    return [vals, keywords]
+    return [vals, regions, keywords]
 
 
 def dc2dict(exml):
     """generate dict of properties from csw:Record"""
 
     vals = {}
+    regions = []
     keywords = []
 
     mdata = CswRecord(exml)
     vals['language'] = mdata.language
     vals['spatial_representation_type'] = mdata.type
     keywords = mdata.subjects
+    regions = [mdata.spatial]
     vals['temporal_extent_start'] = mdata.temporal
     vals['temporal_extent_end'] = mdata.temporal
     vals['constraints_other'] = mdata.license
@@ -188,7 +199,7 @@ def dc2dict(exml):
     vals['title'] = mdata.title
     vals['abstract'] = mdata.abstract
 
-    return [vals, keywords]
+    return [vals, regions, keywords]
 
 
 def sniff_date(datestr):
