@@ -71,10 +71,15 @@
       <td class="table-user-profile-attribute">{% trans "Contact Number" %}</td>
       <td>{{ request_profile.contact_number }}</td>
       </tr>
-      
+
       <tr>
       <td class="table-user-profile-attribute">{% trans "Location of Area Requested" %}</td>
       <td>{{ request_profile.place_name }}</td>
+      </tr>
+
+      <tr>
+      <td class="table-user-profile-attribute">{% trans "Data Size of Area Requested" %}</td>
+      <td>{{ request_profile.juris_data_size }}</td>
       </tr>
 
       <tr>
@@ -153,7 +158,7 @@
               <strong>{{ request_profile.get_request_status_display }}</strong>
             </div>
         </div>
-    
+
         {% if request_profile.request_status == 'rejected'  %}
           <p><strong>{% trans "Reason" %}</strong>: {{ request_profile.rejection_reason }}</p>
           {% if request_profile.additional_rejection_reason %}
@@ -219,7 +224,7 @@
         <form id="approve_form" method="post" class="modal-form" action='{% url "datarequests:data_request_profile_reconfirm" pk=request_profile.pk%}'>{% csrf_token %}
             <button type="submit" class="btn btn-primary btn-md btn-block"  id="reconfirm-request-submit">{% trans "Resend Confirmation Email" %}</button>
         </form>
-          
+
         </li>
       {% endif %}
       {% endif %}
