@@ -114,7 +114,7 @@ def legend(request, layername, layertitle=None):
 
         qgis_server = QGIS_SERVER_CONFIG['qgis_server_url']
         query_string = {
-            'MAP': basename + '.qgs',
+            'MAP': qgis_layer.base_layer_path,
             'SERVICE': 'WMS',
             'VERSION': '1.3.0',
             'REQUEST': 'GetLegendGraphic',
@@ -200,7 +200,7 @@ def thumbnail(request, layername):
             'CRS': 'EPSG:4326',
             'WIDTH': '250',
             'HEIGHT': '250',
-            'MAP': basename + '.qgs',
+            'MAP': qgis_layer.base_layer_path,
             'LAYERS': layer.name,
             'STYLES': 'default',
             'FORMAT': 'image/png',
@@ -272,7 +272,7 @@ def tile(request, layername, z, x, y):
             'CRS': 'EPSG:4326',
             'WIDTH': '256',
             'HEIGHT': '256',
-            'MAP': basename + '.qgs',
+            'MAP': qgis_layer.base_layer_path,
             'LAYERS': layer.name,
             'STYLES': 'default',
             'FORMAT': 'image/png',

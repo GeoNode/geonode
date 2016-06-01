@@ -2,14 +2,10 @@
 import logging
 import shutil
 import os
-from lxml import etree
 from django.db.models import signals
 from django.core.urlresolvers import reverse
 from django.conf import settings
-from django.template.loader import render_to_string
-from django.contrib.gis.gdal import SpatialReference
 
-from geonode.qgis_server.gis_tools import crs_parameters
 from geonode.qgis_server.models import QGISServerLayer
 from geonode.base.models import ResourceBase, Link
 from geonode.layers.models import Layer
@@ -118,73 +114,6 @@ def qgis_server_post_save(instance, sender, **kwargs):
                         link_type='data'
                 )
             )
-
-    # Create the QGIS project. As we can't use the QGIS API in geonode, we
-    # use a QGIS project as a template.
-    # Open the QML
-    basename, _ = os.path.splitext(qgis_layer.base_layer_path)
-    qml_file_path = '%s.qml' % basename
-
-    template_items = {
-        # Use for the vector rendering
-        'renderer_v2': '',
-
-        # Use for the raster rendering
-        'pipe': '',
-
-        # Other XML tags needed in the QGIS project
-        'customproperties': '',
-        'edittypes': '',
-        'labeling': '',
-        'blendMode': '',
-        'featureBlendMode': '',
-        'layerTransparency': '',
-        'displayfield': '',
-        'label': '',
-        'labelattributes': '',
-    }
-
-    if instance.is_vector():
-        template_items['provider'] = (
-            '<provider encoding="System">ogr</provider>')
-        template_items['geometry_type'] = 'vector'
-    else:
-        template_items['provider'] = (
-            '<provider encoding="System">gdal</provider>')
-        template_items['geometry_type'] = 'raster'
-
-    if os.path.exists(qml_file_path):
-        map_layer_qml = etree.parse(qml_file_path)
-
-        for xml in template_items.keys():
-            item = map_layer_qml.find(xml.replace('_', '-'))
-            if item is not None:
-                template_items[xml] = etree.tostring(
-                    item, encoding='utf8', method='xml', xml_declaration=False)
-
-    template_items['layer_id'] = instance.name
-    template_items['layer_name'] = instance.name
-    template_items['layer_source'] = qgis_layer.base_layer_path
-
-    # Bounding box
-    template_items['x_min'] = instance.resourcebase_ptr.bbox_x0
-    template_items['x_max'] = instance.resourcebase_ptr.bbox_x1
-    template_items['y_min'] = instance.resourcebase_ptr.bbox_y0
-    template_items['y_max'] = instance.resourcebase_ptr.bbox_y1
-
-    # CRS
-    srs = SpatialReference(instance.resourcebase_ptr.srid)
-    template_items.update(crs_parameters(srs))
-
-    # Render the QGIS project template
-    qgis_project_xml = render_to_string('qgis_project.qgs', template_items)
-
-    # Write the project to a .qgs file.
-    qgis_project_file_path = '%s.qgs' % basename
-    f = open(qgis_project_file_path, 'w')
-    f.write(qgis_project_xml)
-    f.close()
-    logger.debug('QGIS project created: %s' % qgis_project_file_path)
 
     tile_url = reverse(
             'qgis-server-tile',
