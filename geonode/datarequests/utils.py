@@ -156,14 +156,14 @@ def get_place_name(longitude,latitude):
         'country': g.country
     }
 
-def get_juris_data_size(juris_shp_name,bboxlist):
+def get_juris_data_size(juris_shp_name):
     source = ogr.Open("PG:host=lipad-test02.tst.dream.upd.edu.ph dbname=geonode_data user=geonode password=geonode")
     data = source.ExecuteSQL("select the_geom from "+str(juris_shp_name))
     feature = data.GetNextFeature()
     juris_shp = loads(feature.GetGeometryRef().ExportToWkb())
 
     _TILE_SIZE = 1000
-    total_data_size = 0.00
+    total_data_size = 0
     min_x =  int(math.floor(juris_shp.bounds[0] / float(_TILE_SIZE)) * _TILE_SIZE)
     max_x =  int(math.ceil(juris_shp.bounds[2] / float(_TILE_SIZE)) * _TILE_SIZE)
     min_y =  int(math.floor(juris_shp.bounds[1] / float(_TILE_SIZE)) * _TILE_SIZE)
@@ -179,7 +179,6 @@ def get_juris_data_size(juris_shp_name,bboxlist):
 
             if not tile.intersection(juris_shp).is_empty:
                 gridref = "E{0}N{1}".format(tile_x / _TILE_SIZE, tile_y / _TILE_SIZE,)
-
                 georef_query = CephDataObject.objects.filter(name__startswith=gridref)
                 total_size = 0
                 for georef_query_objects in georef_query:
