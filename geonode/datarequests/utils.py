@@ -174,7 +174,6 @@ def get_juris_data_size(juris_shp_name):
             tile_dlp = (tile_x, tile_y - _TILE_SIZE)
             tile_drp = (tile_x + _TILE_SIZE, tile_y - _TILE_SIZE)
             tile_urp = (tile_x + _TILE_SIZE, tile_y)
-
             tile = Polygon([tile_ulp, tile_dlp, tile_drp, tile_urp])
 
             if not tile.intersection(juris_shp).is_empty:
