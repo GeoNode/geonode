@@ -602,7 +602,7 @@ def layer_download(request, layername):
         'base.view_resourcebase',
         _PERMISSION_MSG_VIEW)
     if request.user.is_authenticated():
-        action.send(request.user, verb='downloaded', action_object=layer.get_self_resource())
+        action.send(request.user, verb='downloaded', action_object=layer)
 
     splits = request.get_full_path().split("/")
     redir_url = urljoin(settings.OGC_SERVER['default']['PUBLIC_LOCATION'], "/".join(splits[4:]))
