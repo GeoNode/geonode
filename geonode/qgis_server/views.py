@@ -114,7 +114,7 @@ def legend(request, layername, layertitle=None):
 
         qgis_server = QGIS_SERVER_CONFIG['qgis_server_url']
         query_string = {
-            'MAP': basename + '.qgs',
+            'MAP': qgis_layer.base_layer_path,
             'SERVICE': 'WMS',
             'VERSION': '1.3.0',
             'REQUEST': 'GetLegendGraphic',
@@ -122,8 +122,8 @@ def legend(request, layername, layertitle=None):
             'LAYERTITLE': layertitle,
             'FORMAT': 'image/png',
             'TILED': 'true',
-            'transparent': 'true',
-            'legend_options': 'fontAntiAliasing:true;fontSize:11;fontName:Arial'
+            'TRANSPARENT': 'true',
+            'LEGEND_OPTIONS': 'fontAntiAliasing:true;fontSize:11;fontName:Arial'
         }
 
         url = qgis_server + '?'
@@ -131,6 +131,7 @@ def legend(request, layername, layertitle=None):
             url += param + '=' + value + '&'
 
         urlretrieve(url, legend_filename)
+        logger.info(url)
 
         if image_format(legend_filename) != 'png':
             logger.error('%s is not valid PNG.' % legend_filename)
@@ -199,7 +200,7 @@ def thumbnail(request, layername):
             'CRS': 'EPSG:4326',
             'WIDTH': '250',
             'HEIGHT': '250',
-            'MAP': basename + '.qgs',
+            'MAP': qgis_layer.base_layer_path,
             'LAYERS': layer.name,
             'STYLES': 'default',
             'FORMAT': 'image/png',
@@ -214,6 +215,7 @@ def thumbnail(request, layername):
             url += param + '=' + value + '&'
 
         urlretrieve(url, thumbnail_filename)
+        logger.info(url)
 
         if image_format(thumbnail_filename) != 'png':
             logger.error('%s is not valid PNG.' % thumbnail_filename)
@@ -270,7 +272,7 @@ def tile(request, layername, z, x, y):
             'CRS': 'EPSG:4326',
             'WIDTH': '256',
             'HEIGHT': '256',
-            'MAP': basename + '.qgs',
+            'MAP': qgis_layer.base_layer_path,
             'LAYERS': layer.name,
             'STYLES': 'default',
             'FORMAT': 'image/png',
