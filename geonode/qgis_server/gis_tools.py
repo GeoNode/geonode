@@ -29,10 +29,9 @@ def set_attributes(layer, overwrite=False):
         layer_name = layer.typename.encode('utf-8')
         qgis_layer = QGISServerLayer.objects.get(layer=layer)
 
-        basename, _ = splitext(qgis_layer.base_layer_path)
         qgis_server = geonode_config.QGIS_SERVER_CONFIG['qgis_server_url']
         dft_url = qgis_server + '?' + urlencode({
-            'MAP': basename + '.qgs',
+            'MAP': qgis_layer.base_layer_path,
             'SERVICE': 'WFS',
             'VERSION': '1.0.0',
             'REQUEST': 'DescribeFeatureType',
