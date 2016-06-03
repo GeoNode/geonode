@@ -189,12 +189,20 @@ class DataRequestProfile(TimeStampedModel):
         blank=True,
         null=True,
         )
-        
+
     #For place name
     place_name = models.CharField(
-        _('Geolocation name provided by Google'),  
+        _('Geolocation name provided by Google'),
         null=True,
-        blank=True, 
+        blank=True,
+        max_length=50,
+    )
+
+    #For jurisdiction data size
+    juris_data_size = models.CharField(
+        _('Data size of requested jurisdiction'),
+        null=True,
+        blank=True,
         max_length=50,
     )
 
@@ -597,7 +605,7 @@ class DataRequestProfile(TimeStampedModel):
             except Exception as e:
                 pprint(traceback.format_exc())
                 return (False, "Account creation failed. Check /var/log/apache2/error.log for more details")
-        
+
         try:
              if not self.profile:
                 pprint("Creating account for "+self.username)
@@ -620,16 +628,16 @@ class DataRequestProfile(TimeStampedModel):
         except Exception as e:
             pprint(traceback.format_exc())
             return (False, "Account creation failed. Check /var/log/apache2/error.log for more details")
-            
+
         self.join_requester_grp()
-        
+
         try:
             if not self.ftp_folder:
                 self.create_directory()
         except Exception as e:
             pprint(traceback.format_exc())
             return (False, "Folder creation failed, Check /var/log/apache2/error.log for more details")
-            
+
         return  (True, "Account creation successful")
 
     def join_requester_grp(self):
@@ -723,7 +731,7 @@ class DataRequestProfile(TimeStampedModel):
                     out.append(unidecode(val))
                 else:
                     out.append(str(val))
-                
+
         return out
 
 class RequestRejectionReason(models.Model):
