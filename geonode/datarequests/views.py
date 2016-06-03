@@ -312,19 +312,11 @@ def registration_part_two(request):
                                 request_letter = form.clean()['letter_file'],
                                 interest_layer = interest_layer
                             )
-<<<<<<< HEAD
-                    
-                    if place_name:
-                        request_profile.place_name = place_name['state']
-                        request_profile.save()
-                    
-=======
 
                     request_profile.place_name = place_name['state']
                     request_profile.juris_data_size = juris_data_size
                     request_profile.save()
 
->>>>>>> data_size_datarequest
                     if request.user.is_authenticated():
                         request_profile.profile = request.user
                         request_profile.request_status = 'pending'
@@ -672,40 +664,7 @@ def data_request_facet_count(request):
         status=200,
         mimetype='text/plain'
     )
-<<<<<<< HEAD
-    
-def create_request_obj(user_profile):
-    if not user_profile.middle_name or not user_profile.organization:
-        try:
-            last_submitted_dr = DataRequestProfile.objects.filter(profile=user_profile, request_status='approved'  ).latest('key_created_date')
-            user_profile.middle_name = last_submitted_dr.middle_name
-            user_profile.organization = last_submitted_dr.organization
-            user_profile.email = last_submitted_dr.email
-            user_profile.voice = last_submitted_dr.contact_number
-            user_profile.save()
-        except ObjectDoesNotExist as e:
-            pprint("User details missing. Please tell user to update user profile first")
-            return None
-            
-    
-    request_object = DataRequestProfile(
-            profile = user_profile,
-            first_name = user_profile.first_name,
-            middle_name = user_profile.middle_name,
-            last_name = user_profile.last_name,
-            organization = user_profile.organization,
-            email = user_profile.email,
-            contact_number = user_profile.voice,
-            request_status = 'pending'
-    )
-    
-    return request_object
-        
-    
-    
-=======
 
->>>>>>> data_size_datarequest
 def update_datarequest_obj(datarequest=None, parameter_dict=None, interest_layer=None, request_letter = None):
     if datarequest is None or parameter_dict is None or request_letter is None:
         raise HttpResponseBadRequest
