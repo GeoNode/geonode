@@ -76,10 +76,22 @@ class UserJurisdictionAdmin(admin.ModelAdmin):
 #                     'group', 
                      'jurisdiction_shapefile__title',)
 
+class MissionGridRefAdmin(admin.ModelAdmin):
+    model = MissionGridRef
+    list_display = ('id',)
+    list_display = (
+        'id',
+        'grid_ref',
+        'fieldID'
+        )
+    list_filter = ('grid_ref','fieldID')
+    search_fields = ('grid_ref','fieldID')
+
 admin.site.register(Cart, CartAdmin)
 admin.site.register(Item, ItemAdmin)
 admin.site.register(CephDataObject, CephDataObjectAdmin)
 admin.site.register(FTPRequest, FTPRequestAdmin)
 admin.site.register(FTPRequestToObjectIndex, FTPRequestToObjectIndexAdmin)
 admin.site.register(UserJurisdiction, UserJurisdictionAdmin)
+admin.site.register(MissionGridRef,MissionGridRefAdmin)
 
