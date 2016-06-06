@@ -383,6 +383,11 @@
                     add_layer(layer_typename);
                 }
             }
+            console.log("{{ map }}");
+            {% for layer in map.layers %}
+                console.log("Adding {{ layer.name }}");
+                add_layer("{{ layer.name }}");
+            {% endfor %}
 
         });
     </script>
