@@ -40,7 +40,7 @@ class SmokeTest(TestCase):
     Basic checks to make sure pages load, etc.
     """
 
-    fixtures = ["group_test_data"]
+    fixtures = ['initial_data.json', "group_test_data"]
 
     def setUp(self):
         create_models(type='layer')
