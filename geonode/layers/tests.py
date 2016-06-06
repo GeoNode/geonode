@@ -53,7 +53,7 @@ class LayersTest(TestCase):
     """Tests geonode.layers app/module
     """
 
-    fixtures = ['bobby']
+    fixtures = ['initial_data.json', 'bobby']
 
     def setUp(self):
         self.user = 'admin'
@@ -728,7 +728,7 @@ class UnpublishedObjectTests(TestCase):
 
     """Test the is_published base attribute"""
 
-    fixtures = ['bobby']
+    fixtures = ['initial_data.json', 'bobby']
 
     def setUp(self):
         super(UnpublishedObjectTests, self).setUp()

@@ -95,7 +95,7 @@ setup(name='GeoNode',
         "transifex-client==0.10",  # transifex-client
         "Paver==1.2.1",  # python-paver
         "nose>=1.3.1",  # python-nose
-        "django-nose>=1.2",  # python-django-nose
+        "django-nose>=1.4",  # python-django-nose
         "awesome-slugify==1.6.2",
 
         # Django Apps

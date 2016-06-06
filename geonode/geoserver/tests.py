@@ -39,7 +39,7 @@ from geonode.layers.models import Layer
 
 class LayerTests(TestCase):
 
-    fixtures = ['bobby']
+    fixtures = ['initial_data.json', 'bobby']
 
     def setUp(self):
         self.user = 'admin'

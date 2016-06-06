@@ -100,7 +100,7 @@ class PermissionsTest(TestCase):
     """Tests GeoNode permissions
     """
 
-    fixtures = ['bobby']
+    fixtures = ['initial_data.json', 'bobby']
 
     perm_spec = {
         "users": {
