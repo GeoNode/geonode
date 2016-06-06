@@ -7,6 +7,7 @@ from django.db.models import signals
 from django.core.urlresolvers import reverse
 from django.conf import settings
 from django.template.loader import render_to_string
+from django.core.exceptions import ObjectDoesNotExist
 
 from geonode.qgis_server.models import QGISServerLayer
 from geonode.base.models import ResourceBase, Link
@@ -217,6 +218,13 @@ def qgis_server_post_save(instance, sender, **kwargs):
 
 def qgis_server_pre_save_maplayer(instance, sender, **kwargs):
     logger.debug('QGIS Server Pre Save Map Layer')
+    try:
+        layer = Layer.objects.get(typename=instance.name)
+        if layer:
+            instance.local = True
+    except Layer.DoesNotExist:
+        pass
+
 
 
 def qgis_server_post_save_map(instance, sender, **kwargs):
