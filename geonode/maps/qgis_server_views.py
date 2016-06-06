@@ -19,6 +19,7 @@ class MapCreateView(CreateView):
         # list all required layers
         layers = Layer.objects.all()
         context = {
+            'create': True,
             'layers': layers
         }
         return context
@@ -40,6 +41,7 @@ class MapDetailView(DetailView):
         # list all required layers
         layers = Layer.objects.all()
         context = {
+            'create': False,
             'layers': layers,
             'map': Map.objects.get(id=self.kwargs.get("mapid"))
         }

@@ -369,25 +369,26 @@
             var list = document.getElementById("layer-list");
             Sortable.create(list); // That's all
 
-            // Check layer parameter in url
-            var qd = {};
-            location.search.substr(1).split("&").forEach(function (item) {
-                var s = item.split("="),
-                        k = s[0],
-                        v = s[1] && decodeURIComponent(s[1]);
-                (k in qd) ? qd[k].push(v) : qd[k] = [v]
-            });
-            if (qd['layer']) {
-                for (i = 0; i < qd['layer'].length; i++) {
-                    var layer_typename = qd['layer'][i];
-                    add_layer(layer_typename);
+            {% if not create %}
+                {% for layer in map.layers %}
+                    add_layer("{{ layer.name }}");
+                {% endfor %}
+            {% else %}
+                // Check layer parameter in url
+                var qd = {};
+                location.search.substr(1).split("&").forEach(function (item) {
+                    var s = item.split("="),
+                            k = s[0],
+                            v = s[1] && decodeURIComponent(s[1]);
+                    (k in qd) ? qd[k].push(v) : qd[k] = [v]
+                });
+                if (qd['layer']) {
+                    for (i = 0; i < qd['layer'].length; i++) {
+                        var layer_typename = qd['layer'][i];
+                        add_layer(layer_typename);
+                    }
                 }
-            }
-            console.log("{{ map }}");
-            {% for layer in map.layers %}
-                console.log("Adding {{ layer.name }}");
-                add_layer("{{ layer.name }}");
-            {% endfor %}
+            {% endif %}
 
         });
     </script>
