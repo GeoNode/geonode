@@ -30,6 +30,9 @@ GEONODE_DEMO_DOMAIN = 'demo.geonode.org' # should match the jenkins configuratio
 NODE_LIST = 'computer/api/json' # jenkins api backend
 GEONODE_DEMO_JOB = 'geonode-aws' # jenkins job name for demo site
 
+## USAGE
+# python demo_site.py -u username -t jenkins_api_token task
+# task can be either "redeploy-demo-site", "build-demo-job"
 
 class DemoGeonode(object):
     """
