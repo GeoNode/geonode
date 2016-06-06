@@ -25,7 +25,9 @@
             var tile_layer = L.tileLayer("{{ layer.ows_url }}");
             if (tile_layer != null) {
                 layer_control.addOverlay(tile_layer, "{{ layer.name }}");
-                map.addLayer(tile_layer);
+                if ("{{ layer.visibility }}" === "True") {
+                    map.addLayer(tile_layer);
+                }
                 overlay_layers["{{ layer.name }}"] = tile_layer;
             }
 
