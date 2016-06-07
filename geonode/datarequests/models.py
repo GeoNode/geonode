@@ -709,7 +709,7 @@ class DataRequestProfile(TimeStampedModel):
         else:
             self.send_request_approval_email(self.username)
 
-    def to_values_list(self, fields=['id','name','email','contact_number', 'organization', 'project_summary', 'created','request_status','juris_data_size','area_coverage']):
+    def to_values_list(self, fields=['id','name','email','contact_number', 'organization', 'project_summary', 'created','request_status','data_size','area_coverage']):
         out = []
         for f in fields:
             if f  is 'id':
