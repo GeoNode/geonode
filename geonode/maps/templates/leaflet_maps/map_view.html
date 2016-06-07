@@ -465,10 +465,6 @@
 
 
         $(document).ready(function () {
-            // Populate radio button for background layer
-            populate_background_layer(background_layers_list, background_layers);
-
-
             // Initiate map
             {% if create %}
                 map = L.map('map', {
@@ -483,6 +479,8 @@
                 });
             {% endif %}
 
+            // Populate radio button for background layer
+            populate_background_layer(background_layers_list, background_layers);
 
             // Make sortable
             var list = document.getElementById("layer-list");
