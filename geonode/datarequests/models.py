@@ -709,7 +709,7 @@ class DataRequestProfile(TimeStampedModel):
         else:
             self.send_request_approval_email(self.username)
 
-    def to_values_list(self, fields=['id','name','email','contact_number', 'organization', 'project_summary', 'created','request_status']):
+    def to_values_list(self, fields=['id','name','email','contact_number', 'organization', 'project_summary', 'created','request_status','juris_data_size','area_coverage']):
         out = []
         for f in fields:
             if f  is 'id':
@@ -741,6 +741,10 @@ class DataRequestProfile(TimeStampedModel):
                     out.append('no')
             elif f is 'rejection_reason':
                 out.append(str(getattr(self,'rejection_reason')))
+            elif f is 'juris_data_size':
+                out.append(str(getattr(self,'juris_data_size')))
+            elif f is 'area_coverage':
+                out.append(str(getattr(self,'area_coverage')))
             else:
                 val = getattr(self, f)
                 if isinstance(val, unicode):
