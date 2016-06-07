@@ -11,13 +11,15 @@
 </style>
 <script type="text/javascript">
     var overlay_layers = {};
-    $(window).on("map:init", init_handler);
     window.addEventListener("map:init", function (e) {
         console.log();
         var map = e.detail.map;
         var layer_control = L.control.layers().addTo(map);
 
-        {#        map.clearLayers();#}
+        // Clear all layers
+        map.eachLayer(function (layer) {
+            map.removeLayer(layer);
+        });
 
         // Add layers
         {% for layer in layers %}
