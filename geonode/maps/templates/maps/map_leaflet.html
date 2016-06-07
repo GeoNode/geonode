@@ -3,7 +3,6 @@
 {% leaflet_js %}
 {% leaflet_css %}
 
-{#{% leaflet_map "the_map" creatediv=False %}#}
 <style>
     .leaflet-container { /* all maps */
         height: 400px;
@@ -16,17 +15,17 @@
 
         var layer_control = L.control.layers().addTo(map);
 
-        // Clear all layers
-        map.eachLayer(function (layer) {
-            map.removeLayer(layer);
-        });
-
         // Add layers
         {% for layer in layers %}
             // Add tile layers
             var tile_layer = L.tileLayer("{{ layer.ows_url }}");
             if (tile_layer != null) {
-                layer_control.addOverlay(tile_layer, "{{ layer.name }}");
+                if ("{{ layer.group }}" == 'background') {
+                    layer_control.addBaseLayer(tile_layer, "{{ layer.name }}");
+                } else {
+                    layer_control.addOverlay(tile_layer, "{{ layer.name }}");
+
+                }
                 if ("{{ layer.visibility }}" === "True") {
                     map.addLayer(tile_layer);
                 }
