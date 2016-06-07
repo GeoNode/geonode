@@ -2,12 +2,9 @@
 import logging
 import shutil
 import os
-from lxml import etree
 from django.db.models import signals
 from django.core.urlresolvers import reverse
 from django.conf import settings
-from django.template.loader import render_to_string
-from django.core.exceptions import ObjectDoesNotExist
 
 from geonode.qgis_server.models import QGISServerLayer
 from geonode.base.models import ResourceBase, Link
@@ -15,6 +12,7 @@ from geonode.layers.models import Layer
 from geonode.maps.models import Map, MapLayer
 from geonode.layers.utils import create_thumbnail
 from geonode.geoserver.helpers import http_client
+from geonode.qgis_server.gis_tools import set_attributes
 
 
 logger = logging.getLogger("geonode.qgis_server.signals")
@@ -117,62 +115,6 @@ def qgis_server_post_save(instance, sender, **kwargs):
                 )
             )
 
-    # Create the QGIS project
-    # Open the QML
-    basename, _ = os.path.splitext(qgis_layer.base_layer_path)
-    qml_file_path = '%s.qml' % basename
-
-    template_items = {
-        'renderer_v2': '',
-        'customproperties': '',
-        'edittypes': '',
-        'labeling': '',
-        'blendMode': '',
-        'featureBlendMode': '',
-        'layerTransparency': '',
-        'displayfield': '',
-        'label': '',
-        'labelattributes': '',
-    }
-
-    if instance.is_vector():
-        template_items['provider'] = (
-            '<provider encoding="System">ogr</provider>')
-        template_items['geometry_type'] = 'vector'
-    else:
-        template_items['provider'] = (
-            '<provider encoding="System">raster</provider>')
-        template_items['geometry_type'] = 'raster'
-
-    if os.path.exists(qml_file_path):
-        map_layer_qml = etree.parse(qml_file_path)
-
-        for xml in template_items.keys():
-            item = map_layer_qml.find(xml.replace('_', '-'))
-            if item is not None:
-                template_items[xml] = etree.tostring(
-                    item, encoding='utf8', method='xml', xml_declaration=False)
-
-    template_items['layer_id'] = instance.name
-    template_items['layer_name'] = instance.name
-    template_items['layer_source'] = qgis_layer.base_layer_path
-
-    # Bounding box
-    template_items['x_min'] = instance.resourcebase_ptr.bbox_x0
-    template_items['x_max'] = instance.resourcebase_ptr.bbox_x1
-    template_items['y_min'] = instance.resourcebase_ptr.bbox_y0
-    template_items['y_max'] = instance.resourcebase_ptr.bbox_y1
-
-    # Render the QGIS project template
-    qgis_project_xml = render_to_string('qgis_project.qgs', template_items)
-
-    # Write the project to a .qgs file.
-    qgis_project_file_path = '%s.qgs' % basename
-    f = open(qgis_project_file_path, 'w')
-    f.write(qgis_project_xml)
-    f.close()
-    logger.debug('QGIS project created: %s' % qgis_project_file_path)
-
     tile_url = reverse(
             'qgis-server-tile',
             kwargs={'layername': instance.name, 'x': 5678, 'y':910, 'z': 1234})
@@ -214,6 +156,9 @@ def qgis_server_post_save(instance, sender, **kwargs):
         'qgis-server-thumbnail', kwargs={'layername': instance.name})
     logger.debug(thumbnail_remote_url)
     create_thumbnail(instance, thumbnail_remote_url, ogc_client=http_client)
+
+    # Attributes
+    set_attributes(instance)
 
 
 def qgis_server_pre_save_maplayer(instance, sender, **kwargs):
