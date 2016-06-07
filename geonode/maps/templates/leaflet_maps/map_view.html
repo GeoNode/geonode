@@ -64,8 +64,8 @@
                     <h4>Background layers</h4>
                     <div>
                         <ul id="background-layer-list">
-                            <li><input type="radio" name="background-layer" value="osm" checked="checked">OSM</li>
-                            <li><input type="radio" name="background-layer" value="mapquest">MapQuest</li>
+                            {#                            <li><input type="radio" name="background-layer" value="osm" checked="checked">OSM</li>#}
+                            {#                            <li><input type="radio" name="background-layer" value="mapquest">MapQuest</li>#}
                         </ul>
                     </div>
                     <div class="buttons">
@@ -173,7 +173,42 @@
 
         // Storing the background layers
         var background_layers = {};
-        var background_layers_layers = [];
+        var background_layers_list = [];
+
+        // Define some default base layers
+        var osm = L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors',
+        });
+
+        var mapquest = L.tileLayer('http://otile4.mqcdn.com/tiles/1.0.0/osm/{z}/{x}/{y}.png', {
+            attribution: 'Tiles Courtesy of <a href="http://www.mapquest.com/">MapQuest</a> &mdash; Map data &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+        });
+
+        {% if create %}
+            background_layers = {
+                'osm': {
+                    'title': 'OpenStreetMap',
+                    'name': 'osm',
+                    'url': osm._url,
+                    'layer': osm,
+                    'visibility': false,
+                    'group': 'background'
+                },
+                'mapquest': {
+                    'title': 'MapQuest',
+                    'name': 'mapquest',
+                    'url': mapquest._url,
+                    'layer': mapquest,
+                    'visibility': true,
+                    'group': 'background'
+                }
+            };
+            background_layers_list.push('mapquest');
+            background_layers_list.push('osm');
+
+            active_background_layer = mapquest;
+        {% else %}
+        {% endif %}
 
         var w_height = $(window).height();
         var map_height = w_height - $('nav').height();
@@ -219,9 +254,9 @@
             document.getElementById("option_" + button.value).style.display = 'block';
         }
 
-        function remove_from_list(list, item){
+        function remove_from_list(list, item) {
             var item_index = list.indexOf(item);
-            if (item_index > -1){
+            if (item_index > -1) {
                 list.splice(item_index, 1)
             }
         }
@@ -278,7 +313,6 @@
                         var added_layer = {};
                         added_layer.title = layer_title;
                         added_layer.url = layer_url;
-                        added_layer.z_index = 0;
                         added_layer.layer = tile_layer;
                         added_layer.visibility = visibility;
                         overlay_layers[layer_typename] = added_layer;
@@ -361,36 +395,53 @@
 
 
         $(document).ready(function () {
-            // Define some default base layers
-            var osm = L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
-                attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors',
-            });
+            // Populate radio button for background layer
+            for (i = 0; i < background_layers_list.length; i++) {
+                var background_layer_name = background_layers_list[i];
+                var background_layer = background_layers[background_layer_name];
+                if (background_layer['visibility']) {
+                    $("#background-layer-list").prepend(
+                            '<li>' +
+                            '<input type="radio" name="background-layer" value="' +
+                            background_layer_name +
+                            '" checked="checked">' +
+                            background_layer['title'] +
+                            '</li>'
+                    );
+                } else {
+                    $("#background-layer-list").prepend(
+                            '<li>' +
+                            '<input type="radio" name="background-layer" value="' +
+                            background_layer_name +
+                            '">' +
+                            background_layer['title'] +
+                            '</li>'
+                    );
+                }
 
-            var mapquest = L.tileLayer('http://otile4.mqcdn.com/tiles/1.0.0/osm/{z}/{x}/{y}.png', {
-                attribution: 'Tiles Courtesy of <a href="http://www.mapquest.com/">MapQuest</a> &mdash; Map data &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
-            });
-
-            background_layers = {
-                'osm': osm,
-                'mapquest': mapquest
-            };
-
-            active_background_layer = osm;
-
+            }
             // Add radio button listener for background layer
             $('input:radio[name=background-layer]').change(function () {
-                var new_background_layer = background_layers[this.value];
+                var new_background_layer = background_layers[this.value]['layer'];
                 map.removeLayer(active_background_layer);
                 new_background_layer.addTo(map);
                 active_background_layer = new_background_layer;
             });
 
             // Initiate map
-            map = L.map('map', {
-                center: [-6.2, 106.8],
-                zoom: 11,
-                layers: [osm]
-            });
+            {% if create %}
+                map = L.map('map', {
+                    center: [-6.2, 106.8],
+                    zoom: 11,
+                    layers: [active_background_layer]
+                });
+            {% else %}
+                map = L.map('map', {
+                    center: [-6.2, 106.8],
+                    zoom: 11
+                });
+            {% endif %}
+
 
             // Make sortable
             var list = document.getElementById("layer-list");
