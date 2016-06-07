@@ -60,7 +60,7 @@ from .forms import (
     DataRequestProfileRejectForm, DataRequestDetailsForm)
 from .models import DataRequestProfile
 from .utils import (
-    get_place_name, get_juris_data_size)
+    get_place_name, get_juris_data_size, get_area_coverage)
 
 def registration_part_one(request):
 

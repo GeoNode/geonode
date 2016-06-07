@@ -142,9 +142,9 @@ class DataRequestProfile(TimeStampedModel):
         max_digits=30,
         decimal_places=4,
         help_text=_('Sqr KMs'),
+        default=0,
         null=True,
         blank=True,
-        default=0
     )
     """
     data_resolution = models.PositiveIntegerField(
