@@ -136,13 +136,14 @@ class DataRequestProfile(TimeStampedModel):
     data_set = models.CharField(
         _('Data/Data Set Subject to License'),
         max_length=100,
-    )
+    )"""
     area_coverage = models.DecimalField(
         _('Area of Coverage'),
         max_digits=30,
         decimal_places=4,
         help_text=_('Sqr KMs'),
     )
+    """
     data_resolution = models.PositiveIntegerField(
         _('Data Resolution'),
         help_text=_('pixels per inch'),
@@ -612,11 +613,11 @@ class DataRequestProfile(TimeStampedModel):
                 dn = create_ad_account(self, self.username)
                 add_to_ad_group(group_dn=settings.LIPAD_LDAP_GROUP_DN, user_dn=dn)
                 profile = LDAPBackend().populate_user(self.username)
-                
+
                 if profile:
                     self.profile = profile
                     self.save()
-                
+
                     profile.middle_name = self.middle_name
                     profile.organization = self.organization
                     profile.voice = self.contact_number
