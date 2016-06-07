@@ -1,8 +1,18 @@
 from operator import itemgetter, attrgetter
 import re
 from changuito.proxy import CartProxy
-from geonode.cephgeo.models import CephDataObject, DataClassification
+from geonode.cephgeo.models import CephDataObject, DataClassification, MissionGridRef
+from osgeo import ogr
+import shapely
+from shapely.wkb import loads
+import math
+import geonode.settings as settings
+from collections import defaultdict
+import json
+from shapely.geometry import Polygon
+import datetime
 
+_TILE_SIZE = 1000
 ### For additional functions/definitions which may be needed by views
 
 ### Sample Ceph object entry:{'hash': '524f26771b90ccea598448b8b7a263b7', 
@@ -111,3 +121,66 @@ def get_data_class_from_filename(filename):
                 data_classification = DataClassification.filename_suffixes[x]
             
         return data_classification
+
+def tile_floor(x):
+    return int(math.floor(x / float(_TILE_SIZE)) * _TILE_SIZE)
+
+def tile_ceiling(x):
+    return int(math.ceil(x / float(_TILE_SIZE)) * _TILE_SIZE)
+
+def get_bounds_1x1km(shape):
+    min_x, min_y, max_x, max_y = shape.bounds
+    min_x = tile_floor(min_x)
+    min_y = tile_floor(min_y)
+    max_x = tile_ceiling(max_x)
+    max_y = tile_ceiling(max_y)
+    return min_x, min_y, max_x, max_y
+
+def filter_gridref():
+    gridref_list = MissionGridRef.objects.all()
+    gridref_dictionary = defaultdict(list)
+    for gridref in gridref_list:
+        gridref_dictionary[gridref.grid_ref].append(gridref.fieldID)
+    gridref_dictionary = {k:v for k,v in gridref_dictionary.items() }
+    with open('geonode/georef_output.json', 'w') as fp:
+        json.dump(gridref_dictionary,fp)
+
+def tile_shp(tile_extents,eval_shp_poly,feature):
+    # gridref_list = []
+    min_x, min_y, max_x, max_y = tile_extents
+    
+    
+    for tile_y in xrange(min_y+_TILE_SIZE, max_y+_TILE_SIZE, _TILE_SIZE): #georeference 
+        for tile_x in xrange(min_x, max_x, _TILE_SIZE):
+            
+            # 4 points of this tile
+            tile_ulp = (tile_x, tile_y)
+            tile_dlp = (tile_x, tile_y - _TILE_SIZE)
+            tile_drp = (tile_x + _TILE_SIZE, tile_y - _TILE_SIZE)
+            tile_urp = (tile_x + _TILE_SIZE, tile_y)
+            
+            # Grid Ref of this tile
+            gridref = "E{0}N{1}".format(tile_x / _TILE_SIZE, tile_y / _TILE_SIZE,) 
+            # print gridref
+             
+            tile = Polygon([tile_ulp, tile_dlp, tile_drp, tile_urp]) 
+            # Evaluate intersections
+            if not tile.intersection(eval_shp_poly).is_empty:
+                if len(MissionGridRef.objects.filter(fieldID=feature.GetField("UID"),grid_ref=str(gridref))) == 0:
+                    print gridref
+                    georef = MissionGridRef.objects.create(fieldID=feature.GetField("UID"),grid_ref=str(gridref))
+                    georef.save()
+
+def iterate_over_features():
+    source = ogr.Open(("PG:host={0} dbname={1} user={2} password={3}".format(settings.HOST_ADDR,settings.GIS_DATABASE_NAME,settings.DATABASE_USER,settings.DATABASE_PASSWORD)))
+    layer = source.GetLayer(settings.LIDAR_COVERAGE)
+    i = 0
+    for feature in layer:
+        i+=1
+        d = datetime.datetime.now()
+        print "[{0}/{1}/{2} - {3}:{4}:{5}] Feature#{6}".format(d.day, d.month, d.year, d.hour, d.minute, d.second,i)
+        feature = layer.GetNextFeature()
+        # print feature.GetField("Block_Name")
+        geom = loads(feature.GetGeometryRef().ExportToWkb())
+        bounds = get_bounds_1x1km(geom)
+        tile_shp(bounds,geom,feature)

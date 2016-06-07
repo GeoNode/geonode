@@ -142,6 +142,7 @@ class DataRequestProfile(TimeStampedModel):
         max_digits=30,
         decimal_places=4,
         help_text=_('Sqr KMs'),
+        default=0
     )
     """
     data_resolution = models.PositiveIntegerField(
@@ -335,7 +336,7 @@ class DataRequestProfile(TimeStampedModel):
         )
 
         text_content = """
-        Hi,
+        Hi LiPAD Admins,
 
         A new data request has been submitted by {} {}. You can view the data request profile using the following link:
         {}
@@ -346,7 +347,7 @@ class DataRequestProfile(TimeStampedModel):
         )
 
         html_content = """
-        <p>Hi,</p>
+        <p>Hi LiPAD Admins,</p>
 
         <p>A new data request has been submitted by {} {}. You can view the data request profile using the following link:</p>
         <p><a rel="nofollow" target="_blank" href="{}">{}</a></p>
@@ -497,6 +498,9 @@ class DataRequestProfile(TimeStampedModel):
         You will be able to edit your account details by logging in and going to the following link:
         {}
 
+        To download DTMs, DSMs, Classified LAZ and Orthophotos, please proceed to http://lipad.dream.upd.edu.ph/maptiles after logging in.
+        To download Flood Hazard Maps, Resource Layers and other datasets, please proceed to http://lipad.dream.upd.edu.ph/layers/.
+
         If you have any questions, you can contact us as at {}.
 
         Regards,
@@ -519,6 +523,9 @@ class DataRequestProfile(TimeStampedModel):
        <p>You will be able to edit your account details by logging in and going to the following link:</p>
        {}
        </br>
+       <p>To download DTMs, DSMs, Classified LAZ and Orthophotos, please proceed to <a href="http://lipad.dream.upd.edu.ph/maptiles">Data Tiles Section</a> under Data Store after logging in.</p>
+       <p>To download Flood Hazard Maps, Resource Layers and other datasets, please proceed to <a href="http://lipad.dream.upd.edu.ph/layers/">Layers Section</a> under Data Store.</p>
+
        <p>If you have any questions, you can contact us as at <a href="mailto:{}" target="_top">{}</a></p>
        </br>
         <p>Regards,</p>
@@ -556,6 +563,9 @@ class DataRequestProfile(TimeStampedModel):
 
         Your current data request for LiPAD was approved.
 
+        To download DTMs, DSMs, Classified LAZ and Orthophotos, please proceed to http://lipad.dream.upd.edu.ph/maptiles after logging in.
+        To download Flood Hazard Maps, Resource Layers and other datasets, please proceed to http://lipad.dream.upd.edu.ph/layers/.
+
         If you have any questions, you can contact us as at {}.
 
         Regards,
@@ -569,6 +579,9 @@ class DataRequestProfile(TimeStampedModel):
         <p>Dear <strong>{}</strong>,</p>
 
        <p>Your current data request in LiPAD was approved.
+       <p>To download DTMs, DSMs, Classified LAZ and Orthophotos, please proceed to <a href="http://lipad.dream.upd.edu.ph/maptiles">Data Tiles Section</a> under Data Store after logging in.</p>
+       <p>To download Flood Hazard Maps, Resource Layers and other datasets, please proceed to <a href="http://lipad.dream.upd.edu.ph/layers/">Layers Section</a> under Data Store.</p>
+
        </br>
        <p>If you have any questions, you can contact us as at <a href="mailto:{}" target="_top">{}</a></p>
        </br>

@@ -15,7 +15,7 @@
 
 <div class="container">
 <body>
-    
+
     <div class="row body-top col-md-6 center-text home-facets" style="">
           <h1 class="no-margin-top">{% trans "Welcome to LiPAD" %}</h1>
           <p>
@@ -27,17 +27,17 @@
                 The datasets, which include Digital Elevation Models (DEMs), Digital Terrain Models (DTMs), Orthophotos, Classified LAZ, Flood Hazard Maps and Resource Maps, are available for download in open and GIS-ready formats, for use by Local Government Units (LGUs), National Government Agencies (NGAs), members of the academe, and researchers, among others.
               {% endblocktrans %}
             </p>
-       
+
           <div class="col-md-4  border=0 text-center" >
         <p>
           {% get_fhm_fmc_url "%s" as fhm %}
-          <a href="{{fhm}}">
+          <a href="{{fhm}}" title="Download Flood Hazard Maps">
             <i class="fa fa-square-o fa-5x rotate-45"></i>
           </a>
         </p>
         <h2>
           {% get_fhm_fmc_url "%s" as fhm %}
-          <a href="{{fhm}}">
+          <a href="{{fhm}}" title="Download Flood Hazard Maps">
             {% get_fhm_count "%d" as fhm_count %}
              <p class="text-center" >{{ fhm_count }} </p>
           </a>
@@ -47,12 +47,12 @@
 
       <div class="col-md-4 border=0 text-center" >
         <p>
-          <a href="layers/?limit=100&amp;offset=0&amp;keywords__slug__in=phillidar2">
+          <a href="layers/?limit=100&amp;offset=0&amp;keywords__slug__in=phillidar2" title="Download Resource Layers">
             <i class="fa fa-map-marker fa-5x"></i>
           </a>
         </p>
         <h2>
-          <a href="layers/?limit=100&amp;offset=0&amp;keywords__slug__in=phillidar2">
+          <a href="layers/?limit=100&amp;offset=0&amp;keywords__slug__in=phillidar2" title="Download Resource Layers">
             {% get_resourceLayers_count "%d" as rl_count %}
             <p class="text-center">{{ rl_count }} </p>
           </a>
@@ -61,9 +61,9 @@
       </div>
 
       <div class="col-md-4 border=0 text-center" >
-        <p><i class="fa fa-globe fa-5x"></i></p>
-        <h2>
-          <p class="text-center">37,557 sq. km.</p>
+        <p><a href="/maptiles/"><i class="fa fa-globe fa-5x"></i></a></p>
+        <h2><a href="/maptiles/">
+          <p class="text-center">37,557 sq. km.</p></a>
         </h2>
         <h4 class="text-center">Total LiDAR Coverage</h4>
       </div>
@@ -95,7 +95,7 @@
       </div>
 
       <div class="col-md-4 border=0" style="" >
-        
+
         <h4 style="margin-top:15px; text-center">OGC Services</h4>
         <p>
           <ol>
@@ -107,23 +107,23 @@
             <li><a href="{{pl}}ows?service=wfs&amp;version=2.0.0">WFS 2.0.0</a></li>
           </ol>
         <p>
-        
+
       </div>
     </div>
 
     <div class="col-md-6 pull-right row body-top">
         <div class="philgrid" >
         {% include "philgrid.html" %}
-        
+
       </div>
       <li class="list-group-item legend">
           <h4 class="list-group-item-heading">Legend</h4>
           <p></p>
-            
+
           <p>{% get_public_location "%s" as pl %}<img id="legend_icon" src="{{pl}}wms?request=GetLegendGraphic&amp;format=image/png&amp;WIDTH=20&amp;HEIGHT=20&amp;LAYER=geonode:philgrid&amp;legend_options=fontAntiAliasing:true;fontSize:12;forceLabels:on"></p>
       </li>
     </div>
-  
+
 </body>
 </div>
 
