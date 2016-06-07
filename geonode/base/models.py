@@ -1,3 +1,23 @@
+# -*- coding: utf-8 -*-
+#########################################################################
+#
+# Copyright (C) 2016 OSGeo
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program. If not, see <http://www.gnu.org/licenses/>.
+#
+#########################################################################
+
 import datetime
 import math
 import os
@@ -19,7 +39,8 @@ from django.core.files import File
 
 from mptt.models import MPTTModel, TreeForeignKey
 
-from polymorphic import PolymorphicModel, PolymorphicManager
+from polymorphic.models import PolymorphicModel
+from polymorphic.managers import PolymorphicManager
 from agon_ratings.models import OverallRating
 
 from geonode.base.enumerations import ALL_LANGUAGES, \
@@ -229,9 +250,6 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin):
     spatial_representation_type_help_text = _('method used to represent geographic information in the dataset.')
     temporal_extent_start_help_text = _('time period covered by the content of the dataset (start)')
     temporal_extent_end_help_text = _('time period covered by the content of the dataset (end)')
-    distribution_url_help_text = _('information about on-line sources from which the dataset, specification, or '
-                                   'community profile name and extended metadata elements can be obtained')
-    distribution_description_help_text = _('detailed text description of what the online resource is/does')
     data_quality_statement_help_text = _('general explanation of the data producer\'s knowledge about the lineage of a'
                                          ' dataset')
     # internal fields
@@ -283,12 +301,6 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin):
     supplemental_information = models.TextField(_('supplemental information'), default=DEFAULT_SUPPLEMENTAL_INFORMATION,
                                                 help_text=_('any other descriptive information about the dataset'))
 
-    # Section 6
-    distribution_url = models.TextField(_('distribution URL'), blank=True, null=True,
-                                        help_text=distribution_url_help_text)
-    distribution_description = models.TextField(_('distribution description'), blank=True, null=True,
-                                                help_text=distribution_description_help_text)
-
     # Section 8
     data_quality_statement = models.TextField(_('data quality statement'), blank=True, null=True,
                                               help_text=data_quality_statement_help_text)
@@ -322,6 +334,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin):
 
     # metadata XML specific fields
     metadata_uploaded = models.BooleanField(default=False)
+    metadata_uploaded_preserve = models.BooleanField(default=False)
     metadata_xml = models.TextField(null=True,
                                     default='<gmd:MD_Metadata xmlns:gmd="http://www.isotc211.org/2005/gmd"/>',
                                     blank=True)
@@ -665,19 +678,19 @@ class LinkManager(models.Manager):
     """
 
     def data(self):
-        return self.get_query_set().filter(link_type='data')
+        return self.get_queryset().filter(link_type='data')
 
     def image(self):
-        return self.get_query_set().filter(link_type='image')
+        return self.get_queryset().filter(link_type='image')
 
     def download(self):
-        return self.get_query_set().filter(link_type__in=['image', 'data'])
+        return self.get_queryset().filter(link_type__in=['image', 'data'])
 
     def metadata(self):
-        return self.get_query_set().filter(link_type='metadata')
+        return self.get_queryset().filter(link_type='metadata')
 
     def original(self):
-        return self.get_query_set().filter(link_type='original')
+        return self.get_queryset().filter(link_type='original')
 
     def geogig(self):
         return self.get_queryset().filter(name__icontains='geogig')

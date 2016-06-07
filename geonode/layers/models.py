@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #########################################################################
 #
-# Copyright (C) 2012 OpenPlans
+# Copyright (C) 2016 OSGeo
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -17,6 +17,7 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
+
 import uuid
 import logging
 
@@ -44,6 +45,18 @@ kml_exts = ['.kml']
 vec_exts = shp_exts + csv_exts + kml_exts
 
 cov_exts = ['.tif', '.tiff', '.geotiff', '.geotif']
+
+TIME_REGEX = (
+    ('[0-9]{8}', _('YYYYMMDD')),
+    ('[0-9]{8}T[0-9]{6}', _("YYYYMMDD'T'hhmmss")),
+    ('[0-9]{8}T[0-9]{6}Z', _("YYYYMMDD'T'hhmmss'Z'")),
+)
+
+TIME_REGEX_FORMAT = {
+    '[0-9]{8}': '%Y%m%d',
+    '[0-9]{8}T[0-9]{6}': '%Y%m%dT%H%M%S',
+    '[0-9]{8}T[0-9]{6}Z': '%Y%m%dT%H%M%SZ'
+}
 
 
 class Style(models.Model):
@@ -88,12 +101,18 @@ class Layer(ResourceBase):
     name = models.CharField(max_length=128)
     typename = models.CharField(max_length=128, null=True, blank=True)
 
+    is_mosaic = models.BooleanField(default=False)
+    has_time = models.BooleanField(default=False)
+    has_elevation = models.BooleanField(default=False)
+    time_regex = models.CharField(max_length=128, null=True, blank=True, choices=TIME_REGEX)
+    elevation_regex = models.CharField(max_length=128, null=True, blank=True)
+
     default_style = models.ForeignKey(
         Style,
         related_name='layer_default_style',
         null=True,
         blank=True)
-    styles = models.ManyToManyField(Style, related_name='layer_styles')
+    styles = models.ManyToManyField(Style, related_name='LayerStyles')
 
     charset = models.CharField(max_length=255, default='UTF-8')
 
@@ -241,7 +260,7 @@ class Layer(ResourceBase):
         return self.__class__.__name__
 
 
-class Layer_Styles(models.Model):
+class LayerStyles(models.Model):
     layer = models.ForeignKey(Layer)
     style = models.ForeignKey(Style)
 
@@ -277,7 +296,7 @@ class AttributeManager(models.Manager):
     """
 
     def visible(self):
-        return self.get_query_set().filter(
+        return self.get_queryset().filter(
             visible=True).order_by('display_order')
 
 
@@ -416,7 +435,7 @@ def pre_save_layer(instance, sender, **kwargs):
         instance.bbox_y1 = instance.resourcebase_ptr.bbox_y1
 
     if instance.abstract == '' or instance.abstract is None:
-        instance.abstract = 'No abstract provided'
+        instance.abstract = unicode(_('No abstract provided'))
     if instance.title == '' or instance.title is None:
         instance.title = instance.name
 
@@ -481,7 +500,7 @@ def pre_delete_layer(instance, sender, **kwargs):
         object_id=instance.id).delete()
     default_style = instance.default_style
     for style in instance.styles.all():
-        if style.layer_styles.all().count() == 1:
+        if style.LayerStyles.all().count() == 1:
             if style != default_style:
                 style.delete()
 

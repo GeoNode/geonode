@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #########################################################################
 #
-# Copyright (C) 2012 OpenPlans
+# Copyright (C) 2016 OSGeo
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -33,10 +33,14 @@ from django.shortcuts import render_to_response
 from django.conf import settings
 from django.template import RequestContext
 from django.utils.translation import ugettext as _
-from django.utils import simplejson as json
+try:
+    import json
+except ImportError:
+    from django.utils import simplejson as json
 from django.utils.html import escape
 from django.template.defaultfilters import slugify
 from django.forms.models import inlineformset_factory
+from django.db import transaction
 from django.db.models import F
 from django.forms.util import ErrorList
 
@@ -72,6 +76,9 @@ DEFAULT_SEARCH_BATCH_SIZE = 10
 MAX_SEARCH_BATCH_SIZE = 25
 GENERIC_UPLOAD_ERROR = _("There was an error while attempting to upload your data. \
 Please try again, or contact and administrator if the problem continues.")
+
+METADATA_UPLOADED_PRESERVE_ERROR = _("Note: this layer's orginal metadata was \
+populated and preserved by importing a metadata XML file. This metadata cannot be edited.")
 
 _PERMISSION_MSG_DELETE = _("You are not permitted to delete this layer")
 _PERMISSION_MSG_GENERIC = _('You do not have permissions for this layer.')
@@ -124,7 +131,9 @@ def _resolve_layer(request, typename, permission='base.view_resourcebase',
 @login_required
 def layer_upload(request, template='upload/layer_upload.html'):
     if request.method == 'GET':
+        mosaics = Layer.objects.filter(is_mosaic=True).order_by('name')
         ctx = {
+            'mosaics': mosaics,
             'charsets': CHARSETS,
             'is_layer': True,
         }
@@ -158,6 +167,7 @@ def layer_upload(request, template='upload/layer_upload.html'):
                     charset=form.cleaned_data["charset"],
                     abstract=form.cleaned_data["abstract"],
                     title=form.cleaned_data["layer_title"],
+                    metadata_uploaded_preserve=form.cleaned_data["metadata_uploaded_preserve"]
                 )
             except Exception as e:
                 exception_type, error, tb = sys.exc_info()
@@ -202,7 +212,7 @@ def layer_upload(request, template='upload/layer_upload.html'):
             status_code = 400
         return HttpResponse(
             json.dumps(out),
-            mimetype='application/json',
+            content_type='application/json',
             status=status_code)
 
 
@@ -258,6 +268,31 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
     metadata = layer.link_set.metadata().filter(
         name__in=settings.DOWNLOAD_FORMATS_METADATA)
 
+    granules = None
+    all_granules = None
+    filter = None
+    if layer.is_mosaic:
+        try:
+            cat = gs_catalog
+            cat._cache.clear()
+            store = cat.get_store(layer.name)
+            coverages = cat.mosaic_coverages(store)
+
+            filter = None
+            try:
+                if request.GET["filter"]:
+                    filter = request.GET["filter"]
+            except:
+                pass
+
+            offset = 10 * (request.page - 1)
+            granules = cat.mosaic_granules(coverages['coverages']['coverage'][0]['name'], store, limit=10,
+                                           offset=offset, filter=filter)
+            all_granules = cat.mosaic_granules(coverages['coverages']['coverage'][0]['name'], store, filter=filter)
+        except:
+            granules = {"features": []}
+            all_granules = {"features": []}
+
     context_dict = {
         "resource": layer,
         'perms_list': get_perms(request.user, layer.get_self_resource()),
@@ -266,6 +301,9 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
         "metadata": metadata,
         "is_layer": True,
         "wps_enabled": settings.OGC_SERVER['default']['WPS_ENABLED'],
+        "granules": granules,
+        "all_granules": all_granules,
+        "filter": filter,
     }
 
     context_dict["viewer"] = json.dumps(
@@ -309,6 +347,16 @@ def layer_metadata(request, layername, template='layers/layer_metadata.html'):
     metadata_author = layer.metadata_author
 
     if request.method == "POST":
+        if layer.metadata_uploaded_preserve:  # layer metadata cannot be edited
+            out = {
+                'success': False,
+                'errors': METADATA_UPLOADED_PRESERVE_ERROR
+            }
+            return HttpResponse(
+                json.dumps(out),
+                content_type='application/json',
+                status=400)
+
         layer_form = LayerForm(request.POST, instance=layer, prefix="resource")
         attribute_form = layer_attribute_set(
             request.POST,
@@ -516,7 +564,7 @@ def layer_replace(request, layername, template='layers/layer_replace.html'):
             status_code = 400
         return HttpResponse(
             json.dumps(out),
-            mimetype='application/json',
+            content_type='application/json',
             status=status_code)
 
 
@@ -534,7 +582,8 @@ def layer_remove(request, layername, template='layers/layer_remove.html'):
         }))
     if (request.method == 'POST'):
         try:
-            delete_layer.delay(object_id=layer.id)
+            with transaction.atomic():
+                delete_layer.delay(object_id=layer.id)
         except Exception as e:
             message = '{0}: {1}.'.format(_('Unable to delete layer'), layer.typename)
 
@@ -549,9 +598,44 @@ def layer_remove(request, layername, template='layers/layer_remove.html'):
         return HttpResponse("Not allowed", status=403)
 
 
+@login_required
+def layer_granule_remove(request, granule_id, layername, template='layers/layer_granule_remove.html'):
+    layer = _resolve_layer(
+        request,
+        layername,
+        'base.delete_resourcebase',
+        _PERMISSION_MSG_DELETE)
+
+    if (request.method == 'GET'):
+        return render_to_response(template, RequestContext(request, {
+            "granule_id": granule_id,
+            "layer": layer
+        }))
+    if (request.method == 'POST'):
+        try:
+            cat = gs_catalog
+            cat._cache.clear()
+            store = cat.get_store(layer.name)
+            coverages = cat.mosaic_coverages(store)
+            cat.mosaic_delete_granule(coverages['coverages']['coverage'][0]['name'], store, granule_id)
+        except Exception as e:
+            message = '{0}: {1}.'.format(_('Unable to delete layer'), layer.typename)
+
+            if 'referenced by layer group' in getattr(e, 'message', ''):
+                message = _('This layer is a member of a layer group, you must remove the layer from the group '
+                            'before deleting.')
+
+            messages.error(request, message)
+            return render_to_response(template, RequestContext(request, {"layer": layer}))
+        return HttpResponseRedirect(reverse('layer_detail', args=(layer.service_typename,)))
+    else:
+        return HttpResponse("Not allowed", status=403)
+
+
 def layer_thumbnail(request, layername):
     if request.method == 'POST':
         layer_obj = _resolve_layer(request, layername)
+
         try:
             image = _render_thumbnail(request.body)
 
@@ -565,7 +649,7 @@ def layer_thumbnail(request, layername):
             return HttpResponse(
                 content='error saving thumbnail',
                 status=500,
-                mimetype='text/plain'
+                content_type='text/plain'
             )
 
 
@@ -611,3 +695,9 @@ def get_layer(request, layername):
             response,
             ensure_ascii=False),
             content_type='application/javascript')
+def layer_metadata_detail(request, layername, template='layers/layer_metadata_detail.html'):
+    layer = _resolve_layer(request, layername, 'view_resourcebase', _PERMISSION_MSG_METADATA)
+    return render_to_response(template, RequestContext(request, {
+        "layer": layer,
+        'SITEURL': settings.SITEURL[:-1]
+    }))

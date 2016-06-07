@@ -1,5 +1,6 @@
 .. _setup_admin:
 
+===========
 Setup steps
 ===========
 
@@ -10,8 +11,11 @@ If you are working remotely, you should first connect to the machine that has yo
 .. code-block:: console
     :linenos:
 	
-	$ django-admin startproject my_geonode --template=https://github.com/GeoNode/geonode-project/archive/master.zip -epy,rst
-	$ sudo pip install -e my_geonode
+    $ apt-get install python-django
+    $ django-admin startproject my_geonode --template=https://github.com/GeoNode/geonode-project/archive/master.zip -epy,rst
+    $ cd my_geonode
+    $ sudo pip install -e .
+    $ python manage.py syncdb
 
 .. note:: You should NOT use the name *geonode* for your project as it will conflict with your default geonode package name.
 
@@ -22,8 +26,8 @@ Make sure that the directories are reachable and have the correct rights for the
 .. code-block:: console
     :linenos:
 	
-	$ chown -Rf geonode: *
-	$ chmod -Rf 775 my_geonode
+    $ sudo chown -Rf geonode: *
+    $ sudo chmod -Rf 775 my_geonode
 
 If you have a brand new installation of GeoNode, rename the **/home/geonode/geonode/local_settings.py.sample** to **local_settings.py** and edit it's content by setting the SITEURL and SITENAME. This file will be your main settings file for your project. It inherits all the settings from the original one plus you can override the ones that you need. 
 
@@ -86,11 +90,11 @@ Then regenerate the static **JavaScript** and **CSS** files from **/path/to/my_g
 .. code-block:: console
     :linenos:
 
-	$ python manage.py collectstatic
-	$ sudo service apache2 restart
+    $ python manage.py collectstatic
+    $ sudo service apache2 restart
 
 Customize the Look & Feel
--------------------------
+=========================
 
 Now you can edit the templates in **my_geonode/templates**, the css and images to match your needs like shown in :ref:`customize.theme_admin`!
 
@@ -101,12 +105,13 @@ When you've done the changes, run the following command in the *my_geonode* fold
 .. code-block:: console
     :linenos:
 
-	$ python manage.py collectstatic
+    $ cd /home/geonode/my_geonode
+    $ python manage.py collectstatic
 
 And now you should see all the changes you've made to your GeoNode.
 
 Source code revision control
-----------------------------
+============================
 
 It is recommended that you immediately put your new project under source code revision control. The GeoNode development team uses Git and GitHub and recommends that you do the same. If you do not already have a GitHub account, you can easily set one up. A full review of Git and distributed source code revision control systems is beyond the scope of this tutorial, but you may find the `Git Book`_ useful if you are not already familiar with these concepts.
 
@@ -131,38 +136,55 @@ It is recommended that you immediately put your new project under source code re
    .. code-block:: console
       :linenos:
 
-      $ git init
+      $ sudo git init
 
 #. Add the remote repository reference to your local git configuration:
 
    .. code-block:: console
       :linenos:
 
-      $ git remote add 
+      $ sudo git remote add origin <https url of your custom repo>
+      
 
 #. Add your project files to the repository:
 
    .. code-block:: console
       :linenos:
 
-      $ git add .
+      $ sudo git add .
 
 #. Commit your changes:
 
    .. code-block:: console
       :linenos:
 
-      $ git commit -am "Initial commit"
+        # Those two command must be issued ONLY once
+      $ sudo git config --global user.email "my@email"
+      $ sudo git config --global user.name "myuser"
+      
+      $ sudo git commit -am "Initial commit"
 
 #. Push to the remote repository:
 
    .. code-block:: console
       :linenos:
 
-      $ git push origin master
+      $ sudo git push origin master
+
+===============
+Further Reading
+===============
+
+* If you want more information on how to GitHub works and how to contribute to GeoNode project, go to the section ":ref:`contrib`"
+
+* If you want to customize the Logo and Style of **my_geonode**, go to the section ":ref:`theme_admin`"
+
+Here below you can find some more details about the custom project structure and info on some of the most important Python files you may want to edit.
+
+The following section is mostly oriented to advanced users and developers.
 
 Project structure
------------------
+=================
 
 Your GeoNode project will now be structured as depicted below::
 

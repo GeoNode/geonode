@@ -14,6 +14,8 @@
 # Translators:
 # Translators:
 # Translators:
+# Translators:
+# Translators:
 # Andres Alfonso Lemon Gomez <lemon.andres@gmail.com>, 2014
 # fakhar uddin al helal <helal.bcc@gmail.com>, 2015
 # Freelance Developer <annachow_hg@yahoo.com>, 2015
@@ -26,8 +28,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-10-29 04:21-0500\n"
-"PO-Revision-Date: 2015-10-29 09:05+0000\n"
+"POT-Creation-Date: 2016-04-14 03:50-0500\n"
+"PO-Revision-Date: 2016-04-14 08:37+0000\n"
 "Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
 "Language-Team: Bengali (http://www.transifex.com/geonode/geonode/language/"
 "bn/)\n"
@@ -41,7 +43,7 @@ msgstr ""
 msgid "Invalid permission level."
 msgstr "অবৈধ অনুমতি স্তর."
 
-#: utils.py:496
+#: utils.py:502
 msgid "Permission Denied"
 msgstr "অনুমতি অস্বীকার"
 
@@ -163,9 +165,8 @@ msgstr "প্রদত্ত কোন তথ্য"
 
 #: base/forms.py:43 base/templates/base/resourcebase_info_panel.html:62
 #: documents/templates/documents/document_metadata.html:65
-#: layers/templates/layers/layer_metadata.html:70
-#: layers/templates/upload/layer_upload.html:89
-#: maps/templates/maps/map_metadata.html:61
+#: layers/templates/layers/layer_metadata.html:75
+#: maps/templates/maps/map_metadata.html:61 templates/metadata_detail.html:86
 msgid "Category"
 msgstr "শ্রেণী"
 
@@ -173,42 +174,97 @@ msgstr "শ্রেণী"
 msgid "Category is required."
 msgstr "শ্রেণী প্রয়োজন"
 
-#: base/forms.py:114 groups/models.py:45 people/forms.py:82
+#: base/forms.py:64 base/models.py:257
+#: base/templates/base/_resourcebase_contact_snippet.html:10
+#: base/templates/base/resourcebase_info_panel.html:84
+#: templates/metadata_detail.html:110
+msgid "Owner"
+msgstr "মালিক"
+
+#: base/forms.py:82 base/templates/base/resourcebase_info_panel.html:34
+#: contrib/exif/templates/exif/_exif_document_detail.html:13
+#: templates/metadata_detail.html:69 templates/search/_general_filters.html:47
+msgid "Date"
+msgstr "তারিখ"
+
+#: base/forms.py:88 base/models.py:295
+msgid "temporal extent start"
+msgstr "সময়গত ব্যাপ্তি শুরু"
+
+#: base/forms.py:95 base/models.py:297
+msgid "temporal extent end"
+msgstr "সময়গত ব্যাপ্তি শেষ"
+
+#: base/forms.py:103 base/forms.py:111
+msgid "Person outside GeoNode (fill form)"
+msgstr ""
+
+#: base/forms.py:104 base/templates/base/_resourcebase_contact_snippet.html:14
+#: base/templates/base/resourcebase_info_panel.html:89
+#: documents/templates/documents/document_metadata.html:33
+#: documents/templates/documents/document_metadata.html:55
+#: layers/templates/layers/layer_metadata.html:39
+#: layers/templates/layers/layer_metadata.html:112
+#: maps/templates/maps/map_metadata.html:51
+msgid "Point of Contact"
+msgstr "যোগাযোগ পয়েন্ট"
+
+#: base/forms.py:112 base/templates/base/_resourcebase_contact_snippet.html:18
+#: documents/templates/documents/document_metadata.html:29
+#: layers/templates/layers/layer_metadata.html:35
+#: templates/metadata_detail.html:329
+msgid "Metadata Author"
+msgstr "মেটাডাটা লেখক"
+
+#: base/forms.py:119 base/templates/base/resourcebase_info_panel.html:50
+#: groups/models.py:64 people/templates/people/profile_detail.html:103
+#: templates/metadata_detail.html:79 templates/metadata_detail.html.py:140
+#: templates/metadata_detail.html:282 templates/metadata_detail.html.py:358
+#: templates/search/_general_filters.html:19
+msgid "Keywords"
+msgstr "মূলশব্দ"
+
+#: base/forms.py:121 groups/models.py:65 people/forms.py:82
 msgid "A space or comma-separated list of keywords"
 msgstr "একটি স্থান বা কীওয়ার্ড কমা-পৃথক তালিকা"
 
-#: base/models.py:44 services/models.py:86
+#: base/forms.py:125 base/templates/base/resourcebase_info_panel.html:72
+#: templates/metadata_detail.html:96 templates/search/_region_filter.html:5
+msgid "Regions"
+msgstr "অঞ্চল"
+
+#: base/models.py:64 services/models.py:106
 msgid "function performed by the responsible party"
 msgstr "দায়ী পক্ষের দ্বারা সঞ্চালিত ফাংশন"
 
-#: base/models.py:212
+#: base/models.py:232
 msgid "reference date for the cited resource"
 msgstr "উদাহৃত সম্পদ জন্য রেফারেন্স তারিখ"
 
-#: base/models.py:213
+#: base/models.py:233
 msgid "identification of when a given event occurred"
 msgstr "একটি প্রদত্ত ঘটনা ঘটেছে যখন সনাক্তকরণ"
 
-#: base/models.py:214
+#: base/models.py:234
 msgid "version of the cited resource"
 msgstr "উদাহৃত সম্পদ সংস্করণ"
 
-#: base/models.py:215
+#: base/models.py:235
 msgid "brief narrative summary of the content of the resource(s)"
 msgstr "সম্পদ এর বিষয়বস্তুর সংক্ষিপ্ত আখ্যান সারসংক্ষেপ (গুলি)"
 
-#: base/models.py:216
+#: base/models.py:236
 msgid "summary of the intentions with which the resource(s) was developed"
 msgstr "সম্পদ (গুলি) উন্নত ছিল যা দিয়ে করতেও সারসংক্ষেপ"
 
-#: base/models.py:217
+#: base/models.py:237
 msgid ""
 "frequency with which modifications and deletions are made to the data after "
 "it is first produced"
 msgstr ""
 "এটা প্রথম উত্পাদিত হয় পরে ফ্রিকোয়েন্সি সঙ্গে যা পরিবর্তন ও মুছে ডেটাতে তৈরি হয়"
 
-#: base/models.py:219
+#: base/models.py:239
 msgid ""
 "commonly used word(s) or formalised word(s) or phrase(s) used to describe "
 "the subject (space or comma-separated"
@@ -216,30 +272,30 @@ msgstr ""
 "সাধারণভাবে ব্যবহৃত শব্দ (গুলি) বা বিধিবদ্ধ শব্দ (গুলি) বা ফ্রেইজ (গুলি) বিষয় (স্পেস বা "
 "কমা দ্বারা পৃথক বর্ণনা ব্যবহৃত"
 
-#: base/models.py:221
+#: base/models.py:241
 msgid "keyword identifies a location"
 msgstr "শব্দ একটি অবস্থান চিহ্নিত"
 
-#: base/models.py:222
+#: base/models.py:242
 msgid "limitation(s) placed upon the access or use of the data."
 msgstr "সীমাবদ্ধতা (গুলি) তথ্য প্রবেশাধিকার বা ব্যবহারের উপর স্থাপিত."
 
-#: base/models.py:223
+#: base/models.py:243
 msgid ""
 "other restrictions and legal prerequisites for accessing and using the "
 "resource or metadata"
 msgstr ""
 "অ্যাক্সেস এবং সম্পদ বা মেটাডেটা ব্যবহারের জন্য অন্যান্য সীমাবদ্ধতা ও আইনি অপরিহার্য"
 
-#: base/models.py:225
+#: base/models.py:245
 msgid "license of the dataset"
 msgstr "ডেটা সেটটি এর লাইসেন্স"
 
-#: base/models.py:226
+#: base/models.py:246
 msgid "language used within the dataset"
 msgstr "ভাষা ডেটা সেটটি মধ্যে ব্যবহার"
 
-#: base/models.py:227
+#: base/models.py:247
 msgid ""
 "high-level geographic data thematic classification to assist in the grouping "
 "and search of available geographic data sets."
@@ -247,197 +303,164 @@ msgstr ""
 "উচ্চ-স্তর ভৌগলিক তথ্য বিষয়ভিত্তিক শ্রেণীবিভাগ বিভাজন এবং উপলব্ধ ভৌগলিক তথ্য সেট "
 "সন্ধানে সাহায্য করতে."
 
-#: base/models.py:229
+#: base/models.py:249
 msgid "method used to represent geographic information in the dataset."
 msgstr "পদ্ধতি ডেটা সেটটি মধ্যে ভৌগলিক তথ্য প্রতিনিধিত্ব করতে ব্যবহৃত."
 
-#: base/models.py:230
+#: base/models.py:250
 msgid "time period covered by the content of the dataset (start)"
 msgstr "ডেটা সেটটি এর কন্টেন্ট দ্বারা আচ্ছাদিত সময় (শুরু)"
 
-#: base/models.py:231
+#: base/models.py:251
 msgid "time period covered by the content of the dataset (end)"
 msgstr "ডেটা সেটটি (শেষ) এর কন্টেন্ট দ্বারা আচ্ছাদিত সময়"
 
-#: base/models.py:232
-msgid ""
-"information about on-line sources from which the dataset, specification, or "
-"community profile name and extended metadata elements can be obtained"
-msgstr ""
-"ডেটা সেটটি, স্পেসিফিকেশন, বা সম্প্রদায় প্রোফাইল নাম এবং বর্ধিত মেটাডেটা উপাদান "
-"পাওয়া যাবে যা থেকে অন লাইন উত্স সম্পর্কে তথ্য"
-
-#: base/models.py:234
-msgid "detailed text description of what the online resource is/does"
-msgstr "/ কী জন্য অনলাইন সম্পদ বিস্তারিত পাঠ্য বর্ণনা"
-
-#: base/models.py:235
+#: base/models.py:252
 msgid ""
 "general explanation of the data producer's knowledge about the lineage of a "
 "dataset"
 msgstr "একটি ডেটা সেটটি এর বংশ সম্পর্কে তথ্য প্রযোজক এর জ্ঞান সাধারণ ব্যাখ্যা"
 
-#: base/models.py:240
-#: base/templates/base/_resourcebase_contact_snippet.html:10
-#: base/templates/base/resourcebase_info_panel.html:84
-msgid "Owner"
-msgstr "মালিক"
-
-#: base/models.py:242
+#: base/models.py:259
 msgid "title"
 msgstr "খেতাব"
 
-#: base/models.py:242
+#: base/models.py:259
 msgid "name by which the cited resource is known"
 msgstr "উদাহৃত সম্পদ পরিচিত যা দ্বারা নাম"
 
-#: base/models.py:243
+#: base/models.py:260
 msgid "date"
 msgstr "তারিখ"
 
-#: base/models.py:244
+#: base/models.py:261
 msgid "date type"
 msgstr "তারিখ ধরন"
 
-#: base/models.py:246
+#: base/models.py:263
 msgid "edition"
 msgstr "সংস্করণ"
 
-#: base/models.py:247
+#: base/models.py:264
 msgid "abstract"
 msgstr "বিমূর্ত"
 
-#: base/models.py:248
+#: base/models.py:265
 msgid "purpose"
 msgstr "উদ্দেশ্য"
 
-#: base/models.py:249
+#: base/models.py:266
 msgid "maintenance frequency"
 msgstr "রক্ষণাবেক্ষণ ফ্রিকোয়েন্সি"
 
-#: base/models.py:252 people/models.py:92
+#: base/models.py:269 people/models.py:92
 msgid "keywords"
 msgstr "কীওয়ার্ড"
 
-#: base/models.py:253
+#: base/models.py:270
 msgid "keywords region"
 msgstr "কীওয়ার্ড অঞ্চল"
 
-#: base/models.py:256
+#: base/models.py:273
 msgid "restrictions"
 msgstr "নিষেধাজ্ঞা"
 
-#: base/models.py:260
+#: base/models.py:277
 msgid "restrictions other"
 msgstr "অন্যান্য বিধিনিষেধ"
 
-#: base/models.py:264 base/templates/base/resourcebase_info_panel.html:16
+#: base/models.py:281 base/templates/base/resourcebase_info_panel.html:16
 #: base/templates/base/resourcebase_info_panel.html:108
+#: templates/metadata_detail.html:55 templates/metadata_detail.html.py:191
 msgid "License"
 msgstr "লাইসেন্স"
 
-#: base/models.py:266
+#: base/models.py:283
 msgid "language"
 msgstr "ভাষা"
 
-#: base/models.py:274
+#: base/models.py:291
 msgid "spatial representation type"
 msgstr "বিশেষ উপস্থাপন পদ্ধতি"
 
-#: base/models.py:278
-msgid "temporal extent start"
-msgstr "সময়গত ব্যাপ্তি শুরু"
-
-#: base/models.py:280
-msgid "temporal extent end"
-msgstr "সময়গত ব্যাপ্তি শেষ"
-
-#: base/models.py:283
+#: base/models.py:300
 msgid "supplemental information"
 msgstr "সম্পূরক তথ্য"
 
-#: base/models.py:284
+#: base/models.py:301
 msgid "any other descriptive information about the dataset"
 msgstr "ডেটা সেটটি সম্পর্কে অন্য কোন বর্ণনামূলক তথ্য"
 
-#: base/models.py:287
-msgid "distribution URL"
-msgstr "বন্টন URL টি"
-
-#: base/models.py:289
-msgid "distribution description"
-msgstr "বন্টন বিবরণ"
-
-#: base/models.py:293
+#: base/models.py:304
 msgid "data quality statement"
 msgstr "তথ্য মানের বিবৃতি"
 
-#: base/models.py:308
+#: base/models.py:319
 msgid "CSW typename"
 msgstr "CSW TypeName"
 
-#: base/models.py:310
+#: base/models.py:321
 msgid "CSW schema"
 msgstr "CSW স্কিমা"
 
-#: base/models.py:315
+#: base/models.py:326
 msgid "CSW source"
 msgstr "CSW উৎস"
 
-#: base/models.py:316
+#: base/models.py:327
 msgid "CSW insert date"
 msgstr "CSW সন্নিবেশ তারিখ"
 
-#: base/models.py:317
+#: base/models.py:328
 msgid "CSW type"
 msgstr "CSW টাইপ"
 
-#: base/models.py:318
+#: base/models.py:329
 msgid "CSW anytext"
 msgstr "CSW anytext"
 
-#: base/models.py:319
+#: base/models.py:330
 msgid "CSW WKT geometry"
 msgstr "CSW উইকেটরক্ষক জ্যামিতি"
 
-#: base/models.py:332
+#: base/models.py:344 templates/metadata_detail.html:103
 msgid "Featured"
 msgstr "বৈশিষ্ট্য"
 
-#: base/models.py:333
+#: base/models.py:345
 msgid "Should this resource be advertised in home page?"
 msgstr "এই সম্পদ হোম পেজ এ বিজ্ঞাপনে করা উচিত?"
 
-#: base/models.py:334
+#: base/models.py:346
 msgid "Is Published"
 msgstr "প্রকাশিত"
 
-#: base/models.py:335
+#: base/models.py:347
 msgid "Should this resource be published and searchable?"
 msgstr "এই সম্পদ প্রকাশিত এবং অনুসন্ধানযোগ্য করা উচিত?"
 
-#: base/models.py:704
+#: base/models.py:716
 msgid "For example \"kml\""
 msgstr "উদাহরণস্বরূপ \"KML\""
 
-#: base/models.py:706
+#: base/models.py:718
 msgid "For example \"View in Google Earth\""
 msgstr "উদাহরণস্বরূপ \"গুগল আর্থ দেখুন\""
 
-#: base/models.py:707
+#: base/models.py:719
 msgid "For example \"text/xml\""
 msgstr "উদাহরণস্বরূপ \"টেক্সট / XML\""
 
-#: base/management/__init__.py:14
+#: base/management/__init__.py:34
 msgid "Request to download a resource"
 msgstr "রিসোর্স ডাউনলোড করার অনুরোধ"
 
-#: base/management/__init__.py:15
+#: base/management/__init__.py:35
 msgid "A request for downloading a resource was sent"
 msgstr "নকশা"
 
 #: base/templates/base/_resourcebase_contact_snippet.html:3
-#: templates/500.html:151 templates/base.html:144
+#: templates/500.html:151 templates/base.html:145
 msgid "About"
 msgstr "প্রায়"
 
@@ -445,24 +468,9 @@ msgstr "প্রায়"
 msgid "Owner, Point of Contact, Metadata Author"
 msgstr "মালিক, যোগাযোগ এর পয়েন্ট, মিটাডাটা লেখক"
 
-#: base/templates/base/_resourcebase_contact_snippet.html:14
-#: base/templates/base/resourcebase_info_panel.html:89
-#: documents/templates/documents/document_metadata.html:33
-#: documents/templates/documents/document_metadata.html:55
-#: layers/templates/layers/layer_metadata.html:36
-#: layers/templates/layers/layer_metadata.html:107
-#: maps/templates/maps/map_metadata.html:51
-msgid "Point of Contact"
-msgstr "যোগাযোগ পয়েন্ট"
-
-#: base/templates/base/_resourcebase_contact_snippet.html:18
-#: documents/templates/documents/document_metadata.html:29
-#: layers/templates/layers/layer_metadata.html:32
-msgid "Metadata Author"
-msgstr "মেটাডাটা লেখক"
-
-#: base/templates/base/resourcebase_info_panel.html:6 groups/models.py:34
-#: services/forms.py:24 templates/announcements/announcement_list.html:20
+#: base/templates/base/resourcebase_info_panel.html:6 groups/models.py:54
+#: services/forms.py:44 templates/metadata_detail.html:41
+#: templates/announcements/announcement_list.html:20
 msgid "Title"
 msgstr "খেতাব"
 
@@ -471,70 +479,63 @@ msgstr "খেতাব"
 msgid "SRID"
 msgstr ""
 
-#: base/templates/base/resourcebase_info_panel.html:29 services/forms.py:29
+#: base/templates/base/resourcebase_info_panel.html:29 services/forms.py:49
+#: templates/metadata_detail.html:46
 msgid "Abstract"
 msgstr "বিমূর্ত"
 
-#: base/templates/base/resourcebase_info_panel.html:34
-#: contrib/exif/templates/exif/_exif_document_detail.html:13
-#: templates/search/_general_filters.html:47
-msgid "Date"
-msgstr "তারিখ"
-
 #: base/templates/base/resourcebase_info_panel.html:45
-#: layers/templates/layers/layer_detail.html:345
+#: layers/templates/layers/layer_detail.html:352
+#: templates/metadata_detail.html:74
 msgid "Type"
 msgstr "প্রকার"
-
-#: base/templates/base/resourcebase_info_panel.html:50 groups/models.py:44
-#: people/templates/people/profile_detail.html:78
-#: templates/search/_general_filters.html:19
-msgid "Keywords"
-msgstr "মূলশব্দ"
-
-#: base/templates/base/resourcebase_info_panel.html:72
-#: templates/search/_region_filter.html:5
-msgid "Regions"
-msgstr "অঞ্চল"
 
 #: base/templates/base/resourcebase_info_panel.html:95
 msgid "More info"
 msgstr "অধিক তথ্য"
 
 #: base/templates/base/resourcebase_info_panel.html:121
+#: templates/metadata_detail.html:204
 msgid "Maintenance Frequency"
 msgstr "রক্ষণাবেক্ষণ ফ্রিকোয়েন্সি"
 
 #: base/templates/base/resourcebase_info_panel.html:126
+#: templates/metadata_detail.html:209
 msgid "Restrictions"
 msgstr "বিধিনিষেধ"
 
 #: base/templates/base/resourcebase_info_panel.html:135
+#: templates/metadata_detail.html:218
 msgid "Edition"
 msgstr "সংস্করণ"
 
 #: base/templates/base/resourcebase_info_panel.html:140
+#: templates/metadata_detail.html:223
 msgid "Purpose"
 msgstr "উদ্দেশ্য"
 
 #: base/templates/base/resourcebase_info_panel.html:145 templates/500.html:154
-#: templates/base.html:147
+#: templates/base.html:148 templates/metadata_detail.html:228
 msgid "Language"
 msgstr "ভাষা"
 
 #: base/templates/base/resourcebase_info_panel.html:150
+#: templates/metadata_detail.html:233
 msgid "Temporal Extent"
 msgstr "টেম্পোরাল ব্যাপ্তি"
 
 #: base/templates/base/resourcebase_info_panel.html:155
+#: templates/metadata_detail.html:238
 msgid "Data Quality"
 msgstr "ডেটা কোয়ালিটির"
 
 #: base/templates/base/resourcebase_info_panel.html:160
+#: templates/metadata_detail.html:243
 msgid "Supplemental Information"
 msgstr "প্রাসঙ্গিক তথ্য"
 
 #: base/templates/base/resourcebase_info_panel.html:165
+#: templates/metadata_detail.html:248
 msgid "Spatial Representation Type"
 msgstr "স্থানিক প্রতিনিধিত্ব প্রকার"
 
@@ -610,7 +611,7 @@ msgstr "Add to Favorites"
 msgid "Favorites for"
 msgstr "যার জন্য পছন্দসমূহ"
 
-#: contrib/geosites/views.py:106 geoserver/views.py:422 geoserver/views.py:477
+#: contrib/geosites/views.py:126 geoserver/views.py:442 geoserver/views.py:497
 msgid "Bad HTTP Authorization Credentials."
 msgstr "খারাপ HTTP- র অনুমোদন প্রমাণপত্রাদি."
 
@@ -650,11 +651,12 @@ msgstr "শুরু"
 #: contrib/geosites/templates/master_index.html:35
 #: contrib/geosites/templates/master_index.html:45 templates/index.html:30
 #: templates/index.html.py:40 templates/index.html:50
+#: templates/metadata_detail.html:101 templates/metadata_detail.html.py:104
 msgid "No"
 msgstr "না"
 
 #: contrib/geosites/templates/master_index.html:25
-#: layers/templates/layers/layer_detail.html:220 templates/index.html:30
+#: layers/templates/layers/layer_detail.html:227 templates/index.html:30
 #: templates/notification/request_download_resourcebase/full.txt:7
 msgid "Layer"
 msgid_plural "Layers"
@@ -678,7 +680,7 @@ msgid "Explore layers"
 msgstr "স্তর অন্বেষণ"
 
 #: contrib/geosites/templates/master_index.html:35
-#: maps/templates/maps/map_detail.html:124 templates/index.html:40
+#: maps/templates/maps/map_detail.html:131 templates/index.html:40
 msgid "Map"
 msgid_plural "Maps"
 msgstr[0] "মানচিত্রসমূহ"
@@ -719,111 +721,111 @@ msgstr ""
 msgid "See users"
 msgstr "ব্যবহারকারীদের দেখুন"
 
-#: documents/forms.py:96 documents/forms.py:164
+#: documents/forms.py:116 documents/forms.py:184
 msgid "Document must be a file or url."
 msgstr "ডকুমেন্ট ফাইল বা URL হওয়া আবশ্যক."
 
-#: documents/forms.py:100 documents/forms.py:168
+#: documents/forms.py:120 documents/forms.py:188
 msgid "A document cannot have both a file and a url."
 msgstr "একটি নথির একটি ফাইল এবং একটি URL উভয় থাকতে পারে না."
 
-#: documents/forms.py:113 documents/forms.py:181
+#: documents/forms.py:133 documents/forms.py:201
 msgid "This file type is not allowed"
 msgstr "এই ফাইল টাইপের অনুমোদিত নয়"
 
-#: documents/forms.py:131
+#: documents/forms.py:151
 msgid "Link to"
 msgstr "সাথে যোগসূত্র"
 
-#: documents/forms.py:153
+#: documents/forms.py:173
 msgid "Permissions must be valid JSON."
 msgstr "অনুমতি বৈধ JSON হতে হবে."
 
-#: documents/models.py:40
+#: documents/models.py:62
 msgid "File"
 msgstr "ফাইল"
 
-#: documents/models.py:49
+#: documents/models.py:72
 msgid "The URL of the document if it is external."
 msgstr "ডকুমেন্টের ইউআরএল এটা বাইরের যদি."
 
-#: documents/models.py:50
+#: documents/models.py:73
 msgid "URL"
 msgstr "URL টি"
 
-#: documents/views.py:29
+#: documents/views.py:49
 msgid "You are not permitted to delete this document"
 msgstr "আপনি এই নথি মুছে করার অনুমতি নেই"
 
-#: documents/views.py:30
+#: documents/views.py:50
 msgid "You do not have permissions for this document."
 msgstr "আপনি এই নথির জন্য অনুমতি নেই."
 
-#: documents/views.py:31
+#: documents/views.py:51
 msgid "You are not permitted to modify this document"
 msgstr "আপনি এই নথি পরিবর্তন করার অনুমতি নেই"
 
-#: documents/views.py:33
+#: documents/views.py:53
 msgid "You are not permitted to modify this document's metadata"
 msgstr "আপনি এই নথির এর মেটাডেটা পরিবর্তন করার অনুমতি নেই"
 
-#: documents/views.py:34
+#: documents/views.py:54
 msgid "You are not permitted to view this document"
 msgstr "আপনি এই নথি দেখতে অনুমতি নেই"
 
-#: documents/views.py:70 documents/views.py:128
+#: documents/views.py:90 documents/views.py:148
 msgid "You are not allowed to view this document."
 msgstr "আপনি এই নথি দেখতে অনুমতি দেওয়া হয়নি."
 
-#: documents/views.py:278
+#: documents/views.py:298
 msgid "You are not allowed to edit this document."
 msgstr "আপনি এই নথি সম্পাদনা করার অনুমতি দেওয়া হয়নি."
 
-#: documents/views.py:328 layers/views.py:358
+#: documents/views.py:348 layers/views.py:366
 msgid "You must set a point of contact for this resource"
 msgstr ""
 
-#: documents/views.py:343 layers/views.py:373
+#: documents/views.py:363 layers/views.py:381
 msgid "You must set an author for this resource"
 msgstr "এই উৎসের জন্য আপনাকে অবশ্যই একজন লেখক নির্বাচন করতে হবে"
 
-#: documents/management/__init__.py:14
+#: documents/management/__init__.py:34
 msgid "Document Created"
 msgstr "ডকুমেন্ট তৈরী করা হয়েছে"
 
-#: documents/management/__init__.py:15
+#: documents/management/__init__.py:35
 msgid "A Document was created"
 msgstr "একটি নথি তৈরি করা হয়েছে"
 
-#: documents/management/__init__.py:18
+#: documents/management/__init__.py:38
 msgid "Document Updated"
 msgstr "নথি হালনাগাদ"
 
-#: documents/management/__init__.py:19
+#: documents/management/__init__.py:39
 msgid "A Document was updated"
 msgstr "নথিটি হালনাগাদ করা হয়েছে"
 
-#: documents/management/__init__.py:22
+#: documents/management/__init__.py:42
 msgid "Document Deleted"
 msgstr "নথি মোছা"
 
-#: documents/management/__init__.py:23
+#: documents/management/__init__.py:43
 msgid "A Document was deleted"
 msgstr "একটি নথি মোছা হয়েছে"
 
-#: documents/management/__init__.py:26
+#: documents/management/__init__.py:46
 msgid "Comment on Document"
 msgstr "মন্তব্য করা"
 
-#: documents/management/__init__.py:27
+#: documents/management/__init__.py:47
 msgid "A Document was commented on"
 msgstr "একটি ডকুমেন্টে মন্তব্য করা হয়েছে"
 
-#: documents/management/__init__.py:30
+#: documents/management/__init__.py:50
 msgid "Document for Map"
 msgstr "মানচিত্র জন্য নথি"
 
-#: documents/management/__init__.py:31
+#: documents/management/__init__.py:51
 msgid "A rating was given to a document"
 msgstr "একটি ডকুমেন্ট মূল্যায়ন করা হয়েছে"
 
@@ -841,104 +843,110 @@ msgstr "এই নথিটি রেটিং করুন"
 msgid "Average Rating"
 msgstr "মাঝামাঝি নির্ধারণ"
 
-#: documents/templates/documents/document_detail.html:91
-#: documents/templates/documents/document_detail.html:93
-#: documents/templates/documents/document_detail.html:95
+#: documents/templates/documents/document_detail.html:89
+#: layers/templates/layers/layer_detail.html:181
+#: maps/templates/maps/map_detail.html:78
+msgid "Metadata Detail"
+msgstr ""
+
+#: documents/templates/documents/document_detail.html:97
+#: documents/templates/documents/document_detail.html:99
+#: documents/templates/documents/document_detail.html:101
 msgid "Download Document"
 msgstr "ডাউনলোড ডকুমেন্ট"
 
-#: documents/templates/documents/document_detail.html:99
+#: documents/templates/documents/document_detail.html:105
 #: layers/templates/layers/layer_detail.html:146
 msgid "Request Download"
 msgstr "ডাউনলোডের অনুরোধ"
 
-#: documents/templates/documents/document_detail.html:105
-#: documents/templates/documents/document_detail.html:112
+#: documents/templates/documents/document_detail.html:111
+#: documents/templates/documents/document_detail.html:118
 msgid "Edit Document"
 msgstr "সম্পাদনা ডকুমেন্ট"
 
-#: documents/templates/documents/document_detail.html:120
-#: layers/templates/layers/layer_detail.html:194
-#: maps/templates/maps/map_detail.html:110
+#: documents/templates/documents/document_detail.html:126
+#: layers/templates/layers/layer_detail.html:201
+#: maps/templates/maps/map_detail.html:117 templates/metadata_detail.html:30
 msgid "Metadata"
 msgstr "মেটাডাটা"
 
-#: documents/templates/documents/document_detail.html:121
-#: layers/templates/layers/layer_detail.html:195
-#: layers/templates/layers/layer_detail.html:204
-#: maps/templates/maps/map_detail.html:111
-#: maps/templates/maps/map_detail.html:125
+#: documents/templates/documents/document_detail.html:127
+#: layers/templates/layers/layer_detail.html:202
+#: layers/templates/layers/layer_detail.html:211
+#: maps/templates/maps/map_detail.html:118
+#: maps/templates/maps/map_detail.html:132
 msgid "Edit"
 msgstr "সম্পাদনা"
 
-#: documents/templates/documents/document_detail.html:127
+#: documents/templates/documents/document_detail.html:133
 #: templates/notification/request_download_resourcebase/full.txt:9
 msgid "Document"
 msgstr "নথি"
 
-#: documents/templates/documents/document_detail.html:129
-#: layers/templates/layers/layer_detail.html:222
+#: documents/templates/documents/document_detail.html:135
+#: layers/templates/layers/layer_detail.html:229
 msgid "Replace"
 msgstr "প্রতিস্থাপন"
 
-#: documents/templates/documents/document_detail.html:132
+#: documents/templates/documents/document_detail.html:138
 #: groups/templates/groups/group_members.html:33
 #: groups/templates/groups/group_members.html:59
 #: groups/templates/groups/group_members.html:86
-#: layers/templates/layers/layer_detail.html:228
-#: maps/templates/maps/map_detail.html:126
+#: layers/templates/layers/layer_detail.html:235
+#: maps/templates/maps/map_detail.html:133
 msgid "Remove"
 msgstr "অপসারণ"
 
-#: documents/templates/documents/document_detail.html:139
-#: documents/templates/documents/document_detail.html:163
+#: documents/templates/documents/document_detail.html:145
+#: documents/templates/documents/document_detail.html:169
 #: layers/templates/layers/layer_detail.html:169
-#: layers/templates/layers/layer_detail.html:235
-#: layers/templates/layers/layer_detail.html:261
-#: maps/templates/maps/map_detail.html:89
-#: maps/templates/maps/map_detail.html:132
+#: layers/templates/layers/layer_detail.html:242
+#: layers/templates/layers/layer_detail.html:268
+#: maps/templates/maps/map_detail.html:96
+#: maps/templates/maps/map_detail.html:139
 #: templates/_bulk_permissions_form.html:19
 msgid "Close"
 msgstr "ঘনিষ্ঠ"
 
-#: documents/templates/documents/document_detail.html:146
-#: documents/templates/documents/document_detail.html:153
-#: layers/templates/layers/layer_detail.html:243
-#: layers/templates/layers/layer_detail.html:251
+#: documents/templates/documents/document_detail.html:152
+#: documents/templates/documents/document_detail.html:159
+#: layers/templates/layers/layer_detail.html:250
+#: layers/templates/layers/layer_detail.html:258
 msgid "Download Metadata"
 msgstr "ডাউনলোড মেটাডাটা"
 
-#: documents/templates/documents/document_detail.html:170
+#: documents/templates/documents/document_detail.html:176
 msgid "Resource using this document"
 msgstr "এই নথির ব্যবহার করে সম্পদ"
 
-#: documents/templates/documents/document_detail.html:172
+#: documents/templates/documents/document_detail.html:178
 msgid "List of resources using this document:"
 msgstr "এই নথির ব্যবহার করে সম্পদের তালিকা:"
 
-#: documents/templates/documents/document_detail.html:176
+#: documents/templates/documents/document_detail.html:182
 msgid "This document is related to a "
 msgstr "এই নথির একটি সঙ্গে সম্পর্কযুক্ত"
 
-#: documents/templates/documents/document_detail.html:179
+#: documents/templates/documents/document_detail.html:185
 msgid "This document is not related to any maps or layers"
 msgstr "এই ডকুমেন্টের কোন মানচিত্র বা স্তর এর সাথে সম্পর্কিত করা হয় না"
 
-#: documents/templates/documents/document_detail.html:186
-#: documents/templates/documents/document_upload.html:31
-#: groups/templates/groups/group_detail.html:70
-#: layers/templates/layers/layer_detail.html:334
+#: documents/templates/documents/document_detail.html:192
+#: documents/templates/documents/document_upload.html:30
+#: groups/templates/groups/group_detail.html:61
+#: layers/templates/layers/layer_detail.html:341
 #: layers/templates/layers/layer_replace.html:94
-#: layers/templates/upload/layer_upload.html:112
-#: maps/templates/maps/map_detail.html:178 people/admin.py:55
+#: layers/templates/upload/layer_upload.html:96
+#: maps/templates/maps/map_detail.html:185 people/admin.py:55
 msgid "Permissions"
 msgstr "অনুমতি"
 
-#: documents/templates/documents/document_detail.html:187
+#: documents/templates/documents/document_detail.html:193
 msgid "Click the button below to change the permissions of this document."
 msgstr "এই ডকুমেন্টের অনুমতি পরিবর্তন করতে নিচের বাটনে ক্লিক করুন."
 
-#: documents/templates/documents/document_detail.html:188
+#: documents/templates/documents/document_detail.html:194
 msgid "Change Document Permissions"
 msgstr "ডকুমেন্ট অনুমতি পরিবর্তন করুন"
 
@@ -965,7 +973,7 @@ msgid "Editing details for"
 msgstr "সম্পাদনার জন্য বিবরণ"
 
 #: documents/templates/documents/document_metadata.html:26
-#: layers/templates/layers/layer_metadata.html:29
+#: layers/templates/layers/layer_metadata.html:32
 #: maps/templates/maps/map_metadata.html:29
 msgid "Error updating metadata.  Please check the following fields: "
 msgstr "ত্রুটি আপডেট মেটাডেটা. নিম্নোক্ত ক্ষেত্রসমূহ চেক করুন:"
@@ -973,15 +981,15 @@ msgstr "ত্রুটি আপডেট মেটাডেটা. নিম�
 #: documents/templates/documents/document_metadata.html:48
 #: documents/templates/documents/document_metadata.html:82
 #: groups/templates/groups/group_update.html:26
-#: layers/templates/layers/layer_metadata.html:59
-#: layers/templates/layers/layer_metadata.html:118
+#: layers/templates/layers/layer_metadata.html:63
+#: layers/templates/layers/layer_metadata.html:124
 #: maps/templates/maps/map_metadata.html:44
 #: maps/templates/maps/map_metadata.html:78
 msgid "Update"
 msgstr "আপডেট"
 
 #: documents/templates/documents/document_metadata.html:60
-#: layers/templates/layers/layer_metadata.html:112
+#: layers/templates/layers/layer_metadata.html:117
 #: maps/templates/maps/map_metadata.html:56
 msgid "Metadata Provider"
 msgstr "মেটাডাটা সরবরাহকারী"
@@ -1031,7 +1039,8 @@ msgstr "প্রতিস্থাপন করা"
 
 #: documents/templates/documents/document_replace.html:27
 #: layers/templates/layers/layer_replace.html:84
-#: layers/templates/upload/layer_upload.html:105
+#: layers/templates/upload/layer_upload.html:89
+#: templates/search/_search_content.html:24
 msgid "Clear"
 msgstr "স্পষ্ট"
 
@@ -1039,110 +1048,118 @@ msgstr "স্পষ্ট"
 msgid "Upload Document"
 msgstr "আপলোড ডকুমেন্ট"
 
-#: geoserver/helpers.py:987
+#: geoserver/helpers.py:459 layers/models.py:420
+msgid "No abstract provided"
+msgstr ""
+
+#: geoserver/helpers.py:1009
 msgid "An exception occurred loading data to PostGIS"
 msgstr ""
 
-#: geoserver/helpers.py:992
+#: geoserver/helpers.py:1014
 msgid " Additionally an error occured during database cleanup"
 msgstr ""
 
-#: geoserver/ows.py:103
+#: geoserver/ows.py:43
+msgid "GZIP"
+msgstr ""
+
+#: geoserver/ows.py:44
+msgid "GeoTIFF"
+msgstr ""
+
+#: geoserver/ows.py:67
 msgid "Zipped Shapefile"
 msgstr "Zipped Shapefile"
 
-#: geoserver/ows.py:104
+#: geoserver/ows.py:68
 msgid "GML 2.0"
 msgstr "GML 2.0"
 
-#: geoserver/ows.py:105
+#: geoserver/ows.py:69
 msgid "GML 3.1.1"
 msgstr "GML 3.1.1"
 
-#: geoserver/ows.py:106
+#: geoserver/ows.py:70
 msgid "CSV"
 msgstr "CSV"
 
-#: geoserver/ows.py:107
+#: geoserver/ows.py:71
 msgid "Excel"
 msgstr "সীমা অতিক্রম করা"
 
-#: geoserver/ows.py:108
+#: geoserver/ows.py:72
 msgid "GeoJSON"
 msgstr "GeoJSON"
 
-#: geoserver/ows.py:132
+#: geoserver/ows.py:96
 msgid "JPEG"
 msgstr "কোন JPEG"
 
-#: geoserver/ows.py:133
+#: geoserver/ows.py:97
 msgid "PDF"
 msgstr "পিডিএফ"
 
-#: geoserver/ows.py:134
+#: geoserver/ows.py:98
 msgid "PNG"
 msgstr "PNG"
 
-#: geoserver/signals.py:294
-msgid "Could not create a download link for layer."
-msgstr "স্তর জন্য একটি ডাউনলোড লিংক তৈরী করা যায়নি."
-
-#: geoserver/views.py:335
+#: geoserver/views.py:355
 msgid "You don't have permissions to change style for this layer"
 msgstr "আপনি এই স্তর জন্য স্টাইল পরিবর্তন করার অনুমতি নেই"
 
-#: geoserver/management/__init__.py:30
+#: geoserver/management/__init__.py:31
 msgid "Layer Uploaded"
 msgstr "লেয়ার ঊর্ধ্বভরণকৃত"
 
-#: geoserver/management/__init__.py:30
+#: geoserver/management/__init__.py:31
 msgid "A layer was uploaded"
 msgstr "একটি স্তর আপলোড করা হয় নি"
 
-#: geoserver/management/__init__.py:31 layers/management/__init__.py:45
+#: geoserver/management/__init__.py:32 layers/management/__init__.py:46
 msgid "Comment on Layer"
 msgstr "লেয়ার মন্তব্য করুন"
 
-#: geoserver/management/__init__.py:31 layers/management/__init__.py:46
+#: geoserver/management/__init__.py:32 layers/management/__init__.py:47
 msgid "A layer was commented on"
 msgstr "একটি স্তর মন্তব্য করেন"
 
-#: geoserver/management/__init__.py:32 layers/management/__init__.py:49
+#: geoserver/management/__init__.py:33 layers/management/__init__.py:50
 msgid "Rating for Layer"
 msgstr "লেয়ার জন্য নির্ধারণ"
 
-#: geoserver/management/__init__.py:32 layers/management/__init__.py:50
+#: geoserver/management/__init__.py:33 layers/management/__init__.py:51
 msgid "A rating was given to a layer"
 msgstr "একটি রেটিং একটি স্তর দেওয়া হয়"
 
-#: groups/forms.py:15
+#: groups/forms.py:35
 msgid ""
 "a short version of the name consisting only of letters, numbers, underscores "
 "and hyphens."
 msgstr ""
 "শুধুমাত্র অক্ষর, সংখ্যা, আন্ডারস্কোর এবং হাইফেন গঠিত নামের একটি সংক্ষিপ্ত সংস্করণ."
 
-#: groups/forms.py:23
+#: groups/forms.py:43
 msgid "A group already exists with that slug."
 msgstr "একদল ইতিমধ্যে যে স্লাগ্ সঙ্গে বিদ্যমান."
 
-#: groups/forms.py:30 groups/forms.py:57
+#: groups/forms.py:50 groups/forms.py:77
 msgid "A group already exists with that name."
 msgstr "একদল ইতিমধ্যে যে নামের সঙ্গে বিদ্যমান."
 
-#: groups/models.py:20
+#: groups/models.py:40
 msgid "Public"
 msgstr "প্রকাশ্য"
 
-#: groups/models.py:21
+#: groups/models.py:41
 msgid "Public (invite-only)"
 msgstr "পাবলিক (আমন্ত্রণ শুধুমাত্র)"
 
-#: groups/models.py:22
+#: groups/models.py:42
 msgid "Private"
 msgstr "ব্যক্তিগত"
 
-#: groups/models.py:25
+#: groups/models.py:45
 msgid ""
 "Public: Any registered user can view and join a public group.<br>Public "
 "(invite-only):Any registered user can view the group.  Only invited users "
@@ -1155,7 +1172,7 @@ msgstr ""
 "গ্রুপ, সম্পর্কে কোনো বিবরণ দেখতে পারবেন না. শুধু আমন্ত্রিত ব্যবহারকারীদের যোগ দিতে "
 "পারেন."
 
-#: groups/models.py:30
+#: groups/models.py:50
 msgid ""
 "Email used to contact one or all group members, such as a mailing list, "
 "shared email, or exchange group."
@@ -1163,62 +1180,62 @@ msgstr ""
 "এটি ইমেল যেমন একটি মেইলিং তালিকা, ভাগ ইমেইল, বা বিনিময় দল হিসেবে এক বা সব "
 "দলের সদস্যরা, যোগাযোগ করতে ব্যবহৃত."
 
-#: groups/models.py:36
+#: groups/models.py:56
 msgid "Logo"
 msgstr "লোগো"
 
-#: groups/models.py:37 layers/templates/layers/layer_detail.html:60
-#: layers/templates/layers/layer_metadata.html:91
-#: people/templates/people/profile_detail.html:73 services/forms.py:27
+#: groups/models.py:57 layers/templates/layers/layer_detail.html:60
+#: layers/templates/layers/layer_metadata.html:96
+#: people/templates/people/profile_detail.html:98 services/forms.py:47
 #: services/templates/services/layers_register.html:28
 msgid "Description"
 msgstr "বিবরণ"
 
-#: groups/models.py:39 people/templates/people/profile_detail.html:36
+#: groups/models.py:59 people/templates/people/profile_detail.html:65
 msgid "Email"
 msgstr "ইমেইল"
 
-#: groups/models.py:48
+#: groups/models.py:68
 msgid "Access"
 msgstr "প্রবেশ্য"
 
-#: groups/models.py:188 groups/models.py:207
+#: groups/models.py:208 groups/models.py:227
 #: groups/templates/groups/group_members.html:28
 #: groups/templates/groups/group_members.html:54
 #: groups/templates/groups/group_members.html:81
 msgid "Manager"
 msgstr "ম্যানেজার"
 
-#: groups/models.py:189 groups/models.py:208
+#: groups/models.py:209 groups/models.py:228
 msgid "Member"
 msgstr "সদস্য"
 
-#: groups/models.py:213
+#: groups/models.py:233
 msgid "Sent"
 msgstr "প্রেরিত"
 
-#: groups/models.py:214
+#: groups/models.py:234
 msgid "Accepted"
 msgstr "গৃহীত"
 
-#: groups/models.py:215
+#: groups/models.py:235
 msgid "Declined"
 msgstr "পতিত"
 
 #: groups/templates/groups/activity.html:7
 #: groups/templates/groups/activity.html:8
-#: groups/templates/groups/activity.html:20 templates/actstream/actor.html:19
+#: groups/templates/groups/activity.html:19 templates/actstream/actor.html:19
 msgid "Activity Feed for"
 msgstr "মার্কিন ফিডে"
 
-#: groups/templates/groups/activity.html:24
+#: groups/templates/groups/activity.html:25
 #: groups/templates/groups/group_members.html:13
 #: social/templates/social/activity_list.html:20
 #: templates/user_messages/inbox.html:16
 msgid "All"
 msgstr "সব"
 
-#: groups/templates/groups/activity.html:25
+#: groups/templates/groups/activity.html:26
 #: people/templates/people/_profile_filters.html:5
 #: services/templates/services/service_detail.html:64
 #: social/templates/social/activity_list.html:21 templates/500.html:55
@@ -1226,23 +1243,23 @@ msgstr "সব"
 msgid "Layers"
 msgstr "স্তরসমূহ"
 
-#: groups/templates/groups/activity.html:26
+#: groups/templates/groups/activity.html:27
 #: people/templates/people/_profile_filters.html:6
 #: social/templates/social/activity_list.html:22 templates/500.html:58
 #: templates/base.html:59
 msgid "Maps"
 msgstr "মানচিত্র"
 
-#: groups/templates/groups/activity.html:27
+#: groups/templates/groups/activity.html:28
 #: social/templates/social/activity_list.html:23 templates/_actions.html:11
 #: templates/_comments.html:12
 msgid "Comments"
 msgstr "মন্তব্য"
 
-#: groups/templates/groups/activity.html:35
-#: groups/templates/groups/activity.html:44
-#: groups/templates/groups/activity.html:53
-#: groups/templates/groups/activity.html:62
+#: groups/templates/groups/activity.html:36
+#: groups/templates/groups/activity.html:45
+#: groups/templates/groups/activity.html:54
+#: groups/templates/groups/activity.html:63
 #: social/templates/social/activity_list.html:31
 #: social/templates/social/activity_list.html:40
 #: social/templates/social/activity_list.html:49
@@ -1259,7 +1276,6 @@ msgstr "গ্রুপ টেলিভিশন"
 
 #: groups/templates/groups/group_base.html:14
 #: groups/templates/groups/group_create.html:11
-#: groups/templates/groups/group_list.html:12
 msgid "Create a Group"
 msgstr "একটি গ্রুপ তৈরি করুন"
 
@@ -1286,30 +1302,23 @@ msgstr "তৈরি করুন"
 msgid "This group has not created a logo."
 msgstr "এই গ্রুপ একটি লোগো তৈরি করেনি."
 
-#: groups/templates/groups/group_detail.html:51
-#: groups/templates/groups/group_invite_response.html:7
-#: groups/templates/groups/group_members.html:9
-#: groups/templates/groups/group_members.html:15
-msgid "Members"
-msgstr "সদস্য"
-
-#: groups/templates/groups/group_detail.html:62
+#: groups/templates/groups/group_detail.html:53
 msgid "Edit Group Details"
 msgstr "সম্পাদনা সংকলনের বিবরণ"
 
-#: groups/templates/groups/group_detail.html:63
+#: groups/templates/groups/group_detail.html:54
 msgid "Manage Group Members"
 msgstr "গ্রুপের সদস্যদের পরিচালনা"
 
-#: groups/templates/groups/group_detail.html:64
+#: groups/templates/groups/group_detail.html:55
 msgid "Delete this Group"
 msgstr "এই গ্রুপ মুছে দিন"
 
-#: groups/templates/groups/group_detail.html:67
+#: groups/templates/groups/group_detail.html:58
 msgid "Group Activities"
 msgstr "গ্রুপ ক্রিয়াকলাপ"
 
-#: groups/templates/groups/group_detail.html:72
+#: groups/templates/groups/group_detail.html:63
 #, python-format
 msgid ""
 "\n"
@@ -1319,22 +1328,29 @@ msgstr ""
 "\n"
 "এই এর গ্রুপ <strong>%(access)s</strong>. হয়."
 
-#: groups/templates/groups/group_detail.html:76
+#: groups/templates/groups/group_detail.html:67
 msgid "Anyone may join this group."
 msgstr "যে কেউ এই দলের যোগদান করতে পারে."
 
-#: groups/templates/groups/group_detail.html:84
+#: groups/templates/groups/group_detail.html:75
 msgid "Anyone may view this group but membership is by invitation only."
 msgstr "যে কেউ এই গ্রুপের দেখতে পারে কিন্তু সদস্যপদ শুধুমাত্র আমন্ত্রণ দ্বারা হয়."
 
-#: groups/templates/groups/group_detail.html:86
+#: groups/templates/groups/group_detail.html:77
 msgid "Membership is by invitation only."
 msgstr "সদস্য শুধুমাত্র আমন্ত্রণ দ্বারা হয়."
 
-#: groups/templates/groups/group_detail.html:91
+#: groups/templates/groups/group_detail.html:82
 #: groups/templates/groups/group_members.html:14
 msgid "Managers"
 msgstr "পরিচালকের"
+
+#: groups/templates/groups/group_detail.html:94
+#: groups/templates/groups/group_invite_response.html:7
+#: groups/templates/groups/group_members.html:9
+#: groups/templates/groups/group_members.html:15
+msgid "Members"
+msgstr "সদস্য"
 
 #: groups/templates/groups/group_invite_response.html:10
 msgid "Membership Request"
@@ -1348,32 +1364,37 @@ msgstr "যোগ দিন না"
 msgid "Join Group"
 msgstr "গ্রুপ যোগ দিন"
 
-#: groups/templates/groups/group_list.html:19
-#: people/templates/people/profile_list.html:13
-#: templates/search/_sort_filters.html:5
+#: groups/templates/groups/group_list.html:12
+msgid "Create a New Group"
+msgstr ""
+
+#: groups/templates/groups/group_list.html:24
+#: people/templates/people/profile_list.html:19
+#: templates/search/_sort_filters.html:10
 msgid "Most recent"
 msgstr "সাম্প্রতিক"
 
-#: groups/templates/groups/group_list.html:20
-#: people/templates/people/profile_list.html:14
-#: templates/search/_sort_filters.html:6
+#: groups/templates/groups/group_list.html:25
+#: people/templates/people/profile_list.html:20
+#: templates/search/_sort_filters.html:11
 msgid "Less recent"
 msgstr "কম সাম্প্রতিক"
 
-#: groups/templates/groups/group_list.html:21
-#: people/templates/people/profile_list.html:15
-#: templates/search/_sort_filters.html:7
+#: groups/templates/groups/group_list.html:26
+#: people/templates/people/profile_list.html:21
+#: templates/search/_sort_filters.html:12
 msgid "A - Z"
 msgstr "একটি - Z"
 
-#: groups/templates/groups/group_list.html:22
-#: people/templates/people/profile_list.html:16
-#: templates/search/_sort_filters.html:8
+#: groups/templates/groups/group_list.html:27
+#: people/templates/people/profile_list.html:22
+#: templates/search/_sort_filters.html:13
 msgid "Z - A"
 msgstr "টু Z - একটি"
 
-#: groups/templates/groups/group_list.html:23
-#: templates/search/_sort_filters.html:9
+#: groups/templates/groups/group_list.html:28
+#: people/templates/people/profile_list.html:23
+#: templates/search/_sort_filters.html:14
 msgid "Most popular"
 msgstr "সর্বাধিক জনপ্রিয়"
 
@@ -1413,141 +1434,141 @@ msgstr "গ্রুপ থেকে মানচিত্র / ডেটা স
 msgid "Remove selected maps/data"
 msgstr "নির্বাচিত মানচিত্র সরান / তথ্য"
 
-#: layers/models.py:53
+#: layers/models.py:54
 msgid "style name"
 msgstr "শৈলী নাম"
 
-#: layers/models.py:55
+#: layers/models.py:56
 msgid "sld text"
 msgstr "SLD টেক্সট"
 
-#: layers/models.py:57
+#: layers/models.py:58
 msgid "sld version"
 msgstr "SLD সংস্করণ"
 
-#: layers/models.py:61
+#: layers/models.py:62
 msgid "sld url"
 msgstr "SLD URL"
 
-#: layers/models.py:190
+#: layers/models.py:194
 msgid "File cannot be opened, maybe check the encoding"
 msgstr ""
 
-#: layers/models.py:297
+#: layers/models.py:301
 msgid "attribute name"
 msgstr "নাম বৈশিষ্ট্যাবলী"
 
-#: layers/models.py:298
+#: layers/models.py:302
 msgid "name of attribute as stored in shapefile/spatial database"
 msgstr "shapefile / স্থানিক ডাটাবেসের মধ্যে সংরক্ষণ হিসাবে অ্যাট্রিবিউট নাম"
 
-#: layers/models.py:304
+#: layers/models.py:308
 msgid "attribute description"
 msgstr "বিবরণ বৈশিষ্ট্যাবলী"
 
-#: layers/models.py:305
+#: layers/models.py:309
 msgid "description of attribute to be used in metadata"
 msgstr "বৈশিষ্ট্য বর্ণনা মেটাডেটা ব্যবহার করা হবে"
 
-#: layers/models.py:310
+#: layers/models.py:314
 msgid "attribute label"
 msgstr "অ্যাট্রিবিউট ট্যাগ"
 
-#: layers/models.py:311
+#: layers/models.py:315
 msgid "title of attribute as displayed in GeoNode"
 msgstr "GeoNode প্রদর্শিত হিসাবে অ্যাট্রিবিউট শিরোনাম"
 
-#: layers/models.py:317
+#: layers/models.py:321
 msgid "attribute type"
 msgstr "অ্যাট্রিবিউট টাইপ"
 
-#: layers/models.py:318
+#: layers/models.py:322
 msgid "the data type of the attribute (integer, string, geometry, etc)"
 msgstr "অ্যাট্রিবিউট (ইত্যাদি পূর্ণসংখ্যা, স্ট্রিং, জ্যামিতি,) এর ডাটা টাইপ"
 
-#: layers/models.py:325
+#: layers/models.py:329
 msgid "visible?"
 msgstr "প্রোফাইল?"
 
-#: layers/models.py:326
+#: layers/models.py:330
 msgid "specifies if the attribute should be displayed in identify results"
 msgstr "বৈশিষ্ট্য প্রদর্শন করা উচিত যদি ফলাফল চিহ্নিত বিশিষ্ট"
 
-#: layers/models.py:329
+#: layers/models.py:333
 msgid "display order"
 msgstr "প্রদর্শন ক্রম"
 
-#: layers/models.py:330
+#: layers/models.py:334
 msgid ""
 "specifies the order in which attribute should be displayed in identify "
 "results"
 msgstr "অ্যাট্রিবিউট ফলাফল চিহ্নিত প্রদর্শন করা উচিত ক্রম যা নির্দিষ্ট করে"
 
-#: layers/models.py:335
+#: layers/models.py:339
 msgid "count"
 msgstr "গণনা"
 
-#: layers/models.py:336
+#: layers/models.py:340
 msgid "count value for this field"
 msgstr "এই ক্ষেত্রের জন্য মান গণনা"
 
-#: layers/models.py:339
+#: layers/models.py:343
 msgid "min"
 msgstr "কমপক্ষে"
 
-#: layers/models.py:340
+#: layers/models.py:344
 msgid "minimum value for this field"
 msgstr "এই ক্ষেত্রের জন্য সর্বনিম্ন মান"
 
-#: layers/models.py:347
+#: layers/models.py:351
 msgid "max"
 msgstr "সর্বোচ্চ"
 
-#: layers/models.py:348
+#: layers/models.py:352
 msgid "maximum value for this field"
 msgstr "এই ক্ষেত্রের জন্য সর্বাধিক মান"
 
-#: layers/models.py:355
+#: layers/models.py:359
 msgid "average"
 msgstr "গড়"
 
-#: layers/models.py:356
+#: layers/models.py:360
 msgid "average value for this field"
 msgstr "এই ক্ষেত্রের জন্য গড় মূল্য"
 
-#: layers/models.py:363
+#: layers/models.py:367
 msgid "median"
 msgstr "মধ্যমা"
 
-#: layers/models.py:364
+#: layers/models.py:368
 msgid "median value for this field"
 msgstr "এই ক্ষেত্রের জন্য মধ্যমা মূল্য"
 
-#: layers/models.py:371
+#: layers/models.py:375
 msgid "standard deviation"
 msgstr "প্রমিত বিচ্যুতি"
 
-#: layers/models.py:372
+#: layers/models.py:376
 msgid "standard deviation for this field"
 msgstr "এই ক্ষেত্রের জন্য প্রমিত বিচ্যুতি"
 
-#: layers/models.py:379
+#: layers/models.py:383
 msgid "sum"
 msgstr "সমষ্টি"
 
-#: layers/models.py:380
+#: layers/models.py:384
 msgid "sum value for this field"
 msgstr "এই ক্ষেত্র সমষ্টি জন্য মূল্য"
 
-#: layers/models.py:387
+#: layers/models.py:391
 msgid "unique values for this field"
 msgstr "এই ক্ষেত্রের জন্য অনন্য মান"
 
-#: layers/models.py:392
+#: layers/models.py:396
 msgid "last modified"
 msgstr "সর্বশেষ সম্পাদিত"
 
-#: layers/models.py:394
+#: layers/models.py:398
 msgid "date when attribute statistics were last updated"
 msgstr "অ্যাট্রিবিউট পরিসংখ্যান গত ছিল যখন তারিখের আপডেট"
 
@@ -1560,64 +1581,70 @@ msgstr ""
 "সমস্যা অব্যাহত থাকলে যোগাযোগ করুন এবং অ্যাডমিনিস্ট্রেটর দয়া করে."
 
 #: layers/views.py:76
+msgid ""
+"Note: this layer's orginal metadata was populated and preserved by importing "
+"a metadata XML file. This metadata cannot be edited."
+msgstr ""
+
+#: layers/views.py:79
 msgid "You are not permitted to delete this layer"
 msgstr "আপনি এই স্তর মুছে ফেলতে অনুমতি নেই"
 
-#: layers/views.py:77
+#: layers/views.py:80
 msgid "You do not have permissions for this layer."
 msgstr "আপনি এই স্তর জন্য অনুমতি নেই."
 
-#: layers/views.py:78
+#: layers/views.py:81
 msgid "You are not permitted to modify this layer"
 msgstr "আপনি এই স্তর পরিবর্তন করার অনুমতি নেই"
 
-#: layers/views.py:80
+#: layers/views.py:83
 msgid "You are not permitted to modify this layer's metadata"
 msgstr "আপনি লেয়ারের মেটাডাটা পরিবর্তন করার অনুমতি নেই"
 
-#: layers/views.py:81
+#: layers/views.py:84
 msgid "You are not permitted to view this layer"
 msgstr "আপনি এই স্তর দেখতে অনুমতি নেই"
 
-#: layers/views.py:486
+#: layers/views.py:494
 msgid "You are attempting to replace a vector layer with a raster."
 msgstr "আপনি একটি রাস্টার স্থর দ্বারা জ্যামিতিক স্থর পরিবর্তন করতে যাচ্ছেন"
 
-#: layers/views.py:489
+#: layers/views.py:497
 msgid "You are attempting to replace a raster layer with a vector."
 msgstr "আপনি একটি জ্যামিতিক স্থর দ্বারা রাস্টার স্থর পরিবর্তন করতে যাচ্ছেন"
 
-#: layers/views.py:545
+#: layers/views.py:553
 msgid "Unable to delete layer"
 msgstr "স্তর মুছতে অক্ষম"
 
-#: layers/views.py:548
+#: layers/views.py:556
 msgid ""
 "This layer is a member of a layer group, you must remove the layer from the "
 "group before deleting."
 msgstr ""
 
-#: layers/management/__init__.py:33
+#: layers/management/__init__.py:34
 msgid "Layer Created"
 msgstr "স্থর তৈরী করা হয়েছে"
 
-#: layers/management/__init__.py:34
+#: layers/management/__init__.py:35
 msgid "A Layer was created"
 msgstr "একটি স্থর তৈরী করা হয়েছিল"
 
-#: layers/management/__init__.py:37
+#: layers/management/__init__.py:38
 msgid "Layer Updated"
 msgstr "স্থর হাল নাগাদ করা হয়েছে"
 
-#: layers/management/__init__.py:38
+#: layers/management/__init__.py:39
 msgid "A Layer was updated"
 msgstr "একটি স্থর হাল নাগাদ করা হয়েছিল"
 
-#: layers/management/__init__.py:41
+#: layers/management/__init__.py:42
 msgid "Layer Deleted"
 msgstr "স্থর মুছা হয়েছে"
 
-#: layers/management/__init__.py:42
+#: layers/management/__init__.py:43
 msgid "A Layer was deleted"
 msgstr "একটি স্থর মুছা হয়েছিল"
 
@@ -1644,7 +1671,7 @@ msgid "Attribute Name"
 msgstr "নাম গুন"
 
 #: layers/templates/layers/layer_detail.html:59
-#: layers/templates/layers/layer_metadata.html:90
+#: layers/templates/layers/layer_metadata.html:95
 msgid "Label"
 msgstr "লেবেল"
 
@@ -1673,72 +1700,73 @@ msgstr "এই স্তর রেটিং করুন"
 msgid "Download Layer"
 msgstr "ডাউনলোড লেয়ার"
 
-#: layers/templates/layers/layer_detail.html:180
 #: layers/templates/layers/layer_detail.html:187
+#: layers/templates/layers/layer_detail.html:194
 msgid "Edit Layer"
 msgstr "সম্পাদনা লেয়ার"
 
-#: layers/templates/layers/layer_detail.html:202
-#: layers/templates/layers/layer_detail.html:311
+#: layers/templates/layers/layer_detail.html:209
+#: layers/templates/layers/layer_detail.html:318
 msgid "Styles"
 msgstr "স্টাইলস"
 
-#: layers/templates/layers/layer_detail.html:206
+#: layers/templates/layers/layer_detail.html:213
 #: services/templates/services/service_detail.html:110
 msgid "Manage"
 msgstr "পরিচালনা করা"
 
-#: layers/templates/layers/layer_detail.html:213
-#: maps/templates/maps/map_detail.html:117
+#: layers/templates/layers/layer_detail.html:220
+#: maps/templates/maps/map_detail.html:124
 msgid "Thumbnail"
 msgstr "Thumbnail"
 
-#: layers/templates/layers/layer_detail.html:214
-#: maps/templates/maps/map_detail.html:118
+#: layers/templates/layers/layer_detail.html:221
+#: maps/templates/maps/map_detail.html:125
 msgid "Set"
 msgstr "স্থাপন"
 
-#: layers/templates/layers/layer_detail.html:225
+#: layers/templates/layers/layer_detail.html:232
 msgid "Edit data"
 msgstr "তথ্য পরিবর্তন"
 
-#: layers/templates/layers/layer_detail.html:269 services/views.py:1288
+#: layers/templates/layers/layer_detail.html:276 services/views.py:1300
 msgid "Legend"
 msgstr "কিংবদন্তী"
 
-#: layers/templates/layers/layer_detail.html:279
+#: layers/templates/layers/layer_detail.html:286
 msgid "Maps using this layer"
 msgstr "এই স্তর ব্যবহার করে মানচিত্র"
 
-#: layers/templates/layers/layer_detail.html:281
+#: layers/templates/layers/layer_detail.html:288
 msgid "List of maps using this layer:"
 msgstr "এই স্তর ব্যবহার ম্যাপের তালিকা:"
 
-#: layers/templates/layers/layer_detail.html:287
+#: layers/templates/layers/layer_detail.html:294
 msgid "This layer is not currently used in any maps."
 msgstr "এই স্তর বর্তমানে কোনো ম্যাপের ব্যবহার করা না হয়."
 
-#: layers/templates/layers/layer_detail.html:292
+#: layers/templates/layers/layer_detail.html:299
 msgid "Create a map using this layer"
 msgstr "এই স্তর ব্যবহার করে একটি মানচিত্র তৈরি করুন"
 
-#: layers/templates/layers/layer_detail.html:293
+#: layers/templates/layers/layer_detail.html:300
 msgid "Click the button below to generate a new map based on this layer."
 msgstr "এই স্তর উপর ভিত্তি করে একটি নতুন মানচিত্র উৎপন্ন করতে নিচের বাটনে ক্লিক করুন."
 
-#: layers/templates/layers/layer_detail.html:294
+#: layers/templates/layers/layer_detail.html:301
+#: templates/search/_search_content.html:16
 msgid "Create a Map"
 msgstr "একটি মানচিত্র তৈরি করুন"
 
-#: layers/templates/layers/layer_detail.html:299
+#: layers/templates/layers/layer_detail.html:306
 msgid "Documents related to this layer"
 msgstr "এই স্তর সংক্রান্ত ডকুমেন্টস"
 
-#: layers/templates/layers/layer_detail.html:300
+#: layers/templates/layers/layer_detail.html:307
 msgid "List of documents related to this layer:"
 msgstr "এই স্তর সংক্রান্ত নথি তালিকা:"
 
-#: layers/templates/layers/layer_detail.html:312
+#: layers/templates/layers/layer_detail.html:319
 msgid ""
 "The following styles are associated with this layer. Choose a style to view "
 "it in the preview map."
@@ -1746,23 +1774,23 @@ msgstr ""
 "নিম্নলিখিত শৈলী এই স্তর সঙ্গে যুক্ত হয়. প্রাকদর্শন মানচিত্র তা দেখতে একটি শৈলী চয়ন "
 "করুন."
 
-#: layers/templates/layers/layer_detail.html:325
+#: layers/templates/layers/layer_detail.html:332
 msgid "No styles associated with this layer"
 msgstr "এই স্তর সঙ্গে যুক্ত কোন শৈলী"
 
-#: layers/templates/layers/layer_detail.html:335
+#: layers/templates/layers/layer_detail.html:342
 msgid "Click the button below to change the permissions of this layer."
 msgstr "এই স্তর অনুমতি পরিবর্তন করতে নিচের বাটনে ক্লিক করুন."
 
-#: layers/templates/layers/layer_detail.html:336
+#: layers/templates/layers/layer_detail.html:343
 msgid "Change Layer Permissions"
 msgstr "পরিবর্তন লেয়ার অনুমতি"
 
-#: layers/templates/layers/layer_detail.html:343
+#: layers/templates/layers/layer_detail.html:350
 msgid "External service layer"
 msgstr "বাহ্যিক সেবা স্তর"
 
-#: layers/templates/layers/layer_detail.html:344
+#: layers/templates/layers/layer_detail.html:351
 msgid "Source"
 msgstr "উত্স"
 
@@ -1778,7 +1806,7 @@ msgstr "স্তরসমূহ টেলিভিশন"
 #: layers/templates/layers/layer_list.html:12
 #: layers/templates/upload/layer_upload.html:18
 #: layers/templates/upload/layer_upload_base.html:12 templates/500.html:216
-#: templates/base.html:209
+#: templates/base.html:210
 msgid "Upload Layers"
 msgstr "আপলোড স্তরসমূহ"
 
@@ -1794,6 +1822,13 @@ msgstr ""
 
 #: layers/templates/layers/layer_metadata.html:23
 msgid ""
+"Note: this layer's orginal metadata was populated and preserved by importing "
+"a metadata XML file.\n"
+"          This metadata cannot be edited."
+msgstr ""
+
+#: layers/templates/layers/layer_metadata.html:26
+msgid ""
 "Note: this layer's orginal metadata was populated by importing a metadata "
 "XML file.\n"
 "          GeoNode's metadata import supports a subset of ISO, FGDC, and "
@@ -1801,16 +1836,16 @@ msgid ""
 "          Some of your original metadata may have been lost."
 msgstr ""
 
-#: layers/templates/layers/layer_metadata.html:45
-#: layers/templates/layers/layer_metadata.html:85 templates/_actions.html:5
+#: layers/templates/layers/layer_metadata.html:48
+#: layers/templates/layers/layer_metadata.html:90 templates/_actions.html:5
 msgid "Attributes"
 msgstr "আরোপ করা"
 
-#: layers/templates/layers/layer_metadata.html:89
+#: layers/templates/layers/layer_metadata.html:94
 msgid "Attribute"
 msgstr "গুণ"
 
-#: layers/templates/layers/layer_metadata.html:92
+#: layers/templates/layers/layer_metadata.html:97
 msgid "Display Order"
 msgstr "প্রদর্শন আদেশ"
 
@@ -1909,7 +1944,7 @@ msgid "Files to be uploaded"
 msgstr "ফাইল আপলোড করা"
 
 #: layers/templates/layers/layer_replace.html:71
-#: layers/templates/upload/layer_upload.html:73
+#: layers/templates/upload/layer_upload.html:76
 msgid "Select the charset or leave default"
 msgstr "অক্ষরসেট নির্বাচন করুন অথবা ডিফল্ট ছেড়ে"
 
@@ -1955,7 +1990,7 @@ msgstr "আপডেট উপলব্ধ স্টাইলস"
 msgid "Upload Layer"
 msgstr "আপলোড লেয়ার"
 
-#: layers/templates/upload/layer_upload.html:106
+#: layers/templates/upload/layer_upload.html:90
 msgid "Upload files"
 msgstr "ফাইল আপলোড করুন"
 
@@ -2346,43 +2381,43 @@ msgstr "আপনি এই ম্যাপ দেখতে অনুমতি �
 msgid "An unknown error has occured."
 msgstr "একটি অজানা ত্রুটি ঘটেছে."
 
-#: maps/management/__init__.py:33
+#: maps/management/__init__.py:34
 msgid "Map Created"
 msgstr "মানচিত্র তৈরী করা"
 
-#: maps/management/__init__.py:34
+#: maps/management/__init__.py:35
 msgid "A Map was created"
 msgstr "একটি মানচিত্র তৈরি করা হয়েছে"
 
-#: maps/management/__init__.py:37
+#: maps/management/__init__.py:38
 msgid "Map Updated"
 msgstr "মানচিত্র হালনাগাদ করা হয়েছে"
 
-#: maps/management/__init__.py:38
+#: maps/management/__init__.py:39
 msgid "A Map was updated"
 msgstr "একটি মানচিত্র হালনাগাদ করা হয়েছিল"
 
-#: maps/management/__init__.py:41
+#: maps/management/__init__.py:42
 msgid "Map Deleted"
 msgstr "মানচিত্র মুছা হয়েছে"
 
-#: maps/management/__init__.py:42
+#: maps/management/__init__.py:43
 msgid "A Map was deleted"
 msgstr "একটি মানচিত্র মুছা হয়েছিল"
 
-#: maps/management/__init__.py:45
+#: maps/management/__init__.py:46
 msgid "Comment on Map"
 msgstr "মানচিত্র মন্তব্য করুন"
 
-#: maps/management/__init__.py:46
+#: maps/management/__init__.py:47
 msgid "A map was commented on"
 msgstr "একটি মানচিত্রের মন্তব্য করেন"
 
-#: maps/management/__init__.py:49
+#: maps/management/__init__.py:50
 msgid "Rating for Map"
 msgstr "মানচিত্র জন্য নির্ধারণ"
 
-#: maps/management/__init__.py:50
+#: maps/management/__init__.py:51
 msgid "A rating was given to a map"
 msgstr "একটি রেটিং একটি মানচিত্র দেওয়া হয়"
 
@@ -2397,86 +2432,86 @@ msgid "Rate this Map"
 msgstr "এই মানচিত্রের মূল্যায়ন"
 
 #: maps/templates/maps/map_detail.html:72
-#: maps/templates/maps/map_detail.html:80
+#: maps/templates/maps/map_detail.html:87
 msgid "Download Map"
 msgstr "ডাউনলোড ম্যাপ"
 
-#: maps/templates/maps/map_detail.html:84
+#: maps/templates/maps/map_detail.html:91
 msgid "Download Data Layers"
 msgstr "ডেটা স্তরসমূহ ডাউনলোড"
 
-#: maps/templates/maps/map_detail.html:85
+#: maps/templates/maps/map_detail.html:92
 msgid "Download Web Map Context"
 msgstr "ওয়েব মানচিত্র প্রসঙ্গের ডাউনলোড"
 
-#: maps/templates/maps/map_detail.html:96
 #: maps/templates/maps/map_detail.html:103
+#: maps/templates/maps/map_detail.html:110
 msgid "Edit Map"
 msgstr "সম্পাদনা ম্যাপ"
 
-#: maps/templates/maps/map_detail.html:139
+#: maps/templates/maps/map_detail.html:146
 msgid "View Map"
 msgstr "মানচিত্র দেখুন"
 
-#: maps/templates/maps/map_detail.html:149
+#: maps/templates/maps/map_detail.html:156
 msgid "Map Layers"
 msgstr "মানচিত্র স্তরসমূহ"
 
-#: maps/templates/maps/map_detail.html:150
+#: maps/templates/maps/map_detail.html:157
 msgid "This map uses the following layers:"
 msgstr "এই মানচিত্রের নিচের স্তর ব্যবহার করে:"
 
-#: maps/templates/maps/map_detail.html:166
+#: maps/templates/maps/map_detail.html:173
 msgid "Documents related to this map"
 msgstr "এই ম্যাপ এর সাথে সম্পর্কিত ডকুমেন্টস"
 
-#: maps/templates/maps/map_detail.html:167
+#: maps/templates/maps/map_detail.html:174
 msgid "List of documents related to this map:"
 msgstr "এই ম্যাপ এর সাথে সম্পর্কিত নথি তালিকা:"
 
-#: maps/templates/maps/map_detail.html:179
+#: maps/templates/maps/map_detail.html:186
 msgid "Specify which users can view or modify this map"
 msgstr "ব্যবহারকারীদের দেখতে পারেন যা নির্দিষ্ট করুন অথবা এই ম্যাপ পরিবর্তন"
 
-#: maps/templates/maps/map_detail.html:180
+#: maps/templates/maps/map_detail.html:187
 msgid "Change Permissions of this Map"
 msgstr "এই মানচিত্র পরিবর্তন অনুমতি"
 
-#: maps/templates/maps/map_detail.html:186
+#: maps/templates/maps/map_detail.html:193
 msgid "Copy this map"
 msgstr "এই ম্যাপ কপি করুন"
 
-#: maps/templates/maps/map_detail.html:187
+#: maps/templates/maps/map_detail.html:194
 msgid "Duplicate this map and modify it for your own purposes"
 msgstr "এই ম্যাপ সদৃশ এবং আপনার নিজের কাজের জন্য এটি পরিবর্তন"
 
-#: maps/templates/maps/map_detail.html:188
+#: maps/templates/maps/map_detail.html:195
 #: maps/templates/maps/map_list.html:10
 msgid "Create a New Map"
 msgstr "একটি নতুন মানচিত্র তৈরি করুন"
 
-#: maps/templates/maps/map_detail.html:193
+#: maps/templates/maps/map_detail.html:200
 msgid "Map WMS"
 msgstr "মানচিত্র WMS"
 
-#: maps/templates/maps/map_detail.html:195
+#: maps/templates/maps/map_detail.html:202
 msgid "WMS layer group for local map layers"
 msgstr "স্থানীয় ম্যাপ স্তর জন্য WMS লেয়ার গ্রুপ"
 
-#: maps/templates/maps/map_detail.html:196 social/tests.py:103
-#: social/templatetags/social_tags.py:48
+#: maps/templates/maps/map_detail.html:203 social/tests.py:123
+#: social/templatetags/social_tags.py:68
 msgid "on"
 msgstr "উপর"
 
-#: maps/templates/maps/map_detail.html:196
+#: maps/templates/maps/map_detail.html:203
 msgid "local OWS"
 msgstr "স্থানীয় OWS"
 
-#: maps/templates/maps/map_detail.html:199
+#: maps/templates/maps/map_detail.html:206
 msgid "Publish local map layers as WMS layer group"
 msgstr "WMS লেয়ার গ্রুপ হিসাবে স্থানীয় ম্যাপ স্তর প্রকাশ করুন"
 
-#: maps/templates/maps/map_detail.html:200
+#: maps/templates/maps/map_detail.html:207
 msgid "Publish Map WMS"
 msgstr "মানচিত্র WMS প্রকাশ করুন"
 
@@ -2664,27 +2699,27 @@ msgstr "তথ্য সংগ্রহ ও গবেষণা আবহ জন�
 msgid "Email Address"
 msgstr "ইমেল ঠিকানা"
 
-#: people/management.py:32
+#: people/management.py:33
 msgid "User following you"
 msgstr "ব্যবহারকারী আপনি নিম্নলিখিত"
 
-#: people/management.py:33
+#: people/management.py:34
 msgid "Another user has started following you"
 msgstr "অন্য ব্যবহারকারী তোমাকে অনুসরণ শুর করেছে।"
 
-#: people/management.py:36
+#: people/management.py:37
 msgid "User requested access"
 msgstr "ব্যবহারকারী প্রবেশের অনুরোধ করেছেন"
 
-#: people/management.py:37
+#: people/management.py:38
 msgid "A new user has requested access to the site"
 msgstr "একজন নতুন ব্যবহারকারী প্রবেশের জন্য অনুরোধ করেছেন"
 
-#: people/management.py:40
+#: people/management.py:41
 msgid "Account activated"
 msgstr "একাউন্ট চালু হয়েছে"
 
-#: people/management.py:41
+#: people/management.py:42
 msgid "This account is now active and can log in the site"
 msgstr "এই একাউন্টটি বর্তমানে সচল এবং সাইটে প্রবেশ করা যাবে"
 
@@ -2696,7 +2731,7 @@ msgstr "প্রতিষ্ঠানের নাম"
 msgid "name of the responsible organization"
 msgstr "দায়ী প্রতিষ্ঠানের নাম"
 
-#: people/models.py:51 templates/500.html:218 templates/base.html:211
+#: people/models.py:51 templates/500.html:218 templates/base.html:212
 msgid "Profile"
 msgstr "প্রোফাইল"
 
@@ -2712,7 +2747,9 @@ msgstr "অবস্থান নাম"
 msgid "role or position of the responsible person"
 msgstr "দায়ী ব্যক্তির ভূমিকা বা অবস্থান"
 
-#: people/models.py:58 people/templates/people/profile_detail.html:61
+#: people/models.py:58 people/templates/people/profile_detail.html:86
+#: templates/metadata_detail.html:133 templates/metadata_detail.html.py:275
+#: templates/metadata_detail.html:351
 msgid "Voice"
 msgstr "স্বর"
 
@@ -2780,15 +2817,15 @@ msgstr ""
 "সাধারণভাবে ব্যবহৃত শব্দ (গুলি) বা বিধিবদ্ধ শব্দ (গুলি) বা ফ্রেইজ (গুলি) বিষয় (স্পেস বা "
 "কমা দ্বারা পৃথক বর্ণনা ব্যবহৃত"
 
-#: people/views.py:91
+#: people/views.py:92
 msgid "Your username for "
 msgstr "আপনার ব্যবহারকারী নাম"
 
-#: people/views.py:105
+#: people/views.py:106
 msgid "Your username has been emailed to you."
 msgstr "আপনার ব্যবহারকারী নাম আপনার ইমেল হয়েছে."
 
-#: people/views.py:107
+#: people/views.py:108
 msgid "No user could be found with that email address."
 msgstr "কোন ব্যবহারকারী যে ইমেইল ঠিকানা দিয়ে পাওয়া যেতে পারে."
 
@@ -2824,110 +2861,111 @@ msgstr "প্রোফাইল তৈরি করুন"
 msgid "Profile of "
 msgstr "এর প্রোফাইল"
 
-#: people/templates/people/profile_detail.html:30
-msgid "Message User"
-msgstr "ব্যহারকারীকে বার্তা প্রদান"
-
-#: people/templates/people/profile_detail.html:40
-#: people/templates/people/profile_detail.html:45
-#: people/templates/people/profile_detail.html:49
-#: people/templates/people/profile_detail.html:53
-#: people/templates/people/profile_detail.html:58
-#: people/templates/people/profile_detail.html:70
+#: people/templates/people/profile_detail.html:69
 #: people/templates/people/profile_detail.html:74
+#: people/templates/people/profile_detail.html:78
+#: people/templates/people/profile_detail.html:83
+#: people/templates/people/profile_detail.html:95
+#: people/templates/people/profile_detail.html:99
 msgid "Not provided."
 msgstr "প্রদান করা হয়নি"
 
-#: people/templates/people/profile_detail.html:44
-#: services/templates/services/layers_register.html:27
-msgid "Name"
-msgstr "নাম"
-
-#: people/templates/people/profile_detail.html:48
+#: people/templates/people/profile_detail.html:73
+#: templates/metadata_detail.html:124 templates/metadata_detail.html.py:266
+#: templates/metadata_detail.html:342
 msgid "Position"
 msgstr "অবস্থান"
 
-#: people/templates/people/profile_detail.html:52
+#: people/templates/people/profile_detail.html:77
+#: templates/metadata_detail.html:127 templates/metadata_detail.html.py:269
+#: templates/metadata_detail.html:345
 msgid "Organization"
 msgstr "প্রতিষ্ঠান"
 
-#: people/templates/people/profile_detail.html:57
+#: people/templates/people/profile_detail.html:82
+#: templates/metadata_detail.html:130 templates/metadata_detail.html.py:272
+#: templates/metadata_detail.html:348
 msgid "Location"
 msgstr "অঞ্চল"
 
-#: people/templates/people/profile_detail.html:69
+#: people/templates/people/profile_detail.html:94
+#: templates/metadata_detail.html:136 templates/metadata_detail.html.py:278
+#: templates/metadata_detail.html:354
 msgid "Fax"
 msgstr "ফ্যাক্স"
 
-#: people/templates/people/profile_detail.html:85 services/views.py:542
-#: services/views.py:639 services/views.py:707 services/views.py:855
+#: people/templates/people/profile_detail.html:110 services/views.py:542
+#: services/views.py:639 services/views.py:707 services/views.py:862
 msgid "Not provided"
 msgstr "উপলব্ধ নেই"
 
-#: people/templates/people/profile_detail.html:96
-#: people/templates/people/profile_detail.html:130
+#: people/templates/people/profile_detail.html:120
+msgid "Message User"
+msgstr "ব্যহারকারীকে বার্তা প্রদান"
+
+#: people/templates/people/profile_detail.html:124
+#: people/templates/people/profile_detail.html:158
 msgid "Edit profile"
 msgstr "প্রোফাইল সম্পাদনা"
 
-#: people/templates/people/profile_detail.html:97
+#: people/templates/people/profile_detail.html:125
 msgid "Change password"
 msgstr "পাসওয়ার্ড পরিবর্তন করুন"
 
-#: people/templates/people/profile_detail.html:100
+#: people/templates/people/profile_detail.html:128
 msgid "Upload new layers"
 msgstr "নতুন স্তর আপলোড করুন"
 
-#: people/templates/people/profile_detail.html:101
+#: people/templates/people/profile_detail.html:129
 msgid "Create a new map"
 msgstr "একটি নতুন মানচিত্র তৈরি করুন"
 
-#: people/templates/people/profile_detail.html:103
+#: people/templates/people/profile_detail.html:131
 msgid "My Activities"
 msgstr "আমার কর্মকান্ড"
 
-#: people/templates/people/profile_detail.html:108 templates/500.html:222
-#: templates/base.html:215
+#: people/templates/people/profile_detail.html:136 templates/500.html:222
+#: templates/base.html:216
 msgid "Notifications"
 msgstr "বিজ্ঞপ্তি"
 
-#: people/templates/people/profile_detail.html:111 templates/500.html:225
-#: templates/base.html:218 templates/announcements/announcement_list.html:6
+#: people/templates/people/profile_detail.html:139 templates/500.html:225
+#: templates/base.html:219 templates/announcements/announcement_list.html:6
 #: templates/announcements/announcement_list.html:13
 msgid "Announcements"
 msgstr "ঘোষনা"
 
-#: people/templates/people/profile_detail.html:116
+#: people/templates/people/profile_detail.html:144
 #: services/templates/services/service_list.html:9 templates/500.html:228
-#: templates/base.html:221
+#: templates/base.html:222
 msgid "Remote Services"
 msgstr "রিমোট সেবা"
 
-#: people/templates/people/profile_detail.html:117 templates/500.html:229
-#: templates/base.html:222 templates/account/invite_user.html:8
+#: people/templates/people/profile_detail.html:145 templates/500.html:229
+#: templates/base.html:223 templates/account/invite_user.html:8
 #: templates/account/invite_user.html:15
 msgid "Invite User"
 msgstr "ব্যবহারকারী আমন্ত্রণ করুন"
 
-#: people/templates/people/profile_detail.html:118 templates/500.html:231
-#: templates/base.html:224
+#: people/templates/people/profile_detail.html:146 templates/500.html:231
+#: templates/base.html:225
 msgid "GeoServer"
 msgstr "GeoServer"
 
-#: people/templates/people/profile_detail.html:121 templates/500.html:234
-#: templates/base.html:227
+#: people/templates/people/profile_detail.html:149 templates/500.html:234
+#: templates/base.html:228
 msgid "Admin"
 msgstr "অ্যাডমিন"
 
-#: people/templates/people/profile_detail.html:134
+#: people/templates/people/profile_detail.html:162
 msgid "User Activities"
 msgstr "ব্যবহারকারী ক্রিয়াকলাপ"
 
-#: people/templates/people/profile_detail.html:191
+#: people/templates/people/profile_detail.html:175
 msgid "Resources"
 msgstr "সম্পদ"
 
 #: people/templates/people/profile_edit.html:10
-#: people/templates/people/profile_edit.html:24
 msgid "Edit Your Profile"
 msgstr "আপনার প্রোফাইল সম্পাদনা করুন"
 
@@ -2995,31 +3033,31 @@ msgstr "সূচিবদ্ধ"
 msgid "Live"
 msgstr "লাইভ"
 
-#: services/forms.py:12
+#: services/forms.py:32
 msgid "Service URL"
 msgstr "পরিষেবা URL টি"
 
-#: services/forms.py:15
+#: services/forms.py:35
 msgid "Service name"
 msgstr "সেবার নাম"
 
-#: services/forms.py:19
+#: services/forms.py:39
 msgid "Service Type"
 msgstr "সেবার ধরণ"
 
-#: services/models.py:92
+#: services/models.py:112
 msgid "Layer Name"
 msgstr "লেয়ার নাম"
 
-#: services/models.py:93
+#: services/models.py:113
 msgid "Layer Title"
 msgstr "লেয়ার শিরোনাম"
 
-#: services/models.py:94
+#: services/models.py:114
 msgid "Layer Description"
 msgstr "লেয়ার বর্ণনা"
 
-#: services/models.py:95
+#: services/models.py:115
 msgid "Layer Styles"
 msgstr "লেয়ার স্টাইলস"
 
@@ -3046,30 +3084,34 @@ msgstr ""
 "ইন্টারফেসের মাধ্যমে ভৌগলিক অবস্থান বিষয়ক প্রযুক্তিবিদ্যা তথ্য স্তর, মানচিত্র, "
 "মেটাডেটা, এবং উন্নয়ন সম্পদ হাজার শেয়ার করার সুযোগ প্রদান করে.\n"
 
-#: services/views.py:278
+#: services/views.py:281
 msgid "This is an existing service"
 msgstr "এই একটি বিদ্যমান সেবা"
 
-#: services/views.py:807
+#: services/views.py:812
 msgid "Could not find any layers in a compatible projection."
 msgstr "একটি সামঞ্জস্যপূর্ণ অভিক্ষেপ যে কোন স্তর খুঁজে পাওয়া যায়নি."
 
-#: services/views.py:952
+#: services/views.py:961
 #, python-format
 msgid ""
-"Could not find any layers in a compatible projection:                 The "
-"spatial id was: %(srs)s and the url %(url)s"
+"Could not find any layers in a compatible projection:                     "
+"The spatial id was: %(srs)s and the url %(url)s"
 msgstr ""
-"একটি সামঞ্জস্যপূর্ণ অভিক্ষেপ যে কোন স্তর খুঁজে পাওয়া যায়নি: স্থানিক আইডি ছিল: %(srs)s "
-"গুলি এবং URL%(url)s"
 
-#: services/views.py:1214
+#: services/views.py:1226
 msgid "You are not permitted to remove this service."
 msgstr "আপনি এই সেবা অপসারণ করার অনুমতি নেই."
 
 #: services/templates/services/layers_register.html:26
 msgid "All/None"
 msgstr "সমস্ত / কেউ"
+
+#: services/templates/services/layers_register.html:27
+#: templates/metadata_detail.html:118 templates/metadata_detail.html.py:260
+#: templates/metadata_detail.html:336
+msgid "Name"
+msgstr "নাম"
 
 #: services/templates/services/layers_register.html:42
 msgid "Add Layers"
@@ -3156,27 +3198,27 @@ msgstr "দূরবর্তী সেবা সরিয়ে দিন"
 msgid "Are you sure you want to remove"
 msgstr "আপনি নিশ্চিত ভাবে সরাতে চান কি"
 
-#: social/signals.py:85
+#: social/signals.py:86
 msgid "created"
 msgstr "নির্মিত"
 
-#: social/signals.py:86 social/tests.py:80
+#: social/signals.py:87 social/tests.py:100
 msgid "deleted"
 msgstr "মোছা"
 
-#: social/signals.py:89
+#: social/signals.py:90
 msgid "updated"
 msgstr "আপডেট"
 
-#: social/signals.py:94 social/tests.py:100
+#: social/signals.py:95 social/tests.py:120
 msgid "added a comment"
 msgstr "একটি মন্তব্য যোগ"
 
-#: social/signals.py:96
+#: social/signals.py:97
 msgid "updated a comment"
 msgstr "একটি মন্তব্য আপডেট"
 
-#: social/signals.py:98 social/tests.py:54
+#: social/signals.py:99 social/tests.py:74
 msgid "uploaded"
 msgstr "আপলোড"
 
@@ -3189,7 +3231,7 @@ msgstr "পূর্বে"
 msgid "Recent activity"
 msgstr "সাম্প্রতিক কার্যকলাপ"
 
-#: social/templatetags/social_tags.py:32
+#: social/templatetags/social_tags.py:52
 msgid "to"
 msgstr "থেকে"
 
@@ -3236,12 +3278,12 @@ msgstr "সম্প্রদায়"
 msgid "Groups"
 msgstr "গ্রুপ"
 
-#: templates/500.html:89 templates/base.html:90
+#: templates/500.html:89 templates/base.html:91
 msgid "Register"
 msgstr "নিবন্ধন"
 
-#: templates/500.html:100 templates/500.html.py:200 templates/base.html:101
-#: templates/base.html.py:175 templates/base.html:193
+#: templates/500.html:100 templates/500.html.py:200 templates/base.html:102
+#: templates/base.html.py:176 templates/base.html:194
 msgid "Sign in"
 msgstr "সাইন ইন"
 
@@ -3260,59 +3302,59 @@ msgid ""
 "            "
 msgstr ""
 
-#: templates/500.html:149 templates/base.html:142
+#: templates/500.html:149 templates/base.html:143
 msgid "Powered by"
 msgstr "দ্বারা প্রস্তুত Blogger"
 
-#: templates/500.html:149 templates/base.html:142
+#: templates/500.html:149 templates/base.html:143
 msgid "GeoNode"
 msgstr "GeoNode"
 
-#: templates/500.html:149 templates/base.html:142
+#: templates/500.html:149 templates/base.html:143
 msgid "version"
 msgstr "সংস্করণ"
 
-#: templates/500.html:150 templates/base.html:143
+#: templates/500.html:150 templates/base.html:144
 msgid "Developers"
 msgstr "ডেভালোপার"
 
-#: templates/500.html:188 templates/500.html.py:189 templates/base.html:181
-#: templates/base.html.py:182
+#: templates/500.html:188 templates/500.html.py:189 templates/base.html:182
+#: templates/base.html.py:183
 msgid "Username"
 msgstr "ইউজারনেম"
 
-#: templates/500.html:192 templates/base.html:185
+#: templates/500.html:192 templates/base.html:186 templates/base.html.py:187
 msgid "Password"
 msgstr "পাসওয়ার্ড"
 
-#: templates/500.html:196 templates/base.html:189
+#: templates/500.html:196 templates/base.html:190
 msgid "Remember Me"
 msgstr "আমাকে মনে রাখুন"
 
-#: templates/500.html:212 templates/base.html:205
+#: templates/500.html:212 templates/base.html:206
 msgid "Menu"
 msgstr "তালিকা"
 
-#: templates/500.html:219 templates/base.html:212
+#: templates/500.html:219 templates/base.html:213
 msgid "Recent Activity"
 msgstr "সাম্প্রতিক কার্যকলাপ"
 
-#: templates/500.html:220 templates/base.html:213
+#: templates/500.html:220 templates/base.html:214
 #: templates/user_messages/inbox.html:15
 msgid "Inbox"
 msgstr "ইনবক্স"
 
-#: templates/500.html:239 templates/base.html:232
+#: templates/500.html:239 templates/base.html:233
 msgid "Help"
 msgstr "সাহায্য করুন"
 
-#: templates/500.html:245 templates/base.html:238
+#: templates/500.html:245 templates/base.html:239
 #: templates/account/logout.html:6 templates/account/logout.html.py:12
 #: templates/account/logout.html:17
 msgid "Log out"
 msgstr "লগ আউট"
 
-#: templates/500.html:280 templates/base.html:275
+#: templates/500.html:280 templates/base.html:276
 msgid "Type your search here ..."
 msgstr "এখানে আপনার অনুসন্ধান টাইপ করুন ..."
 
@@ -3423,6 +3465,11 @@ msgstr "GeoNode সম্পর্কে"
 msgid "About GeoNode."
 msgstr "GeoNode সম্পর্কে."
 
+#: templates/base.html:74 templates/search/search.html:6
+#: templates/search/search.html.py:12
+msgid "Search"
+msgstr "অনুসন্ধান"
+
 #: templates/developer.html:4 templates/developer.html.py:8
 msgid "Information for Developers"
 msgstr "ডেভালোপার জন্য তথ্য"
@@ -3432,6 +3479,7 @@ msgid "Useful information for developers interested in GeoNode."
 msgstr "GeoNode আগ্রহী ডেভেলপারদের জন্য প্রয়োজনীয় তথ্য."
 
 #: templates/developer.html:14
+#, python-format
 msgid ""
 "\n"
 "    <p><a href=\"http://geonode.org/\">GeoNode</a> is an open service built "
@@ -3481,6 +3529,18 @@ msgid ""
 "data hosted by GeoNode is also available through GeoWebCache. GeoWebCache "
 "improves on WMS by caching data and providing more responsive maps.</p>\n"
 "\n"
+"    <h3>CSW Example Code</h3>\n"
+"    <p>To interact with GeoNode's CSW you can use any CSW client (QGIS "
+"MetaSearch, GRASS, etc.).  The following example illustrates a simple "
+"invocation using the OWSLib Python package:</p>\n"
+"    <p><code>from owslib.csw import CatalogueServiceWeb</code></p>\n"
+"    <p><code>from owslib.fes import PropertyIsLike</code></p>\n"
+"    <p><code>csw = CatalogueServiceWeb('%(CATALOGUE_BASE_URL)s')</code></p>\n"
+"    <p><code>anytext = PropertyIsLike('csw:AnyText', 'birds')')</code></p>\n"
+"    <p><code>csw.getrecords2(constraints=[anytext])</code></p>\n"
+"    <p><code>print csw.results</code></p>\n"
+"    <p><code>print csw.records</code></p>\n"
+"\n"
 "    <h3>OpenLayers Example Code</h3>\n"
 "\n"
 "    <p>To include a GeoNode map layer in an OpenLayers map, first find the "
@@ -3519,39 +3579,43 @@ msgid ""
 "    "
 msgstr ""
 
-#: templates/developer.html:55
+#: templates/developer.html:65
 msgid "GeoNode's Web Services"
 msgstr "GeoNode এর ওয়েব সেবা"
 
-#: templates/developer.html:56
+#: templates/developer.html:66
 msgid "GeoNode's Web Services are available from the following URLs:"
 msgstr "GeoNode এর ওয়েব সেবা নিম্নলিখিত URL গুলি থেকে পাওয়া যায়:"
 
-#: templates/developer.html:59
+#: templates/developer.html:69
 msgid "Dynamic tiles via WMS:"
 msgstr "WMS মাধ্যমে ডাইনামিক টাইলস:"
 
-#: templates/developer.html:63
+#: templates/developer.html:73
 msgid "Vector data via WFS:"
 msgstr "তারা সরেজমিনে দেখতে মাধ্যমে ভেক্টর তথ্য:"
 
-#: templates/developer.html:67
+#: templates/developer.html:77
 msgid "Raster data via WCS:"
 msgstr "WCS মাধ্যমে রাস্টার তথ্য:"
 
-#: templates/developer.html:71
+#: templates/developer.html:81
 msgid "Metadata search via CSW:"
 msgstr "CSW মাধ্যমে মিটাডাটা অনুসন্ধান:"
 
-#: templates/developer.html:75
+#: templates/developer.html:85
 msgid "Metadata search via OpenSearch:"
 msgstr ""
 
-#: templates/developer.html:79
+#: templates/developer.html:89
 msgid "Metadata search via OAI-PMH:"
 msgstr ""
 
-#: templates/developer.html:83
+#: templates/developer.html:93
+msgid "Open Data:"
+msgstr ""
+
+#: templates/developer.html:97
 msgid "Cached tiles via WMTS:"
 msgstr "WMTS মাধ্যমে সঞ্চিত পাতা টাইলস:"
 
@@ -3698,6 +3762,87 @@ msgid ""
 "If you have any questions about the software or service, join our <a href="
 "\"http://lists.osgeo.org/cgi-bin/mailman/listinfo/geonode-users\">mailing "
 "list</a>."
+msgstr ""
+
+#: templates/metadata_detail.html:26
+msgid "Return to Document"
+msgstr ""
+
+#: templates/metadata_detail.html:28
+msgid "Return to Layer"
+msgstr ""
+
+#: templates/metadata_detail.html:36
+msgid "Identification"
+msgstr ""
+
+#: templates/metadata_detail.html:100
+msgid "Published"
+msgstr ""
+
+#: templates/metadata_detail.html:101 templates/metadata_detail.html.py:104
+msgid "Yes"
+msgstr ""
+
+#: templates/metadata_detail.html:121 templates/metadata_detail.html.py:263
+#: templates/metadata_detail.html:339
+msgid "email"
+msgstr "ইমেইল"
+
+#: templates/metadata_detail.html:151
+msgid "Information of Layer"
+msgstr ""
+
+#: templates/metadata_detail.html:156
+msgid "Identification Image"
+msgstr ""
+
+#: templates/metadata_detail.html:165
+msgid "Spatial Resolution"
+msgstr ""
+
+#: templates/metadata_detail.html:168
+msgid "Projetion System"
+msgstr ""
+
+#: templates/metadata_detail.html:171
+msgid "Extension x0"
+msgstr ""
+
+#: templates/metadata_detail.html:174
+msgid "Extension x1"
+msgstr ""
+
+#: templates/metadata_detail.html:177
+msgid "Extension y0"
+msgstr ""
+
+#: templates/metadata_detail.html:180
+msgid "Extension y1"
+msgstr ""
+
+#: templates/metadata_detail.html:185
+msgid "Features"
+msgstr ""
+
+#: templates/metadata_detail.html:255
+msgid "Contact Points"
+msgstr ""
+
+#: templates/metadata_detail.html:296
+msgid "References"
+msgstr ""
+
+#: templates/metadata_detail.html:301
+msgid "Link Online"
+msgstr ""
+
+#: templates/metadata_detail.html:304
+msgid "Metadata Page"
+msgstr ""
+
+#: templates/metadata_detail.html:308
+msgid "Online Link"
 msgstr ""
 
 #: templates/social_links.html:10
@@ -4289,25 +4434,25 @@ msgstr "yyyy-mm-dd"
 msgid "Date ends before:"
 msgstr "জন্ম আগে শেষ:"
 
-#: templates/search/_search_content.html:5
-msgid "Your selections"
-msgstr "তোমার মান নির্বাচন"
+#: templates/search/_pagination.html:13
+msgid "page"
+msgstr ""
 
-#: templates/search/_search_content.html:6
-msgid "Clear all filters"
-msgstr "সমস্ত ফিল্টার সাফ"
+#: templates/search/_pagination.html:13
+msgid "of"
+msgstr "এর"
 
-#: templates/search/_sort_filters.html:15
+#: templates/search/_search_content.html:11
 msgid "Set permissions"
 msgstr "অনুমতি স্থাপন করুন"
+
+#: templates/search/_search_content.html:23
+msgid "Filters"
+msgstr ""
 
 #: templates/search/_text_filter.html:5
 msgid "Text"
 msgstr "পাঠ"
-
-#: templates/search/search.html:6 templates/search/search.html.py:12
-msgid "Search"
-msgstr "অনুসন্ধান"
 
 #: templates/user_messages/_message_snippet.html:8
 msgid "With"
@@ -4362,6 +4507,31 @@ msgid "Send Reply"
 msgstr "উত্তর পাঠান"
 
 #~ msgid ""
+#~ "information about on-line sources from which the dataset, specification, "
+#~ "or community profile name and extended metadata elements can be obtained"
+#~ msgstr ""
+#~ "information about on-line sources from which the dataset, specification, "
+#~ "or community profile name and extended metadata elements can be obtained"
+
+#~ msgid "detailed text description of what the online resource is/does"
+#~ msgstr "detailed text description of what the online resource is/does"
+
+#~ msgid "distribution URL"
+#~ msgstr "distribution URL"
+
+#~ msgid "distribution description"
+#~ msgstr "distribution description"
+
+#~ msgid "Could not create a download link for layer."
+#~ msgstr "Could not create a download link for layer."
+
+#~ msgid "Your selections"
+#~ msgstr "Your selections"
+
+#~ msgid "Clear all filters"
+#~ msgstr "Clear all filters"
+
+#~ msgid ""
 #~ "\n"
 #~ "          Are you sure you want to remove %(document_title)s?\n"
 #~ "        "
@@ -4378,9 +4548,6 @@ msgstr "উত্তর পাঠান"
 #~ "\n"
 #~ "        Are you sure you want to remove %(map_title)s?\n"
 #~ "    "
-
-#~ msgid "email"
-#~ msgstr "email"
 
 #~ msgid "KML"
 #~ msgstr "KML"

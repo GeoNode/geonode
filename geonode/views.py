@@ -1,6 +1,7 @@
-########################################################################
+# -*- coding: utf-8 -*-
+#########################################################################
 #
-# Copyright (C) 2012 OpenPlans
+# Copyright (C) 2016 OSGeo
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -18,13 +19,19 @@
 #########################################################################
 
 from django import forms
+from django.conf import settings
 from django.contrib.auth import authenticate, login, get_user_model
 from django.http import HttpResponse, HttpResponseRedirect
 from django.core.urlresolvers import reverse
-from django.utils import simplejson as json
+try:
+    import json
+except ImportError:
+    from django.utils import simplejson as json
 from django.db.models import Q
 from django.template.response import TemplateResponse
 
+from geonode import get_version
+from geonode.base.templatetags.base_tags import facets
 from geonode.groups.models import GroupProfile
 
 
@@ -38,7 +45,7 @@ def ajax_login(request):
         return HttpResponse(
             content="ajax login requires HTTP POST",
             status=405,
-            mimetype="text/plain"
+            content_type="text/plain"
         )
     form = AjaxLoginForm(data=request.POST)
     if form.is_valid():
@@ -49,7 +56,7 @@ def ajax_login(request):
             return HttpResponse(
                 content="bad credentials or disabled user",
                 status=400,
-                mimetype="text/plain"
+                content_type="text/plain"
             )
         else:
             login(request, user)
@@ -58,12 +65,12 @@ def ajax_login(request):
             return HttpResponse(
                 content="successful login",
                 status=200,
-                mimetype="text/plain"
+                content_type="text/plain"
             )
     else:
         return HttpResponse(
             "The form you submitted doesn't look like a username/password combo.",
-            mimetype="text/plain",
+            content_type="text/plain",
             status=400)
 
 
@@ -72,12 +79,12 @@ def ajax_lookup(request):
         return HttpResponse(
             content='ajax user lookup requires HTTP POST',
             status=405,
-            mimetype='text/plain'
+            content_type='text/plain'
         )
     elif 'query' not in request.POST:
         return HttpResponse(
             content='use a field named "query" to specify a prefix to filter usernames',
-            mimetype='text/plain')
+            content_type='text/plain')
     keyword = request.POST['query']
     users = get_user_model().objects.filter(Q(username__istartswith=keyword) |
                                             Q(first_name__icontains=keyword) |
@@ -92,7 +99,7 @@ def ajax_lookup(request):
     json_dict['groups'] = [({'name': g.slug, 'title': g.title}) for g in groups]
     return HttpResponse(
         content=json.dumps(json_dict),
-        mimetype='text/plain'
+        content_type='text/plain'
     )
 
 
@@ -104,3 +111,32 @@ def err403(request):
             request.get_full_path())
     else:
         return TemplateResponse(request, '401.html', {}, status=401).render()
+
+
+def ident_json(request):
+    if not request.user.is_authenticated():
+        return HttpResponseRedirect(
+            reverse('account_login') +
+            '?next=' +
+            request.get_full_path())
+
+    json_data = {}
+    json_data['siteurl'] = settings.SITEURL
+    json_data['name'] = settings.PYCSW['CONFIGURATION']['metadata:main']['identification_title']
+
+    json_data['poc'] = {
+        'name': settings.PYCSW['CONFIGURATION']['metadata:main']['contact_name'],
+        'email': settings.PYCSW['CONFIGURATION']['metadata:main']['contact_email'],
+        'twitter': 'https://twitter.com/%s' % settings.TWITTER_SITE
+    }
+
+    json_data['version'] = get_version()
+
+    json_data['services'] = {
+        'csw': settings.CATALOGUE['default']['URL'],
+        'ows': settings.OGC_SERVER['default']['LOCATION']
+    }
+
+    json_data['counts'] = facets({'request': request, 'facet_type': 'home'})
+
+    return HttpResponse(content=json.dumps(json_data), content_type='application/json')

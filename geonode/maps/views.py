@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #########################################################################
 #
-# Copyright (C) 2012 OpenPlans
+# Copyright (C) 2016 OSGeo
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -30,7 +30,12 @@ from django.shortcuts import render_to_response, get_object_or_404
 from django.conf import settings
 from django.template import RequestContext
 from django.utils.translation import ugettext as _
-from django.utils import simplejson as json
+try:
+    # Django >= 1.7
+    import json
+except ImportError:
+    # Django <= 1.6 backwards compatibility
+    from django.utils import simplejson as json
 from django.utils.html import strip_tags
 from django.db.models import F
 from django.views.decorators.clickjacking import xframe_options_exempt
@@ -322,7 +327,7 @@ def map_view(request, mapid, snapshot=None, template='maps/map_view.html'):
 def map_view_js(request, mapid):
     map_obj = _resolve_map(request, mapid, 'base.view_resourcebase', _PERMISSION_MSG_VIEW)
     config = map_obj.viewer_json(request.user)
-    return HttpResponse(json.dumps(config), mimetype="application/javascript")
+    return HttpResponse(json.dumps(config), content_type="application/javascript")
 
 
 def map_json(request, mapid, snapshot=None):
@@ -334,7 +339,7 @@ def map_json(request, mapid, snapshot=None):
             return HttpResponse(
                 _PERMISSION_MSG_LOGIN,
                 status=401,
-                mimetype="text/plain"
+                content_type="text/plain"
             )
 
         map_obj = Map.objects.get(id=mapid)
@@ -342,7 +347,7 @@ def map_json(request, mapid, snapshot=None):
             return HttpResponse(
                 _PERMISSION_MSG_SAVE,
                 status=401,
-                mimetype="text/plain"
+                content_type="text/plain"
             )
         try:
             map_obj.update_from_viewer(request.body)
@@ -355,7 +360,7 @@ def map_json(request, mapid, snapshot=None):
         except ValueError as e:
             return HttpResponse(
                 "The server could not understand the request." + str(e),
-                mimetype="text/plain",
+                content_type="text/plain",
                 status=400
             )
 
@@ -407,7 +412,7 @@ def new_map_json(request):
         if not request.user.is_authenticated():
             return HttpResponse(
                 'You must be logged in to save new maps',
-                mimetype="text/plain",
+                content_type="text/plain",
                 status=401
             )
 
@@ -436,7 +441,7 @@ def new_map_json(request):
             return HttpResponse(
                 json.dumps({'id': map_obj.id}),
                 status=200,
-                mimetype='application/json'
+                content_type='application/json'
             )
     else:
         return HttpResponse(status=405)
@@ -537,7 +542,11 @@ def new_map_config(request):
                 x = (minx + maxx) / 2
                 y = (miny + maxy) / 2
 
-                center = list(forward_mercator((x, y)))
+                if getattr(settings, 'DEFAULT_MAP_CRS', 'EPSG:900913') == "EPSG:4326":
+                    center = list((x, y))
+                else:
+                    center = list(forward_mercator((x, y)))
+
                 if center[1] == float('-inf'):
                     center[1] = 0
 
@@ -673,7 +682,7 @@ def map_wmc(request, mapid, template="maps/wmc.xml"):
     return render_to_response(template, RequestContext(request, {
         'map': map_obj,
         'siteurl': settings.SITEURL,
-    }), mimetype='text/xml')
+    }), content_type='text/xml')
 
 
 def map_wms(request, mapid):
@@ -696,7 +705,7 @@ def map_wms(request, mapid):
             )
             return HttpResponse(
                 json.dumps(response),
-                mimetype="application/json")
+                content_type="application/json")
         except:
             return HttpResponseServerError()
 
@@ -705,7 +714,7 @@ def map_wms(request, mapid):
             layerGroupName=getattr(map_obj.layer_group, 'name', ''),
             ows=getattr(ogc_server_settings, 'ows', ''),
         )
-        return HttpResponse(json.dumps(response), mimetype="application/json")
+        return HttpResponse(json.dumps(response), content_type="application/json")
 
     return HttpResponseNotAllowed(['PUT', 'GET'])
 
@@ -716,7 +725,7 @@ def maplayer_attributes(request, layername):
     return HttpResponse(
         json.dumps(
             layer.attribute_config()),
-        mimetype="application/json")
+        content_type="application/json")
 
 
 def snapshot_config(snapshot, map_obj, user):
@@ -817,15 +826,15 @@ def snapshot_create(request):
             config=clean_config(conf),
             map=Map.objects.get(
                 id=config['id']))
-        return HttpResponse(num_encode(snapshot.id), mimetype="text/plain")
+        return HttpResponse(num_encode(snapshot.id), content_type="text/plain")
     else:
-        return HttpResponse("Invalid JSON", mimetype="text/plain", status=500)
+        return HttpResponse("Invalid JSON", content_type="text/plain", status=500)
 
 
 def ajax_snapshot_history(request, mapid):
     map_obj = _resolve_map(request, mapid, 'base.view_resourcebase', _PERMISSION_MSG_VIEW)
     history = [snapshot.json() for snapshot in map_obj.snapshots]
-    return HttpResponse(json.dumps(history), mimetype="text/plain")
+    return HttpResponse(json.dumps(history), content_type="text/plain")
 
 
 def ajax_url_lookup(request):
@@ -833,12 +842,12 @@ def ajax_url_lookup(request):
         return HttpResponse(
             content='ajax user lookup requires HTTP POST',
             status=405,
-            mimetype='text/plain'
+            content_type='text/plain'
         )
     elif 'query' not in request.POST:
         return HttpResponse(
             content='use a field named "query" to specify a prefix to filter urls',
-            mimetype='text/plain')
+            content_type='text/plain')
     if request.POST['query'] != '':
         maps = Map.objects.filter(urlsuffix__startswith=request.POST['query'])
         if request.POST['mapid'] != '':
@@ -854,7 +863,7 @@ def ajax_url_lookup(request):
         }
     return HttpResponse(
         content=json.dumps(json_dict),
-        mimetype='text/plain'
+        content_type='text/plain'
     )
 
 
@@ -874,5 +883,14 @@ def map_thumbnail(request, mapid):
             return HttpResponse(
                 content='error saving thumbnail',
                 status=500,
-                mimetype='text/plain'
+                content_type='text/plain'
             )
+
+
+def map_metadata_detail(request, mapid, template='maps/map_metadata_detail.html'):
+    map_obj = _resolve_map(request, mapid, 'view_resourcebase')
+    return render_to_response(template, RequestContext(request, {
+        "layer": map_obj,
+        "mapid": mapid,
+        'SITEURL': settings.SITEURL[:-1]
+    }))

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #########################################################################
 #
-# Copyright (C) 2012 OpenPlans
+# Copyright (C) 2016 OSGeo
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -33,6 +33,7 @@ class LayerAdminForm(ResourceBaseAdminForm):
 
     class Meta:
         model = Layer
+        fields = '__all__'
 
 
 class LayerAdmin(MediaTranslationAdmin):

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #########################################################################
 #
-# Copyright (C) 2012 OpenPlans
+# Copyright (C) 2016 OSGeo
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -25,7 +25,10 @@ import autocomplete_light
 
 from django.conf import settings
 from django import forms
-from django.utils import simplejson as json
+try:
+    import json
+except ImportError:
+    from django.utils import simplejson as json
 from geonode.layers.utils import unzip_file
 from geonode.layers.models import Layer, Attribute
 
@@ -67,6 +70,7 @@ class LayerUploadForm(forms.Form):
     xml_file = forms.FileField(required=False)
 
     charset = forms.CharField(required=False)
+    metadata_uploaded_preserve = forms.BooleanField(required=False)
 
     spatial_files = (
         "base_file",
@@ -173,6 +177,7 @@ class NewLayerUploadForm(LayerUploadForm):
     layer_title = forms.CharField(required=False)
     permissions = JSONField()
     charset = forms.CharField(required=False)
+    metadata_uploaded_preserve = forms.BooleanField(required=False)
 
     spatial_files = [
         "base_file",

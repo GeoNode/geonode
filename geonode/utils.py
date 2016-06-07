@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #########################################################################
 #
-# Copyright (C) 2012 OpenPlans
+# Copyright (C) 2016 OSGeo
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -32,7 +32,10 @@ from django.conf import settings
 from django.core.exceptions import PermissionDenied
 from django.utils.translation import ugettext_lazy as _
 from django.shortcuts import get_object_or_404
-from django.utils import simplejson as json
+try:
+    import json
+except ImportError:
+    from django.utils import simplejson as json
 from django.http import HttpResponse
 from django.core.cache import cache
 from django.http import Http404
@@ -257,7 +260,7 @@ class GXPMapBase(object):
                        for source in sources.values() if 'url' in source]
 
         if 'geonode.geoserver' in settings.INSTALLED_APPS:
-            if not settings.MAP_BASELAYERS[0]['source']['url'] in source_urls:
+            if len(sources.keys()) > 0 and not settings.MAP_BASELAYERS[0]['source']['url'] in source_urls:
                 keys = sorted(sources.keys())
                 settings.MAP_BASELAYERS[0]['source'][
                     'title'] = 'Local Geoserver'
@@ -276,12 +279,13 @@ class GXPMapBase(object):
                     lyr["source"]) not in map(
                     _base_source,
                     sources.values()):
-                sources[
-                    str(int(max(sources.keys(), key=int)) + 1)] = lyr["source"]
+                if len(sources.keys()) > 0:
+                    sources[
+                        str(int(max(sources.keys(), key=int)) + 1)] = lyr["source"]
 
         # adding remote services sources
         from geonode.services.models import Service
-        index = int(max(sources.keys()))
+        index = int(max(sources.keys())) if len(sources.keys()) > 0 else 0
         for service in Service.objects.all():
             remote_source = {
                 'url': service.base_url,
@@ -289,8 +293,9 @@ class GXPMapBase(object):
                 'ptype': 'gxp_wmscsource',
                 'name': service.name
             }
-            index += 1
-            sources[index] = remote_source
+            if remote_source['url'] not in source_urls:
+                index += 1
+                sources[index] = remote_source
 
         config = {
             'id': self.id,
@@ -311,6 +316,10 @@ class GXPMapBase(object):
         if any(layers):
             # Mark the last added layer as selected - important for data page
             config["map"]["layers"][len(layers) - 1]["selected"] = True
+        else:
+            (def_map_config, def_map_layers) = default_map_config()
+            config = def_map_config
+            layers = def_map_layers
 
         config["map"].update(_get_viewer_projection_info(self.projection))
 

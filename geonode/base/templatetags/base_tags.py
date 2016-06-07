@@ -1,3 +1,23 @@
+# -*- coding: utf-8 -*-
+#########################################################################
+#
+# Copyright (C) 2016 OSGeo
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program. If not, see <http://www.gnu.org/licenses/>.
+#
+#########################################################################
+
 from django import template
 
 from agon_ratings.models import Rating
@@ -65,6 +85,7 @@ def facets(context):
             'raster': count_dict.get('coverageStore', 0),
             'vector': count_dict.get('dataStore', 0),
             'remote': count_dict.get('remoteStore', 0),
+            'wms': count_dict.get('wmsStore', 0),
         }
 
         # Break early if only_layers is set.
@@ -89,6 +110,6 @@ def facets(context):
                 access="private").count()
 
             facets['layer'] = facets['raster'] + \
-                facets['vector'] + facets['remote']
+                facets['vector'] + facets['remote'] + facets['wms']
 
     return facets

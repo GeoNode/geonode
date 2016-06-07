@@ -134,6 +134,7 @@ As soon as the import process completes, you will have the possibility to go str
 
 .. figure:: img/layer_info_vector.png
 
+
 GDAL (Raster Data)
 ------------------
 

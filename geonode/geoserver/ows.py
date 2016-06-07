@@ -1,6 +1,7 @@
+# -*- coding: utf-8 -*-
 #########################################################################
 #
-# Copyright (C) 2012 OpenPlans
+# Copyright (C) 2016 OSGeo
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -20,69 +21,32 @@
 import logging
 
 from django.utils.translation import ugettext_lazy as _
-from owslib.wcs import WebCoverageService
-from owslib.coverage.wcsBase import ServiceException
 import urllib
-from geonode import GeoNodeException
-from re import sub
 
 logger = logging.getLogger(__name__)
 
 DEFAULT_EXCLUDE_FORMATS = ['PNG', 'JPEG', 'GIF', 'TIFF']
 
 
-def wcs_links(
-        wcs_url,
-        identifier,
-        bbox=None,
-        crs=None,
-        height=None,
-        width=None,
-        exclude_formats=True,
-        quiet=True,
-        version='1.0.0'):
-    # FIXME(Ariel): This would only work for layers marked for public view,
-    # what about the ones with permissions enabled?
+def _wcs_link(wcs_url, identifier, mime):
+    return wcs_url + urllib.urlencode({
+        'service': 'WCS',
+        'request': 'GetCoverage',
+        'coverageid': identifier,
+        'format': mime,
+        'version': '2.0.1'
+    })
 
-    try:
-        wcs = WebCoverageService(wcs_url, version=version)
-    except ServiceException as err:
-        err_msg = 'WCS server returned exception: %s' % err
-        if not quiet:
-            logger.warn(err_msg)
-        raise GeoNodeException(err_msg)
 
-    msg = ('Could not create WCS links for layer "%s",'
-           ' it was not in the WCS catalog,'
-           ' the available layers were: "%s"' % (
-               identifier, wcs.contents.keys()))
-
+def wcs_links(wcs_url, identifier):
+    types = [
+        ("x-gzip", _("GZIP"), "application/x-gzip"),
+        ("geotiff", _("GeoTIFF"), "image/tiff"),
+    ]
     output = []
-    formats = []
-
-    if identifier not in wcs.contents:
-        if not quiet:
-            raise RuntimeError(msg)
-        else:
-            logger.warn(msg)
-    else:
-        coverage = wcs.contents[identifier]
-        formats = coverage.supportedFormats
-        for f in formats:
-            if exclude_formats and f in DEFAULT_EXCLUDE_FORMATS:
-                continue
-            # roundabout, hacky way to accomplish getting a getCoverage url.
-            # nonetheless, it's better than having to load an entire large
-            # coverage just to generate a URL
-            fakeUrl = wcs.getCoverage(identifier=coverage.id, format=f,
-                                      bbox=bbox, crs=crs, height=20,
-                                      width=20).geturl()
-            url = sub(r'(height=)20(\&width=)20', r'\g<1>{0}\g<2>{1}',
-                      fakeUrl).format(height, width)
-            # The outputs are: (ext, name, mime, url)
-            # FIXME(Ariel): Find a way to get proper ext, name and mime
-            # using format as a default for all is not good enough
-            output.append((f, f, f, url))
+    for ext, name, mime in types:
+        url = _wcs_link(wcs_url, identifier, mime)
+        output.append((ext, name, mime, url))
     return output
 
 

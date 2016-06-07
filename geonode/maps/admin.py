@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #########################################################################
 #
-# Copyright (C) 2012 OpenPlans
+# Copyright (C) 2016 OSGeo
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -33,6 +33,7 @@ class MapAdminForm(ResourceBaseAdminForm):
 
     class Meta:
         model = Map
+        fields = '__all__'
 
 
 class MapAdmin(MediaTranslationAdmin):
@@ -48,7 +49,7 @@ class MapLayerAdmin(admin.ModelAdmin):
     list_display = ('id', 'map', 'name')
     list_filter = ('map',)
     search_fields = ('map__title', 'name',)
-    form = autocomplete_light.modelform_factory(MapLayer)
+    form = autocomplete_light.modelform_factory(MapLayer, fields='__all__')
 
 admin.site.register(Map, MapAdmin)
 admin.site.register(MapLayer, MapLayerAdmin)

@@ -84,6 +84,12 @@
 
   <div class="col-md-4">
 
+    <li class="list-group-item">
+        <a href="{% url "document_metadata_detail" resource.id %}">
+            <button class="btn btn-primary btn-md btn-block">{% trans "Metadata Detail" %}</button>
+        </a>
+    </li> 
+
     <ul class="list-group">
       <li class="list-group-item">
       {% if "download_resourcebase" in perms_list %}
