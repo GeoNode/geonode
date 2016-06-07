@@ -142,6 +142,8 @@ class DataRequestProfile(TimeStampedModel):
         max_digits=30,
         decimal_places=4,
         help_text=_('Sqr KMs'),
+        null=True,
+        blank=True,
         default=0
     )
     """
