@@ -64,8 +64,6 @@
                     <h4>Background layers</h4>
                     <div>
                         <ul id="background-layer-list">
-                            {#                            <li><input type="radio" name="background-layer" value="osm" checked="checked">OSM</li>#}
-                            {#                            <li><input type="radio" name="background-layer" value="mapquest">MapQuest</li>#}
                         </ul>
                     </div>
                     <div class="buttons">
@@ -208,6 +206,8 @@
 
             active_background_layer = mapquest;
         {% else %}
+            background_layers = {};
+            background_layers_list = [];
         {% endif %}
 
         var w_height = $(window).height();
@@ -264,6 +264,9 @@
         function add_layer(layer_typename, visibility) {
             visibility = typeof visibility !== 'undefined' ? visibility : true;
             if (layer_typename in overlay_layers) {
+                return
+            }
+            if (layer_typename in background_layers) {
                 return
             }
             if (!layer_typename) {
@@ -413,13 +416,13 @@
             });
         }
 
-
-        $(document).ready(function () {
-            // Populate radio button for background layer
-            for (i = 0; i < background_layers_list.length; i++) {
-                var background_layer_name = background_layers_list[i];
-                var background_layer = background_layers[background_layer_name];
-                if (background_layer['visibility']) {
+        function populate_background_layer(the_list, the_dict) {
+            console.log(the_list);
+            for (i = 0; i < the_list.length; i++) {
+                var background_layer_name = the_list[i];
+                var background_layer = the_dict[background_layer_name];
+                if (background_layer['visibility'] == "True") {
+                    active_background_layer = background_layer;
                     $("#background-layer-list").prepend(
                             '<li>' +
                             '<input type="radio" name="background-layer" value="' +
@@ -428,6 +431,17 @@
                             background_layer['title'] +
                             '</li>'
                     );
+                } else if (background_layer['visibility']) {
+                    active_background_layer = background_layer;
+                    $("#background-layer-list").prepend(
+                            '<li>' +
+                            '<input type="radio" name="background-layer" value="' +
+                            background_layer_name +
+                            '" checked="checked">' +
+                            background_layer['title'] +
+                            '</li>'
+                    );
+
                 } else {
                     $("#background-layer-list").prepend(
                             '<li>' +
@@ -447,6 +461,13 @@
                 new_background_layer.addTo(map);
                 active_background_layer = new_background_layer;
             });
+        }
+
+
+        $(document).ready(function () {
+            // Populate radio button for background layer
+            populate_background_layer(background_layers_list, background_layers);
+
 
             // Initiate map
             {% if create %}
@@ -469,12 +490,28 @@
 
             {% if not create %}
                 {% for layer in map.layers %}
-                    {% if layer.visibility %}
-                        add_layer("{{ layer.name }}", true);
-                    {% else %}
-                        add_layer("{{ layer.name }}", false);
-                    {% endif %}
+                    if ("{{ layer.group }}" == 'background') {
+                        background_layers_list.push("{{ layer.name }}");
+                        background_tile = L.tileLayer("{{ layer.ows_url }}");
+                        background_layers["{{ layer.name }}"] = {
+                            'title': '{{ layer.name }}',
+                            'url': '{{ layer.ows_url }}',
+                            'group': '{{ layer.group }}',
+                            'visibility': '{{ layer.visibility }}',
+                            'layer': background_tile
+                        };
+                        if ("{{ layer.visibility }}" == 'True') {
+                            background_tile.addTo(map);
+                        }
+                    } else {
+                        {% if layer.visibility %}
+                            add_layer("{{ layer.name }}", true);
+                        {% else %}
+                            add_layer("{{ layer.name }}", false);
+                        {% endif %}
+                    }
                 {% endfor %}
+                populate_background_layer(background_layers_list, background_layers);
             {% else %}
                 // Check layer parameter in url
                 var qd = {};
