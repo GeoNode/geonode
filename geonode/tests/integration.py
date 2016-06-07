@@ -1,6 +1,7 @@
+# -*- coding: utf-8 -*-
 #########################################################################
 #
-# Copyright (C) 2012 OpenPlans
+# Copyright (C) 2016 OSGeo
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -182,7 +183,7 @@ class GeoNodeMapTest(TestCase):
         uploaded = file_upload(filename)
         wcs_link = False
         for link in uploaded.link_set.all():
-            if link.mime == 'GeoTIFF':
+            if link.mime == 'image/tiff':
                 wcs_link = True
         self.assertTrue(wcs_link)
 

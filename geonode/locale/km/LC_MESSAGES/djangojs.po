@@ -14,13 +14,15 @@
 # Translators:
 # Translators:
 # Translators:
+# Translators:
+# Translators:
 # Andres Alfonso Lemon Gomez <lemon.andres@gmail.com>, 2014
 msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-10-29 04:22-0500\n"
-"PO-Revision-Date: 2015-10-29 09:06+0000\n"
+"POT-Creation-Date: 2016-04-14 03:50-0500\n"
+"PO-Revision-Date: 2016-04-14 08:39+0000\n"
 "Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
 "Language-Team: Khmer (http://www.transifex.com/geonode/geonode/language/"
 "km/)\n"
@@ -30,52 +32,13 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 
-#: static/geonode/js/extjs/GeoNode.js:72
-#: static_root/geonode/js/extjs/GeoNode.js:72
-msgid "Add user..."
-msgstr "បន្ថែម​អ្នក​ប្រើ ..."
-
-#: static/geonode/js/extjs/GeoNode.js:72
-#: static_root/geonode/js/extjs/GeoNode.js:72
-msgid "Who can view and download this data?"
-msgstr "តើ​នរណា​អាច​មើល​និង​ទាញ​យក​ទិន្នន័យ​នេះ​?"
-
-#: static/geonode/js/extjs/GeoNode.js:72
-#: static_root/geonode/js/extjs/GeoNode.js:72
-msgid "Anyone"
-msgstr "នរណា​ម្នាក់"
-
-#: static/geonode/js/extjs/GeoNode.js:72
-#: static_root/geonode/js/extjs/GeoNode.js:72
-msgid "Any registered user"
-msgstr "អ្នក​ប្រើ​ដែល​បាន​ចុះ​ឈ្មោះ​ណា​មួយ"
-
-#: static/geonode/js/extjs/GeoNode.js:72
-#: static_root/geonode/js/extjs/GeoNode.js:72
-msgid "Only users who can edit"
-msgstr "មាន​តែ​អ្នក​ប្រើ​ដែល​អាច​កែ​សម្រួល"
-
-#: static/geonode/js/extjs/GeoNode.js:72
-#: static_root/geonode/js/extjs/GeoNode.js:72
-msgid "Who can edit this data?"
-msgstr "តើ​នរណា​អាច​កែសម្រួល​ទិន្នន័យ​នេះ​?"
-
-#: static/geonode/js/extjs/GeoNode.js:72
-#: static_root/geonode/js/extjs/GeoNode.js:72
-msgid "Only the following users or groups:"
-msgstr "មាន​តែ​អ្នក​ប្រើ​ប្រាស់​ដូច​ខាងក្រោម​ឬ​ក្រុម​:"
-
-#: static/geonode/js/extjs/GeoNode.js:72
-#: static_root/geonode/js/extjs/GeoNode.js:72
-msgid "Who can manage and edit this data?"
-msgstr "តើ​នរណា​អាច​គ្រប់គ្រង​និង​កែសម្រួល​ទិន្នន័យ​នេះ​?"
-
-#: static/geonode/js/search/search.js:374
-#: static_root/geonode/js/search/search.js:298
+#: static/geonode/js/search/search.js:373
+#: static_root/geonode/js/search/search.js:374
 msgid "Enter your text here ..."
 msgstr ""
 
-#: static/geonode/js/search/search.js:409
+#: static/geonode/js/search/search.js:408
+#: static_root/geonode/js/search/search.js:409
 msgid "Enter your region here ..."
 msgstr ""
 
@@ -91,102 +54,157 @@ msgid "ESRI Shapefile"
 msgstr "Shapefile ESRI"
 
 #: static/geonode/js/upload/FileTypes.js:13
-#: static/geonode/js/upload/FileTypes.js:19
-#: static_root/geonode/js/upload/FileTypes.js:13
-#: static_root/geonode/js/upload/FileTypes.js:19
-msgid "GeoTiff File"
-msgstr "ឯកសារ GeoTiff"
+#: static/geonode/js/upload/FileTypes.js:18
+msgid "GeoTIFF"
+msgstr ""
 
-#: static/geonode/js/upload/FileTypes.js:26
-#: static_root/geonode/js/upload/FileTypes.js:26
-msgid "Comma Separated File"
-msgstr "ឯកសារ​ដោយ​ឡែក​ពី​គ្នា​ដោយ​សញ្ញា​ក្បៀស"
+#: static/geonode/js/upload/FileTypes.js:24
+msgid "Comma Separated Value"
+msgstr ""
 
-#: static/geonode/js/upload/FileTypes.js:32
+#: static/geonode/js/upload/FileTypes.js:29
 #: static_root/geonode/js/upload/FileTypes.js:32
 msgid "Google Earth KML"
 msgstr "ផែនដី Google ឯកសារ KML"
 
-#: static/geonode/js/upload/FileTypes.js:38
+#: static/geonode/js/upload/FileTypes.js:34
+#: static_root/geonode/js/upload/FileTypes.js:38
 msgid "GeoJSON"
 msgstr "GeoJSON"
 
-#: static/geonode/js/upload/FileTypes.js:44
-#: static_root/geonode/js/upload/FileTypes.js:38
-msgid "Zip Archives"
-msgstr "តំបន់​ប​ណ្ណ​សារ"
+#: static/geonode/js/upload/FileTypes.js:39
+msgid "Zip Archive"
+msgstr ""
 
-#: static/geonode/js/upload/LayerInfo.js:235
-#: static_root/geonode/js/upload/LayerInfo.js:231
+#: static/geonode/js/upload/FileTypes.js:45
+msgid "ERDAS Imagine"
+msgstr ""
+
+#: static/geonode/js/upload/FileTypes.js:50
+#: static/geonode/js/upload/FileTypes.js:55
+msgid "National Imagery Transmission Format"
+msgstr ""
+
+#: static/geonode/js/upload/FileTypes.js:61
+msgid "Controlled Image Base-1 Meter"
+msgstr ""
+
+#: static/geonode/js/upload/FileTypes.js:68
+msgid "Controlled Image Base-5 Meter"
+msgstr ""
+
+#: static/geonode/js/upload/FileTypes.js:75
+msgid "Controlled Image Base-10 Meter"
+msgstr ""
+
+#: static/geonode/js/upload/FileTypes.js:82
+msgid "CADRG-Global Navigation Chart"
+msgstr ""
+
+#: static/geonode/js/upload/FileTypes.js:89
+msgid "CADRG-Jet Navigation Chart"
+msgstr ""
+
+#: static/geonode/js/upload/FileTypes.js:96
+msgid "CADRG-Operational Navigation Chart"
+msgstr ""
+
+#: static/geonode/js/upload/FileTypes.js:103
+msgid "CADRG-Tactical Pilotage Chart"
+msgstr ""
+
+#: static/geonode/js/upload/FileTypes.js:110
+msgid "CADRG-Joint Operations Graphic"
+msgstr ""
+
+#: static/geonode/js/upload/FileTypes.js:117
+msgid "CADRG-Topographic Line Map 100K"
+msgstr ""
+
+#: static/geonode/js/upload/FileTypes.js:124
+msgid "CADRG-Topographic Line Map 50K"
+msgstr ""
+
+#: static/geonode/js/upload/FileTypes.js:131
+msgid "JPEG2000"
+msgstr ""
+
+#: static/geonode/js/upload/FileTypes.js:136
+msgid "MrSID-Multi-resolution Seamless Image Database"
+msgstr ""
+
+#: static/geonode/js/upload/LayerInfo.js:237
+#: static_root/geonode/js/upload/LayerInfo.js:235
 msgid "Layer Info"
 msgstr "ស្រទាប់​ព​ត៌​មាន"
 
-#: static/geonode/js/upload/LayerInfo.js:236
-#: static_root/geonode/js/upload/LayerInfo.js:232
+#: static/geonode/js/upload/LayerInfo.js:238
+#: static_root/geonode/js/upload/LayerInfo.js:236
 msgid "Edit Metadata"
 msgstr "កែសម្រួល​ទិន្នន័យ​មេតា"
 
-#: static/geonode/js/upload/LayerInfo.js:237
-#: static_root/geonode/js/upload/LayerInfo.js:233
+#: static/geonode/js/upload/LayerInfo.js:239
+#: static_root/geonode/js/upload/LayerInfo.js:237
 msgid "Manage Styles"
 msgstr "គ្រប់គ្រង​រចនាប័ទ្ម"
 
-#: static/geonode/js/upload/LayerInfo.js:240
+#: static/geonode/js/upload/LayerInfo.js:242
+#: static_root/geonode/js/upload/LayerInfo.js:240
 msgid "The column %1 was renamed to %2 <br/>"
 msgstr ""
 
-#: static/geonode/js/upload/LayerInfo.js:246
-#: static_root/geonode/js/upload/LayerInfo.js:235
+#: static/geonode/js/upload/LayerInfo.js:248
+#: static_root/geonode/js/upload/LayerInfo.js:246
 msgid "Your layer was successfully uploaded"
 msgstr "ស្រទាប់​របស់​អ្នក​ត្រូវ​បាន​ផ្ទុក​ឡើង​ដោយ​ជោគជ័យ"
 
-#: static/geonode/js/upload/LayerInfo.js:275
-#: static_root/geonode/js/upload/LayerInfo.js:264
+#: static/geonode/js/upload/LayerInfo.js:277
+#: static_root/geonode/js/upload/LayerInfo.js:275
 msgid "Performing Final GeoServer Config Step"
 msgstr "ការ​ស​ម្តែ​ង GeoServer កំណត់​រចនាសម្ព័ន្ធ​ជំហាន​ចុងក្រោយ"
 
-#: static/geonode/js/upload/LayerInfo.js:290
-#: static/geonode/js/upload/LayerInfo.js:316
-#: static_root/geonode/js/upload/LayerInfo.js:279
-#: static_root/geonode/js/upload/LayerInfo.js:305
+#: static/geonode/js/upload/LayerInfo.js:292
+#: static/geonode/js/upload/LayerInfo.js:318
+#: static_root/geonode/js/upload/LayerInfo.js:290
+#: static_root/geonode/js/upload/LayerInfo.js:316
 msgid "You need to specify more information in order to complete your upload"
 msgstr "អ្នក​ត្រូវ​បញ្ជាក់​ព័​ត៌​មាន​បន្ថែម​ទៀត​នៅ​ក្នុង​គោល​បំណង​ដើម្បី​បញ្ចប់​ការ​ផ្ទុក​ឡើង​របស់​អ្នក"
 
-#: static/geonode/js/upload/LayerInfo.js:308
-#: static_root/geonode/js/upload/LayerInfo.js:297
+#: static/geonode/js/upload/LayerInfo.js:310
+#: static_root/geonode/js/upload/LayerInfo.js:308
 msgid "You need to specify more information in order to complete your upload."
 msgstr "អ្នក​ត្រូវ​បញ្ជាក់​ព័​ត៌​មាន​បន្ថែម​ទៀត​នៅ​ក្នុង​គោល​បំណង​ដើម្បី​បញ្ចប់​ការ​ផ្ទុក​ឡើង​របស់​អ្នក​។"
 
-#: static/geonode/js/upload/LayerInfo.js:308
-#: static_root/geonode/js/upload/LayerInfo.js:297
+#: static/geonode/js/upload/LayerInfo.js:310
+#: static_root/geonode/js/upload/LayerInfo.js:308
 msgid "You can continue configuring your layer."
 msgstr "អ្នក​អាច​បន្ត​ការ​កំណត់​រចនា​សម្ព័ន្ធ​ស្រទាប់​របស់​អ្នក​។"
 
-#: static/geonode/js/upload/LayerInfo.js:326
-#: static/geonode/js/upload/LayerInfo.js:412
-#: static_root/geonode/js/upload/LayerInfo.js:315
-#: static_root/geonode/js/upload/LayerInfo.js:400
+#: static/geonode/js/upload/LayerInfo.js:328
+#: static/geonode/js/upload/LayerInfo.js:414
+#: static_root/geonode/js/upload/LayerInfo.js:326
+#: static_root/geonode/js/upload/LayerInfo.js:412
 msgid "Unexpected Error"
 msgstr "មាន​កំហុស​ដែល​មិន​រំពឹង​ទុក"
 
-#: static/geonode/js/upload/LayerInfo.js:342
-#: static_root/geonode/js/upload/LayerInfo.js:331
+#: static/geonode/js/upload/LayerInfo.js:344
+#: static_root/geonode/js/upload/LayerInfo.js:342
 msgid "Performing GeoServer Config Step"
 msgstr "ការ​ស​ម្តែ​ង GeoServer កំណត់​រចនាសម្ព័ន្ធ​ជំហាន​ទី"
 
-#: static/geonode/js/upload/LayerInfo.js:419
-#: static_root/geonode/js/upload/LayerInfo.js:407
+#: static/geonode/js/upload/LayerInfo.js:421
+#: static_root/geonode/js/upload/LayerInfo.js:419
 msgid "Layer files uploaded, configuring in GeoServer"
 msgstr "ឯកសារ​ស្រទាប់​ដែល​បាន​ផ្ទុក​ឡើង​, កំណត់​រចនាសម្ព័ន្ធ​ក្នុង​ការ GeoServer"
 
-#: static/geonode/js/upload/LayerInfo.js:434
-#: static_root/geonode/js/upload/LayerInfo.js:422
+#: static/geonode/js/upload/LayerInfo.js:436
+#: static_root/geonode/js/upload/LayerInfo.js:434
 msgid "Select or create a Geogig repository."
 msgstr ""
 
-#: static/geonode/js/upload/LayerInfo.js:528
+#: static/geonode/js/upload/LayerInfo.js:532
 #: static_root/admin/js/SelectFilter2.js:69
-#: static_root/geonode/js/upload/LayerInfo.js:517
+#: static_root/geonode/js/upload/LayerInfo.js:528
 msgid "Remove"
 msgstr "យក"
 
@@ -196,7 +214,8 @@ msgstr "យក"
 msgid "The file %s is an unsupported file type, please select another file."
 msgstr "ឯកសារ​ %s គឺ​ប្រភេទ​ឯកសារ​មួយ​ដែល​មិន​បាន​គាំទ្រ​សូម​ជ្រើស​ឯកសារ​មួយ​ផ្សេង​ទៀត​។"
 
-#: static/geonode/js/upload/upload.js:280
+#: static/geonode/js/upload/upload.js:262
+#: static_root/geonode/js/upload/upload.js:280
 msgid ""
 "You are trying to upload an incomplete set of files or not all mandatory "
 "options have been validated.\n"
@@ -351,9 +370,50 @@ msgstr ""
 msgid "Tomorrow"
 msgstr ""
 
-#: static_root/geonode/js/upload/upload.js:260
-msgid "You are uploading an incomplete set of files."
-msgstr "អ្នក​ត្រូវ​ផ្ទុក​ឡើង​ជា​សំណុំ​មិន​ពេញលេញ​នៃ​ឯកសារ​។"
+#: static_root/geonode/js/extjs/GeoNode.js:72
+msgid "Add user..."
+msgstr "បន្ថែម​អ្នក​ប្រើ ..."
+
+#: static_root/geonode/js/extjs/GeoNode.js:72
+msgid "Who can view and download this data?"
+msgstr "តើ​នរណា​អាច​មើល​និង​ទាញ​យក​ទិន្នន័យ​នេះ​?"
+
+#: static_root/geonode/js/extjs/GeoNode.js:72
+msgid "Anyone"
+msgstr "នរណា​ម្នាក់"
+
+#: static_root/geonode/js/extjs/GeoNode.js:72
+msgid "Any registered user"
+msgstr "អ្នក​ប្រើ​ដែល​បាន​ចុះ​ឈ្មោះ​ណា​មួយ"
+
+#: static_root/geonode/js/extjs/GeoNode.js:72
+msgid "Only users who can edit"
+msgstr "មាន​តែ​អ្នក​ប្រើ​ដែល​អាច​កែ​សម្រួល"
+
+#: static_root/geonode/js/extjs/GeoNode.js:72
+msgid "Who can edit this data?"
+msgstr "តើ​នរណា​អាច​កែសម្រួល​ទិន្នន័យ​នេះ​?"
+
+#: static_root/geonode/js/extjs/GeoNode.js:72
+msgid "Only the following users or groups:"
+msgstr "មាន​តែ​អ្នក​ប្រើ​ប្រាស់​ដូច​ខាងក្រោម​ឬ​ក្រុម​:"
+
+#: static_root/geonode/js/extjs/GeoNode.js:72
+msgid "Who can manage and edit this data?"
+msgstr "តើ​នរណា​អាច​គ្រប់គ្រង​និង​កែសម្រួល​ទិន្នន័យ​នេះ​?"
+
+#: static_root/geonode/js/upload/FileTypes.js:13
+#: static_root/geonode/js/upload/FileTypes.js:19
+msgid "GeoTiff File"
+msgstr "ឯកសារ GeoTiff"
+
+#: static_root/geonode/js/upload/FileTypes.js:26
+msgid "Comma Separated File"
+msgstr "ឯកសារ​ដោយ​ឡែក​ពី​គ្នា​ដោយ​សញ្ញា​ក្បៀស"
+
+#: static_root/geonode/js/upload/FileTypes.js:44
+msgid "Zip Archives"
+msgstr "តំបន់​ប​ណ្ណ​សារ"
 
 #: templates/lang.js:10
 msgid "Save as Copy"
@@ -807,6 +867,9 @@ msgstr "ទាញ​យក ..."
 #: templates/lang.js:237
 msgid "Please wait"
 msgstr "សូម​រង់ចាំ"
+
+#~ msgid "You are uploading an incomplete set of files."
+#~ msgstr "You are uploading an incomplete set of files."
 
 #~ msgid "No error message supplied"
 #~ msgstr "No error message supplied"

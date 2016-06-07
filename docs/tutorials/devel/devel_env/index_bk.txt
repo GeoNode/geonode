@@ -1,0 +1,419 @@
+.. _install_devmode:
+
+Install GeoNode for Development
+===============================
+
+
+In order to install Geonode 2.0 in developing mode on Ubuntu 12.04 the following steps are required:
+
+.. note:: For Windows: (:ref:`install_win_devmode`)
+
+Summary of the installation steps
+
+    #. Retrieve latest apt-get list
+    #. Install build tools and libraries
+    #. Install dependencies (Python, Postgresql and Java) and supporting tools
+    #. Add Nodejs PPA and other tools required for static development
+    #. Set up a virtual environment (virtualenv)
+    #. Clone geonode from github and install it in the virtual environment
+    #. Run paver to get install geoserver and start the development servers
+    #. Compile and Start the server
+    #. Start Geonode instance
+    #. To stop the server
+    #. Next create a superuser for your django geonode
+
+.. note:: The following steps have to be executed in your terminal. The steps have to be done as a **root user**, therefore don´t forget to type sudo in front!
+
+.. warning:: Don't forget to stop the **GeoNode Production** services if enabled
+
+    .. code-block:: console
+
+        service apahe2 stop
+        service tomcat7 stop
+
+#. If possible log as **root** user, open a terminal and ``cd /home/geonode/dev``
+
+#. Retrieve latest apt-get list
+
+   .. code-block:: console
+
+        $ sudo apt-get update
+
+#. Install build tools and libraries
+
+   .. code-block:: console
+
+        $ sudo apt-get install -y build-essential libxml2-dev libxslt1-dev libpq-dev zlib1g-dev
+
+#. Install dependencies
+
+   *Python native dependencies*
+
+   .. code-block:: console
+
+        $ sudo apt-get install -y python-dev python-imaging python-lxml python-pyproj python-shapely python-nose python-httplib2 python-pip python-software-properties
+
+   *Install Python Virtual Environment*
+
+   .. code-block:: console
+
+        $ sudo pip install virtualenvwrapper
+
+   *Postgresql*
+
+     .. note:: The following steps must be executed **only** if you don't have PostgreSQL and PostGIS already installed on your system (see :ref:`install_geonode_application`)
+
+         .. code-block:: console
+
+            $ sudo apt-get install postgresql-9.3-postgis-2.1 postgresql-9.3-postgis-scripts
+
+         Change postgres UNIX password
+
+
+    .. code-block:: console
+
+        $ sudo passwd -u postgres # change password expiry infromation
+
+        $ sudo passwd postgres # change unix password for postgres
+
+
+    Create geonode role and database
+
+         .. code-block:: console
+
+            $ su postgres
+            $ createdb geonode_dev
+            $ createdb geonode_dev-imports
+            $ psql
+              postgres=#
+              postgres=# \password postgres
+              postgres=# CREATE USER geonode_dev WITH PASSWORD 'geonode_dev'; # should be same as password in setting.py
+              postgres=# GRANT ALL PRIVILEGES ON DATABASE "geonode_dev" to geonode_dev;
+              postgres=# GRANT ALL PRIVILEGES ON DATABASE "geonode_dev-imports" to geonode_dev;
+              postgres=# \q
+
+            $ psql -d geonode_dev-imports -c 'CREATE EXTENSION postgis;'
+            $ psql -d geonode_dev-imports -c 'GRANT ALL ON geometry_columns TO PUBLIC;'
+            $ psql -d geonode_dev-imports -c 'GRANT ALL ON spatial_ref_sys TO PUBLIC;'
+
+            $ exit
+
+    Edit PostgreSQL configuration file ::
+
+        sudo gedit /etc/postgresql/9.3/main/pg_hba.conf
+
+    Scroll to the bottom of the file and edit this line ::
+
+        # "local" is for Unix domain socket connections only
+        local   all             all                            peer
+
+    As follows ::
+
+        # "local" is for Unix domain socket connections only
+        local   all             all                                trust
+
+    Restart PostgreSQL to make the changes effective ::
+
+        sudo service postgresql restart
+
+    *Java dependencies*
+
+    .. note:: The following steps must be executed **only** if you don't have a Java JDK or JRE already installed on your system (see :ref:`install_geonode_application`)
+
+        .. code-block:: console
+
+            $ sudo apt-get install -y --force-yes openjdk-6-jdk --no-install-recommends
+
+    *supporting tools*
+
+    .. code-block:: console
+
+        $ sudo apt-get install -y ant maven2 git gettext
+
+#. Set up a virtual environment
+
+   Here is where Geonode will later be running.
+
+   Add the virtualenvwrapper to your new environement.
+
+
+      .. code-block:: console
+
+        $ cd /home/geonode/dev
+
+        $ export VIRTUALENVWRAPPER_PYTHON=/usr/bin/python
+        $ export WORKON_HOME=/home/geonode/dev/.venvs
+        $ source /usr/local/bin/virtualenvwrapper.sh
+        $ export PIP_DOWNLOAD_CACHE=$HOME/.pip-downloads
+
+   On Ubuntu, you can add the above settings to your .bashrc file and reload the settings running
+
+       .. code-block:: console
+
+            $ echo export VIRTUALENVWRAPPER_PYTHON=/usr/bin/python >> ~/.bashrc
+            $ echo export WORKON_HOME=/home/geonode/dev/.venvs >> ~/.bashrc
+            $ echo source /usr/local/bin/virtualenvwrapper.sh >> ~/.bashrc
+            $ echo export PIP_DOWNLOAD_CACHE=$HOME/.pip-downloads >> ~/.bashrc
+
+            $ source ~/.bashrc
+
+   Set up the local virtual environment for Geonode
+
+      .. code-block:: console
+
+       $ mkvirtualenv geonode
+       $ workon geonode # or $ source /home/geonode/dev/.venvs/geonode/bin/activate
+
+      This creates a new directory where you want your project to be and creates a new virtualenvironment
+
+#. Get the code
+
+   To download the latest geonode version from github, the command *clone* is used
+
+   .. note::
+    If you are following the GeoNode training, skip the following command.
+    You can find the cloned repository in /home/geonode/dev
+
+       .. code-block:: console
+
+        $ git clone https://github.com/GeoNode/geonode.git
+
+#. Add Nodejs PPA and other tools required for static development
+
+   This is required for static development
+
+    .. note::
+     If you are following GeoNode's training, nodejs is already installed in the
+     Virtual Machine skip the first three command and jump to `cd geonode/geonode/static`
+
+        .. code-block:: console
+
+            $ sudo add-apt-repository -y ppa:chris-lea/node.js
+            $ sudo apt-get update
+            $ sudo apt-get install -y nodejs
+            $ cd geonode/geonode/static
+            $ npm install --save-dev
+
+            # If the last command does not work, you can run it manually like this:
+
+            $ npm install bower --save-dev
+            $ npm install grunt-cli --save-dev
+            $ npm install grunt-contrib-jshint --save-dev
+            $ npm install grunt-contrib-less --save-dev
+            $ npm install grunt-contrib-concat --save-dev
+            $ npm install grunt-contrib-copy --save-dev
+            $ npm install grunt-text-replace --save-dev
+            $ npm install grunt-contrib-uglify --save-dev
+            $ npm install grunt-contrib-cssmin --save-dev
+            $ npm install grunt-contrib-watch --save-dev
+
+   Every time you want to update the static files after making changes to the sources, go to geonode/static and run 'grunt production'.
+
+#. Install GeoNode in the new active local virtualenv
+
+    .. code-block:: console
+
+        $ cd /home/geonode/dev
+        $ pip install pip --upgrade
+        $ pip install -e geonode --use-mirrors
+
+        $ cd geonode
+
+   If the install fails because of an error related to pyproj not being verified (happens on pip 1.5), use the following:
+
+   .. code-block:: console
+
+        $ pip install -e geonode --use-mirrors --allow-external pyproj --allow-unverified pyproj
+
+#. Create ``local_settings.py``
+
+   Add the ``local_settings.py`` to your GeoNode instllation
+
+   .. code-block:: console
+
+        $ cd /home/geonode/dev/geonode
+        $ cp geonode/local_settings.py.sample geonode/local_settings.py
+        $ gedit geonode/local_settings.py
+
+   Add the following lines to the ``local_settings.py``
+
+   .. code-block:: python
+
+        ...
+
+        SITEURL = "http://localhost:8000/"
+
+        DATABASES = {
+            'default': {
+                 'ENGINE': 'django.db.backends.postgresql_psycopg2',
+                 'NAME': 'geonode_dev',
+                 'USER': 'geonode_dev',
+                 'PASSWORD': 'geonode_dev',
+             },
+            # vector datastore for uploads
+            'datastore' : {
+                'ENGINE': 'django.contrib.gis.db.backends.postgis',
+                #'ENGINE': '', # Empty ENGINE name disables
+                'NAME': 'geonode_dev-imports',
+                'USER' : 'geonode_dev',
+                'PASSWORD' : 'geonode_dev',
+                'HOST' : 'localhost',
+                'PORT' : '5432',
+            }
+        }
+
+        # OGC (WMS/WFS/WCS) Server Settings
+        OGC_SERVER = {
+            'default' : {
+                'BACKEND' : 'geonode.geoserver',
+                'LOCATION' : 'http://localhost:8080/geoserver/',
+                'PUBLIC_LOCATION' : 'http://localhost:8080/geoserver/',
+                'USER' : 'admin',
+                'PASSWORD' : 'geoserver',
+                'MAPFISH_PRINT_ENABLED' : True,
+                'PRINT_NG_ENABLED' : True,
+                'GEONODE_SECURITY_ENABLED' : True,
+                'GEOGIG_ENABLED' : False,
+                'WMST_ENABLED' : False,
+                'BACKEND_WRITE_ENABLED': True,
+                'WPS_ENABLED' : False,
+                'LOG_FILE': '%s/geoserver/data/logs/geoserver.log' % os.path.abspath(os.path.join(PROJECT_ROOT, os.pardir)),
+                # Set to name of database in DATABASES dictionary to enable
+                'DATASTORE': 'datastore',
+            }
+        }
+
+        CATALOGUE = {
+            'default': {
+                # The underlying CSW implementation
+                # default is pycsw in local mode (tied directly to GeoNode Django DB)
+                'ENGINE': 'geonode.catalogue.backends.pycsw_local',
+                # pycsw in non-local mode
+                # 'ENGINE': 'geonode.catalogue.backends.pycsw_http',
+                # GeoNetwork opensource
+                # 'ENGINE': 'geonode.catalogue.backends.geonetwork',
+                # deegree and others
+                # 'ENGINE': 'geonode.catalogue.backends.generic',
+
+                # The FULLY QUALIFIED base url to the CSW instance for this GeoNode
+                'URL': '%scatalogue/csw' % SITEURL,
+                # 'URL': 'http://localhost:8080/geonetwork/srv/en/csw',
+                # 'URL': 'http://localhost:8080/deegree-csw-demo-3.0.4/services',
+
+                # login credentials (for GeoNetwork)
+                'USER': 'admin',
+                'PASSWORD': 'admin',
+            }
+        }
+
+        ...
+
+#. Compile and Start the server for the first time
+
+   Align the DataBase structure
+
+   .. code-block:: console
+
+    $ cd /home/geonode/dev/geonode
+    $ python manage.py syncdb --noinput
+
+   .. warning:: If the start fails because of an import error related to osgeo, then please consult the :ref:`install_gdal_devmode`.
+
+   The last step is to compile GeoServer and setup
+
+   .. code-block:: console
+
+    $ paver setup
+
+#. Now we can start our geonode instance
+
+    .. warning:: Don't forget to stop the **GeoNode Production** services if enabled
+
+        .. code-block:: console
+
+            service apahe2 stop
+            service tomcat7 stop
+
+   .. code-block:: console
+
+    $ paver start
+
+   Visit the geonode site by typing http://localhost:8000 into your browser window.
+
+   If you are using a different IP address (e.g 1.1.1.1), then start paver using the command below.
+
+   .. code-block:: console
+
+    $ paver start -b 1.1.1.1:8000
+
+   .. warning:: If the start fails because of an import error related to osgeo, then please consult the :ref:`install_gdal_devmode`.
+
+#. To stop the server
+
+   type hold **Ctrl c**  on your keyboard to stop the server
+
+   now type:
+
+   .. code-block:: console
+
+    $ paver stop    # to stop all django, geoserver services
+
+#. Next create a superuser for your django geonode
+
+   Create a superuser so you can log on to your local geonode installation at http://localhost:8000
+
+   .. code-block:: console
+
+       $ python manage.py createsuperuser
+
+Start working on Geonode the next day after install
+===================================================
+
+   With every restart of your machine, you have to restart geonode as well. That means, you will not be able to open http://localhost:8000   directly after starting your machine new. In order to be able to use geonode now, you have to activate your virtualenvironment and to start the development servers.
+
+   .. note:: *username* is the name of your machine and personal folder!
+
+   #. Activate virtualenv
+
+      To activate your virtualenv you just need to type
+
+      .. code-block:: console
+
+       $ workon geonode
+
+      .. todo:: this is not working for me!!! My steps still have to be
+
+      or
+
+      .. code-block:: console
+
+       $ source /home/geonode/dev/.venvs/geonode/bin/activate
+
+      .. note:: Be careful with the path, it might not be the same for you!
+
+   #. Start the server
+
+      .. warning:: Don't forget to stop the **GeoNode Production** services if enabled
+
+            .. code-block:: console
+
+                service apahe2 stop
+                service tomcat7 stop
+
+      .. code-block:: console
+
+       $ cd geonode
+       $ paver start_geoserver
+       $ paver start_django
+
+      Now you are able to access http://localhost:8000 again.
+
+      .. note:: Remember that you have to do these steps each time you restart your machine!!
+
+.. hint:: Now you've followed these installation instructions, geonode is running in development mode. This also means that you are using all the default settings of geonode. If you want to change them, e.g use Tomcat instead of Jetty, or Postgresql instead of sqlite3, you may follow the steps from the section **Configure Manually** in :ref:`geonode_install`.
+
+.. toctree::
+   :maxdepth: 1
+
+   install_win_devmode
+   install_gdal_devmode

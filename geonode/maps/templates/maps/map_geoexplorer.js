@@ -38,7 +38,6 @@ Ext.onReady(function() {
        }
     }, {{ config }});
 
-
     app = new GeoNode.Composer(config);
 {% endautoescape %}
 });

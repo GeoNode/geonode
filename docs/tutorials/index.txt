@@ -4,7 +4,7 @@ Tutorials
 
 The tutorials are based around performing tasks, like adding data or publishing maps. The tutorials are written in a workshop like format and are broken into three groups *Users*, *Administrators* and *Developers*.
 
-.. hint:: An Ubuntu 14.04 based Virtual Machine, containing the base packages and data for the execution of the workshop exercises, is available for download `here <https://www.dropbox.com/s/sucj3pb36qqhav3/GeoNode%20-%20Training%20-%20v1.4.zip?dl=0>`_
+.. An Ubuntu 14.04 based Virtual Machine, containing the base packages and data for the execution of the workshop exercises, is available for download `here <https://www.dropbox.com/s/sucj3pb36qqhav3/GeoNode%20-%20Training%20-%20v1.4.zip?dl=0>`_
     The Virtual Machine can be launched through `VirtualBox <https://www.virtualbox.org/>`_ or `VMWare Player <http://www.vmware.com/>`_ binaries.
     
     The users to be used with the Virtual Machine are:

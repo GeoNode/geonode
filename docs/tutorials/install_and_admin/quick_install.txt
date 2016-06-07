@@ -30,17 +30,11 @@ The easiest way to get the .deb is to install it using APT, the standard install
 
 0. First, make sure you have the ``add-apt-repository`` binary available.
 
-   a) On Ubuntu 12.04 and older::
-
-       sudo apt-get install python-software-properties
-
-   b) On Ubuntu 12.10 and later::
-
        sudo apt-get install software-properties-common
 
 1. Set up the GeoNode PPA repository (you only need to do this once; the repository will still be available for upgrades later)::
 
-    sudo add-apt-repository ppa:geonode/release
+    sudo add-apt-repository ppa:geonode/stable
 
 2. Install the package.
    This step will also automatically download all necessary dependencies::
@@ -62,6 +56,11 @@ Windows, OSX and others
 
 Windows
 -------
+
+It is now available an automatic installer for Windows systems which configres GeoNode with PostgreSQL DB and few sample layers on a few steps.
+See detailed instructions and steps of the GeoNode Windows Installer at section :ref:`win_binary_installer`.
+
+If you have different needs or jast want to configure manully the GeoNode environment, please continue reading the guide below.
 
 To install in Windows it is assumed you're familiar with python development and virtualenv on Windows and that you're familiar with the windows command prompt. You will need the follow prerequists installed:
 

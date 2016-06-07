@@ -335,10 +335,10 @@
                  <gco:CharacterString>{{link.link_type}}</gco:CharacterString>
                </gmd:protocol>
                <gmd:name>
-                 <gco:CharacterString>{{link.link_type}} {{layer.workspace}} Service - Provides Layer: {{ layer.title }}</gco:CharacterString>
+                 <gco:CharacterString>{{ layer.title }}</gco:CharacterString>
                </gmd:name>
                <gmd:description>
-                 <gco:CharacterString>{{link.name}} Root Endpoint.  This service contains the {{layer.title}} layer.</gco:CharacterString>
+                 <gco:CharacterString>{{layer.workspace}} Service - Provides Layer: {{ layer.title }}</gco:CharacterString>
                </gmd:description>
              </gmd:CI_OnlineResource>
            </gmd:onLine>

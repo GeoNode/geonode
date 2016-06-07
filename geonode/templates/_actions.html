@@ -4,6 +4,9 @@
   {% if resource.polymorphic_ctype.name == 'layer' %}
   <li><a href="#attributes" data-toggle="tab"><i class="fa fa-bars"></i>{% trans "Attributes" %}</a></li>
   {% endif %}
+  {% if resource.is_mosaic %}
+  <li><a href="#granules" data-toggle="tab"><i class="fa fa-bars"></i>{% trans "Granules" %}</a></li>
+  {% endif %}
   {% if SOCIAL_BUTTONS %}
   <li><a href="#share" data-toggle="tab"><i class="fa fa-share"></i>{% trans "Share" %}</a></li>
   {% endif %}

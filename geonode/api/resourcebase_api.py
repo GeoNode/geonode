@@ -1,3 +1,23 @@
+# -*- coding: utf-8 -*-
+#########################################################################
+#
+# Copyright (C) 2016 OSGeo
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program. If not, see <http://www.gnu.org/licenses/>.
+#
+#########################################################################
+
 import re
 from django.db.models import Q
 from django.http import HttpResponse
@@ -315,10 +335,7 @@ class CommonModelApi(ModelResource):
 
         if not settings.SKIP_PERMS_FILTER:
             # Get the list of objects the user has access to
-            filter_set = get_objects_for_user(
-                    request.user,
-                    'base.view_resourcebase'
-            )
+            filter_set = get_objects_for_user(request.user, 'base.view_resourcebase')
             if settings.RESOURCE_PUBLISHING:
                 filter_set = filter_set.filter(is_published=True)
 
@@ -438,8 +455,6 @@ class CommonModelApi(ModelResource):
             'abstract',
             'csw_wkt_geometry',
             'csw_type',
-            'distribution_description',
-            'distribution_url',
             'owner__username',
             'share_count',
             'popular_count',

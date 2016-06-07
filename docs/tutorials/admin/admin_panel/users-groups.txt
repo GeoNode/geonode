@@ -17,7 +17,7 @@ Adding a user
 -------------
 
 By clicking on the "add" link on the right of the Users link is possible to add
-a new users to the GeoNode site.
+a new user to the GeoNode site.
 A simple form asking for username and password will be presented, see figure
 
 .. figure:: img/admin-users-new.png
