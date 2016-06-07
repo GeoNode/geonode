@@ -342,8 +342,28 @@
 
             console.log(overlay_layers);
             map_data['sources'] = {};
-            for (var key in overlay_layers) {
-                var source_token = 'source_' + overlay_layers[key]['title'];
+            for (i = 0; i < background_layers_list.length; i++) {
+                key = background_layers_list[i];
+                source_token = 'source_' + background_layers[key]['title'];
+                console.log('Adding to layers');
+                console.log(key);
+                layers.push(
+                        {
+                            'name': key,
+                            'title': background_layers[key]['title'],
+                            'visibility': background_layers[key]['visibility'],
+                            'url': background_layers[key]['url'],
+                            'group': background_layers[key]['group'],
+                            'source': source_token
+                        }
+                );
+                map_data['sources'][source_token] = {
+                    'url': background_layers[key]['url']
+                };
+            }
+            for (i = 0; i < overlay_layers_list.length; i++) {
+                key = overlay_layers_list[i];
+                source_token = 'source_' + overlay_layers[key]['title'];
                 console.log('Adding to layers');
                 console.log(key);
                 layers.push(
