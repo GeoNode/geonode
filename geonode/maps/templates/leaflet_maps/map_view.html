@@ -64,8 +64,6 @@
                     <h4>Background layers</h4>
                     <div>
                         <ul id="background-layer-list">
-                            <li><input type="radio" name="background-layer" value="osm" checked="checked">OSM</li>
-                            <li><input type="radio" name="background-layer" value="mapquest">MapQuest</li>
                         </ul>
                     </div>
                     <div class="buttons">
@@ -167,14 +165,50 @@
         var map = $("#map");
         var active_background_layer;
 
+        // Storing the overlay layers
         var overlay_layers = {};
+        var overlay_layers_list = [];
+
+        // Storing the background layers
         var background_layers = {};
-        // Each element contains:
-        // 1. layer name
-        // 2. layer wms url
-        // 3. z index
-        // 4. layer object
-        var highest_z_index = 0;
+        var background_layers_list = [];
+
+        // Define some default base layers
+        var osm = L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors',
+        });
+
+        var mapquest = L.tileLayer('http://otile4.mqcdn.com/tiles/1.0.0/osm/{z}/{x}/{y}.png', {
+            attribution: 'Tiles Courtesy of <a href="http://www.mapquest.com/">MapQuest</a> &mdash; Map data &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+        });
+
+        {% if create %}
+            background_layers = {
+                'osm': {
+                    'title': 'OpenStreetMap',
+                    'name': 'osm',
+                    'url': osm._url,
+                    'layer': osm,
+                    'visibility': false,
+                    'group': 'background'
+                },
+                'mapquest': {
+                    'title': 'MapQuest',
+                    'name': 'mapquest',
+                    'url': mapquest._url,
+                    'layer': mapquest,
+                    'visibility': true,
+                    'group': 'background'
+                }
+            };
+            background_layers_list.push('mapquest');
+            background_layers_list.push('osm');
+
+            active_background_layer = mapquest;
+        {% else %}
+            background_layers = {};
+            background_layers_list = [];
+        {% endif %}
 
         var w_height = $(window).height();
         var map_height = w_height - $('nav').height();
@@ -213,14 +247,26 @@
             delete overlay_layers[button.value];
             // Remove layer from map layer list
             remove("li_" + button.value);
+            // Remove from list overlay layers
+            remove_from_list(overlay_layers_list, button.value);
 
             // Show from available layer
             document.getElementById("option_" + button.value).style.display = 'block';
         }
 
+        function remove_from_list(list, item) {
+            var item_index = list.indexOf(item);
+            if (item_index > -1) {
+                list.splice(item_index, 1)
+            }
+        }
+
         function add_layer(layer_typename, visibility) {
             visibility = typeof visibility !== 'undefined' ? visibility : true;
             if (layer_typename in overlay_layers) {
+                return
+            }
+            if (layer_typename in background_layers) {
                 return
             }
             if (!layer_typename) {
@@ -270,10 +316,12 @@
                         var added_layer = {};
                         added_layer.title = layer_title;
                         added_layer.url = layer_url;
-                        added_layer.z_index = 0;
                         added_layer.layer = tile_layer;
                         added_layer.visibility = visibility;
                         overlay_layers[layer_typename] = added_layer;
+
+                        // Add to list of overlay layers
+                        overlay_layers_list.push(layer_typename);
 
                         // Hide from available layer
                         document.getElementById("option_" + layer_typename).style.display = 'none';
@@ -297,8 +345,28 @@
 
             console.log(overlay_layers);
             map_data['sources'] = {};
-            for (var key in overlay_layers) {
-                var source_token = 'source_' + overlay_layers[key]['title'];
+            for (i = 0; i < background_layers_list.length; i++) {
+                key = background_layers_list[i];
+                source_token = 'source_' + background_layers[key]['title'];
+                console.log('Adding to layers');
+                console.log(key);
+                layers.push(
+                        {
+                            'name': key,
+                            'title': background_layers[key]['title'],
+                            'visibility': background_layers[key]['visibility'],
+                            'url': background_layers[key]['url'],
+                            'group': background_layers[key]['group'],
+                            'source': source_token
+                        }
+                );
+                map_data['sources'][source_token] = {
+                    'url': background_layers[key]['url']
+                };
+            }
+            for (i = 0; i < overlay_layers_list.length; i++) {
+                key = overlay_layers_list[i];
+                source_token = 'source_' + overlay_layers[key]['title'];
                 console.log('Adding to layers');
                 console.log(key);
                 layers.push(
@@ -348,38 +416,73 @@
             });
         }
 
+        function populate_background_layer(the_list, the_dict) {
+            console.log(the_list);
+            for (i = 0; i < the_list.length; i++) {
+                var background_layer_name = the_list[i];
+                var background_layer = the_dict[background_layer_name];
+                if (background_layer['visibility'] == "True") {
+                    active_background_layer = background_layer;
+                    $("#background-layer-list").prepend(
+                            '<li>' +
+                            '<input type="radio" name="background-layer" value="' +
+                            background_layer_name +
+                            '" checked="checked">' +
+                            background_layer['title'] +
+                            '</li>'
+                    );
+                } else if (background_layer['visibility']) {
+                    active_background_layer = background_layer;
+                    $("#background-layer-list").prepend(
+                            '<li>' +
+                            '<input type="radio" name="background-layer" value="' +
+                            background_layer_name +
+                            '" checked="checked">' +
+                            background_layer['title'] +
+                            '</li>'
+                    );
 
-        $(document).ready(function () {
-            // Define some default base layers
-            var osm = L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
-                attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors',
-            });
+                } else {
+                    $("#background-layer-list").prepend(
+                            '<li>' +
+                            '<input type="radio" name="background-layer" value="' +
+                            background_layer_name +
+                            '">' +
+                            background_layer['title'] +
+                            '</li>'
+                    );
+                }
 
-            var mapquest = L.tileLayer('http://otile4.mqcdn.com/tiles/1.0.0/osm/{z}/{x}/{y}.png', {
-                attribution: 'Tiles Courtesy of <a href="http://www.mapquest.com/">MapQuest</a> &mdash; Map data &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
-            });
-
-            background_layers = {
-                'osm': osm,
-                'mapquest': mapquest
-            };
-
-            active_background_layer = osm;
-
+            }
             // Add radio button listener for background layer
             $('input:radio[name=background-layer]').change(function () {
-                var new_background_layer = background_layers[this.value];
+                var new_background_layer = background_layers[this.value]['layer'];
                 map.removeLayer(active_background_layer);
                 new_background_layer.addTo(map);
                 active_background_layer = new_background_layer;
             });
+        }
+
+
+        $(document).ready(function () {
+            // Populate radio button for background layer
+            populate_background_layer(background_layers_list, background_layers);
+
 
             // Initiate map
-            map = L.map('map', {
-                center: [-6.2, 106.8],
-                zoom: 11,
-                layers: [osm]
-            });
+            {% if create %}
+                map = L.map('map', {
+                    center: [-6.2, 106.8],
+                    zoom: 11,
+                    layers: [active_background_layer]
+                });
+            {% else %}
+                map = L.map('map', {
+                    center: [-6.2, 106.8],
+                    zoom: 11
+                });
+            {% endif %}
+
 
             // Make sortable
             var list = document.getElementById("layer-list");
@@ -387,12 +490,28 @@
 
             {% if not create %}
                 {% for layer in map.layers %}
-                    {% if layer.visibility %}
-                        add_layer("{{ layer.name }}", true);
-                    {% else %}
-                        add_layer("{{ layer.name }}", false);
-                    {% endif %}
+                    if ("{{ layer.group }}" == 'background') {
+                        background_layers_list.push("{{ layer.name }}");
+                        background_tile = L.tileLayer("{{ layer.ows_url }}");
+                        background_layers["{{ layer.name }}"] = {
+                            'title': '{{ layer.name }}',
+                            'url': '{{ layer.ows_url }}',
+                            'group': '{{ layer.group }}',
+                            'visibility': '{{ layer.visibility }}',
+                            'layer': background_tile
+                        };
+                        if ("{{ layer.visibility }}" == 'True') {
+                            background_tile.addTo(map);
+                        }
+                    } else {
+                        {% if layer.visibility %}
+                            add_layer("{{ layer.name }}", true);
+                        {% else %}
+                            add_layer("{{ layer.name }}", false);
+                        {% endif %}
+                    }
                 {% endfor %}
+                populate_background_layer(background_layers_list, background_layers);
             {% else %}
                 // Check layer parameter in url
                 var qd = {};
