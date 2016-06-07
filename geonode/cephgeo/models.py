@@ -104,3 +104,10 @@ class UserJurisdiction(models.Model):
     
     def get_user_name(self):
         return self.user.username
+
+class MissionGridRef(models.Model):
+    fieldID = models.IntegerField()
+    grid_ref = models.CharField(max_length=20)
+
+    def __unicode__(self):
+        return "{0}:{1}".format(self.grid_ref, self.fieldID)
