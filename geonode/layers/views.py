@@ -653,6 +653,48 @@ def layer_thumbnail(request, layername):
             )
 
 
+def layer_list(request):
+    """Get Layer list as JSON
+    """
+    if request.method == 'GET':
+        if 'q' in request.GET:
+            query = request.GET.get('q')
+
+            layers = Layer.objects.filter(
+                name__istartswith=query)
+            result = []
+            for layer in layers:
+                result.append(layer.name)
+        else:
+            layers = Layer.objects.all()
+            result = []
+            for layer in layers:
+                result.append(layer.name)
+        result = json.dumps(result)
+        return HttpResponse(result, content_type='application/json')
+
+
+def get_layer(request, layername):
+    """Get Layer object as JSON"""
+    logger.debug('Call get layer')
+    if request.method == 'GET':
+        layer_obj = _resolve_layer(request, layername)
+        logger.debug(layername)
+        response = {
+            'typename': layername,
+            'name': layer_obj.name,
+            'title': layer_obj.title,
+            'url': layer_obj.get_tiles_url(),
+            'bbox_string': layer_obj.bbox_string,
+            'bbox_x0': layer_obj.bbox_x0,
+            'bbox_x1': layer_obj.bbox_x1,
+            'bbox_y0': layer_obj.bbox_y0,
+            'bbox_y1': layer_obj.bbox_y1,
+        }
+        return HttpResponse(json.dumps(
+            response,
+            ensure_ascii=False),
+            content_type='application/javascript')
 def layer_metadata_detail(request, layername, template='layers/layer_metadata_detail.html'):
     layer = _resolve_layer(request, layername, 'view_resourcebase', _PERMISSION_MSG_METADATA)
     return render_to_response(template, RequestContext(request, {

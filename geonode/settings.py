@@ -20,6 +20,8 @@
 
 # Django settings for the GeoNode project.
 import os
+
+from celery.schedules import crontab
 from kombu import Queue
 import geonode
 from geonode.celery_app import app  # flake8: noqa
@@ -205,7 +207,8 @@ LOGOUT_URL = '/account/logout/'
 # Documents application
 ALLOWED_DOCUMENT_TYPES = [
     'doc', 'docx', 'gif', 'jpg', 'jpeg', 'ods', 'odt', 'odp', 'pdf', 'png', 'ppt',
-    'pptx', 'rar', 'sld', 'tif', 'tiff', 'txt', 'xls', 'xlsx', 'xml', 'zip', 'gz'
+    'pptx', 'rar', 'sld', 'tif', 'tiff', 'txt', 'xls', 'xlsx', 'xml', 'zip', 'gz',
+    'qml'
 ]
 MAX_DOCUMENT_SIZE = 2  # MB
 
@@ -232,12 +235,16 @@ GEONODE_APPS = (
     'geonode.groups',
     'geonode.services',
 
+    # QGIS Server Apps
+    'geonode.qgis_server',
+
     # GeoServer Apps
     # Geoserver needs to come last because
     # it's signals may rely on other apps' signals.
-    'geonode.geoserver',
+    # 'geonode.geoserver',
     'geonode.upload',
-    'geonode.tasks'
+    'geonode.tasks',
+
 )
 
 GEONODE_CONTRIB_APPS = (
@@ -332,7 +339,7 @@ LOGGING = {
             'class': 'django.utils.log.NullHandler',
         },
         'console': {
-            'level': 'ERROR',
+            'level': 'DEBUG',
             'class': 'logging.StreamHandler',
             'formatter': 'simple'
         },
@@ -345,7 +352,7 @@ LOGGING = {
         "django": {
             "handlers": ["console"], "level": "ERROR", },
         "geonode": {
-            "handlers": ["console"], "level": "ERROR", },
+            "handlers": ["console"], "level": "DEBUG", },
         "gsconfig.catalog": {
             "handlers": ["console"], "level": "ERROR", },
         "owslib": {
@@ -800,7 +807,9 @@ LEAFLET_CONFIG = {
             'js': 'lib/js/Leaflet.fullscreen.min.js?v=%s' % VERSION,
             'auto-include': True,
         },
-    }
+    },
+    'SRID': 3857,
+    'RESET_VIEW': False
 }
 
 # option to enable/disable resource unpublishing for administrators
@@ -938,3 +947,26 @@ if 'geonode.geoserver' in INSTALLED_APPS:
     baselayers = MAP_BASELAYERS
     MAP_BASELAYERS = [LOCAL_GEOSERVER]
     MAP_BASELAYERS.extend(baselayers)
+
+# QGIS Server Backend
+# The QGIS server URL might be overridden in local_settings.py.
+if 'geonode.qgis_server' in INSTALLED_APPS:
+    tiles_directory = os.path.join(PROJECT_ROOT, "qgis_tiles")
+    QGIS_SERVER_CONFIG = {
+        'tiles_directory': tiles_directory,
+        'tile_path': tiles_directory + '/%s/%d/%d/%d.png',
+        'legend_path': tiles_directory + '/%s/legend.png',
+        'thumbnail_path': tiles_directory + '/%s/thumbnail.png',
+        'qgis_server_url': 'http://127.0.0.1/qgisltr',
+        'layer_directory': os.path.join(PROJECT_ROOT, "qgis_layer")
+    }
+
+# This settings here is needed to construct url for InaSAFE-Headless celery
+# batch. Note, trailing slash is important
+GEONODE_BASE_URL = 'http://localhost:8000/'
+
+# Load more settings from a file called local_settings.py if it exists
+try:
+    from local_settings import *  # noqa
+except ImportError:
+    pass

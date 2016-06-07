@@ -15,7 +15,11 @@
   {% if OPENGRAPH_ENABLED %}
     {% include "base/_resourcebase_opengraph.html" %}
   {% endif %}
-  {% include "maps/map_include.html" %}
+  {% if preview == 'geoext' %}
+    {% include "maps/map_include.html" %}
+  {% else %}
+    {% include "maps/map_leaflet.html" %}
+  {% endif %}
   {{ block.super }}
 {% endblock %}
 

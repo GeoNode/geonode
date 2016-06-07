@@ -1,0 +1,10 @@
+.leaflet-zoom-box-control {
+    font-size: 18px;
+ }
+.leaflet-zoom-box-control.active a {
+    color: #FFF;
+    background: #666;
+}
+.leaflet-zoom-box-crosshair {
+    cursor: crosshair !important;
+}
