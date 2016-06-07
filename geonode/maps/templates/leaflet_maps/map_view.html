@@ -63,15 +63,15 @@
                     </div>
                     <h4>Background layers</h4>
                     <div>
-                        <form action="">
-                            <input type="radio" name="background-layer" value="osm" checked="checked">OSM<br>
-                            <input type="radio" name="background-layer" value="mapquest">MapQuest<br>
-                        </form>
+                        <ul id="background-layer-list">
+                            <li><input type="radio" name="background-layer" value="osm" checked="checked">OSM</li>
+                            <li><input type="radio" name="background-layer" value="mapquest">MapQuest</li>
+                        </ul>
                     </div>
                     <div class="buttons">
                         <button class="btn btn-info" data-toggle="modal" data-target="#save-map-modal">Save</button>
-                        <button class="btn btn-info">Load</button>
-                        <button class="btn btn-info">Publish</button>
+                        {#                        <button class="btn btn-info">Load</button>#}
+                        {#                        <button class="btn btn-info">Publish</button>#}
                     </div>
                 </div>
             </div>
@@ -168,6 +168,7 @@
         var active_background_layer;
 
         var overlay_layers = {};
+        var background_layers = {};
         // Each element contains:
         // 1. layer name
         // 2. layer wms url
@@ -357,7 +358,8 @@
             var mapquest = L.tileLayer('http://otile4.mqcdn.com/tiles/1.0.0/osm/{z}/{x}/{y}.png', {
                 attribution: 'Tiles Courtesy of <a href="http://www.mapquest.com/">MapQuest</a> &mdash; Map data &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
             });
-            var background_layers = {
+
+            background_layers = {
                 'osm': osm,
                 'mapquest': mapquest
             };
