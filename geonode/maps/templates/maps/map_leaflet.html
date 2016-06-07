@@ -3,37 +3,40 @@
 {% leaflet_js %}
 {% leaflet_css %}
 
-{% leaflet_map "the_map" creatediv=False %}
+{#{% leaflet_map "the_map" creatediv=False %}#}
 <style>
     .leaflet-container { /* all maps */
         height: 400px;
     }
 </style>
 <script type="text/javascript">
-    var overlay_layers = {};
-    window.addEventListener("map:init", function (e) {
-        var map = e.detail.map;
+    document.addEventListener("DOMContentLoaded", function (event) {
+        var overlay_layers = {};
+        map = L.map('the_map');
+
         var layer_control = L.control.layers().addTo(map);
 
-        console.log("{{ layers }}");
+        // Clear all layers
+        map.eachLayer(function (layer) {
+            map.removeLayer(layer);
+        });
+
         // Add layers
         {% for layer in layers %}
-            console.log('Adding new layer to map.');
-            console.log("{{ layer }}");
-            console.log("{{ layer.ows_url }}");
             // Add tile layers
             var tile_layer = L.tileLayer("{{ layer.ows_url }}");
             if (tile_layer != null) {
                 layer_control.addOverlay(tile_layer, "{{ layer.name }}");
-                map.addLayer(tile_layer);
+                if ("{{ layer.visibility }}" === "True") {
+                    map.addLayer(tile_layer);
+                }
                 overlay_layers["{{ layer.name }}"] = tile_layer;
             }
-
         {% endfor %}
         // Set view port
         map.setView(new L.LatLng({{ resource.center_x }}, {{ resource.center_y }}), {{ resource.zoom }});
-
     });
+
     function zoom_to_box(map, bbox) {
         var bounds = [
             [bbox[1], bbox[0]],

@@ -31,6 +31,11 @@
     list-style: none;
     padding: 0;
 }
+
+.newmap #background-layer-list {
+    list-style: none;
+    padding: 0;
+}
 .newmap #layer-list li {
     margin-bottom: 5px;
     padding: 5px 7px;

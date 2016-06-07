@@ -22,18 +22,22 @@ from django.conf.urls import patterns, url
 from django.conf import settings
 from django.views.generic import TemplateView
 
-from geonode.maps.qgis_server_views import MapCreateView
+from geonode.maps.qgis_server_views import MapCreateView, MapDetailView
 
 js_info_dict = {
     'packages': ('geonode.maps',),
 }
 
 new_map_view = 'new_map'
+existing_map_view = 'map_view'
+
 if 'geonode.geoserver' in settings.INSTALLED_APPS:
     new_map_view = 'new_map'
+    existing_map_view = 'map_view'
 
 elif 'geonode.qgis_server' in settings.INSTALLED_APPS:
     new_map_view = MapCreateView.as_view()
+    existing_map_view = MapDetailView.as_view()
 
 urlpatterns = patterns(
     'geonode.maps.views',
@@ -45,7 +49,7 @@ urlpatterns = patterns(
     url(r'^checkurl/?$', 'ajax_url_lookup'),
     url(r'^snapshot/create/?$', 'snapshot_create'),
     url(r'^(?P<mapid>[^/]+)$', 'map_detail', name='map_detail'),
-    url(r'^(?P<mapid>[^/]+)/view$', 'map_view', name='map_view'),
+    url(r'^(?P<mapid>[^/]+)/view$', existing_map_view, name='map_view'),
     url(r'^(?P<mapid>[^/]+)/data$', 'map_json', name='map_json'),
     url(r'^(?P<mapid>[^/]+)/download$', 'map_download', name='map_download'),
     url(r'^(?P<mapid>[^/]+)/wmc$', 'map_wmc', name='map_wmc'),

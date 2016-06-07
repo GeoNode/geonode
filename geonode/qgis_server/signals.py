@@ -163,6 +163,13 @@ def qgis_server_post_save(instance, sender, **kwargs):
 
 def qgis_server_pre_save_maplayer(instance, sender, **kwargs):
     logger.debug('QGIS Server Pre Save Map Layer')
+    try:
+        layer = Layer.objects.get(typename=instance.name)
+        if layer:
+            instance.local = True
+    except Layer.DoesNotExist:
+        pass
+
 
 
 def qgis_server_post_save_map(instance, sender, **kwargs):

@@ -63,15 +63,15 @@
                     </div>
                     <h4>Background layers</h4>
                     <div>
-                        <form action="">
-                            <input type="radio" name="background-layer" value="osm" checked="checked">OSM<br>
-                            <input type="radio" name="background-layer" value="mapquest">MapQuest<br>
-                        </form>
+                        <ul id="background-layer-list">
+                            <li><input type="radio" name="background-layer" value="osm" checked="checked">OSM</li>
+                            <li><input type="radio" name="background-layer" value="mapquest">MapQuest</li>
+                        </ul>
                     </div>
                     <div class="buttons">
                         <button class="btn btn-info" data-toggle="modal" data-target="#save-map-modal">Save</button>
-                        <button class="btn btn-info">Load</button>
-                        <button class="btn btn-info">Publish</button>
+                        {#                        <button class="btn btn-info">Load</button>#}
+                        {#                        <button class="btn btn-info">Publish</button>#}
                     </div>
                 </div>
             </div>
@@ -168,6 +168,7 @@
         var active_background_layer;
 
         var overlay_layers = {};
+        var background_layers = {};
         // Each element contains:
         // 1. layer name
         // 2. layer wms url
@@ -194,9 +195,11 @@
         function check_box_layer_clicked(check_box) {
             if (check_box.checked) {
                 map.addLayer(overlay_layers[check_box.value].layer);
+                overlay_layers[check_box.value].visibility = true;
             } else {
                 if (map.hasLayer(overlay_layers[check_box.value].layer)) {
                     map.removeLayer(overlay_layers[check_box.value].layer);
+                    overlay_layers[check_box.value].visibility = false;
                 }
             }
         }
@@ -215,7 +218,8 @@
             document.getElementById("option_" + button.value).style.display = 'block';
         }
 
-        function add_layer(layer_typename) {
+        function add_layer(layer_typename, visibility) {
+            visibility = typeof visibility !== 'undefined' ? visibility : true;
             if (layer_typename in overlay_layers) {
                 return
             }
@@ -241,16 +245,26 @@
                             json['bbox_x1'],
                             json['bbox_y1']
                         ]);
-                        // Add the layer
-                        map.addLayer(tile_layer);
 
                         // Add to list layer
-                        $("#layer-list").prepend(
-                                "<li id='li_" + layer_typename + "'>" +
-                                "<input type='checkbox' onclick='check_box_layer_clicked(this);' name='show_layer' value='" + layer_typename + "' checked>" +
-                                layer_title +
-                                "<button type='button' onclick='delete_layer_clicked(this);' value='" + layer_typename + "'>X</button>" +
-                                "</li>");
+                        if (visibility) {
+                            // Add the layer
+                            map.addLayer(tile_layer);
+                            $("#layer-list").prepend(
+                                    "<li id='li_" + layer_typename + "'>" +
+                                    "<input type='checkbox' onclick='check_box_layer_clicked(this);' name='show_layer' value='" + layer_typename + "' checked>" +
+                                    layer_title +
+                                    "<button type='button' onclick='delete_layer_clicked(this);' value='" + layer_typename + "'>X</button>" +
+                                    "</li>");
+                        } else {
+                            $("#layer-list").prepend(
+                                    "<li id='li_" + layer_typename + "'>" +
+                                    "<input type='checkbox' onclick='check_box_layer_clicked(this);' name='show_layer' value='" + layer_typename + "'>" +
+                                    layer_title +
+                                    "<button type='button' onclick='delete_layer_clicked(this);' value='" + layer_typename + "'>X</button>" +
+                                    "</li>");
+                        }
+
 
                         // Add to memory
                         var added_layer = {};
@@ -258,6 +272,7 @@
                         added_layer.url = layer_url;
                         added_layer.z_index = 0;
                         added_layer.layer = tile_layer;
+                        added_layer.visibility = visibility;
                         overlay_layers[layer_typename] = added_layer;
 
                         // Hide from available layer
@@ -282,21 +297,21 @@
 
             console.log(overlay_layers);
             map_data['sources'] = {};
-            for (var tempe in overlay_layers) {
-                var token = 'source_' + overlay_layers[tempe]['title'];
+            for (var key in overlay_layers) {
+                var source_token = 'source_' + overlay_layers[key]['title'];
                 console.log('Adding to layers');
-                console.log(tempe);
+                console.log(key);
                 layers.push(
                         {
-                            'name': tempe,
-                            'title': overlay_layers[tempe]['title'],
-                            'url': overlay_layers[tempe]['url'],
-                            'source': token,  // I have no idea
-                            'local': true  // I have no idea
+                            'name': key,
+                            'title': overlay_layers[key]['title'],
+                            'visibility': overlay_layers[key]['visibility'],
+                            'url': overlay_layers[key]['url'],
+                            'source': source_token
                         }
                 );
-                map_data['sources'][token] = {
-                    'url': overlay_layers[tempe]['url']
+                map_data['sources'][source_token] = {
+                    'url': overlay_layers[key]['url']
                 };
             }
             console.log(layers);
@@ -343,7 +358,8 @@
             var mapquest = L.tileLayer('http://otile4.mqcdn.com/tiles/1.0.0/osm/{z}/{x}/{y}.png', {
                 attribution: 'Tiles Courtesy of <a href="http://www.mapquest.com/">MapQuest</a> &mdash; Map data &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
             });
-            var background_layers = {
+
+            background_layers = {
                 'osm': osm,
                 'mapquest': mapquest
             };
@@ -369,20 +385,30 @@
             var list = document.getElementById("layer-list");
             Sortable.create(list); // That's all
 
-            // Check layer parameter in url
-            var qd = {};
-            location.search.substr(1).split("&").forEach(function (item) {
-                var s = item.split("="),
-                        k = s[0],
-                        v = s[1] && decodeURIComponent(s[1]);
-                (k in qd) ? qd[k].push(v) : qd[k] = [v]
-            });
-            if (qd['layer']) {
-                for (i = 0; i < qd['layer'].length; i++) {
-                    var layer_typename = qd['layer'][i];
-                    add_layer(layer_typename);
+            {% if not create %}
+                {% for layer in map.layers %}
+                    {% if layer.visibility %}
+                        add_layer("{{ layer.name }}", true);
+                    {% else %}
+                        add_layer("{{ layer.name }}", false);
+                    {% endif %}
+                {% endfor %}
+            {% else %}
+                // Check layer parameter in url
+                var qd = {};
+                location.search.substr(1).split("&").forEach(function (item) {
+                    var s = item.split("="),
+                            k = s[0],
+                            v = s[1] && decodeURIComponent(s[1]);
+                    (k in qd) ? qd[k].push(v) : qd[k] = [v]
+                });
+                if (qd['layer']) {
+                    for (i = 0; i < qd['layer'].length; i++) {
+                        var layer_typename = qd['layer'][i];
+                        add_layer(layer_typename);
+                    }
                 }
-            }
+            {% endif %}
 
         });
     </script>
