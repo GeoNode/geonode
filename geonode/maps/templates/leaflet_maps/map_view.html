@@ -167,14 +167,13 @@
         var map = $("#map");
         var active_background_layer;
 
+        // Storing the overlay layers
         var overlay_layers = {};
+        var overlay_layers_list = [];
+
+        // Storing the background layers
         var background_layers = {};
-        // Each element contains:
-        // 1. layer name
-        // 2. layer wms url
-        // 3. z index
-        // 4. layer object
-        var highest_z_index = 0;
+        var background_layers_layers = [];
 
         var w_height = $(window).height();
         var map_height = w_height - $('nav').height();
@@ -213,9 +212,18 @@
             delete overlay_layers[button.value];
             // Remove layer from map layer list
             remove("li_" + button.value);
+            // Remove from list overlay layers
+            remove_from_list(overlay_layers_list, button.value);
 
             // Show from available layer
             document.getElementById("option_" + button.value).style.display = 'block';
+        }
+
+        function remove_from_list(list, item){
+            var item_index = list.indexOf(item);
+            if (item_index > -1){
+                list.splice(item_index, 1)
+            }
         }
 
         function add_layer(layer_typename, visibility) {
@@ -274,6 +282,9 @@
                         added_layer.layer = tile_layer;
                         added_layer.visibility = visibility;
                         overlay_layers[layer_typename] = added_layer;
+
+                        // Add to list of overlay layers
+                        overlay_layers_list.push(layer_typename);
 
                         // Hide from available layer
                         document.getElementById("option_" + layer_typename).style.display = 'none';
