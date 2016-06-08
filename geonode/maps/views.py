@@ -25,6 +25,7 @@ from guardian.shortcuts import get_perms
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.urlresolvers import reverse
+from django.core.serializers.json import DjangoJSONEncoder
 from django.http import HttpResponse, HttpResponseRedirect, HttpResponseNotAllowed, HttpResponseServerError
 from django.shortcuts import render_to_response, get_object_or_404
 from django.conf import settings
@@ -531,7 +532,8 @@ def new_map_config(request):
                         map=map_obj,
                         name=layer.typename,
                         ows_url=layer.ows_url,
-                        layer_params=json.dumps(config),
+                        # use DjangoJSONEncoder to handle Decimal values
+                        layer_params=json.dumps(config, cls=DjangoJSONEncoder),
                         visibility=True
                     )
 
