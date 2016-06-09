@@ -312,19 +312,11 @@ def registration_part_two(request):
                                 request_letter = form.clean()['letter_file'],
                                 interest_layer = interest_layer
                             )
-<<<<<<< HEAD
-                    
-                    if place_name:
-                        request_profile.place_name = place_name['state']
-                        request_profile.save()
-                    
-=======
 
                     request_profile.place_name = place_name['state']
                     request_profile.juris_data_size = juris_data_size
                     request_profile.save()
 
->>>>>>> data_size_datarequest
                     if request.user.is_authenticated():
                         request_profile.profile = request.user
                         request_profile.request_status = 'pending'
