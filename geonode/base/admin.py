@@ -49,7 +49,7 @@ class LicenseAdmin(MediaTranslationAdmin):
 class TopicCategoryAdmin(MediaTranslationAdmin):
     model = TopicCategory
     list_display_links = ('identifier',)
-    list_display = ('identifier', 'description', 'gn_description', 'is_choice')
+    list_display = ('identifier', 'description', 'gn_description', 'fa_class', 'is_choice')
     if settings.MODIFY_TOPICCATEGORY is False:
         exclude = ('identifier', 'description',)
 
