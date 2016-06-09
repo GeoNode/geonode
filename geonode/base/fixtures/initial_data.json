@@ -5,7 +5,8 @@
         "fields": {
             "description": "flora and/or fauna in natural environment. Examples: wildlife, vegetation, biological sciences, ecology, wilderness, sealife, wetlands, habitat", 
             "gn_description": "Biota", 
-            "is_choice": true, 
+            "is_choice": true,
+            "fa_class": "fa-leaf",
             "identifier": "biota"
         }
     }, 
@@ -16,6 +17,7 @@
             "description": "legal land descriptions. Examples: political and administrative boundaries", 
             "gn_description": "Boundaries", 
             "is_choice": true, 
+            "fa_class": "fa-ellipsis-h",
             "identifier": "boundaries"
         }
     }, 
@@ -26,6 +28,7 @@
             "description": "processes and phenomena of the atmosphere. Examples: cloud cover, weather, climate, atmospheric conditions, climate change, precipitation", 
             "gn_description": "Climatology Meteorology Atmosphere", 
             "is_choice": true, 
+            "fa_class": "fa-cloud",
             "identifier": "climatologyMeteorologyAtmosphere"
         }
     }, 
@@ -36,6 +39,7 @@
             "description": "economic activities, conditions and employment. Examples: production, labour, revenue, commerce, industry, tourism and ecotourism, forestry, fisheries, commercial or subsistence hunting, exploration and exploitation of resources such as minerals, oil and gas", 
             "gn_description": "Economy", 
             "is_choice": true, 
+            "fa_class": "fa-shopping-cart",
             "identifier": "economy"
         }
     }, 
@@ -46,6 +50,7 @@
             "description": "height above or below sea level. Examples: altitude, bathymetry, digital elevation models, slope, derived products", 
             "gn_description": "Elevation", 
             "is_choice": true, 
+            "fa_class": "fa-flag",
             "identifier": "elevation"
         }
     }, 
@@ -56,6 +61,7 @@
             "description": "environmental resources, protection and conservation. Examples: environmental pollution, waste storage and treatment, environmental impact assessment, monitoring environmental risk, nature reserves, landscape", 
             "gn_description": "Environment", 
             "is_choice": true, 
+            "fa_class": "fa-tree",
             "identifier": "environment"
         }
     }, 
@@ -66,6 +72,7 @@
             "description": "rearing of animals and/or cultivation of plants. Examples: agriculture, irrigation, aquaculture, plantations, herding, pests and diseases affecting crops and livestock", 
             "gn_description": "Farming", 
             "is_choice": true, 
+            "fa_class": "fa-lemon-o",
             "identifier": "farming"
         }
     }, 
@@ -76,6 +83,7 @@
             "description": "information pertaining to earth sciences. Examples: geophysical features and processes, geology, minerals, sciences dealing with the composition, structure and origin of the earth s rocks, risks of earthquakes, volcanic activity, landslides, gravity information, soils, permafrost, hydrogeology, erosion", 
             "gn_description": "Geoscientific Information", 
             "is_choice": true, 
+            "fa_class": "fa-bullseye",
             "identifier": "geoscientificInformation"
         }
     }, 
@@ -86,6 +94,7 @@
             "description": "health, health services, human ecology, and safety. Examples: disease and illness, factors affecting health, hygiene, substance abuse, mental and physical health, health services", 
             "gn_description": "Health", 
             "is_choice": true, 
+            "fa_class": "fa-stethoscope",
             "identifier": "health"
         }
     }, 
@@ -96,6 +105,7 @@
             "description": "base maps. Examples: land cover, topographic maps, imagery, unclassified images, annotations", 
             "gn_description": "Imagery Base Maps Earth Cover", 
             "is_choice": true, 
+            "fa_class": "fa-globe",
             "identifier": "imageryBaseMapsEarthCover"
         }
     }, 
@@ -106,6 +116,7 @@
             "description": "inland water features, drainage systems and their characteristics. Examples: rivers and glaciers, salt lakes, water utilization plans, dams, currents, floods, water quality, hydrographic charts", 
             "gn_description": "Inland Waters", 
             "is_choice": true, 
+            "fa_class": "fa-tint",
             "identifier": "inlandWaters"
         }
     }, 
@@ -116,6 +127,7 @@
             "description": "military bases, structures, activities. Examples: barracks, training grounds, military transportation, information collection", 
             "gn_description": "Intelligence Military", 
             "is_choice": true, 
+            "fa_class": "fa-fighter-jet",
             "identifier": "intelligenceMilitary"
         }
     }, 
@@ -126,6 +138,7 @@
             "description": "features and characteristics of salt water bodies (excluding inland waters). Examples: tides, tidal waves, coastal information, reefs", 
             "gn_description": "Oceans", 
             "is_choice": true, 
+            "fa_class": "fa-anchor",
             "identifier": "oceans"
         }
     }, 
@@ -136,6 +149,7 @@
             "description": "positional information and services. Examples: addresses, geodetic networks, control points, postal zones and services, place names", 
             "gn_description": "Location", 
             "is_choice": true, 
+            "fa_class": "fa-map-marker",
             "identifier": "location"
         }
     }, 
@@ -146,6 +160,7 @@
             "description": "information used for appropriate actions for future use of the land. Examples: land use maps, zoning maps, cadastral surveys, land ownership", 
             "gn_description": "Planning Cadastre", 
             "is_choice": true, 
+            "fa_class": "fa-home",
             "identifier": "planningCadastre"
         }
     }, 
@@ -156,6 +171,7 @@
             "description": "characteristics of society and cultures. Examples: settlements, anthropology, archaeology, education, traditional beliefs, manners and customs, demographic data, recreational areas and activities, social impact assessments, crime and justice, census information", 
             "gn_description": "Society", 
             "is_choice": true, 
+            "fa_class": "fa-comments",
             "identifier": "society"
         }
     }, 
@@ -166,6 +182,7 @@
             "description": "man-made construction. Examples: buildings, museums, churches, factories, housing, monuments, shops, towers", 
             "gn_description": "Structure", 
             "is_choice": true, 
+            "fa_class": "fa-building",
             "identifier": "structure"
         }
     }, 
@@ -176,6 +193,7 @@
             "description": "means and aids for conveying persons and/or goods. Examples: roads, airports/airstrips, shipping routes, tunnels, nautical charts, vehicle or vessel location, aeronautical charts, railways", 
             "gn_description": "Transportation", 
             "is_choice": true, 
+            "fa_class": "fa-truck",
             "identifier": "transportation"
         }
     }, 
@@ -186,6 +204,7 @@
             "description": "energy, water and waste systems and communications infrastructure and services. Examples: hydroelectricity, geothermal, solar and nuclear sources of energy, water purification and distribution, sewage collection and disposal, electricity and gas distribution, data communication, telecommunication, radio, communication networks", 
             "gn_description": "Utilities Communication", 
             "is_choice": true, 
+            "fa_class": "fa-phone",
             "identifier": "utilitiesCommunication"
         }
     },
