@@ -201,14 +201,14 @@ class DataRequestProfile(TimeStampedModel):
         blank=True,
         max_length=50,
     )
-    """
+
     #For jurisdiction data size
     juris_data_size = models.FloatField(
         _('Data size of requested jurisdiction'),
         null=True,
         blank=True,
     )
-    """
+    
     #For request letter
     request_letter= models.ForeignKey(Document, null=True, blank=True)
 
