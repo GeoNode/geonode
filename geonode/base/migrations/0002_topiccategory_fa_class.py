@@ -21,6 +21,7 @@
 from __future__ import unicode_literals
 
 import json
+import os
 
 from django.db import migrations, models
 
@@ -42,7 +43,12 @@ class Migration(migrations.Migration):
         )
     ]
 
-    with open('geonode/base/fixtures/initial_data.json') as data_file:
+    current = os.path.dirname(os.path.abspath(__file__))
+    parent = os.path.abspath(os.path.join(current, os.pardir))
+    fixture = os.path.join(parent, 'fixtures/initial_data.json')
+    # geonode/base/fixtures/initial_data.json
+
+    with open(fixture) as data_file:
         data = json.load(data_file)
 
         for record in data:
