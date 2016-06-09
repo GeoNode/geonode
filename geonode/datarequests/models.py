@@ -203,11 +203,10 @@ class DataRequestProfile(TimeStampedModel):
     )
 
     #For jurisdiction data size
-    juris_data_size = models.CharField(
+    juris_data_size = models.FloatField(
         _('Data size of requested jurisdiction'),
         null=True,
         blank=True,
-        max_length=50,
     )
 
     #For request letter
