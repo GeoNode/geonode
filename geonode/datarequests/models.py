@@ -503,7 +503,6 @@ class DataRequestProfile(TimeStampedModel):
          """.format(
              unidecode(self.first_name),
              username,
-             directory,
              profile_url,
              local_settings.LIPAD_SUPPORT_MAIL
          )
@@ -525,7 +524,6 @@ class DataRequestProfile(TimeStampedModel):
         """.format(
              unidecode(self.first_name),
              username,
-             directory,
              profile_url,
              local_settings.LIPAD_SUPPORT_MAIL,
              local_settings.LIPAD_SUPPORT_MAIL
