@@ -137,7 +137,7 @@ setup(name='GeoNode',
 
         # geopython dependencies
         "OWSLib==0.11.0",
-        "pycsw>=1.10.3",
+        "pycsw==2.0.0-alpha1",
         "pyproj>=1.9.3",
         "Shapely==1.5.13",
 
