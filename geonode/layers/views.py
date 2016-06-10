@@ -70,6 +70,7 @@ from geonode.eula.models import AnonDownloader
 # from datetime import date, timedelta, datetime
 from django.utils import timezone
 
+
 CONTEXT_LOG_FILE = None
 
 if 'geonode.geoserver' in settings.INSTALLED_APPS:
@@ -609,10 +610,9 @@ def layer_download(request, layername):
     return HttpResponseRedirect(redir_url)
 
 @login_required
-@user_passes_test(lambda u: u.is_superuser)
 def layer_download_csv(request):
-    # if not request.user.is_superuser:
-    #     return HttpResponseForbidden()
+    if not request.user.is_superuser:
+        return HttpResponseRedirect('forbidden')
 
     response = HttpResponse(content_type='text/csv')
     datetoday = timezone.now()
