@@ -73,13 +73,18 @@
       </tr>
 
       <tr>
+      <td class="table-user-profile-attribute">{% trans "Area of Coverage in Sqr KMs:" %}</td>
+      <td>{{ request_profile.area_coverage }}</td>
+      </tr>
+
+      <tr>
       <td class="table-user-profile-attribute">{% trans "Location of Area Requested" %}</td>
       <td>{{ request_profile.place_name }}</td>
       </tr>
 
       <tr>
       <td class="table-user-profile-attribute">{% trans "Data Size of Area Requested" %}</td>
-      <td>{{ request_profile.juris_data_size }}</td>
+      <td>{{ request_profile.juris_data_size|filesizeformat }}</td>
       </tr>
 
       <tr>

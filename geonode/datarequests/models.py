@@ -136,13 +136,17 @@ class DataRequestProfile(TimeStampedModel):
     data_set = models.CharField(
         _('Data/Data Set Subject to License'),
         max_length=100,
-    )
+    )"""
     area_coverage = models.DecimalField(
         _('Area of Coverage'),
         max_digits=30,
         decimal_places=4,
         help_text=_('Sqr KMs'),
+        default=0,
+        null=True,
+        blank=True,
     )
+    """
     data_resolution = models.PositiveIntegerField(
         _('Data Resolution'),
         help_text=_('pixels per inch'),
@@ -199,13 +203,12 @@ class DataRequestProfile(TimeStampedModel):
     )
 
     #For jurisdiction data size
-    juris_data_size = models.CharField(
+    juris_data_size = models.FloatField(
         _('Data size of requested jurisdiction'),
         null=True,
         blank=True,
-        max_length=50,
     )
-
+    
     #For request letter
     request_letter= models.ForeignKey(Document, null=True, blank=True)
 
@@ -334,7 +337,7 @@ class DataRequestProfile(TimeStampedModel):
         )
 
         text_content = """
-        Hi,
+        Hi LiPAD Admins,
 
         A new data request has been submitted by {} {}. You can view the data request profile using the following link:
         {}
@@ -345,7 +348,7 @@ class DataRequestProfile(TimeStampedModel):
         )
 
         html_content = """
-        <p>Hi,</p>
+        <p>Hi LiPAD Admins,</p>
 
         <p>A new data request has been submitted by {} {}. You can view the data request profile using the following link:</p>
         <p><a rel="nofollow" target="_blank" href="{}">{}</a></p>
@@ -496,6 +499,9 @@ class DataRequestProfile(TimeStampedModel):
         You will be able to edit your account details by logging in and going to the following link:
         {}
 
+        To download DTMs, DSMs, Classified LAZ and Orthophotos, please proceed to http://lipad.dream.upd.edu.ph/maptiles after logging in.
+        To download Flood Hazard Maps, Resource Layers and other datasets, please proceed to http://lipad.dream.upd.edu.ph/layers/.
+
         If you have any questions, you can contact us as at {}.
 
         Regards,
@@ -518,6 +524,9 @@ class DataRequestProfile(TimeStampedModel):
        <p>You will be able to edit your account details by logging in and going to the following link:</p>
        {}
        </br>
+       <p>To download DTMs, DSMs, Classified LAZ and Orthophotos, please proceed to <a href="http://lipad.dream.upd.edu.ph/maptiles">Data Tiles Section</a> under Data Store after logging in.</p>
+       <p>To download Flood Hazard Maps, Resource Layers and other datasets, please proceed to <a href="http://lipad.dream.upd.edu.ph/layers/">Layers Section</a> under Data Store.</p>
+
        <p>If you have any questions, you can contact us as at <a href="mailto:{}" target="_top">{}</a></p>
        </br>
         <p>Regards,</p>
@@ -555,6 +564,9 @@ class DataRequestProfile(TimeStampedModel):
 
         Your current data request for LiPAD was approved.
 
+        To download DTMs, DSMs, Classified LAZ and Orthophotos, please proceed to http://lipad.dream.upd.edu.ph/maptiles after logging in.
+        To download Flood Hazard Maps, Resource Layers and other datasets, please proceed to http://lipad.dream.upd.edu.ph/layers/.
+
         If you have any questions, you can contact us as at {}.
 
         Regards,
@@ -568,6 +580,9 @@ class DataRequestProfile(TimeStampedModel):
         <p>Dear <strong>{}</strong>,</p>
 
        <p>Your current data request in LiPAD was approved.
+       <p>To download DTMs, DSMs, Classified LAZ and Orthophotos, please proceed to <a href="http://lipad.dream.upd.edu.ph/maptiles">Data Tiles Section</a> under Data Store after logging in.</p>
+       <p>To download Flood Hazard Maps, Resource Layers and other datasets, please proceed to <a href="http://lipad.dream.upd.edu.ph/layers/">Layers Section</a> under Data Store.</p>
+
        </br>
        <p>If you have any questions, you can contact us as at <a href="mailto:{}" target="_top">{}</a></p>
        </br>
@@ -612,11 +627,11 @@ class DataRequestProfile(TimeStampedModel):
                 dn = create_ad_account(self, self.username)
                 add_to_ad_group(group_dn=settings.LIPAD_LDAP_GROUP_DN, user_dn=dn)
                 profile = LDAPBackend().populate_user(self.username)
-                
+
                 if profile:
                     self.profile = profile
                     self.save()
-                
+
                     profile.middle_name = self.middle_name
                     profile.organization = self.organization
                     profile.voice = self.contact_number
@@ -693,7 +708,7 @@ class DataRequestProfile(TimeStampedModel):
         else:
             self.send_request_approval_email(self.username)
 
-    def to_values_list(self, fields=['id','name','email','contact_number', 'organization', 'project_summary', 'created','request_status']):
+    def to_values_list(self, fields=['id','name','email','contact_number', 'organization', 'project_summary', 'created','request_status', 'data_size','area_coverage']):
         out = []
         for f in fields:
             if f  is 'id':
@@ -707,7 +722,7 @@ class DataRequestProfile(TimeStampedModel):
                 out.append( str(created.month) +"/"+str(created.day)+"/"+str(created.year))
             elif f == 'date of action':
                 date_of_action = getattr(self, 'action_date')
-                if self.request_status == 'rejected' or self.request_status == 'approved':
+                if date_of_action:
                     out.append(str(date_of_action.month)+"/"+str(date_of_action.day)+"/"+str(date_of_action.year))
                 else:
                     out.append('')
@@ -725,6 +740,10 @@ class DataRequestProfile(TimeStampedModel):
                     out.append('no')
             elif f is 'rejection_reason':
                 out.append(str(getattr(self,'rejection_reason')))
+            elif f is 'juris_data_size':
+                out.append(str(getattr(self,'juris_data_size')))
+            elif f is 'area_coverage':
+                out.append(str(getattr(self,'area_coverage')))
             else:
                 val = getattr(self, f)
                 if isinstance(val, unicode):
