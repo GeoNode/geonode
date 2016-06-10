@@ -62,6 +62,7 @@ var highlight_layer;
 var jurisdiction_geoms = [];
 var tile_cache = [];
 var single_click = true;
+var totaldatasizeclicked = 0;
 
 var olGeoJSON = new OpenLayers.Format.GeoJSON();
 //var geoserver = "{{geoserver}}";
@@ -208,6 +209,7 @@ function display_points(div_id, vec_layer){
             }
         }
     }
+    getDataSizeClicked(georef_string,totaldatasizeclicked);
     document.getElementById("georef_area").setAttribute("value",georef_string);
 }
 
@@ -473,6 +475,20 @@ function removeHighlight(georef, vec_layer){
     tile_list.splice(index,1);
 }
 
+/*
+ Function in getting total_data_size_clicked
+*/
+function getDataSizeClicked(georefsclicked, datasizeclicked){
+    $.post('/maptiles/datasize/',
+        {"georefs_clicked" : georefsclicked, "total_data_size_clicked": datasizeclicked}).done(function(result){
+          if (result.response){
+            self.submit();
+          } else {
+            totaldatasizeclicked = result.total_data_size_clicked;
+            document.getElementById("data_size_display").innerHTML = result.total_data_size_clicked;
+          }
+       })
+}
 /*
 Defines the style for the highlight tiles
 */

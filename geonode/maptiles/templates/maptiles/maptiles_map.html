@@ -63,7 +63,7 @@
                     <input type="text" id="geocode_input" name="geocode_input"/>
                 </form>
                 <a  id="geocode_submit" name="geocode_submit" class="btn btn-default">Submit</a>
-                
+
                   </nobr>
            </li>
           <li class="list-group-item">
@@ -112,6 +112,7 @@
  <br />
  <div  class ="page-header">
     <h3 class="page-title">Selected Tiles</h3>
+    <div id="data_size_display">
  </div>
  <div class="row" id="point_display">
 
@@ -142,7 +143,7 @@
             });
             return false;
     }
-    
+
     $(document).ready( function() {
          $('#geocode_form').submit(function (e){
             return false;
