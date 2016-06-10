@@ -127,10 +127,10 @@ class CatalogueBackend(GenericCatalogueBackend):
         os.environ['QUERY_STRING'] = ''
 
         # init pycsw
-        csw = server.Csw(config)
+        csw = server.Csw(config, version='2.0.2')
 
         # fake HTTP method
-        csw.requesttype = 'POST'
+        csw.requesttype = 'GET'
 
         # fake HTTP request parameters
         if identifier is None:  # it's a GetRecords request
@@ -139,6 +139,8 @@ class CatalogueBackend(GenericCatalogueBackend):
                 formats.append(METADATA_FORMATS[f][0])
 
             csw.kvp = {
+                'service': 'CSW',
+                'version': '2.0.2',
                 'elementsetname': 'full',
                 'typenames': formats,
                 'resulttype': 'results',
@@ -152,15 +154,21 @@ class CatalogueBackend(GenericCatalogueBackend):
             response = csw.getrecords()
         else:  # it's a GetRecordById request
             csw.kvp = {
-                'id': [identifier],
+                'service': 'CSW',
+                'version': '2.0.2',
+                'request': 'GetRecordById',
+                'id': identifier,
                 'outputschema': 'http://www.isotc211.org/2005/gmd',
             }
             # FIXME(Ariel): Remove this try/except block when pycsw deals with
             # empty geometry fields better.
             # https://gist.github.com/ingenieroariel/717bb720a201030e9b3a
             try:
-                response = csw.getrecordbyid()
+                response = csw.dispatch()
             except ReadingError:
                 return []
 
-        return etree.tostring(response)
+        if isinstance(response, list):  # pycsw 2.0+
+            response = response[1]
+
+        return response
