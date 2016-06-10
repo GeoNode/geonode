@@ -330,11 +330,12 @@ def geoserver_rest_proxy(request, proxy_path, downstream_path):
         # we should remove this geonode dependency calling layers.views straight
         # from GXP, bypassing the proxy
         if downstream_path in ('rest/styles', 'rest/layers') and len(request.body) > 0:
-            if not style_change_check(request, downstream_path):
-                return HttpResponse(
-                    _("You don't have permissions to change style for this layer"),
-                    mimetype="text/plain",
-                    status=401)
+            print request.user
+            #if not style_change_check(request, downstream_path):
+            #    return HttpResponse(
+            #        _("You don't have permissions to change style for this layer"),
+            #        mimetype="text/plain",
+            #        status=401)
             if downstream_path == 'rest/styles':
                 style_update(request, url)
 
