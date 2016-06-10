@@ -620,11 +620,11 @@ def layer_download_csv(request):
 
     auth_list = Action.objects.filter(verb='downloaded').order_by('timestamp') #get layers in prod
 
-    # auth_fmc = 
+    # auth_fmc =
     anon_list = AnonDownloader.objects.all().order_by('date')
-    # anon_fmc  
+    # anon_fmc
     writer.writerow( ['username','layer name','date downloaded'])
-    
+
     for auth in auth_list:
         # auth.actor + " " + auth.action_object + " " +  auth.timestamp.strftime('%Y/%m/%d')
         writer.writerow([auth.actor,auth.action_object.title,auth.timestamp.strftime('%Y/%m/%d')])
@@ -639,4 +639,3 @@ def layer_download_csv(request):
         writer.writerow([lastname,firstname,layername,anon.date.strftime('%Y/%m/%d')])        
 
     return response
-
