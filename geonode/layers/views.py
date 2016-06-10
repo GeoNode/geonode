@@ -629,14 +629,14 @@ def layer_download_csv(request):
         # auth.actor + " " + auth.action_object + " " +  auth.timestamp.strftime('%Y/%m/%d')
         writer.writerow([auth.actor,auth.action_object.title,auth.timestamp.strftime('%Y/%m/%d')])
 
-    # writer.writerow(['\n'])
-    # writer.writerow(['Anonymous Downloads'])
-    # writer.writerow( ['lastname','firstname','layer name','date downloaded'])
-    # for anon in anon_list:
-    #     lastname = anon.anon_last_name
-    #     firstname = anon.anon_first_name
-    #     layername = anon.anon_layer
-    #     writer.writerow([lastname,firstname,layername,anon.date.timestamp.strftime('%Y/%m/%d')])        
+    writer.writerow(['\n'])
+    writer.writerow(['Anonymous Downloads'])
+    writer.writerow( ['lastname','firstname','layer name','date downloaded'])
+    for anon in anon_list:
+        lastname = anon.anon_last_name
+        firstname = anon.anon_first_name
+        layername = anon.anon_layer
+        writer.writerow([lastname,firstname,layername,anon.date.strftime('%Y/%m/%d')])        
 
     return response
 
