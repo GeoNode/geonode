@@ -1466,20 +1466,29 @@ def style_update(request, url):
                 txml = re.sub(r'NS[0-9]:', '', txml)
                 request._body = txml
         tree = ET.ElementTree(ET.fromstring(request.body))
-        elm_namedlayer_name = tree.findall(
-            './/{http://www.opengis.net/sld}Name')[0]
-        elm_user_style_name = tree.findall(
-            './/{http://www.opengis.net/sld}Name')[1]
+        sld_names = tree.findall(
+            './/{http://www.opengis.net/sld}Name')
+        elm_namedlayer_name = sld_names[0].text
+        elm_user_style_name = sld_names[1].text if len(sld_names) > 1 else None
+        if not elm_user_style_name:
+            if 'name' in request.REQUEST:
+                elm_user_style_name = request.REQUEST['name']
+            else:
+                raise ValueError('user style name not defined: %s' % elm_namedlayer_name)
+
         elm_user_style_title = tree.find(
             './/{http://www.opengis.net/sld}Title')
         if not elm_user_style_title:
             elm_user_style_title = elm_user_style_name
-        layer_name = elm_namedlayer_name.text
-        style_name = elm_user_style_name.text
+        layer_name = elm_namedlayer_name
+        style_name = elm_user_style_name
+        style_title = elm_user_style_title.text if hasattr(elm_user_style_title, 'text') else elm_user_style_title
         sld_body = '<?xml version="1.0" encoding="UTF-8"?>%s' % request.body
         # add style in GN and associate it to layer
         if request.method == 'POST':
-            style = Style(name=style_name, sld_body=sld_body, sld_url=url)
+            style, created = Style.objects.get_or_create(name=style_name)
+            style.sld_url = url
+            style.sld_body = sld_body
             style.save()
             layer = Layer.objects.all().filter(typename=layer_name)[0]
             style.layer_styles.add(layer)
@@ -1488,8 +1497,8 @@ def style_update(request, url):
             style = Style.objects.all().filter(name=style_name)[0]
             style.sld_body = sld_body
             style.sld_url = url
-            if len(elm_user_style_title.text) > 0:
-                style.sld_title = elm_user_style_title.text
+            if len(style_title) > 0:
+                style.sld_title = style_title
             style.save()
             for layer in style.layer_styles.all():
                 layer.save()
