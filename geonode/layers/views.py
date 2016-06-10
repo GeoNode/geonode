@@ -611,7 +611,7 @@ def layer_download(request, layername):
 @login_required
 def layer_download_csv(request):
     if not request.user.is_superuser:
-        return HttpResponseForbidden('You are not allowed to view this')
+        return HttpResponseForbidden()
 
     response = HttpResponse(content_type='text/csv')
     datetoday = timezone.now()
