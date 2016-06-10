@@ -28,7 +28,7 @@ import datetime
 from pprint import pprint
 
 from django.contrib import messages
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, user_passes_test
 from django.core.urlresolvers import reverse
 from django.http import HttpResponse, HttpResponseRedirect, HttpResponseForbidden
 from django.shortcuts import (
@@ -609,9 +609,10 @@ def layer_download(request, layername):
     return HttpResponseRedirect(redir_url)
 
 @login_required
+@user_passes_test(lambda u: u.is_superuser)
 def layer_download_csv(request):
-    if not request.user.is_superuser:
-        return HttpResponseForbidden()
+    # if not request.user.is_superuser:
+    #     return HttpResponseForbidden()
 
     response = HttpResponse(content_type='text/csv')
     datetoday = timezone.now()
