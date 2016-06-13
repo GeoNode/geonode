@@ -334,7 +334,7 @@ class DataRequestProfile(TimeStampedModel):
         )
 
         text_content = """
-        Hi,
+        Hello LiPAD Admins,
 
         A new data request has been submitted by {} {}. You can view the data request profile using the following link:
         {}
@@ -345,7 +345,7 @@ class DataRequestProfile(TimeStampedModel):
         )
 
         html_content = """
-        <p>Hi,</p>
+        <p>Hello LiPAD Admins,</p>
 
         <p>A new data request has been submitted by {} {}. You can view the data request profile using the following link:</p>
         <p><a rel="nofollow" target="_blank" href="{}">{}</a></p>
@@ -496,6 +496,9 @@ class DataRequestProfile(TimeStampedModel):
         You will be able to edit your account details by logging in and going to the following link:
         {}
 
+        To download DTMs, DSMs, Classified LAZ and Orthophotos, please proceed to http://lipad.dream.upd.edu.ph/maptiles after logging in.
+        To download Flood Hazard Maps, Resource Layers and other datasets, please proceed to http://lipad.dream.upd.edu.ph/layers/.
+
         If you have any questions, you can contact us as at {}.
 
         Regards,
@@ -510,13 +513,15 @@ class DataRequestProfile(TimeStampedModel):
         html_content = """
         <p>Dear <strong>{}</strong>,</p>
 
-       <p>Your account registration for LiPAD was approved! You will now be able to log in using the following log-in credentials:</p>
-       username: <strong>{}</strong><br/>
-       </br>
+       <p>Your account registration for LiPAD was approved. You will now be able to log in using the following log-in credentials:</p>
+       username: <strong>{}</strong></p>
+
        <p>Before you are able to login to LiPAD, visit first https://ssp.dream.upd.edu.ph/?action=sendtoken and follow the instructions to reset a password for your account</p></br>
        <p>You will be able to edit your account details by logging in and going to the following link:</p>
        {}
        </br>
+       <p>To download DTMs, DSMs, Classified LAZ and Orthophotos, please proceed to <a href="http://lipad.dream.upd.edu.ph/maptiles">Data Tiles Section</a> under Data Store after logging in.</p>
+       <p>To download Flood Hazard Maps, Resource Layers and other datasets, please proceed to <a href="http://lipad.dream.upd.edu.ph/layers/">Layers Section</a> under Data Store.</p>
        <p>If you have any questions, you can contact us as at <a href="mailto:{}" target="_top">{}</a></p>
        </br>
         <p>Regards,</p>
@@ -552,6 +557,8 @@ class DataRequestProfile(TimeStampedModel):
         Dear {},
 
         Your current data request for LiPAD was approved.
+        To download DTMs, DSMs, Classified LAZ and Orthophotos, please proceed to http://lipad.dream.upd.edu.ph/maptiles after logging in.
+        To download Flood Hazard Maps, Resource Layers and other datasets, please proceed to http://lipad.dream.upd.edu.ph/layers/.
 
         If you have any questions, you can contact us as at {}.
 
@@ -565,8 +572,9 @@ class DataRequestProfile(TimeStampedModel):
         html_content = """
         <p>Dear <strong>{}</strong>,</p>
 
-       <p>Your current data request in LiPAD was approved.
-       </br>
+       <p>Your current data request in LiPAD was approved.</p>
+       <p>To download DTMs, DSMs, Classified LAZ and Orthophotos, please proceed to <a href="http://lipad.dream.upd.edu.ph/maptiles">Data Tiles Section</a> under Data Store after logging in.</p>
+       <p>To download Flood Hazard Maps, Resource Layers and other datasets, please proceed to <a href="http://lipad.dream.upd.edu.ph/layers/">Layers Section</a> under Data Store.</p>
        <p>If you have any questions, you can contact us as at <a href="mailto:{}" target="_top">{}</a></p>
        </br>
         <p>Regards,</p>
