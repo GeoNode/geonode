@@ -379,7 +379,7 @@ class Migration(migrations.Migration):
             name='regions',
             field=models.ManyToManyField(
                 help_text='keyword identifies a location', to='base.Region',
-                null=True, verbose_name='keywords region', blank=True),
+                verbose_name='keywords region', blank=True),
         ),
         migrations.AddField(
             model_name='resourcebase',
