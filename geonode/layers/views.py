@@ -28,9 +28,9 @@ import datetime
 from pprint import pprint
 
 from django.contrib import messages
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, user_passes_test
 from django.core.urlresolvers import reverse
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect, HttpResponseForbidden
 from django.shortcuts import (
     redirect, get_object_or_404, render, render_to_response)
 from django.conf import settings
@@ -69,6 +69,7 @@ from geonode.eula.models import AnonDownloader
 
 # from datetime import date, timedelta, datetime
 from django.utils import timezone
+
 
 CONTEXT_LOG_FILE = None
 
@@ -602,7 +603,7 @@ def layer_download(request, layername):
         'base.view_resourcebase',
         _PERMISSION_MSG_VIEW)
     if request.user.is_authenticated():
-        action.send(request.user, verb='downloaded', action_object=layer.get_self_resource())
+        action.send(request.user, verb='downloaded', action_object=layer)
 
     splits = request.get_full_path().split("/")
     redir_url = urljoin(settings.OGC_SERVER['default']['PUBLIC_LOCATION'], "/".join(splits[4:]))
@@ -611,7 +612,7 @@ def layer_download(request, layername):
 @login_required
 def layer_download_csv(request):
     if not request.user.is_superuser:
-        raise HttpResponseForbidden
+        return HttpResponseRedirect("/forbidden/")
 
     response = HttpResponse(content_type='text/csv')
     datetoday = timezone.now()
@@ -620,23 +621,22 @@ def layer_download_csv(request):
 
     auth_list = Action.objects.filter(verb='downloaded').order_by('timestamp') #get layers in prod
 
-    # auth_fmc = 
+    # auth_fmc =
     anon_list = AnonDownloader.objects.all().order_by('date')
-    # anon_fmc  
+    # anon_fmc
     writer.writerow( ['username','layer name','date downloaded'])
-    
+
     for auth in auth_list:
         # auth.actor + " " + auth.action_object + " " +  auth.timestamp.strftime('%Y/%m/%d')
         writer.writerow([auth.actor,auth.action_object.title,auth.timestamp.strftime('%Y/%m/%d')])
 
-    # writer.writerow(['\n'])
-    # writer.writerow(['Anonymous Downloads'])
-    # writer.writerow( ['lastname','firstname','layer name','date downloaded'])
-    # for anon in anon_list:
-    #     lastname = anon.anon_last_name
-    #     firstname = anon.anon_first_name
-    #     layername = anon.anon_layer
-    #     writer.writerow([lastname,firstname,layername,anon.date.timestamp.strftime('%Y/%m/%d')])        
+    writer.writerow(['\n'])
+    writer.writerow(['Anonymous Downloads'])
+    writer.writerow( ['lastname','firstname','layer name','date downloaded'])
+    for anon in anon_list:
+        lastname = anon.anon_last_name
+        firstname = anon.anon_first_name
+        layername = anon.anon_layer
+        writer.writerow([lastname,firstname,layername,anon.date.strftime('%Y/%m/%d')])        
 
     return response
-

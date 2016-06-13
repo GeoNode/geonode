@@ -415,66 +415,45 @@ def management(request):
 
 @login_required
 @user_passes_test(lambda u: u.is_superuser)
-def update_fhm_metadata(request, template='running_task.html'):
+def update_fhm_metadata(request):
     fhm_metadata_update.delay()
-    ctx = {
-        'charsets': CHARSETS,
-        'is_layer': True,
-    }
-    return render_to_response(template,RequestContext(request, ctx))
+    messages.error(request, "Updating Flood Hazard Map metadata")
+    return HttpResponseRedirect(reverse('data_management'))
 
 @login_required
 @user_passes_test(lambda u: u.is_superuser)
-def update_pl2_metadata(request, template='running_task.html'):
+def update_pl2_metadata(request):
     pl2_metadata_update.delay()
-    ctx = {
-        'charsets': CHARSETS,
-        'is_layer': True,
-    }
-    return render_to_response(template,RequestContext(request, ctx))
+    messages.error(request, "Updating Resource Layers Metadata")
+    return HttpResponseRedirect(reverse('data_management'))
 
 @login_required
 @user_passes_test(lambda u: u.is_superuser)
-def update_sar_metadata(request, template='running_task.html'):
+def update_sar_metadata(request):
     sar_metadata_update.delay()
-    ctx = {
-        'charsets': CHARSETS,
-        'is_layer': True,
-    }
-    return render_to_response(template,RequestContext(request, ctx))
+    messages.error(request, "Updating SAR Metadata")
+    return HttpResponseRedirect(reverse('data_management'))
 
 @login_required
 @user_passes_test(lambda u: u.is_superuser)
-def seed_fhm_layers(request, template='running_task.html'):
+def seed_fhm_layers(request):
     keyword = 'hazard'
     seed_layers.delay(keyword)
-    ctx = {
-        'charsets': CHARSETS,
-        'is_layer': True,
-    }
-
-    return render_to_response(template,RequestContext(request, ctx))
+    messages.error(request, "Seeding Flood Hazard Maps")
+    return HttpResponseRedirect(reverse('data_management'))
 
 @login_required
 @user_passes_test(lambda u: u.is_superuser)
-def seed_SAR_DEM(request, template='running_task.html'):
+def seed_SAR_DEM(request):
     keyword = 'SAR'
     seed_layers.delay(keyword)
-    ctx = {
-        'charsets': CHARSETS,
-        'is_layer': True,
-    }
-
-    return render_to_response(template,RequestContext(request, ctx))
+    messages.error(request, "Seeding SAR DEM")
+    return HttpResponseRedirect(reverse('data_management'))
 
 @login_required
 @user_passes_test(lambda u: u.is_superuser)
-def seed_resource_layers(request, template='running_task.html'):
+def seed_resource_layers(request):
     keyword = 'PhilLiDAR2'
     seed_layers.delay(keyword)
-    ctx = {
-        'charsets': CHARSETS,
-        'is_layer': True,
-    }
-
-    return render_to_response(template,RequestContext(request, ctx))
+    messages.error(request, "Seeding Resoure Layers")
+    return HttpResponseRedirect(reverse('data_management'))
