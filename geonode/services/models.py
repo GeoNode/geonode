@@ -116,7 +116,7 @@ class ServiceLayer(models.Model):
 
 
 class WebServiceHarvestLayersJob(models.Model):
-    service = models.ForeignKey(Service, blank=False, null=False, unique=True)
+    service = models.OneToOneField(Service, blank=False, null=False)
     status = models.CharField(choices=[(
         x, x) for x in STATUS_VALUES], max_length=10, blank=False, null=False, default='pending')
 

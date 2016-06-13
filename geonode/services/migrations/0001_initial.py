@@ -126,7 +126,7 @@ class Migration(migrations.Migration):
                     models.CharField(
                         default=b'pending', max_length=10,
                         choices=[(b'pending', b'pending'), (b'failed', b'failed'), (b'process', b'process')])),
-                ('service', models.ForeignKey(to='services.Service', unique=True)),
+                ('service', models.OneToOneField(to='services.Service')),
             ],
         ),
         migrations.CreateModel(
