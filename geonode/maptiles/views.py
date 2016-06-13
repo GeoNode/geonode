@@ -294,14 +294,13 @@ def georefs_datasize(request):
         )
     else:
         georefs_clicked = request.POST["georefs_clicked"]
-        total_data_size_clicked = int(request.POST["total_data_size_clicked"])
-
-        pprint(request.POST)
+        total_data_size_clicked = 0
+        
         georefs_clicked_list = filter(None, georefs_clicked.split(","))
 
-        for georef_clicked in georefs_clicked_list:
-            pprint(georef_clicked)
-            clicked_objects = CephDataObject.objects.filter(name__startswith=georefs_clicked)
+        for eachgeoref_clicked in georefs_clicked_list:
+            pprint(eachgeoref_clicked)
+            clicked_objects = CephDataObject.objects.filter(name__startswith=eachgeoref_clicked)
             for o in clicked_objects:
                 total_data_size_clicked += o.size_in_bytes
                 pprint(o.size_in_bytes)
