@@ -483,9 +483,20 @@ function getDataSizeClicked(georefsclicked){
           if (result.response){
             self.submit();
           } else {
-            document.getElementById("data_size_display").innerHTML = result.total_data_size_clicked;
+            document.getElementById("data_size_display").innerHTML = formatBytes(result.total_data_size_clicked,2);
           }
        })
+}
+/*
+ Function for converting bytes to KB, MB, GB
+*/
+function formatBytes(bytes,decimals) {
+   if(bytes == 0) return '0 Byte';
+   var k = 1000; // or 1024 for binary
+   var dm = decimals + 1 || 3;
+   var sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
+   var i = Math.floor(Math.log(bytes) / Math.log(k));
+   return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
 }
 /*
 Defines the style for the highlight tiles
