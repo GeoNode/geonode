@@ -28,9 +28,9 @@ import datetime
 from pprint import pprint
 
 from django.contrib import messages
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, user_passes_test
 from django.core.urlresolvers import reverse
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect, HttpResponseForbidden
 from django.shortcuts import (
     redirect, get_object_or_404, render, render_to_response)
 from django.conf import settings
@@ -69,6 +69,7 @@ from geonode.eula.models import AnonDownloader
 
 # from datetime import date, timedelta, datetime
 from django.utils import timezone
+
 
 CONTEXT_LOG_FILE = None
 
@@ -611,7 +612,7 @@ def layer_download(request, layername):
 @login_required
 def layer_download_csv(request):
     if not request.user.is_superuser:
-        raise HttpResponseForbidden
+        return HttpResponseRedirect("/forbidden/")
 
     response = HttpResponse(content_type='text/csv')
     datetoday = timezone.now()
@@ -636,6 +637,6 @@ def layer_download_csv(request):
         lastname = anon.anon_last_name
         firstname = anon.anon_first_name
         layername = anon.anon_layer
-        writer.writerow([lastname,firstname,layername,anon.date.timestamp.strftime('%Y/%m/%d')])
+        writer.writerow([lastname,firstname,layername,anon.date.strftime('%Y/%m/%d')])        
 
     return response
