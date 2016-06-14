@@ -722,7 +722,7 @@ class DataRequestProfile(TimeStampedModel):
                 out.append( str(created.month) +"/"+str(created.day)+"/"+str(created.year))
             elif f == 'date of action':
                 date_of_action = getattr(self, 'action_date')
-                if self.request_status == 'rejected' or self.request_status == 'approved':
+                if date_of_action:
                     out.append(str(date_of_action.month)+"/"+str(date_of_action.day)+"/"+str(date_of_action.year))
                 else:
                     out.append('')
