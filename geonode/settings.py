@@ -325,6 +325,9 @@ INSTALLED_APPS = (
     'south',
     'corsheaders',
     'captcha',
+    
+    #CAS client
+    'django_cas_ng', 
 
 ) + GEONODE_APPS
 
@@ -424,10 +427,11 @@ MIDDLEWARE_CLASSES = (
 
 # Replacement of default authentication backend in order to support
 # permissions per object.
-AUTHENTICATION_BACKENDS = (
-    'django.contrib.auth.backends.ModelBackend',
-    'guardian.backends.ObjectPermissionBackend',
-)
+AUTHENTICATION_BACKENDS = ('django_auth_ldap.backend.LDAPBackend',
+                           #'geonode.security.auth.GranularBackend',
+                           'django.contrib.auth.backends.ModelBackend',
+                           'guardian.backends.ObjectPermissionBackend',
+                           'django_cas_ng.backends.CASBackend',)
 
 ANONYMOUS_USER_ID = -1
 GUARDIAN_GET_INIT_ANONYMOUS_USER = 'geonode.people.models.get_anonymous_user_instance'
