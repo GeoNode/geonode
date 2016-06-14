@@ -42,7 +42,7 @@ from geonode.base.populate_test_data import create_models
 
 
 class LayersTest(TestCase):
-    fixtures = ['intial_data.json', 'bobby']
+    fixtures = ['initial_data.json', 'bobby']
 
     perm_spec = {
         "users": {
