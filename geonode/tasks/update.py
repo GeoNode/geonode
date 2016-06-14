@@ -646,3 +646,35 @@ def create_document_thumbnail(object_id):
     image = document._render_thumbnail()
     filename = 'doc-%s-thumb.png' % document.id
     document.save_thumbnail(filename, image)
+
+def iterate_over_layers(layers):
+    count = len(layers)
+    for i,layer in enumerate(layers):
+        try:
+            print "Layer {0} {1}/{2}".format(layer.name,i+1,count)
+            # print "Layer {0}".format(layers.name)
+            layers.default_style = layers.styles.get()
+            layers.save()
+        except Exception as e:
+            print "%s" % e
+            pass
+
+@task(name='geonode.tasks.update.layer_default_style', queue='update')
+def layer_default_style(keyword):
+#put try-except
+    if keyword == 'jurisdict':
+        try:
+            layers = Layer.objects.filter(owner__username="dataRegistrationUploader")
+            # layers = layers[0]
+            iterate_over_layers(layers)
+        except Exception as e:
+            print "%s" % e
+            pass
+    else:
+        try:
+            layers = Layer.objects.filter(name__icontains=keyword)
+            # layers = layers[0]
+            iterate_over_layers(layers)
+        except Exception as e:
+            print "%s" % e
+            pass
