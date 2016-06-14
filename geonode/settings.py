@@ -926,7 +926,8 @@ FILE_UPLOAD_PERMISSIONS = 0666
 GEOSTORAGE_HOST = ""
 
 FILE_UPLOAD_TEMP_DIR = "/tmp/geonode"
-THUMBNAIL_FILE_PERMISSIONS = 0664
+# THUMBNAIL_FILE_PERMISSIONS = 0664
+THUMBNAIL_FILE_PERMISSIONS = 0666
 
 # Load more settings from a file called local_settings.py if it exists
 try:
