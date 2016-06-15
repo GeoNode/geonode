@@ -164,7 +164,7 @@
             </div>
         </div>
 
-        {% if request_profile.request_status == 'rejected'  %}
+        {% if request_profile.request_status == 'rejected' or request_profile.request_status == 'cancelled' %}
           <p><strong>{% trans "Reason" %}</strong>: {{ request_profile.rejection_reason }}</p>
           {% if request_profile.additional_rejection_reason %}
               <p><strong>{% trans "Additional Details" %}</strong>: {{ request_profile.additional_rejection_reason }}</p>
@@ -178,7 +178,8 @@
                 <button type="submit" class="btn btn-primary btn-md btn-block"  id="recreate-dir-submit">{% trans "Create Directory" %}</button>
             </form>
         </li>
-      {% elif request_profile.request_status == 'pending'%}
+      {% else %}
+        {%  if request_profile.request_status == 'pending'%}
         <li class="list-group-item">
           <button class="btn btn-primary btn-md btn-block"  data-toggle="modal" data-target="#approve-request" id="approve-button">{% trans "Approve" %}</button>
         </li>
@@ -238,7 +239,37 @@
 
         </li>
       {% endif %}
-      {% endif %}
+      {% if not request_profile.request_status == 'rejected' %}
+         <li class="list-group-item">
+          <button class="btn btn-default btn-md btn-block" data-toggle="modal" data-target="#reject-request">{% trans "Reject" %}</button>
+        </li>
+
+        <div class="modal fade" id="reject-request" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+          <form id="request_reject_form" accept-charset="UTF-8" method="post" class="modal-form" action='{% url "datarequests:data_request_profile_reject" pk=request_profile.pk%}'>
+            <div class="modal-dialog">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                  <h4 class="modal-title" id="myModalLabel">{% trans "Reject Data Request Profile" %}</h4>
+                </div>
+                <div class="modal-body">
+                  {{ request_reject_form|as_bootstrap }}
+                </div>
+                <div class="alert hidden" id="reject_request_message">
+                  <p class="message">}</p>
+                  <p class="extra_content"></p>
+                </div>
+                <div class="modal-footer">
+                  <a href="#" class="btn btn-default" id="reject_request_cancel" data-dismiss="modal">{% trans "Cancel" %}</a>
+                  <a href="#" class="btn btn-primary" id="reject_request_submit">{% trans "Reject" %}</a>
+                </div>
+              </div>
+            </div>
+          </form>
+        </div>
+        {% endif %}
+  {% endif %}
+{% endif %}
   </ul>
   <input type="hidden" id="request_profile_id" value="{{request_profile.pk}}"></input>
   </div> <!-- col-md-4 -->
