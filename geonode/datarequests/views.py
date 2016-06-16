@@ -582,6 +582,35 @@ def data_request_profile_reject(request, pk):
         status=200,
         mimetype='text/plain'
     )
+    
+@require_POST
+def data_request_profile_cancel(request, pk):
+    if not request.user.is_superuser:
+        raise PermissionDenied
+
+    request_profile = get_object_or_404(DataRequestProfile, pk=pk)
+
+    if request_profile.request_status == 'pending' or request_profile.request_status == 'unconfirmed':
+        pprint("Yown pasok")
+        form = parse_qs(request.POST.get('form', None))
+        request_profile.rejection_reason = form['rejection_reason'][0]
+        request_profile.request_status = 'cancelled'
+        if 'additional_rejection_reason' in form.keys():
+            request_profile.additional_rejection_reason = form['additional_rejection_reason'][0]
+        request_profile.administrator = request.user
+        request_profile.action_date = timezone.now()
+        request_profile.save()
+
+    url = request.build_absolute_uri(request_profile.get_absolute_url())
+
+    return HttpResponse(
+        json.dumps({
+            'result': 'success',
+            'errors': '',
+            'url': url}),
+        status=200,
+        mimetype='text/plain'
+    )
 
 
 @require_POST

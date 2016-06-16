@@ -411,6 +411,7 @@ class DataRequestProfileRejectForm(forms.ModelForm):
     REJECTION_REASON_CHOICES = Choices(
         ('Invalid requirements', _('Invalid requirements')),
         ('Invalid purpose', _('Invalid purpose')),
+        ('Invalid request', _('Invalid request')),
     )
 
     rejection_reason = forms.ChoiceField(
