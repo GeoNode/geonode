@@ -639,9 +639,26 @@ MAP_BASELAYERS = [{
     "name": "naip",
     "group": "background",
     "visibility": False
-}, 
+},
 {
-    "source": {"ptype": "gxp_mapboxsource"},
+    "source": {"ptype": "gxp_olsource"},
+    "type":"OpenLayers.Layer.XYZ",
+    "args":[
+  "Mapbox Satellite", ["https://api.mapbox.com/v4/mapbox.satellite/${z}/${x}/${y}.png?access_token=<your access token here>"],
+        {"transitionEffect": "resize","attribution": "© Mapbox © OpenStreetMap © DigitalGlobe"}],
+    "visibility": False,
+    "fixed": True,
+    "group":"background"
+},
+{
+    "source": {"ptype": "gxp_olsource"},
+    "type":"OpenLayers.Layer.XYZ",
+    "args":[
+  "Mapbox Streets", ["https://api.mapbox.com/styles/v1/mapbox/streets-v9/tiles/${z}/${x}/${y}?access_token=<your access token here>"],
+        {"transitionEffect": "resize","attribution": "© Mapbox © OpenStreetMap"}],
+    "visibility": False,
+    "fixed": True,
+    "group":"background"
 }]
 
 SOCIAL_BUTTONS = True
