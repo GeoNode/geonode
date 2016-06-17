@@ -613,15 +613,17 @@ def data_request_profile_cancel(request, pk):
         request_profile.save()
 
     url = request.build_absolute_uri(request_profile.get_absolute_url())
-
-    return HttpResponse(
-        json.dumps({
-            'result': 'success',
-            'errors': '',
-            'url': url}),
-        status=200,
-        mimetype='text/plain'
-    )
+    if request.user.is_superuser:
+        return HttpResponse(
+            json.dumps({
+                'result': 'success',
+                'errors': '',
+                'url': url}),
+            status=200,
+            mimetype='text/plain'
+        )
+    else:
+        return HttpResponseRedirect(reverse('datarequests:data_request_profile_cancel', args=[pk]))
 
 
 
