@@ -320,11 +320,12 @@ Summary of the installation steps
 
    .. warning:: If the start fails because of an import error related to osgeo, then please consult the :ref:`install_gdal_devmode`.
 
-   The last step is to compile GeoServer and setup
+   The last step is to compile GeoServer and setup, then initialize the database
 
    .. code-block:: console
 
     $ paver setup
+    $ paver sync
 
 
 #. Now we can start our GeoNode instance
