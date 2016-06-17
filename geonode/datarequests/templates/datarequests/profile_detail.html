@@ -269,6 +269,15 @@
         </div>
         {% endif %}
   {% endif %}
+  {% else %}
+  {% if request_profile.request_status == 'unconfirmed' or request_profile.request_status == 'pending' %}
+         <li class="list-group-item">
+             <form id="cancel_form" method="post" class="modal-form" action='{% url "datarequests:data_request_profile_cancel" pk=request_profile.pk%}'>{% csrf_token %}
+             <button type = "submit" class="btn btn-default btn-md btn-block" id="cancel-request-submit">{% trans "Cancel Request" %}</button>
+        </form>
+         
+        </li>
+    {% endif %}
 {% endif %}
   </ul>
   <input type="hidden" id="request_profile_id" value="{{request_profile.pk}}"></input>

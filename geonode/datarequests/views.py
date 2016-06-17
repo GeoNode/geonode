@@ -587,7 +587,9 @@ def data_request_profile_reject(request, pk):
     )
     
 def data_request_profile_cancel(request, pk):
-    if not request.user.is_superuser:
+    request_profile = get_object_or_404(DataRequestProfile, pk=pk)
+    
+    if not request.user.is_superuser and request_profile.profile == request.user:
         raise PermissionDenied
 
     if not request.method == 'POST':
@@ -598,10 +600,14 @@ def data_request_profile_cancel(request, pk):
     if request_profile.request_status == 'pending' or request_profile.request_status == 'unconfirmed':
         pprint("Yown pasok")
         form = parse_qs(request.POST.get('form', None))
-        request_profile.rejection_reason = form['rejection_reason'][0]
         request_profile.request_status = 'cancelled'
+    
+        if 'rejection_reason' in form.keys():
+            request_profile.rejection_reason = form['rejection_reason'][0]
+        
         if 'additional_rejection_reason' in form.keys():
             request_profile.additional_rejection_reason = form['additional_rejection_reason'][0]
+        
         request_profile.administrator = request.user
         request_profile.action_date = timezone.now()
         request_profile.save()
