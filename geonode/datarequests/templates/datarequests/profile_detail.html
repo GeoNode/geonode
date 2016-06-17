@@ -239,7 +239,7 @@
 
         </li>
       {% endif %}
-      {% if not request_profile.request_status == 'rejected' %}
+      {% if not request_profile.request_status == 'rejected' or not request_profile.request_status == 'cancelled' %}
          <li class="list-group-item">
           <button class="btn btn-default btn-md btn-block" data-toggle="modal" data-target="#cancel-request">{% trans "Cancel Request" %}</button>
         </li>

@@ -314,10 +314,11 @@ def registration_part_two(request):
                                 interest_layer = interest_layer
                             )
 
-                    request_profile.place_name = place_name['state']
-                    request_profile.juris_data_size = juris_data_size
-                    request_profile.area_coverage = area_coverage
-                    request_profile.save()
+                    if interest_layer:
+                        request_profile.place_name = place_name['state']
+                        request_profile.juris_data_size = juris_data_size
+                        request_profile.area_coverage = area_coverage
+                        request_profile.save()
 
                     if request.user.is_authenticated():
                         request_profile.profile = request.user
