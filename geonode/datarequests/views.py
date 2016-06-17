@@ -601,12 +601,12 @@ def data_request_profile_cancel(request, pk):
         pprint("Yown pasok")
         form = request.POST.get('form', None)
         request_profile.request_status = 'cancelled'
-    
-        if 'rejection_reason' in form.keys():
-            request_profile.rejection_reason = form['rejection_reason'][0]
-        
-        if 'additional_rejection_reason' in form.keys():
-            request_profile.additional_rejection_reason = form['additional_rejection_reason'][0]
+        if form:
+            if 'rejection_reason' in form.keys():
+                request_profile.rejection_reason = form['rejection_reason'][0]
+            
+            if 'additional_rejection_reason' in form.keys():
+                request_profile.additional_rejection_reason = form['additional_rejection_reason'][0]
         
         request_profile.administrator = request.user
         request_profile.action_date = timezone.now()
