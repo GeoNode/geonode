@@ -550,9 +550,11 @@ def data_request_profile(request, pk, template='datarequests/profile_detail.html
     return render_to_response(template, RequestContext(request, context_dict))
 
 
-@require_POST
 def data_request_profile_reject(request, pk):
     if not request.user.is_superuser:
+        raise PermissionDenied
+
+    if not request.method == 'POST':
         raise PermissionDenied
 
     request_profile = get_object_or_404(DataRequestProfile, pk=pk)
@@ -584,9 +586,11 @@ def data_request_profile_reject(request, pk):
         mimetype='text/plain'
     )
     
-@require_POST
 def data_request_profile_cancel(request, pk):
     if not request.user.is_superuser:
+        raise PermissionDenied
+
+    if not request.method == 'POST':
         raise PermissionDenied
 
     request_profile = get_object_or_404(DataRequestProfile, pk=pk)
@@ -614,9 +618,12 @@ def data_request_profile_cancel(request, pk):
     )
 
 
-@require_POST
+
 def data_request_profile_approve(request, pk):
     if not request.user.is_superuser:
+        raise PermissionDenied
+
+    if not request.method == 'POST':
         raise PermissionDenied
 
     if request.method == 'POST':
@@ -654,9 +661,12 @@ def data_request_profile_approve(request, pk):
     else:
         return HttpResponseRedirect("/forbidden/")
 
-@require_POST
+
 def data_request_profile_reconfirm(request, pk):
     if not request.user.is_superuser:
+        raise PermissionDenied
+
+    if not request.method == 'POST':
         raise PermissionDenied
 
     if request.method == 'POST':
@@ -665,9 +675,11 @@ def data_request_profile_reconfirm(request, pk):
         request_profile.send_verification_email()
         return HttpResponseRedirect(request_profile.get_absolute_url())
 
-@require_POST
 def data_request_profile_recreate_dir(request, pk):
     if not request.user.is_superuser:
+        raise PermissionDenied
+
+    if not request.method == 'POST':
         raise PermissionDenied
 
     if request.method == 'POST':
@@ -676,10 +688,13 @@ def data_request_profile_recreate_dir(request, pk):
         request_profile.create_directory()
         return HttpResponseRedirect(request_profile.get_absolute_url())
 
-@require_POST
 def data_request_facet_count(request):
     if not request.user.is_superuser:
         raise PermissionDenied
+        
+    if not request.method == 'POST':
+        raise PermissionDenied    
+        
     facets_count = {
         'pending': DataRequestProfile.objects.filter(
             request_status='pending').exclude(date=None).count(),
