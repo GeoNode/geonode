@@ -18,7 +18,9 @@
 #
 #########################################################################
 
-from django.conf.urls import patterns, url
+from django.conf.urls import url
+from . import views
 
-urlpatterns = patterns('geonode.contrib.metadataxsl.views',
-                       url(r'^xsl/(?P<id>\d+)$', 'prefix_xsl_line', name='prefix_xsl_line'))
+urlpatterns = [
+    url(r'^xsl/(?P<id>\d+)$', views.prefix_xsl_line, name='prefix_xsl_line')
+]
