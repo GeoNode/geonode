@@ -589,7 +589,7 @@ def data_request_profile_reject(request, pk):
 def data_request_profile_cancel(request, pk):
     request_profile = get_object_or_404(DataRequestProfile, pk=pk)
     
-    if not request.user.is_superuser and request_profile.profile == request.user:
+    if not request.user.is_superuser and  not request_profile.profile == request.user:
         raise PermissionDenied
 
     if not request.method == 'POST':
