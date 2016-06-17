@@ -154,6 +154,10 @@ A list of dictionaries that specify the default map layers.
 
 Specific settings for map API providers (if they are not set those base maps will not be available):
 
+* ALT_OSM_BASEMAPS set this variable to True if you want additional osm basemaps
+* CARTODB_BASEMAPS set this variable to True if you want cartodb basemaps
+* STAMEN_BASEMAPS set this variable to True if you want stamen basemaps
+* THUNDERFOREST_BASEMAPS set this variable to True if you want thunderforest basemaps
 * MAPBOX_ACCESS_TOKEN set this variable to your MapBox public token
 * BING_API_KEY set this variable to your BING Map Key value
 
