@@ -604,10 +604,10 @@ def data_request_profile_cancel(request, pk):
         if form:
             form_parsed = parse_qs(request.POST.get('form', None))
             if 'rejection_reason' in form_parsed.keys():
-                request_profile.rejection_reason = form['rejection_reason'][0]
+                request_profile.rejection_reason = form_parsed['rejection_reason'][0]
             
             if 'additional_rejection_reason' in form_parsed.keys():
-                request_profile.additional_rejection_reason = form['additional_rejection_reason'][0]
+                request_profile.additional_rejection_reason = form_parsed['additional_rejection_reason'][0]
         
         request_profile.administrator = request.user
         request_profile.action_date = timezone.now()
