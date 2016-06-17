@@ -602,7 +602,7 @@ def data_request_profile_cancel(request, pk):
         form = request.POST.get('form', None)
         request_profile.request_status = 'cancelled'
         if form:
-            form_parsed = parse_qs(form)
+            form_parsed = parse_qs(request.POST.get('form', None))
             if 'rejection_reason' in form_parsed.keys():
                 request_profile.rejection_reason = form['rejection_reason'][0]
             
