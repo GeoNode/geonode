@@ -623,7 +623,7 @@ def data_request_profile_cancel(request, pk):
             mimetype='text/plain'
         )
     else:
-        return HttpResponseRedirect(reverse('datarequests:data_request_profile_cancel', args=[pk]))
+        return HttpResponseRedirect(reverse('datarequests:data_request_profile', args=[pk]))
 
 
 
