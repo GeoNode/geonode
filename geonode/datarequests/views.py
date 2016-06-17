@@ -599,7 +599,7 @@ def data_request_profile_cancel(request, pk):
 
     if request_profile.request_status == 'pending' or request_profile.request_status == 'unconfirmed':
         pprint("Yown pasok")
-        form = parse_qs(request.POST.get('form', None))
+        form = request.POST.get('form', None)
         request_profile.request_status = 'cancelled'
     
         if 'rejection_reason' in form.keys():
