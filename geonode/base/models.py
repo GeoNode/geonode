@@ -35,7 +35,8 @@ from django.contrib.staticfiles.templatetags import staticfiles
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.auth import get_user_model
 from django.db.models import signals
-from django.core.files import File
+from django.core.files.storage import default_storage as storage
+from django.core.files.base import ContentFile
 
 from mptt.models import MPTTModel, TreeForeignKey
 
@@ -570,16 +571,17 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin):
         return self.link_set.filter(name='Thumbnail').exists()
 
     def save_thumbnail(self, filename, image):
-        thumb_folder = 'thumbs'
-        upload_path = os.path.join(settings.MEDIA_ROOT, thumb_folder)
-        if not os.path.exists(upload_path):
-            os.makedirs(upload_path)
+        upload_to = 'thumbs/'
+        upload_path = os.path.join('thumbs/', filename)
 
-        with open(os.path.join(upload_path, filename), 'wb') as f:
-            thumbnail = File(f)
-            thumbnail.write(image)
+        if storage.exists(upload_path):
+            # Delete if exists otherwise the (FileSystemStorage) implementation
+            # will create a new file with a unique name
+            storage.delete(os.path.join(upload_path))
 
-        url_path = os.path.join(settings.MEDIA_URL, thumb_folder, filename).replace('\\', '/')
+        storage.save(upload_path, ContentFile(image))
+
+        url_path = os.path.join(settings.MEDIA_URL, upload_to, filename).replace('\\', '/')
         url = urljoin(settings.SITEURL, url_path)
 
         Link.objects.get_or_create(resource=self,
