@@ -184,7 +184,7 @@ def get_juris_data_size(juris_shp_name):
                 for georef_query_objects in georef_query:
                     total_size += georef_query_objects.size_in_bytes
                 total_data_size += total_size
-    return 0.0
+    return total_data_size
 
 def get_area_coverage(juris_shp_name):
     source = ogr.Open(("PG:host={0} dbname={1} user={2} password={3}".format(settings.DATABASE_HOST,settings.DATASTORE_DB,settings.DATABASE_USER,settings.DATABASE_PASSWORD)))

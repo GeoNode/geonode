@@ -241,7 +241,7 @@ def registration_part_two(request):
                         bbox_lon = (float(bbox[0])+float(bbox[1]))/2
                         bbox_lat = (float(bbox[2])+float(bbox[3]))/2
                         place_name = get_place_name(bbox_lon, bbox_lat)
-                        juris_data_size = get_juris_data_size(saved_layer.name)
+                        juris_data_size = 0.0
                         area_coverage = get_area_coverage(saved_layer.name)
 
                     except Exception as e:
