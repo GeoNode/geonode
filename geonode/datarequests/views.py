@@ -241,7 +241,7 @@ def registration_part_two(request):
                         bbox_lon = (float(bbox[0])+float(bbox[1]))/2
                         bbox_lat = (float(bbox[2])+float(bbox[3]))/2
                         place_name = get_place_name(bbox_lon, bbox_lat)
-                        juris_data_size = get_juris_data_size(saved_layer.name)
+                        juris_data_size = 0.0
                         area_coverage = get_area_coverage(saved_layer.name)
 
                     except Exception as e:
@@ -585,10 +585,10 @@ def data_request_profile_reject(request, pk):
         status=200,
         mimetype='text/plain'
     )
-    
+
 def data_request_profile_cancel(request, pk):
     request_profile = get_object_or_404(DataRequestProfile, pk=pk)
-    
+
     if not request.user.is_superuser and  not request_profile.profile == request.user:
         raise PermissionDenied
 
@@ -605,10 +605,10 @@ def data_request_profile_cancel(request, pk):
             form_parsed = parse_qs(request.POST.get('form', None))
             if 'rejection_reason' in form_parsed.keys():
                 request_profile.rejection_reason = form_parsed['rejection_reason'][0]
-            
+
             if 'additional_rejection_reason' in form_parsed.keys():
                 request_profile.additional_rejection_reason = form_parsed['additional_rejection_reason'][0]
-        
+
         request_profile.administrator = request.user
         request_profile.action_date = timezone.now()
         request_profile.save()
@@ -700,10 +700,10 @@ def data_request_profile_recreate_dir(request, pk):
 def data_request_facet_count(request):
     if not request.user.is_superuser:
         raise PermissionDenied
-        
+
     if not request.method == 'POST':
-        raise PermissionDenied    
-        
+        raise PermissionDenied
+
     facets_count = {
         'pending': DataRequestProfile.objects.filter(
             request_status='pending').exclude(date=None).count(),
