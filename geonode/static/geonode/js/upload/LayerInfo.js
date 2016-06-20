@@ -38,19 +38,19 @@ define(function (require, exports) {
         this.polling = false;
     };
 
-    /** Function to safely select a filename 
+    /** Function to safely select a filename
      *
-     *  @params name 
-     *  @returns string 
+     *  @params name
+     *  @returns string
      */
     LayerInfo.safeSelector = function (name) {
         return name.replace(/\[|\]|\(|\)|./g, '_');
     };
 
-    /** Function to return the success template  
+    /** Function to return the success template
      *
      *  @params {options}
-     *  @returns 
+     *  @returns
      */
     LayerInfo.prototype.successTemplate = function (options) {
         var template = _.template($('#successTemplate').html());
@@ -73,7 +73,7 @@ define(function (require, exports) {
         return res;
     };
 
-    /** Function to check the type of a Layer 
+    /** Function to check the type of a Layer
      *
      *  @params {options}
      *  @returns {string}
@@ -102,7 +102,7 @@ define(function (require, exports) {
 
 		var mosaic_is_valid = true;
 		var is_granule = $('#' + this.name + '-mosaic').is(':checked');
-        
+
         var is_time_enabled = $('#' + this.name + '-timedim').is(':checked');
 		var is_time_valid = is_time_enabled && !$('#' + this.name + '-timedim-value-valid').is(':visible');
 
@@ -123,7 +123,7 @@ define(function (require, exports) {
     };
 
     /** Function to get all the file extensions in
-     *  the current list of files being handled. 
+     *  the current list of files being handled.
      *
      *  @params {options}
      *  @returns {string}
@@ -145,7 +145,7 @@ define(function (require, exports) {
 
     /** Build a new FormData object from the current state of the
      *  LayerInfo object.
-     * 
+     *
      *  @returns {FromData}
      */
     LayerInfo.prototype.prepareFormData = function (form_data) {
@@ -202,7 +202,7 @@ define(function (require, exports) {
                     var time_value = $('#' + base_name + '-timedim-value').val();
 
                     //console.log("time_regex:" + time_regex + " / time_value:" + time_value);
-                    
+
                     var time_presentation_opts = $('#' + base_name + '-timedim-presentation').is(':checked');
                     var time_presentation = "LIST";
                     var time_presentation_res = 0;
@@ -210,7 +210,7 @@ define(function (require, exports) {
                     var time_presentation_reference_value = "";
                     if (time_presentation_opts) {
                         time_presentation = $('#' + base_name + '-timedim-presentation-format-select').val();
-                        
+
                         if (time_presentation === 'DISCRETE_INTERVAL') {
                             // Years
                             time_presentation_res += parseInt( $('#' + base_name + '-timedim-presentation-years').val() ) * 31536000000;
@@ -227,26 +227,26 @@ define(function (require, exports) {
                             // Seconds
                             time_presentation_res += parseInt( $('#' + base_name + '-timedim-presentation-seconds').val() ) * 1000;
                         }
-                        
+
                         time_presentation_default_value = $('#' + base_name + '-timedim-defaultvalue-format-select').val();
-                        
+
                         if (time_presentation_default_value == 'NEAREST' || time_presentation_default_value == 'FIXED') {
                             time_presentation_reference_value = $('#' + base_name + '-timedim-defaultvalue-ref-value').val();
                         }
                     }
 
                     //console.log("time_presentation:" + time_presentation + " / time_presentation_res:" + time_presentation_res);
-                    
+
                     form_data.append('mosaic_time_regex', time_regex);
                     form_data.append('mosaic_time_value', time_value);
-                    
+
                     form_data.append('time_presentation', time_presentation);
                     form_data.append('time_presentation_res', time_presentation_res);
-                    
+
                     form_data.append('time_presentation_default_value', time_presentation_default_value);
                     form_data.append('time_presentation_reference_value', time_presentation_reference_value);
                 }
-                
+
 				form_data.append('append_to_mosaic_opts', append_to_mosaic_opts);
 				if (append_to_mosaic_opts) {
 					form_data.append('append_to_mosaic_name', append_to_mosaic_name);
@@ -306,7 +306,7 @@ define(function (require, exports) {
             empty: 'true'
         });
     };
-   
+
     LayerInfo.prototype.doResume = function (event) {
         common.make_request({
             url: event.data.url,
@@ -315,7 +315,7 @@ define(function (require, exports) {
                 self.markError(resp.errors, status);
             },
             success: function (resp, status) {
-                window.location = resp.redirect_to; 
+                window.location = resp.redirect_to;
             },
         });
         return false;
@@ -350,7 +350,7 @@ define(function (require, exports) {
         }
     };
 
-    /** Function to deal with the final step in the upload process 
+    /** Function to deal with the final step in the upload process
      *
      *  @params {options}
      *  @returns {string}
@@ -372,7 +372,7 @@ define(function (require, exports) {
                 },
                 failure: function (resp, status) {
                     self.polling = false;
-                    self.markError(resp.errors, status); 
+                    self.markError(resp.errors, status);
                 },
                 success: function (resp, status) {
                     self.polling = false;
@@ -538,7 +538,7 @@ define(function (require, exports) {
     }
 
     /** Function to display the layers collected from the files
-     * selected for uploading 
+     * selected for uploading
      *
      *  @params {file_queue}
      *  @returns {string}
@@ -560,7 +560,7 @@ define(function (require, exports) {
         this.displayFiles();
         this.displayErrors();
         this.element = $(this.selector);
-		
+
 	    var time_re_txt = "[0-9]{8}";
 
         $('#' + this.name + '-mosaic').on('change', this.doImageMosaicToggle);
@@ -578,12 +578,12 @@ define(function (require, exports) {
 
 			 $('#' + base_name + '-timedim-value-valid').show();
         });
-        
+
         $('#' + this.name + '-timedim-presentation-format-select').on('change', function() {
              var input = $(this);
 
 			 var base_name = this.name.split('-timedim')[0];
-             
+
              if (input.val() === 'DISCRETE_INTERVAL') {
                 $('#' + base_name + '-mosaic-timedim-presentation-res-options').show();
              } else {
@@ -595,17 +595,17 @@ define(function (require, exports) {
              var input = $(this);
 
 			 var base_name = this.name.split('-timedim')[0];
-             
+
              if (input.val() === 'NEAREST' || input.val() === 'FIXED') {
                 $('#' + base_name + '-mosaic-timedim-defaultvalue-res-options').show();
              } else {
                 $('#' + base_name + '-mosaic-timedim-defaultvalue-res-options').hide();
              }
         });
-        
+
         $('#' + this.name + '-timedim-value').on('input', function() {
            var input = $(this);
-           	
+
            var re = new RegExp(time_re_txt, "g");
            var is_valid = re.test(input.val());
            if(is_valid){
@@ -614,7 +614,7 @@ define(function (require, exports) {
 		      $('#' + this.name + '-valid').show();
 	       }
         });
-        
+
         $('#' + this.name + '-timedim-defaultvalue-ref-value').on('input', function() {
            var input = $(this);
 
@@ -636,10 +636,10 @@ define(function (require, exports) {
         return li;
     };
 
-    /** Event handler to deal with user clicking on remove link 
+    /** Event handler to deal with user clicking on remove link
      *
      *  @params event
-     *  @returns none 
+     *  @returns none
      */
     LayerInfo.prototype.removeFileHandler = function (event) {
         var target = $(event.target),
@@ -669,7 +669,7 @@ define(function (require, exports) {
         }
     };
 
-    /** Function to display the files selected for uploading 
+    /** Function to display the files selected for uploading
      *
      *  @params
      *  @returns
@@ -707,10 +707,10 @@ define(function (require, exports) {
         });
     };
 
-    /** Function to display errors 
+    /** Function to display errors
      *
-     *  @params 
-     *  @returns 
+     *  @params
+     *  @returns
      */
     LayerInfo.prototype.displayErrors = function () {
         var ul = $('#' + LayerInfo.safeSelector(this.name) + '-element .errors').first();
@@ -719,13 +719,13 @@ define(function (require, exports) {
         $.each(this.errors, function (idx, error) {
             var li = $('<li/>', {text: error, 'class': 'alert alert-error'});
             li.appendTo(ul);
-            li.animate({opacity:1}, 5000, 'linear', function() { 
-                li.animate({opacity:0}, 1000, 'linear', function() {li.remove(); }); 
+            li.animate({opacity:1}, 5000, 'linear', function() {
+                li.animate({opacity:0}, 1000, 'linear', function() {li.remove(); });
             });
         });
     };
 
-    /** Function to refresh display after adding or removing files 
+    /** Function to refresh display after adding or removing files
      *
      *  @params {options}
      *  @returns {string}
@@ -739,7 +739,7 @@ define(function (require, exports) {
     LayerInfo.prototype.doGeoGigToggle = function (event) {
         var target = event.target || event.srcElement;
         var id = target.id;
-        var base_name = id.split('-mosaic')[0];
+        var base_name = id.split(':')[0];
         var geogig = $('#' + id.replace(':', '\\:')).is(':checked');
         if (geogig) {
             $('#' + base_name + '\\:geogig_store').show();
@@ -761,7 +761,7 @@ define(function (require, exports) {
             $('#' + base_name + '-mosaic-options').hide();
         }
     };
-    
+
     LayerInfo.prototype.doImageMosaicTimedimOptionsToggle = function (event) {
         var target = event.target || event.srcElement;
         var id = target.id;
@@ -773,7 +773,7 @@ define(function (require, exports) {
             $('#' + base_name + '-mosaic-timedim-options').hide();
         }
     };
-    
+
     LayerInfo.prototype.doImageMosaicTimedimPresentationOptionsToggle = function (event) {
         var target = event.target || event.srcElement;
         var id = target.id;
@@ -785,7 +785,7 @@ define(function (require, exports) {
             $('#' + base_name + '-mosaic-timedim-presentation-options').hide();
         }
     };
-    
+
     LayerInfo.prototype.doImageMosaicGranuleOptionsToggle = function (event) {
         var target = event.target || event.srcElement;
         var id = target.id;
@@ -793,7 +793,7 @@ define(function (require, exports) {
         var mosaic_chkbox = $('#' + id).is(':checked');
         if (mosaic_chkbox) {
             $('#' + base_name + '-mosaic-granule-format-options').show();
-            
+
             var dropdown = $('#' + base_name + '-mosaic-granule-format-select');
             // Clear drop down list
             $(dropdown).empty();
@@ -809,7 +809,7 @@ define(function (require, exports) {
                     text: this.name
                 }).appendTo(dropdown);
             });
-            
+
         } else {
             $('#' + base_name + '-mosaic-granule-format-options').hide();
             $('#' + base_name + '-timedim').prop("checked", false);
@@ -822,7 +822,7 @@ define(function (require, exports) {
             $('#' + base_name + '-timedim-format-select').prop("disabled", false);
         }
     };
-    
+
     LayerInfo.prototype.doImageMosaicGranuleLayerSelect = function (event) {
         var target = event.target || event.srcElement;
         var id = target.id;
@@ -855,7 +855,7 @@ define(function (require, exports) {
             });
         }
     };
-    
+
     return LayerInfo;
 });
 

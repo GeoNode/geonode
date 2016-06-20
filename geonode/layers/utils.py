@@ -35,6 +35,7 @@ from osgeo import gdal
 from django.contrib.auth import get_user_model
 from django.template.defaultfilters import slugify
 from django.core.exceptions import ObjectDoesNotExist
+from django.core.files.storage import default_storage as storage
 from django.core.files import File
 from django.conf import settings
 from django.db.models import Q
@@ -659,7 +660,7 @@ def create_thumbnail(instance, thumbnail_remote_url, thumbnail_create_url=None,
     thumbnail_name = 'layer-%s-thumb.png' % instance.uuid
     thumbnail_path = os.path.join(thumbnail_dir, thumbnail_name)
 
-    if overwrite is True or os.path.isfile(thumbnail_path) is False:
+    if overwrite is True or storage.exists(thumbnail_path) is False:
         if not ogc_client:
             ogc_client = http_client
         BBOX_DIFFERENCE_THRESHOLD = 1e-5

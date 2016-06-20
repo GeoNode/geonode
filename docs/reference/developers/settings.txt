@@ -28,7 +28,7 @@ Default: ``2``
 
 Metadata settings
 =================
-  
+
 CATALOGUE
 ---------
 A dict with the following keys:
@@ -49,7 +49,7 @@ PYCSW
   will enable INSPIRE support.   Server level configurations can be overridden
   in the ``server`` section.  See http://docs.pycsw.org/en/latest/configuration.html
   for full pycsw configuration details.
-  
+
 DEFAULT_TOPICCATEGORY
 ---------------------
 Default: ``'location'``
@@ -62,10 +62,10 @@ MODIFY_TOPICCATEGORY
 Default: ``False``
 
 Metadata Topic Categories list should not be modified, as it is strictly defined
-by ISO (See: http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml 
+by ISO (See: http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml
 and check the <CodeListDictionary gml:id="MD_MD_TopicCategoryCode"> element).
 
-Some customisation it is still possible changing the is_choice and the GeoNode 
+Some customisation it is still possible changing the is_choice and the GeoNode
 description fields.
 
 In case it is absolutely necessary to add/delete/update categories, it is
@@ -152,7 +152,15 @@ Default::
 
 A list of dictionaries that specify the default map layers.
 
-In case a BING_API_KEY is defined in the local_settings.py file, then a BingMaps base layer is added to the default MAP_BASELAYERS as well.
+Specific settings for map API providers (if they are not set those base maps will not be available):
+
+* ALT_OSM_BASEMAPS set this variable to True if you want additional osm basemaps
+* CARTODB_BASEMAPS set this variable to True if you want cartodb basemaps
+* STAMEN_BASEMAPS set this variable to True if you want stamen basemaps
+* THUNDERFOREST_BASEMAPS set this variable to True if you want thunderforest basemaps
+* MAPBOX_ACCESS_TOKEN set this variable to your MapBox public token
+* BING_API_KEY set this variable to your BING Map Key value
+
 
 LAYER_PREVIEW_LIBRARY
 ---------------------
@@ -376,10 +384,10 @@ RESOURCE_PUBLISHING
 -------------------
 Default: ``True``
 
-By default, the GeoNode application allows GeoNode staff members to 
+By default, the GeoNode application allows GeoNode staff members to
 publish/unpublish resources.
-By default resources are published when created. When this settings is set to 
-True the staff members will be able to unpublish a resource (and eventually 
+By default resources are published when created. When this settings is set to
+True the staff members will be able to unpublish a resource (and eventually
 publish it back).
 
 Social settings
@@ -529,30 +537,30 @@ Download settings
 DOWNLOAD_FORMATS_METADATA
 -------------------------
 
-Specifies which metadata formats are available for users to download. 
+Specifies which metadata formats are available for users to download.
 
 Default::
 
     DOWNLOAD_FORMATS_METADATA = [
         'Atom', 'DIF', 'Dublin Core', 'ebRIM', 'FGDC', 'ISO',
     ]
-    
+
 DOWNLOAD_FORMATS_VECTOR
 -----------------------
 
-Specifies which formats for vector data are available for users to download. 
+Specifies which formats for vector data are available for users to download.
 
 Default::
 
     DOWNLOAD_FORMATS_VECTOR = [
-        'JPEG', 'PDF', 'PNG', 'Zipped Shapefile', 'GML 2.0', 'GML 3.1.1', 'CSV', 
+        'JPEG', 'PDF', 'PNG', 'Zipped Shapefile', 'GML 2.0', 'GML 3.1.1', 'CSV',
         'Excel', 'GeoJSON', 'KML', 'View in Google Earth', 'Tiles',
     ]
-    
+
 DOWNLOAD_FORMATS_RASTER
 -----------------------
 
-Specifies which formats for raster data are available for users to download. 
+Specifies which formats for raster data are available for users to download.
 
 Default::
 
@@ -609,4 +617,3 @@ Default::
     SLACK_WEBHOOK_URLS = [
         "https://hooks.slack.com/services/T000/B000/XX"
     ]
-

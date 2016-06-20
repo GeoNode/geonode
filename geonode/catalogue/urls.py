@@ -18,8 +18,10 @@
 #
 #########################################################################
 
-from django.conf.urls import patterns, url
+from django.conf.urls import url
+from . import views
 
-urlpatterns = patterns('geonode.catalogue.views',
-                       url(r'^csw$', 'csw_global_dispatch', name='csw_global_dispatch'),
-                       url(r'^opensearch$', 'opensearch_dispatch', name='opensearch_dispatch'))
+urlpatterns = [
+    url(r'^csw$', views.csw_global_dispatch, name='csw_global_dispatch'),
+    url(r'^opensearch$', views.opensearch_dispatch, name='opensearch_dispatch')
+]

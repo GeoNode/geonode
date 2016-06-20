@@ -256,9 +256,9 @@ GEONODE_CONTRIB_APPS = (
 # GEONODE_APPS = GEONODE_APPS + GEONODE_CONTRIB_APPS
 
 INSTALLED_APPS = (
-    
+
     'modeltranslation',
-    
+
     # Boostrap admin theme
     # 'django_admin_bootstrapped.bootstrap3',
     # 'django_admin_bootstrapped',
@@ -307,7 +307,7 @@ INSTALLED_APPS = (
     'tastypie',
     'polymorphic',
     'guardian',
-    
+
 ) + GEONODE_APPS
 
 LOGGING = {
@@ -615,6 +615,13 @@ DEFAULT_MAP_CENTER = (0, 0)
 # maximum zoom is between 12 and 15 (for Google Maps, coverage varies by area)
 DEFAULT_MAP_ZOOM = 0
 
+ALT_OSM_BASEMAPS = os.environ.get('ALT_OSM_BASEMAPS', False)
+CARTODB_BASEMAPS = os.environ.get('CARTODB_BASEMAPS', False)
+STAMEN_BASEMAPS = os.environ.get('STAMEN_BASEMAPS', False)
+THUNDERFOREST_BASEMAPS = os.environ.get('THUNDERFOREST_BASEMAPS', False)
+MAPBOX_ACCESS_TOKEN = os.environ.get('MAPBOX_ACCESS_TOKEN', None)
+BING_API_KEY = os.environ.get('BING_API_KEY', None)
+
 MAP_BASELAYERS = [{
     "source": {"ptype": "gxp_olsource"},
     "type": "OpenLayers.Layer",
@@ -626,22 +633,9 @@ MAP_BASELAYERS = [{
     "source": {"ptype": "gxp_osmsource"},
     "type": "OpenLayers.Layer.OSM",
     "name": "mapnik",
-    "visibility": False,
+    "visibility": True,
     "fixed": True,
     "group": "background"
-}, {
-    "source": {"ptype": "gxp_mapquestsource"},
-    "name": "osm",
-    "group": "background",
-    "visibility": True
-}, {
-    "source": {"ptype": "gxp_mapquestsource"},
-    "name": "naip",
-    "group": "background",
-    "visibility": False
-}, 
-{
-    "source": {"ptype": "gxp_mapboxsource"},
 }]
 
 SOCIAL_BUTTONS = True
@@ -893,19 +887,8 @@ except ImportError:
     pass
 
 try:
-    BING_LAYER = {    
-        "source": {
-            "ptype": "gxp_bingsource",
-            "apiKey": BING_API_KEY
-        },
-        "name": "AerialWithLabels",
-        "fixed": True,
-        "visibility": False,
-        "group": "background"
-    }
-    MAP_BASELAYERS.append(BING_LAYER)
-except NameError:
-    #print "Not enabling BingMaps base layer as a BING_API_KEY is not defined in local_settings.py file."
+    from geonode.contrib.api_basemaps import *
+except ImportError:
     pass
 
 # Require users to authenticate before using Geonode

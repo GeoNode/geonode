@@ -1,3 +1,4 @@
+# flake8: noqa
 # -*- coding: utf-8 -*-
 #########################################################################
 #
@@ -18,9 +19,47 @@
 #
 #########################################################################
 
-from django.conf.urls import url
-from . import views
+from geonode.settings import (
+    ALT_OSM_BASEMAPS,
+    CARTODB_BASEMAPS,
+    STAMEN_BASEMAPS,
+    THUNDERFOREST_BASEMAPS,
+    MAPBOX_ACCESS_TOKEN,
+    BING_API_KEY,
+)
 
-urlpatterns = [
-    url(r'^xsl/(?P<id>\d+)$', views.prefix_xsl_line, name='prefix_xsl_line')
-]
+if ALT_OSM_BASEMAPS:
+    try:
+        from osm import *
+    except ImportError:
+        pass
+
+if CARTODB_BASEMAPS:
+    try:
+        from cartodb import *
+    except ImportError:
+        pass
+
+if STAMEN_BASEMAPS:
+    try:
+        from stamen import *
+    except ImportError:
+        pass
+
+if THUNDERFOREST_BASEMAPS:
+    try:
+        from thunderforest import *
+    except ImportError:
+        pass
+
+if BING_API_KEY is not None:
+    try:
+        from bing import *
+    except ImportError:
+        pass
+
+if MAPBOX_ACCESS_TOKEN is not None:
+    try:
+        from mapbox import *
+    except ImportError:
+        pass

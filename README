@@ -81,6 +81,9 @@ openSUSE Development Build Instructions::
 
     # Compile GeoServer
     paver setup
+
+    # Initialize database
+    paver sync
     
     # Start the servers
     paver start
@@ -122,6 +125,9 @@ Windows Development Build Instructions::
     
     # Compile GeoServer
     paver setup
+
+    # Initialize database
+    paver sync
     
     # Start the servers
     paver start --java_path=C:/path/to/java/bin/java.exe
@@ -156,6 +162,7 @@ Mac OSX Development Build Instructions::
 
     #Paver handles dependencies for Geonode, first setup (this will download and update your python dependencies - ensure you're in a virtualenv)
     paver setup
+    paver sync
     paver start
     
     # Optional: To generate document thumbnails for PDFs and other ghostscripts file types

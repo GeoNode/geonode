@@ -210,12 +210,7 @@ def sync(options):
     """
     Run the syncdb and migrate management commands to create and migrate a DB
     """
-    try:
-        sh("python manage.py migrate auth --fake-initial")
-    except:
-        pass
-    sh("python manage.py syncdb --noinput")
-    # sh("python manage.py migrate --noinput")
+    sh("python manage.py migrate --noinput")
     sh("python manage.py loaddata sample_admin.json")
 
 

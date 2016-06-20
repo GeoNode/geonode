@@ -18,9 +18,15 @@
 #
 #########################################################################
 
-from django.conf.urls import url
-from . import views
-
-urlpatterns = [
-    url(r'^xsl/(?P<id>\d+)$', views.prefix_xsl_line, name='prefix_xsl_line')
-]
+from geonode.settings import MAP_BASELAYERS, BING_API_KEY
+BASEMAP = {
+    'source': {
+        'ptype': 'gxp_bingsource',
+        'apiKey': BING_API_KEY
+    },
+    'name': 'AerialWithLabels',
+    'fixed': True,
+    'visibility': False,
+    'group': 'background'
+}
+MAP_BASELAYERS.append(BASEMAP)
