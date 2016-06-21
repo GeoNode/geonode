@@ -18,22 +18,22 @@
     transform: rotate(-90deg);
     transform-origin: left top 0;
     color: #fff;
-    background-color: blue;
+    background-color: #555;
     cursor: pointer;
 }
 .side-navi-item.item1 {  top: 180px;  }
 .side-navi-item.item2 {  top: 355px;  }
 .side-navi-item.active,
-.side-navi-item:hover {  background-color: #e5e5e5; color: #000;  }
+.side-navi-item:hover {  background-color: #fff; color: #000;  }
 .side-navi-item > div {  padding-top: 15px; text-align: center;  }
 /* data wrapper */
 .side-navi-data {
     position: absolute;
     top: 0;
     left: 50px;
-    width: 650px;
+    width: 300px;
     height: 450px;
-    background-color: #e5e5e5;
+    background-color: #fff;
 }
 /* tab wrapper */
 .side-navi-tab {  display: none;  }
