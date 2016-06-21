@@ -40,5 +40,7 @@ Edit style task can be performed only by the user who have the permission to do 
    .. figure:: img/manage_styles.png
 
       *Manage Layer Styles*
+      
+5. If you import a Style created by other GIS softwares (or edited directly in Geoserver) make sure that your .sld file already has the <Title></Title> and <Abstract></Abstract> nodes under the <UserStyle> node: otherwise the style will be shown as "None" in Geonode.
 
 
