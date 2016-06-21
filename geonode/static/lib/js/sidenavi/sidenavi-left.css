@@ -5,7 +5,7 @@
 .side-navi-tab {  margin: 0; padding: 0;  }
 #sideNavi {
     position: fixed;
-    left: -650px;
+    left: -300px;
     top: 25%;
 }
 /* items */
@@ -31,7 +31,7 @@
     position: absolute;
     top: 0;
     left: 0;
-    width: 650px;
+    width: 300px;
     height: 450px;
     background-color: #e5e5e5;
 }
