@@ -7,20 +7,17 @@
 {% load base_tags %}
 {% load guardian_tags %}
 
-{% block title %}Map Tiles Selection — {{ block.super }}{% endblock %}
+{% block title %}Data Tiles Selection — {{ block.super }}{% endblock %}
 
 {% block head %}
 <style>
 /*** custom checkboxes ***/
 
-    /*input[type=checkbox] { display:none; } to hide the checkbox itself */
-    input[type=checkbox]/* + label:before */{
+    input[type=checkbox] { display:none; } /* to hide the checkbox itself */
+    input[type=checkbox] + label:before {
       font-family: FontAwesome;
       font-size: 16px;
-      display: none;
-    }
-    img{
-      display:inline-block;
+      display: inline-block;
     }
     .label-dataclass{
         font-size: 16px;
@@ -35,7 +32,7 @@
     {# {% include "maptiles/maptiles_explorer_map.html" %} #}
  {#{% else %} #}
     {#{% include "maptiles/maptiles_leaflet_map.html" %} #}
-{% include "maptiles/maptiles_geoext_map2.html" %}
+{% include "maptiles/maptiles_geoext_map.html" %}
 {# {% endif %} #}
 {{ block.super }}
 {% endblock %}
@@ -47,26 +44,64 @@
 <div id="notif">
 
 </div>
+<div class="page-header">
+  <h2 class="page-title">Data Tiles</h2>
+</div>
 <div class="row">
-    <div class="col-md-9" style="position:fixed;bottom:0;left:0; width:100%">
-  		<div id="embedded_map" class="mrg-btm">
-  			<div id="preview_map" ></div>
-  		</div>
+    <div class="col-md-9">
+		<div id="embedded_map" class="mrg-btm">
+			<div id="preview_map" ></div>
+		</div>
     </div>
     <div class="col-md-3">
         <ul class="list-group">
+	   <li class="list-group-item">
+		           <h4 class="list-group-item-heading">{%trans "Area Search" %}</h4>
+                   <nobr>
+                  <form name='geocode_form' id="geocode_form">
+                    {% csrf_token %}
+                    <input type="text" id="geocode_input" name="geocode_input"/>
+                </form>
+                <a  id="geocode_submit" name="geocode_submit" class="btn btn-default">Submit</a>
 
-	    <li class="list-group-item">
-		<h4 class="list-group-item-heading">{%trans "Legend" %}</h4>
-		<img id="legend_icon" src="{{ grid.resource.get_legend.url }}"><br/>
-        <img id="legend_icon2" src="{{jurisdiction.resource.get_legend.url}}">
-	    </li>
-	    <li class="list-group-item">
-		<div class="selections"><nav class="filter">
-		<h4><a href="{% url 'cephgeo.views.get_cart' %}" class="toggle toggle-nav"><i class="fa fa-shopping-cart"></i>Data Cart</a></h4>
-                <h4><a href="{% url 'cephgeo.views.ftp_request_list' %}" class="toggle toggle-nav"><i class="fa fa-database"></i>FTP Requests</a></h4>
-		</nav></div>
-   	   </li>
+                  </nobr>
+           </li>
+          <li class="list-group-item">
+              <h4 class="list-group-item-heading">{%trans "Download Data Class(es)" %}</h4>
+              <form name="georef_form" id="georef_form" action="/maptiles/addtocart/" method="POST" >
+                  {% csrf_token %}
+                <!-- <div class="col-md-4" align="left">-->
+                     <nobr>
+                         <ul>
+                              {% for class in data_classes %}
+                                {% if class != 'Unknown Type' %}
+                                   <li>
+                                     <input id="{{ class | slugify }}" name="{{ class | slugify }}" type="checkbox" />
+                                     <label class="label-dataclass" for="{{ class | slugify }}">{{ class }}</label>
+                                   </li>
+                                {% endif %}
+                              {% endfor %}
+
+                         </ul>
+                     </nobr>
+
+                     <br/>
+                  <input type="text" id="georef_area" name="georef_area" style="display:none" />
+                  <input type="submit" id="georef_submit" name="georef_submit" value="Submit" class="btn btn-default" />
+                <!--</div> -->
+             </form>
+          </li>
+	         <li class="list-group-item">
+		           <h4 class="list-group-item-heading">{%trans "Legend" %}</h4>
+		             <img id="legend_icon" src="{{ grid.resource.get_legend.url }}"><br/>
+                 <img id="legend_icon2" src="{{jurisdiction.resource.get_legend.url}}">
+           </li>
+	         <li class="list-group-item">
+		           <div class="selections"><nav class="filter">
+		               <h4><a href="{% url 'cephgeo.views.get_cart' %}" class="toggle toggle-nav"><i class="fa fa-shopping-cart"></i>Data Cart</a></h4>
+                   <h4><a href="{% url 'cephgeo.views.ftp_request_list' %}" class="toggle toggle-nav"><i class="fa fa-database"></i>FTP Requests</a></h4>
+		               </nav></div>
+   	       </li>
         </ul>
     </div>
 </div>
@@ -75,59 +110,52 @@
 	</ul>-->
 
  <br />
- <div id='layerTree'></div>
- <br />
  <div  class ="page-header">
-    <h3 class="page-title">Selected Tiles</h3>
+    <h3 class="page-title">Selected Tiles <div id="data_size_display" style="display:inline-block;">- 0 Byte</div></h3>
  </div>
  <div class="row" id="point_display">
 
- </div>
- <hr>
- <h3 class="page-title">Select Data Class(es) to Download</h3>
- <form name="georef_form" id="georef_form" action="/maptiles/addtocart/" method="POST" >
-     {% csrf_token %}
-    <div class="col-md-4" align="left">
-        <nobr>
-            <ul class="list-inline pull-left">
-                 {% for class in data_classes %}
-                   {% if class != 'Unknown Type' %}
-                      <li>
-                        <input id="{{ class | slugify }}" name="{{ class | slugify }}" type="checkbox" />
-                        <label class="label-dataclass" for="{{ class | slugify }}">{{ class }}</label>
-                      </li>
-                   {% endif %}
-                 {% endfor %}
 
-            </ul>
-        </nobr>
-
-        <!-- SRS Selection commented out
-        <nobr>
-        <label class="label-dataclass">SRS</label>
-        <select>
-            {% for proj in projections %}
-                {% if proj == 'UTM 51 (Default)' %}
-                    <option  id="{{ proj | slugify }}"
-                             name="{{ proj | slugify }}"
-                             value="{{ proj | slugify }}">
-                {% else %}
-                    <option  id="{{ proj | slugify }}"
-                             name="{{ proj | slugify }}"
-                             value="{{ proj | slugify }}"
-                             selected="selected">
-                {% endif %}
-                    {{ proj }}
-                  </option>
-             {% endfor %}
-        </select>
-        </nobr>
-        -->
-        <br/>
-     <input type="text" id="georef_area" name="georef_area" style="display:none" />
-     <input type="submit" id="georef_submit" name="georef_submit" value="Submit" class="btn btn-default" />
-    </div>
-</form>
 
 {% endblock %}
+{% endblock %}
+{% block extra_script %}
+<script type="text/javascript">
+    {% autoescape off %}
+    submit_location = function(e){
+            form = new FormData($("#geocode_form")[0]);
+            $.ajax({
+               type: "POST",
+               url: "/geocoding/",
+               data: form, //form.serialize(), // serializes the form's elements.
+               contentType: false,
+               processData: false,
+               success: function(data)
+               {
+                   console.log(data);
+                   zoomOnBbox(data.bbox);
+                },
+                error: function(data){
+		    console.log(data);
+                    alert("Invalid area");
+                }
+            });
+            return false;
+    }
+
+    $(document).ready( function() {
+         $('#geocode_form').submit(function (e){
+            return false;
+         });
+         $('#geocode_input').bind("enterKey", function(e){});
+         $('#geocode_input').keyup(function(e){
+            if(e.keyCode == 13){
+                submit_location(e);
+                return false;
+            }
+         });
+         $("#geocode_submit").click(submit_location);
+    });
+    {% endautoescape %}
+</script>
 {% endblock %}
