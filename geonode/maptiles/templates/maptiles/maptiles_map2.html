@@ -11,54 +11,6 @@
 
 {% block head %}
 <style>
-/* SIDENAVI */
-#sideNavi {
-  position: fixed;
-  right: 50px;
-  top: 25%;
-}
-.side-navi-item {
-  position: absolute;
-  display: inline-block;
-  width: 150px;
-  height: 50px;
-  transform: rotate(-90deg);
-  transform-origin: left top 0;
-  color: #fff;
-  background-color: #384047;
-  cursor: pointer;
-  border-radius: 5px 5px 0 0;
-}
-.side-navi-item.item1 {
-  top: 180px;
-  left: 0;
-}
-.side-navi-item.item2 {
-  top: 355px;
-  left: 0;
-}
-.side-navi-item.active {
-  background-color: #e5e5e5;
-  color: #000;
-}
-.side-navi-item > div {
-  padding-top: 15px;
-  text-align: center;
-}
-.side-navi-data {
-  position: absolute;
-  top: 0;
-  left: 50px;
-  width: 650px;
-  height: 450px;
-  background-color: #e5e5e5;
-}
-.side-navi-tab { display: none; }
-.side-navi-tab.active {
-  display: inline-block;
-  color: #000;
-}
-.side-navi-tab > div { padding: 30px; }
 /*** custom checkboxes ***/
     input[type=checkbox] { display:none; } /* to hide the checkbox itself */
     input[type=checkbox] + label:before {
@@ -113,31 +65,6 @@
 
                   </nobr>
            </li>
-          <li class="list-group-item">
-              <h4 class="list-group-item-heading">{%trans "Download Data Class(es)" %}</h4>
-              <form name="georef_form" id="georef_form" action="/maptiles/addtocart/" method="POST" >
-                  {% csrf_token %}
-                <!-- <div class="col-md-4" align="left">-->
-                     <nobr>
-                         <ul>
-                              {% for class in data_classes %}
-                                {% if class != 'Unknown Type' %}
-                                   <li>
-                                     <input id="{{ class | slugify }}" name="{{ class | slugify }}" type="checkbox" />
-                                     <label class="label-dataclass" for="{{ class | slugify }}">{{ class }}</label>
-                                   </li>
-                                {% endif %}
-                              {% endfor %}
-
-                         </ul>
-                     </nobr>
-
-                     <br/>
-                  <input type="text" id="georef_area" name="georef_area" style="display:none" />
-                  <input type="submit" id="georef_submit" name="georef_submit" value="Submit" class="btn btn-default" />
-                <!--</div> -->
-             </form>
-          </li>
 	         <li class="list-group-item">
 		           <h4 class="list-group-item-heading">{%trans "Legend" %}</h4>
 		             <img id="legend_icon" src="{{ grid.resource.get_legend.url }}"><br/>
@@ -160,16 +87,44 @@
  <div  class ="page-header">
     <h3 class="page-title">Selected Tiles <div id="data_size_display" style="display:inline-block;">- 0 Byte</div></h3>
  </div>
- <div class="row" id="point_display">
+ <div class="row" id="point_display"></div>
    <div id="sideNavi">
-     <div class="side-navi-item item1"><div>Item 1</div></div>
-     <div class="side-navi-item item2"><div>Item 2</div></div>
+     <div class="side-navi-item item1"><div>Download Data Class(es)</div></div>
+     <div class="side-navi-item item2"><div>Legend</div></div>
      <div class="side-navi-data">
        <div class="side-navi-tab">
-           <div>Data Item 1</div>
+           <div>
+             <h4 class="list-group-item-heading">{%trans "Download Data Class(es)" %}</h4>
+             <form name="georef_form" id="georef_form" action="/maptiles/addtocart/" method="POST" >
+                 {% csrf_token %}
+               <!-- <div class="col-md-4" align="left">-->
+                    <nobr>
+                        <ul>
+                             {% for class in data_classes %}
+                               {% if class != 'Unknown Type' %}
+                                  <li>
+                                    <input id="{{ class | slugify }}" name="{{ class | slugify }}" type="checkbox" />
+                                    <label class="label-dataclass" for="{{ class | slugify }}">{{ class }}</label>
+                                  </li>
+                               {% endif %}
+                             {% endfor %}
+
+                        </ul>
+                    </nobr>
+
+                    <br/>
+                 <input type="text" id="georef_area" name="georef_area" style="display:none" />
+                 <input type="submit" id="georef_submit" name="georef_submit" value="Submit" class="btn btn-default" />
+               <!--</div> -->
+            </form>
+           </div>
        </div>
        <div class="side-navi-tab">
-           <div>Data Item 2</div>
+           <div>
+              <h4 class="list-group-item-heading">{%trans "Legend" %}</h4>
+              <img id="legend_icon" src="{{ grid.resource.get_legend.url }}"><br/>
+              <img id="legend_icon2" src="{{jurisdiction.resource.get_legend.url}}">
+           </div>
        </div>
      </div>
    </div>
@@ -202,7 +157,7 @@
     }
 
     $(document).ready( function() {
-      SideNavi.init('left', {
+      SideNavi.init('right', {
         container : '#sideNavi',
         item : '.side-navi-item',
         data : '.side-navi-data',
