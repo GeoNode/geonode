@@ -52,23 +52,16 @@
 			<div id="preview_map" ></div>
 		</div>
     </div>
+    <!--
     <div class="col-md-3">
         <ul class="list-group">
 	   <li class="list-group-item">
-		           <h4 class="list-group-item-heading">{%trans "Area Search" %}</h4>
-                   <nobr>
-                  <form name='geocode_form' id="geocode_form">
-                    {% csrf_token %}
-                    <input type="text" id="geocode_input" name="geocode_input"/>
-                </form>
-                <a  id="geocode_submit" name="geocode_submit" class="btn btn-default">Submit</a>
+
 
                   </nobr>
            </li>
 	         <li class="list-group-item">
-		           <h4 class="list-group-item-heading">{%trans "Legend" %}</h4>
-		             <img id="legend_icon" src="{{ grid.resource.get_legend.url }}"><br/>
-                 <img id="legend_icon2" src="{{jurisdiction.resource.get_legend.url}}">
+
            </li>
 	         <li class="list-group-item">
 		           <div class="selections"><nav class="filter">
@@ -78,6 +71,7 @@
    	       </li>
         </ul>
     </div>
+    -->
 </div>
 
     <!--<ul class="list-group">
@@ -87,48 +81,55 @@
  <div  class ="page-header">
     <h3 class="page-title">Selected Tiles <div id="data_size_display" style="display:inline-block;">- 0 Byte</div></h3>
  </div>
- <div class="row" id="point_display"></div>
-   <div id="sideNavi">
-     <div class="side-navi-item item1"><div>Download Data Class(es)</div></div>
-     <div class="side-navi-item item2"><div>Legend</div></div>
-     <div class="side-navi-data">
-       <div class="side-navi-tab">
-           <div>
-             <h4 class="list-group-item-heading">{%trans "Download Data Class(es)" %}</h4>
-             <form name="georef_form" id="georef_form" action="/maptiles/addtocart/" method="POST" >
-                 {% csrf_token %}
-               <!-- <div class="col-md-4" align="left">-->
-                    <nobr>
-                        <ul>
-                             {% for class in data_classes %}
-                               {% if class != 'Unknown Type' %}
-                                  <li>
-                                    <input id="{{ class | slugify }}" name="{{ class | slugify }}" type="checkbox" />
-                                    <label class="label-dataclass" for="{{ class | slugify }}">{{ class }}</label>
-                                  </li>
-                               {% endif %}
-                             {% endfor %}
+ <div id="sideNavi">
+   <div class="side-navi-item item1"><div>Download Data Class(es)</div></div>
+   <div class="side-navi-item item2"><div>Area Search</div></div>
+   <div class="side-navi-data">
+     <div class="side-navi-tab">
+         <div>
+           <h4 class="list-group-item-heading">{%trans "Download Data Class(es)" %}</h4>
+           <form name="georef_form" id="georef_form" action="/maptiles/addtocart/" method="POST" >
+               {% csrf_token %}
+                  <nobr>
+                      <ul>
+                           {% for class in data_classes %}
+                             {% if class != 'Unknown Type' %}
+                                <li>
+                                  <input id="{{ class | slugify }}" name="{{ class | slugify }}" type="checkbox" />
+                                  <label class="label-dataclass" for="{{ class | slugify }}">{{ class }}</label>
+                                </li>
+                             {% endif %}
+                           {% endfor %}
 
-                        </ul>
-                    </nobr>
+                      </ul>
+                  </nobr>
 
-                    <br/>
-                 <input type="text" id="georef_area" name="georef_area" style="display:none" />
-                 <input type="submit" id="georef_submit" name="georef_submit" value="Submit" class="btn btn-default" />
-               <!--</div> -->
-            </form>
-           </div>
-       </div>
-       <div class="side-navi-tab">
-           <div>
-              <h4 class="list-group-item-heading">{%trans "Legend" %}</h4>
-              <img id="legend_icon" src="{{ grid.resource.get_legend.url }}"><br/>
-              <img id="legend_icon2" src="{{jurisdiction.resource.get_legend.url}}">
-           </div>
-       </div>
+                  <br/>
+               <input type="text" id="georef_area" name="georef_area" style="display:none" />
+               <input type="submit" id="georef_submit" name="georef_submit" value="Submit" class="btn btn-default" />
+             <!--</div> -->
+          </form>
+         </div>
+         <div>
+            <h4 class="list-group-item-heading">{%trans "Legend" %}</h4>
+            <img id="legend_icon" src="{{ grid.resource.get_legend.url }}"><br/>
+            <img id="legend_icon2" src="{{jurisdiction.resource.get_legend.url}}">
+         </div>
+     </div>
+     <div class="side-navi-tab">
+        <div>
+         <h4 class="list-group-item-heading">{%trans "Area Search" %}</h4>
+             <nobr>
+            <form name='geocode_form' id="geocode_form">
+              {% csrf_token %}
+              <input type="text" id="geocode_input" name="geocode_input"/>
+          </form>
+          <a  id="geocode_submit" name="geocode_submit" class="btn btn-default">Submit</a>
+        </div>
      </div>
    </div>
-
+ </div>
+ <div class="row" id="point_display">
 
 {% endblock %}
 {% endblock %}
