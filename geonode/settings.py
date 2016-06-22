@@ -259,7 +259,7 @@ GEONODE_APPS = (
     'geonode.datarequests',
 
     #CAS client
-    'django_cas_ng', 
+    'geonode.django_cas_ng', 
 )
 
 INSTALLED_APPS = (
