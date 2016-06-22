@@ -886,6 +886,7 @@ try:
 except ImportError:
     pass
 
+# Load additonal basemaps, see geonode/contrib/api_basemap/README.md 
 try:
     from geonode.contrib.api_basemaps import *
 except ImportError:

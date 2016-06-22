@@ -61,8 +61,8 @@ MAPBOX_API = {
 }
 
 for k, v in MAPBOX_API['styles'].items():
-    URL = ('https://api.mapbox.com/styles/v1/mapbox/%s/tiles/${z}/${x}/${y}'
-           '?access_token=%s') % (k, MAPBOX_ACCESS_TOKEN)
+    URL = ('https://api.mapbox.com/styles/v1/mapbox/%s/tiles/256/${z}/${x}/'
+           '${y}?access_token=%s') % (k, MAPBOX_ACCESS_TOKEN)
     if v['enabled']:
         BASEMAP = {
             'source': {
