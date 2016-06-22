@@ -258,7 +258,8 @@ GEONODE_APPS = (
     # Data Requests Management App
     'geonode.datarequests',
 
-
+    #CAS client
+    'geonode.django_cas_ng', 
 )
 
 INSTALLED_APPS = (
@@ -325,9 +326,6 @@ INSTALLED_APPS = (
     'south',
     'corsheaders',
     'captcha',
-    
-    #CAS client
-    'django_cas_ng', 
 
 ) + GEONODE_APPS
 
