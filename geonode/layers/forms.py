@@ -59,11 +59,11 @@ class AnonDownloaderForm(forms.ModelForm):
             'captcha'
         )
     def __init__(self, *args, **kwargs):
-        self.helper = FormHelper()
         super(AnonDownloaderForm, self).__init__(*args, **kwargs)
         self.fields['captcha'].error_messages = {'required': 'Please answer the Captcha to continue.'}
+        self.helper = FormHelper()
         self.helper.form_tag = False
-        self.helper.render_required_fields = True
+        #self.helper.render_required_fields = True
         self.helper.layout = Layout(
             Fieldset('Requester Information',
                 Div(
@@ -86,7 +86,6 @@ class AnonDownloaderForm(forms.ModelForm):
                 ),
             ),
             Div(
-
                 HTML("<br/><section class=widget>"),
                 Field('captcha'),
                 HTML("</section>")
