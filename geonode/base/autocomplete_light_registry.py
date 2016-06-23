@@ -23,13 +23,18 @@ import autocomplete_light
 from taggit.models import Tag
 from models import ResourceBase, Region
 
+class ResourceBaseAutocomplete(autocomplete_light.AutocompleteModelTemplate):
+    choice_template = 'autocomplete_response.html'
 
 autocomplete_light.register(Region,
                             search_fields=['name'],
                             autocomplete_js_attributes={'placeholder': 'Region/Country ..', },)
 
 autocomplete_light.register(ResourceBase,
+                            ResourceBaseAutocomplete,
                             search_fields=['title'],
+                            order_by=['title'],
+                            limit_choices = 100,
                             autocomplete_js_attributes={'placeholder': 'Resource name..', },)
 
 autocomplete_light.register(Tag,
