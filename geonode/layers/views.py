@@ -310,13 +310,15 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
     if request.method == 'POST':
         form = AnonDownloaderForm(request.POST)
         out = {}
+        pprint(form)
         if form.is_valid():
+            pprint(form)
             out['success'] = True
-            pprint(form.cleaned_data)
             anondownload = form.save()
             anondownload.anon_layer = Layer.objects.get(typename = layername)
             anondownload.save()
         else:
+            pprint(form)
             errormsgs = []
             for e in form.errors.values():
                 errormsgs.extend([escape(v) for v in e])
