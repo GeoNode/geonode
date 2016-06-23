@@ -1,0 +1,5 @@
+<span class="div" data-value="{{choice.pk}}" style="cursor:pointer;font-size:14px;" onclick="window.location.href='{{choice.detail_url}}'">{{ choice }}  
+  {% if choice.regions.all|length > 0 %}
+  	<span style="color:#A0A0A0;margin-left:10px;">{% for reg in choice.regions.all %} {{reg}} {% endfor %}</span>
+  {% endif %}
+</span>
