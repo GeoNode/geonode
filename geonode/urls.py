@@ -78,13 +78,6 @@ urlpatterns = patterns('',
                        # Search views
                        url(r'^search/$', TemplateView.as_view(template_name='search/search.html'), name='search'),
 
-                       # Accounts
-                       #url(r'^account/ajax_login$', 'geonode.views.ajax_login', name='account_ajax_login'),
-                       url(r'^account/login$', 'django_cas_ng.views.login', name='cas_ng_login'),
-                       url(r'^account/logout$', 'django_cas_ng.views.logout', name='cas_ng_logout'),
-                       url(r'^account/ajax_lookup$', 'geonode.views.ajax_lookup', name='account_ajax_lookup'),
-                       url(r'^accounts/callback$', 'django_cas_ng.views.callback', name='cas_ng_proxy_callback'),
-
                        # Social views
                        (r"^account/", include("account.urls")),
                        (r'^people/', include('geonode.people.urls')),
@@ -98,6 +91,12 @@ urlpatterns = patterns('',
                        (r'^social/', include('geonode.social.urls')),
                        (r'^security/', include('geonode.security.urls')),
 
+                        # Accounts
+                       #url(r'^account/ajax_login$', 'geonode.views.ajax_login', name='account_ajax_login'),
+                       url(r'^account/login$', 'django_cas_ng.views.login', name='cas_ng_login'),
+                       url(r'^account/logout$', 'django_cas_ng.views.logout', name='cas_ng_logout'),
+                       url(r'^account/ajax_lookup$', 'geonode.views.ajax_lookup', name='account_ajax_lookup'),
+                       url(r'^accounts/callback$', 'django_cas_ng.views.callback', name='cas_ng_proxy_callback'),
 
 		       #Geocoding
                        (r'^geocoding/',include('geonode.arealocate.urls',namespace='arealocate')),
