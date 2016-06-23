@@ -134,7 +134,7 @@ def document_detail(request, docid):
             # url = reverse('document_download',kwargs={'docid': docid})
             # return HttpResponseRedirect(url)
             document = get_object_or_404(Document, pk=docid)
-            return DownloadResponse(document.doc_file)
+            return DownloadResponse(status=status_code, document.doc_file)
         else:
             #Render form
             form = AnonDownloaderForm()
@@ -158,7 +158,7 @@ def document_download(request, docid):
                 '401.html', RequestContext(
                     request, {
                         'error_message': _("You are not allowed to view this document.")})), status=401)
-        
+
     return DownloadResponse(document.doc_file)
 
 class DocumentUploadView(CreateView):
@@ -400,11 +400,11 @@ def document_csv_download(request):
 
     # auth_list = Action.objects.filter(verb='downloaded').order_by('timestamp') #get layers in prod
 
-    # auth_fmc = 
+    # auth_fmc =
     anon_list = AnonDownloader.objects.all().order_by('date')
-    # anon_fmc  
+    # anon_fmc
     writer.writerow( ['username','layer name','date downloaded'])
-    
+
     # for auth in auth_list:
     #     # auth.actor + " " + auth.action_object + " " +  auth.timestamp.strftime('%Y/%m/%d')
     #     writer.writerow([auth.actor,auth.action_object.title,auth.timestamp.strftime('%Y/%m/%d')])
@@ -416,6 +416,6 @@ def document_csv_download(request):
         lastname = anon.anon_last_name
         firstname = anon.anon_first_name
         documentname = anon.anon_document
-        writer.writerow([lastname,firstname,documentname,anon.date.strftime('%Y/%m/%d')])        
+        writer.writerow([lastname,firstname,documentname,anon.date.strftime('%Y/%m/%d')])
 
     return response
