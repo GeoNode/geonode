@@ -19,6 +19,7 @@ from django.utils.translation import ugettext_lazy as _
 from django.views.decorators.http import require_http_methods
 
 from importlib import import_module
+from pprint import pprint
 
 SessionStore = import_module(settings.SESSION_ENGINE).SessionStore
 
@@ -101,6 +102,7 @@ def login(request, next_page=None, required=False):
 def logout(request, next_page=None):
     """Redirects to CAS logout page"""
     # try to find the ticket matching current session for logout signal
+    pprint("logging out")
     try:
         st = SessionTicket.objects.get(session_key=request.session.session_key)
         ticket = st.ticket
