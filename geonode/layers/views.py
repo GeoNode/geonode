@@ -328,7 +328,8 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
         else:
             status_code = 400
         #Handle form
-        # return HttpResponse(status=status_code)
+        pprint(status_code)
+        return HttpResponse(status=status_code)
     else:
         #Render form
         form = AnonDownloaderForm()
@@ -637,6 +638,6 @@ def layer_download_csv(request):
         lastname = anon.anon_last_name
         firstname = anon.anon_first_name
         layername = anon.anon_layer
-        writer.writerow([lastname,firstname,layername,anon.date.strftime('%Y/%m/%d')])        
+        writer.writerow([lastname,firstname,layername,anon.date.strftime('%Y/%m/%d')])
 
     return response
