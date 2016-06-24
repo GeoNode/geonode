@@ -127,14 +127,16 @@ def document_detail(request, docid):
                 out['errormsgs'] = errormsgs
             if out['success']:
                 status_code = 200
+                document = get_object_or_404(Document, pk=docid)
+                return DownloadResponse(document.doc_file)
             else:
                 status_code = 400
+                return HttpResponse(status=400)
             #Handle form
             # return HttpResponse(status=status_code)
             # url = reverse('document_download',kwargs={'docid': docid})
             # return HttpResponseRedirect(url)
-            document = get_object_or_404(Document, pk=docid)
-            return DownloadResponse(document.doc_file)
+
         else:
             #Render form
             form = AnonDownloaderForm()
