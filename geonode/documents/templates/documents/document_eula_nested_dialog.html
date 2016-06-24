@@ -57,7 +57,7 @@
         $("#form_eula").submit(function(e) {
           $.ajax({
               type: "POST",
-              // url: $(this).attr('action'),
+              url: $(this).attr('action'),
               // url: $(this).attr('href','{% url "document_download" resource.id %}'),
               data: $(this).serialize(),
               success: function() {
@@ -66,13 +66,13 @@
                 // $(this).attr('href','{% url "document_download" resource.id %}');
                 //$("<a href="{% url "document_detail" resource.id %}"></a>").click();
                 // document.location = "{% url 'document_detail' resource.id %}";
-                $("<a href="{% url "document_detail" resource.id %}"></a>").click();
+                //$("<a href="{% url "document_detail" resource.id %}"></a>").click();
                 $("#eula-nested-dialog").modal('hide');
                 // window.close();
                 // $("<a href="{% url "document_detail" resource.id %}"></a>").click();
                 // $('#eula-nested-dialog').modal('hide');
               }
-              
+
           });
 
           if (document.form_eula.anon_first_name.value == "" || document.form_eula.anon_last_name.value == "" || document.form_eula.anon_email.value == "" || document.form_eula.anon_organization.value == "" || document.form_eula.anon_purpose.value == "" ) {
