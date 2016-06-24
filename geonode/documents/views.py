@@ -134,7 +134,7 @@ def document_detail(request, docid):
             # url = reverse('document_download',kwargs={'docid': docid})
             # return HttpResponseRedirect(url)
             document = get_object_or_404(Document, pk=docid)
-            return DownloadResponse(status=status_code, document.doc_file)
+            return DownloadResponse(document.doc_file)
         else:
             #Render form
             form = AnonDownloaderForm()
