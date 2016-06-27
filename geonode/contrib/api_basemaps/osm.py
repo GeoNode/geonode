@@ -18,51 +18,41 @@
 #
 #########################################################################
 
-from geonode.settings import MAP_BASELAYERS, MAPBOX_ACCESS_TOKEN
-MAPBOX_API = {
-    'styles': {
-        'streets-v9': {
+from geonode.settings import MAP_BASELAYERS
+OSM = {
+    'maps': {
+        'de': {
             'enabled': True,
-            'name': 'Mapbox Streetmap',
-            'attribution': '© Mapbox © OpenStreetMap',
+            'name': 'OSM DE',
             'visibility': False,
+            'url': ('http://a.tile.openstreetmap.de/tiles/osmde/${z}/${x}/${y}'
+                    '.png'),
+            'attribution': ('&copy; <a href="http://www.openstreetmap.org/copy'
+                            'right">OpenStreetMap</a>')
         },
-        'outdoors-v9': {
+        'france': {
             'enabled': True,
-            'name': 'Mapbox Outdoors',
-            'attribution': '© Mapbox © OpenStreetMap',
+            'name': 'OSM France',
             'visibility': False,
+            'url': ('http://a.tile.openstreetmap.fr/osmfr/${z}/${x}/${y}.png'),
+            'attribution': ('&copy; Openstreetmap France | &copy; <a href="htt'
+                            'p://www.openstreetmap.org/copyright">OpenStreetMa'
+                            'p</a>')
         },
-        'dark-v9': {
+        'hot': {
             'enabled': True,
-            'name': 'Mapbox Dark',
-            'attribution': '© Mapbox © OpenStreetMap',
+            'name': 'OSM HOT',
             'visibility': False,
-        },
-        'light-v9': {
-            'enabled': True,
-            'name': 'Mapbox Light',
-            'attribution': '© Mapbox © OpenStreetMap',
-            'visibility': False,
-        },
-        'satellite-v9': {
-            'enabled': True,
-            'name': 'Mapbox Satellite',
-            'attribution': '© Mapbox © DigitalGlobe',
-            'visibility': False,
-        },
-        'satellite-streets-v9': {
-            'enabled': True,
-            'name': 'Mapbox Satellite Streets',
-            'attribution': '© Mapbox © OpenStreetMap © DigitalGlobe',
-            'visibility': False,
-        },
+            'url': ('http://a.tile.openstreetmap.fr/hot/${z}/${x}/${y}.png'),
+            'attribution': ('&copy; <a href="http://www.openstreetmap.org/copy'
+                            'right">OpenStreetMap</a>, Tiles courtesy of <a hr'
+                            'ef="http://hot.openstreetmap.org/" target="_blank'
+                            '">Humanitarian OpenStreetMap Team</a>')
+        }
     }
 }
 
-for k, v in MAPBOX_API['styles'].items():
-    URL = ('https://api.mapbox.com/styles/v1/mapbox/%s/tiles/256/${z}/${x}/'
-           '${y}?access_token=%s') % (k, MAPBOX_ACCESS_TOKEN)
+for k, v in OSM['maps'].items():
     if v['enabled']:
         BASEMAP = {
             'source': {
@@ -71,10 +61,10 @@ for k, v in MAPBOX_API['styles'].items():
             'type': 'OpenLayers.Layer.XYZ',
             "args": [
                 '%s' % v['name'],
-                [URL],
+                [v['url']],
                 {
                     'transitionEffect': 'resize',
-                    'attribution': '%s' % v['attribution']
+                    'attribution': '%s' % v['attribution'],
                 }
             ],
             'fixed': True,

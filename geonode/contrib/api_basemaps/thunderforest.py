@@ -18,51 +18,51 @@
 #
 #########################################################################
 
-from geonode.settings import MAP_BASELAYERS, MAPBOX_ACCESS_TOKEN
-MAPBOX_API = {
-    'styles': {
-        'streets-v9': {
+from geonode.settings import MAP_BASELAYERS
+THUNDERFOREST = {
+    'maps': {
+        'cycle': {
             'enabled': True,
-            'name': 'Mapbox Streetmap',
-            'attribution': '© Mapbox © OpenStreetMap',
+            'name': 'Thunderforest OpenCycleMap',
             'visibility': False,
         },
-        'outdoors-v9': {
+        'transport': {
             'enabled': True,
-            'name': 'Mapbox Outdoors',
-            'attribution': '© Mapbox © OpenStreetMap',
+            'name': 'Thunderforest Transport',
             'visibility': False,
         },
-        'dark-v9': {
+        'transport-dark': {
             'enabled': True,
-            'name': 'Mapbox Dark',
-            'attribution': '© Mapbox © OpenStreetMap',
+            'name': 'Thunderforest Transport Dark',
             'visibility': False,
         },
-        'light-v9': {
+        'spinal-map': {
             'enabled': True,
-            'name': 'Mapbox Light',
-            'attribution': '© Mapbox © OpenStreetMap',
+            'name': 'Thunderforest Spinal Map',
             'visibility': False,
         },
-        'satellite-v9': {
+        'landscape': {
             'enabled': True,
-            'name': 'Mapbox Satellite',
-            'attribution': '© Mapbox © DigitalGlobe',
+            'name': 'Thunderforest Landscape',
             'visibility': False,
         },
-        'satellite-streets-v9': {
+        'outdoors': {
             'enabled': True,
-            'name': 'Mapbox Satellite Streets',
-            'attribution': '© Mapbox © OpenStreetMap © DigitalGlobe',
+            'name': 'Thunderforest Outdoors',
             'visibility': False,
         },
+        'pioneer': {
+            'enabled': True,
+            'name': 'Thunderforest Pioneer',
+            'visibility': False,
+        }
     }
 }
-
-for k, v in MAPBOX_API['styles'].items():
-    URL = ('https://api.mapbox.com/styles/v1/mapbox/%s/tiles/256/${z}/${x}/'
-           '${y}?access_token=%s') % (k, MAPBOX_ACCESS_TOKEN)
+ATTRIBUTION = ('&copy; <a href="http://www.thunderforest.com/">Thunderforest</'
+               'a>, &copy; <a href="http://www.openstreetmap.org/copyright">Op'
+               'enStreetMap</a>')
+for k, v in THUNDERFOREST['maps'].items():
+    URL = 'http://a.tile.thunderforest.com/%s/${z}/${x}/${y}.png' % k
     if v['enabled']:
         BASEMAP = {
             'source': {
@@ -74,7 +74,7 @@ for k, v in MAPBOX_API['styles'].items():
                 [URL],
                 {
                     'transitionEffect': 'resize',
-                    'attribution': '%s' % v['attribution']
+                    'attribution': '%s' % ATTRIBUTION,
                 }
             ],
             'fixed': True,

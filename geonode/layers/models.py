@@ -30,6 +30,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.conf import settings
 from django.utils.translation import ugettext_lazy as _
 from django.core.urlresolvers import reverse
+from django.core.files.storage import FileSystemStorage
 
 from geonode.base.models import ResourceBase, ResourceBaseManager, resourcebase_post_save
 from geonode.people.utils import get_valid_user
@@ -287,7 +288,8 @@ class LayerFile(models.Model):
     upload_session = models.ForeignKey(UploadSession)
     name = models.CharField(max_length=255)
     base = models.BooleanField(default=False)
-    file = models.FileField(upload_to='layers', max_length=255)
+    file = models.FileField(upload_to='layers',
+                            storage=FileSystemStorage(base_url=settings.LOCAL_MEDIA_URL),  max_length=255)
 
 
 class AttributeManager(models.Manager):

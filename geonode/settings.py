@@ -155,7 +155,7 @@ MEDIA_ROOT = os.path.join(PROJECT_ROOT, "uploaded")
 # URL that handles the media served from MEDIA_ROOT. Make sure to use a
 # trailing slash if there is a path component (optional in other cases).
 # Examples: "http://media.lawrence.com", "http://example.com/media/"
-MEDIA_URL = "/uploaded/"
+MEDIA_URL = LOCAL_MEDIA_URL = "/uploaded/"
 
 # Absolute path to the directory that holds static files like app media.
 # Example: "/home/media/media.lawrence.com/apps/"
@@ -289,6 +289,7 @@ INSTALLED_APPS = (
     'mptt',
     #'modeltranslation',
     'djcelery',
+    'storages',
 
     # Theme
     "pinax_theme_bootstrap_account",
@@ -615,6 +616,13 @@ DEFAULT_MAP_CENTER = (0, 0)
 # maximum zoom is between 12 and 15 (for Google Maps, coverage varies by area)
 DEFAULT_MAP_ZOOM = 0
 
+ALT_OSM_BASEMAPS = os.environ.get('ALT_OSM_BASEMAPS', False)
+CARTODB_BASEMAPS = os.environ.get('CARTODB_BASEMAPS', False)
+STAMEN_BASEMAPS = os.environ.get('STAMEN_BASEMAPS', False)
+THUNDERFOREST_BASEMAPS = os.environ.get('THUNDERFOREST_BASEMAPS', False)
+MAPBOX_ACCESS_TOKEN = os.environ.get('MAPBOX_ACCESS_TOKEN', None)
+BING_API_KEY = os.environ.get('BING_API_KEY', None)
+
 MAP_BASELAYERS = [{
     "source": {"ptype": "gxp_olsource"},
     "type": "OpenLayers.Layer",
@@ -626,23 +634,10 @@ MAP_BASELAYERS = [{
     "source": {"ptype": "gxp_osmsource"},
     "type": "OpenLayers.Layer.OSM",
     "name": "mapnik",
-    "visibility": False,
+    "visibility": True,
     "fixed": True,
     "group": "background"
-}, {
-    "source": {"ptype": "gxp_mapquestsource"},
-    "name": "osm",
-    "group": "background",
-    "visibility": True
-}, {
-    "source": {"ptype": "gxp_mapquestsource"},
-    "name": "naip",
-    "group": "background",
-    "visibility": False
 }]
-
-MAPBOX_ACCESS_TOKEN = os.environ.get('MAPBOX_ACCESS_TOKEN', None)
-BING_API_KEY = os.environ.get('BING_API_KEY', None)
 
 SOCIAL_BUTTONS = True
 
@@ -883,6 +878,32 @@ CELERY_QUEUES = [
     Queue('email', routing_key='email'),
 ]
 
+
+# AWS S3 Settings
+
+S3_STATIC_ENABLED = os.environ.get('S3_STATIC_ENABLED', False)
+S3_MEDIA_ENABLED = os.environ.get('S3_MEDIA_ENABLED', False)
+
+# Required to run Sync Media to S3
+AWS_BUCKET_NAME = os.environ.get('S3_BUCKET_NAME', '')
+
+AWS_STORAGE_BUCKET_NAME = os.environ.get('S3_BUCKET_NAME', '')
+AWS_ACCESS_KEY_ID = os.environ.get('AWS_ACCESS_KEY_ID', '')
+AWS_SECRET_ACCESS_KEY = os.environ.get('AWS_SECRET_ACCESS_KEY', '')
+AWS_S3_BUCKET_DOMAIN = '%s.s3.amazonaws.com' % AWS_STORAGE_BUCKET_NAME
+
+AWS_QUERYSTRING_AUTH = False
+
+if S3_STATIC_ENABLED:
+    STATICFILES_LOCATION = 'static'
+    STATICFILES_STORAGE = 'storages.backends.s3boto.S3BotoStorage'
+    STATIC_URL = "https://%s/%s/" % (AWS_S3_BUCKET_DOMAIN, STATICFILES_LOCATION)
+
+if S3_MEDIA_ENABLED:
+    MEDIAFILES_LOCATION = 'media'
+    DEFAULT_FILE_STORAGE = 'storages.backends.s3boto.S3BotoStorage'
+    MEDIA_URL = "https://%s/%s/" % (AWS_S3_BUCKET_DOMAIN, MEDIAFILES_LOCATION)
+
 import djcelery
 djcelery.setup_loader()
 
@@ -892,17 +913,11 @@ try:
 except ImportError:
     pass
 
-if MAPBOX_ACCESS_TOKEN is not None:
-    try:
-        from contrib.api_basemaps.mapbox import *
-    except ImportError:
-        pass
-
-if BING_API_KEY is not None:
-    try:
-        from contrib.api_basemaps.bing import *
-    except ImportError:
-        pass
+# Load additonal basemaps, see geonode/contrib/api_basemap/README.md 
+try:
+    from geonode.contrib.api_basemaps import *
+except ImportError:
+    pass
 
 # Require users to authenticate before using Geonode
 if LOCKDOWN_GEONODE:

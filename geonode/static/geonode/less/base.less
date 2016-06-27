@@ -176,7 +176,15 @@ body.groups li#nav_groups a {
 
 .yourlabs-autocomplete {
    top: 100%;
+   max-height:360px;
+   overflow:auto;
 }
+
+.yourlabs-autocomplete .choice,
+.yourlabs-autocomplete [data-value],
+.yourlabs-autocomplete em {
+   max-width: 800px;
+   }
 
 .input-group .yourlabs-autocomplete {
    top: 30px !important;

@@ -18,51 +18,32 @@
 #
 #########################################################################
 
-from geonode.settings import MAP_BASELAYERS, MAPBOX_ACCESS_TOKEN
-MAPBOX_API = {
-    'styles': {
-        'streets-v9': {
+from geonode.settings import MAP_BASELAYERS
+STAMEN = {
+    'maps': {
+        'toner': {
             'enabled': True,
-            'name': 'Mapbox Streetmap',
-            'attribution': '© Mapbox © OpenStreetMap',
+            'name': 'Stamen Toner',
             'visibility': False,
         },
-        'outdoors-v9': {
+        'toner-lite': {
             'enabled': True,
-            'name': 'Mapbox Outdoors',
-            'attribution': '© Mapbox © OpenStreetMap',
+            'name': 'Stamen Toner Lite',
             'visibility': False,
         },
-        'dark-v9': {
+        'watercolor': {
             'enabled': True,
-            'name': 'Mapbox Dark',
-            'attribution': '© Mapbox © OpenStreetMap',
+            'name': 'Stamen Watercolor',
             'visibility': False,
-        },
-        'light-v9': {
-            'enabled': True,
-            'name': 'Mapbox Light',
-            'attribution': '© Mapbox © OpenStreetMap',
-            'visibility': False,
-        },
-        'satellite-v9': {
-            'enabled': True,
-            'name': 'Mapbox Satellite',
-            'attribution': '© Mapbox © DigitalGlobe',
-            'visibility': False,
-        },
-        'satellite-streets-v9': {
-            'enabled': True,
-            'name': 'Mapbox Satellite Streets',
-            'attribution': '© Mapbox © OpenStreetMap © DigitalGlobe',
-            'visibility': False,
-        },
+        }
     }
 }
-
-for k, v in MAPBOX_API['styles'].items():
-    URL = ('https://api.mapbox.com/styles/v1/mapbox/%s/tiles/256/${z}/${x}/'
-           '${y}?access_token=%s') % (k, MAPBOX_ACCESS_TOKEN)
+ATTRIBUTION = ('Map tiles by <a href="http://stamen.com">Stamen Design</a>, <a'
+               ' href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</'
+               'a> &mdash; Map data &copy; <a href="http://www.openstreetmap.o'
+               'rg/copyright">OpenStreetMap</a>')
+for k, v in STAMEN['maps'].items():
+    URL = 'http://stamen-tiles-a.a.ssl.fastly.net/%s/${z}/${x}/${y}.png' % k
     if v['enabled']:
         BASEMAP = {
             'source': {
@@ -74,7 +55,7 @@ for k, v in MAPBOX_API['styles'].items():
                 [URL],
                 {
                     'transitionEffect': 'resize',
-                    'attribution': '%s' % v['attribution']
+                    'attribution': '%s' % ATTRIBUTION,
                 }
             ],
             'fixed': True,

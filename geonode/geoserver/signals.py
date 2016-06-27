@@ -371,6 +371,8 @@ def geoserver_post_save(instance, sender, **kwargs):
         'format': 'image/png8',
         'width': 200,
         'height': 150,
+        'TIME': '-99999999999-01-01T00:00:00.0Z/99999999999-01-01T00:00:00.0Z'
+
     }
 
     # Avoid using urllib.urlencode here because it breaks the url.
