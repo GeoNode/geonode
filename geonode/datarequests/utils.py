@@ -131,7 +131,7 @@ def create_ad_account(datarequest, username):
         import traceback
         print traceback.format_exc()
         pprint(type(e).__name__)
-        return False
+        raise e
 
 def add_to_ad_group(group_dn=settings.LIPAD_LDAP_GROUP_DN, user_dn=""):
     try:
