@@ -645,11 +645,10 @@ class DataRequestProfile(TimeStampedModel):
              else:
                  profile.organization_type = self.organization_type
                  profile.save()
-        except ALREADY_EXISTS:
-            pprint(traceback.format_exc())
-            return (False, "User already has an account. Please notify the user.")
         except Exception as e:
             pprint(traceback.format_exc())
+            exc_type, exc_obj, exc_tb = sys.exc_info()
+            pprint(exc_type)
             return (False, "Account creation failed. Check /var/log/apache2/error.log for more details")
 
         self.join_requester_grp()
