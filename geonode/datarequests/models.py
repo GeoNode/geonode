@@ -645,7 +645,7 @@ class DataRequestProfile(TimeStampedModel):
              else:
                  profile.organization_type = self.organization_type
                  profile.save()
-        except ldap.ALREADY_EXISTS:
+        except ALREADY_EXISTS:
             pprint(traceback.format_exc())
             return (False, "User already has an account. Please notify the user.")
         except Exception as e:
