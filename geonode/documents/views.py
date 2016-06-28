@@ -131,12 +131,11 @@ def document_detail(request, docid):
                 return DownloadResponse(document.doc_file)
             else:
                 status_code = 400
-                return HttpResponse(status=400)
+                # return HttpResponse(status=status_code)
             #Handle form
             # return HttpResponse(status=status_code)
             # url = reverse('document_download',kwargs={'docid': docid})
             # return HttpResponseRedirect(url)
-
         else:
             #Render form
             form = AnonDownloaderForm()
