@@ -621,7 +621,6 @@ class DataRequestProfile(TimeStampedModel):
                 self.save()
             except Exception as e:
                 pprint(traceback.format_exc())
-                if 
                 return (False, "Account creation failed. Check /var/log/apache2/error.log for more details")
 
         try:
@@ -646,7 +645,9 @@ class DataRequestProfile(TimeStampedModel):
              else:
                  profile.organization_type = self.organization_type
                  profile.save()
-            
+        except ldap.ALREADY_EXISTS:
+            pprint(traceback.format_exc())
+            return (False, "User already has an account. Please notify the user.")
         except Exception as e:
             pprint(traceback.format_exc())
             return (False, "Account creation failed. Check /var/log/apache2/error.log for more details")
