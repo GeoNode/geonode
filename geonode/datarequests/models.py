@@ -16,7 +16,7 @@ from django_enumfield import enum
 from django.core import validators
 from django_auth_ldap.backend import LDAPBackend, ldap_error
 
-from ldap import ALREADY_EXISTS
+import ldap
 
 from model_utils import Choices
 from model_utils.models import TimeStampedModel
@@ -647,6 +647,7 @@ class DataRequestProfile(TimeStampedModel):
                  profile.save()
         except Exception as e:
             pprint(traceback.format_exc())
+            pprint(type(e).__name__)
             return (False, "Account creation failed. Check /var/log/apache2/error.log for more details")
 
         self.join_requester_grp()
