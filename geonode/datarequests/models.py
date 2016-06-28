@@ -647,7 +647,6 @@ class DataRequestProfile(TimeStampedModel):
                  profile.save()
         except Exception as e:
             pprint(traceback.format_exc())
-            pprint(type(e).__name__)
             return (False, "Account creation failed. Check /var/log/apache2/error.log for more details")
 
         self.join_requester_grp()
