@@ -72,8 +72,8 @@
 							<dd>{{resource.owner}}</dd>
 								
 						<dt>{% trans "Point of Contact" %}</dt>
-							<dd>{{extra_res_MD.poc_last_name}}</dd>
-							<dd><a href="mailto:{{extra_res_MD.poc_email}}"><i class="fa fa-envelope"></i>{{extra_res_MD.poc_email}}</a></dd>							
+							<dd>{{extra_res_md.poc_last_name}}</dd>
+							<dd><a href="mailto:{{extra_res_md.poc_email}}"><i class="fa fa-envelope"></i>{{extra_res_md.poc_email}}</a></dd>							
 							
 
 						<dt>{% trans "Purpose" %}</dt>
@@ -88,7 +88,7 @@
 							<dd>{{resource.maintenance_frequency}}</dd>
 
 						<dt>{% trans "Type" %} </dt>
-							<dd>{{extra_res_MD.sprt_identifier}}</dd>
+							<dd>{{extra_res_md.sprt_identifier}}</dd>
 
 						<dt>{% trans "Restrictions" %}</dt>
 							<dd>{{resource.restriction_code_type}}</dd>
@@ -139,7 +139,7 @@
 							<dd>{{resource.srid}}</dd>
 
 						<dt>{% trans "Keywords" %}</dt>
-							<dd>{{extra_res_MD.keywords}}</dd>
+							<dd>{{extra_res_md.keywords}}</dd>
 
 						<dt>{% trans "Category" %}</dt>
 							<dd>{{resource.category}}</dd>
@@ -161,7 +161,7 @@
 								</table>
 							</dd>				
 							<script  type="text/javascript">
-								var content="{{extra_res_MD.atrributes}}";
+								var content="{{extra_res_md.atrributes}}";
 								content = content.replace(/\&lt;/gi,"<").replace(/\&gt;/gi,">");
 								var headertab="<thead><tr><th style='width:25%'>Attribute name</th><th>Label</th><th>Description</th></tr></thead>";
 								document.getElementById("attr_table").innerHTML=headertab+content;
