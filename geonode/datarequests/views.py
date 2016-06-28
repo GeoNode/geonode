@@ -607,6 +607,8 @@ def data_request_profile_approve(request, pk):
         if not result:
             messages.error (request, _(message))
         else:
+            request_profile.profile.organization_type = request_profile.organization_type
+            request_profile.profile.save()
             if request_profile.jurisdiction_shapefile:
                 request_profile.assign_jurisdiction() #assigns/creates jurisdiction object
             else:
