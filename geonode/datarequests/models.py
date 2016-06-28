@@ -640,6 +640,11 @@ class DataRequestProfile(TimeStampedModel):
                 else:
                     pprint("Accout was not created")
                     raise Exception("Account not created")
+            
+            if profile:
+                profile.organization_type = self.organization_type
+                profile.save()
+            
         except Exception as e:
             pprint(traceback.format_exc())
             return (False, "Account creation failed. Check /var/log/apache2/error.log for more details")
