@@ -373,6 +373,8 @@ ACCOUNT_ACTIVATION_DAYS = 30
 SERVE_MEDIA = DEBUG;
 
 
+BING_API_KEY = "your-bing-key-here"
+
 MAP_BASELAYERS = [
  {
         "source": {"ptype": "gx_olsource"},
@@ -399,7 +401,10 @@ MAP_BASELAYERS = [
         "group": "background",
         "visibility": False
     }, {
-        "source": {"ptype": "gxp_bingsource"},
+        "source": {
+            "ptype": "gxp_bingsource",
+            "apiKey": BING_API_KEY
+        },
         "name": "AerialWithLabels",
         "fixed": True,
         "visibility": False,
