@@ -115,11 +115,11 @@ If error still persists, forward this email to [{2}]""".format( request_name,
 
                     if srs_epsg is not None:
                         if data_class == 'LAZ':
-                            result = run("mkdir {0}".format(utm_51n_dir))      # Do not reproject LAZ
+                            result = run("mkdir -p {0}".format(utm_51n_dir))      # Do not reproject LAZ
                         else:
                             result = run("mkdir -p {0}".format(reprojected_dir))      # Create a directory for each geo-type
                     else:
-                        result = run("mkdir {0}".format(utm_51n_dir))      # Create a directory for each geo-type
+                        result = run("mkdir -p {0}".format(utm_51n_dir))      # Create a directory for each geo-type
                     if result.return_code is not 0:                 #Handle error
                         logger.error("Error on FTP request: Failed to create data class subdirectory at [{0}]. Please notify the administrator of this error".format(ftp_dir))
                         ftp_request.status = FTPStatus.ERROR
