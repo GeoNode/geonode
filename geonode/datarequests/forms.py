@@ -144,6 +144,27 @@ class DataRequestProfileForm(forms.ModelForm):
             ),
         )
 
+    def clean_first_name(self):
+        fname = self.cleaned_data.get('first_name').strip()
+        if len(fname)<1:
+            raise forms.ValidationError("You have entered an empty first name")
+        
+        return fname
+    
+    def clean_middle_name(self):
+        mname = self.cleaned_data.get('middle_name').strip()
+        if len(mname)<1:
+            raise forms.ValidationError("You have entered an empty middle name")
+        
+        return mname
+        
+    def clean_last_name(self):
+        lname = self.cleaned_data.get('last_name').strip()
+        if len(mname)<1:
+            raise forms.ValidationError("You have entered an empty last name")
+        
+        return lname
+
     def clean_email(self):
         email = self.cleaned_data.get('email')
         user_emails = Profile.objects.all().values_list('email', flat=True)
