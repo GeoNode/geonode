@@ -1,0 +1,177 @@
+{% load i18n %}
+<html> 
+	<head>
+    <meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1"> 
+    <title>{{ resource.title }}</title>
+    {% block head %}
+      {% if DEBUG_STATIC %}
+      <link href="{{ STATIC_URL }}lib/css/jquery.dataTables.css" rel="stylesheet" />
+      <link href="{{ STATIC_URL }}lib/css/select2.css" rel="stylesheet"/>
+      <link href="{{ STATIC_URL }}lib/css/bootstrap.min.css" rel="stylesheet"/>
+      <link href="{{ STATIC_URL }}lib/css/jquery-ui.css" rel="stylesheet"/>
+      <link href="{{ STATIC_URL }}lib/css/bootstrap-datetimepicker.css" rel="stylesheet"/>
+      {% else %}
+      <link href="{{ STATIC_URL }}lib/css/assets.min.css" rel="stylesheet"/>
+      {% endif %}
+      <link href="{{ STATIC_URL }}geonode/css/ext-compatibility.css" rel="stylesheet" />
+      <link href="{{ STATIC_URL }}geonode/css/base.css" rel="stylesheet" />
+      <style type="text/css">[ng\:cloak],[ng-cloak],[data-ng-cloak],[x-ng-cloak],.ng-cloak,.x-ng-cloak,.ng-hide:not(.ng-hide-animate){display:none !important;}</style>
+	<style>
+	dl dd{ margin-left:20px; }
+	dl dt {margin-top:10px;}
+	ul.nop {list-style-type: none;}
+	</style>	
+
+    {% endblock %}
+	</head>
+	<body style="background-color:white;">
+		{% block body_outer %}
+		  {% block body %}{% endblock body %}
+		  {% block sidebar %}{% endblock sidebar %}
+		{% endblock body_outer %}
+		<div id="wrap">
+			<div class="container">
+				<div class="page-header">
+					<div class="row">
+						<div >
+						  <h4 >Resource Metadata</h4>
+						  <h2 class="page-title">{{ resource.title }}</h2>
+						</div>
+					</div>
+				</div>
+
+				<div class="row">
+				  <div class="col-md-8">
+					<dl>
+						<dt>Thumbnail</dt>
+							<dd><img class='items-list thumb' style="border: 1px solid #ccc;margin-top:10px;" src='{{resource.thumbnail_url}}' alt="{{ resource.title }}"></dd>
+
+						<dt>Resource ID</dt>
+							<dd>{{resource.uuid}}</dd>
+
+						<dt>{% trans "Title" %}</dt>
+							<dd>{{resource.title}}</dd>
+							
+						<dt>{% trans "Date" %}</dt>
+							<dd>{{resource.date}}, {% trans resource.date_type|title %} </dd>
+
+						<dt>{% trans "Abstract" %}</dt>
+							<dd>{{resource.abstract}}</dd>
+
+						<dt>{% trans "Edition" %}</dt>
+							{% if resource.edition %}
+							<dd>{{resource.edition}}</dd>
+							{% else %}
+								<dd> -- </dd>
+							{% endif %}
+							
+				  
+						<dt>{% trans "Owner" %}</dt>
+							<dd>{{resource.owner}}</dd>
+								
+						<dt>{% trans "Point of Contact" %}</dt>
+							<dd>{{extra_res_md.poc_last_name}}</dd>
+							<dd><a href="mailto:{{extra_res_md.poc_email}}"><i class="fa fa-envelope"></i>{{extra_res_md.poc_email}}</a></dd>							
+							
+
+						<dt>{% trans "Purpose" %}</dt>
+								{% if resource.purpose %}
+									<dd>{{resource.purpose}}</dd>
+								{% else %}
+									<dd> -- </dd>
+								{% endif %}
+							
+
+						<dt>{% trans "Maintenance Frequency" %}</dt>
+							<dd>{{resource.maintenance_frequency}}</dd>
+
+						<dt>{% trans "Type" %} </dt>
+							<dd>{{extra_res_md.sprt_identifier}}</dd>
+
+						<dt>{% trans "Restrictions" %}</dt>
+							<dd>{{resource.restriction_code_type}}</dd>
+							<dd>{{resource.constraints_other}}</dd>
+
+						<dt>{% trans "License" %}</dt>
+							<dd>{{resource.license}}</dd>
+
+						<dt>{% trans "Language" %} </dt>
+							<dd>{{resource.language}}</dd>
+
+						<dt>{% trans "Temporal Extent" %}</dt>
+							<dt>Start </dt>
+								{% if resource.temporal_extent_start %}
+									<dd> {{resource.temporal_extent_start}} </dd>
+								{% else %}
+									<dd> -- </dd>
+								{% endif %}
+							<dt>End </dt>
+								{% if resource.temporal_extent_end %}
+									<dd> {{resource.temporal_extent_end}} </dd>
+								{% else %}
+									<dd> -- </dd>
+								{% endif %}
+
+
+						<dt>{% trans "Supplemental Information" %}</dt>
+							<dd>{{resource.supplemental_information}}</dd>
+
+						<dt>{% trans "Data Quality" %} </dt>
+							{% if resource.data_quality_statement %}
+							<dd>{{resource.data_quality_statement}}</dd>
+							{% else %}
+								<dd> -- </dd>
+							{% endif %}
+
+						<dt>Extent</dt>
+							<dd>
+								<ul class="nop">	
+									<li>long min: {{resource.bbox_x0}}</li>
+									<li>long max: {{resource.bbox_x1}}</li>
+									<li>lat min: {{resource.bbox_y0}}</li>
+									<li>lat max: {{resource.bbox_y1}}</li>
+								</ul>
+							</dd>
+
+						<dt>Spatial Reference System Identifier</dt>
+							<dd>{{resource.srid}}</dd>
+
+						<dt>{% trans "Keywords" %}</dt>
+							<dd>{{extra_res_md.keywords}}</dd>
+
+						<dt>{% trans "Category" %}</dt>
+							<dd>{{resource.category}}</dd>
+							
+						{% if resource.regions.all %}
+						<dt>{% trans "Regions" %}</dt>
+							<dd>
+							  {% for region in resource.regions.all %}
+								  {{ region.name }}
+								{% if not forloop.last %},{% endif %}
+									  {% endfor %}
+							</dd>
+									{% endif %}						
+						
+						{% if "layer" in  request.META.HTTP_REFERER|stringformat:"s" %}
+						<dt>Attributes</dt>
+							<dd>
+								<table id="attr_table" class="table table-striped table-bordered table-condensed" style="margin-top:10px;font-size:14px;">
+								</table>
+							</dd>				
+							<script  type="text/javascript">
+								var content="{{extra_res_md.atrributes}}";
+								content = content.replace(/\&lt;/gi,"<").replace(/\&gt;/gi,">");
+								var headertab="<thead><tr><th style='width:25%'>Attribute name</th><th>Label</th><th>Description</th></tr></thead>";
+								document.getElementById("attr_table").innerHTML=headertab+content;
+							</script>	
+							
+						{% endif %}
+
+				  </div>
+				 </div>
+			 </div>
+		</div>
+	</body>
+</html>

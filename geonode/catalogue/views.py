@@ -27,7 +27,15 @@ from django.views.decorators.csrf import csrf_exempt
 from pycsw import server
 from geonode.catalogue.backends.pycsw_local import CONFIGURATION
 from geonode.base.models import ResourceBase
-
+from geonode.layers.models import Layer, Attribute
+from geonode.base.models import ContactRole,SpatialRepresentationType,RestrictionCodeType,License
+from geonode.people.models import Profile
+from taggit.managers import TaggableManager
+from django.db import connection
+from django.core.exceptions import ObjectDoesNotExist
+from encodings import idna
+from django.shortcuts import render_to_response
+from django.template import RequestContext
 
 @csrf_exempt
 def csw_global_dispatch(request):
@@ -105,3 +113,146 @@ def data_json(request):
         json_data.append(record)
 
     return HttpResponse(json.dumps(json_data), 'application/json')
+
+# transforms a row sql query into a two dimension array
+def dictfetchall(cursor):
+    """Returns all rows from a cursor as a dict"""
+    desc = cursor.description
+    return [
+        dict(zip([col[0] for col in desc], row))
+        for row in cursor.fetchall()
+    ]
+
+# choose separating characters
+def get_CSV_spec_char():
+	return {"separator":';',"carriage_return":'\r\n'}
+
+# format value to unicode str without ';' char
+def fst(value):
+    chrs=get_CSV_spec_char()
+    return unicode(value).replace(chrs["separator"],',').replace('\\n',' ').replace('\r\n',' ')
+
+# from a resource object, build the corresponding metadata dict
+# the aim is to handle the output format (csv, html or pdf) the same structure  
+def build_md_dict(resource):
+    md_dict={
+		'r_uuid':{'label':'uuid','value':resource.uuid},
+		'r_title':{'label':'titre','value':resource.title}
+		}
+    return md_dict
+
+
+def get_keywords(resource):
+    content = ' '
+    cursor = connection.cursor()
+    cursor.execute("SELECT a.*,b.* FROM taggit_taggeditem as a,taggit_tag as b WHERE a.object_id = %s AND a.tag_id=b.id", [resource.id])
+    desc = cursor.description
+    struct_kw= dictfetchall(cursor)
+    for x in struct_kw:
+		content+=fst(x['name'])+', '
+    return content[:-2]
+
+# from a rsource uuid, return a httpResponse containing the whole geonode metadatas 
+@csrf_exempt
+def csw_render_extra_format_txt(request,layeruuid,resname):
+    """pycsw wrapper"""
+    resource = ResourceBase.objects.get(uuid=layeruuid)
+    chrs=get_CSV_spec_char()
+    s=chrs['separator']
+    c=chrs['carriage_return']
+    sc=s+c
+    content = 'M'+u"\u00E9"+'tadonnees de la ressource'+sc
+    content += 'uuid'+s+fst(resource.uuid)+sc
+    content += 'titre'+s+fst(resource.title)+sc
+    content += 'proprietaire de la donnee'+s+fst(resource.owner)+sc
+    content += 'date'+s+fst(resource.date)+sc
+    content += 'type de date'+s+fst(resource.date_type)+sc
+    content += 'resume'+s+fst(resource.abstract)+sc
+    content += 'edition'+s+fst(resource.edition)+sc
+    content += 'but'+s+fst(resource.purpose)+sc
+    content += 'frequence de maintenance'+s+fst(resource.maintenance_frequency) +sc
+	
+    try:
+		sprt = SpatialRepresentationType.objects.get(id=resource.spatial_representation_type_id)
+		content += 'type de donnees'+s+fst(sprt.identifier) +sc
+    except ObjectDoesNotExist:
+		content+='ObjectDoesNotExist'+sc
+
+    content += 'type de restrictions'+s+fst(resource.restriction_code_type) +sc
+    content += 'autres restrictions '+s+fst(resource.constraints_other )+sc
+    content += 'type de licence'+s+fst(resource.license) +sc
+    content += 'language'+s+fst(resource.language) +sc
+    content += 'etendue temporelle'+sc
+    content += 'debut'+s+fst(resource.temporal_extent_start) +sc
+    content += 'fin'+s+fst(resource.temporal_extent_end) +sc
+    content += 'informations supplementaires'+s+fst(resource.supplemental_information )+sc
+    content += 'URL de distribution '+s+fst(resource.distribution_url )+sc
+    content += 'description de la distribution'+s+fst(resource.distribution_description )+sc
+    content += 'enonce sur la qualite des donnees'+s+fst(resource.data_quality_statement )+sc
+    content += 'emprise '+s+fst(resource.bbox_x0) +','+fst(resource.bbox_x1) +','+fst(resource.bbox_y0) +','+fst(resource.bbox_y1) +sc
+    content += 'EPSG code  '+s+fst(resource.srid) +sc
+    content += 'Thumbnail url'+s+fst(resource.thumbnail_url) +sc
+	
+    content+='mots cles;'+get_keywords(resource)+s
+    content+='categorie ISO'+s+fst(resource.category)+sc
+	
+    content += 'regions'+s	
+    for reg in resource.regions.all():
+		content+=fst(reg.name_en)+','
+    content=content[:-1]	
+    content+=sc
+
+
+    if resource.detail_url.find('/layers/')>-1:
+		layer=Layer.objects.get(resourcebase_ptr_id=resource.id)
+		content += 'donnees attributaires'+sc
+		content += 'nom_attribut;label;description\n'
+		for attr in layer.attribute_set.all():
+			content +=fst(attr.attribute)+s
+			content +=fst(attr.attribute_label)+s
+			content +=fst(attr.description)+sc
+			
+    pocr=ContactRole.objects.get(resource_id=resource.id, role='pointOfContact')	
+    pocp=Profile.objects.get(id=pocr.contact_id)
+    content+="Point de Contact"+sc
+    content+="nom"+s+fst(pocp.last_name) +sc
+    content+="e-mail"+s+fst(pocp.email) +sc
+
+    import logging
+    logger=logging.getLogger(__name__)
+    logger.error(content)
+
+    # return render_to_response("/var/www/temp_download_md/test_3.txt")
+    return HttpResponse(content.encode('utf-8').decode('utf-8'), content_type="text/csv")
+
+# from a rsource uuid, return a httpResponse containing the whole geonode metadatas 
+@csrf_exempt
+def csw_render_extra_format_html(request,layeruuid,resname):
+    resource = ResourceBase.objects.get(uuid=layeruuid)    
+    extra_res_md={}
+    try:
+    	sprt = SpatialRepresentationType.objects.get(id=resource.spatial_representation_type_id)
+    	extra_res_md['sprt_identifier']=sprt.identifier
+    except ObjectDoesNotExist:
+    	extra_res_md['sprt_identifier']='non complété'
+    kw=get_keywords(resource)
+    if len(kw)==0:
+    	extra_res_md['keywords']="Pas de mots-clés"
+    else:
+		extra_res_md['keywords']=get_keywords(resource)
+		
+    if resource.detail_url.find('/layers/')>-1:
+		layer=Layer.objects.get(resourcebase_ptr_id=resource.id)
+		extra_res_md['atrributes']=''
+		for attr in layer.attribute_set.all():
+			extra_res_md['atrributes']+='<tr>'
+			extra_res_md['atrributes']+='<td>'+unicode(attr.attribute)+'</td>'
+			extra_res_md['atrributes']+='<td>'+unicode(attr.attribute_label)+'</td>'
+			extra_res_md['atrributes']+='<td>'+unicode(attr.description)+'</td>'
+			extra_res_md['atrributes']+='</tr>'
+
+    pocr=ContactRole.objects.get(resource_id=resource.id, role='pointOfContact')
+    pocp=Profile.objects.get(id=pocr.contact_id)
+    extra_res_md['poc_last_name']=pocp.last_name
+    extra_res_md['poc_email']=pocp.email
+    return render_to_response("geonode_metadata_full.html", RequestContext(request, {"resource": resource,"extra_res_md":extra_res_md}))
