@@ -40,7 +40,6 @@ class TestDataverseTabularAPI(TestTabularAPIBase):
         pause_time = 5 # seconds
         time.sleep(pause_time)
         msgt("""Sleeping %d seconds - needed for Geoserver to calculate bbox other shapefile stats""" % pause_time)
-        self.dv_group.user_set.add(self.user)
 
     @classmethod
     def tearDownClass(cls):
@@ -48,11 +47,9 @@ class TestDataverseTabularAPI(TestTabularAPIBase):
 
     def setUp(self):
         super(TestDataverseTabularAPI, self).setUp()
-        self.dv_group.user_set.add(self.user)
 
     def tearDown(self):
         super(TestDataverseTabularAPI, self).tearDown()
-        self.dv_group.user_set.remove(self.user)
 
     def get_dataverse_csv_test_info(self):
         return {
