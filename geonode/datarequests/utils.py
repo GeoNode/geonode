@@ -130,7 +130,7 @@ def create_ad_account(datarequest, username):
     except Exception as e:
         import traceback
         print traceback.format_exc()
-        return False
+        return e
 
 def add_to_ad_group(group_dn=settings.LIPAD_LDAP_GROUP_DN, user_dn=""):
     try:
