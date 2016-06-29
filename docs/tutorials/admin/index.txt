@@ -7,7 +7,7 @@ Administrators Workshop
 Welcome to the GeoNode Training `Administrators Workshop` documentation v\ |release|.
 
 This workshop will teach how to install and manage a deployment of the `GeoNode <http://geonode.org/>`_ software application.
-At the end of this section you will master all the GeoNode sections and entities from an administrator perspective. 
+At the end of this section you will master all the GeoNode sections and entities from an administrator perspective.
 
 You will know how to:
 
@@ -27,16 +27,17 @@ You will know how to:
 
 .. toctree::
     :hidden:
-    
+
     admin_panel/index
     admin_mgmt_commands/index
     csw_settings/index
+    ldap/index
     customize_lookfeel/index
     debug_geonode/index
     default_lang/index
     more_on_security_and_permissions/index
     loading_data_into_geonode/index
-    
+
 :ref:`admin_panel`
     GeoNode has an administration panel based on the Django admin which can be used to do some database operations. Although most of the operations can and should be done through the normal GeoNode interface, the admin panel provides a quick overview and management tool over the database.
 
@@ -45,7 +46,10 @@ You will know how to:
 
 :ref:`admin_csw_settings`
     `pycsw <http://pycsw.org/>`_ is the default CSW server implementation provided with GeoNode. This section will explain how to configure GeoNode to operate against alternate CSW server implementations.
-    
+
+:ref:`ldap`
+    This module will allow you to add LDAP authentication to your GeoNode instance.
+
 :ref:`customize_admin`
     You might want to change the look of GeoNode, editing the colors and the logo of the website and adjust the templates for your needs. To do so, you first have to set up your own geonode project from a template. If you've successfully done this, you can go further and start theming your geonode project.
 
