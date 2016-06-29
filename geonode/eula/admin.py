@@ -11,6 +11,7 @@ class AnonDownloaderAdmin(admin.ModelAdmin):
         'anon_last_name',
         'anon_email',
         'anon_organization',
+        'anon_orgtype',
         'anon_purpose',
         'date',
         'anon_layer',

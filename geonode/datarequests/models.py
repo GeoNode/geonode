@@ -16,6 +16,8 @@ from django_enumfield import enum
 from django.core import validators
 from django_auth_ldap.backend import LDAPBackend, ldap_error
 
+import ldap
+
 from model_utils import Choices
 from model_utils.models import TimeStampedModel
 
@@ -646,8 +648,15 @@ class DataRequestProfile(TimeStampedModel):
                 else:
                     pprint("Accout was not created")
                     raise Exception("Account not created")
+             else:
+                 profile.organization_type = self.organization_type
+                 profile.save()
         except Exception as e:
             pprint(traceback.format_exc())
+            exc_name = type(e).__name__
+            pprint(exc_name)
+            if exc_name == "ALREADY_EXISTS":
+                return (False, "This user already has an account.")
             return (False, "Account creation failed. Check /var/log/apache2/error.log for more details")
 
         self.join_requester_grp()
