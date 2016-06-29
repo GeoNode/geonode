@@ -479,16 +479,16 @@ def rl_default_style(request):
 def sar_default_style(request):
     keyword = 'SAR'
     layer_default_style.delay(keyword)
-    messages.error(request, "Updating Default Style of Resource Layers")
+    messages.error(request, "Updating Default Style of SAR")
     return HttpResponseRedirect(reverse('data_management'))
 
 @login_required
 @user_passes_test(lambda u: u.is_superuser)
 def dem_cov_default_style(request):
     #no keyword
-    keyword = 'dem'
+    keyword = 'dem_'
     layer_default_style.delay(keyword)
-    messages.error(request, "Updating Default Style of Resource Layers")
+    messages.error(request, "Updating Default Style of DEM Coverage")
     return HttpResponseRedirect(reverse('data_management'))
 
 @login_required
@@ -497,7 +497,7 @@ def jurisdict_default_style(request):
     #no keyword
     keyword = 'jurisdict'
     layer_default_style.delay(keyword)
-    messages.error(request, "Updating Default Style of Resource Layers")
+    messages.error(request, "Updating Default Style of Jurisdiction Shapefiles")
     return HttpResponseRedirect(reverse('data_management'))
 
 
