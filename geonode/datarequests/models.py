@@ -189,12 +189,12 @@ class DataRequestProfile(TimeStampedModel):
         blank=True,
         null=True,
         )
-        
+
     #For place name
     place_name = models.CharField(
-        _('Geolocation name provided by Google'),  
+        _('Geolocation name provided by Google'),
         null=True,
-        blank=True, 
+        blank=True,
         max_length=50,
     )
 
@@ -488,6 +488,8 @@ class DataRequestProfile(TimeStampedModel):
         You will be able to edit your account details by logging in and going to the following link:
         {}
 
+        Flood Hazard Maps and Resource Layers can be viewed and downloaded in the Data Store > Layers Section while the LiDAR DTM, LiDAR DSM, Classified LAZ and Orthophotos can be downloaded through Data Store > Data Tiles Section.
+
         If you have any questions, you can contact us as at {}.
 
         Regards,
@@ -510,6 +512,8 @@ class DataRequestProfile(TimeStampedModel):
        <p>You will be able to edit your account details by logging in and going to the following link:</p>
        {}
        </br>
+       <p>Flood Hazard Maps and Resource Layers can be viewed and downloaded in the <a href="https://lipad.dream.upd.edu.ph/layers/">Data Store > Layers</a> Section while the LiDAR DTM, LiDAR DSM, Classified LAZ and Orthophotos can be downloaded through <a href="https://lipad.dream.upd.edu.ph/maptiles/">Data Store > Data Tiles</a> Section.</p>
+
        <p>If you have any questions, you can contact us as at <a href="mailto:{}" target="_top">{}</a></p>
        </br>
         <p>Regards,</p>
@@ -597,18 +601,18 @@ class DataRequestProfile(TimeStampedModel):
             except Exception as e:
                 pprint(traceback.format_exc())
                 return (False, "Account creation failed. Check /var/log/apache2/error.log for more details")
-        
+
         try:
              if not self.profile:
                 pprint("Creating account for "+self.username)
                 dn = create_ad_account(self, self.username)
                 add_to_ad_group(group_dn=settings.LIPAD_LDAP_GROUP_DN, user_dn=dn)
                 profile = LDAPBackend().populate_user(self.username)
-                
+
                 if profile:
                     self.profile = profile
                     self.save()
-                
+
                     profile.middle_name = self.middle_name
                     profile.organization = self.organization
                     profile.voice = self.contact_number
@@ -620,16 +624,16 @@ class DataRequestProfile(TimeStampedModel):
         except Exception as e:
             pprint(traceback.format_exc())
             return (False, "Account creation failed. Check /var/log/apache2/error.log for more details")
-            
+
         self.join_requester_grp()
-        
+
         try:
             if not self.ftp_folder:
                 self.create_directory()
         except Exception as e:
             pprint(traceback.format_exc())
             return (False, "Folder creation failed, Check /var/log/apache2/error.log for more details")
-            
+
         return  (True, "Account creation successful")
 
     def join_requester_grp(self):
@@ -723,7 +727,7 @@ class DataRequestProfile(TimeStampedModel):
                     out.append(unidecode(val))
                 else:
                     out.append(str(val))
-                
+
         return out
 
 class RequestRejectionReason(models.Model):
