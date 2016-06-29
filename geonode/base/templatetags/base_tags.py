@@ -12,6 +12,7 @@ from geonode.maps.models import Map
 from geonode.documents.models import Document
 
 import urllib2
+from urllib2 import HTTPError
 import json
 from django.core.urlresolvers import resolve
 from django.db.models import Q
@@ -33,10 +34,13 @@ def get_philgrid(context):
 
 @register.assignment_tag
 def get_fhm_count(takes_context=True):
-    visit_url = 'https://lipad-fmc.dream.upd.edu.ph/api/layers/' #?keyword__contains=hazard'
-    response = urllib2.urlopen(visit_url)
-    data = json.loads(response.read())
-    fhm_count = data['meta']['total_count']
+    try:
+        visit_url = 'https://lipad-fmc.dream.upd.edu.ph/api/layers/' #?keyword__contains=hazard'
+        response = urllib2.urlopen(visit_url)
+        data = json.loads(response.read())
+        fhm_count = data['meta']['total_count']
+    except HTTPError:
+        fhm_count = "N/A"
     return fhm_count
 
 @register.assignment_tag
