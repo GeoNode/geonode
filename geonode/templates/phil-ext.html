@@ -10,31 +10,38 @@
     height: 800px;
   }
 </style>
+
 <script type="text/javascript">
     var map;
     window.addEventListener("map:init", function (e) {
-       
+        
         map = e.detail.map;
 
+        
         {% if resource.bbox_string %}
-          zoom_to_box(map, [{{ resource.bbox_string }}]);
+            zoom_to_box(map, [{{ resource.bbox_string }}]);
         {% endif %}
 
         tile_layer = L.tileLayer.wms('{{ resource.ows_url|safe }}', {
             ptype: "gxp_wmsgetfeatureinfo",
             layers: '{{ resource.typename }}',
-            format: 'image/png8',
+            format: 'image/png',
             transparent: true,
             'opacity':0.8,
-            tiled:true
-        });
+            tiled:true,
+            visibility:true,
+            continuousWorld: true
+           
+        }).addTo(map);
         
           var MapQuestOpen_OSM = L.tileLayer('http://otile{s}.mqcdn.com/tiles/1.0.0/{type}/{z}/{x}/{y}.{ext}', {
             type: 'map',
             ext: 'jpg',
             attribution: 'Tiles Courtesy of <a href="http://www.mapquest.com/">MapQuest</a> &mdash; Map data &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
-            subdomains: '1234'
+            subdomains: '1234',
+            continuousWorld: true
         }).addTo(map);
+
 
         var baseMaps = {
           'MapQuestOpen OSM' : MapQuestOpen_OSM
@@ -45,6 +52,7 @@
             map.layerscontrol.addOverlay(tile_layer,"{{ resource.title }}");
             map.addLayer(tile_layer);
         }
+
 
     });
     function zoom_to_box(map, bbox){

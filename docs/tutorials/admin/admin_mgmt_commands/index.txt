@@ -1,0 +1,149 @@
+.. _admin_mgmt_commands:
+
+===============================
+Management Commands for GeoNode
+===============================
+
+GeoNode comes with administrative commands to help with day to day tasks.
+
+Below is the list of the ones that come from the GeoNode application, the full list can be obtained by doing::
+
+  python manage.py help
+
+
+importlayers
+============
+
+Imports a file or folder with geospatial files to GeoNode.
+
+It supports data in Shapefile and GeoTiff format. It also picks up the styles if a ``.sld`` file is present.
+
+Usage::
+
+    python manage.py importlayers <data_dir>
+
+Additional options::
+
+    Usage: manage.py importlayers [options] path [path...]
+
+    Brings a data file or a directory full of data files into a GeoNode site.  Layers are added to the Django database, the GeoServer configuration, and the GeoNetwork metadata index.
+
+    Options:
+      -v VERBOSITY, --verbosity=VERBOSITY
+                            Verbosity level; 0=minimal output, 1=normal output,
+                            2=verbose output, 3=very verbose output
+      --settings=SETTINGS   The Python path to a settings module, e.g.
+                            "myproject.settings.main". If this isn't provided, the
+                            DJANGO_SETTINGS_MODULE environment variable will be
+                            used.
+      --pythonpath=PYTHONPATH
+                            A directory to add to the Python path, e.g.
+                            "/home/djangoprojects/myproject".
+      --traceback           Raise on exception
+      -u USER, --user=USER  Name of the user account which should own the imported
+                            layers
+      -i, --ignore-errors   Stop after any errors are encountered.
+      -o, --overwrite       Overwrite existing layers if discovered (defaults
+                            False)
+      -k KEYWORDS, --keywords=KEYWORDS
+                            The default keywords, separated by comma, for the
+                            imported layer(s). Will be the same for all imported
+                            layers                     if multiple imports are
+                            done in one command
+      -c CATEGORY, --category=CATEGORY
+                            The category for the                     imported
+                            layer(s). Will be the same for all imported layers
+                            if multiple imports are done in one command
+      -r REGIONS, --regions=REGIONS
+                            The default regions, separated by comma, for the
+                            imported layer(s). Will be the same for all imported
+                            layers                     if multiple imports are
+                            done in one command
+      -t TITLE, --title=TITLE
+                            The title for the                     imported
+                            layer(s). Will be the same for all imported layers
+                            if multiple imports are done in one command
+      -p, --private         Make layer viewable only to owner
+      --version             show program's version number and exit
+      -h, --help            show this help message and exit
+
+
+updatelayers
+============
+
+Update the GeoNode application with data from GeoServer.
+
+This is useful to add data in formats that are not supported in GeoNode by default, and for example to link it it to ArcSDE datastores.  The updatelayers command provides several options that can be used to control how layer information is read from GeoServer and updated in GeoNode.  Refer to 'Additional Options'.
+
+Usage::
+
+    python manage.py updatelayers
+
+Additional options::
+
+    Usage: manage.py updatelayers [options] 
+
+    Update the GeoNode application with data from GeoServer
+
+    Options:
+      -v VERBOSITY, --verbosity=VERBOSITY
+                            Verbosity level; 0=minimal output, 1=normal output,
+                            2=verbose output, 3=very verbose output
+      --settings=SETTINGS   The Python path to a settings module, e.g.
+                            "myproject.settings.main". If this isn't provided, the
+                            DJANGO_SETTINGS_MODULE environment variable will be
+                            used.
+      --pythonpath=PYTHONPATH
+                            A directory to add to the Python path, e.g.
+                            "/home/djangoprojects/myproject".
+      --traceback           Raise on exception
+      -i, --ignore-errors   Stop after any errors are encountered.
+      --skip-unadvertised   Skip processing unadvertised layers from GeoSever.
+      --skip-geonode-registered
+                            Just processing GeoServer layers still not registered
+                            in GeoNode.
+      --remove-deleted      Remove GeoNode layers that have been deleted from
+                            GeoSever.
+      -u USER, --user=USER  Name of the user account which should own the imported
+                            layers
+      -f FILTER, --filter=FILTER
+                            Only update data the layers that match the given
+                            filter
+      -s STORE, --store=STORE
+                            Only update data the layers for the given geoserver
+                            store name
+      -w WORKSPACE, --workspace=WORKSPACE
+                            Only update data on specified workspace
+      --version             show program's version number and exit
+      -h, --help            show this help message and exit
+
+
+fixsitename
+===========
+
+Uses SITENAME and SITEURL to set the values of the default site object.
+
+This information is used in the page titles and when sending emails from GeoNode, for example, new registrations.
+
+Usage::
+
+   python manage.py fixsitename
+
+Additional options::
+
+    Usage: manage.py fixsitename [options] 
+
+    Options:
+      -v VERBOSITY, --verbosity=VERBOSITY
+                            Verbosity level; 0=minimal output, 1=normal output,
+                            2=verbose output, 3=very verbose output
+      --settings=SETTINGS   The Python path to a settings module, e.g.
+                            "myproject.settings.main". If this isn't provided, the
+                            DJANGO_SETTINGS_MODULE environment variable will be
+                            used.
+      --pythonpath=PYTHONPATH
+                            A directory to add to the Python path, e.g.
+                            "/home/djangoprojects/myproject".
+      --traceback           Raise on exception
+      --version             show program's version number and exit
+      -h, --help            show this help message and exit

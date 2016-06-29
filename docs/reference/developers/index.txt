@@ -10,6 +10,8 @@ Here you will find information about each and every component of Geonode, for ex
 
 :ref:`settings`
 
+:ref:`geosites`
+
 .. toctree::
     :hidden:
     :maxdepth: 3
@@ -17,5 +19,6 @@ Here you will find information about each and every component of Geonode, for ex
     django-apps
     javascript
     settings
+    geosites
 
 

@@ -1,15 +1,16 @@
 import json
 
 from django.core.urlresolvers import reverse
-from django.test.client import Client
 from django.test import TestCase
 from tastypie.test import ResourceTestCase
 from django.contrib.auth import get_user_model
 from guardian.shortcuts import get_anonymous_user, assign_perm, remove_perm
 
 from geonode.base.populate_test_data import create_models, all_public
+from geonode.maps.tests_populate_maplayers import create_maplayers
 from geonode.people.models import Profile
 from geonode.layers.models import Layer
+from geonode.maps.models import Map
 from geonode.layers.populate_layers_data import create_layer_data
 from geonode.groups.models import Group
 
@@ -37,23 +38,22 @@ class BulkPermissionsTests(ResourceTestCase):
         """Test that after restrict view permissions on two layers
         bobby is unable to see them"""
 
-        c = Client()
         layers = Layer.objects.all()[:2].values_list('id', flat=True)
         layers_id = map(lambda x: str(x), layers)
 
-        c.login(username='admin', password='admin')
-        resp = c.get(self.list_url)
+        self.client.login(username='admin', password='admin')
+        resp = self.client.get(self.list_url)
         self.assertEquals(len(self.deserialize(resp)['objects']), 8)
         data = {
             'permissions': json.dumps(self.perm_spec),
             'resources': layers_id
         }
-        resp = c.post(self.bulk_perms_url, data)
+        resp = self.client.post(self.bulk_perms_url, data)
         self.assertHttpOK(resp)
-        c.logout()
+        self.client.logout()
 
-        c.login(username='bobby', password='bob')
-        resp = c.get(self.list_url)
+        self.client.login(username='bobby', password='bob')
+        resp = self.client.get(self.list_url)
         self.assertEquals(len(self.deserialize(resp)['objects']), 6)
 
     def test_bobby_cannot_set_all(self):
@@ -61,18 +61,17 @@ class BulkPermissionsTests(ResourceTestCase):
         for which he has the right"""
 
         layer = Layer.objects.all()[0]
-        c = Client()
-        c.login(username='admin', password='admin')
+        self.client.login(username='admin', password='admin')
         # give bobby the right to change the layer permissions
         assign_perm('change_resourcebase', Profile.objects.get(username='bobby'), layer.get_self_resource())
-        c.logout()
-        c.login(username='bobby', password='bob')
+        self.client.logout()
+        self.client.login(username='bobby', password='bob')
         layer2 = Layer.objects.all()[1]
         data = {
             'permissions': json.dumps({"users": {"bobby": ["view_resourcebase"]}, "groups": {}}),
             'resources': [layer.id, layer2.id]
         }
-        resp = c.post(self.bulk_perms_url, data)
+        resp = self.client.post(self.bulk_perms_url, data)
         self.assertTrue(layer2.title in json.loads(resp.content)['not_changed'])
 
 
@@ -206,10 +205,8 @@ class PermissionsTest(TestCase):
         valid_layer_typename = Layer.objects.all()[0].id
         invalid_layer_id = 9999999
 
-        c = Client()
-
         # Test that an invalid layer.typename is handled for properly
-        response = c.post(
+        response = self.client.post(
             reverse(
                 'resource_permissions', args=(
                     invalid_layer_id,)), data=json.dumps(
@@ -217,7 +214,7 @@ class PermissionsTest(TestCase):
         self.assertEquals(response.status_code, 404)
 
         # Test that GET returns permissions
-        response = c.get(
+        response = self.client.get(
             reverse(
                 'resource_permissions',
                 args=(
@@ -228,7 +225,7 @@ class PermissionsTest(TestCase):
         # Test that a user is required to have maps.change_layer_permissions
 
         # First test un-authenticated
-        response = c.post(
+        response = self.client.post(
             reverse(
                 'resource_permissions', args=(
                     valid_layer_typename,)), data=json.dumps(
@@ -236,9 +233,9 @@ class PermissionsTest(TestCase):
         self.assertEquals(response.status_code, 401)
 
         # Next Test with a user that does NOT have the proper perms
-        logged_in = c.login(username='bobby', password='bob')
+        logged_in = self.client.login(username='bobby', password='bob')
         self.assertEquals(logged_in, True)
-        response = c.post(
+        response = self.client.post(
             reverse(
                 'resource_permissions', args=(
                     valid_layer_typename,)), data=json.dumps(
@@ -246,10 +243,10 @@ class PermissionsTest(TestCase):
         self.assertEquals(response.status_code, 401)
 
         # Login as a user with the proper permission and test the endpoint
-        logged_in = c.login(username='admin', password='admin')
+        logged_in = self.client.login(username='admin', password='admin')
         self.assertEquals(logged_in, True)
 
-        response = c.post(
+        response = self.client.post(
             reverse(
                 'resource_permissions', args=(
                     valid_layer_typename,)), data=json.dumps(
@@ -269,7 +266,7 @@ class PermissionsTest(TestCase):
 
         # Test with a Layer object
         layer = Layer.objects.all()[0]
-
+        layer.set_default_permissions()
         # Test that the anonymous user can read
         self.assertTrue(
             self.anonymous_user.has_perm(
@@ -305,15 +302,14 @@ class PermissionsTest(TestCase):
 
         # grab a layer
         layer = Layer.objects.all()[0]
-
+        layer.set_default_permissions()
         # verify bobby has view/change permissions on it but not manage
         self.assertFalse(
             bob.has_perm(
                 'change_resourcebase_permissions',
                 layer.get_self_resource()))
 
-        c = Client()
-        self.assertTrue(c.login(username='bobby', password='bob'))
+        self.assertTrue(self.client.login(username='bobby', password='bob'))
 
         # 1. view_resourcebase
         # 1.1 has view_resourcebase: verify that bobby can access the layer
@@ -323,20 +319,20 @@ class PermissionsTest(TestCase):
                 'view_resourcebase',
                 layer.get_self_resource()))
 
-        response = c.get(reverse('layer_detail', args=(layer.typename,)))
+        response = self.client.get(reverse('layer_detail', args=(layer.typename,)))
         self.assertEquals(response.status_code, 200)
         # 1.2 has not view_resourcebase: verify that bobby can not access the
         # layer detail page
         remove_perm('view_resourcebase', bob, layer.get_self_resource())
         anonymous_group = Group.objects.get(name='anonymous')
         remove_perm('view_resourcebase', anonymous_group, layer.get_self_resource())
-        response = c.get(reverse('layer_detail', args=(layer.typename,)))
+        response = self.client.get(reverse('layer_detail', args=(layer.typename,)))
         self.assertEquals(response.status_code, 401)
 
         # 2. change_resourcebase
         # 2.1 has not change_resourcebase: verify that bobby cannot access the
         # layer replace page
-        response = c.get(reverse('layer_replace', args=(layer.typename,)))
+        response = self.client.get(reverse('layer_replace', args=(layer.typename,)))
         self.assertEquals(response.status_code, 401)
         # 2.2 has change_resourcebase: verify that bobby can access the layer
         # replace page
@@ -345,13 +341,13 @@ class PermissionsTest(TestCase):
             bob.has_perm(
                 'change_resourcebase',
                 layer.get_self_resource()))
-        response = c.get(reverse('layer_replace', args=(layer.typename,)))
+        response = self.client.get(reverse('layer_replace', args=(layer.typename,)))
         self.assertEquals(response.status_code, 200)
 
         # 3. delete_resourcebase
         # 3.1 has not delete_resourcebase: verify that bobby cannot access the
         # layer delete page
-        response = c.get(reverse('layer_remove', args=(layer.typename,)))
+        response = self.client.get(reverse('layer_remove', args=(layer.typename,)))
         self.assertEquals(response.status_code, 401)
         # 3.2 has delete_resourcebase: verify that bobby can access the layer
         # delete page
@@ -360,13 +356,13 @@ class PermissionsTest(TestCase):
             bob.has_perm(
                 'delete_resourcebase',
                 layer.get_self_resource()))
-        response = c.get(reverse('layer_remove', args=(layer.typename,)))
+        response = self.client.get(reverse('layer_remove', args=(layer.typename,)))
         self.assertEquals(response.status_code, 200)
 
         # 4. change_resourcebase_metadata
         # 4.1 has not change_resourcebase_metadata: verify that bobby cannot
         # access the layer metadata page
-        response = c.get(reverse('layer_metadata', args=(layer.typename,)))
+        response = self.client.get(reverse('layer_metadata', args=(layer.typename,)))
         self.assertEquals(response.status_code, 401)
         # 4.2 has delete_resourcebase: verify that bobby can access the layer
         # delete page
@@ -375,7 +371,7 @@ class PermissionsTest(TestCase):
             bob.has_perm(
                 'change_resourcebase_metadata',
                 layer.get_self_resource()))
-        response = c.get(reverse('layer_metadata', args=(layer.typename,)))
+        response = self.client.get(reverse('layer_metadata', args=(layer.typename,)))
         self.assertEquals(response.status_code, 200)
 
         # 5. change_resourcebase_permissions
@@ -389,7 +385,7 @@ class PermissionsTest(TestCase):
         # 7. change_layer_style
         # 7.1 has not change_layer_style: verify that bobby cannot access
         # the layer style page
-        response = c.get(reverse('layer_style_manage', args=(layer.typename,)))
+        response = self.client.get(reverse('layer_style_manage', args=(layer.typename,)))
         self.assertEquals(response.status_code, 401)
         # 7.2 has change_layer_style: verify that bobby can access the
         # change layer style page
@@ -398,16 +394,14 @@ class PermissionsTest(TestCase):
             bob.has_perm(
                 'change_layer_style',
                 layer))
-        response = c.get(reverse('layer_style_manage', args=(layer.typename,)))
+        response = self.client.get(reverse('layer_style_manage', args=(layer.typename,)))
         self.assertEquals(response.status_code, 200)
 
     def test_anonymus_permissions(self):
 
         # grab a layer
         layer = Layer.objects.all()[0]
-
-        c = Client()
-
+        layer.set_default_permissions()
         # 1. view_resourcebase
         # 1.1 has view_resourcebase: verify that anonymous user can access
         # the layer detail page
@@ -415,32 +409,32 @@ class PermissionsTest(TestCase):
             self.anonymous_user.has_perm(
                 'view_resourcebase',
                 layer.get_self_resource()))
-        response = c.get(reverse('layer_detail', args=(layer.typename,)))
+        response = self.client.get(reverse('layer_detail', args=(layer.typename,)))
         self.assertEquals(response.status_code, 200)
         # 1.2 has not view_resourcebase: verify that anonymous user can not
         # access the layer detail page
         remove_perm('view_resourcebase', self.anonymous_user, layer.get_self_resource())
         anonymous_group = Group.objects.get(name='anonymous')
         remove_perm('view_resourcebase', anonymous_group, layer.get_self_resource())
-        response = c.get(reverse('layer_detail', args=(layer.typename,)))
+        response = self.client.get(reverse('layer_detail', args=(layer.typename,)))
         self.assertEquals(response.status_code, 302)
 
         # 2. change_resourcebase
         # 2.1 has not change_resourcebase: verify that anonymous user cannot
         # access the layer replace page but redirected to login
-        response = c.get(reverse('layer_replace', args=(layer.typename,)))
+        response = self.client.get(reverse('layer_replace', args=(layer.typename,)))
         self.assertEquals(response.status_code, 302)
 
         # 3. delete_resourcebase
         # 3.1 has not delete_resourcebase: verify that anonymous user cannot
         # access the layer delete page but redirected to login
-        response = c.get(reverse('layer_remove', args=(layer.typename,)))
+        response = self.client.get(reverse('layer_remove', args=(layer.typename,)))
         self.assertEquals(response.status_code, 302)
 
         # 4. change_resourcebase_metadata
         # 4.1 has not change_resourcebase_metadata: verify that anonymous user
         # cannot access the layer metadata page but redirected to login
-        response = c.get(reverse('layer_metadata', args=(layer.typename,)))
+        response = self.client.get(reverse('layer_metadata', args=(layer.typename,)))
         self.assertEquals(response.status_code, 302)
 
         # 5 N\A? 6 is an integration test...
@@ -448,5 +442,35 @@ class PermissionsTest(TestCase):
         # 7. change_layer_style
         # 7.1 has not change_layer_style: verify that anonymous user cannot access
         # the layer style page but redirected to login
-        response = c.get(reverse('layer_style_manage', args=(layer.typename,)))
+        response = self.client.get(reverse('layer_style_manage', args=(layer.typename,)))
         self.assertEquals(response.status_code, 302)
+
+    def test_map_download(self):
+        """Test the correct permissions on layers on map download"""
+        create_models(type='map')
+        create_maplayers()
+        # Get a Map
+        the_map = Map.objects.get(title='GeoNode Default Map')
+
+        # Get a MapLayer and set the parameters as it is local and not a background
+        # and leave it alone in the map
+        map_layer = the_map.layer_set.get(name='geonode:CA')
+        map_layer.local = True
+        map_layer.group = 'overlay'
+        map_layer.save()
+        the_map.layer_set.all().delete()
+        the_map.layer_set.add(map_layer)
+
+        # Get the Layer and set the permissions for bobby to it and the map
+        bobby = Profile.objects.get(username='bobby')
+        the_layer = Layer.objects.get(typename='geonode:CA')
+        remove_perm('download_resourcebase', bobby, the_layer.get_self_resource())
+        remove_perm('download_resourcebase', Group.objects.get(name='anonymous'),
+                    the_layer.get_self_resource())
+        assign_perm('view_resourcebase', bobby, the_layer.get_self_resource())
+        assign_perm('download_resourcebase', bobby, the_map.get_self_resource())
+
+        self.client.login(username='bobby', password='bob')
+
+        response = self.client.get(reverse('map_download', args=(the_map.id,)))
+        self.assertTrue('Could not find downloadable layers for this map' in response.content)

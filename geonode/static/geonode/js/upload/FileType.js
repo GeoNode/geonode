@@ -15,7 +15,7 @@ define(function (require, exports) {
     FileType = function (options) {
         this.name = null;
         this.main = null;
-        this.requires = null;
+        this.requires = !('requires' in options) ? [options.main] : null;
         $.extend(this, options || {});
     };
 

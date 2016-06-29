@@ -1,0 +1,34 @@
+{% load i18n %}
+
+{% if request.user.is_authenticated %}
+<script type="text/javascript">
+    // set on page load, does not vary with button state.
+    var favoriteAddUrl = "{{ favorite_info.add_url }}"
+
+    // varies with button state.
+    var favoriteCurrentUrl = null;
+
+    // add click behavior to the Add/Delete Favorite button.
+    $("#favoriteLink").click(function(event) {
+        $.post(
+            favoriteCurrentUrl,
+            function(data) {
+                setFavoriteButton(data.has_favorite, data.delete_url);
+        });
+    });
+
+    // set button text and url based on whether user has favorite.
+    function setFavoriteButton(hasFavorite, deleteUrl) {
+        if (hasFavorite == "true") {
+            $("#favoriteLink").html("{% trans "Delete from Favorites" %}");
+            favoriteCurrentUrl = deleteUrl;
+        } else {
+            $("#favoriteLink").html("{% trans "Add to Favorites" %}");
+            favoriteCurrentUrl = favoriteAddUrl;
+        }
+    }
+
+    setFavoriteButton("{{ favorite_info.has_favorite }}","{{ favorite_info.delete_url }}" );
+
+</script>
+{% endif %}

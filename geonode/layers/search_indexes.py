@@ -7,49 +7,68 @@ from geonode.maps.models import Layer
 
 
 class LayerIndex(indexes.SearchIndex, indexes.Indexable):
-    text = indexes.EdgeNgramField(document=True, use_template=True)
-    oid = indexes.CharField(model_attr='resourcebase_ptr_id')
-    uuid = indexes.CharField(model_attr='uuid')
-    type = indexes.CharField(faceted=True)
-    subtype = indexes.CharField(faceted=True)
-    name = indexes.CharField(model_attr="name")
-    title = indexes.CharField(model_attr="title", boost=2)
-    title_sortable = indexes.CharField(indexed=False)  # Necessary for sorting
-    description = indexes.CharField(model_attr="abstract", boost=1.5)
-    owner = indexes.CharField(model_attr="owner", faceted=True, null=True)
-    modified = indexes.DateTimeField(model_attr="date")
-    category = indexes.CharField(
-        model_attr="category__identifier",
-        faceted=True,
-        null=True)
+    id = indexes.IntegerField(model_attr='resourcebase_ptr_id')
+    abstract = indexes.CharField(model_attr="abstract", boost=1.5)
+    category__gn_description = indexes.CharField(model_attr="category__gn_description", null=True)
+    csw_type = indexes.CharField(model_attr="csw_type")
+    csw_wkt_geometry = indexes.CharField(model_attr="csw_wkt_geometry")
     detail_url = indexes.CharField(model_attr="get_absolute_url")
-    bbox_left = indexes.FloatField(model_attr="bbox_x0", null=True)
-    bbox_right = indexes.FloatField(model_attr="bbox_x1", null=True)
-    bbox_bottom = indexes.FloatField(model_attr="bbox_y0", null=True)
-    bbox_top = indexes.FloatField(model_attr="bbox_y1", null=True)
-    temporal_extent_start = indexes.DateTimeField(
-        model_attr="temporal_extent_start",
-        null=True)
-    temporal_extent_end = indexes.DateTimeField(
-        model_attr="temporal_extent_end",
-        null=True)
-    keywords = indexes.MultiValueField(
-        model_attr="keyword_slug_list",
-        null=True,
-        faceted=True)
-    regions = indexes.MultiValueField(
-        model_attr="region_slug_list",
-        null=True,
-        faceted=True)
+    distribution_description = indexes.CharField(model_attr="distribution_description", null=True)
+    distribution_url = indexes.CharField(model_attr="distribution_url", null=True)
+    owner__username = indexes.CharField(model_attr="owner", faceted=True, null=True)
     popular_count = indexes.IntegerField(
         model_attr="popular_count",
         default=0,
         boost=20)
     share_count = indexes.IntegerField(model_attr="share_count", default=0)
     rating = indexes.IntegerField(null=True)
-    num_ratings = indexes.IntegerField()
-    num_comments = indexes.IntegerField()
+    srid = indexes.CharField(model_attr="srid")
+    supplemental_information = indexes.CharField(model_attr="supplemental_information", null=True)
     thumbnail_url = indexes.CharField(model_attr="thumbnail_url", null=True)
+    uuid = indexes.CharField(model_attr="uuid")
+    title = indexes.CharField(model_attr="title", boost=2)
+    date = indexes.DateTimeField(model_attr="date")
+
+    text = indexes.EdgeNgramField(document=True, use_template=True, stored=False)
+    type = indexes.CharField(faceted=True)
+    subtype = indexes.CharField(faceted=True)
+    typename = indexes.CharField(model_attr='typename')
+    title_sortable = indexes.CharField(indexed=False, stored=False)  # Necessary for sorting
+    category = indexes.CharField(
+        model_attr="category__identifier",
+        faceted=True,
+        null=True,
+        stored=True)
+    bbox_left = indexes.FloatField(model_attr="bbox_x0", null=True, stored=False)
+    bbox_right = indexes.FloatField(model_attr="bbox_x1", null=True, stored=False)
+    bbox_bottom = indexes.FloatField(model_attr="bbox_y0", null=True, stored=False)
+    bbox_top = indexes.FloatField(model_attr="bbox_y1", null=True, stored=False)
+    temporal_extent_start = indexes.DateTimeField(
+        model_attr="temporal_extent_start",
+        null=True,
+        stored=False)
+    temporal_extent_end = indexes.DateTimeField(
+        model_attr="temporal_extent_end",
+        null=True,
+        stored=False)
+    keywords = indexes.MultiValueField(
+        model_attr="keyword_slug_list",
+        null=True,
+        faceted=True,
+        stored=True)
+    regions = indexes.MultiValueField(
+        model_attr="region_name_list",
+        null=True,
+        faceted=True,
+        stored=True)
+    popular_count = indexes.IntegerField(
+        model_attr="popular_count",
+        default=0,
+        boost=20)
+    share_count = indexes.IntegerField(model_attr="share_count", default=0)
+    rating = indexes.IntegerField(null=True)
+    num_ratings = indexes.IntegerField(stored=False)
+    num_comments = indexes.IntegerField(stored=False)
 
     def get_model(self):
         return Layer
@@ -64,21 +83,6 @@ class LayerIndex(indexes.SearchIndex, indexes.Indexable):
             return "raster"
         elif obj.storeType == "remoteStore":
             return "remote"
-
-    def prepare_download_links(self, obj):
-        try:
-            links = obj.download_links()
-            prepped = [(ext, name.encode(), extra)
-                       for ext, name, extra in links]
-            return prepped
-        except:
-            return None
-
-    def prepare_metadata_links(self, obj):
-        try:
-            return obj.metadata_links
-        except:
-            return None
 
     def prepare_rating(self, obj):
         ct = ContentType.objects.get_for_model(obj)

@@ -3766,5 +3766,19 @@
       "lft": 261,
       "tree_id": 90
     }
+  },
+  {
+    "pk": 259,
+    "model": "base.region",
+    "fields": {
+      "rght": 59,
+      "code": "SSD",
+      "name": "South Sudan",
+      "parent": 11,
+      "level": 3,
+      "lft": 58,
+      "tree_id": 90
+    }
   }
+
 ]

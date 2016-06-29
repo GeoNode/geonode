@@ -1,8 +1,12 @@
 from django.contrib import admin
 from geonode.documents.models import Document
-from geonode.base.admin import MediaTranslationAdmin
+from geonode.base.admin import MediaTranslationAdmin, ResourceBaseAdminForm
 
-import autocomplete_light
+
+class DocumentAdminForm(ResourceBaseAdminForm):
+
+    class Meta:
+        model = Document
 
 
 class DocumentAdmin(MediaTranslationAdmin):
@@ -11,6 +15,6 @@ class DocumentAdmin(MediaTranslationAdmin):
     list_filter = ('date', 'date_type', 'restriction_code_type', 'category')
     search_fields = ('title', 'abstract', 'purpose',)
     date_hierarchy = 'date'
-    form = autocomplete_light.modelform_factory(Document)
+    form = DocumentAdminForm
 
 admin.site.register(Document, DocumentAdmin)

@@ -110,8 +110,10 @@ def create_model(
         for key, value in options.iteritems():
             setattr(Meta, key, value)
 
+    setattr(Meta, 'verbose_name_plural', name)
+
     # Set up a dictionary to simulate declarations within a class
-    attrs = {'__module__': module, 'Meta': Meta}
+    attrs = {'__module__': module, 'Meta': Meta, 'objects': models.GeoManager()}
 
     # Add in any fields that were provided
     if fields:
@@ -374,7 +376,7 @@ def pre_save_layer(instance, sender, **kwargs):
         return
 
     # Do not process if there is no table.
-    base_file = instance.get_base_file()
+    base_file = instance.get_base_file()[0]
     if base_file is None or base_file.name != 'shp':
         return
 

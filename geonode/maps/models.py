@@ -40,6 +40,7 @@ from geonode.utils import GXPLayerBase
 from geonode.utils import layer_from_viewer_config
 from geonode.utils import default_map_config
 from geonode.utils import num_encode
+from geonode.security.models import remove_object_permissions
 
 from agon_ratings.models import OverallRating
 
@@ -229,7 +230,7 @@ class Map(ResourceBase, GXPMapBase):
         self.owner = user
         self.title = title
         self.abstract = abstract
-        self.projection = "EPSG:900913"
+        self.projection = getattr(settings, 'DEFAULT_MAP_CRS', 'EPSG:900913')
         self.zoom = 0
         self.center_x = 0
         self.center_y = 0
@@ -514,6 +515,7 @@ def pre_delete_map(instance, sender, **kwrargs):
     OverallRating.objects.filter(
         content_type=ct,
         object_id=instance.id).delete()
+    remove_object_permissions(instance.get_self_resource())
 
 
 class MapSnapshot(models.Model):
