@@ -3,6 +3,9 @@ import math
 import os
 import logging
 
+from pyproj import transform, Proj
+from urlparse import urljoin, urlsplit
+
 from django.db import models
 from django.db.models import Q
 from django.utils.translation import ugettext_lazy as _
@@ -235,7 +238,8 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin):
                                          ' dataset')
     # internal fields
     uuid = models.CharField(max_length=36)
-    owner = models.ForeignKey(settings.AUTH_USER_MODEL, blank=True, null=True, related_name='owned_resource')
+    owner = models.ForeignKey(settings.AUTH_USER_MODEL, blank=True, null=True, related_name='owned_resource',
+                              verbose_name=_("Owner"))
     contacts = models.ManyToManyField(settings.AUTH_USER_MODEL, through='ContactRole')
     title = models.CharField(_('title'), max_length=255, help_text=_('name by which the cited resource is known'))
     date = models.DateTimeField(_('date'), default=datetime.datetime.now, help_text=date_help_text)
@@ -259,6 +263,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin):
                                          help_text=constraints_other_help_text)
 
     license = models.ForeignKey(License, null=True, blank=True,
+                                verbose_name=_("License"),
                                 help_text=license_help_text)
     language = models.CharField(_('language'), max_length=3, choices=ALL_LANGUAGES, default='eng',
                                 help_text=language_help_text)
@@ -268,6 +273,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin):
 
     spatial_representation_type = models.ForeignKey(SpatialRepresentationType, null=True, blank=True,
                                                     limit_choices_to=Q(is_choice=True),
+                                                    verbose_name=_("spatial representation type"),
                                                     help_text=spatial_representation_type_help_text)
 
     # Section 5
@@ -325,13 +331,15 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin):
     popular_count = models.IntegerField(default=0)
     share_count = models.IntegerField(default=0)
 
-    featured = models.BooleanField(default=False, help_text=_('Should this resource be advertised in home page?'))
-    is_published = models.BooleanField(default=True, help_text=_('Should this resource be published and searchable?'))
+    featured = models.BooleanField(_("Featured"), default=False,
+                                   help_text=_('Should this resource be advertised in home page?'))
+    is_published = models.BooleanField(_("Is Published"), default=True,
+                                       help_text=_('Should this resource be published and searchable?'))
 
     # fields necessary for the apis
     thumbnail_url = models.TextField(null=True, blank=True)
     detail_url = models.CharField(max_length=255, null=True, blank=True)
-    rating = models.IntegerField(default=0, null=True)
+    rating = models.IntegerField(default=0, null=True, blank=True)
 
     def __unicode__(self):
         return self.title
@@ -374,6 +382,9 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin):
     def keyword_slug_list(self):
         return [kw.slug for kw in self.keywords.all()]
 
+    def region_name_list(self):
+        return [region.name for region in self.regions.all()]
+
     def spatial_representation_type_string(self):
         if hasattr(self.spatial_representation_type, 'identifier'):
             return self.spatial_representation_type.identifier
@@ -387,7 +398,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin):
 
     @property
     def keyword_csv(self):
-        keywords_qs = self.keywords.all()
+        keywords_qs = self.get_real_instance().keywords.all()
         if keywords_qs:
             return ','.join([kw.name for kw in keywords_qs])
         else:
@@ -410,7 +421,38 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin):
         self.center_y = center_y
         self.zoom = zoom
 
-        # FIXME(Ariel): How do we set the bbox with this information?
+        deg_len_equator = 40075160 / 360
+
+        # covert center in lat lon
+        def get_lon_lat():
+            wgs84 = Proj(init='epsg:4326')
+            mercator = Proj(init='epsg:3857')
+            lon, lat = transform(mercator, wgs84, center_x, center_y)
+            return lon, lat
+
+        # calculate the degree length at this latitude
+        def deg_len():
+            lon, lat = get_lon_lat()
+            return math.cos(lat) * deg_len_equator
+
+        lon, lat = get_lon_lat()
+
+        # taken from http://wiki.openstreetmap.org/wiki/Zoom_levels
+        # it might be not precise but enough for the purpose
+        distance_per_pixel = 40075160 * math.cos(lat)/2**(zoom+8)
+
+        # calculate the distance from the center of the map in degrees
+        # we use the calculated degree length on the x axis and the
+        # normal degree length on the y axis assumin that it does not change
+
+        # Assuming a map of 1000 px of width and 700 px of height
+        distance_x_degrees = distance_per_pixel * 500 / deg_len()
+        distance_y_degrees = distance_per_pixel * 350 / deg_len_equator
+
+        self.bbox_x0 = lon - distance_x_degrees
+        self.bbox_x1 = lon + distance_x_degrees
+        self.bbox_y0 = lat - distance_y_degrees
+        self.bbox_y1 = lat + distance_y_degrees
 
     def set_bounds_from_bbox(self, bbox):
         """
@@ -520,12 +562,14 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin):
         upload_path = os.path.join(settings.MEDIA_ROOT, thumb_folder)
         if not os.path.exists(upload_path):
             os.makedirs(upload_path)
-        url = os.path.join(settings.MEDIA_URL, thumb_folder, filename)
 
         #with open(os.path.join(upload_path, filename), 'w') as f:
         with os.fdopen(os.open(os.path.join(upload_path, filename), os.O_WRONLY | os.O_CREAT, settings.THUMBNAIL_FILE_PERMISSIONS), 'w') as f:
             thumbnail = File(f)
             thumbnail.write(image)
+
+        url_path = os.path.join(settings.MEDIA_URL, thumb_folder, filename).replace('\\', '/')
+        url = urljoin(settings.SITEURL, url_path)
 
         Link.objects.get_or_create(resource=self,
                                    url=url,
@@ -552,9 +596,9 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin):
         no_custom_permissions = UserObjectPermission.objects.filter(
             content_type=ContentType.objects.get_for_model(self.get_self_resource()),
             object_pk=str(self.pk)
-            ).count()
+            ).exists()
 
-        if no_custom_permissions == 0:
+        if not no_custom_permissions:
             logger.debug('There are no permissions for this object, setting default perms.')
             self.set_default_permissions()
 
@@ -699,13 +743,18 @@ def resourcebase_post_save(instance, *args, **kwargs):
     """
     ResourceBase.objects.filter(id=instance.id).update(
         thumbnail_url=instance.get_thumbnail_url(),
-        detail_url=instance.get_absolute_url())
+        detail_url=instance.get_absolute_url(),
+        csw_insert_date=datetime.datetime.now())
     instance.set_missing_info()
 
     # we need to remove stale links
     for link in instance.link_set.all():
-        if settings.SITEURL not in link.url:
-            link.delete()
+        if link.name == "External Document":
+            if link.resource.doc_url != link.url:
+                link.delete()
+        else:
+            if urlsplit(settings.SITEURL).hostname not in link.url:
+                link.delete()
 
 
 def rating_post_save(instance, *args, **kwargs):

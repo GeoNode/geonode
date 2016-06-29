@@ -17,13 +17,43 @@
 #
 #########################################################################
 
+import json
+from django.core.urlresolvers import reverse
 from django.test import TestCase
+from geonode.base.models import ResourceBase
 from geonode.catalogue import get_catalogue
 
 
 class CatalogueTest(TestCase):
     def test_get_catalog(self):
-        """
-        Tests the get_catalogue function works.
-        """
+        """Tests the get_catalogue function works."""
+
         c = get_catalogue()  # noqa
+
+    def test_data_json(self):
+        """Test that the data.json representation behaves correctly"""
+
+        response = self.client.get(reverse('data_json')).content
+        data_json = json.loads(response)
+
+        len1 = len(ResourceBase.objects.all())
+        len2 = len(data_json)
+        self.assertEquals(len1, len2,
+                          'Expected equality of json and repository lengths')
+
+        record_keys = [
+            'accessLevel',
+            'contactPoint',
+            'description',
+            'distribution',
+            'identifier',
+            'keyword',
+            'mbox',
+            'modified',
+            'publisher',
+            'title'
+        ]
+
+        for record in data_json:
+            self.assertEquals(record_keys, record.keys(),
+                              'Expected specific list of fields to output')

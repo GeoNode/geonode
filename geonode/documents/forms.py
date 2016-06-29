@@ -1,7 +1,8 @@
 import json
 import os
-import taggit
 import re
+import autocomplete_light
+
 from django import forms
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.contenttypes.models import ContentType
@@ -12,7 +13,6 @@ from modeltranslation.forms import TranslationModelForm
 from mptt.forms import TreeNodeMultipleChoiceField
 from bootstrap3_datetime.widgets import DateTimePicker
 
-from geonode.people.models import Profile
 from geonode.documents.models import Document
 from geonode.maps.models import Map
 from geonode.layers.models import Layer
@@ -35,6 +35,7 @@ class AnonDownloaderForm(forms.ModelForm):
             'anon_email',
             'anon_purpose',
             'anon_organization',
+            'anon_orgtype',
             'captcha'
         )
     def __init__(self, *args, **kwargs):
@@ -49,12 +50,19 @@ class AnonDownloaderForm(forms.ModelForm):
                     Field('anon_first_name', css_class='form-control'),
                     Field('anon_last_name', css_class='form-control'),
                     Field('anon_email', css_class='form-control'),
-                    css_class='form-group'
+                    css_class='form-group', style="text-align:right; width:1200px;"
                 ),
                 Div(
                     Field('anon_organization', css_class='form-control'),
+                    css_class='form-group', style="vertical-align:top;"
+                ),
+                Div(
+                    Field('anon_orgtype', css_class='form-control'),
+                    css_class='form-group', style="vertical-align:top;"
+                ),
+                Div(
                     Field('anon_purpose', css_class='form-control'),
-                    css_class='form-group'
+                    css_class='form-group', style="text-align:right; width:1200px;"
                 ),
             ),
             Div(
@@ -92,31 +100,14 @@ class DocumentForm(TranslationModelForm):
         widget=DateTimePicker(**_date_widget_options)
     )
 
+autocomplete_light.autodiscover() # flake8: noqa
+
+from geonode.base.forms import ResourceBaseForm
+
+
+class DocumentForm(ResourceBaseForm):
+
     resource = forms.ChoiceField(label='Link to')
-
-    poc = forms.ModelChoiceField(
-        empty_label="Person outside GeoNode (fill form)",
-        label="Point Of Contact",
-        required=False,
-        queryset=Profile.objects.exclude(
-            username='AnonymousUser'))
-
-    metadata_author = forms.ModelChoiceField(
-        empty_label="Person outside GeoNode (fill form)",
-        label="Metadata Author",
-        required=False,
-        queryset=Profile.objects.exclude(
-            username='AnonymousUser'))
-
-    keywords = taggit.forms.TagField(
-        required=False,
-        help_text=_("A space or comma-separated list of keywords"))
-
-    regions = TreeNodeMultipleChoiceField(
-        required=False,
-        queryset=Region.objects.all(),
-        level_indicator=u'___')
-    regions.widget.attrs = {"size": 20}
 
     def __init__(self, *args, **kwargs):
         super(DocumentForm, self).__init__(*args, **kwargs)
@@ -136,18 +127,6 @@ class DocumentForm(TranslationModelForm):
             self.fields['resource'].initial = 'type:%s-id:%s' % (
                 self.instance.content_type.id, self.instance.object_id)
 
-        for field in self.fields:
-            help_text = self.fields[field].help_text
-            self.fields[field].help_text = None
-            if help_text != '':
-                self.fields[field].widget.attrs.update(
-                    {
-                        'class': 'has-popover',
-                        'data-content': help_text,
-                        'data-placement': 'right',
-                        'data-container': 'body',
-                        'data-html': 'true'})
-
     def save(self, *args, **kwargs):
         contenttype_id = None
         contenttype = None
@@ -164,39 +143,14 @@ class DocumentForm(TranslationModelForm):
         self.instance.content_type = contenttype
         return super(DocumentForm, self).save(*args, **kwargs)
 
-    class Meta:
+    class Meta(ResourceBaseForm.Meta):
         model = Document
-        exclude = (
-            'uuid',
-            'contacts',
-            'workspace',
-            'store',
-            'name',
-            'uuid',
-            'storeType',
-            'typename',
-            'bbox_x0',
-            'bbox_x1',
-            'bbox_y0',
-            'bbox_y1',
-            'srid',
-            'category',
-            'csw_typename',
-            'csw_schema',
-            'csw_mdsource',
-            'csw_type',
-            'csw_wkt_geometry',
-            'metadata_uploaded',
-            'metadata_xml',
-            'csw_anytext',
+        exclude = ResourceBaseForm.Meta.exclude + (
             'content_type',
             'object_id',
             'doc_file',
             'extension',
             'doc_type',
-            'popular_count',
-            'share_count',
-            'thumbnail',
             'doc_url')
 
 

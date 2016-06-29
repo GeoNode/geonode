@@ -1,4 +1,0 @@
-.. _geoserver_api:
-
-GeoServers Import and Print APIs
-================================

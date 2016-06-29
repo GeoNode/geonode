@@ -16,6 +16,8 @@ from django_enumfield import enum
 from django.core import validators
 from django_auth_ldap.backend import LDAPBackend, ldap_error
 
+import ldap
+
 from model_utils import Choices
 from model_utils.models import TimeStampedModel
 
@@ -136,13 +138,17 @@ class DataRequestProfile(TimeStampedModel):
     data_set = models.CharField(
         _('Data/Data Set Subject to License'),
         max_length=100,
-    )
+    )"""
     area_coverage = models.DecimalField(
         _('Area of Coverage'),
         max_digits=30,
         decimal_places=4,
         help_text=_('Sqr KMs'),
+        default=0,
+        null=True,
+        blank=True,
     )
+    """
     data_resolution = models.PositiveIntegerField(
         _('Data Resolution'),
         help_text=_('pixels per inch'),
@@ -198,6 +204,13 @@ class DataRequestProfile(TimeStampedModel):
         max_length=50,
     )
 
+    #For jurisdiction data size
+    juris_data_size = models.FloatField(
+        _('Data size of requested jurisdiction'),
+        null=True,
+        blank=True,
+    )
+    
     #For request letter
     request_letter= models.ForeignKey(Document, null=True, blank=True)
 
@@ -326,7 +339,7 @@ class DataRequestProfile(TimeStampedModel):
         )
 
         text_content = """
-        Hi,
+        Hello LiPAD Admins,
 
         A new data request has been submitted by {} {}. You can view the data request profile using the following link:
         {}
@@ -337,7 +350,7 @@ class DataRequestProfile(TimeStampedModel):
         )
 
         html_content = """
-        <p>Hi,</p>
+        <p>Hello LiPAD Admins,</p>
 
         <p>A new data request has been submitted by {} {}. You can view the data request profile using the following link:</p>
         <p><a rel="nofollow" target="_blank" href="{}">{}</a></p>
@@ -488,7 +501,12 @@ class DataRequestProfile(TimeStampedModel):
         You will be able to edit your account details by logging in and going to the following link:
         {}
 
+<<<<<<< HEAD
+        To download DTMs, DSMs, Classified LAZ and Orthophotos, please proceed to http://lipad.dream.upd.edu.ph/maptiles after logging in.
+        To download Flood Hazard Maps, Resource Layers and other datasets, please proceed to http://lipad.dream.upd.edu.ph/layers/.
+=======
         Flood Hazard Maps and Resource Layers can be viewed and downloaded in the Data Store > Layers Section while the LiDAR DTM, LiDAR DSM, Classified LAZ and Orthophotos can be downloaded through Data Store > Data Tiles Section.
+>>>>>>> master
 
         If you have any questions, you can contact us as at {}.
 
@@ -497,7 +515,6 @@ class DataRequestProfile(TimeStampedModel):
          """.format(
              unidecode(self.first_name),
              username,
-             directory,
              profile_url,
              local_settings.LIPAD_SUPPORT_MAIL
          )
@@ -505,15 +522,20 @@ class DataRequestProfile(TimeStampedModel):
         html_content = """
         <p>Dear <strong>{}</strong>,</p>
 
-       <p>Your account registration for LiPAD was approved! You will now be able to log in using the following log-in credentials:</p>
-       username: <strong>{}</strong><br/>
-       </br>
+       <p>Your account registration for LiPAD was approved. You will now be able to log in using the following log-in credentials:</p>
+       username: <strong>{}</strong></p>
+
        <p>Before you are able to login to LiPAD, visit first https://ssp.dream.upd.edu.ph/?action=sendtoken and follow the instructions to reset a password for your account</p></br>
        <p>You will be able to edit your account details by logging in and going to the following link:</p>
        {}
        </br>
+<<<<<<< HEAD
+       <p>To download DTMs, DSMs, Classified LAZ and Orthophotos, please proceed to <a href="http://lipad.dream.upd.edu.ph/maptiles">Data Tiles Section</a> under Data Store after logging in.</p>
+       <p>To download Flood Hazard Maps, Resource Layers and other datasets, please proceed to <a href="http://lipad.dream.upd.edu.ph/layers/">Layers Section</a> under Data Store.</p>
+=======
        <p>Flood Hazard Maps and Resource Layers can be viewed and downloaded in the <a href="https://lipad.dream.upd.edu.ph/layers/">Data Store > Layers</a> Section while the LiDAR DTM, LiDAR DSM, Classified LAZ and Orthophotos can be downloaded through <a href="https://lipad.dream.upd.edu.ph/maptiles/">Data Store > Data Tiles</a> Section.</p>
 
+>>>>>>> master
        <p>If you have any questions, you can contact us as at <a href="mailto:{}" target="_top">{}</a></p>
        </br>
         <p>Regards,</p>
@@ -521,7 +543,6 @@ class DataRequestProfile(TimeStampedModel):
         """.format(
              unidecode(self.first_name),
              username,
-             directory,
              profile_url,
              local_settings.LIPAD_SUPPORT_MAIL,
              local_settings.LIPAD_SUPPORT_MAIL
@@ -550,6 +571,11 @@ class DataRequestProfile(TimeStampedModel):
         Dear {},
 
         Your current data request for LiPAD was approved.
+        To download DTMs, DSMs, Classified LAZ and Orthophotos, please proceed to http://lipad.dream.upd.edu.ph/maptiles after logging in.
+        To download Flood Hazard Maps, Resource Layers and other datasets, please proceed to http://lipad.dream.upd.edu.ph/layers/.
+
+        To download DTMs, DSMs, Classified LAZ and Orthophotos, please proceed to http://lipad.dream.upd.edu.ph/maptiles after logging in.
+        To download Flood Hazard Maps, Resource Layers and other datasets, please proceed to http://lipad.dream.upd.edu.ph/layers/.
 
         If you have any questions, you can contact us as at {}.
 
@@ -563,8 +589,9 @@ class DataRequestProfile(TimeStampedModel):
         html_content = """
         <p>Dear <strong>{}</strong>,</p>
 
-       <p>Your current data request in LiPAD was approved.
-       </br>
+       <p>Your current data request in LiPAD was approved.</p>
+       <p>To download DTMs, DSMs, Classified LAZ and Orthophotos, please proceed to <a href="http://lipad.dream.upd.edu.ph/maptiles">Data Tiles Section</a> under Data Store after logging in.</p>
+       <p>To download Flood Hazard Maps, Resource Layers and other datasets, please proceed to <a href="http://lipad.dream.upd.edu.ph/layers/">Layers Section</a> under Data Store.</p>
        <p>If you have any questions, you can contact us as at <a href="mailto:{}" target="_top">{}</a></p>
        </br>
         <p>Regards,</p>
@@ -621,8 +648,15 @@ class DataRequestProfile(TimeStampedModel):
                 else:
                     pprint("Accout was not created")
                     raise Exception("Account not created")
+             else:
+                 profile.organization_type = self.organization_type
+                 profile.save()
         except Exception as e:
             pprint(traceback.format_exc())
+            exc_name = type(e).__name__
+            pprint(exc_name)
+            if exc_name == "ALREADY_EXISTS":
+                return (False, "This user already has an account.")
             return (False, "Account creation failed. Check /var/log/apache2/error.log for more details")
 
         self.join_requester_grp()
@@ -689,7 +723,7 @@ class DataRequestProfile(TimeStampedModel):
         else:
             self.send_request_approval_email(self.username)
 
-    def to_values_list(self, fields=['id','name','email','contact_number', 'organization', 'project_summary', 'created','request_status']):
+    def to_values_list(self, fields=['id','name','email','contact_number', 'organization', 'project_summary', 'created','request_status', 'data_size','area_coverage']):
         out = []
         for f in fields:
             if f  is 'id':
@@ -721,6 +755,10 @@ class DataRequestProfile(TimeStampedModel):
                     out.append('no')
             elif f is 'rejection_reason':
                 out.append(str(getattr(self,'rejection_reason')))
+            elif f is 'juris_data_size':
+                out.append(str(getattr(self,'juris_data_size')))
+            elif f is 'area_coverage':
+                out.append(str(getattr(self,'area_coverage')))
             else:
                 val = getattr(self, f)
                 if isinstance(val, unicode):

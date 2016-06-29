@@ -21,6 +21,7 @@ from shapely.wkb import loads
 from shapely.geometry import Polygon
 from geonode.cephgeo.models import CephDataObject
 import math
+from shapely.ops import cascaded_union
 
 UNALLOWED_USERNAME_CHARACTERS='"[]:;|=+*?<>/\,.'
 ESCAPED_CHARACTERS="/\,"
@@ -129,7 +130,7 @@ def create_ad_account(datarequest, username):
     except Exception as e:
         import traceback
         print traceback.format_exc()
-        return False
+        raise e
 
 def add_to_ad_group(group_dn=settings.LIPAD_LDAP_GROUP_DN, user_dn=""):
     try:
@@ -158,10 +159,7 @@ def get_place_name(longitude,latitude):
     }
 
 def get_juris_data_size(juris_shp_name):
-    source = ogr.Open("PG:host=lipad-test02.tst.dream.upd.edu.ph dbname=geonode_data user=geonode password=geonode")
-    data = source.ExecuteSQL("select the_geom from "+str(juris_shp_name))
-    feature = data.GetNextFeature()
-    juris_shp = loads(feature.GetGeometryRef().ExportToWkb())
+    juris_shp = get_shp_ogr(juris_shp_name)
 
     _TILE_SIZE = 1000
     total_data_size = 0
@@ -185,3 +183,17 @@ def get_juris_data_size(juris_shp_name):
                     total_size += georef_query_objects.size_in_bytes
                 total_data_size += total_size
     return total_data_size
+
+def get_area_coverage(juris_shp_name):
+    juris_shp = get_shp_ogr(juris_shp_name)
+    return juris_shp.area/1000000
+
+def get_shp_ogr(juris_shp_name):
+    source = ogr.Open(("PG:host={0} dbname={1} user={2} password={3}".format(settings.DATABASE_HOST,settings.DATASTORE_DB,settings.DATABASE_USER,settings.DATABASE_PASSWORD)))
+    data = source.ExecuteSQL("select the_geom from "+str(juris_shp_name))
+    shplist = []
+    for i in range(data.GetFeatureCount()):
+        feature = data.GetNextFeature()
+        shplist.append(loads(feature.GetGeometryRef().ExportToWkb()))
+    juris_shp = cascaded_union(shplist)
+    return juris_shp

@@ -1,18 +1,17 @@
 {% load i18n %}
 
-<div class="col-md-6">
-  <ul class="list-inline pull-left" id="sort">
-    <li><a data-value="-date" data-filter="order_by" class="selected" ng-click="single_choice_listener($event)">{% trans "Most recent" %}</a></li>
-    <li><a data-value="date" data-filter="order_by" ng-click="single_choice_listener($event)">{% trans "Less recent" %}</a></li>
-    <li><a data-value="title" data-filter="order_by" ng-click="single_choice_listener($event)">{% trans "A - Z" %}</a></li>
-    <li><a data-value="-title" data-filter="order_by" ng-click="single_choice_listener($event)">{% trans "Z - A" %}</a></li>
-    <li><a data-value="-popular_count" data-filter="order_by" ng-click="single_choice_listener($event)">{% trans "Most popular" %}</a></li>
-  </ul>
-</div>
-<div class="col-md3">
-  {% block bulk_perms_button %}
-    {% if request.user.is_authenticated %}
-    <button data-toggle="modal" class="btn btn-default pull-right" data-target="#_bulk_permissions">{% trans "Set permissions" %}</button>
-    {% endif %}
-  {% endblock %}
+<div class="btn-group pull-right" role="group" aria-label="tools">
+  <div class="btn-group" role="group">
+    <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+      <i class="fa fa-sort-alpha-asc fa-lg"></i>
+      <i class="fa fa-angle-down fa-lg"></i>
+    </button>
+    <ul class="dropdown-menu dropdown-menu-right" id="sort">
+      <li><a data-value="-date" data-filter="order_by" class="selected" ng-click="single_choice_listener($event)">{% trans "Most recent" %}</a></li>
+      <li><a data-value="date" data-filter="order_by" ng-click="single_choice_listener($event)">{% trans "Less recent" %}</a></li>
+      <li><a data-value="title" data-filter="order_by" ng-click="single_choice_listener($event)">{% trans "A - Z" %}</a></li>
+      <li><a data-value="-title" data-filter="order_by" ng-click="single_choice_listener($event)">{% trans "Z - A" %}</a></li>
+      <li><a data-value="-popular_count" data-filter="order_by" ng-click="single_choice_listener($event)">{% trans "Most popular" %}</a></li>
+    </ul>
+  </div>
 </div>

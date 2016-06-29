@@ -1,0 +1,7 @@
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:site" content="{{ TWITTER_SITE }}" />
+<!-- Twitter truncates twitter:title to 70 characters. -->
+<meta name="twitter:title" content="{{ profile.username|truncatechars:70 }}" />
+<!-- Twitter truncates twitter:description at the word to 200 characters. -->
+<meta name="twitter:description" content="{{ profile.get_full_name | default:profile.username }} on {{ SITE_NAME }}" />
+<meta name="twitter:image" content="{{ profile.avatar_140 }}" />

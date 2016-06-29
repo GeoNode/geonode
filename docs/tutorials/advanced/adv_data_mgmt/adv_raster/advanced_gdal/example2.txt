@@ -1,0 +1,216 @@
+.. module:: geoserver.example2
+
+.. _geoserver.example2:
+
+Example n° 2: Serving a large number of DTM ASCII Grid Files
+--------------------------------------------------------------------------
+
+In this example there is a group of DTM images in ASCII Grid format. The purpose of this section is to describe how the GDAL commands may be used for merging the input 
+files provided. These data are taken from `Regione Calabria Open Data Portal <http://pr5sit.regione.calabria.it/web/pr5sit/sezione-opendata1;jsessionid=D37F21C541E793075AF90E3B0A3AAFBD>`_
+at the `ASCII - GRID` section.
+
+.. note:: Data have the same pixel resolution and same Coordinate Reference System *EPSG:3003*.
+
+.. warning:: This example requires GDAL with Python bindings.
+
+#.	Navigate to the workshop directory :file:`${TRAINING_ROOT}/data/user_data/gdal_processing_data` (on Windows :file:`%TRAINING_ROOT%\\data\\user_data\\gdal_processing_data`) and find the *DTM_data* directory.
+
+#.	Navigate inside the *DTM_data* directory with the SDKshell.
+
+.. note:: The following operations must be executed from the shell inside the selected directory. In Windows, run *setenv.bat* if not already launched.
+
+#. 	Calling the **gdalinfo** command on an image for retrieving the associated information::
+
+		gdalinfo 521150.asc
+		
+	And the result is::
+
+		Driver: AAIGrid/Arc/Info ASCII Grid
+		Files: 521150.asc
+		Size is 193, 154
+		Coordinate System is `'
+		Origin = (2590740.000000000000000,4433860.000000000000000)
+		Pixel Size = (40.000000000000000,-40.000000000000000)
+		Metadata:
+		  AREA_OR_POINT=Point
+		Corner Coordinates:
+		Upper Left  ( 2590740.000, 4433860.000)
+		Lower Left  ( 2590740.000, 4427700.000)
+		Upper Right ( 2598460.000, 4433860.000)
+		Lower Right ( 2598460.000, 4427700.000)
+		Center      ( 2594600.000, 4430780.000)
+		Band 1 Block=193x1 Type=Float32, ColorInterp=Undefined
+		  NoData Value=-9999
+			
+	From **gdalinfo** it is possible to note:
+	
+		* No CRS definition. An image without CRS cannot be displayed on GeoServer.
+		* Tiles Striped (193x1).
+		* No Compression.
+	
+#. 	Listing of all the images into a single text list with the following command::
+
+		ls *.asc > list.txt (Linux)
+		
+		or
+		
+		dir /b *.asc > list.txt (Windows)
+
+#. 	Merging of all the input files with the **gdal_merge.py** command::
+
+		gdal_merge.py -o merged.tif -co "TILED=YES" -co "BLOCKXSIZE=512" -co "BLOCKYSIZE=512" -co "COMPRESS=DEFLATE" -co "ZLEVEL=9" -co "BIGTIFF=YES" -init -9999 -a_nodata -9999 -n -9999 -ot Float32 --optfile list.txt
+
+	.. note:: This command must be executed with python for avoiding import errors.
+		
+	Parameters used:
+	
+		* **-o merged.tif** : definition of the output file name.
+		* **-co "TILED=YES" -co "BLOCKXSIZE=512" -co "BLOCKYSIZE=512"** : definition of tile dimensions.
+		* **-co "COMPRESS=DEFLATE" -co "ZLEVEL=9" -co "BIGTIFF=YES"** : definition of the compression mode.
+			
+			.. note:: **-co "BIGTIFF=YES"** is used because GDAL is not automatically able to convert the GeoTiff image into a BigTiff if compression is set.
+		
+		* **-init -9999** : initialization of the image pixels to NO DATA.
+		* **-a_nodata -9999** : definition of the output value for NO DATA.
+		* **-n -9999** : definition of the input pixel value to ignore during merging.
+		* **-ot Float32** : definition of the image output type.
+		* **--optfile list.txt** : definition of the input file list.
+	
+	The **gdalinfo** output on the merged image is::
+	
+		Driver: GTiff/GeoTIFF
+		Files: merged.tif
+		Size is 3613, 6284
+		Coordinate System is `'
+		Origin = (2570700.000000000000000,4445900.000000000000000)
+		Pixel Size = (40.000000000000000,-40.000000000000000)
+		Image Structure Metadata:
+		  COMPRESSION=DEFLATE
+		  INTERLEAVE=BAND
+		Corner Coordinates:
+		Upper Left  ( 2570700.000, 4445900.000)
+		Lower Left  ( 2570700.000, 4194540.000)
+		Upper Right ( 2715220.000, 4445900.000)
+		Lower Right ( 2715220.000, 4194540.000)
+		Center      ( 2642960.000, 4320220.000)
+		Band 1 Block=512x512 Type=Float32, ColorInterp=Gray
+		  NoData Value=-9999
+		  
+	The merged image has a good tiling(512x512) and compression, but the CRS is still undefined.
+
+#.	Setting of the image CRS with **gdal_translate**::
+
+		gdal_translate -a_srs "EPSG:3003" -co "TILED=YES" -co "BLOCKXSIZE=512" -co "BLOCKYSIZE=512" -co "COMPRESS=DEFLATE" -co "ZLEVEL=9" -co "BIGTIFF=YES" merged.tif merged_CRS.tif
+		
+	The various input parameters are maintained because by default GDAL do not compress the input image and set a bad tiling.
+
+	From **gdalinfo**::
+	
+		Driver: GTiff/GeoTIFF
+		Files: merged_CRS.tif
+		Size is 3613, 6284
+		Coordinate System is:
+		PROJCS["Monte Mario / Italy zone 1",
+			GEOGCS["Monte Mario",
+				DATUM["Monte_Mario",
+					SPHEROID["International 1924",6378388,297.0000000000014,
+						AUTHORITY["EPSG","7022"]],
+					TOWGS84[-104.1,-49.1,-9.9,0.971,-2.917,0.714,-11.68],
+					AUTHORITY["EPSG","6265"]],
+				PRIMEM["Greenwich",0],
+				UNIT["degree",0.0174532925199433],
+				AUTHORITY["EPSG","4265"]],
+			PROJECTION["Transverse_Mercator"],
+			PARAMETER["latitude_of_origin",0],
+			PARAMETER["central_meridian",9],
+			PARAMETER["scale_factor",0.9996],
+			PARAMETER["false_easting",1500000],
+			PARAMETER["false_northing",0],
+			UNIT["metre",1,
+				AUTHORITY["EPSG","9001"]],
+			AUTHORITY["EPSG","3003"]]
+		Origin = (2570700.000000000000000,4445900.000000000000000)
+		Pixel Size = (40.000000000000000,-40.000000000000000)
+		Metadata:
+		  AREA_OR_POINT=Area
+		Image Structure Metadata:
+		  COMPRESSION=DEFLATE
+		  INTERLEAVE=BAND
+		Corner Coordinates:
+		Upper Left  ( 2570700.000, 4445900.000) ( 21d25'57.43"E, 39d29'28.80"N)
+		Lower Left  ( 2570700.000, 4194540.000) ( 21d 3'12.94"E, 37d16'39.68"N)
+		Upper Right ( 2715220.000, 4445900.000) ( 23d 3'58.08"E, 39d18' 6.80"N)
+		Lower Right ( 2715220.000, 4194540.000) ( 22d38'27.42"E, 37d 6' 9.29"N)
+		Center      ( 2642960.000, 4320220.000) ( 22d 2'40.73"E, 38d17'47.75"N)
+		Band 1 Block=512x512 Type=Float32, ColorInterp=Gray
+		  NoData Value=-9999
+
+	This image can be displayed on GeoServer but a further optimization step could bring to better performances.
+	
+#.	(**Optional**) Creation of the **overviews** associated to the merged image for having better throughput::
+
+		gdaladdo -r nearest --config COMPRESS_OVERVIEW DEFLATE --config GDAL_TIFF_OVR_BLOCKSIZE 512 merged_CRS.tif 2 4 8 16
+		
+	Overviews are reduced views of the input image used by GeoServer for displaying the image at a lower resolutions.
+
+	Parameters used:
+	
+		* **-r nearest** : definition of the interpolation method.
+		* **--config COMPRESS_OVERVIEW DEFLATE** : definition of the compression on overviews.
+		* **--config GDAL_TIFF_OVR_BLOCKSIZE 512** : definition of the tile dimensions on overviews.
+	
+	And with **gdalinfo**::
+	
+		Driver: GTiff/GeoTIFF
+		Files: merged_CRS.tif
+		Size is 3613, 6284
+		Coordinate System is:
+		PROJCS["Monte Mario / Italy zone 1",
+			GEOGCS["Monte Mario",
+				DATUM["Monte_Mario",
+					SPHEROID["International 1924",6378388,297.0000000000014,
+						AUTHORITY["EPSG","7022"]],
+					TOWGS84[-104.1,-49.1,-9.9,0.971,-2.917,0.714,-11.68],
+					AUTHORITY["EPSG","6265"]],
+				PRIMEM["Greenwich",0],
+				UNIT["degree",0.0174532925199433],
+				AUTHORITY["EPSG","4265"]],
+			PROJECTION["Transverse_Mercator"],
+			PARAMETER["latitude_of_origin",0],
+			PARAMETER["central_meridian",9],
+			PARAMETER["scale_factor",0.9996],
+			PARAMETER["false_easting",1500000],
+			PARAMETER["false_northing",0],
+			UNIT["metre",1,
+				AUTHORITY["EPSG","9001"]],
+			AUTHORITY["EPSG","3003"]]
+		Origin = (2570700.000000000000000,4445900.000000000000000)
+		Pixel Size = (40.000000000000000,-40.000000000000000)
+		Metadata:
+		  AREA_OR_POINT=Area
+		Image Structure Metadata:
+		  COMPRESSION=DEFLATE
+		  INTERLEAVE=BAND
+		Corner Coordinates:
+		Upper Left  ( 2570700.000, 4445900.000) ( 21d25'57.43"E, 39d29'28.80"N)
+		Lower Left  ( 2570700.000, 4194540.000) ( 21d 3'12.94"E, 37d16'39.68"N)
+		Upper Right ( 2715220.000, 4445900.000) ( 23d 3'58.08"E, 39d18' 6.80"N)
+		Lower Right ( 2715220.000, 4194540.000) ( 22d38'27.42"E, 37d 6' 9.29"N)
+		Center      ( 2642960.000, 4320220.000) ( 22d 2'40.73"E, 38d17'47.75"N)
+		Band 1 Block=512x512 Type=Float32, ColorInterp=Gray
+		  NoData Value=-9999
+		  Overviews: 1807x3142, 904x1571, 452x786, 226x393
+		  
+	Then the result can be displayed in GeoServer by configuring the image as a GeoTiff (see :ref:`Adding a GeoTiff <geoserver.add_geotiff>` section).
+	
+#.	Displaying the result on GeoServer:
+
+	.. figure:: img/ascii_merged.png
+	
+
+		
+	
+ 
+	
+
+

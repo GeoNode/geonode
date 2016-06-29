@@ -1,0 +1,20 @@
+.. _user_features_index:
+
+===============
+Users' Features
+===============
+Open Source Geospatial Content Management System
+
+GeoNode is a web-based application and platform for developing geospatial information systems (GIS) and for deploying spatial data infrastructures (SDI).
+
+What GeoNode can be used for…
+`GeoNode Demo <http://demo.geonode.org/>`_
+(admin/admin)
+
+.. toctree::
+   :maxdepth: 2
+
+   spatial_data_discovery
+   import_and_manage
+   interactive_mapping
+

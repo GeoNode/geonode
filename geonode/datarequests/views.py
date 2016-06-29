@@ -60,7 +60,7 @@ from .forms import (
     DataRequestProfileRejectForm, DataRequestDetailsForm)
 from .models import DataRequestProfile
 from .utils import (
-    get_place_name, get_juris_data_size)
+    get_place_name, get_juris_data_size, get_area_coverage)
 
 def registration_part_one(request):
 
@@ -105,13 +105,13 @@ def registration_part_one(request):
     elif request.method == 'POST':
         if request.user.is_authenticated():
             request_object = create_request_obj(request.user)
-            
+
             if not request_object:
                 messages.info(request, "Please update your middle name and/or organization in your profile")
                 return redirect(reverse('profile_detail',  args= [request.user.username]))
-            
+
             request.session['request_object']=request_object
-            
+
         else:
             form = DataRequestProfileForm(
                 request.POST
@@ -241,7 +241,8 @@ def registration_part_two(request):
                         bbox_lon = (float(bbox[0])+float(bbox[1]))/2
                         bbox_lat = (float(bbox[2])+float(bbox[3]))/2
                         place_name = get_place_name(bbox_lon, bbox_lat)
-                        juris_data_size = get_juris_data_size(saved_layer.name)
+                        juris_data_size = 0.0
+                        area_coverage = get_area_coverage(saved_layer.name)
 
                     except Exception as e:
                         exception_type, error, tb = sys.exc_info()
@@ -313,9 +314,11 @@ def registration_part_two(request):
                                 interest_layer = interest_layer
                             )
 
-                    request_profile.place_name = place_name['state']
-                    request_profile.juris_data_size = juris_data_size
-                    request_profile.save()
+                    if interest_layer:
+                        request_profile.place_name = place_name['state']
+                        request_profile.juris_data_size = juris_data_size
+                        request_profile.area_coverage = area_coverage
+                        request_profile.save()
 
                     if request.user.is_authenticated():
                         request_profile.profile = request.user
@@ -398,7 +401,7 @@ def data_request_csv(request):
     response['Content-Disposition'] = 'attachment; filename="datarequests-"'+str(datetoday.month)+str(datetoday.day)+str(datetoday.year)+'.csv"'
 
     writer = csv.writer(response)
-    fields = ['id','name','email','contact_number', 'organization', 'organization_type','has_letter','has_shapefile','project_summary', 'created','request_status', 'date of action','rejection_reason']
+    fields = ['id','name','email','contact_number', 'organization', 'organization_type','has_letter','has_shapefile','project_summary', 'created','request_status', 'date of action','rejection_reason','juris_data_size','area_coverage']
     writer.writerow( fields)
 
     objects = DataRequestProfile.objects.all().order_by('pk')
@@ -547,9 +550,11 @@ def data_request_profile(request, pk, template='datarequests/profile_detail.html
     return render_to_response(template, RequestContext(request, context_dict))
 
 
-@require_POST
 def data_request_profile_reject(request, pk):
     if not request.user.is_superuser:
+        raise PermissionDenied
+
+    if not request.method == 'POST':
         raise PermissionDenied
 
     request_profile = get_object_or_404(DataRequestProfile, pk=pk)
@@ -581,10 +586,53 @@ def data_request_profile_reject(request, pk):
         mimetype='text/plain'
     )
 
+def data_request_profile_cancel(request, pk):
+    request_profile = get_object_or_404(DataRequestProfile, pk=pk)
 
-@require_POST
+    if not request.user.is_superuser and  not request_profile.profile == request.user:
+        raise PermissionDenied
+
+    if not request.method == 'POST':
+        raise PermissionDenied
+
+    request_profile = get_object_or_404(DataRequestProfile, pk=pk)
+
+    if request_profile.request_status == 'pending' or request_profile.request_status == 'unconfirmed':
+        pprint("Yown pasok")
+        form = request.POST.get('form', None)
+        request_profile.request_status = 'cancelled'
+        if form:
+            form_parsed = parse_qs(request.POST.get('form', None))
+            if 'rejection_reason' in form_parsed.keys():
+                request_profile.rejection_reason = form_parsed['rejection_reason'][0]
+
+            if 'additional_rejection_reason' in form_parsed.keys():
+                request_profile.additional_rejection_reason = form_parsed['additional_rejection_reason'][0]
+
+        request_profile.administrator = request.user
+        request_profile.action_date = timezone.now()
+        request_profile.save()
+
+    url = request.build_absolute_uri(request_profile.get_absolute_url())
+    if request.user.is_superuser:
+        return HttpResponse(
+            json.dumps({
+                'result': 'success',
+                'errors': '',
+                'url': url}),
+            status=200,
+            mimetype='text/plain'
+        )
+    else:
+        return HttpResponseRedirect(reverse('datarequests:data_request_profile', args=[pk]))
+
+
+
 def data_request_profile_approve(request, pk):
     if not request.user.is_superuser:
+        raise PermissionDenied
+
+    if not request.method == 'POST':
         raise PermissionDenied
 
     if request.method == 'POST':
@@ -605,6 +653,8 @@ def data_request_profile_approve(request, pk):
         if not result:
             messages.error (request, _(message))
         else:
+            request_profile.profile.organization_type = request_profile.organization_type
+            request_profile.profile.save()
             if request_profile.jurisdiction_shapefile:
                 request_profile.assign_jurisdiction() #assigns/creates jurisdiction object
             else:
@@ -622,9 +672,12 @@ def data_request_profile_approve(request, pk):
     else:
         return HttpResponseRedirect("/forbidden/")
 
-@require_POST
+
 def data_request_profile_reconfirm(request, pk):
     if not request.user.is_superuser:
+        raise PermissionDenied
+
+    if not request.method == 'POST':
         raise PermissionDenied
 
     if request.method == 'POST':
@@ -633,21 +686,26 @@ def data_request_profile_reconfirm(request, pk):
         request_profile.send_verification_email()
         return HttpResponseRedirect(request_profile.get_absolute_url())
 
-@require_POST
 def data_request_profile_recreate_dir(request, pk):
     if not request.user.is_superuser:
         raise PermissionDenied
 
+    if not request.method == 'POST':
+        raise PermissionDenied
+
     if request.method == 'POST':
         request_profile = get_object_or_404(DataRequestProfile, pk=pk)
-        
+
         request_profile.create_directory()
         return HttpResponseRedirect(request_profile.get_absolute_url())
 
-@require_POST
 def data_request_facet_count(request):
     if not request.user.is_superuser:
         raise PermissionDenied
+
+    if not request.method == 'POST':
+        raise PermissionDenied
+
     facets_count = {
         'pending': DataRequestProfile.objects.filter(
             request_status='pending').exclude(date=None).count(),
