@@ -201,14 +201,14 @@ class DataRequestProfile(TimeStampedModel):
         blank=True,
         max_length=50,
     )
-
+    
     #For jurisdiction data size
     juris_data_size = models.FloatField(
         _('Data size of requested jurisdiction'),
         null=True,
         blank=True,
     )
-    
+
     #For request letter
     request_letter= models.ForeignKey(Document, null=True, blank=True)
 
@@ -499,8 +499,12 @@ class DataRequestProfile(TimeStampedModel):
         You will be able to edit your account details by logging in and going to the following link:
         {}
 
+<<<<<<< HEAD
         To download DTMs, DSMs, Classified LAZ and Orthophotos, please proceed to http://lipad.dream.upd.edu.ph/maptiles after logging in.
         To download Flood Hazard Maps, Resource Layers and other datasets, please proceed to http://lipad.dream.upd.edu.ph/layers/.
+=======
+        Flood Hazard Maps and Resource Layers can be viewed and downloaded in the Data Store > Layers Section while the LiDAR DTM, LiDAR DSM, Classified LAZ and Orthophotos can be downloaded through Data Store > Data Tiles Section.
+>>>>>>> SUC-attribute
 
         If you have any questions, you can contact us as at {}.
 
@@ -523,8 +527,13 @@ class DataRequestProfile(TimeStampedModel):
        <p>You will be able to edit your account details by logging in and going to the following link:</p>
        {}
        </br>
+<<<<<<< HEAD
        <p>To download DTMs, DSMs, Classified LAZ and Orthophotos, please proceed to <a href="http://lipad.dream.upd.edu.ph/maptiles">Data Tiles Section</a> under Data Store after logging in.</p>
        <p>To download Flood Hazard Maps, Resource Layers and other datasets, please proceed to <a href="http://lipad.dream.upd.edu.ph/layers/">Layers Section</a> under Data Store.</p>
+=======
+       <p>Flood Hazard Maps and Resource Layers can be viewed and downloaded in the <a href="https://lipad.dream.upd.edu.ph/layers/">Data Store > Layers</a> Section while the LiDAR DTM, LiDAR DSM, Classified LAZ and Orthophotos can be downloaded through <a href="https://lipad.dream.upd.edu.ph/maptiles/">Data Store > Data Tiles</a> Section.</p>
+
+>>>>>>> SUC-attribute
        <p>If you have any questions, you can contact us as at <a href="mailto:{}" target="_top">{}</a></p>
        </br>
         <p>Regards,</p>
