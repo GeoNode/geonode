@@ -653,8 +653,8 @@ def iterate_over_layers(layers):
         try:
             print "Layer {0} {1}/{2}".format(layer.name,i+1,count)
             # print "Layer {0}".format(layers.name)
-            layers.default_style = layers.styles.get()
-            layers.save()
+            layer.default_style = layer.styles.get()
+            layer.save()
         except Exception as e:
             print "%s" % e
             pass
@@ -670,9 +670,17 @@ def layer_default_style(keyword):
         except Exception as e:
             print "%s" % e
             pass
-    else:
+    elif keyword == 'dem_':
         try:
             layers = Layer.objects.filter(name__icontains=keyword)
+            # layers = layers[0]
+            iterate_over_layers(layers)
+        except Exception as e:
+            print "%s" % e
+            pass
+    else:
+        try:
+            layers = Layer.objects.filter(keywords__name__icontains=keyword)
             # layers = layers[0]
             iterate_over_layers(layers)
         except Exception as e:
