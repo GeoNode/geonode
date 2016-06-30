@@ -34,7 +34,7 @@ body{
     {# {% include "maptiles/maptiles_explorer_map.html" %} #}
  {#{% else %} #}
     {#{% include "maptiles/maptiles_leaflet_map.html" %} #}
-{% include "maptiles/maptiles_geoext_map.html" %}
+{% include "maptiles/maptiles_geoext_map2.html" %}
 {# {% endif %} #}
 {{ block.super }}
 {% endblock %}
@@ -51,6 +51,10 @@ body{
 <!--
 <div class="row">
     <div class="col-md-9">
+		<div id="embedded_map" class="mrg-btm">
+-->
+			<div id="preview_map" style="margin-top:9px;" ></div>
+<!--
     </div>
     </div>
 -->
