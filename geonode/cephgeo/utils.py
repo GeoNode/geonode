@@ -189,7 +189,8 @@ def iterate_over_features():
 
 
 def map_blocks_suc():
-    source1 = ogr.Open(("PG:host={0} dbname={1} user={2} password={3}".format(settings.HOST_ADDR,settings.GIS_DATABASE_NAME,settings.DATABASE_USER,settings.DATABASE_PASSWORD)))
+    # source1 = ogr.Open(("PG:host={0} dbname={1} user={2} password={3}".format(settings.HOST_ADDR,settings.GIS_DATABASE_NAME,settings.DATABASE_USER,settings.DATABASE_PASSWORD)))
+    source = ogr.Open(("PG:host={0} dbname={1} user={2} password={3}".format(settings.DATABASE_HOST,settings.DATASTORE_DB,settings.DATABASE_USER,settings.DATABASE_PASSWORD)))
     floodplain = source1.GetLayer("fp_panay")
     blocks = source1.GetLayer("lidar_panay")
     from collections import defaultdict
