@@ -86,7 +86,7 @@
         $("#form_eula").submit(function(e) {
             e.preventDefault();
             $("#eula-nested-dialog").modal('hide');
-            $("<a href="{% url "document_detail" resource.id %}"></a>").click();
+            window.location = '{% url "document_download" resource.id %}';
         });
     {% endif %}
     </script>
