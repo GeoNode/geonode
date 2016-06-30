@@ -512,7 +512,6 @@ var vector_style = new OpenLayers.Style({
 var vector_style_map = new OpenLayers.StyleMap({
     'default': vector_style
 });
-
 /*
 Initialization of the map UI
 */
@@ -541,7 +540,7 @@ Ext.onReady(function (){
             "http://otile4.mqcdn.com/tiles/1.0.0/map/${z}/${x}/${y}.png"
         ],
         {
-            attribution: "Data, imagery and map information provided by <a href='http://www.mapquest.com/'  target='_blank'>MapQuest</a>, <a href='http://www.openstreetmap.org/' target='_blank'>Open Street Map</a> and contributors, <a href='http://creativecommons.org/licenses/by-sa/2.0/' target='_blank'>CC-BY-SA</a>  <img src='http://developer.mapquest.com/content/osm/mq_logo.png' border='0'>",
+            /*attribution: "Data, imagery and map information provided by <a href='http://www.mapquest.com/'  target='_blank'>MapQuest</a>, <a href='http://www.openstreetmap.org/' target='_blank'>Open Street Map</a> and contributors, <a href='http://creativecommons.org/licenses/by-sa/2.0/' target='_blank'>CC-BY-SA</a>  <img src='http://developer.mapquest.com/content/osm/mq_logo.png' border='0'>",*/
             transitionEffect: "resize"
         },
         {
@@ -619,10 +618,9 @@ Ext.onReady(function (){
     var items = [];
     var config = {
         renderTo: "preview_map",
-        height: 480,
+        height: 800,
         width: "100%",
         map: map,
-        title: "Tile Selection",
         items: items,
         center: [13652590.86,1366919.96],
         zoom: 7
@@ -702,6 +700,28 @@ Ext.onReady(function (){
     }else{
         map.zoomToExtent(tile_layer.getExtent());
     }
+
+    setMapSize();
+});
+/*
+Takes the navbar size and subtracts to window properties then Set's the mappanel size
+*/
+function setMapSize(){
+  var w = window.innerWidth;
+  var h = window.innerHeight;
+  var navheight = $("#navbar").height();
+  var size = app.getSize();
+  size.width = w;
+  size.height = h - navheight;
+  app.setSize(size);
+
+  document.getElementById("preview_map").style.marginLeft = -(w-1170)/2-15 +"px";
+
+  document.getElementById('floating-legend').style.top = navheight+15 +"px";
+}
+$(window).resize(function() {
+  //resize just happened, pixels changed
+  setMapSize()
 });
 {% endautoescape %}
 </script>
