@@ -16,6 +16,8 @@ from django_enumfield import enum
 from django.core import validators
 from django_auth_ldap.backend import LDAPBackend, ldap_error
 
+import ldap
+
 from model_utils import Choices
 from model_utils.models import TimeStampedModel
 
@@ -201,7 +203,7 @@ class DataRequestProfile(TimeStampedModel):
         blank=True,
         max_length=50,
     )
-    
+
     #For jurisdiction data size
     juris_data_size = models.FloatField(
         _('Data size of requested jurisdiction'),
@@ -504,7 +506,11 @@ class DataRequestProfile(TimeStampedModel):
         To download Flood Hazard Maps, Resource Layers and other datasets, please proceed to http://lipad.dream.upd.edu.ph/layers/.
 =======
         Flood Hazard Maps and Resource Layers can be viewed and downloaded in the Data Store > Layers Section while the LiDAR DTM, LiDAR DSM, Classified LAZ and Orthophotos can be downloaded through Data Store > Data Tiles Section.
+<<<<<<< HEAD
 >>>>>>> SUC-attribute
+=======
+>>>>>>> master
+>>>>>>> 8ea0f700d2b57a5933485d9a02ad7fd2dd5c4429
 
         If you have any questions, you can contact us as at {}.
 
@@ -533,7 +539,11 @@ class DataRequestProfile(TimeStampedModel):
 =======
        <p>Flood Hazard Maps and Resource Layers can be viewed and downloaded in the <a href="https://lipad.dream.upd.edu.ph/layers/">Data Store > Layers</a> Section while the LiDAR DTM, LiDAR DSM, Classified LAZ and Orthophotos can be downloaded through <a href="https://lipad.dream.upd.edu.ph/maptiles/">Data Store > Data Tiles</a> Section.</p>
 
+<<<<<<< HEAD
 >>>>>>> SUC-attribute
+=======
+>>>>>>> master
+>>>>>>> 8ea0f700d2b57a5933485d9a02ad7fd2dd5c4429
        <p>If you have any questions, you can contact us as at <a href="mailto:{}" target="_top">{}</a></p>
        </br>
         <p>Regards,</p>
@@ -646,8 +656,15 @@ class DataRequestProfile(TimeStampedModel):
                 else:
                     pprint("Accout was not created")
                     raise Exception("Account not created")
+             else:
+                 profile.organization_type = self.organization_type
+                 profile.save()
         except Exception as e:
             pprint(traceback.format_exc())
+            exc_name = type(e).__name__
+            pprint(exc_name)
+            if exc_name == "ALREADY_EXISTS":
+                return (False, "This user already has an account.")
             return (False, "Account creation failed. Check /var/log/apache2/error.log for more details")
 
         self.join_requester_grp()

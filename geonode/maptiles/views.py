@@ -281,3 +281,32 @@ def province_lookup(request, province=""):
             status=200,
             content_type="application/json",
         )
+#
+# Function for showing the data size of a georef
+#
+@login_required
+def georefs_datasize(request):
+    if request.method != 'POST':
+        return HttpResponse(
+            content='no data received from HTTP POST',
+            status=405,
+            mimetype='text/plain'
+        )
+    else:
+        georefs_clicked = request.POST["georefs_clicked"]
+        total_data_size_clicked = 0
+        
+        georefs_clicked_list = filter(None, georefs_clicked.split(","))
+
+        for eachgeoref_clicked in georefs_clicked_list:
+            pprint(eachgeoref_clicked)
+            clicked_objects = CephDataObject.objects.filter(name__startswith=eachgeoref_clicked)
+            for o in clicked_objects:
+                total_data_size_clicked += o.size_in_bytes
+                pprint(o.size_in_bytes)
+            pprint(total_data_size_clicked)
+        return HttpResponse(
+            content=json.dumps({ "total_data_size_clicked": total_data_size_clicked }),
+            status=200,
+            content_type="application/json"
+        )

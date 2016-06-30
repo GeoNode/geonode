@@ -6,6 +6,9 @@
 <script type="text/javascript" src="{{ STATIC_URL}}geonode/js/utils/thumbnail.js"></script>
 <script type="text/javascript" src="{{ STATIC_URL}}geonode/js/utils/proj4js-compressed.js"></script>
 <script type="text/javascript" src="{{ STATIC_URL}}geonode/js/utils/proj4js-EPSG32651.js"></script>
+<script src="http://code.jquery.com/jquery-1.9.1.js"></script>
+<script src="{{ STATIC_URL}}lib/js/sidenavi/SideNavi.js"></script>
+<link rel="stylesheet" href="{{ STATIC_URL}}lib/css/sidenavi/sidenavi-right.css">
 
 <script src="//ajax.googleapis.com/ajax/libs/jquery/1.7/jquery.js"></script>
 <script type="text/javascript" >
@@ -132,7 +135,6 @@ $(document).ready(function(){
             //$("#selection-message").hide();
             document.getElementById("selection-message").style.visibility="collapse";
         });
-
 });
 
 function zoomOnBbox(bounds){
@@ -208,6 +210,7 @@ function display_points(div_id, vec_layer){
             }
         }
     }
+    getDataSizeClicked(georef_string);
     document.getElementById("georef_area").setAttribute("value",georef_string);
 }
 
@@ -474,6 +477,30 @@ function removeHighlight(georef, vec_layer){
 }
 
 /*
+ Function in getting total_data_size_clicked
+*/
+function getDataSizeClicked(georefsclicked){
+    $.post('/maptiles/datasize/',
+        {"georefs_clicked" : georefsclicked}).done(function(result){
+          if (result.response){
+            self.submit();
+          } else {
+            document.getElementById("data_size_display").innerHTML = '- ' + formatBytes(result.total_data_size_clicked,2);
+          }
+       })
+}
+/*
+ Function for converting bytes to KB, MB, GB
+*/
+function formatBytes(bytes,decimals) {
+   if(bytes == 0) return '0 Byte';
+   var k = 1000; // or 1024 for binary
+   var dm = decimals + 1 || 3;
+   var sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
+   var i = Math.floor(Math.log(bytes) / Math.log(k));
+   return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
+}
+/*
 Defines the style for the highlight tiles
 */
 var vector_style = new OpenLayers.Style({
@@ -485,7 +512,6 @@ var vector_style = new OpenLayers.Style({
 var vector_style_map = new OpenLayers.StyleMap({
     'default': vector_style
 });
-
 /*
 Initialization of the map UI
 */
@@ -514,7 +540,7 @@ Ext.onReady(function (){
             "http://otile4.mqcdn.com/tiles/1.0.0/map/${z}/${x}/${y}.png"
         ],
         {
-            attribution: "Data, imagery and map information provided by <a href='http://www.mapquest.com/'  target='_blank'>MapQuest</a>, <a href='http://www.openstreetmap.org/' target='_blank'>Open Street Map</a> and contributors, <a href='http://creativecommons.org/licenses/by-sa/2.0/' target='_blank'>CC-BY-SA</a>  <img src='http://developer.mapquest.com/content/osm/mq_logo.png' border='0'>",
+            /*attribution: "Data, imagery and map information provided by <a href='http://www.mapquest.com/'  target='_blank'>MapQuest</a>, <a href='http://www.openstreetmap.org/' target='_blank'>Open Street Map</a> and contributors, <a href='http://creativecommons.org/licenses/by-sa/2.0/' target='_blank'>CC-BY-SA</a>  <img src='http://developer.mapquest.com/content/osm/mq_logo.png' border='0'>",*/
             transitionEffect: "resize"
         },
         {
@@ -592,10 +618,9 @@ Ext.onReady(function (){
     var items = [];
     var config = {
         renderTo: "preview_map",
-        height: 480,
+        height: 800,
         width: "100%",
         map: map,
-        title: "Tile Selection",
         items: items,
         center: [13652590.86,1366919.96],
         zoom: 7
@@ -675,6 +700,28 @@ Ext.onReady(function (){
     }else{
         map.zoomToExtent(tile_layer.getExtent());
     }
+
+    setMapSize();
+});
+/*
+Takes the navbar size and subtracts to window properties then Set's the mappanel size
+*/
+function setMapSize(){
+  var w = window.innerWidth;
+  var h = window.innerHeight;
+  var navheight = $("#navbar").height();
+  var size = app.getSize();
+  size.width = w;
+  size.height = h - navheight;
+  app.setSize(size);
+
+  document.getElementById("preview_map").style.marginLeft = -(w-1170)/2-15 +"px";
+
+  document.getElementById('floating-legend').style.top = navheight+15 +"px";
+}
+$(window).resize(function() {
+  //resize just happened, pixels changed
+  setMapSize()
 });
 {% endautoescape %}
 </script>

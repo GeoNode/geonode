@@ -167,18 +167,20 @@ def tile_shp(tile_extents,eval_shp_poly,feature):
             # Evaluate intersections
             if not tile.intersection(eval_shp_poly).is_empty:
                 if len(MissionGridRef.objects.filter(fieldID=feature.GetField("UID"),grid_ref=str(gridref))) == 0:
-                    print gridref
+                    # print gridref
                     georef = MissionGridRef.objects.create(fieldID=feature.GetField("UID"),grid_ref=str(gridref))
                     georef.save()
 
 def iterate_over_features():
-    source = ogr.Open(("PG:host={0} dbname={1} user={2} password={3}".format(settings.HOST_ADDR,settings.GIS_DATABASE_NAME,settings.DATABASE_USER,settings.DATABASE_PASSWORD)))
+    #source = ogr.Open(("PG:host={0} dbname={1} user={2} password={3}".format(settings.HOST_ADDR,settings.GIS_DATABASE_NAME,settings.DATABASE_USER,settings.DATABASE_PASSWORD)))
+    source = ogr.Open(("PG:host={0} dbname={1} user={2} password={3}".format(settings.DATABASE_HOST,settings.DATASTORE_DB,settings.DATABASE_USER,settings.DATABASE_PASSWORD)))
     layer = source.GetLayer(settings.LIDAR_COVERAGE)
     i = 0
+    feature_count = layer.GetFeatureCount()
     for feature in layer:
         i+=1
         d = datetime.datetime.now()
-        print "[{0}/{1}/{2} - {3}:{4}:{5}] Feature#{6}".format(d.day, d.month, d.year, d.hour, d.minute, d.second,i)
+        print "[{0}/{1}/{2} - {3}:{4}:{5}] Feature #{6} of {7} - {8}".format(d.day, d.month, d.year, d.hour, d.minute, d.second,i, feature_count, feature.GetField("Block_Name"))
         feature = layer.GetNextFeature()
         # print feature.GetField("Block_Name")
         geom = loads(feature.GetGeometryRef().ExportToWkb())
