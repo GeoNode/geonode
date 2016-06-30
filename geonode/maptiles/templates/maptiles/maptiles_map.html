@@ -143,10 +143,12 @@ body{
    <div id="notif" style="margin: 0px -15px;">
 
    </div>
-   <div class="page-header" style="margin-top:0px;">
-      <h3 class="page-title">Selected Tiles <div id="data_size_display" style="display:inline-block;">- 0 Byte</div></h3>
+   <div style="max-height: 150px; overflow-y: auto; overflow-x: hidden; margin-top: -15px;">
+     <div class="page-header" style="margin-top: 5px;">
+        <h3 class="page-title">Selected Tiles <div id="data_size_display" style="display:inline-block;">- 0 Byte</div></h3>
+     </div>
+     <div class="row" id="point_display" style="padding:0px 30px 30px 30px;">
    </div>
-   <div class="row" id="point_display" style="padding:0px 30px 30px 30px;">
 {% endblock %}
 {% endblock %}
 {% block extra_script %}
