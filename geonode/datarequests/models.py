@@ -210,7 +210,7 @@ class DataRequestProfile(TimeStampedModel):
         null=True,
         blank=True,
     )
-    
+
     #For request letter
     request_letter= models.ForeignKey(Document, null=True, blank=True)
 
@@ -506,7 +506,11 @@ class DataRequestProfile(TimeStampedModel):
         To download Flood Hazard Maps, Resource Layers and other datasets, please proceed to http://lipad.dream.upd.edu.ph/layers/.
 =======
         Flood Hazard Maps and Resource Layers can be viewed and downloaded in the Data Store > Layers Section while the LiDAR DTM, LiDAR DSM, Classified LAZ and Orthophotos can be downloaded through Data Store > Data Tiles Section.
+<<<<<<< HEAD
+>>>>>>> SUC-attribute
+=======
 >>>>>>> master
+>>>>>>> 8ea0f700d2b57a5933485d9a02ad7fd2dd5c4429
 
         If you have any questions, you can contact us as at {}.
 
@@ -535,7 +539,11 @@ class DataRequestProfile(TimeStampedModel):
 =======
        <p>Flood Hazard Maps and Resource Layers can be viewed and downloaded in the <a href="https://lipad.dream.upd.edu.ph/layers/">Data Store > Layers</a> Section while the LiDAR DTM, LiDAR DSM, Classified LAZ and Orthophotos can be downloaded through <a href="https://lipad.dream.upd.edu.ph/maptiles/">Data Store > Data Tiles</a> Section.</p>
 
+<<<<<<< HEAD
+>>>>>>> SUC-attribute
+=======
 >>>>>>> master
+>>>>>>> 8ea0f700d2b57a5933485d9a02ad7fd2dd5c4429
        <p>If you have any questions, you can contact us as at <a href="mailto:{}" target="_top">{}</a></p>
        </br>
         <p>Regards,</p>
