@@ -139,14 +139,16 @@ body{
    provided by <a href='http://www.mapquest.com/'  target='_blank'>MapQuest</a>, <a href='http://www.openstreetmap.org/' target='_blank'>Open Street Map</a><br>
    and contributors, <a href='http://creativecommons.org/licenses/by-sa/2.0/' target='_blank'>CC-BY-SA</a>  <img src='http://developer.mapquest.com/content/osm/mq_logo.png' border='0'>
  </div>
- <div style="position: fixed; bottom: 0px; left: 50%; width: 60%; margin-left: -30%; min-height: 150px; background: white; padding: 0px 15px;  max-height: 300px; overflow-y: auto;">
+ <div style="position: fixed; bottom: 0px; left: 50%; width: 60%; margin-left: -30%; min-height: 150px; background: white; padding: 0px 15px;">
    <div id="notif" style="margin: 0px -15px;">
 
    </div>
-   <div class="page-header" style="margin-top: 0px;">
-      <h3 class="page-title">Selected Tiles <div id="data_size_display" style="display:inline-block;">- 0 Byte</div></h3>
+   <div style="max-height: 150px; overflow-y: auto; overflow-x: hidden; margin-top: -15px;">
+     <div class="page-header" style="margin-top: 5px;">
+        <h3 class="page-title">Selected Tiles <div id="data_size_display" style="display:inline-block;">- 0 Byte</div></h3>
+     </div>
+     <div class="row" id="point_display" style="padding:0px 30px 30px 30px;">
    </div>
-   <div class="row" id="point_display" style="padding:0px 30px 30px 30px;">
 {% endblock %}
 {% endblock %}
 {% block extra_script %}
