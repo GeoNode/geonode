@@ -31,7 +31,8 @@
 
 <div class="row">
   <div class="col-md-8">
-    {% if "download_resourcebase" in perms_list %}
+    {% get_obj_perms request.user for resource.get_self_resource as "perms" %}
+    {% if "download_resourcebase" in perms %}
       {% if resource.extension|lower in imgtypes and resource.doc_file %}
       <div id="embedded_map">
         <a style="text-decoration:none;" href="{% url "document_download" resource.id %}" target="_blank">
@@ -44,7 +45,7 @@
       <p><a data-toggle="modal" data-target="#eula-nested-dialog" target="_blank">Download the {{ resource }} document.</a> <small>({% trans 'External Resource' %})</small></p>
       {%  endif %}
     {%  endif %}
-       
+
     <div class="documents-actions">
       {% include "_actions.html" %}
     </div>
@@ -55,11 +56,11 @@
       {% block social_links %}
         {% include "social_links.html" %}
       {% endblock %}
-        
+
       <article id="comments" class="tab-pane">
       {% include "_comments.html" %}
       </article>
-        
+
       <article id="rate" class="tab-pane">
         <!-- TODO: Move this to a reusable template snippet -->
         {% if request.user.is_authenticated %}
