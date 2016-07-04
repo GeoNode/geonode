@@ -113,3 +113,25 @@ def facets(context):
                 facets['vector'] + facets['remote'] + facets['wms']
 
     return facets
+
+
+@register.assignment_tag(takes_context=True)
+def get_current_path(context):
+    request = context['request']
+    return request.get_full_path()
+
+
+@register.assignment_tag(takes_context=True)
+def get_context_resourcetype(context):
+    c_path = get_current_path(context)
+    if c_path.find('/layers/') > - 1:
+        return 'layers'
+    elif c_path.find('/maps/') > - 1:
+        return 'maps'
+    elif c_path.find('/documents/') > - 1:
+        return 'documents'
+    elif c_path.find('/search/') > - 1:
+        return 'search'
+    else:
+        return 'error'
+    return get_current_path(context)
