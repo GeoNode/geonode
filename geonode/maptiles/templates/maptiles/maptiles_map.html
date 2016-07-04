@@ -86,12 +86,14 @@ body{
 
  <br />
  <div id="sideNavi">
-   <div id="side-navi" class="side-navi-item item1"><div style="padding-top: 5px;">Download Data Class(es)</div></div>
+   <div id="side-navi" class="side-navi-item item1"><div>Download Data</div></div>
    <div class="side-navi-item item2"><div>Area Search</div></div>
    <div class="side-navi-data">
      <div class="side-navi-tab">
-         <div>
-           <h4 class="list-group-item-heading">{%trans "Download Data Class(es)" %}</h4>
+         <div style="padding: 25px;">
+           <h4 class="list-group-item-heading">{%trans "Download Data" %}</h4>
+           <p style="font-size:12px; font-weight:300;">1. Select tiles on the left by either clicking on individual tiles, or select multiple tiles by holding down shift while drawing a bounding box. <i>Note: You need to upload a shapefile of your area of interest before being able to select tiles for download. To upload a shapefile, please <a href="{% url 'datarequests:registration_part_one' %}">update your data request.</a></i></p>
+           <p style="font-size:12px; font-weight:300;">2. Select data type below and click Download.</p>
            <form name="georef_form" id="georef_form" action="/maptiles/addtocart/" method="POST" >
                {% csrf_token %}
                   <nobr>
@@ -107,8 +109,6 @@ body{
 
                       </ul>
                   </nobr>
-
-                  <br/>
                <input type="text" id="georef_area" name="georef_area" style="display:none" />
                <input type="submit" id="georef_submit" name="georef_submit" value="Submit" class="btn btn-default" />
              <!--</div> -->
