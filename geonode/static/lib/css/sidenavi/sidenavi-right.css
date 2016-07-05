@@ -40,4 +40,4 @@
 /* tab wrapper */
 .side-navi-tab {  display: none;  }
 .side-navi-tab.active {  display: inline-block;  }
-.side-navi-tab > div {  padding: 30px;  }
+.side-navi-tab > div {  padding: 25px;  }
