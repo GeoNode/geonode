@@ -19,28 +19,28 @@ def get_prs92_download_url(link): #wfs, wcs
 		epsg4683 = 'srs=EPSG%3A4683'
 		temp = link.split('srs=EPSG%3A4326')
 		link = temp[0] + epsg4683 + temp[1]
-	elif 'SHAPE-ZIP' in str(link):
+	elif 'SHAPE-ZIP' in str(link) or 'kml' in str(link):
 		link = link + '&srsName=EPSG:4683'
 	return link
 
-def prs92_download_url_pl1(link):
+def prs92_download_url_pl1(link): #FHM
 	link = link.get_download_url()
 	if 'image%2Fpng' in str(link) or 'image%2Fjpeg' in str(link):
 		epsg4683 = 'srs=EPSG%3A4683'
 		temp = link.split('srs=EPSG%3A4326')
 		link = temp[0] + epsg4683 + temp[1]
-	elif 'SHAPE-ZIP' in str(link):
+	elif 'SHAPE-ZIP' in str(link) or 'kml' in str(link):
 		link = link + '&srsName=EPSG:4683'
 	link = link + '&format_options=layout:phillidar1'
 	return link
 
-def prs92_download_url_pl2(link):
+def prs92_download_url_pl2(link): #PL2 resource layers
 	link = link.get_download_url()
 	if 'image%2Fpng' in str(link) or 'image%2Fjpeg' in str(link):
 		epsg4683 = 'srs=EPSG%3A4683'
 		temp = link.split('srs=EPSG%3A4326')
 		link = temp[0] + epsg4683 + temp[1]
-	elif 'SHAPE-ZIP' in str(link):
+	elif 'SHAPE-ZIP' in str(link) or 'kml' in str(link):
 		link = link + '&srsName=EPSG:4683'
 	link = link + '&format_options=layout:phillidar2'
 	return link
