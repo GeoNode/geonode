@@ -29,10 +29,12 @@ class AnonDownloader(models.Model):
     anon_organization = models.CharField(_('Organization'), max_length=100)
     anon_purpose = models.CharField(_('Purpose'), max_length=100)
     anon_layer = models.ForeignKey(Layer, null=True, blank=True, related_name='anon_layer')
-    anon_orgtype = enum.EnumField(
-        OrganizationType,
+    anon_orgtype = models.CharField(
+        _('Organization Type'),
+        max_length=1,
+        choices=OrganizationType,
         default=OrganizationType.OTHER,
-        help_text=_('Organization type based on Phil-LiDAR1 Data Distribution Policy')
+        help_text='Organization type based on Phil-LiDAR1 Data Distribution Policy'
     )
     # anon_resourcebase = models.ForeignKey(ResourceBase, null=True, blank=True, related_name='anon_resourcebase')
     anon_document = models.ForeignKey(Document,null=True,blank=True)
