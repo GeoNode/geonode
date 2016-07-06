@@ -22,14 +22,14 @@ class EULALayerDownload(models.Model):
         return "{0}:{1}".format(self.user.username, self.layer.title)
 
 class AnonDownloader(models.Model):
-    PHIL_LIDAR_1 = 0
-    PHIL_LIDAR_2 = 1
-    GOVERNMENT_AGENCY = 2
-    ACADEME = 3
-    NGO_INTERNATIONAL = 4
-    NGO_LOCAL = 5
-    PRIVATE = 6
-    OTHER = 7
+    PHIL_LIDAR_1 = "0"
+    PHIL_LIDAR_2 = "1"
+    GOVERNMENT_AGENCY = "2"
+    ACADEME = "3"
+    NGO_INTERNATIONAL = "4"
+    NGO_LOCAL = "5"
+    PRIVATE = "6"
+    OTHER = "7"
     OrganizationType_Choices = (
         (PHIL_LIDAR_1, 'Phil-LiDAR 1 SUC'),
         (PHIL_LIDAR_2, 'Phil-LiDAR 2 SUC'),
@@ -49,7 +49,7 @@ class AnonDownloader(models.Model):
     anon_layer = models.ForeignKey(Layer, null=True, blank=True, related_name='anon_layer')
     anon_orgtype = models.CharField(
         _('Organization Type'),
-        max_length=10,
+        max_length=1,
         choices=OrganizationType_Choices,
         default=OTHER,
         help_text='Organization type based on Phil-LiDAR1 Data Distribution Policy'
