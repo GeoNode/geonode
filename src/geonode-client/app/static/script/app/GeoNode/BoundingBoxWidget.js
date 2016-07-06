@@ -12,7 +12,8 @@ GeoNode.BoundingBoxWidget = Ext.extend(Ext.util.Observable, {
     isEnabled: false,
     useGxpViewer: false,
 
-    gwcBackend: 'http://hh.worldmap.harvard.edu/layer/',
+    //gwcBackend: 'http://hh.worldmap.harvard.edu/layer/',
+    gwcBackend: 'http://192.168.33.15:8001/layer/',
 
     layers: {},
 
@@ -95,15 +96,15 @@ GeoNode.BoundingBoxWidget = Ext.extend(Ext.util.Observable, {
     },
 
     isActive: function() {
-        return true; 
+        return true;
     },
-    
+
     hasConstraint: function() {
         return this.isActive()
     },
-    
+
     applyConstraint: function(query) {
-        /* set parameters in the search query to limit the search to the 
+        /* set parameters in the search query to limit the search to the
          * displayed bounding box.
          */
         if (this.hasConstraint()) {
@@ -118,7 +119,7 @@ GeoNode.BoundingBoxWidget = Ext.extend(Ext.util.Observable, {
             delete query.bbox;
         }
     },
-    
+
     initFromQuery: function(grid, query) {
         if (query.bbox) {
             var bounds = OpenLayers.Bounds.fromString(query.bbox);

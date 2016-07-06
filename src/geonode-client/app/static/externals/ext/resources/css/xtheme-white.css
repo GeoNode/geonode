@@ -1664,7 +1664,7 @@ body.x-body-masked .x-window-plain .x-window-mc {
 }
 .x-slider-horz, .x-slider-horz .x-slider-end, .x-slider-horz .x-slider-inner {
     background-image:url(../images/white/slider/slider-bg-flat.png);
-    margin-bottom: 10px;
+    margin-bottom: 20px;
 }
 
 .x-slider-horz .x-slider-thumb {

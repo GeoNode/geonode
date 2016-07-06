@@ -38,7 +38,7 @@
     <Call name="addConnector">
       <Arg>
           <New class="org.mortbay.jetty.nio.SelectChannelConnector">
-            <Set name="host"><SystemProperty name="jetty.host" default="localhost"/></Set>
+            <Set name="host"><SystemProperty name="jetty.host" default="192.168.33.16"/></Set>
             <Set name="port"><SystemProperty name="jetty.port" default="8080"/></Set>
             <Set name="maxIdleTime">30000</Set>
             <Set name="Acceptors">2</Set>
@@ -51,7 +51,7 @@
     </Call>
 
     <!-- =========================================================== -->
-    <!-- Set handler Collection Structure                            --> 
+    <!-- Set handler Collection Structure                            -->
     <!-- =========================================================== -->
     <Set name="handler">
       <New id="Handlers" class="org.mortbay.jetty.handler.HandlerCollection">
@@ -70,7 +70,7 @@
         </Set>
       </New>
     </Set>
-    
+
     <!-- =========================================================== -->
     <!-- Configure the context deployer                              -->
     <!-- A context deployer will deploy contexts described in        -->
@@ -111,7 +111,7 @@
           <Set name="contexts"><Ref id="Contexts"/></Set>
           <Set name="webAppDir"><SystemProperty name="jetty.home" default="../../webapps"/></Set>
           <Set name="parentLoaderPriority">true</Set>
-		  <!--  Refer to http://geoserver.org/display/GEOSDOC/Dealing+with+native+JAI 
+		  <!--  Refer to http://geoserver.org/display/GEOSDOC/Dealing+with+native+JAI
 		  		for more background on the parentLoaderPriority=True -->
 	        <Set name="extract">true</Set>
 	        <Set name="allowDuplicates">false</Set>
@@ -169,4 +169,3 @@
     <Set name="gracefulShutdown">1000</Set>
 
 </Configure>
-

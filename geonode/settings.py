@@ -12,15 +12,15 @@ gettext = lambda s: s
 
 ####################### DATAVERSE_INFO_REPOSITORY_PATH
 #
-# For Dataverse/Worldmap communication, the following repository is required: 
+# For Dataverse/Worldmap communication, the following repository is required:
 #
 #   https://github.com/IQSS/shared-dataverse-information
 #
 # It may be accessed in 1 of 2 ways
 # -----------------------------------------------
-# 
+#
 #   (1) Add to the sys.path.  In the local_settings.py:
-#       (a) Add/Uncomment the code below (lines 28-31), 
+#       (a) Add/Uncomment the code below (lines 28-31),
 #           ending with the "sys.path.append" line
 #       (b) Set the appropriate path for "DATAVERSE_INFO_REPOSITORY_PATH"
 #   (2) or run "pip install shared_dataverse_information"
@@ -433,7 +433,8 @@ MAP_BASELAYERS = [
 
 
 #GEONODE_CLIENT_LOCATION = "http://localhost:9090/"
-GEONODE_CLIENT_LOCATION = "/static/geonode/"
+#GEONODE_CLIENT_LOCATION = "/static/geonode/"
+GEONODE_CLIENT_LOCATION = "http://192.168.33.16:9090/"
 
 
 # GeoNode vector data backend configuration.

@@ -43,27 +43,27 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
         this.searchStore = new Ext.data.JsonStore({
             url: this.searchURL,
             root: 'response.docs',
-            idProperty: 'LayerId',
+            idProperty: 'id',
             remoteSort: true,
             totalProperty: 'response.numFound',
             fields: [
-                {name: 'LayerTitle', type: 'string'},
-                {name: 'LayerId', type: 'string'},
-                {name: 'MinX', type: 'string'},
-                {name: 'MinY', type: 'string'},
-                {name: 'MaxX', type: 'string'},
-                {name: 'MaxY', type: 'string'},
-                {name: 'Originator', type: 'string'},
+                {name: 'title', type: 'string'},
+                {name: 'id', type: 'string'},
+                {name: 'min_x', type: 'string'},
+                {name: 'min_y', type: 'string'},
+                {name: 'max_x', type: 'string'},
+                {name: 'max_y', type: 'string'},
+                {name: 'layer_originator', type: 'string'},
                 {name: 'Location', type: 'string'},
-                {name: 'LayerName', type: 'string'},
+                {name: 'name', type: 'string'},
                 {name: 'LayerDate', type: 'string'},
                 {name: 'Availability', type: 'string'},
-                {name: 'Abstract', type: 'string'},
+                {name: 'abstract', type: 'string'},
                 {name: 'bbox', type: 'string'},
                 {name: 'LayerUrl', type: 'string'},
                 {name: 'ServiceType', type: 'string'},
                 {name: 'LayerUsername', type: 'string'},
-                {name: 'Is_Public', type: 'string'},
+                {name: 'is_public', type: 'string'},
                 {name: 'LayerDateType', type: 'string'}
             ]
         });
@@ -274,7 +274,7 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
         var sm = new Ext.grid.RowSelectionModel({
             listeners:{
                 rowselect: function(sm, rowIndex, record){
-                    if(record.get('Is_Public')){
+                    if(record.get('is_public')){
                         self.heatmap.bbox_widget.viewer.fireEvent('showLayer',
                         self.getlayerTypename(record), self.getLayerID(record));
                     }
@@ -316,24 +316,24 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
         var columns = [
             {
                 header: this.titleHeaderText,
-                dataIndex: 'LayerTitle',
+                dataIndex: 'title',
                 id: 'title',
                 sortable: true,
                 width: 200,
                 sortBy: 'LayerTitle',
                 renderer: function(value, metadata, record, rowIndex, colIndex, store){
-                    var the_abstract = app.layerTree.replaceURLWithHTMLLinks(record.get('Abstract'));
-                    metadata.attr = 
-                        'ext:qtip="' + record.get('Originator') + 
-                        '<br/><strong>Abstract</strong>: ' + 
-                        the_abstract.substring(0, 250) + 
+                    var the_abstract = app.layerTree.replaceURLWithHTMLLinks(record.get('abstract'));
+                    metadata.attr =
+                        'ext:qtip="' + record.get('layer_originator') +
+                        '<br/><strong>Abstract</strong>: ' +
+                        the_abstract.substring(0, 250) +
                         '<br/><strong>Date</strong>: ' + record.get('LayerDateType') + '"';
-                    return record.get('Is_Public') ?  value : '<span class="unviewable-layer"></span>' + '  ' + value;
+                    return record.get('is_public') ?  value : '<span class="unviewable-layer"></span>' + '  ' + value;
                 }
             },
             {
                 header: this.originatorText,
-                dataIndex: 'Originator',
+                dataIndex: 'layer_originator',
                 id: 'originator',
                 width: 100,
                 sortable: true
@@ -564,10 +564,10 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
 
     getLayerBounds: function(element){
         var bbox = {};
-        bbox.south = element.data.MinY
-        bbox.north = element.data.MaxY
-        bbox.west = element.data.MinX
-        bbox.east = element.data.MaxX
+        bbox.south = element.data.min_y
+        bbox.north = element.data.max_y
+        bbox.west = element.data.min_x
+        bbox.east = element.data.max_x
         return bbox
     },
 
@@ -576,7 +576,7 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
     },
 
     showPreviewLayer: function(record){
-        if(record.get('Is_Public')){
+        if(record.get('is_public')){
             var typename = this.getlayerTypename(record);
             this.heatmap.bbox_widget.viewer.fireEvent("showPreviewLayer", typename, this.getLayerID(record));
         }
@@ -587,10 +587,10 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
     },
 
     getlayerTypename: function(record){
-        return record.get('LayerName');
+        return record.get('name');
     },
 
     getLayerID: function(record){
-        return record.get('LayerId');
+        return record.get('id');
     }
 });

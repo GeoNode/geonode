@@ -1,13 +1,13 @@
 // This code provides an interface to the spatial data in the OpenGeoServer Solr server
 
-// To use it, first create an instance.  Then call member functions to set 
+// To use it, first create an instance.  Then call member functions to set
 //   as many search parameters as desired (e.g., setBoundingBox or setPublisher).
 //   Finally, to run the query call executeSearchQuery with success and error functions.
 
 // Solr queries can contain multiple filters (fq=) and a single query term (q=).  Filters are used to eliminate rows
 // from the set of returned results.  However, they do not affect scoring.  The query term
 // can both eliminate rows and specify a boost (which affects scoring).
-// For spatial searching, both filtering and query terms are used. 
+// For spatial searching, both filtering and query terms are used.
 // For keyword searching, only query terms are used (different boosts are applied to each field).
 // For searches requiring both keywords and spatial elements, their query terms are ANDed together
 
@@ -51,7 +51,7 @@ GeoNode.Solr = function() {
    * specification ("http://") nor should the urls end in "/select". this
    * function removes these elements as needed this function is inefficient
    * because it re-processes the shards every time it is called
-   * 
+   *
    * @return
    */
   this.getShardServerNames = function getShardNames() {
@@ -214,7 +214,7 @@ GeoNode.Solr = function() {
 
   this.SearchRequestColumns = [ "Name", "Institution", "Access", "DataType",
       "LayerTitle", "Publisher", "GeoReferenced", "Originator",
-      "Location", "MinX", "MaxX", "MinY", "MaxY", "ContentDate",
+      "Location", "min_x", "max_x", "min_y", "max_y", "ContentDate",
       "LayerId", "score", "WorkspaceName", "CollectionId", "ServiceType" , "Availability" ];
 
   // this function returns a Solr fl clause specifying the columns to return
@@ -250,7 +250,7 @@ GeoNode.Solr = function() {
 
   /**
    * Return parameters for text search component
-   * 
+   *
    * @private
    * @return {object} solr parameters
    */
@@ -380,7 +380,7 @@ GeoNode.Solr = function() {
 
   /*
    * Filters
-   * 
+   *
    */
   this.filters = [];
   // a private function used to create filters
@@ -498,7 +498,7 @@ GeoNode.Solr = function() {
 
     this.createNonGlobalAreaFilter = function createNonGlobalAreaFilter()
     {
-        var filter = this.createFilter("Area", "[0 TO 400]");
+        var filter = this.createFilter("area", "[0 TO 400]");
         return filter;
 
     };
@@ -572,7 +572,7 @@ GeoNode.Solr = function() {
 
   /**
    * Query component to filter out non-intersecting layers.
-   * 
+   *
    * @return {string} Query string filter
    */
   this.getIntersectionFilter = function() {
@@ -584,7 +584,7 @@ GeoNode.Solr = function() {
 
   /**
    * Returns the intersection area of the layer and map.
-   * 
+   *
    * @return {string} Query string to calculate intersection
    */
   this.getIntersectionFunction = function(bounds) {
@@ -599,14 +599,14 @@ GeoNode.Solr = function() {
     var xRange;
     if (bounds.minX > bounds.maxX) {
       // crosses the dateline
-      var xRange1 = getRangeClause(bounds.minX, "MinX", 180, "MaxX");
-      var xRange2 = getRangeClause(-180, "MinX", bounds.maxX, "MaxX");
+      var xRange1 = getRangeClause(bounds.minX, "min_x", 180, "max_x");
+      var xRange2 = getRangeClause(-180, "min_x", bounds.maxX, "max_x");
       xRange = "sum(" + xRange1 + "," + xRange2 + ")";
     } else {
-      xRange = getRangeClause(bounds.minX, "MinX", bounds.maxX, "MaxX");
+      xRange = getRangeClause(bounds.minX, "min_x", bounds.maxX, "max_x");
     }
 
-    var yRange = getRangeClause(bounds.minY, "MinY", bounds.maxY, "MaxY");
+    var yRange = getRangeClause(bounds.minY, "min_y", bounds.maxY, "max_y");
 
     var intersection = "product(" + xRange + "," + yRange + ")";
 
@@ -629,9 +629,9 @@ GeoNode.Solr = function() {
   this.classicCenterRelevancyClause = function() {
     var center = this.getCenter();
     var clause = "sum("
-        + this.layerNearCenterClause(center.centerX, "MinX", "MaxX")
+        + this.layerNearCenterClause(center.centerX, "min_x", "max_x")
         + ",";
-    clause += this.layerNearCenterClause(center.centerY, "MinY", "MaxY")
+    clause += this.layerNearCenterClause(center.centerY, "min_y", "max_y")
         + ")";
     return clause;
   };
@@ -645,7 +645,7 @@ GeoNode.Solr = function() {
     var mapDeltaY = Math.abs(bounds.maxY - bounds.minY);
     var mapArea = (mapDeltaX * mapDeltaY);
     var smoothingFactor = 1000;
-    var layerMatchesArea = "recip(sum(abs(sub(Area," + mapArea
+    var layerMatchesArea = "recip(sum(abs(sub(area," + mapArea
         + ")),.01),1," + smoothingFactor + "," + smoothingFactor + ")";
     return layerMatchesArea;
   };
@@ -687,13 +687,13 @@ GeoNode.Solr = function() {
 
         // why 400? this should not be a fixed size
         var thisPointWithin = "map(sum(map(sub(" + currentMapX
-            + ",MinX),0,400,1,0),";
+            + ",min_x),0,400,1,0),";
         thisPointWithin += "map(sub(" + currentMapX
-            + ",MaxX),-400,0,1,0),";
+            + ",max_x),-400,0,1,0),";
         thisPointWithin += "map(sub(" + currentMapY
-            + ",MinY),0,400,1,0),";
+            + ",min_y),0,400,1,0),";
         thisPointWithin += "map(sub(" + currentMapY
-            + ",MaxY),-400,0,1,0)),";
+            + ",max_y),-400,0,1,0)),";
         thisPointWithin += "4,4,1,0)"; // final map values
 
         // note that map(" + currentMapX + ",MinX,MaxX,1,0) doesn't work
@@ -735,13 +735,13 @@ GeoNode.Solr = function() {
     var mapMinY = bounds.minY;
     var mapMaxY = bounds.maxY;
 
-    var layerWithinMap = "if(and(exists(MinX),exists(MaxX),exists(MinY),exists(MaxY)),";
+    var layerWithinMap = "if(and(exists(min_x),exists(max_x),exists(min_y),exists(max_y)),";
 
     layerWithinMap += "map(sum(";
-    layerWithinMap += "map(MinX," + mapMinX + "," + mapMaxX + ",1,0),";
-    layerWithinMap += "map(MaxX," + mapMinX + "," + mapMaxX + ",1,0),";
-    layerWithinMap += "map(MinY," + mapMinY + "," + mapMaxY + ",1,0),";
-    layerWithinMap += "map(MaxY," + mapMinY + "," + mapMaxY + ",1,0))";
+    layerWithinMap += "map(min_x," + mapMinX + "," + mapMaxX + ",1,0),";
+    layerWithinMap += "map(max_x," + mapMinX + "," + mapMaxX + ",1,0),";
+    layerWithinMap += "map(min_y," + mapMinY + "," + mapMaxY + ",1,0),";
+    layerWithinMap += "map(max_y," + mapMinY + "," + mapMaxY + ",1,0))";
     layerWithinMap += ",4,4,1,0),0)";
 
     return layerWithinMap;
@@ -785,7 +785,7 @@ GeoNode.Solr = function() {
 
   /**
    * Other Solr queries: term query, layerInfo query, metadata query
-   * 
+   *
    */
 
   /**
@@ -825,8 +825,8 @@ GeoNode.Solr = function() {
 
   // returns the solr query to obtain a layer's metadata document from the
   // Solr server
-  
-  
+
+
   this.getArbitraryParams = function(layerId, request) {
     var params = {
       q : this.createFilter("LayerId", layerId),
@@ -836,11 +836,11 @@ GeoNode.Solr = function() {
 
     return params;
   };
-  
+
   this.getMetadataParams = function(layerId) {
     return this.getArbitraryParams(layerId, this.MetadataRequest);
   };
-  
+
 
   // returns the solr query to obtain terms directly from the index for a
   // field
@@ -891,9 +891,9 @@ GeoNode.Solr = function() {
   };
 
   /*
-   * 
+   *
    * Experimental spatial query clauses
-   * 
+   *
    */
 
   // all we need is "bounds", which in the application is the map extent
@@ -928,11 +928,11 @@ GeoNode.Solr = function() {
   /**
    * Calculates the reciprocal of the distance of the layer center from the
    * bounding box center.
-   * 
+   *
    * note that, while the squared Euclidean distance is perfectly adequate to
    * calculate relative distances, it affects the score/ranking in a
    * non-linear way; we may decide that is ok
-   * 
+   *
    * @return {string} query string to calculate score for center distance
    */
   this.getCenterRelevancyClause = function(centerLat, centerLon) {
@@ -948,25 +948,25 @@ GeoNode.Solr = function() {
 
   /**
    * Compares the area of the layer to the area of the map extent; "scale"
-   * 
+   *
    * @return {string} query string to calculate score for area comparison
    */
   this.getBoundsAreaRelevancyClause = function() {
     // smoothing factor really should be examined; is the curve shape
     // appropriate?
     var smoothingFactor = 1000;
-    var areaClause = "if(exists(Area),recip(abs(sub(Area,$union)),1,"
+    var areaClause = "if(exists(area),recip(abs(sub(Area,$union)),1,"
         + smoothingFactor + "," + smoothingFactor + "),0)";
     return areaClause;
   };
 
   /**
-   * 
+   *
    * Compares the area of the layer's intersection with the map extent to the
    * area of the map extent. $intx depends on the intersection function
    * defined in "getIntersectionFunction", while $union depends on the value
    * of union being populated with the area of the map extent
-   * 
+   *
    * @return {string} query string to calculate score for area comparison
    */
   this.getIntersectionAreaRelevancyClause = function(area) {

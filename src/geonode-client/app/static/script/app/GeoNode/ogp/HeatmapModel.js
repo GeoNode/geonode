@@ -1,12 +1,12 @@
 Ext.namespace("GeoNode");
 
 var heatmapParams = {
-  facet : "true", 
-  "facet.heatmap" : "bbox", 
+  facet : "true",
+  "facet.heatmap" : "bbox",
   "facet.heatmap.format" : "ints2D",
   fq: [
-    "Area:[0 TO 400]",
-    "!(Area:1 AND MaxX:0 AND MaxY:0)"
+    "area:[0 TO 400]",
+    "!(area:1 AND max_x:0 AND max_y:0)"
   ],
   'facet.heatmap.geom': "",
   rows: 0
@@ -60,7 +60,7 @@ GeoNode.HeatmapModel = Ext.extend(Ext.util.Observable, {
     //   dataType: "jsonp",
     //   data : {
     //     q: '*',
-    //     fq: 'Area:[401 TO *]',
+    //     fq: 'area:[401 TO *]',
     //     rows: 0,
     //     wt: 'json'
     //   },
@@ -138,7 +138,7 @@ GeoNode.HeatmapModel = Ext.extend(Ext.util.Observable, {
     var stepsLongitude = heatmapObject[3];
     var minMaxValue = this.heatmapMinMax(heatmap, stepsLatitude, stepsLongitude);
     var maxValue = minMaxValue[1];
-    if (maxValue == -1) return; 
+    if (maxValue == -1) return;
     var minimumLatitude = heatmapObject[11];
     var maximumLatitude = heatmapObject[13];
     var deltaLatitude = maximumLatitude - minimumLatitude;
@@ -180,7 +180,7 @@ GeoNode.HeatmapModel = Ext.extend(Ext.util.Observable, {
       map.setLayerIndex(this.heatmapLayer, 2);
     }else{
       this.heatmapLayer.redraw();
-    } 
+    }
   },
 
   getRadiusFactor: function(){
@@ -189,7 +189,7 @@ GeoNode.HeatmapModel = Ext.extend(Ext.util.Observable, {
       if (zoomLevel <1){
         return 1;
       };
-    
+
       var index = zoomLevel - 1;
       if (index > factor.length - 1){
         return factor[factor.length - 1];
@@ -209,11 +209,11 @@ GeoNode.HeatmapModel = Ext.extend(Ext.util.Observable, {
         if (currentRow[j] == null){
           currentRow[j] = -1;
         }
-        
+
         if (currentRow[j] > max){
           max = currentRow[j];
         }
-        
+
         if (currentRow[j] < min && currentRow[j] > -1){
           min = currentRow[j];
         }
@@ -300,15 +300,15 @@ GeoNode.HeatmapModel = Ext.extend(Ext.util.Observable, {
     if (value == null){
       return 0;
     };
-      
+
     if (value == -1){
       return -1;
     };
-    
+
     if (value == 0){
       return 0;
     };
-    
+
     value = value * 1.0;
     return value / max;
   },
@@ -368,7 +368,7 @@ GeoNode.HeatmapModel = Ext.extend(Ext.util.Observable, {
       this.tooltip.initTarget('ge_searchWindow');
       this.tooltip.show();
       this.tooltip.body.dom.innerHTML = message;
-      
+
   }
 
 });
