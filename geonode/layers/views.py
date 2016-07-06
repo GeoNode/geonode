@@ -303,9 +303,9 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
         context_dict["social_links"] = build_social_links(request, layer)
 
     if request.method == 'POST':
+        pprint(request.POST)
         form = AnonDownloaderForm(request.POST)
         out = {}
-        pprint(form)
         if form.is_valid():
             pprint(form)
             out['success'] = True
