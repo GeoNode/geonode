@@ -22,6 +22,24 @@ class EULALayerDownload(models.Model):
         return "{0}:{1}".format(self.user.username, self.layer.title)
 
 class AnonDownloader(models.Model):
+    PHIL_LIDAR_1 = "Phil-LiDAR 1 SUC"
+    PHIL_LIDAR_2 = "Phil-LiDAR 2 SUC"
+    GOVERNMENT_AGENCY = "Government Agency"
+    ACADEME = "Academe"
+    NGO_INTERNATIONAL = "International NGO"
+    NGO_LOCAL = "Local NGO"
+    PRIVATE = "Private Insitution"
+    OTHER = "Other"
+    OrganizationType_Choices = (
+        (PHIL_LIDAR_1, 'Phil-LiDAR 1 SUC'),
+        (PHIL_LIDAR_2, 'Phil-LiDAR 2 SUC'),
+        (GOVERNMENT_AGENCY, 'Government Agency'),
+        (ACADEME, 'Academe'),
+        (NGO_INTERNATIONAL, 'International NGO'),
+        (NGO_LOCAL, 'Local NGO'),
+        (PRIVATE, 'Private Insitution'),
+        (OTHER, 'Other'),
+    )
     date = models.DateTimeField(auto_now=True)
     anon_first_name = models.CharField(_('First Name'), max_length=100)
     anon_last_name = models.CharField(_('Last Name'), max_length=100)
@@ -31,9 +49,9 @@ class AnonDownloader(models.Model):
     anon_layer = models.ForeignKey(Layer, null=True, blank=True, related_name='anon_layer')
     anon_orgtype = models.CharField(
         _('Organization Type'),
-        max_length=1,
-        choices=OrganizationType,
-        default=OrganizationType.OTHER,
+        max_length=100,
+        choices=OrganizationType_Choices,
+        default=OTHER,
         help_text='Organization type based on Phil-LiDAR1 Data Distribution Policy'
     )
     # anon_resourcebase = models.ForeignKey(ResourceBase, null=True, blank=True, related_name='anon_resourcebase')
