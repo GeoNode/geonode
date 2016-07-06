@@ -304,7 +304,7 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
 
     if request.method == 'POST':
         pprint(request.POST)
-        form = AnonDownloaderForm(request.POST)
+        form = AnonDownloaderForm(data=request.POST)
         out = {}
         if form.is_valid():
             pprint(form)
