@@ -987,7 +987,8 @@ def _create_db_featurestore(name, data, overwrite=False, charset="UTF-8", worksp
          'min connections': '1',
          'fetch size': '1000',
          'host': db['HOST'],
-         'port': db['PORT'],
+         'port': db['PORT'] if isinstance(
+             db['PORT'], basestring) else str(db['PORT']) or '5432',
          'database': db['NAME'],
          'user': db['USER'],
          'passwd': db['PASSWORD'],
