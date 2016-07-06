@@ -49,7 +49,6 @@ class AnonDownloader(models.Model):
     anon_layer = models.ForeignKey(Layer, null=True, blank=True, related_name='anon_layer')
     anon_orgtype = models.CharField(
         _('Organization Type'),
-        max_length=1,
         choices=OrganizationType_Choices,
         default=OTHER,
         help_text='Organization type based on Phil-LiDAR1 Data Distribution Policy'
