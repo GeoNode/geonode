@@ -1490,9 +1490,10 @@ def style_update(request, url):
             style.sld_url = url
             style.sld_body = sld_body
             style.save()
-            layer = Layer.objects.all().filter(typename=layer_name)[0]
-            style.layer_styles.add(layer)
-            style.save()
+            layers = Layer.objects.all().filter(typename=layer_name)
+            if layers and len(layers) > 0:
+                style.layer_styles.add(layers[0])
+                style.save()
         if request.method == 'PUT':  # update style in GN
             style = Style.objects.all().filter(name=style_name)[0]
             style.sld_body = sld_body
