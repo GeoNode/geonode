@@ -101,7 +101,7 @@ class DataRequestProfileForm(forms.ModelForm):
         
     def clean_last_name(self):
         lname = self.cleaned_data.get('last_name').strip()
-        if len(mname)<1:
+        if len(lname)<1:
             raise forms.ValidationError("You have entered an empty last name")
         
         return lname
