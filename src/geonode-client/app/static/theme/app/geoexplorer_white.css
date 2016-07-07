@@ -993,8 +993,14 @@ td.x-grid3-hd-over .x-grid3-hd-inner, td.sort-desc .x-grid3-hd-inner, td.sort-as
   margin-left: 400px;
 }
 
-.date-form{
+.x-panel .date-form{
   margin-left: 25px;
+  margin-bottom: -10px;
+}
+
+.x-panel-body .x-panel-body-noheader
+.x-panel .date-form label{
+  font-size: 12px;
 }
 
 .x-trigger-wrap-focus .x-form-trigger{

@@ -801,7 +801,6 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
 
         var addLayerButton = new Ext.Button({
             id: "worldmap_addlayers_button",
-            tooltip : this.addLayersButtonText,
             disabled: false,
             text: '<span class="x-btn-text">' + this.addLayersButtonText + '</span>',
             handler : this.showSearchWindow,
@@ -1086,13 +1085,13 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
         var source = dataSource;
 
         var layerStore = this.mapPanel.layers;
-        // var isLocal = source instanceof gxp.plugins.GeoNodeSource &&
-        //     source.url.replace(this.urlPortRegEx, "$1/").indexOf(
-        //         this.localGeoServerBaseUrl.replace(
-        //             this.urlPortRegEx, "$1/")) === 0;
+        var isLocal = source instanceof gxp.plugins.GeoNodeSource &&
+            source.url.replace(this.urlPortRegEx, "$1/").indexOf(
+                this.localGeoServerBaseUrl.replace(
+                    this.urlPortRegEx, "$1/")) === 0;
         for (var i = 0, ii = records.length; i < ii; ++i) {
             var thisRecord = records[i];
-            if (thisRecord.get('Is_Public')) {
+            if (thisRecord.get('Is_Public') && isLocal) {
                 //Get all the required WMS parameters from the GeoNode/Worldmap database
                 // instead of GetCapabilities
                 var typename = this.searchTable.getlayerTypename(records[i]);
@@ -1128,6 +1127,11 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                     layer.url = thisRecord.get('LayerUrl');
                 };
 
+                if(thisRecord.get('ServiceType') === 'ESRI_ImageServer' || thisRecord.get('ServiceType') === 'ESRI_MapServer'){
+                    layer.url = thisRecord.get('LayerUrl');
+                    source = geoEx.addLayerSource({config: {url: layer.url, ptype: 'gxp_arcrestsource'}});
+                };
+
                 var record = source.createLayerRecord(layer);
                 record.selected = true;
                 // record.data.detail_url = thisRecord.get('LayerUrl').indexOf('worldmap.harvard.edu') > -1 ?
@@ -1156,31 +1160,31 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                     }
                 };
             }
-            //else {
-            //     //Not a local GeoNode layer, use source's standard method for creating the layer.
-            //     var layer = records[i].get("name");
-            //     var record = source.createLayerRecord({
-            //         name: layer,
-            //         source: key,
-            //         buffer: 0
-            //     });
-            //     //alert(layer + " created after FAIL");
-            //     if (record) {
-            //         if (record.get("group") === "background") {
-            //             var pos = layerStore.queryBy(
-            //                 function(rec) {
-            //                     return rec.get("group") === "background"
-            //                 }).getCount();
-            //             layerStore.insert(pos, [record]);
-            //         } else {
-            //             category = "General";
-            //             record.set("group", category);
+            else {
+                //Not a local GeoNode layer, use source's standard method for creating the layer.
+                var layer = records[i].get("name");
+                var record = source.createLayerRecord({
+                    name: layer,
+                    source: key,
+                    buffer: 0
+                });
+                //alert(layer + " created after FAIL");
+                if (record) {
+                    if (record.get("group") === "background") {
+                        var pos = layerStore.queryBy(
+                            function(rec) {
+                                return rec.get("group") === "background"
+                            }).getCount();
+                        layerStore.insert(pos, [record]);
+                    } else {
+                        category = "General";
+                        record.set("group", category);
 
-            //             geoEx.layerTree.addCategoryFolder({"group":record.get("group")}, true);
-            //             layerStore.add([record]);
-            //         }
-            //     }
-            // }
+                        geoEx.layerTree.addCategoryFolder({"group":record.get("group")}, true);
+                        layerStore.add([record]);
+                    }
+                }
+            }
         }
         this.searchWindow.hide();
     },
@@ -2192,6 +2196,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             //searchURL: "/solr",
             // TODO this URL should be defined only once
             searchURL: "http://54.221.223.91:8983/solr/hypermap2/select",
+
             layerDetailURL: '/data/search/detail',
             constraints: [this.bbox],
             searchParams: {'limit':10, 'bbox': llbounds.toBBOX()},
@@ -2235,11 +2240,12 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             title: "Search",
             closeAction: 'hide',
             layout: 'fit',
-            width: 900,
-            height: 580,
+            width: 870,
+            height: 570,
             items: [this.dataTabPanel],
             modal: true,
             autoScroll: true,
+            resizable: false,
             bodyStyle: 'background-color:#FFF'
         });
 

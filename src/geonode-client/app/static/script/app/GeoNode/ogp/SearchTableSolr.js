@@ -89,6 +89,12 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
                     clearTimeout(timeout);
                 });
             });
+
+            // use jquery to remove tooltip on mouseleave
+            $('.x-grid3-row').mouseleave(function(){
+                $('.x-tip').hide();
+                $('.x-shadow').hide();
+            });
         }, this);
 
         // hack to fix the sort term as solr is expecting it
@@ -223,7 +229,7 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
             }
         };
         var dates = this.dateInput.getDateValues();
-        if(dates){
+        if(dates != '[* TO *]'){
             GeoNode.queryTerms.fq.push("LayerDate:" + this.dateInput.getDateValues());
         };
 
@@ -347,7 +353,7 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
                 sortBy: 'LayerDate',
                 renderer: function(value, metaData, record, rowIndex, colIndex, store){
                     var date = new Date(record.get('LayerDate'));
-                    return date.getFullYear();
+                    return date.getFullYear() || 'None';
                 }
             }
         ];
@@ -409,12 +415,7 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
             triggerAction: 'all',
             editable: false,
             forceSelection: true,
-            value: '',
-            listeners:{
-                change: function(scope, checked){
-                    self.updateQuery();
-                }
-            }
+            value: ''
         });
 
 
@@ -483,6 +484,13 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
         });
         searchButton.on('click', this.updateQuery, this);
 
+        var clearSearchLink = new Ext.Button({
+            text: "Clear Search",
+            listeners: {
+                click: function(){self.clearSearch()}
+            }
+        });
+
         var searchForm = new Ext.Panel({
              frame: false,
              border: false,
@@ -503,7 +511,8 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
                     this.queryInput,
                     this.originatorInput,
                     this.dataTypeInput, //dropdown
-                    searchButton
+                    searchButton,
+                    clearSearchLink
                 ],
                 colspan: 4
             },{
@@ -592,5 +601,15 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
 
     getLayerID: function(record){
         return record.get('id');
+    },
+
+    clearSearch: function(){
+        this.originatorInput.setValue('');
+        this.dataTypeInput.setValue('');
+        this.dateInput.setValue(0, this.dateInput.values[0]);
+        this.dateInput.setValue(1, this.dateInput.values[1]);
+        this.queryInput.setValue('');
+        delete this.table.store.sortInfo;
+        this.updateQuery();
     }
 });
