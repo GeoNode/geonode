@@ -223,7 +223,8 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
     externalDataText: 'External Data',
     leavePageWarningText: 'If you leave this page, unsaved changes will be lost.',
 
-    mapproxy_backend: 'http://hh.worldmap.harvard.edu',
+    //mapproxy_backend: 'http://hh.worldmap.harvard.edu',
+    mapproxy_backend: 'http://192.168.33.15:8001',
 
     constructor: function(config) {
         this.config = config;
@@ -1089,9 +1090,10 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             source.url.replace(this.urlPortRegEx, "$1/").indexOf(
                 this.localGeoServerBaseUrl.replace(
                     this.urlPortRegEx, "$1/")) === 0;
+        //var isLocal = True;
         for (var i = 0, ii = records.length; i < ii; ++i) {
             var thisRecord = records[i];
-            if (thisRecord.get('Is_Public') && isLocal) {
+            if (thisRecord.get('is_public') && isLocal) {
                 //Get all the required WMS parameters from the GeoNode/Worldmap database
                 // instead of GetCapabilities
                 var typename = this.searchTable.getlayerTypename(records[i]);
@@ -1102,33 +1104,33 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                 for (var j=0; j<bbox_values.length; j++){
                     layer_bbox.push(parseFloat(bbox_values[j]));
                 };
-                var layer_detail_url = this.mapproxy_backend + JSON.parse(thisRecord.get('Location')).layerInfoPage;
+                var layer_detail_url = this.mapproxy_backend + JSON.parse(thisRecord.get('location')).layerInfoPage;
                 var layer = {
                     "styles": "",
                     "group": "General",
-                    "name": thisRecord.get('LayerName'),
-                    "title": thisRecord.get('LayerTitle'),
+                    "name": thisRecord.get('name'),
+                    "title": thisRecord.get('title'),
                     "url": layer_detail_url + 'map/wmts/' + typename.replace('geonode:', '') + '/default_grid/${z}/${x}/${y}.png',
-                    "abstract": thisRecord.get('Abstract'),
+                    "abstract": thisRecord.get('abstract'),
                     "visibility": true,
                     "queryable": true,
                     "disabled": false,
-                    "srs": thisRecord.get('SrsProjectionCode'),
+                    "srs": thisRecord.json['srs'].join(', '),
                     "bbox": layer_bbox,
                     "transparent": true,
                     "llbbox": layer_bbox,
                     "source": key,
                     "buffer": 0,
                     "tiled": true,
-                    "local": thisRecord.get('ServiceType') === 'WM'
+                    "local": thisRecord.get('service_type') === 'Hypermap:WorldMap'
                 };
 
                 if(layer.local){
-                    layer.url = thisRecord.get('LayerUrl');
+                    layer.url = thisRecord.get('url');
                 };
 
-                if(thisRecord.get('ServiceType') === 'ESRI_ImageServer' || thisRecord.get('ServiceType') === 'ESRI_MapServer'){
-                    layer.url = thisRecord.get('LayerUrl');
+                if(thisRecord.get('service_type') === 'ESRI:ArcGIS:ImageServer' || thisRecord.get('service_type') === 'ESRI:ArcGIS:MapServer'){
+                    layer.url = thisRecord.get('url');
                     source = geoEx.addLayerSource({config: {url: layer.url, ptype: 'gxp_arcrestsource'}});
                 };
 
@@ -2195,7 +2197,8 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             //searchURL: 'http://54.83.116.189:8983/solr/wmdata/select',
             //searchURL: "/solr",
             // TODO this URL should be defined only once
-            searchURL: "http://54.221.223.91:8983/solr/hypermap2/select",
+            //searchURL: "http://54.221.223.91:8983/solr/hypermap2/select",
+            searchURL: "http://192.168.33.15:8983/solr/hypermap/select",
 
             layerDetailURL: '/data/search/detail',
             constraints: [this.bbox],

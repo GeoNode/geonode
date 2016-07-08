@@ -47,23 +47,24 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
             remoteSort: true,
             totalProperty: 'response.numFound',
             fields: [
-                {name: 'title', type: 'string'},
                 {name: 'id', type: 'string'},
+                {name: 'name', type: 'string'},
+                {name: 'title', type: 'string'},
+                {name: 'abstract', type: 'string'},
                 {name: 'min_x', type: 'string'},
                 {name: 'min_y', type: 'string'},
                 {name: 'max_x', type: 'string'},
                 {name: 'max_y', type: 'string'},
                 {name: 'layer_originator', type: 'string'},
-                {name: 'Location', type: 'string'},
-                {name: 'name', type: 'string'},
+                {name: 'is_public', type: 'string'},
+                {name: 'url', type: 'string'},
+                {name: 'service_type', type: 'string'},
+                {name: 'bbox', type: 'string'},
+                {name: 'location', type: 'string'},
+                // not used?
                 {name: 'LayerDate', type: 'string'},
                 {name: 'Availability', type: 'string'},
-                {name: 'abstract', type: 'string'},
-                {name: 'bbox', type: 'string'},
-                {name: 'LayerUrl', type: 'string'},
-                {name: 'ServiceType', type: 'string'},
                 {name: 'LayerUsername', type: 'string'},
-                {name: 'is_public', type: 'string'},
                 {name: 'LayerDateType', type: 'string'}
             ]
         });
@@ -213,7 +214,7 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
 
         // Remove any DataType filter if there
         for(var i=0;i<GeoNode.queryTerms.fq.length;i++){
-            if(GeoNode.queryTerms.fq[i].indexOf('ServiceType') > -1){
+            if(GeoNode.queryTerms.fq[i].indexOf('service_type') > -1){
                 GeoNode.queryTerms.fq.splice(i, 1);
             }
         };
@@ -403,11 +404,11 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
                     'Label'
                 ],
                 data: [['', 'All Layers'],
-                    ['ServiceType:WM', 'WorldMap Layers'],
-                    ['ServiceType:OGC_WMTS', 'WMTS'],
-                    ['ServiceType:OGC_WMS', 'WMS'],
-                    ['ServiceType:ESRI_ImageServer', 'ESRI Image'],
-                    ['ServiceType:ESRI_MapServer', 'ESRI Map']
+                    ['service_type:"Hypermap:WorldMap"', 'WorldMap Layers'],
+                    ['service_type:"OGC:WMTS"', 'WMTS'],
+                    ['service_type:"OGC:WMS"', 'WMS'],
+                    ['service_type:"ESRI:ArcGIS:ImageServer"', 'ESRI Image'],
+                    ['service_type:"ESRI:ArcGIS:MapServer"', 'ESRI Map']
                 ]
             }),
             valueField: 'value',
