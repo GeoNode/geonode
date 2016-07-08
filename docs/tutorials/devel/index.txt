@@ -22,9 +22,15 @@ This module will introduce you to the components that GeoNode is built with, the
     devel_debug/index
     geonode_apis/index
     geonode_testing/index
+    envsetup/index
+    projects/projectsintro
+    release/release
 
 :ref:`intro_devel`
     This module will introduce you to the components that GeoNode is built with, the standards that it supports and the services it provides based on those standards, and an overview its architecture.
+
+:ref:`paver.setup`
+    Here's a list of Pavement tasks maintained by the GeoNode development team.
 
 :ref:`django_overview_index`
     This section introduces some basic concepts of DJango, the Python based web framework on top of which GeoNode has been developed.
@@ -43,7 +49,7 @@ This module will introduce you to the components that GeoNode is built with, the
     
     For other Linux distributions the commands are similar, the difference is mainly on the packages names.
     
-    .. note:: For Windows: (:ref:`install_win_devmode`)
+    .. note:: For Windows: (:ref:`win_binary_installer`)
     
 :ref:`dev_debug`
     GeoNode can be difficult to debug as there are several different components involved. This module shows some tecniques to debug the different parts of GeoNode.
@@ -53,3 +59,13 @@ This module will introduce you to the components that GeoNode is built with, the
 
 :ref:`geonode_testing`
     This section explain how to run the tests on GeoNode.
+	
+:ref:`projects.intro`
+    GeoNode enables you to set up a complete site simply by installing the packages and adding your data. 
+	
+    If you want to create your own project based on GeoNode, there are a several options available that enable you to customize the look and feel of your GeoNode site. 
+	
+    You can add additional modules that are necessary for your own use case and to integrate your GeoNode project with other external sites and services.
+	
+:ref:`release`
+    Making a GeoNode release.
