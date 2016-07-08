@@ -116,7 +116,7 @@ setup(name='GeoNode',
         "django-downloadview==1.2",
         "django-tastypie==0.12.2",
 
-        "django-polymorphic==0.9",
+        "django-polymorphic==0.9.2",
         "django-leaflet==0.13.7",
         "django-autocomplete-light==2.3.3",
         "django-modeltranslation==0.11",
@@ -150,7 +150,11 @@ setup(name='GeoNode',
         # datetimepicker widget
         "django-bootstrap3-datetimepicker==2.2.3",
         "flake8==2.3.0",
-        "pep8==1.6.2"
+        "pep8==1.6.2",
+
+        #AWS S3 dependencies
+        "django-storages==1.1.8",
+        "boto==2.38.0"
         ],
       zip_safe=False,
       )

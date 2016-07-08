@@ -155,7 +155,7 @@ MEDIA_ROOT = os.path.join(PROJECT_ROOT, "uploaded")
 # URL that handles the media served from MEDIA_ROOT. Make sure to use a
 # trailing slash if there is a path component (optional in other cases).
 # Examples: "http://media.lawrence.com", "http://example.com/media/"
-MEDIA_URL = "/uploaded/"
+MEDIA_URL = LOCAL_MEDIA_URL = "/uploaded/"
 
 # Absolute path to the directory that holds static files like app media.
 # Example: "/home/media/media.lawrence.com/apps/"
@@ -289,6 +289,7 @@ INSTALLED_APPS = (
     'mptt',
     #'modeltranslation',
     'djcelery',
+    'storages',
 
     # Theme
     "pinax_theme_bootstrap_account",
@@ -876,6 +877,32 @@ CELERY_QUEUES = [
     Queue('update', routing_key='update'),
     Queue('email', routing_key='email'),
 ]
+
+
+# AWS S3 Settings
+
+S3_STATIC_ENABLED = os.environ.get('S3_STATIC_ENABLED', False)
+S3_MEDIA_ENABLED = os.environ.get('S3_MEDIA_ENABLED', False)
+
+# Required to run Sync Media to S3
+AWS_BUCKET_NAME = os.environ.get('S3_BUCKET_NAME', '')
+
+AWS_STORAGE_BUCKET_NAME = os.environ.get('S3_BUCKET_NAME', '')
+AWS_ACCESS_KEY_ID = os.environ.get('AWS_ACCESS_KEY_ID', '')
+AWS_SECRET_ACCESS_KEY = os.environ.get('AWS_SECRET_ACCESS_KEY', '')
+AWS_S3_BUCKET_DOMAIN = '%s.s3.amazonaws.com' % AWS_STORAGE_BUCKET_NAME
+
+AWS_QUERYSTRING_AUTH = False
+
+if S3_STATIC_ENABLED:
+    STATICFILES_LOCATION = 'static'
+    STATICFILES_STORAGE = 'storages.backends.s3boto.S3BotoStorage'
+    STATIC_URL = "https://%s/%s/" % (AWS_S3_BUCKET_DOMAIN, STATICFILES_LOCATION)
+
+if S3_MEDIA_ENABLED:
+    MEDIAFILES_LOCATION = 'media'
+    DEFAULT_FILE_STORAGE = 'storages.backends.s3boto.S3BotoStorage'
+    MEDIA_URL = "https://%s/%s/" % (AWS_S3_BUCKET_DOMAIN, MEDIAFILES_LOCATION)
 
 import djcelery
 djcelery.setup_loader()

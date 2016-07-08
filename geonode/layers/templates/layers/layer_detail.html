@@ -357,6 +357,18 @@
             <h4 class="modal-title" id="myModalLabel">{% trans "Download Metadata" %}</h4>
           </div>
           <div class="modal-body">
+		    <div style="margin-bottom:20px">
+				 <h5 class="modal-title" id="myModalLabel">
+				Full metadata 
+				 </h5>
+				<ul>
+					<li><a href="http://{{request.META.HTTP_HOST}}/catalogue/csw_to_extra_format/{{resource.uuid}}/{{resource.title}}.txt"> Text format </a></li>
+					<li><a target="_blank" href="http://{{request.META.HTTP_HOST}}/catalogue/csw_to_extra_format/{{resource.uuid}}/{{resource.title}}.html"> HTML format </a></li>
+				</ul>
+			</div>
+			<h5 class="modal-title" id="myModalLabel">
+			Standard Metadata - XML format
+			</h5>
             <ul>
               {% for link in metadata %}
                 <li><a href="{{ link.url }}">{{ link.name }}</a></li>
