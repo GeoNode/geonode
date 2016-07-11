@@ -92,7 +92,7 @@ body{
  <div id="sideNavi">
    <div id="side-navi" class="side-navi-item item1"><div>Download Data</div></div>
    <div class="side-navi-item item2"><div>Area Search</div></div>
-   <div class="side-navi-item item3"><div>Extents Search</div></div>
+   <div class="side-navi-item item3"><div style="margin-top: -10px;">Bounding Box Selection</div></div>
    <div class="side-navi-data">
      <div class="side-navi-tab">
           <div style="padding: 25px;">
@@ -134,14 +134,14 @@ body{
         <div>
          <h4 class="list-group-item-heading">{%trans "Bounding Box Selection" %}</h4>
          <p>
-           Select a dataset according to its location. Use EPSG:900913 in decimal degrees.
+           Select a dataset according to its location. Use WGS 1984 or EPSG:4326 in decimal degrees.
          </p>
          <form id="bbox_form">
            <table>
-             <tr><td>Upper limit: </td><td><input type="number" id="upperlimit" name="upperlimit" value=0 step="any" /></td></tr>
-             <tr><td>Left limit: </td><td><input type="number" id="leftlimit" name="leftlimit"value=0 step="any"/></td></tr>
-             <tr><td>Right limit: </td><td><input type="number" id="rightlimit" name="rightlimit" value=0 step="any"/></td></tr>
-             <tr><td>Lower limit: </td><td><input type="number" id="lowerlimit" name="lowerlimit" value=0 step="any"/></td></tr>
+             <tr><td>Upper Lat (&deg;N) limit: </td><td><input type="number" id="upperlimit" name="upperlimit" value=0 step="any" /></td></tr>
+             <tr><td>Left Lng (&deg;E) limit: </td><td><input type="number" id="leftlimit" name="leftlimit"value=0 step="any"/></td></tr>
+             <tr><td>Right Lng (&deg;E) limit: </td><td><input type="number" id="rightlimit" name="rightlimit" value=0 step="any"/></td></tr>
+             <tr><td>Lower Lat (&deg;N) limit: </td><td><input type="number" id="lowerlimit" name="lowerlimit" value=0 step="any"/></td></tr>
            </table>
            <br />
            <input type="submit" id="bbox_submit" name="bbox_submit" value="Submit Bounding Box" class="btn btn-default" />
@@ -165,8 +165,8 @@ body{
    <div id="notif" style="margin: 0px -15px;">
 
    </div>
-   <div style="max-height: 150px; overflow-y: auto; overflow-x: hidden; margin-top: -15px;">
-     <div class="page-header" style="margin-top: 5px;">
+   <div style="max-height: 150px; overflow-y: auto; overflow-x: hidden;">
+     <div class="page-header" style="margin-top: -10px;">
         <h3 class="page-title">Selected Tiles <div id="data_size_display" style="display:inline-block;">- 0 Byte</div></h3>
      </div>
      <div class="row" id="point_display" style="padding:0px 30px 30px 30px;">
