@@ -131,6 +131,11 @@ def map_detail(request, mapid, snapshot=None, template='maps/map_detail.html'):
         "documents": get_related_documents(map_obj),
     }
 
+    context_dict["preview"] = getattr(
+        settings,
+        'LAYER_PREVIEW_LIBRARY',
+        '')
+
     if settings.SOCIAL_ORIGINS:
         context_dict["social_links"] = build_social_links(request, map_obj)
 
