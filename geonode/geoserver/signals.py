@@ -121,7 +121,13 @@ def geoserver_pre_save(instance, sender, **kwargs):
     gs_layer = gs_catalog.get_layer(instance.name)
 
     if instance.poc and instance.poc:
-        gs_layer.attribution = str(instance.poc)
+        # gsconfig now utilizes an attribution dictionary
+        gs_layer.attribution = {'title': str(instance.poc),
+                                'width': None,
+                                'height': None,
+                                'href': None,
+                                'url': None,
+                                'type': None}
         profile = Profile.objects.get(username=instance.poc.username)
         gs_layer.attribution_link = settings.SITEURL[
             :-1] + profile.get_absolute_url()
