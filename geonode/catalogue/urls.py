@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #########################################################################
 #
-# Copyright (C) 2012 OpenPlans
+# Copyright (C) 2016 OSGeo
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -18,8 +18,14 @@
 #
 #########################################################################
 
-from django.conf.urls import patterns, url
+from django.conf.urls import url
+from . import views
 
-urlpatterns = patterns('geonode.catalogue.views',
-                       url(r'^csw$', 'csw_global_dispatch', name='csw_global_dispatch'),
-                       url(r'^opensearch$', 'opensearch_dispatch', name='opensearch_dispatch'))
+urlpatterns = [
+    url(r'^csw$', views.csw_global_dispatch, name='csw_global_dispatch'),
+    url(r'^opensearch$', views.opensearch_dispatch, name='opensearch_dispatch'),
+    url(r'^csw_to_extra_format/(?P<layeruuid>[^/]*)/(?P<resname>[^/]*).txt$',
+        views.csw_render_extra_format_txt, name="csw_render_extra_format_txt"),
+    url(r'^csw_to_extra_format/(?P<layeruuid>[^/]*)/(?P<resname>[^/]*).html$',
+        views.csw_render_extra_format_html, name="csw_render_extra_format_html")
+]

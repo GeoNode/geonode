@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #########################################################################
 #
-# Copyright (C) 2012 OpenPlans
+# Copyright (C) 2016 OSGeo
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -25,12 +25,18 @@ from guardian.shortcuts import get_perms
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.urlresolvers import reverse
+from django.core.serializers.json import DjangoJSONEncoder
 from django.http import HttpResponse, HttpResponseRedirect, HttpResponseNotAllowed, HttpResponseServerError
 from django.shortcuts import render_to_response, get_object_or_404
 from django.conf import settings
 from django.template import RequestContext
 from django.utils.translation import ugettext as _
-from django.utils import simplejson as json
+try:
+    # Django >= 1.7
+    import json
+except ImportError:
+    # Django <= 1.6 backwards compatibility
+    from django.utils import simplejson as json
 from django.utils.html import strip_tags
 from django.db.models import F
 from django.views.decorators.clickjacking import xframe_options_exempt
@@ -526,7 +532,8 @@ def new_map_config(request):
                         map=map_obj,
                         name=layer.typename,
                         ows_url=layer.ows_url,
-                        layer_params=json.dumps(config),
+                        # use DjangoJSONEncoder to handle Decimal values
+                        layer_params=json.dumps(config, cls=DjangoJSONEncoder),
                         visibility=True
                     )
 

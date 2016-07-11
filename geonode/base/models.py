@@ -1,3 +1,23 @@
+# -*- coding: utf-8 -*-
+#########################################################################
+#
+# Copyright (C) 2016 OSGeo
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program. If not, see <http://www.gnu.org/licenses/>.
+#
+#########################################################################
+
 import datetime
 import math
 import os
@@ -15,11 +35,13 @@ from django.contrib.staticfiles.templatetags import staticfiles
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.auth import get_user_model
 from django.db.models import signals
-from django.core.files import File
+from django.core.files.storage import default_storage as storage
+from django.core.files.base import ContentFile
 
 from mptt.models import MPTTModel, TreeForeignKey
 
-from polymorphic import PolymorphicModel, PolymorphicManager
+from polymorphic.models import PolymorphicModel
+from polymorphic.managers import PolymorphicManager
 from agon_ratings.models import OverallRating
 
 from geonode.base.enumerations import ALL_LANGUAGES, \
@@ -80,6 +102,7 @@ class TopicCategory(models.Model):
     description = models.TextField(default='')
     gn_description = models.TextField('GeoNode description', default='', null=True)
     is_choice = models.BooleanField(default=True)
+    fa_class = models.CharField(max_length=64, default='fa-times')
 
     def __unicode__(self):
         return u"{0}".format(self.gn_description)
@@ -247,7 +270,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin):
                                              blank=True, null=True, help_text=maintenance_frequency_help_text)
 
     keywords = TaggableManager(_('keywords'), blank=True, help_text=keywords_help_text)
-    regions = models.ManyToManyField(Region, verbose_name=_('keywords region'), blank=True, null=True,
+    regions = models.ManyToManyField(Region, verbose_name=_('keywords region'), blank=True,
                                      help_text=regions_help_text)
 
     restriction_code_type = models.ForeignKey(RestrictionCodeType, verbose_name=_('restrictions'),
@@ -548,24 +571,17 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin):
         return self.link_set.filter(name='Thumbnail').exists()
 
     def save_thumbnail(self, filename, image):
-        thumb_folder = 'thumbs'
-        upload_path = os.path.join(settings.MEDIA_ROOT, thumb_folder)
-        if not os.path.exists(upload_path):
-            os.makedirs(upload_path)
+        upload_to = 'thumbs/'
+        upload_path = os.path.join('thumbs/', filename)
 
-        try:
-            try:
-                os.remove(os.path.join(upload_path, filename))
-            except:
-                pass
+        if storage.exists(upload_path):
+            # Delete if exists otherwise the (FileSystemStorage) implementation
+            # will create a new file with a unique name
+            storage.delete(os.path.join(upload_path))
 
-            with open(os.path.join(upload_path, filename), 'wb') as f:
-                thumbnail = File(f)
-                thumbnail.write(image)
-        except Exception, err:
-            logger.warning("It was not possible to set the Thumbnail ", os.path.join(upload_path, filename)," due the the following error:", str(err))
+        storage.save(upload_path, ContentFile(image))
 
-        url_path = os.path.join(settings.MEDIA_URL, thumb_folder, filename).replace('\\', '/')
+        url_path = os.path.join(settings.MEDIA_URL, upload_to, filename).replace('\\', '/')
         url = urljoin(settings.SITEURL, url_path)
 
         Link.objects.get_or_create(resource=self,
@@ -669,19 +685,19 @@ class LinkManager(models.Manager):
     """
 
     def data(self):
-        return self.get_query_set().filter(link_type='data')
+        return self.get_queryset().filter(link_type='data')
 
     def image(self):
-        return self.get_query_set().filter(link_type='image')
+        return self.get_queryset().filter(link_type='image')
 
     def download(self):
-        return self.get_query_set().filter(link_type__in=['image', 'data'])
+        return self.get_queryset().filter(link_type__in=['image', 'data'])
 
     def metadata(self):
-        return self.get_query_set().filter(link_type='metadata')
+        return self.get_queryset().filter(link_type='metadata')
 
     def original(self):
-        return self.get_query_set().filter(link_type='original')
+        return self.get_queryset().filter(link_type='original')
 
     def geogig(self):
         return self.get_queryset().filter(name__icontains='geogig')

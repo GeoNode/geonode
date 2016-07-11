@@ -150,6 +150,29 @@ define(['underscore',
             if ($.inArray(ext,types) == -1){
                 types.push(ext);
             }
+
+            var mosaic_is_valid = true;
+            var is_granule = $('#' + base_name + '-mosaic').is(':checked');
+            
+            var is_time_enabled = $('#' + base_name + '-timedim').is(':checked');
+            var is_time_valid = is_time_enabled && !$('#' + base_name + '-timedim-value-valid').is(':visible');
+
+            if (is_granule && is_time_enabled) {
+                mosaic_is_valid = is_time_valid;
+            }
+
+            var is_adv_options_enabled = $('#' + base_name + '-timedim-presentation').is(':checked');
+            var default_value = $('#' + base_name + '-timedim-defaultvalue-format-select').val();
+            
+            if (default_value == 'NEAREST' || default_value == 'FIXED') {
+                var is_reference_value_valid = is_adv_options_enabled && !$('#' + base_name + '-timedim-defaultvalue-ref-value-valid').is(':visible')
+                mosaic_is_valid = is_time_valid && is_reference_value_valid;
+            }
+            
+            if (is_granule && !mosaic_is_valid) {
+                return false;
+            }
+
         }
         var matched = false;
         for (var file_type in fileTypes){

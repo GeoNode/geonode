@@ -1,6 +1,7 @@
+# -*- coding: utf-8 -*-
 #########################################################################
 #
-# Copyright (C) 2012 OpenPlans
+# Copyright (C) 2016 OSGeo
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -16,6 +17,7 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
+
 import logging
 import os
 from django.conf import settings
@@ -65,7 +67,8 @@ def create_geoserver_db_featurestore(store_type=None, store_name=None):
             db = ogc_server_settings.datastore_db
             ds.connection_parameters.update(
                 host=db['HOST'],
-                port=db['PORT'] or '5432',
+                port=db['PORT'] if isinstance(
+                    db['PORT'], basestring) else str(db['PORT']) or '5432',
                 database=db['NAME'],
                 user=db['USER'],
                 passwd=db['PASSWORD'],

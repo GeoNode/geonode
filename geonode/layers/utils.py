@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #########################################################################
 #
-# Copyright (C) 2012 OpenPlans
+# Copyright (C) 2016 OSGeo
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -35,6 +35,7 @@ from osgeo import gdal
 from django.contrib.auth import get_user_model
 from django.template.defaultfilters import slugify
 from django.core.exceptions import ObjectDoesNotExist
+from django.core.files.storage import default_storage as storage
 from django.core.files import File
 from django.conf import settings
 from django.db.models import Q
@@ -653,51 +654,59 @@ def upload(incoming, user=None, overwrite=False,
     return output
 
 
-def create_thumbnail(instance, thumbnail_remote_url, thumbnail_create_url=None, check_bbox=True, ogc_client=None):
-    if not ogc_client:
-        ogc_client = http_client
-    BBOX_DIFFERENCE_THRESHOLD = 1e-5
+def create_thumbnail(instance, thumbnail_remote_url, thumbnail_create_url=None,
+                     check_bbox=True, ogc_client=None, overwrite=False):
+    thumbnail_dir = os.path.join(settings.MEDIA_ROOT, 'thumbs')
+    thumbnail_name = 'layer-%s-thumb.png' % instance.uuid
+    thumbnail_path = os.path.join(thumbnail_dir, thumbnail_name)
 
-    if not thumbnail_create_url:
-        thumbnail_create_url = thumbnail_remote_url
+    if overwrite is True or storage.exists(thumbnail_path) is False:
+        if not ogc_client:
+            ogc_client = http_client
+        BBOX_DIFFERENCE_THRESHOLD = 1e-5
 
-    if check_bbox:
-        # Check if the bbox is invalid
-        valid_x = (
-            float(
-                instance.bbox_x0) -
-            float(
-                instance.bbox_x1)) ** 2 > BBOX_DIFFERENCE_THRESHOLD
-        valid_y = (
-            float(
-                instance.bbox_y1) -
-            float(
-                instance.bbox_y0)) ** 2 > BBOX_DIFFERENCE_THRESHOLD
-    else:
-        valid_x = True
-        valid_y = True
+        if not thumbnail_create_url:
+            thumbnail_create_url = thumbnail_remote_url
 
-    image = None
+        if check_bbox:
+            # Check if the bbox is invalid
+            valid_x = (
+                float(
+                    instance.bbox_x0) -
+                float(
+                    instance.bbox_x1)) ** 2 > BBOX_DIFFERENCE_THRESHOLD
+            valid_y = (
+                float(
+                    instance.bbox_y1) -
+                float(
+                    instance.bbox_y0)) ** 2 > BBOX_DIFFERENCE_THRESHOLD
+        else:
+            valid_x = True
+            valid_y = True
 
-    if valid_x and valid_y:
-        Link.objects.get_or_create(resource=instance.get_self_resource(),
-                                   url=thumbnail_remote_url,
-                                   defaults=dict(
-                                       extension='png',
-                                       name="Remote Thumbnail",
-                                       mime='image/png',
-                                       link_type='image',
+        image = None
+
+        if valid_x and valid_y:
+            Link.objects.get_or_create(resource=instance.get_self_resource(),
+                                       url=thumbnail_remote_url,
+                                       defaults=dict(
+                                           extension='png',
+                                           name="Remote Thumbnail",
+                                           mime='image/png',
+                                           link_type='image',
+                                           )
                                        )
-                                   )
-        Layer.objects.filter(id=instance.id).update(thumbnail_url=thumbnail_remote_url)
-        # Download thumbnail and save it locally.
-        resp, image = ogc_client.request(thumbnail_create_url)
-        if 'ServiceException' in image or resp.status < 200 or resp.status > 299:
-            msg = 'Unable to obtain thumbnail: %s' % image
-            logger.debug(msg)
-            # Replace error message with None.
-            image = None
+            Layer.objects.filter(id=instance.id) \
+                .update(thumbnail_url=thumbnail_remote_url)
+            # Download thumbnail and save it locally.
+            resp, image = ogc_client.request(thumbnail_create_url)
+            if 'ServiceException' in image or \
+               resp.status < 200 or resp.status > 299:
+                msg = 'Unable to obtain thumbnail: %s' % image
+                logger.debug(msg)
+                # Replace error message with None.
+                image = None
 
-    if image is not None:
-        filename = 'layer-%s-thumb.png' % instance.uuid
-        instance.save_thumbnail(filename, image=image)
+        if image is not None:
+            filename = 'layer-%s-thumb.png' % instance.uuid
+            instance.save_thumbnail(filename, image=image)

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #########################################################################
 #
-# Copyright (C) 2012 OpenPlans
+# Copyright (C) 2016 OSGeo
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -35,14 +35,19 @@ from geonode.people.models import Profile
 class CategoryChoiceField(forms.ModelChoiceField):
     def label_from_instance(self, obj):
         return '<span class="has-popover" data-container="body" data-toggle="popover" data-placement="top" ' \
-               'data-content="' + obj.description + '" trigger="hover">' + obj.gn_description + '</span>'
+               'data-content="' + obj.description + '" trigger="hover">' \
+               '<div class="fa-stack fa-1g">' \
+               '<i class="fa fa-square-o fa-stack-2x"></i>' \
+               '<i class="fa '+obj.fa_class+' fa-stack-1x"></i></div>' \
+               '&nbsp;' + obj.gn_description + '</span>'
 
 
 class CategoryForm(forms.Form):
     category_choice_field = CategoryChoiceField(required=False,
                                                 label='*' + _('Category'),
                                                 empty_label=None,
-                                                queryset=TopicCategory.objects.extra(order_by=['description']))
+                                                queryset=TopicCategory.objects.filter(is_choice=True)
+                                                .extra(order_by=['description']))
 
     def clean(self):
         cleaned_data = self.data

@@ -13,7 +13,9 @@ If you are working remotely, you should first connect to the machine that has yo
 	
     $ apt-get install python-django
     $ django-admin startproject my_geonode --template=https://github.com/GeoNode/geonode-project/archive/master.zip -epy,rst
-    $ sudo pip install -e my_geonode
+    $ cd my_geonode
+    $ sudo pip install -e .
+    $ python manage.py syncdb
 
 .. note:: You should NOT use the name *geonode* for your project as it will conflict with your default geonode package name.
 
@@ -88,11 +90,7 @@ Then regenerate the static **JavaScript** and **CSS** files from **/path/to/my_g
 .. code-block:: console
     :linenos:
 
-    $ cd /home/geonode/my_geonode
     $ python manage.py collectstatic
-    $ python manage.py syncdb
-    $ /home/geonode/geonode
-    $ sudo pip install -e .
     $ sudo service apache2 restart
 
 Customize the Look & Feel

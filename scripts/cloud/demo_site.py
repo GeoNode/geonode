@@ -1,3 +1,23 @@
+# -*- coding: utf-8 -*-
+#########################################################################
+#
+# Copyright (C) 2016 OSGeo
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program. If not, see <http://www.gnu.org/licenses/>.
+#
+#########################################################################
+
 import json
 import jenkins
 import sys
@@ -10,6 +30,9 @@ GEONODE_DEMO_DOMAIN = 'demo.geonode.org' # should match the jenkins configuratio
 NODE_LIST = 'computer/api/json' # jenkins api backend
 GEONODE_DEMO_JOB = 'geonode-aws' # jenkins job name for demo site
 
+## USAGE
+# python demo_site.py -u username -t jenkins_api_token task
+# task can be either "redeploy-demo-site", "build-demo-job"
 
 class DemoGeonode(object):
     """
