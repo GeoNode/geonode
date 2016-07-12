@@ -16,9 +16,9 @@
     {% include "base/_resourcebase_opengraph.html" %}
   {% endif %}
   {% if preview == 'OL3' %}
-  {% include "maps/map_ol3.html %}
+    {% include "maps/map_ol3.html" %}
   {% else %}
-  {% include "maps/map_include.html" %}
+    {% include "maps/map_include.html" %}
   {% endif %}
   {{ block.super }}
 {% endblock %}
