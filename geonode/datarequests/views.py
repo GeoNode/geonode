@@ -39,6 +39,7 @@ from geonode.layers.utils import file_upload
 from geonode.people.models import Profile
 from geonode.people.views import profile_detail
 from geonode.security.views import _perms_info_json
+from geonode.tasks.requests_update import place_name_update, compute_size_update
 from geonode.utils import default_map_config
 from geonode.utils import GXPLayer
 from geonode.utils import GXPMap
@@ -622,8 +623,6 @@ def data_request_profile_cancel(request, pk):
     else:
         return HttpResponseRedirect(reverse('datarequests:data_request_profile', args=[pk]))
 
-
-
 def data_request_profile_approve(request, pk):
     if not request.user.is_superuser:
         raise PermissionDenied
@@ -696,9 +695,23 @@ def data_request_profile_recreate_dir(request, pk):
         return HttpResponseRedirect(request_profile.get_absolute_url())
     
 def data_request_compute_size(request):
-    requests = DataRequestProfile.objects.exclude(jurisdiction_shapefile=None,
+    if request.user.is_superuser:
+        data_requests = DataRequestProfile.objects.exclude(jurisdiction_shapefile=None)
+        compute_size_update.delay(data_requests)
+        messages.info(request, "The estimated data size area coverage of the requests are currently being computed")
+        return HttpResponseRedirect(reverse('datarquests:data_request_browse'))
+    else:
+        return HttpResponseRedirect('/forbidden/')
+    
 
 def data_request_profile_compute_size(request, pk):
+    if request.user.is_superuser:
+        data_requests = DataRequestProfile.objects.filter(pk=pk)
+        compute_size_update.delay(data_requests)
+        messages.info(request, "The estimated data size area coverage of the requests are currently being computed")
+        return HttpResponseRedirect(reverse('datarquests:data_request_browse'))
+    else:
+        return HttpResponseRedirect('/forbidden/')
      
 
 def data_request_facet_count(request):
