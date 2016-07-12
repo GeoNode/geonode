@@ -32,24 +32,24 @@
             visibility:true,
             continuousWorld: true
            
-        }).addTo(map);
+        }).addTo(map).bringToFront();
         
           var MapQuestOpen_OSM = L.tileLayer('http://korona.geog.uni-heidelberg.de/tiles/roads/x={x}&y={y}&z={z}', {
             type: 'map',
             ext: 'jpg',
-            attribution: 'Tiles Courtesy of <a href="http://www.mapquest.com/">MapQuest</a> &mdash; Map data &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+            attribution: 'Imagery from <a href="http://giscience.uni-hd.de/">GIScience Research Group @ University of Heidelberg</a> &mdash; Map data &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
             subdomains: '1234',
             continuousWorld: true
-        }).addTo(map);
+        }).addTo(map).bringToBack();
 
 
         var baseMaps = {
           'MapQuestOpen OSM' : MapQuestOpen_OSM
         };
 
-        L.control.layers(baseMaps).addTo(map);
+        // L.control.layers(baseMaps).addTo(map);
         if (tile_layer != null) {
-            map.layerscontrol.addOverlay(tile_layer,"{{ resource.title }}");
+            // map.layerscontrol.addOverlay(tile_layer,"{{ resource.title }}");
             map.addLayer(tile_layer);
         }
 
