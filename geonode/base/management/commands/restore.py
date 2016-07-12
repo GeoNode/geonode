@@ -80,7 +80,7 @@ class Command(BaseCommand):
                 try:
                     call_command('loaddata', fixture_file, app_label=app_name)
                 except:
-                    #traceback.print_exc()
+                    traceback.print_exc()
                     print "WARNING: No valid fixture data found for '"+dump_name+"'."
                     #helpers.load_fixture(app_name, fixture_file)
 
