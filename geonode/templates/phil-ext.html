@@ -27,14 +27,14 @@
             layers: '{{ resource.typename }}',
             format: 'image/png',
             transparent: true,
-            'opacity':0.8,
+            'opacity':1,
             tiled:true,
             visibility:true,
             continuousWorld: true
            
         }).addTo(map);
         
-          var MapQuestOpen_OSM = L.tileLayer('http://otile{s}.mqcdn.com/tiles/1.0.0/{type}/{z}/{x}/{y}.{ext}', {
+          var MapQuestOpen_OSM = L.tileLayer('http://korona.geog.uni-heidelberg.de/tiles/roads/x={x}&y={y}&z={z}', {
             type: 'map',
             ext: 'jpg',
             attribution: 'Tiles Courtesy of <a href="http://www.mapquest.com/">MapQuest</a> &mdash; Map data &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
