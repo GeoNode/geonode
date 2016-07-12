@@ -30,7 +30,7 @@
             'opacity':1,
             tiled:true,
             visibility:true,
-            continuousWorld: true
+            continuousWorld: true,
            
         }).addTo(map).bringToFront();
         
@@ -39,7 +39,8 @@
             ext: 'jpg',
             attribution: 'Imagery from <a href="http://giscience.uni-hd.de/">GIScience Research Group @ University of Heidelberg</a> &mdash; Map data &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
             subdomains: '1234',
-            continuousWorld: true
+            continuousWorld: true,
+            // 'opacity':0.8,
         }).addTo(map).bringToBack();
 
 
@@ -49,10 +50,11 @@
 
         // L.control.layers(baseMaps).addTo(map);
         if (tile_layer != null) {
-            // map.layerscontrol.addOverlay(tile_layer,"{{ resource.title }}");
+            map.layerscontrol.addOverlay(tile_layer,"{{ resource.title }}").removeFrom(map);
             map.addLayer(tile_layer);
         }
 
+        
 
     });
     function zoom_to_box(map, bbox){
