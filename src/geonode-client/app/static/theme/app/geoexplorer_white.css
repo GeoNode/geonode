@@ -976,12 +976,14 @@ td.x-grid3-hd-over .x-grid3-hd-inner, td.sort-desc .x-grid3-hd-inner, td.sort-as
 }
 
 .x-form-field-wrap, .x-form-field-trigger-wrap, .x-trigger-wrap-focus {
-  margin-left: 230px;
+  margin-left: 180px;
 }
 
 .x-panel-body .x-panel-body-noheader .x-panel-body-noborder {
-  max-width: 884px;
-  max-height: 520px;
+  max-width: 100%;
+  max-height: 100%;
+  /*max-width: 884px;
+  max-height: 520px;*/
 }
 
 #search_controls{
@@ -990,7 +992,12 @@ td.x-grid3-hd-over .x-grid3-hd-inner, td.sort-desc .x-grid3-hd-inner, td.sort-as
 
 .search-button {
   margin-top:-29px;
-  margin-left: 400px;
+  margin-left: 336px;
+}
+
+.clear-search-button {
+  float:right;
+  margin-top:-29px;
 }
 
 .x-panel .date-form{

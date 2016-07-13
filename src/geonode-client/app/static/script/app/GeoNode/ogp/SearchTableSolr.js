@@ -20,9 +20,9 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
     remoteTooltip: 'UT: Remote Data',
     invalidQueryText: 'Invalid Query',
     searchTermRequired: 'You need to specify a search term',
-    originatorSearchLabelText: 'Originator',
+    originatorSearchLabelText: 'Source',
     dataTypeSearchLableText: 'UT: Data Type',
-    originatorText: 'Originator',
+    originatorText: 'Source',
 
     searchOnLoad: false,
     linkableTitle: true,
@@ -329,13 +329,16 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
                 width: 200,
                 sortBy: 'LayerTitle',
                 renderer: function(value, metadata, record, rowIndex, colIndex, store){
+
                     var the_abstract = app.layerTree.replaceURLWithHTMLLinks(record.get('abstract'));
                     metadata.attr =
-                        'ext:qtip="' + record.get('layer_originator') +
-                        '<br/><strong>Abstract</strong>: ' +
+                        'ext:qtip="<strong>Title: ' + record.get('title') +
+                        '</strong><br/><strong>Source: ' + record.get('layer_originator') +
+                        '</strong><br/><strong>Abstract</strong>: ' +
                         the_abstract.substring(0, 250) +
                         '<br/><strong>Date</strong>: ' + record.get('LayerDateType') + '"';
-                    return record.get('is_public') ?  value : '<span class="unviewable-layer"></span>' + '  ' + value;
+                    return $.parseJSON(record.get('is_public')) ?  value : '<span class="unviewable-layer"></span>' + '  ' + value;
+
                 }
             },
             {
@@ -371,7 +374,7 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
                         emptyText: this.searchLabelText,
                         name: 'search',
                         allowBlank: true,
-                        width: 100,
+                        width: 90,
                         height: 25,
                         cls: 'search-bar'
                      });
@@ -385,16 +388,20 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
                         emptyText: this.originatorSearchLabelText,
                         name: 'search_originator',
                         allowBlank: true,
-                        width: 100,
+                        width: 90,
                         height: 25,
                         cls: 'search-bar'
         });
-
+        this.originatorInput.on('specialkey', function(field, e) {
+            if (e.getKey() == e.ENTER) {
+                this.updateQuery();
+            }
+        }, this);
 
         this.dataTypeInput = new Ext.form.ComboBox({
             id: 'dataTypes',
             mode: 'local',
-            width: 130,
+            width: 110,
             height: 25,
             cls: 'data-type layer-selection',
             store: new Ext.data.ArrayStore({
@@ -418,7 +425,11 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
             forceSelection: true,
             value: ''
         });
-
+        this.dataTypeInput.on('specialkey', function(field, e) {
+            if (e.getKey() == e.ENTER) {
+                this.updateQuery();
+            }
+        }, this);
 
         var dateStartTextField = new Ext.form.TextField({
             name: 'startDate',
@@ -442,6 +453,7 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
         var dateEndTextField = new Ext.form.TextField({
             name: 'endDate',
             width: 160,
+            height: 25,
             listeners: {
                 change: function(scope, newValue, oldValue){
                     self.dateInput.valuesFromInput(1, newValue);
@@ -486,7 +498,9 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
         searchButton.on('click', this.updateQuery, this);
 
         var clearSearchLink = new Ext.Button({
-            text: "Clear Search",
+            text: "Reset",
+            iconCls: 'not-prominent-btn',
+            cls: 'search-bar clear-search-button',
             listeners: {
                 click: function(){self.clearSearch()}
             }
@@ -586,7 +600,8 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
     },
 
     showPreviewLayer: function(record){
-        if(record.get('is_public')){
+
+        if($.parseJSON(record.get('is_public'))){
             var typename = this.getlayerTypename(record);
             this.heatmap.bbox_widget.viewer.fireEvent("showPreviewLayer", typename, this.getLayerID(record));
         }

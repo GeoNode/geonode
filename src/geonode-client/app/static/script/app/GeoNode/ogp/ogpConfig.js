@@ -16,7 +16,7 @@ Ext.onReady(function(){
   };
 
   //GeoNode.solrBackend = 'http://54.83.116.189:8983/solr/search/select';
-  //GeoNode.solrBackend = 'http://54.221.223.91:8983/solr/hypermap2/select';
+  //GeoNode.solrBackend = 'http://54.221.223.91:8983/solr/hypermap/select';
   GeoNode.solrBackend = 'http://192.168.33.15:8983/solr/hypermap/select';
 
   var solr = new GeoNode.Solr();
