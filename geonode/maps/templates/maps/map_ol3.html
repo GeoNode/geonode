@@ -11,8 +11,20 @@
     var center_x = {{ resource.center_x }};
     var center_y = {{ resource.center_y }};
     var center = [center_x, center_y];
+    var settings_crs = '{{ crs }}'
+
+    if (settings_crs != 'EPSG:4326') {
+        settings_crs = 'EPSG:3857';
+    }
 
     var config = {{ config|safe }};
+
+    var model_crs = config['map']['projection'];
+    if (settings_crs != model_crs) {
+        // if the two crs are not the same, user must have switched default crs for project after map was created
+        center = ol.proj.transform(center, model_crs, settings_crs)
+    }
+
     var config_layers = config['map']['layers']
     for (layer in config_layers) {
         if (config_layers[layer]['title'] == 'OpenStreetMap') {
@@ -41,7 +53,8 @@
       	target: 'the_map',
       	view: new ol.View({
         	center: center,
-        	zoom: zoom
+        	zoom: zoom,
+        	projection: settings_crs
         })	
 	});
   });

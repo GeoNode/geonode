@@ -135,6 +135,10 @@ def map_detail(request, mapid, snapshot=None, template='maps/map_detail.html'):
         settings,
         'LAYER_PREVIEW_LIBRARY',
         '')
+    context_dict["crs"] = getattr(
+        settings,
+        'DEFAULT_MAP_CRS',
+        'EPSG:900913')
 
     if settings.SOCIAL_ORIGINS:
         context_dict["social_links"] = build_social_links(request, map_obj)

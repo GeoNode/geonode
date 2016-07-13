@@ -32,6 +32,11 @@
 
     {% endif %}
 
+    var crs = '{{ crs }}'
+
+    if (crs != 'EPSG:4326') {
+        crs = 'EPSG:3857';
+    }
     if (source != null) {
     	var layers = [
         	new ol.layer.Tile({
@@ -47,13 +52,16 @@
           	target: 'preview_map',
           	view: new ol.View({
             	center: [0, 0],
-            	zoom: 2
+            	zoom: 2,
+            	projection: crs
             })	
     	});
 
     	if (bbox != null) {
-    		var extent = ol.proj.transformExtent(bbox, 'EPSG:4326', 'EPSG:3857');
-    		map.getView().fit(extent, map.getSize());
+    	    if (crs != 'EPSG:4326') {
+    		    bbox = ol.proj.transformExtent(bbox, 'EPSG:4326', 'EPSG:3857');
+    		}
+    		map.getView().fit(bbox, map.getSize());
     	}
     }
   });
