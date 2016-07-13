@@ -2,262 +2,260 @@ import re
 import json
 import datetime
 
+
 class DefaultMangler(json.JSONDecoder):
-   """ TODO """
-   def __init__(self, *args, **kwargs):
-      
-      self.basepk    = kwargs.get('basepk', -1)
-      self.owner     = kwargs.get('owner', 'admin')
-      self.datastore = kwargs.get('datastore', '')
-      self.siteurl   = kwargs.get('siteurl', '')
 
-      super(DefaultMangler, self).__init__(*args)
+    def __init__(self, *args, **kwargs):
 
-   def default(self, obj):
-      # Let the base class default method raise the TypeError
-      return json.JSONEncoder.default(self, obj)
+        self.basepk = kwargs.get('basepk', -1)
+        self.owner = kwargs.get('owner', 'admin')
+        self.datastore = kwargs.get('datastore', '')
+        self.siteurl = kwargs.get('siteurl', '')
 
-   def decode(self, json_string):
-      """
-      json_string is basicly string that you give to json.loads method
-      """
-      default_obj = super(DefaultMangler, self).decode(json_string)
+        super(DefaultMangler, self).__init__(*args)
 
-      # manipulate your object any way you want
-      # ....
+    def default(self, obj):
+        # Let the base class default method raise the TypeError
+        return json.JSONEncoder.default(self, obj)
 
-      return default_obj
+    def decode(self, json_string):
+        """
+        json_string is basicly string that you give to json.loads method
+        """
+        default_obj = super(DefaultMangler, self).decode(json_string)
+
+        # manipulate your object any way you want
+        # ....
+
+        return default_obj
 
 
 class ResourceBaseMangler(DefaultMangler):
-   """ TODO """
-   def default(self, obj):
-      # Let the base class default method raise the TypeError
-      return json.JSONEncoder.default(self, obj)
 
-   def decode(self, json_string):
-      """
-      json_string is basicly string that you give to json.loads method
-      """
-      default_obj = super(ResourceBaseMangler, self).decode(json_string)
+    def default(self, obj):
+        # Let the base class default method raise the TypeError
+        return json.JSONEncoder.default(self, obj)
 
-      # manipulate your object any way you want
-      # ....
-      upload_sessions = []
-      for obj in default_obj:
-         obj['pk'] = obj['pk'] + self.basepk
-         
-         obj['fields']['featured'] = False
-         obj['fields']['rating'] = 0
-         obj['fields']['popular_count'] = 0
-         obj['fields']['share_count'] = 0
-         obj['fields']['is_published'] = True
-         obj['fields']['thumbnail_url'] = ''
+    def decode(self, json_string):
+        """
+        json_string is basicly string that you give to json.loads method
+        """
+        default_obj = super(ResourceBaseMangler, self).decode(json_string)
 
-         if 'distribution_url' in obj['fields']:
-            if not obj['fields']['distribution_url'] is None and 'layers' in obj['fields']['distribution_url']:
+        # manipulate your object any way you want
+        # ....
+        upload_sessions = []
+        for obj in default_obj:
+            obj['pk'] = obj['pk'] + self.basepk
 
-               obj['fields']['polymorphic_ctype'] = ["layers", "layer"]
+            obj['fields']['featured'] = False
+            obj['fields']['rating'] = 0
+            obj['fields']['popular_count'] = 0
+            obj['fields']['share_count'] = 0
+            obj['fields']['is_published'] = True
+            obj['fields']['thumbnail_url'] = ''
 
-               try:
-                  p = '(?P<protocol>http.*://)?(?P<host>[^:/ ]+).?(?P<port>[0-9]*)(?P<details_url>.*)'
-                  m = re.search(p, obj['fields']['distribution_url'])
-                  if 'http' in m.group('protocol'):
-                     obj['fields']['detail_url'] = self.siteurl + m.group('details_url')
-                  else:
-                     obj['fields']['detail_url'] = self.siteurl + obj['fields']['distribution_url']
-               except:
-                  obj['fields']['detail_url'] = obj['fields']['distribution_url']
+            if 'distribution_url' in obj['fields']:
+                if not obj['fields']['distribution_url'] is None and 'layers' in obj['fields']['distribution_url']:
 
-            else:
-               obj['fields']['polymorphic_ctype'] = ["maps", "map"]
-         
-         try:
-            obj['fields'].pop("distribution_description", None)
-         except:
-            pass
+                    obj['fields']['polymorphic_ctype'] = ["layers", "layer"]
 
-         try:
-            obj['fields'].pop("distribution_url", None)
-         except:
-            pass
+                    try:
+                        p = '(?P<protocol>http.*://)?(?P<host>[^:/ ]+).?(?P<port>[0-9]*)(?P<details_url>.*)'
+                        m = re.search(p, obj['fields']['distribution_url'])
+                        if 'http' in m.group('protocol'):
+                            obj['fields']['detail_url'] = self.siteurl + m.group('details_url')
+                        else:
+                            obj['fields']['detail_url'] = self.siteurl + obj['fields']['distribution_url']
+                    except:
+                        obj['fields']['detail_url'] = obj['fields']['distribution_url']
 
-         try:
-            obj['fields'].pop("thumbnail", None)
-         except:
-            pass
+                else:
+                    obj['fields']['polymorphic_ctype'] = ["maps", "map"]
 
-         upload_sessions.append(self.add_upload_session(obj['pk'], obj['fields']['owner']))
+            try:
+                obj['fields'].pop("distribution_description", None)
+            except:
+                pass
 
-      default_obj.extend(upload_sessions)
+            try:
+                obj['fields'].pop("distribution_url", None)
+            except:
+                pass
 
-      return default_obj
+            try:
+                obj['fields'].pop("thumbnail", None)
+            except:
+                pass
 
-   def add_upload_session(self, pk, owner):
-      obj = dict()
-      
-      obj['pk'] = pk
-      obj['model'] = 'layers.uploadsession'
+            upload_sessions.append(self.add_upload_session(obj['pk'], obj['fields']['owner']))
 
-      obj['fields'] = dict()
-      obj['fields']['user'] = owner
-      obj['fields']['traceback'] = None
-      obj['fields']['context'] = None
-      obj['fields']['error'] = None
-      obj['fields']['processed'] = True
-      obj['fields']['date'] = datetime.datetime.now().strftime("%Y-%m-%dT%H:%M:%S")
- 
-      return obj
+        default_obj.extend(upload_sessions)
+
+        return default_obj
+
+    def add_upload_session(self, pk, owner):
+        obj = dict()
+
+        obj['pk'] = pk
+        obj['model'] = 'layers.uploadsession'
+
+        obj['fields'] = dict()
+        obj['fields']['user'] = owner
+        obj['fields']['traceback'] = None
+        obj['fields']['context'] = None
+        obj['fields']['error'] = None
+        obj['fields']['processed'] = True
+        obj['fields']['date'] = datetime.datetime.now().strftime("%Y-%m-%dT%H:%M:%S")
+
+        return obj
 
 
 class LayerMangler(DefaultMangler):
-   """ TODO """
-   def default(self, obj):
-      # Let the base class default method raise the TypeError
-      return json.JSONEncoder.default(self, obj)
 
-   def decode(self, json_string):
-      """
-      json_string is basicly string that you give to json.loads method
-      """
-      default_obj = super(LayerMangler, self).decode(json_string)
+    def default(self, obj):
+        # Let the base class default method raise the TypeError
+        return json.JSONEncoder.default(self, obj)
 
-      # manipulate your object any way you want
-      # ....
-      for obj in default_obj:
-         obj['pk'] = obj['pk'] + self.basepk
+    def decode(self, json_string):
+        """
+        json_string is basicly string that you give to json.loads method
+        """
+        default_obj = super(LayerMangler, self).decode(json_string)
 
-         # Retrieve the ResourceBase associated to this Layer
-         from geonode.base.models import ResourceBase
+        # manipulate your object any way you want
+        # ....
+        for obj in default_obj:
+            obj['pk'] = obj['pk'] + self.basepk
 
-         resource = ResourceBase.objects.get(pk=obj['pk'])
+            # Retrieve the ResourceBase associated to this Layer
+            from geonode.base.models import ResourceBase
 
-         obj['fields']['upload_session'] = obj['pk']
-         obj['fields']['service'] = None
-         obj['fields']['charset'] = "UTF-8"
-         obj['fields']['title_en'] = resource.title
-         obj['fields']['data_quality_statement_en'] = ""
-         obj['fields']['regions'] = []
-         obj['fields']['supplemental_information_en'] = "No information provided"
-         obj['fields']['abstract_en'] = "No abstract provided"
-         obj['fields']['purpose_en'] = ""
-         obj['fields']['constraints_other_en'] = ""
-         obj['fields']['default_style'] = None
+            resource = ResourceBase.objects.get(pk=obj['pk'])
 
-         if self.datastore:
-            obj['fields']['store'] = self.datastore
-         else:
-            obj['fields']['store'] = obj['fields']['name']
+            obj['fields']['upload_session'] = obj['pk']
+            obj['fields']['service'] = None
+            obj['fields']['charset'] = "UTF-8"
+            obj['fields']['title_en'] = resource.title
+            obj['fields']['data_quality_statement_en'] = ""
+            obj['fields']['regions'] = []
+            obj['fields']['supplemental_information_en'] = "No information provided"
+            obj['fields']['abstract_en'] = "No abstract provided"
+            obj['fields']['purpose_en'] = ""
+            obj['fields']['constraints_other_en'] = ""
+            obj['fields']['default_style'] = None
 
-         try:
-            obj['fields'].pop("popular_count", None)
-         except:
-            pass
+            if self.datastore:
+                obj['fields']['store'] = self.datastore
+            else:
+                obj['fields']['store'] = obj['fields']['name']
 
-         try:
-            obj['fields'].pop("share_count", None)
-         except:
-            pass
+            try:
+                obj['fields'].pop("popular_count", None)
+            except:
+                pass
 
-         try:
-            obj['fields'].pop("title", None)
-         except:
-            pass
+            try:
+                obj['fields'].pop("share_count", None)
+            except:
+                pass
 
-      return default_obj
+            try:
+                obj['fields'].pop("title", None)
+            except:
+                pass
+
+        return default_obj
 
 
 class LayerAttributesMangler(DefaultMangler):
-   """ TODO """
-   def default(self, obj):
-      # Let the base class default method raise the TypeError
-      return json.JSONEncoder.default(self, obj)
 
-   def decode(self, json_string):
-      """
-      json_string is basicly string that you give to json.loads method
-      """
-      default_obj = super(LayerAttributesMangler, self).decode(json_string)
+    def default(self, obj):
+        # Let the base class default method raise the TypeError
+        return json.JSONEncoder.default(self, obj)
 
-      # manipulate your object any way you want
-      # ....
-      for obj in default_obj:
-          obj['pk'] = obj['pk'] + self.basepk
-          
-          obj['fields']['layer'] = obj['fields']['layer'] + self.basepk
+    def decode(self, json_string):
+        """
+        json_string is basicly string that you give to json.loads method
+        """
+        default_obj = super(LayerAttributesMangler, self).decode(json_string)
 
-      return default_obj
+        # manipulate your object any way you want
+        # ....
+        for obj in default_obj:
+            obj['pk'] = obj['pk'] + self.basepk
+
+            obj['fields']['layer'] = obj['fields']['layer'] + self.basepk
+
+        return default_obj
 
 
 class MapMangler(DefaultMangler):
-   """ TODO """
-   def default(self, obj):
-      # Let the base class default method raise the TypeError
-      return json.JSONEncoder.default(self, obj)
 
-   def decode(self, json_string):
-      """
-      json_string is basicly string that you give to json.loads method
-      """
-      default_obj = super(MapMangler, self).decode(json_string)
+    def default(self, obj):
+        # Let the base class default method raise the TypeError
+        return json.JSONEncoder.default(self, obj)
 
-      # manipulate your object any way you want
-      # ....
-      for obj in default_obj:
-          obj['pk'] = obj['pk'] + self.basepk
+    def decode(self, json_string):
+        """
+        json_string is basicly string that you give to json.loads method
+        """
+        default_obj = super(MapMangler, self).decode(json_string)
 
-          # Retrieve the ResourceBase associated to this Layer
-          from geonode.base.models import ResourceBase
+        # manipulate your object any way you want
+        # ....
+        for obj in default_obj:
+            obj['pk'] = obj['pk'] + self.basepk
 
-          resource = ResourceBase.objects.get(pk=obj['pk'])
+            # Retrieve the ResourceBase associated to this Layer
+            from geonode.base.models import ResourceBase
 
-          obj['fields']['urlsuffix']   = ""
-          obj['fields']['title_en']    = resource.title
-          obj['fields']['featuredurl'] = "" 
-          obj['fields']['data_quality_statement_en']   = None
-          obj['fields']['supplemental_information_en'] = "No information provided"
-          obj['fields']['abstract_en'] = ""
-          obj['fields']['purpose_en']  = None
-          obj['fields']['constraints_other_en'] = None
+            resource = ResourceBase.objects.get(pk=obj['pk'])
 
-          try:
-             obj['fields'].pop("popular_count", None)
-          except:
-             pass
+            obj['fields']['urlsuffix'] = ""
+            obj['fields']['title_en'] = resource.title
+            obj['fields']['featuredurl'] = ""
+            obj['fields']['data_quality_statement_en'] = None
+            obj['fields']['supplemental_information_en'] = "No information provided"
+            obj['fields']['abstract_en'] = ""
+            obj['fields']['purpose_en'] = None
+            obj['fields']['constraints_other_en'] = None
 
-          try:
-             obj['fields'].pop("share_count", None)
-          except:
-             pass
+            try:
+                obj['fields'].pop("popular_count", None)
+            except:
+                pass
 
-          try:
-             obj['fields'].pop("title", None)
-          except:
-             pass
+            try:
+                obj['fields'].pop("share_count", None)
+            except:
+                pass
 
-      return default_obj
+            try:
+                obj['fields'].pop("title", None)
+            except:
+                pass
+
+        return default_obj
 
 
 class MapLayersMangler(DefaultMangler):
-   """ TODO """
-   def default(self, obj):
-      # Let the base class default method raise the TypeError
-      return json.JSONEncoder.default(self, obj)
 
-   def decode(self, json_string):
-      """
-      json_string is basicly string that you give to json.loads method
-      """
-      default_obj = super(MapLayersMangler, self).decode(json_string)
+    def default(self, obj):
+        # Let the base class default method raise the TypeError
+        return json.JSONEncoder.default(self, obj)
 
-      # manipulate your object any way you want
-      # ....
-      for obj in default_obj:
-          obj['pk'] = obj['pk'] + self.basepk
+    def decode(self, json_string):
+        """
+        json_string is basicly string that you give to json.loads method
+        """
+        default_obj = super(MapLayersMangler, self).decode(json_string)
 
-          obj['fields']['map'] = obj['fields']['map'] + self.basepk
+        # manipulate your object any way you want
+        # ....
+        for obj in default_obj:
+            obj['pk'] = obj['pk'] + self.basepk
 
-      return default_obj
+            obj['fields']['map'] = obj['fields']['map'] + self.basepk
 
-
-
+        return default_obj

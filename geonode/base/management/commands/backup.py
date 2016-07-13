@@ -17,8 +17,7 @@
 #
 #########################################################################
 
-import traceback
-import os, sys
+import os
 import shutil
 import helpers
 
@@ -27,6 +26,7 @@ from optparse import make_option
 from django.conf import settings
 from django.core.management import call_command
 from django.core.management.base import BaseCommand, CommandError
+
 
 class Command(BaseCommand):
 
@@ -47,7 +47,7 @@ class Command(BaseCommand):
             help='Destination folder where to store the backup archive. It must be writable.'))
 
     def handle(self, **options):
-        ignore_errors = options.get('ignore_errors')
+        # ignore_errors = options.get('ignore_errors')
         backup_dir = options.get('backup_dir')
 
         if not backup_dir or len(backup_dir) == 0:
@@ -62,8 +62,9 @@ class Command(BaseCommand):
         # Dump Fixtures
         for app_name, dump_name in zip(helpers.app_names, helpers.dump_names):
             print "Dumping '"+app_name+"' into '"+dump_name+".json'."
-            output = open(os.path.join(target_folder,dump_name+'.json'),'w') # Point stdout at a file for dumping data to.
-            call_command('dumpdata',app_name,format='json',indent=2,natural=True,stdout=output)
+            # Point stdout at a file for dumping data to.
+            output = open(os.path.join(target_folder, dump_name+'.json'), 'w')
+            call_command('dumpdata', app_name, format='json', indent=2, natural=True, stdout=output)
             output.close()
 
         # Store Media Root
@@ -105,7 +106,8 @@ class Command(BaseCommand):
             os.makedirs(template_files_folders)
 
         for template_files_folder in template_folders:
-            template_folder = os.path.join(template_files_folders, os.path.basename(os.path.normpath(template_files_folder)))
+            template_folder = os.path.join(template_files_folders,
+                                           os.path.basename(os.path.normpath(template_files_folder)))
             if not os.path.exists(template_folder):
                 os.makedirs(template_folder)
 
@@ -133,4 +135,3 @@ class Command(BaseCommand):
         shutil.rmtree(target_folder)
 
         print "Backup Finished. Archive generated '"+os.path.join(backup_dir, dir_time_suffix+'.zip')+"'."
-

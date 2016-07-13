@@ -18,8 +18,7 @@
 #########################################################################
 
 import traceback
-import os, sys
-import shutil
+import os
 import helpers
 import tempfile
 import json
@@ -27,12 +26,11 @@ import json
 from optparse import make_option
 
 from django.conf import settings
-from django.core.management import call_command
 from django.core.management.base import BaseCommand, CommandError
 from django.db import (
-    DEFAULT_DB_ALIAS, DatabaseError, IntegrityError, connections, router,
-    transaction,
+    DEFAULT_DB_ALIAS
 )
+
 
 class Command(BaseCommand):
 
@@ -58,9 +56,9 @@ class Command(BaseCommand):
             help='New owner of the GeoNode Layers/Maps.'))
 
     def handle(self, **options):
-        ignore_errors = options.get('ignore_errors')
-        backup_file   = options.get('backup_file')
-        owner         = options.get('owner')
+        # ignore_errors = options.get('ignore_errors')
+        backup_file = options.get('backup_file')
+        owner = options.get('owner')
 
         if not backup_file or len(backup_file) == 0:
             raise CommandError("Backup archive '--backup-file' is mandatory")
@@ -68,44 +66,47 @@ class Command(BaseCommand):
         if not owner or len(owner) == 0:
             raise CommandError("Owner '--owner' is mandatory")
 
-        if helpers.confirm(prompt='WARNING: The migration may break some of your GeoNode existing Layers. Are you sure you want to proceed?', resp=False):
+        message = 'WARNING: The migration may break GeoNode existing Layers. You want to proceed?'
+        if helpers.confirm(prompt=message, resp=False):
+
             """Migrate existing Layers on GeoNode DB"""
             try:
-               # Create Target Folder
-               restore_folder = os.path.join(tempfile.gettempdir(), 'restore')
-               if not os.path.exists(restore_folder):
-                  os.makedirs(restore_folder)
+                # Create Target Folder
+                restore_folder = os.path.join(tempfile.gettempdir(), 'restore')
+                if not os.path.exists(restore_folder):
+                    os.makedirs(restore_folder)
 
-               # Extract ZIP Archive to Target Folder
-               target_folder = helpers.unzip_file(backup_file, restore_folder)
+                # Extract ZIP Archive to Target Folder
+                target_folder = helpers.unzip_file(backup_file, restore_folder)
 
-               # Retrieve the max Primary Key from the DB
-               from geonode.base.models import ResourceBase
-               try:
-                  higher_pk = ResourceBase.objects.all().order_by("-id")[0].pk
-               except:
-                  higher_pk = 0
+                # Retrieve the max Primary Key from the DB
+                from geonode.base.models import ResourceBase
+                try:
+                    higher_pk = ResourceBase.objects.all().order_by("-id")[0].pk
+                except:
+                    higher_pk = 0
 
-               # Restore Fixtures
-               for app_name, dump_name in zip(helpers.app_names, helpers.dump_names):
-                  for mig_name, mangler in zip(helpers.migrations, helpers.manglers):
-                     if app_name == mig_name:
-                        fixture_file = os.path.join(target_folder, dump_name+'.json')
+                # Restore Fixtures
+                for app_name, dump_name in zip(helpers.app_names, helpers.dump_names):
+                    for mig_name, mangler in zip(helpers.migrations, helpers.manglers):
+                        if app_name == mig_name:
+                            fixture_file = os.path.join(target_folder, dump_name+'.json')
 
-                        print "Deserializing "+fixture_file
-                        mangler = helpers.load_class(mangler)
+                            print "Deserializing "+fixture_file
+                            mangler = helpers.load_class(mangler)
 
-                        obj = helpers.load_fixture(app_name, fixture_file, mangler=mangler, basepk=higher_pk, owner=owner, datastore=settings.OGC_SERVER['default']['DATASTORE'], siteurl=settings.SITEURL)
+                            obj = helpers.load_fixture(app_name, fixture_file, mangler=mangler,
+                                                       basepk=higher_pk, owner=owner,
+                                                       datastore=settings.OGC_SERVER['default']['DATASTORE'],
+                                                       siteurl=settings.SITEURL)
 
-                        from django.core import serializers
+                            from django.core import serializers
 
-                        objects = serializers.deserialize('json', json.dumps(obj), ignorenonexistent=True)
-                        for obj in objects:
-                           obj.save(using=DEFAULT_DB_ALIAS)
+                            objects = serializers.deserialize('json', json.dumps(obj), ignorenonexistent=True)
+                            for obj in objects:
+                                obj.save(using=DEFAULT_DB_ALIAS)
 
-               print "Restore finished. Please find restored files and dumps into: '"+target_folder+"'."
+                print "Restore finished. Please find restored files and dumps into: '"+target_folder+"'."
 
-            except Exception, err:
-               traceback.print_exc()
-
-
+            except Exception:
+                traceback.print_exc()
