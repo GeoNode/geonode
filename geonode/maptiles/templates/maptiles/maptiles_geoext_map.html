@@ -337,7 +337,7 @@ function hasDataFiltering( f_list){
 Function which retrieves selected tiles and filters them if  they don't have data or they are outside the jurisdiction
 */
 function filterSelectedTiles(tile_filter, single_click, send_notice){
-     var wfs_proto = wfs_proto_creator("{{feature_tiled}}", "EPSG:32651","json");
+     var wfs_proto = wfs_proto_creator("{{feature_tiled}}", "EPSG:900913","json");
      var arg_obj = {
          filter: tile_filter,
          single_click: single_click,
@@ -400,8 +400,10 @@ function filterSelectedTiles(tile_filter, single_click, send_notice){
  Function which is used for selecting tiles given a rectangular selection
 */
 function selection_bounds(map_bounds, highlight_layer) {
-
-    var transformed_bounds = map_bounds.clone().transform(new OpenLayers.Projection("EPSG:900913"), new OpenLayers.Projection("EPSG:32651"));
+    // var transformed_bounds = map_bounds.clone().transform(new OpenLayers.Projection("EPSG:900913"), new OpenLayers.Projection("EPSG:32651"));
+    var transformed_bounds = map_bounds.clone().transform(new OpenLayers.Projection("EPSG:4326"),new OpenLayers.Projection("EPSG:900913"));
+    map.zoomToExtent(transformed_bounds);
+    console.log(transformed_bounds);
     var filter= new OpenLayers.Filter.Spatial({
             type: OpenLayers.Filter.Spatial.INTERSECTS,
             property: "the_geom",
@@ -529,15 +531,24 @@ Ext.onReady(function (){
       maxResolution: map_options["maxResolution"],
       projection: map_options["projection"]
     });
-
+    map.addControl(
+        new OpenLayers.Control.MousePosition({
+            prefix: 'EPSG:4326 coordinates: ',
+            separator: ' | ',
+            numDigits: 5,
+            emptyString: 'Mouse is not over map.',
+            displayProjection: new OpenLayers.Projection("EPSG:4326")
+        })
+    );
     //definition of the world map layer
     var mq_layer = new OpenLayers.Layer.XYZ(
         "OpenStreetMap",
         [
-            "http://otile1.mqcdn.com/tiles/1.0.0/map/${z}/${x}/${y}.png",
-            "http://otile2.mqcdn.com/tiles/1.0.0/map/${z}/${x}/${y}.png",
-            "http://otile3.mqcdn.com/tiles/1.0.0/map/${z}/${x}/${y}.png",
-            "http://otile4.mqcdn.com/tiles/1.0.0/map/${z}/${x}/${y}.png"
+            // "http://otile1.mqcdn.com/tiles/1.0.0/map/${z}/${x}/${y}.png",
+            // "http://otile2.mqcdn.com/tiles/1.0.0/map/${z}/${x}/${y}.png",
+            // "http://otile3.mqcdn.com/tiles/1.0.0/map/${z}/${x}/${y}.png",
+            // "http://otile4.mqcdn.com/tiles/1.0.0/map/${z}/${x}/${y}.png"
+            "http://korona.geog.uni-heidelberg.de/tiles/roads/x=${x}&y=${y}&z=${z}"
         ],
         {
             /*attribution: "Data, imagery and map information provided by <a href='http://www.mapquest.com/'  target='_blank'>MapQuest</a>, <a href='http://www.openstreetmap.org/' target='_blank'>Open Street Map</a> and contributors, <a href='http://creativecommons.org/licenses/by-sa/2.0/' target='_blank'>CC-BY-SA</a>  <img src='http://developer.mapquest.com/content/osm/mq_logo.png' border='0'>",*/
@@ -695,12 +706,12 @@ Ext.onReady(function (){
     {% endif %}
     app = new GeoExt.MapPanel(config);
     if(jurisdiction_args ){
-        map.zoomToExtent(jurisdiction_view_layer.getExtent());
+        map.zoomToExtent(jurisdiction_view_layer['maxExtent']);
         getJurisdictionGeom(jurisdiction_name.split(":")[1], juris_vec_layer);
     }else{
         map.zoomToExtent(tile_layer.getExtent());
     }
-
+    // console.log(jurisdiction_view_layer);
     setMapSize();
 });
 /*
