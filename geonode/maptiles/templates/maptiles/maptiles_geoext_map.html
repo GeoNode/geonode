@@ -127,7 +127,7 @@ $(document).ready(function(){
                     $('#rightlimit').val(),
                     $('#upperlimit').val()
                 ),
-                highlight_layer
+                highlight_layer, true
             );
         });
 
@@ -399,10 +399,13 @@ function filterSelectedTiles(tile_filter, single_click, send_notice){
 /*
  Function which is used for selecting tiles given a rectangular selection
 */
-function selection_bounds(map_bounds, highlight_layer) {
-    // var transformed_bounds = map_bounds.clone().transform(new OpenLayers.Projection("EPSG:900913"), new OpenLayers.Projection("EPSG:32651"));
-    var transformed_bounds = map_bounds.clone().transform(new OpenLayers.Projection("EPSG:4326"),new OpenLayers.Projection("EPSG:900913"));
-    map.zoomToExtent(transformed_bounds);
+function selection_bounds(map_bounds, highlight_layer, ifbbox_form) {
+    if (ifbbox_form){
+      var transformed_bounds = map_bounds.clone().transform(new OpenLayers.Projection("EPSG:4326"),new OpenLayers.Projection("EPSG:900913"));
+      map.zoomToExtent(transformed_bounds);
+    }else{
+      var transformed_bounds = map_bounds.clone().transform(new OpenLayers.Projection("EPSG:900913"), new OpenLayers.Projection("EPSG:32651"));
+    }
     console.log(transformed_bounds);
     var filter= new OpenLayers.Filter.Spatial({
             type: OpenLayers.Filter.Spatial.INTERSECTS,
@@ -531,7 +534,16 @@ Ext.onReady(function (){
       maxResolution: map_options["maxResolution"],
       projection: map_options["projection"]
     });
-
+    map.addControl(
+        new OpenLayers.Control.MousePosition({
+            // prefix: 'EPSG:4326 coordinates: ',
+            separator: '&deg;E ',
+            suffix: '&deg;N',
+            numDigits: 5,
+            emptyString: 'Mouse is not over map.',
+            displayProjection: new OpenLayers.Projection("EPSG:4326")
+        })
+    );
     //definition of the world map layer
     var mq_layer = new OpenLayers.Layer.XYZ(
         "OpenStreetMap",
@@ -646,7 +658,7 @@ Ext.onReady(function (){
               var map_bounds = new OpenLayers.Bounds();
               map_bounds.extend(ll);
               map_bounds.extend(ur);
-              selection_bounds(map_bounds, this.highlight_layer);
+              selection_bounds(map_bounds, this.highlight_layer, false);
           }
       });
 
