@@ -1,3 +1,16 @@
+geonode (2.4.1+thefinal1) trusty; urgency=high
+
+  [ Tom Kralidis ]
+  * [562af5] catch AttributeError on metadata with no date (#2469)
+  * [75ca9a] update ISO template link gmd:name values to be actionable
+
+  [ Simone Dalmasso ]
+  * [42d589] remove map quest layers
+  * [4d1adf] bump agon ratings
+  * [8cb080] make mapnik the default
+
+ -- Simone Dalmasso <simone.dalmasso@gmail.com>  Wed, 13 Jul 2016 15:30:20 +0000
+
 geonode (2.4.0+thefinal0) trusty; urgency=high
 
   [ Tom Kralidis ]
