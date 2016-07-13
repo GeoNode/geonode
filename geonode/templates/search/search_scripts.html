@@ -1,3 +1,4 @@
+{% load base_tags %}
 {% if DEBUG_STATIC %}
 <script src="{{ STATIC_URL }}lib/js/bootstrap-datepicker.js?v={{ VERSION }}" type="text/javascript"></script>
 <script src="{{ STATIC_URL }}lib/js/angular.js?v={{ VERSION }}"></script>
@@ -26,7 +27,18 @@
   HAYSTACK_SEARCH = "{{ HAYSTACK_SEARCH }}".toLowerCase() === "true";
   HAYSTACK_FACET_COUNTS = "{{ HAYSTACK_FACET_COUNTS }}".toLowerCase() === "true";
   CLIENT_RESULTS_LIMIT = {{ CLIENT_RESULTS_LIMIT }};
-  AUTOCOMPLETE_URL_RESOURCEBASE = '{% url "autocomplete_light_autocomplete" "ResourceBaseAutocomplete" %}';
+  {% get_context_resourcetype as pathc %}
+        {% if pathc == "layers" %}
+                AUTOCOMPLETE_URL_RESOURCEBASE = '{% url "autocomplete_light_autocomplete" "LayerAutocomplete" %}';
+        {% elif pathc == "maps" %}
+                AUTOCOMPLETE_URL_RESOURCEBASE = '{% url "autocomplete_light_autocomplete" "MapAutocomplete" %}';
+        {% elif pathc == "documents" %}
+                AUTOCOMPLETE_URL_RESOURCEBASE = '{% url "autocomplete_light_autocomplete" "DocumentAutocomplete" %}';
+        {% elif pathc == "search" %}
+                AUTOCOMPLETE_URL_RESOURCEBASE = '{% url "autocomplete_light_autocomplete" "ResourceBaseAutocomplete" %}';
+        {% else %}
+                AUTOCOMPLETE_URL_RESOURCEBASE = '{% url "autocomplete_light_autocomplete" "ResourceBaseAutocomplete" %}';
+        {% endif %}
   AUTOCOMPLETE_URL_REGION = '{% url "autocomplete_light_autocomplete" "RegionAutocomplete" %}';
 
   var module = angular.module('search', ['geonode_main_search', 'cart']);
