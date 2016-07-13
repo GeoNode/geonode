@@ -531,7 +531,16 @@ Ext.onReady(function (){
       maxResolution: map_options["maxResolution"],
       projection: map_options["projection"]
     });
-
+    map.addControl(
+        new OpenLayers.Control.MousePosition({
+            // prefix: 'EPSG:4326 coordinates: ',
+            separator: '&deg;E ',
+            suffix: '&deg;N',
+            numDigits: 5,
+            emptyString: 'Mouse is not over map.',
+            displayProjection: new OpenLayers.Projection("EPSG:4326")
+        })
+    );
     //definition of the world map layer
     var mq_layer = new OpenLayers.Layer.XYZ(
         "OpenStreetMap",
