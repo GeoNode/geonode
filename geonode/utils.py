@@ -681,7 +681,8 @@ def check_shp_columnnames(layer):
                         j += 1
                         new_field_name = new_field_name[:-2]+'_'+str(j)
                 list_col.update({field_name: new_field_name})
-    except UnicodeDecodeError:
+    except UnicodeDecodeError as e:
+        print str(e)
         return False, None, None
 
     if len(list_col) == 0:

@@ -152,7 +152,7 @@ setup(name='GeoNode',
         "flake8==2.3.0",
         "pep8==1.6.2",
 
-        #AWS S3 dependencies
+        # AWS S3 dependencies
         "django-storages==1.1.8",
         "boto==2.38.0"
         ],
