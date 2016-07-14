@@ -13,7 +13,7 @@
 <script type="text/javascript">
     var map;
     window.addEventListener("map:init", function (e) {
-       
+
         map = e.detail.map;
 
         {% if resource.bbox_string %}
@@ -28,11 +28,11 @@
             'opacity':0.8,
             tiled:true
         });
-        
+
           var MapQuestOpen_OSM = L.tileLayer('http://otile{s}.mqcdn.com/tiles/1.0.0/{type}/{z}/{x}/{y}.{ext}', {
             type: 'map',
             ext: 'jpg',
-            attribution: 'Tiles Courtesy of <a href="http://www.mapquest.com/">MapQuest</a> &mdash; Map data &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+            attribution: 'Imagery from <a href="http://giscience.uni-hd.de/">GIScience Research Group @ University of Heidelberg</a> &mdash; Map data &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
             subdomains: '1234'
         }).addTo(map);
 
