@@ -79,7 +79,7 @@ class Style(models.Model):
         return "%s" % self.name.encode('utf-8')
 
     def absolute_url(self):
-        return self.sld_url.split('geoserver/', 1)[1]
+        return self.sld_url.split(settings.OGC_SERVER['default']['LOCATION'], 1)[1]
 
 
 class LayerManager(ResourceBaseManager):
