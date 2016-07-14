@@ -72,7 +72,7 @@ from geonode.eula.models import AnonDownloader
 
 # from datetime import date, timedelta, datetime
 from django.utils import timezone
-
+from geonode.people.models import Profile
 
 CONTEXT_LOG_FILE = None
 
@@ -303,9 +303,9 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
         context_dict["social_links"] = build_social_links(request, layer)
 
     if request.method == 'POST':
+        pprint(request.POST)
         form = AnonDownloaderForm(request.POST)
         out = {}
-        pprint(form)
         if form.is_valid():
             pprint(form)
             out['success'] = True
@@ -630,30 +630,46 @@ def layer_download(request, layername):
 def layer_download_csv(request):
     if not request.user.is_superuser:
         return HttpResponseRedirect("/forbidden/")
-
     response = HttpResponse(content_type='text/csv')
     datetoday = timezone.now()
     response['Content-Disposition'] = 'attachment; filename="layerdownloads-"'+str(datetoday.month)+str(datetoday.day)+str(datetoday.year)+'.csv"'
     writer = csv.writer(response)
 
-    auth_list = Action.objects.filter(verb='downloaded').order_by('timestamp') #get layers in prod
+    orgtypelist = ['Phil-LiDAR 1 SUC',
+    'Phil-LiDAR 2 SUC',
+    'Government Agency',
+    'Academe',
+    'International NGO',
+    'Local NGO',
+    'Private Insitution',
+    'Other']
 
-    # auth_fmc =
-    anon_list = AnonDownloader.objects.all().order_by('date')
-    # anon_fmc
-    writer.writerow( ['username','layer name','date downloaded'])
-
+    auth_list = Action.objects.filter(verb='downloaded').order_by('timestamp')
+    writer.writerow( ['username','lastname','firstname','email','organization','organization type','layer name','date downloaded'])
     for auth in auth_list:
-        # auth.actor + " " + auth.action_object + " " +  auth.timestamp.strftime('%Y/%m/%d')
-        writer.writerow([auth.actor,auth.action_object.title,auth.timestamp.strftime('%Y/%m/%d')])
+        username = auth.actor
+        getprofile = Profile.objects.get(username=username)
+        firstname = getprofile.first_name
+        lastname = getprofile.last_name
+        email = getprofile.email
+        organization = getprofile.organization
+        orgtype = orgtypelist[getprofile.organization_type]
+        pprint(dir(getprofile))
+        writer.writerow([username,lastname,firstname,email,organization,orgtype,auth.action_object.title,auth.timestamp.strftime('%Y/%m/%d')])
 
     writer.writerow(['\n'])
+    anon_list = AnonDownloader.objects.all().order_by('date')
     writer.writerow(['Anonymous Downloads'])
-    writer.writerow( ['lastname','firstname','layer name','date downloaded'])
+    writer.writerow( ['lastname','firstname','email','organization','organization type','purpose','layer name','doc name','date downloaded'])
     for anon in anon_list:
         lastname = anon.anon_last_name
         firstname = anon.anon_first_name
+        email = anon.anon_email
         layername = anon.anon_layer
-        writer.writerow([lastname,firstname,layername,anon.date.strftime('%Y/%m/%d')])
+        docname = anon.anon_document
+        organization = anon.anon_organization
+        orgtype = anon.anon_orgtype
+        purpose = anon.anon_purpose
+        writer.writerow([lastname,firstname,email,organization,orgtype,purpose,layername,docname,anon.date.strftime('%Y/%m/%d')])
 
     return response
