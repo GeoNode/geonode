@@ -14,7 +14,7 @@
     
     source = null;
     {% if resource.get_tiles_url %}
-    source = new ol.source.TileWMS({
+    source = new ol.source.XYZ({
     	url: '{{ resource.get_tiles_url|safe }}'
     });
 
