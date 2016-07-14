@@ -716,7 +716,7 @@ def final_step(upload_session, user):
     if xml_file:
         saved_layer.metadata_uploaded = True
         # get model properties from XML
-        vals, regions, keywords = set_metadata(open(xml_file[0]).read())
+        identifier, vals, regions, keywords = set_metadata(open(xml_file[0]).read())
 
         regions_resolved, regions_unresolved = resolve_regions(regions)
         keywords.extend(regions_unresolved)
