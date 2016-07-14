@@ -83,8 +83,19 @@ class MissionGridRefAdmin(admin.ModelAdmin):
         'grid_ref',
         'fieldID'
         )
-    list_filter = ('fieldID')
+    list_filter = ('fieldID',)
     search_fields = ('grid_ref','fieldID')
+
+class SucToLayerAdmin(admin.ModelAdmin):
+    model = SucToLayer
+    list_display_links = ('id',)
+    list_display = (
+        'id',
+        'suc',
+        'block_name'
+        )
+    list_filter = ('suc',)
+    search_fields = ('suc','block_name')
 
 admin.site.register(Cart, CartAdmin)
 admin.site.register(Item, ItemAdmin)
@@ -93,4 +104,5 @@ admin.site.register(FTPRequest, FTPRequestAdmin)
 admin.site.register(FTPRequestToObjectIndex, FTPRequestToObjectIndexAdmin)
 admin.site.register(UserJurisdiction, UserJurisdictionAdmin)
 admin.site.register(MissionGridRef,MissionGridRefAdmin)
+admin.site.register(SucToLayer,SucToLayerAdmin)
 
