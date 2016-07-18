@@ -173,8 +173,8 @@
       </li>
 {% if user.is_superuser %}
     <li class="list-group-item">
-             <form id="recreate_dir_form" method="post" class="modal-form" action='{% url "datarequests:" pk=request_profile.pk%}'>{% csrf_token %}
-                <button type="submit" class="btn btn-primary btn-md btn-block"  id="recreate-dir-submit">{% trans "Create Directory" %}</button>
+             <form id="compute_request_size_form" method="post" class="modal-form" action='{% url "datarequests:data_request_profile_compute_size" pk=request_profile.pk%}'>{% csrf_token %}
+                <button type="submit" class="btn btn-primary btn-md btn-block"  id="compute-request-size">{% trans "Compute Request Size" %}</button>
             </form>
         </li>
       {% if request_profile.request_status == 'approved' %}
