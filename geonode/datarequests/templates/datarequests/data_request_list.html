@@ -11,8 +11,6 @@
 <div class="page-header">
     {% if request.user.is_superuser %}
         <a href="{% url 'datarequests:data_request_compute_size' %}" class="btn btn-primary pull-right">{% trans "Compute Request Sizes" %}</a>
-    {% endif %}
-    {% if request.user.is_superuser %}
         <a href="{% url 'datarequests:data_request_csv' %}" class="btn btn-primary pull-right">{% trans "Download CSV" %}</a>
     {% endif %}
   <h2 class="page-title">{% trans "Data Request Profiles" %}</h2>
