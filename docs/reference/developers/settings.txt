@@ -270,6 +270,12 @@ Default: ``'geoserver'``
 
 The administrative password for the OGC server as a string.
 
+PG_GEOGIG
+.........
+Default: ``False``
+
+A boolean that represents whether GeoNode will use a postgres database as a backend for geogig stores. When set to true, the ``DATASTORE`` field must be set to a postgres database which will be used.
+
 PRINT_NG_ENABLED
 ................
 Default: ``True``
