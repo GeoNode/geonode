@@ -769,11 +769,7 @@ def update_datarequest_obj(datarequest=None, parameter_dict=None, interest_layer
         datarequest.purpose = parameter_dict['purpose']
 
     datarequest.intended_use_of_dataset = parameter_dict['intended_use_of_dataset']
-    datarequest.organization_type = parameter_dict['organization_type']
-    datarequest.request_level = parameter_dict['request_level']
-    datarequest.funding_source = parameter_dict['funding_source']
-    datarequest.is_consultant = parameter_dict['is_consultant']
-
+    
     if interest_layer:
         datarequest.jurisdiction_shapefile = interest_layer
 

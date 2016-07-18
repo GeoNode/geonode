@@ -190,8 +190,11 @@ def get_shp_ogr(juris_shp_name):
     source = ogr.Open(("PG:host={0} dbname={1} user={2} password={3}".format(settings.DATABASE_HOST,settings.GIS_DATABASE_NAME,settings.DATABASE_USER,settings.DATABASE_PASSWORD)))
     data = source.ExecuteSQL("select the_geom from "+str(juris_shp_name))
     shplist = []
-    for i in range(data.GetFeatureCount()):
-        feature = data.GetNextFeature()
-        shplist.append(loads(feature.GetGeometryRef().ExportToWkb()))
-    juris_shp = cascaded_union(shplist)
-    return juris_shp
+    if data:
+        for i in range(data.GetFeatureCount()):
+            feature = data.GetNextFeature()
+            shplist.append(loads(feature.GetGeometryRef().ExportToWkb()))
+        juris_shp = cascaded_union(shplist)
+        return juris_shp
+    else:
+        return None
