@@ -175,13 +175,15 @@
                   {% if "PhilLiDAR2" in resource.keyword_list %}
                   <tr>
                     <td>{% trans link.link_type %}</td>
-                    <td><a href="{{ link | get_layer_download_url }}&format_options=layout:phillidar2">{% trans link.name %}</a></td>
+                    <!-- <td><a href="{{ link | get_layer_download_url }}&format_options=layout:phillidar2">{% trans link.name %}</a></td> -->
+                    <td><a href="{{ link | get_layer_download_url }}">{% trans link.name %}</a></td>
                     <td><a href="{{ link | prs92_download_url_pl2 }}">{% trans link.name %}</a></td>
                   </tr>
                   {% else %}
                   <tr>
                     <td>{% trans link.link_type %}</td>
-                    <td><a href="{{ link | get_layer_download_url }}&format_options=layout:phillidar1">{% trans link.name %}</a></td>
+                    <!-- <td><a href="{{ link | get_layer_download_url }}&format_options=layout:phillidar1">{% trans link.name %}</a></td> -->
+                    <td><a href="{{ link | get_layer_download_url }}">{% trans link.name %}</a></td>
                     <td><a href="{{ link | prs92_download_url_pl1 }}">{% trans link.name %}</a></td>
                   </tr>
                   {% endif %}
@@ -440,11 +442,13 @@
     });
     {% endif %}
         </script>
-    <script type="text/javascript">
+
+ <script type="text/javascript">
       $('#set_thumbnail').click(function(){
         createMapThumbnail();
         $('#edit-layer').modal('toggle');
       });
+      
     </script>
     {% if GEONODE_SECURITY_ENABLED %}
     {% include "_permissions_form_js.html" %}
