@@ -1,6 +1,7 @@
 from geonode.geoserver.helpers import ogc_server_settings
 from pprint import pprint
 from celery.task import task
+from geonode import settings
 from geonode.layers.models import Layer
 from geonode.datarequests.models import DataRequestProfile
 from geonode.datarequests.utils import get_shp_ogr, get_area_coverage,  get_juris_data_size, get_place_name
