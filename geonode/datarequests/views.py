@@ -699,20 +699,37 @@ def data_request_compute_size(request):
         data_requests = DataRequestProfile.objects.exclude(jurisdiction_shapefile=None)
         compute_size_update.delay(data_requests)
         messages.info(request, "The estimated data size area coverage of the requests are currently being computed")
-        return HttpResponseRedirect(reverse('datarquests:data_request_browse'))
+        return HttpResponseRedirect(reverse('datarequests:data_request_browse'))
     else:
         return HttpResponseRedirect('/forbidden/')
     
 
 def data_request_profile_compute_size(request, pk):
-    if request.user.is_superuser:
+    if request.user.is_superuser and request.method == 'POST':
         data_requests = DataRequestProfile.objects.filter(pk=pk)
         compute_size_update.delay(data_requests)
         messages.info(request, "The estimated data size area coverage of the requests are currently being computed")
-        return HttpResponseRedirect(reverse('datarquests:data_request_browse'))
+        return HttpResponseRedirect(reverse('datarequests:data_request_browse'))
     else:
         return HttpResponseRedirect('/forbidden/')
-     
+
+def data_request_reverse_geocode(request):
+    if request.user.is_superuser:
+        data_requests = DataRequestProfile.objects.filter(place_name=None).exclude(jurisdiction_shapefile=None)
+        place_name_update.delay(data_requests)
+        messages.info(request,"Retrieving approximated place names of data requests")
+        return HttpResponseRedirect(reverse('datarequests:data_request_browse'))
+    else:
+        return HttpResponseRedirect('/forbidden/')
+            
+def data_request_profile_reverse_geocode(request, pk):
+    if request.user.is_superuser and request.method == 'POST':
+        data_requests = DataRequestProfile.objects.filter(pk=pk)
+        place_name_update.delay(data_requests)
+        messages.info(request, "Retrieving approximated place names of data requests")
+        return HttpResponseRedirect(reverse('datarequests:data_request_browse'))
+    else:
+        return HttpResponseRedirect('/forbidden/')             
 
 def data_request_facet_count(request):
     if not request.user.is_superuser:
