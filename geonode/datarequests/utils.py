@@ -187,7 +187,7 @@ def get_area_coverage(juris_shp):
     return juris_shp.area/1000000
 
 def get_shp_ogr(juris_shp_name):
-    source = ogr.Open(("PG:host={0} dbname={1} user={2} password={3}".format(settings.DATABASE_HOST,settings.DATASTORE_DB,settings.DATABASE_USER,settings.DATABASE_PASSWORD)))
+    source = ogr.Open(("PG:host={0} dbname={1} user={2} password={3}".format(settings.DATABASE_HOST,settings.GIS_DATABASE_NAME,settings.DATABASE_USER,settings.DATABASE_PASSWORD)))
     data = source.ExecuteSQL("select the_geom from "+str(juris_shp_name))
     shplist = []
     for i in range(data.GetFeatureCount()):
