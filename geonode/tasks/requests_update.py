@@ -5,7 +5,7 @@ from geonode.layers.models import Layer
 from geonode.datarequests.models import DataRequestProfile
 from geonode.datarequests.utils import get_shp_ogr, get_area_coverage,  get_juris_data_size, get_place_name
 
-@task(name='geonode.tasks.requests_update.compute_size', queue='requests_update')
+@task(name='geonode.tasks.requests_update.compute_size_update', queue='requests_update')
 def compute_size_update(requests_query_list, area_compute = True, data_size = True, save=True):
     pprint("Updating requests data size and area coverage")
     if len(requests_query_list) < 1:
