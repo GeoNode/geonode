@@ -1,0 +1,19 @@
+.. _import_and_manage:
+
+=================
+Import and Manage
+=================
+GeoNode allows users to upload and share geospatial data, securely.
+GeoNode makes it easy to upload and manage geospatial data on the web. Any user can upload and make content available via standard OGC protocols such as Web Map Service (WMS) and Web Feature Service (WFS). Data is available for browsing, searching, styling, and processing to generate maps which can be shared publicly or restricted to specific users only.
+Supported upload formats include ShapeFile, GeoTIFF, KML and CSV. In addition, it is possible to connect to existing external spatial databases and services.
+
+Features include:
+
+* Publish raster, vector, and tabular data
+
+* Manage metadata and associated documents
+
+* Securely or publicly share data
+
+* Versioned geospatial data editor
+

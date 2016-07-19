@@ -25,7 +25,7 @@ from django.core.urlresolvers import reverse
 from geonode.maptiles.models import SRS
 from django.utils.text import slugify
 
-from geonode.tasks.update import fhm_metadata_update, style_update, seed_layers, pl2_metadata_update, sar_metadata_update
+from geonode.tasks.update import fhm_metadata_update, style_update, seed_layers, pl2_metadata_update, sar_metadata_update, layer_default_style
 from geonode.base.enumerations import CHARSETS
 
 from geonode import settings
@@ -455,5 +455,49 @@ def seed_SAR_DEM(request):
 def seed_resource_layers(request):
     keyword = 'PhilLiDAR2'
     seed_layers.delay(keyword)
-    messages.error(request, "Seeding Resoure Layers")
+    messages.error(request, "Seeding Resource Layers")
     return HttpResponseRedirect(reverse('data_management'))
+
+@login_required
+@user_passes_test(lambda u: u.is_superuser)
+def fhm_default_style(request):
+    keyword = 'Hazard'
+    layer_default_style.delay(keyword)
+    messages.error(request, "Updating Default Style of FHMs")
+    return HttpResponseRedirect(reverse('data_management'))
+
+@login_required
+@user_passes_test(lambda u: u.is_superuser)
+def rl_default_style(request):
+    keyword = 'PhilLiDAR2'
+    layer_default_style.delay(keyword)
+    messages.error(request, "Updating Default Style of Resource Layers")
+    return HttpResponseRedirect(reverse('data_management'))
+
+@login_required
+@user_passes_test(lambda u: u.is_superuser)
+def sar_default_style(request):
+    keyword = 'SAR'
+    layer_default_style.delay(keyword)
+    messages.error(request, "Updating Default Style of SAR")
+    return HttpResponseRedirect(reverse('data_management'))
+
+@login_required
+@user_passes_test(lambda u: u.is_superuser)
+def dem_cov_default_style(request):
+    #no keyword
+    keyword = 'dem_'
+    layer_default_style.delay(keyword)
+    messages.error(request, "Updating Default Style of DEM Coverage")
+    return HttpResponseRedirect(reverse('data_management'))
+
+@login_required
+@user_passes_test(lambda u: u.is_superuser)
+def jurisdict_default_style(request):
+    #no keyword
+    keyword = 'jurisdict'
+    layer_default_style.delay(keyword)
+    messages.error(request, "Updating Default Style of Jurisdiction Shapefiles")
+    return HttpResponseRedirect(reverse('data_management'))
+
+

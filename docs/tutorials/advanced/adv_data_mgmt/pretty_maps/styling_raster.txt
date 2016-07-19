@@ -1,0 +1,134 @@
+  .. _geoserver.styling_raster:
+
+
+Styling Raster data
+-------------------
+
+In the previous section we have created and optimized some vector styles. In this section we will deal with a styled SRTM raster and we will see how to get a better visualization of that layer by adding hillshade.
+
+#. From the `Welcome Page <http://localhost:8083/geoserver>`_ navigate to :menuselection:`Layer Preview` and select the OpenLayers link for the ``geosolutions:srtm`` layer.
+
+   .. figure:: img/raster_srtm.png
+
+      SRTM rendering with DEM style
+
+   There is a DEM style associated to that SRTM dataset layer, resulting in such a colored rendering.
+
+#. Return to the GeoServer `Welcome Page`, select the :menuselection:`Styles` and click the ``dem`` style to see which color map is applied.
+
+   .. note:: You have to be logged in as Administrator in order to edit/check styles.
+
+   .. figure:: img/raster_dem_style.png
+
+      Style editing
+
+   Note the entries with ``opacity = 0.0`` which allow to make no data values as transparent.
+
+The current DEM style allows to get a pleasant rendering of the SRTM dataset but we can get better results by combining it with an hillshade layer which will be created through another GDAL utility (gdaldem).
+
+Adding hillshade
+^^^^^^^^^^^^^^^^
+
+#. Open a shell and run::
+
+     * Linux
+     
+     gdaldem hillshade -z 5 -s 111120 ${TRAINING_ROOT}/geoserver_data/data/boulder/srtm_boulder.tiff ${TRAINING_ROOT}/geoserver_data/data/boulder/srtm_boulder_hs.tiff -co tiled=yes
+     
+     * Windows
+
+     gdaldem hillshade -z 5 -s 111120 %TRAINING_ROOT%\geoserver_data\data\boulder\srtm_boulder.tiff %TRAINING_ROOT%\geoserver_data\data\boulder\srtm_boulder_hs.tiff -co tiled=yes
+
+   .. note:: The ``z`` parameter exaggerates the elevation, the ``s`` parameter provides the ratio between the elevation units and the ground units (degrees in this case), ``-co tiled=yes`` makes gdaldem generate a TIFF with inner tiling. We'll investigate this last option better in the following pages.
+
+#. From the `Welcome Page <http://localhost:8083/geoserver>`_ navigate to :menuselection:`Styles` and select `Add a new style` as previously seen in the :ref:`Adding a style <geoserver.add_style>` section.
+
+#. In the :guilabel:`SLD Editor` enter the following XML:
+
+   .. code-block:: xml
+   
+    <?xml version="1.0" encoding="UTF-8"?>
+    <sld:StyledLayerDescriptor xmlns="http://www.opengis.net/sld" xmlns:sld="http://www.opengis.net/sld" xmlns:ogc="http://www.opengis.net/ogc" xmlns:gml="http://www.opengis.net/gml" version="1.0.0">
+        <sld:UserLayer>
+            <sld:LayerFeatureConstraints>
+                <sld:FeatureTypeConstraint/>
+            </sld:LayerFeatureConstraints>
+            <sld:UserStyle>
+                <sld:Title/>
+                <sld:FeatureTypeStyle>
+                    <sld:Name>name</sld:Name>
+                    <sld:FeatureTypeName>Feature</sld:FeatureTypeName>
+                    <sld:Rule>
+                        <sld:MinScaleDenominator>75000</sld:MinScaleDenominator>
+                        <sld:RasterSymbolizer>
+                            <sld:Geometry>
+                                <ogc:PropertyName>grid</ogc:PropertyName>
+                            </sld:Geometry>
+                            <sld:ColorMap>
+                                <sld:ColorMapEntry color="#000000" opacity="0.0" quantity="0.0"/>
+                                <sld:ColorMapEntry color="#999999" opacity="0.7" quantity="1.0"/>
+                                <sld:ColorMapEntry color="#FFFFFF" opacity="0.7" quantity="256.0"/>
+                            </sld:ColorMap>
+                        </sld:RasterSymbolizer>
+                    </sld:Rule>
+                </sld:FeatureTypeStyle>
+            </sld:UserStyle>
+        </sld:UserLayer>
+    </sld:StyledLayerDescriptor>
+
+   .. note:: Note the opacity values being less than 1, in order to made it partially transparent which will allows to do overlaying on other layers
+
+#. Set :file:`hillshade` as name and then click the :guilabel:`Submit` button.
+
+#. Select :guilabel:`Add stores` from the GeoServer `Welcome Page` to add the previously created ``hillshade`` raster.
+
+#. Select :guilabel:`GeoTIFF - Tagged Image File Format with Geographic information` from the set of available Raster Data Sources. 
+
+#. Specify :file:`hillshade` as name in the :guilabel:`Data Source Name` field of the interface.
+
+#. Click on  :guilabel:`browse` link in order to set the GeoTIFF location in the :guilabel:`URL` field.
+
+   .. note:: make sure to specify the :file:`srtm_boulder_hs.tiff` previously created with gdaldem, which should be located at :file:`${TRAINING_ROOT}/geoserver_data/data/boulder`
+
+#. Click :guilabel:`Save`. 
+
+#. Publish the layer by clicking on the :guilabel:`publish` link. 
+
+   .. figure:: img/raster_hillshade.png
+         
+      Publishing Raster Layer
+
+#. Set :file:`SRTM Hillshade` as Title
+
+#. Switch to `Publishing` tab
+
+   .. figure:: img/raster_hillshade_publishing.png
+
+#. Make sure to set the default style to ``hillshade`` on the `Publishing --> Default Style` section.
+
+   .. figure:: img/raster_hillshade_defaultstyle.png
+         
+      Editing Raster Publishing info
+
+#. Click :guilabel:`Save` to create the new layer.
+
+#. Use the **Layer Preview** to preview the new layer with the hillshade style.
+   
+   .. figure:: img/raster_hillshade_preview.png
+
+      Previewing the new raster layer with the hillshade style applied
+
+#. Edit the Layer Preview URL in your browser by locating the `layers` parameter
+
+    .. figure:: img/raster_overlay_url.png
+
+#. Insert the `geosolutions:srtm,` additional layer (note the final comma) before the `geosolutions:hillshade` one, and in the `styles` parameter, add a comma before `hillshade` to make GeoServer use the default style for the srtm layer
+
+    .. figure:: img/raster_overlay_2layers.png
+
+#. Press Enter to send the updated request. The Layer Preview should change like this where you can see both the srtm and hillshade layers.
+
+    .. figure:: img/raster_overlay.png
+
+       Layer preview with srtm and hillshade being overlaid
+

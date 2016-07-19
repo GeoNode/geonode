@@ -8,10 +8,10 @@
 <div class="row">
   <nav>
 	<ul class="pagination pull-right">
-	  <li><a href><strong ng-click="paginate_down()"><i class="fa fa-angle-left"></i></strong></a></li>
+	  <li ng-click="paginate_down()"><a href><strong><i class="fa fa-angle-left"></i></strong></a></li>
 	  <li><a href>page <span ng-model="page" ng-bind="page"></span> of <span ng-bind="numpages"></span></a>
 	  </li>
-	  <li><a href><strong ng-click="paginate_up()"><i class="fa fa-angle-right"></i></strong></a></li>
+	  <li ng-click="paginate_up()"><a href><strong><i class="fa fa-angle-right"></i></strong></a></li>
 	</ul>
   </nav>
 </div>

@@ -8,7 +8,9 @@ define(function (require, exports) {
         getName;
 
     getBase = exports.getBase = function (file) {
-        var parts = file.name.split(delimiter);
+        var ext = file.name.substr(file.name.lastIndexOf('.') + 1);
+        var name = file.name.substr(0, file.name.length-(ext.length+1));
+        var parts = [name, ext];
         if (parts) {
             return parts;
         }
@@ -29,9 +31,8 @@ define(function (require, exports) {
         var parts = getBase(file);
 
         if (parts.length > 1) {
-            if (getExt(file) === 'xml' && 
-                    parts[parts.length - 2].toLowerCase() === 'shp'){               
-                parts.pop(); 
+            if (getExt(file) === 'xml' && parts[0].endsWith('.shp')) {
+                parts[0] = parts[0].replace('.shp', '');
             }
             parts.splice(parts.length - 1);
             return parts.join('.');

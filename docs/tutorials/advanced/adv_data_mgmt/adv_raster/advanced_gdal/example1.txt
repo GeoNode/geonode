@@ -1,0 +1,300 @@
+.. module:: geoserver.example1
+
+.. _geoserver.example1:
+
+Example n° 1: Serving a large number of GrayScale GeoTiff with Palette
+--------------------------------------------------------------------------------------------------------------------
+
+
+In this example there is a group of Gray GeoTiff images. The purpose of this section is to describe how to merge these images using GDAL. These data 
+are taken from the `Regione Marche Cartographic Portal <http://www.ambiente.marche.it/Territorio/Cartografiaeinformazioniterritoriali/Archiviocartograficoeinformazioniterritoriali/Cartografie/ORTOFOTOCARTEREGIONALI110000.aspx#>`_.
+
+.. note:: Data have the same pixel resolution and same Coordinate Reference System *EPSG:26592*.
+
+#.	Navigate to the workshop directory :file:`${TRAINING_ROOT}/data/user_data/gdal_processing_data` (on Windows :file:`%TRAINING_ROOT%\\data\\user_data\\gdal_processing_data`) and find the *grayscale_data* directory.
+
+#.	Navigate inside the *grayscale_data* directory with the SDKshell.
+
+.. note:: The following operations must be executed from the shell inside the selected directory. In Windows, run *setenv.bat* if not already launched.
+
+#. 	Calling the **gdalinfo** command on an image for retrieving the associated information::
+
+		gdalinfo 32501_.tif
+		
+	And the result is::
+
+		Driver: GTiff/GeoTIFF
+		Files: 32501_.tif
+			   32501_.tfw
+		Size is 5494, 4526
+		Coordinate System is `'
+		Origin = (2356751.582169299000000,4762684.428062002200000)
+		Pixel Size = (1.269090000000000,-1.269090000000000)
+		Metadata:
+		  TIFFTAG_RESOLUTIONUNIT=2 (pixels/inch)
+		  TIFFTAG_XRESOLUTION=1200
+		  TIFFTAG_YRESOLUTION=1200
+		Image Structure Metadata:
+		  COMPRESSION=LZW
+		  INTERLEAVE=BAND
+		Corner Coordinates:
+		Upper Left  ( 2356751.582, 4762684.428)
+		Lower Left  ( 2356751.582, 4756940.527)
+		Upper Right ( 2363723.963, 4762684.428)
+		Lower Right ( 2363723.963, 4756940.527)
+		Center      ( 2360237.772, 4759812.477)
+		Band 1 Block=5494x1 Type=Byte, ColorInterp=Palette
+		  Color Table (RGB with 256 entries)
+			0: 0,0,0,255
+			1: 1,1,1,255
+			2: 2,2,2,255
+
+			~
+			
+			254: 254,254,254,255
+			255: 255,255,255,255
+			
+	From **gdalinfo** it is possible to note:
+	
+		* No CRS definition. An image without CRS cannot be displayed on GeoServer.
+		* Tiles Striped (5494x1).
+		* LZW Compression.
+		* ColorInterpretation as a Palette.
+	
+#. 	Using **gdal_translate** it is possible to change the ColorInterpretation from Palette to Gray.::
+
+		gdal_translate -expand gray -a_srs EPSG:26592 -of vrt $f ${f:0:6}.vrt
+
+	The final image format is not GeoTiff but **VRT**. This format simply creates an **XML** file containing information about the operation to 
+	perform on the image; the output image is created only when the image must be shown to the screen. The CRS is set with the **-a_srs** parameter.
+	The color interpretation can be set to *gray* because each palette value is equal to a grayscale value (this last step is optional). 
+
+	.. note:: The **expand gray** option does not create a multi banded image but only one band is present.	
+	
+	.. note:: In future a possible operation could be the processing of the input image with the color interpretation set to *gray* and the calculation of the optimal palette on the final image.
+	
+	For executing the same operation on all the input images a script called **script.sh** (Linux) or **script.bat** (Windows) must be created and executed:
+
+	.. note:: In order to edit the scripts use the basic **notepad** editor on Windows or **gedit** on Linux. Remember that on Linux, after the script creation, it must be marked as *executable* with the command ``chmod +x <nome_script>.sh``
+	
+	**Linux**::
+	
+		#!/bin/bash
+		FILES="*.tif"
+		echo start
+		for f in $FILES
+		do
+		  echo $f
+		  gdal_translate -expand gray -a_srs EPSG:26592 -of vrt $f ${f:0:6}.vrt
+		done
+		echo stop 
+		
+	**Windows**::
+		
+		for /R %%f in (*.tif) do (
+		 gdal_translate -expand gray -a_srs EPSG:26592 -of vrt %%~f %%~f.vrt
+		)
+	
+#.	Creating a list of the VRT files::
+	
+	
+		ls *.vrt > list.txt (Linux)
+		
+		or
+		
+		dir /b *.vrt > list.txt (Windows)
+	
+#. 	Merging of all the input files with the **gdalbuildvrt** command::
+
+		gdalbuildvrt -srcnodata 255 -vrtnodata 255 -resolution highest -input_file_list list.txt merged_vrt.vrt
+
+	Parameters used:
+	
+		* **-srcnodata 255 -vrtnodata 255** : setting of the input and output image No Data.
+		* **-resolution highest** : selection of the highest image resolution.
+		* **-input_file_list list.txt** : definition of the input file list.
+		
+	The result of calling **gdalinfo** on the output image is::
+	
+		Driver: VRT/Virtual Raster
+		Files: merged_vrt.vrt
+			   32501_.vrt
+
+			   ~
+			   
+			   32507_.vrt
+		Size is 16342, 9157
+		Coordinate System is:
+		PROJCS["Monte Mario (Rome) / Italy zone 2 (deprecated)",
+			GEOGCS["Monte Mario (Rome)",
+				DATUM["Monte_Mario_Rome",
+					SPHEROID["International 1924",6378388,297,
+						AUTHORITY["EPSG","7022"]],
+					TOWGS84[-104.1,-49.1,-9.9,0.971,-2.917,0.714,-11.68],
+					AUTHORITY["EPSG","6806"]],
+				PRIMEM["Rome",12.45233333333333,
+					AUTHORITY["EPSG","8906"]],
+				UNIT["degree",0.0174532925199433,
+					AUTHORITY["EPSG","9122"]],
+				AUTHORITY["EPSG","4806"]],
+			PROJECTION["Transverse_Mercator"],
+			PARAMETER["latitude_of_origin",0],
+			PARAMETER["central_meridian",2.54766666666666],
+			PARAMETER["scale_factor",0.9996],
+			PARAMETER["false_easting",2520000],
+			PARAMETER["false_northing",0],
+			UNIT["metre",1,
+				AUTHORITY["EPSG","9001"]],
+			AXIS["X",EAST],
+			AXIS["Y",NORTH],
+			AUTHORITY["EPSG","26592"]]
+		Origin = (2356629.695870598300000,4762684.428062002200000)
+		Pixel Size = (1.267290000000000,-1.267290000000000)
+		Corner Coordinates:
+		Upper Left  ( 2356629.696, 4762684.428) (  0d32'36.59"E, 42d59'54.65"N)
+		Lower Left  ( 2356629.696, 4751079.854) (  0d32'48.78"E, 42d53'38.68"N)
+		Upper Right ( 2377339.749, 4762684.428) (  0d47'50.77"E, 43d 0' 9.65"N)
+		Lower Right ( 2377339.749, 4751079.854) (  0d48' 1.42"E, 42d53'53.63"N)
+		Center      ( 2366984.722, 4756882.141) (  0d40'19.38"E, 42d56'54.40"N)
+		Band 1 Block=128x128 Type=Byte, ColorInterp=Gray
+		  NoData Value=255
+
+#.	Transforming from VRT to GeoTiff with **gdal_translate**::
+
+		gdal_translate -co "BLOCKXSIZE=512" -co "BLOCKYSIZE=512" -co "TILED=YES" -co "BIGTIFF=YES" -co "COMPRESS=DEFLATE" merged_vrt.vrt merged_tif.tif
+
+	.. warning:: This operation might take many minutes.
+		
+	Parameters used:
+			
+		* **-co "BLOCKXSIZE=512" -co "BLOCKYSIZE=512" -co "TILED=YES"** : setting tile dimensions.
+		* **-co "BIGTIFF=YES" -co "COMPRESS=DEFLATE"** : (Optional) loss-less compression of the image for reducing the disk space occupation, similar to LZW.
+		
+			.. note:: **-co "BIGTIFF=YES"** is used because GDAL is not automatically able to convert the GeoTiff image into a BigTiff if compression is set.
+
+				
+	From **gdalinfo**::
+	
+		Driver: GTiff/GeoTIFF
+		Files: merged_tif.tif
+		Size is 16342, 9157
+		Coordinate System is:
+		PROJCS["Monte Mario (Rome) / Italy zone 2",
+			GEOGCS["Monte Mario (Rome)",
+				DATUM["Monte_Mario_Rome",
+					SPHEROID["International 1924",6378388,297.0000000000014,
+						AUTHORITY["EPSG","7022"]],
+					TOWGS84[-104.1,-49.1,-9.9,0.971,-2.917,0.714,-11.68],
+					AUTHORITY["EPSG","6806"]],
+				PRIMEM["Rome",12.45233333333333],
+				UNIT["degree",0.0174532925199433],
+				AUTHORITY["EPSG","4806"]],
+			PROJECTION["Transverse_Mercator"],
+			PARAMETER["latitude_of_origin",0],
+			PARAMETER["central_meridian",15],
+			PARAMETER["scale_factor",0.9996],
+			PARAMETER["false_easting",2520000],
+			PARAMETER["false_northing",0],
+			UNIT["metre",1,
+				AUTHORITY["EPSG","9001"]],
+			AUTHORITY["EPSG","26592"]]
+		Origin = (2356629.695870598300000,4762684.428062002200000)
+		Pixel Size = (1.267290000000000,-1.267290000000000)
+		Metadata:
+		  AREA_OR_POINT=Area
+		Image Structure Metadata:
+		  COMPRESSION=DEFLATE
+		  INTERLEAVE=BAND
+		Corner Coordinates:
+		Upper Left  ( 2356629.696, 4762684.428) ( 12d59'44.99"E, 42d59'54.65"N)
+		Lower Left  ( 2356629.696, 4751079.854) ( 12d59'57.18"E, 42d53'38.68"N)
+		Upper Right ( 2377339.749, 4762684.428) ( 13d14'59.17"E, 43d 0' 9.65"N)
+		Lower Right ( 2377339.749, 4751079.854) ( 13d15' 9.82"E, 42d53'53.63"N)
+		Center      ( 2366984.722, 4756882.141) ( 13d 7'27.78"E, 42d56'54.40"N)
+		Band 1 Block=512x512 Type=Byte, ColorInterp=Gray
+		  NoData Value=255
+
+	This image can be displayed on GeoServer but a further optimization step could bring to better performances. There could be two ways for optimizing 
+	the GeoServer performances:
+	
+		* building image overviews.
+		* building a pyramid of the image.
+	
+#.	(**Optional**) Optimization.
+
+	*	Building overview with gdaladdo::
+
+			gdaladdo -r cubicspline --config COMPRESS_OVERVIEW DEFLATE --config GDAL_TIFF_OVR_BLOCKSIZE 512 merged_tif.tif 2 4 8 16 32
+		
+		Overviews are reduced views of the input image used by GeoServer for displaying the image at a lower resolutions.
+
+		Parameters used:
+		
+				* **-r cubicspline** : setting the interpolation mode to *cubicspline* (by default is *nearest-neighbour*).					
+				* **--config COMPRESS_OVERVIEW DEFLATE** : setting DEFLATE compression on the overviews, for reducing disk space occupation.			
+				* **--config GDAL_TIFF_OVR_BLOCKSIZE 512** : setting tile dimensions on overviews.			
+				* **2 ~ 32** : setting overview level.
+		
+		And with **gdalinfo**::	
+		
+			Band 1 Block=512x512 Type=Byte, ColorInterp=Gray
+			  NoData Value=255
+			  Overviews: 8171x4579, 4086x2290, 2043x1145, 1022x573, 511x287
+	
+		Then the result can be displayed in GeoServer by configuring the image as a GeoTiff (see :ref:`Adding a GeoTiff <geoserver.add_geotiff>` section).
+	
+	*	Building a pyramid through several **gdalwarp** invokations, each time by reducing the image resolution::
+	
+			gdalwarp -r cubicspline -dstnodata 255 -srcnodata 255 -multi -tr 2,53458 -2,53458 -co BLOCKXSIZE=512 -co BLOCKYSIZE=512 -co TILED=YES -co COMPRESS=DEFLATE merged_tif.tif merged_tif_2.tif
+		
+		Parameters used:
+		
+			* **-r cubicspline** : definition interpolation method.
+			* **-dstnodata 255 -srcnodata 255** : definition of the image input and output NO DATA.
+			* **-multi** : forcing to use multithreading.
+			* **-tr 2,53458 -2,53458** : definition of the image resolutions.
+			
+		Output image from **gdalinfo**::
+	
+			Driver: GTiff/GeoTIFF
+			Files: merged_tif_2.tif
+			Size is 8171, 4578
+			Coordinate System is:
+			
+			~
+			
+			Band 1 Block=512x512 Type=Byte, ColorInterp=Gray
+			  NoData Value=255
+			
+			
+		After another **gdalwarp** on the output image::
+			
+			gdalwarp -r cubicspline -dstnodata 255 -srcnodata 255 -multi -tr 5,06916 -5,06916 -co BLOCKXSIZE=512 -co BLOCKYSIZE=512 -co TILED=YES -co COMPRESS=DEFLATE merged_tif_2.tif merged_tif_4.tif
+			
+		And **gdalinfo**::
+			
+			Driver: GTiff/GeoTIFF
+			Files: merged_tif_4.tif
+			Size is 4085, 2289
+			Coordinate System is:
+			
+			~
+			
+			Band 1 Block=512x512 Type=Byte, ColorInterp=Gray
+			  NoData Value=255
+			
+		The operations must be executed on the first image, then the same operation must be repeated on the output image and so on. This cycle 
+		allows to create a pyramid of images, each one with a lower resolution.
+		
+		Then the result can be displayed in GeoServer by configuring the images as a pyramid (see :ref:`Advanced Mosaic and Pyramid configuration <geoserver.mosaic_pyramid>` section).
+
+	
+#.	Displaying the result on GeoServer:
+
+	.. figure:: img/screen_overview.png     
+	
+		*Result with gdaladdo*
+		
+	.. figure:: img/screen_pyramid.png
+	
+		*Result with ImagePyramid*

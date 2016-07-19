@@ -75,6 +75,9 @@ urlpatterns = patterns('',
                        # Catalogue views
                        (r'^catalogue/', include('geonode.catalogue.urls')),
 
+                       # data.json
+                       url(r'^data.json$', 'geonode.catalogue.views.data_json', name='data_json'),
+
                        # Search views
                        url(r'^search/$', TemplateView.as_view(template_name='search/search.html'), name='search'),
 
@@ -86,7 +89,6 @@ urlpatterns = patterns('',
                        (r'^ratings/', include('agon_ratings.urls')),
                        (r'^activity/', include('actstream.urls')),
                        (r'^announcements/', include('announcements.urls')),
-                       (r'^notifications/', include('notification.urls')),
                        (r'^messages/', include('user_messages.urls')),
                        (r'^social/', include('geonode.social.urls')),
                        (r'^security/', include('geonode.security.urls')),
@@ -145,6 +147,11 @@ if 'geonode.geoserver' in settings.INSTALLED_APPS:
                             (r'^gs/', include('geonode.geoserver.urls')),
                             )
 
+if 'notification' in settings.INSTALLED_APPS:
+    urlpatterns += patterns('',
+                            (r'^notifications/', include('notification.urls')),
+                            )
+
 if 'simple_sso.sso_server' in settings.INSTALLED_APPS:
     from simple_sso.sso_server.server import Server 
     server = Server()
@@ -160,6 +167,6 @@ handler403 = 'geonode.views.err403'
 
 # Featured Maps Pattens
 urlpatterns += patterns('',
-                        (r'^(?P<site>[A-Za-z0-9_\-]+)/$', 'geonode.maps.views.featured_map'),
-                        (r'^(?P<site>[A-Za-z0-9_\-]+)/info$', 'geonode.maps.views.featured_map_info'),
+                        (r'^featured/(?P<site>[A-Za-z0-9_\-]+)/$', 'geonode.maps.views.featured_map'),
+                        (r'^featured/(?P<site>[A-Za-z0-9_\-]+)/info$', 'geonode.maps.views.featured_map_info'),
                         )

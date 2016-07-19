@@ -21,11 +21,21 @@ Existing downstream GeoNode projects
 
 .. todo:: Add Links?
 
-- Harvard Worldmap
+- `Harvard Worldmap <https://github.com/cga-harvard/cga-worldmap>`_
 
-- MapStory
+- `MapStory <https://github.com/MapStory/mapstory>`_
 
 - Risiko/SAFE
+
+- `MetroBoston DataCommon <http://metroboston.datacommon.org/>`_
+
+- `WFP GeoNode <http://geonode.wfp.org/>`_
+
+- `ADRIPLAN <https://github.com/CNR-ISMAR/adriplan>`_
+
+- `ROGUE GeoNode <https://github.com/ROGUE-JCTD/geonode>`_
+
+
 
 Django template projects
 ------------------------

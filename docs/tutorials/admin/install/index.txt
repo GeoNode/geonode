@@ -15,10 +15,6 @@ This section will guide you through the steps necessary to install GeoNode. Basi
 :ref:`custom_install`
   How to install GeoNode manually.
 
-Other install links:
-
-.. toctree::
-   :maxdepth: 1
-
-   install_postgresql
-   install_postgis
+:ref:`dependencies`
+  How to satisfy GeoNode's dependencies
+  

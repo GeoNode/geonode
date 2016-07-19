@@ -33,4 +33,4 @@ def mail_on_error(username, trace_error):
     mail_subject = "Folder creation failed for {0}".format(username)
     mail_body = "" + trace_error
     
-    send_mail(mail_subject, mail_body, settings.FTP_AUTOMAIL, settings.LIPAD_SUPPORT_MAIL, fail_silently= False)
+    send_mail(mail_subject, mail_body, settings.FTP_AUTOMAIL, [settings.LIPAD_SUPPORT_MAIL], fail_silently= False)

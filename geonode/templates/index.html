@@ -31,13 +31,13 @@
           <div class="col-md-4  border=0 text-center" >
         <p>
           {% get_fhm_fmc_url "%s" as fhm %}
-          <a href="{{fhm}}" title="Download Flood Hazard Maps">
+          <a href="{{fhm}}" title="Download Municipal Flood Hazard Maps">
             <i class="fa fa-square-o fa-5x rotate-45"></i>
           </a>
         </p>
         <h2>
           {% get_fhm_fmc_url "%s" as fhm %}
-          <a href="{{fhm}}" title="Download Flood Hazard Maps">
+          <a href="{{fhm}}" title="Download Municipal Flood Hazard Maps">
             {% get_fhm_count "%d" as fhm_count %}
              <p class="text-center" >{{ fhm_count }} </p>
           </a>
@@ -61,9 +61,9 @@
       </div>
 
       <div class="col-md-4 border=0 text-center" >
-        <p><a href="/maptiles/"><i class="fa fa-globe fa-5x"></i></a></p>
-        <h2><a href="/maptiles/">
-          <p class="text-center">37,557 sq. km.</p></a>
+        <p><a href="/maptiles/" title="Download DEMs, Classified LAZ and Orthophotos"><i class="fa fa-globe fa-5x"></i></a></p>
+        <h2>
+          <p class="text-center"><a href="/maptiles/" title="Download DEMs, Classified LAZ and Orthophotos">37,557 sq. km.</a></p>
         </h2>
         <h4 class="text-center">Total LiDAR Coverage</h4>
       </div>
@@ -89,7 +89,7 @@
           <br>
           <a data-toggle="modal" data-target="#modal-fhm" href="">Download Flood Hazard Maps</a>
         <br>
-          <a data-toggle="modal" data-target="#modal-data" href="">Download LiDAR data tiles</a>
+          <a data-toggle="modal" data-target="#modal-data" href="">Download LiDAR Data Tiles</a>
         </p>
         {% endblocktrans %}
       </div>

@@ -3,37 +3,20 @@ $(function() {
     var $intended_use = $("#id_intended_use_of_dataset");
     var $org_type = $("#id_organization_type")
     var $form = $intended_use.closest('form');
+    var $form2 = $org_type.closest('form');
     var $noncommercial = $form.find('fieldset.noncommercial-fieldset');
-    var $academe = $form.find('fieldset.academe-fieldset');
+    var $academe = $form2.find('fieldset.academe-fieldset');
 
     // Initial values
-    if ($intended_use.val() == 'commercial'){
-        $noncommercial.toggle(false);
+
+    if ($org_type.val() != '3') {
         $academe.toggle(false);
     } else {
-        if ($org_type.val() != '3') {
-            $academe.toggle(false);
-        } else {
-            $academe.toggle(true);
-        }
+        $academe.toggle(true);
     }
-    
-    $intended_use.on('change', function() {
-
-        if ($(this).val() == 'noncommercial'){
-            $noncommercial.slideDown();
-            if ($org_type.val() == '3') {
-                $academe.slideDown();
-            }
-        } else {
-            $noncommercial.slideUp();
-            $academe.slideUp();
-        }
-    });
-
     $org_type.on('change', function() {
 
-        if ($(this).val() == '3' && $intended_use.val() == 'noncommercial'){
+        if ($(this).val() == '3'){
             $academe.slideDown();
         } else {
             $academe.slideUp();
@@ -79,4 +62,3 @@ $(function() {
     });
 
 });
-

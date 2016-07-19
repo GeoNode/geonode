@@ -1,0 +1,76 @@
+.. module:: geoserver.pretty_maps
+   :synopsis: Styling in real world units
+
+
+Styling in real world units
+===========================
+
+By default SLD interprets all sizes expressed in the style sheet (e.g., line widths, symbol sizes) as being pixels on the map.
+
+It is however possible to make the style sheet use real world units, e.g., meters or feet, by specifying the desired unit of measure as an attribute of the symbolizer. The supported unit of measure are:
+
+* meter
+* foot
+* pixel
+
+The following line style uses a line width of 40 meters:
+
+.. code-block:: xml
+
+
+          <LineSymbolizer uom="http://www.opengeospatial.org/se/units/metre">
+            <Stroke>
+              <CssParameter name="stroke">#000033</CssParameter>
+              <CssParameter name="stroke-width">40</CssParameter>
+            </Stroke>
+          </LineSymbolizer>
+
+Setting up a uom based style in GeoServer
+-----------------------------------------
+
+#. Create a new style named ``line40m`` using the following SLD:
+
+    .. code-block:: xml
+
+	<?xml version="1.0" encoding="ISO-8859-1"?>
+	<StyledLayerDescriptor version="1.0.0"
+	 xsi:schemaLocation="http://www.opengis.net/sld StyledLayerDescriptor.xsd"
+	 xmlns="http://www.opengis.net/sld"
+	 xmlns:ogc="http://www.opengis.net/ogc"
+	 xmlns:xlink="http://www.w3.org/1999/xlink"
+	 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	  <NamedLayer>
+		<Name>line40m</Name>
+		<UserStyle>
+		  <Title>40 meter wide line</Title>
+		  <FeatureTypeStyle>
+			<Rule>
+			  <LineSymbolizer uom="http://www.opengeospatial.org/se/units/metre">
+				<Stroke>
+				  <CssParameter name="stroke">#000033</CssParameter>
+				  <CssParameter name="stroke-width">40</CssParameter>
+				</Stroke>
+			  </LineSymbolizer>
+			</Rule>
+		  </FeatureTypeStyle>
+		</UserStyle>
+	  </NamedLayer>
+	</StyledLayerDescriptor>
+
+#. Associate the ``line40m`` to ``MainRd`` as a secondary style:
+
+   .. figure:: img/secondary-line-uom.png
+
+      Adding the line40m style as a secondary style for Mainrd
+
+#. Preview the ``MainRd`` layer and switch to the ``line40m`` style:
+
+   .. figure:: img/uom-zoom1.png
+     
+      A uom based line, zoomed out
+
+#. Zoom in and out and observe how the width of the line on screen varies by changing the zoom level
+
+  .. figure:: img/uom-zoom2.png
+   
+     Zooming in on the same line
