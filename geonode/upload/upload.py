@@ -136,6 +136,9 @@ class UploaderSession(object):
     mosaic_time_regex = None
     mosaic_time_value = None
 
+    # the user who started this upload session
+    user = None
+
     def __init__(self, **kw):
         for k, v in kw.items():
             if hasattr(self, k):
@@ -396,10 +399,11 @@ def run_import(upload_session, async):
 
     if ogc_server_settings.GEOGIG_ENABLED and upload_session.geogig is True \
             and task.target.store_type != 'coverageStore':
-
         target = create_geoserver_db_featurestore(
             store_type='geogig',
-            store_name=upload_session.geogig_store)
+            store_name=upload_session.geogig_store,
+            author_name=upload_session.user.username,
+            author_email=upload_session.user.email)
         _log(
             'setting target datastore %s %s',
             target.name,
