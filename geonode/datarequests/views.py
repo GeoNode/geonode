@@ -706,9 +706,13 @@ def data_request_compute_size(request):
 
 def data_request_profile_compute_size(request, pk):
     if request.user.is_superuser and request.method == 'POST':
-        data_requests = DataRequestProfile.objects.filter(pk=pk)
-        compute_size_update.delay(data_requests)
-        messages.info(request, "The estimated data size area coverage of the request is currently being computed")
+        if DataRequestProfile.objects.get(pk=pk).jurisdiction_shapefile:
+            data_requests = DataRequestProfile.objects.filter(pk=pk)
+            compute_size_update.delay(data_requests)
+            messages.info(request, "The estimated data size area coverage of the request is currently being computed")
+        else:
+            messages.info(request, "This request does not have a shape file")
+            
         return HttpResponseRedirect(reverse('datarequests:data_request_browse'))
     else:
         return HttpResponseRedirect('/forbidden/')
@@ -724,9 +728,13 @@ def data_request_reverse_geocode(request):
             
 def data_request_profile_reverse_geocode(request, pk):
     if request.user.is_superuser and request.method == 'POST':
-        data_requests = DataRequestProfile.objects.filter(pk=pk)
-        place_name_update.delay(data_requests)
-        messages.info(request, "Retrieving approximated place names of data request")
+        if DataRequestProfile.objects.get(pk=pk).jurisdiction_shapefile:
+            data_requests = DataRequestProfile.objects.filter(pk=pk)
+            place_name_update.delay(data_requests)
+            messages.info(request, "Retrieving approximated place names of data request")
+        else:
+            messages.info(request, "This request does not have a shape file")
+            
         return HttpResponseRedirect(reverse('datarequests:data_request_browse'))
     else:
         return HttpResponseRedirect('/forbidden/')             
