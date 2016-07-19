@@ -149,7 +149,7 @@ def add_to_ad_group(group_dn=settings.LIPAD_LDAP_GROUP_DN, user_dn=""):
 
 def get_place_name(longitude,latitude):
     g = geocoder.google([latitude,longitude], method='reverse')
-    pprint(g.geojson)
+    #pprint(g.geojson)
     return {
         'street': g.street,
         'city': g.city,
@@ -158,8 +158,7 @@ def get_place_name(longitude,latitude):
         'country': g.country
     }
 
-def get_juris_data_size(juris_shp_name):
-    juris_shp = get_shp_ogr(juris_shp_name)
+def get_juris_data_size(juris_shp):
 
     _TILE_SIZE = 1000
     total_data_size = 0
@@ -184,16 +183,18 @@ def get_juris_data_size(juris_shp_name):
                 total_data_size += total_size
     return total_data_size
 
-def get_area_coverage(juris_shp_name):
-    juris_shp = get_shp_ogr(juris_shp_name)
+def get_area_coverage(juris_shp):
     return juris_shp.area/1000000
 
 def get_shp_ogr(juris_shp_name):
-    source = ogr.Open(("PG:host={0} dbname={1} user={2} password={3}".format(settings.DATABASE_HOST,settings.DATASTORE_DB,settings.DATABASE_USER,settings.DATABASE_PASSWORD)))
+    source = ogr.Open(("PG:host={0} dbname={1} user={2} password={3}".format(settings.DATABASE_HOST,settings.GIS_DATABASE_NAME,settings.DATABASE_USER,settings.DATABASE_PASSWORD)))
     data = source.ExecuteSQL("select the_geom from "+str(juris_shp_name))
     shplist = []
-    for i in range(data.GetFeatureCount()):
-        feature = data.GetNextFeature()
-        shplist.append(loads(feature.GetGeometryRef().ExportToWkb()))
-    juris_shp = cascaded_union(shplist)
-    return juris_shp
+    if data:
+        for i in range(data.GetFeatureCount()):
+            feature = data.GetNextFeature()
+            shplist.append(loads(feature.GetGeometryRef().ExportToWkb()))
+        juris_shp = cascaded_union(shplist)
+        return juris_shp
+    else:
+        return None

@@ -903,7 +903,8 @@ CELERY_IMPORTS = (
     'geonode.tasks.ceph_update',
     'geonode.tasks.email',
     'geonode.tasks.ftp',
-    'geonode.tasks.mk_folder'
+    'geonode.tasks.mk_folder',
+    'geonode.tasks.requests_update',
 )
 
 
@@ -914,7 +915,8 @@ CELERY_QUEUES = [
     Queue('ceph_update', routing_key='ceph_update'),
     Queue('email', routing_key='email'),
     Queue('ftp', routing_key='ftp'),
-    Queue('mk_folder', routing_key='mk_folder')
+    Queue('mk_folder', routing_key='mk_folder'),
+    Queue('requests_update', routing_key='requests_update')
 ]
 
 import djcelery
