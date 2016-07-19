@@ -110,8 +110,8 @@ def image_basemap(layername,epsg,out_format):
 	jsontext = json.loads(text)
 	jsontext['srs'] = to_srs_str
 	jsontext['outputFormat'] = outputFormat
-	jsontext['layers'][0]['baseURL'] = baseURL + 'wms?SERVICE=WMS&'
-	jsontext['layers'][1]['baseURL'] = baseURL + 'wms?SERVICE=WMS&'
+	jsontext['layers'][0]['baseURL'] = settings.OGC_SERVER['default']['LOCATION'] + 'wms?SERVICE=WMS&'
+	jsontext['layers'][1]['baseURL'] = settings.OGC_SERVER['default']['LOCATION'] + 'wms?SERVICE=WMS&'
 	jsontext['layers'][0]['layers'] = [str(layer.typename)]
 	jsontext['layers'][0]['format'] = format
 	jsontext['layers'][1]['format'] = format
