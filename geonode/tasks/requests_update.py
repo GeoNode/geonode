@@ -25,10 +25,19 @@ def compute_size_update(requests_query_list, area_compute = True, data_size = Tr
                     r.save()
 
 @task(name='geonode.tasks.requests_update.place_name_update', queue='requests_update')
-def  place_name_update(requests_query_list):
+def  place_name_update(requests_query_list, save=True):
     if len(requests_query_list) < 1:
         pprint("Requests for update is empty")
     else:
         for r in requests_query_list:
             pprint("Updating request id:{0}".format(r.pk))
+            jurisdiction = r.jurisdiction_shapefile
+            if jurisdiction:
+                x = (jurisdiction.bbox_x1+jurisdiction.bbox_x0)/2
+                y = (jurisdiction.bbox_y1+jurisdiction.bbox_y0)/2
+                r.place_name = get_place_name(x,y)["county"]
+                pprint("Place name is: {}".format(r.place_name))
+                
+                if save:
+                    r.save()
             
