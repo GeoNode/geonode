@@ -116,7 +116,7 @@ def image_basemap(layername,epsg,out_format):
 	jsonmini = json.dumps(jsontext,separators=(',',':'))
 	urlencoded = urllib.quote(jsonmini)
 	# print urlencoded
-	spec = 'http://geonode1:8080/geoserver/pdf/print.pdf?spec=' + urlencoded
+	spec = baseURL +'pdf/print.pdf?spec=' + urlencoded
 	# print spec
 	return spec
 
