@@ -667,12 +667,14 @@ MAP_BASELAYERS = [{
     "visibility": True,
     "fixed": True,
     "group": "background"
-}, {
-    "source": {"ptype": "gxp_mapquestsource"},
-    "name": "osm",
-    "group": "background",
-    "visibility": False
-}, {
+},
+# {
+#    "source": {"ptype": "gxp_mapquestsource"},
+#    "name": "osm",
+#    "group": "background",
+#    "visibility": False
+#}, 
+{
     "source": {"ptype": "gxp_mapquestsource"},
     "name": "naip",
     "group": "background",
