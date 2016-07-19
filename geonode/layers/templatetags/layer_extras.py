@@ -80,7 +80,10 @@ def image_basemap(layername,epsg,out_format):
 	y1 = float(bbox_string[3])
 	#for mapfish printing
 	to_srs = epsg
-	baseURL = settings.OGC_SERVER['default']['PUBLIC_LOCATION']
+	if 'lipad' in settings.SITEURL:
+		baseURL = settings.OGC_SERVER['default']['LOCATION']
+	else:
+		baseURL = settings.OGC_SERVER['default']['PUBLIC_LOCATION']
 	to_srs_str = 'EPSG:' + str(to_srs)
 	outputFormat = out_format
 	format = 'image/' + str(out_format)
