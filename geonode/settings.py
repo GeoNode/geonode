@@ -407,8 +407,8 @@ ANONYMOUS_USER_ID = -1
 GUARDIAN_GET_INIT_ANONYMOUS_USER = 'geonode.people.models.get_anonymous_user_instance'
 
 # Whether the uplaoded resources should be public and downloadable by default or not
-DEFAULT_ANONYMOUS_VIEW_PERMISSION = True
-DEFAULT_ANONYMOUS_DOWNLOAD_PERMISSION = True
+DEFAULT_ANONYMOUS_VIEW_PERMISSION = False
+DEFAULT_ANONYMOUS_DOWNLOAD_PERMISSION = False
 
 #
 # Settings for default search size
@@ -713,7 +713,7 @@ PROXY_URL = '/proxy/?url=' if DEBUG else None
 # Run "python manage.py rebuild_index"
 HAYSTACK_SEARCH = False
 # Avoid permissions prefiltering
-SKIP_PERMS_FILTER = False
+SKIP_PERMS_FILTER = True
 # Update facet counts from Haystack
 HAYSTACK_FACET_COUNTS = False
 # HAYSTACK_CONNECTIONS = {

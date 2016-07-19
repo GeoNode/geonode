@@ -503,7 +503,7 @@ def resolve_object(request, model, query, permission='base.view_resourcebase',
                 obj_to_check)
     if not allowed:
         mesg = permission_msg or _('Permission Denied')
-        raise PermissionDenied(mesg)
+        # raise PermissionDenied(mesg)
     return obj
 
 

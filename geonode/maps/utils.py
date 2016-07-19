@@ -18,6 +18,8 @@
 #
 #########################################################################
 
+from geonode.layers.models import Layer
+from guardian.shortcuts import get_anonymous_user
 import json
 
 
@@ -65,3 +67,32 @@ def _layer_json(layers, sources):
         return cfg
 
     return [layer_config(l, user=None) for l in layers]
+
+
+def is_map_viewable_by_user_utils(current_user, current_map):
+    list_maplayers = []
+    for layer in current_map.layer_set.all():
+        if layer.local:
+            list_maplayers.append(layer.name.encode("utf-8"))
+
+    # retrieve the corresponding layers entries from 'layers' table
+    layers_from_base = Layer.objects.all()
+    list_layers = []
+
+    for layer in list_maplayers:
+        l = layers_from_base.filter(typename=layer)
+        if len(l) == 1:
+            list_layers.append(l[0])
+    list_has_perm = []
+    for layer in list_layers:
+        list_has_perm.append(current_user.has_perm('view_resourcebase', layer.get_self_resource()))
+    if current_user.is_anonymous():
+        has_perm = False
+    else:
+        has_perm = True
+    # check if all perms are True, return false either
+    for auth in list_has_perm:
+        if not auth:
+            has_perm = False
+            break
+    return has_perm

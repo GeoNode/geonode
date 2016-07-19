@@ -20,7 +20,6 @@
 
 from tastypie.authorization import DjangoAuthorization
 from tastypie.exceptions import Unauthorized
-
 from guardian.shortcuts import get_objects_for_user
 
 
@@ -30,11 +29,17 @@ class GeoNodeAuthorization(DjangoAuthorization):
     permission system"""
 
     def read_list(self, object_list, bundle):
-        permitted_ids = get_objects_for_user(
+        permitted_view_ids = get_objects_for_user(
             bundle.request.user,
-            'base.view_resourcebase').values('id')
+            'base.view_resourcebase').values_list(
+            'id',
+            flat=True)
+        return object_list.filter()
 
-        return object_list.filter(id__in=permitted_ids)
+    def explore_resource(self, object_list, bundle):
+        return bundle.request.user.has_perm(
+            'explore_resourcebase',
+            bundle.obj.get_self_resource())
 
     def read_detail(self, object_list, bundle):
         return bundle.request.user.has_perm(

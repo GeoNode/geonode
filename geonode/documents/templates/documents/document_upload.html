@@ -1,6 +1,7 @@
 {% extends "documents/document_upload_base.html" %}
 {% load bootstrap_tags %}
 {% load i18n %}
+{% load base_tags %}
 
 {% block title %} {% trans "Upload Document" %} - {{ block.super }} {% endblock %}
 
@@ -15,11 +16,17 @@
 {% block body %}
 
 <div class="col-md-8">
+  {% user_can_add_resource_base as add_tag %}
+  {% if add_tag %}
   <form id="upload_form"  method="post" enctype="multipart/form-data" action="{% url "document_upload" %}">
     <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}" />
     {{ form.as_p }}
     <button type="submit" id="upload-button" class="btn btn-danger">Upload</button>
   </form>
+  {% else %}
+		<h4>You're not part of the site contributors.</h4>
+		<h5>Please contact the website administrator for more informations.</h5>
+  {% endif %}
 </div>
 
 {% endblock %}

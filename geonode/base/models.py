@@ -354,6 +354,9 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin):
     detail_url = models.CharField(max_length=255, null=True, blank=True)
     rating = models.IntegerField(default=0, null=True, blank=True)
 
+    # check
+    can_view_resource = False
+
     def __unicode__(self):
         return self.title
 
@@ -646,6 +649,9 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin):
 
     poc = property(_get_poc, _set_poc)
 
+    def set_user_can_view_resource(self, user_can_view_resource):
+        self.can_view_resource = user_can_view_resource
+
     def _set_metadata_author(self, metadata_author):
         # reset any metadata_author assignation to this resource
         ContactRole.objects.filter(role='author', resource=self).delete()
@@ -668,6 +674,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin):
         # add, change and delete are standard in django-guardian
         permissions = (
             ('view_resourcebase', 'Can view resource'),
+            ('explore_resourcebase', 'Can explore resource'),
             ('change_resourcebase_permissions', 'Can change resource permissions'),
             ('download_resourcebase', 'Can download resource'),
             ('publish_resourcebase', 'Can publish resource'),

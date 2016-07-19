@@ -25,7 +25,9 @@ from django.contrib.auth import login
 from django.contrib.auth.models import Group, Permission
 from django.conf import settings
 from guardian.utils import get_user_obj_perms_model
-from guardian.shortcuts import assign_perm, get_groups_with_perms
+from guardian.shortcuts import get_groups_with_perms
+from guardian.shortcuts import assign_perm, remove_perm, \
+    get_users_with_perms
 
 
 ADMIN_PERMISSIONS = [
@@ -42,36 +44,6 @@ LAYER_ADMIN_PERMISSIONS = [
     'change_layer_data',
     'change_layer_style'
 ]
-
-
-def get_users_with_perms(obj):
-    """
-    Override of the Guardian get_users_with_perms
-    """
-    ctype = ContentType.objects.get_for_model(obj)
-    permissions = {}
-    PERMISSIONS_TO_FETCH = ADMIN_PERMISSIONS + LAYER_ADMIN_PERMISSIONS
-
-    for perm in Permission.objects.filter(codename__in=PERMISSIONS_TO_FETCH, content_type_id=ctype.id):
-        permissions[perm.id] = perm.codename
-
-    user_model = get_user_obj_perms_model(obj)
-    users_with_perms = user_model.objects.filter(object_pk=obj.pk,
-                                                 content_type_id=ctype.id,
-                                                 permission_id__in=permissions).values('user_id', 'permission_id')
-
-    users = {}
-    for item in users_with_perms:
-        if item['user_id'] in users:
-            users[item['user_id']].append(permissions[item['permission_id']])
-        else:
-            users[item['user_id']] = [permissions[item['permission_id']], ]
-
-    profiles = {}
-    for profile in get_user_model().objects.filter(id__in=users.keys()):
-        profiles[profile] = users[profile.id]
-
-    return profiles
 
 
 class PermissionLevelError(Exception):
@@ -92,7 +64,9 @@ class PermissionLevelMixin(object):
         resource = self.get_self_resource()
         info = {
             'users': get_users_with_perms(
-                resource),
+                resource,
+                attach_perms=True,
+                with_superusers=True),
             'groups': get_groups_with_perms(
                 resource,
                 attach_perms=True)}
@@ -102,22 +76,39 @@ class PermissionLevelMixin(object):
         if hasattr(self, "layer"):
             info_layer = {
                 'users': get_users_with_perms(
-                    self.layer),
+                    self.layer,
+                    attach_perms=True,
+                    with_superusers=True),
                 'groups': get_groups_with_perms(
                     self.layer,
                     attach_perms=True)}
 
             for user in info_layer['users']:
+                permissions = []
                 if user in info['users']:
-                    info['users'][user] = info['users'][user] + info_layer['users'][user]
+                    permissions = info['users'][user]
                 else:
-                    info['users'][user] = info_layer['users'][user]
+                    info['users'][user] = []
+
+                for perm in info_layer['users'][user]:
+                    if perm not in permissions:
+                        permissions.append(perm)
 
             for group in info_layer['groups']:
+                permissions = []
                 if group in info['groups']:
-                    info['groups'][group] = info['groups'][group] + info_layer['groups'][group]
+                    permissions = info['groups'][group]
                 else:
-                    info['groups'][group] = info_layer['groups'][group]
+                    info['groups'][group] = []
+                for perm in info_layer['groups'][group]:
+
+                    if perm not in permissions:
+                        permissions.append(perm)
+
+        import logging
+        logger = logging.getLogger(__name__)
+        logger.error('security\models.py def get_all_level_info var permission_spec')
+        logger.error(info)
 
         return info
 
@@ -126,15 +117,42 @@ class PermissionLevelMixin(object):
             self,
             'resourcebase_ptr_id') else self
 
+    def remove_all_permissions(self):
+        """
+        Remove all the permissions for users and groups except for the resource owner
+        """
+        # TODO refactor this
+        # first remove in resourcebase
+        for user, perms in get_users_with_perms(self.get_self_resource(), attach_perms=True).iteritems():
+            if not self.owner == user:
+                for perm in perms:
+                    remove_perm(perm, user, self.get_self_resource())
+
+        for group, perms in get_groups_with_perms(self.get_self_resource(), attach_perms=True).iteritems():
+            for perm in perms:
+                remove_perm(perm, group, self.get_self_resource())
+
+        # now remove in layer (if resource is layer
+        if hasattr(self, "layer"):
+            for user, perms in get_users_with_perms(self.layer, attach_perms=True).iteritems():
+                if not self.owner == user:
+                    for perm in perms:
+                        remove_perm(perm, user, self.layer)
+
+            for group, perms in get_groups_with_perms(self.layer, attach_perms=True).iteritems():
+                for perm in perms:
+                    remove_perm(perm, group, self.layer)
+
     def set_default_permissions(self):
         """
         Remove all the permissions except for the owner and assign the
         view permission to the anonymous group
         """
-        remove_object_permissions(self)
+        self.remove_all_permissions()
 
         # default permissions for anonymous users
         anonymous_group, created = Group.objects.get_or_create(name='anonymous')
+        assign_perm('view_resourcebase', anonymous_group, self.get_self_resource())
 
         if not anonymous_group:
             raise Exception("Could not acquire 'anonymous' Group.")
@@ -145,7 +163,8 @@ class PermissionLevelMixin(object):
             assign_perm('download_resourcebase', anonymous_group, self.get_self_resource())
 
         # default permissions for resource owner
-        set_owner_permissions(self)
+        for perm in ADMIN_PERMISSIONS:
+            assign_perm(perm, self.owner, self.get_self_resource())
 
         # only for layer owner
         if self.__class__.__name__ == 'Layer':
@@ -173,7 +192,7 @@ class PermissionLevelMixin(object):
         }
         """
 
-        remove_object_permissions(self)
+        self.remove_all_permissions()
 
         if 'users' in perm_spec and "AnonymousUser" in perm_spec['users']:
             anonymous_group = Group.objects.get(name='anonymous')

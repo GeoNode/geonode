@@ -88,8 +88,9 @@ class Map(ResourceBase, GXPMapBase):
     # Full URL for featured map view, ie http://domain/someview
 
     def __unicode__(self):
-        return '%s by %s' % (
-            self.title, (self.owner.username if self.owner else "<Anonymous>"))
+        # return '%s by %s' % (
+        #     self.title, (self.owner.username if self.owner else "<Anonymous>"))
+        return self.title
 
     @property
     def center(self):
@@ -304,6 +305,17 @@ class Map(ResourceBase, GXPMapBase):
         return user.has_perm(
             'base.view_resourcebase',
             obj=self.resourcebase_ptr)
+
+    @property
+    def is_downloadable_by_user(self, user):
+        """
+        Returns True if all the layers are downloadables by the current user.
+        """
+        from guardian.shortcuts import get_anonymous_user
+        user = request.user
+        # return user.has_perm(
+        # 'base.view_resourcebase',
+        # obj=self.resourcebase_ptr)
 
     @property
     def layer_group(self):

@@ -252,17 +252,17 @@ class ProfileResource(TypeFilteredResource):
     def dehydrate_layers_count(self, bundle):
         obj_with_perms = get_objects_for_user(bundle.request.user,
                                               'base.view_resourcebase').instance_of(Layer)
-        return bundle.obj.resourcebase_set.filter(id__in=obj_with_perms.values('id')).distinct().count()
+        return bundle.obj.resourcebase_set.filter(id__in=obj_with_perms.values_list('id')).distinct().count()
 
     def dehydrate_maps_count(self, bundle):
         obj_with_perms = get_objects_for_user(bundle.request.user,
                                               'base.view_resourcebase').instance_of(Map)
-        return bundle.obj.resourcebase_set.filter(id__in=obj_with_perms.values('id')).distinct().count()
+        return bundle.obj.resourcebase_set.filter(id__in=obj_with_perms.values_list('id')).distinct().count()
 
     def dehydrate_documents_count(self, bundle):
         obj_with_perms = get_objects_for_user(bundle.request.user,
                                               'base.view_resourcebase').instance_of(Document)
-        return bundle.obj.resourcebase_set.filter(id__in=obj_with_perms.values('id')).distinct().count()
+        return bundle.obj.resourcebase_set.filter(id__in=obj_with_perms.values_list('id')).distinct().count()
 
     def dehydrate_avatar_100(self, bundle):
         return avatar_url(bundle.obj, 240)
