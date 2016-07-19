@@ -34,6 +34,7 @@ from geonode.base.models import ResourceBase, ResourceBaseManager, resourcebase_
 from geonode.people.utils import get_valid_user
 from agon_ratings.models import OverallRating
 from geonode.utils import check_shp_columnnames
+from geonode.security.models import remove_object_permissions
 
 logger = logging.getLogger("geonode.layers.models")
 
@@ -61,6 +62,9 @@ class Style(models.Model):
 
     def __str__(self):
         return "%s" % self.name.encode('utf-8')
+
+    def absolute_url(self):
+        return self.sld_url().split('geoserver/', 1)[1]
 
 
 class LayerManager(ResourceBaseManager):
@@ -164,7 +168,7 @@ class Layer(ResourceBase):
 
         # If there was no upload_session return None
         if self.upload_session is None:
-            return None
+            return None, None
 
         base_exts = [x.replace('.', '') for x in cov_exts + vec_exts]
         base_files = self.upload_session.layerfile_set.filter(
@@ -173,19 +177,23 @@ class Layer(ResourceBase):
 
         # If there are no files in the upload_session return None
         if base_files_count == 0:
-            return None
+            return None, None
 
         msg = 'There should only be one main file (.shp or .geotiff), found %s' % base_files_count
         assert base_files_count == 1, msg
 
         # we need to check, for shapefile, if column names are valid
+        list_col = None
         if self.storeType == 'dataStore':
-            valid_shp, wrong_column_name = check_shp_columnnames(self)
-            msg = 'Shapefile has an invalid column name: %s' % wrong_column_name
+            valid_shp, wrong_column_name, list_col = check_shp_columnnames(self)
+            if wrong_column_name:
+                msg = 'Shapefile has an invalid column name: %s' % wrong_column_name
+            else:
+                msg = _('File cannot be opened, maybe check the encoding')
             assert valid_shp, msg
 
         # no error, let's return the base files
-        return base_files.get()
+        return base_files.get(), list_col
 
     def get_absolute_url(self):
         return reverse('layer_detail', args=(self.service_typename,))
@@ -422,7 +430,10 @@ def pre_save_layer(instance, sender, **kwargs):
         # Set a sensible default for the typename
         instance.typename = 'geonode:%s' % instance.name
 
-    base_file = instance.get_base_file()
+    base_file, info = instance.get_base_file()
+
+    if info:
+        instance.info = info
 
     if base_file is not None:
         extension = '.%s' % base_file.name
@@ -473,6 +484,9 @@ def pre_delete_layer(instance, sender, **kwargs):
             if style != default_style:
                 style.delete()
 
+    # Delete object permissions
+    remove_object_permissions(instance)
+
 
 def post_delete_layer(instance, sender, **kwargs):
     """
@@ -480,26 +494,31 @@ def post_delete_layer(instance, sender, **kwargs):
     Remove the layer default style.
     """
     from geonode.maps.models import MapLayer
-    logger.debug(
-        "Going to delete associated maplayers for [%s]",
-        instance.typename.encode('utf-8'))
-    MapLayer.objects.filter(
-        name=instance.typename,
-        ows_url=instance.ows_url).delete()
+    if instance.typename:
+        logger.debug(
+            "Going to delete associated maplayers for [%s]",
+            instance.typename.encode('utf-8'))
+        MapLayer.objects.filter(
+            name=instance.typename,
+            ows_url=instance.ows_url).delete()
 
     if instance.service:
         return
-    logger.debug(
-        "Going to delete the default style for [%s]",
-        instance.typename.encode('utf-8'))
+    if instance.typename:
+        logger.debug(
+            "Going to delete the default style for [%s]",
+            instance.typename.encode('utf-8'))
 
     if instance.default_style and Layer.objects.filter(
             default_style__id=instance.default_style.id).count() == 0:
         instance.default_style.delete()
 
-    if instance.upload_session:
-        for lf in instance.upload_session.layerfile_set.all():
-            lf.file.delete()
+    try:
+        if instance.upload_session:
+            for lf in instance.upload_session.layerfile_set.all():
+                lf.file.delete()
+    except UploadSession.DoesNotExist:
+        pass
 
 
 signals.pre_save.connect(pre_save_layer, sender=Layer)

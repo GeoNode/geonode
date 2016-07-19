@@ -36,7 +36,7 @@ class CephDataObjectAdmin(admin.ModelAdmin):
         'data_class',
         'grid_ref',
         'size_in_bytes',)
-    list_filter = ('data_class','content_type', 'grid_ref')
+    list_filter = ('data_class','content_type')
     search_fields = ('name', 'data_class', 'content_type', 'grid_ref',)
 
 class FTPRequestAdmin(admin.ModelAdmin):
@@ -50,7 +50,7 @@ class FTPRequestAdmin(admin.ModelAdmin):
         'status',
         'num_tiles',
         'size_in_bytes',)
-    list_filter = ('user', 'status',)
+    list_filter = ('status',)
     search_fields = ('name', 'user__username', 'status',)
 
 class FTPRequestToObjectIndexAdmin(admin.ModelAdmin):
@@ -60,7 +60,6 @@ class FTPRequestToObjectIndexAdmin(admin.ModelAdmin):
         'id',
         'ftprequest',
         'cephobject',)
-    list_filter = ('cephobject', 'ftprequest',)
     search_fields = ('cephobject__name', 'ftprequest__name',)
 
 class UserJurisdictionAdmin(admin.ModelAdmin):
@@ -78,14 +77,25 @@ class UserJurisdictionAdmin(admin.ModelAdmin):
 
 class MissionGridRefAdmin(admin.ModelAdmin):
     model = MissionGridRef
-    list_display = ('id',)
+    list_display_links = ('id',)
     list_display = (
         'id',
         'grid_ref',
         'fieldID'
         )
-    list_filter = ('grid_ref','fieldID')
+    list_filter = ('fieldID',)
     search_fields = ('grid_ref','fieldID')
+
+class SucToLayerAdmin(admin.ModelAdmin):
+    model = SucToLayer
+    list_display_links = ('id',)
+    list_display = (
+        'id',
+        'suc',
+        'block_name'
+        )
+    list_filter = ('suc',)
+    search_fields = ('suc','block_name')
 
 admin.site.register(Cart, CartAdmin)
 admin.site.register(Item, ItemAdmin)
@@ -94,4 +104,5 @@ admin.site.register(FTPRequest, FTPRequestAdmin)
 admin.site.register(FTPRequestToObjectIndex, FTPRequestToObjectIndexAdmin)
 admin.site.register(UserJurisdiction, UserJurisdictionAdmin)
 admin.site.register(MissionGridRef,MissionGridRefAdmin)
+admin.site.register(SucToLayer,SucToLayerAdmin)
 

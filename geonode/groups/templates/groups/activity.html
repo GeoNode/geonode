@@ -14,18 +14,19 @@
 {% endblock %}
 {% endcomment %}
 
-{% block body %}
+{% block body_outer %}
+<div class="page-header">
+  <h2 class="page-title">{%  trans "Activity Feed for"  %} <a href="{% url "group_detail" group.slug %}">{{ group.title }}</a></h2>
+</div>
+
 <div class="row">
-  <div class="col-md-12">
-    <h2 class="page-title">{%  trans "Activity Feed for"  %} <a href="{% url "group_detail" group.slug %}">{{ group.title }}</a></h2>
-    <div class="row">
-      <div class="col-md-12">
-        <ul class="nav nav-tabs">
-          <li class="active"><a href="#all" data-toggle="tab"><i class=""></i>{% trans "All" %}</a></li>
-          <li><a href="#layers" data-toggle="tab"><i class="fa fa-square-o rotate-45"></i> {% trans "Layers" %}</a></li>
-          <li><a href="#maps" data-toggle="tab"><i class="fa fa-map-marker"></i> {% trans "Maps" %}</a></li>
-          <li><a href="#comments" data-toggle="tab"><i class="fa fa-comment-o"></i> {% trans "Comments" %}</a></li>
-        </ul>
+  <div class="col-md-8">
+    <ul class="nav nav-tabs">
+      <li class="active"><a href="#all" data-toggle="tab"><i class=""></i>{% trans "All" %}</a></li>
+      <li><a href="#layers" data-toggle="tab"><i class="fa fa-square-o rotate-45"></i> {% trans "Layers" %}</a></li>
+      <li><a href="#maps" data-toggle="tab"><i class="fa fa-map-marker"></i> {% trans "Maps" %}</a></li>
+      <li><a href="#comments" data-toggle="tab"><i class="fa fa-comment-o"></i> {% trans "Comments" %}</a></li>
+    </ul>
     <div class="tab-content">
       <article id="all" class="tab-pane active">
         <ul class="no-style-list">
@@ -63,8 +64,6 @@
         {% endfor %}
         </ul>
       </article>
-    </div>
-      </div>
     </div>
   </div>
 </div>

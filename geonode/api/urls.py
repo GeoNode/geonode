@@ -2,7 +2,7 @@ from tastypie.api import Api
 from django.conf.urls import patterns, url
 
 from .api import TagResource, TopicCategoryResource, ProfileResource, \
-    GroupResource, RegionResource, DataRequestProfileResource
+    GroupResource, RegionResource, DataRequestProfileResource, OwnersResource
 from .resourcebase_api import LayerResource, MapResource, DocumentResource, \
     ResourceBaseResource, FeaturedResourceBaseResource
 
@@ -26,3 +26,4 @@ api.register(TopicCategoryResource())
 api.register(GroupResource())
 api.register(FeaturedResourceBaseResource())
 api.register(DataRequestProfileResource())
+api.register(OwnersResource())

@@ -32,11 +32,55 @@ class DataRequestProfileForm(forms.ModelForm):
             'middle_name',
             'last_name',
             'organization',
+            # Non-commercial requester field
+            'organization_type',
+            # Academe requester fields
+            'request_level',
+            'funding_source',
+            'is_consultant',
+
             'location',
             'email',
             'contact_number',
             'captcha'
         )
+
+    ORGANIZATION_TYPE_CHOICES = Choices(
+        (0, _('Phil-LiDAR 1 SUC')),
+        (1, _('Phil-LiDAR 2 SUC' )),
+        (2, _( 'Government Agency')),
+        (3, _('Academe')),
+        (4, _( 'International NGO')),
+        (5, _('Local NGO')),
+        (6, _('Private Insitution' )),
+        (7, _('Other' )),
+    )
+
+    REQUEST_LEVEL_CHOICES = Choices(
+        ('institution', _('Academic/ Research Institution')),
+        ('faculty', _('Faculty')),
+        ('student', _('Student')),
+    )
+
+    # organization_type = forms.ChoiceField(
+    #     choices = ORGANIZATION_TYPE_CHOICES,
+    #     required = False
+    # )
+
+    # request_level = forms.CharField(
+    #     label=_('Level of the Request'),
+    #     required = False
+    # )
+
+    # funding_source = forms.CharField(
+    #     label = _('Source of Funding'),
+    #     max_length=255,
+    #     required=False
+    # )
+    #
+    # is_consultant = forms.BooleanField(
+    #     required=False
+    # )
 
     def __init__(self, *args, **kwargs):
 
@@ -65,6 +109,22 @@ class DataRequestProfileForm(forms.ModelForm):
                     css_class='form-group'
                 ),
                 Div(
+                    Field('organization_type', css_class='form-control'),
+                    css_class='form-group'
+                ),
+                Fieldset('Academe',
+                    Div(
+                        Field('request_level', css_class='form-control'),
+                        css_class='form-group'
+                    ),
+                    Div(
+                        Field('funding_source', css_class='form-control'),
+                        css_class='form-group'
+                    ),
+                    Field('is_consultant'),
+                    css_class='academe-fieldset',
+                ),
+                Div(
                     Field('location', css_class='form-control'),
                     css_class='form-group'
                 ),
@@ -84,6 +144,28 @@ class DataRequestProfileForm(forms.ModelForm):
             ),
         )
 
+    def clean_first_name(self):
+        fname = self.cleaned_data.get('first_name').strip()
+        if len(fname)<1:
+            raise forms.ValidationError("You have entered an empty first name")
+        
+        return fname
+    
+    def clean_middle_name(self):
+        
+        mname = self.cleaned_data.get('middle_name').strip()
+        if len(mname)<1:
+            mname = '_'
+        
+        return mname
+        
+    def clean_last_name(self):
+        lname = self.cleaned_data.get('last_name').strip()
+        if len(lname)<1:
+            raise forms.ValidationError("You have entered an empty last name")
+        
+        return lname
+
     def clean_email(self):
         email = self.cleaned_data.get('email')
         user_emails = Profile.objects.all().values_list('email', flat=True)
@@ -92,15 +174,26 @@ class DataRequestProfileForm(forms.ModelForm):
                 'That email is already being used by a registered user. lease login with your account instead.')
 
         return email
-        
+
     def clean_organization(self):
         organization = self.cleaned_data.get('organization')
-        
+
         if len(organization) > 64:
             raise forms.ValidationError(
                 'Organization name can only be 64 characters')
-                
+
         return organization
+
+    def clean_funding_source(self):
+        funding_source = self.cleaned_data.get('funding_source')
+        organization_type = self.cleaned_data.get('organization_type')
+        #intended_use_of_dataset = self.cleaned_data.get('intended_use_of_dataset')
+        if (#intended_use_of_dataset == 'noncommercial' and
+                organization_type == OrganizationType.ACADEME and
+                not funding_source):
+            raise forms.ValidationError(
+                'This field is required.')
+        return funding_source
 
     #def clean_letter_file(self):
     #    letter_file = self.cleaned_data.get('letter_file')
@@ -134,25 +227,8 @@ class DataRequestDetailsForm(forms.ModelForm):
         ('other', _('Other, please specify:')),
     )
 
-    ORGANIZATION_TYPE_CHOICES = Choices(
-        (0, _('Phil-LiDAR 1 SUC')),
-        (1, _('Phil-LiDAR 2 SUC' )),
-        (2, _( 'Government Agency')),
-        (3, _('Academe')),
-        (4, _( 'International NGO')),
-        (5, _('Local NGO')),
-        (6, _('Private Insitution' )),
-        (7, _('Other' )),
-    )
-
-    REQUEST_LEVEL_CHOICES = Choices(
-        ('institution', _('Academic/ Research Institution')),
-        ('faculty', _('Faculty')),
-        ('student', _('Student')),
-    )
-    
     project_summary = forms.CharField(
-        widget=forms.Textarea, 
+        widget=forms.Textarea,
         label=_('Project Summary'),
         required=True
     )
@@ -166,7 +242,7 @@ class DataRequestDetailsForm(forms.ModelForm):
         label=_(u'Your custom purpose for the data'),
         required=False
     )
-    
+
     letter_file = forms.FileField(
         label=_('Formal Request Letter (PDF only)'),
         required = True
@@ -179,13 +255,6 @@ class DataRequestDetailsForm(forms.ModelForm):
             'data_type_requested',
             'intended_use_of_dataset',
 
-            # Non-commercial requester field
-            'organization_type',
-
-            # Academe requester fields
-            'request_level',
-            'funding_source',
-            'is_consultant',
         )
 
 
@@ -217,36 +286,21 @@ class DataRequestDetailsForm(forms.ModelForm):
                 Field('intended_use_of_dataset', css_class='form-control'),
                 css_class='form-group'
             ),
-            Fieldset('Non-commercial',
-                Div(
-                    Field('organization_type', css_class='form-control'),
-                    css_class='form-group'
-                ),
-                css_class='noncommercial-fieldset',
-            ),
-            Fieldset('Academe',
-                Div(
-                    Field('request_level', css_class='form-control'),
-                    css_class='form-group'
-                ),
-                Div(
-                    Field('funding_source', css_class='form-control'),
-                    css_class='form-group'
-                ),
-                Field('is_consultant'),
-                css_class='academe-fieldset',
-            ),
+            # Fieldset('Non-commercial',
+            #
+            #    css_class='noncommercial-fieldset',
+            # ),
             Div(
                 Field('letter_file', css_class='form-control'),
                     css_class='form-group'
             ),
             #HTML("""
             #{% load i18n %}
-             
+
 
             #"""),
         )
-        
+
     def clean_letter_file(self):
         letter_file = self.cleaned_data.get('letter_file')
         split_filename =  os.path.splitext(str(letter_file.name))
@@ -271,16 +325,16 @@ class DataRequestProfileShapefileForm(NewLayerUploadForm):
         ('other', _('Other, please specify:')),
     )
 
-    ORGANIZATION_TYPE_CHOICES = Choices(
-        (0, _('Phil-LiDAR 1 SUC')),
-        (1, _('Phil-LiDAR 2 SUC' )),
-        (2, _( 'Government Agency')),
-        (3, _('Academe')),
-        (4, _( 'International NGO')),
-        (5, _('Local NGO')),
-        (6, _('Private Insitution' )),
-        (7, _('Other' )),
-    )
+    # ORGANIZATION_TYPE_CHOICES = Choices(
+    #     (0, _('Phil-LiDAR 1 SUC')),
+    #     (1, _('Phil-LiDAR 2 SUC' )),
+    #     (2, _( 'Government Agency')),
+    #     (3, _('Academe')),
+    #     (4, _( 'International NGO')),
+    #     (5, _('Local NGO')),
+    #     (6, _('Private Insitution' )),
+    #     (7, _('Other' )),
+    # )
 
     DATASET_USE_CHOICES =Choices(
         ('commercial', _('Commercial')),
@@ -294,11 +348,11 @@ class DataRequestProfileShapefileForm(NewLayerUploadForm):
         ('other', _('Other')),
     )
 
-    REQUEST_LEVEL_CHOICES = Choices(
-        ('institution', _('Institution')),
-        ('faculty', _('Faculty')),
-        ('student', _('Student')),
-    )
+    # REQUEST_LEVEL_CHOICES = Choices(
+    #     ('institution', _('Institution')),
+    #     ('faculty', _('Faculty')),
+    #     ('student', _('Student')),
+    # )
 
     abstract = forms.CharField(required=False)
 
@@ -330,26 +384,6 @@ class DataRequestProfileShapefileForm(NewLayerUploadForm):
         required=True
     )
 
-    organization_type = forms.ChoiceField(
-        choices = ORGANIZATION_TYPE_CHOICES,
-        required = False
-    )
-
-    request_level = forms.CharField(
-        label=_('Level of the Request'),
-        required = False
-    )
-
-    funding_source = forms.CharField(
-        label = _('Source of Funding'),
-        max_length=255,
-        required=False
-    )
-
-    is_consultant = forms.BooleanField(
-        required=False
-    )
-    
     letter_file = forms.FileField(
         label=_('Formal Request Letter (PDF only)'),
         required = True
@@ -367,7 +401,7 @@ class DataRequestProfileShapefileForm(NewLayerUploadForm):
         cleaned['purpose_other'] = self.clean_purpose_other()
 
         return cleaned
-        
+
     def clean_letter_file(self):
         letter_file = self.cleaned_data.get('letter_file')
         split_filename =  os.path.splitext(str(letter_file.name))
@@ -395,16 +429,6 @@ class DataRequestProfileShapefileForm(NewLayerUploadForm):
                 return purpose_other
         return purpose
 
-    def clean_funding_source(self):
-        funding_source = self.cleaned_data.get('funding_source')
-        organization_type = self.cleaned_data.get('organization_type')
-        intended_use_of_dataset = self.cleaned_data.get('intended_use_of_dataset')
-        if (intended_use_of_dataset == 'noncommercial' and
-                organization_type == OrganizationType.ACADEME and
-                not funding_source):
-            raise forms.ValidationError(
-                'This field is required.')
-        return funding_source
 
 class DataRequestProfileRejectForm(forms.ModelForm):
 

@@ -1,0 +1,142 @@
+.. module:: geoserver.gsproduction
+
+.. _geoserver.gsproduction:
+
+
+Advanced Production GeoServer configuration
+-------------------------------------------
+
+
+Most of the GeoServer downloads are geared towards quickly showing off the capabilities, with an array of demos, sample layers, and an embedded servlet container. If you are using GeoServer in a production environment, there are a few things we'd like to recommend. In this section the task is to configure your system to use it in production.
+
+.. note:: Before you start, ensure that the `Web Administrator Interface - Server` section has been completed.
+
+Configuring your container for production
+'''''''''''''''''''''''''''''''''''''''''
+
+.. note:: Most open source Java web containers, such as Tomcat, ship with development mode configurations that allow for quick startup but don't deliver the best performance. 
+
+Make sure that in the 'setenv.sh', or 'setenv.bat' on Windows machines, file exists the following configuration to set up the Java virtual machine options in your container. Open the 'setenv.sh/.bat' file located in '<TRAINING_ROOT>' directory and look at the options:
+
+
+.. figure:: img/java_opts.png
+   :align: center
+   :width: 600
+   
+   *Setting the JAVA_OPTS for Tomcat container*
+
+
+* **-server**: Not present among the training options, this option enables the server JVM, which JIT compiles bytecode much earlier, and with stronger optimizations. Startup and first calls will be slower due to JIT compilation taking more time, but subsequent ones will be faster (to give you some numbers, on the same machine a vanilla VM returns GML at 7MB/s speed, a -server one runs at 10MB/s). This option is required only if the JMV does not already get into server mode, which happens on a server opearting system (Linux, Windows server) with at least 2 cores and 2 GB of memory.
+
+.. note:: This parameter is necessary only for Windows environments of class workstation 
+
+* **-Xms512m -Xmx512M**: give your server memory. By default JVM will use only 64MB of heap. If you're serving just vector data, you'll be full streaming, so having much memory won't help a lot, but if you're serving coverages JAI will use a cache to avoid hitting the disk often. In this case, give Geoserver at least 256MB or memory, or more if you have plenty of RAM, and go configure the JAI title cache size in the Geoserver configuration panel so that it uses 75% of the heap (0.75). If you have plenty of memory it is suggested to set -Xms to the same value as -Xmx, this will make heap management more stable during heavy load serving. Generally speaking, don't allocate more than 2GB for the GeoServer heap.
+
+* **-XX:MaxPermSize=128m** (or more): the permanent generation is the heap portion where the class bytecode is stored. GeoServer uses lots of classes, and it may exhaust that space quickly leading to out of memory errors. If you'redeploying GeoServer along with other applications in the same container or if you need to deploy multiple GeoServer instances inside the same container (e.g., different instances for different customers or similar needs) you better raise up the MaxPermSize to 128m or more.
+
+.. warning::
+   
+   In order to obtain best performance, install the native **JAI** version in your JDK. In particular, installing the native JAI is important for all raster processing, which is used heavily in both WMS and WCS to rescale, cut and reproject rasters. Installing the native JAI is also important for all raster reading and writing, which affects both WMS and WCS. Finally, native JAI is very useful even if there is no raster data involved, as WMS output encoding requires writing PNG/GIF/JPEG images, which are themselves rasters. For more information how to installa JAI and ImageIO see the :ref:`Installing the native JAI and ImageIO <geoserver.jai_io_install>` section
+
+ 
+Setting up logging for production
+'''''''''''''''''''''''''''''''''
+
+.. note:: Logging may visibly affect the  performance of your server. High logging levels are often necessary to track down issues, but by default you should run with low ones (and you can switch the logging levels at runtime, so don't worry about having to stop the server to gather more information). You can change the logging level by going to the GeoServer configuration panel, Server section.
+
+
+1) Go to `http://localhost:8083/geoserver <http://localhost:8083/geoserver>`_ and click on the 'Global' link in the 'Settings' section.
+
+
+2) Select 'PRODUCTION_LOGGING.properties' in *Logging Profile* and click submit.
+
+
+
+.. figure:: img/login_setup.png
+   :align: center
+   
+   *Set up logging for production*
+
+
+Choosing a service strategy
+'''''''''''''''''''''''''''
+
+.. note:: A service strategy is the way we serve the output to the client. Basically, you have to choose between being absolutely sure of reporting errors with the proper OGC codes and serving output quickly. 
+
+
+You can configure the service strategy modifying the web.xml file located in '<TOMCAT_HOME>/instances/instance1/webapps/geoserver/WEB-INF' directory of your GeoServer install:
+
+
+1) Set the 'serviceStrategy' param-name with 'SPEED'.
+
+All the possible strategies are:
+
+* SPEED: serve outputs right away. The fastest strategy, make it unlikely to be able to report proper OGC errors in WFS though (they are reported only if the error occurs before the GML encodingstarts).
+
+* BUFFER: stores the whole result in memory, and then serves it after the output is complete. This ensures proper OGC error reporting, but delays the response quite a bit and will exhaust memory if the response is big.
+
+* FILE: same as buffer, but uses a file storage for buffering. Slower than BUFFER, ensures there won't be memory issues.
+
+* PARTIAL-BUFFER2: a balance between the two, tries to buffer in memory a few kilobytes of response, then behaves like SPEED.
+
+
+
+Configuring all data and metadata to your instance
+''''''''''''''''''''''''''''''''''''''''''''''''''
+
+.. note:: It may be tempting to just skip some of the configuration steps, leave in the same keywords and abstract as the sample. Please do not, as this will only confuse potential users. They will have a list of GeoServers called 'My GeoServer'.
+
+
+* Completely fill out the WFS and WMS Contents sections.
+
+* Put in your own URI (such as the name of your website) for the Namespace (Data -> Workspace) and remove the defaults.
+
+* Make sure your datastores all use your URI.
+
+* Remove the sample layers (states, spearfish, New York roads and the like, the easiest way to is go and remove the demo workspaces, everything contained in them will be removed as a result)
+
+
+Change the administrator password
+'''''''''''''''''''''''''''''''''
+
+GeoServer ships by default with "admin" and "geoserver" as the default administrator user name and password. Before putting the GeoServer on-line it is imperative to change at least the administrator password.
+
+Making use of an external Data Directory to store your configurations
+'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+
+.. note:: The configuration data resides within the GEOSERVER_DATA_DIR. To increase the portability of their data and to facilitate updates GeoServer, you should place this directory outside of GeoServer editing the web.xml file with the path that you prefer
+
+See the 'GEOSERVER_DATA_DIR' context param in '<TRAINING_ROOT>/tomcat-6.0.36/instances/instance1/webapps/geoserver/WEB-INF':
+
+
+.. code-block:: xml 
+
+  <context-param>
+    <param-name>GEOSERVER_DATA_DIR</param-name>
+    <param-value>$GEOSERVER_DATA_DIR</param-value>
+  </context-param> 
+
+.. note:: The external data dir can be also configured throught the environment variables on the 'setenv.sh/.bat' file.
+
+Using a Spatial Database
+''''''''''''''''''''''''
+
+We make shapefiles available as a datastore, as they are such a common format. But if you are running GeoServer in a production environment and if you need to manage the spatial indexes, transactions or if you have specific requirements involving the use of a database, setting up a spatial database and converting your shapefiles is highly recommended. If you're doing transactions against GeoServer this is essential. Even though we have a very nice transaction framework, doubling up with the native transaction support of relational databases ensures your data integrity. Most all the major spatial dbs provide support to easily turn shapefiles into their native format. We recommend PostGIS, open source extensions to the postgresql db, most of our testing has been performed against it. Oracle, DB2, SQL Server and ArcSDE are also well supported. At the moment we don't recommend MySQL, as it has trouble with rollbacks on geometry tables, and lacks advanced spatial functionality, but it is an option.
+
+
+Setting security
+''''''''''''''''
+
+GeoServer by default includes WFS-T, which lets users modify your backend database. If you don't want that to happen, you can turn off transactions in the web admin tool, Service Panel -> WFS and set Service Level to Basic. If you'd like some users to be able to modify it, but not all, you'll have to set up data access level security. For extra security when operating in read only mode, make sure that the connection to the datastore that is open to all is with a user who has read only permissions. That will make it so it's completely impossible to do a SQL injection (though GeoServer is generally designed well enough that it's not vulnerable).
+
+
+Dealing with a locked down environment
+''''''''''''''''''''''''''''''''''''''
+
+GeoServer code, and the libraries it uses (Geotools, JAI) are not designed to be run in a security locked down enviroment. They need free access to environment variables, temp directory, user preferences and the like. In operating systems like Ubuntu the default Tomcat is locked down so that most of the above is not authorized. So far, the only way to run Geoserver in that environment is to grant all permissions to it. 
+
+
+Caching
+'''''''
+
+Server-side caching of WMS tiles is the best way to get performance. Essentially how the caching works is the server will recognize a request and quickly return a pre-rendered result. This is how you can optimize for tile-based WMS clients and it works the best for them. There are several ways to set up caching for GeoServer like GeoWebCache.

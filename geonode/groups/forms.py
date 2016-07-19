@@ -1,6 +1,6 @@
 from django import forms
 from django.core.validators import validate_email, ValidationError
-from django.template.defaultfilters import slugify
+from slugify import slugify
 from django.utils.translation import ugettext_lazy as _
 
 from django.contrib.auth import get_user_model

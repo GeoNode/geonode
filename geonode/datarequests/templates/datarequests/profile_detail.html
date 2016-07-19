@@ -172,6 +172,16 @@
         {% endif %}
       </li>
 {% if user.is_superuser %}
+    <li class="list-group-item">
+             <form id="compute_request_size_form" method="post" class="modal-form" action='{% url "datarequests:data_request_profile_compute_size" pk=request_profile.pk%}'>{% csrf_token %}
+                <button type="submit" class="btn btn-primary btn-md btn-block"  id="compute-request-size">{% trans "Compute Request Size" %}</button>
+            </form>
+        </li>
+        <li class="list-group-item">
+             <form id="get_place_name_form" method="post" class="modal-form" action='{% url "datarequests:data_request_profile_reverse_geocode" pk=request_profile.pk%}'>{% csrf_token %}
+                <button type="submit" class="btn btn-primary btn-md btn-block"  id="get-place-name">{% trans "Get Place Name" %}</button>
+            </form>
+        </li>
       {% if request_profile.request_status == 'approved' %}
         <li class="list-group-item">
              <form id="recreate_dir_form" method="post" class="modal-form" action='{% url "datarequests:data_request_profile_recreate_dir" pk=request_profile.pk%}'>{% csrf_token %}
@@ -239,7 +249,7 @@
 
         </li>
       {% endif %}
-      {% if not request_profile.request_status == 'rejected' %}
+      {% if request_profile.request_status == 'unconfirmed' or request_profile.request_status == 'pending' %}
          <li class="list-group-item">
           <button class="btn btn-default btn-md btn-block" data-toggle="modal" data-target="#cancel-request">{% trans "Cancel Request" %}</button>
         </li>
@@ -269,6 +279,14 @@
         </div>
         {% endif %}
   {% endif %}
+  {% else %}
+  {% if request_profile.request_status == 'unconfirmed' or request_profile.request_status == 'pending' %}
+         <li class="list-group-item">
+             <form id="cancel_form" method="post" class="modal-form" action='{% url "datarequests:data_request_profile_cancel" pk=request_profile.pk%}'>{% csrf_token %}
+                <button type="submit" class="btn btn-default btn-md btn-block" id="cancel-request-submit">{% trans "Cancel Request" %}</button>
+        </form>            
+        </li>
+    {% endif %}
 {% endif %}
   </ul>
   <input type="hidden" id="request_profile_id" value="{{request_profile.pk}}"></input>

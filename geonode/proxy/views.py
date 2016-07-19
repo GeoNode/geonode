@@ -45,7 +45,7 @@ def proxy(request):
 
     raw_url = request.GET['url']
     url = urlsplit(raw_url)
-    locator = url.path
+    locator = str(url.path)
     if url.query != "":
         locator += '?' + url.query
     if url.fragment != "":

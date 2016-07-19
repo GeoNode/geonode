@@ -57,6 +57,7 @@ import unittest
 import urllib
 import urllib2
 from zipfile import ZipFile
+import re
 
 GEONODE_USER = 'test_uploader'
 GEONODE_PASSWD = 'test_uploader'
@@ -435,7 +436,7 @@ class UploaderBase(unittest.TestCase):
         h2 = soup.find_all(['h2'])[0]
         self.assertTrue(str(h2).find(layer_name))
 
-    def upload_folder_of_files(self, folder, final_check):
+    def upload_folder_of_files(self, folder, final_check, session_ids=None):
 
         mains = ('.tif', '.shp', '.zip')
 
@@ -449,13 +450,23 @@ class UploaderBase(unittest.TestCase):
             _file = os.path.join(folder, main)
             base, _ = os.path.splitext(_file)
             resp, data = self.client.upload_file(_file)
+            if session_ids is not None:
+                if data.get('url'):
+                    session_id = re.search(r'.*id=(\d+)', data.get('url')).group(1)
+                    if session_id:
+                        session_ids += [session_id]
             self.wait_for_progress(data.get('progress'))
             final_check(base, resp, data)
 
-    def upload_file(self, fname, final_check, check_name=None):
+    def upload_file(self, fname, final_check, check_name=None, session_ids=None):
         if not check_name:
             check_name, _ = os.path.splitext(fname)
         resp, data = self.client.upload_file(fname)
+        if session_ids is not None:
+            if data.get('url'):
+                session_id = re.search(r'.*id=(\d+)', data.get('url')).group(1)
+                if session_id:
+                    session_ids += [session_id]
         self.wait_for_progress(data.get('progress'))
         final_check(check_name, resp, data)
 
@@ -524,6 +535,27 @@ class TestUpload(UploaderBase):
         self.upload_folder_of_files(
             invalid_path,
             self.check_invalid_projection)
+
+    def test_coherent_importer_session(self):
+        """ Tests that the upload computes correctly next session IDs"""
+        session_ids = []
+
+        # First of all lets upload a raster
+        fname = os.path.join(GOOD_DATA, 'raster', 'relief_san_andres.tif')
+        self.upload_file(fname, self.complete_raster_upload, session_ids=session_ids)
+
+        # Next force an invalid session
+        invalid_path = os.path.join(BAD_DATA)
+        self.upload_folder_of_files(
+            invalid_path,
+            self.check_invalid_projection, session_ids=session_ids)
+
+        # Finally try to upload a good file anc check the session IDs
+        fname = os.path.join(GOOD_DATA, 'raster', 'relief_san_andres.tif')
+        self.upload_file(fname, self.complete_raster_upload, session_ids=session_ids)
+
+        self.assertTrue(len(session_ids) > 1)
+        self.assertTrue(int(session_ids[0]) < int(session_ids[1]))
 
     def test_extension_not_implemented(self):
         """Verify a error message is return when an unsupported layer is

@@ -26,6 +26,8 @@ import traceback
 import csv
 import datetime
 from pprint import pprint
+from guardian.shortcuts import get_perms
+
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, user_passes_test
@@ -41,6 +43,7 @@ from django.utils.html import escape
 from django.template.defaultfilters import slugify
 from django.forms.models import inlineformset_factory
 from django.db.models import F
+from django.forms.util import ErrorList
 
 from geonode.tasks.deletion import delete_layer
 from geonode.services.models import Service
@@ -69,7 +72,7 @@ from geonode.eula.models import AnonDownloader
 
 # from datetime import date, timedelta, datetime
 from django.utils import timezone
-
+from geonode.people.models import Profile
 
 CONTEXT_LOG_FILE = None
 
@@ -110,9 +113,9 @@ def _resolve_layer(request, typename, permission='base.view_resourcebase',
     Resolve the layer by the provided typename (which may include service name) and check the optional permission.
     """
     service_typename = typename.split(":", 1)
-    service = Service.objects.filter(name=service_typename[0])
 
-    if service.count() > 0:
+    if Service.objects.filter(name=service_typename[0]).exists():
+        service = Service.objects.filter(name=service_typename[0])
         return resolve_object(request,
                               Layer,
                               {'service': service[0],
@@ -137,17 +140,14 @@ def layer_upload(request, template='upload/layer_upload.html'):
             'charsets': CHARSETS,
             'is_layer': True,
         }
-        return render_to_response(template,
-                                  RequestContext(request, ctx))
+        return render_to_response(template, RequestContext(request, ctx))
     elif request.method == 'POST':
         form = NewLayerUploadForm(request.POST, request.FILES)
         tempdir = None
         errormsgs = []
         out = {'success': False}
-
         if form.is_valid():
             title = form.cleaned_data["layer_title"]
-
             # Replace dots in filename - GeoServer REST API upload bug
             # and avoid any other invalid characters.
             # Use the title if possible, otherwise default to the filename
@@ -156,9 +156,7 @@ def layer_upload(request, template='upload/layer_upload.html'):
             else:
                 name_base, __ = os.path.splitext(
                     form.cleaned_data["base_file"].name)
-
             name = slugify(name_base.replace(".", "_"))
-
             try:
                 # Moved this inside the try/except block because it can raise
                 # exceptions when unicode characters are present.
@@ -173,7 +171,6 @@ def layer_upload(request, template='upload/layer_upload.html'):
                     abstract=form.cleaned_data["abstract"],
                     title=form.cleaned_data["layer_title"],
                 )
-
             except Exception as e:
                 exception_type, error, tb = sys.exc_info()
                 logger.exception(e)
@@ -192,27 +189,25 @@ def layer_upload(request, template='upload/layer_upload.html'):
                     out['upload_session'] = upload_session.id
             else:
                 out['success'] = True
+                if hasattr(saved_layer, 'info'):
+                    out['info'] = saved_layer.info
                 out['url'] = reverse(
                     'layer_detail', args=[
                         saved_layer.service_typename])
-
                 upload_session = saved_layer.upload_session
                 upload_session.processed = True
                 upload_session.save()
                 permissions = form.cleaned_data["permissions"]
                 if permissions is not None and len(permissions.keys()) > 0:
                     saved_layer.set_permissions(permissions)
-
             finally:
                 if tempdir is not None:
                     shutil.rmtree(tempdir)
         else:
             for e in form.errors.values():
                 errormsgs.extend([escape(v) for v in e])
-
             out['errors'] = form.errors
             out['errormsgs'] = errormsgs
-
         if out['success']:
             status_code = 200
         else:
@@ -230,18 +225,16 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
         layername,
         'base.view_resourcebase',
         _PERMISSION_MSG_VIEW)
+
     # assert False, str(layer_bbox)
     config = layer.attribute_config()
     #print layername
     # Add required parameters for GXP lazy-loading
     layer_bbox = layer.bbox
     bbox = [float(coord) for coord in list(layer_bbox[0:4])]
-    srid = layer.srid
-
-    # Transform WGS84 to Mercator.
-    config["srs"] = srid if srid != "EPSG:4326" else "EPSG:900913"
-    config["bbox"] = llbbox_to_mercator([float(coord) for coord in bbox])
-
+    config["srs"] = getattr(settings, 'DEFAULT_MAP_CRS', 'EPSG:900913')
+    config["bbox"] = bbox if config["srs"] != 'EPSG:900913' \
+        else llbbox_to_mercator([float(coord) for coord in bbox])
     config["title"] = layer.title
     config["queryable"] = True
 
@@ -270,7 +263,8 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
             id=layer.id).update(popular_count=F('popular_count') + 1)
 
     # center/zoom don't matter; the viewer will center on the layer bounds
-    map_obj = GXPMap(projection="EPSG:900913")
+    map_obj = GXPMap(projection=getattr(settings, 'DEFAULT_MAP_CRS', 'EPSG:900913'))
+
     NON_WMS_BASE_LAYERS = [
         la for la in default_map_config()[1] if la.ows_url is None]
 
@@ -279,6 +273,7 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
 
     context_dict = {
         "resource": layer,
+        'perms_list': get_perms(request.user, layer.get_self_resource()),
         "permissions_json": _perms_info_json(layer),
         "documents": get_related_documents(layer),
         "metadata": metadata,
@@ -308,15 +303,17 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
         context_dict["social_links"] = build_social_links(request, layer)
 
     if request.method == 'POST':
+        pprint(request.POST)
         form = AnonDownloaderForm(request.POST)
         out = {}
         if form.is_valid():
+            pprint(form)
             out['success'] = True
-            pprint(form.cleaned_data)
             anondownload = form.save()
             anondownload.anon_layer = Layer.objects.get(typename = layername)
             anondownload.save()
         else:
+            pprint(form)
             errormsgs = []
             for e in form.errors.values():
                 errormsgs.extend([escape(v) for v in e])
@@ -328,7 +325,8 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
         else:
             status_code = 400
         #Handle form
-        # return HttpResponse(status=status_code)
+        pprint(status_code)
+        return HttpResponse(status=status_code)
     else:
         #Render form
         form = AnonDownloaderForm()
@@ -367,6 +365,7 @@ def layer_metadata(request, layername, template='layers/layer_metadata.html'):
             prefix="category_choice_field",
             initial=int(
                 request.POST["category_choice_field"]) if "category_choice_field" in request.POST else None)
+
     else:
         layer_form = LayerForm(instance=layer, prefix="resource")
         attribute_form = layer_attribute_set(
@@ -391,6 +390,12 @@ def layer_metadata(request, layername, template='layers/layer_metadata.html'):
                     instance=poc)
             else:
                 poc_form = ProfileForm(request.POST, prefix="poc")
+            if poc_form.is_valid():
+                if len(poc_form.cleaned_data['profile']) == 0:
+                    # FIXME use form.add_error in django > 1.7
+                    errors = poc_form._errors.setdefault('profile', ErrorList())
+                    errors.append(_('You must set a point of contact for this resource'))
+                    poc = None
             if poc_form.has_changed and poc_form.is_valid():
                 new_poc = poc_form.save()
 
@@ -400,6 +405,12 @@ def layer_metadata(request, layername, template='layers/layer_metadata.html'):
                                           instance=metadata_author)
             else:
                 author_form = ProfileForm(request.POST, prefix="author")
+            if author_form.is_valid():
+                if len(author_form.cleaned_data['profile']) == 0:
+                    # FIXME use form.add_error in django > 1.7
+                    errors = author_form._errors.setdefault('profile', ErrorList())
+                    errors.append(_('You must set an author for this resource'))
+                    metadata_author = None
             if author_form.has_changed and author_form.is_valid():
                 new_author = author_form.save()
 
@@ -419,11 +430,21 @@ def layer_metadata(request, layername, template='layers/layer_metadata.html'):
             layer.keywords.clear()
             layer.keywords.add(*new_keywords)
             the_layer = layer_form.save()
+            up_sessions = UploadSession.objects.filter(layer=the_layer.id)
+            if up_sessions.count() > 0 and up_sessions[0].user != the_layer.owner:
+                up_sessions.update(user=the_layer.owner)
             the_layer.poc = new_poc
             the_layer.metadata_author = new_author
             Layer.objects.filter(id=the_layer.id).update(
                 category=new_category
                 )
+
+            if getattr(settings, 'SLACK_ENABLED', False):
+                try:
+                    from geonode.contrib.slack.utils import build_slack_message_layer, send_slack_messages
+                    send_slack_messages(build_slack_message_layer("layer_edit", the_layer))
+                except:
+                    print "Could not send slack message."
 
             return HttpResponseRedirect(
                 reverse(
@@ -432,16 +453,12 @@ def layer_metadata(request, layername, template='layers/layer_metadata.html'):
                         layer.service_typename,
                     )))
 
-    if poc is None:
-        poc_form = ProfileForm(instance=poc, prefix="poc")
-    else:
+    if poc is not None:
         layer_form.fields['poc'].initial = poc.id
         poc_form = ProfileForm(prefix="poc")
         poc_form.hidden = True
 
-    if metadata_author is None:
-        author_form = ProfileForm(instance=metadata_author, prefix="author")
-    else:
+    if metadata_author is not None:
         layer_form.fields['metadata_author'].initial = metadata_author.id
         author_form = ProfileForm(prefix="author")
         author_form.hidden = True
@@ -613,30 +630,46 @@ def layer_download(request, layername):
 def layer_download_csv(request):
     if not request.user.is_superuser:
         return HttpResponseRedirect("/forbidden/")
-
     response = HttpResponse(content_type='text/csv')
     datetoday = timezone.now()
     response['Content-Disposition'] = 'attachment; filename="layerdownloads-"'+str(datetoday.month)+str(datetoday.day)+str(datetoday.year)+'.csv"'
     writer = csv.writer(response)
 
-    auth_list = Action.objects.filter(verb='downloaded').order_by('timestamp') #get layers in prod
+    orgtypelist = ['Phil-LiDAR 1 SUC',
+    'Phil-LiDAR 2 SUC',
+    'Government Agency',
+    'Academe',
+    'International NGO',
+    'Local NGO',
+    'Private Insitution',
+    'Other']
 
-    # auth_fmc =
-    anon_list = AnonDownloader.objects.all().order_by('date')
-    # anon_fmc
-    writer.writerow( ['username','layer name','date downloaded'])
-
+    auth_list = Action.objects.filter(verb='downloaded').order_by('timestamp')
+    writer.writerow( ['username','lastname','firstname','email','organization','organization type','layer name','date downloaded'])
     for auth in auth_list:
-        # auth.actor + " " + auth.action_object + " " +  auth.timestamp.strftime('%Y/%m/%d')
-        writer.writerow([auth.actor,auth.action_object.title,auth.timestamp.strftime('%Y/%m/%d')])
+        username = auth.actor
+        getprofile = Profile.objects.get(username=username)
+        firstname = getprofile.first_name
+        lastname = getprofile.last_name
+        email = getprofile.email
+        organization = getprofile.organization
+        orgtype = orgtypelist[getprofile.organization_type]
+        pprint(dir(getprofile))
+        writer.writerow([username,lastname,firstname,email,organization,orgtype,auth.action_object.title,auth.timestamp.strftime('%Y/%m/%d')])
 
     writer.writerow(['\n'])
+    anon_list = AnonDownloader.objects.all().order_by('date')
     writer.writerow(['Anonymous Downloads'])
-    writer.writerow( ['lastname','firstname','layer name','date downloaded'])
+    writer.writerow( ['lastname','firstname','email','organization','organization type','purpose','layer name','doc name','date downloaded'])
     for anon in anon_list:
         lastname = anon.anon_last_name
         firstname = anon.anon_first_name
+        email = anon.anon_email
         layername = anon.anon_layer
-        writer.writerow([lastname,firstname,layername,anon.date.strftime('%Y/%m/%d')])        
+        docname = anon.anon_document
+        organization = anon.anon_organization
+        orgtype = anon.anon_orgtype
+        purpose = anon.anon_purpose
+        writer.writerow([lastname,firstname,email,organization,orgtype,purpose,layername,docname,anon.date.strftime('%Y/%m/%d')])
 
     return response

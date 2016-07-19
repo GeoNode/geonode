@@ -1,7 +1,7 @@
 from operator import itemgetter, attrgetter
 import re
 from changuito.proxy import CartProxy
-from geonode.cephgeo.models import CephDataObject, DataClassification, MissionGridRef
+from geonode.cephgeo.models import CephDataObject, DataClassification, MissionGridRef, SucToLayer
 from osgeo import ogr
 import shapely
 from shapely.wkb import loads
@@ -167,20 +167,97 @@ def tile_shp(tile_extents,eval_shp_poly,feature):
             # Evaluate intersections
             if not tile.intersection(eval_shp_poly).is_empty:
                 if len(MissionGridRef.objects.filter(fieldID=feature.GetField("UID"),grid_ref=str(gridref))) == 0:
-                    print gridref
+                    # print gridref
                     georef = MissionGridRef.objects.create(fieldID=feature.GetField("UID"),grid_ref=str(gridref))
                     georef.save()
 
 def iterate_over_features():
-    source = ogr.Open(("PG:host={0} dbname={1} user={2} password={3}".format(settings.HOST_ADDR,settings.GIS_DATABASE_NAME,settings.DATABASE_USER,settings.DATABASE_PASSWORD)))
+    #source = ogr.Open(("PG:host={0} dbname={1} user={2} password={3}".format(settings.HOST_ADDR,settings.GIS_DATABASE_NAME,settings.DATABASE_USER,settings.DATABASE_PASSWORD)))
+    source = ogr.Open(("PG:host={0} dbname={1} user={2} password={3}".format(settings.DATABASE_HOST,settings.DATASTORE_DB,settings.DATABASE_USER,settings.DATABASE_PASSWORD)))
     layer = source.GetLayer(settings.LIDAR_COVERAGE)
     i = 0
+    feature_count = layer.GetFeatureCount()
     for feature in layer:
         i+=1
         d = datetime.datetime.now()
-        print "[{0}/{1}/{2} - {3}:{4}:{5}] Feature#{6}".format(d.day, d.month, d.year, d.hour, d.minute, d.second,i)
+        print "[{0}/{1}/{2} - {3}:{4}:{5}] Feature #{6} of {7} - {8}".format(d.day, d.month, d.year, d.hour, d.minute, d.second,i, feature_count, feature.GetField("Block_Name"))
         feature = layer.GetNextFeature()
         # print feature.GetField("Block_Name")
         geom = loads(feature.GetGeometryRef().ExportToWkb())
         bounds = get_bounds_1x1km(geom)
         tile_shp(bounds,geom,feature)
+
+
+def map_blocks_suc():
+    if "lipad" not in settings.BASEURL:
+        source = ogr.Open(("PG:host={0} dbname={1} user={2} password={3}".format(settings.HOST_ADDR,settings.GIS_DATABASE_NAME,settings.DATABASE_USER,settings.DATABASE_PASSWORD)))
+    else:
+        source = ogr.Open(("PG:host={0} dbname={1} user={2} password={3}".format(settings.DATABASE_HOST,settings.DATASTORE_DB,settings.DATABASE_USER,settings.DATABASE_PASSWORD)))
+    floodplain = source.GetLayer("fp_panay")
+    blocks = source.GetLayer("lidar_panay")
+    blocks_with_suc = defaultdict(lambda: defaultdict(str))
+    rb_geomrefs = []
+    rb_list = []
+    block_list = []
+    for i,riverbasin in enumerate(floodplain): #get list of geomrefs of riverbasins
+        rb_list.append(riverbasin)
+        riverbasin_geom = riverbasin.GetGeometryRef()
+        rb_geomrefs.append(riverbasin_geom)
+    for i,riverbasin in enumerate(rb_list):
+        if riverbasin is None:
+            print "None"
+        else:
+            blocks.SetSpatialFilter(None)
+            rb_geom = rb_geomrefs[i] #get geometry of riverbasin
+            blocks.SetSpatialFilter(rb_geom) #intersect rb_geomref to the layer coverage
+            suc = str(riverbasin.GetFieldAsString("SUC"))
+            for block in blocks: #list blocks that intersected with the rb's geomref
+                block_list.append(block.GetFieldAsString("Block_Name"))
+            blocks_with_suc["%s" % suc] = block_list
+    for key,value in blocks_with_suc.items():
+        value = list(set(value))
+        for v in value:
+            obj = SucToLayer.objects.create(suc=riverbasin.GetFieldAsString("SUC"),block_name=str(v))
+            obj.save()
+
+#for testing of map_blocks_suc() uncomment this block:
+# from collections import defaultdict
+# from osgeo import ogr
+# import shapely
+# from shapely.wkb import loads
+# import math
+# import geonode.settings as settings
+# from geonode.cephgeo.models import CephDataObject, DataClassification, MissionGridRef, SucToLayer
+# if "lipad" not in settings.BASEURL:
+#     source = ogr.Open(("PG:host={0} dbname={1} user={2} password={3}".format(settings.HOST_ADDR,settings.GIS_DATABASE_NAME,settings.DATABASE_USER,settings.DATABASE_PASSWORD)))
+# else:
+#     source = ogr.Open(("PG:host={0} dbname={1} user={2} password={3}".format(settings.DATABASE_HOST,settings.DATASTORE_DB,settings.DATABASE_USER,settings.DATABASE_PASSWORD)))
+# floodplain = source.GetLayer("fp_panay")
+# blocks = source.GetLayer("lidar_panay")
+# blocks_with_suc = defaultdict(lambda: defaultdict(str))
+# rb_geomrefs = []
+# rb_list = []
+# block_list = []
+# for i,riverbasin in enumerate(floodplain): #get list of geomrefs of riverbasins
+#     rb_list.append(riverbasin)
+#     riverbasin_geom = riverbasin.GetGeometryRef()
+#     rb_geomrefs.append(riverbasin_geom)
+# for i,riverbasin in enumerate(rb_list):
+#     if riverbasin is None:
+#         print "None"
+#     else:
+#         blocks.SetSpatialFilter(None)
+#         rb_geom = rb_geomrefs[i] #get geometry of riverbasin
+#         blocks.SetSpatialFilter(rb_geom) #intersect rb_geomref to the layer coverage
+#         suc = str(riverbasin.GetFieldAsString("SUC"))
+#         for block in blocks: #list blocks that intersected with the rb's geomref
+#             block_list.append(block.GetFieldAsString("Block_Name"))
+#         blocks_with_suc["%s" % suc] = block_list
+# for key,value in blocks_with_suc.items():
+#     value = list(set(value))
+#     for v in value:
+#         obj = SucToLayer.objects.create(suc=riverbasin.GetFieldAsString("SUC"),block_name=str(v))
+#         obj.save()
+
+
+
