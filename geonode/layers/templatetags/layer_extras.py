@@ -19,7 +19,7 @@ def image_basemap(layername,epsg,out_format):
 	  "srs":"",
 	  "layout":"Image",
 	  "dpi":300,
-	  "outputFilename":"GeoExplorer-print-Image-test-geoserver-osm-basemap",
+	  "outputFilename":"",
 	  "outputFormat":"",
 	  "comment": "",
 	  "mapTitle": "",
@@ -110,6 +110,7 @@ def image_basemap(layername,epsg,out_format):
 	jsontext = json.loads(text)
 	jsontext['srs'] = to_srs_str
 	jsontext['outputFormat'] = outputFormat
+	jsontext['outputFilename'] = layer.name
 	jsontext['layers'][0]['baseURL'] = settings.OGC_SERVER['default']['LOCATION'] + 'wms?SERVICE=WMS&'
 	jsontext['layers'][1]['baseURL'] = settings.OGC_SERVER['default']['LOCATION'] + 'wms?SERVICE=WMS&'
 	jsontext['layers'][0]['layers'] = [str(layer.typename)]
