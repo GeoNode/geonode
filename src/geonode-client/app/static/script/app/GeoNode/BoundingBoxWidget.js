@@ -12,8 +12,8 @@ GeoNode.BoundingBoxWidget = Ext.extend(Ext.util.Observable, {
     isEnabled: false,
     useGxpViewer: false,
 
-    //gwcBackend: 'http://hh.worldmap.harvard.edu/layer/',
-    gwcBackend: 'http://192.168.33.15:8001/layer/',
+    gwcBackend: 'http://hh.worldmap.harvard.edu/layer/',
+    //gwcBackend: 'http://192.168.33.15:8001/layer/',
 
     layers: {},
 

@@ -223,8 +223,8 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
     externalDataText: 'External Data',
     leavePageWarningText: 'If you leave this page, unsaved changes will be lost.',
 
-    //mapproxy_backend: 'http://hh.worldmap.harvard.edu',
-    mapproxy_backend: 'http://192.168.33.15:8001',
+    mapproxy_backend: 'http://hh.worldmap.harvard.edu',
+    //mapproxy_backend: 'http://192.168.33.15:8001',
 
     constructor: function(config) {
         this.config = config;
@@ -2237,11 +2237,10 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             renderTo: 'search_form',
             trackSelection: true,
             permalinkURL: '/data/search',
-            //searchURL: 'http://54.83.116.189:8983/solr/wmdata/select',
             //searchURL: "/solr",
             // TODO this URL should be defined only once
-            //searchURL: "http://54.221.223.91:8983/solr/hypermap/select",
-            searchURL: "http://192.168.33.15:8983/solr/hypermap/select",
+            searchURL: "http://54.221.223.91:8983/solr/hypermap/select",
+            //searchURL: "http://192.168.33.15:8983/solr/hypermap/select",
             layerDetailURL: '/data/search/detail',
             constraints: [this.bbox],
             searchParams: {'limit':10, 'bbox': llbounds.toBBOX()},
