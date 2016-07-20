@@ -1,25 +1,35 @@
 $(function() {
 
     var $intended_use = $("#id_intended_use_of_dataset");
-    var $org_type = $("#id_organization_type")
+    // var $org_type = $("#id_organization_type")
+    var $org_type = $('input[name="organization_type"]');
+    var $org_type_checked = $('input[name="organization_type"]:checked');
     var $form = $intended_use.closest('form');
     var $form2 = $org_type.closest('form');
     var $noncommercial = $form.find('fieldset.noncommercial-fieldset');
     var $academe = $form2.find('fieldset.academe-fieldset');
+    var $other = $form2.find('fieldset.other-fieldset');
 
     // Initial values
-
-    if ($org_type.val() != '3') {
-        $academe.toggle(false);
-    } else {
-        $academe.toggle(true);
+    $academe.toggle(false);
+    $other.toggle(false);
+    if ($org_type_checked.val() == 'Academe') {
+      $academe.toggle(true);
+    }else if ($org_type_checked.val() == 'Other') {
+      $other.toggle(true);
     }
-    $org_type.on('change', function() {
-
-        if ($(this).val() == '3'){
+    // $org_type.on('change', function() {
+    $org_type.change( function() {
+        // if ($(this).val() == 'Academe'){
+        if ($(this).is(':checked') && $(this).val() == 'Academe'){
             $academe.slideDown();
         } else {
             $academe.slideUp();
+        }
+        if ($(this).is(':checked') && $(this).val() == 'Other'){
+            $other.slideDown();
+        } else {
+            $other.slideUp();
         }
     });
 
