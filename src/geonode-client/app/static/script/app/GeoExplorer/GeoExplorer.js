@@ -2237,9 +2237,8 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             renderTo: 'search_form',
             trackSelection: true,
             permalinkURL: '/data/search',
-            //searchURL: "/solr",
-            // TODO this URL should be defined only once
-            searchURL: "http://54.221.223.91:8983/solr/hypermap/select",
+            searchURL: "/solr",
+            // if local use the following searchURL
             //searchURL: "http://192.168.33.15:8983/solr/hypermap/select",
             layerDetailURL: '/data/search/detail',
             constraints: [this.bbox],
