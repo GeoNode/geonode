@@ -61,11 +61,12 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
                 {name: 'service_type', type: 'string'},
                 {name: 'bbox', type: 'string'},
                 {name: 'location', type: 'string'},
+                {name: 'layer_date', type: 'string'},
+                {name: 'layer_datetype', type: 'string'},
                 // not used?
-                {name: 'LayerDate', type: 'string'},
                 {name: 'Availability', type: 'string'},
-                {name: 'LayerUsername', type: 'string'},
-                {name: 'LayerDateType', type: 'string'}
+                {name: 'LayerUsername', type: 'string'}
+
             ]
         });
         this.searchStore.on('load', function() {
@@ -202,14 +203,14 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
         /* called when main search query changes */
         GeoNode.queryTerms.q = this.queryInput.getValue();
 
-        // Remove any Originator filter if there
+        // Remove any layer_originator filter if there
         for(var i=0;i<GeoNode.queryTerms.fq.length;i++){
-            if(GeoNode.queryTerms.fq[i].indexOf('Originator') > -1){
+            if(GeoNode.queryTerms.fq[i].indexOf('layer_originator') > -1){
                 GeoNode.queryTerms.fq.splice(i, 1);
             }
         };
         if (this.originatorInput.getValue() !== ''){
-            GeoNode.queryTerms.fq.push('Originator:*' + this.originatorInput.getValue() + '*');
+            GeoNode.queryTerms.fq.push('layer_originator:*' + this.originatorInput.getValue() + '*');
         }
 
         // Remove any DataType filter if there
@@ -225,13 +226,13 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
 
         // Remove any date filter if there
         for(var i=0;i<GeoNode.queryTerms.fq.length;i++){
-            if(GeoNode.queryTerms.fq[i].indexOf('LayerDate') > -1){
+            if(GeoNode.queryTerms.fq[i].indexOf('layer_date') > -1){
                 GeoNode.queryTerms.fq.splice(i, 1);
             }
         };
         var dates = this.dateInput.getDateValues();
         if(dates != '[* TO *]'){
-            GeoNode.queryTerms.fq.push("LayerDate:" + this.dateInput.getDateValues());
+            GeoNode.queryTerms.fq.push("layer_date:" + this.dateInput.getDateValues());
         };
 
         if (this.queryInput.getValue() === ''){
@@ -336,7 +337,7 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
                         '</strong><br/><strong>Source: ' + record.get('layer_originator') +
                         '</strong><br/><strong>Abstract</strong>: ' +
                         the_abstract.substring(0, 250) +
-                        '<br/><strong>Date</strong>: ' + record.get('LayerDateType') + '"';
+                        '<br/><strong>Date</strong>: ' + record.get('layer_datetype') + '"';
                     return $.parseJSON(record.get('is_public')) ?  value : '<span class="unviewable-layer"></span>' + '  ' + value;
 
                 }
@@ -344,7 +345,7 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
             {
                 header: this.originatorText,
                 dataIndex: 'layer_originator',
-                id: 'originator',
+                id: 'layer_originator',
                 width: 100,
                 sortable: true
             },
@@ -353,10 +354,10 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
                 id: 'date',
                 width: 50,
                 sortable: true,
-                dataIndex: 'LayerDate',
-                sortBy: 'LayerDate',
+                dataIndex: 'layer_date',
+                sortBy: 'layer_date',
                 renderer: function(value, metaData, record, rowIndex, colIndex, store){
-                    var date = new Date(record.get('LayerDate'));
+                    var date = new Date(record.get('layer_date'));
                     return date.getFullYear() || 'None';
                 }
             }

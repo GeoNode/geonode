@@ -2237,9 +2237,13 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             renderTo: 'search_form',
             trackSelection: true,
             permalinkURL: '/data/search',
+            // 0. use this one in production
             searchURL: "/solr",
-            // if local use the following searchURL
-            //searchURL: "http://192.168.33.15:8983/solr/hypermap/select",
+            // 1. when developing use the following searchURLs
+            // 1.1 this one in case using HH on dev server
+            // searchURL: "http://192.168.33.15:8983/solr/hypermap/select",
+            // 1.2 this one in case using HH on prod server
+            // searchURL: "http://54.221.223.91:8983/solr/hypermap/select",
             layerDetailURL: '/data/search/detail',
             constraints: [this.bbox],
             searchParams: {'limit':10, 'bbox': llbounds.toBBOX()},
