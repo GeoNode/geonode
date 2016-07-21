@@ -19,15 +19,51 @@
 #########################################################################
 
 import logging
-import os
 from django.conf import settings
 from geoserver.catalog import FailedRequestError
 from geonode.geoserver.helpers import ogc_server_settings, gs_catalog
+from simplejson import dumps
+from geoserver.store import UnsavedDataStore
 
 logger = logging.getLogger(__name__)
 
 
-def create_geoserver_db_featurestore(store_type=None, store_name=None):
+class UnsavedGeogigDataStore(UnsavedDataStore):
+    save_method = "PUT"
+
+    def __init__(self, catalog, name, workspace, author_name, author_email):
+        self.author_name = author_name
+        self.author_email = author_email
+        super(UnsavedGeogigDataStore, self).__init__(catalog, name, workspace)
+
+    def message(self):
+        message = {
+            "authorName": self.author_name,
+            "authorEmail": self.author_email
+        }
+        if settings.OGC_SERVER['default']['PG_GEOGIG'] is True:
+            datastore = settings.OGC_SERVER['default']['DATASTORE']
+            pg_geogig_db = settings.DATABASES[datastore]
+            message["dbHost"] = pg_geogig_db['HOST']
+            message["dbPort"] = pg_geogig_db['PORT'] or '5432'
+            message["dbName"] = pg_geogig_db['NAME']
+            message["dbSchema"] = pg_geogig_db['SCHEMA']
+            message["dbUser"] = pg_geogig_db['USER']
+            message["dbPassword"] = pg_geogig_db['PASSWORD']
+        else:
+            message["parentDirectory"] = \
+                ogc_server_settings.GEOGIG_DATASTORE_DIR
+        return dumps(message)
+
+    @property
+    def href(self):
+        return ("%sgeogig/repos/%s/init.json"
+                % (ogc_server_settings.LOCATION, self.name))
+
+
+def create_geoserver_db_featurestore(
+        store_type=None, store_name=None,
+        author_name='admin', author_email='admin@geonode.org'):
     cat = gs_catalog
     dsname = ogc_server_settings.DATASTORE
     # get or create datastore
@@ -43,21 +79,9 @@ def create_geoserver_db_featurestore(store_type=None, store_name=None):
             return None
     except FailedRequestError:
         if store_type == 'geogig':
-            if store_name is None and hasattr(
-                    settings,
-                    'GEOGIG_DATASTORE_NAME'):
-                store_name = settings.GEOGIG_DATASTORE_NAME
-            logger.info(
-                'Creating target datastore %s' %
-                settings.GEOGIG_DATASTORE_NAME)
-            ds = cat.create_datastore(store_name)
-            ds.type = "GeoGig"
-            ds.connection_parameters.update(
-                geogig_repository=os.path.join(
-                    ogc_server_settings.GEOGIG_DATASTORE_DIR,
-                    store_name),
-                branch="master",
-                create="true")
+            ds = UnsavedGeogigDataStore(
+                cat, store_name, cat.get_default_workspace(),
+                author_name, author_email)
             cat.save(ds)
             ds = cat.get_store(store_name)
         else:

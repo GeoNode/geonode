@@ -515,6 +515,7 @@ OGC_SERVER = {
         'LOG_FILE': '%s/geoserver/data/logs/geoserver.log' % os.path.abspath(os.path.join(PROJECT_ROOT, os.pardir)),
         # Set to name of database in DATABASES dictionary to enable
         'DATASTORE': '',  # 'datastore',
+        'PG_GEOGIG': False,
         'TIMEOUT': 10  # number of seconds to allow for HTTP requests
     }
 }

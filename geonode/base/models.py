@@ -524,6 +524,8 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin):
             legends_link = self.link_set.get(name='Legend')
         except Link.DoesNotExist:
             return None
+        except Link.MultipleObjectsReturned:
+            return None
         else:
             return legends_link
 
