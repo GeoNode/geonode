@@ -151,15 +151,6 @@ The resulting configuration file should look like this:::
     # Default preview library
     #LAYER_PREVIEW_LIBRARY = 'geoext'
 
-Create GeoNode Superuser
-========================
-
-Now create the admin user for GeoNode running the following:::
-
-    python manage.py createsuperuser
-
-You will be prompted for the username, email address and passoword for the user
-
 Initialize the Database
 =======================
 
@@ -181,6 +172,15 @@ Test that you are able to connect to the database as follows:::
 and::
 
     psql -U geonode geonode_data
+
+Create GeoNode Superuser
+========================
+
+Now create the admin user for GeoNode running the following:::
+
+    python manage.py createsuperuser
+
+You will be prompted for the username, email address and passoword for the user
 
 Test the installation
 =====================
