@@ -120,6 +120,11 @@ them:::
     chmod -Rf 777 /home/geonode/geonode/geonode/uploaded/layers
     sudo chown www-data:www-data /home/geonode/geonode/geonode/static_root/
 
+Dowload GeoNode data to be served by Apache. You will be prompted for confirmation::
+
+    cd /home/geonode/geonode/
+    sudo -u geonode python manage.py collectstatic
+
 SSL configuration
 -----------------
 
