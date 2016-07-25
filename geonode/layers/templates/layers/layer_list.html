@@ -2,6 +2,7 @@
 {% load i18n %}
 {% load staticfiles %}
 {% load url from future %}
+{% load base_tags %}
 
 {% block title %} {% trans "Explore Layers" %} - {{ block.super }} {% endblock %}
 
@@ -9,7 +10,10 @@
 
 {% block body %}
 <div class="page-header">
+  {% user_can_add_resource_base as add_tag %}
+  {% if add_tag %}
   <a href="{% url "layer_upload" %}" class="btn btn-primary pull-right">{% trans "Upload Layers" %}</a>
+  {% endif %}
   <h2 class="page-title">{% trans "Explore Layers" %}</h2>
 </div>
   {% with include_type_filter='true' %}

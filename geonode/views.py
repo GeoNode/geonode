@@ -34,6 +34,11 @@ from geonode import get_version
 from geonode.base.templatetags.base_tags import facets
 from geonode.groups.models import GroupProfile
 
+from django.shortcuts import render_to_response
+from geonode.security.views import _perms_info_json
+
+from geonode.documents.models import get_related_documents
+
 
 class AjaxLoginForm(forms.Form):
     password = forms.CharField(widget=forms.PasswordInput)
@@ -104,6 +109,12 @@ def ajax_lookup(request):
 
 
 def err403(request):
+
+    import logging
+    logger = logging.getLogger("views.py")
+    logger = logging.getLogger(__name__)
+    logger.error(str(request.__dict__))
+
     if not request.user.is_authenticated():
         return HttpResponseRedirect(
             reverse('account_login') +

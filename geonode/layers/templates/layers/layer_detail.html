@@ -19,12 +19,14 @@
   {% if OPENGRAPH_ENABLED %}
     {% include "base/_resourcebase_opengraph.html" %}
   {% endif %}
-
+ {% get_obj_perms request.user for resource.get_self_resource as "perms" %}
+ {% if "view_resourcebase" in perms %}
   {% if preview == 'geoext' %}
     {% include "layers/layer_geoext_map.html" %}
   {% else %}
     {% include "layers/layer_leaflet_map.html" %}
   {% endif %}
+ {% endif %}
 {{ block.super }}
 {% endblock %}
 
@@ -38,11 +40,15 @@
 
 <div class="row">
   <div class="col-md-8">
-
+        {% get_obj_perms request.user for resource.get_self_resource as "perms" %}
+		{% if "view_resourcebase" in perms %}
     <div id="embedded_map" class="mrg-btm">
       <div id="preview_map"></div>
     </div>
-
+	    {% else %}
+			<h4> You don't have the required permissions to visualize the layer. </h4>
+			<div> However, you can communicate with the point of contact.</div>
+        {% endif %}
     <div class="layer-actions">
       {% include "_actions.html" %}
     </div>
@@ -235,16 +241,16 @@
   </div>
 
   <div class="col-md-4">
-
     <ul class="list-group">
       {% if resource.storeType != "remoteStore" %}
         <li class="list-group-item">
         {% if links %}
+		   {% get_obj_perms request.user for resource.get_self_resource as "perms" %}
+		   {% if "download_resourcebase" in perms %}
            <button class="btn btn-primary btn-md btn-block" data-toggle="modal" data-target="#download-layer">{% trans "Download Layer" %}</button>
-        {% else %}
-          {% if request.user.is_authenticated %}
-          <button class="btn btn-primary btn-md btn-block" id="request-download">{% trans "Request Download" %}</button>
-          {% endif %}
+		   {% else %}
+           <button class="btn btn-primary btn-md btn-block" id="request-download">{% trans "Request Download" %}</button>
+           {% endif %}
         {% endif %}
         </li>
       {% endif %}
@@ -281,7 +287,7 @@
       </a>    
     </li>
 
-    {% if "change_resourcebase_metadata" in perms_list or "change_resourcebase" in perms_list or "delete_resourcebase" in perms_list or "change_layer_style" in layer_perms %}
+    {% if "change_resourcebase_metadata" in perms or "change_resourcebase" in perms or "delete_resourcebase" in perms or "change_layer_style" in layer_perms %}
     <li class="list-group-item">
       <button class="btn btn-primary btn-md btn-block" data-toggle="modal" data-target="#edit-layer">{% trans "Edit Layer" %}</button>
     </li>
@@ -294,7 +300,7 @@
           </div>
           <div class="modal-body">
             <div class="row edit-modal">
-              {% if "change_resourcebase_metadata" in perms_list %}
+              {% if "change_resourcebase_metadata" in perms %}
               <div class="col-sm-3">
                 <i class="fa fa-list-alt fa-3x"></i>
                 <h4>{% trans "Metadata" %}</h4>
@@ -302,7 +308,7 @@
               </div>
               {% endif %}
               {% if GEOSERVER_BASE_URL and not resource.service %}
-                {% if "change_layer_style" in layer_perms %}
+                {% if "change_layer_style" in "layer_perms" %}
                 <div class="col-sm-3">
                   <i class="fa fa-tint fa-3x"></i>
                   <h4>{% trans "Styles" %}</h4>
@@ -313,24 +319,24 @@
                 </div>
                 {% endif %}
               {% endif %}
-              {% if "change_resourcebase" in perms_list %}
+              {% if "change_resourcebase" in perms %}
               <div class="col-sm-3">
                 <i class="fa fa-photo fa-3x"></i>
                 <h4>{% trans "Thumbnail" %}</h4>
                 <a class="btn btn-default btn-block btn-xs" href="#" id="set_thumbnail">{% trans "Set" %}</a>
               </div>
               {% endif %}
-              {% if "change_resourcebase" in perms_list or "delete_resourcebase" in perms_list or "change_layer_data" in layer_perms %}
+              {% if "change_resourcebase" in perms or "delete_resourcebase" in perms or "change_layer_data" in "layer_perms" %}
               <div class="col-sm-3">
                 <i class="fa fa-square-o fa-3x rotate-45"></i>
                 <h4>{% trans "Layer" %}</h4>
-                {% if "change_resourcebase" in perms_list and not resource.service %}
+                {% if "change_resourcebase" in perms and not resource.service %}
                 <a class="btn btn-default btn-block btn-xs" href="{% url "layer_replace" resource.service_typename %}">{% trans "Replace" %}</a>
                 {% endif %}
-                {% if resource.storeType == 'dataStore' and "change_layer_data" in layer_perms %}
+                {% if resource.storeType == 'dataStore' and "change_layer_data" in "layer_perms" %}
                 <a class="btn btn-default btn-block btn-xs" href="{% url "new_map" %}?layer={{resource.service_typename}}">{% trans "Edit data" %}</a>
                 {% endif %}
-                {% if "delete_resourcebase" in perms_list %}
+                {% if "delete_resourcebase" in perms %}
                 <a class="btn btn-danger btn-block btn-xs" href="{% url "layer_remove" resource.service_typename %}">{% trans "Remove" %}</a>
                 {% endif %}
               </div>
@@ -382,7 +388,7 @@
       </div>
     </div>
 
-    {% if resource.get_legend %}
+    {% if resource.get_legend and "view_resourcebase" in perms %}
     <li class="list-group-item">
       <h4 class="list-group-item-heading">{%trans "Legend" %}</h4>
       <p>{{ style.sld_title }}</p>
@@ -393,6 +399,8 @@
       {% endif %}
     </li>
     {% endif %}
+	
+	{% if "view_resourcebase" in perms %}
     <li class="list-group-item">
       <h4>{% trans "Maps using this layer" %}</h4>
       {% if resource.maps %}
@@ -406,11 +414,14 @@
           {% endfor %}
         </ul>
     </li>
+	{% if "add_resourcebase" in perms %}
     <li class="list-group-item">
       <h4>{% trans "Create a map using this layer" %}</h4>
       <p>{% trans "Click the button below to generate a new map based on this layer." %}</p>
         <a href="{% url "new_map" %}?layer={{resource.service_typename}}" class="btn btn-primary btn-block">{% trans "Create a Map" %}</a>
     </li>
+	  {% endif %}
+	{% endif %}
 
     {% if documents.count > 0 %}
     <li class="list-group-item">
@@ -425,6 +436,8 @@
     {% endif %}
 
     {% if user.is_authenticated %}
+	{% get_obj_perms request.user for resource.get_self_resource as "perms" %}
+	    {% if "view_resourcebase" in perms %}
     <li class="list-group-item">
       <h4>{% trans "Styles" %}</h4>
        <p>{% trans "The following styles are associated with this layer. Choose a style to view it in the preview map." %}</p>
@@ -444,10 +457,11 @@
         {% endfor %}
       </ul>
     </li>
+	    {% endif %}
     {% endif %}
 
     {% if GEONODE_SECURITY_ENABLED %}
-    {% if "change_resourcebase_permissions" in perms_list %}
+    {% if "change_resourcebase_permissions" in perms %}
     <li class="list-group-item">
       <h4>{% trans "Permissions" %}</h4>
       <p>{% trans "Click the button below to change the permissions of this layer." %}</p>

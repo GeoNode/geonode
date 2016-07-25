@@ -38,6 +38,7 @@ from tastypie.utils.mime import build_content_type
 
 from geonode.layers.models import Layer
 from geonode.maps.models import Map
+from geonode.maps.utils import is_map_viewable_by_user_utils
 from geonode.documents.models import Document
 from geonode.base.models import ResourceBase
 
@@ -46,6 +47,7 @@ from .authorization import GeoNodeAuthorization
 from .api import TagResource, RegionResource, ProfileResource, \
     TopicCategoryResource, \
     FILTER_TYPES
+
 
 if settings.HAYSTACK_SEARCH:
     from haystack.query import SearchQuerySet  # noqa
@@ -304,25 +306,27 @@ class CommonModelApi(ModelResource):
                         bbox_right__lte=left))
 
         # Apply sort
-        if sort.lower() == "-date":
-            sqs = (
-                SearchQuerySet() if sqs is None else sqs).order_by("-date")
-        elif sort.lower() == "date":
-            sqs = (
-                SearchQuerySet() if sqs is None else sqs).order_by("date")
-        elif sort.lower() == "title":
-            sqs = (SearchQuerySet() if sqs is None else sqs).order_by(
-                "title_sortable")
-        elif sort.lower() == "-title":
-            sqs = (SearchQuerySet() if sqs is None else sqs).order_by(
-                "-title_sortable")
-        elif sort.lower() == "-popular_count":
-            sqs = (SearchQuerySet() if sqs is None else sqs).order_by(
-                "-popular_count")
-        else:
-            sqs = (
-                SearchQuerySet() if sqs is None else sqs).order_by("-date")
+        # if sort.lower() == "-date":
+        #     sqs = (
+        #         SearchQuerySet() if sqs is None else sqs).order_by("-date")
+        # elif sort.lower() == "date":
+        #     sqs = (
+        #         SearchQuerySet() if sqs is None else sqs).order_by("date")
+        # elif sort.lower() == "title":
+        #     sqs = (SearchQuerySet() if sqs is None else sqs).order_by(
+        #         "title_sortable")
+        # elif sort.lower() == "-title":
+        #     sqs = (SearchQuerySet() if sqs is None else sqs).order_by(
+        #         "-title_sortable")
+        # elif sort.lower() == "-popular_count":
+        #     sqs = (SearchQuerySet() if sqs is None else sqs).order_by(
+        #         "-popular_count")
+        # else:
+        #     sqs = (
+        #         SearchQuerySet() if sqs is None else sqs).order_by("-date")
 
+        sqs = (
+                SearchQuerySet() if sqs is None else sqs).order_by("-modified")
         return sqs
 
     def get_search(self, request, **kwargs):
@@ -420,10 +424,12 @@ class CommonModelApi(ModelResource):
             bundle=base_bundle,
             **self.remove_api_resource_names(kwargs))
         sorted_objects = self.apply_sorting(objects, options=request.GET)
+        li_obj = self.build_list_from_resource_obj(sorted_objects)
+        sorted_permit_objects = self.apply_perm_sorting(request, li_obj)
 
         paginator = self._meta.paginator_class(
             request.GET,
-            sorted_objects,
+            sorted_permit_objects,
             resource_uri=self.get_resource_uri(),
             limit=self._meta.limit,
             max_limit=self._meta.max_limit,
@@ -435,17 +441,57 @@ class CommonModelApi(ModelResource):
             to_be_serialized)
         return self.create_response(request, to_be_serialized)
 
-    def create_response(
-            self,
-            request,
-            data,
-            response_class=HttpResponse,
-            **response_kwargs):
-        """
-        Extracts the common "which-format/serialize/return-response" cycle.
+    def apply_perm_sorting(self, request, objs):
 
-        Mostly a useful shortcut/hook.
-        """
+        permitted_view_id = get_objects_for_user(
+            request.user,
+            'base.view_resourcebase').values_list(
+            'id',
+            flat=True)
+
+        permited_change_perms = get_objects_for_user(
+            request.user,
+            'base.change_resourcebase_permissions').values_list(
+            'id',
+            flat=True)
+
+        obj_no_perms = []
+        obj_perms = []
+
+        # retrieving in the json response the permisions
+        # to view resource 'can_view_resource'
+        # to change resource perms 'can_change_perms'
+        for idx, obj in enumerate(objs):
+            if self.get_resource_type(obj) == "map":
+                c_map = Map.objects.all().get(resourcebase_ptr_id=obj['id'])
+                obj['can_view_resource'] = is_map_viewable_by_user_utils(request.user, c_map)
+
+                # for a map we only check if user has right to change perms for the map itself
+                if obj['id'] in permited_change_perms:
+                    obj['can_change_perms'] = True
+                else:
+                    obj['can_change_perms'] = False
+
+                if obj['can_view_resource']:
+                    obj_perms.append(obj)
+                else:
+                    obj_no_perms.append(obj)
+            else:
+                if obj['id'] in permitted_view_id:
+                    obj['can_view_resource'] = True
+                    if obj['id'] in permited_change_perms:
+                        obj['can_change_perms'] = True
+                    else:
+                        obj['can_change_perms'] = False
+                    obj_perms.append(obj)
+                else:
+                    obj['can_view_resource'] = False
+                    obj['can_change_perms'] = False
+                    obj_no_perms.append(obj)
+        obj_perms.extend(obj_no_perms)
+        return obj_perms
+
+    def build_list_from_resource_obj(self, objs):
         VALUES = [
             # fields in the db
             'id',
@@ -466,12 +512,21 @@ class CommonModelApi(ModelResource):
             'rating',
         ]
 
-        if isinstance(
-                data,
-                dict) and 'objects' in data and not isinstance(
-                data['objects'],
-                list):
-            data['objects'] = list(data['objects'].values(*VALUES))
+        l_objs = list(objs.values(*VALUES))
+
+        return l_objs
+
+    def create_response(
+            self,
+            request,
+            data,
+            response_class=HttpResponse,
+            **response_kwargs):
+        """
+        Extracts the common "which-format/serialize/return-response" cycle.
+
+        Mostly a useful shortcut/hook.
+        """
 
         desired_format = self.determine_format(request)
         serialized = self.serialize(request, data, desired_format)
@@ -480,6 +535,20 @@ class CommonModelApi(ModelResource):
             content=serialized,
             content_type=build_content_type(desired_format),
             **response_kwargs)
+
+    def get_resource_type(self, obj):
+        detail_url = obj['detail_url']
+        if detail_url is not None:
+            if detail_url.find("/maps/") != -1:
+                return "map"
+            elif detail_url.find("/layers/") != -1:
+                return "layer"
+            elif detail_url.find("/documents/") != -1:
+                return "document"
+            else:
+                return "unknown"
+        else:
+            return "notype"
 
     def prepend_urls(self):
         if settings.HAYSTACK_SEARCH:

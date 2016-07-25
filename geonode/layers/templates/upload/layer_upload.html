@@ -1,6 +1,7 @@
 {% extends "upload/layer_upload_base.html" %}
 {% load i18n %}
 {% load staticfiles %}
+{% load base_tags %}
 
 {% block title %} {% trans "Upload Layer"  %} - {{ block.super }}  {% endblock %}
 
@@ -34,6 +35,10 @@
   </script>
 </div>
 <div class="row">
+
+	{% user_can_add_resource_base as add_tag %}
+    {% if add_tag %}
+	
   <div class="col-md-8">
     {% if incomplete %}
     <section class="widget" id="incomplete-download-list">
@@ -114,6 +119,10 @@
       {% include "_permissions.html" %}
     </form>
   </div>
+  {% endif %}
+  {% else %}
+      <h4>You're not part of the site contributors.</h4>
+	  <h5>Please contact the website administrator for more informations.</h5>
   {% endif %}
 </div>
 {% endblock %}

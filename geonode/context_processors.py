@@ -71,7 +71,7 @@ def resource_urls(request):
         SKIP_PERMS_FILTER=getattr(
             settings,
             'SKIP_PERMS_FILTER',
-            False),
+            True),
         HAYSTACK_FACET_COUNTS=getattr(
             settings,
             'HAYSTACK_FACET_COUNTS',

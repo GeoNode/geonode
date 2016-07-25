@@ -1,4 +1,7 @@
+{% load base_tags %}
+{% user_can_add_resource_base as add_tag %}
 {% verbatim %}
+
 <div class="row">
   <article ng-repeat="item in results" resource_id="{{ item.id }}" ng-cloak class="ng-cloak">
     <div class="col-xs-12 item-container">
@@ -8,8 +11,10 @@
         </div>
         <div class="col-xs-8 item-details">
           {% endverbatim %}
-          <button class="btn btn-default btn-xs pull-right" ng-if="cart" ng-click="cart.toggleItem(item)"><i ng-class="cart.getFaClass(item.id)" class="fa fa-lg"></i></button>
-          {% verbatim %}
+		  {% if add_tag %}
+          <button class="btn btn-default btn-xs pull-right" ng-if="cart && item.can_change_perms && item.can_view_resource" ng-click="cart.toggleItem(item)"><i ng-class="cart.getFaClass(item.id)" class="fa fa-lg"></i></button>
+          {% endif %}
+		  {% verbatim %}
           <p class="item-meta"><span class="item-category">{{ item.category__gn_description }}</span></p>
           <h4><a href="{{ item.detail_url }}">{{ item.title }}</a></h4>
           <p class="abstract">{{ item.abstract | limitTo: 300 }}{{ item.abstract.length  > 300 ? '...' : ''}}</p>
@@ -21,14 +26,17 @@
                 <li><a href="{{ item.detail_url }}"><i class="fa fa-eye"></i>{{ item.popular_count }}</a></li>
                 <li><a href="{{ item.detail_url }}#share"><i class="fa fa-share"></i>{{ item.share_count }}</a></li>
                 <li><a href="{{ item.detail_url }}#rate"><i class="fa fa-star"></i>{{ item.rating }}</a></li>
-                <li><a ng-if="item.detail_url.indexOf('/layers/') > -1" href="{% endverbatim %}{% url "new_map" %}?layer={% verbatim %}{{ item.detail_url.substring(8) }}">
+                {% endverbatim %}{% if add_tag %}{% verbatim %}
+				<li><a ng-if="item.detail_url.indexOf('/layers/') > -1" href="{% endverbatim %}{% url "new_map" %}?layer={% verbatim %}{{ item.detail_url.substring(8) }}">
                   <i class="fa fa-map-marker"></i>Create a Map</a>
                 </li>
                 <li><a ng-if="item.detail_url.indexOf('/maps/') > -1" href="/maps/{{item.id}}/view"><i class="fa fa-map-marker"></i>View Map</a></li>
+				{% endverbatim %}{% endif %}{% verbatim %}
               </ul>
             </div>
           </div>
         </div>
+		<span ng-if="!item.can_view_resource"  class="pull-right" style="margin-right:15px"><i class="fa fa-lock"></i> RESTRICTED ACCESS </span>
       </div>
     </div>
   </article>

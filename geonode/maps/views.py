@@ -126,8 +126,9 @@ def map_detail(request, mapid, snapshot=None, template='maps/map_detail.html'):
         'config': config,
         'resource': map_obj,
         'layers': layers,
-        'perms_list': get_perms(request.user, map_obj.get_self_resource()),
-        'permissions_json': _perms_info_json(map_obj),
+        # 'perms_list': get_perms(request.user, map_obj.get_self_resource()),
+        # 'permissions_json': _perms_info_json(map_obj),
+        'permissions_json': {},
         "documents": get_related_documents(map_obj),
     }
 
@@ -632,7 +633,8 @@ def map_download(request, mapid, template='maps/map_download.html'):
             else:
                 ownable_layer = Layer.objects.get(typename=lyr.name)
                 if not request.user.has_perm(
-                        'download_resourcebase',
+                        # 'download_resourcebase',
+                        'view_resourcebase',
                         obj=ownable_layer.get_self_resource()):
                     locked_layers.append(lyr)
                 else:

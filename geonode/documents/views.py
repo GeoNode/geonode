@@ -112,8 +112,9 @@ def document_detail(request, docid):
             name__in=settings.DOWNLOAD_FORMATS_METADATA)
 
         context_dict = {
-            'perms_list': get_perms(request.user, document.get_self_resource()),
-            'permissions_json': _perms_info_json(document),
+            # 'perms_list': get_perms(request.user, document.get_self_resource()),
+            # 'permissions_json': _perms_info_json(document),
+            'permissions_json': {},
             'resource': document,
             'metadata': metadata,
             'imgtypes': IMGTYPES,
