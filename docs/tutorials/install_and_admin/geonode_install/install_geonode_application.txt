@@ -97,7 +97,7 @@ Let's download GeoNode from the main GeoNode repository on GitHub:
 
 ::
 
-    git clone https://github.com/GeoNode/geonode.git --branch 2.6.x
+    git clone https://github.com/GeoNode/geonode.git --branch 2.4.x
     sudo useradd -m geonode
     sudo mv ~/geonode /home/geonode/
 
