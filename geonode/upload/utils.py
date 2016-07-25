@@ -45,11 +45,11 @@ class UnsavedGeogigDataStore(UnsavedDataStore):
             datastore = settings.OGC_SERVER['default']['DATASTORE']
             pg_geogig_db = settings.DATABASES[datastore]
             message["dbHost"] = pg_geogig_db['HOST']
-            message["dbPort"] = pg_geogig_db['PORT'] or '5432'
+            message["dbPort"] = pg_geogig_db.get('PORT', '5432')
             message["dbName"] = pg_geogig_db['NAME']
-            message["dbSchema"] = pg_geogig_db['SCHEMA']
             message["dbUser"] = pg_geogig_db['USER']
             message["dbPassword"] = pg_geogig_db['PASSWORD']
+            message["dbSchema"] = pg_geogig_db.get('SCHEMA', 'public')
         else:
             message["parentDirectory"] = \
                 ogc_server_settings.GEOGIG_DATASTORE_DIR

@@ -435,13 +435,6 @@ AGON_RATINGS_CATEGORY_CHOICES = {
 
 # Activity Stream
 ACTSTREAM_SETTINGS = {
-    'MODELS': (
-        'people.Profile',
-        'layers.layer',
-        'maps.map',
-        'dialogos.comment',
-        'documents.document',
-        'services.service'),
     'FETCH_RELATIONS': True,
     'USE_PREFETCH': False,
     'USE_JSONFIELD': True,
