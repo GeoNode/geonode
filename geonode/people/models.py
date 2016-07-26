@@ -57,25 +57,6 @@ class OrganizationType(enum.Enum):
         OTHER : 'Other',
     }
 
-class OrganizationType_asChar(models.Model):
-    PHIL_LIDAR_1 = "Phil-LiDAR 1 SUC"
-    PHIL_LIDAR_2 = "Phil-LiDAR 2 SUC"
-    GOVERNMENT_AGENCY = "Government Agency"
-    ACADEME = "Academe"
-    NGO_INTERNATIONAL = "International NGO"
-    NGO_LOCAL = "Local NGO"
-    PRIVATE = "Private Insitution"
-    OTHER = "Other"
-    Choices = (
-        (PHIL_LIDAR_1, 'Phil-LiDAR 1 SUC'),
-        (PHIL_LIDAR_2, 'Phil-LiDAR 2 SUC'),
-        (GOVERNMENT_AGENCY, 'Government Agency'),
-        (ACADEME, 'Academe'),
-        (NGO_INTERNATIONAL, 'International NGO'),
-        (NGO_LOCAL, 'Local NGO'),
-        (PRIVATE, 'Private Insitution'),
-        (OTHER, 'Other'),
-    )
 
 if 'notification' in settings.INSTALLED_APPS:
     from notification import models as notification

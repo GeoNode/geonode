@@ -13,20 +13,20 @@ $(function() {
     // Initial values
     $academe.toggle(false);
     $other.toggle(false);
-    if ($org_type_checked.val() == 'Academe') {
+    if ($org_type_checked.val() == '3') {
       $academe.toggle(true);
-    }else if ($org_type_checked.val() == 'Other') {
+    }else if ($org_type_checked.val() == '7') {
       $other.toggle(true);
     }
     // $org_type.on('change', function() {
     $org_type.change( function() {
-        // if ($(this).val() == 'Academe'){
-        if ($(this).is(':checked') && $(this).val() == 'Academe'){
+        // if ($(this).val() == '3'){
+        if ($(this).is(':checked') && $(this).val() == '3'){
             $academe.slideDown();
         } else {
             $academe.slideUp();
         }
-        if ($(this).is(':checked') && $(this).val() == 'Other'){
+        if ($(this).is(':checked') && $(this).val() == '7'){
             $other.slideDown();
         } else {
             $other.slideUp();
