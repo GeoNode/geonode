@@ -327,6 +327,7 @@ def delete_from_postgis(resource_name):
     import psycopg2
     db = ogc_server_settings.datastore_db
     conn = None
+    port = str(db['PORT'])
     try:
         conn = psycopg2.connect(
             "dbname='" +
@@ -336,7 +337,7 @@ def delete_from_postgis(resource_name):
             "'  password='" +
             db['PASSWORD'] +
             "' port=" +
-            db['PORT'] +
+            port +
             " host='" +
             db['HOST'] +
             "'")
