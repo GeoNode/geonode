@@ -60,7 +60,7 @@ import urllib
 import urllib2
 from zipfile import ZipFile
 import re
-from geonode.upload.utils import UnsavedGeogigDataStore
+from geonode.upload.utils import make_geogig_rest_payload
 
 GEONODE_USER = 'test_uploader'
 GEONODE_PASSWD = 'test_uploader'
@@ -706,32 +706,26 @@ class TestUploadDBDataStore(UploaderBase):
 
 class GeogigTest(unittest.TestCase):
 
-    def test_geogig(self):
+    def test_payload_creation(self):
         '''Test formation of REST call to geoserver's geogig API'''
         author_name = "test"
         author_email = "testuser@geonode.org"
-        cat = gs_catalog
+
+        # Test filebased geogig
         settings.OGC_SERVER['default']['PG_GEOGIG'] = False
-
-        fb_store_name = "test_fb_geogig"
-        fb_geogig = UnsavedGeogigDataStore(
-            cat, fb_store_name, cat.get_default_workspace(),
-            author_name, author_email)
-
         fb_message = {
             "authorName": author_name,
             "authorEmail": author_email,
             "parentDirectory":
             settings.OGC_SERVER['default']['GEOGIG_DATASTORE_DIR']
         }
-        fb_href = ("%sgeogig/repos/%s/init.json" %
-                   (settings.OGC_SERVER['default']['LOCATION'], fb_store_name))
+        fb_payload = make_geogig_rest_payload(author_name, author_email)
+        self.assertDictEqual(fb_message, fb_payload)
+        self.assertEquals(json.dumps(fb_message, sort_keys=True),
+                          json.dumps(fb_payload, sort_keys=True))
 
-        self.assertEquals(json.loads(fb_geogig.message()), fb_message)
-        self.assertEquals(fb_geogig.href, fb_href)
-
+        # Test postgres based geogig
         settings.OGC_SERVER['default']['PG_GEOGIG'] = True
-        pg_store_name = "test_pg_geogig"
         # Manually override the settings to simulate the REST call for postgres
         settings.DATABASES['test-pg'] = {
             "HOST": "localhost",
@@ -742,9 +736,6 @@ class GeogigTest(unittest.TestCase):
             "PASSWORD": "geogig"
         }
         settings.OGC_SERVER['default']['DATASTORE'] = 'test-pg'
-        pg_geogig = UnsavedGeogigDataStore(
-            cat, pg_store_name, cat.get_default_workspace(),
-            author_name, author_email)
 
         pg_message = {
             "authorName": author_name,
@@ -756,8 +747,8 @@ class GeogigTest(unittest.TestCase):
             "dbUser": settings.DATABASES['test-pg']['USER'],
             "dbPassword": settings.DATABASES['test-pg']['PASSWORD']
         }
-        pg_href = ("%sgeogig/repos/%s/init.json" %
-                   (settings.OGC_SERVER['default']['LOCATION'], pg_store_name))
 
-        self.assertEquals(json.loads(pg_geogig.message()), pg_message)
-        self.assertEquals(pg_geogig.href, pg_href)
+        pg_payload = make_geogig_rest_payload(author_name, author_email)
+        self.assertDictEqual(pg_message, pg_payload)
+        self.assertEquals(json.dumps(pg_message, sort_keys=True),
+                          json.dumps(pg_payload, sort_keys=True))
