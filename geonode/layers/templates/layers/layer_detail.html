@@ -126,7 +126,7 @@
         {% paginate %}
       </article>
      {% endif %}
-    
+
       <article id="attributes" class="tab-pane">
         {% if resource.is_mosaic %}
             <table class="table table-striped table-bordered table-condensed">
@@ -275,10 +275,10 @@
       {% get_obj_perms request.user for resource.layer as "layer_perms" %}
     {% endif %}
 
-    <li class="list-group-item"> 
+    <li class="list-group-item">
       <a href="{% url "layer_metadata_detail" resource.typename %}">
-        <button class="btn btn-primary btn-md btn-block">{% trans "Metadata Detail" %}</button> 
-      </a>    
+        <button class="btn btn-primary btn-md btn-block">{% trans "Metadata Detail" %}</button>
+      </a>
     </li>
 
     {% if "change_resourcebase_metadata" in perms_list or "change_resourcebase" in perms_list or "delete_resourcebase" in perms_list or "change_layer_style" in layer_perms %}
@@ -359,12 +359,12 @@
           <div class="modal-body">
 		    <div style="margin-bottom:20px">
 				 <h5 class="modal-title" id="myModalLabel">
-				Full metadata 
+				Full metadata
 				 </h5>
-				<ul>
-					<li><a href="http://{{request.META.HTTP_HOST}}/catalogue/csw_to_extra_format/{{resource.uuid}}/{{resource.title}}.txt"> Text format </a></li>
-					<li><a target="_blank" href="http://{{request.META.HTTP_HOST}}/catalogue/csw_to_extra_format/{{resource.uuid}}/{{resource.title}}.html"> HTML format </a></li>
-				</ul>
+                 <ul>
+ 					<li><a target="_blank" href="../catalogue/csw_to_extra_format/{{resource.uuid}}/{{resource.title}}.txt"> Text format </a></li>
+ 					<li><a target="_blank" href="../catalogue/csw_to_extra_format/{{resource.uuid}}/{{resource.title}}.html"> HTML format </a></li>
+ 				</ul>
 			</div>
 			<h5 class="modal-title" id="myModalLabel">
 			Standard Metadata - XML format
@@ -399,7 +399,7 @@
         <p>{% trans "List of maps using this layer:" %}</p>
         {% endif %}
         <ul class="list-unstyled">
-          {% for maplayer in resource.maps %} 
+          {% for maplayer in resource.maps %}
             <li><a href="{{ maplayer.map.get_absolute_url }}">{{ maplayer.map.title }}</a></li>
           {% empty %}
             <li>{% trans "This layer is not currently used in any maps." %}</li>
