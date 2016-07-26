@@ -44,7 +44,7 @@
       <p><a href="{{ resource.doc_url }}" target="_blank">Download the {{ resource }} document.</a> <small>({% trans 'External Resource' %})</small></p>
       {%  endif %}
     {%  endif %}
-       
+
     <div class="documents-actions">
       {% include "_actions.html" %}
     </div>
@@ -55,11 +55,11 @@
       {% block social_links %}
         {% include "social_links.html" %}
       {% endblock %}
-        
+
       <article id="comments" class="tab-pane">
       {% include "_comments.html" %}
       </article>
-        
+
       <article id="rate" class="tab-pane">
         <!-- TODO: Move this to a reusable template snippet -->
         {% if request.user.is_authenticated %}
@@ -88,7 +88,7 @@
         <a href="{% url "document_metadata_detail" resource.id %}">
             <button class="btn btn-primary btn-md btn-block">{% trans "Metadata Detail" %}</button>
         </a>
-    </li> 
+    </li>
 
     <ul class="list-group">
       <li class="list-group-item">
@@ -164,13 +164,13 @@
 					Full metadata
 					</h5>
 					<ul style="list-style: outside none none;padding: 0;">
-						<li><a href="https://{{request.META.HTTP_HOST}}/catalogue/csw_to_extra_format/{{resource.uuid}}/{{resource.title}}.txt"> Text format </a></li>
-						<li><a target="_blank" href="https://{{request.META.HTTP_HOST}}/catalogue/csw_to_extra_format/{{resource.uuid}}/{{resource.title}}.html"> HTML format </a></li>
+						<li><a target="_blank" href="../catalogue/csw_to_extra_format/{{resource.uuid}}/{{resource.title}}.txt"> Text format </a></li>
+						<li><a target="_blank" href="../catalogue/csw_to_extra_format/{{resource.uuid}}/{{resource.title}}.html"> HTML format </a></li>
 					</ul>
-				</div>		  
+				</div>
 			  <h5 class="modal-title" id="myModalLabel">
 			  Standard Metadata - XML format
-			  </h5>	
+			  </h5>
               <ul style="list-style: outside none none;padding: 0;">
                 {% for link in metadata %}
                 <li><a href="{{ link.url }}">{{ link.name }}</a></li>
