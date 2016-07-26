@@ -163,7 +163,7 @@ class DataRequestProfileForm(forms.ModelForm):
         return fname
 
     def clean_middle_name(self):
-        
+
         mname = self.cleaned_data.get('middle_name').strip()
         if len(mname)<1:
             mname = '_'
@@ -205,7 +205,14 @@ class DataRequestProfileForm(forms.ModelForm):
             raise forms.ValidationError(
                 'This field is required.')
         return funding_source
-
+    def clean_organization_other(self):
+        organization_other = self.cleaned_data.get('organization_other')
+        organization_type = self.cleaned_data.get('organization_type')
+        if (organization_type == OrganizationType.OTHER and
+                not organization_other):
+            raise forms.ValidationError(
+                'This field is required.')
+        return organization_other
     #def clean_letter_file(self):
     #    letter_file = self.cleaned_data.get('letter_file')
     #    split_filename =  os.path.splitext(str(letter_file.name))
