@@ -170,7 +170,7 @@ class DataRequestProfile(TimeStampedModel):
         help_text=_('Organization type based on Phil-LiDAR1 Data Distribution Policy')
     )
     organization_other = models.CharField(
-        _('Other Organization Type'),
+        _('If Other, please specify'),
         max_length=255,
         blank=True,
         null=True,

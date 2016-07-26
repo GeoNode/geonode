@@ -8,7 +8,7 @@ $(function() {
     var $form2 = $org_type.closest('form');
     var $noncommercial = $form.find('fieldset.noncommercial-fieldset');
     var $academe = $form2.find('fieldset.academe-fieldset');
-    var $other = $form2.find('fieldset.other-fieldset');
+    var $other = $form2.find('div#div_id_organization_other');
 
     // Initial values
     $academe.toggle(false);

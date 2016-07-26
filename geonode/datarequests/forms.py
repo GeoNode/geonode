@@ -128,13 +128,12 @@ class DataRequestProfileForm(forms.ModelForm):
                     Field('is_consultant'),
                     css_class='academe-fieldset',
                 ),
-                Fieldset('Other',
+
                     Div(
                         Field('organization_other', css_class='form-control'),
                         css_class='form-group'
                     ),
-                    css_class='other-fieldset',
-                ),
+
                 Div(
                     Field('location', css_class='form-control'),
                     css_class='form-group'
