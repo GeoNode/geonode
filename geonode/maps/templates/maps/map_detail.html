@@ -199,7 +199,7 @@
           <h4>{% trans "Map WMS" %}</h4>
           <dl>{% if resource.layer_group %}
             <dt>{% trans "WMS layer group for local map layers" %}:</dt>
-            <dd><em>{{ resource.layer_group.name }}</em> ({% trans "on" %} <a href="{{ ows }}?service=WMS&request=GetCapabilities">{% trans "local OWS" %}</a>)</dd>
+            <dd><em>{{ resource.layer_group.catalog.name }}</em> ({% trans "on" %} <a href="{{ resource.layer_group.ows }}?service=WMS&request=GetCapabilities">{% trans "local OWS" %}</a>)</dd>
             {% endif %}</dl>
           {% if "change_resourcebase" in perms_list %}
           <p>{% trans "Publish local map layers as WMS layer group" %}</p>
@@ -257,7 +257,7 @@
 
         .done(function(data) {
           layerGroupElTpl = "<dt>WMS layer group for local map layers:</dt> \
-            <dd><em>{{layerGroupName}}</em> (on <a href='{{ows}}?request=GetCapabilities'>local OWS</a>)</dd>";
+            <dd><em>{{layerGroupName}}</em> (on <a href='{{ows}}?service=WMS&request=GetCapabilities'>local OWS</a>)</dd>";
           $.each(data, function(key, value) {
             // client-side template hack
             layerGroupElTpl = layerGroupElTpl.replace("{{"+ key + "}}", value);
