@@ -25,7 +25,7 @@ from geonode.cephgeo.models import UserJurisdiction
 from geonode.groups.models import GroupProfile, GroupMember
 from geonode.layers.models import Layer
 from geonode.documents.models import Document
-from geonode.people.models import OrganizationType, Profile, OrganizationType_asChar
+from geonode.people.models import OrganizationType, Profile
 from geonode.utils import resolve_object
 from geonode.base.models import ResourceBase
 from geonode.tasks.mk_folder import create_folder
@@ -162,20 +162,13 @@ class DataRequestProfile(TimeStampedModel):
         default=DATASET_USE_CHOICES.commercial,
         max_length=15,
     )
-    organization_type =  models.CharField(
-        _('Organization Type'),
-        max_length=100,
-        choices=OrganizationType_asChar.Choices,
-        # default=OrganizationType_asChar.OTHER,
-        default="Undefined", #I assigned random default to get rid of --------- as one of the choices
+    organization_type = enum.EnumField(
+        OrganizationType,
+        default=OrganizationType.OTHER,
+        # default="Undefined", #I assigned random default to get rid of --------- as one of the choices
         blank=False,
-        help_text='Organization type based on Phil-LiDAR1 Data Distribution Policy'
+        help_text=_('Organization type based on Phil-LiDAR1 Data Distribution Policy')
     )
-    # organization_type = enum.EnumField(
-    #     OrganizationType,
-    #     default=OrganizationType.OTHER,
-    #     help_text=_('Organization type based on Phil-LiDAR1 Data Distribution Policy')
-    # )
     organization_other = models.CharField(_('Other Organization Type'), max_length=21)
     request_level = models.CharField(
         _('Level of Request'),
