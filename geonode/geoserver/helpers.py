@@ -1529,7 +1529,7 @@ def style_update(request, url):
             layer = Layer.objects.get(typename=layer_name)
             style.LayerStyles.add(layer)
             style.save()
-        if request.method == 'PUT':  # update style in GN
+        elif request.method == 'PUT':  # update style in GN
             style = Style.objects.get(name=style_name)
             style.sld_body = sld_body
             style.sld_url = url
@@ -1538,7 +1538,7 @@ def style_update(request, url):
             style.save()
             for layer in style.LayerStyles.all():
                 layer.save()
-    if request.method == 'DELETE':  # delete style from GN
+    elif request.method == 'DELETE':  # delete style from GN
         style_name = os.path.basename(request.path)
         style = Style.objects.get(name=style_name)
         style.delete()
