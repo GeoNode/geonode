@@ -1526,11 +1526,11 @@ def style_update(request, url):
         if request.method == 'POST':
             style = Style(name=style_name, sld_body=sld_body, sld_url=url)
             style.save()
-            layer = Layer.objects.all().filter(typename=layer_name)[0]
+            layer = Layer.objects.get(typename=layer_name)
             style.LayerStyles.add(layer)
             style.save()
         if request.method == 'PUT':  # update style in GN
-            style = Style.objects.all().filter(name=style_name)[0]
+            style = Style.objects.get(name=style_name)
             style.sld_body = sld_body
             style.sld_url = url
             if len(elm_user_style_title.text) > 0:
@@ -1540,7 +1540,7 @@ def style_update(request, url):
                 layer.save()
     if request.method == 'DELETE':  # delete style from GN
         style_name = os.path.basename(request.path)
-        style = Style.objects.all().filter(name=style_name)[0]
+        style = Style.objects.get(name=style_name)
         style.delete()
 
 
