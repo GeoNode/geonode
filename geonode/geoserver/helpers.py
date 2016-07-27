@@ -1491,6 +1491,26 @@ def wps_execute_layer_attribute_statistics(layer_name, field):
     #     exml = etree.fromstring(response)
 
 
+def _invalidate_geowebcache_layer(layer_name, url=None):
+    http = httplib2.Http()
+    username, password = ogc_server_settings.credentials
+    http.add_credentials(username, password)
+    method = "POST"
+    headers = {}
+    body = """
+        <truncateLayer><layerName>{0}</layerName></truncateLayer>
+        """.strip().format(layer_name)
+    if not url:
+        path = "geowebcache/rest/masstruncate"
+        url = "/".join(ogc_server_settings.LOCATION.rstrip("/"), path)
+    response, _ = http.request(url, method, body=body, headers={})
+    if response.status != "200":
+        line = "Error {0} invalidating GeoWebCache at {1}".format(
+            response.status, url
+        )
+        logger.error(line)
+
+
 def style_update(request, url):
     """
     Sync style stuff from GS to GN.
@@ -1538,6 +1558,10 @@ def style_update(request, url):
             style.save()
             for layer in style.LayerStyles.all():
                 layer.save()
+
+        # Invalidate GeoWebCache so it doesn't retain old style in tiles
+        _invalidate_geowebcache_layer(layer_name)
+
     elif request.method == 'DELETE':  # delete style from GN
         style_name = os.path.basename(request.path)
         style = Style.objects.get(name=style_name)
