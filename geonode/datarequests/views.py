@@ -402,7 +402,7 @@ def data_request_csv(request):
     response['Content-Disposition'] = 'attachment; filename="datarequests-"'+str(datetoday.month)+str(datetoday.day)+str(datetoday.year)+'.csv"'
 
     writer = csv.writer(response)
-    fields = ['id','name','email','contact_number', 'organization', 'organization_type','has_letter','has_shapefile','project_summary', 'created','request_status', 'date of action','rejection_reason','juris_data_size','area_coverage']
+    fields = ['id','name','email','contact_number', 'organization', 'organization_type','organization_other','has_letter','has_shapefile','project_summary', 'created','request_status', 'date of action','rejection_reason','juris_data_size','area_coverage']
     writer.writerow( fields)
 
     objects = DataRequestProfile.objects.all().order_by('pk')
