@@ -249,7 +249,7 @@ class DataRequestProfile(TimeStampedModel):
     
     additional_remarks = models.TextField(
         blank = True,
-        null = True.
+        null = True,
         help_text= _('Additional remarks by an administrator'),
     )
 
