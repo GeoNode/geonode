@@ -128,6 +128,12 @@ class Profile(AbstractUser):
         default=OrganizationType.OTHER,
         help_text=_('Organization type based on Phil-LiDAR1 Data Distribution Policy'))
 
+    organization_other = models.CharField(
+        max_length=255,
+        blank=True,
+        null=True,
+    )
+
     eula_signed = models.BooleanField(
         default=False,
         help_text=_('Whether or not this user has signed the EULA'))

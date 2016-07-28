@@ -80,6 +80,8 @@ def registration_part_one(request):
                 middle_name = request.user.middle_name,
                 last_name = request.user.last_name,
                 organization = request.user.organization,
+                organization_type = request.user.organization_type,
+                organization_other = request.user.organization_other,
                 email = request.user.email,
                 contact_number = request.user.voice,
                 request_status = 'pending'
@@ -97,7 +99,9 @@ def registration_part_one(request):
                     'first_name': request_object.first_name,
                     'middle_name': request_object.middle_name,
                     'last_name': request_object.last_name,
-                    'organization': request_object.last_name,
+                    'organization': request_object.organization,
+                    'organization_type': request_object.organization_type,
+                    'organization_other': request_object.organization_other,
                     'email': request_object.email,
                     'contact_number': request_object.contact_number,
                     'location': request_object.location
@@ -649,6 +653,7 @@ def data_request_profile_approve(request, pk):
             messages.error (request, _(message))
         else:
             request_profile.profile.organization_type = request_profile.organization_type
+            request_profile.profile.organization_other = request_profile.organization_other
             request_profile.profile.save()
             if request_profile.jurisdiction_shapefile:
                 request_profile.assign_jurisdiction() #assigns/creates jurisdiction object
@@ -693,7 +698,7 @@ def data_request_profile_recreate_dir(request, pk):
 
         request_profile.create_directory()
         return HttpResponseRedirect(request_profile.get_absolute_url())
-    
+
 def data_request_compute_size(request):
     if request.user.is_superuser:
         data_requests = DataRequestProfile.objects.exclude(jurisdiction_shapefile=None)
@@ -702,7 +707,7 @@ def data_request_compute_size(request):
         return HttpResponseRedirect(reverse('datarequests:data_request_browse'))
     else:
         return HttpResponseRedirect('/forbidden/')
-    
+
 
 def data_request_profile_compute_size(request, pk):
     if request.user.is_superuser and request.method == 'POST':
@@ -712,7 +717,7 @@ def data_request_profile_compute_size(request, pk):
             messages.info(request, "The estimated data size area coverage of the request is currently being computed")
         else:
             messages.info(request, "This request does not have a shape file")
-            
+
         return HttpResponseRedirect(reverse('datarequests:data_request_browse'))
     else:
         return HttpResponseRedirect('/forbidden/')
@@ -725,7 +730,7 @@ def data_request_reverse_geocode(request):
         return HttpResponseRedirect(reverse('datarequests:data_request_browse'))
     else:
         return HttpResponseRedirect('/forbidden/')
-            
+
 def data_request_profile_reverse_geocode(request, pk):
     if request.user.is_superuser and request.method == 'POST':
         if DataRequestProfile.objects.get(pk=pk).jurisdiction_shapefile:
@@ -734,10 +739,10 @@ def data_request_profile_reverse_geocode(request, pk):
             messages.info(request, "Retrieving approximated place names of data request")
         else:
             messages.info(request, "This request does not have a shape file")
-            
+
         return HttpResponseRedirect(reverse('datarequests:data_request_browse'))
     else:
-        return HttpResponseRedirect('/forbidden/')             
+        return HttpResponseRedirect('/forbidden/')
 
 def data_request_facet_count(request):
     if not request.user.is_superuser:
@@ -777,7 +782,7 @@ def update_datarequest_obj(datarequest=None, parameter_dict=None, interest_layer
         datarequest.purpose = parameter_dict['purpose']
 
     datarequest.intended_use_of_dataset = parameter_dict['intended_use_of_dataset']
-    
+
     if interest_layer:
         datarequest.jurisdiction_shapefile = interest_layer
 
