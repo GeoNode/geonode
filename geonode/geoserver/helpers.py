@@ -1506,7 +1506,7 @@ def _invalidate_geowebcache_layer(layer_name, url=None):
         path = "geowebcache/rest/masstruncate"
         url = "/".join([ogc_server_settings.LOCATION.rstrip("/"), path])
     response, _ = http.request(url, method, body=body, headers=headers)
-    if response.status != "200":
+    if response.status != 200:
         line = "Error {0} invalidating GeoWebCache at {1}".format(
             response.status, url
         )
