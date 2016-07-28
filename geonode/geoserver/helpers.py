@@ -1496,14 +1496,16 @@ def _invalidate_geowebcache_layer(layer_name, url=None):
     username, password = ogc_server_settings.credentials
     http.add_credentials(username, password)
     method = "POST"
-    headers = {}
+    headers = {
+        "Content-Type": "text/xml"
+    }
     body = """
         <truncateLayer><layerName>{0}</layerName></truncateLayer>
         """.strip().format(layer_name)
     if not url:
         path = "geowebcache/rest/masstruncate"
         url = "/".join(ogc_server_settings.LOCATION.rstrip("/"), path)
-    response, _ = http.request(url, method, body=body, headers={})
+    response, _ = http.request(url, method, body=body, headers=headers)
     if response.status != "200":
         line = "Error {0} invalidating GeoWebCache at {1}".format(
             response.status, url
