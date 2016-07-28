@@ -316,7 +316,11 @@ define(function (require, exports) {
                 self.markError(resp.errors, status);
             },
             success: function (resp, status) {
-                window.location = resp.redirect_to;
+                if(resp.url && resp.input_required){
+                    window.location = resp.url;
+                }else {
+                    window.location = resp.redirect_to;
+                }
             },
         });
         return false;
@@ -393,7 +397,7 @@ define(function (require, exports) {
                 }
             });
         } else if (resp.status === "incomplete") {
-            var id = resp.url.split('=')[1]
+            var id = common.parseQueryString(resp.url).id;
             var element = 'next_step_' + id
             var a = '<a id="' + element + '" class="btn">Continue</a>';
             self.logStatus({
