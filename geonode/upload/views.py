@@ -227,7 +227,7 @@ def _next_step_response(req, upload_session, force_ajax=True):
                                        force_ajax=force_ajax)
     if req.is_ajax() or force_ajax:
         content_type = 'text/html' if not req.is_ajax() else None
-        return json_response(redirect_to=reverse('data_upload', args=[next]),
+        return json_response(redirect_to=reverse('data_upload', args=[next]) + "?id=%s" % req.GET['id'],
                              content_type=content_type)
     # return HttpResponseRedirect(reverse('data_upload', args=[next]))
 
