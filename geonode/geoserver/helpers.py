@@ -1503,8 +1503,7 @@ def _invalidate_geowebcache_layer(layer_name, url=None):
         <truncateLayer><layerName>{0}</layerName></truncateLayer>
         """.strip().format(layer_name)
     if not url:
-        path = "geowebcache/rest/masstruncate"
-        url = "/".join([ogc_server_settings.LOCATION.rstrip("/"), path])
+        url = '%sgwc/rest/masstruncate' % ogc_server_settings.LOCATION
     response, _ = http.request(url, method, body=body, headers=headers)
     if response.status != 200:
         line = "Error {0} invalidating GeoWebCache at {1}".format(
