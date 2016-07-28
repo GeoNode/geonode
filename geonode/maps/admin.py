@@ -44,6 +44,7 @@ class MapStoryAdminForm(ResourceBaseAdminForm):
 
     class Meta:
         model = MapStory
+        fields = '__all__'
 
 
 class MapAdmin(MediaTranslationAdmin):
