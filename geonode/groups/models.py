@@ -99,7 +99,7 @@ class GroupProfile(models.Model):
         null=True,
         help_text=_('country of the physical address'))
     tasks = models.TextField(null=True, blank=True)
-    profile_type = models.CharField(choices=[['org', 'Organization'],['ini', 'Initiative']], max_length=255)
+    profile_type = models.CharField(null=True, choices=[['org', 'Organization'],['ini', 'Initiative']], max_length=255)
     featured = models.BooleanField(default=False, help_text=_('Should this resource be advertised in home page?'))
 
     def save(self, *args, **kwargs):
