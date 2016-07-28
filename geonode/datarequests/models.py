@@ -246,6 +246,12 @@ class DataRequestProfile(TimeStampedModel):
         null=True,
         help_text=_('The date and time this data request was approved or rejected'),
     )
+    
+    additional_remarks = models.TextField(
+        blank = True,
+        null = True.
+        help_text= _('Additional remarks by an administrator'),
+    )
 
     class Meta:
         verbose_name = _('Data Request Profile')
