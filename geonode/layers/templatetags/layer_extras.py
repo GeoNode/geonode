@@ -132,7 +132,8 @@ def image_basemap(layername,epsg,out_format,format_options):
 def prep_basemap(link,epsg,format,format_options):
 	# sample download link
 	# http://geonode1:8080/geoserver/wms?layers=geonode%3Alidar_panay&width=464&bbox=121.85450531172008%2C10.374483313884495%2C123.24705566155922%2C12.025011538981765&service=WMS&format=image%2Fjpeg&srs=EPSG%3A4326&request=GetMap&height=550
-	layername = str(link.split('=geonode%3A')[1]).split('&width')[0]
+	remove_prefix = str(link.split('layers=')[1]).split('&width')[0]
+	layername = str(remove_prefix.split('%3A')[1]).split('&width')[0]
 	# layername = 'geonode:' + str(layername)
 	link = image_basemap(layername,epsg,format,format_options)
 	return link
