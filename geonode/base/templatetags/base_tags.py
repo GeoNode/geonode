@@ -28,10 +28,10 @@ def get_public_location(context):
     public_location = str(settings.OGC_SERVER['default']['PUBLIC_LOCATION'])
     return public_location
 
-@register.inclusion_tag('phil-ext.html',takes_context=True)
-def get_orthophotos(context):
-    orthophotos = Layer.objects.get(name='orthophotos_5m_cdo_sancristobal')
-    return orthophotos.typename
+@register.assignment_tag
+def get_orthophotos(takes_context=True):
+    orthophotos = Layer.objects.get(name='orthophotos_resampled')
+    return str(orthophotos.typename)
 
 @register.inclusion_tag('index.html',takes_context=True)
 def get_philgrid(context):
