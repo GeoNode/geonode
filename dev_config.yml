@@ -1,6 +1,6 @@
 ---
-GEOSERVER_URL: "http://build.geonode.org/geoserver/latest/geoserver.war"
-DATA_DIR_URL: "http://build.geonode.org/geoserver/latest/data.zip"
+GEOSERVER_URL: "http://build.geonode.org/geoserver/latest/geoserver-2.9.x.war"
+DATA_DIR_URL: "http://build.geonode.org/geoserver/latest/data-2.9.x.zip"
 JETTY_RUNNER_URL: "http://repo2.maven.org/maven2/org/mortbay/jetty/jetty-runner/8.1.8.v20121106/jetty-runner-8.1.8.v20121106.jar"
 WINDOWS:
   py2exe: "http://downloads.sourceforge.net/project/py2exe/py2exe/0.6.9/py2exe-0.6.9.win32-py2.7.exe"
