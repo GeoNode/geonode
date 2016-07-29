@@ -633,6 +633,7 @@ def layer_download_csv(request):
     response = HttpResponse(content_type='text/csv')
     datetoday = timezone.now()
     response['Content-Disposition'] = 'attachment; filename="layerdownloads-"'+str(datetoday.month)+str(datetoday.day)+str(datetoday.year)+'.csv"'
+    listtowrite = []
     writer = csv.writer(response)
 
     orgtypelist = ['Phil-LiDAR 1 SUC',
@@ -645,7 +646,7 @@ def layer_download_csv(request):
     'Other']
 
     auth_list = Action.objects.filter(verb='downloaded').order_by('timestamp')
-    writer.writerow( ['username','lastname','firstname','email','organization','organization type','layer name','date downloaded'])
+    writer.writerow( ['username','lastname','firstname','email','organization','organization type','purpose','layer name','date downloaded'])
     for auth in auth_list:
         username = auth.actor
         getprofile = Profile.objects.get(username=username)
@@ -654,13 +655,14 @@ def layer_download_csv(request):
         email = getprofile.email
         organization = getprofile.organization
         orgtype = orgtypelist[getprofile.organization_type]
-        pprint(dir(getprofile))
-        writer.writerow([username,lastname,firstname,email,organization,orgtype,auth.action_object.title,auth.timestamp.strftime('%Y/%m/%d')])
+        #pprint(dir(getprofile))
+        if auth.action_object.csw_type != 'document':
+            listtowrite.append([username,lastname,firstname,email,organization,orgtype,"",auth.action_object.typename,auth.timestamp.strftime('%Y/%m/%d')])
 
-    writer.writerow(['\n'])
+    # writer.writerow(['\n'])
     anon_list = AnonDownloader.objects.all().order_by('date')
-    writer.writerow(['Anonymous Downloads'])
-    writer.writerow( ['lastname','firstname','email','organization','organization type','purpose','layer name','doc name','date downloaded'])
+    # writer.writerow(['Anonymous Downloads'])
+    # writer.writerow( ['lastname','firstname','email','organization','organization type','purpose','layer name','doc name','date downloaded'])
     for anon in anon_list:
         lastname = anon.anon_last_name
         firstname = anon.anon_first_name
@@ -670,6 +672,9 @@ def layer_download_csv(request):
         organization = anon.anon_organization
         orgtype = anon.anon_orgtype
         purpose = anon.anon_purpose
-        writer.writerow([lastname,firstname,email,organization,orgtype,purpose,layername,docname,anon.date.strftime('%Y/%m/%d')])
-
+        if layername:
+            listtowrite.append(["",lastname,firstname,email,organization,orgtype,purpose,layername.typename,anon.date.strftime('%Y/%m/%d')])
+    listtowrite.sort(key=lambda x: datetime.datetime.strptime(x[8], '%Y/%m/%d'), reverse=True)
+    for eachtowrite in listtowrite:
+        writer.writerow(eachtowrite)
     return response
