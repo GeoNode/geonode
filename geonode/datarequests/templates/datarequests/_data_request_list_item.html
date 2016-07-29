@@ -11,7 +11,9 @@
         <p>
         Purpose: <strong>{{ item.purpose }} </strong></br>
         Organization: <strong>{{ item.organization }} </strong></br>
-        Organization Type: <strong>{{ item.org_type }} </strong></p>
+        Organization Type: <strong>{{ item.org_type }}</strong>
+        <strong ng-if="item.org_type == 'Other'">- {{ item.organization_other }}</strong>
+      </p>
         <div ng-if="item.request_status == 'rejected'">
            <p class="abstract">
            Reason for rejection: {{ item.rejection_reason }} </br>
