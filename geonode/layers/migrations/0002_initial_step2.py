@@ -49,6 +49,6 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='attribute',
             name='layer',
-            field=models.ForeignKey(related_name='attribute_set', to='layers.Layer'),
+            field=models.ForeignKey(blank=True, related_name='attribute_set', to='layers.Layer', null=True),
         ),
     ]
