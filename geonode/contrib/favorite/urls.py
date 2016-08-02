@@ -49,7 +49,7 @@ urlpatterns = [
     ),
     url(
         r'^list/$',
-        'get_favorites',
+        views.get_favorites,
         name='favorite_list'
     ),
 ]

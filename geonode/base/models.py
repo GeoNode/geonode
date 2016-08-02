@@ -254,6 +254,12 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin):
     temporal_extent_end_help_text = _('time period covered by the content of the dataset (end)')
     data_quality_statement_help_text = _('general explanation of the data producer\'s knowledge about the lineage of a'
                                          ' dataset')
+
+    distribution_url_help_text = _('information about on-line sources from which the dataset, specification, or '
+                                   'community profile name and extended metadata elements can be obtained')
+
+    distribution_description_help_text = _('detailed text description of what the online resource is/does')
+
     # internal fields
     uuid = models.CharField(max_length=36)
     owner = models.ForeignKey(settings.AUTH_USER_MODEL, blank=True, null=True, related_name='owned_resource',
@@ -302,6 +308,12 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin):
 
     supplemental_information = models.TextField(_('supplemental information'), default=DEFAULT_SUPPLEMENTAL_INFORMATION,
                                                 help_text=_('any other descriptive information about the dataset'))
+
+    # Section 6
+    distribution_url = models.TextField(_('distribution URL'), blank=True, null=True,
+                                        help_text=distribution_url_help_text)
+    distribution_description = models.TextField(_('distribution description'), blank=True, null=True,
+                                                help_text=distribution_description_help_text)
 
     # Section 8
     data_quality_statement = models.TextField(_('data quality statement'), blank=True, null=True,
