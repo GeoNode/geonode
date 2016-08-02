@@ -27,9 +27,10 @@ Copy the key and certificate to the standard locations::
     sudo cp server.crt /etc/ssl/certs/geonode.crt
     sudo cp server.key /etc/ssl/private/geonode.key
 
-Next add the certificate to the cacerts file for python and java::
+It seems not necessary in standard goenode installations (via ppa) but if you plan to use other python or java applications 
+could be useful alsoadd the certificate to the cacerts file for python and java::
 
-    sudo -s "cat server.crt >> /var/lib/geonode/lib/python2.6/site-packages/httplib2/cacerts.txt"
+    sudo -s "cat server.crt >> /usr/lib/python2.7/dist-packages/httplib2/cacerts.txt"
     sudo keytool -import -alias geonodessl -keystore /etc/ssl/certs/java/cacerts -file server.crt
 
 Note keytool will ask for a password and the standard password for the java cacerts file is ``changeit``.
@@ -68,16 +69,17 @@ with::
     </IfModule>
 
     <VirtualHost  *:80>
-        Redirect permanent / https://192.168.10.10/
+        Redirect permanent / https://<ipaddressOrDomainName>/
     </VirtualHost>
 
+Replace <ipaddressOrDomainName> with current value.
 
 This tells Apache where to fine the key and certificate.  There are also some additional lines to handle MSIE, taken from Apache's default-ssl file.
 
 Tomcat Configuration
 ====================
 
-As root edit the Tomcat server config file :file:`/var/lib/tomcat6/conf/server.xml`, and replace::
+As root edit the Tomcat server config file :file:`/etc/tomcat7/server.xml`, and replace::
 
     <Connector port="8080" protocol="HTTP/1.1" 
         connectionTimeout="20000" 
@@ -108,7 +110,7 @@ As root edit the geonode config file :file:`/etc/geonode/local_settings.py` and 
 GeoServer Configuration
 =======================
 
-As root edit the file :file:`/var/lib/tomcat6/webapps/geoserver/WEB-INF/web.xml` and ensure the ``GEONODE_BASE_URL`` is specified as follows::
+As root edit the file :file:`/usr/share/geoserver/WEB-INF/web.xml` and ensure the ``GEONODE_BASE_URL`` is specified as follows::
 
     <context-param>
         <param-name>GEONODE_BASE_URL</param-name>
@@ -117,7 +119,9 @@ As root edit the file :file:`/var/lib/tomcat6/webapps/geoserver/WEB-INF/web.xml`
 
 Also update ``proxyBaseUrl`` in the Geoserver global settings file :file:`/var/lib/geoserver/geonode-data/global.xml`::
 
-    <proxyBaseUrl>https://192.168.10.10/geoserver/</proxyBaseUrl>
+    <proxyBaseUrl>https://XXX.XXX.XXX.XXX/geoserver/</proxyBaseUrl>
+   
+Replace XXX.XXX.XXX.XXX with your server internal address.
 
 
 Restart
