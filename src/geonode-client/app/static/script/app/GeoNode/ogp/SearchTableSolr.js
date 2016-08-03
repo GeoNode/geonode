@@ -357,8 +357,15 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
                 dataIndex: 'layer_date',
                 sortBy: 'layer_date',
                 renderer: function(value, metaData, record, rowIndex, colIndex, store){
-                    var date = new Date(record.get('layer_date'));
-                    return date.getFullYear() || 'None';
+                    var solr_date_array = record.get('layer_date').split('-');
+                    if(solr_date_array.length == 1){
+                      return 'None';
+                    }
+                    if (solr_date_array[0] == ''){
+                      return '-' + parseInt(solr_date_array[1], 10);
+                    } else {
+                      return parseInt(solr_date_array[0], 10);
+                    };
                 }
             }
         ];
