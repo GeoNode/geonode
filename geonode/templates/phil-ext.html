@@ -1,17 +1,17 @@
 {% load leaflet_tags %}
-
 {% leaflet_js %}
 {% leaflet_css %}
 
 {% leaflet_map "preview_map" creatediv=False %}
 
 <style>
-  .leaflet-container {  /* all maps */
+  .leaflet-container {  /* all maps http://localhost:8080/geoserver/orthophotos/wms?service=WMS&version=1.1.0&request=GetMap */
     height: 800px;
   }
 </style>
 
 <script type="text/javascript">
+{% load base_tags %}
     var map;
     window.addEventListener("map:init", function (e) {
         
@@ -33,25 +33,47 @@
             continuousWorld: true,
            
         }).addTo(map).bringToFront();
-        
+
+        {% get_public_location "%s" as public_location %}
+        var pl = '{{public_location}}' + 'orthophotos/wms?service=WMS&version=1.1.0&request=GetMap';
+
+        {% get_orthophotos "%s" as orthos %}
+        var cdo = L.tileLayer.wms(pl,{
+            ptype: "gxp_wmsgetfeatureinfo",
+            layers: '{{orthos}}',
+            format: 'image/png',
+            transparent: true,
+            'opacity':1,
+            tiled:true,
+            visibility:true,
+            continuousWorld: true,
+        }).addTo(map).bringToBack();
+
           var MapQuestOpen_OSM = L.tileLayer('http://korona.geog.uni-heidelberg.de/tiles/roads/x={x}&y={y}&z={z}', {
             type: 'map',
             ext: 'jpg',
             attribution: 'Imagery from <a href="http://giscience.uni-hd.de/">GIScience Research Group @ University of Heidelberg</a> &mdash; Map data &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
             subdomains: '1234',
             continuousWorld: true,
-            // 'opacity':0.8,
+            'opacity':0.8,
         }).addTo(map).bringToBack();
 
 
         var baseMaps = {
-          'MapQuestOpen OSM' : MapQuestOpen_OSM
+          'MapQuestOpen OSM' : MapQuestOpen_OSM,
+          'cdo' : cdo
         };
 
         // L.control.layers(baseMaps).addTo(map);
+        //L.control.layers(baseMaps).addTo(map);
         if (tile_layer != null) {
-            map.layerscontrol.addOverlay(tile_layer,"{{ resource.title }}").removeFrom(map);
+            // map.layerscontrol.addOverlay(tile_layer,"{{ resource.title }}").removeFrom(map);
+            map.layerscontrol.addOverlay(tile_layer,"{{ resource.title }}");
+            map.layerscontrol.addOverlay(cdo,"cdo");
+            // map.layerscontrol.addOverlay(MapQuestOpen_OSM,"basemap");
             map.addLayer(tile_layer);
+            // map.addLayer(cdo);
+            // map.addLayer(MapQuestOpen_OSM);
         }
 
         

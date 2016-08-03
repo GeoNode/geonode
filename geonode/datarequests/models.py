@@ -165,7 +165,15 @@ class DataRequestProfile(TimeStampedModel):
     organization_type = enum.EnumField(
         OrganizationType,
         default=OrganizationType.OTHER,
+        # default="Undefined", #I assigned random default to get rid of --------- as one of the choices
+        blank=False,
         help_text=_('Organization type based on Phil-LiDAR1 Data Distribution Policy')
+    )
+    organization_other = models.CharField(
+        _('If Other, please specify'),
+        max_length=255,
+        blank=True,
+        null=True,
     )
     request_level = models.CharField(
         _('Level of Request'),
@@ -248,6 +256,13 @@ class DataRequestProfile(TimeStampedModel):
         null=True,
         help_text=_('The date and time this data request was approved or rejected'),
     )
+
+    additional_remarks = models.TextField(
+        blank = True,
+        null = True,
+        help_text= _('Additional remarks by an administrator'),
+    )
+
 
     class Meta:
         verbose_name = _('Data Request Profile')

@@ -780,7 +780,7 @@ DOWNLOAD_FORMATS_RASTER = [
     'JPEG',
     #'PDF',
     'PNG',
-    'ArcGrid',
+    # 'ArcGrid',
     'GeoTIFF',
     #'Gtopo30',
     #'ImageMosaic',
