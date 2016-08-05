@@ -60,14 +60,15 @@ class MapStory(ResourceBase):
         return self.chapter_list.order_by('chapter_index')
 
     def update_from_viewer(self, conf):
-
         if isinstance(conf, basestring):
             conf = json.loads(conf)
 
         self.title = conf['title']
         self.abstract = conf['abstract']
         self.is_published = conf['is_published']
-        self.category = TopicCategory(conf['category'])
+        if conf['category'] is not None:
+            self.category = TopicCategory(conf['category'])
+
 
         if self.uuid is None or self.uuid == '':
             self.uuid = str(uuid.uuid1())
