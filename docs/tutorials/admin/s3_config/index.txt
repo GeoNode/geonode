@@ -1,0 +1,116 @@
+.. _s3_config:
+
+=================================================
+Implementing S3 Bucket for Static and Media Files
+=================================================
+
+If you have access to an Amazon S3 bucket, using this resource for your site's static and media files can improve your site's performance. We'll assume you have an account and can create new users and S3 buckets already. This tutorial will walk you through implementing your GeoNode instance to use an S3 bucket for static and media files.
+
+Configuring S3 Bucket
+=====================
+
+Before proceeding, preserving the security and manageability of the system should be considered. Therefore, we're going to suggest creating a new user account to have access to this S3 bucket. With the new username and password only being related to this one bucket, any compromise to the system will only affect this bucket. Additionally, creating a new user account just for the site will allow you to pass on the information to a new maintainer in the future.
+
+Instructions
+------------
+
+Creating Resources
+^^^^^^^^^^^^^^^^^^
+
+ * `Create the S3 bucket <http://docs.aws.amazon.com/AmazonS3/latest/UG/CreatingaBucket.html>`_
+ * Create a new user: Go to `AWS IAM <https://console.aws.amazon.com/iam/home?#users>`_. Select "Create new users" and follow the instructions, making sure you leave "Generate an access key for each User" selected.
+ * Download the user's access keys (access key and secret access key). Go to the new user's Security Credentials and click "Manage access keys". Download the credentials for the access key that was created and put the information somewhere safe. **You will not be able to download this information again.**
+ * Retrieve the new user's ARN (Amazon Resource Name). Go to the user's Summary tab to get the information. For example: ``arn:aws:iam::123456789012:user/username``
+
+Adding Bucket Policy
+^^^^^^^^^^^^^^^^^^^^
+
+Next, the bucket policy needs to be set. In the `S3 management console <https://console.aws.amazon.com/s3/home>`_ head to the bucket properties and add a new bucket policy with the information below. Use the name of the bucket you created for ``S3_BUCKET_NAME`` and the user's ARN retrieved in the previous step for ``USER_ARN``.
+
+.. code-block:: json
+
+  {
+      "Statement": [
+          {
+            "Sid":"PublicReadForGetBucketObjects",
+            "Effect":"Allow",
+            "Principal": {
+                  "AWS": "*"
+               },
+            "Action":["s3:GetObject"],
+            "Resource":["arn:aws:s3:::S3_BUCKET_NAME/*"
+            ]
+          },
+          {
+              "Action": "s3:*",
+              "Effect": "Allow",
+              "Resource": [
+                  "arn:aws:s3:::S3_BUCKET_NAME",
+                  "arn:aws:s3:::S3_BUCKET_NAME/*"
+              ],
+              "Principal": {
+                  "AWS": [
+                      "USER_ARN"
+                  ]
+              }
+          }
+      ]
+  }
+
+Applying CORS
+^^^^^^^^^^^^^
+
+Since assets are going to be served on the site from an external domain now (the S3 bucket), it needs to be configured with CORS. To do so, go to the S3 bucket's Properties > Permissions > Add CORS Configuration and paste this in:
+
+.. code-block:: html
+
+  <CORSConfiguration>
+    <CORSRule>
+      <AllowedOrigin>*</AllowedOrigin>
+      <AllowedMethod>GET</AllowedMethod>
+      <MaxAgeSeconds>3000</MaxAgeSeconds>
+      <AllowedHeader>Authorization</AllowedHeader>
+    </CORSRule>
+  </CORSConfiguration>
+
+Additional Users
+^^^^^^^^^^^^^^^^
+
+If you wish to configure more users, just follow all the steps after creating the S3 bucket with additional users. Add the following to the S3 bucket policy in the ``Statement``:
+
+.. code-block:: json
+
+  {
+      "Action": "s3:ListBucket",
+      "Effect": "Allow",
+      "Resource": "arn:aws:s3:::S3_BUCKET_NAME",
+      "Principal": {
+          "AWS": [
+              "USER_ARN"
+          ]
+      }
+  }
+
+Setting Environment Variables
+=============================
+
+GeoNode already has settings ready to be configured with the created S3 bucket. Simply set the following environment variables with the appropriate information gained from the steps above:
+
+ * ``S3_BUCKET_NAME``, the name of what the bucket created in the first step.
+ * ``AWS_ACCESS_KEY_ID``, the access key id downloaded earlier, e.g. ``AKIAIOSFODNN7EXAMPLE``
+ * ``AWS_SECRET_ACCESS_KEY``, the secret access key downloaded earlier, e.g. ``wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY``
+
+Static Files
+------------
+
+In order to serve your **static files** through the S3 bucket, you'll additionally need to set the environment variable ``S3_STATIC_ENABLED`` to True.
+
+Media Files
+-----------
+
+In order to serve your **media files** through the S3 bucket, you'll additionally need to set the environment variable ``S3_MEDIA_ENABLED`` to True.
+
+Migrating an Existing Site's Data
+=================================
+
+If you already have a GeoNode site running and want to change it so your data is served through an S3 bucket instead, you will need to move your previously existing data into the bucket. Moving your data is beyond the scope of this tutorial, but Amazon provides helpful tools for managing your bucket such as the AWS CLI tools.
