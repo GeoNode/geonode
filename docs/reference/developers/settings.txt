@@ -623,3 +623,44 @@ Default::
     SLACK_WEBHOOK_URLS = [
         "https://hooks.slack.com/services/T000/B000/XX"
     ]
+
+Amazon Web Services Settings
+============================
+
+S3_STATIC_ENABLED
+-----------------
+Default: ``False``
+
+A boolean that specifies whether GeoNode's static files will be served through an S3 bucket. Set through the environment variable ``S3_STATIC_ENABLED``.
+
+S3_MEDIA_ENABLED
+----------------
+Default: ``False``
+
+A boolean that specifies whether GeoNode's media files will be served through an S3 bucket. Set through the environment variable ``S3_MEDIA_ENABLED``.
+
+AWS_BUCKET_NAME
+---------------
+
+The name of the S3 bucket GeoNode will pull static and/or media files from. Set through the environment variable ``S3_BUCKET_NAME``.
+
+AWS_STORAGE_BUCKET_NAME
+-----------------------
+
+The name of the S3 bucket GeoNode will pull static and/or media files from. Set through the environment variable ``S3_BUCKET_NAME``.
+
+AWS_ACCESS_KEY_ID
+-----------------
+
+The access key for the S3 bucket GeoNode will pull static and/or media files from. Set through the environment variable ``AWS_ACCESS_KEY_ID``.
+
+AWS_SECRET_ACCESS_KEY
+---------------------
+
+The secret access key for the S3 bucket GeoNode will pull static and/or media files from. Set through the environment variable ``AWS_SECRET_ACCESS_KEY``.
+
+AWS_QUERYSTRING_AUTH
+--------------------
+Default: ``False``
+
+Generate S3 auth querystring.
