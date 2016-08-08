@@ -162,11 +162,9 @@ class DataRequestProfileForm(forms.ModelForm):
         return fname
 
     def clean_middle_name(self):
-
         mname = self.cleaned_data.get('middle_name').strip()
         if len(mname)<1:
             mname = '_'
-
         return mname
 
     def clean_last_name(self):
