@@ -256,6 +256,12 @@ class DataRequestProfile(TimeStampedModel):
         null=True,
         help_text=_('The date and time this data request was approved or rejected'),
     )
+    
+    additional_remarks = models.TextField(
+        blank = True,
+        null = True,
+        help_text= _('Additional remarks by an administrator'),
+    )
 
     additional_remarks = models.TextField(
         blank = True,
@@ -662,7 +668,6 @@ class DataRequestProfile(TimeStampedModel):
                 else:
                     pprint("Accout was not created")
                     raise Exception("Account not created")
-
              else:
                  profile.organization_type = self.organization_type
                  profile.save()
