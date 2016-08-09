@@ -346,7 +346,6 @@ function filterSelectedTiles(tile_filter, single_click, send_notice){
                  var added_count = 0;
                  feature_out = olGeoJSON.read(response.priv.responseText);
                  var tiles = hasDataFiltering(feature_out);
-                 console.log(tiles.length);
                   if (jurisdiction_geoms.length > 0){
                      for (var i=0;i<tiles.length;i++){
                          var corners = {
@@ -363,31 +362,32 @@ function filterSelectedTiles(tile_filter, single_click, send_notice){
                                     highlight_layer.addFeatures([tile.feature]);
                                     highlight_layer.refresh();
                                     added_count++;
-                              }else if (single_click){
+                                }
+                        }else if (single_click){
                                   removeHighlight(tile.georef, highlight_layer);
-                              }
-                         }
+                        }
                      }
-                  }
-                  display_points("point_display", highlight_layer);
+                 }
+            }
+            display_points("point_display", highlight_layer);
 
-                  if (added_count< feature_out.length){
-                      if (feature_out.length==1){
-                            //alert("Selected tile either lacks data or is out of bounds. ");
-                            display_message("notif","Selected tile either lacks data or is out of bounds." );
-                      }else{
-                            //alert("Some selected tiles have not been included in the list due to lack of data or being outside the jurisdiction boundaries");
-                            display_message("notif","Some selected tiles have not been included in the list due to lack of data or being outside the jurisdiction boundaries");
-                      }
+              if (added_count< feature_out.length){
+                  if (feature_out.length==1){
+                        //alert("Selected tile either lacks data or is out of bounds. ");
+                        display_message("notif","Selected tile either lacks data or is out of bounds." );
                   }else{
-                      /*document.getElementById("warning").style.visibilty =  "visible";
-                      document.getElementById("warning").style.display =  "inline";*/
-                      //container.setAttribute("hidden","hidden");
+                        //alert("Some selected tiles have not been included in the list due to lack of data or being outside the jurisdiction boundaries");
+                        display_message("notif","Some selected tiles have not been included in the list due to lack of data or being outside the jurisdiction boundaries");
                   }
-                  single_click=true;
-                  end = new Date().getTime();
-                  console.log(end);
-                  console.log(end-start);
+              }else{
+                  /*document.getElementById("warning").style.visibilty =  "visible";
+                  document.getElementById("warning").style.display =  "inline";*/
+                  //container.setAttribute("hidden","hidden");
+              }
+              single_click=true;
+              end = new Date().getTime();
+              console.log(end);
+              console.log(end-start);
              }
          }
      };
