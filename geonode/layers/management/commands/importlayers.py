@@ -1,6 +1,7 @@
+# -*- coding: utf-8 -*-
 #########################################################################
 #
-# Copyright (C) 2012 OpenPlans
+# Copyright (C) 2016 OSGeo
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -27,8 +28,8 @@ import datetime
 
 class Command(BaseCommand):
     help = ("Brings a data file or a directory full of data files into a"
-            "GeoNode site.  Layers are added to the Django database, the"
-            "GeoServer configuration, and the GeoNetwork metadata index.")
+            " GeoNode site.  Layers are added to the Django database, the"
+            " GeoServer configuration, and the pycsw metadata index.")
 
     args = 'path [path...]'
 
@@ -72,6 +73,15 @@ class Command(BaseCommand):
                     if multiple imports are done in one command"""
         ),
         make_option(
+            '-r',
+            '--regions',
+            dest='regions',
+            default="",
+            help="""The default regions, separated by comma, for the
+                    imported layer(s). Will be the same for all imported layers
+                    if multiple imports are done in one command"""
+        ),
+        make_option(
             '-t',
             '--title',
             dest='title',
@@ -81,12 +91,30 @@ class Command(BaseCommand):
                     if multiple imports are done in one command"""
         ),
         make_option(
+            '-d',
+            '--date',
+            dest='date',
+            default=None,
+            help=('The date and time for the imported layer(s). Will be the '
+                  'same for all imported layers if multiple imports are done '
+                  'in one command. Use quotes to specify both the date and '
+                  'time in the format \'YYYY-MM-DD HH:MM:SS\'.')
+        ),
+        make_option(
             '-p',
             '--private',
             dest='private',
             default=False,
             action="store_true",
             help="Make layer viewable only to owner"
+        ),
+        make_option(
+            '-m',
+            '--metadata_uploaded_preserve',
+            dest='metadata_uploaded_preserve',
+            default=False,
+            action="store_true",
+            help="Force metadata XML to be preserved"
         )
     )
 
@@ -99,6 +127,9 @@ class Command(BaseCommand):
         category = options.get('category', None)
         private = options.get('private', False)
         title = options.get('title', None)
+        date = options.get('date', None)
+        metadata_uploaded_preserve = options.get('metadata_uploaded_preserve',
+                                                 False)
 
         if verbosity > 0:
             console = self.stdout
@@ -113,6 +144,13 @@ class Command(BaseCommand):
         keywords = options.get('keywords').split(',')
         if len(keywords) == 1 and keywords[0] == '':
             keywords = []
+        else:
+            keywords = map(str.strip, keywords)
+        regions = options.get('regions').split(',')
+        if len(regions) == 1 and regions[0] == '':
+            regions = []
+        else:
+            regions = map(str.strip, regions)
         start = datetime.datetime.now()
         output = []
         for path in args:
@@ -125,8 +163,12 @@ class Command(BaseCommand):
                 verbosity=verbosity,
                 console=console,
                 category=category,
+                regions=regions,
                 title=title,
-                private=private)
+                date=date,
+                private=private,
+                metadata_uploaded_preserve=metadata_uploaded_preserve)
+
             output.extend(out)
 
         updated = [dict_['file']

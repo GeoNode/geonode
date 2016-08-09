@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #########################################################################
 #
-# Copyright (C) 2012 OpenPlans
+# Copyright (C) 2016 OSGeo
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -21,6 +21,9 @@
 import autocomplete_light
 
 from geonode.maps.models import Map
+
+autocomplete_light.autodiscover() # flake8: noqa
+
 from geonode.base.forms import ResourceBaseForm
 
 
@@ -34,4 +37,3 @@ class MapForm(ResourceBaseForm):
             'center_x',
             'center_y',
         )
-        widgets = autocomplete_light.get_widgets_dict(Map)

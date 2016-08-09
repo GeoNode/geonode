@@ -1,0 +1,44 @@
+.. _install_gdal_devmode:
+
+Install GDAL for Development
+============================
+
+In order to install GDAL (1.10.0+) in developing mode, in a virtual environment, on Ubuntu 12.04 the following steps may be required.  If you have already tried any of the approaches suggested elsewhere, it is recommended that, unless you know that this may affect other software, you do a full purge of any existing GDAL-related packages.
+
+#. Install GDAL in your host environment
+
+    .. code-block:: console
+     
+     $ pip install psycopg2 owslib --upgrade
+     $ sudo add-apt-repository ppa:ubuntugis/ubuntugis-unstable
+     $ sudo apt-get update
+     $ sudo apt-get install -y libgdal-dev libevent-dev python-dev build-essential
+     $ sudo apt-get install -y libgdal1h libgdal-dev python-gdal
+
+#. Test that GDAL is installed in your host environment
+
+    .. code-block:: console
+    
+     $ deactivate geonode
+     $ python -c "from osgeo import gdal; print gdal.__version__"
+     
+    .. warning:: Take note of the GDAL Version
+
+#. Assuming that your geonode directory is installed directly off of your home directory, download and configure GDAL
+
+    .. code-block:: console
+    
+     $ workon geonode
+     $ cd /home/geonode/dev
+     $ export CPLUS_INCLUDE_PATH=/usr/include/gdal
+     $ export C_INCLUDE_PATH=/usr/include/gdal
+
+     $ pip install pygdal==1.11.2.1 # select the right version
+
+#. Test that GDAL is installed in your virtual environment
+
+    .. code-block:: console
+    
+     $ workon geonode
+     $ python -c "from osgeo import gdal; print gdal.__version__"
+

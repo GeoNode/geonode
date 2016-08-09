@@ -1,0 +1,30 @@
+.. _dev_debug:
+
+GeoNode debugging techniques
+============================
+
+GeoNode can be difficult to debug as there are several different components
+involved:
+
+* Browser - includes HTML/CSS issues, JavaScript, etc.
+* Django - GeoNode HTML views and web APIs
+* GeoServer - Core Wxx services and Platform REST APIs
+
+When attempting to diagnose a specific problem, often the order of investigation
+mirrors the order above - that is, start with the client: Is this a bug in code
+running on the browser. If not, step to the next level: the Django responses to
+client requests. Often this is possible via the browser using the correct tools.
+Many requests require Django communications with GeoServer. This is the next
+stage of investigation if a specific bug does not appear to originate in Django
+or the client.
+
+The following section covers techniques to help diagnose and debug errors.
+
+
+.. toctree::
+   :maxdepth: 2
+
+   browser
+   geoexplorer
+   python
+   geoserver 

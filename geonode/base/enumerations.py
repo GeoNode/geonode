@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #########################################################################
 #
-# Copyright (C) 2012 OpenPlans
+# Copyright (C) 2016 OSGeo
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -348,6 +348,7 @@ ALL_LANGUAGES = (
     ('fin', 'Finnish'),
     ('fry', 'Frisian'),
     ('glg', 'Gallegan'),
+    ('ger', 'German'),
     ('kal', 'Greenlandic'),
     ('grn', 'Guarani'),
     ('guj', 'Gujarati'),
@@ -457,7 +458,7 @@ CHARSETS = (('', 'None/Unknown'),
             ('Shift_JIS', 'Shift_JIS'),
             ('KOI8-R', 'KOI8-R'),
             ('KOI8-U', 'KOI8-U'),
-            ('windows-874', 'Windows CP874'),
+            ('cp874', 'Windows CP874'),
             ('windows-1250', 'Windows CP1250'),
             ('windows-1251', 'Windows CP1251'),
             ('windows-1252', 'Windows CP1252'),

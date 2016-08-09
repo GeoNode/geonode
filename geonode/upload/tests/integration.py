@@ -1,6 +1,7 @@
+# -*- coding: utf-8 -*-
 #########################################################################
 #
-# Copyright (C) 2012 OpenPlans
+# Copyright (C) 2016 OSGeo
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -16,6 +17,7 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
+
 """
 See the README.rst in this directory for details on running these tests.
 @todo allow using a database other than `development.db` - for some reason, a
@@ -57,6 +59,8 @@ import unittest
 import urllib
 import urllib2
 from zipfile import ZipFile
+import re
+from geonode.upload.utils import UnsavedGeogigDataStore
 
 GEONODE_USER = 'test_uploader'
 GEONODE_PASSWD = 'test_uploader'
@@ -435,7 +439,7 @@ class UploaderBase(unittest.TestCase):
         h2 = soup.find_all(['h2'])[0]
         self.assertTrue(str(h2).find(layer_name))
 
-    def upload_folder_of_files(self, folder, final_check):
+    def upload_folder_of_files(self, folder, final_check, session_ids=None):
 
         mains = ('.tif', '.shp', '.zip')
 
@@ -449,13 +453,23 @@ class UploaderBase(unittest.TestCase):
             _file = os.path.join(folder, main)
             base, _ = os.path.splitext(_file)
             resp, data = self.client.upload_file(_file)
+            if session_ids is not None:
+                if data.get('url'):
+                    session_id = re.search(r'.*id=(\d+)', data.get('url')).group(1)
+                    if session_id:
+                        session_ids += [session_id]
             self.wait_for_progress(data.get('progress'))
             final_check(base, resp, data)
 
-    def upload_file(self, fname, final_check, check_name=None):
+    def upload_file(self, fname, final_check, check_name=None, session_ids=None):
         if not check_name:
             check_name, _ = os.path.splitext(fname)
         resp, data = self.client.upload_file(fname)
+        if session_ids is not None:
+            if data.get('url'):
+                session_id = re.search(r'.*id=(\d+)', data.get('url')).group(1)
+                if session_id:
+                    session_ids += [session_id]
         self.wait_for_progress(data.get('progress'))
         final_check(check_name, resp, data)
 
@@ -524,6 +538,27 @@ class TestUpload(UploaderBase):
         self.upload_folder_of_files(
             invalid_path,
             self.check_invalid_projection)
+
+    def test_coherent_importer_session(self):
+        """ Tests that the upload computes correctly next session IDs"""
+        session_ids = []
+
+        # First of all lets upload a raster
+        fname = os.path.join(GOOD_DATA, 'raster', 'relief_san_andres.tif')
+        self.upload_file(fname, self.complete_raster_upload, session_ids=session_ids)
+
+        # Next force an invalid session
+        invalid_path = os.path.join(BAD_DATA)
+        self.upload_folder_of_files(
+            invalid_path,
+            self.check_invalid_projection, session_ids=session_ids)
+
+        # Finally try to upload a good file anc check the session IDs
+        fname = os.path.join(GOOD_DATA, 'raster', 'relief_san_andres.tif')
+        self.upload_file(fname, self.complete_raster_upload, session_ids=session_ids)
+
+        self.assertTrue(len(session_ids) > 1)
+        self.assertTrue(int(session_ids[0]) < int(session_ids[1]))
 
     def test_extension_not_implemented(self):
         """Verify a error message is return when an unsupported layer is
@@ -667,3 +702,62 @@ class TestUploadDBDataStore(UploaderBase):
         info['enabled'] = True
         set_time_info(uploaded, **info)
         self.assertEquals(100, len(get_wms_timepositions()))
+
+
+class GeogigTest(unittest.TestCase):
+
+    def test_geogig(self):
+        '''Test formation of REST call to geoserver's geogig API'''
+        author_name = "test"
+        author_email = "testuser@geonode.org"
+        cat = gs_catalog
+        settings.OGC_SERVER['default']['PG_GEOGIG'] = False
+
+        fb_store_name = "test_fb_geogig"
+        fb_geogig = UnsavedGeogigDataStore(
+            cat, fb_store_name, cat.get_default_workspace(),
+            author_name, author_email)
+
+        fb_message = {
+            "authorName": author_name,
+            "authorEmail": author_email,
+            "parentDirectory":
+            settings.OGC_SERVER['default']['GEOGIG_DATASTORE_DIR']
+        }
+        fb_href = ("%sgeogig/repos/%s/init.json" %
+                   (settings.OGC_SERVER['default']['LOCATION'], fb_store_name))
+
+        self.assertEquals(json.loads(fb_geogig.message()), fb_message)
+        self.assertEquals(fb_geogig.href, fb_href)
+
+        settings.OGC_SERVER['default']['PG_GEOGIG'] = True
+        pg_store_name = "test_pg_geogig"
+        # Manually override the settings to simulate the REST call for postgres
+        settings.DATABASES['test-pg'] = {
+            "HOST": "localhost",
+            "PORT": "5432",
+            "NAME": "repos",
+            "SCHEMA": "public",
+            "USER": "geogig",
+            "PASSWORD": "geogig"
+        }
+        settings.OGC_SERVER['default']['DATASTORE'] = 'test-pg'
+        pg_geogig = UnsavedGeogigDataStore(
+            cat, pg_store_name, cat.get_default_workspace(),
+            author_name, author_email)
+
+        pg_message = {
+            "authorName": author_name,
+            "authorEmail": author_email,
+            "dbHost": settings.DATABASES['test-pg']['HOST'],
+            "dbPort": settings.DATABASES['test-pg']['PORT'],
+            "dbName": settings.DATABASES['test-pg']['NAME'],
+            "dbSchema": settings.DATABASES['test-pg']['SCHEMA'],
+            "dbUser": settings.DATABASES['test-pg']['USER'],
+            "dbPassword": settings.DATABASES['test-pg']['PASSWORD']
+        }
+        pg_href = ("%sgeogig/repos/%s/init.json" %
+                   (settings.OGC_SERVER['default']['LOCATION'], pg_store_name))
+
+        self.assertEquals(json.loads(pg_geogig.message()), pg_message)
+        self.assertEquals(pg_geogig.href, pg_href)

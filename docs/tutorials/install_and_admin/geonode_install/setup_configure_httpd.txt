@@ -1,0 +1,170 @@
+.. _setup_configure_httpd:
+
+=======================
+Setup & Configure HTTPD
+=======================
+
+In this section we are going to setup Apache HTTP to serve GeoNode.
+
+Apache Configuration
+====================
+
+Navigate to Apache configurations folder:::
+
+    cd /etc/apache2/sites-available
+
+And create a new configuration file for GeoNode:::
+
+    sudo gedit geonode.conf
+
+Place the following content inside the file:::
+
+    WSGIDaemonProcess geonode python-path=/home/geonode/geonode:/home/geonode/.venvs/geonode/lib/python2.7/site-packages user=www-data threads=15 processes=2
+
+    <VirtualHost *:80>
+        ServerName http://localhost
+        ServerAdmin webmaster@localhost
+        DocumentRoot /home/geonode/geonode/geonode
+
+        ErrorLog /var/log/apache2/error.log
+        LogLevel warn
+        CustomLog /var/log/apache2/access.log combined
+
+        WSGIProcessGroup geonode
+        WSGIPassAuthorization On
+        WSGIScriptAlias / /home/geonode/geonode/geonode/wsgi.py
+
+        Alias /static/ /home/geonode/geonode/geonode/static_root/
+        Alias /uploaded/ /home/geonode/geonode/geonode/uploaded/
+
+        <Directory "/home/geonode/geonode/geonode/">
+             <Files wsgi.py>
+                 Order deny,allow
+                 Allow from all
+                 Require all granted
+             </Files>
+
+            Order allow,deny
+            Options Indexes FollowSymLinks
+            Allow from all
+            IndexOptions FancyIndexing
+        </Directory>
+
+        <Directory "/home/geonode/geonode/geonode/static_root/">
+            Order allow,deny
+            Options Indexes FollowSymLinks
+            Allow from all
+            Require all granted
+            IndexOptions FancyIndexing
+        </Directory>
+
+        <Directory "/home/geonode/geonode/geonode/uploaded/thumbs/">
+            Order allow,deny
+            Options Indexes FollowSymLinks
+            Allow from all
+            Require all granted
+            IndexOptions FancyIndexing
+        </Directory>
+
+        <Directory "/home/geonode/geonode/geonode/uploaded/layers/">
+            Order allow,deny
+            Options Indexes FollowSymLinks
+            Allow from all
+            Require all granted
+            IndexOptions FancyIndexing
+        </Directory>
+
+        <Proxy *>
+            Order allow,deny
+            Allow from all
+        </Proxy>
+
+        ProxyPreserveHost On
+        ProxyPass /geoserver http://127.0.0.1:8080/geoserver
+        ProxyPassReverse /geoserver http://127.0.0.1:8080/geoserver
+
+    </VirtualHost>
+
+This sets up a VirtualHost in Apache HTTP server for GeoNode and a reverse proxy
+for GeoServer.
+
+.. note::
+
+    In the case that GeoServer is running on a separate machine change the `ProxyPass`
+    and `ProxyPassReverse` accordingly
+
+Now load apache `proxy` module::
+
+    sudo a2enmod proxy_http
+
+Disable default configuration::
+
+    sudo a2dissite 000-default
+
+And enable geonode configuration file::
+
+    sudo a2ensite geonode
+
+Add `thumbs` and `layers` folders::
+
+    sudo mkdir -p /home/geonode/geonode/geonode/uploaded/thumbs
+    sudo mkdir -p /home/geonode/geonode/geonode/uploaded/layers
+
+Change permissions on GeoNode files and folders to allow Apache to read and edit
+them:::
+
+    sudo chown -R geonode /home/geonode/geonode/
+    sudo chown geonode:www-data /home/geonode/geonode/geonode/static/
+    sudo chown geonode:www-data /home/geonode/geonode/geonode/uploaded/
+    chmod -Rf 777 /home/geonode/geonode/geonode/uploaded/thumbs
+    chmod -Rf 777 /home/geonode/geonode/geonode/uploaded/layers
+    sudo chown www-data:www-data /home/geonode/geonode/geonode/static_root/
+
+Copy GeoNode data to be served by Apache. You will be prompted for confirmation::
+
+    cd /home/geonode/geonode/
+    sudo -u geonode python manage.py collectstatic
+
+SSL configuration
+-----------------
+
+If a secure HTTP communication is needed then you have to add a virtual host listening on a secure port:::
+
+    Listen 443
+    <VirtualHost *:443>
+        ServerName https://localhost
+        SSLEngine on
+        SSLCertificateFile "/path/to/demo.geonode.org.cert"
+        SSLCertificateKeyFile "/path/to/demo.geonode.org.key"
+    </VirtualHost>
+
+In some cases even the proxy pass has to challenge with a secured GeoServer instance listening in HTTPS. In this situation Apache has to verify the remote server certificate with the certificate of its own Certification Authority (CA). For this purpose the concatenation of the various PEM-encoded certificate files can be used accordingly with this directive:::
+
+    SSLProxyCACertificateFile /usr/local/apache2/conf/ssl.crt/ca-bundle-geoserver-remote-server.crt
+
+Alternatively the directive that sets the directory where you keep the certificates of Certification Authorities (CAs) whose remote servers you deal with can be used:::
+
+    SSLProxyCACertificatePath /usr/local/apache2/conf/ssl.crt/
+
+.. note:: 
+
+    If the verification of GeoServer certificate is not required then the SSL proxy has to be instructed with a directive which excludes the need of a valid certificate:::
+
+        SSLProxyVerify none (instead of "require")
+
+If a strong authentication with client certificates is needed then the secure virtual host has to contain at least these directives:::
+
+    SSLVerifyClient require
+    SSLVerifyDepth 1
+    SSLCACertificateFile "conf/ssl.crt/geonode-ca.crt"
+
+.. note:: 
+    
+    This configuration above requires a client certificate which has to be directly signed by the GeoNode CA certificate in geonode-ca.crt. In certain cases you do not want the verification of GeoServer certificate as mandatory hence it is enough to apply the value *none*
+
+Quick administration
+--------------------
+
+If you change any directive then restart Apache to load the new configurations::
+
+    sudo service apache2 restart

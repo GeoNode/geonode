@@ -18,7 +18,7 @@
     <form action="{{ post_url }}" method="POST" class="form form-horizontal">
         {% csrf_token %}
         <div class="form-actions">
-            <a href="{% url "announcements_list" %}" class="btn">{% trans "Cancel" %}</a>
+            <a href="{% url "announcements_list" %}" class="btn btn-default">{% trans "Cancel" %}</a>
             <button type="submit" class="btn btn-danger">{% trans "Delete" %}</button>
         </div>
     </form>

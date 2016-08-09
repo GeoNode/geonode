@@ -1,3 +1,23 @@
+# -*- coding: utf-8 -*-
+#########################################################################
+#
+# Copyright (C) 2016 OSGeo
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program. If not, see <http://www.gnu.org/licenses/>.
+#
+#########################################################################
+
 from __future__ import unicode_literals
 
 import keyword
@@ -12,10 +32,14 @@ from django.core.exceptions import ValidationError
 from django import db
 
 from geonode.layers.models import Layer
+from geonode.geoserver.helpers import ogc_server_settings
 
 from .postgis import file2pgtable
 
-DYNAMIC_DATASTORE = 'datastore'
+datastore_name = settings.OGC_SERVER['default']['DATASTORE']
+DYNAMIC_DATASTORE = datastore_name if datastore_name != '' else 'datastore'
+
+has_datastore = True if len(ogc_server_settings.datastore_db.keys()) > 0 else False
 
 
 class ModelDescription(models.Model):
@@ -67,14 +91,29 @@ class Field(models.Model):
         "Returns the correct field type, instantiated with applicable settings"
         # Get all associated settings into a list ready for dict()
         settings = [(s.name, s.value) for s in self.settings.all()]  # noqa
+        settings = dict(settings)
+        if 'primary_key' in settings:
+            settings['primary_key'] = bool(settings['primary_key'])
+
+        if 'blank' in settings:
+            settings['blank'] = bool(settings['blank'])
+
+        if 'null' in settings:
+            settings['null'] = bool(settings['null'])
+
+        if 'max_length' in settings:
+            settings['max_length'] = int(settings['max_length'])
 
         field_type = getattr(models, self.type)
 
         # Instantiate the field with the settings as **kwargs
-        return field_type(**dict(settings))
+        return field_type(**settings)
 
     class Meta:
         unique_together = (('model', 'name'),)
+
+    def __unicode__(self):
+        return self.name
 
 
 class Setting(models.Model):
@@ -110,8 +149,13 @@ def create_model(
         for key, value in options.iteritems():
             setattr(Meta, key, value)
 
+    setattr(Meta, 'verbose_name_plural', name)
+
     # Set up a dictionary to simulate declarations within a class
-    attrs = {'__module__': module, 'Meta': Meta}
+    geomanager = models.GeoManager()
+    geomanager._db = DYNAMIC_DATASTORE
+
+    attrs = {'__module__': module, 'Meta': Meta, 'objects': geomanager}
 
     # Add in any fields that were provided
     if fields:
@@ -236,15 +280,16 @@ def generate_model(model_description, mapping, db_key=''):
             'GEOMETRY': 'GeometryField',
         }
 
-        geom_type = mapping['geom']
-
+        geo_column_name = 'the_geom' if has_datastore else 'geom'
+        geom_type = mapping[geo_column_name]
         # Use the geom_type to override the geometry field.
+
         if field_type == 'GeometryField':
             if geom_type in GEOM_FIELDS:
                 field_type = GEOM_FIELDS[geom_type]
 
         # Change the type of id to AutoField to get auto generated ids.
-        if att_name == 'id' and extra_params == {'primary_key': True}:
+        if att_name in ['id', 'fid'] and extra_params == {'primary_key': True}:
             field_type = 'AutoField'
 
         # Add 'null' and 'blank', if the 'null_ok' flag was present in the
@@ -366,7 +411,7 @@ def get_field_type(connection, table_name, row):
     return field_type, field_params, field_notes
 
 
-def pre_save_layer(instance, sender, **kwargs):
+def configure_models(instance, sender, **kwargs):
     """Save to postgis if there is a datastore.
     """
     # Abort if a postgis DATABASE is not configured.
@@ -374,7 +419,7 @@ def pre_save_layer(instance, sender, **kwargs):
         return
 
     # Do not process if there is no table.
-    base_file = instance.get_base_file()
+    base_file = instance.get_base_file()[0]
     if base_file is None or base_file.name != 'shp':
         return
 
@@ -395,12 +440,16 @@ def pre_save_layer(instance, sender, **kwargs):
     TheModel = model_description.get_django_model()
 
     # Use layermapping to load the layer with geodjango
-    lm = LayerMapping(TheModel, filename, mapping,
-                      encoding=instance.charset,
-                      using=DYNAMIC_DATASTORE,
-                      transform=None
-                      )
-    lm.save()
+    if not has_datastore:
+        lm = LayerMapping(TheModel, filename, mapping,
+                          encoding=instance.charset,
+                          using=DYNAMIC_DATASTORE,
+                          transform=None
+                          )
+        lm.save()
+
+    else:
+        post_save_layer(instance, sender, **kwargs)
 
 
 def post_save_layer(instance, sender, **kwargs):
@@ -409,6 +458,8 @@ def post_save_layer(instance, sender, **kwargs):
     # Assign this layer model to all ModelDescriptions with the same name.
     ModelDescription.objects.filter(name=instance.name).update(layer=instance)
 
-
-models.signals.pre_save.connect(pre_save_layer, sender=Layer)
-models.signals.post_save.connect(post_save_layer, sender=Layer)
+if not has_datastore:
+    models.signals.pre_save.connect(configure_models, sender=Layer)
+    models.signals.post_save.connect(post_save_layer, sender=Layer)
+else:
+    models.signals.post_save.connect(configure_models, sender=Layer)

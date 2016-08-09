@@ -139,7 +139,7 @@ gxp.plugins.GeoNodeAPICatalogueSource = Ext.extend(gxp.plugins.CatalogueSource, 
             }
         }
         Ext.apply(this.store.baseParams, {
-            'title__contains': options.queryString
+            'title__icontains': options.queryString
         });
         if (options.limit !== undefined) {
             Ext.apply(this.store.baseParams, {

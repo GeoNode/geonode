@@ -1,6 +1,7 @@
+# -*- coding: utf-8 -*-
 #########################################################################
 #
-# Copyright (C) 2012 OpenPlans
+# Copyright (C) 2016 OSGeo
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -155,7 +156,7 @@ class Catalogue(CatalogueServiceWeb):
 
     def csw_request(self, layer, template):
 
-        md_doc = self.csw_gen_xml(layer, template)
+        md_doc = self.csw_gen_xml(layer, template).encode('utf-8')
 
         if self.type == 'geonetwork':
             headers = {

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #########################################################################
 #
-# Copyright (C) 2012 OpenPlans
+# Copyright (C) 2016 OSGeo
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -34,7 +34,12 @@ from django.conf import settings
 from django.template import RequestContext, loader
 from django.template.defaultfilters import slugify
 from django.utils.translation import ugettext as _
-from django.utils import simplejson as json
+try:
+    # Django >= 1.7
+    import json
+except ImportError:
+    # Django <= 1.6 backwards compatibility
+    from django.utils import simplejson as json
 from django.shortcuts import get_object_or_404
 
 from owslib.wms import WebMapService
@@ -204,7 +209,7 @@ def _verify_service_type(base_url, service_type=None):
     """
     Try to determine service type by process of elimination
     """
-
+    logger.info("Checking the url: " + base_url)
     if service_type in ['WMS', 'OWS', None]:
         try:
             service = WebMapService(base_url)
@@ -235,13 +240,17 @@ def _verify_service_type(base_url, service_type=None):
         except:
             pass
         else:
-            service.services
-            return ['REST', service]
+            try:
+                service.services
+                return ['REST', service]
+            except ValueError:
+                service = CatalogueServiceWeb(base_url)
 
     if service_type in ['CSW', None]:
         try:
             service = CatalogueServiceWeb(base_url)
-        except:
+        except Exception, e:
+            logger.exception(e)
             raise
         else:
             return ['CSW', service]
@@ -271,7 +280,6 @@ def _process_wms_service(url, name, type, username, password, wms=None, owner=No
         logger.info(
             "Could not retrieve GetMap url, using originally supplied URL %s" % url)
         pass
-
     try:
         service = Service.objects.get(base_url=url)
         return_dict = [{'status': 'ok',
@@ -281,7 +289,7 @@ def _process_wms_service(url, name, type, username, password, wms=None, owner=No
                         'service_title': service.title
                         }]
         return HttpResponse(json.dumps(return_dict),
-                            mimetype='application/json',
+                            content_type='application/json',
                             status=200)
     except:
         pass
@@ -296,7 +304,7 @@ def _process_wms_service(url, name, type, username, password, wms=None, owner=No
         supported_crs = ','.join(wms.contents.itervalues().next().crsOptions)
     except:
         supported_crs = None
-    if supported_crs and re.search('EPSG:900913|EPSG:3857|EPSG:102100', supported_crs):
+    if supported_crs and re.search('EPSG:900913|EPSG:3857|EPSG:102100|EPSG:102113', supported_crs):
         return _register_indexed_service(type, url, name, username, password, wms=wms, owner=owner, parent=parent)
     else:
         return _register_cascaded_service(url, type, name, username, password, wms=wms, owner=owner, parent=parent)
@@ -313,7 +321,7 @@ def _register_cascaded_service(url, type, name, username, password, wms=None, ow
         return_dict['service_id'] = service.pk
         return_dict['msg'] = "This is an existing Service"
         return HttpResponse(json.dumps(return_dict),
-                            mimetype='application/json',
+                            content_type='application/json',
                             status=200)
     except:
         # TODO: Handle this error properly
@@ -333,11 +341,9 @@ def _register_cascaded_service(url, type, name, username, password, wms=None, ow
                                      online_resource=wms.provider.url,
                                      owner=owner,
                                      parent=parent)
-
     service.keywords = ','.join(wms.identification.keywords)
     service.save()
     service.set_default_permissions()
-
     if type in ['WMS', 'OWS']:
         # Register the Service with GeoServer to be cascaded
         cat = Catalog(settings.OGC_SERVER['default']['LOCATION'] + "rest",
@@ -345,7 +351,7 @@ def _register_cascaded_service(url, type, name, username, password, wms=None, ow
         cascade_ws = cat.get_workspace(name)
         if cascade_ws is None:
             cascade_ws = cat.create_workspace(
-                name, "http://geonode.org/cascade")
+                name, "http://geonode.org/" + name)
 
         # TODO: Make sure there isn't an existing store with that name, and
         # deal with it if there is
@@ -407,7 +413,7 @@ def _register_cascaded_service(url, type, name, username, password, wms=None, ow
         return HttpResponse(
             'Invalid Method / Type combo: ' +
             'Only Cascaded WMS, WFS and WCS supported',
-            mimetype="text/plain",
+            content_type="text/plain",
             status=400)
 
     message = "Service %s registered" % service.name
@@ -425,7 +431,7 @@ def _register_cascaded_service(url, type, name, username, password, wms=None, ow
     else:
         _register_cascaded_layers(service)
     return HttpResponse(json.dumps(return_dict),
-                        mimetype='application/json',
+                        content_type='application/json',
                         status=200)
 
 
@@ -448,7 +454,6 @@ def _register_cascaded_layers(service, owner=None):
             cat.save(store)
         wms = WebMapService(service.base_url)
         layers = list(wms.contents)
-
         count = 0
         for layer in layers:
             lyr = cat.get_resource(layer, store, cascade_ws)
@@ -502,7 +507,7 @@ def _register_cascaded_layers(service, owner=None):
         message = "%d Layers Registered" % count
         return_dict = {'status': 'ok', 'msg': message}
         return HttpResponse(json.dumps(return_dict),
-                            mimetype='application/json',
+                            content_type='application/json',
                             status=200)
     elif service.type == 'WCS':
         return HttpResponse('Not Implemented (Yet)', status=501)
@@ -527,7 +532,7 @@ def _register_indexed_service(type, url, name, username, password, verbosity=Fal
             return_dict['service_id'] = service.pk
             return_dict['msg'] = "This is an existing Service"
             return HttpResponse(json.dumps(return_dict),
-                                mimetype='application/json',
+                                content_type='application/json',
                                 status=200)
         except:
             pass
@@ -567,7 +572,7 @@ def _register_indexed_service(type, url, name, username, password, verbosity=Fal
                         'available_layers': available_resources
                         }]
         return HttpResponse(json.dumps(return_dict),
-                            mimetype='application/json',
+                            content_type='application/json',
                             status=200)
     elif type == 'WFS':
         return HttpResponse('Not Implemented (Yet)', status=501)
@@ -577,7 +582,7 @@ def _register_indexed_service(type, url, name, username, password, verbosity=Fal
         return HttpResponse(
             'Invalid Method / Type combo: ' +
             'Only Indexed WMS, WFS and WCS supported',
-            mimetype="text/plain",
+            content_type="text/plain",
             status=400)
 
 
@@ -620,7 +625,7 @@ def _register_indexed_layers(service, wms=None, verbosity=False):
                 message = "%d Incompatible projection - try setting the service as cascaded" % count
                 return_dict = {'status': 'ok', 'msg': message}
                 return HttpResponse(json.dumps(return_dict),
-                                    mimetype='application/json',
+                                    content_type='application/json',
                                     status=200)
 
             bbox = list(
@@ -665,7 +670,7 @@ def _register_indexed_layers(service, wms=None, verbosity=False):
         message = "%d Layers Registered" % count
         return_dict = {'status': 'ok', 'msg': message}
         return HttpResponse(json.dumps(return_dict),
-                            mimetype='application/json',
+                            content_type='application/json',
                             status=200)
     elif service.type == 'WFS':
         return HttpResponse('Not Implemented (Yet)', status=501)
@@ -689,7 +694,7 @@ def _register_harvested_service(url, name, username, password, csw=None, owner=N
             'msg': 'This is an existing Service'
         }]
         return HttpResponse(json.dumps(return_dict),
-                            mimetype='application/json',
+                            content_type='application/json',
                             status=200)
     except:
         pass
@@ -726,7 +731,7 @@ def _register_harvested_service(url, name, username, password, csw=None, owner=N
         _harvest_csw(service)
 
     return HttpResponse(json.dumps(return_dict),
-                        mimetype='application/json',
+                        content_type='application/json',
                         status=200)
 
 
@@ -798,10 +803,15 @@ def _register_arcgis_url(url, name, username, password, owner=None, parent=None)
     """
     # http://maps1.arcgisonline.com/ArcGIS/rest/services
     baseurl = _clean_url(url)
+    logger.info("Fetching the ESRI url " + url)
     if re.search("\/MapServer\/*(f=json)*", baseurl):
         # This is a MapService
-        arcserver = ArcMapService(baseurl)
-        if isinstance(arcserver, ArcMapService) and arcserver.spatialReference.wkid in [102100, 3857, 900913]:
+        try:
+            arcserver = ArcMapService(baseurl)
+        except Exception, e:
+            logger.exception(e)
+        if isinstance(arcserver, ArcMapService) and arcserver.spatialReference.wkid in [
+                102100, 102113, 3785, 3857, 900913]:
             return_json = [_process_arcgis_service(arcserver, name, owner=owner, parent=parent)]
         else:
             return_json = [{'msg':  _("Could not find any layers in a compatible projection.")}]
@@ -813,7 +823,7 @@ def _register_arcgis_url(url, name, username, password, owner=None, parent=None)
             arcserver, name, services=[], owner=owner, parent=parent)
 
     return HttpResponse(json.dumps(return_json),
-                        mimetype='application/json',
+                        content_type='application/json',
                         status=200)
 
 
@@ -822,6 +832,7 @@ def _register_arcgis_layers(service, arc=None):
     Register layers from an ArcGIS REST service
     """
     arc = arc or ArcMapService(service.base_url)
+    logger.info("Registering layers for %s" % service.base_url)
     for layer in arc.layers:
         valid_name = slugify(layer.name)
         count = 0
@@ -831,7 +842,7 @@ def _register_arcgis_layers(service, arc=None):
         typename = layer.id
 
         existing_layer = None
-
+        logger.info("Registering layer  %s" % layer.name)
         try:
             existing_layer = Layer.objects.get(
                 typename=typename, service=service)
@@ -842,6 +853,7 @@ def _register_arcgis_layers(service, arc=None):
 
         if existing_layer is None:
             # Need to check if layer already exists??
+            logger.info("Importing layer  %s" % layer.name)
             saved_layer, created = Layer.objects.get_or_create(
                 typename=typename,
                 service=service,
@@ -944,14 +956,19 @@ def _process_arcgis_folder(folder, name, services=[], owner=None, parent=None):
         if not isinstance(service, ArcMapService):
             return_dict[
                 'msg'] = 'Service could not be identified as an ArcMapService, URL: %s' % service.url
+            logger.debug(return_dict['msg'])
         else:
-            if service.spatialReference.wkid in [102100, 3857, 900913]:
-                return_dict = _process_arcgis_service(
-                    service, name, owner, parent=parent)
-            else:
-                return_dict['msg'] = _("Could not find any layers in a compatible projection: \
-                The spatial id was: %(srs)s and the url %(url)s" % {'srs': service.spatialReference.wkid,
-                                                                    'url': service.url})
+            try:
+                if service.spatialReference.wkid in [102100, 102113, 3785, 3857, 900913]:
+                    return_dict = _process_arcgis_service(
+                        service, name, owner, parent=parent)
+                else:
+                    return_dict['msg'] = _("Could not find any layers in a compatible projection: \
+                    The spatial id was: %(srs)s and the url %(url)s" % {'srs': service.spatialReference.wkid,
+                                                                        'url': service.url})
+                    logger.debug(return_dict['msg'])
+            except Exception as e:
+                logger.exception('Error uploading from the service: ' + service.url + ' ' + str(e))
 
         services.append(return_dict)
 
@@ -1000,7 +1017,7 @@ def _register_ogp_service(url, owner=None):
                     'service_title': service.title
                     }]
     return HttpResponse(json.dumps(return_dict),
-                        mimetype='application/json',
+                        content_type='application/json',
                         status=200)
 
 
@@ -1219,6 +1236,22 @@ def remove_service(request, service_id):
             "service": service_obj
         }))
     elif request.method == 'POST':
+        # Retrieve this service's workspace from the GeoServer catalog.
+        cat = Catalog(settings.OGC_SERVER['default']['LOCATION'] + "rest",
+                      _user, _password)
+        workspace = cat.get_workspace(service_obj.name)
+
+        # Delete nested workspace structure from GeoServer for this service.
+        if workspace:
+            for store in cat.get_stores(workspace):
+                for resource in cat.get_resources(store):
+                    for layer in cat.get_layers(resource):
+                        cat.delete(layer)
+                    cat.delete(resource)
+                cat.delete(store)
+            cat.delete(workspace)
+
+        # Delete service from GeoNode.
         service_obj.delete()
         return HttpResponseRedirect(reverse("services"))
 
@@ -1230,14 +1263,14 @@ def ajax_service_permissions(request, service_id):
         return HttpResponse(
             'You are not allowed to change permissions for this service',
             status=401,
-            mimetype='text/plain'
+            content_type='text/plain'
         )
 
     if not request.method == 'POST':
         return HttpResponse(
             'You must use POST for editing service permissions',
             status=405,
-            mimetype='text/plain'
+            content_type='text/plain'
         )
 
     spec = json.loads(request.body)
@@ -1246,7 +1279,7 @@ def ajax_service_permissions(request, service_id):
     return HttpResponse(
         "Permissions updated",
         status=200,
-        mimetype='text/plain')
+        content_type='text/plain')
 
 
 def create_arcgis_links(instance):

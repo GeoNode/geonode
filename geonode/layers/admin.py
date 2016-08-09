@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #########################################################################
 #
-# Copyright (C) 2012 OpenPlans
+# Copyright (C) 2016 OSGeo
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -25,10 +25,18 @@ from geonode.layers.models import Layer, Attribute, Style
 from geonode.layers.models import LayerFile, UploadSession
 from geonode.tasks.update import fix_layer_thumbnail
 
+
 def fix_thumbnail(modeladmin, request, queryset):
     for layer in queryset:
             fix_layer_thumbnail.delay(object_id=layer.id)        
 fix_thumbnail.short_description = "Fix Thumbnails"
+
+
+def fix_thumbnail(modeladmin, request, queryset):
+    for layer in queryset:
+            fix_layer_thumbnail.delay(object_id=layer.id)        
+fix_thumbnail.short_description = "Fix Thumbnails"
+
 
 class AttributeInline(admin.TabularInline):
     model = Attribute
@@ -38,6 +46,7 @@ class LayerAdminForm(ResourceBaseAdminForm):
 
     class Meta:
         model = Layer
+        fields = '__all__'
 
 
 class LayerAdmin(MediaTranslationAdmin):

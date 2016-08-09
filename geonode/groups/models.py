@@ -1,3 +1,23 @@
+# -*- coding: utf-8 -*-
+#########################################################################
+#
+# Copyright (C) 2016 OSGeo
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program. If not, see <http://www.gnu.org/licenses/>.
+#
+#########################################################################
+
 import datetime
 import hashlib
 
@@ -44,21 +64,22 @@ class GroupProfile(models.Model):
         null=True,
         blank=True) 
     group = models.OneToOneField(Group)
-    title = models.CharField(max_length=50)
+    title = models.CharField(_('Title'), max_length=50)
     slug = models.SlugField(unique=True)
-    logo = models.ImageField(upload_to="people_group", blank=True)
-    description = models.TextField()
+    logo = models.ImageField(_('Logo'), upload_to="people_group", blank=True)
+    description = models.TextField(_('Description'))
     email = models.EmailField(
-        _('email'),
+        _('Email'),
         null=True,
         blank=True,
         help_text=email_help_text)
     keywords = TaggableManager(
-        _('keywords'),
+        _('Keywords'),
         help_text=_("A space or comma-separated list of keywords"),
         blank=True,
         related_name='group_keywords')
     access = models.CharField(
+        _('Access'),
         max_length=15,
         default="public'",
         choices=GROUP_CHOICES,
@@ -78,7 +99,7 @@ class GroupProfile(models.Model):
         null=True,
         help_text=_('country of the physical address'))
     tasks = models.TextField(null=True, blank=True)
-    profile_type = models.CharField(choices=[['org', 'Organization'],['ini', 'Initiative']], max_length=255)
+    profile_type = models.CharField(null=True, choices=[['org', 'Organization'],['ini', 'Initiative']], max_length=255)
     featured = models.BooleanField(default=False, help_text=_('Should this resource be advertised in home page?'))
 
     def save(self, *args, **kwargs):

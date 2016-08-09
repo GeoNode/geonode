@@ -43,7 +43,7 @@
             }
         });
     }
-    
+
   module.load_keywords = function ($http, $rootScope, $location){
         var params = typeof FILTER_TYPE == 'undefined' ? {} : {'type': FILTER_TYPE};
         if ($location.search().hasOwnProperty('title__icontains')){
@@ -60,7 +60,7 @@
             }
         });
     }
-    
+
   module.load_regions = function ($http, $rootScope, $location){
         var params = typeof FILTER_TYPE == 'undefined' ? {} : {'type': FILTER_TYPE};
         if ($location.search().hasOwnProperty('title__icontains')){
@@ -72,6 +72,23 @@
                     $location.search()['regions__name__in'], 'name');
             }
             $rootScope.regions = data.objects;
+            if (HAYSTACK_FACET_COUNTS && $rootScope.query_data) {
+                module.haystack_facets($http, $rootScope, $location);
+            }
+        });
+    }
+
+    module.load_owners = function ($http, $rootScope, $location){
+        var params = typeof FILTER_TYPE == 'undefined' ? {} : {'type': FILTER_TYPE};
+        if ($location.search().hasOwnProperty('title__icontains')){
+            params['title__icontains'] = $location.search()['title__icontains'];
+        }
+        $http.get(OWNERS_ENDPOINT, {params: params}).success(function(data){
+            if($location.search().hasOwnProperty('owner__username__in')){
+                data.objects = module.set_initial_filters_from_query(data.objects,
+                    $location.search()['owner__username__in'], 'identifier');
+            }
+            $rootScope.owners = data.objects;
             if (HAYSTACK_FACET_COUNTS && $rootScope.query_data) {
                 module.haystack_facets($http, $rootScope, $location);
             }
@@ -103,7 +120,7 @@
                   keyword.count = 0;
               }
           }
-      }	
+      }
 
       if ("regions" in $rootScope) {
           $rootScope.regions_counts = data.meta.facets.regions;
@@ -113,6 +130,18 @@
                   region.count = $rootScope.region_counts[region.name]
               } else {
                   region.count = 0;
+              }
+          }
+      }
+
+      if ("owners" in $rootScope) {
+          $rootScope.owner_counts = data.meta.facets.owners;
+          for (var id in $rootScope.owners) {
+              var owner = $rootScope.owners[id];
+              if (owner.name in $rootScope.owner_counts) {
+                  owner.count = $rootScope.owner_counts[owner.name]
+              } else {
+                  owner.count = 0;
               }
           }
       }
@@ -135,6 +164,10 @@
     if ($('#regions').length > 0){
        module.load_regions($http, $rootScope, $location);
     }
+    if ($('#owners').length > 0){
+       module.load_owners($http, $rootScope, $location);
+    }
+
 
     // Activate the type filters if in the url
     if($location.search().hasOwnProperty('type__in')){
@@ -167,8 +200,7 @@
     $scope.query.limit = $scope.query.limit || CLIENT_RESULTS_LIMIT;
     $scope.query.offset = $scope.query.offset || 0;
     $scope.page = Math.round(($scope.query.offset / $scope.query.limit) + 1);
-
-
+   
     //Get data from apis and make them available to the page
     function query_api(data){
       return $http.get(Configs.url, {params: data || {}}).success(function(data){
@@ -217,7 +249,7 @@
     }
 
     /*
-    * Pagination 
+    * Pagination
     */
     // Control what happens when the total results change
     $scope.$watch('total_counts', function(){
@@ -225,8 +257,8 @@
         ($scope.total_counts / $scope.query.limit) + 0.49
       );
 
-      // In case the user is viewing a page > 1 and a 
-      // subsequent query returns less pages, then 
+      // In case the user is viewing a page > 1 and a
+      // subsequent query returns less pages, then
       // reset the page to one and search again.
       if($scope.numpages < $scope.page){
         $scope.page = 1;
@@ -243,7 +275,7 @@
         $scope.page -= 1;
         $scope.query.offset =  $scope.query.limit * ($scope.page - 1);
         query_api($scope.query);
-      }   
+      }
     }
 
     $scope.paginate_up = function(){
@@ -269,13 +301,13 @@
     * Add the selection behavior to the element, it adds/removes the 'active' class
     * and pushes/removes the value of the element from the query object
     */
-    $scope.multiple_choice_listener = function($event){    
+    $scope.multiple_choice_listener = function($event){
       var element = $($event.target);
       var query_entry = [];
       var data_filter = element.attr('data-filter');
       var value = element.attr('data-value');
 
-      // If the query object has the record then grab it 
+      // If the query object has the record then grab it
       if ($scope.query.hasOwnProperty(data_filter)){
 
         // When in the location are passed two filters of the same
@@ -284,7 +316,7 @@
           query_entry = $scope.query[data_filter];
         }else{
           query_entry.push($scope.query[data_filter]);
-        }     
+        }
       }
 
       // If the element is active active then deactivate it
@@ -293,15 +325,15 @@
         element.removeClass('active');
 
         // Remove the entry from the correct query in scope
-        
+
         query_entry.splice(query_entry.indexOf(value), 1);
       }
       // if is not active then activate it
       else if(!element.hasClass('active')){
         // Add the entry in the correct query
         if (query_entry.indexOf(value) == -1){
-          query_entry.push(value);  
-        }         
+          query_entry.push(value);
+        }
         element.addClass('active');
       }
 
@@ -315,6 +347,241 @@
       query_api($scope.query);
     }
 
+    /*
+    * Setting the query to a single element - replaces single_choice_listener
+    */
+    $scope.set_query = function(filter, value) {
+      $scope.query = {};
+      $scope.query[filter] = value;
+      query_api($scope.query);
+    }
+
+    /*
+    * Add the query, replacing any current query
+    */
+    $scope.add_single_query = function(filter, value) {
+      $scope.query[filter] = value;
+      query_api($scope.query);
+    }
+
+    /*
+    * Add the query, appending it to any current query
+    */
+    $scope.add_query = function(filter, value) {
+      var query_entry = [];
+      if ($scope.query.hasOwnProperty(filter)) {
+        if ($scope.query[filter] instanceof Array) {
+          query_entry = $scope.query[filter];
+        } else {
+          query_entry.push($scope.query[filter]);
+        }
+        // Only add it if this value doesn't already exist
+        // Apparently this doesn't exactly work...
+        if ($scope.query[filter].indexOf(value) == -1) {
+          query_entry.push(value);
+        }
+      } else {
+        query_entry = [value];
+      }
+      $scope.query[filter] = query_entry;
+      query_api($scope.query);
+    }
+
+    /*
+    * Toggle adding/removing this filter
+    */
+    $scope.toggle_query = function(toggle, filter, value) {
+      if (toggle) {
+        $scope.add_query(filter, value);
+      } else {
+        $scope.remove_query(filter, value);
+      }
+    }
+
+    /*
+    * Remove the query
+    */
+    $scope.remove_query = function(filter, value) {
+      var query_entry = [];
+      // First check if this even exists to remove
+      if ($scope.query.hasOwnProperty(filter)) {
+        // Grab the current query
+        if ($scope.query[filter] instanceof Array) {
+          query_entry = $scope.query[filter];
+        } else {
+          query_entry.push($scope.query[filter]);
+        }
+        // Remove this value
+        query_entry.splice(query_entry.indexOf(value), 1);
+        // Update and run the query
+        $scope.query[filter] = query_entry;
+        query_api($scope.query);
+
+      // If the query object has the record then grab it
+      if ($scope.query.hasOwnProperty(data_filter)){
+        query_entry = $scope.query[data_filter];
+      }
+    }
+
+    /*
+    * Delete all parts of this filter
+    */
+    $scope.delete_query = function(filter) {
+      // First check if this even exists to remove
+      if ($scope.query.hasOwnProperty(filter)) {
+        $scope.query[filter] = [];
+        query_api($scope.query);
+      }
+    }
+
+    $scope.add_search = function(filter, value, array) {
+      if (array.indexOf(value) == -1) {
+        array.push(value);
+        $scope.add_query(filter, value);
+      }
+    }
+
+    $scope.remove_search = function(filter, value, array) {
+      var index = array.indexOf(value);
+      if (index != -1) {
+        array.splice(index, 1);
+        $scope.remove_query(filter, value);
+      }
+    }
+
+
+    var location_promise = function() {
+      var highest = 1;
+      var popular = {};
+      // Query the users
+      Configs.url = '/api/profiles/';
+      $scope.query = {limit: 100, offset: 0};
+      return query_api($scope.query).then(function() {
+        var results = $scope.results;
+        results.forEach(function(element) {
+          if (popular[element.city] != null) {
+            popular[element.city]++;
+            if (highest < popular[element.city]) {
+              highest = popular[element.city];
+              $scope.most_popular_location = element.city;
+            }
+          } else {
+            if (element.city != "" && element.city != null) {
+              popular[element.city] = 1;
+              if (highest == 1) {
+                $scope.most_popular_location = element.city;
+              }
+            }
+          }
+        });
+        // Query the groups
+        Configs.url = '/api/groups/';
+        $scope.query = {limit: 100, offset: 0};
+        return query_api($scope.query).then(function() {
+          var results = $scope.results;
+          results.forEach(function(element) {
+            if (popular[element.city] != null) {
+              popular[element.city]++;
+              if (highest < popular[element.city]) {
+                highest = popular[element.city];
+                $scope.most_popular_location = element.city;
+              }
+            } else {
+              if (element.city != "" && element.city != null) {
+                popular[element.city] = 1;
+                if (highest == 1) {
+                  $scope.most_popular_location = element.city;
+                }
+              }
+            }
+          });
+          return results;
+        });
+      });
+    }
+
+    // Need to use both the users and groups api
+    var calculate_most_popular_location = function() {
+      // Store the current api requests
+      var url = Configs.url;
+      var query = $scope.query;
+
+      // Calculate it and then return things to normal
+      location_promise().then(function() {
+        Configs.url = url;
+        $scope.query = query;
+        query_api($scope.query);
+      });
+    }
+
+    var interest_promise = function() {
+      var highest = 1;
+      var popular = {};
+      // Query the users
+      Configs.url = '/api/profiles/';
+      $scope.query = {limit: 100, offset: 0};
+      return query_api($scope.query).then(function() {
+        var results = $scope.results;
+        results.forEach(function(element) {
+          if (element.interests != null) {
+            element.interests.forEach(function(interest) {
+              if (popular[interest] != null) {
+                popular[interest]++;
+                if (highest < popular[interest]) {
+                  highest = popular[interest]
+                  $scope.most_popular_interest = interest;
+                }
+              } else {
+                if (interest != "" && interest != null) {
+                  popular[interest] = 1;
+                  if (highest == 1) {
+                    $scope.most_popular_interest = interest;
+                  }
+                }
+              }
+            });
+          }
+        });
+        // Query the groups
+        Configs.url = '/api/groups/';
+        $scope.query = {limit: 100, offset: 0};
+        return query_api($scope.query).then(function() {
+          var results = $scope.results;
+          results.forEach(function(element) {
+            if (element.interests != null) {
+              element.interests.forEach(function(interest) {
+                if (popular[interest] != null) {
+                  popular[interest]++;
+                  if (highest < popular[interest]) {
+                    highest = popular[interest]
+                    $scope.most_popular_interest = interest;
+                  }
+                } else {
+                  if (interest != "" && interest != null) {
+                    popular[interest] = 1;
+                    if (highest == 1) {
+                      $scope.most_popular_interest = interest;
+                    }
+                  }
+                }
+              });
+            }
+          });
+          return results;
+        });
+      });      
+    }
+
+    var calculate_most_popular_interest = function() {
+      // Store the current api requests
+      var url = Configs.url;
+      var query = $scope.query;
+
+      interest_promise().then(function() {
+        Configs.url = url;
+        $scope.query = query;
+        query_api($scope.query);
+      }
     /*
     * Setting the query to a single element - replaces single_choice_listener
     */
@@ -561,9 +828,17 @@
           choiceSelector: 'span',
           hideAfter: 200,
           minimumCharacters: 1,
-          appendAutocomplete: $('#text_search_input'),
-          placeholder: gettext('Enter your text here ...')
+          placeholder: gettext('Enter your text here ...'),
+          autoHilightFirst: false
     });
+
+    $('#text_search_input').keypress(function(e) {
+      if(e.which == 13) {
+        $('#text_search_btn').click();
+        $('.yourlabs-autocomplete').hide();
+      }
+    });
+
     $('#text_search_input').bind('selectChoice', function(e, choice, text_autocomplete) {
           if(choice[0].children[0] == undefined) {
 
@@ -666,7 +941,7 @@
       else{
         element.html('Deselect');
         article.addClass('resource_selected');
-      } 
+      }
     };
 
     /*
@@ -701,7 +976,7 @@
       }else{
         init_date = false;
       }
-      
+
     }, true);
 
     /*
@@ -726,13 +1001,14 @@
         map_center: {
           lat: 5.6,
           lng: 3.9,
-          zoom: 1
+          zoom: 0
         },
         defaults: {
           zoomControl: false
         }
       });
 
+			
       var leafletData = $injector.get('leafletData'),
           map = leafletData.getMap('filter-map');
 
@@ -741,6 +1017,16 @@
           $scope.query['extent'] = map.getBounds().toBBoxString();
           query_api($scope.query);
         });
+      });
+    
+      var showMap = false;
+      $('#_extent_filter').click(function(evt) {
+     	  showMap = !showMap
+        if (showMap){
+          leafletData.getMap().then(function(map) {
+            map.invalidateSize();
+          });
+        } 
       });
     }
   });

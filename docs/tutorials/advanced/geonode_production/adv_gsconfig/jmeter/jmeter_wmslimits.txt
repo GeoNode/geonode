@@ -1,0 +1,115 @@
+.. _geoserver.jmeter_wmslimits:
+
+
+Configuring JMeter for testing WMS Resource Limits
+==================================================
+
+The following section explains how GeoServer performances are improved when setting the resource limits for WMS.
+
+Preliminary Steps
+-----------------
+
+#. Open your Web browser and navigate to the GeoServer `Welcome Page <http://localhost:8083/geoserver/>`_.
+
+#. Go to :guilabel:`Stores` and select ``storms`` DataStore
+
+#. Change the following parameters:
+
+		.. list-table::
+		  :widths: 30 50
+
+		  * - **Name**
+		    - **Value**
+		  * - max connections
+		    - 1
+		  * - Connection timeout
+		    - 20000000
+	It should appear something like this:
+		
+	   .. figure:: img/jmeter30.png
+		:align: center
+
+		*Change `storms` parameters*
+			
+	Now you have configured this store to enqueue all the requests in a single queue until they are not timed out.
+
+Configure JMeter
+----------------
+	
+#. Go to ``$TRAINING_ROOT/data/jmeter_data`` and copy the file ``template.jmx`` file and create ``limit.jmx``
+
+#. From the training root, on the command line, run ``jmeter.bat`` (or ``jmeter.sh`` if you're on Linux) to start JMeter
+
+#. On the top left go to :guilabel:`File --> Open` and search for the new *jmx* file copied
+
+#. Disable all the **Thread Groups** except for the **64** one in order to create a test environment with multiple concurrent requests to be enqueued. 
+
+#. In the ``CSV Data Set Config`` element, modify the **path** of the CSV file by setting the path for the file ``limits.csv`` in the ``$TRAINING_ROOT/data/jmeter_data`` directory
+	  
+#. In the **HTTP Request Default** element modify the following parameters:
+
+	.. list-table::
+		  :widths: 30 50
+
+		  * - **Name**
+		    - **Value**
+		  * - layers
+		    - geosolutions:storm_obs
+		  * - srs
+		    - EPSG:4326
+	
+	
+Test without WMS Limits
+-----------------------
+
+#. Run the test
+
+	.. note:: Remember to run and stop the test a few times for having stable results
+
+#. You should see something like this:
+
+	     .. figure:: img/jmeter31.png
+		   :align: center
+
+		   *View Results Tree*
+   
+#. When the test is completed, Save the results in a text file and remove them from the console by clicking on :guilabel:`Run --> Clear All` on the menu
+
+Configure WMS Limits
+--------------------
+
+#. On your Web browser, navigate to the GeoServer `Welcome Page <http://localhost:8083/geoserver/>`_.
+
+#. Go to :guilabel:`WMS` and edit the :guilabel:`Raster Rendering Options` section: 
+
+		.. list-table::
+		  :widths: 30 50
+
+		  * - **Name**
+		    - **Value**
+		  * - Max rendering time
+		    - 10
+			
+	     .. figure:: img/jmeter32.png
+		   :align: center
+
+		   *Changing WMS limit configuration*
+		   
+	With this option, GeoServer will cut off all the requests that need more than 10s to be rendered, making GeoServer more responsive. Note that this 
+	will result in various error returned by GeoServer for those operations which are cut off. 
+	You can choose another value to set. For having a good result you should take a value minor than the average response time of the first test.
+
+Test with WMS Limits
+--------------------
+
+#. Run again the test. You should see multiple errors like this:
+
+	   .. figure:: img/jmeter33.png
+		:align: center
+
+		*Exceptions caused by maximum rendering limit exceeded*
+		
+	You may see that the throughput is increased because most of the timed out requests have been removed. With this kind of configuration you can control the responsiveness 
+	of your GeoServer by removing stale requests instead of waiting for them.
+	
+.. note:: At the end of the test remove the limits and restore the previous configuration of the ``storms`` DataStore

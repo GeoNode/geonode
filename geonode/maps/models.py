@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #########################################################################
 #
-# Copyright (C) 2012 OpenPlans
+# Copyright (C) 2016 OSGeo
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -24,7 +24,10 @@ import uuid
 from django.conf import settings
 from django.db import models
 from django.db.models import signals
-from django.utils import simplejson as json
+try:
+    import json
+except ImportError:
+    from django.utils import simplejson as json
 from django.contrib.contenttypes.models import ContentType
 from django.utils.translation import ugettext_lazy as _
 from django.core.exceptions import ObjectDoesNotExist
@@ -64,7 +67,8 @@ class MapStory(ResourceBase):
         self.title = conf['title']
         self.abstract = conf['abstract']
         self.is_published = conf['is_published']
-        self.category = TopicCategory(conf['category'])
+        if conf['category'] is not None:
+            self.category = TopicCategory(conf['category'])
 
         if self.uuid is None or self.uuid == '':
             self.uuid = str(uuid.uuid1())
@@ -316,7 +320,7 @@ class Map(ResourceBase, GXPMapBase):
         self.owner = user
         self.title = title
         self.abstract = abstract
-        self.projection = "EPSG:900913"
+        self.projection = getattr(settings, 'DEFAULT_MAP_CRS', 'EPSG:900913')
         self.zoom = 0
         self.center_x = 0
         self.center_y = 0
@@ -394,9 +398,12 @@ class Map(ResourceBase, GXPMapBase):
         Returns layer group name from local OWS for this map instance.
         """
         if 'geonode.geoserver' in settings.INSTALLED_APPS:
-            from geonode.geoserver.helpers import gs_catalog
+            from geonode.geoserver.helpers import gs_catalog, ogc_server_settings
             lg_name = '%s_%d' % (slugify(self.title), self.id)
-            return gs_catalog.get_layergroup(lg_name)
+            return {
+                'catalog': gs_catalog.get_layergroup(lg_name),
+                'ows': ogc_server_settings.ows
+                }
         else:
             return None
 
@@ -404,7 +411,7 @@ class Map(ResourceBase, GXPMapBase):
         """
         Publishes local map layers as WMS layer group on local OWS.
         """
-        if 'geonode.geoserver' not in settings.INSTALLED_APPS:
+        if 'geonode.geoserver' in settings.INSTALLED_APPS:
             from geonode.geoserver.helpers import gs_catalog
             from geoserver.layergroup import UnsavedLayerGroup as GsUnsavedLayerGroup
         else:
@@ -472,7 +479,7 @@ class MapLayer(models.Model, GXPLayerBase):
         null=True,
         max_length=200,
         blank=True)
-    # The mimetype of the image format to use for tiles (image/png, image/jpeg,
+    # The content_type of the image format to use for tiles (image/png, image/jpeg,
     # image/gif...)
 
     name = models.CharField(_('name'), null=True, max_length=200)

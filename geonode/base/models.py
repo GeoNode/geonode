@@ -1,3 +1,23 @@
+# -*- coding: utf-8 -*-
+#########################################################################
+#
+# Copyright (C) 2016 OSGeo
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program. If not, see <http://www.gnu.org/licenses/>.
+#
+#########################################################################
+
 import datetime
 import math
 import os
@@ -21,7 +41,8 @@ from django.core.files.storage import default_storage as storage
 from django.core.files.base import ContentFile
 from mptt.models import MPTTModel, TreeForeignKey
 
-from polymorphic import PolymorphicModel, PolymorphicManager
+from polymorphic.models import PolymorphicModel
+from polymorphic.managers import PolymorphicManager
 from agon_ratings.models import OverallRating
 
 from geonode.base.enumerations import ALL_LANGUAGES, \
@@ -82,6 +103,7 @@ class TopicCategory(models.Model):
     description = models.TextField(default='')
     gn_description = models.TextField('GeoNode description', default='', null=True)
     is_choice = models.BooleanField(default=True)
+    fa_class = models.CharField(max_length=64, default='fa-times')
 
     def __unicode__(self):
         return u"{0}".format(self.gn_description)
@@ -231,14 +253,18 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin):
     spatial_representation_type_help_text = _('method used to represent geographic information in the dataset.')
     temporal_extent_start_help_text = _('time period covered by the content of the dataset (start)')
     temporal_extent_end_help_text = _('time period covered by the content of the dataset (end)')
-    distribution_url_help_text = _('information about on-line sources from which the dataset, specification, or '
-                                   'community profile name and extended metadata elements can be obtained')
-    distribution_description_help_text = _('detailed text description of what the online resource is/does')
     data_quality_statement_help_text = _('general explanation of the data producer\'s knowledge about the lineage of a'
                                          ' dataset')
+
+    distribution_url_help_text = _('information about on-line sources from which the dataset, specification, or '
+                                   'community profile name and extended metadata elements can be obtained')
+
+    distribution_description_help_text = _('detailed text description of what the online resource is/does')
+
     # internal fields
     uuid = models.CharField(max_length=36)
-    owner = models.ForeignKey(settings.AUTH_USER_MODEL, blank=True, null=True, related_name='owned_resource')
+    owner = models.ForeignKey(settings.AUTH_USER_MODEL, blank=True, null=True, related_name='owned_resource',
+                              verbose_name=_("Owner"))
     contacts = models.ManyToManyField(settings.AUTH_USER_MODEL, through='ContactRole')
     title = models.CharField(_('title'), max_length=255, help_text=_('name by which the cited resource is known'))
     date = models.DateTimeField(_('date'), default=datetime.datetime.now, help_text=date_help_text)
@@ -251,7 +277,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin):
                                              blank=True, null=True, help_text=maintenance_frequency_help_text)
 
     keywords = TaggableManager(_('keywords'), blank=True, help_text=keywords_help_text)
-    regions = models.ManyToManyField(Region, verbose_name=_('keywords region'), blank=True, null=True,
+    regions = models.ManyToManyField(Region, verbose_name=_('keywords region'), blank=True,
                                      help_text=regions_help_text)
 
     restriction_code_type = models.ForeignKey(RestrictionCodeType, verbose_name=_('restrictions'),
@@ -262,6 +288,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin):
                                          help_text=constraints_other_help_text)
 
     license = models.ForeignKey(License, null=True, blank=True,
+                                verbose_name=_("License"),
                                 help_text=license_help_text)
     language = models.CharField(_('language'), max_length=3, choices=ALL_LANGUAGES, default='eng',
                                 help_text=language_help_text)
@@ -271,6 +298,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin):
 
     spatial_representation_type = models.ForeignKey(SpatialRepresentationType, null=True, blank=True,
                                                     limit_choices_to=Q(is_choice=True),
+                                                    verbose_name=_("spatial representation type"),
                                                     help_text=spatial_representation_type_help_text)
 
     # Section 5
@@ -321,6 +349,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin):
 
     # metadata XML specific fields
     metadata_uploaded = models.BooleanField(default=False)
+    metadata_uploaded_preserve = models.BooleanField(default=False)
     metadata_xml = models.TextField(null=True,
                                     default='<gmd:MD_Metadata xmlns:gmd="http://www.isotc211.org/2005/gmd"/>',
                                     blank=True)
@@ -334,7 +363,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin):
     # fields necessary for the apis
     thumbnail_url = models.TextField(null=True, blank=True)
     detail_url = models.CharField(max_length=255, null=True, blank=True)
-    rating = models.IntegerField(default=0, null=True)
+    rating = models.IntegerField(default=0, null=True, blank=True)
 
     def __unicode__(self):
         return self.title
@@ -393,7 +422,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin):
 
     @property
     def keyword_csv(self):
-        keywords_qs = self.keywords.all()
+        keywords_qs = self.get_real_instance().keywords.all()
         if keywords_qs:
             return ','.join([kw.name for kw in keywords_qs])
         else:
@@ -505,6 +534,8 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin):
         try:
             legends_link = self.link_set.get(name='Legend')
         except Link.DoesNotExist:
+            return None
+        except Link.MultipleObjectsReturned:
             return None
         else:
             return legends_link
@@ -662,19 +693,19 @@ class LinkManager(models.Manager):
     """
 
     def data(self):
-        return self.get_query_set().filter(link_type='data')
+        return self.get_queryset().filter(link_type='data')
 
     def image(self):
-        return self.get_query_set().filter(link_type='image')
+        return self.get_queryset().filter(link_type='image')
 
     def download(self):
-        return self.get_query_set().filter(link_type__in=['image', 'data'])
+        return self.get_queryset().filter(link_type__in=['image', 'data'])
 
     def metadata(self):
-        return self.get_query_set().filter(link_type='metadata')
+        return self.get_queryset().filter(link_type='metadata')
 
     def original(self):
-        return self.get_query_set().filter(link_type='original')
+        return self.get_queryset().filter(link_type='original')
 
     def geogig(self):
         return self.get_queryset().filter(name__icontains='geogig')
@@ -718,13 +749,18 @@ def resourcebase_post_save(instance, *args, **kwargs):
     """
     ResourceBase.objects.filter(id=instance.id).update(
         thumbnail_url=instance.get_thumbnail_url(),
-        detail_url=instance.get_absolute_url())
+        detail_url=instance.get_absolute_url(),
+        csw_insert_date=datetime.datetime.now())
     instance.set_missing_info()
 
     # we need to remove stale links
     for link in instance.link_set.all():
-        if urlsplit(settings.SITEURL).hostname not in link.url:
-            link.delete()
+        if link.name == "External Document":
+            if link.resource.doc_url != link.url:
+                link.delete()
+        else:
+            if urlsplit(settings.SITEURL).hostname not in link.url:
+                link.delete()
 
 
 def rating_post_save(instance, *args, **kwargs):

@@ -1,0 +1,9 @@
+.. _manage:
+
+More on Security and Permissions
+================================
+
+.. toctree::
+   :maxdepth: 2
+
+   permission_and_security

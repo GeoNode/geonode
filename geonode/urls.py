@@ -1,6 +1,7 @@
+# -*- coding: utf-8 -*-
 #########################################################################
 #
-# Copyright (C) 2012 OpenPlans
+# Copyright (C) 2016 OSGeo
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -66,6 +67,12 @@ urlpatterns = patterns('',
                        # Catalogue views
                        (r'^catalogue/', include('geonode.catalogue.urls')),
 
+                       # data.json
+                       url(r'^data.json$', 'geonode.catalogue.views.data_json', name='data_json'),
+
+                       # ident
+                       url(r'^ident.json$', 'geonode.views.ident_json', name='ident_json'),
+
                        # Search views
                        url(r'^search/$', TemplateView.as_view(template_name='search/search.html'), name='search'),
 
@@ -108,6 +115,11 @@ if "geonode.contrib.dynamic" in settings.INSTALLED_APPS:
                             (r'^dynamic/', include('geonode.contrib.dynamic.urls')),
                             )
 
+if "geonode.contrib.metadataxsl" in settings.INSTALLED_APPS:
+    urlpatterns += patterns('',
+                            (r'^showmetadata/', include('geonode.contrib.metadataxsl.urls')),
+                            )
+
 if 'geonode.geoserver' in settings.INSTALLED_APPS:
     # GeoServer Helper Views
     urlpatterns += patterns('',
@@ -126,7 +138,7 @@ urlpatterns += geonode.proxy.urls.urlpatterns
 
 # Serve static files
 urlpatterns += staticfiles_urlpatterns()
-urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+urlpatterns += static(settings.LOCAL_MEDIA_URL, document_root=settings.MEDIA_ROOT)
 handler403 = 'geonode.views.err403'
 
 # Featured Maps Pattens

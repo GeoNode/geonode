@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #########################################################################
 #
-# Copyright (C) 2012 OpenPlans
+# Copyright (C) 2016 OSGeo
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -28,26 +28,32 @@ import os
 import glob
 import sys
 import tempfile
-import zipfile
 
 from osgeo import gdal
 
 # Django functionality
 from django.contrib.auth import get_user_model
 from django.template.defaultfilters import slugify
+from django.core.exceptions import ObjectDoesNotExist
+from django.core.files.storage import default_storage as storage
 from django.core.files import File
 from django.conf import settings
+from django.db.models import Q
 
 # Geonode functionality
 from geonode import GeoNodeException
 from geonode.people.utils import get_valid_user
 from geonode.layers.models import Layer, UploadSession
-from geonode.base.models import Link, SpatialRepresentationType, TopicCategory
+from geonode.base.models import Link, SpatialRepresentationType, TopicCategory, Region
 from geonode.layers.models import shp_exts, csv_exts, vec_exts, cov_exts
 from geonode.layers.metadata import set_metadata
 from geonode.utils import http_client
 
-from zipfile import ZipFile
+import tarfile
+
+from zipfile import ZipFile, is_zipfile
+
+from datetime import datetime
 
 logger = logging.getLogger('geonode.layers.utils')
 
@@ -67,6 +73,22 @@ def _clean_string(
         str = replace + str
 
     return regex.sub(replace, str)
+
+
+def resolve_regions(regions):
+
+    regions_resolved = []
+    regions_unresolved = []
+    if regions:
+        if len(regions) > 0:
+            for region in regions:
+                try:
+                    region_resolved = Region.objects.get(Q(name__iexact=region) | Q(code__iexact=region))
+                    regions_resolved.append(region_resolved)
+                except ObjectDoesNotExist:
+                    regions_unresolved.append(region)
+
+    return regions_resolved, regions_unresolved
 
 
 def get_files(filename):
@@ -165,6 +187,17 @@ def layer_type(filename):
                     extension = e
         finally:
             zf.close()
+
+    if extension.lower() == '.tar' or filename.endswith('.tar.gz'):
+        tf = tarfile.open(filename)
+        # TarFile doesn't support with statement in 2.6, so don't do it
+        try:
+            for n in tf.getnames():
+                b, e = os.path.splitext(n.lower())
+                if e in shp_exts or e in cov_exts or e in csv_exts:
+                    extension = e
+        finally:
+            tf.close()
 
     if extension.lower() in vec_exts:
         return 'vector'
@@ -297,7 +330,7 @@ def unzip_file(upload_file, extension='.shp', tempdir=None):
     if tempdir is None:
         tempdir = tempfile.mkdtemp()
 
-    the_zip = zipfile.ZipFile(upload_file)
+    the_zip = ZipFile(upload_file)
     the_zip.extractall(tempdir)
     for item in the_zip.namelist():
         if item.endswith(extension):
@@ -306,8 +339,27 @@ def unzip_file(upload_file, extension='.shp', tempdir=None):
     return absolute_base_file
 
 
+def extract_tarfile(upload_file, extension='.shp', tempdir=None):
+    """
+    Extracts a tarfile into a temporary directory and returns the full path of the .shp file inside (if any)
+    """
+    absolute_base_file = None
+    if tempdir is None:
+        tempdir = tempfile.mkdtemp()
+
+    the_tar = tarfile.open(upload_file)
+    the_tar.extractall(tempdir)
+    for item in the_tar.getnames():
+        if item.endswith(extension):
+            absolute_base_file = os.path.join(tempdir, item)
+
+    return absolute_base_file
+
+
 def file_upload(filename, name=None, user=None, title=None, abstract=None,
-                skip=True, overwrite=False, keywords=[], charset='UTF-8', category=None):
+                keywords=[], category=None, regions=[], date=None,
+                skip=True, overwrite=False, charset='UTF-8',
+                metadata_uploaded_preserve=False):
     """Saves a layer in GeoNode asking as little information as possible.
        Only filename is required, user and title are optional.
     """
@@ -330,8 +382,11 @@ def file_upload(filename, name=None, user=None, title=None, abstract=None,
         name = slugify(title).replace('-', '_')
 
     if category is not None:
-        category = TopicCategory.objects.get(
-                    identifier=category)
+        categories = TopicCategory.objects.filter(Q(identifier__iexact=category) | Q(gn_description__iexact=category))
+        if len(categories) == 1:
+            category = categories[0]
+        else:
+            category = None
 
     # Generate a name that is not taken if overwrite is False.
     valid_name = get_valid_layer_name(name, overwrite)
@@ -372,10 +427,17 @@ def file_upload(filename, name=None, user=None, title=None, abstract=None,
 
     # set metadata
     if 'xml' in files:
-        xml_file = open(files['xml'])
+        with open(files['xml']) as f:
+            xml_file = f.read()
         defaults['metadata_uploaded'] = True
+        defaults['metadata_uploaded_preserve'] = metadata_uploaded_preserve
+
         # get model properties from XML
-        vals, keywords = set_metadata(xml_file.read())
+        identifier, vals, regions, keywords = set_metadata(xml_file)
+
+        if defaults['metadata_uploaded_preserve']:
+            defaults['metadata_xml'] = xml_file
+            defaults['uuid'] = identifier
 
         for key, value in vals.items():
             if key == 'spatial_representation_type':
@@ -388,6 +450,22 @@ def file_upload(filename, name=None, user=None, title=None, abstract=None,
                 defaults[key] = value
             else:
                 defaults[key] = value
+
+    regions_resolved, regions_unresolved = resolve_regions(regions)
+    keywords.extend(regions_unresolved)
+
+    if getattr(settings, 'NLP_ENABLED', False):
+        try:
+            from geonode.contrib.nlp.utils import nlp_extract_metadata_dict
+            nlp_metadata = nlp_extract_metadata_dict({
+                'title': defaults.get('title', None),
+                'abstract': defaults.get('abstract', None),
+                'purpose': defaults.get('purpose', None)})
+            if nlp_metadata:
+                regions_resolved.extend(nlp_metadata.get('regions', []))
+                keywords.extend(nlp_metadata.get('keywords', []))
+        except:
+            print "NLP extraction failed."
 
     # If it is a vector file, create the layer in postgis.
     if is_vector(filename):
@@ -416,20 +494,34 @@ def file_upload(filename, name=None, user=None, title=None, abstract=None,
         layer.save()
 
     # Assign the keywords (needs to be done after saving)
-    if len(keywords) > 0:
-        layer.keywords.add(*keywords)
+    keywords = list(set(keywords))
+    if keywords:
+        if len(keywords) > 0:
+            layer.keywords.add(*keywords)
+
+    # Assign the regions (needs to be done after saving)
+    regions_resolved = list(set(regions_resolved))
+    if regions_resolved:
+        if len(regions_resolved) > 0:
+            layer.regions.add(*regions_resolved)
+
+    if date is not None:
+        layer.date = datetime.strptime(date, '%Y-%m-%d %H:%M:%S')
+        layer.save()
 
     return layer
 
 
 def upload(incoming, user=None, overwrite=False,
-           keywords=(), skip=True, ignore_errors=True,
-           verbosity=1, console=None, category=None, title=None, private=False):
+           keywords=(), category=None, regions=(),
+           skip=True, ignore_errors=True,
+           verbosity=1, console=None, title=None, date=None,
+           private=False, metadata_uploaded_preserve=False):
     """Upload a directory of spatial data files to GeoNode
 
        This function also verifies that each layer is in GeoServer.
 
-       Supported extensions are: .shp, .tif, and .zip (of a shapefile).
+       Supported extensions are: .shp, .tif, .tar, .tar.gz, and .zip (of a shapefile).
        It catches GeoNodeExceptions and gives a report per file
     """
     if verbosity > 1:
@@ -444,7 +536,9 @@ def upload(incoming, user=None, overwrite=False,
         basename, extension = os.path.splitext(short_filename)
         filename = incoming
 
-        if extension in ['.tif', '.shp', '.zip']:
+        if extension in ['.tif', '.shp', '.tar', '.zip']:
+            potential_files.append((basename, filename))
+        elif short_filename.endswith('.tar.gz'):
             potential_files.append((basename, filename))
 
     elif not os.path.isdir(incoming):
@@ -458,7 +552,9 @@ def upload(incoming, user=None, overwrite=False,
             for short_filename in files:
                 basename, extension = os.path.splitext(short_filename)
                 filename = os.path.join(root, short_filename)
-                if extension in ['.tif', '.shp', '.zip']:
+                if extension in ['.tif', '.shp', '.tar', '.zip']:
+                    potential_files.append((basename, filename))
+                elif short_filename.endswith('.tar.gz'):
                     potential_files.append((basename, filename))
 
     # After gathering the list of potential files,
@@ -493,15 +589,21 @@ def upload(incoming, user=None, overwrite=False,
 
         if save_it:
             try:
-                if zipfile.is_zipfile(filename):
+                if is_zipfile(filename):
                     filename = unzip_file(filename)
+
+                if tarfile.is_tarfile(filename):
+                    filename = extract_tarfile(filename)
 
                 layer = file_upload(filename,
                                     user=user,
                                     overwrite=overwrite,
                                     keywords=keywords,
                                     category=category,
-                                    title=title
+                                    regions=regions,
+                                    title=title,
+                                    date=date,
+                                    metadata_uploaded_preserve=metadata_uploaded_preserve
                                     )
                 if not existed:
                     status = 'created'
@@ -514,6 +616,16 @@ def upload(incoming, user=None, overwrite=False,
                                                            "delete_resourcebase", "change_resourcebase_permissions",
                                                            "publish_resourcebase"]}, "groups": {}}
                     layer.set_permissions(perm_spec)
+
+                if getattr(settings, 'SLACK_ENABLED', False):
+                    try:
+                        from geonode.contrib.slack.utils import build_slack_message_layer, send_slack_messages
+                        send_slack_messages(build_slack_message_layer(
+                            ("layer_new" if status == "created" else "layer_edit"),
+                            layer))
+                    except:
+                        print "Could not send slack message."
+
             except Exception as e:
                 if ignore_errors:
                     status = 'failed'
@@ -542,51 +654,59 @@ def upload(incoming, user=None, overwrite=False,
     return output
 
 
-def create_thumbnail(instance, thumbnail_remote_url, thumbnail_create_url=None, check_bbox=True, ogc_client=None):
-    if not ogc_client:
-        ogc_client = http_client
-    BBOX_DIFFERENCE_THRESHOLD = 1e-5
+def create_thumbnail(instance, thumbnail_remote_url, thumbnail_create_url=None,
+                     check_bbox=True, ogc_client=None, overwrite=False):
+    thumbnail_dir = os.path.join(settings.MEDIA_ROOT, 'thumbs')
+    thumbnail_name = 'layer-%s-thumb.png' % instance.uuid
+    thumbnail_path = os.path.join(thumbnail_dir, thumbnail_name)
 
-    if not thumbnail_create_url:
-        thumbnail_create_url = thumbnail_remote_url
+    if overwrite is True or storage.exists(thumbnail_path) is False:
+        if not ogc_client:
+            ogc_client = http_client
+        BBOX_DIFFERENCE_THRESHOLD = 1e-5
 
-    if check_bbox:
-        # Check if the bbox is invalid
-        valid_x = (
-            float(
-                instance.bbox_x0) -
-            float(
-                instance.bbox_x1)) ** 2 > BBOX_DIFFERENCE_THRESHOLD
-        valid_y = (
-            float(
-                instance.bbox_y1) -
-            float(
-                instance.bbox_y0)) ** 2 > BBOX_DIFFERENCE_THRESHOLD
-    else:
-        valid_x = True
-        valid_y = True
+        if not thumbnail_create_url:
+            thumbnail_create_url = thumbnail_remote_url
 
-    image = None
+        if check_bbox:
+            # Check if the bbox is invalid
+            valid_x = (
+                float(
+                    instance.bbox_x0) -
+                float(
+                    instance.bbox_x1)) ** 2 > BBOX_DIFFERENCE_THRESHOLD
+            valid_y = (
+                float(
+                    instance.bbox_y1) -
+                float(
+                    instance.bbox_y0)) ** 2 > BBOX_DIFFERENCE_THRESHOLD
+        else:
+            valid_x = True
+            valid_y = True
 
-    if valid_x and valid_y:
-        Link.objects.get_or_create(resource=instance.get_self_resource(),
-                                   url=thumbnail_remote_url,
-                                   defaults=dict(
-                                       extension='png',
-                                       name="Remote Thumbnail",
-                                       mime='image/png',
-                                       link_type='image',
+        image = None
+
+        if valid_x and valid_y:
+            Link.objects.get_or_create(resource=instance.get_self_resource(),
+                                       url=thumbnail_remote_url,
+                                       defaults=dict(
+                                           extension='png',
+                                           name="Remote Thumbnail",
+                                           mime='image/png',
+                                           link_type='image',
+                                           )
                                        )
-                                   )
-        Layer.objects.filter(id=instance.id).update(thumbnail_url=thumbnail_remote_url)
-        # Download thumbnail and save it locally.
-        resp, image = ogc_client.request(thumbnail_create_url)
-        if 'ServiceException' in image or resp.status < 200 or resp.status > 299:
-            msg = 'Unable to obtain thumbnail: %s' % image
-            logger.debug(msg)
-            # Replace error message with None.
-            image = None
+            Layer.objects.filter(id=instance.id) \
+                .update(thumbnail_url=thumbnail_remote_url)
+            # Download thumbnail and save it locally.
+            resp, image = ogc_client.request(thumbnail_create_url)
+            if 'ServiceException' in image or \
+               resp.status < 200 or resp.status > 299:
+                msg = 'Unable to obtain thumbnail: %s' % image
+                logger.debug(msg)
+                # Replace error message with None.
+                image = None
 
-    if image is not None:
-        filename = 'layer-%s-thumb.png' % instance.uuid
-        instance.save_thumbnail(filename, image=image)
+        if image is not None:
+            filename = 'layer-%s-thumb.png' % instance.uuid
+            instance.save_thumbnail(filename, image=image)

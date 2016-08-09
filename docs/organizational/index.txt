@@ -4,6 +4,9 @@
 Organizational
 ==============
 
+Project Information
+===================
+
 This is information on existing projects, contributing to GeoNode (code, documentation, translation, ...) and the community itself.
 
 :ref:`about` - What is GeoNode, the big picture.
@@ -38,11 +41,13 @@ Helping out the GeoNode project is great and by contributing we all benefit and 
 
 :ref:`contribute_to_doc_translation` describes how to translate the documentation.
 
+Table of Content
+================
+
 .. toctree::
     :maxdepth: 3
 
     about
-    projects
     roadmap
     community_resources
     comm_bylaws

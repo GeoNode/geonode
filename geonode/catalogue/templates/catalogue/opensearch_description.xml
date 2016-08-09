@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<OpenSearchDescription xmlns="http://a9.com/-/spec/opensearch/1.1/">
+    <ShortName>{{ shortname }}</ShortName>
+    <LongName>{{ shortname }}</LongName>
+    <Description>Search {{ url }}</Description>
+    <Tags>{{ tags }}</Tags>
+    <Image height="16" width="16" type="image/vnd.microsoft.icon">{{ url }}/static/geonode/img/favicon.ico</Image>
+    <InputEncoding>UTF-8</InputEncoding>
+    <Url type="text/html" template="{{ url }}/search/?title__icontains={searchTerms}"/>
+    <Url type="application/atom+xml" template="{{ url }}/catalogue/csw?mode=opensearch&amp;service=CSW&amp;version=2.0.2&amp;request=GetRecords&amp;elementsetname=full&amp;typenames=csw:Record&amp;resulttype=results&amp;q={searchTerms?}&amp;bbox={geo:box?}&amp;time={time:start?}/{time:end?}&amp;startposition={startIndex?}&amp;maxrecords={count?}"/>
+    <Developer>{{ developer }}</Developer>
+    <Contact>{{ contact }}</Contact>
+    <Attribution>{{ attribution }}</Attribution>
+</OpenSearchDescription>

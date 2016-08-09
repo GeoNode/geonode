@@ -1,0 +1,135 @@
+
+
+.. _geoserver.jmeter_gwc:
+
+
+Configuring JMeter for testing GeoWebCache fullWMS support
+==========================================================
+
+The following section compare GeoServer WMS with GeoWebCache ``fullWMS`` support. ``FullWMS`` is a new feature which allows GeoWebCache to act as a WMS endpoint, like GeoServer.
+Using GeoWebCache, the server is able to cache the requested tiles in order to return them faster then GeoServer. 
+
+This example will show how to configure GeoWebCache with fullWMS support and how the performances are improved.
+
+
+Configuring GeoServer/GeoWebCache
+---------------------------------
+
+#. On your Web browser, navigate to the GeoServer `Welcome Page <http://localhost:8083/geoserver/>`_.
+
+#. Go to :guilabel:`Gridsets` and click on ``Create a new gridest``
+
+#. Call it ``EPSG_2876`` and set ``EPSG:2876`` as :guilabel:`Coordinate Reference System`
+
+#. Click on :guilabel:`Compute from maximum extent of CRS` and add 15 new **Zoom Levels** (from 0 to 14)by clicking on :guilabel:`Add zoom level`. It should look like this picture:
+
+	.. figure:: img/jmeter41.png
+		:align: center
+   
+		*Create a new Gridset*
+
+#. Click on :guilabel:`Save`. Now this `GridSet` can be added to the Layer Group ``boulder`` for caching it with GeoWebCache
+
+#. Go to :guilabel:`Layer Groups` and click on ``boulder``
+
+#. On the :guilabel:`Available gridsets` panel add the gridset ``EPSG_2876`` from the list. Then click on :guilabel:`Save`. 
+
+	.. figure:: img/jmeter42.png
+		:align: center
+   
+		*Add the new Gridset*
+
+	.. note:: Remember to set :guilabel:`Published zoom levels` to ``Min`` and ``Max``
+	  
+Configuring JMeter
+------------------
+	
+#. Go to ``$TRAINING_ROOT/data/jmeter_data`` and copy the file ``template.jmx`` file into ``gwc.jmx``
+
+#. From the training root, on the command line, run ``jmeter.bat`` (or ``jmeter.sh`` if you're on Linux) to start JMeter
+
+#. On the top left go to :guilabel:`File --> Open` and search for the new *jmx* file copied
+
+#. Disable all the **Thread Groups** except for **8**
+
+#. Disable the **Content-Type Check**
+
+#. In the ``CSV Data Set Config`` element, modify the **path** of the CSV file by setting the path for the file ``gwc.csv`` in the ``$TRAINING_ROOT/data/jmeter_data`` directory
+	  
+#. In the **HTTP Request Default** element modify the following parameters:
+
+	.. list-table::
+		  :widths: 30 50
+
+		  * - **Name**
+		    - **Value**
+		  * - layers
+		    - boulder
+		  * - srs
+		    - EPSG:2876	
+	
+Test GeoServer WMS
+------------------
+
+#. Run the test
+	  
+	.. note:: Remember to run and stop the test a few times for having stable results
+
+#. When the test is completed, Save the results in a text file.
+	
+#. Remove the result from JMeter by clicking on :guilabel:`Run --> Clear All` on the menu
+
+#. Stop GeoServer
+
+Test GeoWebCache fullWMS
+------------------------
+
+#. Go to ``$TRAINING_ROOT/data/gwc/geowebcache.xml`` and add the following snippet:
+
+	.. code-block:: xml
+		
+		<gwcConfiguration>
+		
+		  ...
+		  
+		  <fullWMS>true</fullWMS>
+		</gwcConfiguration>
+		
+	Setting ``fullWMS`` to `true` allows GeoWebCache to use fullWMS support
+
+#. Restart GeoServer
+	
+#. On the JMeter **HTTP Request Default** panel, change the *Path* from ``geoserver/ows`` to ``geoserver/gwc/service/wms`` in order to execute WMS requests directly to GeoWebCache, without passing from GeoServer
+
+#. Add a new parameter called **hints** which can have 3 values ``speed``, ``default`` and ``quality``. The first one should be used for having a faster response without concerning about image quality; the last one, instead, is slower but with a better quality; the second one is a good trade off between them. For the first test set **hints** to ``speed``. 	  
+
+#. Run the test
+
+	.. note:: At the first run, the throughput should be lower than that of GeoServer, because GeoWebCache has spent much time on generating the cached tiles.
+
+#. Remove the result from JMeter by clicking on :guilabel:`Run --> Clear All` on the menu
+
+#. Run the same test again.
+
+	Now the throughput should be improved, because GeoWebCache have already generated the tiles to cache and can reuse them. Image quality should be very poor because of the ``hints=speed`` configuration.
+
+	.. figure:: img/jmeter43.png
+		:align: center
+   
+		*Result from GeoWebCache fullWMS with hints=speed*
+	
+#. Run the same test with ``hints=default``
+
+	.. figure:: img/jmeter44.png
+		:align: center
+   
+		*Result from GeoWebCache fullWMS with hints=default*
+
+#. Run the same test with ``hints=quality``
+
+	.. figure:: img/jmeter45.png
+		:align: center
+   
+		*Result from GeoWebCache fullWMS with hints=quality*
+		
+	It should be noted that changing the ``hints`` parameter changes the image quality, but the throughput is always greater than that of GeoServer WMS

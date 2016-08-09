@@ -1,4 +1,23 @@
 # -*- coding: utf-8 -*-
+#########################################################################
+#
+# Copyright (C) 2016 OSGeo
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program. If not, see <http://www.gnu.org/licenses/>.
+#
+#########################################################################
+
 import errno
 import logging
 import urllib
@@ -6,13 +25,12 @@ import urllib
 from urlparse import urlparse, urljoin
 from socket import error as socket_error
 
-from django.utils.translation import ugettext, ugettext_lazy as _
+from django.utils.translation import ugettext
 from django.conf import settings
 
-from geonode import GeoNodeException
 from geonode.geoserver.ows import wcs_links, wfs_links, wms_links
 from geonode.geoserver.helpers import cascading_delete, set_attributes
-from geonode.geoserver.helpers import set_styles, gs_catalog, get_coverage_grid_extent
+from geonode.geoserver.helpers import set_styles, gs_catalog
 from geonode.geoserver.helpers import ogc_server_settings
 from geonode.geoserver.helpers import geoserver_upload, http_client
 from geonode.base.models import ResourceBase
@@ -34,7 +52,8 @@ def geoserver_pre_delete(instance, sender, **kwargs):
     # ogc_server_settings.BACKEND_WRITE_ENABLED == True
     if getattr(ogc_server_settings, "BACKEND_WRITE_ENABLED", True):
         if not getattr(instance, "service", None):
-            cascading_delete(gs_catalog, instance.typename)
+            if instance.typename:
+                cascading_delete(gs_catalog, instance.typename)
 
 
 def geoserver_pre_save(instance, sender, **kwargs):
@@ -104,7 +123,13 @@ def geoserver_pre_save(instance, sender, **kwargs):
     gs_layer = gs_catalog.get_layer(instance.name)
 
     if instance.poc and instance.poc:
-        gs_layer.attribution = str(instance.poc)
+        # gsconfig now utilizes an attribution dictionary
+        gs_layer.attribution = {'title': str(instance.poc),
+                                'width': None,
+                                'height': None,
+                                'href': None,
+                                'url': None,
+                                'type': None}
         profile = Profile.objects.get(username=instance.poc.username)
         gs_layer.attribution_link = settings.SITEURL[
             :-1] + profile.get_absolute_url()
@@ -279,42 +304,20 @@ def geoserver_post_save(instance, sender, **kwargs):
                                        )
 
     elif instance.storeType == 'coverageStore':
-        # FIXME(Ariel): This works for public layers, does it work for restricted too?
-        # would those end up with no geotiff links, like, forever?
-        permissions = instance.get_all_level_info()
 
-        instance.set_permissions(
-            {'users': {'AnonymousUser': ['view_resourcebase']}})
+        links = wcs_links(ogc_server_settings.public_url + 'wcs?',
+                          instance.typename.encode('utf-8'))
 
-        try:
-            # Potentially 3 dimensions can be returned by the grid if there is a z
-            # axis.  Since we only want width/height, slice to the second
-            # dimension
-            covWidth, covHeight = get_coverage_grid_extent(instance)[:2]
-        except GeoNodeException as e:
-            msg = _('Could not create a download link for layer.')
-            logger.warn(msg, e)
-        else:
-
-            links = wcs_links(ogc_server_settings.public_url + 'wcs?',
-                              instance.typename.encode('utf-8'),
-                              bbox=gs_resource.native_bbox[:-1],
-                              crs=gs_resource.native_bbox[-1],
-                              height=str(covHeight),
-                              width=str(covWidth))
-
-            for ext, name, mime, wcs_url in links:
-                Link.objects.get_or_create(resource=instance.resourcebase_ptr,
-                                           url=wcs_url,
-                                           defaults=dict(
-                                               extension=ext,
-                                               name=name,
-                                               mime=mime,
-                                               link_type='data',
-                                           )
-                                           )
-
-        instance.set_permissions(permissions)
+    for ext, name, mime, wcs_url in links:
+        Link.objects.get_or_create(resource=instance.resourcebase_ptr,
+                                   url=wcs_url,
+                                   defaults=dict(
+                                       extension=ext,
+                                       name=name,
+                                       mime=mime,
+                                       link_type='data',
+                                   )
+                                   )
 
     kml_reflector_link_download = ogc_server_settings.public_url + "wms/kml?" + \
         urllib.urlencode({'layers': instance.typename.encode('utf-8'), 'mode': "download"})
@@ -339,22 +342,6 @@ def geoserver_post_save(instance, sender, **kwargs):
                                    name="View in Google Earth",
                                    mime='text/xml',
                                    link_type='data',
-                               )
-                               )
-
-    tile_url = ('%sgwc/service/gmaps?' % ogc_server_settings.public_url +
-                'layers=%s' % instance.typename.encode('utf-8') +
-                '&zoom={z}&x={x}&y={y}' +
-                '&format=image/png8'
-                )
-
-    Link.objects.get_or_create(resource=instance.resourcebase_ptr,
-                               url=tile_url,
-                               defaults=dict(
-                                   extension='tiles',
-                                   name="Tiles",
-                                   mime='image/png',
-                                   link_type='image',
                                )
                                )
 
@@ -461,6 +448,23 @@ def geoserver_post_save(instance, sender, **kwargs):
                 link.url).hostname:
             link.delete()
 
+    # Define the link after the cleanup, we should use this more rather then remove
+    # potential parasites
+    tile_url = ('%sgwc/service/gmaps?' % ogc_server_settings.public_url +
+                'layers=%s' % instance.typename.encode('utf-8') +
+                '&zoom={z}&x={x}&y={y}' +
+                '&format=image/png8'
+                )
+
+    link, created = Link.objects.get_or_create(resource=instance.resourcebase_ptr,
+                                               extension='tiles',
+                                               name="Tiles",
+                                               mime='image/png',
+                                               link_type='image',
+                                               )
+    if created:
+        Link.objects.filter(pk=link.pk).update(url=tile_url)
+
     # Save layer attributes
     set_attributes(instance)
 
@@ -493,7 +497,11 @@ def geoserver_pre_save_maplayer(instance, sender, **kwargs):
     except EnvironmentError as e:
         if e.errno == errno.ECONNREFUSED:
             msg = 'Could not connect to catalog to verify if layer %s was local' % instance.name
-            logger.warn(msg, e)
+            try:
+                # HACK: The logger on signals throws an exception
+                logger.warn(msg, e)
+            except:
+                pass
         else:
             raise e
 

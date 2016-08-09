@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #########################################################################
 #
-# Copyright (C) 2012 OpenPlans
+# Copyright (C) 2016 OSGeo
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -46,7 +46,7 @@ sensitive_post_parameters_m = method_decorator(sensitive_post_parameters())
 class ProfileAdmin(admin.ModelAdmin):
     list_display = ('id', 'username', 'organization',)
     search_fields = ('username', 'organization', 'profile', )
-    autocomplete_light.modelform_factory(Profile)
+    autocomplete_light.modelform_factory(Profile, fields='__all__')
     add_form_template = 'admin/auth/user/add_form.html'
     change_user_password_template = None
     fieldsets = (
@@ -55,6 +55,11 @@ class ProfileAdmin(admin.ModelAdmin):
         (_('Permissions'), {'fields': ('is_active', 'is_staff', 'is_superuser',
                                        'groups')}),
         (_('Important dates'), {'fields': ('last_login', 'date_joined')}),
+        (_('Extended profile'), {'fields': ('organization', 'profile',
+                                            'position', 'voice', 'fax',
+                                            'delivery', 'city', 'area',
+                                            'zipcode', 'country',
+                                            'keywords')}),
     )
     add_fieldsets = (
         (None, {
@@ -84,7 +89,7 @@ class ProfileAdmin(admin.ModelAdmin):
         if obj is None:
             defaults.update({
                 'form': self.add_form,
-                'fields': admin.util.flatten_fieldsets(self.add_fieldsets),
+                'fields': admin.utils.flatten_fieldsets(self.add_fieldsets),
             })
         defaults.update(kwargs)
         return super(ProfileAdmin, self).get_form(request, obj, **defaults)

@@ -11,11 +11,11 @@ So far GeoNode implements two distinct roles, that can be assigned to resources 
 
 This two profiles can be set in the GeoNode interface by accessing the metadata page and setting the "Point of Contact" and "Metadata Author" fields respectively.
 
-Is possible for an administrator to add new roles if needed, by clicking on the "Add Role" button in the "People" -> "Roles" section:
+Is possible for an administrator to add new roles if needed, by clicking on the "Add Role" button in the "Base" -> "Contact Roles" section:
 
 .. figure:: img/admin-roles-add.png
 
-Clicking on the "People" -> "Profiles" section (see figure) will open a web for with some personal information plus a section called "Contact roles".
+Clicking on the "People" section (see figure) will open a web for with some personal information plus a section called "Users".
 
 .. figure:: img/admin-people.png
 

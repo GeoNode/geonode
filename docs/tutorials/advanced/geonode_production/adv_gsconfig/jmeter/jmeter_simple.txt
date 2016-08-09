@@ -1,0 +1,119 @@
+
+
+.. _geoserver.jmeter_simple:
+
+
+Configuring JMeter for a simple test
+------------------------------------
+
+Apache JMeter is an open source Java desktop application, built to verify functional behavior, perform load tests, and measure performance. 
+
+This section explains how to run performance tests using JMeter in order to evaluate the GeoServer performances when serving WMS requests.
+The performance test aim to stress the server and evaluate  the response time and throughput with an increasing number of simulated users 
+sending concurrent request to the server. 
+
+.. note:: Ideally, to avoid adding extra load to the server JMeter should run on a different machine. 
+
+.. warning:: If you have performed the exercises in the security section, please go back to the layer and
+          service security pages and open access to everybody, on all data and all services, before performing
+          the exercises in this section
+
+#. From the training root, on the command line, run ``jmeter.bat`` (or ``jmeter.sh`` if you're on Linux) to start JMeter:
+
+   .. figure:: img/jmeter2.png
+      :align: center
+   
+      *jMeter interface*
+
+#. Add a new **Thread Group** with the mouse right click on ``Test Plan`` tree node:
+
+   .. figure:: img/jmeter3.png
+      :align: center
+   
+      *Adding a new Thread Group*
+
+#. Add a new **Loop Controller** with the mouse right click on ``Thread Group`` tree node: 
+
+   .. figure:: img/jmeter4.png
+      :align: center
+   
+      *Adding a new Loop Controller*
+
+#. In the ``Thread Group`` panel set the number of thread for the test to  4 (this represents the number of simultaneous requests that are made to GeoServer) and the ramp-up period to 60. Also, chek ``Forever`` on the **Loop Count** field. 
+
+   .. figure:: img/jmeter14.png
+      :align: center
+   
+      *Setting the Thread Group*
+
+#. Right click on the ``Loop Controller`` tree node and add a new **HTTP Request** element: 
+
+   .. figure:: img/jmeter5.png
+      :align: center
+   
+      *Adding a new HTTP Request*
+
+#. Add the following listeners by right clicking on ``Test Plan`` tree node: ``View results Tree``, ``Summary Report``, ``Graph results``
+
+   .. figure:: img/jmeter7.png
+      :align: center
+   
+      *Adding a Listeners*
+
+#. In the **HTTP Request** enter the following basic configuration:
+
+   .. list-table::
+      :widths: 50 50
+      :header-rows: 1
+  
+      * - Field
+        - Value
+      * - Server Name or IP
+        - localhost
+      * - Port Number
+        - 8083
+      * - Path
+        - geoserver/ows
+
+   .. figure:: img/jmeter9.png
+      :align: center
+   
+      *HTTP Request host/port/path configuration*
+
+#. From the training data dir root, open the ``data/jmeter_data/jmeter_request_params.txt``, select and copy its contents in the clipboard, then click "Add from Clipboard" in the "HTTP request" panel to setup a sample GetMap request:
+
+  .. figure:: img/jmeter_request_params.png
+     :align: center
+ 
+     *HTTP parameters configuration*
+
+At this point jMeter is configured to run a GeoServer performance test:
+
+#. Select on **Thread Group** tree node and afted click on ``Run`` tool and select **Start** to startig the jMeter test.
+
+   .. figure:: img/jmeter13.png
+      :align: center
+   
+      *starting jMeter test*
+
+#. Select ``View Results Tree`` to directly see the request informations produced and the request result:
+ 
+   .. figure:: img/jmeter15.png
+      :align: center
+
+      *The View Results Tree panel*
+   
+#. Select ``Suymmary report`` to view the statistical information about the requests:
+   
+   .. figure:: img/jmeter19.png
+      :align: center
+
+      *The Aggregate Graph panel*
+
+#. Select ``Graph Results`` to analyze the technical trend of the requests:
+
+   .. figure:: img/jmeter17.png
+      :align: center
+
+      *The Spline Visualizer panel*
+

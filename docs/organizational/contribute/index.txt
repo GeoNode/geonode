@@ -4,20 +4,21 @@
 Contributing to GeoNode
 =======================
 
+.. warning:: This section is freely adapted from the official `GitHub guides <https://guides.github.com>`_.
+
 If you are interested in helping us to make GeoNode, there are many ways to do so.
 
 Participate in the Discussion
 -----------------------------
 
 GeoNode has a mailing list (https://groups.google.com/d/forum/geonode-users) where users can ask and answer questions about the software.
-There is also an IRC chat room #geonode on Freenode (http://freenode.net/) where users and developers can discuss GeoNode in real time.
+There are also IRC chats on Gitter where users (https://gitter.im/GeoNode/general) and developers (https://gitter.im/GeoNode) can discuss GeoNode in real time.
 Sometimes users also post interesting tips for managing sites running GeoNode.
 If you want to help out with GeoNode, one easy way is to sign up for the mailing list and help answer questions.
 
 Report Problems on the Issue Tracking System
----------------
+--------------------------------------------
 
-While we do our best to keep GeoNode fast and bug-free, problems can and do arise.
 Informative bug reports are a key part of the bug fixing process, so if you do run into a problem with GeoNode, please don't hesitate to report it on our bug tracker, available online at http://github.com/GeoNode/geonode/issues.
 Useful information for bug reports includes:
 
@@ -28,9 +29,9 @@ Useful information for bug reports includes:
   * What version of the software are you using?
     Please also note any changes from the default configuration.
   * If there is a data file involved in the bug (such as a Shapefile that doesn't render properly), please consider including it in the bug report.
-    We do understand that not all data files are freely distributable.
+    Be aware that not all data files are freely distributable.
 
-To help us better address the issue you can tag the ticket with one or more lables
+To help GeoNode to better address the issue you can tag the ticket with one or more lables
 that you can find on the side column.
 
 Write Documentation
@@ -39,20 +40,35 @@ Write Documentation
 GeoNode's documentation can always use improvement - there are always more questions to be answered.
 For managing contributions to the manual, GeoNode uses a process similar to that used for managing the code itself.
 The documentation is generated from source files in the `docs/` directory within the GeoNode source repository.
-See http://sphinx.pocoo.org/ for more information on the documentation system we use.
+See http://sphinx.pocoo.org/ for more information on the documentation system GeoNode uses.
 
-If you want to learn more about contributing to the documentation, please go ahead to the :ref:`contrib_docu`. We also have some guidelines to help with writing once you are set up :ref:`doc_guidelines`.
+If you want to learn more about contributing to the documentation, please go ahead to the "`How to contribute to GeoNode's Documentation <http://docs.geonode.org/en/latest/organizational/contribute/contribute_to_documentation.html#contrib-docu>`_". 
+GeoNode also have some guidelines to help with writing once you are set up "`How to write Documentation <http://docs.geonode.org/en/latest/organizational/contribute/documentation_guidelines.html#doc-guidelines>`_".
 
 Provide Translations
 --------------------
 
 If GeoNode doesn't provide a user interface in your native language, consider contributing a new translation.
-To get started here are the instructions :ref:`contrib_trans`.
+To get started here are the instructions "`How to contribute to GeoNode's Translation <http://docs.geonode.org/en/latest/organizational/contribute/contribute_to_translation.html>`_".
 
 Write Code
 ----------
 
-Of course since GeoNode is an open source project we do encourage contributions of source code as well.
-If you are interested in making small changes, you can find an open ticket on http://github.com/GeoNode/geonode/issues, hack away, and get started on the Patch Review Process.
+Of course since GeoNode is an open source project which encourages contributions of source code as well.
+If you are interested in making small changes, you can find an open ticket on http://github.com/GeoNode/geonode/issues, hack away, and get started on the "`Patch Review Process <http://docs.geonode.org/en/latest/organizational/contribute/review_criteria.html>`_".
 
+Further Reading
+---------------
 
+:ref:`contrib_on_github`
+
+:ref:`work_with_github`
+
+:ref:`roadmap`
+
+.. toctree::
+   :hidden:
+    
+   contrib_on_github
+   work_with_github
+   roadmap

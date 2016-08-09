@@ -1,6 +1,7 @@
+# -*- coding: utf-8 -*-
 #########################################################################
 #
-# Copyright (C) 2012 OpenPlans
+# Copyright (C) 2016 OSGeo
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -97,6 +98,16 @@ class GeoNodeSmokeTests(TestCase):
         response = self.client.get(reverse('profile_detail', args=['admin']))
         self.failUnlessEqual(response.status_code, 200)
         response = self.client.get(reverse('profile_detail', args=['norman']))
+        self.failUnlessEqual(response.status_code, 200)
+
+    def test_csw_endpoint(self):
+        '''Test that the CSW endpoint is correctly configured.'''
+        response = self.client.get(reverse('csw_global_dispatch'))
+        self.failUnlessEqual(response.status_code, 200)
+
+    def test_opensearch_description(self):
+        '''Test that the local OpenSearch endpoint is correctly configured.'''
+        response = self.client.get(reverse('opensearch_dispatch'))
         self.failUnlessEqual(response.status_code, 200)
 
 

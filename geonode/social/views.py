@@ -1,3 +1,23 @@
+# -*- coding: utf-8 -*-
+#########################################################################
+#
+# Copyright (C) 2016 OSGeo
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program. If not, see <http://www.gnu.org/licenses/>.
+#
+#########################################################################
+
 from actstream.models import Action
 from django.views.generic import ListView
 
@@ -14,11 +34,11 @@ class RecentActivity(ListView):
         context = super(ListView, self).get_context_data(*args, **kwargs)
         context['action_list_layers'] = Action.objects.filter(
             public=True,
-            action_object_content_type__name='layer')[:15]
+            action_object_content_type__model='layer')[:15]
         context['action_list_maps'] = Action.objects.filter(
             public=True,
-            action_object_content_type__name='map')[:15]
+            action_object_content_type__model='map')[:15]
         context['action_list_comments'] = Action.objects.filter(
             public=True,
-            action_object_content_type__name='comment')[:15]
+            action_object_content_type__model='comment')[:15]
         return context

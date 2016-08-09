@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #########################################################################
 #
-# Copyright (C) 2012 OpenPlans
+# Copyright (C) 2016 OSGeo
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -19,7 +19,7 @@
 #########################################################################
 
 from django.db import models
-from django.utils.translation import ugettext as _
+from django.utils.translation import ugettext_lazy as _
 from django.core.urlresolvers import reverse
 from django.contrib.auth.models import AbstractUser
 from django.db.models import signals
@@ -154,14 +154,20 @@ def get_anonymous_user_instance(Profile):
 
 
 def profile_post_save(instance, sender, **kwargs):
-    """Make sure the user belongs by default to the anonymous group.
-    This will make sure that anonymous permissions will be granted to the new users."""
+    """
+    Make sure the user belongs by default to the anonymous group.
+    This will make sure that anonymous permissions will be granted to the new users.
+    """
     from django.contrib.auth.models import Group
     anon_group, created = Group.objects.get_or_create(name='anonymous')
     instance.groups.add(anon_group)
     # keep in sync Profile email address with Account email address
     if instance.email not in [u'', '', None] and not kwargs.get('raw', False):
-        EmailAddress.objects.filter(user=instance, primary=True).update(email=instance.email)
+        address, created = EmailAddress.objects.get_or_create(
+            user=instance, primary=True,
+            defaults={'email': instance.email, 'verified': False})
+        if not created:
+            EmailAddress.objects.filter(user=instance, primary=True).update(email=instance.email)
     Profile.objects.filter(id=instance.id).update(avatar_100=avatar_url(instance, 100))
 
 

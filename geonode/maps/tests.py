@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #########################################################################
 #
-# Copyright (C) 2012 OpenPlans
+# Copyright (C) 2016 OSGeo
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -22,7 +22,10 @@ from lxml import etree
 
 from django.core.urlresolvers import reverse
 from django.test import TestCase
-from django.utils import simplejson as json
+try:
+    import json
+except ImportError:
+    from django.utils import simplejson as json
 from django.contrib.contenttypes.models import ContentType
 from agon_ratings.models import OverallRating
 from django.contrib.auth import get_user_model
@@ -215,7 +218,9 @@ community."
         self.assertEquals(cfg['about']['title'], 'GeoNode Default Map')
 
         def is_wms_layer(x):
-            return cfg['sources'][x['source']]['ptype'] == 'gxp_wmscsource'
+            if 'source' in x:
+                return cfg['sources'][x['source']]['ptype'] == 'gxp_wmscsource'
+            return False
         layernames = [x['name']
                       for x in cfg['map']['layers'] if is_wms_layer(x)]
         self.assertEquals(layernames, ['geonode:CA', ])

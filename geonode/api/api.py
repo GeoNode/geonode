@@ -1,3 +1,23 @@
+# -*- coding: utf-8 -*-
+#########################################################################
+#
+# Copyright (C) 2016 OSGeo
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program. If not, see <http://www.gnu.org/licenses/>.
+#
+#########################################################################
+
 import json
 import time
 
@@ -65,8 +85,9 @@ class CountJSONSerializer(Serializer):
         options = options or {}
         data = self.to_simple(data, options)
         counts = self.get_resources_counts(options)
-        for item in data['objects']:
-            item['count'] = counts.get(item['id'], 0)
+        if 'objects' in data:
+            for item in data['objects']:
+                item['count'] = counts.get(item['id'], 0)
         # Add in the current time.
         data['requested_time'] = time.time()
 
@@ -96,8 +117,8 @@ class TypeFilteredResource(ModelResource):
         return orm_filters
 
     def serialize(self, request, data, format, options={}):
-        options['title_filter'] = self.title_filter
-        options['type_filter'] = self.type_filter
+        options['title_filter'] = getattr(self, 'title_filter', None)
+        options['type_filter'] = getattr(self, 'type_filter', None)
         options['user'] = request.user
 
         return super(TypeFilteredResource, self).serialize(request, data, format, options)
@@ -134,9 +155,10 @@ class RegionResource(TypeFilteredResource):
         allowed_methods = ['get']
         filtering = {
             'name': ALL,
+            'code': ALL,
         }
-        # To activate the counts on regions uncomment the following line
-        # serializer = CountJSONSerializer()
+        if settings.API_INCLUDE_REGIONS_COUNT:
+            serializer = CountJSONSerializer()
 
 
 class TopicCategoryResource(TypeFilteredResource):
@@ -189,7 +211,7 @@ class GroupResource(ModelResource):
         ordering = ['title', 'last_modified', 'date_joined']
 
 
-class ProfileResource(ModelResource):
+class ProfileResource(TypeFilteredResource):
     """Profile api"""
 
     avatar_100 = fields.CharField(null=True)
@@ -270,7 +292,7 @@ class ProfileResource(ModelResource):
         return bundle.obj.resourcebase_set.filter(id__in=obj_with_perms.values('id')).distinct().count()
 
     def dehydrate_avatar_100(self, bundle):
-        return avatar_url(bundle.obj, 100)
+        return avatar_url(bundle.obj, 240)
 
     def dehydrate_profile_detail_url(self, bundle):
         return bundle.obj.get_absolute_url()
@@ -299,6 +321,13 @@ class ProfileResource(ModelResource):
             ]
         else:
             return []
+
+
+    def serialize(self, request, data, format, options={}):
+        options['count_type'] = 'owner'
+
+        return super(ProfileResource, self).serialize(request, data, format, options)
+
 
     def get_object_list(self, request):
         result = super(ProfileResource, self).get_object_list(request)
@@ -332,6 +361,8 @@ class ProfileResource(ModelResource):
             'first_name': ALL,
             'last_name': ALL
         }
+        serializer = CountJSONSerializer()
+
 
 class OwnersResource(TypeFilteredResource):
     """Owners api, lighter and faster version of the profiles api"""
