@@ -276,11 +276,16 @@ function isInJurisdiction(geoms, tile){
     console.log(tile);
     console.log(geoms[0])
     for ( var i=0; i<geoms.length; i++){
+        //if (new OpenLayers.Filter.Spatial({
+        //        type: OpenLayers.Filter.Spatial.INTERSECTS,
+        //        property: "geometry",
+        //        value: tile
+        //        }).evaluate(geoms[i].geometry.components[0]))
         if (new OpenLayers.Filter.Spatial({
                 type: OpenLayers.Filter.Spatial.INTERSECTS,
                 property: "geometry",
-                value: tile
-                }).evaluate(geoms[i].geometry.components[0]))
+                value: geoms[i]
+                }).evaluate(tile.geometry.components[0]))
             return true;
     }
     return false;
