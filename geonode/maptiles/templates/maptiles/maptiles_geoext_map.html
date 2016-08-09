@@ -273,8 +273,10 @@ Filters tiles if they intersect the geometries which are part of the jurisdictio
 */
 
 function isInJurisdiction(geoms, tile){
+    console.log(tile)
     for ( var i=0; i<geoms.length; i++){
-        if (geoms[i].geometry.bounds.toGeometry().intersects(tile.geometry.bounds.toGeometry()))
+        console.log(geoms[i])
+        if (geoms[i].geometry.bounds.intersectsBounds(tile.geometry.bounds))
             return true;
     }
     return false;
