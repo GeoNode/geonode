@@ -346,6 +346,7 @@ function filterSelectedTiles(tile_filter, single_click, send_notice){
                  var added_count = 0;
                  feature_out = olGeoJSON.read(response.priv.responseText);
                  var tiles = hasDataFiltering(feature_out);
+                 console.log(tiles.length);
                   if (jurisdiction_geoms.length > 0){
                      for (var i=0;i<tiles.length;i++){
                          var corners = {
