@@ -47,12 +47,6 @@ class MapStoryAdminForm(ResourceBaseAdminForm):
         fields = '__all__'
 
 
-class MapStoryAdminForm(ResourceBaseAdminForm):
-
-    class Meta:
-        model = MapStory
-
-
 class MapAdmin(MediaTranslationAdmin):
     inlines = [MapLayerInline, ]
     list_display_links = ('title',)
