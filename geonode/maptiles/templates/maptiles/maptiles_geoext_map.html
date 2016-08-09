@@ -285,7 +285,7 @@ function isInJurisdiction(geoms, tile){
                 type: OpenLayers.Filter.Spatial.DWITHIN,
                 property: "geometry",
                 distance: 1,
-                distanceUnits: m,
+                distanceUnits: "m",
                 value: geoms[i]
                 }).evaluate(tile.geometry.components[0]))
             return true;
