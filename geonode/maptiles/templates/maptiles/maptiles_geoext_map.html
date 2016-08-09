@@ -282,8 +282,10 @@ function isInJurisdiction(geoms, tile){
         //        value: tile
         //        }).evaluate(geoms[i].geometry.components[0]))
         if (new OpenLayers.Filter.Spatial({
-                type: OpenLayers.Filter.Spatial.INTERSECTS,
+                type: OpenLayers.Filter.Spatial.DWITHIN,
                 property: "geometry",
+                distance: 1,
+                distanceUnits: "m",
                 value: geoms[i]
                 }).evaluate(tile.geometry.components[0]))
             return true;
