@@ -651,7 +651,8 @@ Ext.onReady(function (){
               var transformed_pt = click_pt.transform(map.getProjectionObject(),new OpenLayers.Projection("EPSG:32651"));
               var computed_corners = get_corners(click_pt.x, click_pt.y);
 
-              //var tile = createTile(computed_corners);// this is a pointless piece of code
+              var tile = createTile(computed_corners);// this is a pointless piece of code
+              console.log(tile.georef);
 
               var filter = new OpenLayers. Filter.Comparison({
                       type: "==",
