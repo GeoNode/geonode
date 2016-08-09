@@ -273,14 +273,8 @@ Filters tiles if they intersect the geometries which are part of the jurisdictio
 */
 
 function isInJurisdiction(geoms, tile){
-    console.log(tile);
-    console.log(geoms[0])
     for ( var i=0; i<geoms.length; i++){
-        if (new OpenLayers.Filter.Spatial({
-                type: OpenLayers.Filter.Spatial.BBOX,
-                property: "bounds",
-                value: geoms[i].geometry.bounds
-                }).evaluate(tile.geometry))
+        if (geoms[i].geometry.bounds.toGeometry().intersects(tile.geometry.bounds.toGeometry()))
             return true;
     }
     return false;
@@ -362,11 +356,10 @@ function filterSelectedTiles(tile_filter, single_click, send_notice){
                         }
                         var tile = createTile(corners);
                          if (find_georef(tile_list, tile.georef)<0){
-                               console.log("tile is not yet in the list")
-                               tiles[i].geometry.setBounds(new OpenLayers.Bounds
-                                    (corners.ul_x, corners.ll_y, corners.lr_x,corners.ur_y).transform(new OpenLayers.Projection("EPSG:32651"), new OpenLayers.Projection("EPSG:4326")));
+                               console.log("tile is not yet in the list");
+                               tiles[i].geometry.calculateBounds();
                                if (isInJurisdiction(jurisdiction_geoms, tiles[i])){
-                                    console.log("tile is within jurisdiction")
+                                    console.log("tile is within jurisdiction");
                                     tile_list.push(tile);
                                     tile.feature = createHighlightBox(tile.corners);
                                     highlight_layer.addFeatures([tile.feature]);
