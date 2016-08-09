@@ -450,11 +450,7 @@ def save_story(request, storyid):
         return HttpResponse(
                 _PERMISSION_MSG_LOGIN,
                 status=401,
-<<<<<<< HEAD
-                mimetype="text/plain"
-=======
                 content_type="text/plain"
->>>>>>> geonode-upgrade
         )
 
     story_obj = MapStory.objects.get(id=storyid)
@@ -462,11 +458,7 @@ def save_story(request, storyid):
         return HttpResponse(
                 _PERMISSION_MSG_SAVE,
                 status=401,
-<<<<<<< HEAD
-                mimetype="text/plain"
-=======
                 content_type="text/plain"
->>>>>>> geonode-upgrade
         )
 
     try:
@@ -475,11 +467,7 @@ def save_story(request, storyid):
     except ValueError as e:
         return HttpResponse(
                 "The server could not understand the request." + str(e),
-<<<<<<< HEAD
-                mimetype="text/plain",
-=======
                 content_type="text/plain",
->>>>>>> geonode-upgrade
                 status=400
         )
 
@@ -513,17 +501,9 @@ def new_story_json(request):
     if not request.user.is_authenticated():
         return HttpResponse(
                 'You must be logged in to save new maps',
-<<<<<<< HEAD
-                mimetype="text/plain",
-                status=401
-        )
-
-=======
                 content_type="text/plain",
                 status=401
         )
-    #import ipdb; ipdb.set_trace()
->>>>>>> geonode-upgrade
     story_obj = MapStory(owner=request.user)
     story_obj.save()
     story_obj.set_default_permissions()
@@ -544,11 +524,7 @@ def new_story_json(request):
         return HttpResponse(
                 json.dumps({'id': story_obj.id}),
                 status=200,
-<<<<<<< HEAD
-                mimetype='application/json'
-=======
                 content_type='application/json'
->>>>>>> geonode-upgrade
         )
 
 
