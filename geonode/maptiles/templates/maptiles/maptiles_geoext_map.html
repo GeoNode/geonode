@@ -273,14 +273,8 @@ Filters tiles if they intersect the geometries which are part of the jurisdictio
 */
 
 function isInJurisdiction(geoms, tile){
-    console.log(tile);
-    console.log(geoms[0])
     for ( var i=0; i<geoms.length; i++){
-        if (new OpenLayers.Filter.Spatial({
-                type: OpenLayers.Filter.Spatial.BBOX,
-                property: "bounds",
-                value: geoms[i].geometry.bounds
-                }).evaluate(tile.geometry))
+        if (geoms[i].geometry.bounds.toGeometry().intersects(tile.geometry.bounds.toGeometry()))
             return true;
     }
     return false;
