@@ -280,7 +280,7 @@ function isInJurisdiction(geoms, tile){
                 type: OpenLayers.Filter.Spatial.INTERSECTS,
                 property: "geometry",
                 value: tile
-                }).evaluate(geoms[i]))
+                }).evaluate(geoms[i].geometry.components[0]))
             return true;
     }
     return false;
