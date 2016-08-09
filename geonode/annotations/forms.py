@@ -73,7 +73,4 @@ class AnnotationForm(forms.ModelForm):
 
     class Meta:
         model = Annotation
-<<<<<<< HEAD
-=======
         fields = '__all__'
->>>>>>> geonode-upgrade
