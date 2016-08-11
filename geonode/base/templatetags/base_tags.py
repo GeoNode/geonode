@@ -124,7 +124,8 @@ def get_current_path(context):
 @register.assignment_tag(takes_context=True)
 def get_context_resourcetype(context):
     c_path = get_current_path(context)
-    resource_types = ['layers', 'maps', 'documents', 'search']
+    resource_types = ['layers', 'maps', 'documents', 'search', 'people',
+                      'groups']
     for resource_type in resource_types:
         if "/{0}/".format(resource_type) in c_path:
             return resource_type
