@@ -229,13 +229,13 @@ def registration_part_two(request):
                             username=settings.OGC_SERVER['default']['USER'],
                             password=settings.OGC_SERVER['default']['PASSWORD'])
 
-                        boundary_style = cat.get_style('Boundary')
-                        gs_layer = cat.get_layer(saved_layer.name)
-                        if boundary_style:
-                            gs_layer._set_default_style(boundary_style)
-                            cat.save(gs_layer) #save in geoserver
-                            saved_layer.sld_body = boundary_style.sld_body
-                            saved_layer.save() #save in geonode
+                        #boundary_style = cat.get_style('Boundary')
+                        #gs_layer = cat.get_layer(saved_layer.name)
+                        #if boundary_style:
+                        #    gs_layer._set_default_style(boundary_style)
+                        #    cat.save(gs_layer) #save in geoserver
+                        #    saved_layer.sld_body = boundary_style.sld_body
+                        #    saved_layer.save() #save in geonode
                         
                         pprint("modified layer style")
                             
