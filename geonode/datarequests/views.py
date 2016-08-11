@@ -353,7 +353,7 @@ def registration_part_two(request):
 
         if out['success']:
             status_code = 200
-
+            pprint("request has been succesfully submitted")
             if request_profile and not request_profile.profile:
 #                request_profile.send_verification_email()
 
