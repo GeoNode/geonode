@@ -243,7 +243,8 @@ def registration_part_two(request):
                         #place_name = get_place_name(bbox_lon, bbox_lat)
                         juris_data_size = 0.0
                         #area_coverage = get_area_coverage(saved_layer.name)
-
+                        area_coverage =  0
+                        
                     except Exception as e:
                         exception_type, error, tb = sys.exc_info()
                         print traceback.format_exc()
