@@ -526,7 +526,9 @@ OGP_URL = "http://geodata.tufts.edu/solr/select"
 # absolutely need it set to True this variable
 MODIFY_TOPICCATEGORY = False
 
+FILE_UPLOAD_PERMISSIONS = 0666
 MISSING_THUMBNAIL = 'geonode/img/missing_thumb.png'
+THUMBNAIL_FILE_PERMISSIONS = 0666
 
 # Search Snippet Cache Time in Seconds
 CACHE_TIME = 0
