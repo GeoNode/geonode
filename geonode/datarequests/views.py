@@ -39,6 +39,7 @@ from geonode.layers.utils import file_upload
 from geonode.people.models import Profile
 from geonode.people.views import profile_detail
 from geonode.security.views import _perms_info_json
+from geonode.tasks.jurisdiction import jurisdiction_style
 from geonode.utils import default_map_config
 from geonode.utils import GXPLayer
 from geonode.utils import GXPMap
@@ -218,31 +219,10 @@ def registration_part_two(request):
                             abstract=form.cleaned_data["abstract"],
                             title=form.cleaned_data["layer_title"],
                         )
-                        pprint("saved jurisdiction; updating style on geonode ")
-                        def_style = Style.objects.get(name="Boundary")
-                        saved_layer.styles.add(def_style)
-                        saved_layer.default_style=def_style
-                        saved_layer.is_published = False
-                        saved_layer.save()
-                        interest_layer =  saved_layer
-                        pprint("updated style on geonode; updating style on geoserver")
-
-                        cat = Catalog(settings.OGC_SERVER['default']['LOCATION'] + 'rest',
-                            username=settings.OGC_SERVER['default']['USER'],
-                            password=settings.OGC_SERVER['default']['PASSWORD'])
-
-                        boundary_style = cat.get_style('Boundary')
-                        gs_layer = cat.get_layer(saved_layer.name)
-                        if boundary_style:
-                            gs_layer._set_default_style(boundary_style)
-                            cat.save(gs_layer) #save in geoserver
-                            saved_layer.sld_body = boundary_style.sld_body
-                            saved_layer.save() #save in geonode
-                        pprint("updated style on geoserver")
-
-                        bbox = gs_layer.resource.latlon_bbox
-                        bbox_lon = (float(bbox[0])+float(bbox[1]))/2
-                        bbox_lat = (float(bbox[2])+float(bbox[3]))/2
+                      
+                        #bbox = gs_layer.resource.latlon_bbox
+                        #bbox_lon = (float(bbox[0])+float(bbox[1]))/2
+                        #bbox_lat = (float(bbox[2])+float(bbox[3]))/2
                         #place_name = get_place_name(bbox_lon, bbox_lat)
                         juris_data_size = 0.0
                         #area_coverage = get_area_coverage(saved_layer.name)
@@ -289,6 +269,8 @@ def registration_part_two(request):
                         if permissions is not None and len(permissions.keys()) > 0:
 
                             saved_layer.set_permissions(permissions)
+                        
+                        jurisdiction_style.delay(saved_layer)
 
                     finally:
                         if tempdir is not None:
