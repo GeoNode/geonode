@@ -208,7 +208,7 @@ def registration_part_two(request):
                         # This should be followed up in upstream Django.
                         tempdir, base_file = form.write_files()
                         registration_uploader, created = Profile.objects.get_or_create(username='dataRegistrationUploader')
-
+                        pprint("saving jurisdiction")
                         saved_layer = file_upload(
                             base_file,
                             name=name,
@@ -218,12 +218,14 @@ def registration_part_two(request):
                             abstract=form.cleaned_data["abstract"],
                             title=form.cleaned_data["layer_title"],
                         )
+                        pprint("saved jurisdiction; updating style on geonode ")
                         def_style = Style.objects.get(name="Boundary")
                         saved_layer.styles.add(def_style)
                         saved_layer.default_style=def_style
                         saved_layer.is_published = False
                         saved_layer.save()
                         interest_layer =  saved_layer
+                        pprint("updated style on geonode; updating style on geoserver")
 
                         cat = Catalog(settings.OGC_SERVER['default']['LOCATION'] + 'rest',
                             username=settings.OGC_SERVER['default']['USER'],
@@ -236,6 +238,7 @@ def registration_part_two(request):
                             cat.save(gs_layer) #save in geoserver
                             saved_layer.sld_body = boundary_style.sld_body
                             saved_layer.save() #save in geonode
+                        pprint("updated style on geoserver")
 
                         bbox = gs_layer.resource.latlon_bbox
                         bbox_lon = (float(bbox[0])+float(bbox[1]))/2
