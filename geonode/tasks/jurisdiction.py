@@ -9,7 +9,7 @@ from geoserver.catalog import Catalog
 
 
 @task(name='geonode.tasks.jurisdiction.jurisdiction_style', queue='jurisdiction')
-def jurisdiction_style(layer):
+def jurisdiction_style(saved_layer):
     try:
         pprint("saved jurisdiction; updating style on geonode ")
         def_style = Style.objects.get(name="Boundary")

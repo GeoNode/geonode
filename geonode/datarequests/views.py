@@ -219,7 +219,8 @@ def registration_part_two(request):
                             abstract=form.cleaned_data["abstract"],
                             title=form.cleaned_data["layer_title"],
                         )
-                      
+                        interest_layer =  saved_layer
+                        
                         #bbox = gs_layer.resource.latlon_bbox
                         #bbox_lon = (float(bbox[0])+float(bbox[1]))/2
                         #bbox_lat = (float(bbox[2])+float(bbox[3]))/2
