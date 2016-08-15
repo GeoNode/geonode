@@ -19,5 +19,5 @@
 {% endblock %}
 
 {% block sidebar %}
-<a href="{% url 'profile_detail' slug=user.username %}#-messages_list" class="btn btn-primary" type="button">{% trans "Back to Inbox" %}</a>
+<a href="{% url "messages_inbox" %}" class="btn btn-primary" type="button">{% trans "Back to Inbox" %}</a>
 {% endblock %}
