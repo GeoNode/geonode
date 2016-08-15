@@ -1,8 +1,5 @@
 import sys
-<<<<<<< HEAD
 import traceback
-=======
->>>>>>> 91ffe6754782f2404e2097953fe0130bf92546a1
 from pprint import pprint
 from celery.task import task
 from geonode.geoserver.helpers import ogc_server_settings
