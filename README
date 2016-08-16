@@ -135,7 +135,9 @@ Windows Development Build Instructions::
     # Compile GeoServer
     paver setup
 
-    # Set GDAL environment info (if necessary)
+    # Set GDAL environment info (if necessary, make sure it is a 32 bit version! 
+    # Download and install http://download.gisinternals.com/sdk/downloads/release-1800-gdal-1-11-4-mapserver-6-4-3/gdal-111-1800-core.msi
+    # Download and install http://download.gisinternals.com/sdk/downloads/release-1800-gdal-1-11-4-mapserver-6-4-3/GDAL-1.11.4.win32-py2.7.msi
     SET GDAL_LIBRARY_PATH=<GdalPath>\gdal111.dll
     SET GDAL_HOME=<GdalPath>
     SET GEOS_LIBRARY_PATH=<GdalPath>\geos_c.dll
