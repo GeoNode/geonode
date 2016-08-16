@@ -107,6 +107,11 @@ Windows Development Build Instructions::
     # Install and configure from the windows command prompt
     If you don't already have python virtualenv installed, then do it now:
     easy_install virtualenv
+    
+    # Download and install http://download.gisinternals.com/sdk/downloads/release-1800-gdal-1-11-4-mapserver-6-4-3/gdal-111-1800-core.msi
+    # Download and install http://download.gisinternals.com/sdk/downloads/release-1800-gdal-1-11-4-mapserver-6-4-3/GDAL-1.11.4.win32-py2.7.msi
+    # Choose your 32 bit python as your install target
+    # If you create your virtualenv before doing this, you can copy the <python>\lib\site-packages\osgeo and GDAL-* directory over to your <virtual env>\lib\site-packages directory
 
     # Create virtualenv and activate it
     cd <Directory to install the virtualenv & geonode into>
@@ -135,9 +140,7 @@ Windows Development Build Instructions::
     # Compile GeoServer
     paver setup
 
-    # Set GDAL environment info (if necessary, make sure it is a 32 bit version! 
-    # Download and install http://download.gisinternals.com/sdk/downloads/release-1800-gdal-1-11-4-mapserver-6-4-3/gdal-111-1800-core.msi
-    # Download and install http://download.gisinternals.com/sdk/downloads/release-1800-gdal-1-11-4-mapserver-6-4-3/GDAL-1.11.4.win32-py2.7.msi
+    # Set GDAL environment info 
     SET GDAL_LIBRARY_PATH=<GdalPath>\gdal111.dll
     SET GDAL_HOME=<GdalPath>
     SET GEOS_LIBRARY_PATH=<GdalPath>\geos_c.dll
