@@ -124,6 +124,12 @@ Windows Development Build Instructions::
     # Install GeoNode in the local virtualenv
     pip install -e . --use-mirrors
     
+    # Note, you may get errors due to certain dependencies not being installable on windows with pip, such as lxml and shapely.
+    # For these, you can download a whl file (use cp27 / win32 version) from http://www.lfd.uci.edu/~gohlke/pythonlibs and then install them via pip.
+    # Ex: pip install <Download Dir>\Shapely-1.5-16-cp27-cp27m-win32.whl
+    # 
+    # Also note, you may have to adjust the dependencies in geonode\setup.py to say >= instead of ==, ie "Shapely>=1.5.13", instead of "Shapely==1.5.13",
+    
     # Compile GeoServer
     paver setup
 
