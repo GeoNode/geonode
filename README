@@ -97,7 +97,7 @@ Windows Development Build Instructions::
 
     Prerequisites:
     # Java JDK
-    # Python 2.7
+    # Python 2.7 (32 bit)
     # ant (bin directory must be on system PATH)
     # maven2 (bin directory must be on system PATH)
     # Python distutils (easy_install)
@@ -127,7 +127,7 @@ Windows Development Build Instructions::
     pip install pyyaml
     paver win_install_deps
     
-    # Install GeoNode in the local virtualenv
+    # Install GeoNode in the local virtualenv, if you get an error about use-mirrors, just remove the argument
     pip install -e . --use-mirrors
     
     # Note, you may get errors due to certain dependencies not being installable on windows with pip, such as lxml and shapely.
@@ -152,10 +152,6 @@ Windows Development Build Instructions::
     # Start the servers
     paver start --java_path=C:/path/to/java/bin/java.exe
     
-    # If you get an error WindowsError: [Error 193] %1 is not a valid Win32 application, make sure you are using 32 bit python and that
-    # the environement variables for GDAL are set correctly.  See http://docs.geonode.org/en/master/tutorials/install_and_admin/win_bin_install/win_binary_installer.html
-    # 
-    # Example:
     
 
 Mac OSX
