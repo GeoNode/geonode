@@ -119,6 +119,7 @@ Windows Development Build Instructions::
     # Install compiled packages for Python 2.7 Win32
     cd geonode
     pip install paver
+    pip install pyyaml
     paver win_install_deps
     
     # Install GeoNode in the local virtualenv
@@ -128,16 +129,29 @@ Windows Development Build Instructions::
     # For these, you can download a whl file (use cp27 / win32 version) from http://www.lfd.uci.edu/~gohlke/pythonlibs and then install them via pip.
     # Ex: pip install <Download Dir>\Shapely-1.5-16-cp27-cp27m-win32.whl
     # 
-    # Also note, you may have to adjust the dependencies in geonode\setup.py to say >= instead of ==, ie "Shapely>=1.5.13", instead of "Shapely==1.5.13",
+    # Also note, you may have to adjust the dependencies in geonode\setup.py to say >= instead of ==,
+    # ie "Shapely>=1.5.13", instead of "Shapely==1.5.13",
     
     # Compile GeoServer
     paver setup
 
+    # Set GDAL environment info (if necessary)
+    SET GDAL_LIBRARY_PATH=<GdalPath>\gdal111.dll
+    SET GDAL_HOME=<GdalPath>
+    SET GEOS_LIBRARY_PATH=<GdalPath>\geos_c.dll
+    SET PATH=<GdalPath>;%PATH%
+    
     # Initialize database
     paver sync
     
     # Start the servers
     paver start --java_path=C:/path/to/java/bin/java.exe
+    
+    # If you get an error WindowsError: [Error 193] %1 is not a valid Win32 application, make sure you are using 32 bit python and that
+    # the environement variables for GDAL are set correctly.  See http://docs.geonode.org/en/master/tutorials/install_and_admin/win_bin_install/win_binary_installer.html
+    # 
+    # Example:
+    
 
 Mac OSX
 -------
