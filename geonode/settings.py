@@ -526,7 +526,9 @@ OGP_URL = "http://geodata.tufts.edu/solr/select"
 # absolutely need it set to True this variable
 MODIFY_TOPICCATEGORY = False
 
+FILE_UPLOAD_PERMISSIONS = 0666
 MISSING_THUMBNAIL = 'geonode/img/missing_thumb.png'
+THUMBNAIL_FILE_PERMISSIONS = 666
 
 # Search Snippet Cache Time in Seconds
 CACHE_TIME = 0
@@ -905,6 +907,7 @@ CELERY_IMPORTS = (
     'geonode.tasks.ftp',
     'geonode.tasks.mk_folder',
     'geonode.tasks.requests_update',
+
 )
 
 
@@ -917,6 +920,8 @@ CELERY_QUEUES = [
     Queue('ftp', routing_key='ftp'),
     Queue('mk_folder', routing_key='mk_folder'),
     Queue('requests_update', routing_key='requests_update')
+    Queue('jurisdiction',routing_key='jurisdiction')
+
 ]
 
 import djcelery
@@ -931,12 +936,12 @@ SELECTION_LIMIT=209715200
 
 MUNICIPALITY_SHAPEFILE = 'geonode:phl_adm2_municipalities_utm_z51n'
 #Upload permissions on file
-FILE_UPLOAD_PERMISSIONS = 0666
+FILE_UPLOAD_PERMISSIONS = 666
 GEOSTORAGE_HOST = ""
 
 FILE_UPLOAD_TEMP_DIR = "/tmp/geonode"
 # THUMBNAIL_FILE_PERMISSIONS = 0664
-THUMBNAIL_FILE_PERMISSIONS = 0666
+THUMBNAIL_FILE_PERMISSIONS = 666
 
 # Load more settings from a file called local_settings.py if it exists
 try:

@@ -39,7 +39,11 @@ from geonode.layers.utils import file_upload
 from geonode.people.models import Profile
 from geonode.people.views import profile_detail
 from geonode.security.views import _perms_info_json
+<<<<<<< HEAD
 from geonode.tasks.requests_update import place_name_update, compute_size_update
+=======
+from geonode.tasks.jurisdiction import jurisdiction_style
+>>>>>>> master
 from geonode.utils import default_map_config
 from geonode.utils import GXPLayer
 from geonode.utils import GXPMap
@@ -213,7 +217,7 @@ def registration_part_two(request):
                         # This should be followed up in upstream Django.
                         tempdir, base_file = form.write_files()
                         registration_uploader, created = Profile.objects.get_or_create(username='dataRegistrationUploader')
-
+                        pprint("saving jurisdiction")
                         saved_layer = file_upload(
                             base_file,
                             name=name,
@@ -223,11 +227,6 @@ def registration_part_two(request):
                             abstract=form.cleaned_data["abstract"],
                             title=form.cleaned_data["layer_title"],
                         )
-                        def_style = Style.objects.get(name="Boundary")
-                        saved_layer.styles.add(def_style)
-                        saved_layer.default_style=def_style
-                        saved_layer.is_published = False
-                        saved_layer.save()
                         interest_layer =  saved_layer
 
                         cat = Catalog(settings.OGC_SERVER['default']['LOCATION'] + 'rest',
@@ -286,6 +285,8 @@ def registration_part_two(request):
                         if permissions is not None and len(permissions.keys()) > 0:
 
                             saved_layer.set_permissions(permissions)
+                        
+                        jurisdiction_style.delay(saved_layer)
 
                     finally:
                         if tempdir is not None:
@@ -316,7 +317,11 @@ def registration_part_two(request):
                             )
 
                     if interest_layer:
+<<<<<<< HEAD
                         request_profile.place_name = None
+=======
+                        #request_profile.place_name = place_name['state']
+>>>>>>> master
                         request_profile.juris_data_size = juris_data_size
                         request_profile.area_coverage = area_coverage
                         request_profile.save()
@@ -771,6 +776,9 @@ def data_request_facet_count(request):
 def update_datarequest_obj(datarequest=None, parameter_dict=None, interest_layer=None, request_letter = None):
     if datarequest is None or parameter_dict is None or request_letter is None:
         raise HttpResponseBadRequest
+        
+    if not datarequest.middle_name or len(datarequest.middle_name.strip())<1:
+        datarequest.middle_name = '_'
 
     ### Updating the other fields of the request
     datarequest.project_summary = parameter_dict['project_summary']
