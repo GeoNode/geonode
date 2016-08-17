@@ -39,7 +39,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='layer',
             name='styles',
-            field=models.ManyToManyField(related_name='LayerStyles', to='layers.Style'),
+            field=models.ManyToManyField(related_name='layer_styles', to='layers.Style'),
         ),
         migrations.AddField(
             model_name='layer',
