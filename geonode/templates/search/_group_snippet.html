@@ -1,0 +1,34 @@
+{% verbatim %}
+<div class="row">
+  <article ng-repeat="group in results" resource_id="{{ group.id }}" ng-cloak class="ng-cloak">
+    <div class="col-xs-12 item-container">
+        <div class="col-xs-8 item-details">
+          <h4><a href="{{ group.detail_url }}">{{ group.title }}</a></h4>
+          <p class="abstract">
+              {{ group.description | limitTo: 300 }}
+              {{ group.description.length  > 300 ? '...' : ''}}
+          </p>
+          <div class="row">
+            <div class="col-xs-12 item-items">
+              <ul class="list-inline">
+                <li>
+                    <a href="{{ group.detail_url }}">
+                      <strong>{{ group.member_count }}</strong>
+                      <ng-pluralize count="group.member_count" when="{'1': 'Member', 'other': 'Members'}"></ng-pluralize>
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ group.detail_url }}">
+                        <strong>{{ group.manager_count }}</strong>
+                        <ng-pluralize count="group.manager_count" when="{'1': 'Manager', 'other': 'Managers'}"></ng-pluralize>
+                    </a>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </article>
+</div>
+{% endverbatim %}
