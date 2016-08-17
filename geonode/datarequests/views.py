@@ -148,7 +148,7 @@ def registration_part_two(request):
     part_two_initial ={}
     is_new_auth_req = False
     last_submitted_dr = None
-    if request.user.is_authenticated():
+    if request.user.is_authenticated() and request.user is not Profile.objects.get(username="AnonymousUser") :
         is_new_auth_req = request.session.get('is_new_auth_req', None)
         try:
             last_submitted_dr = DataRequestProfile.objects.filter(profile=request.user).latest('key_created_date')
