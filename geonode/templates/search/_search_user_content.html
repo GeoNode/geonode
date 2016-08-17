@@ -31,9 +31,12 @@
     </div>
     {% include "search/_sort_filters.html" %}
     <div class="col-md-12 grid-spacer">
-    {% include 'search/_group_snippet.html' %}
-    {% include 'search/_pagination.html' %}
+        {% if facet_type == 'groups' %}
+            {% include 'search/_group_snippet.html' %}
+        {% elif facet_type == 'people' %}    
+            {% include "people/_profile_list_item.html" %}
+        {% endif %}
     </div>
+        {% include 'search/_pagination.html' %}
   </div>
-  {% include "_bulk_permissions_form.html" %}
 </div>
