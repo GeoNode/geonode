@@ -118,3 +118,14 @@ class SucToLayer(models.Model):
 
     def __unicode__(self):
         return "{0}:{1}".format(self.suc, self.block_name)
+
+class RIDF(models.Model):
+    municipality = models.CharField(max_length=20)
+    province = models.CharField(max_length=20)
+    _100yr = models.DecimalField()
+    _25yr = models.DecimalField()
+    _5yr = models.DecimalField()
+    municipality_province = models.CharField(max_length=50)
+
+    def __unicode__(self):
+        return "{0}".format(self.municipality_province)
