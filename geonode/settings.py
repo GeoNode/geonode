@@ -919,7 +919,7 @@ CELERY_QUEUES = [
     Queue('email', routing_key='email'),
     Queue('ftp', routing_key='ftp'),
     Queue('mk_folder', routing_key='mk_folder'),
-    Queue('requests_update', routing_key='requests_update')
+    Queue('requests_update', routing_key='requests_update'),
     Queue('jurisdiction',routing_key='jurisdiction')
 
 ]
