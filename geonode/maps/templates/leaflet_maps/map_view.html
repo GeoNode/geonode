@@ -1,0 +1,569 @@
+{% extends "site_base.html" %}
+{% load bootstrap_tags %}
+{% load staticfiles %}
+{% load i18n %}
+
+{% block title %}
+    {% trans "GeoExplorer" %} - {{ block.super }}
+{% endblock title %}
+
+{% block head %}
+    {{ block.super }}
+{% endblock head %}
+
+{% block extra_head %}
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css"/>
+    <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.css"/>
+    <link rel="stylesheet" href="http://code.jquery.com/ui/1.8.18/themes/base/jquery-ui.css" type="text/css"
+          media="all"/>
+    <link rel="stylesheet"
+          href="https://cdn.rawgit.com/elesdoar/leaflet-control-orderlayers/master/dist/css/leaflet.control.orderlayers.min.css"
+          type="text/css"/>
+    <link rel="stylesheet" href="{% static 'lib/css/L.Control.Pan.css' %}"/>
+    <link href="{{ STATIC_URL }}geonode/css/map_leaflet.css" rel="stylesheet"/>
+    <style type="text/css">
+        html, body, #wrap {
+            height: 100%;
+            width: 100%;
+        }
+
+        #layer-list li {
+            cursor: move;
+        }
+
+        label {
+            padding-bottom: 1%;
+        }
+
+    </style>
+{% endblock extra_head %}
+
+{% block body %}
+    </div>
+    </div>
+    </div>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-3 pad0">
+                <div class="options-panel newmap">
+                    <div class="form-group">
+                        <label for="add_layer_select">Available layers</label>
+                        <select class="form-control" id="add_layer_select">
+                            {% for layer in layers %}
+                                <option value="{{ layer.typename }}"
+                                        id="option_{{ layer.typename }}">{{ layer.title }}</option>
+                            {% endfor %}
+                        </select>
+                        <input id="add_layer_button" type="submit" class="btn btn-info" value="Add Layer">
+                    </div>
+                    <h4>Map layers</h4>
+                    <div>
+                        <ul id="layer-list">
+                        </ul>
+                    </div>
+                    <h4>Background layers</h4>
+                    <div>
+                        <ul id="background-layer-list">
+                        </ul>
+                    </div>
+                    <div class="buttons">
+                        <button class="btn btn-info" data-toggle="modal" data-target="#save-map-modal">Save</button>
+                        {#                        <button class="btn btn-info">Load</button>#}
+                        {#                        <button class="btn btn-info">Publish</button>#}
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-9 pad0">
+                <div id="map" style="position:relative; ">
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Modal -->
+    <div class="modal fade" id="save-map-modal" role="dialog">
+        <div class="modal-dialog">
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">Save Map</h4>
+                </div>
+                <div class="modal-body">
+                    <form role="form" id="save-map-form" action="{% url 'new_map_json' %}" method="post">
+                        <div class="form-group">
+                            <label for="map-title-input">Title:</label>
+                            <input name="map-title" type="text" class="form-control" id="map-title-input"
+                                   placeholder="Enter map title">
+                        </div>
+                        <div class="form-group">
+                            <label for="map-abstract-input">Abstract:</label>
+                            <textarea name="map-abstract" class="form-control" rows="5" id="map-abstract-input"
+                                      placeholder="Enter map abstract"></textarea>
+                        </div>
+                        <div class="alert alert-danger" id="error-message-modal" hidden>
+                            <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+                            <span id="error-message-content"></span>
+                        </div>
+                        <button type="submit" class="btn btn-default">Save</button>
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock body %}
+
+{% block footer %}
+
+{% endblock footer %}
+
+{% block extra_script %}
+    <script src="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/jquery-ui.min.js"
+            type="text/javascript"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/Sortable/1.4.2/Sortable.min.js"></script>
+    <script src="https://cdn.rawgit.com/elesdoar/leaflet-control-orderlayers/master/dist/leaflet.control.orderlayers.min.js"></script>
+    <script src="https://cdn.rawgit.com/elesdoar/leaflet-control-orderlayers/master/dist/leaflet.control.orderlayers.min.js"></script>
+
+    <script src="{% static 'lib/js/L.Control.Pan.js' %}"></script>
+
+    <script type="text/javascript">
+        jQuery.fn.extend({
+            propAttr: $.fn.prop || $.fn.attr
+        });
+        var map = $("#map");
+        var active_background_layer;
+
+        var all_layers = {};
+        var all_layers_list = [];
+
+        // Define some default base layers
+        var osm = L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors',
+        });
+
+        var OpenMapSurfer_Roads = L.tileLayer('http://korona.geog.uni-heidelberg.de/tiles/roads/x={x}&y={y}&z={z}', {
+            maxZoom: 20,
+            attribution: 'Imagery from <a href="http://giscience.uni-hd.de/">GIScience Research Group @ University of Heidelberg</a> &mdash; Map data &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+        });
+
+        {% if create %}
+            all_layers = {
+                'OpenMapSurfer_Roads': {
+                    'title': 'OpenMapSurfer Roads',
+                    'name': 'OpenMapSurfer_Roads',
+                    'url': OpenMapSurfer_Roads._url,
+                    'layer': OpenMapSurfer_Roads,
+                    'visibility': true,
+                    'group': 'background',
+                    'zIndex': 0
+                },
+                'osm': {
+                    'title': 'OpenStreetMap',
+                    'name': 'osm',
+                    'url': osm._url,
+                    'layer': osm,
+                    'visibility': false,
+                    'group': 'background',
+                    'zIndex': 1
+                }
+            };
+            all_layers_list.push('OpenMapSurfer_Roads');
+            all_layers_list.push('osm');
+
+            active_background_layer = OpenMapSurfer_Roads;
+        {% else %}
+            all_layers = {};
+            all_layers_list = [];
+        {% endif %}
+
+        var w_height = $(window).height();
+        var map_height = w_height - $('nav').height();
+        map.css("height", map_height);
+
+        function remove(id) {
+            return (elem = document.getElementById(id)).parentNode.removeChild(elem);
+        }
+
+        function zoom_to_box(map, bbox) {
+            var bounds = [
+                [bbox[1], bbox[0]],
+                [bbox[3], bbox[2]]
+            ];
+            map.fitBounds(bounds);
+        }
+
+        function check_box_layer_clicked(check_box) {
+            if (check_box.checked) {
+                map.addLayer(all_layers[check_box.value].layer);
+                all_layers[check_box.value].visibility = true;
+            } else {
+                if (map.hasLayer(all_layers[check_box.value].layer)) {
+                    map.removeLayer(all_layers[check_box.value].layer);
+                    all_layers[check_box.value].visibility = false;
+                }
+            }
+        }
+
+        function delete_layer_clicked(button) {
+            // Remove layer from the map
+            if (map.hasLayer(all_layers[button.value].layer)) {
+                map.removeLayer(all_layers[button.value].layer);
+            }
+            // Remove layer from the array
+            delete all_layers[button.value];
+            // Remove layer from map layer list
+            remove("li_" + button.value);
+            // Remove from list overlay layers
+            remove_from_list(all_layers, button.value);
+
+            // Show from available layer
+            document.getElementById("option_" + button.value).style.display = 'block';
+        }
+
+        function remove_from_list(list, item) {
+            var item_index = list.indexOf(item);
+            if (item_index > -1) {
+                list.splice(item_index, 1)
+            }
+        }
+
+        function add_layer(layer_typename, visibility, layer_order) {
+            visibility = typeof visibility !== 'undefined' ? visibility : true;
+            if (layer_typename in all_layers) {
+                return
+            }
+            if (layer_typename in all_layers) {
+                return
+            }
+            if (!layer_typename) {
+                return
+            }
+            $.ajax({
+                type: 'GET',
+                url: '/layers/' + layer_typename + '/get',
+                data: {},
+                dataType: 'json',
+                success: function (json) {
+                    var layer_url = json['url'];
+                    var layer_title = json['title'];
+
+                    // Add layer to leaflet
+                    var tile_layer = L.tileLayer(layer_url);
+                    if (tile_layer != null) {
+                        // Set view to new added layer
+                        zoom_to_box(map, [
+                            json['bbox_x0'],
+                            json['bbox_y0'],
+                            json['bbox_x1'],
+                            json['bbox_y1']
+                        ]);
+
+                        // Add to list layer
+                        if (visibility) {
+                            // Add the layer
+                            map.addLayer(tile_layer);
+                            $("#layer-list").prepend(
+                                    "<li id='li_" + layer_typename + "'>" +
+                                    "<input type='checkbox' onclick='check_box_layer_clicked(this);' name='show_layer' value='" + layer_typename + "' checked>" +
+                                    layer_title +
+                                    "<button type='button' onclick='delete_layer_clicked(this);' value='" + layer_typename + "'>X</button>" +
+                                    "</li>");
+                        } else {
+                            $("#layer-list").prepend(
+                                    "<li id='li_" + layer_typename + "'>" +
+                                    "<input type='checkbox' onclick='check_box_layer_clicked(this);' name='show_layer' value='" + layer_typename + "'>" +
+                                    layer_title +
+                                    "<button type='button' onclick='delete_layer_clicked(this);' value='" + layer_typename + "'>X</button>" +
+                                    "</li>");
+                        }
+
+
+                        // Add to memory
+                        var added_layer = {};
+                        added_layer.title = layer_title;
+                        added_layer.url = layer_url;
+                        added_layer.layer = tile_layer;
+                        added_layer.visibility = visibility;
+                        if (layer_order) {
+                            added_layer.zIndex = layer_order;
+                        } else {
+                            console.log('No layer order, set to : ' + (all_layers_list.length));
+                            added_layer.zIndex = all_layers_list.length;
+                        }
+                        all_layers[layer_typename] = added_layer;
+
+                        // Add to list of overlay layers
+                        all_layers_list.push(layer_typename);
+
+                        // Set zIndex of the layer
+                        tile_layer.setZIndex(added_layer.zIndex);
+                        console.log(added_layer.zIndex);
+
+
+                        // Hide from available layer
+                        document.getElementById("option_" + layer_typename).style.display = 'none';
+                        $('#add_layer_select').prop('selectedIndex', -1);
+                    }
+                },
+                error: function (xhr, errmsg, err) {
+                    console.log(xhr.status + ": " + xhr.responseText);
+                }
+            });
+        }
+
+        function save_map(event) {
+            console.log('Save Map');
+            event.preventDefault();
+            var form_data = $('#save-map-form').serializeObject();
+
+            // Collect layers
+            var layers = [];
+            var map_data = {};
+
+            map_data['sources'] = {};
+            for (i = 0; i < all_layers_list.length; i++) {
+                key = all_layers_list[i];
+                source_token = 'source_' + all_layers[key]['title'];
+                console.log('Adding to layers');
+                console.log(key);
+                layers.push(
+                        {
+                            'name': key,
+                            'title': all_layers[key]['title'],
+                            'visibility': all_layers[key]['visibility'],
+                            'url': all_layers[key]['url'],
+                            'group': all_layers[key]['group'],
+                            'source': source_token
+                        }
+                );
+                map_data['sources'][source_token] = {
+                    'url': all_layers[key]['url']
+                };
+            }
+            console.log(layers);
+
+            map_data['about'] = {
+                'title': form_data['map-title'],
+                'abstract': form_data['map-abstract']
+            };
+            map_data['map'] = {
+                'center': [map.getCenter()['lat'], map.getCenter()['lng']],
+                'zoom': map.getZoom(),
+                'projection': '',
+                'layers': layers
+            };
+
+            $.ajax({
+                url: $(this).attr('action'),
+                type: $(this).attr('method'),
+                data: JSON.stringify(map_data),
+                cache: false,
+                processData: false,
+                contentType: false,
+                dataType: 'json',
+                success: function (data) {
+                    console.log('Save map success');
+                    $('#save-map-modal').modal('hide');
+                },
+                error: function (xhr, status, error) {
+                    console.log('Save map failed' + error);
+                    $("#error-message-content").html(
+                            "<strong>Failed!</strong> There is an error when saving the map. " + error);
+                    $('#error-message-modal').show();
+                }
+            });
+        }
+
+        function populate_background_layer(the_list, the_dict) {
+            console.log(the_list);
+            for (i = 0; i < the_list.length; i++) {
+                var background_layer_name = the_list[i];
+                var background_layer = the_dict[background_layer_name];
+                if (background_layer['group'] != 'background') {
+                    continue;
+                }
+                if (background_layer['visibility'] == "True") {
+                    active_background_layer = background_layer;
+                    $("#background-layer-list").prepend(
+                            '<li>' +
+                            '<input type="radio" name="background-layer" value="' +
+                            background_layer_name +
+                            '" checked="checked">' +
+                            background_layer['title'] +
+                            '</li>'
+                    );
+                } else if (background_layer['visibility']) {
+                    active_background_layer = background_layer;
+                    $("#background-layer-list").prepend(
+                            '<li>' +
+                            '<input type="radio" name="background-layer" value="' +
+                            background_layer_name +
+                            '" checked="checked">' +
+                            background_layer['title'] +
+                            '</li>'
+                    );
+
+                } else {
+                    $("#background-layer-list").prepend(
+                            '<li>' +
+                            '<input type="radio" name="background-layer" value="' +
+                            background_layer_name +
+                            '">' +
+                            background_layer['title'] +
+                            '</li>'
+                    );
+                }
+
+            }
+            // Add radio button listener for background layer
+            $('input:radio[name=background-layer]').change(function () {
+                var new_background_layer = all_layers[this.value]['layer'];
+                map.removeLayer(active_background_layer);
+                new_background_layer.addTo(map);
+                new_background_layer.setZIndex(0);
+                active_background_layer = new_background_layer;
+            });
+        }
+
+        $(document).ready(function () {
+            // Initiate map
+            {% if create %}
+                map = L.map('map', {
+                    center: [-6.2, 106.8],
+                    zoom: 11,
+                    layers: [active_background_layer]
+                });
+            {% else %}
+                map = L.map('map', {
+                    center: [-6.2, 106.8],
+                    zoom: 11
+                });
+            {% endif %}
+
+            // Populate radio button for background layer
+            populate_background_layer(all_layers_list, all_layers);
+
+            // Make sortable
+            var list = document.getElementById("layer-list");
+            Sortable.create(list, {
+                onEnd: function (/**Event*/evt) {
+                    console.log(evt.oldIndex);
+                    console.log(evt.newIndex);
+                    console.log(evt.item.id);
+                    if (evt.newIndex == undefined) {
+                        // Move but to the same location.
+                        console.log('new index is undefined, return');
+                        return;
+                    }
+                    var num_background = 0;
+
+                    for (i = 0; i < all_layers_list.length; i++) {
+                        if (all_layers[all_layers_list[i]].group == 'background') {
+                            num_background++;
+                        }
+                    }
+                    var num_overlay = all_layers_list.length - num_background;
+                    var flag_move_up = evt.oldIndex > evt.newIndex;
+                    console.log("is move up " + flag_move_up);
+                    var small_index = evt.oldIndex;
+                    var big_index = evt.newIndex;
+
+                    if (flag_move_up) {
+                        big_index = evt.oldIndex;
+                        small_index = evt.newIndex;
+                    }
+
+                    var layer_list = $("ul[id='layer-list'] li");
+                    for (i = 0; i < layer_list.length; i++) {
+                        var layer_typename = layer_list[i].id.slice(3);
+                        layer = all_layers[layer_typename].layer;
+                        if (i < small_index) {
+                            // pass
+                        } else if (i > big_index) {
+                            // pass
+                        } else if (i == evt.newIndex) {
+                            if (flag_move_up) {
+                                layer.setZIndex(layer.options.zIndex + (big_index - small_index));
+                                console.log("move layer " + layer_typename + " to " + (layer.options.zIndex))
+                            } else {
+                                layer.setZIndex(layer.options.zIndex - (big_index - small_index));
+                                console.log("move layer " + layer_typename + " to " + (layer.options.zIndex))
+                            }
+
+                        } else {
+                            if (flag_move_up) {
+                                layer.setZIndex(layer.options.zIndex - 1);
+                                console.log("move layer " + layer_typename + " to " + (layer.options.zIndex))
+                            } else {
+                                layer.setZIndex(layer.options.zIndex + 1);
+                                console.log("move layer " + layer_typename + " to " + (layer.options.zIndex))
+                            }
+                        }
+
+                    }
+
+                }
+            }); // That's all
+
+            {% if not create %}
+                {% for layer in map_layers %}
+                    if ("{{ layer.group }}" == 'background') {
+                        all_layers_list.push("{{ layer.name }}");
+                        background_tile = L.tileLayer("{{ layer.ows_url }}");
+                        all_layers["{{ layer.name }}"] = {
+                            'title': '{{ layer.name }}',
+                            'url': '{{ layer.ows_url }}',
+                            'group': '{{ layer.group }}',
+                            'visibility': '{{ layer.visibility }}',
+                            'layer': background_tile,
+                            'zIndex': parseInt("{{ layer.stack_order }}")
+                        };
+                        if ("{{ layer.visibility }}" == 'True') {
+                            background_tile.addTo(map);
+                        }
+                    } else {
+                        console.log("{{ layer.name }} " + "{{ layer.stack_order }}");
+                        {% if layer.visibility %}
+                            add_layer("{{ layer.name }}", true, parseInt("{{ layer.stack_order }}"));
+                        {% else %}
+                            add_layer("{{ layer.name }}", false, parseInt("{{ layer.stack_order }}"));
+                        {% endif %}
+                    }
+                {% endfor %}
+                populate_background_layer(all_layers_list, all_layers);
+                console.log("{{ map.center_x }}, {{ map.center_y }}), {{ map.zoom }}");
+                map.setView(new L.LatLng({{ map.center_x }}, {{ map.center_y }}), {{ map.zoom }});
+            {% else %}
+                // Check layer parameter in url
+                var qd = {};
+                location.search.substr(1).split("&").forEach(function (item) {
+                    var s = item.split("="),
+                            k = s[0],
+                            v = s[1] && decodeURIComponent(s[1]);
+                    (k in qd) ? qd[k].push(v) : qd[k] = [v]
+                });
+                if (qd['layer']) {
+                    for (i = 0; i < qd['layer'].length; i++) {
+                        var layer_typename = qd['layer'][i];
+                        add_layer(layer_typename);
+                    }
+                }
+            {% endif %}
+
+        });
+
+        $("#add_layer_button").click(function () {
+            // Get value from select option
+            {#            var add_layer_select = $('select[id=add_layer_select]');#}
+            var add_layer_select = $("#add_layer_select option:selected");
+            var layer_typename = add_layer_select.val();
+
+            add_layer(layer_typename);
+
+        });
+
+        $('#save-map-form').submit(save_map);
+    </script>
+{% endblock extra_script %}

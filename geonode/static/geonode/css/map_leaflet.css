@@ -1,0 +1,80 @@
+/* New Map */
+.pad0 {
+    padding: 0;
+}
+.options-panel .form-group {
+    padding: 20px;
+    background: #fafafa;
+    border-bottom: 1px solid #eee;
+}
+.newmap h4, .newmap > div {
+    padding: 0 20px;
+}
+.newmap > div {
+    padding-bottom: 20px;
+}
+.newmap label {
+    display: block;
+}
+.newmap #add_layer_select {
+    display: inline-block;
+    width: 68%;
+    vertical-align: middle;
+}
+.newmap #add_layer_button {
+    display: inline-block;
+    width: 30%;
+    vertical-align: middle;
+}
+.newmap #layer-list {
+    list-style: none;
+    padding: 0;
+}
+
+.newmap #background-layer-list {
+    list-style: none;
+    padding: 0;
+}
+.newmap #layer-list li {
+    margin-bottom: 5px;
+    padding: 5px 7px;
+    border-radius: 3px;
+    background: #fcfcfc;
+    border: 1Px solid #eee;
+    position: relative;
+    max-width: 450px;
+}
+.newmap #layer-list input[type="checkbox"] {
+    margin-right: 5px;
+    vertical-align: text-bottom;
+    margin-top: 0;
+    margin-bottom: 2px;
+}
+.newmap #layer-list button {
+    color: #fff;
+    background-color: #5bc0de;
+    line-height: 15px;
+    border-radius: 3px;
+    border: 1px solid #46b8da;
+    font-size: 10px;
+    padding: 0 4px;
+    position: absolute;
+    top: 7px;
+    right: 7px;
+}
+.newmap #layer-list button:hover {
+    background-color: #39b3d7;
+    border-color: 1px solid #269abc;
+}
+.newmap input[type="radio"] {
+    margin-right: 5px;
+    vertical-align: text-bottom;
+    margin-top: 0;
+    margin-bottom: 2px;
+}
+.newmap .buttons {
+    margin-top: 30px;
+}
+.newmap .buttons button {
+    margin-right: 5px;
+}

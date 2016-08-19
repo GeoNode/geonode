@@ -66,6 +66,7 @@ geonode/static/geonode/junit.xml
 #Temporary files
 *~
 *.swp
+celerybeat-schedule
 
 # OSX specific
 .Python
@@ -86,3 +87,6 @@ uploaded
 development.db
 master
 slave
+
+# virtual env
+venv
