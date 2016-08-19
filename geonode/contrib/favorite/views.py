@@ -32,6 +32,7 @@ from django.template import RequestContext
 from geonode.documents.models import Document
 from geonode.layers.models import Layer
 from geonode.maps.models import Map
+from geonode.maps.models import MapStory
 import models
 
 
@@ -46,6 +47,8 @@ def favorite(req, subject, id):
         obj = get_object_or_404(Document, pk=id)
     elif subject == 'map':
         obj = get_object_or_404(Map, pk=id)
+    elif subject == 'mapstory':
+        obj = get_object_or_404(MapStory, pk=id)
     elif subject == 'layer':
         obj = get_object_or_404(Layer, pk=id)
     elif subject == 'user':

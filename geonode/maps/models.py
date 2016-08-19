@@ -117,6 +117,10 @@ class MapStory(ResourceBase):
         db_table = 'maps_mapstory'
         pass
 
+    @property
+    def class_name(self):
+        return self.__class__.__name__
+
 
 
 class Map(ResourceBase, GXPMapBase):
