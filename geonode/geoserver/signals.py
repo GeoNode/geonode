@@ -482,6 +482,7 @@ def geoserver_post_save(instance, sender, **kwargs):
     try:
         # update the elastic search index for the object after post_save triggers have fired.
         update_es_index(sender, sender.objects.get(id=instance.id))
+        update_es_index(MapStory, MapStory.objects.get(id=instance.story.id))
     except:
         pass
 
@@ -546,11 +547,11 @@ def geoserver_post_save_map(instance, sender, **kwargs):
         #Assuming map thumbnail was created successfully, updating Story object here
         if instance.chapter_index == 0:
             instance.story.update_thumbnail(instance)
+    try:
+        # update the elastic search index for the object after post_save triggers have fired.
+        # TODO: this should be done asynchronously!
 
-        try:
-            # update the elastic search index for the object after post_save triggers have fired.
-            # TODO: this should be done asynchronously!
-            update_es_index(sender, sender.objects.get(id=instance.id))
-            update_es_index(MapStory, MapStory.objects.get(id=instance.story.id))
-        except:
-            pass
+        update_es_index(sender, sender.objects.get(id=instance.id))
+        update_es_index(MapStory, MapStory.objects.get(id=instance.story.id))
+    except:
+        pass
