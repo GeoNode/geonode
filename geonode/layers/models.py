@@ -113,7 +113,7 @@ class Layer(ResourceBase):
         related_name='layer_default_style',
         null=True,
         blank=True)
-    styles = models.ManyToManyField(Style, related_name='LayerStyles')
+    styles = models.ManyToManyField(Style, related_name='layer_styles')
 
     charset = models.CharField(max_length=255, default='UTF-8')
 
@@ -502,7 +502,7 @@ def pre_delete_layer(instance, sender, **kwargs):
         object_id=instance.id).delete()
     default_style = instance.default_style
     for style in instance.styles.all():
-        if style.LayerStyles.all().count() == 1:
+        if style.layer_styles.all().count() == 1:
             if style != default_style:
                 style.delete()
 

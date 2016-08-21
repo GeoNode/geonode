@@ -39,7 +39,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='layer',
             name='styles',
-            field=models.ManyToManyField(related_name='LayerStyles', to='layers.Style'),
+            field=models.ManyToManyField(related_name='layer_styles', to='layers.Style'),
         ),
         migrations.AddField(
             model_name='layer',
@@ -49,6 +49,6 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='attribute',
             name='layer',
-            field=models.ForeignKey(blank=True, related_name='attribute_set', to='layers.Layer', null=True),
+            field=models.ForeignKey(related_name='attribute_set', to='layers.Layer'),
         ),
     ]
