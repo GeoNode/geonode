@@ -46,7 +46,7 @@ geonode-user-messages==0.1.4
 gisdata==0.5.4
 gsconfig==1.0.6
 gsimporter==1.0.0
-httplib2==0.9.2t
+httplib2==0.9.2
 kombu==3.0.35
 lxml==3.6.4
 mccabe==0.5.2
