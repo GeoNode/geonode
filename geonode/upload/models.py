@@ -1,6 +1,7 @@
+# -*- coding: utf-8 -*-
 #########################################################################
 #
-# Copyright (C) 2012 OpenPlans
+# Copyright (C) 2016 OSGeo
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -67,6 +68,16 @@ class Upload(models.Model):
     session = models.TextField(null=True)
     # hold a dict of any intermediate Layer metadata - not used for now
     metadata = models.TextField(null=True)
+
+    mosaic = models.BooleanField(default=False),
+    append_to_mosaic_opts = models.BooleanField(default=False),
+    append_to_mosaic_name = models.CharField(max_length=128, null=True),
+
+    mosaic_time_regex = models.CharField(max_length=128, null=True)
+    mosaic_time_value = models.CharField(max_length=128, null=True)
+
+    mosaic_elev_regex = models.CharField(max_length=128, null=True)
+    mosaic_elev_value = models.CharField(max_length=128, null=True)
 
     class Meta:
         ordering = ['-date']

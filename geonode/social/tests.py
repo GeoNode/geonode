@@ -1,3 +1,23 @@
+# -*- coding: utf-8 -*-
+#########################################################################
+#
+# Copyright (C) 2016 OSGeo
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program. If not, see <http://www.gnu.org/licenses/>.
+#
+#########################################################################
+
 """
 This file demonstrates writing tests using the unittest module. These will pass
 when you run "manage.py test".
@@ -5,6 +25,7 @@ when you run "manage.py test".
 Replace this with more appropriate tests for your application.
 """
 
+from actstream import registry
 from actstream.models import Action, actor_stream
 from dialogos.models import Comment
 from django.contrib.auth import get_user_model
@@ -15,6 +36,7 @@ from geonode.layers.populate_layers_data import create_layer_data
 from geonode.base.populate_test_data import create_models
 from geonode.social.templatetags.social_tags import activity_item
 from geonode.layers.models import Layer
+from geonode.people.models import Profile
 
 
 class SimpleTest(TestCase):
@@ -22,6 +44,9 @@ class SimpleTest(TestCase):
     fixtures = ['initial_data.json']
 
     def setUp(self):
+        registry.register(Layer)
+        registry.register(Comment)
+        registry.register(Profile)
         create_models(type='layer')
         create_layer_data()
         self.user = get_user_model().objects.filter(username='admin')[0]

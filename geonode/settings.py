@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #########################################################################
 #
-# Copyright (C) 2012 OpenPlans
+# Copyright (C) 2016 OSGeo
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -94,6 +94,7 @@ LANGUAGES = (
     ('af', 'Afrikaans'),
     ('sw', 'Swahili'),
     ('pt', 'Portuguese'),
+    ('pt-br', 'Portuguese (Brazil)'),
     ('ru', 'Russian'),
     ('vi', 'Vietnamese'),
     ('ko', '한국어'),
@@ -154,7 +155,7 @@ MEDIA_ROOT = os.path.join(PROJECT_ROOT, "uploaded")
 # URL that handles the media served from MEDIA_ROOT. Make sure to use a
 # trailing slash if there is a path component (optional in other cases).
 # Examples: "http://media.lawrence.com", "http://example.com/media/"
-MEDIA_URL = "/uploaded/"
+MEDIA_URL = LOCAL_MEDIA_URL = "/uploaded/"
 
 # Absolute path to the directory that holds static files like app media.
 # Example: "/home/media/media.lawrence.com/apps/"
@@ -247,13 +248,16 @@ GEONODE_CONTRIB_APPS = (
     'geonode.contrib.geogig',
     'geonode.contrib.geosites',
     'geonode.contrib.nlp',
-    'geonode.contrib.slack'
+    'geonode.contrib.slack',
+    'geonode.contrib.metadataxsl'
 )
 
 # Uncomment the following line to enable contrib apps
 # GEONODE_APPS = GEONODE_APPS + GEONODE_CONTRIB_APPS
 
 INSTALLED_APPS = (
+
+    'modeltranslation',
 
     # Boostrap admin theme
     # 'django_admin_bootstrapped.bootstrap3',
@@ -284,8 +288,9 @@ INSTALLED_APPS = (
     # 'haystack',
     'autocomplete_light',
     'mptt',
-    'modeltranslation',
+    #'modeltranslation',
     'djcelery',
+    'storages',
 
     # Theme
     "pinax_theme_bootstrap_account",
@@ -431,13 +436,6 @@ AGON_RATINGS_CATEGORY_CHOICES = {
 
 # Activity Stream
 ACTSTREAM_SETTINGS = {
-    'MODELS': (
-        'people.Profile',
-        'layers.layer',
-        'maps.map',
-        'dialogos.comment',
-        'documents.document',
-        'services.service'),
     'FETCH_RELATIONS': True,
     'USE_PREFETCH': False,
     'USE_JSONFIELD': True,
@@ -511,6 +509,7 @@ OGC_SERVER = {
         'LOG_FILE': '%s/geoserver/data/logs/geoserver.log' % os.path.abspath(os.path.join(PROJECT_ROOT, os.pardir)),
         # Set to name of database in DATABASES dictionary to enable
         'DATASTORE': '',  # 'datastore',
+        'PG_GEOGIG': False,
         'TIMEOUT': 10  # number of seconds to allow for HTTP requests
     }
 }
@@ -520,6 +519,7 @@ UPLOADER = {
     'BACKEND': 'geonode.rest',
     'OPTIONS': {
         'TIME_ENABLED': False,
+        'MOSAIC_ENABLED': False,
         'GEOGIG_ENABLED': False,
     }
 }
@@ -611,6 +611,13 @@ DEFAULT_MAP_CENTER = (0, 0)
 # maximum zoom is between 12 and 15 (for Google Maps, coverage varies by area)
 DEFAULT_MAP_ZOOM = 0
 
+ALT_OSM_BASEMAPS = os.environ.get('ALT_OSM_BASEMAPS', False)
+CARTODB_BASEMAPS = os.environ.get('CARTODB_BASEMAPS', False)
+STAMEN_BASEMAPS = os.environ.get('STAMEN_BASEMAPS', False)
+THUNDERFOREST_BASEMAPS = os.environ.get('THUNDERFOREST_BASEMAPS', False)
+MAPBOX_ACCESS_TOKEN = os.environ.get('MAPBOX_ACCESS_TOKEN', None)
+BING_API_KEY = os.environ.get('BING_API_KEY', None)
+
 MAP_BASELAYERS = [{
     "source": {"ptype": "gxp_olsource"},
     "type": "OpenLayers.Layer",
@@ -622,22 +629,9 @@ MAP_BASELAYERS = [{
     "source": {"ptype": "gxp_osmsource"},
     "type": "OpenLayers.Layer.OSM",
     "name": "mapnik",
-    "visibility": False,
+    "visibility": True,
     "fixed": True,
     "group": "background"
-}, {
-    "source": {"ptype": "gxp_mapquestsource"},
-    "name": "osm",
-    "group": "background",
-    "visibility": True
-}, {
-    "source": {"ptype": "gxp_mapquestsource"},
-    "name": "naip",
-    "group": "background",
-    "visibility": False
-}, 
-{
-    "source": {"ptype": "gxp_mapboxsource"},
 }]
 
 SOCIAL_BUTTONS = True
@@ -880,6 +874,32 @@ CELERY_QUEUES = [
     Queue('email', routing_key='email'),
 ]
 
+
+# AWS S3 Settings
+
+S3_STATIC_ENABLED = os.environ.get('S3_STATIC_ENABLED', False)
+S3_MEDIA_ENABLED = os.environ.get('S3_MEDIA_ENABLED', False)
+
+# Required to run Sync Media to S3
+AWS_BUCKET_NAME = os.environ.get('S3_BUCKET_NAME', '')
+
+AWS_STORAGE_BUCKET_NAME = os.environ.get('S3_BUCKET_NAME', '')
+AWS_ACCESS_KEY_ID = os.environ.get('AWS_ACCESS_KEY_ID', '')
+AWS_SECRET_ACCESS_KEY = os.environ.get('AWS_SECRET_ACCESS_KEY', '')
+AWS_S3_BUCKET_DOMAIN = '%s.s3.amazonaws.com' % AWS_STORAGE_BUCKET_NAME
+
+AWS_QUERYSTRING_AUTH = False
+
+if S3_STATIC_ENABLED:
+    STATICFILES_LOCATION = 'static'
+    STATICFILES_STORAGE = 'storages.backends.s3boto.S3BotoStorage'
+    STATIC_URL = "https://%s/%s/" % (AWS_S3_BUCKET_DOMAIN, STATICFILES_LOCATION)
+
+if S3_MEDIA_ENABLED:
+    MEDIAFILES_LOCATION = 'media'
+    DEFAULT_FILE_STORAGE = 'storages.backends.s3boto.S3BotoStorage'
+    MEDIA_URL = "https://%s/%s/" % (AWS_S3_BUCKET_DOMAIN, MEDIAFILES_LOCATION)
+
 import djcelery
 djcelery.setup_loader()
 
@@ -889,20 +909,11 @@ try:
 except ImportError:
     pass
 
+# Load additonal basemaps, see geonode/contrib/api_basemap/README.md 
 try:
-    BING_LAYER = {    
-        "source": {
-            "ptype": "gxp_bingsource",
-            "apiKey": BING_API_KEY
-        },
-        "name": "AerialWithLabels",
-        "fixed": True,
-        "visibility": False,
-        "group": "background"
-    }
-    MAP_BASELAYERS.append(BING_LAYER)
-except NameError:
-    print "Not enabling BingMaps base layer as a BING_API_KEY is not defined in local_settings.py file."
+    from geonode.contrib.api_basemaps import *
+except ImportError:
+    pass
 
 # Require users to authenticate before using Geonode
 if LOCKDOWN_GEONODE:

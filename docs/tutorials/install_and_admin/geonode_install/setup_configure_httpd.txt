@@ -97,14 +97,13 @@ Now load apache `proxy` module::
 
     sudo a2enmod proxy_http
 
+Disable default configuration::
+
+    sudo a2dissite 000-default
+
 And enable geonode configuration file::
 
     sudo a2ensite geonode
-
-Dowload GeoNode data to be served by Apache. You will be prompted for confirmation::
-
-    cd /home/geonode/geonode/
-    sudo -u geonode python manage.py collectstatic
 
 Add `thumbs` and `layers` folders::
 
@@ -120,6 +119,11 @@ them:::
     chmod -Rf 777 /home/geonode/geonode/geonode/uploaded/thumbs
     chmod -Rf 777 /home/geonode/geonode/geonode/uploaded/layers
     sudo chown www-data:www-data /home/geonode/geonode/geonode/static_root/
+
+Copy GeoNode data to be served by Apache. You will be prompted for confirmation::
+
+    cd /home/geonode/geonode/
+    sudo -u geonode python manage.py collectstatic
 
 SSL configuration
 -----------------

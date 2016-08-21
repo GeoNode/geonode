@@ -6,7 +6,7 @@
 GeoNode Support
 ===============
 
-To get support, give feedbacks and suggestions please use the GeoNode official channels, the users mailing list: http://lists.osgeo.org/pipermail/geonode-users/ and the developers mailing list: http://lists.osgeo.org/pipermail/geonode-devel/.
+To get support, give feedback and suggestions please use the GeoNode official channels, the users mailing list: http://lists.osgeo.org/pipermail/geonode-users/ and the developers mailing list: http://lists.osgeo.org/pipermail/geonode-devel/.
 
 This repository is used to track code changes and GeoNode issues, please DON'T open new issues to ask for support.
 
@@ -24,9 +24,11 @@ For 12.04 with python software properties installed, install the latest stable r
     sudo apt-get update
     sudo apt-get install geonode
 
-If instead, you are interested in doing development on the source code, here are the instructions: http://docs.geonode.org/en/master/tutorials/devel/install_devmode/index.html#install-devmode.
+If instead, you are interested in doing development on the source code, here are the instructions: http://docs.geonode.org/en/master/tutorials/devel/devel_env/index.html.
 
 Docker Usage
+------------
+
 If you want to use Docker you can now::
 
     # build the docker container
@@ -42,6 +44,9 @@ Or if you use fig::
 
     # run the container
     fig up
+
+openSUSE
+--------
 
 openSUSE Development Build Instructions::
 
@@ -77,9 +82,15 @@ openSUSE Development Build Instructions::
 
     # Compile GeoServer
     paver setup
+
+    # Initialize database
+    paver sync
     
     # Start the servers
     paver start
+
+Windows
+-------
 
 Windows Development Build Instructions::
 
@@ -115,9 +126,15 @@ Windows Development Build Instructions::
     
     # Compile GeoServer
     paver setup
+
+    # Initialize database
+    paver sync
     
     # Start the servers
     paver start --java_path=C:/path/to/java/bin/java.exe
+
+Mac OSX
+-------
 
 Mac OSX Development Build Instructions::
     
@@ -146,6 +163,7 @@ Mac OSX Development Build Instructions::
 
     #Paver handles dependencies for Geonode, first setup (this will download and update your python dependencies - ensure you're in a virtualenv)
     paver setup
+    paver sync
     paver start
     
     # Optional: To generate document thumbnails for PDFs and other ghostscripts file types
@@ -206,7 +224,7 @@ a pull request should be submitted. This will then be reviewed by the community.
 GPL License
 ===========
 
-GeoNode is Copyright 2010 OpenPlans.
+GeoNode is Copyright 2016 Open Source Geospatial Foundation (OSGeo).
 
 GeoNode is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by

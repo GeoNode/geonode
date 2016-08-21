@@ -1,3 +1,23 @@
+# -*- coding: utf-8 -*-
+#########################################################################
+#
+# Copyright (C) 2016 OSGeo
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program. If not, see <http://www.gnu.org/licenses/>.
+#
+#########################################################################
+
 import json
 import logging
 import httplib2
@@ -256,10 +276,10 @@ def feature_edit_check(request, layername):
             'change_layer_data',
             obj=layer) and layer.storeType == 'dataStore' and feature_edit:
         return HttpResponse(
-            json.dumps({'authorized': True}), mimetype="application/json")
+            json.dumps({'authorized': True}), content_type="application/json")
     else:
         return HttpResponse(
-            json.dumps({'authorized': False}), mimetype="application/json")
+            json.dumps({'authorized': False}), content_type="application/json")
 
 
 def style_change_check(request, path):
@@ -308,7 +328,7 @@ def geoserver_rest_proxy(request, proxy_path, downstream_path):
     if not request.user.is_authenticated():
         return HttpResponse(
             "You must be logged in to access GeoServer",
-            mimetype="text/plain",
+            content_type="text/plain",
             status=401)
 
     def strip_prefix(path, prefix):
@@ -333,7 +353,7 @@ def geoserver_rest_proxy(request, proxy_path, downstream_path):
             if not style_change_check(request, downstream_path):
                 return HttpResponse(
                     _("You don't have permissions to change style for this layer"),
-                    mimetype="text/plain",
+                    content_type="text/plain",
                     status=401)
             if downstream_path == 'rest/styles':
                 style_update(request, url)
@@ -346,7 +366,7 @@ def geoserver_rest_proxy(request, proxy_path, downstream_path):
     return HttpResponse(
         content=content,
         status=response.status,
-        mimetype=response.get("content-type", "text/plain"))
+        content_type=response.get("content-type", "text/plain"))
 
 
 def layer_batch_download(request):
@@ -421,7 +441,7 @@ def resolve_user(request):
         else:
             return HttpResponse(_("Bad HTTP Authorization Credentials."),
                                 status=401,
-                                mimetype="text/plain")
+                                content_type="text/plain")
 
     if not any([user, geoserver, superuser]
                ) and not request.user.is_anonymous():
@@ -437,7 +457,7 @@ def resolve_user(request):
     if acl_user and acl_user.is_authenticated():
         resp['fullname'] = acl_user.get_full_name()
         resp['email'] = acl_user.email
-    return HttpResponse(json.dumps(resp), mimetype="application/json")
+    return HttpResponse(json.dumps(resp), content_type="application/json")
 
 
 def layer_acls(request):
@@ -469,14 +489,14 @@ def layer_acls(request):
                 }
                 return HttpResponse(
                     json.dumps(result),
-                    mimetype="application/json")
+                    content_type="application/json")
         except Exception:
             pass
 
         if acl_user is None:
             return HttpResponse(_("Bad HTTP Authorization Credentials."),
                                 status=401,
-                                mimetype="text/plain")
+                                content_type="text/plain")
 
     # Include permissions on the anonymous user
     # use of polymorphic selectors/functions to optimize performances
@@ -502,4 +522,4 @@ def layer_acls(request):
         result['fullname'] = acl_user.get_full_name()
         result['email'] = acl_user.email
 
-    return HttpResponse(json.dumps(result), mimetype="application/json")
+    return HttpResponse(json.dumps(result), content_type="application/json")

@@ -1,4 +1,23 @@
 # -*- coding: utf-8 -*-
+#########################################################################
+#
+# Copyright (C) 2016 OSGeo
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program. If not, see <http://www.gnu.org/licenses/>.
+#
+#########################################################################
+
 import errno
 import logging
 import urllib
@@ -102,7 +121,13 @@ def geoserver_pre_save(instance, sender, **kwargs):
     gs_layer = gs_catalog.get_layer(instance.name)
 
     if instance.poc and instance.poc:
-        gs_layer.attribution = str(instance.poc)
+        # gsconfig now utilizes an attribution dictionary
+        gs_layer.attribution = {'title': str(instance.poc),
+                                'width': None,
+                                'height': None,
+                                'href': None,
+                                'url': None,
+                                'type': None}
         profile = Profile.objects.get(username=instance.poc.username)
         gs_layer.attribution_link = settings.SITEURL[
             :-1] + profile.get_absolute_url()
@@ -318,22 +343,6 @@ def geoserver_post_save(instance, sender, **kwargs):
                                )
                                )
 
-    tile_url = ('%sgwc/service/gmaps?' % ogc_server_settings.public_url +
-                'layers=%s' % instance.typename.encode('utf-8') +
-                '&zoom={z}&x={x}&y={y}' +
-                '&format=image/png8'
-                )
-
-    Link.objects.get_or_create(resource=instance.resourcebase_ptr,
-                               url=tile_url,
-                               defaults=dict(
-                                   extension='tiles',
-                                   name="Tiles",
-                                   mime='image/png',
-                                   link_type='image',
-                               )
-                               )
-
     html_link_url = '%s%s' % (
         settings.SITEURL[:-1], instance.get_absolute_url())
 
@@ -352,6 +361,8 @@ def geoserver_post_save(instance, sender, **kwargs):
         'format': 'image/png8',
         'width': 200,
         'height': 150,
+        'TIME': '-99999999999-01-01T00:00:00.0Z/99999999999-01-01T00:00:00.0Z'
+
     }
 
     # Avoid using urllib.urlencode here because it breaks the url.
@@ -435,6 +446,23 @@ def geoserver_post_save(instance, sender, **kwargs):
             ogc_server_settings.public_url).hostname == urlparse(
                 link.url).hostname:
             link.delete()
+
+    # Define the link after the cleanup, we should use this more rather then remove
+    # potential parasites
+    tile_url = ('%sgwc/service/gmaps?' % ogc_server_settings.public_url +
+                'layers=%s' % instance.typename.encode('utf-8') +
+                '&zoom={z}&x={x}&y={y}' +
+                '&format=image/png8'
+                )
+
+    link, created = Link.objects.get_or_create(resource=instance.resourcebase_ptr,
+                                               extension='tiles',
+                                               name="Tiles",
+                                               mime='image/png',
+                                               link_type='image',
+                                               )
+    if created:
+        Link.objects.filter(pk=link.pk).update(url=tile_url)
 
     # Save layer attributes
     set_attributes(instance)

@@ -3,10 +3,11 @@
 Install GeoNode for Development
 ===============================
 
+In order to install Geonode 2.4 in development mode on Ubuntu 14.04 the following steps are required:
 
-In order to install Geonode 2.0 in developing mode on Ubuntu 12.04 the following steps are required:
+For Windows: (:ref:`win_devinstall`)
 
-.. note:: For Windows: (:ref:`install_win_devmode`)
+For Centos 7: (:ref:`devmode_install_centos`)
 
 Summary of the installation steps
 
@@ -59,13 +60,13 @@ Summary of the installation steps
 
         $ sudo pip install virtualenvwrapper
 
-   *Postgresql*
+   *PostgreSQL & PostGIS*
 
      .. note:: The following steps must be executed **only** if you don't have PostgreSQL and PostGIS already installed on your system (see :ref:`install_geonode_application`)
 
          .. code-block:: console
 
-            $ sudo apt-get install postgresql-9.3-postgis-2.1 postgresql-9.3-postgis-scripts
+      $ sudo apt-get install -y postgresql-9.3-postgis-2.1 postgresql-9.3-postgis-scripts
 
          Change postgres UNIX password
 
@@ -76,8 +77,7 @@ Summary of the installation steps
 
         $ sudo passwd postgres # change unix password for postgres
 
-
-    Create geonode role and database
+     Create GeoNode role and database
 
          .. code-block:: console
 
@@ -122,17 +122,17 @@ Summary of the installation steps
 
         .. code-block:: console
 
-            $ sudo apt-get install -y --force-yes openjdk-6-jdk --no-install-recommends
+    $ sudo apt-get install -y --force-yes openjdk-7-jdk --no-install-recommends
 
-    *supporting tools*
+   *Supporting tools*
 
     .. code-block:: console
 
-        $ sudo apt-get install -y ant maven2 git gettext
+    $ sudo apt-get install -y git gettext libjpeg62 libjpeg62-dev
 
 #. Set up a virtual environment
 
-   Here is where Geonode will later be running.
+   This is the local environment where Geonode will later be running.
 
    Add the virtualenvwrapper to your new environement.
 
@@ -166,9 +166,10 @@ Summary of the installation steps
 
       This creates a new directory where you want your project to be and creates a new virtualenvironment
 
-#. Get the code
 
-   To download the latest geonode version from github, the command *clone* is used
+#. Get the GeoNode source code
+
+   To download the latest GeoNode version from github, the command *clone* is used
 
    .. note::
     If you are following the GeoNode training, skip the following command.
@@ -207,7 +208,7 @@ Summary of the installation steps
             $ npm install grunt-contrib-cssmin --save-dev
             $ npm install grunt-contrib-watch --save-dev
 
-   Every time you want to update the static files after making changes to the sources, go to geonode/static and run 'grunt production'.
+   .. note:: Every time you want to update the static files after making changes to the sources, go to geonode/static and run 'grunt production'.
 
 #. Install GeoNode in the new active local virtualenv
 
@@ -319,13 +320,15 @@ Summary of the installation steps
 
    .. warning:: If the start fails because of an import error related to osgeo, then please consult the :ref:`install_gdal_devmode`.
 
-   The last step is to compile GeoServer and setup
+   The last step is to compile GeoServer and setup, then initialize the database
 
    .. code-block:: console
 
     $ paver setup
+    $ paver sync
 
-#. Now we can start our geonode instance
+
+#. Now we can start our GeoNode instance
 
     .. warning:: Don't forget to stop the **GeoNode Production** services if enabled
 
@@ -338,7 +341,7 @@ Summary of the installation steps
 
     $ paver start
 
-   Visit the geonode site by typing http://localhost:8000 into your browser window.
+   Visit the GeoNode site by typing http://localhost:8000 into your browser window.
 
    If you are using a different IP address (e.g 1.1.1.1), then start paver using the command below.
 
@@ -347,6 +350,7 @@ Summary of the installation steps
     $ paver start -b 1.1.1.1:8000
 
    .. warning:: If the start fails because of an import error related to osgeo, then please consult the :ref:`install_gdal_devmode`.
+
 
 #. To stop the server
 
@@ -358,9 +362,10 @@ Summary of the installation steps
 
     $ paver stop    # to stop all django, geoserver services
 
-#. Next create a superuser for your django geonode
 
-   Create a superuser so you can log on to your local geonode installation at http://localhost:8000
+#. Create a superuser for your django GeoNode 
+
+   Create a superuser so you can log on to your local GeoNode installation at http://localhost:8000
 
    .. code-block:: console
 
@@ -369,7 +374,7 @@ Summary of the installation steps
 Start working on Geonode the next day after install
 ===================================================
 
-   With every restart of your machine, you have to restart geonode as well. That means, you will not be able to open http://localhost:8000   directly after starting your machine new. In order to be able to use geonode now, you have to activate your virtualenvironment and to start the development servers.
+   With every restart of your machine, you have to restart GeoNode as well. That means, you will not be able to open http://localhost:8000   directly after starting your machine new. In order to be able to use GeoNode now, you have to activate your virtualenvironment and to start the development servers. 
 
    .. note:: *username* is the name of your machine and personal folder!
 
@@ -410,7 +415,7 @@ Start working on Geonode the next day after install
 
       .. note:: Remember that you have to do these steps each time you restart your machine!!
 
-.. hint:: Now you've followed these installation instructions, geonode is running in development mode. This also means that you are using all the default settings of geonode. If you want to change them, e.g use Tomcat instead of Jetty, or Postgresql instead of sqlite3, you may follow the steps from the section **Configure Manually** in :ref:`geonode_install`.
+.. hint:: Now you've followed these installation instructions, GeoNode is running in development mode. This also means that you are using all the default settings of GeoNode. If you want to change them, e.g use Tomcat instead of Jetty, or Postgresql instead of sqlite3, you may follow the steps from the section **Configure Manually** in :ref:`custom_install`.
 
 .. toctree::
    :maxdepth: 1

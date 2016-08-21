@@ -1,3 +1,23 @@
+# -*- coding: utf-8 -*-
+#########################################################################
+#
+# Copyright (C) 2016 OSGeo
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program. If not, see <http://www.gnu.org/licenses/>.
+#
+#########################################################################
+
 from agon_ratings.models import OverallRating
 from dialogos.models import Comment
 from django.contrib.contenttypes.models import ContentType
@@ -13,8 +33,6 @@ class MapIndex(indexes.SearchIndex, indexes.Indexable):
     csw_type = indexes.CharField(model_attr="csw_type")
     csw_wkt_geometry = indexes.CharField(model_attr="csw_wkt_geometry")
     detail_url = indexes.CharField(model_attr="get_absolute_url")
-    distribution_description = indexes.CharField(model_attr="distribution_description", null=True)
-    distribution_url = indexes.CharField(model_attr="distribution_url", null=True)
     owner__username = indexes.CharField(model_attr="owner", faceted=True, null=True)
     popular_count = indexes.IntegerField(
         model_attr="popular_count",

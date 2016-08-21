@@ -1,3 +1,23 @@
+# -*- coding: utf-8 -*-
+#########################################################################
+#
+# Copyright (C) 2016 OSGeo
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program. If not, see <http://www.gnu.org/licenses/>.
+#
+#########################################################################
+
 import json
 from guardian.shortcuts import get_perms
 
@@ -72,7 +92,7 @@ def document_detail(request, docid):
     if document is None:
         return HttpResponse(
             'An unknown error has occured.',
-            mimetype="text/plain",
+            content_type="text/plain",
             status=401
         )
 
@@ -280,7 +300,7 @@ def document_metadata(
     if document is None:
         return HttpResponse(
             'An unknown error has occured.',
-            mimetype="text/plain",
+            content_type="text/plain",
             status=401
         )
 
@@ -446,6 +466,19 @@ def document_remove(request, docid, template='documents/document_remove.html'):
     except PermissionDenied:
         return HttpResponse(
             'You are not allowed to delete this document',
-            mimetype="text/plain",
+            content_type="text/plain",
             status=401
         )
+
+
+def document_metadata_detail(request, docid, template='documents/document_metadata_detail.html'):
+    document = _resolve_document(
+        request,
+        docid,
+        'view_resourcebase',
+        _PERMISSION_MSG_METADATA)
+    return render_to_response(template, RequestContext(request, {
+        "layer": document,
+        "docid": docid,
+        'SITEURL': settings.SITEURL[:-1]
+    }))

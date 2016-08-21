@@ -1,3 +1,23 @@
+# -*- coding: utf-8 -*-
+#########################################################################
+#
+# Copyright (C) 2016 OSGeo
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program. If not, see <http://www.gnu.org/licenses/>.
+#
+#########################################################################
+
 import logging
 import os
 import uuid
@@ -38,6 +58,7 @@ class Document(ResourceBase):
     doc_file = models.FileField(upload_to='documents',
                                 null=True,
                                 blank=True,
+                                max_length=255,
                                 verbose_name=_('File'))
 
     extension = models.CharField(max_length=128, blank=True, null=True)
@@ -47,6 +68,7 @@ class Document(ResourceBase):
     doc_url = models.URLField(
         blank=True,
         null=True,
+        max_length=255,
         help_text=_('The URL of the document if it is external.'),
         verbose_name=_('URL'))
 

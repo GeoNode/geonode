@@ -1,3 +1,23 @@
+# -*- coding: utf-8 -*-
+#########################################################################
+#
+# Copyright (C) 2016 OSGeo
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program. If not, see <http://www.gnu.org/licenses/>.
+#
+#########################################################################
+
 import datetime
 import math
 import os
@@ -16,11 +36,13 @@ from django.contrib.staticfiles.templatetags import staticfiles
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.auth import get_user_model
 from django.db.models import signals
-from django.core.files import File
+from django.core.files.storage import default_storage as storage
+from django.core.files.base import ContentFile
 
 from mptt.models import MPTTModel, TreeForeignKey
 
-from polymorphic import PolymorphicModel, PolymorphicManager
+from polymorphic.models import PolymorphicModel
+from polymorphic.managers import PolymorphicManager
 from agon_ratings.models import OverallRating
 
 from geonode.base.enumerations import ALL_LANGUAGES, \
@@ -83,6 +105,7 @@ class TopicCategory(models.Model):
     description = models.TextField(default='')
     gn_description = models.TextField('GeoNode description', default='', null=True)
     is_choice = models.BooleanField(default=True)
+    fa_class = models.CharField(max_length=64, default='fa-times')
 
     def __unicode__(self):
         return u"{0}".format(self.gn_description)
@@ -311,9 +334,6 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
     spatial_representation_type_help_text = _('method used to represent geographic information in the dataset.')
     temporal_extent_start_help_text = _('time period covered by the content of the dataset (start)')
     temporal_extent_end_help_text = _('time period covered by the content of the dataset (end)')
-    distribution_url_help_text = _('information about on-line sources from which the dataset, specification, or '
-                                   'community profile name and extended metadata elements can be obtained')
-    distribution_description_help_text = _('detailed text description of what the online resource is/does')
     data_quality_statement_help_text = _('general explanation of the data producer\'s knowledge about the lineage of a'
                                          ' dataset')
     # internal fields
@@ -333,7 +353,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
 
     keywords = TaggableManager(_('keywords'), through=TaggedContentItem, blank=True, help_text=keywords_help_text,
                                             manager=_HierarchicalTagManager)
-    regions = models.ManyToManyField(Region, verbose_name=_('keywords region'), blank=True, null=True,
+    regions = models.ManyToManyField(Region, verbose_name=_('keywords region'), blank=True,
                                      help_text=regions_help_text)
 
     restriction_code_type = models.ForeignKey(RestrictionCodeType, verbose_name=_('restrictions'),
@@ -365,12 +385,6 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
 
     supplemental_information = models.TextField(_('supplemental information'), default=DEFAULT_SUPPLEMENTAL_INFORMATION,
                                                 help_text=_('any other descriptive information about the dataset'))
-
-    # Section 6
-    distribution_url = models.TextField(_('distribution URL'), blank=True, null=True,
-                                        help_text=distribution_url_help_text)
-    distribution_description = models.TextField(_('distribution description'), blank=True, null=True,
-                                                help_text=distribution_description_help_text)
 
     # Section 8
     data_quality_statement = models.TextField(_('data quality statement'), blank=True, null=True,
@@ -593,6 +607,8 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
             legends_link = self.link_set.get(name='Legend')
         except Link.DoesNotExist:
             return None
+        except Link.MultipleObjectsReturned:
+            return None
         else:
             return legends_link
 
@@ -640,16 +656,17 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         return self.link_set.filter(name='Thumbnail').exists()
 
     def save_thumbnail(self, filename, image):
-        thumb_folder = 'thumbs'
-        upload_path = os.path.join(settings.MEDIA_ROOT, thumb_folder)
-        if not os.path.exists(upload_path):
-            os.makedirs(upload_path)
+        upload_to = 'thumbs/'
+        upload_path = os.path.join('thumbs/', filename)
 
-        with open(os.path.join(upload_path, filename), 'wb') as f:
-            thumbnail = File(f)
-            thumbnail.write(image)
+        if storage.exists(upload_path):
+            # Delete if exists otherwise the (FileSystemStorage) implementation
+            # will create a new file with a unique name
+            storage.delete(os.path.join(upload_path))
 
-        url_path = os.path.join(settings.MEDIA_URL, thumb_folder, filename).replace('\\', '/')
+        storage.save(upload_path, ContentFile(image))
+
+        url_path = os.path.join(settings.MEDIA_URL, upload_to, filename).replace('\\', '/')
         url = urljoin(settings.SITEURL, url_path)
 
         Link.objects.get_or_create(resource=self,
@@ -748,19 +765,19 @@ class LinkManager(models.Manager):
     """
 
     def data(self):
-        return self.get_query_set().filter(link_type='data')
+        return self.get_queryset().filter(link_type='data')
 
     def image(self):
-        return self.get_query_set().filter(link_type='image')
+        return self.get_queryset().filter(link_type='image')
 
     def download(self):
-        return self.get_query_set().filter(link_type__in=['image', 'data'])
+        return self.get_queryset().filter(link_type__in=['image', 'data'])
 
     def metadata(self):
-        return self.get_query_set().filter(link_type='metadata')
+        return self.get_queryset().filter(link_type='metadata')
 
     def original(self):
-        return self.get_query_set().filter(link_type='original')
+        return self.get_queryset().filter(link_type='original')
 
     def geogig(self):
         return self.get_queryset().filter(name__icontains='geogig')

@@ -3,6 +3,7 @@
 {% load dialogos_tags %}
 {% load agon_ratings_tags %}
 {% load bootstrap_tags %}
+{% load pagination_tags %}
 {% load url from future %}
 {% load base_tags %}
 {% load guardian_tags %}
@@ -50,7 +51,106 @@
 
     {% include "base/resourcebase_info_panel.html" %}
 
+     {% if resource.is_mosaic %}
+      <article id="granules" class="description tab-pane {% if tab and tab == 'granules' %}active{% endif %}">
+        <div class="paginate-contents">
+
+            <form method="GET" action="{% url "layer_detail" resource.layer.service_typename %}">
+                {% csrf_token %}
+                <input type="text" id="filter" name="filter" style="witdh:400px"/>&nbsp;<input type="submit" value='{% trans "Filter Granules" %}'/>
+                </br>
+                {% if filter %}
+                <strong>{% trans "Active Filter:" %}</strong> <em>{{ filter }}</em>
+                {% endif %}
+            </form>
+            <table class="table table-striped table-bordered table-condensed">
+              <thead>
+                <tr>
+                  <!-- th>{% trans "Granule ID" %}</th -->
+                  <th>{% trans "Bounding Box" %} (minX,minY,maxX,maxY)</th>
+                  <th>{% trans "Time" %}</th>
+                  <!-- th>{% trans "Elevation" %}</th -->
+                  <th>{% trans "Actions" %}</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% autopaginate all_granules.features 10 %}
+                {% for feature in granules.features %}
+                  <tr>
+                    <!-- td>{{ feature.id }}</td -->
+                    <td><script language="Javascript">var bbox = JSON.parse('{{ feature.geometry.coordinates }}'); document.write('{{ granules.crs.properties.name }};' + bbox[0][0][0] + ',' + bbox[0][0][1] + ',' + bbox[0][2][0] + ',' + bbox[0][2][1]);</script></td>
+                    <td>{% if feature.properties.time %}{{ feature.properties.time }}{% endif %}</td>
+                    <!-- td>{% if feature.properties.elevation %}{{ feature.properties.elevation }}{% endif %}</td -->
+                    <td>
+                        <a class="btn btn-xs" href="#" onclick="doPreview('{{ resource.service_typename }}', '{{ feature.id }}', '{{ granules.crs.properties.name }}', '{{ feature.geometry.coordinates }}', {% if feature.properties.time %}'{{ feature.properties.time }}'{% else %}null{% endif %});"><img alt="Granule Preview" title="Granule Preview" src="/static/lib/img/map_go.png"/></a>
+                        <a class="btn btn-xs" href="{% url "layer_granule_remove" feature.id resource.service_typename %}"><img alt="Granule Remove" title="Granule Remove" src="/static/lib/img/cancel-on.png"/></a>
+                        <script language="Javascript">
+                            function doPreview(layer_name, feature_id, srs, the_geom, time) {
+                                var map = app.mapPanel.map;
+                                for (var ll = 0; ll < app.map.layers.length; ll++) {
+                                    var layer = app.map.layers[ll];
+                                    if (layer.name == layer_name) {
+                                        if (time) {
+                                            var re = new RegExp("(\\+[0-9]{4})", "gm");
+                                            var timePosition = time;
+                                            if (re.test(time)) timePosition = time.replace(re, 'Z');
+                                            map.layers[ll].mergeNewParams({"TIME" : timePosition, "CQL_FILTER" : "IN ('" + feature_id + "')"});
+                                        }
+                                        else {
+                                            map.layers[ll].mergeNewParams({"CQL_FILTER" : "IN ('" + feature_id + "')"});
+                                        }
+
+                                        map.layers[ll].addOptions({
+                                            singleTile: true
+                                        });
+
+                                        bbox = JSON.parse(the_geom);
+                                        bbox = new OpenLayers.Bounds(bbox[0][0][0],bbox[0][0][1],bbox[0][2][0],bbox[0][2][1]).transform(srs, map.projection);
+
+                                        //map.maxExtent = bbox;
+                                        //map.restrictedExtent = bbox;
+                                        map.maxExtent = new OpenLayers.Bounds(-20037508.34,-20037508.34,20037508.34,20037508.34);
+                                        map.restrictedExtent = map.maxExtent;
+
+                                        map.zoomToExtent(bbox);
+                                    }
+                                }
+                            }
+                        </script>
+                    </td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+        </div>
+        {% paginate %}
+      </article>
+     {% endif %}
+
       <article id="attributes" class="tab-pane">
+        {% if resource.is_mosaic %}
+            <table class="table table-striped table-bordered table-condensed">
+              <thead>
+                <tr>
+                  <th>{% trans "Dimension" %}</th>
+                  <th>{% trans "Enabled" %}</th>
+                  <th>{% trans "Regex" %}</th>
+                </tr>
+              </thead>
+              <tbody>
+                  <tr>
+                    <td title="TIME">{% trans "TIME" %}</td>
+                    <td>{% if resource.has_time %}{% trans "True" %}{% else %}{% trans "False" %}{% endif %}</td>
+                    <td>{% if resource.time_regex %}{{ resource.time_regex }}{% else %}&nbsp;{% endif %}</td>
+                  </tr>
+                  <!-- tr>
+                    <td title="ELEVATION">{% trans "ELEVATION" %}</td>
+                    <td>{% if resource.has_elevation %}{% trans "True" %}{% else %}{% trans "False" %}{% endif %}</td>
+                    <td>{% if resource.elevation_regex %}{{ resource.elevation_regex }}{% else %}&nbsp;{% endif %}</td>
+                  </tr -->
+              </tbody>
+            </table>
+        {% endif %}
         {% if resource.attribute_set.all %}
             <table class="table table-striped table-bordered table-condensed">
               <thead>
@@ -70,8 +170,8 @@
                 {% for attribute in resource.attributes %}
                   <tr>
                     <td {% if attribute.attribute_label and attribute.attribute_label != attribute.attribute %}title="{{ attribute.attribute }}"{% endif %}>{{ attribute }}</td>
-                    <td>{{ attribute.attribute_label }}</td>
-                    <td>{{ attribute.description }}</td>
+                    <td>{{ attribute.attribute_label|default:"" }}</td>
+                    <td>{{ attribute.description|default:"" }}</td>
                     {% if wps_enabled %}
                       {% if attribute.unique_values == "NA" %}
                       <td>{{ attribute.unique_values }}</td>
@@ -148,7 +248,6 @@
         {% endif %}
         </li>
       {% endif %}
-    </ul>
     <div class="modal fade" id="download-layer" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
       <div class="modal-dialog">
         <div class="modal-content">
@@ -175,8 +274,15 @@
     {% if GEOSERVER_BASE_URL %}
       {% get_obj_perms request.user for resource.layer as "layer_perms" %}
     {% endif %}
+
+    <li class="list-group-item">
+      <a href="{% url "layer_metadata_detail" resource.typename %}">
+        <button class="btn btn-primary btn-md btn-block">{% trans "Metadata Detail" %}</button>
+      </a>
+    </li>
+
     {% if "change_resourcebase_metadata" in perms_list or "change_resourcebase" in perms_list or "delete_resourcebase" in perms_list or "change_layer_style" in layer_perms %}
-    <li class="list-group-item"> 
+    <li class="list-group-item">
       <button class="btn btn-primary btn-md btn-block" data-toggle="modal" data-target="#edit-layer">{% trans "Edit Layer" %}</button>
     </li>
     <div class="modal fade" id="edit-layer" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
@@ -251,6 +357,18 @@
             <h4 class="modal-title" id="myModalLabel">{% trans "Download Metadata" %}</h4>
           </div>
           <div class="modal-body">
+		    <div style="margin-bottom:20px">
+				 <h5 class="modal-title" id="myModalLabel">
+				Full metadata
+				 </h5>
+                 <ul>
+ 					<li><a target="_blank" href="../catalogue/csw_to_extra_format/{{resource.uuid}}/{{resource.title}}.txt"> Text format </a></li>
+ 					<li><a target="_blank" href="../catalogue/csw_to_extra_format/{{resource.uuid}}/{{resource.title}}.html"> HTML format </a></li>
+ 				</ul>
+			</div>
+			<h5 class="modal-title" id="myModalLabel">
+			Standard Metadata - XML format
+			</h5>
             <ul>
               {% for link in metadata %}
                 <li><a href="{{ link.url }}">{{ link.name }}</a></li>
@@ -281,7 +399,7 @@
         <p>{% trans "List of maps using this layer:" %}</p>
         {% endif %}
         <ul class="list-unstyled">
-          {% for maplayer in resource.maps %} 
+          {% for maplayer in resource.maps %}
             <li><a href="{{ maplayer.map.get_absolute_url }}">{{ maplayer.map.title }}</a></li>
           {% empty %}
             <li>{% trans "This layer is not currently used in any maps." %}</li>
@@ -299,7 +417,7 @@
       <h4>{% trans "Documents related to this layer" %}</h4>
       <p>{% trans "List of documents related to this layer:" %}</p>
       <ul class="list-unstyled">
-        {% for document in documents %} 
+        {% for document in documents %}
           <li><a href="{{ document.get_absolute_url }}">{{ document.title }}</a></li>
         {% endfor %}
       </ul>
@@ -346,11 +464,11 @@
     </li>
     {% endif %}
 
-    {% include "base/_resourcebase_contact_snippet.html" %}  
+    {% include "base/_resourcebase_contact_snippet.html" %}
   </ul>
 
 
-  {% if GEONODE_SECURITY_ENABLED %}   
+  {% if GEONODE_SECURITY_ENABLED %}
     {% include "_permissions_form.html" %}
   {% endif %}
 
@@ -381,7 +499,7 @@
               data: $("#form_post_comment").serialize(),
               success: function() {
                 $('#form_post_comment_div').modal('hide');
-                $('#comments_section').load(window.location.pathname + ' #comments_section', 
+                $('#comments_section').load(window.location.pathname + ' #comments_section',
                 		function(){$(this).children().unwrap()})
               }
             });

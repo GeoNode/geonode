@@ -4,9 +4,9 @@
 
 define(function (require, exports) {
 
-    var _        = require('underscore'),
-        fileTypes = require('upload/FileTypes'),
-        path     = require('upload/path'),
+        var _      = require('underscore'),
+        fileTypes  = require('upload/FileTypes'),
+        path       = require('upload/path'),
         common     = require('upload/common'),
         LayerInfo;
 
@@ -18,6 +18,7 @@ define(function (require, exports) {
      */
     LayerInfo = function (options) {
 
+        this.id       = null;
         this.name     = null;
         this.files    = null;
 
@@ -38,19 +39,19 @@ define(function (require, exports) {
         this.polling = false;
     };
 
-    /** Function to safely select a filename 
+    /** Function to safely select a filename
      *
-     *  @params name 
-     *  @returns string 
+     *  @params name
+     *  @returns string
      */
     LayerInfo.safeSelector = function (name) {
         return name.replace(/\[|\]|\(|\)|./g, '_');
     };
 
-    /** Function to return the success template  
+    /** Function to return the success template
      *
      *  @params {options}
-     *  @returns 
+     *  @returns
      */
     LayerInfo.prototype.successTemplate = function (options) {
         var template = _.template($('#successTemplate').html());
@@ -73,7 +74,7 @@ define(function (require, exports) {
         return res;
     };
 
-    /** Function to check the type of a Layer 
+    /** Function to check the type of a Layer
      *
      *  @params {options}
      *  @returns {string}
@@ -99,6 +100,21 @@ define(function (require, exports) {
      */
     LayerInfo.prototype.collectErrors = function () {
         var errors = [];
+
+		var mosaic_is_valid = true;
+		var is_granule = $('#' + this.name + '-mosaic').is(':checked');
+
+        var is_time_enabled = $('#' + this.name + '-timedim').is(':checked');
+		var is_time_valid = is_time_enabled && !$('#' + this.name + '-timedim-value-valid').is(':visible');
+
+        if (is_granule && is_time_enabled) {
+			mosaic_is_valid = is_time_valid;
+		}
+
+		if (is_granule && !mosaic_is_valid) {
+			errors.push('The configuration of the file as a Mosaic Granule is not valid, please fix the issue and try again');
+		}
+
         if (this.type) {
             errors = this.type.findTypeErrors(this.getExtensions());
         } else {
@@ -108,7 +124,7 @@ define(function (require, exports) {
     };
 
     /** Function to get all the file extensions in
-     *  the current list of files being handled. 
+     *  the current list of files being handled.
      *
      *  @params {options}
      *  @returns {string}
@@ -130,11 +146,17 @@ define(function (require, exports) {
 
     /** Build a new FormData object from the current state of the
      *  LayerInfo object.
-     * 
+     *
      *  @returns {FromData}
      */
     LayerInfo.prototype.prepareFormData = function (form_data) {
-        var i, ext, file, perm, geogig, geogig_store, time;
+        var i, ext, file, perm, geogig, geogig_store, time, mosaic;
+
+		var base_ext  = this.main.name.split('.').pop();
+		var base_name = this.main.name.slice(0, -(base_ext.length+1));
+
+        var base_ext  = this.main.name.split('.').pop();
+        var base_name = this.main.name.slice(0, -(base_ext.length+1));
 
         var base_ext  = this.main.name.split('.').pop();
         var base_name = this.main.name.slice(0, -(base_ext.length+1));
@@ -163,7 +185,75 @@ define(function (require, exports) {
         if (time_enabled) {
             time = $('#' + base_name + '-time').is(':checked');
             form_data.append('time', time);
-        } 
+        }
+        if (mosaic_enabled) {
+            mosaic = $('#' + base_name + '-mosaic').is(':checked');
+			var is_time_valid = $('#' + base_name + '-timedim').is(':checked') && !$('#' + base_name + '-timedim-value-valid').is(':visible');
+
+			if (mosaic /*&& is_time_valid*/) {
+				form_data.append('mosaic', mosaic);
+
+				var append_to_mosaic_opts = $('#' + base_name + '-mosaic-granule').is(':checked');
+				var append_to_mosaic_name = $('#' + base_name + '-mosaic-granule-format-select').val();
+
+				//console.log("append_to_mosaic_opts:" + append_to_mosaic_opts + " / append_to_mosaic_name:" + append_to_mosaic_name);
+
+                if (is_time_valid) {
+                    var time_regex = $('#' + base_name + '-timedim-format-select').val();
+                    var time_value = $('#' + base_name + '-timedim-value').val();
+
+                    //console.log("time_regex:" + time_regex + " / time_value:" + time_value);
+
+                    var time_presentation_opts = $('#' + base_name + '-timedim-presentation').is(':checked');
+                    var time_presentation = "LIST";
+                    var time_presentation_res = 0;
+                    var time_presentation_default_value = "";
+                    var time_presentation_reference_value = "";
+                    if (time_presentation_opts) {
+                        time_presentation = $('#' + base_name + '-timedim-presentation-format-select').val();
+
+                        if (time_presentation === 'DISCRETE_INTERVAL') {
+                            // Years
+                            time_presentation_res += parseInt( $('#' + base_name + '-timedim-presentation-years').val() ) * 31536000000;
+                            // Months
+                            time_presentation_res += parseInt( $('#' + base_name + '-timedim-presentation-months').val() ) * 2628000000;
+                            // Weeks
+                            time_presentation_res += parseInt( $('#' + base_name + '-timedim-presentation-weeks').val() ) * 604800000;
+                            // Days
+                            time_presentation_res += parseInt( $('#' + base_name + '-timedim-presentation-days').val() ) * 86400000;
+                            // Hours
+                            time_presentation_res += parseInt( $('#' + base_name + '-timedim-presentation-hours').val() ) * 3600000;
+                            // Minutes
+                            time_presentation_res += parseInt( $('#' + base_name + '-timedim-presentation-minutes').val() ) * 60000;
+                            // Seconds
+                            time_presentation_res += parseInt( $('#' + base_name + '-timedim-presentation-seconds').val() ) * 1000;
+                        }
+
+                        time_presentation_default_value = $('#' + base_name + '-timedim-defaultvalue-format-select').val();
+
+                        if (time_presentation_default_value == 'NEAREST' || time_presentation_default_value == 'FIXED') {
+                            time_presentation_reference_value = $('#' + base_name + '-timedim-defaultvalue-ref-value').val();
+                        }
+                    }
+
+                    //console.log("time_presentation:" + time_presentation + " / time_presentation_res:" + time_presentation_res);
+
+                    form_data.append('mosaic_time_regex', time_regex);
+                    form_data.append('mosaic_time_value', time_value);
+
+                    form_data.append('time_presentation', time_presentation);
+                    form_data.append('time_presentation_res', time_presentation_res);
+
+                    form_data.append('time_presentation_default_value', time_presentation_default_value);
+                    form_data.append('time_presentation_reference_value', time_presentation_reference_value);
+                }
+
+				form_data.append('append_to_mosaic_opts', append_to_mosaic_opts);
+				if (append_to_mosaic_opts) {
+					form_data.append('append_to_mosaic_name', append_to_mosaic_name);
+				}
+			}
+        }
 
         form_data.append('base_file', this.main);
         form_data.append('permissions', JSON.stringify(perm));
@@ -217,7 +307,7 @@ define(function (require, exports) {
             empty: 'true'
         });
     };
-   
+
     LayerInfo.prototype.doResume = function (event) {
         common.make_request({
             url: event.data.url,
@@ -226,7 +316,11 @@ define(function (require, exports) {
                 self.markError(resp.errors, status);
             },
             success: function (resp, status) {
-                window.location = resp.redirect_to; 
+                if(resp.url && resp.input_required){
+                    window.location = resp.url;
+                }else {
+                    window.location = resp.redirect_to;
+                }
             },
         });
         return false;
@@ -254,21 +348,21 @@ define(function (require, exports) {
     LayerInfo.prototype.startPolling = function() {
         var self = this;
         if (self.polling) {
-            $.ajax({ url: "/upload/progress", type: 'GET', success: function(data){
+            $.ajax({ url: updateUrl("/upload/progress", 'id', self.id), type: 'GET', success: function(data){
                 // TODO: Not sure we need to do anything here?
                 //console.log('polling');
             }, dataType: "json", complete: setTimeout(function() {self.startPolling()}, 3000), timeout: 30000 });
         }
     };
 
-    /** Function to deal with the final step in the upload process 
+    /** Function to deal with the final step in the upload process
      *
      *  @params {options}
      *  @returns {string}
      */
     LayerInfo.prototype.doFinal = function (resp) {
         var self = this;
-        if (resp.redirect_to === '/upload/final') {
+        if (resp.redirect_to.indexOf('/upload/final') > -1) {
             common.make_request({
                 url: resp.redirect_to,
                 async: true,
@@ -283,7 +377,7 @@ define(function (require, exports) {
                 },
                 failure: function (resp, status) {
                     self.polling = false;
-                    self.markError(resp.errors, status); 
+                    self.markError(resp.errors, status);
                 },
                 success: function (resp, status) {
                     self.polling = false;
@@ -303,7 +397,7 @@ define(function (require, exports) {
                 }
             });
         } else if (resp.status === "incomplete") {
-            var id = resp.url.split('=')[1]
+            var id = common.parseQueryString(resp.url).id;
             var element = 'next_step_' + id
             var a = '<a id="' + element + '" class="btn">Continue</a>';
             self.logStatus({
@@ -347,20 +441,21 @@ define(function (require, exports) {
         });
         if (resp.success === true && resp.status === 'incomplete') {
             common.make_request({
-                url: resp.redirect_to + '?force_ajax=true',
+                url: updateUrl(resp.redirect_to, 'force_ajax', 'true'),
                 async: true,
                 failure: function (resp, status) {
                     self.polling = false;
                     self.markError(resp.errors, status);
                 },
                 success: function (resp, status) {
+                    self.id = resp.id;
                     if (resp.status === 'incomplete') {
                         if (resp.input_required === true) {
                             self.doFinal(resp);
                         } else {
                             self.doStep(resp);
                         }
-                    } else if (resp.redirect_to === '/upload/final') {
+                    } else if (resp.redirect_to.indexOf('/upload/final') > -1) {
                         self.doFinal(resp);
                     } else {
                         window.location = resp.url;
@@ -369,7 +464,7 @@ define(function (require, exports) {
             });
         } else if (resp.success === true && typeof resp.url != 'undefined') {
             self.doFinal(resp);
-        } else if (resp.success === true && resp.redirect_to === '/upload/final') {
+        } else if (resp.success === true && resp.redirect_to.indexOf('/upload/final') > -1) {
             self.doFinal(resp);
         }
     };
@@ -422,6 +517,7 @@ define(function (require, exports) {
                     level: 'alert-success',
                     empty: 'true'
                 });
+                self.id = resp.id;
                 self.doStep(resp);
             }
         });
@@ -449,7 +545,7 @@ define(function (require, exports) {
     }
 
     /** Function to display the layers collected from the files
-     * selected for uploading 
+     * selected for uploading
      *
      *  @params {file_queue}
      *  @returns {string}
@@ -463,13 +559,80 @@ define(function (require, exports) {
                 type: this.type.name,
                 format: this.type.format,
                 geogig: geogig_enabled,
-                time: time_enabled
+                time: time_enabled,
+				mosaic: mosaic_enabled
             });
         file_queue.append(li);
         this.errors = this.collectErrors();
         this.displayFiles();
         this.displayErrors();
         this.element = $(this.selector);
+
+	    var time_re_txt = "[0-9]{8}";
+
+        $('#' + this.name + '-mosaic').on('change', this.doImageMosaicToggle);
+        $('#' + this.name + '-mosaic-granule').on('change', this.doImageMosaicGranuleOptionsToggle);
+        $('#' + this.name + '-timedim').on('change', this.doImageMosaicTimedimOptionsToggle);
+        $('#' + this.name + '-timedim-presentation').on('change', this.doImageMosaicTimedimPresentationOptionsToggle);
+        $('#' + this.name + '-mosaic-granule-format-select').on('change', this.doImageMosaicGranuleLayerSelect);
+
+        $('#' + this.name + '-timedim-format-select').on('change', function() {
+             var input = $(this);
+
+             time_re_txt = input.val();
+
+			 var base_name = this.name.split('-timedim')[0];
+
+			 $('#' + base_name + '-timedim-value-valid').show();
+        });
+
+        $('#' + this.name + '-timedim-presentation-format-select').on('change', function() {
+             var input = $(this);
+
+			 var base_name = this.name.split('-timedim')[0];
+
+             if (input.val() === 'DISCRETE_INTERVAL') {
+                $('#' + base_name + '-mosaic-timedim-presentation-res-options').show();
+             } else {
+                $('#' + base_name + '-mosaic-timedim-presentation-res-options').hide();
+             }
+        });
+
+        $('#' + this.name + '-timedim-defaultvalue-format-select').on('change', function() {
+             var input = $(this);
+
+			 var base_name = this.name.split('-timedim')[0];
+
+             if (input.val() === 'NEAREST' || input.val() === 'FIXED') {
+                $('#' + base_name + '-mosaic-timedim-defaultvalue-res-options').show();
+             } else {
+                $('#' + base_name + '-mosaic-timedim-defaultvalue-res-options').hide();
+             }
+        });
+
+        $('#' + this.name + '-timedim-value').on('input', function() {
+           var input = $(this);
+
+           var re = new RegExp(time_re_txt, "g");
+           var is_valid = re.test(input.val());
+           if(is_valid){
+		      $('#' + this.name + '-valid').hide();
+		   } else {
+		      $('#' + this.name + '-valid').show();
+	       }
+        });
+
+        $('#' + this.name + '-timedim-defaultvalue-ref-value').on('input', function() {
+           var input = $(this);
+
+           var re = /(\d{4})-(\d{2})-(\d{2})T(\d{2})\:(\d{2})\:(\d{2})[+-](\d{2})\:(\d{2})/;
+           var is_valid = re.test(input.val());
+           if(is_valid){
+		      $('#' + this.name + '-valid').hide();
+		   } else {
+		      $('#' + this.name + '-valid').show();
+	       }
+        });
 
         $('#' + this.name + '\\:geogig_toggle').on('change', this.doGeoGigToggle);
 
@@ -480,10 +643,10 @@ define(function (require, exports) {
         return li;
     };
 
-    /** Event handler to deal with user clicking on remove link 
+    /** Event handler to deal with user clicking on remove link
      *
      *  @params event
-     *  @returns none 
+     *  @returns none
      */
     LayerInfo.prototype.removeFileHandler = function (event) {
         var target = $(event.target),
@@ -513,7 +676,7 @@ define(function (require, exports) {
         }
     };
 
-    /** Function to display the files selected for uploading 
+    /** Function to display the files selected for uploading
      *
      *  @params
      *  @returns
@@ -551,10 +714,10 @@ define(function (require, exports) {
         });
     };
 
-    /** Function to display errors 
+    /** Function to display errors
      *
-     *  @params 
-     *  @returns 
+     *  @params
+     *  @returns
      */
     LayerInfo.prototype.displayErrors = function () {
         var ul = $('#' + LayerInfo.safeSelector(this.name) + '-element .errors').first();
@@ -563,13 +726,13 @@ define(function (require, exports) {
         $.each(this.errors, function (idx, error) {
             var li = $('<li/>', {text: error, 'class': 'alert alert-error'});
             li.appendTo(ul);
-            li.animate({opacity:1}, 5000, 'linear', function() { 
-                li.animate({opacity:0}, 1000, 'linear', function() {li.remove(); }); 
+            li.animate({opacity:1}, 5000, 'linear', function() {
+                li.animate({opacity:0}, 1000, 'linear', function() {li.remove(); });
             });
         });
     };
 
-    /** Function to refresh display after adding or removing files 
+    /** Function to refresh display after adding or removing files
      *
      *  @params {options}
      *  @returns {string}
@@ -594,8 +757,124 @@ define(function (require, exports) {
         }
     };
 
+    LayerInfo.prototype.doImageMosaicToggle = function (event) {
+        var target = event.target || event.srcElement;
+        var id = target.id;
+        var base_name = id.split('-mosaic')[0];
+        var mosaic_chkbox = $('#' + id).is(':checked');
+        if (mosaic_chkbox) {
+            $('#' + base_name + '-mosaic-options').show();
+        } else {
+            $('#' + base_name + '-mosaic-options').hide();
+        }
+    };
+
+    LayerInfo.prototype.doImageMosaicTimedimOptionsToggle = function (event) {
+        var target = event.target || event.srcElement;
+        var id = target.id;
+        var base_name = id.split('-timedim')[0];
+        var mosaic_chkbox = $('#' + id).is(':checked');
+        if (mosaic_chkbox) {
+            $('#' + base_name + '-mosaic-timedim-options').show();
+        } else {
+            $('#' + base_name + '-mosaic-timedim-options').hide();
+        }
+    };
+
+    LayerInfo.prototype.doImageMosaicTimedimPresentationOptionsToggle = function (event) {
+        var target = event.target || event.srcElement;
+        var id = target.id;
+        var base_name = id.split('-timedim')[0];
+        var mosaic_chkbox = $('#' + id).is(':checked');
+        if (mosaic_chkbox) {
+            $('#' + base_name + '-mosaic-timedim-presentation-options').show();
+        } else {
+            $('#' + base_name + '-mosaic-timedim-presentation-options').hide();
+        }
+    };
+
+    LayerInfo.prototype.doImageMosaicGranuleOptionsToggle = function (event) {
+        var target = event.target || event.srcElement;
+        var id = target.id;
+        var base_name = id.split('-mosaic')[0];
+        var mosaic_chkbox = $('#' + id).is(':checked');
+        if (mosaic_chkbox) {
+            $('#' + base_name + '-mosaic-granule-format-options').show();
+
+            var dropdown = $('#' + base_name + '-mosaic-granule-format-select');
+            // Clear drop down list
+            $(dropdown).empty();
+            $("<option />", {
+                val: '',
+                text: 'Select one Mosaic layer ...',
+                selected: 'selected'
+            }).appendTo(dropdown);
+            // Fill drop down list with new data
+            $(json_mosaics).each(function () {
+                $("<option />", {
+                    val: this.name,
+                    text: this.name
+                }).appendTo(dropdown);
+            });
+
+        } else {
+            $('#' + base_name + '-mosaic-granule-format-options').hide();
+            $('#' + base_name + '-timedim').prop("checked", false);
+            $('#' + base_name + '-timedim').prop("disabled", false);
+            $('#' + base_name + '-mosaic-timedim-options').hide();
+            $('#' + base_name + '-timedim-presentation').prop("checked", false);
+            $('#' + base_name + '-timedim-presentation').prop("disabled", false);
+            $('#' + base_name + '-mosaic-timedim-presentation-options').hide();
+            $('#' + base_name + '-timedim-format-select').val($('#' + base_name + '-timedim-format-select option:first').val());
+            $('#' + base_name + '-timedim-format-select').prop("disabled", false);
+        }
+    };
+
+    LayerInfo.prototype.doImageMosaicGranuleLayerSelect = function (event) {
+        var target = event.target || event.srcElement;
+        var id = target.id;
+        var val = target.value;
+        var base_name = id.split('-mosaic')[0];
+        if (val !== '') {
+            $(json_mosaics).each(function () {
+                if (this.name === val) {
+                    if (this.has_time === "True") {
+                        $('#' + base_name + '-timedim').prop("checked", true);
+                        $('#' + base_name + '-timedim').prop("disabled", true);
+                        $('#' + base_name + '-mosaic-timedim-options').show();
+                        $('#' + base_name + '-timedim-presentation').prop("checked", false);
+                        $('#' + base_name + '-timedim-presentation').prop("disabled", true);
+                        $('#' + base_name + '-mosaic-timedim-presentation-options').hide();
+                        $('#' + base_name + '-timedim-format-select').val(this.time_regex);
+                        $('#' + base_name + '-timedim-format-select').prop("disabled", true);
+                    }
+                    else {
+                        $('#' + base_name + '-timedim').prop("checked", false);
+                        $('#' + base_name + '-timedim').prop("disabled", false);
+                        $('#' + base_name + '-mosaic-timedim-options').hide();
+                        $('#' + base_name + '-timedim-presentation').prop("checked", false);
+                        $('#' + base_name + '-timedim-presentation').prop("disabled", false);
+                        $('#' + base_name + '-mosaic-timedim-presentation-options').hide();
+                        $('#' + base_name + '-timedim-format-select').val($('#' + base_name + '-timedim-format-select option:first').val());
+                        $('#' + base_name + '-timedim-format-select').prop("disabled", false);
+                    }
+                }
+            });
+        }
+    };
+
     return LayerInfo;
 });
+
+function updateUrl(url, key, value){
+    if (key == null || value == null){
+    	return url;
+    }
+
+    var pair = key.concat('=').concat(value);
+
+    return (url.lastIndexOf('?') > -1)? url.concat('&').concat(pair): url.concat('?').concat(pair);
+}
 
 function format(str, arr) {
   return str.replace(/%(\d+)/g, function(_,m) {

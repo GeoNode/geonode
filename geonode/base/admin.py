@@ -1,3 +1,23 @@
+# -*- coding: utf-8 -*-
+#########################################################################
+#
+# Copyright (C) 2016 OSGeo
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program. If not, see <http://www.gnu.org/licenses/>.
+#
+#########################################################################
+
 from django.contrib import admin
 from django.conf import settings
 
@@ -32,7 +52,7 @@ class LicenseAdmin(MediaTranslationAdmin):
 class TopicCategoryAdmin(MediaTranslationAdmin):
     model = TopicCategory
     list_display_links = ('identifier',)
-    list_display = ('identifier', 'description', 'gn_description', 'is_choice')
+    list_display = ('identifier', 'description', 'gn_description', 'fa_class', 'is_choice')
     if settings.MODIFY_TOPICCATEGORY is False:
         exclude = ('identifier', 'description',)
 
@@ -92,7 +112,7 @@ class ContactRoleAdmin(admin.ModelAdmin):
     list_display_links = ('id',)
     list_display = ('id', 'contact', 'resource', 'role')
     list_editable = ('contact', 'resource', 'role')
-    form = autocomplete_light.modelform_factory(ContactRole)
+    form = autocomplete_light.modelform_factory(ContactRole, fields='__all__')
 
 
 class LinkAdmin(admin.ModelAdmin):
@@ -101,7 +121,7 @@ class LinkAdmin(admin.ModelAdmin):
     list_display = ('id', 'resource', 'extension', 'link_type', 'name', 'mime')
     list_filter = ('resource', 'extension', 'link_type', 'mime')
     search_fields = ('name', 'resource__title',)
-    form = autocomplete_light.modelform_factory(Link)
+    form = autocomplete_light.modelform_factory(Link, fields='__all__')
 
 class HierarchicalKeywordAdmin(TreeAdmin):
     form = movenodeform_factory(HierarchicalKeyword)
@@ -116,4 +136,10 @@ admin.site.register(License, LicenseAdmin)
 admin.site.register(HierarchicalKeyword, HierarchicalKeywordAdmin)
 
 class ResourceBaseAdminForm(autocomplete_light.ModelForm):
-    keywords = TaggitField(widget=TaggitWidget('HierarchicalKeywordAutocomplete'), required=False)
+    # We need to specify autocomplete='TagAutocomplete' or admin views like
+    # /admin/maps/map/2/ raise exceptions during form rendering.
+    # But if we specify it up front, TaggitField.__init__ throws an exception
+    # which prevents app startup. Therefore, we defer setting the widget until
+    # after that's done.
+    keywords = TaggitField(required=False)
+    keywords.widget = TaggitWidget(autocomplete='TagAutocomplete')

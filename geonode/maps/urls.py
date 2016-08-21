@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #########################################################################
 #
-# Copyright (C) 2012 OpenPlans
+# Copyright (C) 2016 OSGeo
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -48,6 +48,7 @@ urlpatterns = patterns('geonode.maps.views',
                        url(r'^(?P<mapid>[^/]+)/(?P<snapshot>[A-Za-z0-9_\-]+)/data$', 'map_json', name='map_json'),
                        url(r'^check/$', 'map_download_check', name='map_download_check'),
                        url(r'^embed/$', 'map_embed', name='map_embed'),
+                       url(r'^(?P<mapid>[^/]*)/metadata_detail$', 'map_metadata_detail', name='map_metadata_detail'),
                        url(r'^(?P<layername>[^/]*)/attributes', 'maplayer_attributes', name='maplayer_attributes'),
                        # url(r'^change-poc/(?P<ids>\w+)$', 'change_poc', name='maps_change_poc'),
                        )

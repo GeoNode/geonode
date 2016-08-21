@@ -1,0 +1,85 @@
+.. _release:
+
+Make a GeoNode release
+======================
+
+Making a GeoNode release requires a quite complex preparation of the environment while once everything is set up is a really easy and quick task.
+As said the complex part is the preparation of the environment since it involves, the generation of a password key to be uploaded to the Ubuntu servers and imported in launchpad.
+
+If you have already prepared the environment then jump to the last paragraph.
+
+Before start, make sure to have a `pypi`_ and a `launchpad`_ account.
+
+.. _pypi: https://pypi.python.org/pypi
+.. _launchpad: https://launchpad.net/
+
+Before doing the release, a GeoNode team member who can already make release has to add you as a launchpad GeoNode team member.
+
+Creating and importing a gpg key
+--------------------------------
+
+A gpg key is needed to push and publish the package.
+There is a complete guide on how to `create and import`_ a gpg key
+
+.. _create and import: https://help.launchpad.net/YourAccount/ImportingYourPGPKey
+
+Preparing the environment
+-------------------------
+
+Make sure to have a Ubuntu 12.04 machine.
+Install the following packages in additon to the python virtulenv tools::
+
+    $ sudo apt-get install git-core git-buildpackage dbhelper devscripts
+
+Get the GeoNode code (from master) in a virtuelnv::
+
+    $ mkvirtualenv geonode
+    $ git clone https://github.com/GeoNode/geonode.git
+    $ cd geonode
+
+Edit the .bashrc file and add the following lines (the key ID can be found in "your personal keys" tab::
+    
+    export GPG_KEY_GEONODE="your_gpg_key_id" 
+    export DEBEMAIL=yourmail@mail.com
+    export EDITOR=vim
+    export DEBFULLNAME="Your Full Name"
+
+then close and::
+
+    $ source .bashrc
+
+Type "env" to make sure all the variables are correctly exported
+
+Set the correct git email::
+
+    $ git config --global user.email "yourmail@mail.com"
+
+Register your credentials::
+
+    $ python setup.py register
+
+
+Make the release
+----------------
+
+The followings are the only commands needed if the environment and the various registrations have already been done.
+
+Make sure to have pulled the master to the desired commit.
+Edit the file geonode/__init__.py at line 21 and set the correct version.
+
+Install GeoNode in the virtualenv (make sure to have the virtualenv activated and be in the geonode folder)::
+
+    $ pip install -e geonode
+
+Publish the package::
+
+    $ cd geonode
+    $ paver publish
+
+The last command will:
+
+    * Tag the release and push it to GitHub
+    * Create the debian package and push it at ppa:geonode/testing in launchpad
+    * Create the .tar.gz sources and push them to Pypi
+    * Update the changelog and commit it to master
+

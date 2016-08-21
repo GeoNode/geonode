@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #########################################################################
 #
-# Copyright (C) 2012 OpenPlans
+# Copyright (C) 2016 OSGeo
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -17,6 +17,7 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
+
 import uuid
 import logging
 
@@ -29,6 +30,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.conf import settings
 from django.utils.translation import ugettext_lazy as _
 from django.core.urlresolvers import reverse
+from django.core.files.storage import FileSystemStorage
 
 from geonode.base.models import ResourceBase, ResourceBaseManager, resourcebase_post_save
 from geonode.people.utils import get_valid_user
@@ -44,6 +46,18 @@ kml_exts = ['.kml']
 vec_exts = shp_exts + csv_exts + kml_exts
 
 cov_exts = ['.tif', '.tiff', '.geotiff', '.geotif']
+
+TIME_REGEX = (
+    ('[0-9]{8}', _('YYYYMMDD')),
+    ('[0-9]{8}T[0-9]{6}', _("YYYYMMDD'T'hhmmss")),
+    ('[0-9]{8}T[0-9]{6}Z', _("YYYYMMDD'T'hhmmss'Z'")),
+)
+
+TIME_REGEX_FORMAT = {
+    '[0-9]{8}': '%Y%m%d',
+    '[0-9]{8}T[0-9]{6}': '%Y%m%dT%H%M%S',
+    '[0-9]{8}T[0-9]{6}Z': '%Y%m%dT%H%M%SZ'
+}
 
 
 class Style(models.Model):
@@ -65,7 +79,7 @@ class Style(models.Model):
         return "%s" % self.name.encode('utf-8')
 
     def absolute_url(self):
-        return self.sld_url.split('geoserver/', 1)[1]
+        return self.sld_url.split(settings.OGC_SERVER['default']['LOCATION'], 1)[1]
 
 
 class LayerManager(ResourceBaseManager):
@@ -87,6 +101,12 @@ class Layer(ResourceBase):
     storeType = models.CharField(max_length=128)
     name = models.CharField(max_length=128)
     typename = models.CharField(max_length=128, null=True, blank=True)
+
+    is_mosaic = models.BooleanField(default=False)
+    has_time = models.BooleanField(default=False)
+    has_elevation = models.BooleanField(default=False)
+    time_regex = models.CharField(max_length=128, null=True, blank=True, choices=TIME_REGEX)
+    elevation_regex = models.CharField(max_length=128, null=True, blank=True)
 
     default_style = models.ForeignKey(
         Style,
@@ -241,7 +261,7 @@ class Layer(ResourceBase):
         return self.__class__.__name__
 
 
-class Layer_Styles(models.Model):
+class LayerStyles(models.Model):
     layer = models.ForeignKey(Layer)
     style = models.ForeignKey(Style)
 
@@ -268,7 +288,8 @@ class LayerFile(models.Model):
     upload_session = models.ForeignKey(UploadSession)
     name = models.CharField(max_length=255)
     base = models.BooleanField(default=False)
-    file = models.FileField(upload_to='layers', max_length=255)
+    file = models.FileField(upload_to='layers',
+                            storage=FileSystemStorage(base_url=settings.LOCAL_MEDIA_URL),  max_length=255)
 
 
 class AttributeManager(models.Manager):
@@ -277,7 +298,7 @@ class AttributeManager(models.Manager):
     """
 
     def visible(self):
-        return self.get_query_set().filter(
+        return self.get_queryset().filter(
             visible=True).order_by('display_order')
 
 
@@ -416,7 +437,7 @@ def pre_save_layer(instance, sender, **kwargs):
         instance.bbox_y1 = instance.resourcebase_ptr.bbox_y1
 
     if instance.abstract == '' or instance.abstract is None:
-        instance.abstract = 'No abstract provided'
+        instance.abstract = unicode(_('No abstract provided'))
     if instance.title == '' or instance.title is None:
         instance.title = instance.name
 
