@@ -46,7 +46,7 @@ services:
       - "8080"
 
   nginx:
-    image: geonode/nginx:geonode
+    image: geonode/nginx
     links:
       - django
       - geoserver
