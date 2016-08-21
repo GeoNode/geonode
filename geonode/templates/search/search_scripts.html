@@ -36,6 +36,10 @@
                 AUTOCOMPLETE_URL_RESOURCEBASE = '{% url "autocomplete_light_autocomplete" "DocumentAutocomplete" %}';
         {% elif pathc == "search" %}
                 AUTOCOMPLETE_URL_RESOURCEBASE = '{% url "autocomplete_light_autocomplete" "ResourceBaseAutocomplete" %}';
+        {% elif pathc == "people" %}
+                AUTOCOMPLETE_URL_RESOURCEBASE = '{% url "autocomplete_light_autocomplete" "ProfileAutocomplete" %}';
+        {% elif pathc == "groups" %}
+                AUTOCOMPLETE_URL_RESOURCEBASE = '{% url "autocomplete_light_autocomplete" "GroupProfileAutocomplete" %}';
         {% else %}
                 AUTOCOMPLETE_URL_RESOURCEBASE = '{% url "autocomplete_light_autocomplete" "ResourceBaseAutocomplete" %}';
         {% endif %}
