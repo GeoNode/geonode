@@ -24,7 +24,7 @@ services:
       - ALLOWED_HOSTS=['django',]
 
   celery:
-    image: geonode/django:geonode
+    image: geonode/django
     links:
       - rabbitmq
       - postgres
