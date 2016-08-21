@@ -21,6 +21,9 @@ logs:
 down:
 	docker-compose down
 
+pull:
+	docker-compose pull
+
 test:
 	docker-compose run django python manage.py test --failfast
 
