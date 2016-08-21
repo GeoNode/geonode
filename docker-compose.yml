@@ -11,7 +11,7 @@ services:
      image: rabbitmq
 
   django:
-    image: geonode/django:geonode
+    image: geonode/django
     links:
       - postgres
       - elasticsearch
