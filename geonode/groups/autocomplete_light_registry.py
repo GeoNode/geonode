@@ -19,18 +19,14 @@
 #########################################################################
 
 import autocomplete_light
-from .models import Profile
+from .models import GroupProfile
 
 
-class ProfileAutocomplete(autocomplete_light.AutocompleteModelTemplate):
+class GroupProfileAutocomplete(autocomplete_light.AutocompleteModelTemplate):
     choice_template = 'autocomplete_response.html'
 
-    def choices_for_request(self):
-        self.choices = self.choices.exclude(username='AnonymousUser')
-        return super(ProfileAutocomplete, self).choices_for_request()
-
 autocomplete_light.register(
-    Profile,
-    ProfileAutocomplete,
-    search_fields=['first_name', 'last_name', 'email', 'username'],
+    GroupProfile,
+    GroupProfileAutocomplete,
+    search_fields=['title'],
 )
