@@ -118,7 +118,7 @@ setup(name='GeoNode',
 
         "django-polymorphic>=0.9.2",
         "django-leaflet>=0.13.7",
-        "django-autocomplete-light>=2.3.3",
+        "django-autocomplete-light>=2.3.3, <3.0a0",
         "django-modeltranslation>=0.11",
 
         # GeoNode org maintained apps.
