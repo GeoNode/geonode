@@ -1,2 +1,2 @@
-FROM geonode/django:geonode
+FROM geonode/django
 MAINTAINER GeoNode development team
