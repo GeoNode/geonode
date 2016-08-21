@@ -9,7 +9,7 @@ build:
 sync:
 	# set up the database tablea
 	docker-compose run django python manage.py makemigrations --noinput
-	docker-compose exec django python manage.py migrate account --noinput
+	docker-compose run django python manage.py migrate account --noinput
 	docker-compose run django python manage.py migrate --noinput
 
 wait:
