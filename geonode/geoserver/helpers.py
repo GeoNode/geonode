@@ -1548,7 +1548,7 @@ def style_update(request, url):
             style = Style(name=style_name, sld_body=sld_body, sld_url=url)
             style.save()
             layer = Layer.objects.get(typename=layer_name)
-            style.LayerStyles.add(layer)
+            style.layer_styles.add(layer)
             style.save()
         elif request.method == 'PUT':  # update style in GN
             style = Style.objects.get(name=style_name)
@@ -1557,7 +1557,7 @@ def style_update(request, url):
             if len(elm_user_style_title.text) > 0:
                 style.sld_title = elm_user_style_title.text
             style.save()
-            for layer in style.LayerStyles.all():
+            for layer in style.layer_styles.all():
                 layer.save()
 
         # Invalidate GeoWebCache so it doesn't retain old style in tiles

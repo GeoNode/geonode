@@ -1,0 +1,22 @@
+version: '2'
+
+services:
+  django:
+    build: .
+    # Loading the app is defined here to allow for
+    # autoreload on changes it is mounted on top of the
+    # old copy that docker added when creating the image
+    volumes:
+      - '.:/usr/src/app'
+    environment:
+      - DEBUG=True
+
+  celery:
+    build: .
+    # Loading the app is defined here to allow for
+    # autoreload on changes it is mounted on top of the
+    # old copy that docker added when creating the image
+    volumes:
+      - '.:/usr/src/app'
+    environment:
+      - DEBUG=True

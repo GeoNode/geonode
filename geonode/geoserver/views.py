@@ -313,7 +313,7 @@ def style_change_check(request, path):
             style_name = os.path.splitext(request.path)[0].split('/')[-1]
             try:
                 style = Style.objects.get(name=style_name)
-                for layer in style.LayerStyles.all():
+                for layer in style.layer_styles.all():
                     if not request.user.has_perm('change_layer_style', obj=layer):
                         authorized = False
             except:
