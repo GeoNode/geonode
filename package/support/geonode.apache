@@ -13,9 +13,8 @@ WSGIDaemonProcess geonode user=www-data threads=15 processes=2
 
     <Directory "/var/www/geonode/">
        Order allow,deny
-        Options Indexes FollowSymLinks
-        Allow from all
-        IndexOptions FancyIndexing
+       Options -Indexes
+       Allow from all
     </Directory>
 
     Alias /static/ /var/www/geonode/static/
