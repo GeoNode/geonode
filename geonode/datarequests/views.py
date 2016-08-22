@@ -39,11 +39,7 @@ from geonode.layers.utils import file_upload
 from geonode.people.models import Profile
 from geonode.people.views import profile_detail
 from geonode.security.views import _perms_info_json
-<<<<<<< HEAD
 from geonode.tasks.requests_update import place_name_update, compute_size_update
-=======
-from geonode.tasks.jurisdiction import jurisdiction_style
->>>>>>> master
 from geonode.utils import default_map_config
 from geonode.utils import GXPLayer
 from geonode.utils import GXPMap
@@ -317,11 +313,7 @@ def registration_part_two(request):
                             )
 
                     if interest_layer:
-<<<<<<< HEAD
                         request_profile.place_name = None
-=======
-                        #request_profile.place_name = place_name['state']
->>>>>>> master
                         request_profile.juris_data_size = juris_data_size
                         request_profile.area_coverage = area_coverage
                         request_profile.save()
