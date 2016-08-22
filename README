@@ -32,18 +32,27 @@ Docker Usage
 If you want to use Docker you can now::
 
     # build the docker container
-    docker build -t geonode .
+    docker-compose build
 
     # run the docker container
-    docker run -d -p 8111:8000 -p 8181:8080 geonode
+    docker-compose up
 
-Or if you use fig::
+    # turn it off
+    docker-compose down
+
+Or if you want to use the provided Makefile::
 
     # build the container
-    fig build
+    make build
 
     # run the container
-    fig up
+    make up
+
+    # create database
+    make sync
+
+    # pull latest images
+    make pull
 
 openSUSE
 --------
