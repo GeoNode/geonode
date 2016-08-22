@@ -29,7 +29,8 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     DEFAULT_FA_CLASS = b"fa-times"
-    SQL_UPDATE = "UPDATE base_topiccategory SET fa_class=%s WHERE identifier=%s AND fa_class='"+DEFAULT_FA_CLASS+"';"
+    SQL_UPDATE = "UPDATE base_topiccategory SET fa_class=%s WHERE identifier=%s AND fa_class='" \
+                 + DEFAULT_FA_CLASS + "';"
 
     dependencies = [
         ('base', '0001_initial'),
