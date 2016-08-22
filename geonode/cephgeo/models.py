@@ -120,12 +120,12 @@ class SucToLayer(models.Model):
         return "{0}:{1}".format(self.suc, self.block_name)
 
 class RIDF(models.Model):
-    municipality = models.CharField(max_length=20)
-    province = models.CharField(max_length=20)
-    _100yr = models.DecimalField()
-    _25yr = models.DecimalField()
-    _5yr = models.DecimalField()
-    municipality_province = models.CharField(max_length=50)
+    municipality = models.CharField(max_length=50)
+    province = models.CharField(max_length=50)
+    _100yr = models.DecimalField(max_digits=7, decimal_places=3)
+    _25yr = models.DecimalField(max_digits=7, decimal_places=3)
+    _5yr = models.DecimalField(max_digits=7, decimal_places=3)
+    municipality_province = models.CharField(max_length=100)
 
     def __unicode__(self):
         return "{0}".format(self.municipality_province)
