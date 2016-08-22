@@ -392,7 +392,13 @@
         if (HAYSTACK_SEARCH)
             $scope.query['q'] = $('#text_search_input').val();
         else
-            $scope.query['title__icontains'] = $('#text_search_input').val();
+            if (AUTOCOMPLETE_URL_RESOURCEBASE == "/autocomplete/ProfileAutocomplete/")
+                // a user profile has no title; if search was triggered from
+                // the /people page, filter by username instead
+                var query_key = 'username__icontains';
+            else
+                var query_key = 'title__icontains';
+            $scope.query[query_key] = $('#text_search_input').val();
         query_api($scope.query);
     });
 
