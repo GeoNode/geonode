@@ -15,6 +15,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='profile',
             name='keywords',
-            field=taggit.managers.TaggableManager(to='taggit.Tag', through='taggit.TaggedItem', blank=True, help_text='commonly used word(s) or formalised word(s) or phrase(s) used to describe the subject             (space or comma-separated', verbose_name='keywords'),
+            field=taggit.managers.TaggableManager(to='taggit.Tag', through='taggit.TaggedItem', blank=True,
+                                                  help_text='commonly used word(s) or formalised word(s) or phrase(s) used to describe the subject             (space or comma-separated', verbose_name='keywords'),
         ),
     ]

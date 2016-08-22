@@ -15,6 +15,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='layerfile',
             name='file',
-            field=models.FileField(storage=django.core.files.storage.FileSystemStorage(base_url=b'/uploaded/'), max_length=255, upload_to=b'layers'),
+            field=models.FileField(storage=django.core.files.storage.FileSystemStorage(
+                base_url=b'/uploaded/'), max_length=255, upload_to=b'layers'),
         ),
     ]
