@@ -99,6 +99,7 @@ setup(name='GeoNode',
         "awesome-slugify>=1.6.2",
 
         # Django Apps
+        "dj-database-url >=0.4.0",
         "django-pagination >=1.0.5, <=1.0.7",  # python-django-pagination
         "django-jsonfield>=0.9.16",  # python-django-jsonfield
         "django-extensions>=1.6.1",  # python-django-extensions
