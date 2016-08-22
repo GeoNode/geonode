@@ -16,7 +16,7 @@
     window.addEventListener("map:init", function (e) {
         map = e.detail.map;
 
-        
+
         {% if resource.bbox_string %}
             zoom_to_box(map, [{{ resource.bbox_string }}]);
         {% endif %}
@@ -30,13 +30,12 @@
             tiled:true,
             visibility:true,
             continuousWorld: true,
-           
+
         }).addTo(map).bringToFront();
 
         {% get_public_location "%s" as public_location %}
         var pl = '{{public_location}}' + 'orthophotos/wms?service=WMS&version=1.1.0&request=GetMap';
 
-        {% get_orthophotos "%s" as orthos %}
         var cdo = L.tileLayer.wms(pl,{
             ptype: "gxp_wmsgetfeatureinfo",
             layers: '{{orthos}}',
@@ -74,7 +73,7 @@
             // map.addLayer(MapQuestOpen_OSM);
         }
 
-        
+
 
     });
     function zoom_to_box(map, bbox){
