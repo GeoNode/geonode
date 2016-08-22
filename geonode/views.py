@@ -89,24 +89,24 @@ def philgrid(request,template='index.html'):
         'base.view_resourcebase',
         _PERMISSION_MSG_VIEW)
     config = layer.attribute_config()
-    print "CONFIG 1" + str(config)
+    # print "CONFIG 1" + str(config)
 
     # print layername
     # Add required parameters for GXP lazy-loading
     layer_bbox = layer.bbox
-    print layer_bbox
+    # print layer_bbox
     bbox = [float(coord) for coord in list(layer_bbox[0:4])]
     srid = layer.srid
 
     # Transform WGS84 to Mercator.
     config["srs"] = srid if srid != "EPSG:4326" else "EPSG:900913"
-    print "SRID " + srid
+    # print "SRID " + srid
     config["bbox"] = llbbox_to_mercator([float(coord) for coord in bbox])
 
     config["title"] = layer.title
     config["queryable"] = True
 
-    print "CONFIG 2" + str(config)
+    # print "CONFIG 2" + str(config)
 
     if layer.storeType == "remoteStore":
         service = layer.service
@@ -151,8 +151,8 @@ def philgrid(request,template='index.html'):
         'leaflet')
 
     context_dict["layername"] = layername
-    print "CONTEXT DICT" + str(context_dict)
-    print "Layer" + str(layer)
+    # print "CONTEXT DICT" + str(context_dict)
+    # print "Layer" + str(layer)
     return render_to_response(template, RequestContext(request, context_dict))
 
 
