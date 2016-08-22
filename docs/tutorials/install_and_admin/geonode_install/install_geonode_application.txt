@@ -90,14 +90,14 @@ GeoNode Setup
 
 Let's download GeoNode from the main GeoNode repository on GitHub:
 
-.. 
+..
     For the purpose of this training the GeoNode repository has
     been downloaded and placed in the `geonode` user `home folder` (/home/geo/geonode).
     *Skip* the following command group.
 
 ::
 
-    git clone https://github.com/GeoNode/geonode.git
+    git clone https://github.com/GeoNode/geonode.git --branch 2.4.x
     sudo useradd -m geonode
     sudo mv ~/geonode /home/geonode/
 

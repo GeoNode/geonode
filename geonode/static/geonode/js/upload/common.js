@@ -3,8 +3,9 @@
 
 define(function (require, exports) {
     var make_request,
-        logStatus,
-        logError;
+          logStatus,
+          logError,
+          parseQueryString;
 
     function progressTemplate(options) {
         var template =  _.template($('#progressTemplate').html());
@@ -29,7 +30,7 @@ define(function (require, exports) {
                if (typeof resp === "object" && resp.success === true) {
                     success(resp, status);
                } else if (typeof resp === "string"){
-                    success({status:'other', url: options.url, resp_string:resp}, status);
+                    success({status:'incomplete', input_required: true, url: options.url, resp_string:resp, redirect_to:''}, status);
                 } else {
                     failure(resp, status);
                 }
@@ -93,6 +94,25 @@ define(function (require, exports) {
         logStatus({msg: error, level: 'alert-warning', empty:true, element:element});
     };
 
+    parseQueryString = function (url){
+        var query_dict = {};
+        var url = url || '';
+
+        var pos = url.indexOf("?") + 1;
+
+        $.each(url.substr(pos).split('&'),function(c,kvp){
+            var parts = kvp.split('=');
+            if (parts[0] && parts[1]) {
+                var key = parts[0].toString().toLowerCase();
+                var val = parts[1].toString();
+                query_dict[key] = val;
+            }
+        });
+
+        return query_dict;
+    };
+
     exports.logStatus = logStatus;
     exports.logError = logError;
+    exports.parseQueryString = parseQueryString;
 });

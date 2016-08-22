@@ -59,7 +59,6 @@ from geonode.geoserver.helpers import ogc_server_settings
 
 logger = logging.getLogger(__name__)
 
-_SESSION_KEY = 'geonode_upload_session'
 _ALLOW_TIME_STEP = getattr(settings, 'UPLOADER', False)
 if _ALLOW_TIME_STEP:
     _ALLOW_TIME_STEP = _ALLOW_TIME_STEP.get(
@@ -100,11 +99,12 @@ def _is_async_step(upload_session):
     return _ASYNC_UPLOAD and get_next_step(upload_session, offset=2) == 'run'
 
 
-def _progress_redirect(step):
+def _progress_redirect(step, upload_id):
     return json_response(dict(
         success=True,
-        redirect_to=reverse('data_upload', args=[step]),
-        progress=reverse('data_upload_progress')
+        id=upload_id,
+        redirect_to=reverse('data_upload', args=[step]) + "?id=%s" % upload_id,
+        progress=reverse('data_upload_progress') + "?id=%s" % upload_id
     ))
 
 
@@ -176,7 +176,8 @@ def _next_step_response(req, upload_session, force_ajax=True):
             {'url': url,
              'status': 'incomplete',
              'success': True,
-             'redirect_to': '/upload/time',
+             'id': import_session.id,
+             'redirect_to': '/upload/time' + "?id=%s" % import_session.id,
              }
         )
     if next == 'mosaic' and force_ajax:
@@ -186,7 +187,8 @@ def _next_step_response(req, upload_session, force_ajax=True):
             {'url': url,
              'status': 'incomplete',
              'success': True,
-             'redirect_to': '/upload/mosaic',
+             'id': import_session.id,
+             'redirect_to': '/upload/mosaic' + "?id=%s" % import_session.id,
              }
         )
     if next == 'srs' and force_ajax:
@@ -196,7 +198,8 @@ def _next_step_response(req, upload_session, force_ajax=True):
             {'url': url,
              'status': 'incomplete',
              'success': True,
-             'redirect_to': '/upload/srs',
+             'id': import_session.id,
+             'redirect_to': '/upload/srs' + "?id=%s" % import_session.id,
              }
         )
     if next == 'csv' and force_ajax:
@@ -206,7 +209,8 @@ def _next_step_response(req, upload_session, force_ajax=True):
             {'url': url,
              'status': 'incomplete',
              'success': True,
-             'redirect_to': '/upload/csv',
+             'id': import_session.id,
+             'redirect_to': '/upload/csv' + "?id=%s" % import_session.id,
              }
         )
 
@@ -223,7 +227,7 @@ def _next_step_response(req, upload_session, force_ajax=True):
                                        force_ajax=force_ajax)
     if req.is_ajax() or force_ajax:
         content_type = 'text/html' if not req.is_ajax() else None
-        return json_response(redirect_to=reverse('data_upload', args=[next]),
+        return json_response(redirect_to=reverse('data_upload', args=[next]) + "?id=%s" % req.GET['id'],
                              content_type=content_type)
     # return HttpResponseRedirect(reverse('data_upload', args=[next]))
 
@@ -293,7 +297,7 @@ def save_step_view(req, session):
 
         logger.info('provided sld is %s' % sld)
         # upload_type = get_upload_type(base_file)
-        upload_session = req.session[_SESSION_KEY] = upload.UploaderSession(
+        upload_session = upload.UploaderSession(
             tempdir=tempdir,
             base_file=base_file,
             name=name,
@@ -310,8 +314,10 @@ def save_step_view(req, session):
             append_to_mosaic_opts=form.cleaned_data['append_to_mosaic_opts'],
             append_to_mosaic_name=form.cleaned_data['append_to_mosaic_name'],
             mosaic_time_regex=form.cleaned_data['mosaic_time_regex'],
-            mosaic_time_value=form.cleaned_data['mosaic_time_value']
+            mosaic_time_value=form.cleaned_data['mosaic_time_value'],
+            user=req.user
         )
+        req.session[str(upload_session.import_session.id)] = upload_session
         return _next_step_response(req, upload_session, force_ajax=True)
     else:
         errors = []
@@ -323,8 +329,14 @@ def save_step_view(req, session):
 def data_upload_progress(req):
     """This would not be needed if geoserver REST did not require admin role
     and is an inefficient way of getting this information"""
-    if _SESSION_KEY in req.session:
-        upload_session = req.session[_SESSION_KEY]
+    if 'id' in req.GET:
+        upload_id = str(req.GET['id'])
+        if upload_id in req.session:
+            upload_obj = get_object_or_404(Upload, import_id=upload_id, user=req.user)
+            upload_session = upload_obj.get_session()
+        else:
+            upload_session = req.session[upload_id]
+
         import_session = upload_session.import_session
         progress = import_session.tasks[0].get_progress()
         return json_response(progress)
@@ -521,7 +533,7 @@ def run_response(req, upload_session):
 
     if _ASYNC_UPLOAD:
         next = get_next_step(upload_session)
-        return _progress_redirect(next)
+        return _progress_redirect(next, upload_session.import_session.id)
 
     return _next_step_response(req, upload_session)
 
@@ -533,7 +545,8 @@ def final_step_view(req, upload_session):
     except upload.LayerNotReady:
         return json_response({'status': 'pending',
                               'success': True,
-                              'redirect_to': '/upload/final'})
+                              'id': req.GET['id'],
+                              'redirect_to': '/upload/final' + "?id=%s" % req.GET['id']})
 
     # this response is different then all of the other views in the
     # upload as it does not return a response as a json object
@@ -629,33 +642,39 @@ def advance_step(req, upload_session):
 def view(req, step):
     """Main uploader view"""
     upload_session = None
-
+    upload_id = req.GET.get('id', None)
     if step is None:
-        if 'id' in req.GET:
+        if upload_id:
             # upload recovery
             upload_obj = get_object_or_404(
                 Upload,
-                import_id=req.GET['id'],
+                import_id=upload_id,
                 user=req.user)
             session = upload_obj.get_session()
             if session:
-                req.session[_SESSION_KEY] = session
+                req.session[upload_id] = session
                 return _next_step_response(req, session)
 
         step = 'save'
 
         # delete existing session
-        if _SESSION_KEY in req.session:
-            del req.session[_SESSION_KEY]
+        if upload_id and upload_id in req.session:
+            del req.session[upload_id]
 
     else:
-        if _SESSION_KEY not in req.session:
+        if not upload_id:
             return render_to_response(
                 "upload/layer_upload_invalid.html",
                 RequestContext(
                     req,
                     {}))
-        upload_session = req.session[_SESSION_KEY]
+
+        upload_obj = get_object_or_404(Upload, import_id=upload_id, user=req.user)
+        session = upload_obj.get_session()
+        if session:
+            upload_session = session
+        else:
+            upload_session = req.session[upload_id]
 
     try:
         if req.method == 'GET' and upload_session:
@@ -681,11 +700,11 @@ def view(req, step):
                     # we're done with this session, wax it
                     Upload.objects.update_from_session(upload_session)
                     upload_session = None
-                    del req.session[_SESSION_KEY]
+                    del req.session[upload_id]
             else:
-                req.session[_SESSION_KEY] = upload_session
-        elif _SESSION_KEY in req.session:
-            upload_session = req.session[_SESSION_KEY]
+                req.session[upload_id] = upload_session
+        elif upload_id in req.session:
+            upload_session = req.session[upload_id]
         if upload_session:
             Upload.objects.update_from_session(upload_session)
         return resp

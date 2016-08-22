@@ -486,7 +486,8 @@ def file_upload(filename, name=None, user=None, title=None, abstract=None,
     # process the layer again after that by
     # doing a layer.save()
     if not created and overwrite:
-        layer.upload_session.layerfile_set.all().delete()
+        if layer.upload_session:
+            layer.upload_session.layerfile_set.all().delete()
         layer.upload_session = upload_session
         # Pass the parameter overwrite to tell whether the
         # geoserver_post_save_signal should upload the new file or not

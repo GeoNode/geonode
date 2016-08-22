@@ -84,77 +84,77 @@ setup(name='GeoNode',
         # native dependencies
         "pillow>=3.1.1",  # python-pillow
         "lxml>=3.4.4",  # python-lxml
-        # "psycopg2==2.4.5",  # python-psycopg2
-        "Django==1.8.7",  # python-django
+        "psycopg2>=2.4.5",  # python-psycopg2
+        "Django >=1.8.7, < 1.9a0",  # python-django
 
         # Other
-        "pyyaml==3.11",
-        "beautifulsoup4==4.2.1",  # python-bs4
-        "MultipartPostHandler==0.1.0",  # python-multipartposthandler
-        "httplib2==0.9.2",  # python-httplib2
-        "transifex-client==0.10",  # transifex-client
-        "Paver==1.2.1",  # python-paver
+        "pyyaml>=3.11",
+        "beautifulsoup4>=4.2.1",  # python-bs4
+        "MultipartPostHandler>=0.1.0",  # python-multipartposthandler
+        "httplib2>=0.9.2",  # python-httplib2
+        "transifex-client>=0.10",  # transifex-client
+        "Paver>=1.2.1",  # python-paver
         "nose>=1.3.1",  # python-nose
         "django-nose>=1.4",  # python-django-nose
-        "awesome-slugify==1.6.2",
+        "awesome-slugify>=1.6.2",
 
         # Django Apps
         "django-pagination >=1.0.5, <=1.0.7",  # python-django-pagination
-        "django-jsonfield==0.9.16",  # python-django-jsonfield
-        "django-extensions==1.6.1",  # python-django-extensions
-        "django-taggit==0.18.0",  # python-django-taggit
-        "django-mptt==0.8.0",  # django-mptt
-        "django-guardian==1.4.1",  # django-guardian
-        # "django-admin-bootstrapped==1.6.5",  # django-admin-bootstrapped
+        "django-jsonfield>=0.9.16",  # python-django-jsonfield
+        "django-extensions>=1.6.1",  # python-django-extensions
+        "django-taggit>=0.18.0",  # python-django-taggit
+        "django-mptt>=0.8.0",  # django-mptt
+        "django-guardian>=1.4.1",  # django-guardian
+        # "django-admin-bootstrapped>=1.6.5",  # django-admin-bootstrapped
 
         # # Apps with packages provided in GeoNode's PPA on Launchpad.
-        "pinax-theme-bootstrap==3.0a11",
-        "pinax-theme-bootstrap-account==1.0b2",
-        "django-forms-bootstrap==3.0.1",
-        "django-friendly-tag-loader==1.2.1",
-        "django-activity-stream==0.6.1",
-        "django-downloadview==1.2",
-        "django-tastypie==0.12.2",
+        "pinax-theme-bootstrap>=3.0a11",
+        "pinax-theme-bootstrap-account>=1.0b2",
+        "django-forms-bootstrap>=3.0.1",
+        "django-friendly-tag-loader>=1.2.1",
+        "django-activity-stream>=0.6.1",
+        "django-downloadview>=1.2",
+        "django-tastypie>=0.12.2",
 
-        "django-polymorphic==0.9.2",
-        "django-leaflet==0.13.7",
-        "django-autocomplete-light==2.3.3",
-        "django-modeltranslation==0.11",
+        "django-polymorphic>=0.9.2",
+        "django-leaflet>=0.13.7",
+        "django-autocomplete-light>=2.3.3, <3.0a0",
+        "django-modeltranslation>=0.11",
 
         # GeoNode org maintained apps.
         "django-geoexplorer>=4.0.5",
-        "geonode-user-messages>=0.1.3",
+        "geonode-user-messages>=0.1.4",
         "geonode-avatar>=2.1.6",
         "geonode-announcements>=1.0.8",
         "geonode-agon-ratings>=0.3.5",
-        "geonode-user-accounts>=1.0.12",
-        "geonode-arcrest==10.2",
+        "geonode-user-accounts>=1.0.13",
+        "geonode-arcrest>=10.2",
         "geonode-notification>=1.1.1",
         "geonode-dialogos>=0.5",
-        "gsconfig==1.0.4",
-        "gsimporter==1.0.0",
+        "gsconfig>=1.0.6",
+        "gsimporter>=1.0.0",
         "gisdata>=0.5.4",
 
         # geopython dependencies
-        "OWSLib==0.11.0",
-        "pycsw==2.0.0-alpha1",
+        "OWSLib>=0.11.0",
+        "pycsw>=2.0.0-alpha1",
         "pyproj>=1.9.3",
-        "Shapely==1.5.13",
+        "Shapely>=1.5.13",
 
         # haystack/elasticsearch, uncomment to use
-        "django-haystack==2.1.0",
-        "pyelasticsearch==0.6.1",
-        "celery==3.1.17",
-        "django-celery==3.1.16",
+        "django-haystack>=2.1.0",
+        "pyelasticsearch>=0.6.1",
+        "celery>=3.1.17",
+        "django-celery>=3.1.16",
 
         # datetimepicker widget
-        "django-bootstrap3-datetimepicker==2.2.3",
-        "flake8==2.3.0",
-        "pep8==1.6.2",
+        "django-bootstrap3-datetimepicker>=2.2.3",
+        "flake8>=2.3.0",
+        "pep8>=1.6.2",
 
         #AWS S3 dependencies
-        "django-storages==1.1.8",
-        "boto==2.38.0"
+        "django-storages>=1.1.8",
+        "boto>=2.38.0"
         ],
       zip_safe=False,
       )

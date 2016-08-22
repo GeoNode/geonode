@@ -21,10 +21,16 @@ define(['underscore',
         // Re-use the LayerInfo object to asynchronously save the new csv and present the progress to the user.
         var lyr = new LayerInfo({element:$("#csv-status"), name:"file", type:'csv', files:{csv:{name:'file.csv'}}});
 
+        var params = common.parseQueryString(document.location.search);
+
+        if ('id' in params){
+            lyr.id = params.id;
+        }
+
         $("#upload-csv-submit").on('click', function(){
             common.make_request({
                 type:'POST',
-                url:'/upload/csv',
+                url: updateUrl('/upload/csv', 'id', lyr.id),
                 data:$("#csvForm").serialize(),
                 success: function (resp, status) {
                     lyr.doFinal(resp);

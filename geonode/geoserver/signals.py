@@ -343,22 +343,6 @@ def geoserver_post_save(instance, sender, **kwargs):
                                )
                                )
 
-    tile_url = ('%sgwc/service/gmaps?' % ogc_server_settings.public_url +
-                'layers=%s' % instance.typename.encode('utf-8') +
-                '&zoom={z}&x={x}&y={y}' +
-                '&format=image/png8'
-                )
-
-    Link.objects.get_or_create(resource=instance.resourcebase_ptr,
-                               url=tile_url,
-                               defaults=dict(
-                                   extension='tiles',
-                                   name="Tiles",
-                                   mime='image/png',
-                                   link_type='image',
-                               )
-                               )
-
     html_link_url = '%s%s' % (
         settings.SITEURL[:-1], instance.get_absolute_url())
 
@@ -462,6 +446,23 @@ def geoserver_post_save(instance, sender, **kwargs):
             ogc_server_settings.public_url).hostname == urlparse(
                 link.url).hostname:
             link.delete()
+
+    # Define the link after the cleanup, we should use this more rather then remove
+    # potential parasites
+    tile_url = ('%sgwc/service/gmaps?' % ogc_server_settings.public_url +
+                'layers=%s' % instance.typename.encode('utf-8') +
+                '&zoom={z}&x={x}&y={y}' +
+                '&format=image/png8'
+                )
+
+    link, created = Link.objects.get_or_create(resource=instance.resourcebase_ptr,
+                                               extension='tiles',
+                                               name="Tiles",
+                                               mime='image/png',
+                                               link_type='image',
+                                               )
+    if created:
+        Link.objects.filter(pk=link.pk).update(url=tile_url)
 
     # Save layer attributes
     set_attributes(instance)

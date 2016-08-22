@@ -18,6 +18,7 @@ define(function (require, exports) {
      */
     LayerInfo = function (options) {
 
+        this.id       = null;
         this.name     = null;
         this.files    = null;
 
@@ -315,7 +316,11 @@ define(function (require, exports) {
                 self.markError(resp.errors, status);
             },
             success: function (resp, status) {
-                window.location = resp.redirect_to;
+                if(resp.url && resp.input_required){
+                    window.location = resp.url;
+                }else {
+                    window.location = resp.redirect_to;
+                }
             },
         });
         return false;
@@ -343,7 +348,7 @@ define(function (require, exports) {
     LayerInfo.prototype.startPolling = function() {
         var self = this;
         if (self.polling) {
-            $.ajax({ url: "/upload/progress", type: 'GET', success: function(data){
+            $.ajax({ url: updateUrl("/upload/progress", 'id', self.id), type: 'GET', success: function(data){
                 // TODO: Not sure we need to do anything here?
                 //console.log('polling');
             }, dataType: "json", complete: setTimeout(function() {self.startPolling()}, 3000), timeout: 30000 });
@@ -357,7 +362,7 @@ define(function (require, exports) {
      */
     LayerInfo.prototype.doFinal = function (resp) {
         var self = this;
-        if (resp.redirect_to === '/upload/final') {
+        if (resp.redirect_to.indexOf('/upload/final') > -1) {
             common.make_request({
                 url: resp.redirect_to,
                 async: true,
@@ -392,7 +397,7 @@ define(function (require, exports) {
                 }
             });
         } else if (resp.status === "incomplete") {
-            var id = resp.url.split('=')[1]
+            var id = common.parseQueryString(resp.url).id;
             var element = 'next_step_' + id
             var a = '<a id="' + element + '" class="btn">Continue</a>';
             self.logStatus({
@@ -436,20 +441,21 @@ define(function (require, exports) {
         });
         if (resp.success === true && resp.status === 'incomplete') {
             common.make_request({
-                url: resp.redirect_to + '?force_ajax=true',
+                url: updateUrl(resp.redirect_to, 'force_ajax', 'true'),
                 async: true,
                 failure: function (resp, status) {
                     self.polling = false;
                     self.markError(resp.errors, status);
                 },
                 success: function (resp, status) {
+                    self.id = resp.id;
                     if (resp.status === 'incomplete') {
                         if (resp.input_required === true) {
                             self.doFinal(resp);
                         } else {
                             self.doStep(resp);
                         }
-                    } else if (resp.redirect_to === '/upload/final') {
+                    } else if (resp.redirect_to.indexOf('/upload/final') > -1) {
                         self.doFinal(resp);
                     } else {
                         window.location = resp.url;
@@ -458,7 +464,7 @@ define(function (require, exports) {
             });
         } else if (resp.success === true && typeof resp.url != 'undefined') {
             self.doFinal(resp);
-        } else if (resp.success === true && resp.redirect_to === '/upload/final') {
+        } else if (resp.success === true && resp.redirect_to.indexOf('/upload/final') > -1) {
             self.doFinal(resp);
         }
     };
@@ -511,6 +517,7 @@ define(function (require, exports) {
                     level: 'alert-success',
                     empty: 'true'
                 });
+                self.id = resp.id;
                 self.doStep(resp);
             }
         });
@@ -858,6 +865,16 @@ define(function (require, exports) {
 
     return LayerInfo;
 });
+
+function updateUrl(url, key, value){
+    if (key == null || value == null){
+    	return url;
+    }
+
+    var pair = key.concat('=').concat(value);
+
+    return (url.lastIndexOf('?') > -1)? url.concat('&').concat(pair): url.concat('?').concat(pair);
+}
 
 function format(str, arr) {
   return str.replace(/%(\d+)/g, function(_,m) {
