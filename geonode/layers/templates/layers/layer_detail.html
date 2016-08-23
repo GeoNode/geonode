@@ -22,6 +22,8 @@
 
   {% if preview == 'geoext' %}
     {% include "layers/layer_geoext_map.html" %}
+  {% elif preview == 'OL3' %}
+    {% include "layers/layer_ol3_map.html" %}
   {% else %}
     {% include "layers/layer_leaflet_map.html" %}
   {% endif %}

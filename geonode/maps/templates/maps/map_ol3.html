@@ -1,0 +1,62 @@
+<link rel="stylesheet" href="http://openlayers.org/en/v3.17.1/css/ol.css" type="text/css">
+<script src="http://openlayers.org/en/v3.17.1/build/ol.js" type="text/javascript"></script>
+<script type="text/javascript">
+  
+  document.addEventListener("DOMContentLoaded", function(event) {
+
+  	document.getElementById('the_map').setAttribute("style", "height:600px");
+
+    var layers = [];
+    var zoom = {{ resource.zoom }};
+    var center_x = {{ resource.center_x }};
+    var center_y = {{ resource.center_y }};
+    var center = [center_x, center_y];
+    var settings_crs = '{{ crs }}'
+
+    if (settings_crs != 'EPSG:4326') {
+        settings_crs = 'EPSG:3857';
+    }
+
+    var config = {{ config|safe }};
+
+    var model_crs = config['map']['projection'];
+    if (settings_crs != model_crs) {
+        // if the two crs are not the same, user must have switched default crs for project after map was created
+        center = ol.proj.transform(center, model_crs, settings_crs)
+    }
+
+    var config_layers = config['map']['layers']
+    for (layer in config_layers) {
+        if (config_layers[layer]['title'] == 'OpenStreetMap') {
+            if (config_layers[layer]['visibility'] == true) {
+                layers.push(new ol.layer.Tile({
+                    source: new ol.source.OSM()
+                }));
+            }
+            break;
+        }
+    }
+    {% for layer in resource.layers %}
+        {% if layer.ows_url != None %}
+        layers.push(new ol.layer.Tile({
+                source: new ol.source.TileWMS({
+                    url: '{{ layer.ows_url }}',
+                    params: {'LAYERS': '{{ layer.name }}'}
+                })
+            })
+        );
+        {% endif %}
+    {% endfor %}
+    	
+	var map = new ol.Map({
+    	layers: layers,
+      	target: 'the_map',
+      	view: new ol.View({
+        	center: center,
+        	zoom: zoom,
+        	projection: settings_crs
+        })	
+	});
+  });
+
+</script>
