@@ -1,37 +1,21 @@
 {% extends "people/profile_base.html" %}
 {% load i18n %}
 
+{% block title %} {% trans "Explore People" %} - {{ block.super }} {% endblock %}
+
 {% block body_class %}people people-list explore{% endblock %}
 
 {% block body %}
 <div class="page-header">
   <h2>{% trans "Explore People" %}</h2>
 </div>
-<div class="row">
-  <div class="col-md-12">
-    <div class="btn-group pull-right" role="group" aria-label="tools">
-      <div class="btn-group" role="group">
-        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-          <i class="fa fa-sort-alpha-asc fa-lg"></i>
-          <i class="fa fa-angle-down fa-lg"></i>
-        </button>
-        <ul class="dropdown-menu dropdown-menu-right" id="sort">
-          <li><a data-value="-date" data-filter="order_by" class="selected" ng-click="single_choice_listener($event)">{% trans "Most recent" %}</a></li>
-          <li><a data-value="date" data-filter="order_by" ng-click="single_choice_listener($event)">{% trans "Less recent" %}</a></li>
-          <li><a data-value="title" data-filter="order_by" ng-click="single_choice_listener($event)">{% trans "A - Z" %}</a></li>
-          <li><a data-value="-title" data-filter="order_by" ng-click="single_choice_listener($event)">{% trans "Z - A" %}</a></li>
-          <li><a data-value="-popular_count" data-filter="order_by" ng-click="single_choice_listener($event)">{% trans "Most popular" %}</a></li>
-        </ul>
-      </div>
-    </div>
-    <div class="row">
-      <div class="tab-content col-sm-12" id="search-content">
-        {% include "people/_profile_list_item.html" %}
-      </div>
-    </div>
-  </div>
-</div>
-{% include 'search/_pagination.html' %}
+
+  {% with include_type_filter='true' %}
+  {% with facet_type='people' %}
+  {% include "search/_search_user_content.html" %}
+  {% endwith %}
+  {% endwith %}
+  {% include "_bulk_permissions_form.html" %}
 {% endblock %}
 
 {% block extra_script %}

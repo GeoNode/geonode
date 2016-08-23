@@ -24,7 +24,7 @@ For 12.04 with python software properties installed, install the latest stable r
     sudo apt-get update
     sudo apt-get install geonode
 
-If instead, you are interested in doing development on the source code, here are the instructions: http://docs.geonode.org/en/master/tutorials/devel/devel_env/index.html.
+If instead, you are interested in doing development on the source code, here are the instructions: http://docs.geonode.org/en/master/tutorials/devel/devel_env/index.html 
 
 Docker Usage
 ------------
@@ -32,18 +32,27 @@ Docker Usage
 If you want to use Docker you can now::
 
     # build the docker container
-    docker build -t geonode .
+    docker-compose build
 
     # run the docker container
-    docker run -d -p 8111:8000 -p 8181:8080 geonode
+    docker-compose up
 
-Or if you use fig::
+    # turn it off
+    docker-compose down
+
+Or if you want to use the provided Makefile::
 
     # build the container
-    fig build
+    make build
 
     # run the container
-    fig up
+    make up
+
+    # create database
+    make sync
+
+    # pull latest images
+    make pull
 
 openSUSE
 --------

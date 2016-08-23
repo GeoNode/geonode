@@ -18,7 +18,8 @@ install:
   - sudo apt-get update
   - sudo apt-get install -y --force-yes oracle-java8-installer ant maven2 libjai-imageio-core-java --no-install-recommends
   - sudo update-java-alternatives --set java-8-oracle
-  - pip install -e . --use-mirrors
+  - pip install -r requirements.txt --use-mirrors
+  - pip install -e . --use-mirrors --no-deps
 
 before_script:
   - paver setup

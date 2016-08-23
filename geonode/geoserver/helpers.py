@@ -1209,17 +1209,28 @@ def geoserver_upload(
     else:
         sld = get_sld_for(publishing)
 
+    style = None
     if sld is not None:
         try:
             cat.create_style(name, sld)
+            style = cat.get_style(name)
         except geoserver.catalog.ConflictingDataError as e:
             msg = ('There was already a style named %s in GeoServer, '
-                   'cannot overwrite: "%s"' % (name, str(e)))
+                   'try to use: "%s"' % (name + "_layer", str(e)))
             logger.warn(msg)
             e.args = (msg,)
+            try:
+                cat.create_style(name + '_layer', sld)
+                style = cat.get_style(name + "_layer")
+            except geoserver.catalog.ConflictingDataError as e:
+                style = cat.get_style('point')
+                msg = ('There was already a style named %s in GeoServer, '
+                       'cannot overwrite: "%s"' % (name, str(e)))
+                logger.error(msg)
+                e.args = (msg,)
 
         # FIXME: Should we use the fully qualified typename?
-        publishing.default_style = cat.get_style(name)
+        publishing.default_style = style
         cat.save(publishing)
 
     # Step 10. Create the Django record for the layer
