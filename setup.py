@@ -75,6 +75,7 @@ setup(name='GeoNode',
       license='GPL',
       packages=packages,
       data_files=data_files,
+      include_package_data=True,
       install_requires=[
         # # The commented name next to the package
         # # is the Ubuntu 14.04 package that provides it.
