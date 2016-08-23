@@ -11,7 +11,7 @@ services:
      image: rabbitmq
 
   django:
-    build: .
+    image: geonode/django
     links:
       - postgres
       - elasticsearch
@@ -25,7 +25,7 @@ services:
       - ALLOWED_HOSTS=['django',]
 
   celery:
-    build: .
+    image: geonode/django
     links:
       - rabbitmq
       - postgres
