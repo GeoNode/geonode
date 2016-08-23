@@ -1,3 +1,4 @@
+{% load i18n %}
 {% verbatim %}
 <div class="row">
   <article ng-repeat="item in results" resource_id="{{ item.id }}" ng-cloak class="ng-cloak">
@@ -22,7 +23,9 @@
                 <li><a href="{{ item.detail_url }}#share"><i class="fa fa-share"></i>{{ item.share_count }}</a></li>
                 <li><a href="{{ item.detail_url }}#rate"><i class="fa fa-star"></i>{{ item.rating }}</a></li>
                 <li><a ng-if="item.detail_url.indexOf('/layers/') > -1" href="{% endverbatim %}{% url "new_map" %}?layer={% verbatim %}{{ item.detail_url.substring(8) }}">
-                  <i class="fa fa-map-marker"></i>Create a Map</a>
+                  {% endverbatim %}
+                  <i class="fa fa-map-marker"></i>{% trans "Create a Map" %}</a>
+                  {% verbatim %}
                 </li>
                 <li><a ng-if="item.detail_url.indexOf('/maps/') > -1" href="/maps/{{item.id}}/view"><i class="fa fa-map-marker"></i>View Map</a></li>
               </ul>
