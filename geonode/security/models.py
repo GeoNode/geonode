@@ -233,7 +233,6 @@ def remove_object_permissions(instance):
         GroupObjectPermission.objects.filter(content_type=ContentType.objects.get_for_model(resource.layer),
                                              object_pk=instance.id).delete()
 
-    
     UserObjectPermission.objects.filter(content_type=ContentType.objects.get_for_model(resource),
                                         object_pk=instance.id).delete()
     GroupObjectPermission.objects.filter(content_type=ContentType.objects.get_for_model(resource),
