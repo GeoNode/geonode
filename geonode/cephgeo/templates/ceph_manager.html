@@ -25,6 +25,103 @@
         </div>
     </div>
 
+
+<div class="modal fade" id="modal-metadata" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h4 class="modal-title" id="myModalLabel">{% trans "Update metadata" %}</h4>
+      </div>
+      <form >
+          <div class="modal-body" >
+            <div class="form-check">
+              <label class="form-check-label">
+                <input class="form-check-input" type="radio" name="sample"value="fhm">
+                Update Flood Hazard Map Metadata
+              </label>
+            </div>
+            <div class="form-check">
+              <label class="form-check-label">
+                <input class="form-check-input" type="radio" name="sample"value="resourcelayer">
+                Update Resource Layer Metadata
+              </label>
+            </div>
+             <div class="form-check">
+              <label class="form-check-label">
+                <input class="form-check-input" type="radio" name="sample" value="sar">
+                Update SAR DEM Metadata
+              </label>
+            </div>
+                          <!-- <div>
+                <input type="radio" name="fhm" value="fhm">
+                <label>Flood Hazard Map</label>
+              </div>
+              <div>
+                <input type="radio" name="resourcelayer" value="resourcelayer">
+                <label>Update Resource Layer Metadata</label>
+              </div>
+              <div>
+                <input type="radio" name="sar" value="sar">
+                <label>Update SAR DEM Metadata</label>
+              </div> -->
+          </div>
+          <div class="modal-footer">
+            <button id="update-metadata" class="btn btn-default" data-dismiss="modal">{% trans "Submit" %}</button>
+          </div>
+       </form>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="modal-seed" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h4 class="modal-title" id="myModalLabel">{% trans "Seed Layers" %}</h4>
+      </div>
+      <form>
+          <div class="modal-body">
+              <div class="form-check">
+              <label class="form-check-label">
+                <input class="form-check-input" type="radio" name="seed"value="fhm">
+                Seed Flood Hazard Map
+              </label>
+            </div>
+            <div class="form-check">
+              <label class="form-check-label">
+                <input class="form-check-input" type="radio" name="seed"value="resourcelayer">
+                Seed Resource Layer
+              </label>
+            </div>
+             <div class="form-check">
+              <label class="form-check-label">
+                <input class="form-check-input" type="radio" name="seed" value="sar">
+                Seed SAR DEM
+              </label>
+            </div>
+              <!-- <div>
+                <input type="radio" name="seed-fhm" value="seed-fhm">
+                <label>Seed FHM Layers</label>
+              </div>
+              <div>
+                <input type="radio" name="seed-resourcelayer" value="seed-resourcelayer">
+                <label>Seed Resource Layers</label>
+              </div>
+              <div>
+                <input type="radio" name="seed-sar" value="seed-sar">
+                <label>Seed SAR DEM</label>
+              </div> -->
+          </div>
+          <div class="modal-footer">
+            <button id="seed-layers" class="btn btn-default" data-dismiss="modal">{% trans "Submit" %}</button>
+          </div>
+       </form>
+    </div>
+  </div>
+</div>
+
 <div class="modal fade" id="modal-default-style" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
@@ -32,9 +129,39 @@
         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
         <h4 class="modal-title" id="myModalLabel">{% trans "Update Default Style of Layers" %}</h4>
       </div>
-      <form id="metadata">
+      <form>
           <div class="modal-body">
-              <div>
+              <div class="form-check">
+              <label class="form-check-label">
+                <input class="form-check-input" type="radio" name="def-sld"value="fhm">
+               Flood Hazard Map
+              </label>
+            </div>
+            <div class="form-check">
+              <label class="form-check-label">
+                <input class="form-check-input" type="radio" name="def-sld"value="resourcelayer">
+                Resource Layer
+              </label>
+            </div>
+             <div class="form-check">
+              <label class="form-check-label">
+                <input class="form-check-input" type="radio" name="def-sld" value="sar">
+                SAR DEM
+              </label>
+            </div>
+             <div class="form-check">
+              <label class="form-check-label">
+                <input class="form-check-input" type="radio" name="def-sld" value="dem-cov">
+                DEM Coverage
+              </label>
+            </div>
+            <div class="form-check">
+              <label class="form-check-label">
+                <input class="form-check-input" type="radio" name="def-sld" value="jurisdict">
+                Jurisdiction shapefiles
+              </label>
+            </div>
+              <!-- <div>
                 <input type="radio" name="fhm-def-sld" value="fhm-def-sld" id="fhm-def-sld">
                 <label for="fhm">Flood Hazard Map</label>
               </div>
@@ -53,83 +180,23 @@
               <div>
                 <input type="radio" name="jurisdict-def-sld" value="jurisdict-def-sld" id="jurisdict-def-sld">
                 <label for="sar">Jurisdiction shapefiles</label>
-              </div>
+              </div> -->
           </div>
           <div class="modal-footer">
-            <button id="update-which" type="button" class="btn btn-default" data-dismiss="modal">{% trans "Submit" %}</button>
+            <button id="assign-default-style" type="button" class="btn btn-default" data-dismiss="modal">{% trans "Submit" %}</button>
           </div>
        </form>
     </div>
   </div>
 </div>
 
-
-<div class="modal fade" id="modal-metadata" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-        <h4 class="modal-title" id="myModalLabel">{% trans "Update metadata" %}</h4>
-      </div>
-      <form id="metadata">
-          <div class="modal-body">
-              <div>
-                <input type="radio" name="fhm" value="fhm" id="fhm">
-                <label for="fhm">Flood Hazard Map</label>
-              </div>
-              <div>
-                <input type="radio" name="resourcelayer" value="resourcelayer" id="resourcelayer">
-                <label for="resourcelayer">Update Resource Layer Metadata</label>
-              </div>
-              <div>
-                <input type="radio" name="sar" value="sar" id="sar">
-                <label for="sar">Update SAR DEM Metadata</label>
-              </div>
-          </div>
-          <div class="modal-footer">
-            <button id="update-which" type="button" class="btn btn-default" data-dismiss="modal">{% trans "Submit" %}</button>
-          </div>
-       </form>
-    </div>
-  </div>
-</div>
-
-<div class="modal fade" id="modal-seed" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-        <h4 class="modal-title" id="myModalLabel">{% trans "Seed Layers" %}</h4>
-      </div>
-      <form id="metadata">
-          <div class="modal-body">
-              <div>
-                <input type="radio" name="seed-fhm" value="seed-fhm" id="seed-fhm">
-                <label for="seed-fhm">Seed FHM Layers</label>
-              </div>
-              <div>
-                <input type="radio" name="seed-resourcelayer" value="seed-resourcelayer" id="seed-resourcelayer">
-                <label for="seed-resourcelayer">Seed Resource Layers</label>
-              </div>
-              <div>
-                <input type="radio" name="seed-sar" value="seed-sar" id="seed-sar">
-                <label for="seed-sar">Seed SAR DEM</label>
-              </div>
-          </div>
-          <div class="modal-footer">
-            <button id="update-which" type="button" class="btn btn-default" data-dismiss="modal">{% trans "Submit" %}</button>
-          </div>
-       </form>
-    </div>
-  </div>
-</div>
 
 
 <!-- <div id="log"></div> -->
 
 {% block extra_script %}
 <script type="text/javascript">
-$( "#update-which" ).click(function() {
+$( "#update-metadata" ).click(function() {
     if ($( "input:checked" ).val() == "fhm"){
         // $( "#log" ).html( $( "input:checked" ).val() + " is checked!" );
             window.location = "{% url 'cephgeo.views.update_fhm_metadata' %}";
@@ -140,32 +207,41 @@ $( "#update-which" ).click(function() {
     else if ($( "input:checked" ).val() == "sar"){
             window.location = "{% url 'cephgeo.views.update_sar_metadata' %}";
     }
-    else if ($( "input:checked" ).val() == "seed-fhm"){
+    
+});
+</script>
+<script type="text/javascript">
+$( "#seed-layers" ).click(function() {
+    if ($( "input:checked" ).val() == "fhm"){
         // $( "#log" ).html( $( "input:checked" ).val() + " is checked!" );
             window.location = "{% url 'cephgeo.views.seed_fhm_layers' %}";
     }
-    else if ($( "input:checked" ).val() == "seed-resourcelayer"){
+    else if ($( "input:checked" ).val() == "resourcelayer"){
             window.location = "{% url 'cephgeo.views.seed_resource_layers' %}";
     }
-    else if ($( "input:checked" ).val() == "seed-sar"){
+    else if ($( "input:checked" ).val() == "sar"){
             window.location = "{% url 'cephgeo.views.seed_SAR_DEM' %}";
     }
-    else if ($( "input:checked" ).val() == "fhm-def-sld"){
+    
+});
+</script>
+<script type="text/javascript">
+$( "#assign-default-style" ).click(function() {
+    if ($( "input:checked" ).val() == "fhm"){
             window.location = "{% url 'cephgeo.views.fhm_default_style' %}";
     }
-    else if ($( "input:checked" ).val() == "rl-def-sld"){
+    else if ($( "input:checked" ).val() == "resourcelayer"){
             window.location = "{% url 'cephgeo.views.rl_default_style' %}";
     }
-    else if ($( "input:checked" ).val() == "sar-def-sld"){
+    else if ($( "input:checked" ).val() == "sar"){
             window.location = "{% url 'cephgeo.views.sar_default_style' %}";
     }
-    else if ($( "input:checked" ).val() == "dem-cov-def-sld"){
+    else if ($( "input:checked" ).val() == "dem-cov"){
             window.location = "{% url 'cephgeo.views.dem_cov_default_style' %}";
     }
-     else if ($( "input:checked" ).val() == "jurisdict-def-sld"){
+     else if ($( "input:checked" ).val() == "jurisdict"){
             window.location = "{% url 'cephgeo.views.jurisdict_default_style' %}";
     }
-    
 });
 </script>
 {% endblock extra_script %}
