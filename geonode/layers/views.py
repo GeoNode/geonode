@@ -312,6 +312,10 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
         settings,
         'LAYER_PREVIEW_LIBRARY',
         'leaflet')
+    context_dict["crs"] = getattr(
+        settings,
+        'DEFAULT_MAP_CRS',
+        'EPSG:900913')
 
     if request.user.has_perm('download_resourcebase', layer.get_self_resource()):
         if layer.storeType == 'dataStore':

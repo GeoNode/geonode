@@ -166,11 +166,13 @@ def win_install_deps(options):
         "Nose": dev_config['WINDOWS']['nose'],
         # the wheel 1.9.4 installs but pycsw wants 1.9.3, which fails to compile
         # when pycsw bumps their pyproj to 1.9.4 this can be removed.
-        "PyProj": dev_config['WINDOWS']['pyproj']
+        "PyProj": dev_config['WINDOWS']['pyproj'],
+        "lXML": dev_config['WINDOWS']['lxml']
     }
     failed = False
     for package, url in win_packages.iteritems():
         tempfile = download_dir / os.path.basename(url)
+        print "Installing file ... " + tempfile
         grab_winfiles(url, tempfile, package)
         try:
             easy_install.main([tempfile])

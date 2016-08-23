@@ -32,18 +32,27 @@ Docker Usage
 If you want to use Docker you can now::
 
     # build the docker container
-    docker build -t geonode .
+    docker-compose build
 
     # run the docker container
-    docker run -d -p 8111:8000 -p 8181:8080 geonode
+    docker-compose up
 
-Or if you use fig::
+    # turn it off
+    docker-compose down
+
+Or if you want to use the provided Makefile::
 
     # build the container
-    fig build
+    make build
 
     # run the container
-    fig up
+    make up
+
+    # create database
+    make sync
+
+    # pull latest images
+    make pull
 
 openSUSE
 --------
@@ -97,7 +106,7 @@ Windows Development Build Instructions::
 
     Prerequisites:
     # Java JDK
-    # Python 2.7
+    # Python 2.7 (32 bit)
     # ant (bin directory must be on system PATH)
     # maven2 (bin directory must be on system PATH)
     # Python distutils (easy_install)
@@ -107,6 +116,11 @@ Windows Development Build Instructions::
     # Install and configure from the windows command prompt
     If you don't already have python virtualenv installed, then do it now:
     easy_install virtualenv
+    
+    # Download and install http://download.gisinternals.com/sdk/downloads/release-1800-gdal-1-11-4-mapserver-6-4-3/gdal-111-1800-core.msi
+    # Download and install http://download.gisinternals.com/sdk/downloads/release-1800-gdal-1-11-4-mapserver-6-4-3/GDAL-1.11.4.win32-py2.7.msi
+    # Choose your 32 bit python as your install target
+    # If you create your virtualenv before doing this, you can copy the <python>\lib\site-packages\osgeo and GDAL-* directory over to your <virtual env>\lib\site-packages directory
 
     # Create virtualenv and activate it
     cd <Directory to install the virtualenv & geonode into>
@@ -119,19 +133,35 @@ Windows Development Build Instructions::
     # Install compiled packages for Python 2.7 Win32
     cd geonode
     pip install paver
+    pip install pyyaml
     paver win_install_deps
     
-    # Install GeoNode in the local virtualenv
+    # Install GeoNode in the local virtualenv, if you get an error about use-mirrors, just remove the argument
     pip install -e . --use-mirrors
+    
+    # Note, you may get errors due to certain dependencies not being installable on windows with pip, such as lxml and shapely.
+    # For these, you can download a whl file (use cp27 / win32 version) from http://www.lfd.uci.edu/~gohlke/pythonlibs and then install them via pip.
+    # Ex: pip install <Download Dir>\Shapely-1.5-16-cp27-cp27m-win32.whl
+    # 
+    # Also note, you may have to adjust the dependencies in geonode\setup.py to say >= instead of ==,
+    # ie "Shapely>=1.5.13", instead of "Shapely==1.5.13",
     
     # Compile GeoServer
     paver setup
 
+    # Set GDAL environment info 
+    SET GDAL_LIBRARY_PATH=<GdalPath>\gdal111.dll
+    SET GDAL_HOME=<GdalPath>
+    SET GEOS_LIBRARY_PATH=<GdalPath>\geos_c.dll
+    SET PATH=<GdalPath>;%PATH%
+    
     # Initialize database
     paver sync
     
     # Start the servers
     paver start --java_path=C:/path/to/java/bin/java.exe
+    
+    
 
 Mac OSX
 -------

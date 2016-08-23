@@ -11,6 +11,7 @@ beautifulsoup4==4.2.1
 billiard==3.3.0.23
 boto==2.38.0
 celery==3.1.17
+dj-database-url==0.4.0
 django-activity-stream==0.6.1
 django-appconf==0.5
 django-autocomplete-light==2.3.3
@@ -41,7 +42,7 @@ geonode-arcrest==10.2
 geonode-avatar==2.1.6
 geonode-dialogos==0.6
 geonode-notification==1.1.1
-geonode-user-accounts==1.0.12
+geonode-user-accounts==1.0.13
 geonode-user-messages==0.1.4
 gisdata==0.5.4
 gsconfig==1.0.6

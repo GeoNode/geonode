@@ -604,19 +604,32 @@ def final_step(upload_session, user):
     else:
         sld = get_sld_for(publishing)
 
+    style = None
+    print " **************************************** "
     if sld is not None:
         try:
             cat.create_style(name, sld)
+            style = cat.get_style(name)
         except geoserver.catalog.ConflictingDataError as e:
-            msg = 'There was already a style named %s in GeoServer, cannot overwrite: "%s"' % (
+            msg = 'There was already a style named %s in GeoServer, try using another name: "%s"' % (
                 name, str(e))
-            # what are we doing with this var?
-            # style = cat.get_style(name)
-            logger.warn(msg)
-            e.args = (msg,)
+            try:
+                cat.create_style(name + '_layer', sld)
+                style = cat.get_style(name + '_layer')
+            except geoserver.catalog.ConflictingDataError as e:
+                msg = 'There was already a style named %s in GeoServer, cannot overwrite: "%s"' % (
+                    name, str(e))
+                logger.error(msg)
+                e.args = (msg,)
+
+                # what are we doing with this var?
+                msg = 'No style could be created for the layer, falling back to POINT default one'
+                style = cat.get_style('point')
+                logger.warn(msg)
+                e.args = (msg,)
 
         # FIXME: Should we use the fully qualified typename?
-        publishing.default_style = cat.get_style(name)
+        publishing.default_style = style
         _log('default style set to %s', name)
         cat.save(publishing)
 
