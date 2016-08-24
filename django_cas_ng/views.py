@@ -42,6 +42,7 @@ def login(request, next_page=None, required=False):
     pprint("service url: "+service_url)
     if not next_page:
         next_page = get_redirect_url(request)
+        pprint("next page url: "+next_page)
 
     if request.method == 'POST' and request.POST.get('logoutRequest'):
         clean_sessions(client, request)
