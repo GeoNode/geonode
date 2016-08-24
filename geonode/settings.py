@@ -241,8 +241,6 @@ GEONODE_APPS = (
 
     # Data Requests Management App
     'geonode.datarequests',
-
-
 )
 
 GEONODE_CONTRIB_APPS = (
@@ -324,6 +322,8 @@ INSTALLED_APPS = (
     'corsheaders',
     'captcha',
 
+    #CAS client
+    'django_cas_ng',
 ) + GEONODE_APPS
 
 LOGGING = {
@@ -422,15 +422,11 @@ MIDDLEWARE_CLASSES = (
 
 # Replacement of default authentication backend in order to support
 # permissions per object.
-#AUTHENTICATION_BACKENDS = (
-#   'django.contrib.auth.backends.ModelBackend',
-#    'guardian.backends.ObjectPermissionBackend',
-#)
-AUTHENTICATION_BACKENDS = ('django_auth_ldap.backend.LDAPBackend',
+AUTHENTICATION_BACKENDS = (#y'django_auth_ldap.backend.LDAPBackend',
                            #'geonode.security.auth.GranularBackend',
                            'django.contrib.auth.backends.ModelBackend',
-                           'guardian.backends.ObjectPermissionBackend',)
-
+                           'guardian.backends.ObjectPermissionBackend',
+                           'django_cas_ng.backends.CASBackend',)
 
 ANONYMOUS_USER_ID = -1
 GUARDIAN_GET_INIT_ANONYMOUS_USER = 'geonode.people.models.get_anonymous_user_instance'
@@ -673,13 +669,13 @@ MAP_BASELAYERS = [{
 #    "name": "osm",
 #    "group": "background",
 #    "visibility": False
-#}, 
+#},
 {
     "source": {"ptype": "gxp_mapquestsource"},
     "name": "naip",
     "group": "background",
     "visibility": False
-}, 
+},
 {
     "source": {"ptype": "gxp_mapboxsource"},
 }]
@@ -816,7 +812,7 @@ LEAFLET_CONFIG = {
         # http://leaflet-extras.github.io/leaflet-providers/preview/
 
         # Stamen toner lite.
-        
+
     ],
     'PLUGINS': {
         'esri-leaflet': {
@@ -945,7 +941,7 @@ except ImportError:
     pass
 
 try:
-    BING_LAYER = {    
+    BING_LAYER = {
         "source": {
             "ptype": "gxp_bingsource",
             "apiKey": BING_API_KEY
@@ -991,3 +987,5 @@ if 'geonode.geoserver' in GEONODE_APPS:
     MAP_BASELAYERS.extend(baselayers)
 
 PH_BBOX= [116.22307468566594, 4.27103012208686, 127.09228398538997, 21.2510169394873 ]
+
+CAS_VERSION = 3
