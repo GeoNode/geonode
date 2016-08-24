@@ -61,12 +61,14 @@ ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', ['localhost', 'django'])
 _DEFAULT_SECRET_KEY = 'myv-y4#7j-d*p-__@j#*3z@!y24fz8%^z2v6atuy4bo9vqr1_a'
 SECRET_KEY = os.getenv('SECRET_KEY', _DEFAULT_SECRET_KEY)
 
-DATABASE_URL = os.getenv('DATABASE_URL', 'sqlite:///development.db')
+DATABASE_URL = os.getenv(
+    'DATABASE_URL',
+    'sqlite:///{path}'.format(path=os.path.join(PROJECT_ROOT, 'development.db')))
 
 # Defines settings for development
-DATABASES = {'default':
-              dj_database_url.parse(DATABASE_URL, conn_max_age=600),
-            } 
+DATABASES = {
+    'default': dj_database_url.parse(DATABASE_URL, conn_max_age=600)
+}
 
 MANAGERS = ADMINS = os.getenv('ADMINS', [])
 
@@ -926,7 +928,7 @@ except ImportError:
     pass
 
 
-# Load additonal basemaps, see geonode/contrib/api_basemap/README.md 
+# Load additonal basemaps, see geonode/contrib/api_basemap/README.md
 try:
     from geonode.contrib.api_basemaps import *
 except ImportError:
