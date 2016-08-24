@@ -6,3 +6,4 @@ WINDOWS:
   py2exe: "http://downloads.sourceforge.net/project/py2exe/py2exe/0.6.9/py2exe-0.6.9.win32-py2.7.exe"
   nose: "https://s3.amazonaws.com/geonodedeps/nose-1.3.3.win32-py2.7.exe"
   pyproj: "https://pyproj.googlecode.com/files/pyproj-1.9.3.win32-py2.7.exe"
+  lxml: "https://pypi.python.org/packages/2.7/l/lxml/lxml-3.6.0.win32-py2.7.exe"
