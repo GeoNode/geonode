@@ -34,7 +34,7 @@ DATABASES = {
     # vector datastore for uploads
     'datastore' : {
         #'ENGINE': 'django.contrib.gis.db.backends.postgis',
-        'ENGINE': '', # Empty ENGINE name disables 
+        'ENGINE': '', # Empty ENGINE name disables
         'NAME': 'geonode',
         'USER' : 'geonode',
         'PASSWORD' : 'geonode',
