@@ -214,8 +214,7 @@ def sync(options):
     """
     Run the syncdb and migrate management commands to create and migrate a DB
     """
-    migrate_apps = ['account', 'contenttypes', 'sites', 'auth', 'people', 'base', 'services']  # Order is very important
-    for app in migrate_apps:
+    for app in dev_config['MIGRATE_APPS']:
         try:
             sh("python manage.py migrate {app} --noinput".format(app=app))
         except:
