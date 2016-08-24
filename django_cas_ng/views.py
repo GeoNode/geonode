@@ -17,7 +17,7 @@ from django.contrib.auth import (
 from django.contrib import messages
 from django.utils.translation import ugettext_lazy as _
 from django.views.decorators.http import require_http_methods
-
+from pprint import pprint
 from importlib import import_module
 
 SessionStore = import_module(settings.SESSION_ENGINE).SessionStore
