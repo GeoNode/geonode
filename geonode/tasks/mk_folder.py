@@ -1,6 +1,5 @@
 from pprint import pprint
 
-
 import celery
 import logging, traceback
 from fabric.api import *
