@@ -42,8 +42,8 @@ PROJECT_ROOT = os.path.abspath(os.path.dirname(__file__))
 
 # Setting debug to true makes Django serve static media and
 # present pretty error pages.
-DEBUG = strtobool(os.getenv('DEBUG', 'False'))
-TEMPLATE_DEBUG = strtobool(os.getenv('TEMPLATE_DEBUG', 'False'))
+DEBUG = strtobool(os.getenv('DEBUG', 'True'))
+TEMPLATE_DEBUG = strtobool(os.getenv('TEMPLATE_DEBUG', 'True'))
 
 # Set to True to load non-minified versions of (static) client dependencies
 # Requires to set-up Node and tools that are required for static development
