@@ -39,7 +39,7 @@ def login(request, next_page=None, required=False):
     """Forwards to CAS login URL or verifies CAS ticket"""
     service_url = get_service_url(request, next_page)
     client = get_cas_client(service_url=service_url)
-
+    pprint("service url: "+service_url)
     if not next_page:
         next_page = get_redirect_url(request)
 
