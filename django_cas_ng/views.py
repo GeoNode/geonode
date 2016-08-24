@@ -29,6 +29,7 @@ from .models import ProxyGrantingTicket, SessionTicket
 from .utils import (get_cas_client, get_service_url,
                     get_protocol, get_redirect_url,
                     get_user_from_session)
+from pprint import pprint
 
 __all__ = ['login', 'logout', 'callback']
 
@@ -40,9 +41,10 @@ def login(request, next_page=None, required=False):
     service_url = get_service_url(request, next_page)
     client = get_cas_client(service_url=service_url)
 
-    if not next_page:
-        next_page = get_redirect_url(request)
-
+    pprint(next_page)
+    #if not next_page:
+    next_page = get_redirect_url(request)
+    pprint(next_page)
     if request.method == 'POST' and request.POST.get('logoutRequest'):
         clean_sessions(client, request)
         return HttpResponseRedirect(next_page)
