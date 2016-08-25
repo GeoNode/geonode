@@ -32,7 +32,7 @@ django-nose==1.4.4
 django-pagination==1.0.7
 django-polymorphic==0.9.2
 django-storages==1.1.8
-django-taggit==0.18.0
+django-taggit==0.21.0
 django-tastypie==0.12.2
 flake8==2.3.0
 geolinks==0.2.0
