@@ -5,6 +5,6 @@ def list_duplicate_layer():
     for x in Layer.objects.filter(name__icontains='fh'):
         if x.typename.split('_')[-1] is int:
             dups.append(x)
-    with open(filename,'w') as f:
+    with open('duplicatelayers.txt','w') as f:
         f.write('\n'.join(dups))
     return dups
