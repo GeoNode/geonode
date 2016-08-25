@@ -362,7 +362,7 @@ define(function (require, exports) {
      */
     LayerInfo.prototype.doFinal = function (resp) {
         var self = this;
-        if (resp.redirect_to.indexOf('/upload/final') > -1) {
+        if (resp.hasOwnProperty('redirect_to') && resp.redirect_to.indexOf('/upload/final') > -1) {
             common.make_request({
                 url: resp.redirect_to,
                 async: true,
