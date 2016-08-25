@@ -29,6 +29,7 @@ from .models import ProxyGrantingTicket, SessionTicket
 from .utils import (get_cas_client, get_service_url,
                     get_protocol, get_redirect_url,
                     get_user_from_session)
+from pprint import pprint
 
 __all__ = ['login', 'logout', 'callback']
 
