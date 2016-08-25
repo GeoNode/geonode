@@ -18,15 +18,16 @@
 # Translators:
 # Translators:
 # Translators:
+# Translators:
 # Minpa Lee <mapplus@gmail.com>, 2013-2016
 # Minpa Lee <mapplus@gmail.com>, 2013
 msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-08-23 08:55-0500\n"
-"PO-Revision-Date: 2016-08-23 11:58+0000\n"
-"Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
+"POT-Creation-Date: 2016-08-25 02:28-0500\n"
+"PO-Revision-Date: 2016-08-24 05:38+0000\n"
+"Last-Translator: Minpa Lee <mapplus@gmail.com>\n"
 "Language-Team: Korean (http://www.transifex.com/geonode/geonode/language/"
 "ko/)\n"
 "Language: ko\n"
@@ -206,15 +207,15 @@ msgstr ""
 
 #: geonode/static/lib/js/assets.min.js:2
 msgid "<iframe frameborder='0' width='0' height='0'/>"
-msgstr ""
+msgstr "<iframe frameborder='0' width='0' height='0'/>"
 
 #: geonode/static/lib/js/assets.min.js:4
 msgid "<script>"
-msgstr ""
+msgstr "<script>"
 
 #: geonode/static/lib/js/assets.min.js:4
 msgid "<div>"
-msgstr ""
+msgstr "<div>"
 
 #: geonode/templates/lang.js:9 geonode/templates/lang.js:236
 msgid "Cancel"
