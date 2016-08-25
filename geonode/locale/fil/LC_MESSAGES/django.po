@@ -18,12 +18,13 @@
 # Translators:
 # Translators:
 # Translators:
+# Translators:
 msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-08-23 08:54-0500\n"
-"PO-Revision-Date: 2016-08-23 11:57+0000\n"
+"POT-Creation-Date: 2016-08-25 02:27-0500\n"
+"PO-Revision-Date: 2016-08-23 13:58+0000\n"
 "Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
 "Language-Team: Filipino (http://www.transifex.com/geonode/geonode/language/"
 "fil/)\n"
@@ -518,6 +519,12 @@ msgstr ""
 msgid "Owner, Point of Contact, Metadata Author"
 msgstr ""
 
+#: geonode/base/templates/base/_resourcebase_snippet.html:27
+#: geonode/layers/templates/layers/layer_detail.html:414
+#: geonode/templates/search/_search_content.html:16
+msgid "Create a Map"
+msgstr ""
+
 #: geonode/base/templates/base/resourcebase_info_panel.html:6
 #: geonode/catalogue/templates/geonode_metadata_full.html:54
 #: geonode/groups/models.py:54 geonode/services/forms.py:44
@@ -539,7 +546,7 @@ msgstr ""
 
 #: geonode/base/templates/base/resourcebase_info_panel.html:45
 #: geonode/catalogue/templates/geonode_metadata_full.html:90
-#: geonode/layers/templates/layers/layer_detail.html:463
+#: geonode/layers/templates/layers/layer_detail.html:465
 #: geonode/templates/metadata_detail.html:74
 msgid "Type"
 msgstr ""
@@ -638,14 +645,14 @@ msgid "Flash"
 msgstr ""
 
 #: geonode/contrib/exif/templates/exif/_exif_document_detail.html:20
-#: geonode/layers/templates/layers/layer_detail.html:143
-#: geonode/layers/templates/layers/layer_detail.html:148
+#: geonode/layers/templates/layers/layer_detail.html:145
+#: geonode/layers/templates/layers/layer_detail.html:150
 msgid "True"
 msgstr ""
 
 #: geonode/contrib/exif/templates/exif/_exif_document_detail.html:20
-#: geonode/layers/templates/layers/layer_detail.html:143
-#: geonode/layers/templates/layers/layer_detail.html:148
+#: geonode/layers/templates/layers/layer_detail.html:145
+#: geonode/layers/templates/layers/layer_detail.html:150
 msgid "False"
 msgstr ""
 
@@ -721,7 +728,7 @@ msgid "No"
 msgstr ""
 
 #: geonode/contrib/geosites/templates/master_index.html:25
-#: geonode/layers/templates/layers/layer_detail.html:326
+#: geonode/layers/templates/layers/layer_detail.html:328
 #: geonode/templates/index.html:30
 #: geonode/templates/notification/request_download_resourcebase/full.txt:7
 msgid "Layer"
@@ -747,7 +754,7 @@ msgid "Explore layers"
 msgstr ""
 
 #: geonode/contrib/geosites/templates/master_index.html:35
-#: geonode/maps/templates/maps/map_detail.html:131
+#: geonode/maps/templates/maps/map_detail.html:137
 #: geonode/templates/index.html:40
 msgid "Map"
 msgid_plural "Maps"
@@ -877,14 +884,14 @@ msgid "Rate this document"
 msgstr ""
 
 #: geonode/documents/templates/documents/document_detail.html:70
-#: geonode/layers/templates/layers/layer_detail.html:227
-#: geonode/maps/templates/maps/map_detail.html:54
+#: geonode/layers/templates/layers/layer_detail.html:229
+#: geonode/maps/templates/maps/map_detail.html:60
 msgid "Average Rating"
 msgstr ""
 
 #: geonode/documents/templates/documents/document_detail.html:89
-#: geonode/layers/templates/layers/layer_detail.html:280
-#: geonode/maps/templates/maps/map_detail.html:78
+#: geonode/layers/templates/layers/layer_detail.html:282
+#: geonode/maps/templates/maps/map_detail.html:84
 msgid "Metadata Detail"
 msgstr ""
 
@@ -895,7 +902,7 @@ msgid "Download Document"
 msgstr ""
 
 #: geonode/documents/templates/documents/document_detail.html:105
-#: geonode/layers/templates/layers/layer_detail.html:246
+#: geonode/layers/templates/layers/layer_detail.html:248
 msgid "Request Download"
 msgstr ""
 
@@ -905,17 +912,17 @@ msgid "Edit Document"
 msgstr ""
 
 #: geonode/documents/templates/documents/document_detail.html:126
-#: geonode/layers/templates/layers/layer_detail.html:300
-#: geonode/maps/templates/maps/map_detail.html:117
+#: geonode/layers/templates/layers/layer_detail.html:302
+#: geonode/maps/templates/maps/map_detail.html:123
 #: geonode/templates/metadata_detail.html:30
 msgid "Metadata"
 msgstr ""
 
 #: geonode/documents/templates/documents/document_detail.html:127
-#: geonode/layers/templates/layers/layer_detail.html:301
-#: geonode/layers/templates/layers/layer_detail.html:310
-#: geonode/maps/templates/maps/map_detail.html:118
-#: geonode/maps/templates/maps/map_detail.html:132
+#: geonode/layers/templates/layers/layer_detail.html:303
+#: geonode/layers/templates/layers/layer_detail.html:312
+#: geonode/maps/templates/maps/map_detail.html:124
+#: geonode/maps/templates/maps/map_detail.html:138
 msgid "Edit"
 msgstr ""
 
@@ -925,7 +932,7 @@ msgid "Document"
 msgstr ""
 
 #: geonode/documents/templates/documents/document_detail.html:135
-#: geonode/layers/templates/layers/layer_detail.html:328
+#: geonode/layers/templates/layers/layer_detail.html:330
 msgid "Replace"
 msgstr ""
 
@@ -933,26 +940,26 @@ msgstr ""
 #: geonode/groups/templates/groups/group_members.html:33
 #: geonode/groups/templates/groups/group_members.html:59
 #: geonode/groups/templates/groups/group_members.html:86
-#: geonode/layers/templates/layers/layer_detail.html:334
-#: geonode/maps/templates/maps/map_detail.html:133
+#: geonode/layers/templates/layers/layer_detail.html:336
+#: geonode/maps/templates/maps/map_detail.html:139
 msgid "Remove"
 msgstr ""
 
 #: geonode/documents/templates/documents/document_detail.html:145
 #: geonode/documents/templates/documents/document_detail.html:181
-#: geonode/layers/templates/layers/layer_detail.html:268
-#: geonode/layers/templates/layers/layer_detail.html:341
-#: geonode/layers/templates/layers/layer_detail.html:379
-#: geonode/maps/templates/maps/map_detail.html:96
-#: geonode/maps/templates/maps/map_detail.html:139
+#: geonode/layers/templates/layers/layer_detail.html:270
+#: geonode/layers/templates/layers/layer_detail.html:343
+#: geonode/layers/templates/layers/layer_detail.html:381
+#: geonode/maps/templates/maps/map_detail.html:102
+#: geonode/maps/templates/maps/map_detail.html:145
 #: geonode/templates/_bulk_permissions_form.html:19
 msgid "Close"
 msgstr ""
 
 #: geonode/documents/templates/documents/document_detail.html:152
 #: geonode/documents/templates/documents/document_detail.html:159
-#: geonode/layers/templates/layers/layer_detail.html:349
-#: geonode/layers/templates/layers/layer_detail.html:357
+#: geonode/layers/templates/layers/layer_detail.html:351
+#: geonode/layers/templates/layers/layer_detail.html:359
 msgid "Download Metadata"
 msgstr ""
 
@@ -975,10 +982,10 @@ msgstr ""
 #: geonode/documents/templates/documents/document_detail.html:204
 #: geonode/documents/templates/documents/document_upload.html:30
 #: geonode/groups/templates/groups/group_detail.html:61
-#: geonode/layers/templates/layers/layer_detail.html:452
+#: geonode/layers/templates/layers/layer_detail.html:454
 #: geonode/layers/templates/layers/layer_replace.html:94
 #: geonode/layers/templates/upload/layer_upload.html:112
-#: geonode/maps/templates/maps/map_detail.html:185 geonode/people/admin.py:55
+#: geonode/maps/templates/maps/map_detail.html:191 geonode/people/admin.py:55
 msgid "Permissions"
 msgstr ""
 
@@ -1090,6 +1097,10 @@ msgstr ""
 msgid "Upload Document"
 msgstr ""
 
+#: geonode/documents/templates/documents/document_upload.html:21
+msgid "Upload"
+msgstr ""
+
 #: geonode/documents/views.py:49
 msgid "You are not permitted to delete this document"
 msgstr ""
@@ -1118,11 +1129,11 @@ msgstr ""
 msgid "You are not allowed to edit this document."
 msgstr ""
 
-#: geonode/documents/views.py:348 geonode/layers/views.py:400
+#: geonode/documents/views.py:348 geonode/layers/views.py:405
 msgid "You must set a point of contact for this resource"
 msgstr ""
 
-#: geonode/documents/views.py:363 geonode/layers/views.py:415
+#: geonode/documents/views.py:363 geonode/layers/views.py:420
 msgid "You must set an author for this resource"
 msgstr ""
 
@@ -1259,7 +1270,7 @@ msgid "Logo"
 msgstr ""
 
 #: geonode/groups/models.py:57
-#: geonode/layers/templates/layers/layer_detail.html:160
+#: geonode/layers/templates/layers/layer_detail.html:162
 #: geonode/layers/templates/layers/layer_metadata.html:96
 #: geonode/people/templates/people/profile_detail.html:98
 #: geonode/services/forms.py:47
@@ -1670,178 +1681,173 @@ msgstr ""
 msgid "Submit"
 msgstr ""
 
-#: geonode/layers/templates/layers/layer_detail.html:60
+#: geonode/layers/templates/layers/layer_detail.html:62
 msgid "Filter Granules"
 msgstr ""
 
-#: geonode/layers/templates/layers/layer_detail.html:63
+#: geonode/layers/templates/layers/layer_detail.html:65
 msgid "Active Filter:"
 msgstr ""
 
-#: geonode/layers/templates/layers/layer_detail.html:69
+#: geonode/layers/templates/layers/layer_detail.html:71
 msgid "Granule ID"
 msgstr ""
 
-#: geonode/layers/templates/layers/layer_detail.html:70
+#: geonode/layers/templates/layers/layer_detail.html:72
 msgid "Bounding Box"
 msgstr ""
 
-#: geonode/layers/templates/layers/layer_detail.html:71
+#: geonode/layers/templates/layers/layer_detail.html:73
 msgid "Time"
 msgstr ""
 
-#: geonode/layers/templates/layers/layer_detail.html:72
+#: geonode/layers/templates/layers/layer_detail.html:74
 msgid "Elevation"
 msgstr ""
 
-#: geonode/layers/templates/layers/layer_detail.html:73
+#: geonode/layers/templates/layers/layer_detail.html:75
 msgid "Actions"
 msgstr ""
 
-#: geonode/layers/templates/layers/layer_detail.html:135
+#: geonode/layers/templates/layers/layer_detail.html:137
 msgid "Dimension"
 msgstr ""
 
-#: geonode/layers/templates/layers/layer_detail.html:136
+#: geonode/layers/templates/layers/layer_detail.html:138
 msgid "Enabled"
 msgstr ""
 
-#: geonode/layers/templates/layers/layer_detail.html:137
+#: geonode/layers/templates/layers/layer_detail.html:139
 msgid "Regex"
 msgstr ""
 
-#: geonode/layers/templates/layers/layer_detail.html:142
+#: geonode/layers/templates/layers/layer_detail.html:144
 msgid "TIME"
 msgstr ""
 
-#: geonode/layers/templates/layers/layer_detail.html:147
+#: geonode/layers/templates/layers/layer_detail.html:149
 msgid "ELEVATION"
 msgstr ""
 
-#: geonode/layers/templates/layers/layer_detail.html:158
+#: geonode/layers/templates/layers/layer_detail.html:160
 msgid "Attribute Name"
 msgstr ""
 
-#: geonode/layers/templates/layers/layer_detail.html:159
+#: geonode/layers/templates/layers/layer_detail.html:161
 #: geonode/layers/templates/layers/layer_metadata.html:95
 msgid "Label"
 msgstr ""
 
-#: geonode/layers/templates/layers/layer_detail.html:162
+#: geonode/layers/templates/layers/layer_detail.html:164
 msgid "Range"
 msgstr ""
 
-#: geonode/layers/templates/layers/layer_detail.html:163
+#: geonode/layers/templates/layers/layer_detail.html:165
 msgid "Average"
 msgstr ""
 
-#: geonode/layers/templates/layers/layer_detail.html:164
+#: geonode/layers/templates/layers/layer_detail.html:166
 msgid "Median"
 msgstr ""
 
-#: geonode/layers/templates/layers/layer_detail.html:165
+#: geonode/layers/templates/layers/layer_detail.html:167
 msgid "Standard Deviation"
 msgstr ""
 
-#: geonode/layers/templates/layers/layer_detail.html:223
+#: geonode/layers/templates/layers/layer_detail.html:225
 msgid "Rate this layer"
 msgstr ""
 
-#: geonode/layers/templates/layers/layer_detail.html:243
-#: geonode/layers/templates/layers/layer_detail.html:256
+#: geonode/layers/templates/layers/layer_detail.html:245
+#: geonode/layers/templates/layers/layer_detail.html:258
 msgid "Download Layer"
 msgstr ""
 
-#: geonode/layers/templates/layers/layer_detail.html:286
-#: geonode/layers/templates/layers/layer_detail.html:293
+#: geonode/layers/templates/layers/layer_detail.html:288
+#: geonode/layers/templates/layers/layer_detail.html:295
 msgid "Edit Layer"
 msgstr ""
 
-#: geonode/layers/templates/layers/layer_detail.html:308
-#: geonode/layers/templates/layers/layer_detail.html:429
+#: geonode/layers/templates/layers/layer_detail.html:310
+#: geonode/layers/templates/layers/layer_detail.html:431
 msgid "Styles"
 msgstr ""
 
-#: geonode/layers/templates/layers/layer_detail.html:312
+#: geonode/layers/templates/layers/layer_detail.html:313
 #: geonode/services/templates/services/service_detail.html:110
 msgid "Manage"
 msgstr ""
 
-#: geonode/layers/templates/layers/layer_detail.html:319
-#: geonode/maps/templates/maps/map_detail.html:124
+#: geonode/layers/templates/layers/layer_detail.html:321
+#: geonode/maps/templates/maps/map_detail.html:130
 msgid "Thumbnail"
 msgstr "Thumbnail"
 
-#: geonode/layers/templates/layers/layer_detail.html:320
-#: geonode/maps/templates/maps/map_detail.html:125
+#: geonode/layers/templates/layers/layer_detail.html:322
+#: geonode/maps/templates/maps/map_detail.html:131
 msgid "Set"
 msgstr ""
 
-#: geonode/layers/templates/layers/layer_detail.html:331
+#: geonode/layers/templates/layers/layer_detail.html:333
 msgid "Edit data"
 msgstr ""
 
-#: geonode/layers/templates/layers/layer_detail.html:387
+#: geonode/layers/templates/layers/layer_detail.html:389
 #: geonode/services/views.py:1305
 msgid "Legend"
 msgstr ""
 
-#: geonode/layers/templates/layers/layer_detail.html:397
+#: geonode/layers/templates/layers/layer_detail.html:399
 msgid "Maps using this layer"
 msgstr ""
 
-#: geonode/layers/templates/layers/layer_detail.html:399
+#: geonode/layers/templates/layers/layer_detail.html:401
 msgid "List of maps using this layer:"
 msgstr ""
 
-#: geonode/layers/templates/layers/layer_detail.html:405
+#: geonode/layers/templates/layers/layer_detail.html:407
 msgid "This layer is not currently used in any maps."
 msgstr ""
 
-#: geonode/layers/templates/layers/layer_detail.html:410
+#: geonode/layers/templates/layers/layer_detail.html:412
 msgid "Create a map using this layer"
 msgstr ""
 
-#: geonode/layers/templates/layers/layer_detail.html:411
+#: geonode/layers/templates/layers/layer_detail.html:413
 msgid "Click the button below to generate a new map based on this layer."
 msgstr ""
 
-#: geonode/layers/templates/layers/layer_detail.html:412
-#: geonode/templates/search/_search_content.html:16
-msgid "Create a Map"
-msgstr ""
-
-#: geonode/layers/templates/layers/layer_detail.html:417
+#: geonode/layers/templates/layers/layer_detail.html:419
 msgid "Documents related to this layer"
 msgstr ""
 
-#: geonode/layers/templates/layers/layer_detail.html:418
+#: geonode/layers/templates/layers/layer_detail.html:420
 msgid "List of documents related to this layer:"
 msgstr ""
 
-#: geonode/layers/templates/layers/layer_detail.html:430
+#: geonode/layers/templates/layers/layer_detail.html:432
 msgid ""
 "The following styles are associated with this layer. Choose a style to view "
 "it in the preview map."
 msgstr ""
 
-#: geonode/layers/templates/layers/layer_detail.html:443
+#: geonode/layers/templates/layers/layer_detail.html:445
 msgid "No styles associated with this layer"
 msgstr ""
 
-#: geonode/layers/templates/layers/layer_detail.html:453
+#: geonode/layers/templates/layers/layer_detail.html:455
 msgid "Click the button below to change the permissions of this layer."
 msgstr ""
 
-#: geonode/layers/templates/layers/layer_detail.html:454
+#: geonode/layers/templates/layers/layer_detail.html:456
 msgid "Change Layer Permissions"
 msgstr ""
 
-#: geonode/layers/templates/layers/layer_detail.html:461
+#: geonode/layers/templates/layers/layer_detail.html:463
 msgid "External service layer"
 msgstr ""
 
-#: geonode/layers/templates/layers/layer_detail.html:462
+#: geonode/layers/templates/layers/layer_detail.html:464
 msgid "Source"
 msgstr ""
 
@@ -2316,51 +2322,51 @@ msgstr ""
 msgid "now"
 msgstr ""
 
-#: geonode/layers/views.py:77
+#: geonode/layers/views.py:78
 msgid ""
 "There was an error while attempting to upload your data. Please try again, "
 "or contact and administrator if the problem continues."
 msgstr ""
 
-#: geonode/layers/views.py:80
+#: geonode/layers/views.py:81
 msgid ""
 "Note: this layer's orginal metadata was populated and preserved by importing "
 "a metadata XML file. This metadata cannot be edited."
 msgstr ""
 
-#: geonode/layers/views.py:83
+#: geonode/layers/views.py:84
 msgid "You are not permitted to delete this layer"
 msgstr ""
 
-#: geonode/layers/views.py:84
+#: geonode/layers/views.py:85
 msgid "You do not have permissions for this layer."
 msgstr ""
 
-#: geonode/layers/views.py:85
+#: geonode/layers/views.py:86
 msgid "You are not permitted to modify this layer"
 msgstr ""
 
-#: geonode/layers/views.py:87
+#: geonode/layers/views.py:88
 msgid "You are not permitted to modify this layer's metadata"
 msgstr ""
 
-#: geonode/layers/views.py:88
+#: geonode/layers/views.py:89
 msgid "You are not permitted to view this layer"
 msgstr ""
 
-#: geonode/layers/views.py:528
+#: geonode/layers/views.py:533
 msgid "You are attempting to replace a vector layer with a raster."
 msgstr ""
 
-#: geonode/layers/views.py:531
+#: geonode/layers/views.py:536
 msgid "You are attempting to replace a raster layer with a vector."
 msgstr ""
 
-#: geonode/layers/views.py:588 geonode/layers/views.py:622
+#: geonode/layers/views.py:593 geonode/layers/views.py:627
 msgid "Unable to delete layer"
 msgstr ""
 
-#: geonode/layers/views.py:591 geonode/layers/views.py:625
+#: geonode/layers/views.py:596 geonode/layers/views.py:630
 msgid ""
 "This layer is a member of a layer group, you must remove the layer from the "
 "group before deleting."
@@ -2482,6 +2488,8 @@ msgstr ""
 msgid "JSON Configuration"
 msgstr ""
 
+#: geonode/maps/templates/leaflet_maps/map_base.html:5
+#: geonode/maps/templates/leaflet_maps/map_list.html:11
 #: geonode/maps/templates/maps/map_base.html:5
 #: geonode/maps/templates/maps/map_base.html:12
 #: geonode/maps/templates/maps/map_list.html:11
@@ -2489,91 +2497,97 @@ msgstr ""
 msgid "Explore Maps"
 msgstr ""
 
-#: geonode/maps/templates/maps/map_detail.html:50
-msgid "Rate this Map"
-msgstr ""
-
-#: geonode/maps/templates/maps/map_detail.html:72
-#: geonode/maps/templates/maps/map_detail.html:87
-msgid "Download Map"
-msgstr ""
-
-#: geonode/maps/templates/maps/map_detail.html:91
-msgid "Download Data Layers"
-msgstr ""
-
-#: geonode/maps/templates/maps/map_detail.html:92
-msgid "Download Web Map Context"
-msgstr ""
-
-#: geonode/maps/templates/maps/map_detail.html:103
-#: geonode/maps/templates/maps/map_detail.html:110
-msgid "Edit Map"
-msgstr ""
-
-#: geonode/maps/templates/maps/map_detail.html:146
-msgid "View Map"
-msgstr ""
-
-#: geonode/maps/templates/maps/map_detail.html:156
-msgid "Map Layers"
-msgstr ""
-
-#: geonode/maps/templates/maps/map_detail.html:157
-msgid "This map uses the following layers:"
-msgstr ""
-
-#: geonode/maps/templates/maps/map_detail.html:173
-msgid "Documents related to this map"
-msgstr ""
-
-#: geonode/maps/templates/maps/map_detail.html:174
-msgid "List of documents related to this map:"
-msgstr ""
-
-#: geonode/maps/templates/maps/map_detail.html:186
-msgid "Specify which users can view or modify this map"
-msgstr ""
-
-#: geonode/maps/templates/maps/map_detail.html:187
-msgid "Change Permissions of this Map"
-msgstr ""
-
-#: geonode/maps/templates/maps/map_detail.html:193
-msgid "Copy this map"
-msgstr ""
-
-#: geonode/maps/templates/maps/map_detail.html:194
-msgid "Duplicate this map and modify it for your own purposes"
-msgstr ""
-
-#: geonode/maps/templates/maps/map_detail.html:195
+#: geonode/maps/templates/leaflet_maps/map_list.html:10
+#: geonode/maps/templates/maps/map_detail.html:201
 #: geonode/maps/templates/maps/map_list.html:10
 msgid "Create a New Map"
 msgstr ""
 
+#: geonode/maps/templates/leaflet_maps/map_view.html:7
+#: geonode/maps/templates/maps/map_view.html:5
+msgid "GeoExplorer"
+msgstr ""
+
+#: geonode/maps/templates/maps/map_detail.html:56
+msgid "Rate this Map"
+msgstr ""
+
+#: geonode/maps/templates/maps/map_detail.html:78
+#: geonode/maps/templates/maps/map_detail.html:93
+msgid "Download Map"
+msgstr ""
+
+#: geonode/maps/templates/maps/map_detail.html:97
+msgid "Download Data Layers"
+msgstr ""
+
+#: geonode/maps/templates/maps/map_detail.html:98
+msgid "Download Web Map Context"
+msgstr ""
+
+#: geonode/maps/templates/maps/map_detail.html:109
+#: geonode/maps/templates/maps/map_detail.html:116
+msgid "Edit Map"
+msgstr ""
+
+#: geonode/maps/templates/maps/map_detail.html:152
+msgid "View Map"
+msgstr ""
+
+#: geonode/maps/templates/maps/map_detail.html:162
+msgid "Map Layers"
+msgstr ""
+
+#: geonode/maps/templates/maps/map_detail.html:163
+msgid "This map uses the following layers:"
+msgstr ""
+
+#: geonode/maps/templates/maps/map_detail.html:179
+msgid "Documents related to this map"
+msgstr ""
+
+#: geonode/maps/templates/maps/map_detail.html:180
+msgid "List of documents related to this map:"
+msgstr ""
+
+#: geonode/maps/templates/maps/map_detail.html:192
+msgid "Specify which users can view or modify this map"
+msgstr ""
+
+#: geonode/maps/templates/maps/map_detail.html:193
+msgid "Change Permissions of this Map"
+msgstr ""
+
+#: geonode/maps/templates/maps/map_detail.html:199
+msgid "Copy this map"
+msgstr ""
+
 #: geonode/maps/templates/maps/map_detail.html:200
+msgid "Duplicate this map and modify it for your own purposes"
+msgstr ""
+
+#: geonode/maps/templates/maps/map_detail.html:206
 msgid "Map WMS"
 msgstr ""
 
-#: geonode/maps/templates/maps/map_detail.html:202
+#: geonode/maps/templates/maps/map_detail.html:208
 msgid "WMS layer group for local map layers"
 msgstr ""
 
-#: geonode/maps/templates/maps/map_detail.html:203
+#: geonode/maps/templates/maps/map_detail.html:209
 #: geonode/social/templatetags/social_tags.py:68 geonode/social/tests.py:128
 msgid "on"
 msgstr ""
 
-#: geonode/maps/templates/maps/map_detail.html:203
+#: geonode/maps/templates/maps/map_detail.html:209
 msgid "local OWS"
 msgstr ""
 
-#: geonode/maps/templates/maps/map_detail.html:206
+#: geonode/maps/templates/maps/map_detail.html:212
 msgid "Publish local map layers as WMS layer group"
 msgstr ""
 
-#: geonode/maps/templates/maps/map_detail.html:207
+#: geonode/maps/templates/maps/map_detail.html:213
 msgid "Publish Map WMS"
 msgstr ""
 
@@ -2662,10 +2676,6 @@ msgid ""
 "          Are you sure you want to remove <a href=\"%(map.get_absolute_url)s"
 "\">%(map_title)s</a>?\n"
 "        "
-msgstr ""
-
-#: geonode/maps/templates/maps/map_view.html:5
-msgid "GeoExplorer"
 msgstr ""
 
 #: geonode/maps/views.py:80
@@ -4553,6 +4563,10 @@ msgstr ""
 
 #: geonode/templates/search/_text_filter.html:5
 msgid "Text"
+msgstr ""
+
+#: geonode/templates/search/_text_filter.html:10
+msgid "Search by text"
 msgstr ""
 
 #: geonode/templates/social_links.html:10

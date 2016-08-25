@@ -18,6 +18,7 @@
 # Translators:
 # Translators:
 # Translators:
+# Translators:
 # Barun Paudel <paudel.barun4@gmail.com>, 2015
 # Indunil <ricsdej@gmail.com>, 2013
 # Indunil <ricsdej@gmail.com>, 2013
@@ -27,7 +28,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-08-23 08:55-0500\n"
+"POT-Creation-Date: 2016-08-25 02:28-0500\n"
 "PO-Revision-Date: 2016-08-23 11:58+0000\n"
 "Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
 "Language-Team: Sinhala (http://www.transifex.com/geonode/geonode/language/"
