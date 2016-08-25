@@ -14,7 +14,7 @@ def write_to_txt(writethislist,filename = 'duplicatelayers.txt'):
         try:
             f.write('\n'.join(writethislist))
         except Exception as e:
-            f.write(e)
+            f.write(str(e))
 
 if __name__ == '__main__':
     if sys.argv:
