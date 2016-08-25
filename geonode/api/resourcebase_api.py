@@ -41,7 +41,7 @@ from geonode.layers.models import Layer
 from geonode.maps.models import Map
 from geonode.documents.models import Document
 from geonode.base.models import ResourceBase
-from geonode.base.models import HierarchicalKeyword 
+from geonode.base.models import HierarchicalKeyword
 
 from .authorization import GeoNodeAuthorization
 
@@ -137,18 +137,17 @@ class CommonModelApi(ModelResource):
 
     def filter_h_keywords(self, queryset, keywords):
         filtered = queryset
+        treeqs = HierarchicalKeyword.objects.none()
         for keyword in keywords:
             try:
                 kw = HierarchicalKeyword.objects.get(name=keyword)
-                treeqs = HierarchicalKeyword.get_tree(kw)
-                filtered = queryset.filter(Q(keywords__in=treeqs))
+                treeqs = treeqs | HierarchicalKeyword.get_tree(kw)
             except ObjectDoesNotExist:
                 # Ignore keywords not actually used?
                 pass
 
-        return filtered 
-        
-
+        filtered = queryset.filter(Q(keywords__in=treeqs))
+        return filtered
 
     def filter_bbox(self, queryset, bbox):
         """

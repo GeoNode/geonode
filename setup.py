@@ -101,22 +101,17 @@ setup(name='GeoNode',
 
         # Django Apps
         "django-pagination >=1.0.5, <=1.0.7", # python-django-pagination
-        "django-jsonfield==0.9.12", # python-django-jsonfield
         "django-extensions==1.2.5", # python-django-extensions
-        "django-taggit==0.12", # python-django-taggit
-        "django-mptt==0.6.1", # django-mptt
+        "django-taggit==0.21.0", # python-django-taggit
+        "django-mptt==0.8.6", # django-mptt
 	    "django-treebeard==3.0", #django-treebeard
-        "django-guardian==1.2.0", #django-guardian
+        "django-guardian==1.4.1", #django-guardian
         # "django-admin-bootstrapped==1.6.5", #django-admin-bootstrapped
 
         ## Apps with packages provided in GeoNode's PPA on Launchpad.
         "dj-database-url >=0.4.0",
-        "django-pagination >=1.0.5, <=1.0.7",  # python-django-pagination
         "django-jsonfield>=0.9.16",  # python-django-jsonfield
-        "django-extensions>=1.6.1",  # python-django-extensions
-        "django-taggit>=0.18.0",  # python-django-taggit
         "django-mptt>=0.8.0",  # django-mptt
-        "django-guardian>=1.4.1",  # django-guardian
         # "django-admin-bootstrapped>=1.6.5",  # django-admin-bootstrapped
 
         # # Apps with packages provided in GeoNode's PPA on Launchpad.
@@ -126,7 +121,7 @@ setup(name='GeoNode',
         "django-friendly-tag-loader>=1.2.1",
         "django-activity-stream>=0.6.1",
         "django-downloadview>=1.2",
-        "django-tastypie>=0.12.2",
+        "django-tastypie==0.12.2",
 
         "django-polymorphic>=0.9.2",
         "django-leaflet>=0.13.7",

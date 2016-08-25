@@ -213,7 +213,7 @@ class License(models.Model):
 
 
 class HierarchicalKeyword(TagBase, MP_Node):
-    node_order_by = [ 'name' ]
+    node_order_by = ['name']
 
     @classmethod
     def dump_bulk_tree(cls, parent=None, keep_ids=True):
@@ -238,7 +238,7 @@ class HierarchicalKeyword(TagBase, MP_Node):
 
             newobj = {}
             for field in fields:
-                newobj[field] = fields[field] 
+                newobj[field] = fields[field]
             if keep_ids:
                 newobj['id'] = serobj['pk']
 
@@ -254,6 +254,7 @@ class HierarchicalKeyword(TagBase, MP_Node):
             lnk[pyobj.pk] = newobj
         return ret
 
+
 class TaggedContentItem(ItemBase):
     content_object = models.ForeignKey('ResourceBase')
     tag = models.ForeignKey('HierarchicalKeyword', related_name='keywords')
@@ -268,6 +269,7 @@ class TaggedContentItem(ItemBase):
         return cls.tag_model().objects.filter(**{
             '%s__content_object__isnull' % cls.tag_relname(): False
         }).distinct()
+
 
 class _HierarchicalTagManager(_TaggableManager):
 
@@ -290,6 +292,7 @@ class _HierarchicalTagManager(_TaggableManager):
 
         for tag in tag_objs:
             self.through.objects.get_or_create(tag=tag, **self._lookup_kwargs())
+
 
 class ResourceBaseManager(PolymorphicManager):
     def admin_contact(self):
@@ -352,7 +355,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
                                              blank=True, null=True, help_text=maintenance_frequency_help_text)
 
     keywords = TaggableManager(_('keywords'), through=TaggedContentItem, blank=True, help_text=keywords_help_text,
-                                            manager=_HierarchicalTagManager)
+                               manager=_HierarchicalTagManager)
     regions = models.ManyToManyField(Region, verbose_name=_('keywords region'), blank=True,
                                      help_text=regions_help_text)
 

@@ -123,6 +123,7 @@ class LinkAdmin(admin.ModelAdmin):
     search_fields = ('name', 'resource__title',)
     form = autocomplete_light.modelform_factory(Link, fields='__all__')
 
+
 class HierarchicalKeywordAdmin(TreeAdmin):
     form = movenodeform_factory(HierarchicalKeyword)
 
@@ -135,6 +136,7 @@ admin.site.register(Link, LinkAdmin)
 admin.site.register(License, LicenseAdmin)
 admin.site.register(HierarchicalKeyword, HierarchicalKeywordAdmin)
 
+
 class ResourceBaseAdminForm(autocomplete_light.ModelForm):
     # We need to specify autocomplete='TagAutocomplete' or admin views like
     # /admin/maps/map/2/ raise exceptions during form rendering.
@@ -142,4 +144,4 @@ class ResourceBaseAdminForm(autocomplete_light.ModelForm):
     # which prevents app startup. Therefore, we defer setting the widget until
     # after that's done.
     keywords = TaggitField(required=False)
-    keywords.widget = TaggitWidget(autocomplete='TagAutocomplete')
+    keywords.widget = TaggitWidget(autocomplete='HierarchicalKeywordAutocomplete')

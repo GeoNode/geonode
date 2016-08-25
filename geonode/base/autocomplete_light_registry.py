@@ -20,7 +20,6 @@
 
 import autocomplete_light
 
-from taggit.models import Tag
 from models import ResourceBase, Region, HierarchicalKeyword
 
 
