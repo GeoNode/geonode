@@ -37,7 +37,7 @@ __all__ = ['login', 'logout', 'callback']
 @require_http_methods(["GET", "POST"])
 def login(request, next_page=None, required=False):
     """Forwards to CAS login URL or verifies CAS ticket"""
-    service_url = get_service_url(request, next_page)
+    service_url = get_service_url(request)
     client = get_cas_client(service_url=service_url)
     pprint("service url: "+service_url)
     if not next_page:
