@@ -55,6 +55,7 @@ dev_config = None
 with open("dev_config.yml", 'r') as f:
     dev_config = yaml.load(f)
 
+
 def grab(src, dest, name):
     download = True
     if not dest.exists():
@@ -73,6 +74,7 @@ def grab(src, dest, name):
                 shutil.copyfile(str(src2), str(dest))
         else:
             urllib.urlretrieve(str(src), str(dest))
+
 
 @task
 @cmdopts([
@@ -212,18 +214,11 @@ def sync(options):
     """
     Run the syncdb and migrate management commands to create and migrate a DB
     """
-    try:
-        sh("python manage.py migrate auth --noinput")
-    except:
-        pass
-    try:
-        sh("python manage.py migrate sites --noinput")
-    except:
-        pass
-    try:
-        sh("python manage.py migrate people --noinput")
-    except:
-        pass
+    for app in dev_config['MIGRATE_APPS']:
+        try:
+            sh("python manage.py migrate {app} --noinput".format(app=app))
+        except:
+            pass
     try:
         sh("python manage.py migrate --noinput")
     except:

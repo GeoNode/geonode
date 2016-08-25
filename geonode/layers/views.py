@@ -24,6 +24,7 @@ import logging
 import shutil
 import traceback
 from guardian.shortcuts import get_perms
+import decimal
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
@@ -312,6 +313,10 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
         settings,
         'LAYER_PREVIEW_LIBRARY',
         'leaflet')
+    context_dict["crs"] = getattr(
+        settings,
+        'DEFAULT_MAP_CRS',
+        'EPSG:900913')
 
     if request.user.has_perm('download_resourcebase', layer.get_self_resource()):
         if layer.storeType == 'dataStore':
@@ -650,6 +655,39 @@ def layer_thumbnail(request, layername):
                 status=500,
                 content_type='text/plain'
             )
+
+
+def get_layer(request, layername):
+    """Get Layer object as JSON"""
+
+    # Function to treat Decimal in json.dumps.
+    # http://stackoverflow.com/a/16957370/1198772
+    def decimal_default(obj):
+        if isinstance(obj, decimal.Decimal):
+            return float(obj)
+        raise TypeError
+
+    logger.debug('Call get layer')
+    if request.method == 'GET':
+        layer_obj = _resolve_layer(request, layername)
+        logger.debug(layername)
+        response = {
+            'typename': layername,
+            'name': layer_obj.name,
+            'title': layer_obj.title,
+            'url': layer_obj.get_tiles_url(),
+            'bbox_string': layer_obj.bbox_string,
+            'bbox_x0': layer_obj.bbox_x0,
+            'bbox_x1': layer_obj.bbox_x1,
+            'bbox_y0': layer_obj.bbox_y0,
+            'bbox_y1': layer_obj.bbox_y1,
+        }
+        return HttpResponse(json.dumps(
+            response,
+            ensure_ascii=False,
+            default=decimal_default
+        ),
+            content_type='application/javascript')
 
 
 def layer_metadata_detail(request, layername, template='layers/layer_metadata_detail.html'):

@@ -75,6 +75,7 @@ setup(name='GeoNode',
       license='GPL',
       packages=packages,
       data_files=data_files,
+      include_package_data=True,
       install_requires=[
         # # The commented name next to the package
         # # is the Ubuntu 14.04 package that provides it.
@@ -153,7 +154,8 @@ setup(name='GeoNode',
         "Shapely>=1.5.13",
 
         # haystack/elasticsearch, uncomment to use
-        "django-haystack>=2.1.0",
+        "django-haystack==2.4.1",
+        "elasticsearch==2.4.0",
         "pyelasticsearch>=0.6.1",
         "celery>=3.1.17",
         "django-celery>=3.1.16",

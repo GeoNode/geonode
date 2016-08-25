@@ -15,7 +15,13 @@
   {% if OPENGRAPH_ENABLED %}
     {% include "base/_resourcebase_opengraph.html" %}
   {% endif %}
-  {% include "maps/map_include.html" %}
+  {% if preview == 'OL3' %}
+    {% include "maps/map_ol3.html" %}
+  {% elif preview == 'leaflet' %}
+    {% include "maps/map_leaflet.html" %}
+  {% else %}
+    {% include "maps/map_include.html" %}
+  {% endif %}
   {{ block.super }}
 {% endblock %}
 

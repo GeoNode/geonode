@@ -18,7 +18,7 @@
   <form id="upload_form"  method="post" enctype="multipart/form-data" action="{% url "document_upload" %}">
     <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}" />
     {{ form.as_p }}
-    <button type="submit" id="upload-button" class="btn btn-danger">Upload</button>
+    <button type="submit" id="upload-button" class="btn btn-danger">{% trans "Upload" %}</button>
   </form>
 </div>
 
@@ -63,7 +63,7 @@
                 return {id: object.id, text: object.title};
               })
             }
-          }          
+          }
         }
       });
     $('#upload_form').submit(function(){

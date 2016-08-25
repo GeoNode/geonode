@@ -145,13 +145,14 @@ def get_files(filename):
     elif extension.lower() in cov_exts:
         files[extension.lower().replace('.', '')] = filename
 
-    matches = glob.glob(glob_name + ".[sS][lL][dD]")
-    if len(matches) == 1:
-        files['sld'] = matches[0]
-    elif len(matches) > 1:
-        msg = ('Multiple style files for %s exist; they need to be '
-               'distinct by spelling and not just case.') % filename
-        raise GeoNodeException(msg)
+    if 'geonode.geoserver' in settings.INSTALLED_APPS:
+        matches = glob.glob(glob_name + ".[sS][lL][dD]")
+        if len(matches) == 1:
+            files['sld'] = matches[0]
+        elif len(matches) > 1:
+            msg = ('Multiple style files (sld) for %s exist; they need to be '
+                   'distinct by spelling and not just case.') % filename
+            raise GeoNodeException(msg)
 
     matches = glob.glob(base_name + ".[xX][mM][lL]")
 
@@ -166,6 +167,18 @@ def get_files(filename):
         msg = ('Multiple XML files for %s exist; they need to be '
                'distinct by spelling and not just case.') % filename
         raise GeoNodeException(msg)
+
+    if 'geonode_qgis_server' in settings.INSTALLED_APPS:
+        matches = glob.glob(glob_name + ".[qQ][mM][lL]")
+        logger.debug('Checking QML file')
+        logger.debug('Number of matches QML file : %s' % len(matches))
+        logger.debug('glob name: %s' % glob_name)
+        if len(matches) == 1:
+            files['qml'] = matches[0]
+        elif len(matches) > 1:
+            msg = ('Multiple style files (qml) for %s exist; they need to be '
+                   'distinct by spelling and not just case.') % filename
+            raise GeoNodeException(msg)
 
     return files
 

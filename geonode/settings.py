@@ -20,6 +20,7 @@
 
 # Django settings for the GeoNode project.
 import os
+
 from kombu import Queue
 from geonode import __file__ as geonode_path
 from geonode import get_version
@@ -42,8 +43,8 @@ PROJECT_ROOT = os.path.abspath(os.path.dirname(__file__))
 
 # Setting debug to true makes Django serve static media and
 # present pretty error pages.
-DEBUG = strtobool(os.getenv('DEBUG', 'False'))
-TEMPLATE_DEBUG = strtobool(os.getenv('TEMPLATE_DEBUG', 'False'))
+DEBUG = strtobool(os.getenv('DEBUG', 'True'))
+TEMPLATE_DEBUG = strtobool(os.getenv('TEMPLATE_DEBUG', 'True'))
 
 # Set to True to load non-minified versions of (static) client dependencies
 # Requires to set-up Node and tools that are required for static development
@@ -60,12 +61,14 @@ ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', ['localhost', 'django'])
 _DEFAULT_SECRET_KEY = 'myv-y4#7j-d*p-__@j#*3z@!y24fz8%^z2v6atuy4bo9vqr1_a'
 SECRET_KEY = os.getenv('SECRET_KEY', _DEFAULT_SECRET_KEY)
 
-DATABASE_URL = os.getenv('DATABASE_URL', 'sqlite:///         development.db')
+DATABASE_URL = os.getenv(
+    'DATABASE_URL',
+    'sqlite:///{path}'.format(path=os.path.join(PROJECT_ROOT, 'development.db')))
 
 # Defines settings for development
-DATABASES = {'default':
-              dj_database_url.parse(DATABASE_URL,            conn_max_age=600),
-            } 
+DATABASES = {
+    'default': dj_database_url.parse(DATABASE_URL, conn_max_age=600)
+}
 
 MANAGERS = ADMINS = os.getenv('ADMINS', [])
 
@@ -216,7 +219,8 @@ LOGOUT_URL = os.getenv('LOGOUT_URL','/account/logout/')
 # Documents application
 ALLOWED_DOCUMENT_TYPES = [
     'doc', 'docx', 'gif', 'jpg', 'jpeg', 'ods', 'odt', 'odp', 'pdf', 'png', 'ppt',
-    'pptx', 'rar', 'sld', 'tif', 'tiff', 'txt', 'xls', 'xlsx', 'xml', 'zip', 'gz'
+    'pptx', 'rar', 'sld', 'tif', 'tiff', 'txt', 'xls', 'xlsx', 'xml', 'zip', 'gz',
+    'qml'
 ]
 MAX_DOCUMENT_SIZE = int(os.getenv('MAX_DOCUMENT_SIZE ','2'))  # MB
 
@@ -243,12 +247,16 @@ GEONODE_APPS = (
     'geonode.groups',
     'geonode.services',
 
+    # QGIS Server Apps
+    # 'geonode_qgis_server',
+
     # GeoServer Apps
     # Geoserver needs to come last because
     # it's signals may rely on other apps' signals.
     'geonode.geoserver',
     'geonode.upload',
-    'geonode.tasks'
+    'geonode.tasks',
+
 )
 
 GEONODE_CONTRIB_APPS = (
@@ -803,7 +811,9 @@ LEAFLET_CONFIG = {
             'js': 'lib/js/Leaflet.fullscreen.min.js?v=%s' % VERSION,
             'auto-include': True,
         },
-    }
+    },
+    'SRID': 3857,
+    'RESET_VIEW': False
 }
 
 # option to enable/disable resource unpublishing for administrators
@@ -927,7 +937,7 @@ except ImportError:
     pass
 
 
-# Load additonal basemaps, see geonode/contrib/api_basemap/README.md 
+# Load additonal basemaps, see geonode/contrib/api_basemap/README.md
 try:
     from geonode.contrib.api_basemaps import *
 except ImportError:
@@ -963,3 +973,9 @@ if 'geonode.geoserver' in INSTALLED_APPS:
     baselayers = MAP_BASELAYERS
     MAP_BASELAYERS = [LOCAL_GEOSERVER]
     MAP_BASELAYERS.extend(baselayers)
+
+# Load more settings from a file called local_settings.py if it exists
+try:
+    from local_settings import *  # noqa
+except ImportError:
+    pass
