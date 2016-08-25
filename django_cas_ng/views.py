@@ -17,7 +17,7 @@ from django.contrib.auth import (
 from django.contrib import messages
 from django.utils.translation import ugettext_lazy as _
 from django.views.decorators.http import require_http_methods
-
+from pprint import pprint
 from importlib import import_module
 
 SessionStore = import_module(settings.SESSION_ENGINE).SessionStore
@@ -38,13 +38,13 @@ __all__ = ['login', 'logout', 'callback']
 @require_http_methods(["GET", "POST"])
 def login(request, next_page=None, required=False):
     """Forwards to CAS login URL or verifies CAS ticket"""
-    service_url = get_service_url(request, next_page)
+    service_url = get_service_url(request)
     client = get_cas_client(service_url=service_url)
+    pprint("service url: "+service_url)
+    if not next_page:
+        next_page = get_redirect_url(request)
+        pprint("next page url: "+next_page)
 
-    pprint(next_page)
-    #if not next_page:
-    next_page = get_redirect_url(request)
-    pprint(next_page)
     if request.method == 'POST' and request.POST.get('logoutRequest'):
         clean_sessions(client, request)
         return HttpResponseRedirect(next_page)
