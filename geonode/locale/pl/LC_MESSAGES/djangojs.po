@@ -16,13 +16,16 @@
 # Translators:
 # Translators:
 # Translators:
+# Translators:
+# Translators:
+# Translators:
 # Andres Alfonso Lemon Gomez <lemon.andres@gmail.com>, 2014
 msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-04-14 03:50-0500\n"
-"PO-Revision-Date: 2016-04-14 08:39+0000\n"
+"POT-Creation-Date: 2016-08-25 02:28-0500\n"
+"PO-Revision-Date: 2016-08-23 11:58+0000\n"
 "Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
 "Language-Team: Polish (http://www.transifex.com/geonode/geonode/language/"
 "pl/)\n"
@@ -33,190 +36,165 @@ msgstr ""
 "Plural-Forms: nplurals=3; plural=(n==1 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 "
 "|| n%100>=20) ? 1 : 2);\n"
 
-#: static/geonode/js/search/search.js:373
-#: static_root/geonode/js/search/search.js:374
+#: geonode/static/geonode/js/search/search.js:373
 msgid "Enter your text here ..."
 msgstr ""
 
-#: static/geonode/js/search/search.js:408
-#: static_root/geonode/js/search/search.js:409
+#: geonode/static/geonode/js/search/search.js:414
 msgid "Enter your region here ..."
 msgstr ""
 
-#: static/geonode/js/upload/FileType.js:33
-#: static_root/geonode/js/upload/FileType.js:33
-#, c-format
+#: geonode/static/geonode/js/upload/FileType.js:33
+#, javascript-format
 msgid "Missing a %s file, which is required"
 msgstr "Brakuje pliku %s, który jest wymagany"
 
-#: static/geonode/js/upload/FileTypes.js:7
-#: static_root/geonode/js/upload/FileTypes.js:7
+#: geonode/static/geonode/js/upload/FileTypes.js:7
 msgid "ESRI Shapefile"
 msgstr "ESRI Shapefile"
 
-#: static/geonode/js/upload/FileTypes.js:13
-#: static/geonode/js/upload/FileTypes.js:18
+#: geonode/static/geonode/js/upload/FileTypes.js:13
+#: geonode/static/geonode/js/upload/FileTypes.js:18
 msgid "GeoTIFF"
 msgstr ""
 
-#: static/geonode/js/upload/FileTypes.js:24
+#: geonode/static/geonode/js/upload/FileTypes.js:24
 msgid "Comma Separated Value"
 msgstr ""
 
-#: static/geonode/js/upload/FileTypes.js:29
-#: static_root/geonode/js/upload/FileTypes.js:32
+#: geonode/static/geonode/js/upload/FileTypes.js:29
 msgid "Google Earth KML"
 msgstr "Google Earth KML"
 
-#: static/geonode/js/upload/FileTypes.js:34
-#: static_root/geonode/js/upload/FileTypes.js:38
+#: geonode/static/geonode/js/upload/FileTypes.js:34
 msgid "GeoJSON"
 msgstr "GeoJSON"
 
-#: static/geonode/js/upload/FileTypes.js:39
+#: geonode/static/geonode/js/upload/FileTypes.js:39
 msgid "Zip Archive"
 msgstr ""
 
-#: static/geonode/js/upload/FileTypes.js:45
+#: geonode/static/geonode/js/upload/FileTypes.js:45
 msgid "ERDAS Imagine"
 msgstr ""
 
-#: static/geonode/js/upload/FileTypes.js:50
-#: static/geonode/js/upload/FileTypes.js:55
+#: geonode/static/geonode/js/upload/FileTypes.js:50
+#: geonode/static/geonode/js/upload/FileTypes.js:55
 msgid "National Imagery Transmission Format"
 msgstr ""
 
-#: static/geonode/js/upload/FileTypes.js:61
+#: geonode/static/geonode/js/upload/FileTypes.js:61
 msgid "Controlled Image Base-1 Meter"
 msgstr ""
 
-#: static/geonode/js/upload/FileTypes.js:68
+#: geonode/static/geonode/js/upload/FileTypes.js:68
 msgid "Controlled Image Base-5 Meter"
 msgstr ""
 
-#: static/geonode/js/upload/FileTypes.js:75
+#: geonode/static/geonode/js/upload/FileTypes.js:75
 msgid "Controlled Image Base-10 Meter"
 msgstr ""
 
-#: static/geonode/js/upload/FileTypes.js:82
+#: geonode/static/geonode/js/upload/FileTypes.js:82
 msgid "CADRG-Global Navigation Chart"
 msgstr ""
 
-#: static/geonode/js/upload/FileTypes.js:89
+#: geonode/static/geonode/js/upload/FileTypes.js:89
 msgid "CADRG-Jet Navigation Chart"
 msgstr ""
 
-#: static/geonode/js/upload/FileTypes.js:96
+#: geonode/static/geonode/js/upload/FileTypes.js:96
 msgid "CADRG-Operational Navigation Chart"
 msgstr ""
 
-#: static/geonode/js/upload/FileTypes.js:103
+#: geonode/static/geonode/js/upload/FileTypes.js:103
 msgid "CADRG-Tactical Pilotage Chart"
 msgstr ""
 
-#: static/geonode/js/upload/FileTypes.js:110
+#: geonode/static/geonode/js/upload/FileTypes.js:110
 msgid "CADRG-Joint Operations Graphic"
 msgstr ""
 
-#: static/geonode/js/upload/FileTypes.js:117
+#: geonode/static/geonode/js/upload/FileTypes.js:117
 msgid "CADRG-Topographic Line Map 100K"
 msgstr ""
 
-#: static/geonode/js/upload/FileTypes.js:124
+#: geonode/static/geonode/js/upload/FileTypes.js:124
 msgid "CADRG-Topographic Line Map 50K"
 msgstr ""
 
-#: static/geonode/js/upload/FileTypes.js:131
+#: geonode/static/geonode/js/upload/FileTypes.js:131
 msgid "JPEG2000"
 msgstr ""
 
-#: static/geonode/js/upload/FileTypes.js:136
+#: geonode/static/geonode/js/upload/FileTypes.js:136
 msgid "MrSID-Multi-resolution Seamless Image Database"
 msgstr ""
 
-#: static/geonode/js/upload/LayerInfo.js:237
-#: static_root/geonode/js/upload/LayerInfo.js:235
+#: geonode/static/geonode/js/upload/LayerInfo.js:331
 msgid "Layer Info"
 msgstr "Warstwa Info"
 
-#: static/geonode/js/upload/LayerInfo.js:238
-#: static_root/geonode/js/upload/LayerInfo.js:236
+#: geonode/static/geonode/js/upload/LayerInfo.js:332
 msgid "Edit Metadata"
 msgstr "Edytuj metadane"
 
-#: static/geonode/js/upload/LayerInfo.js:239
-#: static_root/geonode/js/upload/LayerInfo.js:237
+#: geonode/static/geonode/js/upload/LayerInfo.js:333
 msgid "Manage Styles"
 msgstr "Zarządzanie stylami"
 
-#: static/geonode/js/upload/LayerInfo.js:242
-#: static_root/geonode/js/upload/LayerInfo.js:240
+#: geonode/static/geonode/js/upload/LayerInfo.js:336
 msgid "The column %1 was renamed to %2 <br/>"
 msgstr ""
 
-#: static/geonode/js/upload/LayerInfo.js:248
-#: static_root/geonode/js/upload/LayerInfo.js:246
+#: geonode/static/geonode/js/upload/LayerInfo.js:342
 msgid "Your layer was successfully uploaded"
 msgstr "Twoja warstwa została pomyślnie przesłany"
 
-#: static/geonode/js/upload/LayerInfo.js:277
-#: static_root/geonode/js/upload/LayerInfo.js:275
+#: geonode/static/geonode/js/upload/LayerInfo.js:371
 msgid "Performing Final GeoServer Config Step"
 msgstr "Wykonywanie GeoServer Config Krok końcowy"
 
-#: static/geonode/js/upload/LayerInfo.js:292
-#: static/geonode/js/upload/LayerInfo.js:318
-#: static_root/geonode/js/upload/LayerInfo.js:290
-#: static_root/geonode/js/upload/LayerInfo.js:316
+#: geonode/static/geonode/js/upload/LayerInfo.js:386
+#: geonode/static/geonode/js/upload/LayerInfo.js:412
 msgid "You need to specify more information in order to complete your upload"
 msgstr "Musisz podać więcej informacji w celu zakończenia przesyłania"
 
-#: static/geonode/js/upload/LayerInfo.js:310
-#: static_root/geonode/js/upload/LayerInfo.js:308
+#: geonode/static/geonode/js/upload/LayerInfo.js:404
 msgid "You need to specify more information in order to complete your upload."
 msgstr "Musisz podać więcej informacji w celu zakończenia przesyłania."
 
-#: static/geonode/js/upload/LayerInfo.js:310
-#: static_root/geonode/js/upload/LayerInfo.js:308
+#: geonode/static/geonode/js/upload/LayerInfo.js:404
 msgid "You can continue configuring your layer."
 msgstr "Możesz kontynuować konfigurowanie warstwy."
 
-#: static/geonode/js/upload/LayerInfo.js:328
-#: static/geonode/js/upload/LayerInfo.js:414
-#: static_root/geonode/js/upload/LayerInfo.js:326
-#: static_root/geonode/js/upload/LayerInfo.js:412
+#: geonode/static/geonode/js/upload/LayerInfo.js:422
+#: geonode/static/geonode/js/upload/LayerInfo.js:509
 msgid "Unexpected Error"
 msgstr "Nieoczekiwany błąd"
 
-#: static/geonode/js/upload/LayerInfo.js:344
-#: static_root/geonode/js/upload/LayerInfo.js:342
+#: geonode/static/geonode/js/upload/LayerInfo.js:438
 msgid "Performing GeoServer Config Step"
 msgstr "Konfiguracja Krok Wykonywanie GeoServer"
 
-#: static/geonode/js/upload/LayerInfo.js:421
-#: static_root/geonode/js/upload/LayerInfo.js:419
+#: geonode/static/geonode/js/upload/LayerInfo.js:516
 msgid "Layer files uploaded, configuring in GeoServer"
 msgstr "Pliki warstwy dodane, konfigurowanie w GeoServer"
 
-#: static/geonode/js/upload/LayerInfo.js:436
-#: static_root/geonode/js/upload/LayerInfo.js:434
+#: geonode/static/geonode/js/upload/LayerInfo.js:532
 msgid "Select or create a Geogig repository."
 msgstr ""
 
-#: static/geonode/js/upload/LayerInfo.js:532
-#: static_root/admin/js/SelectFilter2.js:69
-#: static_root/geonode/js/upload/LayerInfo.js:528
+#: geonode/static/geonode/js/upload/LayerInfo.js:695
 msgid "Remove"
 msgstr "Usunąć"
 
-#: static/geonode/js/upload/upload.js:125
-#: static_root/geonode/js/upload/upload.js:125
-#, c-format
+#: geonode/static/geonode/js/upload/upload.js:125
+#, javascript-format
 msgid "The file %s is an unsupported file type, please select another file."
 msgstr "Plik %s jest nieobsługiwany typ pliku, wybierz inny plik."
 
-#: static/geonode/js/upload/upload.js:262
-#: static_root/geonode/js/upload/upload.js:280
+#: geonode/static/geonode/js/upload/upload.js:285
 msgid ""
 "You are trying to upload an incomplete set of files or not all mandatory "
 "options have been validated.\n"
@@ -224,479 +202,304 @@ msgid ""
 "Please check for errors in the form!"
 msgstr ""
 
-#: static_root/admin/js/SelectFilter2.js:45
-#, c-format
-msgid "Available %s"
+#: geonode/static/lib/js/assets.min.js:2
+msgid "<iframe frameborder='0' width='0' height='0'/>"
 msgstr ""
 
-#: static_root/admin/js/SelectFilter2.js:46
-#, c-format
-msgid ""
-"This is the list of available %s. You may choose some by selecting them in "
-"the box below and then clicking the \"Choose\" arrow between the two boxes."
+#: geonode/static/lib/js/assets.min.js:4
+msgid "<script>"
 msgstr ""
 
-#: static_root/admin/js/SelectFilter2.js:53
-#, c-format
-msgid "Type into this box to filter down the list of available %s."
+#: geonode/static/lib/js/assets.min.js:4
+msgid "<div>"
 msgstr ""
 
-#: static_root/admin/js/SelectFilter2.js:57
-msgid "Filter"
-msgstr ""
-
-#: static_root/admin/js/SelectFilter2.js:61
-msgid "Choose all"
-msgstr ""
-
-#: static_root/admin/js/SelectFilter2.js:61
-#, c-format
-msgid "Click to choose all %s at once."
-msgstr ""
-
-#: static_root/admin/js/SelectFilter2.js:67
-msgid "Choose"
-msgstr ""
-
-#: static_root/admin/js/SelectFilter2.js:75
-#, c-format
-msgid "Chosen %s"
-msgstr ""
-
-#: static_root/admin/js/SelectFilter2.js:76
-#, c-format
-msgid ""
-"This is the list of chosen %s. You may remove some by selecting them in the "
-"box below and then clicking the \"Remove\" arrow between the two boxes."
-msgstr ""
-
-#: static_root/admin/js/SelectFilter2.js:80
-msgid "Remove all"
-msgstr ""
-
-#: static_root/admin/js/SelectFilter2.js:80
-#, c-format
-msgid "Click to remove all chosen %s at once."
-msgstr ""
-
-#: static_root/admin/js/actions.js:18 static_root/admin/js/actions.min.js:1
-msgid "%(sel)s of %(cnt)s selected"
-msgid_plural "%(sel)s of %(cnt)s selected"
-msgstr[0] ""
-msgstr[1] ""
-msgstr[2] ""
-
-#: static_root/admin/js/actions.js:109 static_root/admin/js/actions.min.js:5
-msgid ""
-"You have unsaved changes on individual editable fields. If you run an "
-"action, your unsaved changes will be lost."
-msgstr ""
-
-#: static_root/admin/js/actions.js:121 static_root/admin/js/actions.min.js:5
-msgid ""
-"You have selected an action, but you haven't saved your changes to "
-"individual fields yet. Please click OK to save. You'll need to re-run the "
-"action."
-msgstr ""
-
-#: static_root/admin/js/actions.js:123 static_root/admin/js/actions.min.js:6
-msgid ""
-"You have selected an action, and you haven't made any changes on individual "
-"fields. You're probably looking for the Go button rather than the Save "
-"button."
-msgstr ""
-
-#: static_root/admin/js/calendar.js:8
-msgid ""
-"January February March April May June July August September October November "
-"December"
-msgstr ""
-
-#: static_root/admin/js/calendar.js:9
-msgid "S M T W T F S"
-msgstr ""
-
-#: static_root/admin/js/collapse.js:8 static_root/admin/js/collapse.js.c:19
-#: static_root/admin/js/collapse.min.js:1
-msgid "Show"
-msgstr ""
-
-#: static_root/admin/js/collapse.js:16 static_root/admin/js/collapse.min.js:1
-msgid "Hide"
-msgstr ""
-
-#: static_root/admin/js/admin/DateTimeShortcuts.js:52
-#: static_root/admin/js/admin/DateTimeShortcuts.js:88
-msgid "Now"
-msgstr ""
-
-#: static_root/admin/js/admin/DateTimeShortcuts.js:56
-msgid "Clock"
-msgstr ""
-
-#: static_root/admin/js/admin/DateTimeShortcuts.js:84
-msgid "Choose a time"
-msgstr ""
-
-#: static_root/admin/js/admin/DateTimeShortcuts.js:89
-msgid "Midnight"
-msgstr ""
-
-#: static_root/admin/js/admin/DateTimeShortcuts.js:90
-msgid "6 a.m."
-msgstr ""
-
-#: static_root/admin/js/admin/DateTimeShortcuts.js:91
-msgid "Noon"
-msgstr ""
-
-#: static_root/admin/js/admin/DateTimeShortcuts.js:95
-#: static_root/admin/js/admin/DateTimeShortcuts.js:208 templates/lang.js:9
-#: templates/lang.js.c:236
+#: geonode/templates/lang.js:9 geonode/templates/lang.js:236
 msgid "Cancel"
 msgstr "Anulować"
 
-#: static_root/admin/js/admin/DateTimeShortcuts.js:148
-#: static_root/admin/js/admin/DateTimeShortcuts.js:201
-msgid "Today"
-msgstr ""
-
-#: static_root/admin/js/admin/DateTimeShortcuts.js:152
-msgid "Calendar"
-msgstr ""
-
-#: static_root/admin/js/admin/DateTimeShortcuts.js:199
-msgid "Yesterday"
-msgstr ""
-
-#: static_root/admin/js/admin/DateTimeShortcuts.js:203
-msgid "Tomorrow"
-msgstr ""
-
-#: static_root/geonode/js/extjs/GeoNode.js:72
-msgid "Add user..."
-msgstr "Dodaj użytkownika ..."
-
-#: static_root/geonode/js/extjs/GeoNode.js:72
-msgid "Who can view and download this data?"
-msgstr "Kto może oglądać i pobierać te dane?"
-
-#: static_root/geonode/js/extjs/GeoNode.js:72
-msgid "Anyone"
-msgstr "Ktoś"
-
-#: static_root/geonode/js/extjs/GeoNode.js:72
-msgid "Any registered user"
-msgstr "Każdy zarejestrowany użytkownik"
-
-#: static_root/geonode/js/extjs/GeoNode.js:72
-msgid "Only users who can edit"
-msgstr "Tylko użytkownicy, którzy mogą edytować"
-
-#: static_root/geonode/js/extjs/GeoNode.js:72
-msgid "Who can edit this data?"
-msgstr "Kto może edytować te dane?"
-
-#: static_root/geonode/js/extjs/GeoNode.js:72
-msgid "Only the following users or groups:"
-msgstr "Tylko następujące użytkowników lub grup:"
-
-#: static_root/geonode/js/extjs/GeoNode.js:72
-msgid "Who can manage and edit this data?"
-msgstr "Kto może zarządzać i edytować te dane?"
-
-#: static_root/geonode/js/upload/FileTypes.js:13
-#: static_root/geonode/js/upload/FileTypes.js:19
-msgid "GeoTiff File"
-msgstr "GeoTIFF pliku"
-
-#: static_root/geonode/js/upload/FileTypes.js:26
-msgid "Comma Separated File"
-msgstr "Plik oddzielonych przecinkami"
-
-#: static_root/geonode/js/upload/FileTypes.js:44
-msgid "Zip Archives"
-msgstr "ZIP"
-
-#: templates/lang.js:10
+#: geonode/templates/lang.js:10
 msgid "Save as Copy"
 msgstr "Zapisz jako kopię"
 
-#: templates/lang.js:11
+#: geonode/templates/lang.js:11
 msgid "About this Map"
 msgstr "O tej mapie"
 
-#: templates/lang.js:12 templates/lang.js.c:96 templates/lang.js.c:165
+#: geonode/templates/lang.js:12 geonode/templates/lang.js:96
+#: geonode/templates/lang.js:165
 msgid "Abstract"
 msgstr "Abstrakcyjny"
 
-#: templates/lang.js:13
+#: geonode/templates/lang.js:13
 msgid "Save"
 msgstr "Zapisz"
 
-#: templates/lang.js:14 templates/lang.js.c:100 templates/lang.js.c:109
-#: templates/lang.js:162 templates/lang.js.c:184 templates/lang.js.c:219
+#: geonode/templates/lang.js:14 geonode/templates/lang.js:100
+#: geonode/templates/lang.js:109 geonode/templates/lang.js:162
+#: geonode/templates/lang.js:184 geonode/templates/lang.js:219
 msgid "Title"
 msgstr "Tytuł"
 
-#: templates/lang.js:20
+#: geonode/templates/lang.js:20
 msgid "Connection Error"
 msgstr "Błąd połączenia"
 
-#: templates/lang.js:21
+#: geonode/templates/lang.js:21
 msgid "The server returned an error"
 msgstr "Serwer zwrócił błąd"
 
-#: templates/lang.js:22
+#: geonode/templates/lang.js:22
 msgid "Details..."
 msgstr "Szczegóły ..."
 
-#: templates/lang.js:28 templates/lang.js.c:31
+#: geonode/templates/lang.js:28 geonode/templates/lang.js:31
 msgid "Add Layers"
 msgstr "Dodaj Layers"
 
-#: templates/lang.js:29
+#: geonode/templates/lang.js:29
 msgid "Area"
 msgstr "Obszar"
 
-#: templates/lang.js:30
+#: geonode/templates/lang.js:30
 msgid "Background"
 msgstr "Tło"
 
-#: templates/lang.js:32
+#: geonode/templates/lang.js:32
 msgid "Done"
 msgstr "Gotowe"
 
-#: templates/lang.js:33
+#: geonode/templates/lang.js:33
 msgid "Available Layers"
 msgstr "Dostępne Warstwy"
 
-#: templates/lang.js:35 templates/lang.js.c:121
+#: geonode/templates/lang.js:35 geonode/templates/lang.js:121
 msgid "Height"
 msgstr "Wysokość"
 
-#: templates/lang.js:36
+#: geonode/templates/lang.js:36
 msgid "Get Feature Info"
 msgstr "Get Feature Info"
 
-#: templates/lang.js:37 templates/lang.js.c:122
+#: geonode/templates/lang.js:37 geonode/templates/lang.js:122
 msgid "Large"
 msgstr "Duży"
 
-#: templates/lang.js:38
+#: geonode/templates/lang.js:38
 msgid "or add a new server."
 msgstr "lub dodać nowy serwer."
 
-#: templates/lang.js:39
+#: geonode/templates/lang.js:39
 msgid "Map Layers"
 msgstr "Warstwy mapy"
 
-#: templates/lang.js:40
+#: geonode/templates/lang.js:40
 msgid "View available data from:"
 msgstr "Zobacz dostępne dane z:"
 
-#: templates/lang.js:41
+#: geonode/templates/lang.js:41
 msgid "Data"
 msgstr "Dane"
 
-#: templates/lang.js:42
+#: geonode/templates/lang.js:42
 msgid "Layers"
 msgstr "Warstwy"
 
-#: templates/lang.js:43
+#: geonode/templates/lang.js:43
 msgid "Legend"
 msgstr "Legenda"
 
-#: templates/lang.js:44
+#: geonode/templates/lang.js:44
 msgid "Length"
 msgstr "Długość"
 
-#: templates/lang.js:45
+#: geonode/templates/lang.js:45
 msgid "Loading Map..."
 msgstr "Ładowanie mapy ..."
 
-#: templates/lang.js:46 templates/lang.js.c:123
+#: geonode/templates/lang.js:46 geonode/templates/lang.js:123
 msgid "Map Size"
 msgstr "Mapa Rozmiar"
 
-#: templates/lang.js:47
+#: geonode/templates/lang.js:47
 msgid "Measure"
 msgstr "Działanie"
 
-#: templates/lang.js:48 templates/lang.js.c:97 templates/lang.js.c:163
+#: geonode/templates/lang.js:48 geonode/templates/lang.js:97
+#: geonode/templates/lang.js:163
 msgid "Contact"
 msgstr "Kontakt"
 
-#: templates/lang.js:49 templates/lang.js.c:55
+#: geonode/templates/lang.js:49 geonode/templates/lang.js:55
 msgid "Permalink"
 msgstr "Permalink"
 
-#: templates/lang.js:50 templates/lang.js.c:124
+#: geonode/templates/lang.js:50 geonode/templates/lang.js:124
 msgid "Mini"
 msgstr "Mini"
 
-#: templates/lang.js:51
+#: geonode/templates/lang.js:51
 msgid "Pan Map"
 msgstr "Pan Mapa"
 
-#: templates/lang.js:52
+#: geonode/templates/lang.js:52
 msgid "Zoom to Next Extent"
 msgstr "Przybliża Następny wyciągnięcie"
 
-#: templates/lang.js:53
+#: geonode/templates/lang.js:53
 msgid "Zoom to Previous Extent"
 msgstr "Powiększyć do poprzedniego wyciągnięcie"
 
-#: templates/lang.js:54
+#: geonode/templates/lang.js:54
 msgid "This map has not yet been saved."
 msgstr "Ta mapa nie została jeszcze zapisana."
 
-#: templates/lang.js:56 templates/lang.js.c:125
+#: geonode/templates/lang.js:56 geonode/templates/lang.js:125
 msgid "Premium"
 msgstr "Premia"
 
-#: templates/lang.js:57
+#: geonode/templates/lang.js:57
 msgid "Print Map"
 msgstr "Drukuj Mapa"
 
-#: templates/lang.js:58
+#: geonode/templates/lang.js:58
 msgid "Print Preview"
 msgstr "Podgląd wydruku"
 
-#: templates/lang.js:59
+#: geonode/templates/lang.js:59
 msgid "Properties"
 msgstr "Właściwości"
 
-#: templates/lang.js:60 templates/lang.js.c:126
+#: geonode/templates/lang.js:60 geonode/templates/lang.js:126
 msgid "Publish Map"
 msgstr "Publikowanie Mapa"
 
-#: templates/lang.js:61 templates/lang.js.c:62
+#: geonode/templates/lang.js:61 geonode/templates/lang.js:62
 msgid "Remove Layer"
 msgstr "Usuń warstwę"
 
-#: templates/lang.js:63
+#: geonode/templates/lang.js:63
 msgid "Sorry, your map could not be saved."
 msgstr "Niestety, Twoja mapa nie może zostać zapisany."
 
-#: templates/lang.js:64
+#: geonode/templates/lang.js:64
 msgid "Error While Saving"
 msgstr "Błąd podczas zapisywania"
 
-#: templates/lang.js:65
+#: geonode/templates/lang.js:65
 msgid "Save Map"
 msgstr "Zapisz Mapa"
 
-#: templates/lang.js:66
+#: geonode/templates/lang.js:66
 msgid "You must be logged in to save this map."
 msgstr "Musisz być zalogowany, aby zapisać tę mapę."
 
-#: templates/lang.js:67 templates/lang.js.c:128
+#: geonode/templates/lang.js:67 geonode/templates/lang.js:128
 msgid "Small"
 msgstr "Mały"
 
-#: templates/lang.js:68
+#: geonode/templates/lang.js:68
 msgid ""
 "Error contacting server.\n"
 " Please check the url and try again."
 msgstr "Błąd kontaktując serwer. Sprawdź adres URL i spróbuj ponownie."
 
-#: templates/lang.js:69
+#: geonode/templates/lang.js:69
 msgid "Layer Properties"
 msgstr "Właściwości warstw"
 
-#: templates/lang.js:70
+#: geonode/templates/lang.js:70
 msgid "Change layer format and style"
 msgstr "Zmień styl warstwy i formacie"
 
-#: templates/lang.js:71
+#: geonode/templates/lang.js:71
 msgid "Edit Styles"
 msgstr "Edytuj Style"
 
-#: templates/lang.js:72
+#: geonode/templates/lang.js:72
 msgid "Edit layer styles"
 msgstr "Edit layer style"
 
-#: templates/lang.js:73
+#: geonode/templates/lang.js:73
 msgid "Switch to Google Earth 3D Viewer"
 msgstr "Przełączyć się do Google Earth 3D Viewer"
 
-#: templates/lang.js:74
+#: geonode/templates/lang.js:74
 msgid ""
 "The map that you are trying to load does not exist.  Creating a new map "
 "instead."
 msgstr ""
 "Mapa, że ​​próbujesz załadować nie istnieje. Tworzenie nowej mapy zamiast."
 
-#: templates/lang.js:75
+#: geonode/templates/lang.js:75
 msgid "Unknown Map"
 msgstr "Nieznane Mapa"
 
-#: templates/lang.js:76 templates/lang.js.c:129
+#: geonode/templates/lang.js:76 geonode/templates/lang.js:129
 msgid "Width"
 msgstr "Szerokość"
 
-#: templates/lang.js:77
+#: geonode/templates/lang.js:77
 msgid "Zoom In"
 msgstr "Powiększ"
 
-#: templates/lang.js:78
+#: geonode/templates/lang.js:78
 msgid "Zoom Out"
 msgstr "Oddalanie"
 
-#: templates/lang.js:79
+#: geonode/templates/lang.js:79
 msgid "Zoom level"
 msgstr "Poziom zoomu"
 
-#: templates/lang.js:80
+#: geonode/templates/lang.js:80
 msgid "Zoom Level"
 msgstr "Poziom powiększenia"
 
-#: templates/lang.js:81
+#: geonode/templates/lang.js:81
 msgid "Zoom to Layer Extent"
 msgstr "Powiększ do warstwy Zakres"
 
-#: templates/lang.js:82
+#: geonode/templates/lang.js:82
 msgid "Zoom to Visible Extent"
 msgstr "Widoczne wyciągnięcie zbliżeniem"
 
-#: templates/lang.js:88
+#: geonode/templates/lang.js:88
 msgid "Zoom Level {zoom}"
 msgstr "Poziom zoom zoom} {"
 
-#: templates/lang.js:94
+#: geonode/templates/lang.js:94
 msgid "Create Map"
 msgstr "Tworzenie mapy"
 
-#: templates/lang.js:95
+#: geonode/templates/lang.js:95
 msgid "Export Map"
 msgstr "Eksport Mapa"
 
-#: templates/lang.js:98
+#: geonode/templates/lang.js:98
 msgid "Map"
 msgstr "Mapa"
 
-#: templates/lang.js:99 templates/lang.js.c:166
+#: geonode/templates/lang.js:99 geonode/templates/lang.js:166
 msgid "View this Map"
 msgstr "Zobacz to na mapie"
 
-#: templates/lang.js:101
+#: geonode/templates/lang.js:101
 msgid "Open Map"
 msgstr "Otwórz mapę"
 
-#: templates/lang.js:107 templates/lang.js.c:183
+#: geonode/templates/lang.js:107 geonode/templates/lang.js:183
 msgid "Name"
 msgstr "Nazwa"
 
-#: templates/lang.js:108
+#: geonode/templates/lang.js:108
 msgid "Queryable"
 msgstr "Queryable"
 
-#: templates/lang.js:115
+#: geonode/templates/lang.js:115
 msgid "No background"
 msgstr "Bez tła"
 
-#: templates/lang.js:127
+#: geonode/templates/lang.js:127
 msgid ""
 "Your map is ready to be published to the web!  Simply copy the following "
 "HTML to embed the map in your website:"
@@ -704,173 +507,328 @@ msgstr ""
 "Twoja mapa jest gotowy do publikacji w internecie! Wystarczy skopiować "
 "poniższy kod HTML, aby umieścić mapę na swojej stronie:"
 
-#: templates/lang.js:136 templates/lang.js.c:202
+#: geonode/templates/lang.js:136 geonode/templates/lang.js:202
 msgid "Abstract:"
 msgstr "Streszczenie:"
 
-#: templates/lang.js:137 templates/lang.js.c:204
+#: geonode/templates/lang.js:137 geonode/templates/lang.js:204
 msgid "No attribution information is provided for this layer."
 msgstr "Brak jest informacji o uznanie dla tej warstwy."
 
-#: templates/lang.js:138 templates/lang.js.c:205
+#: geonode/templates/lang.js:138 geonode/templates/lang.js:205
 msgid "Provided by:"
 msgstr "Zapewnione przez:"
 
-#: templates/lang.js:139 templates/lang.js.c:206
+#: geonode/templates/lang.js:139 geonode/templates/lang.js:206
 msgid "Download:"
 msgstr "Download:"
 
-#: templates/lang.js:140 templates/lang.js.c:208
+#: geonode/templates/lang.js:140 geonode/templates/lang.js:208
 msgid "No keywords are listed for this layer."
 msgstr "Brak słów kluczowych są wyświetlane na tej warstwie."
 
-#: templates/lang.js:141 templates/lang.js.c:209
+#: geonode/templates/lang.js:141 geonode/templates/lang.js:209
 msgid "Keywords:"
 msgstr "Słowa kluczowe:"
 
-#: templates/lang.js:142 templates/lang.js.c:210
+#: geonode/templates/lang.js:142 geonode/templates/lang.js:210
 msgid "No metadata URLs are defined for this layer."
 msgstr "Brak URL metadanych są zdefiniowane dla tej warstwy."
 
-#: templates/lang.js:143 templates/lang.js.c:211
+#: geonode/templates/lang.js:143 geonode/templates/lang.js:211
 msgid "Metadata Links:"
 msgstr "Metadanych Linki:"
 
-#: templates/lang.js:149
+#: geonode/templates/lang.js:149
 msgid "Paper size:"
 msgstr "Rozmiar papieru:"
 
-#: templates/lang.js:150
+#: geonode/templates/lang.js:150
 msgid "Resolution:"
 msgstr "Rozdzielczość:"
 
-#: templates/lang.js:151
+#: geonode/templates/lang.js:151
 msgid "Print"
 msgstr "Druk"
 
-#: templates/lang.js:152
+#: geonode/templates/lang.js:152
 msgid "Enter map title here."
 msgstr "Wprowadź tytuł mapę tutaj."
 
-#: templates/lang.js:153
+#: geonode/templates/lang.js:153
 msgid "Include legend?"
 msgstr "Dołącz legendę?"
 
-#: templates/lang.js:154
+#: geonode/templates/lang.js:154
 msgid "Enter comments here."
 msgstr "Wpisz tutaj komentarzy."
 
-#: templates/lang.js:155
+#: geonode/templates/lang.js:155
 msgid "Creating PDF..."
 msgstr "Tworzenie plików PDF ..."
 
-#: templates/lang.js:164
+#: geonode/templates/lang.js:164
 msgid "Last Modified"
 msgstr "Ostatnia modyfikacja"
 
-#: templates/lang.js:167 templates/lang.js.c:188
+#: geonode/templates/lang.js:167 geonode/templates/lang.js:188
 msgid "Prev"
 msgstr "Poprzednia"
 
-#: templates/lang.js:168 templates/lang.js.c:189
+#: geonode/templates/lang.js:168 geonode/templates/lang.js:189
 msgid "Next"
 msgstr "Następny"
 
-#: templates/lang.js:169 templates/lang.js.c:190
+#: geonode/templates/lang.js:169 geonode/templates/lang.js:190
 msgid "of"
 msgstr "z"
 
-#: templates/lang.js:170 templates/lang.js.c:191
+#: geonode/templates/lang.js:170 geonode/templates/lang.js:191
 msgid "Your search did not match any items."
 msgstr "Wyszukiwanie nie dało żadnych przedmiotów."
 
-#: templates/lang.js:171
+#: geonode/templates/lang.js:171
 msgid "Search Maps"
 msgstr "Szukaj Mapy"
 
-#: templates/lang.js:172 templates/lang.js.c:192
+#: geonode/templates/lang.js:172 geonode/templates/lang.js:192
 msgid "Search"
 msgstr "Poszukiwanie"
 
-#: templates/lang.js:173 templates/lang.js.c:193
+#: geonode/templates/lang.js:173 geonode/templates/lang.js:193
 msgid "Showing"
 msgstr "Pokazywanie"
 
-#: templates/lang.js:174
+#: geonode/templates/lang.js:174
 msgid "Loading"
 msgstr "Ładowanie"
 
-#: templates/lang.js:175 templates/lang.js.c:195
+#: geonode/templates/lang.js:175 geonode/templates/lang.js:195
 msgid "permalink"
 msgstr "permalink"
 
-#: templates/lang.js:182
+#: geonode/templates/lang.js:182
 msgid "Select"
 msgstr "Wybierać"
 
-#: templates/lang.js:185
+#: geonode/templates/lang.js:185
 msgid "Select:"
 msgstr "Wybierz:"
 
-#: templates/lang.js:186
+#: geonode/templates/lang.js:186
 msgid "All"
 msgstr "Wszystko"
 
-#: templates/lang.js:187
+#: geonode/templates/lang.js:187
 msgid "None"
 msgstr "Żaden"
 
-#: templates/lang.js:194
+#: geonode/templates/lang.js:194
 msgid "Loading..."
 msgstr "Ładowanie ..."
 
-#: templates/lang.js:196
+#: geonode/templates/lang.js:196
 msgid "You do not have permission to view this data"
 msgstr "Nie masz uprawnień, aby zobaczyć te dane"
 
-#: templates/lang.js:197
+#: geonode/templates/lang.js:197
 msgid "This data is stored on a remote server"
 msgstr "Dane te są przechowywane w zdalnym serwerze"
 
-#: templates/lang.js:203
+#: geonode/templates/lang.js:203
 msgid "No abstract is provided for this layer."
 msgstr "Nie abstrakcyjne jest dla tej warstwy."
 
-#: templates/lang.js:207
+#: geonode/templates/lang.js:207
 msgid "No download URLs are definied for this layer."
 msgstr "Brak pobieranie adresy są przepisami określonymi dla tej warstwy."
 
-#: templates/lang.js:217
+#: geonode/templates/lang.js:217
 msgid "Selected Layers"
 msgstr "Wybrane warstwy"
 
-#: templates/lang.js:218
+#: geonode/templates/lang.js:218
 msgid "No Layers Selected"
 msgstr "Brak Warstwy Wybrany"
 
-#: templates/lang.js:220
+#: geonode/templates/lang.js:220
 msgid "Clear Selected"
 msgstr "Wyczyść Zaznaczone"
 
-#: templates/lang.js:221
+#: geonode/templates/lang.js:221
 msgid "Clear All"
 msgstr "Wyczyść wszystko"
 
-#: templates/lang.js:227
+#: geonode/templates/lang.js:227
 msgid "Operation Failed"
 msgstr "Operacja nie powiodła się"
 
-#: templates/lang.js:228
+#: geonode/templates/lang.js:228
 msgid "No layers are currently selected."
 msgstr "Brak warstwy są aktualnie wybrany."
 
-#: templates/lang.js:235
+#: geonode/templates/lang.js:235
 msgid "Downloading..."
 msgstr "Pobieranie ..."
 
-#: templates/lang.js:237
+#: geonode/templates/lang.js:237
 msgid "Please wait"
 msgstr "Proszę czekać"
+
+#~ msgid "Available %s"
+#~ msgstr "Available %s"
+
+#~ msgid ""
+#~ "This is the list of available %s. You may choose some by selecting them "
+#~ "in the box below and then clicking the \"Choose\" arrow between the two "
+#~ "boxes."
+#~ msgstr ""
+#~ "This is the list of available %s. You may choose some by selecting them "
+#~ "in the box below and then clicking the \"Choose\" arrow between the two "
+#~ "boxes."
+
+#~ msgid "Type into this box to filter down the list of available %s."
+#~ msgstr "Type into this box to filter down the list of available %s."
+
+#~ msgid "Filter"
+#~ msgstr "Filter"
+
+#~ msgid "Choose all"
+#~ msgstr "Choose all"
+
+#~ msgid "Click to choose all %s at once."
+#~ msgstr "Click to choose all %s at once."
+
+#~ msgid "Choose"
+#~ msgstr "Choose"
+
+#~ msgid "Chosen %s"
+#~ msgstr "Chosen %s"
+
+#~ msgid ""
+#~ "This is the list of chosen %s. You may remove some by selecting them in "
+#~ "the box below and then clicking the \"Remove\" arrow between the two "
+#~ "boxes."
+#~ msgstr ""
+#~ "This is the list of chosen %s. You may remove some by selecting them in "
+#~ "the box below and then clicking the \"Remove\" arrow between the two "
+#~ "boxes."
+
+#~ msgid "Remove all"
+#~ msgstr "Remove all"
+
+#~ msgid "Click to remove all chosen %s at once."
+#~ msgstr "Click to remove all chosen %s at once."
+
+#~ msgid "%(sel)s of %(cnt)s selected"
+#~ msgid_plural "%(sel)s of %(cnt)s selected"
+#~ msgstr[0] "94d7ef36d54e81afde607d8fd121772b_pl_0"
+#~ msgstr[1] "94d7ef36d54e81afde607d8fd121772b_pl_1"
+#~ msgstr[2] "94d7ef36d54e81afde607d8fd121772b_pl_2"
+
+#~ msgid ""
+#~ "You have unsaved changes on individual editable fields. If you run an "
+#~ "action, your unsaved changes will be lost."
+#~ msgstr ""
+#~ "You have unsaved changes on individual editable fields. If you run an "
+#~ "action, your unsaved changes will be lost."
+
+#~ msgid ""
+#~ "You have selected an action, but you haven't saved your changes to "
+#~ "individual fields yet. Please click OK to save. You'll need to re-run the "
+#~ "action."
+#~ msgstr ""
+#~ "You have selected an action, but you haven't saved your changes to "
+#~ "individual fields yet. Please click OK to save. You'll need to re-run the "
+#~ "action."
+
+#~ msgid ""
+#~ "You have selected an action, and you haven't made any changes on "
+#~ "individual fields. You're probably looking for the Go button rather than "
+#~ "the Save button."
+#~ msgstr ""
+#~ "You have selected an action, and you haven't made any changes on "
+#~ "individual fields. You're probably looking for the Go button rather than "
+#~ "the Save button."
+
+#~ msgid ""
+#~ "January February March April May June July August September October "
+#~ "November December"
+#~ msgstr ""
+#~ "January February March April May June July August September October "
+#~ "November December"
+
+#~ msgid "S M T W T F S"
+#~ msgstr "S M T W T F S"
+
+#~ msgid "Show"
+#~ msgstr "Show"
+
+#~ msgid "Hide"
+#~ msgstr "Hide"
+
+#~ msgid "Now"
+#~ msgstr "Now"
+
+#~ msgid "Clock"
+#~ msgstr "Clock"
+
+#~ msgid "Choose a time"
+#~ msgstr "Choose a time"
+
+#~ msgid "Midnight"
+#~ msgstr "Midnight"
+
+#~ msgid "6 a.m."
+#~ msgstr "6 a.m."
+
+#~ msgid "Noon"
+#~ msgstr "Noon"
+
+#~ msgid "Today"
+#~ msgstr "Today"
+
+#~ msgid "Calendar"
+#~ msgstr "Calendar"
+
+#~ msgid "Yesterday"
+#~ msgstr "Yesterday"
+
+#~ msgid "Tomorrow"
+#~ msgstr "Tomorrow"
+
+#~ msgid "Add user..."
+#~ msgstr "Add user..."
+
+#~ msgid "Who can view and download this data?"
+#~ msgstr "Who can view and download this data?"
+
+#~ msgid "Anyone"
+#~ msgstr "Anyone"
+
+#~ msgid "Any registered user"
+#~ msgstr "Any registered user"
+
+#~ msgid "Only users who can edit"
+#~ msgstr "Only users who can edit"
+
+#~ msgid "Who can edit this data?"
+#~ msgstr "Who can edit this data?"
+
+#~ msgid "Only the following users or groups:"
+#~ msgstr "Only the following users or groups:"
+
+#~ msgid "Who can manage and edit this data?"
+#~ msgstr "Who can manage and edit this data?"
+
+#~ msgid "GeoTiff File"
+#~ msgstr "GeoTiff File"
+
+#~ msgid "Comma Separated File"
+#~ msgstr "Comma Separated File"
+
+#~ msgid "Zip Archives"
+#~ msgstr "Zip Archives"
 
 #~ msgid "You are uploading an incomplete set of files."
 #~ msgstr "You are uploading an incomplete set of files."

@@ -14,8 +14,12 @@ install:
   - sudo apt-get -qq -y update
   - sudo apt-get install -y libgdal1h python-gdal
   - sudo apt-get install -y python-virtualenv python-imaging python-lxml python-pyproj python-shapely python-nose python-httplib2 python-httplib2 gettext
-  - sudo apt-get install -y --force-yes openjdk-6-jdk ant maven2 libjai-imageio-core-java --no-install-recommends
-  - pip install -e . --use-mirrors
+  - sudo add-apt-repository -y ppa:webupd8team/java
+  - sudo apt-get update
+  - sudo apt-get install -y --force-yes oracle-java8-installer ant maven2 libjai-imageio-core-java --no-install-recommends
+  - sudo update-java-alternatives --set java-8-oracle
+  - pip install -r requirements.txt --use-mirrors
+  - pip install -e . --use-mirrors --no-deps
 
 before_script:
   - paver setup

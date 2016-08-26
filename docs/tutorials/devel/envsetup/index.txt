@@ -1,4 +1,4 @@
-.. _paver:
+.. _paver.setup:
 
 =====================
 Pavement.py and Paver

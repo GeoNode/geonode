@@ -327,6 +327,7 @@ def delete_from_postgis(resource_name):
     import psycopg2
     db = ogc_server_settings.datastore_db
     conn = None
+    port = str(db['PORT'])
     try:
         conn = psycopg2.connect(
             "dbname='" +
@@ -336,7 +337,7 @@ def delete_from_postgis(resource_name):
             "'  password='" +
             db['PASSWORD'] +
             "' port=" +
-            db['PORT'] +
+            port +
             " host='" +
             db['HOST'] +
             "'")
@@ -987,7 +988,8 @@ def _create_db_featurestore(name, data, overwrite=False, charset="UTF-8", worksp
          'min connections': '1',
          'fetch size': '1000',
          'host': db['HOST'],
-         'port': db['PORT'],
+         'port': db['PORT'] if isinstance(
+             db['PORT'], basestring) else str(db['PORT']) or '5432',
          'database': db['NAME'],
          'user': db['USER'],
          'passwd': db['PASSWORD'],
@@ -1207,17 +1209,28 @@ def geoserver_upload(
     else:
         sld = get_sld_for(publishing)
 
+    style = None
     if sld is not None:
         try:
             cat.create_style(name, sld)
+            style = cat.get_style(name)
         except geoserver.catalog.ConflictingDataError as e:
             msg = ('There was already a style named %s in GeoServer, '
-                   'cannot overwrite: "%s"' % (name, str(e)))
+                   'try to use: "%s"' % (name + "_layer", str(e)))
             logger.warn(msg)
             e.args = (msg,)
+            try:
+                cat.create_style(name + '_layer', sld)
+                style = cat.get_style(name + "_layer")
+            except geoserver.catalog.ConflictingDataError as e:
+                style = cat.get_style('point')
+                msg = ('There was already a style named %s in GeoServer, '
+                       'cannot overwrite: "%s"' % (name, str(e)))
+                logger.error(msg)
+                e.args = (msg,)
 
         # FIXME: Should we use the fully qualified typename?
-        publishing.default_style = cat.get_style(name)
+        publishing.default_style = style
         cat.save(publishing)
 
     # Step 10. Create the Django record for the layer
@@ -1489,6 +1502,27 @@ def wps_execute_layer_attribute_statistics(layer_name, field):
     #     exml = etree.fromstring(response)
 
 
+def _invalidate_geowebcache_layer(layer_name, url=None):
+    http = httplib2.Http()
+    username, password = ogc_server_settings.credentials
+    http.add_credentials(username, password)
+    method = "POST"
+    headers = {
+        "Content-Type": "text/xml"
+    }
+    body = """
+        <truncateLayer><layerName>{0}</layerName></truncateLayer>
+        """.strip().format(layer_name)
+    if not url:
+        url = '%sgwc/rest/masstruncate' % ogc_server_settings.LOCATION
+    response, _ = http.request(url, method, body=body, headers=headers)
+    if response.status != 200:
+        line = "Error {0} invalidating GeoWebCache at {1}".format(
+            response.status, url
+        )
+        logger.error(line)
+
+
 def style_update(request, url):
     """
     Sync style stuff from GS to GN.
@@ -1524,21 +1558,25 @@ def style_update(request, url):
         if request.method == 'POST':
             style = Style(name=style_name, sld_body=sld_body, sld_url=url)
             style.save()
-            layer = Layer.objects.all().filter(typename=layer_name)[0]
-            style.LayerStyles.add(layer)
+            layer = Layer.objects.get(typename=layer_name)
+            style.layer_styles.add(layer)
             style.save()
-        if request.method == 'PUT':  # update style in GN
-            style = Style.objects.all().filter(name=style_name)[0]
+        elif request.method == 'PUT':  # update style in GN
+            style = Style.objects.get(name=style_name)
             style.sld_body = sld_body
             style.sld_url = url
             if len(elm_user_style_title.text) > 0:
                 style.sld_title = elm_user_style_title.text
             style.save()
-            for layer in style.LayerStyles.all():
+            for layer in style.layer_styles.all():
                 layer.save()
-    if request.method == 'DELETE':  # delete style from GN
+
+        # Invalidate GeoWebCache so it doesn't retain old style in tiles
+        _invalidate_geowebcache_layer(layer_name)
+
+    elif request.method == 'DELETE':  # delete style from GN
         style_name = os.path.basename(request.path)
-        style = Style.objects.all().filter(name=style_name)[0]
+        style = Style.objects.get(name=style_name)
         style.delete()
 
 

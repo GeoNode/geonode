@@ -55,6 +55,7 @@ dev_config = None
 with open("dev_config.yml", 'r') as f:
     dev_config = yaml.load(f)
 
+
 def grab(src, dest, name):
     download = True
     if not dest.exists():
@@ -73,6 +74,7 @@ def grab(src, dest, name):
                 shutil.copyfile(str(src2), str(dest))
         else:
             urllib.urlretrieve(str(src), str(dest))
+
 
 @task
 @cmdopts([
@@ -166,11 +168,13 @@ def win_install_deps(options):
         "Nose": dev_config['WINDOWS']['nose'],
         # the wheel 1.9.4 installs but pycsw wants 1.9.3, which fails to compile
         # when pycsw bumps their pyproj to 1.9.4 this can be removed.
-        "PyProj": dev_config['WINDOWS']['pyproj']
+        "PyProj": dev_config['WINDOWS']['pyproj'],
+        "lXML": dev_config['WINDOWS']['lxml']
     }
     failed = False
     for package, url in win_packages.iteritems():
         tempfile = download_dir / os.path.basename(url)
+        print "Installing file ... " + tempfile
         grab_winfiles(url, tempfile, package)
         try:
             easy_install.main([tempfile])
@@ -210,7 +214,15 @@ def sync(options):
     """
     Run the syncdb and migrate management commands to create and migrate a DB
     """
-    sh("python manage.py migrate --noinput")
+    for app in dev_config['MIGRATE_APPS']:
+        try:
+            sh("python manage.py migrate {app} --noinput".format(app=app))
+        except:
+            pass
+    try:
+        sh("python manage.py migrate --noinput")
+    except:
+        pass
     sh("python manage.py loaddata sample_admin.json")
 
 

@@ -225,14 +225,14 @@ def remove_object_permissions(instance):
         If is a layer removes the layer specific permissions then the resourcebase permissions
     """
     from guardian.models import UserObjectPermission, GroupObjectPermission
+    resource = instance.get_self_resource()
 
-    if hasattr(instance, "layer"):
-        UserObjectPermission.objects.filter(content_type=ContentType.objects.get_for_model(instance),
+    if hasattr(resource, "layer"):
+        UserObjectPermission.objects.filter(content_type=ContentType.objects.get_for_model(resource.layer),
                                             object_pk=instance.id).delete()
-        GroupObjectPermission.objects.filter(content_type=ContentType.objects.get_for_model(instance),
+        GroupObjectPermission.objects.filter(content_type=ContentType.objects.get_for_model(resource.layer),
                                              object_pk=instance.id).delete()
 
-    resource = instance.get_self_resource()
     UserObjectPermission.objects.filter(content_type=ContentType.objects.get_for_model(resource),
                                         object_pk=instance.id).delete()
     GroupObjectPermission.objects.filter(content_type=ContentType.objects.get_for_model(resource),

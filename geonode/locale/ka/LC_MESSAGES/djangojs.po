@@ -1,0 +1,831 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+#
+# Translators:
+# Translators:
+# Translators:
+# Translators:
+# Translators:
+# Translators:
+# Translators:
+# Translators:
+# Translators:
+# Translators:
+# Translators:
+# Translators:
+# Translators:
+# Translators:
+# Translators:
+# Translators:
+# Translators:
+# akaki <ratiani1234@yahoo.com>, 2016
+msgid ""
+msgstr ""
+"Project-Id-Version: GeoNode\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2016-08-25 02:28-0500\n"
+"PO-Revision-Date: 2016-08-23 11:58+0000\n"
+"Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
+"Language-Team: Georgian (http://www.transifex.com/geonode/geonode/language/"
+"ka/)\n"
+"Language: ka\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#: geonode/static/geonode/js/search/search.js:373
+msgid "Enter your text here ..."
+msgstr "შეიყვანეთ თქვენი ტექსტი ..."
+
+#: geonode/static/geonode/js/search/search.js:414
+msgid "Enter your region here ..."
+msgstr "შეიყვანეთ თქვენი რეგიონი..."
+
+#: geonode/static/geonode/js/upload/FileType.js:33
+#, javascript-format
+msgid "Missing a %s file, which is required"
+msgstr ""
+
+#: geonode/static/geonode/js/upload/FileTypes.js:7
+msgid "ESRI Shapefile"
+msgstr ""
+
+#: geonode/static/geonode/js/upload/FileTypes.js:13
+#: geonode/static/geonode/js/upload/FileTypes.js:18
+msgid "GeoTIFF"
+msgstr ""
+
+#: geonode/static/geonode/js/upload/FileTypes.js:24
+msgid "Comma Separated Value"
+msgstr ""
+
+#: geonode/static/geonode/js/upload/FileTypes.js:29
+msgid "Google Earth KML"
+msgstr ""
+
+#: geonode/static/geonode/js/upload/FileTypes.js:34
+msgid "GeoJSON"
+msgstr ""
+
+#: geonode/static/geonode/js/upload/FileTypes.js:39
+msgid "Zip Archive"
+msgstr ""
+
+#: geonode/static/geonode/js/upload/FileTypes.js:45
+msgid "ERDAS Imagine"
+msgstr ""
+
+#: geonode/static/geonode/js/upload/FileTypes.js:50
+#: geonode/static/geonode/js/upload/FileTypes.js:55
+msgid "National Imagery Transmission Format"
+msgstr ""
+
+#: geonode/static/geonode/js/upload/FileTypes.js:61
+msgid "Controlled Image Base-1 Meter"
+msgstr ""
+
+#: geonode/static/geonode/js/upload/FileTypes.js:68
+msgid "Controlled Image Base-5 Meter"
+msgstr ""
+
+#: geonode/static/geonode/js/upload/FileTypes.js:75
+msgid "Controlled Image Base-10 Meter"
+msgstr ""
+
+#: geonode/static/geonode/js/upload/FileTypes.js:82
+msgid "CADRG-Global Navigation Chart"
+msgstr ""
+
+#: geonode/static/geonode/js/upload/FileTypes.js:89
+msgid "CADRG-Jet Navigation Chart"
+msgstr ""
+
+#: geonode/static/geonode/js/upload/FileTypes.js:96
+msgid "CADRG-Operational Navigation Chart"
+msgstr ""
+
+#: geonode/static/geonode/js/upload/FileTypes.js:103
+msgid "CADRG-Tactical Pilotage Chart"
+msgstr ""
+
+#: geonode/static/geonode/js/upload/FileTypes.js:110
+msgid "CADRG-Joint Operations Graphic"
+msgstr ""
+
+#: geonode/static/geonode/js/upload/FileTypes.js:117
+msgid "CADRG-Topographic Line Map 100K"
+msgstr ""
+
+#: geonode/static/geonode/js/upload/FileTypes.js:124
+msgid "CADRG-Topographic Line Map 50K"
+msgstr ""
+
+#: geonode/static/geonode/js/upload/FileTypes.js:131
+msgid "JPEG2000"
+msgstr ""
+
+#: geonode/static/geonode/js/upload/FileTypes.js:136
+msgid "MrSID-Multi-resolution Seamless Image Database"
+msgstr ""
+
+#: geonode/static/geonode/js/upload/LayerInfo.js:331
+msgid "Layer Info"
+msgstr "ფენის ინფორმაცია"
+
+#: geonode/static/geonode/js/upload/LayerInfo.js:332
+msgid "Edit Metadata"
+msgstr "მეტამონაცემების რედაქტირება"
+
+#: geonode/static/geonode/js/upload/LayerInfo.js:333
+msgid "Manage Styles"
+msgstr "სტილების მართვა"
+
+#: geonode/static/geonode/js/upload/LayerInfo.js:336
+msgid "The column %1 was renamed to %2 <br/>"
+msgstr ""
+
+#: geonode/static/geonode/js/upload/LayerInfo.js:342
+msgid "Your layer was successfully uploaded"
+msgstr "თქვენი ფენა წარმატებით აიტვირთა"
+
+#: geonode/static/geonode/js/upload/LayerInfo.js:371
+msgid "Performing Final GeoServer Config Step"
+msgstr ""
+
+#: geonode/static/geonode/js/upload/LayerInfo.js:386
+#: geonode/static/geonode/js/upload/LayerInfo.js:412
+msgid "You need to specify more information in order to complete your upload"
+msgstr "მიუთითეთ მეტი ინფორმაცია, რათა დაამთავროთ ატვირთვა"
+
+#: geonode/static/geonode/js/upload/LayerInfo.js:404
+msgid "You need to specify more information in order to complete your upload."
+msgstr "მიუთითეთ მეტი ინფორმაცია, რათა დაამთავროთ ატვირთვა."
+
+#: geonode/static/geonode/js/upload/LayerInfo.js:404
+msgid "You can continue configuring your layer."
+msgstr "თქვენ შეგიძლიათ გააგრძელოთ ფენის კონფიგურაცია."
+
+#: geonode/static/geonode/js/upload/LayerInfo.js:422
+#: geonode/static/geonode/js/upload/LayerInfo.js:509
+msgid "Unexpected Error"
+msgstr "მოულოდნელი შეცდომა"
+
+#: geonode/static/geonode/js/upload/LayerInfo.js:438
+msgid "Performing GeoServer Config Step"
+msgstr ""
+
+#: geonode/static/geonode/js/upload/LayerInfo.js:516
+msgid "Layer files uploaded, configuring in GeoServer"
+msgstr ""
+
+#: geonode/static/geonode/js/upload/LayerInfo.js:532
+msgid "Select or create a Geogig repository."
+msgstr ""
+
+#: geonode/static/geonode/js/upload/LayerInfo.js:695
+msgid "Remove"
+msgstr "წაშლა"
+
+#: geonode/static/geonode/js/upload/upload.js:125
+#, javascript-format
+msgid "The file %s is an unsupported file type, please select another file."
+msgstr ""
+
+#: geonode/static/geonode/js/upload/upload.js:285
+msgid ""
+"You are trying to upload an incomplete set of files or not all mandatory "
+"options have been validated.\n"
+"\n"
+"Please check for errors in the form!"
+msgstr ""
+
+#: geonode/static/lib/js/assets.min.js:2
+msgid "<iframe frameborder='0' width='0' height='0'/>"
+msgstr ""
+
+#: geonode/static/lib/js/assets.min.js:4
+msgid "<script>"
+msgstr ""
+
+#: geonode/static/lib/js/assets.min.js:4
+msgid "<div>"
+msgstr ""
+
+#: geonode/templates/lang.js:9 geonode/templates/lang.js:236
+msgid "Cancel"
+msgstr "გაუქმება"
+
+#: geonode/templates/lang.js:10
+msgid "Save as Copy"
+msgstr ""
+
+#: geonode/templates/lang.js:11
+msgid "About this Map"
+msgstr "ამ რუკის შესახებ"
+
+#: geonode/templates/lang.js:12 geonode/templates/lang.js:96
+#: geonode/templates/lang.js:165
+msgid "Abstract"
+msgstr "ანოტაცია"
+
+#: geonode/templates/lang.js:13
+msgid "Save"
+msgstr "შენახვა"
+
+#: geonode/templates/lang.js:14 geonode/templates/lang.js:100
+#: geonode/templates/lang.js:109 geonode/templates/lang.js:162
+#: geonode/templates/lang.js:184 geonode/templates/lang.js:219
+msgid "Title"
+msgstr "სათაური"
+
+#: geonode/templates/lang.js:20
+msgid "Connection Error"
+msgstr ""
+
+#: geonode/templates/lang.js:21
+msgid "The server returned an error"
+msgstr ""
+
+#: geonode/templates/lang.js:22
+msgid "Details..."
+msgstr "დაწვრილებით ..."
+
+#: geonode/templates/lang.js:28 geonode/templates/lang.js:31
+msgid "Add Layers"
+msgstr "ფენის დამატება"
+
+#: geonode/templates/lang.js:29
+msgid "Area"
+msgstr ""
+
+#: geonode/templates/lang.js:30
+msgid "Background"
+msgstr ""
+
+#: geonode/templates/lang.js:32
+msgid "Done"
+msgstr "შესრულებულია"
+
+#: geonode/templates/lang.js:33
+msgid "Available Layers"
+msgstr "ხელმისაწვდომი ფენები"
+
+#: geonode/templates/lang.js:35 geonode/templates/lang.js:121
+msgid "Height"
+msgstr "სიმაღლე"
+
+#: geonode/templates/lang.js:36
+msgid "Get Feature Info"
+msgstr ""
+
+#: geonode/templates/lang.js:37 geonode/templates/lang.js:122
+msgid "Large"
+msgstr "დიდი"
+
+#: geonode/templates/lang.js:38
+msgid "or add a new server."
+msgstr ""
+
+#: geonode/templates/lang.js:39
+msgid "Map Layers"
+msgstr "რუკის ფენა"
+
+#: geonode/templates/lang.js:40
+msgid "View available data from:"
+msgstr ""
+
+#: geonode/templates/lang.js:41
+msgid "Data"
+msgstr "მონაცემი"
+
+#: geonode/templates/lang.js:42
+msgid "Layers"
+msgstr "ფენები"
+
+#: geonode/templates/lang.js:43
+msgid "Legend"
+msgstr "ლეგენდა"
+
+#: geonode/templates/lang.js:44
+msgid "Length"
+msgstr "სიგრძე"
+
+#: geonode/templates/lang.js:45
+msgid "Loading Map..."
+msgstr "რუკა იტვირთება ..."
+
+#: geonode/templates/lang.js:46 geonode/templates/lang.js:123
+msgid "Map Size"
+msgstr "რუკის ზომა"
+
+#: geonode/templates/lang.js:47
+msgid "Measure"
+msgstr "გაზომვა"
+
+#: geonode/templates/lang.js:48 geonode/templates/lang.js:97
+#: geonode/templates/lang.js:163
+msgid "Contact"
+msgstr "კონტაქტი"
+
+#: geonode/templates/lang.js:49 geonode/templates/lang.js:55
+msgid "Permalink"
+msgstr ""
+
+#: geonode/templates/lang.js:50 geonode/templates/lang.js:124
+msgid "Mini"
+msgstr ""
+
+#: geonode/templates/lang.js:51
+msgid "Pan Map"
+msgstr ""
+
+#: geonode/templates/lang.js:52
+msgid "Zoom to Next Extent"
+msgstr ""
+
+#: geonode/templates/lang.js:53
+msgid "Zoom to Previous Extent"
+msgstr ""
+
+#: geonode/templates/lang.js:54
+msgid "This map has not yet been saved."
+msgstr "რუკა ჯერ არ შენახულა"
+
+#: geonode/templates/lang.js:56 geonode/templates/lang.js:125
+msgid "Premium"
+msgstr ""
+
+#: geonode/templates/lang.js:57
+msgid "Print Map"
+msgstr "რუკის დაბეჭდვა"
+
+#: geonode/templates/lang.js:58
+msgid "Print Preview"
+msgstr ""
+
+#: geonode/templates/lang.js:59
+msgid "Properties"
+msgstr ""
+
+#: geonode/templates/lang.js:60 geonode/templates/lang.js:126
+msgid "Publish Map"
+msgstr "რუკის გამოქვეყნება "
+
+#: geonode/templates/lang.js:61 geonode/templates/lang.js:62
+msgid "Remove Layer"
+msgstr "ფენის წაშლა"
+
+#: geonode/templates/lang.js:63
+msgid "Sorry, your map could not be saved."
+msgstr "თქვენი რუკის შენახვა შეუძლებელია."
+
+#: geonode/templates/lang.js:64
+msgid "Error While Saving"
+msgstr "შენახვის დროს შეიქმნა რაღაც პრობლემა"
+
+#: geonode/templates/lang.js:65
+msgid "Save Map"
+msgstr "რუკის შენახვა"
+
+#: geonode/templates/lang.js:66
+msgid "You must be logged in to save this map."
+msgstr "თქვენ უნდა იყოთ ჩატვირთული, რომ შეინახოთ რუკა"
+
+#: geonode/templates/lang.js:67 geonode/templates/lang.js:128
+msgid "Small"
+msgstr ""
+
+#: geonode/templates/lang.js:68
+msgid ""
+"Error contacting server.\n"
+" Please check the url and try again."
+msgstr ""
+
+#: geonode/templates/lang.js:69
+msgid "Layer Properties"
+msgstr "ფენის მონაცემები"
+
+#: geonode/templates/lang.js:70
+msgid "Change layer format and style"
+msgstr "ფენის ფორმატის და სტილის შეცვლა"
+
+#: geonode/templates/lang.js:71
+msgid "Edit Styles"
+msgstr "ფენის რედაქტირება"
+
+#: geonode/templates/lang.js:72
+msgid "Edit layer styles"
+msgstr "ფენის სტილის რედაქტირება"
+
+#: geonode/templates/lang.js:73
+msgid "Switch to Google Earth 3D Viewer"
+msgstr "Google Earth 3D-ში გადასვლა"
+
+#: geonode/templates/lang.js:74
+msgid ""
+"The map that you are trying to load does not exist.  Creating a new map "
+"instead."
+msgstr ""
+
+#: geonode/templates/lang.js:75
+msgid "Unknown Map"
+msgstr ""
+
+#: geonode/templates/lang.js:76 geonode/templates/lang.js:129
+msgid "Width"
+msgstr "სიგანე"
+
+#: geonode/templates/lang.js:77
+msgid "Zoom In"
+msgstr ""
+
+#: geonode/templates/lang.js:78
+msgid "Zoom Out"
+msgstr ""
+
+#: geonode/templates/lang.js:79
+msgid "Zoom level"
+msgstr ""
+
+#: geonode/templates/lang.js:80
+msgid "Zoom Level"
+msgstr ""
+
+#: geonode/templates/lang.js:81
+msgid "Zoom to Layer Extent"
+msgstr ""
+
+#: geonode/templates/lang.js:82
+msgid "Zoom to Visible Extent"
+msgstr ""
+
+#: geonode/templates/lang.js:88
+msgid "Zoom Level {zoom}"
+msgstr ""
+
+#: geonode/templates/lang.js:94
+msgid "Create Map"
+msgstr "რუკის შექმნა"
+
+#: geonode/templates/lang.js:95
+msgid "Export Map"
+msgstr "რუკის გამოქვეყნება"
+
+#: geonode/templates/lang.js:98
+msgid "Map"
+msgstr "რუკა"
+
+#: geonode/templates/lang.js:99 geonode/templates/lang.js:166
+msgid "View this Map"
+msgstr "რუკის ნახვა"
+
+#: geonode/templates/lang.js:101
+msgid "Open Map"
+msgstr "რუკის გახსნა"
+
+#: geonode/templates/lang.js:107 geonode/templates/lang.js:183
+msgid "Name"
+msgstr "სახელი"
+
+#: geonode/templates/lang.js:108
+msgid "Queryable"
+msgstr ""
+
+#: geonode/templates/lang.js:115
+msgid "No background"
+msgstr ""
+
+#: geonode/templates/lang.js:127
+msgid ""
+"Your map is ready to be published to the web!  Simply copy the following "
+"HTML to embed the map in your website:"
+msgstr ""
+
+#: geonode/templates/lang.js:136 geonode/templates/lang.js:202
+msgid "Abstract:"
+msgstr "ანოტაცია:"
+
+#: geonode/templates/lang.js:137 geonode/templates/lang.js:204
+msgid "No attribution information is provided for this layer."
+msgstr ""
+
+#: geonode/templates/lang.js:138 geonode/templates/lang.js:205
+msgid "Provided by:"
+msgstr ""
+
+#: geonode/templates/lang.js:139 geonode/templates/lang.js:206
+msgid "Download:"
+msgstr "ჩამოტვირთვა:"
+
+#: geonode/templates/lang.js:140 geonode/templates/lang.js:208
+msgid "No keywords are listed for this layer."
+msgstr ""
+
+#: geonode/templates/lang.js:141 geonode/templates/lang.js:209
+msgid "Keywords:"
+msgstr "საკვანძო სიტყვა:"
+
+#: geonode/templates/lang.js:142 geonode/templates/lang.js:210
+msgid "No metadata URLs are defined for this layer."
+msgstr ""
+
+#: geonode/templates/lang.js:143 geonode/templates/lang.js:211
+msgid "Metadata Links:"
+msgstr ""
+
+#: geonode/templates/lang.js:149
+msgid "Paper size:"
+msgstr ""
+
+#: geonode/templates/lang.js:150
+msgid "Resolution:"
+msgstr "გაფართოება:"
+
+#: geonode/templates/lang.js:151
+msgid "Print"
+msgstr "დაბეჭდვა"
+
+#: geonode/templates/lang.js:152
+msgid "Enter map title here."
+msgstr "აქ შეიყვანეთ რუკის სათაური."
+
+#: geonode/templates/lang.js:153
+msgid "Include legend?"
+msgstr ""
+
+#: geonode/templates/lang.js:154
+msgid "Enter comments here."
+msgstr "აქ დაწერეთ კომენტარი."
+
+#: geonode/templates/lang.js:155
+msgid "Creating PDF..."
+msgstr ""
+
+#: geonode/templates/lang.js:164
+msgid "Last Modified"
+msgstr "საბოლოო მოდიფიკაცია"
+
+#: geonode/templates/lang.js:167 geonode/templates/lang.js:188
+msgid "Prev"
+msgstr "წინა"
+
+#: geonode/templates/lang.js:168 geonode/templates/lang.js:189
+msgid "Next"
+msgstr "შემდეგი"
+
+#: geonode/templates/lang.js:169 geonode/templates/lang.js:190
+msgid "of"
+msgstr ""
+
+#: geonode/templates/lang.js:170 geonode/templates/lang.js:191
+msgid "Your search did not match any items."
+msgstr "თქვენი ძებნა არ დაემთხვა არცერთ საკითხი."
+
+#: geonode/templates/lang.js:171
+msgid "Search Maps"
+msgstr "რუკების ძიება"
+
+#: geonode/templates/lang.js:172 geonode/templates/lang.js:192
+msgid "Search"
+msgstr "ძიება"
+
+#: geonode/templates/lang.js:173 geonode/templates/lang.js:193
+msgid "Showing"
+msgstr "ჩვენება"
+
+#: geonode/templates/lang.js:174
+msgid "Loading"
+msgstr "იტვირთება"
+
+#: geonode/templates/lang.js:175 geonode/templates/lang.js:195
+msgid "permalink"
+msgstr ""
+
+#: geonode/templates/lang.js:182
+msgid "Select"
+msgstr "არჩევა"
+
+#: geonode/templates/lang.js:185
+msgid "Select:"
+msgstr "არჩევა:"
+
+#: geonode/templates/lang.js:186
+msgid "All"
+msgstr "ყველა"
+
+#: geonode/templates/lang.js:187
+msgid "None"
+msgstr "არცერთი"
+
+#: geonode/templates/lang.js:194
+msgid "Loading..."
+msgstr "იტვირთება..."
+
+#: geonode/templates/lang.js:196
+msgid "You do not have permission to view this data"
+msgstr "თქვენ არ გაქვთ ამ მონაცემის ნახვის უფლება"
+
+#: geonode/templates/lang.js:197
+msgid "This data is stored on a remote server"
+msgstr "ეს ინფორმაცია ინახება სერვერზე"
+
+#: geonode/templates/lang.js:203
+msgid "No abstract is provided for this layer."
+msgstr ""
+
+#: geonode/templates/lang.js:207
+msgid "No download URLs are definied for this layer."
+msgstr ""
+
+#: geonode/templates/lang.js:217
+msgid "Selected Layers"
+msgstr "ფენების არჩევა"
+
+#: geonode/templates/lang.js:218
+msgid "No Layers Selected"
+msgstr "ფენები არ არის არჩეული"
+
+#: geonode/templates/lang.js:220
+msgid "Clear Selected"
+msgstr "მონიშნულების წაშლა"
+
+#: geonode/templates/lang.js:221
+msgid "Clear All"
+msgstr "ყველაფრის წაშლა"
+
+#: geonode/templates/lang.js:227
+msgid "Operation Failed"
+msgstr "ოპერაცია ვერ შედგა"
+
+#: geonode/templates/lang.js:228
+msgid "No layers are currently selected."
+msgstr "ამჟამად ფენები არ არის არჩეული"
+
+#: geonode/templates/lang.js:235
+msgid "Downloading..."
+msgstr "იტვირთება..."
+
+#: geonode/templates/lang.js:237
+msgid "Please wait"
+msgstr "გთხოვთ მოიცადოთ"
+
+#~ msgid "Available %s"
+#~ msgstr "Available %s"
+
+#~ msgid ""
+#~ "This is the list of available %s. You may choose some by selecting them "
+#~ "in the box below and then clicking the \"Choose\" arrow between the two "
+#~ "boxes."
+#~ msgstr ""
+#~ "This is the list of available %s. You may choose some by selecting them "
+#~ "in the box below and then clicking the \"Choose\" arrow between the two "
+#~ "boxes."
+
+#~ msgid "Type into this box to filter down the list of available %s."
+#~ msgstr "Type into this box to filter down the list of available %s."
+
+#~ msgid "Filter"
+#~ msgstr "Filter"
+
+#~ msgid "Choose all"
+#~ msgstr "Choose all"
+
+#~ msgid "Click to choose all %s at once."
+#~ msgstr "Click to choose all %s at once."
+
+#~ msgid "Choose"
+#~ msgstr "Choose"
+
+#~ msgid "Chosen %s"
+#~ msgstr "Chosen %s"
+
+#~ msgid ""
+#~ "This is the list of chosen %s. You may remove some by selecting them in "
+#~ "the box below and then clicking the \"Remove\" arrow between the two "
+#~ "boxes."
+#~ msgstr ""
+#~ "This is the list of chosen %s. You may remove some by selecting them in "
+#~ "the box below and then clicking the \"Remove\" arrow between the two "
+#~ "boxes."
+
+#~ msgid "Remove all"
+#~ msgstr "Remove all"
+
+#~ msgid "Click to remove all chosen %s at once."
+#~ msgstr "Click to remove all chosen %s at once."
+
+#~ msgid "%(sel)s of %(cnt)s selected"
+#~ msgid_plural "%(sel)s of %(cnt)s selected"
+#~ msgstr[0] "94d7ef36d54e81afde607d8fd121772b_pl_0"
+
+#~ msgid ""
+#~ "You have unsaved changes on individual editable fields. If you run an "
+#~ "action, your unsaved changes will be lost."
+#~ msgstr ""
+#~ "You have unsaved changes on individual editable fields. If you run an "
+#~ "action, your unsaved changes will be lost."
+
+#~ msgid ""
+#~ "You have selected an action, but you haven't saved your changes to "
+#~ "individual fields yet. Please click OK to save. You'll need to re-run the "
+#~ "action."
+#~ msgstr ""
+#~ "You have selected an action, but you haven't saved your changes to "
+#~ "individual fields yet. Please click OK to save. You'll need to re-run the "
+#~ "action."
+
+#~ msgid ""
+#~ "You have selected an action, and you haven't made any changes on "
+#~ "individual fields. You're probably looking for the Go button rather than "
+#~ "the Save button."
+#~ msgstr ""
+#~ "You have selected an action, and you haven't made any changes on "
+#~ "individual fields. You're probably looking for the Go button rather than "
+#~ "the Save button."
+
+#~ msgid ""
+#~ "January February March April May June July August September October "
+#~ "November December"
+#~ msgstr ""
+#~ "January February March April May June July August September October "
+#~ "November December"
+
+#~ msgid "S M T W T F S"
+#~ msgstr "S M T W T F S"
+
+#~ msgid "Show"
+#~ msgstr "Show"
+
+#~ msgid "Hide"
+#~ msgstr "Hide"
+
+#~ msgid "Now"
+#~ msgstr "Now"
+
+#~ msgid "Clock"
+#~ msgstr "Clock"
+
+#~ msgid "Choose a time"
+#~ msgstr "Choose a time"
+
+#~ msgid "Midnight"
+#~ msgstr "Midnight"
+
+#~ msgid "6 a.m."
+#~ msgstr "6 a.m."
+
+#~ msgid "Noon"
+#~ msgstr "Noon"
+
+#~ msgid "Today"
+#~ msgstr "Today"
+
+#~ msgid "Calendar"
+#~ msgstr "Calendar"
+
+#~ msgid "Yesterday"
+#~ msgstr "Yesterday"
+
+#~ msgid "Tomorrow"
+#~ msgstr "Tomorrow"
+
+#~ msgid "Add user..."
+#~ msgstr "Add user..."
+
+#~ msgid "Who can view and download this data?"
+#~ msgstr "Who can view and download this data?"
+
+#~ msgid "Anyone"
+#~ msgstr "Anyone"
+
+#~ msgid "Any registered user"
+#~ msgstr "Any registered user"
+
+#~ msgid "Only users who can edit"
+#~ msgstr "Only users who can edit"
+
+#~ msgid "Who can edit this data?"
+#~ msgstr "Who can edit this data?"
+
+#~ msgid "Only the following users or groups:"
+#~ msgstr "Only the following users or groups:"
+
+#~ msgid "Who can manage and edit this data?"
+#~ msgstr "Who can manage and edit this data?"
+
+#~ msgid "GeoTiff File"
+#~ msgstr "GeoTiff File"
+
+#~ msgid "Comma Separated File"
+#~ msgstr "Comma Separated File"
+
+#~ msgid "Zip Archives"
+#~ msgstr "Zip Archives"
+
+#~ msgid "You are uploading an incomplete set of files."
+#~ msgstr "You are uploading an incomplete set of files."
+
+#~ msgid "No error message supplied"
+#~ msgstr "No error message supplied"

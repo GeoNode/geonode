@@ -1,0 +1,46 @@
+{% load leaflet_tags %}
+
+{% leaflet_js %}
+{% leaflet_css %}
+
+<style>
+    .leaflet-container { /* all maps */
+        height: 400px;
+    }
+</style>
+<script type="text/javascript">
+    document.addEventListener("DOMContentLoaded", function (event) {
+        var overlay_layers = {};
+        map = L.map('the_map');
+
+        var layer_control = L.control.layers().addTo(map);
+
+        // Add layers
+        {% for layer in layers %}
+            // Add tile layers
+            var tile_layer = L.tileLayer("{{ layer.ows_url }}");
+            if (tile_layer != null) {
+                if ("{{ layer.group }}" == 'background') {
+                    layer_control.addBaseLayer(tile_layer, "{{ layer.name }}");
+                } else {
+                    layer_control.addOverlay(tile_layer, "{{ layer.name }}");
+
+                }
+                if ("{{ layer.visibility }}" === "True") {
+                    map.addLayer(tile_layer);
+                }
+                overlay_layers["{{ layer.name }}"] = tile_layer;
+            }
+        {% endfor %}
+        // Set view port
+        map.setView(new L.LatLng({{ resource.center_x }}, {{ resource.center_y }}), {{ resource.zoom }});
+    });
+
+    function zoom_to_box(map, bbox) {
+        var bounds = [
+            [bbox[1], bbox[0]],
+            [bbox[3], bbox[2]]
+        ];
+        map.fitBounds(bounds);
+    }
+</script>

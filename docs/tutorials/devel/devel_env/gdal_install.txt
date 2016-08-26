@@ -33,7 +33,7 @@ In order to install GDAL (1.10.0+) in developing mode, in a virtual environment,
      $ export CPLUS_INCLUDE_PATH=/usr/include/gdal
      $ export C_INCLUDE_PATH=/usr/include/gdal
 
-     $ pip install GDAL==1.11.2 # select the right version
+     $ pip install pygdal==1.11.2.1 # select the right version
 
 #. Test that GDAL is installed in your virtual environment
 

@@ -24,10 +24,13 @@ from django.conf import settings
 import autocomplete_light
 from autocomplete_light.contrib.taggit_field import TaggitField, TaggitWidget
 
+from treebeard.admin import TreeAdmin
+from treebeard.forms import movenodeform_factory
+
 from modeltranslation.admin import TranslationAdmin
 
 from geonode.base.models import (TopicCategory, SpatialRepresentationType, Region, RestrictionCodeType,
-                                 ContactRole, Link, License)
+                                 ContactRole, Link, License, HierarchicalKeyword)
 
 
 class MediaTranslationAdmin(TranslationAdmin):
@@ -120,6 +123,10 @@ class LinkAdmin(admin.ModelAdmin):
     search_fields = ('name', 'resource__title',)
     form = autocomplete_light.modelform_factory(Link, fields='__all__')
 
+
+class HierarchicalKeywordAdmin(TreeAdmin):
+    form = movenodeform_factory(HierarchicalKeyword)
+
 admin.site.register(TopicCategory, TopicCategoryAdmin)
 admin.site.register(Region, RegionAdmin)
 admin.site.register(SpatialRepresentationType, SpatialRepresentationTypeAdmin)
@@ -127,8 +134,14 @@ admin.site.register(RestrictionCodeType, RestrictionCodeTypeAdmin)
 admin.site.register(ContactRole, ContactRoleAdmin)
 admin.site.register(Link, LinkAdmin)
 admin.site.register(License, LicenseAdmin)
+admin.site.register(HierarchicalKeyword, HierarchicalKeywordAdmin)
 
 
 class ResourceBaseAdminForm(autocomplete_light.ModelForm):
-    # keywords = TaggitField(widget=TaggitWidget('TagAutocomplete'), required=False)
-    keywords = TaggitField(widget=TaggitWidget(), required=False)
+    # We need to specify autocomplete='TagAutocomplete' or admin views like
+    # /admin/maps/map/2/ raise exceptions during form rendering.
+    # But if we specify it up front, TaggitField.__init__ throws an exception
+    # which prevents app startup. Therefore, we defer setting the widget until
+    # after that's done.
+    keywords = TaggitField(required=False)
+    keywords.widget = TaggitWidget(autocomplete='HierarchicalKeywordAutocomplete')

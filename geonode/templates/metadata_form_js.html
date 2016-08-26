@@ -1,6 +1,8 @@
 {% load staticfiles %}
 {% if DEBUG_STATIC %}
 <script src="{% static "lib/js/bootstrap-datetimepicker.min.js" %}" type="text/javascript"></script>
+<script src="{% static "lib/js/bootstrap-treeview.min.js" %}" type="text/javascript"></script>
+<script src="{% static "lib/js/bootstrap-tokenfield.js" %}" type="text/javascript"></script>
 {% endif %}
 <script type="text/javascript">
 {% autoescape off %}
@@ -46,6 +48,38 @@
         $('#layer_metadata_update :input').attr('readonly','readonly');
         {% endif %}
         $('.has-popover').popover({'trigger':'hover'});
+
+        var params = typeof FILTER_TYPE == 'undefined' ? {} : {'type': FILTER_TYPE};
+        $('#id_resource-keywords').tokenfield({
+            /*
+            autocomplete: {
+                source: ['red','blue','green','yellow','violet','brown','purple','black','white'],
+                delay: 100
+            },
+            showAutocompleteOnFocus: true
+            */
+        })
+
+        $.ajax('/h_keywords_api', {params: params}).success(function(data){
+            $('#treeview').treeview({
+                data: data,
+                levels: 1,
+                onNodeSelected: function($event, $data) {
+                    //TODO: This seems a horribly inelegant way of doing this in 12 Lines
+                    kws = $('#id_resource-keywords').tokenfield('getTokens');
+                    newToken = $data.text
+                    exists = false 
+                    for (kw in kws) {
+                        if (kws[kw]['value'].indexOf(newToken) >=0) {
+                            exists = true
+                        }
+                    }
+                    if (!exists) {
+                        $('#id_resource-keywords').tokenfield('createToken', $data.text);
+                    }
+                }
+            });
+        });
     });
 {% endautoescape %}
 </script>

@@ -70,6 +70,9 @@ urlpatterns = patterns('',
                        # ident
                        url(r'^ident.json$', 'geonode.views.ident_json', name='ident_json'),
 
+                       # h keywords
+                       url(r'^h_keywords_api$', 'geonode.views.h_keywords', name='h_keywords_api'),
+
                        # Search views
                        url(r'^search/$', TemplateView.as_view(template_name='search/search.html'), name='search'),
 
@@ -123,6 +126,11 @@ if 'geonode.geoserver' in settings.INSTALLED_APPS:
                             (r'^upload/', include('geonode.upload.urls')),
                             (r'^gs/', include('geonode.geoserver.urls')),
                             )
+if 'geonode_qgis_server' in settings.INSTALLED_APPS:
+    # QGIS Server's urls
+    urlpatterns += patterns('',
+                            (r'', include('geonode_qgis_server.urls')),
+                            )
 
 if 'notification' in settings.INSTALLED_APPS:
     urlpatterns += patterns('',
@@ -134,7 +142,7 @@ urlpatterns += geonode.proxy.urls.urlpatterns
 
 # Serve static files
 urlpatterns += staticfiles_urlpatterns()
-urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+urlpatterns += static(settings.LOCAL_MEDIA_URL, document_root=settings.MEDIA_ROOT)
 handler403 = 'geonode.views.err403'
 
 # Featured Maps Pattens

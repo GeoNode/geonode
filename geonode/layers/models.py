@@ -30,6 +30,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.conf import settings
 from django.utils.translation import ugettext_lazy as _
 from django.core.urlresolvers import reverse
+from django.core.files.storage import FileSystemStorage
 
 from geonode.base.models import ResourceBase, ResourceBaseManager, resourcebase_post_save
 from geonode.people.utils import get_valid_user
@@ -78,7 +79,7 @@ class Style(models.Model):
         return "%s" % self.name.encode('utf-8')
 
     def absolute_url(self):
-        return self.sld_url.split('geoserver/', 1)[1]
+        return self.sld_url.split(settings.OGC_SERVER['default']['LOCATION'], 1)[1]
 
 
 class LayerManager(ResourceBaseManager):
@@ -112,7 +113,7 @@ class Layer(ResourceBase):
         related_name='layer_default_style',
         null=True,
         blank=True)
-    styles = models.ManyToManyField(Style, related_name='LayerStyles')
+    styles = models.ManyToManyField(Style, related_name='layer_styles')
 
     charset = models.CharField(max_length=255, default='UTF-8')
 
@@ -287,7 +288,8 @@ class LayerFile(models.Model):
     upload_session = models.ForeignKey(UploadSession)
     name = models.CharField(max_length=255)
     base = models.BooleanField(default=False)
-    file = models.FileField(upload_to='layers', max_length=255)
+    file = models.FileField(upload_to='layers',
+                            storage=FileSystemStorage(base_url=settings.LOCAL_MEDIA_URL),  max_length=255)
 
 
 class AttributeManager(models.Manager):
@@ -500,7 +502,7 @@ def pre_delete_layer(instance, sender, **kwargs):
         object_id=instance.id).delete()
     default_style = instance.default_style
     for style in instance.styles.all():
-        if style.LayerStyles.all().count() == 1:
+        if style.layer_styles.all().count() == 1:
             if style != default_style:
                 style.delete()
 

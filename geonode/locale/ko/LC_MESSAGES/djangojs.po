@@ -16,15 +16,18 @@
 # Translators:
 # Translators:
 # Translators:
-# Minpa Lee <mapplus@gmail.com>, 2013-2015
+# Translators:
+# Translators:
+# Translators:
+# Minpa Lee <mapplus@gmail.com>, 2013-2016
 # Minpa Lee <mapplus@gmail.com>, 2013
 msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-04-14 03:50-0500\n"
-"PO-Revision-Date: 2016-04-14 08:39+0000\n"
-"Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
+"POT-Creation-Date: 2016-08-25 02:28-0500\n"
+"PO-Revision-Date: 2016-08-24 05:38+0000\n"
+"Last-Translator: Minpa Lee <mapplus@gmail.com>\n"
 "Language-Team: Korean (http://www.transifex.com/geonode/geonode/language/"
 "ko/)\n"
 "Language: ko\n"
@@ -33,190 +36,165 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 
-#: static/geonode/js/search/search.js:373
-#: static_root/geonode/js/search/search.js:374
+#: geonode/static/geonode/js/search/search.js:373
 msgid "Enter your text here ..."
 msgstr "여기에 텍스트를 입력하세요 ..."
 
-#: static/geonode/js/search/search.js:408
-#: static_root/geonode/js/search/search.js:409
+#: geonode/static/geonode/js/search/search.js:414
 msgid "Enter your region here ..."
 msgstr "여기에 지역을 입력하세요 ..."
 
-#: static/geonode/js/upload/FileType.js:33
-#: static_root/geonode/js/upload/FileType.js:33
-#, c-format
+#: geonode/static/geonode/js/upload/FileType.js:33
+#, javascript-format
 msgid "Missing a %s file, which is required"
 msgstr "필요한 %s 파일이 누락되었습니다"
 
-#: static/geonode/js/upload/FileTypes.js:7
-#: static_root/geonode/js/upload/FileTypes.js:7
+#: geonode/static/geonode/js/upload/FileTypes.js:7
 msgid "ESRI Shapefile"
 msgstr "ESRI Shape파일"
 
-#: static/geonode/js/upload/FileTypes.js:13
-#: static/geonode/js/upload/FileTypes.js:18
+#: geonode/static/geonode/js/upload/FileTypes.js:13
+#: geonode/static/geonode/js/upload/FileTypes.js:18
 msgid "GeoTIFF"
-msgstr ""
+msgstr "GeoTIFF"
 
-#: static/geonode/js/upload/FileTypes.js:24
+#: geonode/static/geonode/js/upload/FileTypes.js:24
 msgid "Comma Separated Value"
-msgstr ""
+msgstr "콤마로 분리된 값"
 
-#: static/geonode/js/upload/FileTypes.js:29
-#: static_root/geonode/js/upload/FileTypes.js:32
+#: geonode/static/geonode/js/upload/FileTypes.js:29
 msgid "Google Earth KML"
 msgstr "구글 어스 KML 파일"
 
-#: static/geonode/js/upload/FileTypes.js:34
-#: static_root/geonode/js/upload/FileTypes.js:38
+#: geonode/static/geonode/js/upload/FileTypes.js:34
 msgid "GeoJSON"
 msgstr "GeoJSON"
 
-#: static/geonode/js/upload/FileTypes.js:39
+#: geonode/static/geonode/js/upload/FileTypes.js:39
 msgid "Zip Archive"
-msgstr ""
+msgstr "Zip 압축파일"
 
-#: static/geonode/js/upload/FileTypes.js:45
+#: geonode/static/geonode/js/upload/FileTypes.js:45
 msgid "ERDAS Imagine"
-msgstr ""
+msgstr "ERDAS Imagine"
 
-#: static/geonode/js/upload/FileTypes.js:50
-#: static/geonode/js/upload/FileTypes.js:55
+#: geonode/static/geonode/js/upload/FileTypes.js:50
+#: geonode/static/geonode/js/upload/FileTypes.js:55
 msgid "National Imagery Transmission Format"
-msgstr ""
+msgstr "National Imagery Transmission Format"
 
-#: static/geonode/js/upload/FileTypes.js:61
+#: geonode/static/geonode/js/upload/FileTypes.js:61
 msgid "Controlled Image Base-1 Meter"
-msgstr ""
+msgstr "Controlled Image Base-1 Meter"
 
-#: static/geonode/js/upload/FileTypes.js:68
+#: geonode/static/geonode/js/upload/FileTypes.js:68
 msgid "Controlled Image Base-5 Meter"
-msgstr ""
+msgstr "Controlled Image Base-5 Meter"
 
-#: static/geonode/js/upload/FileTypes.js:75
+#: geonode/static/geonode/js/upload/FileTypes.js:75
 msgid "Controlled Image Base-10 Meter"
-msgstr ""
+msgstr "Controlled Image Base-10 Meter"
 
-#: static/geonode/js/upload/FileTypes.js:82
+#: geonode/static/geonode/js/upload/FileTypes.js:82
 msgid "CADRG-Global Navigation Chart"
-msgstr ""
+msgstr "CADRG-Global Navigation Chart"
 
-#: static/geonode/js/upload/FileTypes.js:89
+#: geonode/static/geonode/js/upload/FileTypes.js:89
 msgid "CADRG-Jet Navigation Chart"
-msgstr ""
+msgstr "CADRG-Jet Navigation Chart"
 
-#: static/geonode/js/upload/FileTypes.js:96
+#: geonode/static/geonode/js/upload/FileTypes.js:96
 msgid "CADRG-Operational Navigation Chart"
-msgstr ""
+msgstr "CADRG-Operational Navigation Chart"
 
-#: static/geonode/js/upload/FileTypes.js:103
+#: geonode/static/geonode/js/upload/FileTypes.js:103
 msgid "CADRG-Tactical Pilotage Chart"
-msgstr ""
+msgstr "CADRG-Tactical Pilotage Chart"
 
-#: static/geonode/js/upload/FileTypes.js:110
+#: geonode/static/geonode/js/upload/FileTypes.js:110
 msgid "CADRG-Joint Operations Graphic"
-msgstr ""
+msgstr "CADRG-Joint Operations Graphic"
 
-#: static/geonode/js/upload/FileTypes.js:117
+#: geonode/static/geonode/js/upload/FileTypes.js:117
 msgid "CADRG-Topographic Line Map 100K"
-msgstr ""
+msgstr "CADRG-Topographic Line Map 100K"
 
-#: static/geonode/js/upload/FileTypes.js:124
+#: geonode/static/geonode/js/upload/FileTypes.js:124
 msgid "CADRG-Topographic Line Map 50K"
-msgstr ""
+msgstr "CADRG-Topographic Line Map 50K"
 
-#: static/geonode/js/upload/FileTypes.js:131
+#: geonode/static/geonode/js/upload/FileTypes.js:131
 msgid "JPEG2000"
-msgstr ""
+msgstr "JPEG2000"
 
-#: static/geonode/js/upload/FileTypes.js:136
+#: geonode/static/geonode/js/upload/FileTypes.js:136
 msgid "MrSID-Multi-resolution Seamless Image Database"
-msgstr ""
+msgstr "MrSID-Multi-resolution Seamless Image Database"
 
-#: static/geonode/js/upload/LayerInfo.js:237
-#: static_root/geonode/js/upload/LayerInfo.js:235
+#: geonode/static/geonode/js/upload/LayerInfo.js:331
 msgid "Layer Info"
 msgstr "레이어 정보"
 
-#: static/geonode/js/upload/LayerInfo.js:238
-#: static_root/geonode/js/upload/LayerInfo.js:236
+#: geonode/static/geonode/js/upload/LayerInfo.js:332
 msgid "Edit Metadata"
 msgstr "메타데이터 편집"
 
-#: static/geonode/js/upload/LayerInfo.js:239
-#: static_root/geonode/js/upload/LayerInfo.js:237
+#: geonode/static/geonode/js/upload/LayerInfo.js:333
 msgid "Manage Styles"
 msgstr "스타일 관리"
 
-#: static/geonode/js/upload/LayerInfo.js:242
-#: static_root/geonode/js/upload/LayerInfo.js:240
+#: geonode/static/geonode/js/upload/LayerInfo.js:336
 msgid "The column %1 was renamed to %2 <br/>"
 msgstr "%1  컬럼이 %2 컬럼으로 변경되었습니다 <br/>"
 
-#: static/geonode/js/upload/LayerInfo.js:248
-#: static_root/geonode/js/upload/LayerInfo.js:246
+#: geonode/static/geonode/js/upload/LayerInfo.js:342
 msgid "Your layer was successfully uploaded"
 msgstr "레이어를 성공적으로 업로드했습니다"
 
-#: static/geonode/js/upload/LayerInfo.js:277
-#: static_root/geonode/js/upload/LayerInfo.js:275
+#: geonode/static/geonode/js/upload/LayerInfo.js:371
 msgid "Performing Final GeoServer Config Step"
 msgstr "마지막 GeoServer 구성 단계 수행"
 
-#: static/geonode/js/upload/LayerInfo.js:292
-#: static/geonode/js/upload/LayerInfo.js:318
-#: static_root/geonode/js/upload/LayerInfo.js:290
-#: static_root/geonode/js/upload/LayerInfo.js:316
+#: geonode/static/geonode/js/upload/LayerInfo.js:386
+#: geonode/static/geonode/js/upload/LayerInfo.js:412
 msgid "You need to specify more information in order to complete your upload"
 msgstr "업로드를 완료하기 위해 더 많은 정보를 설정해야 합니다"
 
-#: static/geonode/js/upload/LayerInfo.js:310
-#: static_root/geonode/js/upload/LayerInfo.js:308
+#: geonode/static/geonode/js/upload/LayerInfo.js:404
 msgid "You need to specify more information in order to complete your upload."
 msgstr "업로드를 완료하기 위해 더 많은 정보를 설정해야 합니다."
 
-#: static/geonode/js/upload/LayerInfo.js:310
-#: static_root/geonode/js/upload/LayerInfo.js:308
+#: geonode/static/geonode/js/upload/LayerInfo.js:404
 msgid "You can continue configuring your layer."
 msgstr "레이어를 계속해서 설정할 수 있습니다."
 
-#: static/geonode/js/upload/LayerInfo.js:328
-#: static/geonode/js/upload/LayerInfo.js:414
-#: static_root/geonode/js/upload/LayerInfo.js:326
-#: static_root/geonode/js/upload/LayerInfo.js:412
+#: geonode/static/geonode/js/upload/LayerInfo.js:422
+#: geonode/static/geonode/js/upload/LayerInfo.js:509
 msgid "Unexpected Error"
 msgstr "예기치 않은 오류"
 
-#: static/geonode/js/upload/LayerInfo.js:344
-#: static_root/geonode/js/upload/LayerInfo.js:342
+#: geonode/static/geonode/js/upload/LayerInfo.js:438
 msgid "Performing GeoServer Config Step"
 msgstr "GeoServer 구성 단계 수행"
 
-#: static/geonode/js/upload/LayerInfo.js:421
-#: static_root/geonode/js/upload/LayerInfo.js:419
+#: geonode/static/geonode/js/upload/LayerInfo.js:516
 msgid "Layer files uploaded, configuring in GeoServer"
 msgstr "GeoServer에 레이어 파일 업로드 완료, 구성중"
 
-#: static/geonode/js/upload/LayerInfo.js:436
-#: static_root/geonode/js/upload/LayerInfo.js:434
+#: geonode/static/geonode/js/upload/LayerInfo.js:532
 msgid "Select or create a Geogig repository."
 msgstr "Geogig 저장소를 선택하거나 생성합니다."
 
-#: static/geonode/js/upload/LayerInfo.js:532
-#: static_root/admin/js/SelectFilter2.js:69
-#: static_root/geonode/js/upload/LayerInfo.js:528
+#: geonode/static/geonode/js/upload/LayerInfo.js:695
 msgid "Remove"
 msgstr "제거하기"
 
-#: static/geonode/js/upload/upload.js:125
-#: static_root/geonode/js/upload/upload.js:125
-#, c-format
+#: geonode/static/geonode/js/upload/upload.js:125
+#, javascript-format
 msgid "The file %s is an unsupported file type, please select another file."
 msgstr "%s 파일은 지원되지 않는 유형입니다. 다른 파일을 선택하십시오."
 
-#: static/geonode/js/upload/upload.js:262
-#: static_root/geonode/js/upload/upload.js:280
+#: geonode/static/geonode/js/upload/upload.js:285
 msgid ""
 "You are trying to upload an incomplete set of files or not all mandatory "
 "options have been validated.\n"
@@ -227,386 +205,203 @@ msgstr ""
 "\n"
 "폼에서 오류를 확인하시기 바랍니다!"
 
-#: static_root/admin/js/SelectFilter2.js:45
-#, c-format
-msgid "Available %s"
-msgstr "사용가능한 %s"
+#: geonode/static/lib/js/assets.min.js:2
+msgid "<iframe frameborder='0' width='0' height='0'/>"
+msgstr "<iframe frameborder='0' width='0' height='0'/>"
 
-#: static_root/admin/js/SelectFilter2.js:46
-#, c-format
-msgid ""
-"This is the list of available %s. You may choose some by selecting them in "
-"the box below and then clicking the \"Choose\" arrow between the two boxes."
-msgstr ""
-"사용가능한 %s 목록입니다. 선택하기 위해 아래에서 선택한 후 \"선택하기\" 화살"
-"표를 눌러 선택할 수 있습니다."
+#: geonode/static/lib/js/assets.min.js:4
+msgid "<script>"
+msgstr "<script>"
 
-#: static_root/admin/js/SelectFilter2.js:53
-#, c-format
-msgid "Type into this box to filter down the list of available %s."
-msgstr "사용가능한 %s를 필터링하기 위해 여기에 입력하십시오."
+#: geonode/static/lib/js/assets.min.js:4
+msgid "<div>"
+msgstr "<div>"
 
-#: static_root/admin/js/SelectFilter2.js:57
-msgid "Filter"
-msgstr "필터"
-
-#: static_root/admin/js/SelectFilter2.js:61
-msgid "Choose all"
-msgstr "모두 선택"
-
-#: static_root/admin/js/SelectFilter2.js:61
-#, c-format
-msgid "Click to choose all %s at once."
-msgstr "%s를 한번에  선택하기 위해 클릭하십시오."
-
-#: static_root/admin/js/SelectFilter2.js:67
-msgid "Choose"
-msgstr "선택하기"
-
-#: static_root/admin/js/SelectFilter2.js:75
-#, c-format
-msgid "Chosen %s"
-msgstr "선택된 %s"
-
-#: static_root/admin/js/SelectFilter2.js:76
-#, c-format
-msgid ""
-"This is the list of chosen %s. You may remove some by selecting them in the "
-"box below and then clicking the \"Remove\" arrow between the two boxes."
-msgstr ""
-"선택된 %s 목록입니다. 제거하기 위해 아래에서 선택한 후 \"제거하기\" 화살표를 "
-"눌러 제거할 수 있습니다."
-
-#: static_root/admin/js/SelectFilter2.js:80
-msgid "Remove all"
-msgstr "모두 제거"
-
-#: static_root/admin/js/SelectFilter2.js:80
-#, c-format
-msgid "Click to remove all chosen %s at once."
-msgstr "%s를 한번에  모두 제거하기 위해 클릭하십시오."
-
-#: static_root/admin/js/actions.js:18 static_root/admin/js/actions.min.js:1
-msgid "%(sel)s of %(cnt)s selected"
-msgid_plural "%(sel)s of %(cnt)s selected"
-msgstr[0] "%(cnt)s 중 %(sel)s 선택됨"
-
-#: static_root/admin/js/actions.js:109 static_root/admin/js/actions.min.js:5
-msgid ""
-"You have unsaved changes on individual editable fields. If you run an "
-"action, your unsaved changes will be lost."
-msgstr ""
-"편집가능한 개별 필드의 변경사항을 저장하지 않았습니다. 작업을 실행하는 경우, "
-"저장되지 않은 변경 사항이 손실됩니다."
-
-#: static_root/admin/js/actions.js:121 static_root/admin/js/actions.min.js:5
-msgid ""
-"You have selected an action, but you haven't saved your changes to "
-"individual fields yet. Please click OK to save. You'll need to re-run the "
-"action."
-msgstr ""
-"작업을 선택했지만, 아직 개별 필드에 대한 변경사항을 저장하지 않았습니다. 저장"
-"하기 위해 확인 버튼을 눌러 저장하십시오. 작업을 다시 실행해야 합니다."
-
-#: static_root/admin/js/actions.js:123 static_root/admin/js/actions.min.js:6
-msgid ""
-"You have selected an action, and you haven't made any changes on individual "
-"fields. You're probably looking for the Go button rather than the Save "
-"button."
-msgstr ""
-"작업을 선택했으며 개별 필드에 대한 변경 내용이 없습니다. 저장하기 버튼보다 이"
-"동하기 버튼을 사용하는 것이 좋습니다."
-
-#: static_root/admin/js/calendar.js:8
-msgid ""
-"January February March April May June July August September October November "
-"December"
-msgstr "1월 2월 3월 4월 5월 6월 7월 8월 9월 10월 11월 12월"
-
-#: static_root/admin/js/calendar.js:9
-msgid "S M T W T F S"
-msgstr "S M T W T F S"
-
-#: static_root/admin/js/collapse.js:8 static_root/admin/js/collapse.js.c:19
-#: static_root/admin/js/collapse.min.js:1
-msgid "Show"
-msgstr "보이기"
-
-#: static_root/admin/js/collapse.js:16 static_root/admin/js/collapse.min.js:1
-msgid "Hide"
-msgstr "숨기기"
-
-#: static_root/admin/js/admin/DateTimeShortcuts.js:52
-#: static_root/admin/js/admin/DateTimeShortcuts.js:88
-msgid "Now"
-msgstr "지금"
-
-#: static_root/admin/js/admin/DateTimeShortcuts.js:56
-msgid "Clock"
-msgstr "시계"
-
-#: static_root/admin/js/admin/DateTimeShortcuts.js:84
-msgid "Choose a time"
-msgstr "시간 선택"
-
-#: static_root/admin/js/admin/DateTimeShortcuts.js:89
-msgid "Midnight"
-msgstr "자정"
-
-#: static_root/admin/js/admin/DateTimeShortcuts.js:90
-msgid "6 a.m."
-msgstr "오전 6시"
-
-#: static_root/admin/js/admin/DateTimeShortcuts.js:91
-msgid "Noon"
-msgstr "정오"
-
-#: static_root/admin/js/admin/DateTimeShortcuts.js:95
-#: static_root/admin/js/admin/DateTimeShortcuts.js:208 templates/lang.js:9
-#: templates/lang.js.c:236
+#: geonode/templates/lang.js:9 geonode/templates/lang.js:236
 msgid "Cancel"
 msgstr "취소"
 
-#: static_root/admin/js/admin/DateTimeShortcuts.js:148
-#: static_root/admin/js/admin/DateTimeShortcuts.js:201
-msgid "Today"
-msgstr "오늘"
-
-#: static_root/admin/js/admin/DateTimeShortcuts.js:152
-msgid "Calendar"
-msgstr "캘린더"
-
-#: static_root/admin/js/admin/DateTimeShortcuts.js:199
-msgid "Yesterday"
-msgstr "어제"
-
-#: static_root/admin/js/admin/DateTimeShortcuts.js:203
-msgid "Tomorrow"
-msgstr "내일"
-
-#: static_root/geonode/js/extjs/GeoNode.js:72
-msgid "Add user..."
-msgstr "사용자 추가..."
-
-#: static_root/geonode/js/extjs/GeoNode.js:72
-msgid "Who can view and download this data?"
-msgstr "누가 이 데이터를 보거나 다운로드 할 수 있습니까?"
-
-#: static_root/geonode/js/extjs/GeoNode.js:72
-msgid "Anyone"
-msgstr "모든 사용자"
-
-#: static_root/geonode/js/extjs/GeoNode.js:72
-msgid "Any registered user"
-msgstr "등록된 사용자"
-
-#: static_root/geonode/js/extjs/GeoNode.js:72
-msgid "Only users who can edit"
-msgstr "편집 가능한 사용자만"
-
-#: static_root/geonode/js/extjs/GeoNode.js:72
-msgid "Who can edit this data?"
-msgstr "누가 이 데이터를 편집 할 수 있습니까?"
-
-#: static_root/geonode/js/extjs/GeoNode.js:72
-msgid "Only the following users or groups:"
-msgstr "다음 사용자 또는 그룹 전용 :"
-
-#: static_root/geonode/js/extjs/GeoNode.js:72
-msgid "Who can manage and edit this data?"
-msgstr "누가 이 데이터를 관리하고 편집 할 수 있습니까?"
-
-#: static_root/geonode/js/upload/FileTypes.js:13
-#: static_root/geonode/js/upload/FileTypes.js:19
-msgid "GeoTiff File"
-msgstr "GeoTIFF 파일"
-
-#: static_root/geonode/js/upload/FileTypes.js:26
-msgid "Comma Separated File"
-msgstr "콤마로 분리된 파일"
-
-#: static_root/geonode/js/upload/FileTypes.js:44
-msgid "Zip Archives"
-msgstr "Zip 압축 파일"
-
-#: templates/lang.js:10
+#: geonode/templates/lang.js:10
 msgid "Save as Copy"
 msgstr "복사본으로 저장"
 
-#: templates/lang.js:11
+#: geonode/templates/lang.js:11
 msgid "About this Map"
 msgstr "이 지도의 정보"
 
-#: templates/lang.js:12 templates/lang.js.c:96 templates/lang.js.c:165
+#: geonode/templates/lang.js:12 geonode/templates/lang.js:96
+#: geonode/templates/lang.js:165
 msgid "Abstract"
 msgstr "요약"
 
-#: templates/lang.js:13
+#: geonode/templates/lang.js:13
 msgid "Save"
 msgstr "저장"
 
-#: templates/lang.js:14 templates/lang.js.c:100 templates/lang.js.c:109
-#: templates/lang.js:162 templates/lang.js.c:184 templates/lang.js.c:219
+#: geonode/templates/lang.js:14 geonode/templates/lang.js:100
+#: geonode/templates/lang.js:109 geonode/templates/lang.js:162
+#: geonode/templates/lang.js:184 geonode/templates/lang.js:219
 msgid "Title"
 msgstr "제목"
 
-#: templates/lang.js:20
+#: geonode/templates/lang.js:20
 msgid "Connection Error"
 msgstr "연결 오류"
 
-#: templates/lang.js:21
+#: geonode/templates/lang.js:21
 msgid "The server returned an error"
 msgstr "서버가 오류를 반환했습니다"
 
-#: templates/lang.js:22
+#: geonode/templates/lang.js:22
 msgid "Details..."
 msgstr "상세정보..."
 
-#: templates/lang.js:28 templates/lang.js.c:31
+#: geonode/templates/lang.js:28 geonode/templates/lang.js:31
 msgid "Add Layers"
 msgstr "레이어 추가"
 
-#: templates/lang.js:29
+#: geonode/templates/lang.js:29
 msgid "Area"
 msgstr "영역"
 
-#: templates/lang.js:30
+#: geonode/templates/lang.js:30
 msgid "Background"
 msgstr "배경"
 
-#: templates/lang.js:32
+#: geonode/templates/lang.js:32
 msgid "Done"
 msgstr "완료"
 
-#: templates/lang.js:33
+#: geonode/templates/lang.js:33
 msgid "Available Layers"
 msgstr "사용가능한 레이어"
 
-#: templates/lang.js:35 templates/lang.js.c:121
+#: geonode/templates/lang.js:35 geonode/templates/lang.js:121
 msgid "Height"
 msgstr "높이"
 
-#: templates/lang.js:36
+#: geonode/templates/lang.js:36
 msgid "Get Feature Info"
 msgstr "객체 정보 얻기"
 
-#: templates/lang.js:37 templates/lang.js.c:122
+#: geonode/templates/lang.js:37 geonode/templates/lang.js:122
 msgid "Large"
 msgstr "크게"
 
-#: templates/lang.js:38
+#: geonode/templates/lang.js:38
 msgid "or add a new server."
 msgstr "또는 새로운 서버 추가."
 
-#: templates/lang.js:39
+#: geonode/templates/lang.js:39
 msgid "Map Layers"
 msgstr "지도 레이어"
 
-#: templates/lang.js:40
+#: geonode/templates/lang.js:40
 msgid "View available data from:"
 msgstr "다음에서 사용가능한 데이터 보기:"
 
-#: templates/lang.js:41
+#: geonode/templates/lang.js:41
 msgid "Data"
 msgstr "데이터"
 
-#: templates/lang.js:42
+#: geonode/templates/lang.js:42
 msgid "Layers"
 msgstr "레이어"
 
-#: templates/lang.js:43
+#: geonode/templates/lang.js:43
 msgid "Legend"
 msgstr "범례"
 
-#: templates/lang.js:44
+#: geonode/templates/lang.js:44
 msgid "Length"
 msgstr "길이"
 
-#: templates/lang.js:45
+#: geonode/templates/lang.js:45
 msgid "Loading Map..."
 msgstr "지도 로딩 중 ..."
 
-#: templates/lang.js:46 templates/lang.js.c:123
+#: geonode/templates/lang.js:46 geonode/templates/lang.js:123
 msgid "Map Size"
 msgstr "지도 크기"
 
-#: templates/lang.js:47
+#: geonode/templates/lang.js:47
 msgid "Measure"
 msgstr "측정"
 
-#: templates/lang.js:48 templates/lang.js.c:97 templates/lang.js.c:163
+#: geonode/templates/lang.js:48 geonode/templates/lang.js:97
+#: geonode/templates/lang.js:163
 msgid "Contact"
 msgstr "연락처"
 
-#: templates/lang.js:49 templates/lang.js.c:55
+#: geonode/templates/lang.js:49 geonode/templates/lang.js:55
 msgid "Permalink"
 msgstr "고유링크"
 
-#: templates/lang.js:50 templates/lang.js.c:124
+#: geonode/templates/lang.js:50 geonode/templates/lang.js:124
 msgid "Mini"
 msgstr "최소"
 
-#: templates/lang.js:51
+#: geonode/templates/lang.js:51
 msgid "Pan Map"
 msgstr "지도 이동"
 
-#: templates/lang.js:52
+#: geonode/templates/lang.js:52
 msgid "Zoom to Next Extent"
 msgstr "다음 범위로 확대"
 
-#: templates/lang.js:53
+#: geonode/templates/lang.js:53
 msgid "Zoom to Previous Extent"
 msgstr "이전 범위로 확대"
 
-#: templates/lang.js:54
+#: geonode/templates/lang.js:54
 msgid "This map has not yet been saved."
 msgstr "아직 지도를 저장하지 않았습니다."
 
-#: templates/lang.js:56 templates/lang.js.c:125
+#: geonode/templates/lang.js:56 geonode/templates/lang.js:125
 msgid "Premium"
 msgstr "고급"
 
-#: templates/lang.js:57
+#: geonode/templates/lang.js:57
 msgid "Print Map"
 msgstr "지도 인쇄하기"
 
-#: templates/lang.js:58
+#: geonode/templates/lang.js:58
 msgid "Print Preview"
 msgstr "인쇄 미리보기"
 
-#: templates/lang.js:59
+#: geonode/templates/lang.js:59
 msgid "Properties"
 msgstr "속성"
 
-#: templates/lang.js:60 templates/lang.js.c:126
+#: geonode/templates/lang.js:60 geonode/templates/lang.js:126
 msgid "Publish Map"
 msgstr "지도 발행하기"
 
-#: templates/lang.js:61 templates/lang.js.c:62
+#: geonode/templates/lang.js:61 geonode/templates/lang.js:62
 msgid "Remove Layer"
 msgstr "레이어 제거"
 
-#: templates/lang.js:63
+#: geonode/templates/lang.js:63
 msgid "Sorry, your map could not be saved."
 msgstr "죄송합니다, 지도를 저장할 수 없습니다."
 
-#: templates/lang.js:64
+#: geonode/templates/lang.js:64
 msgid "Error While Saving"
 msgstr "저장하는 동안 오류 발생"
 
-#: templates/lang.js:65
+#: geonode/templates/lang.js:65
 msgid "Save Map"
 msgstr "지도 저장"
 
-#: templates/lang.js:66
+#: geonode/templates/lang.js:66
 msgid "You must be logged in to save this map."
 msgstr "이 지도를 저장하려면 로그인해야 합니다."
 
-#: templates/lang.js:67 templates/lang.js.c:128
+#: geonode/templates/lang.js:67 geonode/templates/lang.js:128
 msgid "Small"
 msgstr "작게"
 
-#: templates/lang.js:68
+#: geonode/templates/lang.js:68
 msgid ""
 "Error contacting server.\n"
 " Please check the url and try again."
@@ -614,101 +409,101 @@ msgstr ""
 "서버 연결 오류입니다.\n"
 "URL을 확인하고 다시 시도하십시오."
 
-#: templates/lang.js:69
+#: geonode/templates/lang.js:69
 msgid "Layer Properties"
 msgstr "레이어 속성"
 
-#: templates/lang.js:70
+#: geonode/templates/lang.js:70
 msgid "Change layer format and style"
 msgstr "레이어 형식 및 스타일 변경"
 
-#: templates/lang.js:71
+#: geonode/templates/lang.js:71
 msgid "Edit Styles"
 msgstr "스타일 편집"
 
-#: templates/lang.js:72
+#: geonode/templates/lang.js:72
 msgid "Edit layer styles"
 msgstr "레이어 스타일 편집"
 
-#: templates/lang.js:73
+#: geonode/templates/lang.js:73
 msgid "Switch to Google Earth 3D Viewer"
 msgstr "구글 어스 3D 뷰어로 전환"
 
-#: templates/lang.js:74
+#: geonode/templates/lang.js:74
 msgid ""
 "The map that you are trying to load does not exist.  Creating a new map "
 "instead."
 msgstr "불러오려는 지도가 없습니다. 대신 새로운 지도를 생성하십시오."
 
-#: templates/lang.js:75
+#: geonode/templates/lang.js:75
 msgid "Unknown Map"
 msgstr "알 수 없는 지도"
 
-#: templates/lang.js:76 templates/lang.js.c:129
+#: geonode/templates/lang.js:76 geonode/templates/lang.js:129
 msgid "Width"
 msgstr "너비"
 
-#: templates/lang.js:77
+#: geonode/templates/lang.js:77
 msgid "Zoom In"
 msgstr "확대"
 
-#: templates/lang.js:78
+#: geonode/templates/lang.js:78
 msgid "Zoom Out"
 msgstr "축소"
 
-#: templates/lang.js:79
+#: geonode/templates/lang.js:79
 msgid "Zoom level"
 msgstr "줌 레벨"
 
-#: templates/lang.js:80
+#: geonode/templates/lang.js:80
 msgid "Zoom Level"
 msgstr "줌 레벨"
 
-#: templates/lang.js:81
+#: geonode/templates/lang.js:81
 msgid "Zoom to Layer Extent"
 msgstr "레이어 범위로 확대"
 
-#: templates/lang.js:82
+#: geonode/templates/lang.js:82
 msgid "Zoom to Visible Extent"
 msgstr "보이는 범위로 확대"
 
-#: templates/lang.js:88
+#: geonode/templates/lang.js:88
 msgid "Zoom Level {zoom}"
 msgstr "줌 레벨 {zoom}"
 
-#: templates/lang.js:94
+#: geonode/templates/lang.js:94
 msgid "Create Map"
 msgstr "지도 생성하기"
 
-#: templates/lang.js:95
+#: geonode/templates/lang.js:95
 msgid "Export Map"
 msgstr "지도 내보내기"
 
-#: templates/lang.js:98
+#: geonode/templates/lang.js:98
 msgid "Map"
 msgstr "지도"
 
-#: templates/lang.js:99 templates/lang.js.c:166
+#: geonode/templates/lang.js:99 geonode/templates/lang.js:166
 msgid "View this Map"
 msgstr "이 지도 보기"
 
-#: templates/lang.js:101
+#: geonode/templates/lang.js:101
 msgid "Open Map"
 msgstr "지도 열기"
 
-#: templates/lang.js:107 templates/lang.js.c:183
+#: geonode/templates/lang.js:107 geonode/templates/lang.js:183
 msgid "Name"
 msgstr "이름"
 
-#: templates/lang.js:108
+#: geonode/templates/lang.js:108
 msgid "Queryable"
 msgstr "조회가능"
 
-#: templates/lang.js:115
+#: geonode/templates/lang.js:115
 msgid "No background"
 msgstr "배경 없음"
 
-#: templates/lang.js:127
+#: geonode/templates/lang.js:127
 msgid ""
 "Your map is ready to be published to the web!  Simply copy the following "
 "HTML to embed the map in your website:"
@@ -716,173 +511,326 @@ msgstr ""
 "지도를 웹에 게시할 준비가 되었습니다! 웹사이트에 지도를 추가하려면 다음 HTML"
 "을 복사하십시오."
 
-#: templates/lang.js:136 templates/lang.js.c:202
+#: geonode/templates/lang.js:136 geonode/templates/lang.js:202
 msgid "Abstract:"
 msgstr "요약:"
 
-#: templates/lang.js:137 templates/lang.js.c:204
+#: geonode/templates/lang.js:137 geonode/templates/lang.js:204
 msgid "No attribution information is provided for this layer."
 msgstr "이 레이어에 대한 귀속 정보가 없습니다."
 
-#: templates/lang.js:138 templates/lang.js.c:205
+#: geonode/templates/lang.js:138 geonode/templates/lang.js:205
 msgid "Provided by:"
 msgstr "제공 : "
 
-#: templates/lang.js:139 templates/lang.js.c:206
+#: geonode/templates/lang.js:139 geonode/templates/lang.js:206
 msgid "Download:"
 msgstr "다운로드 : "
 
-#: templates/lang.js:140 templates/lang.js.c:208
+#: geonode/templates/lang.js:140 geonode/templates/lang.js:208
 msgid "No keywords are listed for this layer."
 msgstr "이 레이어에 대한 키워드 목록이 없습니다."
 
-#: templates/lang.js:141 templates/lang.js.c:209
+#: geonode/templates/lang.js:141 geonode/templates/lang.js:209
 msgid "Keywords:"
 msgstr "키워드 : "
 
-#: templates/lang.js:142 templates/lang.js.c:210
+#: geonode/templates/lang.js:142 geonode/templates/lang.js:210
 msgid "No metadata URLs are defined for this layer."
 msgstr "이 레이어에 대한 메타데이터 URL이 없습니다."
 
-#: templates/lang.js:143 templates/lang.js.c:211
+#: geonode/templates/lang.js:143 geonode/templates/lang.js:211
 msgid "Metadata Links:"
 msgstr "메타데이터 연결:"
 
-#: templates/lang.js:149
+#: geonode/templates/lang.js:149
 msgid "Paper size:"
 msgstr "용지 크기:"
 
-#: templates/lang.js:150
+#: geonode/templates/lang.js:150
 msgid "Resolution:"
 msgstr "해상도:"
 
-#: templates/lang.js:151
+#: geonode/templates/lang.js:151
 msgid "Print"
 msgstr "인쇄"
 
-#: templates/lang.js:152
+#: geonode/templates/lang.js:152
 msgid "Enter map title here."
 msgstr "여기에 지도 제목을 입력하십시오."
 
-#: templates/lang.js:153
+#: geonode/templates/lang.js:153
 msgid "Include legend?"
 msgstr "범례를 포함하시겠습니까?"
 
-#: templates/lang.js:154
+#: geonode/templates/lang.js:154
 msgid "Enter comments here."
 msgstr "여기에 설명을 입력하십시오."
 
-#: templates/lang.js:155
+#: geonode/templates/lang.js:155
 msgid "Creating PDF..."
 msgstr "PDF 생성 중..."
 
-#: templates/lang.js:164
+#: geonode/templates/lang.js:164
 msgid "Last Modified"
 msgstr "마지막 수정"
 
-#: templates/lang.js:167 templates/lang.js.c:188
+#: geonode/templates/lang.js:167 geonode/templates/lang.js:188
 msgid "Prev"
 msgstr "이전"
 
-#: templates/lang.js:168 templates/lang.js.c:189
+#: geonode/templates/lang.js:168 geonode/templates/lang.js:189
 msgid "Next"
 msgstr "다음"
 
-#: templates/lang.js:169 templates/lang.js.c:190
+#: geonode/templates/lang.js:169 geonode/templates/lang.js:190
 msgid "of"
 msgstr "의"
 
-#: templates/lang.js:170 templates/lang.js.c:191
+#: geonode/templates/lang.js:170 geonode/templates/lang.js:191
 msgid "Your search did not match any items."
 msgstr "검색어와 일치하는 항목이 없습니다."
 
-#: templates/lang.js:171
+#: geonode/templates/lang.js:171
 msgid "Search Maps"
 msgstr "지도 검색"
 
-#: templates/lang.js:172 templates/lang.js.c:192
+#: geonode/templates/lang.js:172 geonode/templates/lang.js:192
 msgid "Search"
 msgstr "검색"
 
-#: templates/lang.js:173 templates/lang.js.c:193
+#: geonode/templates/lang.js:173 geonode/templates/lang.js:193
 msgid "Showing"
 msgstr "보기중"
 
-#: templates/lang.js:174
+#: geonode/templates/lang.js:174
 msgid "Loading"
 msgstr "로딩중"
 
-#: templates/lang.js:175 templates/lang.js.c:195
+#: geonode/templates/lang.js:175 geonode/templates/lang.js:195
 msgid "permalink"
 msgstr "고유링크"
 
-#: templates/lang.js:182
+#: geonode/templates/lang.js:182
 msgid "Select"
 msgstr "선택"
 
-#: templates/lang.js:185
+#: geonode/templates/lang.js:185
 msgid "Select:"
 msgstr "선택:"
 
-#: templates/lang.js:186
+#: geonode/templates/lang.js:186
 msgid "All"
 msgstr "전체"
 
-#: templates/lang.js:187
+#: geonode/templates/lang.js:187
 msgid "None"
 msgstr "없음"
 
-#: templates/lang.js:194
+#: geonode/templates/lang.js:194
 msgid "Loading..."
 msgstr "로딩 중..."
 
-#: templates/lang.js:196
+#: geonode/templates/lang.js:196
 msgid "You do not have permission to view this data"
 msgstr "이 데이터를 볼 수 있는 권한이 없습니다"
 
-#: templates/lang.js:197
+#: geonode/templates/lang.js:197
 msgid "This data is stored on a remote server"
 msgstr "이 데이터는 원격 서버에 저장되어 있습니다"
 
-#: templates/lang.js:203
+#: geonode/templates/lang.js:203
 msgid "No abstract is provided for this layer."
 msgstr "이 레이어에 대한 개요가 제공되지 않습니다."
 
-#: templates/lang.js:207
+#: geonode/templates/lang.js:207
 msgid "No download URLs are definied for this layer."
 msgstr "이 레이어의 다운로드 URL이 정의되지 않았습니다."
 
-#: templates/lang.js:217
+#: geonode/templates/lang.js:217
 msgid "Selected Layers"
 msgstr "선택된 레이어"
 
-#: templates/lang.js:218
+#: geonode/templates/lang.js:218
 msgid "No Layers Selected"
 msgstr "선택된 레이어 없음"
 
-#: templates/lang.js:220
+#: geonode/templates/lang.js:220
 msgid "Clear Selected"
 msgstr "선택 해제"
 
-#: templates/lang.js:221
+#: geonode/templates/lang.js:221
 msgid "Clear All"
 msgstr "모두 제거"
 
-#: templates/lang.js:227
+#: geonode/templates/lang.js:227
 msgid "Operation Failed"
 msgstr "작업이 실패했습니다"
 
-#: templates/lang.js:228
+#: geonode/templates/lang.js:228
 msgid "No layers are currently selected."
 msgstr "현재 선택된 레이어가 없습니다."
 
-#: templates/lang.js:235
+#: geonode/templates/lang.js:235
 msgid "Downloading..."
 msgstr "다운로드 중..."
 
-#: templates/lang.js:237
+#: geonode/templates/lang.js:237
 msgid "Please wait"
 msgstr "잠시만 기다리십시오"
+
+#~ msgid "Available %s"
+#~ msgstr "Available %s"
+
+#~ msgid ""
+#~ "This is the list of available %s. You may choose some by selecting them "
+#~ "in the box below and then clicking the \"Choose\" arrow between the two "
+#~ "boxes."
+#~ msgstr ""
+#~ "This is the list of available %s. You may choose some by selecting them "
+#~ "in the box below and then clicking the \"Choose\" arrow between the two "
+#~ "boxes."
+
+#~ msgid "Type into this box to filter down the list of available %s."
+#~ msgstr "Type into this box to filter down the list of available %s."
+
+#~ msgid "Filter"
+#~ msgstr "Filter"
+
+#~ msgid "Choose all"
+#~ msgstr "Choose all"
+
+#~ msgid "Click to choose all %s at once."
+#~ msgstr "Click to choose all %s at once."
+
+#~ msgid "Choose"
+#~ msgstr "Choose"
+
+#~ msgid "Chosen %s"
+#~ msgstr "Chosen %s"
+
+#~ msgid ""
+#~ "This is the list of chosen %s. You may remove some by selecting them in "
+#~ "the box below and then clicking the \"Remove\" arrow between the two "
+#~ "boxes."
+#~ msgstr ""
+#~ "This is the list of chosen %s. You may remove some by selecting them in "
+#~ "the box below and then clicking the \"Remove\" arrow between the two "
+#~ "boxes."
+
+#~ msgid "Remove all"
+#~ msgstr "Remove all"
+
+#~ msgid "Click to remove all chosen %s at once."
+#~ msgstr "Click to remove all chosen %s at once."
+
+#~ msgid "%(sel)s of %(cnt)s selected"
+#~ msgid_plural "%(sel)s of %(cnt)s selected"
+#~ msgstr[0] "94d7ef36d54e81afde607d8fd121772b_pl_0"
+
+#~ msgid ""
+#~ "You have unsaved changes on individual editable fields. If you run an "
+#~ "action, your unsaved changes will be lost."
+#~ msgstr ""
+#~ "You have unsaved changes on individual editable fields. If you run an "
+#~ "action, your unsaved changes will be lost."
+
+#~ msgid ""
+#~ "You have selected an action, but you haven't saved your changes to "
+#~ "individual fields yet. Please click OK to save. You'll need to re-run the "
+#~ "action."
+#~ msgstr ""
+#~ "You have selected an action, but you haven't saved your changes to "
+#~ "individual fields yet. Please click OK to save. You'll need to re-run the "
+#~ "action."
+
+#~ msgid ""
+#~ "You have selected an action, and you haven't made any changes on "
+#~ "individual fields. You're probably looking for the Go button rather than "
+#~ "the Save button."
+#~ msgstr ""
+#~ "You have selected an action, and you haven't made any changes on "
+#~ "individual fields. You're probably looking for the Go button rather than "
+#~ "the Save button."
+
+#~ msgid ""
+#~ "January February March April May June July August September October "
+#~ "November December"
+#~ msgstr ""
+#~ "January February March April May June July August September October "
+#~ "November December"
+
+#~ msgid "S M T W T F S"
+#~ msgstr "S M T W T F S"
+
+#~ msgid "Show"
+#~ msgstr "Show"
+
+#~ msgid "Hide"
+#~ msgstr "Hide"
+
+#~ msgid "Now"
+#~ msgstr "Now"
+
+#~ msgid "Clock"
+#~ msgstr "Clock"
+
+#~ msgid "Choose a time"
+#~ msgstr "Choose a time"
+
+#~ msgid "Midnight"
+#~ msgstr "Midnight"
+
+#~ msgid "6 a.m."
+#~ msgstr "6 a.m."
+
+#~ msgid "Noon"
+#~ msgstr "Noon"
+
+#~ msgid "Today"
+#~ msgstr "Today"
+
+#~ msgid "Calendar"
+#~ msgstr "Calendar"
+
+#~ msgid "Yesterday"
+#~ msgstr "Yesterday"
+
+#~ msgid "Tomorrow"
+#~ msgstr "Tomorrow"
+
+#~ msgid "Add user..."
+#~ msgstr "Add user..."
+
+#~ msgid "Who can view and download this data?"
+#~ msgstr "Who can view and download this data?"
+
+#~ msgid "Anyone"
+#~ msgstr "Anyone"
+
+#~ msgid "Any registered user"
+#~ msgstr "Any registered user"
+
+#~ msgid "Only users who can edit"
+#~ msgstr "Only users who can edit"
+
+#~ msgid "Who can edit this data?"
+#~ msgstr "Who can edit this data?"
+
+#~ msgid "Only the following users or groups:"
+#~ msgstr "Only the following users or groups:"
+
+#~ msgid "Who can manage and edit this data?"
+#~ msgstr "Who can manage and edit this data?"
+
+#~ msgid "GeoTiff File"
+#~ msgstr "GeoTiff File"
+
+#~ msgid "Comma Separated File"
+#~ msgstr "Comma Separated File"
+
+#~ msgid "Zip Archives"
+#~ msgstr "Zip Archives"
 
 #~ msgid "You are uploading an incomplete set of files."
 #~ msgstr "You are uploading an incomplete set of files."

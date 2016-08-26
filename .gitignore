@@ -29,6 +29,7 @@ geonode/static/lib/css/multi-select.css
 geonode/static/lib/css/qunit.css
 geonode/static/lib/css/select2.css
 geonode/static/lib/css/assets.min.css
+geonode/static/lib/css/bootstrap-tokenfield.css
 geonode/static/lib/js/assets.min.js
 geonode/static/lib/js/bootstrap-datepicker.js
 geonode/static/lib/js/bootstrap.js
@@ -52,6 +53,11 @@ geonode/static/lib/js/angular.min.js
 geonode/static/lib/js/angular.min.js.map
 geonode/static/lib/js/ZeroClipboard.min.js
 geonode/static/lib/js/moment.min.js
+geonode/static/lib/css/bootstrap-treeview.css
+geonode/static/lib/js/bootstrap-treeview.js
+geonode/static/lib/css/bootstrap-treeview.min.css
+geonode/static/lib/js/bootstrap-tokenfield.js
+geonode/static/lib/js/bootstrap-treeview.min.js
 
 # Uploaded files
 geonode/uploaded
@@ -66,6 +72,7 @@ geonode/static/geonode/junit.xml
 #Temporary files
 *~
 *.swp
+celerybeat-schedule
 
 # OSX specific
 .Python
@@ -86,3 +93,6 @@ uploaded
 development.db
 master
 slave
+
+# virtual env
+venv

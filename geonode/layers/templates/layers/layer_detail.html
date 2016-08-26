@@ -22,6 +22,8 @@
 
   {% if preview == 'geoext' %}
     {% include "layers/layer_geoext_map.html" %}
+  {% elif preview == 'OL3' %}
+    {% include "layers/layer_ol3_map.html" %}
   {% else %}
     {% include "layers/layer_leaflet_map.html" %}
   {% endif %}
@@ -126,7 +128,7 @@
         {% paginate %}
       </article>
      {% endif %}
-    
+
       <article id="attributes" class="tab-pane">
         {% if resource.is_mosaic %}
             <table class="table table-striped table-bordered table-condensed">
@@ -275,10 +277,10 @@
       {% get_obj_perms request.user for resource.layer as "layer_perms" %}
     {% endif %}
 
-    <li class="list-group-item"> 
+    <li class="list-group-item">
       <a href="{% url "layer_metadata_detail" resource.typename %}">
-        <button class="btn btn-primary btn-md btn-block">{% trans "Metadata Detail" %}</button> 
-      </a>    
+        <button class="btn btn-primary btn-md btn-block">{% trans "Metadata Detail" %}</button>
+      </a>
     </li>
 
     {% if "change_resourcebase_metadata" in perms_list or "change_resourcebase" in perms_list or "delete_resourcebase" in perms_list or "change_layer_style" in layer_perms %}
@@ -308,8 +310,8 @@
                   <h4>{% trans "Styles" %}</h4>
                   {% if preview == 'geoext' %}
                   <a class="btn btn-default btn-block btn-xs style-edit" data-dismiss="modal" href="#">{% trans "Edit" %}</a>
-                  {% endif %}
                   <a class="btn btn-default btn-block btn-xs" href="{% url "layer_style_manage" resource.service_typename %}">{% trans "Manage" %}</a>
+                  {% endif %}
                 </div>
                 {% endif %}
               {% endif %}
@@ -357,6 +359,18 @@
             <h4 class="modal-title" id="myModalLabel">{% trans "Download Metadata" %}</h4>
           </div>
           <div class="modal-body">
+		    <div style="margin-bottom:20px">
+				 <h5 class="modal-title" id="myModalLabel">
+				Full metadata
+				 </h5>
+                 <ul>
+ 					<li><a target="_blank" href="../catalogue/csw_to_extra_format/{{resource.uuid}}/{{resource.title}}.txt"> Text format </a></li>
+ 					<li><a target="_blank" href="../catalogue/csw_to_extra_format/{{resource.uuid}}/{{resource.title}}.html"> HTML format </a></li>
+ 				</ul>
+			</div>
+			<h5 class="modal-title" id="myModalLabel">
+			Standard Metadata - XML format
+			</h5>
             <ul>
               {% for link in metadata %}
                 <li><a href="{{ link.url }}">{{ link.name }}</a></li>
@@ -387,7 +401,7 @@
         <p>{% trans "List of maps using this layer:" %}</p>
         {% endif %}
         <ul class="list-unstyled">
-          {% for maplayer in resource.maps %} 
+          {% for maplayer in resource.maps %}
             <li><a href="{{ maplayer.map.get_absolute_url }}">{{ maplayer.map.title }}</a></li>
           {% empty %}
             <li>{% trans "This layer is not currently used in any maps." %}</li>

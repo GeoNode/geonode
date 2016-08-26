@@ -34,15 +34,13 @@ LOGGER = logging.getLogger(__name__)
 
 
 def catalogue_pre_delete(instance, sender, **kwargs):
-    """Removes the layer from the catalogue
-    """
+    """Removes the layer from the catalogue"""
     catalogue = get_catalogue()
     catalogue.remove_record(instance.uuid)
 
 
 def catalogue_post_save(instance, sender, **kwargs):
-    """Get information from catalogue
-    """
+    """Get information from catalogue"""
     try:
         catalogue = get_catalogue()
         catalogue.create_record(instance)
@@ -90,8 +88,7 @@ def catalogue_post_save(instance, sender, **kwargs):
 
 
 def catalogue_pre_save(instance, sender, **kwargs):
-    """Send information to catalogue
-    """
+    """Send information to catalogue"""
     record = None
 
     # if the layer is in the catalogue, try to get the distribution urls
