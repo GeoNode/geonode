@@ -522,7 +522,9 @@ OGP_URL = "http://geodata.tufts.edu/solr/select"
 # absolutely need it set to True this variable
 MODIFY_TOPICCATEGORY = False
 
+FILE_UPLOAD_PERMISSIONS = 0777
 MISSING_THUMBNAIL = 'geonode/img/missing_thumb.png'
+THUMBNAIL_FILE_PERMISSIONS = 0777
 
 # Search Snippet Cache Time in Seconds
 CACHE_TIME = 0
@@ -901,6 +903,7 @@ CELERY_IMPORTS = (
     'geonode.tasks.ftp',
     'geonode.tasks.mk_folder',
     'geonode.tasks.requests_update',
+
 )
 
 
@@ -912,7 +915,9 @@ CELERY_QUEUES = [
     Queue('email', routing_key='email'),
     Queue('ftp', routing_key='ftp'),
     Queue('mk_folder', routing_key='mk_folder'),
-    Queue('requests_update', routing_key='requests_update')
+    Queue('requests_update', routing_key='requests_update'),
+    Queue('jurisdiction',routing_key='jurisdiction')
+
 ]
 
 import djcelery

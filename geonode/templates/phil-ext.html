@@ -33,7 +33,7 @@
 
         }).addTo(map).bringToFront();
 
-        {% get_public_location "%s" as public_location %}
+        /*{% get_public_location "%s" as public_location %}
         var pl = '{{public_location}}' + 'orthophotos/wms?service=WMS&version=1.1.0&request=GetMap';
 
         var cdo = L.tileLayer.wms(pl,{
@@ -45,8 +45,9 @@
             tiled:true,
             visibility:true,
             continuousWorld: true,
-        }).addTo(map).bringToBack();
+        }).addTo(map).bringToBack();*/
 
+        
           var MapQuestOpen_OSM = L.tileLayer('http://korona.geog.uni-heidelberg.de/tiles/roads/x={x}&y={y}&z={z}', {
             type: 'map',
             ext: 'jpg',
@@ -58,11 +59,10 @@
 
         var baseMaps = {
           'MapQuestOpen OSM' : MapQuestOpen_OSM,
-          'cdo' : cdo
+          // 'cdo' : cdo
         };
 
         // L.control.layers(baseMaps).addTo(map);
-        //L.control.layers(baseMaps).addTo(map);
         if (tile_layer != null) {
             // map.layerscontrol.addOverlay(tile_layer,"{{ resource.title }}").removeFrom(map);
             map.layerscontrol.addOverlay(tile_layer,"{{ resource.title }}");
