@@ -27,6 +27,7 @@ from pyproj import transform, Proj
 from urlparse import urljoin, urlsplit
 
 from django.db import models
+from django.core import serializers
 from django.db.models import Q
 from django.utils.translation import ugettext_lazy as _
 from django.core.exceptions import ValidationError
@@ -50,7 +51,9 @@ from geonode.base.enumerations import ALL_LANGUAGES, \
 from geonode.utils import bbox_to_wkt
 from geonode.utils import forward_mercator
 from geonode.security.models import PermissionLevelMixin
-from taggit.managers import TaggableManager
+from taggit.managers import TaggableManager, _TaggableManager
+from taggit.models import TagBase, ItemBase
+from treebeard.mp_tree import MP_Node
 
 from geonode.people.enumerations import ROLE_VALUES
 
@@ -209,6 +212,88 @@ class License(models.Model):
         verbose_name_plural = 'Licenses'
 
 
+class HierarchicalKeyword(TagBase, MP_Node):
+    node_order_by = ['name']
+
+    @classmethod
+    def dump_bulk_tree(cls, parent=None, keep_ids=True):
+        """Dumps a tree branch to a python data structure."""
+        qset = cls._get_serializable_model().get_tree(parent)
+        ret, lnk = [], {}
+        for pyobj in qset:
+            serobj = serializers.serialize('python', [pyobj])[0]
+            # django's serializer stores the attributes in 'fields'
+            fields = serobj['fields']
+            depth = fields['depth']
+            fields['text'] = fields['name']
+            fields['href'] = fields['slug']
+            del fields['name']
+            del fields['slug']
+            del fields['path']
+            del fields['numchild']
+            del fields['depth']
+            if 'id' in fields:
+                # this happens immediately after a load_bulk
+                del fields['id']
+
+            newobj = {}
+            for field in fields:
+                newobj[field] = fields[field]
+            if keep_ids:
+                newobj['id'] = serobj['pk']
+
+            if (not parent and depth == 1) or\
+               (parent and depth == parent.depth):
+                ret.append(newobj)
+            else:
+                parentobj = pyobj.get_parent()
+                parentser = lnk[parentobj.pk]
+                if 'nodes' not in parentser:
+                    parentser['nodes'] = []
+                parentser['nodes'].append(newobj)
+            lnk[pyobj.pk] = newobj
+        return ret
+
+
+class TaggedContentItem(ItemBase):
+    content_object = models.ForeignKey('ResourceBase')
+    tag = models.ForeignKey('HierarchicalKeyword', related_name='keywords')
+
+    # see https://github.com/alex/django-taggit/issues/101
+    @classmethod
+    def tags_for(cls, model, instance=None):
+        if instance is not None:
+            return cls.tag_model().objects.filter(**{
+                '%s__content_object' % cls.tag_relname(): instance
+            })
+        return cls.tag_model().objects.filter(**{
+            '%s__content_object__isnull' % cls.tag_relname(): False
+        }).distinct()
+
+
+class _HierarchicalTagManager(_TaggableManager):
+
+    def add(self, *tags):
+        str_tags = set([
+            t
+            for t in tags
+            if not isinstance(t, self.through.tag_model())
+        ])
+        tag_objs = set(tags) - str_tags
+        # If str_tags has 0 elements Django actually optimizes that to not do a
+        # query.  Malcolm is very smart.
+        existing = self.through.tag_model().objects.filter(
+            slug__in=str_tags
+        )
+        tag_objs.update(existing)
+
+        for new_tag in str_tags - set(t.slug for t in existing):
+            tag_objs.add(HierarchicalKeyword.add_root(name=new_tag))
+
+        for tag in tag_objs:
+            self.through.objects.get_or_create(tag=tag, **self._lookup_kwargs())
+
+
 class ResourceBaseManager(PolymorphicManager):
     def admin_contact(self):
         # this assumes there is at least one superuser
@@ -225,7 +310,7 @@ class ResourceBaseManager(PolymorphicManager):
         return super(ResourceBaseManager, self).get_queryset()
 
 
-class ResourceBase(PolymorphicModel, PermissionLevelMixin):
+class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
     """
     Base Resource Object loosely based on ISO 19115:2003
     """
@@ -269,7 +354,8 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin):
     maintenance_frequency = models.CharField(_('maintenance frequency'), max_length=255, choices=UPDATE_FREQUENCIES,
                                              blank=True, null=True, help_text=maintenance_frequency_help_text)
 
-    keywords = TaggableManager(_('keywords'), blank=True, help_text=keywords_help_text)
+    keywords = TaggableManager(_('keywords'), through=TaggedContentItem, blank=True, help_text=keywords_help_text,
+                               manager=_HierarchicalTagManager)
     regions = models.ManyToManyField(Region, verbose_name=_('keywords region'), blank=True,
                                      help_text=regions_help_text)
 

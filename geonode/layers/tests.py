@@ -164,7 +164,7 @@ class LayersTest(TestCase):
         lyr.save()
         self.assertEqual(
             lyr.keyword_list(), [
-                "populartag", "here", "keywords", "saving"])
+                u'here', u'keywords', u'populartag', u'saving'])
 
     def test_get_valid_user(self):
         # Verify it accepts an admin user

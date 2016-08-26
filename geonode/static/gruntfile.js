@@ -82,7 +82,9 @@ module.exports = function(grunt) {
             'leaflet-fullscreen/dist/leaflet.fullscreen.css',
             'leaflet-fullscreen/dist/fullscreen@2x.png',
             'leaflet-fullscreen/dist/fullscreen.png',
-            'eonasdan-bootstrap-datetimepicker/build/css/bootstrap-datetimepicker.css'
+            'eonasdan-bootstrap-datetimepicker/build/css/bootstrap-datetimepicker.css',
+            'bootstrap-treeview/dist/bootstrap-treeview.min.css',
+            'bootstrap-tokenfield/dist/css/bootstrap-tokenfield.css'
           ]
         }, {
           expand: true,
@@ -126,7 +128,9 @@ module.exports = function(grunt) {
             'zeroclipboard/dist/ZeroClipboard.min.js',
             'leaflet-fullscreen/dist/Leaflet.fullscreen.min.js',
             'moment/min/moment-with-locales.min.js',
-            'eonasdan-bootstrap-datetimepicker/build/js/bootstrap-datetimepicker.min.js'
+            'eonasdan-bootstrap-datetimepicker/build/js/bootstrap-datetimepicker.min.js',
+            'bootstrap-treeview/dist/bootstrap-treeview.min.js',
+            'bootstrap-tokenfield/js/bootstrap-tokenfield.js'
           ]
         }]
       }

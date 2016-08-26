@@ -22,6 +22,7 @@ import autocomplete_light
 from autocomplete_light.contrib.taggit_field import TaggitField, TaggitWidget
 
 from django import forms
+from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext as _
 
 from mptt.forms import TreeNodeMultipleChoiceField
@@ -40,6 +41,23 @@ class CategoryChoiceField(forms.ModelChoiceField):
                '<i class="fa fa-square-o fa-stack-2x"></i>' \
                '<i class="fa '+obj.fa_class+' fa-stack-1x"></i></div>' \
                '&nbsp;' + obj.gn_description + '</span>'
+
+
+class TreeWidget(forms.TextInput):
+        input_type = 'text'
+
+        def __init__(self, attrs=None):
+            super(TreeWidget, self).__init__(attrs)
+
+        def render(self, name, values, attrs=None):
+            if isinstance(values, basestring):
+                vals = values
+            else:
+                vals = ','.join([str(i.tag.name) for i in values])
+            output = ["""<input class='form-control' id='id_resource-keywords' name='resource-keywords'
+                 value='%s'><br/>""" % (vals)]
+            output.append('<div id="treeview" class=""></div>')
+            return mark_safe(u'\n'.join(output))
 
 
 class CategoryForm(forms.Form):
@@ -124,7 +142,7 @@ class ResourceBaseForm(TranslationModelForm):
         label=_("Keywords"),
         required=False,
         help_text=_("A space or comma-separated list of keywords"),
-        widget=TaggitWidget('TagAutocomplete'))
+        widget=TaggitWidget('HierarchicalKeywordAutocomplete'))
 
     regions = TreeNodeMultipleChoiceField(
         label=_("Regions"),

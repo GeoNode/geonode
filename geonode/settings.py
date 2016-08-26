@@ -51,7 +51,6 @@ TEMPLATE_DEBUG = strtobool(os.getenv('TEMPLATE_DEBUG', 'True'))
 # otherwise it will raise errors for the missing non-minified dependencies
 DEBUG_STATIC = strtobool(os.getenv('DEBUG_STATIC', 'False'))
 
-
 # This is needed for integration tests, they require
 # geonode to be listening for GeoServer auth requests.
 os.environ['DJANGO_LIVE_TEST_SERVER_ADDRESS'] = 'localhost:8000'
@@ -300,6 +299,7 @@ INSTALLED_APPS = (
     # Utility
     'pagination',
     'taggit',
+    'treebeard',
     'friendlytagloader',
     'geoexplorer',
     'leaflet',
@@ -861,6 +861,7 @@ SEARCH_FILTERS = {
     'CATEGORIES_ENABLED': True,
     'OWNERS_ENABLED': True,
     'KEYWORDS_ENABLED': True,
+    'H_KEYWORDS_ENABLED': True,
     'DATE_ENABLED': True,
     'REGION_ENABLED': True,
     'EXTENT_ENABLED': True,
