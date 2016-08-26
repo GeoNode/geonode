@@ -35,7 +35,7 @@ def _put_value_in_dict(municipality, province, _100yr, _25yr, _5yr):
     return _dict
 
 
-def _parse_floodplain_csv(csv_path):
+def _parse_floodplain_csv(csv_path, msg):
 
     if not os.path.isfile(csv_path):
         print '{0} file not found'.format(msg)
@@ -80,12 +80,12 @@ def _parse_floodplain_csv(csv_path):
 def insert_pl1_floodplain():
     csv_path = os.path.realpath('Phil-LiDAR1-RB-FP.csv')
     msg = 'Phil LiDAR 1 RB-FP CSV'
-    _parse_floodplain_csv(csv_path.msg)
+    _parse_floodplain_csv(csv_path,msg)
 
 def insert_dream_floodplain():
     csv_path = os.path.realpath('DREAM-RB_FP.csv')
     msg = 'DREAM RB-FP CSV'
-    _parse_floodplain_csv(csv_path.msg)
+    _parse_floodplain_csv(csv_path,msg)
 
 def _parse_ridf_muni_csv():
 
