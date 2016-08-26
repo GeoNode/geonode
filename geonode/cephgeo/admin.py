@@ -117,10 +117,21 @@ class RIDFAdmin(admin.ModelAdmin):
         '_100yr',
         '_25yr',
         '_5yr',
-        'municipality_province'
+        'layer_name',
+        'Riverbasins'
+
     )
     # list_filter = ('')
-    search_fields = ('municipality','province','_100yr','_25yr','_5yr')
+
+    def get_queryset(self, request):
+        return super(RIDFAdmin, self).get_queryset(request).prefetch_related('riverbasins')
+
+    def Riverbasins(self, obj):
+        return u", ".join(o.name for o in obj.riverbasins.all())
+
+    search_fields = ('municipality', 'province', '_100yr',
+                     '_25yr', '_5yr', 'layer_name')
+
 
 admin.site.register(Cart, CartAdmin)
 admin.site.register(Item, ItemAdmin)
