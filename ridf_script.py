@@ -197,7 +197,7 @@ if __name__ == '__main__':
     # dbcon, dbcur = _init_db()
     print('Reading RIDF_Municipality list')
     #call this function once
-    ridf_muni_list = _parse_ridf_muni_csv()
+    # ridf_muni_list = _parse_ridf_muni_csv()
 
     print('Inserted into geonode db')
     # pprint(sorted(ridf_muni_list, key=(lambda x: x['_muni_prov'])))
@@ -206,6 +206,6 @@ if __name__ == '__main__':
     #     print(i)
     # print('Data inserted to geonode')
 
-    insert_pl_floodplain()
+    insert_pl1_floodplain()
     insert_dream_floodplain()
     
