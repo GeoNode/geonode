@@ -11,13 +11,13 @@ from crispy_forms.layout import Layout, Fieldset, HTML, Div, Column, Row, Field
 from crispy_forms.bootstrap import PrependedText, InlineRadios
 from model_utils import Choices
 
-from geonode.datarequests.models import DataRequestProfile
+from geonode.datarequests.models import DataRequestProfile, DataRequest, ProfileRequest
 from geonode.layers.forms import NewLayerUploadForm, LayerUploadForm, JSONField
 from geonode.documents.models import Document
 from geonode.documents.forms import DocumentCreateForm
 from geonode.people.models import OrganizationType, Profile
 
-from .models import DataRequestProfile, RequestRejectionReason
+from .models import DataRequestProfile, RequestRejectionReason, DataRequest, ProfileRequest
 
 from pprint import pprint
 
@@ -26,7 +26,7 @@ class DataRequestProfileForm(forms.ModelForm):
     captcha = ReCaptchaField(attrs={'theme': 'clean'})
 
     class Meta:
-        model = DataRequestProfile
+        model = DataRequest
         fields = (
             'first_name',
             'middle_name',
@@ -148,21 +148,21 @@ class DataRequestProfileForm(forms.ModelForm):
         fname = self.cleaned_data.get('first_name').strip()
         if len(fname)<1:
             raise forms.ValidationError("You have entered an empty first name")
-        
+
         return fname
-    
+
     def clean_middle_name(self):
         mname = self.cleaned_data.get('middle_name').strip()
         if len(mname)<1:
             raise forms.ValidationError("You have entered an empty middle name")
-        
+
         return mname
-        
+
     def clean_last_name(self):
         lname = self.cleaned_data.get('last_name').strip()
         if len(lname)<1:
             raise forms.ValidationError("You have entered an empty last name")
-        
+
         return lname
 
     def clean_email(self):
@@ -248,7 +248,7 @@ class DataRequestDetailsForm(forms.ModelForm):
     )
 
     class Meta:
-        model = DataRequestProfile
+        model = ProfileRequest
         fields=(
             #project_summary',
             'data_type_requested',
@@ -443,7 +443,7 @@ class DataRequestProfileRejectForm(forms.ModelForm):
     )
 
     class Meta:
-        model = DataRequestProfile
+        model = DataRequest
         fields = (
             'rejection_reason', 'additional_rejection_reason',
         )
