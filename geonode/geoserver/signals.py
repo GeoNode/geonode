@@ -257,12 +257,15 @@ def geoserver_post_save(instance, sender, **kwargs):
                                        )
                                        )
 
-        if gs_resource.store.type and gs_resource.store.type.lower() == 'geogig' and \
-                gs_resource.store.connection_parameters.get('geogig_repository'):
+        gs_store_type = gs_resource.store.type.lower() if gs_resource.store.type else None
+        geogig_repository = gs_resource.store.connection_parameters.get('geogig_repository', '')
+        geogig_repo_name = geogig_repository.replace('geoserver://', '')
 
-            repo_url = '{url}geogig/{geogig_repository}'.format(
+        if gs_store_type == 'geogig' and geogig_repo_name:
+
+            repo_url = '{url}geogig/repos/{repo_name}'.format(
                 url=ogc_server_settings.public_url,
-                geogig_repository=gs_resource.store.connection_parameters.get('geogig_repository'))
+                repo_name=geogig_repo_name)
 
             path = gs_resource.dom.findall('nativeName')
 
