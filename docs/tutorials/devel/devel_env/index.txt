@@ -29,7 +29,7 @@ Summary of the installation steps
 
     .. code-block:: console
 
-        service apahe2 stop
+        service apache2 stop
         service tomcat7 stop
 
 #. If possible log as **root** user, open a terminal and ``cd /home/geonode/dev``
@@ -334,7 +334,7 @@ Summary of the installation steps
 
         .. code-block:: console
 
-            service apahe2 stop
+            service apache2 stop
             service tomcat7 stop
 
    .. code-block:: console
@@ -402,7 +402,7 @@ Start working on Geonode the next day after install
 
             .. code-block:: console
 
-                service apahe2 stop
+                service apache2 stop
                 service tomcat7 stop
 
       .. code-block:: console
