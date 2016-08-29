@@ -1,6 +1,7 @@
 from geonode.settings import GEONODE_APPS
 from geonode.cephgeo.models import RIDF
 import shutil
+import os
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "geonode.settings")
 
