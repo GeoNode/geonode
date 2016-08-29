@@ -1,5 +1,4 @@
-import geonode.settings as settings
-from settings import GEONODE_APPS
+from geonode.settings import GEONODE_APPS
 from geonode.cephgeo.models import RIDF
 import shutil
 
