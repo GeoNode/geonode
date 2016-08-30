@@ -90,7 +90,7 @@ Only for transifex maintainers
 .. note:: This section is only for the maintainers of a transifex group!
 
 For main Geonode localization files
-----------------------------------
+-----------------------------------
 
 These files are generated using standard django-admin tools : makemessages and compilemessages command line tools.
 
