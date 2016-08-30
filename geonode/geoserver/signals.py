@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import errno
 import logging
 import urllib
@@ -30,8 +31,9 @@ def geoserver_pre_delete(instance, sender, **kwargs):
     # cascading_delete should only be called if
     # ogc_server_settings.BACKEND_WRITE_ENABLED == True
     if getattr(ogc_server_settings, "BACKEND_WRITE_ENABLED", True):
-        if instance.storeType != "remoteStore":
-            cascading_delete(gs_catalog, instance.typename)
+        if not getattr(instance, "service", None):
+            if instance.typename:
+                cascading_delete(gs_catalog, instance.typename)
 
 
 def geoserver_pre_save(instance, sender, **kwargs):
@@ -48,26 +50,28 @@ def geoserver_pre_save(instance, sender, **kwargs):
     """
 
     # Don't run this signal if is a Layer from a remote service
-    if instance.workspace == 'remoteWorkspace':
+    if getattr(instance, "service", None) is not None:
         return
+
+    gs_resource = None
 
     # If the store in None then it's a new instance from an upload,
     # only in this case run the geonode_uplaod method
     if not instance.store or getattr(instance, 'overwrite', False):
-        base_file = instance.get_base_file()
+        base_file, info = instance.get_base_file()
 
         # There is no need to process it if there is not file.
         if base_file is None:
             return
-        gs_name, workspace, values = geoserver_upload(instance,
-                                                      base_file.file.path,
-                                                      instance.owner,
-                                                      instance.name,
-                                                      overwrite=True,
-                                                      title=instance.title,
-                                                      abstract=instance.abstract,
-                                                      # keywords=instance.keywords,
-                                                      charset=instance.charset)
+        gs_name, workspace, values, gs_resource = geoserver_upload(instance,
+                                                                   base_file.file.path,
+                                                                   instance.owner,
+                                                                   instance.name,
+                                                                   overwrite=True,
+                                                                   title=instance.title,
+                                                                   abstract=instance.abstract,
+                                                                   # keywords=instance.keywords,
+                                                                   charset=instance.charset)
         # Set fields obtained via the geoserver upload.
         instance.name = gs_name
         instance.workspace = workspace
@@ -75,10 +79,11 @@ def geoserver_pre_save(instance, sender, **kwargs):
         for key in ['typename', 'store', 'storeType']:
             setattr(instance, key, values[key])
 
-    gs_resource = gs_catalog.get_resource(
-        instance.name,
-        store=instance.store,
-        workspace=instance.workspace)
+    if not gs_resource:
+        gs_resource = gs_catalog.get_resource(
+            instance.name,
+            store=instance.store,
+            workspace=instance.workspace)
 
     gs_resource.title = instance.title
     gs_resource.abstract = instance.abstract
@@ -116,7 +121,6 @@ def geoserver_pre_save(instance, sender, **kwargs):
        * Download links (WMS, WCS or WFS and KML)
        * Styles (SLD)
     """
-    gs_resource = gs_catalog.get_resource(instance.name)
 
     bbox = gs_resource.latlon_bbox
 
@@ -131,6 +135,9 @@ def geoserver_pre_save(instance, sender, **kwargs):
     instance.bbox_x1 = bbox[1]
     instance.bbox_y0 = bbox[2]
     instance.bbox_y1 = bbox[3]
+
+    # store the resource to avoid another geoserver call in the post_save
+    instance.gs_resource = gs_resource
 
 
 def geoserver_post_save(instance, sender, **kwargs):
@@ -151,17 +158,20 @@ def geoserver_post_save(instance, sender, **kwargs):
         set_attributes(instance)
         return
 
-    try:
-        gs_resource = gs_catalog.get_resource(
-            instance.name,
-            store=instance.store,
-            workspace=instance.workspace)
-    except socket_error as serr:
-        if serr.errno != errno.ECONNREFUSED:
-            # Not the error we are looking for, re-raise
-            raise serr
-        # If the connection is refused, take it easy.
-        return
+    if not getattr(instance, 'gs_resource', None):
+        try:
+            gs_resource = gs_catalog.get_resource(
+                instance.name,
+                store=instance.store,
+                workspace=instance.workspace)
+        except socket_error as serr:
+            if serr.errno != errno.ECONNREFUSED:
+                # Not the error we are looking for, re-raise
+                raise serr
+            # If the connection is refused, take it easy.
+            return
+    else:
+        gs_resource = instance.gs_resource
 
     if gs_resource is None:
         return
@@ -282,7 +292,11 @@ def geoserver_post_save(instance, sender, **kwargs):
             covWidth, covHeight = get_coverage_grid_extent(instance)[:2]
         except GeoNodeException as e:
             msg = _('Could not create a download link for layer.')
-            logger.warn(msg, e)
+            try:
+                # HACK: The logger on signals throws an exception
+                logger.warn(msg, e)
+            except:
+                pass
         else:
 
             links = wcs_links(ogc_server_settings.public_url + 'wcs?',
@@ -312,7 +326,7 @@ def geoserver_post_save(instance, sender, **kwargs):
                                url=kml_reflector_link_download,
                                defaults=dict(
                                    extension='kml',
-                                   name=_("KML"),
+                                   name="KML",
                                    mime='text/xml',
                                    link_type='data',
                                )
@@ -341,7 +355,7 @@ def geoserver_post_save(instance, sender, **kwargs):
                                url=tile_url,
                                defaults=dict(
                                    extension='tiles',
-                                   name=_("Tiles"),
+                                   name="Tiles",
                                    mime='image/png',
                                    link_type='image',
                                )
@@ -388,7 +402,7 @@ def geoserver_post_save(instance, sender, **kwargs):
                                url=legend_url,
                                defaults=dict(
                                    extension='png',
-                                   name=_('Legend'),
+                                   name='Legend',
                                    url=legend_url,
                                    mime='image/png',
                                    link_type='image',
@@ -475,7 +489,11 @@ def geoserver_pre_save_maplayer(instance, sender, **kwargs):
     except EnvironmentError as e:
         if e.errno == errno.ECONNREFUSED:
             msg = 'Could not connect to catalog to verify if layer %s was local' % instance.name
-            logger.warn(msg, e)
+            try:
+                # HACK: The logger on signals throws an exception
+                logger.warn(msg, e)
+            except:
+                pass
         else:
             raise e
 

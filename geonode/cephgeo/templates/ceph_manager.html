@@ -20,10 +20,49 @@
                 <h4><a href="{% url 'cephgeo.views.data_input' %}" class="toggle toggle-nav"><i class="fa fa-file-code-o"></i>Metadata Input</a></h4>
                 <h4><a data-toggle="modal" data-target="#modal-metadata" href="" class="toggle toggle-nav"><i class="fa fa-file-text-o"></i>Metadata Update</a></h4>
                 <h4><a data-toggle="modal" data-target="#modal-seed" href="" class="toggle toggle-nav"><i class="fa fa-leaf"></i>Seed Layers</a></h4>
-
+                <h4><a data-toggle="modal" data-target="#modal-default-style" href="" class="toggle toggle-nav"><i class="fa fa-star-o"></i>Set Default Styles</a></h4>
             </nav>
         </div>
     </div>
+
+<div class="modal fade" id="modal-default-style" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h4 class="modal-title" id="myModalLabel">{% trans "Update Default Style of Layers" %}</h4>
+      </div>
+      <form id="metadata">
+          <div class="modal-body">
+              <div>
+                <input type="radio" name="fhm-def-sld" value="fhm-def-sld" id="fhm-def-sld">
+                <label for="fhm">Flood Hazard Map</label>
+              </div>
+              <div>
+                <input type="radio" name="rl-def-sld" value="rl-def-sld" id="rl-def-sld">
+                <label for="resourcelayer">Resource Layer</label>
+              </div>
+              <div>
+                <input type="radio" name="sar-def-sld" value="sar-def-sld" id="sar-def-sld">
+                <label for="sar">Update SAR DEM</label>
+              </div>
+              <div>
+                <input type="radio" name="dem-cov-def-sld" value="dem-cov-def-sld" id="dem-cov-def-sld">
+                <label for="sar">DEM Coverage</label>
+              </div>
+              <div>
+                <input type="radio" name="jurisdict-def-sld" value="jurisdict-def-sld" id="jurisdict-def-sld">
+                <label for="sar">Jurisdiction shapefiles</label>
+              </div>
+          </div>
+          <div class="modal-footer">
+            <button id="update-which" type="button" class="btn btn-default" data-dismiss="modal">{% trans "Submit" %}</button>
+          </div>
+       </form>
+    </div>
+  </div>
+</div>
+
 
 <div class="modal fade" id="modal-metadata" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
   <div class="modal-dialog">
@@ -111,6 +150,22 @@ $( "#update-which" ).click(function() {
     else if ($( "input:checked" ).val() == "seed-sar"){
             window.location = "{% url 'cephgeo.views.seed_SAR_DEM' %}";
     }
+    else if ($( "input:checked" ).val() == "fhm-def-sld"){
+            window.location = "{% url 'cephgeo.views.fhm_default_style' %}";
+    }
+    else if ($( "input:checked" ).val() == "rl-def-sld"){
+            window.location = "{% url 'cephgeo.views.rl_default_style' %}";
+    }
+    else if ($( "input:checked" ).val() == "sar-def-sld"){
+            window.location = "{% url 'cephgeo.views.sar_default_style' %}";
+    }
+    else if ($( "input:checked" ).val() == "dem-cov-def-sld"){
+            window.location = "{% url 'cephgeo.views.dem_cov_default_style' %}";
+    }
+     else if ($( "input:checked" ).val() == "jurisdict-def-sld"){
+            window.location = "{% url 'cephgeo.views.jurisdict_default_style' %}";
+    }
+    
 });
 </script>
 {% endblock extra_script %}

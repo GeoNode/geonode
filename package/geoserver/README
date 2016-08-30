@@ -1,0 +1,7 @@
+To build the debian package, you need to do the following.
+
+1. Download geoserver.war from the build server
+2. Rename the war to zip and unzip in target/geoserver
+3. Update debian/changelog with the new version
+4. Run debuild -S -k<your-gpg-key-id>
+5. dput ppa:geonode/testing ../geoserver-geonode*.sources

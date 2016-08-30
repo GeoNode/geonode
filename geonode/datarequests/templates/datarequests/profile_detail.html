@@ -164,7 +164,7 @@
             </div>
         </div>
 
-        {% if request_profile.request_status == 'rejected'  %}
+        {% if request_profile.request_status == 'rejected' or request_profile.request_status == 'cancelled' %}
           <p><strong>{% trans "Reason" %}</strong>: {{ request_profile.rejection_reason }}</p>
           {% if request_profile.additional_rejection_reason %}
               <p><strong>{% trans "Additional Details" %}</strong>: {{ request_profile.additional_rejection_reason }}</p>
@@ -178,7 +178,8 @@
                 <button type="submit" class="btn btn-primary btn-md btn-block"  id="recreate-dir-submit">{% trans "Create Directory" %}</button>
             </form>
         </li>
-      {% elif request_profile.request_status == 'pending'%}
+      {% else %}
+        {%  if request_profile.request_status == 'pending'%}
         <li class="list-group-item">
           <button class="btn btn-primary btn-md btn-block"  data-toggle="modal" data-target="#approve-request" id="approve-button">{% trans "Approve" %}</button>
         </li>
@@ -238,7 +239,45 @@
 
         </li>
       {% endif %}
-      {% endif %}
+      {% if request_profile.request_status == 'unconfirmed' or request_profile.request_status == 'pending' %}
+         <li class="list-group-item">
+          <button class="btn btn-default btn-md btn-block" data-toggle="modal" data-target="#cancel-request">{% trans "Cancel Request" %}</button>
+        </li>
+
+        <div class="modal fade" id="cancel-request" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+          <form id="request_cancel_form" accept-charset="UTF-8" method="post" class="modal-form" action='{% url "datarequests:data_request_profile_cancel" pk=request_profile.pk%}'>
+            <div class="modal-dialog">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                  <h4 class="modal-title" id="myModalLabel">{% trans "Cancel Data Request " %}</h4>
+                </div>
+                <div class="modal-body">
+                  {{ request_reject_form|as_bootstrap }}
+                </div>
+                <div class="alert hidden" id="cancel_request_message">
+                  <p class="message">}</p>
+                  <p class="extra_content"></p>
+                </div>
+                <div class="modal-footer">
+                  <a href="#" class="btn btn-default" id="cancel_request_exit" data-dismiss="modal">{% trans "Exit" %}</a>
+                  <a href="#" class="btn btn-primary" id="cancel_request_submit">{% trans "Cancel Request" %}</a>
+                </div>
+              </div>
+            </div>
+          </form>
+        </div>
+        {% endif %}
+  {% endif %}
+  {% else %}
+  {% if request_profile.request_status == 'unconfirmed' or request_profile.request_status == 'pending' %}
+         <li class="list-group-item">
+             <form id="cancel_form" method="post" class="modal-form" action='{% url "datarequests:data_request_profile_cancel" pk=request_profile.pk%}'>{% csrf_token %}
+                <button type="submit" class="btn btn-default btn-md btn-block" id="cancel-request-submit">{% trans "Cancel Request" %}</button>
+        </form>            
+        </li>
+    {% endif %}
+{% endif %}
   </ul>
   <input type="hidden" id="request_profile_id" value="{{request_profile.pk}}"></input>
   </div> <!-- col-md-4 -->
@@ -316,12 +355,56 @@
               }
             );
           };
+          
+           var cancel_request_submit = function(){
+             var message = $('#cancel_request_message');
+             var $request_cancel_form = $('#request_cancel_form');
+             var pk = $('#request_profile_id').val();
+             var url = "{% url 'datarequests:data_request_profile_cancel' pk=666 %}".replace('666', pk);
+             var form = $request_cancel_form.serialize()
+             $.ajax(
+              {
+                type: "POST",
+                url: url,
+                data: {
+                  form: $request_cancel_form.serialize()
+                },
+                success: function(data) {
+                  var result = $.parseJSON(data).result;
+                  var errors = $.parseJSON(data).errors;
+                  var url = $.parseJSON(data).url;
+                  if (result == 'error'){
+                    message.find('.message').html(errors);
+                    message.addClass('alert-warning').removeClass('alert-success alert-danger hidden');
+                    $("#reject_request_submit").attr("disabled", false);
+                    $("#reject_request_cancel").attr("disabled", false);
+                  }
+                  else{
+                    location.href = url;
+                  }
+                },
+                error: function(data){
+                  $("#cancel_request_submit").attr("disabled", false);
+                  $("#cancel_request_exit").attr("disabled", false);
+                  message.find('.message').html('An unexpected error was encounterred');
+                  message.addClass('alert-danger').removeClass('alert-success alert-warning hidden');
+                }
+              }
+            );
+          };
 
           $("#reject_request_submit").click(function(e){
               e.preventDefault();
               $(this).attr("disabled", true);
               $("#reject_request_cancel").attr("disabled", true);
               reject_request_submit();
+          });
+          
+          $("#cancel_request_submit").click(function(e){
+              e.preventDefault();
+              $(this).attr("disabled", true);
+              $("#cancel_request_exit").attr("disabled", true);
+              cancel_request_submit();
           });
 
           $("#approve_request_submit").click(function(e){
@@ -333,6 +416,10 @@
 
           $("#reject-request").on('hidden.bs.modal', function (e) {
             $('#reject_request_message').addClass("hidden");
+          });
+          
+          $("#cancel-request").on('hidden.bs.modal', function (e) {
+            $('#cancel_request_message').addClass("hidden");
           });
     </script>
 

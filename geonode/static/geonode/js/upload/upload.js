@@ -122,7 +122,7 @@ define(['underscore',
             if (!info.type) {
                 log_error({
                     title: 'Unsupported type',
-                    message: interpolate(gettext('The file %s is an unsupported file type, please select another file.',[info.files[0].name]))
+                    message: interpolate(gettext('The file %s is an unsupported file type, please select another file.'),[info.files[0].name])
                 });
                 delete layers[name];
             } else {
@@ -145,7 +145,8 @@ define(['underscore',
         var files = layers[Object.keys(layers)[0]]['files'];
         var types = [];
         for (var i = 0; i<files.length; i++){
-            var ext = files[i].name.split('.').pop();
+            var base_name = files[i].name.split('.')[0];
+            var ext = files[i].name.split('.').pop().toLowerCase();
             if ($.inArray(ext,types) == -1){
                 types.push(ext);
             }
@@ -255,9 +256,10 @@ define(['underscore',
             common.logError('Please provide some files');
             return false;
         }
+
         var checked = checkFiles();
         if ($.isEmptyObject(layers) || !checked) {
-            alert(gettext('You are uploading an incomplete set of files.'));
+            alert(gettext('You are trying to upload an incomplete set of files or not all mandatory options have been validated.\n\nPlease check for errors in the form!'));
         } else {
             $.each(layers, function (name, layerinfo) {
                 layerinfo.uploadFiles();

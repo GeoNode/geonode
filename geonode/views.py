@@ -82,25 +82,31 @@ def _resolve_layer(request, typename, permission='base.view_resourcebase',
 
 def philgrid(request,template='index.html'):
     layername = "geonode:philgrid"
-    
+   
     layer = _resolve_layer(
         request,
         layername,
         'base.view_resourcebase',
         _PERMISSION_MSG_VIEW)
     config = layer.attribute_config()
+    # print "CONFIG 1" + str(config)
+
     # print layername
     # Add required parameters for GXP lazy-loading
     layer_bbox = layer.bbox
+    # print layer_bbox
     bbox = [float(coord) for coord in list(layer_bbox[0:4])]
     srid = layer.srid
 
     # Transform WGS84 to Mercator.
     config["srs"] = srid if srid != "EPSG:4326" else "EPSG:900913"
+    # print "SRID " + srid
     config["bbox"] = llbbox_to_mercator([float(coord) for coord in bbox])
 
     config["title"] = layer.title
     config["queryable"] = True
+
+    # print "CONFIG 2" + str(config)
 
     if layer.storeType == "remoteStore":
         service = layer.service
@@ -145,7 +151,8 @@ def philgrid(request,template='index.html'):
         'leaflet')
 
     context_dict["layername"] = layername
-    # pprint context_dict
+    # print "CONTEXT DICT" + str(context_dict)
+    # print "Layer" + str(layer)
     return render_to_response(template, RequestContext(request, context_dict))
 
 
