@@ -113,7 +113,6 @@ def _resolve_story(request, id, permission='base.change_resourcebase',
     return resolve_object(request, MapStory, {key: id}, permission=permission,
                           permission_msg=msg, **kwargs)
 
-
 # BASIC MAP VIEWS #
 
 def map_detail(request, mapid, snapshot=None, template='maps/map_detail.html'):
@@ -335,19 +334,6 @@ def map_embed(
         'config': json.dumps(config)
     }))
 
-
-# Story View #
-def draft_view(request, storyid, template='maps/maploom.html'):
-
-    story_obj = _resolve_story(request, storyid, 'base.change_resourcebase', _PERMISSION_MSG_SAVE)
-
-    config = story_obj.viewer_json(request.user)
-
-    return render_to_response(template, RequestContext(request, {
-        'config': json.dumps(config),
-        'story': story_obj
-    }))
-
 # MAPS VIEWER #
 
 @xframe_options_exempt
@@ -385,24 +371,6 @@ def mapstory_view(request, mapid, snapshot=None, template='maps/map_view.html'):
         'config': json.dumps(config),
         'map': map_obj
     }))
-
-def map_viewer(request, mapid, snapshot=None, template='maps/map_viewer.html'):
-    """
-    The view that returns the map composer opened to
-    the map with the given map ID.
-    """
-    map_obj = _resolve_map(request, mapid, 'base.view_resourcebase', _PERMISSION_MSG_VIEW)
-
-    if snapshot is None:
-        config = map_obj.viewer_json(request.user)
-    else:
-        config = snapshot_config(snapshot, map_obj, request.user)
-
-    return render_to_response(template, RequestContext(request, {
-        'config': json.dumps(config),
-        'map': map_obj
-    }))
-
 
 def map_view_js(request, mapid):
     map_obj = _resolve_map(request, mapid, 'base.view_resourcebase', _PERMISSION_MSG_VIEW)
