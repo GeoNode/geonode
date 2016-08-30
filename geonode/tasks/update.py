@@ -145,7 +145,8 @@ def fhm_year_metadata(flood_year, skip_prev):
     #     layer_list = Layer.objects.filter(name__icontains='fh{0}yr'.format(flood_year)).exclude(Q(keywords__name__icontains='flood hazard map')&Q(category__identifier='geoscientificInformation')&Q(purpose__icontains='the')&Q(abstract__icontains='the'))
     # else:
     #     layer_list = Layer.objects.filter(name__icontains='fh{0}yr'.format(flood_year))
-    layer_list = Layer.objects.filter(name__icontains='fh{0}yr'.format(flood_year))
+    # layer_list = Layer.objects.filter(name__icontains='fh{0}yr'.format(flood_year))
+    layer_list = Layer.objects.filter(name__icontains='muni_')
     total_layers = len(layer_list)
     print("Updating metadata of [{0}] Flood Hazard Maps for Flood Year [{1}]".format(total_layers, flood_year))
     ctr = 0
