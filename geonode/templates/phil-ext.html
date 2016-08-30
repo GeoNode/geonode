@@ -10,14 +10,16 @@
     height: 800px;
   }
 </style>
+
 <script type="text/javascript">
     var map;
     window.addEventListener("map:init", function (e) {
 
         map = e.detail.map;
 
+        
         {% if resource.bbox_string %}
-          zoom_to_box(map, [{{ resource.bbox_string }}]);
+            zoom_to_box(map, [{{ resource.bbox_string }}]);
         {% endif %}
 
         tile_layer = L.tileLayer.wms('{{ resource.ows_url|safe }}', {
@@ -45,11 +47,12 @@
           'MapQuestOpen OSM' : MapQuestOpen_OSM
         };
 
-        L.control.layers(baseMaps).addTo(map);
+        //L.control.layers(baseMaps).addTo(map);
         if (tile_layer != null) {
             map.layerscontrol.addOverlay(tile_layer,"{{ resource.title }}");
             map.addLayer(tile_layer);
         }
+
 
     });
     function zoom_to_box(map, bbox){

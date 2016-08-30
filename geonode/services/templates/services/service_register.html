@@ -35,6 +35,13 @@
 <script type="text/javascript">
     $( document ).ready(function() {
         $("#service_register_form").submit(function(e) {
+            var service_name_regexp = new RegExp('^[a-zA-Z]+[a-zA-Z0-9-_\.]*$');
+            if(!service_name_regexp.test($("#id_name").val())) {
+                $("#responseDiv").html("Service name must start with a letter, followed by letters, numbers, or the characters: . - _").show();
+                $("#submit_button").prop("disabled",false);
+                return false;
+            }
+
             $("#responseDiv").html("Importing service, please wait...").show();
             $(".result").remove();
             $("#tableDiv").hide();

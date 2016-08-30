@@ -194,7 +194,7 @@ if notification_app:
         """
         recipients_ids = NoticeSetting.objects \
             .filter(notice_type__label=notice_type_label) \
-            .values_list('user', flat=True)
+            .values('user')
         profiles = Profile.objects.filter(id__in=recipients_ids)
         if exclude_user:
             profiles.exclude(username=exclude_user.username)

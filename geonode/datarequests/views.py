@@ -39,6 +39,7 @@ from geonode.layers.utils import file_upload
 from geonode.people.models import Profile
 from geonode.people.views import profile_detail
 from geonode.security.views import _perms_info_json
+from geonode.tasks.jurisdiction import jurisdiction_style
 from geonode.utils import default_map_config
 from geonode.utils import GXPLayer
 from geonode.utils import GXPMap
@@ -212,7 +213,7 @@ def registration_part_two(request):
                         # This should be followed up in upstream Django.
                         tempdir, base_file = form.write_files()
                         registration_uploader, created = Profile.objects.get_or_create(username='dataRegistrationUploader')
-
+                        pprint("saving jurisdiction")
                         saved_layer = file_upload(
                             base_file,
                             name=name,
@@ -222,33 +223,15 @@ def registration_part_two(request):
                             abstract=form.cleaned_data["abstract"],
                             title=form.cleaned_data["layer_title"],
                         )
-                        def_style = Style.objects.get(name="Boundary")
-                        saved_layer.styles.add(def_style)
-                        saved_layer.default_style=def_style
-                        saved_layer.is_published = False
-                        saved_layer.save()
                         interest_layer =  saved_layer
-
-                        cat = Catalog(settings.OGC_SERVER['default']['LOCATION'] + 'rest',
-                            username=settings.OGC_SERVER['default']['USER'],
-                            password=settings.OGC_SERVER['default']['PASSWORD'])
-
-                        #boundary_style = cat.get_style('Boundary')
-                        #gs_layer = cat.get_layer(saved_layer.name)
-                        #if boundary_style:
-                        #    gs_layer._set_default_style(boundary_style)
-                        #    cat.save(gs_layer) #save in geoserver
-                        #    saved_layer.sld_body = boundary_style.sld_body
-                        #    saved_layer.save() #save in geonode
-                        
-                        pprint("modified layer style")
-                            
                         #bbox = gs_layer.resource.latlon_bbox
                         #bbox_lon = (float(bbox[0])+float(bbox[1]))/2
                         #bbox_lat = (float(bbox[2])+float(bbox[3]))/2
                         #place_name = get_place_name(bbox_lon, bbox_lat)
+                        juris_data_size = 0.0
+                        #area_coverage = get_area_coverage(saved_layer.name)
+                        area_coverage =  0
                         
-
                     except Exception as e:
                         exception_type, error, tb = sys.exc_info()
                         print traceback.format_exc()
@@ -290,6 +273,8 @@ def registration_part_two(request):
                         if permissions is not None and len(permissions.keys()) > 0:
 
                             saved_layer.set_permissions(permissions)
+                        
+                        jurisdiction_style.delay(saved_layer)
 
                     finally:
                         if tempdir is not None:
@@ -319,11 +304,11 @@ def registration_part_two(request):
                                 interest_layer = interest_layer
                             )
 
-                    #request_profile.place_name = place_name['state']
-                    request_profile.place_name = place_name
-                    request_profile.juris_data_size = juris_data_size
-                    request_profile.area_coverage = area_coverage
-                    request_profile.save()
+                    if interest_layer:
+                        #request_profile.place_name = place_name['state']
+                        request_profile.juris_data_size = juris_data_size
+                        request_profile.area_coverage = area_coverage
+                        request_profile.save()
 
                     if request.user.is_authenticated():
                         request_profile.profile = request.user
@@ -555,9 +540,11 @@ def data_request_profile(request, pk, template='datarequests/profile_detail.html
     return render_to_response(template, RequestContext(request, context_dict))
 
 
-@require_POST
 def data_request_profile_reject(request, pk):
     if not request.user.is_superuser:
+        raise PermissionDenied
+
+    if not request.method == 'POST':
         raise PermissionDenied
 
     request_profile = get_object_or_404(DataRequestProfile, pk=pk)
@@ -589,10 +576,53 @@ def data_request_profile_reject(request, pk):
         mimetype='text/plain'
     )
 
+def data_request_profile_cancel(request, pk):
+    request_profile = get_object_or_404(DataRequestProfile, pk=pk)
 
-@require_POST
+    if not request.user.is_superuser and  not request_profile.profile == request.user:
+        raise PermissionDenied
+
+    if not request.method == 'POST':
+        raise PermissionDenied
+
+    request_profile = get_object_or_404(DataRequestProfile, pk=pk)
+
+    if request_profile.request_status == 'pending' or request_profile.request_status == 'unconfirmed':
+        pprint("Yown pasok")
+        form = request.POST.get('form', None)
+        request_profile.request_status = 'cancelled'
+        if form:
+            form_parsed = parse_qs(request.POST.get('form', None))
+            if 'rejection_reason' in form_parsed.keys():
+                request_profile.rejection_reason = form_parsed['rejection_reason'][0]
+
+            if 'additional_rejection_reason' in form_parsed.keys():
+                request_profile.additional_rejection_reason = form_parsed['additional_rejection_reason'][0]
+
+        request_profile.administrator = request.user
+        request_profile.action_date = timezone.now()
+        request_profile.save()
+
+    url = request.build_absolute_uri(request_profile.get_absolute_url())
+    if request.user.is_superuser:
+        return HttpResponse(
+            json.dumps({
+                'result': 'success',
+                'errors': '',
+                'url': url}),
+            status=200,
+            mimetype='text/plain'
+        )
+    else:
+        return HttpResponseRedirect(reverse('datarequests:data_request_profile', args=[pk]))
+
+
+
 def data_request_profile_approve(request, pk):
     if not request.user.is_superuser:
+        raise PermissionDenied
+
+    if not request.method == 'POST':
         raise PermissionDenied
 
     if request.method == 'POST':
@@ -632,9 +662,12 @@ def data_request_profile_approve(request, pk):
     else:
         return HttpResponseRedirect("/forbidden/")
 
-@require_POST
+
 def data_request_profile_reconfirm(request, pk):
     if not request.user.is_superuser:
+        raise PermissionDenied
+
+    if not request.method == 'POST':
         raise PermissionDenied
 
     if request.method == 'POST':
@@ -643,9 +676,11 @@ def data_request_profile_reconfirm(request, pk):
         request_profile.send_verification_email()
         return HttpResponseRedirect(request_profile.get_absolute_url())
 
-@require_POST
 def data_request_profile_recreate_dir(request, pk):
     if not request.user.is_superuser:
+        raise PermissionDenied
+
+    if not request.method == 'POST':
         raise PermissionDenied
 
     if request.method == 'POST':
@@ -654,10 +689,13 @@ def data_request_profile_recreate_dir(request, pk):
         request_profile.create_directory()
         return HttpResponseRedirect(request_profile.get_absolute_url())
 
-@require_POST
 def data_request_facet_count(request):
     if not request.user.is_superuser:
         raise PermissionDenied
+
+    if not request.method == 'POST':
+        raise PermissionDenied
+
     facets_count = {
         'pending': DataRequestProfile.objects.filter(
             request_status='pending').exclude(date=None).count(),
@@ -678,10 +716,10 @@ def data_request_facet_count(request):
 def update_datarequest_obj(datarequest=None, parameter_dict=None, interest_layer=None, request_letter = None):
     if datarequest is None or parameter_dict is None or request_letter is None:
         raise HttpResponseBadRequest
-    
+        
     if not datarequest.middle_name or len(datarequest.middle_name.strip())<1:
         datarequest.middle_name = '_'
-    
+
     ### Updating the other fields of the request
     datarequest.project_summary = parameter_dict['project_summary']
     datarequest.data_type_requested = parameter_dict['data_type_requested']
@@ -692,10 +730,6 @@ def update_datarequest_obj(datarequest=None, parameter_dict=None, interest_layer
         datarequest.purpose = parameter_dict['purpose']
 
     datarequest.intended_use_of_dataset = parameter_dict['intended_use_of_dataset']
-    datarequest.organization_type = parameter_dict['organization_type']
-    datarequest.request_level = parameter_dict['request_level']
-    datarequest.funding_source = parameter_dict['funding_source']
-    datarequest.is_consultant = parameter_dict['is_consultant']
 
     if interest_layer:
         datarequest.jurisdiction_shapefile = interest_layer

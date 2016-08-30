@@ -1,0 +1,90 @@
+.. _vm_running_vagrant:
+
+=========================
+Running a VM with Vagrant
+=========================
+
+In this section you will find instructions on how to setup an Ubuntu 14.04 VM using
+`Vagrant`_
+
+.. _Vagrant: https://www.vagrantup.com/
+
+Vagrant Setup
+=============
+
+Download Vagrant from the `official <https://www.vagrantup.com/downloads>`_ web site.
+Choose the installer matching your operating system and architecture.
+
+Installation process is straightforward, refer to Vagrant `official documentation
+<https://docs.vagrantup.com/v2/installation/index.html>`_ if you encounter any problem.
+
+At the end of the installation process log out your system and log back
+in.
+
+Vagrant is going to need a `provider <https://docs.vagrantup.com/v2/providers/>`_
+in order to setup the Virtual Machines. `VirtualBox` is supported out of the box.
+Just make sure you install `one of the supported versions of VirtualBox <https://docs.vagrantup.com/v2/virtualbox>`_
+
+Open a terminal and type `vagrant version`. A message containing the installed
+version of Vagrant will be printed on the terminal
+::
+
+    Installed Version: 1.7.2
+    Latest Version: 1.7.4
+    ...
+
+Virtual Machine Setup
+=====================
+
+Now that Vagrant is installed let's create our Ubuntu Virtual Machine. Open the terminal
+and create a new folder called `vagrand`. enter the folder and run
+::
+
+    vagrant init ubuntu/trusty32
+
+    A `Vagrantfile` has been placed in this directory. You are now
+    ready to `vagrant up` your first virtual environment! Please read
+    the comments in the Vagrantfile as well as documentation on
+    `vagrantup.com` for more information on using Vagrant.
+
+
+This will create a configuration file called `Vagrantfile` containing the settings
+for the virtual machine, notably the `config.vm.box` variable set to "ubuntu/trusty32"
+will tell Vagrant the specific VM we want to run (Ubuntu 14.04 "Trusty Tahr", 32 bit version)
+
+To start the VM, run
+::
+
+    vagrant up
+
+The first time you run the command it is going to take some since you do not have a
+locally available image of the VM. Vagrant will download the VM from the `Vagrant
+Could <https://vagrantcloud.com/>`_ to your local system.
+::
+
+    Bringing machine 'default' up with 'virtualbox' provider...
+    ==> default: Box 'ubuntu/trusty32' could not be found. Attempting to find and install...
+    default: Box Provider: virtualbox
+    default: Box Version: >= 0
+    ==> default: Loading metadata for box 'ubuntu/trusty32'
+    default: URL: https://atlas.hashicorp.com/ubuntu/trusty32
+    ==> default: Adding box 'ubuntu/trusty32' (v20150928.0.0) for provider: virtualbox
+    default: Downloading: https://atlas.hashicorp.com/ubuntu/boxes/trusty32/versions/20150928.0.0/providers/virtualbox.b
+    ox
+    default: Progress: 3% (Rate: 489k/s, Estimated time remaining: 0:11:11)))
+
+At the end of the download process Vagrant will start the VM.
+
+To access the Virtual machine, run
+::
+
+    vagrant ssh
+
+.. note::
+
+    You need an SSH client for the previous command to work. Most Linux distributions
+    come with an SSH installed. If you are using Windows as the guest operating system
+    install MinGW or Cygwin or Git to obtain a command line SSH client. More information
+    available `here <http://docs-v1.vagrantup.com/v1/docs/getting-started/ssh.html>`_
+
+You will be connected to the guest Virtual Machine over SSH as user `vagrant`.

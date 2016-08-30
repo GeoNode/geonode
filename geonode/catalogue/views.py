@@ -18,12 +18,15 @@
 #
 #########################################################################
 
+import json
 import os
 from django.conf import settings
 from django.http import HttpResponse, HttpResponseRedirect
+from django.shortcuts import render_to_response
 from django.views.decorators.csrf import csrf_exempt
 from pycsw import server
 from geonode.catalogue.backends.pycsw_local import CONFIGURATION
+from geonode.base.models import ResourceBase
 
 
 @csrf_exempt
@@ -46,3 +49,51 @@ def csw_global_dispatch(request):
     content = csw.dispatch_wsgi()
 
     return HttpResponse(content, content_type=csw.contenttype)
+
+
+@csrf_exempt
+def opensearch_dispatch(request):
+    """OpenSearch wrapper"""
+
+    ctx = {
+        'shortname': settings.PYCSW['CONFIGURATION']['metadata:main']['identification_title'],
+        'description': settings.PYCSW['CONFIGURATION']['metadata:main']['identification_abstract'],
+        'developer': settings.PYCSW['CONFIGURATION']['metadata:main']['contact_name'],
+        'contact': settings.PYCSW['CONFIGURATION']['metadata:main']['contact_email'],
+        'attribution': settings.PYCSW['CONFIGURATION']['metadata:main']['provider_name'],
+        'tags': settings.PYCSW['CONFIGURATION']['metadata:main']['identification_keywords'].replace(',', ' '),
+        'url': settings.SITEURL.rstrip('/')
+    }
+
+    return render_to_response('catalogue/opensearch_description.xml', ctx,
+                              content_type='application/opensearchdescription+xml')
+
+
+@csrf_exempt
+def data_json(request):
+    """Return data.json representation of catalogue"""
+    json_data = []
+    for resource in ResourceBase.objects.all():
+        record = {}
+        record['title'] = resource.title
+        record['description'] = resource.abstract
+        record['keyword'] = resource.keyword_csv.split(',')
+        record['modified'] = resource.csw_insert_date.isoformat()
+        record['publisher'] = resource.poc.organization
+        record['contactPoint'] = resource.poc.name_long
+        record['mbox'] = resource.poc.email
+        record['identifier'] = resource.uuid
+        if resource.is_published:
+            record['accessLevel'] = 'public'
+        else:
+            record['accessLevel'] = 'non-public'
+
+        record['distribution'] = []
+        for link in resource.link_set.all():
+            record['distribution'].append({
+                'accessURL': link.url,
+                'format': link.mime
+            })
+        json_data.append(record)
+
+    return HttpResponse(json.dumps(json_data), 'application/json')
