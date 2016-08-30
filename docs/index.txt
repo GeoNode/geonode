@@ -1,3 +1,5 @@
+.. _mainindex:
+
 =======================
 GeoNode's Documentation
 =======================
@@ -11,9 +13,9 @@ First Steps
 
 The following sections give an overview of GeoNode from different perspectives, they are targeted at a non-technical audience and the quick installation guide at people who just want to get it installed and will come back later to the complete documentation.
 
- * :doc:`About GeoNode <organizational/about>`
- * :doc:`Quick Installation Guide <tutorials/admin/install/quick_install>`
- * :doc:`GeoNode Users Quickstart Manual <tutorials/users/quickstart/index>`
+ * :doc:`About GeoNode <about>`
+ * :doc:`Quick Installation Guide <tutorials/install_and_admin/quick_install>`
+ * :doc:`GeoNode Users Quickstart Manual <tutorials/overview_and_ref/introduction/geonode_quickstart>`
 
 
 How To Use The Documentation
@@ -34,6 +36,14 @@ The documentation is divided into three sections:
 
 Table of contents
 =================
+
+About GeoNode
+-------------
+
+.. toctree::
+    :maxdepth: 5
+
+    about 
 
 Tutorials
 ---------
@@ -85,9 +95,4 @@ Having trouble? Cant find what you are looking for? We'd like to help!
 .. _Freenode's web based client: http://webchat.freenode.net
 .. _ticket tracker: http://github.com/GeoNode/geonode/issues
 
-.. toctree::
-   :maxdepth: 4
 
-   organizational
-   tutorials
-   reference

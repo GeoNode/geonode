@@ -1,0 +1,13 @@
+.. _dev_core:
+
+Development Prerequsites and Core Modules
+=========================================
+
+This module will introduce you to the basic tools and skills required to start actively developing GeoNode.
+
+.. toctree::
+   :maxdepth: 2
+
+   prerequisites
+   coremodules
+   exercises

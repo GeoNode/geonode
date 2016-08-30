@@ -15,7 +15,7 @@ Sometimes users also post interesting tips for managing sites running GeoNode.
 If you want to help out with GeoNode, one easy way is to sign up for the mailing list and help answer questions.
 
 Report Problems on the Issue Tracking System
----------------
+--------------------------------------------
 
 While we do our best to keep GeoNode fast and bug-free, problems can and do arise.
 Informative bug reports are a key part of the bug fixing process, so if you do run into a problem with GeoNode, please don't hesitate to report it on our bug tracker, available online at http://github.com/GeoNode/geonode/issues.

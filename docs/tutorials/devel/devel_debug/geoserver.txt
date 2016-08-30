@@ -1,0 +1,63 @@
+.. _geoserver:
+
+Debugging GeoServer
+===================
+
+Resources:
+
+- http://docs.geoserver.org/stable/en/user/advanced/logging.html
+- http://docs.geoserver.org/stable/en/user/production/troubleshooting.html
+
+This section does not attempt to cover developer-level debugging in GeoServer as
+this is a much larger topic involving many more tools. The goal here is to
+provide 'black-box' techniques to help resolve and report problems.
+
+Logging
+-------
+
+GeoServer logging, while sometimes containing too much information, is the best
+way to start diagnosing an issue in GeoNode once the other. To create a proper
+error report for use in requesting support, providing any contextual logging
+information is critical.
+
+When using a standard geoserver installation, the GeoServer logs are located at
+:file:`/usr/share/geoserver/data/logs/geoserver.log`. The properties files that
+control the varying rules are also located here.
+
+Exercises
+..........
+
+#. Switch logging levels for various loggers.
+#. Look at the different logging profiles and discuss the loggers and levels.
+#. Learn how to read stacktraces, nested or otherwise.
+
+Advanced Troubleshooting
+------------------------
+
+JVM diagnostics and advanced troubleshooting techniques are covered in the
+GeoServer documents linked to above. When providing information for a bug
+report, these can be helpful but in-depth Java knowledge is required to fully
+comprehend the output from some of these tools.
+
+Exercises
+..........
+
+#. Look at jstack output
+
+Using Django to Help Debug
+--------------------------
+
+The gsconfig library provides a rich interface to interacting with GeoServer's
+REST API. This allows high-level functions as well as viewing raw REST responses.
+
+  .. code-block:: python
+
+     cat = Layer.objects.gs_catalog
+     cat.get_layers() # list of gsconfig layer objects
+     # OR, for a specific layer
+     lyr = Layer.objects.get(id=1)
+     lyr.resource # specfic gsconfig layer object
+     lyr.resource.fetch() # get the XML from REST
+     lyr.resource.dom # reference to the parsed XML
+     from xml.etree.ElementTree import tostring
+     tostring(lyr.resource.dom)
