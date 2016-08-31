@@ -153,7 +153,7 @@ def registration_part_two(request):
     part_two_initial ={}
     is_new_auth_req = False
     last_submitted_dr = None
-    if request.user.is_authenticated():
+    if request.user.is_authenticated() and request.user is not Profile.objects.get(username="AnonymousUser") :
         is_new_auth_req = request.session.get('is_new_auth_req', None)
         try:
             last_submitted_dr = DataRequestProfile.objects.filter(profile=request.user).latest('key_created_date')
@@ -169,6 +169,10 @@ def registration_part_two(request):
         return redirect(reverse('datarequests:registration_part_one'))
 
     form = DataRequestDetailsForm(initial=part_two_initial)
+    
+    juris_data_size = 0.0
+    #area_coverage = get_area_coverage(saved_layer.name)
+    area_coverage = 0
 
     if request.method == 'POST' :
         post_data = request.POST.copy()
@@ -213,7 +217,7 @@ def registration_part_two(request):
                         # This should be followed up in upstream Django.
                         tempdir, base_file = form.write_files()
                         registration_uploader, created = Profile.objects.get_or_create(username='dataRegistrationUploader')
-
+                        pprint("saving jurisdiction")
                         saved_layer = file_upload(
                             base_file,
                             name=name,
@@ -223,11 +227,6 @@ def registration_part_two(request):
                             abstract=form.cleaned_data["abstract"],
                             title=form.cleaned_data["layer_title"],
                         )
-                        def_style = Style.objects.get(name="Boundary")
-                        saved_layer.styles.add(def_style)
-                        saved_layer.default_style=def_style
-                        saved_layer.is_published = False
-                        saved_layer.save()
                         interest_layer =  saved_layer
 
                         cat = Catalog(settings.OGC_SERVER['default']['LOCATION'] + 'rest',
@@ -242,6 +241,10 @@ def registration_part_two(request):
                             saved_layer.sld_body = boundary_style.sld_body
                             saved_layer.save() #save in geonode
 
+                        #bbox = gs_layer.resource.latlon_bbox
+                        #bbox_lon = (float(bbox[0])+float(bbox[1]))/2
+                        #bbox_lat = (float(bbox[2])+float(bbox[3]))/2
+                        #place_name = get_place_name(bbox_lon, bbox_lat)
                         juris_data_size = 0.0
                         area_coverage = 0.0
 
@@ -286,6 +289,8 @@ def registration_part_two(request):
                         if permissions is not None and len(permissions.keys()) > 0:
 
                             saved_layer.set_permissions(permissions)
+                        
+                        jurisdiction_style.delay(saved_layer)
 
                     finally:
                         if tempdir is not None:
@@ -353,7 +358,7 @@ def registration_part_two(request):
 
         if out['success']:
             status_code = 200
-
+            pprint("request has been succesfully submitted")
             if request_profile and not request_profile.profile:
 #                request_profile.send_verification_email()
 
@@ -771,6 +776,9 @@ def data_request_facet_count(request):
 def update_datarequest_obj(datarequest=None, parameter_dict=None, interest_layer=None, request_letter = None):
     if datarequest is None or parameter_dict is None or request_letter is None:
         raise HttpResponseBadRequest
+        
+    if not datarequest.middle_name or len(datarequest.middle_name.strip())<1:
+        datarequest.middle_name = '_'
 
     ### Updating the other fields of the request
     datarequest.project_summary = parameter_dict['project_summary']
