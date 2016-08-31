@@ -672,7 +672,6 @@ class DataRequestProfile(TimeStampedModel):
              else:
                  profile.organization_type = self.organization_type
                  profile.save()
-
         except Exception as e:
             pprint(traceback.format_exc())
             exc_name = type(e).__name__
