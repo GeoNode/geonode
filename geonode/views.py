@@ -94,7 +94,7 @@ def philgrid(request,template='index.html'):
     # print layername
     # Add required parameters for GXP lazy-loading
     layer_bbox = layer.bbox
-    print layer_bbox
+    # print layer_bbox
     bbox = [float(coord) for coord in list(layer_bbox[0:4])]
     srid = layer.srid
 
