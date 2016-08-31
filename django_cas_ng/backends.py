@@ -13,6 +13,7 @@ User = get_user_model()
 
 __all__ = ['CASBackend']
 
+from pprint import pprint
 
 class CASBackend(ModelBackend):
     """CAS authentication backend"""
