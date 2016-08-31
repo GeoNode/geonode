@@ -33,28 +33,13 @@
 
         }).addTo(map).bringToFront();
 
-        /*{% get_public_location "%s" as public_location %}
-        var pl = '{{public_location}}' + 'orthophotos/wms?service=WMS&version=1.1.0&request=GetMap';
-
-        var cdo = L.tileLayer.wms(pl,{
-            ptype: "gxp_wmsgetfeatureinfo",
-            layers: '{{orthos}}',
-            format: 'image/png',
-            transparent: true,
-            'opacity':1,
-            tiled:true,
-            visibility:true,
-            continuousWorld: true,
-        }).addTo(map).bringToBack();*/
-
-        
           var MapQuestOpen_OSM = L.tileLayer('http://korona.geog.uni-heidelberg.de/tiles/roads/x={x}&y={y}&z={z}', {
             type: 'map',
             ext: 'jpg',
             attribution: 'Imagery from <a href="http://giscience.uni-hd.de/">GIScience Research Group @ University of Heidelberg</a> &mdash; Map data &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
             subdomains: '1234',
             continuousWorld: true,
-            'opacity':0.8,
+            // 'opacity':0.8,
         }).addTo(map).bringToBack();
 
         var baseMaps = {
