@@ -1,7 +1,7 @@
 from operator import itemgetter, attrgetter
 import re
 from changuito.proxy import CartProxy
-from geonode.cephgeo.models import CephDataObject, DataClassification, MissionGridRef, SucToLayer
+from geonode.cephgeo.models import CephDataObject, DataClassification, MissionGridRef, SucToLayer, RIDF
 from osgeo import ogr
 import shapely
 from shapely.wkb import loads
@@ -258,6 +258,9 @@ def map_blocks_suc():
 #     for v in value:
 #         obj = SucToLayer.objects.create(suc=riverbasin.GetFieldAsString("SUC"),block_name=str(v))
 #         obj.save()
+
+
+
 
 
 
