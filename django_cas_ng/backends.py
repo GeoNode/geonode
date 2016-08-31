@@ -25,6 +25,7 @@ class CASBackend(ModelBackend):
         if attributes:
             request.session['attributes'] = attributes
         if not username:
+            pprint("no username found")
             return None
 
         username_case = settings.CAS_FORCE_CHANGE_USERNAME_CASE
