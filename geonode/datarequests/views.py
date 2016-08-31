@@ -153,7 +153,7 @@ def registration_part_two(request):
     part_two_initial ={}
     is_new_auth_req = False
     last_submitted_dr = None
-    if request.user.is_authenticated():
+    if request.user.is_authenticated() and request.user is not Profile.objects.get(username="AnonymousUser") :
         is_new_auth_req = request.session.get('is_new_auth_req', None)
         try:
             last_submitted_dr = DataRequestProfile.objects.filter(profile=request.user).latest('key_created_date')
@@ -169,6 +169,10 @@ def registration_part_two(request):
         return redirect(reverse('datarequests:registration_part_one'))
 
     form = DataRequestDetailsForm(initial=part_two_initial)
+    
+    juris_data_size = 0.0
+    #area_coverage = get_area_coverage(saved_layer.name)
+    area_coverage = 0
 
     if request.method == 'POST' :
         post_data = request.POST.copy()
@@ -237,6 +241,10 @@ def registration_part_two(request):
                             saved_layer.sld_body = boundary_style.sld_body
                             saved_layer.save() #save in geonode
 
+                        #bbox = gs_layer.resource.latlon_bbox
+                        #bbox_lon = (float(bbox[0])+float(bbox[1]))/2
+                        #bbox_lat = (float(bbox[2])+float(bbox[3]))/2
+                        #place_name = get_place_name(bbox_lon, bbox_lat)
                         juris_data_size = 0.0
                         area_coverage = 0.0
 
@@ -350,7 +358,7 @@ def registration_part_two(request):
 
         if out['success']:
             status_code = 200
-
+            pprint("request has been succesfully submitted")
             if request_profile and not request_profile.profile:
 #                request_profile.send_verification_email()
 
