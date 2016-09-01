@@ -261,7 +261,7 @@
             {% if links %}
             <ul>
               {% for link in links %}
-              <li><a href="{{ link.url }}">{% trans link.name %}</a></li>
+              <li><a href="{{ link.url }}" target="_blank">{% trans link.name %}</a></li>
               {% endfor %}
             </ul>
             {% endif %}
@@ -373,7 +373,7 @@
 			</h5>
             <ul>
               {% for link in metadata %}
-                <li><a href="{{ link.url }}">{{ link.name }}</a></li>
+                <li><a href="{{ link.url }}" target="_blank">{{ link.name }}</a></li>
               {% endfor %}
             <ul>
           </div>
