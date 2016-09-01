@@ -160,10 +160,6 @@ INSTALLED_APPS = (
     'geonode.capabilities',
     'geonode.queue',
     'geonode.certification',
-
-    # Datatable API
-    'geonode.contrib.datatables',
-
     #'geonode.hoods',
     #'geonode.gazetteer',
     #'debug_toolbar',
@@ -171,8 +167,8 @@ INSTALLED_APPS = (
     #DVN apps
     'shared_dataverse_information.dataverse_info',           # external repository: https://github.com/IQSS/shared-dataverse-information
     'shared_dataverse_information.layer_classification',     # external repository: https://github.com/IQSS/shared-dataverse-information
-    'geonode.contrib.dataverse_layer_metadata', # uses the dataverse_info repository models
-    'geonode.contrib.dataverse_connect',
+    'geonode.dataverse_layer_metadata', # uses the dataverse_info repository models
+    'geonode.dataverse_connect',
 
 )
 LOGGING = {
@@ -372,34 +368,29 @@ REGISTRATION_OPEN = True
 ACCOUNT_ACTIVATION_DAYS = 30
 SERVE_MEDIA = DEBUG;
 
-
-BING_API_KEY = "your-bing-key-here"
+BING_API_KEY = "your-api-here"
 
 MAP_BASELAYERS = [
- {
+    {
+        "source": {
+            "ptype": "gxp_gnsource",
+            "url": GEOSERVER_BASE_URL + "wms",
+            "restUrl": "/gs/rest"
+        }
+    }, {
         "source": {"ptype": "gx_olsource"},
         "type": "OpenLayers.Layer",
-        "args": [gettext("No background")],
+        "args": ["No background"],
         "visibility": False,
         "fixed": True,
         "group": "background"
     }, {
         "source": {"ptype": "gx_olsource"},
         "type": "OpenLayers.Layer.OSM",
-        "args": [gettext("OpenStreetMap")],
+        "args": ["OpenStreetMap"],
         "visibility": False,
         "fixed": True,
         "group": "background"
-    }, {
-        "source": {"ptype": "gxp_mapquestsource"},
-        "name": "osm",
-        "group": "background",
-        "visibility": True
-    }, {
-        "source": {"ptype": "gxp_mapquestsource"},
-        "name": "naip",
-        "group": "background",
-        "visibility": False
     }, {
         "source": {
             "ptype": "gxp_bingsource",
@@ -409,8 +400,70 @@ MAP_BASELAYERS = [
         "fixed": True,
         "visibility": False,
         "group": "background"
-    }, {
+    },
+{
         "source": {"ptype": "gxp_mapboxsource"},
+    },
+    {
+        "source": {"ptype": "gxp_stamensource"},
+        "name": "watercolor",
+        "visibility": False,
+        "group": "background",
+        "title": "Stamen Watercolor"
+        },
+    {
+        "source": {"ptype": "gxp_stamensource"},
+        "name": "toner",
+        "visibility": False,
+        "group": "background",
+        "title": "Stamen Toner"
+    },
+    {
+        "source": {
+            "url": "http://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer",
+            "ptype": "gxp_arcgiscachesource"},
+        "group": "background",
+        "name": "World Street Map",
+        "visibility": False,
+        "fixed": True,
+        "format": "jpeg",
+        "tiled" : False,
+        "title": "ESRI World Street Map"
+    },{
+        "source": {
+            "url": "http://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer",
+            "ptype": "gxp_arcgiscachesource"},
+        "group": "background",
+        "format": "jpeg",
+        "name": "World Imagery",
+        "visibility": False,
+        "fixed": True,
+        "tiled" : False,
+        "title": "ESRI World Imagery"
+    },
+    {
+        "source": {
+            "url": "http://services.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer",
+            "ptype": "gxp_arcgiscachesource"},
+        "group": "background",
+        "name": "Light Gray Canvas Base",
+        "visibility": False,
+        "fixed": True,
+        "format": "jpeg",
+        "tiled" : False,
+        "title": "ESRI Light Gray Reference"
+    },
+    {
+        "source": {
+            "url": "http://services.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer",
+            "ptype": "gxp_arcgiscachesource"},
+        "group": "background",
+        "name": "Dark Gray Canvas Base",
+        "visibility": False,
+        "fixed": True,
+        "format": "jpeg",
+        "tiled" : False,
+        "title": "ESRI Dark Gray Reference"
     },
     {
         "source": {"ptype": "gx_googlesource"},
@@ -422,7 +475,7 @@ MAP_BASELAYERS = [
         "source": {"ptype": "gx_googlesource"},
         "group": "background",
         "name": "TERRAIN",
-        "visibility": False,
+        "visibility": True,
         "fixed": True,
     }, {
         "source": {"ptype": "gx_googlesource"},
@@ -443,6 +496,7 @@ MAP_BASELAYERS = [
 
 #GEONODE_CLIENT_LOCATION = "http://localhost:9090/"
 GEONODE_CLIENT_LOCATION = "/static/geonode/"
+#GEONODE_CLIENT_LOCATION = "http://192.168.33.16:9090/"
 
 
 # GeoNode vector data backend configuration.
@@ -547,13 +601,6 @@ SESSION_COOKIE_HTTPONLY = True
 CSRF_COOKIE_HTTPONLY = True
 
 WORLDMAP_TOKEN_FOR_DATAVERSE = 'FakeToken'
-
-DB_DATAVERSE_NAME = 'dataverse'
-DATAVERSE_GROUP_NAME = 'dataverse'
-
-TESTING = len(sys.argv) > 1 and sys.argv[1] == 'test'
-if TESTING:
-    SOUTH_TESTS_MIGRATE = False
 
 try:
     from local_settings import *
