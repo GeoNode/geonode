@@ -614,6 +614,9 @@ def map_download(request, mapid, template='maps/map_download.html'):
         j_map = json.loads(mapJson)
         j_layers = j_map["layers"]
         for j_layer in j_layers:
+            if j_layer["service"] is None:
+                j_layers.remove(j_layer)
+                continue
             if(len([l for l in j_layers if l == j_layer])) > 1:
                 j_layers.remove(j_layer)
         mapJson = json.dumps(j_map)
