@@ -153,7 +153,7 @@ if 'notification' in settings.INSTALLED_APPS:
                             )
 
 if 'simple_sso.sso_server' in settings.INSTALLED_APPS:
-    from simple_sso.sso_server.server import Server 
+    from simple_sso.sso_server.server import Server
     server = Server()
     urlpatterns += server.get_urls()
 
