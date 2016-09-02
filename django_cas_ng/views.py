@@ -17,8 +17,9 @@ from django.contrib.auth import (
 from django.contrib import messages
 from django.utils.translation import ugettext_lazy as _
 from django.views.decorators.http import require_http_methods
-from pprint import pprint
+
 from importlib import import_module
+from pprint import pprint
 
 SessionStore = import_module(settings.SESSION_ENGINE).SessionStore
 
@@ -29,7 +30,6 @@ from .models import ProxyGrantingTicket, SessionTicket
 from .utils import (get_cas_client, get_service_url,
                     get_protocol, get_redirect_url,
                     get_user_from_session)
-from pprint import pprint
 
 __all__ = ['login', 'logout', 'callback']
 
@@ -38,7 +38,7 @@ __all__ = ['login', 'logout', 'callback']
 @require_http_methods(["GET", "POST"])
 def login(request, next_page=None, required=False):
     """Forwards to CAS login URL or verifies CAS ticket"""
-    service_url = get_service_url(request)
+    service_url = get_service_url(request, next_page)
     client = get_cas_client(service_url=service_url)
     pprint("service url: "+service_url)
     if not next_page:
@@ -55,7 +55,6 @@ def login(request, next_page=None, required=False):
         return HttpResponseRedirect(next_page)
 
     ticket = request.GET.get('ticket')
-    
     if ticket:
         pprint("ticket found")
         user = authenticate(ticket=ticket,
@@ -106,6 +105,7 @@ def login(request, next_page=None, required=False):
 def logout(request, next_page=None):
     """Redirects to CAS logout page"""
     # try to find the ticket matching current session for logout signal
+    pprint("logging out")
     try:
         st = SessionTicket.objects.get(session_key=request.session.session_key)
         ticket = st.ticket
