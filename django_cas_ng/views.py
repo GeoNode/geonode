@@ -40,7 +40,7 @@ def login(request, next_page=None, required=False):
     """Forwards to CAS login URL or verifies CAS ticket"""
     service_url = get_service_url(request, next_page)
     client = get_cas_client(service_url=service_url)
-
+    pprint("service url: "+service_url)
     if not next_page:
         next_page = get_redirect_url(request)
 
@@ -56,10 +56,12 @@ def login(request, next_page=None, required=False):
 
     ticket = request.GET.get('ticket')
     if ticket:
+        pprint("ticket found")
         user = authenticate(ticket=ticket,
                             service=service_url,
                             request=request)
         pgtiou = request.session.get("pgtiou")
+        pprint("user should be authenticated by now")
         if user is not None:
             auth_login(request, user)
             if not request.session.exists(request.session.session_key):
@@ -92,6 +94,7 @@ def login(request, next_page=None, required=False):
         elif settings.CAS_RETRY_LOGIN or required:
             return HttpResponseRedirect(client.get_login_url())
         else:
+            pprint("user not found")
             error = "<h1>{0}</h1><p>{1}</p>".format(_('Forbidden'), _('Login failed.'))
             return HttpResponseForbidden(error)
     else:
