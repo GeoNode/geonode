@@ -19,6 +19,7 @@ from geonode.security.models import PermissionLevelMixin
 from django.contrib.auth.models import Group
 from guardian.shortcuts import assign_perm, get_anonymous_user
 from string import Template
+from geonode.cephgeo.models import RIDF
  
 
 @task(name='geonode.tasks.update.fh_perms_update', queue='update')
@@ -127,6 +128,15 @@ def seed_layers(keyword):
             print 'e.cmd:', e.cmd
             print 'e.output:', e.output
 
+def _get_ridf(layer_name, flood_year):
+    print ''
+    #layer.name = municipality_province_fh{year}yr_mapresolution
+    tokens = layer_name.split('_fh').strip()
+    layer_muni_prov = tokens[0]
+
+    # ridf = RIDF.objects.filter(Q(layer_name=layer_muni_prov)&Q())
+
+
 
 def fhm_year_metadata(flood_year, skip_prev):
     flood_year_probability = int(100/flood_year)
@@ -135,7 +145,8 @@ def fhm_year_metadata(flood_year, skip_prev):
     #     layer_list = Layer.objects.filter(name__icontains='fh{0}yr'.format(flood_year)).exclude(Q(keywords__name__icontains='flood hazard map')&Q(category__identifier='geoscientificInformation')&Q(purpose__icontains='the')&Q(abstract__icontains='the'))
     # else:
     #     layer_list = Layer.objects.filter(name__icontains='fh{0}yr'.format(flood_year))
-    layer_list = Layer.objects.filter(name__icontains='fh{0}yr'.format(flood_year))
+    # layer_list = Layer.objects.filter(name__icontains='fh{0}yr'.format(flood_year))
+    layer_list = Layer.objects.filter(name__icontains='muni_')
     total_layers = len(layer_list)
     print("Updating metadata of [{0}] Flood Hazard Maps for Flood Year [{1}]".format(total_layers, flood_year))
     ctr = 0
@@ -147,11 +158,10 @@ def fhm_year_metadata(flood_year, skip_prev):
             style_update(layer,'fhm')
             fh_perms_update(layer)
             #fh_perms_update(layer,f)
-
             #batch_seed(layer)
 
+            ridf = _get_ridf(layer.name, flood_year)
             map_resolution = ''
-
             if "_10m_30m" in layer.name:
                 map_resolution = '30'
             elif "_10m" in layer.name:
@@ -164,7 +174,7 @@ def fhm_year_metadata(flood_year, skip_prev):
             
             layer.abstract = """This shapefile, with a resolution of {0} meters, illustrates the inundation extents in the area if the actual amount of rain exceeds that of a {1} year-rain return period.
 
-    Note: There is a 1/{2} ({3}%) probability of a flood with {4} year return period occurring in a single year.
+    Note: There is a 1/{2} ({3}%) probability of a flood with {4} year return period occurring in a single year. For this area, the Rainfall Intensity Duration Frequency is {5}. 
 
     3 levels of hazard:
     Low Hazard (YELLOW)
@@ -174,7 +184,7 @@ def fhm_year_metadata(flood_year, skip_prev):
     Height: 0.5m-1.5m
 
     High Hazard (RED)
-    Height: beyond 1.5m""".format(map_resolution, flood_year, flood_year, flood_year_probability, flood_year)
+    Height: beyond 1.5m""".format(map_resolution, flood_year, flood_year, flood_year_probability, flood_year, ridf)
 
 
             layer.purpose = " The flood hazard map may be used by the local government for appropriate land use planning in flood-prone areas and for disaster risk reduction and management, such as identifying areas at risk of flooding and proper planning of evacuation."
