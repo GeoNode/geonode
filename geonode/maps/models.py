@@ -796,6 +796,11 @@ class LayerManager(models.Manager):
                     "owner": owner,
                     "uuid": str(uuid.uuid4())
                 })
+                if layer is not None and layer.topic_category is None:
+                    # we need a default category, otherwise metadata are not generated
+                    default_category = LayerCategory.objects.get(name='boundaries')
+                    layer.topic_category = default_category
+                    layer.save()
                 if layer is not None and layer.bbox is None:
                     layer._populate_from_gs()
                 layer.save()
@@ -980,8 +985,12 @@ class Layer(models.Model, PermissionLevelMixin):
 
     # Section 9
     # see metadata_author property definition below
+
+    # join target: available only for layers within the DATAVERSE_DB
     def add_as_join_target(self):
         if not self.id:
+            return 'n/a'
+        if self.store != settings.DB_DATAVERSE_NAME:
             return 'n/a'
         admin_url = reverse('admin:datatables_jointarget_add', args=())
         add_as_target_link = '%s?layer=%s' % (admin_url, self.id)
@@ -1570,7 +1579,7 @@ class Layer(models.Model, PermissionLevelMixin):
 
     def update_bounds(self):
         #Get extent for layer from PostGIS
-        bboxes = get_postgis_bbox(self.name)
+        bboxes = get_postgis_bbox(self.name, self.store)
         if len(bboxes) != 1 and len(bboxes[0]) != 2:
             return
         if bboxes[0][0] is None or bboxes[0][1] is None:

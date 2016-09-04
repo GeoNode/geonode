@@ -12,15 +12,15 @@ gettext = lambda s: s
 
 ####################### DATAVERSE_INFO_REPOSITORY_PATH
 #
-# For Dataverse/Worldmap communication, the following repository is required: 
+# For Dataverse/Worldmap communication, the following repository is required:
 #
 #   https://github.com/IQSS/shared-dataverse-information
 #
 # It may be accessed in 1 of 2 ways
 # -----------------------------------------------
-# 
+#
 #   (1) Add to the sys.path.  In the local_settings.py:
-#       (a) Add/Uncomment the code below (lines 28-31), 
+#       (a) Add/Uncomment the code below (lines 28-31),
 #           ending with the "sys.path.append" line
 #       (b) Set the appropriate path for "DATAVERSE_INFO_REPOSITORY_PATH"
 #   (2) or run "pip install shared_dataverse_information"
@@ -160,10 +160,6 @@ INSTALLED_APPS = (
     'geonode.capabilities',
     'geonode.queue',
     'geonode.certification',
-    
-    # Datatable API
-    'geonode.contrib.datatables',
-    
     #'geonode.hoods',
     #'geonode.gazetteer',
     #'debug_toolbar',
@@ -171,8 +167,8 @@ INSTALLED_APPS = (
     #DVN apps
     'shared_dataverse_information.dataverse_info',           # external repository: https://github.com/IQSS/shared-dataverse-information
     'shared_dataverse_information.layer_classification',     # external repository: https://github.com/IQSS/shared-dataverse-information
-    'geonode.contrib.dataverse_layer_metadata', # uses the dataverse_info repository models
-    'geonode.contrib.dataverse_connect',
+    'geonode.dataverse_layer_metadata', # uses the dataverse_info repository models
+    'geonode.dataverse_connect',
 
 )
 LOGGING = {
@@ -372,40 +368,102 @@ REGISTRATION_OPEN = True
 ACCOUNT_ACTIVATION_DAYS = 30
 SERVE_MEDIA = DEBUG;
 
+BING_API_KEY = "your-api-here"
 
 MAP_BASELAYERS = [
- {
+    {
+        "source": {
+            "ptype": "gxp_gnsource",
+            "url": GEOSERVER_BASE_URL + "wms",
+            "restUrl": "/gs/rest"
+        }
+    }, {
         "source": {"ptype": "gx_olsource"},
         "type": "OpenLayers.Layer",
-        "args": [gettext("No background")],
+        "args": ["No background"],
         "visibility": False,
         "fixed": True,
         "group": "background"
     }, {
         "source": {"ptype": "gx_olsource"},
         "type": "OpenLayers.Layer.OSM",
-        "args": [gettext("OpenStreetMap")],
+        "args": ["OpenStreetMap"],
         "visibility": False,
         "fixed": True,
         "group": "background"
     }, {
-        "source": {"ptype": "gxp_mapquestsource"},
-        "name": "osm",
-        "group": "background",
-        "visibility": True
-    }, {
-        "source": {"ptype": "gxp_mapquestsource"},
-        "name": "naip",
-        "group": "background",
-        "visibility": False
-    }, {
-        "source": {"ptype": "gxp_bingsource"},
+        "source": {
+            "ptype": "gxp_bingsource",
+            "apiKey": BING_API_KEY
+        },
         "name": "AerialWithLabels",
         "fixed": True,
         "visibility": False,
         "group": "background"
-    }, {
+    },
+{
         "source": {"ptype": "gxp_mapboxsource"},
+    },
+    {
+        "source": {"ptype": "gxp_stamensource"},
+        "name": "watercolor",
+        "visibility": False,
+        "group": "background",
+        "title": "Stamen Watercolor"
+        },
+    {
+        "source": {"ptype": "gxp_stamensource"},
+        "name": "toner",
+        "visibility": False,
+        "group": "background",
+        "title": "Stamen Toner"
+    },
+    {
+        "source": {
+            "url": "http://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer",
+            "ptype": "gxp_arcgiscachesource"},
+        "group": "background",
+        "name": "World Street Map",
+        "visibility": False,
+        "fixed": True,
+        "format": "jpeg",
+        "tiled" : False,
+        "title": "ESRI World Street Map"
+    },{
+        "source": {
+            "url": "http://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer",
+            "ptype": "gxp_arcgiscachesource"},
+        "group": "background",
+        "format": "jpeg",
+        "name": "World Imagery",
+        "visibility": False,
+        "fixed": True,
+        "tiled" : False,
+        "title": "ESRI World Imagery"
+    },
+    {
+        "source": {
+            "url": "http://services.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer",
+            "ptype": "gxp_arcgiscachesource"},
+        "group": "background",
+        "name": "Light Gray Canvas Base",
+        "visibility": False,
+        "fixed": True,
+        "format": "jpeg",
+        "tiled" : False,
+        "title": "ESRI Light Gray Reference"
+    },
+    {
+        "source": {
+            "url": "http://services.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer",
+            "ptype": "gxp_arcgiscachesource"},
+        "group": "background",
+        "name": "Dark Gray Canvas Base",
+        "visibility": False,
+        "fixed": True,
+        "format": "jpeg",
+        "tiled" : False,
+        "title": "ESRI Dark Gray Reference"
     },
     {
         "source": {"ptype": "gx_googlesource"},
@@ -417,7 +475,7 @@ MAP_BASELAYERS = [
         "source": {"ptype": "gx_googlesource"},
         "group": "background",
         "name": "TERRAIN",
-        "visibility": False,
+        "visibility": True,
         "fixed": True,
     }, {
         "source": {"ptype": "gx_googlesource"},
@@ -438,6 +496,7 @@ MAP_BASELAYERS = [
 
 #GEONODE_CLIENT_LOCATION = "http://localhost:9090/"
 GEONODE_CLIENT_LOCATION = "/static/geonode/"
+#GEONODE_CLIENT_LOCATION = "http://192.168.33.16:9090/"
 
 
 # GeoNode vector data backend configuration.

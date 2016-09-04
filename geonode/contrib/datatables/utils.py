@@ -35,17 +35,18 @@ from geonode.contrib.datatables.layer_helper import\
     create_layer_attributes_from_datatable
 
 from geonode.contrib.datatables.db_helper import get_datastore_connection_string
+from geonode.contrib.datatables.db_helper import get_database_name
 from geonode.contrib.datatables.utils_joins import drop_view_by_name
 
 
 from shared_dataverse_information.shared_form_util.format_form_errors import format_errors_as_text
-from .db_helper import CHOSEN_DB_SETTING
 
 LOGGER = logging.getLogger(__name__)
 
 
 
-def process_csv_file(data_table,\
+def process_csv_file(data_table,
+                is_dataverse_db,\
                 delimiter=",",\
                 no_header_row=False,\
                 force_char_column=None):
@@ -158,7 +159,7 @@ def process_csv_file(data_table,\
     # -----------------------------------------------------
     # Execute the SQL and Create the Table (No data is loaded)
     # -----------------------------------------------------
-    conn = psycopg2.connect(get_datastore_connection_string())
+    conn = psycopg2.connect(get_datastore_connection_string(is_dataverse_db=is_dataverse_db))
 
     try:
         cur = conn.cursor()
@@ -180,7 +181,7 @@ def process_csv_file(data_table,\
     # -----------------------------------------------------
     #connection_string = "postgresql://%s:%s@%s:%s/%s" % (db['USER'], db['PASSWORD'], db['HOST'], db['PORT'], db['NAME'])
 
-    connection_string = get_datastore_connection_string(url_format=True)
+    connection_string = get_datastore_connection_string(url_format=True,is_dataverse_db=is_dataverse_db)
     try:
         engine, metadata = sql.get_connection(connection_string)
     except ImportError:
@@ -270,6 +271,7 @@ def setup_join(new_table_owner, table_name, layer_typename, table_attribute_name
     """
     Setup the Table Join in GeoNode
     """
+
     assert isinstance(new_table_owner, User), "new_table_owner must be a User object"
     assert table_name is not None, "table_name cannot be None"
     assert layer_typename is not None, "layer_typename cannot be None"
@@ -314,6 +316,15 @@ def setup_join(new_table_owner, table_name, layer_typename, table_attribute_name
     LOGGER.info('setup_join. Step (5): Build SQL statement to create view')
 
     layer_name = layer.typename.split(':')[1]
+
+    # ------------------------------------------------------------------
+    # (5) Check if the layer and the table are in the same store (database)
+    # ------------------------------------------------------------------
+    if layer.store != dt.tablespace:
+        err_msg = 'layer (%s) and tablespace (%s) must be in the same database.'\
+            % (layer.store, dt.tablespace)
+        LOGGER.error(err_msg)
+        return None, err_msg
 
     # ------------------------------------------------------------------
     # (5a) Check if the join columns compatible
@@ -460,7 +471,7 @@ def setup_join(new_table_owner, table_name, layer_typename, table_attribute_name
         #
         for datastore in datastores:
             #msg ('datastore name:', datastore.name)
-            if datastore.name == settings.DB_DATASTORE_NAME:
+            if datastore.name == layer.store:
                 ds = datastore
 
         if ds is None:
@@ -543,7 +554,7 @@ def setup_join(new_table_owner, table_name, layer_typename, table_attribute_name
 
 
 def attempt_datatable_upload_from_request_params(request,\
-                            new_layer_owner,\
+                            new_layer_owner, is_dataverse_db, \
                             force_char_column=None):
     """
     Using request parameters, attempt a TableJoin
@@ -554,6 +565,7 @@ def attempt_datatable_upload_from_request_params(request,\
     Error:  (False, Error Message)
     Success: (True, TableJoin object)
     """
+
     LOGGER.info('contrib.datatables.utils.attempt_tablejoin_from_request_params')
     if not isinstance(new_layer_owner, User):
         return (False, "Please specify an owner for the new layer.")
@@ -582,14 +594,18 @@ def attempt_datatable_upload_from_request_params(request,\
 
     table_name = get_unique_tablename(splitext(basename(request.FILES['uploaded_file'].name))[0])
 
+    delimiter = data['delimiter']
+    # only joins go to dataverse db
+    database = get_database_name(is_dataverse_db)
     instance = DataTable(uploaded_file=request.FILES['uploaded_file'],
                          table_name=table_name,
-                         tablespace=CHOSEN_DB_SETTING,
+                         tablespace=database,
                          title=data['title'],
                          abstract=data['abstract'],
-                         delimiter=data['delimiter'],
+                         #delimiter=data['delimiter'],
+                         delimiter=delimiter,
                          owner=request.user)
-    delimiter = data['delimiter']
+
     no_header_row = data['no_header_row']
 
     # save DataTable object
@@ -598,6 +614,7 @@ def attempt_datatable_upload_from_request_params(request,\
     LOGGER.info('Step (d): Process the tabular file')
 
     (new_datatable_obj, result_msg) = process_csv_file(instance,\
+            is_dataverse_db=is_dataverse_db,\
             delimiter=delimiter,\
             no_header_row=no_header_row,\
             force_char_column=force_char_column)

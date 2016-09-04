@@ -1,0 +1,29 @@
+{% extends "admin/change_form.html" %}
+
+{% block pretitle %}
+<div id="go-to-layer" style="display:block; border:2px solid #006699; padding:10px; padding:15px; margin:10px 0; width:660px;">
+    <p id="msg-different-layer" style="display:none;">To choose a different Layer:</p>
+    <p id="msg-new-jointarget" style="display:none;">To choose a new Join Target:</p>
+        <ul>
+            <li>Go to the <a href="{% url admin:maps_layer_changelist %}">Layer admin</a></li>
+            <li>Click "<b>Add as Join Target</b>" next to your chosen layer</li>
+        </ul>
+</div>
+<script type="text/javascript">
+$(document).ready(function () {
+
+    if ($("#id_layer option:selected").val().length > 0){
+        $('#msg-different-layer').show();
+        //$('#go-to-layer').css("border","2px solid #006699");
+    } else {
+        $('#msg-new-jointarget').show();
+        $('#go-to-layer').css("border","2px solid red");
+    }
+
+
+    //if(window.location.href.indexOf("add") > -1) {
+    //
+    //}
+});
+</script>
+{% endblock %}

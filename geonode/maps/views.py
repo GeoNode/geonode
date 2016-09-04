@@ -31,6 +31,7 @@ import logging
 from geonode.flexidates import FlexiDateFormField
 import taggit
 from geonode.maps.utils import forward_mercator
+from geonode.maps.utils import get_db_store_name
 from geonode.maps.owslib_csw import CswRecord
 from django.utils.html import escape, strip_tags
 from django.forms.models import inlineformset_factory
@@ -932,7 +933,7 @@ def layer_metadata(request, layername):
 
         topic_category = layer.topic_category
         layerAttSet = inlineformset_factory(Layer, LayerAttribute, extra=0, form=LayerAttributeForm, )
-        show_gazetteer_form = settings.USE_GAZETTEER and layer.store == settings.DB_DATASTORE_NAME
+        show_gazetteer_form = settings.USE_GAZETTEER and layer.store == get_db_store_name(request.user)
 
         fieldTypes = {}
         attributeOptions = layer.attribute_set.filter(attribute_type__in=['xsd:dateTime','xsd:date','xsd:int','xsd:string','xsd:bigint', 'xsd:double'])
@@ -2682,6 +2683,7 @@ def map_share(request,mapid):
 
 @login_required
 def create_pg_layer(request):
+    db_store_name = get_db_store_name(request.user)
     if request.method == 'GET':
         layer_form = LayerCreateForm(prefix="layer")
 
@@ -2709,9 +2711,9 @@ def create_pg_layer(request):
                 return HttpResponse(msg, status='400')
 
             # Assume datastore used for PostGIS
-            store = settings.DB_DATASTORE_NAME
+            store = db_store_name
             if store is None:
-                msg = 'Specified store [%s] not found' % settings.DB_DATASTORE_NAME
+                msg = 'Specified store [%s] not found' % db_store_name
                 return HttpResponse(msg, status='400')
 
             #TODO: Let users create their own schema
@@ -2736,7 +2738,7 @@ def create_pg_layer(request):
             try:
                 logger.info("Create layer %s", name)
                 layer = cat.create_native_layer(settings.DEFAULT_WORKSPACE,
-                                          settings.DB_DATASTORE_NAME,
+                                          db_store_name,
                                           name,
                                           name,
                                           escape(layer_form.cleaned_data['title']),

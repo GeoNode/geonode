@@ -28,6 +28,8 @@ from requests.exceptions import ConnectionError as RequestsConnectionError
 import requests
 
 from django.utils import unittest
+from django.conf import settings
+from django.contrib.auth.models import Group, User
 
 from django.core.urlresolvers import reverse
 
@@ -120,8 +122,60 @@ class TestTabularAPIBase(unittest.TestCase):
         cls.existing_layer_data = 'boohoo existing_layer_data'
         cls.layer_attribute_info = 'boohoo layer_attribute_info'
 
+        # For table joins, the user must be in the Dataverse group
+        # so that the target layer goes to the correct table
+        cls.createDataverseUserAndGroup(add_user_to_dv_group=True)
+
         cls.upload_ma_tigerlines_shapefile()
 
+
+    @classmethod
+    def createDataverseUserAndGroup(cls, add_user_to_dv_group=True):
+        """
+        Make sure there is a Dataverse Group.
+        If appropriate add the test user to this group.
+        Note: For tablejoins, the user must be part of this group
+
+
+        DATAVERSE_GROUP_NAME -> specified in settings.DATAVERSE_GROUP_NAME
+
+        username for test -> specified in server_credentials.json*
+            (* See datatables/tests/__init__.py for info on making this file)
+
+        """
+        cls.dv_group, group_created = Group.objects.get_or_create(name=settings.DATAVERSE_GROUP_NAME)
+        cls.dv_user, user_created = User.objects.get_or_create(username=GEONODE_USERNAME)
+
+        if add_user_to_dv_group:
+            cls.dv_group.user_set.add(cls.dv_user)
+            cls.dv_group.save()
+        else:
+            cls.dv_group.user_set.remove(cls.dv_user)
+            cls.dv_group.save()
+
+        print '-' * 40
+        print 'added to group?', cls.dv_group.user_set.all()
+
+    @classmethod
+    def removeDataverseGroupAndUser(cls):
+        """
+        For local tests, this should be used.
+
+        Commented out b/c we're testing on a remote server right now
+        """
+        if cls.dv_user and cls.dv_group:
+            cls.dv_group.user_set.remove(cls.dv_user)
+            cls.dv_group.save()
+
+        """
+        # Delete the user
+        if User.objects.filter(username=GEONODE_USERNAME).count() > 0:
+            User.objects.filter(username=GEONODE_USERNAME).delete()
+
+        # Delete the group
+        if Group.objects.filter(name=settings.DATAVERSE_GROUP_NAME).count() > 0:
+            Group.objects.filter(name=settings.DATAVERSE_GROUP_NAME).delete()
+        """
 
     def setUp(self):
         global GEONODE_SERVER, GEONODE_USERNAME, GEONODE_PASSWORD
@@ -131,8 +185,6 @@ class TestTabularAPIBase(unittest.TestCase):
 
         self.geonode_username = GEONODE_USERNAME
         self.geonode_password = GEONODE_PASSWORD
-
-        # self.login_url =  self.base_url + "/account/login/" # GeoNode
 
         self.login_url = self.base_url + "/accounts/login/" # WorldMap
         self.csv_upload_url = self.base_url +  reverse('datatable_upload_api', kwargs={})
@@ -354,6 +406,20 @@ class TestTabularAPIBase(unittest.TestCase):
                 return True
         return False
 
+    """
+    def get_join_table_params_temp(self, **kwargs):
+        params = dict(title='CGB Annual Measures',
+                      abstract='(abstract)',
+                      table_attribute='BG_ID_10',
+
+                      layer_name='geonode:ma_census_2010_kyv Layer',
+                      layer_attribute='GEOID10',
+
+                      delimiter='\t',
+                      no_header_row=False,
+                      new_table_owner=None)
+        return params
+    """
 
     def get_join_datatable_params(self, **kwargs):
 

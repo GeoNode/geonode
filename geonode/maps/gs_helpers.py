@@ -5,6 +5,7 @@ import logging
 import re
 from django.conf import settings
 
+
 logger = logging.getLogger("geonode.maps.gs_helpers")
 
 _punc = re.compile(r"[\.:]") #regex for punctuation that confuses restconfig
@@ -126,7 +127,7 @@ def fixup_style(cat, resource, style):
             name = _style_name(resource)
             if style is None:
                 sld = get_sld_for(lyr)
-            else: 
+            else:
                 sld = style.read()
             logger.debug("Creating style [%s]", name)
             style = cat.create_style(name, sld)
@@ -168,19 +169,19 @@ def cascading_delete(cat, resource):
             # continue on....
 
         if store.resource_type == 'dataStore' and 'dbtype' in store.connection_parameters and store.connection_parameters['dbtype'] == 'postgis':
-            delete_from_postgis(resource_name)
+            delete_from_postgis(resource_name, store.name)
         else:
             cat.delete(store)
 
 
 
-def delete_from_postgis(resource_name):
+def delete_from_postgis(resource_name, store_name):
     """
     Delete a table from PostGIS (because Geoserver won't do it yet);
     to be used after deleting a layer from the system.
     """
     import psycopg2
-    conn=psycopg2.connect("dbname='" + settings.DB_DATASTORE_DATABASE + "' user='" + settings.DB_DATASTORE_USER + "'  password='" + settings.DB_DATASTORE_PASSWORD + "' port=" + settings.DB_DATASTORE_PORT + " host='" + settings.DB_DATASTORE_HOST + "'")
+    conn=psycopg2.connect("dbname='" + store_name + "' user='" + settings.DB_DATASTORE_USER + "'  password='" + settings.DB_DATASTORE_PASSWORD + "' port=" + settings.DB_DATASTORE_PORT + " host='" + settings.DB_DATASTORE_HOST + "'")
     try:
         cur = conn.cursor()
         cur.execute("SELECT DropGeometryTable ('%s')" %  resource_name)
@@ -191,20 +192,19 @@ def delete_from_postgis(resource_name):
         conn.close()
 
 
-def get_postgis_bbox(resource_name):
+def get_postgis_bbox(resource_name, store_name):
     """
     Update the native and latlong bounding box for a layer via PostGIS.
     Doing it via Geoserver is too resource-intensive
     """
     import psycopg2
-    conn=psycopg2.connect("dbname='" + settings.DB_DATASTORE_DATABASE + "' user='" + settings.DB_DATASTORE_USER + "'  password='" + settings.DB_DATASTORE_PASSWORD + "' port=" + settings.DB_DATASTORE_PORT + " host='" + settings.DB_DATASTORE_HOST + "'")
+    conn=psycopg2.connect("dbname='" + store_name + "' user='" + settings.DB_DATASTORE_USER + "'  password='" + settings.DB_DATASTORE_PASSWORD + "' port=" + settings.DB_DATASTORE_PORT + " host='" + settings.DB_DATASTORE_HOST + "'")
     try:
         cur = conn.cursor()
-        cur.execute("select EXTENT(the_geom) as bbox, EXTENT(ST_Transform(the_geom,4326)) as llbbox from \"%s\"" %  resource_name)
+        cur.execute("select ST_EXTENT(the_geom) as bbox, ST_EXTENT(ST_Transform(the_geom,4326)) as llbbox from \"%s\"" %  resource_name)
         rows = cur.fetchall()
         return rows
     except Exception, e:
         logger.info("Error retrieving bbox for PostGIS table %s:%s", resource_name, str(e))
     finally:
         conn.close()
-

@@ -59,9 +59,10 @@ def does_table_name_exist(table_name):
     stmt_count = ("SELECT COUNT(table_name) "
             "FROM information_schema.tables "
             "WHERE table_schema='public' "
-            "AND table_name = '{0}'';".format(\
+            "AND table_name = '{0}';".format(\
             table_name))
 
+    #print 'stmt_count', stmt_count
     conn = psycopg2.connect(get_datastore_connection_string())
 
     try:

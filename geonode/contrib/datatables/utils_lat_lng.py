@@ -66,6 +66,7 @@ def create_point_col_from_lat_lon(new_table_owner, table_name, lat_column, lng_c
     :param lng_column:
     :return:
     """
+
     LOGGER.info('create_point_col_from_lat_lon')
     assert isinstance(new_table_owner, User), "new_table_owner must be a User object"
     assert table_name is not None, "table_name cannot be None"
@@ -162,7 +163,7 @@ def create_point_col_from_lat_lon(new_table_owner, table_name, lat_column, lng_c
     # Run the SQL
     # ---------------------------------------------
     try:
-        conn = psycopg2.connect(get_datastore_connection_string())
+        conn = psycopg2.connect(get_datastore_connection_string(is_dataverse_db=False))
 
         cur = conn.cursor()
 
@@ -194,9 +195,9 @@ def create_point_col_from_lat_lon(new_table_owner, table_name, lat_column, lng_c
         # Find the datastore
         #----------------------------
         ds = None
+        from geonode.maps.utils import get_db_store_name
         for datastore in datastores:
-            #if datastore.name == "datastore":
-            if datastore.name == settings.DB_DATASTORE_NAME: #"geonode_imports":
+            if datastore.name == get_db_store_name():
                 ds = datastore
 
         if ds is None:
@@ -338,7 +339,7 @@ def remove_bad_lat_lng_numbers(lat_lng_map_record):
                 datatable_name, lat_lng_clause_or_err_msg)
 
     try:
-        conn = psycopg2.connect(get_datastore_connection_string())
+        conn = psycopg2.connect(get_datastore_connection_string(is_dataverse_db=False))
         cur = conn.cursor()
 
         # Are there any bad rows?
@@ -451,12 +452,15 @@ def get_layer_feature_count(table_name):
     """
     Given a table return the number of features--in this case the number of rows.
     """
+
     if table_name is None:
         LOGGER.error("Expected a table name")
         return (False, "Expected a table object")
 
     # e.g. geonode:coded_data_2008_10 => coded_data_2008_10
     table_name = table_name.split(':')[-1]
+
+    layer = Layer.objects.get(name=table_name)
 
     # format SQL
     num_features_sql = 'SELECT COUNT(*) from {0};'.format(table_name)
@@ -465,7 +469,7 @@ def get_layer_feature_count(table_name):
 
     # Make the query
     try:
-        conn = psycopg2.connect(get_datastore_connection_string())
+        conn = psycopg2.connect(get_datastore_connection_string(db_name=layer.store))
         cur = conn.cursor()
         cur.execute(num_features_sql)
         return (True, cur.fetchone()[0])

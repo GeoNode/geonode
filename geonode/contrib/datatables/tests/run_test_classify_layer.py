@@ -40,7 +40,8 @@ class TestWorldMapClassification(TestTabularAPIBase):
 
     @classmethod
     def setUpClass(cls):
-        pass
+        cls.createDataverseUserAndGroup(add_user_to_dv_group=False)
+
 
     def setUp(self):
         super(TestWorldMapClassification, self).setUp()

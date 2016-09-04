@@ -155,6 +155,7 @@ def view_upload_table_and_join_layer(request):
     LOGGER.info("Step 4: Attempt to UPLOAD the table")
     (success, data_table_or_error) = attempt_datatable_upload_from_request_params(request,\
                                         request.user,\
+                                        is_dataverse_db=True,\
                                         force_char_column=force_char_column)
     if not success:
         json_msg = MessageHelperJSON.get_json_fail_msg(data_table_or_error)
@@ -301,7 +302,9 @@ def view_upload_lat_lng_table(request):
     # --------------------------------------
     LOGGER.info('Step 3:  Datatable Upload')
     try:
-        resp = datatable_upload_api(request)
+        # Upload Lat/Lng Datatables to the Monthly table--not the Dataverse table
+        #
+        resp = datatable_upload_api(request, is_dataverse_db=False)
         upload_return_dict = json.loads(resp.content)
         if upload_return_dict.get('success', None) is not True:
             return HttpResponse(json.dumps(upload_return_dict), mimetype='application/json', status=400)
