@@ -43,6 +43,15 @@
               </div>
           </div>
       </div>
+      <div id="please-wait" class="modal fade" tabindex="-1" role="dialog">
+          <div class="modal-dialog">
+              <div class="modal-content">
+                  <div class="modal-body">
+                      <h4>Sending your request.</h4>
+                  </div>
+              </div>
+          </div>
+      </div>
 
       <div id="upload-status"></div>
         <form id="file-uploader" class="form-horizontal" method="post" enctype="multipart/form-data">
@@ -109,22 +118,6 @@
     </div>
   </div>
 
-  <div id="please-wait" class="modal fade" tabindex="-1" role="dialog">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <!-- <div class="modal-header">
-          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-          <h4 class="modal-title" id="myModalLabel">{% trans "Please Wait." %}</h4>
-        </div> -->
-        <div class="modal-body">
-          <p>Sending your request.</p>
-        </div>
-        <!-- <div class="modal-footer">
-          <button type="button" class="btn btn-default" data-dismiss="modal">{% trans "Close" %}</button>
-        </div> -->
-      </div>
-    </div>
-  </div>
 {% endblock %}
 
 
@@ -148,7 +141,10 @@
 {% endautoescape %}
 
 $('#upload-button').click(function(){
-  $('#please-wait').modal('toggle');
+  $('#please-wait').modal({
+      backdrop: 'static',
+      keyboard: false
+  });
 });
 $('#modal-content').on('shown.bs.modal', function () {//when upload modal shows
   $('#please-wait').modal('toggle');//to hide please wait modal
