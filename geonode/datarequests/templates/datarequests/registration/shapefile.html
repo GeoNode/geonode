@@ -109,7 +109,7 @@
     </div>
   </div>
 
-  <div id="please-wait" class="modal fade" tabindex="-2" role="dialog">
+  <div id="please-wait" class="modal fade" tabindex="-1" role="dialog">
     <div class="modal-dialog">
       <div class="modal-content">
         <!-- <div class="modal-header">
@@ -150,5 +150,8 @@
 $('#upload-button').click(function(){
   $('#please-wait').modal('toggle');
 });
+$('#modal-content').on('shown.bs.modal', function () {//when upload modal shows
+  $('#please-wait').modal('toggle');//to hide please wait modal
+})
 </script>
 {% endblock extra_script %}
