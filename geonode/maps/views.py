@@ -2896,3 +2896,28 @@ def mobilemap(request, mapid=None, snapshot=None):
         'maptitle': map_obj.title,
         'urlsuffix': get_suffix_if_custom(map_obj),
     }))
+
+
+@login_required
+def users_remove(request):
+    # delete multiple user from admin map page action
+    users = []
+    ids = ''
+    if 'ids' in request.GET:
+        ids = request.GET['ids']
+    else:
+        ids = request.POST['ids']
+    maps = Map.objects.filter(id__in=ids.split(','))
+    for map in maps:
+        if map.owner not in users:
+            users.append(map.owner)
+    if request.method == 'GET':
+        return render_to_response("maps/users_remove.html", RequestContext(request, {
+            'users': users,
+            'ids': ids,
+        }))
+    if request.method == 'POST':
+        for user in users:
+            print 'Removing user %s' % user.username
+            user.delete()
+        return HttpResponseRedirect(reverse('admin:maps_map_changelist'))

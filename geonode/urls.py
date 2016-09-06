@@ -72,6 +72,7 @@ urlpatterns = patterns('',
     (r'^bostonhoods/?', include('geonode.hoods.urls')),
     (r'^certification/', include('geonode.certification.urls')),
     url(r'^autocomplete/', include('autocomplete_light.urls')),
+    url(r'^users_remove/?$', 'geonode.maps.views.users_remove', name='users_remove'),
 
     # Datatables API
     (r'^datatables/', include('geonode.contrib.datatables.urls')),
