@@ -502,7 +502,7 @@ def pre_delete_layer(instance, sender, **kwargs):
         object_id=instance.id).delete()
     default_style = instance.default_style
     for style in instance.styles.all():
-        if style.layer_styles.all().count() == 1:
+        if style.layerstyles_set.count() == 1:
             if style != default_style:
                 style.delete()
 
