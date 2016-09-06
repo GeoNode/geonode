@@ -160,6 +160,8 @@ INSTALLED_APPS = (
     'geonode.capabilities',
     'geonode.queue',
     'geonode.certification',
+    # Datatable API
+    'geonode.contrib.datatables',
     #'geonode.hoods',
     #'geonode.gazetteer',
     #'debug_toolbar',
@@ -167,8 +169,8 @@ INSTALLED_APPS = (
     #DVN apps
     'shared_dataverse_information.dataverse_info',           # external repository: https://github.com/IQSS/shared-dataverse-information
     'shared_dataverse_information.layer_classification',     # external repository: https://github.com/IQSS/shared-dataverse-information
-    'geonode.dataverse_layer_metadata', # uses the dataverse_info repository models
-    'geonode.dataverse_connect',
+    'geonode.contrib.dataverse_layer_metadata', # uses the dataverse_info repository models
+    'geonode.contrib.dataverse_connect',
 
 )
 LOGGING = {
@@ -602,6 +604,12 @@ CSRF_COOKIE_HTTPONLY = True
 
 WORLDMAP_TOKEN_FOR_DATAVERSE = 'FakeToken'
 
+DB_DATAVERSE_NAME = 'dataverse'
+DATAVERSE_GROUP_NAME = 'dataverse'
+
+TESTING = len(sys.argv) > 1 and sys.argv[1] == 'test'
+if TESTING:
+    SOUTH_TESTS_MIGRATE = False
 try:
     from local_settings import *
 except ImportError:
