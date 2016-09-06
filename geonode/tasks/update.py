@@ -70,7 +70,7 @@ def style_update(layer,style_template):
         #print "[FH STYLE] {0}/{1} : {2} ".format(ctr,total_layers,layer.name)
         #delete thumbnail first because of permissions
 
-    if 'fh' in layer.name:
+    if '_fh' in layer.name:
         style = None
         if layer_attrib == "Var":
             style = cat.get_style(style_template)
@@ -111,10 +111,7 @@ def style_update(layer,style_template):
             layer.save()
         except Exception as e:
             print "%s" % e
-    elif style is '' or style is None:
-        layer.default_style = layer.styles.get()
-        layer.save()
-            
+
 def iterate_over_layers(layers,style_template):
     count = len(layers)
     for i,layer in enumerate(layers):
@@ -123,7 +120,13 @@ def iterate_over_layers(layers,style_template):
             # print "Layer {0}".format(layers.name)
             # layer.default_style = layer.styles.get()
             # layer.save()
-            style_update(layer,style_template)
+            if style_template == '':
+                print "Layer {0} - style template is {1} ".format(layers.name,style_template)
+                layer.default_style = layer.styles.get()
+                layer.save()
+            else:
+
+                style_update(layer,style_template)
         except Exception as e:
             print "%s" % e
             pass
@@ -133,7 +136,7 @@ def layer_default_style(keyword):
 #put try-except
     if keyword == 'jurisdict':
         try:
-            layers = Layer.objects.filter(owner__username="dataRegistrationUploader")
+            layers = Layer.objects.filter(owner__username="dataRegistrationUploader").exclude(default_style__name="Boundary")
             iterate_over_layers(layers,'Boundary')
         except Exception as e:
             print "%s" % e
@@ -145,13 +148,28 @@ def layer_default_style(keyword):
         except Exception as e:
             print "%s" % e
             pass
-    else:
+    elif keyword == 'Hazard':
+        try:
+            layers = Layer.objects.filter(keywords__name__icontains=keyword)
+            iterate_over_layers(layers,'fhm')
+        except Exception as e:
+            print "%s" % e
+            pass
+    elif keyword == 'PhilLiDAR2':
         try:
             layers = Layer.objects.filter(keywords__name__icontains=keyword)
             iterate_over_layers(layers,'')
         except Exception as e:
             print "%s" % e
             pass
+    elif keyword == 'SAR':
+        try:
+            layers = Layer.objects.filter(keywords__name__icontains=keyword)
+            iterate_over_layers(layers,'dem')
+        except Exception as e:
+            print "%s" % e
+            pass
+       
 
 @task(name='geonode.tasks.update.seed_layers', queue='update')
 def seed_layers(keyword):
