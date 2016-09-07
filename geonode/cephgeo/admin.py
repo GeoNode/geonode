@@ -108,7 +108,8 @@ class RIDFAdmin(admin.ModelAdmin):
         '_25yr',
         '_5yr',
         'layer_name',
-        'Riverbasins'
+        'Riverbasins',
+        'nscb_code'
 
     )
     # list_filter = ('')
@@ -120,7 +121,7 @@ class RIDFAdmin(admin.ModelAdmin):
         return u", ".join(o.name for o in obj.riverbasins.all())
 
     search_fields = ('municipality', 'province', '_100yr',
-                     '_25yr', '_5yr', 'layer_name')
+                     '_25yr', '_5yr', 'layer_name','nscb_code')
 
 admin.site.register(Cart, CartAdmin)
 admin.site.register(Item, ItemAdmin)
