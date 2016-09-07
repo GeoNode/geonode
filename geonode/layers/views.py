@@ -63,13 +63,11 @@ from geonode.security.views import _perms_info_json
 from geonode.documents.models import get_related_documents
 from geonode.utils import build_social_links
 from geonode.geoserver.helpers import cascading_delete, gs_catalog
-
-CONTEXT_LOG_FILE = None
+from geonode.geoserver.helpers import ogc_server_settings
 
 if 'geonode.geoserver' in settings.INSTALLED_APPS:
     from geonode.geoserver.helpers import _render_thumbnail
-    from geonode.geoserver.helpers import ogc_server_settings
-    CONTEXT_LOG_FILE = ogc_server_settings.LOG_FILE
+CONTEXT_LOG_FILE = ogc_server_settings.LOG_FILE
 
 logger = logging.getLogger("geonode.layers.views")
 
