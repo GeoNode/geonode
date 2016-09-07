@@ -933,7 +933,7 @@ def layer_metadata(request, layername):
 
         topic_category = layer.topic_category
         layerAttSet = inlineformset_factory(Layer, LayerAttribute, extra=0, form=LayerAttributeForm, )
-        show_gazetteer_form = request.user.is_superuser and layer.store == get_db_store_name(request.user)
+        show_gazetteer_form = settings.USE_GAZETTEER and layer.store == get_db_store_name(request.user)
 
         fieldTypes = {}
         attributeOptions = layer.attribute_set.filter(attribute_type__in=['xsd:dateTime','xsd:date','xsd:int','xsd:string','xsd:bigint', 'xsd:double'])
@@ -983,9 +983,8 @@ def layer_metadata(request, layername):
             if "tab" in request.POST:
                 tab = request.POST["tab"]
 
-
-
-            if layer_form.is_valid() and category_form.is_valid() and (not request.user.is_superuser or gazetteer_form.is_valid()):
+            if layer_form.is_valid() and category_form.is_valid() and (
+                    not settings.USE_GAZETTEER or gazetteer_form.is_valid()):
 
                 new_category = LayerCategory.objects.get(id=category_form.cleaned_data['category_choice_field'])
 
@@ -996,7 +995,7 @@ def layer_metadata(request, layername):
                         la.searchable = form["searchable"]
                         la.visible = form["visible"]
                         la.display_order = form["display_order"]
-                        if (request.user.is_superuser and gazetteer_form.is_valid()):
+                        if settings.USE_GAZETTEER and gazetteer_form.is_valid():
                             la.in_gazetteer = form["in_gazetteer"]
                             la.is_gaz_start_date = (la == gazetteer_form.cleaned_data["startDate"])
                             la.is_gaz_end_date = (la == gazetteer_form.cleaned_data["endDate"])
@@ -1021,7 +1020,7 @@ def layer_metadata(request, layername):
                 the_layer.keywords.clear()
                 the_layer.keywords.add(*new_keywords)
 
-                if request.user.is_superuser and gazetteer_form.is_valid():
+                if settings.USE_GAZETTEER and gazetteer_form.is_valid():
                     the_layer.in_gazetteer = "gazetteer_include" in request.POST
                     if the_layer.in_gazetteer:
                         the_layer.gazetteer_project = gazetteer_form.cleaned_data["project"]

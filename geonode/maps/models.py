@@ -1551,8 +1551,6 @@ class Layer(models.Model, PermissionLevelMixin):
             newJob = GazetteerUpdateJob(layer=self)
             newJob.save()
 
-
-
     def update_gazetteer(self):
         from geonode.gazetteer.utils import add_to_gazetteer, delete_from_gazetteer
         if not self.in_gazetteer:
@@ -1566,7 +1564,12 @@ class Layer(models.Model, PermissionLevelMixin):
             startAttribute = self.attribute_set.filter(is_gaz_start_date=True)[0].attribute if self.attribute_set.filter(is_gaz_start_date=True).exists() > 0 else None
             endAttribute = self.attribute_set.filter(is_gaz_end_date=True)[0].attribute if self.attribute_set.filter(is_gaz_end_date=True).exists() > 0 else None
 
-            add_to_gazetteer(self.name, includedAttributes, start_attribute=startAttribute, end_attribute=endAttribute, project=self.gazetteer_project)
+            add_to_gazetteer(self.name,
+                             includedAttributes,
+                             start_attribute=startAttribute,
+                             end_attribute=endAttribute,
+                             project=self.gazetteer_project,
+                             user=self.owner.username)
 
     def queue_bounds_update(self):
         from geonode.queue.models import LayerBoundsUpdateJob
@@ -2336,6 +2339,9 @@ def delete_layer(instance, sender, **kwargs):
     """
     instance.delete_from_geoserver()
     instance.delete_from_geonetwork()
+    if settings.USE_GAZETTEER and instance.in_gazetteer:
+        instance.in_gazetteer = False
+        instance.update_gazetteer()
 
 def post_save_layer(instance, sender, **kwargs):
     instance._autopopulate()
