@@ -5,6 +5,8 @@ from datetime import datetime
 import json
 from geonode.people.models import Profile
 from geonode.groups.models import GroupProfile
+from django.utils.translation import ugettext_lazy as _
+from taggit.managers import TaggableManager
 
 try:
     from django.conf import settings
@@ -118,3 +120,22 @@ class SucToLayer(models.Model):
 
     def __unicode__(self):
         return "{0}:{1}".format(self.suc, self.block_name)
+
+class RIDF(models.Model):
+    municipality = models.CharField(max_length=50)
+    province = models.CharField(max_length=50)
+    _100yr = models.DecimalField(max_digits=7, decimal_places=3)
+    _25yr = models.DecimalField(max_digits=7, decimal_places=3)
+    _5yr = models.DecimalField(max_digits=7, decimal_places=3)
+    layer_name = models.CharField(max_length=100, blank=True)
+    riverbasins = TaggableManager(
+        _('riverbasins'),blank=True, help_text='List of riverbasins')
+
+    # def keyword_list(self):
+    #     """
+    #     Returns a list of the Area's riverbasins.
+    #     """
+    #     return [kw.name for kw in self.riverbasins.all()]
+
+    def __unicode__(self):
+        return "{0}".format(self.layer_name)
