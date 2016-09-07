@@ -90,7 +90,8 @@ class MapStory(ResourceBase):
         about = {
             'title': self.title,
             'abstract': self.abstract,
-            'owner': self.owner.name_long
+            'owner': self.owner.name_long,
+            'username': self.owner.username
         }
 
         config = {
