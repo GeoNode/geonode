@@ -70,7 +70,7 @@ def style_update(layer,style_template):
         #print "[FH STYLE] {0}/{1} : {2} ".format(ctr,total_layers,layer.name)
         #delete thumbnail first because of permissions
 
-    if 'fh' in layer.name:
+    if '_fh' in layer.name:
         style = None
         if layer_attrib == "Var":
             style = cat.get_style(style_template)
@@ -96,18 +96,80 @@ def style_update(layer,style_template):
             cat.save(gs_layer)
             ctr+=1
             gs_style = cat.get_style(layer.name)
-            print "GS STYLE: %s " % gs_style.name
-            print "Geoserver: Will delete style %s " % gs_style.name
-            cat.delete(gs_style)
+            if gs_style is not None:
+                print "GS STYLE: %s " % gs_style.name
+                print "Geoserver: Will delete style %s " % gs_style.name
+                cat.delete(gs_style)
             gn_style = Style.objects.get(name=layer.name)
-            print "Geonode: Will delete style %s " % gn_style.name
-            gn_style.delete()
+            if gn_style is not None:
+                print "Geonode: Will delete style %s " % gn_style.name
+                gn_style.delete()
 
             layer.sld_body = style.sld_body
+            _style = Style.objects.get(name=style_template)
+            layer.default_style = _style
             layer.save()
         except Exception as e:
             print "%s" % e
-            
+
+def iterate_over_layers(layers,style_template):
+    count = len(layers)
+    for i,layer in enumerate(layers):
+        try:
+            print "Layer {0} {1}/{2}".format(layer.name,i+1,count)
+            # print "Layer {0}".format(layers.name)
+            # layer.default_style = layer.styles.get()
+            # layer.save()
+            if style_template == '':
+                print "Layer {0} - style template is {1} ".format(layers.name,style_template)
+                layer.default_style = layer.styles.get()
+                layer.save()
+            else:
+
+                style_update(layer,style_template)
+        except Exception as e:
+            print "%s" % e
+            pass
+
+@task(name='geonode.tasks.update.layer_default_style', queue='update')
+def layer_default_style(keyword):
+#put try-except
+    if keyword == 'jurisdict':
+        try:
+            layers = Layer.objects.filter(owner__username="dataRegistrationUploader").exclude(default_style__name="Boundary")
+            iterate_over_layers(layers,'Boundary')
+        except Exception as e:
+            print "%s" % e
+            pass
+    elif keyword == 'dem_':
+        try:
+            layers = Layer.objects.filter(name__icontains=keyword)
+            iterate_over_layers(layers,'dem')
+        except Exception as e:
+            print "%s" % e
+            pass
+    elif keyword == 'Hazard':
+        try:
+            layers = Layer.objects.filter(keywords__name__icontains=keyword)
+            iterate_over_layers(layers,'fhm')
+        except Exception as e:
+            print "%s" % e
+            pass
+    elif keyword == 'PhilLiDAR2':
+        try:
+            layers = Layer.objects.filter(keywords__name__icontains=keyword)
+            iterate_over_layers(layers,'')
+        except Exception as e:
+            print "%s" % e
+            pass
+    elif keyword == 'SAR':
+        try:
+            layers = Layer.objects.filter(keywords__name__icontains=keyword)
+            iterate_over_layers(layers,'dem')
+        except Exception as e:
+            print "%s" % e
+            pass
+       
 
 @task(name='geonode.tasks.update.seed_layers', queue='update')
 def seed_layers(keyword):
@@ -144,7 +206,7 @@ def fhm_year_metadata(flood_year, skip_prev):
     for layer in layer_list:
         try:
             print "Layer: %s" % layer.name
-            style_update(layer,'fhm')
+            # style_update(layer,'fhm')
             fh_perms_update(layer)
             #fh_perms_update(layer,f)
 
@@ -218,7 +280,7 @@ def sar_metadata_update():
     for layer in layer_list:
         ctr+=1
         print "Layer: %s" % layer.name
-        style_update(layer,'dem')
+        # style_update(layer,'dem')
         text_split = layer.name.split(filter_substring)
         area = text_split[1].title().replace('_',' ') #from sar_area to ['','area']
         print count_notification.substitute(ctr=ctr,total=total,layername=layer.name)
@@ -646,43 +708,3 @@ def create_document_thumbnail(object_id):
     image = document._render_thumbnail()
     filename = 'doc-%s-thumb.png' % document.id
     document.save_thumbnail(filename, image)
-
-def iterate_over_layers(layers):
-    count = len(layers)
-    for i,layer in enumerate(layers):
-        try:
-            print "Layer {0} {1}/{2}".format(layer.name,i+1,count)
-            # print "Layer {0}".format(layers.name)
-            layer.default_style = layer.styles.get()
-            layer.save()
-        except Exception as e:
-            print "%s" % e
-            pass
-
-@task(name='geonode.tasks.update.layer_default_style', queue='update')
-def layer_default_style(keyword):
-#put try-except
-    if keyword == 'jurisdict':
-        try:
-            layers = Layer.objects.filter(owner__username="dataRegistrationUploader")
-            # layers = layers[0]
-            iterate_over_layers(layers)
-        except Exception as e:
-            print "%s" % e
-            pass
-    elif keyword == 'dem_':
-        try:
-            layers = Layer.objects.filter(name__icontains=keyword)
-            # layers = layers[0]
-            iterate_over_layers(layers)
-        except Exception as e:
-            print "%s" % e
-            pass
-    else:
-        try:
-            layers = Layer.objects.filter(keywords__name__icontains=keyword)
-            # layers = layers[0]
-            iterate_over_layers(layers)
-        except Exception as e:
-            print "%s" % e
-            pass
