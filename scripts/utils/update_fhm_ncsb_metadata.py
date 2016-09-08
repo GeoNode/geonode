@@ -103,6 +103,7 @@ def style_update(layer,style_template):
         except Exception as e:
             print "%s" % e
 
+
 def fhm_year_metadata(flood_year, skip_prev):
     flood_year_probability = int(100/flood_year)
     layer_list = []
@@ -167,6 +168,8 @@ def fhm_year_metadata(flood_year, skip_prev):
             layer.purpose = " The flood hazard map may be used by the local government for appropriate land use planning in flood-prone areas and for disaster risk reduction and management, such as identifying areas at risk of flooding and proper planning of evacuation."
             
             layer.keywords.add("Flood Hazard Map")
+            for tag in r.riverbasins.all():
+                layer.keywords.add(tag)
             layer.category = TopicCategory.objects.get(identifier="geoscientificInformation")
             layer.save()
             ctr+=1
