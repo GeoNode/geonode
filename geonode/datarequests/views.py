@@ -59,7 +59,7 @@ from braces.views import (
 from .forms import (
     DataRequestProfileForm, DataRequestProfileShapefileForm,
     DataRequestProfileRejectForm, DataRequestDetailsForm)
-from .models import DataRequestProfile
+from .models import DataRequestProfile, DataRequest, ProfileRequest
 from .utils import (
     get_place_name, get_juris_data_size, get_area_coverage)
 
@@ -74,7 +74,7 @@ def registration_part_one(request):
     if request.method == 'GET':
         if request.user.is_authenticated():
 
-            request_object = DataRequestProfile(
+            request_object = ProfileRequest(
                 profile = request.user,
                 first_name = request.user.first_name,
                 middle_name = request.user.middle_name,
@@ -156,7 +156,7 @@ def registration_part_two(request):
     if request.user.is_authenticated() and request.user is not Profile.objects.get(username="AnonymousUser") :
         is_new_auth_req = request.session.get('is_new_auth_req', None)
         try:
-            last_submitted_dr = DataRequestProfile.objects.filter(profile=request.user).latest('key_created_date')
+            last_submitted_dr = ProfileRequest.objects.filter(profile=request.user).latest('key_created_date')
             part_two_initial['project_summary']=last_submitted_dr.project_summary
             part_two_initial['data_type_requested']=last_submitted_dr.data_type_requested
         except ObjectDoesNotExist as e:
@@ -169,7 +169,7 @@ def registration_part_two(request):
         return redirect(reverse('datarequests:registration_part_one'))
 
     form = DataRequestDetailsForm(initial=part_two_initial)
-    
+
     juris_data_size = 0.0
     #area_coverage = get_area_coverage(saved_layer.name)
     area_coverage = 0
@@ -289,7 +289,7 @@ def registration_part_two(request):
                         if permissions is not None and len(permissions.keys()) > 0:
 
                             saved_layer.set_permissions(permissions)
-                        
+
                         jurisdiction_style.delay(saved_layer)
 
                     finally:
@@ -442,7 +442,7 @@ def email_verification_confirm(request):
 
     if key and email:
         try:
-            data_request = DataRequestProfile.objects.get(
+            data_request = ProfileRequest.objects.get(
                 email=email,
                 verification_key=key,
             )
@@ -472,7 +472,7 @@ def email_verification_confirm(request):
 
 def data_request_profile(request, pk, template='datarequests/profile_detail.html'):
 
-    request_profile = get_object_or_404(DataRequestProfile, pk=pk)
+    request_profile = get_object_or_404(DataRequest, pk=pk)
 
     if not request.user.is_superuser and not request_profile.profile == request.user:
         raise PermissionDenied
@@ -563,7 +563,7 @@ def data_request_profile_reject(request, pk):
     if not request.method == 'POST':
         raise PermissionDenied
 
-    request_profile = get_object_or_404(DataRequestProfile, pk=pk)
+    request_profile = get_object_or_404(ProfileRequest, pk=pk)
 
     if request_profile.request_status == 'pending':
         form = parse_qs(request.POST.get('form', None))
@@ -593,7 +593,7 @@ def data_request_profile_reject(request, pk):
     )
 
 def data_request_profile_cancel(request, pk):
-    request_profile = get_object_or_404(DataRequestProfile, pk=pk)
+    request_profile = get_object_or_404(ProfileRequest, pk=pk)
 
     if not request.user.is_superuser and  not request_profile.profile == request.user:
         raise PermissionDenied
@@ -601,7 +601,7 @@ def data_request_profile_cancel(request, pk):
     if not request.method == 'POST':
         raise PermissionDenied
 
-    request_profile = get_object_or_404(DataRequestProfile, pk=pk)
+    request_profile = get_object_or_404(ProfileRequest, pk=pk)
 
     if request_profile.request_status == 'pending' or request_profile.request_status == 'unconfirmed':
         pprint("Yown pasok")
@@ -640,7 +640,7 @@ def data_request_profile_approve(request, pk):
         raise PermissionDenied
 
     if request.method == 'POST':
-        request_profile = get_object_or_404(DataRequestProfile, pk=pk)
+        request_profile = get_object_or_404(ProfileRequest, pk=pk)
 
         if not request_profile.has_verified_email or request_profile.request_status != 'pending':
             raise PermissionDenied
@@ -686,7 +686,7 @@ def data_request_profile_reconfirm(request, pk):
         raise PermissionDenied
 
     if request.method == 'POST':
-        request_profile = get_object_or_404(DataRequestProfile, pk=pk)
+        request_profile = get_object_or_404(ProfileRequest, pk=pk)
 
         request_profile.send_verification_email()
         return HttpResponseRedirect(request_profile.get_absolute_url())
@@ -699,14 +699,14 @@ def data_request_profile_recreate_dir(request, pk):
         raise PermissionDenied
 
     if request.method == 'POST':
-        request_profile = get_object_or_404(DataRequestProfile, pk=pk)
+        request_profile = get_object_or_404(ProfileRequest, pk=pk)
 
         request_profile.create_directory()
         return HttpResponseRedirect(request_profile.get_absolute_url())
 
 def data_request_compute_size(request):
     if request.user.is_superuser:
-        data_requests = DataRequestProfile.objects.exclude(jurisdiction_shapefile=None)
+        data_requests = DataRequest.objects.exclude(jurisdiction_shapefile=None)
         compute_size_update.delay(data_requests)
         messages.info(request, "The estimated data size area coverage of the requests are currently being computed")
         return HttpResponseRedirect(reverse('datarequests:data_request_browse'))
@@ -716,8 +716,8 @@ def data_request_compute_size(request):
 
 def data_request_profile_compute_size(request, pk):
     if request.user.is_superuser and request.method == 'POST':
-        if DataRequestProfile.objects.get(pk=pk).jurisdiction_shapefile:
-            data_requests = DataRequestProfile.objects.filter(pk=pk)
+        if DataRequest.objects.get(pk=pk).jurisdiction_shapefile:
+            data_requests = DataRequest.objects.filter(pk=pk)
             compute_size_update.delay(data_requests)
             messages.info(request, "The estimated data size area coverage of the request is currently being computed")
         else:
@@ -729,7 +729,7 @@ def data_request_profile_compute_size(request, pk):
 
 def data_request_reverse_geocode(request):
     if request.user.is_superuser:
-        data_requests = DataRequestProfile.objects.exclude(jurisdiction_shapefile=None)
+        data_requests = DataRequest.objects.exclude(jurisdiction_shapefile=None)
         place_name_update.delay(data_requests)
         messages.info(request,"Retrieving approximated place names of data requests")
         return HttpResponseRedirect(reverse('datarequests:data_request_browse'))
@@ -738,8 +738,8 @@ def data_request_reverse_geocode(request):
 
 def data_request_profile_reverse_geocode(request, pk):
     if request.user.is_superuser and request.method == 'POST':
-        if DataRequestProfile.objects.get(pk=pk).jurisdiction_shapefile:
-            data_requests = DataRequestProfile.objects.filter(pk=pk)
+        if DataRequest.objects.get(pk=pk).jurisdiction_shapefile:
+            data_requests = DataRequest.objects.filter(pk=pk)
             place_name_update.delay(data_requests)
             messages.info(request, "Retrieving approximated place names of data request")
         else:
@@ -757,13 +757,13 @@ def data_request_facet_count(request):
         raise PermissionDenied
 
     facets_count = {
-        'pending': DataRequestProfile.objects.filter(
+        'pending': ProfileRequest.objects.filter(
             request_status='pending').exclude(date=None).count(),
-        'approved': DataRequestProfile.objects.filter(
+        'approved': ProfileRequest.objects.filter(
             request_status='approved').count(),
-        'rejected': DataRequestProfile.objects.filter(
+        'rejected': ProfileRequest.objects.filter(
             request_status='rejected').count(),
-        'cancelled': DataRequestProfile.objects.filter(
+        'cancelled': ProfileRequest.objects.filter(
             request_status='cancelled').exclude(date=None).count(),
     }
 
@@ -776,7 +776,7 @@ def data_request_facet_count(request):
 def update_datarequest_obj(datarequest=None, parameter_dict=None, interest_layer=None, request_letter = None):
     if datarequest is None or parameter_dict is None or request_letter is None:
         raise HttpResponseBadRequest
-        
+
     if not datarequest.middle_name or len(datarequest.middle_name.strip())<1:
         datarequest.middle_name = '_'
 
