@@ -11,13 +11,13 @@ from crispy_forms.layout import Layout, Fieldset, HTML, Div, Column, Row, Field
 from crispy_forms.bootstrap import PrependedText, InlineRadios
 from model_utils import Choices
 
-from geonode.datarequests.models import DataRequestProfile
+from geonode.datarequests.models import DataRequestProfile, DataRequest, ProfileRequest
 from geonode.layers.forms import NewLayerUploadForm, LayerUploadForm, JSONField
 from geonode.documents.models import Document
 from geonode.documents.forms import DocumentCreateForm
 from geonode.people.models import OrganizationType, Profile
 
-from .models import DataRequestProfile, RequestRejectionReason
+from .models import DataRequestProfile, RequestRejectionReason, DataRequest, ProfileRequest
 
 from pprint import pprint
 
@@ -26,7 +26,7 @@ class DataRequestProfileForm(forms.ModelForm):
     captcha = ReCaptchaField(attrs={'theme': 'clean'})
 
     class Meta:
-        model = DataRequestProfile
+        model = ProfileRequest
         fields = (
             'first_name',
             'middle_name',
@@ -264,11 +264,14 @@ class DataRequestDetailsForm(forms.ModelForm):
     )
 
     class Meta:
-        model = DataRequestProfile
+        model = DataRequest
         fields=(
-            #project_summary',
+            'project_summary',
+            'purpose',
+            'purpose_other',
             'data_type_requested',
             'intended_use_of_dataset',
+            'letter_file',
 
         )
 
@@ -404,6 +407,17 @@ class DataRequestProfileShapefileForm(NewLayerUploadForm):
         required = True
     )
 
+    class Meta:
+        model = DataRequest
+        fields = (
+            'project_summary',
+            'purpose',
+            'purpose_other',
+            'data_type_requested',
+            'intended_use_of_dataset',
+            'letter_file',
+        )
+
     def __init__(self, *args, **kwargs):
         super(DataRequestProfileShapefileForm, self).__init__(*args, **kwargs)
 
@@ -412,7 +426,7 @@ class DataRequestProfileShapefileForm(NewLayerUploadForm):
         if cleaned['base_file']:
             cleaned = super(NewLayerUploadForm, self).clean()
 
-        cleaned[ 'purpose'] = self.clean_purpose()
+        cleaned['purpose'] = self.clean_purpose()
         cleaned['purpose_other'] = self.clean_purpose_other()
 
         return cleaned
@@ -459,7 +473,7 @@ class DataRequestProfileRejectForm(forms.ModelForm):
     )
 
     class Meta:
-        model = DataRequestProfile
+        model = ProfileRequest
         fields = (
             'rejection_reason', 'additional_rejection_reason',
         )
