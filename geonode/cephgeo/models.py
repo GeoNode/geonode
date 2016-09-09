@@ -110,6 +110,10 @@ class UserJurisdiction(models.Model):
 
     def get_user_name(self):
         return self.user.username
+        
+class UserTiles(models.Model):
+    user = models.ForeignKey(Profile, null=False, blank=False)
+    gridref_list = models.TextField(null=False, blank=False)
 
 
 class MissionGridRef(models.Model):

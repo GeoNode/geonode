@@ -13,6 +13,7 @@ from django.http import HttpResponse, HttpResponseBadRequest, HttpResponseRedire
 from geonode.people.models import Profile
 from geonode.documents.models import Document
 from geonode.layers.models import Layer
+from geonode.cephgeo.models import UserJurisdiction
 
 import geocoder
 
@@ -158,14 +159,14 @@ def get_place_name(longitude,latitude):
         'country': g.country
     }
 
-def get_juris_data_size(juris_shp):
-
+def get_juris_tiles(juris_shp):
     _TILE_SIZE = 1000
     total_data_size = 0
     min_x =  int(math.floor(juris_shp.bounds[0] / float(_TILE_SIZE)) * _TILE_SIZE)
     max_x =  int(math.ceil(juris_shp.bounds[2] / float(_TILE_SIZE)) * _TILE_SIZE)
     min_y =  int(math.floor(juris_shp.bounds[1] / float(_TILE_SIZE)) * _TILE_SIZE)
     max_y =  int(math.ceil(juris_shp.bounds[3] / float(_TILE_SIZE)) * _TILE_SIZE)
+    tile_list = []
     for tile_y in xrange(min_y+_TILE_SIZE, max_y+_TILE_SIZE, _TILE_SIZE):
         for tile_x in xrange(min_x, max_x, _TILE_SIZE):
             tile_ulp = (tile_x, tile_y)
@@ -173,15 +174,40 @@ def get_juris_data_size(juris_shp):
             tile_drp = (tile_x + _TILE_SIZE, tile_y - _TILE_SIZE)
             tile_urp = (tile_x + _TILE_SIZE, tile_y)
             tile = Polygon([tile_ulp, tile_dlp, tile_drp, tile_urp])
-
+            
             if not tile.intersection(juris_shp).is_empty:
-                gridref = "E{0}N{1}".format(tile_x / _TILE_SIZE, tile_y / _TILE_SIZE,)
-                georef_query = CephDataObject.objects.filter(name__startswith=gridref)
-                total_size = 0
-                for georef_query_objects in georef_query:
-                    total_size += georef_query_objects.size_in_bytes
-                total_data_size += total_size
+                tile_list.append(tile)
+                
+    return tile_list
+
+def get_juris_data_size(juris_shp):
+    tile_list = get_juris_tiles(juris_shp)
+    total_data_size = 0
+    
+    for tile in tile_list:
+        (minx, miny, maxx, maxy) = tile.bounds
+        gridref = "E{0}N{1}".format(minx / _TILE_SIZE, maxy / _TILE_SIZE,)
+        georef_query = CephDataObject.objects.filter(name__startswith=gridref)
+        total_size = 0
+        for georef_query_objects in georef_query:
+            total_size += georef_query_objects.size_in_bytes
+        total_data_size += total_size
+        
     return total_data_size
+    
+def assign_grid_refs(user):
+    shapefile = UserJurisdiction.objects.get(user=user).jurisdiction_shapefile
+    _TILE_SIZE = 1000
+    gridref_list = ""
+    
+    
+    
+    for tile in get_juris_tiles(shapefile):
+        (minx, miny, maxx, maxy) = tile.bounds
+        gridref = "E{0}N{1}".format(minx / _TILE_SIZE, maxy / _TILE_SIZE,)
+        gridref_list += gridref
+        
+    
 
 def get_area_coverage(juris_shp):
     return juris_shp.area/1000000
