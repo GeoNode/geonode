@@ -163,7 +163,7 @@ INSTALLED_APPS = (
     # Datatable API
     'geonode.contrib.datatables',
     #'geonode.hoods',
-    #'geonode.gazetteer',
+    'geonode.gazetteer',
     #'debug_toolbar',
 
     #DVN apps

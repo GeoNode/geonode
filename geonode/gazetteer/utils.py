@@ -31,19 +31,18 @@ CREATE TRIGGER tsvectorupdate BEFORE INSERT OR UPDATE
   tsvector_update_trigger(placename_tsv, 'pg_catalog.english', place_name);
 '''
 
-def get_geometry_type(layer_name):
+def get_geometry_type(layer):
     """
     Return the geometry type (POINT, POLYGON etc), geometry column name, and projection of a layer
     """
-
-    conn = getConnection()
+    conn = getConnection(layer.store)
     try:
         cur = conn.cursor()
-        cur.execute("select type, f_geometry_column, srid from geometry_columns where f_table_name = '%s'" % layer_name)
+        cur.execute("select type, f_geometry_column, srid from geometry_columns where f_table_name = '%s'" % layer.name)
         result = cur.fetchone()
         return result
     except Exception, e:
-        logger.error("Error retrieving type for PostGIS table %s:%s", layer_name, str(e))
+        logger.error("Error retrieving type for PostGIS table %s:%s", layer.name, str(e))
         raise
     finally:
         conn.close()
@@ -207,17 +206,22 @@ def add_to_gazetteer(layer_name, name_attributes, start_attribute=None,
                 metadata_date))
         return date_format
 
-
     layer = get_object_or_404(Layer, name=layer_name)
-    layer_type, geocolumn, projection = get_geometry_type(layer_name)
+    layer_type, geocolumn, projection = get_geometry_type(layer)
 
     namelist = "'" + "','".join(name_attributes) + "'"
 
     """
     Delete layer placenames where the FID is no longer in the original table or the layer_attribute is not in the list of name attributes.
     """
+
+    conn = getConnection(layer.store)
+    cur = conn.cursor()
+    cur.execute("SELECT string_agg(fid::text, ',') as fids_list from %s;" % layer.name)
+    fids = cur.fetchone()[0]
+
     delete_query = "DELETE FROM " + GAZETTEER_TABLE + " WHERE layer_name = '" + str(
-        layer.name) + "' AND (feature_fid NOT IN (SELECT fid from \"" + layer.name + "\") OR layer_attribute NOT IN (" + namelist + "))"
+        layer.name) + "' AND (feature_fid NOT IN (" + fids + ") OR layer_attribute NOT IN (" + namelist + "))"
 
     updateQueries = []
     insertQueries = []
@@ -257,7 +261,10 @@ def add_to_gazetteer(layer_name, name_attributes, start_attribute=None,
     start_date={sdate}, end_date = {edate},
     julian_start = {sjulian}, julian_end={ejulian}, project='{project}',
     longitude = ST_X({coord}), latitude = ST_Y({coord})
-    FROM "{layer}" as l WHERE layer_name = '{layer}' AND feature_fid = l.fid
+    FROM
+    (select * from dblink('dbname={store}', 'select fid, {geocolumn}, "{attribute}" from {layer};') as lt
+    (fid integer, {geocolumn} geometry, "{attribute}" {attribute_type})) as l
+    WHERE layer_name = '{layer}' AND feature_fid = l.fid
     AND layer_attribute = '{attribute}' and l."{attribute}" is not NULL;
     """
 
@@ -267,16 +274,26 @@ def add_to_gazetteer(layer_name, name_attributes, start_attribute=None,
     feature, longitude, latitude, username)
     (SELECT '{layer}' as layer_name, '{attribute}' as layer_attribute,
     '{type}' as feature_type, fid as feature_fid, "{attribute}" as place_name,
-    {sdate} as start_attribute, {edate} as end_attribute, {sjulian} as
+    {sdate} as start_date, {edate} as end_date, {sjulian} as
     julian_start, {ejulian} as julian_end, '{project}' as project, {geom} as
     feature, ST_X({coord}), ST_Y({coord}), {username}
-    FROM {layer} as l WHERE l."{attribute}" IS NOT NULL AND fid NOT IN
+    FROM
+    (select * from dblink('dbname={store}', 'select fid, {geocolumn}, "{attribute}" from {layer};') as lt
+    (fid integer, {geocolumn} geometry, "{attribute}" {attribute_type})) as l
+    WHERE l."{attribute}" IS NOT NULL AND fid NOT IN
     (SELECT feature_fid FROM {table} WHERE layer_name = '{layer}' AND
     layer_attribute = '{attribute}'))
     """
 
     for name in name_attributes:
         attribute = get_object_or_404(LayerAttribute, layer=layer, attribute=name)
+
+        # detect column type, needed by dblink
+        cur = conn.cursor(layer.store)
+        cur.execute("select data_type from information_schema.columns where table_name = '%s' and column_name = '%s';" % (layer_name, name))
+        attribute_type = cur.fetchone()[0]
+        cur.close()
+
         """
         Update layer placenames where placename FID = layer FID
         and placename layer attribute = name attribute
@@ -294,8 +311,11 @@ def add_to_gazetteer(layer_name, name_attributes, start_attribute=None,
             ejulian=(julian_end if julian_end else "NULL"),
             project=project,
             coord=coord_query,
-            layer=layer_name)
-        print updateQuery
+            layer=layer_name,
+            store=layer.store,
+            geocolumn=geocolumn,
+            attribute_type=attribute_type,
+            )
         updateQueries.append(updateQuery)
 
         """
@@ -313,7 +333,10 @@ def add_to_gazetteer(layer_name, name_attributes, start_attribute=None,
             ejulian=julian_end if julian_end else "NULL",
             project=project,
             coord=coord_query,
-            layer=layer_name)
+            layer=layer_name,
+            store=layer.store,
+            geocolumn=geocolumn,
+            attribute_type=attribute_type,)
         insertQueries.append(insertQuery)
 
     conn = getConnection()
@@ -379,9 +402,12 @@ def getNominatimResults(place_name):
     except:
         return []
 
-def getConnection():
+def getConnection(layer_store=None):
+    dbname = settings.DATABASES[settings.GAZETTEER_DB_ALIAS]['NAME']
+    if layer_store:
+        dbname = layer_store
     return psycopg2.connect(
-        "dbname='" + settings.DATABASES[settings.GAZETTEER_DB_ALIAS]['NAME'] + "' user='" + \
+        "dbname='" + dbname + "' user='" + \
         settings.DATABASES[settings.GAZETTEER_DB_ALIAS]['USER'] + "'  password='" + \
         settings.DATABASES[settings.GAZETTEER_DB_ALIAS]['PASSWORD'] + "' port=" + \
         settings.DATABASES[settings.GAZETTEER_DB_ALIAS]['PORT'] + " host='" + \
