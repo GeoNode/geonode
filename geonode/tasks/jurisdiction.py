@@ -36,3 +36,7 @@ def jurisdiction_style(saved_layer):
     except Exception as e:
         exception_type, error, tb = sys.exc_info()
         print traceback.format_exc()
+        
+@task(name="geonode.tasks.jurisdiction.jurisdiction_gridrefs", queue="jurisdiction")
+def  jurisdiction_gridrefs(user):
+    pass
