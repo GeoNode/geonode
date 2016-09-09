@@ -1,0 +1,27 @@
+{% extends "admin/base_site.html" %}
+
+{% block content %}
+
+        <div class="grp-group">
+            <h2>
+                Are you sure you want to run the selected {{ objects_name }}?
+            </h2>
+            {% for cancellable_backup in cancellable_backups %}
+                <ul class="grp-nested-list">{{ cancellable_backup.name }}</ul>
+            {% endfor %}
+        </div>
+        <form action="" method="post">{% csrf_token %}
+            <div id="submit" class="grp-module grp-submit-row grp-fixed-footer">
+                {% for cancellable_backup in cancellable_backups %}
+                    <input type="hidden" name="{{ action_checkbox_name }}" value="{{ cancellable_backup.id }}" />
+                {% endfor %}
+                <input type="hidden" name="action" value="{{ action_exec }}" />
+                <input type="hidden" name="post" value="yes" />
+                <a href="." class="grp-button grp-cancel-link">Cancel</a>
+                <input type="submit" value="Yes, I'm sure" class="grp-button grp-default" />
+                <input type="hidden" name="post" value="yes" />
+            </div>
+        </form>
+
+
+{% endblock %}
