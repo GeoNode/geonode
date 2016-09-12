@@ -46,10 +46,10 @@ class Profile(AbstractUser):
     Volunteer_Technical_Community = models.BooleanField(_('Volunteer Technical Community'),
         help_text=_('indicates membership of the Volunteer Technical Comunity'),
         default=False)
-    social_twitter = models.CharField(_('Twitter Handle'), help_text=_('Provide your Twitter handle or URL'), max_length=255, null=True, blank=True)
-    social_facebook = models.CharField(_('Facebook Profile'), help_text=_('Provide your Facebook handle or URL'), max_length=255, null=True, blank=True)
-    social_github = models.CharField(_('GitHub Profile'), help_text=_('Provide your GitHub handle or URL'), max_length=255, null=True, blank=True)
-    social_linkedin = models.CharField(_('LinkedIn Profile'), help_text=_('Provide your LinkedIn handle or URL'), max_length=255, null=True, blank=True)
+    social_twitter = models.CharField(_('Twitter Handle'), help_text=_('Provide your Twitter username'), max_length=255, null=True, blank=True)
+    social_facebook = models.CharField(_('Facebook Profile'), help_text=_('Provide your Facebook username'), max_length=255, null=True, blank=True)
+    social_github = models.CharField(_('GitHub Profile'), help_text=_('Provide your GitHub username'), max_length=255, null=True, blank=True)
+    social_linkedin = models.CharField(_('LinkedIn Profile'), help_text=_('Provide your LinkedIn username'), max_length=255, null=True, blank=True)
     education = models.TextField(_('Education'), null=True, blank=True, help_text=_('Provide some details about your Education and Background'))
     expertise = models.TextField(_('Expertise'), null=True, blank=True, help_text=_('Provide some details about your Expertise'))
     digest = models.BooleanField(_('Monthly email digest'), help_text=_('Subscribe to MapStory monthly email digest'), default=False)
